@@ -25,12 +25,10 @@
 		<dependency>
 			<groupId>com.oracle</groupId>
 			<artifactId>ojdbc8</artifactId>
-			<version>${oracle.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.oracle</groupId>
 			<artifactId>ucp</artifactId>
-			<version>${oracle.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
