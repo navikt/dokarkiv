@@ -1,0 +1,4 @@
+naisPipeline {
+    applicationName = "dokarkiv"
+    dockerfileDir = "."
+}
