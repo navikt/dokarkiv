@@ -22,3 +22,11 @@ resources:
     memory: 1024Mi
   requests:
     memory: 512Mi
+fasitResources:
+  used:
+  - alias: joarkds
+    resourceType: datasource
+    propertyMap:
+      url: SPRING_DATASOURCE_URL
+      username: SPRING_DATASOURCE_USERNAME
+      password: SPRING_DATASOURCE_PASSWORD

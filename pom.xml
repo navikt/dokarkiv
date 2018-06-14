@@ -42,6 +42,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
+		<oracle.version>12.2.0.1</oracle.version>
 	</properties>
 
 	<reporting>
@@ -78,6 +79,16 @@
 				<groupId>no.nav.dokarkiv</groupId>
 				<artifactId>dokumentproduksjoninfo</artifactId>
 				<version>1-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>com.oracle</groupId>
+				<artifactId>ojdbc8</artifactId>
+				<version>${oracle.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.oracle</groupId>
+				<artifactId>ucp</artifactId>
+				<version>${oracle.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
