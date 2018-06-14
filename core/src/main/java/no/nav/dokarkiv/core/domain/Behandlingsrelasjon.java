@@ -35,7 +35,6 @@ public class Behandlingsrelasjon extends AbstractPersistentVersionedDomainObject
 	@Column(name = "behandling_id", nullable = false)
 	private String behandlingsId;
 	
-	//TODO Enum
 	@Column(name = "behandling_type", nullable = false)
 	private String behandlingsType;
 

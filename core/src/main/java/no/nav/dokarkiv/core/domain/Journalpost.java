@@ -25,6 +25,7 @@ import org.hibernate.annotations.Parameter;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -34,6 +35,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
+import javax.persistence.MapKeyColumn;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -250,9 +252,9 @@ import java.util.stream.Collectors;
 	@Cascade({CascadeType.PERSIST, CascadeType.SAVE_UPDATE, CascadeType.DELETE, CascadeType.EVICT})
 	private final Set<JournalpostDokumentInfoRelasjon> journalpostDokumentInfoRelasjoner = new HashSet<>();
 	
-//	@CollectionOfElements FIXME
+	@ElementCollection
 	@JoinTable(name = "t_jp_tillegg", joinColumns = @JoinColumn(name = "journalpost_id", nullable = false))
-//	@MapKey(columns = {@Column(name = "nokkel", nullable = false)}) FIXME
+	@MapKeyColumn(name = "nokkel")
 	@Column(name = "verdi", nullable = false)
 	private Map<String, String> tilleggsopplysninger = new HashMap<>();
 
