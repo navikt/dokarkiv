@@ -318,8 +318,7 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	 * @return The SkannetInnhold.
 	 */
 	public SkannetInnhold findSkannetInnholdById(final Long skannetInnholdId) {
-//		return Iterables.find(skannetInnholdListe, new IdEqualToPredicate(skannetInnholdId), null); FIXME
-		return null;
+		return skannetInnholdListe.stream().filter(skannetInnhold -> skannetInnholdId.equals(skannetInnhold.getId())).findAny().orElse(null);
 	}
 
 	/**
@@ -329,8 +328,7 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	 * @return The FilDetaljer.
 	 */
 	public FilDetaljer findFilDetaljerById(final Long filDetaljerId) {
-//		return Iterables.find(fildetaljerListe, new IdEqualToPredicate(filDetaljerId), null); FIXME
-		return null;
+		return fildetaljerListe.stream().filter(filDetaljer -> filDetaljerId.equals(filDetaljer.getId())).findAny().orElse(null);
 	}
 
 	/**
@@ -340,12 +338,7 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	 * @return The FilDetaljer.
 	 */
 	public FilDetaljer findFilDetaljerByFilUuid(final String filUuid) {
-//		return Iterables.find(fildetaljerListe, new Predicate<FilDetaljer>() {
-//			public boolean apply(FilDetaljer input) {
-//				return filUuid.equals(input.getFilUuid());
-//			}
-//		}, null); FIXME
-		return null;
+		return fildetaljerListe.stream().filter(filDetaljer -> filUuid.equals(filDetaljer.getFilUuid())).findAny().orElse(null);
 	}
 
 	/**
@@ -355,8 +348,7 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	 * @return A list of Fildetaljer with the given VariantFormatCode.
 	 */
 	public FilDetaljer findFilDetaljerByVariantFormat(final VariantFormatCode variantFormat) {
-//		return Iterables.find(fildetaljerListe, new FilDetaljerVariantPredicate(variantFormat), null);
-		return null;
+		return fildetaljerListe.stream().filter(filDetaljer -> variantFormat.equals(filDetaljer.getVariantFormat())).findAny().orElse(null);
 	}
 
 	/**

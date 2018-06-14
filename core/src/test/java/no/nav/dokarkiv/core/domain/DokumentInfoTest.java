@@ -1,0 +1,360 @@
+package no.nav.dokarkiv.core.domain;
+
+import static no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder.getDokumentInfoBuilder;
+import static no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder.getFilDetaljerBuilder;
+import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalpostBuilder;
+import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
+import static no.nav.dokarkiv.core.domain.builder.SkannetInnholdBuilder.getSkannetInnholdBuilder;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
+
+import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
+import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
+import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
+import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
+import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
+import no.nav.dokarkiv.core.exceptions.InvalidJournalpostStructureException;
+import org.junit.Test;
+
+/**
+ * Unit tests for DokumentInfo.
+ *
+ * @author Thomas Eugen Bjørge, Sirius IT
+ */
+public class DokumentInfoTest {
+
+	@Test
+	public void shouldThrowExceptionForMissingEndretAvNavn() throws Exception {
+		DokumentInfo dokumentInfo = getDokumentInfoBuilder()
+				.dokumentInfoId(19L)
+				.build();
+
+		assertExceptionThrownWhenVerifyingMandatoryFields(dokumentInfo, null, "endretAvNavn");
+	}
+
+	@Test
+	public void shouldThrowExceptionForMissingDokumentstatusAndJournalposttypeU() throws Exception {
+		Journalpost journalpost = getJournalpostBuilder()
+				.journalpostType(JournalpostTypeCode.U)
+				.build();
+		DokumentInfo dokumentInfo = getDokumentInfoBuilder().build();
+
+		assertExceptionThrownWhenVerifyingMandatoryFields(dokumentInfo, journalpost, "dokumentstatus");
+	}
+
+	@Test
+	public void shouldThrowExceptionForMissingDokumentstatusAndJournalposttypeN() throws Exception {
+		Journalpost journalpost = getJournalpostBuilder()
+				.journalpostType(JournalpostTypeCode.N)
+				.build();
+		DokumentInfo dokumentInfo = getDokumentInfoBuilder().build();
+
+		assertExceptionThrownWhenVerifyingMandatoryFields(dokumentInfo, journalpost, "dokumentstatus");
+	}
+
+	@Test
+	public void shouldThrowExceptionForMissingKategori() throws Exception {
+		Journalpost journalpost = getJournalpostBuilder().build();
+		DokumentInfo dokumentInfo = getDokumentInfoBuilder()
+				.tittel("Tittel")
+				.sensitivt(false)
+				.build();
+
+		assertExceptionThrownWhenVerifyingMandatoryFields(dokumentInfo, journalpost, "kategori");
+	}
+
+	@Test
+	public void shouldThrowExceptionForMissingTittel() throws Exception {
+		Journalpost journalpost = getJournalpostBuilder()
+				.journalStatus(JournalStatusCode.D)
+				.build();
+		DokumentInfo dokumentInfo = getDokumentInfoBuilder()
+				.kategori(DokumentKategoriCode.B)
+				.sensitivt(false)
+				.build();
+
+		assertExceptionThrownWhenVerifyingMandatoryFields(dokumentInfo, journalpost, "tittel");
+	}
+
+	@Test
+	public void shouldThrowExceptionForMissingSensistivt() throws Exception {
+		Journalpost journalpost = getJournalpostBuilder()
+				.journalStatus(JournalStatusCode.FS)
+				.build();
+		DokumentInfo dokumentInfo = getDokumentInfoBuilder()
+				.kategori(DokumentKategoriCode.B)
+				.tittel("Tittel")
+				.build();
+
+		assertExceptionThrownWhenVerifyingMandatoryFields(dokumentInfo, journalpost, "sensitivt");
+	}
+
+	@Test
+	public void shouldFindSkannetInnholdById() throws Exception {
+		long skannetInnholdId = 200L;
+		String innhold = "innhold";
+		DokumentInfo dokumentInfo = getDokumentInfoBuilder()
+				.skannetInnhold(getSkannetInnholdBuilder()
+								.skannetInnholdId(100L)
+								.vedleggInnhold("test")
+								.build(),
+						getSkannetInnholdBuilder()
+								.skannetInnholdId(skannetInnholdId)
+								.vedleggInnhold(innhold)
+								.build())
+				.build();
+		SkannetInnhold skannetInnhold = dokumentInfo.findSkannetInnholdById(skannetInnholdId);
+		assertThat(skannetInnhold.getVedleggInnhold(), is(innhold));
+	}
+
+	@Test
+	public void shouldFindSkannetInnholdByIdWithNewAndExistingSkannetInnholdsInList() throws Exception {
+		long skannetInnholdId = 200L;
+		String innhold = "innhold";
+		DokumentInfo dokumentInfo = getDokumentInfoBuilder()
+				.skannetInnhold(getSkannetInnholdBuilder()
+								.vedleggInnhold("test")
+								.build(),
+						getSkannetInnholdBuilder()
+								.skannetInnholdId(skannetInnholdId)
+								.vedleggInnhold(innhold)
+								.build())
+				.build();
+		SkannetInnhold skannetInnhold = dokumentInfo.findSkannetInnholdById(skannetInnholdId);
+		assertThat(skannetInnhold.getVedleggInnhold(), is(innhold));
+	}
+
+	@Test
+	public void shouldFindFilDetaljerById() throws Exception {
+		long filDetaljerId = 200L;
+		String uuid = "uuid";
+		DokumentInfo dokumentInfo = getDokumentInfoBuilder()
+				.filDetaljerList(
+						getFilDetaljerBuilder()
+								.fildetaljerId(100L)
+								.filUuid("test")
+								.build(),
+						getFilDetaljerBuilder()
+								.fildetaljerId(filDetaljerId)
+								.filUuid(uuid)
+								.build())
+				.build();
+		FilDetaljer filDetaljer = dokumentInfo.findFilDetaljerById(filDetaljerId);
+		assertThat(filDetaljer.getFilUuid(), is(uuid));
+	}
+
+	@Test
+	public void shouldFindFilDetaljerByFilUuid() throws Exception {
+		long filDetaljerId = 200L;
+		String filUuid = FilDetaljer.generateUuid();
+		DokumentInfo dokumentInfo = getDokumentInfoBuilder()
+				.filDetaljerList(
+						getFilDetaljerBuilder()
+								.filUuid("test")
+								.build(),
+						getFilDetaljerBuilder()
+								.fildetaljerId(filDetaljerId)
+								.filUuid(filUuid)
+								.build())
+				.build();
+		FilDetaljer filDetaljer = dokumentInfo.findFilDetaljerByFilUuid(filUuid);
+		assertThat(filDetaljer.getId(), is(filDetaljerId));
+	}
+
+	@Test
+	public void shouldThrowExceptionForDuplicateDokumentVarianter() throws Exception {
+		VariantFormatCode arkivVariant = VariantFormatCode.ARKIV;
+		DokumentInfo dokumentInfo = getDokumentInfoBuilder()
+				.filDetaljerList(getFilDetaljerBuilder()
+								.variantFormat(arkivVariant)
+								.build(),
+						getFilDetaljerBuilder()
+								.variantFormat(VariantFormatCode.PRODUKSJON)
+								.build(),
+						getFilDetaljerBuilder()
+								.variantFormat(arkivVariant)
+								.build())
+				.build();
+
+		try {
+			dokumentInfo.verifyNoVariantDuplicates();
+		} catch (InvalidJournalpostStructureException e) {
+			assertThat(e.getMessage(), containsString("2"));
+			assertThat(e.getMessage(), containsString(arkivVariant.name()));
+		}
+	}
+
+	@Test
+	public void shouldReturnTrueIfThereIsADocumentWithArkivVariant() throws Exception {
+		DokumentInfo dokumentInfo = getDokumentInfoBuilder()
+				.filDetaljerList(getFilDetaljerBuilder()
+						.variantFormat(VariantFormatCode.ARKIV)
+						.build())
+				.build();
+
+		assertThat(dokumentInfo.hasArkivFormat(), is(true));
+	}
+
+	@Test
+	public void shouldReturnFalseIfThereIsNotADocumentWithArkivVariant() throws Exception {
+		DokumentInfo dokumentInfo = getDokumentInfoBuilder()
+				.filDetaljerList(getFilDetaljerBuilder()
+						.variantFormat(VariantFormatCode.PRODUKSJON)
+						.build())
+				.build();
+
+		assertThat(dokumentInfo.hasArkivFormat(), is(false));
+	}
+
+	@Test
+	public void shouldThrowExceptionForMissingFilDetaljerWhenEndeligJournalforing() throws Exception {
+		Journalpost journalpost = getJournalpostBuilder()
+				.journalStatus(JournalStatusCode.J)
+				.build();
+		DokumentInfo dokumentInfo = getDokumentInfoBuilder()
+				.tittel("Tittel")
+				.kategori(DokumentKategoriCode.B)
+				.sensitivt(false)
+				.build();
+
+		assertExceptionThrownWhenVerifyingMandatoryFields(dokumentInfo, journalpost, "FilDetaljer");
+	}
+
+	@Test
+	public void shouldFindFilDetaljerByVariantFormat() throws Exception {
+		VariantFormatCode arkiv = VariantFormatCode.ARKIV;
+		String uuid = "uuid";
+		DokumentInfo dokumentInfo = getDokumentInfoBuilder()
+				.filDetaljerList(
+						getFilDetaljerBuilder()
+								.variantFormat(VariantFormatCode.PRODUKSJON)
+								.filUuid("test")
+								.build(),
+						getFilDetaljerBuilder()
+								.variantFormat(arkiv)
+								.filUuid(uuid)
+								.build())
+				.build();
+		FilDetaljer filDetaljer = dokumentInfo.findFilDetaljerByVariantFormat(arkiv);
+		assertThat(filDetaljer.getFilUuid(), is(uuid));
+
+	}
+
+	@Test
+	public void shouldFindJournalpostDokumentInfoRelasjonByJournalpostId() throws Exception {
+		Long journalpostId = 200L;
+		DokumentInfo dokumentInfo = getDokumentInfoBuilder().build();
+
+		JournalpostDokumentInfoRelasjon journalpostRelasjon = getJournalpostDokumentInfoRelasjonBuilder()
+				.dokumentInfo(dokumentInfo)
+				.build();
+		getJournalpostBuilder()
+				.journalpostId(journalpostId)
+				.dokumentInfoRelasjoner(journalpostRelasjon)
+				.build();
+
+		assertThat(dokumentInfo.findJournalpostRelasjonByJournalpostId(journalpostId), is(journalpostRelasjon));
+	}
+
+	@Test
+	public void shouldRemoveFildetaljerFromSet() throws Exception {
+		FilDetaljer arkivFildetaljer = getFilDetaljerBuilder()
+				.variantFormat(VariantFormatCode.ARKIV)
+				.filUuid("uuid")
+				.build();
+
+		DokumentInfo dokumentInfo = getDokumentInfoBuilder()
+				.filDetaljerList(
+						getFilDetaljerBuilder()
+								.variantFormat(VariantFormatCode.PRODUKSJON)
+								.filUuid("uuid2")
+								.build(),
+						arkivFildetaljer)
+				.build();
+
+		dokumentInfo.removeFilDetaljer(arkivFildetaljer);
+		assertThat(dokumentInfo.getFildetaljerListe().size(), is(1));
+		assertThat(dokumentInfo.getFildetaljerListe().iterator().next().getVariantFormat(), is(VariantFormatCode.PRODUKSJON));
+
+	}
+
+	@Test
+	public void shouldHaveMultipleJournalpostRelations() throws Exception {
+		DokumentInfo dokumentInfo = getDokumentInfoBuilder().build();
+
+		getJournalpostDokumentInfoRelasjonBuilder()
+				.dokumentInfo(dokumentInfo)
+				.build();
+
+		getJournalpostDokumentInfoRelasjonBuilder()
+				.dokumentInfo(dokumentInfo)
+				.build();
+		assertThat(dokumentInfo.isRelatedToMultipleJournalposts(), is(true));
+	}
+
+	@Test
+	public void shouldNotHaveMultipleJournalpostRelations() throws Exception {
+		DokumentInfo dokumentInfo = getDokumentInfoBuilder().build();
+
+		getJournalpostDokumentInfoRelasjonBuilder()
+				.dokumentInfo(dokumentInfo)
+				.build();
+
+		assertThat(dokumentInfo.isRelatedToMultipleJournalposts(), is(false));
+	}
+
+	@Test
+	public void shouldNotHaveMultipleJournalpostRelationsWhenZero() throws Exception {
+		DokumentInfo dokumentInfo = getDokumentInfoBuilder().build();
+
+		assertThat(dokumentInfo.isRelatedToMultipleJournalposts(), is(false));
+	}
+
+	@Test
+	public void shouldBeMarkedAsDeletedWhenSlettetIsTrue() {
+		DokumentInfo dokumentInfo = getDokumentInfoBuilder().slettet(true).build();
+
+		boolean result = dokumentInfo.isFunksjoneltSlettet();
+
+		assertThat(result, is(true));
+	}
+
+	@Test
+	public void shouldBeMarkedAsDeletedWhenTittelContainsSlettetDokument() {
+		DokumentInfo dokumentInfo = getDokumentInfoBuilder().slettet(null).tittel("Test - Slettet dokument").build();
+
+		boolean result = dokumentInfo.isFunksjoneltSlettet();
+
+		assertThat(result, is(true));
+	}
+
+	@Test
+	public void shouldNotBeMarkedAsDeletedWhenSlettetIsFalseAndTittelDoesNotContainSlettetDokument() {
+		DokumentInfo dokumentInfo = getDokumentInfoBuilder().slettet(false).tittel("Test").build();
+
+		boolean result = dokumentInfo.isFunksjoneltSlettet();
+
+		assertThat(result, is(false));
+	}
+
+	@Test
+	public void shouldNotBeMarkedAsDeletedWhenSlettetIsNullAndTittelDoesNotContainSlettetDokument() {
+		DokumentInfo dokumentInfo = getDokumentInfoBuilder().slettet(null).tittel("Test").build();
+
+		boolean result = dokumentInfo.isFunksjoneltSlettet();
+
+		assertThat(result, is(false));
+	}
+
+	private void assertExceptionThrownWhenVerifyingMandatoryFields(DokumentInfo dokumentInfo, Journalpost journalpost,
+																   String fieldName) {
+		try {
+			dokumentInfo.verifyMandatoryFields(journalpost);
+			fail();
+		} catch (InvalidArgumentException e) {
+			assertThat(e.getMessage(), containsString(fieldName));
+		}
+	}
+}

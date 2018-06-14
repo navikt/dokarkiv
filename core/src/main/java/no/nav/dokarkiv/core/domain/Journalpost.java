@@ -51,6 +51,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Domain entity that represents journalposts.
@@ -598,8 +599,7 @@ import java.util.Set;
 	 * @return The ReturInfo with id.
 	 */
 	public ReturInfo findReturInfoById(final Long returInfoId) {
-//		return Iterables.find(returInfos, new IdEqualToPredicate(returInfoId), null); FIXME
-		return null;
+		return returInfos.stream().filter(returInfo -> returInfoId.equals(returInfo.getId())).findAny().orElse(null);
 	}
 
 	/**
@@ -609,8 +609,7 @@ import java.util.Set;
 	 * @return The KryssReferanse with kryssReferanseId.
 	 */
 	public Kryssreferanse findKryssreferanseById(final Long kryssReferanseId) {
-//		return Iterables.find(kryssreferanser, new IdEqualToPredicate(kryssReferanseId), null); FIXME
-		return null;
+		return kryssreferanser.stream().filter(kryssreferanse -> kryssReferanseId.equals(kryssreferanse.getId())).findAny().orElse(null);
 	}
 	
 	/**
@@ -620,8 +619,7 @@ import java.util.Set;
 	 * @return The Bruker.
 	 */
 	public Bruker findBrukerById(final Long brukerInfoId) {
-//		return Iterables.find(brukere, new IdEqualToPredicate(brukerInfoId), null); FIXME
-		return null;
+		return brukere.stream().filter(bruker -> brukerInfoId.equals(bruker.getId())).findAny().orElse(null);
 	}
 
 	/**
@@ -631,12 +629,7 @@ import java.util.Set;
 	 * @return The Bruker.
 	 */
 	public Bruker findBrukerByBrukerId(final String brukerId) {
-//		return Iterables.find(brukere, new Predicate<Bruker>() {
-//			public boolean apply(Bruker input) {
-//				return brukerId.equals(input.getBrukerId());
-//			}
-//		}, null); FIXME
-		return null;
+		return brukere.stream().filter(bruker -> brukerId.equals(bruker.getBrukerId())).findAny().orElse(null);
 	}
 
 	/**
@@ -646,9 +639,8 @@ import java.util.Set;
 	 * @return The JournalpostDokumentInfoRelasjon.
 	 */
 	public JournalpostDokumentInfoRelasjon findDokumentInfoRelasjonById(final Long journalpostDokumentInfoRelasjonId) {
-//		return Iterables.find(journalpostDokumentInfoRelasjoner, new IdEqualToPredicate(journalpostDokumentInfoRelasjonId),
-//				null); FIXME
-		return null;
+		return journalpostDokumentInfoRelasjoner.stream()
+				.filter(journalpostDokumentInfoRelasjon -> journalpostDokumentInfoRelasjonId.equals(journalpostDokumentInfoRelasjon.getId())).findAny().orElse(null);
 	}
 
 	/**
@@ -658,14 +650,7 @@ import java.util.Set;
 	 * @return An Iterable of DokumentInfo
 	 */
 	public Iterable<DokumentInfo> findDokumentInfoByDokumentStatus(final DokumentStatusCode dokumentStatusCode) {
-//		return Iterables.filter(findAllDokumentInfos(), new Predicate<DokumentInfo>() {
-//			@Override
-//			public boolean apply(DokumentInfo input) {
-//				return dokumentStatusCode.equals(input.getDokumentstatus());
-//			}
-//
-//		}); FIXME
-		return null;
+		return findAllDokumentInfos().stream().filter(dokumentInfo -> dokumentStatusCode.equals(dokumentInfo.getDokumentstatus())).collect(Collectors.toList());
 	}
 	
 	/**
@@ -676,13 +661,9 @@ import java.util.Set;
 	 */
 	public Set<JournalpostDokumentInfoRelasjon> findDokumentInfoRelasjonByTilknyttetJournalpostSom(
 			final TilknyttetJournalpostSomCode tilknyttetJournalpostSom) {
-//		return Sets.filter(journalpostDokumentInfoRelasjoner, new Predicate<JournalpostDokumentInfoRelasjon>() {
-//			@Override
-//			public boolean apply(JournalpostDokumentInfoRelasjon input) {
-//				return tilknyttetJournalpostSom == input.getTilknyttetJournalpostSom();
-//			}
-//		}); FIXME
-		return null;
+		return journalpostDokumentInfoRelasjoner.stream()
+				.filter(journalpostDokumentInfoRelasjon -> tilknyttetJournalpostSom.equals(journalpostDokumentInfoRelasjon.getTilknyttetJournalpostSom()))
+				.collect(Collectors.toSet());
 	}
 	
 	/**

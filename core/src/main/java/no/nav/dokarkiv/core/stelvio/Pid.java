@@ -29,6 +29,7 @@ import java.util.Date;
  * @author Odin Hole Standal
  * @see Embeddable
  */
+@Deprecated // ikke bruk denne mer
 @Embeddable
 public final class Pid implements Serializable {
 	/** The id used to check version of object when serializing. */
