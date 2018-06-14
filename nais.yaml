@@ -1,0 +1,24 @@
+image: "docker.adeo.no:5000/dok/dokarkiv"
+replicas:
+  min: 2
+  max: 10
+  cpuThresholdPercentage: 70
+port: 8080
+healthcheck:
+  liveness:
+    path: /isAlive
+    initialDelay: 30
+    failureThreshold: 10
+  readiness:
+    path: /isReady
+    initialDelay: 30
+    timeout: 3
+prometheus:
+  enabled: true
+  path: /prometheus
+resources:
+  limits:
+    cpu: 4000m
+    memory: 1024Mi
+  requests:
+    memory: 512Mi
