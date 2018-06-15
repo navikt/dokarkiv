@@ -21,6 +21,7 @@
 		<module>app</module>
 		<module>core</module>
 		<module>dokumentproduksjoninfo</module>
+		<module>arkiverdokumentmottak</module>
 	</modules>
 
 	<distributionManagement>
