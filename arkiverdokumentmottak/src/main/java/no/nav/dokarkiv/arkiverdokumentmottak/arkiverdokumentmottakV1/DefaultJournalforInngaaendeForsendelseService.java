@@ -1,22 +1,22 @@
 package no.nav.dokarkiv.arkiverdokumentmottak.arkiverdokumentmottakV1;
 
-import static no.nav.service.dok.joark.ServiceConstants.FORSENDELSE_MOTTAK_ID_KEY;
 
-import com.google.common.base.Strings;
-import no.nav.domain.dok.joark.Journalpost;
-import no.nav.domain.dok.joark.JournalpostDokumentInfoRelasjon;
-import no.nav.domain.dok.joark.codestable.JournalStatusCode;
-import no.nav.domain.dok.joark.codestable.JournalpostTypeCode;
-import no.nav.domain.dok.joark.codestable.TilknyttetJournalpostSomCode;
-import no.nav.repository.dok.joark.mod.JoarkRepository;
-import no.nav.repository.dok.joark.util.DateProvider;
-import no.nav.service.dok.joark.journalbehandling.DokumentFilerDelegate;
-import no.nav.service.dok.joark.nsb.JournalforInngaaendeForsendelseValidator;
+import static no.nav.dokarkiv.arkiverdokumentmottak.arkiverdokumentmottakV1.config.ServiceConstants.FORSENDELSE_MOTTAK_ID_KEY;
+
+import no.nav.dokarkiv.core.domain.Journalpost;
+import no.nav.dokarkiv.core.domain.JournalpostDokumentInfoRelasjon;
+import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
+import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
+import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
+import no.nav.dokarkiv.core.domain.util.DateProvider;
+import no.nav.dokarkiv.core.journabehandling.DokumentFilerDelegate;
+import no.nav.dokarkiv.core.nsb.DokumentInfoIdVedleggTo;
+import no.nav.dokarkiv.core.repository.JoarkRepository;
 import org.springframework.util.CollectionUtils;
 
 import javax.inject.Inject;
 
-public class DefaultJournalforInngaaendeForsendelseService implements JournalforInngaaendeForsendelseService {
+public class DefaultJournalforInngaaendeForsendelseService {
 
 	@Inject
 	private JoarkRepository joarkRepository;
@@ -25,7 +25,6 @@ public class DefaultJournalforInngaaendeForsendelseService implements Journalfor
 	@Inject
 	private JournalforInngaaendeForsendelseValidator validator;
 
-	@Override
 	public JournalforInngaaendeForsendelseResponseTo journalforInngaaendeForsendelse(
 			JournalforInngaaendeForsendelseRequestTo requestTo) {
 		requestTo.validate();
@@ -36,7 +35,7 @@ public class DefaultJournalforInngaaendeForsendelseService implements Journalfor
 			validator.validate(journalpost, true);
 
 			dokumentFilerDelegate.saveUpdateDokumentFiler(journalpost);
-			storedJournalpost = joarkRepository.saveNewJournalPost(journalpost);
+			storedJournalpost = joarkRepository.save(journalpost);
 			return buildResponse(storedJournalpost);
 		}
 		return buildResponse(storedJournalpost);
@@ -73,12 +72,12 @@ public class DefaultJournalforInngaaendeForsendelseService implements Journalfor
 		}
 
 		String forsendelseMottakId = requestTo.getJournalpost().getTilleggsopplysninger().get(FORSENDELSE_MOTTAK_ID_KEY);
-		if (Strings.isNullOrEmpty(forsendelseMottakId)) {
+		if (forsendelseMottakId == null || forsendelseMottakId.isEmpty()) {
 			return null;
 		}
 
-		Long findJournalpostTilleggssopplysning = joarkRepository.findJournalpostWithTilleggssopplysning(FORSENDELSE_MOTTAK_ID_KEY, forsendelseMottakId);
-		return joarkRepository.findJournalpostById(findJournalpostTilleggssopplysning);
+		Long findJournalpostTilleggssopplysning = joarkRepository.findJournalpostByTilleggsopplysninger(FORSENDELSE_MOTTAK_ID_KEY, forsendelseMottakId);
+		return joarkRepository.findById(findJournalpostTilleggssopplysning).get(); //FIXME
 	}
 
 }

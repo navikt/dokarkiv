@@ -1,6 +1,6 @@
 package no.nav.dokarkiv.arkiverdokumentmottak.arkiverdokumentmottakV1.config;
 
-import static no.nav.service.dok.joark.ServiceConstants.FORSENDELSE_MOTTAK_ID_KEY;
+import static no.nav.dokarkiv.arkiverdokumentmottak.arkiverdokumentmottakV1.config.ServiceConstants.FORSENDELSE_MOTTAK_ID_KEY;
 
 import com.google.common.base.Objects;
 import no.nav.dokarkiv.arkiverdokumentmottak.arkiverdokumentmottakV1.DefaultJournalforInngaaendeForsendelseRequestMapper;

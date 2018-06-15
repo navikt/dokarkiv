@@ -7,5 +7,8 @@ import org.springframework.data.repository.Repository;
  * @author Joakim Bjørnstad, Jbit AS
  */
 public interface DokumentFilRepository extends Repository<DokumentFil, String> {
+
 	DokumentFil findByFilUuid(String filUuid);
+
+	void save(DokumentFil dokumentFil);
 }
