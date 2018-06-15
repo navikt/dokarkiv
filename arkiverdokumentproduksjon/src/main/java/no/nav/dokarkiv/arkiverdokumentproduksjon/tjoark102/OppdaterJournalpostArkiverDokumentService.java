@@ -1,15 +1,15 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark102;
 
-import no.nav.service.dok.joark.nsb.exceptions.AlleredeFerdigstiltException;
-import no.nav.service.dok.joark.nsb.exceptions.FeilStrukturException;
-import no.nav.service.dok.joark.nsb.exceptions.KanIkkeFerdigstillesException;
-import no.nav.service.dok.joark.nsb.exceptions.ObjektIkkeFunnetException;
-import no.nav.service.dok.joark.nsb.exceptions.UgyldigInputException;
-import no.nav.service.dok.joark.nsb.to.OppdaterJournalpostArkiverDokumentRequestTo;
+
+import no.nav.dokarkiv.core.exceptions.AlleredeFerdigstiltException;
+import no.nav.dokarkiv.core.exceptions.FeilStrukturException;
+import no.nav.dokarkiv.core.exceptions.KanIkkeFerdigstillesException;
+import no.nav.dokarkiv.core.exceptions.ObjektIkkeFunnetException;
+import no.nav.dokarkiv.core.exceptions.UgyldigInputException;
 
 /**
  * Interface for the operation OppdaterJournalpostArkiverDokument
- * 
+ *
  * @author Torgeir Cook.
  */
 public interface OppdaterJournalpostArkiverDokumentService {

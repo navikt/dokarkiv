@@ -1,4 +1,4 @@
-package no.nav.service.dok.joark.nsb.to;
+package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark101;
 
 /**
  * The response object for the OpprettJournalpostService as a part in

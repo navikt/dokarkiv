@@ -11,7 +11,6 @@ import no.nav.domain.dok.joark.codestable.VariantFormatCode;
 import no.nav.modig.core.exception.ApplicationException;
 import no.nav.service.dok.joark.NoJournalpostFoundException;
 import no.nav.service.dok.joark.journalbehandling.IllegalDocumentUpdateException;
-import no.nav.service.dok.joark.nsb.ArkiverVedleggValidator;
 import no.nav.service.dok.joark.nsb.to.ArkiverVedleggRequestTo;
 import org.springframework.util.StringUtils;
 

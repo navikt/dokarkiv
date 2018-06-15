@@ -1,4 +1,4 @@
-package no.nav.dokarkiv;
+package no.nav.dokarkiv.arkiverdokumentproduksjon;
 
 import no.nav.modig.common.MDCOperations;
 import no.nav.provider.dok.joark.nsb.config.ArkiverDokumentproduksjonConfig;

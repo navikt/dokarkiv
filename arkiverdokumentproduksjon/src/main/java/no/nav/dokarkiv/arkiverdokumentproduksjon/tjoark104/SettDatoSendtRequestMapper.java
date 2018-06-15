@@ -1,4 +1,4 @@
-package no.nav.provider.dok.joark.nsb.map;
+package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark104;
 
 import no.nav.service.dok.joark.nsb.to.SettDatoSendtRequestTo;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.SettDatoSendtRequest;

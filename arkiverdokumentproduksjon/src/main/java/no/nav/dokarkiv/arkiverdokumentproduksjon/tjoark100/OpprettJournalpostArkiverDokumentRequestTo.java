@@ -1,4 +1,4 @@
-package no.nav.service.dok.joark.nsb.to;
+package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark100;
 
 import no.nav.domain.dok.joark.Journalpost;
 import no.nav.domain.dok.joark.codestable.JournalpostTypeCode;

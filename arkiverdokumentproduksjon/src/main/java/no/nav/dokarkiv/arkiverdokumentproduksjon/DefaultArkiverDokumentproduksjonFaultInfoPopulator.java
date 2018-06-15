@@ -1,4 +1,4 @@
-package no.nav.provider.dok.joark.nsb.support;
+package no.nav.dokarkiv.arkiverdokumentproduksjon;
 
 import no.nav.provider.dok.joark.nsb.ArkiverDokumentproduksjonFaultInfoPopulator;
 import no.nav.provider.dok.joark.support.AbstractJournalFaultInfoPopulator;

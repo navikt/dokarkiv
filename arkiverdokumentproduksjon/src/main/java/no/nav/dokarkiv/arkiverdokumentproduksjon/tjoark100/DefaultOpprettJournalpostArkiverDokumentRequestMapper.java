@@ -1,7 +1,6 @@
-package no.nav.dokarkiv.map;
+package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark100;
 
 import no.nav.domain.dok.joark.Journalpost;
-import no.nav.provider.dok.joark.nsb.map.OpprettJournalpostArkiverDokumentRequestMapper;
 import no.nav.service.dok.joark.journalbehandling.KildeNavnPopulator;
 import no.nav.service.dok.joark.nsb.to.OpprettJournalpostArkiverDokumentRequestTo;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.OpprettJournalpostArkiverDokumentRequest;

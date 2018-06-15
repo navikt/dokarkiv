@@ -1,8 +1,7 @@
-package no.nav.provider.dok.joark.nsb.map.support;
+package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark104;
 
 import com.google.common.collect.ImmutableList;
 import no.nav.modig.core.exception.ApplicationException;
-import no.nav.provider.dok.joark.nsb.map.SettDatoSendtRequestMapper;
 import no.nav.service.dok.joark.nsb.to.SettDatoSendtRequestTo;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.SettDatoSendtRequest;
 

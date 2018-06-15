@@ -1,5 +1,19 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark109;
 
+import static java.util.Arrays.asList;
+import static no.nav.domain.dok.joark.codestable.DokumentStatusCode.FERDIGSTILT;
+import static no.nav.domain.dok.joark.codestable.FagomradeCode.GEN;
+import static no.nav.domain.dok.joark.codestable.FagomradeCode.OPP;
+import static no.nav.domain.dok.joark.codestable.JournalStatusCode.D;
+import static no.nav.domain.dok.joark.codestable.JournalStatusCode.E;
+import static no.nav.domain.dok.joark.codestable.JournalStatusCode.FL;
+import static no.nav.domain.dok.joark.codestable.JournalStatusCode.FS;
+import static no.nav.domain.dok.joark.codestable.JournalStatusCode.J;
+import static no.nav.domain.dok.joark.codestable.TilknyttetJournalpostSomCode.VEDLEGG;
+import static no.nav.domain.dok.joark.codestable.VariantFormatCode.ARKIV;
+import static org.apache.commons.lang3.BooleanUtils.isTrue;
+import static org.springframework.util.StringUtils.collectionToDelimitedString;
+
 import no.nav.domain.dok.joark.DokumentInfo;
 import no.nav.domain.dok.joark.FilDetaljer;
 import no.nav.domain.dok.joark.Journalpost;
@@ -8,8 +22,6 @@ import no.nav.domain.dok.joark.codestable.FagomradeCode;
 import no.nav.domain.dok.joark.codestable.JournalStatusCode;
 import no.nav.service.dok.joark.journalbehandling.SporingPopulator;
 import no.nav.service.dok.joark.nsb.FindJournalpostByIdService;
-import no.nav.service.dok.joark.nsb.KnyttDokumentTilJournalpostSomVedleggService;
-import no.nav.service.dok.joark.nsb.KnyttDokumentTilJournalpostSomVedleggValidator;
 import no.nav.service.dok.joark.nsb.exceptions.DokumentInfoInnskrenketPartsinnsynException;
 import no.nav.service.dok.joark.nsb.exceptions.DokumentInfoIsOrganInterntException;
 import no.nav.service.dok.joark.nsb.exceptions.DokumentInfoNotFoundException;
@@ -29,20 +41,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
 import java.util.EnumSet;
-
-import static java.util.Arrays.asList;
-import static no.nav.domain.dok.joark.codestable.DokumentStatusCode.FERDIGSTILT;
-import static no.nav.domain.dok.joark.codestable.FagomradeCode.GEN;
-import static no.nav.domain.dok.joark.codestable.FagomradeCode.OPP;
-import static no.nav.domain.dok.joark.codestable.JournalStatusCode.D;
-import static no.nav.domain.dok.joark.codestable.JournalStatusCode.E;
-import static no.nav.domain.dok.joark.codestable.JournalStatusCode.FL;
-import static no.nav.domain.dok.joark.codestable.JournalStatusCode.FS;
-import static no.nav.domain.dok.joark.codestable.JournalStatusCode.J;
-import static no.nav.domain.dok.joark.codestable.TilknyttetJournalpostSomCode.VEDLEGG;
-import static no.nav.domain.dok.joark.codestable.VariantFormatCode.ARKIV;
-import static org.apache.commons.lang3.BooleanUtils.isTrue;
-import static org.springframework.util.StringUtils.collectionToDelimitedString;
 
 /**
  * @author Thomas Kåsene, Visma Consulting AS

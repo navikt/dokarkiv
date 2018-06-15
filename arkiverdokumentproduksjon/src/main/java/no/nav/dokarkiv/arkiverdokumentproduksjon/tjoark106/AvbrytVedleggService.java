@@ -1,4 +1,4 @@
-package no.nav.service.dok.joark.nsb;
+package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark106;
 
 import no.nav.service.dok.joark.NoJournalpostFoundException;
 import no.nav.service.dok.joark.journalbehandling.NoDokumentInfoFoundException;

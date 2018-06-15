@@ -10,7 +10,6 @@ import no.nav.service.dok.joark.NoJournalpostFoundException;
 import no.nav.service.dok.joark.journalbehandling.NoDokumentInfoFoundException;
 import no.nav.service.dok.joark.journalbehandling.UgyldigDokumentStatusVerdiException;
 import no.nav.service.dok.joark.journalbehandling.UgyldigJournalStatusVerdiException;
-import no.nav.service.dok.joark.nsb.AvbrytVedleggValidator;
 import no.nav.service.dok.joark.nsb.exceptions.UgyldigTilknyttetJournalpostSomVerdiException;
 import no.nav.service.dok.joark.nsb.to.AvbrytVedleggRequestTo;
 import org.springframework.util.Assert;

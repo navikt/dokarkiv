@@ -1,10 +1,9 @@
-package no.nav.service.dok.joark.nsb.support;
+package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark104;
 
 import no.nav.domain.dok.joark.Journalpost;
 import no.nav.modig.core.exception.ApplicationException;
 import no.nav.repository.dok.joark.mod.JoarkRepository;
 import no.nav.service.dok.joark.journalbehandling.SporingPopulator;
-import no.nav.service.dok.joark.nsb.SettDatoSendtService;
 import no.nav.service.dok.joark.nsb.to.SettDatoSendtRequestTo;
 
 import javax.inject.Inject;

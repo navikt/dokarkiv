@@ -1,12 +1,10 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark108;
 
 
-import org.springframework.util.Assert;
-
 import no.nav.domain.dok.joark.codestable.UtsendingsKanalCode;
-import no.nav.provider.dok.joark.nsb.map.FerdigstillJournalpostRequestMapper;
 import no.nav.service.dok.joark.nsb.to.FerdigstillJournalpostRequestTo;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.FerdigstillJournalpostRequest;
+import org.springframework.util.Assert;
 
 /**
  * Implementation of {@link FerdigstillJournalpostRequestMapper} interface

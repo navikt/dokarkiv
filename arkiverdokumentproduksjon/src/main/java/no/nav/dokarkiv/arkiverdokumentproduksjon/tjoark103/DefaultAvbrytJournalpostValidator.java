@@ -3,7 +3,6 @@ package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark103;
 import no.nav.domain.dok.joark.Journalpost;
 import no.nav.domain.dok.joark.codestable.JournalStatusCode;
 import no.nav.service.dok.joark.journalbehandling.UgyldigJournalStatusOvergangException;
-import no.nav.service.dok.joark.nsb.AvbrytJournalpostValidator;
 
 /**
  * Implementation of the AvbrytJournalpostValidator

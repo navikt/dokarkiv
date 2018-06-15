@@ -9,7 +9,6 @@ import no.nav.domain.dok.joark.codestable.JournalStatusCode;
 import no.nav.domain.dok.joark.codestable.TilknyttetJournalpostSomCode;
 import no.nav.domain.dok.joark.codestable.UtsendingsKanalCode;
 import no.nav.domain.dok.joark.codestable.VariantFormatCode;
-import no.nav.service.dok.joark.nsb.OppdaterJournalpostArkiverDokumentValidator;
 import no.nav.service.dok.joark.nsb.exceptions.AlleredeFerdigstiltException;
 import no.nav.service.dok.joark.nsb.exceptions.FeilStrukturException;
 import no.nav.service.dok.joark.nsb.exceptions.KanIkkeFerdigstillesException;

@@ -1,7 +1,6 @@
-package no.nav.service.dok.joark.nsb.to;
+package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark108;
 
 import no.nav.domain.dok.joark.codestable.UtsendingsKanalCode;
-
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 

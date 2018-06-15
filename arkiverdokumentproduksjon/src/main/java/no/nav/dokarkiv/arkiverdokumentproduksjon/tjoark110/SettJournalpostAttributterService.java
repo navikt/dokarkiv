@@ -1,4 +1,4 @@
-package no.nav.service.dok.joark.arkiverdokumentproduksjon;
+package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark110;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
@@ -10,7 +10,7 @@ import no.nav.service.dok.joark.journalbehandling.SporingPopulator;
 import javax.inject.Inject;
 
 /**
- * @author Joakim Bjørnstad, Jbit AS
+ * @author Joakim Bj?rnstad, Jbit AS
  */
 public class SettJournalpostAttributterService {
 	@Inject

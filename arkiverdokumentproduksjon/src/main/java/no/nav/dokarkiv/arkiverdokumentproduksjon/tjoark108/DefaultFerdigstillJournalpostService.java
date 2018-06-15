@@ -1,7 +1,5 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark108;
 
-import javax.inject.Inject;
-
 import no.nav.domain.dok.joark.DokumentInfo;
 import no.nav.domain.dok.joark.FilDetaljer;
 import no.nav.domain.dok.joark.Journalpost;
@@ -14,9 +12,9 @@ import no.nav.service.dok.joark.NoJournalpostFoundException;
 import no.nav.service.dok.joark.journalbehandling.SporingPopulator;
 import no.nav.service.dok.joark.journalbehandling.UgyldigDokumentStatusVerdiException;
 import no.nav.service.dok.joark.journalbehandling.UgyldigJournalStatusVerdiException;
-import no.nav.service.dok.joark.nsb.FerdigstillJournalpostService;
-import no.nav.service.dok.joark.nsb.FerdigstillJournalpostValidator;
 import no.nav.service.dok.joark.nsb.to.FerdigstillJournalpostRequestTo;
+
+import javax.inject.Inject;
 
 /**
  * Implementation of the {@link FerdigstillJournalpostService}

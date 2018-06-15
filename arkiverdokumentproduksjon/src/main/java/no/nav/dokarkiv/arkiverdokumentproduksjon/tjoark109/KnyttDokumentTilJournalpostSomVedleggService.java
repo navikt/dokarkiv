@@ -1,4 +1,4 @@
-package no.nav.service.dok.joark.nsb;
+package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark109;
 
 import no.nav.service.dok.joark.nsb.exceptions.DokumentInfoInnskrenketPartsinnsynException;
 import no.nav.service.dok.joark.nsb.exceptions.DokumentInfoIsOrganInterntException;

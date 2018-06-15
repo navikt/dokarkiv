@@ -1,6 +1,4 @@
-package no.nav.service.dok.joark.nsb.exceptions;
-
-import no.stelvio.common.error.FunctionalRecoverableException;
+package no.nav.dokarkiv.core.exceptions;
 
 /**
  * @author Leo-Andreas Ervik, Visma Consulting

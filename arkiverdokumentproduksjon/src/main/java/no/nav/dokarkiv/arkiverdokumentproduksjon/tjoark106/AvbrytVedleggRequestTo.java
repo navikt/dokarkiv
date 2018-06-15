@@ -1,4 +1,4 @@
-package no.nav.service.dok.joark.nsb.to;
+package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark106;
 
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 

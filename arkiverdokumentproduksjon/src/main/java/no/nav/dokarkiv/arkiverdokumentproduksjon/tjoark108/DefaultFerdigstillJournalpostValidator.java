@@ -1,5 +1,10 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark108;
 
+import static no.nav.domain.dok.joark.codestable.DokumentStatusCode.UNDER_REDIGERING;
+import static no.nav.domain.dok.joark.codestable.JournalStatusCode.D;
+import static no.nav.domain.dok.joark.codestable.JournalStatusCode.FL;
+import static no.nav.domain.dok.joark.codestable.JournalStatusCode.FS;
+
 import no.nav.domain.dok.joark.DokumentInfo;
 import no.nav.domain.dok.joark.FilDetaljer;
 import no.nav.domain.dok.joark.Journalpost;
@@ -9,14 +14,8 @@ import no.nav.domain.dok.joark.codestable.VariantFormatCode;
 import no.nav.modig.core.exception.ApplicationException;
 import no.nav.service.dok.joark.journalbehandling.UgyldigDokumentStatusVerdiException;
 import no.nav.service.dok.joark.journalbehandling.UgyldigJournalStatusVerdiException;
-import no.nav.service.dok.joark.nsb.FerdigstillJournalpostValidator;
 import no.nav.service.dok.joark.nsb.to.FerdigstillJournalpostRequestTo;
 import org.springframework.util.Assert;
-
-import static no.nav.domain.dok.joark.codestable.DokumentStatusCode.UNDER_REDIGERING;
-import static no.nav.domain.dok.joark.codestable.JournalStatusCode.D;
-import static no.nav.domain.dok.joark.codestable.JournalStatusCode.FL;
-import static no.nav.domain.dok.joark.codestable.JournalStatusCode.FS;
 
 /**
  * Implementation for the {@link FerdigstillJournalpostValidator} interface

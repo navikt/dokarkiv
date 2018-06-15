@@ -10,8 +10,6 @@ import no.nav.repository.dok.joark.util.DateProvider;
 import no.nav.service.dok.joark.NoJournalpostFoundException;
 import no.nav.service.dok.joark.journalbehandling.DokumentFilerDelegate;
 import no.nav.service.dok.joark.journalbehandling.SporingPopulator;
-import no.nav.service.dok.joark.nsb.ArkiverVedleggService;
-import no.nav.service.dok.joark.nsb.ArkiverVedleggValidator;
 import no.nav.service.dok.joark.nsb.to.ArkiverVedleggRequestTo;
 import no.nav.service.dok.joark.nsb.to.ArkiverVedleggResponseTo;
 

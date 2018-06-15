@@ -6,7 +6,6 @@ import no.nav.domain.dok.joark.JournalpostDokumentInfoRelasjon;
 import no.nav.domain.dok.joark.codestable.DokumentStatusCode;
 import no.nav.domain.dok.joark.codestable.JournalStatusCode;
 import no.nav.service.dok.joark.journalbehandling.SporingPopulator;
-import no.nav.service.dok.joark.nsb.AvbrytJournalpostUpdater;
 
 import javax.inject.Inject;
 

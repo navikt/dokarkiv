@@ -1,7 +1,5 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark100;
 
-import no.nav.dokarkiv.map.OpprettJournalpostArkiverDokumentResponseMapper;
-import no.nav.provider.dok.joark.nsb.map.OpprettJournalpostArkiverDokumentResponseMapper;
 import no.nav.service.dok.joark.nsb.to.OpprettJournalpostArkiverDokumentResponseTo;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.OpprettJournalpostArkiverDokumentResponse;
 import org.dozer.Mapper;

@@ -1,4 +1,4 @@
-package no.nav.service.dok.joark.nsb.to;
+package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark109;
 
 /**
  * @author Thomas Kåsene, Visma Consulting AS

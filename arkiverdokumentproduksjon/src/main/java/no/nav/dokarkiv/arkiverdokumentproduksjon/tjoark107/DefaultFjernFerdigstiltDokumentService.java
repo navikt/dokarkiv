@@ -1,6 +1,4 @@
-package no.nav.service.dok.joark.nsb.support;
-
-import javax.inject.Inject;
+package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark107;
 
 import no.nav.domain.dok.joark.DokumentInfo;
 import no.nav.domain.dok.joark.FilDetaljer;
@@ -14,9 +12,10 @@ import no.nav.service.dok.joark.journalbehandling.NoDokumentInfoFoundException;
 import no.nav.service.dok.joark.journalbehandling.SporingPopulator;
 import no.nav.service.dok.joark.journalbehandling.UgyldigDokumentStatusVerdiException;
 import no.nav.service.dok.joark.journalbehandling.UgyldigJournalStatusVerdiException;
-import no.nav.service.dok.joark.nsb.FjernFerdigstiltDokumentService;
 import no.nav.service.dok.joark.nsb.FjernFerdigstiltDokumentValidator;
 import no.nav.service.dok.joark.nsb.to.FjernFerdigstiltDokumentRequestTo;
+
+import javax.inject.Inject;
 
 /**
  * Implementation of the {@link FjernFerdigstiltDokumentService}

@@ -1,4 +1,4 @@
-package no.nav.service.dok.joark.nsb.support;
+package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark100;
 
 import static no.nav.service.dok.joark.ServiceConstants.BESTILLINGS_ID_KEY;
 
@@ -14,7 +14,6 @@ import no.nav.modig.core.exception.ApplicationException;
 import no.nav.repository.dok.joark.mod.JoarkRepository;
 import no.nav.repository.dok.joark.util.DateProvider;
 import no.nav.service.dok.joark.journalbehandling.DokumentFilerDelegate;
-import no.nav.service.dok.joark.nsb.OpprettJournalpostArkiverDokumentService;
 import no.nav.service.dok.joark.nsb.OpprettJournalpostArkiverDokumentValidator;
 import no.nav.service.dok.joark.nsb.to.OpprettJournalpostArkiverDokumentRequestTo;
 import no.nav.service.dok.joark.nsb.to.OpprettJournalpostArkiverDokumentResponseTo;

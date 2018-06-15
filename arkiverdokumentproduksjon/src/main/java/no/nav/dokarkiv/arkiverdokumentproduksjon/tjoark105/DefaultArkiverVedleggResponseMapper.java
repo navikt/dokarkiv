@@ -1,6 +1,5 @@
-package no.nav.provider.dok.joark.nsb.map.support;
+package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark105;
 
-import no.nav.provider.dok.joark.nsb.map.ArkiverVedleggResponseMapper;
 import no.nav.service.dok.joark.nsb.to.ArkiverVedleggResponseTo;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.ArkiverVedleggResponse;
 import org.dozer.Mapper;

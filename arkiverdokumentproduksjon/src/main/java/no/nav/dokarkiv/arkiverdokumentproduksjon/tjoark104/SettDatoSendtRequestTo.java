@@ -1,4 +1,4 @@
-package no.nav.service.dok.joark.nsb.to;
+package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark104;
 
 import no.nav.modig.core.exception.ApplicationException;
 import org.apache.commons.lang.StringUtils;

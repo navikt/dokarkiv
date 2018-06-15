@@ -1,4 +1,4 @@
-package no.nav.provider.dok.joark.nsb.map;
+package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark102;
 
 import no.nav.service.dok.joark.nsb.exceptions.UgyldigInputException;
 import no.nav.service.dok.joark.nsb.to.OppdaterJournalpostArkiverDokumentRequestTo;

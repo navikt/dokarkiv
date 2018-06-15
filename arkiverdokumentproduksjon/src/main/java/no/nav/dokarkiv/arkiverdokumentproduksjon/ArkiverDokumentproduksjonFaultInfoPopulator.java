@@ -1,4 +1,4 @@
-package no.nav.provider.dok.joark.nsb;
+package no.nav.dokarkiv.arkiverdokumentproduksjon;
 
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.feil.ForretningsmessigUnntak;
 

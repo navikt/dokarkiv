@@ -1,4 +1,4 @@
-package no.nav.service.dok.joark.nsb;
+package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark108;
 
 import no.nav.domain.dok.joark.Journalpost;
 import no.nav.service.dok.joark.journalbehandling.UgyldigDokumentStatusVerdiException;

@@ -1,4 +1,4 @@
-package no.nav.provider.dok.joark.nsb.map;
+package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark108;
 
 import no.nav.service.dok.joark.nsb.to.FerdigstillJournalpostRequestTo;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.FerdigstillJournalpostRequest;

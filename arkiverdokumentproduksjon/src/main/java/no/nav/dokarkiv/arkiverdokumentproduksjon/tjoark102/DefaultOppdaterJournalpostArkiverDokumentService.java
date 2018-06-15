@@ -1,4 +1,4 @@
-package no.nav.service.dok.joark.nsb.support;
+package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark102;
 
 import no.nav.domain.dok.joark.DokumentInfo;
 import no.nav.domain.dok.joark.FilDetaljer;
@@ -11,8 +11,6 @@ import no.nav.repository.dok.joark.JoarkRepository;
 import no.nav.repository.dok.joark.util.DateProvider;
 import no.nav.service.dok.joark.journalbehandling.DokumentFilerDelegate;
 import no.nav.service.dok.joark.journalbehandling.SporingPopulator;
-import no.nav.service.dok.joark.nsb.OppdaterJournalpostArkiverDokumentService;
-import no.nav.service.dok.joark.nsb.OppdaterJournalpostArkiverDokumentValidator;
 import no.nav.service.dok.joark.nsb.exceptions.AlleredeFerdigstiltException;
 import no.nav.service.dok.joark.nsb.exceptions.FeilStrukturException;
 import no.nav.service.dok.joark.nsb.exceptions.KanIkkeFerdigstillesException;

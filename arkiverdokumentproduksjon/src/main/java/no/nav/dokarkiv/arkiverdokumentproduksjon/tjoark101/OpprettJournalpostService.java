@@ -1,4 +1,4 @@
-package no.nav.service.dok.joark.nsb;
+package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark101;
 
 import no.nav.service.dok.joark.nsb.to.OpprettJournalpostRequestTo;
 import no.nav.service.dok.joark.nsb.to.OpprettJournalpostResponseTo;

@@ -1,7 +1,5 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark101;
 
-import javax.inject.Inject;
-
 import no.nav.domain.dok.joark.DokumentInfo;
 import no.nav.domain.dok.joark.Journalpost;
 import no.nav.domain.dok.joark.JournalpostDokumentInfoRelasjon;
@@ -12,10 +10,11 @@ import no.nav.modig.core.exception.ApplicationException;
 import no.nav.repository.dok.joark.mod.JoarkRepository;
 import no.nav.repository.dok.joark.util.DateProvider;
 import no.nav.service.dok.joark.journalbehandling.DokumentFilerDelegate;
-import no.nav.service.dok.joark.nsb.OpprettJournalpostService;
 import no.nav.service.dok.joark.nsb.OpprettJournalpostValidator;
 import no.nav.service.dok.joark.nsb.to.OpprettJournalpostRequestTo;
 import no.nav.service.dok.joark.nsb.to.OpprettJournalpostResponseTo;
+
+import javax.inject.Inject;
 
 /**
  * Implementation of the OpprettJournalpostService

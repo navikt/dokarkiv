@@ -1,4 +1,4 @@
-package no.nav.service.dok.joark.nsb.to;
+package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark102;
 
 import no.nav.domain.dok.joark.FilDetaljer;
 import no.nav.domain.dok.joark.codestable.UtsendingsKanalCode;

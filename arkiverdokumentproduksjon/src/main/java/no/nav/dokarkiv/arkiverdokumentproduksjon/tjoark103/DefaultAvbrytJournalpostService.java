@@ -4,9 +4,6 @@ import no.nav.domain.dok.joark.Journalpost;
 import no.nav.repository.dok.joark.JoarkRepository;
 import no.nav.service.dok.joark.NoJournalpostFoundException;
 import no.nav.service.dok.joark.journalbehandling.UgyldigJournalStatusOvergangException;
-import no.nav.service.dok.joark.nsb.AvbrytJournalpostService;
-import no.nav.service.dok.joark.nsb.AvbrytJournalpostUpdater;
-import no.nav.service.dok.joark.nsb.AvbrytJournalpostValidator;
 import no.nav.service.dok.joark.nsb.to.AvbrytJournalpostRequestTo;
 import org.springframework.util.Assert;
 
