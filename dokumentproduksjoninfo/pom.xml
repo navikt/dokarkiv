@@ -11,10 +11,40 @@
 
 	<artifactId>dokumentproduksjoninfo</artifactId>
 
+	<properties>
+		<dokumentproduksjoninfo-tjenestespesifikasjon.version>2.1.0</dokumentproduksjoninfo-tjenestespesifikasjon.version>
+	</properties>
+
 	<dependencies>
 		<dependency>
 			<groupId>no.nav.dokarkiv</groupId>
 			<artifactId>core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>javax.inject</groupId>
+			<artifactId>javax.inject</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>no.nav.tjenester.brevogarkiv</groupId>
+			<artifactId>dokumentproduksjoninfo-tjenestespesifikasjon</artifactId>
+			<version>${dokumentproduksjoninfo-tjenestespesifikasjon.version}</version>
+			<classifier>jaxws</classifier>
+		</dependency>
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>no.nav.dokarkiv</groupId>
+			<artifactId>core</artifactId>
+			<version>1-SNAPSHOT</version>
+			<type>test-jar</type>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 </project>
