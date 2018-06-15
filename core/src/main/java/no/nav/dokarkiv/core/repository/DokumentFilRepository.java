@@ -1,11 +1,11 @@
 package no.nav.dokarkiv.core.repository;
 
 import no.nav.dokarkiv.core.domain.DokumentFil;
-import org.springframework.data.repository.Repository;
+import org.springframework.data.repository.CrudRepository;
 
 /**
  * @author Joakim Bjørnstad, Jbit AS
  */
-public interface DokumentFilRepository extends Repository<DokumentFil, String> {
+public interface DokumentFilRepository extends CrudRepository<DokumentFil, String> {
 	DokumentFil findByFilUuid(String filUuid);
 }

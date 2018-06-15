@@ -1,6 +1,7 @@
 package no.nav.dokarkiv.core.exceptions;
 
 
+import no.nav.dokarkiv.core.stelvio.FunctionalRecoverableException;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 /**

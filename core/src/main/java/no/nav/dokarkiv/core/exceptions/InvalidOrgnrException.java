@@ -1,5 +1,7 @@
 package no.nav.dokarkiv.core.exceptions;
 
+import no.nav.dokarkiv.core.stelvio.FunctionalUnrecoverableException;
+
 /**
  * Thrown when validating OrgNr.
  * 

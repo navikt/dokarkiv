@@ -2,6 +2,7 @@ package no.nav.dokarkiv.dokumentproduksjoninfo.tjoark121;
 
 import no.nav.tjeneste.domene.brevogarkiv.dokumentproduksjoninfo.v1.informasjon.Dokument;
 import no.nav.tjeneste.domene.brevogarkiv.dokumentproduksjoninfo.v1.meldinger.HentFerdigstilteDokumenterResponse;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
@@ -11,6 +12,7 @@ import java.util.List;
  * @author Stig Strøm
  *
  */
+@Component
 public class HentFerdigstilteDokumenterResponseMapper {
 	
 	

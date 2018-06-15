@@ -13,6 +13,7 @@ import no.nav.dokarkiv.core.exceptions.IllegalVariantFormatException;
 import no.nav.dokarkiv.core.exceptions.JournalpostNotFoundException;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
+import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import java.util.LinkedList;
@@ -25,6 +26,7 @@ import java.util.List;
  * @author Stig Strøm
  *
  */
+@Service
 public class HentFerdigstilteDokumenterService {
 
 	@Inject

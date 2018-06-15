@@ -9,6 +9,7 @@ import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
 import no.nav.dokarkiv.core.exceptions.NoDokumentInfoFoundException;
 import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
+import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 
@@ -17,6 +18,7 @@ import javax.inject.Inject;
  *
  * @author Thomas Eugen Bjørge, Visma Consulting
  */
+@Service
 public class DefaultHentJournalOgDokumentStatus implements HentJournalOgDokumentStatus {
 
 	@Inject
