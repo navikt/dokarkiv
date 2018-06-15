@@ -2,7 +2,6 @@ package no.nav.dokarkiv.arkiverdokumentmottak.arkiverdokumentmottakV1.config;
 
 import static no.nav.dokarkiv.arkiverdokumentmottak.arkiverdokumentmottakV1.config.ServiceConstants.FORSENDELSE_MOTTAK_ID_KEY;
 
-import com.google.common.base.Objects;
 import no.nav.dokarkiv.arkiverdokumentmottak.arkiverdokumentmottakV1.DefaultJournalforInngaaendeForsendelseRequestMapper;
 import no.nav.dokarkiv.arkiverdokumentmottak.arkiverdokumentmottakV1.DefaultJournalforInngaaendeForsendelseResponseMapper;
 import no.nav.dokarkiv.arkiverdokumentmottak.arkiverdokumentmottakV1.DefaultJournalforInngaaendeForsendelseService;
@@ -58,7 +57,7 @@ public class ArkiverDokumentmottakProvider implements ArkiverDokumentmottakV1 {
 			responseTo = journalforInngaaendeForsendelseService.journalforInngaaendeForsendelse(requestTo);
 		} catch (FunctionalUnrecoverableException | IllegalArgumentException e) {
 			String tilleggsOpplysning = findTilleggsOpplysning(request);
-			log.warn("Kan ikke journalføre inngående forsendelse. tilleggsopplysning=" + tilleggsOpplysning, e);
+			log.warn("Kan ikke journalfï¿½re inngï¿½ende forsendelse. tilleggsopplysning=" + tilleggsOpplysning, e);
 			throw new KanIkkeJournalfores(e.getMessage(), faultInfoPopulator.populateFaultInfo(
 					new no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v1.feil.KanIkkeJournalfores(), e, "journalforInngaaendeForsendelse"));
 		}
@@ -77,9 +76,8 @@ public class ArkiverDokumentmottakProvider implements ArkiverDokumentmottakV1 {
 				.getJournalpostTilleggsopplysninger() != null) {
 			for (Tilleggsopplysning tilleggsopplysning : request.getJournalpost().getJournalpostTilleggsopplysninger()) {
 				if (tilleggsopplysning != null && FORSENDELSE_MOTTAK_ID_KEY.equals(tilleggsopplysning.getOpplysningsnoekkel())) {
-					return Objects.toStringHelper(Tilleggsopplysning.class)
-							.add("key", FORSENDELSE_MOTTAK_ID_KEY)
-							.add("value", tilleggsopplysning.getOpplysningsverdi()).toString();
+					return "(key=" + FORSENDELSE_MOTTAK_ID_KEY + " value=" + tilleggsopplysning.getOpplysningsverdi();
+					//FIXME Sjekk originalen. Alternative metode istedenfor Ã¥ bruke Guava
 				}
 			}
 		}
