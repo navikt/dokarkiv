@@ -34,6 +34,7 @@ import no.nav.tjeneste.domene.brevogarkiv.dokumentproduksjoninfo.v1.meldinger.He
 import no.nav.tjeneste.domene.brevogarkiv.dokumentproduksjoninfo.v1.meldinger.HentJournalOgDokumentStatusResponse;
 import no.nav.tjeneste.domene.brevogarkiv.dokumentproduksjoninfo.v1.meldinger.HentJournalpostInfoRequest;
 import no.nav.tjeneste.domene.brevogarkiv.dokumentproduksjoninfo.v1.meldinger.HentJournalpostInfoResponse;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
@@ -45,6 +46,7 @@ import java.util.List;
  *
  * @author Thomas Eugen Bjørge, Visma Consulting
  */
+@Component
 public class DokumentproduksjonInfoProvider implements DokumentproduksjonInfoV1 {
 
 	@Inject 

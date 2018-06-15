@@ -10,6 +10,7 @@ import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.exceptions.NoDokumentInfoFoundException;
 import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
+import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import java.util.Set;
@@ -18,6 +19,7 @@ import java.util.Set;
  *
  * @author Joakim Bjørnstad, Jbit AS
  */
+@Service
 public class HentJournalpostInfoService {
 
 	@Inject

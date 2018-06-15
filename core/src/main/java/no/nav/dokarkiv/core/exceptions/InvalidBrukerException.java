@@ -1,11 +1,13 @@
 package no.nav.dokarkiv.core.exceptions;
 
+import no.nav.dokarkiv.core.stelvio.FunctionalUnrecoverableException;
+
 /**
  * Thrown when validating GjelderInfo.
  * 
  * @author Hans Olav Loftum, BEKK
  */
-public class InvalidBrukerException extends FunctionalUnrecoverableException{
+public class InvalidBrukerException extends FunctionalUnrecoverableException {
 
 	/** Serialization ID */
 	private static final long serialVersionUID = -***gammelt_fnr***71491890L;

@@ -8,6 +8,7 @@ import no.nav.dokarkiv.core.exceptions.IllegalDokumentstatusException;
 import no.nav.dokarkiv.core.exceptions.IllegalJournalStatusException;
 import no.nav.dokarkiv.core.exceptions.IllegalVariantFormatException;
 import no.nav.dokarkiv.core.exceptions.JournalpostNotFoundException;
+import org.springframework.stereotype.Component;
 
 /**
  * Sjekker om journalpost og dokumentet er i riktig status for HentFerdigstilteDokumenter(TJOARK121)
@@ -16,6 +17,7 @@ import no.nav.dokarkiv.core.exceptions.JournalpostNotFoundException;
  * @author Stig Strøm
  *
  */
+@Component
 public class HentFerdigstilteDokumenterValidator {
 
 	/**
