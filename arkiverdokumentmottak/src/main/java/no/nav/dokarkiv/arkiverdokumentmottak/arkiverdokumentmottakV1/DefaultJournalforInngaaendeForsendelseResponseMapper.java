@@ -1,0 +1,36 @@
+package no.nav.dokarkiv.arkiverdokumentmottak.arkiverdokumentmottakV1;
+
+import no.nav.dokarkiv.core.nsb.DokumentInfoIdVedleggTo;
+import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v1.informasjon.arkiverdokumentmottak.DokumentInfoIdVedlegg;
+import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v1.meldinger.JournalforInngaaendeForsendelseResponse;
+import org.springframework.util.Assert;
+
+/**
+ * JournalforInngaaendeForsendelseResponseMapper implementation
+ *
+ * @author Leo-Andreas Ervik, Visma Consulting. 16.02.2017
+ */
+public class DefaultJournalforInngaaendeForsendelseResponseMapper {
+
+	public JournalforInngaaendeForsendelseResponse map(JournalforInngaaendeForsendelseResponseTo to) {
+		Assert.notNull(to);
+
+		JournalforInngaaendeForsendelseResponse response = new JournalforInngaaendeForsendelseResponse();
+
+		response.setJournalpostId(to.getJournalpostId());
+		response.setDokumentInfoIdHoveddokument(to.getDokumentInfoIdHoveddokument());
+
+		for (DokumentInfoIdVedleggTo vedlegg : to.getDokumentInfoIdVedleggTo()) {
+			response.getDokumentInfoIdVedleggListe().add(createDokumentInfoIdVedleggFromTo(vedlegg));
+		}
+
+		return response;
+	}
+
+	private DokumentInfoIdVedlegg createDokumentInfoIdVedleggFromTo(DokumentInfoIdVedleggTo from) {
+		DokumentInfoIdVedlegg v = new DokumentInfoIdVedlegg();
+		v.setDokumentInfoId(from.getDokumentInfoId());
+		v.setDokumentTypeId(from.getDokumentTypeId());
+		return v;
+	}
+}

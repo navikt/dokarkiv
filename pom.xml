@@ -22,6 +22,7 @@
 		<module>core</module>
 		<module>dokumentproduksjoninfo</module>
 		<module>arkiverdokumentproduksjon</module>
+		<module>arkiverdokumentmottak</module>
 	</modules>
 
 	<distributionManagement>
@@ -67,6 +68,12 @@
 
 	<dependencyManagement>
 		<dependencies>
+			<dependency>
+				<groupId>net.sf.dozer</groupId>
+				<artifactId>dozer</artifactId>
+				<version>5.5.1</version>
+			</dependency>
+
 			<dependency>
 				<groupId>no.nav.dokarkiv</groupId>
 				<artifactId>app</artifactId>
