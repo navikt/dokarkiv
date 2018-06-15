@@ -1,4 +1,4 @@
-package no.nav.dokarkiv;
+package no.nav.dokarkiv.arkiverdokumentproduksjon;
 
 
 import no.nav.dokarkiv.map.OpprettJournalpostArkiverDokumentRequestMapper;

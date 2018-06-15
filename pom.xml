@@ -103,6 +103,22 @@
 				<version>${arkiverdokumentproduksjon-tjenestespesifikasjon.version}</version>
 				<classifier>jaxws</classifier>
 			</dependency>
+			<dependency>
+				<groupId>javax.inject</groupId>
+				<artifactId>javax.inject</artifactId>
+				<version>1</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.cxf</groupId>
+				<artifactId>cxf-core</artifactId>
+				<version>3.2.4</version>
+			</dependency>
+			<dependency>
+				<groupId>org.projectlombok</groupId>
+				<artifactId>lombok</artifactId>
+				<version>1.16.22</version>
+				<scope>provided</scope>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 	<build>
