@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<parent>
+		<artifactId>dokarkiv</artifactId>
+		<groupId>no.nav.dokarkiv</groupId>
+		<version>1-SNAPSHOT</version>
+	</parent>
+	<modelVersion>4.0.0</modelVersion>
+
+	<artifactId>arkiverdokumentmottak</artifactId>
+
+	<properties>
+		<arkiverdokumentmottak-tjenestespesifikasjon.version>1.1.8</arkiverdokumentmottak-tjenestespesifikasjon.version>
+		<arkiverdokumentmottak-tjenestespesifikasjon-v2.version>2.1.3</arkiverdokumentmottak-tjenestespesifikasjon-v2.version>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>no.nav.tjenester.brevogarkiv</groupId>
+			<artifactId>arkiverdokumentmottak-tjenestespesifikasjon</artifactId>
+			<classifier>jaxws</classifier>
+			<version>${arkiverdokumentmottak-tjenestespesifikasjon.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>no.nav.tjenester.brevogarkiv</groupId>
+			<artifactId>arkiverdokumentmottak-tjenestespesifikasjon-v2</artifactId>
+			<classifier>jaxws</classifier>
+			<version>${arkiverdokumentmottak-tjenestespesifikasjon-v2.version}</version>
+		</dependency>
+	</dependencies>
+
+
+</project>
