@@ -17,6 +17,12 @@
 	</properties>
 
 	<dependencies>
+
+		<dependency>
+			<groupId>net.sf.dozer</groupId>
+			<artifactId>dozer</artifactId>
+		</dependency>
+
 		<dependency>
 			<groupId>no.nav.tjenester.brevogarkiv</groupId>
 			<artifactId>arkiverdokumentmottak-tjenestespesifikasjon</artifactId>
@@ -29,6 +35,31 @@
 			<artifactId>arkiverdokumentmottak-tjenestespesifikasjon-v2</artifactId>
 			<classifier>jaxws</classifier>
 			<version>${arkiverdokumentmottak-tjenestespesifikasjon-v2.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>no.nav.dokarkiv</groupId>
+			<artifactId>core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>javax.inject</groupId>
+			<artifactId>javax.inject</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>no.nav.dokarkiv</groupId>
+			<artifactId>core</artifactId>
+			<version>1-SNAPSHOT</version>
+			<type>test-jar</type>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 
