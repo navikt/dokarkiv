@@ -7,7 +7,5 @@ import org.springframework.data.repository.CrudRepository;
  * @author Joakim Bjørnstad, Jbit AS
  */
 public interface DokumentFilRepository extends CrudRepository<DokumentFil, String> {
-
 	DokumentFil findByFilUuid(String filUuid);
-
 }

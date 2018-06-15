@@ -9,7 +9,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
-import org.springframework.context.annotation.Profile;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
@@ -20,17 +19,17 @@ import java.util.Properties;
 /**
  * @author Joakim Bjørnstad, Jbit AS
  */
-@Configuration
 @EntityScan(basePackages = {
-		"no.nav.dokarkiv.core.domain"
+		"no.nav.dokarkiv.core.domain",
+		"no.nav.dokarkiv.core.domain.codes"
 })
-@EnableJpaRepositories
+@EnableJpaRepositories(basePackageClasses = {JoarkRepository.class, DokumentFilRepository.class})
 @EnableTransactionManagement
 @EnableConfigurationProperties(DataSourceProperties.class)
+@Configuration
 public class RepositoryConfig {
 	@Bean
 	@Primary
-	@Profile("nais")
 	DataSource dataSource(final DataSourceProperties dataSourceProperties) throws SQLException {
 		PoolDataSource poolDataSource = PoolDataSourceFactory.getPoolDataSource();
 		poolDataSource.setURL(dataSourceProperties.getUrl());
@@ -51,3 +50,5 @@ public class RepositoryConfig {
 		return poolDataSource;
 	}
 }
+
+

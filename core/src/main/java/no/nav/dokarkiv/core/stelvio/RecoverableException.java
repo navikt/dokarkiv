@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.core.exceptions;
+package no.nav.dokarkiv.core.stelvio;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 

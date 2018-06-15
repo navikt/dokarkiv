@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.core.exceptions;
+package no.nav.dokarkiv.core.stelvio;
 
 /**
  * Base exception for exceptions considered functional and recoverable. Should
