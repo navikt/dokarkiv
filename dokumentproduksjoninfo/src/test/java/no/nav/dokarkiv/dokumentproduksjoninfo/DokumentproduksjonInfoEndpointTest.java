@@ -19,7 +19,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 /**
  * Unit tests for DokumentproduksjonInfoEndpoint.
  *
- * @author Thomas Eugen Bjørge, Visma Consulting
+ * @author Thomas Eugen BjÃ¸rge, Visma Consulting
  */
 @RunWith(MockitoJUnitRunner.class)
 public class DokumentproduksjonInfoEndpointTest {

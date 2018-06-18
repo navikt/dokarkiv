@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.dokumentproduksjoninfo;
 
+import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.exceptions.DokumentInfoNotFoundException;
 import no.nav.dokarkiv.core.exceptions.FilDetaljerNotFoundException;
 import no.nav.dokarkiv.core.exceptions.IllegalDokumentstatusException;
@@ -46,6 +47,7 @@ import java.util.List;
  *
  * @author Thomas Eugen Bjørge, Visma Consulting
  */
+@Slf4j
 @Component
 public class DokumentproduksjonInfoProvider implements DokumentproduksjonInfoV1 {
 

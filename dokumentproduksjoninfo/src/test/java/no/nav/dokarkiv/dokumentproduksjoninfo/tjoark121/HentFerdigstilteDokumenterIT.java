@@ -64,7 +64,7 @@ public class HentFerdigstilteDokumenterIT extends AbstractDokumentproduksjoninfo
 		HentFerdigstilteDokumenterResponse wsResponse = dokumentproduksjonInfoProvider.hentFerdigstilteDokumenter(request);
 		assertThat(wsResponse.getDokumentListe().size(), is(1));
 		assertThat(wsResponse.getDokumentListe().get(0).getDokumentInfoId(), is(dokumentInfoId));
-//		assertThat(getFil(wsResponse.getDokumentListe().get(0)), is(FIL_AS_BYTE)); FIXME
+		assertThat(getFil(wsResponse.getDokumentListe().get(0)), is(FIL_AS_BYTE));
 	}
 	
 	@Test
