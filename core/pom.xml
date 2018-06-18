@@ -36,7 +36,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.apache.cxf</groupId>
-			<artifactId>cxf-core</artifactId>
+			<artifactId>cxf-spring-boot-starter-jaxws</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

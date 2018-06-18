@@ -97,7 +97,7 @@
 			</dependency>
 			<dependency>
 				<groupId>org.apache.cxf</groupId>
-				<artifactId>cxf-core</artifactId>
+				<artifactId>cxf-spring-boot-starter-jaxws</artifactId>
 				<version>3.2.4</version>
 			</dependency>
 			<dependency>
