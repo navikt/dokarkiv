@@ -1,12 +1,12 @@
 package no.nav.dokarkiv.core.domain.builder;
 
 import no.nav.dokarkiv.core.domain.ChangeStamp;
-import no.nav.dokarkiv.core.domain.DokumentInfo;
-import no.nav.dokarkiv.core.domain.FilDetaljer;
-import no.nav.dokarkiv.core.domain.Journalpost;
-import no.nav.dokarkiv.core.domain.SkannetInnhold;
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
+import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
+import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
+import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.domain.entities.SkannetInnhold;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;

@@ -1,6 +1,6 @@
 package no.nav.dokarkiv.core.repository;
 
-import no.nav.dokarkiv.core.domain.DokumentFil;
+import no.nav.dokarkiv.core.domain.entities.DokumentFil;
 import org.springframework.data.repository.CrudRepository;
 
 /**

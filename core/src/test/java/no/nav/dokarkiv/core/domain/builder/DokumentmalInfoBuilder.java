@@ -1,8 +1,8 @@
 package no.nav.dokarkiv.core.domain.builder;
 
-import no.nav.dokarkiv.core.domain.DokumentmalInfo;
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
+import no.nav.dokarkiv.core.domain.entities.DokumentmalInfo;
 
 /**
  * Builder for DokumentFil.

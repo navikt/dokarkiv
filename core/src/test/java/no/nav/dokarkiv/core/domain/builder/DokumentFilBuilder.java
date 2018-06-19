@@ -1,7 +1,7 @@
 package no.nav.dokarkiv.core.domain.builder;
 
-import no.nav.dokarkiv.core.domain.DokumentFil;
-import no.nav.dokarkiv.core.domain.FilDetaljer;
+import no.nav.dokarkiv.core.domain.entities.DokumentFil;
+import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 
 /**
  * Builder for DokumentFil.

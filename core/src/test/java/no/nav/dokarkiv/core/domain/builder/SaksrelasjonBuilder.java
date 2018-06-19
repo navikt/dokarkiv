@@ -1,7 +1,7 @@
 package no.nav.dokarkiv.core.domain.builder;
 
-import no.nav.dokarkiv.core.domain.Saksrelasjon;
 import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
+import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
 
 /**
  * Builder for Saksrelasjon.

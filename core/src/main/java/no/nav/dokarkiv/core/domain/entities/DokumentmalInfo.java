@@ -1,5 +1,6 @@
-package no.nav.dokarkiv.core.domain;
+package no.nav.dokarkiv.core.domain.entities;
 
+import no.nav.dokarkiv.core.domain.AbstractPersistentDomainObject;
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;

@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.core.domain;
+package no.nav.dokarkiv.core.domain.entities;
 
 import static no.nav.dokarkiv.core.domain.builder.SkannetInnholdBuilder.getSkannetInnholdBuilder;
 import static org.hamcrest.Matchers.containsString;

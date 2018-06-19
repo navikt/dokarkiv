@@ -1,5 +1,6 @@
-package no.nav.dokarkiv.core.domain;
+package no.nav.dokarkiv.core.domain.entities;
 
+import no.nav.dokarkiv.core.domain.AbstractPersistentVersionedDomainObjectWithKilde;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;

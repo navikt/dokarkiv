@@ -1,7 +1,8 @@
-package no.nav.dokarkiv.core.domain;
+package no.nav.dokarkiv.core.domain.entities;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
+import no.nav.dokarkiv.core.domain.AbstractPersistentVersionedDomainObjectWithKilde;
 import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
 import no.nav.dokarkiv.core.domain.codes.OnDemandInstansCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;

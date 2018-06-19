@@ -1,6 +1,6 @@
 package no.nav.dokarkiv.core.domain.builder;
 
-import no.nav.dokarkiv.core.domain.Behandlingsrelasjon;
+import no.nav.dokarkiv.core.domain.entities.Behandlingsrelasjon;
 
 /**
  * Builder for Bruker.

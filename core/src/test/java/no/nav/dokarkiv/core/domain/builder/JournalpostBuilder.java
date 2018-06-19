@@ -1,19 +1,19 @@
 package no.nav.dokarkiv.core.domain.builder;
 
-import no.nav.dokarkiv.core.domain.Behandlingsrelasjon;
-import no.nav.dokarkiv.core.domain.Bruker;
 import no.nav.dokarkiv.core.domain.ChangeStamp;
-import no.nav.dokarkiv.core.domain.Journalpost;
-import no.nav.dokarkiv.core.domain.JournalpostDokumentInfoRelasjon;
-import no.nav.dokarkiv.core.domain.Kryssreferanse;
-import no.nav.dokarkiv.core.domain.ReturInfo;
-import no.nav.dokarkiv.core.domain.Saksrelasjon;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.FaktiskDistribusjonskanalCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
 import no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode;
+import no.nav.dokarkiv.core.domain.entities.Behandlingsrelasjon;
+import no.nav.dokarkiv.core.domain.entities.Bruker;
+import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
+import no.nav.dokarkiv.core.domain.entities.Kryssreferanse;
+import no.nav.dokarkiv.core.domain.entities.ReturInfo;
+import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
 
 import java.util.Arrays;
 import java.util.Date;
