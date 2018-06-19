@@ -1,7 +1,7 @@
 package no.nav.dokarkiv.core.domain.builder;
 
-import no.nav.dokarkiv.core.domain.DokumentUrlInfo;
-import no.nav.dokarkiv.core.domain.Journalpost;
+import no.nav.dokarkiv.core.domain.entities.DokumentUrlInfo;
+import no.nav.dokarkiv.core.domain.entities.Journalpost;
 
 import java.util.Date;
 

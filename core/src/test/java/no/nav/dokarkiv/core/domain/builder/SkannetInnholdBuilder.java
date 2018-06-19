@@ -1,6 +1,6 @@
 package no.nav.dokarkiv.core.domain.builder;
 
-import no.nav.dokarkiv.core.domain.SkannetInnhold;
+import no.nav.dokarkiv.core.domain.entities.SkannetInnhold;
 
 /**
  * Builder for SkannetInnhold.

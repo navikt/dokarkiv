@@ -10,10 +10,12 @@ import org.slf4j.MDC;
  * configured to include them in the logs by specifying the <code>ConversionPattern</code> on the layout. Example:
  * <code>[appender].layout.ConversionPattern=... %X{user}... </code>
  * </p>
- * 
+ *
+ * @deprecated De fleste av disse MDC verdiene er ikke i bruk i joark
  * @author Kjetil Kristiansen
  * @see RequestContext Contains most of the context data applicable to MDC logging.
  */
+@Deprecated
 public class MdcConstants {
 
 	/**

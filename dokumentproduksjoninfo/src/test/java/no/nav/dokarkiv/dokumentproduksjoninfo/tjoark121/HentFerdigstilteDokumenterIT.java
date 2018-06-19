@@ -9,7 +9,6 @@ import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.FS;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
-import no.nav.dokarkiv.core.domain.Journalpost;
 import no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder;
 import no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
@@ -18,6 +17,7 @@ import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
+import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.dokumentproduksjoninfo.AbstractDokumentproduksjoninfoItest;
 import no.nav.tjeneste.domene.brevogarkiv.dokumentproduksjoninfo.v1.HentFerdigstilteDokumenterDokumenterIkkeFunnet;
 import no.nav.tjeneste.domene.brevogarkiv.dokumentproduksjoninfo.v1.HentFerdigstilteDokumenterUgyldingInput;
@@ -64,7 +64,7 @@ public class HentFerdigstilteDokumenterIT extends AbstractDokumentproduksjoninfo
 		HentFerdigstilteDokumenterResponse wsResponse = dokumentproduksjonInfoProvider.hentFerdigstilteDokumenter(request);
 		assertThat(wsResponse.getDokumentListe().size(), is(1));
 		assertThat(wsResponse.getDokumentListe().get(0).getDokumentInfoId(), is(dokumentInfoId));
-//		assertThat(getFil(wsResponse.getDokumentListe().get(0)), is(FIL_AS_BYTE)); FIXME
+		assertThat(getFil(wsResponse.getDokumentListe().get(0)), is(FIL_AS_BYTE));
 	}
 	
 	@Test

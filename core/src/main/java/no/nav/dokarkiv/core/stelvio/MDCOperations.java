@@ -2,6 +2,11 @@ package no.nav.dokarkiv.core.stelvio;
 
 import org.slf4j.MDC;
 
+/**
+ * @deprecated De fleste av disse MDC verdiene brukes ikke i joark. Kun MDC_USER brukes for ChangeStamp interceptor
+ * @see no.nav.dokarkiv.core.domain.ChangeStamp
+ */
+@Deprecated
 public final class MDCOperations {
 
 	/**

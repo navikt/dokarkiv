@@ -1,7 +1,7 @@
 package no.nav.dokarkiv.dokumentproduksjoninfo.tjoark120;
 
-import no.nav.dokarkiv.core.exceptions.NoDokumentInfoFoundException;
-import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
+import no.nav.dokarkiv.dokumentproduksjoninfo.exceptions.NoDokumentInfoFoundException;
+import no.nav.dokarkiv.dokumentproduksjoninfo.exceptions.NoJournalpostFoundException;
 
 /**
  * Service operation to retrieve Journalpost and DokumentInfo status and metaForceInstanceId if present.

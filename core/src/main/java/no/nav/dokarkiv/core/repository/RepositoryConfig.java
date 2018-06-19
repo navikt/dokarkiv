@@ -20,7 +20,7 @@ import java.util.Properties;
  * @author Joakim Bjørnstad, Jbit AS
  */
 @EntityScan(basePackages = {
-		"no.nav.dokarkiv.core.domain",
+		"no.nav.dokarkiv.core.domain.entities",
 		"no.nav.dokarkiv.core.domain.codes"
 })
 @EnableJpaRepositories(basePackageClasses = {JoarkRepository.class, DokumentFilRepository.class})
