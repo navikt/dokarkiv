@@ -1,24 +1,23 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark103;
 
-import no.nav.domain.dok.joark.DokumentInfo;
-import no.nav.domain.dok.joark.Journalpost;
-import no.nav.domain.dok.joark.JournalpostDokumentInfoRelasjon;
-import no.nav.domain.dok.joark.codestable.DokumentStatusCode;
-import no.nav.domain.dok.joark.codestable.JournalStatusCode;
-import no.nav.service.dok.joark.journalbehandling.SporingPopulator;
+import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
+import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
+import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
+import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
+import no.nav.dokarkiv.core.sporing.SporingPopulator;
 
 import javax.inject.Inject;
 
 /**
  * Implementation of AvbrytJournalpostUpdater
- * 
- * @author Stig Strøm
  *
+ * @author Stig StrÃ¸m
  */
 public class DefaultAvbrytJournalpostUpdater implements AvbrytJournalpostUpdater {
-	
+
 	@Inject
-	SporingPopulator sporingPopulator;
+	private SporingPopulator sporingPopulator;
 
 	public void setSporingPopulator(SporingPopulator sporingPopulator) {
 		this.sporingPopulator = sporingPopulator;
@@ -27,7 +26,7 @@ public class DefaultAvbrytJournalpostUpdater implements AvbrytJournalpostUpdater
 	@Override
 	public Journalpost updateJournalpost(Journalpost journalpost, String endretAvNavn) {
 		journalpost.setJournalstatus(JournalStatusCode.A);
-		
+
 		for (JournalpostDokumentInfoRelasjon journalpostDokInfoRel : journalpost.getJournalpostDokumentInfoRelasjoner()) {
 			updateDokumentInfo(journalpostDokInfoRel.getDokumentInfo());
 		}
@@ -35,11 +34,11 @@ public class DefaultAvbrytJournalpostUpdater implements AvbrytJournalpostUpdater
 		return journalpost;
 
 	}
-	
+
 	private void updateDokumentInfo(DokumentInfo dokumentInfo) {
 		if (dokumentInfo.getDokumentstatus() == DokumentStatusCode.UNDER_REDIGERING) {
 			dokumentInfo.setDokumentstatus(DokumentStatusCode.AVBRUTT);
 		}
 	}
-	
+
 }

@@ -1,18 +1,17 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark103;
 
-import no.nav.domain.dok.joark.Journalpost;
+import no.nav.dokarkiv.core.domain.entities.Journalpost;
 
 /**
- * Interface for AvbrytJournalpostUpdater. 
- * 
- * @author Stig Strøm
+ * Interface for AvbrytJournalpostUpdater.
  *
+ * @author Stig StrÃ¸m
  */
 public interface AvbrytJournalpostUpdater {
-	
+
 	/**
 	 * Set the journalpost to Interrupted State
-	 * 
+	 *
 	 * @param the journalpost to update
 	 * @param the one who updates the journalpost
 	 * @return the updated journalpost

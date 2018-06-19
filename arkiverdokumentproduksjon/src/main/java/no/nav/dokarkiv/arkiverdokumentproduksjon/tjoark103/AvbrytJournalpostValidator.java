@@ -1,12 +1,12 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark103;
 
-import no.nav.domain.dok.joark.Journalpost;
-import no.nav.service.dok.joark.journalbehandling.UgyldigJournalStatusOvergangException;
+import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.UgyldigJournalStatusOvergangException;
+import no.nav.dokarkiv.core.domain.entities.Journalpost;
 
 /**
  * Interface for validating AvbrytJournalpost
  *
- * @author Stig Strøm
+ * @author Stig StrÃ¸m
  */
 public interface AvbrytJournalpostValidator {
 

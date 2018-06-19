@@ -1,22 +1,21 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark103;
 
-import no.nav.service.dok.joark.NoJournalpostFoundException;
-import no.nav.service.dok.joark.journalbehandling.UgyldigJournalStatusOvergangException;
-import no.nav.service.dok.joark.nsb.to.AvbrytJournalpostRequestTo;
+import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.NoJournalpostFoundException;
+import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.UgyldigJournalStatusOvergangException;
 
 
 /**
  * Interface for the operation AvbrytJournalpostService
- * 
- * @author Stig Strøm
+ *
+ * @author Stig Strï¿½m
  */
 public interface AvbrytJournalpostService {
-	
+
 	/**
 	 * Sets the Journalpost in Interrupted state.
-	 * 
-	 * @param domainRequest with journalpostId and endreAvNavn 
-	 * @throws NoJournalpostFoundException when journalpost cannot be found
+	 *
+	 * @param domainRequest with journalpostId and endreAvNavn
+	 * @throws NoJournalpostFoundException           when journalpost cannot be found
 	 * @throws UgyldigJournalStatusOvergangException when journalpost is in a not interruptable state
 	 */
 	void avbrytJournalpost(AvbrytJournalpostRequestTo domainRequest) throws NoJournalpostFoundException,

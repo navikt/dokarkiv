@@ -1,10 +1,9 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark103;
 
-import no.nav.domain.dok.joark.Journalpost;
-import no.nav.repository.dok.joark.JoarkRepository;
-import no.nav.service.dok.joark.NoJournalpostFoundException;
-import no.nav.service.dok.joark.journalbehandling.UgyldigJournalStatusOvergangException;
-import no.nav.service.dok.joark.nsb.to.AvbrytJournalpostRequestTo;
+import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.NoJournalpostFoundException;
+import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.UgyldigJournalStatusOvergangException;
+import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.repository.JoarkRepository;
 import org.springframework.util.Assert;
 
 import javax.inject.Inject;
@@ -12,7 +11,7 @@ import javax.inject.Inject;
 /**
  * Implementation of the AvbrytJournalpostService
  *
- * @author Stig Strøm
+ * @author Stig StrÃ¸m
  */
 public class DefaultAvbrytJournalpostService implements AvbrytJournalpostService {
 
@@ -31,11 +30,8 @@ public class DefaultAvbrytJournalpostService implements AvbrytJournalpostService
 		Assert.notNull(domainRequest, "Request cannot be empty or missing");
 		domainRequest.validate();
 
-		Journalpost journalpost = joarkRepository.findJournalpostByJournalpostId(domainRequest.getJournalpostId(), false);
-		if (journalpost == null) {
-			throw new NoJournalpostFoundException("Journalpost with id: " + domainRequest.getJournalpostId() + " not found",
-					domainRequest.getJournalpostId());
-		}
+		Journalpost journalpost = joarkRepository.findById(domainRequest.getJournalpostId())
+				.orElseThrow(() -> new NoJournalpostFoundException("Journalpost with id: " + domainRequest.getJournalpostId() + " not found", domainRequest.getJournalpostId()));
 
 		validator.validate(journalpost);
 		avbrytJournalpostUpdater.updateJournalpost(journalpost, domainRequest.getEndretAvNavn());
