@@ -14,6 +14,7 @@ import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
+import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
 /**
@@ -21,6 +22,7 @@ import org.springframework.util.Assert;
  *
  * @author Stig Strøm
  */
+@Component
 public class DefaultFerdigstillJournalpostValidator implements FerdigstillJournalpostValidator {
 
 	@Override

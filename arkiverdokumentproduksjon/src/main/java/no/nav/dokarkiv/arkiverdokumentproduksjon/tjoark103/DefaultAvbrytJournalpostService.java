@@ -4,6 +4,7 @@ import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.NoJournalpostFoundEx
 import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.UgyldigJournalStatusOvergangException;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
+import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
 import javax.inject.Inject;
@@ -13,6 +14,7 @@ import javax.inject.Inject;
  *
  * @author Stig Strøm
  */
+@Component
 public class DefaultAvbrytJournalpostService implements AvbrytJournalpostService {
 
 	@Inject

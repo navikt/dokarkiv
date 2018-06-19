@@ -1,12 +1,14 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon;
 
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.feil.ForretningsmessigUnntak;
+import org.springframework.stereotype.Component;
 
 /**
  * Implementation of ArkiverDokumentproduksjonFaultInfoPopulator.
  *
  * @author Stig Strøm
  */
+@Component
 public class DefaultArkiverDokumentproduksjonFaultInfoPopulator extends AbstractJournalFaultInfoPopulator implements
 		ArkiverDokumentproduksjonFaultInfoPopulator {
 

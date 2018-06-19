@@ -15,6 +15,7 @@ import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -27,6 +28,7 @@ import java.util.Set;
  *
  * @author Torgeir Cook
  */
+@Component
 public class DefaultOppdaterJournalpostArkiverDokumentValidator implements OppdaterJournalpostArkiverDokumentValidator {
 
 	@Override

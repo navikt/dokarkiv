@@ -2,6 +2,7 @@ package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark100;
 
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.OpprettJournalpostArkiverDokumentResponse;
 import org.dozer.Mapper;
+import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -11,6 +12,7 @@ import javax.inject.Named;
  *
  * @author Torgeir Cook
  */
+@Component
 public class DefaultOpprettJournalpostArkiverDokumentResponseMapper implements
 		OpprettJournalpostArkiverDokumentResponseMapper {
 

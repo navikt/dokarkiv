@@ -1,10 +1,12 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark109;
 
+import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
 /**
  * @author Thomas Kåsene, Visma Consulting AS
  */
+@Component
 public class DefaultKnyttDokumentTilJournalpostSomVedleggValidator implements KnyttDokumentTilJournalpostSomVedleggValidator {
 
     @Override

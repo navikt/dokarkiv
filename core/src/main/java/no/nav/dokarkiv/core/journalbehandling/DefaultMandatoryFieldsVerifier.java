@@ -9,12 +9,14 @@ import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.entities.Kryssreferanse;
 import no.nav.dokarkiv.core.domain.entities.ReturInfo;
 import no.nav.dokarkiv.core.domain.entities.SkannetInnhold;
+import org.springframework.stereotype.Component;
 
 /**
  * Implementation of <code>MandatoryFieldsVerifier</code>.
  *
  * @author Thomas Eugen Bjørge, Visma Sirius
  */
+@Component
 public class DefaultMandatoryFieldsVerifier implements MandatoryFieldsVerifier {
 
 	/**

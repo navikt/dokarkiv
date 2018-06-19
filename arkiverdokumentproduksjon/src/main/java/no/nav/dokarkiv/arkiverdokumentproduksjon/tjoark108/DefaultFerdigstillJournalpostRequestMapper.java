@@ -3,6 +3,7 @@ package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark108;
 
 import no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.FerdigstillJournalpostRequest;
+import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
 /**
@@ -11,6 +12,7 @@ import org.springframework.util.Assert;
  * @author Stig Strøm
  *
  */
+@Component
 public class DefaultFerdigstillJournalpostRequestMapper implements FerdigstillJournalpostRequestMapper {
 
 	@Override

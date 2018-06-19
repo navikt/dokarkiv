@@ -12,6 +12,7 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.core.sporing.SporingPopulator;
+import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 
@@ -20,6 +21,7 @@ import javax.inject.Inject;
  *
  * @author Stig Strøm
  */
+@Component
 public class DefaultFjernFerdigstiltDokumentService implements FjernFerdigstiltDokumentService {
 
 	@Inject

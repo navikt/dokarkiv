@@ -35,6 +35,7 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.core.sporing.SporingPopulator;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,6 +45,7 @@ import java.util.EnumSet;
 /**
  * @author Thomas Kåsene, Visma Consulting AS
  */
+@Component
 public class DefaultKnyttDokumentTilJournalpostSomVedleggService implements KnyttDokumentTilJournalpostSomVedleggService {
 
 	private static final String KILDENAVN = "Dokumentproduksjon";
