@@ -1,17 +1,16 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark106;
 
-import static no.nav.domain.dok.joark.codestable.DokumentStatusCode.AVBRUTT;
+import static no.nav.dokarkiv.core.domain.codes.DokumentStatusCode.AVBRUTT;
 
-import no.nav.domain.dok.joark.DokumentInfo;
-import no.nav.domain.dok.joark.Journalpost;
-import no.nav.domain.dok.joark.JournalpostDokumentInfoRelasjon;
-import no.nav.domain.dok.joark.codestable.JournalStatusCode;
-import no.nav.service.dok.joark.NoJournalpostFoundException;
-import no.nav.service.dok.joark.journalbehandling.NoDokumentInfoFoundException;
-import no.nav.service.dok.joark.journalbehandling.UgyldigDokumentStatusVerdiException;
-import no.nav.service.dok.joark.journalbehandling.UgyldigJournalStatusVerdiException;
-import no.nav.service.dok.joark.nsb.exceptions.UgyldigTilknyttetJournalpostSomVerdiException;
-import no.nav.service.dok.joark.nsb.to.AvbrytVedleggRequestTo;
+import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.NoDokumentInfoFoundException;
+import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.NoJournalpostFoundException;
+import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.UgyldigDokumentStatusVerdiException;
+import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.UgyldigJournalStatusVerdiException;
+import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.UgyldigTilknyttetJournalpostSomVerdiException;
+import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
+import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
+import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import org.springframework.util.Assert;
 
 /**

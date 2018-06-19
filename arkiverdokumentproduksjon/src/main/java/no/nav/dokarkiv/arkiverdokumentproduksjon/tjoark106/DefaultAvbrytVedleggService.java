@@ -1,17 +1,16 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark106;
 
-import no.nav.domain.dok.joark.DokumentInfo;
-import no.nav.domain.dok.joark.Journalpost;
-import no.nav.domain.dok.joark.JournalpostDokumentInfoRelasjon;
-import no.nav.domain.dok.joark.codestable.DokumentStatusCode;
-import no.nav.repository.dok.joark.mod.JoarkRepository;
-import no.nav.service.dok.joark.NoJournalpostFoundException;
-import no.nav.service.dok.joark.journalbehandling.NoDokumentInfoFoundException;
-import no.nav.service.dok.joark.journalbehandling.SporingPopulator;
-import no.nav.service.dok.joark.journalbehandling.UgyldigDokumentStatusVerdiException;
-import no.nav.service.dok.joark.journalbehandling.UgyldigJournalStatusVerdiException;
-import no.nav.service.dok.joark.nsb.exceptions.UgyldigTilknyttetJournalpostSomVerdiException;
-import no.nav.service.dok.joark.nsb.to.AvbrytVedleggRequestTo;
+import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.NoDokumentInfoFoundException;
+import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.NoJournalpostFoundException;
+import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.UgyldigDokumentStatusVerdiException;
+import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.UgyldigJournalStatusVerdiException;
+import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.UgyldigTilknyttetJournalpostSomVerdiException;
+import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
+import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
+import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
+import no.nav.dokarkiv.core.repository.JoarkRepository;
+import no.nav.dokarkiv.core.sporing.SporingPopulator;
 
 import javax.inject.Inject;
 
@@ -37,18 +36,20 @@ public class DefaultAvbrytVedleggService implements AvbrytVedleggService {
 			UgyldigTilknyttetJournalpostSomVerdiException {
 		validator.validateInputRequest(request);
 
-		Journalpost journalpost = joarkRepository.findJournalpostById(request.getJournalpostId());
-		validator.validateJournalpost(journalpost, request.getJournalpostId());
+		final Long journalpostId = request.getJournalpostId();
+		Journalpost journalpost = joarkRepository.findById(journalpostId)
+				.orElseThrow(() -> new NoJournalpostFoundException("journalpostid=" + journalpostId + " does not exist", journalpostId));
+		validator.validateJournalpost(journalpost, journalpostId);
 
 		DokumentInfo dokumentInfo = journalpost.findDokumentInfoById(request.getDokumentInfoId());
 		validator.validateDokumentInfo(dokumentInfo, request.getDokumentInfoId());
 
 		JournalpostDokumentInfoRelasjon dokumentInfoRelasjon =
-				dokumentInfo.findJournalpostRelasjonByJournalpostId(request.getJournalpostId());
+				dokumentInfo.findJournalpostRelasjonByJournalpostId(journalpostId);
 		validator.validateJournalpostDokumentInfoRelasjon(dokumentInfoRelasjon);
 
 		if (dokumentInfo.isRelatedToMultipleJournalposts()) {
-			joarkRepository.deleteJournalpostDokumentInfoRelasjon(dokumentInfoRelasjon);
+//			joarkRepository.deleteJournalpostDokumentInfoRelasjon(dokumentInfoRelasjon); FIXME
 		} else {
 			dokumentInfo.setDokumentstatus(DokumentStatusCode.AVBRUTT);
 		}

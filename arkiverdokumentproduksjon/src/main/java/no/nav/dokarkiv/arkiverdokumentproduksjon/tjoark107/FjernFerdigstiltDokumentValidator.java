@@ -9,7 +9,7 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 /**
  * Interface for FjernFerdigstiltDokumentValidator. Used for validating request and that the journalpost is in correct state.
  *
- * @author Stig Strøm
+ * @author Stig StrÃ¸m
  */
 public interface FjernFerdigstiltDokumentValidator {
 

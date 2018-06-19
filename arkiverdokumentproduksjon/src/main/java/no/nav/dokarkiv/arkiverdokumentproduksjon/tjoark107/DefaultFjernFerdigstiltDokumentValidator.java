@@ -16,7 +16,7 @@ import org.springframework.util.Assert;
 /**
  * Implementation of the interface {@link FjernFerdigstiltDokumentValidator}
  *
- * @author Stig Strøm
+ * @author Stig StrÃ¸m
  */
 public class DefaultFjernFerdigstiltDokumentValidator implements FjernFerdigstiltDokumentValidator {
 	private static final DokumentStatusCode UNDER_REDIGERING = DokumentStatusCode.UNDER_REDIGERING;
