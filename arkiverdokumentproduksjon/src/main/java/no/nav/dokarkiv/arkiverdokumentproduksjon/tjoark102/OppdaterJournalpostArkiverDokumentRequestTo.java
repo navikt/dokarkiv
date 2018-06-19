@@ -1,7 +1,7 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark102;
 
-import no.nav.domain.dok.joark.FilDetaljer;
-import no.nav.domain.dok.joark.codestable.UtsendingsKanalCode;
+import no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode;
+import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 
 import java.util.Date;
 import java.util.HashSet;
@@ -61,7 +61,7 @@ public class OppdaterJournalpostArkiverDokumentRequestTo {
 	}
 
 	public Date getDatoDokument() {
-		return datoDokument != null ? (Date)datoDokument.clone() : null;
+		return datoDokument != null ? (Date) datoDokument.clone() : null;
 	}
 
 	public void setDatoDokument(Date datoDokument) {
@@ -72,7 +72,9 @@ public class OppdaterJournalpostArkiverDokumentRequestTo {
 		return fildetaljerSet;
 	}
 
-    public boolean isFerdigstillJournalpost() { return ferdigstillJournalpost; }
+	public boolean isFerdigstillJournalpost() {
+		return ferdigstillJournalpost;
+	}
 
 	public void setFerdigstillJournalpost(boolean ferdigstillJournalpost) {
 		this.ferdigstillJournalpost = ferdigstillJournalpost;

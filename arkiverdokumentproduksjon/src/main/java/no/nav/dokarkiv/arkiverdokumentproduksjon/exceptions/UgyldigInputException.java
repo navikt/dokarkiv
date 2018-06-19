@@ -1,4 +1,6 @@
-package no.nav.dokarkiv.core.exceptions;
+package no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions;
+
+import no.nav.dokarkiv.core.stelvio.FunctionalRecoverableException;
 
 /**
  * @author Leo-Andreas Ervik, Visma Consulting

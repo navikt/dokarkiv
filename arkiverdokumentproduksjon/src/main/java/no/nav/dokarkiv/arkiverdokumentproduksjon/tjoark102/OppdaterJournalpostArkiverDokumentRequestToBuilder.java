@@ -1,7 +1,7 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark102;
 
-import no.nav.domain.dok.joark.FilDetaljer;
-import no.nav.domain.dok.joark.codestable.UtsendingsKanalCode;
+import no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode;
+import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -15,7 +15,7 @@ public final class OppdaterJournalpostArkiverDokumentRequestToBuilder {
 	private UtsendingsKanalCode utsendingskanal;
 	private String endretAvNavn;
 	private Set<FilDetaljer> fildetaljerSet = new HashSet<>();
-    private boolean ferdigstillJournalpost;
+	private boolean ferdigstillJournalpost;
 
 	private OppdaterJournalpostArkiverDokumentRequestToBuilder() {
 	}

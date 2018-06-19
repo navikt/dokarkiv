@@ -1,7 +1,6 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark102;
 
-import no.nav.service.dok.joark.nsb.exceptions.UgyldigInputException;
-import no.nav.service.dok.joark.nsb.to.OppdaterJournalpostArkiverDokumentRequestTo;
+import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.UgyldigInputException;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.OppdaterJournalpostArkiverDokumentRequest;
 import org.dozer.Mapper;
 

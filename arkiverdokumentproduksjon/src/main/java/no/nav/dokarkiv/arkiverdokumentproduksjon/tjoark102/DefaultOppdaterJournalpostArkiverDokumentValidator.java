@@ -1,20 +1,19 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark102;
 
-import no.nav.domain.dok.joark.DokumentInfo;
-import no.nav.domain.dok.joark.FilDetaljer;
-import no.nav.domain.dok.joark.Journalpost;
-import no.nav.domain.dok.joark.JournalpostDokumentInfoRelasjon;
-import no.nav.domain.dok.joark.codestable.DokumentStatusCode;
-import no.nav.domain.dok.joark.codestable.JournalStatusCode;
-import no.nav.domain.dok.joark.codestable.TilknyttetJournalpostSomCode;
-import no.nav.domain.dok.joark.codestable.UtsendingsKanalCode;
-import no.nav.domain.dok.joark.codestable.VariantFormatCode;
-import no.nav.service.dok.joark.nsb.exceptions.AlleredeFerdigstiltException;
-import no.nav.service.dok.joark.nsb.exceptions.FeilStrukturException;
-import no.nav.service.dok.joark.nsb.exceptions.KanIkkeFerdigstillesException;
-import no.nav.service.dok.joark.nsb.exceptions.ObjektIkkeFunnetException;
-import no.nav.service.dok.joark.nsb.exceptions.UgyldigInputException;
-import no.nav.service.dok.joark.nsb.to.OppdaterJournalpostArkiverDokumentRequestTo;
+import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.AlleredeFerdigstiltException;
+import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.FeilStrukturException;
+import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.KanIkkeFerdigstillesException;
+import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.ObjektIkkeFunnetException;
+import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.UgyldigInputException;
+import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
+import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
+import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
+import no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode;
+import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
+import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
+import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
+import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
@@ -52,28 +51,28 @@ public class DefaultOppdaterJournalpostArkiverDokumentValidator implements Oppda
 	@Override
 	public void validateRequest(OppdaterJournalpostArkiverDokumentRequestTo request) throws ObjektIkkeFunnetException, UgyldigInputException {
 		if (request == null) {
-			throw new ObjektIkkeFunnetException("OppdaterJournalpostArkiverDokumentRequest kan ikke være null", null);
+			throw new ObjektIkkeFunnetException("OppdaterJournalpostArkiverDokumentRequest kan ikke vï¿½re null", null);
 		}
 		validateRequiredFields(request);
 	}
 
 	private void validateRequiredFields(OppdaterJournalpostArkiverDokumentRequestTo request) throws UgyldigInputException {
 		String message = "";
-		if(request.getJournalpostId() == null) {
+		if (request.getJournalpostId() == null) {
 			message += "journalpostId";
 		}
-		if(request.getDokumentInfoId() == null) {
+		if (request.getDokumentInfoId() == null) {
 			message = message.isEmpty() ? "dokumentInfoId" : ", dokumentInfoId";
 		}
-		if(StringUtils.isBlank(request.getEndretAvNavn())) {
+		if (StringUtils.isBlank(request.getEndretAvNavn())) {
 			message = message.isEmpty() ? "endretAvNavn" : ", endretAvNavn";
 		}
-		if(request.getFildetaljer().isEmpty()) {
+		if (request.getFildetaljer().isEmpty()) {
 			message = message.isEmpty() ? "filDetaljer" : ", filDetaljer";
 		}
 
 		if (!message.isEmpty()) {
-			throw new UgyldigInputException("Mangler påkrevde attributter: " + message, request.getJournalpostId());
+			throw new UgyldigInputException("Mangler pï¿½krevde attributter: " + message, request.getJournalpostId());
 		}
 	}
 
@@ -116,16 +115,17 @@ public class DefaultOppdaterJournalpostArkiverDokumentValidator implements Oppda
 	}
 
 	/**
-	 * Validates that journalpost type is not Inngående dokument.
+	 * Validates that journalpost type is not Inngï¿½ende dokument.
 	 * Validates that journalpost status is not Dokument under produksjon.
 	 * https://confluence.adeo.no/x/RLJlBQ step 3
-	 * @param journalpost            to be validated.
-	 * @param request input request with dokument payloads for dokumentinfo
+	 *
+	 * @param journalpost to be validated.
+	 * @param request     input request with dokument payloads for dokumentinfo
 	 */
 	public void validateJournalpostTypeAndStatus(Journalpost journalpost, OppdaterJournalpostArkiverDokumentRequestTo request) throws KanIkkeFerdigstillesException, AlleredeFerdigstiltException, UgyldigInputException {
 		boolean ferdigstillJournalpost = request.isFerdigstillJournalpost();
 		if (journalpost.isInngaende()) {
-			throw new UgyldigInputException("Journalpost kan ikke være av typen INNGÅENDE", journalpost.getJournalpostId());
+			throw new UgyldigInputException("Journalpost kan ikke vï¿½re av typen INNGï¿½ENDE", journalpost.getJournalpostId());
 		} else {
 			DokumentInfo dokumentInfoById = journalpost.findDokumentInfoById(request.getDokumentInfoId());
 			if (journalpost.getJournalstatus() == JournalStatusCode.FS
@@ -138,7 +138,7 @@ public class DefaultOppdaterJournalpostArkiverDokumentValidator implements Oppda
 					&& ferdigstillJournalpost) {
 				throw new AlleredeFerdigstiltException("Journalpost med dokument er allerede ferdigstilt lokalprint", journalpost.getJournalpostId());
 			} else if (journalpost.getJournalstatus() == JournalStatusCode.D
-					&&  DokumentStatusCode.FERDIGSTILT == dokumentInfoById.getDokumentstatus()
+					&& DokumentStatusCode.FERDIGSTILT == dokumentInfoById.getDokumentstatus()
 					&& !ferdigstillJournalpost) {
 				throw new AlleredeFerdigstiltException("Dokument er allerede ferdigstilt for journalpost under arbeid", journalpost.getJournalpostId());
 			} else if (journalpost.getJournalstatus() != JournalStatusCode.D
@@ -169,7 +169,7 @@ public class DefaultOppdaterJournalpostArkiverDokumentValidator implements Oppda
 		Set<Long> dokInfoIdSet = getDokumentInfoIdSet(journalpost);
 
 		if (!dokInfoIdSet.contains(dokumentInfoId)) {
-			throw new ObjektIkkeFunnetException("DokumentInfoId [" + dokumentInfoId + "] finnes ikke på angitt journalpost", journalpost
+			throw new ObjektIkkeFunnetException("DokumentInfoId [" + dokumentInfoId + "] finnes ikke pï¿½ angitt journalpost", journalpost
 					.getJournalpostId());
 		}
 	}
@@ -225,14 +225,14 @@ public class DefaultOppdaterJournalpostArkiverDokumentValidator implements Oppda
 	 */
 	public void validateDatoDokument(OppdaterJournalpostArkiverDokumentRequestTo request) throws UgyldigInputException {
 		if (request.getDatoDokument() == null) {
-			throw new UgyldigInputException("Mangler påkrevd felt datoDokument", request.getJournalpostId());
+			throw new UgyldigInputException("Mangler pï¿½krevd felt datoDokument", request.getJournalpostId());
 		}
 	}
 
 	private void validateFilDetaljerDoesNotContainVariantFormat(Set<FilDetaljer> jpFileDetaljerSet, VariantFormatCode variantFormatCode, Long journalpostId) throws FeilStrukturException {
 		for (FilDetaljer filDetaljer : jpFileDetaljerSet) {
 			if (filDetaljer.getVariantFormat().equals(variantFormatCode)) {
-				throw new FeilStrukturException("Variantformat som forøkes lagt til eksisterer allerede. variantFormatCode=" + variantFormatCode, journalpostId);
+				throw new FeilStrukturException("Variantformat som forï¿½kes lagt til eksisterer allerede. variantFormatCode=" + variantFormatCode, journalpostId);
 			}
 		}
 	}

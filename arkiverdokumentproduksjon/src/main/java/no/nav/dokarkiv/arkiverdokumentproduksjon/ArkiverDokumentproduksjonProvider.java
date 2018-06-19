@@ -217,15 +217,15 @@ public class ArkiverDokumentproduksjonProvider implements ArkiverDokumentproduks
 			OppdaterJournalpostArkiverDokumentRequestTo domeneRequest
 					= oppdaterJournalpostArkiverDokumentRequestMapper.map(wsRequest);
 			oppdaterJournalpostArkiverDokumentService.oppdaterJournalpostArkiverDokument(domeneRequest);
-		} catch (no.nav.dokarkiv.core.exceptions.UgyldigInputException e) {
+		} catch (no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.UgyldigInputException e) {
 			throw new UgyldigInputException(e.getMessage(), new UgyldigInputFault());
-		} catch (no.nav.dokarkiv.core.exceptions.ObjektIkkeFunnetException e) {
+		} catch (no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.ObjektIkkeFunnetException e) {
 			throw new ObjektIkkeFunnetException(e.getMessage(), new ObjektIkkeFunnetFault());
-		} catch (no.nav.dokarkiv.core.exceptions.KanIkkeFerdigstillesException e) {
+		} catch (no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.KanIkkeFerdigstillesException e) {
 			throw new KanIkkeFerdigstillesException(e.getMessage(), new KanIkkeFerdigstillesFault());
-		} catch (no.nav.dokarkiv.core.exceptions.FeilStrukturException e) {
+		} catch (no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.FeilStrukturException e) {
 			throw new FeilStrukturException(e.getMessage(), new FeilStrukturFault());
-		} catch (no.nav.dokarkiv.core.exceptions.AlleredeFerdigstiltException e) {
+		} catch (no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.AlleredeFerdigstiltException e) {
 			throw new AlleredeFerdigstiltException(e.getMessage(), new AlleredeFerdigstiltFault());
 		}
 	}

@@ -1,22 +1,21 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark102;
 
-import no.nav.domain.dok.joark.DokumentInfo;
-import no.nav.domain.dok.joark.FilDetaljer;
-import no.nav.domain.dok.joark.Journalpost;
-import no.nav.domain.dok.joark.codestable.DokumentStatusCode;
-import no.nav.domain.dok.joark.codestable.JournalStatusCode;
-import no.nav.domain.dok.joark.codestable.UtsendingsKanalCode;
-import no.nav.domain.dok.joark.codestable.VariantFormatCode;
-import no.nav.repository.dok.joark.JoarkRepository;
-import no.nav.repository.dok.joark.util.DateProvider;
-import no.nav.service.dok.joark.journalbehandling.DokumentFilerDelegate;
-import no.nav.service.dok.joark.journalbehandling.SporingPopulator;
-import no.nav.service.dok.joark.nsb.exceptions.AlleredeFerdigstiltException;
-import no.nav.service.dok.joark.nsb.exceptions.FeilStrukturException;
-import no.nav.service.dok.joark.nsb.exceptions.KanIkkeFerdigstillesException;
-import no.nav.service.dok.joark.nsb.exceptions.ObjektIkkeFunnetException;
-import no.nav.service.dok.joark.nsb.exceptions.UgyldigInputException;
-import no.nav.service.dok.joark.nsb.to.OppdaterJournalpostArkiverDokumentRequestTo;
+import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.AlleredeFerdigstiltException;
+import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.FeilStrukturException;
+import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.KanIkkeFerdigstillesException;
+import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.ObjektIkkeFunnetException;
+import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.UgyldigInputException;
+import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
+import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
+import no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode;
+import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
+import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
+import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
+import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.domain.util.DateProvider;
+import no.nav.dokarkiv.core.journalbehandling.DokumentFilerDelegate;
+import no.nav.dokarkiv.core.repository.JoarkRepository;
+import no.nav.dokarkiv.core.sporing.SporingPopulator;
 
 import javax.inject.Inject;
 import java.util.Set;
@@ -40,7 +39,8 @@ public class DefaultOppdaterJournalpostArkiverDokumentService implements Oppdate
 	@Override
 	public void oppdaterJournalpostArkiverDokument(OppdaterJournalpostArkiverDokumentRequestTo request) throws UgyldigInputException, ObjektIkkeFunnetException, KanIkkeFerdigstillesException, FeilStrukturException, AlleredeFerdigstiltException {
 		validator.validateRequest(request);
-		Journalpost journalpost = joarkRepository.findJournalpostByJournalpostId(request.getJournalpostId(), false);
+		Journalpost journalpost = joarkRepository.findById(request.getJournalpostId())
+				.orElseThrow(() -> new ObjektIkkeFunnetException("JournalpostId eksisterer ikke i Joark", request.getJournalpostId()));
 
 		validator.validate(journalpost, request);
 		updateJournalpost(journalpost, request);
@@ -52,18 +52,18 @@ public class DefaultOppdaterJournalpostArkiverDokumentService implements Oppdate
 								  OppdaterJournalpostArkiverDokumentRequestTo request) {
 		UtsendingsKanalCode utsendingskanal = request.getUtsendingskanal();
 
-		if(request.isFerdigstillJournalpost()) {
+		if (request.isFerdigstillJournalpost()) {
 			if (utsendingskanal == UtsendingsKanalCode.L) {
 				journalpost.setJournalstatus(JournalStatusCode.FL);
 			} else {
 				journalpost.setJournalstatus(JournalStatusCode.FS);
 			}
-            journalpost.setJournalDato(DateProvider.getToday());
+			journalpost.setJournalDato(DateProvider.getToday());
 			journalpost.setJournalfortAvNavn(request.getEndretAvNavn());
 		}
 
 		journalpost.setUtsendingskanal(utsendingskanal);
-        journalpost.setDokumentDato(request.getDatoDokument());
+		journalpost.setDokumentDato(request.getDatoDokument());
 		DokumentInfo dokumentInfo = journalpost.findDokumentInfoById(request.getDokumentInfoId());
 		dokumentInfo.setDokumentstatus(DokumentStatusCode.FERDIGSTILT);
 		dokumentInfo.setDokumentFerdigDato(DateProvider.getToday());
@@ -88,8 +88,8 @@ public class DefaultOppdaterJournalpostArkiverDokumentService implements Oppdate
 		dokFilDetalj.setFiltype(filDetalj.getFiltype());
 		dokFilDetalj.setFileContent(filDetalj.getFileContent());
 		dokFilDetalj.setFilstorrelse(filDetalj.getFilstorrelse());
-        if(ferdigstillJournalpost) {
-            dokFilDetalj.setMetaforceInstanceId(null);
-        }
+		if (ferdigstillJournalpost) {
+			dokFilDetalj.setMetaforceInstanceId(null);
+		}
 	}
 }

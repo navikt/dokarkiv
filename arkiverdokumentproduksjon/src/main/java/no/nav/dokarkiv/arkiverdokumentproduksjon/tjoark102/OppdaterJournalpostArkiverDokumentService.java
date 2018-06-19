@@ -1,11 +1,11 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark102;
 
 
-import no.nav.dokarkiv.core.exceptions.AlleredeFerdigstiltException;
-import no.nav.dokarkiv.core.exceptions.FeilStrukturException;
-import no.nav.dokarkiv.core.exceptions.KanIkkeFerdigstillesException;
-import no.nav.dokarkiv.core.exceptions.ObjektIkkeFunnetException;
-import no.nav.dokarkiv.core.exceptions.UgyldigInputException;
+import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.AlleredeFerdigstiltException;
+import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.FeilStrukturException;
+import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.KanIkkeFerdigstillesException;
+import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.ObjektIkkeFunnetException;
+import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.UgyldigInputException;
 
 /**
  * Interface for the operation OppdaterJournalpostArkiverDokument
