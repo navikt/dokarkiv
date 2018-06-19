@@ -5,8 +5,8 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
  * RequestTo object for ArkiverDokumentproduksjon.fjernFerdigstiltDokumentRequest
- * 
- * @author Stig Strøm
+ *
+ * @author Stig StrÃ¸m
  */
 public class FjernFerdigstiltDokumentRequestTo {
 
@@ -23,7 +23,7 @@ public class FjernFerdigstiltDokumentRequestTo {
 	public Long getJournalpostId() {
 		return journalpostId;
 	}
-	
+
 	public void setDokumentInfoId(Long dokumentInfoId) {
 		this.dokumentInfoId = dokumentInfoId;
 	}
@@ -31,7 +31,7 @@ public class FjernFerdigstiltDokumentRequestTo {
 	public Long getDokumentInfoId() {
 		return dokumentInfoId;
 	}
-	
+
 	public String getEndretAvNavn() {
 		return endretAvNavn;
 	}
@@ -47,9 +47,9 @@ public class FjernFerdigstiltDokumentRequestTo {
 	@Override
 	public String toString() {
 		return new ToStringBuilder(this)
-		.append("journalpostId", journalpostId)
-		.append("dokumentInfoId", dokumentInfoId)
-		.append("endretAvNavn", endretAvNavn)
-		.toString();
+				.append("journalpostId", journalpostId)
+				.append("dokumentInfoId", dokumentInfoId)
+				.append("endretAvNavn", endretAvNavn)
+				.toString();
 	}
 }

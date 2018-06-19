@@ -1,78 +1,65 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark107;
 
-import no.nav.domain.dok.joark.DokumentInfo;
-import no.nav.domain.dok.joark.FilDetaljer;
-import no.nav.domain.dok.joark.Journalpost;
-import no.nav.domain.dok.joark.codestable.DokumentStatusCode;
-import no.nav.domain.dok.joark.codestable.VariantFormatCode;
-import no.nav.repository.dok.joark.DokumentFilRepository;
-import no.nav.repository.dok.joark.mod.JoarkRepository;
-import no.nav.service.dok.joark.NoJournalpostFoundException;
-import no.nav.service.dok.joark.journalbehandling.NoDokumentInfoFoundException;
-import no.nav.service.dok.joark.journalbehandling.SporingPopulator;
-import no.nav.service.dok.joark.journalbehandling.UgyldigDokumentStatusVerdiException;
-import no.nav.service.dok.joark.journalbehandling.UgyldigJournalStatusVerdiException;
-import no.nav.service.dok.joark.nsb.FjernFerdigstiltDokumentValidator;
-import no.nav.service.dok.joark.nsb.to.FjernFerdigstiltDokumentRequestTo;
+import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.NoDokumentInfoFoundException;
+import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.NoJournalpostFoundException;
+import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.UgyldigDokumentStatusVerdiException;
+import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.UgyldigJournalStatusVerdiException;
+import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
+import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
+import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
+import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
+import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.repository.DokumentFilRepository;
+import no.nav.dokarkiv.core.repository.JoarkRepository;
+import no.nav.dokarkiv.core.sporing.SporingPopulator;
 
 import javax.inject.Inject;
 
 /**
  * Implementation of the {@link FjernFerdigstiltDokumentService}
- * 
- * @author Stig Strøm
  *
+ * @author Stig StrÃ¸m
  */
 public class DefaultFjernFerdigstiltDokumentService implements FjernFerdigstiltDokumentService {
-	
-	
-	
+
 	@Inject
 	private JoarkRepository joarkRepository;
-	
-	@Inject 
-	DokumentFilRepository dokumentFilRepository;
-	
+
+	@Inject
+	private DokumentFilRepository dokumentFilRepository;
+
 	@Inject
 	private FjernFerdigstiltDokumentValidator fjernFerdigstiltDokumentValidator;
 
 	@Inject
 	private SporingPopulator sporingPopulator;
 
-
 	@Override
 	public void fjernFerdigstiltDokument(FjernFerdigstiltDokumentRequestTo request) throws NoJournalpostFoundException,
 			NoDokumentInfoFoundException, UgyldigJournalStatusVerdiException, UgyldigDokumentStatusVerdiException {
 		fjernFerdigstiltDokumentValidator.validateInputRequest(request);
-		
+
 		Journalpost journalpost = findJournalpost(request.getJournalpostId());
 		fjernFerdigstiltDokumentValidator.validate(journalpost, request);
-		
+
 		journalpost.setDokumentDato(null);
 		DokumentInfo dokumentInfo = journalpost.findDokumentInfoById(request.getDokumentInfoId());
 		dokumentInfo.setDokumentstatus(DokumentStatusCode.UNDER_REDIGERING);
 		dokumentInfo.setDokumentFerdigDato(null);
-		
-		
+
+
 		FilDetaljer arkivFilDetaljer = dokumentInfo.findFilDetaljerByVariantFormat(VariantFormatCode.ARKIV);
 		if (arkivFilDetaljer != null) {
-			dokumentFilRepository.deleteDokumentFil(arkivFilDetaljer.getFilUuid());
+			dokumentFilRepository.deleteByFilUuid(arkivFilDetaljer.getFilUuid());
 			dokumentInfo.removeFilDetaljer(arkivFilDetaljer);
 		}
 		sporingPopulator.populateSporingInfo(journalpost, request.getEndretAvNavn());
 	}
-	
-	
-	
+
+
 	private Journalpost findJournalpost(Long journalpostId) throws NoJournalpostFoundException {
-		Journalpost journalpost = joarkRepository.findJournalpostById(journalpostId);
-		if (journalpost == null) {
-			throw new NoJournalpostFoundException("Journalpost with id: " + journalpostId + " does not exist", journalpostId);
-		}
-		return journalpost;
+		return joarkRepository.findById(journalpostId).orElseThrow(() -> new NoJournalpostFoundException("Journalpost with id: " + journalpostId + " does not exist", journalpostId));
 	}
 
-
-	
 
 }
