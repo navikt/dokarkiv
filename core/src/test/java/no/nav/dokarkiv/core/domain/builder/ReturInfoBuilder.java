@@ -1,8 +1,8 @@
 package no.nav.dokarkiv.core.domain.builder;
 
 import no.nav.dokarkiv.core.domain.ChangeStamp;
-import no.nav.dokarkiv.core.domain.ReturInfo;
 import no.nav.dokarkiv.core.domain.codes.ArsakReturCode;
+import no.nav.dokarkiv.core.domain.entities.ReturInfo;
 
 import java.util.Date;
 

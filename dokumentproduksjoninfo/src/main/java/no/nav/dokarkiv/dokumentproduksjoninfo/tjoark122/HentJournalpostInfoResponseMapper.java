@@ -1,10 +1,12 @@
 package no.nav.dokarkiv.dokumentproduksjoninfo.tjoark122;
 
 import no.nav.tjeneste.domene.brevogarkiv.dokumentproduksjoninfo.v1.meldinger.HentJournalpostInfoResponse;
+import org.springframework.stereotype.Component;
 
 /**
  * @author Joakim Bjørnstad, Jbit AS
  */
+@Component
 public class HentJournalpostInfoResponseMapper {
 	public HentJournalpostInfoResponse map(HentJournalpostInfoResponseTo responseTo) {
 		return new HentJournalpostInfoResponse()

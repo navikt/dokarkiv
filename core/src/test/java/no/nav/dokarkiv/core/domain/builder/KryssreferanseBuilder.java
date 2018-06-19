@@ -1,7 +1,7 @@
 package no.nav.dokarkiv.core.domain.builder;
 
-import no.nav.dokarkiv.core.domain.Kryssreferanse;
 import no.nav.dokarkiv.core.domain.codes.ReferanseTypeCode;
+import no.nav.dokarkiv.core.domain.entities.Kryssreferanse;
 
 /**
  * Builder for Kryssreferanse.

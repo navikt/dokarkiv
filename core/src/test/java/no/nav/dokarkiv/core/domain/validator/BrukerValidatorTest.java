@@ -3,8 +3,8 @@ package no.nav.dokarkiv.core.domain.validator;
 import static no.nav.dokarkiv.core.domain.builder.BrukerBuilder.getBrukerBuilder;
 import static org.junit.Assert.fail;
 
-import no.nav.dokarkiv.core.domain.Bruker;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
+import no.nav.dokarkiv.core.domain.entities.Bruker;
 import no.nav.dokarkiv.core.exceptions.InvalidBrukerException;
 import org.junit.Test;
 

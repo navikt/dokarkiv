@@ -11,12 +11,11 @@ import no.nav.tjeneste.domene.brevogarkiv.dokumentproduksjoninfo.v1.meldinger.He
 import no.nav.tjeneste.domene.brevogarkiv.dokumentproduksjoninfo.v1.meldinger.HentJournalOgDokumentStatusResponse;
 import no.nav.tjeneste.domene.brevogarkiv.dokumentproduksjoninfo.v1.meldinger.HentJournalpostInfoRequest;
 import no.nav.tjeneste.domene.brevogarkiv.dokumentproduksjoninfo.v1.meldinger.HentJournalpostInfoResponse;
+import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
+import javax.inject.Inject;
 import javax.jws.HandlerChain;
 import javax.jws.WebService;
-import javax.xml.ws.WebServiceContext;
 import javax.xml.ws.soap.Addressing;
 import javax.xml.ws.soap.MTOM;
 
@@ -27,19 +26,18 @@ import javax.xml.ws.soap.MTOM;
  * @author Thomas Eugen Bjørge, Visma Consulting
  */
 @WebService(endpointInterface = "no.nav.tjeneste.domene.brevogarkiv.dokumentproduksjoninfo.v1.DokumentproduksjonInfoV1",
-		wsdlLocation = "WEB-INF/wsdl/no/nav/tjeneste/domene/brevogarkiv/dokumentproduksjoninfo/v1/dokumentproduksjoninfo.wsdl",
+		wsdlLocation = "classpath:wsdl/no/nav/tjeneste/domene/brevogarkiv/dokumentproduksjoninfo/v1/dokumentproduksjoninfo.wsdl",
 		targetNamespace = "http://nav.no/tjeneste/domene/brevogarkiv/dokumentproduksjoninfo/v1/",
 		serviceName = "DokumentproduksjonInfo_v1",
 		portName = "DokumentproduksjonInfoPort_v1")
 @Addressing
 @MTOM(enabled = true)
-@HandlerChain(file = "handler.xml")
+@HandlerChain(file = "classpath:dokumentproduksjoninfo-handler.xml")
+@Service
 public class DokumentproduksjonInfoEndpoint implements DokumentproduksjonInfoV1 {
 
+	@Inject
 	private DokumentproduksjonInfoV1 dokumentproduksjonInfoProvider;
-
-	@Resource
-	private WebServiceContext webServiceContext;
 
 	@Override
 	public HentJournalOgDokumentStatusResponse hentJournalOgDokumentStatus(HentJournalOgDokumentStatusRequest request)
@@ -61,19 +59,4 @@ public class DokumentproduksjonInfoEndpoint implements DokumentproduksjonInfoV1 
 	public void ping() {
 		dokumentproduksjonInfoProvider.ping();
 	}
-
-	/**
-	 * Retrieve the dokumentproduksjonInfoProvider bean from the Spring context.
-	 */
-	@PostConstruct
-	public void initDokumentproduksjonInfoProvider() {
-//		ServletContext servletContext = (ServletContext) webServiceContext.getMessageContext().get(
-//				MessageContext.SERVLET_CONTEXT);
-//		WebApplicationContext webApplicationContext = WebApplicationContextUtils
-//				.getRequiredWebApplicationContext(servletContext);
-//		dokumentproduksjonInfoProvider = (DokumentproduksjonInfoV1) webApplicationContext
-//				.getBean(DokumentproduksjonInfoConfig.PROVIDER_BEAN);
-	}
-
-
 }

@@ -1,8 +1,8 @@
 package no.nav.dokarkiv.core.domain.builder;
 
-import no.nav.dokarkiv.core.domain.Bruker;
 import no.nav.dokarkiv.core.domain.ChangeStamp;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
+import no.nav.dokarkiv.core.domain.entities.Bruker;
 
 /**
  * Builder for Bruker.

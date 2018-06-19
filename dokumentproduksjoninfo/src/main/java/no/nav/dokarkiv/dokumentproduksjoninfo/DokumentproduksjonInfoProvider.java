@@ -1,13 +1,14 @@
 package no.nav.dokarkiv.dokumentproduksjoninfo;
 
-import no.nav.dokarkiv.core.exceptions.DokumentInfoNotFoundException;
-import no.nav.dokarkiv.core.exceptions.FilDetaljerNotFoundException;
-import no.nav.dokarkiv.core.exceptions.IllegalDokumentstatusException;
-import no.nav.dokarkiv.core.exceptions.IllegalJournalStatusException;
-import no.nav.dokarkiv.core.exceptions.IllegalVariantFormatException;
-import no.nav.dokarkiv.core.exceptions.JournalpostNotFoundException;
-import no.nav.dokarkiv.core.exceptions.NoDokumentInfoFoundException;
-import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
+import lombok.extern.slf4j.Slf4j;
+import no.nav.dokarkiv.dokumentproduksjoninfo.exceptions.DokumentInfoNotFoundException;
+import no.nav.dokarkiv.dokumentproduksjoninfo.exceptions.FilDetaljerNotFoundException;
+import no.nav.dokarkiv.dokumentproduksjoninfo.exceptions.IllegalDokumentstatusException;
+import no.nav.dokarkiv.dokumentproduksjoninfo.exceptions.IllegalJournalStatusException;
+import no.nav.dokarkiv.dokumentproduksjoninfo.exceptions.IllegalVariantFormatException;
+import no.nav.dokarkiv.dokumentproduksjoninfo.exceptions.JournalpostNotFoundException;
+import no.nav.dokarkiv.dokumentproduksjoninfo.exceptions.NoDokumentInfoFoundException;
+import no.nav.dokarkiv.dokumentproduksjoninfo.exceptions.NoJournalpostFoundException;
 import no.nav.dokarkiv.dokumentproduksjoninfo.tjoark120.HentJournalOgDokumentStatus;
 import no.nav.dokarkiv.dokumentproduksjoninfo.tjoark120.HentJournalOgDokumentStatusRequestMapper;
 import no.nav.dokarkiv.dokumentproduksjoninfo.tjoark120.HentJournalOgDokumentStatusResponseMapper;
@@ -34,6 +35,7 @@ import no.nav.tjeneste.domene.brevogarkiv.dokumentproduksjoninfo.v1.meldinger.He
 import no.nav.tjeneste.domene.brevogarkiv.dokumentproduksjoninfo.v1.meldinger.HentJournalOgDokumentStatusResponse;
 import no.nav.tjeneste.domene.brevogarkiv.dokumentproduksjoninfo.v1.meldinger.HentJournalpostInfoRequest;
 import no.nav.tjeneste.domene.brevogarkiv.dokumentproduksjoninfo.v1.meldinger.HentJournalpostInfoResponse;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
@@ -45,6 +47,8 @@ import java.util.List;
  *
  * @author Thomas Eugen Bjørge, Visma Consulting
  */
+@Slf4j
+@Component
 public class DokumentproduksjonInfoProvider implements DokumentproduksjonInfoV1 {
 
 	@Inject 

@@ -5,6 +5,7 @@ package no.nav.dokarkiv.core.stelvio;
  *
  * @author Stig Kleppe-Jørgensen, Accenture
  */
+@Deprecated
 public class Internal {
 
 	/**

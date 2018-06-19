@@ -1,9 +1,9 @@
 package no.nav.dokarkiv.core.domain.builder;
 
 import no.nav.dokarkiv.core.domain.ChangeStamp;
-import no.nav.dokarkiv.core.domain.DokumentInfo;
-import no.nav.dokarkiv.core.domain.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
+import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
+import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 
 /**
  * Builder for JournalpostDokumentInfoRelasjon.
