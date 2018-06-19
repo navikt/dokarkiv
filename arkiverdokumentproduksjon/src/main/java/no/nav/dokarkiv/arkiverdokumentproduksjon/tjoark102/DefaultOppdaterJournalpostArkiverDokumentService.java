@@ -16,6 +16,7 @@ import no.nav.dokarkiv.core.domain.util.DateProvider;
 import no.nav.dokarkiv.core.journalbehandling.DokumentFilerDelegate;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.core.sporing.SporingPopulator;
+import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 import java.util.Set;
@@ -25,6 +26,7 @@ import java.util.Set;
  *
  * @author Torgeir Cook
  */
+@Component
 public class DefaultOppdaterJournalpostArkiverDokumentService implements OppdaterJournalpostArkiverDokumentService {
 
 	@Inject

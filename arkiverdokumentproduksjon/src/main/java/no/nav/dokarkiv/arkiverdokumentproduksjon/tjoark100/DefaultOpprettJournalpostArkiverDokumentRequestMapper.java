@@ -1,10 +1,11 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark100;
 
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import no.nav.dokarkiv.core.journalbehandling.KildeNavnPopulator;
+import no.nav.dokarkiv.core.sporing.KildeNavnPopulator;
 import no.nav.dokarkiv.core.stelvio.RequestContextHolder;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.OpprettJournalpostArkiverDokumentRequest;
 import org.dozer.Mapper;
+import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -12,8 +13,9 @@ import javax.inject.Named;
 /**
  * Implementation of OpprettJournalpostArkiverDokumentRequestMapper
  *
- * @author Stig Str?m
+ * @author Stig Strøm
  */
+@Component
 public class DefaultOpprettJournalpostArkiverDokumentRequestMapper implements
 		OpprettJournalpostArkiverDokumentRequestMapper {
 

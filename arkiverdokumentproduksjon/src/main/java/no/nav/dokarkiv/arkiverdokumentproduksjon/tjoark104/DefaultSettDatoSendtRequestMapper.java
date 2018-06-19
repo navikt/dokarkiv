@@ -2,12 +2,14 @@ package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark104;
 
 import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.ApplicationException;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.SettDatoSendtRequest;
+import org.springframework.stereotype.Component;
 
 /**
  * Default implementation of SettDatoSendtRequestMapper
  *
  * @author Joakim Bjørnstad, Visma Consulting
  */
+@Component
 public class DefaultSettDatoSendtRequestMapper implements SettDatoSendtRequestMapper {
 
 	@Override

@@ -4,6 +4,7 @@ import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.ApplicationException
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.core.sporing.SporingPopulator;
+import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 
@@ -12,6 +13,7 @@ import javax.inject.Inject;
  *
  * @author Joakim Bjørnstad, Visma Consulting
  */
+@Component
 public class DefaultSettDatoSendtService implements SettDatoSendtService {
 
 	@Inject

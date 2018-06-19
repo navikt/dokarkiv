@@ -7,7 +7,7 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
  * Verifies the journalpost structure, i.e. the object graph satrting with the
  * Journalpost.
  *
- * @author Thomas Eugen Bjørge, Visma Sirius
+ * @author Thomas Eugen BjÃ¸rge, Visma Sirius
  */
 public interface JournalpostStructureVerifier {
 

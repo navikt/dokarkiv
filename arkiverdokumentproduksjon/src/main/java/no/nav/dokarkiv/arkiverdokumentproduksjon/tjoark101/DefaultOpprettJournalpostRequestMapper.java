@@ -5,6 +5,7 @@ import no.nav.dokarkiv.core.sporing.KildeNavnPopulator;
 import no.nav.dokarkiv.core.stelvio.RequestContextHolder;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.OpprettJournalpostRequest;
 import org.dozer.Mapper;
+import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -15,6 +16,7 @@ import javax.inject.Named;
  *
  * @author Stig Strøm
  */
+@Component
 public class DefaultOpprettJournalpostRequestMapper implements
 		OpprettJournalpostRequestMapper {
 

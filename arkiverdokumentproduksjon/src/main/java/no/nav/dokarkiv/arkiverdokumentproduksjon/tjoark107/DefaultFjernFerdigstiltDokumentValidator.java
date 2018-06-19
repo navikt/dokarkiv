@@ -11,6 +11,7 @@ import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
 /**
@@ -18,6 +19,7 @@ import org.springframework.util.Assert;
  *
  * @author Stig Strøm
  */
+@Component
 public class DefaultFjernFerdigstiltDokumentValidator implements FjernFerdigstiltDokumentValidator {
 	private static final DokumentStatusCode UNDER_REDIGERING = DokumentStatusCode.UNDER_REDIGERING;
 	private static final DokumentStatusCode AVBRUTT = DokumentStatusCode.AVBRUTT;

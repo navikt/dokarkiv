@@ -11,6 +11,7 @@ import no.nav.dokarkiv.core.domain.entities.Kryssreferanse;
 import no.nav.dokarkiv.core.domain.entities.ReturInfo;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
 import no.nav.dokarkiv.core.domain.entities.SkannetInnhold;
+import org.springframework.stereotype.Component;
 
 import java.util.Set;
 
@@ -19,6 +20,7 @@ import java.util.Set;
  * 
  * @author Thomas Eugen Bjørge, Visma Sirius
  */
+@Component
 public class DefaultKildeNavnPopulator implements KildeNavnPopulator {
 
 	/** {@inheritDoc} */

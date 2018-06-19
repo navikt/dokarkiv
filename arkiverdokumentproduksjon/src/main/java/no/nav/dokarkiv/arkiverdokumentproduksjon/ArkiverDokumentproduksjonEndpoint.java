@@ -46,9 +46,10 @@ import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.OpprettJournalpostResponse;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.SettDatoSendtRequest;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.SettJournalpostAttributterRequest;
+import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
+import javax.inject.Inject;
 import javax.jws.HandlerChain;
 import javax.jws.WebService;
 import javax.xml.ws.WebServiceContext;
@@ -58,20 +59,22 @@ import javax.xml.ws.soap.Addressing;
  * Implementation of JAX-WS-generated service interface ArkiverDokumentproduksjonV1. Bootstraps the
  * Spring context and delegates to Spring-managed ArkiverDokumentProduksjonProvider.
  *
- * @author Joakim Bj?rnstad, Visma Consulting
+ * @author Joakim Bjørnstad, Visma Consulting
  */
 @WebService(endpointInterface = "no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.ArkiverDokumentproduksjonV1",
-        wsdlLocation = "WEB-INF/wsdl/no/nav/tjeneste/domene/brevogarkiv/arkiverdokumentproduksjon/v1/arkiverdokumentproduksjon.wsdl",
+        wsdlLocation = "classpath:wsdl/no/nav/tjeneste/domene/brevogarkiv/arkiverdokumentproduksjon/v1/arkiverdokumentproduksjon.wsdl",
         targetNamespace = "http://nav.no/tjeneste/domene/brevogarkiv/arkiverdokumentproduksjon/v1/",
-        serviceName = "ArkiverDokumentproduksjon_v1",
+        serviceName = "ArkiverDokumentproduksjonService_v1",
         portName = "ArkiverDokumentproduksjonPort_v1")
 @Addressing
-@HandlerChain(file = "handler.xml")
+@HandlerChain(file = "classpath:arkiverdokumentproduksjon-handler.xml")
+@Service
 public class ArkiverDokumentproduksjonEndpoint implements ArkiverDokumentproduksjonV1 {
 
     // hardkodet, siden appid ikke er tilgjenglig i api
     private static final String DOKPROS_APPID = "dokumentproduksjon";
 
+    @Inject
     private ArkiverDokumentproduksjonV1 arkiverDokumentproduksjonProvider;
 
     @Resource
@@ -167,18 +170,4 @@ public class ArkiverDokumentproduksjonEndpoint implements ArkiverDokumentproduks
         RequestContextUtil.createAndSetRequestContext(webServiceContext, DOKPROS_APPID);
         arkiverDokumentproduksjonProvider.knyttDokumentTilJournalpostSomVedlegg(request);
     }
-
-    /**
-     * Retrieve the arkiverDokumentproduksjonProvider bean from the Spring context.
-     */
-    @PostConstruct
-    public void initArkiverDokumentproduksjonProvider() {
-//        ServletContext servletContext = (ServletContext) webServiceContext.getMessageContext().get(
-//                MessageContext.SERVLET_CONTEXT);
-//        WebApplicationContext webApplicationContext = WebApplicationContextUtils
-//                .getRequiredWebApplicationContext(servletContext);
-//        arkiverDokumentproduksjonProvider = (ArkiverDokumentproduksjonV1)
-//                webApplicationContext.getBean(ArkiverDokumentproduksjonConfig.PROVIDER_BEAN);
-    }
-
 }

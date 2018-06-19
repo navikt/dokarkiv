@@ -11,6 +11,7 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.core.sporing.SporingPopulator;
+import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 
@@ -19,6 +20,7 @@ import javax.inject.Inject;
  *
  * @author Roar Bjurstrom, Visma Consulting
  */
+@Component
 public class DefaultAvbrytVedleggService implements AvbrytVedleggService {
 
 	@Inject

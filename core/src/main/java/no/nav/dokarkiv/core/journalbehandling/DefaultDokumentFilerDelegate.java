@@ -4,6 +4,7 @@ import no.nav.dokarkiv.core.domain.entities.DokumentFil;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +14,7 @@ import java.util.List;
  *
  * @author Thomas Eugen Bjørge, Visma Sirius
  */
+@Component
 public class DefaultDokumentFilerDelegate implements DokumentFilerDelegate {
 
 	private DokumentFilRepository dokumentFilRepository;

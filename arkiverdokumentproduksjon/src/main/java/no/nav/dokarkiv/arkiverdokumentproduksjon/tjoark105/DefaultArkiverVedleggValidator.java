@@ -11,6 +11,7 @@ import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.util.Set;
@@ -21,6 +22,7 @@ import java.util.TreeSet;
  *
  * @author Magnar Brandsdal, Visma Consulting
  */
+@Component
 public class DefaultArkiverVedleggValidator implements ArkiverVedleggValidator {
 
 	/**
