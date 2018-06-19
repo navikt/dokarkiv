@@ -8,7 +8,8 @@ public class ArkiverVedleggResponseTo {
 	private long journalpostId;
 	private long dokumentInfoId;
 
-	private ArkiverVedleggResponseTo() {}
+	private ArkiverVedleggResponseTo() {
+	}
 
 	public static ArkiverVedleggResponseTo create(long journalpostId, long dokumentInfoId) {
 		ArkiverVedleggResponseTo to = new ArkiverVedleggResponseTo();

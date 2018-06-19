@@ -1,17 +1,15 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark105;
 
-import no.nav.domain.dok.joark.DokumentInfo;
-import no.nav.domain.dok.joark.Journalpost;
-import no.nav.domain.dok.joark.JournalpostDokumentInfoRelasjon;
-import no.nav.domain.dok.joark.codestable.DokumentStatusCode;
-import no.nav.domain.dok.joark.codestable.TilknyttetJournalpostSomCode;
-import no.nav.repository.dok.joark.JoarkRepository;
-import no.nav.repository.dok.joark.util.DateProvider;
-import no.nav.service.dok.joark.NoJournalpostFoundException;
-import no.nav.service.dok.joark.journalbehandling.DokumentFilerDelegate;
-import no.nav.service.dok.joark.journalbehandling.SporingPopulator;
-import no.nav.service.dok.joark.nsb.to.ArkiverVedleggRequestTo;
-import no.nav.service.dok.joark.nsb.to.ArkiverVedleggResponseTo;
+import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.NoJournalpostFoundException;
+import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
+import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
+import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
+import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
+import no.nav.dokarkiv.core.domain.util.DateProvider;
+import no.nav.dokarkiv.core.journalbehandling.DokumentFilerDelegate;
+import no.nav.dokarkiv.core.repository.JoarkRepository;
+import no.nav.dokarkiv.core.sporing.SporingPopulator;
 
 import javax.inject.Inject;
 
@@ -39,15 +37,15 @@ public class DefaultArkiverVedleggService implements ArkiverVedleggService {
 			throws NoJournalpostFoundException {
 		arkiverVedleggValidator.validate(arkiverVedleggRequest);
 
-		Journalpost journalpost =
-				joarkRepository.findJournalpostByJournalpostId(arkiverVedleggRequest.getJournalpostId(), false);
+		// eager fetch? FIXME
+		Journalpost journalpost = null;
+		//joarkRepository.findJournalpostByJournalpostId(arkiverVedleggRequest.getJournalpostId(), false); FIXME
 
 		arkiverVedleggValidator.validate(journalpost, arkiverVedleggRequest.getJournalpostId());
 
 		oppdaterJournalpostMedDokumentInfo(journalpost, arkiverVedleggRequest);
 
 		dokumentFilerDelegate.saveUpdateDokumentFiler(journalpost);
-		joarkRepository.updateJournalpost(journalpost);
 
 		return ArkiverVedleggResponseTo.create(
 				arkiverVedleggRequest.getJournalpostId(),
@@ -67,7 +65,7 @@ public class DefaultArkiverVedleggService implements ArkiverVedleggService {
 		boolean ferdigstillDokument = arkiverVedleggRequest.getFerdigstillDokument();
 		dokumentInfo.setDokumentstatus(toDokumentStatusCode(ferdigstillDokument));
 		dokumentInfo.setDokumentFerdigDato(ferdigstillDokument ? DateProvider.getToday() : null);
-}
+	}
 
 	private JournalpostDokumentInfoRelasjon createJournalpostDokumentInfoRelasjon(ArkiverVedleggRequestTo arkiverVedleggRequest,
 																				  DokumentInfo dokumentInfo) {

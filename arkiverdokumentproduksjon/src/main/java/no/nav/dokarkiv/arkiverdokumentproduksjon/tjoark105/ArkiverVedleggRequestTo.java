@@ -1,6 +1,6 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark105;
 
-import no.nav.domain.dok.joark.DokumentInfo;
+import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 
 /**
  * Request object for ArkiverDokumentproduksjon.arkiverVedlegg

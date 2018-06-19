@@ -1,8 +1,6 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark105;
 
-import no.nav.service.dok.joark.NoJournalpostFoundException;
-import no.nav.service.dok.joark.nsb.to.ArkiverVedleggRequestTo;
-import no.nav.service.dok.joark.nsb.to.ArkiverVedleggResponseTo;
+import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.NoJournalpostFoundException;
 
 /**
  * Interface for the operation ArkiverVedlegg

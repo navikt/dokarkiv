@@ -1,9 +1,9 @@
 package no.nav.dokarkiv.core.journalbehandling;
 
-import no.nav.dokarkiv.core.domain.DokumentFil;
-import no.nav.dokarkiv.core.domain.FilDetaljer;
-import no.nav.dokarkiv.core.domain.Journalpost;
-import no.nav.repository.dok.joark.DokumentFilRepository;
+import no.nav.dokarkiv.core.domain.entities.DokumentFil;
+import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
+import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * Implementation of DokumentFilerDelegate.
  *
- * @author Thomas Eugen Bjørge, Visma Sirius
+ * @author Thomas Eugen BjÃ¸rge, Visma Sirius
  */
 public class DefaultDokumentFilerDelegate implements DokumentFilerDelegate {
 
@@ -44,7 +44,7 @@ public class DefaultDokumentFilerDelegate implements DokumentFilerDelegate {
 	}
 
 	private void saveDokumentFil(DokumentFil dokumentFil) {
-		dokumentFilRepository.saveDokumentFil(dokumentFil);
+		dokumentFilRepository.save(dokumentFil);
 	}
 
 	private void updateExistingDokumentFiler(Journalpost journalpost) {
@@ -63,7 +63,7 @@ public class DefaultDokumentFilerDelegate implements DokumentFilerDelegate {
 	 * @param filDetaljer The existing FilDetaljer.
 	 */
 	private void updateDokumentFil(FilDetaljer filDetaljer) {
-		DokumentFil existingDokumentFil = dokumentFilRepository.findDokumentFil(filDetaljer.getFilUuid());
+		DokumentFil existingDokumentFil = dokumentFilRepository.findByFilUuid(filDetaljer.getFilUuid());
 		if (existingDokumentFil == null) {
 			saveDokumentFil(filDetaljer.createDokumentFil());
 		} else {

@@ -1,17 +1,16 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark105;
 
-import static no.nav.domain.dok.joark.codestable.JournalStatusCode.D;
-import static no.nav.domain.dok.joark.codestable.VariantFormatCode.ARKIV;
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.D;
+import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.ARKIV;
 
-import no.nav.domain.dok.joark.DokumentInfo;
-import no.nav.domain.dok.joark.FilDetaljer;
-import no.nav.domain.dok.joark.Journalpost;
-import no.nav.domain.dok.joark.codestable.JournalStatusCode;
-import no.nav.domain.dok.joark.codestable.VariantFormatCode;
-import no.nav.modig.core.exception.ApplicationException;
-import no.nav.service.dok.joark.NoJournalpostFoundException;
-import no.nav.service.dok.joark.journalbehandling.IllegalDocumentUpdateException;
-import no.nav.service.dok.joark.nsb.to.ArkiverVedleggRequestTo;
+import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.ApplicationException;
+import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.IllegalDocumentUpdateException;
+import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.NoJournalpostFoundException;
+import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
+import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
+import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
+import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
+import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import org.springframework.util.StringUtils;
 
 import java.util.Set;
@@ -24,7 +23,9 @@ import java.util.TreeSet;
  */
 public class DefaultArkiverVedleggValidator implements ArkiverVedleggValidator {
 
-	/** {@inheritDoc} */
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void validate(ArkiverVedleggRequestTo arkiverVedleggRequestTo) {
 		validateRequestFields(arkiverVedleggRequestTo);
@@ -32,7 +33,9 @@ public class DefaultArkiverVedleggValidator implements ArkiverVedleggValidator {
 		validateFilDetaljerVariantFormat(arkiverVedleggRequestTo.getDokumentInfo().getFildetaljerListe());
 	}
 
-	/** {@inheritDoc} */
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void validate(Journalpost journalpost, Long journalpostId) throws NoJournalpostFoundException {
 		if (journalpost == null) {

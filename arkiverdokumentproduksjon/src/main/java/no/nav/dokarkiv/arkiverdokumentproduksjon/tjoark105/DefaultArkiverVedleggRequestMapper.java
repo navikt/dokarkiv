@@ -1,6 +1,5 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark105;
 
-import no.nav.service.dok.joark.nsb.to.ArkiverVedleggRequestTo;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.ArkiverVedleggRequest;
 import org.dozer.Mapper;
 
