@@ -1,10 +1,9 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark109;
 
-import no.nav.service.dok.joark.nsb.to.KnyttDokumentTilJournalpostSomVedleggRequestTo;
 import org.springframework.util.Assert;
 
 /**
- * @author Thomas Kåsene, Visma Consulting AS
+ * @author Thomas KÃ¥sene, Visma Consulting AS
  */
 public class DefaultKnyttDokumentTilJournalpostSomVedleggValidator implements KnyttDokumentTilJournalpostSomVedleggValidator {
 

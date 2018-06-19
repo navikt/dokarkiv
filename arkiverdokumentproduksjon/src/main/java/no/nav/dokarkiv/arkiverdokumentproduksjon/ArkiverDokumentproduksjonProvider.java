@@ -109,7 +109,7 @@ import javax.inject.Inject;
 /**
  * Provider delegate for the ArkiverDokumentproduksjon webservice
  *
- * @author Joakim Bj?rnstad, Visma Consulting
+ * @author Joakim Bjørnstad, Visma Consulting
  */
 public class ArkiverDokumentproduksjonProvider implements ArkiverDokumentproduksjonV1 {
 

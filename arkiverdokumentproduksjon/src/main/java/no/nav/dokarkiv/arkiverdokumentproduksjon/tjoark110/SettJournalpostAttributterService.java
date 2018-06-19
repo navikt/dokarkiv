@@ -2,15 +2,15 @@ package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark110;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
-import no.nav.domain.dok.joark.Journalpost;
-import no.nav.modig.core.exception.ApplicationException;
-import no.nav.repository.dok.joark.mod.JoarkRepository;
-import no.nav.service.dok.joark.journalbehandling.SporingPopulator;
+import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.ApplicationException;
+import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.repository.JoarkRepository;
+import no.nav.dokarkiv.core.sporing.SporingPopulator;
 
 import javax.inject.Inject;
 
 /**
- * @author Joakim Bj?rnstad, Jbit AS
+ * @author Joakim Bjørnstad, Jbit AS
  */
 public class SettJournalpostAttributterService {
 	@Inject
@@ -39,10 +39,6 @@ public class SettJournalpostAttributterService {
 	}
 
 	private Journalpost getJournalpost(Long journalpostId) {
-		Journalpost journalpost = joarkRepository.findJournalpostById(journalpostId);
-		if(journalpost == null) {
-			throw new ApplicationException("Could not find Journalpost with journalpostId: " + journalpostId);
-		}
-		return journalpost;
+		return joarkRepository.findById(journalpostId).orElseThrow(() -> new ApplicationException("Could not find Journalpost with journalpostId: " + journalpostId));
 	}
 }

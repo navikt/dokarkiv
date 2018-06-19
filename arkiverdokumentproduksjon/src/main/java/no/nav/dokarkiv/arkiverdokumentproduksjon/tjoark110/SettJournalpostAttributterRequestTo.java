@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * Domain transfer object for settJournalpostAttributter
  *
- * @author Joakim Bj?rnstad, Jbit AS
+ * @author Joakim Bjørnstad, Jbit AS
  */
 @Data
 @Builder

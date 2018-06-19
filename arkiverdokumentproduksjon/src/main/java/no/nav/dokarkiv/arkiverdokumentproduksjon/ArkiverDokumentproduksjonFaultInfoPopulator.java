@@ -5,7 +5,7 @@ import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.feil.Forr
 /**
  * Used to populate ForretningsmessigUnntak faultInfos in checked exceptions.
  * 
- * @author Stig Strøm
+ * @author Stig StrÃ¸m
  */
 public interface ArkiverDokumentproduksjonFaultInfoPopulator {
 

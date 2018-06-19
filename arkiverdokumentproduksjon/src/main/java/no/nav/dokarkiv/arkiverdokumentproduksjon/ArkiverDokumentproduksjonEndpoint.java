@@ -1,8 +1,6 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon;
 
-import no.nav.modig.common.MDCOperations;
-import no.nav.provider.dok.joark.nsb.config.ArkiverDokumentproduksjonConfig;
-import no.nav.provider.dok.joark.support.RequestContextUtil;
+import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.AlleredeFerdigstiltException;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.ArkiverDokumentproduksjonV1;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.ArkiverVedleggJournalpostIkkeFunnet;
@@ -48,16 +46,12 @@ import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.OpprettJournalpostResponse;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.SettDatoSendtRequest;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.SettJournalpostAttributterRequest;
-import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.jws.HandlerChain;
 import javax.jws.WebService;
-import javax.servlet.ServletContext;
 import javax.xml.ws.WebServiceContext;
-import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.soap.Addressing;
 
 /**
@@ -147,8 +141,8 @@ public class ArkiverDokumentproduksjonEndpoint implements ArkiverDokumentproduks
     public void ferdigstillJournalpost(FerdigstillJournalpostRequest request)
             throws FerdigstillJournalpostJournalpostIkkeUnderArbeid, FerdigstillJournalpostInneholderDokumenterUnderRedigering,
             FerdigstillJournalpostJournalpostIkkeFunnet {
-        String userId = MDCOperations.getFromMDC(MDCOperations.MDC_USER_ID);
-        RequestContextUtil.createAndSetUsername(userId, DOKPROS_APPID);
+//        String userId = MDCOperations.getFromMDC(MDCOperations.MDC_USER_ID); FIXME
+//        RequestContextUtil.createAndSetUsername(userId, DOKPROS_APPID); FIXME
         arkiverDokumentproduksjonProvider.ferdigstillJournalpost(request);
     }
 
@@ -179,12 +173,12 @@ public class ArkiverDokumentproduksjonEndpoint implements ArkiverDokumentproduks
      */
     @PostConstruct
     public void initArkiverDokumentproduksjonProvider() {
-        ServletContext servletContext = (ServletContext) webServiceContext.getMessageContext().get(
-                MessageContext.SERVLET_CONTEXT);
-        WebApplicationContext webApplicationContext = WebApplicationContextUtils
-                .getRequiredWebApplicationContext(servletContext);
-        arkiverDokumentproduksjonProvider = (ArkiverDokumentproduksjonV1)
-                webApplicationContext.getBean(ArkiverDokumentproduksjonConfig.PROVIDER_BEAN);
+//        ServletContext servletContext = (ServletContext) webServiceContext.getMessageContext().get(
+//                MessageContext.SERVLET_CONTEXT);
+//        WebApplicationContext webApplicationContext = WebApplicationContextUtils
+//                .getRequiredWebApplicationContext(servletContext);
+//        arkiverDokumentproduksjonProvider = (ArkiverDokumentproduksjonV1)
+//                webApplicationContext.getBean(ArkiverDokumentproduksjonConfig.PROVIDER_BEAN);
     }
 
 }

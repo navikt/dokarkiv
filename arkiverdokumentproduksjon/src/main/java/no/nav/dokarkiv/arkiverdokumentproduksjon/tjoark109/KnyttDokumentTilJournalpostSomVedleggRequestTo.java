@@ -1,7 +1,7 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark109;
 
 /**
- * @author Thomas Kåsene, Visma Consulting AS
+ * @author Thomas KÃ¥sene, Visma Consulting AS
  */
 public class KnyttDokumentTilJournalpostSomVedleggRequestTo {
 
