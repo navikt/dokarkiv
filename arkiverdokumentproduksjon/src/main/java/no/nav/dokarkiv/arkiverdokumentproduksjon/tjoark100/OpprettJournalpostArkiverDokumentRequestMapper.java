@@ -6,7 +6,7 @@ import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger
  * Mapper for OpprettJournalpostArkiverDokumentRequestMapper from arkiverdokumentproduksjon-tjenestespesifikasjon
  * to domain
  *
- * @author Stig Strøm
+ * @author Stig StrÃ¸m
  */
 public interface OpprettJournalpostArkiverDokumentRequestMapper {
 	/**

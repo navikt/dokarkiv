@@ -1,11 +1,11 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark100;
 
-import no.nav.dokarkiv.core.domain.Journalpost;
+import no.nav.dokarkiv.core.domain.entities.Journalpost;
 
 /**
  * Interface for validating OpprettJournalpostArkiverDokumentService
  *
- * @author Stig Strøm
+ * @author Stig StrÃ¸m
  */
 public interface OpprettJournalpostArkiverDokumentValidator {
 

@@ -1,15 +1,15 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark100;
 
 
-import no.nav.dokarkiv.core.domain.Journalpost;
+import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.ApplicationException;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
-import no.nav.modig.core.exception.ApplicationException;
+import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
  * Request object for operation OpprettOgFerdigstillJournalpost.
  *
- * @author Stig Strøm
+ * @author Stig StrÃ¸m
  */
 
 public class OpprettJournalpostArkiverDokumentRequestTo {

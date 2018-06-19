@@ -3,14 +3,14 @@ package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark100;
 import static org.apache.commons.lang.StringUtils.contains;
 import static org.apache.commons.lang.StringUtils.isBlank;
 
-import no.nav.dokarkiv.core.domain.DokumentInfo;
-import no.nav.dokarkiv.core.domain.FilDetaljer;
-import no.nav.dokarkiv.core.domain.Journalpost;
+import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.ApplicationException;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
+import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
+import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
+import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
 import no.nav.dokarkiv.core.journalbehandling.JournalpostStructureVerifier;
 import no.nav.dokarkiv.core.journalbehandling.MandatoryFieldsVerifier;
-import no.nav.modig.core.exception.ApplicationException;
-import no.stelvio.common.error.InvalidArgumentException;
 import org.apache.commons.lang.StringUtils;
 
 import javax.inject.Inject;
@@ -18,7 +18,7 @@ import javax.inject.Inject;
 /**
  * Validates Journalpost for OpprettOgFerdigstillJournalpost
  *
- * @author Stig Strøm
+ * @author Stig StrÃ¸m
  */
 public class DefaultOpprettJournalpostArkiverDokumentValidator implements
 		OpprettJournalpostArkiverDokumentValidator {

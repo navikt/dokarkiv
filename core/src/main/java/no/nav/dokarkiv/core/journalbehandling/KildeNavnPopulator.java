@@ -1,7 +1,7 @@
 package no.nav.dokarkiv.core.journalbehandling;
 
 
-import no.nav.dokarkiv.core.domain.Journalpost;
+import no.nav.dokarkiv.core.domain.entities.Journalpost;
 
 /**
  * Populates opprettetKildeNavn/endretKildeNavn for the entire Journalpost object graph.

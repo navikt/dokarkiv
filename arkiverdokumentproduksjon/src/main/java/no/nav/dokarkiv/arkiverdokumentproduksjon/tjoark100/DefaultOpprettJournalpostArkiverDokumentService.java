@@ -1,20 +1,19 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark100;
 
 import static no.nav.dokarkiv.core.constants.ServiceConstants.BESTILLINGS_ID_KEY;
-import static no.nav.service.dok.joark.ServiceConstants.BESTILLINGS_ID_KEY;
+import static org.assertj.core.util.Strings.isNullOrEmpty;
 
-import com.google.common.base.Strings;
-import no.nav.dokarkiv.core.domain.DokumentInfo;
-import no.nav.dokarkiv.core.domain.Journalpost;
-import no.nav.dokarkiv.core.domain.JournalpostDokumentInfoRelasjon;
+import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.ApplicationException;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode;
+import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
+import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.journalbehandling.DokumentFilerDelegate;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.core.repository.util.DateProvider;
-import no.nav.modig.core.exception.ApplicationException;
 import org.springframework.util.CollectionUtils;
 
 import javax.inject.Inject;
@@ -101,12 +100,12 @@ public class DefaultOpprettJournalpostArkiverDokumentService implements OpprettJ
 		}
 
 		String bestillingsId = dokumentInfo.getTilleggsopplysninger().get(BESTILLINGS_ID_KEY);
-		if (Strings.isNullOrEmpty(bestillingsId)) {
+		if (isNullOrEmpty(bestillingsId)) {
 			return null;
 		}
-
-		Long findJournalpostTilleggssopplysning = joarkRepository.findJournalpostWithDokumentInfoTilleggsopplysning(BESTILLINGS_ID_KEY, bestillingsId);
-
-		return joarkRepository.findById(findJournalpostTilleggssopplysning);
+// 		TODO: fixMe
+//		Long findJournalpostTilleggssopplysning = joarkRepository.findJournalpostWithDokumentInfoTilleggsopplysning(BESTILLINGS_ID_KEY, bestillingsId);
+//		return joarkRepository.findById(findJournalpostTilleggssopplysning);
+		return new Journalpost();
 	}
 }

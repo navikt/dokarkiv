@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.core.journalbehandling;
 
+
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 
 /**
