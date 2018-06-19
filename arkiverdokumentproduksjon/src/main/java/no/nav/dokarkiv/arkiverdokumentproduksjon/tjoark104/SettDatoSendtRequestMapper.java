@@ -1,12 +1,11 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark104;
 
-import no.nav.service.dok.joark.nsb.to.SettDatoSendtRequestTo;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.SettDatoSendtRequest;
 
 /**
  * Maps SettDatoSendt requests
  *
- * @author Joakim Bjørnstad, Visma Consulting
+ * @author Joakim BjÃ¸rnstad, Visma Consulting
  */
 public interface SettDatoSendtRequestMapper {
 	/**

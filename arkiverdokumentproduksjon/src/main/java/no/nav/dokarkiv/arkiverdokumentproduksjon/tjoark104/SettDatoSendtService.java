@@ -1,11 +1,9 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark104;
 
-import no.nav.service.dok.joark.nsb.to.SettDatoSendtRequestTo;
-
 /**
  * Service thats sets sendtPrintDato on Journalposts
  *
- * @author Joakim Bjørnstad, Visma Consulting
+ * @author Joakim BjÃ¸rnstad, Visma Consulting
  */
 public interface SettDatoSendtService {
 

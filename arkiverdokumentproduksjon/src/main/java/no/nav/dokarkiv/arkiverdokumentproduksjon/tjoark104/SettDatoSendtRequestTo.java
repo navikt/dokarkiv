@@ -1,6 +1,6 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark104;
 
-import no.nav.modig.core.exception.ApplicationException;
+import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.ApplicationException;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.Date;
@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * Domain transfer object for settDatoSendt
  *
- * @author Joakim Bjørnstad, Visma Consulting
+ * @author Joakim BjÃ¸rnstad, Visma Consulting
  */
 public class SettDatoSendtRequestTo {
 	private List<Long> journalpostIds;
