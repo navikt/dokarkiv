@@ -1,6 +1,7 @@
 package no.nav.dokarkiv.core.domain.util;
 
-import no.stelvio.common.util.DateUtil;
+
+import no.nav.dokarkiv.core.stelvio.DateUtil;
 
 import java.util.Date;
 import java.util.GregorianCalendar;

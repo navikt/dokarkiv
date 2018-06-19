@@ -18,6 +18,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.inject.Inject;
+import javax.transaction.Transactional;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE,
@@ -25,6 +26,7 @@ import javax.inject.Inject;
 @ActiveProfiles("itest")
 @AutoConfigureTestDatabase
 @AutoConfigureTestEntityManager
+@Transactional
 public abstract class AbstractDokumentproduksjoninfoItest {
 
 	@Rule
@@ -35,6 +37,7 @@ public abstract class AbstractDokumentproduksjoninfoItest {
 	protected JoarkRepository joarkRepository;
 	@Inject
 	protected DokumentFilRepository dokumentFilRepository;
+
 	@Inject
 	protected TransactionTemplate transactionTemplate;
 

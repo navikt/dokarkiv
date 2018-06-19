@@ -6,8 +6,8 @@ import org.springframework.data.repository.CrudRepository;
 /**
  * @author Joakim Bjørnstad, Jbit AS
  */
-public interface JoarkRepository extends CrudRepository<Journalpost, Long> {
+public interface JoarkRepository extends CrudRepository<Journalpost, Long>, JoarkCustomRepository {
 
 
-	Long findJournalpostByTilleggsopplysningerContainingNokkelAnd(String nokkel, String verdi);
 }
+

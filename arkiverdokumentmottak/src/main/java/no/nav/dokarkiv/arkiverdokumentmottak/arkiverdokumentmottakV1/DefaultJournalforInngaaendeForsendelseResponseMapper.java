@@ -13,7 +13,7 @@ import org.springframework.util.Assert;
 public class DefaultJournalforInngaaendeForsendelseResponseMapper {
 
 	public JournalforInngaaendeForsendelseResponse map(JournalforInngaaendeForsendelseResponseTo to) {
-		Assert.notNull(to);
+		Assert.notNull(to, "Feil ved mapping av JournalforInngaaendeForsendelseResponseTo til JournalforInngaaendeForsendelseResponse: TO objektet er null");
 
 		JournalforInngaaendeForsendelseResponse response = new JournalforInngaaendeForsendelseResponse();
 

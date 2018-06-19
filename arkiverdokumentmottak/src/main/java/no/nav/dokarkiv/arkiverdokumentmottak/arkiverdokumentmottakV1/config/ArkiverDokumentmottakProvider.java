@@ -8,7 +8,7 @@ import no.nav.dokarkiv.arkiverdokumentmottak.arkiverdokumentmottakV1.DefaultJour
 import no.nav.dokarkiv.arkiverdokumentmottak.arkiverdokumentmottakV1.JournalforInngaaendeForsendelseRequestTo;
 import no.nav.dokarkiv.arkiverdokumentmottak.arkiverdokumentmottakV1.JournalforInngaaendeForsendelseResponseTo;
 import no.nav.dokarkiv.core.domain.DefaultPingService;
-import no.nav.dokarkiv.core.exceptions.FunctionalUnrecoverableException;
+import no.nav.dokarkiv.core.stelvio.FunctionalUnrecoverableException;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v1.ArkiverDokumentmottakV1;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v1.KanIkkeJournalfores;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v1.informasjon.arkiverdokumentmottak.Tilleggsopplysning;

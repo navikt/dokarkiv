@@ -1,10 +1,9 @@
 package no.nav.dokarkiv.core.stelvio;
 
+
+import no.nav.dokarkiv.core.soap.CallIdHandler;
 import no.nav.modig.core.exception.ApplicationException;
-import no.nav.provider.joark.ws.handler.CallIdHandler;
-import no.stelvio.common.context.support.RequestContextSetter;
-import no.stelvio.common.context.support.SimpleRequestContext;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -17,7 +16,7 @@ import java.security.Principal;
  * <p>
  * NB! CallIdHandler must be configured in order to make callId available in MDC.
  *
- * @author Thomas Eugen Bjørge, Visma Consulting
+ * @author Thomas Eugen Bjï¿½rge, Visma Consulting
  */
 public final class RequestContextUtil {
 
