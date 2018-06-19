@@ -1,14 +1,13 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark108;
 
-import no.nav.service.dok.joark.NoJournalpostFoundException;
-import no.nav.service.dok.joark.journalbehandling.UgyldigDokumentStatusVerdiException;
-import no.nav.service.dok.joark.journalbehandling.UgyldigJournalStatusVerdiException;
-import no.nav.service.dok.joark.nsb.to.FerdigstillJournalpostRequestTo;
+import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.NoJournalpostFoundException;
+import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.UgyldigDokumentStatusVerdiException;
+import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.UgyldigJournalStatusVerdiException;
 
 /**
  * Interface for the operation FerdigstillJournalpostService
  * 
- * @author Stig Strøm
+ * @author Stig StrÃ¸m
  */
 public interface FerdigstillJournalpostService {
 

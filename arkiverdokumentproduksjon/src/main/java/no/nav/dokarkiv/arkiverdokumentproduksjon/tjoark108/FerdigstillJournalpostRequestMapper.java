@@ -1,6 +1,5 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark108;
 
-import no.nav.service.dok.joark.nsb.to.FerdigstillJournalpostRequestTo;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.FerdigstillJournalpostRequest;
 
 /**
@@ -8,7 +7,7 @@ import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger
  * Interface for mapping a web service request to domain request for FerdigstillJournalpost
  * 
  * 
- * @author Stig Strøm
+ * @author Stig StrÃ¸m
  *
  */
 public interface FerdigstillJournalpostRequestMapper {

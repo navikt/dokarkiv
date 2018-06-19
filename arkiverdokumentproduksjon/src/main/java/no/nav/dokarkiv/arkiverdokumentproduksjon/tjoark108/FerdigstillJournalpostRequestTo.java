@@ -1,21 +1,20 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark108;
 
-import no.nav.domain.dok.joark.codestable.UtsendingsKanalCode;
+import no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 
 /**
  * RequestTo object for ArkiverDokumentproduksjon.ferdigstillJournalpost
- * 
- * @author Stig Strøm
+ *
+ * @author Stig StrÃ¸m
  */
 public class FerdigstillJournalpostRequestTo {
 
 	private Long journalpostId;
 	private String endretAvNavn;
-	private UtsendingsKanalCode utsendingskanal; 
+	private UtsendingsKanalCode utsendingskanal;
 
-	
 
 	public FerdigstillJournalpostRequestTo(Long journalpostId, String endretAvNavn, UtsendingsKanalCode utsendingskanal) {
 		this.journalpostId = journalpostId;
@@ -26,11 +25,11 @@ public class FerdigstillJournalpostRequestTo {
 	public Long getJournalpostId() {
 		return journalpostId;
 	}
-	
+
 	public String getEndretAvNavn() {
 		return endretAvNavn;
 	}
-	
+
 	public UtsendingsKanalCode getUtsendingskanal() {
 		return utsendingskanal;
 	}
@@ -42,7 +41,7 @@ public class FerdigstillJournalpostRequestTo {
 	public void setJournalpostId(Long journalpostId) {
 		this.journalpostId = journalpostId;
 	}
-	
+
 	public void setUtsendingskanal(UtsendingsKanalCode utsendingskanal) {
 		this.utsendingskanal = utsendingskanal;
 	}
@@ -50,9 +49,9 @@ public class FerdigstillJournalpostRequestTo {
 	@Override
 	public String toString() {
 		return new ToStringBuilder(this)
-		.append("journalpostId", journalpostId)
-		.append("endretAvNavn", endretAvNavn)
-		.append("utsendingskanal", utsendingskanal)
-		.toString();
+				.append("journalpostId", journalpostId)
+				.append("endretAvNavn", endretAvNavn)
+				.append("utsendingskanal", utsendingskanal)
+				.toString();
 	}
 }

@@ -1,27 +1,25 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark108;
 
-import static no.nav.domain.dok.joark.codestable.DokumentStatusCode.UNDER_REDIGERING;
-import static no.nav.domain.dok.joark.codestable.JournalStatusCode.D;
-import static no.nav.domain.dok.joark.codestable.JournalStatusCode.FL;
-import static no.nav.domain.dok.joark.codestable.JournalStatusCode.FS;
+import static no.nav.dokarkiv.core.domain.codes.DokumentStatusCode.UNDER_REDIGERING;
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.D;
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.FL;
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.FS;
 
-import no.nav.domain.dok.joark.DokumentInfo;
-import no.nav.domain.dok.joark.FilDetaljer;
-import no.nav.domain.dok.joark.Journalpost;
-import no.nav.domain.dok.joark.JournalpostDokumentInfoRelasjon;
-import no.nav.domain.dok.joark.codestable.JournalStatusCode;
-import no.nav.domain.dok.joark.codestable.VariantFormatCode;
-import no.nav.modig.core.exception.ApplicationException;
-import no.nav.service.dok.joark.journalbehandling.UgyldigDokumentStatusVerdiException;
-import no.nav.service.dok.joark.journalbehandling.UgyldigJournalStatusVerdiException;
-import no.nav.service.dok.joark.nsb.to.FerdigstillJournalpostRequestTo;
+import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.ApplicationException;
+import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.UgyldigDokumentStatusVerdiException;
+import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.UgyldigJournalStatusVerdiException;
+import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
+import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
+import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
+import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
+import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import org.springframework.util.Assert;
 
 /**
  * Implementation for the {@link FerdigstillJournalpostValidator} interface
- * 
- * @author Stig Strøm
  *
+ * @author Stig StrÃ¸m
  */
 public class DefaultFerdigstillJournalpostValidator implements FerdigstillJournalpostValidator {
 
@@ -30,19 +28,19 @@ public class DefaultFerdigstillJournalpostValidator implements FerdigstillJourna
 		if (request.getJournalpostId() == null || request.getJournalpostId() == 0) {
 			throw new IllegalArgumentException("JournalpostId cannot be empty or missing. " + request);
 		}
-		
+
 		Assert.notNull(request.getUtsendingskanal(), "Utsendingskanal cannot be empty or missing. " + request);
 		Assert.hasText(request.getEndretAvNavn(), "EndretAvNavn cannot be empty or missing. " + request);
 	}
-	
+
 	@Override
 	public void validate(final Journalpost journalpost) throws UgyldigJournalStatusVerdiException,
 			UgyldigDokumentStatusVerdiException {
 		validateIfJournalpostHasHoveddokument(journalpost);
-        validateIfJournalpostHasCorrectStatus(journalpost);
-        validateDokumentInfoAndFildetaljer(journalpost);
+		validateIfJournalpostHasCorrectStatus(journalpost);
+		validateDokumentInfoAndFildetaljer(journalpost);
 	}
-	
+
 	private void validateIfJournalpostHasHoveddokument(final Journalpost journalpost) {
 		JournalpostDokumentInfoRelasjon hoveddokumentDokumentInfoRelasjon = journalpost.findHoveddokumentDokumentInfoRelasjon();
 		if (hoveddokumentDokumentInfoRelasjon == null) {
@@ -50,18 +48,18 @@ public class DefaultFerdigstillJournalpostValidator implements FerdigstillJourna
 		}
 	}
 
-    private void validateIfJournalpostHasCorrectStatus(final Journalpost journalpost) throws UgyldigJournalStatusVerdiException {
-        JournalStatusCode journalstatus = journalpost.getJournalstatus();
+	private void validateIfJournalpostHasCorrectStatus(final Journalpost journalpost) throws UgyldigJournalStatusVerdiException {
+		JournalStatusCode journalstatus = journalpost.getJournalstatus();
 
-        if (journalstatus != D && journalstatus != FS && journalstatus != FL) {
-            throw new UgyldigJournalStatusVerdiException("Expected one of Journalstatus.D or Journalstatus.FS or Journalstatus.FL for journalpostId="
-                    + journalpost.getJournalpostId(), journalstatus);
-        }
+		if (journalstatus != D && journalstatus != FS && journalstatus != FL) {
+			throw new UgyldigJournalStatusVerdiException("Expected one of Journalstatus.D or Journalstatus.FS or Journalstatus.FL for journalpostId="
+					+ journalpost.getJournalpostId(), journalstatus);
+		}
 	}
-	
+
 	private void validateDokumentInfoAndFildetaljer(final Journalpost journalpost) throws UgyldigDokumentStatusVerdiException {
 		for (DokumentInfo dokumentInfo : journalpost.findAllDokumentInfos()) {
-			validateDokumentInfoIsNotUnderRedigering(journalpost, dokumentInfo);			
+			validateDokumentInfoIsNotUnderRedigering(journalpost, dokumentInfo);
 			validateThatFildetaljerIsArchived(journalpost, dokumentInfo);
 		}
 	}
