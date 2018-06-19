@@ -1,7 +1,6 @@
 package no.nav.dokarkiv.arkiverdokumentmottak;
 
-import no.nav.modig.core.exception.ApplicationException;
-import no.nav.repository.dok.joark.util.DateProvider;
+import no.nav.dokarkiv.core.domain.util.DateProvider;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
@@ -12,7 +11,7 @@ import java.util.GregorianCalendar;
 /**
  * Abstract base class for faultinfo populators.
  *
- * @author Thomas Eugen Bjørge, Visma Sirius
+ * @author Thomas Eugen BjÃ¸rge, Visma Sirius
  */
 public abstract class AbstractJournalFaultInfoPopulator {
 
@@ -70,7 +69,8 @@ public abstract class AbstractJournalFaultInfoPopulator {
 		try {
 			return DatatypeFactory.newInstance().newXMLGregorianCalendar(calendar);
 		} catch (DatatypeConfigurationException e) {
-			throw new ApplicationException("Unable to create XMLGregorianCalendar", e);
+//			throw new ApplicationException("Unable to create XMLGregorianCalendar", e);
+			throw new RuntimeException("FIXME"); // FIXME
 		}
 	}
 

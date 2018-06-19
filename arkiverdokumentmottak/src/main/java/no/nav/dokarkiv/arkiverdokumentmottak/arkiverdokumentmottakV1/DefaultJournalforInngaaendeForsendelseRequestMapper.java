@@ -1,6 +1,6 @@
 package no.nav.dokarkiv.arkiverdokumentmottak.arkiverdokumentmottakV1;
 
-import no.nav.dokarkiv.core.domain.Journalpost;
+import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.journalbehandling.KildeNavnPopulator;
 import no.nav.dokarkiv.core.stelvio.RequestContextHolder;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v1.meldinger.JournalforInngaaendeForsendelseRequest;

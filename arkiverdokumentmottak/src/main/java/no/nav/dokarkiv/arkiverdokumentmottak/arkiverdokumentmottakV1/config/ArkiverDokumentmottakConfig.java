@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Configuration;
 /**
  * Spring configuration for the ArkiverDokumentMottaktV1 ws service
  *
- * @author Stig Strøm
+ * @author Stig StrÃ¸m
  */
 @Configuration
 public class ArkiverDokumentmottakConfig extends BaseProviderConfig {

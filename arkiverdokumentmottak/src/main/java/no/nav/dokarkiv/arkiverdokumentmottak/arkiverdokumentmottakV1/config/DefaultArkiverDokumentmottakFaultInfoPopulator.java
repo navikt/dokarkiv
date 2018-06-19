@@ -6,7 +6,7 @@ import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v1.feil.Forretni
 /**
  * Implementation of ArkiverDokumentmottakFaultInfoPopulator.
  *
- * @author Stig Strøm
+ * @author Stig StrÃ¸m
  */
 public class DefaultArkiverDokumentmottakFaultInfoPopulator extends AbstractJournalFaultInfoPopulator {
 

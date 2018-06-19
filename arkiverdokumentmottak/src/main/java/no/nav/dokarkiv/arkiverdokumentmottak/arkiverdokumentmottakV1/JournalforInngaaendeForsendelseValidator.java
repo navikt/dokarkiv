@@ -1,12 +1,12 @@
 package no.nav.dokarkiv.arkiverdokumentmottak.arkiverdokumentmottakV1;
 
 
-import no.nav.dokarkiv.core.domain.Journalpost;
+import no.nav.dokarkiv.core.domain.entities.Journalpost;
 
 /**
  * Validates the input for JournalforInngaaendeForsendelse
  *
- * @author Stig Strøm
+ * @author Stig StrÃ¸m
  */
 public interface JournalforInngaaendeForsendelseValidator {
 

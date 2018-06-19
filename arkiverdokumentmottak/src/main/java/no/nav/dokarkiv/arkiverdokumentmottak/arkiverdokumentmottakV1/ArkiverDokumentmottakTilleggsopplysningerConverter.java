@@ -15,7 +15,7 @@ import java.util.Map;
  * {@link no.nav.domain.dok.joark.DokumentInfo}.tilleggsOpplysninger
  *
  * @author Leo-Andreas Ervik, Visma Consulting. 24.02.2017
- * @author Stig Strøm, Acando
+ * @author Stig StrÃ¸m, Acando
  */
 public class ArkiverDokumentmottakTilleggsopplysningerConverter
 		extends DozerConverter<List<Tilleggsopplysning>, Map<String, String>> {

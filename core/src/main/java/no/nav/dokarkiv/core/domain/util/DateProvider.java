@@ -1,8 +1,8 @@
 package no.nav.dokarkiv.core.domain.util;
 
 
-import no.nav.dokarkiv.core.stelvio.DateUtil;
-
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Locale;
@@ -93,7 +93,7 @@ public class DateProvider {
 	 * @return A formatted date, see {@value #DATE_PATTERN}.
 	 */
 	public static String getDate(Date date) {
-		return DateUtil.formatDB2String(date);
+		return LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault()).toString();
 	}
 
 	/**
@@ -118,7 +118,7 @@ public class DateProvider {
 	private static Provider getMockProvider(final String mockDate) {
 		return new Provider() {
 			public Date getToday() {
-				return DateUtil.parseDB2String(mockDate, false);
+				return Date.from(LocalDateTime.parse(mockDate ).atZone(ZoneId.systemDefault()).toInstant());
 			}
 		};
 	}
