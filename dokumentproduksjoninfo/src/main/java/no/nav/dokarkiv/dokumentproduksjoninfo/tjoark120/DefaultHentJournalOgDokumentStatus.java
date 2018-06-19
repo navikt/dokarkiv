@@ -6,9 +6,9 @@ import no.nav.dokarkiv.core.domain.Journalpost;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
-import no.nav.dokarkiv.core.exceptions.NoDokumentInfoFoundException;
-import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
+import no.nav.dokarkiv.dokumentproduksjoninfo.exceptions.NoDokumentInfoFoundException;
+import no.nav.dokarkiv.dokumentproduksjoninfo.exceptions.NoJournalpostFoundException;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;

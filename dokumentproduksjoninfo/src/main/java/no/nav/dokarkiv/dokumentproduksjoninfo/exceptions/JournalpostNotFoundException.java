@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.core.exceptions;
+package no.nav.dokarkiv.dokumentproduksjoninfo.exceptions;
 
 import no.nav.dokarkiv.core.stelvio.FunctionalRecoverableException;
 
