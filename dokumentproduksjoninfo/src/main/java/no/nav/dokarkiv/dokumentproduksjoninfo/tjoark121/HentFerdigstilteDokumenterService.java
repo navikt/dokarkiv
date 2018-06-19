@@ -50,7 +50,7 @@ public class HentFerdigstilteDokumenterService {
 			throws FilDetaljerNotFoundException, JournalpostNotFoundException, IllegalJournalStatusException, IllegalDokumentstatusException
 			, DokumentInfoNotFoundException, IllegalVariantFormatException {
 		List<HentFerdigstilteDokumenterResponseTo> returnValue = new LinkedList<>();
-			Journalpost journalpost = joarkRepository.findById(journalpostId).orElse(null);
+			Journalpost journalpost = joarkRepository.findById(journalpostId).orElseThrow(() -> new JournalpostNotFoundException("journalpostId=" + journalpostId + " eksisterer ikke"));
 			hentFerdigstilteRokumenterValidator.validateJournalpost(journalpostId, journalpost);
 
 			for (Long dokumentInfoId : dokumentInfos) {
