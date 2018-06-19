@@ -1,8 +1,7 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark100;
 
-import no.nav.domain.dok.joark.Journalpost;
-import no.nav.service.dok.joark.journalbehandling.KildeNavnPopulator;
-import no.nav.service.dok.joark.nsb.to.OpprettJournalpostArkiverDokumentRequestTo;
+import no.nav.dokarkiv.core.domain.Journalpost;
+import no.nav.dokarkiv.core.journalbehandling.KildeNavnPopulator;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.OpprettJournalpostArkiverDokumentRequest;
 import no.stelvio.common.context.RequestContextHolder;
 import org.dozer.Mapper;

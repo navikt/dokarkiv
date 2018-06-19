@@ -45,6 +45,7 @@
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<oracle.version>12.2.0.1</oracle.version>
+		<stelvio.version>4.1.8</stelvio.version>
 		<arkiverdokumentproduksjon-tjenestespesifikasjon.version>3.2.0</arkiverdokumentproduksjon-tjenestespesifikasjon.version>
 	</properties>
 
@@ -125,6 +126,44 @@
 				<artifactId>lombok</artifactId>
 				<version>1.16.22</version>
 				<scope>provided</scope>
+			</dependency>
+			<!-- Modig -->
+			<dependency>
+				<groupId>no.nav.modig</groupId>
+				<artifactId>modig-core</artifactId>
+				<version>1.0.0</version>
+			</dependency>
+			<!-- Stelvio dependencies -->
+			<dependency>
+				<groupId>no.stelvio</groupId>
+				<artifactId>stelvio-common-java</artifactId>
+				<version>${stelvio.version}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>commons-logging</groupId>
+						<artifactId>commons-logging</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.acegisecurity</groupId>
+						<artifactId>acegi-security</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.acegisecurity</groupId>
+						<artifactId>acegi-security-tiger</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>net.sf.ehcache</groupId>
+						<artifactId>ehcache</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.springmodules</groupId>
+						<artifactId>spring-modules-cache</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>javax.persistence</groupId>
+						<artifactId>persistence-api</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

@@ -1,13 +1,12 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark100;
 
-import no.nav.service.dok.joark.nsb.to.OpprettJournalpostArkiverDokumentRequestTo;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.OpprettJournalpostArkiverDokumentRequest;
 
 /**
  * Mapper for OpprettJournalpostArkiverDokumentRequestMapper from arkiverdokumentproduksjon-tjenestespesifikasjon
  * to domain
  *
- * @author Stig Strøm 
+ * @author Stig Strøm
  */
 public interface OpprettJournalpostArkiverDokumentRequestMapper {
 	/**

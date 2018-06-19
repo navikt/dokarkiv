@@ -47,6 +47,14 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>no.stelvio</groupId>
+			<artifactId>stelvio-common-java</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>no.nav.modig</groupId>
+			<artifactId>modig-core</artifactId>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>

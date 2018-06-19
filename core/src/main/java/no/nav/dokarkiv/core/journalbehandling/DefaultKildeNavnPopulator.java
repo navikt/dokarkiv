@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.core.journabehandling;
+package no.nav.dokarkiv.core.journalbehandling;
 
 
 import no.nav.dokarkiv.core.domain.AbstractPersistentVersionedDomainObjectWithKilde;
@@ -18,7 +18,7 @@ import java.util.Set;
 /**
  * Implementation of KildeNavnPopulator.
  *
- * @author Thomas Eugen Bjørge, Visma Sirius
+ * @author Thomas Eugen Bjï¿½rge, Visma Sirius
  */
 public class DefaultKildeNavnPopulator implements KildeNavnPopulator {
 

@@ -57,7 +57,7 @@ import java.util.stream.Collectors;
 
 /**
  * Domain entity that represents journalposts.
- * 
+ *
  * @author Thomas Eugen Bjørge, Sirius IT
  * @author Magnus Skuland, Sirius IT
  * @author Stian Landsnes, Sirius IT
@@ -116,11 +116,13 @@ import java.util.stream.Collectors;
 				query = "select j from Journalpost j where j.kanalReferanseId = :kanalReferanseId"),
 		@NamedQuery(name = "Journalpost.findJournalPostByKanalReferanseAndKanal",
 				query = "select j from Journalpost j where j.kanalReferanseId = :kanalReferanseId and j.mottakskanal = :mottaksKanal")
-		})
+})
 
-		public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKilde {
+public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKilde {
 
-	/** ID used for serialization. */
+	/**
+	 * ID used for serialization.
+	 */
 	private static final long serialVersionUID = ***gammelt_fnr***06158366L;
 	private static final List<JournalStatusCode> ENDELIG_JOURNALFOERING_STATUS = Arrays.asList(J, JournalStatusCode.FS, JournalStatusCode.FL);
 	private static final List<JournalStatusCode> MIDLERTIDIG_INNGAAENDE_JOURNALFOERING_STATUS = Arrays.asList(MO, M, UB);
@@ -171,7 +173,7 @@ import java.util.stream.Collectors;
 
 	@Column(name = "endret_av_navn")
 	private String endretAvNavn;
-	
+
 	@Column(name = "kanal_referanse_id")
 	private String kanalReferanseId;
 
@@ -186,35 +188,35 @@ import java.util.stream.Collectors;
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "dato_dokument")
 	private Date dokumentDato;
-	
+
 	@Column(name = "avsend_mottaker")
 	private String avsenderMottaker;
 
 	@Column(name = "avsend_mottak_id")
 	private String avsenderMottakerId;
-	
+
 	@Column(name = "journalfort_av_navn")
 	private String journalfortAvNavn;
-	
+
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "dato_mottatt")
 	private Date mottattDato;
-	
+
 	@Enumerated(EnumType.STRING)
 	@Column(name = "k_mottaks_kanal")
 	private MottaksKanalCode mottakskanal;
-	
+
 	@Enumerated(EnumType.STRING)
 	@Column(name = "k_utsendings_kanal")
 	private UtsendingsKanalCode utsendingskanal;
-	
+
 	@Column(name = "land")
 	private String land;
-	
+
 	@Enumerated(EnumType.STRING)
 	@Column(name = "k_fakt_dis_kanal")
 	private FaktiskDistribusjonskanalCode faktiskDistribusjonskanal;
-	
+
 	@Column(name = "elektronisk_distr")
 	@Type(type = "org.hibernate.type.TrueFalseType")
 	private Boolean elektroniskDistribusjon;
@@ -222,15 +224,15 @@ import java.util.stream.Collectors;
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "dato_ekspedert")
 	private Date ekspedertDato;
-	
+
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "dato_lest")
 	private Date lestDato;
-	
+
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "mottatt_adressat")
 	private Date mottattAdressatDato;
-	
+
 	@Enumerated(EnumType.STRING)
 	@Column(name = "k_journalpost_t", nullable = false)
 	private JournalpostTypeCode journalposttype;
@@ -238,7 +240,7 @@ import java.util.stream.Collectors;
 	@Column(name = "signatur")
 	@Type(type = "org.hibernate.type.TrueFalseType")
 	private Boolean signatur;
-	
+
 	@OneToMany
 	@JoinColumn(name = "journalpost_id", nullable = false)
 	@Cascade({CascadeType.PERSIST, CascadeType.SAVE_UPDATE, CascadeType.DELETE, CascadeType.EVICT})
@@ -247,11 +249,11 @@ import java.util.stream.Collectors;
 	@OneToOne(mappedBy = "journalpost", fetch = FetchType.LAZY)
 	@Cascade({CascadeType.PERSIST, CascadeType.SAVE_UPDATE, CascadeType.DELETE, CascadeType.EVICT})
 	private Saksrelasjon saksrelasjon;
-	
+
 	@OneToMany(mappedBy = "journalpost")
 	@Cascade({CascadeType.PERSIST, CascadeType.SAVE_UPDATE, CascadeType.DELETE, CascadeType.EVICT})
 	private final Set<JournalpostDokumentInfoRelasjon> journalpostDokumentInfoRelasjoner = new HashSet<>();
-	
+
 	@ElementCollection
 	@JoinTable(name = "t_jp_tillegg", joinColumns = @JoinColumn(name = "journalpost_id", nullable = false))
 	@MapKeyColumn(name = "nokkel")
@@ -262,12 +264,12 @@ import java.util.stream.Collectors;
 	@JoinColumn(name = "journalpost_id", nullable = false)
 	@Cascade({CascadeType.PERSIST, CascadeType.SAVE_UPDATE, CascadeType.DELETE, CascadeType.EVICT})
 	private final Set<Kryssreferanse> kryssreferanser = new HashSet<>();
-	
+
 	@OneToMany
 	@JoinColumn(name = "journalpost_id", nullable = false)
 	@Cascade({CascadeType.PERSIST, CascadeType.SAVE_UPDATE, CascadeType.DELETE, CascadeType.EVICT})
 	private final Set<ReturInfo> returInfos = new HashSet<>();
-	
+
 	@OneToOne(mappedBy = "journalpost", fetch = FetchType.LAZY)
 	@Cascade({CascadeType.PERSIST, CascadeType.SAVE_UPDATE, CascadeType.DELETE, CascadeType.EVICT})
 	private Behandlingsrelasjon behandlingsrelasjon;
@@ -288,8 +290,10 @@ import java.util.stream.Collectors;
 		this.journalpostId = journalpostId;
 		setVersion(version);
 	}
-	
-	/** {@inheritDoc} */
+
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Long getId() {
 		return getJournalpostId();
@@ -305,7 +309,7 @@ import java.util.stream.Collectors;
 		List<JournalStatusCode> lenientStatuses = Arrays.asList(MO, M, UB, U, OD);
 		return lenientStatuses.contains(journalstatus);
 	}
-	
+
 	/**
 	 * Checks if the Journalpost's status is one that indicates an inngaende
 	 * journalpost.
@@ -316,7 +320,7 @@ import java.util.stream.Collectors;
 		List<JournalStatusCode> inngaendeStatuses = Arrays.asList(MO, M, UB, U, J);
 		return inngaendeStatuses.contains(journalstatus);
 	}
-	
+
 	/**
 	 * Verify that all mandatory fields are set. Some fields are only required
 	 * given certain journalStatuses and journalpostTypes.
@@ -382,7 +386,7 @@ import java.util.stream.Collectors;
 			verifyStringNotBlank(journalForendeEnhetId, "journalForendeEnhetId");
 		}
 	}
-	
+
 	private void verifyFieldsForEndeligJournalforing() {
 		if (hasEndeligJournalforingStatus()) {
 			if (journalpostDokumentInfoRelasjoner.isEmpty()) {
@@ -400,7 +404,7 @@ import java.util.stream.Collectors;
 			dokumentInfo.verifyNoVariantDuplicates();
 		}
 	}
-	
+
 	/**
 	 * Checks that all DokumentInfoRelasjoner points to different DokumentInfos.
 	 */
@@ -443,7 +447,7 @@ import java.util.stream.Collectors;
 		verifyArkivVariantOfAllDocuments();
 		verifyNoDokumentInfosUnderRedigering();
 	}
-	
+
 	/**
 	 * Checks if the Journalpost's status indicates endelig journalforing.
 	 *
@@ -451,15 +455,16 @@ import java.util.stream.Collectors;
 	 */
 	public boolean hasEndeligJournalforingStatus() {
 		return ENDELIG_JOURNALFOERING_STATUS.contains(journalstatus);
-		}
+	}
 
 	/**
 	 * Checks if the Journalpost status is midlertidig journalfï¿½rt for inngï¿½ende.
 	 *
-		* @return true if the status is midlertidig for inngï¿½ende, false otherwise.
+	 * @return true if the status is midlertidig for inngï¿½ende, false otherwise.
 	 */
 	public boolean hasMidlertidigInngaaendeJournalforingStatus() {
-		return MIDLERTIDIG_INNGAAENDE_JOURNALFOERING_STATUS.contains(journalstatus);}
+		return MIDLERTIDIG_INNGAAENDE_JOURNALFOERING_STATUS.contains(journalstatus);
+	}
 
 	/**
 	 * Checks if the Journalpost status is utgï¿½tt.
@@ -517,7 +522,7 @@ import java.util.stream.Collectors;
 	}
 
 	private int getTilknyttetSomCount(Set<JournalpostDokumentInfoRelasjon> dokumentInfoRelasjoner,
-			TilknyttetJournalpostSomCode codeToCount) {
+									  TilknyttetJournalpostSomCode codeToCount) {
 		int count = 0;
 		for (JournalpostDokumentInfoRelasjon dokumentInfoRelasjon : dokumentInfoRelasjoner) {
 			if (dokumentInfoRelasjon.getTilknyttetJournalpostSom() == codeToCount) {
@@ -548,7 +553,7 @@ import java.util.stream.Collectors;
 	private void throwExceptionForFailedVerificationForEndeligJournalforing(String message) {
 		throw new InvalidJournalpostStructureException(message + " when endelig journalforing");
 	}
-	
+
 	/**
 	 * Finds a FilDetaljer that belongs to this Journalpost by filUuid.
 	 *
@@ -563,7 +568,7 @@ import java.util.stream.Collectors;
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Finds a FilDetaljer that belongs to this Journalpost by FilDetaljerId.
 	 *
@@ -578,7 +583,7 @@ import java.util.stream.Collectors;
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Finds all FilDetaljer that belongs to this Journalpost.
 	 *
@@ -593,7 +598,7 @@ import java.util.stream.Collectors;
 		}
 		return allFilDetaljer;
 	}
-	
+
 	/**
 	 * Finds a ReturInfo by Id.
 	 *
@@ -611,9 +616,12 @@ import java.util.stream.Collectors;
 	 * @return The KryssReferanse with kryssReferanseId.
 	 */
 	public Kryssreferanse findKryssreferanseById(final Long kryssReferanseId) {
-		return kryssreferanser.stream().filter(kryssreferanse -> kryssReferanseId.equals(kryssreferanse.getId())).findAny().orElse(null);
+		return kryssreferanser.stream()
+				.filter(kryssreferanse -> kryssReferanseId.equals(kryssreferanse.getId()))
+				.findAny()
+				.orElse(null);
 	}
-	
+
 	/**
 	 * Finds a Bruker by Id (primary key)
 	 *
@@ -626,7 +634,7 @@ import java.util.stream.Collectors;
 
 	/**
 	 * Find a bruker by brukerId (e.g. fnr)
-	 * 
+	 *
 	 * @param brukerId The brukerId
 	 * @return The Bruker.
 	 */
@@ -642,7 +650,8 @@ import java.util.stream.Collectors;
 	 */
 	public JournalpostDokumentInfoRelasjon findDokumentInfoRelasjonById(final Long journalpostDokumentInfoRelasjonId) {
 		return journalpostDokumentInfoRelasjoner.stream()
-				.filter(journalpostDokumentInfoRelasjon -> journalpostDokumentInfoRelasjonId.equals(journalpostDokumentInfoRelasjon.getId())).findAny().orElse(null);
+				.filter(journalpostDokumentInfoRelasjon -> journalpostDokumentInfoRelasjonId.equals(journalpostDokumentInfoRelasjon
+						.getId())).findAny().orElse(null);
 	}
 
 	/**
@@ -652,9 +661,11 @@ import java.util.stream.Collectors;
 	 * @return An Iterable of DokumentInfo
 	 */
 	public Iterable<DokumentInfo> findDokumentInfoByDokumentStatus(final DokumentStatusCode dokumentStatusCode) {
-		return findAllDokumentInfos().stream().filter(dokumentInfo -> dokumentStatusCode.equals(dokumentInfo.getDokumentstatus())).collect(Collectors.toList());
+		return findAllDokumentInfos().stream()
+				.filter(dokumentInfo -> dokumentStatusCode.equals(dokumentInfo.getDokumentstatus()))
+				.collect(Collectors.toList());
 	}
-	
+
 	/**
 	 * Finds a JournalpostDokumentInfoRelasjon by TilknyttetJournalpostSomCode.
 	 *
@@ -667,11 +678,11 @@ import java.util.stream.Collectors;
 				.filter(journalpostDokumentInfoRelasjon -> tilknyttetJournalpostSom.equals(journalpostDokumentInfoRelasjon.getTilknyttetJournalpostSom()))
 				.collect(Collectors.toSet());
 	}
-	
+
 	/**
 	 * Finds a JournalpostDokumentInfoRelasjon that has
 	 * TilknyttetJournalpostSomCode = HOVEDDOKUMENT.
-	 * 
+	 *
 	 * @return The JournalpostDokumentInfoRelasjon.
 	 */
 	public JournalpostDokumentInfoRelasjon findHoveddokumentDokumentInfoRelasjon() {
@@ -679,13 +690,13 @@ import java.util.stream.Collectors;
 				TilknyttetJournalpostSomCode.HOVEDDOKUMENT);
 		return hoveddokumentList.isEmpty() ? null : hoveddokumentList.iterator().next();
 	}
-	
+
 	/**
 	 * Finds all DokumentInfos that belongs to this Journalpost.
-	 * 
+	 *
 	 * @return A List with all DokumentInfos
 	 */
-	public List<DokumentInfo> findAllDokumentInfos () {
+	public List<DokumentInfo> findAllDokumentInfos() {
 		List<DokumentInfo> allDokumentInfos = new ArrayList<DokumentInfo>();
 		for (JournalpostDokumentInfoRelasjon relasjon : getJournalpostDokumentInfoRelasjoner()) {
 			if (relasjon.getDokumentInfo() != null) {
@@ -694,7 +705,7 @@ import java.util.stream.Collectors;
 		}
 		return allDokumentInfos;
 	}
-	
+
 	/**
 	 * Finds a DokumentInfo that belongs to this Journalpost by dokumentInfoId.
 	 *
@@ -710,7 +721,7 @@ import java.util.stream.Collectors;
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Check if this Journalpost has not yet been persisted.
 	 *
@@ -719,7 +730,7 @@ import java.util.stream.Collectors;
 	public boolean isNew() {
 		return hasId();
 	}
-	
+
 	/**
 	 * Checks if this Journalpost's type is inngaende.
 	 *
@@ -728,28 +739,28 @@ import java.util.stream.Collectors;
 	public boolean isInngaende() {
 		return journalposttype == JournalpostTypeCode.I;
 	}
-	
+
 	/**
 	 * Checks if this Journalpost's type is notat.
-	 * 
+	 *
 	 * @return true if notat, otherwise false
 	 */
 	public boolean isNotat() {
 		return journalposttype == JournalpostTypeCode.N;
 	}
-	
+
 	/**
 	 * Checks if this Journalpost's type is utgaende.
-	 * 
+	 *
 	 * @return true if utgaende, otherwise false
 	 */
 	public boolean isUtgaende() {
 		return journalposttype == JournalpostTypeCode.U;
 	}
-	
+
 	/**
 	 * Getter for the antallRetur property.
-	 * 
+	 *
 	 * @return the antallRetur
 	 */
 	public Integer getAntallRetur() {
@@ -817,7 +828,7 @@ import java.util.stream.Collectors;
 
 	/**
 	 * Getter for the journalDato property.
-	 * 
+	 *
 	 * @return the journalDato
 	 */
 	public Date getJournalDato() {
@@ -829,7 +840,7 @@ import java.util.stream.Collectors;
 
 	/**
 	 * Setter for the journalDato property.
-	 * 
+	 *
 	 * @param journalDato the journalDato to set
 	 */
 	public void setJournalDato(Date journalDato) {
@@ -1046,7 +1057,7 @@ import java.util.stream.Collectors;
 	public Long getJournalpostId() {
 		return journalpostId;
 	}
-	
+
 	/**
 	 * Getter for the brukere property.
 	 *
@@ -1055,7 +1066,7 @@ import java.util.stream.Collectors;
 	public Set<Bruker> getBrukere() {
 		return Collections.unmodifiableSet(brukere);
 	}
-	
+
 	/**
 	 * Removes a subset from brukere
 	 *
@@ -1075,14 +1086,14 @@ import java.util.stream.Collectors;
 			brukere.add(bruker);
 		}
 	}
-	
+
 	/**
 	 * Empties the Brukere set
 	 */
 	public void clearBrukere() {
 		brukere.clear();
 	}
-	
+
 	/**
 	 * Getter for the saksrelasjon property.
 	 *
@@ -1092,7 +1103,7 @@ import java.util.stream.Collectors;
 		return saksrelasjon;
 	}
 
-/**
+	/**
 	 * Whether this Journalpost is feilregistrert or not. Checks the attached sak, if any exists.
 	 *
 	 * @return true if Journalpost is feilregistrert, false if it is not or not applicable.
@@ -1100,6 +1111,7 @@ import java.util.stream.Collectors;
 	public boolean isFeilregistrert() {
 		return saksrelasjon != null && saksrelasjon.getFeilregistrert() != null && saksrelasjon.getFeilregistrert();
 	}
+
 	/**
 	 * Setter for the saksrelasjon property.
 	 *
@@ -1459,7 +1471,7 @@ import java.util.stream.Collectors;
 	public boolean removeJournalpostDokumentInfoRelasjon(JournalpostDokumentInfoRelasjon relasjonToRemove) {
 		return journalpostDokumentInfoRelasjoner.remove(relasjonToRemove);
 	}
-	
+
 	/**
 	 * Getter for the journalpostDokumentInfoRelasjoner property.
 	 *
@@ -1468,7 +1480,7 @@ import java.util.stream.Collectors;
 	public Set<JournalpostDokumentInfoRelasjon> getJournalpostDokumentInfoRelasjoner() {
 		return Collections.unmodifiableSet(journalpostDokumentInfoRelasjoner);
 	}
-	
+
 	/**
 	 * Getter for the journalpostDokumentInfoRelasjoner property.
 	 *
@@ -1493,7 +1505,7 @@ import java.util.stream.Collectors;
 	 * @return
 	 */
 	public DokumentInfo getDokumentInfoFromJpDokInfoRelasjonerByDokumentInfoId(Long dokumentInfoId) {
-		for (JournalpostDokumentInfoRelasjon rel: journalpostDokumentInfoRelasjoner) {
+		for (JournalpostDokumentInfoRelasjon rel : journalpostDokumentInfoRelasjoner) {
 			DokumentInfo dokumentInfo = rel.getDokumentInfo();
 			if (dokumentInfo.getDokumentInfoId().equals(dokumentInfoId)) {
 				return dokumentInfo;
@@ -1501,14 +1513,14 @@ import java.util.stream.Collectors;
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Empties the journalpostDokumentInfoRelasjoner set.
 	 */
 	public void clearJournalpostDokumentInfoRelasjoner() {
 		journalpostDokumentInfoRelasjoner.clear();
 	}
-	
+
 	/**
 	 * Getter for the tilleggsopplysninger property.
 	 *
@@ -1535,12 +1547,11 @@ import java.util.stream.Collectors;
 	public Set<Kryssreferanse> getKryssreferanser() {
 		return Collections.unmodifiableSet(kryssreferanser);
 	}
-	
+
 	/**
 	 * Add a KryssReferanse to the KryssReferanse Set.
-	 * 
-	 * @param kryssreferanse
-	 *            The KryssReferanse to add.
+	 *
+	 * @param kryssreferanse The KryssReferanse to add.
 	 */
 	public void addKryssReferanse(Kryssreferanse kryssreferanse) {
 		if (kryssreferanse != null) {
@@ -1567,7 +1578,7 @@ import java.util.stream.Collectors;
 			returInfos.add(returInfo);
 		}
 	}
-	
+
 	/**
 	 * Empties the ReturInfo set.
 	 */
@@ -1578,9 +1589,8 @@ import java.util.stream.Collectors;
 	/**
 	 * Updates a Journalpost with values from the Journalpost created by the
 	 * scanning process (re-scanning, scenario 2b).
-	 * 
-	 * @param journalpostFromScanning
-	 *            The journalpost created from scanning.
+	 *
+	 * @param journalpostFromScanning The journalpost created from scanning.
 	 */
 	public void updateJournalpostWithScanningValues(Journalpost journalpostFromScanning) {
 		setMottattDato(journalpostFromScanning.getMottattDato());

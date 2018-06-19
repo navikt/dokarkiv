@@ -14,7 +14,7 @@ public class OpprettJournalpostArkiverDokumentResponseTo {
 	/**
 	 * Constructor with parameters
 	 *
-	 * @param journalpostId  The journalpostId
+	 * @param journalpostId The journalpostId
 	 * @param dokumentInfoId dokumentInfoId
 	 */
 	public OpprettJournalpostArkiverDokumentResponseTo(Long journalpostId, Long dokumentInfoId) {

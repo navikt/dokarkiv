@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.core.journabehandling;
+package no.nav.dokarkiv.core.journalbehandling;
 
 
 import no.nav.dokarkiv.core.domain.Journalpost;
@@ -6,7 +6,7 @@ import no.nav.dokarkiv.core.domain.Journalpost;
 /**
  * Populates opprettetKildeNavn/endretKildeNavn for the entire Journalpost object graph.
  *
- * @author Thomas Eugen Bjørge, Visma Sirius
+ * @author Thomas Eugen Bjï¿½rge, Visma Sirius
  */
 public interface KildeNavnPopulator {
 
