@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:tx="http://www.springframework.org/schema/tx"
+	   xmlns:aop="http://www.springframework.org/schema/aop"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans
+							http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+							http://www.springframework.org/schema/tx 
+							http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
+       						http://www.springframework.org/schema/aop 
+       						http://www.springframework.org/schema/aop/spring-aop-2.5.xsd">
+
+	<!-- Enable @Transactional annotations -->
+	<tx:annotation-driven transaction-manager="rep.joark.transactionManager"/>
+
+	<!-- Populate ServletContext with a reference to the metrics registry.
+		 Used in the servlet com.codahale.metrics.servlets.MetricsServlet -->
+	<bean class="org.springframework.web.context.support.ServletContextAttributeExporter">
+		<property name="attributes">
+			<map>
+				<entry key="com.codahale.metrics.servlets.MetricsServlet.registry" value-ref="getMetricRegistry"/>
+			</map>
+		</property>
+	</bean>
+
+	<bean id="prv.joark.journalProvider" class="no.nav.provider.dok.joark.support.JournalProvider">
+		<property name="journalService" ref="srv.joark.journalService"/>
+		<property name="journalFaultInfoPopulator" ref="prv.joark.journalFaultInfoPopulator"/>
+		<property name="hentJournalpostRequestMapper" ref="prv.joark.hentJournalpostRequestMapper"/>
+		<property name="hentJournalpostResponseMapper" ref="prv.joark.hentJournalpostResponseMapper"/>
+		<property name="finnJournalpostRequestMapper" ref="prv.joark.finnJournalpostRequestMapper"/>
+		<property name="finnJournalpostResponseMapper" ref="prv.joark.finnJournalpostResponseMapper"/>
+		<property name="hentDokumentUrlRequestMapper" ref="prv.joark.hentDokumentUrlRequestMapper"/>
+		<property name="hentDokumentUrlResponseMapper" ref="prv.joark.hentDokumentUrlResponseMapper"/>
+		<property name="hentDokumentResponseMapper" ref="prv.joark.hentDokumentResponseMapper"/>
+		<property name="hentDokumentRequestMapper" ref="prv.joark.hentDokumentRequestMapper"/>
+		<property name="identifiserBrevgruppeRequestMapper" ref="prv.joark.identifiserBrevgruppeRequestMapper"/>
+		<property name="identifiserBrevgruppeResponseMapper" ref="prv.joark.identifiserBrevgruppeResponseMapper"/>
+	</bean>
+
+	<bean id="prv.joark.journalbehandlingProvider" class="no.nav.provider.dok.joark.support.JournalbehandlingProvider">
+		<property name="journalbehandlingService" ref="srv.joark.journalbehandlingService"/>
+		<property name="journalbehandlingFaultInfoPopulator" ref="prv.joark.journalbehandlingFaultInfoPopulator"/>
+		<property name="oppdaterJournalRequestMapper" ref="prv.joark.oppdaterJournalRequestMapper"/>
+		<property name="opprettJournalpostRequestMapper" ref="prv.joark.opprettJournalpostRequestMapper"/>
+		<property name="opprettJournalpostResponseMapper" ref="prv.joark.opprettJournalpostResponseMapper"/>
+		<property name="mellomlagreRedigerbartDokumentRequestMapper"
+				  ref="prv.joark.mellomlagreRedigerbartDokumentRequestMapper"/>
+		<property name="ferdigstillRedigerbartDokumentRequestMapper"
+				  ref="prv.joark.ferdigstillRedigerbartDokumentRequestMapper"/>
+		<property name="opprettJournalpostMedRedigerbartDokumentRequestMapper"
+				  ref="prv.joark.opprettJournalpostMedRedigerbartDokumentRequestMapper"/>
+		<property name="opprettJournalpostMedRedigerbartDokumentResponseMapper"
+				  ref="prv.joark.opprettJournalpostMedRedigerbartDokumentResponseMapper"/>
+		<property name="gjenbrukRedigerbartDokumentRequestMapper" ref="prv.joark.gjenbrukRedigerbartDokumentRequestMapper"/>
+		<property name="gjenbrukRedigerbartDokumentResponseMapper" ref="prv.joark.gjenbrukRedigerbartDokumentResponseMapper"/>
+		<property name="kopierDokumentSomRedigerbartVedleggRequestMapper"
+				  ref="prv.joark.kopierDokumentSomRedigerbartVedleggRequestMapper"/>
+		<property name="kopierDokumentSomRedigerbartVedleggResponseMapper"
+				  ref="prv.joark.kopierDokumentSomRedigerbartVedleggResponseMapper"/>
+		<property name="avbrytJournalpostRequestMapper" ref="prv.joark.avbrytJournalpostRequestMapper"/>
+		<property name="ferdigstillRedigerbartVedleggRequestMapper" ref="prv.joark.ferdigstillRedigerbartVedleggRequestMapper"/>
+		<property name="slettVedleggFraUtgaendeJournalpostRequestMapper"
+				  ref="prv.joark.slettVedleggFraUtgaendeJournalpostRequestMapper"/>
+		<property name="avvikshandterOgDelDokumentRequestMapper" ref="prv.joark.avvikshandterOgDelDokumentRequestMapper"/>
+		<property name="avvikshandterOgDelDokumentResponseMapper" ref="prv.joark.avvikshandterOgDelDokumentResponseMapper"/>
+	</bean>
+
+	<bean id="prv.joark.journalFaultInfoPopulator"
+		  class="no.nav.provider.dok.joark.support.DefaultJournalFaultInfoPopulator"/>
+
+	<bean id="prv.joark.journalbehandlingFaultInfoPopulator"
+		  class="no.nav.provider.dok.joark.support.DefaultJournalbehandlingFaultInfoPopulator"/>
+
+	<bean id="prv.joark.dozerMapper" class="org.dozer.DozerBeanMapper">
+		<property name="mappingFiles">
+			<list>
+				<value>modules/prv-journal-mapping.xml</value>
+				<value>modules/prv-journalbehandling-mapping.xml</value>
+				<value>modules/dozer-configuration.xml</value>
+			</list>
+		</property>
+		<property name="customConverters">
+			<list>
+				<ref bean="prv.joark.enumToKodetabellConverter"/>
+				<ref bean="prv.joark.StringToEnumConverter"/>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="prv.joark.enumToKodetabellConverter" class="no.nav.provider.dok.joark.map.converters.EnumToKodetabellConverter">
+		<property name="codesTableManager" ref="rep.common.codesTableManager"/>
+	</bean>
+
+	<bean id="prv.joark.StringToEnumConverter" class="no.nav.provider.dok.joark.map.converters.StringToEnumConverter"/>
+
+	<!-- MAPPERS -->
+	<bean id="prv.joark.abstractMapper" abstract="true">
+		<property name="dozerMapper" ref="prv.joark.dozerMapper"/>
+	</bean>
+
+	<!-- Journalmappers -->
+	<bean id="prv.joark.hentJournalpostRequestMapper"
+		  class="no.nav.provider.dok.joark.map.support.DefaultHentJournalpostRequestMapper" parent="prv.joark.abstractMapper"/>
+	<bean id="prv.joark.hentJournalpostResponseMapper"
+		  class="no.nav.provider.dok.joark.map.support.DefaultHentJournalpostResponseMapper" parent="prv.joark.abstractMapper">
+		<property name="filtypePdfaMasker" ref="prv.joark.filtypePdfaMasker"/>
+	</bean>
+	<bean id="prv.joark.finnJournalpostRequestMapper"
+		  class="no.nav.provider.dok.joark.map.support.DefaultFinnJournalpostRequestMapper" parent="prv.joark.abstractMapper"/>
+	<bean id="prv.joark.finnJournalpostResponseMapper"
+		  class="no.nav.provider.dok.joark.map.support.DefaultFinnJournalpostResponseMapper" parent="prv.joark.abstractMapper">
+		<property name="filtypePdfaMasker" ref="prv.joark.filtypePdfaMasker"/>
+	</bean>
+	<bean id="prv.joark.hentDokumentUrlRequestMapper"
+		  class="no.nav.provider.dok.joark.map.support.DefaultHentDokumentUrlRequestMapper" parent="prv.joark.abstractMapper"/>
+	<bean id="prv.joark.hentDokumentUrlResponseMapper"
+		  class="no.nav.provider.dok.joark.map.support.DefaultHentDokumentUrlResponseMapper" parent="prv.joark.abstractMapper"/>
+	<bean id="prv.joark.hentDokumentRequestMapper"
+		  class="no.nav.provider.dok.joark.map.support.DefaultHentDokumentRequestMapper" parent="prv.joark.abstractMapper"/>
+	<bean id="prv.joark.hentDokumentResponseMapper"
+		  class="no.nav.provider.dok.joark.map.support.DefaultHentDokumentResponseMapper" parent="prv.joark.abstractMapper"/>
+	<bean id="prv.joark.identifiserBrevgruppeRequestMapper"
+		  class="no.nav.provider.dok.joark.map.support.DefaultIdentifiserBrevgruppeRequestMapper"
+		  parent="prv.joark.abstractMapper"/>
+	<bean id="prv.joark.identifiserBrevgruppeResponseMapper"
+		  class="no.nav.provider.dok.joark.map.support.DefaultIdentifiserBrevgruppeResponseMapper"
+		  parent="prv.joark.abstractMapper"/>
+
+	<!-- Journalbehandlingmappers -->
+	<bean id="prv.joark.oppdaterJournalRequestMapper"
+		  class="no.nav.provider.dok.joark.map.support.DefaultOppdaterJournalRequestMapper"
+		  parent="prv.joark.abstractMapper">
+		<property name="sporingMapper" ref="prv.joark.sporingMapper"/>
+	</bean>
+	<bean id="prv.joark.opprettJournalpostRequestMapper"
+		  class="no.nav.provider.dok.joark.map.support.DefaultOpprettJournalpostRequestMapper"
+		  parent="prv.joark.abstractMapper">
+		<property name="sporingMapper" ref="prv.joark.sporingMapper"/>
+	</bean>
+	<bean id="prv.joark.opprettJournalpostResponseMapper"
+		  class="no.nav.provider.dok.joark.map.support.DefaultOpprettJournalpostResponseMapper"
+		  parent="prv.joark.abstractMapper"/>
+	<bean id="prv.joark.ferdigstillRedigerbartDokumentRequestMapper"
+		  class="no.nav.provider.dok.joark.map.support.DefaultFerdigstillRedigerbartDokumentRequestMapper"
+		  parent="prv.joark.abstractMapper"/>
+	<bean id="prv.joark.mellomlagreRedigerbartDokumentRequestMapper"
+		  class="no.nav.provider.dok.joark.map.support.DefaultMellomlagreRedigerbartDokumentRequestMapper"
+		  parent="prv.joark.abstractMapper"/>
+	<bean id="prv.joark.opprettJournalpostMedRedigerbartDokumentRequestMapper"
+		  class="no.nav.provider.dok.joark.map.support.DefaultOpprettJournalpostMedRedigerbartDokumentRequestMapper"
+		  parent="prv.joark.abstractMapper"/>
+	<bean id="prv.joark.opprettJournalpostMedRedigerbartDokumentResponseMapper"
+		  class="no.nav.provider.dok.joark.map.support.DefaultOpprettJournalpostMedRedigerbartDokumentResponseMapper"
+		  parent="prv.joark.abstractMapper"/>
+	<bean id="prv.joark.gjenbrukRedigerbartDokumentRequestMapper"
+		  class="no.nav.provider.dok.joark.map.support.DefaultGjenbrukRedigerbartDokumentRequestMapper"
+		  parent="prv.joark.abstractMapper"/>
+	<bean id="prv.joark.gjenbrukRedigerbartDokumentResponseMapper"
+		  class="no.nav.provider.dok.joark.map.support.DefaultGjenbrukRedigerbartDokumentResponseMapper"
+		  parent="prv.joark.abstractMapper"/>
+	<bean id="prv.joark.kopierDokumentSomRedigerbartVedleggRequestMapper"
+		  class="no.nav.provider.dok.joark.map.support.DefaultKopierDokumentSomRedigerbartVedleggRequestMapper"
+		  parent="prv.joark.abstractMapper"/>
+	<bean id="prv.joark.kopierDokumentSomRedigerbartVedleggResponseMapper"
+		  class="no.nav.provider.dok.joark.map.support.DefaultKopierDokumentSomRedigerbartVedleggResponseMapper"
+		  parent="prv.joark.abstractMapper"/>
+	<bean id="prv.joark.avbrytJournalpostRequestMapper"
+		  class="no.nav.provider.dok.joark.map.support.DefaultAvbrytJournalpostRequestMapper"
+		  parent="prv.joark.abstractMapper"/>
+	<bean id="prv.joark.ferdigstillRedigerbartVedleggRequestMapper"
+		  class="no.nav.provider.dok.joark.map.support.DefaultFerdigstillRedigerbartVedleggRequestMapper"
+		  parent="prv.joark.abstractMapper"/>
+	<bean id="prv.joark.slettVedleggFraUtgaendeJournalpostRequestMapper"
+		  class="no.nav.provider.dok.joark.map.support.DefaultSlettVedleggFraUtgaendeJournalpostRequestMapper"
+		  parent="prv.joark.abstractMapper"/>
+	<bean id="prv.joark.avvikshandterOgDelDokumentRequestMapper"
+		  class="no.nav.provider.dok.joark.map.support.DefaultAvvikshandterOgDelDokumentRequestMapper"
+		  parent="prv.joark.abstractMapper"/>
+	<bean id="prv.joark.avvikshandterOgDelDokumentResponseMapper"
+		  class="no.nav.provider.dok.joark.map.support.DefaultAvvikshandterOgDelDokumentResponseMapper"
+		  parent="prv.joark.abstractMapper"/>
+
+	<bean id="prv.joark.sporingMapper" class="no.nav.provider.dok.joark.map.support.DefaultSporingMapper">
+		<property name="kildeNavnPopulator" ref="srv.joark.kildeNavnPopulator"/>
+	</bean>
+
+	<bean id="prv.joark.filtypePdfaMasker" class="no.nav.provider.dok.joark.map.support.DefaultFiltypePdfaMasker"/>
+
+	<!-- Exception logging -->
+	<aop:config>
+		<aop:pointcut id="prv.joark.providerPointcut"
+					  expression="execution(* no.nav.virksomhet.tjenester.arkiv.journal.v2.binding.Journal.*(..))
+						or execution(* no.nav.virksomhet.tjenester.arkiv.journalbehandling.v1.binding.Journalbehandling.*(..))
+						or execution(* no.nav.tjeneste.virksomhet.behandlejournal.v2.binding.BehandleJournalV2.*(..))
+						or execution(* no.nav.tjeneste.virksomhet.journal.v1.binding.JournalV1.*(..))
+						or execution(* no.nav.tjeneste.virksomhet.journal.v2.binding.JournalV2.*(..))
+						or execution(* no.nav.tjeneste.virksomhet.journal.v3.JournalV3.*(..))
+						or execution(* no.nav.tjeneste.virksomhet.innsynjournal.v1.binding.InnsynJournalV1.*(..))
+						or execution(* no.nav.tjeneste.virksomhet.innsynjournal.v2.binding.InnsynJournalV2.*(..))
+						or execution(* no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.ArkiverDokumentproduksjonV1.*(..))
+						or execution(* no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v1.ArkiverDokumentmottakV1.*(..))
+						or execution(* no.nav.tjeneste.virksomhet.inngaaendejournal.v1.binding.InngaaendeJournalV1.*(..))
+						or execution(* no.nav.tjeneste.virksomhet.behandleinngaaendejournal.v1.binding.BehandleInngaaendeJournalV1.*(..))
+						or execution(* no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v2.ArkiverDokumentmottakV2.*(..))
+						or execution(* no.nav.tjeneste.domene.brevogarkiv.dokumentproduksjoninfo.v1.DokumentproduksjonInfoV1.*(..))"/>
+		<aop:advisor pointcut-ref="prv.joark.providerPointcut" advice-ref="cfg.common.loggerInterceptor"/>
+	</aop:config>
+
+</beans>

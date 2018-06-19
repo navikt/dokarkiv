@@ -1,0 +1,66 @@
+package no.nav.dokarkiv.arkiverdokumentmottak.arkiverdokumentmottakV1.config;
+
+
+import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
+import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v1.ArkiverDokumentmottakV1;
+import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v1.KanIkkeJournalfores;
+import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v1.meldinger.JournalforInngaaendeForsendelseRequest;
+import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v1.meldinger.JournalforInngaaendeForsendelseResponse;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
+import javax.jws.HandlerChain;
+import javax.jws.WebService;
+import javax.xml.ws.WebServiceContext;
+import javax.xml.ws.soap.Addressing;
+
+@WebService(endpointInterface = "no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v1.ArkiverDokumentmottakV1",
+		wsdlLocation = "WEB-INF/wsdl/no/nav/tjeneste/domene/brevogarkiv/arkiverdokumentmottak/v1/arkiverdokumentmottak.wsdl",
+		targetNamespace = "http://nav.no/tjeneste/domene/brevogarkiv/arkiverdokumentmottak/v1/",
+		serviceName = "ArkiverDokumentmottak_v1",
+		portName = "ArkiverDokumentmottakPort_v1")
+@Addressing
+@HandlerChain(file = "ArkiverdokumentmottakHandler.xml")
+public class ArkiverDokumentmottakEndpoint implements ArkiverDokumentmottakV1 {
+
+	private static final String DEFAULT_APPID = "Dokmot";
+
+	@Resource
+	private WebServiceContext webServiceContext;
+
+	private ArkiverDokumentmottakV1 arkiverDokumentMottakProvider;
+
+	@Override
+	public JournalforInngaaendeForsendelseResponse journalforInngaaendeForsendelse(
+			JournalforInngaaendeForsendelseRequest request) throws KanIkkeJournalfores {
+		RequestContextUtil.createAndSetRequestContext(webServiceContext, findAppId());
+		return arkiverDokumentMottakProvider.journalforInngaaendeForsendelse(request);
+	}
+
+	@Override
+	public void ping() {
+		RequestContextUtil.createAndSetRequestContext(webServiceContext, findAppId());
+		arkiverDokumentMottakProvider.ping();
+	}
+
+	/**
+	 * Retrieve the arkiverDokumentproduksjonProvider bean from the Spring context.
+	 */
+	@PostConstruct
+	public void initArkiverDokumentproduksjonProvider() {
+//        ServletContext servletContext = (ServletContext) webServiceContext.getMessageContext().get(
+//                MessageContext.SERVLET_CONTEXT);
+//        WebApplicationContext webApplicationContext = WebApplicationContextUtils
+//                .getRequiredWebApplicationContext(servletContext);
+//        arkiverDokumentMottakProvider = (ArkiverDokumentmottakV1)
+//                webApplicationContext.getBean(ArkiverDokumentmottakConfig.PROVIDER_BEAN);
+	}
+
+	private String findAppId() {
+		return "fixme";
+		//String appId = MDC.get(MDCUsernameTokenInHandler.MDC_APP_ID);
+		//return Strings.isNullOrEmpty(appId) ? DEFAULT_APPID : appId;
+	}
+
+
+}
