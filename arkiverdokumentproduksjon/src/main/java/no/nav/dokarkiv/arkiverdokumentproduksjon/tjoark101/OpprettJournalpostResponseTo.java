@@ -4,31 +4,31 @@ package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark101;
  * The response object for the OpprettJournalpostService as a part in
  * arkiverDokumentproduksjon
  *
- * @author Stig Strøm
+ * @author Stig StrÃ¸m
  */
 public class OpprettJournalpostResponseTo {
 
-    private Long journalpostId;
+	private Long journalpostId;
 
-    private Long dokumentInfoId;
+	private Long dokumentInfoId;
 
-    /**
-     * Constructor with parameters
-     *
-     * @param journalpostId  The journalpostId
-     * @param dokumentInfoId The dokumentInfoId
-     */
-    public OpprettJournalpostResponseTo(Long journalpostId,
-                                        Long dokumentInfoId) {
-        this.journalpostId = journalpostId;
-        this.dokumentInfoId = dokumentInfoId;
-    }
+	/**
+	 * Constructor with parameters
+	 *
+	 * @param journalpostId  The journalpostId
+	 * @param dokumentInfoId The dokumentInfoId
+	 */
+	public OpprettJournalpostResponseTo(Long journalpostId,
+										Long dokumentInfoId) {
+		this.journalpostId = journalpostId;
+		this.dokumentInfoId = dokumentInfoId;
+	}
 
-    public Long getJournalpostId() {
-        return journalpostId;
-    }
+	public Long getJournalpostId() {
+		return journalpostId;
+	}
 
-    public Long getDokumentInfoId() {
-        return dokumentInfoId;
-    }
+	public Long getDokumentInfoId() {
+		return dokumentInfoId;
+	}
 }

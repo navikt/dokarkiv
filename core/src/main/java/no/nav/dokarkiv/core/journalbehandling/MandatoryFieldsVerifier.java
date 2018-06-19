@@ -1,13 +1,13 @@
 package no.nav.dokarkiv.core.journalbehandling;
 
 
-import no.nav.dokarkiv.core.domain.Journalpost;
+import no.nav.dokarkiv.core.domain.entities.Journalpost;
 
 /**
  * Inteface defining the MandatoryFieldsVerifier used to verify that mandatory
  * fields are set in the domain object graph.
  *
- * @author Thomas Eugen Bjørge, Sirius IT
+ * @author Thomas Eugen BjÃ¸rge, Sirius IT
  */
 public interface MandatoryFieldsVerifier {
 

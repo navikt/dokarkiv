@@ -1,16 +1,14 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon;
 
-import no.nav.provider.dok.joark.nsb.ArkiverDokumentproduksjonFaultInfoPopulator;
-import no.nav.provider.dok.joark.support.AbstractJournalFaultInfoPopulator;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.feil.ForretningsmessigUnntak;
 
 /**
  * Implementation of ArkiverDokumentproduksjonFaultInfoPopulator.
  *
- * @author Stig Strøm
+ * @author Stig StrÃ¸m
  */
 public class DefaultArkiverDokumentproduksjonFaultInfoPopulator extends AbstractJournalFaultInfoPopulator implements
-ArkiverDokumentproduksjonFaultInfoPopulator {
+		ArkiverDokumentproduksjonFaultInfoPopulator {
 
 	@Override
 	public <T extends ForretningsmessigUnntak> T populateFaultInfo(
@@ -21,5 +19,5 @@ ArkiverDokumentproduksjonFaultInfoPopulator {
 		faultInfo.setTidspunkt(getXmlTimestamp());
 		return faultInfo;
 	}
-	
+
 }

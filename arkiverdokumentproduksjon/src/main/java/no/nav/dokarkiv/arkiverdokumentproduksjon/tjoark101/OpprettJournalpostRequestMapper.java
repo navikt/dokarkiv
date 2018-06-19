@@ -1,6 +1,5 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark101;
 
-import no.nav.service.dok.joark.nsb.to.OpprettJournalpostRequestTo;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.OpprettJournalpostRequest;
 
 
@@ -8,7 +7,7 @@ import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger
  * Mapper for OpprettJournalpostRequestMapper from arkiverdokumentproduksjon-tjenestespesifikasjon
  * to domain (JOARK)
  *
- * @author Stig Strøm 
+ * @author Stig StrÃ¸m
  */
 public interface OpprettJournalpostRequestMapper {
 	/**

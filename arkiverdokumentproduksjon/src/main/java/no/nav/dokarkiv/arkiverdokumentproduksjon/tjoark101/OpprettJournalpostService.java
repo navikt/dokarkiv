@@ -1,18 +1,15 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark101;
 
-import no.nav.service.dok.joark.nsb.to.OpprettJournalpostRequestTo;
-import no.nav.service.dok.joark.nsb.to.OpprettJournalpostResponseTo;
-
 /**
  * Interface for the operation OpprettJournalpostService
- * 
- * @author Stig Strøm
+ *
+ * @author Stig StrÃ¸m
  */
 public interface OpprettJournalpostService {
-	
+
 	/**
 	 * Validates, updates mandatory values and persists the Journalpost contained within the request
-	 * 
+	 *
 	 * @param opprettJournalpostRequest, The request containing the Journalpost to create.
 	 * @return The response object containing the persisted journalpostId and dokumentId.
 	 */

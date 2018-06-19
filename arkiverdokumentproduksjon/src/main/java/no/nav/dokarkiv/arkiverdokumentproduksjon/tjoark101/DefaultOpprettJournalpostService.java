@@ -1,25 +1,22 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark101;
 
-import no.nav.domain.dok.joark.DokumentInfo;
-import no.nav.domain.dok.joark.Journalpost;
-import no.nav.domain.dok.joark.JournalpostDokumentInfoRelasjon;
-import no.nav.domain.dok.joark.codestable.DokumentStatusCode;
-import no.nav.domain.dok.joark.codestable.JournalStatusCode;
-import no.nav.domain.dok.joark.codestable.JournalpostTypeCode;
-import no.nav.modig.core.exception.ApplicationException;
-import no.nav.repository.dok.joark.mod.JoarkRepository;
-import no.nav.repository.dok.joark.util.DateProvider;
-import no.nav.service.dok.joark.journalbehandling.DokumentFilerDelegate;
-import no.nav.service.dok.joark.nsb.OpprettJournalpostValidator;
-import no.nav.service.dok.joark.nsb.to.OpprettJournalpostRequestTo;
-import no.nav.service.dok.joark.nsb.to.OpprettJournalpostResponseTo;
+import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.ApplicationException;
+import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
+import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
+import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
+import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
+import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
+import no.nav.dokarkiv.core.domain.util.DateProvider;
+import no.nav.dokarkiv.core.journalbehandling.DokumentFilerDelegate;
+import no.nav.dokarkiv.core.repository.JoarkRepository;
 
 import javax.inject.Inject;
 
 /**
  * Implementation of the OpprettJournalpostService
- * 
- * @author Stig Strøm
+ *
+ * @author Stig Strï¿½m
  */
 public class DefaultOpprettJournalpostService implements OpprettJournalpostService {
 
@@ -34,34 +31,34 @@ public class DefaultOpprettJournalpostService implements OpprettJournalpostServi
 	public OpprettJournalpostResponseTo opprettJournalpost(
 			OpprettJournalpostRequestTo opprettJournalpostRequest) {
 		validateRequest(opprettJournalpostRequest);
-		
+
 		Journalpost journalpost = opprettJournalpostRequest.getJournalpost();
 		updateJournalpost(journalpost);
 		opprettJournalpostValidator.validate(journalpost);
 		dokumentFilerDelegate.saveUpdateDokumentFiler(journalpost);
-		Journalpost storedJournalpost = joarkRepository.saveNewJournalPost(journalpost);
+		Journalpost storedJournalpost = joarkRepository.save(journalpost);
 		return createResponse(storedJournalpost);
 	}
-	
+
 	private void validateRequest(OpprettJournalpostRequestTo request) {
 		if (request == null) {
 			throw new ApplicationException("Missing parameter: request");
 		}
 		request.validate();
 	}
-	
+
 	private OpprettJournalpostResponseTo createResponse(Journalpost journalpost) {
 		OpprettJournalpostResponseTo response = new OpprettJournalpostResponseTo(
 				journalpost.getJournalpostId(),
 				journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId());
 		return response;
 	}
-	
+
 	private void updateJournalpost(Journalpost journalpost) {
 		journalpost.setJournalposttype(JournalpostTypeCode.U);
 		journalpost.setJournalstatus(JournalStatusCode.D);
 		journalpost.setJournalDato(DateProvider.getToday());
-		journalpost.setJournalfortAvNavn(journalpost.getOpprettetAvNavn());	
+		journalpost.setJournalfortAvNavn(journalpost.getOpprettetAvNavn());
 		JournalpostDokumentInfoRelasjon hoveddokumentDokumentInfoRelasjon = journalpost.findHoveddokumentDokumentInfoRelasjon();
 		hoveddokumentDokumentInfoRelasjon.setTilknyttetAvNavn(journalpost.getOpprettetAvNavn());
 

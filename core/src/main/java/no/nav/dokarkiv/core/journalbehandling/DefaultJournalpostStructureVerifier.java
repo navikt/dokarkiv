@@ -1,11 +1,11 @@
 package no.nav.dokarkiv.core.journalbehandling;
 
-import no.nav.dokarkiv.core.domain.Journalpost;
+import no.nav.dokarkiv.core.domain.entities.Journalpost;
 
 /**
  * Implementation of JournalpostStructureVerifier.
  *
- * @author Thomas Eugen Bjørge, Visma Sirius
+ * @author Thomas Eugen BjÃ¸rge, Visma Sirius
  */
 public class DefaultJournalpostStructureVerifier implements JournalpostStructureVerifier {
 
