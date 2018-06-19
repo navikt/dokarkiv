@@ -1,16 +1,14 @@
 package no.nav.dokarkiv.core.domain;
 
-import no.nav.repository.dok.joark.mod.JoarkRepository;
-import no.nav.service.dok.joark.mod.ping.PingService;
-
-import javax.inject.Inject;
+import no.nav.dokarkiv.core.repository.JoarkRepository;
+import org.dozer.inject.Inject;
 
 /**
  * Implementation of PingService.
  *
  * @author Rune Romundstad, Visma Consulting
  */
-public class DefaultPingService implements PingService {
+public class DefaultPingService {
 
 	@Inject
 	private JoarkRepository joarkRepository;
@@ -18,9 +16,8 @@ public class DefaultPingService implements PingService {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public void ping() {
-		joarkRepository.countJournalpostTyper();
+		joarkRepository.count();
 	}
 
 }

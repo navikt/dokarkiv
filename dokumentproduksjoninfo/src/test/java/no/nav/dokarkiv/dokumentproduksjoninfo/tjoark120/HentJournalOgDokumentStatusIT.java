@@ -23,6 +23,9 @@ import no.nav.tjeneste.domene.brevogarkiv.dokumentproduksjoninfo.v1.meldinger.He
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Integration test for HentJournalOgDokumentStatus.
  *
@@ -46,6 +49,22 @@ public class HentJournalOgDokumentStatusIT extends AbstractDokumentproduksjoninf
 		dokumentInfoId = journalpost.findAllDokumentInfos().iterator().next().getId();
 		createRequest();
 	}
+
+	@Test
+	public void findJournalpostByTilleggsopplysningerContaining() {
+		Journalpost journalpost = buildAndPersistJournalpost();
+		Map<String, String> map = new HashMap<>();
+		map.put("key", "val");
+		journalpost.setTilleggsopplysninger(map);
+		joarkRepository.save(journalpost);
+
+		Journalpost journalpost2 = buildAndPersistJournalpost();
+		Map<String, String> map2 = new HashMap<>();
+		map2.put("key", "val2");
+		journalpost.setTilleggsopplysninger(map2);
+		joarkRepository.save(journalpost2);
+	}
+
 
 	@Test
 	public void shouldThrowExceptionWhenJournalpostNotFound() throws Exception {
