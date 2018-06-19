@@ -1,7 +1,7 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions;
 
 /**
- * @author Thomas Kåsene, Visma Consulting AS
+ * @author Thomas KÃ¥sene, Visma Consulting AS
  */
 public class JournalpostIkkeFerdigstiltException extends IllegalJournalStatusException {
 

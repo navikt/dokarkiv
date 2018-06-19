@@ -17,7 +17,7 @@ import java.util.Set;
 /**
  * Implementation of KildeNavnPopulator.
  * 
- * @author Thomas Eugen Bjørge, Visma Sirius
+ * @author Thomas Eugen BjÃ¸rge, Visma Sirius
  */
 public class DefaultKildeNavnPopulator implements KildeNavnPopulator {
 

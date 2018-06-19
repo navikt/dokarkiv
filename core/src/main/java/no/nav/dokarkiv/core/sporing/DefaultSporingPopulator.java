@@ -7,7 +7,7 @@ import no.nav.dokarkiv.core.stelvio.RequestContextHolder;
 /**
  * Implementation of SporingPopulator.
  *
- * @author Thomas Eugen Bjørge, Visma Sirius
+ * @author Thomas Eugen BjÃ¸rge, Visma Sirius
  */
 public class DefaultSporingPopulator implements SporingPopulator {
 
