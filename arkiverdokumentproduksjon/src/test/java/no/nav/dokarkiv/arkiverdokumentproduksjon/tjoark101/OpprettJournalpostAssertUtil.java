@@ -41,7 +41,7 @@ import java.util.Set;
 /**
  * Assert util specific for OpprettJournalpost in arkiverDokumentproduksjon
  *
- * @author Stig Strøm
+ * @author Stig StrÃ¸m
  */
 public class OpprettJournalpostAssertUtil {
 

@@ -42,7 +42,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 /**
  * Tests for {@link DefaultOpprettJournalpostService}
  *
- * @author Stig Strøm
+ * @author Stig StrÃ¸m
  */
 @RunWith(MockitoJUnitRunner.class)
 public class DefaultOpprettJournalpostServiceTest {
