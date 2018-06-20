@@ -30,6 +30,12 @@
 			<artifactId>core</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>no.nav.dokarkiv</groupId>
+			<artifactId>core</artifactId>
+			<type>test-jar</type>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
 			<groupId>no.nav.tjenester.brevogarkiv</groupId>
 			<artifactId>arkiverdokumentproduksjon-tjenestespesifikasjon</artifactId>
 			<classifier>jaxws</classifier>

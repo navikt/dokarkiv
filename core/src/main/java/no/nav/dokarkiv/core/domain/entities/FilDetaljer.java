@@ -2,6 +2,8 @@ package no.nav.dokarkiv.core.domain.entities;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import no.nav.dokarkiv.core.domain.AbstractPersistentVersionedDomainObjectWithKilde;
 import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
 import no.nav.dokarkiv.core.domain.codes.OnDemandInstansCode;
@@ -32,6 +34,8 @@ import java.util.UUID;
  */
 @Entity
 @Table(name = "T_FIL_DETALJER")
+@Builder
+@AllArgsConstructor
 public class FilDetaljer extends AbstractPersistentVersionedDomainObjectWithKilde {
 
 	/** ID used for serialization. */

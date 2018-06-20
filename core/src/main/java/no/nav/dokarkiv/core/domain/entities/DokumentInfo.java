@@ -3,6 +3,8 @@ package no.nav.dokarkiv.core.domain.entities;
 import static org.apache.commons.lang3.BooleanUtils.isTrue;
 import static org.apache.commons.lang3.StringUtils.contains;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import no.nav.dokarkiv.core.domain.AbstractPersistentVersionedDomainObjectWithKilde;
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
@@ -55,6 +57,8 @@ import java.util.Set;
 				query = "select distinct d from DokumentInfo d left join fetch d.journalpostRelasjoner jr "
 						+ "where jr.journalpost.saksrelasjon.sakId in (:sakIdListe)")
 })
+@Builder
+@AllArgsConstructor
 public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKilde {
 
 	/**
