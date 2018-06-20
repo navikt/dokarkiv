@@ -36,4 +36,4 @@ fasitResources:
       url: SPRING_LDAP_URLS
       username: SPRING_LDAP_USERNAME
       password: SPRING_LDAP_PASSWORD
-      serviceuser_basedn: SPRING_LDAP_BASE
+      serviceuser.basedn: SPRING_LDAP_BASE
