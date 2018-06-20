@@ -7,6 +7,8 @@ import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.OD;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.U;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.UB;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import no.nav.dokarkiv.core.domain.AbstractPersistentVersionedDomainObjectWithKilde;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
@@ -119,6 +121,8 @@ import java.util.stream.Collectors;
 				query = "select j from Journalpost j where j.kanalReferanseId = :kanalReferanseId and j.mottakskanal = :mottaksKanal")
 })
 
+@Builder
+@AllArgsConstructor
 public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKilde {
 
 	/**

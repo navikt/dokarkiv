@@ -1,5 +1,7 @@
 package no.nav.dokarkiv.core.domain.entities;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import no.nav.dokarkiv.core.domain.AbstractPersistentVersionedDomainObjectWithKilde;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.validator.BrukerValidator;
@@ -23,6 +25,8 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "T_BRUKER")
+@Builder
+@AllArgsConstructor
 public class Bruker extends AbstractPersistentVersionedDomainObjectWithKilde {
 
 	/** ID used for serialization. */

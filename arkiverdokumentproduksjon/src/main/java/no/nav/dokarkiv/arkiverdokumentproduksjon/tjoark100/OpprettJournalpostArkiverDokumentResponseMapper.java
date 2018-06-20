@@ -1,19 +1,20 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark100;
 
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.OpprettJournalpostArkiverDokumentResponse;
+import org.springframework.stereotype.Component;
 
 /**
- * Mapper for OpprettJournalpostArkiverDokumentResponse from domain response to ws response.
+ * Implementation of OpprettJournalpostAkiverDokumentResponseMapper
  *
  * @author Torgeir Cook
  */
-public interface OpprettJournalpostArkiverDokumentResponseMapper {
-	/**
-	 * Map from domain response to ws response.
-	 *
-	 * @param domainResponse
-	 * @return wsResponse
-	 */
-	OpprettJournalpostArkiverDokumentResponse map(
-			OpprettJournalpostArkiverDokumentResponseTo domainResponse);
+@Component
+public class OpprettJournalpostArkiverDokumentResponseMapper {
+
+	public OpprettJournalpostArkiverDokumentResponse map(OpprettJournalpostArkiverDokumentResponseTo domainResponse) {
+		return new OpprettJournalpostArkiverDokumentResponse()
+				.withDokumentInfoId(domainResponse.getDokumentInfoId())
+				.withJournalpostId(domainResponse.getJournalpostId());
+	}
+
 }

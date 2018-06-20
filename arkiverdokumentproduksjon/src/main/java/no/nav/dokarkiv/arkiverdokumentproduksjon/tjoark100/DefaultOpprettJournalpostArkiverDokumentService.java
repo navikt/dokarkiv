@@ -14,17 +14,18 @@ import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.util.DateProvider;
 import no.nav.dokarkiv.core.journalbehandling.DokumentFilerDelegate;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import javax.inject.Inject;
+import java.util.Optional;
 
 /**
  * Implementation of OpprettJournalpostArkiverDokumentService
  *
  * @author Cook, Torgeir
  */
-@Component
+@Service
 public class DefaultOpprettJournalpostArkiverDokumentService implements OpprettJournalpostArkiverDokumentService {
 
 	@Inject
@@ -106,8 +107,7 @@ public class DefaultOpprettJournalpostArkiverDokumentService implements OpprettJ
 			return null;
 		}
 // 		TODO: fixMe
-//		Long findJournalpostTilleggssopplysning = joarkRepository.findJournalpostWithDokumentInfoTilleggsopplysning(BESTILLINGS_ID_KEY, bestillingsId);
-//		return joarkRepository.findById(findJournalpostTilleggssopplysning);
-		return new Journalpost();
+		Optional<Long> findJournalpostTilleggssopplysning = joarkRepository.findJournalpostIdByTilleggsopplysningerNokkelAndVerdi(BESTILLINGS_ID_KEY, bestillingsId);
+		return joarkRepository.findById(findJournalpostTilleggssopplysning.get()).get();
 	}
 }

@@ -13,23 +13,23 @@ import org.junit.Test;
  * @author Thomas Eugen Bjørge, Visma Consulting
  */
 public class DefaultHentJournalOgDokumentStatusRequestMapperTest {
-	
+
 	private static final Long JOURNALPOST_ID = 200L;
 	private static final Long DOKUMENT_INFO_ID = 100L;
-	
+
 	private DefaultHentJournalOgDokumentStatusRequestMapper requestMapper;
 
 	@Before
 	public void setUp() throws Exception {
 		requestMapper = new DefaultHentJournalOgDokumentStatusRequestMapper();
 	}
-	
+
 	@Test
 	public void shouldMapFromWsRequestToDomainRequest() {
 		HentJournalOgDokumentStatusRequest wsRequest = createRequest();
-		
+
 		HentJournalOgDokumentStatusRequestTo domainRequest = requestMapper.map(wsRequest);
-		
+
 		assertThat(domainRequest.getJournalpostId(), is(JOURNALPOST_ID));
 		assertThat(domainRequest.getDokumentInfoId(), is(DOKUMENT_INFO_ID));
 	}
