@@ -30,3 +30,10 @@ fasitResources:
       url: SPRING_DATASOURCE_URL
       username: SPRING_DATASOURCE_USERNAME
       password: SPRING_DATASOURCE_PASSWORD
+  - alias: ldap
+    resourceType: ldap
+    propertyMap:
+      url: SPRING_LDAP_URLS
+      username: SPRING_LDAP_USERNAME
+      password: SPRING_LDAP_PASSWORD
+      serviceuser_basedn: SPRING_LDAP_BASE
