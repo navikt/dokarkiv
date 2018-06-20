@@ -15,10 +15,11 @@ import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
-import no.nav.dokarkiv.core.journalbehandling.KildeNavnPopulator;
+import no.nav.dokarkiv.core.sporing.KildeNavnPopulator;
 import no.nav.dokarkiv.core.stelvio.RequestContextHolder;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasjon.arkiverdokumentproduksjon.Tilleggsopplysning;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.OpprettJournalpostArkiverDokumentRequest;
+import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 import java.util.stream.Collectors;
@@ -26,8 +27,9 @@ import java.util.stream.Collectors;
 /**
  * Implementation of OpprettJournalpostArkiverDokumentRequestMapper
  *
- * @author Stig Str?m
+ * @author Sigurd Midttun
  */
+@Component
 public class OpprettJournalpostArkiverDokumentRequestMapper {
 
 	@Inject

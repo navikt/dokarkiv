@@ -4,6 +4,7 @@ package no.nav.dokarkiv.arkiverdokumentproduksjon.config;
 import no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark100.DefaultOpprettJournalpostArkiverDokumentValidator;
 import no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark100.OpprettJournalpostArkiverDokumentValidator;
 import no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark101.DefaultOpprettJournalpostValidator;
+import no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark101.OpprettJournalpostPostUpdateVerifier;
 import no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark101.OpprettJournalpostValidator;
 import no.nav.dokarkiv.core.journalbehandling.DefaultJournalpostStructureVerifier;
 import no.nav.dokarkiv.core.journalbehandling.DefaultMandatoryFieldsVerifier;
@@ -36,16 +37,14 @@ public class ValidatorTestConfig {
 		return new DefaultOpprettJournalpostArkiverDokumentValidator();
 	}
 
-	//FIXME
-//	@Bean
-//	public OpprettJournalpostValidator opprettJournalpostValidator() {
-//		return new DefaultOpprettJournalpostValidator();
-//	}
+	@Bean
+	public OpprettJournalpostValidator opprettJournalpostValidator() {
+		return new DefaultOpprettJournalpostValidator();
+	}
 
 	@Bean
 	public OpprettJournalpostValidator postUpdateVerifier() {
-		return null;
-		//FIXME new OpprettJournalpostPostUpdateVerifier();
+		return new OpprettJournalpostPostUpdateVerifier();
 	}
 
 //	FIXME
