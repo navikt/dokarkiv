@@ -3,6 +3,7 @@ package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark102;
 import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.UgyldigInputException;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.OppdaterJournalpostArkiverDokumentRequest;
 import org.dozer.Mapper;
+import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -12,6 +13,7 @@ import javax.inject.Named;
  *
  * @author Torgeir Cook
  */
+@Component
 public class DefaultOppdaterJournalpostArkiverDokumentRequestMapper implements
 		OppdaterJournalpostArkiverDokumentRequestMapper {
 

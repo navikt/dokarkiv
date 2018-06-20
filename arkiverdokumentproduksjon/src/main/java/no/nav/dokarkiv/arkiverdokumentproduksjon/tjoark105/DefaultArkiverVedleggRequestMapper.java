@@ -2,6 +2,7 @@ package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark105;
 
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.ArkiverVedleggRequest;
 import org.dozer.Mapper;
+import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -11,6 +12,7 @@ import javax.inject.Named;
  *
  * @author Magnar Brandsdal, Visma Consulting
  */
+@Component
 public class DefaultArkiverVedleggRequestMapper implements ArkiverVedleggRequestMapper {
 
 	private Mapper dozerMapper;

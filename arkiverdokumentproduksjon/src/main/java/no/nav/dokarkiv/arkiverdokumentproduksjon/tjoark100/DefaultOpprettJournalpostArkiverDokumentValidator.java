@@ -12,6 +12,7 @@ import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
 import no.nav.dokarkiv.core.journalbehandling.JournalpostStructureVerifier;
 import no.nav.dokarkiv.core.journalbehandling.MandatoryFieldsVerifier;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 
@@ -20,6 +21,7 @@ import javax.inject.Inject;
  *
  * @author Stig Strøm
  */
+@Component
 public class DefaultOpprettJournalpostArkiverDokumentValidator implements
 		OpprettJournalpostArkiverDokumentValidator {
 

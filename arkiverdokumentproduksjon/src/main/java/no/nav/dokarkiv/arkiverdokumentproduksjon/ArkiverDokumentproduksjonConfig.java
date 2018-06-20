@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.dokumentproduksjoninfo;
+package no.nav.dokarkiv.arkiverdokumentproduksjon;
 
 import no.nav.dokarkiv.core.security.LdapUsernameTokenValidatorInterceptor;
 import org.apache.cxf.Bus;
@@ -20,17 +20,17 @@ import java.util.Map;
  */
 @Configuration
 @ComponentScan
-public class DokumentproduksjonInfoConfig {
+public class ArkiverDokumentproduksjonConfig {
 
 	@Bean
 	@Profile("nais")
-	Endpoint dokumentproduksjonInfoV1(Bus bus,
-									  DokumentproduksjonInfoEndpoint dokumentproduksjonInfoEndpoint,
-									  LdapUsernameTokenValidatorInterceptor ldapUsernameTokenValidatorInterceptor) {
-		EndpointImpl endpoint = new EndpointImpl(bus, dokumentproduksjonInfoEndpoint);
-		endpoint.getProperties().put("ws-security.validate.token", "false");
-		endpoint.publish("/dokumentproduksjoninfo/v1");
+	Endpoint arkiverDokumentproduksjon(Bus bus,
+									   ArkiverDokumentproduksjonEndpoint arkiverDokumentproduksjonEndpoint,
+									   LdapUsernameTokenValidatorInterceptor ldapUsernameTokenValidatorInterceptor) {
+		EndpointImpl endpoint = new EndpointImpl(bus, arkiverDokumentproduksjonEndpoint);
+		endpoint.publish("/arkiverdokumentproduksjon/v1");
 		org.apache.cxf.endpoint.Endpoint cxfEndpoint = endpoint.getServer().getEndpoint();
+		endpoint.getProperties().put("ws-security.validate.token", "false");
 		Map<String, Object> inProps = new HashMap<>();
 		inProps.put(WSHandlerConstants.ACTION, WSHandlerConstants.USERNAME_TOKEN);
 		inProps.put(WSHandlerConstants.PASSWORD_TYPE, WSConstants.PW_TEXT);

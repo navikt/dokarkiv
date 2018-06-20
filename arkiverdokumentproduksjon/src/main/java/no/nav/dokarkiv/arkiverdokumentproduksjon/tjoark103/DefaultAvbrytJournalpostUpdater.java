@@ -6,6 +6,7 @@ import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.sporing.SporingPopulator;
+import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 
@@ -14,6 +15,7 @@ import javax.inject.Inject;
  *
  * @author Stig Strøm
  */
+@Component
 public class DefaultAvbrytJournalpostUpdater implements AvbrytJournalpostUpdater {
 
 	@Inject

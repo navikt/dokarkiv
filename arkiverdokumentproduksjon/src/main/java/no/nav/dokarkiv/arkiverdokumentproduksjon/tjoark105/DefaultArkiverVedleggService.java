@@ -10,6 +10,7 @@ import no.nav.dokarkiv.core.domain.util.DateProvider;
 import no.nav.dokarkiv.core.journalbehandling.DokumentFilerDelegate;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.core.sporing.SporingPopulator;
+import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 
@@ -18,6 +19,7 @@ import javax.inject.Inject;
  *
  * @author Magnar Brandsdal, Visma Consulting
  */
+@Component
 public class DefaultArkiverVedleggService implements ArkiverVedleggService {
 
 	@Inject

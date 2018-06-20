@@ -11,6 +11,7 @@ import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
+import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
 /**
@@ -18,6 +19,7 @@ import org.springframework.util.Assert;
  *
  * @author Roar Bjurstrom, Visma Consulting
  */
+@Component
 public class DefaultAvbrytVedleggValidator implements AvbrytVedleggValidator {
 
 	@Override

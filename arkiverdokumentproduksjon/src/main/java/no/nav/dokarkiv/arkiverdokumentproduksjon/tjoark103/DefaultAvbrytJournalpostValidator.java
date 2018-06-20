@@ -3,12 +3,14 @@ package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark103;
 import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.UgyldigJournalStatusOvergangException;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import org.springframework.stereotype.Component;
 
 /**
  * Implementation of the AvbrytJournalpostValidator
  *
  * @author Stig Strøm
  */
+@Component
 public class DefaultAvbrytJournalpostValidator implements AvbrytJournalpostValidator {
 
 	@Override

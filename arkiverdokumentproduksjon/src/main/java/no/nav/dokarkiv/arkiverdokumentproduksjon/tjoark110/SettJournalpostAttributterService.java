@@ -6,12 +6,14 @@ import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.ApplicationException
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.core.sporing.SporingPopulator;
+import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 
 /**
  * @author Joakim Bjørnstad, Jbit AS
  */
+@Component
 public class SettJournalpostAttributterService {
 	@Inject
 	private JoarkRepository joarkRepository;
