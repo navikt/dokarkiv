@@ -80,6 +80,7 @@ public class DokumentproduksjonInfoProvider implements DokumentproduksjonInfoV1 
 	public HentJournalOgDokumentStatusResponse hentJournalOgDokumentStatus(HentJournalOgDokumentStatusRequest request)
 			throws HentJournalOgDokumentStatusJournalpostIkkeFunnet, HentJournalOgDokumentStatusDokumentInfoIkkeFunnet {
 		try {
+			log.info("tjoark120 henter journal og dokumentstatus for journalpostId={}, dokumentInfoId={}", request.getJournalpostId(), request.getDokumentInfoId());
 			return hentJournalOgDokumentStatusResponseMapper.map(hentJournalOgDokumentStatus
 					.hentJournalOgDokumentStatus(hentJournalOgDokumentStatusRequestMapper.map(request)));
 		} catch (NoJournalpostFoundException e) {
@@ -93,6 +94,7 @@ public class DokumentproduksjonInfoProvider implements DokumentproduksjonInfoV1 
 	@Override
 	public HentJournalpostInfoResponse hentJournalpostInfo(HentJournalpostInfoRequest hentJournalpostInfoRequest) throws HentJournalpostInfoJournalpostIkkeFunnet, HentJournalpostInfoDokumentInfoIkkeFunnet {
 		try {
+			log.info("tjoark122 henter journalpostinfo for journalpostId={}, dokumentInfoId={}", hentJournalpostInfoRequest.getJournalpostId(), hentJournalpostInfoRequest.getDokumentInfoId());
 			HentJournalpostInfoRequestTo request = hentJournalpostInfoRequestMapper.map(hentJournalpostInfoRequest);
 			HentJournalpostInfoResponseTo responseTo = hentJournalpostInfoService.hentJournalOgDokumentStatus(request);
 			return hentJournalpostInfoResponseMapper.map(responseTo);
@@ -110,6 +112,7 @@ public class DokumentproduksjonInfoProvider implements DokumentproduksjonInfoV1 
 		if (request == null) {
 			throw new HentFerdigstilteDokumenterUgyldingInput("request is null", new FunctionalFault());
 		}
+		log.info("tjoark121 henter ferdigstilte dokumenter for journalpostId={}", request.getJournalpostId());
 		if (request.getJournalpostId() == 0) {
 			throw new HentFerdigstilteDokumenterUgyldingInput("journalpostId is null or 0", new FunctionalFault());
 		}
