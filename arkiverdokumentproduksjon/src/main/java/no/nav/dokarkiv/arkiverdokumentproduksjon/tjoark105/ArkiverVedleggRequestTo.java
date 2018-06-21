@@ -1,5 +1,8 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark105;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 
 /**
@@ -7,6 +10,9 @@ import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
  *
  * @author Magnar Brandsdal, Visma Consulting
  */
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class ArkiverVedleggRequestTo {
 
 	private Long journalpostId;

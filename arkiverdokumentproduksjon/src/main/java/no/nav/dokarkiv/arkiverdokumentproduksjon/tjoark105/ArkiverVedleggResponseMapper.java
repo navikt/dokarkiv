@@ -1,14 +1,17 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark105;
 
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.ArkiverVedleggResponse;
+import org.springframework.stereotype.Component;
 
 /**
- * Mapper for ArkiverVedleggResponse, domain to ws
- *
  * @author Magnar Brandsdal, Visma Consulting
  */
-public interface ArkiverVedleggResponseMapper {
+@Component
+public class ArkiverVedleggResponseMapper {
 
-	ArkiverVedleggResponse map(ArkiverVedleggResponseTo arkiverVedleggResponseTo);
-
+	public ArkiverVedleggResponse map(ArkiverVedleggResponseTo arkiverVedleggResponseTo) {
+		return new ArkiverVedleggResponse()
+				.withDokumentInfoId(arkiverVedleggResponseTo.getDokumentInfoId())
+				.withJournalpostId(arkiverVedleggResponseTo.getJournalpostId());
+	}
 }
