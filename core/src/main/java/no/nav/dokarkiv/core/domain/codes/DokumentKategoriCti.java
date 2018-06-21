@@ -33,10 +33,6 @@ public class DokumentKategoriCti extends CodesTablePeriodicItem<DokumentKategori
 	 * Audit information.
 	 */
 	@Embedded
-	@AttributeOverrides( { @AttributeOverride(name = "createdBy", column = @Column(name = "opprettet_av")),
-			@AttributeOverride(name = "createdDate", column = @Column(name = "dato_opprettet")),
-			@AttributeOverride(name = "updatedBy", column = @Column(name = "endret_av")),
-			@AttributeOverride(name = "updatedDate", column = @Column(name = "dato_endret")) })
 	private ChangeStamp changeStamp;
 
 	/**

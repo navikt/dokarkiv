@@ -42,17 +42,17 @@ public class ChangeStamp implements Serializable {
 
 	private static final long serialVersionUID = ***gammelt_fnr***562288L;
 
-	@Column(name = "created_by", insertable = true, updatable = false)
+	@Column(name = "opprettet_av", insertable = true, updatable = false, nullable = false)
 	private String createdBy;
 
-	@Column(name = "created_date", insertable = true, updatable = false)
+	@Column(name = "dato_opprettet", insertable = true, updatable = false, nullable = false)
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date createdDate;
 
-	@Column(name = "updated_by")
+	@Column(name = "endret_av")
 	private String updatedBy;
 
-	@Column(name = "updated_date")
+	@Column(name = "dato_endret")
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date updatedDate;
 
