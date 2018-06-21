@@ -29,7 +29,7 @@ public class DefaultOpprettJournalpostValidator implements
 	protected MandatoryFieldsVerifier mandatoryFieldsVerifier;
 
 	@Inject
-	protected OpprettJournalpostValidator postUpdateVerifier;
+	protected OpprettJournalpostPostUpdateVerifier postUpdateVerifier;
 
 	@Override
 	public void validate(final Journalpost journalpost) {

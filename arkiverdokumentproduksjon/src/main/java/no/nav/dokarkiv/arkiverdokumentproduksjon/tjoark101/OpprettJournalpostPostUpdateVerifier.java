@@ -16,8 +16,8 @@ import org.springframework.stereotype.Component;
  * @author Hans Petter Simonsen - Visma Consulting AS
  */
 @Component
-public class OpprettJournalpostPostUpdateVerifier implements OpprettJournalpostValidator {
-	@Override
+public class OpprettJournalpostPostUpdateVerifier {
+
 	public void validate(Journalpost journalpost) {
 		validateJournalStatus(journalpost, JournalStatusCode.D);
 		validateJournalpostType(journalpost, JournalpostTypeCode.U);
