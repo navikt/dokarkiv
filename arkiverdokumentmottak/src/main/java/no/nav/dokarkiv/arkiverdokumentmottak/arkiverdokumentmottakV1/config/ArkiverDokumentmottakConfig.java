@@ -3,7 +3,6 @@ package no.nav.dokarkiv.arkiverdokumentmottak.arkiverdokumentmottakV1.config;
 
 import no.nav.dokarkiv.arkiverdokumentmottak.arkiverdokumentmottakV1.DefaultJournalforInngaaendeForsendelseRequestMapper;
 import no.nav.dokarkiv.arkiverdokumentmottak.arkiverdokumentmottakV1.DefaultJournalforInngaaendeForsendelseResponseMapper;
-import no.nav.dokarkiv.core.config.BaseProviderConfig;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v1.ArkiverDokumentmottakV1;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,7 +13,7 @@ import org.springframework.context.annotation.Configuration;
  * @author Stig Strøm
  */
 @Configuration
-public class ArkiverDokumentmottakConfig extends BaseProviderConfig {
+public class ArkiverDokumentmottakConfig {
 
 	public static final String PROVIDER_BEAN = "prv.joark.nsb.arkiverDokumentmottak";
 	public static final String PROVIDER_BEAN_V2 = "prv.joark.nsb.arkiverDokumentmottakV2";

@@ -149,14 +149,14 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 
 	@OneToMany
 	@JoinColumn(name = "dokument_info_id", nullable = false)
-	@Cascade({CascadeType.PERSIST, CascadeType.SAVE_UPDATE, CascadeType.DELETE, CascadeType.EVICT})
+	@Cascade({CascadeType.PERSIST, CascadeType.SAVE_UPDATE, CascadeType.DELETE, CascadeType.DETACH})
 	private Set<SkannetInnhold> skannetInnholdListe = new HashSet<SkannetInnhold>();
 
 	@OneToMany(mappedBy = "dokumentInfo")
 	private Set<JournalpostDokumentInfoRelasjon> journalpostRelasjoner = new HashSet<JournalpostDokumentInfoRelasjon>();
 
 	@OneToMany(mappedBy = "dokumentInfo")
-	@Cascade({CascadeType.PERSIST, CascadeType.SAVE_UPDATE, CascadeType.DELETE_ORPHAN, CascadeType.EVICT})
+	@Cascade({CascadeType.PERSIST, CascadeType.SAVE_UPDATE, CascadeType.DELETE_ORPHAN, CascadeType.DETACH})
 	private Set<FilDetaljer> fildetaljerListe = new HashSet<FilDetaljer>();
 
 	/**
