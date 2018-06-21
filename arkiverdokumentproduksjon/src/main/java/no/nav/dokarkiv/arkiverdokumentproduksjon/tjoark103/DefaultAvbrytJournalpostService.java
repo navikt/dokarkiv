@@ -27,13 +27,13 @@ public class DefaultAvbrytJournalpostService implements AvbrytJournalpostService
 	private AvbrytJournalpostValidator validator;
 
 	@Override
-	public void avbrytJournalpost(AvbrytJournalpostRequestTo domainRequest) throws NoJournalpostFoundException,
-			UgyldigJournalStatusOvergangException {
+	public void avbrytJournalpost(AvbrytJournalpostRequestTo domainRequest) throws NoJournalpostFoundException, UgyldigJournalStatusOvergangException {
 		Assert.notNull(domainRequest, "Request cannot be empty or missing");
 		domainRequest.validate();
 
 		Journalpost journalpost = joarkRepository.findById(domainRequest.getJournalpostId())
-				.orElseThrow(() -> new NoJournalpostFoundException("Journalpost with id: " + domainRequest.getJournalpostId() + " not found", domainRequest.getJournalpostId()));
+				.orElseThrow(() -> new NoJournalpostFoundException("Journalpost with id: " + domainRequest.getJournalpostId() + " not found", domainRequest
+						.getJournalpostId()));
 
 		validator.validate(journalpost);
 		avbrytJournalpostUpdater.updateJournalpost(journalpost, domainRequest.getEndretAvNavn());
