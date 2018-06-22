@@ -248,15 +248,15 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 
 	@OneToMany
 	@JoinColumn(name = "journalpost_id", nullable = false)
-	@Cascade({CascadeType.PERSIST, CascadeType.SAVE_UPDATE, CascadeType.DELETE, CascadeType.EVICT})
+	@Cascade({CascadeType.PERSIST, CascadeType.SAVE_UPDATE, CascadeType.DELETE, CascadeType.DETACH})
 	private final Set<Bruker> brukere = new HashSet<Bruker>();
 
 	@OneToOne(mappedBy = "journalpost", fetch = FetchType.LAZY)
-	@Cascade({CascadeType.PERSIST, CascadeType.SAVE_UPDATE, CascadeType.DELETE, CascadeType.EVICT})
+	@Cascade({CascadeType.PERSIST, CascadeType.SAVE_UPDATE, CascadeType.DELETE, CascadeType.DETACH})
 	private Saksrelasjon saksrelasjon;
 
 	@OneToMany(mappedBy = "journalpost")
-	@Cascade({CascadeType.PERSIST, CascadeType.SAVE_UPDATE, CascadeType.DELETE, CascadeType.EVICT})
+	@Cascade({CascadeType.PERSIST, CascadeType.SAVE_UPDATE, CascadeType.DELETE, CascadeType.DETACH})
 	private final Set<JournalpostDokumentInfoRelasjon> journalpostDokumentInfoRelasjoner = new HashSet<>();
 
 	@ElementCollection
@@ -267,16 +267,16 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 
 	@OneToMany
 	@JoinColumn(name = "journalpost_id", nullable = false)
-	@Cascade({CascadeType.PERSIST, CascadeType.SAVE_UPDATE, CascadeType.DELETE, CascadeType.EVICT})
+	@Cascade({CascadeType.PERSIST, CascadeType.SAVE_UPDATE, CascadeType.DELETE, CascadeType.DETACH})
 	private final Set<Kryssreferanse> kryssreferanser = new HashSet<>();
 
 	@OneToMany
 	@JoinColumn(name = "journalpost_id", nullable = false)
-	@Cascade({CascadeType.PERSIST, CascadeType.SAVE_UPDATE, CascadeType.DELETE, CascadeType.EVICT})
+	@Cascade({CascadeType.PERSIST, CascadeType.SAVE_UPDATE, CascadeType.DELETE, CascadeType.DETACH})
 	private final Set<ReturInfo> returInfos = new HashSet<>();
 
 	@OneToOne(mappedBy = "journalpost", fetch = FetchType.LAZY)
-	@Cascade({CascadeType.PERSIST, CascadeType.SAVE_UPDATE, CascadeType.DELETE, CascadeType.EVICT})
+	@Cascade({CascadeType.PERSIST, CascadeType.SAVE_UPDATE, CascadeType.DELETE, CascadeType.DETACH})
 	private Behandlingsrelasjon behandlingsrelasjon;
 
 	/**

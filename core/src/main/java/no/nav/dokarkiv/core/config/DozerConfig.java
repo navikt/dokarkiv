@@ -10,9 +10,11 @@ import java.util.Arrays;
 /**
  * Spring configuration of Dozer for MOD services.
  *
+ * @deprecated Vi skal slutte å bruke dozer
  * @author Thomas Eugen Bjørge, Visma Consulting
  */
 @Configuration
+@Deprecated
 public class DozerConfig {
 
 	private static final String ARKIVER_DOKUMENTMOTTAK_MAPPING_XML = "prv-arkiverdokumentmottak-mapping.xml";

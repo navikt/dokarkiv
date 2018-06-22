@@ -16,6 +16,7 @@ import java.util.Locale;
  * @author Ole Hjalmar Herje, BEKK
  * @author Magnus Skuland, Sirius IT
  */
+@Deprecated
 public class DateProvider {
 
 	/**

@@ -2,10 +2,12 @@ package no.nav.dokarkiv.core.constants;
 
 /**
  * Contains constants for the service layer.
- * 
+ *
+ * @deprecated Lag en konstantklasse for hver tjeneste i sine respektive moduler ved behov
  * @author Thomas Eugen Bjørge, Sirius IT
  * @author Magnus Skuland, Sirius IT
  */
+@Deprecated
 public final class ServiceConstants {
 
 	/** TJOARK025 servlet param. */

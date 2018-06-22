@@ -37,7 +37,7 @@ import javax.inject.Inject;
  * @author Stig Strøm
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {ValidatorTestConfig.class})
+@ContextConfiguration(classes = {ValidatorTestConfig.class, DefaultOpprettJournalpostValidator.class, OpprettJournalpostPostUpdateVerifier.class})
 public class DefaultOpprettJournalpostValidatorTest {
 	private static final boolean SENSITIVT_REQUEST = true;
 	private static final String OPPRETTET_AV_NAVN = "Saksbehandler";
