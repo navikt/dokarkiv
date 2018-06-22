@@ -39,9 +39,9 @@ public class DefaultArkiverVedleggService implements ArkiverVedleggService {
 			throws NoJournalpostFoundException {
 		arkiverVedleggValidator.validate(arkiverVedleggRequest);
 
-		// eager fetch? FIXME
-		Journalpost journalpost = null;
-		//joarkRepository.findJournalpostByJournalpostId(arkiverVedleggRequest.getJournalpostId(), false); FIXME
+		Journalpost journalpost = joarkRepository.findById(arkiverVedleggRequest.getJournalpostId())
+				.orElseThrow(() -> new NoJournalpostFoundException("journalpostid=" + arkiverVedleggRequest.getJournalpostId() + " does not exist", arkiverVedleggRequest
+						.getJournalpostId()));
 
 		arkiverVedleggValidator.validate(journalpost, arkiverVedleggRequest.getJournalpostId());
 

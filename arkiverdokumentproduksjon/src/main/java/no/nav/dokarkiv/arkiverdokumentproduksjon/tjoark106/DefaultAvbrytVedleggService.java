@@ -51,7 +51,10 @@ public class DefaultAvbrytVedleggService implements AvbrytVedleggService {
 		validator.validateJournalpostDokumentInfoRelasjon(dokumentInfoRelasjon);
 
 		if (dokumentInfo.isRelatedToMultipleJournalposts()) {
-//			joarkRepository.deleteJournalpostDokumentInfoRelasjon(dokumentInfoRelasjon); FIXME
+			//TODO OK FIX?
+			dokumentInfoRelasjon.getDokumentInfo().removeJournalpostDokumentInfoRelasjon(dokumentInfoRelasjon);
+			dokumentInfoRelasjon.getJournalpost().removeJournalpostDokumentInfoRelasjon(dokumentInfoRelasjon);
+			joarkRepository.deleteJournalpostDokumentInfoRelasjon(journalpostId);
 		} else {
 			dokumentInfo.setDokumentstatus(DokumentStatusCode.AVBRUTT);
 		}

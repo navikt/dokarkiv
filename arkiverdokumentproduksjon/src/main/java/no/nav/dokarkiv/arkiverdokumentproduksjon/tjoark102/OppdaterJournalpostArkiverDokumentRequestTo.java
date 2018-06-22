@@ -1,5 +1,7 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark102;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 
@@ -13,7 +15,8 @@ import java.util.Set;
  *
  * @author Torgeir Cook
  */
-
+@Builder
+@AllArgsConstructor
 public class OppdaterJournalpostArkiverDokumentRequestTo {
 
 	private Long journalpostId;
