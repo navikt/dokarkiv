@@ -78,6 +78,7 @@ public class DokTimedAspect {
 					.tags("error_type", asList(method.getExceptionTypes()).contains(e.getClass()) ? "functional" : "technical")
 					.tags("exception_name", e.getClass().getSimpleName())
 					.tags(timed.extraTags())
+					.tags(tagsBasedOnJoinpoint.apply(pjp))
 					.register(registry)
 					.increment();
 			throw e;
