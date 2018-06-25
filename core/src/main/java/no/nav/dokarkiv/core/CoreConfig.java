@@ -1,7 +1,7 @@
 package no.nav.dokarkiv.core;
 
-import io.micrometer.core.aop.TimedAspect;
 import io.micrometer.core.instrument.MeterRegistry;
+import no.nav.dokarkiv.core.metrics.DokTimedAspect;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -18,7 +18,7 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 @EnableAspectJAutoProxy
 public class CoreConfig {
 	@Bean
-	public TimedAspect timedAspect(MeterRegistry meterRegistry) {
-		return new TimedAspect(meterRegistry);
+	public DokTimedAspect timedAspect(MeterRegistry meterRegistry) {
+		return new DokTimedAspect(meterRegistry);
 	}
 }

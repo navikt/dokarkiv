@@ -40,25 +40,25 @@ public class DokumentproduksjonInfoEndpoint implements DokumentproduksjonInfoV1 
 	@Inject
 	private DokumentproduksjonInfoV1 dokumentproduksjonInfoProvider;
 
-	@Timed(value = "dok_request", extraTags = {"process_code", "tjoark120"})
+	@Timed(value = "dok_request", extraTags = {"process_code", "tjoark120"}, percentiles = {0.5, 0.95})
 	@Override
 	public HentJournalOgDokumentStatusResponse hentJournalOgDokumentStatus(HentJournalOgDokumentStatusRequest request)
 			throws HentJournalOgDokumentStatusJournalpostIkkeFunnet, HentJournalOgDokumentStatusDokumentInfoIkkeFunnet {
 		return dokumentproduksjonInfoProvider.hentJournalOgDokumentStatus(request);
 	}
 
-	@Timed(value = "dok_request", extraTags = {"process_code", "tjoark122"})
+	@Timed(value = "dok_request", extraTags = {"process_code", "tjoark122"}, percentiles = {0.5, 0.95})
 	@Override
 	public HentJournalpostInfoResponse hentJournalpostInfo(HentJournalpostInfoRequest hentJournalpostInfoRequest) throws HentJournalpostInfoJournalpostIkkeFunnet, HentJournalpostInfoDokumentInfoIkkeFunnet {
 		return dokumentproduksjonInfoProvider.hentJournalpostInfo(hentJournalpostInfoRequest);
 	}
 
-	@Timed(value = "dok_request", extraTags = {"process_code", "tjoark121"})
+	@Timed(value = "dok_request", extraTags = {"process_code", "tjoark121"}, percentiles = {0.5, 0.95})
 	@Override
 	public HentFerdigstilteDokumenterResponse hentFerdigstilteDokumenter(HentFerdigstilteDokumenterRequest request) {
 		return dokumentproduksjonInfoProvider.hentFerdigstilteDokumenter(request);
 	}
-	
+
 	@Override
 	public void ping() {
 		dokumentproduksjonInfoProvider.ping();
