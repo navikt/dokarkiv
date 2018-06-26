@@ -1,12 +1,12 @@
 package no.nav.dokarkiv.core.journabehandling;
 
 
-import no.nav.dokarkiv.core.domain.Journalpost;
+import no.nav.dokarkiv.core.domain.entities.Journalpost;
 
 /**
  * Delegate that encapsulates logic for handling DokumentFil.
  *
- * @author Thomas Eugen Bjørge, Visma Sirius
+ * @author Thomas Eugen Bjï¿½rge, Visma Sirius
  */
 public interface DokumentFilerDelegate {
 

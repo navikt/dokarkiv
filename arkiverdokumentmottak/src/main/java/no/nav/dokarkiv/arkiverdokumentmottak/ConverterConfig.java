@@ -1,6 +1,6 @@
-package no.nav.dokarkiv.arkiverdokumentmottak.arkiverdokumentmottakV1.config;
+package no.nav.dokarkiv.arkiverdokumentmottak;
 
-import no.nav.dokarkiv.arkiverdokumentmottak.arkiverdokumentmottakV1.ArkiverDokumentmottakTilleggsopplysningerConverter;
+import no.nav.dokarkiv.arkiverdokumentmottak.v1.tjoark203.ArkiverDokumentmottakTilleggsopplysningerConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

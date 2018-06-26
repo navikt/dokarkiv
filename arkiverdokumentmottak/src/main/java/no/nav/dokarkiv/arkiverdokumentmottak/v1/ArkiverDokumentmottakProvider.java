@@ -1,12 +1,12 @@
-package no.nav.dokarkiv.arkiverdokumentmottak.arkiverdokumentmottakV1.config;
+package no.nav.dokarkiv.arkiverdokumentmottak.v1;
 
-import static no.nav.dokarkiv.arkiverdokumentmottak.arkiverdokumentmottakV1.config.ServiceConstants.FORSENDELSE_MOTTAK_ID_KEY;
-
-import no.nav.dokarkiv.arkiverdokumentmottak.arkiverdokumentmottakV1.DefaultJournalforInngaaendeForsendelseRequestMapper;
-import no.nav.dokarkiv.arkiverdokumentmottak.arkiverdokumentmottakV1.DefaultJournalforInngaaendeForsendelseResponseMapper;
-import no.nav.dokarkiv.arkiverdokumentmottak.arkiverdokumentmottakV1.DefaultJournalforInngaaendeForsendelseService;
-import no.nav.dokarkiv.arkiverdokumentmottak.arkiverdokumentmottakV1.JournalforInngaaendeForsendelseRequestTo;
-import no.nav.dokarkiv.arkiverdokumentmottak.arkiverdokumentmottakV1.JournalforInngaaendeForsendelseResponseTo;
+import no.nav.dokarkiv.arkiverdokumentmottak.DefaultArkiverDokumentmottakFaultInfoPopulator;
+import no.nav.dokarkiv.arkiverdokumentmottak.ServiceConstants;
+import no.nav.dokarkiv.arkiverdokumentmottak.v1.tjoark203.DefaultJournalforInngaaendeForsendelseRequestMapper;
+import no.nav.dokarkiv.arkiverdokumentmottak.v1.tjoark203.DefaultJournalforInngaaendeForsendelseResponseMapper;
+import no.nav.dokarkiv.arkiverdokumentmottak.v1.tjoark203.DefaultJournalforInngaaendeForsendelseService;
+import no.nav.dokarkiv.arkiverdokumentmottak.v1.to.JournalforInngaaendeForsendelseRequestTo;
+import no.nav.dokarkiv.arkiverdokumentmottak.v1.to.JournalforInngaaendeForsendelseResponseTo;
 import no.nav.dokarkiv.core.domain.DefaultPingService;
 import no.nav.dokarkiv.core.stelvio.FunctionalUnrecoverableException;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v1.ArkiverDokumentmottakV1;
@@ -16,11 +16,12 @@ import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v1.meldinger.Jou
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v1.meldinger.JournalforInngaaendeForsendelseResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
 
-
+@Component
 public class ArkiverDokumentmottakProvider implements ArkiverDokumentmottakV1 {
 	private static final Logger log = LoggerFactory.getLogger(ArkiverDokumentmottakProvider.class);
 
@@ -51,13 +52,12 @@ public class ArkiverDokumentmottakProvider implements ArkiverDokumentmottakV1 {
 			JournalforInngaaendeForsendelseRequest request) throws KanIkkeJournalfores {
 		JournalforInngaaendeForsendelseRequestTo requestTo = journalforInngaaendeForsendelseRequestMapper.map(request);
 
-
 		JournalforInngaaendeForsendelseResponseTo responseTo;
 		try {
 			responseTo = journalforInngaaendeForsendelseService.journalforInngaaendeForsendelse(requestTo);
 		} catch (FunctionalUnrecoverableException | IllegalArgumentException e) {
 			String tilleggsOpplysning = findTilleggsOpplysning(request);
-			log.warn("Kan ikke journalf�re inng�ende forsendelse. tilleggsopplysning=" + tilleggsOpplysning, e);
+			log.warn("Kan ikke journalføre inngående forsendelse. tilleggsopplysning=" + tilleggsOpplysning, e);
 			throw new KanIkkeJournalfores(e.getMessage(), faultInfoPopulator.populateFaultInfo(
 					new no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v1.feil.KanIkkeJournalfores(), e, "journalforInngaaendeForsendelse"));
 		}
@@ -75,8 +75,8 @@ public class ArkiverDokumentmottakProvider implements ArkiverDokumentmottakV1 {
 		if (request != null && request.getJournalpost() != null && request.getJournalpost()
 				.getJournalpostTilleggsopplysninger() != null) {
 			for (Tilleggsopplysning tilleggsopplysning : request.getJournalpost().getJournalpostTilleggsopplysninger()) {
-				if (tilleggsopplysning != null && FORSENDELSE_MOTTAK_ID_KEY.equals(tilleggsopplysning.getOpplysningsnoekkel())) {
-					return "(key=" + FORSENDELSE_MOTTAK_ID_KEY + " value=" + tilleggsopplysning.getOpplysningsverdi();
+				if (tilleggsopplysning != null && ServiceConstants.FORSENDELSE_MOTTAK_ID_KEY.equals(tilleggsopplysning.getOpplysningsnoekkel())) {
+					return "(key=" + ServiceConstants.FORSENDELSE_MOTTAK_ID_KEY + " value=" + tilleggsopplysning.getOpplysningsverdi();
 					//FIXME Sjekk originalen. Alternative metode istedenfor å bruke Guava
 				}
 			}

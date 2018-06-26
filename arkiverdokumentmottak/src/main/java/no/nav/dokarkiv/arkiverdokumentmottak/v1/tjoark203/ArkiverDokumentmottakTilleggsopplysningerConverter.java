@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.arkiverdokumentmottak.arkiverdokumentmottakV1;
+package no.nav.dokarkiv.arkiverdokumentmottak.v1.tjoark203;
 
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v1.informasjon.arkiverdokumentmottak.Tilleggsopplysning;
 import org.dozer.DozerConverter;
@@ -12,10 +12,10 @@ import java.util.Map;
 
 /**
  * Custom converter from {@link Tilleggsopplysning} to
- * {@link no.nav.domain.dok.joark.DokumentInfo}.tilleggsOpplysninger
+ * {@link no.nav.dokarkiv.core.domain.entities}.tilleggsOpplysninger
  *
  * @author Leo-Andreas Ervik, Visma Consulting. 24.02.2017
- * @author Stig Strøm, Acando
+ * @author Stig Strï¿½m, Acando
  */
 public class ArkiverDokumentmottakTilleggsopplysningerConverter
 		extends DozerConverter<List<Tilleggsopplysning>, Map<String, String>> {

@@ -1,13 +1,14 @@
-package no.nav.dokarkiv.arkiverdokumentmottak.arkiverdokumentmottakV1.config;
+package no.nav.dokarkiv.arkiverdokumentmottak;
 
-import no.nav.dokarkiv.arkiverdokumentmottak.AbstractJournalFaultInfoPopulator;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v1.feil.ForretningsmessigUnntak;
+import org.springframework.stereotype.Component;
 
 /**
  * Implementation of ArkiverDokumentmottakFaultInfoPopulator.
  *
- * @author Stig Strøm
+ * @author Stig Strï¿½m
  */
+@Component
 public class DefaultArkiverDokumentmottakFaultInfoPopulator extends AbstractJournalFaultInfoPopulator {
 
 	public <T extends ForretningsmessigUnntak> T populateFaultInfo(

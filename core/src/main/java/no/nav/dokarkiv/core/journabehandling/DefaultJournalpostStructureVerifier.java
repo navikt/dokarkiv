@@ -1,7 +1,7 @@
 package no.nav.dokarkiv.core.journabehandling;
 
 
-import no.nav.dokarkiv.core.domain.Journalpost;
+import no.nav.dokarkiv.core.domain.entities.Journalpost;
 
 /**
  * Implementation of JournalpostStructureVerifier.

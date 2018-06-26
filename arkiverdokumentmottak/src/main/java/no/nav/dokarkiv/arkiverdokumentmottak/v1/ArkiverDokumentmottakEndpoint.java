@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.arkiverdokumentmottak.arkiverdokumentmottakV1.config;
+package no.nav.dokarkiv.arkiverdokumentmottak.v1;
 
 
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
@@ -6,6 +6,7 @@ import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v1.ArkiverDokume
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v1.KanIkkeJournalfores;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v1.meldinger.JournalforInngaaendeForsendelseRequest;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v1.meldinger.JournalforInngaaendeForsendelseResponse;
+import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
@@ -20,7 +21,8 @@ import javax.xml.ws.soap.Addressing;
 		serviceName = "ArkiverDokumentmottak_v1",
 		portName = "ArkiverDokumentmottakPort_v1")
 @Addressing
-@HandlerChain(file = "ArkiverdokumentmottakHandler.xml")
+@HandlerChain(file = "classpath:v1/ArkiverdokumentmottakHandler.xml")
+@Service
 public class ArkiverDokumentmottakEndpoint implements ArkiverDokumentmottakV1 {
 
 	private static final String DEFAULT_APPID = "Dokmot";

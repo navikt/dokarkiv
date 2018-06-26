@@ -1,19 +1,19 @@
 package no.nav.dokarkiv.core.journabehandling;
 
 
-import no.nav.dokarkiv.core.domain.Bruker;
-import no.nav.dokarkiv.core.domain.DokumentInfo;
-import no.nav.dokarkiv.core.domain.FilDetaljer;
-import no.nav.dokarkiv.core.domain.Journalpost;
-import no.nav.dokarkiv.core.domain.JournalpostDokumentInfoRelasjon;
-import no.nav.dokarkiv.core.domain.Kryssreferanse;
-import no.nav.dokarkiv.core.domain.ReturInfo;
-import no.nav.dokarkiv.core.domain.SkannetInnhold;
+import no.nav.dokarkiv.core.domain.entities.Bruker;
+import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
+import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
+import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
+import no.nav.dokarkiv.core.domain.entities.Kryssreferanse;
+import no.nav.dokarkiv.core.domain.entities.ReturInfo;
+import no.nav.dokarkiv.core.domain.entities.SkannetInnhold;
 
 /**
  * Implementation of <code>MandatoryFieldsVerifier</code>.
  *
- * @author Thomas Eugen Bjørge, Visma Sirius
+ * @author Thomas Eugen Bjï¿½rge, Visma Sirius
  */
 public class DefaultMandatoryFieldsVerifier implements MandatoryFieldsVerifier {
 

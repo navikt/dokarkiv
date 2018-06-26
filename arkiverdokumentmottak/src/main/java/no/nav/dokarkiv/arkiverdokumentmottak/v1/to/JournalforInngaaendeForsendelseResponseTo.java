@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.arkiverdokumentmottak.arkiverdokumentmottakV1;
+package no.nav.dokarkiv.arkiverdokumentmottak.v1.to;
 
 import no.nav.dokarkiv.core.nsb.DokumentInfoIdVedleggTo;
 import org.apache.commons.lang.builder.ToStringBuilder;

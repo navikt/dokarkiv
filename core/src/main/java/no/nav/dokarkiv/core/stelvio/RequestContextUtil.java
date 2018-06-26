@@ -1,8 +1,8 @@
 package no.nav.dokarkiv.core.stelvio;
 
 
-import no.nav.dokarkiv.core.soap.CallIdHandler;
-import no.nav.modig.core.exception.ApplicationException;
+import no.nav.dokarkiv.core.exceptions.ApplicationException;
+import no.nav.dokarkiv.core.jaxws.CallIdHandler;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

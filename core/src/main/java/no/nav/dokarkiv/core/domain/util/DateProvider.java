@@ -1,8 +1,6 @@
 package no.nav.dokarkiv.core.domain.util;
 
 
-import no.nav.dokarkiv.core.stelvio.DateUtil;
-
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Locale;
@@ -54,24 +52,24 @@ public class DateProvider {
 	 * @param mockMode see {@link #setMockMode(boolean)}.
 	 * @param mockDate see {@link #setMockDate(String)}.
 	 */
-	public static void configure(final boolean mockMode, final String mockDate) {
-		if (mockMode) {
-			provider = getMockProvider(mockDate);
-		} else {
-			provider = getNormalProvider();
-		}
-	}
-
-	/**
-	 * Spring init-method. Initializes dateprovider in configured mode.
-	 */
-	public void initialize() {
-		if (mockMode) {
-			provider = getMockProvider(mockDate);
-		} else {
-			provider = getNormalProvider();
-		}
-	}
+//	public static void configure(final boolean mockMode, final String mockDate) {
+//		if (mockMode) {
+//			provider = getMockProvider(mockDate);
+//		} else {
+//			provider = getNormalProvider();
+//		}
+//	}
+//
+//	/**
+//	 * Spring init-method. Initializes dateprovider in configured mode.
+//	 */
+//	public void initialize() {
+//		if (mockMode) {
+//			provider = getMockProvider(mockDate);
+//		} else {
+//			provider = getNormalProvider();
+//		}
+//	}
 
 	/**
 	 * Gets todays date. Real date by default, or mocked date if configured.
@@ -92,9 +90,9 @@ public class DateProvider {
 	 * @param date Date to format
 	 * @return A formatted date, see {@value #DATE_PATTERN}.
 	 */
-	public static String getDate(Date date) {
-		return DateUtil.formatDB2String(date);
-	}
+//	public static String getDate(Date date) {
+//		return DateUtil.formatDB2String(date);
+//	}
 
 	/**
 	 * Gets a provider that gives actual date from calendar.
@@ -115,13 +113,13 @@ public class DateProvider {
 	 * @param mockDate Date to return as today, must be in format:
 	 * @return A mock date provider.
 	 */
-	private static Provider getMockProvider(final String mockDate) {
-		return new Provider() {
-			public Date getToday() {
-				return DateUtil.parseDB2String(mockDate, false);
-			}
-		};
-	}
+//	private static Provider getMockProvider(final String mockDate) {
+//		return new Provider() {
+//			public Date getToday() {
+//				return DateUtil.parseDB2String(mockDate, false);
+//			}
+//		};
+//	}
 
 	/**
 	 * Defines a date provider interface.

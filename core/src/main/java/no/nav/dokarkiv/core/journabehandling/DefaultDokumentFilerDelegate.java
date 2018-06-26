@@ -1,9 +1,9 @@
 package no.nav.dokarkiv.core.journabehandling;
 
 
-import no.nav.dokarkiv.core.domain.DokumentFil;
-import no.nav.dokarkiv.core.domain.FilDetaljer;
-import no.nav.dokarkiv.core.domain.Journalpost;
+import no.nav.dokarkiv.core.domain.entities.DokumentFil;
+import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
+import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 
 import java.util.ArrayList;
@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * Implementation of DokumentFilerDelegate.
  *
- * @author Thomas Eugen Bjørge, Visma Sirius
+ * @author Thomas Eugen Bjï¿½rge, Visma Sirius
  */
 public class DefaultDokumentFilerDelegate implements DokumentFilerDelegate {
 

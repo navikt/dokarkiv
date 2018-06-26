@@ -1,8 +1,8 @@
-package no.nav.dokarkiv.arkiverdokumentmottak.arkiverdokumentmottakV1;
+package no.nav.dokarkiv.arkiverdokumentmottak.v1.to;
 
 
-import no.nav.dokarkiv.core.domain.Journalpost;
-import no.nav.dokarkiv.core.domain.JournalpostDokumentInfoRelasjon;
+import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import org.springframework.util.Assert;
 
 /**

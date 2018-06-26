@@ -1,9 +1,9 @@
-package no.nav.dokarkiv.arkiverdokumentmottak.arkiverdokumentmottakV1.config;
+package no.nav.dokarkiv.arkiverdokumentmottak;
 
 /**
  * Contains constants for the service layer.
  *
- * @author Thomas Eugen Bjørge, Sirius IT
+ * @author Thomas Eugen Bjï¿½rge, Sirius IT
  * @author Magnus Skuland, Sirius IT
  */
 public final class ServiceConstants {

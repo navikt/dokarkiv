@@ -1,21 +1,25 @@
-package no.nav.dokarkiv.arkiverdokumentmottak.arkiverdokumentmottakV1;
+package no.nav.dokarkiv.arkiverdokumentmottak.v1.tjoark203;
 
 
-import static no.nav.dokarkiv.arkiverdokumentmottak.arkiverdokumentmottakV1.config.ServiceConstants.FORSENDELSE_MOTTAK_ID_KEY;
+import static no.nav.dokarkiv.arkiverdokumentmottak.ServiceConstants.FORSENDELSE_MOTTAK_ID_KEY;
 
-import no.nav.dokarkiv.core.domain.Journalpost;
-import no.nav.dokarkiv.core.domain.JournalpostDokumentInfoRelasjon;
+import no.nav.dokarkiv.arkiverdokumentmottak.v1.to.JournalforInngaaendeForsendelseRequestTo;
+import no.nav.dokarkiv.arkiverdokumentmottak.v1.to.JournalforInngaaendeForsendelseResponseTo;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
+import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.util.DateProvider;
 import no.nav.dokarkiv.core.journabehandling.DokumentFilerDelegate;
 import no.nav.dokarkiv.core.nsb.DokumentInfoIdVedleggTo;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
+import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import javax.inject.Inject;
 
+@Service
 public class DefaultJournalforInngaaendeForsendelseService {
 
 	@Inject
@@ -76,8 +80,9 @@ public class DefaultJournalforInngaaendeForsendelseService {
 			return null;
 		}
 
-		Long findJournalpostTilleggssopplysning = joarkRepository.findJournalpostByTilleggsopplysninger(FORSENDELSE_MOTTAK_ID_KEY, forsendelseMottakId);
-		return joarkRepository.findById(findJournalpostTilleggssopplysning).get(); //FIXME
+		Long journalpostId = joarkRepository.findJournalpostIdByTilleggsopplysningerNokkelAndVerdi(FORSENDELSE_MOTTAK_ID_KEY, forsendelseMottakId)
+				.orElseThrow(() -> new RuntimeException("Fiks dette!"));
+		return joarkRepository.findById(journalpostId).orElseThrow(() -> new RuntimeException()); //FIXME
 	}
 
 }

@@ -1,8 +1,10 @@
-package no.nav.dokarkiv.arkiverdokumentmottak.arkiverdokumentmottakV1;
+package no.nav.dokarkiv.arkiverdokumentmottak.v1.tjoark203;
 
+import no.nav.dokarkiv.arkiverdokumentmottak.v1.to.JournalforInngaaendeForsendelseResponseTo;
 import no.nav.dokarkiv.core.nsb.DokumentInfoIdVedleggTo;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v1.informasjon.arkiverdokumentmottak.DokumentInfoIdVedlegg;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v1.meldinger.JournalforInngaaendeForsendelseResponse;
+import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
 /**
@@ -10,6 +12,7 @@ import org.springframework.util.Assert;
  *
  * @author Leo-Andreas Ervik, Visma Consulting. 16.02.2017
  */
+@Component
 public class DefaultJournalforInngaaendeForsendelseResponseMapper {
 
 	public JournalforInngaaendeForsendelseResponse map(JournalforInngaaendeForsendelseResponseTo to) {

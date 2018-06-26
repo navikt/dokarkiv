@@ -1,17 +1,19 @@
-package no.nav.dokarkiv.arkiverdokumentmottak.arkiverdokumentmottakV1;
+package no.nav.dokarkiv.arkiverdokumentmottak.v1.tjoark203;
 
 
 import static org.apache.commons.lang.Validate.notNull;
 import static org.springframework.util.Assert.hasLength;
 
-import no.nav.dokarkiv.core.domain.DokumentInfo;
-import no.nav.dokarkiv.core.domain.FilDetaljer;
-import no.nav.dokarkiv.core.domain.Journalpost;
-import no.nav.dokarkiv.core.domain.JournalpostDokumentInfoRelasjon;
+import no.nav.dokarkiv.arkiverdokumentmottak.v1.to.JournalforInngaaendeForsendelseRequestTo;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
+import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
+import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
+import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.journabehandling.JournalpostStructureVerifier;
 import no.nav.dokarkiv.core.journabehandling.MandatoryFieldsVerifier;
 import org.apache.commons.lang.ArrayUtils;
+import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 import java.util.Arrays;
@@ -22,9 +24,10 @@ import java.util.Set;
  * <p>
  * Check for {@code lists == null || object == null} is validated by {@link JournalforInngaaendeForsendelseRequestTo}
  *
- * @author Stig Strøm
+ * @author Stig Strï¿½m
  * @author Leo-Andreas Ervik
  */
+@Component
 public class DefaultJournalforInngaaendeForsendelseValidator implements JournalforInngaaendeForsendelseValidator {
 
 	@Inject
@@ -93,7 +96,7 @@ public class DefaultJournalforInngaaendeForsendelseValidator implements Journalf
 	/**
 	 * Validates {@link FilDetaljer}
 	 *
-	 * @param filDetaljerList the list of {@link FilDetaljer} in the {@link no.nav.dokarkiv.core.domain.Journalpost} in the request
+	 * @param filDetaljerList the list of {@link FilDetaljer} in the {@link no.nav.dokarkiv.core.domain.entities.Journalpost} in the request
 	 */
 	private void validateFildetaljerList(Set<FilDetaljer> filDetaljerList) {
 		for (FilDetaljer filDetaljer : filDetaljerList) {
