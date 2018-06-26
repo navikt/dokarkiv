@@ -8,4 +8,5 @@ import org.springframework.data.repository.CrudRepository;
  */
 public interface DokumentFilRepository extends CrudRepository<DokumentFil, String> {
 	DokumentFil findByFilUuid(String filUuid);
+	void deleteByFilUuid(String filUuid);
 }

@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.arkiverdokumentmottak.v1.tjoark203;
+package no.nav.dokarkiv.arkiverdokumentmottak.arkiverdokumentmottakV1;
 
 
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
@@ -6,7 +6,7 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 /**
  * Validates the input for JournalforInngaaendeForsendelse
  *
- * @author Stig Str�m
+ * @author Stig Strøm
  */
 public interface JournalforInngaaendeForsendelseValidator {
 

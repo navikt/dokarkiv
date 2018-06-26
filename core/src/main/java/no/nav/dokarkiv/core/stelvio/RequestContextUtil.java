@@ -1,7 +1,6 @@
 package no.nav.dokarkiv.core.stelvio;
 
 
-import no.nav.dokarkiv.core.exceptions.ApplicationException;
 import no.nav.dokarkiv.core.jaxws.CallIdHandler;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -33,7 +32,7 @@ public final class RequestContextUtil {
 	 */
 	public static void createAndSetUsername(String username, String applikasjonsID) {
 		if (StringUtils.isBlank(applikasjonsID)) {
-			throw new ApplicationException("ApplikasjonsID must be set on the request");
+			throw new IllegalArgumentException("ApplikasjonsID must be set on the request");
 		}
 
 		SimpleRequestContext requestContext = new SimpleRequestContext
@@ -61,7 +60,7 @@ public final class RequestContextUtil {
 	private static String getUserId(WebServiceContext webServiceContext) {
 		Principal userPrincipal = webServiceContext.getUserPrincipal();
 		if (userPrincipal == null) {
-			throw new ApplicationException("No user Principal found, make sure policy set is configured corretly");
+			throw new IllegalArgumentException("No user Principal found, make sure policy set is configured corretly");
 		}
 		return userPrincipal.getName();
 	}

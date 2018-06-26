@@ -15,5 +15,8 @@ public interface JoarkRepository extends CrudRepository<Journalpost, Long> {
 	@Query(value = "select jt.journalpost_id from t_jp_tillegg jt where jt.nokkel = :nokkel and jt.verdi = :verdi", nativeQuery = true)
 	Optional<Long> findJournalpostIdByTilleggsopplysningerNokkelAndVerdi(@Param("nokkel") String nokkel, @Param("verdi") String verdi);
 
-}
+	//TODO OK?
+	@Query(value = "delete * from T_JP_DOK_INFO_REL where JOURNALPOST_ID= :journalpostId", nativeQuery = true)
+	void deleteJournalpostDokumentInfoRelasjon(@Param("journalpostId") Long journalpostId);
 
+}

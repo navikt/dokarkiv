@@ -1,5 +1,7 @@
 package no.nav.dokarkiv.core.domain.entities;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import no.nav.dokarkiv.core.domain.AbstractPersistentVersionedDomainObjectWithKilde;
 import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
 import org.hibernate.annotations.GenericGenerator;
@@ -24,6 +26,8 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "T_SAKSRELASJON")
+@Builder
+@AllArgsConstructor
 public class Saksrelasjon extends AbstractPersistentVersionedDomainObjectWithKilde {
 
 	/** ID used for serialization. */

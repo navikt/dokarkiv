@@ -1,5 +1,7 @@
 package no.nav.dokarkiv.core.domain.entities;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import no.nav.dokarkiv.core.domain.AbstractPersistentVersionedDomainObjectWithKilde;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import org.hibernate.annotations.Cascade;
@@ -27,6 +29,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "T_JP_DOK_INFO_REL")
+@Builder@AllArgsConstructor
 public class JournalpostDokumentInfoRelasjon extends AbstractPersistentVersionedDomainObjectWithKilde {
 
 	/**
@@ -50,7 +53,7 @@ public class JournalpostDokumentInfoRelasjon extends AbstractPersistentVersioned
 
 	@ManyToOne
 	@JoinColumn(name = "dokument_info_id", nullable = false)
-	@Cascade({CascadeType.PERSIST, CascadeType.SAVE_UPDATE, CascadeType.EVICT})
+	@Cascade({CascadeType.PERSIST, CascadeType.SAVE_UPDATE, CascadeType.DETACH})
 	private DokumentInfo dokumentInfo;
 
 	@ManyToOne(fetch = FetchType.LAZY)

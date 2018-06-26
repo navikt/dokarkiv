@@ -3,6 +3,8 @@ package no.nav.dokarkiv.core.domain.entities;
 import static org.apache.commons.lang3.BooleanUtils.isTrue;
 import static org.apache.commons.lang3.StringUtils.contains;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import no.nav.dokarkiv.core.domain.AbstractPersistentVersionedDomainObjectWithKilde;
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
@@ -55,6 +57,8 @@ import java.util.Set;
 				query = "select distinct d from DokumentInfo d left join fetch d.journalpostRelasjoner jr "
 						+ "where jr.journalpost.saksrelasjon.sakId in (:sakIdListe)")
 })
+@Builder
+@AllArgsConstructor
 public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKilde {
 
 	/**
@@ -145,14 +149,14 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 
 	@OneToMany
 	@JoinColumn(name = "dokument_info_id", nullable = false)
-	@Cascade({CascadeType.PERSIST, CascadeType.SAVE_UPDATE, CascadeType.DELETE, CascadeType.EVICT})
+	@Cascade({CascadeType.PERSIST, CascadeType.SAVE_UPDATE, CascadeType.DELETE, CascadeType.DETACH})
 	private Set<SkannetInnhold> skannetInnholdListe = new HashSet<SkannetInnhold>();
 
 	@OneToMany(mappedBy = "dokumentInfo")
 	private Set<JournalpostDokumentInfoRelasjon> journalpostRelasjoner = new HashSet<JournalpostDokumentInfoRelasjon>();
 
 	@OneToMany(mappedBy = "dokumentInfo")
-	@Cascade({CascadeType.PERSIST, CascadeType.SAVE_UPDATE, CascadeType.DELETE_ORPHAN, CascadeType.EVICT})
+	@Cascade({CascadeType.PERSIST, CascadeType.SAVE_UPDATE, CascadeType.DELETE_ORPHAN, CascadeType.DETACH})
 	private Set<FilDetaljer> fildetaljerListe = new HashSet<FilDetaljer>();
 
 	/**
