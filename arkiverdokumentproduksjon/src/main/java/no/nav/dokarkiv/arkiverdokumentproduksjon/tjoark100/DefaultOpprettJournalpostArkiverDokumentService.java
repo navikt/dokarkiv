@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import javax.inject.Inject;
+import java.math.BigInteger;
 import java.util.Optional;
 
 /**
@@ -106,8 +107,20 @@ public class DefaultOpprettJournalpostArkiverDokumentService implements OpprettJ
 		if (isNullOrEmpty(bestillingsId)) {
 			return null;
 		}
-// 		TODO: fixMe
-		Optional<Long> findJournalpostTilleggssopplysning = joarkRepository.findJournalpostIdByTilleggsopplysningerNokkelAndVerdi(BESTILLINGS_ID_KEY, bestillingsId);
-		return joarkRepository.findById(findJournalpostTilleggssopplysning.get()).get();
+
+		Optional<BigInteger> dokumentinfoIdPreviousJournalforing = joarkRepository.findDokumentinfoIdIdByDokumentinfoTilleggsopplysningerNokkelAndVerdi(BESTILLINGS_ID_KEY, bestillingsId);
+		if (!dokumentinfoIdPreviousJournalforing.isPresent()) {
+			return null;
+		}
+
+		Optional<BigInteger> journalpostIdPreviousJournalforing = joarkRepository.findJournalpostIdByDokumentinfoId(dokumentinfoIdPreviousJournalforing
+				.get().toString());
+
+		if (journalpostIdPreviousJournalforing.isPresent()) {
+			Optional<Journalpost> journalpost = joarkRepository.findById(journalpostIdPreviousJournalforing.get().longValue());
+			return journalpost.isPresent() ? journalpost.get() : null;
+		} else {
+			return null;
+		}
 	}
 }

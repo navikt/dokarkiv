@@ -7,8 +7,9 @@ import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalp
 import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
 import static no.nav.dokarkiv.core.domain.builder.SaksrelasjonBuilder.getSaksrelasjonBuilder;
 
-import no.nav.dokarkiv.arkiverdokumentproduksjon.config.ValidatorTestConfig;
 import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.ApplicationException;
+import no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark101.DefaultOpprettJournalpostValidator;
+import no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark101.OpprettJournalpostPostUpdateVerifier;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
@@ -23,6 +24,8 @@ import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
 import no.nav.dokarkiv.core.exceptions.InvalidJournalpostStructureException;
+import no.nav.dokarkiv.core.journalbehandling.DefaultJournalpostStructureVerifier;
+import no.nav.dokarkiv.core.journalbehandling.DefaultMandatoryFieldsVerifier;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -40,7 +43,10 @@ import java.util.Date;
  * @author Stig Strøm
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {ValidatorTestConfig.class})
+@ContextConfiguration(classes = {DefaultMandatoryFieldsVerifier.class,
+		DefaultOpprettJournalpostArkiverDokumentValidator.class,
+		DefaultJournalpostStructureVerifier.class,
+		OpprettJournalpostPostUpdateVerifier.class})
 public class DefaultOpprettJournalpostArkiverDokumentValidatorTest {
 	private static final Long DOKUMENTINFO_ID = 1L;
 	private static final boolean SENSITIVT_REQUEST = true;

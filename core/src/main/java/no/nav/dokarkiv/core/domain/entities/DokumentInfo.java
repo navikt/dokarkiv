@@ -145,18 +145,22 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	@JoinTable(name = "t_dok_info_tillegg", joinColumns = @JoinColumn(name = "dokument_info_id", nullable = false))
 	@MapKeyColumn(name = "nokkel")
 	@Column(name = "verdi", nullable = false)
+	@Builder.Default
 	private Map<String, String> tilleggsopplysninger = new HashMap<String, String>();
 
 	@OneToMany
 	@JoinColumn(name = "dokument_info_id", nullable = false)
 	@Cascade({CascadeType.PERSIST, CascadeType.SAVE_UPDATE, CascadeType.DELETE, CascadeType.DETACH})
+	@Builder.Default
 	private Set<SkannetInnhold> skannetInnholdListe = new HashSet<SkannetInnhold>();
 
 	@OneToMany(mappedBy = "dokumentInfo")
+	@Builder.Default
 	private Set<JournalpostDokumentInfoRelasjon> journalpostRelasjoner = new HashSet<JournalpostDokumentInfoRelasjon>();
 
 	@OneToMany(mappedBy = "dokumentInfo")
 	@Cascade({CascadeType.PERSIST, CascadeType.SAVE_UPDATE, CascadeType.DELETE_ORPHAN, CascadeType.DETACH})
+	@Builder.Default
 	private Set<FilDetaljer> fildetaljerListe = new HashSet<FilDetaljer>();
 
 	/**
@@ -174,6 +178,12 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	public DokumentInfo(Long dokumentInfoId, long version) {
 		this.dokumentInfoId = dokumentInfoId;
 		setVersion(version);
+		this.tilleggsopplysninger = new HashMap<>();
+		this.fildetaljerListe = new HashSet<>();
+		this.journalpostRelasjoner = new HashSet<>();
+		this.tilleggsopplysninger = new HashMap<>();
+		this.skannetInnholdListe = new HashSet<>();
+
 	}
 
 	/**
@@ -325,7 +335,10 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	 * @return The SkannetInnhold.
 	 */
 	public SkannetInnhold findSkannetInnholdById(final Long skannetInnholdId) {
-		return skannetInnholdListe.stream().filter(skannetInnhold -> skannetInnholdId.equals(skannetInnhold.getId())).findAny().orElse(null);
+		return skannetInnholdListe.stream()
+				.filter(skannetInnhold -> skannetInnholdId.equals(skannetInnhold.getId()))
+				.findAny()
+				.orElse(null);
 	}
 
 	/**
@@ -335,7 +348,10 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	 * @return The FilDetaljer.
 	 */
 	public FilDetaljer findFilDetaljerById(final Long filDetaljerId) {
-		return fildetaljerListe.stream().filter(filDetaljer -> filDetaljerId.equals(filDetaljer.getId())).findAny().orElse(null);
+		return fildetaljerListe.stream()
+				.filter(filDetaljer -> filDetaljerId.equals(filDetaljer.getId()))
+				.findAny()
+				.orElse(null);
 	}
 
 	/**
@@ -355,7 +371,10 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	 * @return A list of Fildetaljer with the given VariantFormatCode.
 	 */
 	public FilDetaljer findFilDetaljerByVariantFormat(final VariantFormatCode variantFormat) {
-		return fildetaljerListe.stream().filter(filDetaljer -> variantFormat.equals(filDetaljer.getVariantFormat())).findAny().orElse(null);
+		return fildetaljerListe.stream()
+				.filter(filDetaljer -> variantFormat.equals(filDetaljer.getVariantFormat()))
+				.findAny()
+				.orElse(null);
 	}
 
 	/**

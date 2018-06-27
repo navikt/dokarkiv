@@ -6,6 +6,7 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import org.springframework.stereotype.Component;
 
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,6 +18,7 @@ import java.util.List;
 @Component
 public class DefaultDokumentFilerDelegate implements DokumentFilerDelegate {
 
+	@Inject
 	private DokumentFilRepository dokumentFilRepository;
 
 	/**
