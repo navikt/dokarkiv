@@ -1,5 +1,7 @@
 package no.nav.dokarkiv.core.domain.entities;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import no.nav.dokarkiv.core.domain.AbstractPersistentVersionedDomainObjectWithKilde;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
@@ -17,6 +19,8 @@ import javax.persistence.Table;
  * @author Thomas Eugen Bjørge, Sirius IT
  * @author Per Kristian Foss, Visma Sirius
  */
+@Builder
+@AllArgsConstructor
 @Entity
 @Table(name = "T_SKANNET_INNHOLD")
 public class SkannetInnhold extends AbstractPersistentVersionedDomainObjectWithKilde {

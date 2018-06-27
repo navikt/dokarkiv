@@ -33,6 +33,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
+import java.math.BigInteger;
 import java.util.Optional;
 
 @RunWith(org.mockito.junit.MockitoJUnitRunner.class)
@@ -126,7 +127,7 @@ public class DefaultJournalforInngaaendeForsendelseServiceTest {
 	public void shouldReturnAlreadyJournalfoertForsendelse() throws Exception {
 		JournalforInngaaendeForsendelseRequestTo requestTo = new JournalforInngaaendeForsendelseRequestTo(createJournalpostUtenVedlegg(null, null));
 		when(repositoryMock.findJournalpostIdByTilleggsopplysningerNokkelAndVerdi(FORSENDELSE_MOTTAK_ID_KEY, FORSENDLESE_MOTTAKS_ID))
-				.thenReturn(Optional.ofNullable(JOURNALPOST_ID));
+				.thenReturn(Optional.ofNullable(BigInteger.valueOf(JOURNALPOST_ID)));
 		when(repositoryMock.findById(JOURNALPOST_ID)).thenReturn(Optional.ofNullable(createJournalpostUtenVedlegg(JOURNALPOST_ID, DOKUMENTINFO_ID)));
 
 		JournalforInngaaendeForsendelseResponseTo response = service.journalforInngaaendeForsendelse(requestTo);

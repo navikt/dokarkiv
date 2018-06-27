@@ -1,6 +1,5 @@
 package no.nav.dokarkiv.arkiverdokumentmottak.v1.tjoark203;
 
-import no.nav.dokarkiv.arkiverdokumentmottak.v1.ArkiverDokumentmottakTilleggsopplysningerConverter;
 import no.nav.dokarkiv.arkiverdokumentmottak.v1.to.JournalforInngaaendeForsendelseRequestTo;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
@@ -18,11 +17,15 @@ import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
 import no.nav.dokarkiv.core.sporing.KildeNavnPopulator;
 import no.nav.dokarkiv.core.stelvio.RequestContextHolder;
+import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v1.informasjon.arkiverdokumentmottak.Tilleggsopplysning;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v1.meldinger.JournalforInngaaendeForsendelseRequest;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 import javax.inject.Inject;
-import java.util.stream.Collectors;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * JournalforInngaaendeForsendelseRequestMapper implementation
@@ -31,8 +34,6 @@ import java.util.stream.Collectors;
  */
 @Component
 public class DefaultJournalforInngaaendeForsendelseRequestMapper {
-
-	private ArkiverDokumentmottakTilleggsopplysningerConverter arkiverDokumentmottakTilleggsopplysningerConverter = new ArkiverDokumentmottakTilleggsopplysningerConverter();
 
 	@Inject
 	private KildeNavnPopulator kildeNavnPopulator;
@@ -56,12 +57,7 @@ public class DefaultJournalforInngaaendeForsendelseRequestMapper {
 				.dokumentDato(journalpost.getDatoDokument() == null ? null : journalpost.getDatoDokument()
 						.toGregorianCalendar()
 						.getTime())
-				.saksrelasjon(journalpost.getSaksrelasjon() == null ? null :
-						Saksrelasjon.builder()
-								.fagsystem(stringToEnum(FagsystemCode.class, journalpost.getSaksrelasjon().getFagsystem()))
-								.sakId(journalpost.getSaksrelasjon().getSaksnummer())
-								.build())
-				.tilleggsopplysninger(arkiverDokumentmottakTilleggsopplysningerConverter.convertTo(journalpost.getJournalpostTilleggsopplysninger()))
+				.tilleggsopplysninger(converTillegsopplysningerToMap(journalpost.getJournalpostTilleggsopplysninger()))
 				.build();
 
 		if (journalpost.getBruker() != null) {
@@ -71,25 +67,20 @@ public class DefaultJournalforInngaaendeForsendelseRequestMapper {
 					.build());
 		}
 
+		if (journalpost.getSaksrelasjon() != null) {
+			domainJournalpost.setSaksrelasjon(Saksrelasjon.builder()
+					.fagsystem(stringToEnum(FagsystemCode.class, journalpost.getSaksrelasjon().getFagsystem()))
+					.sakId(journalpost.getSaksrelasjon().getSaksnummer())
+					.journalpost(domainJournalpost)
+					.build());
+		}
 
 		journalpost.getJournalpostDokumentInfoRelasjon().forEach(relasjon ->
 				domainJournalpost.addJournalpostDokumentInfoRelasjon(JournalpostDokumentInfoRelasjon.builder()
 						.journalpost(domainJournalpost)
 						.tilknyttetJournalpostSom(stringToEnum(TilknyttetJournalpostSomCode.class, relasjon.getTilknyttetJournalpostSom()
 								.name()))
-						.dokumentInfo(DokumentInfo.builder()
-								.kategori(stringToEnum(DokumentKategoriCode.class, relasjon.getDokumentInfo().getKategori()))
-								.sensitivt(relasjon.getDokumentInfo().isSensitivt())
-								.tittel(relasjon.getDokumentInfo().getTittel())
-								.brevkode(relasjon.getDokumentInfo().getBrevkode())
-								.dokumenttypeId(relasjon.getDokumentInfo().getDokumentTypeId())
-								.fildetaljerListe(relasjon.getDokumentInfo().getFildetaljerListe().stream()
-										.map(fildetaljer -> FilDetaljer.builder()
-												.fileContent(fildetaljer.getDokument())
-												.filtype(stringToEnum(FilTypeCode.class, fildetaljer.getFiltype()))
-												.filnavn(fildetaljer.getFilNavn())
-												.variantFormat(stringToEnum(VariantFormatCode.class, fildetaljer.getVariantformat()))
-												.build()).collect(Collectors.toSet())).build())
+						.dokumentInfo(createDokumentInfo(relasjon, domainJournalpost))
 						.build()));
 
 		kildeNavnPopulator.populateKildeNavnForEntireJournalStructure(domainJournalpost, RequestContextHolder.currentRequestContext()
@@ -100,6 +91,39 @@ public class DefaultJournalforInngaaendeForsendelseRequestMapper {
 
 	}
 
+	public DokumentInfo createDokumentInfo(no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v1.informasjon.journalforinngaaendeforsendelse.JournalpostDokumentInfoRelasjon relasjon, Journalpost domainJournalpost) {
+		DokumentInfo dokumentInfo = DokumentInfo.builder()
+				.kategori(stringToEnum(DokumentKategoriCode.class, relasjon.getDokumentInfo().getKategori()))
+				.sensitivt(relasjon.getDokumentInfo().isSensitivt())
+				.tittel(relasjon.getDokumentInfo().getTittel())
+				.brevkode(relasjon.getDokumentInfo().getBrevkode())
+				.dokumenttypeId(relasjon.getDokumentInfo().getDokumentTypeId())
+				.originalJournalpost(domainJournalpost).build();
+
+		relasjon.getDokumentInfo().getFildetaljerListe().forEach(fildetaljer -> {
+			dokumentInfo.addFilDetaljer(FilDetaljer.builder()
+					.fileContent(fildetaljer.getDokument())
+					.filtype(stringToEnum(FilTypeCode.class, fildetaljer.getFiltype()))
+					.filnavn(fildetaljer.getFilNavn())
+					.filUuid(FilDetaljer.generateUuid())
+					.variantFormat(stringToEnum(VariantFormatCode.class, fildetaljer.getVariantformat()))
+					.build());
+		});
+		return dokumentInfo;
+	}
+
+	public Map<String, String> converTillegsopplysningerToMap(List<Tilleggsopplysning> source) {
+		if (CollectionUtils.isEmpty(source)) {
+			return null;
+		}
+
+		Map<String, String> destination = new HashMap<>();
+		for (Tilleggsopplysning tilleggsopplysning : source) {
+			destination.put(tilleggsopplysning.getOpplysningsnoekkel(), tilleggsopplysning.getOpplysningsverdi());
+		}
+
+		return destination;
+	}
 
 	private <T extends Enum<T>> T stringToEnum(Class<T> clazz, String value) {
 		if (value == null) {

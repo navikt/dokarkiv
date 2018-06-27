@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import javax.inject.Inject;
+import java.math.BigInteger;
 
 @Service
 public class DefaultJournalforInngaaendeForsendelseService {
@@ -80,9 +81,9 @@ public class DefaultJournalforInngaaendeForsendelseService {
 			return null;
 		}
 
-		Long journalpostId = joarkRepository.findJournalpostIdByTilleggsopplysningerNokkelAndVerdi(FORSENDELSE_MOTTAK_ID_KEY, forsendelseMottakId)
-				.orElse(null);
-		return joarkRepository.findById(journalpostId).orElse(null);
+		BigInteger journalpostId = joarkRepository.findJournalpostIdByTilleggsopplysningerNokkelAndVerdi(FORSENDELSE_MOTTAK_ID_KEY, forsendelseMottakId)
+				.orElse(BigInteger.valueOf(-1));
+		return joarkRepository.findById(Long.valueOf(journalpostId.toString())).orElse(null);
 	}
 
 }

@@ -14,7 +14,7 @@ import java.util.Optional;
 public interface JoarkRepository extends CrudRepository<Journalpost, Long> {
 
 	@Query(value = "select jt.journalpost_id from t_jp_tillegg jt where jt.nokkel = :nokkel and jt.verdi = :verdi", nativeQuery = true)
-	Optional<Long> findJournalpostIdByTilleggsopplysningerNokkelAndVerdi(@Param("nokkel") String nokkel, @Param("verdi") String verdi);
+	Optional<BigInteger> findJournalpostIdByTilleggsopplysningerNokkelAndVerdi(@Param("nokkel") String nokkel, @Param("verdi") String verdi);
 
 	@Query(value = "select jt.DOKUMENT_INFO_ID from t_dok_info_tillegg jt where jt.nokkel = :nokkel and jt.verdi = :verdi", nativeQuery = true)
 	Optional<BigInteger> findDokumentinfoIdIdByDokumentinfoTilleggsopplysningerNokkelAndVerdi(@Param("nokkel") String nokkel, @Param("verdi") String verdi);
