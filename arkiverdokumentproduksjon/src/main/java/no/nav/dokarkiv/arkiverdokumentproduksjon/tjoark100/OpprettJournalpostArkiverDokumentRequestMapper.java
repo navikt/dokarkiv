@@ -114,7 +114,6 @@ public class OpprettJournalpostArkiverDokumentRequestMapper {
 										.collect(Collectors.toMap(Tilleggsopplysning::getOpplysningsnoekkel, Tilleggsopplysning::getOpplysningsverdi)))
 						.build())
 				.build());
-
 	}
 
 	private void addFildetaljer(Journalpost domainJournalpost,
