@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.arkiverdokumentmottak.v1.tjoark203;
+package no.nav.dokarkiv.arkiverdokumentmottak.v1;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -15,7 +15,7 @@ import java.io.IOException;
 /**
  * Unit tests of DefaultArkiverDokumentmottakFaultInfoPopulator.
  *
- * @author Stig Strøm
+ * @author Stig Strï¿½m
  */
 public class ArkiverDokumentmottakFaultInfoPopulatorTest {
 

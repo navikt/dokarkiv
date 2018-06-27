@@ -8,8 +8,8 @@ import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v1.meldinger.Jou
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v1.meldinger.JournalforInngaaendeForsendelseResponse;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
+import javax.inject.Inject;
 import javax.jws.HandlerChain;
 import javax.jws.WebService;
 import javax.xml.ws.WebServiceContext;
@@ -30,38 +30,20 @@ public class ArkiverDokumentmottakEndpoint implements ArkiverDokumentmottakV1 {
 	@Resource
 	private WebServiceContext webServiceContext;
 
+	@Inject
 	private ArkiverDokumentmottakV1 arkiverDokumentMottakProvider;
 
 	@Override
 	public JournalforInngaaendeForsendelseResponse journalforInngaaendeForsendelse(
 			JournalforInngaaendeForsendelseRequest request) throws KanIkkeJournalfores {
-		RequestContextUtil.createAndSetRequestContext(webServiceContext, findAppId());
+		RequestContextUtil.createAndSetRequestContext(webServiceContext, DEFAULT_APPID);
 		return arkiverDokumentMottakProvider.journalforInngaaendeForsendelse(request);
 	}
 
 	@Override
 	public void ping() {
-		RequestContextUtil.createAndSetRequestContext(webServiceContext, findAppId());
+		RequestContextUtil.createAndSetRequestContext(webServiceContext, DEFAULT_APPID);
 		arkiverDokumentMottakProvider.ping();
-	}
-
-	/**
-	 * Retrieve the arkiverDokumentproduksjonProvider bean from the Spring context.
-	 */
-	@PostConstruct
-	public void initArkiverDokumentproduksjonProvider() {
-//        ServletContext servletContext = (ServletContext) webServiceContext.getMessageContext().get(
-//                MessageContext.SERVLET_CONTEXT);
-//        WebApplicationContext webApplicationContext = WebApplicationContextUtils
-//                .getRequiredWebApplicationContext(servletContext);
-//        arkiverDokumentMottakProvider = (ArkiverDokumentmottakV1)
-//                webApplicationContext.getBean(ArkiverDokumentmottakConfig.PROVIDER_BEAN);
-	}
-
-	private String findAppId() {
-		return "fixme";
-		//String appId = MDC.get(MDCUsernameTokenInHandler.MDC_APP_ID);
-		//return Strings.isNullOrEmpty(appId) ? DEFAULT_APPID : appId;
 	}
 
 

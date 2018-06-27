@@ -1,17 +1,17 @@
-package no.nav.dokarkiv.arkiverdokumentmottak.v1.tjoark203;
+package no.nav.dokarkiv.arkiverdokumentmottak.v1;
 
 import static no.nav.dokarkiv.arkiverdokumentmottak.ServiceConstants.FORSENDELSE_MOTTAK_ID_KEY;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import no.nav.dokarkiv.arkiverdokumentmottak.DefaultArkiverDokumentmottakFaultInfoPopulator;
-import no.nav.dokarkiv.arkiverdokumentmottak.v1.ArkiverDokumentmottakProvider;
+import no.nav.dokarkiv.arkiverdokumentmottak.v1.tjoark203.DefaultJournalforInngaaendeForsendelseRequestMapper;
+import no.nav.dokarkiv.arkiverdokumentmottak.v1.tjoark203.DefaultJournalforInngaaendeForsendelseResponseMapper;
+import no.nav.dokarkiv.arkiverdokumentmottak.v1.tjoark203.DefaultJournalforInngaaendeForsendelseService;
 import no.nav.dokarkiv.arkiverdokumentmottak.v1.to.JournalforInngaaendeForsendelseRequestTo;
 import no.nav.dokarkiv.arkiverdokumentmottak.v1.to.JournalforInngaaendeForsendelseResponseTo;
-import no.nav.dokarkiv.core.domain.DefaultPingService;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v1.KanIkkeJournalfores;
@@ -28,16 +28,12 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
 
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(org.mockito.junit.MockitoJUnitRunner.class)
 public class ArkiverDokumentmottakProviderTest {
 	@Rule
 	public ExpectedException expectedException = ExpectedException.none();
-
-	@Mock
-	private DefaultPingService pingService;
 
 	@Mock
 	private DefaultJournalforInngaaendeForsendelseRequestMapper journalforInngaaendeForsendelseRequestMapperMock;
@@ -73,7 +69,7 @@ public class ArkiverDokumentmottakProviderTest {
 
 		when(journalforInngaaendeForsendelseResponseMapperMock
 				.map(any(JournalforInngaaendeForsendelseResponseTo.class)))
-				.thenReturn(null);
+				.thenReturn(wsResponse);
 
 		JournalforInngaaendeForsendelseResponse response = provider
 				.journalforInngaaendeForsendelse(new JournalforInngaaendeForsendelseRequest());
@@ -106,8 +102,6 @@ public class ArkiverDokumentmottakProviderTest {
 	@Test
 	public void shouldPing() throws Exception {
 		provider.ping();
-
-		verify(pingService).ping();
 	}
 
 	private JournalforInngaaendeForsendelseRequest createRequest() {

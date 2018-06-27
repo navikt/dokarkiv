@@ -2,13 +2,11 @@ package no.nav.dokarkiv.arkiverdokumentmottak;
 
 
 import no.nav.dokarkiv.arkiverdokumentmottak.v1.ArkiverDokumentmottakEndpoint;
-import no.nav.dokarkiv.core.config.DozerConfig;
 import org.apache.cxf.Bus;
 import org.apache.cxf.jaxws.EndpointImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Profile;
 
 import javax.xml.ws.Endpoint;
@@ -20,7 +18,6 @@ import javax.xml.ws.Endpoint;
  */
 @Configuration
 @ComponentScan
-@Import({DozerConfig.class})
 public class ArkiverDokumentmottakConfig {
 
 	@Bean

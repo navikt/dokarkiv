@@ -135,6 +135,7 @@
 		<class-b>no.nav.domain.dok.joark.JournalpostDokumentInfoRelasjon</class-b>
 	</mapping>
 
+
 	<!-- ................................................... -->
 	<!-- JournalforInngaaendeForsendelseRequest.DokumentInfo -->
 	<!-- ................................................... -->

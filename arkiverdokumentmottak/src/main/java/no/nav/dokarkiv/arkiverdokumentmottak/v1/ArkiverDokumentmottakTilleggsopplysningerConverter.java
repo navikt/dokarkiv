@@ -1,7 +1,8 @@
-package no.nav.dokarkiv.arkiverdokumentmottak.arkiverdokumentmottakV1;
+package no.nav.dokarkiv.arkiverdokumentmottak.v1;
 
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v1.informasjon.arkiverdokumentmottak.Tilleggsopplysning;
 import org.dozer.DozerConverter;
+import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
@@ -17,6 +18,7 @@ import java.util.Map;
  * @author Leo-Andreas Ervik, Visma Consulting. 24.02.2017
  * @author Stig Strøm, Acando
  */
+@Component
 public class ArkiverDokumentmottakTilleggsopplysningerConverter
 		extends DozerConverter<List<Tilleggsopplysning>, Map<String, String>> {
 

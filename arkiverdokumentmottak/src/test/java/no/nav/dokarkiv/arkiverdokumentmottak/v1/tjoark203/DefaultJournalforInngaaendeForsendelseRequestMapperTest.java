@@ -12,15 +12,13 @@ import static org.junit.Assert.assertThat;
 
 import no.nav.dokarkiv.arkiverdokumentmottak.utils.JournalforInngaaendeForsendelseRequestDataUtil;
 import no.nav.dokarkiv.arkiverdokumentmottak.v1.to.JournalforInngaaendeForsendelseRequestTo;
-import no.nav.dokarkiv.core.config.DozerConfig;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
-import no.nav.dokarkiv.core.journabehandling.KildeNavnPopulator;
+import no.nav.dokarkiv.core.sporing.KildeNavnPopulator;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v1.informasjon.journalforinngaaendeforsendelse.Journalpost;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v1.meldinger.JournalforInngaaendeForsendelseRequest;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -35,7 +33,6 @@ import org.mockito.junit.MockitoJUnitRunner;
  * @author Leo-Andreas Ervik, Visma Consulting. 21.02.2017
  */
 @RunWith(MockitoJUnitRunner.class)
-@Ignore
 public class DefaultJournalforInngaaendeForsendelseRequestMapperTest {
 
 	@Rule
@@ -53,7 +50,6 @@ public class DefaultJournalforInngaaendeForsendelseRequestMapperTest {
 	@Before
 	public void setUp() throws Exception {
 		createRequest();
-		mapper.setDozerMapper(new DozerConfig().dozerMapper());
 		RequestContextSetter.setRequestContextForUnitTest();
 	}
 

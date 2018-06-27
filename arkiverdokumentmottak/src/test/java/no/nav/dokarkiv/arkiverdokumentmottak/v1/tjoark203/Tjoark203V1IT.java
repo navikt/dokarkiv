@@ -1,6 +1,7 @@
 package no.nav.dokarkiv.arkiverdokumentmottak.v1.tjoark203;
 
 import static no.nav.dokarkiv.arkiverdokumentmottak.ServiceConstants.FORSENDELSE_MOTTAK_ID_KEY;
+import static org.hamcrest.core.Is.is;
 
 import no.nav.dokarkiv.arkiverdokumentmottak.AbstractArkiverDokumentmottakItest;
 import no.nav.dokarkiv.arkiverdokumentmottak.v1.to.JournalforInngaaendeForsendelseRequestTo;
@@ -15,11 +16,15 @@ import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.domain.entities.SkannetInnhold;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v1.informasjon.arkiverdokumentmottak.TilknyttetJournalpostEnum;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v1.informasjon.arkiverdokumentmottak.Tilleggsopplysning;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v1.informasjon.journalforinngaaendeforsendelse.DokumentInfo;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v1.informasjon.journalforinngaaendeforsendelse.JournalpostDokumentInfoRelasjon;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v1.meldinger.JournalforInngaaendeForsendelseRequest;
+import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v1.meldinger.JournalforInngaaendeForsendelseResponse;
+import org.hamcrest.Matchers;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -31,7 +36,7 @@ import java.util.Map;
  *
  * @author Thomas Eugen Bjørge, Visma Consulting
  */
-public class ArkiverDokumentmottakV1IT extends AbstractArkiverDokumentmottakItest {
+public class Tjoark203V1IT extends AbstractArkiverDokumentmottakItest {
 
 	private static final long METAFORCE_INSTANCE_ID = 555L;
 	private static final DokumentStatusCode DOKUMENT_INFO_STATUS = DokumentStatusCode.UNDER_REDIGERING;
@@ -51,12 +56,25 @@ public class ArkiverDokumentmottakV1IT extends AbstractArkiverDokumentmottakItes
 	}
 
 	@Test
+	public void happy() throws Exception {
+		Journalpost journalpost = buildAndPersistJournalpost();
+		Map<String, String> map = new HashMap<>();
+		map.put("key", "val");
+		journalpost.setTilleggsopplysninger(map);
+		joarkRepository.save(journalpost);
+		JournalforInngaaendeForsendelseResponse response = arkiverDokumentmottakProvider.journalforInngaaendeForsendelse(createRequest());
+		assertResponse(journalpost, response);
+
+	}
+
+	@Test
 	public void findJournalpostByTilleggsopplysningerContaining() throws Exception {
 		Journalpost journalpost = buildAndPersistJournalpost();
 		Map<String, String> map = new HashMap<>();
 		map.put("key", "val");
 		journalpost.setTilleggsopplysninger(map);
-		//joarkRepository.save(journalpost);
+		joarkRepository.save(journalpost);
+		Long id = joarkRepository.findJournalpostIdByTilleggsopplysningerNokkelAndVerdi("key", "val").get();
 
 		arkiverDokumentmottakProvider.journalforInngaaendeForsendelse(createRequest());
 
@@ -74,6 +92,24 @@ public class ArkiverDokumentmottakV1IT extends AbstractArkiverDokumentmottakItes
 										.withDokumentInfo(new DokumentInfo())));
 	}
 
+	private void assertResponse(Journalpost journalpost, JournalforInngaaendeForsendelseResponse response) {
+		Assert.assertThat(response, Matchers.notNullValue());
+		Assert.assertThat(response.getJournalpostId(), is(journalpost.getId()));
+
+		no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon pDokumentInfoRelasjon = journalpost.findHoveddokumentDokumentInfoRelasjon();
+		Assert.assertThat(response.getDokumentInfoIdHoveddokument(), is(pDokumentInfoRelasjon.getDokumentInfo()
+				.getDokumentInfoId()));
+
+		for (no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon jdir : journalpost.getJournalpostDokumentInfoRelasjoner()) {
+			if (jdir.getTilknyttetJournalpostSom().equals(TilknyttetJournalpostSomCode.VEDLEGG)) {
+				Assert.assertThat(response.getDokumentInfoIdVedleggListe().get(0).getDokumentInfoId(), is(jdir.getDokumentInfo()
+						.getDokumentInfoId()));
+				Assert.assertThat(response.getDokumentInfoIdVedleggListe().get(0).getDokumentTypeId(), is(jdir.getDokumentInfo()
+						.getDokumenttypeId()));
+			}
+		}
+	}
+
 	private Journalpost buildAndPersistJournalpost() {
 		return JournalpostBuilder.getJournalpostBuilder()
 				.journalStatus(JOURNAL_STATUS)
@@ -88,6 +124,7 @@ public class ArkiverDokumentmottakV1IT extends AbstractArkiverDokumentmottakItes
 						.dokumentInfo(DokumentInfoBuilder.getDokumentInfoBuilder()
 								.opprettetKildeNavn("test")
 								.dokumentstatus(DOKUMENT_INFO_STATUS)
+								.skannetInnhold(new SkannetInnhold(), new SkannetInnhold(), new SkannetInnhold(), new SkannetInnhold())
 								.filDetaljerList(FilDetaljerBuilder.getFilDetaljerBuilder()
 										.filtype(FilTypeCode.PDF)
 										.variantFormat(VariantFormatCode.PRODUKSJON)

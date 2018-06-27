@@ -7,7 +7,6 @@ import no.nav.dokarkiv.arkiverdokumentmottak.v1.tjoark203.DefaultJournalforInnga
 import no.nav.dokarkiv.arkiverdokumentmottak.v1.tjoark203.DefaultJournalforInngaaendeForsendelseService;
 import no.nav.dokarkiv.arkiverdokumentmottak.v1.to.JournalforInngaaendeForsendelseRequestTo;
 import no.nav.dokarkiv.arkiverdokumentmottak.v1.to.JournalforInngaaendeForsendelseResponseTo;
-import no.nav.dokarkiv.core.domain.DefaultPingService;
 import no.nav.dokarkiv.core.stelvio.FunctionalUnrecoverableException;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v1.ArkiverDokumentmottakV1;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v1.KanIkkeJournalfores;
@@ -29,9 +28,6 @@ public class ArkiverDokumentmottakProvider implements ArkiverDokumentmottakV1 {
 
 	private static final String JOURNALFOR_INNGAAENDE_FORSENDELSE = ARKIVER_DOKUMENTMOTTAK_V1 + ".journalforInngaaendeForsendelse";
 	private static final String PING = ARKIVER_DOKUMENTMOTTAK_V1 + ".ping";
-
-	@Inject
-	private DefaultPingService pingService;
 
 	@Inject
 	private DefaultJournalforInngaaendeForsendelseResponseMapper journalforInngaaendeForsendelseResponseMapper;
@@ -68,7 +64,7 @@ public class ArkiverDokumentmottakProvider implements ArkiverDokumentmottakV1 {
 	@Transactional
 	//FIXME Her ble codahale@Counted annotering brukt. Legg til tilsvarende metrikker i form av prometheus og micrometer
 	public void ping() {
-		pingService.ping();
+		//noop
 	}
 
 	private String findTilleggsOpplysning(JournalforInngaaendeForsendelseRequest request) {

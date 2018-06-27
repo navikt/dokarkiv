@@ -1,9 +1,10 @@
-package no.nav.dokarkiv.arkiverdokumentmottak.arkiverdokumentmottakV1;
+package no.nav.dokarkiv.arkiverdokumentmottak.v1.tjoark203;
 
 
 import static org.apache.commons.lang.Validate.notNull;
 import static org.springframework.util.Assert.hasLength;
 
+import no.nav.dokarkiv.arkiverdokumentmottak.v1.to.JournalforInngaaendeForsendelseRequestTo;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
@@ -12,6 +13,7 @@ import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.journalbehandling.JournalpostStructureVerifier;
 import no.nav.dokarkiv.core.journalbehandling.MandatoryFieldsVerifier;
 import org.apache.commons.lang.ArrayUtils;
+import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 import java.util.Arrays;
@@ -25,7 +27,8 @@ import java.util.Set;
  * @author Stig Strøm
  * @author Leo-Andreas Ervik
  */
-public class DefaultJournalforInngaaendeForsendelseValidator implements JournalforInngaaendeForsendelseValidator {
+@Component
+public class DefaultJournalforInngaaendeForsendelseValidator {
 
 	@Inject
 	protected JournalpostStructureVerifier verifier;
@@ -33,7 +36,6 @@ public class DefaultJournalforInngaaendeForsendelseValidator implements Journalf
 	@Inject
 	protected MandatoryFieldsVerifier mandatoryFieldsVerifier;
 
-	@Override
 	public void validate(final Journalpost journalpost, boolean verifyStructure) {
 		mandatoryFieldsVerifier.verifyFields(journalpost);
 		if (verifyStructure) {

@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.arkiverdokumentmottak.arkiverdokumentmottakV1.config;
+package no.nav.dokarkiv.arkiverdokumentmottak;
 
 /**
  * Contains constants for the service layer.
