@@ -9,6 +9,7 @@ import no.nav.dokarkiv.core.journalbehandling.JournalpostStructureVerifier;
 import no.nav.dokarkiv.core.journalbehandling.MandatoryFieldsVerifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 
 
 /**
@@ -17,6 +18,7 @@ import org.springframework.context.annotation.Configuration;
  * @author Stig Strøm
  */
 @Configuration
+@Profile("test")
 public class ValidatorTestConfig {
 
 	@Bean
@@ -29,10 +31,10 @@ public class ValidatorTestConfig {
 		return new DefaultJournalpostStructureVerifier();
 	}
 
-	@Bean
-	public OpprettJournalpostArkiverDokumentValidator opprettOgFerdigstillJournalpostValidator() {
-		return new DefaultOpprettJournalpostArkiverDokumentValidator();
-	}
+//	@Bean
+//	public OpprettJournalpostArkiverDokumentValidator opprettOgFerdigstillJournalpostValidator() {
+//		return new DefaultOpprettJournalpostArkiverDokumentValidator();
+//	}
 
 //	FIXME
 //	@Bean

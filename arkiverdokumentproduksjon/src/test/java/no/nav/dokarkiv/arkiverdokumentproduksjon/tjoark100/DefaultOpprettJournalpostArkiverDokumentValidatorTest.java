@@ -24,6 +24,7 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
 import no.nav.dokarkiv.core.exceptions.InvalidJournalpostStructureException;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -41,6 +42,7 @@ import java.util.Date;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {ValidatorTestConfig.class})
+@Ignore
 public class DefaultOpprettJournalpostArkiverDokumentValidatorTest {
 	private static final Long DOKUMENTINFO_ID = 1L;
 	private static final boolean SENSITIVT_REQUEST = true;
@@ -54,8 +56,7 @@ public class DefaultOpprettJournalpostArkiverDokumentValidatorTest {
 
 	private Journalpost journalpost;
 
-	@Inject
-	private OpprettJournalpostArkiverDokumentValidator validator;
+	private OpprettJournalpostArkiverDokumentValidator validator = new DefaultOpprettJournalpostArkiverDokumentValidator();
 
 	@Before
 	public void setUp() {

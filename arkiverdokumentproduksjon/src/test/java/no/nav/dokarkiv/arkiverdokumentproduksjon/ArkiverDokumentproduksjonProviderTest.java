@@ -53,6 +53,7 @@ import no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark107.FjernFerdigstiltDokum
 import no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark108.FerdigstillJournalpostRequestMapper;
 import no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark108.FerdigstillJournalpostRequestTo;
 import no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark108.FerdigstillJournalpostService;
+import no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark109.KnyttDokumentTilJournalpostSomVedleggRequestMapper;
 import no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark109.KnyttDokumentTilJournalpostSomVedleggRequestTo;
 import no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark109.KnyttDokumentTilJournalpostSomVedleggService;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
@@ -100,7 +101,6 @@ import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.OpprettJournalpostRequest;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.OpprettJournalpostResponse;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.SettDatoSendtRequest;
-import org.dozer.Mapper;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -185,7 +185,7 @@ public class ArkiverDokumentproduksjonProviderTest {
 	private KnyttDokumentTilJournalpostSomVedleggService knyttDokumentTilJournalpostSomVedleggServiceMock;
 
 	@Mock
-	private Mapper dozerMapperMock;
+	private KnyttDokumentTilJournalpostSomVedleggRequestMapper knyttDokumentTilJournalpostSomVedleggRequestMapperMock;
 
 	@InjectMocks
 	private ArkiverDokumentproduksjonProvider provider;
@@ -484,7 +484,7 @@ public class ArkiverDokumentproduksjonProviderTest {
 	public void doesNothingWhenKnyttDokumentTilJournalpostSomVedleggSucceeds() throws Exception {
 		KnyttDokumentTilJournalpostSomVedleggRequest requestMock = mock(KnyttDokumentTilJournalpostSomVedleggRequest.class);
 		KnyttDokumentTilJournalpostSomVedleggRequestTo mappedRequestMock = mock(KnyttDokumentTilJournalpostSomVedleggRequestTo.class);
-		when(dozerMapperMock.map(requestMock, KnyttDokumentTilJournalpostSomVedleggRequestTo.class)).thenReturn(mappedRequestMock);
+		when(knyttDokumentTilJournalpostSomVedleggRequestMapperMock.map(any())).thenReturn(mappedRequestMock);
 
 		provider.knyttDokumentTilJournalpostSomVedlegg(requestMock);
 	}
@@ -493,18 +493,18 @@ public class ArkiverDokumentproduksjonProviderTest {
 	public void knyttDokumentTilJournalpostSomVedleggCallsMapperWithRequest() throws Exception {
 		KnyttDokumentTilJournalpostSomVedleggRequest requestMock = mock(KnyttDokumentTilJournalpostSomVedleggRequest.class);
 		KnyttDokumentTilJournalpostSomVedleggRequestTo mappedRequestMock = mock(KnyttDokumentTilJournalpostSomVedleggRequestTo.class);
-		when(dozerMapperMock.map(requestMock, KnyttDokumentTilJournalpostSomVedleggRequestTo.class)).thenReturn(mappedRequestMock);
+		when(knyttDokumentTilJournalpostSomVedleggRequestMapperMock.map(any())).thenReturn(mappedRequestMock);
 
 		provider.knyttDokumentTilJournalpostSomVedlegg(requestMock);
 
-		verify(dozerMapperMock).map(requestMock, KnyttDokumentTilJournalpostSomVedleggRequestTo.class);
+		verify(knyttDokumentTilJournalpostSomVedleggRequestMapperMock).map(requestMock);
 	}
 
 	@Test
 	public void knyttDokumentTilJournalpostSomVedleggCallsServiceWithMappedRequest() throws Exception {
 		KnyttDokumentTilJournalpostSomVedleggRequest requestMock = mock(KnyttDokumentTilJournalpostSomVedleggRequest.class);
 		KnyttDokumentTilJournalpostSomVedleggRequestTo mappedRequestMock = mock(KnyttDokumentTilJournalpostSomVedleggRequestTo.class);
-		when(dozerMapperMock.map(requestMock, KnyttDokumentTilJournalpostSomVedleggRequestTo.class)).thenReturn(mappedRequestMock);
+		when(knyttDokumentTilJournalpostSomVedleggRequestMapperMock.map(any())).thenReturn(mappedRequestMock);
 
 		provider.knyttDokumentTilJournalpostSomVedlegg(requestMock);
 
@@ -515,7 +515,7 @@ public class ArkiverDokumentproduksjonProviderTest {
 	public void throwsDokumentTillatesIkkeGjenbruktWhenServiceThrowsDokumentInfoInnskrenketPartsinnsynException() throws Exception {
 		KnyttDokumentTilJournalpostSomVedleggRequest requestMock = mock(KnyttDokumentTilJournalpostSomVedleggRequest.class);
 		KnyttDokumentTilJournalpostSomVedleggRequestTo mappedRequestMock = mock(KnyttDokumentTilJournalpostSomVedleggRequestTo.class);
-		when(dozerMapperMock.map(requestMock, KnyttDokumentTilJournalpostSomVedleggRequestTo.class)).thenReturn(mappedRequestMock);
+		when(knyttDokumentTilJournalpostSomVedleggRequestMapperMock.map(any())).thenReturn(mappedRequestMock);
 
 		doThrow(new DokumentInfoInnskrenketPartsinnsynException("Something failed"))
 				.when(knyttDokumentTilJournalpostSomVedleggServiceMock)
@@ -531,7 +531,7 @@ public class ArkiverDokumentproduksjonProviderTest {
 	public void throwsDokumentTillatesIkkeGjenbruktWhenServiceThrowsDokumentInfoSlettetException() throws Exception {
 		KnyttDokumentTilJournalpostSomVedleggRequest requestMock = mock(KnyttDokumentTilJournalpostSomVedleggRequest.class);
 		KnyttDokumentTilJournalpostSomVedleggRequestTo mappedRequestMock = mock(KnyttDokumentTilJournalpostSomVedleggRequestTo.class);
-		when(dozerMapperMock.map(requestMock, KnyttDokumentTilJournalpostSomVedleggRequestTo.class)).thenReturn(mappedRequestMock);
+		when(knyttDokumentTilJournalpostSomVedleggRequestMapperMock.map(any())).thenReturn(mappedRequestMock);
 
 		doThrow(new DokumentInfoSlettetException("Something failed"))
 				.when(knyttDokumentTilJournalpostSomVedleggServiceMock)
@@ -547,7 +547,7 @@ public class ArkiverDokumentproduksjonProviderTest {
 	public void throwsDokumentTillatesIkkeGjenbruktWhenServiceThrowsDokumentInfoIsOrganInterntException() throws Exception {
 		KnyttDokumentTilJournalpostSomVedleggRequest requestMock = mock(KnyttDokumentTilJournalpostSomVedleggRequest.class);
 		KnyttDokumentTilJournalpostSomVedleggRequestTo mappedRequestMock = mock(KnyttDokumentTilJournalpostSomVedleggRequestTo.class);
-		when(dozerMapperMock.map(requestMock, KnyttDokumentTilJournalpostSomVedleggRequestTo.class)).thenReturn(mappedRequestMock);
+		when(knyttDokumentTilJournalpostSomVedleggRequestMapperMock.map(any())).thenReturn(mappedRequestMock);
 
 		doThrow(new DokumentInfoIsOrganInterntException("Something failed"))
 				.when(knyttDokumentTilJournalpostSomVedleggServiceMock)
@@ -563,7 +563,7 @@ public class ArkiverDokumentproduksjonProviderTest {
 	public void throwsDokumentTillatesIkkeGjenbruktWhenServiceThrowsIllegalDokumentstatusException() throws Exception {
 		KnyttDokumentTilJournalpostSomVedleggRequest requestMock = mock(KnyttDokumentTilJournalpostSomVedleggRequest.class);
 		KnyttDokumentTilJournalpostSomVedleggRequestTo mappedRequestMock = mock(KnyttDokumentTilJournalpostSomVedleggRequestTo.class);
-		when(dozerMapperMock.map(requestMock, KnyttDokumentTilJournalpostSomVedleggRequestTo.class)).thenReturn(mappedRequestMock);
+		when(knyttDokumentTilJournalpostSomVedleggRequestMapperMock.map(any())).thenReturn(mappedRequestMock);
 
 		doThrow(new IllegalDokumentstatusException("Something failed"))
 				.when(knyttDokumentTilJournalpostSomVedleggServiceMock)
@@ -579,7 +579,7 @@ public class ArkiverDokumentproduksjonProviderTest {
 	public void throwsDokumentTillatesIkkeGjenbruktWhenServiceThrowsFilDetaljerOnDemandException() throws Exception {
 		KnyttDokumentTilJournalpostSomVedleggRequest requestMock = mock(KnyttDokumentTilJournalpostSomVedleggRequest.class);
 		KnyttDokumentTilJournalpostSomVedleggRequestTo mappedRequestMock = mock(KnyttDokumentTilJournalpostSomVedleggRequestTo.class);
-		when(dozerMapperMock.map(requestMock, KnyttDokumentTilJournalpostSomVedleggRequestTo.class)).thenReturn(mappedRequestMock);
+		when(knyttDokumentTilJournalpostSomVedleggRequestMapperMock.map(any())).thenReturn(mappedRequestMock);
 
 		doThrow(new FilDetaljerOnDemandException("Something failed"))
 				.when(knyttDokumentTilJournalpostSomVedleggServiceMock)
@@ -595,7 +595,7 @@ public class ArkiverDokumentproduksjonProviderTest {
 	public void throwsDokumentTillatesIkkeGjenbruktWhenServiceThrowsIllegalVariantFormatException() throws Exception {
 		KnyttDokumentTilJournalpostSomVedleggRequest requestMock = mock(KnyttDokumentTilJournalpostSomVedleggRequest.class);
 		KnyttDokumentTilJournalpostSomVedleggRequestTo mappedRequestMock = mock(KnyttDokumentTilJournalpostSomVedleggRequestTo.class);
-		when(dozerMapperMock.map(requestMock, KnyttDokumentTilJournalpostSomVedleggRequestTo.class)).thenReturn(mappedRequestMock);
+		when(knyttDokumentTilJournalpostSomVedleggRequestMapperMock.map(any())).thenReturn(mappedRequestMock);
 
 		doThrow(new IllegalVariantFormatException("Something failed"))
 				.when(knyttDokumentTilJournalpostSomVedleggServiceMock)
@@ -611,7 +611,7 @@ public class ArkiverDokumentproduksjonProviderTest {
 	public void throwsJournalpostIkkeFunnetWhenServiceThrowsJournalpostNotFoundException() throws Exception {
 		KnyttDokumentTilJournalpostSomVedleggRequest requestMock = mock(KnyttDokumentTilJournalpostSomVedleggRequest.class);
 		KnyttDokumentTilJournalpostSomVedleggRequestTo mappedRequestMock = mock(KnyttDokumentTilJournalpostSomVedleggRequestTo.class);
-		when(dozerMapperMock.map(requestMock, KnyttDokumentTilJournalpostSomVedleggRequestTo.class)).thenReturn(mappedRequestMock);
+		when(knyttDokumentTilJournalpostSomVedleggRequestMapperMock.map(any())).thenReturn(mappedRequestMock);
 
 		doThrow(new JournalpostNotFoundException("Something failed"))
 				.when(knyttDokumentTilJournalpostSomVedleggServiceMock)
@@ -627,7 +627,7 @@ public class ArkiverDokumentproduksjonProviderTest {
 	public void throwsDokumentIkkeFunnetWhenServiceThrowsDokumentInfoNotFoundException() throws Exception {
 		KnyttDokumentTilJournalpostSomVedleggRequest requestMock = mock(KnyttDokumentTilJournalpostSomVedleggRequest.class);
 		KnyttDokumentTilJournalpostSomVedleggRequestTo mappedRequestMock = mock(KnyttDokumentTilJournalpostSomVedleggRequestTo.class);
-		when(dozerMapperMock.map(requestMock, KnyttDokumentTilJournalpostSomVedleggRequestTo.class)).thenReturn(mappedRequestMock);
+		when(knyttDokumentTilJournalpostSomVedleggRequestMapperMock.map(any())).thenReturn(mappedRequestMock);
 
 		doThrow(new DokumentInfoNotFoundException("Something failed"))
 				.when(knyttDokumentTilJournalpostSomVedleggServiceMock)
@@ -643,7 +643,7 @@ public class ArkiverDokumentproduksjonProviderTest {
 	public void throwsUlikeFagomraaderWhenServiceThrowsIllegalFagomraadeException() throws Exception {
 		KnyttDokumentTilJournalpostSomVedleggRequest requestMock = mock(KnyttDokumentTilJournalpostSomVedleggRequest.class);
 		KnyttDokumentTilJournalpostSomVedleggRequestTo mappedRequestMock = mock(KnyttDokumentTilJournalpostSomVedleggRequestTo.class);
-		when(dozerMapperMock.map(requestMock, KnyttDokumentTilJournalpostSomVedleggRequestTo.class)).thenReturn(mappedRequestMock);
+		when(knyttDokumentTilJournalpostSomVedleggRequestMapperMock.map(any())).thenReturn(mappedRequestMock);
 
 		doThrow(new IllegalFagomraadeException("Something failed"))
 				.when(knyttDokumentTilJournalpostSomVedleggServiceMock)
@@ -659,7 +659,7 @@ public class ArkiverDokumentproduksjonProviderTest {
 	public void throwsJournalpostIkkeFerdigstiltWhenServiceThrowsJournalpostIkkeFerdigstiltException() throws Exception {
 		KnyttDokumentTilJournalpostSomVedleggRequest requestMock = mock(KnyttDokumentTilJournalpostSomVedleggRequest.class);
 		KnyttDokumentTilJournalpostSomVedleggRequestTo mappedRequestMock = mock(KnyttDokumentTilJournalpostSomVedleggRequestTo.class);
-		when(dozerMapperMock.map(requestMock, KnyttDokumentTilJournalpostSomVedleggRequestTo.class)).thenReturn(mappedRequestMock);
+		when(knyttDokumentTilJournalpostSomVedleggRequestMapperMock.map(any())).thenReturn(mappedRequestMock);
 
 		doThrow(new JournalpostIkkeFerdigstiltException("Something failed"))
 				.when(knyttDokumentTilJournalpostSomVedleggServiceMock)
@@ -675,7 +675,7 @@ public class ArkiverDokumentproduksjonProviderTest {
 	public void throwsJournalpostIkkeFerdigstiltWhenServiceThrowsFeilregistrertSaksrelasjonException() throws Exception {
 		KnyttDokumentTilJournalpostSomVedleggRequest requestMock = mock(KnyttDokumentTilJournalpostSomVedleggRequest.class);
 		KnyttDokumentTilJournalpostSomVedleggRequestTo mappedRequestMock = mock(KnyttDokumentTilJournalpostSomVedleggRequestTo.class);
-		when(dozerMapperMock.map(requestMock, KnyttDokumentTilJournalpostSomVedleggRequestTo.class)).thenReturn(mappedRequestMock);
+		when(knyttDokumentTilJournalpostSomVedleggRequestMapperMock.map(any())).thenReturn(mappedRequestMock);
 
 		doThrow(new FeilregistrertSaksrelasjonException("Something failed"))
 				.when(knyttDokumentTilJournalpostSomVedleggServiceMock)
@@ -691,7 +691,7 @@ public class ArkiverDokumentproduksjonProviderTest {
 	public void throwsJournalpostIkkeUnderArbeidWhenServiceThrowsIllegalJournalStatusException() throws Exception {
 		KnyttDokumentTilJournalpostSomVedleggRequest requestMock = mock(KnyttDokumentTilJournalpostSomVedleggRequest.class);
 		KnyttDokumentTilJournalpostSomVedleggRequestTo mappedRequestMock = mock(KnyttDokumentTilJournalpostSomVedleggRequestTo.class);
-		when(dozerMapperMock.map(requestMock, KnyttDokumentTilJournalpostSomVedleggRequestTo.class)).thenReturn(mappedRequestMock);
+		when(knyttDokumentTilJournalpostSomVedleggRequestMapperMock.map(any())).thenReturn(mappedRequestMock);
 
 		doThrow(new IllegalJournalStatusException("Something failed"))
 				.when(knyttDokumentTilJournalpostSomVedleggServiceMock)
@@ -707,7 +707,7 @@ public class ArkiverDokumentproduksjonProviderTest {
 	public void throwsEksterneVedleggIkkeTillattWhenServiceThrowsIllegalTilleggsopplysningerException() throws Exception {
 		KnyttDokumentTilJournalpostSomVedleggRequest requestMock = mock(KnyttDokumentTilJournalpostSomVedleggRequest.class);
 		KnyttDokumentTilJournalpostSomVedleggRequestTo mappedRequestMock = mock(KnyttDokumentTilJournalpostSomVedleggRequestTo.class);
-		when(dozerMapperMock.map(requestMock, KnyttDokumentTilJournalpostSomVedleggRequestTo.class)).thenReturn(mappedRequestMock);
+		when(knyttDokumentTilJournalpostSomVedleggRequestMapperMock.map(any())).thenReturn(mappedRequestMock);
 
 		doThrow(new IllegalTilleggsopplysningerException("Something failed"))
 				.when(knyttDokumentTilJournalpostSomVedleggServiceMock)

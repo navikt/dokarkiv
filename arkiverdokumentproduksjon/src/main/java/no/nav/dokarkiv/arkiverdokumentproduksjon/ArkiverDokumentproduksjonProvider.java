@@ -53,6 +53,7 @@ import no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark107.FjernFerdigstiltDokum
 import no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark108.FerdigstillJournalpostRequestMapper;
 import no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark108.FerdigstillJournalpostRequestTo;
 import no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark108.FerdigstillJournalpostService;
+import no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark109.KnyttDokumentTilJournalpostSomVedleggRequestMapper;
 import no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark109.KnyttDokumentTilJournalpostSomVedleggRequestTo;
 import no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark109.KnyttDokumentTilJournalpostSomVedleggService;
 import no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark110.SettJournalpostAttributterRequestMapper;
@@ -122,7 +123,6 @@ import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.OpprettJournalpostResponse;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.SettDatoSendtRequest;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.SettJournalpostAttributterRequest;
-import org.dozer.Mapper;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -213,7 +213,7 @@ public class ArkiverDokumentproduksjonProvider implements ArkiverDokumentproduks
 	private KnyttDokumentTilJournalpostSomVedleggService knyttDokumentTilJournalpostSomVedleggService;
 
 	@Inject
-	private Mapper dozerMapper;
+	private KnyttDokumentTilJournalpostSomVedleggRequestMapper knyttDokumentTilJournalpostSomVedleggRequestMapper;
 
 	@Override
 	@Transactional
@@ -425,7 +425,7 @@ public class ArkiverDokumentproduksjonProvider implements ArkiverDokumentproduks
 		KnyttDokumentTilJournalpostSomVedleggRequestTo domainRequest = null;
 
 		if (request != null) {
-			domainRequest = dozerMapper.map(request, KnyttDokumentTilJournalpostSomVedleggRequestTo.class);
+			domainRequest = knyttDokumentTilJournalpostSomVedleggRequestMapper.map(request);
 		}
 
 		try {
