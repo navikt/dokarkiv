@@ -16,7 +16,7 @@ import javax.xml.ws.WebServiceContext;
 import javax.xml.ws.soap.Addressing;
 
 @WebService(endpointInterface = "no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v1.ArkiverDokumentmottakV1",
-		wsdlLocation = "WEB-INF/wsdl/no/nav/tjeneste/domene/brevogarkiv/arkiverdokumentmottak/v1/arkiverdokumentmottak.wsdl",
+		wsdlLocation = "classpath:wsdl/no/nav/tjeneste/domene/brevogarkiv/arkiverdokumentmottak/v1/arkiverdokumentmottak.wsdl",
 		targetNamespace = "http://nav.no/tjeneste/domene/brevogarkiv/arkiverdokumentmottak/v1/",
 		serviceName = "ArkiverDokumentmottak_v1",
 		portName = "ArkiverDokumentmottakPort_v1")

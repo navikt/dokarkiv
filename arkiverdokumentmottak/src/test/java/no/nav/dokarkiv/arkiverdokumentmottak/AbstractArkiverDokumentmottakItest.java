@@ -2,6 +2,7 @@ package no.nav.dokarkiv.arkiverdokumentmottak;
 
 import no.nav.dokarkiv.arkiverdokumentmottak.v1.ArkiverDokumentmottakProvider;
 import no.nav.dokarkiv.core.CoreConfig;
+import no.nav.dokarkiv.core.domain.util.DateProvider;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
@@ -17,7 +18,10 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.inject.Inject;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
+import java.util.Date;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE,
@@ -36,9 +40,12 @@ public abstract class AbstractArkiverDokumentmottakItest {
 	protected DokumentFilRepository dokumentFilRepository;
 	@Inject
 	protected ArkiverDokumentmottakProvider arkiverDokumentmottakProvider;
+	@PersistenceContext
+	protected EntityManager entityManager;
 
 	@Before
 	public void setUpItest() {
+		DateProvider.configure(true, DateProvider.getDate(new Date()));
 		joarkRepository.deleteAll();
 		dokumentFilRepository.deleteAll();
 		RequestContextSetter.setRequestContext(new SimpleRequestContext.Builder()

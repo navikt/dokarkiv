@@ -33,7 +33,6 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
-import java.math.BigInteger;
 import java.util.Optional;
 
 @RunWith(org.mockito.junit.MockitoJUnitRunner.class)
@@ -60,8 +59,7 @@ public class DefaultJournalforInngaaendeForsendelseServiceTest {
 	public void shouldJournalforNewInngaaendeForsendelse() throws Exception {
 		JournalforInngaaendeForsendelseRequestTo requestTo = new JournalforInngaaendeForsendelseRequestTo(createJournalpost(null, null, null));
 		when(repositoryMock.save(any(Journalpost.class))).thenReturn(createJournalpost(JOURNALPOST_ID, DOKUMENTINFO_ID, DOKUMENTINFO_VEDLEGG));
-		when(repositoryMock.findJournalpostIdByTilleggsopplysningerNokkelAndVerdi(FORSENDELSE_MOTTAK_ID_KEY, FORSENDLESE_MOTTAKS_ID))
-				.thenReturn(Optional.ofNullable(null));
+		when(repositoryMock.findJournalpostIdByTilleggsopplysningerNokkelAndVerdi(FORSENDELSE_MOTTAK_ID_KEY, FORSENDLESE_MOTTAKS_ID)).thenReturn(null);
 
 		JournalforInngaaendeForsendelseResponseTo response = service.journalforInngaaendeForsendelse(requestTo);
 
@@ -71,7 +69,6 @@ public class DefaultJournalforInngaaendeForsendelseServiceTest {
 
 		verify(repositoryMock).save(any(Journalpost.class));
 		verify(repositoryMock).findJournalpostIdByTilleggsopplysningerNokkelAndVerdi(FORSENDELSE_MOTTAK_ID_KEY, FORSENDLESE_MOTTAKS_ID);
-		verify(repositoryMock).findById(null);
 		verifyNoMoreInteractions(repositoryMock);
 		verify(validator).validate(any(Journalpost.class), eq(true));
 		verifyNoMoreInteractions(validator);
@@ -105,8 +102,7 @@ public class DefaultJournalforInngaaendeForsendelseServiceTest {
 	public void shouldJournalforNewInngaaendeForsendelseUtenVedlegg() throws Exception {
 		JournalforInngaaendeForsendelseRequestTo requestTo = new JournalforInngaaendeForsendelseRequestTo(createJournalpostUtenVedlegg(null, null));
 		when(repositoryMock.save(any(Journalpost.class))).thenReturn(createJournalpostUtenVedlegg(JOURNALPOST_ID, DOKUMENTINFO_ID));
-		when(repositoryMock.findJournalpostIdByTilleggsopplysningerNokkelAndVerdi(FORSENDELSE_MOTTAK_ID_KEY, FORSENDLESE_MOTTAKS_ID))
-				.thenReturn(Optional.ofNullable(null));
+		when(repositoryMock.findJournalpostIdByTilleggsopplysningerNokkelAndVerdi(FORSENDELSE_MOTTAK_ID_KEY, FORSENDLESE_MOTTAKS_ID)).thenReturn(null);
 
 		JournalforInngaaendeForsendelseResponseTo response = service.journalforInngaaendeForsendelse(requestTo);
 		assertThat(response.getJournalpostId(), is(JOURNALPOST_ID));
@@ -115,7 +111,6 @@ public class DefaultJournalforInngaaendeForsendelseServiceTest {
 
 		verify(repositoryMock).save(any(Journalpost.class));
 		verify(repositoryMock).findJournalpostIdByTilleggsopplysningerNokkelAndVerdi(FORSENDELSE_MOTTAK_ID_KEY, FORSENDLESE_MOTTAKS_ID);
-		verify(repositoryMock).findById(null);
 		verifyNoMoreInteractions(repositoryMock);
 		verify(validator).validate(any(Journalpost.class), eq(true));
 		verifyNoMoreInteractions(validator);
@@ -127,7 +122,7 @@ public class DefaultJournalforInngaaendeForsendelseServiceTest {
 	public void shouldReturnAlreadyJournalfoertForsendelse() throws Exception {
 		JournalforInngaaendeForsendelseRequestTo requestTo = new JournalforInngaaendeForsendelseRequestTo(createJournalpostUtenVedlegg(null, null));
 		when(repositoryMock.findJournalpostIdByTilleggsopplysningerNokkelAndVerdi(FORSENDELSE_MOTTAK_ID_KEY, FORSENDLESE_MOTTAKS_ID))
-				.thenReturn(Optional.ofNullable(BigInteger.valueOf(JOURNALPOST_ID)));
+				.thenReturn(JOURNALPOST_ID);
 		when(repositoryMock.findById(JOURNALPOST_ID)).thenReturn(Optional.ofNullable(createJournalpostUtenVedlegg(JOURNALPOST_ID, DOKUMENTINFO_ID)));
 
 		JournalforInngaaendeForsendelseResponseTo response = service.journalforInngaaendeForsendelse(requestTo);

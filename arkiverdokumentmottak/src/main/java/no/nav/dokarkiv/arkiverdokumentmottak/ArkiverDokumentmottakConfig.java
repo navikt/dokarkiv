@@ -12,9 +12,9 @@ import org.springframework.context.annotation.Profile;
 import javax.xml.ws.Endpoint;
 
 /**
- * Spring configuration for the ArkiverDokumentMottaktV1 ws service
+ * Spring configuration for the ArkiverDokumentMottakV1 ws service
  *
- * @author Stig Str�m
+ * @author Stig Strøm
  */
 @Configuration
 @ComponentScan
@@ -22,9 +22,9 @@ public class ArkiverDokumentmottakConfig {
 
 	@Bean
 	@Profile("nais")
-	Endpoint dokumentproduksjonInfoV1(Bus bus, ArkiverDokumentmottakEndpoint arkiverDokumentmottakEndpoint) {
+	Endpoint arkiverDokumentmottakV1(Bus bus, ArkiverDokumentmottakEndpoint arkiverDokumentmottakEndpoint) {
 		EndpointImpl endpoint = new EndpointImpl(bus, arkiverDokumentmottakEndpoint);
-		endpoint.publish("/dokumentproduksjoninfo/v1");
+		endpoint.publish("/arkiverdokumentmottak/v1");
 		return endpoint;
 	}
 

@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.arkiverdokumentmottak.v1;
 
+import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.arkiverdokumentmottak.DefaultArkiverDokumentmottakFaultInfoPopulator;
 import no.nav.dokarkiv.arkiverdokumentmottak.ServiceConstants;
 import no.nav.dokarkiv.arkiverdokumentmottak.v1.tjoark203.DefaultJournalforInngaaendeForsendelseRequestMapper;
@@ -13,22 +14,14 @@ import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v1.KanIkkeJourna
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v1.informasjon.arkiverdokumentmottak.Tilleggsopplysning;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v1.meldinger.JournalforInngaaendeForsendelseRequest;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v1.meldinger.JournalforInngaaendeForsendelseResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
 
 @Component
+@Slf4j
 public class ArkiverDokumentmottakProvider implements ArkiverDokumentmottakV1 {
-	private static final Logger log = LoggerFactory.getLogger(ArkiverDokumentmottakProvider.class);
-
-	private static final String ARKIVER_DOKUMENTMOTTAK_V1 = "provider.arkiverDokumentmottak.v1";
-
-	private static final String JOURNALFOR_INNGAAENDE_FORSENDELSE = ARKIVER_DOKUMENTMOTTAK_V1 + ".journalforInngaaendeForsendelse";
-	private static final String PING = ARKIVER_DOKUMENTMOTTAK_V1 + ".ping";
-
 	@Inject
 	private DefaultJournalforInngaaendeForsendelseResponseMapper journalforInngaaendeForsendelseResponseMapper;
 
@@ -61,8 +54,6 @@ public class ArkiverDokumentmottakProvider implements ArkiverDokumentmottakV1 {
 	}
 
 	@Override
-	@Transactional
-	//FIXME Her ble codahale@Counted annotering brukt. Legg til tilsvarende metrikker i form av prometheus og micrometer
 	public void ping() {
 		//noop
 	}

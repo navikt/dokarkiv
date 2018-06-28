@@ -13,7 +13,7 @@ import java.util.Map;
 
 /**
  * Custom converter from {@link Tilleggsopplysning} to
- * {@link no.nav.domain.dok.joark.DokumentInfo}.tilleggsOpplysninger
+ * {@link no.nav.dokarkiv.core.domain.entities.DokumentInfo}.tilleggsOpplysninger
  *
  * @author Leo-Andreas Ervik, Visma Consulting. 24.02.2017
  * @author Stig Strøm, Acando
