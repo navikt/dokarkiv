@@ -8,6 +8,7 @@ import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.OppdaterJournalpostArkiverDokumentRequest;
 import org.springframework.stereotype.Component;
 
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -35,6 +36,7 @@ public class OppdaterJournalpostArkiverDokumentRequestMapper {
 									.fileContent(fildetaljer.getRedigerbartDokument())
 									.filstorrelse(fildetaljer.getRedigerbartDokument() == null ? null : String.valueOf(fildetaljer
 											.getRedigerbartDokument().length))
+									.filUuid(UUID.randomUUID().toString())
 									.build())
 							.collect(Collectors.toSet()))
 					.build();

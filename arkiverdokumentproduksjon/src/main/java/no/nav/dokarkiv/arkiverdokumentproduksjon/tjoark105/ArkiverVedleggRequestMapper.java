@@ -9,6 +9,7 @@ import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasj
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.ArkiverVedleggRequest;
 import org.springframework.stereotype.Component;
 
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -40,6 +41,7 @@ public class ArkiverVedleggRequestMapper {
 										.variantFormat(fildetaljer.getVariantformat() == null ? null : VariantFormatCode.valueOf(fildetaljer
 												.getVariantformat()))
 										.fileContent(fildetaljer.getIkkeRedigerbartDokument())
+										.filUuid(UUID.randomUUID().toString())
 										.build())
 								.collect(Collectors.toSet()))
 						.build())

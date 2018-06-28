@@ -48,6 +48,7 @@ public class DefaultArkiverVedleggService implements ArkiverVedleggService {
 		oppdaterJournalpostMedDokumentInfo(journalpost, arkiverVedleggRequest);
 
 		dokumentFilerDelegate.saveUpdateDokumentFiler(journalpost);
+		joarkRepository.save(journalpost);
 
 		return ArkiverVedleggResponseTo.create(
 				arkiverVedleggRequest.getJournalpostId(),
