@@ -18,7 +18,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import javax.inject.Inject;
-import java.math.BigInteger;
 import java.util.Optional;
 
 /**
@@ -108,19 +107,19 @@ public class DefaultOpprettJournalpostArkiverDokumentService implements OpprettJ
 			return null;
 		}
 
-		Optional<BigInteger> dokumentinfoIdPreviousJournalforing = joarkRepository.findDokumentinfoIdIdByDokumentinfoTilleggsopplysningerNokkelAndVerdi(BESTILLINGS_ID_KEY, bestillingsId);
-		if (!dokumentinfoIdPreviousJournalforing.isPresent()) {
+		Long dokumentinfoIdPreviousJournalforing = joarkRepository.findDokumentinfoIdIdByDokumentinfoTilleggsopplysningerNokkelAndVerdi(BESTILLINGS_ID_KEY, bestillingsId);
+		if (dokumentinfoIdPreviousJournalforing == null) {
 			return null;
 		}
 
-		Optional<BigInteger> journalpostIdPreviousJournalforing = joarkRepository.findJournalpostIdByDokumentinfoId(dokumentinfoIdPreviousJournalforing
-				.get().toString());
+		Long journalpostIdPreviousJournalforing = joarkRepository.findJournalpostIdByDokumentinfoId(dokumentinfoIdPreviousJournalforing
+				.toString());
 
-		if (journalpostIdPreviousJournalforing.isPresent()) {
-			Optional<Journalpost> journalpost = joarkRepository.findById(journalpostIdPreviousJournalforing.get().longValue());
-			return journalpost.isPresent() ? journalpost.get() : null;
-		} else {
+		if (journalpostIdPreviousJournalforing == null) {
 			return null;
+		} else {
+			Optional<Journalpost> journalpost = joarkRepository.findById(journalpostIdPreviousJournalforing);
+			return journalpost.isPresent() ? journalpost.get() : null;
 		}
 	}
 }

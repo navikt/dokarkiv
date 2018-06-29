@@ -185,16 +185,12 @@ public class DefaultKnyttDokumentTilJournalpostSomVedleggServiceTest {
 		assertThatProcessingWasNotCompleted();
 	}
 
-	//	FIXME
 	@Test
-	@Ignore
 	public void propagatesJournalpostNotFoundExceptionWhenJournalpostSourceDoesNotExist() throws Exception {
-		JournalpostNotFoundException exception = new JournalpostNotFoundException("Journalpost not found");
-
-		when(repositoryMock.findById(JOURNALPOST_SOURCE_ID)).thenThrow(exception);
+		when(repositoryMock.findById(JOURNALPOST_SOURCE_ID)).thenReturn(Optional.ofNullable(null));
 
 		expectedException.expect(JournalpostNotFoundException.class);
-		expectedException.expectMessage("Journalpost not found");
+		expectedException.expectMessage("Journalpost with journalpostId=234 does not exist");
 
 		service.knyttDokumentTilJournalpostSomVedlegg(request);
 
@@ -259,16 +255,12 @@ public class DefaultKnyttDokumentTilJournalpostSomVedleggServiceTest {
 		assertThatProcessingWasCompletedSuccessfully();
 	}
 
-	//	FIXME
 	@Test
-	@Ignore
 	public void propagatesJournalpostNotFoundExceptionWhenJournalpostTargetDoesNotExist() throws Exception {
-		JournalpostNotFoundException exception = new JournalpostNotFoundException("Journalpost not found");
-
-		when(repositoryMock.findById(JOURNALPOST_TARGET_ID)).thenThrow(exception);
+		when(repositoryMock.findById(JOURNALPOST_TARGET_ID)).thenReturn(Optional.ofNullable(null));
 
 		expectedException.expect(JournalpostNotFoundException.class);
-		expectedException.expectMessage("Journalpost not found");
+		expectedException.expectMessage("Journalpost with journalpostId=345 does not exist");
 
 		service.knyttDokumentTilJournalpostSomVedlegg(request);
 
