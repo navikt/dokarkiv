@@ -106,8 +106,20 @@ public class DefaultOpprettJournalpostArkiverDokumentService implements OpprettJ
 		if (isNullOrEmpty(bestillingsId)) {
 			return null;
 		}
-// 		TODO: fixMe
-		Optional<Long> findJournalpostTilleggssopplysning = joarkRepository.findJournalpostIdByTilleggsopplysningerNokkelAndVerdi(BESTILLINGS_ID_KEY, bestillingsId);
-		return joarkRepository.findById(findJournalpostTilleggssopplysning.get()).get();
+
+		Long dokumentinfoIdPreviousJournalforing = joarkRepository.findDokumentinfoIdIdByDokumentinfoTilleggsopplysningerNokkelAndVerdi(BESTILLINGS_ID_KEY, bestillingsId);
+		if (dokumentinfoIdPreviousJournalforing == null) {
+			return null;
+		}
+
+		Long journalpostIdPreviousJournalforing = joarkRepository.findJournalpostIdByDokumentinfoId(dokumentinfoIdPreviousJournalforing
+				.toString());
+
+		if (journalpostIdPreviousJournalforing == null) {
+			return null;
+		} else {
+			Optional<Journalpost> journalpost = joarkRepository.findById(journalpostIdPreviousJournalforing);
+			return journalpost.isPresent() ? journalpost.get() : null;
+		}
 	}
 }

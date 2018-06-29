@@ -95,11 +95,13 @@ public class DefaultKnyttDokumentTilJournalpostSomVedleggService implements Knyt
 
 		validator.validate(request);
 
-		Journalpost journalpostTarget = joarkRepository.findById(request.getKnyttesTilJournalpostId()).orElseThrow(() -> new JournalpostNotFoundException("Journalpost with journalpostId=" + request.getKnyttesTilJournalpostId() + " does not exist"));
+		Journalpost journalpostTarget = joarkRepository.findById(request.getKnyttesTilJournalpostId())
+				.orElseThrow(() -> new JournalpostNotFoundException("Journalpost with journalpostId=" + request.getKnyttesTilJournalpostId() + " does not exist"));
 		checkIfJournalpostIsUnderProduksjon(journalpostTarget);
 		checkIfJournalpostAllowsEksterneVedlegg(journalpostTarget);
 
-		Journalpost journalpostSource = joarkRepository.findById(request.getKnyttesFraJournalpostId()).orElseThrow(() -> new JournalpostNotFoundException("Journalpost with journalpostId=" + request.getKnyttesFraJournalpostId() + " does not exist"));
+		Journalpost journalpostSource = joarkRepository.findById(request.getKnyttesFraJournalpostId())
+				.orElseThrow(() -> new JournalpostNotFoundException("Journalpost with journalpostId=" + request.getKnyttesFraJournalpostId() + " does not exist"));
 		checkIfJournalpostHasAllowedJournalstatus(journalpostSource);
 		checkIfJournalpostHasFeilregistrertSaksrelasjon(journalpostSource);
 

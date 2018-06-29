@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon;
 
+import io.micrometer.core.annotation.Timed;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.AlleredeFerdigstiltException;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.ArkiverDokumentproduksjonV1;
@@ -62,112 +63,123 @@ import javax.xml.ws.soap.Addressing;
  * @author Joakim Bjørnstad, Visma Consulting
  */
 @WebService(endpointInterface = "no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.ArkiverDokumentproduksjonV1",
-        wsdlLocation = "classpath:wsdl/no/nav/tjeneste/domene/brevogarkiv/arkiverdokumentproduksjon/v1/arkiverdokumentproduksjon.wsdl",
-        targetNamespace = "http://nav.no/tjeneste/domene/brevogarkiv/arkiverdokumentproduksjon/v1/",
-        serviceName = "ArkiverDokumentproduksjonService_v1",
-        portName = "ArkiverDokumentproduksjonPort_v1")
+		wsdlLocation = "classpath:wsdl/no/nav/tjeneste/domene/brevogarkiv/arkiverdokumentproduksjon/v1/arkiverdokumentproduksjon.wsdl",
+		targetNamespace = "http://nav.no/tjeneste/domene/brevogarkiv/arkiverdokumentproduksjon/v1/",
+		serviceName = "ArkiverDokumentproduksjonService_v1",
+		portName = "ArkiverDokumentproduksjonPort_v1")
 @Addressing
 @HandlerChain(file = "classpath:arkiverdokumentproduksjon-handler.xml")
 @Service
 public class ArkiverDokumentproduksjonEndpoint implements ArkiverDokumentproduksjonV1 {
 
-    // hardkodet, siden appid ikke er tilgjenglig i api
-    private static final String DOKPROS_APPID = "dokumentproduksjon";
+	// hardkodet, siden appid ikke er tilgjenglig i api
+	private static final String DOKPROS_APPID = "dokumentproduksjon";
 
-    @Inject
-    private ArkiverDokumentproduksjonV1 arkiverDokumentproduksjonProvider;
+	@Inject
+	private ArkiverDokumentproduksjonV1 arkiverDokumentproduksjonProvider;
 
-    @Resource
-    private WebServiceContext webServiceContext;
+	@Resource
+	private WebServiceContext webServiceContext;
 
-    @Override
-    public OpprettJournalpostArkiverDokumentResponse opprettJournalpostArkiverDokument
-            (OpprettJournalpostArkiverDokumentRequest request) {
-        RequestContextUtil.createAndSetRequestContext(webServiceContext, DOKPROS_APPID);
-        return arkiverDokumentproduksjonProvider.opprettJournalpostArkiverDokument(request);
-    }
+	@Timed(value = "dok_request", extraTags = {"process_code", "tjoark100"}, percentiles = {0.5, 0.95})
+	@Override
+	public OpprettJournalpostArkiverDokumentResponse opprettJournalpostArkiverDokument
+			(OpprettJournalpostArkiverDokumentRequest request) {
+		RequestContextUtil.createAndSetRequestContext(webServiceContext, DOKPROS_APPID);
+		return arkiverDokumentproduksjonProvider.opprettJournalpostArkiverDokument(request);
+	}
 
-    @Override
-    public void settDatoSendt(SettDatoSendtRequest settDatoSendtRequest) {
-        RequestContextUtil.createAndSetRequestContext(webServiceContext, DOKPROS_APPID);
-        arkiverDokumentproduksjonProvider.settDatoSendt(settDatoSendtRequest);
-    }
+	@Timed(value = "dok_request", extraTags = {"process_code", "tjoark101"}, percentiles = {0.5, 0.95})
+	@Override
+	public OpprettJournalpostResponse opprettJournalpost(OpprettJournalpostRequest request) {
+		RequestContextUtil.createAndSetRequestContext(webServiceContext, DOKPROS_APPID);
+		return arkiverDokumentproduksjonProvider.opprettJournalpost(request);
+	}
 
-    @Override
-    public void oppdaterJournalpostArkiverDokument(OppdaterJournalpostArkiverDokumentRequest request) throws KanIkkeFerdigstillesException, FeilStrukturException, ObjektIkkeFunnetException, AlleredeFerdigstiltException, UgyldigInputException {
-        RequestContextUtil.createAndSetRequestContext(webServiceContext, DOKPROS_APPID);
-        arkiverDokumentproduksjonProvider.oppdaterJournalpostArkiverDokument(request);
-    }
+	@Timed(value = "dok_request", extraTags = {"process_code", "tjoark102"}, percentiles = {0.5, 0.95})
+	@Override
+	public void oppdaterJournalpostArkiverDokument(OppdaterJournalpostArkiverDokumentRequest request) throws KanIkkeFerdigstillesException, FeilStrukturException, ObjektIkkeFunnetException, AlleredeFerdigstiltException, UgyldigInputException {
+		RequestContextUtil.createAndSetRequestContext(webServiceContext, DOKPROS_APPID);
+		arkiverDokumentproduksjonProvider.oppdaterJournalpostArkiverDokument(request);
+	}
 
-    @Override
-    public void settJournalpostAttributter(SettJournalpostAttributterRequest settJournalpostAttributterRequest) {
-        RequestContextUtil.createAndSetRequestContext(webServiceContext, DOKPROS_APPID);
-        arkiverDokumentproduksjonProvider.settJournalpostAttributter(settJournalpostAttributterRequest);
-    }
+	@Timed(value = "dok_request", extraTags = {"process_code", "tjoark103"}, percentiles = {0.5, 0.95})
+	@Override
+	public void avbrytJournalpost(AvbrytJournalpostRequest request)
+			throws AvbrytJournalpostJournalpostIkkeFunnet, AvbrytJournalpostAvbrytelseIkkeTillatt,
+			AvbrytJournalpostJournalpostAlleredeAvbrutt {
+		RequestContextUtil.createAndSetRequestContext(webServiceContext, DOKPROS_APPID);
+		arkiverDokumentproduksjonProvider.avbrytJournalpost(request);
+	}
 
-    @Override
-    public OpprettJournalpostResponse opprettJournalpost(OpprettJournalpostRequest request) {
-        RequestContextUtil.createAndSetRequestContext(webServiceContext, DOKPROS_APPID);
-        return arkiverDokumentproduksjonProvider.opprettJournalpost(request);
-    }
+	@Timed(value = "dok_request", extraTags = {"process_code", "tjoark104"}, percentiles = {0.5, 0.95})
 
-    @Override
-    public void ping() {
-        arkiverDokumentproduksjonProvider.ping();
-    }
+	@Override
+	public void settDatoSendt(SettDatoSendtRequest settDatoSendtRequest) {
+		RequestContextUtil.createAndSetRequestContext(webServiceContext, DOKPROS_APPID);
+		arkiverDokumentproduksjonProvider.settDatoSendt(settDatoSendtRequest);
+	}
 
-    @Override
-    public void avbrytJournalpost(AvbrytJournalpostRequest request)
-            throws AvbrytJournalpostJournalpostIkkeFunnet, AvbrytJournalpostAvbrytelseIkkeTillatt,
-            AvbrytJournalpostJournalpostAlleredeAvbrutt {
-        RequestContextUtil.createAndSetRequestContext(webServiceContext, DOKPROS_APPID);
-        arkiverDokumentproduksjonProvider.avbrytJournalpost(request);
-    }
+	@Timed(value = "dok_request", extraTags = {"process_code", "tjoark105"}, percentiles = {0.5, 0.95})
+	@Override
+	public ArkiverVedleggResponse arkiverVedlegg(ArkiverVedleggRequest arkiverVedleggRequest)
+			throws ArkiverVedleggJournalpostIkkeFunnet, ArkiverVedleggJournalpostIkkeUnderArbeid {
+		RequestContextUtil.createAndSetRequestContext(webServiceContext, DOKPROS_APPID);
+		return arkiverDokumentproduksjonProvider.arkiverVedlegg(arkiverVedleggRequest);
+	}
 
-    @Override
-    public ArkiverVedleggResponse arkiverVedlegg(ArkiverVedleggRequest arkiverVedleggRequest)
-            throws ArkiverVedleggJournalpostIkkeFunnet, ArkiverVedleggJournalpostIkkeUnderArbeid {
-        RequestContextUtil.createAndSetRequestContext(webServiceContext, DOKPROS_APPID);
-        return arkiverDokumentproduksjonProvider.arkiverVedlegg(arkiverVedleggRequest);
-    }
+	@Timed(value = "dok_request", extraTags = {"process_code", "tjoark106"}, percentiles = {0.5, 0.95})
+	@Override
+	public void avbrytVedlegg(AvbrytVedleggRequest request) throws AvbrytVedleggDokumentIkkeFunnet,
+			AvbrytVedleggDokumentIkkeVedlegg, AvbrytVedleggJournalpostIkkeUnderArbeid, AvbrytVedleggDokumentAlleredeAvbrutt,
+			AvbrytVedleggJournalpostIkkeFunnet {
+		RequestContextUtil.createAndSetRequestContext(webServiceContext, DOKPROS_APPID);
+		arkiverDokumentproduksjonProvider.avbrytVedlegg(request);
+	}
 
-    @Override
-    public void avbrytVedlegg(AvbrytVedleggRequest request) throws AvbrytVedleggDokumentIkkeFunnet,
-            AvbrytVedleggDokumentIkkeVedlegg, AvbrytVedleggJournalpostIkkeUnderArbeid, AvbrytVedleggDokumentAlleredeAvbrutt,
-            AvbrytVedleggJournalpostIkkeFunnet {
-        RequestContextUtil.createAndSetRequestContext(webServiceContext, DOKPROS_APPID);
-        arkiverDokumentproduksjonProvider.avbrytVedlegg(request);
+	@Timed(value = "dok_request", extraTags = {"process_code", "tjoark107"}, percentiles = {0.5, 0.95})
+	@Override
+	public void fjernFerdigstiltDokument(FjernFerdigstiltDokumentRequest request)
+			throws FjernFerdigstiltDokumentDokumentIkkeFunnet, FjernFerdigstiltDokumentDokumentAlleredeAvbrutt,
+			FjernFerdigstiltDokumentJournalpostIkkeUnderArbeid, FjernFerdigstiltDokumentJournalpostIkkeFunnet,
+			FjernFerdigstiltDokumentDokumentAlleredeRedigerbart {
+		RequestContextUtil.createAndSetRequestContext(webServiceContext, DOKPROS_APPID);
+		arkiverDokumentproduksjonProvider.fjernFerdigstiltDokument(request);
+	}
 
-    }
+	@Timed(value = "dok_request", extraTags = {"process_code", "tjoark108"}, percentiles = {0.5, 0.95})
+	@Override
+	public void ferdigstillJournalpost(FerdigstillJournalpostRequest request)
+			throws FerdigstillJournalpostJournalpostIkkeUnderArbeid, FerdigstillJournalpostInneholderDokumenterUnderRedigering,
+			FerdigstillJournalpostJournalpostIkkeFunnet {
+		RequestContextUtil.createAndSetRequestContext(webServiceContext, DOKPROS_APPID);
+		arkiverDokumentproduksjonProvider.ferdigstillJournalpost(request);
+	}
 
-    @Override
-    public void ferdigstillJournalpost(FerdigstillJournalpostRequest request)
-            throws FerdigstillJournalpostJournalpostIkkeUnderArbeid, FerdigstillJournalpostInneholderDokumenterUnderRedigering,
-            FerdigstillJournalpostJournalpostIkkeFunnet {
-//        String userId = MDCOperations.getFromMDC(MDCOperations.MDC_USER_ID); FIXME
-//        RequestContextUtil.createAndSetUsername(userId, DOKPROS_APPID); FIXME
-        arkiverDokumentproduksjonProvider.ferdigstillJournalpost(request);
-    }
+	@Timed(value = "dok_request", extraTags = {"process_code", "tjoark109"}, percentiles = {0.5, 0.95})
+	@Override
+	public void knyttDokumentTilJournalpostSomVedlegg(KnyttDokumentTilJournalpostSomVedleggRequest request) throws
+			KnyttDokumentTilJournalpostSomVedleggDokumentTillatesIkkeGjenbrukt,
+			KnyttDokumentTilJournalpostSomVedleggEksterneVedleggIkkeTillatt,
+			KnyttDokumentTilJournalpostSomVedleggJournalpostIkkeFerdigstilt,
+			KnyttDokumentTilJournalpostSomVedleggJournalpostIkkeFunnet,
+			KnyttDokumentTilJournalpostSomVedleggUlikeFagomraader,
+			KnyttDokumentTilJournalpostSomVedleggJournalpostIkkeUnderArbeid,
+			KnyttDokumentTilJournalpostSomVedleggDokumentIkkeFunnet {
+		RequestContextUtil.createAndSetRequestContext(webServiceContext, DOKPROS_APPID);
+		arkiverDokumentproduksjonProvider.knyttDokumentTilJournalpostSomVedlegg(request);
+	}
 
-    @Override
-    public void fjernFerdigstiltDokument(FjernFerdigstiltDokumentRequest request)
-            throws FjernFerdigstiltDokumentDokumentIkkeFunnet, FjernFerdigstiltDokumentDokumentAlleredeAvbrutt,
-            FjernFerdigstiltDokumentJournalpostIkkeUnderArbeid, FjernFerdigstiltDokumentJournalpostIkkeFunnet,
-            FjernFerdigstiltDokumentDokumentAlleredeRedigerbart {
-        RequestContextUtil.createAndSetRequestContext(webServiceContext, DOKPROS_APPID);
-        arkiverDokumentproduksjonProvider.fjernFerdigstiltDokument(request);
-    }
+	@Timed(value = "dok_request", extraTags = {"process_code", "tjoark110"}, percentiles = {0.5, 0.95})
+	@Override
+	public void settJournalpostAttributter(SettJournalpostAttributterRequest settJournalpostAttributterRequest) {
+		RequestContextUtil.createAndSetRequestContext(webServiceContext, DOKPROS_APPID);
+		arkiverDokumentproduksjonProvider.settJournalpostAttributter(settJournalpostAttributterRequest);
+	}
 
-    @Override
-    public void knyttDokumentTilJournalpostSomVedlegg(KnyttDokumentTilJournalpostSomVedleggRequest request) throws
-            KnyttDokumentTilJournalpostSomVedleggDokumentTillatesIkkeGjenbrukt,
-            KnyttDokumentTilJournalpostSomVedleggEksterneVedleggIkkeTillatt,
-            KnyttDokumentTilJournalpostSomVedleggJournalpostIkkeFerdigstilt,
-            KnyttDokumentTilJournalpostSomVedleggJournalpostIkkeFunnet,
-            KnyttDokumentTilJournalpostSomVedleggUlikeFagomraader,
-            KnyttDokumentTilJournalpostSomVedleggJournalpostIkkeUnderArbeid,
-            KnyttDokumentTilJournalpostSomVedleggDokumentIkkeFunnet {
-        RequestContextUtil.createAndSetRequestContext(webServiceContext, DOKPROS_APPID);
-        arkiverDokumentproduksjonProvider.knyttDokumentTilJournalpostSomVedlegg(request);
-    }
+	@Override
+	public void ping() {
+		arkiverDokumentproduksjonProvider.ping();
+	}
+
 }

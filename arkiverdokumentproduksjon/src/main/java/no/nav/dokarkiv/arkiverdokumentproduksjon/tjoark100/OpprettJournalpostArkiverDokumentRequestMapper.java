@@ -22,6 +22,7 @@ import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -41,34 +42,63 @@ public class OpprettJournalpostArkiverDokumentRequestMapper {
 		no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasjon.opprettjournalpostarkiverdokument.DokumentInfo dokumentInfo = journalpost
 				.getDokumentInfo();
 
-		Journalpost domainJournalpost = Journalpost.builder()
-				.saksrelasjon(Saksrelasjon.builder()
-						.sakId(journalpost.getSaksrelasjon().getSaksnummer())
-						.fagsystem(journalpost.getSaksrelasjon()
-								.getFagsystem() == null ? null : FagsystemCode.valueOf(journalpost.getSaksrelasjon()
-								.getFagsystem()))
-						.build())
-				.journalposttype(journalpost.getJournalpostType() == null ? null : JournalpostTypeCode.valueOf(journalpost.getJournalpostType()
+		Journalpost domainJournalpost = createDomainJournalpostBase(journalpost);
+		addBruker(domainJournalpost, journalpost);
+		setSaksrelasjon(domainJournalpost, journalpost);
+		addJournalpostDokumentInfoRelasjon(domainJournalpost, dokumentInfo);
+		addFildetaljer(domainJournalpost, dokumentInfo);
+
+		kildeNavnPopulator.populateKildeNavnForEntireJournalStructure(domainJournalpost, RequestContextHolder
+				.currentRequestContext().getComponentId());
+
+		return new OpprettJournalpostArkiverDokumentRequestTo(domainJournalpost, wsRequest.isFerdigstillJournalpost());
+	}
+
+	Journalpost createDomainJournalpostBase(no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasjon.opprettjournalpostarkiverdokument.Journalpost journalpost) {
+		return Journalpost.builder()
+				.journalposttype(journalpost.getJournalpostType() == null ? null : JournalpostTypeCode.valueOf(journalpost
+						.getJournalpostType()
 						.name()))
 				.fagomrade(journalpost.getFagomrade() == null ? null : FagomradeCode.valueOf(journalpost.getFagomrade()))
 				.opprettetAvNavn(journalpost.getOpprettetAvNavn())
 				.journalForendeEnhetId(journalpost.getJournalforendeEnhet())
 				.innhold(journalpost.getInnhold())
 				.dokumentDato(journalpost.getDatoDokument() == null || journalpost.getDatoDokument()
-						.toGregorianCalendar() == null ? null : journalpost.getDatoDokument().toGregorianCalendar().getTime())
+						.toGregorianCalendar() == null ? null : journalpost.getDatoDokument()
+						.toGregorianCalendar()
+						.getTime())
 				.avsenderMottaker(journalpost.getAvsenderMottakerNavn())
 				.avsenderMottakerId(journalpost.getAvsenderMottakerId())
-				.utsendingskanal(journalpost.getUtsendingskanal() == null ? null : UtsendingsKanalCode.valueOf(journalpost.getUtsendingskanal()))
+				.utsendingskanal(journalpost.getUtsendingskanal() == null ? null : UtsendingsKanalCode.valueOf(journalpost
+						.getUtsendingskanal()))
 				.land(journalpost.getLand())
 				.build();
+	}
 
+	private void addBruker(Journalpost domainJournalpost,
+						   no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasjon.opprettjournalpostarkiverdokument.Journalpost journalpost) {
 		domainJournalpost.addBruker(Bruker.builder()
 				.brukerId(journalpost.getBruker() == null ? null : journalpost.getBruker().getBrukerId())
 				.brukerType(journalpost.getBruker() == null || journalpost.getBruker()
 						.getBrukerType() == null ? null : BrukerTypeCode.valueOf(journalpost.getBruker()
 						.getBrukerType()))
 				.build());
+	}
 
+
+	private void setSaksrelasjon(Journalpost domainJournalpost,
+								 no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasjon.opprettjournalpostarkiverdokument.Journalpost journalpost) {
+		domainJournalpost.setSaksrelasjon(Saksrelasjon.builder()
+				.sakId(journalpost.getSaksrelasjon().getSaksnummer())
+				.fagsystem(journalpost.getSaksrelasjon()
+						.getFagsystem() == null ? null : FagsystemCode.valueOf(journalpost.getSaksrelasjon()
+						.getFagsystem()))
+				.journalpost(domainJournalpost)
+				.build());
+	}
+
+	private void addJournalpostDokumentInfoRelasjon(Journalpost domainJournalpost,
+													no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasjon.opprettjournalpostarkiverdokument.DokumentInfo dokumentInfo) {
 		domainJournalpost.addJournalpostDokumentInfoRelasjon(JournalpostDokumentInfoRelasjon.builder()
 				.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.HOVEDDOKUMENT)
 				.journalpost(domainJournalpost)
@@ -82,22 +112,24 @@ public class OpprettJournalpostArkiverDokumentRequestMapper {
 								dokumentInfo.getTilleggsopplysninger()
 										.stream()
 										.collect(Collectors.toMap(Tilleggsopplysning::getOpplysningsnoekkel, Tilleggsopplysning::getOpplysningsverdi)))
-						.fildetaljerListe(dokumentInfo.getFildetaljerListe() == null ? null : dokumentInfo.getFildetaljerListe()
-								.stream()
-								.map(fildetaljer -> FilDetaljer.builder()
-										.filtype(fildetaljer.getFiltype() == null ? null : FilTypeCode.valueOf(fildetaljer.getFiltype()))
-										.variantFormat(fildetaljer.getVariantformat() == null ? null : VariantFormatCode.valueOf(fildetaljer
-												.getVariantformat()))
-										.fileContent(fildetaljer.getIkkeRedigerbartdokument())
-										.build())
-								.collect(Collectors.toSet()))
 						.build())
 				.build());
-
-		kildeNavnPopulator.populateKildeNavnForEntireJournalStructure(domainJournalpost, RequestContextHolder
-				.currentRequestContext().getComponentId());
-
-		return new OpprettJournalpostArkiverDokumentRequestTo(domainJournalpost, wsRequest.isFerdigstillJournalpost());
 	}
 
+	private void addFildetaljer(Journalpost domainJournalpost,
+								no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasjon.opprettjournalpostarkiverdokument.DokumentInfo dokumentInfo) {
+		dokumentInfo.getFildetaljerListe()
+				.stream()
+				.forEach(fildetaljer -> domainJournalpost.getJournalpostDokumentInfoRelasjoner()
+						.iterator()
+						.next()
+						.getDokumentInfo()
+						.addFilDetaljer(FilDetaljer.builder()
+								.filtype(fildetaljer.getFiltype() == null ? null : FilTypeCode.valueOf(fildetaljer.getFiltype()))
+								.variantFormat(fildetaljer.getVariantformat() == null ? null : VariantFormatCode.valueOf(fildetaljer
+										.getVariantformat()))
+								.fileContent(fildetaljer.getIkkeRedigerbartdokument())
+								.filUuid(UUID.randomUUID().toString())
+								.build()));
+	}
 }

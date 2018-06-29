@@ -22,6 +22,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -32,10 +33,11 @@ import org.mockito.MockitoAnnotations;
  */
 public class DefaultDokumentFilerDelegateTest {
 
-	private DefaultDokumentFilerDelegate dokumentFilerDelegate;
-
 	@Mock
 	private DokumentFilRepository dokumentFilRepositoryMock;
+
+	@InjectMocks
+	private DefaultDokumentFilerDelegate dokumentFilerDelegate;
 
 	@Captor
 	ArgumentCaptor<DokumentFil> dokumentFilCaptor;
