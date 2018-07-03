@@ -5,9 +5,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
-import java.math.BigInteger;
-import java.util.Optional;
-
 /**
  * @author Joakim Bjørnstad, Jbit AS
  */
@@ -25,5 +22,4 @@ public interface JoarkRepository extends CrudRepository<Journalpost, Long> {
 	//FIXME - denne spørringen fungerer ikke
 	@Query(value = "delete * from T_JP_DOK_INFO_REL where JOURNALPOST_ID= :journalpostId", nativeQuery = true)
 	void deleteJournalpostDokumentInfoRelasjon(@Param("journalpostId") Long journalpostId);
-
 }

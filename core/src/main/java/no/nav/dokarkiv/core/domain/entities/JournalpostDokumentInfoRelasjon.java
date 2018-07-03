@@ -53,7 +53,7 @@ public class JournalpostDokumentInfoRelasjon extends AbstractPersistentVersioned
 
 	@ManyToOne
 	@JoinColumn(name = "dokument_info_id", nullable = false)
-	@Cascade({CascadeType.PERSIST, CascadeType.SAVE_UPDATE, CascadeType.DETACH})
+	@Cascade({CascadeType.PERSIST, CascadeType.MERGE, CascadeType.SAVE_UPDATE, CascadeType.DETACH})
 	private DokumentInfo dokumentInfo;
 
 	@ManyToOne(fetch = FetchType.LAZY)

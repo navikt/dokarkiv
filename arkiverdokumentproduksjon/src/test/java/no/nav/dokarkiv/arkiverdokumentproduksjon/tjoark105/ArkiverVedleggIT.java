@@ -25,7 +25,6 @@ import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.ArkiverVe
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasjon.arkivervedlegg.Fildetaljer;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.ArkiverVedleggRequest;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.ArkiverVedleggResponse;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -36,7 +35,6 @@ import org.junit.rules.ExpectedException;
  *
  * @author Roar Bjurstrom - (Visma Consulting)
  */
-@Ignore
 //FIXME
 public class ArkiverVedleggIT extends AbstractArkiverdokumentproduksjonItest {
 
@@ -52,7 +50,7 @@ public class ArkiverVedleggIT extends AbstractArkiverdokumentproduksjonItest {
 
 	@Test
 	public void shouldArkiverVedlegg() throws Exception {
-		Journalpost journalpost = createJurnalpost(JournalStatusCode.D);
+		Journalpost journalpost = createJournalpost(JournalStatusCode.D);
 		joarkRepository.save(journalpost);
 		ArkiverVedleggRequest arkiverVedleggRequest = new ArkiverVedleggRequest();
 		arkiverVedleggRequest.setJournalpost(buildJournalpostForWsRequest(journalpost.getId()));
@@ -67,7 +65,7 @@ public class ArkiverVedleggIT extends AbstractArkiverdokumentproduksjonItest {
 	public void shouldSaveDokumentInfo() throws Exception {
 		DateProvider.configure(true, "2018-06-20T14:31:54.767");
 
-		Journalpost journalpost = createJurnalpost(JournalStatusCode.D);
+		Journalpost journalpost = createJournalpost(JournalStatusCode.D);
 		joarkRepository.save(journalpost);
 		ArkiverVedleggRequest arkiverVedleggRequest = new ArkiverVedleggRequest();
 		arkiverVedleggRequest.setJournalpost(buildJournalpostForWsRequest(journalpost.getId()));
@@ -75,7 +73,7 @@ public class ArkiverVedleggIT extends AbstractArkiverdokumentproduksjonItest {
 
 		ArkiverVedleggResponse arkiverVedleggResponse = arkiverDokumentproduksjonProvider.arkiverVedlegg(arkiverVedleggRequest);
 
-		Journalpost persistedJournalpost = joarkRepository.findById(arkiverVedleggResponse.getDokumentInfoId()).get();
+		Journalpost persistedJournalpost = joarkRepository.findById(arkiverVedleggResponse.getJournalpostId()).get();
 		DokumentInfo dokumentInfo = persistedJournalpost.findDokumentInfoById(arkiverVedleggResponse.getDokumentInfoId());
 
 		assertThat(dokumentInfo.getDokumentstatus(), is(DokumentStatusCode.FERDIGSTILT));
@@ -100,7 +98,7 @@ public class ArkiverVedleggIT extends AbstractArkiverdokumentproduksjonItest {
 
 	@Test
 	public void shouldUpdateJournalpostDokumentInforRelasjon() throws Exception {
-		Journalpost journalpost = createJurnalpost(JournalStatusCode.D);
+		Journalpost journalpost = createJournalpost(JournalStatusCode.D);
 		joarkRepository.save(journalpost);
 
 		ArkiverVedleggRequest arkiverVedleggRequest = new ArkiverVedleggRequest();
@@ -122,7 +120,7 @@ public class ArkiverVedleggIT extends AbstractArkiverdokumentproduksjonItest {
 	public void shouldThrowExceptionIfJournalpostNotExist() throws Exception {
 		Long journalpostId = 1L;
 		thrown.expect(ArkiverVedleggJournalpostIkkeFunnet.class);
-		thrown.expectMessage("Journalpost with id: " + journalpostId + " not found");
+		thrown.expectMessage("journalpostId=" + journalpostId + " does not exist");
 
 		ArkiverVedleggRequest arkiverVedleggRequest = new ArkiverVedleggRequest();
 		arkiverVedleggRequest.setJournalpost(buildJournalpostForWsRequest(journalpostId));
@@ -132,7 +130,7 @@ public class ArkiverVedleggIT extends AbstractArkiverdokumentproduksjonItest {
 
 	@Test
 	public void shouldThrowExceptionIfIkkeUnderArbeid() throws Exception {
-		Journalpost journalpost = createJurnalpost(JournalStatusCode.A);
+		Journalpost journalpost = createJournalpost(JournalStatusCode.A);
 		joarkRepository.save(journalpost);
 		ArkiverVedleggRequest arkiverVedleggRequest = new ArkiverVedleggRequest();
 		arkiverVedleggRequest.setJournalpost(buildJournalpostForWsRequest(journalpost.getId()));
@@ -143,9 +141,9 @@ public class ArkiverVedleggIT extends AbstractArkiverdokumentproduksjonItest {
 		arkiverDokumentproduksjonProvider.arkiverVedlegg(arkiverVedleggRequest);
 	}
 
-	private no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasjon.arkivervedlegg.Journalpost buildJournalpostForWsRequest(Long journalPostId) {
+	private no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasjon.arkivervedlegg.Journalpost buildJournalpostForWsRequest(Long journalpostId) {
 		return new no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasjon.arkivervedlegg.Journalpost()
-				.withJournalpostId(journalPostId.toString())
+				.withJournalpostId(journalpostId.toString())
 				.withEndretAvNavn(ENDRET_AV_NAVN)
 				.withDokumentInfo(new no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasjon.arkivervedlegg.DokumentInfo()
 						.withDokumentTypeId(DOKUMENT_TYPE_ID)
@@ -160,7 +158,7 @@ public class ArkiverVedleggIT extends AbstractArkiverdokumentproduksjonItest {
 						));
 	}
 
-	private Journalpost createJurnalpost(JournalStatusCode journalStatusCode) {
+	private Journalpost createJournalpost(JournalStatusCode journalStatusCode) {
 		return getJournalpostBuilder()
 				.journalStatus(journalStatusCode)
 				.journalpostType(JournalpostTypeCode.U)

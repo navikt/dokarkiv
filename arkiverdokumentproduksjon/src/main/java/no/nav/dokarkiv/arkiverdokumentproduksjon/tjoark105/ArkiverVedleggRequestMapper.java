@@ -10,7 +10,6 @@ import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger
 import org.springframework.stereotype.Component;
 
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 /**
  * Implementation of ArkiverVedleggRequestMapper
@@ -25,26 +24,25 @@ public class ArkiverVedleggRequestMapper {
 		no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasjon.arkivervedlegg.DokumentInfo dokumentInfo = journalpost
 				.getDokumentInfo();
 
+		DokumentInfo domainDokumentInfo = DokumentInfo.builder()
+				.kategori(dokumentInfo.getKategori() == null ? null : DokumentKategoriCode.valueOf(dokumentInfo.getKategori()))
+				.tittel(dokumentInfo.getTittel())
+				.brevkode(dokumentInfo.getBrevkode())
+				.dokumenttypeId(dokumentInfo.getDokumentTypeId())
+				.sensitivt(dokumentInfo.isSensitivt())
+				.build();
+		dokumentInfo.getFildetaljer().forEach(fildetaljer -> domainDokumentInfo.addFilDetaljer(FilDetaljer.builder()
+				.filtype(fildetaljer.getFiltype() == null ? null : FilTypeCode.valueOf(fildetaljer.getFiltype()))
+				.variantFormat(fildetaljer.getVariantformat() == null ? null : VariantFormatCode.valueOf(fildetaljer
+						.getVariantformat()))
+				.fileContent(fildetaljer.getIkkeRedigerbartDokument())
+				.filUuid(UUID.randomUUID().toString())
+				.build()));
 		return ArkiverVedleggRequestTo.builder()
 				.journalpostId(journalpost.getJournalpostId() == null ? null : Long.valueOf(journalpost.getJournalpostId()))
 				.endretAvNavn(journalpost.getEndretAvNavn())
 				.ferdigstillDokument(arkiverVedleggRequest.isFerdigstillDokument())
-				.dokumentInfo(DokumentInfo.builder()
-						.kategori(dokumentInfo.getKategori() == null ? null : DokumentKategoriCode.valueOf(dokumentInfo.getKategori()))
-						.tittel(dokumentInfo.getTittel())
-						.brevkode(dokumentInfo.getBrevkode())
-						.dokumenttypeId(dokumentInfo.getDokumentTypeId())
-						.sensitivt(dokumentInfo.isSensitivt())
-						.fildetaljerListe(dokumentInfo.getFildetaljer().stream()
-								.map(fildetaljer -> FilDetaljer.builder()
-										.filtype(fildetaljer.getFiltype() == null ? null : FilTypeCode.valueOf(fildetaljer.getFiltype()))
-										.variantFormat(fildetaljer.getVariantformat() == null ? null : VariantFormatCode.valueOf(fildetaljer
-												.getVariantformat()))
-										.fileContent(fildetaljer.getIkkeRedigerbartDokument())
-										.filUuid(UUID.randomUUID().toString())
-										.build())
-								.collect(Collectors.toSet()))
-						.build())
+				.dokumentInfo(domainDokumentInfo)
 				.build();
 	}
 }
