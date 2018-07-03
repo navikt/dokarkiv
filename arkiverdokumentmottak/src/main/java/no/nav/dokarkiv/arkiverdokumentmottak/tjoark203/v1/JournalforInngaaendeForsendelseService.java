@@ -9,7 +9,6 @@ import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
-import no.nav.dokarkiv.core.domain.util.DateProvider;
 import no.nav.dokarkiv.core.journalbehandling.DokumentFilerDelegate;
 import no.nav.dokarkiv.core.nsb.DokumentInfoIdVedleggTo;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
@@ -17,6 +16,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import javax.inject.Inject;
+import java.sql.Date;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 @Service
 @Slf4j
@@ -54,7 +56,7 @@ public class JournalforInngaaendeForsendelseService {
 	private void updateJournalpost(Journalpost journalpost) {
 		journalpost.setJournalstatus(JournalStatusCode.J);
 		journalpost.setJournalposttype(JournalpostTypeCode.I);
-		journalpost.setJournalDato(DateProvider.getToday());
+		journalpost.setJournalDato(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()));
 
 		for (JournalpostDokumentInfoRelasjon rel : journalpost.getJournalpostDokumentInfoRelasjoner()) {
 			rel.setTilknyttetAvNavn(journalpost.getOpprettetAvNavn());
