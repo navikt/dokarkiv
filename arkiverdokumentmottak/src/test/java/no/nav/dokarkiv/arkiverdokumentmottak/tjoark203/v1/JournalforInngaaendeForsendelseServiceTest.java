@@ -68,7 +68,6 @@ public class JournalforInngaaendeForsendelseServiceTest {
 
 		verify(repositoryMock).save(any(Journalpost.class));
 		verify(repositoryMock).findJournalpostIdByTilleggsopplysningerNokkelAndVerdi(FORSENDELSE_MOTTAK_ID_KEY, FORSENDLESE_MOTTAKS_ID);
-		verify(repositoryMock).findById(null);
 		verifyNoMoreInteractions(repositoryMock);
 		verify(validator).validate(any(Journalpost.class), eq(true));
 		verifyNoMoreInteractions(validator);
@@ -112,7 +111,6 @@ public class JournalforInngaaendeForsendelseServiceTest {
 
 		verify(repositoryMock).save(any(Journalpost.class));
 		verify(repositoryMock).findJournalpostIdByTilleggsopplysningerNokkelAndVerdi(FORSENDELSE_MOTTAK_ID_KEY, FORSENDLESE_MOTTAKS_ID);
-		verify(repositoryMock).findById(null);
 		verifyNoMoreInteractions(repositoryMock);
 		verify(validator).validate(any(Journalpost.class), eq(true));
 		verifyNoMoreInteractions(validator);

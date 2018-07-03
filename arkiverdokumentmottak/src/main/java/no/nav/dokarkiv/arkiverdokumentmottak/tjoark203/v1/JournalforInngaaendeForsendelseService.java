@@ -32,7 +32,10 @@ public class JournalforInngaaendeForsendelseService {
 	public JournalforInngaaendeForsendelseResponseTo journalforInngaaendeForsendelse(
 			JournalforInngaaendeForsendelseRequestTo requestTo) {
 		requestTo.validate();
-		String tillegsopplysning = requestTo.getJournalpost().getTilleggsopplysninger().get(FORSENDELSE_MOTTAK_ID_KEY);
+		String tillegsopplysning = requestTo.getJournalpost()
+				.getTilleggsopplysninger() == null ? null : requestTo.getJournalpost()
+				.getTilleggsopplysninger()
+				.get(FORSENDELSE_MOTTAK_ID_KEY);
 		log.info("TJOARK203_V1 Sjekker om journalpost med tillegsopplysning.ForsendelseMottakId={} finnes fra før", tillegsopplysning);
 		Journalpost storedJournalpost = findPreviousJournalforing(requestTo);
 		if (storedJournalpost == null) {

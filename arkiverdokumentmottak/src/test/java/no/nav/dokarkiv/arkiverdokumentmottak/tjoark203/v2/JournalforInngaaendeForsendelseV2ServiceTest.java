@@ -31,7 +31,6 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
 import no.nav.dokarkiv.core.domain.entities.SkannetInnhold;
-import no.nav.dokarkiv.core.domain.util.DateProvider;
 import no.nav.dokarkiv.core.journalbehandling.DokumentFilerDelegate;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import org.junit.Rule;
@@ -42,6 +41,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.Optional;
 
 /**
@@ -196,7 +198,7 @@ public class JournalforInngaaendeForsendelseV2ServiceTest {
 				.journalpostId(JOURNALPOST_ID)
 				.journalForendeEnhetId("9999")
 				.opprettetAvNavn(OPPRETTET_AV)
-				.mottattDato(DateProvider.getToday())
+				.mottattDato(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()))
 				.mottakskanal(MOTTAKSKANAL)
 				.kanalReferanseId(KANAL_REFERANSE_ID)
 				.saksrelasjon(createSaksrelasjon())

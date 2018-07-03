@@ -17,6 +17,7 @@ import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
+import no.nav.dokarkiv.core.domain.entities.SkannetInnhold;
 import no.nav.dokarkiv.core.sporing.KildeNavnPopulator;
 import no.nav.dokarkiv.core.stelvio.RequestContextHolder;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v2.meldinger.JournalforInngaaendeForsendelseRequest;
@@ -73,6 +74,7 @@ public class JournalforInngaaendeForsendelseV2RequestMapper {
 					.build());
 		}
 
+
 		journalpost.getJournalpostDokumentInfoRelasjon().forEach(relasjon ->
 				domainJournalpost.addJournalpostDokumentInfoRelasjon(JournalpostDokumentInfoRelasjon.builder()
 						.journalpost(domainJournalpost)
@@ -104,6 +106,13 @@ public class JournalforInngaaendeForsendelseV2RequestMapper {
 				.brevkode(relasjon.getDokumentInfo().getBrevkode())
 				.dokumenttypeId(relasjon.getDokumentInfo().getDokumentTypeId())
 				.originalJournalpost(domainJournalpost).build();
+
+		relasjon.getDokumentInfo().getSkannetInnholdListe().forEach(skannetInnhold -> {
+			dokumentInfo.addSkannetInnhold(SkannetInnhold.builder()
+					.dokumenttypeid(skannetInnhold.getDokumentTypeId())
+					.vedleggInnhold(skannetInnhold.getVedleggInnhold())
+					.build());
+		});
 
 		relasjon.getDokumentInfo()
 				.getFildetaljerListe()

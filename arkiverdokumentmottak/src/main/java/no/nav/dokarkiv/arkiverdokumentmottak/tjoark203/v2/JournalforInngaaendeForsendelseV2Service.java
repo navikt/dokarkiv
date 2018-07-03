@@ -8,13 +8,15 @@ import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.entities.Bruker;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
-import no.nav.dokarkiv.core.domain.util.DateProvider;
 import no.nav.dokarkiv.core.journalbehandling.DokumentFilerDelegate;
 import no.nav.dokarkiv.core.nsb.DokumentInfoIdVedleggTo;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
+import java.sql.Date;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -93,7 +95,7 @@ public class JournalforInngaaendeForsendelseV2Service {
 
 	private void updateJournalpostAfterValidation(Journalpost journalpost) {
 		if (journalpost.getJournalstatus() == JournalStatusCode.J) {
-			journalpost.setJournalDato(DateProvider.getToday());
+			journalpost.setJournalDato(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()));
 			journalpost.setJournalfortAvNavn(journalpost.getOpprettetAvNavn());
 		}
 	}
