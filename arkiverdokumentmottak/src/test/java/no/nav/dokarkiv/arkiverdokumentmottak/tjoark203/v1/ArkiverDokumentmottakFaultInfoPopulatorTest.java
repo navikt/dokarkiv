@@ -3,13 +3,15 @@ package no.nav.dokarkiv.arkiverdokumentmottak.tjoark203.v1;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
-import no.nav.dokarkiv.core.domain.util.DateProvider;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v1.feil.ForretningsmessigUnntak;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.sql.Date;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 /**
  * Unit tests of DefaultArkiverDokumentmottakFaultInfoPopulator.
@@ -42,7 +44,9 @@ public class ArkiverDokumentmottakFaultInfoPopulatorTest {
 		assertThat(faultInfo.getFeilmelding(), is(EXCEPTION_MESSAGE));
 		assertThat(faultInfo.getFeilkilde(), is(KILDE + ":" + OPERATION_NAME));
 		assertThat(faultInfo.getFeilaarsak(), is(rootCause.toString()));
-		assertThat(faultInfo.getTidspunkt().toGregorianCalendar().getTime().toString(), is(DateProvider.getToday().toString()));
+		assertThat(faultInfo.getTidspunkt().toGregorianCalendar().getTime().toString(), is(Date.from(LocalDateTime.now()
+				.atZone(ZoneId.systemDefault())
+				.toInstant()).toString()));
 	}
 
 	private static class TestForretningsmessigUnntak extends ForretningsmessigUnntak {

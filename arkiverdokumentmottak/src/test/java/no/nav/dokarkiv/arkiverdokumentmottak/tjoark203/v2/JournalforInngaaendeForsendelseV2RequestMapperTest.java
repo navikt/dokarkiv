@@ -12,8 +12,8 @@ import static org.junit.Assert.assertThat;
 import no.nav.dokarkiv.arkiverdokumentmottak.utils.JournalforInngaaendeForsendelseV2RequestDataUtil;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
-import no.nav.dokarkiv.core.domain.util.DateProvider;
 import no.nav.dokarkiv.core.sporing.KildeNavnPopulator;
+import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v2.informasjon.arkiverdokumentmottak.Journalpost;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v2.meldinger.JournalforInngaaendeForsendelseRequest;
 import org.junit.Before;
@@ -46,7 +46,7 @@ public class JournalforInngaaendeForsendelseV2RequestMapperTest {
 
 	@Before
 	public void setUp() throws Exception {
-		DateProvider.configure(true, "2017-02-21 12:00:00");
+		RequestContextSetter.setRequestContextForUnitTest();
 		createRequest();
 	}
 
