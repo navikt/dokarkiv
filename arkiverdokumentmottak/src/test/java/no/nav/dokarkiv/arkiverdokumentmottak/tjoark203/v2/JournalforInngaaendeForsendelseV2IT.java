@@ -32,6 +32,7 @@ import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v2.meldinger.Jou
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v2.meldinger.JournalforInngaaendeForsendelseResponse;
 import org.dozer.MappingException;
 import org.hamcrest.Matchers;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Rule;
@@ -48,7 +49,7 @@ import java.util.Set;
  * @author Ugur Alpay Cenar, Visma Consulting.
  */
 @Ignore
-public class Tjoark203V2IT extends AbstractArkiverDokumentmottakItest {
+public class JournalforInngaaendeForsendelseV2IT extends AbstractArkiverDokumentmottakItest {
 
 	private static JournalTilstandEnum JOURNALTILSTAND_ENDELIG = JournalTilstandEnum.ENDELIG;
 	private static JournalTilstandEnum JOURNALTILSTAND_MIDLERTIDIG = JournalTilstandEnum.MIDLERTIDIG;
@@ -57,6 +58,11 @@ public class Tjoark203V2IT extends AbstractArkiverDokumentmottakItest {
 
 	@Rule
 	public ExpectedException expectedException = ExpectedException.none();
+
+	@After
+	public void tearDown() throws Exception {
+		entityManager.flush();
+	}
 
 	@Before
 	public void setUp() throws Exception {

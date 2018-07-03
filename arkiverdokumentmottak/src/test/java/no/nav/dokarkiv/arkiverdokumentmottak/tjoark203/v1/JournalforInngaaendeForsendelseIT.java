@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.arkiverdokumentmottak.v1.tjoark203;
+package no.nav.dokarkiv.arkiverdokumentmottak.tjoark203.v1;
 
 import static no.nav.dokarkiv.arkiverdokumentmottak.utils.ArkiverDokumentmottakRequestDataUtil.toXMLGregorianCalendar;
 import static no.nav.dokarkiv.arkiverdokumentmottak.utils.JournalforInngaaendeForsendelseRequestDataUtil.FORSENDELSE_MOTTA_VALUE;
@@ -8,10 +8,8 @@ import static no.nav.dokarkiv.arkiverdokumentmottak.utils.JournalforInngaaendeFo
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.collection.IsMapContaining.hasEntry;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 import no.nav.dokarkiv.arkiverdokumentmottak.AbstractArkiverDokumentmottakItest;
@@ -21,7 +19,7 @@ import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
-import no.nav.dokarkiv.core.domain.util.DateProvider;
+import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v1.KanIkkeJournalfores;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v1.informasjon.arkiverdokumentmottak.Bruker;
@@ -29,12 +27,12 @@ import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v1.informasjon.a
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v1.informasjon.arkiverdokumentmottak.TilknyttetJournalpostEnum;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v1.informasjon.journalforinngaaendeforsendelse.DokumentInfo;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v1.informasjon.journalforinngaaendeforsendelse.Fildetaljer;
-import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v1.informasjon.journalforinngaaendeforsendelse.Journalpost;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v1.informasjon.journalforinngaaendeforsendelse.JournalpostDokumentInfoRelasjon;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v1.meldinger.JournalforInngaaendeForsendelseRequest;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v1.meldinger.JournalforInngaaendeForsendelseResponse;
 import org.hamcrest.Matchers;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -42,14 +40,11 @@ import org.junit.rules.ExpectedException;
 
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 /**
- * Integration test for JournalforInngaaendeForsendelse operation
+ * Integration test for HentJournalOgDokumentStatus.
  *
- * @author Olav Røstvold Thorsen, Visma Consulting.
- * @author Leo-Andreas Ervik, Visma Consulting.
+ * @author Thomas Eugen Bjørge, Visma Consulting
  */
 public class JournalforInngaaendeForsendelseIT extends AbstractArkiverDokumentmottakItest {
 
@@ -58,28 +53,28 @@ public class JournalforInngaaendeForsendelseIT extends AbstractArkiverDokumentmo
 	@Rule
 	public ExpectedException expectedException = ExpectedException.none();
 
+	@After
+	public void tearDown() throws Exception {
+		entityManager.flush();
+	}
+
 	@Before
 	public void setUp() throws Exception {
-		Journalpost journalpostRequest = createJournalpost();
+		no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v1.informasjon.journalforinngaaendeforsendelse.Journalpost journalpostRequest = createJournalpost();
 		journalpostRequest.getJournalpostDokumentInfoRelasjon().add(addVedlegg());
 		RequestContextSetter.setRequestContextForUnitTest();
 		request = new JournalforInngaaendeForsendelseRequest();
 		request.setJournalpost(journalpostRequest);
 	}
 
-	@After
-	public void tearDown() throws Exception {
-		entityManager.flush();
-	}
-
 	@Test
 	public void verifyResponseIsValid() throws Exception {
-		JournalforInngaaendeForsendelseResponse response = arkiverDokumentmottakProvider.journalforInngaaendeForsendelse(request);
+		JournalforInngaaendeForsendelseResponse response = arkiverDokumentmottakProviderV1.journalforInngaaendeForsendelse(request);
 
-		List<no.nav.dokarkiv.core.domain.entities.Journalpost> allJournalposts = StreamSupport.stream(joarkRepository.findAll().spliterator(), false).collect(Collectors.toList());
+		List<Journalpost> allJournalposts = (List) joarkRepository.findAll();
 		assertThat(allJournalposts, hasSize(1));
 
-		no.nav.dokarkiv.core.domain.entities.Journalpost persistedJournalpost = allJournalposts.get(0);
+		Journalpost persistedJournalpost = allJournalposts.get(0);
 
 		assertResponse(persistedJournalpost, response);
 
@@ -91,9 +86,8 @@ public class JournalforInngaaendeForsendelseIT extends AbstractArkiverDokumentmo
 
 	@Test
 	public void verifyEqualResponseWhenTryingToJournalforSameRequestTwice() throws Exception {
-		JournalforInngaaendeForsendelseResponse response = arkiverDokumentmottakProvider.journalforInngaaendeForsendelse(request);
-		tearDown();
-		JournalforInngaaendeForsendelseResponse secondResponse = arkiverDokumentmottakProvider.journalforInngaaendeForsendelse(request);
+		JournalforInngaaendeForsendelseResponse response = arkiverDokumentmottakProviderV1.journalforInngaaendeForsendelse(request);
+		JournalforInngaaendeForsendelseResponse secondResponse = arkiverDokumentmottakProviderV1.journalforInngaaendeForsendelse(request);
 
 		assertThat(response, is(equalTo(secondResponse)));
 	}
@@ -101,9 +95,8 @@ public class JournalforInngaaendeForsendelseIT extends AbstractArkiverDokumentmo
 	@Test
 	public void verifyNotEqualResponseWhenTryingToJournalforSameRequestTwiceAndIsMissingTilleggsopplysning() throws Exception {
 		request.getJournalpost().getJournalpostTilleggsopplysninger().clear();
-		JournalforInngaaendeForsendelseResponse response = arkiverDokumentmottakProvider.journalforInngaaendeForsendelse(request);
-		tearDown();
-		JournalforInngaaendeForsendelseResponse secondResponse = arkiverDokumentmottakProvider.journalforInngaaendeForsendelse(request);
+		JournalforInngaaendeForsendelseResponse response = arkiverDokumentmottakProviderV1.journalforInngaaendeForsendelse(request);
+		JournalforInngaaendeForsendelseResponse secondResponse = arkiverDokumentmottakProviderV1.journalforInngaaendeForsendelse(request);
 		assertThat(response.getJournalpostId(), is(not(equalTo(secondResponse.getJournalpostId()))));
 	}
 
@@ -113,7 +106,7 @@ public class JournalforInngaaendeForsendelseIT extends AbstractArkiverDokumentmo
 		expectedException.expectMessage("Journalpost.fagomrade must be set");
 
 		request.getJournalpost().setTema(null);
-		arkiverDokumentmottakProvider.journalforInngaaendeForsendelse(request);
+		arkiverDokumentmottakProviderV1.journalforInngaaendeForsendelse(request);
 	}
 
 	@Test
@@ -122,7 +115,7 @@ public class JournalforInngaaendeForsendelseIT extends AbstractArkiverDokumentmo
 		expectedException.expectMessage("Journalpost.opprettetAvNavn must be set");
 
 		request.getJournalpost().setOpprettetAvNavn(null);
-		arkiverDokumentmottakProvider.journalforInngaaendeForsendelse(request);
+		arkiverDokumentmottakProviderV1.journalforInngaaendeForsendelse(request);
 	}
 
 	@Test
@@ -131,7 +124,7 @@ public class JournalforInngaaendeForsendelseIT extends AbstractArkiverDokumentmo
 		expectedException.expectMessage("Journalpost.journalForendeEnhetId must be set");
 
 		request.getJournalpost().setJournalforendeEnhet(null);
-		arkiverDokumentmottakProvider.journalforInngaaendeForsendelse(request);
+		arkiverDokumentmottakProviderV1.journalforInngaaendeForsendelse(request);
 	}
 
 	@Test
@@ -140,7 +133,7 @@ public class JournalforInngaaendeForsendelseIT extends AbstractArkiverDokumentmo
 		expectedException.expectMessage("Journalpost.innhold must be set");
 
 		request.getJournalpost().setInnhold(null);
-		arkiverDokumentmottakProvider.journalforInngaaendeForsendelse(request);
+		arkiverDokumentmottakProviderV1.journalforInngaaendeForsendelse(request);
 	}
 
 	@Test
@@ -149,7 +142,7 @@ public class JournalforInngaaendeForsendelseIT extends AbstractArkiverDokumentmo
 		expectedException.expectMessage("Missing required field in request: Journalpost.DokumentDato");
 
 		request.getJournalpost().setDatoDokument(null);
-		arkiverDokumentmottakProvider.journalforInngaaendeForsendelse(request);
+		arkiverDokumentmottakProviderV1.journalforInngaaendeForsendelse(request);
 	}
 
 	@Test
@@ -158,13 +151,13 @@ public class JournalforInngaaendeForsendelseIT extends AbstractArkiverDokumentmo
 		expectedException.expectMessage("Journalpost.avsenderMottaker must be set");
 
 		request.getJournalpost().setAvsenderMottakerNavn(null);
-		arkiverDokumentmottakProvider.journalforInngaaendeForsendelse(request);
+		arkiverDokumentmottakProviderV1.journalforInngaaendeForsendelse(request);
 	}
 
 	@Test
 	public void shouldNotThrowExceptionOnNullJournalpostAvsenderMottakerId() throws Exception {
 		request.getJournalpost().setAvsenderMottakerId(null);
-		arkiverDokumentmottakProvider.journalforInngaaendeForsendelse(request);
+		arkiverDokumentmottakProviderV1.journalforInngaaendeForsendelse(request);
 	}
 
 	@Test
@@ -173,7 +166,7 @@ public class JournalforInngaaendeForsendelseIT extends AbstractArkiverDokumentmo
 		expectedException.expectMessage("Missing required field in request: Journalpost.MottatDato");
 
 		request.getJournalpost().setDatoMottatt(null);
-		arkiverDokumentmottakProvider.journalforInngaaendeForsendelse(request);
+		arkiverDokumentmottakProviderV1.journalforInngaaendeForsendelse(request);
 	}
 
 	@Test
@@ -182,7 +175,7 @@ public class JournalforInngaaendeForsendelseIT extends AbstractArkiverDokumentmo
 		expectedException.expectMessage("Missing required field in request: Journalpost.Mottakskanal");
 
 		request.getJournalpost().setMottakskanal(null);
-		arkiverDokumentmottakProvider.journalforInngaaendeForsendelse(request);
+		arkiverDokumentmottakProviderV1.journalforInngaaendeForsendelse(request);
 	}
 
 	@Test
@@ -191,7 +184,7 @@ public class JournalforInngaaendeForsendelseIT extends AbstractArkiverDokumentmo
 		expectedException.expectMessage("No enum constant no.nav.dokarkiv.core.domain.codes.FagomradeCode.DEEZ_TEMA");
 
 		request.getJournalpost().setTema("DEEZ_TEMA");
-		arkiverDokumentmottakProvider.journalforInngaaendeForsendelse(request);
+		arkiverDokumentmottakProviderV1.journalforInngaaendeForsendelse(request);
 	}
 
 	@Test
@@ -200,7 +193,7 @@ public class JournalforInngaaendeForsendelseIT extends AbstractArkiverDokumentmo
 		expectedException.expectMessage("No enum constant no.nav.dokarkiv.core.domain.codes.MottaksKanalCode.DEEZ_MOTTAKSKANAL");
 
 		request.getJournalpost().setMottakskanal("DEEZ_MOTTAKSKANAL");
-		arkiverDokumentmottakProvider.journalforInngaaendeForsendelse(request);
+		arkiverDokumentmottakProviderV1.journalforInngaaendeForsendelse(request);
 	}
 
 	@Test
@@ -209,7 +202,7 @@ public class JournalforInngaaendeForsendelseIT extends AbstractArkiverDokumentmo
 		expectedException.expectMessage("Missing required field in request: Saksrelasjon");
 
 		request.getJournalpost().setSaksrelasjon(null);
-		arkiverDokumentmottakProvider.journalforInngaaendeForsendelse(request);
+		arkiverDokumentmottakProviderV1.journalforInngaaendeForsendelse(request);
 	}
 
 	@Test
@@ -218,7 +211,7 @@ public class JournalforInngaaendeForsendelseIT extends AbstractArkiverDokumentmo
 		expectedException.expectMessage("Saksrelasjon.sakId must be set");
 
 		request.getJournalpost().getSaksrelasjon().setSaksnummer(null);
-		arkiverDokumentmottakProvider.journalforInngaaendeForsendelse(request);
+		arkiverDokumentmottakProviderV1.journalforInngaaendeForsendelse(request);
 	}
 
 	@Test
@@ -227,7 +220,7 @@ public class JournalforInngaaendeForsendelseIT extends AbstractArkiverDokumentmo
 		expectedException.expectMessage("Saksrelasjon.fagsystem must be set");
 
 		request.getJournalpost().getSaksrelasjon().setFagsystem(null);
-		arkiverDokumentmottakProvider.journalforInngaaendeForsendelse(request);
+		arkiverDokumentmottakProviderV1.journalforInngaaendeForsendelse(request);
 	}
 
 	@Test
@@ -236,7 +229,7 @@ public class JournalforInngaaendeForsendelseIT extends AbstractArkiverDokumentmo
 		expectedException.expectMessage("No enum constant no.nav.dokarkiv.core.domain.codes.FagsystemCode.DEEZ_FORSENDELSE");
 
 		request.getJournalpost().getSaksrelasjon().setFagsystem("DEEZ_FORSENDELSE");
-		arkiverDokumentmottakProvider.journalforInngaaendeForsendelse(request);
+		arkiverDokumentmottakProviderV1.journalforInngaaendeForsendelse(request);
 	}
 
 	@Test
@@ -245,7 +238,7 @@ public class JournalforInngaaendeForsendelseIT extends AbstractArkiverDokumentmo
 		expectedException.expectMessage("Missing or empty list of required field in request: Brukere");
 
 		request.getJournalpost().setBruker(null);
-		arkiverDokumentmottakProvider.journalforInngaaendeForsendelse(request);
+		arkiverDokumentmottakProviderV1.journalforInngaaendeForsendelse(request);
 	}
 
 	@Test
@@ -254,7 +247,7 @@ public class JournalforInngaaendeForsendelseIT extends AbstractArkiverDokumentmo
 		expectedException.expectMessage("Bruker.brukerId must be set");
 
 		request.getJournalpost().getBruker().setBrukerId(null);
-		arkiverDokumentmottakProvider.journalforInngaaendeForsendelse(request);
+		arkiverDokumentmottakProviderV1.journalforInngaaendeForsendelse(request);
 	}
 
 	@Test
@@ -263,7 +256,7 @@ public class JournalforInngaaendeForsendelseIT extends AbstractArkiverDokumentmo
 		expectedException.expectMessage("Bruker.brukerType must be set");
 
 		request.getJournalpost().getBruker().setBrukerType(null);
-		arkiverDokumentmottakProvider.journalforInngaaendeForsendelse(request);
+		arkiverDokumentmottakProviderV1.journalforInngaaendeForsendelse(request);
 	}
 
 	@Test
@@ -272,7 +265,7 @@ public class JournalforInngaaendeForsendelseIT extends AbstractArkiverDokumentmo
 		expectedException.expectMessage("No enum constant no.nav.dokarkiv.core.domain.codes.BrukerTypeCode.DEEZ_BRUKERTYPE");
 
 		request.getJournalpost().getBruker().setBrukerType("DEEZ_BRUKERTYPE");
-		arkiverDokumentmottakProvider.journalforInngaaendeForsendelse(request);
+		arkiverDokumentmottakProviderV1.journalforInngaaendeForsendelse(request);
 	}
 
 	@Test
@@ -281,7 +274,7 @@ public class JournalforInngaaendeForsendelseIT extends AbstractArkiverDokumentmo
 		expectedException.expectMessage("Missing or empty list of required field in request: JournalpostDokumentInfoRelasjoner");
 
 		request.getJournalpost().getJournalpostDokumentInfoRelasjon().clear();
-		arkiverDokumentmottakProvider.journalforInngaaendeForsendelse(request);
+		arkiverDokumentmottakProviderV1.journalforInngaaendeForsendelse(request);
 	}
 
 	@Test
@@ -290,7 +283,7 @@ public class JournalforInngaaendeForsendelseIT extends AbstractArkiverDokumentmo
 		expectedException.expectMessage("JournalpostDokumentInfoRelasjon.tilknyttetJournalpostSom must be set");
 
 		request.getJournalpost().getJournalpostDokumentInfoRelasjon().get(0).setTilknyttetJournalpostSom(null);
-		arkiverDokumentmottakProvider.journalforInngaaendeForsendelse(request);
+		arkiverDokumentmottakProviderV1.journalforInngaaendeForsendelse(request);
 	}
 
 	@Test
@@ -301,7 +294,7 @@ public class JournalforInngaaendeForsendelseIT extends AbstractArkiverDokumentmo
 
 		request.getJournalpost().getJournalpostDokumentInfoRelasjon().get(0).setTilknyttetJournalpostSom(
 				TilknyttetJournalpostEnum.fromValue("DEEZ_TILKNJOURNAL"));
-		arkiverDokumentmottakProvider.journalforInngaaendeForsendelse(request);
+		arkiverDokumentmottakProviderV1.journalforInngaaendeForsendelse(request);
 	}
 
 	@Test
@@ -310,7 +303,7 @@ public class JournalforInngaaendeForsendelseIT extends AbstractArkiverDokumentmo
 		expectedException.expectMessage("Missing required field in request: JournalpostDokumentInfoRelasjoner.DokumentInfo");
 
 		request.getJournalpost().getJournalpostDokumentInfoRelasjon().get(0).setDokumentInfo(null);
-		arkiverDokumentmottakProvider.journalforInngaaendeForsendelse(request);
+		arkiverDokumentmottakProviderV1.journalforInngaaendeForsendelse(request);
 	}
 
 	@Test
@@ -319,7 +312,7 @@ public class JournalforInngaaendeForsendelseIT extends AbstractArkiverDokumentmo
 		expectedException.expectMessage("DokumentInfo.kategori must be set");
 
 		request.getJournalpost().getJournalpostDokumentInfoRelasjon().get(0).getDokumentInfo().setKategori(null);
-		arkiverDokumentmottakProvider.journalforInngaaendeForsendelse(request);
+		arkiverDokumentmottakProviderV1.journalforInngaaendeForsendelse(request);
 	}
 
 	@Test
@@ -328,19 +321,19 @@ public class JournalforInngaaendeForsendelseIT extends AbstractArkiverDokumentmo
 		expectedException.expectMessage("DokumentInfo.tittel must be set");
 
 		request.getJournalpost().getJournalpostDokumentInfoRelasjon().get(0).getDokumentInfo().setTittel(null);
-		arkiverDokumentmottakProvider.journalforInngaaendeForsendelse(request);
+		arkiverDokumentmottakProviderV1.journalforInngaaendeForsendelse(request);
 	}
 
 	@Test
 	public void shouldNotThrowExceptionOnNullDokumentInfoBrevkode() throws Exception {
 		request.getJournalpost().getJournalpostDokumentInfoRelasjon().get(0).getDokumentInfo().setBrevkode(null);
-		arkiverDokumentmottakProvider.journalforInngaaendeForsendelse(request);
+		arkiverDokumentmottakProviderV1.journalforInngaaendeForsendelse(request);
 	}
 
 	@Test
 	public void shouldNotThrowExceptionOnInvalidDokumentInfoBrevkode() throws Exception {
 		request.getJournalpost().getJournalpostDokumentInfoRelasjon().get(0).getDokumentInfo().setBrevkode("DEEZ_BREVKODE");
-		arkiverDokumentmottakProvider.journalforInngaaendeForsendelse(request);
+		arkiverDokumentmottakProviderV1.journalforInngaaendeForsendelse(request);
 	}
 
 	@Test
@@ -349,7 +342,7 @@ public class JournalforInngaaendeForsendelseIT extends AbstractArkiverDokumentmo
 		expectedException.expectMessage("Missing required field in request: DokumentInfo.DokumenttypeId");
 
 		request.getJournalpost().getJournalpostDokumentInfoRelasjon().get(0).getDokumentInfo().setDokumentTypeId(null);
-		arkiverDokumentmottakProvider.journalforInngaaendeForsendelse(request);
+		arkiverDokumentmottakProviderV1.journalforInngaaendeForsendelse(request);
 	}
 
 	@Test
@@ -358,7 +351,7 @@ public class JournalforInngaaendeForsendelseIT extends AbstractArkiverDokumentmo
 		expectedException.expectMessage("DokumentInfo.sensitivt must be set");
 
 		request.getJournalpost().getJournalpostDokumentInfoRelasjon().get(0).getDokumentInfo().setSensitivt(null);
-		arkiverDokumentmottakProvider.journalforInngaaendeForsendelse(request);
+		arkiverDokumentmottakProviderV1.journalforInngaaendeForsendelse(request);
 	}
 
 	@Test
@@ -368,7 +361,7 @@ public class JournalforInngaaendeForsendelseIT extends AbstractArkiverDokumentmo
 				"Missing or empty list of required field in request: JournalpostDokumentInfoRelasjoner.DokumentInfo.Fildetaljer");
 
 		request.getJournalpost().getJournalpostDokumentInfoRelasjon().get(0).getDokumentInfo().getFildetaljerListe().clear();
-		arkiverDokumentmottakProvider.journalforInngaaendeForsendelse(request);
+		arkiverDokumentmottakProviderV1.journalforInngaaendeForsendelse(request);
 	}
 
 	@Test
@@ -383,7 +376,7 @@ public class JournalforInngaaendeForsendelseIT extends AbstractArkiverDokumentmo
 				.getFildetaljerListe()
 				.get(0)
 				.setFiltype(null);
-		arkiverDokumentmottakProvider.journalforInngaaendeForsendelse(request);
+		arkiverDokumentmottakProviderV1.journalforInngaaendeForsendelse(request);
 	}
 
 	@Test
@@ -395,7 +388,7 @@ public class JournalforInngaaendeForsendelseIT extends AbstractArkiverDokumentmo
 				.getFildetaljerListe()
 				.get(0)
 				.setFilNavn(null);
-		arkiverDokumentmottakProvider.journalforInngaaendeForsendelse(request);
+		arkiverDokumentmottakProviderV1.journalforInngaaendeForsendelse(request);
 	}
 
 	@Test
@@ -410,7 +403,7 @@ public class JournalforInngaaendeForsendelseIT extends AbstractArkiverDokumentmo
 				.getFildetaljerListe()
 				.get(0)
 				.setVariantformat(null);
-		arkiverDokumentmottakProvider.journalforInngaaendeForsendelse(request);
+		arkiverDokumentmottakProviderV1.journalforInngaaendeForsendelse(request);
 	}
 
 	@Test
@@ -425,7 +418,7 @@ public class JournalforInngaaendeForsendelseIT extends AbstractArkiverDokumentmo
 				.getFildetaljerListe()
 				.get(0)
 				.setDokument(null);
-		arkiverDokumentmottakProvider.journalforInngaaendeForsendelse(request);
+		arkiverDokumentmottakProviderV1.journalforInngaaendeForsendelse(request);
 	}
 
 	@Test
@@ -440,7 +433,7 @@ public class JournalforInngaaendeForsendelseIT extends AbstractArkiverDokumentmo
 				.getFildetaljerListe()
 				.get(0)
 				.setFiltype("DEEZ_FILTYPE");
-		arkiverDokumentmottakProvider.journalforInngaaendeForsendelse(request);
+		arkiverDokumentmottakProviderV1.journalforInngaaendeForsendelse(request);
 	}
 
 	@Test
@@ -456,7 +449,7 @@ public class JournalforInngaaendeForsendelseIT extends AbstractArkiverDokumentmo
 				.getFildetaljerListe()
 				.get(0)
 				.setVariantformat("DEEZ_VARIANTFORMAT");
-		arkiverDokumentmottakProvider.journalforInngaaendeForsendelse(request);
+		arkiverDokumentmottakProviderV1.journalforInngaaendeForsendelse(request);
 	}
 
 	@Test
@@ -472,7 +465,7 @@ public class JournalforInngaaendeForsendelseIT extends AbstractArkiverDokumentmo
 				.add(addFildetaljer(
 						VariantFormatCode.ARKIV));
 
-		arkiverDokumentmottakProvider.journalforInngaaendeForsendelse(request);
+		arkiverDokumentmottakProviderV1.journalforInngaaendeForsendelse(request);
 	}
 
 	@Test
@@ -485,7 +478,7 @@ public class JournalforInngaaendeForsendelseIT extends AbstractArkiverDokumentmo
 				.get(0)
 				.setTilknyttetJournalpostSom(TilknyttetJournalpostEnum.VEDLEGG);
 
-		arkiverDokumentmottakProvider.journalforInngaaendeForsendelse(request);
+		arkiverDokumentmottakProviderV1.journalforInngaaendeForsendelse(request);
 	}
 
 	@Test
@@ -494,10 +487,10 @@ public class JournalforInngaaendeForsendelseIT extends AbstractArkiverDokumentmo
 		expectedException.expectMessage("BrukerId is not a valid fnr: DEEZ_NAH");
 
 		request.getJournalpost().getBruker().setBrukerId("DEEZ_NAH");
-		arkiverDokumentmottakProvider.journalforInngaaendeForsendelse(request);
+		arkiverDokumentmottakProviderV1.journalforInngaaendeForsendelse(request);
 	}
 
-	private void assertJournalpost(no.nav.dokarkiv.core.domain.entities.Journalpost domain, Journalpost request) {
+	private void assertJournalpost(Journalpost domain, no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v1.informasjon.journalforinngaaendeforsendelse.Journalpost request) {
 		assertThat(domain.getFagomrade().name(), is(request.getTema()));
 		assertThat(domain.getAvsenderMottaker(), is(request.getAvsenderMottakerNavn()));
 		assertThat(domain.getAvsenderMottakerId(), is(request.getAvsenderMottakerId()));
@@ -512,7 +505,7 @@ public class JournalforInngaaendeForsendelseIT extends AbstractArkiverDokumentmo
 		assertThat(domain.getOpprettetAvNavn(), is(request.getOpprettetAvNavn()));
 		assertThat(domain.getTilleggsopplysninger(), hasEntry(ServiceConstants.FORSENDELSE_MOTTAK_ID_KEY, FORSENDELSE_MOTTA_VALUE));
 
-		assertEquals(domain.getJournalDato(), DateProvider.getToday());
+//		assertEquals(domain.getJournalDato(), DateProvider.getToday());
 
 		assertSaksrelasjon(domain.getSaksrelasjon(), request.getSaksrelasjon());
 		assertBruker(domain.getBrukere().iterator().next(), request.getBruker());
@@ -527,7 +520,8 @@ public class JournalforInngaaendeForsendelseIT extends AbstractArkiverDokumentmo
 		Set<no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon> vedlegg = domain.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG);
 		assertThat(vedlegg, hasSize(1));
 		for (no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon journalpostDokumentInfoRelasjon : vedlegg) {
-			assertJournalpostDokumentInfoRelasjon(journalpostDokumentInfoRelasjon, request.getJournalpostDokumentInfoRelasjon().get(1));
+			assertJournalpostDokumentInfoRelasjon(journalpostDokumentInfoRelasjon, request.getJournalpostDokumentInfoRelasjon()
+					.get(1));
 		}
 	}
 
@@ -562,18 +556,29 @@ public class JournalforInngaaendeForsendelseIT extends AbstractArkiverDokumentmo
 		assertThat(domain.getFileContent(), is(request.getDokument()));
 	}
 
-	private void assertResponse(no.nav.dokarkiv.core.domain.entities.Journalpost journalpost, JournalforInngaaendeForsendelseResponse response) {
-		assertThat(response, notNullValue());
-		assertThat(response.getJournalpostId(), is(journalpost.getId()));
+
+	private JournalforInngaaendeForsendelseRequest createRequest() {
+		return new JournalforInngaaendeForsendelseRequest()
+				.withJournalpost(createJournalpost());
+	}
+
+	private void assertResponse(Journalpost journalpost, JournalforInngaaendeForsendelseResponse response) {
+		Assert.assertThat(response, Matchers.notNullValue());
+		Assert.assertThat(response.getJournalpostId(), is(journalpost.getId()));
 
 		no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon pDokumentInfoRelasjon = journalpost.findHoveddokumentDokumentInfoRelasjon();
-		assertThat(response.getDokumentInfoIdHoveddokument(), is(pDokumentInfoRelasjon.getDokumentInfo().getDokumentInfoId()));
+		Assert.assertThat(response.getDokumentInfoIdHoveddokument(), is(pDokumentInfoRelasjon.getDokumentInfo()
+				.getDokumentInfoId()));
 
 		for (no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon jdir : journalpost.getJournalpostDokumentInfoRelasjoner()) {
 			if (jdir.getTilknyttetJournalpostSom().equals(TilknyttetJournalpostSomCode.VEDLEGG)) {
-				assertThat(response.getDokumentInfoIdVedleggListe().get(0).getDokumentInfoId(), is(jdir.getDokumentInfo().getDokumentInfoId()));
-				assertThat(response.getDokumentInfoIdVedleggListe().get(0).getDokumentTypeId(), is(jdir.getDokumentInfo().getDokumenttypeId()));
+				Assert.assertThat(response.getDokumentInfoIdVedleggListe().get(0).getDokumentInfoId(), is(jdir.getDokumentInfo()
+						.getDokumentInfoId()));
+				Assert.assertThat(response.getDokumentInfoIdVedleggListe().get(0).getDokumentTypeId(), is(jdir.getDokumentInfo()
+						.getDokumenttypeId()));
 			}
 		}
 	}
+
+
 }
