@@ -212,7 +212,7 @@
 
 		<field>
 			<a>dokumentTypeId</a>
-			<b>dokumenttypeId</b>
+			<b>dokumenttypeid</b>
 		</field>
 
 	</mapping>
