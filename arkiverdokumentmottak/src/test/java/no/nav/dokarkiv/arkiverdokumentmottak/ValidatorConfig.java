@@ -1,6 +1,6 @@
 package no.nav.dokarkiv.arkiverdokumentmottak;
 
-import no.nav.dokarkiv.arkiverdokumentmottak.v1.tjoark203.DefaultJournalforInngaaendeForsendelseValidator;
+import no.nav.dokarkiv.arkiverdokumentmottak.tjoark203.v1.JournalforInngaaendeForsendelseValidator;
 import no.nav.dokarkiv.core.journalbehandling.DefaultJournalpostStructureVerifier;
 import no.nav.dokarkiv.core.journalbehandling.DefaultMandatoryFieldsVerifier;
 import no.nav.dokarkiv.core.journalbehandling.JournalpostStructureVerifier;
@@ -24,8 +24,8 @@ public class ValidatorConfig {
 
 
 	@Bean
-	public DefaultJournalforInngaaendeForsendelseValidator journalforInngaaendeForsendelseValidator() {
-		return new DefaultJournalforInngaaendeForsendelseValidator();
+	public JournalforInngaaendeForsendelseValidator journalforInngaaendeForsendelseValidator() {
+		return new JournalforInngaaendeForsendelseValidator();
 	}
 
 }

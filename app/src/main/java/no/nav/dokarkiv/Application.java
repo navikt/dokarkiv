@@ -1,5 +1,6 @@
 package no.nav.dokarkiv;
 
+import no.nav.dokarkiv.arkiverdokumentmottak.ArkiverDokumentmottakConfig;
 import no.nav.dokarkiv.arkiverdokumentproduksjon.ArkiverDokumentproduksjonConfig;
 import no.nav.dokarkiv.core.CoreConfig;
 import no.nav.dokarkiv.dokumentproduksjoninfo.DokumentproduksjonInfoConfig;
@@ -13,6 +14,7 @@ import org.springframework.context.annotation.Import;
 @Import({CoreConfig.class,
 		DokumentproduksjonInfoConfig.class,
 		ArkiverDokumentproduksjonConfig.class,
+		ArkiverDokumentmottakConfig.class,
 		NaisContract.class})
 public class Application {
 	public static void main(String[] args) {

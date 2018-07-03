@@ -1,5 +1,7 @@
 package no.nav.dokarkiv.core.jaxws;
 
+import static no.nav.dokarkiv.core.jaxws.MDCConstants.MDC_CALL_ID;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -26,9 +28,6 @@ import java.util.Set;
 public class CallIdHandler implements SOAPHandler<SOAPMessageContext> {
 
 	private static final Logger logger = LoggerFactory.getLogger(CallIdHandler.class);
-	
-	/** The callID MDC key */
-	public static final String MDC_CALL_ID = "callId";
 
     // QName for the callId header
     private static final QName CALLID_QNAME = new QName("uri:no.nav.applikasjonsrammeverk", MDC_CALL_ID);

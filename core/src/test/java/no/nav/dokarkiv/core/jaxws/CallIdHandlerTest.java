@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.core.jaxws;
 
+import static no.nav.dokarkiv.core.jaxws.MDCConstants.MDC_CALL_ID;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
@@ -46,7 +47,7 @@ public class CallIdHandlerTest {
 		when(context.getMessage()).thenReturn(soapMessage);
 		when(context.get(MessageContext.MESSAGE_OUTBOUND_PROPERTY)).thenReturn(false);
 
-		MDC.put(CallIdHandler.MDC_CALL_ID, null);
+		MDC.put(MDC_CALL_ID, null);
 	}
 
 	@Test
@@ -55,7 +56,7 @@ public class CallIdHandlerTest {
 
 		handler.handleMessage(context);
 
-		assertThat(MDC.get(CallIdHandler.MDC_CALL_ID), is(callId));
+		assertThat(MDC.get(MDC_CALL_ID), is(callId));
 	}
 
 	private void addCallIdHeaderToSOAPMessage() throws Exception {
