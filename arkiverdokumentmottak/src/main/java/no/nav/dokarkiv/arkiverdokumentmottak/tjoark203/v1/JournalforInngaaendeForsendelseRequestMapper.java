@@ -90,10 +90,9 @@ public class JournalforInngaaendeForsendelseRequestMapper {
 	}
 
 	public DokumentInfo createDokumentInfo(no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v1.informasjon.journalforinngaaendeforsendelse.JournalpostDokumentInfoRelasjon relasjon, Journalpost domainJournalpost) {
-		if (relasjon.getDokumentInfo() == null) {
+		if(relasjon == null || relasjon.getDokumentInfo() == null) {
 			return null;
 		}
-
 		DokumentInfo dokumentInfo = DokumentInfo.builder()
 				.kategori(stringToEnum(DokumentKategoriCode.class, relasjon.getDokumentInfo().getKategori()))
 				.sensitivt(relasjon.getDokumentInfo().isSensitivt())

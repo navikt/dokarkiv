@@ -19,7 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Spring configuration for the ArkiverDokumentMottaktV1 ws service
+ * Spring configuration for the ArkiverDokumentMottak ws service
  *
  * @author Stig Strøm
  */

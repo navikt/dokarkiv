@@ -53,7 +53,7 @@ public class ArkiverDokumentmottakProvider implements ArkiverDokumentmottakV1 {
 
 		} catch (FunctionalUnrecoverableException | IllegalArgumentException e) {
 			String tilleggsOpplysning = findTilleggsOpplysning(request);
-			log.warn("TJOARK203_V1 Kan ikke journalføre inngående forsendelse. tilleggsopplysning.ForsendelseMottakId=" + tilleggsOpplysning, e);
+			log.warn("Kan ikke journalføre inngående forsendelse. tilleggsopplysning=" + tilleggsOpplysning, e);
 			throw new KanIkkeJournalfores(e.getMessage(), faultInfoPopulator.populateFaultInfo(
 					new no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v1.feil.KanIkkeJournalfores(), e, "journalforInngaaendeForsendelse"));
 		}
@@ -61,8 +61,6 @@ public class ArkiverDokumentmottakProvider implements ArkiverDokumentmottakV1 {
 	}
 
 	@Override
-	@Transactional
-	//FIXME Her ble codahale@Counted annotering brukt. Legg til tilsvarende metrikker i form av prometheus og micrometer
 	public void ping() {
 		//noop
 	}
