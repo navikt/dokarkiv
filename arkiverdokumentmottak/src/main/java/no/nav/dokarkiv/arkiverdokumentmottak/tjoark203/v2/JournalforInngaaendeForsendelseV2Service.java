@@ -104,10 +104,8 @@ public class JournalforInngaaendeForsendelseV2Service {
 			return null;
 		}
 
-		return null;
-		//TODO
-//		return joarkRepository.findJournalpostByKanalReferanseIdAndMottakskanal(journalpost.getKanalReferanseId(),
-//				journalpost.getMottakskanal().name());
+		return joarkRepository.findJournalpostIdByKanalReferanseIdAndMottakskanal(journalpost.getKanalReferanseId(),
+				journalpost.getMottakskanal().name()).orElse(null);
 	}
 
 	private void decideAndSetJournalStatus(Boolean isForsokEndeligJf, Journalpost journalpost) {

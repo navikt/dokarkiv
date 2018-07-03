@@ -85,7 +85,7 @@ public final class JournalforInngaaendeForsendelseRequestDataUtil {
 	private static Set<SkannetInnhold> createSkannetInnholdListe() {
 		Set<SkannetInnhold> skannetInnholds = new HashSet<>();
 		skannetInnholds.add(SkannetInnhold.builder()
-				.dokumenttypeId(DOKUMENT_TYPE_ID)
+				.dokumenttypeid(DOKUMENT_TYPE_ID)
 				.vedleggInnhold(VEDLEGG_INNHOLD).build());
 		return skannetInnholds;
 	}

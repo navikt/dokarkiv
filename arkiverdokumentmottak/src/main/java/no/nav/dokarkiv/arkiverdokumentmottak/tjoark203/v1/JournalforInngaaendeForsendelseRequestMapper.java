@@ -1,5 +1,8 @@
 package no.nav.dokarkiv.arkiverdokumentmottak.tjoark203.v1;
 
+import static no.nav.dokarkiv.arkiverdokumentmottak.util.ConverterUtils.converTillegsopplysningerToMap;
+import static no.nav.dokarkiv.arkiverdokumentmottak.util.ConverterUtils.stringToEnum;
+
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
@@ -16,15 +19,10 @@ import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
 import no.nav.dokarkiv.core.sporing.KildeNavnPopulator;
 import no.nav.dokarkiv.core.stelvio.RequestContextHolder;
-import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v1.informasjon.arkiverdokumentmottak.Tilleggsopplysning;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v1.meldinger.JournalforInngaaendeForsendelseRequest;
 import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
 
 import javax.inject.Inject;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * JournalforInngaaendeForsendelseRequestMapper implementation
@@ -116,23 +114,6 @@ public class JournalforInngaaendeForsendelseRequestMapper {
 		return dokumentInfo;
 	}
 
-	public Map<String, String> converTillegsopplysningerToMap(List<Tilleggsopplysning> source) {
-		if (CollectionUtils.isEmpty(source)) {
-			return null;
-		}
 
-		Map<String, String> destination = new HashMap<>();
-		for (Tilleggsopplysning tilleggsopplysning : source) {
-			destination.put(tilleggsopplysning.getOpplysningsnoekkel(), tilleggsopplysning.getOpplysningsverdi());
-		}
 
-		return destination;
-	}
-
-	private <T extends Enum<T>> T stringToEnum(Class<T> clazz, String value) {
-		if (value == null) {
-			return null;
-		}
-		return Enum.valueOf(clazz, value);
-	}
 }

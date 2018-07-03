@@ -1,5 +1,4 @@
-package no.nav.dokarkiv.arkiverdokumentmottak.tjoark203.v1;
-
+package no.nav.dokarkiv.arkiverdokumentmottak.tjoark203.v2;
 
 import no.nav.dokarkiv.arkiverdokumentmottak.ValidatorTestConfig;
 import no.nav.dokarkiv.core.domain.builder.BrukerBuilder;
@@ -38,14 +37,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Unit test for {@link JournalforInngaaendeForsendelseValidator}
- *
- * @author Leo-Andreas Ervik, Visma Consulting. 27.02.2017
+ * @author Ugur Alpay Cenar, Visma Consulting.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {ValidatorTestConfig.class})
-public class JournalforInngaaendeForsendelseValidatorTest {
-
+public class JournalforInngaaendeForsendelseV2ValidatorTest {
 	private static final boolean SENSITIVITET = true;
 	private static final String BREVKODE = "brevkode";
 	private static final String DOKUMENT_TYPE_ID = "dokumentTypeId";
@@ -78,7 +74,7 @@ public class JournalforInngaaendeForsendelseValidatorTest {
 	private Journalpost journalpost;
 
 	@Inject
-	private JournalforInngaaendeForsendelseValidator validator;
+	private JournalforInngaaendeForsendelseV2Validator validator;
 
 	@Before
 	public void setUp() throws Exception {
@@ -88,7 +84,7 @@ public class JournalforInngaaendeForsendelseValidatorTest {
 
 	@Test
 	public void testValidRequest() throws Exception {
-		validator.validate(journalpost, true);
+		validator.validate(journalpost);
 	}
 
 	@Test
@@ -105,46 +101,7 @@ public class JournalforInngaaendeForsendelseValidatorTest {
 				.next()
 				.setVariantFormat(null);
 
-		validator.validate(journalpost, true);
-	}
-
-	@Test
-	public void testInvalidVariantFormat() throws Exception {
-		expectedException.expect(InvalidJournalpostStructureException.class);
-		expectedException.expectMessage("DokumentInfo cannot contain dokumentvariant duplicates, found 2 ARKIV varianter");
-
-		for (JournalpostDokumentInfoRelasjon jdir : journalpost.getJournalpostDokumentInfoRelasjoner()) {
-			for (FilDetaljer filDetaljer : jdir.getDokumentInfo().getFildetaljerListe()) {
-				filDetaljer.setVariantFormat(VARIANTFORMAT_AKTIV);
-			}
-		}
-
-		validator.validate(journalpost, true);
-	}
-
-	@Test
-	public void testTooFewHoveddokument() throws Exception {
-		expectedException.expect(InvalidJournalpostStructureException.class);
-		expectedException.expectMessage("Journalpost must contain either a hoveddokument or a sammensatt dokument when endelig journalforing");
-
-		for (JournalpostDokumentInfoRelasjon jdir : journalpost.getJournalpostDokumentInfoRelasjoner()) {
-			jdir.setTilknyttetJournalpostSom(VEDLEGG);
-		}
-
-		validator.validate(journalpost, true);
-	}
-
-	@Test
-	public void testTooManyHoveddokument() throws Exception {
-		expectedException.expect(InvalidJournalpostStructureException.class);
-		expectedException.expectMessage("Journalpost cannot contain more than one hoveddokument when endelig journalforing");
-
-
-		for (JournalpostDokumentInfoRelasjon jp : journalpost.getJournalpostDokumentInfoRelasjoner()) {
-			jp.setTilknyttetJournalpostSom(HOVEDDOKUMENT);
-		}
-
-		validator.validate(journalpost, true);
+		validator.validate(journalpost);
 	}
 
 	@Test
@@ -153,7 +110,7 @@ public class JournalforInngaaendeForsendelseValidatorTest {
 		expectedException.expectMessage("Journalpost.fagomrade");
 
 		journalpost.setFagomrade(null);
-		validator.validate(journalpost, true);
+		validator.validate(journalpost);
 	}
 
 	@Test
@@ -162,7 +119,7 @@ public class JournalforInngaaendeForsendelseValidatorTest {
 		expectedException.expectMessage("Journalpost.journalForendeEnhetId");
 
 		journalpost.setJournalForendeEnhetId(null);
-		validator.validate(journalpost, true);
+		validator.validate(journalpost);
 	}
 
 	@Test
@@ -171,7 +128,7 @@ public class JournalforInngaaendeForsendelseValidatorTest {
 		expectedException.expectMessage("Journalpost.opprettetAvNavn");
 
 		journalpost.setOpprettetAvNavn(null);
-		validator.validate(journalpost, true);
+		validator.validate(journalpost);
 	}
 
 	@Test
@@ -180,7 +137,7 @@ public class JournalforInngaaendeForsendelseValidatorTest {
 		expectedException.expectMessage("Journalpost.innhold");
 
 		journalpost.setInnhold(null);
-		validator.validate(journalpost, true);
+		validator.validate(journalpost);
 	}
 
 	@Test
@@ -189,7 +146,7 @@ public class JournalforInngaaendeForsendelseValidatorTest {
 		expectedException.expectMessage("Missing required field in request: Journalpost.DokumentDato");
 
 		journalpost.setDokumentDato(null);
-		validator.validate(journalpost, true);
+		validator.validate(journalpost);
 	}
 
 	@Test
@@ -198,7 +155,7 @@ public class JournalforInngaaendeForsendelseValidatorTest {
 		expectedException.expectMessage("Journalpost.avsenderMottaker");
 
 		journalpost.setAvsenderMottaker(null);
-		validator.validate(journalpost, true);
+		validator.validate(journalpost);
 	}
 
 	@Test
@@ -207,7 +164,7 @@ public class JournalforInngaaendeForsendelseValidatorTest {
 		expectedException.expectMessage("Missing required field in request: Journalpost.MottatDato");
 
 		journalpost.setMottattDato(null);
-		validator.validate(journalpost, true);
+		validator.validate(journalpost);
 	}
 
 	@Test
@@ -216,7 +173,7 @@ public class JournalforInngaaendeForsendelseValidatorTest {
 		expectedException.expectMessage("Missing required field in request: Journalpost.Mottakskanal");
 
 		journalpost.setMottakskanal(null);
-		validator.validate(journalpost, true);
+		validator.validate(journalpost);
 	}
 
 	@Test
@@ -225,7 +182,7 @@ public class JournalforInngaaendeForsendelseValidatorTest {
 		expectedException.expectMessage("Saksrelasjon.sakId");
 
 		journalpost.getSaksrelasjon().setSakId(null);
-		validator.validate(journalpost, true);
+		validator.validate(journalpost);
 	}
 
 	@Test
@@ -234,7 +191,7 @@ public class JournalforInngaaendeForsendelseValidatorTest {
 		expectedException.expectMessage("Saksrelasjon.fagsystem");
 
 		journalpost.getSaksrelasjon().setFagsystem(null);
-		validator.validate(journalpost, true);
+		validator.validate(journalpost);
 	}
 
 	@Test
@@ -245,7 +202,7 @@ public class JournalforInngaaendeForsendelseValidatorTest {
 		for (Bruker bruker : journalpost.getBrukere()) {
 			bruker.setBrukerId(null);
 		}
-		validator.validate(journalpost, true);
+		validator.validate(journalpost);
 	}
 
 	@Test
@@ -256,7 +213,7 @@ public class JournalforInngaaendeForsendelseValidatorTest {
 		for (Bruker bruker : journalpost.getBrukere()) {
 			bruker.setBrukerType(null);
 		}
-		validator.validate(journalpost, true);
+		validator.validate(journalpost);
 	}
 
 
@@ -268,7 +225,7 @@ public class JournalforInngaaendeForsendelseValidatorTest {
 		for (JournalpostDokumentInfoRelasjon jdir : journalpost.getJournalpostDokumentInfoRelasjoner()) {
 			jdir.setTilknyttetJournalpostSom(null);
 		}
-		validator.validate(journalpost, true);
+		validator.validate(journalpost);
 	}
 
 	@Test
@@ -279,7 +236,7 @@ public class JournalforInngaaendeForsendelseValidatorTest {
 		for (JournalpostDokumentInfoRelasjon jdir : journalpost.getJournalpostDokumentInfoRelasjoner()) {
 			jdir.getDokumentInfo().setKategori(null);
 		}
-		validator.validate(journalpost, true);
+		validator.validate(journalpost);
 	}
 
 	@Test
@@ -290,7 +247,7 @@ public class JournalforInngaaendeForsendelseValidatorTest {
 		for (JournalpostDokumentInfoRelasjon jdir : journalpost.getJournalpostDokumentInfoRelasjoner()) {
 			jdir.getDokumentInfo().setTittel(null);
 		}
-		validator.validate(journalpost, true);
+		validator.validate(journalpost);
 	}
 
 	@Test
@@ -301,7 +258,7 @@ public class JournalforInngaaendeForsendelseValidatorTest {
 		for (JournalpostDokumentInfoRelasjon jdir : journalpost.getJournalpostDokumentInfoRelasjoner()) {
 			jdir.getDokumentInfo().setDokumenttypeId(null);
 		}
-		validator.validate(journalpost, true);
+		validator.validate(journalpost);
 	}
 
 	@Test
@@ -312,7 +269,7 @@ public class JournalforInngaaendeForsendelseValidatorTest {
 		for (JournalpostDokumentInfoRelasjon jdir : journalpost.getJournalpostDokumentInfoRelasjoner()) {
 			jdir.getDokumentInfo().setDokumenttypeId("");
 		}
-		validator.validate(journalpost, true);
+		validator.validate(journalpost);
 	}
 
 	@Test
@@ -323,7 +280,7 @@ public class JournalforInngaaendeForsendelseValidatorTest {
 		for (JournalpostDokumentInfoRelasjon jdir : journalpost.getJournalpostDokumentInfoRelasjoner()) {
 			jdir.getDokumentInfo().setSensitivt(null);
 		}
-		validator.validate(journalpost, true);
+		validator.validate(journalpost);
 	}
 
 	@Test
@@ -337,22 +294,69 @@ public class JournalforInngaaendeForsendelseValidatorTest {
 				filDetaljer.setFiltype(null);
 			}
 		}
-		validator.validate(journalpost, true);
+		validator.validate(journalpost);
 	}
 
 	@Test
-	public void shouldFailOnNullFileContent() throws Exception {
-		expectedException.expect(IllegalArgumentException.class);
-		expectedException.expectMessage("Missing required field in request: FilDetaljer.FileContent");
+	public void testValidVariantformater() throws Exception {
+		validator.validateVariantFormaterAndHoveddokument(journalpost);
+	}
+
+	@Test
+	public void shouldFailOnNoVariantFormatArkiv() throws Exception {
+		expectedException.expect(InvalidJournalpostStructureException.class);
+		expectedException.expectMessage("All the Journalpost's DokumentInfos must contain an arkiv variant");
 
 		for (JournalpostDokumentInfoRelasjon jdir : journalpost
 				.getJournalpostDokumentInfoRelasjoner()) {
 			for (FilDetaljer filDetaljer : jdir.getDokumentInfo().getFildetaljerListe()) {
-				filDetaljer.setFileContent(null);
+				filDetaljer.setVariantFormat(VariantFormatCode.BREVBESTILLING);
 			}
+			validator.validateVariantFormaterAndHoveddokument(journalpost);
 		}
-		validator.validate(journalpost, true);
 	}
+
+	@Test
+	public void shouldFailOnMultipleFilVarianterWithSameFormat() throws Exception {
+		expectedException.expect(InvalidJournalpostStructureException.class);
+		expectedException.expectMessage("DokumentInfo cannot contain dokumentvariant duplicates, found 2 ARKIV varianter");
+
+		for (JournalpostDokumentInfoRelasjon jdir : journalpost
+				.getJournalpostDokumentInfoRelasjoner()) {
+			for (FilDetaljer filDetaljer : jdir.getDokumentInfo().getFildetaljerListe()) {
+				filDetaljer.setVariantFormat(VariantFormatCode.ARKIV);
+			}
+			validator.validateVariantFormaterAndHoveddokument(journalpost);
+		}
+	}
+
+	@Test
+	public void testValidHoveddokument() throws Exception {
+		validator.validateVariantFormaterAndHoveddokument(journalpost);
+	}
+
+	@Test
+	public void testTooFewHoveddokument() throws Exception {
+		expectedException.expect(InvalidJournalpostStructureException.class);
+		expectedException.expectMessage("Journalpost must contain a hoveddokument");
+
+		for (JournalpostDokumentInfoRelasjon jdir : journalpost.getJournalpostDokumentInfoRelasjoner()) {
+			jdir.setTilknyttetJournalpostSom(VEDLEGG);
+		}
+		validator.validateVariantFormaterAndHoveddokument(journalpost);
+	}
+
+	@Test
+	public void testTooManyHoveddokument() throws Exception {
+		expectedException.expect(InvalidJournalpostStructureException.class);
+		expectedException.expectMessage("Journalpost cannot contain more than one hoveddokument");
+
+		for (JournalpostDokumentInfoRelasjon jp : journalpost.getJournalpostDokumentInfoRelasjoner()) {
+			jp.setTilknyttetJournalpostSom(HOVEDDOKUMENT);
+		}
+		validator.validateVariantFormaterAndHoveddokument(journalpost);
+	}
+
 
 	private Journalpost createJournalpost() {
 		return JournalpostBuilder.getJournalpostBuilder()

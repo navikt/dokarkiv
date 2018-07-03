@@ -1,6 +1,7 @@
 package no.nav.dokarkiv.arkiverdokumentmottak;
 
 import no.nav.dokarkiv.arkiverdokumentmottak.tjoark203.v1.ArkiverDokumentmottakProvider;
+import no.nav.dokarkiv.arkiverdokumentmottak.tjoark203.v2.ArkiverDokumentmottakV2Provider;
 import no.nav.dokarkiv.core.CoreConfig;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
@@ -36,6 +37,9 @@ public abstract class AbstractArkiverDokumentmottakItest {
 	protected DokumentFilRepository dokumentFilRepository;
 	@Inject
 	protected ArkiverDokumentmottakProvider arkiverDokumentmottakProviderV1;
+
+	@Inject
+	protected ArkiverDokumentmottakV2Provider arkiverDokumentmottakV2Provider;
 
 	@Before
 	public void setUpItest() {

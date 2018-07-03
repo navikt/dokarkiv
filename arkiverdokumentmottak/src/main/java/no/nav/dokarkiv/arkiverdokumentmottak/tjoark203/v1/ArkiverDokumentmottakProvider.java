@@ -40,18 +40,20 @@ public class ArkiverDokumentmottakProvider implements ArkiverDokumentmottakV1 {
 	public JournalforInngaaendeForsendelseResponse journalforInngaaendeForsendelse(
 			JournalforInngaaendeForsendelseRequest request) throws KanIkkeJournalfores {
 
-		log.info("TJOARK203_V1 har mottatt forsendelse med tilleggsopplysning={}", findTilleggsOpplysning(request));
+		String tillegsopplysning = findTilleggsOpplysning(request);
+		log.info("TJOARK203_V1 har mottatt forsendelse med tilleggsopplysning.ForsendelseMottakId={} og mapper om forsendelsen til TO objekt", tillegsopplysning);
 
 		JournalforInngaaendeForsendelseRequestTo requestTo = journalforInngaaendeForsendelseRequestMapper.map(request);
 
 		JournalforInngaaendeForsendelseResponseTo responseTo;
 		try {
 			responseTo = journalforInngaaendeForsendelseService.journalforInngaaendeForsendelse(requestTo);
-			log.info("TJOARK203_V1 har journalført inngående forsendelse med tillegsopplysning", findTilleggsOpplysning(request));
+			log.info("TJOARK203_V1 har journalført inngående forsendelse med tillegsopplysning.ForsendelseMottakId={}, journalpostId={}, dokumentInfoIdHoveddokument={}", tillegsopplysning, responseTo
+					.getJournalpostId(), responseTo.getDokumentInfoIdHoveddokument());
 
 		} catch (FunctionalUnrecoverableException | IllegalArgumentException e) {
 			String tilleggsOpplysning = findTilleggsOpplysning(request);
-			log.warn("Kan ikke journalføre inngående forsendelse. tilleggsopplysning=" + tilleggsOpplysning, e);
+			log.warn("TJOARK203_V1 Kan ikke journalføre inngående forsendelse. tilleggsopplysning.ForsendelseMottakId=" + tilleggsOpplysning, e);
 			throw new KanIkkeJournalfores(e.getMessage(), faultInfoPopulator.populateFaultInfo(
 					new no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v1.feil.KanIkkeJournalfores(), e, "journalforInngaaendeForsendelse"));
 		}
@@ -70,7 +72,7 @@ public class ArkiverDokumentmottakProvider implements ArkiverDokumentmottakV1 {
 				.getJournalpostTilleggsopplysninger() != null) {
 			for (Tilleggsopplysning tilleggsopplysning : request.getJournalpost().getJournalpostTilleggsopplysninger()) {
 				if (tilleggsopplysning != null && ServiceConstants.FORSENDELSE_MOTTAK_ID_KEY.equals(tilleggsopplysning.getOpplysningsnoekkel())) {
-					return "(key=" + ServiceConstants.FORSENDELSE_MOTTAK_ID_KEY + " value=" + tilleggsopplysning.getOpplysningsverdi();
+					return tilleggsopplysning.getOpplysningsverdi();
 					//FIXME Sjekk originalen. Alternative metode istedenfor å bruke Guava
 				}
 			}

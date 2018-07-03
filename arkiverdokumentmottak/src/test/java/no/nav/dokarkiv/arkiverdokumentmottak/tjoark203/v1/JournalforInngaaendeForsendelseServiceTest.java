@@ -31,7 +31,6 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
-import java.math.BigInteger;
 import java.util.Optional;
 
 @RunWith(org.mockito.junit.MockitoJUnitRunner.class)
@@ -59,7 +58,7 @@ public class JournalforInngaaendeForsendelseServiceTest {
 		JournalforInngaaendeForsendelseRequestTo requestTo = new JournalforInngaaendeForsendelseRequestTo(createJournalpost(null, null, null));
 		when(repositoryMock.save(any(Journalpost.class))).thenReturn(createJournalpost(JOURNALPOST_ID, DOKUMENTINFO_ID, DOKUMENTINFO_VEDLEGG));
 		when(repositoryMock.findJournalpostIdByTilleggsopplysningerNokkelAndVerdi(FORSENDELSE_MOTTAK_ID_KEY, FORSENDLESE_MOTTAKS_ID))
-				.thenReturn(Optional.ofNullable(null));
+				.thenReturn(null);
 
 		JournalforInngaaendeForsendelseResponseTo response = service.journalforInngaaendeForsendelse(requestTo);
 
@@ -104,7 +103,7 @@ public class JournalforInngaaendeForsendelseServiceTest {
 		JournalforInngaaendeForsendelseRequestTo requestTo = new JournalforInngaaendeForsendelseRequestTo(createJournalpostUtenVedlegg(null, null));
 		when(repositoryMock.save(any(Journalpost.class))).thenReturn(createJournalpostUtenVedlegg(JOURNALPOST_ID, DOKUMENTINFO_ID));
 		when(repositoryMock.findJournalpostIdByTilleggsopplysningerNokkelAndVerdi(FORSENDELSE_MOTTAK_ID_KEY, FORSENDLESE_MOTTAKS_ID))
-				.thenReturn(Optional.ofNullable(null));
+				.thenReturn(null);
 
 		JournalforInngaaendeForsendelseResponseTo response = service.journalforInngaaendeForsendelse(requestTo);
 		assertThat(response.getJournalpostId(), is(JOURNALPOST_ID));
@@ -125,7 +124,7 @@ public class JournalforInngaaendeForsendelseServiceTest {
 	public void shouldReturnAlreadyJournalfoertForsendelse() throws Exception {
 		JournalforInngaaendeForsendelseRequestTo requestTo = new JournalforInngaaendeForsendelseRequestTo(createJournalpostUtenVedlegg(null, null));
 		when(repositoryMock.findJournalpostIdByTilleggsopplysningerNokkelAndVerdi(FORSENDELSE_MOTTAK_ID_KEY, FORSENDLESE_MOTTAKS_ID))
-				.thenReturn(Optional.ofNullable(BigInteger.valueOf(JOURNALPOST_ID)));
+				.thenReturn(JOURNALPOST_ID);
 		when(repositoryMock.findById(JOURNALPOST_ID)).thenReturn(Optional.ofNullable(createJournalpostUtenVedlegg(JOURNALPOST_ID, DOKUMENTINFO_ID)));
 
 		JournalforInngaaendeForsendelseResponseTo response = service.journalforInngaaendeForsendelse(requestTo);

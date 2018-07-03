@@ -17,7 +17,7 @@ import org.springframework.util.Assert;
 public class JournalforInngaaendeForsendelseV2ResponseMapper {
 
 	public JournalforInngaaendeForsendelseResponse map(JournalforInngaaendeForsendelseV2ResponseTo to) {
-		Assert.notNull(to, ""); //TODO
+		Assert.notNull(to, "Feil ved mapping av JournalforInngaaendeForsendelseV2ResponseTo til JournalforInngaaendeForsendelseResponse: TO objektet er null");
 
 		JournalforInngaaendeForsendelseResponse response = new JournalforInngaaendeForsendelseResponse();
 

@@ -20,11 +20,11 @@ import javax.xml.ws.soap.MTOM;
 @WebService(endpointInterface = "no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v1.ArkiverDokumentmottakV1",
 		wsdlLocation = "classpath:wsdl/no/nav/tjeneste/domene/brevogarkiv/arkiverdokumentmottak/v1/arkiverdokumentmottak.wsdl",
 		targetNamespace = "http://nav.no/tjeneste/domene/brevogarkiv/arkiverdokumentmottak/v1/",
-		serviceName = "ArkiverDokumentmottak_v1",
+		serviceName = "ArkiverDokumentmottakService_v1",
 		portName = "ArkiverDokumentmottakPort_v1")
 @Addressing
 @MTOM(enabled = true)
-@HandlerChain(file = "classpath:tjoark203/v1/ArkiverdokumentmottakHandler.xml")
+@HandlerChain(file = "classpath:tjoark203/v1/arkiverdokumentmottakhandler.xml")
 @Service
 public class ArkiverDokumentmottakEndpoint implements ArkiverDokumentmottakV1 {
 

@@ -94,7 +94,7 @@ public class JournalforInngaaendeForsendelseV2RequestTo {
 			for (SkannetInnhold skannetInnhold : relasjon.getDokumentInfo().getSkannetInnholdListe()) {
 				Assert.notNull(skannetInnhold, ERROR_DESC + "JournalpostDokumentInfoRelasjoner.DokumentInfo.SkannetInnhold");
 				Assert.notNull(skannetInnhold.getVedleggInnhold(), ERROR_DESC + "JournalpostDokumentInfoRelasjoner.DokumentInfo.SkannetInnhold.VedleggInnhold");
-				Assert.notNull(skannetInnhold.getDokumenttypeId(), ERROR_DESC + "JournalpostDokumentInfoRelasjoner.DokumentInfo.SkannetInnhold.DokumenttypeId");
+				Assert.notNull(skannetInnhold.getDokumenttypeid(), ERROR_DESC + "JournalpostDokumentInfoRelasjoner.DokumentInfo.SkannetInnhold.DokumenttypeId");
 			}
 		}
 	}

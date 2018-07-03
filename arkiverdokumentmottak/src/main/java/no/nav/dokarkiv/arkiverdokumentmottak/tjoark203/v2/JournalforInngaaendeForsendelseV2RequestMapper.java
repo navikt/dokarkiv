@@ -1,5 +1,8 @@
 package no.nav.dokarkiv.arkiverdokumentmottak.tjoark203.v2;
 
+import static no.nav.dokarkiv.arkiverdokumentmottak.util.ConverterUtils.converTillegsopplysningerToMapV2;
+import static no.nav.dokarkiv.arkiverdokumentmottak.util.ConverterUtils.stringToEnum;
+
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
@@ -16,15 +19,10 @@ import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
 import no.nav.dokarkiv.core.sporing.KildeNavnPopulator;
 import no.nav.dokarkiv.core.stelvio.RequestContextHolder;
-import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v2.informasjon.arkiverdokumentmottak.Tilleggsopplysning;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v2.meldinger.JournalforInngaaendeForsendelseRequest;
 import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
 
 import javax.inject.Inject;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Mapper for TJOARK203 request
@@ -34,12 +32,11 @@ import java.util.Map;
 @Component
 public class JournalforInngaaendeForsendelseV2RequestMapper {
 
-
+	//TODO: NOT FINISHED!!!!
 	@Inject
 	private KildeNavnPopulator kildeNavnPopulator;
 
 	public JournalforInngaaendeForsendelseV2RequestTo map(JournalforInngaaendeForsendelseRequest request) {
-//		Journalpost domainJournalpost = dozerMapper.map(request.getJournalpost(), Journalpost.class);
 
 		no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v2.informasjon.arkiverdokumentmottak.Journalpost journalpost = request
 				.getJournalpost();
@@ -51,6 +48,7 @@ public class JournalforInngaaendeForsendelseV2RequestMapper {
 				.avsenderMottaker(journalpost.getAvsenderMottakerNavn())
 				.avsenderMottakerId(journalpost.getAvsenderMottakerId())
 				.innhold(journalpost.getInnhold())
+				.kanalReferanseId(journalpost.getKanalReferanseId())
 				.mottattDato(journalpost.getDatoMottatt() == null ? null : journalpost.getDatoMottatt()
 						.toGregorianCalendar()
 						.getTime())
@@ -58,7 +56,7 @@ public class JournalforInngaaendeForsendelseV2RequestMapper {
 				.dokumentDato(journalpost.getDatoDokument() == null ? null : journalpost.getDatoDokument()
 						.toGregorianCalendar()
 						.getTime())
-				.tilleggsopplysninger(converTillegsopplysningerToMap(journalpost.getTilleggsopplysninger()))
+				.tilleggsopplysninger(converTillegsopplysningerToMapV2(journalpost.getTilleggsopplysninger()))
 				.build();
 
 		if (journalpost.getBruker() != null) {
@@ -72,7 +70,6 @@ public class JournalforInngaaendeForsendelseV2RequestMapper {
 			domainJournalpost.setSaksrelasjon(Saksrelasjon.builder()
 					.fagsystem(stringToEnum(FagsystemCode.class, journalpost.getSaksrelasjon().getFagsystem()))
 					.sakId(journalpost.getSaksrelasjon().getSaksnummer())
-					.journalpost(domainJournalpost)
 					.build());
 		}
 
@@ -120,23 +117,5 @@ public class JournalforInngaaendeForsendelseV2RequestMapper {
 		return dokumentInfo;
 	}
 
-	private <T extends Enum<T>> T stringToEnum(Class<T> clazz, String value) {
-		if (value == null) {
-			return null;
-		}
-		return Enum.valueOf(clazz, value);
-	}
 
-	public Map<String, String> converTillegsopplysningerToMap(List<Tilleggsopplysning> source) {
-		if (CollectionUtils.isEmpty(source)) {
-			return null;
-		}
-
-		Map<String, String> destination = new HashMap<>();
-		for (Tilleggsopplysning tilleggsopplysning : source) {
-			destination.put(tilleggsopplysning.getOpplysningsnoekkel(), tilleggsopplysning.getOpplysningsverdi());
-		}
-
-		return destination;
-	}
 }
