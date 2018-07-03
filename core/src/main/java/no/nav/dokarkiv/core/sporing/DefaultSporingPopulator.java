@@ -5,6 +5,8 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.stelvio.RequestContextHolder;
 import org.springframework.stereotype.Component;
 
+import javax.inject.Inject;
+
 /**
  * Implementation of SporingPopulator.
  *
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class DefaultSporingPopulator implements SporingPopulator {
 
+	@Inject
 	private KildeNavnPopulator kildeNavnPopulator;
 	
 	/** {@inheritDoc} */

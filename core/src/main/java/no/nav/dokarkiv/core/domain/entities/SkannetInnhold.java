@@ -42,8 +42,8 @@ public class SkannetInnhold extends AbstractPersistentVersionedDomainObjectWithK
 	@Column(name = "vedlegg_innhold")
 	private String vedleggInnhold;
 	
-	@Column(name = "dokumenttypeId")
-	private String dokumenttypeId;
+	@Column(name = "dokumenttypeid")
+	private String dokumenttypeid;
 
 	/**
 	 * Default constructor.
@@ -125,21 +125,21 @@ public class SkannetInnhold extends AbstractPersistentVersionedDomainObjectWithK
 	}
 	
 	/**
-	 * Getter for the dokumenttypeId property
+	 * Getter for the dokumenttypeid property
 	 *
-	 * @return the dokumenttypeId
+	 * @return the dokumenttypeid
 	 */
-	public String getDokumenttypeId() {
-		return dokumenttypeId;
+	public String getDokumenttypeid() {
+		return dokumenttypeid;
 	}
 	
 	/**
-	 * Setter for the dokumenttypeId property
+	 * Setter for the dokumenttypeid property
 	 *
-	 * @param dokumenttypeId
-	 * 				the dokumenttypeId to set
+	 * @param dokumenttypeid
+	 * 				the dokumenttypeid to set
 	 */
-	public void setDokumenttypeId(String dokumenttypeId) {
-		this.dokumenttypeId = dokumenttypeId;
+	public void setDokumenttypeid(String dokumenttypeid) {
+		this.dokumenttypeid = dokumenttypeid;
 	}
 }

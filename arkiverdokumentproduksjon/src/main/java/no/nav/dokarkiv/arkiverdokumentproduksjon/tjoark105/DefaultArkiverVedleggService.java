@@ -40,7 +40,7 @@ public class DefaultArkiverVedleggService implements ArkiverVedleggService {
 		arkiverVedleggValidator.validate(arkiverVedleggRequest);
 
 		Journalpost journalpost = joarkRepository.findById(arkiverVedleggRequest.getJournalpostId())
-				.orElseThrow(() -> new NoJournalpostFoundException("journalpostid=" + arkiverVedleggRequest.getJournalpostId() + " does not exist", arkiverVedleggRequest
+				.orElseThrow(() -> new NoJournalpostFoundException("journalpostId=" + arkiverVedleggRequest.getJournalpostId() + " does not exist", arkiverVedleggRequest
 						.getJournalpostId()));
 
 		arkiverVedleggValidator.validate(journalpost, arkiverVedleggRequest.getJournalpostId());
@@ -48,10 +48,13 @@ public class DefaultArkiverVedleggService implements ArkiverVedleggService {
 		oppdaterJournalpostMedDokumentInfo(journalpost, arkiverVedleggRequest);
 
 		dokumentFilerDelegate.saveUpdateDokumentFiler(journalpost);
+		Journalpost mergedJournalpost = joarkRepository.save(journalpost);
+		String attachedFilUuid = arkiverVedleggRequest.getDokumentInfo().getFildetaljerListe().iterator().next().getFilUuid();
+		Long dokumentInfoId = mergedJournalpost.findFilDetaljerByFilUuid(attachedFilUuid).getDokumentInfo().getDokumentInfoId();
 
 		return ArkiverVedleggResponseTo.create(
-				arkiverVedleggRequest.getJournalpostId(),
-				arkiverVedleggRequest.getDokumentInfo().getDokumentInfoId());
+				mergedJournalpost.getJournalpostId(),
+				dokumentInfoId);
 	}
 
 	private void oppdaterJournalpostMedDokumentInfo(Journalpost journalpost, ArkiverVedleggRequestTo arkiverVedleggRequest) {

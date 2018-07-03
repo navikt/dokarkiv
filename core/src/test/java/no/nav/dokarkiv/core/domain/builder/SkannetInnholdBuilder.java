@@ -38,7 +38,7 @@ public class SkannetInnholdBuilder extends Builder<SkannetInnhold> {
 		skannetInnhold.setVedleggInnhold(vedleggInnhold);
 		skannetInnhold.setOpprettetKildeNavn(opprettetKildeNavn);
 		skannetInnhold.setEndretKildeNavn(endretKildeNavn);
-		skannetInnhold.setDokumenttypeId(dokumenttypeId);
+		skannetInnhold.setDokumenttypeid(dokumenttypeId);
 		return skannetInnhold;
 	}
 	

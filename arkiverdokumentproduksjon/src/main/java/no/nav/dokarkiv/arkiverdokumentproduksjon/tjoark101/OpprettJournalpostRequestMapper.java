@@ -20,8 +20,7 @@ import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
-import java.util.Arrays;
-import java.util.HashSet;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -41,13 +40,20 @@ public class OpprettJournalpostRequestMapper {
 		no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasjon.opprettjournalpost.DokumentInfo dokumentInfo = journalpost
 				.getDokumentInfo();
 
-		Journalpost domainJournalpost = Journalpost.builder()
-				.saksrelasjon(Saksrelasjon.builder()
-						.sakId(journalpost.getSaksrelasjon().getSaksnummer())
-						.fagsystem(journalpost.getSaksrelasjon()
-								.getFagsystem() == null ? null : FagsystemCode.valueOf(journalpost.getSaksrelasjon()
-								.getFagsystem()))
-						.build())
+		Journalpost domainJournalpost = createDomainJournalpostBase(journalpost);
+		addBruker(domainJournalpost, journalpost);
+		setSaksrelasjon(domainJournalpost, journalpost);
+		addJournalpostDokumentInfoRelasjon(domainJournalpost, dokumentInfo);
+		addFildetaljer(domainJournalpost, dokumentInfo);
+
+		kildeNavnPopulator.populateKildeNavnForEntireJournalStructure(domainJournalpost, RequestContextHolder
+				.currentRequestContext().getComponentId());
+
+		return new OpprettJournalpostRequestTo(domainJournalpost);
+	}
+
+	Journalpost createDomainJournalpostBase(no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasjon.opprettjournalpost.Journalpost journalpost) {
+		return Journalpost.builder()
 				.fagomrade(journalpost.getFagomrade() == null ? null : FagomradeCode.valueOf(journalpost.getFagomrade()))
 				.opprettetAvNavn(journalpost.getOpprettetAvNavn())
 				.journalForendeEnhetId(journalpost.getJournalforendeEnhet())
@@ -56,14 +62,21 @@ public class OpprettJournalpostRequestMapper {
 				.avsenderMottakerId(journalpost.getAvsenderMottakerId())
 				.land(journalpost.getLand())
 				.build();
+	}
 
-		domainJournalpost.addBruker(Bruker.builder()
-				.brukerId(journalpost.getBruker() == null ? null : journalpost.getBruker().getBrukerId())
-				.brukerType(journalpost.getBruker() == null || journalpost.getBruker()
-						.getBrukerType() == null ? null : BrukerTypeCode.valueOf(journalpost.getBruker()
-						.getBrukerType()))
+	private void setSaksrelasjon(Journalpost domainJournalpost,
+								 no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasjon.opprettjournalpost.Journalpost journalpost) {
+		domainJournalpost.setSaksrelasjon(Saksrelasjon.builder()
+				.sakId(journalpost.getSaksrelasjon().getSaksnummer())
+				.fagsystem(journalpost.getSaksrelasjon()
+						.getFagsystem() == null ? null : FagsystemCode.valueOf(journalpost.getSaksrelasjon()
+						.getFagsystem()))
+				.journalpost(domainJournalpost)
 				.build());
+	}
 
+	private void addJournalpostDokumentInfoRelasjon(Journalpost domainJournalpost,
+													no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasjon.opprettjournalpost.DokumentInfo dokumentInfo) {
 		domainJournalpost.addJournalpostDokumentInfoRelasjon(JournalpostDokumentInfoRelasjon.builder()
 				.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.HOVEDDOKUMENT)
 				.journalpost(domainJournalpost)
@@ -77,22 +90,38 @@ public class OpprettJournalpostRequestMapper {
 								dokumentInfo.getTilleggsopplysninger()
 										.stream()
 										.collect(Collectors.toMap(Tilleggsopplysning::getOpplysningsnoekkel, Tilleggsopplysning::getOpplysningsverdi)))
-						.fildetaljerListe(dokumentInfo.getFildetaljer() == null ? null : new HashSet<>(Arrays.asList(FilDetaljer
-								.builder()
-								.metaforceInstanceId(dokumentInfo.getFildetaljer().getMetaForceInstanceId())
-								.filtype(dokumentInfo.getFildetaljer()
-										.getFiltype() == null ? null : FilTypeCode.valueOf(dokumentInfo.getFildetaljer()
-										.getFiltype()))
-								.variantFormat(dokumentInfo.getFildetaljer()
-										.getVariantformat() == null ? null : VariantFormatCode.valueOf(dokumentInfo.getFildetaljer()
-										.getVariantformat()))
-								.build())))
 						.build())
 				.build());
-
-		kildeNavnPopulator.populateKildeNavnForEntireJournalStructure(domainJournalpost, RequestContextHolder
-				.currentRequestContext().getComponentId());
-		return new OpprettJournalpostRequestTo(domainJournalpost);
 	}
+
+	private void addFildetaljer(Journalpost domainJournalpost,
+								no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasjon.opprettjournalpost.DokumentInfo dokumentInfo) {
+		domainJournalpost.getJournalpostDokumentInfoRelasjoner()
+				.iterator()
+				.next()
+				.getDokumentInfo()
+				.addFilDetaljer(FilDetaljer
+						.builder()
+						.metaforceInstanceId(dokumentInfo.getFildetaljer().getMetaForceInstanceId())
+						.filtype(dokumentInfo.getFildetaljer()
+								.getFiltype() == null ? null : FilTypeCode.valueOf(dokumentInfo.getFildetaljer()
+								.getFiltype()))
+						.variantFormat(dokumentInfo.getFildetaljer()
+								.getVariantformat() == null ? null : VariantFormatCode.valueOf(dokumentInfo.getFildetaljer()
+								.getVariantformat()))
+						.filUuid(UUID.randomUUID().toString())
+						.build());
+	}
+
+	private void addBruker(Journalpost domainJournalpost,
+						   no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasjon.opprettjournalpost.Journalpost journalpost) {
+		domainJournalpost.addBruker(Bruker.builder()
+				.brukerId(journalpost.getBruker() == null ? null : journalpost.getBruker().getBrukerId())
+				.brukerType(journalpost.getBruker() == null || journalpost.getBruker()
+						.getBrukerType() == null ? null : BrukerTypeCode.valueOf(journalpost.getBruker()
+						.getBrukerType()))
+				.build());
+	}
+
 
 }
