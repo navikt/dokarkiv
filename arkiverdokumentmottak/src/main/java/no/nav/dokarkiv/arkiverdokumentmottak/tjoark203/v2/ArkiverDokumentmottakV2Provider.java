@@ -1,13 +1,13 @@
 package no.nav.dokarkiv.arkiverdokumentmottak.tjoark203.v2;
 
+import io.micrometer.core.annotation.Timed;
+import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
 import no.nav.dokarkiv.core.exceptions.InvalidJournalpostStructureException;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v2.ArkiverDokumentmottakV2;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v2.KanIkkeJournalfores;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v2.meldinger.JournalforInngaaendeForsendelseRequest;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v2.meldinger.JournalforInngaaendeForsendelseResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,14 +19,8 @@ import javax.inject.Inject;
  * @author Sigurd Midttun, Visma Consulting.
  */
 @Component
+@Slf4j
 public class ArkiverDokumentmottakV2Provider implements ArkiverDokumentmottakV2 {
-
-	private static final Logger log = LoggerFactory.getLogger(ArkiverDokumentmottakV2Provider.class);
-
-	private static final String ARKIVER_DOKUMENTMOTTAK_V2 = "provider.arkiverDokumentmottak.v2";
-
-	private static final String JOURNALFOR_INNGAAENDE_FORSENDELSE_V2 = ARKIVER_DOKUMENTMOTTAK_V2 + ".journalforInngaaendeForsendelse";
-	private static final String PING = ARKIVER_DOKUMENTMOTTAK_V2 + ".ping";
 
 	@Inject
 	public JournalforInngaaendeForsendelseV2ResponseMapper journalforInngaaendeForsendelseV2ResponseMapper;
@@ -40,16 +34,16 @@ public class ArkiverDokumentmottakV2Provider implements ArkiverDokumentmottakV2 
 	@Inject
 	public ArkiverDokumentmottakV2FaultInfoPopulator faultInfoPopulator;
 
-
 	@Override
 	@Transactional
+	@Timed(value = "dok_request", extraTags = {"process_code", "TJOARK203_V2"}, percentiles = {0.5, 0.95})
 	public JournalforInngaaendeForsendelseResponse journalforInngaaendeForsendelse(
 			JournalforInngaaendeForsendelseRequest request) throws KanIkkeJournalfores {
 
 		JournalforInngaaendeForsendelseV2RequestTo requestTo;
 		JournalforInngaaendeForsendelseV2ResponseTo responseTo;
 
-		log.info("TJOARK203(V2) har mottat forsendelse med kanalreferanseId={} og mottakskanal={}.", getKanalereferanseId(request), getMottakskanal(request));
+		log.info("TJOARK203_V2 har mottat forsendelse med kanalreferanseId={} og mottakskanal={}.", getKanalereferanseId(request), getMottakskanal(request));
 
 		try {
 			requestTo = journalforInngaaendeForsendelseV2RequestMapper.map(request);
@@ -58,8 +52,6 @@ public class ArkiverDokumentmottakV2Provider implements ArkiverDokumentmottakV2 
 			throw new KanIkkeJournalfores(e.getMessage() + getAdditionalErrorInfo(request), faultInfoPopulator.populateFaultInfo(
 					new no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v2.feil.KanIkkeJournalfores(), e, "journalforInngaaendeForsendelseV2"));
 		}
-		log.info("TJOARK203(V2) har journalført inngående forsendelse med journalpostId={}, dokumentInfoIdHoveddokument={}, kanalreferanseId={}, mottakskanal={}.", responseTo
-				.getJournalpostId(), responseTo.getDokumentInfoIdHoveddokument(), getKanalereferanseId(request), getMottakskanal(request));
 
 		return journalforInngaaendeForsendelseV2ResponseMapper.map(responseTo);
 	}

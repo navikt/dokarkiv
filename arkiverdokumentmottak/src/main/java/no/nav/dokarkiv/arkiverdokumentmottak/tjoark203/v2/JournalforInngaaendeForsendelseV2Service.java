@@ -44,6 +44,7 @@ public class JournalforInngaaendeForsendelseV2Service {
 			JournalforInngaaendeForsendelseV2RequestTo requestTo) {
 		requestTo.validate();
 		Journalpost storedJournalpost = findPreviousJournalforing(requestTo.getJournalpost());
+
 		if (storedJournalpost == null) {
 			Journalpost journalpost = requestTo.getJournalpost();
 
@@ -55,14 +56,18 @@ public class JournalforInngaaendeForsendelseV2Service {
 			dokumentFilerDelegate.saveUpdateDokumentFiler(journalpost);
 			updateJournalpostDokumentInfoListOriginalJournalpost(journalpost);
 			storedJournalpost = joarkRepository.save(journalpost);
-			log.info("TJOARK203(V2) Har opprettet journalpost med journalpostId={}, Journalstatus={}, Fagområde={}, MottaksKanal={}, BrukerID(er)={} ", storedJournalpost
-							.getJournalpostId(),
-					storedJournalpost.getJournalstatus(), storedJournalpost.getFagomrade(), storedJournalpost.getMottakskanal(), retrieveAllBrukerIds(storedJournalpost)
+			log.info("TJOARK203_V2 Har journalført journalpost med journalpostId={}, dokumentInfoId={}, Journalstatus={}, KanalreferanseId={}, MottaksKanal={}, Fagområde={}, BrukerID(er)={}", storedJournalpost
+							.getJournalpostId(), storedJournalpost.findHoveddokumentDokumentInfoRelasjon()
+							.getDokumentInfo()
+							.getDokumentInfoId(),
+					storedJournalpost.getJournalstatus(), storedJournalpost.getKanalReferanseId(), storedJournalpost.getMottakskanal(), storedJournalpost
+							.getFagomrade(), retrieveAllBrukerIds(storedJournalpost)
 							.toString());
 			return buildResponse(storedJournalpost);
 		}
-		log.info("TJOARK203(V2) Journalpost med journalpostId=" + storedJournalpost.getJournalpostId() + " eksisterer allerede i databasen. BrukerID(er)=" +
-				retrieveAllBrukerIds(storedJournalpost).toString());
+		log.info("TJOARK203_V2 Journalpost med journalpostId={}, kanalReferanseId={} og mottaksKanal={} eksisterer allerede i databasen. BrukerID(er)={}", storedJournalpost
+						.getJournalpostId(), storedJournalpost.getKanalReferanseId(),
+				storedJournalpost.getMottakskanal(), retrieveAllBrukerIds(storedJournalpost).toString());
 		return buildResponse(storedJournalpost);
 	}
 

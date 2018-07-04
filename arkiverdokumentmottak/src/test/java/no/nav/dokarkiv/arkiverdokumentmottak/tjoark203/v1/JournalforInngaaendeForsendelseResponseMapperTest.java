@@ -6,7 +6,6 @@ import static org.junit.Assert.assertThat;
 
 import no.nav.dokarkiv.core.nsb.DokumentInfoIdVedleggTo;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v1.meldinger.JournalforInngaaendeForsendelseResponse;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -18,7 +17,6 @@ import java.util.Collections;
  *
  * @author Leo-Andreas Ervik, Visma Consulting. 16.02.2017
  */
-@Ignore
 public class JournalforInngaaendeForsendelseResponseMapperTest {
 
 	@Rule

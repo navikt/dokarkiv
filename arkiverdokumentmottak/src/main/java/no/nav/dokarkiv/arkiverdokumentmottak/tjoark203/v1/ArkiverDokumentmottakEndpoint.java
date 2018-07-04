@@ -15,7 +15,6 @@ import javax.jws.HandlerChain;
 import javax.jws.WebService;
 import javax.xml.ws.WebServiceContext;
 import javax.xml.ws.soap.Addressing;
-import javax.xml.ws.soap.MTOM;
 
 @WebService(endpointInterface = "no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v1.ArkiverDokumentmottakV1",
 		wsdlLocation = "classpath:wsdl/no/nav/tjeneste/domene/brevogarkiv/arkiverdokumentmottak/v1/arkiverdokumentmottak.wsdl",
@@ -23,14 +22,12 @@ import javax.xml.ws.soap.MTOM;
 		serviceName = "ArkiverDokumentmottakService_v1",
 		portName = "ArkiverDokumentmottakPort_v1")
 @Addressing
-@MTOM(enabled = true)
 @HandlerChain(file = "classpath:tjoark203/v1/arkiverdokumentmottakhandler.xml")
 @Service
 public class ArkiverDokumentmottakEndpoint implements ArkiverDokumentmottakV1 {
 
 	private static final String DEFAULT_APPID = "Dokmot";
 
-	//TODO: Default app id?
 	@Resource
 	private WebServiceContext webServiceContext;
 

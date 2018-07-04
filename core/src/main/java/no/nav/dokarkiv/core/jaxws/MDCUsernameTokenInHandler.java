@@ -25,7 +25,7 @@ import java.util.UUID;
  * Handler used for UsernameToken to get appId, consumerId and callId, which is not present in the
  * username-token
  *
- * @author Stig Str�m
+ * @author Stig Strøm
  */
 public class MDCUsernameTokenInHandler implements SOAPHandler<SOAPMessageContext> {
 
