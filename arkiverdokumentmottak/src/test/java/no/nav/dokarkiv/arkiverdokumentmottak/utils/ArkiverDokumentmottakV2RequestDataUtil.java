@@ -130,6 +130,8 @@ public class ArkiverDokumentmottakV2RequestDataUtil {
 		assertThat(filDetaljer.getFiltype(), is(FilTypeCode.XML));
 		assertThat(filDetaljer.getVariantFormat(), is(VariantFormatCode.ARKIV));
 		assertThat(filDetaljer.getFilnavn(), is(ArkiverDokumentmottakV2RequestDataUtil.FILNAVN));
+		assertThat(filDetaljer.getBatchNavn(), is(ArkiverDokumentmottakV2RequestDataUtil.BATCHNAVN));
+
 	}
 
 	public static void assertSaksrelasjon(no.nav.dokarkiv.core.domain.entities.Saksrelasjon saksrelasjon, Saksrelasjon requestSaksrelasjon) {

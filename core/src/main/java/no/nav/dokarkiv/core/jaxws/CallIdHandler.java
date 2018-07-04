@@ -1,6 +1,6 @@
 package no.nav.dokarkiv.core.jaxws;
 
-import static no.nav.dokarkiv.core.jaxws.MDCConstants.MDC_CALL_ID;
+import static no.nav.dokarkiv.core.MDCConstants.MDC_CALL_ID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +17,7 @@ import javax.xml.ws.handler.soap.SOAPMessageContext;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.UUID;
 
 /**
  * Inspired by MDCInHandler in modig-log-jaxws. Since MDCInHandler uses
@@ -78,11 +79,13 @@ public class CallIdHandler implements SOAPHandler<SOAPMessageContext> {
         Iterator<SOAPElement> headersIter = header.getChildElements(CALLID_QNAME);
         while (headersIter.hasNext()) {
             SOAPElement element = headersIter.next();
-            if (element.getElementQName().equals(CALLID_QNAME)) {
-                callId = element.getValue();
-                logger.debug("Found callId: " + callId);
-                break;
-            }
+			if (element.getElementQName().equals(CALLID_QNAME)) {
+				callId = element.getValue();
+				logger.debug("Found callId: " + callId);
+				break;
+			} else {
+				callId = UUID.randomUUID().toString();
+			}
         }
         return callId;
     }

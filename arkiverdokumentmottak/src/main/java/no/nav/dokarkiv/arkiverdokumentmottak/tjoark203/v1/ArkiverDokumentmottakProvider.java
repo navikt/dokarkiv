@@ -36,19 +36,18 @@ public class ArkiverDokumentmottakProvider implements ArkiverDokumentmottakV1 {
 
 	@Override
 	@Transactional
-	//FIXME Her ble codahale @Timed @Counted @Metered @ExceptionMetered annoteringer brukt. Legg til tilsvarende metrikker i form av prometheus og micrometer
 	public JournalforInngaaendeForsendelseResponse journalforInngaaendeForsendelse(
 			JournalforInngaaendeForsendelseRequest request) throws KanIkkeJournalfores {
 
 		String tillegsopplysning = findTilleggsOpplysning(request);
-		log.info("TJOARK203_V1 har mottatt forsendelse med tilleggsopplysning.ForsendelseMottakId={} og mapper om forsendelsen til TO objekt", tillegsopplysning);
+		log.info("TJOARK203(V1) har mottatt forsendelse med tilleggsopplysning.ForsendelseMottakId={} og mapper om forsendelsen til TO objekt", tillegsopplysning);
 
 		JournalforInngaaendeForsendelseRequestTo requestTo = journalforInngaaendeForsendelseRequestMapper.map(request);
 
 		JournalforInngaaendeForsendelseResponseTo responseTo;
 		try {
 			responseTo = journalforInngaaendeForsendelseService.journalforInngaaendeForsendelse(requestTo);
-			log.info("TJOARK203_V1 har journalført inngående forsendelse med tillegsopplysning.ForsendelseMottakId={}, journalpostId={}, dokumentInfoIdHoveddokument={}", tillegsopplysning, responseTo
+			log.info("TJOARK203(V1) har journalført inngående forsendelse med tillegsopplysning.ForsendelseMottakId={}, journalpostId={}, dokumentInfoIdHoveddokument={}", tillegsopplysning, responseTo
 					.getJournalpostId(), responseTo.getDokumentInfoIdHoveddokument());
 
 		} catch (FunctionalUnrecoverableException | IllegalArgumentException e) {

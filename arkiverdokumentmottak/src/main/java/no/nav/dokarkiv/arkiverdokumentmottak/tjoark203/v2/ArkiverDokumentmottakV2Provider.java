@@ -43,15 +43,13 @@ public class ArkiverDokumentmottakV2Provider implements ArkiverDokumentmottakV2 
 
 	@Override
 	@Transactional
-//	@Timed(name = JOURNALFOR_INNGAAENDE_FORSENDELSE_V2 + ".timer", absolute = true)
-//	@Counted(name = JOURNALFOR_INNGAAENDE_FORSENDELSE_V2, absolute = true, monotonic = true)
-//	@Metered(name = JOURNALFOR_INNGAAENDE_FORSENDELSE_V2 + ".meter", absolute = true)
-//	@ExceptionMetered(name = JOURNALFOR_INNGAAENDE_FORSENDELSE_V2 + ".exceptionMeter", absolute = true)
 	public JournalforInngaaendeForsendelseResponse journalforInngaaendeForsendelse(
 			JournalforInngaaendeForsendelseRequest request) throws KanIkkeJournalfores {
 
 		JournalforInngaaendeForsendelseV2RequestTo requestTo;
 		JournalforInngaaendeForsendelseV2ResponseTo responseTo;
+
+		log.info("TJOARK203(V2) har mottat forsendelse med kanalreferanseId={} og mottakskanal={}.", getKanalereferanseId(request), getMottakskanal(request));
 
 		try {
 			requestTo = journalforInngaaendeForsendelseV2RequestMapper.map(request);
@@ -60,12 +58,13 @@ public class ArkiverDokumentmottakV2Provider implements ArkiverDokumentmottakV2 
 			throw new KanIkkeJournalfores(e.getMessage() + getAdditionalErrorInfo(request), faultInfoPopulator.populateFaultInfo(
 					new no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v2.feil.KanIkkeJournalfores(), e, "journalforInngaaendeForsendelseV2"));
 		}
+		log.info("TJOARK203(V2) har journalført inngående forsendelse med journalpostId={}, dokumentInfoIdHoveddokument={}, kanalreferanseId={}, mottakskanal={}.", responseTo
+				.getJournalpostId(), responseTo.getDokumentInfoIdHoveddokument(), getKanalereferanseId(request), getMottakskanal(request));
+
 		return journalforInngaaendeForsendelseV2ResponseMapper.map(responseTo);
 	}
 
 	@Override
-	@Transactional
-//	@Counted(name = PING + ".counter", absolute = true, monotonic = true)
 	public void ping() {
 		//noop
 	}
@@ -77,5 +76,21 @@ public class ArkiverDokumentmottakV2Provider implements ArkiverDokumentmottakV2 
 			sb.append(", Mottakskanal=" + request.getJournalpost().getMottakskanal());
 		}
 		return sb.toString();
+	}
+
+	private String getKanalereferanseId(JournalforInngaaendeForsendelseRequest request) {
+		if (request.getJournalpost() == null) {
+			return null;
+		}
+
+		return request.getJournalpost().getKanalReferanseId();
+	}
+
+	private String getMottakskanal(JournalforInngaaendeForsendelseRequest request) {
+		if (request.getJournalpost() == null) {
+			return null;
+		}
+
+		return request.getJournalpost().getMottakskanal();
 	}
 }

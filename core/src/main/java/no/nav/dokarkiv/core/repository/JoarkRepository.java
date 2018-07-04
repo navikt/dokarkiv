@@ -12,19 +12,19 @@ import java.util.Optional;
  */
 public interface JoarkRepository extends CrudRepository<Journalpost, Long> {
 
-	@Query(value = "select jt.journalpost_id from t_jp_tillegg jt where jt.nokkel = :nokkel and jt.verdi = :verdi", nativeQuery = true)
+	@Query(value = "SELECT jt.journalpost_id FROM t_jp_tillegg jt WHERE jt.nokkel = :nokkel AND jt.verdi = :verdi", nativeQuery = true)
 	Long findJournalpostIdByTilleggsopplysningerNokkelAndVerdi(@Param("nokkel") String nokkel, @Param("verdi") String verdi);
 
 	@Query(value = "SELECT * FROM t_journalpost j WHERE j.k_mottaks_kanal = :mottakskanal AND j.kanal_referanse_id = :kanalReferanseId", nativeQuery = true)
-	Optional<Journalpost> findJournalpostIdByKanalReferanseIdAndMottakskanal(@Param("mottakskanal") String mottakskanal, @Param("kanalReferanseId") String kanalReferanseId);
+	Optional<Journalpost> findJournalpostIdByKanalReferanseIdAndMottakskanal(@Param("kanalReferanseId") String kanalReferanseId, @Param("mottakskanal") String mottakskanal);
 
-	@Query(value = "select jt.DOKUMENT_INFO_ID from t_dok_info_tillegg jt where jt.nokkel = :nokkel and jt.verdi = :verdi", nativeQuery = true)
+	@Query(value = "SELECT jt.DOKUMENT_INFO_ID FROM t_dok_info_tillegg jt WHERE jt.nokkel = :nokkel AND jt.verdi = :verdi", nativeQuery = true)
 	Long findDokumentinfoIdIdByDokumentinfoTilleggsopplysningerNokkelAndVerdi(@Param("nokkel") String nokkel, @Param("verdi") String verdi);
 
-	@Query(value = "select jt.ORIG_JOURNALPOST_ID from T_DOKUMENT_INFO jt where jt.DOKUMENT_INFO_ID = :dokumentinfoId", nativeQuery = true)
+	@Query(value = "SELECT jt.ORIG_JOURNALPOST_ID FROM T_DOKUMENT_INFO jt WHERE jt.DOKUMENT_INFO_ID = :dokumentinfoId", nativeQuery = true)
 	Long findJournalpostIdByDokumentinfoId(@Param("dokumentinfoId") String dokumentinfoId);
 
 	//FIXME - denne spørringen fungerer ikke
-	@Query(value = "delete * from T_JP_DOK_INFO_REL where JOURNALPOST_ID= :journalpostId", nativeQuery = true)
+	@Query(value = "DELETE * FROM T_JP_DOK_INFO_REL WHERE JOURNALPOST_ID= :journalpostId", nativeQuery = true)
 	void deleteJournalpostDokumentInfoRelasjon(@Param("journalpostId") Long journalpostId);
 }

@@ -55,13 +55,13 @@ public class JournalforInngaaendeForsendelseV2Service {
 			dokumentFilerDelegate.saveUpdateDokumentFiler(journalpost);
 			updateJournalpostDokumentInfoListOriginalJournalpost(journalpost);
 			storedJournalpost = joarkRepository.save(journalpost);
-
-			log.info("Opprettet journalpost med journalpostId=" + storedJournalpost.getJournalpostId() +
-					". Journalstatus=" + storedJournalpost.getJournalstatus() + ". BrukerID(er)=" + retrieveAllBrukerIds(storedJournalpost)
-					.toString());
+			log.info("TJOARK203(V2) Har opprettet journalpost med journalpostId={}, Journalstatus={}, Fagområde={}, MottaksKanal={}, BrukerID(er)={} ", storedJournalpost
+							.getJournalpostId(),
+					storedJournalpost.getJournalstatus(), storedJournalpost.getFagomrade(), storedJournalpost.getMottakskanal(), retrieveAllBrukerIds(storedJournalpost)
+							.toString());
 			return buildResponse(storedJournalpost);
 		}
-		log.info("Journalpost med journalpostId=" + storedJournalpost.getJournalpostId() + " eksisterer allerede i databasen. BrukerID(er)=" +
+		log.info("TJOARK203(V2) Journalpost med journalpostId=" + storedJournalpost.getJournalpostId() + " eksisterer allerede i databasen. BrukerID(er)=" +
 				retrieveAllBrukerIds(storedJournalpost).toString());
 		return buildResponse(storedJournalpost);
 	}

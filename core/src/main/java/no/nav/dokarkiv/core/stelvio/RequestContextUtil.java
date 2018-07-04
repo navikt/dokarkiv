@@ -1,7 +1,7 @@
 package no.nav.dokarkiv.core.stelvio;
 
 
-import static no.nav.dokarkiv.core.jaxws.MDCConstants.MDC_CALL_ID;
+import static no.nav.dokarkiv.core.MDCConstants.MDC_CALL_ID;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;

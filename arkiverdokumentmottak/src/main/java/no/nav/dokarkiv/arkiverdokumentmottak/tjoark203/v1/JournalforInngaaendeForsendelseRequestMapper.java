@@ -39,7 +39,23 @@ public class JournalforInngaaendeForsendelseRequestMapper {
 
 		no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v1.informasjon.journalforinngaaendeforsendelse.Journalpost journalpost = request
 				.getJournalpost();
-		Journalpost domainJournalpost = Journalpost.builder()
+
+		Journalpost domainJournalpost = mapJournalpost(journalpost);
+
+		mapBruker(domainJournalpost, journalpost);
+		mapSaksrelasjon(domainJournalpost, journalpost);
+		mapJournalpostDokumentInfoRelasjon(domainJournalpost, journalpost);
+
+		kildeNavnPopulator.populateKildeNavnForEntireJournalStructure(domainJournalpost, RequestContextHolder.currentRequestContext()
+				.getComponentId());
+
+		return new JournalforInngaaendeForsendelseRequestTo(domainJournalpost);
+
+
+	}
+
+	private Journalpost mapJournalpost(no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v1.informasjon.journalforinngaaendeforsendelse.Journalpost journalpost) {
+		return Journalpost.builder()
 				.fagomrade(stringToEnum(FagomradeCode.class, journalpost.getTema()))
 				.journalForendeEnhetId(journalpost.getJournalforendeEnhet())
 				.opprettetAvNavn(journalpost.getOpprettetAvNavn())
@@ -57,20 +73,36 @@ public class JournalforInngaaendeForsendelseRequestMapper {
 				.tilleggsopplysninger(converTillegsopplysningerToMap(journalpost.getJournalpostTilleggsopplysninger()))
 				.build();
 
-		if (journalpost.getBruker() != null) {
-			domainJournalpost.addBruker(Bruker.builder()
-					.brukerType(stringToEnum(BrukerTypeCode.class, journalpost.getBruker().getBrukerType()))
-					.brukerId(journalpost.getBruker().getBrukerId())
-					.build());
+	}
+
+	private void mapBruker(Journalpost domainJournalpost, no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v1.informasjon.journalforinngaaendeforsendelse.Journalpost journalpost) {
+
+		if (journalpost.getBruker() == null) {
+			return;
 		}
 
-		if (journalpost.getSaksrelasjon() != null) {
-			domainJournalpost.setSaksrelasjon(Saksrelasjon.builder()
-					.fagsystem(stringToEnum(FagsystemCode.class, journalpost.getSaksrelasjon().getFagsystem()))
-					.sakId(journalpost.getSaksrelasjon().getSaksnummer())
-					.journalpost(domainJournalpost)
-					.build());
+		domainJournalpost.addBruker(Bruker.builder()
+				.brukerType(stringToEnum(BrukerTypeCode.class, journalpost.getBruker().getBrukerType()))
+				.brukerId(journalpost.getBruker().getBrukerId())
+				.build());
+
+	}
+
+	private void mapSaksrelasjon(Journalpost domainJournalpost, no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v1.informasjon.journalforinngaaendeforsendelse.Journalpost journalpost) {
+
+		if (journalpost.getSaksrelasjon() == null) {
+			return;
 		}
+
+		domainJournalpost.setSaksrelasjon(Saksrelasjon.builder()
+				.fagsystem(stringToEnum(FagsystemCode.class, journalpost.getSaksrelasjon().getFagsystem()))
+				.sakId(journalpost.getSaksrelasjon().getSaksnummer())
+				.journalpost(domainJournalpost)
+				.build());
+
+	}
+
+	private void mapJournalpostDokumentInfoRelasjon(Journalpost domainJournalpost, no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v1.informasjon.journalforinngaaendeforsendelse.Journalpost journalpost) {
 
 		journalpost.getJournalpostDokumentInfoRelasjon().forEach(relasjon ->
 				domainJournalpost.addJournalpostDokumentInfoRelasjon(JournalpostDokumentInfoRelasjon.builder()
@@ -78,21 +110,16 @@ public class JournalforInngaaendeForsendelseRequestMapper {
 						.tilknyttetJournalpostSom(stringToEnum(TilknyttetJournalpostSomCode.class, relasjon.getTilknyttetJournalpostSom() == null ? null : relasjon
 								.getTilknyttetJournalpostSom()
 								.name()))
-						.dokumentInfo(createDokumentInfo(relasjon, domainJournalpost))
+						.dokumentInfo(mapDokumentInfo(relasjon, domainJournalpost))
 						.build()));
-
-		kildeNavnPopulator.populateKildeNavnForEntireJournalStructure(domainJournalpost, RequestContextHolder.currentRequestContext()
-				.getComponentId());
-
-		return new JournalforInngaaendeForsendelseRequestTo(domainJournalpost);
-
 
 	}
 
-	public DokumentInfo createDokumentInfo(no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v1.informasjon.journalforinngaaendeforsendelse.JournalpostDokumentInfoRelasjon relasjon, Journalpost domainJournalpost) {
-		if(relasjon == null || relasjon.getDokumentInfo() == null) {
+	public DokumentInfo mapDokumentInfo(no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v1.informasjon.journalforinngaaendeforsendelse.JournalpostDokumentInfoRelasjon relasjon, Journalpost domainJournalpost) {
+		if (relasjon == null || relasjon.getDokumentInfo() == null) {
 			return null;
 		}
+
 		DokumentInfo dokumentInfo = DokumentInfo.builder()
 				.kategori(stringToEnum(DokumentKategoriCode.class, relasjon.getDokumentInfo().getKategori()))
 				.sensitivt(relasjon.getDokumentInfo().isSensitivt())
@@ -110,9 +137,9 @@ public class JournalforInngaaendeForsendelseRequestMapper {
 						.filUuid(FilDetaljer.generateUuid())
 						.variantFormat(stringToEnum(VariantFormatCode.class, fildetaljer.getVariantformat()))
 						.build()));
+
 		return dokumentInfo;
 	}
-
 
 
 }

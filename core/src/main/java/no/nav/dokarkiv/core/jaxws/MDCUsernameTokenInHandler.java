@@ -1,8 +1,8 @@
 package no.nav.dokarkiv.core.jaxws;
 
-import static no.nav.dokarkiv.core.jaxws.MDCConstants.MDC_APP_ID;
-import static no.nav.dokarkiv.core.jaxws.MDCConstants.MDC_CALL_ID;
-import static no.nav.dokarkiv.core.jaxws.MDCConstants.MDC_CONSUMER_ID;
+import static no.nav.dokarkiv.core.MDCConstants.MDC_APP_ID;
+import static no.nav.dokarkiv.core.MDCConstants.MDC_CALL_ID;
+import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 
 import com.google.common.collect.Sets;
 import org.slf4j.Logger;
@@ -19,12 +19,13 @@ import javax.xml.ws.handler.soap.SOAPHandler;
 import javax.xml.ws.handler.soap.SOAPMessageContext;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.UUID;
 
 /**
  * Handler used for UsernameToken to get appId, consumerId and callId, which is not present in the
  * username-token
  *
- * @author Stig Strøm
+ * @author Stig Strï¿½m
  */
 public class MDCUsernameTokenInHandler implements SOAPHandler<SOAPMessageContext> {
 
@@ -55,7 +56,8 @@ public class MDCUsernameTokenInHandler implements SOAPHandler<SOAPMessageContext
 
 			MDC.put(MDC_APP_ID, extractMDC(header, APPID_QNAME));
 			MDC.put(MDC_CONSUMER_ID, extractMDC(header, CONSUMER_QNAME));
-			MDC.put(MDC_CALL_ID, extractMDC(header, CALLID_QNAME));
+			String callId = extractMDC(header, CALLID_QNAME);
+			MDC.put(MDC_CALL_ID, callId.isEmpty() ? UUID.randomUUID().toString() : callId);
 
 		}
 		return true;

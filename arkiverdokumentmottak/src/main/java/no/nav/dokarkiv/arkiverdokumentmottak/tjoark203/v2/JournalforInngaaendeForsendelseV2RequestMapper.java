@@ -33,15 +33,33 @@ import javax.inject.Inject;
 @Component
 public class JournalforInngaaendeForsendelseV2RequestMapper {
 
-	//TODO: NOT FINISHED!!!!
 	@Inject
 	private KildeNavnPopulator kildeNavnPopulator;
 
 	public JournalforInngaaendeForsendelseV2RequestTo map(JournalforInngaaendeForsendelseRequest request) {
 
+		if (request == null || request.getJournalpost() == null) {
+			return new JournalforInngaaendeForsendelseV2RequestTo(false, null);
+		}
+
 		no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v2.informasjon.arkiverdokumentmottak.Journalpost journalpost = request
 				.getJournalpost();
-		Journalpost domainJournalpost = Journalpost.builder()
+
+		Journalpost domainJournalpost = mapJournalpost(journalpost);
+
+		mapBruker(domainJournalpost, journalpost);
+		mapSaksrelasjon(domainJournalpost, journalpost);
+		mapJournalpostDokumentInfoRelasjon(domainJournalpost, journalpost);
+
+		kildeNavnPopulator.populateKildeNavnForEntireJournalStructure(domainJournalpost, RequestContextHolder.currentRequestContext()
+				.getComponentId());
+
+
+		return new JournalforInngaaendeForsendelseV2RequestTo(request.isForsokEndeligJF(), domainJournalpost);
+	}
+
+	private Journalpost mapJournalpost(no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v2.informasjon.arkiverdokumentmottak.Journalpost journalpost) {
+		return Journalpost.builder()
 				.fagomrade(stringToEnum(FagomradeCode.class, journalpost.getTema()))
 				.journalForendeEnhetId(journalpost.getJournalforendeEnhet())
 				.opprettetAvNavn(journalpost.getOpprettetAvNavn())
@@ -60,42 +78,48 @@ public class JournalforInngaaendeForsendelseV2RequestMapper {
 				.tilleggsopplysninger(converTillegsopplysningerToMapV2(journalpost.getTilleggsopplysninger()))
 				.build();
 
-		if (journalpost.getBruker() != null) {
-			domainJournalpost.addBruker(Bruker.builder()
-					.brukerType(stringToEnum(BrukerTypeCode.class, journalpost.getBruker().getBrukerType()))
-					.brukerId(journalpost.getBruker().getBrukerId())
-					.build());
+	}
+
+	private void mapBruker(Journalpost domainJournalpost, no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v2.informasjon.arkiverdokumentmottak.Journalpost journalpost) {
+
+		if (journalpost.getBruker() == null) {
+			return;
 		}
 
-		if (journalpost.getSaksrelasjon() != null) {
-			domainJournalpost.setSaksrelasjon(Saksrelasjon.builder()
-					.fagsystem(stringToEnum(FagsystemCode.class, journalpost.getSaksrelasjon().getFagsystem()))
-					.sakId(journalpost.getSaksrelasjon().getSaksnummer())
-					.build());
+		domainJournalpost.addBruker(Bruker.builder()
+				.brukerType(stringToEnum(BrukerTypeCode.class, journalpost.getBruker().getBrukerType()))
+				.brukerId(journalpost.getBruker().getBrukerId())
+				.build());
+
+	}
+
+	private void mapSaksrelasjon(Journalpost domainJournalpost, no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v2.informasjon.arkiverdokumentmottak.Journalpost journalpost) {
+
+		if (journalpost.getSaksrelasjon() == null) {
+			return;
 		}
 
+		domainJournalpost.setSaksrelasjon(Saksrelasjon.builder()
+				.fagsystem(stringToEnum(FagsystemCode.class, journalpost.getSaksrelasjon().getFagsystem()))
+				.sakId(journalpost.getSaksrelasjon().getSaksnummer())
+				.build());
+
+	}
+
+	private void mapJournalpostDokumentInfoRelasjon(Journalpost domainJournalpost, no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v2.informasjon.arkiverdokumentmottak.Journalpost journalpost) {
 
 		journalpost.getJournalpostDokumentInfoRelasjon().forEach(relasjon ->
 				domainJournalpost.addJournalpostDokumentInfoRelasjon(JournalpostDokumentInfoRelasjon.builder()
-						.journalpost(domainJournalpost)
 						.tilknyttetJournalpostSom(stringToEnum(TilknyttetJournalpostSomCode.class, relasjon.getTilknyttetJournalpostSom() == null ? null : relasjon
 								.getTilknyttetJournalpostSom()
 								.name()))
-						.dokumentInfo(createDokumentInfo(relasjon, domainJournalpost))
+						.dokumentInfo(mapDokumentInfo(relasjon, domainJournalpost))
 						.build()));
 
-		kildeNavnPopulator.populateKildeNavnForEntireJournalStructure(domainJournalpost, RequestContextHolder.currentRequestContext()
-				.getComponentId());
-
-
-		kildeNavnPopulator.populateKildeNavnForEntireJournalStructure(domainJournalpost, RequestContextHolder.currentRequestContext()
-				.getComponentId());
-
-		return new JournalforInngaaendeForsendelseV2RequestTo(request.isForsokEndeligJF(), domainJournalpost);
 	}
 
-	public DokumentInfo createDokumentInfo(no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v2.informasjon.arkiverdokumentmottak.JournalpostDokumentInfoRelasjon relasjon, Journalpost domainJournalpost) {
-		if (relasjon.getDokumentInfo() == null) {
+	public DokumentInfo mapDokumentInfo(no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v2.informasjon.arkiverdokumentmottak.JournalpostDokumentInfoRelasjon relasjon, Journalpost domainJournalpost) {
+		if (relasjon == null || relasjon.getDokumentInfo() == null) {
 			return null;
 		}
 
@@ -107,12 +131,12 @@ public class JournalforInngaaendeForsendelseV2RequestMapper {
 				.dokumenttypeId(relasjon.getDokumentInfo().getDokumentTypeId())
 				.originalJournalpost(domainJournalpost).build();
 
-		relasjon.getDokumentInfo().getSkannetInnholdListe().forEach(skannetInnhold -> {
-			dokumentInfo.addSkannetInnhold(SkannetInnhold.builder()
-					.dokumenttypeid(skannetInnhold.getDokumentTypeId())
-					.vedleggInnhold(skannetInnhold.getVedleggInnhold())
-					.build());
-		});
+		relasjon.getDokumentInfo()
+				.getSkannetInnholdListe()
+				.forEach(skannetInnhold -> dokumentInfo.addSkannetInnhold(SkannetInnhold.builder()
+						.dokumenttypeid(skannetInnhold.getDokumentTypeId())
+						.vedleggInnhold(skannetInnhold.getVedleggInnhold())
+						.build()));
 
 		relasjon.getDokumentInfo()
 				.getFildetaljerListe()
@@ -121,8 +145,10 @@ public class JournalforInngaaendeForsendelseV2RequestMapper {
 						.filtype(stringToEnum(FilTypeCode.class, fildetaljer.getFiltype()))
 						.filnavn(fildetaljer.getFilNavn())
 						.filUuid(FilDetaljer.generateUuid())
+						.batchNavn(fildetaljer.getBatchNavn())
 						.variantFormat(stringToEnum(VariantFormatCode.class, fildetaljer.getVariantformat()))
 						.build()));
+
 		return dokumentInfo;
 	}
 

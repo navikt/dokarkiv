@@ -1,6 +1,6 @@
 package no.nav.dokarkiv.core.jaxws;
 
-import static no.nav.dokarkiv.core.jaxws.MDCConstants.MDC_CALL_ID;
+import static no.nav.dokarkiv.core.MDCConstants.MDC_CALL_ID;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;

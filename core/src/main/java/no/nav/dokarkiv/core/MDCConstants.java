@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.core.jaxws;
+package no.nav.dokarkiv.core;
 
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
