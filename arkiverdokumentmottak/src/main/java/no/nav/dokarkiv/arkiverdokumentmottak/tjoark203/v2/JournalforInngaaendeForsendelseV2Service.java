@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
-import no.nav.dokarkiv.core.domain.entities.Bruker;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.journalbehandling.DokumentFilerDelegate;
@@ -17,9 +16,6 @@ import javax.inject.Inject;
 import java.sql.Date;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
 /**
  * Service class for JournalforInngaaendeForsendelseV2 (TJOARK203)
@@ -56,18 +52,17 @@ public class JournalforInngaaendeForsendelseV2Service {
 			dokumentFilerDelegate.saveUpdateDokumentFiler(journalpost);
 			updateJournalpostDokumentInfoListOriginalJournalpost(journalpost);
 			storedJournalpost = joarkRepository.save(journalpost);
-			log.info("TJOARK203_V2 Har journalført journalpost med journalpostId={}, dokumentInfoId={}, Journalstatus={}, KanalreferanseId={}, MottaksKanal={}, Fagområde={}, BrukerID(er)={}", storedJournalpost
+			log.info("TJOARK203_V2 Har journalført journalpost med journalpostId={}, dokumentInfoId={}, Journalstatus={}, KanalreferanseId={}, MottaksKanal={}, Fagområde={}", storedJournalpost
 							.getJournalpostId(), storedJournalpost.findHoveddokumentDokumentInfoRelasjon()
 							.getDokumentInfo()
 							.getDokumentInfoId(),
 					storedJournalpost.getJournalstatus(), storedJournalpost.getKanalReferanseId(), storedJournalpost.getMottakskanal(), storedJournalpost
-							.getFagomrade(), retrieveAllBrukerIds(storedJournalpost)
-							.toString());
+							.getFagomrade());
 			return buildResponse(storedJournalpost);
 		}
-		log.info("TJOARK203_V2 Journalpost med journalpostId={}, kanalReferanseId={} og mottaksKanal={} eksisterer allerede i databasen. BrukerID(er)={}", storedJournalpost
+		log.info("TJOARK203_V2 Journalpost med journalpostId={}, kanalReferanseId={} og mottaksKanal={} eksisterer allerede i databasen.", storedJournalpost
 						.getJournalpostId(), storedJournalpost.getKanalReferanseId(),
-				storedJournalpost.getMottakskanal(), retrieveAllBrukerIds(storedJournalpost).toString());
+				storedJournalpost.getMottakskanal());
 		return buildResponse(storedJournalpost);
 	}
 
@@ -128,15 +123,6 @@ public class JournalforInngaaendeForsendelseV2Service {
 		} else {
 			journalpost.setJournalstatus(JournalStatusCode.M);
 		}
-	}
-
-	private List<String> retrieveAllBrukerIds(Journalpost journalpost) {
-		List<String> brukerIdList = new ArrayList<>();
-		Iterator<Bruker> itr = journalpost.getBrukere().iterator();
-		while (itr.hasNext()) {
-			brukerIdList.add(itr.next().getBrukerId());
-		}
-		return brukerIdList;
 	}
 
 	private void updateJournalpostBeforeValidation(Journalpost journalpost) {

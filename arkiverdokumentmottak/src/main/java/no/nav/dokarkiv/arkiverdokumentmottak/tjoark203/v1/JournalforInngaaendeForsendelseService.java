@@ -7,7 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
-import no.nav.dokarkiv.core.domain.entities.Bruker;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.journalbehandling.DokumentFilerDelegate;
@@ -20,9 +19,6 @@ import javax.inject.Inject;
 import java.sql.Date;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
 @Service
 @Slf4j
@@ -49,12 +45,11 @@ public class JournalforInngaaendeForsendelseService {
 
 			dokumentFilerDelegate.saveUpdateDokumentFiler(journalpost);
 			storedJournalpost = joarkRepository.save(journalpost);
-			log.info("TJOARK203_V1 Har journalført journalpost med journalpostId={}, dokumentInfoId={}, forsendelseMottakId={}, Journalstatus={}, Fagområde={}, MottaksKanal={}, BrukerID(er)={} ", storedJournalpost
+			log.info("TJOARK203_V1 Har journalført journalpost med journalpostId={}, dokumentInfoId={}, forsendelseMottakId={}, Journalstatus={}, Fagområde={}, MottaksKanal={}", storedJournalpost
 							.getJournalpostId(), storedJournalpost.findHoveddokumentDokumentInfoRelasjon()
 							.getDokumentInfo()
 							.getDokumentInfoId(), tillegsopplysning,
-					storedJournalpost.getJournalstatus(), storedJournalpost.getFagomrade(), storedJournalpost.getMottakskanal(), retrieveAllBrukerIds(storedJournalpost)
-							.toString());
+					storedJournalpost.getJournalstatus(), storedJournalpost.getFagomrade(), storedJournalpost.getMottakskanal());
 			return buildResponse(storedJournalpost);
 		}
 
@@ -113,12 +108,4 @@ public class JournalforInngaaendeForsendelseService {
 				.get(FORSENDELSE_MOTTAK_ID_KEY);
 	}
 
-	private List<String> retrieveAllBrukerIds(Journalpost journalpost) {
-		List<String> brukerIdList = new ArrayList<>();
-		Iterator<Bruker> itr = journalpost.getBrukere().iterator();
-		while (itr.hasNext()) {
-			brukerIdList.add(itr.next().getBrukerId());
-		}
-		return brukerIdList;
-	}
 }

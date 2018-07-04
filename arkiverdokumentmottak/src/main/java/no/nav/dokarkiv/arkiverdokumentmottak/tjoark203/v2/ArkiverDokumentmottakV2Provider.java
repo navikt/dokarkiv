@@ -40,20 +40,19 @@ public class ArkiverDokumentmottakV2Provider implements ArkiverDokumentmottakV2 
 	public JournalforInngaaendeForsendelseResponse journalforInngaaendeForsendelse(
 			JournalforInngaaendeForsendelseRequest request) throws KanIkkeJournalfores {
 
-		JournalforInngaaendeForsendelseV2RequestTo requestTo;
-		JournalforInngaaendeForsendelseV2ResponseTo responseTo;
-
 		log.info("TJOARK203_V2 har mottat forsendelse med kanalreferanseId={} og mottakskanal={}.", getKanalereferanseId(request), getMottakskanal(request));
 
 		try {
-			requestTo = journalforInngaaendeForsendelseV2RequestMapper.map(request);
-			responseTo = journalforInngaaendeForsendelseV2Service.journalforInngaaendeForsendelseV2(requestTo);
+			JournalforInngaaendeForsendelseV2RequestTo requestTo = journalforInngaaendeForsendelseV2RequestMapper.map(request);
+			log.info("TJOARK203_V2 har mappet om forsendelse til to objekt og er klar til å journalføre.");
+
+			JournalforInngaaendeForsendelseV2ResponseTo responseTo = journalforInngaaendeForsendelseV2Service.journalforInngaaendeForsendelseV2(requestTo);
+			return journalforInngaaendeForsendelseV2ResponseMapper.map(responseTo);
 		} catch (InvalidArgumentException | InvalidJournalpostStructureException | IllegalArgumentException e) {
 			throw new KanIkkeJournalfores(e.getMessage() + getAdditionalErrorInfo(request), faultInfoPopulator.populateFaultInfo(
 					new no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v2.feil.KanIkkeJournalfores(), e, "journalforInngaaendeForsendelseV2"));
 		}
 
-		return journalforInngaaendeForsendelseV2ResponseMapper.map(responseTo);
 	}
 
 	@Override
