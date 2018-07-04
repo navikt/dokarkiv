@@ -6,6 +6,7 @@ import no.nav.dokarkiv.core.cache.CacheConfig;
 import org.apache.cxf.common.security.SimplePrincipal;
 import org.apache.cxf.common.security.UsernameToken;
 import org.apache.cxf.interceptor.security.AbstractUsernameTokenInInterceptor;
+import org.slf4j.MDC;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.ldap.core.LdapTemplate;
@@ -32,6 +33,7 @@ public class LdapUsernameTokenValidatorInterceptor extends AbstractUsernameToken
 
 	@Override
 	protected Subject createSubject(UsernameToken token) {
+		MDC.put("consumerId", token.getName());
 		Cache usernameTokenCache = cacheManager.getCache(CacheConfig.USERNAME_TOKEN_CACHE);
 		final String username = token.getName();
 		Integer cachedAuthHash = usernameTokenCache.get(username, Integer.class);
