@@ -21,6 +21,7 @@ import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
+import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
 import no.nav.dokarkiv.core.sporing.SporingPopulator;
 import no.nav.dokarkiv.core.stelvio.FunctionalRecoverableException;
 import org.junit.Before;
@@ -50,6 +51,9 @@ public class DefaultAvbrytVedleggServiceTest {
 
 	@Mock
 	private JoarkRepository joarkRepository;
+
+	@Mock
+	private JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository;
 
 	@Mock
 	private SporingPopulator sporingPopulator;
@@ -194,6 +198,7 @@ public class DefaultAvbrytVedleggServiceTest {
 		dokumentInfo.setDokumentstatus(DokumentStatusCode.FERDIGSTILT);
 
 		Journalpost jp = createJournalpost(JOURNALPOST_ID, dokumentInfo);
+		JournalpostDokumentInfoRelasjon relasjon = jp.getJournalpostDokumentInfoRelasjoner().iterator().next();
 
 		//Create another journalpost related to dokumentInfo
 		createJournalpost(JOURNALPOST_ID + 1, dokumentInfo);
@@ -201,9 +206,8 @@ public class DefaultAvbrytVedleggServiceTest {
 		when(joarkRepository.findById(JOURNALPOST_ID)).thenReturn(Optional.of(jp));
 
 		avbrytVedleggService.avbrytVedlegg(createRequest());
-		//TODO OK FIX?
-		verify(joarkRepository).deleteJournalpostDokumentInfoRelasjon(
-				jp.getJournalpostId());
+
+		verify(journalpostDokumentInfoRelasjonRepository).delete(relasjon);
 	}
 
 	private Journalpost createJournalpost(Long journalPostId, DokumentInfo dokumentInfo) {

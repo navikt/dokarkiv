@@ -10,6 +10,7 @@ import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
+import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
 import no.nav.dokarkiv.core.sporing.SporingPopulator;
 import org.springframework.stereotype.Component;
 
@@ -28,6 +29,9 @@ public class DefaultAvbrytVedleggService implements AvbrytVedleggService {
 
 	@Inject
 	private JoarkRepository joarkRepository;
+
+	@Inject
+	private JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository;
 
 	@Inject
 	private SporingPopulator sporingPopulator;
@@ -51,14 +55,12 @@ public class DefaultAvbrytVedleggService implements AvbrytVedleggService {
 		validator.validateJournalpostDokumentInfoRelasjon(dokumentInfoRelasjon);
 
 		if (dokumentInfo.isRelatedToMultipleJournalposts()) {
-			//FIXME - fiks sletting av journlalpostdokumentinforelasjoner
 			dokumentInfoRelasjon.getDokumentInfo().removeJournalpostDokumentInfoRelasjon(dokumentInfoRelasjon);
 			dokumentInfoRelasjon.getJournalpost().removeJournalpostDokumentInfoRelasjon(dokumentInfoRelasjon);
-			joarkRepository.deleteJournalpostDokumentInfoRelasjon(journalpostId);
+			journalpostDokumentInfoRelasjonRepository.delete(dokumentInfoRelasjon);
 		} else {
 			dokumentInfo.setDokumentstatus(DokumentStatusCode.AVBRUTT);
 		}
-
 		sporingPopulator.populateSporingInfo(journalpost, request.getEndretAvNavn());
 	}
 

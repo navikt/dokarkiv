@@ -13,7 +13,7 @@ import javax.persistence.Table;
 
 /**
  * Domain entity that represents skannet innhold.
- * 
+ *
  * @author Thomas Eugen Bjørge, Sirius IT
  * @author Per Kristian Foss, Visma Sirius
  */
@@ -21,14 +21,16 @@ import javax.persistence.Table;
 @Table(name = "T_SKANNET_INNHOLD")
 public class SkannetInnhold extends AbstractPersistentVersionedDomainObjectWithKilde {
 
-	/** ID used for serialization. */
+	/**
+	 * ID used for serialization.
+	 */
 	private static final long serialVersionUID = ***gammelt_fnr***94040373L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "skannetInnhold_seq")
-	@GenericGenerator(name = "skannetInnhold_seq", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator", 
-					  parameters = { @Parameter(name = "sequence_name", value = "T_SKANNET_INNHOLD_SEQ"), 
-									 @Parameter(name = "initial_value", value = "200000000") })
+	@GenericGenerator(name = "skannetInnhold_seq", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
+			parameters = {@Parameter(name = "sequence_name", value = "T_SKANNET_INNHOLD_SEQ"),
+					@Parameter(name = "initial_value", value = "200000000")})
 	@Column(name = "skannet_innhold_id", nullable = false)
 	private Long skannetInnholdId;
 
@@ -37,7 +39,7 @@ public class SkannetInnhold extends AbstractPersistentVersionedDomainObjectWithK
 
 	@Column(name = "vedlegg_innhold")
 	private String vedleggInnhold;
-	
+
 	@Column(name = "dokumenttypeid")
 	private String dokumenttypeid;
 
@@ -49,33 +51,33 @@ public class SkannetInnhold extends AbstractPersistentVersionedDomainObjectWithK
 
 	/**
 	 * Constructor that assigns immutable properties. Used for testing.
-	 * 
-	 * @param skannetInnholdId
-	 *            DB-id for the instance.
-	 * @param version
-	 *            DB-version for the instance.
+	 *
+	 * @param skannetInnholdId DB-id for the instance.
+	 * @param version DB-version for the instance.
 	 */
 	public SkannetInnhold(Long skannetInnholdId, long version) {
 		this.skannetInnholdId = skannetInnholdId;
 		setVersion(version);
 	}
 
-	/** {@inheritDoc} */
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Long getId() {
 		return getSkannetInnholdId();
 	}
-	
+
 	/**
 	 * Verify that all mandatory fields are set.
 	 */
 	public void verifyMandatoryFields() {
 		verifyStringNotBlank(vedleggInnhold, "vedleggInnhold");
 	}
-	
+
 	/**
 	 * Getter for the skannetInnholdId property.
-	 * 
+	 *
 	 * @return the skannetInnholdId
 	 */
 	public Long getSkannetInnholdId() {
@@ -84,7 +86,7 @@ public class SkannetInnhold extends AbstractPersistentVersionedDomainObjectWithK
 
 	/**
 	 * Getter for the vedleggInnhold property.
-	 * 
+	 *
 	 * @return the vedleggInnhold
 	 */
 	public String getVedleggInnhold() {
@@ -93,9 +95,8 @@ public class SkannetInnhold extends AbstractPersistentVersionedDomainObjectWithK
 
 	/**
 	 * Setter for the vedleggInnhold property.
-	 * 
-	 * @param vedleggInnhold
-	 *            the vedleggInnhold to set
+	 *
+	 * @param vedleggInnhold the vedleggInnhold to set
 	 */
 	public void setVedleggInnhold(String vedleggInnhold) {
 		this.vedleggInnhold = vedleggInnhold;
@@ -103,7 +104,7 @@ public class SkannetInnhold extends AbstractPersistentVersionedDomainObjectWithK
 
 	/**
 	 * Getter for the vedleggNr property.
-	 * 
+	 *
 	 * @return the vedleggNr
 	 */
 	public Integer getVedleggNr() {
@@ -112,14 +113,13 @@ public class SkannetInnhold extends AbstractPersistentVersionedDomainObjectWithK
 
 	/**
 	 * Setter for the vedleggNr property.
-	 * 
-	 * @param vedleggNr
-	 *            the vedleggNr to set
+	 *
+	 * @param vedleggNr the vedleggNr to set
 	 */
 	public void setVedleggNr(Integer vedleggNr) {
 		this.vedleggNr = vedleggNr;
 	}
-	
+
 	/**
 	 * Getter for the dokumenttypeid property
 	 *
@@ -128,12 +128,11 @@ public class SkannetInnhold extends AbstractPersistentVersionedDomainObjectWithK
 	public String getDokumenttypeid() {
 		return dokumenttypeid;
 	}
-	
+
 	/**
 	 * Setter for the dokumenttypeid property
 	 *
-	 * @param dokumenttypeid
-	 * 				the dokumenttypeid to set
+	 * @param dokumenttypeid the dokumenttypeid to set
 	 */
 	public void setDokumenttypeid(String dokumenttypeid) {
 		this.dokumenttypeid = dokumenttypeid;

@@ -69,7 +69,6 @@ public class AvbrytVedleggIT extends AbstractArkiverdokumentproduksjonItest {
 	}
 
 	//FIXME
-	@Ignore
 	@Test
 	public void shouldDeleteJournalpostDokumentInfoRelation() throws Exception {
 		DokumentInfo dokumentInfo = createDokumentInfo(DokumentStatusCode.UNDER_REDIGERING);
@@ -85,7 +84,7 @@ public class AvbrytVedleggIT extends AbstractArkiverdokumentproduksjonItest {
 		assertThat(resultJournalpost.getSaksrelasjon().getEndretAvNavn(), is(ENDRET_AV_NAVN));
 		assertThat(resultJournalpost.getJournalpostDokumentInfoRelasjoner().isEmpty(), is(true));
 
-		DokumentInfo resultDokumentInfo = resultJournalpost.findDokumentInfoById(dokumentInfo.getDokumentInfoId());
+		DokumentInfo resultDokumentInfo = dokumentinfoRepository.findById(dokumentInfo.getDokumentInfoId()).get();
 		assertThat(resultDokumentInfo.getJournalpostRelasjoner().size(), is(1));
 		JournalpostDokumentInfoRelasjon journalpostDokumentInfoRelasjon = getJournalpostRelasjon(resultDokumentInfo);
 		assertThat(journalpostDokumentInfoRelasjon.getJournalpost().getId(), is(nonProcessedJp.getId()));
