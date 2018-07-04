@@ -37,12 +37,3 @@ fasitResources:
       username: SPRING_LDAP_USERNAME
       password: SPRING_LDAP_PASSWORD
       serviceuser.basedn: SPRING_LDAP_BASE
-  exposed:
-  - alias: DokumentproduksjonInfo_v1
-    resourceType: webserviceendpoint
-    path: /services/dokumentproduksjoninfo/v1
-    wsdlGroupId: no.nav.tjenester.brevogarkiv
-    wsdlArtifactId: dokumentproduksjoninfo-tjenestespesifikasjon
-    wsdlVersion: 2.1.0
-    securityToken: USERNAME_TOKEN
-    description: Domenetjeneste for henting av info fra journalposter
