@@ -1,7 +1,7 @@
 image: "docker.adeo.no:5000/dok/dokarkiv"
 replicas:
   min: 2
-  max: 6
+  max: 10
   cpuThresholdPercentage: 70
 port: 8080
 healthcheck:
@@ -19,9 +19,9 @@ prometheus:
 resources:
   limits:
     cpu: 4000m
-    memory: 1024Mi
+    memory: 1536Mi
   requests:
-    memory: 512Mi
+    memory: 1024Mi
 fasitResources:
   used:
   - alias: dokarkivds
