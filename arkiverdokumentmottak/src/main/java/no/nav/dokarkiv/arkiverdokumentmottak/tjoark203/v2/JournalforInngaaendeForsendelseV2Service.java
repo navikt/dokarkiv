@@ -28,8 +28,6 @@ public class JournalforInngaaendeForsendelseV2Service {
 
 	private static final String JOURNALTILSTAND_ENDELIG = "ENDELIG";
 	private static final String JOURNALTILSTAND_MIDLERTIDIG = "MIDLERTIDIG";
-	private static final String JOURNAL_F_ENHET_9999 = "9999";
-
 
 	@Inject
 	private JoarkRepository joarkRepository;

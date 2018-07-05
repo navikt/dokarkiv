@@ -94,7 +94,7 @@ public class JournalforInngaaendeForsendelseService {
 		}
 
 		Long journalpostId = joarkRepository.findJournalpostIdByTilleggsopplysningerNokkelAndVerdi(FORSENDELSE_MOTTAK_ID_KEY, forsendelseMottakId);
-		if(journalpostId == null) {
+		if (journalpostId == null) {
 			return null;
 		}
 		return joarkRepository.findById(journalpostId).orElse(null);

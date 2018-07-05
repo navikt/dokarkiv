@@ -44,7 +44,7 @@ public class ArkiverDokumentmottakV2Provider implements ArkiverDokumentmottakV2 
 
 		try {
 			JournalforInngaaendeForsendelseV2RequestTo requestTo = journalforInngaaendeForsendelseV2RequestMapper.map(request);
-			log.info("TJOARK203_V2 har mappet om forsendelse til to objekt og er klar til å journalføre.");
+			log.info("TJOARK203_V2 har mappet om forsendelse med kanalreferanseId={} og mottakskanal={} til to objekt og er klar til å journalføre.", getKanalereferanseId(request), getMottakskanal(request));
 
 			JournalforInngaaendeForsendelseV2ResponseTo responseTo = journalforInngaaendeForsendelseV2Service.journalforInngaaendeForsendelseV2(requestTo);
 			return journalforInngaaendeForsendelseV2ResponseMapper.map(responseTo);
