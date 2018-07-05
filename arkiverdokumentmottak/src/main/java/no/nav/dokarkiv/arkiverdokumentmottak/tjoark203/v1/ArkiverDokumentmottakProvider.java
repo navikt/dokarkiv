@@ -39,17 +39,16 @@ public class ArkiverDokumentmottakProvider implements ArkiverDokumentmottakV1 {
 		String tillegsopplysning = findTilleggsOpplysningForsendelseMottakId(request);
 		log.info("TJOARK203_V1 har mottatt forsendelse med tilleggsopplysning.ForsendelseMottakId={}", tillegsopplysning);
 
+		JournalforInngaaendeForsendelseRequestTo requestTo = journalforInngaaendeForsendelseRequestMapper.map(request);
+		log.info("TJOARK203_V1 har mappet om forsendelse til to objekt og er klar til å journalføre. ", tillegsopplysning);
 		try {
-
-			JournalforInngaaendeForsendelseRequestTo requestTo = journalforInngaaendeForsendelseRequestMapper.map(request);
-			log.info("TJOARK203_V1 har mappet om forsendelse til to objekt og er klar til å journalføre. ", tillegsopplysning);
-
 			JournalforInngaaendeForsendelseResponseTo responseTo = journalforInngaaendeForsendelseService.journalforInngaaendeForsendelse(requestTo);
 			return journalforInngaaendeForsendelseResponseMapper.map(responseTo);
 		} catch (FunctionalUnrecoverableException | IllegalArgumentException e) {
 			String tilleggsOpplysning = findTilleggsOpplysningForsendelseMottakId(request);
-			throw new KanIkkeJournalfores(String.format("Kan ikke journalføre inngående forsendelse. feilmelding=%s, tilleggsopplysning.forsendelseMottakId=%s", e
-					.getMessage(), tilleggsOpplysning), faultInfoPopulator.populateFaultInfo(
+			log.warn(String.format("Kan ikke journalføre inngående forsendelse. feilmelding=%s, tilleggsopplysning.forsendelseMottakId=%s", e
+					.getMessage(), tilleggsOpplysning), e);
+			throw new KanIkkeJournalfores(e.getMessage(), faultInfoPopulator.populateFaultInfo(
 					new no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v1.feil.KanIkkeJournalfores(), e, "journalforInngaaendeForsendelse"));
 		}
 	}

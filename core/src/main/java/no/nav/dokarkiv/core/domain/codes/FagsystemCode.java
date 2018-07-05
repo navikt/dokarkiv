@@ -49,7 +49,11 @@ public enum FagsystemCode implements CtiRelationship<FagsystemCode, String> {
 	/**
 	 * GSAK
 	 */
-	FS19;
+	FS19,
+	/**
+	 * Utbetalingsmeldinger (UR)
+	 */
+	OB36;
 
 	/** {@inheritDoc} */
 	@Override

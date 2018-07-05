@@ -18,4 +18,5 @@ public interface MandatoryFieldsVerifier {
 	 * @param journalpost The journalpost to verify.
 	 */
 	void verifyFields(Journalpost journalpost);
+
 }

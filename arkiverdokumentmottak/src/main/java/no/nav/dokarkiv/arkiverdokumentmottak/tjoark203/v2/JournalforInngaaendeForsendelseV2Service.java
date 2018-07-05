@@ -28,6 +28,8 @@ public class JournalforInngaaendeForsendelseV2Service {
 
 	private static final String JOURNALTILSTAND_ENDELIG = "ENDELIG";
 	private static final String JOURNALTILSTAND_MIDLERTIDIG = "MIDLERTIDIG";
+	private static final String JOURNAL_F_ENHET_9999 = "9999";
+
 
 	@Inject
 	private JoarkRepository joarkRepository;
@@ -50,9 +52,8 @@ public class JournalforInngaaendeForsendelseV2Service {
 			updateJournalpostAfterValidation(journalpost);
 
 			dokumentFilerDelegate.saveUpdateDokumentFiler(journalpost);
-			updateJournalpostDokumentInfoListOriginalJournalpost(journalpost);
 			storedJournalpost = joarkRepository.save(journalpost);
-			log.info("TJOARK203_V2 Har journalført journalpost med journalpostId={}, dokumentInfoId={}, Journalstatus={}, KanalreferanseId={}, MottaksKanal={}, Fagområde={}", storedJournalpost
+			log.info("TJOARK203_V2 Har journalført journalpost med journalpostId={}, hoveddokumentDokumentInfoId={}, journalstatus={}, kanalreferanseId={}, mottaksKanal={}, fagområde={}", storedJournalpost
 							.getJournalpostId(), storedJournalpost.findHoveddokumentDokumentInfoRelasjon()
 							.getDokumentInfo()
 							.getDokumentInfoId(),
@@ -64,13 +65,6 @@ public class JournalforInngaaendeForsendelseV2Service {
 						.getJournalpostId(), storedJournalpost.getKanalReferanseId(),
 				storedJournalpost.getMottakskanal());
 		return buildResponse(storedJournalpost);
-	}
-
-	private void updateJournalpostDokumentInfoListOriginalJournalpost(Journalpost originalJournalpost) {
-
-		for (JournalpostDokumentInfoRelasjon relasjon : originalJournalpost.getJournalpostDokumentInfoRelasjoner()) {
-			relasjon.getDokumentInfo().setOriginalJournalpost(originalJournalpost);
-		}
 	}
 
 	private JournalforInngaaendeForsendelseV2ResponseTo buildResponse(Journalpost journalpost) {
@@ -97,6 +91,9 @@ public class JournalforInngaaendeForsendelseV2Service {
 		if (journalpost.getJournalstatus() == JournalStatusCode.J) {
 			journalpost.setJournalDato(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()));
 			journalpost.setJournalfortAvNavn(journalpost.getOpprettetAvNavn());
+			if (journalpost.getJournalForendeEnhetId() == null) {
+				journalpost.setJournalForendeEnhetId(JOURNAL_F_ENHET_9999);
+			}
 		}
 	}
 

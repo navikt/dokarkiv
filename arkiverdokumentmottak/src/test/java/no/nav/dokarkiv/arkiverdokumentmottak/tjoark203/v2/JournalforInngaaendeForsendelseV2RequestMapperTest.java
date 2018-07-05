@@ -3,8 +3,10 @@ package no.nav.dokarkiv.arkiverdokumentmottak.tjoark203.v2;
 import static no.nav.dokarkiv.arkiverdokumentmottak.utils.ArkiverDokumentmottakRequestDataUtil.toXMLGregorianCalendar;
 import static no.nav.dokarkiv.arkiverdokumentmottak.utils.ArkiverDokumentmottakV2RequestDataUtil.assertBruker;
 import static no.nav.dokarkiv.arkiverdokumentmottak.utils.ArkiverDokumentmottakV2RequestDataUtil.assertFilDetaljer;
+import static no.nav.dokarkiv.arkiverdokumentmottak.utils.ArkiverDokumentmottakV2RequestDataUtil.assertKryssreferanser;
 import static no.nav.dokarkiv.arkiverdokumentmottak.utils.ArkiverDokumentmottakV2RequestDataUtil.assertSaksrelasjon;
 import static no.nav.dokarkiv.arkiverdokumentmottak.utils.ArkiverDokumentmottakV2RequestDataUtil.assertSkannetInnhold;
+import static no.nav.dokarkiv.arkiverdokumentmottak.utils.ArkiverDokumentmottakV2RequestDataUtil.assertTilleggsopplysninger;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
@@ -72,12 +74,17 @@ public class JournalforInngaaendeForsendelseV2RequestMapperTest {
 		assertBruker(domainResult.getBrukere().iterator().next(), journalpostRequest.getBruker());
 
 		assertThat(requestTo.isForsokEndeligJf(), is(SHOULD_ENDELIG_JOURNALFOERES));
+
+		assertTilleggsopplysninger(domainResult.getTilleggsopplysninger());
+		assertKryssreferanser(domainResult.getKryssreferanser().iterator().next());
 	}
 
 	private void assertJournalpostDokumentInfoRelasjon(JournalpostDokumentInfoRelasjon dokumentInfoRelasjon) {
 		assertDokumentInfo(dokumentInfoRelasjon.getDokumentInfo());
 		assertThat(dokumentInfoRelasjon.getTilknyttetJournalpostSom().name(),
 				is(journalpostRequest.getJournalpostDokumentInfoRelasjon().get(0).getTilknyttetJournalpostSom().name()));
+		assertThat(dokumentInfoRelasjon.getTilknyttetAvNavn(), is(journalpostRequest.getOpprettetAvNavn()));
+
 	}
 
 	private void assertDokumentInfo(DokumentInfo dokumentInfo) {

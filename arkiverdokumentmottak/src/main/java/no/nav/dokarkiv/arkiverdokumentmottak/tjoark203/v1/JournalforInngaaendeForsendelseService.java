@@ -45,7 +45,7 @@ public class JournalforInngaaendeForsendelseService {
 
 			dokumentFilerDelegate.saveUpdateDokumentFiler(journalpost);
 			storedJournalpost = joarkRepository.save(journalpost);
-			log.info("TJOARK203_V1 Har journalført journalpost med journalpostId={}, dokumentInfoId={}, forsendelseMottakId={}, Journalstatus={}, Fagområde={}, MottaksKanal={}", storedJournalpost
+			log.info("TJOARK203_V1 Har journalført journalpost med journalpostId={}, hoveddokumentDokumentInfoId={}, forsendelseMottakId={}, Journalstatus={}, Fagområde={}, MottaksKanal={}", storedJournalpost
 							.getJournalpostId(), storedJournalpost.findHoveddokumentDokumentInfoRelasjon()
 							.getDokumentInfo()
 							.getDokumentInfoId(), tillegsopplysning,

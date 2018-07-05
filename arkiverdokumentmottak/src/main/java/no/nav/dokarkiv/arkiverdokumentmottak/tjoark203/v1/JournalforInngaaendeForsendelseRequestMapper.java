@@ -110,6 +110,7 @@ public class JournalforInngaaendeForsendelseRequestMapper {
 						.tilknyttetJournalpostSom(stringToEnum(TilknyttetJournalpostSomCode.class, relasjon.getTilknyttetJournalpostSom() == null ? null : relasjon
 								.getTilknyttetJournalpostSom()
 								.name()))
+						.tilknyttetAvNavn(journalpost.getOpprettetAvNavn())
 						.dokumentInfo(mapDokumentInfo(relasjon, domainJournalpost))
 						.build()));
 

@@ -346,9 +346,7 @@ public class JournalforInngaaendeForsendelseIT extends AbstractArkiverDokumentmo
 	}
 
 	@Test
-	public void shouldThrowExceptionOnNullSensitiv() throws Exception {
-		expectedException.expect(KanIkkeJournalfores.class);
-		expectedException.expectMessage("DokumentInfo.sensitivt must be set");
+	public void shouldNotThrowExceptionWhenNullSensitiv() throws Exception {
 
 		request.getJournalpost().getJournalpostDokumentInfoRelasjon().get(0).getDokumentInfo().setSensitivt(null);
 		arkiverDokumentmottakProviderV1.journalforInngaaendeForsendelse(request);

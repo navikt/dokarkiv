@@ -204,9 +204,8 @@ public class DefaultOpprettJournalpostValidatorTest {
 	}
 
 	@Test
-	public void shouldThrowExceptionIfNoSensitivtOnDocumentInfo() {
-		expected.expect(InvalidArgumentException.class);
-		expected.expectMessage("sensitivt must be set");
+	public void shouldNotThrowExceptionIfNoSensitivtOnDocumentInfo() {
+
 		journalpost.getJournalpostDokumentInfoRelasjoner().iterator().next().getDokumentInfo().setSensitivt(null);
 		opprettJournalpostValidator.validate(journalpost);
 	}

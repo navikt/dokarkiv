@@ -40,7 +40,7 @@ public class ArkiverDokumentmottakV2Provider implements ArkiverDokumentmottakV2 
 	public JournalforInngaaendeForsendelseResponse journalforInngaaendeForsendelse(
 			JournalforInngaaendeForsendelseRequest request) throws KanIkkeJournalfores {
 
-		log.info("TJOARK203_V2 har mottat forsendelse med kanalreferanseId={} og mottakskanal={}.", getKanalereferanseId(request), getMottakskanal(request));
+		log.info("TJOARK203_V2 har mottatt forsendelse med kanalreferanseId={} og mottakskanal={}.", getKanalereferanseId(request), getMottakskanal(request));
 
 		try {
 			JournalforInngaaendeForsendelseV2RequestTo requestTo = journalforInngaaendeForsendelseV2RequestMapper.map(request);
@@ -49,7 +49,8 @@ public class ArkiverDokumentmottakV2Provider implements ArkiverDokumentmottakV2 
 			JournalforInngaaendeForsendelseV2ResponseTo responseTo = journalforInngaaendeForsendelseV2Service.journalforInngaaendeForsendelseV2(requestTo);
 			return journalforInngaaendeForsendelseV2ResponseMapper.map(responseTo);
 		} catch (InvalidArgumentException | InvalidJournalpostStructureException | IllegalArgumentException e) {
-			throw new KanIkkeJournalfores(e.getMessage() + getAdditionalErrorInfo(request), faultInfoPopulator.populateFaultInfo(
+			log.warn(String.format("TJOARK203_V2 Kan ikke journalføre inngående forsendelse. Feilmelding=%s. %s", e.getMessage(), getAdditionalErrorInfo(request)), e);
+			throw new KanIkkeJournalfores(e.getMessage(), faultInfoPopulator.populateFaultInfo(
 					new no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v2.feil.KanIkkeJournalfores(), e, "journalforInngaaendeForsendelseV2"));
 		}
 
@@ -61,7 +62,7 @@ public class ArkiverDokumentmottakV2Provider implements ArkiverDokumentmottakV2 
 	}
 
 	private String getAdditionalErrorInfo(JournalforInngaaendeForsendelseRequest request) {
-		StringBuilder sb = new StringBuilder(". ");
+		StringBuilder sb = new StringBuilder();
 		if (request != null && request.getJournalpost() != null) {
 			sb.append("KanalreferanseId=" + request.getJournalpost().getKanalReferanseId());
 			sb.append(", Mottakskanal=" + request.getJournalpost().getMottakskanal());

@@ -9,15 +9,18 @@ import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
 import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
 import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
+import no.nav.dokarkiv.core.domain.codes.ReferanseTypeCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v2.informasjon.arkiverdokumentmottak.Bruker;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v2.informasjon.arkiverdokumentmottak.DokumentInfo;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v2.informasjon.arkiverdokumentmottak.Fildetaljer;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v2.informasjon.arkiverdokumentmottak.Journalpost;
+import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v2.informasjon.arkiverdokumentmottak.Kryssreferanse;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v2.informasjon.arkiverdokumentmottak.Saksrelasjon;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v2.informasjon.arkiverdokumentmottak.SkannetInnhold;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v2.informasjon.arkiverdokumentmottak.TilknyttetJournalpostEnum;
+import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v2.informasjon.arkiverdokumentmottak.Tilleggsopplysning;
 import org.hamcrest.Matchers;
 
 import javax.xml.datatype.DatatypeConfigurationException;
@@ -25,6 +28,7 @@ import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.Map;
 
 /**
  * Util for ArkiverDokumentmottakV2-operations (TJOARK203)
@@ -44,6 +48,11 @@ public class ArkiverDokumentmottakV2RequestDataUtil {
 	static final String JOURNALFOERENDE_ENHET_REF = "2009";
 	static final String OPPRETTET_AV_NAVN = "Banjo Kazooie";
 	static final String TITTEL = "Once Upon a Time In Mehico";
+	static final String REFERANSE_ID = "789";
+	static final String OPPLYSNINGSNOEKKEL1 = "noekkel1";
+	static final String OPPLYSNINGSVERDI1 = "verdi1";
+	static final String OPPLYSNINGSNOEKKEL2 = "noekkel2";
+	static final String OPPLYSNINGSVERDI2 = "verdi2";
 	static final String KATEGORI = DokumentKategoriCode.B.name();
 	static final String INNHOLD = "Antonio Banderas";
 	static final String VARIANTFORMAT = "ARKIV";
@@ -67,6 +76,27 @@ public class ArkiverDokumentmottakV2RequestDataUtil {
 		journalpost.setAvsenderMottakerId(PERSONIDENT);
 		journalpost.setDatoMottatt(toXMLGregorianCalendar(DATO_MOTTATT));
 		journalpost.setMottakskanal(MOTTAKS_KANAL_CODE.name());
+	}
+
+	public static Kryssreferanse createKryssreferanse() {
+		Kryssreferanse kryssreferanse = new Kryssreferanse();
+		kryssreferanse.setReferanseId(REFERANSE_ID);
+		kryssreferanse.setReferanseType(ReferanseTypeCode.ETTERSENDT.name());
+		return kryssreferanse;
+	}
+
+	public static Tilleggsopplysning createTilleggsopplysning1() {
+		Tilleggsopplysning tilleggsopplysning = new Tilleggsopplysning();
+		tilleggsopplysning.setOpplysningsnoekkel(OPPLYSNINGSNOEKKEL1);
+		tilleggsopplysning.setOpplysningsverdi(OPPLYSNINGSVERDI1);
+		return tilleggsopplysning;
+	}
+
+	public static Tilleggsopplysning createTilleggsopplysning2() {
+		Tilleggsopplysning tilleggsopplysning = new Tilleggsopplysning();
+		tilleggsopplysning.setOpplysningsnoekkel(OPPLYSNINGSNOEKKEL2);
+		tilleggsopplysning.setOpplysningsverdi(OPPLYSNINGSVERDI2);
+		return tilleggsopplysning;
 	}
 
 	public static void populateFildetaljerBase(Fildetaljer fildetaljer, VariantFormatCode variantFormatCode) {
@@ -142,5 +172,15 @@ public class ArkiverDokumentmottakV2RequestDataUtil {
 	public static void assertBruker(no.nav.dokarkiv.core.domain.entities.Bruker bruker, Bruker requestBruker) {
 		assertThat(bruker.getBrukerId(), Matchers.is(requestBruker.getBrukerId()));
 		assertThat(bruker.getBrukerType().name(), Matchers.is(requestBruker.getBrukerType()));
+	}
+
+	public static void assertTilleggsopplysninger(Map<String, String> tilleggsopplysninger) {
+		assertThat(tilleggsopplysninger.get(OPPLYSNINGSNOEKKEL1), Matchers.is(OPPLYSNINGSVERDI1));
+		assertThat(tilleggsopplysninger.get(OPPLYSNINGSNOEKKEL2), Matchers.is(OPPLYSNINGSVERDI2));
+	}
+
+	public static void assertKryssreferanser(no.nav.dokarkiv.core.domain.entities.Kryssreferanse kryssreferanse) {
+		assertThat(kryssreferanse.getReferanseId(), Matchers.is(REFERANSE_ID));
+		assertThat(kryssreferanse.getReferanseType().name(), Matchers.is(ReferanseTypeCode.ETTERSENDT.name()));
 	}
 }

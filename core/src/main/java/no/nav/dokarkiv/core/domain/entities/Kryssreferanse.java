@@ -1,5 +1,7 @@
 package no.nav.dokarkiv.core.domain.entities;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import no.nav.dokarkiv.core.domain.AbstractPersistentVersionedDomainObjectWithKilde;
 import no.nav.dokarkiv.core.domain.codes.ReferanseTypeCode;
 import org.hibernate.annotations.GenericGenerator;
@@ -19,6 +21,8 @@ import javax.persistence.Table;
  * 
  * @author Per Kristian Foss, Visma Sirius
  */
+@Builder
+@AllArgsConstructor
 @Entity
 @Table(name = "T_KRYSSREFERANSE")
 public class Kryssreferanse extends AbstractPersistentVersionedDomainObjectWithKilde {

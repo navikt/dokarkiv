@@ -14,12 +14,14 @@ import static org.junit.Assert.assertTrue;
 import no.nav.dokarkiv.arkiverdokumentmottak.AbstractArkiverDokumentmottakItest;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
+import no.nav.dokarkiv.core.domain.codes.ReferanseTypeCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.Bruker;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
+import no.nav.dokarkiv.core.domain.entities.Kryssreferanse;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
 import no.nav.dokarkiv.core.domain.entities.SkannetInnhold;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
@@ -41,6 +43,7 @@ import java.sql.Date;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -48,6 +51,11 @@ import java.util.Set;
  */
 public class JournalforInngaaendeForsendelseV2IT extends AbstractArkiverDokumentmottakItest {
 
+	private static final String REFERANSE_ID = "789";
+	private static final String OPPLYSNINGSNOEKKEL1 = "noekkel1";
+	private static final String OPPLYSNINGSVERDI1 = "verdi1";
+	private static final String OPPLYSNINGSNOEKKEL2 = "noekkel2";
+	private static final String OPPLYSNINGSVERDI2 = "verdi2";
 	private static JournalTilstandEnum JOURNALTILSTAND_ENDELIG = JournalTilstandEnum.ENDELIG;
 	private static JournalTilstandEnum JOURNALTILSTAND_MIDLERTIDIG = JournalTilstandEnum.MIDLERTIDIG;
 
@@ -88,6 +96,24 @@ public class JournalforInngaaendeForsendelseV2IT extends AbstractArkiverDokument
 	}
 
 	@Test
+	public void shouldRunOkTillegsopplysningerAndKryssreferanseIsNull() throws Exception {
+		request.getJournalpost().getTilleggsopplysninger().clear();
+		request.getJournalpost().setKryssreferanse(null);
+
+		JournalforInngaaendeForsendelseResponse response = arkiverDokumentmottakV2Provider.journalforInngaaendeForsendelse(request);
+
+		List<no.nav.dokarkiv.core.domain.entities.Journalpost> allJournalposts = (List) joarkRepository.findAll();
+		assertThat(allJournalposts, hasSize(1));
+
+		no.nav.dokarkiv.core.domain.entities.Journalpost persistedJournalpost = allJournalposts.get(0);
+
+		assertResponse(persistedJournalpost, response, JOURNALTILSTAND_ENDELIG);
+
+		assertTrue(persistedJournalpost.getTilleggsopplysninger().isEmpty());
+		assertThat(persistedJournalpost.getKryssreferanser(), hasSize(0));
+	}
+
+	@Test
 	public void verifyEqualResponseWhenTryingToJournalforSameRequestTwice() throws Exception {
 		JournalforInngaaendeForsendelseResponse response = arkiverDokumentmottakV2Provider.journalforInngaaendeForsendelse(request);
 		JournalforInngaaendeForsendelseResponse secondResponse = arkiverDokumentmottakV2Provider.journalforInngaaendeForsendelse(request);
@@ -112,7 +138,7 @@ public class JournalforInngaaendeForsendelseV2IT extends AbstractArkiverDokument
 	@Test
 	public void shouldThrowExceptionOnNullJournalpost() throws Exception {
 		expectedException.expect(KanIkkeJournalfores.class);
-		expectedException.expectMessage("Missing required field in request: Journalpost. ");
+		expectedException.expectMessage("Missing required field in request: Journalpost");
 
 		request.setJournalpost(null);
 		arkiverDokumentmottakV2Provider.journalforInngaaendeForsendelse(request);
@@ -402,7 +428,7 @@ public class JournalforInngaaendeForsendelseV2IT extends AbstractArkiverDokument
 	}
 
 	@Test
-	public void shouldMidlertidigJournalforeWhenDokumenttypeInfoNullSensitivt() throws Exception {
+	public void shouldNotMidlertidigJournalforeWhenDokumenttypeInfoNullSensitivt() throws Exception {
 		request.getJournalpost().getJournalpostDokumentInfoRelasjon().iterator().next().getDokumentInfo().setSensitivt(null);
 		JournalforInngaaendeForsendelseResponse response = arkiverDokumentmottakV2Provider.journalforInngaaendeForsendelse(request);
 		List<no.nav.dokarkiv.core.domain.entities.Journalpost> allJournalposts = (List) joarkRepository.findAll();
@@ -410,9 +436,10 @@ public class JournalforInngaaendeForsendelseV2IT extends AbstractArkiverDokument
 
 		no.nav.dokarkiv.core.domain.entities.Journalpost persistedJournalpost = allJournalposts.get(0);
 
-		assertResponse(persistedJournalpost, response, JOURNALTILSTAND_MIDLERTIDIG);
-		assertJournalStatus(persistedJournalpost, JournalStatusCode.M);
+		assertResponse(persistedJournalpost, response, JOURNALTILSTAND_ENDELIG);
+		assertJournalStatus(persistedJournalpost, JournalStatusCode.J);
 	}
+
 
 	@Test
 	public void shouldThrowExceptionMissingFilDetaljer() throws Exception {
@@ -572,7 +599,7 @@ public class JournalforInngaaendeForsendelseV2IT extends AbstractArkiverDokument
 	@Test
 	public void shouldThrowExceptionOnInvalidFagomraade() throws Exception {
 		expectedException.expect(KanIkkeJournalfores.class);
-		expectedException.expectMessage("No enum constant no.nav.dokarkiv.core.domain.codes.FagomradeCode.DEEZ_TEMA.");
+		expectedException.expectMessage("No enum constant no.nav.dokarkiv.core.domain.codes.FagomradeCode.DEEZ_TEMA");
 
 		request.getJournalpost().setTema("DEEZ_TEMA");
 		arkiverDokumentmottakV2Provider.journalforInngaaendeForsendelse(request);
@@ -595,7 +622,7 @@ public class JournalforInngaaendeForsendelseV2IT extends AbstractArkiverDokument
 	@Test
 	public void shouldThrowExceptionOnInvalidMottakskanal() throws Exception {
 		expectedException.expect(KanIkkeJournalfores.class);
-		expectedException.expectMessage("No enum constant no.nav.dokarkiv.core.domain.codes.MottaksKanalCode.DEEZ_MOTTAKSKANAL.");
+		expectedException.expectMessage("No enum constant no.nav.dokarkiv.core.domain.codes.MottaksKanalCode.DEEZ_MOTTAKSKANAL");
 
 		request.getJournalpost().setMottakskanal("DEEZ_MOTTAKSKANAL");
 		arkiverDokumentmottakV2Provider.journalforInngaaendeForsendelse(request);
@@ -604,7 +631,7 @@ public class JournalforInngaaendeForsendelseV2IT extends AbstractArkiverDokument
 	@Test
 	public void shouldThrowExceptionOnInvalidFagsystem() throws Exception {
 		expectedException.expect(KanIkkeJournalfores.class);
-		expectedException.expectMessage("No enum constant no.nav.dokarkiv.core.domain.codes.FagsystemCode.DEEZ_FORSENDELSE.");
+		expectedException.expectMessage("No enum constant no.nav.dokarkiv.core.domain.codes.FagsystemCode.DEEZ_FORSENDELSE");
 
 		request.getJournalpost().getSaksrelasjon().setFagsystem("DEEZ_FORSENDELSE");
 		arkiverDokumentmottakV2Provider.journalforInngaaendeForsendelse(request);
@@ -613,7 +640,7 @@ public class JournalforInngaaendeForsendelseV2IT extends AbstractArkiverDokument
 	@Test
 	public void shouldThrowExceptionOnInvalidBrukerType() throws Exception {
 		expectedException.expect(KanIkkeJournalfores.class);
-		expectedException.expectMessage("No enum constant no.nav.dokarkiv.core.domain.codes.BrukerTypeCode.DEEZ_BRUKERTYPE.");
+		expectedException.expectMessage("No enum constant no.nav.dokarkiv.core.domain.codes.BrukerTypeCode.DEEZ_BRUKERTYPE");
 
 		request.getJournalpost().getBruker().setBrukerType("DEEZ_BRUKERTYPE");
 		arkiverDokumentmottakV2Provider.journalforInngaaendeForsendelse(request);
@@ -622,7 +649,7 @@ public class JournalforInngaaendeForsendelseV2IT extends AbstractArkiverDokument
 	@Test
 	public void shouldThrowExceptionOnInvalidDokumentinfoKategori() throws Exception {
 		expectedException.expect(KanIkkeJournalfores.class);
-		expectedException.expectMessage("No enum constant no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode.DEEZ_KATEGORI.");
+		expectedException.expectMessage("No enum constant no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode.DEEZ_KATEGORI");
 
 		request.getJournalpost()
 				.getJournalpostDokumentInfoRelasjon()
@@ -635,7 +662,7 @@ public class JournalforInngaaendeForsendelseV2IT extends AbstractArkiverDokument
 	@Test
 	public void shouldThrowExceptionOnInvalidFildetaljerFiltype() throws Exception {
 		expectedException.expect(KanIkkeJournalfores.class);
-		expectedException.expectMessage("No enum constant no.nav.dokarkiv.core.domain.codes.FilTypeCode.DEEZ_FILTYPE.");
+		expectedException.expectMessage("No enum constant no.nav.dokarkiv.core.domain.codes.FilTypeCode.DEEZ_FILTYPE");
 
 		request.getJournalpost()
 				.getJournalpostDokumentInfoRelasjon()
@@ -651,7 +678,7 @@ public class JournalforInngaaendeForsendelseV2IT extends AbstractArkiverDokument
 	public void shouldThrowExceptionOnInvalidFildetaljerVariantFormat() throws Exception {
 		expectedException.expect(KanIkkeJournalfores.class);
 		expectedException.expectMessage(
-				"No enum constant no.nav.dokarkiv.core.domain.codes.VariantFormatCode.DEEZ_VARIANTFORMAT.");
+				"No enum constant no.nav.dokarkiv.core.domain.codes.VariantFormatCode.DEEZ_VARIANTFORMAT");
 
 		request.getJournalpost()
 				.getJournalpostDokumentInfoRelasjon()
@@ -682,7 +709,7 @@ public class JournalforInngaaendeForsendelseV2IT extends AbstractArkiverDokument
 	@Test
 	public void shouldThrowExceptionOnZeroArkivvariant() throws Exception {
 		expectedException.expect(KanIkkeJournalfores.class);
-		expectedException.expectMessage("All the Journalpost's DokumentInfos must contain an arkiv variant when endelig journalforing.");
+		expectedException.expectMessage("All the Journalpost's DokumentInfos must contain an arkiv variant when endelig journalforing");
 
 		request.getJournalpost()
 				.getJournalpostDokumentInfoRelasjon()
@@ -756,6 +783,8 @@ public class JournalforInngaaendeForsendelseV2IT extends AbstractArkiverDokument
 		assertJournalpostDokumentInfoRelasjon(domainDokumentRelasjon,
 				request.getJournalpostDokumentInfoRelasjon().get(0), domain.getJournalpostId());
 
+		assertKryssreferanse(domain.getKryssreferanser().iterator().next());
+
 		Set<JournalpostDokumentInfoRelasjon> vedlegg = domain.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG);
 		assertThat(vedlegg, hasSize(1));
 		for (JournalpostDokumentInfoRelasjon journalpostDokumentInfoRelasjon : vedlegg) {
@@ -800,6 +829,16 @@ public class JournalforInngaaendeForsendelseV2IT extends AbstractArkiverDokument
 	private void assertSkannetInnhold(SkannetInnhold domain, no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v2.informasjon.arkiverdokumentmottak.SkannetInnhold request) {
 		assertThat(domain.getVedleggInnhold(), is(request.getVedleggInnhold()));
 		assertThat(domain.getDokumenttypeid(), is(request.getDokumentTypeId()));
+	}
+
+	public static void assertTilleggsopplysninger(Map<String, String> domain) {
+		assertThat(domain.get(OPPLYSNINGSNOEKKEL1), Matchers.is(OPPLYSNINGSVERDI1));
+		assertThat(domain.get(OPPLYSNINGSNOEKKEL2), Matchers.is(OPPLYSNINGSVERDI2));
+	}
+
+	public static void assertKryssreferanse(Kryssreferanse kryssreferanse) {
+		assertThat(kryssreferanse.getReferanseId(), Matchers.is(REFERANSE_ID));
+		assertThat(kryssreferanse.getReferanseType().name(), Matchers.is(ReferanseTypeCode.ETTERSENDT.name()));
 	}
 
 	private void assertResponse(no.nav.dokarkiv.core.domain.entities.Journalpost journalpost, JournalforInngaaendeForsendelseResponse response, JournalTilstandEnum journalTilstand) {

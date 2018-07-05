@@ -1,6 +1,8 @@
 package no.nav.dokarkiv.arkiverdokumentmottak.utils;
 
 import static no.nav.dokarkiv.arkiverdokumentmottak.utils.ArkiverDokumentmottakV2RequestDataUtil.createSkannetInnhold;
+import static no.nav.dokarkiv.arkiverdokumentmottak.utils.ArkiverDokumentmottakV2RequestDataUtil.createTilleggsopplysning1;
+import static no.nav.dokarkiv.arkiverdokumentmottak.utils.ArkiverDokumentmottakV2RequestDataUtil.createTilleggsopplysning2;
 import static no.nav.dokarkiv.arkiverdokumentmottak.utils.ArkiverDokumentmottakV2RequestDataUtil.populateFildetaljerBase;
 
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
@@ -33,7 +35,9 @@ public class JournalforInngaaendeForsendelseV2RequestDataUtil {
 		journalpost.setSaksrelasjon(ArkiverDokumentmottakV2RequestDataUtil.createSaksrelasjon());
 		journalpost.setBruker(ArkiverDokumentmottakV2RequestDataUtil.createBruker());
 		journalpost.withJournalpostDokumentInfoRelasjon(createJournalpostDokumentInfoRelasjon());
-
+		journalpost.setKryssreferanse(ArkiverDokumentmottakV2RequestDataUtil.createKryssreferanse());
+		journalpost.withTilleggsopplysninger(createTilleggsopplysning1());
+		journalpost.withTilleggsopplysninger(createTilleggsopplysning2());
 		return journalpost;
 	}
 

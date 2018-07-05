@@ -21,7 +21,7 @@ public class ConverterUtils {
 
 	public static Map<String, String> converTillegsopplysningerToMapV2(List<Tilleggsopplysning> source) {
 		if (CollectionUtils.isEmpty(source)) {
-			return null;
+			return new HashMap<>();
 		}
 
 		Map<String, String> destination = new HashMap<>();

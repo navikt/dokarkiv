@@ -273,10 +273,7 @@ public class JournalforInngaaendeForsendelseV2ValidatorTest {
 	}
 
 	@Test
-	public void shouldFailOnNullSensitivt() throws Exception {
-		expectedException.expect(InvalidArgumentException.class);
-		expectedException.expectMessage("DokumentInfo.sensitivt");
-
+	public void shouldNotFailOnNullSensitivt() throws Exception {
 		for (JournalpostDokumentInfoRelasjon jdir : journalpost.getJournalpostDokumentInfoRelasjoner()) {
 			jdir.getDokumentInfo().setSensitivt(null);
 		}
