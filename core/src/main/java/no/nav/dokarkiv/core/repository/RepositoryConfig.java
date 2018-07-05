@@ -39,6 +39,7 @@ public class RepositoryConfig {
 		poolDataSource.setUser(dataSourceProperties.getUsername());
 		poolDataSource.setPassword(dataSourceProperties.getPassword());
 		poolDataSource.setConnectionFactoryClassName(dataSourceProperties.getDriverClassName());
+		poolDataSource.registerConnectionInitializationCallback(connection -> connection.setSchema("joark"));
 
 		Properties connProperties = new Properties();
 		connProperties.setProperty(SQLnetDef.TCP_CONNTIMEOUT_STR, "3000");
