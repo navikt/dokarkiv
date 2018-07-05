@@ -33,6 +33,7 @@ public class DefaultMandatoryFieldsVerifier implements MandatoryFieldsVerifier {
 		verifyDokumentInfoRelasjon(journalpost);
 	}
 
+
 	private void verifySaksrelasjon(Journalpost journalpost) {
 		if (journalpost.getSaksrelasjon() != null) {
 			journalpost.getSaksrelasjon().verifyMandatoryFields();

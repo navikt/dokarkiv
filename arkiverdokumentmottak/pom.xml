@@ -19,11 +19,6 @@
 	<dependencies>
 
 		<dependency>
-			<groupId>net.sf.dozer</groupId>
-			<artifactId>dozer</artifactId>
-		</dependency>
-
-		<dependency>
 			<groupId>no.nav.tjenester.brevogarkiv</groupId>
 			<artifactId>arkiverdokumentmottak-tjenestespesifikasjon</artifactId>
 			<classifier>jaxws</classifier>
@@ -55,13 +50,16 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
 			<groupId>no.nav.dokarkiv</groupId>
 			<artifactId>core</artifactId>
-			<version>1-SNAPSHOT</version>
 			<type>test-jar</type>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-
 
 </project>

@@ -216,7 +216,7 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	 *
 	 * @param journalpost The journalpost which has a relation to this DokumentInfo
 	 */
-	public void verifyMandatoryFieldsNotEndretAvNavn(Journalpost journalpost) {
+	public void verifyMandatoryFieldsForInngaaendeJournal(Journalpost journalpost) {
 		verifyDokumentStatus(journalpost);
 
 		verifyFieldsForNonLenientJournalstatuses(journalpost);
@@ -237,7 +237,6 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 		if (!journalpost.hasLenientStatus()) {
 			verifyFieldNotNull(kategori, "kategori");
 			verifyStringNotBlank(tittel, "tittel");
-			verifyFieldNotNull(sensitivt, "sensitivt");
 		}
 	}
 

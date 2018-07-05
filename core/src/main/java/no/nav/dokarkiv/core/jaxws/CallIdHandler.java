@@ -1,5 +1,7 @@
 package no.nav.dokarkiv.core.jaxws;
 
+import static no.nav.dokarkiv.core.MDCConstants.MDC_CALL_ID;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -15,6 +17,7 @@ import javax.xml.ws.handler.soap.SOAPMessageContext;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.UUID;
 
 /**
  * Inspired by MDCInHandler in modig-log-jaxws. Since MDCInHandler uses
@@ -26,9 +29,6 @@ import java.util.Set;
 public class CallIdHandler implements SOAPHandler<SOAPMessageContext> {
 
 	private static final Logger logger = LoggerFactory.getLogger(CallIdHandler.class);
-	
-	/** The callID MDC key */
-	public static final String MDC_CALL_ID = "callId";
 
     // QName for the callId header
     private static final QName CALLID_QNAME = new QName("uri:no.nav.applikasjonsrammeverk", MDC_CALL_ID);
@@ -79,11 +79,13 @@ public class CallIdHandler implements SOAPHandler<SOAPMessageContext> {
         Iterator<SOAPElement> headersIter = header.getChildElements(CALLID_QNAME);
         while (headersIter.hasNext()) {
             SOAPElement element = headersIter.next();
-            if (element.getElementQName().equals(CALLID_QNAME)) {
-                callId = element.getValue();
-                logger.debug("Found callId: " + callId);
-                break;
-            }
+			if (element.getElementQName().equals(CALLID_QNAME)) {
+				callId = element.getValue();
+				logger.debug("Found callId: " + callId);
+				break;
+			} else {
+				callId = UUID.randomUUID().toString();
+			}
         }
         return callId;
     }

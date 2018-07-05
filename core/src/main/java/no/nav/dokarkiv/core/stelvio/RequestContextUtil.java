@@ -1,7 +1,8 @@
 package no.nav.dokarkiv.core.stelvio;
 
 
-import no.nav.dokarkiv.core.jaxws.CallIdHandler;
+import static no.nav.dokarkiv.core.MDCConstants.MDC_CALL_ID;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,7 +67,7 @@ public final class RequestContextUtil {
 	}
 
 	private static String getCallId() {
-		return MDC.get(CallIdHandler.MDC_CALL_ID);
+		return MDC.get(MDC_CALL_ID);
 	}
 
 }
