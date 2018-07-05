@@ -1,6 +1,7 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark100;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 
 /**
@@ -10,6 +11,7 @@ import lombok.Data;
  */
 @Data
 @AllArgsConstructor
+@Builder
 public class OpprettJournalpostArkiverDokumentResponseTo {
 
 	private Long journalpostId;

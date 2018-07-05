@@ -30,6 +30,7 @@ import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.UgyldigJournalStatus
 import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.UgyldigTilknyttetJournalpostSomVerdiException;
 import no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark100.OpprettJournalpostArkiverDokumentRequestMapper;
 import no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark100.OpprettJournalpostArkiverDokumentResponseMapper;
+import no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark100.OpprettJournalpostArkiverDokumentResponseTo;
 import no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark100.OpprettJournalpostArkiverDokumentService;
 import no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark101.OpprettJournalpostRequestMapper;
 import no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark101.OpprettJournalpostResponseTo;
@@ -45,6 +46,7 @@ import no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark104.SettDatoSendtService;
 import no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark105.ArkiverVedleggRequestMapper;
 import no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark105.ArkiverVedleggRequestTo;
 import no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark105.ArkiverVedleggResponseMapper;
+import no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark105.ArkiverVedleggResponseTo;
 import no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark105.ArkiverVedleggService;
 import no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark106.AvbrytVedleggRequestTo;
 import no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark106.AvbrytVedleggService;
@@ -199,6 +201,12 @@ public class ArkiverDokumentproduksjonProviderTest {
 				new OpprettJournalpostArkiverDokumentResponse();
 		wsResponse.setJournalpostId(JOURNALPOST_ID);
 
+		when(opprettJournalpostArkiverDokumentServiceMock.opprettJournalpostArkiverDokument(any())).thenReturn(OpprettJournalpostArkiverDokumentResponseTo
+				.builder()
+				.dokumentInfoId(DOCUMENT_INFO_ID)
+				.journalpostId(JOURNALPOST_ID)
+				.build());
+
 		when(opprettJournalpostArkiverDokumentResponseMapperMock
 				.map(any()))
 				.thenReturn(wsResponse);
@@ -247,11 +255,6 @@ public class ArkiverDokumentproduksjonProviderTest {
 		verify(avbrytJournalpostServiceMock).avbrytJournalpost(Matchers.argThat(new IsAvbrytJournalpostServiceCalledWithExpectedInput()));
 	}
 
-	@Test
-	public void shouldAvbrytJournalpostRequestIsNull() throws Exception {
-		provider.avbrytJournalpost(null);
-		verify(avbrytJournalpostServiceMock).avbrytJournalpost(null);
-	}
 
 	@Test
 	public void shouldThrowExceptionIfJournalpostNotFound() throws Exception {
@@ -288,6 +291,10 @@ public class ArkiverDokumentproduksjonProviderTest {
 	@Test
 	public void shouldArkiverVedlegg() throws Exception {
 		when(arkiverVedleggRequestMapperMock.map(any())).thenReturn(new ArkiverVedleggRequestTo());
+		when(arkiverVedleggServiceMock.arkiverVedlegg(any())).thenReturn(ArkiverVedleggResponseTo.builder()
+				.dokumentInfoId(12L)
+				.journalpostId(11L)
+				.build());
 		provider.arkiverVedlegg(createArkiverVedleggRequest(JOURNALPOST_ID));
 		verify(arkiverVedleggServiceMock).arkiverVedlegg(any(ArkiverVedleggRequestTo.class));
 	}

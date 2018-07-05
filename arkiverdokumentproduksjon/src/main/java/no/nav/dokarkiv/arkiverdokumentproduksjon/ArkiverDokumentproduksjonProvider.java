@@ -4,6 +4,7 @@ package no.nav.dokarkiv.arkiverdokumentproduksjon;
 import static no.nav.dokarkiv.core.domain.codes.DokumentStatusCode.AVBRUTT;
 import static no.nav.dokarkiv.core.domain.codes.DokumentStatusCode.UNDER_REDIGERING;
 
+import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.DokumentInfoInnskrenketPartsinnsynException;
 import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.DokumentInfoIsOrganInterntException;
 import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.DokumentInfoNotFoundException;
@@ -134,6 +135,7 @@ import javax.inject.Inject;
  *
  * @author Joakim Bjørnstad, Visma Consulting
  */
+@Slf4j
 @Component
 public class ArkiverDokumentproduksjonProvider implements ArkiverDokumentproduksjonV1 {
 
@@ -219,11 +221,30 @@ public class ArkiverDokumentproduksjonProvider implements ArkiverDokumentproduks
 	@Transactional
 	public OpprettJournalpostArkiverDokumentResponse opprettJournalpostArkiverDokument(
 			OpprettJournalpostArkiverDokumentRequest request) {
+		Assert.notNull(request, "Request is null");
 		OpprettJournalpostArkiverDokumentRequestTo domeneRequest
 				= opprettJournalpostArkiverDokumentRequestMapper.map(request);
 		OpprettJournalpostArkiverDokumentResponseTo domeneResponse
 				= opprettJournalpostArkiverDokumentService.opprettJournalpostArkiverDokument(domeneRequest);
+		log.info("tjoark100 har opprettet journalpost med journalpostId={} og dokumentInfoId={}", domeneResponse.getJournalpostId(), domeneResponse
+				.getDokumentInfoId());
 		return opprettJournalpostArkiverDokumentResponseMapper.map(domeneResponse);
+	}
+
+	@Override
+	@Transactional
+	public OpprettJournalpostResponse opprettJournalpost(
+			OpprettJournalpostRequest wsRequest) {
+		Assert.notNull(wsRequest, "Request is null");
+		OpprettJournalpostRequestTo domeneRequest = opprettJournalpostRequestMapper.map(wsRequest);
+		OpprettJournalpostResponseTo opprettJournalpost = opprettJournalpostService.opprettJournalpost(domeneRequest);
+
+		log.info("tjoark101 har opprettet journalpost med journalpostId={} og dokumentInfoId={}", opprettJournalpost.getJournalpostId(), opprettJournalpost
+				.getDokumentInfoId());
+		OpprettJournalpostResponse opprettJournalpostWsResponse = new OpprettJournalpostResponse();
+		opprettJournalpostWsResponse.setDokumentInfoId(opprettJournalpost.getDokumentInfoId());
+		opprettJournalpostWsResponse.setJournalpostId(opprettJournalpost.getJournalpostId());
+		return opprettJournalpostWsResponse;
 	}
 
 	@Override
@@ -241,6 +262,8 @@ public class ArkiverDokumentproduksjonProvider implements ArkiverDokumentproduks
 			OppdaterJournalpostArkiverDokumentRequestTo domeneRequest
 					= oppdaterJournalpostArkiverDokumentRequestMapper.map(wsRequest);
 			oppdaterJournalpostArkiverDokumentService.oppdaterJournalpostArkiverDokument(domeneRequest);
+			log.info("tjoark102 har oppdatert journalpost med journalpostId={} og dokumentInfoId={}", domeneRequest.getJournalpostId(), domeneRequest
+					.getDokumentInfoId());
 		} catch (no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.UgyldigInputException e) {
 			throw new UgyldigInputException(e.getMessage(), new UgyldigInputFault());
 		} catch (no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.ObjektIkkeFunnetException e) {
@@ -256,28 +279,9 @@ public class ArkiverDokumentproduksjonProvider implements ArkiverDokumentproduks
 
 	@Override
 	@Transactional
-	public void settJournalpostAttributter(SettJournalpostAttributterRequest settJournalpostAttributterRequest) {
-		SettJournalpostAttributterRequestTo domainRequest = settJournalpostAttributterRequestMapper.map(settJournalpostAttributterRequest);
-		settJournalpostAttributterService.settJournalpostAttributter(domainRequest);
-	}
-
-	@Override
-	@Transactional
-	public OpprettJournalpostResponse opprettJournalpost(
-			OpprettJournalpostRequest wsRequest) {
-		OpprettJournalpostRequestTo domeneRequest = opprettJournalpostRequestMapper.map(wsRequest);
-		OpprettJournalpostResponseTo opprettJournalpost = opprettJournalpostService.opprettJournalpost(domeneRequest);
-
-		OpprettJournalpostResponse opprettJournalpostWsResponse = new OpprettJournalpostResponse();
-		opprettJournalpostWsResponse.setDokumentInfoId(opprettJournalpost.getDokumentInfoId());
-		opprettJournalpostWsResponse.setJournalpostId(opprettJournalpost.getJournalpostId());
-		return opprettJournalpostWsResponse;
-	}
-
-	@Override
-	@Transactional
 	public void avbrytJournalpost(AvbrytJournalpostRequest wsRequest) throws AvbrytJournalpostJournalpostIkkeFunnet,
 			AvbrytJournalpostAvbrytelseIkkeTillatt, AvbrytJournalpostJournalpostAlleredeAvbrutt {
+		Assert.notNull(wsRequest, "Request is null");
 		String operationName = "avbrytJournalpost";
 		AvbrytJournalpostRequestTo domainRequest = null;
 		if (wsRequest != null) {
@@ -285,6 +289,7 @@ public class ArkiverDokumentproduksjonProvider implements ArkiverDokumentproduks
 		}
 		try {
 			avbrytJournalpostService.avbrytJournalpost(domainRequest);
+			log.info("tjoark103 har avbrutt journalpost med journalpostId={}", domainRequest.getJournalpostId());
 		} catch (NoJournalpostFoundException e) {
 			throw new AvbrytJournalpostJournalpostIkkeFunnet(e.getMessage(), faultInfoPopulator.populateFaultInfo(
 					new JournalpostIkkeFunnet(), e, operationName));
@@ -297,6 +302,15 @@ public class ArkiverDokumentproduksjonProvider implements ArkiverDokumentproduks
 						new AvbrytelseIkkeTillatt(), e, operationName));
 			}
 		}
+	}
+
+	@Override
+	@Transactional
+	public void settDatoSendt(SettDatoSendtRequest settDatoSendtRequest) {
+		Assert.notNull(settDatoSendtRequest, "Request is null");
+		SettDatoSendtRequestTo domainRequest = settDatoSendtRequestMapper.map(settDatoSendtRequest);
+		settDatoSendtService.settDatoSendt(domainRequest);
+		log.info("tjoark104 har oppdatert datoSendt for journalpost(er) med journalpostId(er)={}", domainRequest.getJournalpostIds());
 
 	}
 
@@ -304,12 +318,13 @@ public class ArkiverDokumentproduksjonProvider implements ArkiverDokumentproduks
 	@Transactional
 	public ArkiverVedleggResponse arkiverVedlegg(ArkiverVedleggRequest arkiverVedleggRequest)
 			throws ArkiverVedleggJournalpostIkkeFunnet, ArkiverVedleggJournalpostIkkeUnderArbeid {
-
+		Assert.notNull(arkiverVedleggRequest, "Request is null");
 		ArkiverVedleggRequestTo arkiverVedleggRequestTo = arkiverVedleggRequestMapper.map(arkiverVedleggRequest);
-
 		ArkiverVedleggResponseTo response;
 		try {
 			response = arkiverVedleggService.arkiverVedlegg(arkiverVedleggRequestTo);
+			log.info("tjoark105 har arkivert vedlegg med dokumentinfoId={} på journalpost med journalpostId={}",
+					response.getDokumentInfoId(),  arkiverVedleggRequestTo.getJournalpostId());
 		} catch (NoJournalpostFoundException e) {
 			throw new ArkiverVedleggJournalpostIkkeFunnet(e.getMessage(), faultInfoPopulator.populateFaultInfo(
 					new JournalpostIkkeFunnet(), e, ARKIVER_VEDLEGG));
@@ -331,6 +346,8 @@ public class ArkiverDokumentproduksjonProvider implements ArkiverDokumentproduks
 			avbrytVedleggService.avbrytVedlegg(new AvbrytVedleggRequestTo(wsRequest.getJournalpostId(),
 					wsRequest.getDokumentInfoId(),
 					wsRequest.getEndretAvNavn()));
+			log.info("tjoark106 har avbrutt vedlegg med dokumentinfoId={} på journalpost med journalpostId={}", wsRequest.getDokumentInfoId(), wsRequest
+					.getJournalpostId());
 		} catch (NoJournalpostFoundException e) {
 			throw new AvbrytVedleggJournalpostIkkeFunnet(e.getMessage(), faultInfoPopulator.populateFaultInfo(
 					new JournalpostIkkeFunnet(), e, AVBRYT_VEDLEGG));
@@ -351,27 +368,6 @@ public class ArkiverDokumentproduksjonProvider implements ArkiverDokumentproduks
 
 	@Override
 	@Transactional
-	public void ferdigstillJournalpost(FerdigstillJournalpostRequest wsRequest)
-			throws FerdigstillJournalpostJournalpostIkkeUnderArbeid, FerdigstillJournalpostInneholderDokumenterUnderRedigering,
-			FerdigstillJournalpostJournalpostIkkeFunnet {
-		try {
-			FerdigstillJournalpostRequestTo domainRequest = ferdigstillJournalpostRequestMapper.map(wsRequest);
-			ferdigstillJournalpostService.ferdigstillJournalpost(domainRequest);
-		} catch (NoJournalpostFoundException e) {
-			throw new FerdigstillJournalpostJournalpostIkkeFunnet(e.getMessage(), faultInfoPopulator.populateFaultInfo(
-					new JournalpostIkkeFunnet(), e, FERDIGSTILL_JOURNALPOST));
-		} catch (UgyldigJournalStatusVerdiException e) {
-			throw new FerdigstillJournalpostJournalpostIkkeUnderArbeid(e.getMessage(), faultInfoPopulator.populateFaultInfo(
-					new JournalpostIkkeUnderArbeid(), e, FERDIGSTILL_JOURNALPOST));
-		} catch (UgyldigDokumentStatusVerdiException e) {
-			throw new FerdigstillJournalpostInneholderDokumenterUnderRedigering(e.getMessage(),
-					faultInfoPopulator.populateFaultInfo(new InneholderDokumenterUnderRedigering(), e,
-							FERDIGSTILL_JOURNALPOST));
-		}
-	}
-
-	@Override
-	@Transactional
 	public void fjernFerdigstiltDokument(FjernFerdigstiltDokumentRequest wsRequest)
 			throws FjernFerdigstiltDokumentDokumentIkkeFunnet, FjernFerdigstiltDokumentDokumentAlleredeAvbrutt,
 			FjernFerdigstiltDokumentJournalpostIkkeUnderArbeid, FjernFerdigstiltDokumentJournalpostIkkeFunnet,
@@ -381,6 +377,8 @@ public class ArkiverDokumentproduksjonProvider implements ArkiverDokumentproduks
 				wsRequest.getDokumentInfoId(), wsRequest.getEndretAvNavn());
 		try {
 			fjernFerdigstiltDokumentService.fjernFerdigstiltDokument(domainRequest);
+			log.info("tjoark107 har fjernet ferdigstilt dokument med dokumentinfoId={} på journalpost med journalpostId={}", domainRequest
+					.getDokumentInfoId(), domainRequest.getJournalpostId());
 		} catch (NoJournalpostFoundException e) {
 			throw new FjernFerdigstiltDokumentJournalpostIkkeFunnet(e.getMessage(), faultInfoPopulator.populateFaultInfo(
 					new JournalpostIkkeFunnet(), e, FJERN_FERDIGSTILT_DOKUMENT));
@@ -406,9 +404,25 @@ public class ArkiverDokumentproduksjonProvider implements ArkiverDokumentproduks
 
 	@Override
 	@Transactional
-	public void settDatoSendt(SettDatoSendtRequest settDatoSendtRequest) {
-		SettDatoSendtRequestTo domainRequest = settDatoSendtRequestMapper.map(settDatoSendtRequest);
-		settDatoSendtService.settDatoSendt(domainRequest);
+	public void ferdigstillJournalpost(FerdigstillJournalpostRequest wsRequest)
+			throws FerdigstillJournalpostJournalpostIkkeUnderArbeid, FerdigstillJournalpostInneholderDokumenterUnderRedigering,
+			FerdigstillJournalpostJournalpostIkkeFunnet {
+		Assert.notNull(wsRequest, "Request is null");
+		try {
+			FerdigstillJournalpostRequestTo domainRequest = ferdigstillJournalpostRequestMapper.map(wsRequest);
+			ferdigstillJournalpostService.ferdigstillJournalpost(domainRequest);
+			log.info("tjoark108 har ferdigstilt journalpost med journalpostId={}", domainRequest.getJournalpostId());
+		} catch (NoJournalpostFoundException e) {
+			throw new FerdigstillJournalpostJournalpostIkkeFunnet(e.getMessage(), faultInfoPopulator.populateFaultInfo(
+					new JournalpostIkkeFunnet(), e, FERDIGSTILL_JOURNALPOST));
+		} catch (UgyldigJournalStatusVerdiException e) {
+			throw new FerdigstillJournalpostJournalpostIkkeUnderArbeid(e.getMessage(), faultInfoPopulator.populateFaultInfo(
+					new JournalpostIkkeUnderArbeid(), e, FERDIGSTILL_JOURNALPOST));
+		} catch (UgyldigDokumentStatusVerdiException e) {
+			throw new FerdigstillJournalpostInneholderDokumenterUnderRedigering(e.getMessage(),
+					faultInfoPopulator.populateFaultInfo(new InneholderDokumenterUnderRedigering(), e,
+							FERDIGSTILL_JOURNALPOST));
+		}
 	}
 
 	@Override
@@ -430,6 +444,8 @@ public class ArkiverDokumentproduksjonProvider implements ArkiverDokumentproduks
 
 		try {
 			knyttDokumentTilJournalpostSomVedleggService.knyttDokumentTilJournalpostSomVedlegg(domainRequest);
+			log.info("tjoark109 har knyttet dokument med dokumentinfoId={} på journalpost med journalpostId={} til journalpost med journalpostId={}",
+					domainRequest.getDokumentInfoId(), domainRequest.getKnyttesFraJournalpostId(), domainRequest.getKnyttesTilJournalpostId());
 		} catch (DokumentInfoInnskrenketPartsinnsynException
 				| DokumentInfoSlettetException
 				| DokumentInfoIsOrganInterntException
@@ -465,6 +481,16 @@ public class ArkiverDokumentproduksjonProvider implements ArkiverDokumentproduks
 							KNYTT_DOKUMENT_TIL_JOURNALPOST_SOM_VEDLEGG));
 		}
 	}
+
+	@Override
+	@Transactional
+	public void settJournalpostAttributter(SettJournalpostAttributterRequest settJournalpostAttributterRequest) {
+		Assert.notNull(settJournalpostAttributterRequest, "Request is null");
+		SettJournalpostAttributterRequestTo domainRequest = settJournalpostAttributterRequestMapper.map(settJournalpostAttributterRequest);
+		settJournalpostAttributterService.settJournalpostAttributter(domainRequest);
+		log.info("tjoark110 har satt journalpostattributter på journalpost(er) med journalpostId(er)={}", domainRequest.getJournalpostIds());
+	}
+
 
 	@Override
 	public void ping() {

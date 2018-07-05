@@ -1,6 +1,7 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark100;
 
 
+import lombok.Builder;
 import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.ApplicationException;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
@@ -11,7 +12,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
  *
  * @author Stig Strøm
  */
-
+@Builder
 public class OpprettJournalpostArkiverDokumentRequestTo {
 	private Journalpost journalpost;
 	private boolean ferdigstillJournalpost;
