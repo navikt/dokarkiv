@@ -79,19 +79,6 @@ public class DokumentInfoTest {
 	}
 
 	@Test
-	public void shouldThrowExceptionForMissingSensistivt() throws Exception {
-		Journalpost journalpost = getJournalpostBuilder()
-				.journalStatus(JournalStatusCode.FS)
-				.build();
-		DokumentInfo dokumentInfo = getDokumentInfoBuilder()
-				.kategori(DokumentKategoriCode.B)
-				.tittel("Tittel")
-				.build();
-
-		assertExceptionThrownWhenVerifyingMandatoryFields(dokumentInfo, journalpost, "sensitivt");
-	}
-
-	@Test
 	public void shouldFindSkannetInnholdById() throws Exception {
 		long skannetInnholdId = 200L;
 		String innhold = "innhold";
