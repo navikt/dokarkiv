@@ -74,9 +74,10 @@ public class CallIdHandler implements SOAPHandler<SOAPMessageContext> {
 	private String extractCallId(SOAPHeader header) {
         String callId = "";
         if (header == null) {
-            return callId;
+			return UUID.randomUUID().toString();
         }
-        Iterator<SOAPElement> headersIter = header.getChildElements(CALLID_QNAME);
+
+		Iterator<SOAPElement> headersIter = header.getChildElements(CALLID_QNAME);
         while (headersIter.hasNext()) {
             SOAPElement element = headersIter.next();
 			if (element.getElementQName().equals(CALLID_QNAME)) {
