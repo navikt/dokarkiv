@@ -39,7 +39,9 @@ public class CallIdHandler implements SOAPHandler<SOAPMessageContext> {
         Boolean outbound = (Boolean) context.get(MessageContext.MESSAGE_OUTBOUND_PROPERTY);
         // INBOUND processing
         if (!outbound) {
-        	logger.debug("About to extract callId from SOAP message");
+			if (logger.isDebugEnabled()) {
+				logger.debug("About to extract callId from SOAP message");
+			}
             SOAPHeader header = null;
             try {
                 header = context.getMessage().getSOAPHeader();
@@ -82,7 +84,9 @@ public class CallIdHandler implements SOAPHandler<SOAPMessageContext> {
             SOAPElement element = headersIter.next();
 			if (element.getElementQName().equals(CALLID_QNAME)) {
 				callId = element.getValue();
-				logger.debug("Found callId: " + callId);
+				if (logger.isDebugEnabled()) {
+					logger.debug("Found callId: " + callId);
+				}
 				break;
 			} else {
 				callId = UUID.randomUUID().toString();

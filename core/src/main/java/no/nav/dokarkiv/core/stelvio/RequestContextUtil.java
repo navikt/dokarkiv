@@ -43,7 +43,9 @@ public final class RequestContextUtil {
 				.transactionId(getCallId())
 				.build();
 
-		logger.debug("Setting RequestContext " + requestContext);
+		if (logger.isDebugEnabled()) {
+			logger.debug("Setting RequestContext " + requestContext);
+		}
 
 		RequestContextSetter.setRequestContext(requestContext);
 	}

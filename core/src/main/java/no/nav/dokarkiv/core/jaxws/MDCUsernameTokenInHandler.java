@@ -46,7 +46,9 @@ public class MDCUsernameTokenInHandler implements SOAPHandler<SOAPMessageContext
 		Boolean outbound = (Boolean) context.get(MessageContext.MESSAGE_OUTBOUND_PROPERTY);
 		// INBOUND processing
 		if (!outbound) {
-			log.debug("About to extract appId, callId and consumerId from SOAP message");
+			if (log.isDebugEnabled()) {
+				log.debug("About to extract appId, callId and consumerId from SOAP message");
+			}
 			SOAPHeader header = null;
 			try {
 				header = context.getMessage().getSOAPHeader();
@@ -100,7 +102,9 @@ public class MDCUsernameTokenInHandler implements SOAPHandler<SOAPMessageContext
 			SOAPElement element = headersIter.next();
 			if (element.getElementQName().equals(mdcQname)) {
 				mdc = element.getValue();
-				log.debug("Found " + mdcQname + " : " + mdc);
+				if (log.isDebugEnabled()) {
+					log.debug("Found " + mdcQname + " : " + mdc);
+				}
 				break;
 			}
 		}
