@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.arkiverdokumentmottak.tjoark203.v2;
 
+import io.micrometer.core.annotation.Timed;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v2.ArkiverDokumentmottakV2;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v2.KanIkkeJournalfores;
@@ -40,6 +41,7 @@ public class ArkiverDokumentmottakV2Endpoint implements ArkiverDokumentmottakV2 
 	private ArkiverDokumentmottakV2 arkiverDokumentmottakV2Provider;
 
 	@Override
+	@Timed(value = "dok_request", extraTags = {"process_code", "tjoark203_v2"}, percentiles = {0.5, 0.95})
 	public JournalforInngaaendeForsendelseResponse journalforInngaaendeForsendelse(
 			JournalforInngaaendeForsendelseRequest request) throws KanIkkeJournalfores {
 		RequestContextUtil.createAndSetRequestContext(webServiceContext, DEFAULT_APPID);

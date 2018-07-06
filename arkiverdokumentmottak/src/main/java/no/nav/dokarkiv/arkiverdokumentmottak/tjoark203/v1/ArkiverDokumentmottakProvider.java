@@ -1,6 +1,5 @@
 package no.nav.dokarkiv.arkiverdokumentmottak.tjoark203.v1;
 
-import io.micrometer.core.annotation.Timed;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.arkiverdokumentmottak.ServiceConstants;
 import no.nav.dokarkiv.core.stelvio.FunctionalUnrecoverableException;
@@ -32,7 +31,6 @@ public class ArkiverDokumentmottakProvider implements ArkiverDokumentmottakV1 {
 
 	@Override
 	@Transactional
-	@Timed(value = "dok_request", extraTags = {"process_code", "TJOARK203_V1"}, percentiles = {0.5, 0.95})
 	public JournalforInngaaendeForsendelseResponse journalforInngaaendeForsendelse(
 			JournalforInngaaendeForsendelseRequest request) throws KanIkkeJournalfores {
 

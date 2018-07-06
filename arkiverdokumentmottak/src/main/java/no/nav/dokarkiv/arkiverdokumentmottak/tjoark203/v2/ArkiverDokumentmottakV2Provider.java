@@ -1,6 +1,5 @@
 package no.nav.dokarkiv.arkiverdokumentmottak.tjoark203.v2;
 
-import io.micrometer.core.annotation.Timed;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
 import no.nav.dokarkiv.core.exceptions.InvalidJournalpostStructureException;
@@ -36,7 +35,6 @@ public class ArkiverDokumentmottakV2Provider implements ArkiverDokumentmottakV2 
 
 	@Override
 	@Transactional
-	@Timed(value = "dok_request", extraTags = {"process_code", "TJOARK203_V2"}, percentiles = {0.5, 0.95})
 	public JournalforInngaaendeForsendelseResponse journalforInngaaendeForsendelse(
 			JournalforInngaaendeForsendelseRequest request) throws KanIkkeJournalfores {
 
@@ -71,7 +69,7 @@ public class ArkiverDokumentmottakV2Provider implements ArkiverDokumentmottakV2 
 	}
 
 	private String getKanalereferanseId(JournalforInngaaendeForsendelseRequest request) {
-		if (request.getJournalpost() == null) {
+		if (request == null || request.getJournalpost() == null) {
 			return null;
 		}
 
@@ -79,7 +77,7 @@ public class ArkiverDokumentmottakV2Provider implements ArkiverDokumentmottakV2 
 	}
 
 	private String getMottakskanal(JournalforInngaaendeForsendelseRequest request) {
-		if (request.getJournalpost() == null) {
+		if (request == null || request.getJournalpost() == null) {
 			return null;
 		}
 

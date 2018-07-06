@@ -34,8 +34,8 @@ public class ArkiverDokumentmottakEndpoint implements ArkiverDokumentmottakV1 {
 	@Inject
 	private ArkiverDokumentmottakV1 arkiverDokumentMottakProvider;
 
-	@Timed(value = "dok_request", extraTags = {"process_code", "tjoark203"}, percentiles = {0.5, 0.95})
 	@Override
+	@Timed(value = "dok_request", extraTags = {"process_code", "tjoark203_v1"}, percentiles = {0.5, 0.95})
 	public JournalforInngaaendeForsendelseResponse journalforInngaaendeForsendelse(
 			JournalforInngaaendeForsendelseRequest request) throws KanIkkeJournalfores {
 		RequestContextUtil.createAndSetRequestContext(webServiceContext, DEFAULT_APPID);
