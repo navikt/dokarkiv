@@ -23,8 +23,11 @@ import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import java.util.Date;
 
@@ -38,6 +41,9 @@ public class DefaultMandatoryFieldsVerifierTest {
 
 	private DefaultMandatoryFieldsVerifier mandatoryFieldsVerifier;
 
+	@Rule
+	public ExpectedException expectedException = ExpectedException.none();
+
 	@Before
 	public void setup() {
 		mandatoryFieldsVerifier = new DefaultMandatoryFieldsVerifier();
@@ -48,7 +54,26 @@ public class DefaultMandatoryFieldsVerifierTest {
 		DokumentInfo dokumentInfo = createDokumentInfo();
 		Journalpost journalpost = createJournalpost(dokumentInfo);
 
-		mandatoryFieldsVerifier.verifyFields(journalpost);
+		mandatoryFieldsVerifier.verifyFields(journalpost, true);
+	}
+
+	@Test
+	public void shouldNotVerifyJournalForendeEnhetIdWhenVerifyJournalForendeEnhetIdIsFalse() {
+		DokumentInfo dokumentInfo = createDokumentInfo();
+		Journalpost journalpost = createJournalpost(dokumentInfo);
+		journalpost.setJournalForendeEnhetId(null);
+		journalpost.setJournalstatus(JournalStatusCode.J);
+		mandatoryFieldsVerifier.verifyFields(journalpost, false);
+	}
+
+	@Test
+	public void shouldVerifyJournalForendeEnhetIdWhenVerifyJournalForendeEnhetIdIsTrue() {
+		expectedException.expect(InvalidArgumentException.class);
+		DokumentInfo dokumentInfo = createDokumentInfo();
+		Journalpost journalpost = createJournalpost(dokumentInfo);
+		journalpost.setJournalForendeEnhetId(null);
+		journalpost.setJournalstatus(JournalStatusCode.J);
+		mandatoryFieldsVerifier.verifyFields(journalpost, true);
 	}
 
 	@Test
@@ -67,7 +92,7 @@ public class DefaultMandatoryFieldsVerifierTest {
 								.build())
 						.build();
 
-		mandatoryFieldsVerifier.verifyFields(journalpost);
+		mandatoryFieldsVerifier.verifyFields(journalpost, true);
 	}
 
 	private Journalpost createJournalpost(DokumentInfo dokumentInfo) {

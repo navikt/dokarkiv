@@ -36,7 +36,7 @@ public class JournalforInngaaendeForsendelseValidator {
 	protected MandatoryFieldsVerifier mandatoryFieldsVerifier;
 
 	public void validate(final Journalpost journalpost, boolean verifyStructure) {
-		mandatoryFieldsVerifier.verifyFields(journalpost);
+		mandatoryFieldsVerifier.verifyFields(journalpost, true);
 		if (verifyStructure) {
 			verifier.verifyJournalpostStructure(journalpost);
 		}

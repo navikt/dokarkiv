@@ -41,7 +41,7 @@ public class DefaultOpprettJournalpostArkiverDokumentValidator implements
 
 	private void verifyRequiredFields(Journalpost journalpost) {
 		try {
-			mandatoryFieldsVerifier.verifyFields(journalpost);
+			mandatoryFieldsVerifier.verifyFields(journalpost, true);
 		} catch (InvalidArgumentException e) {
 			if (!contains(e.getMessage(), "journalposttype must be set")) {
 				throw new InvalidArgumentException(e.getMessage());
