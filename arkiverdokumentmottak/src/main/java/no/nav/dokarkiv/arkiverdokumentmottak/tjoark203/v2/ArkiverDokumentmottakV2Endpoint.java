@@ -1,11 +1,15 @@
 package no.nav.dokarkiv.arkiverdokumentmottak.tjoark203.v2;
 
+import static no.nav.dokarkiv.core.MDCConstants.MDC_APP_ID;
+
+import com.google.common.base.Strings;
 import io.micrometer.core.annotation.Timed;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v2.ArkiverDokumentmottakV2;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v2.KanIkkeJournalfores;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v2.meldinger.JournalforInngaaendeForsendelseRequest;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v2.meldinger.JournalforInngaaendeForsendelseResponse;
+import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -44,7 +48,7 @@ public class ArkiverDokumentmottakV2Endpoint implements ArkiverDokumentmottakV2 
 	@Timed(value = "dok_request", extraTags = {"process_code", "tjoark203_v2"}, percentiles = {0.5, 0.95})
 	public JournalforInngaaendeForsendelseResponse journalforInngaaendeForsendelse(
 			JournalforInngaaendeForsendelseRequest request) throws KanIkkeJournalfores {
-		RequestContextUtil.createAndSetRequestContext(webServiceContext, DEFAULT_APPID);
+		RequestContextUtil.createAndSetRequestContext(webServiceContext, findAppId());
 		return arkiverDokumentmottakV2Provider.journalforInngaaendeForsendelse(request);
 	}
 
@@ -53,4 +57,10 @@ public class ArkiverDokumentmottakV2Endpoint implements ArkiverDokumentmottakV2 
 		RequestContextUtil.createAndSetRequestContext(webServiceContext, DEFAULT_APPID);
 		arkiverDokumentmottakV2Provider.ping();
 	}
+
+	private String findAppId() {
+		String appId = MDC.get(MDC_APP_ID);
+		return Strings.isNullOrEmpty(appId) ? DEFAULT_APPID : appId;
+	}
+
 }
