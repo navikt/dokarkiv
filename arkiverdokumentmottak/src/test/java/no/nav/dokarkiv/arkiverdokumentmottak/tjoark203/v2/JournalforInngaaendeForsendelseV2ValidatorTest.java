@@ -114,10 +114,7 @@ public class JournalforInngaaendeForsendelseV2ValidatorTest {
 	}
 
 	@Test
-	public void shouldFailOnNullJournalforendeEnhetId() throws Exception {
-		expectedException.expect(InvalidArgumentException.class);
-		expectedException.expectMessage("Journalpost.journalForendeEnhetId");
-
+	public void shouldNotFailOnNullJournalforendeEnhetId() throws Exception {
 		journalpost.setJournalForendeEnhetId(null);
 		validator.validate(journalpost);
 	}
