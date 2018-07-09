@@ -33,6 +33,17 @@ public class DefaultMandatoryFieldsVerifier implements MandatoryFieldsVerifier {
 		verifyDokumentInfoRelasjon(journalpost);
 	}
 
+	@Override
+	public void verifyFieldsSkipJournalForendeEnhetId(Journalpost journalpost) {
+		journalpost.verifyMandatoryFieldsSkipJournalforendeEnhetId();
+
+		verifySaksrelasjon(journalpost);
+		verifyKryssreferanse(journalpost);
+		verifyReturInfo(journalpost);
+		verifyBruker(journalpost);
+		verifyDokumentInfoRelasjon(journalpost);
+	}
+
 
 	private void verifySaksrelasjon(Journalpost journalpost) {
 		if (journalpost.getSaksrelasjon() != null) {

@@ -19,4 +19,6 @@ public interface MandatoryFieldsVerifier {
 	 */
 	void verifyFields(Journalpost journalpost);
 
+	void verifyFieldsSkipJournalForendeEnhetId(Journalpost journalpost);
+
 }
