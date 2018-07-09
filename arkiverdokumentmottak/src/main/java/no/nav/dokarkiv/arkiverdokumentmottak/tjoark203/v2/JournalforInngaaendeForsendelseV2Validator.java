@@ -22,10 +22,26 @@ public class JournalforInngaaendeForsendelseV2Validator {
 	@Inject
 	protected MandatoryFieldsVerifier mandatoryFieldsVerifier;
 
+	private static final String DUMMY_STRING = "dummy_null";
+
 	public void validate(final Journalpost journalpost) {
-		mandatoryFieldsVerifier.verifyFields(journalpost, false);
+		verifyFieldsSkipJournalForendeEnhetId(journalpost);
 		validateJournalpost(journalpost);
 		validateDokumentInfoRelasjonList(journalpost.getJournalpostDokumentInfoRelasjoner());
+	}
+
+	private void verifyFieldsSkipJournalForendeEnhetId(final Journalpost journalpost) {
+
+		//Skip verify of JournalForendeEnhetId by using dummy value
+		if (journalpost.getJournalForendeEnhetId() == null) {
+			journalpost.setJournalForendeEnhetId(DUMMY_STRING);
+		}
+
+		mandatoryFieldsVerifier.verifyFields(journalpost);
+
+		if (journalpost.getJournalForendeEnhetId().equals(DUMMY_STRING)) {
+			journalpost.setJournalForendeEnhetId(null);
+		}
 	}
 
 	public void validateVariantFormaterAndHoveddokument(Journalpost journalpost) {

@@ -54,7 +54,7 @@ public class DefaultMandatoryFieldsVerifierTest {
 		DokumentInfo dokumentInfo = createDokumentInfo();
 		Journalpost journalpost = createJournalpost(dokumentInfo);
 
-		mandatoryFieldsVerifier.verifyFields(journalpost, true);
+		mandatoryFieldsVerifier.verifyFields(journalpost);
 	}
 
 	@Test
@@ -63,7 +63,7 @@ public class DefaultMandatoryFieldsVerifierTest {
 		Journalpost journalpost = createJournalpost(dokumentInfo);
 		journalpost.setJournalForendeEnhetId(null);
 		journalpost.setJournalstatus(JournalStatusCode.J);
-		mandatoryFieldsVerifier.verifyFields(journalpost, false);
+		mandatoryFieldsVerifier.verifyFields(journalpost);
 	}
 
 	@Test
@@ -73,7 +73,7 @@ public class DefaultMandatoryFieldsVerifierTest {
 		Journalpost journalpost = createJournalpost(dokumentInfo);
 		journalpost.setJournalForendeEnhetId(null);
 		journalpost.setJournalstatus(JournalStatusCode.J);
-		mandatoryFieldsVerifier.verifyFields(journalpost, true);
+		mandatoryFieldsVerifier.verifyFields(journalpost);
 	}
 
 	@Test
@@ -92,7 +92,7 @@ public class DefaultMandatoryFieldsVerifierTest {
 								.build())
 						.build();
 
-		mandatoryFieldsVerifier.verifyFields(journalpost, true);
+		mandatoryFieldsVerifier.verifyFields(journalpost);
 	}
 
 	private Journalpost createJournalpost(DokumentInfo dokumentInfo) {

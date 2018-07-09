@@ -34,7 +34,7 @@ public class DefaultOpprettJournalpostValidator implements
 	@Override
 	public void validate(final Journalpost journalpost) {
 		verifier.verifyJournalpostStructure(journalpost);
-		mandatoryFieldsVerifier.verifyFields(journalpost, true);
+		mandatoryFieldsVerifier.verifyFields(journalpost);
 
 		if (isBlank(journalpost.getJournalForendeEnhetId())) {
 			throw new ApplicationException(

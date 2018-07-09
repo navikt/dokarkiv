@@ -23,8 +23,8 @@ public class DefaultMandatoryFieldsVerifier implements MandatoryFieldsVerifier {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void verifyFields(Journalpost journalpost, boolean verifyJournalForendeEnhetId) {
-		journalpost.verifyMandatoryFields(verifyJournalForendeEnhetId);
+	public void verifyFields(Journalpost journalpost) {
+		journalpost.verifyMandatoryFields();
 
 		verifySaksrelasjon(journalpost);
 		verifyKryssreferanse(journalpost);

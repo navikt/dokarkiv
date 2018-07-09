@@ -330,12 +330,10 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	 * Verify that all mandatory fields are set. Some fields are only required
 	 * given certain journalStatuses and journalpostTypes.
 	 */
-	public void verifyMandatoryFields(boolean verifyJournalForendeEnhetId) {
+	public void verifyMandatoryFields() {
 		verifyAlwaysRequiredFields();
 		verifyFieldsForNonLenientStatuses();
-		if (verifyJournalForendeEnhetId) {
-			verifyJournalforendeEnhetIdForJournalfortJournalforing();
-		}
+		verifyJournalforendeEnhetIdForJournalfortJournalforing();
 		verifyFieldsForEndeligJournalforing();
 	}
 

@@ -7,6 +7,7 @@ import static no.nav.dokarkiv.arkiverdokumentmottak.utils.JournalforInngaaendeFo
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -79,8 +80,18 @@ public class JournalforInngaaendeForsendelseV2IT extends AbstractArkiverDokument
 		request.setForsokEndeligJF(true);
 	}
 
+	/**
+	 * HVIS journalpost med journalStatus "J" opprettes og input.journalFEnhet er satt SÅ skal Joark.journalFEnhet settes lik input.journalFEnhet
+	 * HVIS ForsokEndeligJF=true så skal Journalpost.JournalStatus = "J"
+	 * HVIS journalpost opprettes så skal DokumentInfo.OriginalJournalpostId være satt lik Journalpost.JournalpostId for alle dokumenter som er tilknyttet journalposten.
+	 * HVIS journalpost opprettes SÅ skal filstorrelse settes for alle Fildetaljer
+	 * HVIS journalpost opprettes SÅ skal følgende attributter hardkodes for Journalposten: journalpostType = "I"
+	 * HVIS journalpost opprettes SÅ skal alle attributtene som er med i input lagres på journalposten
+	 * HVIS input inneholder nok informasjon til å endelig journalføre forsendelsen, så blir Journalpost.JournalStatus = "J" og journalTilstand "ENDELIG" returneres i output.
+	 */
 	@Test
 	public void verifyResponseIsValid() throws Exception {
+		request.getJournalpost().setJournalforendeEnhet("test test teest");
 		JournalforInngaaendeForsendelseResponse response = arkiverDokumentmottakV2Provider.journalforInngaaendeForsendelse(request);
 
 		List<no.nav.dokarkiv.core.domain.entities.Journalpost> allJournalposts = (List) joarkRepository.findAll();
@@ -113,6 +124,46 @@ public class JournalforInngaaendeForsendelseV2IT extends AbstractArkiverDokument
 		assertThat(persistedJournalpost.getKryssreferanser(), hasSize(0));
 	}
 
+	/**
+	 * HVIS journalpost med journalStatus "J" opprettes og input.journalFEnhet IKKE er satt SÅ skal Joark.journalFEnhet settes til "9999"
+	 */
+	@Test
+	public void shouldSetJournalForendeEnhetIdTo9999WhenNull() throws Exception {
+		request.getJournalpost().setJournalforendeEnhet(null);
+
+		arkiverDokumentmottakV2Provider.journalforInngaaendeForsendelse(request);
+
+		List<no.nav.dokarkiv.core.domain.entities.Journalpost> allJournalposts = (List) joarkRepository.findAll();
+		assertThat(allJournalposts, hasSize(1));
+
+		no.nav.dokarkiv.core.domain.entities.Journalpost persistedJournalpost = allJournalposts.get(0);
+
+		assertThat(persistedJournalpost.getJournalForendeEnhetId(), is("9999"));
+	}
+
+	/**
+	 * HVIS journalpost med journalStatus "M" opprettes og input.journalFEnhet IKKE er satt SÅ skal Joark.journalFEnhet IKKE settes
+	 * HVIS input IKKE inneholder nok informasjon til å endelig journalføre forsendelsen, så blir Journalpost.JournalStatus = "M" og journalTilstand "MIDLERTIDIG" returneres i output.
+	 */
+	@Test
+	public void shouldNotSetJournalForendeEnhetIdWhenJournalStatusIsM() throws Exception {
+		request.getJournalpost().setJournalforendeEnhet(null);
+		request.setForsokEndeligJF(false);
+
+		arkiverDokumentmottakV2Provider.journalforInngaaendeForsendelse(request);
+
+		List<no.nav.dokarkiv.core.domain.entities.Journalpost> allJournalposts = (List) joarkRepository.findAll();
+		assertThat(allJournalposts, hasSize(1));
+
+		no.nav.dokarkiv.core.domain.entities.Journalpost persistedJournalpost = allJournalposts.get(0);
+
+		assertThat(persistedJournalpost.getJournalForendeEnhetId(), nullValue());
+	}
+
+	/**
+	 * HVIS det finnes et eksisterende Journalpostobjekt i JOARK med journalpost.kanalReferanseId som tilsvarer input.Journalpost.kanalReferanseId OG mottakskanal = input.Journalpost.mottakskanal
+	 * SÅ skal ny journalpost IKKE opprettes OG JournalpostId og DokumentInfoId`er på eksisterende journalpost skal returneres som respons på tjenesten
+	 */
 	@Test
 	public void verifyEqualResponseWhenTryingToJournalforSameRequestTwice() throws Exception {
 		JournalforInngaaendeForsendelseResponse response = arkiverDokumentmottakV2Provider.journalforInngaaendeForsendelse(request);
@@ -122,6 +173,10 @@ public class JournalforInngaaendeForsendelseV2IT extends AbstractArkiverDokument
 		assertThat(response.getDokumentInfoIdHoveddokument(), is(equalTo(secondResponse.getDokumentInfoIdHoveddokument())));
 	}
 
+	/**
+	 * HVIS journalpost med journalStatus "M" opprettes og input.journalFEnhet er satt SÅ skal Joark.journalFEnhet settes lik input.journalFEnhet
+	 * HVIS ForsokEndligJF=false så skal Journalpost.JournalStatus = "M"
+	 */
 	@Test
 	public void shouldMidlertidigJournalforeWhenForsokEndeligJFIsFalse() throws Exception {
 		request.setForsokEndeligJF(false);
@@ -133,6 +188,8 @@ public class JournalforInngaaendeForsendelseV2IT extends AbstractArkiverDokument
 
 		assertResponse(persistedJournalpost, response, JOURNALTILSTAND_MIDLERTIDIG);
 		assertJournalStatus(persistedJournalpost, JournalStatusCode.M);
+		assertThat(persistedJournalpost.getJournalForendeEnhetId(), is(request.getJournalpost().getJournalforendeEnhet()));
+
 	}
 
 	@Test
@@ -168,7 +225,7 @@ public class JournalforInngaaendeForsendelseV2IT extends AbstractArkiverDokument
 
 	@Test
 	public void shouldMidlertidigJournalforeWhenNullJournalpostJournalfEnhet() throws Exception {
-		request.getJournalpost().setJournalforendeEnhet(null);
+		request.getJournalpost().setTema(null);
 		JournalforInngaaendeForsendelseResponse response = arkiverDokumentmottakV2Provider.journalforInngaaendeForsendelse(request);
 		List<no.nav.dokarkiv.core.domain.entities.Journalpost> allJournalposts = (List) joarkRepository.findAll();
 		assertThat(allJournalposts, hasSize(1));
@@ -595,7 +652,10 @@ public class JournalforInngaaendeForsendelseV2IT extends AbstractArkiverDokument
 		arkiverDokumentmottakV2Provider.journalforInngaaendeForsendelse(request);
 	}
 
-
+	/**
+	 * HVIS operasjonen kalles med en ugyldig kodeverdi i input SÅ skal det returneres en feil (2)
+	 * HVIS operasjonen kalles uten at alle påkrevde inputparametere er oppgitt SÅ skal det returneres en feil (1)
+	 */
 	@Test
 	public void shouldThrowExceptionOnInvalidFagomraade() throws Exception {
 		expectedException.expect(KanIkkeJournalfores.class);
@@ -690,6 +750,9 @@ public class JournalforInngaaendeForsendelseV2IT extends AbstractArkiverDokument
 		arkiverDokumentmottakV2Provider.journalforInngaaendeForsendelse(request);
 	}
 
+	/**
+	 * HVIS operasjonen kalles med flere Fildetaljer for et DokumentInfo-objekt OG to av disse har identiske variantformater SÅ skal det returneres en feil (4)
+	 */
 	@Test
 	public void shouldThrowExceptionOnMultipleOfSameArkivvariant() throws Exception {
 		expectedException.expect(KanIkkeJournalfores.class);
@@ -706,6 +769,9 @@ public class JournalforInngaaendeForsendelseV2IT extends AbstractArkiverDokument
 		arkiverDokumentmottakV2Provider.journalforInngaaendeForsendelse(request);
 	}
 
+	/**
+	 * HVIS operasjonen kalles med en Fildetaljer for et DokumentInfo-objekt OG denne mangler variantformat = "ARKIV" SÅ skal det returneres en feil (3)
+	 */
 	@Test
 	public void shouldThrowExceptionOnZeroArkivvariant() throws Exception {
 		expectedException.expect(KanIkkeJournalfores.class);
@@ -722,6 +788,9 @@ public class JournalforInngaaendeForsendelseV2IT extends AbstractArkiverDokument
 		arkiverDokumentmottakV2Provider.journalforInngaaendeForsendelse(request);
 	}
 
+	/**
+	 * HVIS en journalpost ikke inneholder nøyaktig 1 JournalpostDokumentInfoRelasjon.tilknyttetJournalpostSom = ”Hoveddokument" SÅ returner en feil (5)
+	 */
 	@Test
 	public void shouldThrowExceptionOnMissingHoveddokument() throws Exception {
 		expectedException.expect(KanIkkeJournalfores.class);
@@ -824,6 +893,7 @@ public class JournalforInngaaendeForsendelseV2IT extends AbstractArkiverDokument
 		assertThat(domain.getFiltype().name(), is(request.getFiltype()));
 		assertThat(domain.getVariantFormat().name(), is(request.getVariantformat()));
 		assertThat(domain.getFileContent(), is(request.getDokument()));
+		assertThat(domain.getFilstorrelse(), notNullValue());
 	}
 
 	private void assertSkannetInnhold(SkannetInnhold domain, no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v2.informasjon.arkiverdokumentmottak.SkannetInnhold request) {
