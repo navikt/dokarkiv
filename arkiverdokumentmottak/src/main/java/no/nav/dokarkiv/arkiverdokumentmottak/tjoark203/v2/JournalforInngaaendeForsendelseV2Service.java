@@ -91,7 +91,7 @@ public class JournalforInngaaendeForsendelseV2Service {
 			journalpost.setJournalDato(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()));
 			journalpost.setJournalfortAvNavn(journalpost.getOpprettetAvNavn());
 
-			if (journalpost.getJournalForendeEnhetId() == null) {
+			if (journalpost.getJournalForendeEnhetId() == null || journalpost.getJournalForendeEnhetId().isEmpty()) {
 				journalpost.setJournalForendeEnhetId(JOURNALFORENDE_ENHET_9999);
 			}
 		}

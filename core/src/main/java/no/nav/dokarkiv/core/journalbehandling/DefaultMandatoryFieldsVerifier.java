@@ -26,17 +26,17 @@ public class DefaultMandatoryFieldsVerifier implements MandatoryFieldsVerifier {
 	public void verifyFields(Journalpost journalpost) {
 		journalpost.verifyMandatoryFields();
 
-		verifySaksrelasjon(journalpost);
-		verifyKryssreferanse(journalpost);
-		verifyReturInfo(journalpost);
-		verifyBruker(journalpost);
-		verifyDokumentInfoRelasjon(journalpost);
+		verifyRemainingFields(journalpost);
 	}
 
 	@Override
 	public void verifyFieldsSkipJournalForendeEnhetId(Journalpost journalpost) {
 		journalpost.verifyMandatoryFieldsSkipJournalforendeEnhetId();
 
+		verifyRemainingFields(journalpost);
+	}
+
+	private void verifyRemainingFields(final Journalpost journalpost) {
 		verifySaksrelasjon(journalpost);
 		verifyKryssreferanse(journalpost);
 		verifyReturInfo(journalpost);
