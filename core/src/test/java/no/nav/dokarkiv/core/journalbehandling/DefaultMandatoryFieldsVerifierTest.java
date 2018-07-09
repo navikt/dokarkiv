@@ -58,15 +58,6 @@ public class DefaultMandatoryFieldsVerifierTest {
 	}
 
 	@Test
-	public void shouldNotVerifyJournalForendeEnhetIdWhenVerifyJournalForendeEnhetIdIsFalse() {
-		DokumentInfo dokumentInfo = createDokumentInfo();
-		Journalpost journalpost = createJournalpost(dokumentInfo);
-		journalpost.setJournalForendeEnhetId(null);
-		journalpost.setJournalstatus(JournalStatusCode.J);
-		mandatoryFieldsVerifier.verifyFields(journalpost);
-	}
-
-	@Test
 	public void shouldVerifyJournalForendeEnhetIdWhenVerifyJournalForendeEnhetIdIsTrue() {
 		expectedException.expect(InvalidArgumentException.class);
 		DokumentInfo dokumentInfo = createDokumentInfo();
