@@ -23,7 +23,7 @@ public class JournalforInngaaendeForsendelseV2Validator {
 	protected MandatoryFieldsVerifier mandatoryFieldsVerifier;
 
 	public void validate(final Journalpost journalpost) {
-		mandatoryFieldsVerifier.verifyFields(journalpost);
+		mandatoryFieldsVerifier.verifyFieldsSkipJournalForendeEnhetId(journalpost);
 		validateJournalpost(journalpost);
 		validateDokumentInfoRelasjonList(journalpost.getJournalpostDokumentInfoRelasjoner());
 	}

@@ -338,6 +338,16 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	}
 
 	/**
+	 * Verify that all mandatory fields are set except for JournalforendeEnhetId. Some fields are only required
+	 * given certain journalStatuses and journalpostTypes.
+	 */
+	public void verifyMandatoryFieldsSkipJournalforendeEnhetId() {
+		verifyAlwaysRequiredFields();
+		verifyFieldsForNonLenientStatuses();
+		verifyFieldsForEndeligJournalforing();
+	}
+
+	/**
 	 * Verify that all mandatory fields are set except endretAvNavn before ferdigstilling.
 	 * Some fields are only required given certain journalStatuses and journalpostTypes.
 	 */

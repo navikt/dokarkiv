@@ -28,6 +28,7 @@ public class JournalforInngaaendeForsendelseV2Service {
 
 	private static final String JOURNALTILSTAND_ENDELIG = "ENDELIG";
 	private static final String JOURNALTILSTAND_MIDLERTIDIG = "MIDLERTIDIG";
+	private static final String JOURNALFORENDE_ENHET_9999 = "9999";
 
 	@Inject
 	private JoarkRepository joarkRepository;
@@ -89,6 +90,10 @@ public class JournalforInngaaendeForsendelseV2Service {
 		if (journalpost.getJournalstatus() == JournalStatusCode.J) {
 			journalpost.setJournalDato(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()));
 			journalpost.setJournalfortAvNavn(journalpost.getOpprettetAvNavn());
+
+			if (journalpost.getJournalForendeEnhetId() == null) {
+				journalpost.setJournalForendeEnhetId(JOURNALFORENDE_ENHET_9999);
+			}
 		}
 	}
 
