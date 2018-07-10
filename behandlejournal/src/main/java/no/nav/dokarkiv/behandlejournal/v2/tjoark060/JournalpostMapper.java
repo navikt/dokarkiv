@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.behandlejournal.v2;
+package no.nav.dokarkiv.behandlejournal.v2.tjoark060;
 
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 

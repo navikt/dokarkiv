@@ -12,7 +12,7 @@ import java.util.Set;
 /**
  * Builder for BidragMellomlagring.
  *
- * @author Thomas Eugen Bjørge, Visma Consulting
+ * @author Thomas Eugen BjÃ¸rge, Visma Consulting
  */
 public class BidragMellomlagringBuilder extends Builder<BidragMellomlagring> {
 

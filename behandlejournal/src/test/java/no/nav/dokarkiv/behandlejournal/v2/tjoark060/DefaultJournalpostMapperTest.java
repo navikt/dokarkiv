@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.behandlejournal.v2;
+package no.nav.dokarkiv.behandlejournal.v2.tjoark060;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
@@ -34,7 +34,6 @@ public class DefaultJournalpostMapperTest {
 
 	@Before
 	public void setUp() throws Exception {
-//		journalpostMapper.setDozerMapper(new DozerConfig().dozerMapper());
 		DateProvider.configure(true, "2014-08-27T12:00:00");
 	}
 

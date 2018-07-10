@@ -10,7 +10,7 @@ import org.junit.Test;
 /**
  * Tests for {@link DefaultFerdigstillDokumentopplastingRequestMapper}
  * 
- * @author Joakim Bjørnstad, Visma Consulting
+ * @author Joakim BjÃ¸rnstad, Visma Consulting
  * 
  */
 public class DefaultFerdigstillDokumentopplastingRequestMapperTest {

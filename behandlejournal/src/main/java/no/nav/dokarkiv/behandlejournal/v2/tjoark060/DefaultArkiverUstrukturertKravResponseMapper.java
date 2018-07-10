@@ -5,27 +5,17 @@ import org.springframework.stereotype.Component;
 
 /**
  * Implementation of {@link ArkiverUstrukturertKravResponseMapper}. Maps response from domain to FIM.
- * 
- * @author Rune Romundstad, Visma Consulting
  *
+ * @author Rune Romundstad, Visma Consulting
  */
 @Component
 public class DefaultArkiverUstrukturertKravResponseMapper implements ArkiverUstrukturertKravResponseMapper {
 
-//	private Mapper dozerMapper;
-	
-	/** {@inheritDoc} */
 	@Override
 	public ArkiverUstrukturertKravResponse map(
 			no.nav.dokarkiv.behandlejournal.v2.tjoark060.ArkiverUstrukturertKravResponse domainResponse) {
-//		return dozerMapper.map(domainResponse, ArkiverUstrukturertKravResponse.class); FIXME
-		return null;
+		return new ArkiverUstrukturertKravResponse()
+				.withJournalpostId(domainResponse.getJournalpostId().toString())
+				.withDokumentId(domainResponse.getDokumentId().toString());
 	}
-	
-//	@Inject
-//	@Named("dozerMapper")
-//	public void setDozerMapper(Mapper dozerMapper) {
-//		this.dozerMapper = dozerMapper;
-//	}
-
 }

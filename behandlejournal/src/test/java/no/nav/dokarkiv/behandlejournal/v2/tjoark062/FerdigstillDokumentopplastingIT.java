@@ -43,7 +43,7 @@ import java.util.Date;
 /**
  * Integration tests for the ferdigstillDokumentopplasting operation.
  * 
- * @author Joakim Bjørnstad, Visma Consulting
+ * @author Joakim BjÃ¸rnstad, Visma Consulting
  * 
  */
 public class FerdigstillDokumentopplastingIT extends AbstractBehandleJournalV2Itest {

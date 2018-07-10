@@ -7,7 +7,7 @@ import no.nav.dokarkiv.core.domain.entities.bidrag.BidragMellomlagringDokumentTy
 /**
  * Builder for BidragMellomlagringDokument.
  *
- * @author Thomas Eugen Bjørge, Visma Consulting
+ * @author Thomas Eugen BjÃ¸rge, Visma Consulting
  */
 public class BidragMellomlagringDokumentBuilder extends Builder<BidragMellomlagringDokument>{
 
