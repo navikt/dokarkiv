@@ -4,12 +4,14 @@ import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.sporing.KildeNavnPopulator;
 import no.nav.dokarkiv.core.stelvio.RequestContextHolder;
+import org.springframework.stereotype.Component;
 
 /**
  * Implementation of SporingMapper.
  * 
  * @author Thomas Eugen Bjørge, Visma Sirius
  */
+@Component
 public class DefaultSporingMapper implements SporingMapper {
 
 	private KildeNavnPopulator kildeNavnPopulator;

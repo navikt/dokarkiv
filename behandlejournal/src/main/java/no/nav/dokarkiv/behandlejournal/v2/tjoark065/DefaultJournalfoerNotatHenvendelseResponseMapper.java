@@ -1,12 +1,14 @@
 package no.nav.dokarkiv.behandlejournal.v2.tjoark065;
 
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.meldinger.JournalfoerNotatResponse;
+import org.springframework.stereotype.Component;
 
 /**
  * Default implementation
  *
  * @author Joakim Bjørnstad, Visma Consulting
  */
+@Component
 public class DefaultJournalfoerNotatHenvendelseResponseMapper implements
 		JournalfoerNotatHenvendelseResponseMapper {
 //	private Mapper dozerMapper;

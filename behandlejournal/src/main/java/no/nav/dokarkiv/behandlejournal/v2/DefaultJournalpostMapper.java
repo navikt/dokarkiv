@@ -8,12 +8,14 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.informasjon.arkiverustrukturertkrav.JournalfoertDokumentInfo;
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.informasjon.behandlejournal.Kommunikasjonskanaler;
+import org.springframework.stereotype.Component;
 
 /**
  * Implementation of JournalpostMapper.
  *
  * @author Thomas Eugen Bjørge, Visma Consulting
  */
+@Component
 public class DefaultJournalpostMapper implements JournalpostMapper {
 
 //	private Mapper dozerMapper;

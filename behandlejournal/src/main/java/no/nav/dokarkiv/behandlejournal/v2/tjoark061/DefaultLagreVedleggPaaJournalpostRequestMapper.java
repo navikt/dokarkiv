@@ -1,10 +1,13 @@
 package no.nav.dokarkiv.behandlejournal.v2.tjoark061;
 
+import org.springframework.stereotype.Component;
+
 /**
  * Implementation of {@link DefaultLagreVedleggPaaJournalpostRequestMapper}
  * 
  * @author Rune Romundstad, Visma Consulting
  */
+@Component
 public class DefaultLagreVedleggPaaJournalpostRequestMapper implements LagreVedleggPaaJournalpostRequestMapper {
 
 //	private Mapper dozerMapper;

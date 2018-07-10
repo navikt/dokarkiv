@@ -4,12 +4,14 @@ import no.nav.dokarkiv.behandlejournal.v2.AbstractBehandleJournalJournalpostVali
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.ApplicationException;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Component;
 
 /**
  * Validates Journalpost for arkiverUstrukturertKrav operation.
  *
  * @author Thomas Eugen Bjørge, Visma Consulting
  */
+@Component
 public class ArkiverUstrukturertKravJournalpostValidator extends AbstractBehandleJournalJournalpostValidator {
 
 	/**

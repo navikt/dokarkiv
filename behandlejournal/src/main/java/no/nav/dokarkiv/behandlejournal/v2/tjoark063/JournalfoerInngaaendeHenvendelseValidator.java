@@ -3,6 +3,7 @@ package no.nav.dokarkiv.behandlejournal.v2.tjoark063;
 import no.nav.dokarkiv.behandlejournal.v2.AbstractBehandleJournalJournalpostValidator;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import org.springframework.stereotype.Component;
 
 /**
  * Validates Journalpost for journalfoerInngaaendeHenvendelse
@@ -10,6 +11,7 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
  *
  * @author Thomas Eugen Bjørge, Visma Consulting
  */
+@Component
 public class JournalfoerInngaaendeHenvendelseValidator extends
 		AbstractBehandleJournalJournalpostValidator {
 

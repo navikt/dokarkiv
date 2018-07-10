@@ -4,6 +4,7 @@ import no.nav.dokarkiv.behandlejournal.v2.JournalpostMapper;
 import no.nav.dokarkiv.behandlejournal.v2.SporingMapper;
 import no.nav.dokarkiv.behandlejournal.v2.SporingUtil;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 
@@ -13,6 +14,7 @@ import javax.inject.Inject;
  * 
  * @author Rune Romundstad, Visma Consulting
  */
+@Component
 public class DefaultArkiverUstrukturertKravRequestMapper implements ArkiverUstrukturertKravRequestMapper {
 
 	@Inject

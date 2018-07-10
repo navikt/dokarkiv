@@ -3,12 +3,14 @@ package no.nav.dokarkiv.behandlejournal.v2.tjoark065;
 import no.nav.dokarkiv.behandlejournal.v2.AbstractBehandleJournalJournalpostValidator;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import org.springframework.stereotype.Component;
 
 /**
  * Validates Journalpost for journalfoerNotatHenvendelse operations.
  *
  * @author Thomas Eugen Bjørge, Visma Consulting
  */
+@Component
 public class JournalfoerNotatHenvendelseValidator extends AbstractBehandleJournalJournalpostValidator {
 
 	@Override

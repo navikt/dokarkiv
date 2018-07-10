@@ -1,6 +1,5 @@
 package no.nav.dokarkiv.behandlejournal.v2.tjoark060;
 
-import no.nav.dokarkiv.behandlejournal.v2.BehandleJournalJournalpostValidator;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
@@ -19,9 +18,9 @@ import no.nav.dokarkiv.core.exceptions.ApplicationException;
 import no.nav.dokarkiv.core.journalbehandling.DokumentFilerDelegate;
 import no.nav.dokarkiv.core.repository.BidragMellomlagringRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
+import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 
 /**
  * Implementation of {@link ArkiverUstrukturertKrav}
@@ -29,6 +28,7 @@ import javax.inject.Named;
  * @author Joakim Bjørnstad, Visma Consulting
  * @author Thomas Eugen Bjørge, Visma Consulting
  */
+@Component
 public class DefaultArkiverUstrukturertKrav implements ArkiverUstrukturertKrav {
 
 	@Inject
@@ -38,8 +38,7 @@ public class DefaultArkiverUstrukturertKrav implements ArkiverUstrukturertKrav {
 	@Inject
 	private DokumentFilerDelegate dokumentFilerDelegate;
 	@Inject
-	@Named("arkiverUstrukturerKravJournalpostValidator")
-	private BehandleJournalJournalpostValidator behandleJournalJournalpostValidator;
+	private ArkiverUstrukturertKravJournalpostValidator behandleJournalJournalpostValidator;
 
 	@Override
 	/** {@inheritDoc} */

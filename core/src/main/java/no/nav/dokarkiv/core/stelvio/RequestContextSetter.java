@@ -60,7 +60,7 @@ public class RequestContextSetter {
 	 * </ul>
 	 */
 	public static void setRequestContextForUnitTest() {
-		setRequestContext(new SimpleRequestContext("one", "two", "three", "four", "userId"));
+		setRequestContext(new SimpleRequestContext("testScreenId", "testModuleId", "testTransactionId", "testComponentId", "testUserId"));
 	}
 
 	/**

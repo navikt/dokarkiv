@@ -18,6 +18,7 @@ import no.nav.dokarkiv.behandlejournal.v2.tjoark064.JournalfoerUtgaaendeHenvende
 import no.nav.dokarkiv.behandlejournal.v2.tjoark065.JournalfoerNotatHenvendelse;
 import no.nav.dokarkiv.behandlejournal.v2.tjoark065.JournalfoerNotatHenvendelseRequest;
 import no.nav.dokarkiv.behandlejournal.v2.tjoark065.JournalfoerNotatHenvendelseResponse;
+import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 
@@ -26,6 +27,7 @@ import javax.inject.Inject;
  *
  * @author Joakim Bjørnstad, Visma Consulting
  */
+@Component
 public class DefaultBehandleJournalService implements BehandleJournalServiceBi {
 
 	@Inject

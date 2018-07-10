@@ -6,12 +6,14 @@ import no.nav.dokarkiv.behandlejournal.v2.AbstractBehandleJournalJournalpostVali
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.ApplicationException;
+import org.springframework.stereotype.Component;
 
 /**
  * Validator for the JournalfoerUtgaaendeHenvendelseMedHoveddokument service
  *
  * @author Joakim Bjørnstad, Visma Consulting
  */
+@Component
 public class JournalfoerUtgaaendeHenvendelseValidator extends
 		AbstractBehandleJournalJournalpostValidator {
 

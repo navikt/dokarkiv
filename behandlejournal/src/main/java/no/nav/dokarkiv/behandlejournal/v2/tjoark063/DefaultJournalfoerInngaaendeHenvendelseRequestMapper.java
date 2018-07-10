@@ -1,9 +1,9 @@
 package no.nav.dokarkiv.behandlejournal.v2.tjoark063;
 
 import no.nav.dokarkiv.behandlejournal.v2.SporingMapper;
+import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
-
 
 /**
  * Implementation of
@@ -11,6 +11,7 @@ import javax.inject.Inject;
  *
  * @author Rune Romundstad, Visma Consulting
  */
+@Component
 public class DefaultJournalfoerInngaaendeHenvendelseRequestMapper implements
 		JournalfoerInngaaendeHenvendelseRequestMapper {
 

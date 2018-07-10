@@ -15,8 +15,10 @@ import no.nav.tjeneste.virksomhet.behandlejournal.v2.meldinger.JournalfoerUtgaae
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.meldinger.JournalfoerUtgaaendeHenvendelseResponse;
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.meldinger.LagreVedleggPaaJournalpostRequest;
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.meldinger.LagreVedleggPaaJournalpostResponse;
+import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import javax.inject.Inject;
 import javax.jws.HandlerChain;
 import javax.jws.WebService;
 import javax.xml.ws.WebServiceContext;
@@ -35,11 +37,13 @@ import javax.xml.ws.soap.Addressing;
 		portName = "BehandleJournal_v2")
 @Addressing
 @HandlerChain(file = "handler.xml")
+@Service
 public class BehandleJournalEndpoint implements BehandleJournalV2 {
 
 	@Resource
 	private WebServiceContext webServiceContext;
 
+	@Inject
 	private BehandleJournalV2 behandleJournalProvider;
 
 	@Override
@@ -87,17 +91,4 @@ public class BehandleJournalEndpoint implements BehandleJournalV2 {
 	public void ping() {
 		behandleJournalProvider.ping();
 	}
-
-	/**
-	 * Retrieve the behandleJournal bean from the Spring context.
-	 */
-//	@PostConstruct
-//	public void initBehandleJournalProvider() {
-//		ServletContext servletContext = (ServletContext) webServiceContext.getMessageContext().get(
-//				MessageContext.SERVLET_CONTEXT);
-//		WebApplicationContext webApplicationContext = WebApplicationContextUtils
-//				.getRequiredWebApplicationContext(servletContext);
-//		behandleJournalProvider = (BehandleJournalV2) webApplicationContext
-//				.getBean(BehandleJournalProviderConfig.PROVIDER_BEAN);
-//	}
 }

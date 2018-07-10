@@ -27,10 +27,10 @@ import no.nav.tjeneste.virksomhet.behandlejournal.v2.meldinger.JournalfoerUtgaae
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.meldinger.JournalfoerUtgaaendeHenvendelseResponse;
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.meldinger.LagreVedleggPaaJournalpostRequest;
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.meldinger.LagreVedleggPaaJournalpostResponse;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 
 /**
  * POJO BehandleJournalProvider for MOD-services managed by Spring. Maps from
@@ -39,6 +39,7 @@ import javax.inject.Named;
  * @author Rune Romundstad, Visma Consulting
  *
  */
+@Component
 public class BehandleJournalProvider implements BehandleJournalV2 {
 	
 	static final String BEHANDLE_JOURNAL_V2 = "BehandleJournalV2";
@@ -49,10 +50,8 @@ public class BehandleJournalProvider implements BehandleJournalV2 {
 	static final String BEHANDLE_JOURNAL_V2_JOURNALFOER_UTGAAENDE_HENVENDELSE = BEHANDLE_JOURNAL_V2 + ".journalfoerUtgaaendeHenvendelse";
 	static final String BEHANDLE_JOURNAL_V2_JOURNALFOER_NOTAT = BEHANDLE_JOURNAL_V2 + ".journalfoerNotat";
 
-
 	@Inject
-	@Named("srv.joark.mod.behandleJournalService")
-	private BehandleJournalServiceBi modBehandleJournalService;
+	private BehandleJournalServiceBi behandleJournalServiceBi;
 	@Inject
 	private BehandleJournalFaultInfoPopulator behandleJournalFaultInfoPopulator;
 	@Inject
@@ -81,7 +80,7 @@ public class BehandleJournalProvider implements BehandleJournalV2 {
 	@Transactional
 	@Override
 	public ArkiverUstrukturertKravResponse arkiverUstrukturertKrav(ArkiverUstrukturertKravRequest request) {
-		return arkiverUstrukturertKravResponseMapper.map(modBehandleJournalService
+		return arkiverUstrukturertKravResponseMapper.map(behandleJournalServiceBi
 				.arkiverUstrukturertKrav(arkiverUstrukturertKravRequestMapper.map(request)));
 	}
 
@@ -90,7 +89,7 @@ public class BehandleJournalProvider implements BehandleJournalV2 {
 	public LagreVedleggPaaJournalpostResponse lagreVedleggPaaJournalpost(LagreVedleggPaaJournalpostRequest request)
 			throws LagreVedleggPaaJournalpostLagreVedleggPaaJournalpostjournalpostIkkeFunnet {
 		try {
-			return lagreVedleggPaaJournalpostResponseMapper.map(modBehandleJournalService
+			return lagreVedleggPaaJournalpostResponseMapper.map(behandleJournalServiceBi
 					.lagreVedleggPaaJournalpost(lagreVedleggPaaJournalpostRequestMapper.map(request)));
 		} catch (NoJournalpostFoundException e) {
 			throw new LagreVedleggPaaJournalpostLagreVedleggPaaJournalpostjournalpostIkkeFunnet(e.getMessage(),
@@ -104,7 +103,7 @@ public class BehandleJournalProvider implements BehandleJournalV2 {
 	public void ferdigstillDokumentopplasting(FerdigstillDokumentopplastingRequest request)
 			throws FerdigstillDokumentopplastingFerdigstillDokumentopplastingjournalpostIkkeFunnet {
 		try {
-			modBehandleJournalService.ferdigstillDokumentopplasting(ferdigstillDokumentopplastingRequestMapper
+			behandleJournalServiceBi.ferdigstillDokumentopplasting(ferdigstillDokumentopplastingRequestMapper
 					.map(request));
 		} catch (NoJournalpostFoundException e) {
 			throw new FerdigstillDokumentopplastingFerdigstillDokumentopplastingjournalpostIkkeFunnet(e.getMessage(),
@@ -119,7 +118,7 @@ public class BehandleJournalProvider implements BehandleJournalV2 {
 			JournalfoerInngaaendeHenvendelseRequest request) {
 
 		return journalfoerInngaaendeHenvendelseMedHoveddokumentResponseMapper
-				.map(modBehandleJournalService
+				.map(behandleJournalServiceBi
 						.journalfoerInngaaendeHenvendelse(journalfoerInngaaendeHenvendelseMedHoveddokumentRequestMapper
 								.map(request)));
 	}
@@ -129,7 +128,7 @@ public class BehandleJournalProvider implements BehandleJournalV2 {
 	public JournalfoerUtgaaendeHenvendelseResponse journalfoerUtgaaendeHenvendelse(
 			JournalfoerUtgaaendeHenvendelseRequest request) {
 		return journalfoerUtgaaendeHenvendelseResponseMapper
-				.map(modBehandleJournalService
+				.map(behandleJournalServiceBi
 						.journalfoerUtgaaendeHenvendelse(journalfoerUtgaaendeHenvendelseMedHoveddokumentRequestMapper
 								.map(request)));
 	}
@@ -138,7 +137,7 @@ public class BehandleJournalProvider implements BehandleJournalV2 {
 	@Override
 	public JournalfoerNotatResponse journalfoerNotat(
 			JournalfoerNotatRequest request) {
-		return journalfoerNotatHenvendelseResponseMapper.map(modBehandleJournalService
+		return journalfoerNotatHenvendelseResponseMapper.map(behandleJournalServiceBi
 				.journalfoerNotatHenvendelse(journalfoerNotatHenvendelseRequestMapper
 						.map(request)));
 	}
@@ -149,6 +148,6 @@ public class BehandleJournalProvider implements BehandleJournalV2 {
 	}
 
 	private String getOperationName() {
-		return Thread.currentThread().getStackTrace()[3].getMethodName();
+		return Thread.currentThread().getStackTrace()[2].getMethodName();
 	}
 }

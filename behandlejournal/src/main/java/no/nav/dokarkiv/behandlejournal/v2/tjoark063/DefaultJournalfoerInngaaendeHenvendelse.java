@@ -1,6 +1,5 @@
 package no.nav.dokarkiv.behandlejournal.v2.tjoark063;
 
-import no.nav.dokarkiv.behandlejournal.v2.BehandleJournalJournalpostValidator;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
@@ -10,23 +9,23 @@ import no.nav.dokarkiv.core.domain.util.DateProvider;
 import no.nav.dokarkiv.core.exceptions.ApplicationException;
 import no.nav.dokarkiv.core.journalbehandling.DokumentFilerDelegate;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
+import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 
 /**
  * Implementation of JournalfoerInngaaendeHenvendelseMedHoveddokument
  *
  * @author Rune Romundstad, Visma Consulting
  */
+@Component
 public class DefaultJournalfoerInngaaendeHenvendelse implements
 		JournalfoerInngaaendeHenvendelse {
 
 	@Inject
 	private JoarkRepository joarkRepository;
 	@Inject
-	@Named("journalfoerInngaaendeHenvendelseValidator")
-	private BehandleJournalJournalpostValidator behandleJournalJournalpostValidator;
+	private JournalfoerInngaaendeHenvendelseValidator behandleJournalJournalpostValidator;
 	@Inject
 	private DokumentFilerDelegate dokumentFilerDelegate;
 

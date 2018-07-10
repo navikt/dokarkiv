@@ -1,6 +1,7 @@
 package no.nav.dokarkiv.behandlejournal.v2;
 
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.feil.ForretningsmessigUnntak;
+import org.springframework.stereotype.Component;
 
 /**
  * Implementation of BehandleJournalFaultInfoPopulator
@@ -8,6 +9,7 @@ import no.nav.tjeneste.virksomhet.behandlejournal.v2.feil.ForretningsmessigUnnta
  * @author Joakim Bjørnstad, Visma Consulting
  * 
  */
+@Component
 public class DefaultBehandleJournalFaultInfoPopulator extends AbstractJournalFaultInfoPopulator implements
 		BehandleJournalFaultInfoPopulator {
 

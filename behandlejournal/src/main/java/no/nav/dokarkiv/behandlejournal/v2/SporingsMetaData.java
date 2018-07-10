@@ -1,11 +1,14 @@
 package no.nav.dokarkiv.behandlejournal.v2;
 
+import lombok.Builder;
+
 /**
  * Type that holds metadata about request tracking.
  * 
  * @author Joakim Bjørnstad, Visma Consulting
  *
  */
+@Builder
 public class SporingsMetaData {
 	private String personFornavn;
 	private String personEtternavn;

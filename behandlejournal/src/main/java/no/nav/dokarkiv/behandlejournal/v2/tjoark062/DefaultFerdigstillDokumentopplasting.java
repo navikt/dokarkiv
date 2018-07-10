@@ -12,9 +12,9 @@ import no.nav.dokarkiv.core.exceptions.ApplicationException;
 import no.nav.dokarkiv.core.repository.BidragMellomlagringRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.core.sporing.SporingPopulator;
+import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 
 /**
  * Implementation of {@link FerdigstillDokumentopplasting}.
@@ -22,15 +22,14 @@ import javax.inject.Named;
  * @author Joakim Bjørnstad, Visma Consulting
  * 
  */
+@Component
 public class DefaultFerdigstillDokumentopplasting implements FerdigstillDokumentopplasting {
 	@Inject
 	private JoarkRepository joarkRepository;
 	@Inject
 	private BidragMellomlagringRepository bidragMellomlagringRepository;
 	@Inject
-	@Named("srv.joark.sporingPopulator")
 	private SporingPopulator sporingPopulator;
-	//FIXME
 
 	/** {@inheritDoc} */
 	@Override
@@ -62,8 +61,7 @@ public class DefaultFerdigstillDokumentopplasting implements FerdigstillDokument
 
 	private void handleJoarkFerdigstillDokumentOpplasting(Long journalpostId, SporingsMetaData sporingsMetaData)
 			throws NoJournalpostFoundException {
-//		Journalpost journalpost = joarkRepository.findJournalpostByJournalpostId(journalpostId, true); FIXME
-		Journalpost journalpost = null;
+		Journalpost journalpost = joarkRepository.findById(journalpostId).orElse(null);
 		if (journalpost == null) {
 			throw new NoJournalpostFoundException("Journalpost with id: " + journalpostId + " does not exist",
 					journalpostId);

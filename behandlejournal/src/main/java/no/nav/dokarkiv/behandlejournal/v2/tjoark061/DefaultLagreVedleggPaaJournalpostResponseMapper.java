@@ -1,6 +1,7 @@
 package no.nav.dokarkiv.behandlejournal.v2.tjoark061;
 
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.meldinger.LagreVedleggPaaJournalpostResponse;
+import org.springframework.stereotype.Component;
 
 /**
  * Implementation of {@link LagreVedleggPaaJournalpostResponseMapper}
@@ -8,6 +9,7 @@ import no.nav.tjeneste.virksomhet.behandlejournal.v2.meldinger.LagreVedleggPaaJo
  * @author Rune Romundstad, Visma Consulting
  *
  */
+@Component
 public class DefaultLagreVedleggPaaJournalpostResponseMapper implements LagreVedleggPaaJournalpostResponseMapper {
 
 //	private Mapper dozerMapper;

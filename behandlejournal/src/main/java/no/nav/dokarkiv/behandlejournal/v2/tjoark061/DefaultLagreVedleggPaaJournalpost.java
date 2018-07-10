@@ -22,6 +22,7 @@ import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.core.sporing.KildeNavnPopulator;
 import no.nav.dokarkiv.core.stelvio.RequestContextHolder;
+import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 import java.util.Date;
@@ -32,6 +33,7 @@ import java.util.List;
  * 
  * @author Rune Romundstad, Visma Consulting
  */
+@Component
 public class DefaultLagreVedleggPaaJournalpost implements LagreVedleggPaaJournalpost {
 
 	@Inject

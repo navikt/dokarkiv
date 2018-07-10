@@ -1,6 +1,7 @@
 package no.nav.dokarkiv.behandlejournal.v2.tjoark064;
 
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.meldinger.JournalfoerUtgaaendeHenvendelseResponse;
+import org.springframework.stereotype.Component;
 
 /**
  * Implementation of
@@ -9,6 +10,7 @@ import no.nav.tjeneste.virksomhet.behandlejournal.v2.meldinger.JournalfoerUtgaae
  * @author Joakim Bjørnstad, Visma Consulting
  *
  */
+@Component
 public class DefaultJournalfoerUtgaaendeHenvendelseResponseMapper implements
 		JournalfoerUtgaaendeHenvendelseResponseMapper {
 //	private Mapper dozerMapper;
