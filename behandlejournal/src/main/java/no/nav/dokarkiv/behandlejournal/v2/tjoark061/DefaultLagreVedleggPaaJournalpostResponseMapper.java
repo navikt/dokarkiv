@@ -12,19 +12,10 @@ import org.springframework.stereotype.Component;
 @Component
 public class DefaultLagreVedleggPaaJournalpostResponseMapper implements LagreVedleggPaaJournalpostResponseMapper {
 
-//	private Mapper dozerMapper;
-	
 	/**{@inheritDoc} */
 	@Override
 	public LagreVedleggPaaJournalpostResponse map(
 			no.nav.dokarkiv.behandlejournal.v2.tjoark061.LagreVedleggPaaJournalpostResponse domainResponse) {
-//		return dozerMapper.map(domainResponse, LagreVedleggPaaJournalpostResponse.class);
-		return null;
+		return new LagreVedleggPaaJournalpostResponse().withDokumentId(domainResponse.getDokumentId().toString());
 	}
-
-//	@Inject
-//	@Named("dozerMapper")
-//	public void setDozerMapper(Mapper dozerMapper) {
-//		this.dozerMapper = dozerMapper;
-//	}
 }

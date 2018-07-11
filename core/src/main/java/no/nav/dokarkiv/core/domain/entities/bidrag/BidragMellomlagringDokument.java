@@ -1,5 +1,7 @@
 package no.nav.dokarkiv.core.domain.entities.bidrag;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import no.nav.dokarkiv.core.domain.AbstractPersistentVersionedDomainObject;
 import org.apache.commons.lang3.ArrayUtils;
 import org.hibernate.annotations.GenericGenerator;
@@ -26,6 +28,8 @@ import java.util.Arrays;
  */
 @Entity
 @Table(name = "T_BIDRAG_MELLOMLAGRING_DOK")
+@Builder
+@AllArgsConstructor
 public class BidragMellomlagringDokument extends AbstractPersistentVersionedDomainObject {
 
 	/** Serialization UID */

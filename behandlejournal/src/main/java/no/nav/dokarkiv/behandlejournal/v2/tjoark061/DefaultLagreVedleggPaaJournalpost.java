@@ -17,11 +17,14 @@ import no.nav.dokarkiv.core.domain.entities.bidrag.BidragMellomlagring;
 import no.nav.dokarkiv.core.domain.entities.bidrag.BidragMellomlagringDokument;
 import no.nav.dokarkiv.core.domain.entities.bidrag.BidragMellomlagringDokumentType;
 import no.nav.dokarkiv.core.exceptions.ApplicationException;
+import no.nav.dokarkiv.core.repository.BidragMellomlagringDokumentRepository;
 import no.nav.dokarkiv.core.repository.BidragMellomlagringRepository;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
+import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.core.sporing.KildeNavnPopulator;
 import no.nav.dokarkiv.core.stelvio.RequestContextHolder;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
@@ -39,12 +42,17 @@ public class DefaultLagreVedleggPaaJournalpost implements LagreVedleggPaaJournal
 	@Inject
 	private JoarkRepository joarkRepository;
 	@Inject
+	private DokumentinfoRepository dokumentinfoRepository;
+	@Inject
 	private DokumentFilRepository dokumentFilRepository;
 	@Inject
 	private BidragMellomlagringRepository bidragMellomlagringRepository;
 	@Inject
+	private BidragMellomlagringDokumentRepository bidragMellomlagringDokumentRepository;
+	@Inject
 	private KildeNavnPopulator kildeNavnPopulator;
-	
+
+	@Value("${behandlejournal.v2.lagreVedleggPaaJournalpost.vedleggDokumentTypeId}")
 	private String vedleggDokumentTypeId;
 
 	/** {@inheritDoc} */
@@ -75,11 +83,11 @@ public class DefaultLagreVedleggPaaJournalpost implements LagreVedleggPaaJournal
 		BidragMellomlagring bidragMellomlagring = getPersistedBidragMellomlagring(bidragMellomlagringId);
 
 		BidragMellomlagringDokument bidragMellomlagringDokument = createArkivBidragMellomlagringDokument(dokumentInfo);
+		BidragMellomlagringDokument savedBidragMellomlagringDokument = bidragMellomlagringDokumentRepository.save(bidragMellomlagringDokument);
 		bidragMellomlagring.addBidragMellomlagringDokument(bidragMellomlagringDokument);
 
 		bidragMellomlagringRepository.save(bidragMellomlagring);
-		//FIXME
-		return new LagreVedleggPaaJournalpostResponse(bidragMellomlagringDokument.getBidragMellomlagringDokumentId());
+		return new LagreVedleggPaaJournalpostResponse(savedBidragMellomlagringDokument.getBidragMellomlagringDokumentId());
 	}
 	
 	private BidragMellomlagring getPersistedBidragMellomlagring(Long bidragMellomlagringId) {
@@ -114,8 +122,9 @@ public class DefaultLagreVedleggPaaJournalpost implements LagreVedleggPaaJournal
 		updateJournalpostAndDokumentInfoValues(journalpost, dokumentInfo, sporingsMetaData);
 
 		persistDokumenter(dokumentInfo);
-		joarkRepository.save(journalpost); //FIXME
-		return new LagreVedleggPaaJournalpostResponse(dokumentInfo.getDokumentInfoId());
+		DokumentInfo savedDokumentInfo = dokumentinfoRepository.save(dokumentInfo);
+		joarkRepository.save(journalpost);
+		return new LagreVedleggPaaJournalpostResponse(savedDokumentInfo.getDokumentInfoId());
 	}
 
 	private Journalpost getPersistedJournalpost(Long journalpostId) throws NoJournalpostFoundException {
@@ -190,7 +199,7 @@ public class DefaultLagreVedleggPaaJournalpost implements LagreVedleggPaaJournal
 	private void validateAndSetOrginalJournalpost(Journalpost journalpost, DokumentInfo dokumentInfo) {
 		long journalpostId = journalpost.getJournalpostId();
 		DokumentInfo hoveddokumentDokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
-		if (hoveddokumentDokumentInfo.getOriginalJournalpost().getJournalpostId().longValue() == journalpostId) {
+		if (hoveddokumentDokumentInfo.getOriginalJournalpost().getJournalpostId() == journalpostId) {
 			dokumentInfo.setOriginalJournalpost(journalpost);
 		} else {
 			throw new ApplicationException(
@@ -222,13 +231,7 @@ public class DefaultLagreVedleggPaaJournalpost implements LagreVedleggPaaJournal
 		lagreVedleggPaaJournalpostRequest.validate();
 	}
 
-	/**
-	 * Setter for the vedleggDokumentTypeId property.
-	 *
-	 * @param vedleggDokumentTypeId the vedleggDokumentTypeId to set
-	 */
-	public void setVedleggDokumentTypeId(String vedleggDokumentTypeId) {
+	void setVedleggDokumentTypeId(String vedleggDokumentTypeId) {
 		this.vedleggDokumentTypeId = vedleggDokumentTypeId;
 	}
-	
 }
