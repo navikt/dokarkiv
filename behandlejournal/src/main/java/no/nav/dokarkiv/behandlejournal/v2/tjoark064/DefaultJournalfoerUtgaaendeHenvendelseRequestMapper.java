@@ -54,7 +54,7 @@ public class DefaultJournalfoerUtgaaendeHenvendelseRequestMapper implements
 				.dokumentDato(wsJournalpost.getDokumentDato() == null ? null : wsJournalpost.getDokumentDato().toGregorianCalendar().getTime())
 				.utsendingskanal(wsJournalpost.getKanal() == null ? null : UtsendingsKanalCode.valueOf(wsJournalpost.getKanal().getValue()))
 				.sendtPrintDato(wsJournalpost.getDistribusjonAvJournal() == null ? null : wsJournalpost.getDistribusjonAvJournal().getSendtPrintDato().toGregorianCalendar().getTime())
-				.ekspedertDato(wsJournalpost.getDatoEkspedert().toGregorianCalendar().getTime())
+				.ekspedertDato(wsJournalpost.getDatoEkspedert() == null ? null : wsJournalpost.getDatoEkspedert().toGregorianCalendar().getTime())
 				.signatur(wsJournalpost.getSignatur() == null ? null : wsJournalpost.getSignatur().isSignert())
 				.journalForendeEnhetId(wsJournalpost.getJournalfoerendeEnhetREF())
 				.journalfortAvNavn(wsJournalpost.getOpprettetAvNavn())
@@ -63,11 +63,12 @@ public class DefaultJournalfoerUtgaaendeHenvendelseRequestMapper implements
 				.avsenderMottakerId(wsJournalpost.getEksternPart() == null || wsJournalpost.getEksternPart().getEksternAktoer() == null ?
 						null : convertAktoerToId(wsJournalpost.getEksternPart().getEksternAktoer()))
 				.avsenderMottaker(wsJournalpost.getEksternPart() == null ? null : wsJournalpost.getEksternPart().getNavn())
-				.saksrelasjon(Saksrelasjon.builder()
-						.sakId(wsJournalpost.getGjelderSak() == null ? null : wsJournalpost.getGjelderSak().getSaksId())
-						.fagsystem(wsJournalpost.getGjelderSak() == null ? null : FagsystemCode.valueOf(wsJournalpost.getGjelderSak().getFagsystemkode()))
-						.build())
 				.build();
+		Saksrelasjon saksrelasjon = Saksrelasjon.builder()
+				.sakId(wsJournalpost.getGjelderSak() == null ? null : wsJournalpost.getGjelderSak().getSaksId())
+				.fagsystem(wsJournalpost.getGjelderSak() == null ? null : FagsystemCode.valueOf(wsJournalpost.getGjelderSak().getFagsystemkode()))
+				.build();
+		domainJournalpost.setSaksrelasjon(saksrelasjon);
 		wsJournalpost.getForBruker().forEach(aktoer -> domainJournalpost.addBruker(convertAktoerToBruker(aktoer)));
 		wsJournalpost.getKryssreferanseListe().forEach(kryssreferanse -> domainJournalpost.addKryssReferanse(Kryssreferanse.builder()
 				.referanseId(kryssreferanse.getReferanseId())

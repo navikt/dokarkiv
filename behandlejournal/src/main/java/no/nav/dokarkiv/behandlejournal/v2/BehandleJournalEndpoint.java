@@ -31,12 +31,12 @@ import javax.xml.ws.soap.Addressing;
  * @author Rune Romundstad, Visma Consulting
  */
 @WebService(endpointInterface = "no.nav.tjeneste.virksomhet.behandlejournal.v2.binding.BehandleJournalV2",
-		wsdlLocation = "WEB-INF/wsdl/no/nav/tjeneste/virksomhet/behandleJournal/v2/Binding.wsdl",
-		targetNamespace = "http://nav.no/tjeneste/virksomhet/behandleJournal/v2/",
+		wsdlLocation = "classpath:wsdl/no/nav/tjeneste/virksomhet/behandleJournal/v2/Binding.wsdl",
+		targetNamespace = "http://nav.no/tjeneste/virksomhet/behandleJournal/v2/Binding",
 		serviceName = "BehandleJournal_v2",
-		portName = "BehandleJournal_v2")
+		portName = "behandleJournal_v2Port")
 @Addressing
-@HandlerChain(file = "handler.xml")
+@HandlerChain(file = "classpath:behandlejournalv2.xml")
 @Service
 public class BehandleJournalEndpoint implements BehandleJournalV2 {
 

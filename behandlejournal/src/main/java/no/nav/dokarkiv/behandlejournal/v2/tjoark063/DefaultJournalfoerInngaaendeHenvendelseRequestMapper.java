@@ -62,11 +62,11 @@ public class DefaultJournalfoerInngaaendeHenvendelseRequestMapper implements
 				.avsenderMottakerId(wsJournalpost.getEksternPart() == null || wsJournalpost.getEksternPart().getEksternAktoer() == null ?
 						null : convertAktoerToId(wsJournalpost.getEksternPart().getEksternAktoer()))
 				.avsenderMottaker(wsJournalpost.getEksternPart() == null ? null : wsJournalpost.getEksternPart().getNavn())
-				.saksrelasjon(Saksrelasjon.builder()
-						.sakId(wsJournalpost.getGjelderSak() == null ? null : wsJournalpost.getGjelderSak().getSaksId())
-						.fagsystem(wsJournalpost.getGjelderSak() == null ? null : FagsystemCode.valueOf(wsJournalpost.getGjelderSak().getFagsystemkode()))
-						.build())
 				.build();
+		domainJournalpost.setSaksrelasjon(Saksrelasjon.builder()
+				.sakId(wsJournalpost.getGjelderSak() == null ? null : wsJournalpost.getGjelderSak().getSaksId())
+				.fagsystem(wsJournalpost.getGjelderSak() == null ? null : FagsystemCode.valueOf(wsJournalpost.getGjelderSak().getFagsystemkode()))
+				.build());
 		wsJournalpost.getForBruker().forEach(aktoer -> domainJournalpost.addBruker(convertAktoerToBruker(aktoer)));
 		wsJournalpost.getKryssreferanseListe().forEach(kryssreferanse -> domainJournalpost.addKryssReferanse(Kryssreferanse.builder()
 				.referanseId(kryssreferanse.getReferanseId())

@@ -55,11 +55,12 @@ public class DefaultJournalfoerNotatHenvendelseRequestMapper implements
 				.journalfortAvNavn(wsJournalpost.getOpprettetAvNavn())
 				.innhold(wsJournalpost.getInnhold())
 				.fagomrade(wsJournalpost.getArkivtema() == null ? null : FagomradeCode.valueOf(wsJournalpost.getArkivtema().getValue()))
-				.saksrelasjon(Saksrelasjon.builder()
-						.sakId(wsJournalpost.getGjelderSak() == null ? null : wsJournalpost.getGjelderSak().getSaksId())
-						.fagsystem(wsJournalpost.getGjelderSak() == null ? null : FagsystemCode.valueOf(wsJournalpost.getGjelderSak().getFagsystemkode()))
-						.build())
 				.build();
+		Saksrelasjon saksrelasjon = Saksrelasjon.builder()
+				.sakId(wsJournalpost.getGjelderSak() == null ? null : wsJournalpost.getGjelderSak().getSaksId())
+				.fagsystem(wsJournalpost.getGjelderSak() == null ? null : FagsystemCode.valueOf(wsJournalpost.getGjelderSak().getFagsystemkode()))
+				.build();
+		domainJournalpost.setSaksrelasjon(saksrelasjon);
 		wsJournalpost.getForBruker().forEach(aktoer -> domainJournalpost.addBruker(convertAktoerToBruker(aktoer)));
 		wsJournalpost.getKryssreferanseListe().forEach(kryssreferanse -> domainJournalpost.addKryssReferanse(Kryssreferanse.builder()
 				.referanseId(kryssreferanse.getReferanseId())
