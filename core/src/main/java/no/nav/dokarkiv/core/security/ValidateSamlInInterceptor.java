@@ -46,7 +46,6 @@ public class ValidateSamlInInterceptor extends WSS4JInInterceptor {
 
 	@Override
 	public void handleMessage(SoapMessage msg) {
-
 		super.handleMessage(msg);
 
 		SecurityContext sc = (SecurityContext) msg.get(SecurityContext.class.getName());

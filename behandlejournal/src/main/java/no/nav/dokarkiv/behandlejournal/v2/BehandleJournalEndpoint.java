@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.behandlejournal.v2;
 
+import io.micrometer.core.annotation.Timed;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.binding.BehandleJournalV2;
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.binding.FerdigstillDokumentopplastingFerdigstillDokumentopplastingjournalpostIkkeFunnet;
@@ -46,12 +47,14 @@ public class BehandleJournalEndpoint implements BehandleJournalV2 {
 	@Inject
 	private BehandleJournalV2 behandleJournalProvider;
 
+	@Timed(value = "dok_request", extraTags = {"process_code", "tjoark060"}, percentiles = {0.5, 0.95})
 	@Override
 	public ArkiverUstrukturertKravResponse arkiverUstrukturertKrav(ArkiverUstrukturertKravRequest request) {
 		RequestContextUtil.createAndSetRequestContext(webServiceContext, request.getApplikasjonsID());
 		return behandleJournalProvider.arkiverUstrukturertKrav(request);
 	}
 
+	@Timed(value = "dok_request", extraTags = {"process_code", "tjoark061"}, percentiles = {0.5, 0.95})
 	@Override
 	public LagreVedleggPaaJournalpostResponse lagreVedleggPaaJournalpost(LagreVedleggPaaJournalpostRequest request)
 			throws LagreVedleggPaaJournalpostLagreVedleggPaaJournalpostjournalpostIkkeFunnet {
@@ -59,6 +62,7 @@ public class BehandleJournalEndpoint implements BehandleJournalV2 {
 		return behandleJournalProvider.lagreVedleggPaaJournalpost(request);
 	}
 
+	@Timed(value = "dok_request", extraTags = {"process_code", "tjoark062"}, percentiles = {0.5, 0.95})
 	@Override
 	public void ferdigstillDokumentopplasting(FerdigstillDokumentopplastingRequest request)
 			throws FerdigstillDokumentopplastingFerdigstillDokumentopplastingjournalpostIkkeFunnet {
@@ -66,6 +70,7 @@ public class BehandleJournalEndpoint implements BehandleJournalV2 {
 		behandleJournalProvider.ferdigstillDokumentopplasting(request);
 	}
 
+	@Timed(value = "dok_request", extraTags = {"process_code", "tjoark063"}, percentiles = {0.5, 0.95})
 	@Override
 	public JournalfoerNotatResponse journalfoerNotat(
 			JournalfoerNotatRequest request) {
@@ -73,6 +78,7 @@ public class BehandleJournalEndpoint implements BehandleJournalV2 {
 		return behandleJournalProvider.journalfoerNotat(request);
 	}
 
+	@Timed(value = "dok_request", extraTags = {"process_code", "tjoark064"}, percentiles = {0.5, 0.95})
 	@Override
 	public JournalfoerUtgaaendeHenvendelseResponse journalfoerUtgaaendeHenvendelse(
 			JournalfoerUtgaaendeHenvendelseRequest request) {
@@ -80,6 +86,7 @@ public class BehandleJournalEndpoint implements BehandleJournalV2 {
 		return behandleJournalProvider.journalfoerUtgaaendeHenvendelse(request);
 	}
 
+	@Timed(value = "dok_request", extraTags = {"process_code", "tjoark065"}, percentiles = {0.5, 0.95})
 	@Override
 	public JournalfoerInngaaendeHenvendelseResponse journalfoerInngaaendeHenvendelse(
 			JournalfoerInngaaendeHenvendelseRequest request) {

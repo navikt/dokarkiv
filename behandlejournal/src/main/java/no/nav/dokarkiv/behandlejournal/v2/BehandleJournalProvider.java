@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.behandlejournal.v2;
 
+import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.behandlejournal.v2.exceptions.NoJournalpostFoundException;
 import no.nav.dokarkiv.behandlejournal.v2.tjoark060.ArkiverUstrukturertKravRequestMapper;
 import no.nav.dokarkiv.behandlejournal.v2.tjoark060.ArkiverUstrukturertKravResponseMapper;
@@ -39,16 +40,9 @@ import javax.inject.Inject;
  * @author Rune Romundstad, Visma Consulting
  *
  */
+@Slf4j
 @Component
 public class BehandleJournalProvider implements BehandleJournalV2 {
-	
-	static final String BEHANDLE_JOURNAL_V2 = "BehandleJournalV2";
-	static final String BEHANDLE_JOURNAL_V2_LAGRE_VEDLEGG_JOURNALPOST = BEHANDLE_JOURNAL_V2 + ".lagreVedleggPaaJournalpost";
-	static final String BEHANDLE_JOURNAL_V2_ARKIVER_USTRUKTURERT_KRAV = BEHANDLE_JOURNAL_V2 + ".arkiverUstrukturertKrav";
-	static final String BEHANDLE_JOURNAL_V2_FERDIGSTILL_DOKUMENTOPPLASTING = BEHANDLE_JOURNAL_V2 + ".ferdigstillDokumentopplasting";
-	static final String BEHANDLE_JOURNAL_V2_JOURNALFOER_INNGAAENDE_HENVENDELSE = BEHANDLE_JOURNAL_V2 + ".journalfoerInngaaendeHenvendelse";
-	static final String BEHANDLE_JOURNAL_V2_JOURNALFOER_UTGAAENDE_HENVENDELSE = BEHANDLE_JOURNAL_V2 + ".journalfoerUtgaaendeHenvendelse";
-	static final String BEHANDLE_JOURNAL_V2_JOURNALFOER_NOTAT = BEHANDLE_JOURNAL_V2 + ".journalfoerNotat";
 
 	@Inject
 	private BehandleJournalServiceBi behandleJournalServiceBi;
@@ -80,8 +74,10 @@ public class BehandleJournalProvider implements BehandleJournalV2 {
 	@Transactional
 	@Override
 	public ArkiverUstrukturertKravResponse arkiverUstrukturertKrav(ArkiverUstrukturertKravRequest request) {
-		return arkiverUstrukturertKravResponseMapper.map(behandleJournalServiceBi
+		ArkiverUstrukturertKravResponse response = arkiverUstrukturertKravResponseMapper.map(behandleJournalServiceBi
 				.arkiverUstrukturertKrav(arkiverUstrukturertKravRequestMapper.map(request)));
+		log.info("tjoark060 arkiverer ustrukturert krav i journalpostId={}, dokumentId={}", response.getJournalpostId(), response.getDokumentId());
+		return response;
 	}
 
 	@Transactional
@@ -89,8 +85,10 @@ public class BehandleJournalProvider implements BehandleJournalV2 {
 	public LagreVedleggPaaJournalpostResponse lagreVedleggPaaJournalpost(LagreVedleggPaaJournalpostRequest request)
 			throws LagreVedleggPaaJournalpostLagreVedleggPaaJournalpostjournalpostIkkeFunnet {
 		try {
-			return lagreVedleggPaaJournalpostResponseMapper.map(behandleJournalServiceBi
+			LagreVedleggPaaJournalpostResponse response = lagreVedleggPaaJournalpostResponseMapper.map(behandleJournalServiceBi
 					.lagreVedleggPaaJournalpost(lagreVedleggPaaJournalpostRequestMapper.map(request)));
+			log.info("tjoark061 lagret vedlegg dokumentId={} til journalpostId={}", response.getDokumentId(), request.getJournalpostId());
+			return response;
 		} catch (NoJournalpostFoundException e) {
 			throw new LagreVedleggPaaJournalpostLagreVedleggPaaJournalpostjournalpostIkkeFunnet(e.getMessage(),
 					behandleJournalFaultInfoPopulator.populateFaultInfo(new JournalpostIkkeFunnet(), e,
@@ -105,6 +103,7 @@ public class BehandleJournalProvider implements BehandleJournalV2 {
 		try {
 			behandleJournalServiceBi.ferdigstillDokumentopplasting(ferdigstillDokumentopplastingRequestMapper
 					.map(request));
+			log.info("tjoark063 ferdigstilte dokumentopplasting journalpostId={}", request.getJournalpostId());
 		} catch (NoJournalpostFoundException e) {
 			throw new FerdigstillDokumentopplastingFerdigstillDokumentopplastingjournalpostIkkeFunnet(e.getMessage(),
 					behandleJournalFaultInfoPopulator.populateFaultInfo(new JournalpostIkkeFunnet(), e,
@@ -116,30 +115,35 @@ public class BehandleJournalProvider implements BehandleJournalV2 {
 	@Override
 	public JournalfoerInngaaendeHenvendelseResponse journalfoerInngaaendeHenvendelse(
 			JournalfoerInngaaendeHenvendelseRequest request) {
-
-		return journalfoerInngaaendeHenvendelseMedHoveddokumentResponseMapper
+		JournalfoerInngaaendeHenvendelseResponse response = journalfoerInngaaendeHenvendelseMedHoveddokumentResponseMapper
 				.map(behandleJournalServiceBi
 						.journalfoerInngaaendeHenvendelse(journalfoerInngaaendeHenvendelseMedHoveddokumentRequestMapper
 								.map(request)));
+		log.info("tjoark063 journalførte inngående henvendelse i journalpostId={}", response.getJournalpostId());
+		return response;
 	}
 
 	@Transactional
 	@Override
 	public JournalfoerUtgaaendeHenvendelseResponse journalfoerUtgaaendeHenvendelse(
 			JournalfoerUtgaaendeHenvendelseRequest request) {
-		return journalfoerUtgaaendeHenvendelseResponseMapper
+		JournalfoerUtgaaendeHenvendelseResponse response = journalfoerUtgaaendeHenvendelseResponseMapper
 				.map(behandleJournalServiceBi
 						.journalfoerUtgaaendeHenvendelse(journalfoerUtgaaendeHenvendelseMedHoveddokumentRequestMapper
 								.map(request)));
+		log.info("tjoark064 journalførte utgående henvendelse i journalpostId={}", response.getJournalpostId());
+		return response;
 	}
 
 	@Transactional
 	@Override
 	public JournalfoerNotatResponse journalfoerNotat(
 			JournalfoerNotatRequest request) {
-		return journalfoerNotatHenvendelseResponseMapper.map(behandleJournalServiceBi
+		JournalfoerNotatResponse response = journalfoerNotatHenvendelseResponseMapper.map(behandleJournalServiceBi
 				.journalfoerNotatHenvendelse(journalfoerNotatHenvendelseRequestMapper
 						.map(request)));
+		log.info("tjoark065 journalførte notat i journalpostId={}", response.getJournalpostId());
+		return response;
 	}
 
 	@Override
