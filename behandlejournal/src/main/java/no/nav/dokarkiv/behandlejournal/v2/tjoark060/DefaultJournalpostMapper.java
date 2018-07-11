@@ -48,7 +48,7 @@ public class DefaultJournalpostMapper implements JournalpostMapper {
 				.journalForendeEnhetId(wsJournalpost.getJournalfoerendeEnhetREF())
 				.fagomrade(FagomradeCode.valueOf(wsJournalpost.getArkivtema().getValue()))
 				.avsenderMottaker(wsJournalpost.getEksternPart() == null ? null : wsJournalpost.getEksternPart().getNavn())
-				.avsenderMottakerId(wsJournalpost.getEksternPart() == null ? null : convertAktoerToNavn(wsJournalpost.getEksternPart().getEksternAktoer()))
+				.avsenderMottakerId(wsJournalpost.getEksternPart() == null ? null : convertAktoerToId(wsJournalpost.getEksternPart().getEksternAktoer()))
 				.build();
 		wsJournalpost.getForBruker().forEach(aktoer -> domainJournalpost.addBruker(convertAktoerToBruker(aktoer)));
 
@@ -84,7 +84,7 @@ public class DefaultJournalpostMapper implements JournalpostMapper {
 		return Enum.valueOf(MottaksKanalCode.class, kanal);
 	}
 
-	private String convertAktoerToNavn(Aktoer source) {
+	private String convertAktoerToId(Aktoer source) {
 		if (source == null) {
 			return null;
 		}

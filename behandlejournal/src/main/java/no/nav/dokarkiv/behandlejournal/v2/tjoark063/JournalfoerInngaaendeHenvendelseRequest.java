@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.behandlejournal.v2.tjoark063;
 
+import lombok.Builder;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.ApplicationException;
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -9,6 +10,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
  *
  * @author Rune Romundstad, Visma Consulting
  */
+@Builder
 public class JournalfoerInngaaendeHenvendelseRequest {
 
 	private Journalpost journalpost;

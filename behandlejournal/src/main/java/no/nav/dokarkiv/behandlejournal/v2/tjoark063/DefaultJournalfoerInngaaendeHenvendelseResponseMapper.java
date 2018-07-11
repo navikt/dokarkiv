@@ -13,19 +13,9 @@ import org.springframework.stereotype.Component;
 public class DefaultJournalfoerInngaaendeHenvendelseResponseMapper implements
 		JournalfoerInngaaendeHenvendelseResponseMapper {
 
-//	private Mapper dozerMapper;
-
 	@Override
 	public JournalfoerInngaaendeHenvendelseResponse map(
-			no.nav.dokarkiv.behandlejournal.v2.tjoark063.JournalfoerInngaaendeHenvendelseResponse  domainResponse) {
-//		return dozerMapper.map(domainResponse, JournalfoerInngaaendeHenvendelseResponse.class);
-		return null;
+			no.nav.dokarkiv.behandlejournal.v2.tjoark063.JournalfoerInngaaendeHenvendelseResponse domainResponse) {
+		return new JournalfoerInngaaendeHenvendelseResponse().withJournalpostId(domainResponse.getJournalpostId().toString());
 	}
-
-//	@Inject
-//	@Named("dozerMapper")
-//	public void setDozerMapper(Mapper dozerMapper) {
-//		this.dozerMapper = dozerMapper;
-//	}
-
 }
