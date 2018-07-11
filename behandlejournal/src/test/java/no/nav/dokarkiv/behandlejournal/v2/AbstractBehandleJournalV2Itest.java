@@ -25,7 +25,6 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEnti
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.inject.Inject;
 import javax.transaction.Transactional;
@@ -55,9 +54,6 @@ public abstract class AbstractBehandleJournalV2Itest {
 	protected DokumentFilRepository dokumentFilRepository;
 	@Inject
 	protected BidragMellomlagringRepository bidragMellomlagringRepository;
-
-	@Inject
-	protected TransactionTemplate transactionTemplate;
 
 	@Before
 	public void setUpItest() {

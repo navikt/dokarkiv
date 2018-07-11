@@ -16,7 +16,7 @@ import java.security.Principal;
  * <p>
  * NB! CallIdHandler must be configured in order to make callId available in MDC.
  *
- * @author Thomas Eugen Bj�rge, Visma Consulting
+ * @author Thomas Eugen Bjørge, Visma Consulting
  */
 public final class RequestContextUtil {
 

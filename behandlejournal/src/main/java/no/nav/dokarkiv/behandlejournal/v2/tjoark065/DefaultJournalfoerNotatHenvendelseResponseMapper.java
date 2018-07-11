@@ -11,21 +11,10 @@ import org.springframework.stereotype.Component;
 @Component
 public class DefaultJournalfoerNotatHenvendelseResponseMapper implements
 		JournalfoerNotatHenvendelseResponseMapper {
-//	private Mapper dozerMapper;
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public JournalfoerNotatResponse map(
 			JournalfoerNotatHenvendelseResponse domainResponse) {
-//		return dozerMapper.map(domainResponse, JournalfoerNotatResponse.class);
-		return null;
+		return new JournalfoerNotatResponse().withJournalpostId(domainResponse.getJournalpostId().toString());
 	}
-
-//	@Inject
-//	@Named("dozerMapper")
-//	public void setDozerMapper(Mapper dozerMapper) {
-//		this.dozerMapper = dozerMapper;
-//	}
 }
