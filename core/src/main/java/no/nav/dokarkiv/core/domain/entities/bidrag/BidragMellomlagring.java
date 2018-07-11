@@ -42,7 +42,7 @@ public class BidragMellomlagring extends AbstractPersistentVersionedDomainObject
 	/** Serialization UID */
 	private static final long serialVersionUID = -***gammelt_fnr***56861638L;
 	
-	private static final Integer ID_PREFIX = 4249;
+	public static final Integer ID_PREFIX = 4249;
 	private static final int ID_PREFIX_LENGTH = ID_PREFIX.toString().length();
 	private static final int ID_WITH_PREFIX_LENGTH = 12;
 	
