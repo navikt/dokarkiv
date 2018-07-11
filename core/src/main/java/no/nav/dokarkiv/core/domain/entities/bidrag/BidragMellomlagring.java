@@ -65,7 +65,7 @@ public class BidragMellomlagring extends AbstractPersistentVersionedDomainObject
 	private BidragMellomlagringStatus status;
 	
 	@OneToMany(mappedBy = "bidragMellomlagring")
-	@Cascade({ CascadeType.PERSIST, CascadeType.SAVE_UPDATE, CascadeType.DELETE, CascadeType.EVICT })
+	@Cascade({ CascadeType.PERSIST, CascadeType.MERGE, CascadeType.SAVE_UPDATE, CascadeType.DELETE, CascadeType.DETACH })
 	private Set<BidragMellomlagringDokument> bidragMellomlagringDokuments = new HashSet<BidragMellomlagringDokument>();
 
 	/**

@@ -6,6 +6,8 @@ import no.nav.dokarkiv.core.sporing.KildeNavnPopulator;
 import no.nav.dokarkiv.core.stelvio.RequestContextHolder;
 import org.springframework.stereotype.Component;
 
+import javax.inject.Inject;
+
 /**
  * Implementation of SporingMapper.
  * 
@@ -14,8 +16,13 @@ import org.springframework.stereotype.Component;
 @Component
 public class DefaultSporingMapper implements SporingMapper {
 
-	private KildeNavnPopulator kildeNavnPopulator;
-	
+	private final KildeNavnPopulator kildeNavnPopulator;
+
+	@Inject
+	DefaultSporingMapper(KildeNavnPopulator kildeNavnPopulator) {
+		this.kildeNavnPopulator = kildeNavnPopulator;
+	}
+
 	/** {@inheritDoc} */
 	public void mapSporingsinfo(Journalpost journalpost, String opprettetEndretAvNavn) {
 		if (journalpost != null) {
@@ -44,14 +51,4 @@ public class DefaultSporingMapper implements SporingMapper {
 		String kildeNavn = RequestContextHolder.currentRequestContext().getComponentId();
 		kildeNavnPopulator.populateKildeNavnForEntireJournalStructure(journalpost, kildeNavn);
 	}
-
-	/**
-	 * Setter for the kildeNavnPopulator property.
-	 *
-	 * @param kildeNavnPopulator the kildeNavnPopulator to set
-	 */
-	public void setKildeNavnPopulator(KildeNavnPopulator kildeNavnPopulator) {
-		this.kildeNavnPopulator = kildeNavnPopulator;
-	}
-
 }

@@ -4,18 +4,29 @@ import static org.apache.commons.lang.StringUtils.isBlank;
 
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
+import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
 import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
+import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.Bruker;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
+import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.exceptions.ApplicationException;
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.informasjon.arkiverustrukturertkrav.JournalfoertDokumentInfo;
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.informasjon.behandlejournal.Aktoer;
+import no.nav.tjeneste.virksomhet.behandlejournal.v2.informasjon.behandlejournal.DokumentInnhold;
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.informasjon.behandlejournal.Kommunikasjonskanaler;
+import no.nav.tjeneste.virksomhet.behandlejournal.v2.informasjon.behandlejournal.NoekkelVerdiPar;
+import no.nav.tjeneste.virksomhet.behandlejournal.v2.informasjon.behandlejournal.NoekkelVerdiSett;
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.informasjon.behandlejournal.Organisasjon;
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.informasjon.behandlejournal.Person;
+import no.nav.tjeneste.virksomhet.behandlejournal.v2.informasjon.behandlejournal.StrukturertInnhold;
+import no.nav.tjeneste.virksomhet.behandlejournal.v2.informasjon.behandlejournal.UstrukturertInnhold;
 import org.springframework.stereotype.Component;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Implementation of JournalpostMapper.
@@ -40,12 +51,17 @@ public class DefaultJournalpostMapper implements JournalpostMapper {
 				.avsenderMottakerId(wsJournalpost.getEksternPart() == null ? null : convertAktoerToNavn(wsJournalpost.getEksternPart().getEksternAktoer()))
 				.build();
 		wsJournalpost.getForBruker().forEach(aktoer -> domainJournalpost.addBruker(convertAktoerToBruker(aktoer)));
-		JournalfoertDokumentInfo journalfoertDokumentInfo = wsJournalpost.getJournalfoertDokument();
 
+		JournalfoertDokumentInfo journalfoertDokumentInfo = wsJournalpost.getJournalfoertDokument();
 		JournalpostDokumentInfoRelasjon dokumentInfoRelasjon = new JournalpostDokumentInfoRelasjon();
 		DokumentInfo dokumentInfo = DokumentInfo.builder()
-
+				.innskrenketPartsinnsyn(journalfoertDokumentInfo.isBegrensetPartsInnsyn())
+				.brevkode(journalfoertDokumentInfo.getDokumentType().getValue())
+				.dokumenttypeId(journalfoertDokumentInfo.getDokumentType().getValue())
+				.tilleggsopplysninger(convertNoekkelVerdiSettToMap(journalfoertDokumentInfo.getTilleggsopplysninger()))
 				.build();
+		journalfoertDokumentInfo.getBeskriverInnhold().forEach(dokumentInnhold -> dokumentInfo.addFilDetaljer(convertDokumentInnhold(dokumentInnhold)));
+
 		// We explicitly null out dokumentTypeId since JournalfoertDokumentInfo is the same type for
 		// ArkiverUstrukturertKrav and JournalfoerInngaaendeHenvendelseMedHoveddokument. 
 		// They use the same mapper that sets both brevkode and dokumentTypeId 
@@ -98,5 +114,34 @@ public class DefaultJournalpostMapper implements JournalpostMapper {
 			throw new ApplicationException("Aktoer must be a type or subtype of Person or Organisasjon.");
 		}
 		return bruker;
+	}
+
+	private Map<String, String> convertNoekkelVerdiSettToMap(NoekkelVerdiSett source) {
+		if (source == null) {
+			return null;
+		}
+		Map<String, String> tilleggsopplysninger = new HashMap<String, String>();
+		for (NoekkelVerdiPar noekkelVerdiPar : source.getInneholderNoekkelVerdiPar()) {
+			tilleggsopplysninger.put(noekkelVerdiPar.getNoekkel(), noekkelVerdiPar.getVerdi());
+		}
+		return tilleggsopplysninger;
+	}
+
+	private FilDetaljer convertDokumentInnhold(DokumentInnhold dokumentInnhold) {
+		FilDetaljer filDetaljer = new FilDetaljer();
+		filDetaljer.setFiltype(FilTypeCode.valueOf(dokumentInnhold.getFiltype().getValue()));
+		filDetaljer.setVariantFormat(VariantFormatCode.valueOf(dokumentInnhold.getVariantformat().getValue()));
+		filDetaljer.setFilnavn(dokumentInnhold.getFilnavn());
+
+		if (dokumentInnhold instanceof UstrukturertInnhold) {
+			UstrukturertInnhold ustrukturertInnhold = (UstrukturertInnhold) dokumentInnhold;
+			filDetaljer.setFileContent(ustrukturertInnhold.getInnhold());
+		}
+
+		if (dokumentInnhold instanceof StrukturertInnhold) {
+			StrukturertInnhold strukturertInnhold = (StrukturertInnhold) dokumentInnhold;
+			filDetaljer.setFileContent(strukturertInnhold.getInnhold());
+		}
+		return filDetaljer;
 	}
 }

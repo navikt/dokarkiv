@@ -64,7 +64,7 @@ public class DefaultArkiverUstrukturertKrav implements ArkiverUstrukturertKrav {
 	}
 
 	private boolean isBidragsdokument(Journalpost journalpost) {
-		return FagomradeCode.BID == journalpost.getFagomrade() ? true : false;
+		return FagomradeCode.BID == journalpost.getFagomrade();
 	}
 
 	private ArkiverUstrukturertKravResponse handleJoarkdokument(Journalpost journalpost) {

@@ -42,8 +42,7 @@ public class DefaultSporingMapperTest {
 	@Before
 	public void setUp() {
 		MockitoAnnotations.initMocks(this);
-		mapper = new DefaultSporingMapper();
-		mapper.setKildeNavnPopulator(kildeNavnPopulatorMock);
+		mapper = new DefaultSporingMapper(kildeNavnPopulatorMock);
 		RequestContextSetter.setRequestContext(new SimpleRequestContext.Builder().componentId(kilde).build());
 	}
 	

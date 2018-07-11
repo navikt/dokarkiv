@@ -60,6 +60,8 @@ import java.util.Date;
 @RunWith(MockitoJUnitRunner.class)
 public class DefaultArkiverUstrukturertKravTest {
 
+	private static final long JOURNALPOST_ID = 100L;
+	private static final long DOKUMENT_INFO_ID = 1000L;
 	private final String validFnr = "***gammelt_fnr***";
 	private final String invalidFnr = "***gammelt_fnr***";
 	private final String brevkode = "BREVKODE";
@@ -88,6 +90,16 @@ public class DefaultArkiverUstrukturertKravTest {
 
 	@Before
 	public void setUp() {
+		Journalpost persistedJournalpost = Journalpost.builder()
+				.journalpostId(JOURNALPOST_ID)
+				.build();
+		persistedJournalpost.addJournalpostDokumentInfoRelasjon(JournalpostDokumentInfoRelasjon.builder()
+				.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.HOVEDDOKUMENT)
+				.dokumentInfo(DokumentInfo.builder()
+						.dokumentInfoId(DOKUMENT_INFO_ID)
+						.build())
+				.build());
+		when(repositoryMock.save(any())).thenReturn(persistedJournalpost);
 		journalpost = createJournalpost(validFnr, FagomradeCode.UFO);
 	}
 
@@ -255,7 +267,7 @@ public class DefaultArkiverUstrukturertKravTest {
 
 	private Journalpost createJournalpost(String brukerId, FagomradeCode fagomrade) {
 		return getJournalpostBuilder()
-				.journalpostId(100L)
+				.journalpostId(JOURNALPOST_ID)
 				.fagomrade(fagomrade)
 				.mottattDato(new Date())
 				.mottakskanal(MottaksKanalCode.ALTINN)
@@ -270,7 +282,7 @@ public class DefaultArkiverUstrukturertKravTest {
 	private DokumentInfo createDokumentInfoWithFildetaljer() {
 		FilDetaljer fildetaljer = createFildetaljer(VariantFormatCode.ARKIV);
 
-		return getDokumentInfoBuilder().dokumentInfoId(1000L).dokumentstatus(DokumentStatusCode.FERDIGSTILT)
+		return getDokumentInfoBuilder().dokumentInfoId(DOKUMENT_INFO_ID).dokumentstatus(DokumentStatusCode.FERDIGSTILT)
 				.dokumenttypeId("dokumenttypeId").brevkode(brevkode).filDetaljerList(fildetaljer).build();
 	}
 
