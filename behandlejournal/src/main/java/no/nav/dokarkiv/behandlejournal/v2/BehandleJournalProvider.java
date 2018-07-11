@@ -90,7 +90,7 @@ public class BehandleJournalProvider implements BehandleJournalV2 {
 			LagreVedleggPaaJournalpostResponse response = lagreVedleggPaaJournalpostResponseMapper.map(behandleJournalServiceBi
 					.lagreVedleggPaaJournalpost(lagreVedleggPaaJournalpostRequestMapper.map(request)));
 			log.info("tjoark061 lagret vedlegg dokumentId={} til {}={}",
-					journalpostOrBidragClassifier(request.getJournalpostId()), response.getDokumentId(), request.getJournalpostId());
+					response.getDokumentId(), journalpostOrBidragClassifier(request.getJournalpostId()), request.getJournalpostId());
 			return response;
 		} catch (NoJournalpostFoundException e) {
 			throw new LagreVedleggPaaJournalpostLagreVedleggPaaJournalpostjournalpostIkkeFunnet(e.getMessage(),
