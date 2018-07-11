@@ -13,18 +13,10 @@ import org.springframework.stereotype.Component;
 @Component
 public class DefaultJournalfoerUtgaaendeHenvendelseResponseMapper implements
 		JournalfoerUtgaaendeHenvendelseResponseMapper {
-//	private Mapper dozerMapper;
 
 	@Override
 	public JournalfoerUtgaaendeHenvendelseResponse map(
 			no.nav.dokarkiv.behandlejournal.v2.tjoark064.JournalfoerUtgaaendeHenvendelseResponse domainResponse) {
-//		return dozerMapper.map(domainResponse, JournalfoerUtgaaendeHenvendelseResponse.class); FIXME
-		return null;
+		return new JournalfoerUtgaaendeHenvendelseResponse().withJournalpostId(domainResponse.getJournalpostId().toString());
 	}
-
-//	@Inject
-//	@Named("dozerMapper")
-//	public void setDozerMapper(Mapper dozerMapper) {
-//		this.dozerMapper = dozerMapper;
-//	}
 }
