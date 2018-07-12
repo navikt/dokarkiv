@@ -28,4 +28,8 @@
 	<logger name="org.apache.cxf.ws.addressing.ContextUtils" additivity="false" level="ERROR"/>
 	<logger name="org.apache.cxf.ws.addressing.soap.MAPCodec" additivity="false" level="ERROR"/>
 
+	<logger name="org.apache.wss4j.common.crypto.CryptoBase" additivity="false" level="ERROR">
+		<appender-ref ref="stdout_json"/>
+	</logger>
+
 </configuration>
