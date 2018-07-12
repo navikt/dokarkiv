@@ -8,8 +8,8 @@ package no.nav.dokarkiv.behandlejournal.v2.tjoark060;
  */
 public class ArkiverUstrukturertKravResponse {
 
-	private Long journalpostId;
-	private Long dokumentId;
+	private final Long journalpostId;
+	private final Long dokumentId;
 
 	/**
 	 * Constructs a new ArkiverUstrukturertKravResponse.

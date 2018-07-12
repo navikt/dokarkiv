@@ -12,7 +12,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
  */
 public class ArkiverUstrukturertKravRequest {
 
-	private Journalpost journalpost;
+	private final Journalpost journalpost;
 
 	/**
 	 * Constructs a new ArkiverUstrukturertKravRequest.

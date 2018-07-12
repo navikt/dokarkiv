@@ -10,7 +10,7 @@ import javax.inject.Inject;
 
 /**
  * Implementation of SporingMapper.
- * 
+ *
  * @author Thomas Eugen Bjørge, Visma Sirius
  */
 @Component
@@ -23,7 +23,7 @@ public class DefaultSporingMapper implements SporingMapper {
 		this.kildeNavnPopulator = kildeNavnPopulator;
 	}
 
-	/** {@inheritDoc} */
+	@Override
 	public void mapSporingsinfo(Journalpost journalpost, String opprettetEndretAvNavn) {
 		if (journalpost != null) {
 			mapOpprettetEndretAvNavn(journalpost, opprettetEndretAvNavn);

@@ -9,7 +9,6 @@ import no.nav.dokarkiv.core.exceptions.ApplicationException;
 import no.nav.dokarkiv.core.journalbehandling.JournalpostStructureVerifier;
 import no.nav.dokarkiv.core.journalbehandling.MandatoryFieldsVerifier;
 import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.StringUtils;
 
 import javax.inject.Inject;
 import java.util.List;
@@ -27,9 +26,6 @@ public abstract class AbstractBehandleJournalJournalpostValidator implements Beh
 
 	@Inject
 	protected JournalpostStructureVerifier journalpostStructureVerifier;
-
-	@Override
-	public abstract void validate(Journalpost journalpost);
 
 	protected void performCommonValidation(Journalpost journalpost) {
 		mandatoryFieldsVerifier.verifyFields(journalpost);
@@ -104,13 +100,13 @@ public abstract class AbstractBehandleJournalJournalpostValidator implements Beh
 		if (dokumentInfo.getKategori() == null) {
 			throw new ApplicationException("Kategori must be set");
 		}
-		if (StringUtils.isBlank(dokumentInfo.getTittel())) {
+		if (isBlank(dokumentInfo.getTittel())) {
 			throw new ApplicationException("Tittel must be set");
 		}
 	}
 
 	protected void validateBrevkode(DokumentInfo dokumentInfo) {
-		if (StringUtils.isBlank(dokumentInfo.getBrevkode())) {
+		if (isBlank(dokumentInfo.getBrevkode())) {
 			throw new ApplicationException("Brevkode must be set");
 		}
 	}
@@ -140,10 +136,10 @@ public abstract class AbstractBehandleJournalJournalpostValidator implements Beh
 	}
 
 	protected void validateAvsenderMottaker(Journalpost journalpost) {
-		if (StringUtils.isBlank(journalpost.getAvsenderMottakerId())) {
+		if (isBlank(journalpost.getAvsenderMottakerId())) {
 			throw new ApplicationException("AvsenderMottakerId must be set");
 		}
-		if (StringUtils.isBlank(journalpost.getAvsenderMottaker())) {
+		if (isBlank(journalpost.getAvsenderMottaker())) {
 			throw new ApplicationException("AvsenderMottaker must be set");
 		}
 	}

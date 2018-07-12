@@ -32,21 +32,19 @@ public interface BehandleJournalServiceBi {
 
 	/**
 	 * Adds a dokumentInfo as vedlegg to an existing Journalpost.
-	 * 
-	 * @param lagreVedleggPaaJournalpostRequest
-	 *            The request containg the dokumentInfo object and the
-	 *            journalpostId.
+	 *
+	 * @param lagreVedleggPaaJournalpostRequest The request containg the dokumentInfo object and the
+	 *                                          journalpostId.
 	 * @return a LagreVedleggPaaJournalpostResponse with dokumentId of the
-	 *         stored dokumentInfo.
+	 * stored dokumentInfo.
 	 */
 	LagreVedleggPaaJournalpostResponse lagreVedleggPaaJournalpost(
 			LagreVedleggPaaJournalpostRequest lagreVedleggPaaJournalpostRequest) throws NoJournalpostFoundException;
 
 	/**
 	 * Creates and journalfører an incoming Journalpost with hoveddokument.
-	 * 
-	 * @param journalfoerInngaaendeHenvendelseRequest
-	 *            The request containing the new Journalpost to create.
+	 *
+	 * @param journalfoerInngaaendeHenvendelseRequest The request containing the new Journalpost to create.
 	 * @return a JournalfoerInngaaendeHenvendelseMedHoveddokumentResponse with the journalpostId of
 	 * the new persisted Journalpost.
 	 */
@@ -63,13 +61,12 @@ public interface BehandleJournalServiceBi {
 
 	/**
 	 * Creates and journalfører an outgoing Journalpost with hoveddokument.
-	 * 
-	 * @param journalfoerUtgaaendeHenvendelseRequest
-	 *            The request containing the Journalpost to create.
+	 *
+	 * @param journalfoerUtgaaendeHenvendelseRequest The request containing the Journalpost to create.
 	 * @return The response containing the journalpostId and dokumentId of the
 	 * created Journalpost and document.
 	 */
-    JournalfoerUtgaaendeHenvendelseResponse journalfoerUtgaaendeHenvendelse(
+	JournalfoerUtgaaendeHenvendelseResponse journalfoerUtgaaendeHenvendelse(
 			JournalfoerUtgaaendeHenvendelseRequest journalfoerUtgaaendeHenvendelseRequest);
 
 	/**

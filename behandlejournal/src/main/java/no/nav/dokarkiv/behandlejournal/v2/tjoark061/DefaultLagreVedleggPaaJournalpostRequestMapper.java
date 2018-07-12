@@ -56,7 +56,7 @@ public class DefaultLagreVedleggPaaJournalpostRequestMapper implements LagreVedl
 		if (source == null) {
 			return null;
 		}
-		Map<String, String> tilleggsopplysninger = new HashMap<String, String>();
+		Map<String, String> tilleggsopplysninger = new HashMap<>();
 		for (NoekkelVerdiPar noekkelVerdiPar : source.getInneholderNoekkelVerdiPar()) {
 			tilleggsopplysninger.put(noekkelVerdiPar.getNoekkel(), noekkelVerdiPar.getVerdi());
 		}

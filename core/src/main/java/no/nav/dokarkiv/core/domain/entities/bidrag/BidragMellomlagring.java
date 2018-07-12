@@ -66,7 +66,7 @@ public class BidragMellomlagring extends AbstractPersistentVersionedDomainObject
 	
 	@OneToMany(mappedBy = "bidragMellomlagring")
 	@Cascade({ CascadeType.PERSIST, CascadeType.MERGE, CascadeType.SAVE_UPDATE, CascadeType.DELETE, CascadeType.DETACH })
-	private Set<BidragMellomlagringDokument> bidragMellomlagringDokuments = new HashSet<BidragMellomlagringDokument>();
+	private Set<BidragMellomlagringDokument> bidragMellomlagringDokuments = new HashSet<>();
 
 	/**
 	 * Default constructor.

@@ -6,9 +6,8 @@ import no.nav.dokarkiv.core.exceptions.ApplicationException;
 
 /**
  * Utility class for sporing in MOD
- * 
+ *
  * @author Joakim Bjørnstad, Visma Consulting
- * 
  */
 public final class SporingUtil {
 
@@ -21,13 +20,13 @@ public final class SporingUtil {
 	/**
 	 * Decides whether to use personFornavn + personEtternavn or applikasjonsID
 	 * personFornavn + personEtternavn has precedence over applikasjonsID
-	 * 
+	 *
 	 * @param personFornavn
 	 * @param personEtternavn
 	 * @param applikasjonsID
 	 * @return Either "personFornavn personEtternavn" or applikasjonsID
 	 */
-	public static final String decideSporingNavn(String personFornavn, String personEtternavn, String applikasjonsID) {
+	public static String decideSporingNavn(String personFornavn, String personEtternavn, String applikasjonsID) {
 		if (!isBlank(personFornavn) && !isBlank(personEtternavn)) {
 			return personFornavn + " " + personEtternavn;
 		} else if (!isBlank(applikasjonsID)) {
@@ -40,11 +39,11 @@ public final class SporingUtil {
 	/**
 	 * Decides whether to use personFornavn + personEtternavn or applikasjonsID
 	 * personFornavn + personEtternavn has precedence over applikasjonsID
-	 * 
+	 *
 	 * @param sporingsMetaData
 	 * @return Either "personFornavn personEtternavn" or applikasjonsID
 	 */
-	public static final String decideSporingNavn(SporingsMetaData sporingsMetaData) {
+	public static String decideSporingNavn(SporingsMetaData sporingsMetaData) {
 		if (sporingsMetaData == null) {
 			throw new ApplicationException(
 					"sporingsMetaData with personFornavn, personEtternavn or applikasjonsID must be set.");
