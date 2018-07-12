@@ -60,7 +60,14 @@ import no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark109.KnyttDokumentTilJourn
 import no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark110.SettJournalpostAttributterRequestMapper;
 import no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark110.SettJournalpostAttributterRequestTo;
 import no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark110.SettJournalpostAttributterService;
+import no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark111.OpprettUtgaaendeJournalpostArkiverDokumentRequestTo;
+import no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark111.OpprettUtgaaendeJournalpostArkiverDokumentResponseMapper;
+import no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark111.OpprettUtgaaendeJournalpostArkiverDokumentResponseTo;
+import no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark111.OpprettUtgaaendeJournalpostArkiverDokumentService;
+import no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark111.OpprettUtgaaendeJournalpostArkiverDokumenterRequestMapper;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
+import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
+import no.nav.dokarkiv.core.exceptions.InvalidJournalpostStructureException;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.AlleredeFerdigstiltException;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.ArkiverDokumentproduksjonV1;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.ArkiverVedleggJournalpostIkkeFunnet;
@@ -122,6 +129,8 @@ import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.OpprettJournalpostArkiverDokumentResponse;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.OpprettJournalpostRequest;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.OpprettJournalpostResponse;
+import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.OpprettUtgaaendeJournalpostArkiverDokumentRequest;
+import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.OpprettUtgaaendeJournalpostArkiverDokumentResponse;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.SettDatoSendtRequest;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.SettJournalpostAttributterRequest;
 import org.springframework.stereotype.Component;
@@ -216,6 +225,14 @@ public class ArkiverDokumentproduksjonProvider implements ArkiverDokumentproduks
 
 	@Inject
 	private KnyttDokumentTilJournalpostSomVedleggRequestMapper knyttDokumentTilJournalpostSomVedleggRequestMapper;
+
+	@Inject
+	private OpprettUtgaaendeJournalpostArkiverDokumentResponseMapper opprettUtgaaendeJournalpostArkiverDokumentResponseMapper;
+	@Inject
+	private OpprettUtgaaendeJournalpostArkiverDokumenterRequestMapper opprettUtgaaendeJournalpostArkiverDokumenterRequestMapper;
+
+	@Inject
+	private OpprettUtgaaendeJournalpostArkiverDokumentService opprettUtgaaendeJournalpostArkiverDokumentService;
 
 	@Override
 	@Transactional
@@ -491,9 +508,29 @@ public class ArkiverDokumentproduksjonProvider implements ArkiverDokumentproduks
 		log.info("tjoark110 har satt journalpostattributter på journalpost(er) med journalpostId(er)={}", domainRequest.getJournalpostIds());
 	}
 
+	@Override
+	@Transactional
+	public OpprettUtgaaendeJournalpostArkiverDokumentResponse opprettUtgaaendeJournalpostArkiverDokument(OpprettUtgaaendeJournalpostArkiverDokumentRequest opprettUtgaaendeJournalpostArkiverDokumentRequest) {
+		Assert.notNull(opprettUtgaaendeJournalpostArkiverDokumentRequest, "Request is null");
+		OpprettUtgaaendeJournalpostArkiverDokumentRequestTo requestTo = opprettUtgaaendeJournalpostArkiverDokumenterRequestMapper
+				.map(opprettUtgaaendeJournalpostArkiverDokumentRequest);
+
+		try {
+			OpprettUtgaaendeJournalpostArkiverDokumentResponseTo responseTo = opprettUtgaaendeJournalpostArkiverDokumentService.opprettUtgaaendeJournalpostArkiverDokument(requestTo);
+			return opprettUtgaaendeJournalpostArkiverDokumentResponseMapper.map(responseTo);
+		} catch (InvalidArgumentException | InvalidJournalpostStructureException | IllegalArgumentException e) {
+			log.warn(e.getMessage(), e);
+			throw e;
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
+			throw e;
+		}
+	}
 
 	@Override
 	public void ping() {
 		// noop
 	}
+
+
 }

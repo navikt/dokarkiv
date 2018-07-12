@@ -12,7 +12,8 @@
 	<artifactId>arkiverdokumentproduksjon</artifactId>
 
 	<properties>
-		<arkiverdokumentproduksjon-tjenestespesifikasjon.version>3.2.0</arkiverdokumentproduksjon-tjenestespesifikasjon.version>
+		<arkiverdokumentproduksjon-tjenestespesifikasjon.version>3.2.1-SNAPSHOT
+		</arkiverdokumentproduksjon-tjenestespesifikasjon.version>
 	</properties>
 
 	<dependencies>

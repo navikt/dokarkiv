@@ -45,6 +45,8 @@ import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.OpprettJournalpostArkiverDokumentResponse;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.OpprettJournalpostRequest;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.OpprettJournalpostResponse;
+import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.OpprettUtgaaendeJournalpostArkiverDokumentRequest;
+import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.OpprettUtgaaendeJournalpostArkiverDokumentResponse;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.SettDatoSendtRequest;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.SettJournalpostAttributterRequest;
 import org.springframework.stereotype.Service;
@@ -178,8 +180,16 @@ public class ArkiverDokumentproduksjonEndpoint implements ArkiverDokumentproduks
 	}
 
 	@Override
+	@Timed(value = "dok_request", extraTags = {"process_code", "tjoark111"}, percentiles = {0.5, 0.95})
+	public OpprettUtgaaendeJournalpostArkiverDokumentResponse opprettUtgaaendeJournalpostArkiverDokument(OpprettUtgaaendeJournalpostArkiverDokumentRequest opprettUtgaaendeJournalpostArkiverDokumentRequest) {
+		RequestContextUtil.createAndSetRequestContext(webServiceContext, DOKPROS_APPID);
+		return arkiverDokumentproduksjonProvider.opprettUtgaaendeJournalpostArkiverDokument(opprettUtgaaendeJournalpostArkiverDokumentRequest);
+	}
+
+	@Override
 	public void ping() {
 		arkiverDokumentproduksjonProvider.ping();
 	}
+
 
 }
