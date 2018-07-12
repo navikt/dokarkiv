@@ -92,7 +92,7 @@ public class CallIdHandler implements SOAPHandler<SOAPMessageContext> {
 				callId = UUID.randomUUID().toString();
 			}
         }
-        if(callId == "") {
+        if("".equals(callId)) {
         	callId = UUID.randomUUID().toString();
 		}
         return callId;
