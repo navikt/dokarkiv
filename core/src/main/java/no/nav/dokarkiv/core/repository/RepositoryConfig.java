@@ -26,7 +26,9 @@ import java.util.Properties;
 @EnableJpaRepositories(basePackageClasses = {JoarkRepository.class,
 		DokumentFilRepository.class,
 		DokumentinfoRepository.class,
-		JournalpostDokumentInfoRelasjonRepository.class})
+		JournalpostDokumentInfoRelasjonRepository.class,
+		BidragMellomlagringRepository.class,
+		BidragMellomlagringDokumentRepository.class,})
 @EnableTransactionManagement
 @EnableConfigurationProperties(DataSourceProperties.class)
 @Configuration

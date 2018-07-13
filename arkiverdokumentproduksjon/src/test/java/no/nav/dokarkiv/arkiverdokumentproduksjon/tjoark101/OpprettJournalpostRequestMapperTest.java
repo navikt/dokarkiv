@@ -33,7 +33,7 @@ public class OpprettJournalpostRequestMapperTest {
 
 	@Before
 	public void setUp() throws Exception {
-		DateProvider.configure(true, "2014-08-27 12:00:00");
+		DateProvider.configure(true, "2014-08-27T12:00:00");
 		createRequest();
 		RequestContextSetter.setRequestContextForUnitTest();
 	}

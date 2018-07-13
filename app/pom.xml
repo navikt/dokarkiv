@@ -13,6 +13,7 @@
 	<packaging>jar</packaging>
 
 	<dependencies>
+		<!-- domenetjenester -->
 		<dependency>
 			<groupId>no.nav.dokarkiv</groupId>
 			<artifactId>dokumentproduksjoninfo</artifactId>
@@ -24,6 +25,11 @@
 		<dependency>
 			<groupId>no.nav.dokarkiv</groupId>
 			<artifactId>arkiverdokumentmottak</artifactId>
+		</dependency>
+		<!-- virksomhetstjenester -->
+		<dependency>
+			<groupId>no.nav.dokarkiv</groupId>
+			<artifactId>behandlejournal</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
