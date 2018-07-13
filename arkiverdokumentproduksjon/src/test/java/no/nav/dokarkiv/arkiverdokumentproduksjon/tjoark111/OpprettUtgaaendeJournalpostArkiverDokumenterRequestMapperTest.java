@@ -37,15 +37,21 @@ import org.hamcrest.core.IsNull;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import javax.inject.Inject;
 
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
  */
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes = {OpprettUtgaaendeJournalpostArkiverDokumenterRequestMapper.class,
+		DefaultKildeNavnPopulator.class})
 public class OpprettUtgaaendeJournalpostArkiverDokumenterRequestMapperTest {
 
-	private OpprettUtgaaendeJournalpostArkiverDokumenterRequestMapper requestMapper = new OpprettUtgaaendeJournalpostArkiverDokumenterRequestMapper(new DefaultKildeNavnPopulator());
+	@Inject
+	private OpprettUtgaaendeJournalpostArkiverDokumenterRequestMapper requestMapper;
 
 	@Before
 	public void setUp() {

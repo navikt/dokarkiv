@@ -26,6 +26,7 @@ import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasj
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.OpprettUtgaaendeJournalpostArkiverDokumentRequest;
 import org.springframework.stereotype.Component;
 
+import javax.inject.Inject;
 import java.sql.Date;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -39,11 +40,8 @@ import java.util.stream.Collectors;
 @Component
 public class OpprettUtgaaendeJournalpostArkiverDokumenterRequestMapper {
 
-	private final KildeNavnPopulator kildeNavnPopulator;
-
-	public OpprettUtgaaendeJournalpostArkiverDokumenterRequestMapper(KildeNavnPopulator kildeNavnPopulator) {
-		this.kildeNavnPopulator = kildeNavnPopulator;
-	}
+	@Inject
+	private KildeNavnPopulator kildeNavnPopulator;
 
 	public OpprettUtgaaendeJournalpostArkiverDokumentRequestTo map(OpprettUtgaaendeJournalpostArkiverDokumentRequest wsRequest) {
 

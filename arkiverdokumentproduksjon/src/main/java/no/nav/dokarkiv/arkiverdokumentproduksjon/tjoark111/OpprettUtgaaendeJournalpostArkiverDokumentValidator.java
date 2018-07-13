@@ -25,9 +25,9 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Validates Journalpost for OpprettOgFerdigstillJournalpost
+ * Validator for OpprettUtgaaendeJournalpostArkiverDokument
  *
- * @author Stig Strøm
+ * @author Ugur Alpay Cenar, Visma Consulting.
  */
 @Component
 public class OpprettUtgaaendeJournalpostArkiverDokumentValidator {

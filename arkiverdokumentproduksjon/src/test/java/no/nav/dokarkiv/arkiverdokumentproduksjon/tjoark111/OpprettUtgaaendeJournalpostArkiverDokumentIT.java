@@ -145,8 +145,6 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentIT extends AbstractArkive
 	public void shouldThrowForInvalidInput() throws Exception {
 		expectedException.expect(isA(OpprettUtgaaendeJournalpostUgyldigInput.class));
 		expectedException.expectMessage("kanalReferanseId, opprettetAvNavn, journalpostDokumentInfoRelasjoner");
-
-
 		arkiverDokumentproduksjonProvider.opprettUtgaaendeJournalpostArkiverDokument(new OpprettUtgaaendeJournalpostArkiverDokumentRequest());
 	}
 

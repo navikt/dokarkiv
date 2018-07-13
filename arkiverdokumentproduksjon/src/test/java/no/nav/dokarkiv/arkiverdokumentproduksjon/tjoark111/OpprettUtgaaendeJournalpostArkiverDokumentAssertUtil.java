@@ -34,7 +34,7 @@ import java.util.Set;
 /**
  * Assert util specific for operation OpprettJournalpostArkiverDokument
  *
- * @author Stig Strøm
+ * @author Ugur Alpay Cenar, Visma Consulting.
  */
 public class OpprettUtgaaendeJournalpostArkiverDokumentAssertUtil {
 

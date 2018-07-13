@@ -10,9 +10,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The response object for the OpprettOgFerdigstillJournalpost service.
+ * Respons objekt for OpprettUtgaaendeJournalpostArkiverDokument service.
  *
- * @author Torgeir Cook.
+ * @author Ugur Alpay Cenar, Visma Consulting.
  */
 @Data
 @AllArgsConstructor

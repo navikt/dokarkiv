@@ -11,9 +11,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Request object for operation OpprettOgFerdigstillJournalpost.
+ * Request objekt for OpprettUtgaaendeJournalpostArkiverDokument.
  *
- * @author Stig Strøm
+ * @author Ugur Alpay Cenar, Visma Consulting.
  */
 @Builder
 @Data

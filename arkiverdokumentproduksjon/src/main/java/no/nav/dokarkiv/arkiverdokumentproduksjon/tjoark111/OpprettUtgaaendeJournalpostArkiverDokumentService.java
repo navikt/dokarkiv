@@ -172,7 +172,7 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentService {
 				journalpost.setJournalstatus(JournalStatusCode.FS);
 			} catch (Exception e) {
 				log.info("Påkrevde parametere ikke satt: " + e.getMessage() +
-						". Setter JournalStatus = D. KanalreferanseId = " + journalpost.getKanalReferanseId());
+						". Setter JournalStatus = D. kanalReferanseId = " + journalpost.getKanalReferanseId());
 				journalpost.setJournalstatus(JournalStatusCode.D);
 			}
 

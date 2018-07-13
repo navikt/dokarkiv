@@ -29,7 +29,7 @@ import java.util.GregorianCalendar;
  * Util for creating Journalpost for the OpprettJournalpostArkiverDokument
  * operation
  *
- * @author Stig Strøm
+ * @author Ugur Alpay Cenar, Visma Consulting.
  */
 public class OpprettUtgaaendeJournalpostArkiverDokumentDataUtil {
 

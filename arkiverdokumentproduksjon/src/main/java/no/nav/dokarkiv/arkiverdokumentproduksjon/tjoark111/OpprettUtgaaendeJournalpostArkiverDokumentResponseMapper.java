@@ -6,9 +6,9 @@ import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger
 import org.springframework.stereotype.Component;
 
 /**
- * Implementation of OpprettJournalpostAkiverDokumentResponseMapper
+ * Implementation of OpprettUtgaaendeJournalpostArkiverDokumentResponseMapper
  *
- * @author Torgeir Cook
+ * @author Ugur Alpay Cenar, Visma Consulting.
  */
 @Component
 public class OpprettUtgaaendeJournalpostArkiverDokumentResponseMapper {
