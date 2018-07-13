@@ -25,6 +25,7 @@ import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.Tags;
 import io.micrometer.core.instrument.Timer;
 import io.micrometer.core.lang.NonNullApi;
+import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -45,6 +46,7 @@ import java.util.function.Function;
 @Aspect
 @NonNullApi
 @Incubating(since = "1.0.0")
+@Slf4j
 public class DokTimedAspect {
 	private final MeterRegistry registry;
 	private final Function<ProceedingJoinPoint, Iterable<Tag>> tagsBasedOnJoinpoint;
@@ -74,8 +76,13 @@ public class DokTimedAspect {
 		try {
 			return pjp.proceed();
 		} catch(Exception e) {
+			if (isFunctionalException(method, e)) {
+				log.warn(e.getMessage(), e);
+			} else {
+				log.error(e.getMessage(), e);
+			}
 			Counter.builder(timed.value() + "_exception")
-					.tags("error_type", asList(method.getExceptionTypes()).contains(e.getClass()) ? "functional" : "technical")
+					.tags("error_type", isFunctionalException(method, e) ? "functional" : "technical")
 					.tags("exception_name", e.getClass().getSimpleName())
 					.tags(timed.extraTags())
 					.tags(tagsBasedOnJoinpoint.apply(pjp))
@@ -92,4 +99,9 @@ public class DokTimedAspect {
 					.register(registry));
 		}
 	}
+
+	private boolean isFunctionalException(Method method, Exception e) {
+		return asList(method.getExceptionTypes()).contains(e.getClass());
+	}
+
 }

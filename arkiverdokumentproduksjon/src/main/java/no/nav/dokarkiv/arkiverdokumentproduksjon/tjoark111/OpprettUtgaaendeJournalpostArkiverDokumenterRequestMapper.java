@@ -59,7 +59,8 @@ public class OpprettUtgaaendeJournalpostArkiverDokumenterRequestMapper {
 		return OpprettUtgaaendeJournalpostArkiverDokumentRequestTo.builder()
 				.journalpost(domainJournalpost)
 				.forsokFerdigstilling(wsRequest.isForsokFerdigstilling())
-				.journalforendeEnhet(wsRequest.getJournalpost().getJournalforendeEnhet())
+				.journalforendeEnhet(wsRequest.getJournalpost() == null ? null : wsRequest.getJournalpost()
+						.getJournalforendeEnhet())
 				.vedleggList(mapVedlegg(wsRequest.getVedlegg()))
 				.build();
 
@@ -92,6 +93,10 @@ public class OpprettUtgaaendeJournalpostArkiverDokumenterRequestMapper {
 	}
 
 	private Journalpost createDomainJournalpostBase(no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasjon.opprettutgaaendejournalpostarkiverdokument.Journalpost journalpost) {
+		if (journalpost == null) {
+			return new Journalpost();
+		}
+
 		return Journalpost.builder()
 				.journalposttype(JournalpostTypeCode.U)
 				.fagomrade(stringToEnum(FagomradeCode.class, journalpost.getTema()))

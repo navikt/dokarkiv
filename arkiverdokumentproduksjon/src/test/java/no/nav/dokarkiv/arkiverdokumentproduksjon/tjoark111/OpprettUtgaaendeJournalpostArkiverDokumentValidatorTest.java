@@ -15,6 +15,8 @@ import static no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark111.OpprettUtgaaen
 import static no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark111.OpprettUtgaaendeJournalpostArkiverDokumentDataUtil.SAKSID;
 import static no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark111.OpprettUtgaaendeJournalpostArkiverDokumentDataUtil.TITTEL;
 
+import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.UgyldigInputException;
+import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.ValideringAvVedleggFeiletException;
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
@@ -32,7 +34,6 @@ import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.entities.Kryssreferanse;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
 import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
-import no.nav.dokarkiv.core.exceptions.InvalidJournalpostStructureException;
 import no.nav.dokarkiv.core.journalbehandling.DefaultJournalpostStructureVerifier;
 import no.nav.dokarkiv.core.journalbehandling.DefaultMandatoryFieldsVerifier;
 import org.junit.Before;
@@ -121,7 +122,7 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentValidatorTest {
 	@Test
 	public void shouldThrowExceptionIfJournalforendeEnhetIdNotSetOnJournalpost() {
 		expected.expect(IllegalArgumentException.class);
-		expected.expectMessage("Missing required field in request: Journalpost.JournalForendeEnhetId");
+		expected.expectMessage("Mangler påkrevd attributt: Journalpost.JournalForendeEnhetId");
 		journalpost.setJournalForendeEnhetId(null);
 		validator.validate(journalpost);
 	}
@@ -145,7 +146,7 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentValidatorTest {
 	@Test
 	public void shouldThrowExceptionIfDokumentDatoIsMissing() {
 		expected.expect(IllegalArgumentException.class);
-		expected.expectMessage("Missing required field in request: Journalpost.DokumentDato");
+		expected.expectMessage("Mangler påkrevd attributt: Journalpost.DokumentDato");
 
 		journalpost.setDokumentDato(null);
 		validator.validate(journalpost);
@@ -214,7 +215,7 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentValidatorTest {
 	@Test
 	public void shouldThrowExceptionIfNoDokumenttypeIdOnDocumentInfo() {
 		expected.expect(IllegalArgumentException.class);
-		expected.expectMessage("Missing required field in request: DokumentInfo.DokumenttypeId");
+		expected.expectMessage("Mangler påkrevd attributt: DokumentInfo.DokumenttypeId");
 		journalpost.getJournalpostDokumentInfoRelasjoner().iterator().next().getDokumentInfo().setDokumenttypeId(null);
 		validator.validate(journalpost);
 	}
@@ -244,7 +245,7 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentValidatorTest {
 	@Test
 	public void shouldThrowExceptionNoUtsendingskanal() {
 		expected.expect(IllegalArgumentException.class);
-		expected.expectMessage("Missing required field in request: Journalpost.Utsendingskanal");
+		expected.expectMessage("Mangler påkrevd attributt: Journalpost.Utsendingskanal");
 
 		journalpost.setUtsendingskanal(null);
 		validator.validate(journalpost);
@@ -252,24 +253,24 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentValidatorTest {
 
 	//FilDetaljer
 	@Test
-	public void shouldThrowExceptionIfVariantFormatArkivIsMissing() {
-		expected.expect(InvalidJournalpostStructureException.class);
+	public void shouldThrowExceptionIfVariantFormatArkivIsMissing() throws Exception {
+		expected.expect(UgyldigInputException.class);
 		expected.expectMessage("DokumentInfos must contain an arkiv variant");
 		journalpost.findAllFilDetaljer().get(0).setVariantFormat(null);
 		validator.validateVariantFormaterAndHoveddokument(journalpost);
 	}
 
 	@Test
-	public void shouldThrowExceptionIfDokumentDuplicatesOnJournalpost() {
-		expected.expect(InvalidJournalpostStructureException.class);
+	public void shouldThrowExceptionIfDokumentDuplicatesOnJournalpost() throws UgyldigInputException {
+		expected.expect(UgyldigInputException.class);
 		expected.expectMessage("DokumentInfo cannot contain dokumentvariant duplicates");
 		addJournalpostDokumentInfoRelasjonWithTwoVariantFormats(journalpost, VariantFormatCode.ARKIV);
 		validator.validateVariantFormaterAndHoveddokument(journalpost);
 	}
 
 	@Test
-	public void shouldThrowExceptionIfTwoHoveddokuments() {
-		expected.expect(InvalidJournalpostStructureException.class);
+	public void shouldThrowExceptionIfTwoHoveddokuments() throws Exception {
+		expected.expect(UgyldigInputException.class);
 		expected.expectMessage("Journalpost cannot contain more than one hoveddokument when endelig journalforing");
 		journalpost.addJournalpostDokumentInfoRelasjon(JournalpostDokumentInfoRelasjon.builder()
 				.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.HOVEDDOKUMENT)
@@ -278,22 +279,23 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentValidatorTest {
 	}
 
 	@Test
-	public void shouldNotThrowExceptionIfGotArkivVariantButOneVarianIsNull() {
+	public void shouldNotThrowExceptionIfGotArkivVariantButOneVarianIsNull() throws Exception {
 		Journalpost journalpost = createJournalpost();
 		addJournalpostDokumentInfoRelasjonWithTwoVariantFormats(journalpost, null);
 		validator.validateVariantFormaterAndHoveddokument(journalpost);
 	}
 
 	@Test
-	public void shouldThrowIfJournalStatusIsD() {
-		expected.expect(IllegalArgumentException.class);
+	public void shouldThrowIfInputJournalStatusIsD() throws Exception {
+		expected.expect(ValideringAvVedleggFeiletException.class);
 		expected.expectMessage("Journalpost.JournalStatus kan ikke være D");
 		journalpost.setJournalstatus(JournalStatusCode.D);
-		validator.validateVedleggOriginalJournalpost(journalpost, 1L);
+		validator.validateVedlegg(journalpost, journalpost.findHoveddokumentDokumentInfoRelasjon()
+				.getDokumentInfo(), createVedlegg());
 	}
 
 	@Test
-	public void shouldThrowIfDokumentInfoIdIsNotFerdigstilt() {
+	public void shouldThrowIfInputDokumentInfoIdIsNotFerdigstilt() {
 		expected.expect(IllegalArgumentException.class);
 		expected.expectMessage("DokumentInfo.Dokumentstatus må være FERDIGSTILT men var UNDER_REDIGERING");
 		validator.validateVedleggDokumentInfo(DokumentInfo.builder()
@@ -302,19 +304,19 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentValidatorTest {
 	}
 
 	@Test
-	public void shouldThrowIfDokumentInfoSlettetIsTrue() {
-		expected.expect(IllegalArgumentException.class);
+	public void shouldThrowIfInputDokumentInfoSlettetIsTrue() throws Exception {
+		expected.expect(ValideringAvVedleggFeiletException.class);
 		expected.expectMessage("DokumentInfo.slettet kan ikke være True");
-		validator.validateVedleggDokumentInfo(DokumentInfo.builder()
+		validator.validateVedlegg(journalpost, DokumentInfo.builder()
 				.dokumentstatus(DokumentStatusCode.FERDIGSTILT)
 				.slettet(true)
-				.build());
+				.build(), createVedlegg());
 	}
 
 	@Test
-	public void shouldThrowIfDokumentInfoOrganinterntIsTrue() {
+	public void shouldThrowIfInputDokumentInfoOrganinterntIsTrue() {
 		expected.expect(IllegalArgumentException.class);
-		expected.expectMessage("Validering av vedlegg med dokumentInfoId=null feilet. DokumentInfo.OrganInternt kan ikke være True");
+		expected.expectMessage("DokumentInfo.OrganInternt kan ikke være True");
 		validator.validateVedleggDokumentInfo(DokumentInfo.builder()
 				.dokumentstatus(DokumentStatusCode.FERDIGSTILT)
 				.organInternt(true)
@@ -322,7 +324,7 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentValidatorTest {
 	}
 
 	@Test
-	public void shouldThrowIfDokumentInfoInnskrenketPartsinnsynIsTrue() {
+	public void shouldThrowIfInputDokumentInfoInnskrenketPartsinnsynIsTrue() {
 		expected.expect(IllegalArgumentException.class);
 		expected.expectMessage("DokumentInfo.innskrenketPartsinnsyn kan ikke være True");
 		validator.validateVedleggDokumentInfo(DokumentInfo.builder()
@@ -332,7 +334,7 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentValidatorTest {
 	}
 
 	@Test
-	public void shouldThrowIfDokumentInfoInnskrenketPartsinnsynFraTredjePartIsTrue() {
+	public void shouldThrowIfInputDokumentInfoInnskrenketPartsinnsynFraTredjePartIsTrue() {
 		expected.expect(IllegalArgumentException.class);
 		expected.expectMessage("DokumentInfo.innskrenketPartsinnsynFraTredjepart kan ikke være True");
 		validator.validateVedleggDokumentInfo(DokumentInfo.builder()
@@ -342,7 +344,7 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentValidatorTest {
 	}
 
 	@Test
-	public void shouldThrowIfDokumentInfoFildetaljerHasNoVariantFormatWithArkiv() {
+	public void shouldThrowIfInputDokumentInfoFildetaljerHasNoVariantFormatWithArkiv() {
 		expected.expect(IllegalArgumentException.class);
 		expected.expectMessage("Vedlegg mangler Fildetaljer med variantFormat=ARKIV");
 		DokumentInfo dokumentInfo = createDokumentInfoWithFildetaljer();
@@ -351,7 +353,7 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentValidatorTest {
 	}
 
 	@Test
-	public void shouldThrowIfDokumentInfoFildetaljerOnDemandIdIsNotNull() {
+	public void shouldThrowIfInputDokumentInfoFildetaljerOnDemandIdIsNotNull() {
 		expected.expect(IllegalArgumentException.class);
 		expected.expectMessage("Fildetaljer.OnDemandId kan ikke være satt");
 		DokumentInfo dokumentInfo = createDokumentInfoWithFildetaljer();
@@ -359,6 +361,181 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentValidatorTest {
 		validator.validateVedleggFildetaljer(dokumentInfo);
 	}
 
+
+	@Test
+	public void shouldThrowIfInputIsMissingKanalreferanseId() throws Exception {
+		expected.expect(UgyldigInputException.class);
+		expected.expectMessage("kanalReferanseId");
+		OpprettUtgaaendeJournalpostArkiverDokumentRequestTo requestTo = createRequestTo();
+		requestTo.getJournalpost().setKanalReferanseId(null);
+		validator.validateRequiredFields(requestTo);
+	}
+
+	@Test
+	public void shouldThrowIfInputIsMissingOpprettetAvNavn() throws Exception {
+		expected.expect(UgyldigInputException.class);
+		expected.expectMessage("opprettetAvNavn");
+		OpprettUtgaaendeJournalpostArkiverDokumentRequestTo requestTo = createRequestTo();
+		requestTo.getJournalpost().setOpprettetAvNavn(null);
+		validator.validateRequiredFields(requestTo);
+	}
+
+
+	@Test
+	public void shouldThrowIfInputIsMissinJournalpostDokumentInfoRelasjoner() throws Exception {
+		expected.expect(UgyldigInputException.class);
+		expected.expectMessage("journalpostDokumentInfoRelasjoner");
+		OpprettUtgaaendeJournalpostArkiverDokumentRequestTo requestTo = createRequestTo();
+		requestTo.setJournalpost(Journalpost.builder().kanalReferanseId("ads").build());
+		validator.validateRequiredFields(requestTo);
+	}
+
+	@Test
+	public void shouldThrowIfInputIsMissingDokumentInfo() throws Exception {
+		expected.expect(UgyldigInputException.class);
+		expected.expectMessage("DokumentInfo");
+		OpprettUtgaaendeJournalpostArkiverDokumentRequestTo requestTo = createRequestTo();
+		requestTo.getJournalpost().findHoveddokumentDokumentInfoRelasjon().setDokumentInfo(null);
+		validator.validateRequiredFields(requestTo);
+	}
+
+	@Test
+	public void shouldThrowIfInputIsMissingJournalpostDokumentInfoKategori() throws Exception {
+		expected.expect(UgyldigInputException.class);
+		expected.expectMessage("Kategori");
+		OpprettUtgaaendeJournalpostArkiverDokumentRequestTo requestTo = createRequestTo();
+		requestTo.getJournalpost().findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().setKategori(null);
+		validator.validateRequiredFields(requestTo);
+	}
+
+
+	@Test
+	public void shouldThrowIfInputIsMissingJournalpostDokumentInfoTittel() throws Exception {
+		expected.expect(UgyldigInputException.class);
+		expected.expectMessage("Tittel");
+		OpprettUtgaaendeJournalpostArkiverDokumentRequestTo requestTo = createRequestTo();
+		requestTo.getJournalpost().findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().setTittel(null);
+		validator.validateRequiredFields(requestTo);
+	}
+
+	@Test
+	public void shouldThrowIfInputIsMissingJournalpostDokumentInfoDokumenttypeId() throws Exception {
+		expected.expect(UgyldigInputException.class);
+		expected.expectMessage("DokumenttypeId");
+		OpprettUtgaaendeJournalpostArkiverDokumentRequestTo requestTo = createRequestTo();
+		requestTo.getJournalpost().findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().setDokumenttypeId(null);
+		validator.validateRequiredFields(requestTo);
+	}
+
+
+	@Test
+	public void shouldThrowIfInputIsMissingJournalpostFildetaljerFiltype() throws Exception {
+		expected.expect(UgyldigInputException.class);
+		expected.expectMessage("Filtype");
+		OpprettUtgaaendeJournalpostArkiverDokumentRequestTo requestTo = createRequestTo();
+		requestTo.getJournalpost()
+				.findHoveddokumentDokumentInfoRelasjon()
+				.getDokumentInfo()
+				.getFildetaljerListe()
+				.iterator()
+				.next()
+				.setFiltype(null);
+		validator.validateRequiredFields(requestTo);
+	}
+
+
+	@Test
+	public void shouldThrowIfInputIsMissingJournalpostFildetaljerVariantFormat() throws Exception {
+		expected.expect(UgyldigInputException.class);
+		expected.expectMessage("VariantFormat");
+		OpprettUtgaaendeJournalpostArkiverDokumentRequestTo requestTo = createRequestTo();
+		requestTo.getJournalpost()
+				.findHoveddokumentDokumentInfoRelasjon()
+				.getDokumentInfo()
+				.getFildetaljerListe()
+				.iterator()
+				.next()
+				.setVariantFormat(null);
+		validator.validateRequiredFields(requestTo);
+	}
+
+	@Test
+	public void shouldThrowIfInputIsMissingJournalpostFildetaljerIkkeRedigerbartDokument() throws Exception {
+		expected.expect(UgyldigInputException.class);
+		expected.expectMessage("IkkeRedigerbartDokument");
+		OpprettUtgaaendeJournalpostArkiverDokumentRequestTo requestTo = createRequestTo();
+		requestTo.getJournalpost()
+				.findHoveddokumentDokumentInfoRelasjon()
+				.getDokumentInfo()
+				.getFildetaljerListe()
+				.iterator()
+				.next()
+				.setFileContent(null);
+		validator.validateRequiredFields(requestTo);
+	}
+
+	@Test
+	public void shouldThrowIfInputIsMissingVedleggKnyttesFraJournalpost() throws Exception {
+		expected.expect(UgyldigInputException.class);
+		expected.expectMessage("KnyttesFraJournalpostId");
+		OpprettUtgaaendeJournalpostArkiverDokumentRequestTo requestTo = createRequestTo();
+		requestTo.getVedleggList().get(0).setKnyttesFraJournalpostId(null);
+		validator.validateRequiredFields(requestTo);
+	}
+
+	@Test
+	public void shouldThrowIfInputIsMissingVedleggDokumentinfoId() throws Exception {
+		expected.expect(UgyldigInputException.class);
+		expected.expectMessage("DokumentInfoId");
+		OpprettUtgaaendeJournalpostArkiverDokumentRequestTo requestTo = createRequestTo();
+		requestTo.getVedleggList().get(0).setDokumentInfoId(null);
+		validator.validateRequiredFields(requestTo);
+	}
+
+	@Test
+	public void shouldThrowIfInputIsMissingSaksrelasjonSaksnummer() throws Exception {
+		expected.expect(UgyldigInputException.class);
+		expected.expectMessage("Saksnummer");
+		OpprettUtgaaendeJournalpostArkiverDokumentRequestTo requestTo = createRequestTo();
+		requestTo.getJournalpost().getSaksrelasjon().setSakId(null);
+		validator.validateRequiredFields(requestTo);
+	}
+
+
+	@Test
+	public void shouldThrowIfInputIsMissingSaksrelasjonFagsystem() throws Exception {
+		expected.expect(UgyldigInputException.class);
+		expected.expectMessage("Fagsystem");
+		OpprettUtgaaendeJournalpostArkiverDokumentRequestTo requestTo = createRequestTo();
+		requestTo.getJournalpost().getSaksrelasjon().setFagsystem(null);
+		validator.validateRequiredFields(requestTo);
+	}
+
+	@Test
+	public void shouldThrowIfInputIsMissingKryssreferanseReferanseId() throws Exception {
+		expected.expect(UgyldigInputException.class);
+		expected.expectMessage("ReferanseId");
+		OpprettUtgaaendeJournalpostArkiverDokumentRequestTo requestTo = createRequestTo();
+		requestTo.getJournalpost().getKryssreferanser().iterator().next().setReferanseId(null);
+		validator.validateRequiredFields(requestTo);
+	}
+
+	@Test
+	public void shouldThrowIfInputIsMissingKryssreferanseReferanseType() throws Exception {
+		expected.expect(UgyldigInputException.class);
+		expected.expectMessage("ReferanseType");
+		OpprettUtgaaendeJournalpostArkiverDokumentRequestTo requestTo = createRequestTo();
+		requestTo.getJournalpost().getKryssreferanser().iterator().next().setReferanseType(null);
+		validator.validateRequiredFields(requestTo);
+	}
+
+
+	private OpprettUtgaaendeJournalpostArkiverDokumentRequestTo createRequestTo() {
+		return OpprettUtgaaendeJournalpostArkiverDokumentRequestTo.builder()
+				.journalpost(createJournalpost())
+				.journalforendeEnhet("ads")
+				.vedleggList(Arrays.asList(createVedlegg())).build();
+	}
 	private Journalpost createJournalpost() {
 		Journalpost journalpost = Journalpost.builder()
 				.journalposttype(JournalpostTypeCode.U)
@@ -394,6 +571,7 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentValidatorTest {
 								.filtype(FilTypeCode.PDF)
 								.variantFormat(VariantFormatCode.ARKIV)
 								.filstorrelse("1")
+								.fileContent(new byte[1000])
 								.build())))
 						.build())
 				.tilknyttetAvNavn(OPPRETTET_AV_NAVN)
@@ -404,6 +582,9 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentValidatorTest {
 
 	}
 
+	private OpprettUtgaaendeJournalpostArkiverDokumentRequestTo.Vedlegg createVedlegg() {
+		return new OpprettUtgaaendeJournalpostArkiverDokumentRequestTo.Vedlegg(1l, 1l);
+	}
 
 	private DokumentInfo createDokumentInfoWithFildetaljer() {
 		return DokumentInfo.builder()

@@ -3,6 +3,7 @@ package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark111;
 import static no.nav.dokarkiv.core.utils.DateUtil.getDateNow;
 
 import lombok.extern.slf4j.Slf4j;
+import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.UgyldigInputException;
 import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.ValideringAvVedleggFeiletException;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
@@ -32,8 +33,9 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentService {
 	@Inject
 	private OpprettUtgaaendeJournalpostArkiverDokumentValidator validator;
 
-	public OpprettUtgaaendeJournalpostArkiverDokumentResponseTo opprettUtgaaendeJournalpostArkiverDokument(OpprettUtgaaendeJournalpostArkiverDokumentRequestTo requestTo) {
+	public OpprettUtgaaendeJournalpostArkiverDokumentResponseTo opprettUtgaaendeJournalpostArkiverDokument(OpprettUtgaaendeJournalpostArkiverDokumentRequestTo requestTo) throws UgyldigInputException, ValideringAvVedleggFeiletException {
 
+		validator.validateRequiredFields(requestTo);
 		//1. Verifiser for evt. tidligere arkivering av samme forsendelse
 		Journalpost storedJournalpost = findPreviousJournalpostByKanalReferanseId(requestTo.getJournalpost()
 				.getKanalReferanseId());
@@ -41,16 +43,25 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentService {
 		if (storedJournalpost == null) {
 			Journalpost journalpost = requestTo.getJournalpost();
 
-			//2. Sjekk om tjenesten skal forsøke å ferdigstille journalposten
 			updateJournalpostBeforeValidation(journalpost);
+
+			//2. Sjekk om tjenesten skal forsøke å ferdigstille journalposten
+			//3. Sjekk om alle påkrevde attributter er satt
 			decideAndSetJournalStatus(requestTo.isForsokFerdigstilling(), journalpost);
+
+			//4.Validering av variantformater
+			//5.Verifisering av hoveddokument
 			validator.validateVariantFormaterAndHoveddokument(journalpost);
+
+			//6.Kontroller knyttesFraJournalpost
 			validateAndAddVedlegg(journalpost, requestTo.getVedleggList());
+
 			updateJournalpostAfterValidation(journalpost, requestTo.getJournalforendeEnhet());
 
-			dokumentFilerDelegate.saveUpdateDokumentFiler(journalpost);
+			//7.Opprett Journalpost
+			dokumentFilerDelegate.saveNewDokumentFiler(journalpost);
 			storedJournalpost = joarkRepository.save(journalpost);
-			log.info("TJOARK111 Har opprettet utgående journalpost med journalpostId={}, hoveddokumentDokumentInfoId={}, journalstatus={}, kanalreferanseId={}, fagområde={}", storedJournalpost
+			log.info("tjoark111 Har opprettet utgående journalpost med journalpostId={}, hoveddokumentDokumentInfoId={}, journalstatus={}, kanalreferanseId={}, fagområde={}", storedJournalpost
 							.getJournalpostId(), storedJournalpost.findHoveddokumentDokumentInfoRelasjon()
 							.getDokumentInfo()
 							.getDokumentInfoId(),
@@ -59,7 +70,7 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentService {
 			return buildResponse(storedJournalpost, requestTo);
 		}
 
-		log.info("TJOARK111 Journalpost med journalpostId={}, kanalReferanseId={} eksisterer allerede i databasen.", storedJournalpost
+		log.info("tjoark111 Journalpost med journalpostId={}, kanalReferanseId={} eksisterer allerede i databasen.", storedJournalpost
 				.getJournalpostId(), storedJournalpost.getKanalReferanseId());
 		return buildResponse(storedJournalpost, requestTo);
 	}
@@ -90,14 +101,12 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentService {
 				.stream()
 				.filter(this::isNotHoveddokument)
 				.filter(relasjon -> !requestVedleggDokumentInfoIds.contains(relasjon.getDokumentInfo().getDokumentInfoId()))
-				.map(journalpostDokumentInfoRelasjon -> journalpostDokumentInfoRelasjon.getDokumentInfo()
-						.getDokumentInfoId())
+				.map(journalpostDokumentInfoRelasjon -> journalpostDokumentInfoRelasjon.getDokumentInfo().getDokumentInfoId())
 				.collect(Collectors.toList());
 	}
 
 	private boolean isNotHoveddokument(JournalpostDokumentInfoRelasjon relasjon) {
 		return !relasjon.getTilknyttetJournalpostSom().equals(TilknyttetJournalpostSomCode.HOVEDDOKUMENT);
-
 	}
 
 	private List<Long> getVedleggDokumentInfoIdsFromRequest(OpprettUtgaaendeJournalpostArkiverDokumentRequestTo requestTo) {
@@ -107,28 +116,21 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentService {
 				.collect(Collectors.toList());
 	}
 
-	private void validateAndAddVedlegg(Journalpost journalpost, List<OpprettUtgaaendeJournalpostArkiverDokumentRequestTo.Vedlegg> vedleggList) {
+	private void validateAndAddVedlegg(Journalpost journalpost, List<OpprettUtgaaendeJournalpostArkiverDokumentRequestTo.Vedlegg> vedleggList) throws ValideringAvVedleggFeiletException {
 
-		vedleggList.forEach(vedlegg -> {
+		for (OpprettUtgaaendeJournalpostArkiverDokumentRequestTo.Vedlegg vedlegg : vedleggList) {
 
 			Journalpost originalJournalpost = joarkRepository.findById(vedlegg.getKnyttesFraJournalpostId())
-					.orElseThrow(() -> new IllegalArgumentException(String.format("Fant ingen journalpost med journalpostId=%s for vedlegg med dokumentInfoId=%s", vedlegg
+					.orElseThrow(() -> new ValideringAvVedleggFeiletException(String.format("tjoark111 Fant ingen knyttet journalpost med journalpostId=%s for vedlegg med dokumentInfoId=%s", vedlegg
 							.getKnyttesFraJournalpostId(), vedlegg.getDokumentInfoId())));
 
 			DokumentInfo dokumentInfo = originalJournalpost.findDokumentInfoById(vedlegg.getDokumentInfoId());
 			if (dokumentInfo == null) {
-				throw new ValideringAvVedleggFeiletException(String.format("Fant ingen vedlegg med dokumentInfoId=%s og knyttet journalpostId=%s", vedlegg
+				throw new ValideringAvVedleggFeiletException(String.format("tjoark111 Fant ingen DokumentInfo for vedlegg med dokumentInfoId=%s og knyttet journalpostId=%s", vedlegg
 						.getDokumentInfoId(), vedlegg.getKnyttesFraJournalpostId()));
 			}
 
-			try {
-				validator.validateVedleggOriginalJournalpost(originalJournalpost, vedlegg.getDokumentInfoId());
-				validator.validateVedleggDokumentInfo(dokumentInfo);
-				validator.validateVedleggFildetaljer(dokumentInfo);
-			} catch (IllegalArgumentException e) {
-				throw new ValideringAvVedleggFeiletException(e.getMessage() + ". vedleggKnyttesFraJournalpostId=" + vedlegg.getKnyttesFraJournalpostId());
-			}
-
+			validator.validateVedlegg(originalJournalpost, dokumentInfo, vedlegg);
 
 			journalpost.addJournalpostDokumentInfoRelasjon(no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon.builder()
 					.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
@@ -137,7 +139,7 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentService {
 					.build());
 
 			populateDokumentInfoRelasjonWithOpprettetKildeNavn(journalpost);
-		});
+		}
 	}
 
 	public void populateDokumentInfoRelasjonWithOpprettetKildeNavn(Journalpost journalpost) {

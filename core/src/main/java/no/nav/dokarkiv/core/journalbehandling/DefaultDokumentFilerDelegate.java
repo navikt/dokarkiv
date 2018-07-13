@@ -30,7 +30,11 @@ public class DefaultDokumentFilerDelegate implements DokumentFilerDelegate {
 		updateExistingDokumentFiler(journalpost);
 	}
 
-	private void saveNewDokumentFiler(Journalpost journalpost) {
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void saveNewDokumentFiler(Journalpost journalpost) {
 		List<DokumentFil> newDokumentFiler = createNewDokumentFiler(journalpost);
 		for (DokumentFil dokumentFil : newDokumentFiler) {
 			saveDokumentFil(dokumentFil);

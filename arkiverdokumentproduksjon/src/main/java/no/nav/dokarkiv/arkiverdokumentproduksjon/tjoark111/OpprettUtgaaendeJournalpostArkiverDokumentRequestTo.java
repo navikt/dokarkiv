@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -22,11 +23,11 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentRequestTo {
 	private Journalpost journalpost;
 	private boolean forsokFerdigstilling;
 	private String journalforendeEnhet;
-	private List<Vedlegg> vedleggList;
+	@Builder.Default
+	private List<Vedlegg> vedleggList = new ArrayList<>();
 
 	@Builder
 	@Data
-	@NoArgsConstructor
 	@AllArgsConstructor
 	public static final class Vedlegg {
 		private Long knyttesFraJournalpostId;

@@ -16,5 +16,15 @@ public interface DokumentFilerDelegate {
 	 * @param journalpost The Journalpost containing the updates.
 	 */
 	void saveUpdateDokumentFiler(Journalpost journalpost);
+
+
+	/**
+	 * Only saves new DokumentFiler
+	 *
+	 * @param journalpost The Journalpost containing the updates.
+	 */
+	void saveNewDokumentFiler(Journalpost journalpost);
+
+
 	
 }
