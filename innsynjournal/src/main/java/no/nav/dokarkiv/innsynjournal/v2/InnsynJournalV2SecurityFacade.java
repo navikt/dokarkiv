@@ -1,0 +1,359 @@
+package no.nav.dokarkiv.innsynjournal.v2;
+
+import static java.util.Collections.singletonMap;
+import static no.nav.dokarkiv.innsynjournal.v2.InnsynJournalpostTo.innsynJournalposts;
+
+import com.google.common.collect.Maps;
+import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
+import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
+import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
+import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
+import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
+import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
+import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
+import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
+import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
+import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.innsynjournal.v2.exceptions.DocumentNotFoundException;
+import no.nav.dokarkiv.innsynjournal.v2.exceptions.JournalpostIkkeFunnetException;
+import no.nav.dokarkiv.innsynjournal.v2.exceptions.JournalpostIkkeInngaaendeException;
+import no.nav.dokarkiv.innsynjournal.v2.exceptions.JournalpostNotSupportedException;
+import no.nav.dokarkiv.innsynjournal.v2.exceptions.NoJournalpostFoundException;
+import no.nav.dokarkiv.innsynjournal.v2.exceptions.SecurityLimitationAttributeException;
+import no.nav.dokarkiv.innsynjournal.v2.exceptions.SecurityTechnicalException;
+import no.nav.dokarkiv.innsynjournal.v2.exceptions.UgyldigInputException;
+import no.nav.dokarkiv.innsynjournal.v2.tjoark053.HentJournalpostListeToRequest;
+import no.nav.dokarkiv.innsynjournal.v2.tjoark053.HentMinTilgjengeligeJournalpostListeService;
+import no.nav.dokarkiv.innsynjournal.v2.tjoark059.IdentifiserJournalpostService;
+import no.nav.dokarkiv.innsynjournal.v2.tjoark059.IdentifiserJournalpostToRequest;
+import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+
+import javax.inject.Inject;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Adds security to the InnsynJournal-services
+ *
+ * @author Roar Bjurstrom, Visma Consulting.
+ */
+public class InnsynJournalV2SecurityFacade {
+
+	private static final Logger log = LoggerFactory.getLogger(InnsynJournalV2SecurityFacade.class);
+
+	@Value("#{new java.text.SimpleDateFormat(\"yyyy-MM-dd\").parse(\"${innsyn.earliest.date}\")}")
+	private Date earliestAllowedDate;
+
+//	@Inject
+//	private HentJournalpost hentJournalpostService;
+//	@Inject
+//	private HentDokumentService hentDokumentService;
+//	@Inject
+//	private AktoerConsumerService aktoerConsumerService;
+	@Inject
+	private HentMinTilgjengeligeJournalpostListeService hentMinTilgjengeligeJournalpostListeService;
+	@Inject
+	private IdentifiserJournalpostService identifiserJournalpostService;
+
+//	@AccessControl(attributes = {
+//			@AccessControlAttribute(name = ATTR_ACTION_ID, value = READ_OPERATION, type = AttributeType.ACTION),
+//			@AccessControlAttribute(name = ATTR_RESOURCE_TARGET, value = JOURNALPOST_DOCUMENT, type = AttributeType.RESOURCE),
+//			@AccessControlAttribute(name = ATTR_RESOURCE_ID, value = JOURNALPOST_DOCUMENT, type = AttributeType.RESOURCE),
+//			@AccessControlAttribute(name = ATTR_ENVIRONMENT_RECIEVER, value = EXTERNAL, type = AttributeType.SUBJECT)//FIXME:
+//			// Denne burde vært laget med type=environment, men en bug i
+//			// modig-security gjør at "environment"-variabler aldri blir sendt
+//			// inn som en del av XACML-requesten
+//	})
+	public byte[] hentDokument(Long journalpostId, Long dokumentInfoId) throws NoJournalpostFoundException,
+			DocumentNotFoundException {
+//		HentJournalpostResponse response = hentJournalpostService.hentJournalpost(new HentJournalpostRequest(journalpostId));
+//		Journalpost journalpost = response.getJournalpost();
+		Journalpost journalpost = null;
+		DokumentInfo dokumentInfo = journalpost.getDokumentInfoFromJpDokInfoRelasjonerByDokumentInfoId(dokumentInfoId);
+
+		if (dokumentInfo == null) {
+			throw new DocumentNotFoundException("DokumentInfo med dokumentInfoId=" + dokumentInfoId +
+					" på Journalpost med journalpostId=" + journalpostId + " eksisterer ikke");
+		}
+
+		verifyAvsenderMottakerId(journalpost, dokumentInfoId);
+
+		if (MottaksKanalCode.NAV_NO.equals(journalpost.getMottakskanal())) {
+			return hentDokumentBytes(journalpostId, dokumentInfoId);
+		}
+
+		verifyJournalstatus(journalpost, dokumentInfoId);
+		verifyCreatedAndJournalDate(journalpost, dokumentInfoId);
+		verifySaksrelasjon(journalpost, dokumentInfoId);
+		verifyFagomrade(journalpost, dokumentInfoId);
+		verifyMottakskanal(journalpost, dokumentInfoId);
+		verifyIfNotat(journalpost, dokumentInfo);
+		verifyDokumentstatus(journalpost, dokumentInfo);
+		verifyFildetaljer(journalpostId, dokumentInfo);
+		verifyInnskrenketPartsinnsyn(journalpostId, dokumentInfo);
+		verifyNotSlettet(journalpostId, dokumentInfo);
+
+		return hentDokumentBytes(journalpostId, dokumentInfoId);
+	}
+
+//	@AccessControl(attributes = {
+//			@AccessControlAttribute(name = ATTR_ACTION_ID, value = READ_OPERATION, type = AttributeType.ACTION),
+//			@AccessControlAttribute(name = ATTR_RESOURCE_TARGET, value = JOURNALPOST_DOCUMENT, type = AttributeType.RESOURCE),
+//			@AccessControlAttribute(name = ATTR_RESOURCE_ID, value = JOURNALPOST_DOCUMENT, type = AttributeType.RESOURCE),
+//			@AccessControlAttribute(name = ATTR_ENVIRONMENT_RECIEVER, value = EXTERNAL, type = AttributeType.SUBJECT)//FIXME:
+//			// Denne burde vært laget med type=environment, men en bug i
+//			// modig-security gjør at "environment"-variabler aldri blir sendt
+//			// inn som en del av XACML-requesten
+//	})
+	public List<InnsynJournalpostTo> hentMineTilgjengeligeJournalpostListe(HentJournalpostListeToRequest request) {
+		List<Journalpost> journalposts = hentMinTilgjengeligeJournalpostListeService
+				.hentMineTilgjengeligeJournalposter(request);
+		List<InnsynJournalpostTo> innsynJournalposts = innsynJournalposts(journalposts);
+
+		for (InnsynJournalpostTo innsynJournalpost : innsynJournalposts) {
+			decideAvsenderMottaker(innsynJournalpost);
+			if (request.isMerkInnsynDokument()) {
+				decideInnsynDokumentInfo(innsynJournalpost);
+			}
+		}
+		return innsynJournalposts;
+	}
+
+	public InnsynJournalpostTo identifiserJournalpost(IdentifiserJournalpostToRequest request)
+	throws JournalpostNotSupportedException, JournalpostIkkeFunnetException, UgyldigInputException, JournalpostIkkeInngaaendeException {
+		Journalpost journalpost = identifiserJournalpostService
+				.identifiserJournalpost(request);
+		InnsynJournalpostTo innsynJournalpost = new InnsynJournalpostTo(journalpost);
+		decideInnsynDokumentInfo(innsynJournalpost);
+
+		return innsynJournalpost;
+	}
+
+
+	private void decideAvsenderMottaker(InnsynJournalpostTo innsynJournalpost) {
+		try {
+			if (!isInnsendtByBruker(innsynJournalpost.getJournalpost())) {
+				innsynJournalpost.setAvsenderMottaker(InnsynJournalpostTo.AvsenderMottaker.NEI);
+			}
+		} catch (SecurityTechnicalException e) {
+			log.debug(e.toString());
+			innsynJournalpost.setAvsenderMottaker(InnsynJournalpostTo.AvsenderMottaker.KAN_IKKE_AVGJOERES);
+		}
+	}
+
+	private void verifyAvsenderMottakerId(Journalpost journalpost, Long dokumentInfoId) {
+		if (JournalpostTypeCode.N != journalpost.getJournalposttype()) {
+			if (journalpost.getAvsenderMottakerId() == null || !isInnsendtByBruker(journalpost)) {
+				throw new SecurityLimitationAttributeException(journalpost.getJournalpostId(),
+						dokumentInfoId,
+						singletonMap("Journalpost.AvsenderMottakerId", journalpost.getAvsenderMottakerId()));
+			}
+		}
+	}
+
+	private boolean isInnsendtByBruker(Journalpost journalpost) {
+//		String loggedOnFnr = SubjectHandler.getSubjectHandler().getUid();
+		String loggedOnFnr = null; // FIXME
+		return loggedOnFnr.equals(journalpost.getAvsenderMottakerId()) ||
+				matchesHistoricalFnr(loggedOnFnr, journalpost);
+	}
+
+	private boolean matchesHistoricalFnr(String fnr, Journalpost journalpostTomatch) {
+//		HentAktoerIdForIdentResponseTo responseTo; FIXME
+//		try {
+//			responseTo = aktoerConsumerService.hentAktoerIdForIdent(new HentAktoerIdForIdentRequestTo(fnr));
+//		} catch (PersonIkkeFunnetException e) {
+//			throw new SecurityTechnicalException("Kan ikke utføre tilgangskontroll for pålogget bruker med fnr=" + fnr + " " +
+//					"for journalpost med journalpostId=" + journalpostTomatch.getJournalpostId(), e);
+//		}
+//
+//		for (IdentDetaljerTo identDetaljerTo : responseTo.getHistoriskeIdenter()) {
+//			if (identDetaljerTo.getFnr().equals(journalpostTomatch.getAvsenderMottakerId())) {
+//				return true;
+//			}
+//		}
+		return false;
+	}
+
+	private void verifyJournalstatus(Journalpost journalpost, Long dokumentInfoId) {
+		if (!(journalpost.hasEndeligJournalforingStatus() || JournalStatusCode.E.equals(journalpost.getJournalstatus()))) {
+			throw new SecurityLimitationAttributeException(journalpost.getJournalpostId(),
+					dokumentInfoId,
+					singletonMap("Journalpost.journalStatus", journalpost.getJournalstatus()));
+		}
+	}
+
+	private void verifyCreatedAndJournalDate(Journalpost journalpost, Long dokumentInfoId) {
+//		if (DateUtil.isBeforeByDay(journalpost.getChangeStamp().getCreatedDate(), earliestAllowedDate, false)
+//				|| DateUtil.isBeforeByDay(journalpost.getJournalDato(), earliestAllowedDate, false)) {
+//			Map<String, Date> attributeMap = Maps.newHashMap();
+//			attributeMap.put("Journalpost.JournalDato", journalpost.getJournalDato());
+//			attributeMap.put("Journalpost.ChangeStamp.CreatedDate", journalpost.getChangeStamp().getCreatedDate());
+//			throw new SecurityLimitationAttributeException(journalpost.getJournalpostId(),
+//					dokumentInfoId,
+//					attributeMap);
+//		} FIXME
+	}
+
+	private void verifySaksrelasjon(Journalpost journalpost, Long dokumentInfoId) {
+		if (journalpost.getSaksrelasjon() == null) {
+			throw new IllegalStateException("Journalpost med journalpostId=" + journalpost.getJournalpostId() +
+					" er ferdigstilt, men mangler saksrelasjon.");
+		}
+
+		if (BooleanUtils.isTrue(journalpost.getSaksrelasjon().getFeilregistrert())) {
+			throw new SecurityLimitationAttributeException(journalpost.getJournalpostId(),
+					dokumentInfoId,
+					singletonMap("Journalpost.Saksrelasjon.Feilregistrert", journalpost.getSaksrelasjon().getFeilregistrert()));
+		}
+	}
+
+	private void verifyFagomrade(Journalpost journalpost, Long dokumentInfoId) {
+		if (journalpost.getFagomrade() == FagomradeCode.KTR) {
+			throw new SecurityLimitationAttributeException(journalpost.getJournalpostId(),
+					dokumentInfoId,
+					singletonMap("Journalpost.Fagomrade", journalpost.getFagomrade()));
+		}
+	}
+
+	private void verifyMottakskanal(Journalpost journalpost, Long dokumentInfoId) {
+		if (journalpost.getMottakskanal() == MottaksKanalCode.SKAN_PEN ||
+				journalpost.getMottakskanal() == MottaksKanalCode.SKAN_NETS) {
+			throw new SecurityLimitationAttributeException(journalpost.getJournalpostId(),
+					dokumentInfoId,
+					singletonMap("Journalpost.Mottakskanal", journalpost.getMottakskanal()));
+		}
+	}
+
+	private void verifyIfNotat(Journalpost journalpost, DokumentInfo dokumentInfo) {
+		if (journalpost.getJournalposttype() == JournalpostTypeCode.N) {
+			if (dokumentInfo.getKategori() != DokumentKategoriCode.FORVALTNINGSNOTAT) {
+				Map<String, Object> attributeMap = Maps.newHashMap();
+				attributeMap.put("Journalpost.Journalposttype", journalpost.getJournalposttype());
+				attributeMap.put("DokumentInfo.Kategori", dokumentInfo.getKategori());
+				throw new SecurityLimitationAttributeException(journalpost.getJournalpostId(),
+						dokumentInfo.getDokumentInfoId(),
+						attributeMap);
+			}
+			if (BooleanUtils.isTrue(dokumentInfo.getOrganInternt())) {
+				Map<String, Object> attributeMap = Maps.newHashMap();
+				attributeMap.put("Journalpost.Journalposttype", journalpost.getJournalposttype());
+				attributeMap.put("DokumentInfo.OrganInternt", dokumentInfo.getOrganInternt());
+				throw new SecurityLimitationAttributeException(journalpost.getJournalpostId(),
+						dokumentInfo.getDokumentInfoId(),
+						attributeMap);
+			}
+		}
+	}
+
+	private void verifyDokumentstatus(Journalpost journalpost, DokumentInfo dokumentInfo) {
+		if (journalpost.getJournalposttype() == JournalpostTypeCode.U ||
+				journalpost.getJournalposttype() == JournalpostTypeCode.N) {
+			if (dokumentInfo.getDokumentstatus() != DokumentStatusCode.FERDIGSTILT) {
+				Map<String, Object> attributeMap = Maps.newHashMap();
+				attributeMap.put("Journalpost.Journalposttype", journalpost.getJournalposttype());
+				attributeMap.put("DokumentInfo.Dokumentstatus", dokumentInfo.getDokumentstatus());
+				throw new SecurityLimitationAttributeException(journalpost.getJournalpostId(),
+						dokumentInfo.getDokumentInfoId(),
+						attributeMap);
+			}
+		}
+	}
+
+	private void verifyFildetaljer(Long journalpostId, DokumentInfo dokumentInfo) throws DocumentNotFoundException {
+		FilDetaljer filDetaljer = dokumentInfo.findFilDetaljerByVariantFormat(VariantFormatCode.ARKIV);
+		if (filDetaljer == null) {
+			throw new DocumentNotFoundException("DokumentInfo med dokumentinfoId=" + dokumentInfo.getDokumentInfoId()
+					+ " på Journalpost med journalpostId=" + journalpostId
+					+ " har ikke en fildetaljer med VariantFormat=ARKIV");
+		}
+
+		if (StringUtils.isNotEmpty(filDetaljer.getOnDemandId())) {
+			throw new SecurityLimitationAttributeException(journalpostId,
+					dokumentInfo.getDokumentInfoId(),
+					Collections.singletonMap("DokumentInfo.Fildetaljer.OnDemandId", filDetaljer.getOnDemandId()));
+		}
+	}
+
+	private void verifyInnskrenketPartsinnsyn(Long journalpostId, DokumentInfo dokumentInfo) {
+		if (BooleanUtils.isTrue(dokumentInfo.getInnskrenketPartsinnsyn())) {
+			throw new SecurityLimitationAttributeException(journalpostId,
+					dokumentInfo.getDokumentInfoId(),
+					Collections.singletonMap("DokumentInfo.InnskrenketPartsinnsyn", dokumentInfo.getInnskrenketPartsinnsyn()));
+		}
+	}
+
+	private void verifyNotSlettet(Long journalpostId, DokumentInfo dokumentInfo) {
+		if (dokumentInfo.isFunksjoneltSlettet()) {
+			throw new SecurityLimitationAttributeException(journalpostId,
+					dokumentInfo.getDokumentInfoId(),
+					Collections.singletonMap("DokumentInfo.Slettet", dokumentInfo.isFunksjoneltSlettet()));
+		}
+	}
+
+	private byte[] hentDokumentBytes(Long journalpostId, Long dokumentInfoId) throws NoJournalpostFoundException,
+			DocumentNotFoundException {
+//		return hentDokumentService.hentDokument(new HentDokumentRequestTo(journalpostId,
+//				dokumentInfoId, VariantFormatCode.ARKIV)); FIXME
+		return new byte[]{};
+	}
+
+	public void setEarliestAllowedDate(Date earliestAllowedDate) {
+		if (earliestAllowedDate != null) {
+			this.earliestAllowedDate = new Date(earliestAllowedDate.getTime());
+		} else {
+			this.earliestAllowedDate = null;
+		}
+	}
+
+	private void decideInnsynDokumentInfo(InnsynJournalpostTo innsynJournalpost) {
+		Journalpost journalpost = innsynJournalpost.getJournalpost();
+		for (DokumentInfo dokumentInfo : journalpost.findAllDokumentInfos()) {
+
+			innsynJournalpost.putDokumentInnsyn(InnsynJournalpostTo.DokumentInnsyn.JA, dokumentInfo.getDokumentInfoId());
+
+			if (journalpost.getMottakskanal() == MottaksKanalCode.NAV_NO
+					|| journalpost.getJournalposttype() != JournalpostTypeCode.N) {
+				boolean innsendtByBruker;
+				try {
+					innsendtByBruker = isInnsendtByBruker(journalpost);
+				} catch (SecurityTechnicalException e) {
+					log.debug(e.toString());
+					innsynJournalpost.putDokumentInnsyn(InnsynJournalpostTo.DokumentInnsyn.KAN_IKKE_AVGJOERES,
+							dokumentInfo.getDokumentInfoId());
+					continue;
+				}
+
+				decideDokumentInnsynValue(innsynJournalpost, journalpost, dokumentInfo, innsendtByBruker);
+
+				try {
+					verifyMottakskanal(journalpost, dokumentInfo.getDokumentInfoId());
+					verifyFildetaljer(journalpost.getJournalpostId(), dokumentInfo);
+					verifyInnskrenketPartsinnsyn(journalpost.getJournalpostId(), dokumentInfo);
+				} catch (DocumentNotFoundException | SecurityLimitationAttributeException e) {
+					innsynJournalpost.putDokumentInnsyn(InnsynJournalpostTo.DokumentInnsyn.NEI,
+							dokumentInfo.getDokumentInfoId());
+					log.debug(e.toString());
+				}
+			}
+		}
+	}
+
+	private void decideDokumentInnsynValue(InnsynJournalpostTo innsynJournalpost, Journalpost journalpost,
+										   DokumentInfo dokumentInfo, boolean innsendtByBruker) {
+		if (!innsendtByBruker) {
+			innsynJournalpost.putDokumentInnsyn(InnsynJournalpostTo.DokumentInnsyn.NEI,
+					dokumentInfo.getDokumentInfoId());
+		} else if (MottaksKanalCode.NAV_NO == journalpost.getMottakskanal()) {
+			innsynJournalpost.putDokumentInnsyn(InnsynJournalpostTo.DokumentInnsyn.JA,
+					dokumentInfo.getDokumentInfoId());
+		}
+	}
+
+}

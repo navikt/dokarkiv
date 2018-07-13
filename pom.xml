@@ -24,6 +24,7 @@
 		<module>arkiverdokumentproduksjon</module>
 		<module>arkiverdokumentmottak</module>
 		<module>behandlejournal</module>
+		<module>innsynjournal</module>
 	</modules>
 
 	<distributionManagement>
