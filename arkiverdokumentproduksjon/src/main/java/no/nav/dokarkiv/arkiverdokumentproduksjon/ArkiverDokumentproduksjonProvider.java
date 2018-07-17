@@ -514,8 +514,10 @@ public class ArkiverDokumentproduksjonProvider implements ArkiverDokumentproduks
 	@Override
 	@Transactional
 	public OpprettUtgaaendeJournalpostArkiverDokumentResponse opprettUtgaaendeJournalpostArkiverDokument(OpprettUtgaaendeJournalpostArkiverDokumentRequest opprettUtgaaendeJournalpostArkiverDokumentRequest) throws OpprettUtgaaendeJournalpostUgyldigInput, OpprettUtgaaendeJournalpostValideringAvVedleggFeilet {
-		log.info("tjoark111 Har motttat kall om å arkivere utgående journalpost");
 		Assert.notNull(opprettUtgaaendeJournalpostArkiverDokumentRequest, "Request kan ikke være null");
+		log.info(String.format("tjoark111 Har motttat kall om å arkivere utgående journalpost. kanalReferanseId=%s", opprettUtgaaendeJournalpostArkiverDokumentRequest
+				.getJournalpost() == null ? null : opprettUtgaaendeJournalpostArkiverDokumentRequest.getJournalpost()
+				.getKanalreferanseId()));
 
 		try {
 			OpprettUtgaaendeJournalpostArkiverDokumentRequestTo requestTo = opprettUtgaaendeJournalpostArkiverDokumenterRequestMapper

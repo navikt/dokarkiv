@@ -36,7 +36,7 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentService {
 	public OpprettUtgaaendeJournalpostArkiverDokumentResponseTo opprettUtgaaendeJournalpostArkiverDokument(OpprettUtgaaendeJournalpostArkiverDokumentRequestTo requestTo) throws UgyldigInputException, ValideringAvVedleggFeiletException {
 
 		validator.validateRequiredFields(requestTo);
-		//1. Verifiser for evt. tidligere arkivering av samme forsendelse
+
 		Journalpost storedJournalpost = findPreviousJournalpostByKanalReferanseId(requestTo.getJournalpost()
 				.getKanalReferanseId());
 
@@ -44,21 +44,13 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentService {
 			Journalpost journalpost = requestTo.getJournalpost();
 
 			updateJournalpostBeforeValidation(journalpost);
-
-			//2. Sjekk om tjenesten skal forsøke å ferdigstille journalposten
-			//3. Sjekk om alle påkrevde attributter er satt
 			decideAndSetJournalStatus(requestTo.isForsokFerdigstilling(), journalpost);
 
-			//4.Validering av variantformater
-			//5.Verifisering av hoveddokument
 			validator.validateVariantFormaterAndHoveddokument(journalpost);
-
-			//6.Kontroller knyttesFraJournalpost
 			validateAndAddVedlegg(journalpost, requestTo.getVedleggList());
 
 			updateJournalpostAfterValidation(journalpost, requestTo.getJournalforendeEnhet());
 
-			//7.Opprett Journalpost
 			dokumentFilerDelegate.saveNewDokumentFiler(journalpost);
 			storedJournalpost = joarkRepository.save(journalpost);
 			log.info("tjoark111 Har opprettet utgående journalpost med journalpostId={}, hoveddokumentDokumentInfoId={}, journalstatus={}, kanalreferanseId={}, fagområde={}", storedJournalpost

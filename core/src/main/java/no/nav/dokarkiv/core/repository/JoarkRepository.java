@@ -26,7 +26,4 @@ public interface JoarkRepository extends CrudRepository<Journalpost, Long> {
 
 	Optional<Journalpost> findJournalpostByKanalReferanseId(String kanalReferanseId);
 
-	//FIXME - denne spørringen fungerer ikke
-	@Query(value = "DELETE * FROM T_JP_DOK_INFO_REL WHERE JOURNALPOST_ID= :journalpostId", nativeQuery = true)
-	void deleteJournalpostDokumentInfoRelasjon(@Param("journalpostId") Long journalpostId);
 }
