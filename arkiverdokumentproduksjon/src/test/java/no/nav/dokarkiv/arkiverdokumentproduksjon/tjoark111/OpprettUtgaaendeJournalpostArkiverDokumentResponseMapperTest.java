@@ -55,11 +55,13 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentResponseMapperTest {
 
 
 	private OpprettUtgaaendeJournalpostArkiverDokumentResponseTo createResponseTo() {
-		OpprettUtgaaendeJournalpostArkiverDokumentResponseTo to = new OpprettUtgaaendeJournalpostArkiverDokumentResponseTo();
-		to.setDokumentInfoIdHoveddokument(DOKUMENTINFOID_HOVEDDOK);
-		to.setDokumentInfoIdVedlegg(Arrays.asList(DOKUMENTINFOID_VEDLEGG_1, DOKUMENTINFOID_VEDLEGG_2));
-		to.setJournalpostId(JOURNALPOSTID);
-		to.setJournalStatus(JOURNAL_STATUS_CODE);
+		OpprettUtgaaendeJournalpostArkiverDokumentResponseTo to = OpprettUtgaaendeJournalpostArkiverDokumentResponseTo.builder()
+				.dokumentInfoIdHoveddokument(DOKUMENTINFOID_HOVEDDOK)
+				.journalpostId(JOURNALPOSTID)
+				.journalStatus(JOURNAL_STATUS_CODE)
+				.build();
+		to.getDokumentInfoIdVedlegg().addAll(Arrays.asList(DOKUMENTINFOID_VEDLEGG_1, DOKUMENTINFOID_VEDLEGG_2));
+
 		return to;
 	}
 

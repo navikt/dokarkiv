@@ -124,7 +124,7 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentService {
 
 			validator.validateVedlegg(originalJournalpost, dokumentInfo, vedlegg);
 
-			journalpost.addJournalpostDokumentInfoRelasjon(no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon.builder()
+			journalpost.addJournalpostDokumentInfoRelasjon(JournalpostDokumentInfoRelasjon.builder()
 					.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
 					.tilknyttetAvNavn(journalpost.getOpprettetAvNavn())
 					.dokumentInfo(dokumentInfo)
@@ -135,10 +135,9 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentService {
 	}
 
 	public void populateDokumentInfoRelasjonWithOpprettetKildeNavn(Journalpost journalpost) {
-		journalpost.getJournalpostDokumentInfoRelasjoner().forEach(relasjon -> {
-			relasjon.setOpprettetKildeNavn(RequestContextHolder
-					.currentRequestContext().getComponentId());
-		});
+		journalpost.getJournalpostDokumentInfoRelasjoner()
+				.forEach(relasjon -> relasjon.setOpprettetKildeNavn(RequestContextHolder
+						.currentRequestContext().getComponentId()));
 	}
 
 	private void updateJournalpostAfterValidation(Journalpost journalpost, String journalforendeEnhet) {

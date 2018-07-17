@@ -531,10 +531,11 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentValidatorTest {
 
 
 	private OpprettUtgaaendeJournalpostArkiverDokumentRequestTo createRequestTo() {
-		return OpprettUtgaaendeJournalpostArkiverDokumentRequestTo.builder()
+		OpprettUtgaaendeJournalpostArkiverDokumentRequestTo to = OpprettUtgaaendeJournalpostArkiverDokumentRequestTo.builder()
 				.journalpost(createJournalpost())
-				.journalforendeEnhet("ads")
-				.vedleggList(Arrays.asList(createVedlegg())).build();
+				.journalforendeEnhet("ads").build();
+		to.getVedleggList().add(createVedlegg());
+		return to;
 	}
 	private Journalpost createJournalpost() {
 		Journalpost journalpost = Journalpost.builder()

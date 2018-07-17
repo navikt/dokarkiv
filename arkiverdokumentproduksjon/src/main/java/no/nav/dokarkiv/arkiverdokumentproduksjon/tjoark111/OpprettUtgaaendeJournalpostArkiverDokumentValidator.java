@@ -35,7 +35,7 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentValidator {
 	@Inject
 	protected MandatoryFieldsVerifier mandatoryFieldsVerifier;
 
-	private List<JournalStatusCode> VEDLEGG_EXPECTED_JOURNALSTATUSES = Arrays.asList(JournalStatusCode.J, JournalStatusCode.FS, JournalStatusCode.FL, JournalStatusCode.E);
+	private final static List<JournalStatusCode> VEDLEGG_EXPECTED_JOURNALSTATUSES = Arrays.asList(JournalStatusCode.J, JournalStatusCode.FS, JournalStatusCode.FL, JournalStatusCode.E);
 
 	public void validateRequiredFields(final OpprettUtgaaendeJournalpostArkiverDokumentRequestTo requestTo) throws UgyldigInputException {
 		StringBuilder message = new StringBuilder();
@@ -55,8 +55,7 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentValidator {
 
 	private void validateRequiredFieldsJournalpostDokumentInfoRelasjonFields(final OpprettUtgaaendeJournalpostArkiverDokumentRequestTo requestTo, StringBuilder message) {
 		addMessageIfTrue(requestTo.getJournalpost()
-				.getJournalpostDokumentInfoRelasjoner()
-				.size() == 0, message, "journalpostDokumentInfoRelasjoner");
+				.getJournalpostDokumentInfoRelasjoner().isEmpty(), message, "journalpostDokumentInfoRelasjoner");
 
 		requestTo.getJournalpost().getJournalpostDokumentInfoRelasjoner().forEach(relasjon -> {
 			addMessageIfTrue(relasjon.getTilknyttetJournalpostSom() == null, message, "JournalpostDokumentInfoRelasjoner.TilknyttetJournalpostSom");
@@ -88,7 +87,7 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentValidator {
 		addMessageIfTrue(dokumentInfo.getTittel() == null, message, "JournalpostDokumentInfoRelasjoner.DokumentInfo.Tittel");
 		addMessageIfTrue(dokumentInfo.getDokumenttypeId() == null, message, "JournalpostDokumentInfoRelasjoner.DokumentInfo.DokumenttypeId");
 		addMessageIfTrue(dokumentInfo.getFildetaljerListe()
-				.size() == 0, message, "JournalpostDokumentInfoRelasjoner.DokumentInfo.Fildetaljer");
+				.isEmpty(), message, "JournalpostDokumentInfoRelasjoner.DokumentInfo.Fildetaljer");
 		dokumentInfo.getFildetaljerListe().forEach(filDetaljer -> validateRequiredFieldsFildetaljer(filDetaljer, message));
 	}
 
