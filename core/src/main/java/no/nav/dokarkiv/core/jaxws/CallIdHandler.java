@@ -74,10 +74,7 @@ public class CallIdHandler implements SOAPHandler<SOAPMessageContext> {
 
     @SuppressWarnings("unchecked")
 	private String extractCallId(SOAPHeader header) {
-        String callId = "";
-        if (header == null) {
-			return UUID.randomUUID().toString();
-        }
+		String callId = null;
 
 		Iterator<SOAPElement> headersIter = header.getChildElements(CALLID_QNAME);
         while (headersIter.hasNext()) {
@@ -88,12 +85,11 @@ public class CallIdHandler implements SOAPHandler<SOAPMessageContext> {
 					logger.debug("Found callId: " + callId);
 				}
 				break;
-			} else {
-				callId = UUID.randomUUID().toString();
 			}
-        }
-        if("".equals(callId)) {
-        	callId = UUID.randomUUID().toString();
+		}
+
+		if (callId == null) {
+			callId = UUID.randomUUID().toString();
 		}
         return callId;
     }

@@ -23,4 +23,7 @@ public interface JoarkRepository extends CrudRepository<Journalpost, Long> {
 
 	@Query(value = "SELECT jt.ORIG_JOURNALPOST_ID FROM T_DOKUMENT_INFO jt WHERE jt.DOKUMENT_INFO_ID = :dokumentinfoId", nativeQuery = true)
 	Long findJournalpostIdByDokumentinfoId(@Param("dokumentinfoId") String dokumentinfoId);
+
+	Optional<Journalpost> findJournalpostByKanalReferanseId(String kanalReferanseId);
+
 }
