@@ -173,15 +173,15 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentValidator {
 	}
 
 	private void isFalse(Boolean statement, String message) {
-		statement = statement == null ? false : statement;
-		if (statement) {
+
+		if (statement != null && statement) {
 			throw new IllegalArgumentException(message);
 		}
 	}
 
 	private void addMessageIfTrue(Boolean statement, StringBuilder message, String variableName) {
-		statement = statement == null ? false : statement;
-		if (statement) {
+
+		if (statement != null && statement) {
 			message.append(" " + variableName + ",");
 		}
 	}
