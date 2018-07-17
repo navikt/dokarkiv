@@ -68,14 +68,15 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentService {
 	}
 
 	private OpprettUtgaaendeJournalpostArkiverDokumentResponseTo buildResponse(Journalpost journalpost, OpprettUtgaaendeJournalpostArkiverDokumentRequestTo requestTo) {
-		return OpprettUtgaaendeJournalpostArkiverDokumentResponseTo.builder()
+		OpprettUtgaaendeJournalpostArkiverDokumentResponseTo to = OpprettUtgaaendeJournalpostArkiverDokumentResponseTo.builder()
 				.dokumentInfoIdHoveddokument(journalpost.findHoveddokumentDokumentInfoRelasjon()
 						.getDokumentInfo()
 						.getDokumentInfoId())
 				.journalpostId(journalpost.getJournalpostId())
 				.journalStatus(journalpost.getJournalstatus())
-				.dokumentInfoIdVedlegg(mapDokumentInfoVedlegg(journalpost, requestTo))
 				.build();
+		to.getDokumentInfoIdVedlegg().addAll(mapDokumentInfoVedlegg(journalpost, requestTo));
+		return to;
 	}
 
 	private List<Long> mapDokumentInfoVedlegg(Journalpost journalpost, OpprettUtgaaendeJournalpostArkiverDokumentRequestTo requestTo) {
