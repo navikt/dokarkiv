@@ -456,11 +456,7 @@ public class ArkiverDokumentproduksjonProvider implements ArkiverDokumentproduks
 			KnyttDokumentTilJournalpostSomVedleggJournalpostIkkeFerdigstilt,
 			KnyttDokumentTilJournalpostSomVedleggUlikeFagomraader {
 
-		KnyttDokumentTilJournalpostSomVedleggRequestTo domainRequest = null;
-
-		if (request != null) {
-			domainRequest = knyttDokumentTilJournalpostSomVedleggRequestMapper.map(request);
-		}
+		KnyttDokumentTilJournalpostSomVedleggRequestTo domainRequest = knyttDokumentTilJournalpostSomVedleggRequestMapper.map(request);
 
 		try {
 			knyttDokumentTilJournalpostSomVedleggService.knyttDokumentTilJournalpostSomVedlegg(domainRequest);

@@ -93,9 +93,7 @@ public class DefaultOppdaterJournalpostArkiverDokumentValidatorTest {
 
 	@Test
 	public void shouldThrowExceptionOnEmptyFilDetaljer() throws Exception {
-		OppdaterJournalpostArkiverDokumentRequestTo request = createRequest();
-
-		request.getFildetaljer().clear();
+		OppdaterJournalpostArkiverDokumentRequestTo request = createBaseRequest().build();
 
 		expected.expect(UgyldigInputException.class);
 		expected.expectMessage("filDetaljer");
@@ -322,16 +320,18 @@ public class DefaultOppdaterJournalpostArkiverDokumentValidatorTest {
 	}
 
 	private OppdaterJournalpostArkiverDokumentRequestTo createRequest() {
-		OppdaterJournalpostArkiverDokumentRequestTo request = new OppdaterJournalpostArkiverDokumentRequestTo();
-
-		request.setJournalpostId(2379873L);
-		request.setDokumentInfoId(123456L);
-		request.setEndretAvNavn("endretAv");
-		request.setDatoDokument(new Date());
+		OppdaterJournalpostArkiverDokumentRequestTo request = createBaseRequest().build();
 		request.addFilDetaljer(createFilDetaljer());
-		request.setFerdigstillJournalpost(true);
-
 		return request;
+	}
+
+	private OppdaterJournalpostArkiverDokumentRequestTo.OppdaterJournalpostArkiverDokumentRequestToBuilder createBaseRequest() {
+		return OppdaterJournalpostArkiverDokumentRequestTo.builder()
+				.journalpostId(2379873L)
+				.dokumentInfoId(123456L)
+				.endretAvNavn("endretAv")
+				.datoDokument(new Date())
+				.ferdigstillJournalpost(true);
 	}
 
 	private FilDetaljer createFilDetaljer() {
