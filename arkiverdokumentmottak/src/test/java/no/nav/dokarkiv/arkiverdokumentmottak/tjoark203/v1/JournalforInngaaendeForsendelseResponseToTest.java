@@ -3,7 +3,7 @@ package no.nav.dokarkiv.arkiverdokumentmottak.tjoark203.v1;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
-import no.nav.dokarkiv.core.nsb.DokumentInfoIdVedleggTo;
+import no.nav.dokarkiv.arkiverdokumentmottak.DokumentInfoIdVedleggTo;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;

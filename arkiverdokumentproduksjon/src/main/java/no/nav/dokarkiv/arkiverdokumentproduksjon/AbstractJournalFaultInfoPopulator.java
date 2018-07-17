@@ -49,10 +49,10 @@ public abstract class AbstractJournalFaultInfoPopulator {
 		boolean done = false;
 		Throwable throwable = exception;
 		while (!done) {
-			if (throwable.getCause() != null) {
-				throwable = throwable.getCause();
-			} else {
+			if (throwable.getCause() == null) {
 				done = true;
+			} else {
+				throwable = throwable.getCause();
 			}
 		}
 		return throwable;

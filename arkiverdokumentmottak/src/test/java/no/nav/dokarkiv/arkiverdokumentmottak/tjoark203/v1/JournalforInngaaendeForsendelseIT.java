@@ -40,6 +40,8 @@ import org.junit.rules.ExpectedException;
 
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 /**
  * Integration test for HentJournalOgDokumentStatus.
@@ -71,7 +73,7 @@ public class JournalforInngaaendeForsendelseIT extends AbstractArkiverDokumentmo
 	public void verifyResponseIsValid() throws Exception {
 		JournalforInngaaendeForsendelseResponse response = arkiverDokumentmottakProviderV1.journalforInngaaendeForsendelse(request);
 
-		List<Journalpost> allJournalposts = (List) joarkRepository.findAll();
+		List<Journalpost> allJournalposts = StreamSupport.stream(joarkRepository.findAll().spliterator(), false).collect(Collectors.toList());
 		assertThat(allJournalposts, hasSize(1));
 
 		Journalpost persistedJournalpost = allJournalposts.get(0);

@@ -14,7 +14,6 @@ import no.nav.tjeneste.virksomhet.behandlejournal.v2.informasjon.behandlejournal
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.informasjon.behandlejournal.Organisasjon;
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.informasjon.behandlejournal.Person;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -22,7 +21,6 @@ import org.junit.Test;
  *
  * @author Thomas Eugen Bjørge, Visma Consulting
  */
-@Ignore
 public class DefaultJournalpostMapperTest {
 
 	private static final String NAVN = "navn";

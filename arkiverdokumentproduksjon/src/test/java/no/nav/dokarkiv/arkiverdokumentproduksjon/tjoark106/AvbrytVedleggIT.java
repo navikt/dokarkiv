@@ -27,7 +27,6 @@ import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.AvbrytVed
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.AvbrytVedleggJournalpostIkkeFunnet;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.AvbrytVedleggRequest;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -68,7 +67,6 @@ public class AvbrytVedleggIT extends AbstractArkiverdokumentproduksjonItest {
 		assertThat(dokumentInfo.getEndretAvNavn(), is(ENDRET_AV_NAVN));
 	}
 
-	//FIXME
 	@Test
 	public void shouldDeleteJournalpostDokumentInfoRelation() throws Exception {
 		DokumentInfo dokumentInfo = createDokumentInfo(DokumentStatusCode.UNDER_REDIGERING);

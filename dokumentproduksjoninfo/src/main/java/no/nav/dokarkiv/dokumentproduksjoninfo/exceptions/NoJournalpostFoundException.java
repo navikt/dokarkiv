@@ -16,7 +16,7 @@ public class NoJournalpostFoundException extends FunctionalRecoverableException 
 	/** Id used for serialization. */
 	private static final long serialVersionUID = 1L;
 
-	private Long journalpostId;
+	private final Long journalpostId;
 
 	/**
 	 * Constructs a new NoJournalpostFoundException.

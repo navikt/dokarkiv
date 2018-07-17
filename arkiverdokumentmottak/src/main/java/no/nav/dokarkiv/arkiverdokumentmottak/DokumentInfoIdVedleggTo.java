@@ -1,7 +1,7 @@
-package no.nav.dokarkiv.core.nsb;
+package no.nav.dokarkiv.arkiverdokumentmottak;
 
 /**
- * Support class for DokumentInfoIdVedleggListe for use in {@link no.nav.service.dok.joark.nsb.to.JournalforInngaaendeForsendelseResponseTo}
+ * Support class for DokumentInfoIdVedleggListe
  * when mapping to response.
  *
  * @author Leo-Andreas Ervik, Visma Consulting. 21.02.2017

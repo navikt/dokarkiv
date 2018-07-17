@@ -15,7 +15,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 
 /**
- * @author Øyvind Ølberg, Visma Consulting
+ * @author Ã˜yvind Ã˜lberg, Visma Consulting
  */
 public class OppdaterJournalpostArkiverDokumentDataUtil {
 

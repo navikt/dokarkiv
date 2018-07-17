@@ -2,13 +2,13 @@ package no.nav.dokarkiv.arkiverdokumentmottak.tjoark203.v2;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import no.nav.dokarkiv.core.nsb.DokumentInfoIdVedleggTo;
+import no.nav.dokarkiv.arkiverdokumentmottak.DokumentInfoIdVedleggTo;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Response object for TJOARK203 Journalf�rinng�endeForsendelse
+ * Response object for TJOARK203 JournalførinngåendeForsendelse
  *
  * @author Paul Magne Lunde, Visma Consulting
  */
@@ -16,7 +16,7 @@ import java.util.List;
 @AllArgsConstructor
 public class JournalforInngaaendeForsendelseV2ResponseTo {
 
-	private Long journalpostId;
+	private final Long journalpostId;
 	private Long dokumentInfoIdHoveddokument;
 	private List<DokumentInfoIdVedleggTo> dokumentInfoIdVedleggTo = new ArrayList<>();
 	private String journalTilstand;

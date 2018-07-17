@@ -1,6 +1,7 @@
 package no.nav.dokarkiv.arkiverdokumentmottak;
 
 import no.nav.dokarkiv.core.domain.util.DateProvider;
+import no.nav.dokarkiv.core.exceptions.ApplicationException;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
@@ -48,10 +49,10 @@ public abstract class AbstractJournalFaultInfoPopulator {
 		boolean done = false;
 		Throwable throwable = exception;
 		while (!done) {
-			if (throwable.getCause() != null) {
-				throwable = throwable.getCause();
-			} else {
+			if (throwable.getCause() == null) {
 				done = true;
+			} else {
+				throwable = throwable.getCause();
 			}
 		}
 		return throwable;
@@ -69,8 +70,7 @@ public abstract class AbstractJournalFaultInfoPopulator {
 		try {
 			return DatatypeFactory.newInstance().newXMLGregorianCalendar(calendar);
 		} catch (DatatypeConfigurationException e) {
-//			throw new ApplicationException("Unable to create XMLGregorianCalendar", e);
-			throw new RuntimeException("FIXME"); // FIXME
+			throw new ApplicationException("Unable to create XMLGregorianCalendar", e);
 		}
 	}
 

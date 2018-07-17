@@ -24,7 +24,6 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.util.DateProvider;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.core.sporing.SporingPopulator;
-import org.joda.time.LocalDateTime;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -34,6 +33,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.sql.Date;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Optional;
 
 /**
@@ -77,7 +79,7 @@ public class DefaultFerdigstillJournalpostServiceTest {
 		service.ferdigstillJournalpost(request);
 
 		assertThat(journalpost.getJournalstatus(), is(JournalStatusCode.FS));
-		assertThat(journalpost.getJournalDato(), is(LocalDateTime.parse(MOCK_DATE.replace(" ", "T")).toDate()));
+		assertThat(journalpost.getJournalDato(), is(Date.from(LocalDateTime.parse(MOCK_DATE).atZone(ZoneId.systemDefault()).toInstant())));
 		assertThat(journalpost.getUtsendingskanal(), is(UTSENDINGS_KANAL));
 		assertThat(journalpost.getJournalfortAvNavn(), is(ENDRET_AV_NAVN));
 
@@ -117,9 +119,9 @@ public class DefaultFerdigstillJournalpostServiceTest {
 	}
 
 	@Test
-	public void shouldThrowException_cannotFindJournalpost() throws Exception {
+	public void shouldThrowExceptionCannotFindJournalpost() throws Exception {
 		expectedException.expect(NoJournalpostFoundException.class);
-		when(joarkRepository.findById(JOURNALPOST_ID)).thenReturn(Optional.ofNullable(null));
+		when(joarkRepository.findById(JOURNALPOST_ID)).thenReturn(Optional.empty());
 		service.ferdigstillJournalpost(request);
 	}
 

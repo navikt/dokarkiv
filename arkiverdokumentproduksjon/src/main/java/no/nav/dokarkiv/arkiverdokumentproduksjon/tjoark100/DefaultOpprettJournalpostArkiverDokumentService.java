@@ -119,7 +119,7 @@ public class DefaultOpprettJournalpostArkiverDokumentService implements OpprettJ
 			return null;
 		} else {
 			Optional<Journalpost> journalpost = joarkRepository.findById(journalpostIdPreviousJournalforing);
-			return journalpost.isPresent() ? journalpost.get() : null;
+			return journalpost.orElse(null);
 		}
 	}
 }

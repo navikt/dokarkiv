@@ -249,7 +249,7 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	@OneToMany
 	@JoinColumn(name = "journalpost_id", nullable = false)
 	@Cascade({CascadeType.PERSIST, CascadeType.MERGE, CascadeType.SAVE_UPDATE, CascadeType.DELETE, CascadeType.DETACH})
-	private final Set<Bruker> brukere = new HashSet<Bruker>();
+	private final Set<Bruker> brukere = new HashSet<>();
 
 	@OneToOne(mappedBy = "journalpost", fetch = FetchType.LAZY)
 	@Cascade({CascadeType.PERSIST, CascadeType.MERGE, CascadeType.SAVE_UPDATE, CascadeType.DELETE, CascadeType.DETACH})

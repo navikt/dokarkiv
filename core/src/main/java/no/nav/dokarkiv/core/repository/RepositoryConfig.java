@@ -23,12 +23,14 @@ import java.util.Properties;
 		"no.nav.dokarkiv.core.domain.entities",
 		"no.nav.dokarkiv.core.domain.codes"
 })
-@EnableJpaRepositories(basePackageClasses = {JoarkRepository.class,
+@EnableJpaRepositories(basePackageClasses = {
+		JoarkRepository.class,
 		DokumentFilRepository.class,
 		DokumentinfoRepository.class,
 		JournalpostDokumentInfoRelasjonRepository.class,
 		BidragMellomlagringRepository.class,
-		BidragMellomlagringDokumentRepository.class,})
+		BidragMellomlagringDokumentRepository.class
+})
 @EnableTransactionManagement
 @EnableConfigurationProperties(DataSourceProperties.class)
 @Configuration

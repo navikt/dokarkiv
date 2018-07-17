@@ -146,22 +146,22 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	@MapKeyColumn(name = "nokkel")
 	@Column(name = "verdi", nullable = false)
 	@Builder.Default
-	private Map<String, String> tilleggsopplysninger = new HashMap<String, String>();
+	private Map<String, String> tilleggsopplysninger = new HashMap<>();
 
 	@OneToMany
 	@JoinColumn(name = "dokument_info_id", nullable = false)
 	@Cascade({CascadeType.PERSIST, CascadeType.MERGE, CascadeType.SAVE_UPDATE, CascadeType.DELETE, CascadeType.DETACH})
 	@Builder.Default
-	private Set<SkannetInnhold> skannetInnholdListe = new HashSet<SkannetInnhold>();
+	private Set<SkannetInnhold> skannetInnholdListe = new HashSet<>();
 
 	@OneToMany(mappedBy = "dokumentInfo")
 	@Builder.Default
-	private Set<JournalpostDokumentInfoRelasjon> journalpostRelasjoner = new HashSet<JournalpostDokumentInfoRelasjon>();
+	private Set<JournalpostDokumentInfoRelasjon> journalpostRelasjoner = new HashSet<>();
 
-	@OneToMany(mappedBy = "dokumentInfo")
-	@Cascade({CascadeType.PERSIST, CascadeType.MERGE, CascadeType.SAVE_UPDATE, CascadeType.DELETE_ORPHAN, CascadeType.DETACH})
+	@OneToMany(mappedBy = "dokumentInfo", orphanRemoval = true)
+	@Cascade({CascadeType.PERSIST, CascadeType.MERGE, CascadeType.SAVE_UPDATE, CascadeType.DETACH})
 	@Builder.Default
-	private Set<FilDetaljer> fildetaljerListe = new HashSet<FilDetaljer>();
+	private Set<FilDetaljer> fildetaljerListe = new HashSet<>();
 
 	/**
 	 * Default constructor.
@@ -320,7 +320,7 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	}
 
 	private Map<VariantFormatCode, Integer> getVariantCounters() {
-		Map<VariantFormatCode, Integer> variantCounters = new HashMap<VariantFormatCode, Integer>();
+		Map<VariantFormatCode, Integer> variantCounters = new HashMap<>();
 		for (VariantFormatCode variantFormat : VariantFormatCode.values()) {
 			variantCounters.put(variantFormat, 0);
 		}

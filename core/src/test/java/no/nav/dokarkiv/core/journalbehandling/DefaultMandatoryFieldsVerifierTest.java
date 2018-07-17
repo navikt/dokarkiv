@@ -45,7 +45,7 @@ public class DefaultMandatoryFieldsVerifierTest {
 	public ExpectedException expectedException = ExpectedException.none();
 
 	@Before
-	public void setup() {
+	public void setUp() {
 		mandatoryFieldsVerifier = new DefaultMandatoryFieldsVerifier();
 	}
 
