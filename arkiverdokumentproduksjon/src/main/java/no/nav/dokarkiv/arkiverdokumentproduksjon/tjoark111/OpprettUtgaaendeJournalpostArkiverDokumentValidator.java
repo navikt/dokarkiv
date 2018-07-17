@@ -149,17 +149,17 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentValidator {
 		isTrue(VEDLEGG_EXPECTED_JOURNALSTATUSES.contains(journalpost.getJournalstatus()), String.format("Journalpost.JournalStatus kan ikke være %s", journalpost
 				.getJournalstatus()));
 		isFalse(journalpost.getSaksrelasjon() == null ? null : journalpost.getSaksrelasjon()
-				.getFeilregistrert(), "Journalpost.Saksrelasjon.Feilregistert kan ikke være True");
+				.getFeilregistrert(), "Journalpost.Saksrelasjon.Feilregistert kan ikke være Sann");
 	}
 
 	public void validateVedleggDokumentInfo(DokumentInfo dokumentInfo) {
 
 		isTrue(DokumentStatusCode.FERDIGSTILT == dokumentInfo.getDokumentstatus(), String.format("DokumentInfo.Dokumentstatus må være FERDIGSTILT men var %s", dokumentInfo
 				.getDokumentstatus()));
-		isFalse(dokumentInfo.getSlettet(), "DokumentInfo.slettet kan ikke være True");
-		isFalse(dokumentInfo.getOrganInternt(), "DokumentInfo.OrganInternt kan ikke være True");
-		isFalse(dokumentInfo.getInnskrenketPartsinnsyn(), "DokumentInfo.innskrenketPartsinnsyn kan ikke være True");
-		isFalse(dokumentInfo.getInnskrenketPartsinnsynFraTredjepart(), "DokumentInfo.innskrenketPartsinnsynFraTredjepart kan ikke være True");
+		isFalse(dokumentInfo.getSlettet(), "DokumentInfo.Slettet kan ikke være Sann");
+		isFalse(dokumentInfo.getOrganInternt(), "DokumentInfo.OrganInternt kan ikke være Sann");
+		isFalse(dokumentInfo.getInnskrenketPartsinnsyn(), "DokumentInfo.InnskrenketPartsinnsyn kan ikke være Sann");
+		isFalse(dokumentInfo.getInnskrenketPartsinnsynFraTredjepart(), "DokumentInfo.InnskrenketPartsinnsynFraTredjepart kan ikke være Sann");
 	}
 
 	public void validateVedleggFildetaljer(DokumentInfo dokumentInfo) {

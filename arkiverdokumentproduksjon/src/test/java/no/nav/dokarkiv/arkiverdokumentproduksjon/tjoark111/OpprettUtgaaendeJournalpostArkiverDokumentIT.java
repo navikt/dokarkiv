@@ -226,7 +226,7 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentIT extends AbstractArkive
 	@Test
 	public void shouldThrowIfVedleggRefersToJournalpostWithFeiletregistertSaksrelasjon() throws Exception {
 		expectedException.expect(isA(OpprettUtgaaendeJournalpostValideringAvVedleggFeilet.class));
-		expectedException.expectMessage("Journalpost.Saksrelasjon.Feilregistert kan ikke være True");
+		expectedException.expectMessage("Journalpost.Saksrelasjon.Feilregistert kan ikke være Sann");
 
 		persistedJournalpost.getSaksrelasjon().setFeilregistrert(true);
 		persistedJournalpost = joarkRepository.save(persistedJournalpost);
@@ -288,7 +288,7 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentIT extends AbstractArkive
 	@Test
 	public void shouldThrowIfVedleggDokumentInfoSlettetIsTrue() throws Exception {
 		expectedException.expect(isA(OpprettUtgaaendeJournalpostValideringAvVedleggFeilet.class));
-		expectedException.expectMessage("DokumentInfo.slettet kan ikke være True");
+		expectedException.expectMessage("DokumentInfo.Slettet kan ikke være Sann");
 
 		persistedJournalpost.getJournalpostDokumentInfoRelasjoner()
 				.iterator()
@@ -314,7 +314,7 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentIT extends AbstractArkive
 	@Test
 	public void shouldThrowIfVedleggDokumentInfoOrganInterntIsTrue() throws Exception {
 		expectedException.expect(isA(OpprettUtgaaendeJournalpostValideringAvVedleggFeilet.class));
-		expectedException.expectMessage("DokumentInfo.OrganInternt kan ikke være True");
+		expectedException.expectMessage("DokumentInfo.OrganInternt kan ikke være Sann");
 
 		persistedJournalpost.getJournalpostDokumentInfoRelasjoner()
 				.iterator()
@@ -340,7 +340,7 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentIT extends AbstractArkive
 	@Test
 	public void shouldThrowIfVedleggDokumentInfoInnskrenketPartInnsynIsTrue() throws Exception {
 		expectedException.expect(isA(OpprettUtgaaendeJournalpostValideringAvVedleggFeilet.class));
-		expectedException.expectMessage("DokumentInfo.innskrenketPartsinnsyn kan ikke være True");
+		expectedException.expectMessage("DokumentInfo.InnskrenketPartsinnsyn kan ikke være Sann");
 
 		persistedJournalpost.getJournalpostDokumentInfoRelasjoner()
 				.iterator()

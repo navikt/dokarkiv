@@ -306,7 +306,7 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentValidatorTest {
 	@Test
 	public void shouldThrowIfInputDokumentInfoSlettetIsTrue() throws Exception {
 		expected.expect(ValideringAvVedleggFeiletException.class);
-		expected.expectMessage("DokumentInfo.slettet kan ikke være True");
+		expected.expectMessage("DokumentInfo.Slettet kan ikke være Sann");
 		validator.validateVedlegg(journalpost, DokumentInfo.builder()
 				.dokumentstatus(DokumentStatusCode.FERDIGSTILT)
 				.slettet(true)
@@ -316,7 +316,7 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentValidatorTest {
 	@Test
 	public void shouldThrowIfInputDokumentInfoOrganinterntIsTrue() {
 		expected.expect(IllegalArgumentException.class);
-		expected.expectMessage("DokumentInfo.OrganInternt kan ikke være True");
+		expected.expectMessage("DokumentInfo.OrganInternt kan ikke være Sann");
 		validator.validateVedleggDokumentInfo(DokumentInfo.builder()
 				.dokumentstatus(DokumentStatusCode.FERDIGSTILT)
 				.organInternt(true)
@@ -326,7 +326,7 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentValidatorTest {
 	@Test
 	public void shouldThrowIfInputDokumentInfoInnskrenketPartsinnsynIsTrue() {
 		expected.expect(IllegalArgumentException.class);
-		expected.expectMessage("DokumentInfo.innskrenketPartsinnsyn kan ikke være True");
+		expected.expectMessage("DokumentInfo.InnskrenketPartsinnsyn kan ikke være Sann");
 		validator.validateVedleggDokumentInfo(DokumentInfo.builder()
 				.dokumentstatus(DokumentStatusCode.FERDIGSTILT)
 				.innskrenketPartsinnsyn(true)
@@ -336,7 +336,7 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentValidatorTest {
 	@Test
 	public void shouldThrowIfInputDokumentInfoInnskrenketPartsinnsynFraTredjePartIsTrue() {
 		expected.expect(IllegalArgumentException.class);
-		expected.expectMessage("DokumentInfo.innskrenketPartsinnsynFraTredjepart kan ikke være True");
+		expected.expectMessage("DokumentInfo.InnskrenketPartsinnsynFraTredjepart kan ikke være Sann");
 		validator.validateVedleggDokumentInfo(DokumentInfo.builder()
 				.dokumentstatus(DokumentStatusCode.FERDIGSTILT)
 				.innskrenketPartsinnsynFraTredjepart(true)
