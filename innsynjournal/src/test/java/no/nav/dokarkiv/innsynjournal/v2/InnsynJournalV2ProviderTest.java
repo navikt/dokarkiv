@@ -1,7 +1,5 @@
 package no.nav.dokarkiv.innsynjournal.v2;
 
-import static no.nav.dokarkiv.innsynjournal.v2.InnsynJournalV2Provider.INNSYN_JOURNAL_V2_HENT_JP_LISTE;
-import static no.nav.dokarkiv.innsynjournal.v2.InnsynJournalV2Provider.INNSYN_JOURNAL_V2_IDENTIFISER_JP;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.fail;
@@ -10,8 +8,6 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.codahale.metrics.Histogram;
-import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.Lists;
 import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
@@ -45,7 +41,6 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.ArrayList;
@@ -70,8 +65,6 @@ public class InnsynJournalV2ProviderTest {
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
 
-	@Spy
-	private MetricRegistry metrics = new MetricRegistry();
 	@Mock
 	private InnsynJournalV2SecurityFacade securityFacade;
 	@Mock
@@ -88,9 +81,8 @@ public class InnsynJournalV2ProviderTest {
 
 	@Before
 	public void setUp() throws Exception {
-		System.setProperty("no.nav.modig.security.systemuser.username", "JOARK");
+//		System.setProperty("no.nav.modig.security.systemuser.username", "JOARK");
 //		System.setProperty("no.nav.modig.core.context.subjectHandlerImplementationClass", ThreadLocalSubjectHandler.class.getName());
-		innsynJournalV2Provider.afterPropertiesSet();
 	}
 
 	@Test
@@ -230,8 +222,6 @@ public class InnsynJournalV2ProviderTest {
 		verify(hentMinTilgjengeligeJournalpostListeV2RequestMapper).map(wsRequest);
 		verify(securityFacade).hentMineTilgjengeligeJournalpostListe(request);
 		verify(hentMinTilgjengeligJournalpostListeV2ResponseMapper).mapList(innsynList);
-
-		assertHistograms(1, 3);
 	}
 
 	@Test
@@ -253,23 +243,6 @@ public class InnsynJournalV2ProviderTest {
 		verify(identifiserJournalpostV2RequestMapper).map(wsRequest);
 		verify(securityFacade).identifiserJournalpost(request);
 		verify(identifiserJournalpostV2ResponseMapper).map(innsynJournalpostTo);
-
-		assertIdentifiserJpurnalpostHistograms(3);
-	}
-
-	private void assertIdentifiserJpurnalpostHistograms(long dokumenter) {
-		Histogram dokumenterHist = metrics.histogram(INNSYN_JOURNAL_V2_IDENTIFISER_JP + ".dokumenter");
-
-		assertThat(dokumenterHist.getSnapshot().getValues()[0], is(dokumenter));
-	}
-
-
-	private void assertHistograms(long saker, long dokumenter) {
-		Histogram sakerHist = metrics.histogram(INNSYN_JOURNAL_V2_HENT_JP_LISTE + ".saker");
-		Histogram dokumenterHist = metrics.histogram(INNSYN_JOURNAL_V2_HENT_JP_LISTE + ".dokumenter");
-
-		assertThat(sakerHist.getSnapshot().getValues()[0], is(saker));
-		assertThat(dokumenterHist.getSnapshot().getValues()[0], is(dokumenter));
 	}
 
 	private HentTilgjengeligJournalpostListeResponse createResponse() {

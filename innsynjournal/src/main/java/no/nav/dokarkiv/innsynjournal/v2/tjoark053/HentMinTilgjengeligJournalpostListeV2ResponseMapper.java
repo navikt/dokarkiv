@@ -3,6 +3,7 @@ package no.nav.dokarkiv.innsynjournal.v2.tjoark053;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
+import no.nav.dokarkiv.core.util.DateConverterUtil;
 import no.nav.dokarkiv.innsynjournal.v2.InnsynJournalpostTo;
 import no.nav.tjeneste.virksomhet.innsynjournal.v2.informasjon.AvsenderMottaker;
 import no.nav.tjeneste.virksomhet.innsynjournal.v2.informasjon.DokumentinfoRelasjon;

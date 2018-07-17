@@ -2,8 +2,20 @@ package no.nav.dokarkiv.innsynjournal.v2;
 
 import static java.util.Collections.singletonMap;
 import static no.nav.dokarkiv.innsynjournal.v2.InnsynJournalpostTo.innsynJournalposts;
+import static no.nav.dokarkiv.innsynjournal.v2.security.urn.ActionAttributeIds.READ_OPERATION;
+import static no.nav.dokarkiv.innsynjournal.v2.security.urn.EnvironmentAttributeIds.ATTR_ENVIRONMENT_RECIEVER;
+import static no.nav.dokarkiv.innsynjournal.v2.security.urn.EnvironmentAttributeIds.EXTERNAL;
+import static no.nav.dokarkiv.innsynjournal.v2.security.urn.ResourceAttributeIds.ATTR_RESOURCE_TARGET;
+import static no.nav.dokarkiv.innsynjournal.v2.security.urn.ResourceAttributeIds.JOURNALPOST_DOCUMENT;
+import static no.nav.modig.security.tilgangskontroll.policy.attributes.AttributeIds.ATTR_ACTION_ID;
+import static no.nav.modig.security.tilgangskontroll.policy.attributes.AttributeIds.ATTR_RESOURCE_ID;
 
 import com.google.common.collect.Maps;
+import no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerService;
+import no.nav.dokarkiv.core.consumer.aktoer.HentAktoerIdForIdentRequestTo;
+import no.nav.dokarkiv.core.consumer.aktoer.HentAktoerIdForIdentResponseTo;
+import no.nav.dokarkiv.core.consumer.aktoer.IdentDetaljerTo;
+import no.nav.dokarkiv.core.consumer.aktoer.PersonIkkeFunnetException;
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
@@ -14,6 +26,7 @@ import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.innsynjournal.v2.exceptions.DocumentNotFoundException;
 import no.nav.dokarkiv.innsynjournal.v2.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.innsynjournal.v2.exceptions.JournalpostIkkeInngaaendeException;
@@ -26,6 +39,9 @@ import no.nav.dokarkiv.innsynjournal.v2.tjoark053.HentJournalpostListeToRequest;
 import no.nav.dokarkiv.innsynjournal.v2.tjoark053.HentMinTilgjengeligeJournalpostListeService;
 import no.nav.dokarkiv.innsynjournal.v2.tjoark059.IdentifiserJournalpostService;
 import no.nav.dokarkiv.innsynjournal.v2.tjoark059.IdentifiserJournalpostToRequest;
+import no.nav.modig.security.tilgangskontroll.policy.pep.AccessControl;
+import no.nav.modig.security.tilgangskontroll.policy.pep.AccessControlAttribute;
+import no.nav.modig.security.tilgangskontroll.policy.pep.AttributeType;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -51,30 +67,28 @@ public class InnsynJournalV2SecurityFacade {
 	private Date earliestAllowedDate;
 
 //	@Inject
-//	private HentJournalpost hentJournalpostService;
-//	@Inject
 //	private HentDokumentService hentDokumentService;
-//	@Inject
-//	private AktoerConsumerService aktoerConsumerService;
+	@Inject
+	private AktoerConsumerService aktoerConsumerService;
+	@Inject
+	private JoarkRepository joarkRepository;
 	@Inject
 	private HentMinTilgjengeligeJournalpostListeService hentMinTilgjengeligeJournalpostListeService;
 	@Inject
 	private IdentifiserJournalpostService identifiserJournalpostService;
 
-//	@AccessControl(attributes = {
-//			@AccessControlAttribute(name = ATTR_ACTION_ID, value = READ_OPERATION, type = AttributeType.ACTION),
-//			@AccessControlAttribute(name = ATTR_RESOURCE_TARGET, value = JOURNALPOST_DOCUMENT, type = AttributeType.RESOURCE),
-//			@AccessControlAttribute(name = ATTR_RESOURCE_ID, value = JOURNALPOST_DOCUMENT, type = AttributeType.RESOURCE),
-//			@AccessControlAttribute(name = ATTR_ENVIRONMENT_RECIEVER, value = EXTERNAL, type = AttributeType.SUBJECT)//FIXME:
-//			// Denne burde vært laget med type=environment, men en bug i
-//			// modig-security gjør at "environment"-variabler aldri blir sendt
-//			// inn som en del av XACML-requesten
-//	})
+	@AccessControl(attributes = {
+			@AccessControlAttribute(name = ATTR_ACTION_ID, value = READ_OPERATION, type = AttributeType.ACTION),
+			@AccessControlAttribute(name = ATTR_RESOURCE_TARGET, value = JOURNALPOST_DOCUMENT, type = AttributeType.RESOURCE),
+			@AccessControlAttribute(name = ATTR_RESOURCE_ID, value = JOURNALPOST_DOCUMENT, type = AttributeType.RESOURCE),
+			@AccessControlAttribute(name = ATTR_ENVIRONMENT_RECIEVER, value = EXTERNAL, type = AttributeType.SUBJECT)
+			// Denne burde vært laget med type=environment, men en bug i
+			// modig-security gjør at "environment"-variabler aldri blir sendt
+			// inn som en del av XACML-requesten
+	})
 	public byte[] hentDokument(Long journalpostId, Long dokumentInfoId) throws NoJournalpostFoundException,
 			DocumentNotFoundException {
-//		HentJournalpostResponse response = hentJournalpostService.hentJournalpost(new HentJournalpostRequest(journalpostId));
-//		Journalpost journalpost = response.getJournalpost();
-		Journalpost journalpost = null;
+		Journalpost journalpost = joarkRepository.findById(journalpostId).orElseThrow(() -> new NoJournalpostFoundException("Journalpost med id " + journalpostId + " eksisterer ikke", journalpostId));
 		DokumentInfo dokumentInfo = journalpost.getDokumentInfoFromJpDokInfoRelasjonerByDokumentInfoId(dokumentInfoId);
 
 		if (dokumentInfo == null) {
@@ -102,15 +116,15 @@ public class InnsynJournalV2SecurityFacade {
 		return hentDokumentBytes(journalpostId, dokumentInfoId);
 	}
 
-//	@AccessControl(attributes = {
-//			@AccessControlAttribute(name = ATTR_ACTION_ID, value = READ_OPERATION, type = AttributeType.ACTION),
-//			@AccessControlAttribute(name = ATTR_RESOURCE_TARGET, value = JOURNALPOST_DOCUMENT, type = AttributeType.RESOURCE),
-//			@AccessControlAttribute(name = ATTR_RESOURCE_ID, value = JOURNALPOST_DOCUMENT, type = AttributeType.RESOURCE),
-//			@AccessControlAttribute(name = ATTR_ENVIRONMENT_RECIEVER, value = EXTERNAL, type = AttributeType.SUBJECT)//FIXME:
-//			// Denne burde vært laget med type=environment, men en bug i
-//			// modig-security gjør at "environment"-variabler aldri blir sendt
-//			// inn som en del av XACML-requesten
-//	})
+	@AccessControl(attributes = {
+			@AccessControlAttribute(name = ATTR_ACTION_ID, value = READ_OPERATION, type = AttributeType.ACTION),
+			@AccessControlAttribute(name = ATTR_RESOURCE_TARGET, value = JOURNALPOST_DOCUMENT, type = AttributeType.RESOURCE),
+			@AccessControlAttribute(name = ATTR_RESOURCE_ID, value = JOURNALPOST_DOCUMENT, type = AttributeType.RESOURCE),
+			@AccessControlAttribute(name = ATTR_ENVIRONMENT_RECIEVER, value = EXTERNAL, type = AttributeType.SUBJECT)
+			// Denne burde vært laget med type=environment, men en bug i
+			// modig-security gjør at "environment"-variabler aldri blir sendt
+			// inn som en del av XACML-requesten
+	})
 	public List<InnsynJournalpostTo> hentMineTilgjengeligeJournalpostListe(HentJournalpostListeToRequest request) {
 		List<Journalpost> journalposts = hentMinTilgjengeligeJournalpostListeService
 				.hentMineTilgjengeligeJournalposter(request);
@@ -165,19 +179,19 @@ public class InnsynJournalV2SecurityFacade {
 	}
 
 	private boolean matchesHistoricalFnr(String fnr, Journalpost journalpostTomatch) {
-//		HentAktoerIdForIdentResponseTo responseTo; FIXME
-//		try {
-//			responseTo = aktoerConsumerService.hentAktoerIdForIdent(new HentAktoerIdForIdentRequestTo(fnr));
-//		} catch (PersonIkkeFunnetException e) {
-//			throw new SecurityTechnicalException("Kan ikke utføre tilgangskontroll for pålogget bruker med fnr=" + fnr + " " +
-//					"for journalpost med journalpostId=" + journalpostTomatch.getJournalpostId(), e);
-//		}
-//
-//		for (IdentDetaljerTo identDetaljerTo : responseTo.getHistoriskeIdenter()) {
-//			if (identDetaljerTo.getFnr().equals(journalpostTomatch.getAvsenderMottakerId())) {
-//				return true;
-//			}
-//		}
+		HentAktoerIdForIdentResponseTo responseTo;
+		try {
+			responseTo = aktoerConsumerService.hentAktoerIdForIdent(new HentAktoerIdForIdentRequestTo(fnr));
+		} catch (PersonIkkeFunnetException e) {
+			throw new SecurityTechnicalException("Kan ikke utføre tilgangskontroll for pålogget bruker med fnr=" + fnr + " " +
+					"for journalpost med journalpostId=" + journalpostTomatch.getJournalpostId(), e);
+		}
+
+		for (IdentDetaljerTo identDetaljerTo : responseTo.getHistoriskeIdenter()) {
+			if (identDetaljerTo.getFnr().equals(journalpostTomatch.getAvsenderMottakerId())) {
+				return true;
+			}
+		}
 		return false;
 	}
 
@@ -198,7 +212,7 @@ public class InnsynJournalV2SecurityFacade {
 //			throw new SecurityLimitationAttributeException(journalpost.getJournalpostId(),
 //					dokumentInfoId,
 //					attributeMap);
-//		} FIXME
+//		}
 	}
 
 	private void verifySaksrelasjon(Journalpost journalpost, Long dokumentInfoId) {

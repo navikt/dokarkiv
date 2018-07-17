@@ -55,7 +55,7 @@ import java.util.Map;
  */
 @Ignore
 @RunWith(MockitoJUnitRunner.class)
-public class InnsynJournalSecurityFacadeTest {
+public class InnsynJournalV2SecurityFacadeTest {
 
 	private static final byte[] DOK = "dok".getBytes();
 	private static final String USER_ID = "***gammelt_fnr***";

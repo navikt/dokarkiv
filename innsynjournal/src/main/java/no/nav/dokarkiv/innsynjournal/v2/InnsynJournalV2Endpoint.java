@@ -35,7 +35,7 @@ import javax.xml.ws.soap.Addressing;
 		serviceName = "InnsynJournal_v2",
 		portName = "InnsynJournal_v2Port")
 @Addressing
-@HandlerChain(file = "handler.xml")
+@HandlerChain(file = "classpath:innsynjournalv2handler.xml")
 public class InnsynJournalV2Endpoint implements InnsynJournalV2 {
 
 	@Resource
@@ -72,16 +72,4 @@ public class InnsynJournalV2Endpoint implements InnsynJournalV2 {
 		RequestContextUtil.createAndSetRequestContext(webServiceContext, "InnsynJournalV2.identifiserJournalpost");
 		return innsynJournalV2Provider.identifiserJournalpost(request);
 	}
-
-//	/**
-//	 * Retrieve the innsynJournalProvider bean from the Spring context.
-//	 */
-//	@PostConstruct
-//	public void initArkiverDokumentproduksjonProvider() {
-//		ServletContext servletContext = (ServletContext) webServiceContext.getMessageContext().get(
-//				MessageContext.SERVLET_CONTEXT);
-//		WebApplicationContext webApplicationContext = WebApplicationContextUtils
-//				.getRequiredWebApplicationContext(servletContext);
-//		innsynJournalV2Provider = (InnsynJournalV2) webApplicationContext.getBean(InnsynJournalProviderConfig.PROVIDER_BEAN2);
-//	}
 }

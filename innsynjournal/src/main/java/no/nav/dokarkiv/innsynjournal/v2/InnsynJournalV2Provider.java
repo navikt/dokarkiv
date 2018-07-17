@@ -1,7 +1,5 @@
 package no.nav.dokarkiv.innsynjournal.v2;
 
-import com.codahale.metrics.Histogram;
-import com.codahale.metrics.MetricRegistry;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.exceptions.AuthorizationException;
 import no.nav.dokarkiv.innsynjournal.v2.exceptions.DocumentNotFoundException;
@@ -27,7 +25,6 @@ import no.nav.tjeneste.virksomhet.innsynjournal.v2.binding.IdentifiserJournalpos
 import no.nav.tjeneste.virksomhet.innsynjournal.v2.binding.InnsynJournalV2;
 import no.nav.tjeneste.virksomhet.innsynjournal.v2.feil.FunctionalFault;
 import no.nav.tjeneste.virksomhet.innsynjournal.v2.feil.TechnicalFault;
-import no.nav.tjeneste.virksomhet.innsynjournal.v2.informasjon.Journalpost;
 import no.nav.tjeneste.virksomhet.innsynjournal.v2.informasjon.Variantformater;
 import no.nav.tjeneste.virksomhet.innsynjournal.v2.meldinger.HentDokumentRequest;
 import no.nav.tjeneste.virksomhet.innsynjournal.v2.meldinger.HentDokumentResponse;
@@ -37,7 +34,6 @@ import no.nav.tjeneste.virksomhet.innsynjournal.v2.meldinger.IdentifiserJournalp
 import no.nav.tjeneste.virksomhet.innsynjournal.v2.meldinger.IdentifiserJournalpostResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
@@ -50,7 +46,7 @@ import java.util.List;
  *
  * @author Roar Bjurstrom, Visma Consulting.
  */
-public class InnsynJournalV2Provider implements InnsynJournalV2, InitializingBean {
+public class InnsynJournalV2Provider implements InnsynJournalV2 {
 
 	private static final Logger log = LoggerFactory.getLogger(InnsynJournalV2Provider.class);
 
@@ -74,12 +70,6 @@ public class InnsynJournalV2Provider implements InnsynJournalV2, InitializingBea
 	@Inject
 	private IdentifiserJournalpostV2ResponseMapper identifiserJournalpostV2ResponseMapper;
 
-	@Inject
-	private MetricRegistry metrics;
-	private Histogram sakerHistogram;
-	private Histogram dokumenterHistogram;
-	private Histogram dokumenterIJPHistogram;
-
 	@Override
 	public void ping() {
 		//noop
@@ -92,25 +82,13 @@ public class InnsynJournalV2Provider implements InnsynJournalV2, InitializingBea
 		try {
 			HentJournalpostListeToRequest toRequest = journalpostListeV2RequestMapper.map(wsRequest);
 			List<InnsynJournalpostTo> innsynJournalpostTos = securityFacade.hentMineTilgjengeligeJournalpostListe(toRequest);
-			HentTilgjengeligJournalpostListeResponse response = journalpostListeV2ResponseMapper.mapList(innsynJournalpostTos);
-			countSakerAndDokumenter(response, toRequest.getSaksListe().size());
-			return response;
+			return journalpostListeV2ResponseMapper.mapList(innsynJournalpostTos);
 		} catch (AuthorizationException e) {
 //			log.warn(String.format("Access denied in operation %s. LoggedOnUser=%s", INNSYN_JOURNAL_V2_HENT_JP_LISTE,
 //					SubjectHandler.getSubjectHandler().getUid()), e); FIXME
 			AuthorizationException undetailedException = new AuthorizationException(ACCESS_DENIED);
 			throw new HentTilgjengeligJournalpostListeSikkerhetsbegrensning(undetailedException.getMessage(), new FunctionalFault());
 		}
-	}
-
-	private void countSakerAndDokumenter(HentTilgjengeligJournalpostListeResponse response, int antallSaker) {
-		sakerHistogram.update(antallSaker);
-		List<Journalpost> journalpostListe = response.getJournalpostListe();
-		int i = 0;
-		for (Journalpost journalpost : journalpostListe) {
-			i += journalpost.getDokumentinfoRelasjonListe().size();
-		}
-		dokumenterHistogram.update(i);
 	}
 
 	@Override
@@ -162,9 +140,7 @@ public class InnsynJournalV2Provider implements InnsynJournalV2, InitializingBea
 			}
 			IdentifiserJournalpostToRequest toRequest = identifiserJournalpostV2RequestMapper.map(wsRequest);
 			InnsynJournalpostTo innsynJournalpostTo = securityFacade.identifiserJournalpost(toRequest);
-			IdentifiserJournalpostResponse response = identifiserJournalpostV2ResponseMapper.map(innsynJournalpostTo);
-			countDokumenter(response);
-			return response;
+			return identifiserJournalpostV2ResponseMapper.map(innsynJournalpostTo);
 
 		} catch (UgyldigInputException e) {
 			throw new IdentifiserJournalpostUgyldingInput(e.getMessage(), new TechnicalFault());
@@ -176,19 +152,5 @@ public class InnsynJournalV2Provider implements InnsynJournalV2, InitializingBea
 		} catch (JournalpostIkkeFunnetException e) {
 			throw new IdentifiserJournalpostUgyldigAntallJournalposter(e.getMessage(), new FunctionalFault());
 		}
-	}
-
-	private void countDokumenter(IdentifiserJournalpostResponse response) {
-		int i = 1; //Hoveddokument
-		i += response.getVedleggListe().size();
-		dokumenterIJPHistogram.update(i);
-	}
-
-
-	@Override
-	public void afterPropertiesSet() throws Exception {
-		sakerHistogram = metrics.histogram(INNSYN_JOURNAL_V2_HENT_JP_LISTE + ".saker");
-		dokumenterHistogram = metrics.histogram(INNSYN_JOURNAL_V2_HENT_JP_LISTE + ".dokumenter");
-		dokumenterIJPHistogram = metrics.histogram(INNSYN_JOURNAL_V2_IDENTIFISER_JP + ".dokumenter");
 	}
 }
