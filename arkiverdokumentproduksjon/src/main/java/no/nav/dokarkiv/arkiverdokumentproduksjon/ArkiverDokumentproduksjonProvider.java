@@ -151,15 +151,10 @@ import javax.inject.Inject;
 public class ArkiverDokumentproduksjonProvider implements ArkiverDokumentproduksjonV1 {
 
 	private static final String ARKIVER_DOKUMENTPRODUKSJON_V1 = "ArkiverDokumentproduksjonV1";
-	private static final String OPPRETT_JOURNALPOST_ARKIVER_DOKUMENT = ARKIVER_DOKUMENTPRODUKSJON_V1 + ".opprettJournalpostArkiverDokument";
-	private static final String OPPDATER_JOURNALPOST_ARKIVER_DOKUMENT = ARKIVER_DOKUMENTPRODUKSJON_V1 + ".oppdaterJournalpostArkiverDokument";
-	private static final String OPPRETT_JOURNALPOST = ARKIVER_DOKUMENTPRODUKSJON_V1 + ".opprettJournalpost";
-	private static final String AVBRYT_JOURNALPOST = ARKIVER_DOKUMENTPRODUKSJON_V1 + ".avbrytJournalpost";
 	private static final String ARKIVER_VEDLEGG = ARKIVER_DOKUMENTPRODUKSJON_V1 + ".arkiverVedlegg";
 	private static final String AVBRYT_VEDLEGG = ARKIVER_DOKUMENTPRODUKSJON_V1 + ".avbrytVedlegg";
 	private static final String FERDIGSTILL_JOURNALPOST = ARKIVER_DOKUMENTPRODUKSJON_V1 + ".ferdigstillJournalpost";
 	private static final String FJERN_FERDIGSTILT_DOKUMENT = ARKIVER_DOKUMENTPRODUKSJON_V1 + ".fjernFerdigstiltDokument";
-	private static final String SETT_DATO_SENDT = ARKIVER_DOKUMENTPRODUKSJON_V1 + ".settDatoSendt";
 	private static final String KNYTT_DOKUMENT_TIL_JOURNALPOST_SOM_VEDLEGG = ARKIVER_DOKUMENTPRODUKSJON_V1 + ".knyttDokumentTilJournalpostSomVedlegg";
 	private static final String OPPRETT_UTGAAENDE_JOURNALPOST_ARKIVER_DOKUMENT = ARKIVER_DOKUMENTPRODUKSJON_V1 + ".opprettUtgaaendeJournalpostArkiverDokument";
 
@@ -456,11 +451,7 @@ public class ArkiverDokumentproduksjonProvider implements ArkiverDokumentproduks
 			KnyttDokumentTilJournalpostSomVedleggJournalpostIkkeFerdigstilt,
 			KnyttDokumentTilJournalpostSomVedleggUlikeFagomraader {
 
-		KnyttDokumentTilJournalpostSomVedleggRequestTo domainRequest = null;
-
-		if (request != null) {
-			domainRequest = knyttDokumentTilJournalpostSomVedleggRequestMapper.map(request);
-		}
+		KnyttDokumentTilJournalpostSomVedleggRequestTo domainRequest = knyttDokumentTilJournalpostSomVedleggRequestMapper.map(request);
 
 		try {
 			knyttDokumentTilJournalpostSomVedleggService.knyttDokumentTilJournalpostSomVedlegg(domainRequest);

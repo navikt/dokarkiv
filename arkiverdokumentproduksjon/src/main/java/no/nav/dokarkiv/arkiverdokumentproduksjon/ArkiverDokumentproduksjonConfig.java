@@ -29,7 +29,7 @@ public class ArkiverDokumentproduksjonConfig {
 									   LdapUsernameTokenValidatorInterceptor ldapUsernameTokenValidatorInterceptor) {
 		EndpointImpl endpoint = new EndpointImpl(bus, arkiverDokumentproduksjonEndpoint);
 		endpoint.publish("/arkiverdokumentproduksjon/v1");
-		org.apache.cxf.endpoint.Endpoint cxfEndpoint = endpoint.getServer().getEndpoint();
+		final org.apache.cxf.endpoint.Endpoint cxfEndpoint = endpoint.getServer().getEndpoint();
 		endpoint.getProperties().put("ws-security.validate.token", "false");
 		Map<String, Object> inProps = new HashMap<>();
 		inProps.put(WSHandlerConstants.ACTION, WSHandlerConstants.USERNAME_TOKEN);

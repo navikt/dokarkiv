@@ -21,7 +21,7 @@ public final class ByteArrayDataSource implements DataSource {
 	}
 
 	private ByteArrayDataSource(byte[] buf, int start, int length, String contentType) {
-		this.buf = buf;
+		this.buf = buf.clone();
 		this.start = start;
 		this.len = length;
 		this.contentType = contentType;

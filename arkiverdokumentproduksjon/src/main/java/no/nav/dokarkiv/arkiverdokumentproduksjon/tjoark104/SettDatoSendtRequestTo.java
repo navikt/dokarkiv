@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark104;
 
+import lombok.Data;
 import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.ApplicationException;
 import org.apache.commons.lang.StringUtils;
 
@@ -11,28 +12,11 @@ import java.util.List;
  *
  * @author Joakim Bjørnstad, Visma Consulting
  */
+@Data
 public class SettDatoSendtRequestTo {
-	private List<Long> journalpostIds;
-	private String endretAvNavn;
-	private Date datoSendtPrint;
-
-	public SettDatoSendtRequestTo(List<Long> journalpostIds, String endretAvNavn, Date datoSendtPrint) {
-		this.journalpostIds = journalpostIds;
-		this.endretAvNavn = endretAvNavn;
-		this.datoSendtPrint = datoSendtPrint;
-	}
-
-	public List<Long> getJournalpostIds() {
-		return journalpostIds;
-	}
-
-	public String getEndretAvNavn() {
-		return endretAvNavn;
-	}
-
-	public Date getDatoSendtPrint() {
-		return datoSendtPrint;
-	}
+	private final List<Long> journalpostIds;
+	private final String endretAvNavn;
+	private final Date datoSendtPrint;
 
 	public void validate() {
 		if (journalpostIds == null || journalpostIds.isEmpty()) {

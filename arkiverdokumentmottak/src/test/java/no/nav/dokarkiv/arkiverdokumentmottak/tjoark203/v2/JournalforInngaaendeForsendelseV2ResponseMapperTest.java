@@ -4,7 +4,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
-import no.nav.dokarkiv.core.nsb.DokumentInfoIdVedleggTo;
+import no.nav.dokarkiv.arkiverdokumentmottak.DokumentInfoIdVedleggTo;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v2.informasjon.arkiverdokumentmottak.JournalTilstandEnum;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v2.meldinger.JournalforInngaaendeForsendelseResponse;
 import org.junit.Rule;
@@ -29,14 +29,14 @@ public class JournalforInngaaendeForsendelseV2ResponseMapperTest {
 	private static final JournalTilstandEnum JOURNAL_TILSTAND_ENDELIG_ENUM = JournalTilstandEnum.ENDELIG;
 
 	private JournalforInngaaendeForsendelseV2ResponseMapper mapper = new JournalforInngaaendeForsendelseV2ResponseMapper();
-	private JournalforInngaaendeForsendelseV2ResponseTo to;
 
 	@Test
 	public void testValidMap() throws Exception {
-		DokumentInfoIdVedleggTo vedlegg = new DokumentInfoIdVedleggTo();
-		vedlegg.setDokumentInfoId(DOKUMENTINFO_ID);
-		vedlegg.setDokumentTypeId(DOKUMENTTYPE_ID);
-		to = new JournalforInngaaendeForsendelseV2ResponseTo(
+		DokumentInfoIdVedleggTo vedlegg = DokumentInfoIdVedleggTo.builder()
+				.dokumentInfoId(DOKUMENTINFO_ID)
+				.dokumentTypeId(DOKUMENTTYPE_ID)
+				.build();
+		JournalforInngaaendeForsendelseV2ResponseTo to = new JournalforInngaaendeForsendelseV2ResponseTo(
 				JOURNALPOST_ID,
 				DOKUMENT_INFO_ID_HOVEDDOKUMENT,
 				Collections.singletonList(vedlegg),

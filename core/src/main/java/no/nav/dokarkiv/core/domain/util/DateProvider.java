@@ -64,17 +64,6 @@ public class DateProvider {
 	}
 
 	/**
-	 * Spring init-method. Initializes dateprovider in configured mode.
-	 */
-	public void initialize() {
-		if (mockMode) {
-			provider = getMockProvider(mockDate);
-		} else {
-			provider = getNormalProvider();
-		}
-	}
-
-	/**
 	 * Gets todays date. Real date by default, or mocked date if configured.
 	 *
 	 * @return Todays date.
@@ -91,7 +80,7 @@ public class DateProvider {
 	 * DateProvider.
 	 *
 	 * @param date Date to format
-	 * @return A formatted date, see {@value #DATE_PATTERN}.
+	 * @return A formatted date.
 	 */
 	public static String getDate(Date date) {
 		return LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault()).toString();

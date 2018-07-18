@@ -8,8 +8,9 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
  * 
  * @author Morten Andersen-Gott
  * @author Christian Kjendseth Wiik (Accenture)
- * @author Stig Kleppe-J�rgensen
+ * @author Stig Kleppe-Jørgensen
  */
+@Deprecated
 public abstract class SystemUnrecoverableException extends UnrecoverableException {
 
 	private ErrorCode errorCode;

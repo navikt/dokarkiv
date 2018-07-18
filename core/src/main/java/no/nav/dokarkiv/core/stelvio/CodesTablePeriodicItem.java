@@ -14,13 +14,14 @@ import javax.persistence.MappedSuperclass;
  * @author Therese Steensen (Accenture)
  * @author Stig Kleppe-Jørgensen (Accenture)
  * @version $Id$
- * @see CodesTableItem
+ * @deprecated for mye komplisert logikk som ikke brukes. burde konsolideres
  *
  * @param <K>
  *            an enum type variable
  * @param <V>
  *            a type variable
  */
+@Deprecated
 @MappedSuperclass
 public abstract class CodesTablePeriodicItem<K extends Enum, V> extends AbstractCodesTablePeriodicItem<K, V> {
 	private static final long serialVersionUID = -***gammelt_fnr***40432765L;

@@ -12,6 +12,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
  * @author Christian Kjendseth Wiik (Accenture)
  * @author Petter Skodvin, Accenture
  */
+@Deprecated
 public abstract class RecoverableException extends Exception {
 
 	private boolean logged;

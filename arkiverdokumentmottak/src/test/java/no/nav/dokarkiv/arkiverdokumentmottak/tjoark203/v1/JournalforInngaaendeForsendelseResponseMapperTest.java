@@ -4,7 +4,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
-import no.nav.dokarkiv.core.nsb.DokumentInfoIdVedleggTo;
+import no.nav.dokarkiv.arkiverdokumentmottak.DokumentInfoIdVedleggTo;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v1.meldinger.JournalforInngaaendeForsendelseResponse;
 import org.junit.Rule;
 import org.junit.Test;
@@ -28,14 +28,14 @@ public class JournalforInngaaendeForsendelseResponseMapperTest {
 	private static final String DOKUMENTTYPE_ID = "TID";
 
 	private JournalforInngaaendeForsendelseResponseMapper mapper = new JournalforInngaaendeForsendelseResponseMapper();
-	private JournalforInngaaendeForsendelseResponseTo to;
 
 	@Test
 	public void testValidMap() throws Exception {
-		DokumentInfoIdVedleggTo vedlegg = new DokumentInfoIdVedleggTo();
-		vedlegg.setDokumentInfoId(DOKUMENTINFO_ID);
-		vedlegg.setDokumentTypeId(DOKUMENTTYPE_ID);
-		to = new JournalforInngaaendeForsendelseResponseTo(
+		DokumentInfoIdVedleggTo vedlegg = DokumentInfoIdVedleggTo.builder()
+				.dokumentInfoId(DOKUMENTINFO_ID)
+				.dokumentTypeId(DOKUMENTTYPE_ID)
+				.build();
+		JournalforInngaaendeForsendelseResponseTo to = new JournalforInngaaendeForsendelseResponseTo(
 				JOURNALPOST_ID,
 				DOKUMENT_INFO_ID_HOVEDDOKUMENT,
 				Collections.singletonList(vedlegg)

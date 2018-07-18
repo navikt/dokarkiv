@@ -19,8 +19,6 @@ import javax.jws.WebService;
 import javax.xml.ws.WebServiceContext;
 import javax.xml.ws.soap.Addressing;
 
-;
-
 /**
  * Endpoint class for TJOARK203
  *

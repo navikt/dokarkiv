@@ -40,7 +40,7 @@ public final class MDCOperations {
 	}
 	
 	/**
-	 * Resets the request context MDC properties set by {@link #setRequestContextMdcProperties()}.
+	 * Resets the request context MDC properties set by {@link #setMdcProperties()}.
 	 *
 	 */
 	public static void resetMdcProperties() {

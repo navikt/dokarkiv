@@ -94,9 +94,9 @@ public class ChangeStamp implements Serializable {
 	 */
 	public ChangeStamp(String createdBy, Date createdDate, String updatedBy, Date updatedDate) {
 		this.createdBy = createdBy;
-		this.createdDate = createdDate;
+		this.createdDate = createdDate == null ? null : new Date(createdDate.getTime());
 		this.updatedBy = updatedBy;
-		this.updatedDate = updatedDate;
+		this.updatedDate = updatedDate == null ? null : new Date(updatedDate.getTime());
 	}
 
 	/**
@@ -125,7 +125,7 @@ public class ChangeStamp implements Serializable {
 	 * @return sql timestamp for the creation of the object embedding <code>this</code>
 	 */
 	public Date getCreatedDate() {
-		return createdDate;
+		return createdDate == null ? null : new Date(createdDate.getTime());
 	}
 
 	/**
@@ -134,7 +134,7 @@ public class ChangeStamp implements Serializable {
 	 * @return sql timestamp for the most recent change to the object embedding <code>this</code>
 	 */
 	public Date getUpdatedDate() {
-		return updatedDate;
+		return updatedDate == null ? null : new Date(updatedDate.getTime());
 	}
 
 	/**
