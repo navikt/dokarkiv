@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2017 Pivotal Software, Inc.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -38,8 +38,8 @@ import java.util.function.Function;
 /**
  * AspectJ aspect for intercepting types or method annotated with @Timed.
  * Changes: Counter for exceptions
- * @author Joakim Bjørnstad, Jbit AS
  *
+ * @author Joakim Bjørnstad, Jbit AS
  * @author David J. M. Karlsen
  * @author Jon Schneider
  */
@@ -75,7 +75,7 @@ public class DokTimedAspect {
 		Timer.Sample sample = Timer.start(registry);
 		try {
 			return pjp.proceed();
-		} catch(Exception e) {
+		} catch (Exception e) {
 			if (isFunctionalException(method, e)) {
 				log.warn(e.getMessage(), e);
 			} else {

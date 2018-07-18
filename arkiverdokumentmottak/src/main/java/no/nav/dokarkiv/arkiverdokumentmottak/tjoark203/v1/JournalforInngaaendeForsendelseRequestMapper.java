@@ -116,7 +116,7 @@ public class JournalforInngaaendeForsendelseRequestMapper {
 
 	}
 
-	public DokumentInfo mapDokumentInfo(no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v1.informasjon.journalforinngaaendeforsendelse.JournalpostDokumentInfoRelasjon relasjon, Journalpost domainJournalpost) {
+	private DokumentInfo mapDokumentInfo(no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v1.informasjon.journalforinngaaendeforsendelse.JournalpostDokumentInfoRelasjon relasjon, Journalpost domainJournalpost) {
 		if (relasjon == null || relasjon.getDokumentInfo() == null) {
 			return null;
 		}

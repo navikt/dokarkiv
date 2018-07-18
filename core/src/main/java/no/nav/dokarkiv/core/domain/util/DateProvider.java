@@ -80,7 +80,7 @@ public class DateProvider {
 	 * DateProvider.
 	 *
 	 * @param date Date to format
-	 * @return A formatted date, see {@value #DATE_PATTERN}.
+	 * @return A formatted date.
 	 */
 	public static String getDate(Date date) {
 		return LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault()).toString();

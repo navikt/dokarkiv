@@ -11,6 +11,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
  * @author Christian Kjendseth Wiik (Accenture)
  * @author Petter Skodvin
  */
+@Deprecated
 public abstract class UnrecoverableException extends RuntimeException {
 
 	private boolean handled;

@@ -10,6 +10,7 @@ import java.lang.reflect.Field;
  * @author Tommy Trøen, Accenture
  * @version $Id$
  */
+@Deprecated
 public class RequestContextSetter {
 
 	/**

@@ -16,9 +16,10 @@ import java.io.Serializable;
  * tier.
  * 
  * @author Petter Skodvin, Accenture
- * @author Stig Kleppe-J�rgensen, Accenture
+ * @author Stig Kleppe-Jørgensen, Accenture
  * @version $Id: RequestContext.java 1979 2005-02-16 16:34:40Z psa2920 $
  */
+@Deprecated
 public final class SimpleRequestContext implements RequestContext, Serializable {
 	/**
 	 * 

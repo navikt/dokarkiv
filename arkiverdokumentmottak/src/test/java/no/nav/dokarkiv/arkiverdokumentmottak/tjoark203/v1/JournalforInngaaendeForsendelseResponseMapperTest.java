@@ -28,14 +28,14 @@ public class JournalforInngaaendeForsendelseResponseMapperTest {
 	private static final String DOKUMENTTYPE_ID = "TID";
 
 	private JournalforInngaaendeForsendelseResponseMapper mapper = new JournalforInngaaendeForsendelseResponseMapper();
-	private JournalforInngaaendeForsendelseResponseTo to;
 
 	@Test
 	public void testValidMap() throws Exception {
-		DokumentInfoIdVedleggTo vedlegg = new DokumentInfoIdVedleggTo();
-		vedlegg.setDokumentInfoId(DOKUMENTINFO_ID);
-		vedlegg.setDokumentTypeId(DOKUMENTTYPE_ID);
-		to = new JournalforInngaaendeForsendelseResponseTo(
+		DokumentInfoIdVedleggTo vedlegg = DokumentInfoIdVedleggTo.builder()
+				.dokumentInfoId(DOKUMENTINFO_ID)
+				.dokumentTypeId(DOKUMENTTYPE_ID)
+				.build();
+		JournalforInngaaendeForsendelseResponseTo to = new JournalforInngaaendeForsendelseResponseTo(
 				JOURNALPOST_ID,
 				DOKUMENT_INFO_ID_HOVEDDOKUMENT,
 				Collections.singletonList(vedlegg)

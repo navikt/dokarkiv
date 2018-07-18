@@ -26,7 +26,9 @@ import java.lang.reflect.ParameterizedType;
  * @author Morten Andersen-Gott (Accenture)
  * @author Stig Kleppe-Jørgensen (Accenture)
  * @version $Id$
+ * @deprecated for mye komplisert logikk som ikke brukes. burde konsolideres
  */
+@Deprecated
 @MappedSuperclass
 public abstract class AbstractCodesTableItem<K extends Enum, V> implements Serializable, Comparable {
 	private static final long serialVersionUID = -***gammelt_fnr***1433404L;

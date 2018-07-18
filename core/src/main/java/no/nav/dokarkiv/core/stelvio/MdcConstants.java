@@ -25,7 +25,6 @@ public class MdcConstants {
 
 	/**
 	 * Error id, used in error logging to provide framework exception error ids. Typically from
-	 * {@link StelvioException#getErrorId()}.
 	 */
 	public static final String MDC_ERROR = "error";
 

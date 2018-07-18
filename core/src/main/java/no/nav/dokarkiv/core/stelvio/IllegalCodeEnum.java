@@ -12,8 +12,10 @@ package no.nav.dokarkiv.core.stelvio;
  * </p>
  *
  * @author Morten Andersen-Gott (Accenture)
+ * @deprecated brukes ikke
  *
  */
+@Deprecated
 public interface IllegalCodeEnum {
 
 	/**

@@ -6,7 +6,9 @@ package no.nav.dokarkiv.core.stelvio;
  *
  * @author Christian Kjendseth Wiik (Accenture)
  * @author Stig Kleppe-Jørgensen
+ * @deprecated forenkle dette. Kun bruke DokarkivFunctionalException
  */
+@Deprecated
 public abstract class FunctionalUnrecoverableException extends UnrecoverableException {
 
 	/**

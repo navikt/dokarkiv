@@ -24,7 +24,7 @@ import javax.inject.Inject;
 
 /**
  * Implementation of {@link ArkiverUstrukturertKrav}
- * 
+ *
  * @author Joakim Bjørnstad, Visma Consulting
  * @author Thomas Eugen Bjørge, Visma Consulting
  */
@@ -41,7 +41,6 @@ public class DefaultArkiverUstrukturertKrav implements ArkiverUstrukturertKrav {
 	private ArkiverUstrukturertKravJournalpostValidator behandleJournalJournalpostValidator;
 
 	@Override
-	/** {@inheritDoc} */
 	public ArkiverUstrukturertKravResponse arkiverUstrukturertKrav(
 			ArkiverUstrukturertKravRequest arkiverUstrukturertKravRequest) {
 		arkiverUstrukturertKravRequest.validate();

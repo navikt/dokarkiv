@@ -75,8 +75,10 @@ public class JournalforInngaaendeForsendelseService {
 				.getDokumentInfoId());
 		for (JournalpostDokumentInfoRelasjon rel : journalpost.getJournalpostDokumentInfoRelasjoner()) {
 			if (rel.getTilknyttetJournalpostSom() == TilknyttetJournalpostSomCode.VEDLEGG) {
-				DokumentInfoIdVedleggTo vedlegg = new DokumentInfoIdVedleggTo(rel.getDokumentInfo()
-						.getDokumentInfoId(), rel.getDokumentInfo().getDokumenttypeId());
+				DokumentInfoIdVedleggTo vedlegg = DokumentInfoIdVedleggTo.builder()
+						.dokumentInfoId(rel.getDokumentInfo().getDokumentInfoId())
+						.dokumentTypeId(rel.getDokumentInfo().getDokumenttypeId())
+						.build();
 				to.getDokumentInfoIdVedleggTo().add(vedlegg);
 			}
 		}

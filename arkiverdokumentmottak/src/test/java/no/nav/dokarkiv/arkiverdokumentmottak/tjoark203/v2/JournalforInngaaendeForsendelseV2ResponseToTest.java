@@ -60,9 +60,10 @@ public class JournalforInngaaendeForsendelseV2ResponseToTest {
 	}
 
 	private List<DokumentInfoIdVedleggTo> createVedlegg() {
-		DokumentInfoIdVedleggTo vedlegg = new DokumentInfoIdVedleggTo();
-		vedlegg.setDokumentInfoId(DOKUMENTINFO_ID);
-		vedlegg.setDokumentTypeId(DOKUMENTTYPE_ID);
+		DokumentInfoIdVedleggTo vedlegg = DokumentInfoIdVedleggTo.builder()
+				.dokumentInfoId(DOKUMENTINFO_ID)
+				.dokumentTypeId(DOKUMENTTYPE_ID)
+				.build();
 		return Collections.singletonList(vedlegg);
 	}
 }

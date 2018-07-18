@@ -29,9 +29,10 @@ public class JournalforInngaaendeForsendelseResponseToTest {
 
 	@Before
 	public void setUp() throws Exception {
-		DokumentInfoIdVedleggTo vedlegg = new DokumentInfoIdVedleggTo();
-		vedlegg.setDokumentInfoId(DOKUMENTINFO_ID);
-		vedlegg.setDokumentTypeId(DOKUMENTTYPE_ID);
+		DokumentInfoIdVedleggTo vedlegg = DokumentInfoIdVedleggTo.builder()
+				.dokumentInfoId(DOKUMENTINFO_ID)
+				.dokumentTypeId(DOKUMENTTYPE_ID)
+				.build();
 		to = new JournalforInngaaendeForsendelseResponseTo(
 				JOURNALPOST_ID,
 				DOKUMENTINFO_ID_HOVEDDOKUMENT,

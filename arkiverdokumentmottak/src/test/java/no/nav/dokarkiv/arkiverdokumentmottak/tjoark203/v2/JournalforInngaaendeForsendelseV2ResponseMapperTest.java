@@ -29,14 +29,14 @@ public class JournalforInngaaendeForsendelseV2ResponseMapperTest {
 	private static final JournalTilstandEnum JOURNAL_TILSTAND_ENDELIG_ENUM = JournalTilstandEnum.ENDELIG;
 
 	private JournalforInngaaendeForsendelseV2ResponseMapper mapper = new JournalforInngaaendeForsendelseV2ResponseMapper();
-	private JournalforInngaaendeForsendelseV2ResponseTo to;
 
 	@Test
 	public void testValidMap() throws Exception {
-		DokumentInfoIdVedleggTo vedlegg = new DokumentInfoIdVedleggTo();
-		vedlegg.setDokumentInfoId(DOKUMENTINFO_ID);
-		vedlegg.setDokumentTypeId(DOKUMENTTYPE_ID);
-		to = new JournalforInngaaendeForsendelseV2ResponseTo(
+		DokumentInfoIdVedleggTo vedlegg = DokumentInfoIdVedleggTo.builder()
+				.dokumentInfoId(DOKUMENTINFO_ID)
+				.dokumentTypeId(DOKUMENTTYPE_ID)
+				.build();
+		JournalforInngaaendeForsendelseV2ResponseTo to = new JournalforInngaaendeForsendelseV2ResponseTo(
 				JOURNALPOST_ID,
 				DOKUMENT_INFO_ID_HOVEDDOKUMENT,
 				Collections.singletonList(vedlegg),

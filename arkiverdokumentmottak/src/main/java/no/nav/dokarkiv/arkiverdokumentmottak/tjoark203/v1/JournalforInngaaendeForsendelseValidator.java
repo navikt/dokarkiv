@@ -30,10 +30,10 @@ import java.util.Set;
 public class JournalforInngaaendeForsendelseValidator {
 
 	@Inject
-	protected JournalpostStructureVerifier verifier;
+	private JournalpostStructureVerifier verifier;
 
 	@Inject
-	protected MandatoryFieldsVerifier mandatoryFieldsVerifier;
+	private MandatoryFieldsVerifier mandatoryFieldsVerifier;
 
 	public void validate(final Journalpost journalpost, boolean verifyStructure) {
 		mandatoryFieldsVerifier.verifyFields(journalpost);
@@ -94,7 +94,7 @@ public class JournalforInngaaendeForsendelseValidator {
 	/**
 	 * Validates {@link FilDetaljer}
 	 *
-	 * @param filDetaljerList the list of {@link FilDetaljer} in the {@link no.nav.dokarkiv.core.domain.Journalpost} in the request
+	 * @param filDetaljerList the list of {@link FilDetaljer} in the {@link Journalpost} in the request
 	 */
 	private void validateFildetaljerList(Set<FilDetaljer> filDetaljerList) {
 		for (FilDetaljer filDetaljer : filDetaljerList) {
