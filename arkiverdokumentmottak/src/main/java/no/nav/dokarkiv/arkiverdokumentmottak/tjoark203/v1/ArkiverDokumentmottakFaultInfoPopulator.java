@@ -1,6 +1,6 @@
 package no.nav.dokarkiv.arkiverdokumentmottak.tjoark203.v1;
 
-import no.nav.dokarkiv.arkiverdokumentmottak.AbstractJournalFaultInfoPopulator;
+import no.nav.dokarkiv.core.exceptions.AbstractJournalFaultInfoPopulator;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v1.feil.ForretningsmessigUnntak;
 import org.springframework.stereotype.Component;
 

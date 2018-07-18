@@ -35,11 +35,11 @@ public class JournalforInngaaendeForsendelseResponseMapperTest {
 				.dokumentInfoId(DOKUMENTINFO_ID)
 				.dokumentTypeId(DOKUMENTTYPE_ID)
 				.build();
-		JournalforInngaaendeForsendelseResponseTo to = new JournalforInngaaendeForsendelseResponseTo(
-				JOURNALPOST_ID,
-				DOKUMENT_INFO_ID_HOVEDDOKUMENT,
-				Collections.singletonList(vedlegg)
-		);
+		JournalforInngaaendeForsendelseResponseTo to = JournalforInngaaendeForsendelseResponseTo.builder()
+				.journalpostId(JOURNALPOST_ID)
+				.dokumentInfoIdHoveddokument(DOKUMENT_INFO_ID_HOVEDDOKUMENT)
+				.build();
+		to.getDokumentInfoIdVedleggTo().addAll(Collections.singletonList(vedlegg));
 
 		JournalforInngaaendeForsendelseResponse response = mapper.map(to);
 

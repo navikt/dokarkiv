@@ -1,12 +1,10 @@
-package no.nav.dokarkiv.arkiverdokumentproduksjon;
+package no.nav.dokarkiv.core.exceptions;
 
-import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.ApplicationException;
 import no.nav.dokarkiv.core.domain.util.DateProvider;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
-import java.text.SimpleDateFormat;
 import java.util.GregorianCalendar;
 
 /**
@@ -16,9 +14,7 @@ import java.util.GregorianCalendar;
  */
 public abstract class AbstractJournalFaultInfoPopulator {
 
-	private static final String DATE_PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 	private static final String COMPONENT_NAME = "JOARK";
-	protected static final String ERROR_TYPE = "Business";
 
 	/**
 	 * Get the errorsource.
@@ -27,16 +23,7 @@ public abstract class AbstractJournalFaultInfoPopulator {
 	 * @return The errorSource
 	 */
 	protected String getErrorSource(String operationName) {
-		return new StringBuilder(COMPONENT_NAME).append(":").append(operationName).toString();
-	}
-
-	/**
-	 * Get the current time, formatted.
-	 *
-	 * @return The current time
-	 */
-	protected String getTimeStamp() {
-		return new SimpleDateFormat(DATE_PATTERN).format(DateProvider.getToday());
+		return COMPONENT_NAME + ":" + operationName;
 	}
 
 	/**

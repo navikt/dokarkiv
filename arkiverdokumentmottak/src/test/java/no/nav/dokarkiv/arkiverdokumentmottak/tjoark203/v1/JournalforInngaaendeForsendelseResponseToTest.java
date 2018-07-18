@@ -33,11 +33,11 @@ public class JournalforInngaaendeForsendelseResponseToTest {
 				.dokumentInfoId(DOKUMENTINFO_ID)
 				.dokumentTypeId(DOKUMENTTYPE_ID)
 				.build();
-		to = new JournalforInngaaendeForsendelseResponseTo(
-				JOURNALPOST_ID,
-				DOKUMENTINFO_ID_HOVEDDOKUMENT,
-				Collections.singletonList(vedlegg)
-		);
+		to = JournalforInngaaendeForsendelseResponseTo.builder()
+				.journalpostId(JOURNALPOST_ID)
+				.dokumentInfoIdHoveddokument(DOKUMENTINFO_ID_HOVEDDOKUMENT)
+				.build();
+		to.getDokumentInfoIdVedleggTo().addAll(Collections.singletonList(vedlegg));
 	}
 
 	@Test

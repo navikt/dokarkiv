@@ -13,7 +13,7 @@ public class UgyldigTilknyttetJournalpostSomVerdiException extends FunctionalRec
 
 	private static final long serialVersionUID = ***gammelt_fnr***69188758L;
 
-	private TilknyttetJournalpostSomCode tilknyttetJournalpostSomCode;
+	private final TilknyttetJournalpostSomCode tilknyttetJournalpostSomCode;
 
 	public UgyldigTilknyttetJournalpostSomVerdiException(String message, TilknyttetJournalpostSomCode
 			tilknyttetJournalpostSomCode) {

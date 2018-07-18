@@ -69,10 +69,12 @@ public class JournalforInngaaendeForsendelseService {
 	}
 
 	private JournalforInngaaendeForsendelseResponseTo buildResponse(Journalpost journalpost) {
-		JournalforInngaaendeForsendelseResponseTo to = new JournalforInngaaendeForsendelseResponseTo(journalpost.getJournalpostId());
-		to.setDokumentInfoIdHoveddokument(journalpost.findHoveddokumentDokumentInfoRelasjon()
-				.getDokumentInfo()
-				.getDokumentInfoId());
+		JournalforInngaaendeForsendelseResponseTo to = JournalforInngaaendeForsendelseResponseTo.builder()
+				.journalpostId(journalpost.getJournalpostId())
+				.dokumentInfoIdHoveddokument(journalpost.findHoveddokumentDokumentInfoRelasjon()
+						.getDokumentInfo()
+						.getDokumentInfoId())
+				.build();
 		for (JournalpostDokumentInfoRelasjon rel : journalpost.getJournalpostDokumentInfoRelasjoner()) {
 			if (rel.getTilknyttetJournalpostSom() == TilknyttetJournalpostSomCode.VEDLEGG) {
 				DokumentInfoIdVedleggTo vedlegg = DokumentInfoIdVedleggTo.builder()

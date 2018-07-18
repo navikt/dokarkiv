@@ -221,8 +221,10 @@ public class ArkiverDokumentproduksjonProviderTest {
 	public void shouldOpprettJournalpost() throws Exception {
 		OpprettJournalpostRequest wsRequest = new OpprettJournalpostRequest();
 
-		OpprettJournalpostResponseTo domainResponse = new OpprettJournalpostResponseTo(
-				JOURNALPOST_ID, DOCUMENT_INFO_ID);
+		OpprettJournalpostResponseTo domainResponse = OpprettJournalpostResponseTo.builder()
+				.journalpostId(JOURNALPOST_ID)
+				.dokumentInfoId(DOCUMENT_INFO_ID)
+				.build();
 		when(opprettJournalpostServiceMock
 				.opprettJournalpost(any()))
 				.thenReturn(domainResponse);
@@ -238,8 +240,7 @@ public class ArkiverDokumentproduksjonProviderTest {
 			throws Exception {
 		thrown.expect(UgyldigInputException.class);
 
-		OppdaterJournalpostArkiverDokumentRequestTo domainRequest
-				= new OppdaterJournalpostArkiverDokumentRequestTo();
+		OppdaterJournalpostArkiverDokumentRequestTo domainRequest = OppdaterJournalpostArkiverDokumentRequestTo.builder().build();
 
 		provider.oppdaterJournalpostArkiverDokument(new OppdaterJournalpostArkiverDokumentRequest());
 

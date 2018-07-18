@@ -33,15 +33,12 @@ public class OppdaterJournalpostArkiverDokumentRequestTo {
 	private Set<FilDetaljer> fildetaljerSet = new HashSet<>();
 	private boolean ferdigstillJournalpost;
 
-	public OppdaterJournalpostArkiverDokumentRequestTo() {
-	}
-
 	public Date getDatoDokument() {
-		return datoDokument != null ? (Date) datoDokument.clone() : null;
+		return datoDokument == null ? null : new Date(this.datoDokument.getTime());
 	}
 
 	public void setDatoDokument(Date datoDokument) {
-		this.datoDokument = datoDokument != null ? new Date(datoDokument.getTime()) : null;
+		this.datoDokument = datoDokument == null ? null : new Date(datoDokument.getTime());
 	}
 
 	public Set<FilDetaljer> getFildetaljer() {

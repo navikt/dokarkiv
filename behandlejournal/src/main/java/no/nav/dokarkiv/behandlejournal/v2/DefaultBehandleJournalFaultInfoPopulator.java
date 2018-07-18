@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.behandlejournal.v2;
 
+import no.nav.dokarkiv.core.exceptions.AbstractJournalFaultInfoPopulator;
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.feil.ForretningsmessigUnntak;
 import org.springframework.stereotype.Component;
 

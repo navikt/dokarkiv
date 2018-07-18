@@ -3,15 +3,14 @@ package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark100;
 import static org.apache.commons.lang.StringUtils.contains;
 import static org.apache.commons.lang.StringUtils.isBlank;
 
-import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.ApplicationException;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.exceptions.ApplicationException;
 import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
 import no.nav.dokarkiv.core.journalbehandling.JournalpostStructureVerifier;
 import no.nav.dokarkiv.core.journalbehandling.MandatoryFieldsVerifier;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
@@ -70,15 +69,15 @@ public class DefaultOpprettJournalpostArkiverDokumentValidator implements
 			throw new ApplicationException("Sensitivt must be set");
 		}
 
-		if (StringUtils.isBlank(dokumentInfo.getBrevkode())) {
+		if (isBlank(dokumentInfo.getBrevkode())) {
 			throw new ApplicationException("Brevkode must be set");
 		}
 
-		if (StringUtils.isBlank(dokumentInfo.getTittel())) {
+		if (isBlank(dokumentInfo.getTittel())) {
 			throw new ApplicationException("Tittel must be set");
 		}
 
-		if (StringUtils.isBlank(dokumentInfo.getDokumenttypeId())) {
+		if (isBlank(dokumentInfo.getDokumenttypeId())) {
 			throw new ApplicationException("DokumenttypeId must be set");
 		}
 

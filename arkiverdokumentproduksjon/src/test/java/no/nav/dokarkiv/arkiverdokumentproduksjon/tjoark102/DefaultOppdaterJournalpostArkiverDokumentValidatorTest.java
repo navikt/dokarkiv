@@ -123,7 +123,7 @@ public class DefaultOppdaterJournalpostArkiverDokumentValidatorTest {
 
 	@Test
 	public void shouldThrowExceptionIfJournalpostContainsNoDatoDokument() throws Exception {
-		OppdaterJournalpostArkiverDokumentRequestTo request = new OppdaterJournalpostArkiverDokumentRequestTo();
+		OppdaterJournalpostArkiverDokumentRequestTo request = OppdaterJournalpostArkiverDokumentRequestTo.builder().build();
 
 		expected.expect(UgyldigInputException.class);
 		expected.expectMessage("Mangler påkrevd felt datoDokument");
