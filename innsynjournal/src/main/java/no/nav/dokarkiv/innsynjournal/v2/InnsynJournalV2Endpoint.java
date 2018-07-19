@@ -30,7 +30,7 @@ import javax.xml.ws.soap.Addressing;
  * @author Roar Bjurstrom, Visma Consulting.
  */
 @WebService(endpointInterface = "no.nav.tjeneste.virksomhet.innsynjournal.v2.binding.InnsynJournalV2",
-		wsdlLocation = "WEB-INF/wsdl/no/nav/tjeneste/virksomhet/innsynJournal/v2/Binding.wsdl",
+		wsdlLocation = "classpath:wsdl/no/nav/tjeneste/virksomhet/innsynJournal/v2/Binding.wsdl",
 		targetNamespace = "http://nav.no/tjeneste/virksomhet/innsynJournal/v2/Binding",
 		serviceName = "InnsynJournal_v2",
 		portName = "InnsynJournal_v2Port")

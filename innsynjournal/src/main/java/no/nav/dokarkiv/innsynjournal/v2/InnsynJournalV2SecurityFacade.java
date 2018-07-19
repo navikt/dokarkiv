@@ -35,10 +35,13 @@ import no.nav.dokarkiv.innsynjournal.v2.exceptions.NoJournalpostFoundException;
 import no.nav.dokarkiv.innsynjournal.v2.exceptions.SecurityLimitationAttributeException;
 import no.nav.dokarkiv.innsynjournal.v2.exceptions.SecurityTechnicalException;
 import no.nav.dokarkiv.innsynjournal.v2.exceptions.UgyldigInputException;
+import no.nav.dokarkiv.innsynjournal.v2.hentdokument.HentDokumentRequestTo;
+import no.nav.dokarkiv.innsynjournal.v2.hentdokument.HentDokumentService;
 import no.nav.dokarkiv.innsynjournal.v2.tjoark053.HentJournalpostListeToRequest;
 import no.nav.dokarkiv.innsynjournal.v2.tjoark053.HentMinTilgjengeligeJournalpostListeService;
 import no.nav.dokarkiv.innsynjournal.v2.tjoark059.IdentifiserJournalpostService;
 import no.nav.dokarkiv.innsynjournal.v2.tjoark059.IdentifiserJournalpostToRequest;
+import no.nav.modig.core.context.SubjectHandler;
 import no.nav.modig.security.tilgangskontroll.policy.pep.AccessControl;
 import no.nav.modig.security.tilgangskontroll.policy.pep.AccessControlAttribute;
 import no.nav.modig.security.tilgangskontroll.policy.pep.AttributeType;
@@ -49,6 +52,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 
 import javax.inject.Inject;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -63,11 +68,11 @@ public class InnsynJournalV2SecurityFacade {
 
 	private static final Logger log = LoggerFactory.getLogger(InnsynJournalV2SecurityFacade.class);
 
-	@Value("#{new java.text.SimpleDateFormat(\"yyyy-MM-dd\").parse(\"${innsyn.earliest.date}\")}")
-	private Date earliestAllowedDate;
+	@Value("${innsynjournal.v2.innsyn.earliest.date}")
+	private LocalDate earliestAllowedDate;
 
-//	@Inject
-//	private HentDokumentService hentDokumentService;
+	@Inject
+	private HentDokumentService hentDokumentService;
 	@Inject
 	private AktoerConsumerService aktoerConsumerService;
 	@Inject
@@ -172,8 +177,7 @@ public class InnsynJournalV2SecurityFacade {
 	}
 
 	private boolean isInnsendtByBruker(Journalpost journalpost) {
-//		String loggedOnFnr = SubjectHandler.getSubjectHandler().getUid();
-		String loggedOnFnr = null; // FIXME
+		String loggedOnFnr = SubjectHandler.getSubjectHandler().getUid();
 		return loggedOnFnr.equals(journalpost.getAvsenderMottakerId()) ||
 				matchesHistoricalFnr(loggedOnFnr, journalpost);
 	}
@@ -204,15 +208,22 @@ public class InnsynJournalV2SecurityFacade {
 	}
 
 	private void verifyCreatedAndJournalDate(Journalpost journalpost, Long dokumentInfoId) {
-//		if (DateUtil.isBeforeByDay(journalpost.getChangeStamp().getCreatedDate(), earliestAllowedDate, false)
-//				|| DateUtil.isBeforeByDay(journalpost.getJournalDato(), earliestAllowedDate, false)) {
-//			Map<String, Date> attributeMap = Maps.newHashMap();
-//			attributeMap.put("Journalpost.JournalDato", journalpost.getJournalDato());
-//			attributeMap.put("Journalpost.ChangeStamp.CreatedDate", journalpost.getChangeStamp().getCreatedDate());
-//			throw new SecurityLimitationAttributeException(journalpost.getJournalpostId(),
-//					dokumentInfoId,
-//					attributeMap);
-//		}
+		if (isBeforeEarlieastAllowedDate(journalpost.getChangeStamp().getCreatedDate())
+				|| isBeforeEarlieastAllowedDate(journalpost.getJournalDato())) {
+			Map<String, Date> attributeMap = Maps.newHashMap();
+			attributeMap.put("Journalpost.JournalDato", journalpost.getJournalDato());
+			attributeMap.put("Journalpost.ChangeStamp.CreatedDate", journalpost.getChangeStamp().getCreatedDate());
+			throw new SecurityLimitationAttributeException(journalpost.getJournalpostId(),
+					dokumentInfoId,
+					attributeMap);
+		}
+	}
+
+	private boolean isBeforeEarlieastAllowedDate(Date theDate) {
+		if(theDate == null) {
+			return false;
+		}
+		return theDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate().isBefore(earliestAllowedDate);
 	}
 
 	private void verifySaksrelasjon(Journalpost journalpost, Long dokumentInfoId) {
@@ -311,16 +322,14 @@ public class InnsynJournalV2SecurityFacade {
 		}
 	}
 
-	private byte[] hentDokumentBytes(Long journalpostId, Long dokumentInfoId) throws NoJournalpostFoundException,
-			DocumentNotFoundException {
-//		return hentDokumentService.hentDokument(new HentDokumentRequestTo(journalpostId,
-//				dokumentInfoId, VariantFormatCode.ARKIV)); FIXME
-		return new byte[]{};
+	private byte[] hentDokumentBytes(Long journalpostId, Long dokumentInfoId) throws DocumentNotFoundException {
+		return hentDokumentService.hentDokument(new HentDokumentRequestTo(journalpostId,
+				dokumentInfoId, VariantFormatCode.ARKIV));
 	}
 
-	public void setEarliestAllowedDate(Date earliestAllowedDate) {
+	public void setEarliestAllowedDate(LocalDate earliestAllowedDate) {
 		if (earliestAllowedDate != null) {
-			this.earliestAllowedDate = new Date(earliestAllowedDate.getTime());
+			this.earliestAllowedDate = LocalDate.from(earliestAllowedDate);
 		} else {
 			this.earliestAllowedDate = null;
 		}

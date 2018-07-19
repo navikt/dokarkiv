@@ -16,6 +16,7 @@ import no.nav.dokarkiv.core.exceptions.AuthorizationException;
 import no.nav.dokarkiv.innsynjournal.v2.exceptions.DocumentNotFoundException;
 import no.nav.dokarkiv.innsynjournal.v2.exceptions.NoJournalpostFoundException;
 import no.nav.dokarkiv.innsynjournal.v2.exceptions.SecurityLimitationAttributeException;
+import no.nav.dokarkiv.innsynjournal.v2.security.ThreadLocalSubjectHandler;
 import no.nav.dokarkiv.innsynjournal.v2.tjoark053.HentJournalpostListeToRequest;
 import no.nav.dokarkiv.innsynjournal.v2.tjoark053.HentMinTilgjengeligJournalpostListeV2ResponseMapper;
 import no.nav.dokarkiv.innsynjournal.v2.tjoark053.HentMinTilgjengeligeJournalpostListeV2RequestMapper;
@@ -41,7 +42,7 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.ArrayList;
 
@@ -81,8 +82,7 @@ public class InnsynJournalV2ProviderTest {
 
 	@Before
 	public void setUp() throws Exception {
-//		System.setProperty("no.nav.modig.security.systemuser.username", "JOARK");
-//		System.setProperty("no.nav.modig.core.context.subjectHandlerImplementationClass", ThreadLocalSubjectHandler.class.getName());
+		System.setProperty("no.nav.modig.core.context.subjectHandlerImplementationClass", ThreadLocalSubjectHandler.class.getName());
 	}
 
 	@Test
@@ -228,9 +228,10 @@ public class InnsynJournalV2ProviderTest {
 	public void shouldRunIdentifiserJournalpost() throws Exception {
 
 		IdentifiserJournalpostRequest wsRequest = new IdentifiserJournalpostRequest();
-		IdentifiserJournalpostToRequest request = new IdentifiserJournalpostToRequest();
-		request.setKanalReferanseId(KANAL_REFERANSE_ID);
-		request.setMottaksKanal(MOTTAK_KANAL);
+		IdentifiserJournalpostToRequest request = IdentifiserJournalpostToRequest.builder()
+				.kanalReferanseId(KANAL_REFERANSE_ID)
+				.mottaksKanal(MOTTAK_KANAL)
+				.build();
 		InnsynJournalpostTo innsynJournalpostTo = new InnsynJournalpostTo(new Journalpost());
 		IdentifiserJournalpostResponse response = createIdentifiserJournalpostResponse();
 

@@ -15,6 +15,7 @@ import no.nav.dokarkiv.innsynjournal.v2.tjoark053.HentMinTilgjengeligeJournalpos
 import no.nav.dokarkiv.innsynjournal.v2.tjoark059.IdentifiserJournalpostToRequest;
 import no.nav.dokarkiv.innsynjournal.v2.tjoark059.IdentifiserJournalpostV2RequestMapper;
 import no.nav.dokarkiv.innsynjournal.v2.tjoark059.IdentifiserJournalpostV2ResponseMapper;
+import no.nav.modig.core.context.SubjectHandler;
 import no.nav.tjeneste.virksomhet.innsynjournal.v2.binding.HentDokumentDokumentIkkeFunnet;
 import no.nav.tjeneste.virksomhet.innsynjournal.v2.binding.HentDokumentSikkerhetsbegrensning;
 import no.nav.tjeneste.virksomhet.innsynjournal.v2.binding.HentTilgjengeligJournalpostListeSikkerhetsbegrensning;
@@ -84,8 +85,8 @@ public class InnsynJournalV2Provider implements InnsynJournalV2 {
 			List<InnsynJournalpostTo> innsynJournalpostTos = securityFacade.hentMineTilgjengeligeJournalpostListe(toRequest);
 			return journalpostListeV2ResponseMapper.mapList(innsynJournalpostTos);
 		} catch (AuthorizationException e) {
-//			log.warn(String.format("Access denied in operation %s. LoggedOnUser=%s", INNSYN_JOURNAL_V2_HENT_JP_LISTE,
-//					SubjectHandler.getSubjectHandler().getUid()), e); FIXME
+			log.warn(String.format("Access denied in operation %s. LoggedOnUser=%s", INNSYN_JOURNAL_V2_HENT_JP_LISTE,
+					SubjectHandler.getSubjectHandler().getUid()), e);
 			AuthorizationException undetailedException = new AuthorizationException(ACCESS_DENIED);
 			throw new HentTilgjengeligJournalpostListeSikkerhetsbegrensning(undetailedException.getMessage(), new FunctionalFault());
 		}
@@ -106,9 +107,9 @@ public class InnsynJournalV2Provider implements InnsynJournalV2 {
 		} catch (NoJournalpostFoundException | DocumentNotFoundException e) {
 			throw new HentDokumentDokumentIkkeFunnet(e.getMessage(),new FunctionalFault());
 		} catch (AuthorizationException e) {
-//			log.warn(String.format("Access denied in operation %s. JournalpostId=%s ,dokumentInfoId=%s , logged on user=%s",
-//					INNSYN_JOURNAL_V2_HENT_DOKUMENT, request.getJournalpostId(), request.getDokumentId(),
-//					SubjectHandler.getSubjectHandler().getUid()), e);
+			log.warn(String.format("Access denied in operation %s. JournalpostId=%s ,dokumentInfoId=%s , logged on user=%s",
+					INNSYN_JOURNAL_V2_HENT_DOKUMENT, request.getJournalpostId(), request.getDokumentId(),
+					SubjectHandler.getSubjectHandler().getUid()), e);
 			AuthorizationException undetailedException = new AuthorizationException(ACCESS_DENIED);
 			throw new HentDokumentSikkerhetsbegrensning(undetailedException.getMessage(),new FunctionalFault());
 		} catch (SecurityLimitationAttributeException e) {

@@ -3,13 +3,23 @@ package no.nav.dokarkiv.innsynjournal.v2;
 import static no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder.getFilDetaljerBuilder;
 import static no.nav.dokarkiv.core.domain.builder.SaksrelasjonBuilder.getSaksrelasjonBuilder;
 import static no.nav.dokarkiv.core.domain.codes.MottaksKanalCode.ALTINN;
+import static no.nav.dokarkiv.core.domain.codes.MottaksKanalCode.NAV_NO;
 import static no.nav.dokarkiv.core.domain.codes.MottaksKanalCode.SKAN_NETS;
 import static no.nav.dokarkiv.core.domain.codes.MottaksKanalCode.SKAN_PEN;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
+import no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerService;
+import no.nav.dokarkiv.core.consumer.aktoer.HentAktoerIdForIdentRequestTo;
+import no.nav.dokarkiv.core.consumer.aktoer.HentAktoerIdForIdentResponseTo;
+import no.nav.dokarkiv.core.consumer.aktoer.IdentDetaljerTo;
+import no.nav.dokarkiv.core.consumer.aktoer.PersonIkkeFunnetException;
+import no.nav.dokarkiv.core.domain.ChangeStamp;
 import no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder;
 import no.nav.dokarkiv.core.domain.builder.JournalpostBuilder;
 import no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder;
@@ -19,13 +29,17 @@ import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
-import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.innsynjournal.v2.exceptions.DocumentNotFoundException;
 import no.nav.dokarkiv.innsynjournal.v2.exceptions.NoJournalpostFoundException;
 import no.nav.dokarkiv.innsynjournal.v2.exceptions.SecurityLimitationAttributeException;
+import no.nav.dokarkiv.innsynjournal.v2.hentdokument.HentDokumentRequestTo;
+import no.nav.dokarkiv.innsynjournal.v2.hentdokument.HentDokumentService;
+import no.nav.dokarkiv.innsynjournal.v2.security.SubjectHandlerUtils;
+import no.nav.dokarkiv.innsynjournal.v2.security.ThreadLocalSubjectHandler;
 import no.nav.dokarkiv.innsynjournal.v2.tjoark053.HentJournalpostListeToRequest;
 import no.nav.dokarkiv.innsynjournal.v2.tjoark053.HentMinTilgjengeligJournalpostListeV2ResponseMapper;
 import no.nav.dokarkiv.innsynjournal.v2.tjoark053.HentMinTilgjengeligeJournalpostListeService;
@@ -33,47 +47,50 @@ import no.nav.dokarkiv.innsynjournal.v2.tjoark059.IdentifiserJournalpostService;
 import no.nav.dokarkiv.innsynjournal.v2.tjoark059.IdentifiserJournalpostToRequest;
 import no.nav.dokarkiv.innsynjournal.v2.tjoark059.IdentifiserJournalpostV2ResponseMapper;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
+import org.mockito.Matchers;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
+import java.time.LocalDate;
+import java.time.Month;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Unit tests for {@link InnsynJournalV2SecurityFacade}
  *
  * @author Roar Bjurstrom, Visma Consulting.
  */
-@Ignore
 @RunWith(MockitoJUnitRunner.class)
 public class InnsynJournalV2SecurityFacadeTest {
 
 	private static final byte[] DOK = "dok".getBytes();
 	private static final String USER_ID = "***gammelt_fnr***";
-//	private static Date DAY_BEFORE_LEGAL_DATE = DateUtil.createDate(2015, Calendar.DECEMBER, 31);
-//	private static final Date LEGAL_DATE = DateUtil.createDate(2016, Calendar.JANUARY, 1);
-//	private static Date DAY_AFTER_LEGAL_DATE = DateUtil.createDate(2016, Calendar.JANUARY, 2);
+	private static Date DAY_BEFORE_LEGAL_DATE = Date.from(LocalDate.of(2015, Month.DECEMBER, 31).atStartOfDay(ZoneId.systemDefault()).toInstant());
+	private static final LocalDate LEGAL_DATE = LocalDate.of(2016, Month.JANUARY, 1);
+	private static Date DAY_AFTER_LEGAL_DATE = Date.from(LocalDate.of(2016, Month.JANUARY, 2).atStartOfDay(ZoneId.systemDefault()).toInstant());
 
 	private static final long JOURNALPOST_ID = 1L;
 	private static final long DOKUMENT_INFO_ID = 2L;
 	@Rule
 	public ExpectedException expectedException = ExpectedException.none();
 
-//	@Mock
-//	private HentDokumentService hentDokumentService;
-//	@Mock
-//	public HentJournalpost hentJournalpost;
-//	@Mock
-//	private AktoerConsumerService aktoerConsumerService;
+	@Mock
+	private JoarkRepository joarkRepository;
+	@Mock
+	private HentDokumentService hentDokumentService;
+	@Mock
+	private AktoerConsumerService aktoerConsumerService;
 	@Mock
 	private HentMinTilgjengeligeJournalpostListeService hentMinTilgjengeligeJournalpostListeService;
 	@Mock
@@ -89,9 +106,9 @@ public class InnsynJournalV2SecurityFacadeTest {
 	@Before
 	public void setUp() throws Exception {
 		System.setProperty("no.nav.modig.security.systemuser.username", "JOARK");
-//		System.setProperty("no.nav.modig.core.context.subjectHandlerImplementationClass", ThreadLocalSubjectHandler.class.getName());
-//		SubjectHandlerUtils.setEksternBruker(USER_ID, 4, null);
-//		securityFacade.setEarliestAllowedDate(LEGAL_DATE);
+		System.setProperty("no.nav.modig.core.context.subjectHandlerImplementationClass", ThreadLocalSubjectHandler.class.getName());
+		SubjectHandlerUtils.setEksternBruker(USER_ID, 4, null);
+		securityFacade.setEarliestAllowedDate(LEGAL_DATE);
 	}
 
 	@Test
@@ -104,8 +121,8 @@ public class InnsynJournalV2SecurityFacadeTest {
 
 	@Test
 	public void shouldThrowNoJournalpostFoundWhenJournalpostIdNotExists() throws Exception {
-		String message = "Not found";
-//		when(hentJournalpost.hentJournalpost(eq(new HentJournalpostRequest(JOURNALPOST_ID)))).thenThrow(new NoJournalpostFoundException(message, JOURNALPOST_ID));
+		String message = "Journalpost med id 1 eksisterer ikke";
+		when(joarkRepository.findById(eq(JOURNALPOST_ID))).thenReturn(Optional.empty());
 
 		expectedException.expect(NoJournalpostFoundException.class);
 		expectedException.expectMessage(message);
@@ -136,34 +153,34 @@ public class InnsynJournalV2SecurityFacadeTest {
 
 	@Test
 	public void shouldThrowSikkerhetsbegrensningWhenJournalDatoIsTooEarly() throws Exception {
-//		Date createdDate = DAY_AFTER_LEGAL_DATE;
-//		Date journalDate = DAY_BEFORE_LEGAL_DATE;
-//		mockJournalpost(createJournalpost(createdDate, journalDate, VariantFormatCode.ARKIV, false));
-//
-//		expectedException.expect(SecurityLimitationAttributeException.class);
-//
-//		securityFacade.hentDokument(JOURNALPOST_ID, DOKUMENT_INFO_ID); FIXME
+		Date createdDate = DAY_AFTER_LEGAL_DATE;
+		Date journalDate = DAY_BEFORE_LEGAL_DATE;
+		mockJournalpost(createJournalpost(createdDate, journalDate, VariantFormatCode.ARKIV, false));
+
+		expectedException.expect(SecurityLimitationAttributeException.class);
+
+		securityFacade.hentDokument(JOURNALPOST_ID, DOKUMENT_INFO_ID);
 	}
 
 	@Test
 	public void shouldThrowExceptionWhenOpprettetDatoIsTooEarly() throws Exception {
-//		Date createdDate = DAY_BEFORE_LEGAL_DATE;
-//		Date journalDate = DAY_AFTER_LEGAL_DATE;
-//		mockJournalpost(createJournalpost(createdDate, journalDate, VariantFormatCode.ARKIV, false));
-//
-//		expectedException.expect(SecurityLimitationAttributeException.class);
-//
-//		securityFacade.hentDokument(JOURNALPOST_ID, DOKUMENT_INFO_ID); FIXME
+		Date createdDate = DAY_BEFORE_LEGAL_DATE;
+		Date journalDate = DAY_AFTER_LEGAL_DATE;
+		mockJournalpost(createJournalpost(createdDate, journalDate, VariantFormatCode.ARKIV, false));
+
+		expectedException.expect(SecurityLimitationAttributeException.class);
+
+		securityFacade.hentDokument(JOURNALPOST_ID, DOKUMENT_INFO_ID);
 	}
 
 	@Test
 	public void shouldHandleNullDateAsToEarly() throws Exception {
-//		Date journalDate = DAY_BEFORE_LEGAL_DATE;
-//		mockJournalpost(createJournalpost(null, journalDate, VariantFormatCode.ARKIV, false));
-//
-//		expectedException.expect(SecurityLimitationAttributeException.class);
-//
-//		securityFacade.hentDokument(JOURNALPOST_ID, DOKUMENT_INFO_ID); FIXME
+		Date journalDate = DAY_BEFORE_LEGAL_DATE;
+		mockJournalpost(createJournalpost(null, journalDate, VariantFormatCode.ARKIV, false));
+
+		expectedException.expect(SecurityLimitationAttributeException.class);
+
+		securityFacade.hentDokument(JOURNALPOST_ID, DOKUMENT_INFO_ID);
 	}
 
 	@Test
@@ -466,8 +483,8 @@ public class InnsynJournalV2SecurityFacadeTest {
 		Journalpost legalJournalpost = createLegalJournalpost();
 		legalJournalpost.setAvsenderMottakerId("***gammelt_fnr***");
 
-//		HentAktoerIdForIdentResponseTo identResponseTo = new HentAktoerIdForIdentResponseTo("001", createIdentDetaljerList(USER_ID));
-//		when(aktoerConsumerService.hentAktoerIdForIdent(eq(new HentAktoerIdForIdentRequestTo(USER_ID)))).thenReturn(identResponseTo); FIXME
+		HentAktoerIdForIdentResponseTo identResponseTo = new HentAktoerIdForIdentResponseTo("001", createIdentDetaljerList(USER_ID));
+		when(aktoerConsumerService.hentAktoerIdForIdent(eq(new HentAktoerIdForIdentRequestTo(USER_ID)))).thenReturn(identResponseTo);
 
 		mockJournalpost(legalJournalpost);
 		expectedException.expect(SecurityLimitationAttributeException.class);
@@ -498,9 +515,9 @@ public class InnsynJournalV2SecurityFacadeTest {
 	public void shouldReturnDocumentIfAvsenderMottakerExistsInHistoricalList() throws Exception {
 		String historicalFnr = "***gammelt_fnr***";
 
-//		HentAktoerIdForIdentResponseTo identResponseTo = new HentAktoerIdForIdentResponseTo("001",
-//				createIdentDetaljerList("***gammelt_fnr***", historicalFnr, "***gammelt_fnr***"));
-//		when(aktoerConsumerService.hentAktoerIdForIdent(eq(new HentAktoerIdForIdentRequestTo(USER_ID)))).thenReturn(identResponseTo); FIXME
+		HentAktoerIdForIdentResponseTo identResponseTo = new HentAktoerIdForIdentResponseTo("001",
+				createIdentDetaljerList("***gammelt_fnr***", historicalFnr, "***gammelt_fnr***"));
+		when(aktoerConsumerService.hentAktoerIdForIdent(eq(new HentAktoerIdForIdentRequestTo(USER_ID)))).thenReturn(identResponseTo);
 
 		mockJournalpost(createNAVNOJournalpost(historicalFnr));
 
@@ -514,8 +531,8 @@ public class InnsynJournalV2SecurityFacadeTest {
 		legalJournalpost.setAvsenderMottakerId("***gammelt_fnr***444");
 		mockJournalpost(legalJournalpost);
 
-//		doThrow(new PersonIkkeFunnetException(new Exception(), "Person not found"))
-//				.when(aktoerConsumerService).hentAktoerIdForIdent(eq(new HentAktoerIdForIdentRequestTo(USER_ID))); FIXME
+		doThrow(new PersonIkkeFunnetException(new Exception(), "Person not found"))
+				.when(aktoerConsumerService).hentAktoerIdForIdent(eq(new HentAktoerIdForIdentRequestTo(USER_ID)));
 
 		expectedException.expect(RuntimeException.class);
 		expectedException.expectMessage("Kan ikke utføre tilgangskontroll for pålogget bruker med fnr=" + USER_ID + " "
@@ -535,36 +552,36 @@ public class InnsynJournalV2SecurityFacadeTest {
 		assertThat(innsynJournalpostTos.size(), is(2));
 	}
 
-//	@Test
-//	public void shouldSetAvsenderMottakerAndDokumentInnsynToCannotBeDecidedOnDkiPersonNotFound() throws PersonIkkeFunnetException {
-//		Journalpost journalpost = createLegalJournalpost();
-//		journalpost.setAvsenderMottakerId("notLoggedOnUser");
-//		journalpost.setMottakskanal(NAV_NO);
-//		HentJournalpostListeToRequest request = createRequest();
-//		when(aktoerConsumerService.hentAktoerIdForIdent(any(HentAktoerIdForIdentRequestTo.class)))
-//				.thenThrow(new PersonIkkeFunnetException(new Throwable(""), "person not found"));
-//		mockHentMinJournalpostListe(request, journalpost);
-//
-//		List<InnsynJournalpostTo> innsynJournalpostTos = securityFacade.hentMineTilgjengeligeJournalpostListe(request);
-//		assertThat(innsynJournalpostTos.get(0).getAvsenderMottaker(), is(InnsynJournalpostTo.AvsenderMottaker.KAN_IKKE_AVGJOERES));
-//		assertDokumenInfoInnsyn(innsynJournalpostTos, DokumentInnsyn.KAN_IKKE_AVGJOERES); FIXME
-//	}
+	@Test
+	public void shouldSetAvsenderMottakerAndDokumentInnsynToCannotBeDecidedOnDkiPersonNotFound() throws PersonIkkeFunnetException {
+		Journalpost journalpost = createLegalJournalpost();
+		journalpost.setAvsenderMottakerId("notLoggedOnUser");
+		journalpost.setMottakskanal(NAV_NO);
+		HentJournalpostListeToRequest request = createRequest();
+		when(aktoerConsumerService.hentAktoerIdForIdent(any(HentAktoerIdForIdentRequestTo.class)))
+				.thenThrow(new PersonIkkeFunnetException(new Throwable(""), "person not found"));
+		mockHentMinJournalpostListe(request, journalpost);
+
+		List<InnsynJournalpostTo> innsynJournalpostTos = securityFacade.hentMineTilgjengeligeJournalpostListe(request);
+		assertThat(innsynJournalpostTos.get(0).getAvsenderMottaker(), is(InnsynJournalpostTo.AvsenderMottaker.KAN_IKKE_AVGJOERES));
+		assertDokumenInfoInnsyn(innsynJournalpostTos, InnsynJournalpostTo.DokumentInnsyn.KAN_IKKE_AVGJOERES);
+	}
 
 
-//	@Test
-//	public void shouldNotAllowDokumentInnsynWhenNotInnsendtByBruker() throws PersonIkkeFunnetException {
-//		Journalpost journalpost = createLegalJournalpost();
-//		journalpost.setAvsenderMottakerId("notLoggedOnUser");
-//		journalpost.setMottakskanal(NAV_NO);
-//		HentJournalpostListeToRequest request = createRequest();
-//
-//		mockHentMinJournalpostListe(request, journalpost);
-//		HentAktoerIdForIdentResponseTo identResponseTo = new HentAktoerIdForIdentResponseTo("001", createIdentDetaljerList(USER_ID));
-//		when(aktoerConsumerService.hentAktoerIdForIdent(eq(new HentAktoerIdForIdentRequestTo(USER_ID)))).thenReturn(identResponseTo);
-//
-//		List<InnsynJournalpostTo> innsynJournalpostTos = securityFacade.hentMineTilgjengeligeJournalpostListe(request);
-//		assertDokumenInfoInnsyn(innsynJournalpostTos, DokumentInnsyn.NEI);
-//	} FIXME
+	@Test
+	public void shouldNotAllowDokumentInnsynWhenNotInnsendtByBruker() throws PersonIkkeFunnetException {
+		Journalpost journalpost = createLegalJournalpost();
+		journalpost.setAvsenderMottakerId("notLoggedOnUser");
+		journalpost.setMottakskanal(NAV_NO);
+		HentJournalpostListeToRequest request = createRequest();
+
+		mockHentMinJournalpostListe(request, journalpost);
+		HentAktoerIdForIdentResponseTo identResponseTo = new HentAktoerIdForIdentResponseTo("001", createIdentDetaljerList(USER_ID));
+		when(aktoerConsumerService.hentAktoerIdForIdent(eq(new HentAktoerIdForIdentRequestTo(USER_ID)))).thenReturn(identResponseTo);
+
+		List<InnsynJournalpostTo> innsynJournalpostTos = securityFacade.hentMineTilgjengeligeJournalpostListe(request);
+		assertDokumenInfoInnsyn(innsynJournalpostTos, InnsynJournalpostTo.DokumentInnsyn.NEI);
+	}
 
 	@Test
 	public void shouldAllowInnsynWhenInnsendtByBrukerAndMottaksKanalNav_no() {
@@ -603,24 +620,24 @@ public class InnsynJournalV2SecurityFacadeTest {
 
 	@Test
 	public void shouldNotAllowInnsynIfNoArkivVariant() {
-//		HentJournalpostListeToRequest request = createRequest();
-//		Journalpost journalpost = createJournalpost(DAY_AFTER_LEGAL_DATE, DAY_AFTER_LEGAL_DATE, VariantFormatCode.BREVBESTILLING, false);
-//		journalpost.setJournalposttype(JournalpostTypeCode.U);
-//		mockHentMinJournalpostListe(request, journalpost);
-//
-//		List<InnsynJournalpostTo> innsynJournalpostTos = securityFacade.hentMineTilgjengeligeJournalpostListe(request);
-//		assertDokumenInfoInnsyn(innsynJournalpostTos, DokumentInnsyn.NEI); FIXME
+		HentJournalpostListeToRequest request = createRequest();
+		Journalpost journalpost = createJournalpost(DAY_AFTER_LEGAL_DATE, DAY_AFTER_LEGAL_DATE, VariantFormatCode.BREVBESTILLING, false);
+		journalpost.setJournalposttype(JournalpostTypeCode.U);
+		mockHentMinJournalpostListe(request, journalpost);
+
+		List<InnsynJournalpostTo> innsynJournalpostTos = securityFacade.hentMineTilgjengeligeJournalpostListe(request);
+		assertDokumenInfoInnsyn(innsynJournalpostTos, InnsynJournalpostTo.DokumentInnsyn.NEI);
 	}
 
 	@Test
 	public void shouldNotAllowIfInnskrenketPartsinnsyn() {
-//		HentJournalpostListeToRequest request = createRequest();
-//		Journalpost journalpost = createJournalpost(DAY_AFTER_LEGAL_DATE, DAY_AFTER_LEGAL_DATE, VariantFormatCode.BREVBESTILLING, true);
-//		journalpost.setJournalposttype(JournalpostTypeCode.U);
-//		mockHentMinJournalpostListe(request, journalpost);
-//
-//		List<InnsynJournalpostTo> innsynJournalpostTos = securityFacade.hentMineTilgjengeligeJournalpostListe(request);
-//		assertDokumenInfoInnsyn(innsynJournalpostTos, DokumentInnsyn.NEI); FIXME
+		HentJournalpostListeToRequest request = createRequest();
+		Journalpost journalpost = createJournalpost(DAY_AFTER_LEGAL_DATE, DAY_AFTER_LEGAL_DATE, VariantFormatCode.BREVBESTILLING, true);
+		journalpost.setJournalposttype(JournalpostTypeCode.U);
+		mockHentMinJournalpostListe(request, journalpost);
+
+		List<InnsynJournalpostTo> innsynJournalpostTos = securityFacade.hentMineTilgjengeligeJournalpostListe(request);
+		assertDokumenInfoInnsyn(innsynJournalpostTos, InnsynJournalpostTo.DokumentInnsyn.NEI);
 	}
 
 	@Test
@@ -637,7 +654,7 @@ public class InnsynJournalV2SecurityFacadeTest {
 
 	@Test
 	public void shouldAllowIdentifiserJpurnalpost() throws Exception {
-		IdentifiserJournalpostToRequest request = new IdentifiserJournalpostToRequest();
+		IdentifiserJournalpostToRequest request = IdentifiserJournalpostToRequest.builder().build();
 		Journalpost journalpost = createLegalJournalpost();
 		when(identifiserJournalpostService.identifiserJournalpost(request)).thenReturn(journalpost);
 		InnsynJournalpostTo innsynJournalpostTo = securityFacade.identifiserJournalpost(request);
@@ -669,20 +686,20 @@ public class InnsynJournalV2SecurityFacadeTest {
 		return journalposts;
 	}
 
-//	private List<IdentDetaljerTo> createIdentDetaljerList(String... fnrs) {
-//		List<IdentDetaljerTo> identDetaljerToList = new ArrayList<>();
-//		for (String fnr : fnrs) {
-//			identDetaljerToList.add(new IdentDetaljerTo(fnr, new Date()));
-//		}
-//		return identDetaljerToList; FIXME
-//	}
+	private List<IdentDetaljerTo> createIdentDetaljerList(String... fnrs) {
+		List<IdentDetaljerTo> identDetaljerToList = new ArrayList<>();
+		for (String fnr : fnrs) {
+			identDetaljerToList.add(new IdentDetaljerTo(fnr, new Date()));
+		}
+		return identDetaljerToList;
+	}
 
 	private Journalpost createNAVNOJournalpost(String avsenderMottakerId) {
 		return JournalpostBuilder
 				.getJournalpostBuilder()
 				.journalpostId(JOURNALPOST_ID)
 				.avsenderMottakerId(avsenderMottakerId)
-				.mottakskanal(MottaksKanalCode.NAV_NO)
+				.mottakskanal(NAV_NO)
 				.dokumentInfoRelasjoner(JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder()
 						.dokumentInfo(DokumentInfoBuilder.getDokumentInfoBuilder()
 								.dokumentInfoId(DOKUMENT_INFO_ID).build()).build())
@@ -690,21 +707,19 @@ public class InnsynJournalV2SecurityFacadeTest {
 	}
 
 	private Journalpost createLegalJournalpost() {
-//		return createJournalpost(DAY_AFTER_LEGAL_DATE, DAY_AFTER_LEGAL_DATE, null, false); FIXME
-		return null;
+		return createJournalpost(DAY_AFTER_LEGAL_DATE, DAY_AFTER_LEGAL_DATE, null, false);
 	}
 
 	private Journalpost createJournalpost(JournalStatusCode journalStatusCode) {
-//		Journalpost journalpost = createJournalpost(DAY_AFTER_LEGAL_DATE, DAY_AFTER_LEGAL_DATE, null, false);
-//		journalpost.setJournalstatus(journalStatusCode);
-//		return journalpost;
-		return null;
+		Journalpost journalpost = createJournalpost(DAY_AFTER_LEGAL_DATE, DAY_AFTER_LEGAL_DATE, null, false);
+		journalpost.setJournalstatus(journalStatusCode);
+		return journalpost;
 	}
 
 	private Journalpost createJournalpost(Date createdDate, Date journalDate, VariantFormatCode variantFormatCode, boolean innskrenketPartsinnsyn) {
 		return JournalpostBuilder
 				.getJournalpostBuilder()
-//				.changeStamp(new ChangeStamp("test", createdDate, "test", DateUtil.createDate(2016, Calendar.JUNE, 30)))
+				.changeStamp(new ChangeStamp("test", createdDate, "test", Date.from(LocalDate.of(2016, Month.JUNE, 30).atStartOfDay(ZoneId.systemDefault()).toInstant())))
 				.journalpostId(JOURNALPOST_ID)
 				.journalDato(journalDate)
 				.journalStatus(JournalStatusCode.J)
@@ -731,9 +746,8 @@ public class InnsynJournalV2SecurityFacadeTest {
 	}
 
 	private void mockJournalpost(Journalpost journalpost) throws NoJournalpostFoundException, DocumentNotFoundException {
-//		when(hentJournalpost.hentJournalpost(eq(new HentJournalpostRequest(JOURNALPOST_ID))))
-//				.thenReturn(new HentJournalpostResponse(journalpost));
-//		when(hentDokumentService.hentDokument(eq(new HentDokumentRequestTo(JOURNALPOST_ID, DOKUMENT_INFO_ID, VariantFormatCode.ARKIV))))
-//				.thenReturn(DOK);
+		when(joarkRepository.findById(Matchers.eq(JOURNALPOST_ID))).thenReturn(Optional.ofNullable(journalpost));
+		when(hentDokumentService.hentDokument(eq(new HentDokumentRequestTo(JOURNALPOST_ID, DOKUMENT_INFO_ID, VariantFormatCode.ARKIV))))
+				.thenReturn(DOK);
 	}
 }

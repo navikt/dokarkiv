@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.innsynjournal.v2.tjoark059;
 
+import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
 import no.nav.tjeneste.virksomhet.innsynjournal.v2.meldinger.IdentifiserJournalpostRequest;
 
 /**
@@ -10,7 +11,9 @@ import no.nav.tjeneste.virksomhet.innsynjournal.v2.meldinger.IdentifiserJournalp
 public class IdentifiserJournalpostV2RequestMapper {
 
 	public IdentifiserJournalpostToRequest map(IdentifiserJournalpostRequest request) {
-//		return dozerMapper.map(request, IdentifiserJournalpostToRequest.class);
-		return null;
+		return IdentifiserJournalpostToRequest.builder()
+				.kanalReferanseId(request.getKanalReferanseId())
+				.mottaksKanal(request.getMottakskanal() == null ? null : MottaksKanalCode.valueOf(request.getMottakskanal()))
+				.build();
 	}
 }

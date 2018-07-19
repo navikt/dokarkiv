@@ -8,12 +8,10 @@ import no.nav.dokarkiv.innsynjournal.v2.exceptions.JournalpostIkkeInngaaendeExce
 import no.nav.dokarkiv.innsynjournal.v2.exceptions.JournalpostNotSupportedException;
 import no.nav.dokarkiv.innsynjournal.v2.exceptions.UgyldigInputException;
 import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.orm.hibernate5.HibernateTemplate;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author Ketill Fenne, Visma Consulting.
@@ -23,21 +21,16 @@ public class DefaultIdentifiserJournalpostService implements IdentifiserJournalp
 	@Inject
 	private JoarkRepository joarkRepository;
 
-	@Inject
-	@Qualifier("rep.joark.hibernateTemplate")
-	HibernateTemplate hibernateTemplate;
-
 	@Override
 	public Journalpost identifiserJournalpost(IdentifiserJournalpostToRequest identifiserJournalpostToRequest)
 	throws JournalpostNotSupportedException, JournalpostIkkeFunnetException, UgyldigInputException, JournalpostIkkeInngaaendeException {
 		validateInput(identifiserJournalpostToRequest);
-//		List<Journalpost> journalposts = joarkRepository.findJournalpostByKanal(identifiserJournalpostToRequest.getKanalReferanseId(), identifiserJournalpostToRequest.getMottaksKanal());
-		List<Journalpost> journalposts = new ArrayList<>();
+		List<Journalpost> journalposts = joarkRepository.findJournalpostByKanalReferanseIdAndMottakskanal(identifiserJournalpostToRequest.getKanalReferanseId(), identifiserJournalpostToRequest.getMottaksKanal());
 		if (!(journalposts == null) && journalposts.size() == 1) {
 			validateJournalpost(journalposts.get(0));
 			return journalposts.get(0);
 		} else {
-			if ((identifiserJournalpostToRequest.getMottaksKanal() == null) || (identifiserJournalpostToRequest.getMottaksKanal().name() == "")) {
+			if ((identifiserJournalpostToRequest.getMottaksKanal() == null) || (Objects.equals(identifiserJournalpostToRequest.getMottaksKanal().name(), ""))) {
 				throw new JournalpostIkkeFunnetException("Uthenting av journalposter med kanalReferanseId=" + identifiserJournalpostToRequest.getKanalReferanseId() + " resulterte ikke i nøyaktig én journalpost");
 			} else {
 				throw new JournalpostIkkeFunnetException("Uthenting av journalposter med kanalReferanseId=" + identifiserJournalpostToRequest.getKanalReferanseId() + " og mottakskanal=" + identifiserJournalpostToRequest.getMottaksKanal().name() + " resulterte ikke i nøyaktig én journalpost");
@@ -45,9 +38,7 @@ public class DefaultIdentifiserJournalpostService implements IdentifiserJournalp
 		}
 	}
 
-
 	private void validateInput(IdentifiserJournalpostToRequest identifiserJournalpostToRequest) throws UgyldigInputException {
-
 		if (StringUtils.isEmpty(identifiserJournalpostToRequest.getKanalReferanseId())) {
 			throw new UgyldigInputException("KanalReferanseId cannot be empty");
 		}

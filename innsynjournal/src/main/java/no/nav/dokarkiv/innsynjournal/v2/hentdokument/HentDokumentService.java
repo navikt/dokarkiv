@@ -1,0 +1,39 @@
+package no.nav.dokarkiv.innsynjournal.v2.hentdokument;
+
+import no.nav.dokarkiv.core.domain.entities.DokumentFil;
+import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
+import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
+import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.innsynjournal.v2.exceptions.DocumentNotFoundException;
+import org.apache.commons.lang3.StringUtils;
+
+/**
+ * The service layer class for HentDokument(TJOARK051 and TJOARK054)
+ *
+ * @author Stig Strøm
+ * @author Thomas Kåsene, Visma Consulting AS
+ */
+public class HentDokumentService extends AbstractJournalOperations {
+
+	/**
+	 * Search and retrieves the document, will get documents from OnDemand as well
+	 *
+	 * @param request domain request with document info
+	 * @return the byte array of the document
+	 * @throws DocumentNotFoundException Cannot find journalpost, dokumentinfo or fildetaljer
+	 */
+	public byte[] hentDokument(HentDokumentRequestTo request) throws DocumentNotFoundException {
+		Journalpost journalpost = lookupJournalpost(request.getJournalpostId());
+
+		DokumentInfo dokumentInfo = getDokumentInfo(journalpost, request.getDokumentInfoId());
+		FilDetaljer filDetaljer = getFilDetaljer(dokumentInfo, request.getVariantFormat());
+		generateAuditLogIfDokumentIsSensitivt(journalpost, filDetaljer, "hentDokument");
+
+		if (StringUtils.isNotEmpty(filDetaljer.getOnDemandId())) {
+			return hentDokumentFromOnDemand(filDetaljer.getOnDemandId(), filDetaljer.getOnDemandInstans());
+		}
+
+		DokumentFil dokumentFil = getDocumentFromDBRepository(filDetaljer.getFilUuid());
+		return dokumentFil.getFil();
+	}
+}

@@ -1,5 +1,7 @@
 package no.nav.dokarkiv.innsynjournal.v2.exceptions;
 
+import no.nav.modig.core.context.SubjectHandler;
+
 import java.util.Map;
 
 /**
@@ -20,7 +22,7 @@ public class SecurityLimitationAttributeException extends RuntimeException {
 		this.journalpostId = journalpostId;
 		this.dokumentInfoId = dokumentInfoId;
 		this.attributeMap = attributeMap;
-//		this.loggedOnUser = SubjectHandler.getSubjectHandler().getUid(); FIXME
+		this.loggedOnUser = SubjectHandler.getSubjectHandler().getUid();
 	}
 
 	@Override

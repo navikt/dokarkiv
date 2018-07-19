@@ -19,10 +19,6 @@ import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.innsynjournal.v2.exceptions.JournalpostIkkeInngaaendeException;
 import no.nav.dokarkiv.innsynjournal.v2.exceptions.JournalpostNotSupportedException;
 import no.nav.dokarkiv.innsynjournal.v2.exceptions.UgyldigInputException;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -30,19 +26,16 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
-import org.springframework.orm.hibernate5.HibernateTemplate;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Date;
 import java.util.List;
-
 
 /**
  * Unit tests for {@link IdentifiserJournalpostService}
  *
  * @author Ketill Fenne, Visma Consulting
  */
-@Ignore
 @RunWith(MockitoJUnitRunner.class)
 public class DefaultIdentifiserJournalpostServiceTest {
 
@@ -62,33 +55,19 @@ public class DefaultIdentifiserJournalpostServiceTest {
 
 	@Mock
 	private JoarkRepository joarkRepository;
-	@Mock
-	private HibernateTemplate hibernateTemplate;
-	@Mock
-	private Session sessionMock;
-	@Mock
-	private SessionFactory sessionFactoryMock;
 
 	@InjectMocks
 	private DefaultIdentifiserJournalpostService service;
 
 	private List<Journalpost> journalposts;
 
-	@Before
-	public void setUp() throws Exception {
-		when(hibernateTemplate.getSessionFactory()).thenReturn(sessionFactoryMock);
-		when(sessionFactoryMock.getCurrentSession()).thenReturn(sessionMock);
-//		when(joarkRepository.findJournalpostByKanal(any(String.class), any(MottaksKanalCode.class)))
-//				.thenReturn(journalposts); FIXME
-	}
-
 	@Test
 	public void shouldCreateParams() throws Exception {
 		journalposts = Lists.newArrayList(createJournalpost(JournalpostTypeCode.I));
 		ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
 		ArgumentCaptor<MottaksKanalCode> captorMottaksKanalCode = ArgumentCaptor.forClass(MottaksKanalCode.class);
-//		when(joarkRepository.findJournalpostByKanal(captor.capture(), captorMottaksKanalCode.capture()))
-//				.thenReturn(journalposts);
+		when(joarkRepository.findJournalpostByKanalReferanseIdAndMottakskanal(captor.capture(), captorMottaksKanalCode.capture()))
+				.thenReturn(journalposts);
 
 		service.identifiserJournalpost(createRequest(KANAL_REFERANSE_ID, MOTTAKSKANAL));
 
@@ -103,7 +82,6 @@ public class DefaultIdentifiserJournalpostServiceTest {
 		service.identifiserJournalpost(createRequest(null, null));
 	}
 
-
 	@Test
 	public void shouldThrowWrongJournalpostType() throws Exception {
 		thrown.expect(JournalpostIkkeInngaaendeException.class);
@@ -111,8 +89,8 @@ public class DefaultIdentifiserJournalpostServiceTest {
 		journalposts = Lists.newArrayList(createJournalpost(JournalpostTypeCode.U));
 		ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
 		ArgumentCaptor<MottaksKanalCode> captorMottaksKanalCode = ArgumentCaptor.forClass(MottaksKanalCode.class);
-//		when(joarkRepository.findJournalpostByKanal(captor.capture(), captorMottaksKanalCode.capture()))
-//				.thenReturn(journalposts);
+		when(joarkRepository.findJournalpostByKanalReferanseIdAndMottakskanal(captor.capture(), captorMottaksKanalCode.capture()))
+				.thenReturn(journalposts);
 
 		service.identifiserJournalpost(createRequest(KANAL_REFERANSE_ID, MOTTAKSKANAL));
 	}
@@ -124,17 +102,17 @@ public class DefaultIdentifiserJournalpostServiceTest {
 		journalposts = Lists.newArrayList(createJournalpostNoHoveddokument(JournalpostTypeCode.I));
 		ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
 		ArgumentCaptor<MottaksKanalCode> captorMottaksKanalCode = ArgumentCaptor.forClass(MottaksKanalCode.class);
-//		when(joarkRepository.findJournalpostByKanal(captor.capture(), captorMottaksKanalCode.capture()))
-//				.thenReturn(journalposts);
+		when(joarkRepository.findJournalpostByKanalReferanseIdAndMottakskanal(captor.capture(), captorMottaksKanalCode.capture()))
+				.thenReturn(journalposts);
 
 		service.identifiserJournalpost(createRequest(KANAL_REFERANSE_ID, MOTTAKSKANAL));
 	}
 
 	private IdentifiserJournalpostToRequest createRequest(String kanalReferanseId, String mottakskanal) {
-		IdentifiserJournalpostToRequest identifiserJournalpostToRequest = new IdentifiserJournalpostToRequest();
-		identifiserJournalpostToRequest.setKanalReferanseId(kanalReferanseId);
-		identifiserJournalpostToRequest.setMottaksKanal(MottaksKanalCode.NAV_NO);
-		return identifiserJournalpostToRequest;
+		return IdentifiserJournalpostToRequest.builder()
+				.kanalReferanseId(kanalReferanseId)
+				.mottaksKanal(MottaksKanalCode.NAV_NO)
+				.build();
 	}
 
 	private Journalpost createJournalpost(JournalpostTypeCode typeCode) {
