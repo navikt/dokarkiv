@@ -60,6 +60,11 @@ import no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark109.KnyttDokumentTilJourn
 import no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark110.SettJournalpostAttributterRequestMapper;
 import no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark110.SettJournalpostAttributterRequestTo;
 import no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark110.SettJournalpostAttributterService;
+import no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark111.OpprettUtgaaendeJournalpostArkiverDokumentRequestTo;
+import no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark111.OpprettUtgaaendeJournalpostArkiverDokumentResponseMapper;
+import no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark111.OpprettUtgaaendeJournalpostArkiverDokumentResponseTo;
+import no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark111.OpprettUtgaaendeJournalpostArkiverDokumentService;
+import no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark111.OpprettUtgaaendeJournalpostArkiverDokumenterRequestMapper;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.AlleredeFerdigstiltException;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.ArkiverDokumentproduksjonV1;
@@ -91,6 +96,8 @@ import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.KnyttDoku
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.KnyttDokumentTilJournalpostSomVedleggJournalpostIkkeUnderArbeid;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.KnyttDokumentTilJournalpostSomVedleggUlikeFagomraader;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.ObjektIkkeFunnetException;
+import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.OpprettUtgaaendeJournalpostUgyldigInput;
+import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.OpprettUtgaaendeJournalpostValideringAvVedleggFeilet;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.UgyldigInputException;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.feil.AlleredeFerdigstiltFault;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.feil.AvbrytelseIkkeTillatt;
@@ -108,8 +115,10 @@ import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.feil.Jour
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.feil.JournalpostIkkeUnderArbeid;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.feil.KanIkkeFerdigstillesFault;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.feil.ObjektIkkeFunnetFault;
+import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.feil.UgyldigInput;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.feil.UgyldigInputFault;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.feil.UlikeFagomraader;
+import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.feil.ValideringAvVedleggFeilet;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.ArkiverVedleggRequest;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.ArkiverVedleggResponse;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.AvbrytJournalpostRequest;
@@ -122,6 +131,8 @@ import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.OpprettJournalpostArkiverDokumentResponse;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.OpprettJournalpostRequest;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.OpprettJournalpostResponse;
+import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.OpprettUtgaaendeJournalpostArkiverDokumentRequest;
+import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.OpprettUtgaaendeJournalpostArkiverDokumentResponse;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.SettDatoSendtRequest;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.SettJournalpostAttributterRequest;
 import org.springframework.stereotype.Component;
@@ -140,16 +151,12 @@ import javax.inject.Inject;
 public class ArkiverDokumentproduksjonProvider implements ArkiverDokumentproduksjonV1 {
 
 	private static final String ARKIVER_DOKUMENTPRODUKSJON_V1 = "ArkiverDokumentproduksjonV1";
-	private static final String OPPRETT_JOURNALPOST_ARKIVER_DOKUMENT = ARKIVER_DOKUMENTPRODUKSJON_V1 + ".opprettJournalpostArkiverDokument";
-	private static final String OPPDATER_JOURNALPOST_ARKIVER_DOKUMENT = ARKIVER_DOKUMENTPRODUKSJON_V1 + ".oppdaterJournalpostArkiverDokument";
-	private static final String OPPRETT_JOURNALPOST = ARKIVER_DOKUMENTPRODUKSJON_V1 + ".opprettJournalpost";
-	private static final String AVBRYT_JOURNALPOST = ARKIVER_DOKUMENTPRODUKSJON_V1 + ".avbrytJournalpost";
 	private static final String ARKIVER_VEDLEGG = ARKIVER_DOKUMENTPRODUKSJON_V1 + ".arkiverVedlegg";
 	private static final String AVBRYT_VEDLEGG = ARKIVER_DOKUMENTPRODUKSJON_V1 + ".avbrytVedlegg";
 	private static final String FERDIGSTILL_JOURNALPOST = ARKIVER_DOKUMENTPRODUKSJON_V1 + ".ferdigstillJournalpost";
 	private static final String FJERN_FERDIGSTILT_DOKUMENT = ARKIVER_DOKUMENTPRODUKSJON_V1 + ".fjernFerdigstiltDokument";
-	private static final String SETT_DATO_SENDT = ARKIVER_DOKUMENTPRODUKSJON_V1 + ".settDatoSendt";
 	private static final String KNYTT_DOKUMENT_TIL_JOURNALPOST_SOM_VEDLEGG = ARKIVER_DOKUMENTPRODUKSJON_V1 + ".knyttDokumentTilJournalpostSomVedlegg";
+	private static final String OPPRETT_UTGAAENDE_JOURNALPOST_ARKIVER_DOKUMENT = ARKIVER_DOKUMENTPRODUKSJON_V1 + ".opprettUtgaaendeJournalpostArkiverDokument";
 
 	@Inject
 	private OpprettJournalpostArkiverDokumentRequestMapper opprettJournalpostArkiverDokumentRequestMapper;
@@ -216,6 +223,14 @@ public class ArkiverDokumentproduksjonProvider implements ArkiverDokumentproduks
 
 	@Inject
 	private KnyttDokumentTilJournalpostSomVedleggRequestMapper knyttDokumentTilJournalpostSomVedleggRequestMapper;
+
+	@Inject
+	private OpprettUtgaaendeJournalpostArkiverDokumentResponseMapper opprettUtgaaendeJournalpostArkiverDokumentResponseMapper;
+	@Inject
+	private OpprettUtgaaendeJournalpostArkiverDokumenterRequestMapper opprettUtgaaendeJournalpostArkiverDokumenterRequestMapper;
+
+	@Inject
+	private OpprettUtgaaendeJournalpostArkiverDokumentService opprettUtgaaendeJournalpostArkiverDokumentService;
 
 	@Override
 	@Transactional
@@ -436,11 +451,7 @@ public class ArkiverDokumentproduksjonProvider implements ArkiverDokumentproduks
 			KnyttDokumentTilJournalpostSomVedleggJournalpostIkkeFerdigstilt,
 			KnyttDokumentTilJournalpostSomVedleggUlikeFagomraader {
 
-		KnyttDokumentTilJournalpostSomVedleggRequestTo domainRequest = null;
-
-		if (request != null) {
-			domainRequest = knyttDokumentTilJournalpostSomVedleggRequestMapper.map(request);
-		}
+		KnyttDokumentTilJournalpostSomVedleggRequestTo domainRequest = knyttDokumentTilJournalpostSomVedleggRequestMapper.map(request);
 
 		try {
 			knyttDokumentTilJournalpostSomVedleggService.knyttDokumentTilJournalpostSomVedlegg(domainRequest);
@@ -491,9 +502,35 @@ public class ArkiverDokumentproduksjonProvider implements ArkiverDokumentproduks
 		log.info("tjoark110 har satt journalpostattributter på journalpost(er) med journalpostId(er)={}", domainRequest.getJournalpostIds());
 	}
 
+	@Override
+	@Transactional
+	public OpprettUtgaaendeJournalpostArkiverDokumentResponse opprettUtgaaendeJournalpostArkiverDokument(OpprettUtgaaendeJournalpostArkiverDokumentRequest opprettUtgaaendeJournalpostArkiverDokumentRequest) throws OpprettUtgaaendeJournalpostUgyldigInput, OpprettUtgaaendeJournalpostValideringAvVedleggFeilet {
+		Assert.notNull(opprettUtgaaendeJournalpostArkiverDokumentRequest, "Request kan ikke være null");
+		log.info(String.format("tjoark111 Har motttat kall om å arkivere utgående journalpost. kanalReferanseId=%s", opprettUtgaaendeJournalpostArkiverDokumentRequest
+				.getJournalpost() == null ? null : opprettUtgaaendeJournalpostArkiverDokumentRequest.getJournalpost()
+				.getKanalreferanseId()));
+
+		try {
+			OpprettUtgaaendeJournalpostArkiverDokumentRequestTo requestTo = opprettUtgaaendeJournalpostArkiverDokumenterRequestMapper
+					.map(opprettUtgaaendeJournalpostArkiverDokumentRequest);
+			OpprettUtgaaendeJournalpostArkiverDokumentResponseTo responseTo = opprettUtgaaendeJournalpostArkiverDokumentService.opprettUtgaaendeJournalpostArkiverDokument(requestTo);
+			return opprettUtgaaendeJournalpostArkiverDokumentResponseMapper.map(responseTo);
+		} catch (IllegalArgumentException | no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.UgyldigInputException e) {
+			throw new OpprettUtgaaendeJournalpostUgyldigInput(e.getMessage(),
+					faultInfoPopulator.populateFaultInfo(new UgyldigInput(), e,
+							OPPRETT_UTGAAENDE_JOURNALPOST_ARKIVER_DOKUMENT));
+		} catch (no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.ValideringAvVedleggFeiletException e) {
+			throw new OpprettUtgaaendeJournalpostValideringAvVedleggFeilet(e.getMessage(),
+					faultInfoPopulator.populateFaultInfo(new ValideringAvVedleggFeilet(), e,
+							OPPRETT_UTGAAENDE_JOURNALPOST_ARKIVER_DOKUMENT));
+		}
+
+	}
 
 	@Override
 	public void ping() {
 		// noop
 	}
+
+
 }

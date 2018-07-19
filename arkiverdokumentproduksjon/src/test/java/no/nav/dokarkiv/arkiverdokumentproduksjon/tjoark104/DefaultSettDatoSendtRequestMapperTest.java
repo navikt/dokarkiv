@@ -4,8 +4,8 @@ import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.ApplicationException;
 import no.nav.dokarkiv.core.domain.util.DateProvider;
+import no.nav.dokarkiv.core.exceptions.ApplicationException;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.SettDatoSendtRequest;
 import org.junit.Before;
 import org.junit.Rule;

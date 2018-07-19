@@ -35,7 +35,6 @@ import org.junit.rules.ExpectedException;
  *
  * @author Roar Bjurstrom - (Visma Consulting)
  */
-//FIXME
 public class ArkiverVedleggIT extends AbstractArkiverdokumentproduksjonItest {
 
 	private static final String OPPRETTET_KILDE_NAVN = "opprettet kilde";

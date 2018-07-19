@@ -13,7 +13,7 @@ public class NoDokumentInfoFoundException extends FunctionalRecoverableException
 	/** Serialization UID */
 	private static final long serialVersionUID = ***gammelt_fnr***36396074L;
 
-	private Long dokumentInfoId;
+	private final Long dokumentInfoId;
 	
 	/**
 	 * Constructs a new NoDokumentInfoFoundException.

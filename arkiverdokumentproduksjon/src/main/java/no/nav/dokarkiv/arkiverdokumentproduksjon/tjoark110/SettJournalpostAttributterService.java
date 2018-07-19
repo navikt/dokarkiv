@@ -2,8 +2,8 @@ package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark110;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
-import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.ApplicationException;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.exceptions.ApplicationException;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.core.sporing.SporingPopulator;
 import org.springframework.stereotype.Component;

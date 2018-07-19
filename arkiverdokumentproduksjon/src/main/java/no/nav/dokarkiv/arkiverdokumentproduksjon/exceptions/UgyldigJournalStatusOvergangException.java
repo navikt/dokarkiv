@@ -17,9 +17,9 @@ public class UgyldigJournalStatusOvergangException extends FunctionalRecoverable
 	 */
 	private static final long serialVersionUID = ***gammelt_fnr***52808018L;
 
-	private JournalStatusCode existingJournalStatus;
-	private JournalStatusCode updatedJournalStatus;
-	private JournalpostTypeCode journalpostType;
+	private final JournalStatusCode existingJournalStatus;
+	private final JournalStatusCode updatedJournalStatus;
+	private final JournalpostTypeCode journalpostType;
 
 	/**
 	 * Constructs a new UgyldigJournalStatusOvergangException.

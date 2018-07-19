@@ -3,7 +3,7 @@ package no.nav.dokarkiv.arkiverdokumentmottak.tjoark203.v1;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
-import no.nav.dokarkiv.core.nsb.DokumentInfoIdVedleggTo;
+import no.nav.dokarkiv.arkiverdokumentmottak.DokumentInfoIdVedleggTo;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -29,14 +29,15 @@ public class JournalforInngaaendeForsendelseResponseToTest {
 
 	@Before
 	public void setUp() throws Exception {
-		DokumentInfoIdVedleggTo vedlegg = new DokumentInfoIdVedleggTo();
-		vedlegg.setDokumentInfoId(DOKUMENTINFO_ID);
-		vedlegg.setDokumentTypeId(DOKUMENTTYPE_ID);
-		to = new JournalforInngaaendeForsendelseResponseTo(
-				JOURNALPOST_ID,
-				DOKUMENTINFO_ID_HOVEDDOKUMENT,
-				Collections.singletonList(vedlegg)
-		);
+		DokumentInfoIdVedleggTo vedlegg = DokumentInfoIdVedleggTo.builder()
+				.dokumentInfoId(DOKUMENTINFO_ID)
+				.dokumentTypeId(DOKUMENTTYPE_ID)
+				.build();
+		to = JournalforInngaaendeForsendelseResponseTo.builder()
+				.journalpostId(JOURNALPOST_ID)
+				.dokumentInfoIdHoveddokument(DOKUMENTINFO_ID_HOVEDDOKUMENT)
+				.build();
+		to.getDokumentInfoIdVedleggTo().addAll(Collections.singletonList(vedlegg));
 	}
 
 	@Test

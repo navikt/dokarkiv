@@ -12,8 +12,8 @@ public interface AvbrytJournalpostUpdater {
 	/**
 	 * Set the journalpost to Interrupted State
 	 *
-	 * @param the journalpost to update
-	 * @param the one who updates the journalpost
+	 * @param journalpost journalpost to update
+	 * @param endretAvNavn one who updates the journalpost
 	 * @return the updated journalpost
 	 */
 	Journalpost updateJournalpost(Journalpost journalpost, String endretAvNavn);

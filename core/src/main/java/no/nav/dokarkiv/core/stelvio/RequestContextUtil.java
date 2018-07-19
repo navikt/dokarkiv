@@ -18,6 +18,7 @@ import java.security.Principal;
  *
  * @author Thomas Eugen Bjørge, Visma Consulting
  */
+@Deprecated
 public final class RequestContextUtil {
 
 	private static final Logger logger = LoggerFactory.getLogger(RequestContextUtil.class);

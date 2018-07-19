@@ -14,7 +14,7 @@ public interface AvbrytJournalpostValidator {
 	 * Checks if the Journalpost can be interrupted
 	 *
 	 * @param journalpost The Journalpost to be updated
-	 * @throws ApplicationException if Journalpost cannot be interrupted
+	 * @throws UgyldigJournalStatusOvergangException if Journalpost cannot be interrupted
 	 */
 	void validate(Journalpost journalpost) throws UgyldigJournalStatusOvergangException;
 

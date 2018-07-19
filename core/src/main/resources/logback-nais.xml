@@ -32,4 +32,8 @@
 		<appender-ref ref="stdout_json"/>
 	</logger>
 
+	<logger name="log4j.logger.org.apache.cxf.interceptor" additivity="false" level="ERROR">
+		<appender-ref ref="stdout_json"/>
+	</logger>
+
 </configuration>

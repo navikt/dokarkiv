@@ -20,7 +20,7 @@ import java.util.Set;
 public class JournalforInngaaendeForsendelseV2Validator {
 
 	@Inject
-	protected MandatoryFieldsVerifier mandatoryFieldsVerifier;
+	private MandatoryFieldsVerifier mandatoryFieldsVerifier;
 
 	public void validate(final Journalpost journalpost) {
 		mandatoryFieldsVerifier.verifyFieldsSkipJournalForendeEnhetId(journalpost);

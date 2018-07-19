@@ -83,6 +83,7 @@ public class DefaultLagreVedleggPaaJournalpost implements LagreVedleggPaaJournal
 		BidragMellomlagring bidragMellomlagring = getPersistedBidragMellomlagring(bidragMellomlagringId);
 
 		BidragMellomlagringDokument bidragMellomlagringDokument = createArkivBidragMellomlagringDokument(dokumentInfo);
+		bidragMellomlagringDokument.setBidragMellomlagring(bidragMellomlagring);
 		BidragMellomlagringDokument savedBidragMellomlagringDokument = bidragMellomlagringDokumentRepository.save(bidragMellomlagringDokument);
 		bidragMellomlagring.addBidragMellomlagringDokument(bidragMellomlagringDokument);
 

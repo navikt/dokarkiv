@@ -1,6 +1,5 @@
 package no.nav.dokarkiv.arkiverdokumentmottak.tjoark203.v1;
 
-
 import static no.nav.dokarkiv.core.MDCConstants.MDC_APP_ID;
 
 import com.google.common.base.Strings;
@@ -56,7 +55,4 @@ public class ArkiverDokumentmottakEndpoint implements ArkiverDokumentmottakV1 {
 		String appId = MDC.get(MDC_APP_ID);
 		return Strings.isNullOrEmpty(appId) ? DEFAULT_APPID : appId;
 	}
-
-
-
 }

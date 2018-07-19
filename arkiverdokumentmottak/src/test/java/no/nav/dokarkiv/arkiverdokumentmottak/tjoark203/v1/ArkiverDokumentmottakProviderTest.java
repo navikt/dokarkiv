@@ -50,7 +50,10 @@ public class ArkiverDokumentmottakProviderTest {
 	@Before
 	public void setUp() {
 		when(journalforInngaaendeForsendelseServiceMock.journalforInngaaendeForsendelse(any()))
-				.thenReturn(new JournalforInngaaendeForsendelseResponseTo(1L));
+				.thenReturn(JournalforInngaaendeForsendelseResponseTo.builder()
+						.journalpostId(1L)
+						.dokumentInfoIdHoveddokument(1L)
+						.build());
 		when(journalforInngaaendeForsendelseRequestMapperMock.map(any()))
 				.thenReturn(new JournalforInngaaendeForsendelseRequestTo(new Journalpost()));
 

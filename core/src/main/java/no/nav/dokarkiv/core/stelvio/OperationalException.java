@@ -10,7 +10,9 @@ package no.nav.dokarkiv.core.stelvio;
  * considered to be operational (outside application boundaries).
  * 
  * @author Christian Kjendseth Wiik (Accenture)
+ * @deprecated Konsolideres i DokarkivTechnicalException
  */
+@Deprecated
 public class OperationalException extends SystemUnrecoverableException {
 
 	private static final long serialVersionUID = ***gammelt_fnr***35567061L;

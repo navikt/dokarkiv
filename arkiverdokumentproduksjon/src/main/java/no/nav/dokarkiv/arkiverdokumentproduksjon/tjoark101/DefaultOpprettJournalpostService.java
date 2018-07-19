@@ -1,6 +1,5 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark101;
 
-import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.ApplicationException;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
@@ -8,6 +7,7 @@ import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.util.DateProvider;
+import no.nav.dokarkiv.core.exceptions.ApplicationException;
 import no.nav.dokarkiv.core.journalbehandling.DokumentFilerDelegate;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import org.springframework.stereotype.Component;
@@ -50,10 +50,10 @@ public class DefaultOpprettJournalpostService implements OpprettJournalpostServi
 	}
 
 	private OpprettJournalpostResponseTo createResponse(Journalpost journalpost) {
-		OpprettJournalpostResponseTo response = new OpprettJournalpostResponseTo(
-				journalpost.getJournalpostId(),
-				journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId());
-		return response;
+		return OpprettJournalpostResponseTo.builder()
+				.journalpostId(journalpost.getJournalpostId())
+				.dokumentInfoId(journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId())
+				.build();
 	}
 
 	private void updateJournalpost(Journalpost journalpost) {

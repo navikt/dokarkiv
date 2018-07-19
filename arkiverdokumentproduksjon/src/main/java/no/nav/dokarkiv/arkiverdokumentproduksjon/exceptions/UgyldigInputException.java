@@ -15,4 +15,7 @@ public class UgyldigInputException extends FunctionalRecoverableException {
 		super(message + (". journalpostId=" + journalpostId), cause);
 	}
 
+	public UgyldigInputException(String message) {
+		super(message);
+	}
 }

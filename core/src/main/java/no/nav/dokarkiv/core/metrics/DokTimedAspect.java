@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2017 Pivotal Software, Inc.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,6 +25,7 @@ import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.Tags;
 import io.micrometer.core.instrument.Timer;
 import io.micrometer.core.lang.NonNullApi;
+import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -37,14 +38,15 @@ import java.util.function.Function;
 /**
  * AspectJ aspect for intercepting types or method annotated with @Timed.
  * Changes: Counter for exceptions
- * @author Joakim Bjørnstad, Jbit AS
  *
+ * @author Joakim Bjørnstad, Jbit AS
  * @author David J. M. Karlsen
  * @author Jon Schneider
  */
 @Aspect
 @NonNullApi
 @Incubating(since = "1.0.0")
+@Slf4j
 public class DokTimedAspect {
 	private final MeterRegistry registry;
 	private final Function<ProceedingJoinPoint, Iterable<Tag>> tagsBasedOnJoinpoint;
@@ -73,9 +75,14 @@ public class DokTimedAspect {
 		Timer.Sample sample = Timer.start(registry);
 		try {
 			return pjp.proceed();
-		} catch(Exception e) {
+		} catch (Exception e) {
+			if (isFunctionalException(method, e)) {
+				log.warn(e.getMessage(), e);
+			} else {
+				log.error(e.getMessage(), e);
+			}
 			Counter.builder(timed.value() + "_exception")
-					.tags("error_type", asList(method.getExceptionTypes()).contains(e.getClass()) ? "functional" : "technical")
+					.tags("error_type", isFunctionalException(method, e) ? "functional" : "technical")
 					.tags("exception_name", e.getClass().getSimpleName())
 					.tags(timed.extraTags())
 					.tags(tagsBasedOnJoinpoint.apply(pjp))
@@ -92,4 +99,9 @@ public class DokTimedAspect {
 					.register(registry));
 		}
 	}
+
+	private boolean isFunctionalException(Method method, Exception e) {
+		return asList(method.getExceptionTypes()).contains(e.getClass());
+	}
+
 }

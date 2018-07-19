@@ -14,7 +14,7 @@ public class UgyldigDokumentStatusVerdiException extends FunctionalRecoverableEx
 	/** Unique serial version id. */
 	private static final long serialVersionUID = ***gammelt_fnr***0054658L;
 
-	private DokumentStatusCode dokumentStatus;
+	private final DokumentStatusCode dokumentStatus;
 	
 	/**
 	 * Constructs a new UgyldigDokumentStatusVerdiException.

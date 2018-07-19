@@ -46,6 +46,8 @@ import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
@@ -80,6 +82,10 @@ public class JournalforInngaaendeForsendelseV2IT extends AbstractArkiverDokument
 		request.setForsokEndeligJF(true);
 	}
 
+	private List<no.nav.dokarkiv.core.domain.entities.Journalpost> getAllJournalposts() {
+		return StreamSupport.stream(joarkRepository.findAll().spliterator(), false).collect(Collectors.toList());
+	}
+
 	/**
 	 * HVIS journalpost med journalStatus "J" opprettes og input.journalFEnhet er satt SÅ skal Joark.journalFEnhet settes lik input.journalFEnhet
 	 * HVIS ForsokEndeligJF=true så skal Journalpost.JournalStatus = "J"
@@ -94,7 +100,7 @@ public class JournalforInngaaendeForsendelseV2IT extends AbstractArkiverDokument
 		request.getJournalpost().setJournalforendeEnhet("test test teest");
 		JournalforInngaaendeForsendelseResponse response = arkiverDokumentmottakV2Provider.journalforInngaaendeForsendelse(request);
 
-		List<no.nav.dokarkiv.core.domain.entities.Journalpost> allJournalposts = (List) joarkRepository.findAll();
+		List<no.nav.dokarkiv.core.domain.entities.Journalpost> allJournalposts = getAllJournalposts();
 		assertThat(allJournalposts, hasSize(1));
 
 		no.nav.dokarkiv.core.domain.entities.Journalpost persistedJournalpost = allJournalposts.get(0);
@@ -113,7 +119,7 @@ public class JournalforInngaaendeForsendelseV2IT extends AbstractArkiverDokument
 
 		JournalforInngaaendeForsendelseResponse response = arkiverDokumentmottakV2Provider.journalforInngaaendeForsendelse(request);
 
-		List<no.nav.dokarkiv.core.domain.entities.Journalpost> allJournalposts = (List) joarkRepository.findAll();
+		List<no.nav.dokarkiv.core.domain.entities.Journalpost> allJournalposts = getAllJournalposts();
 		assertThat(allJournalposts, hasSize(1));
 
 		no.nav.dokarkiv.core.domain.entities.Journalpost persistedJournalpost = allJournalposts.get(0);
@@ -133,7 +139,7 @@ public class JournalforInngaaendeForsendelseV2IT extends AbstractArkiverDokument
 
 		arkiverDokumentmottakV2Provider.journalforInngaaendeForsendelse(request);
 
-		List<no.nav.dokarkiv.core.domain.entities.Journalpost> allJournalposts = (List) joarkRepository.findAll();
+		List<no.nav.dokarkiv.core.domain.entities.Journalpost> allJournalposts = getAllJournalposts();
 		assertThat(allJournalposts, hasSize(1));
 
 		no.nav.dokarkiv.core.domain.entities.Journalpost persistedJournalpost = allJournalposts.get(0);
@@ -152,7 +158,7 @@ public class JournalforInngaaendeForsendelseV2IT extends AbstractArkiverDokument
 
 		arkiverDokumentmottakV2Provider.journalforInngaaendeForsendelse(request);
 
-		List<no.nav.dokarkiv.core.domain.entities.Journalpost> allJournalposts = (List) joarkRepository.findAll();
+		List<no.nav.dokarkiv.core.domain.entities.Journalpost> allJournalposts = getAllJournalposts();
 		assertThat(allJournalposts, hasSize(1));
 
 		no.nav.dokarkiv.core.domain.entities.Journalpost persistedJournalpost = allJournalposts.get(0);
@@ -181,7 +187,7 @@ public class JournalforInngaaendeForsendelseV2IT extends AbstractArkiverDokument
 	public void shouldMidlertidigJournalforeWhenForsokEndeligJFIsFalse() throws Exception {
 		request.setForsokEndeligJF(false);
 		JournalforInngaaendeForsendelseResponse response = arkiverDokumentmottakV2Provider.journalforInngaaendeForsendelse(request);
-		List<no.nav.dokarkiv.core.domain.entities.Journalpost> allJournalposts = (List) joarkRepository.findAll();
+		List<no.nav.dokarkiv.core.domain.entities.Journalpost> allJournalposts = getAllJournalposts();
 		assertThat(allJournalposts, hasSize(1));
 
 		no.nav.dokarkiv.core.domain.entities.Journalpost persistedJournalpost = allJournalposts.get(0);
@@ -205,7 +211,7 @@ public class JournalforInngaaendeForsendelseV2IT extends AbstractArkiverDokument
 	public void shouldMidlertidigJournalforeWhenNullJournalpostTema() throws Exception {
 		request.getJournalpost().setTema(null);
 		JournalforInngaaendeForsendelseResponse response = arkiverDokumentmottakV2Provider.journalforInngaaendeForsendelse(request);
-		List<no.nav.dokarkiv.core.domain.entities.Journalpost> allJournalposts = (List) joarkRepository.findAll();
+		List<no.nav.dokarkiv.core.domain.entities.Journalpost> allJournalposts = getAllJournalposts();
 		assertThat(allJournalposts, hasSize(1));
 
 		no.nav.dokarkiv.core.domain.entities.Journalpost persistedJournalpost = allJournalposts.get(0);
@@ -227,7 +233,7 @@ public class JournalforInngaaendeForsendelseV2IT extends AbstractArkiverDokument
 	public void shouldMidlertidigJournalforeWhenNullJournalpostJournalfEnhet() throws Exception {
 		request.getJournalpost().setTema(null);
 		JournalforInngaaendeForsendelseResponse response = arkiverDokumentmottakV2Provider.journalforInngaaendeForsendelse(request);
-		List<no.nav.dokarkiv.core.domain.entities.Journalpost> allJournalposts = (List) joarkRepository.findAll();
+		List<no.nav.dokarkiv.core.domain.entities.Journalpost> allJournalposts = getAllJournalposts();
 		assertThat(allJournalposts, hasSize(1));
 
 		no.nav.dokarkiv.core.domain.entities.Journalpost persistedJournalpost = allJournalposts.get(0);
@@ -240,7 +246,7 @@ public class JournalforInngaaendeForsendelseV2IT extends AbstractArkiverDokument
 	public void shouldMidlertidigJournalforeWhenNullInnhold() throws Exception {
 		request.getJournalpost().setInnhold(null);
 		JournalforInngaaendeForsendelseResponse response = arkiverDokumentmottakV2Provider.journalforInngaaendeForsendelse(request);
-		List<no.nav.dokarkiv.core.domain.entities.Journalpost> allJournalposts = (List) joarkRepository.findAll();
+		List<no.nav.dokarkiv.core.domain.entities.Journalpost> allJournalposts = getAllJournalposts();
 		assertThat(allJournalposts, hasSize(1));
 
 		no.nav.dokarkiv.core.domain.entities.Journalpost persistedJournalpost = allJournalposts.get(0);
@@ -253,7 +259,7 @@ public class JournalforInngaaendeForsendelseV2IT extends AbstractArkiverDokument
 	public void shouldMidlertidigJournalforeWhenNullJournalpostDatoDokument() throws Exception {
 		request.getJournalpost().setDatoDokument(null);
 		JournalforInngaaendeForsendelseResponse response = arkiverDokumentmottakV2Provider.journalforInngaaendeForsendelse(request);
-		List<no.nav.dokarkiv.core.domain.entities.Journalpost> allJournalposts = (List) joarkRepository.findAll();
+		List<no.nav.dokarkiv.core.domain.entities.Journalpost> allJournalposts = getAllJournalposts();
 		assertThat(allJournalposts, hasSize(1));
 
 		no.nav.dokarkiv.core.domain.entities.Journalpost persistedJournalpost = allJournalposts.get(0);
@@ -266,7 +272,7 @@ public class JournalforInngaaendeForsendelseV2IT extends AbstractArkiverDokument
 	public void shouldMidlertidigJournalforeWhenNullJournalpostAvsendMottaker() throws Exception {
 		request.getJournalpost().setAvsenderMottakerNavn(null);
 		JournalforInngaaendeForsendelseResponse response = arkiverDokumentmottakV2Provider.journalforInngaaendeForsendelse(request);
-		List<no.nav.dokarkiv.core.domain.entities.Journalpost> allJournalposts = (List) joarkRepository.findAll();
+		List<no.nav.dokarkiv.core.domain.entities.Journalpost> allJournalposts = getAllJournalposts();
 		assertThat(allJournalposts, hasSize(1));
 
 		no.nav.dokarkiv.core.domain.entities.Journalpost persistedJournalpost = allJournalposts.get(0);
@@ -279,7 +285,7 @@ public class JournalforInngaaendeForsendelseV2IT extends AbstractArkiverDokument
 	public void shouldEndeligJournalforeWhenNullJournalpostAvsenderMottakerId() throws Exception {
 		request.getJournalpost().setAvsenderMottakerId(null);
 		JournalforInngaaendeForsendelseResponse response = arkiverDokumentmottakV2Provider.journalforInngaaendeForsendelse(request);
-		List<no.nav.dokarkiv.core.domain.entities.Journalpost> allJournalposts = (List) joarkRepository.findAll();
+		List<no.nav.dokarkiv.core.domain.entities.Journalpost> allJournalposts = getAllJournalposts();
 		assertThat(allJournalposts, hasSize(1));
 
 		no.nav.dokarkiv.core.domain.entities.Journalpost persistedJournalpost = allJournalposts.get(0);
@@ -319,7 +325,7 @@ public class JournalforInngaaendeForsendelseV2IT extends AbstractArkiverDokument
 	public void shouldMidlertidigJournalforeWhenNullSaksrelasjon() throws Exception {
 		request.getJournalpost().setSaksrelasjon(null);
 		JournalforInngaaendeForsendelseResponse response = arkiverDokumentmottakV2Provider.journalforInngaaendeForsendelse(request);
-		List<no.nav.dokarkiv.core.domain.entities.Journalpost> allJournalposts = (List) joarkRepository.findAll();
+		List<no.nav.dokarkiv.core.domain.entities.Journalpost> allJournalposts = getAllJournalposts();
 		assertThat(allJournalposts, hasSize(1));
 
 		no.nav.dokarkiv.core.domain.entities.Journalpost persistedJournalpost = allJournalposts.get(0);
@@ -360,7 +366,7 @@ public class JournalforInngaaendeForsendelseV2IT extends AbstractArkiverDokument
 	public void shouldMidlertidigJournalforeWhenNullBruker() throws Exception {
 		request.getJournalpost().setBruker(null);
 		JournalforInngaaendeForsendelseResponse response = arkiverDokumentmottakV2Provider.journalforInngaaendeForsendelse(request);
-		List<no.nav.dokarkiv.core.domain.entities.Journalpost> allJournalposts = (List) joarkRepository.findAll();
+		List<no.nav.dokarkiv.core.domain.entities.Journalpost> allJournalposts = getAllJournalposts();
 		assertThat(allJournalposts, hasSize(1));
 
 		no.nav.dokarkiv.core.domain.entities.Journalpost persistedJournalpost = allJournalposts.get(0);
@@ -448,7 +454,7 @@ public class JournalforInngaaendeForsendelseV2IT extends AbstractArkiverDokument
 	public void shouldMidlertidigJournalforeWhenDokumenttypeInfoNullTittel() throws Exception {
 		request.getJournalpost().getJournalpostDokumentInfoRelasjon().iterator().next().getDokumentInfo().setTittel(null);
 		JournalforInngaaendeForsendelseResponse response = arkiverDokumentmottakV2Provider.journalforInngaaendeForsendelse(request);
-		List<no.nav.dokarkiv.core.domain.entities.Journalpost> allJournalposts = (List) joarkRepository.findAll();
+		List<no.nav.dokarkiv.core.domain.entities.Journalpost> allJournalposts = getAllJournalposts();
 		assertThat(allJournalposts, hasSize(1));
 
 		no.nav.dokarkiv.core.domain.entities.Journalpost persistedJournalpost = allJournalposts.get(0);
@@ -461,7 +467,7 @@ public class JournalforInngaaendeForsendelseV2IT extends AbstractArkiverDokument
 	public void shouldEndeligJournalforeWhenDokumenttypeInfoNullbrevKode() throws Exception {
 		request.getJournalpost().getJournalpostDokumentInfoRelasjon().iterator().next().getDokumentInfo().setBrevkode(null);
 		JournalforInngaaendeForsendelseResponse response = arkiverDokumentmottakV2Provider.journalforInngaaendeForsendelse(request);
-		List<no.nav.dokarkiv.core.domain.entities.Journalpost> allJournalposts = (List) joarkRepository.findAll();
+		List<no.nav.dokarkiv.core.domain.entities.Journalpost> allJournalposts = getAllJournalposts();
 		assertThat(allJournalposts, hasSize(1));
 
 		no.nav.dokarkiv.core.domain.entities.Journalpost persistedJournalpost = allJournalposts.get(0);
@@ -488,7 +494,7 @@ public class JournalforInngaaendeForsendelseV2IT extends AbstractArkiverDokument
 	public void shouldNotMidlertidigJournalforeWhenDokumenttypeInfoNullSensitivt() throws Exception {
 		request.getJournalpost().getJournalpostDokumentInfoRelasjon().iterator().next().getDokumentInfo().setSensitivt(null);
 		JournalforInngaaendeForsendelseResponse response = arkiverDokumentmottakV2Provider.journalforInngaaendeForsendelse(request);
-		List<no.nav.dokarkiv.core.domain.entities.Journalpost> allJournalposts = (List) joarkRepository.findAll();
+		List<no.nav.dokarkiv.core.domain.entities.Journalpost> allJournalposts = getAllJournalposts();
 		assertThat(allJournalposts, hasSize(1));
 
 		no.nav.dokarkiv.core.domain.entities.Journalpost persistedJournalpost = allJournalposts.get(0);
@@ -544,7 +550,7 @@ public class JournalforInngaaendeForsendelseV2IT extends AbstractArkiverDokument
 		request.getJournalpost().getJournalpostDokumentInfoRelasjon().iterator().next().getDokumentInfo()
 				.getFildetaljerListe().iterator().next().setFilNavn(null);
 		JournalforInngaaendeForsendelseResponse response = arkiverDokumentmottakV2Provider.journalforInngaaendeForsendelse(request);
-		List<no.nav.dokarkiv.core.domain.entities.Journalpost> allJournalposts = (List) joarkRepository.findAll();
+		List<no.nav.dokarkiv.core.domain.entities.Journalpost> allJournalposts = getAllJournalposts();
 		assertThat(allJournalposts, hasSize(1));
 
 		no.nav.dokarkiv.core.domain.entities.Journalpost persistedJournalpost = allJournalposts.get(0);
@@ -558,7 +564,7 @@ public class JournalforInngaaendeForsendelseV2IT extends AbstractArkiverDokument
 		request.getJournalpost().getJournalpostDokumentInfoRelasjon().iterator().next().getDokumentInfo()
 				.getFildetaljerListe().iterator().next().setBatchNavn(null);
 		JournalforInngaaendeForsendelseResponse response = arkiverDokumentmottakV2Provider.journalforInngaaendeForsendelse(request);
-		List<no.nav.dokarkiv.core.domain.entities.Journalpost> allJournalposts = (List) joarkRepository.findAll();
+		List<no.nav.dokarkiv.core.domain.entities.Journalpost> allJournalposts = getAllJournalposts();
 		assertThat(allJournalposts, hasSize(1));
 
 		no.nav.dokarkiv.core.domain.entities.Journalpost persistedJournalpost = allJournalposts.get(0);
@@ -594,7 +600,7 @@ public class JournalforInngaaendeForsendelseV2IT extends AbstractArkiverDokument
 		request.getJournalpost().getJournalpostDokumentInfoRelasjon().iterator().next().getDokumentInfo()
 				.getSkannetInnholdListe().clear();
 		JournalforInngaaendeForsendelseResponse response = arkiverDokumentmottakV2Provider.journalforInngaaendeForsendelse(request);
-		List<no.nav.dokarkiv.core.domain.entities.Journalpost> allJournalposts = (List) joarkRepository.findAll();
+		List<no.nav.dokarkiv.core.domain.entities.Journalpost> allJournalposts = getAllJournalposts();
 		assertThat(allJournalposts, hasSize(1));
 
 		no.nav.dokarkiv.core.domain.entities.Journalpost persistedJournalpost = allJournalposts.get(0);
@@ -669,7 +675,7 @@ public class JournalforInngaaendeForsendelseV2IT extends AbstractArkiverDokument
 	public void shouldMidlertidigJournalforeWhenInvalidBruker() throws Exception {
 		request.getJournalpost().getBruker().setBrukerId("INVALID");
 		JournalforInngaaendeForsendelseResponse response = arkiverDokumentmottakV2Provider.journalforInngaaendeForsendelse(request);
-		List<no.nav.dokarkiv.core.domain.entities.Journalpost> allJournalposts = (List) joarkRepository.findAll();
+		List<no.nav.dokarkiv.core.domain.entities.Journalpost> allJournalposts = getAllJournalposts();
 		assertThat(allJournalposts, hasSize(1));
 
 		no.nav.dokarkiv.core.domain.entities.Journalpost persistedJournalpost = allJournalposts.get(0);

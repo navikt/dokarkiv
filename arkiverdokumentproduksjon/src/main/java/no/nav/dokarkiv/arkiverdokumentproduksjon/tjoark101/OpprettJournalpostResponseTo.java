@@ -1,34 +1,17 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark101;
 
+import lombok.Builder;
+import lombok.Data;
+
 /**
  * The response object for the OpprettJournalpostService as a part in
  * arkiverDokumentproduksjon
  *
  * @author Stig Strøm
  */
+@Data
+@Builder
 public class OpprettJournalpostResponseTo {
-
-	private Long journalpostId;
-
-	private Long dokumentInfoId;
-
-	/**
-	 * Constructor with parameters
-	 *
-	 * @param journalpostId  The journalpostId
-	 * @param dokumentInfoId The dokumentInfoId
-	 */
-	public OpprettJournalpostResponseTo(Long journalpostId,
-										Long dokumentInfoId) {
-		this.journalpostId = journalpostId;
-		this.dokumentInfoId = dokumentInfoId;
-	}
-
-	public Long getJournalpostId() {
-		return journalpostId;
-	}
-
-	public Long getDokumentInfoId() {
-		return dokumentInfoId;
-	}
+	private final Long journalpostId;
+	private final Long dokumentInfoId;
 }

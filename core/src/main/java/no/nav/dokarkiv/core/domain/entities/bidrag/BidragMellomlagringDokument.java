@@ -137,7 +137,7 @@ public class BidragMellomlagringDokument extends AbstractPersistentVersionedDoma
 	 *
 	 * @param bidragMellomlagring the bidragMellomlagring to set
 	 */
-	void setBidragMellomlagring(BidragMellomlagring bidragMellomlagring) {
+	public void setBidragMellomlagring(BidragMellomlagring bidragMellomlagring) {
 		this.bidragMellomlagring = bidragMellomlagring;
 	}
 	

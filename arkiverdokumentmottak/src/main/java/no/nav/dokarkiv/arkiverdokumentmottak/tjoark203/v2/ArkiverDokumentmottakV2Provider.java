@@ -22,16 +22,16 @@ import javax.inject.Inject;
 public class ArkiverDokumentmottakV2Provider implements ArkiverDokumentmottakV2 {
 
 	@Inject
-	public JournalforInngaaendeForsendelseV2ResponseMapper journalforInngaaendeForsendelseV2ResponseMapper;
+	private JournalforInngaaendeForsendelseV2ResponseMapper journalforInngaaendeForsendelseV2ResponseMapper;
 
 	@Inject
-	public JournalforInngaaendeForsendelseV2RequestMapper journalforInngaaendeForsendelseV2RequestMapper;
+	private JournalforInngaaendeForsendelseV2RequestMapper journalforInngaaendeForsendelseV2RequestMapper;
 
 	@Inject
-	public JournalforInngaaendeForsendelseV2Service journalforInngaaendeForsendelseV2Service;
+	private JournalforInngaaendeForsendelseV2Service journalforInngaaendeForsendelseV2Service;
 
 	@Inject
-	public ArkiverDokumentmottakV2FaultInfoPopulator faultInfoPopulator;
+	private ArkiverDokumentmottakV2FaultInfoPopulator faultInfoPopulator;
 
 	@Override
 	@Transactional

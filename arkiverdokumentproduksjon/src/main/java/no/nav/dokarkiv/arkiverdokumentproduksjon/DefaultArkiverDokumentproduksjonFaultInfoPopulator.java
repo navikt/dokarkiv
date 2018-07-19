@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon;
 
+import no.nav.dokarkiv.core.exceptions.AbstractJournalFaultInfoPopulator;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.feil.ForretningsmessigUnntak;
 import org.springframework.stereotype.Component;
 
@@ -21,5 +22,4 @@ public class DefaultArkiverDokumentproduksjonFaultInfoPopulator extends Abstract
 		faultInfo.setTidspunkt(getXmlTimestamp());
 		return faultInfo;
 	}
-
 }

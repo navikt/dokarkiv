@@ -2,9 +2,9 @@ package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark100;
 
 
 import lombok.Builder;
-import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.ApplicationException;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.exceptions.ApplicationException;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**

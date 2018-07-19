@@ -4,6 +4,7 @@ package no.nav.dokarkiv.core.stelvio;
  * Internal helper class to be used only by Stelvio.
  *
  * @author Stig Kleppe-Jørgensen, Accenture
+ * @deprecated fjern bruken av denne, forsøk å unngå unchecked casts slik javadoc hinter til
  */
 @Deprecated
 public class Internal {

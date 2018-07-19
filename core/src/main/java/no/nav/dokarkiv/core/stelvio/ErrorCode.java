@@ -6,11 +6,9 @@ package no.nav.dokarkiv.core.stelvio;
  * exceptions' constructor
  *
  * @author Christian Kjendseth Wiik (Accenture)
- * @see {@link #UnrecoverableException(String, ErrorCode)}
- * @see {@link #UnrecoverableException(String, ErrorCode, Throwable)}
- * @see {@link #RecoverableException(String, ErrorCode)}
- * @see {@link #RecoverableException(String, ErrorCode, Throwable)}
+ * @deprecated brukes ikke i praksis
  */
+@Deprecated
 public interface ErrorCode {
 
 	/**

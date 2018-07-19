@@ -6,6 +6,7 @@ package no.nav.dokarkiv.core.stelvio;
  * @author Stig Kleppe-Jørgensen
  * @see RequestContext
  */
+@Deprecated
 public final class RequestContextHolder {
 	/**
 	 * Holds an instance of the <code>RequestContext</code> class.

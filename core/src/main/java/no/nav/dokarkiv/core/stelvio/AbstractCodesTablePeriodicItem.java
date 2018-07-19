@@ -27,12 +27,14 @@ import java.util.Date;
  * @author Stig Kleppe-Jorgense, Accenture
  * @version $Id$
  * @see AbstractCodesTableItem
+ * @deprecated for mye komplisert logikk som ikke brukes. burde konsolideres
  *
  * @param <K>
  *            an enum type variable
  * @param <V>
  *            a type variable
  */
+@Deprecated
 @MappedSuperclass
 public abstract class AbstractCodesTablePeriodicItem<K extends Enum, V> extends AbstractCodesTableItem<K, V> {
 	/** The date the item is valid from. */

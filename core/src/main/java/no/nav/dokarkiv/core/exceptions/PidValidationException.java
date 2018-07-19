@@ -1,6 +1,7 @@
 package no.nav.dokarkiv.core.exceptions;
 
 import no.nav.dokarkiv.core.stelvio.FunctionalUnrecoverableException;
+import no.nav.dokarkiv.core.stelvio.Pid;
 
 /**
  * Exception thrown as a result of Pid validation failure.

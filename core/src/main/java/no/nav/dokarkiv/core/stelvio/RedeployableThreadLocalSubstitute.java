@@ -12,6 +12,7 @@ import java.util.WeakHashMap;
  * @param <T>
  *            value type
  */
+@Deprecated
 public class RedeployableThreadLocalSubstitute<T> {
 	private final Map<Thread, T> valuesByThread = Collections.synchronizedMap(new WeakHashMap<Thread, T>());
 

@@ -7,6 +7,7 @@ package no.nav.dokarkiv.core.stelvio;
  * @author Stig Kleppe-Jørgensen, Accenture
  * @author Morten Andersen-Gott, Accenture
  */
+@Deprecated
 public interface RequestContext {
 
 	/**

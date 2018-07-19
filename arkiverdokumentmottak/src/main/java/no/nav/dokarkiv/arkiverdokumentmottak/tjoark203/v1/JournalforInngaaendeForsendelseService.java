@@ -4,13 +4,13 @@ package no.nav.dokarkiv.arkiverdokumentmottak.tjoark203.v1;
 import static no.nav.dokarkiv.arkiverdokumentmottak.ServiceConstants.FORSENDELSE_MOTTAK_ID_KEY;
 
 import lombok.extern.slf4j.Slf4j;
+import no.nav.dokarkiv.arkiverdokumentmottak.DokumentInfoIdVedleggTo;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.journalbehandling.DokumentFilerDelegate;
-import no.nav.dokarkiv.core.nsb.DokumentInfoIdVedleggTo;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -69,14 +69,18 @@ public class JournalforInngaaendeForsendelseService {
 	}
 
 	private JournalforInngaaendeForsendelseResponseTo buildResponse(Journalpost journalpost) {
-		JournalforInngaaendeForsendelseResponseTo to = new JournalforInngaaendeForsendelseResponseTo(journalpost.getJournalpostId());
-		to.setDokumentInfoIdHoveddokument(journalpost.findHoveddokumentDokumentInfoRelasjon()
-				.getDokumentInfo()
-				.getDokumentInfoId());
+		JournalforInngaaendeForsendelseResponseTo to = JournalforInngaaendeForsendelseResponseTo.builder()
+				.journalpostId(journalpost.getJournalpostId())
+				.dokumentInfoIdHoveddokument(journalpost.findHoveddokumentDokumentInfoRelasjon()
+						.getDokumentInfo()
+						.getDokumentInfoId())
+				.build();
 		for (JournalpostDokumentInfoRelasjon rel : journalpost.getJournalpostDokumentInfoRelasjoner()) {
 			if (rel.getTilknyttetJournalpostSom() == TilknyttetJournalpostSomCode.VEDLEGG) {
-				DokumentInfoIdVedleggTo vedlegg = new DokumentInfoIdVedleggTo(rel.getDokumentInfo()
-						.getDokumentInfoId(), rel.getDokumentInfo().getDokumenttypeId());
+				DokumentInfoIdVedleggTo vedlegg = DokumentInfoIdVedleggTo.builder()
+						.dokumentInfoId(rel.getDokumentInfo().getDokumentInfoId())
+						.dokumentTypeId(rel.getDokumentInfo().getDokumenttypeId())
+						.build();
 				to.getDokumentInfoIdVedleggTo().add(vedlegg);
 			}
 		}

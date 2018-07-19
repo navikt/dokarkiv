@@ -3,19 +3,17 @@
 		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-
-	<groupId>no.nav.dokarkiv</groupId>
-	<artifactId>dokarkiv</artifactId>
-	<version>1-SNAPSHOT</version>
-
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>2.0.3.RELEASE</version>
 	</parent>
+	<groupId>no.nav.dokarkiv</groupId>
+	<artifactId>dokarkiv</artifactId>
+	<version>1-SNAPSHOT</version>
 
-	<name>dokarkiv</name>
 	<packaging>pom</packaging>
+	<name>dokarkiv</name>
 
 	<modules>
 		<module>app</module>
@@ -50,26 +48,7 @@
 		<cxf.version>3.2.4</cxf.version>
 	</properties>
 
-	<reporting>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-report-plugin</artifactId>
-				<version>2.20.1</version>
-				<reportSets>
-					<reportSet>
-						<id>integration-tests</id>
-						<reports>
-							<report>failsafe-report-only</report>
-						</reports>
-					</reportSet>
-				</reportSets>
-			</plugin>
-		</plugins>
-	</reporting>
-
 	<dependencyManagement>
-
 		<dependencies>
 			<dependency>
 				<groupId>no.nav.dokarkiv</groupId>
@@ -178,4 +157,21 @@
 			</plugin>
 		</plugins>
 	</build>
+	<reporting>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-report-plugin</artifactId>
+				<version>2.20.1</version>
+				<reportSets>
+					<reportSet>
+						<id>integration-tests</id>
+						<reports>
+							<report>failsafe-report-only</report>
+						</reports>
+					</reportSet>
+				</reportSets>
+			</plugin>
+		</plugins>
+	</reporting>
 </project>

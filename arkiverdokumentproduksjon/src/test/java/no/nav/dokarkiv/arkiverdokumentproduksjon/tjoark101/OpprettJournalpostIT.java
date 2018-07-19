@@ -6,7 +6,6 @@ import static org.junit.Assert.assertThat;
 
 import com.google.common.collect.Iterables;
 import no.nav.dokarkiv.arkiverdokumentproduksjon.AbstractArkiverdokumentproduksjonItest;
-import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.ApplicationException;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
@@ -14,6 +13,7 @@ import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.util.DateProvider;
+import no.nav.dokarkiv.core.exceptions.ApplicationException;
 import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasjon.opprettjournalpost.Journalpost;
@@ -41,6 +41,7 @@ public class OpprettJournalpostIT extends AbstractArkiverdokumentproduksjonItest
 
 	@Before
 	public void setUp() throws Exception {
+		DateProvider.configure(true, "2018-07-17T12:00");
 		RequestContextSetter.setRequestContextForUnitTest();
 		wsJournalpost = OpprettJournalpostDataUtil.createJournalpost();
 		createRequest();
@@ -71,12 +72,12 @@ public class OpprettJournalpostIT extends AbstractArkiverdokumentproduksjonItest
 		DokumentInfo dokumentInfo = Iterables.getFirst(persistedJournalpost.getJournalpostDokumentInfoRelasjoner(), null)
 				.getDokumentInfo();
 
-//		assertThat(persistedJournalpost.getJournalDato(), is(DateProvider.getToday())); //FIXME
+		assertThat(persistedJournalpost.getJournalDato(), is(DateProvider.getToday()));
 		assertThat(persistedJournalpost.getJournalstatus(), is(JournalStatusCode.D));
 		assertThat(persistedJournalpost.getJournalposttype(), is(JournalpostTypeCode.U));
 		assertThat(dokumentInfoRelasjon.getTilknyttetJournalpostSom(), is(TilknyttetJournalpostSomCode.HOVEDDOKUMENT));
 		assertThat(dokumentInfo.getDokumentstatus(), is(DokumentStatusCode.UNDER_REDIGERING));
-//		assertThat(dokumentInfo.getDokumentFerdigDato(), is(DateProvider.getToday())); //FIXME
+		assertThat(dokumentInfo.getDokumentFerdigDato(), is(DateProvider.getToday()));
 	}
 
 	@Test
