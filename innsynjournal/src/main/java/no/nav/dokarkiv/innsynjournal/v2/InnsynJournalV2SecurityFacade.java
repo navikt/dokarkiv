@@ -50,6 +50,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 import java.time.LocalDate;
@@ -64,11 +65,12 @@ import java.util.Map;
  *
  * @author Roar Bjurstrom, Visma Consulting.
  */
+@Component
 public class InnsynJournalV2SecurityFacade {
 
 	private static final Logger log = LoggerFactory.getLogger(InnsynJournalV2SecurityFacade.class);
 
-	@Value("${innsynjournal.v2.innsyn.earliest.date}")
+	@Value("#{T(java.time.LocalDate).parse(\"${innsynjournal.v2.innsyn.earliest.date}\")}")
 	private LocalDate earliestAllowedDate;
 
 	@Inject

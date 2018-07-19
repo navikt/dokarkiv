@@ -1,12 +1,14 @@
 package no.nav.dokarkiv.core.consumer.aktoer;
 
 import no.nav.tjeneste.virksomhet.aktoer.v2.meldinger.HentAktoerIdForIdentRequest;
+import org.springframework.stereotype.Component;
 
 /**
  * Mapper for HentAktoerIdForIdentRequestTo
  *
  * @author Roar Bjurstrom, Visma Consulting.
  */
+@Component
 public class HentAktoerIdForIdentRequestMapper {
 
 	/**

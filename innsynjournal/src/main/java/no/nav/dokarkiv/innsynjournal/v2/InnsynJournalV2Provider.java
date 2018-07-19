@@ -35,6 +35,7 @@ import no.nav.tjeneste.virksomhet.innsynjournal.v2.meldinger.IdentifiserJournalp
 import no.nav.tjeneste.virksomhet.innsynjournal.v2.meldinger.IdentifiserJournalpostResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
@@ -47,6 +48,7 @@ import java.util.List;
  *
  * @author Roar Bjurstrom, Visma Consulting.
  */
+@Component
 public class InnsynJournalV2Provider implements InnsynJournalV2 {
 
 	private static final Logger log = LoggerFactory.getLogger(InnsynJournalV2Provider.class);

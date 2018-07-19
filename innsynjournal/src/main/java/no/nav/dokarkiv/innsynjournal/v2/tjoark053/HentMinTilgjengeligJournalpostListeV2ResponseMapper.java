@@ -11,6 +11,7 @@ import no.nav.tjeneste.virksomhet.innsynjournal.v2.informasjon.InnsynDokument;
 import no.nav.tjeneste.virksomhet.innsynjournal.v2.informasjon.JournalfoertDokumentInfo;
 import no.nav.tjeneste.virksomhet.innsynjournal.v2.informasjon.Journalpost;
 import no.nav.tjeneste.virksomhet.innsynjournal.v2.meldinger.HentTilgjengeligJournalpostListeResponse;
+import org.springframework.stereotype.Component;
 
 import java.util.Collections;
 import java.util.Date;
@@ -22,6 +23,7 @@ import java.util.Map;
  *
  * @author Torgeir Cook, Visma Consulting.
  */
+@Component
 public class HentMinTilgjengeligJournalpostListeV2ResponseMapper {
 
 //	private Mapper dozerMapper;

@@ -8,6 +8,7 @@ import no.nav.dokarkiv.innsynjournal.v2.exceptions.JournalpostIkkeInngaaendeExce
 import no.nav.dokarkiv.innsynjournal.v2.exceptions.JournalpostNotSupportedException;
 import no.nav.dokarkiv.innsynjournal.v2.exceptions.UgyldigInputException;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 import java.util.List;
@@ -16,6 +17,7 @@ import java.util.Objects;
 /**
  * @author Ketill Fenne, Visma Consulting.
  */
+@Component
 public class DefaultIdentifiserJournalpostService implements IdentifiserJournalpostService {
 
 	@Inject

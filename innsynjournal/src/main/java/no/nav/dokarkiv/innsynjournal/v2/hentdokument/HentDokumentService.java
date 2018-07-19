@@ -6,6 +6,7 @@ import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.innsynjournal.v2.exceptions.DocumentNotFoundException;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Component;
 
 /**
  * The service layer class for HentDokument(TJOARK051 and TJOARK054)
@@ -13,6 +14,7 @@ import org.apache.commons.lang3.StringUtils;
  * @author Stig Strøm
  * @author Thomas Kåsene, Visma Consulting AS
  */
+@Component
 public class HentDokumentService extends AbstractJournalOperations {
 
 	/**

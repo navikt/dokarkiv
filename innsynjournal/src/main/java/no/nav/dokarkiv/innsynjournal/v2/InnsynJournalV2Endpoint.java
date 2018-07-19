@@ -15,6 +15,7 @@ import no.nav.tjeneste.virksomhet.innsynjournal.v2.meldinger.HentTilgjengeligJou
 import no.nav.tjeneste.virksomhet.innsynjournal.v2.meldinger.HentTilgjengeligJournalpostListeResponse;
 import no.nav.tjeneste.virksomhet.innsynjournal.v2.meldinger.IdentifiserJournalpostRequest;
 import no.nav.tjeneste.virksomhet.innsynjournal.v2.meldinger.IdentifiserJournalpostResponse;
+import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import javax.inject.Inject;
@@ -36,6 +37,7 @@ import javax.xml.ws.soap.Addressing;
 		portName = "InnsynJournal_v2Port")
 @Addressing
 @HandlerChain(file = "classpath:innsynjournalv2handler.xml")
+@Service
 public class InnsynJournalV2Endpoint implements InnsynJournalV2 {
 
 	@Resource

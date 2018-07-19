@@ -36,6 +36,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -77,7 +78,7 @@ public class DefaultHentMinTilgjengeligeJournalpostListeServiceTest {
 //		when(sessionFactoryMock.getCurrentSession()).thenReturn(sessionMock);
 //		when(joarkRepository.findJournalpostListe(any(HentMinJPListeParameters.class)))
 //				.thenReturn(journalposts);
-		service.setEarliestDateAllowed(EARLIEST_DATE_ALLOWED);
+		service.setEarliestDateAllowed(LocalDate.now());
 	}
 
 	@Test

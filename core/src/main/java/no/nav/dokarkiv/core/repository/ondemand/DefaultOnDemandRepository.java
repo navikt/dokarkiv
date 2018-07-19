@@ -10,6 +10,7 @@ import no.nav.dokarkiv.core.stelvio.MissingPropertyException;
 import org.apache.commons.pool.ObjectPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -22,6 +23,7 @@ import java.util.Vector;
  * @author Stian Landsnes, Sirius IT
  * @author Thomas Eugen Bjørge, Visma Sirius
  */
+@Component
 public class DefaultOnDemandRepository implements OnDemandRepository {
 
 	private Map<OnDemandInstansCode, ObjectPool<OnDemandConnection>> onDemandConnections;

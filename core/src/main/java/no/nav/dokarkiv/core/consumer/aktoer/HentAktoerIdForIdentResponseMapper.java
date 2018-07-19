@@ -4,12 +4,14 @@ import static no.nav.dokarkiv.core.util.DateConverterUtil.convertXMLGregorianCal
 
 import no.nav.tjeneste.virksomhet.aktoer.v2.meldinger.HentAktoerIdForIdentResponse;
 import no.nav.tjeneste.virksomhet.aktoer.v2.meldinger.IdentDetaljer;
+import org.springframework.stereotype.Component;
 
 /**
  * Mapper for HentAktoerIdForIdentResponse
  *
  * @author Roar Bjurstrom, Visma Consulting.
  */
+@Component
 public class HentAktoerIdForIdentResponseMapper {
 
 	/**

@@ -2,12 +2,14 @@ package no.nav.dokarkiv.innsynjournal.v2.tjoark059;
 
 import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
 import no.nav.tjeneste.virksomhet.innsynjournal.v2.meldinger.IdentifiserJournalpostRequest;
+import org.springframework.stereotype.Component;
 
 /**
  * Mapper between {@link IdentifiserJournalpostRequest} and {@link IdentifiserJournalpostToRequest}.
  *
  * @author Ketill Fenne, Visma Consulting AS
  */
+@Component
 public class IdentifiserJournalpostV2RequestMapper {
 
 	public IdentifiserJournalpostToRequest map(IdentifiserJournalpostRequest request) {

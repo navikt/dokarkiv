@@ -19,9 +19,11 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.orm.hibernate5.HibernateTemplate;
+import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -32,16 +34,14 @@ import java.util.Set;
  * @author Torgeir Cook, Visma Consulting.
  * @author Thomas Kåsene, Visma Consulting AS
  */
+@Component
 public class DefaultHentMinTilgjengeligeJournalpostListeService implements HentMinTilgjengeligeJournalpostListeService {
 
 	@Inject
 	private JoarkRepository joarkRepository;
 
-	@Inject
-	private HibernateTemplate hibernateTemplate;
-
-	@Value("#{new java.text.SimpleDateFormat(\"yyyy-MM-dd\").parse(\"${innsyn.earliest.date}\")}")
-	private Date earliestDateAllowed;
+	@Value("#{T(java.time.LocalDate).parse(\"${innsynjournal.v2.innsyn.earliest.date}\")}")
+	private LocalDate earliestDateAllowed;
 
 	private JournalStatusCode[] journalStatusCodesAllowed =
 			new JournalStatusCode[]{JournalStatusCode.J, JournalStatusCode.FS, JournalStatusCode.FL, JournalStatusCode.E};
@@ -160,7 +160,7 @@ public class DefaultHentMinTilgjengeligeJournalpostListeService implements HentM
 		for (SakFagsystem sakFagsystem : request.getSaksListe()) {
 			parameters.addFagsystemSak(sakFagsystem);
 		}
-		parameters.setTidligstInnsynDato(earliestDateAllowed);
+		parameters.setTidligstInnsynDato(Date.from(earliestDateAllowed.atStartOfDay(ZoneId.systemDefault()).toInstant()));
 		parameters.setTillattInnsynStatus(Lists.newArrayList(journalStatusCodesAllowed));
 		parameters.setVisFeilRegistrert(false);
 		List<FagomradeCode> skjulFagomraade = Lists.newArrayList();
@@ -169,7 +169,7 @@ public class DefaultHentMinTilgjengeligeJournalpostListeService implements HentM
 		return parameters;
 	}
 
-	public void setEarliestDateAllowed(Date earliestDateAllowed) {
+	public void setEarliestDateAllowed(LocalDate earliestDateAllowed) {
 		this.earliestDateAllowed = earliestDateAllowed;
 	}
 }

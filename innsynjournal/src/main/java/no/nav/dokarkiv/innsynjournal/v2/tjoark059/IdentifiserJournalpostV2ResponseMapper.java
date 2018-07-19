@@ -8,6 +8,7 @@ import no.nav.tjeneste.virksomhet.innsynjournal.v2.informasjon.Dokument;
 import no.nav.tjeneste.virksomhet.innsynjournal.v2.informasjon.InnsynDokument;
 import no.nav.tjeneste.virksomhet.innsynjournal.v2.meldinger.HentTilgjengeligJournalpostListeResponse;
 import no.nav.tjeneste.virksomhet.innsynjournal.v2.meldinger.IdentifiserJournalpostResponse;
+import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
@@ -16,6 +17,7 @@ import java.util.Map;
  *
  * @author Ketill Fenne, Visma Consulting.
  */
+@Component
 public class IdentifiserJournalpostV2ResponseMapper {
 
 	/**

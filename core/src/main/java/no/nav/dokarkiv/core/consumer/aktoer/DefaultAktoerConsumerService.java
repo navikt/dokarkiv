@@ -4,6 +4,7 @@ import com.google.common.cache.Cache;
 import no.nav.tjeneste.virksomhet.aktoer.v2.binding.AktoerV2;
 import no.nav.tjeneste.virksomhet.aktoer.v2.binding.HentAktoerIdForIdentPersonIkkeFunnet;
 import no.nav.tjeneste.virksomhet.aktoer.v2.meldinger.HentAktoerIdForIdentResponse;
+import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 
@@ -12,6 +13,7 @@ import javax.inject.Inject;
  *
  * @author Roar Bjurstrom, Visma Consulting.
  */
+@Component
 public class DefaultAktoerConsumerService implements AktoerConsumerService {
 
 	@Inject

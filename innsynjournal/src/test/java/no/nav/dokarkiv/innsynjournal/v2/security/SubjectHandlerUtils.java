@@ -13,6 +13,10 @@ import javax.security.auth.Subject;
  * Utilityclass that provides support for populating and resetting TestSubjectHandlers.
  */
 public class SubjectHandlerUtils {
+
+	public static void reset() {
+		((ThreadLocalSubjectHandler) SubjectHandler.getSubjectHandler()).reset();
+	}
 	/**
 	 * @param openAmToken
 	 *            - if null it will be generated with a value of "&lt;userId&gt;-&lt;authLevel&gt;", eg "***gammelt_fnr***-4" for the
