@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.innsynjournal.v2.tjoark053;
+package no.nav.dokarkiv.innsynjournal.v2.tjoark053.repository;
 
 import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
@@ -6,7 +6,7 @@ import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
-import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.util.Date;
 import java.util.List;

@@ -36,13 +36,13 @@ import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.innsynjournal.v2.exceptions.DocumentNotFoundException;
 import no.nav.dokarkiv.innsynjournal.v2.exceptions.NoJournalpostFoundException;
 import no.nav.dokarkiv.innsynjournal.v2.exceptions.SecurityLimitationAttributeException;
-import no.nav.dokarkiv.innsynjournal.v2.hentdokument.HentDokumentRequestTo;
-import no.nav.dokarkiv.innsynjournal.v2.hentdokument.HentDokumentService;
 import no.nav.dokarkiv.innsynjournal.v2.security.SubjectHandlerUtils;
 import no.nav.dokarkiv.innsynjournal.v2.security.ThreadLocalSubjectHandler;
 import no.nav.dokarkiv.innsynjournal.v2.tjoark053.HentJournalpostListeToRequest;
 import no.nav.dokarkiv.innsynjournal.v2.tjoark053.HentMinTilgjengeligJournalpostListeV2ResponseMapper;
 import no.nav.dokarkiv.innsynjournal.v2.tjoark053.HentMinTilgjengeligeJournalpostListeService;
+import no.nav.dokarkiv.innsynjournal.v2.tjoark054.HentDokumentRequestTo;
+import no.nav.dokarkiv.innsynjournal.v2.tjoark054.HentDokumentService;
 import no.nav.dokarkiv.innsynjournal.v2.tjoark059.IdentifiserJournalpostService;
 import no.nav.dokarkiv.innsynjournal.v2.tjoark059.IdentifiserJournalpostToRequest;
 import no.nav.dokarkiv.innsynjournal.v2.tjoark059.IdentifiserJournalpostV2ResponseMapper;
@@ -543,7 +543,7 @@ public class InnsynJournalV2SecurityFacadeTest {
 
 	@Test
 	public void shouldAllowAllDokumentInfoInnsyn() {
-		HentJournalpostListeToRequest request = createRequest();
+		HentJournalpostListeToRequest request = createRequest(true);
 		Journalpost journalpost = createLegalJournalpost();
 		Journalpost journalpost1 = createLegalJournalpost();
 		mockHentMinJournalpostListe(request, journalpost, journalpost1);
@@ -557,7 +557,7 @@ public class InnsynJournalV2SecurityFacadeTest {
 		Journalpost journalpost = createLegalJournalpost();
 		journalpost.setAvsenderMottakerId("notLoggedOnUser");
 		journalpost.setMottakskanal(NAV_NO);
-		HentJournalpostListeToRequest request = createRequest();
+		HentJournalpostListeToRequest request = createRequest(true);
 		when(aktoerConsumerService.hentAktoerIdForIdent(any(HentAktoerIdForIdentRequestTo.class)))
 				.thenThrow(new PersonIkkeFunnetException(new Throwable(""), "person not found"));
 		mockHentMinJournalpostListe(request, journalpost);
@@ -573,7 +573,7 @@ public class InnsynJournalV2SecurityFacadeTest {
 		Journalpost journalpost = createLegalJournalpost();
 		journalpost.setAvsenderMottakerId("notLoggedOnUser");
 		journalpost.setMottakskanal(NAV_NO);
-		HentJournalpostListeToRequest request = createRequest();
+		HentJournalpostListeToRequest request = createRequest(true);
 
 		mockHentMinJournalpostListe(request, journalpost);
 		HentAktoerIdForIdentResponseTo identResponseTo = new HentAktoerIdForIdentResponseTo("001", createIdentDetaljerList(USER_ID));
@@ -585,7 +585,7 @@ public class InnsynJournalV2SecurityFacadeTest {
 
 	@Test
 	public void shouldAllowInnsynWhenInnsendtByBrukerAndMottaksKanalNav_no() {
-		HentJournalpostListeToRequest request = createRequest();
+		HentJournalpostListeToRequest request = createRequest(true);
 		Journalpost journalpost = createLegalJournalpost();
 		journalpost.setJournalposttype(JournalpostTypeCode.U);
 		mockHentMinJournalpostListe(request, journalpost);
@@ -596,7 +596,7 @@ public class InnsynJournalV2SecurityFacadeTest {
 
 	@Test
 	public void shouldNotAllowInnsynWhenMottakskanalSkanPen() throws Exception {
-		HentJournalpostListeToRequest request = createRequest();
+		HentJournalpostListeToRequest request = createRequest(true);
 		Journalpost journalpost = createLegalJournalpost();
 		journalpost.setJournalposttype(JournalpostTypeCode.U);
 		journalpost.setMottakskanal(SKAN_PEN);
@@ -608,7 +608,7 @@ public class InnsynJournalV2SecurityFacadeTest {
 
 	@Test
 	public void shouldNotAllowInnsynWhenMottakskanalSkanNets() throws Exception {
-		HentJournalpostListeToRequest request = createRequest();
+		HentJournalpostListeToRequest request = createRequest(true);
 		Journalpost journalpost = createLegalJournalpost();
 		journalpost.setJournalposttype(JournalpostTypeCode.U);
 		journalpost.setMottakskanal(SKAN_NETS);
@@ -620,7 +620,7 @@ public class InnsynJournalV2SecurityFacadeTest {
 
 	@Test
 	public void shouldNotAllowInnsynIfNoArkivVariant() {
-		HentJournalpostListeToRequest request = createRequest();
+		HentJournalpostListeToRequest request = createRequest(true);
 		Journalpost journalpost = createJournalpost(DAY_AFTER_LEGAL_DATE, DAY_AFTER_LEGAL_DATE, VariantFormatCode.BREVBESTILLING, false);
 		journalpost.setJournalposttype(JournalpostTypeCode.U);
 		mockHentMinJournalpostListe(request, journalpost);
@@ -631,7 +631,7 @@ public class InnsynJournalV2SecurityFacadeTest {
 
 	@Test
 	public void shouldNotAllowIfInnskrenketPartsinnsyn() {
-		HentJournalpostListeToRequest request = createRequest();
+		HentJournalpostListeToRequest request = createRequest(true);
 		Journalpost journalpost = createJournalpost(DAY_AFTER_LEGAL_DATE, DAY_AFTER_LEGAL_DATE, VariantFormatCode.BREVBESTILLING, true);
 		journalpost.setJournalposttype(JournalpostTypeCode.U);
 		mockHentMinJournalpostListe(request, journalpost);
@@ -642,8 +642,7 @@ public class InnsynJournalV2SecurityFacadeTest {
 
 	@Test
 	public void shouldNotSetDokumentInfoInnsynWhenNotMerkInnsynDokument() {
-		HentJournalpostListeToRequest request = createRequest();
-		request.setMerkInnsynDokument(false);
+		HentJournalpostListeToRequest request = createRequest(false);
 		Journalpost journalpost = createLegalJournalpost();
 		mockHentMinJournalpostListe(request, journalpost);
 
@@ -674,10 +673,10 @@ public class InnsynJournalV2SecurityFacadeTest {
 		when(hentMinTilgjengeligeJournalpostListeService.hentMineTilgjengeligeJournalposter(request)).thenReturn(createJournalpostList(journalpost));
 	}
 
-	private HentJournalpostListeToRequest createRequest() {
-		HentJournalpostListeToRequest hentJournalpostListeToRequest = new HentJournalpostListeToRequest();
-		hentJournalpostListeToRequest.setMerkInnsynDokument(true);
-		return hentJournalpostListeToRequest;
+	private HentJournalpostListeToRequest createRequest(boolean merkInnsyn) {
+		return HentJournalpostListeToRequest.builder()
+				.merkInnsynDokument(merkInnsyn)
+				.build();
 	}
 
 	private List<Journalpost> createJournalpostList(Journalpost... journalpost) {

@@ -24,6 +24,8 @@ import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
+import no.nav.dokarkiv.innsynjournal.v2.tjoark053.repository.HentMinJPListeParameters;
+import no.nav.dokarkiv.innsynjournal.v2.tjoark053.repository.SakFagsystem;
 import org.hibernate.SessionFactory;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -322,7 +324,7 @@ public class DefaultHentMinTilgjengeligeJournalpostListeServiceTest {
 
 
 	private HentJournalpostListeToRequest createRequest(SakFagsystem... saks) {
-		HentJournalpostListeToRequest hentJournalpostListeTo = new HentJournalpostListeToRequest();
+		HentJournalpostListeToRequest hentJournalpostListeTo = HentJournalpostListeToRequest.builder().build();
 		List<SakFagsystem> saksListe = hentJournalpostListeTo.getSaksListe();
 		for (SakFagsystem sak : saks) {
 			saksListe.add(sak);

@@ -17,11 +17,15 @@ import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
-import no.nav.dokarkiv.core.repository.JoarkRepository;
+import no.nav.dokarkiv.innsynjournal.v2.tjoark053.repository.HentMinJPListeParameters;
+import no.nav.dokarkiv.innsynjournal.v2.tjoark053.repository.SakFagsystem;
+import no.nav.dokarkiv.innsynjournal.v2.tjoark053.repository.Tjoark053JournalpostListeRepository;
+import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
+import javax.persistence.EntityManager;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -38,7 +42,9 @@ import java.util.Set;
 public class DefaultHentMinTilgjengeligeJournalpostListeService implements HentMinTilgjengeligeJournalpostListeService {
 
 	@Inject
-	private JoarkRepository joarkRepository;
+	private Tjoark053JournalpostListeRepository journalpostListeRepository;
+	@Inject
+	private EntityManager entityManager;
 
 	@Value("#{T(java.time.LocalDate).parse(\"${innsynjournal.v2.innsyn.earliest.date}\")}")
 	private LocalDate earliestDateAllowed;
@@ -50,18 +56,22 @@ public class DefaultHentMinTilgjengeligeJournalpostListeService implements HentM
 	public List<Journalpost> hentMineTilgjengeligeJournalposter(HentJournalpostListeToRequest hentJournalpostListeToRequest) {
 		validateInput(hentJournalpostListeToRequest);
 		HentMinJPListeParameters hentMinJPListeParameters = createHentMinJPListeParameters(hentJournalpostListeToRequest);
-//		List<Journalpost> journalposts = joarkRepository.findJournalpostListe(hentMinJPListeParameters);
-		List<Journalpost> journalposts = new ArrayList<>();
+		List<Journalpost> journalposts = journalpostListeRepository.findJournalpostListe(hentMinJPListeParameters);
 		evictJournalposts(journalposts);
 		filterJournalposts(journalposts);
 		return journalposts;
 	}
 
 	private void evictJournalposts(List<Journalpost> journalposts) {
-//		Session currentSession = hibernateTemplate.getSessionFactory().getCurrentSession();
+		Session currentSession = entityManager.unwrap(Session.class);
+		journalposts.forEach(journalpost -> {
+			if(currentSession.contains(journalpost)) {
+				currentSession.evict(journalpost);
+			}
+		});
 //		if (currentSession.contains(journalposts)) {
 //			currentSession.evict(journalposts);
-//		} FIXME
+//		}
 	}
 
 	private void validateInput(HentJournalpostListeToRequest hentJournalpostListeToRequest) {

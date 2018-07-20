@@ -1,5 +1,7 @@
 package no.nav.dokarkiv.innsynjournal.v2.tjoark053;
 
+import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
+import no.nav.dokarkiv.innsynjournal.v2.tjoark053.repository.SakFagsystem;
 import no.nav.tjeneste.virksomhet.innsynjournal.v2.meldinger.HentTilgjengeligJournalpostListeRequest;
 import org.springframework.stereotype.Component;
 
@@ -7,21 +9,18 @@ import org.springframework.stereotype.Component;
  * Mapping from {@link HentTilgjengeligJournalpostListeRequest} to {@link HentJournalpostListeToRequest}
  *
  * @author Torgeir Cook, Visma Consulting.
- *
  */
 @Component
 public class HentMinTilgjengeligeJournalpostListeV2RequestMapper {
 
-//	private Mapper dozerMapper;
-
 	public HentJournalpostListeToRequest map(HentTilgjengeligJournalpostListeRequest request) {
-//		return dozerMapper.map(request, HentJournalpostListeToRequest.class);
-		return null;
+		final HentJournalpostListeToRequest toRequest = HentJournalpostListeToRequest.builder()
+				.merkInnsynDokument(request.isMerkInnsynDokument())
+				.build();
+		request.getSakListe().forEach(sak -> toRequest.getSaksListe().add(
+				new SakFagsystem(sak.getFagsystem() == null ? null : FagsystemCode.valueOf(sak.getFagsystem().getValue()),
+						sak.getSakId())
+		));
+		return toRequest;
 	}
-
-//	@Inject
-//	@Named("dozerMapper")
-//	public void setDozerMapper(Mapper dozerMapper) {
-//		this.dozerMapper = dozerMapper;
-//	}
 }

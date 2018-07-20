@@ -2,6 +2,7 @@ package no.nav.dokarkiv.core.consumer.aktoer;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import no.nav.dokarkiv.core.security.STSConfig;
 import no.nav.tjeneste.virksomhet.aktoer.v2.binding.AktoerV2;
 import no.nav.tjeneste.virksomhet.aktoer.v2.meldinger.HentAktoerIdForIdentResponse;
 import org.apache.cxf.jaxws.JaxWsProxyFactoryBean;
@@ -21,12 +22,14 @@ public class AktoerV2Config {
 	private static final int CACHE_EXPIRES_AFTER = 10;
 
 	@Bean
-	public AktoerV2 aktoerV2() {
+	public AktoerV2 aktoerV2(STSConfig stsConfig) {
 		JaxWsProxyFactoryBean clientFactory = new JaxWsProxyFactoryBean();
 		clientFactory.setServiceClass(AktoerV2.class);
 		clientFactory.setAddress("http://tmp");
 		clientFactory.setFeatures(Collections.singletonList(new WSAddressingFeature()));
-		return (AktoerV2) clientFactory.create();
+		AktoerV2 aktoerV2 = (AktoerV2) clientFactory.create();
+		stsConfig.configureSTS(aktoerV2);
+		return aktoerV2;
 	}
 
 	@Bean

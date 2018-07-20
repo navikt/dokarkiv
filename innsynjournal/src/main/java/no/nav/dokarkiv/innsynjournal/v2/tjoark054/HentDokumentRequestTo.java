@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.innsynjournal.v2.hentdokument;
+package no.nav.dokarkiv.innsynjournal.v2.tjoark054;
 
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 

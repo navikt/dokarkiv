@@ -1,5 +1,9 @@
 package no.nav.dokarkiv.innsynjournal.v2.tjoark053;
 
+import lombok.Builder;
+import lombok.Data;
+import no.nav.dokarkiv.innsynjournal.v2.tjoark053.repository.SakFagsystem;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,24 +12,9 @@ import java.util.List;
  *
  * @author Torgeir Cook, Visma Consulting
  */
+@Data
+@Builder
 public class HentJournalpostListeToRequest {
-
-	private boolean merkInnsynDokument;
-	private List<SakFagsystem> saksListe;
-
-	public HentJournalpostListeToRequest() {
-		this.saksListe = new ArrayList<>();
-	}
-
-	public boolean isMerkInnsynDokument() {
-		return merkInnsynDokument;
-	}
-
-	public void setMerkInnsynDokument(boolean merkInnsynDokument) {
-		this.merkInnsynDokument = merkInnsynDokument;
-	}
-
-	public List<SakFagsystem> getSaksListe() {
-		return saksListe;
-	}
+	private final boolean merkInnsynDokument;
+	private final List<SakFagsystem> saksListe = new ArrayList<>();
 }

@@ -5,11 +5,10 @@ import com.ibm.edms.od.ODCriteria;
 import com.ibm.edms.od.ODException;
 import com.ibm.edms.od.ODFolder;
 import com.ibm.edms.od.ODHit;
+import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.domain.codes.OnDemandInstansCode;
 import no.nav.dokarkiv.core.stelvio.MissingPropertyException;
 import org.apache.commons.pool.ObjectPool;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -23,13 +22,12 @@ import java.util.Vector;
  * @author Stian Landsnes, Sirius IT
  * @author Thomas Eugen Bjørge, Visma Sirius
  */
+@Slf4j
 @Component
 public class DefaultOnDemandRepository implements OnDemandRepository {
 
 	private Map<OnDemandInstansCode, ObjectPool<OnDemandConnection>> onDemandConnections;
 	private Map<OnDemandInstansCode, String> onDemandSearchCriterias;
-//	private ExceptionLogger exceptionLogger;
-	private static final Logger infologger = LoggerFactory.getLogger(DefaultOnDemandRepository.class);
 
 	/**
 	 * {@inheritDoc}
@@ -59,7 +57,7 @@ public class DefaultOnDemandRepository implements OnDemandRepository {
 					odConnectionPool.returnObject(odConnection);
 				}
 			} catch (Exception e) {
-//				exceptionLogger.log("Could not return OdConnection to connectionpool", e);
+				log.error("Could not return OdConnection to connectionpool", e);
 			}
 		}
 	}
@@ -75,7 +73,7 @@ public class DefaultOnDemandRepository implements OnDemandRepository {
 			try {
 				odConnectionPool.invalidateObject(odConnection);
 			} catch (Exception poolException) {
-//				exceptionLogger.log("Could not invalidate OdConnection", poolException);
+				log.error("Could not invalidate OdConnection", poolException);
 			}
 		}
 		return new OnDemandRepositoryException("Failed to retrieve document with OnDemandId=" + onDemandId
@@ -95,7 +93,7 @@ public class DefaultOnDemandRepository implements OnDemandRepository {
 					+ odFolder.getName() + " returned 0 hits");
 		}
 		if (hits.size() > 1) {
-			infologger.warn("{} hits from ondemand on {} = {} in folder {}. Proceeding with first hit.", hits.size(), onDemandInstans, onDemandId, odFolder);
+			log.warn("{} hits from ondemand on {} = {} in folder {}. Proceeding with first hit.", hits.size(), onDemandInstans, onDemandId, odFolder);
 		}
 		return hits.get(0);
 	}
@@ -119,15 +117,6 @@ public class DefaultOnDemandRepository implements OnDemandRepository {
 	}
 
 	/**
-	 * Setter for the exceptionLogger property.
-	 *
-	 * @param exceptionLogger the exceptionLogger to set
-	 */
-//	public void setExceptionLogger(ExceptionLogger exceptionLogger) {
-//		this.exceptionLogger = exceptionLogger;
-//	}
-
-	/**
 	 * Called by Spring to validate that the required dependency injection is
 	 * properly configured.
 	 *
@@ -142,9 +131,6 @@ public class DefaultOnDemandRepository implements OnDemandRepository {
 		if (onDemandSearchCriterias == null) {
 			propertyList.add("onDemandSearchCriterias");
 		}
-//		if (exceptionLogger == null) {
-//			propertyList.add("exceptionLogger");
-//		} FIXME
 		if (!propertyList.isEmpty()) {
 			throw new MissingPropertyException("Required property/properties was not set by configuration", propertyList);
 		}

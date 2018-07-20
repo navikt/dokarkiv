@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.innsynjournal.v2.tjoark053;
+package no.nav.dokarkiv.innsynjournal.v2.tjoark053.repository;
 
 import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
 

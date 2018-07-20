@@ -20,7 +20,7 @@ import no.nav.dokarkiv.innsynjournal.v2.security.ThreadLocalSubjectHandler;
 import no.nav.dokarkiv.innsynjournal.v2.tjoark053.HentJournalpostListeToRequest;
 import no.nav.dokarkiv.innsynjournal.v2.tjoark053.HentMinTilgjengeligJournalpostListeV2ResponseMapper;
 import no.nav.dokarkiv.innsynjournal.v2.tjoark053.HentMinTilgjengeligeJournalpostListeV2RequestMapper;
-import no.nav.dokarkiv.innsynjournal.v2.tjoark053.SakFagsystem;
+import no.nav.dokarkiv.innsynjournal.v2.tjoark053.repository.SakFagsystem;
 import no.nav.dokarkiv.innsynjournal.v2.tjoark059.IdentifiserJournalpostToRequest;
 import no.nav.dokarkiv.innsynjournal.v2.tjoark059.IdentifiserJournalpostV2RequestMapper;
 import no.nav.dokarkiv.innsynjournal.v2.tjoark059.IdentifiserJournalpostV2ResponseMapper;
@@ -193,7 +193,7 @@ public class InnsynJournalV2ProviderTest {
 		HentTilgjengeligJournalpostListeRequest wsRequest = new HentTilgjengeligJournalpostListeRequest();
 		when(securityFacade.hentMineTilgjengeligeJournalpostListe(any(HentJournalpostListeToRequest.class)))
 				.thenThrow(new AuthorizationException("Access denied"));
-		when(hentMinTilgjengeligeJournalpostListeV2RequestMapper.map(wsRequest)).thenReturn(new HentJournalpostListeToRequest());
+		when(hentMinTilgjengeligeJournalpostListeV2RequestMapper.map(wsRequest)).thenReturn(HentJournalpostListeToRequest.builder().build());
 
 		try {
 			innsynJournalV2Provider.hentTilgjengeligJournalpostListe(wsRequest);
@@ -208,7 +208,7 @@ public class InnsynJournalV2ProviderTest {
 	public void shouldHentMinTilgjeneligeJournalpostListe() throws Exception {
 
 		HentTilgjengeligJournalpostListeRequest wsRequest = new HentTilgjengeligJournalpostListeRequest();
-		HentJournalpostListeToRequest request = new HentJournalpostListeToRequest();
+		HentJournalpostListeToRequest request = HentJournalpostListeToRequest.builder().build();
 		request.getSaksListe().add(new SakFagsystem());
 		ArrayList<InnsynJournalpostTo> innsynList = Lists.newArrayList(new InnsynJournalpostTo(new Journalpost()));
 		HentTilgjengeligJournalpostListeResponse response = createResponse();

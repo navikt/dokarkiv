@@ -3,13 +3,23 @@ package no.nav.dokarkiv.innsynjournal.v2.tjoark053;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
+import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.util.DateConverterUtil;
 import no.nav.dokarkiv.innsynjournal.v2.InnsynJournalpostTo;
+import no.nav.tjeneste.virksomhet.innsynjournal.v2.informasjon.Arkivfiltyper;
+import no.nav.tjeneste.virksomhet.innsynjournal.v2.informasjon.Arkivtemaer;
 import no.nav.tjeneste.virksomhet.innsynjournal.v2.informasjon.AvsenderMottaker;
+import no.nav.tjeneste.virksomhet.innsynjournal.v2.informasjon.DokumentInnhold;
 import no.nav.tjeneste.virksomhet.innsynjournal.v2.informasjon.DokumentinfoRelasjon;
+import no.nav.tjeneste.virksomhet.innsynjournal.v2.informasjon.Fagsystemer;
 import no.nav.tjeneste.virksomhet.innsynjournal.v2.informasjon.InnsynDokument;
 import no.nav.tjeneste.virksomhet.innsynjournal.v2.informasjon.JournalfoertDokumentInfo;
 import no.nav.tjeneste.virksomhet.innsynjournal.v2.informasjon.Journalpost;
+import no.nav.tjeneste.virksomhet.innsynjournal.v2.informasjon.Kommunikasjonsretninger;
+import no.nav.tjeneste.virksomhet.innsynjournal.v2.informasjon.Sak;
+import no.nav.tjeneste.virksomhet.innsynjournal.v2.informasjon.SkannetInnhold;
+import no.nav.tjeneste.virksomhet.innsynjournal.v2.informasjon.TilknyttetJournalpostSom;
+import no.nav.tjeneste.virksomhet.innsynjournal.v2.informasjon.Variantformater;
 import no.nav.tjeneste.virksomhet.innsynjournal.v2.meldinger.HentTilgjengeligJournalpostListeResponse;
 import org.springframework.stereotype.Component;
 
@@ -17,6 +27,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Mapper for domain response to ws-reponse.
@@ -25,8 +36,6 @@ import java.util.Map;
  */
 @Component
 public class HentMinTilgjengeligJournalpostListeV2ResponseMapper {
-
-//	private Mapper dozerMapper;
 
 	/**
 	 * Mapping of domain journalpost to ws-journalpost
@@ -56,12 +65,12 @@ public class HentMinTilgjengeligJournalpostListeV2ResponseMapper {
 		Journalpost journalpost = null;
 		if (innsynJournalpostTo.getJournalpost().getJournalposttype() != null) {
 			if (innsynJournalpostTo.getJournalpost().getJournalposttype().equals(JournalpostTypeCode.I)) {
-//				journalpost = dozerMapper.map(innsynJournalpostTo.getJournalpost(), Journalpost.class, "caseInngaende");
+				journalpost = mapInngaaende(innsynJournalpostTo.getJournalpost());
 			} else {
-//				journalpost = dozerMapper.map(innsynJournalpostTo.getJournalpost(), Journalpost.class, "caseUtgaaende");
+				journalpost = mapUtgaaende(innsynJournalpostTo.getJournalpost());
 			}
 		} else {
-//			journalpost = dozerMapper.map(innsynJournalpostTo.getJournalpost(), Journalpost.class, "caseUtgaaende"); FIXME
+			journalpost = mapUtgaaende(innsynJournalpostTo.getJournalpost());
 		}
 		mapAvsenderMottaker(journalpost, innsynJournalpostTo);
 		mapSendtDato(journalpost, innsynJournalpostTo.getJournalpost());
@@ -69,6 +78,75 @@ public class HentMinTilgjengeligJournalpostListeV2ResponseMapper {
 		mapInnsynDokument(journalpost, innsynJournalpostTo);
 		Collections.sort(journalpost.getDokumentinfoRelasjonListe(), new JournalpostDokumentInfoRelasjonV2Comparator());
 		return journalpost;
+	}
+
+	private Journalpost mapUtgaaende(no.nav.dokarkiv.core.domain.entities.Journalpost journalpost) {
+		return mapBaseJournalpost(journalpost)
+				.withKommunikasjonskanal(journalpost.getUtsendingskanal() == null ? null : journalpost.getUtsendingskanal().name());
+	}
+
+	private Journalpost mapInngaaende(no.nav.dokarkiv.core.domain.entities.Journalpost journalpost) {
+		return mapBaseJournalpost(journalpost)
+				.withKommunikasjonskanal(journalpost.getMottakskanal() == null ? null : journalpost.getMottakskanal().name());
+	}
+
+	private Journalpost mapBaseJournalpost(no.nav.dokarkiv.core.domain.entities.Journalpost journalpost) {
+		Journalpost baseJournalpost = new Journalpost()
+				.withJournalpostId(journalpost.getJournalpostId() == null ? null : journalpost.getJournalpostId().toString())
+				.withKommunikasjonsretning(new Kommunikasjonsretninger().withValue(journalpost.getJournalposttype() == null ? null : journalpost.getJournalposttype().name()))
+				.withArkivtema(new Arkivtemaer().withValue(journalpost.getFagomrade() == null ? null : journalpost.getFagomrade().name()))
+				.withEksternPart(journalpost.getAvsenderMottaker())
+				.withGjelderSak(mapSak(journalpost))
+				.withMottatt(journalpost.getMottattDato() == null ? null : DateConverterUtil.convertDateToXMLGregorianCalendar(journalpost.getMottattDato()))
+				.withOpprettet(journalpost.getChangeStamp() == null ? null : DateConverterUtil.convertDateToXMLGregorianCalendar(journalpost.getChangeStamp().getCreatedDate()))
+				.withKanalReferanseId(journalpost.getKanalReferanseId());
+		journalpost.getJournalpostDokumentInfoRelasjoner().forEach(journalpostDokumentInfoRelasjon -> {
+			final DokumentInfo dokumentInfo = journalpostDokumentInfoRelasjon.getDokumentInfo();
+			JournalfoertDokumentInfo journalfoertDokumentInfo = mapJournalfoertDokumentInfo(dokumentInfo);
+			if(journalfoertDokumentInfo != null) {
+				dokumentInfo.getSkannetInnholdListe().forEach(skannetInnhold -> journalfoertDokumentInfo.getSkannetInnholdListe().add(
+						new SkannetInnhold()
+								.withSkannetInnholdId(skannetInnhold.getSkannetInnholdId().toString())
+								.withVedleggInnhold(skannetInnhold.getVedleggInnhold())));
+			}
+
+			baseJournalpost.getDokumentinfoRelasjonListe().add(new DokumentinfoRelasjon()
+					.withDokumentTilknyttetJournalpost(new TilknyttetJournalpostSom()
+							.withValue(journalpostDokumentInfoRelasjon.getTilknyttetJournalpostSom().name()))
+					.withDokumentinfoRelasjonId(journalpostDokumentInfoRelasjon.getJournalpostDokumentInfoRelasjonId().toString())
+					.withJournalfoertDokument(journalfoertDokumentInfo));
+		});
+		return baseJournalpost;
+	}
+
+	private JournalfoertDokumentInfo mapJournalfoertDokumentInfo(DokumentInfo dokumentInfo) {
+		final Optional<FilDetaljer> filDetaljer = dokumentInfo.getFildetaljerListe().stream().findFirst();
+		if(filDetaljer.isPresent()) {
+			DokumentInnhold dokumentInnhold = mapDokumentInnhold(filDetaljer.get());
+			return new JournalfoertDokumentInfo()
+					.withDokumentId(dokumentInfo.getDokumentInfoId().toString())
+					.withTittel(dokumentInfo.getTittel())
+					.withBeskriverInnhold(dokumentInnhold);
+		} else {
+			return new JournalfoertDokumentInfo()
+					.withDokumentId(dokumentInfo.getDokumentInfoId().toString())
+					.withTittel(dokumentInfo.getTittel());
+		}
+	}
+
+	private DokumentInnhold mapDokumentInnhold(FilDetaljer filDetaljer) {
+		return new DokumentInnhold()
+				.withFiltype(new Arkivfiltyper().withValue(filDetaljer.getFiltype().name()))
+				.withVariantformat(new Variantformater().withValue(filDetaljer.getVariantFormat().name()));
+	}
+
+	private Sak mapSak(no.nav.dokarkiv.core.domain.entities.Journalpost journalpost) {
+		if (journalpost.getSaksrelasjon() == null) {
+			return null;
+		}
+		return new Sak()
+				.withSakId(journalpost.getSaksrelasjon().getSakId())
+				.withFagsystem(new Fagsystemer().withValue(journalpost.getSaksrelasjon().getFagsystem().name()));
 	}
 
 	private void mapAvsenderMottaker(Journalpost journalpost, InnsynJournalpostTo innsynJournalpostTo) {
