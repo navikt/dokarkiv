@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.innsynjournal.v2.security;
+package no.nav.dokarkiv.core.jaxws;
 
 import no.nav.modig.core.context.SubjectHandler;
 

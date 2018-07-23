@@ -6,6 +6,8 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 import no.nav.dokarkiv.core.domain.ChangeStamp;
 import no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder;
@@ -23,12 +25,10 @@ import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
-import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.innsynjournal.v2.tjoark053.repository.HentMinJPListeParameters;
 import no.nav.dokarkiv.innsynjournal.v2.tjoark053.repository.SakFagsystem;
-import org.hibernate.SessionFactory;
+import no.nav.dokarkiv.innsynjournal.v2.tjoark053.repository.Tjoark053JournalpostListeRepository;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -36,9 +36,11 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.time.LocalDate;
+import java.time.Month;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -50,23 +52,16 @@ import java.util.Set;
  *
  * @author Torgeir Cook, Visma Consulting
  */
-@Ignore
 @RunWith(MockitoJUnitRunner.class)
 public class DefaultHentMinTilgjengeligeJournalpostListeServiceTest {
 
-	public static final Date EARLIEST_DATE_ALLOWED = new Date(1L);
+	public static final Date EARLIEST_DATE_ALLOWED = Date.from(LocalDate.of(2018, Month.JULY, 23).atStartOfDay(ZoneId.systemDefault()).toInstant());
 	public static final String SAK_ID = "1256";
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
 
 	@Mock
-	private JoarkRepository joarkRepository;
-//	@Mock
-//	private HibernateTemplate hibernateTemplate;
-//	@Mock
-//	private Session sessionMock;
-	@Mock
-	private SessionFactory sessionFactoryMock;
+	private Tjoark053JournalpostListeRepository journalpostListeRepository;
 
 	@InjectMocks
 	private DefaultHentMinTilgjengeligeJournalpostListeService service;
@@ -76,18 +71,15 @@ public class DefaultHentMinTilgjengeligeJournalpostListeServiceTest {
 	@Before
 	public void setUp() throws Exception {
 		journalposts = new ArrayList<>();
-//		when(hibernateTemplate.getSessionFactory()).thenReturn(sessionFactoryMock);
-//		when(sessionFactoryMock.getCurrentSession()).thenReturn(sessionMock);
-//		when(joarkRepository.findJournalpostListe(any(HentMinJPListeParameters.class)))
-//				.thenReturn(journalposts);
-		service.setEarliestDateAllowed(LocalDate.now());
+		when(journalpostListeRepository.findJournalpostListe(any(HentMinJPListeParameters.class))).thenReturn(journalposts);
+		service.setEarliestDateAllowed(LocalDate.of(2018, Month.JULY, 23));
 	}
 
 	@Test
 	public void shouldCreateParams() throws Exception {
 		ArgumentCaptor<HentMinJPListeParameters> captor = ArgumentCaptor.forClass(HentMinJPListeParameters.class);
-//		when(joarkRepository.findJournalpostListe(captor.capture()))
-//				.thenReturn(journalposts);
+		when(journalpostListeRepository.findJournalpostListe(captor.capture()))
+				.thenReturn(journalposts);
 
 		service.hentMineTilgjengeligeJournalposter(createRequest(new SakFagsystem(FagsystemCode.PEN, SAK_ID)));
 
@@ -129,7 +121,7 @@ public class DefaultHentMinTilgjengeligeJournalpostListeServiceTest {
 //		when(sessionMock.contains(journalposts)).thenReturn(true);
 //		when(joarkRepository.findJournalpostListe(any(HentMinJPListeParameters.class)))
 //				.thenReturn(journalposts);
-		service.hentMineTilgjengeligeJournalposter(createRequest(new SakFagsystem(FagsystemCode.BID, "0")));
+//		service.hentMineTilgjengeligeJournalposter(createRequest(new SakFagsystem(FagsystemCode.BID, "0")));
 //		verify(sessionMock).evict(journalposts);
 	}
 

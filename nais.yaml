@@ -44,6 +44,10 @@ fasitResources:
       password: SERVICEUSER_PASSWORD
   - alias: securityTokenService
     resourceType: baseurl
+  - alias: Aktoer_v2
+    resourceType: webserviceendpoint
+    propertyMap:
+      endpointurl: aktoerv2_url
   exposed:
   - alias: BehandleJournal_v2
     resourceType: webserviceendpoint

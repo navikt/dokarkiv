@@ -4,9 +4,9 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
 import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
+import no.nav.dokarkiv.core.jaxws.ThreadLocalSubjectHandler;
 import no.nav.dokarkiv.innsynjournal.v2.AbstractInnsynJournalV2Itest;
 import no.nav.dokarkiv.innsynjournal.v2.security.SubjectHandlerUtils;
-import no.nav.dokarkiv.innsynjournal.v2.security.ThreadLocalSubjectHandler;
 import no.nav.modig.core.domain.IdentType;
 import no.nav.tjeneste.virksomhet.innsynjournal.v2.binding.HentTilgjengeligJournalpostListeSikkerhetsbegrensning;
 import no.nav.tjeneste.virksomhet.innsynjournal.v2.informasjon.Fagsystemer;

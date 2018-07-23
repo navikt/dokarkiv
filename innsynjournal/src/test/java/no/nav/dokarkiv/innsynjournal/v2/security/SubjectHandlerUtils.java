@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.innsynjournal.v2.security;
 
+import no.nav.dokarkiv.core.jaxws.ThreadLocalSubjectHandler;
 import no.nav.modig.core.context.AuthenticationLevelCredential;
 import no.nav.modig.core.context.OpenAmTokenCredential;
 import no.nav.modig.core.context.SubjectHandler;
@@ -17,10 +18,10 @@ public class SubjectHandlerUtils {
 	public static void reset() {
 		((ThreadLocalSubjectHandler) SubjectHandler.getSubjectHandler()).reset();
 	}
+
 	/**
-	 * @param openAmToken
-	 *            - if null it will be generated with a value of "&lt;userId&gt;-&lt;authLevel&gt;", eg "***gammelt_fnr***-4" for the
-	 *            userId "***gammelt_fnr***" with autLevel "4"
+	 * @param openAmToken - if null it will be generated with a value of "&lt;userId&gt;-&lt;authLevel&gt;", eg "***gammelt_fnr***-4" for the
+	 *                    userId "***gammelt_fnr***" with autLevel "4"
 	 */
 	public static void setEksternBruker(String userId, int authLevel, String openAmToken) {
 
