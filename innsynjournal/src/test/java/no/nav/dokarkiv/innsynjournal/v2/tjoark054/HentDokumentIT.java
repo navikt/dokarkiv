@@ -42,7 +42,7 @@ import java.util.Date;
  *
  * @author Ketill Fenne, Visma Consulting.
  */
-public class HentDokumentTest extends AbstractInnsynJournalV2Itest {
+public class HentDokumentIT extends AbstractInnsynJournalV2Itest {
 
 	private static final String FNR = "***gammelt_fnr***";
 

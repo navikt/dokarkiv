@@ -163,7 +163,9 @@ public class InnsynJournalV2SecurityFacade {
 				innsynJournalpost.setAvsenderMottaker(InnsynJournalpostTo.AvsenderMottaker.NEI);
 			}
 		} catch (SecurityTechnicalException e) {
-			log.debug(e.toString());
+			if(log.isDebugEnabled()) {
+				log.debug(e.toString());
+			}
 			innsynJournalpost.setAvsenderMottaker(InnsynJournalpostTo.AvsenderMottaker.KAN_IKKE_AVGJOERES);
 		}
 	}
@@ -349,7 +351,9 @@ public class InnsynJournalV2SecurityFacade {
 				try {
 					innsendtByBruker = isInnsendtByBruker(journalpost);
 				} catch (SecurityTechnicalException e) {
-					log.debug(e.toString());
+					if(log.isDebugEnabled()) {
+						log.debug(e.toString());
+					}
 					innsynJournalpost.putDokumentInnsyn(InnsynJournalpostTo.DokumentInnsyn.KAN_IKKE_AVGJOERES,
 							dokumentInfo.getDokumentInfoId());
 					continue;
@@ -364,7 +368,9 @@ public class InnsynJournalV2SecurityFacade {
 				} catch (DocumentNotFoundException | SecurityLimitationAttributeException e) {
 					innsynJournalpost.putDokumentInnsyn(InnsynJournalpostTo.DokumentInnsyn.NEI,
 							dokumentInfo.getDokumentInfoId());
-					log.debug(e.toString());
+					if(log.isDebugEnabled()) {
+						log.debug(e.toString());
+					}
 				}
 			}
 		}

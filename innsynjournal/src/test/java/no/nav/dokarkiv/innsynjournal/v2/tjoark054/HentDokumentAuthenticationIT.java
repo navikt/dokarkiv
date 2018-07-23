@@ -24,7 +24,7 @@ import org.junit.Test;
  *
  * @author Ketill Fenne, Visma Consulting.
  */
-public class HentDokumentAuthenticationTest extends AbstractInnsynJournalV2Itest {
+public class HentDokumentAuthenticationIT extends AbstractInnsynJournalV2Itest {
 
 	private static final String DEFAULT_JOURNALPOST_ID = "1";
 	private static final String DEFAULT_DOKUMENT_ID = "2";

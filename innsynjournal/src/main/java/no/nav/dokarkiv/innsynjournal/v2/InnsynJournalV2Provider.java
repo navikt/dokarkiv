@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.innsynjournal.v2;
 
+import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.innsynjournal.v2.exceptions.DocumentNotFoundException;
 import no.nav.dokarkiv.innsynjournal.v2.exceptions.JournalpostIkkeFunnetException;
@@ -33,8 +34,6 @@ import no.nav.tjeneste.virksomhet.innsynjournal.v2.meldinger.HentTilgjengeligJou
 import no.nav.tjeneste.virksomhet.innsynjournal.v2.meldinger.HentTilgjengeligJournalpostListeResponse;
 import no.nav.tjeneste.virksomhet.innsynjournal.v2.meldinger.IdentifiserJournalpostRequest;
 import no.nav.tjeneste.virksomhet.innsynjournal.v2.meldinger.IdentifiserJournalpostResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -48,18 +47,15 @@ import java.util.List;
  *
  * @author Roar Bjurstrom, Visma Consulting.
  */
+@Slf4j
 @Component
 public class InnsynJournalV2Provider implements InnsynJournalV2 {
-
-	private static final Logger log = LoggerFactory.getLogger(InnsynJournalV2Provider.class);
-
 	static final String JOURNALPOSTID_REQIRED = "Journalpostid is required";
 	static final String DOKUMENTID_REQUIRED = "Dokumentid is required";
 
-	static final String INNSYN_JOURNAL_V2 = "InnsynJournalV2";
-	static final String INNSYN_JOURNAL_V2_HENT_DOKUMENT = INNSYN_JOURNAL_V2 + ".hentDokument";
-	static final String INNSYN_JOURNAL_V2_HENT_JP_LISTE = INNSYN_JOURNAL_V2 + ".hentTilgjengeligJournalpostListe";
-	static final String INNSYN_JOURNAL_V2_IDENTIFISER_JP = INNSYN_JOURNAL_V2 + ".identifiserJournalpost";
+	private static final String INNSYN_JOURNAL_V2 = "InnsynJournalV2";
+	private static final String INNSYN_JOURNAL_V2_HENT_DOKUMENT = INNSYN_JOURNAL_V2 + ".hentDokument";
+	private static final String INNSYN_JOURNAL_V2_HENT_JP_LISTE = INNSYN_JOURNAL_V2 + ".hentTilgjengeligJournalpostListe";
 	private static final String ACCESS_DENIED = "Access denied";
 
 	@Inject
@@ -85,6 +81,7 @@ public class InnsynJournalV2Provider implements InnsynJournalV2 {
 		try {
 			HentJournalpostListeToRequest toRequest = journalpostListeV2RequestMapper.map(wsRequest);
 			List<InnsynJournalpostTo> innsynJournalpostTos = securityFacade.hentMineTilgjengeligeJournalpostListe(toRequest);
+			log.info("tjoark053 hentet tilgjengelige journalposter");
 			return journalpostListeV2ResponseMapper.mapList(innsynJournalpostTos);
 		} catch (AuthorizationException e) {
 			log.warn(String.format("Access denied in operation %s. LoggedOnUser=%s", INNSYN_JOURNAL_V2_HENT_JP_LISTE,
@@ -107,22 +104,23 @@ public class InnsynJournalV2Provider implements InnsynJournalV2 {
 		try {
 			file = securityFacade.hentDokument(journalpostId, dokumentId);
 		} catch (NoJournalpostFoundException | DocumentNotFoundException e) {
-			throw new HentDokumentDokumentIkkeFunnet(e.getMessage(),new FunctionalFault());
+			throw new HentDokumentDokumentIkkeFunnet(e.getMessage(), new FunctionalFault());
 		} catch (AuthorizationException e) {
 			log.warn(String.format("Access denied in operation %s. JournalpostId=%s ,dokumentInfoId=%s , logged on user=%s",
 					INNSYN_JOURNAL_V2_HENT_DOKUMENT, request.getJournalpostId(), request.getDokumentId(),
 					SubjectHandler.getSubjectHandler().getUid()), e);
 			AuthorizationException undetailedException = new AuthorizationException(ACCESS_DENIED);
-			throw new HentDokumentSikkerhetsbegrensning(undetailedException.getMessage(),new FunctionalFault());
+			throw new HentDokumentSikkerhetsbegrensning(undetailedException.getMessage(), new FunctionalFault());
 		} catch (SecurityLimitationAttributeException e) {
 			log.warn(e.toLogMessage(INNSYN_JOURNAL_V2_HENT_DOKUMENT));
 			AuthorizationException undetailedException = new AuthorizationException(ACCESS_DENIED);
-			throw new HentDokumentSikkerhetsbegrensning(undetailedException.getMessage(),new FunctionalFault());
+			throw new HentDokumentSikkerhetsbegrensning(undetailedException.getMessage(), new FunctionalFault());
 		}
 
 		HentDokumentResponse response = new HentDokumentResponse();
 		response.setVariantFormat(createVariantFormatter());
 		response.setDokument(file);
+		log.info("tjoark054 hentet dokument fra journalpostId={}, dokumentInfoId={}", request.getJournalpostId(), request.getDokumentId());
 		return response;
 	}
 
@@ -135,16 +133,15 @@ public class InnsynJournalV2Provider implements InnsynJournalV2 {
 	@Override
 	@Transactional(readOnly = true)
 	public IdentifiserJournalpostResponse identifiserJournalpost
-			(IdentifiserJournalpostRequest wsRequest) throws IdentifiserJournalpostUgyldingInput, IdentifiserJournalpostObjektIkkeFunnet, IdentifiserJournalpostUgyldigAntallJournalposter, IdentifiserJournalpostJournalpostIkkeInngaaende
-	{
+			(IdentifiserJournalpostRequest wsRequest) throws IdentifiserJournalpostUgyldingInput, IdentifiserJournalpostObjektIkkeFunnet, IdentifiserJournalpostUgyldigAntallJournalposter, IdentifiserJournalpostJournalpostIkkeInngaaende {
 		try {
 			if (wsRequest == null) {
 				throw new IdentifiserJournalpostUgyldingInput("Request is empty", new TechnicalFault());
 			}
 			IdentifiserJournalpostToRequest toRequest = identifiserJournalpostV2RequestMapper.map(wsRequest);
 			InnsynJournalpostTo innsynJournalpostTo = securityFacade.identifiserJournalpost(toRequest);
+			log.info("tjoark059 identifiserte journalposter for kanalReferanseId={}, mottakskanal={}", wsRequest.getKanalReferanseId(), wsRequest.getMottakskanal());
 			return identifiserJournalpostV2ResponseMapper.map(innsynJournalpostTo);
-
 		} catch (UgyldigInputException e) {
 			throw new IdentifiserJournalpostUgyldingInput(e.getMessage(), new TechnicalFault());
 		} catch (JournalpostNotSupportedException e) {

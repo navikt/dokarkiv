@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.innsynjournal.v2.tjoark054;
 
+import no.nav.dokarkiv.core.audit.AuditLogger;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentFil;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
@@ -12,6 +13,7 @@ import no.nav.dokarkiv.innsynjournal.v2.exceptions.DocumentNotFoundException;
 import no.nav.dokarkiv.innsynjournal.v2.exceptions.InvalidFilUuidException;
 import no.nav.dokarkiv.innsynjournal.v2.exceptions.NoDokumentInfoFoundException;
 import no.nav.dokarkiv.innsynjournal.v2.exceptions.NoJournalpostFoundException;
+import org.apache.commons.lang3.BooleanUtils;
 
 import javax.inject.Inject;
 
@@ -103,9 +105,9 @@ public abstract class AbstractJournalOperations {
 	protected void generateAuditLogIfDokumentIsSensitivt(Journalpost journalpost, FilDetaljer fildetaljer,
 														 String operationName) {
 		Boolean sensitivt = fildetaljer.getDokumentInfo().getSensitivt();
-//		if (BooleanUtils.isTrue(sensitivt) && AuditLogUtil.AUDIT_READ.isInfoEnabled()) {
-//			AuditLogUtil.generateAuditLog(operationName, journalpost, fildetaljer);
-//		} FIXME need arcsight integrasjon
+		if (BooleanUtils.isTrue(sensitivt) && AuditLogger.auditLogger.isInfoEnabled()) {
+			AuditLogger.generateAuditLog(operationName, journalpost, fildetaljer);
+		}
 	}
 
 }

@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.innsynjournal.v2;
 
+import io.micrometer.core.annotation.Timed;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import no.nav.tjeneste.virksomhet.innsynjournal.v2.binding.HentDokumentDokumentIkkeFunnet;
 import no.nav.tjeneste.virksomhet.innsynjournal.v2.binding.HentDokumentSikkerhetsbegrensning;
@@ -51,15 +52,16 @@ public class InnsynJournalV2Endpoint implements InnsynJournalV2 {
 		innsynJournalV2Provider.ping();
 	}
 
+	@Timed(value = "dok_request", extraTags = {"process_code", "tjoark053"}, percentiles = {0.5, 0.95})
 	@Override
-	public HentTilgjengeligJournalpostListeResponse hentTilgjengeligJournalpostListe(HentTilgjengeligJournalpostListeRequest
-																							 request)
+	public HentTilgjengeligJournalpostListeResponse hentTilgjengeligJournalpostListe(HentTilgjengeligJournalpostListeRequest request)
 			throws HentTilgjengeligJournalpostListeSikkerhetsbegrensning {
 		// ApplikasjonsID is not used since this is read operation, so we set it to the operation name
 		RequestContextUtil.createAndSetRequestContext(webServiceContext, "InnsynJournalV2.hentTilgjengeligJournalpostListe");
 		return innsynJournalV2Provider.hentTilgjengeligJournalpostListe(request);
 	}
 
+	@Timed(value = "dok_request", extraTags = {"process_code", "tjoark054"}, percentiles = {0.5, 0.95})
 	@Override
 	public HentDokumentResponse hentDokument(HentDokumentRequest hentDokumentRequest) throws HentDokumentDokumentIkkeFunnet,
 			HentDokumentSikkerhetsbegrensning {
@@ -67,8 +69,9 @@ public class InnsynJournalV2Endpoint implements InnsynJournalV2 {
 		return innsynJournalV2Provider.hentDokument(hentDokumentRequest);
 	}
 
+	@Timed(value = "dok_request", extraTags = {"process_code", "tjoark059"}, percentiles = {0.5, 0.95})
 	@Override
-	public IdentifiserJournalpostResponse identifiserJournalpost (IdentifiserJournalpostRequest request)
+	public IdentifiserJournalpostResponse identifiserJournalpost(IdentifiserJournalpostRequest request)
 			throws IdentifiserJournalpostUgyldingInput, IdentifiserJournalpostObjektIkkeFunnet, IdentifiserJournalpostUgyldigAntallJournalposter, IdentifiserJournalpostJournalpostIkkeInngaaende {
 		// ApplikasjonsID is not used since this is read operation, so we set it to the operation name
 		RequestContextUtil.createAndSetRequestContext(webServiceContext, "InnsynJournalV2.identifiserJournalpost");
