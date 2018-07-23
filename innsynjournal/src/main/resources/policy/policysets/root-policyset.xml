@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PolicySet xmlns="urn:oasis:names:tc:xacml:2.0:policy:schema:os"
+		   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		   xsi:schemaLocation="urn:oasis:names:tc:xacml:2.0:policy:schema:os
+      http://docs.oasis-open.org/xacml/access_control-xacml-2.0-policy-schema-os.xsd"
+		   PolicySetId="urn:xacml:2.0:nav:joark:policysetid:root"
+		   PolicyCombiningAlgId="urn:oasis:names:tc:xacml:1.0:policy-combining-algorithm:permit-overrides">
+	<Description>
+		Root policy set.
+	</Description>
+	<Target/>
+
+	<PolicySetIdReference>urn:xacml:2.0:nav:joark:policysetid:1:document:read</PolicySetIdReference>
+	<PolicySetIdReference>urn:xacml:2.0:nav:joark:policysetid:2:journalpost:document:read:internal</PolicySetIdReference>
+	<PolicySetIdReference>urn:xacml:2.0:nav:joark:policysetid:3:journalpost:read</PolicySetIdReference>
+	<PolicySetIdReference>urn:xacml:2.0:nav:joark:policysetid:4:journalpost:document:read:external</PolicySetIdReference>
+
+</PolicySet>
