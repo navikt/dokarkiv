@@ -32,6 +32,11 @@
 			<artifactId>behandlejournal</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>no.nav.dokarkiv</groupId>
+			<artifactId>innsynjournal</artifactId>
+		</dependency>
+		<!-- annet -->
+		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
@@ -48,6 +53,13 @@
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>no.nav.dokarkiv</groupId>
+			<artifactId>core</artifactId>
+			<version>1-SNAPSHOT</version>
+			<type>test-jar</type>
 			<scope>test</scope>
 		</dependency>
 		<dependency>

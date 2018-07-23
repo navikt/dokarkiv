@@ -87,6 +87,11 @@
 				<version>1-SNAPSHOT</version>
 			</dependency>
 			<dependency>
+				<groupId>no.nav.dokarkiv</groupId>
+				<artifactId>innsynjournal</artifactId>
+				<version>1-SNAPSHOT</version>
+			</dependency>
+			<dependency>
 				<groupId>com.oracle</groupId>
 				<artifactId>ojdbc8</artifactId>
 				<version>${oracle.version}</version>

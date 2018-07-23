@@ -37,6 +37,13 @@ fasitResources:
       username: SPRING_LDAP_USERNAME
       password: SPRING_LDAP_PASSWORD
       serviceuser.basedn: SPRING_LDAP_BASE
+  - alias: srvdokarkiv
+    resourceType: credential
+    propertyMap:
+      username: SERVICEUSER_USERNAME
+      password: SERVICEUSER_PASSWORD
+  - alias: securityTokenService
+    resourceType: baseurl
   exposed:
   - alias: BehandleJournal_v2
     resourceType: webserviceendpoint
