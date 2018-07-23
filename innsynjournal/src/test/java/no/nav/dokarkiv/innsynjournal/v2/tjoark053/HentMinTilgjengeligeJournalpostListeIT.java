@@ -1,6 +1,5 @@
 package no.nav.dokarkiv.innsynjournal.v2.tjoark053;
 
-import static java.util.Calendar.DECEMBER;
 import static no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerV2Mock.CURRENT_IDENT;
 import static no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerV2Mock.FAIL_IDENT;
 import static no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerV2Mock.HISTORICAL_IDENTS;
@@ -100,6 +99,7 @@ import org.junit.Test;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.time.LocalDate;
+import java.time.Month;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
@@ -135,8 +135,8 @@ public class HentMinTilgjengeligeJournalpostListeIT extends AbstractInnsynJourna
 	@Test
 	public void shouldNotReturnJournalpostWhereCreatedDateAndJournalDatoAreBothEarlierThan1stOfJanuary2016() throws Exception {
 		Journalpost journalpost = buildAndPersist(aJournalpost()
-				.changeStamp(createChangeStamp(2015, DECEMBER, 31))
-				.journalDato(createDate(2015, DECEMBER, 31)));
+				.changeStamp(createChangeStamp(2015, Month.DECEMBER, 31))
+				.journalDato(createDate(2015, Month.DECEMBER, 31)));
 
 		String sakId = journalpost.getSaksrelasjon().getSakId();
 
@@ -154,7 +154,7 @@ public class HentMinTilgjengeligeJournalpostListeIT extends AbstractInnsynJourna
 	@Test
 	public void shouldNotReturnJournalpostWhereCreatedDateIsEarlierThan1stJanuary2016AndJournalDatoIsNull() throws Exception {
 		Journalpost journalpost = buildAndPersist(aJournalpost()
-				.changeStamp(createChangeStamp(2015, DECEMBER, 31))
+				.changeStamp(createChangeStamp(2015, Month.DECEMBER, 31))
 				.journalDato(null));
 
 		String sakId = journalpost.getSaksrelasjon().getSakId();
@@ -920,11 +920,11 @@ public class HentMinTilgjengeligeJournalpostListeIT extends AbstractInnsynJourna
 		return sak;
 	}
 
-	private ChangeStamp createChangeStamp(int createdYear, int createdMonthOfYear, int createdDayOfMonth) {
+	private ChangeStamp createChangeStamp(int createdYear, Month createdMonthOfYear, int createdDayOfMonth) {
 		return createChangeStamp(createDate(createdYear, createdMonthOfYear, createdDayOfMonth));
 	}
 
-	private Date createDate(int createdYear, int createdMonthOfYear, int createdDayOfMonth) {
+	private Date createDate(int createdYear, Month createdMonthOfYear, int createdDayOfMonth) {
 		return Date.from(LocalDate.of(createdYear, createdMonthOfYear, createdDayOfMonth).atStartOfDay(ZoneId.systemDefault()).toInstant());
 	}
 

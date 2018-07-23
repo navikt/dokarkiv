@@ -5,8 +5,11 @@ import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.innsynjournal.v2.exceptions.DocumentNotFoundException;
+import no.nav.dokarkiv.innsynjournal.v2.exceptions.SecurityLimitationAttributeException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
+
+import java.util.Collections;
 
 /**
  * The service layer class for HentDokument(TJOARK051 and TJOARK054)
@@ -32,7 +35,10 @@ public class HentDokumentService extends AbstractJournalOperations {
 		generateAuditLogIfDokumentIsSensitivt(journalpost, filDetaljer, "hentDokument");
 
 		if (StringUtils.isNotEmpty(filDetaljer.getOnDemandId())) {
-			return hentDokumentFromOnDemand(filDetaljer.getOnDemandId(), filDetaljer.getOnDemandInstans());
+			// pga lisens tillater man ikke henting fra OnDemand
+			throw new SecurityLimitationAttributeException(request.getJournalpostId(),
+					request.getDokumentInfoId(),
+					Collections.singletonMap("DokumentInfo.Fildetaljer.OnDemandId", filDetaljer.getOnDemandId()));
 		}
 
 		DokumentFil dokumentFil = getDocumentFromDBRepository(filDetaljer.getFilUuid());

@@ -1,6 +1,5 @@
 package no.nav.dokarkiv.innsynjournal.v2.tjoark054;
 
-import no.nav.dokarkiv.core.domain.codes.OnDemandInstansCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentFil;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
@@ -9,12 +8,10 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
-import no.nav.dokarkiv.core.repository.ondemand.OnDemandRepository;
 import no.nav.dokarkiv.innsynjournal.v2.exceptions.DocumentNotFoundException;
 import no.nav.dokarkiv.innsynjournal.v2.exceptions.InvalidFilUuidException;
 import no.nav.dokarkiv.innsynjournal.v2.exceptions.NoDokumentInfoFoundException;
 import no.nav.dokarkiv.innsynjournal.v2.exceptions.NoJournalpostFoundException;
-import org.springframework.util.Assert;
 
 import javax.inject.Inject;
 
@@ -31,9 +28,6 @@ public abstract class AbstractJournalOperations {
 
 	@Inject
 	private DokumentFilRepository dokumentFilRepository;
-
-	@Inject
-	private OnDemandRepository onDemandRepository;
 
 	/**
 	 * Finds the journalpost for a journalpostId
@@ -114,15 +108,4 @@ public abstract class AbstractJournalOperations {
 //		} FIXME need arcsight integrasjon
 	}
 
-	/**
-	 * Retrieves a document from OnDemand
-	 *
-	 * @param onDemandId      the OnDemandId
-	 * @param onDemandInstans the OnDemandInstans
-	 * @return the document
-	 */
-	protected byte[] hentDokumentFromOnDemand(String onDemandId, OnDemandInstansCode onDemandInstans) {
-		Assert.notNull(onDemandInstans, "DokumentInfo.Fildetaljer.OnDemandInstans null for OnDemandId=" + onDemandId);
-		return onDemandRepository.getDocument(onDemandId, onDemandInstans);
-	}
 }
