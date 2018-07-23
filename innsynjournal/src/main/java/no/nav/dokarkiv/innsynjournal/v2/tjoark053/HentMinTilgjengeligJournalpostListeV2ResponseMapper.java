@@ -103,7 +103,7 @@ public class HentMinTilgjengeligJournalpostListeV2ResponseMapper {
 		journalpost.getJournalpostDokumentInfoRelasjoner().forEach(journalpostDokumentInfoRelasjon -> {
 			final DokumentInfo dokumentInfo = journalpostDokumentInfoRelasjon.getDokumentInfo();
 			JournalfoertDokumentInfo journalfoertDokumentInfo = mapJournalfoertDokumentInfo(dokumentInfo);
-			if(journalfoertDokumentInfo != null) {
+			if(!dokumentInfo.getSkannetInnholdListe().isEmpty()) {
 				dokumentInfo.getSkannetInnholdListe().forEach(skannetInnhold -> journalfoertDokumentInfo.getSkannetInnholdListe().add(
 						new SkannetInnhold()
 								.withSkannetInnholdId(skannetInnhold.getSkannetInnholdId().toString())
