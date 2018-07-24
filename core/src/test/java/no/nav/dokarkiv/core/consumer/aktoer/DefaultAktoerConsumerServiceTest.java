@@ -23,6 +23,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import java.util.ArrayList;
+
 /**
  * Unit tests for {@link DefaultAktoerConsumerService}
  *
@@ -115,7 +117,7 @@ public class DefaultAktoerConsumerServiceTest {
 
 	@Test
 	public void shouldReturnResponseTo() throws Exception {
-		HentAktoerIdForIdentResponseTo mappedResponseTo = new HentAktoerIdForIdentResponseTo();
+		HentAktoerIdForIdentResponseTo mappedResponseTo = new HentAktoerIdForIdentResponseTo(null, new ArrayList<>());
 		when(responseMapper.map(any())).thenReturn(mappedResponseTo);
 
 		HentAktoerIdForIdentResponseTo result = consumerService.hentAktoerIdForIdent(createHentAktoerIdForIdentRequestTo());

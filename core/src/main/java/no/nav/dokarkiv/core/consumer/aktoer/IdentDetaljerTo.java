@@ -1,5 +1,7 @@
 package no.nav.dokarkiv.core.consumer.aktoer;
 
+import lombok.Data;
+
 import java.util.Date;
 
 /**
@@ -8,31 +10,8 @@ import java.util.Date;
  *
  * @author Roar Bjurstrom, Visma Consulting.
  */
+@Data
 public class IdentDetaljerTo {
-
-	private String fnr;
-	private Date datoFom;
-
-	public IdentDetaljerTo(String fnr, Date datoFom) {
-		this.fnr = fnr;
-		this.datoFom = datoFom;
-	}
-
-	public String getFnr() {
-		return fnr;
-	}
-
-
-	public Date getDatoFom() {
-		return datoFom;
-	}
-
-
-	@Override
-	public String toString() {
-		return "IdentDetaljerTo{" +
-				"fnr='" + fnr + '\'' +
-				", datoFom=" + datoFom +
-				'}';
-	}
+	private final String fnr;
+	private final Date datoFom;
 }

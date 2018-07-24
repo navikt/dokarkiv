@@ -6,6 +6,9 @@ import no.nav.tjeneste.virksomhet.aktoer.v2.meldinger.HentAktoerIdForIdentRespon
 import no.nav.tjeneste.virksomhet.aktoer.v2.meldinger.IdentDetaljer;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 /**
  * Mapper for HentAktoerIdForIdentResponse
  *
@@ -20,13 +23,9 @@ public class HentAktoerIdForIdentResponseMapper {
 	 * @param response The ws-response to map
 	 * @return The domain object
 	 */
-	public HentAktoerIdForIdentResponseTo map(HentAktoerIdForIdentResponse response) {
-		HentAktoerIdForIdentResponseTo responseTo = new HentAktoerIdForIdentResponseTo();
-		responseTo.setAktoerId(response.getAktoerId());
-		for (IdentDetaljer identDetaljer : response.getIdentHistorikk()) {
-			responseTo.getHistoriskeIdenter().add(mapIdentDetaljerTo(identDetaljer));
-		}
-		return responseTo;
+	public HentAktoerIdForIdentResponseTo map(HentAktoerIdForIdentResponse response) { ;
+		List<IdentDetaljerTo> historiskeIdenter = response.getIdentHistorikk().stream().map(this::mapIdentDetaljerTo).collect(Collectors.toList());
+		return new HentAktoerIdForIdentResponseTo(response.getAktoerId(), historiskeIdenter);
 	}
 
 	private IdentDetaljerTo mapIdentDetaljerTo(IdentDetaljer identDetaljer) {
