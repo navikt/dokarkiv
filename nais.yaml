@@ -47,7 +47,7 @@ fasitResources:
   - alias: Aktoer_v2
     resourceType: webserviceendpoint
     propertyMap:
-      endpointurl: aktoerv2_url
+      endpointUrl: AKTOERV2_URL
   exposed:
   - alias: BehandleJournal_v2
     resourceType: webserviceendpoint
