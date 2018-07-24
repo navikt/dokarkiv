@@ -41,7 +41,7 @@ public class IdentifiserJournalpostV2ResponseMapper {
 		for (JournalpostDokumentInfoRelasjon dokumentInfoRelasjon  : journalpost.getJournalpostDokumentInfoRelasjoner()) {
 			if (TilknyttetJournalpostSomCode.HOVEDDOKUMENT.equals(dokumentInfoRelasjon.getTilknyttetJournalpostSom())) {
 				Dokument dokument =  new Dokument();
-				Long dokumentId = Long.valueOf(dokumentInfoRelasjon.getDokumentInfo().getDokumentInfoId());
+				Long dokumentId = dokumentInfoRelasjon.getDokumentInfo().getDokumentInfoId();
 				dokument.setDokumentId(dokumentId.toString());
 				dokument.setTittel(dokumentInfoRelasjon.getDokumentInfo().getTittel());
 				if (dokumentInnsynMap.containsKey(dokumentId)) {
@@ -58,7 +58,7 @@ public class IdentifiserJournalpostV2ResponseMapper {
 		for (JournalpostDokumentInfoRelasjon dokumentInfoRelasjon  : journalpost.getJournalpostDokumentInfoRelasjoner()) {
 			if (TilknyttetJournalpostSomCode.VEDLEGG.equals(dokumentInfoRelasjon.getTilknyttetJournalpostSom())) {
 				Dokument dokument =  new Dokument();
-				Long dokumentId = Long.valueOf(dokumentInfoRelasjon.getDokumentInfo().getDokumentInfoId());
+				Long dokumentId = dokumentInfoRelasjon.getDokumentInfo().getDokumentInfoId();
 				dokument.setDokumentId(dokumentId.toString());
 				dokument.setTittel(dokumentInfoRelasjon.getDokumentInfo().getTittel());
 				if (dokumentInnsynMap.containsKey(dokumentId)) {

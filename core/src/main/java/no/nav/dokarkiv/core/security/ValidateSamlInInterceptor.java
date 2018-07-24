@@ -19,10 +19,14 @@ import org.apache.wss4j.common.principal.SAMLTokenPrincipal;
 import org.apache.wss4j.common.saml.SamlAssertionWrapper;
 import org.apache.wss4j.dom.handler.RequestData;
 import org.apache.wss4j.dom.handler.WSHandlerConstants;
+import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.schema.XSString;
+import org.opensaml.core.xml.schema.impl.XSAnyImpl;
 import org.opensaml.saml.saml2.core.Attribute;
 
 import javax.security.auth.Subject;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.stream.Collectors;
@@ -32,6 +36,11 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 public class ValidateSamlInInterceptor extends WSS4JInInterceptor {
+
+	private static final List<String> PING_ACTIONS = Arrays.asList(
+			"http://nav.no/tjeneste/virksomhet/behandleJournal/v2/behandleJournal_v2/pingRequest",
+			"http://nav.no/tjeneste/virksomhet/innsynJournal/v2/InnsynJournal_v2/pingRequest");
+
 	public ValidateSamlInInterceptor() {
 		super();
 		setProperty(WSHandlerConstants.ACTION, WSHandlerConstants.SAML_TOKEN_SIGNED);
@@ -61,15 +70,21 @@ public class ValidateSamlInInterceptor extends WSS4JInInterceptor {
 	public void handleMessage(SoapMessage msg) {
 		super.handleMessage(msg);
 
-		SAMLSecurityContext sc = (SAMLSecurityContext) msg.get(SecurityContext.class.getName());
-		if(sc == null) {
-			throw new RuntimeException("Cannot get SecurityContext from SoapMessage");
+		if (!isPingCall(msg)) {
+			SAMLSecurityContext sc = (SAMLSecurityContext) msg.get(SecurityContext.class.getName());
+			if (sc == null) {
+				throw new RuntimeException("Cannot get SecurityContext from SoapMessage");
+			}
+			SAMLTokenPrincipal samlTokenPrincipal = (SAMLTokenPrincipal) sc.getUserPrincipal();
+			if (samlTokenPrincipal == null) {
+				throw new RuntimeException("Cannot get SAMLTokenPrincipal from SecurityContext");
+			}
+			((ThreadLocalSubjectHandler) SubjectHandler.getSubjectHandler()).setSubject(buildSubject(sc));
 		}
-		SAMLTokenPrincipal samlTokenPrincipal = (SAMLTokenPrincipal) sc.getUserPrincipal();
-		if(samlTokenPrincipal == null) {
-			throw new RuntimeException("Cannot get SAMLTokenPrincipal from SecurityContext");
-		}
-		((ThreadLocalSubjectHandler) SubjectHandler.getSubjectHandler()).setSubject(buildSubject(sc));
+	}
+
+	private boolean isPingCall(SoapMessage msg) {
+		return PING_ACTIONS.contains((String) msg.getOrDefault("SOAPAction", ""));
 	}
 
 	private Subject buildSubject(SAMLSecurityContext samlSecurityContext) {
@@ -92,6 +107,15 @@ public class ValidateSamlInInterceptor extends WSS4JInInterceptor {
 	private Map<String, String> extractSamlAttributeValues(SamlAssertionWrapper samlAssertionWrapper) {
 		return samlAssertionWrapper.getSaml2().getAttributeStatements().stream()
 				.flatMap(attributeStatement -> attributeStatement.getAttributes().stream())
-				.collect(Collectors.toMap(Attribute::getName, attribute -> ((XSString)attribute.getAttributeValues().get(0)).getValue()));
+				.collect(Collectors.toMap(Attribute::getName, attribute -> {
+					final XMLObject xmlObject = attribute.getAttributeValues().get(0);
+					if (xmlObject instanceof XSString) {
+						return ((XSString) xmlObject).getValue();
+					} else if (xmlObject instanceof XSAnyImpl) {
+						return ((XSAnyImpl) xmlObject).getTextContent();
+					} else {
+						return "unknown";
+					}
+				}));
 	}
 }
