@@ -22,6 +22,7 @@
 		<module>arkiverdokumentproduksjon</module>
 		<module>arkiverdokumentmottak</module>
 		<module>behandlejournal</module>
+		<module>innsynjournal</module>
 	</modules>
 
 	<distributionManagement>
@@ -83,6 +84,11 @@
 			<dependency>
 				<groupId>no.nav.dokarkiv</groupId>
 				<artifactId>behandlejournal</artifactId>
+				<version>1-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>no.nav.dokarkiv</groupId>
+				<artifactId>innsynjournal</artifactId>
 				<version>1-SNAPSHOT</version>
 			</dependency>
 			<dependency>

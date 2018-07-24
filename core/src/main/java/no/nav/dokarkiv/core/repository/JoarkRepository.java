@@ -1,10 +1,12 @@
 package no.nav.dokarkiv.core.repository;
 
+import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -26,4 +28,5 @@ public interface JoarkRepository extends CrudRepository<Journalpost, Long> {
 
 	Optional<Journalpost> findJournalpostByKanalReferanseId(String kanalReferanseId);
 
+	List<Journalpost> findJournalpostByKanalReferanseIdAndMottakskanal(String kanalReferanseId, MottaksKanalCode mottaksKanalCode);
 }
