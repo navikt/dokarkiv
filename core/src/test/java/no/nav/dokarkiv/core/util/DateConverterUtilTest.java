@@ -4,12 +4,14 @@ import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.nullValue;
 import static org.junit.Assert.assertThat;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.Month;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
@@ -18,7 +20,6 @@ import java.util.GregorianCalendar;
  *
  * @author Roar Bjurstrom, Visma Consulting.
  */
-@Ignore
 public class DateConverterUtilTest {
 
 	private static final Date NOW = new Date();
@@ -32,7 +33,7 @@ public class DateConverterUtilTest {
 	public void shouldConvertXMLGregorianCalendarToDate() throws Exception {
 		GregorianCalendar gregorianCalendar = new GregorianCalendar();
 		gregorianCalendar.clear();
-//		gregorianCalendar.setTime(createDate(2015, Calendar.MAY, 17));
+		gregorianCalendar.setTime(Date.from(LocalDate.of(2015, Month.MAY, 17).atStartOfDay(ZoneId.systemDefault()).toInstant()));
 		XMLGregorianCalendar xgc = DatatypeFactory.newInstance().newXMLGregorianCalendar(gregorianCalendar);
 		xgc.setTime(2, 34, 56);
 
