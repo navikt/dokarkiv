@@ -2,6 +2,7 @@ package no.nav.dokarkiv.inngaaendejournal.v1;
 
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 
+import io.micrometer.core.annotation.Timed;
 import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import no.nav.tjeneste.virksomhet.inngaaendejournal.v1.binding.HentJournalpostJournalpostIkkeFunnet;
@@ -22,31 +23,27 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
 import javax.inject.Inject;
 import javax.jws.HandlerChain;
 import javax.jws.WebService;
-import javax.xml.ws.WebServiceContext;
 import javax.xml.ws.soap.Addressing;
 
 @WebService(endpointInterface = "no.nav.tjeneste.virksomhet.inngaaendejournal.v1.binding.InngaaendeJournalV1",
-		wsdlLocation = "WEB-INF/wsdl/no/nav/tjeneste/virksomhet/inngaaendeJournal/v1/inngaaendeJournal.wsdl",
-		targetNamespace = "http://nav.no/tjeneste/virksomhet/inngaaendeJournal/v1",
+		wsdlLocation = "classpath:wsdl/no/nav/tjeneste/virksomhet/inngaaendeJournal/v1/Binding.wsdl",
+		targetNamespace = "http://nav.no/tjeneste/virksomhet/inngaaendeJournal/v1/Binding",
 		serviceName = "InngaaendeJournal_v1",
 		portName = "InngaaendeJournal_v1Port")
 @Addressing
-@HandlerChain(file = "InngaaendeJournalHandler.xml")
+@HandlerChain(file = "classpath:inngaaendejournalv1handler.xml")
 @Service
 public class InngaaendeJournalEndpoint implements InngaaendeJournalV1 {
 
 	private static final String DEFAULT_APPID = "joark:InngaaendeJournal_v1";
 
-	@Resource
-	private WebServiceContext webServiceContext;
-
 	@Inject
 	private InngaaendeJournalV1 inngaaendeJournalProvider;
 
+	@Timed(value = "dok_request", extraTags = {"process_code", "tjoark056"}, percentiles = {0.5, 0.95})
 	@Override
 	public HentJournalpostResponse hentJournalpost(HentJournalpostRequest request)
 			throws HentJournalpostJournalpostIkkeFunnet, HentJournalpostJournalpostIkkeInngaaende,
@@ -56,7 +53,7 @@ public class InngaaendeJournalEndpoint implements InngaaendeJournalV1 {
 		return inngaaendeJournalProvider.hentJournalpost(request);
 	}
 
-
+	@Timed(value = "dok_request", extraTags = {"process_code", "tjoark057"}, percentiles = {0.5, 0.95})
 	@Override
 	public UtledJournalfoeringsbehovResponse utledJournalfoeringsbehov(UtledJournalfoeringsbehovRequest request)
 			throws UtledJournalfoeringsbehovJournalpostIkkeFunnet, UtledJournalfoeringsbehovJournalpostIkkeInngaaende,

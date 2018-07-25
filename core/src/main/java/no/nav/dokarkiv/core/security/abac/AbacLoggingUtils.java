@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class AbacLoggingUtils {
-	private static final Logger ABAC_LOG = LoggerFactory.getLogger("abac");
+	private static final Logger ABAC_LOG = LoggerFactory.getLogger("auditLogger");
 
 	private static final String NO_ACCESS_TO_JOURNALPOST = "Refused access to journalpostId=";
 	private static final String ACCESS_TO_MARKED_JOURNALPOST = "Granted access to marked journalpostId=";

@@ -40,7 +40,8 @@ public class ValidateSamlInInterceptor extends WSS4JInInterceptor {
 
 	private static final List<String> PING_ACTIONS = Arrays.asList(
 			"http://nav.no/tjeneste/virksomhet/behandleJournal/v2/behandleJournal_v2/pingRequest",
-			"http://nav.no/tjeneste/virksomhet/innsynJournal/v2/InnsynJournal_v2/pingRequest");
+			"http://nav.no/tjeneste/virksomhet/innsynJournal/v2/InnsynJournal_v2/pingRequest",
+			"http://nav.no/tjeneste/virksomhet/inngaaendeJournal/v1/InngaaendeJournal_v1/pingRequest");
 
 	public ValidateSamlInInterceptor() {
 		super();

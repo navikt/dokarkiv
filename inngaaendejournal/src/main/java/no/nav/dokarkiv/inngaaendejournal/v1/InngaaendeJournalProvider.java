@@ -5,6 +5,7 @@ import static no.nav.abac.xacml.NavAttributter.RESOURCE_FELLES_RESOURCE_TYPE;
 import static no.nav.abac.xacml.StandardAttributter.ACTION_ID;
 import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.READ_ACTION;
 
+import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.security.abac.AbacSecurityService;
 import no.nav.dokarkiv.core.security.abac.AuthorizationException;
@@ -45,6 +46,7 @@ import javax.inject.Inject;
 /**
  * @author Stig Strøm, Acando
  */
+@Slf4j
 @Component
 public class InngaaendeJournalProvider implements InngaaendeJournalV1 {
 
@@ -78,6 +80,7 @@ public class InngaaendeJournalProvider implements InngaaendeJournalV1 {
 		try {
 			assertAccessToHentJournalpost(journalpostId);
 			InngaaendeJournalpostTo inngaaendeJournalpostTo = inngaaendeJournalpostService.hentJournalpost(journalpostId);
+			log.info("tjoark056 hentet inngaaende journalpost med journalpostId={}", journalpostId);
 			return hentInngaaendeJournalpostResponseMapper.map(inngaaendeJournalpostTo);
 		} catch (UgyldigInputException | IllegalArgumentException e) {
 			throw new HentJournalpostUgyldigInput(e.getMessage(),
@@ -103,6 +106,7 @@ public class InngaaendeJournalProvider implements InngaaendeJournalV1 {
 		try {
 			assertAccessToUtledJournalfoeringsbehov(journalpostId);
 			JournalpostManglerTo journalpostManglerTo = utledJournalfoeringsbehovService.utledJournalfoeringsbehov(journalpostId);
+			log.info("tjoark057 utledet journalføringsbehov for journalpostId={}", journalpostId);
 			return utledJournalfoeringsbehovResponseMapper.map(journalpostManglerTo);
 		} catch (UgyldigInputException | IllegalArgumentException e) {
 			throw new UtledJournalfoeringsbehovUgyldigInput(e.getMessage(),
