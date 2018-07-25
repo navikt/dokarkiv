@@ -2,8 +2,6 @@ package no.nav.dokarkiv.inngaaendejournal.v1.tjoark056;
 
 import static no.nav.dokarkiv.core.util.DateConverterUtil.convertDateToXMLGregorianCalendar;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Lists;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.exceptions.DokarkivFunctionalException;
 import no.nav.dokarkiv.inngaaendejournal.v1.tjoark056.to.AktoerTo;
@@ -34,6 +32,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author Joakim Bjørnstad, Jbit AS
@@ -50,10 +49,10 @@ public class HentInngaaendeJournalpostResponseMapper {
 	private InngaaendeJournalpost mapInngaendeJournalpost(InngaaendeJournalpostTo to) {
 		InngaaendeJournalpost inngaaendeJournalpost = new InngaaendeJournalpost();
 		inngaaendeJournalpost.setAvsenderId(to.getAvsenderId());
-		if (to.getForsendelseMottatt() != null) {
-			inngaaendeJournalpost.setForsendelseMottatt(convertDateToXMLGregorianCalendar(to.getForsendelseMottatt().toDate()));
-		} else {
+		if (to.getForsendelseMottatt() == null) {
 			inngaaendeJournalpost.setForsendelseMottatt(null);
+		} else {
+			inngaaendeJournalpost.setForsendelseMottatt(convertDateToXMLGregorianCalendar(to.getForsendelseMottatt().toDate()));
 		}
 		inngaaendeJournalpost.setMottakskanal(nullsafeEnumToKodeverdiMapper(to.getMottakskanal(), Mottakskanaler.class));
 		inngaaendeJournalpost.setTema(nullsafeEnumToKodeverdiMapper(to.getTema(), Tema.class));
@@ -67,20 +66,17 @@ public class HentInngaaendeJournalpostResponseMapper {
 	}
 
 	private List<Dokumentinformasjon> mapDokumentinformasjon(List<DokumentinformasjonTo> vedleggTo) {
-		if (vedleggTo != null && !vedleggTo.isEmpty()) {
-			return Lists.transform(vedleggTo, new Function<DokumentinformasjonTo, Dokumentinformasjon>() {
-				@Override
-				public Dokumentinformasjon apply(DokumentinformasjonTo dokumentinformasjonTo) {
-					return mapDokumentinformasjon(dokumentinformasjonTo);
-				}
-			});
-		} else {
+		if (vedleggTo == null) {
 			return new ArrayList<>();
+		} else {
+			return vedleggTo.stream().map(this::mapDokumentinformasjon).collect(Collectors.toList());
 		}
 	}
 
 	private Dokumentinformasjon mapDokumentinformasjon(DokumentinformasjonTo to) {
-		if (to != null) {
+		if (to == null) {
+			return null;
+		} else {
 			Dokumentinformasjon dokumentinformasjon = new Dokumentinformasjon();
 			dokumentinformasjon.setDokumentkategori(nullsafeEnumToKodeverdiMapper(to.getDokumentkategori(), Dokumentkategorier.class));
 			DokumenttypeIder dokumenttypeIder = new DokumenttypeIder();
@@ -90,8 +86,6 @@ public class HentInngaaendeJournalpostResponseMapper {
 			dokumentinformasjon.setDokumenttilstand(mapDokumenttilstand(to.getDokumenttilstand()));
 			dokumentinformasjon.getDokumentInnholdListe().addAll(mapDokumentinnhold(to.getDokumentInnhold()));
 			return dokumentinformasjon;
-		} else {
-			return null;
 		}
 	}
 
@@ -100,69 +94,63 @@ public class HentInngaaendeJournalpostResponseMapper {
 	}
 
 	private Dokumenttilstand mapDokumenttilstand(DokumenttilstandTo dokumenttilstand) {
-		if (dokumenttilstand != null) {
-			return Dokumenttilstand.fromValue(dokumenttilstand.name());
-		} else {
+		if (dokumenttilstand == null) {
 			return null;
+		} else {
+			return Dokumenttilstand.fromValue(dokumenttilstand.name());
 		}
 	}
 
 	private ArkivSak mapArkivSak(ArkivSakTo arkivSakTo) {
-		if (arkivSakTo != null) {
+		if (arkivSakTo == null) {
+			return null;
+		} else {
 			ArkivSak arkivSak = new ArkivSak();
 			arkivSak.setArkivSakId(arkivSakTo.getArkivSakId());
 			arkivSak.setArkivSakSystem(arkivSakTo.getFagsystem().toString());
 			return arkivSak;
-		} else {
-			return null;
 		}
 	}
 
 	private List<? extends Aktoer> mapBrukere(List<AktoerTo> brukere) {
-		if (brukere != null && !brukere.isEmpty()) {
-			return Lists.transform(brukere, new Function<AktoerTo, Aktoer>() {
-				@Override
-				public Aktoer apply(AktoerTo aktoerTo) {
-					Aktoer mappedAktor = null;
-					if (aktoerTo.getAktoerType() == BrukerTypeCode.ORGANISASJON) {
-						mappedAktor = new Organisasjon();
-						((Organisasjon) mappedAktor).setOrganisasjonsnummer(aktoerTo.getAktoerId());
-					} else if (aktoerTo.getAktoerType() == BrukerTypeCode.PERSON) {
-						mappedAktor = new Person();
-						((Person) mappedAktor).setIdent(aktoerTo.getAktoerId());
-					}
-					return mappedAktor;
-				}
-			});
-		} else {
+		if (brukere == null) {
 			return new ArrayList<>();
+		} else {
+			return brukere.stream().map(aktoerTo -> {
+				Aktoer mappedAktor = null;
+				if (aktoerTo.getAktoerType() == BrukerTypeCode.ORGANISASJON) {
+					mappedAktor = new Organisasjon();
+					((Organisasjon) mappedAktor).setOrganisasjonsnummer(aktoerTo.getAktoerId());
+				} else if (aktoerTo.getAktoerType() == BrukerTypeCode.PERSON) {
+					mappedAktor = new Person();
+					((Person) mappedAktor).setIdent(aktoerTo.getAktoerId());
+				}
+				return mappedAktor;
+			}).collect(Collectors.toList());
 		}
 	}
 
 	private List<? extends Dokumentinnhold> mapDokumentinnhold(List<DokumentInnholdTo> dokumentInnholds) {
-		if (dokumentInnholds != null) {
-			return Lists.transform(dokumentInnholds, new Function<DokumentInnholdTo, Dokumentinnhold>() {
-				@Override
-				public Dokumentinnhold apply(DokumentInnholdTo dokumentInnholdTo) {
-					Dokumentinnhold dokumentinnhold = new Dokumentinnhold();
-					dokumentinnhold.setArkivfiltype(nullsafeEnumToKodeverdiMapper(dokumentInnholdTo.getArkivFiltype(), Arkivfiltyper.class));
-					dokumentinnhold.setVariantformat(nullsafeEnumToKodeverdiMapper(dokumentInnholdTo.getVariantFormat(), Variantformater.class));
-					return dokumentinnhold;
-				}
-			});
-		} else {
+		if (dokumentInnholds == null) {
 			return new ArrayList<>();
+		} else {
+			return dokumentInnholds.stream().map(dokumentInnholdTo -> {
+				Dokumentinnhold dokumentinnhold = new Dokumentinnhold();
+				dokumentinnhold.setArkivfiltype(nullsafeEnumToKodeverdiMapper(dokumentInnholdTo.getArkivFiltype(), Arkivfiltyper.class));
+				dokumentinnhold.setVariantformat(nullsafeEnumToKodeverdiMapper(dokumentInnholdTo.getVariantFormat(), Variantformater.class));
+				return dokumentinnhold;
+			}).collect(Collectors.toList());
 		}
 	}
 
 	private static <T extends Kodeverdi> T nullsafeEnumToKodeverdiMapper(Enum enumz, Class<T> clazz) {
 		try {
-			if (enumz != null) {
+			if (enumz == null) {
+				return null;
+			} else {
 				T kodeverdi = clazz.newInstance();
 				kodeverdi.setValue(enumz.name());
 				return kodeverdi;
-			} else {
-				return null;
 			}
 		} catch (IllegalAccessException e) {
 			throw new DokarkivFunctionalException("Unable to access Kodeverdi", e);

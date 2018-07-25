@@ -1,7 +1,5 @@
 package no.nav.dokarkiv.inngaaendejournal.v1.tjoark057;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Lists;
 import no.nav.dokarkiv.inngaaendejournal.v1.common.DokumentInformasjonManglerTo;
 import no.nav.dokarkiv.inngaaendejournal.v1.common.JournalfoeringsbehovTo;
 import no.nav.dokarkiv.inngaaendejournal.v1.common.JournalpostManglerTo;
@@ -12,6 +10,7 @@ import no.nav.tjeneste.virksomhet.inngaaendejournal.v1.meldinger.UtledJournalfoe
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author Joakim Bjørnstad, Jbit AS
@@ -49,15 +48,10 @@ public class UtledJournalfoeringsbehovResponseMapper {
 	}
 
 	private List<? extends DokumentInformasjonMangler> mapVedlegg(List<DokumentInformasjonManglerTo> vedlegg) {
-		if(vedlegg != null && !vedlegg.isEmpty()) {
-			return Lists.transform(vedlegg, new Function<DokumentInformasjonManglerTo, DokumentInformasjonMangler>() {
-				@Override
-				public DokumentInformasjonMangler apply(DokumentInformasjonManglerTo dokumentInformasjonManglerTo) {
-					return mapDokumentInformasjonMangler(dokumentInformasjonManglerTo);
-				}
-			});
-		} else {
+		if(vedlegg == null) {
 			return new ArrayList<>();
+		} else {
+			return vedlegg.stream().map(this::mapDokumentInformasjonMangler).collect(Collectors.toList());
 		}
 	}
 }

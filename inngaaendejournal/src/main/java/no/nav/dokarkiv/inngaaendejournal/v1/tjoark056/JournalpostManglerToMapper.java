@@ -1,7 +1,5 @@
 package no.nav.dokarkiv.inngaaendejournal.v1.tjoark056;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Lists;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
@@ -16,6 +14,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author Joakim Bjørnstad, Jbit AS
@@ -34,7 +33,7 @@ public class JournalpostManglerToMapper {
 		return JournalpostManglerTo.builder()
 				.avsenderId(isNull(journalpost.getAvsenderMottakerId()))
 				.avsenderNavn(isNull(journalpost.getAvsenderMottaker()))
-				.arkivSak(journalpost.getSaksrelasjon() != null ? isNull(journalpost.getSaksrelasjon().getSakId()) : JournalfoeringsbehovTo.MANGLER)
+				.arkivSak(journalpost.getSaksrelasjon() == null ? JournalfoeringsbehovTo.MANGLER : isNull(journalpost.getSaksrelasjon().getSakId()))
 				.innhold(isNull(journalpost.getInnhold()))
 				.tema(isNull(journalpost.getFagomrade()))
 				.bruker(isNull(journalpost.getBrukere()))
@@ -51,12 +50,7 @@ public class JournalpostManglerToMapper {
 		if(vedlegg.isEmpty()) {
 			return Collections.emptyList();
 		} else {
-			return Lists.transform(Lists.newArrayList(vedlegg.iterator()), new Function<JournalpostDokumentInfoRelasjon, DokumentInformasjonManglerTo>() {
-				@Override
-				public DokumentInformasjonManglerTo apply(JournalpostDokumentInfoRelasjon relasjon) {
-					return mapToDokumentInformasjonMangler(relasjon);
-				}
-			});
+			return vedlegg.stream().map(this::mapToDokumentInformasjonMangler).collect(Collectors.toList());
 		}
 	}
 
@@ -70,10 +64,10 @@ public class JournalpostManglerToMapper {
 	}
 
 	private JournalfoeringsbehovTo isNull(Object object) {
-		if(object != null) {
-			return JournalfoeringsbehovTo.MANGLER_IKKE;
-		} else {
+		if(object == null) {
 			return JournalfoeringsbehovTo.MANGLER;
+		} else {
+			return JournalfoeringsbehovTo.MANGLER_IKKE;
 		}
 	}
 

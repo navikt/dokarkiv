@@ -1,7 +1,5 @@
 package no.nav.dokarkiv.inngaaendejournal.v1.tjoark056;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
@@ -28,6 +26,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author Joakim Bjørnstad, Jbit AS
@@ -48,7 +47,7 @@ public final class InngaaendeJournalpostToMapper {
 	private InngaaendeJournalpostTo doMap(Journalpost journalpost) {
 		return InngaaendeJournalpostTo.builder()
 				.avsenderId(journalpost.getAvsenderMottakerId())
-				.forsendelseMottatt(journalpost.getMottattDato() != null ? LocalDateTime.fromDateFields(journalpost.getMottattDato()) : null)
+				.forsendelseMottatt(journalpost.getMottattDato() == null ? null : LocalDateTime.fromDateFields(journalpost.getMottattDato()))
 				.mottakskanal(journalpost.getMottakskanal())
 				.tema(journalpost.getFagomrade())
 				.journaltilstand(mapJournaltilstand(journalpost))
@@ -89,15 +88,10 @@ public final class InngaaendeJournalpostToMapper {
 		if(brukere.isEmpty()) {
 			return new ArrayList<>();
 		} else {
-			return Lists.transform(Lists.newArrayList(brukere.iterator()), new Function<Bruker, AktoerTo>() {
-				@Override
-				public AktoerTo apply(Bruker bruker) {
-					return AktoerTo.builder()
-							.aktoerId(bruker.getBrukerId())
-							.aktoerType(bruker.getBrukerType())
-							.build();
-				}
-			});
+			return brukere.stream().map(bruker -> AktoerTo.builder()
+					.aktoerId(bruker.getBrukerId())
+					.aktoerType(bruker.getBrukerType())
+					.build()).collect(Collectors.toList());
 		}
 	}
 
@@ -130,15 +124,10 @@ public final class InngaaendeJournalpostToMapper {
 		if(filDetaljers.isEmpty()) {
 			return Collections.emptyList();
 		} else {
-			return Lists.transform(Lists.newArrayList(filDetaljers.iterator()), new Function<FilDetaljer, DokumentInnholdTo>() {
-				@Override
-				public DokumentInnholdTo apply(FilDetaljer filDetaljer) {
-					return DokumentInnholdTo.builder()
-							.arkivFiltype(filDetaljer.getFiltype())
-							.variantFormat(filDetaljer.getVariantFormat())
-							.build();
-				}
-			});
+			return filDetaljers.stream().map(filDetaljer -> DokumentInnholdTo.builder()
+					.arkivFiltype(filDetaljer.getFiltype())
+					.variantFormat(filDetaljer.getVariantFormat())
+					.build()).collect(Collectors.toList());
 		}
 	}
 
@@ -153,19 +142,16 @@ public final class InngaaendeJournalpostToMapper {
 							.compareTo(LocalDateTime.fromDateFields(o2.getDokumentInfo().getChangeStamp().getCreatedDate()));
 				}
 			}).sortedCopy(vedlegg);
-			return Lists.transform(sortedCopy, new Function<JournalpostDokumentInfoRelasjon, DokumentinformasjonTo>() {
-				@Override
-				public DokumentinformasjonTo apply(JournalpostDokumentInfoRelasjon relasjon) {
-					DokumentInfo dokumentInfo = relasjon.getDokumentInfo();
-					return DokumentinformasjonTo.builder()
-							.dokumentkategori(dokumentInfo.getKategori())
-							.dokumenttypeId(dokumentInfo.getDokumenttypeId())
-							.dokumentId(dokumentInfo.getDokumentInfoId())
-							.dokumenttilstand(mapDokumenttilstand(dokumentInfo))
-							.dokumentInnhold(mapDokumentinnhold(dokumentInfo.getFildetaljerListe()))
-							.build();
-				}
-			});
+			return sortedCopy.stream().map(relasjon -> {
+				DokumentInfo dokumentInfo = relasjon.getDokumentInfo();
+				return DokumentinformasjonTo.builder()
+						.dokumentkategori(dokumentInfo.getKategori())
+						.dokumenttypeId(dokumentInfo.getDokumenttypeId())
+						.dokumentId(dokumentInfo.getDokumentInfoId())
+						.dokumenttilstand(mapDokumenttilstand(dokumentInfo))
+						.dokumentInnhold(mapDokumentinnhold(dokumentInfo.getFildetaljerListe()))
+						.build();
+			}).collect(Collectors.toList());
 		}
 	}
 }

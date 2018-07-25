@@ -57,10 +57,10 @@ public class AbacDefaultConfig {
 	@Bean
 	AbacAttributeLocator samlTokenLocator() {
 		return new ResolvingAbacAttributeLocator(NavAttributter.ENVIRONMENT_FELLES_SAML_TOKEN, () -> {
-			if (SubjectHandler.getSubjectHandler().getSAMLAssertion() != null) {
-				return DOM2Writer.nodeToString(SubjectHandler.getSubjectHandler().getSAMLAssertion()).getBytes();
-			} else {
+			if (SubjectHandler.getSubjectHandler().getSAMLAssertion() == null) {
 				return new byte[]{};
+			} else {
+				return DOM2Writer.nodeToString(SubjectHandler.getSubjectHandler().getSAMLAssertion()).getBytes();
 			}
 		});
 	}

@@ -58,8 +58,7 @@ public class JdbcAbacSecurityRepository implements AbacSecurityRepository {
 			if (StringUtils.isNotEmpty(fagomrade)) {
 				result.setFagomrade(FagomradeCode.valueOf(fagomrade));
 			}
-		}
-		catch (HibernateException e) {
+		} catch (HibernateException e) {
 			LOG.warn("Could not find AbacResources for journalpostId=" + journalpostId, e);
 			return result;
 		}
@@ -79,8 +78,8 @@ public class JdbcAbacSecurityRepository implements AbacSecurityRepository {
 	private String findFagomrade(Long journalpostId) {
 		Query q = getQuery(FINN_FAGOMRADE_PAA_JOURNALPOST, journalpostId);
 		Object o = q.uniqueResult();
-		if(o instanceof String) {
-			return (String)o;
+		if (o instanceof String) {
+			return (String) o;
 		}
 		return null;
 	}

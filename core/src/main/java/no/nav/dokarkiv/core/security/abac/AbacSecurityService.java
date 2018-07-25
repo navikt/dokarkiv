@@ -48,7 +48,7 @@ public class AbacSecurityService {
 		Long journalpostId = Long.parseLong(journalpost);
 
 		if (!joarkRepository.existsById(journalpostId)) {
-			throw new JournalpostIkkeFunnetException("Journalpost ikke funnet. journalpostId="+journalpostId);
+			throw new JournalpostIkkeFunnetException("Journalpost ikke funnet. journalpostId=" + journalpostId);
 		}
 
 		AbacResources abacResources = jdbcAbacSecurityRepository.findAbacResources(journalpostId);
@@ -72,13 +72,11 @@ public class AbacSecurityService {
 
 	XacmlRequest decorateJoarkResources(XacmlRequest request,
 										AbacResources joarkResources, Long journalpostId) {
-		if (journalpostId != null && !joarkResources.getBrukerIds().isEmpty()) {
-			if (joarkResources.getBrukerIds().size() > 1) {
-				abaclog.logAccessToJournalpostWithSeveralUsers(journalpostId);
-			}
+		if (journalpostId != null && !joarkResources.getBrukerIds().isEmpty() && joarkResources.getBrukerIds().size() > 1) {
+			abaclog.logAccessToJournalpostWithSeveralUsers(journalpostId);
 		}
 
-		if(joarkResources.getBrukerIds() != null && joarkResources.getBrukerIds().size() == 1) {
+		if (joarkResources.getBrukerIds() != null && joarkResources.getBrukerIds().size() == 1) {
 			request.resource(RESOURCE_FELLES_PERSON_TILKNYTTET_FNR,
 					joarkResources.getBrukerIds().get(0));
 		}
@@ -91,7 +89,7 @@ public class AbacSecurityService {
 			}
 		}
 
-		if(joarkResources.getFagomrade() != null) {
+		if (joarkResources.getFagomrade() != null) {
 			request.resource(RESOURCE_FELLES_TEMA, joarkResources.getFagomrade().name());
 		}
 		return request;

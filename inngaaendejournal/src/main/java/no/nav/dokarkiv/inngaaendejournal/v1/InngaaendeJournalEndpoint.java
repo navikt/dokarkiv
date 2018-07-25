@@ -28,11 +28,11 @@ import javax.jws.HandlerChain;
 import javax.jws.WebService;
 import javax.xml.ws.soap.Addressing;
 
-@WebService(endpointInterface = "no.nav.tjeneste.virksomhet.inngaaendejournal.v1.binding.InngaaendeJournalV1",
-		wsdlLocation = "classpath:wsdl/no/nav/tjeneste/virksomhet/inngaaendeJournal/v1/Binding.wsdl",
-		targetNamespace = "http://nav.no/tjeneste/virksomhet/inngaaendeJournal/v1/Binding",
+@WebService(targetNamespace = "http://nav.no/tjeneste/virksomhet/inngaaendeJournal/v1/Binding",
 		serviceName = "InngaaendeJournal_v1",
-		portName = "InngaaendeJournal_v1Port")
+		portName = "InngaaendeJournal_v1Port",
+		wsdlLocation = "classpath:wsdl/no/nav/tjeneste/virksomhet/inngaaendeJournal/v1/Binding.wsdl",
+		endpointInterface = "no.nav.tjeneste.virksomhet.inngaaendejournal.v1.binding.InngaaendeJournalV1")
 @Addressing
 @HandlerChain(file = "classpath:inngaaendejournalv1handler.xml")
 @Service
@@ -71,10 +71,10 @@ public class InngaaendeJournalEndpoint implements InngaaendeJournalV1 {
 
 	private String consumerIdFromMdcOrDefault() {
 		String consumerId = MDC.get(MDC_CONSUMER_ID);
-		if (!StringUtils.isBlank(consumerId)) {
-			return consumerId;
-		} else {
+		if (StringUtils.isBlank(consumerId)) {
 			return DEFAULT_APPID;
+		} else {
+			return consumerId;
 		}
 	}
 }
