@@ -2,8 +2,8 @@ package no.nav.dokarkiv.innsynjournal.v2;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
+import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.innsynjournal.v2.exceptions.DocumentNotFoundException;
-import no.nav.dokarkiv.innsynjournal.v2.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.innsynjournal.v2.exceptions.JournalpostIkkeInngaaendeException;
 import no.nav.dokarkiv.innsynjournal.v2.exceptions.JournalpostNotSupportedException;
 import no.nav.dokarkiv.innsynjournal.v2.exceptions.NoJournalpostFoundException;

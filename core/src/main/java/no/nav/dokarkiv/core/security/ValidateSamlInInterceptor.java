@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.exceptions.ApplicationException;
 import no.nav.dokarkiv.core.jaxws.ThreadLocalSubjectHandler;
 import no.nav.modig.core.context.AuthenticationLevelCredential;
+import no.nav.modig.core.context.SAMLAssertionCredential;
 import no.nav.modig.core.context.SubjectHandler;
 import no.nav.modig.core.domain.ConsumerId;
 import no.nav.modig.core.domain.IdentType;
@@ -39,7 +40,8 @@ public class ValidateSamlInInterceptor extends WSS4JInInterceptor {
 
 	private static final List<String> PING_ACTIONS = Arrays.asList(
 			"http://nav.no/tjeneste/virksomhet/behandleJournal/v2/behandleJournal_v2/pingRequest",
-			"http://nav.no/tjeneste/virksomhet/innsynJournal/v2/InnsynJournal_v2/pingRequest");
+			"http://nav.no/tjeneste/virksomhet/innsynJournal/v2/InnsynJournal_v2/pingRequest",
+			"http://nav.no/tjeneste/virksomhet/inngaaendeJournal/v1/InngaaendeJournal_v1/pingRequest");
 
 	public ValidateSamlInInterceptor() {
 		super();
@@ -97,6 +99,7 @@ public class ValidateSamlInInterceptor extends WSS4JInInterceptor {
 			final Subject subject = new Subject();
 			subject.getPrincipals().add(new SluttBruker(samlAssertionWrapper.getSubjectName(), identType));
 			subject.getPublicCredentials().add(new AuthenticationLevelCredential(authenticationLevel));
+			subject.getPublicCredentials().add(new SAMLAssertionCredential(samlAssertionWrapper.getElement()));
 			subject.getPrincipals().add(new ConsumerId(consumerId));
 			return subject;
 		} catch (WSSecurityException e) {

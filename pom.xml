@@ -23,6 +23,7 @@
 		<module>arkiverdokumentmottak</module>
 		<module>behandlejournal</module>
 		<module>innsynjournal</module>
+		<module>inngaaendejournal</module>
 	</modules>
 
 	<distributionManagement>
@@ -92,6 +93,11 @@
 				<version>1-SNAPSHOT</version>
 			</dependency>
 			<dependency>
+				<groupId>no.nav.dokarkiv</groupId>
+				<artifactId>inngaaendejournal</artifactId>
+				<version>1-SNAPSHOT</version>
+			</dependency>
+			<dependency>
 				<groupId>com.oracle</groupId>
 				<artifactId>ojdbc8</artifactId>
 				<version>${oracle.version}</version>
@@ -121,6 +127,12 @@
 				<artifactId>lombok</artifactId>
 				<version>1.16.22</version>
 				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.cloud</groupId>
+				<artifactId>spring-cloud-contract-wiremock</artifactId>
+				<version>1.2.5.RELEASE</version>
+				<scope>test</scope>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

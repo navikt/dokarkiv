@@ -48,6 +48,10 @@ fasitResources:
     resourceType: webserviceendpoint
     propertyMap:
       endpointUrl: AKTOERV2_URL
+  - alias: "abac.pdp.endpoint"
+    resourceType: restservice
+    propertyMap:
+      url: ABAC_URL
   exposed:
   - alias: BehandleJournal_v2
     resourceType: webserviceendpoint

@@ -1,16 +1,16 @@
 package no.nav.dokarkiv.innsynjournal.v2.tjoark054;
 
-import static no.nav.dokarkiv.innsynjournal.v2.datautil.DokumentFilTestDataProvider.FIL_UUID;
-import static no.nav.dokarkiv.innsynjournal.v2.datautil.DokumentFilTestDataProvider.createDokumentFil;
-import static no.nav.dokarkiv.innsynjournal.v2.datautil.JournalpostTestDataProvider.createJournalpost;
+import static no.nav.dokarkiv.core.datautil.DokumentFilTestDataProvider.FIL_UUID;
+import static no.nav.dokarkiv.core.datautil.DokumentFilTestDataProvider.createDokumentFil;
+import static no.nav.dokarkiv.core.datautil.JournalpostTestDataProvider.createJournalpost;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.jaxws.SubjectHandlerUtils;
 import no.nav.dokarkiv.core.jaxws.ThreadLocalSubjectHandler;
 import no.nav.dokarkiv.innsynjournal.v2.AbstractInnsynJournalV2Itest;
-import no.nav.dokarkiv.innsynjournal.v2.security.SubjectHandlerUtils;
 import no.nav.modig.core.domain.IdentType;
 import no.nav.tjeneste.virksomhet.innsynjournal.v2.binding.HentDokumentDokumentIkkeFunnet;
 import no.nav.tjeneste.virksomhet.innsynjournal.v2.binding.HentDokumentSikkerhetsbegrensning;

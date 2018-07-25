@@ -1,14 +1,17 @@
 package no.nav.dokarkiv.innsynjournal.v2.tjoark054;
 
-import static no.nav.dokarkiv.innsynjournal.v2.datautil.DokumentFilTestDataProvider.createDokumentFil;
-import static no.nav.dokarkiv.innsynjournal.v2.datautil.DokumentInfoTestDataProvider.DOKUMENT_TITTEL;
-import static no.nav.dokarkiv.innsynjournal.v2.datautil.DokumentInfoTestDataProvider.createDokumentInfo;
-import static no.nav.dokarkiv.innsynjournal.v2.datautil.FildetaljerTestDataProvider.createFildetaljerFil;
+import static no.nav.dokarkiv.core.datautil.DokumentFilTestDataProvider.createDokumentFil;
+import static no.nav.dokarkiv.core.datautil.DokumentInfoTestDataProvider.DOKUMENT_TITTEL;
+import static no.nav.dokarkiv.core.datautil.DokumentInfoTestDataProvider.createDokumentInfo;
+import static no.nav.dokarkiv.core.datautil.FildetaljerTestDataProvider.createFildetaljerFil;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.isA;
 import static org.junit.Assert.assertThat;
 
 import no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerV2Mock;
+import no.nav.dokarkiv.core.datautil.DokumentFilTestDataProvider;
+import no.nav.dokarkiv.core.datautil.JournalpostTestDataProvider;
+import no.nav.dokarkiv.core.datautil.SaksrelasjonTestDataProvider;
 import no.nav.dokarkiv.core.domain.ChangeStamp;
 import no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder;
 import no.nav.dokarkiv.core.domain.builder.JournalpostBuilder;
@@ -19,12 +22,9 @@ import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.jaxws.SubjectHandlerUtils;
 import no.nav.dokarkiv.core.jaxws.ThreadLocalSubjectHandler;
 import no.nav.dokarkiv.innsynjournal.v2.AbstractInnsynJournalV2Itest;
-import no.nav.dokarkiv.innsynjournal.v2.datautil.DokumentFilTestDataProvider;
-import no.nav.dokarkiv.innsynjournal.v2.datautil.JournalpostTestDataProvider;
-import no.nav.dokarkiv.innsynjournal.v2.datautil.SaksrelasjonTestDataProvider;
-import no.nav.dokarkiv.innsynjournal.v2.security.SubjectHandlerUtils;
 import no.nav.tjeneste.virksomhet.innsynjournal.v2.binding.HentDokumentDokumentIkkeFunnet;
 import no.nav.tjeneste.virksomhet.innsynjournal.v2.binding.HentDokumentSikkerhetsbegrensning;
 import no.nav.tjeneste.virksomhet.innsynjournal.v2.meldinger.HentDokumentRequest;
