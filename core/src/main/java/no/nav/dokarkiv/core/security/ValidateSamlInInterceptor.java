@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.exceptions.ApplicationException;
 import no.nav.dokarkiv.core.jaxws.ThreadLocalSubjectHandler;
 import no.nav.modig.core.context.AuthenticationLevelCredential;
+import no.nav.modig.core.context.SAMLAssertionCredential;
 import no.nav.modig.core.context.SubjectHandler;
 import no.nav.modig.core.domain.ConsumerId;
 import no.nav.modig.core.domain.IdentType;
@@ -97,6 +98,7 @@ public class ValidateSamlInInterceptor extends WSS4JInInterceptor {
 			final Subject subject = new Subject();
 			subject.getPrincipals().add(new SluttBruker(samlAssertionWrapper.getSubjectName(), identType));
 			subject.getPublicCredentials().add(new AuthenticationLevelCredential(authenticationLevel));
+			subject.getPublicCredentials().add(new SAMLAssertionCredential(samlAssertionWrapper.getElement()));
 			subject.getPrincipals().add(new ConsumerId(consumerId));
 			return subject;
 		} catch (WSSecurityException e) {

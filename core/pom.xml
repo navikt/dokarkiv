@@ -80,6 +80,10 @@
 			<artifactId>cxf-rt-ws-security</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>no.nav.tjenester.fim</groupId>
 			<artifactId>nav-fim-aktoer-v2-tjenestespesifikasjon</artifactId>
 			<version>${nav-fim-aktoer-v2-tjenestespesifikasjon.version}</version>
@@ -89,6 +93,11 @@
 			<groupId>no.nav.modig</groupId>
 			<artifactId>modig-security-authorization</artifactId>
 			<version>1.0.35</version>
+		</dependency>
+		<dependency>
+			<groupId>no.nav.freg</groupId>
+			<artifactId>abac-spring</artifactId>
+			<version>1.5.0</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-beanutils</groupId>

@@ -1,6 +1,5 @@
 package no.nav.dokarkiv.innsynjournal.v2;
 
-import no.nav.dokarkiv.core.jaxws.ThreadLocalSubjectHandler;
 import no.nav.dokarkiv.core.security.ValidateSamlInInterceptor;
 import no.nav.tjeneste.virksomhet.innsynjournal.v2.binding.InnsynJournalV2;
 import org.apache.cxf.Bus;
@@ -21,8 +20,7 @@ public class InnsynJournalV2Config {
 	@Bean
 	@Profile("nais")
 	Endpoint innsynJournalV2(Bus bus,
-							   InnsynJournalV2 innsynJournalV2Endpoint) {
-		System.setProperty(ThreadLocalSubjectHandler.SUBJECTHANDLER_KEY, ThreadLocalSubjectHandler.class.getName());
+							 InnsynJournalV2 innsynJournalV2Endpoint) {
 		EndpointImpl endpoint = new EndpointImpl(bus, innsynJournalV2Endpoint);
 		endpoint.publish("/innsynjournal/v2");
 		org.apache.cxf.endpoint.Endpoint cxfEndpoint = endpoint.getServer().getEndpoint();
