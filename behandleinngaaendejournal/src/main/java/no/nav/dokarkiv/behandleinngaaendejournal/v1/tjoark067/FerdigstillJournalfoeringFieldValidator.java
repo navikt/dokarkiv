@@ -6,12 +6,14 @@ import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
+import org.springframework.stereotype.Component;
 
 import java.util.Collection;
 
 /**
  * @author Joakim Bjørnstad, Jbit AS
  */
+@Component
 public class FerdigstillJournalfoeringFieldValidator {
 
 	public void validate(Journalpost journalpost) {

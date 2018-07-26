@@ -14,6 +14,7 @@ import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeInngaaendeException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeMidlertidigException;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Set;
@@ -24,6 +25,7 @@ import java.util.Set;
  * @author Leo-Andreas Ervik, Visma Consulting. 02.06.2017.
  */
 @NoArgsConstructor
+@Component
 public class OppdaterJournalpostValidator {
 	
 	public void validateInput(OppdaterJournalpostRequestTo request) {

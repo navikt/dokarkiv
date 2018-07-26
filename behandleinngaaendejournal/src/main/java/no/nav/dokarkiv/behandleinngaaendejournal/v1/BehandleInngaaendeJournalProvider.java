@@ -39,6 +39,7 @@ import no.nav.tjeneste.virksomhet.behandleinngaaendejournal.v1.feil.Sikkerhetsbe
 import no.nav.tjeneste.virksomhet.behandleinngaaendejournal.v1.feil.UgyldigInput;
 import no.nav.tjeneste.virksomhet.behandleinngaaendejournal.v1.meldinger.FerdigstillJournalfoeringRequest;
 import no.nav.tjeneste.virksomhet.behandleinngaaendejournal.v1.meldinger.OppdaterJournalpostRequest;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
@@ -47,6 +48,7 @@ import javax.inject.Inject;
 /**
  * @author Stig Strøm, Acando
  */
+@Component
 public class BehandleInngaaendeJournalProvider implements BehandleInngaaendeJournalV1 {
 	private static final String BEHANDLE_INNGAAENDE_JOURNAL_V1 = "BehandleInngaaendeJournalV1";
 	public static final String FERDIGSTILL_JOURNALFOERING = BEHANDLE_INNGAAENDE_JOURNAL_V1 + ".ferdigstillJournalfoering";

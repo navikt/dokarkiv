@@ -24,6 +24,7 @@ import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
+import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 import java.util.Comparator;
@@ -35,6 +36,7 @@ import java.util.Set;
  *
  * @author Leo-Andreas Ervik, Visma Consulting. 23.05.2017.
  */
+@Component
 public class OppdaterJournalpostService {
 	private static final String UKJENT_BRUKER = "Ukjent";
 	private static final Logger log = LoggerFactory.getLogger(OppdaterJournalpostService.class);

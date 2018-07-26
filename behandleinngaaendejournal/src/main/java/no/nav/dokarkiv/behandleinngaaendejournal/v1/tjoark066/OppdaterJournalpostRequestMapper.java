@@ -20,6 +20,7 @@ import no.nav.tjeneste.virksomhet.behandleinngaaendejournal.v1.informasjon.Innga
 import no.nav.tjeneste.virksomhet.behandleinngaaendejournal.v1.informasjon.Organisasjon;
 import no.nav.tjeneste.virksomhet.behandleinngaaendejournal.v1.informasjon.Person;
 import no.nav.tjeneste.virksomhet.behandleinngaaendejournal.v1.meldinger.OppdaterJournalpostRequest;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +30,7 @@ import java.util.List;
  *
  * @author Leo-Andreas Ervik, Visma Consulting. 29.05.2017.
  */
+@Component
 public class OppdaterJournalpostRequestMapper {
 	
 	public OppdaterJournalpostRequestTo map(OppdaterJournalpostRequest request) {

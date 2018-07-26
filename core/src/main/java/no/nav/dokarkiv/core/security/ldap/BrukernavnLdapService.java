@@ -1,15 +1,14 @@
 package no.nav.dokarkiv.core.security.ldap;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.inject.Inject;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 
 /**
  * @author Tore Gard Andersen
  */
+@Slf4j
+@Component
 public class BrukernavnLdapService {
-	private static final Logger log = LoggerFactory.getLogger(BrukernavnLdapService.class);
 	private static final String ERROR_FORMAT = "%s=%s error=%s";
 	
 	
@@ -17,7 +16,7 @@ public class BrukernavnLdapService {
 	private LdapLookup ldapLookup;
 
 
-	@Inject
+//	@Inject
 //	public BrukernavnLdapService(RetryTemplate retryTemplate, LdapLookup ldapLookup) {
 //		this.retryTemplate = retryTemplate;
 //		this.ldapLookup = ldapLookup;

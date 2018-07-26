@@ -19,12 +19,11 @@ import no.nav.tjeneste.virksomhet.behandleinngaaendejournal.v1.meldinger.Ferdigs
 import no.nav.tjeneste.virksomhet.behandleinngaaendejournal.v1.meldinger.OppdaterJournalpostRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.MDC;
+import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
 import javax.inject.Inject;
 import javax.jws.HandlerChain;
 import javax.jws.WebService;
-import javax.xml.ws.WebServiceContext;
 import javax.xml.ws.soap.Addressing;
 
 @WebService(endpointInterface = "no.nav.tjeneste.virksomhet.behandleinngaaendejournal.v1.binding.BehandleInngaaendeJournalV1",
@@ -34,12 +33,10 @@ import javax.xml.ws.soap.Addressing;
 	portName = "BehandleInngaaendeJournal_v1Port")
 @Addressing
 @HandlerChain(file = "classpath:behandleinngaaendejournalv1handler.xml")
+@Service
 public class BehandleInngaaendeJournalEndpoint implements BehandleInngaaendeJournalV1 {
 
 	private static final String DEFAULT_APPID = "joark:BehandleInngaaendeJournal_v1";
-
-	@Resource
-	private WebServiceContext webServiceContext;
 
 	@Inject
 	private BehandleInngaaendeJournalV1 behandleInngaaendeJournalProvider;

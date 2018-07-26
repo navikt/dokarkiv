@@ -20,6 +20,7 @@ import no.nav.modig.core.domain.IdentType;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.LocalDateTime;
 import org.slf4j.MDC;
+import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 
@@ -27,6 +28,7 @@ import javax.inject.Inject;
  * @author Joakim Bjørnstad, Jbit AS
  */
 @Slf4j
+@Component
 public class FerdigstillJournalfoeringService {
 	private static final String UKJENT_BRUKER = "Ukjent";
 
