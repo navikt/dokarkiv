@@ -19,7 +19,9 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
+import org.springframework.boot.test.autoconfigure.data.ldap.AutoConfigureDataLdap;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureDataJpa;
 import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
@@ -27,24 +29,27 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
-import javax.transaction.Transactional;
 import java.io.IOException;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE,
 		classes = {CoreConfig.class, BehandleInngaaendeJournalV1Config.class})
-@ActiveProfiles("itest,wiremock")
+@ActiveProfiles("itest,wiremock,ldap")
+@AutoConfigureDataJpa
 @AutoConfigureTestDatabase
 @AutoConfigureTestEntityManager
+@AutoConfigureDataLdap
 @AutoConfigureWireMock(port = 0)
 @Transactional
 public abstract class AbstractBehandleInngaaendeJournalV1Itest {
 
 	protected static final String INTERN_BRUKER_LDAP_NA_USER_ID = "systemDown";
-	protected static final String INTERN_BRUKER_USER_ID = "internBruker";
-	protected static final String SYSTEMERESSURS_USER_ID = "srvBjoark";
+	protected static final String INTERN_BRUKER_USER_ID = "z000001";
+	protected static final String INTERN_BRUKER_USER_NAVN = "Kaptein Sabeltann";
+	protected static final String SYSTEMERESSURS_USER_ID = "srvdokarkiv";
 
 	@Rule
 	public ExpectedException expectedException = ExpectedException.none();

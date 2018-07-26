@@ -14,7 +14,6 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
-import com.google.common.collect.Lists;
 import no.nav.dokarkiv.behandleinngaaendejournal.v1.AbstractBehandleInngaaendeJournalV1Itest;
 import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.datautil.BrukerTestDataProvider;
@@ -44,14 +43,10 @@ import no.nav.tjeneste.virksomhet.behandleinngaaendejournal.v1.meldinger.Ferdigs
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
-import org.junit.Rule;
 import org.junit.Test;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
 import org.slf4j.MDC;
 
 import java.util.Date;
-import java.util.List;
 
 /**
  * Integration test for FerdigstillJournalpost(TJOARK067).
@@ -61,13 +56,6 @@ import java.util.List;
 @Ignore
 public class FerdigstillJournalfoeringIT extends AbstractBehandleInngaaendeJournalV1Itest {
 
-	private static final String SYSTEM_RESSURS_USER_ID = "systemRessurs";
-
-	private static final String USER_ID_NAME = "Dølle Døck";
-
-	@Rule
-	public MockitoRule rule = MockitoJUnit.rule();
-
 	private static final String OPPRETTET_KILDE_NAVN = "opprettet kilde";
 	private static final String ENDRET_KILDE_NAVN = "endret_kilde";
 
@@ -76,11 +64,9 @@ public class FerdigstillJournalfoeringIT extends AbstractBehandleInngaaendeJourn
 	@Before
 	public void setUp() throws Exception {
 		MDC.put(MDCConstants.MDC_CONSUMER_ID, ENDRET_KILDE_NAVN);
-		MDC.put(MDCConstants.MDC_USER_ID, USER_ID_NAME);
+		MDC.put(MDCConstants.MDC_USER_ID, INTERN_BRUKER_USER_ID);
 		RequestContextSetter.setRequestContextForUnitTest();
-//		when(ldapTemplate.search(argThat(new IsInternBruker()), any(NameMapper.class))).thenReturn(Lists.newArrayList(USER_ID_NAME));
-//		when(ldapTemplate.search(argThat(new IsLdapNAUser()), any(NameMapper.class))).thenThrow(new InvalidNameException(null));
-		SubjectHandlerUtils.setInternBruker(USER_ID_NAME);
+		SubjectHandlerUtils.setInternBruker(INTERN_BRUKER_USER_ID);
 	}
 
 	@After
@@ -103,7 +89,7 @@ public class FerdigstillJournalfoeringIT extends AbstractBehandleInngaaendeJourn
 		assertThat(resultJournalpost.getJournalstatus(), equalTo(JournalStatusCode.J));
 		assertThat(resultJournalpost.getJournalForendeEnhetId(), equalTo(ENHET_ID));
 		assertThat(resultJournalpost.getJournalDato(), notNullValue());
-		assertThat(resultJournalpost.getJournalfortAvNavn(), equalTo(USER_ID_NAME));
+		assertThat(resultJournalpost.getJournalfortAvNavn(), equalTo(INTERN_BRUKER_USER_NAVN));
 		assertSporing(resultJournalpost);
 	}
 
@@ -153,9 +139,8 @@ public class FerdigstillJournalfoeringIT extends AbstractBehandleInngaaendeJourn
 	@Test
 	public void shouldFerdigstillJournalAsSystemBruker() throws Exception {
 		abacPermit();
-		SubjectHandlerUtils.setSystemressurs(SYSTEM_RESSURS_USER_ID);
-		MDC.put(MDCConstants.MDC_USER_ID, SYSTEM_RESSURS_USER_ID);
-//		when(ldapTemplate.search(any(LdapQuery.class), any(NameMapper.class))).thenReturn(Lists.newArrayList(USER_ID_NAME)); FIXME
+		SubjectHandlerUtils.setSystemressurs(SYSTEMERESSURS_USER_ID);
+		MDC.put(MDCConstants.MDC_USER_ID, SYSTEMERESSURS_USER_ID);
 		Journalpost persistedJournalpost = buildAndCommit(buildJournalpost());
 
 		FerdigstillJournalfoeringRequest request = createRequest(persistedJournalpost.getJournalpostId());
@@ -165,7 +150,7 @@ public class FerdigstillJournalfoeringIT extends AbstractBehandleInngaaendeJourn
 		assertThat(resultJournalpost.getJournalstatus(), equalTo(JournalStatusCode.J));
 		assertThat(resultJournalpost.getJournalForendeEnhetId(), equalTo(ENHET_ID));
 		assertThat(resultJournalpost.getJournalDato(), notNullValue());
-		assertThat(resultJournalpost.getJournalfortAvNavn(), equalTo(SYSTEM_RESSURS_USER_ID));
+		assertThat(resultJournalpost.getJournalfortAvNavn(), equalTo(SYSTEMERESSURS_USER_ID));
 		assertSporing(resultJournalpost);
 	}
 
@@ -174,8 +159,6 @@ public class FerdigstillJournalfoeringIT extends AbstractBehandleInngaaendeJourn
 		abacPermit();
 		SubjectHandlerUtils.reset();
 		MDC.put(MDCConstants.MDC_USER_ID, null);
-		List<String> ldapReturnList = Lists.newArrayList(USER_ID_NAME);
-//		when(ldapTemplate.search(any(LdapQuery.class), any(NameMapper.class))).thenReturn(ldapReturnList); FIXME
 		Journalpost persistedJournalpost = buildAndCommit(buildJournalpost());
 
 		FerdigstillJournalfoeringRequest request = createRequest(persistedJournalpost.getJournalpostId());
@@ -328,8 +311,9 @@ public class FerdigstillJournalfoeringIT extends AbstractBehandleInngaaendeJourn
 		ferdigstillExpectFerdigstillIkkeMuligAndRollback(persistedJournalpost.getJournalpostId());
 	}
 
-	private void ferdigstillExpectFerdigstillIkkeMuligAndRollback(Long journalpostId) throws Exception {
+	public void ferdigstillExpectFerdigstillIkkeMuligAndRollback(Long journalpostId) throws Exception {
 		try {
+			abacPermit();
 			behandleInngaaendeJournalProvider.ferdigstillJournalfoering(createRequest(journalpostId));
 			fail();
 		} catch (FerdigstillJournalfoeringFerdigstillingIkkeMulig e) {

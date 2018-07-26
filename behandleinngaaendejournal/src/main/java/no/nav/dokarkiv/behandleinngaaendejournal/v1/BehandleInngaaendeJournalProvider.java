@@ -54,8 +54,6 @@ public class BehandleInngaaendeJournalProvider implements BehandleInngaaendeJour
 	public static final String FERDIGSTILL_JOURNALFOERING = BEHANDLE_INNGAAENDE_JOURNAL_V1 + ".ferdigstillJournalfoering";
 	public static final String OPPDATER_JOURNALPOST = BEHANDLE_INNGAAENDE_JOURNAL_V1 + ".oppdaterJournalpost";
 
-	private static final String PING = BEHANDLE_INNGAAENDE_JOURNAL_V1 + ".ping";
-
 	@Inject
 	private FerdigstillJournalfoeringService ferdigstillJournalfoeringService;
 	@Inject

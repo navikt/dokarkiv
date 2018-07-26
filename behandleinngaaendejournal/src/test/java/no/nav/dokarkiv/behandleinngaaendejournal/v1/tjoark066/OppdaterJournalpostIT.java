@@ -55,7 +55,6 @@ import no.nav.tjeneste.virksomhet.behandleinngaaendejournal.v1.meldinger.Oppdate
 import org.joda.time.LocalDateTime;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.MDC;
 
@@ -69,10 +68,8 @@ import java.util.Set;
  *
  * @author Roar Bjurstrom, Visma Consulting.
  */
-@Ignore
 public class OppdaterJournalpostIT extends AbstractBehandleInngaaendeJournalV1Itest {
 	private static final String OPPRETTET_KILDE_NAVN = "opprettet kilde";
-	private static final String INTERN_USER_NAME = "Dølle duck";
 	private static final String TITTEL = "Foreldrepenger!";
 	private static final String FNR = "***gammelt_fnr***";
 	private static final String ORGNR = "999999999";
@@ -81,16 +78,14 @@ public class OppdaterJournalpostIT extends AbstractBehandleInngaaendeJournalV1It
 	private static final String AVSENDER_MOTTAKER_ID = "***gammelt_fnr***";
 	private static final Date DOKUMENT_DATO = new Date();
 	private static final String INNHOLD = "innhold";
-	private static final String ENDRET_KILDE_NAVN = "Endret Kildenavn";
+	private static final String ENDRET_KILDE_NAVN = "srvdokarkiv";
 	private static final String UGYLDIG_HOVEDOKUMENT = "42";
 
 	@Before
 	public void setUp() throws Exception {
 		MDC.put(MDCConstants.MDC_CONSUMER_ID, ENDRET_KILDE_NAVN);
-		MDC.put(MDCConstants.MDC_USER_ID, INTERN_USER_NAME);
+		MDC.put(MDCConstants.MDC_USER_ID, INTERN_BRUKER_USER_ID);
 		RequestContextSetter.setRequestContextForUnitTest();
-//		when(ldapTemplate.search(argThat(new IsInternBruker()), any(NameMapper.class))).thenReturn(Lists.newArrayList(INTERN_USER_NAME));
-//		when(ldapTemplate.search(argThat(new IsLdapNAUser()), any(NameMapper.class))).thenThrow(new InvalidNameException(null));
 		SubjectHandlerUtils.setInternBruker(INTERN_BRUKER_USER_ID);
 	}
 
@@ -141,7 +136,7 @@ public class OppdaterJournalpostIT extends AbstractBehandleInngaaendeJournalV1It
 
 		Journalpost resultJournalpost = getPersistedJournalpostById(persistedJournalpost.getJournalpostId());
 		assertThat(resultJournalpost.getInnhold(), equalTo(innhold));
-		assertThat(resultJournalpost.getEndretAvNavn(), equalTo(INTERN_USER_NAME));
+		assertThat(resultJournalpost.getEndretAvNavn(), equalTo(INTERN_BRUKER_USER_NAVN));
 		assertThat(resultJournalpost.getEndretKildeNavn(), is(equalTo(ENDRET_KILDE_NAVN)));
 	}
 
@@ -249,7 +244,7 @@ public class OppdaterJournalpostIT extends AbstractBehandleInngaaendeJournalV1It
 		assertThat(resultJournalpost.getFagomrade(), equalTo(FagomradeCode.FOR));
 		assertThat(resultJournalpost.getAvsenderMottaker(), equalTo(avsendMottaker));
 		assertThat(resultJournalpost.getAvsenderMottakerId(), equalTo(avsendMottakId));
-		assertThat(resultJournalpost.getEndretAvNavn(), equalTo(INTERN_USER_NAME));
+		assertThat(resultJournalpost.getEndretAvNavn(), equalTo(INTERN_BRUKER_USER_NAVN));
 		assertThat(resultJournalpost.getEndretKildeNavn(), is(equalTo(ENDRET_KILDE_NAVN)));
 		assertThat(resultJournalpost.getSaksrelasjon().getEndretAvNavn(), nullValue());
 	}
@@ -304,7 +299,7 @@ public class OppdaterJournalpostIT extends AbstractBehandleInngaaendeJournalV1It
 		Journalpost resultJournalpost = getPersistedJournalpostById(persistedJournalpost.getJournalpostId());
 		Saksrelasjon saksrelasjon = resultJournalpost.getSaksrelasjon();
 		assertThat(saksrelasjon, notNullValue());
-		assertThat(saksrelasjon.getEndretAvNavn(), equalTo(INTERN_USER_NAME));
+		assertThat(saksrelasjon.getEndretAvNavn(), equalTo(INTERN_BRUKER_USER_NAVN));
 		assertThat(saksrelasjon.getFagsystem(), equalTo(fagsystem));
 		assertThat(saksrelasjon.getSakId(), equalTo(saksnummer));
 		assertThat(saksrelasjon.getEndretKildeNavn(), is(equalTo(ENDRET_KILDE_NAVN)));
@@ -333,7 +328,7 @@ public class OppdaterJournalpostIT extends AbstractBehandleInngaaendeJournalV1It
 		DokumentInfo hovedDokumentInfo = resultJournalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 		assertThat(hovedDokumentInfo.getTittel(), is(TITTEL));
 		assertThat(hovedDokumentInfo.getKategori(), is(DokumentKategoriCode.SOK));
-		assertThat(hovedDokumentInfo.getEndretAvNavn(), is(INTERN_USER_NAME));
+		assertThat(hovedDokumentInfo.getEndretAvNavn(), is(INTERN_BRUKER_USER_NAVN));
 		assertThat(hovedDokumentInfo.getEndretKildeNavn(), is(equalTo(ENDRET_KILDE_NAVN)));
 		assertThat(resultJournalpost.getEndretAvNavn(), nullValue());
 		assertThat(resultJournalpost.getSaksrelasjon().getEndretAvNavn(), nullValue());
@@ -370,7 +365,7 @@ public class OppdaterJournalpostIT extends AbstractBehandleInngaaendeJournalV1It
 				.iterator().next().getDokumentInfo();
 		assertThat(vedlegg.getTittel(), is(TITTEL));
 		assertThat(vedlegg.getKategori(), is(DokumentKategoriCode.ES));
-		assertThat(vedlegg.getEndretAvNavn(), is(INTERN_USER_NAME));
+		assertThat(vedlegg.getEndretAvNavn(), is(INTERN_BRUKER_USER_NAVN));
 		assertThat(vedlegg.getEndretKildeNavn(), is(equalTo(ENDRET_KILDE_NAVN)));
 		assertThat(resultJournalpost.getEndretAvNavn(), nullValue());
 		JournalpostDokumentInfoRelasjon hovedDokument = resultJournalpost.findHoveddokumentDokumentInfoRelasjon();

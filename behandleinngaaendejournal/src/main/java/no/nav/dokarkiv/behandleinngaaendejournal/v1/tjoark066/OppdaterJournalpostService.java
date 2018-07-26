@@ -16,7 +16,7 @@ import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
 import no.nav.dokarkiv.core.domain.validator.BrukerValidator;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
-import no.nav.dokarkiv.core.security.ldap.BrukernavnLdapService;
+import no.nav.dokarkiv.core.security.ldap.BusinessUnitService;
 import no.nav.modig.core.context.SubjectHandler;
 import no.nav.modig.core.domain.IdentType;
 import org.apache.commons.lang3.StringUtils;
@@ -40,16 +40,15 @@ import java.util.Set;
 public class OppdaterJournalpostService {
 	private static final String UKJENT_BRUKER = "Ukjent";
 	private static final Logger log = LoggerFactory.getLogger(OppdaterJournalpostService.class);
-	private String userId = UKJENT_BRUKER;
 	private JoarkRepository repository;
 	private OppdaterJournalpostValidator validator;
-	private final BrukernavnLdapService brukernavnLdapService;
+	private final BusinessUnitService businessUnitService;
 
 	@Inject
-	public OppdaterJournalpostService(JoarkRepository repository, OppdaterJournalpostValidator validator, BrukernavnLdapService brukernavnLdapService) {
+	public OppdaterJournalpostService(JoarkRepository repository, OppdaterJournalpostValidator validator, BusinessUnitService businessUnitService) {
 		this.repository = repository;
 		this.validator = validator;
-		this.brukernavnLdapService = brukernavnLdapService;
+		this.businessUnitService = businessUnitService;
 	}
 
 	public void oppdaterJournalpost(OppdaterJournalpostRequestTo request) {
@@ -59,8 +58,8 @@ public class OppdaterJournalpostService {
 		Journalpost journalpost = getJournalpost(oppdaterJournalpostTo);
 
 		validator.validateJournalpost(journalpost, oppdaterJournalpostTo);
-		userId = hentLdapBrukernavn(journalpost.getJournalpostId());
-		updateAndPersist(journalpost, oppdaterJournalpostTo);
+		String userId = hentLdapBrukernavn(journalpost.getJournalpostId());
+		updateAndPersist(journalpost, oppdaterJournalpostTo, userId);
 	}
 
 	private Journalpost getJournalpost(OppdaterJournalpostTo to) {
@@ -74,11 +73,11 @@ public class OppdaterJournalpostService {
 			log.warn(String.format("Kan ikke utlede brukerident på rett format fra SAML-token. journalpostId=%s", journalpostId.toString()));
 			return UKJENT_BRUKER;
 		}
-		
+
 		String ldapNavn = userId;
 		IdentType type = SubjectHandler.getSubjectHandler().getIdentType();
 		if (type.equals(IdentType.InternBruker)) {
-			ldapNavn = brukernavnLdapService.searchWithRetry(userId);
+			ldapNavn = businessUnitService.findByUserId(userId).getFullname();
 			if (ldapNavn.trim().equals(userId.trim())) {
 				log.warn(String.format("Feil ved søk mot LDAP. journalpostId=%s", journalpostId.toString()));
 			}
@@ -86,15 +85,15 @@ public class OppdaterJournalpostService {
 		return ldapNavn;
 	}
 
-	private void updateAndPersist(Journalpost journalpost, OppdaterJournalpostTo input) {
-		updateJournalpostFields(journalpost, input);
-		updateSaksrelasjonFields(journalpost, input);
+	private void updateAndPersist(Journalpost journalpost, OppdaterJournalpostTo input, String userId) {
+		updateJournalpostFields(journalpost, input, userId);
+		updateSaksrelasjonFields(journalpost, input, userId);
 		updateBrukerFields(journalpost, input);
-		updateHovedDokumentInfo(journalpost.findHoveddokumentDokumentInfoRelasjon(), input);
-		updateVedleggDokumentInfo(journalpost.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG), input);
+		updateHovedDokumentInfo(journalpost.findHoveddokumentDokumentInfoRelasjon(), input, userId);
+		updateVedleggDokumentInfo(journalpost.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG), input, userId);
 	}
 
-	private void updateJournalpostFields(Journalpost journalpost, OppdaterJournalpostTo input) {
+	private void updateJournalpostFields(Journalpost journalpost, OppdaterJournalpostTo input, String userId) {
 		boolean endret = false;
 		String innhold = input.getInnhold();
 		String avsendMottakerId = null;
@@ -126,7 +125,7 @@ public class OppdaterJournalpostService {
 		}
 	}
 
-	private void updateSaksrelasjonFields(Journalpost journalpost, OppdaterJournalpostTo input) {
+	private void updateSaksrelasjonFields(Journalpost journalpost, OppdaterJournalpostTo input, String userId) {
 		boolean newSak = false;
 		if (input.getArkivSak() != null) {
 			Saksrelasjon saksrelasjon;
@@ -176,13 +175,11 @@ public class OppdaterJournalpostService {
 	 * Gets the latest bruker
 	 */
 	private Bruker getLatestBruker(Journalpost journalpost) {
-		assert(!journalpost.getBrukere().isEmpty());
-		List<Bruker> sortedCopy = Ordering.from(new Comparator<Bruker>() {
-			@Override
-			public int compare(Bruker o1, Bruker o2) {
-				return LocalDateTime.fromDateFields(o2.getChangeStamp().getCreatedDate()).compareTo(LocalDateTime.fromDateFields(o1.getChangeStamp().getCreatedDate()));
-			}
-		}).sortedCopy(journalpost.getBrukere());
+		assert (!journalpost.getBrukere().isEmpty());
+		List<Bruker> sortedCopy = Ordering.from((Comparator<Bruker>) (o1, o2) ->
+				LocalDateTime.fromDateFields(o2.getChangeStamp().getCreatedDate())
+						.compareTo(LocalDateTime.fromDateFields(o1.getChangeStamp().getCreatedDate())))
+				.sortedCopy(journalpost.getBrukere());
 		return sortedCopy.get(0);
 	}
 
@@ -192,7 +189,7 @@ public class OppdaterJournalpostService {
 	private boolean addBruker(Journalpost journalpost) {
 		boolean opprettet = false;
 		Set<Bruker> brukere = journalpost.getBrukere();
-		if(brukere.isEmpty()) {
+		if (brukere.isEmpty()) {
 			Bruker newBruker = new Bruker();
 			newBruker.setOpprettetKildeNavn(MDC.get(MDC_CONSUMER_ID));
 			journalpost.addBruker(newBruker);
@@ -201,7 +198,7 @@ public class OppdaterJournalpostService {
 		return opprettet;
 	}
 
-	private void updateHovedDokumentInfo(JournalpostDokumentInfoRelasjon relasjon, OppdaterJournalpostTo input) {
+	private void updateHovedDokumentInfo(JournalpostDokumentInfoRelasjon relasjon, OppdaterJournalpostTo input, String userId) {
 		if (input.getHoveddokument() != null && relasjon != null) {
 			DokumentInfo dokumentInfo = relasjon.getDokumentInfo();
 			boolean endret = false;
@@ -221,15 +218,15 @@ public class OppdaterJournalpostService {
 		}
 	}
 
-	private void updateVedleggDokumentInfo(Set<JournalpostDokumentInfoRelasjon> vedlegg, OppdaterJournalpostTo input) {
+	private void updateVedleggDokumentInfo(Set<JournalpostDokumentInfoRelasjon> vedlegg, OppdaterJournalpostTo input, String userId) {
 		if (!input.getVedlegg().isEmpty()) {
 			for (JournalpostDokumentInfoRelasjon relasjon : vedlegg) {
-				updateDokumentInfo(input, relasjon);
+				updateDokumentInfo(input, relasjon, userId);
 			}
 		}
 	}
 
-	private void updateDokumentInfo(OppdaterJournalpostTo input, JournalpostDokumentInfoRelasjon relasjon) {
+	private void updateDokumentInfo(OppdaterJournalpostTo input, JournalpostDokumentInfoRelasjon relasjon, String userId) {
 		DokumentInfo dokumentInfo = relasjon.getDokumentInfo();
 		boolean endret = false;
 		for (DokumentInformasjonTo di : input.getVedlegg()) {
