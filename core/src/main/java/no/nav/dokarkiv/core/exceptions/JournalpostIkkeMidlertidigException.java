@@ -1,6 +1,4 @@
-package no.nav.dokarkiv.inngaaendejournal.v1.exceptions;
-
-import no.nav.dokarkiv.core.exceptions.DokarkivFunctionalException;
+package no.nav.dokarkiv.core.exceptions;
 
 /**
  * @author Leo-Andreas Ervik, Visma Consulting. 24.05.2017.
