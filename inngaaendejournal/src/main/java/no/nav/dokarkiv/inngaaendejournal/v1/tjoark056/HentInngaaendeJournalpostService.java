@@ -2,8 +2,8 @@ package no.nav.dokarkiv.inngaaendejournal.v1.tjoark056;
 
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
+import no.nav.dokarkiv.core.exceptions.JournalpostIkkeInngaaendeException;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
-import no.nav.dokarkiv.inngaaendejournal.v1.exceptions.JournalpostIkkeInngaaendeException;
 import no.nav.dokarkiv.inngaaendejournal.v1.exceptions.UgyldigInputException;
 import no.nav.dokarkiv.inngaaendejournal.v1.tjoark056.to.InngaaendeJournalpostTo;
 import org.springframework.stereotype.Component;

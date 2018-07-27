@@ -24,6 +24,7 @@
 		<module>behandlejournal</module>
 		<module>innsynjournal</module>
 		<module>inngaaendejournal</module>
+		<module>behandleinngaaendejournal</module>
 	</modules>
 
 	<distributionManagement>
@@ -95,6 +96,11 @@
 			<dependency>
 				<groupId>no.nav.dokarkiv</groupId>
 				<artifactId>inngaaendejournal</artifactId>
+				<version>1-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>no.nav.dokarkiv</groupId>
+				<artifactId>behandleinngaaendejournal</artifactId>
 				<version>1-SNAPSHOT</version>
 			</dependency>
 			<dependency>

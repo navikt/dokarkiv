@@ -8,7 +8,7 @@ import org.springframework.cache.support.SimpleCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -19,11 +19,16 @@ import java.util.concurrent.TimeUnit;
 public class CacheConfig {
 
 	public static final String USERNAME_TOKEN_CACHE = "usernameTokenCache";
+	public static final String NAVUSER_CACHE = "navuserCache";
 
 	@Bean
 	CacheManager cacheManager() {
 		SimpleCacheManager manager = new SimpleCacheManager();
-		manager.setCaches(Collections.singletonList(
+		manager.setCaches(Arrays.asList(
+				new CaffeineCache(NAVUSER_CACHE, Caffeine.newBuilder()
+						.expireAfterWrite(8, TimeUnit.HOURS)
+						.maximumSize(10000)
+						.build()),
 				new CaffeineCache(USERNAME_TOKEN_CACHE, Caffeine.newBuilder()
 						.expireAfterWrite(10, TimeUnit.MINUTES)
 						.maximumSize(10)

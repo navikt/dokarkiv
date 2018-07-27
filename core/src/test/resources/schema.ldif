@@ -1,0 +1,72 @@
+dn: dc=test,dc=local
+objectclass: top
+objectclass: domain
+objectclass: extensibleObject
+dc: test
+
+# organizational units
+dn: ou=BusinessUnits,dc=test,dc=local
+objectclass: top
+objectclass: organizationalUnit
+ou: BusinessUnits
+
+dn: ou=ServiceAccounts,dc=test,dc=local
+objectclass: top
+objectclass: organizationalUnit
+ou: BusinessUnits
+
+# service user
+dn: cn=srvdokarkiv,ou=ServiceAccounts,dc=test,dc=local
+objectclass: top
+objectclass: person
+objectclass: organizationalPerson
+cn: srvdokarkiv
+sn: srvdokarkiv
+description: Service account for srvdokarkiv
+displayName: srvdokarkiv
+userPassword: hemmelig
+
+# person
+dn: cn=b133337,ou=BusinessUnits,dc=test,dc=local
+objectclass: top
+objectclass: person
+objectclass: organizationalPerson
+cn: b133337
+sn: Betjent
+description: Bjarne Betjent
+displayName: Bjarne Betjent
+userPassword: 123
+
+# person
+dn: cn=m000007,ou=BusinessUnits,dc=test,dc=local
+objectclass: top
+objectclass: person
+objectclass: organizationalPerson
+cn: m000007
+sn: Mekker
+description: Max Mekker
+displayName: Max Mekker
+userPassword: max
+
+# person
+dn: cn=z000001,ou=BusinessUnits,dc=test,dc=local
+objectclass: top
+objectclass: person
+objectclass: organizationalPerson
+objectclass: inetOrgPerson
+cn: z000001
+sn: Sabeltann
+description:
+displayName: Kaptein Sabeltann
+userPassword: skatt
+
+# person
+dn: cn=z000002,ou=BusinessUnits,dc=test,dc=local
+objectclass: top
+objectclass: person
+objectclass: organizationalPerson
+cn: z000002
+sn: Tidemann
+description: Stasjonsmester Tidemann
+displayName:
+userPassword: sesam

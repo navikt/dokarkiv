@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.retry.annotation.EnableRetry;
 
 import javax.annotation.PostConstruct;
 
@@ -22,6 +23,7 @@ import javax.annotation.PostConstruct;
 @EnableAutoConfiguration(exclude = DataSourceAutoConfiguration.class)
 @EnableConfigurationProperties(ServiceuserAlias.class)
 @EnableAspectJAutoProxy
+@EnableRetry
 public class CoreConfig {
 	@Bean
 	public DokTimedAspect timedAspect(MeterRegistry meterRegistry) {
