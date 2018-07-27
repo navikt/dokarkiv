@@ -5,6 +5,7 @@ import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Ordering;
+import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.behandleinngaaendejournal.v1.tjoark066.to.DokumentInformasjonTo;
 import no.nav.dokarkiv.behandleinngaaendejournal.v1.tjoark066.to.OppdaterJournalpostRequestTo;
 import no.nav.dokarkiv.behandleinngaaendejournal.v1.tjoark066.to.OppdaterJournalpostTo;
@@ -21,8 +22,6 @@ import no.nav.modig.core.context.SubjectHandler;
 import no.nav.modig.core.domain.IdentType;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.LocalDateTime;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 
@@ -36,12 +35,12 @@ import java.util.Set;
  *
  * @author Leo-Andreas Ervik, Visma Consulting. 23.05.2017.
  */
+@Slf4j
 @Component
 public class OppdaterJournalpostService {
 	private static final String UKJENT_BRUKER = "Ukjent";
-	private static final Logger log = LoggerFactory.getLogger(OppdaterJournalpostService.class);
-	private JoarkRepository repository;
-	private OppdaterJournalpostValidator validator;
+	private final JoarkRepository repository;
+	private final OppdaterJournalpostValidator validator;
 	private final NavUserLdapService navUserLdapService;
 
 	@Inject
@@ -129,12 +128,12 @@ public class OppdaterJournalpostService {
 		boolean newSak = false;
 		if (input.getArkivSak() != null) {
 			Saksrelasjon saksrelasjon;
-			if (journalpost.getSaksrelasjon() != null) {
-				saksrelasjon = journalpost.getSaksrelasjon();
-			} else {
+			if (journalpost.getSaksrelasjon() == null) {
 				saksrelasjon = new Saksrelasjon();
 				saksrelasjon.setOpprettetKildeNavn(MDC.get(MDC_CONSUMER_ID));
 				newSak = true;
+			} else {
+				saksrelasjon = journalpost.getSaksrelasjon();
 			}
 			saksrelasjon.setSakId(input.getArkivSak().getArkivSakId());
 			saksrelasjon.setFagsystem(input.getArkivSak().getArkivSakSystem());
@@ -150,9 +149,9 @@ public class OppdaterJournalpostService {
 	private void updateBrukerFields(Journalpost journalpost, OppdaterJournalpostTo input) {
 		if (input.getAktoerTo() != null) {
 			boolean endret = false;
-			boolean opprettet = addBruker(journalpost);
 
 			Bruker bruker = getLatestBruker(journalpost);
+			final boolean opprettet = addBruker(journalpost);
 
 			if (!input.getAktoerTo().getBrukerTypeCode().equals(bruker.getBrukerType())) {
 				bruker.setBrukerType(input.getAktoerTo().getBrukerTypeCode());

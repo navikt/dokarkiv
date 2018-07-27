@@ -37,10 +37,8 @@ public class OppdaterJournalpostRequestMapper {
 		if (request.getInngaaendeJournalpost() == null) {
 			throw new UgyldigInputException("OppdaterJournalpostRequest.InngaaendeJournal kan ikke være null");
 		}
-		
-		OppdaterJournalpostRequestTo requestTo = new OppdaterJournalpostRequestTo();
+
 		OppdaterJournalpostTo oppdaterTo = new OppdaterJournalpostTo();
-		
 		
 		InngaaendeJournalpost inngaaendeJournalpost = request.getInngaaendeJournalpost();
 		
@@ -57,7 +55,8 @@ public class OppdaterJournalpostRequestMapper {
 		oppdaterTo.setAktoerTo(mapAktoer(inngaaendeJournalpost.getBruker(), journalpostId));
 		oppdaterTo.setHoveddokument(mapDokumentInformasjon(inngaaendeJournalpost.getHoveddokument(), journalpostId));
 		oppdaterTo.setVedlegg(mapVedlegg(inngaaendeJournalpost.getVedleggListe(), journalpostId));
-		
+
+		OppdaterJournalpostRequestTo requestTo = new OppdaterJournalpostRequestTo();
 		requestTo.setOppdaterJournalpostTo(oppdaterTo);
 		return requestTo;
 	}

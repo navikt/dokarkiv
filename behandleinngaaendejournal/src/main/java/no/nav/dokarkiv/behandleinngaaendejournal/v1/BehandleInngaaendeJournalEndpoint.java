@@ -71,10 +71,10 @@ public class BehandleInngaaendeJournalEndpoint implements BehandleInngaaendeJour
 
 	private String consumerIdFromMdcOrDefault() {
 		String consumerId = MDC.get(MDC_CONSUMER_ID);
-		if (!StringUtils.isBlank(consumerId)) {
-			return consumerId;
-		} else {
+		if (StringUtils.isBlank(consumerId)) {
 			return DEFAULT_APPID;
+		} else {
+			return consumerId;
 		}
 	}
 }
