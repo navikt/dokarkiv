@@ -150,8 +150,8 @@ public class OppdaterJournalpostService {
 		if (input.getAktoerTo() != null) {
 			boolean endret = false;
 
-			Bruker bruker = getLatestBruker(journalpost);
 			final boolean opprettet = addBruker(journalpost);
+			Bruker bruker = getLatestBruker(journalpost);
 
 			if (!input.getAktoerTo().getBrukerTypeCode().equals(bruker.getBrukerType())) {
 				bruker.setBrukerType(input.getAktoerTo().getBrukerTypeCode());
