@@ -42,9 +42,10 @@ import no.nav.tjeneste.virksomhet.behandleinngaaendejournal.v1.binding.Ferdigsti
 import no.nav.tjeneste.virksomhet.behandleinngaaendejournal.v1.meldinger.FerdigstillJournalfoeringRequest;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.MDC;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 
@@ -53,7 +54,6 @@ import java.util.Date;
  *
  * @author Roar Bjurstrom, Visma Consulting.
  */
-@Ignore
 public class FerdigstillJournalfoeringIT extends AbstractBehandleInngaaendeJournalV1Itest {
 
 	private static final String OPPRETTET_KILDE_NAVN = "opprettet kilde";
@@ -234,6 +234,7 @@ public class FerdigstillJournalfoeringIT extends AbstractBehandleInngaaendeJourn
 	}
 
 	@Test
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public void shouldFailIfDokumentUnderRedigering() throws Exception {
 		Journalpost persistedJournalpost = buildAndCommit(buildJournalpost()
 				.dokumentInfoRelasjoner(
@@ -252,6 +253,7 @@ public class FerdigstillJournalfoeringIT extends AbstractBehandleInngaaendeJourn
 	}
 
 	@Test
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public void shouldFailIfMultipleHoveddokuments() throws Exception {
 		Journalpost persistedJournalpost = buildAndCommit(buildJournalpost()
 				.dokumentInfoRelasjoner(createHoveddokumentRelasjon()));
@@ -260,6 +262,7 @@ public class FerdigstillJournalfoeringIT extends AbstractBehandleInngaaendeJourn
 	}
 
 	@Test
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public void shouldFailIfNoFildetaljerIsArkiv() throws Exception {
 		abacPermit();
 		Journalpost persistedJournalpost = buildAndCommit(buildBaseJournalpost()
@@ -280,6 +283,7 @@ public class FerdigstillJournalfoeringIT extends AbstractBehandleInngaaendeJourn
 	}
 
 	@Test
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public void shouldFailIfMultipleVariantFormatAreEqual() throws Exception {
 		Journalpost persistedJournalpost = buildAndCommit(buildJournalpost()
 				.dokumentInfoRelasjoner(
@@ -298,6 +302,7 @@ public class FerdigstillJournalfoeringIT extends AbstractBehandleInngaaendeJourn
 	}
 
 	@Test
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public void shouldFailIfJournalpostMissingInnhold() throws Exception {
 		Journalpost persistedJournalpost = buildAndCommit(buildJournalpost().innhold(null));
 
@@ -305,6 +310,7 @@ public class FerdigstillJournalfoeringIT extends AbstractBehandleInngaaendeJourn
 	}
 
 	@Test
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public void shouldFailIfJournalpostMissingAvsenderMottakerId() throws Exception {
 		Journalpost persistedJournalpost = buildAndCommit(buildJournalpost().avsenderMottakerId(null));
 
