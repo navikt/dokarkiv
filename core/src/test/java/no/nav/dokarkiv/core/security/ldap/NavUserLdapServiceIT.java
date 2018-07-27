@@ -19,38 +19,44 @@ import javax.inject.Inject;
  * @author Joakim Bjørnstad, Jbit AS
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = {LdapConfig.class, BusinessUnitService.class})
+@SpringBootTest(classes = {LdapConfig.class, NavUserLdapService.class})
 @DataLdapTest
 @ActiveProfiles("itest,ldap")
-public class BusinessUnitServiceIT {
+public class NavUserLdapServiceIT {
 
 	@Inject
-	private BusinessUnitService businessUnitService;
+	private NavUserLdapService navUserLdapService;
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
 
 	@Test
 	public void shouldReturnNameWhenUserIdLookedUp() {
-		BusinessUnit saksbehandler = businessUnitService.findByUserId("b133337");
+		NavUser saksbehandler = navUserLdapService.findByUserId("b133337");
 		assertThat(saksbehandler.getFullname(), is("Bjarne Betjent"));
 	}
 
 	@Test
 	public void shouldReturnNameUserIdWithNoDescriptionLookedUp() {
-		BusinessUnit saksbehandler = businessUnitService.findByUserId("z000001");
+		NavUser saksbehandler = navUserLdapService.findByUserId("z000001");
 		assertThat(saksbehandler.getFullname(), is("Kaptein Sabeltann"));
 	}
 
 	@Test
 	public void shouldReturnNameUserIdWithNoDisplayNameLookedUp() {
-		BusinessUnit saksbehandler = businessUnitService.findByUserId("z000002");
+		NavUser saksbehandler = navUserLdapService.findByUserId("z000002");
 		assertThat(saksbehandler.getFullname(), is("Stasjonsmester Tidemann"));
 	}
 
 	@Test
 	public void shouldReturnUserIdAsFallbackWhenNotFound() {
-		BusinessUnit saksbehandler = businessUnitService.findByUserId("abcdefgh");
+		NavUser saksbehandler = navUserLdapService.findByUserId("abcdefgh");
 		assertThat(saksbehandler.getFullname(), is("abcdefgh"));
+	}
+
+	@Test
+	public void shouldReturnServiceUserIdWhenInDifferentBasedn() {
+		NavUser saksbehandler = navUserLdapService.findByUserId("srvdokarkiv");
+		assertThat(saksbehandler.getFullname(), is("srvdokarkiv"));
 	}
 }

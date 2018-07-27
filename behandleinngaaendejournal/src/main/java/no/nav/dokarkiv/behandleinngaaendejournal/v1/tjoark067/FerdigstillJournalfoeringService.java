@@ -14,7 +14,7 @@ import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeInngaaendeException;
 import no.nav.dokarkiv.core.journalbehandling.JournalpostStructureVerifier;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
-import no.nav.dokarkiv.core.security.ldap.BusinessUnitService;
+import no.nav.dokarkiv.core.security.ldap.NavUserLdapService;
 import no.nav.modig.core.context.SubjectHandler;
 import no.nav.modig.core.domain.IdentType;
 import org.apache.commons.lang3.StringUtils;
@@ -35,15 +35,15 @@ public class FerdigstillJournalfoeringService {
 	private final JoarkRepository repository;
 	private final FerdigstillJournalfoeringFieldValidator fieldValidator;
 	private final JournalpostStructureVerifier structureVerifier;
-	private final BusinessUnitService businessUnitService;
+	private final NavUserLdapService navUserLdapService;
 
 	@Inject
 	public FerdigstillJournalfoeringService(JoarkRepository repository, FerdigstillJournalfoeringFieldValidator fieldValidator,
-											JournalpostStructureVerifier structureVerifier, BusinessUnitService businessUnitService) {
+											JournalpostStructureVerifier structureVerifier, NavUserLdapService navUserLdapService) {
 		this.repository = repository;
 		this.fieldValidator = fieldValidator;
 		this.structureVerifier = structureVerifier;
-		this.businessUnitService = businessUnitService;
+		this.navUserLdapService = navUserLdapService;
 	}
 
 
@@ -90,7 +90,7 @@ public class FerdigstillJournalfoeringService {
 		String ldapNavn = userId;
 		IdentType type = SubjectHandler.getSubjectHandler().getIdentType();
 		if (type.equals(IdentType.InternBruker)) {
-			ldapNavn = businessUnitService.findByUserId(userId).getFullname();
+			ldapNavn = navUserLdapService.findByUserId(userId).getFullname();
 			if (ldapNavn.trim().equals(userId.trim())) {
 				log.warn(String.format("Feil ved søk mot LDAP. journalpostId=%s", journalpostId.toString()));
 			}

@@ -2,6 +2,7 @@ package no.nav.dokarkiv;
 
 import no.nav.dokarkiv.arkiverdokumentmottak.ArkiverDokumentmottakConfig;
 import no.nav.dokarkiv.arkiverdokumentproduksjon.ArkiverDokumentproduksjonConfig;
+import no.nav.dokarkiv.behandleinngaaendejournal.v1.BehandleInngaaendeJournalV1Config;
 import no.nav.dokarkiv.behandlejournal.v2.BehandleJournalV2Config;
 import no.nav.dokarkiv.core.CoreConfig;
 import no.nav.dokarkiv.dokumentproduksjoninfo.DokumentproduksjonInfoConfig;
@@ -21,6 +22,7 @@ import org.springframework.context.annotation.Import;
 		BehandleJournalV2Config.class,
 		InnsynJournalV2Config.class,
 		InngaaendeJournalV1Config.class,
+		BehandleInngaaendeJournalV1Config.class,
 		NaisContract.class})
 public class Application {
 	public static void main(String[] args) {

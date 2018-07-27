@@ -34,8 +34,8 @@ import no.nav.dokarkiv.core.jaxws.SubjectHandlerUtils;
 import no.nav.dokarkiv.core.jaxws.ThreadLocalSubjectHandler;
 import no.nav.dokarkiv.core.journalbehandling.DefaultJournalpostStructureVerifier;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
-import no.nav.dokarkiv.core.security.ldap.BusinessUnit;
-import no.nav.dokarkiv.core.security.ldap.BusinessUnitService;
+import no.nav.dokarkiv.core.security.ldap.NavUser;
+import no.nav.dokarkiv.core.security.ldap.NavUserLdapService;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -61,7 +61,7 @@ public class FerdigstillJournalfoeringServiceTest {
 	public static final String CONSUMER = "fpsak";
 
 	@Mock
-	private BusinessUnitService businessUnitService;
+	private NavUserLdapService navUserLdapService;
 
 	@Mock
 	private JoarkRepository repository;
@@ -73,7 +73,7 @@ public class FerdigstillJournalfoeringServiceTest {
 
 	@Before
 	public void setUp() throws Exception {
-		when(businessUnitService.findByUserId(eq(USER_ID))).thenReturn(BusinessUnit.builder().description(LDAP_NAME).build());
+		when(navUserLdapService.findByUserId(eq(USER_ID))).thenReturn(NavUser.builder().description(LDAP_NAME).build());
 		System.setProperty("no.nav.modig.security.systemuser.username", CONSUMER);
 		System.setProperty("no.nav.modig.core.context.subjectHandlerImplementationClass", ThreadLocalSubjectHandler.class.getName());
 		SubjectHandlerUtils.setInternBruker(USER_ID);
@@ -84,7 +84,7 @@ public class FerdigstillJournalfoeringServiceTest {
 		ferdigstillJournalfoeringService = new FerdigstillJournalfoeringService(repository,
 				new FerdigstillJournalfoeringFieldValidator(),
 				new DefaultJournalpostStructureVerifier(),
-				businessUnitService);
+				navUserLdapService);
 	}
 
 	@Test

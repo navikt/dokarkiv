@@ -16,7 +16,7 @@ import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
 import no.nav.dokarkiv.core.domain.validator.BrukerValidator;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
-import no.nav.dokarkiv.core.security.ldap.BusinessUnitService;
+import no.nav.dokarkiv.core.security.ldap.NavUserLdapService;
 import no.nav.modig.core.context.SubjectHandler;
 import no.nav.modig.core.domain.IdentType;
 import org.apache.commons.lang3.StringUtils;
@@ -42,13 +42,13 @@ public class OppdaterJournalpostService {
 	private static final Logger log = LoggerFactory.getLogger(OppdaterJournalpostService.class);
 	private JoarkRepository repository;
 	private OppdaterJournalpostValidator validator;
-	private final BusinessUnitService businessUnitService;
+	private final NavUserLdapService navUserLdapService;
 
 	@Inject
-	public OppdaterJournalpostService(JoarkRepository repository, OppdaterJournalpostValidator validator, BusinessUnitService businessUnitService) {
+	public OppdaterJournalpostService(JoarkRepository repository, OppdaterJournalpostValidator validator, NavUserLdapService navUserLdapService) {
 		this.repository = repository;
 		this.validator = validator;
-		this.businessUnitService = businessUnitService;
+		this.navUserLdapService = navUserLdapService;
 	}
 
 	public void oppdaterJournalpost(OppdaterJournalpostRequestTo request) {
@@ -77,7 +77,7 @@ public class OppdaterJournalpostService {
 		String ldapNavn = userId;
 		IdentType type = SubjectHandler.getSubjectHandler().getIdentType();
 		if (type.equals(IdentType.InternBruker)) {
-			ldapNavn = businessUnitService.findByUserId(userId).getFullname();
+			ldapNavn = navUserLdapService.findByUserId(userId).getFullname();
 			if (ldapNavn.trim().equals(userId.trim())) {
 				log.warn(String.format("Feil ved søk mot LDAP. journalpostId=%s", journalpostId.toString()));
 			}

@@ -5,6 +5,7 @@ import static no.nav.abac.xacml.NavAttributter.RESOURCE_FELLES_RESOURCE_TYPE;
 import static no.nav.abac.xacml.StandardAttributter.ACTION_ID;
 import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.UPDATE_ACTION;
 
+import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.behandleinngaaendejournal.v1.exceptions.DokumentInfoIkkeTilknyttetJournalpostException;
 import no.nav.dokarkiv.behandleinngaaendejournal.v1.exceptions.FerdigstillingIkkeMuligException;
 import no.nav.dokarkiv.behandleinngaaendejournal.v1.exceptions.OppdaterJournalpostIkkeMuligException;
@@ -48,6 +49,7 @@ import javax.inject.Inject;
 /**
  * @author Stig Strøm, Acando
  */
+@Slf4j
 @Component
 public class BehandleInngaaendeJournalProvider implements BehandleInngaaendeJournalV1 {
 	private static final String BEHANDLE_INNGAAENDE_JOURNAL_V1 = "BehandleInngaaendeJournalV1";
@@ -84,6 +86,7 @@ public class BehandleInngaaendeJournalProvider implements BehandleInngaaendeJour
 			ferdigstillJournalfoeringTo.validate();
 			assertAccessToFerdigstillJournalfoering(request);
 			ferdigstillJournalfoeringService.ferdigstillJournalfoering(ferdigstillJournalfoeringTo);
+			log.info("tjoark067 ferdigstilte journalføring for journalpostId={}", request.getJournalpostId());
 		} catch (UgyldigInputException | IllegalArgumentException e) {
 			throw new FerdigstillJournalfoeringUgyldigInput(e.getMessage(),
 					faultInfoPopulator.populateFaultInfo(new UgyldigInput(), e, FERDIGSTILL_JOURNALFOERING), e);
@@ -111,10 +114,12 @@ public class BehandleInngaaendeJournalProvider implements BehandleInngaaendeJour
 		try {
 			Assert.notNull(request, "Input request is null.");
 			Assert.notNull(request.getInngaaendeJournalpost(), "Journalpost is missing");
-			Assert.hasLength(request.getInngaaendeJournalpost().getJournalpostId(), "JournalpostId is null or empty.");
+			final String journalpostId = request.getInngaaendeJournalpost().getJournalpostId();
+			Assert.hasLength(journalpostId, "JournalpostId is null or empty.");
 			OppdaterJournalpostRequestTo requestTo = oppdaterJournalpostRequestMapper.map(request);
 			assertAccessToOppdaterJournalpost(request);
 			oppdaterJournalpostService.oppdaterJournalpost(requestTo);
+			log.info("tjoark066 oppdaterte journalpostId={}", journalpostId);
 		} catch (UgyldigInputException | IllegalArgumentException e) {
 			throw new OppdaterJournalpostUgyldigInput(e.getMessage(),
 					faultInfoPopulator.populateFaultInfo(new UgyldigInput(), e, OPPDATER_JOURNALPOST), e);

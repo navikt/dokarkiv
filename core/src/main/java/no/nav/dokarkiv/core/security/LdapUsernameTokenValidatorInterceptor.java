@@ -8,6 +8,7 @@ import org.apache.cxf.common.security.SimplePrincipal;
 import org.apache.cxf.common.security.UsernameToken;
 import org.apache.cxf.interceptor.security.AbstractUsernameTokenInInterceptor;
 import org.slf4j.MDC;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.ldap.core.LdapTemplate;
@@ -23,11 +24,15 @@ import java.util.Objects;
 @Component
 public class LdapUsernameTokenValidatorInterceptor extends AbstractUsernameTokenInInterceptor {
 
+	private final String serviceuserBasedn;
 	private final LdapTemplate ldapTemplate;
 	private final CacheManager cacheManager;
 
 	@Inject
-	public LdapUsernameTokenValidatorInterceptor(LdapTemplate ldapTemplate, CacheManager cacheManager) {
+	public LdapUsernameTokenValidatorInterceptor(@Value("${ldap.serviceuser.basedn}") String serviceuserBasedn,
+												 LdapTemplate ldapTemplate,
+												 CacheManager cacheManager) {
+		this.serviceuserBasedn = serviceuserBasedn;
 		this.ldapTemplate = ldapTemplate;
 		this.cacheManager = cacheManager;
 	}
@@ -40,7 +45,7 @@ public class LdapUsernameTokenValidatorInterceptor extends AbstractUsernameToken
 		Integer cachedAuthHash = usernameTokenCache.get(username, Integer.class);
 		if (cachedAuthHash == null) {
 			try {
-				ldapTemplate.authenticate(query().where("cn").is(username), token.getPassword());
+				ldapTemplate.authenticate(query().base(serviceuserBasedn).where("cn").is(username), token.getPassword());
 				usernameTokenCache.put(username, Objects.hash(token.getName(), token.getPassword()));
 			} catch (Exception e) {
 				innloggingFeilet(token);
@@ -55,7 +60,7 @@ public class LdapUsernameTokenValidatorInterceptor extends AbstractUsernameToken
 	}
 
 	private void cachedAuthenticate(Integer cachedAuthHash, UsernameToken token) {
-		if(cachedAuthHash != Objects.hash(token.getName(), token.getPassword())) {
+		if (cachedAuthHash != Objects.hash(token.getName(), token.getPassword())) {
 			innloggingFeilet(token);
 		}
 	}

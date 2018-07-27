@@ -1,61 +1,55 @@
-dn: dc=adeo,dc=no
+dn: dc=test,dc=local
 objectclass: top
 objectclass: domain
 objectclass: extensibleObject
-dc: adeo
+dc: test
 
 # organizational units
-dn: ou=BusinessUnits,dc=adeo,dc=no
+dn: ou=BusinessUnits,dc=test,dc=local
 objectclass: top
 objectclass: organizationalUnit
 ou: BusinessUnits
 
-dn: ou=ServiceAccounts,dc=adeo,dc=no
+dn: ou=ServiceAccounts,dc=test,dc=local
 objectclass: top
 objectclass: organizationalUnit
 ou: BusinessUnits
 
 # service user
-dn: uid=srvdokarkiv,ou=ServiceAccounts,dc=adeo,dc=no
+dn: cn=srvdokarkiv,ou=ServiceAccounts,dc=test,dc=local
 objectclass: top
 objectclass: person
 objectclass: organizationalPerson
-objectclass: inetOrgPerson
 cn: srvdokarkiv
 sn: srvdokarkiv
 description: Service account for srvdokarkiv
 displayName: srvdokarkiv
-uid: srvdokarkiv
 userPassword: hemmelig
 
 # person
-dn: uid=b133337,ou=BusinessUnits,dc=adeo,dc=no
+dn: cn=b133337,ou=BusinessUnits,dc=test,dc=local
 objectclass: top
 objectclass: person
 objectclass: organizationalPerson
-objectclass: inetOrgPerson
 cn: b133337
 sn: Betjent
 description: Bjarne Betjent
 displayName: Bjarne Betjent
-uid: b133337
 userPassword: 123
 
 # person
-dn: uid=m000007,ou=BusinessUnits,dc=adeo,dc=no
+dn: cn=m000007,ou=BusinessUnits,dc=test,dc=local
 objectclass: top
 objectclass: person
 objectclass: organizationalPerson
-objectclass: inetOrgPerson
 cn: m000007
 sn: Mekker
 description: Max Mekker
 displayName: Max Mekker
-uid: m000007
 userPassword: max
 
 # person
-dn: uid=z000001,ou=BusinessUnits,dc=adeo,dc=no
+dn: cn=z000001,ou=BusinessUnits,dc=test,dc=local
 objectclass: top
 objectclass: person
 objectclass: organizationalPerson
@@ -64,18 +58,15 @@ cn: z000001
 sn: Sabeltann
 description:
 displayName: Kaptein Sabeltann
-uid: z000001
 userPassword: skatt
 
 # person
-dn: uid=z000002,ou=BusinessUnits,dc=adeo,dc=no
+dn: cn=z000002,ou=BusinessUnits,dc=test,dc=local
 objectclass: top
 objectclass: person
 objectclass: organizationalPerson
-objectclass: inetOrgPerson
 cn: z000002
 sn: Tidemann
 description: Stasjonsmester Tidemann
 displayName:
-uid: z000002
 userPassword: sesam

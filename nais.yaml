@@ -36,7 +36,8 @@ fasitResources:
       url: SPRING_LDAP_URLS
       username: SPRING_LDAP_USERNAME
       password: SPRING_LDAP_PASSWORD
-      serviceuser.basedn: SPRING_LDAP_BASE
+      user.basedn: LDAP_NAVUSER_BASEDN
+      serviceuser.basedn: LDAP_SERVICEUSER_BASEDN
   - alias: srvdokarkiv
     resourceType: credential
     propertyMap:

@@ -21,8 +21,8 @@ import javax.naming.Name;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString(exclude = {"displayName", "description"})
-@Entry(objectClasses = "inetOrgPerson")
-public final class BusinessUnit {
+@Entry(objectClasses =  {"organizationalPerson"})
+public final class NavUser {
 	@Id
 	private Name dn;
 

@@ -2,6 +2,7 @@ package no.nav.dokarkiv.behandleinngaaendejournal.v1;
 
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 
+import io.micrometer.core.annotation.Timed;
 import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import no.nav.tjeneste.virksomhet.behandleinngaaendejournal.v1.binding.BehandleInngaaendeJournalV1;
@@ -26,11 +27,11 @@ import javax.jws.HandlerChain;
 import javax.jws.WebService;
 import javax.xml.ws.soap.Addressing;
 
-@WebService(endpointInterface = "no.nav.tjeneste.virksomhet.behandleinngaaendejournal.v1.binding.BehandleInngaaendeJournalV1",
-	wsdlLocation = "WEB-INF/wsdl/no/nav/tjeneste/virksomhet/behandleInngaaendeJournal/v1/behandleInngaaendeJournal.wsdl",
-	targetNamespace = "http://nav.no/tjeneste/virksomhet/behandleInngaaendeJournal/v1",
-	serviceName = "BehandleInngaaendeJournal_v1",
-	portName = "BehandleInngaaendeJournal_v1Port")
+@WebService(targetNamespace = "http://nav.no/tjeneste/virksomhet/behandleInngaaendeJournal/v1/Binding",
+		serviceName = "BehandleInngaaendeJournal_v1",
+		portName = "BehandleInngaaendeJournal_v1Port",
+		wsdlLocation = "classpath:wsdl/no/nav/tjeneste/virksomhet/behandleInngaaendeJournal/v1/Binding.wsdl",
+		endpointInterface = "no.nav.tjeneste.virksomhet.behandleinngaaendejournal.v1.binding.BehandleInngaaendeJournalV1")
 @Addressing
 @HandlerChain(file = "classpath:behandleinngaaendejournalv1handler.xml")
 @Service
@@ -41,6 +42,7 @@ public class BehandleInngaaendeJournalEndpoint implements BehandleInngaaendeJour
 	@Inject
 	private BehandleInngaaendeJournalV1 behandleInngaaendeJournalProvider;
 
+	@Timed(value = "dok_request", extraTags = {"process_code", "tjoark067"}, percentiles = {0.5, 0.95})
 	@Override
 	public void ferdigstillJournalfoering(FerdigstillJournalfoeringRequest request)
 			throws FerdigstillJournalfoeringFerdigstillingIkkeMulig, FerdigstillJournalfoeringJournalpostIkkeInngaaende,
@@ -51,6 +53,7 @@ public class BehandleInngaaendeJournalEndpoint implements BehandleInngaaendeJour
 		behandleInngaaendeJournalProvider.ferdigstillJournalfoering(request);
 	}
 
+	@Timed(value = "dok_request", extraTags = {"process_code", "tjoark066"}, percentiles = {0.5, 0.95})
 	@Override
 	public void oppdaterJournalpost(OppdaterJournalpostRequest request)
 			throws OppdaterJournalpostJournalpostIkkeInngaaende, OppdaterJournalpostObjektIkkeFunnet,
@@ -60,15 +63,15 @@ public class BehandleInngaaendeJournalEndpoint implements BehandleInngaaendeJour
 		RequestContextUtil.createAndSetUsername(userId, consumerIdFromMdcOrDefault());
 		behandleInngaaendeJournalProvider.oppdaterJournalpost(request);
 	}
-	
+
 	@Override
 	public void ping() {
 		behandleInngaaendeJournalProvider.ping();
 	}
-    
-    private String consumerIdFromMdcOrDefault() {
+
+	private String consumerIdFromMdcOrDefault() {
 		String consumerId = MDC.get(MDC_CONSUMER_ID);
-		if(!StringUtils.isBlank(consumerId)) {
+		if (!StringUtils.isBlank(consumerId)) {
 			return consumerId;
 		} else {
 			return DEFAULT_APPID;

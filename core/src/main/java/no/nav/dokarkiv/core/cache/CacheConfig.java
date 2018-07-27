@@ -19,13 +19,13 @@ import java.util.concurrent.TimeUnit;
 public class CacheConfig {
 
 	public static final String USERNAME_TOKEN_CACHE = "usernameTokenCache";
-	public static final String BUSINESS_UNIT_CACHE = "businessUnitCache";
+	public static final String NAVUSER_CACHE = "navuserCache";
 
 	@Bean
 	CacheManager cacheManager() {
 		SimpleCacheManager manager = new SimpleCacheManager();
 		manager.setCaches(Arrays.asList(
-				new CaffeineCache(BUSINESS_UNIT_CACHE, Caffeine.newBuilder()
+				new CaffeineCache(NAVUSER_CACHE, Caffeine.newBuilder()
 						.expireAfterWrite(8, TimeUnit.HOURS)
 						.maximumSize(10000)
 						.build()),
