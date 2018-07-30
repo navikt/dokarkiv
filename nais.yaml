@@ -68,7 +68,7 @@ fasitResources:
     wsdlGroupId: no.nav.tjenester.brevogarkiv
     wsdlArtifactId: arkiverdokumentproduksjon-tjenestespesifikasjon
     wsdlVersion: 3.2.0
-    securityToken: SAML
+    securityToken: USERNAME_TOKEN
     description: Domenetjeneste for arkivering av dokumenter under produksjon.
   - alias: ArkiverDokumentmottak_v1
     resourceType: webserviceendpoint
@@ -76,15 +76,15 @@ fasitResources:
     wsdlGroupId: no.nav.tjenester.brevogarkiv
     wsdlArtifactId: arkiverdokumentmottak-tjenestespesifikasjon
     wsdlVersion: 1.1.8
-    securityToken: SAML
+    securityToken: USERNAME_TOKEN
     description: Domenetjeneste for arkivering av dokumenter fra mottak.
   - alias: ArkiverDokumentmottak_v2
     resourceType: webserviceendpoint
     path: /services/arkiverdokumentmottak/v2
     wsdlGroupId: no.nav.tjenester.brevogarkiv
-    wsdlArtifactId: arkiverdokumentmottak-tjenestespesifikasjon
+    wsdlArtifactId: arkiverdokumentmottak-tjenestespesifikasjon-v2
     wsdlVersion: 2.1.3
-    securityToken: SAML
+    securityToken: USERNAME_TOKEN
     description: Domenetjeneste for arkivering av dokumenter fra mottak.
   - alias: DokumentproduksjonInfo_v1
     resourceType: webserviceendpoint
@@ -92,5 +92,5 @@ fasitResources:
     wsdlGroupId: no.nav.tjenester.brevogarkiv
     wsdlArtifactId: dokumentproduksjoninfo-tjenestespesifikasjon
     wsdlVersion: 2.1.0
-    securityToken: SAML
+    securityToken: USERNAME_TOKEN
     description: Domenetjeneste for uthenting av informasjon ifm. dokumentproduksjon.
