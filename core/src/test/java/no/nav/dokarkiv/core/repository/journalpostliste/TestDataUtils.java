@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.innsynjournal.v2.tjoark053.repository;
+package no.nav.dokarkiv.core.repository.journalpostliste;
 
 import no.nav.dokarkiv.core.domain.builder.BrukerBuilder;
 import no.nav.dokarkiv.core.domain.builder.ChangeStampBuilder;

@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.innsynjournal.v2.tjoark053.repository;
+package no.nav.dokarkiv.core.repository.journalpostliste;
 
 import com.google.common.base.Objects;
 import com.google.common.collect.Lists;

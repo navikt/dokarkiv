@@ -25,6 +25,7 @@
 		<module>innsynjournal</module>
 		<module>inngaaendejournal</module>
 		<module>behandleinngaaendejournal</module>
+		<module>journal</module>
 	</modules>
 
 	<distributionManagement>

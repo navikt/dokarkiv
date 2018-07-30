@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.innsynjournal.v2.tjoark053.repository;
+package no.nav.dokarkiv.core.repository.journalpostliste;
 
 import com.google.common.collect.Lists;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
@@ -29,11 +29,11 @@ import java.util.LinkedList;
 import java.util.List;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = {RepositoryConfig.class, Tjoark053JournalpostListeRepository.class})
+@SpringBootTest(classes = {RepositoryConfig.class, JournalpostListeRepository.class})
 @DataJpaTest
 @Transactional
 @ActiveProfiles("itest")
-public class Tjoark053JournalpostListeRepositoryIT {
+public class JournalpostListeRepositoryIT {
 
 	private DateTime earliestInnsynDato = new DateTime(2015, 5, 1, 0, 0);
 	private JournalStatusCode[] journalStatusCodesAllowed =
@@ -46,7 +46,7 @@ public class Tjoark053JournalpostListeRepositoryIT {
 	private HentMinJPListeParameters hentMinJPListeParameters;
 
 	@Inject
-	private Tjoark053JournalpostListeRepository journalpostListeRepository;
+	private JournalpostListeRepository journalpostListeRepository;
 	@Inject
 	private JoarkRepository joarkRepository;
 

@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.innsynjournal.v2.tjoark053.repository;
+package no.nav.dokarkiv.core.repository.journalpostliste;
 
 import com.google.common.collect.Lists;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
@@ -14,12 +14,12 @@ import java.util.List;
  * @author Joakim Bjørnstad, Jbit AS
  */
 @Repository
-public class Tjoark053JournalpostListeRepository {
+public class JournalpostListeRepository {
 
 	private final EntityManager entityManager;
 
 	@Inject
-	public Tjoark053JournalpostListeRepository(EntityManager entityManager) {
+	public JournalpostListeRepository(EntityManager entityManager) {
 		this.entityManager = entityManager;
 	}
 

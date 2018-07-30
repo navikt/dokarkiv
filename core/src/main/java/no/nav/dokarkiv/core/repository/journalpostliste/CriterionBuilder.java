@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.innsynjournal.v2.tjoark053.repository;
+package no.nav.dokarkiv.core.repository.journalpostliste;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Criteria;
