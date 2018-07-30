@@ -67,7 +67,7 @@ fasitResources:
     path: /services/arkiverdokumentproduksjon/v1
     wsdlGroupId: no.nav.tjenester.brevogarkiv
     wsdlArtifactId: arkiverdokumentproduksjon-tjenestespesifikasjon
-    wsdlVersion: 3.2.0
+    wsdlVersion: 3.2.1
     securityToken: USERNAME_TOKEN
     description: Domenetjeneste for arkivering av dokumenter under produksjon.
   - alias: ArkiverDokumentmottak_v1
