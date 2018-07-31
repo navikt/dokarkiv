@@ -18,6 +18,7 @@ public class HentJournalpostInfoResponseMapper {
 				.withBrukerId(responseTo.getBrukerId())
 				.withBrukerType(responseTo.getBrukerType() == null ? null : responseTo.getBrukerType().name())
 				.withSaksNummer(responseTo.getSaksNummer())
-				.withFagsystem(responseTo.getFagsystem() == null ? null : responseTo.getFagsystem().name());
+				.withFagsystem(responseTo.getFagsystem() == null ? null : responseTo.getFagsystem().name())
+				.withAntallRetur(responseTo.getAntallRetur());
 	}
 }

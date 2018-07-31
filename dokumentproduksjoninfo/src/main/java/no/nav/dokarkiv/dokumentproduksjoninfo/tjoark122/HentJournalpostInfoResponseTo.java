@@ -25,4 +25,5 @@ public class HentJournalpostInfoResponseTo {
 	private BrukerTypeCode brukerType;
 	private String saksNummer;
 	private FagsystemCode fagsystem;
+	private Integer antallRetur;
 }

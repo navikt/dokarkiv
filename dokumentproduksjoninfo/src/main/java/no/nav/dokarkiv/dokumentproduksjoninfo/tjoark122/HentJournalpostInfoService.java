@@ -54,6 +54,7 @@ public class HentJournalpostInfoService {
 				.fagsystem(saksrelasjon == null ? null : saksrelasjon.getFagsystem())
 				.dokumentStatus(dokumentstatus)
 				.metaforceInstanceId(metaforceInstanceId)
+				.antallRetur(journalpost.getAntallRetur())
 				.build();
 	}
 
