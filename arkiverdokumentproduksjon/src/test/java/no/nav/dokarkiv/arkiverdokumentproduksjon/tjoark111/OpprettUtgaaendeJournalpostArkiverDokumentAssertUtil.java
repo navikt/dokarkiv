@@ -48,7 +48,7 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentAssertUtil {
 		assertThat(domainJournalpost.getDokumentDato(), is(OpprettUtgaaendeJournalpostArkiverDokumentDataUtil.DATO_DOKUMENT));
 		assertThat(domainJournalpost.getJournalposttype(), is(JournalpostTypeCode.U));
 		assertThat(domainJournalpost.getKanalReferanseId(), is(KANAL_REF_ID));
-		assertThat(domainJournalpost.getOpprettetKildeNavn(), is("itest"));
+		assertThat(domainJournalpost.getOpprettetKildeNavn(), is("itestuser"));
 	}
 
 	public static void assertEqualDokumentInfo(DokumentInfo persistedDokumentInfo, DokumentInfo newDokumentInfo) {
@@ -64,7 +64,7 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentAssertUtil {
 		Kryssreferanse kryssreferanse = kryssreferanser.iterator().next();
 		assertThat(kryssreferanse.getReferanseId(), is(KRYSSREFERANSE_ID));
 		assertThat(kryssreferanse.getReferanseType(), is(KRYSSREFERANSE_TYPE));
-		assertThat(kryssreferanse.getOpprettetKildeNavn(), is("itest"));
+		assertThat(kryssreferanse.getOpprettetKildeNavn(), is("itestuser"));
 	}
 
 	public static void assertDokumentinfoRelasjon(Set<JournalpostDokumentInfoRelasjon> domainDokumentInfoRelasjon) {
@@ -72,7 +72,7 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentAssertUtil {
 		domainDokumentInfoRelasjon.forEach(relasjon -> {
 			assertThat(relasjon.getTilknyttetAvNavn(), is(OPPRETTET_AV_NAVN));
 			assertDokumentInfo(relasjon.getDokumentInfo());
-			assertThat(relasjon.getOpprettetKildeNavn(), is("itest"));
+			assertThat(relasjon.getOpprettetKildeNavn(), is("itestuser"));
 		});
 	}
 
@@ -97,14 +97,14 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentAssertUtil {
 		assertTrue(domainDokumentInfo.getDokumentFerdigDato().toInstant().toEpochMilli() - getDateNow().toInstant()
 				.toEpochMilli() < 1000);
 		assertFildetaljer(domainDokumentInfo.getFildetaljerListe().iterator().next());
-		assertThat(domainDokumentInfo.getOpprettetKildeNavn(), is("itest"));
+		assertThat(domainDokumentInfo.getOpprettetKildeNavn(), is("itestuser"));
 	}
 
 	public static void assertSaksrelasjon(Saksrelasjon saksrelasjon) {
 		assertThat(saksrelasjon, is(notNullValue()));
 		assertThat(saksrelasjon.getSakId(), is(OpprettUtgaaendeJournalpostArkiverDokumentDataUtil.SAKSID));
 		assertThat(saksrelasjon.getFagsystem().name(), is(OpprettUtgaaendeJournalpostArkiverDokumentDataUtil.FAGSYSTEMKODE));
-		assertThat(saksrelasjon.getOpprettetKildeNavn(), is("itest"));
+		assertThat(saksrelasjon.getOpprettetKildeNavn(), is("itestuser"));
 	}
 
 	public static void assertFildetaljer(FilDetaljer fildetaljer) {
@@ -113,7 +113,7 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentAssertUtil {
 		assertThat(fildetaljer.getVariantFormat(), is(VariantFormatCode.ARKIV));
 		assertThat(fildetaljer.getFileContent(), is(OpprettUtgaaendeJournalpostArkiverDokumentDataUtil.DOKUMENT_INNHOLD.getBytes()));
 		assertThat(fildetaljer.getFilstorrelse(), notNullValue());
-		assertThat(fildetaljer.getOpprettetKildeNavn(), is("itest"));
+		assertThat(fildetaljer.getOpprettetKildeNavn(), is("itestuser"));
 	}
 
 	public static void assertBruker(Set<Bruker> domainBrukere) {
