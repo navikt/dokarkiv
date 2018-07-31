@@ -44,6 +44,7 @@ public class HentJournalpostInfoIT extends AbstractDokumentproduksjoninfoItest {
 	private static final String SAKID = "12";
 	private static final String BRUKERID = "999999999";
 	private static final BrukerTypeCode BRUKER_TYPE_CODE = BrukerTypeCode.PERSON;
+	private static final int ANTALL_RETUR = 1;
 
 	private Long journalpostId;
 	private Long dokumentInfoId;
@@ -85,7 +86,7 @@ public class HentJournalpostInfoIT extends AbstractDokumentproduksjoninfoItest {
 	}
 
 	@Test
-	public void dokumentInfoMissingFromInput_shouldOnlyReturnJournalStatus() throws Exception {
+	public void shouldOnlyReturnJournalStatusWhenDokumentInfoMissingFromInput() throws Exception {
 		HentJournalpostInfoRequest request = createRequest();
 		request.setDokumentInfoId(0L);
 		HentJournalpostInfoResponse response = dokumentproduksjonInfoProvider.hentJournalpostInfo(request);
@@ -103,6 +104,7 @@ public class HentJournalpostInfoIT extends AbstractDokumentproduksjoninfoItest {
 		assertThat(response.getBrukerType(), is(BRUKER_TYPE_CODE.name()));
 		assertThat(response.getSaksNummer(), is(SAKID));
 		assertThat(response.getFagsystem(), is(FAGSYSTEM_CODE.name()));
+		assertThat(response.getAntallRetur(), is(ANTALL_RETUR));
 	}
 
 	private Journalpost buildJournalpost() {
@@ -111,6 +113,7 @@ public class HentJournalpostInfoIT extends AbstractDokumentproduksjoninfoItest {
 				.journalForendeEnhetId(JOURNALFOERENDE_ENHET)
 				.fagomrade(FAGOMRADE_CODE)
 				.journalpostType(JournalpostTypeCode.U)
+				.antallRetur(ANTALL_RETUR)
 				.opprettetAvNavn("testuser")
 				.opprettetKildeNavn("test")
 				.saksrelasjon(SaksrelasjonBuilder.getSaksrelasjonBuilder()

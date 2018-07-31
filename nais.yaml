@@ -91,6 +91,6 @@ fasitResources:
     path: /services/dokumentproduksjoninfo/v1
     wsdlGroupId: no.nav.tjenester.brevogarkiv
     wsdlArtifactId: dokumentproduksjoninfo-tjenestespesifikasjon
-    wsdlVersion: 2.1.0
+    wsdlVersion: 2.1.1
     securityToken: USERNAME_TOKEN
     description: Domenetjeneste for uthenting av informasjon ifm. dokumentproduksjon.

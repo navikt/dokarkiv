@@ -12,7 +12,7 @@
 	<artifactId>dokumentproduksjoninfo</artifactId>
 
 	<properties>
-		<dokumentproduksjoninfo-tjenestespesifikasjon.version>2.1.0</dokumentproduksjoninfo-tjenestespesifikasjon.version>
+		<dokumentproduksjoninfo-tjenestespesifikasjon.version>2.1.1</dokumentproduksjoninfo-tjenestespesifikasjon.version>
 	</properties>
 
 	<dependencies>
