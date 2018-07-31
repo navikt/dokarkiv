@@ -34,6 +34,8 @@ import javax.transaction.Transactional;
 @Transactional
 public abstract class AbstractArkiverdokumentproduksjonItest {
 
+	public static String ITEST_USERID = "itestuser";
+
 	@Rule
 	public ExpectedException expectedException = ExpectedException.none();
 
@@ -55,7 +57,7 @@ public abstract class AbstractArkiverdokumentproduksjonItest {
 		joarkRepository.deleteAll();
 		dokumentFilRepository.deleteAll();
 		RequestContextSetter.setRequestContext(new SimpleRequestContext.Builder()
-				.userId("itestuser")
+				.userId(ITEST_USERID)
 				.componentId("itest")
 				.build());
 	}
