@@ -52,7 +52,7 @@ public class OpprettUtgaaendeJournalpostArkiverDokumenterRequestMapper {
 		addKryssreferanse(domainJournalpost, wsRequest.getKryssreferanse());
 
 		kildeNavnPopulator.populateKildeNavnForEntireJournalStructure(domainJournalpost, RequestContextHolder
-				.currentRequestContext().getComponentId());
+				.currentRequestContext().getUserId());
 
 		return OpprettUtgaaendeJournalpostArkiverDokumentRequestTo.builder()
 				.journalpost(domainJournalpost)
