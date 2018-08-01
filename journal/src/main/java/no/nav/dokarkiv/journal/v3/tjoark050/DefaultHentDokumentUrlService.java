@@ -1,11 +1,18 @@
 package no.nav.dokarkiv.journal.v3.tjoark050;
 
+import no.nav.dokarkiv.core.dokumenturl.DefaultHentDokumentUrl;
+import no.nav.dokarkiv.core.dokumenturl.HentDokumentUrlRequest;
+import no.nav.dokarkiv.core.dokumenturl.HentDokumentUrlResponse;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
+import no.nav.dokarkiv.core.exceptions.InvalidFilUuidException;
+import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
 import no.nav.dokarkiv.journal.v3.exceptions.DocumentNotFoundException;
 import no.nav.dokarkiv.journal.v3.tjoark051.AbstractJournalOperations;
+
+import javax.inject.Inject;
 
 /**
  * Implementation of HentDokumentUrlService. Retrieves the filUuid for the
@@ -15,8 +22,8 @@ import no.nav.dokarkiv.journal.v3.tjoark051.AbstractJournalOperations;
  */
 public class DefaultHentDokumentUrlService extends AbstractJournalOperations implements HentDokumentUrlService {
 	
-//	@Inject
-//	private DefaultHentDokumentUrl hentDokumentUrl;
+	@Inject
+	private DefaultHentDokumentUrl hentDokumentUrl;
 	
 	@Override
 	public HentDokumentUrlResponseTo hentDokumentUrl(HentDokumentUrlRequestTo hentDokumentUrlRequest)
@@ -39,14 +46,13 @@ public class DefaultHentDokumentUrlService extends AbstractJournalOperations imp
 	}
 	
 	private String getDokumentUrlFromDelegateOperation(Long journalpostId, String filUuid) throws DocumentNotFoundException {
-//		HentDokumentUrlRequest delegateRequest = new HentDokumentUrlRequest(journalpostId, filUuid);
-//		try {
-//			HentDokumentUrlResponse delegateResponse = hentDokumentUrl.hentDokumentUrl(delegateRequest);
-//			return delegateResponse.getDokumentUrl();
-//		} catch (NoJournalpostFoundException | InvalidFilUuidException e) {
-//			throw new DocumentNotFoundException(e);
-//		} FIXME
-		return "";
+		HentDokumentUrlRequest delegateRequest = new HentDokumentUrlRequest(journalpostId, filUuid);
+		try {
+			HentDokumentUrlResponse delegateResponse = hentDokumentUrl.hentDokumentUrl(delegateRequest);
+			return delegateResponse.getDokumentUrl();
+		} catch (NoJournalpostFoundException | InvalidFilUuidException e) {
+			throw new DocumentNotFoundException(e);
+		}
 	}
 	
 	private void validateRequest(HentDokumentUrlRequestTo hentDokumentUrlRequest) {

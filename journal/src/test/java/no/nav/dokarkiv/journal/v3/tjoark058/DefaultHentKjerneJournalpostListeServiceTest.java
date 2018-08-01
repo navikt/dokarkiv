@@ -5,28 +5,26 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.core.repository.journalpostliste.HentMinJPListeParameters;
+import no.nav.dokarkiv.core.repository.journalpostliste.JournalpostListeRepository;
 import no.nav.dokarkiv.core.repository.journalpostliste.SakFagsystem;
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
-import org.springframework.orm.hibernate5.HibernateTemplate;
+import org.mockito.junit.MockitoJUnitRunner;
 
+import javax.persistence.EntityManager;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -37,7 +35,6 @@ import java.util.List;
  * @author Stig Strøm, Acando
  *
  */
-@Ignore
 @RunWith(MockitoJUnitRunner.class)
 public class DefaultHentKjerneJournalpostListeServiceTest {
 	
@@ -53,30 +50,21 @@ public class DefaultHentKjerneJournalpostListeServiceTest {
 	private static final String SAK_ID = "sakID";
 	private static final List<SakFagsystem> SAKFAGSYSTEM_LIST = Arrays.asList(new SakFagsystem(FAGSYSTEM, SAK_ID));
 	@Mock
-	private JoarkRepository joarkRepositoryMock;
-	@Mock
-	private HibernateTemplate hibernateTemplate;
+	private JournalpostListeRepository journalpostListeRepository;
 	@Mock
 	private Session sessionMock;
 	@Mock
-	private SessionFactory sessionFactoryMock;
+	private EntityManager entityManager;
 	@Captor
 	private ArgumentCaptor<HentMinJPListeParameters> captureParams;
 	
-	
 	@InjectMocks
 	private DefaultHentKjerneJournalpostListeService service;
-	
-	@Before
-	public void setUp() throws Exception {
-		when(hibernateTemplate.getSessionFactory()).thenReturn(sessionFactoryMock);
-		when(sessionFactoryMock.getCurrentSession()).thenReturn(sessionMock);		
-	}
-	
+
 	@Test
 	public void shouldSearchAndReturnListWithJournalpost() throws Exception {
-//		when(joarkRepositoryMock.findJournalpostListe(captureParams.capture())).thenReturn(searchResultWith100Journalposts());
-//		when(joarkRepositoryMock.findTotalNumberOfJournalposts(any(HentMinJPListeParameters.class))).thenReturn(HUNDRED_JOURNALPOSTS);
+		when(journalpostListeRepository.findJournalpostListe(captureParams.capture())).thenReturn(searchResultWith100Journalposts());
+		when(journalpostListeRepository.findTotalNumberOfJournalposts(any(HentMinJPListeParameters.class))).thenReturn(HUNDRED_JOURNALPOSTS);
 		
 		HentKjerneJournalpostListeRequestTo requestTo = HentKjerneJournalpostListeRequestTo.builder()
 				.saksListe(SAKFAGSYSTEM_LIST)
@@ -113,7 +101,7 @@ public class DefaultHentKjerneJournalpostListeServiceTest {
 	
 	@Test
 	public void shouldReturnEmptyResponse_searchReturnsNull() throws Exception {
-//		when(joarkRepositoryMock.findJournalpostListe(captureParams.capture())).thenReturn(null);
+		when(journalpostListeRepository.findJournalpostListe(captureParams.capture())).thenReturn(null);
 		HentKjerneJournalpostListeResponseTo responseTo = service.hentKjerneJournalpostListe(HentKjerneJournalpostListeRequestTo.builder().build());
 		
 		assertThat(responseTo.getJournalpostListe(), is(nullValue()));
@@ -123,8 +111,8 @@ public class DefaultHentKjerneJournalpostListeServiceTest {
 	
 	@Test
 	public void shouldReturnFirst100JournalpostsAndNotIsSisteIntervall() throws Exception {
-//		when(joarkRepositoryMock.findJournalpostListe(captureParams.capture())).thenReturn(searchResultWith100Journalposts());
-//		when(joarkRepositoryMock.findTotalNumberOfJournalposts(any(HentMinJPListeParameters.class))).thenReturn(HUNDRED_JOURNALPOSTS + 1);
+		when(journalpostListeRepository.findJournalpostListe(captureParams.capture())).thenReturn(searchResultWith100Journalposts());
+		when(journalpostListeRepository.findTotalNumberOfJournalposts(any(HentMinJPListeParameters.class))).thenReturn(HUNDRED_JOURNALPOSTS + 1);
 		HentKjerneJournalpostListeRequestTo requestTo = HentKjerneJournalpostListeRequestTo.builder()
 				.saksListe(SAKFAGSYSTEM_LIST)
 				.resultatSettStoerrelse(HUNDRED_JOURNALPOSTS)
@@ -137,8 +125,8 @@ public class DefaultHentKjerneJournalpostListeServiceTest {
 	
 	@Test
 	public void shouldReturnAllJournalpostsAndIsSisteIntervall() throws Exception {
-//		when(joarkRepositoryMock.findJournalpostListe(captureParams.capture())).thenReturn(searchResultWith100Journalposts());
-//		when(joarkRepositoryMock.findTotalNumberOfJournalposts(any(HentMinJPListeParameters.class))).thenReturn(HUNDRED_JOURNALPOSTS);
+		when(journalpostListeRepository.findJournalpostListe(captureParams.capture())).thenReturn(searchResultWith100Journalposts());
+		when(journalpostListeRepository.findTotalNumberOfJournalposts(any(HentMinJPListeParameters.class))).thenReturn(HUNDRED_JOURNALPOSTS);
 		HentKjerneJournalpostListeRequestTo requestTo = HentKjerneJournalpostListeRequestTo.builder()
 				.saksListe(SAKFAGSYSTEM_LIST)
 				.resultatSettStoerrelse(HUNDRED_JOURNALPOSTS)
@@ -152,8 +140,8 @@ public class DefaultHentKjerneJournalpostListeServiceTest {
 	
 	@Test
 	public void shouldReturnJournalpost91to100AndIsSisteIntervall() throws Exception {
-//		when(joarkRepositoryMock.findJournalpostListe(captureParams.capture())).thenReturn(searchResultWith100Journalposts());
-//		when(joarkRepositoryMock.findTotalNumberOfJournalposts(any(HentMinJPListeParameters.class))).thenReturn(HUNDRED_JOURNALPOSTS);
+		when(journalpostListeRepository.findJournalpostListe(captureParams.capture())).thenReturn(searchResultWith100Journalposts());
+		when(journalpostListeRepository.findTotalNumberOfJournalposts(any(HentMinJPListeParameters.class))).thenReturn(HUNDRED_JOURNALPOSTS);
 		HentKjerneJournalpostListeRequestTo requestTo = HentKjerneJournalpostListeRequestTo.builder()
 				.saksListe(SAKFAGSYSTEM_LIST)
 				.resultatSettStoerrelse(HUNDRED_JOURNALPOSTS/10)
@@ -166,7 +154,7 @@ public class DefaultHentKjerneJournalpostListeServiceTest {
 	}
 	
 	private List<Journalpost> searchResultWith100Journalposts() {
-		List<Journalpost> list = new ArrayList<Journalpost>();
+		List<Journalpost> list = new ArrayList<>();
 		for (int i = 0; i < LIST_SIZE; i++) {
 			list.add(new Journalpost());
 		}

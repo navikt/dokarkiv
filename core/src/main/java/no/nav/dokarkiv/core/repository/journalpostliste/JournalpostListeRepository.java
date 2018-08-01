@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
+import org.hibernate.criterion.Projections;
 import org.springframework.stereotype.Repository;
 
 import javax.inject.Inject;
@@ -46,4 +47,19 @@ public class JournalpostListeRepository {
 		return foundJournalposts;
 	}
 
+	public long findTotalNumberOfJournalposts(HentMinJPListeParameters hentMinJPListeParameters) {
+		if (hentMinJPListeParameters.getSaksListe().isEmpty()) {
+			return 0;
+		}
+		Session session = entityManager.unwrap(Session.class);
+		JournalpostCriterionBuilder criterionBuilder = new JournalpostCriterionBuilder(session);
+
+		Criteria criteria = criterionBuilder.buildCriteria(hentMinJPListeParameters);
+		addCountToCriteria(criteria);
+		return (Long) criteria.uniqueResult();
+	}
+
+	private void addCountToCriteria(Criteria criteria) {
+		criteria.setProjection(Projections.rowCount());
+	}
 }

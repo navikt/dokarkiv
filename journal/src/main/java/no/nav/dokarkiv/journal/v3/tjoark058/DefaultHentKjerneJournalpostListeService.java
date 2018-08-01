@@ -1,9 +1,12 @@
 package no.nav.dokarkiv.journal.v3.tjoark058;
 
+import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import no.nav.dokarkiv.core.repository.JoarkRepository;
+import no.nav.dokarkiv.core.repository.journalpostliste.HentMinJPListeParameters;
+import no.nav.dokarkiv.core.repository.journalpostliste.JournalpostListeRepository;
 
 import javax.inject.Inject;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -14,41 +17,28 @@ import java.util.List;
 public class DefaultHentKjerneJournalpostListeService implements HentKjerneJournalpostListeService {
 
 	@Inject
-	private JoarkRepository joarkRepository;
-
-//	@Inject
-//	@Qualifier("rep.joark.hibernateTemplate")
-//	private HibernateTemplate hibernateTemplate; FIXME
+	private JournalpostListeRepository journalpostListeRepository;
 
 	@Override
 	public HentKjerneJournalpostListeResponseTo hentKjerneJournalpostListe(
 			HentKjerneJournalpostListeRequestTo requestTo) {
 
-//		HentMinJPListeParameters params = new HentMinJPListeParameters(); DIXME
-//		params.setSaksListe(requestTo.getSaksListe());
-//		params.setJournalFom(requestTo.getJournalFom());
-//		params.setJournalTom(requestTo.getJournalTom());
-//		params.setVisFeilRegistrert(true);
-//		params.setJournalpostTypeCode(requestTo.getJournalpostType());
-//		params.getFagomraade()
-//				.addAll(requestTo.getTema() == null ? new ArrayList<FagomradeCode>() : requestTo.getTema());
-//		params.setMaxResults(requestTo.getResultatSettStoerrelse());
-//		params.setPageNr(requestTo.getResultatSettNr());
-//
-//		List<Journalpost> journalposts = joarkRepository.findJournalpostListe(params);
-//		long totalNrJournalposts = joarkRepository.findTotalNumberOfJournalposts(params);
-//		evictJournalposts(journalposts);
+		HentMinJPListeParameters params = new HentMinJPListeParameters();
+		params.setSaksListe(requestTo.getSaksListe());
+		params.setJournalFom(requestTo.getJournalFom());
+		params.setJournalTom(requestTo.getJournalTom());
+		params.setVisFeilRegistrert(true);
+		params.setJournalpostTypeCode(requestTo.getJournalpostType());
+		params.getFagomraade()
+				.addAll(requestTo.getTema() == null ? new ArrayList<FagomradeCode>() : requestTo.getTema());
+		params.setMaxResults(requestTo.getResultatSettStoerrelse());
+		params.setPageNr(requestTo.getResultatSettNr());
 
-//		return HentKjerneJournalpostListeResponseTo.builder().journalpostListe(journalposts)
-//				.sisteIntervall(isSisteIntervall(journalposts, totalNrJournalposts, requestTo)).build();
-		return null;
-	}
+		List<Journalpost> journalposts = journalpostListeRepository.findJournalpostListe(params);
+		long totalNrJournalposts = journalpostListeRepository.findTotalNumberOfJournalposts(params);
 
-	private void evictJournalposts(List<Journalpost> journalposts) {
-//		Session currentSession = hibernateTemplate.getSessionFactory().getCurrentSession();
-//		if (currentSession.contains(journalposts)) {
-//			currentSession.evict(journalposts);
-//		} FIXME
+		return HentKjerneJournalpostListeResponseTo.builder().journalpostListe(journalposts)
+				.sisteIntervall(isSisteIntervall(journalposts, totalNrJournalposts, requestTo)).build();
 	}
 
 	private boolean isSisteIntervall(List<Journalpost> journalpostListe, long totalNrJournalposts,

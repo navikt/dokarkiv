@@ -4,13 +4,16 @@ package no.nav.dokarkiv.journal.v3.tjoark058;
 import static no.nav.dokarkiv.core.util.DateConverterUtil.convertXMLGregorianCalendarToDate;
 
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
+import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
+import no.nav.dokarkiv.core.repository.journalpostliste.SakFagsystem;
 import no.nav.tjeneste.virksomhet.journal.v3.informasjon.Journalposttyper;
 import no.nav.tjeneste.virksomhet.journal.v3.informasjon.Tema;
 import no.nav.tjeneste.virksomhet.journal.v3.informasjon.hentkjernejournalpostliste.ArkivSak;
 import no.nav.tjeneste.virksomhet.journal.v3.informasjon.hentkjernejournalpostliste.Soekefilter;
 import no.nav.tjeneste.virksomhet.journal.v3.meldinger.HentKjerneJournalpostListeRequest;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -49,7 +52,7 @@ public class HentKjerneJournalpostListeRequestMapper {
 			}
 		}
 		return HentKjerneJournalpostListeRequestTo.builder()
-//				.saksListe(mapSaksListe(filteredArkivSakListe)) FIXME
+				.saksListe(mapSaksListe(filteredArkivSakListe))
 				.journalFom(journalFom)
 				.journalTom(journalTom)
 				.tema(temaer)
@@ -59,15 +62,15 @@ public class HentKjerneJournalpostListeRequestMapper {
 				.build();
 	}
 
-//	private List<SakFagsystem> mapSaksListe(List<ArkivSak> arkivSakListe) {
-//		List<SakFagsystem> sakListe = new ArrayList<>();
-//		for (ArkivSak arkivSak : arkivSakListe) {
-//			SakFagsystem sakFagsystem = new SakFagsystem();
-//			sakFagsystem.setSakId(arkivSak.getArkivSakId());
-//			sakFagsystem.setFagsystem(FagsystemCode.valueOf(arkivSak.getArkivSakSystem()));
-//			sakListe.add(sakFagsystem);
-//		}
-//		return sakListe;
-//	} FIXME
+	private List<SakFagsystem> mapSaksListe(List<ArkivSak> arkivSakListe) {
+		List<SakFagsystem> sakListe = new ArrayList<>();
+		for (ArkivSak arkivSak : arkivSakListe) {
+			SakFagsystem sakFagsystem = new SakFagsystem();
+			sakFagsystem.setSakId(arkivSak.getArkivSakId());
+			sakFagsystem.setFagsystem(FagsystemCode.valueOf(arkivSak.getArkivSakSystem()));
+			sakListe.add(sakFagsystem);
+		}
+		return sakListe;
+	}
 
 }

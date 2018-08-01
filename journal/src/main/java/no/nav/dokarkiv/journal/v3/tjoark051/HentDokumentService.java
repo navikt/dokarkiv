@@ -33,6 +33,7 @@ public class HentDokumentService extends AbstractJournalOperations {
 
 		if (StringUtils.isNotEmpty(filDetaljer.getOnDemandId())) {
 			// FIXME tjenesten skal støtte ondemand..
+			return new byte[]{};
 		}
 
 		DokumentFil dokumentFil = getDocumentFromDBRepository(filDetaljer.getFilUuid());

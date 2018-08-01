@@ -4,8 +4,13 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.isA;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import no.nav.dokarkiv.core.dokumenturl.DefaultHentDokumentUrl;
+import no.nav.dokarkiv.core.dokumenturl.HentDokumentUrlRequest;
+import no.nav.dokarkiv.core.dokumenturl.HentDokumentUrlResponse;
 import no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder;
 import no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder;
 import no.nav.dokarkiv.core.domain.builder.JournalpostBuilder;
@@ -14,18 +19,20 @@ import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
+import no.nav.dokarkiv.core.exceptions.InvalidFilUuidException;
+import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.journal.v3.exceptions.DocumentNotFoundException;
 import no.nav.dokarkiv.journal.v3.exceptions.NoDokumentInfoFoundException;
-import no.nav.dokarkiv.journal.v3.exceptions.NoJournalpostFoundException;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Optional;
 
@@ -35,7 +42,6 @@ import java.util.Optional;
  * @author Thomas Eugen Bjørge, Visma Consulting
  */
 @RunWith(MockitoJUnitRunner.class)
-@Ignore
 public class DefaultHentDokumentUrlServiceTest {
 
 	private static final long JOURNALPOST_ID = 1L;
@@ -49,13 +55,13 @@ public class DefaultHentDokumentUrlServiceTest {
 	@Rule
 	public ExpectedException expectedException = ExpectedException.none();
 	
-//	@Mock
-//	private DefaultHentDokumentUrl hentDokumentUrlMock; FIXME
+	@Mock
+	private DefaultHentDokumentUrl hentDokumentUrlMock;
 	@Mock
 	private JoarkRepository joarkRepositoryMock;
 	
-//	@Captor
-//	private ArgumentCaptor<HentDokumentUrlRequest> delegateRequestCaptor;
+	@Captor
+	private ArgumentCaptor<HentDokumentUrlRequest> delegateRequestCaptor;
 	
 	@InjectMocks
 	private DefaultHentDokumentUrlService hentDokumentUrlService;
@@ -138,8 +144,8 @@ public class DefaultHentDokumentUrlServiceTest {
 		expectedException.expect(DocumentNotFoundException.class);
 
 		when(joarkRepositoryMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(createJournalPost()));
-//		when(hentDokumentUrlMock.hentDokumentUrl(isA(HentDokumentUrlRequest.class))).thenThrow(
-//				new NoJournalpostFoundException("Test", JOURNALPOST_ID));
+		when(hentDokumentUrlMock.hentDokumentUrl(isA(HentDokumentUrlRequest.class))).thenThrow(
+				new NoJournalpostFoundException("Test", JOURNALPOST_ID));
 
 		hentDokumentUrlService.hentDokumentUrl(hentDokumentUrlRequest);
 	}
@@ -149,8 +155,8 @@ public class DefaultHentDokumentUrlServiceTest {
 		expectedException.expect(DocumentNotFoundException.class);
 
 		when(joarkRepositoryMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(createJournalPost()));
-//		when(hentDokumentUrlMock.hentDokumentUrl(isA(HentDokumentUrlRequest.class))).thenThrow(
-//				new InvalidFilUuidException("Test", FIL_UUID));
+		when(hentDokumentUrlMock.hentDokumentUrl(isA(HentDokumentUrlRequest.class))).thenThrow(
+				new InvalidFilUuidException("Test", FIL_UUID));
 
 		hentDokumentUrlService.hentDokumentUrl(hentDokumentUrlRequest);		
 	}
@@ -158,15 +164,15 @@ public class DefaultHentDokumentUrlServiceTest {
 	@Test
 	public void shouldCallDelegateWithCorrectValues() throws Exception {
 		when(joarkRepositoryMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(createJournalPost()));
-//		when(hentDokumentUrlMock.hentDokumentUrl(isA(HentDokumentUrlRequest.class))).thenReturn(
-//				new HentDokumentUrlResponse("Test"));
+		when(hentDokumentUrlMock.hentDokumentUrl(isA(HentDokumentUrlRequest.class))).thenReturn(
+				new HentDokumentUrlResponse("Test"));
 		hentDokumentUrlService.hentDokumentUrl(hentDokumentUrlRequest);	
 		
-//		verify(hentDokumentUrlMock).hentDokumentUrl(delegateRequestCaptor.capture());
+		verify(hentDokumentUrlMock).hentDokumentUrl(delegateRequestCaptor.capture());
 		
-//		HentDokumentUrlRequest delegateRequest = delegateRequestCaptor.getValue();
-//		assertThat(delegateRequest.getJournalpostId(), is(JOURNALPOST_ID));
-//		assertThat(delegateRequest.getFilUuid(), is(FIL_UUID));
+		HentDokumentUrlRequest delegateRequest = delegateRequestCaptor.getValue();
+		assertThat(delegateRequest.getJournalpostId(), is(JOURNALPOST_ID));
+		assertThat(delegateRequest.getFilUuid(), is(FIL_UUID));
 	}
 	
 	@Test
@@ -174,8 +180,8 @@ public class DefaultHentDokumentUrlServiceTest {
 		String dokumentUrl = "nav.no/joark/dokument123";
 		
 		when(joarkRepositoryMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(createJournalPost()));
-//		when(hentDokumentUrlMock.hentDokumentUrl(isA(HentDokumentUrlRequest.class))).thenReturn(
-//				new HentDokumentUrlResponse(dokumentUrl));
+		when(hentDokumentUrlMock.hentDokumentUrl(isA(HentDokumentUrlRequest.class))).thenReturn(
+				new HentDokumentUrlResponse(dokumentUrl));
 		
 		HentDokumentUrlResponseTo response = hentDokumentUrlService.hentDokumentUrl(hentDokumentUrlRequest);
 		

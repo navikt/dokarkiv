@@ -1,0 +1,512 @@
+package no.nav.dokarkiv.journal.v3.tjoark058;
+
+import static no.nav.dokarkiv.core.datautil.DokumentFilTestDataProvider.FIL_UUID;
+import static no.nav.dokarkiv.core.datautil.JournalpostTestDataProvider.JANUARY_1_2020;
+import static no.nav.dokarkiv.core.datautil.JournalpostTestDataProvider.createJournalpost;
+import static no.nav.dokarkiv.core.datautil.SaksrelasjonTestDataProvider.PEN_SAK_ID;
+import static no.nav.dokarkiv.core.datautil.SaksrelasjonTestDataProvider.createPENSaksrelasjon;
+import static no.nav.dokarkiv.core.datautil.SaksrelasjonTestDataProvider.createSaksrelasjon;
+import static no.nav.dokarkiv.core.domain.entities.DokumentInfo.DELETED_DOCUMENT_TITLE;
+import static no.nav.dokarkiv.core.util.DateConverterUtil.convertDateToXMLGregorianCalendar;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
+
+import no.nav.dokarkiv.core.datautil.DokumentInfoTestDataProvider;
+import no.nav.dokarkiv.core.datautil.JournalpostTestDataProvider;
+import no.nav.dokarkiv.core.datautil.SaksrelasjonTestDataProvider;
+import no.nav.dokarkiv.core.datautil.SkannetInnholdTestDataProvider;
+import no.nav.dokarkiv.core.domain.builder.BrukerBuilder;
+import no.nav.dokarkiv.core.domain.builder.JournalpostBuilder;
+import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
+import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
+import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
+import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
+import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
+import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
+import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
+import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
+import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
+import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
+import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.jaxws.SubjectHandlerUtils;
+import no.nav.dokarkiv.journal.v3.AbstractJournalV3Itest;
+import no.nav.tjeneste.virksomhet.journal.v3.HentKjerneJournalpostListeSikkerhetsbegrensning;
+import no.nav.tjeneste.virksomhet.journal.v3.HentKjerneJournalpostListeUgyldigInput;
+import no.nav.tjeneste.virksomhet.journal.v3.informasjon.Dokumentkategorier;
+import no.nav.tjeneste.virksomhet.journal.v3.informasjon.Dokumenttilstand;
+import no.nav.tjeneste.virksomhet.journal.v3.informasjon.Journalposttyper;
+import no.nav.tjeneste.virksomhet.journal.v3.informasjon.Journaltilstand;
+import no.nav.tjeneste.virksomhet.journal.v3.informasjon.Mottakskanaler;
+import no.nav.tjeneste.virksomhet.journal.v3.informasjon.Organisasjon;
+import no.nav.tjeneste.virksomhet.journal.v3.informasjon.Person;
+import no.nav.tjeneste.virksomhet.journal.v3.informasjon.Tema;
+import no.nav.tjeneste.virksomhet.journal.v3.informasjon.hentkjernejournalpostliste.ArkivSak;
+import no.nav.tjeneste.virksomhet.journal.v3.informasjon.hentkjernejournalpostliste.DetaljertDokumentinformasjon;
+import no.nav.tjeneste.virksomhet.journal.v3.informasjon.hentkjernejournalpostliste.DokumentInnhold;
+import no.nav.tjeneste.virksomhet.journal.v3.informasjon.hentkjernejournalpostliste.SkannetInnhold;
+import no.nav.tjeneste.virksomhet.journal.v3.informasjon.hentkjernejournalpostliste.Soekefilter;
+import no.nav.tjeneste.virksomhet.journal.v3.meldinger.HentKjerneJournalpostListeRequest;
+import no.nav.tjeneste.virksomhet.journal.v3.meldinger.HentKjerneJournalpostListeResponse;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.mockito.ArgumentCaptor;
+import org.springframework.http.HttpEntity;
+
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+/**
+ * Integration test for HentKjerneJournalpostListe(TJOARK058) in 3rd gen. Journal
+ * service.
+ *
+ * @author Stig Strøm
+ */
+@Ignore
+public class HentKjerneJournalpostListeIT extends AbstractJournalV3Itest {
+
+	private static final String FNR = "***gammelt_fnr***";
+	private static final String ORG_NR = "220278387";
+	private static final boolean DEFAULT_FEILREGISTRERT = false;
+	private static final DokumentKategoriCode DOKUMENT_KATEGORI = DokumentKategoriCode.SOK;
+	private static final FagsystemCode SAK_FAGSYSTEM = FagsystemCode.AO01;
+	private static final String SAK_ID = "9999";
+
+	@Before
+	public void setUp() throws Exception {
+		SubjectHandlerUtils.setInternBruker("userId");
+	}
+
+	@Test
+	public void shouldThrowExceptionWhenFilteringGivesEmptySakList() throws Exception {
+		abacDeny();
+
+		joarkRepository.save(createJournalpost(DOKUMENT_KATEGORI).build());
+
+		try {
+			journalV3Provider.hentKjerneJournalpostListe(createRequest());
+			fail();
+		} catch (HentKjerneJournalpostListeSikkerhetsbegrensning e) {
+			assertThat(e.getMessage(), equalTo("Access Denied"));
+		}
+
+//		assertAbacRequestFromFile("abac/hentkjernejournalpost_1.json"); FIXME
+	}
+
+	@Test
+	public void shouldKeepAbacContextForEachCall() throws Exception {
+//		ResponseEntity<String> responseEntity = mock(ResponseEntity.class);
+//		when(responseEntity.getStatusCode()).thenReturn(HttpStatus.OK);
+//		when(responseEntity.getBody())
+//				.thenReturn(ABAC_DENY_RESPONSE)
+//				.thenReturn(ABAC_PERMIT_RESPONSE);
+//		when(abacRestTemplate.postForEntity(anyString(),
+//				org.mockito.Matchers.any(HttpEntity.class),
+//				org.mockito.Matchers.<Class<String>>any(),
+//				org.mockito.Matchers.anyVararg()))
+//				.thenReturn(responseEntity);
+
+
+		HentKjerneJournalpostListeRequest request = createRequest();
+		request.withArkivSakListe(new ArkivSak()
+				.withArkivSakId(PEN_SAK_ID)
+				.withArkivSakSystem(FagsystemCode.PEN.name()));
+
+		journalV3Provider.hentKjerneJournalpostListe(request);
+
+		ArgumentCaptor<HttpEntity> captor = ArgumentCaptor.forClass(HttpEntity.class);
+//		verify(abacRestTemplate, times(2)).postForEntity(anyString(),
+//				captor.capture(),
+//				org.mockito.Matchers.<Class<String>>any(),
+//				org.mockito.Matchers.anyVararg());
+//		List<HttpEntity> values = captor.getAllValues();
+//		assertThat(values, hasSize(2));
+
+//		assertAbacRequestFromFile("abac/hentkjernejournalpost_2_1.json", values.get(0)); FIXME
+//		assertAbacRequestFromFile("abac/hentkjernejournalpost_2_2.json", values.get(1));
+	}
+
+	@Test
+	public void shouldFilterSakListByAbac() throws Exception {
+//		ResponseEntity<String> responseEntity = mock(ResponseEntity.class);
+//		when(responseEntity.getStatusCode()).thenReturn(HttpStatus.OK);
+//		when(responseEntity.getBody())
+//				.thenReturn(ABAC_DENY_RESPONSE)
+//				.thenReturn(ABAC_PERMIT_RESPONSE);
+//		when(abacRestTemplate.postForEntity(anyString(),
+//				org.mockito.Matchers.any(HttpEntity.class),
+//				org.mockito.Matchers.<Class<String>>any(),
+//				org.mockito.Matchers.anyVararg()))
+//				.thenReturn(responseEntity);
+
+		joarkRepository.save(createJournalpost(DOKUMENT_KATEGORI).build());
+
+		Journalpost journalpostPen = joarkRepository.save(createJournalpost(DOKUMENT_KATEGORI)
+				.saksrelasjon(createPENSaksrelasjon()).build());
+
+		HentKjerneJournalpostListeRequest request = createRequest();
+		request.withArkivSakListe(new ArkivSak()
+				.withArkivSakId(PEN_SAK_ID)
+				.withArkivSakSystem(FagsystemCode.PEN.name()));
+
+		HentKjerneJournalpostListeResponse response = journalV3Provider.hentKjerneJournalpostListe(request);
+
+		assertThat(response.getJournalpostListe(), hasSize(1));
+		assertThat(response.getJournalpostListe().get(0).getJournalpostId(), equalTo(String.valueOf(journalpostPen.getJournalpostId())));
+	}
+
+	@Test
+	public void searchReturnsEmptyList() throws Exception {
+		HentKjerneJournalpostListeResponse response = journalV3Provider.hentKjerneJournalpostListe(createRequest());
+
+		assertThat(response, is(notNullValue()));
+		assertThat(response.getJournalpostListe(), empty());
+	}
+
+	@Test
+	public void shouldReturnListWithOneJournalpost() throws Exception {
+		Journalpost storedJournalpost = joarkRepository.save(createJournalpost(DOKUMENT_KATEGORI).build());
+
+		HentKjerneJournalpostListeResponse response = journalV3Provider.hentKjerneJournalpostListe(createRequest());
+
+		assertThat(response.getJournalpostListe(), hasSize(1));
+		assertThat(response.isSisteIntervall(), is(true));
+		assertJournalpost(response.getJournalpostListe().get(0), storedJournalpost, Journaltilstand.ENDELIG, false);
+	}
+
+	@Test
+	public void shouldMapSamhandlerToPerson() throws Exception {
+		joarkRepository.save(createJournalpost(DOKUMENT_KATEGORI).brukere(BrukerBuilder.getBrukerBuilder()
+				.brukerId(FNR)
+				.brukerType(BrukerTypeCode.SAMHANDLER)
+				.opprettetKildeNavn("itest").build()).build());
+
+		HentKjerneJournalpostListeResponse response = journalV3Provider.hentKjerneJournalpostListe(createRequest());
+
+		assertThat(response.getJournalpostListe(), hasSize(1));
+		assertThat(response.isSisteIntervall(), is(true));
+		assertThat(response.getJournalpostListe().get(0).getBrukerListe(), hasSize(1));
+		assertThat(response.getJournalpostListe().get(0).getBrukerListe().get(0), instanceOf(Person.class));
+		Person person = (Person) response.getJournalpostListe().get(0).getBrukerListe().get(0);
+		assertThat(person.getIdent(), is(FNR));
+	}
+
+	@Test
+	public void shouldMapSamhandlerToOrg() throws Exception {
+		joarkRepository.save(createJournalpost(DOKUMENT_KATEGORI).brukere(BrukerBuilder.getBrukerBuilder()
+				.brukerId(ORG_NR)
+				.brukerType(BrukerTypeCode.SAMHANDLER)
+				.opprettetKildeNavn("itest").build()).build());
+
+		HentKjerneJournalpostListeResponse response = journalV3Provider.hentKjerneJournalpostListe(createRequest());
+
+		assertThat(response.getJournalpostListe(), hasSize(1));
+		assertThat(response.isSisteIntervall(), is(true));
+		assertThat(response.getJournalpostListe().get(0).getBrukerListe(), hasSize(1));
+		assertThat(response.getJournalpostListe().get(0).getBrukerListe().get(0), instanceOf(Organisasjon.class));
+		Organisasjon org = (Organisasjon) response.getJournalpostListe().get(0).getBrukerListe().get(0);
+		assertThat(org.getOrgnr(), is(ORG_NR));
+	}
+
+
+	@Test
+	public void shouldReturnJournalpostFeilregistrertJournaltilstandUtgaar() throws Exception {
+		JournalpostBuilder journalpostBuilder = createJournalpost(DOKUMENT_KATEGORI);
+		journalpostBuilder.saksrelasjon(createSaksrelasjon(true).build());
+		Journalpost storedJournalpost = joarkRepository.save(journalpostBuilder.build());
+
+		HentKjerneJournalpostListeResponse response = journalV3Provider.hentKjerneJournalpostListe(createRequest());
+
+		assertThat(response.getJournalpostListe(), hasSize(1));
+		assertThat(response.isSisteIntervall(), is(true));
+		assertJournalpost(response.getJournalpostListe().get(0), storedJournalpost, Journaltilstand.UTGAAR, true);
+	}
+
+	@Test
+	public void shouldReturnJournaltilstandMidlertidig() throws Exception {
+		JournalpostBuilder journalpostBuilder = createJournalpost(DOKUMENT_KATEGORI);
+		journalpostBuilder.journalStatus(JournalStatusCode.OD);
+		Journalpost storedJournalpost = joarkRepository.save(journalpostBuilder.build());
+
+		HentKjerneJournalpostListeResponse response = journalV3Provider.hentKjerneJournalpostListe(createRequest());
+
+		assertThat(response.getJournalpostListe(), hasSize(1));
+		assertThat(response.isSisteIntervall(), is(true));
+		assertJournalpost(response.getJournalpostListe().get(0), storedJournalpost, Journaltilstand.MIDLERTIDIG, false);
+	}
+
+	@Test
+	public void shouldReturnJournaltilstandUtgaar() throws Exception {
+		JournalpostBuilder journalpostBuilder = createJournalpost(DOKUMENT_KATEGORI);
+		journalpostBuilder.journalStatus(JournalStatusCode.U);
+		Journalpost storedJournalpost = joarkRepository.save(journalpostBuilder.build());
+
+		HentKjerneJournalpostListeResponse response = journalV3Provider.hentKjerneJournalpostListe(createRequest());
+
+		assertThat(response.getJournalpostListe(), hasSize(1));
+		assertThat(response.isSisteIntervall(), is(true));
+		assertJournalpost(response.getJournalpostListe().get(0), storedJournalpost, Journaltilstand.UTGAAR, false);
+	}
+
+	@Test
+	public void shouldReturnDokumenttilstandSlettet() throws Exception {
+		Journalpost storedJournalpost = joarkRepository.save(createJournalpost(DELETED_DOCUMENT_TITLE, FIL_UUID).build());
+
+		HentKjerneJournalpostListeResponse response = journalV3Provider.hentKjerneJournalpostListe(createRequest());
+
+		assertThat(response.getJournalpostListe(), hasSize(1));
+		assertThat(response.isSisteIntervall(), is(true));
+		assertJournalpost(response.getJournalpostListe().get(0), storedJournalpost, Dokumenttilstand.SLETTET, DELETED_DOCUMENT_TITLE);
+	}
+
+	@Test
+	public void shouldThrowUgyldigInputException_whenSakIdIsMissing() throws Exception {
+		expectedException.expect(HentKjerneJournalpostListeUgyldigInput.class);
+		expectedException.expectMessage("ArkivSakId er tom eller null");
+
+		HentKjerneJournalpostListeRequest wsRequest = createRequest();
+		wsRequest.getArkivSakListe().get(0).setArkivSakId("");
+		journalV3Provider.hentKjerneJournalpostListe(wsRequest);
+	}
+
+
+	@Test
+	public void shouldThrowUgyldigInputException_whenSakArkivSystemIsMissing() throws Exception {
+		expectedException.expect(HentKjerneJournalpostListeUgyldigInput.class);
+		expectedException.expectMessage("ArkivSakSystem er tom eller null");
+
+		HentKjerneJournalpostListeRequest wsRequest = createRequest();
+		wsRequest.getArkivSakListe().get(0).setArkivSakSystem("");
+		journalV3Provider.hentKjerneJournalpostListe(wsRequest);
+	}
+
+	@Test
+	public void shouldThrowIfJournalFomIsInTheFuture() throws Exception {
+		Date futureDate = Date.from(LocalDate.now().plusYears(1).atStartOfDay(ZoneId.systemDefault()).toInstant());
+
+		HentKjerneJournalpostListeRequest request = createRequest();
+		request.withSoekefilter(new Soekefilter().withJournalFom(convertDateToXMLGregorianCalendar(futureDate)));
+
+
+		expectedException.expect(HentKjerneJournalpostListeUgyldigInput.class);
+		expectedException.expectMessage("Ugyldig datointervall. JournalFom er etter dagens dato.");
+		journalV3Provider.hentKjerneJournalpostListe(request);
+	}
+
+	@Test
+	public void shouldThrowIfJournalFomIsAfterJournalTom() throws Exception {
+		Date lastYear = Date.from(LocalDate.now().minusYears(1).atStartOfDay(ZoneId.systemDefault()).toInstant());
+		Date yesterday = Date.from(LocalDate.now().minusDays(1).atStartOfDay(ZoneId.systemDefault()).toInstant());
+
+		HentKjerneJournalpostListeRequest request = createRequest();
+		request.withSoekefilter(new Soekefilter()
+				.withJournalFom(convertDateToXMLGregorianCalendar(yesterday))
+				.withJournalTom(convertDateToXMLGregorianCalendar(lastYear)));
+
+		expectedException.expect(HentKjerneJournalpostListeUgyldigInput.class);
+		expectedException.expectMessage("Ugyldig datointervall. JournalFom er etter journalTom.");
+
+		journalV3Provider.hentKjerneJournalpostListe(request);
+	}
+
+	@Test
+	public void shouldFailOnListeLargerThanPredefinertAntallSaker() throws Exception {
+		expectedException.expect(HentKjerneJournalpostListeUgyldigInput.class);
+		expectedException.expectMessage("Saksliste må begrenses");
+
+		int predefinertAntall = 51;
+		List<ArkivSak> arkivSaker = new ArrayList<>(predefinertAntall);
+		for (int i = 0; i < predefinertAntall; i++) {
+			arkivSaker.add(new ArkivSak().withArkivSakId(SAK_ID).withArkivSakSystem(SAK_FAGSYSTEM.name()));
+		}
+		HentKjerneJournalpostListeRequest request = createRequest();
+		request.withArkivSakListe(arkivSaker);
+
+		journalV3Provider.hentKjerneJournalpostListe(request);
+	}
+
+	@Test
+	public void shouldNotReturnJournalpostWhenOpprettetDateIsBeforeSoekefilter() throws Exception {
+		Date lastYear = Date.from(LocalDate.now().minusYears(1).atStartOfDay(ZoneId.systemDefault()).toInstant());
+		Date yesterday = Date.from(LocalDate.now().minusDays(1).atStartOfDay(ZoneId.systemDefault()).toInstant());
+
+		joarkRepository.save(createJournalpost(FIL_UUID).build());
+
+		HentKjerneJournalpostListeRequest request = createRequest();
+		request.withSoekefilter(new Soekefilter()
+				.withJournalFom(convertDateToXMLGregorianCalendar(lastYear))
+				.withJournalTom(convertDateToXMLGregorianCalendar(yesterday)));
+
+		HentKjerneJournalpostListeResponse response = journalV3Provider.hentKjerneJournalpostListe(request);
+
+		assertThat(response.getJournalpostListe(), is(empty()));
+	}
+
+
+	@Test
+	public void shouldReturnIsSisteIntervallFalseWhenThereIsMoreJournalposts() throws Exception {
+		for (int i = 0; i < 60; i++) {
+			joarkRepository.save(createJournalpost(FIL_UUID).build());
+		}
+
+		HentKjerneJournalpostListeResponse response = journalV3Provider.hentKjerneJournalpostListe(createRequest());
+
+		assertThat(response.getJournalpostListe(), hasSize(50));
+		assertThat(response.isSisteIntervall(), is(false));
+	}
+
+	@Test
+	public void shouldIsSisteIntervallFalseWhenEndOfResultSet() throws Exception {
+		for (int i = 0; i < 60; i++) {
+			joarkRepository.save(createJournalpost(FIL_UUID).build());
+		}
+
+		HentKjerneJournalpostListeRequest requestWithResultatSettNr1 = createRequest();
+		requestWithResultatSettNr1.setResultatSettNr(1);
+
+		HentKjerneJournalpostListeResponse response = journalV3Provider.hentKjerneJournalpostListe(requestWithResultatSettNr1);
+
+		assertThat(response.getJournalpostListe(), hasSize(10));
+		assertThat(response.isSisteIntervall(), is(true));
+	}
+
+	@Test
+	public void shouldFilterOnTemaPEN() throws Exception {
+		joarkRepository.save(createJournalpost(FagomradeCode.PEN).build());
+		joarkRepository.save(createJournalpost(FagomradeCode.AAP).build());
+
+		HentKjerneJournalpostListeRequest request = createRequest();
+		request.withSoekefilter(new Soekefilter().withTema(new Tema().withValue(FagomradeCode.PEN.name())));
+		HentKjerneJournalpostListeResponse response = journalV3Provider.hentKjerneJournalpostListe(request);
+
+		assertThat(response.getJournalpostListe(), hasSize(1));
+		assertThat(response.getJournalpostListe().get(0).getTema().getValue(), is(FagomradeCode.PEN.name()));
+		assertThat(response.isSisteIntervall(), is(true));
+	}
+
+	@Test
+	public void shouldFilterOnJournalposttypeI() throws Exception {
+		joarkRepository.save(createJournalpost(FagomradeCode.PEN).build());
+		joarkRepository.save(createJournalpost(FagomradeCode.AAP).journalpostType(JournalpostTypeCode.I).build());
+		joarkRepository.save(createJournalpost(FagomradeCode.AAP).journalpostType(JournalpostTypeCode.I).build());
+
+		HentKjerneJournalpostListeRequest request = createRequest();
+		request.withSoekefilter(new Soekefilter().withJournalposttype(new Journalposttyper().withValue(JournalpostTypeCode.I.name())));
+		HentKjerneJournalpostListeResponse response = journalV3Provider.hentKjerneJournalpostListe(request);
+
+		assertThat(response.getJournalpostListe(), hasSize(2));
+		assertThat(response.isSisteIntervall(), is(true));
+
+	}
+
+	private void assertJournalpost(
+			no.nav.tjeneste.virksomhet.journal.v3.informasjon.hentkjernejournalpostliste.Journalpost wsJournalpost,
+			Journalpost j, Journaltilstand journalTilstand, boolean feilregistrert, Dokumenttilstand dokTilstand,
+			String dokumenttittel) {
+		assertThat(wsJournalpost.getJournalpostId(), is(String.valueOf(j.getJournalpostId())));
+		assertSak(wsJournalpost.getGjelderArkivSak(), feilregistrert);
+		assertKorrespodansePart(wsJournalpost);
+		assertThat(wsJournalpost.getKryssreferanseListe(), is(empty()));
+
+		assertHoveddokument(wsJournalpost.getHoveddokument(), j.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo(), dokTilstand, dokumenttittel);
+		assertThat(wsJournalpost.getVedleggListe(), is(empty()));
+		assertThat(wsJournalpost.getBrukerListe(), hasSize(0));
+		assertThat(wsJournalpost.getJournaltilstand(), is(journalTilstand));
+		assertJournalposttype(wsJournalpost.getJournalposttype());
+		assertTema(wsJournalpost.getTema());
+		assertMottakskanal(wsJournalpost.getMottakskanal());
+		assertThat(wsJournalpost.getInnhold(), is(JournalpostTestDataProvider.JP_INNHOLD));
+		assertThat(wsJournalpost.getForsendelseJournalfoert(), is(convertDateToXMLGregorianCalendar(JANUARY_1_2020)));
+		assertThat(wsJournalpost.getForsendelseMottatt(), is(convertDateToXMLGregorianCalendar(JANUARY_1_2020)));
+	}
+
+	private void assertJournalpost(
+			no.nav.tjeneste.virksomhet.journal.v3.informasjon.hentkjernejournalpostliste.Journalpost wsJournalpost,
+			Journalpost j, Journaltilstand journalTilstand, boolean feilregistrert) {
+		assertJournalpost(wsJournalpost, j, journalTilstand, feilregistrert, Dokumenttilstand.FERDIGSTILT, DokumentInfoTestDataProvider.DOKUMENT_TITTEL);
+	}
+
+
+	private void assertJournalpost(
+			no.nav.tjeneste.virksomhet.journal.v3.informasjon.hentkjernejournalpostliste.Journalpost wsJournalpost,
+			Journalpost j, Dokumenttilstand dokTilstand, String dokumenttittel) {
+		assertJournalpost(wsJournalpost, j, Journaltilstand.ENDELIG, DEFAULT_FEILREGISTRERT, dokTilstand,
+				dokumenttittel);
+	}
+
+
+	private HentKjerneJournalpostListeRequest createRequest() {
+		return new HentKjerneJournalpostListeRequest()
+				.withArkivSakListe(new ArkivSak().withArkivSakId(SAK_ID).withArkivSakSystem(SAK_FAGSYSTEM.name()))
+				.withResultatSettNr(0)
+				.withResultatSettStoerrelse(50);
+	}
+
+	private void assertSak(ArkivSak gjelderSak, boolean feilregistrert) {
+		assertThat(gjelderSak.getArkivSakId(), is(SaksrelasjonTestDataProvider.SAK_ID));
+		assertThat(gjelderSak.isErFeilregistrert(), is(feilregistrert));
+		assertThat(gjelderSak.getArkivSakSystem(), is(SaksrelasjonTestDataProvider.SAK_FAGSYSTEM.name()));
+	}
+
+	private void assertKorrespodansePart(
+			no.nav.tjeneste.virksomhet.journal.v3.informasjon.hentkjernejournalpostliste.Journalpost journalpost) {
+		assertThat(journalpost.getKorrespondansePart(), is(notNullValue()));
+		assertThat(journalpost.getKorrespondansePart().getKorrespondansepartId(), is(JournalpostTestDataProvider.JP_AVSENDER_MOTTAKER_ID));
+		assertThat(journalpost.getKorrespondansePart().getKorrespondansepartNavn(), is(JournalpostTestDataProvider.JP_AVSENDER_MOTTAKER));
+		assertThat(journalpost.getKorrespondansePart().getKorrespondansepartType(), is("Mottaker"));
+	}
+
+	private void assertMottakskanal(Mottakskanaler mottakskanal) {
+		assertThat(mottakskanal, is(notNullValue()));
+		assertThat(mottakskanal.getValue(), is(MottaksKanalCode.NAV_NO.name()));
+	}
+
+	private void assertTema(Tema tema) {
+		assertThat(tema, is(notNullValue()));
+		assertThat(tema.getValue(), is(JournalpostTestDataProvider.JP_FAGOMRADE.name()));
+	}
+
+	private void assertJournalposttype(Journalposttyper journalposttype) {
+		assertThat(journalposttype, is(notNullValue()));
+		assertThat(journalposttype.getValue(), is(JournalpostTestDataProvider.JP_TYPE.name()));
+	}
+
+	private void assertDokumentkategori(Dokumentkategorier dokKategori) {
+		assertThat(dokKategori, is(notNullValue()));
+		assertThat(dokKategori.getValue(), is(DOKUMENT_KATEGORI.name()));
+	}
+
+	private void assertHoveddokument(DetaljertDokumentinformasjon dokument, DokumentInfo dokumentInfo, Dokumenttilstand dokTilstand, String dokumenttittel) {
+		assertThat(dokument.getDokumentId(), is(String.valueOf(dokumentInfo.getDokumentInfoId())));
+		assertThat(dokument.getDokumentInnholdListe(), hasSize(1));
+		assertDokumentInnhold(dokument.getDokumentInnholdListe().get(0));
+		if (!DELETED_DOCUMENT_TITLE.equals(dokumenttittel)) {
+			assertDokumentkategori(dokument.getDokumentkategori());
+		}
+		assertThat(dokument.getTittel(), is(dokumenttittel));
+		assertThat(dokument.getDokumenttilstand(), is(dokTilstand));
+		assertSkannetInnholdListe(dokument.getSkannetInnholdListe(), 1);
+	}
+
+	private void assertDokumentInnhold(DokumentInnhold dokumentInnhold) {
+		assertThat(dokumentInnhold.getArkivfiltype(), is(notNullValue()));
+		assertThat(dokumentInnhold.getArkivfiltype().getValue(), is(FilTypeCode.PDF.name()));
+		assertThat(dokumentInnhold.getVariantformat(), is(notNullValue()));
+		assertThat(dokumentInnhold.getVariantformat().getValue(), is(VariantFormatCode.ARKIV.name()));
+	}
+
+	private void assertSkannetInnholdListe(List<SkannetInnhold> skannetInnholdListe, int size) {
+		assertThat(skannetInnholdListe, hasSize(size));
+		assertThat(skannetInnholdListe.get(0).getDokumenttypeId().getValue(), is(SkannetInnholdTestDataProvider.DOKUMENT_TYPE_ID));
+		assertThat(skannetInnholdListe.get(0).getVedleggInnhold(), is(SkannetInnholdTestDataProvider.VEDLEGG_INNHOLD));
+	}
+}
