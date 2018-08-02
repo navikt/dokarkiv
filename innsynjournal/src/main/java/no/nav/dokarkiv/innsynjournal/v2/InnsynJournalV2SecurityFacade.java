@@ -38,7 +38,7 @@ import no.nav.dokarkiv.innsynjournal.v2.exceptions.UgyldigInputException;
 import no.nav.dokarkiv.innsynjournal.v2.tjoark053.HentJournalpostListeToRequest;
 import no.nav.dokarkiv.innsynjournal.v2.tjoark053.HentMinTilgjengeligeJournalpostListeService;
 import no.nav.dokarkiv.innsynjournal.v2.tjoark054.HentDokumentRequestTo;
-import no.nav.dokarkiv.innsynjournal.v2.tjoark054.HentDokumentService;
+import no.nav.dokarkiv.innsynjournal.v2.tjoark054.Tjoark054HentDokumentService;
 import no.nav.dokarkiv.innsynjournal.v2.tjoark059.IdentifiserJournalpostService;
 import no.nav.dokarkiv.innsynjournal.v2.tjoark059.IdentifiserJournalpostToRequest;
 import no.nav.modig.core.context.SubjectHandler;
@@ -74,7 +74,7 @@ public class InnsynJournalV2SecurityFacade {
 	private LocalDate earliestAllowedDate;
 
 	@Inject
-	private HentDokumentService hentDokumentService;
+	private Tjoark054HentDokumentService tjoark054HentDokumentService;
 	@Inject
 	private AktoerConsumerService aktoerConsumerService;
 	@Inject
@@ -327,7 +327,7 @@ public class InnsynJournalV2SecurityFacade {
 	}
 
 	private byte[] hentDokumentBytes(Long journalpostId, Long dokumentInfoId) throws DocumentNotFoundException {
-		return hentDokumentService.hentDokument(new HentDokumentRequestTo(journalpostId,
+		return tjoark054HentDokumentService.hentDokument(new HentDokumentRequestTo(journalpostId,
 				dokumentInfoId, VariantFormatCode.ARKIV));
 	}
 

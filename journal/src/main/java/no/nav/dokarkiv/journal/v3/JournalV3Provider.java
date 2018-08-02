@@ -17,8 +17,8 @@ import no.nav.dokarkiv.journal.v3.tjoark050.HentDokumentUrlRequestTo;
 import no.nav.dokarkiv.journal.v3.tjoark050.HentDokumentUrlResponseTo;
 import no.nav.dokarkiv.journal.v3.tjoark050.HentDokumentUrlService;
 import no.nav.dokarkiv.journal.v3.tjoark051.HentDokumentRequestTo;
-import no.nav.dokarkiv.journal.v3.tjoark051.HentDokumentService;
 import no.nav.dokarkiv.journal.v3.tjoark051.HentDokumentV3RequestMapper;
+import no.nav.dokarkiv.journal.v3.tjoark051.Tjoark051HentDokumentService;
 import no.nav.dokarkiv.journal.v3.tjoark058.HentKjerneJournalpostListeRequestMapper;
 import no.nav.dokarkiv.journal.v3.tjoark058.HentKjerneJournalpostListeRequestTo;
 import no.nav.dokarkiv.journal.v3.tjoark058.HentKjerneJournalpostListeRequestValidator;
@@ -76,7 +76,7 @@ public class JournalV3Provider implements JournalV3 {
 	@Inject
 	private HentKjerneJournalpostListeService hentKjerneJournalpostListeService;
 	@Inject
-	private HentDokumentService hentDokumentService;
+	private Tjoark051HentDokumentService tjoark051HentDokumentService;
 	@Inject
 	private AbacSecurityService abacSecurityService;
 	@Inject
@@ -123,7 +123,7 @@ public class JournalV3Provider implements JournalV3 {
 		try {
 			assertAccessToHentDokument(wsRequest);
 			HentDokumentRequestTo domainRequest = hentDokumentRequestMapper.map(wsRequest);
-			byte[] dokument = hentDokumentService.hentDokument(domainRequest);
+			byte[] dokument = tjoark051HentDokumentService.hentDokument(domainRequest);
 			return new HentDokumentResponse().withDokument(dokument);
 		} catch (DocumentNotFoundException e) {
 			throw new HentDokumentDokumentIkkeFunnet(e.getMessage(), faultInfoPopulator.populateFaultInfo(

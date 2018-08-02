@@ -110,7 +110,7 @@ public class DefaultHentDokumentUrl extends AbstractDocumentOperation implements
 	private String saveDokumentUrlInfo(Journalpost journalpost, String filUuid, Long timeToLiveMinutes) {
 		String token = UUID.randomUUID().toString();
 		DokumentUrlInfo dokUrl = new DokumentUrlInfo();
-		dokUrl.setDocToken(token);
+		dokUrl.setDoctoken(token);
 		dokUrl.setJournalpost(journalpost);
 		dokUrl.setTidspunkt(DateProvider.getToday());
 		dokUrl.setFilUuid(filUuid);

@@ -27,8 +27,8 @@ import no.nav.dokarkiv.journal.v3.tjoark050.HentDokumentUrlRequestTo;
 import no.nav.dokarkiv.journal.v3.tjoark050.HentDokumentUrlResponseTo;
 import no.nav.dokarkiv.journal.v3.tjoark050.HentDokumentUrlService;
 import no.nav.dokarkiv.journal.v3.tjoark051.HentDokumentRequestTo;
-import no.nav.dokarkiv.journal.v3.tjoark051.HentDokumentService;
 import no.nav.dokarkiv.journal.v3.tjoark051.HentDokumentV3RequestMapper;
+import no.nav.dokarkiv.journal.v3.tjoark051.Tjoark051HentDokumentService;
 import no.nav.dokarkiv.journal.v3.tjoark058.HentKjerneJournalpostListeRequestMapper;
 import no.nav.dokarkiv.journal.v3.tjoark058.HentKjerneJournalpostListeRequestTo;
 import no.nav.dokarkiv.journal.v3.tjoark058.HentKjerneJournalpostListeRequestValidator;
@@ -101,7 +101,7 @@ public class JournalV3ProviderTest {
 	@Mock
 	private HentDokumentV3RequestMapper hentDokumentRequestMapper;
 	@Mock
-	private HentDokumentService hentDokumentService;
+	private Tjoark051HentDokumentService tjoark051HentDokumentService;
 	@Mock
 	private AbacSecurityService abacSecurityService;
 	@Mock
@@ -225,7 +225,7 @@ public class JournalV3ProviderTest {
 		
 		HentDokumentRequestTo domainRequest = createHentDokumentRequestTo();
 		when(hentDokumentRequestMapper.map(wsRequest)).thenReturn(domainRequest);
-		when(hentDokumentService.hentDokument(eq(domainRequest))).thenReturn(FIL_INNHOLD);
+		when(tjoark051HentDokumentService.hentDokument(eq(domainRequest))).thenReturn(FIL_INNHOLD);
 		
 		HentDokumentResponse wsResponse = journalProvider.hentDokument(wsRequest);
 		
@@ -305,7 +305,7 @@ public class JournalV3ProviderTest {
 		
 		HentDokumentRequestTo domainRequest = createHentDokumentRequestTo();
 		when(hentDokumentRequestMapper.map(any(HentDokumentRequest.class))).thenReturn(domainRequest);
-		when(hentDokumentService.hentDokument(eq(domainRequest))).thenThrow(
+		when(tjoark051HentDokumentService.hentDokument(eq(domainRequest))).thenThrow(
 				new DocumentNotFoundException(new NoJournalpostFoundException("not found", Long.valueOf(JOURNALPOST_ID))));
 		
 		HentDokumentRequest wsRequest = createHentDokumentRequest(JOURNALPOST_ID, DOKUMENT_ID, VariantFormatCode.ARKIV.name());

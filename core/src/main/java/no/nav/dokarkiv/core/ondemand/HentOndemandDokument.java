@@ -6,6 +6,7 @@ import no.nav.dokarkiv.core.dokumenturl.HentDokumentUrlResponse;
 import no.nav.dokarkiv.core.exceptions.InvalidFilUuidException;
 import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
@@ -25,12 +26,11 @@ public class HentOndemandDokument {
 		this.hentDokumentUrl = hentDokumentUrl;
 	}
 
-	public byte[] hentOndemandDokumentFromJoark(Long journalpostId, String filUuid) throws InvalidFilUuidException, NoJournalpostFoundException {
-		String dokumentUrl = createDokumentUrl(journalpostId, filUuid).getDokumentUrl();
+	public byte[] hentOndemandDokumentFromJoark(String dokumentUrl) {
 		return restTemplate.getForObject(dokumentUrl, byte[].class);
 	}
 
-	@Transactional
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public HentDokumentUrlResponse createDokumentUrl(Long journalpostId, String filUuid) throws InvalidFilUuidException, NoJournalpostFoundException {
 		return hentDokumentUrl.hentDokumentUrlJoark(mapHentDokumentRequest(journalpostId, filUuid));
 	}

@@ -165,7 +165,7 @@ public class HentDokumentURLIT extends AbstractJournalV3Itest {
 	
 	private void assertDokumentUrlInfoIsPersisted() {
 		DokumentUrlInfo dokUrlInfo = dokumentUrlInfoRepository.findByFilUuid(FIL_UUID);
-		assertThat(dokUrlInfo.getDocToken(), notNullValue());
+		assertThat(dokUrlInfo.getDoctoken(), notNullValue());
 		assertThat(dokUrlInfo.getFilUuid(), is(FIL_UUID));
 	}
 	

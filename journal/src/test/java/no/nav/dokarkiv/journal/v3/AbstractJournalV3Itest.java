@@ -68,8 +68,9 @@ public abstract class AbstractJournalV3Itest {
 
 	@Before
 	public void setUpItest() {
-		joarkRepository.deleteAll();
+		dokumentUrlInfoRepository.deleteAll();
 		dokumentFilRepository.deleteAll();
+		joarkRepository.deleteAll();
 		RequestContextSetter.setRequestContext(new SimpleRequestContext.Builder()
 				.userId("itestuser")
 				.componentId("itest")

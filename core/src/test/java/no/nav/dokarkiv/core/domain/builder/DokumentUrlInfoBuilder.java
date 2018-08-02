@@ -37,7 +37,7 @@ public class DokumentUrlInfoBuilder extends Builder<DokumentUrlInfo> {
 	@Override
 	public DokumentUrlInfo build() {
 		DokumentUrlInfo dokumentUrlInfo = new DokumentUrlInfo(dokumentUrlInfoId, 1);
-		dokumentUrlInfo.setDocToken(docToken);
+		dokumentUrlInfo.setDoctoken(docToken);
 		dokumentUrlInfo.setJournalpost(journalpost);
 		dokumentUrlInfo.setFilUuid(filUuid);
 		dokumentUrlInfo.setTidspunkt(tidspunkt);

@@ -7,6 +7,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.when;
 
+import no.nav.dokarkiv.core.dokumenturl.HentDokumentUrlResponse;
 import no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder;
 import no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder;
 import no.nav.dokarkiv.core.domain.builder.JournalpostBuilder;
@@ -22,11 +23,11 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
 import no.nav.dokarkiv.core.exceptions.InvalidFilUuidException;
 import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
+import no.nav.dokarkiv.core.ondemand.HentOndemandDokument;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.journal.v3.exceptions.DocumentNotFoundException;
 import no.nav.dokarkiv.journal.v3.exceptions.NoDokumentInfoFoundException;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -41,7 +42,7 @@ import java.util.Optional;
  * @author Stig Strøm
  */
 @RunWith(MockitoJUnitRunner.class)
-public class HentDokumentServiceTest {
+public class Tjoark051HentDokumentServiceTest {
 
 	private static final long JOURNALPOST_ID = 1L;
 	private static final long DOKUMENT_INFO_ID = 1L;
@@ -51,6 +52,7 @@ public class HentDokumentServiceTest {
 	private static final OnDemandInstansCode ON_DEMAND_INSTANS = OnDemandInstansCode.PESYS;
 	private static final String ON_DEMAND_ID = "onDemandId";
 	private static final byte[] BYTES = "fil".getBytes();
+	private static final String DOKUMENTURL = "http://hentdokument";
 
 	private HentDokumentRequestTo request = new HentDokumentRequestTo(JOURNALPOST_ID, DOKUMENT_INFO_ID, VARIANT_FORMAT);
 
@@ -58,9 +60,11 @@ public class HentDokumentServiceTest {
 	private JoarkRepository joarkRepositoryMock;
 	@Mock
 	private DokumentFilRepository dokumentFilRepository;
+	@Mock
+	private HentOndemandDokument hentOndemandDokument;
 
 	@InjectMocks
-	private HentDokumentService service;
+	private Tjoark051HentDokumentService service;
 
 	@Test
 	public void shouldThrowExceptionForJournalpostNotFound() throws Exception {
@@ -118,37 +122,6 @@ public class HentDokumentServiceTest {
 	}
 
 	@Test
-	@Ignore //FIXME
-	public void shouldThrowExceptionWhenOndemandInstansMissing() throws Exception {
-		Journalpost journalPost = createWithOndemand(ON_DEMAND_ID, null);
-
-		when(joarkRepositoryMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(journalPost));
-		try {
-			service.hentDokument(request);
-			fail("Expected exception");
-		} catch (IllegalArgumentException e) {
-			assertThat(e.getMessage(), is("DokumentInfo.Fildetaljer.OnDemandInstans null for OnDemandId=" + ON_DEMAND_ID));
-		}
-	}
-
-	@Test
-	@Ignore
-	public void shouldThrowExceptionWhenOndemandNotFound() throws Exception {
-		Journalpost journalPost = createWithOndemand(ON_DEMAND_ID, ON_DEMAND_INSTANS);
-
-		when(joarkRepositoryMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(journalPost));
-//		when(onDemandRepository.getDocument(ON_DEMAND_ID, ON_DEMAND_INSTANS))
-//				.thenThrow(new EmptyOnDemandSearchResultException("not found")); FIXME
-
-//		try {
-//			service.hentDokument(request);
-//			fail("Expected exception");
-//		} catch (EmptyOnDemandSearchResultException e) {
-//			assertThat(e.getMessage(), is("not found"));
-//		}
-	}
-
-	@Test
 	public void shouldReturnDokument() throws Exception {
 		DokumentFil dokumentFil = getDokumentFilBuilder().fil(BYTES).build();
 
@@ -161,12 +134,12 @@ public class HentDokumentServiceTest {
 	}
 
 	@Test
-	@Ignore
 	public void shouldReturnOnDemandDokument() throws Exception {
 		Journalpost journalPost = createWithOndemand(ON_DEMAND_ID, ON_DEMAND_INSTANS);
 
 		when(joarkRepositoryMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(journalPost));
-//		when(onDemandRepository.getDocument(ON_DEMAND_ID, ON_DEMAND_INSTANS)).thenReturn(BYTES); FIXME
+		when(hentOndemandDokument.createDokumentUrl(JOURNALPOST_ID, FIL_UUID)).thenReturn(new HentDokumentUrlResponse(DOKUMENTURL));
+		when(hentOndemandDokument.hentOndemandDokumentFromJoark(DOKUMENTURL)).thenReturn(BYTES);
 
 		byte[] dokument = service.hentDokument(request);
 

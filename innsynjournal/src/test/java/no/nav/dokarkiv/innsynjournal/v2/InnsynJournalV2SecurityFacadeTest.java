@@ -42,7 +42,7 @@ import no.nav.dokarkiv.innsynjournal.v2.tjoark053.HentJournalpostListeToRequest;
 import no.nav.dokarkiv.innsynjournal.v2.tjoark053.HentMinTilgjengeligJournalpostListeV2ResponseMapper;
 import no.nav.dokarkiv.innsynjournal.v2.tjoark053.HentMinTilgjengeligeJournalpostListeService;
 import no.nav.dokarkiv.innsynjournal.v2.tjoark054.HentDokumentRequestTo;
-import no.nav.dokarkiv.innsynjournal.v2.tjoark054.HentDokumentService;
+import no.nav.dokarkiv.innsynjournal.v2.tjoark054.Tjoark054HentDokumentService;
 import no.nav.dokarkiv.innsynjournal.v2.tjoark059.IdentifiserJournalpostService;
 import no.nav.dokarkiv.innsynjournal.v2.tjoark059.IdentifiserJournalpostToRequest;
 import no.nav.dokarkiv.innsynjournal.v2.tjoark059.IdentifiserJournalpostV2ResponseMapper;
@@ -88,7 +88,7 @@ public class InnsynJournalV2SecurityFacadeTest {
 	@Mock
 	private JoarkRepository joarkRepository;
 	@Mock
-	private HentDokumentService hentDokumentService;
+	private Tjoark054HentDokumentService tjoark054HentDokumentService;
 	@Mock
 	private AktoerConsumerService aktoerConsumerService;
 	@Mock
@@ -746,7 +746,7 @@ public class InnsynJournalV2SecurityFacadeTest {
 
 	private void mockJournalpost(Journalpost journalpost) throws NoJournalpostFoundException, DocumentNotFoundException {
 		when(joarkRepository.findById(Matchers.eq(JOURNALPOST_ID))).thenReturn(Optional.ofNullable(journalpost));
-		when(hentDokumentService.hentDokument(eq(new HentDokumentRequestTo(JOURNALPOST_ID, DOKUMENT_INFO_ID, VariantFormatCode.ARKIV))))
+		when(tjoark054HentDokumentService.hentDokument(eq(new HentDokumentRequestTo(JOURNALPOST_ID, DOKUMENT_INFO_ID, VariantFormatCode.ARKIV))))
 				.thenReturn(DOK);
 	}
 }

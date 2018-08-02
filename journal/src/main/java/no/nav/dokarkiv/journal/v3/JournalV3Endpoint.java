@@ -26,7 +26,7 @@ import javax.xml.ws.soap.Addressing;
 
 @WebService(endpointInterface = "no.nav.tjeneste.virksomhet.journal.v3.JournalV3",
 		wsdlLocation = "classpath:wsdl/no/nav/tjeneste/virksomhet/journal/v3/Binding.wsdl",
-		targetNamespace = "http://nav.no/tjeneste/virksomhet/journal/v3",
+		targetNamespace = "http://nav.no/tjeneste/virksomhet/journal/v3/Binding",
 		serviceName = "Journal_v3",
 		portName = "Journal_v3Port")
 @Addressing

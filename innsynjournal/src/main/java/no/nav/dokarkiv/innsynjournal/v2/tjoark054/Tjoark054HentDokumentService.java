@@ -18,7 +18,7 @@ import java.util.Collections;
  * @author Thomas Kåsene, Visma Consulting AS
  */
 @Component
-public class HentDokumentService extends AbstractJournalOperations {
+public class Tjoark054HentDokumentService extends AbstractJournalOperations {
 
 	/**
 	 * Search and retrieves the document, will get documents from OnDemand as well

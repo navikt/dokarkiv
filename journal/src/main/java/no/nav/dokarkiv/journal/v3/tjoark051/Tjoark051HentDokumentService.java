@@ -20,7 +20,7 @@ import javax.inject.Inject;
  * @author Thomas Kåsene, Visma Consulting AS
  */
 @Component
-public class HentDokumentService extends AbstractJournalOperations {
+public class Tjoark051HentDokumentService extends AbstractJournalOperations {
 
 	@Inject
 	private HentOndemandDokument hentOndemandDokument;
@@ -41,7 +41,8 @@ public class HentDokumentService extends AbstractJournalOperations {
 
 		if (StringUtils.isNotEmpty(filDetaljer.getOnDemandId())) {
 			try {
-				return hentOndemandDokument.hentOndemandDokumentFromJoark(request.getJournalpostId(), filDetaljer.getFilUuid());
+				String dokumentUrl = hentOndemandDokument.createDokumentUrl(request.getJournalpostId(), filDetaljer.getFilUuid()).getDokumentUrl();
+				return hentOndemandDokument.hentOndemandDokumentFromJoark(dokumentUrl);
 			} catch (InvalidFilUuidException | NoJournalpostFoundException e) {
 				throw new DocumentNotFoundException("Dokument med journalpostId=" + request.getJournalpostId() + ", filUuid=" + filDetaljer.getFilUuid() + " ikke funnet i OnDemand.", e);
 			}

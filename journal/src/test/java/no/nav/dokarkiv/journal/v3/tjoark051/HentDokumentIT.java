@@ -4,6 +4,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.resetAllRequests;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
@@ -54,6 +55,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Integration test for HentDokument(TJOARK051) in 3rd gen. Journal service.
@@ -70,17 +73,8 @@ public class HentDokumentIT extends AbstractJournalV3Itest {
 	private static final String ON_DEMAND_ID = "onDemandId";
 	private static final byte[] ONDEMAND_FIL_CONTENT = "e-business".getBytes();
 
-	private String journalpostId;
-	private String dokumentInfoId;
-
-	private HentDokumentRequest request = new HentDokumentRequest();
-	private Journalpost journalpost;
-
 	@Before
 	public void setUp() {
-		journalpost = buildAndPersistJournalpost("Dokumenttittel");
-		createRequestFromJournalpost(journalpost);
-
 		SubjectHandlerUtils.setSubject(new SubjectHandlerUtils.SubjectBuilder(INTERN_BRUKER_USER_ID, IdentType.InternBruker).getSubject());
 	}
 
@@ -88,6 +82,8 @@ public class HentDokumentIT extends AbstractJournalV3Itest {
 	public void shouldFailWhenABACDenies() throws Exception {
 		abacDeny();
 
+		Journalpost journalpost = buildAndPersistJournalpost("Dokumenttittel");
+		HentDokumentRequest request = createRequest(journalpost);
 		persistDokumentFil();
 
 		try {
@@ -104,6 +100,8 @@ public class HentDokumentIT extends AbstractJournalV3Itest {
 	public void shouldAllowAccessWhenAbacPermits() throws Exception {
 		abacPermit();
 
+		Journalpost journalpost = buildAndPersistJournalpost("Dokumenttittel");
+		HentDokumentRequest request = createRequest(journalpost);
 		persistDokumentFil();
 
 		journalV3Provider.hentDokument(request);
@@ -112,6 +110,8 @@ public class HentDokumentIT extends AbstractJournalV3Itest {
 	@Test
 	public void shouldThrowExceptionWhenJournalpostNotFound() throws Exception {
 		abacPermit();
+		Journalpost journalpost = buildAndPersistJournalpost("Dokumenttittel");
+		HentDokumentRequest request = createRequest(journalpost);
 		request.setJournalpostId("123");
 
 		expectedException.expect(HentDokumentDokumentIkkeFunnet.class);
@@ -125,6 +125,8 @@ public class HentDokumentIT extends AbstractJournalV3Itest {
 	@Test
 	public void shouldThrowExceptionWhenDokumentInfoNotFoundOnJournalpost() throws Exception {
 		abacPermit();
+		Journalpost journalpost = buildAndPersistJournalpost("Dokumenttittel");
+		HentDokumentRequest request = createRequest(journalpost);
 		request.setDokumentId("123");
 
 		setupExpectedException(NoDokumentInfoFoundException.class.getName());
@@ -135,6 +137,8 @@ public class HentDokumentIT extends AbstractJournalV3Itest {
 	@Test
 	public void shouldThrowExceptionWhenFilDetaljerNotFoundWithGivenVariant() throws Exception {
 		abacPermit();
+		Journalpost journalpost = buildAndPersistJournalpost("Dokumenttittel");
+		HentDokumentRequest request = createRequest(journalpost);
 		Variantformater variantFormat = new Variantformater();
 		variantFormat.setValue(VariantFormatCode.PRODUKSJON.name());
 		request.setVariantformat(variantFormat);
@@ -147,6 +151,8 @@ public class HentDokumentIT extends AbstractJournalV3Itest {
 	@Test
 	public void shouldThrowExceptionWhenDokumentFilNotFound() throws Exception {
 		abacPermit();
+		Journalpost journalpost = buildAndPersistJournalpost("Dokumenttittel");
+		HentDokumentRequest request = createRequest(journalpost);
 		try {
 			journalV3Provider.hentDokument(request);
 		} catch (HentDokumentDokumentIkkeFunnet e) {
@@ -159,7 +165,7 @@ public class HentDokumentIT extends AbstractJournalV3Itest {
 	public void shouldReturnDeletedDocument() throws Exception {
 		abacPermit();
 		Journalpost journalpost = buildAndPersistJournalpost(DELETED_DOCUMENT_TITLE);
-		createRequestFromJournalpost(journalpost);
+		HentDokumentRequest request = createRequest(journalpost);
 
 		persistDokumentFil();
 
@@ -172,7 +178,7 @@ public class HentDokumentIT extends AbstractJournalV3Itest {
 	public void shouldGetDocumentWhenMottakskanalAltinn() throws Exception {
 		abacPermit();
 		Journalpost journalpost = buildAndPersistJournalpost(MottaksKanalCode.ALTINN);
-		createRequestFromJournalpost(journalpost);
+		HentDokumentRequest request = createRequest(journalpost);
 
 		persistDokumentFil();
 
@@ -184,6 +190,8 @@ public class HentDokumentIT extends AbstractJournalV3Itest {
 	@Test
 	public void shouldGetDokument() throws Exception {
 		abacPermit();
+		Journalpost journalpost = buildAndPersistJournalpost("Dokumenttittel");
+		HentDokumentRequest request = createRequest(journalpost);
 		persistDokumentFil();
 
 		HentDokumentResponse response = journalV3Provider.hentDokument(request);
@@ -192,36 +200,32 @@ public class HentDokumentIT extends AbstractJournalV3Itest {
 	}
 
 	@Test
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public void shouldGetOnDemandDokument() throws Exception {
+		resetAllRequests();
 		abacPermit();
+		Journalpost journalpost = joarkRepository.save(createOnDemandJournalpostBuilder().build());
+		HentDokumentRequest request = createRequest(journalpost);
 		stubFor(get(urlMatching("\\/joarkhentdokument\\?docToken=[a-zA-Z0-9\\-]+&mimetype=application%252Fpdf"))
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
 						.withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_PDF_VALUE)
 						.withBody(ONDEMAND_FIL_CONTENT)));
-		FilDetaljer filDetaljer = journalpost.findHoveddokumentDokumentInfoRelasjon()
-				.getDokumentInfo().findFilDetaljerByFilUuid(FIL_UUID);
-		filDetaljer.setOnDemandId(ON_DEMAND_ID);
-		filDetaljer.setOnDemandInstans(ON_DEMAND_INSTANS);
 
 		HentDokumentResponse response = journalV3Provider.hentDokument(request);
 
 		assertThat(response.getDokument(), is(ONDEMAND_FIL_CONTENT));
 		DokumentUrlInfo dokumentUrlInfo = dokumentUrlInfoRepository.findByFilUuid(FIL_UUID);
-		assertThat(dokumentUrlInfo.getDocToken(), notNullValue());
+		assertThat(dokumentUrlInfo.getDoctoken(), notNullValue());
 	}
 
-	private void createRequestFromJournalpost(Journalpost journalpost) {
-		journalpostId = journalpost.getId().toString();
-		dokumentInfoId = journalpost.findAllDokumentInfos().iterator().next().getId().toString();
-		createRequest();
-	}
-
-	private void createRequest() {
-		request.setJournalpostId(journalpostId);
-		request.setDokumentId(dokumentInfoId);
+	private HentDokumentRequest createRequest(Journalpost journalpost) {
+		HentDokumentRequest request = new HentDokumentRequest();
+		request.setJournalpostId(journalpost.getJournalpostId().toString());
+		request.setDokumentId(journalpost.findAllDokumentInfos().iterator().next().getId().toString());
 		Variantformater variantFormat = new Variantformater();
 		variantFormat.setValue(VARIANT_FORMAT.name());
 		request.setVariantformat(variantFormat);
+		return request;
 	}
 
 	private void setupExpectedException(String rootCause) {
@@ -266,6 +270,35 @@ public class HentDokumentIT extends AbstractJournalV3Itest {
 												.filDetaljerList(
 														FilDetaljerBuilder.getFilDetaljerBuilder().filtype(FilTypeCode.PDF)
 																.filUuid(FIL_UUID).variantFormat(VARIANT_FORMAT)
+																.opprettetKildeNavn("test").build()).build()).build());
+	}
+
+	private JournalpostBuilder createOnDemandJournalpostBuilder() {
+		return JournalpostBuilder
+				.getJournalpostBuilder()
+				.journalStatus(JournalStatusCode.FS)
+				.journalpostType(JournalpostTypeCode.U)
+				.opprettetAvNavn("testuser")
+				.opprettetKildeNavn("test")
+				.saksrelasjon(SaksrelasjonTestDataProvider.createSaksrelasjon().build())
+				.brukere(BrukerTestDataProvider.createBruker().build())
+				.mottakskanal(MottaksKanalCode.NAV_NO)
+				.dokumentInfoRelasjoner(
+						JournalpostDokumentInfoRelasjonBuilder
+								.getJournalpostDokumentInfoRelasjonBuilder()
+								.tilknyttetAvNavn("testuser")
+								.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.HOVEDDOKUMENT)
+								.opprettetKildeNavn("test")
+								.dokumentInfo(
+										DokumentInfoBuilder
+												.getDokumentInfoBuilder()
+												.opprettetKildeNavn("test")
+												.dokumentstatus(DokumentStatusCode.FERDIGSTILT)
+												.tittel("Dokumentittel")
+												.filDetaljerList(
+														FilDetaljerBuilder.getFilDetaljerBuilder().filtype(FilTypeCode.PDF)
+																.filUuid(FIL_UUID).variantFormat(VARIANT_FORMAT)
+																.onDemandId(ON_DEMAND_ID).onDemandInstans(ON_DEMAND_INSTANS)
 																.opprettetKildeNavn("test").build()).build()).build());
 	}
 
