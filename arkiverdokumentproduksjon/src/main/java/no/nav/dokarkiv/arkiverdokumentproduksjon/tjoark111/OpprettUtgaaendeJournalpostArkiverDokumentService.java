@@ -138,7 +138,7 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentService {
 	public void populateDokumentInfoRelasjonWithOpprettetKildeNavn(Journalpost journalpost) {
 		journalpost.getJournalpostDokumentInfoRelasjoner()
 				.forEach(relasjon -> relasjon.setOpprettetKildeNavn(RequestContextHolder
-						.currentRequestContext().getUserId()));
+						.currentRequestContext().getComponentId()));
 	}
 
 	private void updateJournalpostAfterValidation(Journalpost journalpost, String journalforendeEnhet) {
