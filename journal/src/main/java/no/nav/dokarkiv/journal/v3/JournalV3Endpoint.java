@@ -3,6 +3,7 @@ package no.nav.dokarkiv.journal.v3;
 
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 
+import io.micrometer.core.annotation.Timed;
 import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import no.nav.tjeneste.virksomhet.journal.v3.HentDokumentJournalpostIkkeFunnet;
@@ -39,6 +40,7 @@ public class JournalV3Endpoint implements JournalV3 {
 	@Inject
 	private JournalV3 journalV3Provider;
 
+	@Timed(value = "dok_request", extraTags = {"process_code", "tjoark058"}, percentiles = {0.5, 0.95})
 	@Override
 	public HentKjerneJournalpostListeResponse hentKjerneJournalpostListe(HentKjerneJournalpostListeRequest request)
 			throws HentKjerneJournalpostListeUgyldigInput, HentKjerneJournalpostListeSikkerhetsbegrensning {
@@ -47,6 +49,7 @@ public class JournalV3Endpoint implements JournalV3 {
 		return journalV3Provider.hentKjerneJournalpostListe(request);
 	}
 
+	@Timed(value = "dok_request", extraTags = {"process_code", "tjoark051"}, percentiles = {0.5, 0.95})
 	@Override
 	public no.nav.tjeneste.virksomhet.journal.v3.meldinger.HentDokumentResponse hentDokument(
 			no.nav.tjeneste.virksomhet.journal.v3.meldinger.HentDokumentRequest request)
@@ -58,6 +61,7 @@ public class JournalV3Endpoint implements JournalV3 {
 		return journalV3Provider.hentDokument(request);
 	}
 
+	@Timed(value = "dok_request", extraTags = {"process_code", "tjoark050"}, percentiles = {0.5, 0.95})
 	@Override
 	public HentDokumentURLResponse hentDokumentURL(HentDokumentURLRequest hentDokumentURLRequest)
 			throws HentDokumentURLDokumentIkkeFunnet, HentDokumentURLSikkerhetsbegrensning {

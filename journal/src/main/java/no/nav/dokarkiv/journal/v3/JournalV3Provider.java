@@ -7,6 +7,7 @@ import static no.nav.abac.xacml.StandardAttributter.ACTION_ID;
 import static no.nav.dokarkiv.core.security.abac.AbacSecurityService.ACCESS_DENIED;
 import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.READ_ACTION;
 
+import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.security.abac.AbacSecurityService;
@@ -61,6 +62,7 @@ import java.util.List;
  *
  * @author Stig Strøm
  */
+@Slf4j
 @Component
 public class JournalV3Provider implements JournalV3 {
 
@@ -100,6 +102,7 @@ public class JournalV3Provider implements JournalV3 {
 			List<ArkivSak> filteredArkivSakList = assertAccessAndfilterHentKjerneJournalpostListe(request);
 			HentKjerneJournalpostListeRequestTo requestTo = hentKjerneJournalpostListeRequestMapper.map(request, filteredArkivSakList);
 			HentKjerneJournalpostListeResponseTo responseTo = hentKjerneJournalpostListeService.hentKjerneJournalpostListe(requestTo);
+			log.info("tjoark058 hentet kjernejournalpostliste for sakFagsystemer={}", requestTo.getSaksListe());
 			return hentKjerneJournalpostListeResponseMapper.map(responseTo);
 		} catch (IllegalArgumentException e) {
 			throw new HentKjerneJournalpostListeUgyldigInput(e.getMessage(), faultInfoPopulator
@@ -124,6 +127,7 @@ public class JournalV3Provider implements JournalV3 {
 			assertAccessToHentDokument(wsRequest);
 			HentDokumentRequestTo domainRequest = hentDokumentRequestMapper.map(wsRequest);
 			byte[] dokument = tjoark051HentDokumentService.hentDokument(domainRequest);
+			log.info("tjoark051 hentet dokument med journalpostId={}, dokumentId={}, variantformat={}", wsRequest.getJournalpostId(), wsRequest.getDokumentId(), wsRequest.getVariantformat().getValue());
 			return new HentDokumentResponse().withDokument(dokument);
 		} catch (DocumentNotFoundException e) {
 			throw new HentDokumentDokumentIkkeFunnet(e.getMessage(), faultInfoPopulator.populateFaultInfo(
@@ -150,6 +154,7 @@ public class JournalV3Provider implements JournalV3 {
 			HentDokumentUrlRequestTo dokumentUrlRequestTo = hentDokumentURLV3RequestMapper.map(wsRequest);
 			HentDokumentUrlResponseTo domainResponse = hentDokumentUrlService.
 					hentDokumentUrl(dokumentUrlRequestTo);
+			log.info("tjoark050 hentet dokumenturl med journalpostId={}, dokumentId={}, variantformat={}", wsRequest.getJournalpostId(), wsRequest.getDokumentId(), wsRequest.getVariantformat().getValue());
 			return new HentDokumentURLResponse().withDokumentURL(domainResponse.getDokumentUrl());
 		} catch (DocumentNotFoundException e) {
 			throw new HentDokumentURLDokumentIkkeFunnet(e.getMessage(), faultInfoPopulator.populateFaultInfo(
