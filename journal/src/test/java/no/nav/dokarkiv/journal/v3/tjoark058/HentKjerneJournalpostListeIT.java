@@ -1,5 +1,14 @@
 package no.nav.dokarkiv.journal.v3.tjoark058;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
+import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.resetAllRequests;
+import static com.github.tomakehurst.wiremock.client.WireMock.resetAllScenarios;
+import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static no.nav.dokarkiv.core.datautil.DokumentFilTestDataProvider.FIL_UUID;
 import static no.nav.dokarkiv.core.datautil.JournalpostTestDataProvider.JANUARY_1_2020;
 import static no.nav.dokarkiv.core.datautil.JournalpostTestDataProvider.createJournalpost;
@@ -53,11 +62,11 @@ import no.nav.tjeneste.virksomhet.journal.v3.informasjon.hentkjernejournalpostli
 import no.nav.tjeneste.virksomhet.journal.v3.informasjon.hentkjernejournalpostliste.Soekefilter;
 import no.nav.tjeneste.virksomhet.journal.v3.meldinger.HentKjerneJournalpostListeRequest;
 import no.nav.tjeneste.virksomhet.journal.v3.meldinger.HentKjerneJournalpostListeResponse;
+import org.apache.http.HttpHeaders;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
-import org.mockito.ArgumentCaptor;
-import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -71,7 +80,6 @@ import java.util.List;
  *
  * @author Stig Strøm
  */
-@Ignore
 public class HentKjerneJournalpostListeIT extends AbstractJournalV3Itest {
 
 	private static final String FNR = "***gammelt_fnr***";
@@ -80,6 +88,7 @@ public class HentKjerneJournalpostListeIT extends AbstractJournalV3Itest {
 	private static final DokumentKategoriCode DOKUMENT_KATEGORI = DokumentKategoriCode.SOK;
 	private static final FagsystemCode SAK_FAGSYSTEM = FagsystemCode.AO01;
 	private static final String SAK_ID = "9999";
+	private static final String DENY_PERMIT_ABAC_SCENARIO = "denypermitabac";
 
 	@Before
 	public void setUp() throws Exception {
@@ -99,21 +108,23 @@ public class HentKjerneJournalpostListeIT extends AbstractJournalV3Itest {
 			assertThat(e.getMessage(), equalTo("Access Denied"));
 		}
 
-//		assertAbacRequestFromFile("abac/hentkjernejournalpost_1.json"); FIXME
+		verify(postRequestedFor(urlEqualTo("/abac")).withRequestBody(equalToJson(stringFromClasspath("abac/hentkjernejournalpost_1.json"))));
 	}
 
 	@Test
 	public void shouldKeepAbacContextForEachCall() throws Exception {
-//		ResponseEntity<String> responseEntity = mock(ResponseEntity.class);
-//		when(responseEntity.getStatusCode()).thenReturn(HttpStatus.OK);
-//		when(responseEntity.getBody())
-//				.thenReturn(ABAC_DENY_RESPONSE)
-//				.thenReturn(ABAC_PERMIT_RESPONSE);
-//		when(abacRestTemplate.postForEntity(anyString(),
-//				org.mockito.Matchers.any(HttpEntity.class),
-//				org.mockito.Matchers.<Class<String>>any(),
-//				org.mockito.Matchers.anyVararg()))
-//				.thenReturn(responseEntity);
+		resetAllRequests();
+		resetAllScenarios();
+		stubFor(post("/abac")
+				.inScenario(DENY_PERMIT_ABAC_SCENARIO)
+				.willSetStateTo("permit")
+				.willReturn(aResponse().withStatus(HttpStatus.OK.value()).withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+						.withBodyFile("abac/abac-deny.json")));
+		stubFor(post("/abac")
+				.inScenario(DENY_PERMIT_ABAC_SCENARIO)
+				.whenScenarioStateIs("permit")
+				.willReturn(aResponse().withStatus(HttpStatus.OK.value()).withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+						.withBodyFile("abac/abac-permit.json")));
 
 
 		HentKjerneJournalpostListeRequest request = createRequest();
@@ -123,30 +134,24 @@ public class HentKjerneJournalpostListeIT extends AbstractJournalV3Itest {
 
 		journalV3Provider.hentKjerneJournalpostListe(request);
 
-		ArgumentCaptor<HttpEntity> captor = ArgumentCaptor.forClass(HttpEntity.class);
-//		verify(abacRestTemplate, times(2)).postForEntity(anyString(),
-//				captor.capture(),
-//				org.mockito.Matchers.<Class<String>>any(),
-//				org.mockito.Matchers.anyVararg());
-//		List<HttpEntity> values = captor.getAllValues();
-//		assertThat(values, hasSize(2));
-
-//		assertAbacRequestFromFile("abac/hentkjernejournalpost_2_1.json", values.get(0)); FIXME
-//		assertAbacRequestFromFile("abac/hentkjernejournalpost_2_2.json", values.get(1));
+		verify(postRequestedFor(urlEqualTo("/abac")).withRequestBody(equalToJson(stringFromClasspath("abac/hentkjernejournalpost_2_1.json"))));
+		verify(postRequestedFor(urlEqualTo("/abac")).withRequestBody(equalToJson(stringFromClasspath("abac/hentkjernejournalpost_2_2.json"))));
 	}
 
 	@Test
 	public void shouldFilterSakListByAbac() throws Exception {
-//		ResponseEntity<String> responseEntity = mock(ResponseEntity.class);
-//		when(responseEntity.getStatusCode()).thenReturn(HttpStatus.OK);
-//		when(responseEntity.getBody())
-//				.thenReturn(ABAC_DENY_RESPONSE)
-//				.thenReturn(ABAC_PERMIT_RESPONSE);
-//		when(abacRestTemplate.postForEntity(anyString(),
-//				org.mockito.Matchers.any(HttpEntity.class),
-//				org.mockito.Matchers.<Class<String>>any(),
-//				org.mockito.Matchers.anyVararg()))
-//				.thenReturn(responseEntity);
+		resetAllRequests();
+		resetAllScenarios();
+		stubFor(post("/abac")
+				.inScenario(DENY_PERMIT_ABAC_SCENARIO)
+				.willSetStateTo("permit")
+				.willReturn(aResponse().withStatus(HttpStatus.OK.value()).withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+						.withBodyFile("abac/abac-deny.json")));
+		stubFor(post("/abac")
+				.inScenario(DENY_PERMIT_ABAC_SCENARIO)
+				.whenScenarioStateIs("permit")
+				.willReturn(aResponse().withStatus(HttpStatus.OK.value()).withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+						.withBodyFile("abac/abac-permit.json")));
 
 		joarkRepository.save(createJournalpost(DOKUMENT_KATEGORI).build());
 
@@ -166,6 +171,7 @@ public class HentKjerneJournalpostListeIT extends AbstractJournalV3Itest {
 
 	@Test
 	public void searchReturnsEmptyList() throws Exception {
+		abacPermit();
 		HentKjerneJournalpostListeResponse response = journalV3Provider.hentKjerneJournalpostListe(createRequest());
 
 		assertThat(response, is(notNullValue()));
@@ -174,6 +180,7 @@ public class HentKjerneJournalpostListeIT extends AbstractJournalV3Itest {
 
 	@Test
 	public void shouldReturnListWithOneJournalpost() throws Exception {
+		abacPermit();
 		Journalpost storedJournalpost = joarkRepository.save(createJournalpost(DOKUMENT_KATEGORI).build());
 
 		HentKjerneJournalpostListeResponse response = journalV3Provider.hentKjerneJournalpostListe(createRequest());
@@ -185,6 +192,7 @@ public class HentKjerneJournalpostListeIT extends AbstractJournalV3Itest {
 
 	@Test
 	public void shouldMapSamhandlerToPerson() throws Exception {
+		abacPermit();
 		joarkRepository.save(createJournalpost(DOKUMENT_KATEGORI).brukere(BrukerBuilder.getBrukerBuilder()
 				.brukerId(FNR)
 				.brukerType(BrukerTypeCode.SAMHANDLER)
@@ -202,6 +210,7 @@ public class HentKjerneJournalpostListeIT extends AbstractJournalV3Itest {
 
 	@Test
 	public void shouldMapSamhandlerToOrg() throws Exception {
+		abacPermit();
 		joarkRepository.save(createJournalpost(DOKUMENT_KATEGORI).brukere(BrukerBuilder.getBrukerBuilder()
 				.brukerId(ORG_NR)
 				.brukerType(BrukerTypeCode.SAMHANDLER)
@@ -220,6 +229,7 @@ public class HentKjerneJournalpostListeIT extends AbstractJournalV3Itest {
 
 	@Test
 	public void shouldReturnJournalpostFeilregistrertJournaltilstandUtgaar() throws Exception {
+		abacPermit();
 		JournalpostBuilder journalpostBuilder = createJournalpost(DOKUMENT_KATEGORI);
 		journalpostBuilder.saksrelasjon(createSaksrelasjon(true).build());
 		Journalpost storedJournalpost = joarkRepository.save(journalpostBuilder.build());
@@ -246,6 +256,7 @@ public class HentKjerneJournalpostListeIT extends AbstractJournalV3Itest {
 
 	@Test
 	public void shouldReturnJournaltilstandUtgaar() throws Exception {
+		abacPermit();
 		JournalpostBuilder journalpostBuilder = createJournalpost(DOKUMENT_KATEGORI);
 		journalpostBuilder.journalStatus(JournalStatusCode.U);
 		Journalpost storedJournalpost = joarkRepository.save(journalpostBuilder.build());
@@ -259,6 +270,7 @@ public class HentKjerneJournalpostListeIT extends AbstractJournalV3Itest {
 
 	@Test
 	public void shouldReturnDokumenttilstandSlettet() throws Exception {
+		abacPermit();
 		Journalpost storedJournalpost = joarkRepository.save(createJournalpost(DELETED_DOCUMENT_TITLE, FIL_UUID).build());
 
 		HentKjerneJournalpostListeResponse response = journalV3Provider.hentKjerneJournalpostListe(createRequest());
@@ -270,6 +282,7 @@ public class HentKjerneJournalpostListeIT extends AbstractJournalV3Itest {
 
 	@Test
 	public void shouldThrowUgyldigInputException_whenSakIdIsMissing() throws Exception {
+		abacPermit();
 		expectedException.expect(HentKjerneJournalpostListeUgyldigInput.class);
 		expectedException.expectMessage("ArkivSakId er tom eller null");
 
@@ -281,6 +294,7 @@ public class HentKjerneJournalpostListeIT extends AbstractJournalV3Itest {
 
 	@Test
 	public void shouldThrowUgyldigInputException_whenSakArkivSystemIsMissing() throws Exception {
+		abacPermit();
 		expectedException.expect(HentKjerneJournalpostListeUgyldigInput.class);
 		expectedException.expectMessage("ArkivSakSystem er tom eller null");
 
@@ -291,6 +305,7 @@ public class HentKjerneJournalpostListeIT extends AbstractJournalV3Itest {
 
 	@Test
 	public void shouldThrowIfJournalFomIsInTheFuture() throws Exception {
+		abacPermit();
 		Date futureDate = Date.from(LocalDate.now().plusYears(1).atStartOfDay(ZoneId.systemDefault()).toInstant());
 
 		HentKjerneJournalpostListeRequest request = createRequest();
@@ -304,6 +319,7 @@ public class HentKjerneJournalpostListeIT extends AbstractJournalV3Itest {
 
 	@Test
 	public void shouldThrowIfJournalFomIsAfterJournalTom() throws Exception {
+		abacPermit();
 		Date lastYear = Date.from(LocalDate.now().minusYears(1).atStartOfDay(ZoneId.systemDefault()).toInstant());
 		Date yesterday = Date.from(LocalDate.now().minusDays(1).atStartOfDay(ZoneId.systemDefault()).toInstant());
 
@@ -320,6 +336,7 @@ public class HentKjerneJournalpostListeIT extends AbstractJournalV3Itest {
 
 	@Test
 	public void shouldFailOnListeLargerThanPredefinertAntallSaker() throws Exception {
+		abacPermit();
 		expectedException.expect(HentKjerneJournalpostListeUgyldigInput.class);
 		expectedException.expectMessage("Saksliste må begrenses");
 
@@ -336,6 +353,7 @@ public class HentKjerneJournalpostListeIT extends AbstractJournalV3Itest {
 
 	@Test
 	public void shouldNotReturnJournalpostWhenOpprettetDateIsBeforeSoekefilter() throws Exception {
+		abacPermit();
 		Date lastYear = Date.from(LocalDate.now().minusYears(1).atStartOfDay(ZoneId.systemDefault()).toInstant());
 		Date yesterday = Date.from(LocalDate.now().minusDays(1).atStartOfDay(ZoneId.systemDefault()).toInstant());
 
@@ -354,6 +372,7 @@ public class HentKjerneJournalpostListeIT extends AbstractJournalV3Itest {
 
 	@Test
 	public void shouldReturnIsSisteIntervallFalseWhenThereIsMoreJournalposts() throws Exception {
+		abacPermit();
 		for (int i = 0; i < 60; i++) {
 			joarkRepository.save(createJournalpost(FIL_UUID).build());
 		}
@@ -366,6 +385,7 @@ public class HentKjerneJournalpostListeIT extends AbstractJournalV3Itest {
 
 	@Test
 	public void shouldIsSisteIntervallFalseWhenEndOfResultSet() throws Exception {
+		abacPermit();
 		for (int i = 0; i < 60; i++) {
 			joarkRepository.save(createJournalpost(FIL_UUID).build());
 		}
@@ -381,6 +401,7 @@ public class HentKjerneJournalpostListeIT extends AbstractJournalV3Itest {
 
 	@Test
 	public void shouldFilterOnTemaPEN() throws Exception {
+		abacPermit();
 		joarkRepository.save(createJournalpost(FagomradeCode.PEN).build());
 		joarkRepository.save(createJournalpost(FagomradeCode.AAP).build());
 
@@ -395,6 +416,7 @@ public class HentKjerneJournalpostListeIT extends AbstractJournalV3Itest {
 
 	@Test
 	public void shouldFilterOnJournalposttypeI() throws Exception {
+		abacPermit();
 		joarkRepository.save(createJournalpost(FagomradeCode.PEN).build());
 		joarkRepository.save(createJournalpost(FagomradeCode.AAP).journalpostType(JournalpostTypeCode.I).build());
 		joarkRepository.save(createJournalpost(FagomradeCode.AAP).journalpostType(JournalpostTypeCode.I).build());

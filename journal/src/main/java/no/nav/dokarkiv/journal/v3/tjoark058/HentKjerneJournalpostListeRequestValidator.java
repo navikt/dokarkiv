@@ -6,6 +6,8 @@ import no.nav.tjeneste.virksomhet.journal.v3.informasjon.hentkjernejournalpostli
 import no.nav.tjeneste.virksomhet.journal.v3.informasjon.hentkjernejournalpostliste.Soekefilter;
 import no.nav.tjeneste.virksomhet.journal.v3.meldinger.HentKjerneJournalpostListeRequest;
 import org.joda.time.DateTime;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -16,12 +18,12 @@ import java.util.List;
  *
  * @author Stig Strøm, Acando
  */
+@Component
 public class HentKjerneJournalpostListeRequestValidator {
 	
-	private int predefinertAntallSaker;
+	private final int predefinertAntallSaker;
 	
-	public HentKjerneJournalpostListeRequestValidator(int predefinertAntallSaker) {
-		super();
+	public HentKjerneJournalpostListeRequestValidator(@Value("${journal.v3.predefinert.antall.saker:50}") int predefinertAntallSaker) {
 		this.predefinertAntallSaker = predefinertAntallSaker;
 	}
 	

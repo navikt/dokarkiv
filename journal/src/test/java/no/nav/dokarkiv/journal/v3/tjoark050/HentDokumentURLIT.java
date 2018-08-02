@@ -1,5 +1,9 @@
 package no.nav.dokarkiv.journal.v3.tjoark050;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
+import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.Matchers.containsString;
@@ -38,7 +42,6 @@ import no.nav.tjeneste.virksomhet.journal.v3.informasjon.Variantformater;
 import no.nav.tjeneste.virksomhet.journal.v3.meldinger.HentDokumentURLRequest;
 import no.nav.tjeneste.virksomhet.journal.v3.meldinger.HentDokumentURLResponse;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -46,7 +49,6 @@ import org.junit.Test;
  *
  * @author Jarl Øystein Samseth, Visma Consulting
  */
-@Ignore
 public class HentDokumentURLIT extends AbstractJournalV3Itest {
 
 	private static final String FIL_UUID = FilDetaljer.generateUuid();
@@ -79,7 +81,7 @@ public class HentDokumentURLIT extends AbstractJournalV3Itest {
 			assertThat(e.getMessage(), equalTo("Bruker har ikke tilgang til journalpost"));
 		}
 
-//		assertAbacRequestFromFile("abac/hentdokumenturl.json"); FIXME
+		verify(postRequestedFor(urlEqualTo("/abac")).withRequestBody(equalToJson(stringFromClasspath("abac/hentdokumenturl.json"))));
 	}
 
 	@Test
@@ -93,6 +95,7 @@ public class HentDokumentURLIT extends AbstractJournalV3Itest {
 	
 	@Test
 	public void shouldThrowExceptionWhenJournalpostNotFound() throws Exception {
+		abacPermit();
 		request.setJournalpostId("123");
 
 		expectedException.expect(HentDokumentURLDokumentIkkeFunnet.class);
@@ -105,6 +108,7 @@ public class HentDokumentURLIT extends AbstractJournalV3Itest {
 	
 	@Test
 	public void shouldThrowExceptionWhenDokumentInfoNotFoundOnJournalpost() throws Exception {
+		abacPermit();
 		request.setDokumentId("123");
 
 		setupExpectedException(NoDokumentInfoFoundException.class.getName());
@@ -114,6 +118,7 @@ public class HentDokumentURLIT extends AbstractJournalV3Itest {
 
 	@Test
 	public void shouldThrowExceptionWhenFilDetaljerNotFoundWithGivenVariant() throws Exception {
+		abacPermit();
 		Variantformater variantFormat = new Variantformater();
 		variantFormat.setValue(VariantFormatCode.PRODUKSJON.name());
 		request.setVariantformat(variantFormat);
@@ -125,6 +130,7 @@ public class HentDokumentURLIT extends AbstractJournalV3Itest {
 	
 	@Test
 	public void shouldThrowExceptionWhenDokumentFilNotFound() throws Exception {
+		abacPermit();
 		setupExpectedException(InvalidFilUuidException.class.getName());
 
 		journalV3Provider.hentDokumentURL(request);
@@ -132,6 +138,7 @@ public class HentDokumentURLIT extends AbstractJournalV3Itest {
 	
 	@Test
 	public void shouldGetDokumentUrl() throws Exception {
+		abacPermit();
 		persistDokumentFil();
 		
 		HentDokumentURLResponse response = journalV3Provider.hentDokumentURL(request);
@@ -157,9 +164,7 @@ public class HentDokumentURLIT extends AbstractJournalV3Itest {
 	}
 	
 	private void assertDokumentUrlInfoIsPersisted() {
-		DokumentUrlInfo dokUrlInfo = dokumentUrlInfoRepository.findByJournalpost(Long.parseLong(journalpostId));
-//				(DokumentUrlInfo) hibernateOperations.find(
-//				"select d from DokumentUrlInfo d where d.journalpost = " + journalpostId).get(0);
+		DokumentUrlInfo dokUrlInfo = dokumentUrlInfoRepository.findByFilUuid(FIL_UUID);
 		assertThat(dokUrlInfo.getDocToken(), notNullValue());
 		assertThat(dokUrlInfo.getFilUuid(), is(FIL_UUID));
 	}

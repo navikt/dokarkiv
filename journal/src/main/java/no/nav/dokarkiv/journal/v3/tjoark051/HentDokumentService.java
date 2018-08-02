@@ -4,9 +4,14 @@ import no.nav.dokarkiv.core.domain.entities.DokumentFil;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.exceptions.InvalidFilUuidException;
+import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
+import no.nav.dokarkiv.core.ondemand.HentOndemandDokument;
 import no.nav.dokarkiv.journal.v3.exceptions.DocumentNotFoundException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
+
+import javax.inject.Inject;
 
 /**
  * The service layer class for HentDokument(TJOARK051 and TJOARK054)
@@ -16,6 +21,9 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class HentDokumentService extends AbstractJournalOperations {
+
+	@Inject
+	private HentOndemandDokument hentOndemandDokument;
 
 	/**
 	 * Search and retrieves the document, will get documents from OnDemand as well
@@ -32,8 +40,11 @@ public class HentDokumentService extends AbstractJournalOperations {
 		generateAuditLogIfDokumentIsSensitivt(journalpost, filDetaljer, "hentDokument");
 
 		if (StringUtils.isNotEmpty(filDetaljer.getOnDemandId())) {
-			// FIXME tjenesten skal støtte ondemand..
-			return new byte[]{};
+			try {
+				return hentOndemandDokument.hentOndemandDokumentFromJoark(request.getJournalpostId(), filDetaljer.getFilUuid());
+			} catch (InvalidFilUuidException | NoJournalpostFoundException e) {
+				throw new DocumentNotFoundException("Dokument med journalpostId=" + request.getJournalpostId() + ", filUuid=" + filDetaljer.getFilUuid() + " ikke funnet i OnDemand.", e);
+			}
 		}
 
 		DokumentFil dokumentFil = getDocumentFromDBRepository(filDetaljer.getFilUuid());

@@ -47,6 +47,7 @@ import no.nav.tjeneste.virksomhet.journal.v3.meldinger.HentDokumentURLRequest;
 import no.nav.tjeneste.virksomhet.journal.v3.meldinger.HentDokumentURLResponse;
 import no.nav.tjeneste.virksomhet.journal.v3.meldinger.HentKjerneJournalpostListeRequest;
 import no.nav.tjeneste.virksomhet.journal.v3.meldinger.HentKjerneJournalpostListeResponse;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
@@ -60,6 +61,7 @@ import java.util.List;
  *
  * @author Stig Strøm
  */
+@Component
 public class JournalV3Provider implements JournalV3 {
 
 	private static final String JOURNAL_V3 = "Journal_v3";

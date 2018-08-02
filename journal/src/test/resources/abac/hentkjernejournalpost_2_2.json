@@ -1,0 +1,40 @@
+{
+  "Request": {
+    "Resource": {
+      "Attribute": [
+        {
+          "AttributeId": "no.nav.abac.attributter.resource.felles.domene",
+          "Value": "arkiv"
+        },
+        {
+          "AttributeId": "no.nav.abac.attributter.resource.felles.resource_type",
+          "Value": "no.nav.abac.attributter.resource.arkiv.sak"
+        },
+        {
+          "AttributeId": "no.nav.abac.attributter.resource.arkiv.pensjon_saksid",
+          "Value": "1000"
+        }
+      ]
+    },
+    "Action": {
+      "Attribute": [
+        {
+          "AttributeId": "urn:oasis:names:tc:xacml:1.0:action:action-id",
+          "Value": "read"
+        }
+      ]
+    },
+    "Environment": {
+      "Attribute": [
+        {
+          "AttributeId": "no.nav.abac.attributter.environment.felles.saml_token",
+          "Value": "PHNhbWwvPg=="
+        },
+        {
+          "AttributeId": "no.nav.abac.attributter.environment.felles.pep_id",
+          "Value": "joark"
+        }
+      ]
+    }
+  }
+}

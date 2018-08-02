@@ -25,4 +25,7 @@ public interface HentDokumentUrl {
 	HentDokumentUrlResponse hentDokumentUrl(HentDokumentUrlRequest hentDokumentUrlRequest) throws NoJournalpostFoundException,
 			InvalidFilUuidException;
 
+	HentDokumentUrlResponse hentDokumentUrlJoark(HentDokumentUrlRequest hentDokumentUrlRequest) throws NoJournalpostFoundException,
+			InvalidFilUuidException;
+
 }

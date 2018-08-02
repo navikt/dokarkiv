@@ -5,6 +5,8 @@ import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 
+import javax.inject.Inject;
+
 /**
  * Contains common functionality for operation implementations.
  * 
@@ -13,9 +15,11 @@ import no.nav.dokarkiv.core.repository.JoarkRepository;
 public abstract class AbstractOperation {
 
 	/** The repository reference for metadata access. */
+	@Inject
 	protected JoarkRepository joarkRepository;
 
 	/** The repository reference for document access in DB. */
+	@Inject
 	protected DokumentFilRepository dokumentFilRepository;
 
 	/**

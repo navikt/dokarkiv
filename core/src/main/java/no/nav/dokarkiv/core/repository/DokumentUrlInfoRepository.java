@@ -7,5 +7,5 @@ import org.springframework.data.repository.CrudRepository;
  * @author Joakim Bjørnstad, Jbit AS
  */
 public interface DokumentUrlInfoRepository extends CrudRepository<DokumentUrlInfo, Long> {
-	DokumentUrlInfo findByJournalpost(Long journalpostId);
+	DokumentUrlInfo findByFilUuid(String filUuid);
 }

@@ -2,7 +2,6 @@ package no.nav.dokarkiv.core.hentdokumenturl;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.isA;
@@ -154,25 +153,13 @@ public class DefaultHentDokumentUrlTest {
 				createJournalPost(null, FIL_UUID)));
 		when(dokumentFilRepositoryMock.findByFilUuid(FIL_UUID)).thenReturn(new DokumentFil());
 		
-		request = new HentDokumentUrlRequest(JOURNALPOST_ID, FIL_UUID, timeToLive, null);
+		request = new HentDokumentUrlRequest(JOURNALPOST_ID, FIL_UUID, timeToLive);
 		hentDokumentUrl.hentDokumentUrl(request);
 		
 		verify(dokumentUrlInfoRepositoryMock).save(dokumentUrlInfoCaptor.capture());
 		
 		DokumentUrlInfo dokumentUrlInfo = dokumentUrlInfoCaptor.getValue();
 		assertThat(dokumentUrlInfo.getTimeToLiveMinutes(), is(timeToLive ));
-	}
-	
-	@Test
-	public void shouldReturnNonSslUrlIfFlagIsSet() throws Exception {
-		when(joarkRepositoryMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(createJournalPost(null, FIL_UUID)));
-		when(dokumentFilRepositoryMock.findByFilUuid(FIL_UUID)).thenReturn(new DokumentFil());
-		
-		request = new HentDokumentUrlRequest(JOURNALPOST_ID, FIL_UUID, null, true);
-		
-		HentDokumentUrlResponse response = hentDokumentUrl.hentDokumentUrl(request);
-		
-		assertThat(response.getDokumentUrl(), not(containsString("https")));
 	}
 	
 	@Test

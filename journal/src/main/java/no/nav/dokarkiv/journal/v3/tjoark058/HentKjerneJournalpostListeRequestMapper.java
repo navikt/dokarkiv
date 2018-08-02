@@ -12,6 +12,7 @@ import no.nav.tjeneste.virksomhet.journal.v3.informasjon.Tema;
 import no.nav.tjeneste.virksomhet.journal.v3.informasjon.hentkjernejournalpostliste.ArkivSak;
 import no.nav.tjeneste.virksomhet.journal.v3.informasjon.hentkjernejournalpostliste.Soekefilter;
 import no.nav.tjeneste.virksomhet.journal.v3.meldinger.HentKjerneJournalpostListeRequest;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -23,6 +24,7 @@ import java.util.List;
  *
  * @author Stig Strøm, Acando
  */
+@Component
 public class HentKjerneJournalpostListeRequestMapper {
 
 	protected static final long DEFAULT_RESULTAT_SET_STOERRELSE = 50;

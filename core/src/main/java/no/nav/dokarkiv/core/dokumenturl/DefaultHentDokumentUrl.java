@@ -9,6 +9,8 @@ import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
 import no.nav.dokarkiv.core.exceptions.InvalidFilUuidException;
 import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
 import no.nav.dokarkiv.core.repository.DokumentUrlInfoRepository;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 import java.io.UnsupportedEncodingException;
@@ -22,34 +24,48 @@ import java.util.UUID;
  * @author Magnus Skuland, Sirius IT
  * @author Thao Thao Nguyen, Visma Sirius
  */
+@Component
 public class DefaultHentDokumentUrl extends AbstractDocumentOperation implements HentDokumentUrl {
-	
+
+	@Value("${dokarkiv.hentdokument.baseurl}")
 	private String servletUrl;
+	@Value("${joark.hentdokument.baseurl}")
+	private String joarkUrl;
+
 	private MimeTypeMapper mimeTypeMapper = new MimeTypeMapper();
 	@Inject
 	private DokumentUrlInfoRepository dokumentUrlInfoRepository;
 
-	/** {@inheritDoc} */
 	public HentDokumentUrlResponse hentDokumentUrl(HentDokumentUrlRequest hentDokumentUrlRequest)
 			throws NoJournalpostFoundException, InvalidFilUuidException {
-
 		validateRequest(hentDokumentUrlRequest);
-		
+
 		Long journalpostId = hentDokumentUrlRequest.getJournalpostId();
 		String filUuid = hentDokumentUrlRequest.getFilUuid();
-		
+
+		return generateUrlWithBaseUrl(servletUrl, journalpostId, filUuid, hentDokumentUrlRequest.getTimeToLiveMinutes());
+	}
+
+	@Override
+	public HentDokumentUrlResponse hentDokumentUrlJoark(HentDokumentUrlRequest hentDokumentUrlRequest) throws NoJournalpostFoundException, InvalidFilUuidException {
+		validateRequest(hentDokumentUrlRequest);
+
+		Long journalpostId = hentDokumentUrlRequest.getJournalpostId();
+		String filUuid = hentDokumentUrlRequest.getFilUuid();
+
+		return generateUrlWithBaseUrl(joarkUrl, journalpostId, filUuid, hentDokumentUrlRequest.getTimeToLiveMinutes());
+	}
+
+	private HentDokumentUrlResponse generateUrlWithBaseUrl(String baseUrl, Long journalpostId, String filUuid, Long ttl) throws NoJournalpostFoundException, InvalidFilUuidException {
 		Journalpost journalpost = getJournalpost(journalpostId);
 		FilDetaljer filDetaljer = getFilDetaljer(filUuid, journalpost);
 		generateAuditLogIfDokumentIsSensitivt(journalpost, filDetaljer, "HentDokumentUrl");
 
-		String url = generateUrl(journalpost, filDetaljer, hentDokumentUrlRequest.getTimeToLiveMinutes());
-		
-		if (Boolean.TRUE.equals(hentDokumentUrlRequest.getIkkeBrukSSL())) {
-			url = url.replace("https:", "http:");
-		}
+		String url = generateUrl(baseUrl, journalpost, filDetaljer, ttl);
+
 		return new HentDokumentUrlResponse(url);
 	}
-	
+
 	private void validateRequest(HentDokumentUrlRequest hentDokumentUrlRequest) {
 		if (hentDokumentUrlRequest == null) {
 			throw new InvalidArgumentException("HentDokumentUrlRequest is null");
@@ -57,13 +73,13 @@ public class DefaultHentDokumentUrl extends AbstractDocumentOperation implements
 		hentDokumentUrlRequest.validate();
 	}
 
-	private String generateUrl(Journalpost journalpost, FilDetaljer fildetaljer, Long timeToLiveMinutes)
+	private String generateUrl(String baseUrl, Journalpost journalpost, FilDetaljer fildetaljer, Long timeToLiveMinutes)
 			throws InvalidFilUuidException {
 		String filUuid = fildetaljer.getFilUuid();
 		if (fildetaljer.getOnDemandId() == null) {
 			verifyThatDocumentExistsInDB(journalpost, filUuid);
 		}
-		String url = createDokumentUrlInfoAndUrl(journalpost, filUuid, timeToLiveMinutes);
+		String url = createDokumentUrlInfoAndUrl(baseUrl, journalpost, filUuid, timeToLiveMinutes);
 		return addMimetypeToUrl(url, mimeTypeMapper.getMimeTypeForFileExtension(fildetaljer.getFiltype().name()));
 	}
 	
@@ -81,9 +97,9 @@ public class DefaultHentDokumentUrl extends AbstractDocumentOperation implements
 		return url.concat(mimetypeParam);
 	}	
 
-	private String createDokumentUrlInfoAndUrl(Journalpost journalpost, String filUuid, Long timeToLiveMinutes) {
+	private String createDokumentUrlInfoAndUrl(String baseUrl, Journalpost journalpost, String filUuid, Long timeToLiveMinutes) {
 		String token = saveDokumentUrlInfo(journalpost, filUuid, timeToLiveMinutes);
-		return new StringBuilder(servletUrl)
+		return new StringBuilder(baseUrl)
 				.append("?")
 				.append(ServiceConstants.HENT_DOKUMENT_SERVLET_PARAM)
 				.append("=")

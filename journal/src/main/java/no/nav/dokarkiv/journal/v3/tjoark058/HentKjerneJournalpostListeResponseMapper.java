@@ -33,6 +33,7 @@ import no.nav.tjeneste.virksomhet.journal.v3.informasjon.hentkjernejournalpostli
 import no.nav.tjeneste.virksomhet.journal.v3.informasjon.hentkjernejournalpostliste.Kryssreferanse;
 import no.nav.tjeneste.virksomhet.journal.v3.informasjon.hentkjernejournalpostliste.SkannetInnhold;
 import no.nav.tjeneste.virksomhet.journal.v3.meldinger.HentKjerneJournalpostListeResponse;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -40,6 +41,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+@Component
 public class HentKjerneJournalpostListeResponseMapper {
 	public static final String KORRESPODANSE_TYPE_MOTTAKER = "Mottaker";
 	public static final String KORRESPODANSE_TYPE_AVSENDER = "Avsender";

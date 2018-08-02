@@ -4,6 +4,7 @@ import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.repository.journalpostliste.HentMinJPListeParameters;
 import no.nav.dokarkiv.core.repository.journalpostliste.JournalpostListeRepository;
+import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -14,6 +15,7 @@ import java.util.List;
  *
  * @author Stig Strøm, Acando
  */
+@Component
 public class DefaultHentKjerneJournalpostListeService implements HentKjerneJournalpostListeService {
 
 	@Inject

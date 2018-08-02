@@ -17,6 +17,7 @@ import no.nav.tjeneste.virksomhet.journal.v3.meldinger.HentKjerneJournalpostList
 import no.nav.tjeneste.virksomhet.journal.v3.meldinger.HentKjerneJournalpostListeResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.MDC;
+import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import javax.jws.HandlerChain;
@@ -30,6 +31,7 @@ import javax.xml.ws.soap.Addressing;
 		portName = "Journal_v3Port")
 @Addressing
 @HandlerChain(file = "classpath:joarkv3handler.xml")
+@Service
 public class JournalV3Endpoint implements JournalV3 {
 
 	private static final String DEFAULT_APPID = "joark:Journal_v3";

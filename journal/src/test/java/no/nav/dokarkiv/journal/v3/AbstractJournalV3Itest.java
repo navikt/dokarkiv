@@ -23,6 +23,7 @@ import org.junit.runner.RunWith;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -40,6 +41,7 @@ import java.io.IOException;
 @ActiveProfiles("itest,wiremock")
 @AutoConfigureTestDatabase
 @AutoConfigureTestEntityManager
+@AutoConfigureWireMock(port = 0)
 @Transactional
 public abstract class AbstractJournalV3Itest {
 

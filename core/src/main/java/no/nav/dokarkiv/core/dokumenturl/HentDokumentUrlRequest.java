@@ -18,7 +18,6 @@ public class HentDokumentUrlRequest {
 	private Long journalpostId;
 	private String filUuid;
 	private Long timeToLiveMinutes;
-	private Boolean ikkeBrukSSL;
 
 	/**
 	 * Constructor for mapping
@@ -44,13 +43,11 @@ public class HentDokumentUrlRequest {
 	 * @param journalpostId The journalpostId.
 	 * @param filUuid The filUUid.
 	 * @param timeToLiveMinutes How long the URL should be valid.
-	 * @param ikkeBrukSSL Used to override environment config of URL
 	 */
-	public HentDokumentUrlRequest(Long journalpostId, String filUuid, Long timeToLiveMinutes, Boolean ikkeBrukSSL) {
+	public HentDokumentUrlRequest(Long journalpostId, String filUuid, Long timeToLiveMinutes) {
 		this.journalpostId = journalpostId;
 		this.filUuid = filUuid;
 		this.timeToLiveMinutes = timeToLiveMinutes;
-		this.ikkeBrukSSL = ikkeBrukSSL;
 	}
 
 	
@@ -98,23 +95,12 @@ public class HentDokumentUrlRequest {
 		return timeToLiveMinutes;
 	}
 
-	/**
-	 * Getter for the ikkeBrukSSL property.
-	 *
-	 * @return the ikkeBrukSSL
-	 */
-	public Boolean getIkkeBrukSSL() {
-		return ikkeBrukSSL;
-	}
-
-	/** {@inheritDoc} */
 	@Override
 	public String toString() {
 		return new ToStringBuilder(this)
 			.append("journalpostId", journalpostId)
 			.append("filUuid", filUuid)
 			.append("timeToLiveMinutes", timeToLiveMinutes)
-			.append("ikkeBrukSSL", ikkeBrukSSL)
 			.toString();
 	}
 

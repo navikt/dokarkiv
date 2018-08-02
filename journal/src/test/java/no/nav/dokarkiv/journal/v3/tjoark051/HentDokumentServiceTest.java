@@ -31,7 +31,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Optional;
 
@@ -40,7 +40,6 @@ import java.util.Optional;
  *
  * @author Stig Strøm
  */
-@Ignore
 @RunWith(MockitoJUnitRunner.class)
 public class HentDokumentServiceTest {
 
@@ -59,8 +58,6 @@ public class HentDokumentServiceTest {
 	private JoarkRepository joarkRepositoryMock;
 	@Mock
 	private DokumentFilRepository dokumentFilRepository;
-//	@Mock
-//	private OnDemandRepository onDemandRepository; FIXME
 
 	@InjectMocks
 	private HentDokumentService service;
@@ -121,6 +118,7 @@ public class HentDokumentServiceTest {
 	}
 
 	@Test
+	@Ignore //FIXME
 	public void shouldThrowExceptionWhenOndemandInstansMissing() throws Exception {
 		Journalpost journalPost = createWithOndemand(ON_DEMAND_ID, null);
 
@@ -134,6 +132,7 @@ public class HentDokumentServiceTest {
 	}
 
 	@Test
+	@Ignore
 	public void shouldThrowExceptionWhenOndemandNotFound() throws Exception {
 		Journalpost journalPost = createWithOndemand(ON_DEMAND_ID, ON_DEMAND_INSTANS);
 
@@ -162,6 +161,7 @@ public class HentDokumentServiceTest {
 	}
 
 	@Test
+	@Ignore
 	public void shouldReturnOnDemandDokument() throws Exception {
 		Journalpost journalPost = createWithOndemand(ON_DEMAND_ID, ON_DEMAND_INSTANS);
 

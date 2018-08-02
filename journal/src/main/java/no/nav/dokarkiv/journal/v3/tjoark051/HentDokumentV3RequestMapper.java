@@ -2,6 +2,7 @@ package no.nav.dokarkiv.journal.v3.tjoark051;
 
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.tjeneste.virksomhet.journal.v3.meldinger.HentDokumentRequest;
+import org.springframework.stereotype.Component;
 
 
 /**
@@ -9,6 +10,7 @@ import no.nav.tjeneste.virksomhet.journal.v3.meldinger.HentDokumentRequest;
  *
  * @author Stig Strøm
  */
+@Component
 public class HentDokumentV3RequestMapper {
 
 	/**
