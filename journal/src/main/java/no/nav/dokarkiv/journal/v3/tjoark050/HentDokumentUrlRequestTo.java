@@ -13,27 +13,27 @@ public class HentDokumentUrlRequestTo {
 	private Long journalpostId;
 	private Long dokumentInfoId;
 	private VariantFormatCode variantFormat;
- 
-    /**
+
+	/**
 	 * Default constructor only used for mapping.
 	 */
 	@SuppressWarnings("unused")
 	private HentDokumentUrlRequestTo() {
 	}
-    
+
 	/**
 	 * Constructs a new HentDokumentUrlRequestTo.
 	 *
-	 * @param journalpostId journalpostId
+	 * @param journalpostId  journalpostId
 	 * @param dokumentInfoId dokumentInfoId
-	 * @param variantFormat document variant
+	 * @param variantFormat  document variant
 	 */
 	public HentDokumentUrlRequestTo(Long journalpostId, Long dokumentInfoId, VariantFormatCode variantFormat) {
 		this.journalpostId = journalpostId;
 		this.dokumentInfoId = dokumentInfoId;
 		this.variantFormat = variantFormat;
 	}
-	
+
 	public void validate() {
 		if (journalpostId == null) {
 			throw new InvalidArgumentException("Missing parameter journalpostId");
@@ -57,5 +57,5 @@ public class HentDokumentUrlRequestTo {
 	public VariantFormatCode getVariantFormat() {
 		return variantFormat;
 	}
-	
+
 }

@@ -25,11 +25,11 @@ import javax.jws.HandlerChain;
 import javax.jws.WebService;
 import javax.xml.ws.soap.Addressing;
 
-@WebService(endpointInterface = "no.nav.tjeneste.virksomhet.journal.v3.JournalV3",
-		wsdlLocation = "classpath:wsdl/no/nav/tjeneste/virksomhet/journal/v3/Binding.wsdl",
-		targetNamespace = "http://nav.no/tjeneste/virksomhet/journal/v3/Binding",
+@WebService(targetNamespace = "http://nav.no/tjeneste/virksomhet/journal/v3/Binding",
 		serviceName = "Journal_v3",
-		portName = "Journal_v3Port")
+		portName = "Journal_v3Port",
+		wsdlLocation = "classpath:wsdl/no/nav/tjeneste/virksomhet/journal/v3/Binding.wsdl",
+		endpointInterface = "no.nav.tjeneste.virksomhet.journal.v3.JournalV3")
 @Addressing
 @HandlerChain(file = "classpath:joarkv3handler.xml")
 @Service
@@ -77,12 +77,10 @@ public class JournalV3Endpoint implements JournalV3 {
 
 	private String consumerIdFromMdcOrDefault() {
 		String consumerId = MDC.get(MDC_CONSUMER_ID);
-		if (!StringUtils.isBlank(consumerId)) {
-			return consumerId;
-		} else {
+		if (StringUtils.isBlank(consumerId)) {
 			return DEFAULT_APPID;
+		} else {
+			return consumerId;
 		}
 	}
-
-
 }
