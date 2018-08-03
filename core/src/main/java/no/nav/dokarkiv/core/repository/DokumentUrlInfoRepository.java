@@ -8,4 +8,6 @@ import org.springframework.data.repository.CrudRepository;
  */
 public interface DokumentUrlInfoRepository extends CrudRepository<DokumentUrlInfo, Long> {
 	DokumentUrlInfo findByFilUuid(String filUuid);
+
+	DokumentUrlInfo findByDoctoken(String doctoken);
 }
