@@ -2,7 +2,7 @@ package no.nav.dokarkiv.innsynjournal.v2.tjoark053;
 
 import lombok.Builder;
 import lombok.Data;
-import no.nav.dokarkiv.innsynjournal.v2.tjoark053.repository.SakFagsystem;
+import no.nav.dokarkiv.core.repository.journalpostliste.SakFagsystem;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -53,6 +53,14 @@ fasitResources:
     resourceType: restservice
     propertyMap:
       url: ABAC_URL
+  - alias: joarkhentdokumentbaseurl
+    resourceType: baseurl
+    propertyMap:
+      url: JOARK_HENTDOKUMENT_BASEURL
+  - alias: dokarkivhentdokumentbaseurl
+    resourceType: baseurl
+    propertyMap:
+      url: DOKARKIV_HENTDOKUMENT_BASEURL
   exposed:
   - alias: BehandleJournal_v2
     resourceType: webserviceendpoint

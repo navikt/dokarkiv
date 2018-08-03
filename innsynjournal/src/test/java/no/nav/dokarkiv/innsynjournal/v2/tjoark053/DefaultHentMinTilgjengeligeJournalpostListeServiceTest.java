@@ -25,9 +25,9 @@ import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
-import no.nav.dokarkiv.innsynjournal.v2.tjoark053.repository.HentMinJPListeParameters;
-import no.nav.dokarkiv.innsynjournal.v2.tjoark053.repository.SakFagsystem;
-import no.nav.dokarkiv.innsynjournal.v2.tjoark053.repository.Tjoark053JournalpostListeRepository;
+import no.nav.dokarkiv.core.repository.journalpostliste.HentMinJPListeParameters;
+import no.nav.dokarkiv.core.repository.journalpostliste.JournalpostListeRepository;
+import no.nav.dokarkiv.core.repository.journalpostliste.SakFagsystem;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -61,7 +61,7 @@ public class DefaultHentMinTilgjengeligeJournalpostListeServiceTest {
 	public ExpectedException thrown = ExpectedException.none();
 
 	@Mock
-	private Tjoark053JournalpostListeRepository journalpostListeRepository;
+	private JournalpostListeRepository journalpostListeRepository;
 
 	@InjectMocks
 	private DefaultHentMinTilgjengeligeJournalpostListeService service;

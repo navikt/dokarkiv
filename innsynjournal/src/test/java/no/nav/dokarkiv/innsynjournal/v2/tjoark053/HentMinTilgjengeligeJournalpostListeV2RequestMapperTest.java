@@ -5,7 +5,7 @@ import static org.junit.Assert.assertThat;
 import static org.springframework.test.util.AssertionErrors.assertTrue;
 
 import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
-import no.nav.dokarkiv.innsynjournal.v2.tjoark053.repository.SakFagsystem;
+import no.nav.dokarkiv.core.repository.journalpostliste.SakFagsystem;
 import no.nav.tjeneste.virksomhet.innsynjournal.v2.informasjon.Fagsystemer;
 import no.nav.tjeneste.virksomhet.innsynjournal.v2.informasjon.Sak;
 import no.nav.tjeneste.virksomhet.innsynjournal.v2.meldinger.HentTilgjengeligJournalpostListeRequest;

@@ -12,8 +12,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -27,22 +25,10 @@ import java.util.Date;
  */
 @Entity
 @Table(name = "T_DOK_URL_INFO")
-@NamedQueries({
-		@NamedQuery(name = DokumentUrlInfo.NQ_HENT_DOKUMENT_URL_BY_DOC_TOKEN, 
-				query = "select du from DokumentUrlInfo du where du.docToken = :"
-				+ DokumentUrlInfo.NQ_PARAM_DOC_TOKEN),
-		@NamedQuery(name = "DokumentUrlInfo.findDokumentUrlByJournalpost",
-				query = "select du from DokumentUrlInfo du where du.journalpost= :journalpost")
-		})
 public class DokumentUrlInfo extends AbstractPersistentVersionedDomainObject {
 
 	/** ID used for serialization. */
 	private static final long serialVersionUID = 1L;
-	
-	/** Named query for findDokumentUrlByDocToken. */
-	public static final String NQ_HENT_DOKUMENT_URL_BY_DOC_TOKEN = "DokumentUrlInfo.findDokumentUrlByDocToken";
-	/** Named query param for docToken. */
-	public static final String NQ_PARAM_DOC_TOKEN = "docToken";
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "dokumentUrlInfo_seq")
@@ -52,8 +38,8 @@ public class DokumentUrlInfo extends AbstractPersistentVersionedDomainObject {
 	@Column(name = "dok_url_info_id", nullable = false)
 	private Long dokumentUrlInfoId;
 
-	@Column(name = "docToken", nullable = false, length = 36)
-	private String docToken;
+	@Column(name = "doctoken", nullable = false, length = 36)
+	private String doctoken;
 
 	@ManyToOne
 	@JoinColumn(name = "journalpost_id", nullable = false)
@@ -93,18 +79,18 @@ public class DokumentUrlInfo extends AbstractPersistentVersionedDomainObject {
 	 * 
 	 * @return the docToken
 	 */
-	public String getDocToken() {
-		return docToken;
+	public String getDoctoken() {
+		return doctoken;
 	}
 
 	/**
 	 * Setter for the docToken property.
 	 * 
-	 * @param docToken
+	 * @param doctoken
 	 *            the docToken to set
 	 */
-	public void setDocToken(String docToken) {
-		this.docToken = docToken;
+	public void setDoctoken(String doctoken) {
+		this.doctoken = doctoken;
 	}
 
 	/**
@@ -213,7 +199,7 @@ public class DokumentUrlInfo extends AbstractPersistentVersionedDomainObject {
 		return new ToStringBuilder(this)
 			.append("journalpostId", journalpost.getJournalpostId())
 			.append("tidspunkt", tidspunkt)
-			.append("docToken", docToken)
+			.append("docToken", doctoken)
 			.append("filUuid", filUuid)
 			.append("timeToLiveMinutes", timeToLiveMinutes)
 			.toString();
