@@ -63,7 +63,7 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
@@ -154,8 +154,8 @@ public class JournalV3ProviderTest {
 	public void shouldFilterSaksIdsByAbacAccess() throws Exception {
 		ArkivSak accessableArkivSak = new ArkivSak().withArkivSakId("1").withArkivSakSystem("FS22");
 		ArkivSak notAccesableArkivSak = new ArkivSak().withArkivSakId("2").withArkivSakSystem("PEN");
-		
-		
+
+		when(hentKjerneJournalpostListeRequestMapper.map(eq(hentKjerneJournalpostListeRequest), anyListOf(ArkivSak.class))).thenReturn(requestTo);
 		when(abacSecurityService.assertAccessToSak(any(XacmlRequest.class), eq("1"), eq(FagsystemCode.FS22))).thenReturn(Decision.PERMIT);
 		when(abacSecurityService.assertAccessToSak(any(XacmlRequest.class), eq("2"), eq(FagsystemCode.PEN))).thenReturn(Decision.DENY);
 		
@@ -171,9 +171,7 @@ public class JournalV3ProviderTest {
 	public void shouldThrowHentKjerneJournalpostListeSikkerhetsbegrensningWhenAbacFiltersToEmptyList() throws Exception {
 		ArkivSak accessableArkivSak = new ArkivSak().withArkivSakId("1").withArkivSakSystem("FS22");
 		ArkivSak notAccesableArkivSak = new ArkivSak().withArkivSakId("2").withArkivSakSystem("PEN");
-//		when(abacSecurityService.assertAccessToSak(eq("1"), eq(FagsystemCode.FS22))).thenReturn(Decision.DENY);
-//		when(abacSecurityService.assertAccessToSak(eq("2"), eq(FagsystemCode.PEN))).thenReturn(Decision.DENY);
-		
+
 		hentKjerneJournalpostListeRequest.withArkivSakListe(accessableArkivSak, notAccesableArkivSak);
 		
 		expected.expect(HentKjerneJournalpostListeSikkerhetsbegrensning.class);
