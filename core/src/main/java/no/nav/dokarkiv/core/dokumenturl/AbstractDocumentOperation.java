@@ -6,13 +6,31 @@ import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.InvalidFilUuidException;
 import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
+import no.nav.dokarkiv.core.repository.DokumentFilRepository;
+import no.nav.dokarkiv.core.repository.JoarkRepository;
+
+import javax.inject.Inject;
 
 /**
  * Contains functionality shared between HentDokument and HentDokumentUrl.
  *
  * @author Thomas Eugen Bjørge, Visma Sirius
  */
-public abstract class AbstractDocumentOperation extends AbstractOperation {
+public abstract class AbstractDocumentOperation {
+
+	@Inject
+	protected JoarkRepository joarkRepository;
+
+	@Inject
+	protected DokumentFilRepository dokumentFilRepository;
+
+	public void setJoarkRepository(JoarkRepository joarkRepository) {
+		this.joarkRepository = joarkRepository;
+	}
+
+	public void setDokumentFilRepository(DokumentFilRepository dokumentFilRepository) {
+		this.dokumentFilRepository = dokumentFilRepository;
+	}
 
 	/**
 	 * Get a FilDetaljer from a Journalpost by filuuid.
@@ -64,12 +82,11 @@ public abstract class AbstractDocumentOperation extends AbstractOperation {
 	/**
 	 * Retrieve a physical document from the database.
 	 * 
-	 * @param journalpost The Journalpost.
 	 * @param filUuid The filuuid of the DokumentFil.
 	 * @return The DokumentFil.
 	 * @throws InvalidFilUuidException if the DokumentFil is not found.
 	 */
-	protected DokumentFil getDocumentFromDBRepository(Journalpost journalpost, String filUuid)
+	protected DokumentFil getDocumentFromDBRepository(String filUuid)
 			throws InvalidFilUuidException {
 		DokumentFil dokumentFil = dokumentFilRepository.findByFilUuid(filUuid);
 		if (dokumentFil == null) {

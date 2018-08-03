@@ -32,7 +32,8 @@ public class DefaultHentDokumentUrl extends AbstractDocumentOperation implements
 	@Value("${joark.hentdokument.baseurl}")
 	private String joarkUrl;
 
-	private MimeTypeMapper mimeTypeMapper = new MimeTypeMapper();
+	private final MimeTypeMapper mimeTypeMapper = new MimeTypeMapper();
+
 	@Inject
 	private DokumentUrlInfoRepository dokumentUrlInfoRepository;
 
@@ -77,14 +78,14 @@ public class DefaultHentDokumentUrl extends AbstractDocumentOperation implements
 			throws InvalidFilUuidException {
 		String filUuid = fildetaljer.getFilUuid();
 		if (fildetaljer.getOnDemandId() == null) {
-			verifyThatDocumentExistsInDB(journalpost, filUuid);
+			verifyThatDocumentExistsInDB(filUuid);
 		}
 		String url = createDokumentUrlInfoAndUrl(baseUrl, journalpost, filUuid, timeToLiveMinutes);
 		return addMimetypeToUrl(url, mimeTypeMapper.getMimeTypeForFileExtension(fildetaljer.getFiltype().name()));
 	}
 	
-	private void verifyThatDocumentExistsInDB(Journalpost journalpost, String filUuid) throws InvalidFilUuidException {
-		getDocumentFromDBRepository(journalpost, filUuid);
+	private void verifyThatDocumentExistsInDB(String filUuid) throws InvalidFilUuidException {
+		getDocumentFromDBRepository(filUuid);
 	}
 
 	private String addMimetypeToUrl(String url, String mimetype) {

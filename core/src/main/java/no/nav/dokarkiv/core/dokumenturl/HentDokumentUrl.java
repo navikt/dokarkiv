@@ -13,7 +13,6 @@ public interface HentDokumentUrl {
 	/**
 	 * HentDokumentUrl.
 	 * 
-	 * @see {@link JournalServiceBi#hentDokumentUrl(HentDokumentUrlRequest)}
 	 * @param hentDokumentUrlRequest
 	 *            The request.
 	 * @return The response.
