@@ -5,6 +5,7 @@ import no.nav.dokarkiv.core.domain.entities.DokumentUrlInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.util.DateProvider;
+import no.nav.dokarkiv.core.exceptions.DokarkivTechnicalException;
 import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
 import no.nav.dokarkiv.core.exceptions.InvalidFilUuidException;
 import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
@@ -93,7 +94,7 @@ public class DefaultHentDokumentUrl extends AbstractDocumentOperation implements
 		try {
 			mimetypeParam = "&mimetype=" + URLEncoder.encode(mimetype, "UTF-8");
 		} catch (UnsupportedEncodingException e) {
-			throw new RuntimeException("Could not generate URL", e);
+			throw new DokarkivTechnicalException("Could not generate URL", e);
 		}
 		return url.concat(mimetypeParam);
 	}	

@@ -35,6 +35,7 @@ import javax.transaction.Transactional;
 public abstract class AbstractArkiverdokumentproduksjonItest {
 
 	public static String ITEST_USERID = "itestuser";
+	public static String ITEST_COMPONENTID = "itest";
 
 	@Rule
 	public ExpectedException expectedException = ExpectedException.none();
@@ -58,7 +59,7 @@ public abstract class AbstractArkiverdokumentproduksjonItest {
 		dokumentFilRepository.deleteAll();
 		RequestContextSetter.setRequestContext(new SimpleRequestContext.Builder()
 				.userId(ITEST_USERID)
-				.componentId("itest")
+				.componentId(ITEST_COMPONENTID)
 				.build());
 	}
 }

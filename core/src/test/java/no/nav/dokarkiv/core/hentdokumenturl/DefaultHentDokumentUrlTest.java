@@ -69,7 +69,7 @@ public class DefaultHentDokumentUrlTest {
 	private HentDokumentUrlRequest request;
 	
 	@Before
-	public void setup() {
+	public void setUp() {
 		MockitoAnnotations.initMocks(this);
 		hentDokumentUrl = new DefaultHentDokumentUrl();
 		hentDokumentUrl.setJoarkRepository(joarkRepositoryMock);

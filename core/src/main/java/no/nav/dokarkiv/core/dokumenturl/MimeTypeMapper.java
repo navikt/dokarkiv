@@ -13,7 +13,9 @@ import java.util.Map;
  */
 public class MimeTypeMapper {
 
-	private Map<String, String> mimeTypes = new HashMap<String, String>();
+	private static final String TEXT_XML = "text/xml";
+	private static final String APPLICATION_PDF = "application/pdf";
+	private Map<String, String> mimeTypes = new HashMap<>();
 	
 	private static final String MIMETYPE_BINARY = "application/binary";
 	
@@ -21,14 +23,14 @@ public class MimeTypeMapper {
 	 * Should have mapping for all FileTypeCodes
 	 */
 	public MimeTypeMapper() {
-		mimeTypes.put("pdf", "application/pdf");
-		mimeTypes.put("pdfa", "application/pdf");
-		mimeTypes.put("xml", "text/xml");
-		mimeTypes.put("dxml", "text/xml");
-		mimeTypes.put("axml", "text/xml");
+		mimeTypes.put("pdf", APPLICATION_PDF);
+		mimeTypes.put("pdfa", APPLICATION_PDF);
+		mimeTypes.put("xml", TEXT_XML);
+		mimeTypes.put("dxml", TEXT_XML);
+		mimeTypes.put("axml", TEXT_XML);
 		mimeTypes.put("rtf", "application/rtf");
 		mimeTypes.put("afp", "application/afp");
-		mimeTypes.put("meta", "text/xml");
+		mimeTypes.put("meta", TEXT_XML);
 		mimeTypes.put("dlf", "application/dlf");
 		mimeTypes.put("jpeg", "image/jpeg");
 		mimeTypes.put("tiff", "image/tiff");

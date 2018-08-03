@@ -12,7 +12,7 @@ public class InvalidFilUuidException extends FunctionalRecoverableException {
 	/** Serialization UID */
 	private static final long serialVersionUID = ***gammelt_fnr***32278339L;
 
-	private String filUuid;
+	private final String filUuid;
 	
 	/**
 	 * Constructs a new InvalidFilUuidException.
@@ -33,5 +33,4 @@ public class InvalidFilUuidException extends FunctionalRecoverableException {
 	public String getFilUuid() {
 		return filUuid;
 	}
-
 }

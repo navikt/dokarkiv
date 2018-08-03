@@ -29,11 +29,6 @@ public class DokumentUrlInfo extends AbstractPersistentVersionedDomainObject {
 
 	/** ID used for serialization. */
 	private static final long serialVersionUID = 1L;
-	
-	/** Named query for findDokumentUrlByDocToken. */
-	public static final String NQ_HENT_DOKUMENT_URL_BY_DOC_TOKEN = "DokumentUrlInfo.findDokumentUrlByDocToken";
-	/** Named query param for docToken. */
-	public static final String NQ_PARAM_DOC_TOKEN = "docToken";
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "dokumentUrlInfo_seq")

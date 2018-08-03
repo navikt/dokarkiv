@@ -1,7 +1,7 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark111;
 
 
-import static no.nav.dokarkiv.arkiverdokumentproduksjon.AbstractArkiverdokumentproduksjonItest.ITEST_USERID;
+import static no.nav.dokarkiv.arkiverdokumentproduksjon.AbstractArkiverdokumentproduksjonItest.ITEST_COMPONENTID;
 import static no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark111.OpprettUtgaaendeJournalpostArkiverDokumentDataUtil.BREVKODE;
 import static no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark111.OpprettUtgaaendeJournalpostArkiverDokumentDataUtil.DOKUMENT_TYPE_ID;
 import static no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark111.OpprettUtgaaendeJournalpostArkiverDokumentDataUtil.KANAL_REF_ID;
@@ -49,7 +49,7 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentAssertUtil {
 		assertThat(domainJournalpost.getDokumentDato(), is(OpprettUtgaaendeJournalpostArkiverDokumentDataUtil.DATO_DOKUMENT));
 		assertThat(domainJournalpost.getJournalposttype(), is(JournalpostTypeCode.U));
 		assertThat(domainJournalpost.getKanalReferanseId(), is(KANAL_REF_ID));
-		assertThat(domainJournalpost.getOpprettetKildeNavn(), is(ITEST_USERID));
+		assertThat(domainJournalpost.getOpprettetKildeNavn(), is(ITEST_COMPONENTID));
 	}
 
 	public static void assertEqualDokumentInfo(DokumentInfo persistedDokumentInfo, DokumentInfo newDokumentInfo) {
@@ -65,7 +65,7 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentAssertUtil {
 		Kryssreferanse kryssreferanse = kryssreferanser.iterator().next();
 		assertThat(kryssreferanse.getReferanseId(), is(KRYSSREFERANSE_ID));
 		assertThat(kryssreferanse.getReferanseType(), is(KRYSSREFERANSE_TYPE));
-		assertThat(kryssreferanse.getOpprettetKildeNavn(), is(ITEST_USERID));
+		assertThat(kryssreferanse.getOpprettetKildeNavn(), is(ITEST_COMPONENTID));
 	}
 
 	public static void assertDokumentinfoRelasjon(Set<JournalpostDokumentInfoRelasjon> domainDokumentInfoRelasjon) {
@@ -73,7 +73,7 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentAssertUtil {
 		domainDokumentInfoRelasjon.forEach(relasjon -> {
 			assertThat(relasjon.getTilknyttetAvNavn(), is(OPPRETTET_AV_NAVN));
 			assertDokumentInfo(relasjon.getDokumentInfo());
-			assertThat(relasjon.getOpprettetKildeNavn(), is(ITEST_USERID));
+			assertThat(relasjon.getOpprettetKildeNavn(), is(ITEST_COMPONENTID));
 		});
 	}
 
@@ -98,14 +98,14 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentAssertUtil {
 		assertTrue(domainDokumentInfo.getDokumentFerdigDato().toInstant().toEpochMilli() - getDateNow().toInstant()
 				.toEpochMilli() < 1000);
 		assertFildetaljer(domainDokumentInfo.getFildetaljerListe().iterator().next());
-		assertThat(domainDokumentInfo.getOpprettetKildeNavn(), is(ITEST_USERID));
+		assertThat(domainDokumentInfo.getOpprettetKildeNavn(), is(ITEST_COMPONENTID));
 	}
 
 	public static void assertSaksrelasjon(Saksrelasjon saksrelasjon) {
 		assertThat(saksrelasjon, is(notNullValue()));
 		assertThat(saksrelasjon.getSakId(), is(OpprettUtgaaendeJournalpostArkiverDokumentDataUtil.SAKSID));
 		assertThat(saksrelasjon.getFagsystem().name(), is(OpprettUtgaaendeJournalpostArkiverDokumentDataUtil.FAGSYSTEMKODE));
-		assertThat(saksrelasjon.getOpprettetKildeNavn(), is(ITEST_USERID));
+		assertThat(saksrelasjon.getOpprettetKildeNavn(), is(ITEST_COMPONENTID));
 	}
 
 	public static void assertFildetaljer(FilDetaljer fildetaljer) {
@@ -114,7 +114,7 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentAssertUtil {
 		assertThat(fildetaljer.getVariantFormat(), is(VariantFormatCode.ARKIV));
 		assertThat(fildetaljer.getFileContent(), is(OpprettUtgaaendeJournalpostArkiverDokumentDataUtil.DOKUMENT_INNHOLD.getBytes()));
 		assertThat(fildetaljer.getFilstorrelse(), notNullValue());
-		assertThat(fildetaljer.getOpprettetKildeNavn(), is(ITEST_USERID));
+		assertThat(fildetaljer.getOpprettetKildeNavn(), is(ITEST_COMPONENTID));
 	}
 
 	public static void assertBruker(Set<Bruker> domainBrukere) {
