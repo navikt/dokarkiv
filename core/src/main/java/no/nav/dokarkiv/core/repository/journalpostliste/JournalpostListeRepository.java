@@ -1,9 +1,10 @@
-package no.nav.dokarkiv.innsynjournal.v2.tjoark053.repository;
+package no.nav.dokarkiv.core.repository.journalpostliste;
 
 import com.google.common.collect.Lists;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
+import org.hibernate.criterion.Projections;
 import org.springframework.stereotype.Repository;
 
 import javax.inject.Inject;
@@ -14,12 +15,12 @@ import java.util.List;
  * @author Joakim Bjørnstad, Jbit AS
  */
 @Repository
-public class Tjoark053JournalpostListeRepository {
+public class JournalpostListeRepository {
 
 	private final EntityManager entityManager;
 
 	@Inject
-	public Tjoark053JournalpostListeRepository(EntityManager entityManager) {
+	public JournalpostListeRepository(EntityManager entityManager) {
 		this.entityManager = entityManager;
 	}
 
@@ -46,4 +47,19 @@ public class Tjoark053JournalpostListeRepository {
 		return foundJournalposts;
 	}
 
+	public long findTotalNumberOfJournalposts(HentMinJPListeParameters hentMinJPListeParameters) {
+		if (hentMinJPListeParameters.getSaksListe().isEmpty()) {
+			return 0;
+		}
+		Session session = entityManager.unwrap(Session.class);
+		JournalpostCriterionBuilder criterionBuilder = new JournalpostCriterionBuilder(session);
+
+		Criteria criteria = criterionBuilder.buildCriteria(hentMinJPListeParameters);
+		addCountToCriteria(criteria);
+		return (Long) criteria.uniqueResult();
+	}
+
+	private void addCountToCriteria(Criteria criteria) {
+		criteria.setProjection(Projections.rowCount());
+	}
 }

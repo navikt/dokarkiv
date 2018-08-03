@@ -1,15 +1,17 @@
-package no.nav.dokarkiv.innsynjournal.v2.tjoark054;
+package no.nav.dokarkiv.journal.v3.tjoark051;
 
 import no.nav.dokarkiv.core.domain.entities.DokumentFil;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import no.nav.dokarkiv.innsynjournal.v2.exceptions.DocumentNotFoundException;
-import no.nav.dokarkiv.innsynjournal.v2.exceptions.SecurityLimitationAttributeException;
+import no.nav.dokarkiv.core.exceptions.InvalidFilUuidException;
+import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
+import no.nav.dokarkiv.core.ondemand.HentOndemandDokument;
+import no.nav.dokarkiv.journal.v3.exceptions.DocumentNotFoundException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
-import java.util.Collections;
+import javax.inject.Inject;
 
 /**
  * The service layer class for HentDokument(TJOARK051 and TJOARK054)
@@ -18,7 +20,10 @@ import java.util.Collections;
  * @author Thomas Kåsene, Visma Consulting AS
  */
 @Component
-public class HentDokumentService extends AbstractJournalOperations {
+public class Tjoark051HentDokumentService extends AbstractJournalOperations {
+
+	@Inject
+	private HentOndemandDokument hentOndemandDokument;
 
 	/**
 	 * Search and retrieves the document, will get documents from OnDemand as well
@@ -35,10 +40,12 @@ public class HentDokumentService extends AbstractJournalOperations {
 		generateAuditLogIfDokumentIsSensitivt(journalpost, filDetaljer, "hentDokument");
 
 		if (StringUtils.isNotEmpty(filDetaljer.getOnDemandId())) {
-			// pga lisens tillater man ikke henting fra OnDemand
-			throw new SecurityLimitationAttributeException(request.getJournalpostId(),
-					request.getDokumentInfoId(),
-					Collections.singletonMap("DokumentInfo.Fildetaljer.OnDemandId", filDetaljer.getOnDemandId()));
+			try {
+				String dokumentUrl = hentOndemandDokument.createDokumentUrl(request.getJournalpostId(), filDetaljer.getFilUuid()).getDokumentUrl();
+				return hentOndemandDokument.hentOndemandDokumentFromJoark(dokumentUrl);
+			} catch (InvalidFilUuidException | NoJournalpostFoundException e) {
+				throw new DocumentNotFoundException("Dokument med journalpostId=" + request.getJournalpostId() + ", filUuid=" + filDetaljer.getFilUuid() + " ikke funnet i OnDemand.", e);
+			}
 		}
 
 		DokumentFil dokumentFil = getDocumentFromDBRepository(filDetaljer.getFilUuid());

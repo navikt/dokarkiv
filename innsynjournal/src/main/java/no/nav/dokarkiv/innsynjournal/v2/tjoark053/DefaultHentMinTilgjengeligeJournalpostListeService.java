@@ -17,9 +17,9 @@ import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
-import no.nav.dokarkiv.innsynjournal.v2.tjoark053.repository.HentMinJPListeParameters;
-import no.nav.dokarkiv.innsynjournal.v2.tjoark053.repository.SakFagsystem;
-import no.nav.dokarkiv.innsynjournal.v2.tjoark053.repository.Tjoark053JournalpostListeRepository;
+import no.nav.dokarkiv.core.repository.journalpostliste.HentMinJPListeParameters;
+import no.nav.dokarkiv.core.repository.journalpostliste.JournalpostListeRepository;
+import no.nav.dokarkiv.core.repository.journalpostliste.SakFagsystem;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -40,7 +40,7 @@ import java.util.Set;
 public class DefaultHentMinTilgjengeligeJournalpostListeService implements HentMinTilgjengeligeJournalpostListeService {
 
 	@Inject
-	private Tjoark053JournalpostListeRepository journalpostListeRepository;
+	private JournalpostListeRepository journalpostListeRepository;
 
 	@Value("#{T(java.time.LocalDate).parse(\"${innsynjournal.v2.innsyn.earliest.date}\")}")
 	private LocalDate earliestDateAllowed;
