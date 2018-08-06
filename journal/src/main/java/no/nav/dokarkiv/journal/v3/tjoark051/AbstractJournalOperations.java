@@ -11,7 +11,7 @@ import no.nav.dokarkiv.core.exceptions.InvalidFilUuidException;
 import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
-import no.nav.dokarkiv.journal.v3.exceptions.DocumentNotFoundException;
+import no.nav.dokarkiv.core.exceptions.DocumentNotFoundException;
 import no.nav.dokarkiv.journal.v3.exceptions.NoDokumentInfoFoundException;
 import org.apache.commons.lang3.BooleanUtils;
 

@@ -5,6 +5,7 @@ import no.nav.dokarkiv.core.dokumenturl.HentDokumentUrl;
 import no.nav.dokarkiv.core.dokumenturl.HentDokumentUrlRequest;
 import no.nav.dokarkiv.core.dokumenturl.HentDokumentUrlResponse;
 import no.nav.dokarkiv.core.dokumenturlinfo.HentDokumentUrlInfo;
+import no.nav.dokarkiv.core.exceptions.DocumentNotFoundException;
 import no.nav.dokarkiv.core.exceptions.InvalidFilUuidException;
 import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
 import no.nav.dokarkiv.core.dokument.HentDokumentRequest;
@@ -30,7 +31,7 @@ public class DefaultJournalService implements JournalServiceBi {
 
 	/** {@inheritDoc} */
 	public HentDokumentResponse hentDokument(HentDokumentRequest hentDokumentRequest) throws NoJournalpostFoundException,
-			InvalidFilUuidException {
+			InvalidFilUuidException, DocumentNotFoundException {
 		return hentDokument.hentDokument(hentDokumentRequest);
 	}
 
