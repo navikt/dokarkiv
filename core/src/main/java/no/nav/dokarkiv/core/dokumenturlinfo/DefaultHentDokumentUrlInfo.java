@@ -6,6 +6,7 @@ import no.nav.dokarkiv.core.domain.util.DateProvider;
 import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
 import no.nav.dokarkiv.core.exceptions.UrlNotValidException;
 import no.nav.dokarkiv.core.repository.DokumentUrlInfoRepository;
+import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 
@@ -16,6 +17,7 @@ import javax.inject.Inject;
  * @author Eirik Bergande, Sirius IT
  * @author Thomas Eugen Bjørge, Visma Consulting
  */
+@Component
 public class DefaultHentDokumentUrlInfo extends AbstractDocumentOperation implements HentDokumentUrlInfo {
 
 	private Long defaultUrlTimeToLiveMinutes;
@@ -29,7 +31,6 @@ public class DefaultHentDokumentUrlInfo extends AbstractDocumentOperation implem
 	@Override
 	public HentDokumentUrlInfoResponse hentDokumentUrlInfo(HentDokumentUrlInfoRequest hentUrlRequest) {
 		validateHentUrlRequest(hentUrlRequest);
-//		DokumentUrlInfo dokumentUrlInfo =  joarkRepository.findDokumentUrlByDocToken(hentUrlRequest.getDocToken());
 		DokumentUrlInfo dokumentUrlInfo = dokumentUrlInfoRepository.findByDoctoken(hentUrlRequest.getDocToken());
 		validateUrlStillValid(dokumentUrlInfo);
 		return new HentDokumentUrlInfoResponse(dokumentUrlInfo);

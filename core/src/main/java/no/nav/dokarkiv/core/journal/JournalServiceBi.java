@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.core.journal;
 
+import no.nav.dokarkiv.core.exceptions.DocumentNotFoundException;
 import no.nav.dokarkiv.core.exceptions.InvalidFilUuidException;
 import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
 import no.nav.dokarkiv.core.dokument.HentDokumentRequest;
@@ -63,7 +64,7 @@ public interface JournalServiceBi {
 	 *             by filuuid.
 	 */
 	HentDokumentResponse hentDokument(HentDokumentRequest hentDokumentRequest) throws NoJournalpostFoundException,
-			InvalidFilUuidException;
+			InvalidFilUuidException, DocumentNotFoundException;
 
 //	/**
 //	 * Retrieves a URL to a document.

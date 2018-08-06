@@ -11,6 +11,7 @@ import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentUrlInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.exceptions.DocumentNotFoundException;
 import no.nav.dokarkiv.core.exceptions.InvalidFilUuidException;
 import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
 import no.nav.dokarkiv.core.journal.JournalServiceBi;
@@ -99,7 +100,7 @@ public class HentDokumentServlet extends javax.servlet.http.HttpServlet implemen
 	}
 
 	private byte[] getDocument(final Long journalpostId, final String filUuid) throws NoJournalpostFoundException,
-			InvalidFilUuidException {
+			InvalidFilUuidException, DocumentNotFoundException {
 		HentDokumentResponse hentDokumentResponse = service.hentDokument(createHentDokumentRequest(journalpostId, filUuid));
 		return hentDokumentResponse.getDokument();
 	}
