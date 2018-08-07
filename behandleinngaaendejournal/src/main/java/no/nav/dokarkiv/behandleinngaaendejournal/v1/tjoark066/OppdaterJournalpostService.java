@@ -16,6 +16,7 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
 import no.nav.dokarkiv.core.domain.validator.BrukerValidator;
+import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.core.security.ldap.NavUserLdapService;
 import no.nav.modig.core.context.SubjectHandler;
@@ -63,7 +64,7 @@ public class OppdaterJournalpostService {
 
 	private Journalpost getJournalpost(OppdaterJournalpostTo to) {
 		Long journalpostId = Long.valueOf(to.getJournalpostId());
-		return repository.findById(journalpostId).orElse(null);
+		return repository.findById(journalpostId).orElseThrow(() -> new JournalpostIkkeFunnetException("Journalpost ikke funnet. journalpostId=" + to.getJournalpostId()));
 	}
 
 	private String hentLdapBrukernavn(Long journalpostId) {

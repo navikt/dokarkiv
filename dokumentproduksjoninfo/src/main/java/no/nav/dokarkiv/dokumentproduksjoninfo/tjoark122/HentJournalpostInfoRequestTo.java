@@ -2,7 +2,7 @@ package no.nav.dokarkiv.dokumentproduksjoninfo.tjoark122;
 
 import lombok.Builder;
 import lombok.Data;
-import no.nav.dokarkiv.dokumentproduksjoninfo.exceptions.NoJournalpostFoundException;
+import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
 
 /**
  * Internal DTO for HentJournalpostInfoService requests

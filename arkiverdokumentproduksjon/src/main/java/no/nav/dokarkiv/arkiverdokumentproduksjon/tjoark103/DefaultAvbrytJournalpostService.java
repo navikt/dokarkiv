@@ -1,8 +1,8 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark103;
 
-import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.NoJournalpostFoundException;
 import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.UgyldigJournalStatusOvergangException;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
