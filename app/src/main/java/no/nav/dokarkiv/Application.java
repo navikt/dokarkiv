@@ -6,6 +6,8 @@ import no.nav.dokarkiv.behandleinngaaendejournal.v1.BehandleInngaaendeJournalV1C
 import no.nav.dokarkiv.behandlejournal.v2.BehandleJournalV2Config;
 import no.nav.dokarkiv.core.CoreConfig;
 import no.nav.dokarkiv.dokumentproduksjoninfo.DokumentproduksjonInfoConfig;
+import no.nav.dokarkiv.hentdokument.HentDokumentConfig;
+import no.nav.dokarkiv.hentdokument.HentDokumentController;
 import no.nav.dokarkiv.inngaaendejournal.v1.InngaaendeJournalV1Config;
 import no.nav.dokarkiv.innsynjournal.v2.InnsynJournalV2Config;
 import no.nav.dokarkiv.journal.v3.JournalV3Config;
@@ -25,6 +27,8 @@ import org.springframework.context.annotation.Import;
 		InngaaendeJournalV1Config.class,
 		BehandleInngaaendeJournalV1Config.class,
 		JournalV3Config.class,
+		HentDokumentConfig.class,
+		HentDokumentController.class,
 		NaisContract.class})
 public class Application {
 	public static void main(String[] args) {

@@ -6,6 +6,7 @@ import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
 import no.nav.dokarkiv.core.exceptions.MetadataXmlUpdateFailedException;
 import no.nav.dokarkiv.core.journalbehandling.to.SettMetadataForKopiering;
 import no.nav.dokarkiv.core.journalbehandling.to.SettMetadataForUthenting;
+import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -33,6 +34,7 @@ import java.util.List;
  *
  * @author Thomas Eugen Bjørge, Visma Consulting
  */
+@Component
 public class DefaultSettMetadataIDlfXmlUpdater implements SettMetadataIDlfXmlUpdater {
 
 	private static final String JOURNALPOST_ID_TAG = "journalpostID";

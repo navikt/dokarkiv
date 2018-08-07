@@ -1,6 +1,8 @@
 //package no.nav.dokarkiv.hentdokument;
 //
 //
+//import no.nav.dokarkiv.hentdokument.itest.HentDokumentServletJettyTest;
+//
 //import javax.servlet.ServletConfig;
 //import javax.servlet.ServletException;
 //

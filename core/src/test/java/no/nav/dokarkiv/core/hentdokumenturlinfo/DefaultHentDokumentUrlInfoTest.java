@@ -25,7 +25,7 @@ import java.util.Date;
 /**
  * Unit tests for DefaultHentDokumentUrlInfo.
  *
- * @author Thomas Eugen Bjørge, Visma Consulting
+ * @author Thomas Eugen BjÃ¸rge, Visma Consulting
  */
 public class DefaultHentDokumentUrlInfoTest {
 

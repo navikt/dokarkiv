@@ -6,12 +6,14 @@ import no.nav.dokarkiv.core.dokumenturl.HentDokumentUrlResponse;
 import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
 import no.nav.dokarkiv.core.exceptions.InvalidFilUuidException;
 import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
+import org.springframework.stereotype.Component;
 
 /**
  * Implementation of VedleggUrlRetriever.
  *
  * @author Thomas Eugen Bjørge, Visma Consulting
  */
+@Component
 public class DefaultVedleggUrlRetriever implements VedleggUrlRetriever {
 
 	private HentDokumentUrl hentDokumentUrl;

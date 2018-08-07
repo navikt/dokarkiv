@@ -6,6 +6,7 @@ import no.nav.dokarkiv.core.dokumenturl.AbstractDocumentOperation;
 import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
 import no.nav.dokarkiv.core.journalbehandling.to.SettMetadataIDLFRequest;
 import no.nav.dokarkiv.core.journalbehandling.to.SettMetadataIDLFResponse;
+import org.springframework.stereotype.Component;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -21,6 +22,7 @@ import java.util.zip.ZipOutputStream;
  *
  * @author Per Kristian Foss, Visma Sirius
  */
+@Component
 public class DefaultSettMetadataIDLF extends AbstractDocumentOperation implements SettMetadataIDLF {
 
 	/**

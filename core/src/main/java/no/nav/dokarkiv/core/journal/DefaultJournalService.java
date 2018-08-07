@@ -12,6 +12,9 @@ import no.nav.dokarkiv.core.dokument.HentDokumentRequest;
 import no.nav.dokarkiv.core.dokument.HentDokumentResponse;
 import no.nav.dokarkiv.core.dokumenturlinfo.HentDokumentUrlInfoRequest;
 import no.nav.dokarkiv.core.dokumenturlinfo.HentDokumentUrlInfoResponse;
+import org.springframework.stereotype.Service;
+
+import javax.inject.Inject;
 
 /**
  * Implementation of JOARK information service.
@@ -20,12 +23,16 @@ import no.nav.dokarkiv.core.dokumenturlinfo.HentDokumentUrlInfoResponse;
  * @author Rune Romundstad, Sirius IT
  * @author Thomas Eugen Bjørge, Visma Sirius
  */
+@Service
 public class DefaultJournalService implements JournalServiceBi {
 
+	@Inject
 	private HentDokument hentDokument;
+	@Inject
 	private HentDokumentUrl hentDokumentUrl;
 //	private HentJournalpost hentJournalpost;
 //	private FinnJournalpost finnJournalpost;
+	@Inject
 	private HentDokumentUrlInfo hentDokumentUrlInfo;
 //	private IdentifiserBrevgruppe identifiserBrevgruppe;
 

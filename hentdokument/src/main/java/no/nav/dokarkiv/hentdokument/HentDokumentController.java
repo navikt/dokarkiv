@@ -1,0 +1,84 @@
+package no.nav.dokarkiv.hentdokument;
+
+import lombok.extern.slf4j.Slf4j;
+import no.nav.dokarkiv.core.dokument.HentDokumentRequest;
+import no.nav.dokarkiv.core.dokument.HentDokumentResponse;
+import no.nav.dokarkiv.core.dokumenturl.MimeTypeMapper;
+import no.nav.dokarkiv.core.dokumenturlinfo.HentDokumentUrlInfoRequest;
+import no.nav.dokarkiv.core.dokumenturlinfo.HentDokumentUrlInfoResponse;
+import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
+import no.nav.dokarkiv.core.domain.entities.DokumentUrlInfo;
+import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
+import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.exceptions.DocumentNotFoundException;
+import no.nav.dokarkiv.core.exceptions.InvalidFilUuidException;
+import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
+import no.nav.dokarkiv.core.journal.JournalServiceBi;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import javax.inject.Inject;
+
+@Slf4j
+@RestController
+public class HentDokumentController {
+
+	private static final String ROOT_URL = "/dokarkiv/";
+
+	@Inject
+	private JournalServiceBi service;
+
+	private MimeTypeMapper mimeTypeMapper = new MimeTypeMapper();
+
+
+	@GetMapping(value = ROOT_URL + "hentDokument")
+	public ResponseEntity<byte[]> getDokument(final @RequestParam("docToken") String docToken) {
+		try {
+			DokumentUrlInfo dokUrlInfo = getDokumentUrlInfo(docToken);
+			Long journalpostId = dokUrlInfo.getJournalpost().getJournalpostId();
+			String filUuid = dokUrlInfo.getFilUuid();
+			byte[] document = getDocument(journalpostId, filUuid);
+
+			FilTypeCode filtype = getFilTypeFromJournalpost(dokUrlInfo.getJournalpost(), filUuid);
+
+			return ResponseEntity
+					.ok()
+					.contentType(MediaType.parseMediaType(getContentType(filtype)))
+					.contentLength(document.length)
+					.body(document); //header() ?
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+
+	@GetMapping(value = ROOT_URL + "ping")
+	public String ping() {
+		return "OK";
+	}
+
+	private DokumentUrlInfo getDokumentUrlInfo(String docToken) {
+		HentDokumentUrlInfoResponse hentDokumentUrlInfoResponse = service.hentDokumentUrlInfo(new HentDokumentUrlInfoRequest(docToken));
+		return hentDokumentUrlInfoResponse.getDokumentUrl();
+	}
+
+	private byte[] getDocument(final Long journalpostId, final String filUuid) throws NoJournalpostFoundException,
+			InvalidFilUuidException, DocumentNotFoundException {
+		HentDokumentRequest hentDokumentRequest = new HentDokumentRequest(journalpostId, filUuid);
+		HentDokumentResponse hentDokumentResponse = service.hentDokument(hentDokumentRequest);
+		return hentDokumentResponse.getDokument();
+	}
+
+	private FilTypeCode getFilTypeFromJournalpost(Journalpost journalpost, String filUuid) {
+		FilDetaljer filDetaljer = journalpost.findFilDetaljerByFilUuid(filUuid);
+		return filDetaljer != null ? filDetaljer.getFiltype() : null;
+	}
+
+	private String getContentType(FilTypeCode filtype) {
+		return mimeTypeMapper.getMimeTypeForFileExtension(filtype.name());
+	}
+
+}
