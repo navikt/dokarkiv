@@ -26,6 +26,7 @@
 		<module>inngaaendejournal</module>
 		<module>behandleinngaaendejournal</module>
 		<module>journal</module>
+		<module>inngaaendejournalbehandling</module>
 	</modules>
 
 	<distributionManagement>
