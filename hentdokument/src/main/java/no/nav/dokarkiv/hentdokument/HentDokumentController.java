@@ -16,6 +16,7 @@ import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
 import no.nav.dokarkiv.core.journal.JournalServiceBi;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -33,14 +34,15 @@ public class HentDokumentController {
 
 	private MimeTypeMapper mimeTypeMapper = new MimeTypeMapper();
 
-
+	@Transactional(readOnly = true)
 	@GetMapping(value = ROOT_URL + "hentDokument")
 	public ResponseEntity<byte[]> getDokument(final @RequestParam("docToken") String docToken) {
 		try {
 			DokumentUrlInfo dokUrlInfo = getDokumentUrlInfo(docToken);
 			Long journalpostId = dokUrlInfo.getJournalpost().getJournalpostId();
 			String filUuid = dokUrlInfo.getFilUuid();
-			byte[] document = getDocument(journalpostId, filUuid);
+
+			byte[] document = getDocument(journalpostId, filUuid, docToken);
 
 			FilTypeCode filtype = getFilTypeFromJournalpost(dokUrlInfo.getJournalpost(), filUuid);
 
@@ -48,8 +50,9 @@ public class HentDokumentController {
 					.ok()
 					.contentType(MediaType.parseMediaType(getContentType(filtype)))
 					.contentLength(document.length)
-					.body(document); //header() ?
+					.body(document);
 		} catch (Exception e) {
+//			System.out.println(e.getStackTrace());
 			throw new RuntimeException(e);
 		}
 	}
@@ -65,9 +68,9 @@ public class HentDokumentController {
 		return hentDokumentUrlInfoResponse.getDokumentUrl();
 	}
 
-	private byte[] getDocument(final Long journalpostId, final String filUuid) throws NoJournalpostFoundException,
+	private byte[] getDocument(final Long journalpostId, final String filUuid, final String docToken) throws NoJournalpostFoundException,
 			InvalidFilUuidException, DocumentNotFoundException {
-		HentDokumentRequest hentDokumentRequest = new HentDokumentRequest(journalpostId, filUuid);
+		HentDokumentRequest hentDokumentRequest = new HentDokumentRequest(journalpostId, filUuid, docToken);
 		HentDokumentResponse hentDokumentResponse = service.hentDokument(hentDokumentRequest);
 		return hentDokumentResponse.getDokument();
 	}

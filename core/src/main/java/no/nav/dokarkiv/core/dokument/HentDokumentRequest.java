@@ -20,6 +20,7 @@ public class HentDokumentRequest {
 
 	private Long journalpostId;
 	private String filUuid;
+	private String docToken;
 
 	/**
 	 * Constructor for mapping
@@ -37,6 +38,19 @@ public class HentDokumentRequest {
 	public HentDokumentRequest(Long journalpostId, String filUuid) {
 		this.journalpostId = journalpostId;
 		this.filUuid = filUuid;
+	}
+
+	/**
+	 * Constructs a HentDokumentRequest.
+	 *
+	 * @param journalpostId The journalpostId.
+	 * @param filUuid       The filUuid of the file to get.
+	 * @param docToken		The docToken
+	 */
+	public HentDokumentRequest(Long journalpostId, String filUuid, String docToken) {
+		this.journalpostId = journalpostId;
+		this.filUuid = filUuid;
+		this.docToken = docToken;
 	}
 
 	/**
@@ -67,6 +81,15 @@ public class HentDokumentRequest {
 	 */
 	public String getFilUuid() {
 		return filUuid;
+	}
+
+	/**
+	 * Getter for the docToken property.
+	 *
+	 * @return the docToken
+	 */
+	public String getDocToken() {
+		return docToken;
 	}
 
 	/**
