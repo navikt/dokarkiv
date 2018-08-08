@@ -29,7 +29,8 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "T_JP_DOK_INFO_REL")
-@Builder@AllArgsConstructor
+@Builder
+@AllArgsConstructor
 public class JournalpostDokumentInfoRelasjon extends AbstractPersistentVersionedDomainObjectWithKilde {
 
 	/**

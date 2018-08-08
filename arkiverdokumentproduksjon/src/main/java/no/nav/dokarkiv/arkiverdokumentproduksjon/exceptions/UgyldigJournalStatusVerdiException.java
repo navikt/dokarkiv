@@ -14,7 +14,7 @@ public class UgyldigJournalStatusVerdiException extends FunctionalRecoverableExc
 	/** Unique serial version id. */
 	private static final long serialVersionUID = 1L;
 
-	private JournalStatusCode journalStatus;
+	private final JournalStatusCode journalStatus;
 
 	/**
 	 * Constructs a new UgyldigJournalStatusVerdiException.

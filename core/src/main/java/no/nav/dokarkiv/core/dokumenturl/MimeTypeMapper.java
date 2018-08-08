@@ -15,7 +15,7 @@ public class MimeTypeMapper {
 
 	private static final String TEXT_XML = "text/xml";
 	private static final String APPLICATION_PDF = "application/pdf";
-	private Map<String, String> mimeTypes = new HashMap<>();
+	private final Map<String, String> mimeTypes = new HashMap<>();
 	
 	private static final String MIMETYPE_BINARY = "application/binary";
 	

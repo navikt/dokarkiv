@@ -1,8 +1,6 @@
 package no.nav.dokarkiv.core.domain.entities.bidrag;
 
-import com.google.common.base.Predicate;
 import com.google.common.base.Strings;
-import com.google.common.collect.Sets;
 import no.nav.dokarkiv.core.domain.AbstractPersistentVersionedDomainObject;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
@@ -26,6 +24,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Domain object representing metadata for temporary stored Bidrag documents.
@@ -218,11 +217,8 @@ public class BidragMellomlagring extends AbstractPersistentVersionedDomainObject
 	 */
 	public Set<BidragMellomlagringDokument> findBidragMellomlagringDokumentByType(
 			final BidragMellomlagringDokumentType bidragMellomlagringDokumentType) {
-		return Sets.filter(bidragMellomlagringDokuments, new Predicate<BidragMellomlagringDokument>() {
-			@Override
-			public boolean apply(BidragMellomlagringDokument input) {
-				return bidragMellomlagringDokumentType == input.getDokumentType();
-			}
-		});
+		return bidragMellomlagringDokuments.stream()
+				.filter(bidragMellomlagringDokument -> bidragMellomlagringDokument.getDokumentType() == bidragMellomlagringDokumentType)
+				.collect(Collectors.toSet());
 	}
 }

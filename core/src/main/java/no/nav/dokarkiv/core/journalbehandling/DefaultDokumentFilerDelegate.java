@@ -42,7 +42,7 @@ public class DefaultDokumentFilerDelegate implements DokumentFilerDelegate {
 	}
 
 	private List<DokumentFil> createNewDokumentFiler(Journalpost journalpost) {
-		List<DokumentFil> dokumentFiler = new ArrayList<DokumentFil>();
+		List<DokumentFil> dokumentFiler = new ArrayList<>();
 		for (FilDetaljer filDetaljer : journalpost.findAllFilDetaljer()) {
 			if (filDetaljer.getFildetaljerId() == null && filDetaljer.hasFileContent()) {
 				dokumentFiler.add(filDetaljer.createDokumentFil());

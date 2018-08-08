@@ -236,7 +236,7 @@ public class DefaultOppdaterJournalpostArkiverDokumentValidatorTest {
 		expected.expect(KanIkkeFerdigstillesException.class);
 		expected.expectMessage("Journalposten kan ikke ferdigstilles fordi tilknyttet dokument (dokumentInfoId=" + dokumentInfo.getDokumentInfoId() + ")  ikke har status " + DokumentStatusCode.FERDIGSTILT
 				.name());
-		validator.validateThatAllDocumentStatusesAreFerdigstilltWhenFerdigstillJournalPost(journalpost, dokumentInfo, true);
+		validator.validateThatAllDocumentStatusesAreFerdigstilt(journalpost, dokumentInfo);
 	}
 
 	@Test
