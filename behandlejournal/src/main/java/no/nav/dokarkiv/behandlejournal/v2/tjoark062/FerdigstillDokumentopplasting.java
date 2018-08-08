@@ -1,6 +1,6 @@
 package no.nav.dokarkiv.behandlejournal.v2.tjoark062;
 
-import no.nav.dokarkiv.behandlejournal.v2.exceptions.NoJournalpostFoundException;
+import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
 
 /**
  * Defines the contract for the FerdigstillDokumentOpplasting operation.

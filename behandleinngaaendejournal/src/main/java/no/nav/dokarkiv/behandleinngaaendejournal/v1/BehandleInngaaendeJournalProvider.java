@@ -9,7 +9,6 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.behandleinngaaendejournal.v1.exceptions.DokumentInfoIkkeTilknyttetJournalpostException;
 import no.nav.dokarkiv.behandleinngaaendejournal.v1.exceptions.FerdigstillingIkkeMuligException;
 import no.nav.dokarkiv.behandleinngaaendejournal.v1.exceptions.OppdaterJournalpostIkkeMuligException;
-import no.nav.dokarkiv.behandleinngaaendejournal.v1.exceptions.UgyldigInputException;
 import no.nav.dokarkiv.behandleinngaaendejournal.v1.tjoark066.OppdaterJournalpostRequestMapper;
 import no.nav.dokarkiv.behandleinngaaendejournal.v1.tjoark066.OppdaterJournalpostService;
 import no.nav.dokarkiv.behandleinngaaendejournal.v1.tjoark066.to.OppdaterJournalpostRequestTo;
@@ -18,6 +17,7 @@ import no.nav.dokarkiv.behandleinngaaendejournal.v1.tjoark067.FerdigstillJournal
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeInngaaendeException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeMidlertidigException;
+import no.nav.dokarkiv.core.exceptions.UgyldigInputException;
 import no.nav.dokarkiv.core.security.abac.AbacSecurityService;
 import no.nav.dokarkiv.core.security.abac.AuthorizationException;
 import no.nav.freg.abac.core.annotation.Abac;

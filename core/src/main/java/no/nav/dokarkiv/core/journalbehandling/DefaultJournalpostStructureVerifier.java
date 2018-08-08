@@ -12,13 +12,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class DefaultJournalpostStructureVerifier implements JournalpostStructureVerifier {
 
-	/**
-	 * {@inheritDoc}
-	 */
 	public void verifyJournalpostStructure(Journalpost journalpost) {
 		journalpost.verifyUniqueDokumentInfoRelasjoner();
 		journalpost.verifyNoDokumentVariantDuplicates();
 		journalpost.verifyStructureForEndeligJournalforing();
 	}
-
 }

@@ -1,10 +1,10 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark106;
 
-import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.NoDokumentInfoFoundException;
-import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.NoJournalpostFoundException;
 import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.UgyldigDokumentStatusVerdiException;
 import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.UgyldigJournalStatusVerdiException;
 import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.UgyldigTilknyttetJournalpostSomVerdiException;
+import no.nav.dokarkiv.core.exceptions.NoDokumentInfoFoundException;
+import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
 
 /**
  * Interface for operation AvbrytVedlegg

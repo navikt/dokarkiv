@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions;
+package no.nav.dokarkiv.core.exceptions;
 
 import no.nav.dokarkiv.core.stelvio.FunctionalRecoverableException;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -13,7 +13,7 @@ public class NoDokumentInfoFoundException extends FunctionalRecoverableException
 	/** Serialization UID */
 	private static final long serialVersionUID = ***gammelt_fnr***36396074L;
 
-	private final Long dokumentInfoId;
+	private Long dokumentInfoId;
 	
 	/**
 	 * Constructs a new NoDokumentInfoFoundException.

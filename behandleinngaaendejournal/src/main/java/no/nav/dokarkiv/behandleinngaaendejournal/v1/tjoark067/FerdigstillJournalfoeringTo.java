@@ -2,7 +2,7 @@ package no.nav.dokarkiv.behandleinngaaendejournal.v1.tjoark067;
 
 import lombok.Builder;
 import lombok.Value;
-import no.nav.dokarkiv.behandleinngaaendejournal.v1.exceptions.UgyldigInputException;
+import no.nav.dokarkiv.core.exceptions.UgyldigInputException;
 
 /**
  * @author Joakim Bjørnstad, Jbit AS

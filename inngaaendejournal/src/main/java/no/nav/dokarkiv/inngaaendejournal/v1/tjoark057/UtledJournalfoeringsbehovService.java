@@ -3,10 +3,10 @@ package no.nav.dokarkiv.inngaaendejournal.v1.tjoark057;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeInngaaendeException;
+import no.nav.dokarkiv.core.exceptions.UgyldigInputException;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.inngaaendejournal.v1.common.JournalpostManglerTo;
 import no.nav.dokarkiv.inngaaendejournal.v1.exceptions.JournalpostKanIkkeBehandlesException;
-import no.nav.dokarkiv.inngaaendejournal.v1.exceptions.UgyldigInputException;
 import no.nav.dokarkiv.inngaaendejournal.v1.tjoark056.JournalpostManglerToMapper;
 import org.springframework.stereotype.Component;
 

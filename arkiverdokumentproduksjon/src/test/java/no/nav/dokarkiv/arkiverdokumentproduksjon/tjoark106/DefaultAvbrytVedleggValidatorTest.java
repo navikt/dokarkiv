@@ -5,8 +5,6 @@ import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalp
 import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.HOVEDDOKUMENT;
 import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.VEDLEGG;
 
-import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.NoDokumentInfoFoundException;
-import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.NoJournalpostFoundException;
 import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.UgyldigDokumentStatusVerdiException;
 import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.UgyldigJournalStatusVerdiException;
 import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.UgyldigTilknyttetJournalpostSomVerdiException;
@@ -17,6 +15,8 @@ import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
+import no.nav.dokarkiv.core.exceptions.NoDokumentInfoFoundException;
+import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -39,7 +39,7 @@ public class DefaultAvbrytVedleggValidatorTest {
 
 	@Test
 	public void shouldValidateRequest() throws Exception {
-		validator.validateInputRequest(createRequest());
+		validator.validateInputRequest(createRequest(JOURNALPOST_ID, DOKUMENTINFO_ID, ENDRET_AV_NAVN));
 	}
 
 	@Test
@@ -47,8 +47,7 @@ public class DefaultAvbrytVedleggValidatorTest {
 		thrown.expect(IllegalArgumentException.class);
 		thrown.expectMessage("JournalpostId cannot be empty or missing");
 
-		AvbrytVedleggRequestTo requestTo = createRequest();
-		requestTo.setJournalpostId(null);
+		AvbrytVedleggRequestTo requestTo = createRequest(null, DOKUMENTINFO_ID, ENDRET_AV_NAVN);
 
 		validator.validateInputRequest(requestTo);
 	}
@@ -58,8 +57,7 @@ public class DefaultAvbrytVedleggValidatorTest {
 		thrown.expect(IllegalArgumentException.class);
 		thrown.expectMessage("JournalpostId cannot be empty or missing");
 
-		AvbrytVedleggRequestTo requestTo = createRequest();
-		requestTo.setJournalpostId(0L);
+		AvbrytVedleggRequestTo requestTo = createRequest(0L, DOKUMENTINFO_ID, ENDRET_AV_NAVN);
 
 		validator.validateInputRequest(requestTo);
 	}
@@ -69,8 +67,7 @@ public class DefaultAvbrytVedleggValidatorTest {
 		thrown.expect(IllegalArgumentException.class);
 		thrown.expectMessage("DokumentInfoId cannot be empty or missing");
 
-		AvbrytVedleggRequestTo requestTo = createRequest();
-		requestTo.setDokumentInfoId(null);
+		AvbrytVedleggRequestTo requestTo = createRequest(JOURNALPOST_ID, null, ENDRET_AV_NAVN);
 
 		validator.validateInputRequest(requestTo);
 	}
@@ -80,8 +77,7 @@ public class DefaultAvbrytVedleggValidatorTest {
 		thrown.expect(IllegalArgumentException.class);
 		thrown.expectMessage("DokumentInfoId cannot be empty or missing");
 
-		AvbrytVedleggRequestTo requestTo = createRequest();
-		requestTo.setDokumentInfoId(0L);
+		AvbrytVedleggRequestTo requestTo = createRequest(JOURNALPOST_ID, 0L, ENDRET_AV_NAVN);
 
 		validator.validateInputRequest(requestTo);
 	}
@@ -91,8 +87,7 @@ public class DefaultAvbrytVedleggValidatorTest {
 		thrown.expect(IllegalArgumentException.class);
 		thrown.expectMessage("EndretAvNavn cannot be empty or missing.");
 
-		AvbrytVedleggRequestTo requestTo = createRequest();
-		requestTo.setEndretAvNavn(null);
+		AvbrytVedleggRequestTo requestTo = createRequest(JOURNALPOST_ID, DOKUMENTINFO_ID, null);
 
 		validator.validateInputRequest(requestTo);
 	}
@@ -102,8 +97,7 @@ public class DefaultAvbrytVedleggValidatorTest {
 		thrown.expect(IllegalArgumentException.class);
 		thrown.expectMessage("EndretAvNavn cannot be empty or missing.");
 
-		AvbrytVedleggRequestTo requestTo = createRequest();
-		requestTo.setEndretAvNavn("");
+		AvbrytVedleggRequestTo requestTo = createRequest(JOURNALPOST_ID, DOKUMENTINFO_ID, "");
 
 		validator.validateInputRequest(requestTo);
 	}
@@ -186,7 +180,7 @@ public class DefaultAvbrytVedleggValidatorTest {
 				.build();
 	}
 
-	private AvbrytVedleggRequestTo createRequest() {
-		return new AvbrytVedleggRequestTo(JOURNALPOST_ID, DOKUMENTINFO_ID, ENDRET_AV_NAVN);
+	private AvbrytVedleggRequestTo createRequest(Long journalpostId, Long dokumentInfoId, String endretAvNavn) {
+		return new AvbrytVedleggRequestTo(journalpostId, dokumentInfoId, endretAvNavn);
 	}
 }
