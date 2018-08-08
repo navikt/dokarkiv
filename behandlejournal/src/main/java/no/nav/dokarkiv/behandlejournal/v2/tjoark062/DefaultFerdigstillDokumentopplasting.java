@@ -2,13 +2,13 @@ package no.nav.dokarkiv.behandlejournal.v2.tjoark062;
 
 import no.nav.dokarkiv.behandlejournal.v2.SporingUtil;
 import no.nav.dokarkiv.behandlejournal.v2.SporingsMetaData;
-import no.nav.dokarkiv.behandlejournal.v2.exceptions.NoJournalpostFoundException;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.bidrag.BidragMellomlagring;
 import no.nav.dokarkiv.core.domain.entities.bidrag.BidragMellomlagringStatus;
 import no.nav.dokarkiv.core.exceptions.ApplicationException;
+import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
 import no.nav.dokarkiv.core.repository.BidragMellomlagringRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.core.sporing.SporingPopulator;

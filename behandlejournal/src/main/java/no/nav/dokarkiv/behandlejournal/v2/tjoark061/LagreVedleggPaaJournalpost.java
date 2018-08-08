@@ -1,6 +1,6 @@
 package no.nav.dokarkiv.behandlejournal.v2.tjoark061;
 
-import no.nav.dokarkiv.behandlejournal.v2.exceptions.NoJournalpostFoundException;
+import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
 
 /**
  * Service to add a new vedlegg to an already persisted Journalpost.

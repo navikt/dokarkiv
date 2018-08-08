@@ -14,7 +14,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import no.nav.dokarkiv.behandlejournal.v2.SporingsMetaData;
-import no.nav.dokarkiv.behandlejournal.v2.exceptions.NoJournalpostFoundException;
 import no.nav.dokarkiv.core.domain.builder.JournalpostBuilder;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
@@ -32,6 +31,7 @@ import no.nav.dokarkiv.core.domain.entities.bidrag.BidragMellomlagringDokumentTy
 import no.nav.dokarkiv.core.domain.entities.bidrag.BidragMellomlagringStatus;
 import no.nav.dokarkiv.core.domain.util.DateProvider;
 import no.nav.dokarkiv.core.exceptions.ApplicationException;
+import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
 import no.nav.dokarkiv.core.repository.BidragMellomlagringRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.core.sporing.SporingPopulator;

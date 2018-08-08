@@ -64,6 +64,7 @@ public class CallIdHandler implements SOAPHandler<SOAPMessageContext> {
     /** {@inheritDoc} */
     @Override
     public void close(MessageContext context) {
+    	//noop
     }
 
     /** {@inheritDoc} */

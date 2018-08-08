@@ -31,7 +31,7 @@ public class AuditItem {
 
 	private ProtectionLevel protectionLevel;
 
-	private Map<String, String> customInfo = new HashMap<String, String>();
+	private final Map<String, String> customInfo = new HashMap<>();
 
 	/**
 	 * Constructor that creates an <code>{@link AuditItem}</code> Setting userId and transactionId from RequestContext if
@@ -196,16 +196,14 @@ public class AuditItem {
 	 */
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		sb.append("AccessType=").append(getAccessType()).append(", ");
-		sb.append("ProtectionLevel=").append(getProtectionLevel()).append(", ");
-		sb.append("Message=").append(getMessage()).append(", ");
-		sb.append("Target=").append(getTarget()).append(", ");
-		sb.append("Source=").append(getSource()).append(", ");
-		sb.append("UserId=").append(getUserId()).append(", ");
-		sb.append("Timestamp=").append(getTimestamp()).append(", ");
-		sb.append("CustomInfo=").append(parseCustomInfo(getCustomInfo()));
-		return sb.toString();
+		return "AccessType=" + getAccessType() + ", " +
+				"ProtectionLevel=" + getProtectionLevel() + ", " +
+				"Message=" + getMessage() + ", " +
+				"Target=" + getTarget() + ", " +
+				"Source=" + getSource() + ", " +
+				"UserId=" + getUserId() + ", " +
+				"Timestamp=" + getTimestamp() + ", " +
+				"CustomInfo=" + parseCustomInfo(getCustomInfo());
 	}
 
 	/**

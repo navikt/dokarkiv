@@ -11,7 +11,6 @@ import com.google.common.collect.Ordering;
 import no.nav.dokarkiv.behandleinngaaendejournal.v1.BehandleInngaaendeJournalDataProvider;
 import no.nav.dokarkiv.behandleinngaaendejournal.v1.exceptions.DokumentInfoIkkeTilknyttetJournalpostException;
 import no.nav.dokarkiv.behandleinngaaendejournal.v1.exceptions.OppdaterJournalpostIkkeMuligException;
-import no.nav.dokarkiv.behandleinngaaendejournal.v1.exceptions.UgyldigInputException;
 import no.nav.dokarkiv.behandleinngaaendejournal.v1.tjoark066.to.AktoerTo;
 import no.nav.dokarkiv.behandleinngaaendejournal.v1.tjoark066.to.ArkivSakTo;
 import no.nav.dokarkiv.behandleinngaaendejournal.v1.tjoark066.to.AvsenderTo;
@@ -29,12 +28,12 @@ import no.nav.dokarkiv.core.exceptions.InvalidBrukerException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeInngaaendeException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeMidlertidigException;
+import no.nav.dokarkiv.core.exceptions.UgyldigInputException;
 import no.nav.dokarkiv.core.jaxws.SubjectHandlerUtils;
 import no.nav.dokarkiv.core.jaxws.ThreadLocalSubjectHandler;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.core.security.ldap.NavUser;
 import no.nav.dokarkiv.core.security.ldap.NavUserLdapService;
-import org.joda.time.LocalDateTime;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -46,6 +45,8 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.slf4j.MDC;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -365,7 +366,8 @@ public class OppdaterJournalpostServiceTest {
 		List<Bruker> sortedCopy = Ordering.from(new Comparator<Bruker>() {
 			@Override
 			public int compare(Bruker o1, Bruker o2) {
-				return LocalDateTime.fromDateFields(o2.getChangeStamp().getCreatedDate()).compareTo(LocalDateTime.fromDateFields(o1.getChangeStamp().getCreatedDate()));
+				return LocalDateTime.ofInstant(o2.getChangeStamp().getCreatedDate().toInstant(), ZoneId.systemDefault())
+						.compareTo(LocalDateTime.ofInstant(o1.getChangeStamp().getCreatedDate().toInstant(), ZoneId.systemDefault()));
 			}
 		}).sortedCopy(journalpost.getBrukere());
 		return sortedCopy.get(0);

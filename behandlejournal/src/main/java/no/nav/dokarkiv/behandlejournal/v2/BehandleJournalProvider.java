@@ -1,7 +1,6 @@
 package no.nav.dokarkiv.behandlejournal.v2;
 
 import lombok.extern.slf4j.Slf4j;
-import no.nav.dokarkiv.behandlejournal.v2.exceptions.NoJournalpostFoundException;
 import no.nav.dokarkiv.behandlejournal.v2.tjoark060.ArkiverUstrukturertKravRequestMapper;
 import no.nav.dokarkiv.behandlejournal.v2.tjoark060.ArkiverUstrukturertKravResponseMapper;
 import no.nav.dokarkiv.behandlejournal.v2.tjoark061.LagreVedleggPaaJournalpostRequestMapper;
@@ -14,6 +13,7 @@ import no.nav.dokarkiv.behandlejournal.v2.tjoark064.JournalfoerUtgaaendeHenvende
 import no.nav.dokarkiv.behandlejournal.v2.tjoark065.JournalfoerNotatHenvendelseRequestMapper;
 import no.nav.dokarkiv.behandlejournal.v2.tjoark065.JournalfoerNotatHenvendelseResponseMapper;
 import no.nav.dokarkiv.core.domain.entities.bidrag.BidragMellomlagring;
+import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.binding.BehandleJournalV2;
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.binding.FerdigstillDokumentopplastingFerdigstillDokumentopplastingjournalpostIkkeFunnet;
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.binding.LagreVedleggPaaJournalpostLagreVedleggPaaJournalpostjournalpostIkkeFunnet;

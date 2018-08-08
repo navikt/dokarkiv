@@ -30,7 +30,9 @@ import no.nav.tjeneste.virksomhet.inngaaendejournal.v1.informasjon.Variantformat
 import no.nav.tjeneste.virksomhet.inngaaendejournal.v1.meldinger.HentJournalpostResponse;
 import org.springframework.stereotype.Component;
 
+import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -52,7 +54,7 @@ public class HentInngaaendeJournalpostResponseMapper {
 		if (to.getForsendelseMottatt() == null) {
 			inngaaendeJournalpost.setForsendelseMottatt(null);
 		} else {
-			inngaaendeJournalpost.setForsendelseMottatt(convertDateToXMLGregorianCalendar(to.getForsendelseMottatt().toDate()));
+			inngaaendeJournalpost.setForsendelseMottatt(convertDateToXMLGregorianCalendar(Date.from(to.getForsendelseMottatt().atZone(ZoneId.systemDefault()).toInstant())));
 		}
 		inngaaendeJournalpost.setMottakskanal(nullsafeEnumToKodeverdiMapper(to.getMottakskanal(), Mottakskanaler.class));
 		inngaaendeJournalpost.setTema(nullsafeEnumToKodeverdiMapper(to.getTema(), Tema.class));

@@ -8,11 +8,11 @@ import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.READ_ACTION
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeInngaaendeException;
+import no.nav.dokarkiv.core.exceptions.UgyldigInputException;
 import no.nav.dokarkiv.core.security.abac.AbacSecurityService;
 import no.nav.dokarkiv.core.security.abac.AuthorizationException;
 import no.nav.dokarkiv.inngaaendejournal.v1.common.JournalpostManglerTo;
 import no.nav.dokarkiv.inngaaendejournal.v1.exceptions.JournalpostKanIkkeBehandlesException;
-import no.nav.dokarkiv.inngaaendejournal.v1.exceptions.UgyldigInputException;
 import no.nav.dokarkiv.inngaaendejournal.v1.tjoark056.HentInngaaendeJournalpostResponseMapper;
 import no.nav.dokarkiv.inngaaendejournal.v1.tjoark056.HentInngaaendeJournalpostService;
 import no.nav.dokarkiv.inngaaendejournal.v1.tjoark056.to.InngaaendeJournalpostTo;

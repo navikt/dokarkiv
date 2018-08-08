@@ -8,11 +8,11 @@ import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
 import no.nav.dokarkiv.core.exceptions.InvalidFilUuidException;
+import no.nav.dokarkiv.core.exceptions.NoDokumentInfoFoundException;
+import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.innsynjournal.v2.exceptions.DocumentNotFoundException;
-import no.nav.dokarkiv.innsynjournal.v2.exceptions.NoDokumentInfoFoundException;
-import no.nav.dokarkiv.innsynjournal.v2.exceptions.NoJournalpostFoundException;
 import org.apache.commons.lang3.BooleanUtils;
 
 import javax.inject.Inject;
