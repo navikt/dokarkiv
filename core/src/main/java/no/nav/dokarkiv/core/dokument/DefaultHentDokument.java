@@ -9,7 +9,6 @@ import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentFil;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import no.nav.dokarkiv.core.exceptions.DocumentNotFoundException;
 import no.nav.dokarkiv.core.exceptions.DokarkivTechnicalException;
 import no.nav.dokarkiv.core.exceptions.InvalidFilUuidException;
 import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
@@ -55,7 +54,7 @@ public class DefaultHentDokument extends AbstractDocumentOperation implements He
 	 * {@inheritDoc}
 	 */
 	public HentDokumentResponse hentDokument(HentDokumentRequest hentDokumentRequest) throws NoJournalpostFoundException,
-			InvalidFilUuidException, DocumentNotFoundException {
+			InvalidFilUuidException {
 		hentDokumentRequest.validate();
 		return getDokument(hentDokumentRequest);
 	}
@@ -78,20 +77,17 @@ public class DefaultHentDokument extends AbstractDocumentOperation implements He
 	}
 
 	private byte[] getDocumentFromRepository(Journalpost journalpost, FilDetaljer filDetaljer, String docToken) throws InvalidFilUuidException {
-		if (filDetaljer.getOnDemandId() != null && isNotEmpty(docToken)) {
-			return getDocumentFromOnDemandRepository(filDetaljer, docToken);
+		if (isNotEmpty(filDetaljer.getOnDemandId()) && isNotEmpty(docToken)) {
+			return getDocumentFromOnDemand(filDetaljer, docToken);
 		} else {
 			DokumentFil dokumentFil = getDocumentFromDBRepository(filDetaljer.getFilUuid());
 			return updateDocumentIfDlf(dokumentFil, journalpost.getId(), filDetaljer);
 		}
 	}
 
-	private byte[] getDocumentFromOnDemandRepository(FilDetaljer filDetaljer, String docToken) {
-		if (isNotEmpty(filDetaljer.getOnDemandId())) {
-			String dokumentUrl = getUrl(filDetaljer, docToken);
-			return hentOndemandDokument.hentOndemandDokumentFromJoark(dokumentUrl);
-		}
-		return null;
+	private byte[] getDocumentFromOnDemand(FilDetaljer filDetaljer, String docToken) {
+		String dokumentUrl = getUrl(filDetaljer, docToken);
+		return hentOndemandDokument.hentOndemandDokumentFromJoark(dokumentUrl);
 	}
 
 	private String getUrl(FilDetaljer filDetaljer, String docToken) {

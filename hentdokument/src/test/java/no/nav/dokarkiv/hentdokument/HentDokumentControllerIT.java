@@ -85,13 +85,6 @@ public class HentDokumentControllerIT {
 	@Inject
 	private HentDokumentController controller;
 
-
-//	@Configuration
-//	public static class HentDokumentTestConfig {
-//
-//
-//	}
-
 	@Before
 	public void setUp() {
 		RequestContextSetter.setRequestContext(new SimpleRequestContext.Builder()
@@ -155,6 +148,22 @@ public class HentDokumentControllerIT {
 		ResponseEntity<byte[]> response = controller.getDokument(docToken);
 
 		assertEquals(HttpStatus.OK.value(), response.getStatusCodeValue());
+		assertArrayEquals(FIL_CONTENT, response.getBody());
+	}
+
+	@Test
+	@Ignore("TODO fix exception handling")
+	public void shouldThrowExceptionInvalidDocToken() {
+		String docToken = UUID.randomUUID().toString();
+
+		Journalpost journalpost = joarkRepository.save(createJournalpostBuilder("tittel").build());
+		DokumentUrlInfo dokumentUrlInfo = dokumentUrlInfoRepository.save(createDokumentUrlInfo(journalpost, docToken, FIL_UUID).build());
+
+		persistDokumentFil();
+
+		ResponseEntity<byte[]> response = controller.getDokument("");
+
+		assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatusCodeValue());
 		assertArrayEquals(FIL_CONTENT, response.getBody());
 	}
 
