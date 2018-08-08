@@ -48,7 +48,7 @@
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<oracle.version>12.2.0.1</oracle.version>
-		<cxf.version>3.2.4</cxf.version>
+		<cxf.version>3.2.5</cxf.version>
 		<flyway.version>4.2.0</flyway.version>
 	</properties>
 
