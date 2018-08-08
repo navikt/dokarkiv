@@ -11,9 +11,11 @@ import no.nav.dokarkiv.core.domain.entities.DokumentUrlInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.DocumentNotFoundException;
+import no.nav.dokarkiv.core.exceptions.DokarkivFunctionalException;
 import no.nav.dokarkiv.core.exceptions.InvalidFilUuidException;
 import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
 import no.nav.dokarkiv.core.journal.JournalServiceBi;
+import no.nav.dokarkiv.core.stelvio.FunctionalRecoverableException;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,6 +39,7 @@ public class HentDokumentController {
 	@Transactional(readOnly = true)
 	@GetMapping(value = ROOT_URL + "hentDokument")
 	public ResponseEntity<byte[]> getDokument(final @RequestParam("docToken") String docToken) {
+		// metrikker ?
 		try {
 			DokumentUrlInfo dokUrlInfo = getDokumentUrlInfo(docToken);
 			Long journalpostId = dokUrlInfo.getJournalpost().getJournalpostId();
@@ -51,12 +54,11 @@ public class HentDokumentController {
 					.contentType(MediaType.parseMediaType(getContentType(filtype)))
 					.contentLength(document.length)
 					.body(document);
-		} catch (Exception e) {
-//			System.out.println(e.getStackTrace());
-			throw new RuntimeException(e);
+		} catch (FunctionalRecoverableException e) {
+			log.error("HentDokumentController feilet.", e);
+			throw new DokarkivFunctionalException(e);
 		}
 	}
-
 
 	@GetMapping(value = ROOT_URL + "ping")
 	public String ping() {

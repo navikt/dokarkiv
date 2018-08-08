@@ -61,7 +61,7 @@ public class DefaultHentDokument extends AbstractDocumentOperation implements He
 	}
 
 	private HentDokumentResponse getDokument(HentDokumentRequest hentDokumentRequest) throws NoJournalpostFoundException,
-			InvalidFilUuidException, DocumentNotFoundException {
+			InvalidFilUuidException {
 
 		Long journalpostId = hentDokumentRequest.getJournalpostId();
 		String filUuid = hentDokumentRequest.getFilUuid();
@@ -77,7 +77,7 @@ public class DefaultHentDokument extends AbstractDocumentOperation implements He
 		return new HentDokumentResponse(document);
 	}
 
-	private byte[] getDocumentFromRepository(Journalpost journalpost, FilDetaljer filDetaljer, String docToken) throws InvalidFilUuidException, DocumentNotFoundException {
+	private byte[] getDocumentFromRepository(Journalpost journalpost, FilDetaljer filDetaljer, String docToken) throws InvalidFilUuidException {
 		if (filDetaljer.getOnDemandId() != null && isNotEmpty(docToken)) {
 			return getDocumentFromOnDemandRepository(filDetaljer, docToken);
 		} else {
@@ -86,7 +86,7 @@ public class DefaultHentDokument extends AbstractDocumentOperation implements He
 		}
 	}
 
-	private byte[] getDocumentFromOnDemandRepository(FilDetaljer filDetaljer, String docToken) throws DocumentNotFoundException {
+	private byte[] getDocumentFromOnDemandRepository(FilDetaljer filDetaljer, String docToken) {
 		if (isNotEmpty(filDetaljer.getOnDemandId())) {
 			String dokumentUrl = getUrl(filDetaljer, docToken);
 			return hentOndemandDokument.hentOndemandDokumentFromJoark(dokumentUrl);

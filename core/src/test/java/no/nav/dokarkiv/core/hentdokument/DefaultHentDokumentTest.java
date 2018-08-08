@@ -10,6 +10,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -50,6 +51,8 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.util.ReflectionUtils;
 
 import java.util.Optional;
 
@@ -63,8 +66,9 @@ import java.util.Optional;
 public class DefaultHentDokumentTest {
 
 	private static final Long JOURNALPOST_ID = 1L;
-	private static final String DOKUMENTURL = "http://hentdokument";
+	private static final String JOARK_URL = "http://hentdokument";
 	private static final byte[] BYTES = "fil".getBytes();
+	public static final String DOCTOKEN = "doctoken";
 
 	private DefaultHentDokument hentDokument;
 
@@ -91,6 +95,8 @@ public class DefaultHentDokumentTest {
 		hentDokument.setHentOndemandDokument(hentOndemandDokument);
 		hentDokument.setDokumentFilRepository(dokumentFilRepositoryMock);
 		hentDokument.setSettMetadataIDLF(settMetadataIDLFMock);
+
+		ReflectionTestUtils.setField(hentDokument, "joarkUrl", JOARK_URL);
 	}
 
 	@Test
@@ -102,10 +108,11 @@ public class DefaultHentDokumentTest {
 
 		fildetaljer.setOnDemandId("10");
 		when(joarkRepositoryMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(journalpost));
-		when(hentOndemandDokument.createDokumentUrl(JOURNALPOST_ID, filUuid)).thenReturn(new HentDokumentUrlResponse(DOKUMENTURL));
-		when(hentOndemandDokument.hentOndemandDokumentFromJoark(DOKUMENTURL)).thenReturn(BYTES);
+		when(hentOndemandDokument.hentOndemandDokumentFromJoark(anyString())).thenReturn(BYTES);
 
-		assertServiceReturnsDocument(JOURNALPOST_ID, filUuid, BYTES);
+		HentDokumentRequest request = new HentDokumentRequest(JOURNALPOST_ID, filUuid, DOCTOKEN);
+
+		assertServiceReturnsDocument(request, BYTES);
 	}
 
 	@Test
@@ -116,7 +123,10 @@ public class DefaultHentDokumentTest {
 		when(joarkRepositoryMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(journalpost));
 		when(dokumentFilRepositoryMock.findByFilUuid(filUuid)).thenReturn(
 				getDokumentFilBuilder().fil(dokument).build());
-		assertServiceReturnsDocument(JOURNALPOST_ID, filUuid, dokument);
+
+		HentDokumentRequest request = new HentDokumentRequest(JOURNALPOST_ID, filUuid);
+
+		assertServiceReturnsDocument(request, dokument);
 	}
 
 	/**
@@ -266,8 +276,7 @@ public class DefaultHentDokumentTest {
 		assertThat(settMetadataIDLFRequest.getDlfDokument(), is(dokument));
 	}
 
-	private void assertServiceReturnsDocument(Long journalpostId, String filUuid, byte[] doc) throws Exception {
-		request = new HentDokumentRequest(journalpostId, filUuid);
+	private void assertServiceReturnsDocument(HentDokumentRequest request, byte[] doc) throws Exception {
 		HentDokumentResponse response = hentDokument.hentDokument(request);
 		assertThat(doc, is(equalTo(response.getDokument())));
 	}
