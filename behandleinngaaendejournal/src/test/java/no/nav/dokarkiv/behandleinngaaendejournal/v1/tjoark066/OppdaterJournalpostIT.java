@@ -52,12 +52,13 @@ import no.nav.tjeneste.virksomhet.behandleinngaaendejournal.v1.informasjon.Organ
 import no.nav.tjeneste.virksomhet.behandleinngaaendejournal.v1.informasjon.Person;
 import no.nav.tjeneste.virksomhet.behandleinngaaendejournal.v1.informasjon.Tema;
 import no.nav.tjeneste.virksomhet.behandleinngaaendejournal.v1.meldinger.OppdaterJournalpostRequest;
-import org.joda.time.LocalDateTime;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.MDC;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
@@ -405,9 +406,9 @@ public class OppdaterJournalpostIT extends AbstractBehandleInngaaendeJournalV1It
 		LocalDateTime oneOClock = LocalDateTime.parse("2017-05-17T13:00:00");
 
 		Bruker aPerson = BrukerTestDataProvider.createBruker().brukerId(FNR).brukerType(BrukerTypeCode.PERSON)
-				.changeStamp(new ChangeStamp("user", twelveOclock.toDate(), null, null)).build();
+				.changeStamp(new ChangeStamp("user", Date.from(twelveOclock.atZone(ZoneId.systemDefault()).toInstant()), null, null)).build();
 		Bruker anOrg = BrukerTestDataProvider.createBruker().brukerId(ORGNR).brukerType(BrukerTypeCode.ORGANISASJON)
-				.changeStamp(new ChangeStamp("user", oneOClock.toDate(), null, null)).build();
+				.changeStamp(new ChangeStamp("user", Date.from(oneOClock.atZone(ZoneId.systemDefault()).toInstant()), null, null)).build();
 		Journalpost persistedJournalpost = joarkRepository.save(buildJournalpostNoBruker().brukere(aPerson, anOrg).build());
 
 		OppdaterJournalpostRequest oppdaterRequest = new OppdaterJournalpostRequest();
@@ -427,7 +428,7 @@ public class OppdaterJournalpostIT extends AbstractBehandleInngaaendeJournalV1It
 		assertThat(bruker.getBrukerId(), is(FNR_2));
 		assertThat(bruker.getBrukerType(), is(BrukerTypeCode.PERSON));
 		assertThat(bruker.getEndretKildeNavn(), is(equalTo(ENDRET_KILDE_NAVN)));
-		assertThat(bruker.getChangeStamp().getCreatedDate(), equalTo(oneOClock.toDate()));
+		assertThat(bruker.getChangeStamp().getCreatedDate(), equalTo(Date.from(oneOClock.atZone(ZoneId.systemDefault()).toInstant())));
 		assertThat(bruker.getChangeStamp().getUpdatedDate(), notNullValue());
 		assertThat(resultJournalpost.getEndretAvNavn(), nullValue());
 	}
@@ -610,7 +611,8 @@ public class OppdaterJournalpostIT extends AbstractBehandleInngaaendeJournalV1It
 
 	private Bruker getLatestBruker(Journalpost journalpost) {
 		assert(!journalpost.getBrukere().isEmpty());
-		List<Bruker> sortedCopy = Ordering.from((Comparator<Bruker>) (o1, o2) -> LocalDateTime.fromDateFields(o2.getChangeStamp().getCreatedDate()).compareTo(LocalDateTime.fromDateFields(o1.getChangeStamp().getCreatedDate()))).sortedCopy(journalpost.getBrukere());
+		List<Bruker> sortedCopy = Ordering.from((Comparator<Bruker>) (o1, o2) -> LocalDateTime.ofInstant(o2.getChangeStamp().getCreatedDate().toInstant(), ZoneId.systemDefault())
+				.compareTo(LocalDateTime.ofInstant(o1.getChangeStamp().getCreatedDate().toInstant(), ZoneId.systemDefault()))).sortedCopy(journalpost.getBrukere());
 		return sortedCopy.get(0);
 	}
 

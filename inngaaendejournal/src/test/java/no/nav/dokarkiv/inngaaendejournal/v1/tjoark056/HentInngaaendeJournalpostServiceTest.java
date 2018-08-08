@@ -41,7 +41,6 @@ import no.nav.dokarkiv.inngaaendejournal.v1.tjoark056.to.DokumentInnholdTo;
 import no.nav.dokarkiv.inngaaendejournal.v1.tjoark056.to.DokumenttilstandTo;
 import no.nav.dokarkiv.inngaaendejournal.v1.tjoark056.to.InngaaendeJournalpostTo;
 import no.nav.dokarkiv.inngaaendejournal.v1.tjoark056.to.JournaltilstandTo;
-import org.joda.time.LocalDateTime;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -50,6 +49,9 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -203,19 +205,19 @@ public class HentInngaaendeJournalpostServiceTest {
 				getJournalpostDokumentInfoRelasjonBuilder()
 						.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
 						.dokumentInfo(createBaseVedleggDokumentInfo().dokumentInfoId(DOKUMENT_INFO_ID_VEDLEGG_3)
-								.changeStamp(new ChangeStamp("test", LocalDateTime.parse("2017-05-29T00:59:00").toDate(), null, null))
+								.changeStamp(new ChangeStamp("test", Date.from(LocalDateTime.parse("2017-05-29T00:59:00").atZone(ZoneId.systemDefault()).toInstant()), null, null))
 								.build())
 						.build(),
 				getJournalpostDokumentInfoRelasjonBuilder()
 						.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
 						.dokumentInfo(createBaseVedleggDokumentInfo().dokumentInfoId(DOKUMENT_INFO_ID_VEDLEGG)
-								.changeStamp(new ChangeStamp("test", LocalDateTime.parse("2017-05-30T01:00:00").toDate(), null, null))
+								.changeStamp(new ChangeStamp("test", Date.from(LocalDateTime.parse("2017-05-30T01:00:00").atZone(ZoneId.systemDefault()).toInstant()), null, null))
 								.build())
 						.build(),
 				getJournalpostDokumentInfoRelasjonBuilder()
 						.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
 						.dokumentInfo(createBaseVedleggDokumentInfo().dokumentInfoId(DOKUMENT_INFO_ID_VEDLEGG_2)
-								.changeStamp(new ChangeStamp("test", LocalDateTime.parse("2017-05-29T01:00:00").toDate(), null, null))
+								.changeStamp(new ChangeStamp("test", Date.from(LocalDateTime.parse("2017-05-29T01:00:00").atZone(ZoneId.systemDefault()).toInstant()), null, null))
 								.build())
 						.build())
 				.build();

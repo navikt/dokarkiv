@@ -22,11 +22,12 @@ import no.nav.dokarkiv.core.security.ldap.NavUserLdapService;
 import no.nav.modig.core.context.SubjectHandler;
 import no.nav.modig.core.domain.IdentType;
 import org.apache.commons.lang3.StringUtils;
-import org.joda.time.LocalDateTime;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
@@ -177,8 +178,8 @@ public class OppdaterJournalpostService {
 	private Bruker getLatestBruker(Journalpost journalpost) {
 		assert (!journalpost.getBrukere().isEmpty());
 		List<Bruker> sortedCopy = Ordering.from((Comparator<Bruker>) (o1, o2) ->
-				LocalDateTime.fromDateFields(o2.getChangeStamp().getCreatedDate())
-						.compareTo(LocalDateTime.fromDateFields(o1.getChangeStamp().getCreatedDate())))
+				LocalDateTime.ofInstant(o2.getChangeStamp().getCreatedDate().toInstant(), ZoneId.systemDefault())
+						.compareTo(LocalDateTime.ofInstant(o1.getChangeStamp().getCreatedDate().toInstant(), ZoneId.systemDefault())))
 				.sortedCopy(journalpost.getBrukere());
 		return sortedCopy.get(0);
 	}

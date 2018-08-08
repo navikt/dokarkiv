@@ -17,9 +17,10 @@ import no.nav.dokarkiv.inngaaendejournal.v1.tjoark056.to.DokumentinformasjonTo;
 import no.nav.dokarkiv.inngaaendejournal.v1.tjoark056.to.DokumenttilstandTo;
 import no.nav.dokarkiv.inngaaendejournal.v1.tjoark056.to.InngaaendeJournalpostTo;
 import no.nav.dokarkiv.inngaaendejournal.v1.tjoark056.to.JournaltilstandTo;
-import org.joda.time.LocalDateTime;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -47,7 +48,7 @@ public final class InngaaendeJournalpostToMapper {
 	private InngaaendeJournalpostTo doMap(Journalpost journalpost) {
 		return InngaaendeJournalpostTo.builder()
 				.avsenderId(journalpost.getAvsenderMottakerId())
-				.forsendelseMottatt(journalpost.getMottattDato() == null ? null : LocalDateTime.fromDateFields(journalpost.getMottattDato()))
+				.forsendelseMottatt(journalpost.getMottattDato() == null ? null : LocalDateTime.ofInstant(journalpost.getMottattDato().toInstant(), ZoneId.systemDefault()))
 				.mottakskanal(journalpost.getMottakskanal())
 				.tema(journalpost.getFagomrade())
 				.journaltilstand(mapJournaltilstand(journalpost))
@@ -138,8 +139,8 @@ public final class InngaaendeJournalpostToMapper {
 			List<JournalpostDokumentInfoRelasjon> sortedCopy = Ordering.from(new Comparator<JournalpostDokumentInfoRelasjon>() {
 				@Override
 				public int compare(JournalpostDokumentInfoRelasjon o1, JournalpostDokumentInfoRelasjon o2) {
-					return LocalDateTime.fromDateFields(o1.getDokumentInfo().getChangeStamp().getCreatedDate())
-							.compareTo(LocalDateTime.fromDateFields(o2.getDokumentInfo().getChangeStamp().getCreatedDate()));
+					return LocalDateTime.ofInstant(o1.getDokumentInfo().getChangeStamp().getCreatedDate().toInstant(), ZoneId.systemDefault())
+							.compareTo(LocalDateTime.ofInstant(o2.getDokumentInfo().getChangeStamp().getCreatedDate().toInstant(), ZoneId.systemDefault()));
 				}
 			}).sortedCopy(vedlegg);
 			return sortedCopy.stream().map(relasjon -> {
