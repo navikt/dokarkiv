@@ -1,1 +1,0 @@
-insert into T_K_UTSENDINGS_KANAL (k_utsendings_kanal,dekode,dato_fom,dato_tom,er_gyldig,dato_opprettet,opprettet_av,dato_endret,endret_av) VALUES ('EIA','EIA',date '1900-01-01',NULL,'1',timestamp '2015-11-17 13:00:00','Gerhard Wiese',timestamp '2015-11-17 13:00:00','Gerhard Wiese');

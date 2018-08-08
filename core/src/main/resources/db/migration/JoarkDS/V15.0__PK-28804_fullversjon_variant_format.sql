@@ -1,1 +1,0 @@
-insert into T_K_VARIANT_FORMAT (k_variant_format,dekode,dato_fom,dato_tom,er_gyldig,dato_opprettet,opprettet_av,dato_endret,endret_av) VALUES ('FULLVERSJON','FULLVERSJON',date '1900-01-01',NULL,'1',timestamp '2016-08-12 16:30:00','Thomas Fiksdal',timestamp '2016-08-12 16:30:00','Thomas Fiksdal');

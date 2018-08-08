@@ -1,1 +1,0 @@
-insert into T_K_ONDEMAND_INST (k_ondemand_inst,dekode,dato_fom,dato_tom,er_gyldig,dato_opprettet,opprettet_av,dato_endret,endret_av) VALUES ('SYFO','Arena SYFO',date '1900-01-01',NULL,'1',timestamp '2014-02-05 10:00:00','T. Bjørge',timestamp '2014-02-05 10:00:00','T. Bjørge');

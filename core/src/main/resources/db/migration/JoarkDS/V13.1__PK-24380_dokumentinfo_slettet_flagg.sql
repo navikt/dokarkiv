@@ -1,1 +1,0 @@
-alter table T_DOKUMENT_INFO add SLETTET CHAR(1);

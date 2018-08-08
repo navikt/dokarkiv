@@ -1,1 +1,0 @@
-insert into T_K_MOTTAKS_KANAL (k_mottaks_kanal,dekode,dato_fom,dato_tom,er_gyldig,dato_opprettet,opprettet_av,dato_endret,endret_av) VALUES ('SKAN_NETS','Skanning Nets',date '1900-01-01',NULL,'1',timestamp '2016-01-04 11:00:00','Roar Bjurstrøm',timestamp '2016-01-04 11:00:00','Roar Bjurstrøm');
