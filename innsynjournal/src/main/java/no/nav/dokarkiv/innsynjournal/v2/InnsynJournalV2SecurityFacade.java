@@ -55,7 +55,6 @@ import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -306,7 +305,7 @@ public class InnsynJournalV2SecurityFacade {
 		if (StringUtils.isNotEmpty(filDetaljer.getOnDemandId())) {
 			throw new SecurityLimitationAttributeException(journalpostId,
 					dokumentInfo.getDokumentInfoId(),
-					Collections.singletonMap("DokumentInfo.Fildetaljer.OnDemandId", filDetaljer.getOnDemandId()));
+					singletonMap("DokumentInfo.Fildetaljer.OnDemandId", filDetaljer.getOnDemandId()));
 		}
 	}
 
@@ -314,7 +313,7 @@ public class InnsynJournalV2SecurityFacade {
 		if (BooleanUtils.isTrue(dokumentInfo.getInnskrenketPartsinnsyn())) {
 			throw new SecurityLimitationAttributeException(journalpostId,
 					dokumentInfo.getDokumentInfoId(),
-					Collections.singletonMap("DokumentInfo.InnskrenketPartsinnsyn", dokumentInfo.getInnskrenketPartsinnsyn()));
+					singletonMap("DokumentInfo.InnskrenketPartsinnsyn", dokumentInfo.getInnskrenketPartsinnsyn()));
 		}
 	}
 
@@ -322,7 +321,7 @@ public class InnsynJournalV2SecurityFacade {
 		if (dokumentInfo.isFunksjoneltSlettet()) {
 			throw new SecurityLimitationAttributeException(journalpostId,
 					dokumentInfo.getDokumentInfoId(),
-					Collections.singletonMap("DokumentInfo.Slettet", dokumentInfo.isFunksjoneltSlettet()));
+					singletonMap("DokumentInfo.Slettet", dokumentInfo.isFunksjoneltSlettet()));
 		}
 	}
 
@@ -331,11 +330,11 @@ public class InnsynJournalV2SecurityFacade {
 				dokumentInfoId, VariantFormatCode.ARKIV));
 	}
 
-	public void setEarliestAllowedDate(LocalDate earliestAllowedDate) {
-		if (earliestAllowedDate != null) {
-			this.earliestAllowedDate = LocalDate.from(earliestAllowedDate);
-		} else {
+	void setEarliestAllowedDate(LocalDate earliestAllowedDate) {
+		if (earliestAllowedDate == null) {
 			this.earliestAllowedDate = null;
+		} else {
+			this.earliestAllowedDate = LocalDate.from(earliestAllowedDate);
 		}
 	}
 

@@ -47,10 +47,10 @@ public class DefaultIdentifiserJournalpostService implements IdentifiserJournalp
 	}
 
 	private void validateJournalpost(Journalpost journalpost) throws JournalpostNotSupportedException, JournalpostIkkeInngaaendeException {
-		Boolean hoveddokument = false;
 		if (!journalpost.isInngaende()) {
 			throw new JournalpostIkkeInngaaendeException("Journalposten, journalpostId=" + journalpost.getJournalpostId() + ", som ble funnet er ikke inngående");
 		}
+		boolean hoveddokument = false;
 		for (JournalpostDokumentInfoRelasjon dokumentInfoRelasjon : journalpost.getJournalpostDokumentInfoRelasjoner()) {
 			if (dokumentInfoRelasjon.isHoveddokument()) {
 				hoveddokument = true;

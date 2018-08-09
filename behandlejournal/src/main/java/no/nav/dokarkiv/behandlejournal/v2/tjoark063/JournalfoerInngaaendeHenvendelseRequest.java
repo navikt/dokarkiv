@@ -1,9 +1,11 @@
 package no.nav.dokarkiv.behandlejournal.v2.tjoark063;
 
 import lombok.Builder;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.ApplicationException;
-import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
  * Domain request object for the JournalfoerInngaaendeHenvendelseMedHoveddokument service.
@@ -11,25 +13,12 @@ import org.apache.commons.lang.builder.ToStringBuilder;
  * @author Rune Romundstad, Visma Consulting
  */
 @Builder
+@Getter
+@RequiredArgsConstructor
+@ToString
 public class JournalfoerInngaaendeHenvendelseRequest {
 
-	private Journalpost journalpost;
-
-	/**
-	 * Default constructor only used for mapping.
-	 */
-	@SuppressWarnings("unused")
-	private JournalfoerInngaaendeHenvendelseRequest() {
-	}
-
-	/**
-	 * Constructor taking request fields as parameter.
-	 *
-	 * @param journalpost The Journalpost object in request.
-	 */
-	public JournalfoerInngaaendeHenvendelseRequest(Journalpost journalpost) {
-		this.journalpost = journalpost;
-	}
+	private final Journalpost journalpost;
 
 	/**
 	 * Check that journalpost is set.
@@ -43,21 +32,4 @@ public class JournalfoerInngaaendeHenvendelseRequest {
 			throw new ApplicationException("Missing parameter in request: Hoveddokument");
 		}
 	}
-
-	/**
-	 * Getter for the Journalpost property.
-	 *
-	 * @return the Journalpost object.
-	 */
-	public Journalpost getJournalpost() {
-		return journalpost;
-	}
-
-	@Override
-	public String toString() {
-		return new ToStringBuilder(this)
-				.append("journalpost", journalpost)
-				.toString();
-	}
-
 }

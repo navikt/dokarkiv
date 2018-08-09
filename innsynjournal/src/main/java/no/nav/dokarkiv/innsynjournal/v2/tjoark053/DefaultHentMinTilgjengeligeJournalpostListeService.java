@@ -45,7 +45,7 @@ public class DefaultHentMinTilgjengeligeJournalpostListeService implements HentM
 	@Value("#{T(java.time.LocalDate).parse(\"${innsynjournal.v2.innsyn.earliest.date}\")}")
 	private LocalDate earliestDateAllowed;
 
-	private JournalStatusCode[] journalStatusCodesAllowed =
+	private final JournalStatusCode[] journalStatusCodesAllowed =
 			new JournalStatusCode[]{JournalStatusCode.J, JournalStatusCode.FS, JournalStatusCode.FL, JournalStatusCode.E};
 
 	@Override

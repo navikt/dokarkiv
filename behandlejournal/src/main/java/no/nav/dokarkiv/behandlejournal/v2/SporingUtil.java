@@ -1,6 +1,7 @@
 package no.nav.dokarkiv.behandlejournal.v2;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 import no.nav.dokarkiv.core.exceptions.ApplicationException;
 
@@ -27,12 +28,13 @@ public final class SporingUtil {
 	 * @return Either "personFornavn personEtternavn" or applikasjonsID
 	 */
 	public static String decideSporingNavn(String personFornavn, String personEtternavn, String applikasjonsID) {
-		if (!isBlank(personFornavn) && !isBlank(personEtternavn)) {
-			return personFornavn + " " + personEtternavn;
-		} else if (!isBlank(applikasjonsID)) {
-			return applikasjonsID;
-		} else {
+		if (isBlank(personFornavn) && isBlank(personEtternavn) && isBlank(applikasjonsID)) {
 			throw new ApplicationException("personFornavn, personEtternavn or applikasjonsID must be set.");
+		}
+		if (isNotBlank(personFornavn) && isNotBlank(personEtternavn)) {
+			return personFornavn + " " + personEtternavn;
+		} else {
+			return applikasjonsID;
 		}
 	}
 

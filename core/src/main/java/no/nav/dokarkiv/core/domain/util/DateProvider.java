@@ -13,6 +13,8 @@ import java.util.Locale;
  * <p>
  * DatePattern is DB2_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss".
  *
+ * @deprecated Hvis man behøver spesifikke tidspunkt mtp test. Vurder å supplere en Clock i implementasjonen.
+ *
  * @author Ole Hjalmar Herje, BEKK
  * @author Magnus Skuland, Sirius IT
  */
@@ -27,33 +29,9 @@ public class DateProvider {
 	 * The provider to use.
 	 */
 	private static Provider provider;
-	private boolean mockMode;
-	private String mockDate;
-
-	/**
-	 * Sets date to return as todays date if {@link #mockMode} is true.
-	 * DatePattern is DB2_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss".
-	 *
-	 * @param mockDate the mockDate to set
-	 */
-	public void setMockDate(String mockDate) {
-		this.mockDate = mockDate;
-	}
-
-	/**
-	 * Set to true to return configured mockdate.
-	 *
-	 * @param mockMode the mockMode to set
-	 */
-	public void setMockMode(boolean mockMode) {
-		this.mockMode = mockMode;
-	}
 
 	/**
 	 * Configures a DateProvider. Can be called from unit test classes.
-	 *
-	 * @param mockMode see {@link #setMockMode(boolean)}.
-	 * @param mockDate see {@link #setMockDate(String)}.
 	 */
 	public static void configure(final boolean mockMode, final String mockDate) {
 		if (mockMode) {
@@ -92,11 +70,7 @@ public class DateProvider {
 	 * @return A normal date provider.
 	 */
 	private static Provider getNormalProvider() {
-		return new Provider() {
-			public Date getToday() {
-				return new GregorianCalendar(new Locale(NORWAY)).getTime();
-			}
-		};
+		return () -> new GregorianCalendar(new Locale(NORWAY)).getTime();
 	}
 
 	/**
@@ -106,11 +80,7 @@ public class DateProvider {
 	 * @return A mock date provider.
 	 */
 	private static Provider getMockProvider(final String mockDate) {
-		return new Provider() {
-			public Date getToday() {
-				return Date.from(LocalDateTime.parse(mockDate ).atZone(ZoneId.systemDefault()).toInstant());
-			}
-		};
+		return () -> Date.from(LocalDateTime.parse(mockDate ).atZone(ZoneId.systemDefault()).toInstant());
 	}
 
 	/**

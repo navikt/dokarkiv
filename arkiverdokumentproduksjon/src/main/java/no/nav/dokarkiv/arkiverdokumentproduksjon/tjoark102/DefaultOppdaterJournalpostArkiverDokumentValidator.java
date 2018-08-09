@@ -19,6 +19,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -106,7 +107,7 @@ public class DefaultOppdaterJournalpostArkiverDokumentValidator implements Oppda
 	 */
 	public void validateNoDuplicateVariantFormats(Set<FilDetaljer> filDetaljer, Long journalpostId) throws FeilStrukturException {
 		List<VariantFormatCode> variantList = getVariantFormatList(filDetaljer);
-		Set<VariantFormatCode> uniqueSet = new HashSet<>(variantList);
+		EnumSet<VariantFormatCode> uniqueSet = EnumSet.copyOf(variantList);
 
 		for (VariantFormatCode variantFormatCode : uniqueSet) {
 			if (Collections.frequency(variantList, variantFormatCode) > 1) {

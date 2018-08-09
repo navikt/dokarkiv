@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.innsynjournal.v2.security;
 
+import no.nav.dokarkiv.core.exceptions.DokarkivTechnicalException;
 import no.nav.modig.security.tilgangskontroll.config.AccessControlInterceptorConfig;
 import no.nav.modig.security.tilgangskontroll.policy.enrichers.EnvironmentRequestEnricher;
 import no.nav.modig.security.tilgangskontroll.policy.enrichers.SecurityContextRequestEnricher;
@@ -46,11 +47,11 @@ public class LegacyPdpConfig {
 	}
 
 
-	private URL getConfigUrl(String path) {
+	private URL getConfigUrl(final String path) {
 		try {
 			return new ClassPathResource(path).getURL();
 		} catch (IOException e) {
-			throw new RuntimeException(e);
+			throw new DokarkivTechnicalException("Fant ikke path=" + path + " på classpath", e);
 		}
 	}
 }
