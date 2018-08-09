@@ -30,7 +30,7 @@ public class SettMetadataForKopiering implements Serializable {
 	public SettMetadataForKopiering(Long journalpostIdVedlegg, String filUuidVedlegg, byte[] dlfHoveddokument) {
 		this.journalpostIdVedlegg = journalpostIdVedlegg;
 		this.filUuidVedlegg = filUuidVedlegg;
-		this.dlfHoveddokument = dlfHoveddokument;
+		this.dlfHoveddokument = dlfHoveddokument.clone();
 	}
 
 	/**
@@ -57,7 +57,7 @@ public class SettMetadataForKopiering implements Serializable {
 	 * @return the dlfHoveddokument
 	 */
 	public byte[] getDlfHoveddokument() {
-		return dlfHoveddokument;
+		return dlfHoveddokument.clone();
 	}
 
 	/**

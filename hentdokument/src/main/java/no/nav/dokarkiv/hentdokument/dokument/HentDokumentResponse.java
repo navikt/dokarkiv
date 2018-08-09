@@ -22,7 +22,7 @@ public class HentDokumentResponse {
 	 * @param dokument The document.
 	 */
 	public HentDokumentResponse(byte[] dokument) {
-		this.dokument = dokument;
+		this.dokument = dokument.clone();
 	}
 
 	/**
@@ -31,7 +31,7 @@ public class HentDokumentResponse {
 	 * @return the dokument
 	 */
 	public byte[] getDokument() {
-		return dokument;
+		return dokument.clone();
 	}
 
 	/**

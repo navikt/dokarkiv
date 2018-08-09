@@ -30,7 +30,7 @@ public class SettMetadataIDLFRequest {
 	 */
 	public SettMetadataIDLFRequest(SettMetadataForUthenting settMetadataForUthenting, byte[] dlfDokument) {
 		this.settMetadataForUthenting = settMetadataForUthenting;
-		this.dlfDokument = dlfDokument;
+		this.dlfDokument = dlfDokument.clone();
 	}
 
 	/**

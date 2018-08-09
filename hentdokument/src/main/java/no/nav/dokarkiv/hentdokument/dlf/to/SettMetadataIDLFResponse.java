@@ -28,7 +28,7 @@ public class SettMetadataIDLFResponse {
 	 * @param dlfDokument The updated DLF-document
 	 */
 	public SettMetadataIDLFResponse(byte[] dlfDokument) {
-		this.dlfDokument = dlfDokument;
+		this.dlfDokument = dlfDokument.clone();
 	}
 
 	/**
@@ -37,7 +37,7 @@ public class SettMetadataIDLFResponse {
 	 * @return the dlfDokument
 	 */
 	public byte[] getDlfDokument() {
-		return dlfDokument;
+		return dlfDokument.clone();
 	}
 
 	/**
@@ -46,7 +46,7 @@ public class SettMetadataIDLFResponse {
 	 * @param dlfDokument the dlfDokument to set
 	 */
 	public void setDlfDokument(byte[] dlfDokument) {
-		this.dlfDokument = dlfDokument;
+		this.dlfDokument = dlfDokument.clone();
 	}
 
 	/**
