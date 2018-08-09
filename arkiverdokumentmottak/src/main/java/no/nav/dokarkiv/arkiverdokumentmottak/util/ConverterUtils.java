@@ -34,7 +34,7 @@ public class ConverterUtils {
 
 	public static Map<String, String> converTillegsopplysningerToMap(List<no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v1.informasjon.arkiverdokumentmottak.Tilleggsopplysning> source) {
 		if (CollectionUtils.isEmpty(source)) {
-			return null;
+			return new HashMap<>();
 		}
 
 		Map<String, String> destination = new HashMap<>();

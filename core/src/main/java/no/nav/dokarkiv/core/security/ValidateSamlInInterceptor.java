@@ -2,6 +2,7 @@ package no.nav.dokarkiv.core.security;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.exceptions.ApplicationException;
+import no.nav.dokarkiv.core.exceptions.DokarkivTechnicalException;
 import no.nav.dokarkiv.core.jaxws.ThreadLocalSubjectHandler;
 import no.nav.modig.core.context.AuthenticationLevelCredential;
 import no.nav.modig.core.context.SAMLAssertionCredential;
@@ -76,11 +77,11 @@ public class ValidateSamlInInterceptor extends WSS4JInInterceptor {
 		if (!isPingCall(msg)) {
 			SAMLSecurityContext sc = (SAMLSecurityContext) msg.get(SecurityContext.class.getName());
 			if (sc == null) {
-				throw new RuntimeException("Cannot get SecurityContext from SoapMessage");
+				throw new DokarkivTechnicalException("Cannot get SecurityContext from SoapMessage");
 			}
 			SAMLTokenPrincipal samlTokenPrincipal = (SAMLTokenPrincipal) sc.getUserPrincipal();
 			if (samlTokenPrincipal == null) {
-				throw new RuntimeException("Cannot get SAMLTokenPrincipal from SecurityContext");
+				throw new DokarkivTechnicalException("Cannot get SAMLTokenPrincipal from SecurityContext");
 			}
 			((ThreadLocalSubjectHandler) SubjectHandler.getSubjectHandler()).setSubject(buildSubject(sc));
 		}

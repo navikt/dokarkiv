@@ -15,7 +15,6 @@ import no.nav.dokarkiv.core.exceptions.ApplicationException;
 import no.nav.dokarkiv.core.journalbehandling.DokumentFilerDelegate;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 
 import javax.inject.Inject;
 
@@ -97,9 +96,6 @@ public class DefaultOpprettJournalpostArkiverDokumentService implements OpprettJ
 
 	private Journalpost findPreviousJournalforing(OpprettJournalpostArkiverDokumentRequestTo requestTo) {
 		final DokumentInfo dokumentInfo = requestTo.getJournalpost().findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
-		if (CollectionUtils.isEmpty(dokumentInfo.getTilleggsopplysninger())) {
-			return null;
-		}
 		final String bestillingsId = dokumentInfo.getTilleggsopplysninger().get(BESTILLINGS_ID_KEY);
 		if (isNullOrEmpty(bestillingsId)) {
 			return null;

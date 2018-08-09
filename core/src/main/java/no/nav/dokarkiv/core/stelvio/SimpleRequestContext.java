@@ -100,37 +100,27 @@ public final class SimpleRequestContext implements RequestContext, Serializable 
 		this(screenId, moduleId, transactionId, componentId, null);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
+	@Override
 	public String getScreenId() {
 		return screenId;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
+	@Override
 	public String getModuleId() {
 		return moduleId;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
+	@Override
 	public String getTransactionId() {
 		return transactionId;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
+	@Override
 	public String getComponentId() {
 		return componentId;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
+	@Override
 	public String getUserId() {
 		return userId;
 	}

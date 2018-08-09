@@ -35,6 +35,7 @@ public class PersistentDomainObjectHibernateInterceptor extends EmptyInterceptor
 	 *            The types of the object's variables
 	 * @return true if the change stamp is updated, false otherwise
 	 */
+	@Override
 	public boolean onFlushDirty(Object entity, Serializable id, Object[] currentState, Object[] previousState,
 								String[] propertyNames, Type[] types) {
 		return updateChangeStamp(entity, currentState, types);
@@ -55,6 +56,7 @@ public class PersistentDomainObjectHibernateInterceptor extends EmptyInterceptor
 	 *            The types of the object's variables
 	 * @return true if the change stamp is updated, false otherwise
 	 */
+	@Override
 	public boolean onSave(Object entity, Serializable id, Object[] currentState, String[] propertyNames, Type[] types) {
 		return updateChangeStamp(entity, currentState, types);
 	}

@@ -13,16 +13,16 @@ import no.nav.dokarkiv.core.stelvio.Pid;
  * @author Thomas Eugen Bjørge, Visma Sirius
  */
 public final class BrukerValidator {
-	
+
 	/**
 	 * Avoid instantiation.
 	 */
 	private BrukerValidator() {
 	}
-	
+
 	/**
 	 * Validate the bruker's brukerId
-	 * 
+	 *
 	 * @param bruker The Bruker.
 	 */
 	public static void validate(Bruker bruker) {
@@ -45,10 +45,8 @@ public final class BrukerValidator {
 	}
 
 	private static void validateFnrIfGjelderTypeIsPerson(Bruker bruker) {
-		if (bruker.getBrukerType() == BrukerTypeCode.PERSON) {
-			if (!Pid.isValidPid(bruker.getBrukerId())) {
-				throw new InvalidBrukerException("BrukerId is not a valid fnr: " + bruker.getBrukerId());
-			}
+		if (bruker.getBrukerType() == BrukerTypeCode.PERSON && !Pid.isValidPid(bruker.getBrukerId())) {
+			throw new InvalidBrukerException("BrukerId is not a valid fnr: " + bruker.getBrukerId());
 		}
 	}
 

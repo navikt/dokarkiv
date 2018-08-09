@@ -1,5 +1,7 @@
 package no.nav.dokarkiv.core.util;
 
+import no.nav.dokarkiv.core.exceptions.DokarkivTechnicalException;
+
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -62,7 +64,7 @@ public final class DateConverterUtil {
 			try {
 				xgc = DatatypeFactory.newInstance().newXMLGregorianCalendar(gc);
 			} catch (DatatypeConfigurationException e) {
-				throw new RuntimeException("Failed to convert date '" + source + "'", e);
+				throw new DokarkivTechnicalException("Failed to convert date '" + source + "'", e);
 			}
 		}
 		return xgc;

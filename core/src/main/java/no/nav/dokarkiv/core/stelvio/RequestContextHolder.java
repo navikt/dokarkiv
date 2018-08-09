@@ -13,7 +13,6 @@ public final class RequestContextHolder {
 	 * 
 	 * Use RedeployableThreadLocalSubstitute to avoid memory leak when application is stopped.
 	 */
-	//private static final ThreadLocal<RequestContext> REQUEST_CONTEXT_HOLDER = new InheritableThreadLocal<RequestContext>();
 	private static final RedeployableThreadLocalSubstitute<RequestContext> REQUEST_CONTEXT_HOLDER =
 			new RedeployableThreadLocalSubstitute<>();
 

@@ -12,6 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -55,9 +56,9 @@ public class DokumentInfoBuilder extends Builder<DokumentInfo> {
 	private String endretKildeNavn;
 	private Boolean slettet;
 	private String dokumenttypeId;
-	private Map<String, String> tilleggsopplysninger;
-	private List<SkannetInnhold> skannetInnholdList = new ArrayList<SkannetInnhold>();
-	private Set<FilDetaljer> filDetaljerList = new HashSet<FilDetaljer>();
+	private Map<String, String> tilleggsopplysninger = new HashMap<>();
+	private List<SkannetInnhold> skannetInnholdList = new ArrayList<>();
+	private Set<FilDetaljer> filDetaljerList = new HashSet<>();
 	private ChangeStamp changeStamp;
 	
 	public DokumentInfoBuilder dokumentInfoId(Long value) { this.dokumentInfoId = value; return this; }
