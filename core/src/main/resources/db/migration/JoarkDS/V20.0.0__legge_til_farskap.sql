@@ -1,0 +1,2 @@
+insert into T_K_FAGOMRADE (k_fagomrade,dekode,dato_fom,dato_tom,er_gyldig,dato_opprettet,opprettet_av,dato_endret,endret_av)
+  VALUES ('FAR','Farskap',date '1900-01-01',NULL,'1',timestamp '2018-08-08 13:00:00','Ragne Henriksen',timestamp '2018-08-08 13:00:00','Ragne Henriksen');
