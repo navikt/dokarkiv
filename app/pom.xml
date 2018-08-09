@@ -47,6 +47,10 @@
 			<groupId>no.nav.dokarkiv</groupId>
 			<artifactId>journal</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>no.nav.dokarkiv</groupId>
+			<artifactId>journalfoerInngaaende</artifactId>
+		</dependency>
 		<!-- annet -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
