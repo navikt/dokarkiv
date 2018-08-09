@@ -6,7 +6,6 @@ import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentUrlInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import no.nav.dokarkiv.core.exceptions.DocumentNotFoundException;
 import no.nav.dokarkiv.core.exceptions.DokarkivFunctionalException;
 import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
 import no.nav.dokarkiv.core.exceptions.InvalidFilUuidException;
@@ -19,7 +18,6 @@ import no.nav.dokarkiv.hentdokument.dokumenturlinfo.HentDokumentUrlInfo;
 import no.nav.dokarkiv.hentdokument.dokumenturlinfo.HentDokumentUrlInfoRequest;
 import no.nav.dokarkiv.hentdokument.dokumenturlinfo.HentDokumentUrlInfoResponse;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.InvalidMediaTypeException;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,7 +41,7 @@ public class HentDokumentController {
 	@Inject
 	private HentDokument hentDokument;
 
-	private MimeTypeMapper mimeTypeMapper = new MimeTypeMapper();
+	private final MimeTypeMapper mimeTypeMapper = new MimeTypeMapper();
 
 	@Transactional(readOnly = true)
 	@GetMapping(value = "hentDokument")

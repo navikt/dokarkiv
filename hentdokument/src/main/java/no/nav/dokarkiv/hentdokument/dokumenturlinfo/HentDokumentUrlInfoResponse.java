@@ -14,7 +14,7 @@ public class HentDokumentUrlInfoResponse implements Serializable {
 
 	private static final long serialVersionUID = -***gammelt_fnr***05143913L;
 
-	private DokumentUrlInfo dokumentUrl;
+	private final DokumentUrlInfo dokumentUrl;
 
 	/**
 	 * Constructs a HentDokumentUrlInfoResponse object

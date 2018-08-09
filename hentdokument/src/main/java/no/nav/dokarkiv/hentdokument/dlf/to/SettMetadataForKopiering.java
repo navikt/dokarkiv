@@ -16,9 +16,9 @@ public class SettMetadataForKopiering implements Serializable {
 	 */
 	private static final long serialVersionUID = ***gammelt_fnr***59271019L;
 
-	private Long journalpostIdVedlegg;
-	private String filUuidVedlegg;
-	private byte[] dlfHoveddokument;
+	private final Long journalpostIdVedlegg;
+	private final String filUuidVedlegg;
+	private final byte[] dlfHoveddokument;
 
 	/**
 	 * Constructs a new SettMetadataForKopiering.

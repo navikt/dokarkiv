@@ -45,14 +45,12 @@ public class DefaultHentDokument extends AbstractDocumentOperation implements He
 	@Inject
 	private SettMetadataIDLF settMetadataIDLF;
 
-	@Inject
-	private DokumentUrlInfoRepository dokumentUrlInfoRepository;
-
-	private MimeTypeMapper mimeTypeMapper = new MimeTypeMapper();
+	private final MimeTypeMapper mimeTypeMapper = new MimeTypeMapper();
 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public HentDokumentResponse hentDokument(HentDokumentRequest hentDokumentRequest) throws NoJournalpostFoundException,
 			InvalidFilUuidException {
 		hentDokumentRequest.validate();

@@ -16,9 +16,9 @@ public class SettMetadataForUthenting implements Serializable {
 	 */
 	private static final long serialVersionUID = -***gammelt_fnr***7887837L;
 
-	private Long journalpostId;
-	private String filUuid;
-	private Long versjon;
+	private final Long journalpostId;
+	private final String filUuid;
+	private final Long versjon;
 
 	/**
 	 * Constructs a new SettMetadataForUthenting

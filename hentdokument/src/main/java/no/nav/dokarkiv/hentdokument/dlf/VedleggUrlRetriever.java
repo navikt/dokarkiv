@@ -9,9 +9,9 @@ public interface VedleggUrlRetriever {
 
 	/**
 	 * Retrieves an URL to a vedlegg.
-	 * 
+	 *
 	 * @param journalpostIdVedlegg The journalpost Id.
-	 * @param filUuidVedlegg The fil Uuid.
+	 * @param filUuidVedlegg       The fil Uuid.
 	 * @return The URL.
 	 */
 	String retrieveVedleggUrl(String journalpostIdVedlegg, String filUuidVedlegg);

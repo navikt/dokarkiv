@@ -14,7 +14,7 @@ public class HentDokumentResponse {
 	 */
 	private static final long serialVersionUID = ***gammelt_fnr***16902996L;
 
-	private byte[] dokument;
+	private final byte[] dokument;
 
 	/**
 	 * Constructs a HentDokumentResponse.
@@ -40,7 +40,7 @@ public class HentDokumentResponse {
 	@Override
 	public String toString() {
 		return new ToStringBuilder(this)
-				.append("Document size (b): ", dokument != null ? dokument.length : 0)
+				.append("Document size (b): ", dokument == null ? 0 : dokument.length)
 				.toString();
 	}
 

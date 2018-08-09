@@ -12,7 +12,7 @@ import javax.inject.Inject;
 
 /**
  * Default implementation of the HentDokumentUrlInfo.
- * 
+ *
  * @author Magnus Skuland, Sirius IT
  * @author Eirik Bergande, Sirius IT
  * @author Thomas Eugen Bjørge, Visma Consulting
@@ -27,7 +27,9 @@ public class DefaultHentDokumentUrlInfo extends AbstractDocumentOperation implem
 	@Inject
 	private DokumentUrlInfoRepository dokumentUrlInfoRepository;
 
-	/** {@inheritDoc} */
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public HentDokumentUrlInfoResponse hentDokumentUrlInfo(HentDokumentUrlInfoRequest hentUrlRequest) {
 		validateHentUrlRequest(hentUrlRequest);
@@ -65,9 +67,8 @@ public class DefaultHentDokumentUrlInfo extends AbstractDocumentOperation implem
 
 	/**
 	 * Setter for the defaultUrlTimeToLiveMinutes property.
-	 * 
-	 * @param defaultUrlTimeToLiveMinutes
-	 *            the defaultUrlTimeToLiveMinutes to set
+	 *
+	 * @param defaultUrlTimeToLiveMinutes the defaultUrlTimeToLiveMinutes to set
 	 */
 	public void setDefaultUrlTimeToLiveMinutes(Long defaultUrlTimeToLiveMinutes) {
 		this.defaultUrlTimeToLiveMinutes = defaultUrlTimeToLiveMinutes;

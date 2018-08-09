@@ -18,7 +18,6 @@ public class DefaultVedleggUrlRetriever implements VedleggUrlRetriever {
 
 	private HentDokumentUrl hentDokumentUrl;
 	private Long urlTimeToLive;
-	private Boolean nonSSLUrl;
 
 	/**
 	 * {@inheritDoc}
@@ -27,14 +26,12 @@ public class DefaultVedleggUrlRetriever implements VedleggUrlRetriever {
 	public String retrieveVedleggUrl(String journalpostIdVedlegg, String filUuidVedlegg) {
 
 		HentDokumentUrlRequest request = new HentDokumentUrlRequest(Long.valueOf(journalpostIdVedlegg), filUuidVedlegg,
-				urlTimeToLive); //nonSSLUrl
+				urlTimeToLive);
 
 		HentDokumentUrlResponse response = null;
 		try {
 			response = hentDokumentUrl.hentDokumentUrl(request);
-		} catch (NoJournalpostFoundException e) {
-			throw new InvalidArgumentException("HentDokumentUrl for vedlegg failed", e);
-		} catch (InvalidFilUuidException e) {
+		} catch (NoJournalpostFoundException | InvalidFilUuidException e) {
 			throw new InvalidArgumentException("HentDokumentUrl for vedlegg failed", e);
 		}
 		return response.getDokumentUrl();
@@ -56,15 +53,6 @@ public class DefaultVedleggUrlRetriever implements VedleggUrlRetriever {
 	 */
 	public void setUrlTimeToLive(Long urlTimeToLive) {
 		this.urlTimeToLive = urlTimeToLive;
-	}
-
-	/**
-	 * Setter for the nonSSLUrl property.
-	 *
-	 * @param nonSSLUrl the nonSSLUrl to set
-	 */
-	public void setNonSSLUrl(Boolean nonSSLUrl) {
-		this.nonSSLUrl = nonSSLUrl;
 	}
 
 }

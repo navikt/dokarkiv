@@ -92,7 +92,7 @@ public class DefaultSettMetadataIDLF extends AbstractDocumentOperation implement
 		return foundmetadataEntry;
 	}
 
-	private String convertToXml(ZipInputStream inputDlfStream) throws IOException, UnsupportedEncodingException {
+	private String convertToXml(ZipInputStream inputDlfStream) throws IOException {
 		return CharStreams.toString(new InputStreamReader(inputDlfStream, metadataXmlEncoding));
 	}
 

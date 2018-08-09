@@ -14,7 +14,7 @@ public class HentDokumentUrlInfoRequest {
 
 	private static final long serialVersionUID = ***gammelt_fnr***94300753L;
 
-	private String docToken;
+	private final String docToken;
 
 	/**
 	 * Constructs a {@link HentDokumentUrlInfoRequest}.

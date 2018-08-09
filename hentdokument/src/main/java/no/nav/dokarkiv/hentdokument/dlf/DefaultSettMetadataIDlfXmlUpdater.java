@@ -77,11 +77,7 @@ public class DefaultSettMetadataIDlfXmlUpdater implements SettMetadataIDlfXmlUpd
 		try {
 			DocumentBuilder documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
 			metadata = documentBuilder.parse(new InputSource(new StringReader(metadataXml)));
-		} catch (ParserConfigurationException e) {
-			throw new MetadataXmlUpdateFailedException(e);
-		} catch (SAXException e) {
-			throw new MetadataXmlUpdateFailedException(e);
-		} catch (IOException e) {
+		} catch (ParserConfigurationException | SAXException | IOException e) {
 			throw new MetadataXmlUpdateFailedException(e);
 		}
 		return metadata;
