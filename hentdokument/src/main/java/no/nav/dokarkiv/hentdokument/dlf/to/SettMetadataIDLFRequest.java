@@ -30,7 +30,7 @@ public class SettMetadataIDLFRequest {
 	 */
 	public SettMetadataIDLFRequest(SettMetadataForUthenting settMetadataForUthenting, byte[] dlfDokument) {
 		this.settMetadataForUthenting = settMetadataForUthenting;
-		this.dlfDokument = dlfDokument.clone();
+		this.dlfDokument = dlfDokument == null ? null : dlfDokument.clone();
 	}
 
 	/**
@@ -121,7 +121,7 @@ public class SettMetadataIDLFRequest {
 	 * @return the dlfDokument
 	 */
 	public byte[] getDlfDokument() {
-		return dlfDokument;
+		return dlfDokument == null ? null : dlfDokument.clone();
 	}
 
 	/**
@@ -130,7 +130,7 @@ public class SettMetadataIDLFRequest {
 	 * @param dlfDokument the dlfDokument to set
 	 */
 	public void setDlfDokument(byte[] dlfDokument) {
-		this.dlfDokument = dlfDokument;
+		this.dlfDokument = dlfDokument == null ? null : dlfDokument.clone();
 	}
 
 	/**
