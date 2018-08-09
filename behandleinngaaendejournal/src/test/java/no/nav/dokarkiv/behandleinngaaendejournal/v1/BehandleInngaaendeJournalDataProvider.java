@@ -24,8 +24,9 @@ import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.Bruker;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
-import org.joda.time.LocalDateTime;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
@@ -84,8 +85,8 @@ public class BehandleInngaaendeJournalDataProvider {
 		return getJournalpostBuilder()
 				.avsenderMottaker(AVSENDER_MOTTAKER_NAVN)
 				.avsenderMottakerId(AVSENDER_MOTTAKERID)
-				.mottattDato(now.toDate())
-				.dokumentDato(now.toDate())
+				.mottattDato(Date.from(now.atZone(ZoneId.systemDefault()).toInstant()))
+				.dokumentDato(Date.from(now.atZone(ZoneId.systemDefault()).toInstant()))
 				.mottakskanal(MottaksKanalCode.NAV_NO)
 				.fagomrade(JOURNALPOST_FAGOMRADE)
 				.journalStatus(JournalStatusCode.M)

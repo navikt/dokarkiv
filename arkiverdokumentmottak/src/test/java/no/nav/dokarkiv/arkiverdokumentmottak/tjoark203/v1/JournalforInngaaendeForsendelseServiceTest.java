@@ -10,7 +10,6 @@ import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.verifyZeroInteractions;
@@ -69,7 +68,7 @@ public class JournalforInngaaendeForsendelseServiceTest {
 		verify(repositoryMock).save(any(Journalpost.class));
 		verify(repositoryMock).findJournalpostIdByTilleggsopplysningerNokkelAndVerdi(FORSENDELSE_MOTTAK_ID_KEY, FORSENDLESE_MOTTAKS_ID);
 		verifyNoMoreInteractions(repositoryMock);
-		verify(validator).validate(any(Journalpost.class), eq(true));
+		verify(validator).validate(any(Journalpost.class));
 		verifyNoMoreInteractions(validator);
 		verify(dokumentFilerDelegateMock).saveUpdateDokumentFiler(any(Journalpost.class));
 		verifyNoMoreInteractions(dokumentFilerDelegateMock);
@@ -91,7 +90,7 @@ public class JournalforInngaaendeForsendelseServiceTest {
 
 		verify(repositoryMock).save(any(Journalpost.class));
 		verifyNoMoreInteractions(repositoryMock);
-		verify(validator).validate(any(Journalpost.class), eq(true));
+		verify(validator).validate(any(Journalpost.class));
 		verifyNoMoreInteractions(validator);
 		verify(dokumentFilerDelegateMock).saveUpdateDokumentFiler(any(Journalpost.class));
 		verifyNoMoreInteractions(dokumentFilerDelegateMock);
@@ -112,7 +111,7 @@ public class JournalforInngaaendeForsendelseServiceTest {
 		verify(repositoryMock).save(any(Journalpost.class));
 		verify(repositoryMock).findJournalpostIdByTilleggsopplysningerNokkelAndVerdi(FORSENDELSE_MOTTAK_ID_KEY, FORSENDLESE_MOTTAKS_ID);
 		verifyNoMoreInteractions(repositoryMock);
-		verify(validator).validate(any(Journalpost.class), eq(true));
+		verify(validator).validate(any(Journalpost.class));
 		verifyNoMoreInteractions(validator);
 		verify(dokumentFilerDelegateMock).saveUpdateDokumentFiler(any(Journalpost.class));
 		verifyNoMoreInteractions(dokumentFilerDelegateMock);

@@ -1,14 +1,14 @@
 package no.nav.dokarkiv.dokumentproduksjoninfo;
 
 import lombok.extern.slf4j.Slf4j;
+import no.nav.dokarkiv.core.exceptions.NoDokumentInfoFoundException;
+import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
 import no.nav.dokarkiv.dokumentproduksjoninfo.exceptions.DokumentInfoNotFoundException;
 import no.nav.dokarkiv.dokumentproduksjoninfo.exceptions.FilDetaljerNotFoundException;
 import no.nav.dokarkiv.dokumentproduksjoninfo.exceptions.IllegalDokumentstatusException;
 import no.nav.dokarkiv.dokumentproduksjoninfo.exceptions.IllegalJournalStatusException;
 import no.nav.dokarkiv.dokumentproduksjoninfo.exceptions.IllegalVariantFormatException;
 import no.nav.dokarkiv.dokumentproduksjoninfo.exceptions.JournalpostNotFoundException;
-import no.nav.dokarkiv.dokumentproduksjoninfo.exceptions.NoDokumentInfoFoundException;
-import no.nav.dokarkiv.dokumentproduksjoninfo.exceptions.NoJournalpostFoundException;
 import no.nav.dokarkiv.dokumentproduksjoninfo.tjoark120.HentJournalOgDokumentStatus;
 import no.nav.dokarkiv.dokumentproduksjoninfo.tjoark120.HentJournalOgDokumentStatusRequestMapper;
 import no.nav.dokarkiv.dokumentproduksjoninfo.tjoark120.HentJournalOgDokumentStatusResponseMapper;

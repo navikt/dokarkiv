@@ -41,7 +41,7 @@ public class JournalforInngaaendeForsendelseService {
 		if (storedJournalpost == null) {
 			Journalpost journalpost = requestTo.getJournalpost();
 			updateJournalpost(journalpost);
-			validator.validate(journalpost, true);
+			validator.validate(journalpost);
 
 			dokumentFilerDelegate.saveUpdateDokumentFiler(journalpost);
 			storedJournalpost = joarkRepository.save(journalpost);
@@ -91,7 +91,6 @@ public class JournalforInngaaendeForsendelseService {
 		if (CollectionUtils.isEmpty(requestTo.getJournalpost().getTilleggsopplysninger())) {
 			return null;
 		}
-
 		String forsendelseMottakId = requestTo.getJournalpost().getTilleggsopplysninger().get(FORSENDELSE_MOTTAK_ID_KEY);
 		if (forsendelseMottakId == null || forsendelseMottakId.isEmpty()) {
 			return null;
@@ -103,7 +102,6 @@ public class JournalforInngaaendeForsendelseService {
 		}
 		return joarkRepository.findById(journalpostId).orElse(null);
 	}
-
 
 	private String getTillegsopplysning(JournalforInngaaendeForsendelseRequestTo requestTo) {
 		return requestTo.getJournalpost()

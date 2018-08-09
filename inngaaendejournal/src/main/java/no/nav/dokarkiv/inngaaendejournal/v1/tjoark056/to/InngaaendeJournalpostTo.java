@@ -5,8 +5,8 @@ import lombok.Data;
 import lombok.NonNull;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
-import org.joda.time.LocalDateTime;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**

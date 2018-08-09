@@ -91,7 +91,6 @@ import no.nav.tjeneste.virksomhet.innsynjournal.v2.informasjon.SkannetInnhold;
 import no.nav.tjeneste.virksomhet.innsynjournal.v2.meldinger.HentTilgjengeligJournalpostListeRequest;
 import no.nav.tjeneste.virksomhet.innsynjournal.v2.meldinger.HentTilgjengeligJournalpostListeResponse;
 import org.hamcrest.Matcher;
-import org.joda.time.LocalDateTime;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -99,6 +98,7 @@ import org.junit.Test;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.Month;
 import java.time.ZoneId;
 import java.util.Date;
@@ -661,7 +661,7 @@ public class HentMinTilgjengeligeJournalpostListeIT extends AbstractInnsynJourna
 	 */
 	@Test
 	public void shouldSetSendtDatoToEkspedertDatoWhenEkspedertDatoIsNotNull() throws Exception {
-		Date ekspedertDato = LocalDateTime.now().minusDays(2).toDate();
+		Date ekspedertDato = Date.from(LocalDateTime.now().minusDays(2).atZone(ZoneId.systemDefault()).toInstant());
 		Journalpost journalpost = buildAndPersist(aJournalpost().ekspedertDato(ekspedertDato));
 
 		String sakId = journalpost.getSaksrelasjon().getSakId();
@@ -680,7 +680,7 @@ public class HentMinTilgjengeligeJournalpostListeIT extends AbstractInnsynJourna
 	 */
 	@Test
 	public void shouldSetSendtDatoToSendtPrintDatoWhenEkspedertDatoIsNullAndSendtPrintDatoIsNotNull() throws Exception {
-		Date sendtPrintDato = LocalDateTime.now().minusDays(2).toDate();
+		Date sendtPrintDato = Date.from(LocalDateTime.now().minusDays(2).atZone(ZoneId.systemDefault()).toInstant());
 		Journalpost journalpost = buildAndPersist(aJournalpost()
 				.ekspedertDato(null)
 				.sendtPrintDato(sendtPrintDato)
@@ -702,7 +702,7 @@ public class HentMinTilgjengeligeJournalpostListeIT extends AbstractInnsynJourna
 	 */
 	@Test
 	public void shouldSetSendtDatoToJournalDatoWhenEkspedertDatoAndSendtPrintDatoAreBothNull() throws Exception {
-		Date journalDato = LocalDateTime.now().minusDays(2).toDate();
+		Date journalDato = Date.from(LocalDateTime.now().minusDays(2).atZone(ZoneId.systemDefault()).toInstant());
 		Journalpost journalpost = buildAndPersist(aJournalpost()
 				.ekspedertDato(null)
 				.sendtPrintDato(null)
@@ -725,7 +725,7 @@ public class HentMinTilgjengeligeJournalpostListeIT extends AbstractInnsynJourna
 	 */
 	@Test
 	public void shouldSetFerdigstiltToJournalDatoWhenJournalDatoIsNotNull() throws Exception {
-		Date journalDato = LocalDateTime.now().minusDays(2).toDate();
+		Date journalDato = Date.from(LocalDateTime.now().minusDays(2).atZone(ZoneId.systemDefault()).toInstant());
 		Journalpost journalpost = buildAndPersist(aJournalpost()
 				.journalDato(journalDato));
 

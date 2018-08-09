@@ -435,7 +435,7 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	}
 
 	private Map<Long, Integer> getDokumentInfoIdsCount() {
-		Map<Long, Integer> dokumentInfoIdsCount = new HashMap<Long, Integer>();
+		Map<Long, Integer> dokumentInfoIdsCount = new HashMap<>();
 		for (JournalpostDokumentInfoRelasjon dokumentInfoRelasjon : getJournalpostDokumentInfoRelasjoner()) {
 			DokumentInfo dokumentInfo = dokumentInfoRelasjon.getDokumentInfo();
 			if (dokumentInfo != null && dokumentInfo.getDokumentInfoId() != null) {
@@ -605,7 +605,7 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	 * @return A List with all FilDetaljer
 	 */
 	public List<FilDetaljer> findAllFilDetaljer() {
-		List<FilDetaljer> allFilDetaljer = new ArrayList<FilDetaljer>();
+		List<FilDetaljer> allFilDetaljer = new ArrayList<>();
 		for (JournalpostDokumentInfoRelasjon relasjon : getJournalpostDokumentInfoRelasjoner()) {
 			if (relasjon.getDokumentInfo() != null) {
 				allFilDetaljer.addAll(relasjon.getDokumentInfo().getFildetaljerListe());
@@ -712,7 +712,7 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	 * @return A List with all DokumentInfos
 	 */
 	public List<DokumentInfo> findAllDokumentInfos() {
-		List<DokumentInfo> allDokumentInfos = new ArrayList<DokumentInfo>();
+		List<DokumentInfo> allDokumentInfos = new ArrayList<>();
 		for (JournalpostDokumentInfoRelasjon relasjon : getJournalpostDokumentInfoRelasjoner()) {
 			if (relasjon.getDokumentInfo() != null) {
 				allDokumentInfos.add(relasjon.getDokumentInfo());

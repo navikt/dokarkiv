@@ -35,11 +35,9 @@ public class JournalforInngaaendeForsendelseValidator {
 	@Inject
 	private MandatoryFieldsVerifier mandatoryFieldsVerifier;
 
-	public void validate(final Journalpost journalpost, boolean verifyStructure) {
+	public void validate(final Journalpost journalpost) {
 		mandatoryFieldsVerifier.verifyFields(journalpost);
-		if (verifyStructure) {
-			verifier.verifyJournalpostStructure(journalpost);
-		}
+		verifier.verifyJournalpostStructure(journalpost);
 		validateJournalpost(journalpost);
 		validateDokumentInfoRelasjonList(journalpost.getJournalpostDokumentInfoRelasjoner());
 	}

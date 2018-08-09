@@ -30,7 +30,7 @@ public class AutowireUtil {
 		}
 	}
 
-	private static void setAutowireCapableBeanFactory(AutowireCapableBeanFactory bean) {
+	private static synchronized void setAutowireCapableBeanFactory(AutowireCapableBeanFactory bean) {
 		beanFactory = bean;
 	}
 
