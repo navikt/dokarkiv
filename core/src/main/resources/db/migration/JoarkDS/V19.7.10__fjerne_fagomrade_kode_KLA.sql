@@ -1,0 +1,1 @@
+delete from T_K_FAGOMRADE where k_fagomrade = 'KLA';
