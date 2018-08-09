@@ -41,7 +41,7 @@ public class SettMetadataIDLFRequest {
 	 */
 	public SettMetadataIDLFRequest(SettMetadataForKopiering settMetadataForKopiering, byte[] dlfDokument) {
 		this.settMetadataForKopiering = settMetadataForKopiering;
-		this.dlfDokument = dlfDokument;
+		this.dlfDokument = dlfDokument == null ? null : dlfDokument.clone();
 	}
 
 	/**
