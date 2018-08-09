@@ -32,6 +32,7 @@ import no.nav.dokarkiv.core.repository.DokumentUrlInfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.dokarkiv.core.stelvio.SimpleRequestContext;
+import no.nav.dokarkiv.hentdokument.rest.HentDokumentController;
 import org.apache.http.HttpHeaders;
 import org.assertj.core.util.DateUtil;
 import org.junit.After;
@@ -57,7 +58,7 @@ import java.util.UUID;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE,
-		classes = {CoreConfig.class, HentDokumentController.class})
+		classes = {CoreConfig.class, HentDokumentConfig.class})
 @ActiveProfiles("itest,wiremock")
 @AutoConfigureTestDatabase
 @AutoConfigureTestEntityManager
@@ -161,10 +162,9 @@ public class HentDokumentControllerIT {
 
 		persistDokumentFil();
 
-		ResponseEntity<byte[]> response = controller.getDokument("");
+		ResponseEntity<byte[]> response = controller.getDokument("???");
 
-		assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatusCodeValue());
-		assertArrayEquals(FIL_CONTENT, response.getBody());
+		assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), response.getStatusCodeValue());
 	}
 
 	private JournalpostBuilder createJournalpostBuilder(String dokumentTittel) {
