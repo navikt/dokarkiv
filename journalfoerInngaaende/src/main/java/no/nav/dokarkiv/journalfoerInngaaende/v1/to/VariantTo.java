@@ -13,7 +13,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class VariantTo {
-	String type;
-	String identifikator;
-	String navn;
+	String arkivfiltype;
+	String variantformat;
 }

@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class AktoerTo {
-	String arkivfiltype;
-	String variantformat;
+	String type;
+	String identifikator;
+	String navn;
 }

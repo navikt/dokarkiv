@@ -14,8 +14,8 @@ import java.util.List;
 public class JournalpostResponseTo {
 
 	private String journaltilstand;
-	private AktoerTo avsender;
-	private List<AktoerTo> brukere;
+	private VariantTo avsender;
+	private List<VariantTo> brukere;
 	private ArkivsakTo arkivsak;
 	private String tema;
 	private String tittel;

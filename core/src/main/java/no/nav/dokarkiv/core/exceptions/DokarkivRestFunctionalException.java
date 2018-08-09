@@ -2,16 +2,16 @@ package no.nav.dokarkiv.core.exceptions;
 
 import org.springframework.http.HttpStatus;
 
-public class DokmotArkivRestFunctionalException extends DokarkivFunctionalException {
+public class DokarkivRestFunctionalException extends DokarkivFunctionalException {
 
 	private final HttpStatus httpStatus;
 
-	public DokmotArkivRestFunctionalException(String message, HttpStatus status) {
+	public DokarkivRestFunctionalException(String message, HttpStatus status) {
 		super(message);
 		this.httpStatus = status;
 	}
 
-	public DokmotArkivRestFunctionalException(String message, Throwable cause, HttpStatus status) {
+	public DokarkivRestFunctionalException(String message, Throwable cause, HttpStatus status) {
 		super(message, cause);
 		this.httpStatus = status;
 	}
