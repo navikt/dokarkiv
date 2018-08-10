@@ -6,6 +6,7 @@ import no.nav.dokarkiv.core.dokumenturl.HentDokumentUrlResponse;
 import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
 import no.nav.dokarkiv.core.exceptions.InvalidFilUuidException;
 import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 /**
@@ -16,43 +17,40 @@ import org.springframework.stereotype.Component;
 @Component
 public class DefaultVedleggUrlRetriever implements VedleggUrlRetriever {
 
-	private HentDokumentUrl hentDokumentUrl;
-	private Long urlTimeToLive;
+	private final HentDokumentUrl hentDokumentUrl;
+	private final Long urlTimeToLive;
+	private final boolean nonSslUrl;
 
-	/**
-	 * {@inheritDoc}
-	 */
+	public DefaultVedleggUrlRetriever(HentDokumentUrl hentDokumentUrl,
+									  @Value("${hentdokument.dlf.vedleggUrlTimeToLiveMinutes:480}") long urlTimeToLive,
+									  @Value("${hentdokument.dlf.vedleggNonSslUrl:true}") boolean nonSslUrl) {
+		this.hentDokumentUrl = hentDokumentUrl;
+		this.urlTimeToLive = urlTimeToLive;
+		this.nonSslUrl = nonSslUrl;
+	}
+
 	@Override
 	public String retrieveVedleggUrl(String journalpostIdVedlegg, String filUuidVedlegg) {
 
-		HentDokumentUrlRequest request = new HentDokumentUrlRequest(Long.valueOf(journalpostIdVedlegg), filUuidVedlegg,
-				urlTimeToLive);
+		HentDokumentUrlRequest request = new HentDokumentUrlRequest(Long.valueOf(journalpostIdVedlegg), filUuidVedlegg, urlTimeToLive);
 
 		HentDokumentUrlResponse response = null;
 		try {
-			response = hentDokumentUrl.hentDokumentUrl(request);
+			response = hentDokumentUrl.hentDokumentUrlJoark(request);
 		} catch (NoJournalpostFoundException | InvalidFilUuidException e) {
 			throw new InvalidArgumentException("HentDokumentUrl for vedlegg failed", e);
 		}
-		return response.getDokumentUrl();
+		return determineNonSslUrl(response);
 	}
 
-	/**
-	 * Setter for the hentDokumentUrl property.
-	 *
-	 * @param hentDokumentUrl the hentDokumentUrl to set
+	/*
+	 * Denne hacken er her fordi av historisk årsaker så har ikke DLF leseren klart å hente urler med https.
 	 */
-	public void setHentDokumentUrl(HentDokumentUrl hentDokumentUrl) {
-		this.hentDokumentUrl = hentDokumentUrl;
+	private String determineNonSslUrl(HentDokumentUrlResponse response) {
+		if(nonSslUrl) {
+			return response.getDokumentUrl().replace("https:", "http:");
+		} else {
+			return response.getDokumentUrl();
+		}
 	}
-
-	/**
-	 * Setter for the urlTimeToLive property.
-	 *
-	 * @param urlTimeToLive the urlTimeToLive to set
-	 */
-	public void setUrlTimeToLive(Long urlTimeToLive) {
-		this.urlTimeToLive = urlTimeToLive;
-	}
-
 }

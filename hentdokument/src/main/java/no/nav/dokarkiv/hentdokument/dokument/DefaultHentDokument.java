@@ -14,7 +14,6 @@ import no.nav.dokarkiv.core.exceptions.InvalidFilUuidException;
 import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
 import no.nav.dokarkiv.core.exceptions.SettMetadataIDlfFailedException;
 import no.nav.dokarkiv.core.ondemand.HentOndemandDokument;
-import no.nav.dokarkiv.core.repository.DokumentUrlInfoRepository;
 import no.nav.dokarkiv.hentdokument.dlf.SettMetadataIDLF;
 import no.nav.dokarkiv.hentdokument.dlf.to.SettMetadataForUthenting;
 import no.nav.dokarkiv.hentdokument.dlf.to.SettMetadataIDLFRequest;
@@ -38,18 +37,13 @@ public class DefaultHentDokument extends AbstractDocumentOperation implements He
 
 	@Value("${joark.hentdokument.baseurl}")
 	private String joarkUrl;
-
 	@Inject
 	private HentOndemandDokument hentOndemandDokument;
-
 	@Inject
 	private SettMetadataIDLF settMetadataIDLF;
 
 	private final MimeTypeMapper mimeTypeMapper = new MimeTypeMapper();
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public HentDokumentResponse hentDokument(HentDokumentRequest hentDokumentRequest) throws NoJournalpostFoundException,
 			InvalidFilUuidException {
@@ -84,18 +78,12 @@ public class DefaultHentDokument extends AbstractDocumentOperation implements He
 	}
 
 	private byte[] getDocumentFromOnDemand(FilDetaljer filDetaljer, String docToken) {
-		String dokumentUrl = getUrl(filDetaljer, docToken);
+		String dokumentUrl = constructJoarkUrl(filDetaljer, docToken);
 		return hentOndemandDokument.hentOndemandDokumentFromJoark(dokumentUrl);
 	}
 
-	private String getUrl(FilDetaljer filDetaljer, String docToken) {
-		String url = new StringBuilder(joarkUrl)
-				.append("?")
-				.append(HENT_DOKUMENT_SERVLET_PARAM)
-				.append("=")
-				.append(docToken)
-				.toString();
-
+	private String constructJoarkUrl(FilDetaljer filDetaljer, String docToken) {
+		String url = joarkUrl + "?" + HENT_DOKUMENT_SERVLET_PARAM + "=" + docToken;
 		return addMimetypeToUrl(url, mimeTypeMapper.getMimeTypeForFileExtension(filDetaljer.getFiltype().name()));
 	}
 
@@ -131,22 +119,15 @@ public class DefaultHentDokument extends AbstractDocumentOperation implements He
 		return response.getDlfDokument();
 	}
 
-	/**
-	 * Setter for the hentOndemandDokument
-	 *
-	 * @param hentOndemandDokument the hentOndemandDokument to set
-	 */
+	public void setJoarkUrl(String joarkUrl) {
+		this.joarkUrl = joarkUrl;
+	}
+
 	public void setHentOndemandDokument(HentOndemandDokument hentOndemandDokument) {
 		this.hentOndemandDokument = hentOndemandDokument;
 	}
 
-	/**
-	 * Setter for the settMetadataIDLF property.
-	 *
-	 * @param settMetadataIDLF the settMetadataIDLF to set
-	 */
 	public void setSettMetadataIDLF(SettMetadataIDLF settMetadataIDLF) {
 		this.settMetadataIDLF = settMetadataIDLF;
 	}
-
 }

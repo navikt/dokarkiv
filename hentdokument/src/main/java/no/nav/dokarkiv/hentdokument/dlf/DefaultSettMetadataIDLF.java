@@ -6,13 +6,14 @@ import no.nav.dokarkiv.core.dokumenturl.AbstractDocumentOperation;
 import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
 import no.nav.dokarkiv.hentdokument.dlf.to.SettMetadataIDLFRequest;
 import no.nav.dokarkiv.hentdokument.dlf.to.SettMetadataIDLFResponse;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import javax.inject.Inject;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
@@ -30,12 +31,11 @@ public class DefaultSettMetadataIDLF extends AbstractDocumentOperation implement
 	 */
 	public static final String DLF_METADATA_XML_FILE = "DLF/D/Customer 1.xml";
 
+	@Inject
 	private SettMetadataIDlfXmlUpdater settMetadataIDlfXmlUpdater;
+	@Value("${hentdokument.dlf.metadataXmlEncoding}")
 	private String metadataXmlEncoding;
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public SettMetadataIDLFResponse settMetadataIDLF(SettMetadataIDLFRequest settMetadataIDLFRequest) {
 		validateRequest(settMetadataIDLFRequest);
@@ -127,22 +127,11 @@ public class DefaultSettMetadataIDLF extends AbstractDocumentOperation implement
 		return metadataXml;
 	}
 
-	/**
-	 * Setter for the settMetadataIDlfXmlUpdater property.
-	 *
-	 * @param settMetadataIDlfXmlUpdater the settMetadataIDlfXmlUpdater to set
-	 */
 	public void setSettMetadataIDlfXmlUpdater(SettMetadataIDlfXmlUpdater settMetadataIDlfXmlUpdater) {
 		this.settMetadataIDlfXmlUpdater = settMetadataIDlfXmlUpdater;
 	}
 
-	/**
-	 * Setter for the metadataXmlEncoding property.
-	 *
-	 * @param metadataXmlEncoding the metadataXmlEncoding to set
-	 */
 	public void setMetadataXmlEncoding(String metadataXmlEncoding) {
 		this.metadataXmlEncoding = metadataXmlEncoding;
 	}
-
 }

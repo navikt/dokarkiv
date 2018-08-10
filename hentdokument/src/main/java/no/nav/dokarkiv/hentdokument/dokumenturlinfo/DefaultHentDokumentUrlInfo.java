@@ -6,9 +6,12 @@ import no.nav.dokarkiv.core.domain.util.DateProvider;
 import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
 import no.nav.dokarkiv.core.exceptions.UrlNotValidException;
 import no.nav.dokarkiv.core.repository.DokumentUrlInfoRepository;
+import no.nav.dokarkiv.hentdokument.exceptions.DokumentUrlNotFoundException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Default implementation of the HentDokumentUrlInfo.
@@ -20,20 +23,21 @@ import javax.inject.Inject;
 @Component
 public class DefaultHentDokumentUrlInfo extends AbstractDocumentOperation implements HentDokumentUrlInfo {
 
-	private Long defaultUrlTimeToLiveMinutes;
-
 	private long defaultTimeToLiveMillis;
 
-	@Inject
-	private DokumentUrlInfoRepository dokumentUrlInfoRepository;
+	private final DokumentUrlInfoRepository dokumentUrlInfoRepository;
 
-	/**
-	 * {@inheritDoc}
-	 */
+	@Inject
+	public DefaultHentDokumentUrlInfo(@Value("${hentdokument.dokumenturl.urlTimeToLiveMinutes:1}") long urlTimeToLiveMinutes,
+			DokumentUrlInfoRepository dokumentUrlInfoRepository) {
+		this.defaultTimeToLiveMillis = minutesToMillis(urlTimeToLiveMinutes);
+		this.dokumentUrlInfoRepository = dokumentUrlInfoRepository;
+	}
+
 	@Override
 	public HentDokumentUrlInfoResponse hentDokumentUrlInfo(HentDokumentUrlInfoRequest hentUrlRequest) {
 		validateHentUrlRequest(hentUrlRequest);
-		DokumentUrlInfo dokumentUrlInfo = dokumentUrlInfoRepository.findByDoctoken(hentUrlRequest.getDocToken());
+		DokumentUrlInfo dokumentUrlInfo = dokumentUrlInfoRepository.findByDoctoken(hentUrlRequest.getDocToken()).orElseThrow(() -> new DokumentUrlNotFoundException(hentUrlRequest.getDocToken()));
 		validateUrlStillValid(dokumentUrlInfo);
 		return new HentDokumentUrlInfoResponse(dokumentUrlInfo);
 	}
@@ -47,10 +51,10 @@ public class DefaultHentDokumentUrlInfo extends AbstractDocumentOperation implem
 
 	private void validateUrlStillValid(DokumentUrlInfo dokumentUrlInfo) {
 		long timeToLive;
-		if (dokumentUrlInfo.getTimeToLiveMinutes() != null) {
-			timeToLive = minutesToMillis(dokumentUrlInfo.getTimeToLiveMinutes());
-		} else {
+		if (dokumentUrlInfo.getTimeToLiveMinutes() == null) {
 			timeToLive = defaultTimeToLiveMillis;
+		} else {
+			timeToLive = minutesToMillis(dokumentUrlInfo.getTimeToLiveMinutes());
 		}
 
 		long timestamp = dokumentUrlInfo.getTidspunkt().getTime();
@@ -61,23 +65,7 @@ public class DefaultHentDokumentUrlInfo extends AbstractDocumentOperation implem
 		}
 	}
 
-	private long minutesToMillis(Long timeToLiveMinutes) {
-		return timeToLiveMinutes * 60 * 1000;
+	private long minutesToMillis(long timeToLiveMinutes) {
+		return TimeUnit.MINUTES.toMillis(timeToLiveMinutes);
 	}
-
-	/**
-	 * Setter for the defaultUrlTimeToLiveMinutes property.
-	 *
-	 * @param defaultUrlTimeToLiveMinutes the defaultUrlTimeToLiveMinutes to set
-	 */
-	public void setDefaultUrlTimeToLiveMinutes(Long defaultUrlTimeToLiveMinutes) {
-		this.defaultUrlTimeToLiveMinutes = defaultUrlTimeToLiveMinutes;
-		defaultTimeToLiveMillis = minutesToMillis(defaultUrlTimeToLiveMinutes);
-	}
-
-
-	public void setDokumentUrlInfoRepository(DokumentUrlInfoRepository dokumentUrlInfoRepository) {
-		this.dokumentUrlInfoRepository = dokumentUrlInfoRepository;
-	}
-
 }

@@ -20,7 +20,7 @@ public class UrlNotValidException extends FunctionalUnrecoverableException {
 	 */
 	private static final String MSG = "The time to live is exceeded for the DokumentUrlInfo with identifier: ";
 
-	private DokumentUrlInfo dokumentUrlInfo;
+	private final DokumentUrlInfo dokumentUrlInfo;
 
 	/**
 	 * Constructs a new UrlNotValidException.

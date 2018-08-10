@@ -24,7 +24,6 @@ import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
 import no.nav.dokarkiv.core.domain.codes.OnDemandInstansCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
-import no.nav.dokarkiv.core.domain.entities.DokumentUrlInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
@@ -32,32 +31,32 @@ import no.nav.dokarkiv.core.repository.DokumentUrlInfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.dokarkiv.core.stelvio.SimpleRequestContext;
-import no.nav.dokarkiv.hentdokument.rest.HentDokumentController;
+import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpHeaders;
 import org.assertj.core.util.DateUtil;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.transaction.TestTransaction;
 
 import javax.inject.Inject;
 import javax.transaction.Transactional;
+import java.io.IOException;
 import java.util.UUID;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE,
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
 		classes = {CoreConfig.class, HentDokumentConfig.class})
 @ActiveProfiles("itest,wiremock")
 @AutoConfigureTestDatabase
@@ -74,9 +73,6 @@ public class HentDokumentControllerIT {
 	private static final String ON_DEMAND_ID = "onDemandId";
 	private static final byte[] ONDEMAND_FIL_CONTENT = "e-business".getBytes();
 
-	@Rule
-	public ExpectedException expectedException = ExpectedException.none();
-
 	@Inject
 	private DokumentUrlInfoRepository dokumentUrlInfoRepository;
 	@Inject
@@ -84,7 +80,7 @@ public class HentDokumentControllerIT {
 	@Inject
 	private DokumentFilRepository dokumentFilRepository;
 	@Inject
-	private HentDokumentController controller;
+	private TestRestTemplate testRestTemplate;
 
 	@Before
 	public void setUp() {
@@ -102,67 +98,67 @@ public class HentDokumentControllerIT {
 	}
 
 	@Test
-	public void testOnDemand() {
+	public void shouldFetchOnDemandDocumentFromJoarkInsteadOfDatabase() {
 		String docToken = UUID.randomUUID().toString();
 		Journalpost journalpost = joarkRepository.save(createOnDemandJournalpostBuilder().build());
-		DokumentUrlInfo dokumentUrlInfo = dokumentUrlInfoRepository.save(createDokumentUrlInfo(journalpost, docToken, FIL_UUID).build());
+		dokumentUrlInfoRepository.save(createDokumentUrlInfo(journalpost, docToken, FIL_UUID).build());
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
 
 		stubFor(get(urlMatching("\\/joarkhentdokument\\?docToken=[a-zA-Z0-9\\-]+&mimetype=application%252Fpdf"))
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
 						.withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_PDF_VALUE)
 						.withBody(ONDEMAND_FIL_CONTENT)));
 
-		ResponseEntity<byte[]> response = controller.getDokument(docToken);
+		ResponseEntity<byte[]> response = testRestTemplate.getForEntity("/hentdokument?docToken=" + docToken + "&amp;mimetype=application%2Fpdf", byte[].class);
 
 		assertEquals(HttpStatus.OK.value(), response.getStatusCodeValue());
 		assertArrayEquals(ONDEMAND_FIL_CONTENT, response.getBody());
 	}
 
 	@Test
-	public void testRegularDBDocument() {
+	public void shouldFetchDocumentFromDatabase() {
 		String docToken = UUID.randomUUID().toString();
-
 		Journalpost journalpost = joarkRepository.save(createJournalpostBuilder("tittel").build());
-		DokumentUrlInfo dokumentUrlInfo = dokumentUrlInfoRepository.save(createDokumentUrlInfo(journalpost, docToken, FIL_UUID).build());
+		dokumentUrlInfoRepository.save(createDokumentUrlInfo(journalpost, docToken, FIL_UUID).build());
+		persistDokumentFil(FIL_CONTENT);
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
 
-		persistDokumentFil();
-
-		ResponseEntity<byte[]> response = controller.getDokument(docToken);
+		ResponseEntity<byte[]> response = testRestTemplate.getForEntity("/hentdokument?docToken=" + docToken + "&amp;mimetype=application%2Fpdf", byte[].class);
 
 		assertEquals(HttpStatus.OK.value(), response.getStatusCodeValue());
 		assertArrayEquals(FIL_CONTENT, response.getBody());
 	}
 
 	@Test
-	@Ignore("Ignorert inntil DLF er konfigurert")
-	public void testDLFDocument() {
+	public void shouldFetchAndUpdateDlfDocument() throws IOException {
 		String docToken = UUID.randomUUID().toString();
 
 		Journalpost journalpost = createJournalpostBuilder("tittel").build();
 		journalpost.findAllFilDetaljer().get(0).setVariantFormat(VariantFormatCode.PRODUKSJON_DLF);
 		joarkRepository.save(journalpost);
+		dokumentUrlInfoRepository.save(createDokumentUrlInfo(journalpost, docToken, FIL_UUID).build());
+		persistDokumentFil(byteArrFromClasspath("EESSI.dlf"));
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
 
-		DokumentUrlInfo dokumentUrlInfo = dokumentUrlInfoRepository.save(createDokumentUrlInfo(journalpost, docToken, FIL_UUID).build());
-
-		persistDokumentFil();
-
-		ResponseEntity<byte[]> response = controller.getDokument(docToken);
+		ResponseEntity<byte[]> response = testRestTemplate.getForEntity("/hentdokument?docToken=" + docToken + "&amp;mimetype=application%2Fpdf", byte[].class);
 
 		assertEquals(HttpStatus.OK.value(), response.getStatusCodeValue());
-		assertArrayEquals(FIL_CONTENT, response.getBody());
 	}
 
 	@Test
-	@Ignore("TODO fix exception handling")
 	public void shouldThrowExceptionInvalidDocToken() {
 		String docToken = UUID.randomUUID().toString();
 
 		Journalpost journalpost = joarkRepository.save(createJournalpostBuilder("tittel").build());
-		DokumentUrlInfo dokumentUrlInfo = dokumentUrlInfoRepository.save(createDokumentUrlInfo(journalpost, docToken, FIL_UUID).build());
+		dokumentUrlInfoRepository.save(createDokumentUrlInfo(journalpost, docToken, FIL_UUID).build());
+		persistDokumentFil(FIL_CONTENT);
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
 
-		persistDokumentFil();
-
-		ResponseEntity<byte[]> response = controller.getDokument("???");
+		ResponseEntity<byte[]> response = testRestTemplate.getForEntity("/hentdokument?docToken=xyz&amp;mimetype=application%2Fpdf", byte[].class);
 
 		assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), response.getStatusCodeValue());
 	}
@@ -233,7 +229,11 @@ public class HentDokumentControllerIT {
 				.filUuid(filUuid);
 	}
 
-	private void persistDokumentFil() {
-		dokumentFilRepository.save(DokumentFilBuilder.getDokumentFilBuilder().filUuid(FIL_UUID).fil(FIL_CONTENT).opprettetKildeNavn("test").build());
+	private void persistDokumentFil(byte[] fileContent) {
+		dokumentFilRepository.save(DokumentFilBuilder.getDokumentFilBuilder().filUuid(FIL_UUID).fil(fileContent).opprettetKildeNavn("test").build());
+	}
+
+	protected byte[] byteArrFromClasspath(String resourcename) throws IOException {
+		return IOUtils.toByteArray(this.getClass().getClassLoader().getResourceAsStream(resourcename));
 	}
 }

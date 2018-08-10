@@ -6,11 +6,13 @@ import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
 import no.nav.dokarkiv.core.exceptions.MetadataXmlUpdateFailedException;
 import no.nav.dokarkiv.hentdokument.dlf.to.SettMetadataForKopiering;
 import no.nav.dokarkiv.hentdokument.dlf.to.SettMetadataForUthenting;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+import javax.inject.Inject;
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -48,12 +50,16 @@ public class DefaultSettMetadataIDlfXmlUpdater implements SettMetadataIDlfXmlUpd
 	private static final String ESB_ENDPOINT_URL_HP_LIVE_TAG = "ArkivDokumentURL";
 	private static final String VEDLEGG_URL_TAG = "ArkivPdfVedleggURL";
 
-	private VedleggUrlRetriever vedleggUrlRetriever;
-	private String metadataXmlEncoding;
+	private final VedleggUrlRetriever vedleggUrlRetriever;
+	private final String metadataXmlEncoding;
 
-	/**
-	 * {@inheritDoc}
-	 */
+	@Inject
+	public DefaultSettMetadataIDlfXmlUpdater(VedleggUrlRetriever vedleggUrlRetriever,
+											 @Value("${hentdokument.dlf.metadataXmlEncoding}") String metadataXmlEncoding) {
+		this.vedleggUrlRetriever = vedleggUrlRetriever;
+		this.metadataXmlEncoding = metadataXmlEncoding;
+	}
+
 	@Override
 	public String updateMetadataXmlForUthenting(String metadataXml, SettMetadataForUthenting metadataForUthenting) {
 		Document metadata = getMetadataDocument(metadataXml);
@@ -61,9 +67,6 @@ public class DefaultSettMetadataIDlfXmlUpdater implements SettMetadataIDlfXmlUpd
 		return transformDocumentToXml(metadata);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public String updateMetadataXmlForKopiering(String metadataXml, SettMetadataForKopiering metadataForKopiering,
 												String hoveddokumentMetadataXml) {
@@ -171,24 +174,6 @@ public class DefaultSettMetadataIDlfXmlUpdater implements SettMetadataIDlfXmlUpd
 
 	private String getTextContentFromElement(Document document, String tagName) {
 		return document.getElementsByTagName(tagName).item(0).getTextContent();
-	}
-
-	/**
-	 * Setter for the vedleggUrlRetriever property.
-	 *
-	 * @param vedleggUrlRetriever the vedleggUrlRetriever to set
-	 */
-	public void setVedleggUrlRetriever(VedleggUrlRetriever vedleggUrlRetriever) {
-		this.vedleggUrlRetriever = vedleggUrlRetriever;
-	}
-
-	/**
-	 * Setter for the metadataXmlEncoding property.
-	 *
-	 * @param metadataXmlEncoding the metadataXmlEncoding to set
-	 */
-	public void setMetadataXmlEncoding(String metadataXmlEncoding) {
-		this.metadataXmlEncoding = metadataXmlEncoding;
 	}
 
 	/**

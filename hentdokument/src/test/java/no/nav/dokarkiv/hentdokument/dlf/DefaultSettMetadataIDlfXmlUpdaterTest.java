@@ -46,9 +46,7 @@ public class DefaultSettMetadataIDlfXmlUpdaterTest {
 	@Before
 	public void setUp() {
 		MockitoAnnotations.initMocks(this);
-		xmlUpdater = new DefaultSettMetadataIDlfXmlUpdater();
-		xmlUpdater.setVedleggUrlRetriever(vedleggUrlRetrieverMock);
-		xmlUpdater.setMetadataXmlEncoding(encoding);
+		xmlUpdater = new DefaultSettMetadataIDlfXmlUpdater(vedleggUrlRetrieverMock, encoding);
 	}
 
 	@Test

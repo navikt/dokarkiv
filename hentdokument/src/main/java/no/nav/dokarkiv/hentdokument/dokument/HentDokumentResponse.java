@@ -8,12 +8,6 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
  * @author Thomas Eugen Bjørge, Sirius IT
  */
 public class HentDokumentResponse {
-
-	/**
-	 * ID used for serialization.
-	 */
-	private static final long serialVersionUID = ***gammelt_fnr***16902996L;
-
 	private final byte[] dokument;
 
 	/**
