@@ -9,10 +9,8 @@ import lombok.NoArgsConstructor;
  * @author Sigurd Midttun, Visma Consulting.
  */
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
 @Builder
 public class VariantTo {
-	String arkivfiltype;
-	String variantformat;
+	private String arkivfiltype;
+	private String variantformat;
 }
