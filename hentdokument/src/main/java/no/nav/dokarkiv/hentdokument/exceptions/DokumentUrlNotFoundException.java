@@ -13,7 +13,7 @@ public class DokumentUrlNotFoundException extends FunctionalUnrecoverableExcepti
 	/** Serialization ID. */
 	private static final long serialVersionUID = 1L;
 
-	private String docToken;
+	private final String docToken;
 	/** Error message. */
 	private static final String MSG = "No DokumentUrl entry could be found for docToken: ";
 

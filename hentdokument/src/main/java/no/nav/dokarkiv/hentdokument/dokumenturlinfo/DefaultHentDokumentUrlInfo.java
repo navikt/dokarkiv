@@ -23,8 +23,7 @@ import java.util.concurrent.TimeUnit;
 @Component
 public class DefaultHentDokumentUrlInfo extends AbstractDocumentOperation implements HentDokumentUrlInfo {
 
-	private long defaultTimeToLiveMillis;
-
+	private final long defaultTimeToLiveMillis;
 	private final DokumentUrlInfoRepository dokumentUrlInfoRepository;
 
 	@Inject
