@@ -37,6 +37,10 @@
 		<appender-ref ref="stdout_json"/>
 	</root>
 
+	<logger name="org.flywaydb" level="INFO" additivity="false">
+		<appender-ref ref="stdout_json"/>
+	</logger>
+
 	<logger name="no.nav.dokarkiv" level="INFO" additivity="false">
 		<appender-ref ref="stdout_json"/>
 	</logger>
