@@ -1,5 +1,7 @@
 package no.nav.dokarkiv.core.domain.entities;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import no.nav.dokarkiv.core.domain.AbstractPersistentVersionedDomainObject;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.hibernate.annotations.GenericGenerator;
@@ -25,6 +27,8 @@ import java.util.Date;
  */
 @Entity
 @Table(name = "T_DOK_URL_INFO")
+@Builder
+@AllArgsConstructor
 public class DokumentUrlInfo extends AbstractPersistentVersionedDomainObject {
 
 	/** ID used for serialization. */
