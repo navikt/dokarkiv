@@ -10,12 +10,13 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class PersistInngaaendeJournalpostTo {
+public class PersistInngaaendeRequestTo {
     private String journalpostId;
+    private boolean forsoekEndeligJf;
     private String journafEnhet;
     private AktoerTo avsender;
     private AktoerTo bruker;
     private ArkivsakTo arkivsak;
-    private String tema; //FagomradeCode
+    private String tema;
     private String journalpostTittel;
 }
