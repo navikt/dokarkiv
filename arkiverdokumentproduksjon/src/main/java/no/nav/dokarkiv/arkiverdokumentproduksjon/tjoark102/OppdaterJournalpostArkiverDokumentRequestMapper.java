@@ -1,6 +1,6 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark102;
 
-import static no.nav.dokarkiv.core.util.FilTypeMapper.mapFiltype;
+import static no.nav.dokarkiv.core.util.SpecialFilTypeConverter.mapFiltype;
 
 import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.UgyldigInputException;
 import no.nav.dokarkiv.core.domain.codes.FilTypeCode;

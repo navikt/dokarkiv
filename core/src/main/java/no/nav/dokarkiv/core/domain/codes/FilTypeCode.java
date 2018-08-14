@@ -32,5 +32,7 @@ public enum FilTypeCode implements CtiRelationship<FilTypeCode, String> {
 	public Class<? extends CodesTablePeriodicItem<FilTypeCode, String>> getCtiClass() {
 		return FilTypeCti.class;
 	}
-	
+
+	public static final String specialFiltypeJPG = "JPG";
+	public static final String specialFiltypeTIF = "TIF";
 }

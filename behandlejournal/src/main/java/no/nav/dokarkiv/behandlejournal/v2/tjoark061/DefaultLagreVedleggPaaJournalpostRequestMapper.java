@@ -1,6 +1,6 @@
 package no.nav.dokarkiv.behandlejournal.v2.tjoark061;
 
-import static no.nav.dokarkiv.core.util.FilTypeMapper.mapFiltype;
+import static no.nav.dokarkiv.core.util.SpecialFilTypeConverter.mapFiltype;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 import no.nav.dokarkiv.behandlejournal.v2.SporingsMetaData;

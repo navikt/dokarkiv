@@ -1,6 +1,6 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark111;
 
-import static no.nav.dokarkiv.core.util.FilTypeMapper.mapFiltype;
+import static no.nav.dokarkiv.core.util.SpecialFilTypeConverter.mapFiltype;
 import static no.nav.dokarkiv.core.utils.ConverterUtils.stringToEnum;
 
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;

@@ -2,7 +2,7 @@ package no.nav.dokarkiv.arkiverdokumentmottak.tjoark203.v2;
 
 import static no.nav.dokarkiv.arkiverdokumentmottak.util.ConverterUtils.converTillegsopplysningerToMapV2;
 import static no.nav.dokarkiv.arkiverdokumentmottak.util.ConverterUtils.stringToEnum;
-import static no.nav.dokarkiv.core.util.FilTypeMapper.mapFiltype;
+import static no.nav.dokarkiv.core.util.SpecialFilTypeConverter.mapFiltype;
 
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;

@@ -1,6 +1,6 @@
 package no.nav.dokarkiv.behandlejournal.v2.tjoark064;
 
-import static no.nav.dokarkiv.core.util.FilTypeMapper.mapFiltype;
+import static no.nav.dokarkiv.core.util.SpecialFilTypeConverter.mapFiltype;
 
 import no.nav.dokarkiv.behandlejournal.v2.SporingMapper;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
