@@ -1,6 +1,6 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark105;
 
-import static no.nav.dokarkiv.core.util.SpecialFilTypeConverter.mapFiltype;
+import static no.nav.dokarkiv.core.util.SpecialFilTypeConverter.convertFilType;
 
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
 import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
@@ -34,7 +34,7 @@ public class ArkiverVedleggRequestMapper {
 				.sensitivt(dokumentInfo.isSensitivt())
 				.build();
 		dokumentInfo.getFildetaljer().forEach(fildetaljer -> domainDokumentInfo.addFilDetaljer(FilDetaljer.builder()
-				.filtype(fildetaljer.getFiltype() == null ? null : FilTypeCode.valueOf(mapFiltype(fildetaljer.getFiltype())))
+				.filtype(fildetaljer.getFiltype() == null ? null : FilTypeCode.valueOf(convertFilType(fildetaljer.getFiltype())))
 				.variantFormat(fildetaljer.getVariantformat() == null ? null : VariantFormatCode.valueOf(fildetaljer
 						.getVariantformat()))
 				.fileContent(fildetaljer.getIkkeRedigerbartDokument())

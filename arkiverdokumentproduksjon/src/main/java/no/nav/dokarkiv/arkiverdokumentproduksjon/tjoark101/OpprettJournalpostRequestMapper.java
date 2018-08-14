@@ -1,6 +1,6 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark101;
 
-import static no.nav.dokarkiv.core.util.SpecialFilTypeConverter.mapFiltype;
+import static no.nav.dokarkiv.core.util.SpecialFilTypeConverter.convertFilType;
 
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
@@ -105,8 +105,8 @@ public class OpprettJournalpostRequestMapper {
 				.addFilDetaljer(FilDetaljer
 						.builder()
 						.metaforceInstanceId(dokumentInfo.getFildetaljer().getMetaForceInstanceId())
-						.filtype(mapFiltype(dokumentInfo.getFildetaljer()
-								.getFiltype()) == null ? null : FilTypeCode.valueOf(mapFiltype(dokumentInfo.getFildetaljer()
+						.filtype(convertFilType(dokumentInfo.getFildetaljer()
+								.getFiltype()) == null ? null : FilTypeCode.valueOf(convertFilType(dokumentInfo.getFildetaljer()
 								.getFiltype())))
 						.variantFormat(dokumentInfo.getFildetaljer()
 								.getVariantformat() == null ? null : VariantFormatCode.valueOf(dokumentInfo.getFildetaljer()

@@ -2,7 +2,7 @@ package no.nav.dokarkiv.core.util;
 
 import static no.nav.dokarkiv.core.domain.codes.FilTypeCode.specialFiltypeJPG;
 import static no.nav.dokarkiv.core.domain.codes.FilTypeCode.specialFiltypeTIF;
-import static no.nav.dokarkiv.core.util.SpecialFilTypeConverter.mapFiltype;
+import static no.nav.dokarkiv.core.util.SpecialFilTypeConverter.convertFilType;
 
 import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
 import org.junit.Test;
@@ -19,25 +19,25 @@ public class SpecialFilTypeConverterTest {
 
 	@Test
 	public void shouldMapPDF(){
-		String mappedFiltype = mapFiltype(FilTypeCode.PDF.name());
+		String mappedFiltype = convertFilType(FilTypeCode.PDF.name());
 		assertThat(mappedFiltype, is(FilTypeCode.PDF.name()));
 	}
 
 	@Test
 	public void shouldMapTIFtoTIFF(){
-		String mappedFiltype = mapFiltype(specialFiltypeTIF);
+		String mappedFiltype = convertFilType(specialFiltypeTIF);
 		assertThat(mappedFiltype, is(FilTypeCode.TIFF.name()));
 	}
 
 	@Test
 	public void shouldMapJPGtoJPEG(){
-		String mappedFiltype = mapFiltype(specialFiltypeJPG);
+		String mappedFiltype = convertFilType(specialFiltypeJPG);
 		assertThat(mappedFiltype, is(FilTypeCode.JPEG.name()));
 	}
 
 	@Test
 	public void shouldMapEmptyFiltype(){
-		String mappedFiltype = mapFiltype(null);
+		String mappedFiltype = convertFilType(null);
 		assertThat(mappedFiltype, is(nullValue()));
 	}
 

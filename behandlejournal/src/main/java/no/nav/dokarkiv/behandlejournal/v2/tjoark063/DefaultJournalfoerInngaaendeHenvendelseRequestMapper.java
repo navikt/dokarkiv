@@ -1,6 +1,6 @@
 package no.nav.dokarkiv.behandlejournal.v2.tjoark063;
 
-import static no.nav.dokarkiv.core.util.SpecialFilTypeConverter.mapFiltype;
+import static no.nav.dokarkiv.core.util.SpecialFilTypeConverter.convertFilType;
 
 import no.nav.dokarkiv.behandlejournal.v2.SporingMapper;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
@@ -142,7 +142,7 @@ public class DefaultJournalfoerInngaaendeHenvendelseRequestMapper implements
 
 	private FilDetaljer convertDokumentInnhold(DokumentInnhold dokumentInnhold) {
 		FilDetaljer filDetaljer = new FilDetaljer();
-		filDetaljer.setFiltype(FilTypeCode.valueOf(mapFiltype(dokumentInnhold.getFiltype().getValue())));
+		filDetaljer.setFiltype(FilTypeCode.valueOf(convertFilType(dokumentInnhold.getFiltype().getValue())));
 		filDetaljer.setVariantFormat(VariantFormatCode.valueOf(dokumentInnhold.getVariantformat().getValue()));
 		filDetaljer.setFilnavn(dokumentInnhold.getFilnavn());
 

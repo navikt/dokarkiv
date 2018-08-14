@@ -1,6 +1,6 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark102;
 
-import static no.nav.dokarkiv.core.util.SpecialFilTypeConverter.mapFiltype;
+import static no.nav.dokarkiv.core.util.SpecialFilTypeConverter.convertFilType;
 
 import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.UgyldigInputException;
 import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
@@ -32,7 +32,7 @@ public class OppdaterJournalpostArkiverDokumentRequestMapper {
 					.datoDokument(wsRequest.getDatoDokument().toGregorianCalendar().getTime())
 					.fildetaljerSet(wsRequest.getFildetaljerListe().stream()
 							.map(fildetaljer -> FilDetaljer.builder()
-									.filtype(fildetaljer.getFiltype() == null ? null : FilTypeCode.valueOf(mapFiltype(fildetaljer.getFiltype())))
+									.filtype(fildetaljer.getFiltype() == null ? null : FilTypeCode.valueOf(convertFilType(fildetaljer.getFiltype())))
 									.variantFormat(fildetaljer.getVariantformat() == null ? null : VariantFormatCode.valueOf(fildetaljer
 											.getVariantformat()))
 									.fileContent(fildetaljer.getRedigerbartDokument())

@@ -1,6 +1,6 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark100;
 
-import static no.nav.dokarkiv.core.util.SpecialFilTypeConverter.mapFiltype;
+import static no.nav.dokarkiv.core.util.SpecialFilTypeConverter.convertFilType;
 
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
@@ -127,7 +127,7 @@ public class OpprettJournalpostArkiverDokumentRequestMapper {
 						.next()
 						.getDokumentInfo()
 						.addFilDetaljer(FilDetaljer.builder()
-								.filtype(mapFiltype(fildetaljer.getFiltype()) == null ? null : FilTypeCode.valueOf(mapFiltype(fildetaljer.getFiltype())))
+								.filtype(convertFilType(fildetaljer.getFiltype()) == null ? null : FilTypeCode.valueOf(convertFilType(fildetaljer.getFiltype())))
 								.variantFormat(fildetaljer.getVariantformat() == null ? null : VariantFormatCode.valueOf(fildetaljer
 										.getVariantformat()))
 								.fileContent(fildetaljer.getIkkeRedigerbartdokument())
