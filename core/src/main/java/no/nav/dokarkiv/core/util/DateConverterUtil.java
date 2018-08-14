@@ -64,7 +64,7 @@ public final class DateConverterUtil {
 			try {
 				xgc = DatatypeFactory.newInstance().newXMLGregorianCalendar(gc);
 			} catch (DatatypeConfigurationException e) {
-				throw new DokarkivTechnicalException("Failed to convertFilType date '" + source + "'", e);
+				throw new DokarkivTechnicalException("Failed to convert date '" + source + "'", e);
 			}
 		}
 		return xgc;
