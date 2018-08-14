@@ -24,12 +24,15 @@ public enum FilTypeCode implements CtiRelationship<FilTypeCode, String> {
 	XLSX,
 	AXML,
 	DXML,
-	JSON;
+	JSON,
+	PNG;
 	
 	/** {@inheritDoc} */
 	@Override
 	public Class<? extends CodesTablePeriodicItem<FilTypeCode, String>> getCtiClass() {
 		return FilTypeCti.class;
 	}
-	
+
+	public static final String specialFiltypeJPG = "JPG";
+	public static final String specialFiltypeTIF = "TIF";
 }
