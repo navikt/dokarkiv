@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PersistInngaaendeRequestTo {
-    private String journalpostId;
     private boolean forsoekEndeligJf;
     private String journafEnhet;
     private AktoerTo avsender;

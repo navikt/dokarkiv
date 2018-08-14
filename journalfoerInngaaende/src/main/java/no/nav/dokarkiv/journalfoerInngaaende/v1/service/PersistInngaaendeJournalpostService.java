@@ -13,7 +13,6 @@ import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
 import no.nav.dokarkiv.core.exceptions.DokarkivRestFunctionalException;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.journalfoerInngaaende.v1.to.DokumentinfoTo;
-import no.nav.dokarkiv.journalfoerInngaaende.v1.to.JournalpostResponseTo;
 import no.nav.dokarkiv.journalfoerInngaaende.v1.to.PersistInngaaendeRequestTo;
 import no.nav.dokarkiv.journalfoerInngaaende.v1.to.PersistInngaaendeResponseTo;
 import no.nav.dokarkiv.journalfoerInngaaende.v1.util.Utils;
@@ -22,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
@@ -42,14 +42,14 @@ public class PersistInngaaendeJournalpostService {
         this.joarkRepository = joarkRepository;
     }
 
-    public PersistInngaaendeResponseTo persist(PersistInngaaendeRequestTo persistInngaaendeJp) {
+    public PersistInngaaendeResponseTo persist(String journalpostId, PersistInngaaendeRequestTo persistInngaaendeJp) {
         validateRequest(persistInngaaendeJp);
 
         Journalpost journalpost;
         try {
-            journalpost = joarkRepository.findById(Utils.convertStringToLong(persistInngaaendeJp.getJournalpostId(), "journalpostId")).get();
+            journalpost = joarkRepository.findById(Utils.convertStringToLong(journalpostId, "journalpostId")).get();
         } catch (NoSuchElementException e) {
-            throw new DokarkivRestFunctionalException(String.format("Oppgitt journalpostId %s eksisterer ikke", persistInngaaendeJp.getJournalpostId()), HttpStatus.NOT_FOUND);
+            throw new DokarkivRestFunctionalException(String.format("Oppgitt journalpostId %s eksisterer ikke", journalpostId), HttpStatus.NOT_FOUND);
 
         }
 
@@ -85,16 +85,20 @@ public class PersistInngaaendeJournalpostService {
             });
         }
 
+        if (persistInngaaendeJp.isForsoekEndeligJf()) {
+            journalpost.setJournalstatus(JournalStatusCode.J);
+            journalpost.setJournalForendeEnhetId(persistInngaaendeJp.getJournafEnhet());
+            journalpost.setJournalDato(new Date());
+            journalpost.setEndretAvNavn("dfd"); //TODO Fra MDC
+            journalpost.setJournalfortAvNavn("dfdf"); //TODO
+        }
+
         joarkRepository.save(journalpost);
 
         return createResponse(journalpost);
     }
 
     private void validateRequest(PersistInngaaendeRequestTo persistInngaaendeJp) {
-        if (isEmpty(persistInngaaendeJp.getJournalpostId())) {
-            throw new DokarkivRestFunctionalException("JournalpostId kan ikke være tom", HttpStatus.BAD_REQUEST);
-        }
-
         try {
             FagomradeCode.valueOf(persistInngaaendeJp.getTema());
         } catch (Exception e) {

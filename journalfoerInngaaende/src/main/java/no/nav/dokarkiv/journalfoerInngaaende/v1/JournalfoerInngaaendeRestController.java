@@ -14,7 +14,10 @@ import no.nav.dokarkiv.core.exceptions.DokarkivRestFunctionalException;
 import no.nav.dokarkiv.core.security.abac.AbacSecurityService;
 import no.nav.dokarkiv.core.security.abac.AuthorizationException;
 import no.nav.dokarkiv.journalfoerInngaaende.v1.service.GetInngaaendeJournalpostService;
+import no.nav.dokarkiv.journalfoerInngaaende.v1.service.PersistInngaaendeJournalpostService;
 import no.nav.dokarkiv.journalfoerInngaaende.v1.to.JournalpostResponseTo;
+import no.nav.dokarkiv.journalfoerInngaaende.v1.to.PersistInngaaendeRequestTo;
+import no.nav.dokarkiv.journalfoerInngaaende.v1.to.PersistInngaaendeResponseTo;
 import no.nav.freg.abac.core.annotation.Abac;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -23,6 +26,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -38,6 +43,7 @@ import javax.inject.Inject;
 public class JournalfoerInngaaendeRestController {
 
 	private GetInngaaendeJournalpostService getInngaaendeJournalpostService;
+	private PersistInngaaendeJournalpostService persistInngaaendeJournalpostService;
 	private AbacSecurityService abacSecurityService;
 
 	@Inject
@@ -59,6 +65,23 @@ public class JournalfoerInngaaendeRestController {
 			log.info("Hentet journalpost med journalpostId={}, dokumentinfoId(er)={} og dokumenttypeId(er)={} fra Joark.",
 					journalpostId, getDokumentIds(responseTo), getDokumenttypeIds(responseTo));
 			return new ResponseEntity<>(responseTo, HttpStatus.OK);
+		} catch (DokarkivRestFunctionalException e) {
+			log.info(e.getMessage());
+			HttpHeaders headers = new HttpHeaders();
+			headers.setContentType(MediaType.TEXT_PLAIN);
+			return new ResponseEntity<>(e.getMessage(), headers, e.getHttpStatus());
+		}
+	}
+
+	@PutMapping(value = "/journalpost/{journalpostId}")
+	@Transactional
+	//TODO Abac
+	public ResponseEntity persistInngaaendeJournalpost(@PathVariable String journalpostId, @RequestBody PersistInngaaendeRequestTo request) {
+		try {
+			hasText(journalpostId, "journalpostId");
+			PersistInngaaendeResponseTo inngaaendeResponseTo = persistInngaaendeJournalpostService.persist(journalpostId, request);
+			log.info("Oppdatert journalpost med journalpostId={} i Joark.", journalpostId);
+			return new ResponseEntity<>(inngaaendeResponseTo, HttpStatus.OK);
 		} catch (DokarkivRestFunctionalException e) {
 			log.info(e.getMessage());
 			HttpHeaders headers = new HttpHeaders();
