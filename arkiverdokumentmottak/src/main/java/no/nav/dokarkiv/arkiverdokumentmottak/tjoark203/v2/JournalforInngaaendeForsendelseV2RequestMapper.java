@@ -2,6 +2,7 @@ package no.nav.dokarkiv.arkiverdokumentmottak.tjoark203.v2;
 
 import static no.nav.dokarkiv.arkiverdokumentmottak.util.ConverterUtils.converTillegsopplysningerToMapV2;
 import static no.nav.dokarkiv.arkiverdokumentmottak.util.ConverterUtils.stringToEnum;
+import static no.nav.dokarkiv.core.util.FilTypeMapper.mapFiltype;
 
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
@@ -157,7 +158,7 @@ public class JournalforInngaaendeForsendelseV2RequestMapper {
 				.getFildetaljerListe()
 				.forEach(fildetaljer -> dokumentInfo.addFilDetaljer(FilDetaljer.builder()
 						.fileContent(fildetaljer.getDokument())
-						.filtype(stringToEnum(FilTypeCode.class, fildetaljer.getFiltype()))
+						.filtype(stringToEnum(FilTypeCode.class, mapFiltype(fildetaljer.getFiltype())))
 						.filnavn(fildetaljer.getFilNavn())
 						.filUuid(FilDetaljer.generateUuid())
 						.batchNavn(fildetaljer.getBatchNavn())

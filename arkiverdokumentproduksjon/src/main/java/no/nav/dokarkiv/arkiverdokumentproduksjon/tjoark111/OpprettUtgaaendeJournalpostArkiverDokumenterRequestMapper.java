@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark111;
 
+import static no.nav.dokarkiv.core.util.FilTypeMapper.mapFiltype;
 import static no.nav.dokarkiv.core.utils.ConverterUtils.stringToEnum;
 
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
@@ -173,7 +174,7 @@ public class OpprettUtgaaendeJournalpostArkiverDokumenterRequestMapper {
 
 		fildetaljerList.forEach(fildetaljer -> journalpostDokumentInfoRelasjon.getDokumentInfo()
 				.addFilDetaljer(FilDetaljer.builder()
-						.filtype(stringToEnum(FilTypeCode.class, fildetaljer.getFiltype()))
+						.filtype(stringToEnum(FilTypeCode.class, mapFiltype(fildetaljer.getFiltype())))
 						.variantFormat(stringToEnum(VariantFormatCode.class, fildetaljer.getVariantformat()))
 						.fileContent(fildetaljer.getIkkeRedigerbartdokument())
 						.filUuid(FilDetaljer.generateUuid())

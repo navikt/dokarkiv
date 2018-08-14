@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.behandlejournal.v2.tjoark061;
 
+import static no.nav.dokarkiv.core.util.FilTypeMapper.mapFiltype;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 import no.nav.dokarkiv.behandlejournal.v2.SporingsMetaData;
@@ -65,7 +66,7 @@ public class DefaultLagreVedleggPaaJournalpostRequestMapper implements LagreVedl
 
 	private FilDetaljer convertDokumentInnhold(DokumentInnhold dokumentInnhold) {
 		FilDetaljer filDetaljer = new FilDetaljer();
-		filDetaljer.setFiltype(FilTypeCode.valueOf(dokumentInnhold.getFiltype().getValue()));
+		filDetaljer.setFiltype(FilTypeCode.valueOf(mapFiltype(dokumentInnhold.getFiltype().getValue())));
 		filDetaljer.setVariantFormat(VariantFormatCode.valueOf(dokumentInnhold.getVariantformat().getValue()));
 		filDetaljer.setFilnavn(dokumentInnhold.getFilnavn());
 
