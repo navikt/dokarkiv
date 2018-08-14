@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
  * @author Sigurd Midttun, Visma Consulting.
  */
 @Component
-public class HentInngaaendeJournalpostMapper {
+public class GetInngaaendeJournalpostMapper {
 
 	private static final List<JournalStatusCode> MIDLERTIDIG_STATUS = Arrays.asList(JournalStatusCode.M, JournalStatusCode.MO, JournalStatusCode.UB, JournalStatusCode.OD);
 

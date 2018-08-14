@@ -5,7 +5,7 @@ import static no.nav.dokarkiv.journalfoerInngaaende.v1.util.Utils.convertStringT
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.DokarkivRestFunctionalException;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
-import no.nav.dokarkiv.journalfoerInngaaende.v1.map.HentInngaaendeJournalpostMapper;
+import no.nav.dokarkiv.journalfoerInngaaende.v1.map.GetInngaaendeJournalpostMapper;
 import no.nav.dokarkiv.journalfoerInngaaende.v1.to.JournalpostResponseTo;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -16,19 +16,19 @@ import javax.inject.Inject;
  * @author Sigurd Midttun, Visma Consulting.
  */
 @Service
-public class HentInngaaendeJournalpostService {
+public class GetInngaaendeJournalpostService {
 
 	private JoarkRepository joarkRepository;
-	private HentInngaaendeJournalpostMapper hentInngaaendeJournalpostMapper;
+	private GetInngaaendeJournalpostMapper getInngaaendeJournalpostMapper;
 
 	@Inject
-	public HentInngaaendeJournalpostService(JoarkRepository joarkRepository,
-											HentInngaaendeJournalpostMapper hentInngaaendeJournalpostMapper) {
+	public GetInngaaendeJournalpostService(JoarkRepository joarkRepository,
+										   GetInngaaendeJournalpostMapper getInngaaendeJournalpostMapper) {
 		this.joarkRepository = joarkRepository;
-		this.hentInngaaendeJournalpostMapper = hentInngaaendeJournalpostMapper;
+		this.getInngaaendeJournalpostMapper = getInngaaendeJournalpostMapper;
 	}
 
-	public JournalpostResponseTo hentJournalpostByJournalpostId(String journalpostIdString) throws DokarkivRestFunctionalException {
+	public JournalpostResponseTo getInngaaendeJournalpostByJournalpostId(String journalpostIdString) throws DokarkivRestFunctionalException {
 		Long journalpostId = convertStringToLong(journalpostIdString, "journalpostId");
 
 		Journalpost journalpost = joarkRepository.findById(journalpostId)
@@ -39,7 +39,7 @@ public class HentInngaaendeJournalpostService {
 		}
 
 		try {
-			return hentInngaaendeJournalpostMapper.map(journalpost);
+			return getInngaaendeJournalpostMapper.map(journalpost);
 		} catch (Exception e) {
 			throw new DokarkivRestFunctionalException(String.format("Kunne ikke mappe Journalpost. Feilmelding: %s",
 					journalpost.getJournalpostId(), e.getMessage()), HttpStatus.BAD_REQUEST);

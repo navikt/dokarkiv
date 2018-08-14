@@ -13,7 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.exceptions.DokarkivRestFunctionalException;
 import no.nav.dokarkiv.core.security.abac.AbacSecurityService;
 import no.nav.dokarkiv.core.security.abac.AuthorizationException;
-import no.nav.dokarkiv.journalfoerInngaaende.v1.service.HentInngaaendeJournalpostService;
+import no.nav.dokarkiv.journalfoerInngaaende.v1.service.GetInngaaendeJournalpostService;
 import no.nav.dokarkiv.journalfoerInngaaende.v1.to.JournalpostResponseTo;
 import no.nav.freg.abac.core.annotation.Abac;
 import org.springframework.http.HttpHeaders;
@@ -37,13 +37,13 @@ import javax.inject.Inject;
 @Slf4j
 public class JournalfoerInngaaendeRestController {
 
-	private HentInngaaendeJournalpostService hentInngaaendeJournalpostService;
+	private GetInngaaendeJournalpostService getInngaaendeJournalpostService;
 	private AbacSecurityService abacSecurityService;
 
 	@Inject
-	public JournalfoerInngaaendeRestController(HentInngaaendeJournalpostService hentInngaaendeJournalpostService,
+	public JournalfoerInngaaendeRestController(GetInngaaendeJournalpostService getInngaaendeJournalpostService,
 											   AbacSecurityService abacSecurityService) {
-		this.hentInngaaendeJournalpostService = hentInngaaendeJournalpostService;
+		this.getInngaaendeJournalpostService = getInngaaendeJournalpostService;
 		this.abacSecurityService = abacSecurityService;
 	}
 
@@ -51,11 +51,11 @@ public class JournalfoerInngaaendeRestController {
 	@Transactional(readOnly = true)
 	@Abac(actions = @Abac.Attr(key = ACTION_ID, value = READ_ACTION),
 			resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_JOURNALPOST)})
-	public ResponseEntity hentJournalpostByJournalpostId(@PathVariable String journalpostId) {
+	public ResponseEntity getInngaaendeJournalpostByJournalpostId(@PathVariable String journalpostId) {
 		try {
 			hasText(journalpostId, "journalpostId");
 			assertAccessToHentJournalpost(journalpostId);
-			JournalpostResponseTo responseTo = hentInngaaendeJournalpostService.hentJournalpostByJournalpostId(journalpostId);
+			JournalpostResponseTo responseTo = getInngaaendeJournalpostService.getInngaaendeJournalpostByJournalpostId(journalpostId);
 			log.info("Hentet journalpost med journalpostId={}, dokumentinfoId(er)={} og dokumenttypeId(er)={} fra Joark.",
 					journalpostId, getDokumentIds(responseTo), getDokumenttypeIds(responseTo));
 			return new ResponseEntity<>(responseTo, HttpStatus.OK);
