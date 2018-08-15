@@ -49,9 +49,11 @@ public class JournalfoerInngaaendeRestController {
 
 	@Inject
 	public JournalfoerInngaaendeRestController(GetInngaaendeJournalpostService getInngaaendeJournalpostService,
+											   PersistInngaaendeJournalpostService persistInngaaendeJournalpostService,
 											   AbacSecurityService abacSecurityService) {
 		this.getInngaaendeJournalpostService = getInngaaendeJournalpostService;
 		this.abacSecurityService = abacSecurityService;
+		this.persistInngaaendeJournalpostService = persistInngaaendeJournalpostService;
 	}
 
 	@GetMapping("/journalpost/{journalpostId}")
