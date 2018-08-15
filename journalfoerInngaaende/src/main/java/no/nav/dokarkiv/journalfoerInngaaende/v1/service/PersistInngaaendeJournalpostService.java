@@ -49,7 +49,7 @@ public class PersistInngaaendeJournalpostService {
         verifyMidlertidigJournalfoert(journalpost);
 
         if (!journalpost.isInngaende()) {
-            throw new DokarkivRestFunctionalException("Journalpost er ikke av type Inngående", HttpStatus.BAD_REQUEST);
+            throw new DokarkivRestFunctionalException("Journalpost er ikke av type Inngaaende", HttpStatus.BAD_REQUEST);
         }
 
         verifyDokumentInfos(journalpost);
