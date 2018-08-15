@@ -12,7 +12,8 @@
 	<artifactId>behandlejournal</artifactId>
 
 	<properties>
-		<behandlejournal-tjenestespesifikasjon.version>2.3.0</behandlejournal-tjenestespesifikasjon.version>
+		<behandlejournal-v2-tjenestespesifikasjon.version>2.3.0</behandlejournal-v2-tjenestespesifikasjon.version>
+		<behandlejournal-v3-tjenestespesifikasjon.version>3.0.0-SNAPSHOT</behandlejournal-v3-tjenestespesifikasjon.version>
 	</properties>
 
 	<dependencies>
@@ -27,7 +28,13 @@
 		<dependency>
 			<groupId>no.nav.tjenester.fim</groupId>
 			<artifactId>nav-fim-behandleJournal-v2-tjenestespesifikasjon</artifactId>
-			<version>${behandlejournal-tjenestespesifikasjon.version}</version>
+			<version>${behandlejournal-v2-tjenestespesifikasjon.version}</version>
+			<classifier>jaxws</classifier>
+		</dependency>
+		<dependency>
+			<groupId>no.nav.tjenester.fim</groupId>
+			<artifactId>nav-fim-behandleJournal-v3-tjenestespesifikasjon</artifactId>
+			<version>${behandlejournal-v3-tjenestespesifikasjon.version}</version>
 			<classifier>jaxws</classifier>
 		</dependency>
 		<dependency>
