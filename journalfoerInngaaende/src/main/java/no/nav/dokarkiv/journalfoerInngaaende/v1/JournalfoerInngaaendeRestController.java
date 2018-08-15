@@ -37,9 +37,9 @@ import javax.inject.Inject;
 /**
  * @author Sigurd Midttun, Visma Consulting.
  */
-@RestController
-@RequestMapping("journalfoer-inngaaende/v1")
 @Slf4j
+@RestController
+@RequestMapping("/rest/journalfoer-inngaaende/v1")
 public class JournalfoerInngaaendeRestController {
 
 	private GetInngaaendeJournalpostService getInngaaendeJournalpostService;
@@ -53,7 +53,7 @@ public class JournalfoerInngaaendeRestController {
 		this.abacSecurityService = abacSecurityService;
 	}
 
-	@GetMapping(value = "/journalpost/{journalpostId}")
+	@GetMapping("/journalpost/{journalpostId}")
 	@Transactional(readOnly = true)
 	@Abac(actions = @Abac.Attr(key = ACTION_ID, value = READ_ACTION),
 			resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_JOURNALPOST)})
@@ -66,7 +66,7 @@ public class JournalfoerInngaaendeRestController {
 					journalpostId, getDokumentIds(responseTo), getDokumenttypeIds(responseTo));
 			return new ResponseEntity<>(responseTo, HttpStatus.OK);
 		} catch (DokarkivRestFunctionalException e) {
-			log.info(e.getMessage());
+			log.warn("Feilmelding={}, journalpostId={}. HttpStatus=", e.getMessage(), journalpostId, e.getHttpStatus());
 			HttpHeaders headers = new HttpHeaders();
 			headers.setContentType(MediaType.TEXT_PLAIN);
 			return new ResponseEntity<>(e.getMessage(), headers, e.getHttpStatus());
@@ -92,10 +92,9 @@ public class JournalfoerInngaaendeRestController {
 
 	private void assertAccessToHentJournalpost(String journalpostId) throws DokarkivRestFunctionalException {
 		try {
-			hasText(journalpostId, "journalpostId");
 			abacSecurityService.assertAccessToJournalpost(journalpostId);
 		} catch (AuthorizationException e) {
-			throw new DokarkivRestFunctionalException(e.getMessage(), HttpStatus.UNAUTHORIZED);
+			throw new DokarkivRestFunctionalException(e.getMessage(), HttpStatus.FORBIDDEN);
 		}
 	}
 

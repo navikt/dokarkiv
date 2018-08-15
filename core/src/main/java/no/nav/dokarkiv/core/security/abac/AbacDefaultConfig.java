@@ -7,6 +7,7 @@ import no.nav.modig.core.context.SubjectHandler;
 import org.apache.wss4j.common.util.DOM2Writer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -19,6 +20,7 @@ public class AbacDefaultConfig {
 		Set<String> values = new HashSet<>();
 		values.add(NavAttributter.ENVIRONMENT_FELLES_PEP_ID);
 		values.add(NavAttributter.ENVIRONMENT_FELLES_SAML_TOKEN);
+		values.add(NavAttributter.ENVIRONMENT_FELLES_OIDC_TOKEN_BODY);
 		return values;
 	}
 
@@ -61,6 +63,20 @@ public class AbacDefaultConfig {
 				return new byte[]{};
 			} else {
 				return DOM2Writer.nodeToString(SubjectHandler.getSubjectHandler().getSAMLAssertion()).getBytes();
+			}
+		});
+	}
+
+	@Bean
+	AbacAttributeLocator oidcTokenLocator() {
+		return new ResolvingAbacAttributeLocator(NavAttributter.ENVIRONMENT_FELLES_OIDC_TOKEN_BODY, () -> {
+			if (SecurityContextHolder.getContext().getAuthentication() == null) {
+				return "";
+			} else {
+				return SecurityContextHolder.getContext()
+						.getAuthentication()
+						.getCredentials() == null ? "" : SecurityContextHolder.getContext().getAuthentication()
+						.getCredentials().toString();
 			}
 		});
 	}
