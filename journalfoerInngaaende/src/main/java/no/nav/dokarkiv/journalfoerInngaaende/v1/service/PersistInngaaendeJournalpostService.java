@@ -11,6 +11,7 @@ import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
 import no.nav.dokarkiv.core.exceptions.DokarkivRestFunctionalException;
+import no.nav.dokarkiv.core.exceptions.InvalidJournalpostStructureException;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.journalfoerInngaaende.v1.to.DokumentinfoTo;
 import no.nav.dokarkiv.journalfoerInngaaende.v1.to.PersistInngaaendeRequestTo;
@@ -43,23 +44,23 @@ public class PersistInngaaendeJournalpostService {
     }
 
     public PersistInngaaendeResponseTo persist(String journalpostId, PersistInngaaendeRequestTo persistInngaaendeJp) {
-        validateRequest(persistInngaaendeJp);
+        Journalpost journalpost = getJournalpost(journalpostId);
 
-        Journalpost journalpost;
-        try {
-            journalpost = joarkRepository.findById(Utils.convertStringToLong(journalpostId, "journalpostId")).get();
-        } catch (NoSuchElementException e) {
-            throw new DokarkivRestFunctionalException(String.format("Oppgitt journalpostId %s eksisterer ikke", journalpostId), HttpStatus.NOT_FOUND);
-
-        }
+        verifyMidlertidigJournalfoert(journalpost);
 
         if (!journalpost.isInngaende()) {
             throw new DokarkivRestFunctionalException("Journalpost er ikke av type Inngående", HttpStatus.BAD_REQUEST);
         }
 
-        isMidlertidigJournalfoert(journalpost);
+        verifyDokumentInfos(journalpost);
 
-        journalpost.setInnhold(persistInngaaendeJp.getJournalpostTittel());
+        verifyHoveddokument(journalpost);
+
+        verifyFildetaljer(journalpost);
+
+        verifyRequiredFields(journalpost);
+
+        journalpost.setInnhold(persistInngaaendeJp.getTittel());
         journalpost.setFagomrade(FagomradeCode.valueOf(persistInngaaendeJp.getTema()));
         journalpost.setAvsenderMottaker(persistInngaaendeJp.getAvsender().getNavn());
         journalpost.setAvsenderMottakerId(persistInngaaendeJp.getAvsender().getIdentifikator());
@@ -87,7 +88,7 @@ public class PersistInngaaendeJournalpostService {
 
         if (persistInngaaendeJp.isForsoekEndeligJf()) {
             journalpost.setJournalstatus(JournalStatusCode.J);
-            journalpost.setJournalForendeEnhetId(persistInngaaendeJp.getJournafEnhet());
+            journalpost.setJournalForendeEnhetId(persistInngaaendeJp.getJournalfEnhet());
             journalpost.setJournalDato(new Date());
             journalpost.setEndretAvNavn("dfd"); //TODO Fra MDC
             journalpost.setJournalfortAvNavn("dfdf"); //TODO
@@ -98,24 +99,56 @@ public class PersistInngaaendeJournalpostService {
         return createResponse(journalpost);
     }
 
-    private void validateRequest(PersistInngaaendeRequestTo persistInngaaendeJp) {
+    private Journalpost getJournalpost(String journalpostId) {
         try {
-            FagomradeCode.valueOf(persistInngaaendeJp.getTema());
-        } catch (Exception e) {
-            throw new DokarkivRestFunctionalException(String.format("Tema %s eksisterer ikke", persistInngaaendeJp.getTema()), HttpStatus.BAD_REQUEST);
-        }
-
-        try {
-            FagsystemCode.valueOf(persistInngaaendeJp.getArkivsak().getArkivsaksystem());
-        } catch (Exception e) {
-            throw new DokarkivRestFunctionalException(String.format("Fagsystem %s eksisterer ikke", persistInngaaendeJp.getArkivsak().getArkivsaksystem()), HttpStatus.BAD_REQUEST);
+            return joarkRepository.findById(Utils.convertStringToLong(journalpostId, "journalpostId")).get();
+        } catch (NoSuchElementException e) {
+            throw new DokarkivRestFunctionalException(String.format("Oppgitt journalpostId %s eksisterer ikke", journalpostId), HttpStatus.NOT_FOUND);
         }
     }
 
-    private void isMidlertidigJournalfoert(Journalpost jp) {
-        JournalStatusCode journalstatus = jp.getJournalstatus();
-        if (!(journalstatus.equals(JournalStatusCode.M) || journalstatus.equals(JournalStatusCode.MO) || journalstatus.equals(JournalStatusCode.UB))) {
-            throw new DokarkivRestFunctionalException("Journalpost er ikke midlertidig journalført", HttpStatus.BAD_REQUEST);
+    private void verifyMidlertidigJournalfoert(Journalpost jp) {
+        if (!jp.hasMidlertidigInngaaendeJournalforingStatus()) {
+            throw new DokarkivRestFunctionalException("Journalposten er ikke midlertidig journalført", HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    private void verifyDokumentInfos(Journalpost journalpost) {
+        try {
+            journalpost.verifyNoDokumentInfosUnderRedigering();
+        } catch (InvalidJournalpostStructureException e) {
+            throw new DokarkivRestFunctionalException("Ett eller flere av dokumentene som forsøkes oppdatert er ikke ferdigstilt", HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    private void verifyHoveddokument(Journalpost journalpost) {
+        try {
+            journalpost.verifyOnlyOneHoveddokument();
+        } catch (InvalidJournalpostStructureException e) {
+            throw new DokarkivRestFunctionalException("Journalpost inneholder ikke ett hoveddokument", HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    private void verifyFildetaljer(Journalpost journalpost) {
+        try {
+            journalpost.verifyArkivVariantOfAllDocuments();
+        } catch (InvalidJournalpostStructureException e) {
+            throw new DokarkivRestFunctionalException("Det mangler arkivvariant, dette er påkrevd for å ferdigstille journalposter", HttpStatus.BAD_REQUEST);
+        }
+        journalpost.getJournalpostDokumentInfoRelasjoner().forEach(dr -> {
+            try {
+                dr.getDokumentInfo().verifyNoVariantDuplicates();
+            } catch (InvalidJournalpostStructureException e) {
+                throw new DokarkivRestFunctionalException("Journalpost inneholder flere fildetaljer med samme variantformat", HttpStatus.BAD_REQUEST);
+            }
+        });
+    }
+
+    private void verifyRequiredFields(Journalpost journalpost) {
+        try {
+            journalpost.verifyMandatoryFieldsSkipJournalforendeEnhetId();
+        } catch (Exception e) {
+            throw new DokarkivRestFunctionalException("Journalpost mangler påkrevde felt for endelig journalføring", HttpStatus.BAD_REQUEST);
         }
     }
 

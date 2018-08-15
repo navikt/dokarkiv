@@ -12,10 +12,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class PersistInngaaendeRequestTo {
     private boolean forsoekEndeligJf;
-    private String journafEnhet;
     private AktoerTo avsender;
     private AktoerTo bruker;
     private ArkivsakTo arkivsak;
     private String tema;
-    private String journalpostTittel;
+    private String tittel;
+    private String journalfEnhet;
 }
