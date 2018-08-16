@@ -54,7 +54,7 @@ public class AbacSecurityService {
 			throw new JournalpostIkkeFunnetException("Journalpost ikke funnet. journalpostId=" + journalpostId);
 		}
 
-		setAbacEnvironment();
+		setAbacEnvironment(abacContext.getRequest());
 		AbacResources abacResources = jdbcAbacSecurityRepository.findAbacResources(journalpostId);
 		decorateJoarkResources(abacContext.getRequest(), abacResources, journalpostId);
 		XacmlResponse accessResponse = abacService.evaluate(abacContext.getRequest());
@@ -66,6 +66,7 @@ public class AbacSecurityService {
 	}
 
 	public Decision assertAccessToSak(XacmlRequest abacRequest, String sakId, FagsystemCode fagsystemCode) {
+		setAbacEnvironment(abacRequest);
 		AbacResources abacResources = new AbacResources();
 		abacResources.setFagsystem(fagsystemCode);
 		abacResources.setSakId(sakId);
@@ -128,13 +129,13 @@ public class AbacSecurityService {
 	 * At this point we know, because either the value of ENVIRONMENT_FELLES_SAML_TOKEN or the value of ENVIRONMENT_FELLES_OIDC_TOKEN_BODY
 	 * should have been set, depending on the type of the incoming request.
 	 **/
-	private void setAbacEnvironment() {
-		XacmlAttribute oidcTokenAttribute = abacContext.getRequest().getEnvironment().get(ENVIRONMENT_FELLES_OIDC_TOKEN_BODY);
+	private void setAbacEnvironment(XacmlRequest request) {
+		XacmlAttribute oidcTokenAttribute = request.getEnvironment().get(ENVIRONMENT_FELLES_OIDC_TOKEN_BODY);
 
-		if (oidcTokenAttribute.getValue().toString().isEmpty()) {
-			abacContext.getRequest().getEnvironment().remove(ENVIRONMENT_FELLES_OIDC_TOKEN_BODY);
-		} else {
-			abacContext.getRequest().getEnvironment().remove(ENVIRONMENT_FELLES_SAML_TOKEN);
+		if (oidcTokenAttribute != null && oidcTokenAttribute.getValue().toString().isEmpty()) {
+			request.getEnvironment().remove(ENVIRONMENT_FELLES_OIDC_TOKEN_BODY);
+		} else if (oidcTokenAttribute != null) {
+			request.getEnvironment().remove(ENVIRONMENT_FELLES_SAML_TOKEN);
 		}
 	}
 
