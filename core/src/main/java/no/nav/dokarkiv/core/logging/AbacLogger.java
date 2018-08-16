@@ -19,15 +19,19 @@ public class AbacLogger {
 	private static final String SEPARATOR = ".";
 
 	public void logAbacDeny(final XacmlRequest xacmlRequest, final XacmlResponse xacmlResponse, final Map<String, String> resources) {
-		log.warn("{}, {}; {}", mapRequest(xacmlRequest), mapCustomResources(resources), mapResponse(xacmlResponse));
+		log.warn("{}{}; {}", mapRequest(xacmlRequest), mapCustomResources(resources), mapResponse(xacmlResponse));
 	}
 
 	public void logAbacPermit(final XacmlRequest xacmlRequest, final XacmlResponse xacmlResponse, final Map<String, String> resources) {
-		log.info("{}, {}; {}", mapRequest(xacmlRequest), mapCustomResources(resources), mapResponse(xacmlResponse));
+		log.info("{}{}; {}", mapRequest(xacmlRequest), mapCustomResources(resources), mapResponse(xacmlResponse));
 	}
 
 	private String mapCustomResources(final Map<String, String> resources) {
-		return resources.entrySet().stream().map(entry -> entry.getKey() + "=" + entry.getValue()).collect(Collectors.joining(", "));
+		if (resources.isEmpty()) {
+			return "";
+		} else {
+			return ", " + resources.entrySet().stream().map(entry -> entry.getKey() + "=" + entry.getValue()).collect(Collectors.joining(", "));
+		}
 	}
 
 	private String mapRequest(final XacmlRequest xacmlRequest) {
