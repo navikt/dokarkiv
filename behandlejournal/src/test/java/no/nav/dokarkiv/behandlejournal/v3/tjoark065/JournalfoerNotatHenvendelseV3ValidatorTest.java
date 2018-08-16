@@ -2,7 +2,7 @@ package no.nav.dokarkiv.behandlejournal.v3.tjoark065;
 
 import static org.mockito.Mockito.verify;
 
-import no.nav.dokarkiv.behandlejournal.v3.AbstractBehandleJournalJournalpostValidatorTest;
+import no.nav.dokarkiv.behandlejournal.v3.AbstractBehandleJournalV3JournalpostValidatorTest;
 import no.nav.dokarkiv.core.exceptions.ApplicationException;
 import no.nav.dokarkiv.core.exceptions.InvalidJournalpostStructureException;
 import org.junit.Test;
@@ -16,7 +16,7 @@ import org.mockito.junit.MockitoJUnitRunner;
  * @author Thomas Eugen Bjørge, Visma Consulting
  */
 @RunWith(MockitoJUnitRunner.class)
-public class JournalfoerNotatHenvendelseV3ValidatorTest extends AbstractBehandleJournalJournalpostValidatorTest {
+public class JournalfoerNotatHenvendelseV3ValidatorTest extends AbstractBehandleJournalV3JournalpostValidatorTest {
 
 	@InjectMocks
 	private JournalfoerNotatHenvendelseV3Validator validator;

@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.behandlejournal.v2;
+package no.nav.dokarkiv.behandlejournal;
 
 import static no.nav.dokarkiv.core.domain.builder.BrukerBuilder.getBrukerBuilder;
 import static no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder.getDokumentInfoBuilder;
@@ -28,12 +28,12 @@ import org.mockito.MockitoAnnotations;
  *
  * @author Thomas Eugen Bjørge, Visma Sirius
  */
-public class DefaultSporingMapperTest {
+public class BehandleJournalSporingMapperTest {
 
 	@Mock
 	private KildeNavnPopulator kildeNavnPopulatorMock;
 	
-	private DefaultSporingMapper mapper;
+	private BehandleJournalSporingMapper mapper;
 	
 	private final String endretAvNavn = "Siri Saksbehandler";
 	private final String kilde = "Kilden";
@@ -42,7 +42,7 @@ public class DefaultSporingMapperTest {
 	@Before
 	public void setUp() {
 		MockitoAnnotations.initMocks(this);
-		mapper = new DefaultSporingMapper(kildeNavnPopulatorMock);
+		mapper = new BehandleJournalSporingMapper(kildeNavnPopulatorMock);
 		RequestContextSetter.setRequestContext(new SimpleRequestContext.Builder().componentId(kilde).build());
 	}
 	

@@ -1,6 +1,6 @@
 package no.nav.dokarkiv.behandlejournal.v3.tjoark060;
 
-import no.nav.dokarkiv.behandlejournal.v3.AbstractBehandleJournalJournalpostValidator;
+import no.nav.dokarkiv.behandlejournal.v3.AbstractBehandleJournalV3JournalpostValidator;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.ApplicationException;
 import org.apache.commons.lang3.StringUtils;
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
  * @author Thomas Eugen Bjørge, Visma Consulting
  */
 @Component
-public class ArkiverUstrukturertKravV3JournalpostValidator extends AbstractBehandleJournalJournalpostValidator {
+public class ArkiverUstrukturertKravV3JournalpostValidator extends AbstractBehandleJournalV3JournalpostValidator {
 
 	/**
 	 * {@inheritDoc}

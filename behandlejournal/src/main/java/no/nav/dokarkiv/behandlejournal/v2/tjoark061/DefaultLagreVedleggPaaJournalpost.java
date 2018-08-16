@@ -1,8 +1,8 @@
 package no.nav.dokarkiv.behandlejournal.v2.tjoark061;
 
 import com.google.common.collect.Lists;
-import no.nav.dokarkiv.behandlejournal.v2.SporingUtil;
-import no.nav.dokarkiv.behandlejournal.v2.SporingsMetaData;
+import no.nav.dokarkiv.behandlejournal.SporingUtil;
+import no.nav.dokarkiv.behandlejournal.SporingsMetaData;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;

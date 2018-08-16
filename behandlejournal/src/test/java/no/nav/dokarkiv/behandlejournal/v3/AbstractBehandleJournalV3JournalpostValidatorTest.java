@@ -33,7 +33,7 @@ import java.util.Date;
  *
  * @author Thomas Eugen Bjørge, Visma Consulting
  */
-public abstract class AbstractBehandleJournalJournalpostValidatorTest {
+public abstract class AbstractBehandleJournalV3JournalpostValidatorTest {
 
 	@Rule
 	public ExpectedException expected = ExpectedException.none();

@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.behandlejournal.v2;
+package no.nav.dokarkiv.behandlejournal;
 
 import lombok.Builder;
 

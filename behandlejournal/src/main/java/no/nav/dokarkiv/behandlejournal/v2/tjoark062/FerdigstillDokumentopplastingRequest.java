@@ -1,7 +1,7 @@
 package no.nav.dokarkiv.behandlejournal.v2.tjoark062;
 
 import lombok.Builder;
-import no.nav.dokarkiv.behandlejournal.v2.SporingsMetaData;
+import no.nav.dokarkiv.behandlejournal.SporingsMetaData;
 import no.nav.dokarkiv.core.exceptions.ApplicationException;
 import org.apache.commons.lang.builder.ToStringBuilder;
 

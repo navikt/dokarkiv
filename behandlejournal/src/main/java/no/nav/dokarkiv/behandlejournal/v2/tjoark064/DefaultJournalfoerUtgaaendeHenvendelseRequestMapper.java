@@ -2,7 +2,7 @@ package no.nav.dokarkiv.behandlejournal.v2.tjoark064;
 
 import static no.nav.dokarkiv.core.util.SpecialFilTypeConverter.convertFilType;
 
-import no.nav.dokarkiv.behandlejournal.v2.SporingMapper;
+import no.nav.dokarkiv.behandlejournal.SporingMapper;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;

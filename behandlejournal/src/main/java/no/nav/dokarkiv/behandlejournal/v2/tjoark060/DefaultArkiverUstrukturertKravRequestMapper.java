@@ -1,7 +1,7 @@
 package no.nav.dokarkiv.behandlejournal.v2.tjoark060;
 
-import no.nav.dokarkiv.behandlejournal.v2.SporingMapper;
-import no.nav.dokarkiv.behandlejournal.v2.SporingUtil;
+import no.nav.dokarkiv.behandlejournal.SporingMapper;
+import no.nav.dokarkiv.behandlejournal.SporingUtil;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import org.springframework.stereotype.Component;
 

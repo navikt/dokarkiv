@@ -11,7 +11,7 @@ import org.junit.Test;
  * 
  * @author Rune Romundstad, Visma Consulting
  */
-public class DefaultArkiverUstrukturertKravV3V3ResponseMapperTest {
+public class DefaultArkiverUstrukturertKravV3ResponseMapperTest {
 
 	private static final Long JOURNALPOST_ID = 1L;
 	private static final Long DOKUMENT_ID = 1L;

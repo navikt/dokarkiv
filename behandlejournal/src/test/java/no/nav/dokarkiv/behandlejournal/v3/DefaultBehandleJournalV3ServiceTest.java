@@ -3,7 +3,7 @@ package no.nav.dokarkiv.behandlejournal.v3;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 
-import no.nav.dokarkiv.behandlejournal.v2.SporingsMetaData;
+import no.nav.dokarkiv.behandlejournal.SporingsMetaData;
 import no.nav.dokarkiv.behandlejournal.v3.tjoark060.ArkiverUstrukturertKrav;
 import no.nav.dokarkiv.behandlejournal.v3.tjoark060.ArkiverUstrukturertKravRequest;
 import no.nav.dokarkiv.behandlejournal.v3.tjoark061.LagreVedleggPaaJournalpost;

@@ -1,6 +1,6 @@
 package no.nav.dokarkiv.behandlejournal.v3.tjoark063;
 
-import no.nav.dokarkiv.behandlejournal.v3.AbstractBehandleJournalJournalpostValidator;
+import no.nav.dokarkiv.behandlejournal.v3.AbstractBehandleJournalV3JournalpostValidator;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import org.springframework.stereotype.Component;
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class JournalfoerInngaaendeHenvendelseV3Validator extends
-		AbstractBehandleJournalJournalpostValidator {
+		AbstractBehandleJournalV3JournalpostValidator {
 
 	@Override
 	public void validate(Journalpost journalpost) {

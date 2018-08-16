@@ -2,7 +2,7 @@ package no.nav.dokarkiv.behandlejournal.v3.tjoark061;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 
-import no.nav.dokarkiv.behandlejournal.v2.SporingsMetaData;
+import no.nav.dokarkiv.behandlejournal.SporingsMetaData;
 import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;

@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.behandlejournal.v2;
+package no.nav.dokarkiv.behandlejournal;
 
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
@@ -14,12 +14,12 @@ import javax.inject.Inject;
  * @author Thomas Eugen Bjørge, Visma Sirius
  */
 @Component
-public class DefaultSporingMapper implements SporingMapper {
+public class BehandleJournalSporingMapper implements SporingMapper {
 
 	private final KildeNavnPopulator kildeNavnPopulator;
 
 	@Inject
-	DefaultSporingMapper(KildeNavnPopulator kildeNavnPopulator) {
+	BehandleJournalSporingMapper(KildeNavnPopulator kildeNavnPopulator) {
 		this.kildeNavnPopulator = kildeNavnPopulator;
 	}
 

@@ -13,7 +13,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import no.nav.dokarkiv.behandlejournal.v2.SporingsMetaData;
+import no.nav.dokarkiv.behandlejournal.SporingsMetaData;
 import no.nav.dokarkiv.core.domain.builder.JournalpostBuilder;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;

@@ -1,6 +1,6 @@
 package no.nav.dokarkiv.behandlejournal.v3.tjoark064;
 
-import no.nav.dokarkiv.behandlejournal.v3.AbstractBehandleJournalJournalpostValidatorTest;
+import no.nav.dokarkiv.behandlejournal.v3.AbstractBehandleJournalV3JournalpostValidatorTest;
 import no.nav.dokarkiv.core.exceptions.ApplicationException;
 import no.nav.dokarkiv.core.exceptions.InvalidJournalpostStructureException;
 import org.junit.Test;
@@ -15,7 +15,7 @@ import org.mockito.junit.MockitoJUnitRunner;
  */
 @RunWith(MockitoJUnitRunner.class)
 public class JournalfoerUtgaaendeHenvendelseV3ValidatorTest extends
-		AbstractBehandleJournalJournalpostValidatorTest {
+		AbstractBehandleJournalV3JournalpostValidatorTest {
 
 	@InjectMocks
 	private JournalfoerUtgaaendeHenvendelseV3Validator validator;

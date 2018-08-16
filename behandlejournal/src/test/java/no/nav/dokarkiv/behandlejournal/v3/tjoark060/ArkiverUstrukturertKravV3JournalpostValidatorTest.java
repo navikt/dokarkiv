@@ -4,7 +4,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.core.IsNull.nullValue;
 import static org.junit.Assert.assertThat;
 
-import no.nav.dokarkiv.behandlejournal.v3.AbstractBehandleJournalJournalpostValidatorTest;
+import no.nav.dokarkiv.behandlejournal.v3.AbstractBehandleJournalV3JournalpostValidatorTest;
 import no.nav.dokarkiv.core.exceptions.ApplicationException;
 import no.nav.dokarkiv.core.exceptions.InvalidJournalpostStructureException;
 import org.junit.Test;
@@ -18,7 +18,7 @@ import org.mockito.junit.MockitoJUnitRunner;
  * @author Thomas Eugen Bjørge, Visma Consulting
  */
 @RunWith(MockitoJUnitRunner.class)
-public class ArkiverUstrukturertKravV3JournalpostValidatorTest extends AbstractBehandleJournalJournalpostValidatorTest {
+public class ArkiverUstrukturertKravV3JournalpostValidatorTest extends AbstractBehandleJournalV3JournalpostValidatorTest {
 
 	private static final String MOTTAKER = "mottaker";
 	private static final String AVSENDER_MOTTAKER_ID = "12345542";

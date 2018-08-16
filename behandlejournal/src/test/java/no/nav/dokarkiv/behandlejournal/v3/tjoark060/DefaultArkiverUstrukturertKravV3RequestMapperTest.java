@@ -5,7 +5,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import no.nav.dokarkiv.behandlejournal.v2.SporingMapper;
+import no.nav.dokarkiv.behandlejournal.SporingMapper;
 import no.nav.tjeneste.virksomhet.behandlejournal.v3.informasjon.arkiverustrukturertkrav.Journalpost;
 import no.nav.tjeneste.virksomhet.behandlejournal.v3.meldinger.ArkiverUstrukturertKravRequest;
 import org.junit.Before;
@@ -21,7 +21,7 @@ import org.mockito.junit.MockitoJUnitRunner;
  * @author Rune Romundstad, Visma Consulting
  */
 @RunWith(MockitoJUnitRunner.class)
-public class DefaultArkiverUstrukturertKravV3V3RequestMapperTest {
+public class DefaultArkiverUstrukturertKravV3RequestMapperTest {
 	private static final String SPORING_FORNAVN = "fornavn";
 	private static final String SPORING_ETTERNAVN = "etternavn";
 

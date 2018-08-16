@@ -19,7 +19,7 @@ import java.util.List;
  *
  * @author Rune Romundstad, Visma Consulting
  */
-public abstract class AbstractBehandleJournalJournalpostValidator implements BehandleJournalJournalpostValidator {
+public abstract class AbstractBehandleJournalV3JournalpostValidator implements BehandleJournalJournalpostValidator {
 
 	@Inject
 	protected MandatoryFieldsVerifier mandatoryFieldsVerifier;

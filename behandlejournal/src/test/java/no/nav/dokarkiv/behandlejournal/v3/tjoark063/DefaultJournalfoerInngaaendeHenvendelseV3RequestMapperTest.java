@@ -2,7 +2,7 @@ package no.nav.dokarkiv.behandlejournal.v3.tjoark063;
 
 import static org.mockito.Mockito.verify;
 
-import no.nav.dokarkiv.behandlejournal.v2.SporingMapper;
+import no.nav.dokarkiv.behandlejournal.SporingMapper;
 import no.nav.dokarkiv.behandlejournal.v3.datautil.BehandleJournalCommonDataUtil;
 import no.nav.dokarkiv.behandlejournal.v3.datautil.JournalfoerInngaaendeHenvendelseAssertUtil;
 import no.nav.dokarkiv.behandlejournal.v3.datautil.JournalfoerInngaaendeHenvendelseDataUtil;

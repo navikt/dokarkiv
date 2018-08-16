@@ -1,6 +1,6 @@
 package no.nav.dokarkiv.behandlejournal.v3.tjoark064;
 
-import no.nav.dokarkiv.behandlejournal.v2.SporingMapper;
+import no.nav.dokarkiv.behandlejournal.SporingMapper;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;

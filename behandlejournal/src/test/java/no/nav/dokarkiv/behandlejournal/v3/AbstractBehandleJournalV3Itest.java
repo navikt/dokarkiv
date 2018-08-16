@@ -9,7 +9,6 @@ import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 
-import no.nav.dokarkiv.behandlejournal.v2.DefaultSporingMapper;
 import no.nav.dokarkiv.core.CoreConfig;
 import no.nav.dokarkiv.core.domain.util.DateProvider;
 import no.nav.dokarkiv.core.exceptions.ApplicationException;
@@ -31,7 +30,6 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
@@ -47,7 +45,7 @@ import java.util.GregorianCalendar;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE,
-		classes = {CoreConfig.class, AbstractBehandleJournalV3Itest.TestConfig.class, BehandleJournalV3Config.class})
+		classes = {CoreConfig.class, BehandleJournalV3Config.class})
 @ActiveProfiles("itest,wiremock")
 @AutoConfigureTestDatabase
 @AutoConfigureTestEntityManager
@@ -67,11 +65,6 @@ public abstract class AbstractBehandleJournalV3Itest {
 	protected DokumentFilRepository dokumentFilRepository;
 	@Inject
 	protected BidragMellomlagringRepository bidragMellomlagringRepository;
-
-
-	@Import(DefaultSporingMapper.class)
-	static class TestConfig {
-	}
 
 	@Before
 	public void setUpItest() {
