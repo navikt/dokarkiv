@@ -17,19 +17,19 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 /**
- * Tests for {@link DefaultJournalfoerNotatHenvendelseV3RequestMapper}
+ * Tests for {@link JournalfoerNotatHenvendelseV3RequestMapper}
  *
  * @author Joakim Bjørnstad, Visma Consulting
  */
 @RunWith(MockitoJUnitRunner.class)
-public class DefaultJournalfoerNotatHenvendelseV3RequestMapperTest {
+public class JournalfoerNotatHenvendelseV3RequestMapperTest {
 	private static final String SPORING_FORNAVN = JournalfoerNotatHenvendelseDataUtil.SPORING_FORNAVN;
 	private static final String SPORING_ETTERNAVN = JournalfoerNotatHenvendelseDataUtil.SPORING_ETTERNAVN;
 
 	@Mock
 	private SporingMapper sporingMapperMock;
 	@InjectMocks
-	private DefaultJournalfoerNotatHenvendelseV3RequestMapper requestMapper;
+	private JournalfoerNotatHenvendelseV3RequestMapper requestMapper;
 
 	private JournalfoerNotatRequest wsRequest;
 	private JournalfoerNotatHenvendelseRequest domainRequest;

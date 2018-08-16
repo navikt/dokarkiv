@@ -24,7 +24,7 @@ import java.util.Map;
  *
  * @author Rune Romundstad, Visma Consulting
  */
-public class DefaultLagreVedleggPaaJournalpostV3RequestMapperTest {
+public class LagreVedleggPaaJournalpostV3RequestMapperTest {
 	private static final String SPORING_FORNAVN = "fornavn";
 	private static final String SPORING_ETTERNAVN = "etternavn";
 	private static final String APPLIKASJONS_ID = "applikasjonsid";
@@ -38,12 +38,12 @@ public class DefaultLagreVedleggPaaJournalpostV3RequestMapperTest {
 	private static final String BREVKODE = "brevkode";
 	private static final boolean BEGRENSET_PARTS_INNSYN = true;
 
-	private DefaultLagreVedleggPaaJournalpostV3RequestMapper requestMapper;
+	private LagreVedleggPaaJournalpostV3RequestMapper requestMapper;
 	private LagreVedleggPaaJournalpostRequest wsRequest;
 
 	@Before
 	public void init() {
-		requestMapper = new DefaultLagreVedleggPaaJournalpostV3RequestMapper();
+		requestMapper = new LagreVedleggPaaJournalpostV3RequestMapper();
 		wsRequest = createRequest(JOURNALPOST_ID, createDokumentInfo());
 	}
 

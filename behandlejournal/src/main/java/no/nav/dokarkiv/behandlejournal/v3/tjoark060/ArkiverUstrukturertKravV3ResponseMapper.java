@@ -3,15 +3,9 @@ package no.nav.dokarkiv.behandlejournal.v3.tjoark060;
 import no.nav.tjeneste.virksomhet.behandlejournal.v3.meldinger.ArkiverUstrukturertKravResponse;
 import org.springframework.stereotype.Component;
 
-/**
- * Implementation of {@link ArkiverUstrukturertKravResponseMapper}. Maps response from domain to FIM.
- *
- * @author Rune Romundstad, Visma Consulting
- */
 @Component
-public class DefaultArkiverUstrukturertKravV3ResponseMapper implements ArkiverUstrukturertKravResponseMapper {
+public class ArkiverUstrukturertKravV3ResponseMapper {
 
-	@Override
 	public ArkiverUstrukturertKravResponse map(
 			no.nav.dokarkiv.behandlejournal.v3.tjoark060.ArkiverUstrukturertKravResponse domainResponse) {
 		return new ArkiverUstrukturertKravResponse()

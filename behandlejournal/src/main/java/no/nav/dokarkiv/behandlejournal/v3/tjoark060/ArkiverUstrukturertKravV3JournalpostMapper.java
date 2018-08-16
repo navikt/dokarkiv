@@ -34,7 +34,7 @@ import java.util.Map;
  * @author Thomas Eugen Bjørge, Visma Consulting
  */
 @Component
-public class DefaultJournalpostMapperV3 implements JournalpostMapper {
+public class ArkiverUstrukturertKravV3JournalpostMapper {
 
 	public Journalpost map(
 			no.nav.tjeneste.virksomhet.behandlejournal.v3.informasjon.arkiverustrukturertkrav.Journalpost wsJournalpost) {

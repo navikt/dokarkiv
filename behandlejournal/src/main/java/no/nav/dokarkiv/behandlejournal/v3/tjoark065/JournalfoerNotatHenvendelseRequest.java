@@ -1,8 +1,6 @@
 package no.nav.dokarkiv.behandlejournal.v3.tjoark065;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
+import lombok.Data;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.ApplicationException;
 
@@ -11,9 +9,7 @@ import no.nav.dokarkiv.core.exceptions.ApplicationException;
  *
  * @author Joakim Bjørnstad, Visma Consulting
  */
-@RequiredArgsConstructor
-@Getter
-@ToString
+@Data
 public class JournalfoerNotatHenvendelseRequest {
 	private final Journalpost journalpost;
 

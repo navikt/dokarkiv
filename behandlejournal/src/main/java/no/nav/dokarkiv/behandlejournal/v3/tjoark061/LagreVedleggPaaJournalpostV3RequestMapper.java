@@ -18,18 +18,9 @@ import org.springframework.stereotype.Component;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Implementation of {@link DefaultLagreVedleggPaaJournalpostV3RequestMapper}
- *
- * @author Rune Romundstad, Visma Consulting
- */
 @Component
-public class DefaultLagreVedleggPaaJournalpostV3RequestMapper implements LagreVedleggPaaJournalpostRequestMapper {
+public class LagreVedleggPaaJournalpostV3RequestMapper {
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
 	public LagreVedleggPaaJournalpostRequest map(
 			no.nav.tjeneste.virksomhet.behandlejournal.v3.meldinger.LagreVedleggPaaJournalpostRequest wsRequest) {
 		JournalfoertDokumentInfo journalfortDokumentInfo = wsRequest.getJournalfortDokumentInfo();

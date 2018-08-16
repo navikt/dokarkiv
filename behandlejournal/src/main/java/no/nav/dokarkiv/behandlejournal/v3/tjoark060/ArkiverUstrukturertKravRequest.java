@@ -1,8 +1,8 @@
 package no.nav.dokarkiv.behandlejournal.v3.tjoark060;
 
+import lombok.Data;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.ApplicationException;
-import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
  * Request object for the ArkiverUstrukturertKrav service.
@@ -10,19 +10,11 @@ import org.apache.commons.lang.builder.ToStringBuilder;
  * @author Rune Romundstad, Visma Consulting
  *
  */
+@Data
 public class ArkiverUstrukturertKravRequest {
 
 	private final Journalpost journalpost;
 
-	/**
-	 * Constructs a new ArkiverUstrukturertKravRequest.
-	 *
-	 * @param journalpost The Journalpost
-	 */
-	public ArkiverUstrukturertKravRequest(Journalpost journalpost) {
-		this.journalpost = journalpost;
-	}
-	
 	/**
 	 * Validate that a Journalpost is set in the request.
 	 */
@@ -30,22 +22,5 @@ public class ArkiverUstrukturertKravRequest {
 		if (journalpost == null) {
 			throw new ApplicationException("Journalpost must be set");
 		}
-	}
-
-	/**
-	 * Getter for the journalpost property.
-	 *
-	 * @return the journalpost
-	 */
-	public Journalpost getJournalpost() {
-		return journalpost;
-	}
-
-	/** {@inheritDoc} */
-	@Override
-	public String toString() {
-		return new ToStringBuilder(this)
-			.append("journalpost", journalpost)
-			.toString();
 	}
 }

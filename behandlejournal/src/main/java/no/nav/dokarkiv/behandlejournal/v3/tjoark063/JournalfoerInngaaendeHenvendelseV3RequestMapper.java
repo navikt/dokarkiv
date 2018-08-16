@@ -33,20 +33,16 @@ import javax.inject.Inject;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Implementation of
- * JournalfoerInngaaendeHenvendelseRequestMapper
- *
- * @author Rune Romundstad, Visma Consulting
- */
 @Component
-public class DefaultJournalfoerInngaaendeHenvendelseV3RequestMapper implements
-		JournalfoerInngaaendeHenvendelseRequestMapper {
+public class JournalfoerInngaaendeHenvendelseV3RequestMapper {
+
+	private final SporingMapper sporingMapper;
 
 	@Inject
-	private SporingMapper sporingMapper;
+	public JournalfoerInngaaendeHenvendelseV3RequestMapper(SporingMapper sporingMapper) {
+		this.sporingMapper = sporingMapper;
+	}
 
-	@Override
 	public JournalfoerInngaaendeHenvendelseRequest map(
 			no.nav.tjeneste.virksomhet.behandlejournal.v3.meldinger.JournalfoerInngaaendeHenvendelseRequest wsRequest) {
 		no.nav.tjeneste.virksomhet.behandlejournal.v3.informasjon.journalfoerinngaaendehenvendelse.Journalpost wsJournalpost = wsRequest.getJournalpost();

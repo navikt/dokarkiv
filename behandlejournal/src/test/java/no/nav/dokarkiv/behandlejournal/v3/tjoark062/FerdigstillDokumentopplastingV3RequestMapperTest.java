@@ -8,24 +8,24 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * Tests for {@link DefaultFerdigstillDokumentopplastingV3RequestMapper}
+ * Tests for {@link FerdigstillDokumentopplastingV3RequestMapper}
  *
  * @author Joakim Bjørnstad, Visma Consulting
  *
  */
-public class DefaultFerdigstillDokumentopplastingV3RequestMapperTest {
+public class FerdigstillDokumentopplastingV3RequestMapperTest {
 	private static final String SPORING_FORNAVN = "fornavn";
 	private static final String SPORING_ETTERNAVN = "etternavn";
 	private static final String APPLIKASJONS_ID = "applikasjonsid";
 	private static final String JOURNALPOST_ID = "100";
 
-	private DefaultFerdigstillDokumentopplastingV3RequestMapper mapper;
+	private FerdigstillDokumentopplastingV3RequestMapper mapper;
 
 	private FerdigstillDokumentopplastingRequest wsRequest;
 
 	@Before
 	public void setUp() {
-		mapper = new DefaultFerdigstillDokumentopplastingV3RequestMapper();
+		mapper = new FerdigstillDokumentopplastingV3RequestMapper();
 		createRequest();
 	}
 

@@ -11,17 +11,17 @@ import org.junit.Test;
  * 
  * @author Rune Romundstad, Visma Consulting
  */
-public class DefaultJournalfoerInngaaendeHenvendelseV3ResponseMapperTest {
+public class JournalfoerInngaaendeHenvendelseV3ResponseMapperTest {
 
 	private static final Long JOURNALPOST_ID = 13L;
 
-	private DefaultJournalfoerInngaaendeHenvendelseV3ResponseMapper mapper;
+	private JournalfoerInngaaendeHenvendelseV3ResponseMapper mapper;
 	private JournalfoerInngaaendeHenvendelseResponse domainResponse;
 	private no.nav.tjeneste.virksomhet.behandlejournal.v3.meldinger.JournalfoerInngaaendeHenvendelseResponse wsResponse;
 
 	@Before
 	public void setUp() {
-		mapper = new DefaultJournalfoerInngaaendeHenvendelseV3ResponseMapper();
+		mapper = new JournalfoerInngaaendeHenvendelseV3ResponseMapper();
 		domainResponse = new JournalfoerInngaaendeHenvendelseResponse(JOURNALPOST_ID);
 	}
 

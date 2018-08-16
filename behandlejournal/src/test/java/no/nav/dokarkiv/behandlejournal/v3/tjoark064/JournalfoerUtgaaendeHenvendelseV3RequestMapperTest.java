@@ -21,14 +21,14 @@ import org.mockito.junit.MockitoJUnitRunner;
  * @author Joakim Bjørnstad, Visma Consulting
  */
 @RunWith(MockitoJUnitRunner.class)
-public class DefaultJournalfoerUtgaaendeHenvendelseV3RequestMapperTest {
+public class JournalfoerUtgaaendeHenvendelseV3RequestMapperTest {
 	private static final String SPORING_FORNAVN = JournalfoerUtgaaendeHenvendelseDataUtil.OPPRETTET_AV_FORNAVN;
 	private static final String SPORING_ETTERNAVN = JournalfoerUtgaaendeHenvendelseDataUtil.OPPRETTET_AV_ETTERNAVN;
 	
 	@Mock
 	private SporingMapper sporingMapperMock;
 	@InjectMocks
-	private DefaultJournalfoerUtgaaendeHenvendelseV3RequestMapper requestMapper;
+	private JournalfoerUtgaaendeHenvendelseV3RequestMapper requestMapper;
 
 	private JournalfoerUtgaaendeHenvendelseRequest wsRequest;
 	private no.nav.dokarkiv.behandlejournal.v3.tjoark064.JournalfoerUtgaaendeHenvendelseRequest domainRequest;

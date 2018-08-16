@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.behandlejournal.v3.tjoark065;
+package no.nav.dokarkiv.behandlejournal.v3.tjoark064;
 
 import no.nav.dokarkiv.behandlejournal.SporingMapper;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
@@ -8,6 +8,7 @@ import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
 import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
 import no.nav.dokarkiv.core.domain.codes.ReferanseTypeCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
+import no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.Bruker;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
@@ -25,36 +26,39 @@ import no.nav.tjeneste.virksomhet.behandlejournal.v3.informasjon.behandlejournal
 import no.nav.tjeneste.virksomhet.behandlejournal.v3.informasjon.behandlejournal.Person;
 import no.nav.tjeneste.virksomhet.behandlejournal.v3.informasjon.behandlejournal.StrukturertInnhold;
 import no.nav.tjeneste.virksomhet.behandlejournal.v3.informasjon.behandlejournal.UstrukturertInnhold;
-import no.nav.tjeneste.virksomhet.behandlejournal.v3.informasjon.journalfoernotat.JournalfoertDokumentInfo;
+import no.nav.tjeneste.virksomhet.behandlejournal.v3.informasjon.journalfoerutgaaendehenvendelse.JournalfoertDokumentInfo;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Implementation of JournalfoerNotatHenvendelseRequestMapper
- *
- * @author Joakim Bjørnstad, Visma Consulting
- */
 @Component
-public class DefaultJournalfoerNotatHenvendelseV3RequestMapper implements
-		JournalfoerNotatHenvendelseRequestMapper {
+public class JournalfoerUtgaaendeHenvendelseV3RequestMapper {
+
+	private final SporingMapper sporingMapper;
 
 	@Inject
-	private SporingMapper sporingMapper;
+	public JournalfoerUtgaaendeHenvendelseV3RequestMapper(SporingMapper sporingMapper) {
+		this.sporingMapper = sporingMapper;
+	}
 
-	@Override
-	public JournalfoerNotatHenvendelseRequest map(
-			no.nav.tjeneste.virksomhet.behandlejournal.v3.meldinger.JournalfoerNotatRequest wsRequest) {
-		no.nav.tjeneste.virksomhet.behandlejournal.v3.informasjon.journalfoernotat.Journalpost wsJournalpost = wsRequest.getJournalpost();
+	public JournalfoerUtgaaendeHenvendelseRequest map(
+			no.nav.tjeneste.virksomhet.behandlejournal.v3.meldinger.JournalfoerUtgaaendeHenvendelseRequest wsRequest) {
+		no.nav.tjeneste.virksomhet.behandlejournal.v3.informasjon.journalfoerutgaaendehenvendelse.Journalpost wsJournalpost = wsRequest.getJournalpost();
 		Journalpost domainJournalpost = Journalpost.builder()
 				.dokumentDato(wsJournalpost.getDokumentDato() == null ? null : wsJournalpost.getDokumentDato().toGregorianCalendar().getTime())
+				.utsendingskanal(wsJournalpost.getKanal() == null ? null : UtsendingsKanalCode.valueOf(wsJournalpost.getKanal().getValue()))
+				.sendtPrintDato(wsJournalpost.getDistribusjonAvJournal() == null ? null : wsJournalpost.getDistribusjonAvJournal().getSendtPrintDato().toGregorianCalendar().getTime())
+				.ekspedertDato(wsJournalpost.getDatoEkspedert() == null ? null : wsJournalpost.getDatoEkspedert().toGregorianCalendar().getTime())
 				.signatur(wsJournalpost.getSignatur() == null ? null : wsJournalpost.getSignatur().isSignert())
 				.journalForendeEnhetId(wsJournalpost.getJournalfoerendeEnhetREF())
 				.journalfortAvNavn(wsJournalpost.getOpprettetAvNavn())
 				.innhold(wsJournalpost.getInnhold())
 				.fagomrade(wsJournalpost.getArkivtema() == null ? null : FagomradeCode.valueOf(wsJournalpost.getArkivtema().getValue()))
+				.avsenderMottakerId(wsJournalpost.getEksternPart() == null || wsJournalpost.getEksternPart().getEksternAktoer() == null ?
+						null : convertAktoerToId(wsJournalpost.getEksternPart().getEksternAktoer()))
+				.avsenderMottaker(wsJournalpost.getEksternPart() == null ? null : wsJournalpost.getEksternPart().getNavn())
 				.build();
 		Saksrelasjon saksrelasjon = Saksrelasjon.builder()
 				.sakId(wsJournalpost.getGjelderSak() == null ? null : wsJournalpost.getGjelderSak().getSaksId())
@@ -74,9 +78,6 @@ public class DefaultJournalfoerNotatHenvendelseV3RequestMapper implements
 					.tittel(journalfoertDokumentInfo.getTittel())
 					.kategori(journalfoertDokumentInfo.getKategorikode() == null ? null : DokumentKategoriCode.valueOf(journalfoertDokumentInfo.getKategorikode()))
 					.brevkode(journalfoertDokumentInfo.getDokumentType() == null ? null : journalfoertDokumentInfo.getDokumentType().getValue())
-					.dokumenttypeId(null)
-					.organInternt(journalfoertDokumentInfo.isErOrganinternt())
-					.dokumentFerdigDato(journalfoertDokumentInfo.getFerdigDato() == null ? null : journalfoertDokumentInfo.getFerdigDato().toGregorianCalendar().getTime())
 					.tilleggsopplysninger(convertNoekkelVerdiSettToMap(journalfoertDokumentInfo.getTilleggsopplysninger()))
 					.build();
 			journalfoertDokumentInfo.getBeskriverInnhold().forEach(dokumentInnhold -> dokumentInfo.addFilDetaljer(convertDokumentInnhold(dokumentInnhold)));
@@ -87,7 +88,21 @@ public class DefaultJournalfoerNotatHenvendelseV3RequestMapper implements
 					.build());
 		});
 		sporingMapper.mapSporingsinfo(domainJournalpost, wsJournalpost.getOpprettetAvNavn());
-		return new JournalfoerNotatHenvendelseRequest(domainJournalpost);
+		return new JournalfoerUtgaaendeHenvendelseRequest(domainJournalpost);
+	}
+
+	private String convertAktoerToId(Aktoer source) {
+		if (source == null) {
+			return null;
+		}
+
+		if (source instanceof Person) {
+			return ((Person) source).getIdent().getIdent();
+		} else if (source instanceof Organisasjon) {
+			return ((Organisasjon) source).getOrgnummer();
+		} else {
+			throw new ApplicationException("Aktoer must be a type or subtype of Person or Organisasjon.");
+		}
 	}
 
 	private Bruker convertAktoerToBruker(Aktoer source) {

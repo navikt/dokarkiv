@@ -9,20 +9,20 @@ import org.junit.Test;
 
 /**
  * Tests for
- * {@link DefaultJournalfoerNotatHenvendelseV3ResponseMapper}
+ * {@link JournalfoerNotatHenvendelseV3ResponseMapper}
  *
  * @author Joakim Bjørnstad, Visma Consulting
  */
-public class DefaultJournalfoerNotatHenvendelseV3ResponseMapperTest {
+public class JournalfoerNotatHenvendelseV3ResponseMapperTest {
 	private static final Long JOURNALPOST_ID = 1L;
 
-	private DefaultJournalfoerNotatHenvendelseV3ResponseMapper mapper;
+	private JournalfoerNotatHenvendelseV3ResponseMapper mapper;
 	private JournalfoerNotatHenvendelseResponse domainResponse;
 	private JournalfoerNotatResponse wsResponse;
 
 	@Before
 	public void setUp() {
-		mapper = new DefaultJournalfoerNotatHenvendelseV3ResponseMapper();
+		mapper = new JournalfoerNotatHenvendelseV3ResponseMapper();
 		domainResponse = new JournalfoerNotatHenvendelseResponse(JOURNALPOST_ID);
 	}
 

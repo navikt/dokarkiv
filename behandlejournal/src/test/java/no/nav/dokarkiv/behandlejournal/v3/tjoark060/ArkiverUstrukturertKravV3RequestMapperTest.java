@@ -15,22 +15,17 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-/**
- * Test class for the ArkiverUstrukturertKravRequestMapper.
- *
- * @author Rune Romundstad, Visma Consulting
- */
 @RunWith(MockitoJUnitRunner.class)
-public class DefaultArkiverUstrukturertKravV3RequestMapperTest {
+public class ArkiverUstrukturertKravV3RequestMapperTest {
 	private static final String SPORING_FORNAVN = "fornavn";
 	private static final String SPORING_ETTERNAVN = "etternavn";
 
 	@Mock
-	private JournalpostMapper journalpostMapperMock;
+	private ArkiverUstrukturertKravV3JournalpostMapper journalpostMapperMock;
 	@Mock
 	private SporingMapper sporingMapperMock;
 	@InjectMocks
-	private DefaultArkiverUstrukturertKravV3RequestMapper requestMapper;
+	private ArkiverUstrukturertKravV3RequestMapper requestMapper;
 
 	private ArkiverUstrukturertKravRequest wsRequest;
 	private no.nav.dokarkiv.behandlejournal.v3.tjoark060.ArkiverUstrukturertKravRequest domainRequest;

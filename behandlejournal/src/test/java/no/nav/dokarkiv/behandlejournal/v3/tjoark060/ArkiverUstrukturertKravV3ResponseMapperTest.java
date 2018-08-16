@@ -11,17 +11,17 @@ import org.junit.Test;
  * 
  * @author Rune Romundstad, Visma Consulting
  */
-public class DefaultArkiverUstrukturertKravV3ResponseMapperTest {
+public class ArkiverUstrukturertKravV3ResponseMapperTest {
 
 	private static final Long JOURNALPOST_ID = 1L;
 	private static final Long DOKUMENT_ID = 1L;
 	
-	private DefaultArkiverUstrukturertKravV3ResponseMapper responseMapper;
+	private ArkiverUstrukturertKravV3ResponseMapper responseMapper;
 	private ArkiverUstrukturertKravResponse domainResponse;
 	
 	@Before
 	public void init() {
-		responseMapper = new DefaultArkiverUstrukturertKravV3ResponseMapper();
+		responseMapper = new ArkiverUstrukturertKravV3ResponseMapper();
 		domainResponse = new ArkiverUstrukturertKravResponse(JOURNALPOST_ID, DOKUMENT_ID);
 	}
 	

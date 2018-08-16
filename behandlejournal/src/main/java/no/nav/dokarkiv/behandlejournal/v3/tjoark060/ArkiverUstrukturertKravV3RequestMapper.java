@@ -7,22 +7,18 @@ import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 
-/**
- * Implementation of {@link ArkiverUstrukturertKravRequestMapper}. Maps request
- * from FIM to Joark domain.
- * 
- * @author Rune Romundstad, Visma Consulting
- */
 @Component
-public class DefaultArkiverUstrukturertKravV3RequestMapper implements ArkiverUstrukturertKravRequestMapper {
+public class ArkiverUstrukturertKravV3RequestMapper {
+
+	private final ArkiverUstrukturertKravV3JournalpostMapper journalpostMapper;
+	private final SporingMapper sporingMapper;
 
 	@Inject
-	private JournalpostMapper journalpostMapper;
-	@Inject
-	private SporingMapper sporingMapper;
+	public ArkiverUstrukturertKravV3RequestMapper(ArkiverUstrukturertKravV3JournalpostMapper journalpostMapper, SporingMapper sporingMapper) {
+		this.journalpostMapper = journalpostMapper;
+		this.sporingMapper = sporingMapper;
+	}
 
-	/** {@inheritDoc} */
-	@Override
 	public ArkiverUstrukturertKravRequest map(
 			no.nav.tjeneste.virksomhet.behandlejournal.v3.meldinger.ArkiverUstrukturertKravRequest wsRequest) {
 		Journalpost domainJournalpost = journalpostMapper.map(wsRequest.getJournalpost());

@@ -11,17 +11,17 @@ import org.junit.Test;
  * 
  * @author Rune Romundstad, Visma Consulting
  */
-public class DefaultLagreVedleggPaaJournalpostV3ResponseMapperTest {
+public class LagreVedleggPaaJournalpostV3ResponseMapperTest {
 	
 	private static final Long DOKUMENT_ID = 1L;
 	
-	private DefaultLagreVedleggPaaJournalpostV3ResponseMapper responseMapper;
+	private LagreVedleggPaaJournalpostV3ResponseMapper responseMapper;
 	private LagreVedleggPaaJournalpostResponse domainResponse;
 	
 	@Before
 	public void init() {
 		domainResponse = new LagreVedleggPaaJournalpostResponse(DOKUMENT_ID);
-		responseMapper = new DefaultLagreVedleggPaaJournalpostV3ResponseMapper();
+		responseMapper = new LagreVedleggPaaJournalpostV3ResponseMapper();
 	}
 	
 	@Test
