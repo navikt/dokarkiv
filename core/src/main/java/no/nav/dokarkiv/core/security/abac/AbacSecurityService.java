@@ -6,8 +6,10 @@ import static no.nav.abac.xacml.NavAttributter.RESOURCE_FELLES_PERSON_TILKNYTTET
 import static no.nav.abac.xacml.NavAttributter.RESOURCE_FELLES_TEMA;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
+import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
+import no.nav.dokarkiv.core.logging.AbacLogger;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.freg.abac.core.annotation.context.AbacContext;
 import no.nav.freg.abac.core.dto.request.XacmlRequest;
@@ -18,19 +20,21 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Martin Burheim Tingstad, Visma Consulting AS
  */
+@Slf4j
 @Component
 public class AbacSecurityService {
 
 	public static final String ACCESS_DENIED_TO_JOURNALPOST = "Bruker har ikke tilgang til journalpost";
 	public static final String ACCESS_DENIED = "Access Denied";
-	public static final String ABAC_SECURITY_SERVICE = "AbacSecurityService";
 
 	@Inject
-	private AbacLoggingUtils abaclog;
+	private AbacLogger abaclog;
 
 	@Inject
 	private AbacService abacService;
@@ -54,10 +58,10 @@ public class AbacSecurityService {
 		AbacResources abacResources = jdbcAbacSecurityRepository.findAbacResources(journalpostId);
 		decorateJoarkResources(abacContext.getRequest(), abacResources, journalpostId);
 		XacmlResponse accessResponse = abacService.evaluate(abacContext.getRequest());
-		handleResponseForJournalpostId(accessResponse, journalpostId);
+		handleResponseForJournalpostId(abacContext.getRequest(), accessResponse, journalpostId);
 	}
 
-	public Decision assertAccessToSak(String sakId, FagsystemCode fagsystemCode) {
+	Decision assertAccessToSak(String sakId, FagsystemCode fagsystemCode) {
 		return assertAccessToSak(abacContext.getRequest(), sakId, fagsystemCode);
 	}
 
@@ -67,13 +71,13 @@ public class AbacSecurityService {
 		abacResources.setSakId(sakId);
 		decorateJoarkResources(abacRequest, abacResources, null);
 		XacmlResponse accessResponse = abacService.evaluate(abacRequest);
-		return handleResponseForSakId(accessResponse, abacResources);
+		return handleResponseForSakId(abacRequest, accessResponse, abacResources);
 	}
 
 	XacmlRequest decorateJoarkResources(XacmlRequest request,
 										AbacResources joarkResources, Long journalpostId) {
 		if (journalpostId != null && !joarkResources.getBrukerIds().isEmpty() && joarkResources.getBrukerIds().size() > 1) {
-			abaclog.logAccessToJournalpostWithSeveralUsers(journalpostId);
+			log.error("Requested access to journalpost with multiple users, journalpostId={}", journalpostId);
 		}
 
 		if (joarkResources.getBrukerIds() != null && joarkResources.getBrukerIds().size() == 1) {
@@ -95,24 +99,29 @@ public class AbacSecurityService {
 		return request;
 	}
 
-	private void handleResponseForJournalpostId(XacmlResponse response, Long journalpostId) {
+	private void handleResponseForJournalpostId(XacmlRequest request, XacmlResponse response, Long journalpostId) {
+		final Map<String, String> resources = new HashMap<>();
+		resources.put("journalpostId", journalpostId.toString());
 		if (response.getDecision() == Decision.DENY) {
-			abaclog.logAccessDeniedToJournalpost(journalpostId);
+			abaclog.logAbacDeny(request, response, resources);
 			throw new AuthorizationException(ACCESS_DENIED_TO_JOURNALPOST);
 		} else {
 			if (!isEmpty(response.getAdvices())) {
-				abaclog.logAccessToJournalpostWithAdvice(journalpostId);
+				abaclog.logAbacPermit(request, response, resources);
 			}
 		}
 	}
 
-	private Decision handleResponseForSakId(XacmlResponse response, AbacResources abacResources) {
+	private Decision handleResponseForSakId(XacmlRequest abacRequest, XacmlResponse response, AbacResources abacResources) {
+		final Map<String, String> resources = new HashMap<>();
+		resources.put("sakId", abacResources.getSakId());
+		resources.put("fagsystem", abacResources.getFagsystem().name());
 		if (response.getDecision() == Decision.DENY) {
-			abaclog.logAttemptedAccessToSak(abacResources.getSakId(), abacResources.getFagsystem());
+			abaclog.logAbacDeny(abacRequest, response, resources);
 			return response.getDecision();
 		} else {
 			if (!isEmpty(response.getAdvices())) {
-				abaclog.logAccessToSakdWithAdvice(abacResources.getSakId(), abacResources.getFagsystem());
+				abaclog.logAbacPermit(abacRequest, response, resources);
 			}
 			return response.getDecision();
 		}

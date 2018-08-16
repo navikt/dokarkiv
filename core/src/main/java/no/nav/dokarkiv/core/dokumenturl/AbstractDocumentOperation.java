@@ -1,11 +1,11 @@
 package no.nav.dokarkiv.core.dokumenturl;
 
-import no.nav.dokarkiv.core.audit.AuditLogger;
 import no.nav.dokarkiv.core.domain.entities.DokumentFil;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.InvalidFilUuidException;
 import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
+import no.nav.dokarkiv.core.logging.AuditLogger;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 
@@ -59,7 +59,7 @@ public abstract class AbstractDocumentOperation {
 	protected void generateAuditLogIfDokumentIsSensitivt(Journalpost journalpost, FilDetaljer fildetaljer, 
 			String operationName) {
 		Boolean sensitivt = fildetaljer.getDokumentInfo().getSensitivt();
-		if (sensitivt != null && sensitivt.booleanValue() && AuditLogger.auditLogger.isInfoEnabled()) {
+		if (sensitivt != null && sensitivt) {
 			AuditLogger.generateAuditLog(operationName, journalpost, fildetaljer);
 		}
 	}

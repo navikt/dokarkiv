@@ -1,6 +1,5 @@
 package no.nav.dokarkiv.journal.v3.tjoark051;
 
-import no.nav.dokarkiv.core.audit.AuditLogger;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentFil;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
@@ -11,6 +10,7 @@ import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
 import no.nav.dokarkiv.core.exceptions.InvalidFilUuidException;
 import no.nav.dokarkiv.core.exceptions.NoDokumentInfoFoundException;
 import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
+import no.nav.dokarkiv.core.logging.AuditLogger;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import org.apache.commons.lang3.BooleanUtils;
@@ -105,7 +105,7 @@ public abstract class AbstractJournalOperations {
 	protected void generateAuditLogIfDokumentIsSensitivt(Journalpost journalpost, FilDetaljer fildetaljer,
 														 String operationName) {
 		Boolean sensitivt = fildetaljer.getDokumentInfo().getSensitivt();
-		if (BooleanUtils.isTrue(sensitivt) && AuditLogger.auditLogger.isInfoEnabled()) {
+		if (BooleanUtils.isTrue(sensitivt)) {
 			AuditLogger.generateAuditLog(operationName, journalpost, fildetaljer);
 		}
 	}
