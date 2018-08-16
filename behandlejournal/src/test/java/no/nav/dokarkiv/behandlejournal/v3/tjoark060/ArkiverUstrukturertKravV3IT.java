@@ -43,7 +43,7 @@ import org.junit.Test;
  *
  * @author Rune Romundstad, Visma Consulting
  */
-public class ArkiverUstrukturertKravIT extends AbstractBehandleJournalV3Itest {
+public class ArkiverUstrukturertKravV3IT extends AbstractBehandleJournalV3Itest {
 
 	private static final String FNR_BRUKER = "***gammelt_fnr***";
 	private static final String KANAL_ALTINN = "ALTINN";

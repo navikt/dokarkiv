@@ -1,5 +1,9 @@
 package no.nav.dokarkiv.behandlejournal.v3;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.instanceOf;
@@ -17,6 +21,8 @@ import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.dokarkiv.core.stelvio.SimpleRequestContext;
 import no.nav.tjeneste.virksomhet.behandlejournal.v3.binding.BehandleJournalV3;
 import no.nav.tjeneste.virksomhet.behandlejournal.v3.feil.ForretningsmessigUnntak;
+import org.apache.commons.io.IOUtils;
+import org.apache.http.HttpHeaders;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.rules.ExpectedException;
@@ -24,7 +30,10 @@ import org.junit.runner.RunWith;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -33,14 +42,16 @@ import javax.transaction.Transactional;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
+import java.io.IOException;
 import java.util.GregorianCalendar;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE,
-		classes = {CoreConfig.class, AbstractBehandleJournalV3Itest.Config.class, BehandleJournalV3Config.class})
-@ActiveProfiles("itest")
+		classes = {CoreConfig.class, AbstractBehandleJournalV3Itest.TestConfig.class, BehandleJournalV3Config.class})
+@ActiveProfiles("itest,wiremock")
 @AutoConfigureTestDatabase
 @AutoConfigureTestEntityManager
+@AutoConfigureWireMock(port = 0)
 @Transactional
 public abstract class AbstractBehandleJournalV3Itest {
 
@@ -57,8 +68,9 @@ public abstract class AbstractBehandleJournalV3Itest {
 	@Inject
 	protected BidragMellomlagringRepository bidragMellomlagringRepository;
 
+
 	@Import(DefaultSporingMapper.class)
-	static class Config {
+	static class TestConfig {
 	}
 
 	@Before
@@ -104,5 +116,19 @@ public abstract class AbstractBehandleJournalV3Itest {
 		} catch (DatatypeConfigurationException e) {
 			throw new ApplicationException("Unable to create XMLGregorianCalendar", e);
 		}
+	}
+
+	protected void abacDeny() {
+		stubFor(post(urlEqualTo("/abac"))
+				.willReturn(aResponse().withStatus(HttpStatus.OK.value()).withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE).withBodyFile("abac/abac-deny.json")));
+	}
+
+	protected void abacPermit() {
+		stubFor(post(urlEqualTo("/abac"))
+				.willReturn(aResponse().withStatus(HttpStatus.OK.value()).withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE).withBodyFile("abac/abac-permit.json")));
+	}
+
+	protected String stringFromClasspath(String resourcename) throws IOException {
+		return IOUtils.toString(this.getClass().getClassLoader().getResourceAsStream(resourcename));
 	}
 }

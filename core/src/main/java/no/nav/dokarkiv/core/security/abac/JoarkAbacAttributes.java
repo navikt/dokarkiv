@@ -7,8 +7,8 @@ package no.nav.dokarkiv.core.security.abac;
  */
 public class JoarkAbacAttributes {
 
-    /* Samme som applikasjonsnavn i Fasit */
-    public static final String PEP_ID = "joark";
+    // Samme som applikasjonsnavn i Fasit
+    public static final String PEP_ID = "dokarkiv";
 
     public static final String READ_ACTION = "read";
 	public static final String CREATE_ACTION = "create";

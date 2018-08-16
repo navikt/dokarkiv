@@ -46,7 +46,7 @@ import java.util.Date;
  * @author Joakim Bjørnstad, Visma Consulting
  * 
  */
-public class FerdigstillDokumentopplastingIT extends AbstractBehandleJournalV3Itest {
+public class FerdigstillDokumentopplastingV3IT extends AbstractBehandleJournalV3Itest {
 	private static final String SPORING_FORNAVN = "fornavn";
 	private static final String SPORING_ETTERNAVN = "etternavn";
 	private static final String NONEXISTING_JOURNALPOST_ID = "12345";

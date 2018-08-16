@@ -55,7 +55,7 @@ import java.util.Set;
  * @author Rune Romundstad, Visma Consulting
  */
 
-public class LagreVedleggPaaJournalpostIT extends AbstractBehandleJournalV3Itest {
+public class LagreVedleggPaaJournalpostV3IT extends AbstractBehandleJournalV3Itest {
 	private static final String SPORING_FORNAVN = "fornavn";
 	private static final String SPORING_ETTERNAVN = "etternavn";
 	private static final String NONEXISTING_JOURNALPOST_ID = "12345";

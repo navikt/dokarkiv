@@ -21,7 +21,7 @@ import org.junit.Test;
  *
  * @author Rune Romundstad, Visma Consulting
  */
-public class JournalfoerInngaaendeHenvendelseIT extends AbstractBehandleJournalV3Itest {
+public class JournalfoerInngaaendeHenvendelseV3IT extends AbstractBehandleJournalV3Itest {
 
 	private static final String SPORING_FORNAVN = JournalfoerInngaaendeHenvendelseDataUtil.SPORING_FORNAVN;
 	private static final String SPORING_ETTERNAVN = JournalfoerInngaaendeHenvendelseDataUtil.SPORING_ETTERNAVN;
