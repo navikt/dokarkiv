@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.core.audit;
+package no.nav.dokarkiv.core.logging;
 
 import no.nav.dokarkiv.core.stelvio.RequestContext;
 import no.nav.dokarkiv.core.stelvio.RequestContextHolder;

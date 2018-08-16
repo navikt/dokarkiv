@@ -1,6 +1,7 @@
 package no.nav.dokarkiv.core.security;
 
 import lombok.extern.slf4j.Slf4j;
+import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.exceptions.ApplicationException;
 import no.nav.dokarkiv.core.exceptions.DokarkivTechnicalException;
 import no.nav.dokarkiv.core.jaxws.ThreadLocalSubjectHandler;
@@ -11,6 +12,7 @@ import no.nav.modig.core.domain.ConsumerId;
 import no.nav.modig.core.domain.IdentType;
 import no.nav.modig.core.domain.SluttBruker;
 import org.apache.cxf.binding.soap.SoapMessage;
+import org.apache.cxf.message.Message;
 import org.apache.cxf.rt.security.saml.claims.SAMLSecurityContext;
 import org.apache.cxf.security.SecurityContext;
 import org.apache.cxf.ws.security.wss4j.WSS4JInInterceptor;
@@ -25,6 +27,7 @@ import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.schema.XSString;
 import org.opensaml.core.xml.schema.impl.XSAnyImpl;
 import org.opensaml.saml.saml2.core.Attribute;
+import org.slf4j.MDC;
 
 import javax.security.auth.Subject;
 import java.util.Arrays;
@@ -83,8 +86,15 @@ public class ValidateSamlInInterceptor extends WSS4JInInterceptor {
 			if (samlTokenPrincipal == null) {
 				throw new DokarkivTechnicalException("Cannot get SAMLTokenPrincipal from SecurityContext");
 			}
+			putAbacMdcValues(msg);
 			((ThreadLocalSubjectHandler) SubjectHandler.getSubjectHandler()).setSubject(buildSubject(sc));
 		}
+	}
+
+	// MDC verdiene blir logget som en del av tilgangslogging knyttet til abacLogger. Se logback-nais.xml
+	private void putAbacMdcValues(SoapMessage msg) {
+		MDC.put(MDCConstants.MDC_HTTP_ENDPOINT, (String) msg.getOrDefault(Message.REQUEST_URL, "unknown_operation"));
+		MDC.put(MDCConstants.MDC_HTTP_OPERATION, (String) msg.getOrDefault(Message.HTTP_REQUEST_METHOD, "unknown_endpoint"));
 	}
 
 	private boolean isPingCall(SoapMessage msg) {
