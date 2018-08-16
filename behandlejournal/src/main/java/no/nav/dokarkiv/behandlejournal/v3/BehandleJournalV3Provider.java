@@ -1,5 +1,10 @@
 package no.nav.dokarkiv.behandlejournal.v3;
 
+import static no.nav.abac.xacml.NavAttributter.RESOURCE_ARKIV_JOURNALPOST;
+import static no.nav.abac.xacml.NavAttributter.RESOURCE_FELLES_RESOURCE_TYPE;
+import static no.nav.abac.xacml.StandardAttributter.ACTION_ID;
+import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.CREATE_ACTION;
+
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.behandlejournal.v3.tjoark060.ArkiverUstrukturertKravRequestMapper;
 import no.nav.dokarkiv.behandlejournal.v3.tjoark060.ArkiverUstrukturertKravResponseMapper;
@@ -10,12 +15,16 @@ import no.nav.dokarkiv.behandlejournal.v3.tjoark063.JournalfoerInngaaendeHenvend
 import no.nav.dokarkiv.behandlejournal.v3.tjoark063.JournalfoerInngaaendeHenvendelseResponseMapper;
 import no.nav.dokarkiv.behandlejournal.v3.tjoark064.JournalfoerUtgaaendeHenvendelseRequestMapper;
 import no.nav.dokarkiv.behandlejournal.v3.tjoark064.JournalfoerUtgaaendeHenvendelseResponseMapper;
+import no.nav.dokarkiv.behandlejournal.v3.tjoark065.JournalfoerNotatHenvendelseRequest;
 import no.nav.dokarkiv.behandlejournal.v3.tjoark065.JournalfoerNotatHenvendelseRequestMapper;
 import no.nav.dokarkiv.behandlejournal.v3.tjoark065.JournalfoerNotatHenvendelseResponseMapper;
 import no.nav.dokarkiv.core.domain.entities.bidrag.BidragMellomlagring;
 import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
+import no.nav.dokarkiv.core.security.abac.AuthorizationException;
+import no.nav.freg.abac.core.annotation.Abac;
 import no.nav.tjeneste.virksomhet.behandlejournal.v3.binding.BehandleJournalV3;
 import no.nav.tjeneste.virksomhet.behandlejournal.v3.binding.FerdigstillDokumentopplastingFerdigstillDokumentopplastingjournalpostIkkeFunnet;
+import no.nav.tjeneste.virksomhet.behandlejournal.v3.binding.JournalfoerNotatSikkerhetsbegrensning;
 import no.nav.tjeneste.virksomhet.behandlejournal.v3.binding.LagreVedleggPaaJournalpostLagreVedleggPaaJournalpostjournalpostIkkeFunnet;
 import no.nav.tjeneste.virksomhet.behandlejournal.v3.feil.JournalpostIkkeFunnet;
 import no.nav.tjeneste.virksomhet.behandlejournal.v3.meldinger.ArkiverUstrukturertKravRequest;
@@ -45,6 +54,8 @@ import javax.inject.Inject;
 @Component
 public class BehandleJournalV3Provider implements BehandleJournalV3 {
 
+	@Inject
+	private BehandleJournalV3Pep behandleJournalV3Pep;
 	@Inject
 	private BehandleJournalV3ServiceBi behandleJournalV3ServiceBi;
 	@Inject
@@ -140,14 +151,20 @@ public class BehandleJournalV3Provider implements BehandleJournalV3 {
 	}
 
 	@Transactional
+	@Abac(actions = @Abac.Attr(key = ACTION_ID, value = CREATE_ACTION),
+			resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_JOURNALPOST)})
 	@Override
-	public JournalfoerNotatResponse journalfoerNotat(
-			JournalfoerNotatRequest request) {
-		JournalfoerNotatResponse response = journalfoerNotatHenvendelseResponseMapper.map(behandleJournalV3ServiceBi
-				.journalfoerNotatHenvendelse(journalfoerNotatHenvendelseRequestMapper
-						.map(request)));
-		log.info("tjoark065 journalførte notat i journalpostId={}", response.getJournalpostId());
-		return response;
+	public JournalfoerNotatResponse journalfoerNotat(JournalfoerNotatRequest request) throws JournalfoerNotatSikkerhetsbegrensning {
+		JournalfoerNotatHenvendelseRequest henvendelseRequest = journalfoerNotatHenvendelseRequestMapper.map(request);
+		try {
+			behandleJournalV3Pep.journalfoerNotatPep(henvendelseRequest);
+			JournalfoerNotatResponse response = journalfoerNotatHenvendelseResponseMapper.map(behandleJournalV3ServiceBi
+					.journalfoerNotatHenvendelse(henvendelseRequest));
+			log.info("tjoark065 journalførte notat i journalpostId={}", response.getJournalpostId());
+			return response;
+		} catch(AuthorizationException e) {
+			throw new JournalfoerNotatSikkerhetsbegrensning(e.getMessage());
+		}
 	}
 
 	@Override

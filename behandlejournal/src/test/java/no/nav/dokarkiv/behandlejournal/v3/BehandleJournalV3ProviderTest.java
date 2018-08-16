@@ -77,6 +77,8 @@ public class BehandleJournalV3ProviderTest {
 	private static final String EXCEPTION_MESSAGE = "Exception message";
 
 	@Mock
+	private BehandleJournalV3Pep behandleJournalV3PepMock;
+	@Mock
 	private BehandleJournalV3ServiceBi behandleJournalServiceMock;
 	@Mock
 	private BehandleJournalFaultInfoPopulator behandleJournalFaultInfoPopulatorMock;
@@ -265,7 +267,7 @@ public class BehandleJournalV3ProviderTest {
 	}
 
 	@Test
-	public void shouldDelegateToJournalfoerNotatHenvendelseServiceAndReturnResponse() {
+	public void shouldDelegateToJournalfoerNotatHenvendelseServiceAndReturnResponse() throws Exception {
 		JournalfoerNotatRequest wsRequest = new JournalfoerNotatRequest();
 		wsRequest
 				.setJournalpost(new no.nav.tjeneste.virksomhet.behandlejournal.v3.informasjon.journalfoernotat.Journalpost());
