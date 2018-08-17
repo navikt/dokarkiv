@@ -59,7 +59,7 @@ public class BehandleJournalV3Provider implements BehandleJournalV3 {
 	@Inject
 	private BehandleJournalV3ServiceBi behandleJournalV3ServiceBi;
 	@Inject
-	private BehandleJournalFaultInfoPopulator behandleJournalFaultInfoPopulator;
+	private BehandleJournalV3FaultInfoPopulator behandleJournalV3FaultInfoPopulator;
 	@Inject
 	private ArkiverUstrukturertKravV3RequestMapper arkiverUstrukturertKravRequestMapper;
 	@Inject
@@ -105,7 +105,7 @@ public class BehandleJournalV3Provider implements BehandleJournalV3 {
 			return response;
 		} catch (NoJournalpostFoundException e) {
 			throw new LagreVedleggPaaJournalpostLagreVedleggPaaJournalpostjournalpostIkkeFunnet(e.getMessage(),
-					behandleJournalFaultInfoPopulator.populateFaultInfo(new JournalpostIkkeFunnet(), e,
+					behandleJournalV3FaultInfoPopulator.populateFaultInfo(new JournalpostIkkeFunnet(), e,
 							getOperationName()));
 		}
 	}
@@ -121,7 +121,7 @@ public class BehandleJournalV3Provider implements BehandleJournalV3 {
 					journalpostOrBidragClassifier(request.getJournalpostId()), request.getJournalpostId());
 		} catch (NoJournalpostFoundException e) {
 			throw new FerdigstillDokumentopplastingFerdigstillDokumentopplastingjournalpostIkkeFunnet(e.getMessage(),
-					behandleJournalFaultInfoPopulator.populateFaultInfo(new JournalpostIkkeFunnet(), e,
+					behandleJournalV3FaultInfoPopulator.populateFaultInfo(new JournalpostIkkeFunnet(), e,
 							getOperationName()));
 		}
 	}

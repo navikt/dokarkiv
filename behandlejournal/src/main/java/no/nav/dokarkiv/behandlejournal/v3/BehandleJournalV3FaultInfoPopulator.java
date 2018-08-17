@@ -11,11 +11,8 @@ import org.springframework.stereotype.Component;
  * 
  */
 @Component
-public class DefaultBehandleJournalV3FaultInfoPopulator extends AbstractJournalFaultInfoPopulator implements
-		BehandleJournalFaultInfoPopulator {
+public class BehandleJournalV3FaultInfoPopulator extends AbstractJournalFaultInfoPopulator {
 
-	/** {@inheritDoc} */
-	@Override
 	public <T extends ForretningsmessigUnntak> T populateFaultInfo(T faultInfo, Exception exception,
 			String operationName) {
 		faultInfo.setFeilaarsak(getRootCause(exception).toString());

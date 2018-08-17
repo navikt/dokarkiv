@@ -81,7 +81,7 @@ public class BehandleJournalV3ProviderTest {
 	@Mock
 	private BehandleJournalV3ServiceBi behandleJournalServiceMock;
 	@Mock
-	private BehandleJournalFaultInfoPopulator behandleJournalFaultInfoPopulatorMock;
+	private BehandleJournalV3FaultInfoPopulator behandleJournalV3FaultInfoPopulatorMock;
 	@Mock
 	private ArkiverUstrukturertKravV3RequestMapper arkiverUstrukturertKravRequestMapperMock;
 	@Mock
@@ -178,8 +178,7 @@ public class BehandleJournalV3ProviderTest {
 		when(lagreVedleggPaaJournalpostRequestMapperMock.map(eq(wsRequest))).thenReturn(domainRequest);
 		when(behandleJournalServiceMock.lagreVedleggPaaJournalpost(domainRequest)).thenThrow(
 				NoJournalpostFoundException.class);
-		when(
-				behandleJournalFaultInfoPopulatorMock.populateFaultInfo((JournalpostIkkeFunnet) any(),
+		when(behandleJournalV3FaultInfoPopulatorMock.populateFaultInfo((JournalpostIkkeFunnet) any(),
 						(Exception) any(), (String) any())).thenReturn(journalpostIkkeFunnet);
 
 		behandleJournalV3Provider.lagreVedleggPaaJournalpost(wsRequest);
@@ -235,8 +234,7 @@ public class BehandleJournalV3ProviderTest {
 		when(ferdigstillDokumentopplastingRequestMapper.map(wsRequest)).thenReturn(domainRequest);
 		doThrow(NoJournalpostFoundException.class).when(behandleJournalServiceMock).ferdigstillDokumentopplasting(
 				domainRequest);
-		when(
-				behandleJournalFaultInfoPopulatorMock.populateFaultInfo((JournalpostIkkeFunnet) any(),
+		when(behandleJournalV3FaultInfoPopulatorMock.populateFaultInfo((JournalpostIkkeFunnet) any(),
 						(Exception) any(), (String) any())).thenReturn(journalpostIkkeFunnet);
 
 		behandleJournalV3Provider.ferdigstillDokumentopplasting(wsRequest);

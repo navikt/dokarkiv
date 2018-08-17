@@ -19,16 +19,16 @@ import java.util.Date;
  * @author Joakim Bjørnstad, Visma Consulting
  * 
  */
-public class DefaultBehandleJournalV3FaultInfoPopulatorTest {
+public class BehandleJournalV3FaultInfoPopulatorTest {
 	private static final String KILDE = "JOARK";
 	private static final String OPERATION_NAME = "testOperation";
 	private static final String EXCEPTION_MESSAGE = "Exception message";
 
-	private DefaultBehandleJournalV3FaultInfoPopulator faultInfoPopulator;
+	private BehandleJournalV3FaultInfoPopulator faultInfoPopulator;
 
 	@Before
 	public void setUp() {
-		faultInfoPopulator = new DefaultBehandleJournalV3FaultInfoPopulator();
+		faultInfoPopulator = new BehandleJournalV3FaultInfoPopulator();
 		DateProvider.configure(true, DateProvider.getDate(new Date()));
 	}
 
