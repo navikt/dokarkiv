@@ -17,5 +17,5 @@ public class PersistInngaaendeResponseTo {
     private String tittel;
     private String tema;
     private String brukerId;
-    private List<DokumentinfoTo> dokumenter;
+    private List<DokumentTo> dokumenter;
 }

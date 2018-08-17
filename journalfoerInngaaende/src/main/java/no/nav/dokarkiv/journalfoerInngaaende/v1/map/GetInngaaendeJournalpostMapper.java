@@ -8,11 +8,14 @@ import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
+import no.nav.dokarkiv.core.domain.entities.SkannetInnhold;
 import no.nav.dokarkiv.core.exceptions.DokarkivFunctionalException;
-import no.nav.dokarkiv.journalfoerInngaaende.v1.to.AktoerTo;
 import no.nav.dokarkiv.journalfoerInngaaende.v1.to.ArkivsakTo;
-import no.nav.dokarkiv.journalfoerInngaaende.v1.to.DokumentinfoTo;
+import no.nav.dokarkiv.journalfoerInngaaende.v1.to.AvsenderTo;
+import no.nav.dokarkiv.journalfoerInngaaende.v1.to.BrukerTo;
+import no.nav.dokarkiv.journalfoerInngaaende.v1.to.DokumentTo;
 import no.nav.dokarkiv.journalfoerInngaaende.v1.to.JournalpostResponseTo;
+import no.nav.dokarkiv.journalfoerInngaaende.v1.to.LogiskVedleggTo;
 import no.nav.dokarkiv.journalfoerInngaaende.v1.to.VariantTo;
 import org.springframework.stereotype.Component;
 
@@ -86,22 +89,22 @@ public class GetInngaaendeJournalpostMapper {
 		}
 	}
 
-	private List<AktoerTo> mapBrukere(Set<Bruker> brukere) {
+	private List<BrukerTo> mapBrukere(Set<Bruker> brukere) {
 		if (brukere.isEmpty()) {
 			return new ArrayList<>();
 		} else {
-			return brukere.stream().map(bruker -> AktoerTo.builder()
+			return brukere.stream().map(bruker -> BrukerTo.builder()
 					.identifikator(bruker.getBrukerId())
 					.type(bruker.getBrukerType().name())
 					.build()).collect(Collectors.toList());
 		}
 	}
 
-	private AktoerTo mapAvsender(Journalpost journalpost) {
+	private AvsenderTo mapAvsender(Journalpost journalpost) {
 		if (journalpost.getAvsenderMottakerId() == null || journalpost.getAvsenderMottakerId().isEmpty()) {
 			return null;
 		} else {
-			return AktoerTo.builder()
+			return AvsenderTo.builder()
 					.identifikator(journalpost.getAvsenderMottakerId())
 					.type(utledAvsenderType(journalpost.getAvsenderMottakerId()))
 					.navn(journalpost.getAvsenderMottaker())
@@ -109,8 +112,8 @@ public class GetInngaaendeJournalpostMapper {
 		}
 	}
 
-	private List<DokumentinfoTo> mapDokumenter(Set<JournalpostDokumentInfoRelasjon> journalpostDokumentInfoRelasjoner) {
-		return journalpostDokumentInfoRelasjoner.stream().map(relasjon -> DokumentinfoTo.builder()
+	private List<DokumentTo> mapDokumenter(Set<JournalpostDokumentInfoRelasjon> journalpostDokumentInfoRelasjoner) {
+		return journalpostDokumentInfoRelasjoner.stream().map(relasjon -> DokumentTo.builder()
 				.dokumentId(relasjon.getDokumentInfo().getDokumentInfoId().toString())
 				.dokumenttypeId(relasjon.getDokumentInfo().getDokumenttypeId())
 				.navSkjemaId(relasjon.getDokumentInfo().getBrevkode())
@@ -119,6 +122,7 @@ public class GetInngaaendeJournalpostMapper {
 						.getKategori().name())
 				.tilknyttetSom(relasjon.getTilknyttetJournalpostSom().name())
 				.varianter(mapVarianter(relasjon.getDokumentInfo().getFildetaljerListe()))
+				.logiskeVedlegg(mapLogiskeVedlegg(relasjon.getDokumentInfo().getSkannetInnholdListe()))
 				.build()).collect(Collectors.toList());
 	}
 
@@ -128,6 +132,14 @@ public class GetInngaaendeJournalpostMapper {
 				.variantformat(filDetaljer.getVariantFormat().name())
 				.build()).collect(Collectors.toList());
 
+	}
+
+	private List<LogiskVedleggTo> mapLogiskeVedlegg(Set<SkannetInnhold> skannetInnholdSet) {
+		return skannetInnholdSet.stream().map(skannetInnhold -> LogiskVedleggTo.builder()
+				.logiskVedleggId(skannetInnhold.getSkannetInnholdId() == null ? null : skannetInnhold.getSkannetInnholdId()
+						.toString())
+				.logiskVedleggTittel(skannetInnhold.getVedleggInnhold())
+				.build()).collect(Collectors.toList());
 	}
 
 	private String utledAvsenderType(String avsenderId) {

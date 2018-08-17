@@ -13,7 +13,7 @@ import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
 import no.nav.dokarkiv.core.exceptions.DokarkivRestFunctionalException;
 import no.nav.dokarkiv.core.exceptions.InvalidJournalpostStructureException;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
-import no.nav.dokarkiv.journalfoerInngaaende.v1.to.DokumentinfoTo;
+import no.nav.dokarkiv.journalfoerInngaaende.v1.to.DokumentTo;
 import no.nav.dokarkiv.journalfoerInngaaende.v1.to.PersistInngaaendeRequestTo;
 import no.nav.dokarkiv.journalfoerInngaaende.v1.to.PersistInngaaendeResponseTo;
 import no.nav.dokarkiv.journalfoerInngaaende.v1.util.Utils;
@@ -154,12 +154,12 @@ public class PersistInngaaendeJournalpostService {
 
     private PersistInngaaendeResponseTo createResponse(Journalpost jp) {
 
-        List<DokumentinfoTo> dokumentinfos = new ArrayList<>();
+        List<DokumentTo> dokumentinfos = new ArrayList<>();
         jp.getJournalpostDokumentInfoRelasjoner().forEach(d -> {
             DokumentInfo dokumentInfo = d.getDokumentInfo();
             if (dokumentInfo != null) {
                 dokumentinfos.add(
-                        DokumentinfoTo.builder()
+                        DokumentTo.builder()
                                 .dokumentId(dokumentInfo.getId().toString())
                                 .tittel(isEmpty(dokumentInfo.getTittel()) ? MANGLER : MANGLER_IKKE)
                                 .dokumentkategori(isEmpty(dokumentInfo.getKategori().name()) ? MANGLER : MANGLER_IKKE)
