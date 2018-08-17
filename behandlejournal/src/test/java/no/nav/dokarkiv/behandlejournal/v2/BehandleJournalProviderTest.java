@@ -10,6 +10,7 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import no.nav.dokarkiv.behandlejournal.SporingsMetaData;
 import no.nav.dokarkiv.behandlejournal.v2.tjoark060.ArkiverUstrukturertKravRequestMapper;
 import no.nav.dokarkiv.behandlejournal.v2.tjoark060.ArkiverUstrukturertKravResponseMapper;
 import no.nav.dokarkiv.behandlejournal.v2.tjoark061.LagreVedleggPaaJournalpostRequestMapper;

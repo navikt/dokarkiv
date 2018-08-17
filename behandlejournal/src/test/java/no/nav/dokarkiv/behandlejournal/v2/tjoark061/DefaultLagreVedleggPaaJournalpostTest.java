@@ -14,7 +14,7 @@ import static org.mockito.Mockito.when;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
-import no.nav.dokarkiv.behandlejournal.v2.SporingsMetaData;
+import no.nav.dokarkiv.behandlejournal.SporingsMetaData;
 import no.nav.dokarkiv.core.domain.builder.BrukerBuilder;
 import no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder;
 import no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder;

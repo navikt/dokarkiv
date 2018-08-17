@@ -70,6 +70,14 @@ fasitResources:
     wsdlVersion: 2.3.0
     securityToken: SAML
     description: Virksomhetstjeneste for midlertidig og endelig journalføring i arkivet.
+  - alias: BehandleJournal_v3
+    resourceType: webserviceendpoint
+    path: /services/behandlejournal/v3
+    wsdlGroupId: no.nav.tjenester.fim
+    wsdlArtifactId: nav-fim-behandleJournal-v3-tjenestespesifikasjon
+    wsdlVersion: 3.0.2
+    securityToken: SAML
+    description: Virksomhetstjeneste for midlertidig og endelig journalføring i arkivet versjon 3.
   - alias: ArkiverDokumentproduksjon_v1
     resourceType: webserviceendpoint
     path: /services/arkiverdokumentproduksjon/v1

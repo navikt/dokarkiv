@@ -1,7 +1,7 @@
 package no.nav.dokarkiv.behandlejournal.v2.tjoark062;
 
-import no.nav.dokarkiv.behandlejournal.v2.SporingUtil;
-import no.nav.dokarkiv.behandlejournal.v2.SporingsMetaData;
+import no.nav.dokarkiv.behandlejournal.SporingUtil;
+import no.nav.dokarkiv.behandlejournal.SporingsMetaData;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;

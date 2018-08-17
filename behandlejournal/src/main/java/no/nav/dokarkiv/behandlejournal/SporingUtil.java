@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.behandlejournal.v2;
+package no.nav.dokarkiv.behandlejournal;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
