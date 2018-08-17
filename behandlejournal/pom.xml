@@ -13,7 +13,7 @@
 
 	<properties>
 		<behandlejournal-v2-tjenestespesifikasjon.version>2.3.0</behandlejournal-v2-tjenestespesifikasjon.version>
-		<behandlejournal-v3-tjenestespesifikasjon.version>3.0.0-SNAPSHOT</behandlejournal-v3-tjenestespesifikasjon.version>
+		<behandlejournal-v3-tjenestespesifikasjon.version>3.0.2</behandlejournal-v3-tjenestespesifikasjon.version>
 	</properties>
 
 	<dependencies>
