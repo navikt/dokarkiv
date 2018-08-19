@@ -14,8 +14,8 @@ import java.util.List;
 public class JournalpostResponseTo {
 
 	private String journaltilstand;
-	private AktoerTo avsender;
-	private List<AktoerTo> brukere;
+	private AvsenderTo avsender;
+	private List<BrukerTo> brukere;
 	private ArkivsakTo arkivsak;
 	private String tema;
 	private String tittel;
@@ -23,5 +23,5 @@ public class JournalpostResponseTo {
 	private LocalDateTime forsendelseMottatt;
 	private String mottakskanal;
 	private String journalfoerendeEnhet;
-	private List<DokumentinfoTo> dokumenter;
+	private List<DokumentTo> dokumenter;
 }

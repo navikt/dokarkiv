@@ -11,6 +11,7 @@ import static no.nav.dokarkiv.journalfoerInngaaende.v1.util.Utils.getDokumenttyp
 import static no.nav.dokarkiv.journalfoerInngaaende.v1.util.Utils.hasText;
 
 import lombok.extern.slf4j.Slf4j;
+import no.nav.dok.tjenester.journalfoerinngaaende.JournalpostResponse;
 import no.nav.dok.tjenester.journalfoerinngaaende.PutJournalpostRequest;
 import no.nav.dok.tjenester.journalfoerinngaaende.PutJournalpostResponse;
 import no.nav.dokarkiv.core.exceptions.DokarkivRestFunctionalException;
@@ -18,7 +19,6 @@ import no.nav.dokarkiv.core.security.abac.AbacSecurityService;
 import no.nav.dokarkiv.core.security.abac.AuthorizationException;
 import no.nav.dokarkiv.journalfoerInngaaende.v1.service.GetInngaaendeJournalpostService;
 import no.nav.dokarkiv.journalfoerInngaaende.v1.service.PersistInngaaendeJournalpostService;
-import no.nav.dokarkiv.journalfoerInngaaende.v1.to.JournalpostResponseTo;
 import no.nav.freg.abac.core.annotation.Abac;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -64,7 +64,7 @@ public class JournalfoerInngaaendeRestController {
 		try {
 			hasText(journalpostId, "journalpostId");
 			assertAccessToJournalpost(journalpostId);
-			JournalpostResponseTo responseTo = getInngaaendeJournalpostService.getInngaaendeJournalpostByJournalpostId(journalpostId);
+			JournalpostResponse responseTo = getInngaaendeJournalpostService.getInngaaendeJournalpostByJournalpostId(journalpostId);
 			log.info("Hentet journalpost med journalpostId={}, dokumentinfoId(er)={} og dokumenttypeId(er)={} fra Joark.",
 					journalpostId, getDokumentIds(responseTo), getDokumenttypeIds(responseTo));
 			return new ResponseEntity<>(responseTo, HttpStatus.OK);

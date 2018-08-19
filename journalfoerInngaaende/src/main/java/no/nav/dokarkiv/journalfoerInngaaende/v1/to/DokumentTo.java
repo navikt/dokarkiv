@@ -10,7 +10,7 @@ import java.util.List;
  */
 @Data
 @Builder
-public class DokumentinfoTo {
+public class DokumentTo {
 	private String dokumentId;
 	private String dokumenttypeId;
 	private String navSkjemaId;

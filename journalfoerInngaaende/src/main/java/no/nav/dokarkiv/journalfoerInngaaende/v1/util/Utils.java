@@ -1,7 +1,8 @@
 package no.nav.dokarkiv.journalfoerInngaaende.v1.util;
 
+import no.nav.dok.tjenester.journalfoerinngaaende.Dokument;
+import no.nav.dok.tjenester.journalfoerinngaaende.JournalpostResponse;
 import no.nav.dokarkiv.core.exceptions.DokarkivRestFunctionalException;
-import no.nav.dokarkiv.journalfoerInngaaende.v1.to.JournalpostResponseTo;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 
@@ -28,18 +29,16 @@ public class Utils {
 	}
 
 	//Used for logging
-	public static List<String> getDokumentIds(JournalpostResponseTo responseTo) {
-		return responseTo
-				.getDokumenter()
-				.stream()
-				.map(dokumentinfoTo -> new String(dokumentinfoTo.getDokumentId())).collect(Collectors.toList());
+	public static List<String> getDokumentIds(JournalpostResponse response) {
+		return response.getDokumentListe().stream()
+				.map(Dokument::getDokumentId)
+				.collect(Collectors.toList());
 	}
 
-	public static List<String> getDokumenttypeIds(JournalpostResponseTo responseTo) {
-		return responseTo
-				.getDokumenter()
-				.stream()
-				.filter(dokumentinfoTo -> dokumentinfoTo.getDokumenttypeId() != null)
-				.map(dokumentinfoTo -> new String(dokumentinfoTo.getDokumenttypeId())).collect(Collectors.toList());
+	public static List<String> getDokumenttypeIds(JournalpostResponse response) {
+		return response.getDokumentListe().stream()
+				.filter(dokumentinfoTo -> dokumentinfoTo.getDokumentTypeId() != null)
+				.map(Dokument::getDokumentTypeId)
+				.collect(Collectors.toList());
 	}
 }
