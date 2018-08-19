@@ -1,7 +1,12 @@
 package no.nav.dokarkiv.journalfoerInngaaende.v1.service;
 
+import static no.nav.dok.tjenester.journalfoerinngaaende.PutJournalpostResponse.AvsenderId.MANGLER;
+import static no.nav.dok.tjenester.journalfoerinngaaende.PutJournalpostResponse.AvsenderId.MANGLER_IKKE;
 import static org.hibernate.annotations.common.util.StringHelper.isEmpty;
 
+import no.nav.dok.tjenester.journalfoerinngaaende.response.Dokument;
+import no.nav.dok.tjenester.journalfoerinngaaende.PutJournalpostRequest;
+import no.nav.dok.tjenester.journalfoerinngaaende.PutJournalpostResponse;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
@@ -13,9 +18,6 @@ import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
 import no.nav.dokarkiv.core.exceptions.DokarkivRestFunctionalException;
 import no.nav.dokarkiv.core.exceptions.InvalidJournalpostStructureException;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
-import no.nav.dokarkiv.journalfoerInngaaende.v1.to.DokumentinfoTo;
-import no.nav.dokarkiv.journalfoerInngaaende.v1.to.PersistInngaaendeRequestTo;
-import no.nav.dokarkiv.journalfoerInngaaende.v1.to.PersistInngaaendeResponseTo;
 import no.nav.dokarkiv.journalfoerInngaaende.v1.util.Utils;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -33,9 +35,6 @@ import java.util.Set;
 @Service
 public class PersistInngaaendeJournalpostService {
 
-    private static final String MANGLER = "MANGLER";
-    private static final String MANGLER_IKKE = "MANGLER IKKE";
-
     private JoarkRepository joarkRepository;
 
     @Inject
@@ -43,7 +42,7 @@ public class PersistInngaaendeJournalpostService {
         this.joarkRepository = joarkRepository;
     }
 
-    public PersistInngaaendeResponseTo persist(String journalpostId, PersistInngaaendeRequestTo persistInngaaendeJp) {
+    public PutJournalpostResponse persist(String journalpostId, PutJournalpostRequest putJournalpostRequest) {
         Journalpost journalpost = getJournalpost(journalpostId);
 
         verifyMidlertidigJournalfoert(journalpost);
@@ -60,35 +59,35 @@ public class PersistInngaaendeJournalpostService {
 
         verifyRequiredFields(journalpost);
 
-        journalpost.setInnhold(persistInngaaendeJp.getTittel());
-        journalpost.setFagomrade(FagomradeCode.valueOf(persistInngaaendeJp.getTema()));
-        journalpost.setAvsenderMottaker(persistInngaaendeJp.getAvsender().getNavn());
-        journalpost.setAvsenderMottakerId(persistInngaaendeJp.getAvsender().getIdentifikator());
+        journalpost.setInnhold(putJournalpostRequest.getTittel());
+        journalpost.setFagomrade(FagomradeCode.valueOf(putJournalpostRequest.getTema()));
+        journalpost.setAvsenderMottaker(putJournalpostRequest.getAvsender().getNavn());
+        journalpost.setAvsenderMottakerId(putJournalpostRequest.getAvsender().getIdentifikator());
 
-        if (persistInngaaendeJp.getArkivsak() != null) {
+        if (putJournalpostRequest.getArkivSak() != null) {
             Saksrelasjon saksrelasjon = new Saksrelasjon();
-            saksrelasjon.setSakId(persistInngaaendeJp.getArkivsak().getArkivsakId());
-            saksrelasjon.setFagsystem(FagsystemCode.valueOf(persistInngaaendeJp.getArkivsak().getArkivsaksystem()));
+            saksrelasjon.setSakId(putJournalpostRequest.getArkivSak().getArkivSakId());
+            saksrelasjon.setFagsystem(FagsystemCode.valueOf(putJournalpostRequest.getArkivSak().getArkivSakSystem().name()));
             journalpost.setSaksrelasjon(saksrelasjon);
         }
 
         Set<Bruker> brukere = journalpost.getBrukere();
         if (brukere.isEmpty() || brukere.size() > 1) {
             Bruker bruker = new Bruker();
-            bruker.setBrukerId(persistInngaaendeJp.getBruker().getIdentifikator());
-            bruker.setBrukerType(BrukerTypeCode.valueOf(persistInngaaendeJp.getBruker().getType()));
+            bruker.setBrukerId(putJournalpostRequest.getBruker().getIdentifikator());
+            bruker.setBrukerType(BrukerTypeCode.valueOf(putJournalpostRequest.getBruker().getBrukerType().name()));
             journalpost.getBrukere().clear();
             journalpost.getBrukere().add(bruker);
         } else {
             brukere.iterator().forEachRemaining(bruker -> {
-                bruker.setBrukerId(persistInngaaendeJp.getBruker().getIdentifikator());
-                bruker.setBrukerType(BrukerTypeCode.valueOf(persistInngaaendeJp.getBruker().getType()));
+                bruker.setBrukerId(putJournalpostRequest.getBruker().getIdentifikator());
+                bruker.setBrukerType(BrukerTypeCode.valueOf(putJournalpostRequest.getBruker().getBrukerType().name()));
             });
         }
 
-        if (persistInngaaendeJp.isForsoekEndeligJf()) {
+        if (putJournalpostRequest.getForsoekEndeligJF()) {
             journalpost.setJournalstatus(JournalStatusCode.J);
-            journalpost.setJournalForendeEnhetId(persistInngaaendeJp.getJournalfEnhet());
+            journalpost.setJournalForendeEnhetId(putJournalpostRequest.getJournalfEnhet());
             journalpost.setJournalDato(new Date());
             journalpost.setEndretAvNavn("dfd"); //TODO Fra MDC
             journalpost.setJournalfortAvNavn("dfdf"); //TODO
@@ -152,29 +151,28 @@ public class PersistInngaaendeJournalpostService {
         }
     }
 
-    private PersistInngaaendeResponseTo createResponse(Journalpost jp) {
+    private PutJournalpostResponse createResponse(Journalpost jp) {
 
-        List<DokumentinfoTo> dokumentinfos = new ArrayList<>();
+        List<Dokument> dokumentList = new ArrayList<>();
         jp.getJournalpostDokumentInfoRelasjoner().forEach(d -> {
             DokumentInfo dokumentInfo = d.getDokumentInfo();
             if (dokumentInfo != null) {
-                dokumentinfos.add(
-                        DokumentinfoTo.builder()
-                                .dokumentId(dokumentInfo.getId().toString())
-                                .tittel(isEmpty(dokumentInfo.getTittel()) ? MANGLER : MANGLER_IKKE)
-                                .dokumentkategori(isEmpty(dokumentInfo.getKategori().name()) ? MANGLER : MANGLER_IKKE)
-                                .build()
+                dokumentList.add(
+                        new Dokument()
+                        .withDokumentId(dokumentInfo.getId().toString())
+                        .withTittel(isEmpty(dokumentInfo.getTittel()) ? MANGLER : MANGLER_IKKE)
+                        .withDokumentKategori(isEmpty(dokumentInfo.getKategori().name()) ? MANGLER : MANGLER_IKKE)
                 );
             }
         });
-        return PersistInngaaendeResponseTo.builder()
-                .avsenderId(isEmpty(jp.getAvsenderMottakerId()) ? MANGLER : MANGLER_IKKE)
-                .avsenderNavn(isEmpty(jp.getAvsenderMottaker()) ? MANGLER : MANGLER_IKKE)
-                .arkivSak((jp.getSaksrelasjon() != null) ? MANGLER : MANGLER_IKKE)
-                .tittel(isEmpty(jp.getInnhold()) ? MANGLER : MANGLER_IKKE)
-                .tema((jp.getFagomrade() != null) ? MANGLER : MANGLER_IKKE)
-                .brukerId((jp.getBrukere().isEmpty()) ? MANGLER : MANGLER_IKKE)
-                .dokumenter(dokumentinfos)
-                .build();
+
+        return new PutJournalpostResponse()
+                .withAvsenderId(isEmpty(jp.getAvsenderMottakerId()) ? MANGLER : MANGLER_IKKE)
+                .withAvsenderNavn(isEmpty(jp.getAvsenderMottaker()) ? MANGLER : MANGLER_IKKE)
+                .withArkivSak((jp.getSaksrelasjon() != null) ? MANGLER : MANGLER_IKKE)
+                .withTittel(isEmpty(jp.getInnhold()) ? MANGLER : MANGLER_IKKE)
+                .withTema((jp.getFagomrade() != null) ? MANGLER : MANGLER_IKKE)
+                .withBruker((jp.getBrukere().isEmpty()) ? MANGLER : MANGLER_IKKE)
+                .withDokumenter(dokumentList);
     }
 }

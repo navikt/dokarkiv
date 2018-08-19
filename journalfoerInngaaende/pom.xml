@@ -21,6 +21,10 @@
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
 
+		<dependency>
+			<groupId>no.nav.tjenester.fim</groupId>
+			<artifactId>no-nav-dok-tjenester-journalfoerinngaaende</artifactId>
+		</dependency>
 		<!--Swagger-->
 		<dependency>
 			<groupId>io.springfox</groupId>
