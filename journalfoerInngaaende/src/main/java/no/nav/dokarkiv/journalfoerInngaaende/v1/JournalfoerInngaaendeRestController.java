@@ -11,7 +11,7 @@ import static no.nav.dokarkiv.journalfoerInngaaende.v1.util.Utils.getDokumenttyp
 import static no.nav.dokarkiv.journalfoerInngaaende.v1.util.Utils.hasText;
 
 import lombok.extern.slf4j.Slf4j;
-import no.nav.dok.tjenester.journalfoerinngaaende.JournalpostResponse;
+import no.nav.dok.tjenester.journalfoerinngaaende.GetJournalpostResponse;
 import no.nav.dok.tjenester.journalfoerinngaaende.PutJournalpostRequest;
 import no.nav.dok.tjenester.journalfoerinngaaende.PutJournalpostResponse;
 import no.nav.dokarkiv.core.exceptions.DokarkivRestFunctionalException;
@@ -64,7 +64,7 @@ public class JournalfoerInngaaendeRestController {
 		try {
 			hasText(journalpostId, "journalpostId");
 			assertAccessToJournalpost(journalpostId);
-			JournalpostResponse responseTo = getInngaaendeJournalpostService.getInngaaendeJournalpostByJournalpostId(journalpostId);
+			GetJournalpostResponse responseTo = getInngaaendeJournalpostService.getInngaaendeJournalpostByJournalpostId(journalpostId);
 			log.info("Hentet journalpost med journalpostId={}, dokumentinfoId(er)={} og dokumenttypeId(er)={} fra Joark.",
 					journalpostId, getDokumentIds(responseTo), getDokumenttypeIds(responseTo));
 			return new ResponseEntity<>(responseTo, HttpStatus.OK);

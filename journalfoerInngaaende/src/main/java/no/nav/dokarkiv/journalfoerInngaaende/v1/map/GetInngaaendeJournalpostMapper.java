@@ -4,7 +4,7 @@ import no.nav.dok.tjenester.journalfoerinngaaende.ArkivSak;
 import no.nav.dok.tjenester.journalfoerinngaaende.Avsender;
 import no.nav.dok.tjenester.journalfoerinngaaende.Bruker;
 import no.nav.dok.tjenester.journalfoerinngaaende.Dokument;
-import no.nav.dok.tjenester.journalfoerinngaaende.JournalpostResponse;
+import no.nav.dok.tjenester.journalfoerinngaaende.GetJournalpostResponse;
 import no.nav.dok.tjenester.journalfoerinngaaende.LogiskVedlegg;
 import no.nav.dok.tjenester.journalfoerinngaaende.Variant;
 import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
@@ -17,7 +17,6 @@ import no.nav.dokarkiv.core.domain.entities.SkannetInnhold;
 import no.nav.dokarkiv.core.exceptions.DokarkivFunctionalException;
 import org.springframework.stereotype.Component;
 
-import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -32,9 +31,9 @@ public class GetInngaaendeJournalpostMapper {
 
     private static final List<JournalStatusCode> MIDLERTIDIG_STATUS = Arrays.asList(JournalStatusCode.M, JournalStatusCode.MO, JournalStatusCode.UB, JournalStatusCode.OD);
 
-    public JournalpostResponse map(Journalpost journalpost) {
-        return new JournalpostResponse()
-                .withJournalTilstand(JournalpostResponse.JournalTilstand.fromValue(mapJournaltilstand(journalpost)))
+    public GetJournalpostResponse map(Journalpost journalpost) {
+        return new GetJournalpostResponse()
+                .withJournalTilstand(GetJournalpostResponse.JournalTilstand.fromValue(mapJournaltilstand(journalpost)))
                 .withAvsender(mapAvsender(journalpost))
                 .withBrukerListe(mapBrukere(journalpost.getBrukere()))
                 .withArkivSak(mapArkivsak(journalpost.getSaksrelasjon()))

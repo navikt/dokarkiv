@@ -2,7 +2,7 @@ package no.nav.dokarkiv.journalfoerInngaaende.v1.service;
 
 import static no.nav.dokarkiv.journalfoerInngaaende.v1.util.Utils.convertStringToLong;
 
-import no.nav.dok.tjenester.journalfoerinngaaende.JournalpostResponse;
+import no.nav.dok.tjenester.journalfoerinngaaende.GetJournalpostResponse;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.DokarkivRestFunctionalException;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
@@ -28,7 +28,7 @@ public class GetInngaaendeJournalpostService {
 		this.getInngaaendeJournalpostMapper = getInngaaendeJournalpostMapper;
 	}
 
-	public JournalpostResponse getInngaaendeJournalpostByJournalpostId(String journalpostIdString) throws DokarkivRestFunctionalException {
+	public GetJournalpostResponse getInngaaendeJournalpostByJournalpostId(String journalpostIdString) throws DokarkivRestFunctionalException {
 		Long journalpostId = convertStringToLong(journalpostIdString, "journalpostId");
 
 		Journalpost journalpost = joarkRepository.findById(journalpostId)

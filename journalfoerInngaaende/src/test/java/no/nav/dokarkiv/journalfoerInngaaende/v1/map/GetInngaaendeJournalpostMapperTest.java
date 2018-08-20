@@ -17,6 +17,7 @@ import static no.nav.dokarkiv.journalfoerInngaaende.v1.util.TestUtils.DOKUMNETTY
 import static no.nav.dokarkiv.journalfoerInngaaende.v1.util.TestUtils.INNHOLD;
 import static no.nav.dokarkiv.journalfoerInngaaende.v1.util.TestUtils.JOURNALFOERENDE_ENHET;
 import static no.nav.dokarkiv.journalfoerInngaaende.v1.util.TestUtils.KANALREFERANSE_ID;
+import static no.nav.dokarkiv.journalfoerInngaaende.v1.util.TestUtils.LOCAL_DATE_TIME;
 import static no.nav.dokarkiv.journalfoerInngaaende.v1.util.TestUtils.SAK_ID;
 import static no.nav.dokarkiv.journalfoerInngaaende.v1.util.TestUtils.SKANNETINNHOLD_ID1;
 import static no.nav.dokarkiv.journalfoerInngaaende.v1.util.TestUtils.SKANNETINNHOLD_ID2;
@@ -32,7 +33,7 @@ import no.nav.dok.tjenester.journalfoerinngaaende.ArkivSak;
 import no.nav.dok.tjenester.journalfoerinngaaende.Avsender;
 import no.nav.dok.tjenester.journalfoerinngaaende.Bruker;
 import no.nav.dok.tjenester.journalfoerinngaaende.Dokument;
-import no.nav.dok.tjenester.journalfoerinngaaende.JournalpostResponse;
+import no.nav.dok.tjenester.journalfoerinngaaende.GetJournalpostResponse;
 import no.nav.dok.tjenester.journalfoerinngaaende.LogiskVedlegg;
 import no.nav.dok.tjenester.journalfoerinngaaende.Variant;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
@@ -47,7 +48,9 @@ import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import org.junit.Test;
 
-import java.text.ParseException;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -64,73 +67,75 @@ public class GetInngaaendeJournalpostMapperTest {
 	private GetInngaaendeJournalpostMapper mapper = new GetInngaaendeJournalpostMapper();
 
 	@Test
-	public void shouldMap() throws Exception {
-		JournalpostResponse response = mapper.map(createJournalpost());
+	public void shouldMap(){
+		GetJournalpostResponse response = mapper.map(createJournalpost());
 		assertJournalpostResponse(response);
 	}
 
 	@Test
-	public void shouldMapJournaltilstandUtgaar() throws Exception {
+	public void shouldMapJournaltilstandUtgaar(){
 		Journalpost journalpost = createJournalpost();
 		journalpost.getSaksrelasjon().setFeilregistrert(true);
-		JournalpostResponse response = mapper.map(journalpost);
+		GetJournalpostResponse response = mapper.map(journalpost);
 		assertThat(response.getJournalTilstand().value(), is(JOURNALTILSTAND_UTGAAR));
 	}
 
 	@Test
-	public void shouldMapJournaltilstandMidlertidigJournalstatusM() throws Exception {
+	public void shouldMapJournaltilstandMidlertidigJournalstatusM(){
 		Journalpost journalpost = createJournalpost();
 		journalpost.setJournalstatus(JournalStatusCode.M);
-		JournalpostResponse response = mapper.map(journalpost);
+		GetJournalpostResponse response = mapper.map(journalpost);
 		assertThat(response.getJournalTilstand().value(), is(JOURNALTILSTAND_MIDLERTIDIG));
 	}
 
 	@Test
-	public void shouldMapJournaltilstandMidlertidigJournalstatusMO() throws Exception {
+	public void shouldMapJournaltilstandMidlertidigJournalstatusMO(){
 		Journalpost journalpost = createJournalpost();
 		journalpost.setJournalstatus(JournalStatusCode.MO);
-		JournalpostResponse response = mapper.map(journalpost);
+		GetJournalpostResponse response = mapper.map(journalpost);
 		assertThat(response.getJournalTilstand().value(), is(JOURNALTILSTAND_MIDLERTIDIG));
 	}
 
 	@Test
-	public void shouldMapJournaltilstandMidlertidigJournalstatusUB() throws Exception {
+	public void shouldMapJournaltilstandMidlertidigJournalstatusUB(){
 		Journalpost journalpost = createJournalpost();
 		journalpost.setJournalstatus(JournalStatusCode.UB);
-		JournalpostResponse response = mapper.map(journalpost);
+		GetJournalpostResponse response = mapper.map(journalpost);
 		assertThat(response.getJournalTilstand().value(), is(JOURNALTILSTAND_MIDLERTIDIG));
 	}
 
 	@Test
-	public void shouldMapJournaltilstandMidlertidigJournalstatusOD() throws Exception {
+	public void shouldMapJournaltilstandMidlertidigJournalstatusOD(){
 		Journalpost journalpost = createJournalpost();
 		journalpost.setJournalstatus(JournalStatusCode.OD);
-		JournalpostResponse response = mapper.map(journalpost);
+		GetJournalpostResponse response = mapper.map(journalpost);
 		assertThat(response.getJournalTilstand().value(), is(JOURNALTILSTAND_MIDLERTIDIG));
 	}
 
 	@Test
-	public void shouldMapAvsendertyoeOrganisasjon() throws Exception {
+	public void shouldMapAvsendertyoeOrganisasjon(){
 		Journalpost journalpost = createJournalpost();
 		journalpost.setAvsenderMottakerId(AVSENDER_ID_ORGANISASJON);
-		JournalpostResponse response = mapper.map(journalpost);
+		GetJournalpostResponse response = mapper.map(journalpost);
 		assertThat(response.getAvsender().getAvsenderType().value(), is(BrukerTypeCode.ORGANISASJON.name()));
 	}
 
 	@Test
-	public void shouldMapArkivsaksystemPsak() throws Exception {
+	public void shouldMapArkivsaksystemPsak(){
 		Journalpost journalpost = createJournalpost();
 		journalpost.getSaksrelasjon().setFagsystem(FagsystemCode.PEN.PEN);
-		JournalpostResponse response = mapper.map(journalpost);
+		GetJournalpostResponse response = mapper.map(journalpost);
 		assertThat(response.getArkivSak().getArkivSakSystem().value(), is(ARKIVSAK_SYSTEM_PSAK));
 	}
 
-	private void assertJournalpostResponse(JournalpostResponse response) {
+	private void assertJournalpostResponse(GetJournalpostResponse response) {
+		LocalDateTime localDateTime = LocalDateTime.of(2017, 2, 3, 10, 37, 30);
+
 		assertThat("response.journaltilstand", response.getJournalTilstand().toString(), is(JOURNALTILSTAND_ENDELIG));
 		assertThat("response.tema", response.getTema(), is(FagomradeCode.FS22.name()));
 		assertThat("response.tittel", response.getTittel(), is(INNHOLD));
 		assertThat("response.kanalreferanseId", response.getKanalReferanseId(), is(KANALREFERANSE_ID));
-//		assertThat("response.forsendelseMottatt", response.getForsendelseMottatt().toString(), is(DATO_MOTTATT)); //TODO Fix me
+		assertThat("response.forsendelseMottatt", response.getForsendelseMottatt(), is(Date.from(LOCAL_DATE_TIME.toInstant(ZoneOffset.UTC))));
 		assertThat("response.mottakskanal", response.getMottaksKanal(), is(MottaksKanalCode.ALTINN.name()));
 		assertThat("response.journalfoerendeEnhet", response.getJournalfEnhet(), is(JOURNALFOERENDE_ENHET));
 
