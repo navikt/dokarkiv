@@ -42,7 +42,9 @@ public final class JournalpostTestDataProvider {
 	public static final String JP_INNHOLD = "innhold";
 	public static final JournalpostTypeCode JP_TYPE = U;
 	public static final String FNR = "***gammelt_fnr***";
-	public static final Date JANUARY_1_2020 = Date.from(LocalDate.of(2020, Month.JANUARY, 1).atStartOfDay(ZoneId.systemDefault()).toInstant());
+	public static final Date JANUARY_1_2020 = Date.from(LocalDate.of(2020, Month.JANUARY, 1)
+			.atStartOfDay(ZoneId.systemDefault())
+			.toInstant());
 	public static final String INNHOLD = "Foreldrepenger";
 
 	private JournalpostTestDataProvider() {
@@ -51,11 +53,11 @@ public final class JournalpostTestDataProvider {
 	public static JournalpostBuilder createJournalpost(String filuid) {
 		return createJournalpost(DokumentInfoTestDataProvider.DOKUMENT_TITTEL, filuid);
 	}
-	
+
 	public static JournalpostBuilder createJournalpost(FagomradeCode fagomradeCode) {
 		return createJournalpostWithoutHoveddokument(fagomradeCode)
-				.dokumentInfoRelasjoner(createHoveddokumentRelasjon(createDokumentInfo().build()).build());	
-		}
+				.dokumentInfoRelasjoner(createHoveddokumentRelasjon(createDokumentInfo().build()).build());
+	}
 
 	public static JournalpostBuilder createJournalpost(String dokumentTittel, String filuid) {
 		return createJournalpost(createDokumentInfo(dokumentTittel, filuid));
@@ -73,11 +75,11 @@ public final class JournalpostTestDataProvider {
 		return createJournalpostWithoutHoveddokument()
 				.dokumentInfoRelasjoner(createHoveddokumentRelasjon(dokumentInfoBuilder.build()).build());
 	}
-	
+
 	public static JournalpostBuilder createJournalpostWithoutHoveddokument() {
 		return createJournalpostWithoutHoveddokument(JP_FAGOMRADE);
 	}
-	
+
 	public static JournalpostBuilder createJournalpostWithoutHoveddokument(FagomradeCode fagomradeCode) {
 		return getJournalpostBuilder()
 				.journalStatus(FS)
@@ -96,32 +98,33 @@ public final class JournalpostTestDataProvider {
 	}
 
 	public static JournalpostBuilder buildJournalpost(JournalpostTypeCode journalpostType, JournalStatusCode journalStatus) {
-        return getJournalpostBuilder()
-                .avsenderMottakerId("1")
-                .mottattDato(LocalDateTime.now().toDate())
-                .mottakskanal(NAV_NO)
-                .fagomrade(FagomradeCode.PEN)
-                .journalStatus(journalStatus)
-                .journalpostType(journalpostType)
-                .saksrelasjon(SaksrelasjonTestDataProvider.createPENSaksrelasjon())
-                .brukere(BrukerTestDataProvider.createBruker("***gammelt_fnr***", BrukerTypeCode.PERSON), BrukerTestDataProvider.createBruker("999999999", BrukerTypeCode.ORGANISASJON))
-                .innhold(INNHOLD)
+		return getJournalpostBuilder()
+				.avsenderMottakerId("1")
+				.kanalReferanseId("kanalreferansseId")
+				.mottattDato(LocalDateTime.now().toDate())
+				.mottakskanal(NAV_NO)
+				.fagomrade(FagomradeCode.PEN)
+				.journalStatus(journalStatus)
+				.journalpostType(journalpostType)
+				.saksrelasjon(SaksrelasjonTestDataProvider.createPENSaksrelasjon())
+				.brukere(BrukerTestDataProvider.createBruker("***gammelt_fnr***", BrukerTypeCode.PERSON), BrukerTestDataProvider.createBruker("999999999", BrukerTypeCode.ORGANISASJON))
+				.innhold(INNHOLD)
 				.journalForendeEnhetId("SesamStasjon")
-                .avsenderMottaker("Bjarne Betjent")
-                .opprettetKildeNavn("itest")
-                .dokumentDato(LocalDateTime.now().toDate())
-                .dokumentInfoRelasjoner(
-                        getJournalpostDokumentInfoRelasjonBuilder()
-                                .opprettetKildeNavn("itest")
-                                .tilknyttetAvNavn("itest")
-                                .tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.HOVEDDOKUMENT)
-                                .dokumentInfo(createHovedDokumentInfoFP().build())
-                                .build(),
-                        getJournalpostDokumentInfoRelasjonBuilder()
-                                .opprettetKildeNavn("itest")
-                                .tilknyttetAvNavn("itest")
-                                .tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
-                                .dokumentInfo(createVedleggDokumentInfo().build())
-                                .build());
-    }
+				.avsenderMottaker("Bjarne Betjent")
+				.opprettetKildeNavn("itest")
+				.dokumentDato(LocalDateTime.now().toDate())
+				.dokumentInfoRelasjoner(
+						getJournalpostDokumentInfoRelasjonBuilder()
+								.opprettetKildeNavn("itest")
+								.tilknyttetAvNavn("itest")
+								.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
+								.dokumentInfo(createVedleggDokumentInfo().build())
+								.build(),
+						getJournalpostDokumentInfoRelasjonBuilder()
+								.opprettetKildeNavn("itest")
+								.tilknyttetAvNavn("itest")
+								.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.HOVEDDOKUMENT)
+								.dokumentInfo(createHovedDokumentInfoFP().build())
+								.build());
+	}
 }

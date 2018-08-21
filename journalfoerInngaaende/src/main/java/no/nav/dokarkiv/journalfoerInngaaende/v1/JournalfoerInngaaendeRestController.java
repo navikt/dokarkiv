@@ -6,6 +6,7 @@ import static no.nav.abac.xacml.NavAttributter.RESOURCE_FELLES_RESOURCE_TYPE;
 import static no.nav.abac.xacml.StandardAttributter.ACTION_ID;
 import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.READ_ACTION;
 import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.UPDATE_ACTION;
+import static no.nav.dokarkiv.journalfoerInngaaende.v1.util.Utils.convertStringToLong;
 import static no.nav.dokarkiv.journalfoerInngaaende.v1.util.Utils.getDokumentIds;
 import static no.nav.dokarkiv.journalfoerInngaaende.v1.util.Utils.getDokumenttypeIds;
 import static no.nav.dokarkiv.journalfoerInngaaende.v1.util.Utils.hasText;
@@ -15,6 +16,7 @@ import no.nav.dok.tjenester.journalfoerinngaaende.GetJournalpostResponse;
 import no.nav.dok.tjenester.journalfoerinngaaende.PutJournalpostRequest;
 import no.nav.dok.tjenester.journalfoerinngaaende.PutJournalpostResponse;
 import no.nav.dokarkiv.core.exceptions.DokarkivRestFunctionalException;
+import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.security.abac.AbacSecurityService;
 import no.nav.dokarkiv.core.security.abac.AuthorizationException;
 import no.nav.dokarkiv.journalfoerInngaaende.v1.service.GetInngaaendeJournalpostService;
@@ -40,7 +42,7 @@ import javax.inject.Inject;
  */
 @Slf4j
 @RestController
-@RequestMapping("/rest/journalfoer-inngaaende/v1")
+@RequestMapping("/rest/journalfoer-inngaaende/v1/journalposter")
 public class JournalfoerInngaaendeRestController {
 
 	private GetInngaaendeJournalpostService getInngaaendeJournalpostService;
@@ -56,42 +58,42 @@ public class JournalfoerInngaaendeRestController {
 		this.persistInngaaendeJournalpostService = persistInngaaendeJournalpostService;
 	}
 
-	@GetMapping("/journalpost/{journalpostId}")
+	@GetMapping("/{journalpostId}")
 	@Transactional(readOnly = true)
 	@Abac(actions = @Abac.Attr(key = ACTION_ID, value = READ_ACTION),
 			resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_JOURNALPOST)})
 	public ResponseEntity getInngaaendeJournalpostByJournalpostId(@PathVariable String journalpostId) {
 		try {
-			hasText(journalpostId, "journalpostId");
+			validateJournalpostId(journalpostId);
 			assertAccessToJournalpost(journalpostId);
 			GetJournalpostResponse responseTo = getInngaaendeJournalpostService.getInngaaendeJournalpostByJournalpostId(journalpostId);
 			log.info("Hentet journalpost med journalpostId={}, dokumentinfoId(er)={} og dokumenttypeId(er)={} fra Joark.",
 					journalpostId, getDokumentIds(responseTo), getDokumenttypeIds(responseTo));
 			return new ResponseEntity<>(responseTo, HttpStatus.OK);
 		} catch (DokarkivRestFunctionalException e) {
-			log.warn("Feilmelding={}, journalpostId={}. HttpStatus=", e.getMessage(), journalpostId, e.getHttpStatus());
+			log.warn("Feilmelding={}, journalpostId={}. HttpStatus={}", e.getMessage(), journalpostId, e.getHttpStatus());
 			HttpHeaders headers = new HttpHeaders();
 			headers.setContentType(MediaType.TEXT_PLAIN);
-			return new ResponseEntity<>(e.getMessage(), headers, e.getHttpStatus());
+			return new ResponseEntity<>(e.getMessage() + ". journalpostId=" + journalpostId, headers, e.getHttpStatus());
 		}
 	}
 
-	@PutMapping(value = "/journalpost/{journalpostId}")
+	@PutMapping(value = "/{journalpostId}")
 	@Transactional
 	@Abac(actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION),
 			resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_JOURNALPOST)})
 	public ResponseEntity persistInngaaendeJournalpost(@PathVariable String journalpostId, @RequestBody PutJournalpostRequest request) {
 		try {
-			hasText(journalpostId, "journalpostId");
+			validateJournalpostId(journalpostId);
 			assertAccessToJournalpost(journalpostId);
 			PutJournalpostResponse inngaaendeResponseTo = persistInngaaendeJournalpostService.persist(journalpostId, request);
 			log.info("Oppdatert journalpost med journalpostId={} i Joark.", journalpostId);
 			return new ResponseEntity<>(inngaaendeResponseTo, HttpStatus.OK);
 		} catch (DokarkivRestFunctionalException e) {
-			log.warn("Feilmelding={}, journalpostId={}. HttpStatus=", e.getMessage(), journalpostId, e.getHttpStatus());
+			log.warn("Feilmelding={}, journalpostId={}. HttpStatus={}", e.getMessage(), journalpostId, e.getHttpStatus());
 			HttpHeaders headers = new HttpHeaders();
 			headers.setContentType(MediaType.TEXT_PLAIN);
-			return new ResponseEntity<>(e.getMessage(), headers, e.getHttpStatus());
+			return new ResponseEntity<>(e.getMessage() + ". journalpostId=" + journalpostId, headers, e.getHttpStatus());
 		}
 	}
 
@@ -100,7 +102,14 @@ public class JournalfoerInngaaendeRestController {
 			abacSecurityService.assertAccessToJournalpost(journalpostId);
 		} catch (AuthorizationException e) {
 			throw new DokarkivRestFunctionalException(e.getMessage(), HttpStatus.FORBIDDEN);
+		} catch (JournalpostIkkeFunnetException e) {
+			throw new DokarkivRestFunctionalException("Kunne ikke finne journalpost i Joark", HttpStatus.NOT_FOUND);
 		}
+	}
+
+	private void validateJournalpostId(String journalpostId) {
+		hasText(journalpostId, "journalpostId");
+		convertStringToLong(journalpostId, "journalpostId");
 	}
 
 }

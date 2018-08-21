@@ -32,7 +32,7 @@ public class GetInngaaendeJournalpostService {
 		Long journalpostId = convertStringToLong(journalpostIdString, "journalpostId");
 
 		Journalpost journalpost = joarkRepository.findById(journalpostId)
-				.orElseThrow(() -> new DokarkivRestFunctionalException(String.format("Kunne ikke finne journalpost med journalpostId=%s i Joark", journalpostId), HttpStatus.NOT_FOUND));
+				.orElseThrow(() -> new DokarkivRestFunctionalException("Kunne ikke finne journalpost i Joark", HttpStatus.NOT_FOUND));
 
 		if (!journalpost.isInngaende()) {
 			throw new DokarkivRestFunctionalException("Journalpost er ikke av type Inngaaende", HttpStatus.BAD_REQUEST);

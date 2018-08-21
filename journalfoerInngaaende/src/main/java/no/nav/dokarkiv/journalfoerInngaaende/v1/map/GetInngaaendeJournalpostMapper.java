@@ -9,16 +9,19 @@ import no.nav.dok.tjenester.journalfoerinngaaende.LogiskVedlegg;
 import no.nav.dok.tjenester.journalfoerinngaaende.Variant;
 import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
+import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
 import no.nav.dokarkiv.core.domain.entities.SkannetInnhold;
 import no.nav.dokarkiv.core.exceptions.DokarkivFunctionalException;
+import no.nav.dokarkiv.journalfoerInngaaende.v1.to.DokumentTo;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -71,10 +74,6 @@ public class GetInngaaendeJournalpostMapper {
         if (saksrelasjon == null) {
             return null;
         }
-        //TODO Finn ut om dette skal valideres på
-// else if (saksrelasjon.getFagsystem() != FagsystemCode.FS22 || saksrelasjon.getFagsystem() != FagsystemCode.PEN {
-//			throw new DokArkivRestFunctionalException()
-//		}
         else {
             return new ArkivSak()
                     .withArkivSakId(saksrelasjon.getSakId())
@@ -104,20 +103,35 @@ public class GetInngaaendeJournalpostMapper {
         }
     }
 
-    private List<Dokument> mapDokumenter(Set<JournalpostDokumentInfoRelasjon> journalpostDokumentInfoRelasjoner) {
-        return journalpostDokumentInfoRelasjoner.stream()
-                .map(relasjon -> new Dokument()
-                        .withDokumentId(relasjon.getDokumentInfo().getDokumentInfoId().toString())
-                        .withDokumentTypeId(relasjon.getDokumentInfo().getDokumenttypeId())
-                        .withNavSkjemaId(relasjon.getDokumentInfo().getBrevkode())
-                        .withTittel(relasjon.getDokumentInfo().getTittel())
-                        .withDokumentKategori(relasjon.getDokumentInfo().getKategori() == null ? null : relasjon.getDokumentInfo()
-                                .getKategori().name())
-                        .withTilknyttetSom(Dokument.TilknyttetSom.fromValue(relasjon.getTilknyttetJournalpostSom().name()))
-                        .withVariant(mapVarianter(relasjon.getDokumentInfo().getFildetaljerListe()))
-                        .withLogiskVedleggListe(mapLogiskeVedlegg(relasjon.getDokumentInfo().getSkannetInnholdListe())))
-                .collect(Collectors.toList());
-    }
+
+	private List<Dokument> mapDokumenter(Set<JournalpostDokumentInfoRelasjon> journalpostDokumentInfoRelasjoner) {
+		List<Dokument> dokumentList = new ArrayList<>();
+
+		dokumentList.addAll(journalpostDokumentInfoRelasjoner.stream()
+				.filter(relasjon -> relasjon.getTilknyttetJournalpostSom().equals(TilknyttetJournalpostSomCode.HOVEDDOKUMENT))
+				.map(relasjon -> mapDokumentinfoRelasjonToDokument(relasjon))
+				.collect(Collectors.toList()));
+
+		dokumentList.addAll(journalpostDokumentInfoRelasjoner.stream()
+				.filter(relasjon -> relasjon.getTilknyttetJournalpostSom().equals(TilknyttetJournalpostSomCode.VEDLEGG))
+				.sorted(Comparator.comparing(relasjon -> relasjon.getDokumentInfo().getChangeStamp().getCreatedDate()))
+				.map(relasjon -> mapDokumentinfoRelasjonToDokument(relasjon))
+				.collect(Collectors.toList()));
+
+		return dokumentList;
+	}
+
+	private Dokument mapDokumentinfoRelasjonToDokument(JournalpostDokumentInfoRelasjon relasjon) {
+		return new Dokument()
+				.withDokumentId(relasjon.getDokumentInfo().getDokumentInfoId().toString())
+				.withDokumentTypeId(relasjon.getDokumentInfo().getDokumenttypeId())
+				.withNavSkjemaId(relasjon.getDokumentInfo().getBrevkode())
+				.withTittel(relasjon.getDokumentInfo().getTittel())
+				.withDokumentKategori(relasjon.getDokumentInfo().getKategori() == null ? null : relasjon.getDokumentInfo()
+						.getKategori().name())
+				.withVariant(mapVarianter(relasjon.getDokumentInfo().getFildetaljerListe()))
+				.withLogiskVedleggListe(mapLogiskeVedlegg(relasjon.getDokumentInfo().getSkannetInnholdListe()));
+	}
 
     private List<Variant> mapVarianter(Set<FilDetaljer> fildetaljer) {
         return fildetaljer.stream().map(filDetaljer -> new Variant()

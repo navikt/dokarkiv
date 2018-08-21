@@ -43,7 +43,6 @@ import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
 import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
-import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import org.junit.Test;
@@ -66,20 +65,40 @@ public class GetInngaaendeJournalpostMapperTest {
 
 	private GetInngaaendeJournalpostMapper mapper = new GetInngaaendeJournalpostMapper();
 
+	/**
+	 * HVIS Journalstatus i JOARK = ("J") OG Saksrelasjon.Feilregistrert <> "1" SÅ sett JournalTilstand = "ENDELIG" som output
+	 **/
 	@Test
 	public void shouldMap(){
 		GetJournalpostResponse response = mapper.map(createJournalpost());
 		assertJournalpostResponse(response);
 	}
 
+	/**
+	 * HVIS Saksrelasjon.Feilregistrert = "1", SÅ sett JournalTilstand = UTGAAR returneres som output
+	 **/
 	@Test
-	public void shouldMapJournaltilstandUtgaar(){
+	public void shouldMapJournaltilstandUtgaarFeilregistrertTrue() {
 		Journalpost journalpost = createJournalpost();
 		journalpost.getSaksrelasjon().setFeilregistrert(true);
 		GetJournalpostResponse response = mapper.map(journalpost);
 		assertThat(response.getJournalTilstand().value(), is(JOURNALTILSTAND_UTGAAR));
 	}
 
+	/**
+	 * HVIS Journalstatus i JOARK= ("U"), OG Saksrelasjon.Feilregistrert <> "1" SÅ sett JournalTilstand = "UTGAAR" som output
+	 **/
+	@Test
+	public void shouldMapJournaltilstandUtgaarJournalstatusU() {
+		Journalpost journalpost = createJournalpost();
+		journalpost.setJournalstatus(JournalStatusCode.U);
+		JournalpostResponseTo response = mapper.map(journalpost);
+		assertThat(response.getJournaltilstand(), is(JOURNALTILSTAND_UTGAAR));
+	}
+
+	/**
+	 * HVIS Journalstatus i JOARK = ("M" eller "MO" eller "UB" eller "OD") OG Saksrelasjon.Feilregistrert <> "1" SÅ sett JournalTilstand = "MIDLERTIDIG" som output
+	 **/
 	@Test
 	public void shouldMapJournaltilstandMidlertidigJournalstatusM(){
 		Journalpost journalpost = createJournalpost();
@@ -88,6 +107,9 @@ public class GetInngaaendeJournalpostMapperTest {
 		assertThat(response.getJournalTilstand().value(), is(JOURNALTILSTAND_MIDLERTIDIG));
 	}
 
+	/**
+	 * HVIS Journalstatus i JOARK = ("M" eller "MO" eller "UB" eller "OD") OG Saksrelasjon.Feilregistrert <> "1" SÅ sett JournalTilstand = "MIDLERTIDIG" som output
+	 **/
 	@Test
 	public void shouldMapJournaltilstandMidlertidigJournalstatusMO(){
 		Journalpost journalpost = createJournalpost();
@@ -96,6 +118,9 @@ public class GetInngaaendeJournalpostMapperTest {
 		assertThat(response.getJournalTilstand().value(), is(JOURNALTILSTAND_MIDLERTIDIG));
 	}
 
+	/**
+	 * HVIS Journalstatus i JOARK = ("M" eller "MO" eller "UB" eller "OD") OG Saksrelasjon.Feilregistrert <> "1" SÅ sett JournalTilstand = "MIDLERTIDIG" som output
+	 **/
 	@Test
 	public void shouldMapJournaltilstandMidlertidigJournalstatusUB(){
 		Journalpost journalpost = createJournalpost();
@@ -104,6 +129,9 @@ public class GetInngaaendeJournalpostMapperTest {
 		assertThat(response.getJournalTilstand().value(), is(JOURNALTILSTAND_MIDLERTIDIG));
 	}
 
+	/**
+	 * HVIS Journalstatus i JOARK = ("M" eller "MO" eller "UB" eller "OD") OG Saksrelasjon.Feilregistrert <> "1" SÅ sett JournalTilstand = "MIDLERTIDIG" som output
+	 **/
 	@Test
 	public void shouldMapJournaltilstandMidlertidigJournalstatusOD(){
 		Journalpost journalpost = createJournalpost();
@@ -223,8 +251,6 @@ public class GetInngaaendeJournalpostMapperTest {
 		assertThat("response.dokument2.navSkjemaId", dokument.getNavSkjemaId(), is(BREVKODE2));
 		assertThat("response.dokument2.tittel", dokument.getTittel(), is(DOKUMENT_TITTEL2));
 		assertThat("response.dokument2.dokumentKategori", dokument.getDokumentKategori(), is(DokumentKategoriCode.FORVALTNINGSNOTAT
-				.name()));
-		assertThat("response.dokument2.tilknyttetSom", dokument.getTilknyttetSom().value(), is(TilknyttetJournalpostSomCode.HOVEDDOKUMENT
 				.name()));
 		assertVarianterDokument2(dokument.getVariant());
 		assertLogiskVedleggDokument2(dokument.getLogiskVedleggListe());
