@@ -16,7 +16,6 @@ import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
 import no.nav.dokarkiv.core.domain.entities.SkannetInnhold;
 import no.nav.dokarkiv.core.exceptions.DokarkivFunctionalException;
-import no.nav.dokarkiv.journalfoerInngaaende.v1.to.DokumentTo;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -32,77 +31,75 @@ import java.util.stream.Collectors;
 @Component
 public class GetInngaaendeJournalpostMapper {
 
-    private static final List<JournalStatusCode> MIDLERTIDIG_STATUS = Arrays.asList(JournalStatusCode.M, JournalStatusCode.MO, JournalStatusCode.UB, JournalStatusCode.OD);
+	private static final List<JournalStatusCode> MIDLERTIDIG_STATUS = Arrays.asList(JournalStatusCode.M, JournalStatusCode.MO, JournalStatusCode.UB, JournalStatusCode.OD);
 
-    public GetJournalpostResponse map(Journalpost journalpost) {
-        return new GetJournalpostResponse()
-                .withJournalTilstand(GetJournalpostResponse.JournalTilstand.fromValue(mapJournaltilstand(journalpost)))
-                .withAvsender(mapAvsender(journalpost))
-                .withBrukerListe(mapBrukere(journalpost.getBrukere()))
-                .withArkivSak(mapArkivsak(journalpost.getSaksrelasjon()))
-                .withTema(journalpost.getFagomrade() == null ? null : journalpost.getFagomrade().name())
-                .withTittel(journalpost.getInnhold())
-                .withKanalReferanseId(journalpost.getKanalReferanseId())
-                .withForsendelseMottatt(journalpost.getMottattDato())
-                .withMottaksKanal(journalpost.getMottakskanal() == null ? null : journalpost.getMottakskanal().name())
-                .withJournalfEnhet(journalpost.getJournalForendeEnhetId())
-                .withDokumentListe(mapDokumenter(journalpost.getJournalpostDokumentInfoRelasjoner()));
-    }
+	public GetJournalpostResponse map(Journalpost journalpost) {
+		return new GetJournalpostResponse()
+				.withJournalTilstand(GetJournalpostResponse.JournalTilstand.fromValue(mapJournaltilstand(journalpost)))  //TODO: Valider eller endre grensesnintt!
+				.withAvsender(mapAvsender(journalpost))
+				.withBrukerListe(mapBrukere(journalpost.getBrukere()))
+				.withArkivSak(mapArkivsak(journalpost.getSaksrelasjon()))
+				.withTema(journalpost.getFagomrade() == null ? null : journalpost.getFagomrade().name())
+				.withTittel(journalpost.getInnhold())
+				.withKanalReferanseId(journalpost.getKanalReferanseId())
+				.withForsendelseMottatt(journalpost.getMottattDato())
+				.withMottaksKanal(journalpost.getMottakskanal() == null ? null : journalpost.getMottakskanal().name())
+				.withJournalfEnhet(journalpost.getJournalForendeEnhetId())
+				.withDokumentListe(mapDokumenter(journalpost.getJournalpostDokumentInfoRelasjoner()));
+	}
+	//TODO: Avklar om dette skal valideres på, og om feil skal kastes eller ei. Returner GetJournalpostResponse.JournalTilstand direkte
+	private String mapJournaltilstand(Journalpost journalpost) {
+		if (journalpost.isFeilregistrert()) {
+			return JournaltilstandKode.UTGAAR.name();
+		} else if (journalpost.hasEndeligJournalforingStatus()) {
+			return JournaltilstandKode.ENDELIG.name();
+		} else if (MIDLERTIDIG_STATUS.contains(journalpost.getJournalstatus())) {
+			return JournaltilstandKode.MIDLERTIDIG.name();
+		} else if (journalpost.hasUtgaattJournalforingStatus()) {
+			return JournaltilstandKode.UTGAAR.name();
+		} else {
+			throw new DokarkivFunctionalException("Ugyldig journalstatus for inngående Journalpost. journalpostId=" + journalpost
+					.getJournalpostId());
+		}
+	}
 
-    private String mapJournaltilstand(Journalpost journalpost) {
-        if (journalpost.isFeilregistrert()) {
-            return JournaltilstandKode.UTGAAR.name();
-        } else if (journalpost.hasEndeligJournalforingStatus()) {
-            return JournaltilstandKode.ENDELIG.name();
-        } else if (MIDLERTIDIG_STATUS.contains(journalpost.getJournalstatus())) {
-            return JournaltilstandKode.MIDLERTIDIG.name();
-        } else if (journalpost.hasUtgaattJournalforingStatus()) {
-            return JournaltilstandKode.UTGAAR.name();
-        } else {
-            throw new DokarkivFunctionalException("Ugyldig journalstatus for inngående Journalpost. journalpostId=" + journalpost
-                    .getJournalpostId());
-        }
-    }
+	private enum JournaltilstandKode {
+		MIDLERTIDIG,
+		UTGAAR,
+		ENDELIG
+	}
 
-    private enum JournaltilstandKode {
-        MIDLERTIDIG,
-        UTGAAR,
-        ENDELIG
-    }
+	private ArkivSak mapArkivsak(Saksrelasjon saksrelasjon) {
+		if (saksrelasjon == null) {
+			return null;
+		} else {
+			return new ArkivSak()
+					.withArkivSakId(saksrelasjon.getSakId())
+					.withArkivSakSystem(ArkivSak.ArkivSakSystem.fromValue(mapFagsystemtoArkivsaksystem(saksrelasjon.getFagsystem())));  //TODO: Valider eller endre grensesnintt!
+		}
+	}
 
-    private ArkivSak mapArkivsak(Saksrelasjon saksrelasjon) {
-        if (saksrelasjon == null) {
-            return null;
-        }
-        else {
-            return new ArkivSak()
-                    .withArkivSakId(saksrelasjon.getSakId())
-                    .withArkivSakSystem(ArkivSak.ArkivSakSystem.fromValue(mapFagsystemtoArkivsaksystem(saksrelasjon.getFagsystem())));
-        }
-    }
+	private List<Bruker> mapBrukere(Set<no.nav.dokarkiv.core.domain.entities.Bruker> brukere) {
+		if (brukere.isEmpty()) {
+			return new ArrayList<>();
+		} else {
+			return brukere.stream().map(bruker -> new no.nav.dok.tjenester.journalfoerinngaaende.Bruker()
+					.withIdentifikator(bruker.getBrukerId())
+					.withBrukerType(Bruker.BrukerType.fromValue(bruker.getBrukerType().name())))  //TODO: Valider eller endre grensesnintt!
+					.collect(Collectors.toList());
+		}
+	}
 
-    private List<Bruker> mapBrukere(Set<no.nav.dokarkiv.core.domain.entities.Bruker> brukere) {
-        if (brukere.isEmpty()) {
-            return new ArrayList<>();
-        } else {
-            return brukere.stream().map(bruker -> new no.nav.dok.tjenester.journalfoerinngaaende.Bruker()
-                    .withIdentifikator(bruker.getBrukerId())
-                    .withBrukerType(Bruker.BrukerType.fromValue(bruker.getBrukerType().name())))
-                    .collect(Collectors.toList());
-        }
-    }
-
-    private Avsender mapAvsender(Journalpost journalpost) {
-        if (journalpost.getAvsenderMottakerId() == null || journalpost.getAvsenderMottakerId().isEmpty()) {
-            return null;
-        } else {
-            return new Avsender()
-                    .withIdentifikator(journalpost.getAvsenderMottakerId())
-                    .withAvsenderType(utledAvsenderType(journalpost.getAvsenderMottakerId()))
-                    .withNavn(journalpost.getAvsenderMottaker());
-        }
-    }
-
+	private Avsender mapAvsender(Journalpost journalpost) {
+		if (journalpost.getAvsenderMottakerId() == null || journalpost.getAvsenderMottakerId().isEmpty()) {
+			return null;
+		} else {
+			return new Avsender()
+					.withIdentifikator(journalpost.getAvsenderMottakerId())
+					.withAvsenderType(utledAvsenderType(journalpost.getAvsenderMottakerId()))
+					.withNavn(journalpost.getAvsenderMottaker());
+		}
+	}
 
 	private List<Dokument> mapDokumenter(Set<JournalpostDokumentInfoRelasjon> journalpostDokumentInfoRelasjoner) {
 		List<Dokument> dokumentList = new ArrayList<>();
@@ -133,45 +130,45 @@ public class GetInngaaendeJournalpostMapper {
 				.withLogiskVedleggListe(mapLogiskeVedlegg(relasjon.getDokumentInfo().getSkannetInnholdListe()));
 	}
 
-    private List<Variant> mapVarianter(Set<FilDetaljer> fildetaljer) {
-        return fildetaljer.stream().map(filDetaljer -> new Variant()
-                .withArkivFilType(Variant.ArkivFilType.fromValue(filDetaljer.getFiltype().name()))
-                .withVariantFormat(Variant.VariantFormat.fromValue(filDetaljer.getVariantFormat().name())))
-                .collect(Collectors.toList());
+	private List<Variant> mapVarianter(Set<FilDetaljer> fildetaljer) {
+		return fildetaljer.stream().map(filDetaljer -> new Variant()
+				.withArkivFilType(Variant.ArkivFilType.fromValue(filDetaljer.getFiltype().name()))//TODO: Valider eller endre grensesnintt!
+				.withVariantFormat(Variant.VariantFormat.fromValue(filDetaljer.getVariantFormat().name()))) //TODO: Valider eller endre grensesnintt!
+				.collect(Collectors.toList());
 
-    }
+	}
 
-    private List<LogiskVedlegg> mapLogiskeVedlegg(Set<SkannetInnhold> skannetInnholdSet) {
-        return skannetInnholdSet.stream().map(skannetInnhold -> new LogiskVedlegg()
-                .withLogiskVedleggId(skannetInnhold.getSkannetInnholdId() == null ? null : skannetInnhold.getSkannetInnholdId()
-                        .toString())
-                .withLogiskVedleggTittel(skannetInnhold.getVedleggInnhold()))
-                .collect(Collectors.toList());
-    }
+	private List<LogiskVedlegg> mapLogiskeVedlegg(Set<SkannetInnhold> skannetInnholdSet) {
+		return skannetInnholdSet.stream().map(skannetInnhold -> new LogiskVedlegg()
+				.withLogiskVedleggId(skannetInnhold.getSkannetInnholdId() == null ? null : skannetInnhold.getSkannetInnholdId()
+						.toString())
+				.withLogiskVedleggTittel(skannetInnhold.getVedleggInnhold()))
+				.collect(Collectors.toList());
+	}
 
-    private Avsender.AvsenderType utledAvsenderType(String avsenderId) {
-        if (avsenderId == null) {
-            return null;
-        } else if (avsenderId != null && avsenderId.length() == 11) {
-            return Avsender.AvsenderType.PERSON;
-        } else {
-            return Avsender.AvsenderType.ORGANISASJON;
-        }
-    }
+	private Avsender.AvsenderType utledAvsenderType(String avsenderId) {
+		if (avsenderId == null) {
+			return null;
+		} else if (avsenderId != null && avsenderId.length() == 11) {
+			return Avsender.AvsenderType.PERSON;
+		} else {
+			return Avsender.AvsenderType.ORGANISASJON;
+		}
+	}
 
-    private String mapFagsystemtoArkivsaksystem(FagsystemCode fagsystemCode) {
-        if (fagsystemCode.equals(FagsystemCode.FS22)) {
-            return ArkivsystemKode.GSAK.name();
-        } else if (fagsystemCode.equals(FagsystemCode.PEN)) {
-            return ArkivsystemKode.PSAK.name();
-        } else {
-            return fagsystemCode.name();
-        }
-    }
+	private String mapFagsystemtoArkivsaksystem(FagsystemCode fagsystemCode) {
+		if (fagsystemCode.equals(FagsystemCode.FS22)) {
+			return ArkivsystemKode.GSAK.name();
+		} else if (fagsystemCode.equals(FagsystemCode.PEN)) {
+			return ArkivsystemKode.PSAK.name();
+		} else {
+			return fagsystemCode.name();
+		}
+	}
 
-    private enum ArkivsystemKode {
-        GSAK,
-        PSAK
-    }
+	private enum ArkivsystemKode {
+		GSAK,
+		PSAK
+	}
 
 }

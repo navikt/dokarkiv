@@ -7,7 +7,6 @@ import static no.nav.dokarkiv.journalfoerInngaaende.v1.util.TestUtils.BREVKODE1;
 import static no.nav.dokarkiv.journalfoerInngaaende.v1.util.TestUtils.BREVKODE2;
 import static no.nav.dokarkiv.journalfoerInngaaende.v1.util.TestUtils.BRUKER_ID_ORGANISASJON;
 import static no.nav.dokarkiv.journalfoerInngaaende.v1.util.TestUtils.BRUKER_ID_PERSON;
-import static no.nav.dokarkiv.journalfoerInngaaende.v1.util.TestUtils.DATO_MOTTATT;
 import static no.nav.dokarkiv.journalfoerInngaaende.v1.util.TestUtils.DOKUMENTINFO_ID1;
 import static no.nav.dokarkiv.journalfoerInngaaende.v1.util.TestUtils.DOKUMENTINFO_ID2;
 import static no.nav.dokarkiv.journalfoerInngaaende.v1.util.TestUtils.DOKUMENT_TITTEL1;
@@ -69,7 +68,7 @@ public class GetInngaaendeJournalpostMapperTest {
 	 * HVIS Journalstatus i JOARK = ("J") OG Saksrelasjon.Feilregistrert <> "1" SÅ sett JournalTilstand = "ENDELIG" som output
 	 **/
 	@Test
-	public void shouldMap(){
+	public void shouldMap() {
 		GetJournalpostResponse response = mapper.map(createJournalpost());
 		assertJournalpostResponse(response);
 	}
@@ -82,7 +81,7 @@ public class GetInngaaendeJournalpostMapperTest {
 		Journalpost journalpost = createJournalpost();
 		journalpost.getSaksrelasjon().setFeilregistrert(true);
 		GetJournalpostResponse response = mapper.map(journalpost);
-		assertThat(response.getJournalTilstand().value(), is(JOURNALTILSTAND_UTGAAR));
+		assertThat(response.getJournalTilstand(), is(GetJournalpostResponse.JournalTilstand.UTGAAR));
 	}
 
 	/**
@@ -92,56 +91,56 @@ public class GetInngaaendeJournalpostMapperTest {
 	public void shouldMapJournaltilstandUtgaarJournalstatusU() {
 		Journalpost journalpost = createJournalpost();
 		journalpost.setJournalstatus(JournalStatusCode.U);
-		JournalpostResponseTo response = mapper.map(journalpost);
-		assertThat(response.getJournaltilstand(), is(JOURNALTILSTAND_UTGAAR));
+		GetJournalpostResponse response = mapper.map(journalpost);
+		assertThat(response.getJournalTilstand(), is(GetJournalpostResponse.JournalTilstand.UTGAAR));
 	}
 
 	/**
 	 * HVIS Journalstatus i JOARK = ("M" eller "MO" eller "UB" eller "OD") OG Saksrelasjon.Feilregistrert <> "1" SÅ sett JournalTilstand = "MIDLERTIDIG" som output
 	 **/
 	@Test
-	public void shouldMapJournaltilstandMidlertidigJournalstatusM(){
+	public void shouldMapJournaltilstandMidlertidigJournalstatusM() {
 		Journalpost journalpost = createJournalpost();
 		journalpost.setJournalstatus(JournalStatusCode.M);
 		GetJournalpostResponse response = mapper.map(journalpost);
-		assertThat(response.getJournalTilstand().value(), is(JOURNALTILSTAND_MIDLERTIDIG));
+		assertThat(response.getJournalTilstand(), is(GetJournalpostResponse.JournalTilstand.MIDLERTIDIG));
 	}
 
 	/**
 	 * HVIS Journalstatus i JOARK = ("M" eller "MO" eller "UB" eller "OD") OG Saksrelasjon.Feilregistrert <> "1" SÅ sett JournalTilstand = "MIDLERTIDIG" som output
 	 **/
 	@Test
-	public void shouldMapJournaltilstandMidlertidigJournalstatusMO(){
+	public void shouldMapJournaltilstandMidlertidigJournalstatusMO() {
 		Journalpost journalpost = createJournalpost();
 		journalpost.setJournalstatus(JournalStatusCode.MO);
 		GetJournalpostResponse response = mapper.map(journalpost);
-		assertThat(response.getJournalTilstand().value(), is(JOURNALTILSTAND_MIDLERTIDIG));
+		assertThat(response.getJournalTilstand(), is(GetJournalpostResponse.JournalTilstand.MIDLERTIDIG));
 	}
 
 	/**
 	 * HVIS Journalstatus i JOARK = ("M" eller "MO" eller "UB" eller "OD") OG Saksrelasjon.Feilregistrert <> "1" SÅ sett JournalTilstand = "MIDLERTIDIG" som output
 	 **/
 	@Test
-	public void shouldMapJournaltilstandMidlertidigJournalstatusUB(){
+	public void shouldMapJournaltilstandMidlertidigJournalstatusUB() {
 		Journalpost journalpost = createJournalpost();
 		journalpost.setJournalstatus(JournalStatusCode.UB);
 		GetJournalpostResponse response = mapper.map(journalpost);
-		assertThat(response.getJournalTilstand().value(), is(JOURNALTILSTAND_MIDLERTIDIG));
+		assertThat(response.getJournalTilstand(), is(GetJournalpostResponse.JournalTilstand.MIDLERTIDIG));
 	}
 
 	/**
 	 * HVIS Journalstatus i JOARK = ("M" eller "MO" eller "UB" eller "OD") OG Saksrelasjon.Feilregistrert <> "1" SÅ sett JournalTilstand = "MIDLERTIDIG" som output
 	 **/
 	@Test
-	public void shouldMapJournaltilstandMidlertidigJournalstatusOD(){
+	public void shouldMapJournaltilstandMidlertidigJournalstatusOD() {
 		Journalpost journalpost = createJournalpost();
 		journalpost.setJournalstatus(JournalStatusCode.OD);
 		GetJournalpostResponse response = mapper.map(journalpost);
-		assertThat(response.getJournalTilstand().value(), is(JOURNALTILSTAND_MIDLERTIDIG));
+		assertThat(response.getJournalTilstand(), is(GetJournalpostResponse.JournalTilstand.MIDLERTIDIG));
 	}
 
 	@Test
-	public void shouldMapAvsendertyoeOrganisasjon(){
+	public void shouldMapAvsendertyoeOrganisasjon() {
 		Journalpost journalpost = createJournalpost();
 		journalpost.setAvsenderMottakerId(AVSENDER_ID_ORGANISASJON);
 		GetJournalpostResponse response = mapper.map(journalpost);
@@ -149,7 +148,7 @@ public class GetInngaaendeJournalpostMapperTest {
 	}
 
 	@Test
-	public void shouldMapArkivsaksystemPsak(){
+	public void shouldMapArkivsaksystemPsak() {
 		Journalpost journalpost = createJournalpost();
 		journalpost.getSaksrelasjon().setFagsystem(FagsystemCode.PEN.PEN);
 		GetJournalpostResponse response = mapper.map(journalpost);
@@ -179,7 +178,8 @@ public class GetInngaaendeJournalpostMapperTest {
 				assertThat("response.brukere.bruker1.type", bruker.getBrukerType().value(), is(BrukerTypeCode.PERSON.name()));
 				assertThat("response.brukere.bruker1.brukerId", bruker.getIdentifikator(), is(BRUKER_ID_PERSON));
 			} else {
-				assertThat("response.brukere.bruker2.type", bruker.getBrukerType().value(), is(BrukerTypeCode.ORGANISASJON.name()));
+				assertThat("response.brukere.bruker2.type", bruker.getBrukerType()
+						.value(), is(BrukerTypeCode.ORGANISASJON.name()));
 				assertThat("response.brukere.bruker2.brukerId", bruker.getIdentifikator(), is(BRUKER_ID_ORGANISASJON));
 			}
 		});
@@ -213,8 +213,6 @@ public class GetInngaaendeJournalpostMapperTest {
 		assertThat("response.dokument1.tittel", dokument.getTittel(), is(DOKUMENT_TITTEL1));
 		assertThat("response.dokument1.dokumentKategori", dokument.getDokumentKategori(), is(DokumentKategoriCode.ELEKTRONISK_DIALOG
 				.name()));
-		assertThat("response.dokument1.tilknyttetSom", dokument.getTilknyttetSom().value(), is(TilknyttetJournalpostSomCode.HOVEDDOKUMENT
-				.name()));
 		assertVarianterDokument1(dokument.getVariant());
 		assertLogiskVedleggDokument1(dokument.getLogiskVedleggListe());
 	}
@@ -222,12 +220,16 @@ public class GetInngaaendeJournalpostMapperTest {
 	private void assertVarianterDokument1(List<Variant> varianter) {
 		varianter.stream().forEach(variant -> {
 			if (variant.getArkivFilType().name().equals(FilTypeCode.XML.name())) {
-				assertThat("response.dokument1.variant1.arkivfiltype1", variant.getArkivFilType().value(), is(FilTypeCode.XML.name()));
-				assertThat("response.dokument1.variant1.variantformat1", variant.getVariantFormat().value(), is(VariantFormatCode.ORIGINAL
+				assertThat("response.dokument1.variant1.arkivfiltype1", variant.getArkivFilType()
+						.value(), is(FilTypeCode.XML.name()));
+				assertThat("response.dokument1.variant1.variantformat1", variant.getVariantFormat()
+						.value(), is(VariantFormatCode.ORIGINAL
 						.name()));
 			} else {
-				assertThat("response.dokument1.variant1.arkivfiltype2", variant.getArkivFilType().value(), is(FilTypeCode.PDFA.name()));
-				assertThat("response.dokument1.variant1.variantformat2", variant.getVariantFormat().value(), is(VariantFormatCode.ARKIV
+				assertThat("response.dokument1.variant1.arkivfiltype2", variant.getArkivFilType()
+						.value(), is(FilTypeCode.PDFA.name()));
+				assertThat("response.dokument1.variant1.variantformat2", variant.getVariantFormat()
+						.value(), is(VariantFormatCode.ARKIV
 						.name()));
 			}
 		});
@@ -259,7 +261,8 @@ public class GetInngaaendeJournalpostMapperTest {
 	private void assertVarianterDokument2(List<Variant> varianter) {
 		Variant variant = varianter.get(0);
 		assertThat("response.dokument2.variant.arkivfiltype1", variant.getArkivFilType().value(), is(FilTypeCode.PDFA.name()));
-		assertThat("response.dokument2.variant.variantformat1", variant.getVariantFormat().value(), is(VariantFormatCode.ARKIV.name()));
+		assertThat("response.dokument2.variant.variantformat1", variant.getVariantFormat()
+				.value(), is(VariantFormatCode.ARKIV.name()));
 	}
 
 	private void assertLogiskVedleggDokument2(List<LogiskVedlegg> logiskeVedlegg) {
