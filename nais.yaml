@@ -70,6 +70,14 @@ fasitResources:
     wsdlVersion: 1.1.3
     securityToken: SAML
     description: Virksomhetstjeneste for henting av metadata om inngående journalposter.
+  - alias: BehandleInngaaendeJournal_v1
+    resourceType: webserviceendpoint
+    path: /services/behandleinngaaendejournal/v1
+    wsdlGroupId: no.nav.tjenester
+    wsdlArtifactId: nav-behandleInngaaendeJournal-v1-tjenestespesifikasjon
+    wsdlVersion: 1.0.1
+    securityToken: SAML
+    description: Virksomhetstjeneste for oppdatering av inngående journalposter.
   - alias: BehandleJournal_v2
     resourceType: webserviceendpoint
     path: /services/behandlejournal/v2
