@@ -101,7 +101,7 @@ public class AbacSecurityService {
 
 	private void handleResponseForJournalpostId(XacmlRequest request, XacmlResponse response, Long journalpostId) {
 		final Map<String, String> resources = new HashMap<>();
-		resources.put("journalpostId", journalpostId.toString());
+		resources.put("journalpost_id", journalpostId.toString());
 		if (response.getDecision() == Decision.DENY) {
 			abaclog.logAbacDeny(request, response, resources);
 			throw new AuthorizationException(ACCESS_DENIED_TO_JOURNALPOST);
