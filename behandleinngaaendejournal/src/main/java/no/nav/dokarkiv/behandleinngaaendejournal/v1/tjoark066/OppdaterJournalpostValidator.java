@@ -4,7 +4,6 @@ import com.google.common.base.Strings;
 import lombok.NoArgsConstructor;
 import no.nav.dokarkiv.behandleinngaaendejournal.v1.exceptions.DokumentInfoIkkeTilknyttetJournalpostException;
 import no.nav.dokarkiv.behandleinngaaendejournal.v1.exceptions.OppdaterJournalpostIkkeMuligException;
-import no.nav.dokarkiv.behandleinngaaendejournal.v1.exceptions.UgyldigInputException;
 import no.nav.dokarkiv.behandleinngaaendejournal.v1.tjoark066.to.DokumentInformasjonTo;
 import no.nav.dokarkiv.behandleinngaaendejournal.v1.tjoark066.to.OppdaterJournalpostRequestTo;
 import no.nav.dokarkiv.behandleinngaaendejournal.v1.tjoark066.to.OppdaterJournalpostTo;
@@ -14,6 +13,7 @@ import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeInngaaendeException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeMidlertidigException;
+import no.nav.dokarkiv.core.exceptions.UgyldigInputException;
 import org.springframework.stereotype.Component;
 
 import java.util.List;

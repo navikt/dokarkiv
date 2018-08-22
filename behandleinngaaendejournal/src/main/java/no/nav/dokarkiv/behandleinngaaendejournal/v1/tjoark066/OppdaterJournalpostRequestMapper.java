@@ -1,7 +1,6 @@
 package no.nav.dokarkiv.behandleinngaaendejournal.v1.tjoark066;
 
 import com.google.common.base.Strings;
-import no.nav.dokarkiv.behandleinngaaendejournal.v1.exceptions.UgyldigInputException;
 import no.nav.dokarkiv.behandleinngaaendejournal.v1.tjoark066.to.AktoerTo;
 import no.nav.dokarkiv.behandleinngaaendejournal.v1.tjoark066.to.ArkivSakTo;
 import no.nav.dokarkiv.behandleinngaaendejournal.v1.tjoark066.to.AvsenderTo;
@@ -12,6 +11,7 @@ import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
+import no.nav.dokarkiv.core.exceptions.UgyldigInputException;
 import no.nav.tjeneste.virksomhet.behandleinngaaendejournal.v1.informasjon.Aktoer;
 import no.nav.tjeneste.virksomhet.behandleinngaaendejournal.v1.informasjon.ArkivSak;
 import no.nav.tjeneste.virksomhet.behandleinngaaendejournal.v1.informasjon.Avsender;

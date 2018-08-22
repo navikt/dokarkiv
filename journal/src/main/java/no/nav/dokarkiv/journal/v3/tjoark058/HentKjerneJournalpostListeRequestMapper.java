@@ -45,9 +45,8 @@ public class HentKjerneJournalpostListeRequestMapper {
 
 			Journalposttyper journalposttype = soekefilter.getJournalposttype();
 
-			journalpostType = journalposttype == null ?
-					null : journalposttype.getValue() == null ?
-					null : JournalpostTypeCode.valueOf(journalposttype.getValue());
+			journalpostType = journalposttype == null ? null :
+					(journalposttype.getValue() == null ? null : JournalpostTypeCode.valueOf(journalposttype.getValue()));
 
 			for (Tema tema : soekefilter.getTema()) {
 				temaer.add(FagomradeCode.valueOf(tema.getValue()));

@@ -19,6 +19,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -45,8 +46,9 @@ public class DefaultOppdaterJournalpostArkiverDokumentValidator implements Oppda
 		validateJournalpostContainsOneRealtedDokumenInfoOfTypeHoveddokument(journalpost);
 		validateNoDuplicateVariantFormatsExceptProduksjon(dokumentInfoById.getFildetaljerListe(), fildetaljer, journalpost.getJournalpostId());
 		validateDokumentInfoIsUnderRedigering(dokumentInfoById, journalpost.getJournalpostId());
-		validateThatAllDocumentStatusesAreFerdigstilltWhenFerdigstillJournalPost(journalpost,
-				dokumentInfoById, request.isFerdigstillJournalpost());
+		if(request.isFerdigstillJournalpost()) {
+			validateThatAllDocumentStatusesAreFerdigstilt(journalpost, dokumentInfoById);
+		}
 		validateDatoDokument(request);
 	}
 
@@ -82,22 +84,18 @@ public class DefaultOppdaterJournalpostArkiverDokumentValidator implements Oppda
 	 * Validate that all DocumentStatuses = FERDIGSTILT for all DocumentInfo not in request
 	 * when ferdigstillJournalpost = true
 	 *
-	 * @param journalpost List of DokumentInfo-objects on Journalpost
-	 * @param requestDokumentInfoId DokumentInfoId from request
-	 * @param ferdigstillJournalpost whether to ferdigstill Journalpost
+	 * @param journalpost            List of DokumentInfo-objects on Journalpost
+	 * @param requestDokumentInfoId  DokumentInfoId from request
 	 */
-	public void validateThatAllDocumentStatusesAreFerdigstilltWhenFerdigstillJournalPost(Journalpost journalpost, DokumentInfo requestDokumentInfoId, boolean ferdigstillJournalpost) throws KanIkkeFerdigstillesException {
-
-		if (ferdigstillJournalpost) {
-			List<DokumentInfo> dokumentInfoNotInRequest = journalpost.findAllDokumentInfos();
-			dokumentInfoNotInRequest.remove(requestDokumentInfoId);
-			for (DokumentInfo dokumentInfo : dokumentInfoNotInRequest) {
-				if (!dokumentInfo.isFerdigstilt()) {
-					throw new KanIkkeFerdigstillesException("Journalposten kan ikke ferdigstilles fordi tilknyttet dokument (dokumentInfoId=" + dokumentInfo
-							.getDokumentInfoId() + ")  ikke har status " + DokumentStatusCode.FERDIGSTILT
-							.name(),
-							journalpost.getJournalpostId());
-				}
+	public void validateThatAllDocumentStatusesAreFerdigstilt(Journalpost journalpost, DokumentInfo requestDokumentInfoId) throws KanIkkeFerdigstillesException {
+		List<DokumentInfo> dokumentInfoNotInRequest = journalpost.findAllDokumentInfos();
+		dokumentInfoNotInRequest.remove(requestDokumentInfoId);
+		for (DokumentInfo dokumentInfo : dokumentInfoNotInRequest) {
+			if (!dokumentInfo.isFerdigstilt()) {
+				throw new KanIkkeFerdigstillesException("Journalposten kan ikke ferdigstilles fordi tilknyttet dokument (dokumentInfoId=" + dokumentInfo
+						.getDokumentInfoId() + ")  ikke har status " + DokumentStatusCode.FERDIGSTILT
+						.name(),
+						journalpost.getJournalpostId());
 			}
 		}
 	}
@@ -109,7 +107,8 @@ public class DefaultOppdaterJournalpostArkiverDokumentValidator implements Oppda
 	 */
 	public void validateNoDuplicateVariantFormats(Set<FilDetaljer> filDetaljer, Long journalpostId) throws FeilStrukturException {
 		List<VariantFormatCode> variantList = getVariantFormatList(filDetaljer);
-		Set<VariantFormatCode> uniqueSet = new HashSet<>(variantList);
+		EnumSet<VariantFormatCode> uniqueSet = EnumSet.copyOf(variantList);
+
 		for (VariantFormatCode variantFormatCode : uniqueSet) {
 			if (Collections.frequency(variantList, variantFormatCode) > 1) {
 				throw new FeilStrukturException("Input til tjenesten inneholder flere fildetaljer med samme variantformat", journalpostId);
@@ -118,12 +117,12 @@ public class DefaultOppdaterJournalpostArkiverDokumentValidator implements Oppda
 	}
 
 	/**
-	 * Validates that journalpost type is not Inng�ende dokument.
+	 * Validates that journalpost type is not Inngående dokument.
 	 * Validates that journalpost status is not Dokument under produksjon.
 	 * https://confluence.adeo.no/x/RLJlBQ step 3
 	 *
 	 * @param journalpost to be validated.
-	 * @param request input request with dokument payloads for dokumentinfo
+	 * @param request     input request with dokument payloads for dokumentinfo
 	 */
 	public void validateJournalpostTypeAndStatus(Journalpost journalpost, OppdaterJournalpostArkiverDokumentRequestTo request) throws KanIkkeFerdigstillesException, AlleredeFerdigstiltException, UgyldigInputException {
 		boolean ferdigstillJournalpost = request.isFerdigstillJournalpost();
@@ -168,7 +167,7 @@ public class DefaultOppdaterJournalpostArkiverDokumentValidator implements Oppda
 	/**
 	 * Validates that journalpost contains dokument info with dokumentInfoId.
 	 *
-	 * @param journalpost to be validated.
+	 * @param journalpost    to be validated.
 	 * @param dokumentInfoId used for .
 	 */
 	public void validateJournalpostContainsDokumentInfoWithId(Journalpost journalpost, Long dokumentInfoId) throws ObjektIkkeFunnetException {
@@ -184,7 +183,7 @@ public class DefaultOppdaterJournalpostArkiverDokumentValidator implements Oppda
 	 * Validates that dokumentInfo or filDetaljer contains a variant format of the type Format arkiv.
 	 *
 	 * @param dokumentInfo to be validated.
-	 * @param filDetaljer to be validated.
+	 * @param filDetaljer  to be validated.
 	 */
 	public void validateDokumentInfoOrFilDetaljerContainsArkivFormat(DokumentInfo dokumentInfo, Set<FilDetaljer> filDetaljer, Long journalpostId) throws FeilStrukturException {
 		Set<FilDetaljer> concatFilDetaljer = new HashSet<>();
@@ -198,7 +197,7 @@ public class DefaultOppdaterJournalpostArkiverDokumentValidator implements Oppda
 	 * Duplicate variant format of the type Produksjon is however allowed.
 	 *
 	 * @param jpFileDetaljer to be validated.
-	 * @param filDetaljer to be validated.
+	 * @param filDetaljer    to be validated.
 	 */
 	public void validateNoDuplicateVariantFormatsExceptProduksjon(Set<FilDetaljer> jpFileDetaljer, Set<FilDetaljer> filDetaljer, Long journalpostId) throws FeilStrukturException {
 		for (FilDetaljer filDetalj : filDetaljer) {
@@ -267,24 +266,5 @@ public class DefaultOppdaterJournalpostArkiverDokumentValidator implements Oppda
 			variantList.add(filDetaljer.getVariantFormat());
 		}
 		return variantList;
-	}
-
-	private boolean journalpostIsFerdigstiltSentralPrint(Journalpost journalpost) {
-		return journalpost.getJournalstatus()
-				.equals(JournalStatusCode.FS) && dokumentInfoIsFerdigstilt(journalpost.findAllDokumentInfos());
-	}
-
-	private boolean journalpostIsFerdigstiltLokalPrint(Journalpost journalpost) {
-		return journalpost.getJournalstatus()
-				.equals(JournalStatusCode.FL) && dokumentInfoIsFerdigstilt(journalpost.findAllDokumentInfos());
-	}
-
-	private boolean dokumentInfoIsFerdigstilt(List<DokumentInfo> dokumentInfos) {
-		for (DokumentInfo dokumentInfo : dokumentInfos) {
-			if (!dokumentInfo.isFerdigstilt()) {
-				return false;
-			}
-		}
-		return true;
 	}
 }

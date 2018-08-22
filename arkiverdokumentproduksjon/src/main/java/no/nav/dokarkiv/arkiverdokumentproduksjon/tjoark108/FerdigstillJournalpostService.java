@@ -1,8 +1,8 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark108;
 
-import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.NoJournalpostFoundException;
 import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.UgyldigDokumentStatusVerdiException;
 import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.UgyldigJournalStatusVerdiException;
+import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
 
 /**
  * Interface for the operation FerdigstillJournalpostService

@@ -14,8 +14,7 @@ import static org.mockito.Mockito.when;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
-import no.nav.dokarkiv.behandlejournal.v2.SporingsMetaData;
-import no.nav.dokarkiv.behandlejournal.v2.exceptions.NoJournalpostFoundException;
+import no.nav.dokarkiv.behandlejournal.SporingsMetaData;
 import no.nav.dokarkiv.core.domain.builder.BrukerBuilder;
 import no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder;
 import no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder;
@@ -36,6 +35,7 @@ import no.nav.dokarkiv.core.domain.entities.bidrag.BidragMellomlagringDokumentTy
 import no.nav.dokarkiv.core.domain.entities.bidrag.BidragMellomlagringStatus;
 import no.nav.dokarkiv.core.exceptions.ApplicationException;
 import no.nav.dokarkiv.core.exceptions.InvalidJournalpostStructureException;
+import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
 import no.nav.dokarkiv.core.repository.BidragMellomlagringDokumentRepository;
 import no.nav.dokarkiv.core.repository.BidragMellomlagringRepository;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;

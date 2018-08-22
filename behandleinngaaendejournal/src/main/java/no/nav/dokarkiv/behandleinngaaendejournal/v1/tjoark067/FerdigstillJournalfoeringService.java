@@ -1,49 +1,45 @@
 package no.nav.dokarkiv.behandleinngaaendejournal.v1.tjoark067;
 
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
-import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
 
 import lombok.extern.slf4j.Slf4j;
+import no.nav.dokarkiv.behandleinngaaendejournal.v1.AbstractBehandleInngaaendeJournalService;
 import no.nav.dokarkiv.behandleinngaaendejournal.v1.exceptions.FerdigstillingIkkeMuligException;
-import no.nav.dokarkiv.behandleinngaaendejournal.v1.exceptions.UgyldigInputException;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
 import no.nav.dokarkiv.core.exceptions.InvalidJournalpostStructureException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeInngaaendeException;
+import no.nav.dokarkiv.core.exceptions.UgyldigInputException;
 import no.nav.dokarkiv.core.journalbehandling.JournalpostStructureVerifier;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.core.security.ldap.NavUserLdapService;
-import no.nav.modig.core.context.SubjectHandler;
-import no.nav.modig.core.domain.IdentType;
-import org.apache.commons.lang3.StringUtils;
-import org.joda.time.LocalDateTime;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 
 /**
  * @author Joakim Bjørnstad, Jbit AS
  */
 @Slf4j
 @Component
-public class FerdigstillJournalfoeringService {
-	private static final String UKJENT_BRUKER = "Ukjent";
-
+public class FerdigstillJournalfoeringService extends AbstractBehandleInngaaendeJournalService {
 	private final JoarkRepository repository;
 	private final FerdigstillJournalfoeringFieldValidator fieldValidator;
 	private final JournalpostStructureVerifier structureVerifier;
-	private final NavUserLdapService navUserLdapService;
 
 	@Inject
 	public FerdigstillJournalfoeringService(JoarkRepository repository, FerdigstillJournalfoeringFieldValidator fieldValidator,
 											JournalpostStructureVerifier structureVerifier, NavUserLdapService navUserLdapService) {
+		super(navUserLdapService);
 		this.repository = repository;
 		this.fieldValidator = fieldValidator;
 		this.structureVerifier = structureVerifier;
-		this.navUserLdapService = navUserLdapService;
 	}
 
 
@@ -58,7 +54,7 @@ public class FerdigstillJournalfoeringService {
 	private void doFerdigstillJournalfoering(FerdigstillJournalfoeringTo ferdigstillJournalfoeringTo) {
 		ferdigstillJournalfoeringTo.validate();
 
-		Long journalpostId = Long.parseLong(ferdigstillJournalfoeringTo.getJournalpostId());
+		long journalpostId = Long.parseLong(ferdigstillJournalfoeringTo.getJournalpostId());
 
 		Journalpost journalpost = repository.findById(journalpostId).orElse(null);
 		if (journalpost == null) {
@@ -80,27 +76,9 @@ public class FerdigstillJournalfoeringService {
 		}
 	}
 
-	private String hentLdapBrukernavn(Long journalpostId) {
-		String userId = MDC.get(MDC_USER_ID);
-		if (StringUtils.isEmpty(userId)) {
-			log.warn(String.format("Kan ikke utlede brukerident på rett format fra SAML-token. journalpostId=%s", journalpostId.toString()));
-			return UKJENT_BRUKER;
-		}
-		
-		String ldapNavn = userId;
-		IdentType type = SubjectHandler.getSubjectHandler().getIdentType();
-		if (type.equals(IdentType.InternBruker)) {
-			ldapNavn = navUserLdapService.findByUserId(userId).getFullname();
-			if (ldapNavn.trim().equals(userId.trim())) {
-				log.warn(String.format("Feil ved søk mot LDAP. journalpostId=%s", journalpostId.toString()));
-			}
-		}
-		return ldapNavn;
-	}
-
 	private void ferdigstill(Journalpost journalpost, FerdigstillJournalfoeringTo to, String endretAv) {
 		journalpost.setJournalstatus(JournalStatusCode.J);
-		journalpost.setJournalDato(LocalDateTime.now().toDate());
+		journalpost.setJournalDato(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()));
 		journalpost.setJournalForendeEnhetId(to.getEnhetId());
 		journalpost.setJournalfortAvNavn(endretAv);
 		journalpost.setEndretAvNavn(endretAv);

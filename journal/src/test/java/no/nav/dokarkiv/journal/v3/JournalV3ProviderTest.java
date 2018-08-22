@@ -21,7 +21,7 @@ import no.nav.dokarkiv.core.domain.util.DateProvider;
 import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
 import no.nav.dokarkiv.core.security.abac.AbacSecurityService;
 import no.nav.dokarkiv.core.security.abac.AuthorizationException;
-import no.nav.dokarkiv.journal.v3.exceptions.DocumentNotFoundException;
+import no.nav.dokarkiv.core.exceptions.DocumentNotFoundException;
 import no.nav.dokarkiv.journal.v3.tjoark050.HentDokumentURLV3RequestMapper;
 import no.nav.dokarkiv.journal.v3.tjoark050.HentDokumentUrlRequestTo;
 import no.nav.dokarkiv.journal.v3.tjoark050.HentDokumentUrlResponseTo;

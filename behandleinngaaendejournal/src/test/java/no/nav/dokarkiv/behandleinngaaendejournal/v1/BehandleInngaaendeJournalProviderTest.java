@@ -10,7 +10,6 @@ import static org.mockito.Mockito.verify;
 import no.nav.dokarkiv.behandleinngaaendejournal.v1.exceptions.DokumentInfoIkkeTilknyttetJournalpostException;
 import no.nav.dokarkiv.behandleinngaaendejournal.v1.exceptions.FerdigstillingIkkeMuligException;
 import no.nav.dokarkiv.behandleinngaaendejournal.v1.exceptions.OppdaterJournalpostIkkeMuligException;
-import no.nav.dokarkiv.behandleinngaaendejournal.v1.exceptions.UgyldigInputException;
 import no.nav.dokarkiv.behandleinngaaendejournal.v1.tjoark066.OppdaterJournalpostRequestMapper;
 import no.nav.dokarkiv.behandleinngaaendejournal.v1.tjoark066.OppdaterJournalpostService;
 import no.nav.dokarkiv.behandleinngaaendejournal.v1.tjoark066.to.OppdaterJournalpostRequestTo;
@@ -19,6 +18,7 @@ import no.nav.dokarkiv.behandleinngaaendejournal.v1.tjoark067.FerdigstillJournal
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeInngaaendeException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeMidlertidigException;
+import no.nav.dokarkiv.core.exceptions.UgyldigInputException;
 import no.nav.dokarkiv.core.security.abac.AbacSecurityService;
 import no.nav.tjeneste.virksomhet.behandleinngaaendejournal.v1.binding.FerdigstillJournalfoeringFerdigstillingIkkeMulig;
 import no.nav.tjeneste.virksomhet.behandleinngaaendejournal.v1.binding.FerdigstillJournalfoeringJournalpostIkkeInngaaende;

@@ -9,8 +9,8 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -19,6 +19,7 @@ import static org.mockito.Mockito.when;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
+import no.nav.dokarkiv.core.logging.AbacLogger;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.freg.abac.core.annotation.context.AbacContext;
 import no.nav.freg.abac.core.annotation.context.ThreadLocalAbacContext;
@@ -56,7 +57,7 @@ public class AbacSecurityServiceTest {
 	private static AbacContext abacContext;
 
 	@Mock
-	private AbacLoggingUtils abaclog;
+	private AbacLogger abaclog;
 	@Mock
 	private AbacService abacService;
 	@Mock
@@ -90,9 +91,6 @@ public class AbacSecurityServiceTest {
 
 		XacmlRequest request = getXacmlRequestFromAbacServiceMock();
 
-		verify(abaclog, times(1))
-				.logAccessToJournalpostWithSeveralUsers(DEFAULT_JOURNALPOST);
-
 		assertThat(request.getResources(), hasSize(0));
 	}
 
@@ -103,7 +101,8 @@ public class AbacSecurityServiceTest {
 		when(jdbcAbacSecurityRepository.findAbacResources(DEFAULT_JOURNALPOST)).thenReturn(abacResources);
 
 		abacSecurityService.assertAccessToJournalpost(String.valueOf(DEFAULT_JOURNALPOST));
-		verify(abaclog, never()).logAccessDeniedToJournalpost(any(Long.class));
+		verify(abaclog, never()).logAbacDeny(any(XacmlRequest.class), any(XacmlResponse.class), anyMap());
+		verify(abaclog, never()).logAbacPermit(any(XacmlRequest.class), any(XacmlResponse.class), anyMap());
 	}
 
 	@Test
@@ -115,7 +114,7 @@ public class AbacSecurityServiceTest {
 
 		assertThat(request.getResources(), hasSize(1));
 		assertThat(request.getResources().get(0), equalTo(new XacmlAttribute(RESOURCE_FELLES_TEMA, "FOR")));
-		verify(abaclog, never()).logAccessDeniedToJournalpost(any(Long.class));
+		verify(abaclog, never()).logAbacDeny(any(XacmlRequest.class), any(XacmlResponse.class), anyMap());
 	}
 
 	@Test
@@ -135,7 +134,7 @@ public class AbacSecurityServiceTest {
 		} catch (AuthorizationException e) {
 			assertThat(e.getMessage(), equalTo("Bruker har ikke tilgang til journalpost"));
 		}
-		verify(abaclog, times(1)).logAccessDeniedToJournalpost(any(Long.class));
+		verify(abaclog, times(1)).logAbacDeny(any(XacmlRequest.class), any(XacmlResponse.class), anyMap());
 	}
 
 	@Test
@@ -150,7 +149,7 @@ public class AbacSecurityServiceTest {
 		} catch (JournalpostIkkeFunnetException e) {
 			assertThat(e.getMessage(), equalTo("Journalpost ikke funnet. journalpostId=" + DEFAULT_JOURNALPOST));
 		}
-		verify(abaclog, times(0)).logAccessDeniedToJournalpost(any(Long.class));
+		verify(abaclog, never()).logAbacDeny(any(XacmlRequest.class), any(XacmlResponse.class), anyMap());
 	}
 
 	@Test
@@ -166,7 +165,6 @@ public class AbacSecurityServiceTest {
 		XacmlRequest request = captor.getValue();
 
 		assertThat((String) request.getResource().get(RESOURCE_FELLES_PERSON_TILKNYTTET_FNR).getValue(), equalTo("2"));
-		verify(abaclog, times(0)).logAccessToJournalpostWithSeveralUsers(eq(DEFAULT_JOURNALPOST));
 	}
 
 	@Test
@@ -177,7 +175,6 @@ public class AbacSecurityServiceTest {
 
 		XacmlRequest request = abacSecurityService.decorateJoarkResources(abacContext.getRequest(), abacResources, DEFAULT_JOURNALPOST);
 		assertThat(request.getResources(), hasSize(1));
-		verify(abaclog, times(1)).logAccessToJournalpostWithSeveralUsers(eq(DEFAULT_JOURNALPOST));
 	}
 
 	@Test
@@ -186,7 +183,8 @@ public class AbacSecurityServiceTest {
 
 		XacmlRequest request = getXacmlRequestFromAbacServiceMock();
 
-		verify(abaclog, never()).logAttemptedAccessToSak(eq(SAK_ID), eq(FagsystemCode.PEN));
+		verify(abaclog, never()).logAbacDeny(any(XacmlRequest.class), any(XacmlResponse.class), anyMap());
+		verify(abaclog, never()).logAbacPermit(any(XacmlRequest.class), any(XacmlResponse.class), anyMap());
 
 		assertThat(decision, equalTo(Decision.PERMIT));
 		assertThat(request.getResources(), hasSize(1));
@@ -199,7 +197,8 @@ public class AbacSecurityServiceTest {
 
 		XacmlRequest request = getXacmlRequestFromAbacServiceMock();
 
-		verify(abaclog, never()).logAttemptedAccessToSak(eq(SAK_ID), eq(FagsystemCode.AO01));
+		verify(abaclog, never()).logAbacDeny(any(XacmlRequest.class), any(XacmlResponse.class), anyMap());
+		verify(abaclog, never()).logAbacPermit(any(XacmlRequest.class), any(XacmlResponse.class), anyMap());
 
 		assertThat(decision, equalTo(Decision.PERMIT));
 		assertThat(request.getResources(), hasSize(1));
@@ -215,7 +214,7 @@ public class AbacSecurityServiceTest {
 
 		Decision decision = abacSecurityService.assertAccessToSak(SAK_ID, FagsystemCode.AO01);
 
-		verify(abaclog).logAttemptedAccessToSak(eq(SAK_ID), eq(FagsystemCode.AO01));
+		verify(abaclog).logAbacDeny(any(XacmlRequest.class), any(XacmlResponse.class), anyMap());
 		assertThat(decision, equalTo(Decision.DENY));
 	}
 
@@ -229,7 +228,7 @@ public class AbacSecurityServiceTest {
 
 		Decision decision = abacSecurityService.assertAccessToSak(SAK_ID, FagsystemCode.AO01);
 
-		verify(abaclog, times(1)).logAccessToSakdWithAdvice(eq(SAK_ID), eq(FagsystemCode.AO01));
+		verify(abaclog).logAbacPermit(any(XacmlRequest.class), any(XacmlResponse.class), anyMap());
 
 		assertThat(decision, equalTo(Decision.PERMIT));
 	}

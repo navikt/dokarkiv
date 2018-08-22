@@ -10,6 +10,7 @@ import org.slf4j.MDC;
 
 import javax.xml.ws.WebServiceContext;
 import java.security.Principal;
+import java.util.UUID;
 
 /**
  * Class that contains functionality to create and set a RequestContext for the current web service request.
@@ -70,7 +71,12 @@ public final class RequestContextUtil {
 	}
 
 	private static String getCallId() {
-		return MDC.get(MDC_CALL_ID);
+		String callId = MDC.get(MDC_CALL_ID);
+		if(callId == null) {
+			return UUID.randomUUID().toString();
+		} else {
+			return callId;
+		}
 	}
 
 }

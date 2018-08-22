@@ -71,7 +71,7 @@ public class MDCInHandler implements SOAPHandler<SOAPMessageContext> {
 					LdapName name = new LdapName(uid);
 					
 					for(Rdn rdn : name.getRdns()) {
-						if(rdn.getType().equalsIgnoreCase("CN")) {
+						if("CN".equalsIgnoreCase(rdn.getType())) {
 							return rdn.getValue().toString();
 						}
 					}

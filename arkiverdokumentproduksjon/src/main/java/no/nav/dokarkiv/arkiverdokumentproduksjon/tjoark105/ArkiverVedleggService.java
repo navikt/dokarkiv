@@ -1,6 +1,6 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark105;
 
-import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.NoJournalpostFoundException;
+import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
 
 /**
  * Interface for the operation ArkiverVedlegg

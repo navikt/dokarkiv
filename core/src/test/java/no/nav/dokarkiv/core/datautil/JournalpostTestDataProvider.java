@@ -20,9 +20,9 @@ import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
-import org.joda.time.LocalDateTime;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.Month;
 import java.time.ZoneId;
 import java.util.Date;
@@ -101,7 +101,7 @@ public final class JournalpostTestDataProvider {
 		return getJournalpostBuilder()
 				.avsenderMottakerId("1")
 				.kanalReferanseId("kanalreferansseId")
-				.mottattDato(LocalDateTime.now().toDate())
+				.mottattDato(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()))
 				.mottakskanal(NAV_NO)
 				.fagomrade(FagomradeCode.PEN)
 				.journalStatus(journalStatus)
@@ -112,19 +112,19 @@ public final class JournalpostTestDataProvider {
 				.journalForendeEnhetId("SesamStasjon")
 				.avsenderMottaker("Bjarne Betjent")
 				.opprettetKildeNavn("itest")
-				.dokumentDato(LocalDateTime.now().toDate())
+				.dokumentDato(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()))
 				.dokumentInfoRelasjoner(
-						getJournalpostDokumentInfoRelasjonBuilder()
-								.opprettetKildeNavn("itest")
-								.tilknyttetAvNavn("itest")
-								.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
-								.dokumentInfo(createVedleggDokumentInfo().build())
-								.build(),
 						getJournalpostDokumentInfoRelasjonBuilder()
 								.opprettetKildeNavn("itest")
 								.tilknyttetAvNavn("itest")
 								.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.HOVEDDOKUMENT)
 								.dokumentInfo(createHovedDokumentInfoFP().build())
+								.build(),
+						getJournalpostDokumentInfoRelasjonBuilder()
+								.opprettetKildeNavn("itest")
+								.tilknyttetAvNavn("itest")
+								.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
+								.dokumentInfo(createVedleggDokumentInfo().build())
 								.build());
 	}
 }

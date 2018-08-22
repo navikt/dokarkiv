@@ -1,6 +1,6 @@
 package no.nav.dokarkiv.journal.v3.tjoark050;
 
-import no.nav.dokarkiv.journal.v3.exceptions.DocumentNotFoundException;
+import no.nav.dokarkiv.core.exceptions.DocumentNotFoundException;
 
 /**
  * Defines operations that use existing HentDokumentUrl functionality with different input.

@@ -13,10 +13,10 @@ import java.util.Map;
 public class SecurityLimitationAttributeException extends RuntimeException {
 
 	private static final String DEFAULT_RESOURCE = "ressurs";
-	private Long journalpostId;
-	private Long dokumentInfoId;
-	private Map<String, ?> attributeMap;
-	private String loggedOnUser;
+	private final Long journalpostId;
+	private final Long dokumentInfoId;
+	private final Map<String, ?> attributeMap;
+	private final String loggedOnUser;
 
 	public SecurityLimitationAttributeException(Long journalpostId, Long dokumentInfoId, Map<String, ?> attributeMap) {
 		this.journalpostId = journalpostId;

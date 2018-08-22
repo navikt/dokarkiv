@@ -36,7 +36,7 @@ public class HentDokumentV3RequestMapperTest {
 	}
 
 	@Test(expected = NumberFormatException.class)
-	public void shouldThrowExcpetionWhenMapping_journalpostIdIsNotANumber() {
+	public void shouldThrowExceptionWhenMappingJournalpostIdIsNotANumber() {
 		HentDokumentRequest invalidWsRequest = new HentDokumentRequest();
 		invalidWsRequest.setJournalpostId("not a valid journalpostId");
 		mapper.map(invalidWsRequest);

@@ -62,6 +62,22 @@ fasitResources:
     propertyMap:
       url: DOKARKIV_HENTDOKUMENT_BASEURL
   exposed:
+  - alias: InngaaendeJournal_v1
+    resourceType: webserviceendpoint
+    path: /services/inngaaendejournal/v1
+    wsdlGroupId: no.nav.tjenester
+    wsdlArtifactId: nav-inngaaendeJournal-v1-tjenestespesifikasjon
+    wsdlVersion: 1.1.3
+    securityToken: SAML
+    description: Virksomhetstjeneste for henting av metadata om inngående journalposter.
+  - alias: BehandleInngaaendeJournal_v1
+    resourceType: webserviceendpoint
+    path: /services/behandleinngaaendejournal/v1
+    wsdlGroupId: no.nav.tjenester
+    wsdlArtifactId: nav-behandleInngaaendeJournal-v1-tjenestespesifikasjon
+    wsdlVersion: 1.0.1
+    securityToken: SAML
+    description: Virksomhetstjeneste for oppdatering av inngående journalposter.
   - alias: BehandleJournal_v2
     resourceType: webserviceendpoint
     path: /services/behandlejournal/v2
@@ -70,6 +86,14 @@ fasitResources:
     wsdlVersion: 2.3.0
     securityToken: SAML
     description: Virksomhetstjeneste for midlertidig og endelig journalføring i arkivet.
+  - alias: BehandleJournal_v3
+    resourceType: webserviceendpoint
+    path: /services/behandlejournal/v3
+    wsdlGroupId: no.nav.tjenester.fim
+    wsdlArtifactId: nav-fim-behandleJournal-v3-tjenestespesifikasjon
+    wsdlVersion: 3.0.2
+    securityToken: SAML
+    description: Virksomhetstjeneste for midlertidig og endelig journalføring i arkivet versjon 3.
   - alias: ArkiverDokumentproduksjon_v1
     resourceType: webserviceendpoint
     path: /services/arkiverdokumentproduksjon/v1

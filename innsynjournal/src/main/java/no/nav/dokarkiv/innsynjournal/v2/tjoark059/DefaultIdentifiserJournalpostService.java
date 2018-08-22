@@ -4,9 +4,9 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeInngaaendeException;
+import no.nav.dokarkiv.core.exceptions.UgyldigInputException;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.innsynjournal.v2.exceptions.JournalpostNotSupportedException;
-import no.nav.dokarkiv.innsynjournal.v2.exceptions.UgyldigInputException;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
@@ -47,10 +47,10 @@ public class DefaultIdentifiserJournalpostService implements IdentifiserJournalp
 	}
 
 	private void validateJournalpost(Journalpost journalpost) throws JournalpostNotSupportedException, JournalpostIkkeInngaaendeException {
-		Boolean hoveddokument = false;
 		if (!journalpost.isInngaende()) {
 			throw new JournalpostIkkeInngaaendeException("Journalposten, journalpostId=" + journalpost.getJournalpostId() + ", som ble funnet er ikke inngående");
 		}
+		boolean hoveddokument = false;
 		for (JournalpostDokumentInfoRelasjon dokumentInfoRelasjon : journalpost.getJournalpostDokumentInfoRelasjoner()) {
 			if (dokumentInfoRelasjon.isHoveddokument()) {
 				hoveddokument = true;

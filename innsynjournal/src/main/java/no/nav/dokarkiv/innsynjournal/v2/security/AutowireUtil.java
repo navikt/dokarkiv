@@ -21,16 +21,16 @@ public class AutowireUtil {
 	private static AutowireCapableBeanFactory beanFactory;
 
 	public static synchronized void autowireBean(Object object) {
-		if (beanFactory != null) {
-			// autowire now
-			beanFactory.autowireBean(object);
-		} else {
+		if (beanFactory == null) {
 			// add to delay list and autowire when util bean is created
 			DELAYED_AUTOWIRE_OBJECTS.add(object);
+		} else {
+			// autowire now
+			beanFactory.autowireBean(object);
 		}
 	}
 
-	private static void setAutowireCapableBeanFactory(AutowireCapableBeanFactory bean) {
+	private static synchronized void setAutowireCapableBeanFactory(AutowireCapableBeanFactory bean) {
 		beanFactory = bean;
 	}
 

@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.core.stelvio;
 
+import no.nav.dokarkiv.core.exceptions.DokarkivTechnicalException;
 import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.Field;
@@ -32,7 +33,7 @@ public class RequestContextSetter {
 			((RedeployableThreadLocalSubstitute<RequestContext>) getRequestContextHolder().get(null)).set(requestContext);
 			MDCOperations.setMdcProperties();
 		} catch (Exception e) {
-			throw new OperationalException("Setting requestContext on RequestContextHolder failed.", e);
+			throw new DokarkivTechnicalException("Setting requestContext on RequestContextHolder failed.", e);
 		}
 	}
 

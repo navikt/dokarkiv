@@ -1,6 +1,5 @@
 package no.nav.dokarkiv.behandlejournal.v2;
 
-import no.nav.dokarkiv.behandlejournal.v2.exceptions.NoJournalpostFoundException;
 import no.nav.dokarkiv.behandlejournal.v2.tjoark060.ArkiverUstrukturertKravRequest;
 import no.nav.dokarkiv.behandlejournal.v2.tjoark060.ArkiverUstrukturertKravResponse;
 import no.nav.dokarkiv.behandlejournal.v2.tjoark061.LagreVedleggPaaJournalpostRequest;
@@ -12,6 +11,7 @@ import no.nav.dokarkiv.behandlejournal.v2.tjoark064.JournalfoerUtgaaendeHenvende
 import no.nav.dokarkiv.behandlejournal.v2.tjoark064.JournalfoerUtgaaendeHenvendelseResponse;
 import no.nav.dokarkiv.behandlejournal.v2.tjoark065.JournalfoerNotatHenvendelseRequest;
 import no.nav.dokarkiv.behandlejournal.v2.tjoark065.JournalfoerNotatHenvendelseResponse;
+import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
 
 /**
  * Defines the Joark MOD information service BehandleJournal.

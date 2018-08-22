@@ -1,0 +1,138 @@
+package no.nav.dokarkiv.behandlejournal.v3.tjoark060;
+
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertThat;
+
+import no.nav.dokarkiv.behandlejournal.v3.datautil.ArkiverUstrukturertKravJournalpostAssertUtil;
+import no.nav.dokarkiv.behandlejournal.v3.datautil.ArkiverUstrukturertKravJournalpostDataUtil;
+import no.nav.dokarkiv.behandlejournal.v3.datautil.BehandleJournalCommonDataUtil;
+import no.nav.dokarkiv.core.domain.util.DateProvider;
+import no.nav.tjeneste.virksomhet.behandlejournal.v3.informasjon.arkiverustrukturertkrav.Journalpost;
+import no.nav.tjeneste.virksomhet.behandlejournal.v3.informasjon.behandlejournal.EksternPart;
+import no.nav.tjeneste.virksomhet.behandlejournal.v3.informasjon.behandlejournal.NorskIdent;
+import no.nav.tjeneste.virksomhet.behandlejournal.v3.informasjon.behandlejournal.Organisasjon;
+import no.nav.tjeneste.virksomhet.behandlejournal.v3.informasjon.behandlejournal.Person;
+import org.junit.Before;
+import org.junit.Test;
+
+/**
+ * Unit tests for DefaultJournalpostMapper.
+ *
+ * @author Thomas Eugen Bjørge, Visma Consulting
+ */
+public class ArkiverUstrukturertKravV3JournalpostMapperTest {
+
+	private static final String NAVN = "navn";
+	private static final String ORG_NUMMER = "1235";
+	private static final String FNR = "***gammelt_fnr***00000000";
+	private ArkiverUstrukturertKravV3JournalpostMapper journalpostMapper = new ArkiverUstrukturertKravV3JournalpostMapper();
+
+	private no.nav.dokarkiv.core.domain.entities.Journalpost domainJournalpost;
+
+	@Before
+	public void setUp() throws Exception {
+		DateProvider.configure(true, "2014-08-27T12:00:00");
+	}
+
+	@Test
+	public void shouldReturnNullForNullInput() throws Exception {
+		no.nav.dokarkiv.core.domain.entities.Journalpost result = journalpostMapper.map(null);
+
+		assertThat(result, is(nullValue()));
+	}
+
+	@Test
+	public void shouldMapArkiverUstrukturertKravJournalpost() throws Exception {
+		Journalpost wsJournalpost = ArkiverUstrukturertKravJournalpostDataUtil.createJournalpost();
+		domainJournalpost = journalpostMapper.map(wsJournalpost);
+		ArkiverUstrukturertKravJournalpostAssertUtil.assertEqualJournalposts(domainJournalpost, wsJournalpost);
+	}
+
+	@Test
+	public void shouldMapArkiverUstrukturertKravWithBrukerOrganisasjon() throws Exception {
+		Journalpost wsJournalpost = ArkiverUstrukturertKravJournalpostDataUtil.createJournalpost();
+		wsJournalpost.getForBruker().clear();
+		wsJournalpost.getForBruker().add(BehandleJournalCommonDataUtil.createOrganisasjon());
+		domainJournalpost = journalpostMapper.map(wsJournalpost);
+		ArkiverUstrukturertKravJournalpostAssertUtil.assertEqualJournalposts(domainJournalpost, wsJournalpost);
+	}
+
+	@Test
+	public void shouldHandleThatEksternPartIsNull() throws Exception {
+		Journalpost wsJournalpost = ArkiverUstrukturertKravJournalpostDataUtil.createJournalpost();
+		domainJournalpost = journalpostMapper.map(wsJournalpost);
+
+		assertThat(domainJournalpost.getAvsenderMottakerId(), is(nullValue()));
+	}
+
+	@Test
+	public void shouldMapEksternPartNavnToAvsenderMottaker() throws Exception {
+		Journalpost wsJournalpost = ArkiverUstrukturertKravJournalpostDataUtil.createJournalpost();
+		wsJournalpost.setEksternPart(createEksternPartWithOrganisasjon());
+
+		domainJournalpost = journalpostMapper.map(wsJournalpost);
+
+		assertThat(domainJournalpost.getAvsenderMottaker(), is(NAVN));
+	}
+
+	@Test
+	public void shouldMapOrganisasjonIdentToAvsenderMottakerId() throws Exception {
+		Journalpost wsJournalpost = ArkiverUstrukturertKravJournalpostDataUtil.createJournalpost();
+		wsJournalpost.setEksternPart(createEksternPartWithOrganisasjon());
+
+		domainJournalpost = journalpostMapper.map(wsJournalpost);
+
+		assertThat(domainJournalpost.getAvsenderMottakerId(), is(ORG_NUMMER));
+	}
+
+	@Test
+	public void shouldMapPersonIdentToAvsenderMottakerId() throws Exception {
+		Journalpost wsJournalpost = ArkiverUstrukturertKravJournalpostDataUtil.createJournalpost();
+		wsJournalpost.setEksternPart(createEksternPartWithPerson());
+
+		domainJournalpost = journalpostMapper.map(wsJournalpost);
+
+		assertThat(domainJournalpost.getAvsenderMottakerId(), is(FNR));
+	}
+
+	@Test
+	public void shouldHandleEmptyEksternPartNavn() throws Exception {
+		Journalpost wsJournalpost = ArkiverUstrukturertKravJournalpostDataUtil.createJournalpost();
+		wsJournalpost.setEksternPart(createEksternPartWithPerson());
+		wsJournalpost.getEksternPart().setNavn("");
+
+		domainJournalpost = journalpostMapper.map(wsJournalpost);
+
+		assertThat(domainJournalpost.getAvsenderMottaker(), is(""));
+	}
+
+	private EksternPart createEksternPartWithOrganisasjon() {
+		EksternPart eksternPart = new EksternPart();
+		eksternPart.setNavn(NAVN);
+		eksternPart.setEksternAktoer(createOrganisasjon());
+		return eksternPart;
+	}
+
+	private EksternPart createEksternPartWithPerson() {
+		EksternPart eksternPart = new EksternPart();
+		eksternPart.setNavn(NAVN);
+		eksternPart.setEksternAktoer(createPerson());
+		return eksternPart;
+	}
+
+	private Organisasjon createOrganisasjon() {
+		Organisasjon organisasjon = new Organisasjon();
+		organisasjon.setOrgnummer(ORG_NUMMER);
+		return organisasjon;
+	}
+
+	private Person createPerson() {
+		Person person = new Person();
+		NorskIdent norskIdent = new NorskIdent();
+		norskIdent.setIdent(FNR);
+		person.setIdent(norskIdent);
+		return person;
+	}
+
+}

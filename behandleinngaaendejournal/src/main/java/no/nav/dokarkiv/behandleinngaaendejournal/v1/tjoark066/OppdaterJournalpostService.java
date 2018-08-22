@@ -1,11 +1,11 @@
 package no.nav.dokarkiv.behandleinngaaendejournal.v1.tjoark066;
 
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
-import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Ordering;
 import lombok.extern.slf4j.Slf4j;
+import no.nav.dokarkiv.behandleinngaaendejournal.v1.AbstractBehandleInngaaendeJournalService;
 import no.nav.dokarkiv.behandleinngaaendejournal.v1.tjoark066.to.DokumentInformasjonTo;
 import no.nav.dokarkiv.behandleinngaaendejournal.v1.tjoark066.to.OppdaterJournalpostRequestTo;
 import no.nav.dokarkiv.behandleinngaaendejournal.v1.tjoark066.to.OppdaterJournalpostTo;
@@ -16,16 +16,15 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
 import no.nav.dokarkiv.core.domain.validator.BrukerValidator;
+import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.core.security.ldap.NavUserLdapService;
-import no.nav.modig.core.context.SubjectHandler;
-import no.nav.modig.core.domain.IdentType;
-import org.apache.commons.lang3.StringUtils;
-import org.joda.time.LocalDateTime;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
@@ -37,17 +36,15 @@ import java.util.Set;
  */
 @Slf4j
 @Component
-public class OppdaterJournalpostService {
-	private static final String UKJENT_BRUKER = "Ukjent";
+public class OppdaterJournalpostService extends AbstractBehandleInngaaendeJournalService {
 	private final JoarkRepository repository;
 	private final OppdaterJournalpostValidator validator;
-	private final NavUserLdapService navUserLdapService;
 
 	@Inject
 	public OppdaterJournalpostService(JoarkRepository repository, OppdaterJournalpostValidator validator, NavUserLdapService navUserLdapService) {
+		super(navUserLdapService);
 		this.repository = repository;
 		this.validator = validator;
-		this.navUserLdapService = navUserLdapService;
 	}
 
 	public void oppdaterJournalpost(OppdaterJournalpostRequestTo request) {
@@ -63,25 +60,7 @@ public class OppdaterJournalpostService {
 
 	private Journalpost getJournalpost(OppdaterJournalpostTo to) {
 		Long journalpostId = Long.valueOf(to.getJournalpostId());
-		return repository.findById(journalpostId).orElse(null);
-	}
-
-	private String hentLdapBrukernavn(Long journalpostId) {
-		String userId = MDC.get(MDC_USER_ID);
-		if (StringUtils.isEmpty(userId)) {
-			log.warn(String.format("Kan ikke utlede brukerident på rett format fra SAML-token. journalpostId=%s", journalpostId.toString()));
-			return UKJENT_BRUKER;
-		}
-
-		String ldapNavn = userId;
-		IdentType type = SubjectHandler.getSubjectHandler().getIdentType();
-		if (type.equals(IdentType.InternBruker)) {
-			ldapNavn = navUserLdapService.findByUserId(userId).getFullname();
-			if (ldapNavn.trim().equals(userId.trim())) {
-				log.warn(String.format("Feil ved søk mot LDAP. journalpostId=%s", journalpostId.toString()));
-			}
-		}
-		return ldapNavn;
+		return repository.findById(journalpostId).orElseThrow(() -> new JournalpostIkkeFunnetException("Journalpost ikke funnet. journalpostId=" + to.getJournalpostId()));
 	}
 
 	private void updateAndPersist(Journalpost journalpost, OppdaterJournalpostTo input, String userId) {
@@ -176,8 +155,8 @@ public class OppdaterJournalpostService {
 	private Bruker getLatestBruker(Journalpost journalpost) {
 		assert (!journalpost.getBrukere().isEmpty());
 		List<Bruker> sortedCopy = Ordering.from((Comparator<Bruker>) (o1, o2) ->
-				LocalDateTime.fromDateFields(o2.getChangeStamp().getCreatedDate())
-						.compareTo(LocalDateTime.fromDateFields(o1.getChangeStamp().getCreatedDate())))
+				LocalDateTime.ofInstant(o2.getChangeStamp().getCreatedDate().toInstant(), ZoneId.systemDefault())
+						.compareTo(LocalDateTime.ofInstant(o1.getChangeStamp().getCreatedDate().toInstant(), ZoneId.systemDefault())))
 				.sortedCopy(journalpost.getBrukere());
 		return sortedCopy.get(0);
 	}

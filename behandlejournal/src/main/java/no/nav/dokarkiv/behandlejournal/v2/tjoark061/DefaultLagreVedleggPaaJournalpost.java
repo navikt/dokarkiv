@@ -1,9 +1,8 @@
 package no.nav.dokarkiv.behandlejournal.v2.tjoark061;
 
 import com.google.common.collect.Lists;
-import no.nav.dokarkiv.behandlejournal.v2.SporingUtil;
-import no.nav.dokarkiv.behandlejournal.v2.SporingsMetaData;
-import no.nav.dokarkiv.behandlejournal.v2.exceptions.NoJournalpostFoundException;
+import no.nav.dokarkiv.behandlejournal.SporingUtil;
+import no.nav.dokarkiv.behandlejournal.SporingsMetaData;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
@@ -17,6 +16,7 @@ import no.nav.dokarkiv.core.domain.entities.bidrag.BidragMellomlagring;
 import no.nav.dokarkiv.core.domain.entities.bidrag.BidragMellomlagringDokument;
 import no.nav.dokarkiv.core.domain.entities.bidrag.BidragMellomlagringDokumentType;
 import no.nav.dokarkiv.core.exceptions.ApplicationException;
+import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
 import no.nav.dokarkiv.core.repository.BidragMellomlagringDokumentRepository;
 import no.nav.dokarkiv.core.repository.BidragMellomlagringRepository;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;

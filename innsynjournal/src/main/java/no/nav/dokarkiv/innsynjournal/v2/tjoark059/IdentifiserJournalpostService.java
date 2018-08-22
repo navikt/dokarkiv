@@ -3,8 +3,8 @@ package no.nav.dokarkiv.innsynjournal.v2.tjoark059;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeInngaaendeException;
+import no.nav.dokarkiv.core.exceptions.UgyldigInputException;
 import no.nav.dokarkiv.innsynjournal.v2.exceptions.JournalpostNotSupportedException;
-import no.nav.dokarkiv.innsynjournal.v2.exceptions.UgyldigInputException;
 
 /**
  * Interface for the innsyn operation identifiserJournalpost (TJOARK059)

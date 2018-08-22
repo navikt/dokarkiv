@@ -23,7 +23,10 @@ import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.Bruker;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
-import org.joda.time.LocalDateTime;
+
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 
 /**
  * @author Joakim Bjørnstad, Jbit AS
@@ -48,7 +51,7 @@ public class InngaaendeJournalDataProvider {
 	public static JournalpostBuilder buildBaseJournalpost() {
 		return getJournalpostBuilder()
 				.avsenderMottakerId(AVSENDER_MOTTAKERID)
-				.mottattDato(NOW.toDate())
+				.mottattDato(Date.from(NOW.atZone(ZoneId.systemDefault()).toInstant()))
 				.mottakskanal(MottaksKanalCode.NAV_NO)
 				.fagomrade(FagomradeCode.PEN)
 				.journalStatus(JournalStatusCode.J)
@@ -57,7 +60,7 @@ public class InngaaendeJournalDataProvider {
 				.brukere(createBruker(FNR, BrukerTypeCode.PERSON), createBruker(ORGNR, BrukerTypeCode.ORGANISASJON))
 				.innhold(INNHOLD)
 				.avsenderMottaker(AVSENDER_MOTTAKERNAVN)
-				.dokumentDato(NOW.toDate());
+				.dokumentDato(Date.from(NOW.atZone(ZoneId.systemDefault()).toInstant()));
 	}
 
 	public static JournalpostBuilder buildJournalpost() {

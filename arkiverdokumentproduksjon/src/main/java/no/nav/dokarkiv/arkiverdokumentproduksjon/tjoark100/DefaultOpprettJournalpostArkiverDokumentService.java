@@ -15,10 +15,8 @@ import no.nav.dokarkiv.core.exceptions.ApplicationException;
 import no.nav.dokarkiv.core.journalbehandling.DokumentFilerDelegate;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 
 import javax.inject.Inject;
-import java.util.Optional;
 
 /**
  * Implementation of OpprettJournalpostArkiverDokumentService
@@ -98,28 +96,25 @@ public class DefaultOpprettJournalpostArkiverDokumentService implements OpprettJ
 
 	private Journalpost findPreviousJournalforing(OpprettJournalpostArkiverDokumentRequestTo requestTo) {
 		final DokumentInfo dokumentInfo = requestTo.getJournalpost().findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
-		if (CollectionUtils.isEmpty(dokumentInfo.getTilleggsopplysninger())) {
-			return null;
-		}
-
-		String bestillingsId = dokumentInfo.getTilleggsopplysninger().get(BESTILLINGS_ID_KEY);
+		final String bestillingsId = dokumentInfo.getTilleggsopplysninger().get(BESTILLINGS_ID_KEY);
 		if (isNullOrEmpty(bestillingsId)) {
 			return null;
 		}
 
+		Long journalpostIdPreviousJournalforing = findPreviousJournalpostIdByDokumentInfoTilleggsopplysningerBestillingsId(bestillingsId);
+		if (journalpostIdPreviousJournalforing == null) {
+			return null;
+		} else {
+			return joarkRepository.findById(journalpostIdPreviousJournalforing).orElse(null);
+		}
+	}
+
+	private Long findPreviousJournalpostIdByDokumentInfoTilleggsopplysningerBestillingsId(final String bestillingsId) {
 		Long dokumentinfoIdPreviousJournalforing = joarkRepository.findDokumentinfoIdIdByDokumentinfoTilleggsopplysningerNokkelAndVerdi(BESTILLINGS_ID_KEY, bestillingsId);
 		if (dokumentinfoIdPreviousJournalforing == null) {
 			return null;
 		}
 
-		Long journalpostIdPreviousJournalforing = joarkRepository.findJournalpostIdByDokumentinfoId(dokumentinfoIdPreviousJournalforing
-				.toString());
-
-		if (journalpostIdPreviousJournalforing == null) {
-			return null;
-		} else {
-			Optional<Journalpost> journalpost = joarkRepository.findById(journalpostIdPreviousJournalforing);
-			return journalpost.orElse(null);
-		}
+		return joarkRepository.findJournalpostIdByDokumentinfoId(dokumentinfoIdPreviousJournalforing.toString());
 	}
 }

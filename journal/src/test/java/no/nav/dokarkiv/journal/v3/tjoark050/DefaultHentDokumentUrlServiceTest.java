@@ -18,12 +18,12 @@ import no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilde
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.exceptions.DocumentNotFoundException;
 import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
 import no.nav.dokarkiv.core.exceptions.InvalidFilUuidException;
+import no.nav.dokarkiv.core.exceptions.NoDokumentInfoFoundException;
 import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
-import no.nav.dokarkiv.journal.v3.exceptions.DocumentNotFoundException;
-import no.nav.dokarkiv.journal.v3.exceptions.NoDokumentInfoFoundException;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -48,45 +48,42 @@ public class DefaultHentDokumentUrlServiceTest {
 	private static final long DOKUMENT_INFO_ID = 1L;
 	private static final VariantFormatCode VARIANT_FORMAT = VariantFormatCode.ARKIV;
 	private static final String FIL_UUID = "456b166e-5f9f-430f-8e35-09a732156562";
-
-	HentDokumentUrlRequestTo hentDokumentUrlRequest = new HentDokumentUrlRequestTo(
-														JOURNALPOST_ID, DOKUMENT_INFO_ID, VARIANT_FORMAT);
-
 	@Rule
 	public ExpectedException expectedException = ExpectedException.none();
-	
+	HentDokumentUrlRequestTo hentDokumentUrlRequest = new HentDokumentUrlRequestTo(
+			JOURNALPOST_ID, DOKUMENT_INFO_ID, VARIANT_FORMAT);
 	@Mock
 	private DefaultHentDokumentUrl hentDokumentUrlMock;
 	@Mock
 	private JoarkRepository joarkRepositoryMock;
-	
+
 	@Captor
 	private ArgumentCaptor<HentDokumentUrlRequest> delegateRequestCaptor;
-	
+
 	@InjectMocks
 	private DefaultHentDokumentUrlService hentDokumentUrlService;
-	
+
 	@Test
 	public void shouldFailValidationWhenRequestIsNull() throws Exception {
 		expectedException.expect(InvalidArgumentException.class);
 		expectedException.expectMessage("HentDokumentUrlRequest is null");
-		
+
 		hentDokumentUrlService.hentDokumentUrl(null);
 	}
-	
+
 	@Test
 	public void shouldFailValidationWhenJournalpostIdIsNull() throws Exception {
 		expectedException.expect(InvalidArgumentException.class);
 		expectedException.expectMessage("Missing parameter journalpostId");
-		
+
 		hentDokumentUrlService.hentDokumentUrl(new HentDokumentUrlRequestTo(null, DOKUMENT_INFO_ID, VARIANT_FORMAT));
 	}
-	
+
 	@Test
 	public void shouldFailValidationWhenDokumentInfoIdIsNull() throws Exception {
 		expectedException.expect(InvalidArgumentException.class);
 		expectedException.expectMessage("Missing parameter dokumentInfoId");
-		
+
 		hentDokumentUrlService.hentDokumentUrl(new HentDokumentUrlRequestTo(JOURNALPOST_ID, null, VARIANT_FORMAT));
 	}
 
@@ -94,10 +91,10 @@ public class DefaultHentDokumentUrlServiceTest {
 	public void shouldFailValidationWhenVariantFormatIsNull() throws Exception {
 		expectedException.expect(InvalidArgumentException.class);
 		expectedException.expectMessage("Missing parameter variantFormat");
-		
+
 		hentDokumentUrlService.hentDokumentUrl(new HentDokumentUrlRequestTo(JOURNALPOST_ID, DOKUMENT_INFO_ID, null));
 	}
-	
+
 	@Test
 	public void shouldThrowExceptionForJournalpostNotFound() throws Exception {
 		try {
@@ -105,17 +102,17 @@ public class DefaultHentDokumentUrlServiceTest {
 			fail("Expected exception");
 		} catch (DocumentNotFoundException e) {
 			assertThat(e.getCause(), is(instanceOf(NoJournalpostFoundException.class)));
-		}		
+		}
 	}
-	
+
 	@Test
 	public void shouldThrowExceptionWhenDokumentInfoNotFoundOnJournalpost() throws Exception {
 		Journalpost journalpost = createJournalPost();
 		DokumentInfo dokumentInfo = new DokumentInfo(10L, 0);
 		journalpost.getJournalpostDokumentInfoRelasjoner().iterator().next().setDokumentInfo(dokumentInfo);
-		
+
 		when(joarkRepositoryMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(journalpost));
-		
+
 		try {
 			hentDokumentUrlService.hentDokumentUrl(hentDokumentUrlRequest);
 			fail("Expected exception");
@@ -123,14 +120,14 @@ public class DefaultHentDokumentUrlServiceTest {
 			assertThat(e.getCause(), is(instanceOf(NoDokumentInfoFoundException.class)));
 		}
 	}
-	
+
 	@Test
 	public void shouldThrowExceptionWhenFilDetaljerWithGivenVariantNotFound() throws Exception {
 		Journalpost journalpost = createJournalPost();
 		journalpost.findFilDetaljerByFilUuid(FIL_UUID).setVariantFormat(VariantFormatCode.PRODUKSJON);
-		
+
 		when(joarkRepositoryMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(journalpost));
-		
+
 		try {
 			hentDokumentUrlService.hentDokumentUrl(hentDokumentUrlRequest);
 			fail("Expected exception");
@@ -138,7 +135,7 @@ public class DefaultHentDokumentUrlServiceTest {
 			assertThat(e.getCause(), is(instanceOf(InvalidArgumentException.class)));
 		}
 	}
-	
+
 	@Test
 	public void shouldThrowExceptionWhenDelegateThrowsNoJournalpostFound() throws Exception {
 		expectedException.expect(DocumentNotFoundException.class);
@@ -149,7 +146,7 @@ public class DefaultHentDokumentUrlServiceTest {
 
 		hentDokumentUrlService.hentDokumentUrl(hentDokumentUrlRequest);
 	}
-	
+
 	@Test
 	public void shouldThrowExceptionWhenDelegateThrowsInvalidFilUuid() throws Exception {
 		expectedException.expect(DocumentNotFoundException.class);
@@ -158,41 +155,41 @@ public class DefaultHentDokumentUrlServiceTest {
 		when(hentDokumentUrlMock.hentDokumentUrl(isA(HentDokumentUrlRequest.class))).thenThrow(
 				new InvalidFilUuidException("Test", FIL_UUID));
 
-		hentDokumentUrlService.hentDokumentUrl(hentDokumentUrlRequest);		
+		hentDokumentUrlService.hentDokumentUrl(hentDokumentUrlRequest);
 	}
-	
+
 	@Test
 	public void shouldCallDelegateWithCorrectValues() throws Exception {
 		when(joarkRepositoryMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(createJournalPost()));
 		when(hentDokumentUrlMock.hentDokumentUrl(isA(HentDokumentUrlRequest.class))).thenReturn(
 				new HentDokumentUrlResponse("Test"));
-		hentDokumentUrlService.hentDokumentUrl(hentDokumentUrlRequest);	
-		
+		hentDokumentUrlService.hentDokumentUrl(hentDokumentUrlRequest);
+
 		verify(hentDokumentUrlMock).hentDokumentUrl(delegateRequestCaptor.capture());
-		
+
 		HentDokumentUrlRequest delegateRequest = delegateRequestCaptor.getValue();
 		assertThat(delegateRequest.getJournalpostId(), is(JOURNALPOST_ID));
 		assertThat(delegateRequest.getFilUuid(), is(FIL_UUID));
 	}
-	
+
 	@Test
 	public void shouldReturnDokumentUrl() throws Exception {
 		String dokumentUrl = "nav.no/joark/dokument123";
-		
+
 		when(joarkRepositoryMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(createJournalPost()));
 		when(hentDokumentUrlMock.hentDokumentUrl(isA(HentDokumentUrlRequest.class))).thenReturn(
 				new HentDokumentUrlResponse(dokumentUrl));
-		
+
 		HentDokumentUrlResponseTo response = hentDokumentUrlService.hentDokumentUrl(hentDokumentUrlRequest);
-		
+
 		assertThat(response.getDokumentUrl(), is(dokumentUrl));
 	}
-	
+
 	private Journalpost createJournalPost() {
 		return JournalpostBuilder.getJournalpostBuilder()
 				.journalpostId(JOURNALPOST_ID)
 				.dokumentInfoRelasjoner(JournalpostDokumentInfoRelasjonBuilder
-					.getJournalpostDokumentInfoRelasjonBuilder()
+						.getJournalpostDokumentInfoRelasjonBuilder()
 						.dokumentInfo(DokumentInfoBuilder.getDokumentInfoBuilder()
 								.dokumentInfoId(DOKUMENT_INFO_ID)
 								.filDetaljerList(FilDetaljerBuilder.getFilDetaljerBuilder()
