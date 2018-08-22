@@ -126,7 +126,9 @@ public enum FagomradeCode implements CtiRelationship<FagomradeCode, String> {
 	/** Rettferdsvederlag */
 	RVE,
 	/** Retting av personopplysninger */
-	RPO;
+	RPO,
+	/** Farskap */
+	FAR;
 
 	/** {@inheritDoc} */
 	@Override
