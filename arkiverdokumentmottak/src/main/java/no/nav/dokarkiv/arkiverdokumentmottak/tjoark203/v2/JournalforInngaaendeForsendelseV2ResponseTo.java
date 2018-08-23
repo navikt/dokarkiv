@@ -21,9 +21,7 @@ public class JournalforInngaaendeForsendelseV2ResponseTo {
 	private List<DokumentInfoIdVedleggTo> dokumentInfoIdVedleggTo = new ArrayList<>();
 	private String journalTilstand;
 
-	public JournalforInngaaendeForsendelseV2ResponseTo(Long journalpostId) {
+	JournalforInngaaendeForsendelseV2ResponseTo(Long journalpostId) {
 		this.journalpostId = journalpostId;
 	}
-
-
 }

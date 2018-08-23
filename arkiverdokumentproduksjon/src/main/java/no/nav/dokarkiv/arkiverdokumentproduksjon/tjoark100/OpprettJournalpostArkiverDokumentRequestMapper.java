@@ -56,7 +56,7 @@ public class OpprettJournalpostArkiverDokumentRequestMapper {
 		return new OpprettJournalpostArkiverDokumentRequestTo(domainJournalpost, wsRequest.isFerdigstillJournalpost());
 	}
 
-	Journalpost createDomainJournalpostBase(no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasjon.opprettjournalpostarkiverdokument.Journalpost journalpost) {
+	private Journalpost createDomainJournalpostBase(no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasjon.opprettjournalpostarkiverdokument.Journalpost journalpost) {
 		return Journalpost.builder()
 				.journalposttype(journalpost.getJournalpostType() == null ? null : JournalpostTypeCode.valueOf(journalpost
 						.getJournalpostType()

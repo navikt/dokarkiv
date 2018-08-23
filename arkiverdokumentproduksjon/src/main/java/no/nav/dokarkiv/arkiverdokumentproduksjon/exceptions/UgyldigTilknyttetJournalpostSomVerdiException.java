@@ -1,7 +1,7 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions;
 
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
-import no.nav.dokarkiv.core.stelvio.FunctionalRecoverableException;
+import no.nav.dokarkiv.core.exceptions.DokarkivFunctionalException;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
@@ -9,7 +9,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
  *
  * @author Roar Bjurstrom, Visma Consulting
  */
-public class UgyldigTilknyttetJournalpostSomVerdiException extends FunctionalRecoverableException {
+public class UgyldigTilknyttetJournalpostSomVerdiException extends DokarkivFunctionalException {
 
 	private static final long serialVersionUID = ***gammelt_fnr***69188758L;
 

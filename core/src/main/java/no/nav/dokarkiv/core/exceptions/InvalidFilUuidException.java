@@ -1,13 +1,11 @@
 package no.nav.dokarkiv.core.exceptions;
 
-import no.nav.dokarkiv.core.stelvio.FunctionalRecoverableException;
-
 /**
  * Thrown when either a FilDetaljer or DokumentFil cannot be found by filUuid.
  *
  * @author Thomas Eugen Bjørge, Visma Sirius
  */
-public class InvalidFilUuidException extends FunctionalRecoverableException {
+public class InvalidFilUuidException extends DokarkivFunctionalException {
 	
 	/** Serialization UID */
 	private static final long serialVersionUID = ***gammelt_fnr***32278339L;

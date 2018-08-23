@@ -19,11 +19,11 @@ import javax.jws.WebService;
 import javax.xml.ws.WebServiceContext;
 import javax.xml.ws.soap.Addressing;
 
-@WebService(endpointInterface = "no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v1.ArkiverDokumentmottakV1",
-		wsdlLocation = "classpath:wsdl/no/nav/tjeneste/domene/brevogarkiv/arkiverdokumentmottak/v1/arkiverdokumentmottak.wsdl",
-		targetNamespace = "http://nav.no/tjeneste/domene/brevogarkiv/arkiverdokumentmottak/v1/",
+@WebService(targetNamespace = "http://nav.no/tjeneste/domene/brevogarkiv/arkiverdokumentmottak/v1/",
 		serviceName = "ArkiverDokumentmottakService_v1",
-		portName = "ArkiverDokumentmottakPort_v1")
+		portName = "ArkiverDokumentmottakPort_v1",
+		wsdlLocation = "classpath:wsdl/no/nav/tjeneste/domene/brevogarkiv/arkiverdokumentmottak/v1/arkiverdokumentmottak.wsdl",
+		endpointInterface = "no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v1.ArkiverDokumentmottakV1")
 @Addressing
 @HandlerChain(file = "classpath:tjoark203/v1/arkiverdokumentmottakhandler.xml")
 @Service

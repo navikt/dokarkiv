@@ -1,6 +1,6 @@
 package no.nav.dokarkiv.innsynjournal.v2.exceptions;
 
-import no.nav.dokarkiv.core.stelvio.FunctionalRecoverableException;
+import no.nav.dokarkiv.core.exceptions.DokarkivFunctionalException;
 
 /**
  * Exception indicating that the selected Journalpost is not supported for the
@@ -9,7 +9,7 @@ import no.nav.dokarkiv.core.stelvio.FunctionalRecoverableException;
  * @author A137939 - Per Abich, Visma Consulting
  * 
  */
-public class JournalpostNotSupportedException extends FunctionalRecoverableException {
+public class JournalpostNotSupportedException extends DokarkivFunctionalException {
 
 	/**
 	 * Constructs a {@link JournalpostNotSupportedException} with message and

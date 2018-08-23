@@ -1,13 +1,11 @@
 package no.nav.dokarkiv.core.exceptions;
 
-import no.nav.dokarkiv.core.stelvio.FunctionalRecoverableException;
-
 /**
  * Thrown when a Journalpost or journalpost, document or variantformat that cannot be found.
  *
  * @author Thomas Eugen Bjørge, Visma Consulting
  */
-public class DocumentNotFoundException extends FunctionalRecoverableException {
+public class DocumentNotFoundException extends DokarkivFunctionalException {
 
 	/**
 	 * Serialization UID

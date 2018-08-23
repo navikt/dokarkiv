@@ -70,11 +70,11 @@ import javax.xml.ws.soap.Addressing;
  *
  * @author Joakim Bjørnstad, Visma Consulting
  */
-@WebService(endpointInterface = "no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.ArkiverDokumentproduksjonV1",
-		wsdlLocation = "classpath:wsdl/no/nav/tjeneste/domene/brevogarkiv/arkiverdokumentproduksjon/v1/arkiverdokumentproduksjon.wsdl",
-		targetNamespace = "http://nav.no/tjeneste/domene/brevogarkiv/arkiverdokumentproduksjon/v1/",
+@WebService(targetNamespace = "http://nav.no/tjeneste/domene/brevogarkiv/arkiverdokumentproduksjon/v1/",
 		serviceName = "ArkiverDokumentproduksjonService_v1",
-		portName = "ArkiverDokumentproduksjonPort_v1")
+		portName = "ArkiverDokumentproduksjonPort_v1",
+		wsdlLocation = "classpath:wsdl/no/nav/tjeneste/domene/brevogarkiv/arkiverdokumentproduksjon/v1/arkiverdokumentproduksjon.wsdl",
+		endpointInterface = "no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.ArkiverDokumentproduksjonV1")
 @Addressing
 @HandlerChain(file = "classpath:arkiverdokumentproduksjon-handler.xml")
 @Service

@@ -23,7 +23,6 @@ import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
 import no.nav.dokarkiv.core.sporing.SporingPopulator;
-import no.nav.dokarkiv.core.stelvio.FunctionalRecoverableException;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -73,7 +72,7 @@ public class DefaultAvbrytVedleggServiceTest {
 	}
 
 	@Test
-	public void shouldValidateInput() throws FunctionalRecoverableException {
+	public void shouldValidateInput() throws Exception {
 		AvbrytVedleggRequestTo request = createRequest();
 		avbrytVedleggService.avbrytVedlegg(request);
 
@@ -84,7 +83,7 @@ public class DefaultAvbrytVedleggServiceTest {
 	}
 
 	@Test
-	public void shouldFindJournalpostBasedOnResponse() throws FunctionalRecoverableException {
+	public void shouldFindJournalpostBasedOnResponse() throws Exception {
 		AvbrytVedleggRequestTo request = createRequest();
 		avbrytVedleggService.avbrytVedlegg(request);
 
