@@ -54,6 +54,7 @@ public class InngaaendeJournalDataProvider {
 				.avsenderMottakerId(AVSENDER_MOTTAKERID)
 				.mottattDato(Date.from(NOW.atZone(ZoneId.systemDefault()).toInstant()))
 				.mottakskanal(MottaksKanalCode.NAV_NO)
+				.kanalReferanseId(KANAL_REFERANSE_ID)
 				.fagomrade(FagomradeCode.PEN)
 				.journalStatus(JournalStatusCode.J)
 				.journalpostType(JournalpostTypeCode.I)
