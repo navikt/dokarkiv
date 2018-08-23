@@ -84,6 +84,7 @@ public class HentInngaaendeJournalpostServiceTest {
 		assertThat(to.getForsendelseMottatt(), is(InngaaendeJournalDataProvider.NOW));
 		assertThat(to.getMottakskanal(), is(MottaksKanalCode.NAV_NO));
 		assertThat(to.getTema(), is(FagomradeCode.PEN));
+		assertThat(to.getKanalReferanseId(), is(InngaaendeJournalDataProvider.KANAL_REFERANSE_ID));
 		assertThat(to.getJournaltilstand(), is(JournaltilstandTo.ENDELIG));
 		assertThat(to.getArkivSak().getArkivSakId(), is(InngaaendeJournalDataProvider.ARKIV_SAKID));
 		assertThat(to.getArkivSak().getFagsystem(), is(FagsystemCode.PEN));

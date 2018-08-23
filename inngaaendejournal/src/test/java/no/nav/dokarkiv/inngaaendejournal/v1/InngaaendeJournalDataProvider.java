@@ -47,6 +47,7 @@ public class InngaaendeJournalDataProvider {
 	private static final String AVSENDER_MOTTAKERNAVN = "Spiderman";
 	public static final String TITTEL_VEDLEGG = "Mitt vedlegg";
 	private static final String TITTEL_HOVEDDOKUMENT = "Mitt hoveddokument";
+	public static final String KANAL_REFERANSE_ID = "KanalReferanseId";
 
 	public static JournalpostBuilder buildBaseJournalpost() {
 		return getJournalpostBuilder()
