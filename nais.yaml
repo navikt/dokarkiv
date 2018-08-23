@@ -62,6 +62,14 @@ fasitResources:
     propertyMap:
       url: DOKARKIV_HENTDOKUMENT_BASEURL
   exposed:
+  - alias: Journal_v3
+    resourceType: webserviceendpoint
+    path: /services/journal/v3
+    wsdlGroupId: no.nav.tjenester
+    wsdlArtifactId: nav-journal-v3-tjenestespesifikasjon
+    wsdlVersion: 3.1.5
+    securityToken: SAML
+    description: Virksomhetstjeneste for henting av journalposter og dokumenter fra arkivet.
   - alias: InngaaendeJournal_v1
     resourceType: webserviceendpoint
     path: /services/inngaaendejournal/v1
