@@ -13,6 +13,8 @@ import static no.nav.dokarkiv.journalfoerInngaaende.v1.util.Utils.hasText;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dok.tjenester.journalfoerinngaaende.GetJournalpostResponse;
+import no.nav.dok.tjenester.journalfoerinngaaende.PutDokumentRequest;
+import no.nav.dok.tjenester.journalfoerinngaaende.PutDokumentResponse;
 import no.nav.dok.tjenester.journalfoerinngaaende.PutJournalpostRequest;
 import no.nav.dok.tjenester.journalfoerinngaaende.PutJournalpostResponse;
 import no.nav.dokarkiv.core.exceptions.DokarkivRestFunctionalException;
@@ -21,6 +23,7 @@ import no.nav.dokarkiv.core.security.abac.AbacSecurityService;
 import no.nav.dokarkiv.core.security.abac.AuthorizationException;
 import no.nav.dokarkiv.journalfoerInngaaende.v1.service.GetInngaaendeJournalpostService;
 import no.nav.dokarkiv.journalfoerInngaaende.v1.service.PersistInngaaendeJournalpostService;
+import no.nav.dokarkiv.journalfoerInngaaende.v1.service.UpdateInngaaendeJournalpostDokumentService;
 import no.nav.freg.abac.core.annotation.Abac;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -45,16 +48,19 @@ import javax.inject.Inject;
 @RequestMapping("/rest/journalfoer-inngaaende/v1/journalposter")
 public class JournalfoerInngaaendeRestController {
 
-	private GetInngaaendeJournalpostService getInngaaendeJournalpostService;
-	private PersistInngaaendeJournalpostService persistInngaaendeJournalpostService;
-	private AbacSecurityService abacSecurityService;
+	private final GetInngaaendeJournalpostService getInngaaendeJournalpostService;
+	private final PersistInngaaendeJournalpostService persistInngaaendeJournalpostService;
+	private final UpdateInngaaendeJournalpostDokumentService updateInngaaendeJournalpostDokumentService;
+	private final AbacSecurityService abacSecurityService;
 
 	@Inject
 	public JournalfoerInngaaendeRestController(GetInngaaendeJournalpostService getInngaaendeJournalpostService,
 											   PersistInngaaendeJournalpostService persistInngaaendeJournalpostService,
+											   UpdateInngaaendeJournalpostDokumentService updateInngaaendeJournalpostDokumentService,
 											   AbacSecurityService abacSecurityService) {
 		this.getInngaaendeJournalpostService = getInngaaendeJournalpostService;
 		this.abacSecurityService = abacSecurityService;
+		this.updateInngaaendeJournalpostDokumentService = updateInngaaendeJournalpostDokumentService;
 		this.persistInngaaendeJournalpostService = persistInngaaendeJournalpostService;
 	}
 
@@ -91,6 +97,26 @@ public class JournalfoerInngaaendeRestController {
 			return new ResponseEntity<>(inngaaendeResponseTo, HttpStatus.OK);
 		} catch (DokarkivRestFunctionalException e) {
 			log.warn("Feilmelding={}, journalpostId={}. HttpStatus={}", e.getMessage(), journalpostId, e.getHttpStatus());
+			HttpHeaders headers = new HttpHeaders();
+			headers.setContentType(MediaType.TEXT_PLAIN);
+			return new ResponseEntity<>(e.getMessage() + ". journalpostId=" + journalpostId, headers, e.getHttpStatus());
+		}
+	}
+
+	@PutMapping(value = "/{journalpostId}/dokumenter/{dokumentid}")
+	@Transactional
+	@Abac(actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION),
+			resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_JOURNALPOST)})
+	public ResponseEntity updateDokument(@PathVariable String journalpostId, @PathVariable String dokumentid, @RequestBody PutDokumentRequest request) {
+		try {
+			validateJournalpostId(journalpostId);
+			assertAccessToJournalpost(journalpostId);
+			PutDokumentResponse inngaaendeResponseTo = updateInngaaendeJournalpostDokumentService.update(journalpostId, dokumentid, request);
+			log.info("Oppdatert dokument med journalpostId={} og dokumentId={} i Joark.", journalpostId, dokumentid);
+			return new ResponseEntity<>(inngaaendeResponseTo, HttpStatus.OK);
+		} catch (DokarkivRestFunctionalException e) {
+			log.warn("Feilmelding={}, journalpostId={}, dokumentId={}. HttpStatus={}", e.getMessage(), journalpostId, dokumentid, e
+					.getHttpStatus());
 			HttpHeaders headers = new HttpHeaders();
 			headers.setContentType(MediaType.TEXT_PLAIN);
 			return new ResponseEntity<>(e.getMessage() + ". journalpostId=" + journalpostId, headers, e.getHttpStatus());

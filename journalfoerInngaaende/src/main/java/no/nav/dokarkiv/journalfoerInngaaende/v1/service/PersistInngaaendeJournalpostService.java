@@ -1,12 +1,12 @@
 package no.nav.dokarkiv.journalfoerInngaaende.v1.service;
 
-import static no.nav.dok.tjenester.journalfoerinngaaende.PutJournalpostResponse.AvsenderId.MANGLER;
-import static no.nav.dok.tjenester.journalfoerinngaaende.PutJournalpostResponse.AvsenderId.MANGLER_IKKE;
+import static no.nav.dok.tjenester.journalfoerinngaaende.response.Mangler.AvsenderId.MANGLER;
+import static no.nav.dok.tjenester.journalfoerinngaaende.response.Mangler.AvsenderId.MANGLER_IKKE;
 import static org.hibernate.annotations.common.util.StringHelper.isEmpty;
 
-import no.nav.dok.tjenester.journalfoerinngaaende.response.Dokument;
 import no.nav.dok.tjenester.journalfoerinngaaende.PutJournalpostRequest;
 import no.nav.dok.tjenester.journalfoerinngaaende.PutJournalpostResponse;
+import no.nav.dok.tjenester.journalfoerinngaaende.response.Dokument;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
@@ -67,7 +67,7 @@ public class PersistInngaaendeJournalpostService {
         if (putJournalpostRequest.getArkivSak() != null) {
             Saksrelasjon saksrelasjon = new Saksrelasjon();
             saksrelasjon.setSakId(putJournalpostRequest.getArkivSak().getArkivSakId());
-            saksrelasjon.setFagsystem(FagsystemCode.valueOf(putJournalpostRequest.getArkivSak().getArkivSakSystem().name()));
+            saksrelasjon.setFagsystem(FagsystemCode.valueOf(putJournalpostRequest.getArkivSak().getArkivSakSystem()));
             journalpost.setSaksrelasjon(saksrelasjon);
         }
 
@@ -166,13 +166,13 @@ public class PersistInngaaendeJournalpostService {
             }
         });
 
-        return new PutJournalpostResponse()
-                .withAvsenderId(isEmpty(jp.getAvsenderMottakerId()) ? MANGLER : MANGLER_IKKE)
-                .withAvsenderNavn(isEmpty(jp.getAvsenderMottaker()) ? MANGLER : MANGLER_IKKE)
-                .withArkivSak((jp.getSaksrelasjon() != null) ? MANGLER : MANGLER_IKKE)
-                .withTittel(isEmpty(jp.getInnhold()) ? MANGLER : MANGLER_IKKE)
-                .withTema((jp.getFagomrade() != null) ? MANGLER : MANGLER_IKKE)
-                .withBruker((jp.getBrukere().isEmpty()) ? MANGLER : MANGLER_IKKE)
-                .withDokumenter(dokumentList);
+        return new PutJournalpostResponse();
+//                .withAvsenderId(isEmpty(jp.getAvsenderMottakerId()) ? MANGLER : MANGLER_IKKE)
+//                .withAvsenderNavn(isEmpty(jp.getAvsenderMottaker()) ? MANGLER : MANGLER_IKKE)
+//                .withArkivSak((jp.getSaksrelasjon() != null) ? MANGLER : MANGLER_IKKE)
+//                .withTittel(isEmpty(jp.getInnhold()) ? MANGLER : MANGLER_IKKE)
+//                .withTema((jp.getFagomrade() != null) ? MANGLER : MANGLER_IKKE)
+//                .withBruker((jp.getBrukere().isEmpty()) ? MANGLER : MANGLER_IKKE)
+//                .withDokumenter(dokumentList);
     }
 }
