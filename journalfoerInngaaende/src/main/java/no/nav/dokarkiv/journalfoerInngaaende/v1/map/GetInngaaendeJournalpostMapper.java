@@ -49,7 +49,7 @@ public class GetInngaaendeJournalpostMapper extends AbstractInngaaendeJournalpos
 				.withDokumentListe(mapDokumenter(journalpost.getJournalpostDokumentInfoRelasjoner()));
 	}
 
-	private String mapJournaltilstand(Journalpost journalpost) {
+	private GetJournalpostResponse.JournalTilstand mapJournaltilstand(Journalpost journalpost) {
 		if (journalpost.isFeilregistrert()) {
 			return GetJournalpostResponse.JournalTilstand.UTGAAR;
 		} else if (journalpost.hasEndeligJournalforingStatus()) {
@@ -157,21 +157,6 @@ public class GetInngaaendeJournalpostMapper extends AbstractInngaaendeJournalpos
 		} else {
 			return Bruker.BrukerType.ORGANISASJON;
 		}
-	}
-
-	private String mapFagsystemToArkivsaksystem(FagsystemCode fagsystemCode) {
-		if (fagsystemCode.equals(FagsystemCode.FS22)) {
-			return ArkivsystemKode.GSAK.name();
-		} else if (fagsystemCode.equals(FagsystemCode.PEN)) {
-			return ArkivsystemKode.PSAK.name();
-		} else {
-			return fagsystemCode.name();
-		}
-	}
-
-	private enum ArkivsystemKode {
-		GSAK,
-		PSAK
 	}
 
 }
