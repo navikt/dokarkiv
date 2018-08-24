@@ -1,139 +1,47 @@
-package no.nav.dokarkiv.core.stelvio;
+package no.nav.dokarkiv.core.domain.validator;
 
-import no.nav.dokarkiv.core.exceptions.PidValidationException;
 import org.apache.commons.lang3.StringUtils;
 
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
-import java.io.Serializable;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 /**
+ * Endringer:
+ * Modifisert Pid klasse fra Stelvio der all logikk knyttet til persistens er fjernet, da dette ikke blir brukt i joark.
+ * <p>
  * Class represents a personal identification number, that can be persistet into a table. Instances of this object can not exist
  * on it's own, they must exist inside an <code>@Entity</code>-object in order to be persisted.
  * <p/>
  * There shouldn't exist an instance of this class where <code>getPid</code> doesn't return a valid fnr. Class is final to avoid
  * public implementations of the no-arg constructor.
  * <p/>
- *
+ * <p>
  * By setting the special circumstances flag in the validation code to <code>true</code> the validation code will accept special
  * circumstances. Special circumstances are where the personnummer (last 5 digit of fnr) does not follow the normal rules, but
  * has a special value like 00000 or 00001
- *
- * NB! Pid is and should always be immutable.
+ * <p>
+ * NB! FoedselsnummerValidator is and should always be immutable.
  *
  * @author Morten Andersen-Gott (Accenture)
  * @author Kjetil Kristiansen
  * @author Odin Hole Standal
- * @see Embeddable
  */
-@Deprecated // ikke bruk denne mer
-@Embeddable
-public final class Pid implements Serializable {
-	/** The id used to check version of object when serializing. */
-	private static final long serialVersionUID = ***gammelt_fnr***89499716L;
-
-	@Column(name = "fnr_fk")
-	private String pid;
-
-	/**
-	 * Protected constructor, should only be used by persistence provider. Never to be used by a client.
-	 */
-	protected Pid() {
+public final class FoedselsnummerValidator {
+	private FoedselsnummerValidator() {
 	}
 
 	/**
-	 * Creates a new Pid using the a pid String.
+	 * Gets the day part of a valid FoedselsnummerValidator.
 	 *
-	 * Will validate supplied pid, not accepting special circumstances
-	 *
-	 * @param pid
-	 *            a valid fnr
-	 * @throws PidValidationException
-	 *             if pid isn't a valid Personal Identification Number
-	 */
-	public Pid(String pid) throws PidValidationException {
-		this.pid = StringUtils.deleteWhitespace(pid);
-		validate(false);
-	}
-
-	/**
-	 * Creates a new Pid using the a pid String.
-	 *
-	 * @param pid
-	 *            a valid fnr
-	 * @param acceptSpecialCircumstances
-	 *            true if special circumstances should be accepted in validation
-	 * @throws PidValidationException
-	 *             if pid isn't a valid Personal Identification Number
-	 */
-	public Pid(String pid, boolean acceptSpecialCircumstances) throws PidValidationException {
-		this.pid = StringUtils.deleteWhitespace(pid);
-		validate(acceptSpecialCircumstances);
-	}
-
-	/**
-	 * Gets the personal identification number, this number should always be a valid pid..
-	 *
-	 * @return pid representing a fnr, dnr or bostnr
-	 */
-	public String getPid() {
-		return pid;
-	}
-
-	/**
-	 * Method that calculates and returns the birth date for <code>this</code> pid.
-	 *
-	 * @return java.util.Date representing the birth date of person with this Pid
-	 */
-	public Date getFodselsdato() {
-		// Adjust bnr or dnr (for fnr return value will be equal to pid)
-		String adjustedFnr = makeDnrOrBostnrAdjustments(pid);
-		// Construct a date string with MMDDyyyy format
-
-		String dateString = adjustedFnr.substring(0, 4) + get4DigitYearOfBirthWithAdjustedFnr(adjustedFnr, this.isDnummer());
-
-		try {
-			return createDateFormatter().parse(dateString);
-		} catch (ParseException e) {
-			// This should never occur, as "pid" has been validated by constructor
-			throw new PidValidationException("Pid validation failed, " + pid + " is not a valid personal identification number");
-		}
-	}
-
-	/**
-	 * Returns a 4-digit birth date.
-	 *
-	 * Will try to determin that the fnr is valid, this behavior is not guaranteed. Parameter passed to this method should pass
-	 * the {@link Pid#isValidPid(String)} test.
-	 *
-	 * @param validPid
-	 *            - a valid fnr, dnr or bostnr
-	 * @return 4 digit birth date, -1 if method is able to determin that the supplied fnr isn't valid
-	 */
-	public static int get4DigitYearOfBirth(String validPid) {
-		return get4DigitYearOfBirthWithAdjustedFnr(makeDnrOrBostnrAdjustments(validPid), isDnummer(validPid));
-	}
-
-	/**
-	 * Gets the day part of a valid Pid.
-	 *
-	 * @param validPid
-	 *            - a valid fnr, dnr or bostnr
-	 * @return Day in birth date part of Pid
+	 * @param validPid - a valid fnr, dnr or bostnr
+	 * @return Day in birth date part of FoedselsnummerValidator
 	 */
 	private static int getDay(String validPid) {
 		return Integer.parseInt(validPid.substring(0, 2));
 	}
 
 	/**
-	 * Gets the Month part of a valid Pid.
+	 * Gets the Month part of a valid FoedselsnummerValidator.
 	 *
-	 * @param validPid
-	 *            - a valid fnr, dnr or bostnr
-	 * @return Month in birth date part of Pid
+	 * @param validPid - a valid fnr, dnr or bostnr
+	 * @return Month in birth date part of FoedselsnummerValidator
 	 */
 	private static int getMonth(String validPid) {
 		return Integer.parseInt(validPid.substring(2, 4));
@@ -144,8 +52,7 @@ public final class Pid implements Serializable {
 	 * BostNr. This method does not check for special circumstances i.e. where the personnummer has a specific value like 00000
 	 * or 000001.
 	 *
-	 * @param pid
-	 *            personal identification id to validate
+	 * @param pid personal identification id to validate
 	 * @return <code>true</code> if the specified string is valid, otherwise <code>false</code>
 	 */
 	public static boolean isValidPid(String pid) {
@@ -156,11 +63,9 @@ public final class Pid implements Serializable {
 	 * Determines whether the specified string is a valid personal identification number. A valid PID can be: FNR, DNR or BostNr
 	 * See CR 97658 for the functional details.
 	 *
-	 * @param pid
-	 *            personal identification id to validate
-	 * @param acceptSpecialCircumstances
-	 *            flag indicating if the method should accept special circumstances. Special circumstances are where the
-	 *            personnummer does not follow the normal rules, but has a special value like 00000 or 00001
+	 * @param pid                        personal identification id to validate
+	 * @param acceptSpecialCircumstances flag indicating if the method should accept special circumstances. Special circumstances are where the
+	 *                                   personnummer does not follow the normal rules, but has a special value like 00000 or 00001
 	 * @return <code>true</code> if the specified string is valid, otherwise <code>false</code>
 	 */
 	public static boolean isValidPid(String pid, boolean acceptSpecialCircumstances) {
@@ -194,64 +99,9 @@ public final class Pid implements Serializable {
 	}
 
 	/**
-	 * Validates that the white space usage in the pid is valid. Valid use of white space is ONE white space between index 5 and
-	 * 6 (making the pid.length() == 12). No spaces is also a valid "use" of white spaces.
+	 * Calculates wether the FoedselsnummerValidator parameter is representing a D-nummer.
 	 *
-	 * @param pid
-	 *            Pid to check for whitespace compliance.
-	 * @return <code>true</code> if usage is valid, otherwise <code>false</code>
-	 */
-	public static boolean isWhitespaceCompliant(String pid) {
-		String pidWithWhitespace = "\\d\\d\\d\\d\\d\\d\\s\\d\\d\\d\\d\\d"; // DDMMYYXXXZZ
-		String pidWithoutWhitespace = "\\d\\d\\d\\d\\d\\d\\d\\d\\d\\d\\d"; // DDMMYYXXXZZ
-
-		return pid.matches(pidWithWhitespace) || pid.matches(pidWithoutWhitespace);
-	}
-
-	/**
-	 * Method that calculates whether the this Pid is representing a Bostnummer.
-	 *
-	 * @return <code>true</code> if <code>this</code> is representing a bostnummer, otherwise <code>false</code>
-	 */
-	public boolean isBostnummer() {
-		// fnr format will be <DDMMAAXXXYY>
-		return isBostnummer(pid);
-	}
-
-	/**
-	 * Calculates wether the Pid parameter is representing a Bostnummer.
-	 *
-	 * @param pidValue
-	 *            The Pid to check
-	 * @return <code>true</code> if it is a bostnummer
-	 */
-	private static boolean isBostnummer(String pidValue) {
-		int month = Integer.parseInt(pidValue.substring(2, 4));
-		return month > 20 && month <= 32;
-	}
-
-	/**
-	 * <p>
-	 * Checks if the Pid value could represent a D-nummer. A D-nummer is used as the birthnumber for foreigners living in
-	 * Norway. In a D-nummer, the number 4 has been added to the first cipher in the Pid. Otherwise it is similar to a
-	 * birthnumber for native Norwegians.
-	 * </p>
-	 * <p>
-	 * Note that this method may not work on weakly validated Pids (using special circumstances flag), as such Pids can never be
-	 * guaranteed.
-	 * </p>
-	 *
-	 * @return <code>true</code> if Pid is representing a D-nummer, otherwise <code>false</code>
-	 */
-	public boolean isDnummer() {
-		return isDnummer(this.pid);
-	}
-
-	/**
-	 * Calculates wether the Pid parameter is representing a D-nummer.
-	 *
-	 * @param pidValue
-	 *            The Pid to check
+	 * @param pidValue The FoedselsnummerValidator to check
 	 * @return true if it is a D-nummer
 	 */
 	private static boolean isDnummer(String pidValue) {
@@ -259,56 +109,9 @@ public final class Pid implements Serializable {
 	}
 
 	/**
-	 * Indicates whether some object is equals to this object. Two Pid objects are equal if their {@link #getPid()} value are
-	 * equal
-	 *
-	 * @param obj
-	 *            the reference object with which to compare
-	 * @return <code>true</code> if objects are equal, otherwise <code>false</code>
-	 */
-	@Override
-	public boolean equals(Object obj) {
-		if (obj instanceof Pid) {
-			Pid pidObj = (Pid) obj;
-			return pid.equals(pidObj.pid);
-		} else {
-			return false;
-		}
-	}
-
-	/**
-	 * Returns a hash code value for the object.
-	 *
-	 * @return a hash code value for this object.
-	 * @see #equals(Object)
-	 */
-	@Override
-	public int hashCode() {
-		return pid.hashCode();
-	}
-
-	/**
-	 * Validates that <code>this</code> is a valid Pid.
-	 *
-	 * @param acceptSpecialCircumstances
-	 *            flag indicating if the method should accept special circumstances. Special circumstances are where the
-	 *            personnummer (last 5 digit of fnr) does not follow the normal rules, but has a special value like 00000 or
-	 *            00001
-	 *
-	 * @throws PidValidationException
-	 *             if validation of <code>this</code> fails
-	 */
-	private void validate(boolean acceptSpecialCircumstances) throws PidValidationException {
-		if (!isValidPid(pid, acceptSpecialCircumstances)) {
-			throw new PidValidationException("Pid validation failed, " + pid + " is not a valid personal identification number");
-		}
-	}
-
-	/**
 	 * Validates that the length of the fnr is valid. To be valid the length must be 11.
 	 *
-	 * @param fnr
-	 *            personal identification number
+	 * @param fnr personal identification number
 	 * @return <code>true</code> if valid, otherwise <code>false</code>
 	 */
 	private static boolean isValidFnrLength(String fnr) {
@@ -318,8 +121,7 @@ public final class Pid implements Serializable {
 	/**
 	 * Validates that the characters that make up the fnr are valid. To be valid, all characters must be numeric.
 	 *
-	 * @param fnr
-	 *            personal identification number
+	 * @param fnr personal identification number
 	 * @return <code>true</code> if valid, otherwise <code>false</code>
 	 */
 	private static boolean isValidCharacters(String fnr) {
@@ -329,8 +131,7 @@ public final class Pid implements Serializable {
 	/**
 	 * Checks that a fnr is valid according to the modulus 11 control.
 	 *
-	 * @param fnr
-	 *            fodselsnummer
+	 * @param fnr fodselsnummer
 	 * @return true if fnr is valid, otherwise false
 	 */
 	private static boolean isMod11Compliant(String fnr) {
@@ -368,8 +169,7 @@ public final class Pid implements Serializable {
 	/**
 	 * Checks that a fnr is valid special circumstance. A special circumstance is when the personnummer is 0 or 1.
 	 *
-	 * @param fnr
-	 *            fodselsnummer
+	 * @param fnr fodselsnummer
 	 * @return <code>true</code> if fnr is valid special circumstance, otherwise <code>false</code>
 	 */
 	private static boolean isSpecialCircumstance(String fnr) {
@@ -381,8 +181,7 @@ public final class Pid implements Serializable {
 	/**
 	 * Checks that a day may be a D-nummer.
 	 *
-	 * @param day
-	 *            Day part of the Pid
+	 * @param day Day part of the FoedselsnummerValidator
 	 * @return <code>true</code> if Day could be a D-number, otherwise <code>false</code>
 	 */
 	private static boolean isDnrDay(int day) {
@@ -393,10 +192,8 @@ public final class Pid implements Serializable {
 	/**
 	 * Validates that the first six digits of a fnr represents a valid birth date.
 	 *
-	 * @param dnrOrBnrAdjustedFnr
-	 *            - 11 digit fødselsnummer, ajdusted if bnr or fnr
-	 * @param isDnummer
-	 *            indicates if the dnrOrBnrAdjusteFnr is a Dnr
+	 * @param dnrOrBnrAdjustedFnr - 11 digit fødselsnummer, ajdusted if bnr or fnr
+	 * @param isDnummer           indicates if the dnrOrBnrAdjusteFnr is a Dnr
 	 * @return <code>true</code> if fnr can be converted to a valid date, otherwise <code>false</code>
 	 */
 	private static boolean isFnrDateValid(String dnrOrBnrAdjustedFnr, boolean isDnummer) {
@@ -472,10 +269,9 @@ public final class Pid implements Serializable {
 	 * Adjusts DNR and BostNr so that the first 6 numbers represents a valid date In the case wher DNR or BostNr is the input,
 	 * the return value will fail a modulus 11 check.
 	 *
-	 * @param value
-	 *            a personal identification number
+	 * @param value a personal identification number
 	 * @return the inparam if it wasn't a DNR or BostNr, otherwise the BostNr/DNR where the 6 first digits can be converted to a
-	 *         valid date
+	 * valid date
 	 */
 	private static String makeDnrOrBostnrAdjustments(String value) {
 		if (StringUtils.isBlank(value)) {
@@ -519,10 +315,8 @@ public final class Pid implements Serializable {
 	/**
 	 * Returns a 4-digit birth date.
 	 *
-	 * @param dnrOrBnrAdjustedFnr
-	 *            a fnr, adjusted if it's a bnr or dnr
-	 * @param isDnummer
-	 *            boolean that says wether the dnrOrBnrAdjustedFnr is a Dnr
+	 * @param dnrOrBnrAdjustedFnr a fnr, adjusted if it's a bnr or dnr
+	 * @param isDnummer           boolean that says wether the dnrOrBnrAdjustedFnr is a Dnr
 	 * @return 4 digit birth date, -1 if invalid
 	 */
 	private static int get4DigitYearOfBirthWithAdjustedFnr(String dnrOrBnrAdjustedFnr, boolean isDnummer) {
@@ -547,28 +341,5 @@ public final class Pid implements Serializable {
 			}
 		}
 		return year;
-	}
-
-	/**
-	 * Creates the date formatter to be used for parsing the date part of a pid. It won't be lenient, that is, it won't use
-	 * heuristics to interpret inputs that do not precisely match the specified format.
-	 *
-	 * @return the date formatter to use.
-	 */
-	private static SimpleDateFormat createDateFormatter() {
-		SimpleDateFormat formatter = new SimpleDateFormat("ddMMyyyy");
-		formatter.setLenient(false);
-
-		return formatter;
-	}
-
-	/**
-	 * Returns a string representation of Pid. The string consists of 11-digits without spaces
-	 *
-	 * @return Pid as string
-	 */
-	@Override
-	public String toString() {
-		return this.pid;
 	}
 }

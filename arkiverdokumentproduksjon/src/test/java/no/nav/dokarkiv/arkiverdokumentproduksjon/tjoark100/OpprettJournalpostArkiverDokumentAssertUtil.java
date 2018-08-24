@@ -9,7 +9,7 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.junit.Assert.assertThat;
 
-import no.nav.dokarkiv.core.constants.ServiceConstants;
+import no.nav.dokarkiv.arkiverdokumentproduksjon.ArkiverDokumentproduksjonConstants;
 import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
@@ -88,7 +88,7 @@ public class OpprettJournalpostArkiverDokumentAssertUtil {
 	}
 
 	private static void assertTilleggsopplysninger(Map<String, String> tilleggsopplysninger) {
-		assertThat(tilleggsopplysninger, hasEntry(ServiceConstants.BESTILLINGS_ID_KEY, BESTILLINGS_ID));
+		assertThat(tilleggsopplysninger, hasEntry(ArkiverDokumentproduksjonConstants.BESTILLINGS_ID_KEY, BESTILLINGS_ID));
 		assertThat(tilleggsopplysninger, hasEntry(TILLEGGSOPPLYSNING_KEY_2, TILLEGGSOPPLYSNING_VALUE_2));
 	}
 

@@ -1,6 +1,6 @@
 package no.nav.dokarkiv.hentdokument.dokument;
 
-import static no.nav.dokarkiv.core.constants.ServiceConstants.HENT_DOKUMENT_SERVLET_PARAM;
+import static no.nav.dokarkiv.core.dokumenturl.HentDokumentUrlConstants.HENT_DOKUMENT_SERVLET_PARAM;
 import static org.apache.logging.log4j.util.Strings.isNotEmpty;
 
 import no.nav.dokarkiv.core.dokumenturl.AbstractDocumentOperation;

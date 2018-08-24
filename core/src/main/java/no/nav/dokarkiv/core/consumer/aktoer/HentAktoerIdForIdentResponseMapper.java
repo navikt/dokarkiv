@@ -23,7 +23,7 @@ public class HentAktoerIdForIdentResponseMapper {
 	 * @param response The ws-response to map
 	 * @return The domain object
 	 */
-	public HentAktoerIdForIdentResponseTo map(HentAktoerIdForIdentResponse response) { ;
+	public HentAktoerIdForIdentResponseTo map(HentAktoerIdForIdentResponse response) {
 		List<IdentDetaljerTo> historiskeIdenter = response.getIdentHistorikk().stream().map(this::mapIdentDetaljerTo).collect(Collectors.toList());
 		return new HentAktoerIdForIdentResponseTo(response.getAktoerId(), historiskeIdenter);
 	}

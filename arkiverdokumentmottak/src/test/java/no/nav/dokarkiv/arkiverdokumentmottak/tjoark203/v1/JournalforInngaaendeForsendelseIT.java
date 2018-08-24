@@ -13,7 +13,7 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
 import no.nav.dokarkiv.arkiverdokumentmottak.AbstractArkiverDokumentmottakItest;
-import no.nav.dokarkiv.arkiverdokumentmottak.ServiceConstants;
+import no.nav.dokarkiv.arkiverdokumentmottak.ArkiverDokumentmottakConstants;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
@@ -503,7 +503,7 @@ public class JournalforInngaaendeForsendelseIT extends AbstractArkiverDokumentmo
 		assertThat(toXMLGregorianCalendar(domain.getDokumentDato()), is(request.getDatoDokument()));
 		assertThat(domain.getJournalfortAvNavn(), is(request.getOpprettetAvNavn()));
 		assertThat(domain.getOpprettetAvNavn(), is(request.getOpprettetAvNavn()));
-		assertThat(domain.getTilleggsopplysninger(), hasEntry(ServiceConstants.FORSENDELSE_MOTTAK_ID_KEY, FORSENDELSE_MOTTA_VALUE));
+		assertThat(domain.getTilleggsopplysninger(), hasEntry(ArkiverDokumentmottakConstants.FORSENDELSE_MOTTAK_ID_KEY, FORSENDELSE_MOTTA_VALUE));
 
 //		assertEquals(domain.getJournalDato(), DateProvider.getToday());
 

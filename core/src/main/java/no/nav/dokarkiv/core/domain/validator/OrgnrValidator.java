@@ -69,13 +69,13 @@ public final class OrgnrValidator {
 		return controlNumber != 10;
 	}
 
-	private static int getExpectedControlNumber(int[] fields) {
+	private static int getExpectedControlNumber(int... fields) {
 		int productSum = getProductSum(fields);
 		int rest = productSum % 11;
 		return rest == 0 ? 0 : 11 - rest;
 	}
 
-	private static int getProductSum(int[] fields) {
+	private static int getProductSum(int... fields) {
 		int productSum = 0;
 		for (int ii = 0; ii < fields.length; ii++) {
 			productSum += fields[ii] * WEIGHTS[ii];

@@ -1,6 +1,5 @@
 package no.nav.dokarkiv.core.dokumenturl;
 
-import no.nav.dokarkiv.core.constants.ServiceConstants;
 import no.nav.dokarkiv.core.domain.entities.DokumentUrlInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
@@ -103,7 +102,7 @@ public class DefaultHentDokumentUrl extends AbstractDocumentOperation implements
 		String token = saveDokumentUrlInfo(journalpost, filUuid, timeToLiveMinutes);
 		return new StringBuilder(baseUrl)
 				.append("?")
-				.append(ServiceConstants.HENT_DOKUMENT_SERVLET_PARAM)
+				.append(HentDokumentUrlConstants.HENT_DOKUMENT_SERVLET_PARAM)
 				.append("=")
 				.append(token)
 				.toString();
