@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
  * @author Sigurd Midttun, Visma Consulting.
  */
 @Component
-public class GetInngaaendeJournalpostMapper {
+public class GetInngaaendeJournalpostMapper extends AbstractInngaaendeJournalpostMapper {
 
 	private static final List<JournalStatusCode> MIDLERTIDIG_STATUS = Arrays.asList(JournalStatusCode.M, JournalStatusCode.MO, JournalStatusCode.UB, JournalStatusCode.OD);
 
@@ -47,6 +47,7 @@ public class GetInngaaendeJournalpostMapper {
 				.withJournalfEnhet(journalpost.getJournalForendeEnhetId())
 				.withDokumentListe(mapDokumenter(journalpost.getJournalpostDokumentInfoRelasjoner()));
 	}
+
 	//TODO: Avklar om dette skal valideres på, og om feil skal kastes eller ei. Returner GetJournalpostResponse.JournalTilstand direkte
 	private String mapJournaltilstand(Journalpost journalpost) {
 		if (journalpost.isFeilregistrert()) {
@@ -63,19 +64,13 @@ public class GetInngaaendeJournalpostMapper {
 		}
 	}
 
-	private enum JournaltilstandKode {
-		MIDLERTIDIG,
-		UTGAAR,
-		ENDELIG
-	}
-
 	private ArkivSak mapArkivsak(Saksrelasjon saksrelasjon) {
 		if (saksrelasjon == null) {
 			return null;
 		} else {
 			return new ArkivSak()
 					.withArkivSakId(saksrelasjon.getSakId())
-					.withArkivSakSystem(ArkivSak.ArkivSakSystem.fromValue(mapFagsystemtoArkivsaksystem(saksrelasjon.getFagsystem())));  //TODO: Valider eller endre grensesnintt!
+					.withArkivSakSystem(mapFagsystemCodeToArkivSakSystem(saksrelasjon.getFagsystem()));  //TODO: Valider eller endre grensesnintt!
 		}
 	}
 
@@ -132,8 +127,8 @@ public class GetInngaaendeJournalpostMapper {
 
 	private List<Variant> mapVarianter(Set<FilDetaljer> fildetaljer) {
 		return fildetaljer.stream().map(filDetaljer -> new Variant()
-				.withArkivFilType(Variant.ArkivFilType.fromValue(filDetaljer.getFiltype().name()))//TODO: Valider eller endre grensesnintt!
-				.withVariantFormat(Variant.VariantFormat.fromValue(filDetaljer.getVariantFormat().name()))) //TODO: Valider eller endre grensesnintt!
+				.withArkivFilType(filDetaljer.getFiltype().name()) //TODO: Valider eller endre grensesnintt!
+				.withVariantFormat(filDetaljer.getVariantFormat().name())) //TODO: Valider eller endre grensesnintt!
 				.collect(Collectors.toList());
 
 	}
@@ -156,19 +151,9 @@ public class GetInngaaendeJournalpostMapper {
 		}
 	}
 
-	private String mapFagsystemtoArkivsaksystem(FagsystemCode fagsystemCode) {
-		if (fagsystemCode.equals(FagsystemCode.FS22)) {
-			return ArkivsystemKode.GSAK.name();
-		} else if (fagsystemCode.equals(FagsystemCode.PEN)) {
-			return ArkivsystemKode.PSAK.name();
-		} else {
-			return fagsystemCode.name();
-		}
+	private enum JournaltilstandKode {
+		MIDLERTIDIG,
+		UTGAAR,
+		ENDELIG
 	}
-
-	private enum ArkivsystemKode {
-		GSAK,
-		PSAK
-	}
-
 }
