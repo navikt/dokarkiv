@@ -156,6 +156,9 @@ public class JournalpostBuilder extends Builder<Journalpost> {
 		for (ReturInfo returInfo : returInfos) {
 			journalpost.addReturInfo(returInfo);
 		}
+		journalpost.getJournalpostDokumentInfoRelasjoner().forEach(relasjon -> {
+			relasjon.getDokumentInfo().setOriginalJournalpost(journalpost);
+		});
 		journalpost.setBehandlingsrelasjon(behandlingsrelasjon);
 		journalpost.setDokumentDato(dokumentDato);
 		journalpost.setAvsenderMottaker(avsenderMottaker);

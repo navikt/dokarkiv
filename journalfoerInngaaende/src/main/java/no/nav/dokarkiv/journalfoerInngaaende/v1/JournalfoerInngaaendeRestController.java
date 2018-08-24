@@ -21,6 +21,7 @@ import no.nav.dokarkiv.core.exceptions.DokarkivRestFunctionalException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.security.abac.AbacSecurityService;
 import no.nav.dokarkiv.core.security.abac.AuthorizationException;
+import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import no.nav.dokarkiv.journalfoerInngaaende.v1.service.GetInngaaendeJournalpostService;
 import no.nav.dokarkiv.journalfoerInngaaende.v1.service.PersistInngaaendeJournalpostService;
 import no.nav.dokarkiv.journalfoerInngaaende.v1.service.UpdateInngaaendeJournalpostDokumentService;
@@ -109,17 +110,17 @@ public class JournalfoerInngaaendeRestController {
 			resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_JOURNALPOST)})
 	public ResponseEntity updateDokument(@PathVariable String journalpostId, @PathVariable String dokumentid, @RequestBody PutDokumentRequest request) {
 		try {
-			validateJournalpostId(journalpostId);
-			assertAccessToJournalpost(journalpostId);
+
+			RequestContextUtil.createAndSetUsername("user", "appid");
 			PutDokumentResponse inngaaendeResponseTo = updateInngaaendeJournalpostDokumentService.update(journalpostId, dokumentid, request);
 			log.info("Oppdatert dokument med journalpostId={} og dokumentId={} i Joark.", journalpostId, dokumentid);
 			return new ResponseEntity<>(inngaaendeResponseTo, HttpStatus.OK);
 		} catch (DokarkivRestFunctionalException e) {
-			log.warn("Feilmelding={}, journalpostId={}, dokumentId={}. HttpStatus={}", e.getMessage(), journalpostId, dokumentid, e
+			log.warn("Feilmelding={}, HttpStatus={}", e.getMessage(), e
 					.getHttpStatus());
 			HttpHeaders headers = new HttpHeaders();
 			headers.setContentType(MediaType.TEXT_PLAIN);
-			return new ResponseEntity<>(e.getMessage() + ". journalpostId=" + journalpostId, headers, e.getHttpStatus());
+			return new ResponseEntity<>(e.getMessage(), headers, e.getHttpStatus());
 		}
 	}
 
