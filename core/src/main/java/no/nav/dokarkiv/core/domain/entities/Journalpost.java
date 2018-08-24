@@ -39,8 +39,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.MapKeyColumn;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -70,57 +68,6 @@ import java.util.stream.Collectors;
  */
 @Entity
 @Table(name = "T_JOURNALPOST")
-@NamedQueries({
-		@NamedQuery(name = "Journalpost.findJournalPostByJournalpostId",
-				query = "select j from Journalpost j where j.journalpostId = :journalpostId"),
-		@NamedQuery(name = "Journalpost.findJournalPostByJournalpostIdEager", query = "select distinct j from Journalpost as j"
-				+ " left join fetch j.brukere as g" + " left join fetch j.saksrelasjon as s"
-				+ " left join fetch j.returInfos as r" + " left join fetch j.kryssreferanser as k"
-				+ " left join fetch j.journalpostDokumentInfoRelasjoner as jd" + " left join fetch jd.dokumentInfo as d"
-				+ " left join fetch d.skannetInnholdListe as si" + " left join fetch d.fildetaljerListe as f"
-				+ " where j.journalpostId = :journalpostId"),
-		@NamedQuery(name = "Journalpost.findJournalposterByBrukerId", query = "select j from Journalpost j"
-				+ " left join fetch j.brukere b" + " where b.brukerId=:brukerId"),
-		@NamedQuery(name = "Journalpost.findJournalpostByJournalStatus", query = "select j from Journalpost j"
-				+ " where j.journalstatus=:journalstatus"),
-		@NamedQuery(name = "Journalpost.findJournalpostWithCreatedDateOlderThan",
-				query = "select distinct j from Journalpost as j"
-						+ " inner join fetch j.journalpostDokumentInfoRelasjoner as jd"
-						+ " inner join fetch jd.dokumentInfo as d" + " inner join fetch d.fildetaljerListe as f"
-						+ " left join fetch j.brukere as g"
-						+ " where j.journalstatus = 'R'" + " and j.changeStamp.createdDate < :date"),
-		@NamedQuery(name = "Journalpost.findJournalPostWithDokumentInfoByJournalpostId",
-				query = "select distinct j from Journalpost as j " + " left join fetch j.brukere as g"
-						+ " left join fetch j.journalpostDokumentInfoRelasjoner as jd"
-						+ " left join fetch jd.dokumentInfo as d" + " left join fetch d.fildetaljerListe as f"
-						+ " where j.journalpostId = :journalpostId"),
-		@NamedQuery(name = "Journalpost.findJournalPostBySaksnummerAndFagomradeEager",
-				query = "select distinct j from Journalpost as j " + "join fetch j.saksrelasjon as s "
-						+ "where s.sakId in (:saksnummerListe) " + "and s.fagsystem=:fagomrade "),
-		@NamedQuery(name = "Journalpost.findJournalPostBySaksnummerAndFagomradeWithBrukerTypeEager",
-				query = "select distinct j from Journalpost as j " + "join fetch j.saksrelasjon as s "
-						+ "left join fetch j.brukere as b " + "where s.sakId in (:saksnummerListe) "
-						+ "and s.fagsystem=:fagomrade " + "and b.brukerType =:brukerType "),
-		@NamedQuery(name = "Journalpost.findJournalpostIdByBatchNavnMottattDato",
-				query = "select distinct j from Journalpost j" + " left join fetch j.journalpostDokumentInfoRelasjoner as jdr"
-						+ " left join fetch j.brukere as b" + " left join fetch jdr.dokumentInfo d"
-						+ " left join fetch d.fildetaljerListe as f" + " where j.mottattDato=:mottattDato"
-						+ " and f.batchNavn=:batchNavn"),
-		@NamedQuery(name = "Journalpost.findAllJournalpost", query = "select distinct j from Journalpost j"
-				+ " left join fetch j.journalpostDokumentInfoRelasjoner as jdr" + " left join fetch j.brukere as b"
-				+ " left join fetch jdr.dokumentInfo d" + " left join fetch d.fildetaljerListe as f"),
-		@NamedQuery(name = "Journalpost.findJournalpostByFilnavn", query = "select distinct j from Journalpost j"
-				+ " left join fetch j.journalpostDokumentInfoRelasjoner as jdr" + " left join fetch jdr.dokumentInfo d"
-				+ " left join fetch d.fildetaljerListe as f" + " where f.filnavn=:filnavn"),
-		@NamedQuery(name = "Journalpost.findJournalpostWithJournalStatusMidlertidigOrMottattAndFagomrade", query = "select j "
-				+ "from Journalpost as j " + "where (j.journalstatus = :journalstatusMidlertidig "
-				+ "or j.journalstatus = :journalstatusMottatt) " + "and j.fagomrade = :fagomrade "),
-		@NamedQuery(name = "Journalpost.findJournalPostByKanalReferanse",
-				query = "select j from Journalpost j where j.kanalReferanseId = :kanalReferanseId"),
-		@NamedQuery(name = "Journalpost.findJournalPostByKanalReferanseAndKanal",
-				query = "select j from Journalpost j where j.kanalReferanseId = :kanalReferanseId and j.mottakskanal = :mottaksKanal")
-})
-
 @Builder
 @AllArgsConstructor
 public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKilde {

@@ -11,8 +11,6 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Id;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 /**
@@ -22,16 +20,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "T_DOKUMENT_MAL_INFO")
-@NamedQueries( { @NamedQuery(name = DokumentmalInfo.NQ_FIND_BY_BREV_KODER, 
-							 query = "SELECT d FROM DokumentmalInfo d WHERE d.brevkode = :"
-								 	+ DokumentmalInfo.NP_BREV_KODE)})
 public class DokumentmalInfo extends AbstractPersistentDomainObject {
-
-	/** Named Parameter */
-	public static final String NP_BREV_KODE = "brevkode";
-	/** Named Query */
-	public static final String NQ_FIND_BY_BREV_KODER = "DokumentmalInfo.findDokumentmalInfosByBrevkoder";
-	
 	/** Serialization UID */
 	private static final long serialVersionUID = -***gammelt_fnr***88597536L;
 

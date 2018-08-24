@@ -11,8 +11,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Lob;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import java.util.Arrays;
 
@@ -23,8 +21,6 @@ import java.util.Arrays;
  */
 @Entity
 @Table(name = "T_DOKUMENT_FIL")
-@NamedQueries({ @NamedQuery(name = DokumentFil.NQ_FIND_BY_FIL_UUID, query = "SELECT d FROM DokumentFil d WHERE d.filUuid = :"
-	+ DokumentFil.NP_FIL_UUID) })
 public class DokumentFil extends AbstractPersistentVersionedDomainObjectWithKilde {
 	
 	/** Named Parameter */

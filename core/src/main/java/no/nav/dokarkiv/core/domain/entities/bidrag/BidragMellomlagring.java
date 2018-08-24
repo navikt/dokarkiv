@@ -14,8 +14,6 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -33,9 +31,6 @@ import java.util.stream.Collectors;
  */
 @Entity
 @Table(name = "T_BIDRAG_MELLOMLAGRING")
-@NamedQueries({
-	@NamedQuery(name = "BidragMellomlagring.findBidragMellomlagringById",
-			query = "select b from BidragMellomlagring b where b.bidragMellomlagringId = :bidragMellomlagringId") })
 public class BidragMellomlagring extends AbstractPersistentVersionedDomainObject {
 
 	/** Serialization UID */
