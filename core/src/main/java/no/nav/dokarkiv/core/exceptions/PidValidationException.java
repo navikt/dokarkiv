@@ -1,6 +1,5 @@
 package no.nav.dokarkiv.core.exceptions;
 
-import no.nav.dokarkiv.core.stelvio.FunctionalUnrecoverableException;
 import no.nav.dokarkiv.core.stelvio.Pid;
 
 /**
@@ -10,7 +9,7 @@ import no.nav.dokarkiv.core.stelvio.Pid;
  *
  * @see Pid
  */
-public class PidValidationException extends FunctionalUnrecoverableException {
+public class PidValidationException extends DokarkivFunctionalException {
 
 	private static final long serialVersionUID = ***gammelt_fnr***82768191L;
 

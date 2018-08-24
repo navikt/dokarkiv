@@ -1,6 +1,5 @@
 package no.nav.dokarkiv.core.exceptions;
 
-import no.nav.dokarkiv.core.stelvio.FunctionalUnrecoverableException;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 /**
@@ -9,7 +8,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
  * @author Stig Kleppe-Jørgensen
  * @author Mette Lafton
  */
-public class InvalidArgumentException extends FunctionalUnrecoverableException {
+public class InvalidArgumentException extends DokarkivFunctionalException {
 	private static final long serialVersionUID = ***gammelt_fnr***6L;
 
 	/* The name of the argument that is not used correctly */
