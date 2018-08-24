@@ -6,6 +6,7 @@ import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
 import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
+import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
@@ -17,7 +18,6 @@ import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
 import no.nav.dokarkiv.core.domain.entities.SkannetInnhold;
 
-import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Arrays;
@@ -30,6 +30,7 @@ import java.util.HashSet;
 public class TestUtils {
 
     public static final String AVSENDER_NAVN = "avsenderNavn";
+    public static final String AVSENDER_NAVN_ORGANISASJON = "avsenderNavn_org";
     public static final String AVSENDER_ID_PERSON = "***gammelt_fnr***";
     public static final String AVSENDER_ID_ORGANISASJON = "123456789";
     public static final String BRUKER_ID_PERSON = "***gammelt_fnr***";
@@ -54,12 +55,14 @@ public class TestUtils {
     public static final String SKANNETINNHOLD_ID3 = "6875454564";
     public static final String VEDLEGGINNHOLD3 = "vedlegginnhold3";
     public static final LocalDateTime LOCAL_DATE_TIME = LocalDateTime.of(2017, 2, 3, 10, 37, 30);
+    public static final String OPPRETTET_AV_NAVN = "Sak S. Behandler";
 
     public static Journalpost createJournalpost() {
         Journalpost journalpost = Journalpost.builder()
                 .journalstatus(JournalStatusCode.J)
                 .avsenderMottakerId(AVSENDER_ID_PERSON)
                 .avsenderMottaker(AVSENDER_NAVN)
+                .journalposttype(JournalpostTypeCode.I)
                 .fagomrade(FagomradeCode.FS22)
                 .innhold(INNHOLD)
                 .kanalReferanseId(KANALREFERANSE_ID)
@@ -81,8 +84,32 @@ public class TestUtils {
 
     }
 
+    public static Journalpost createJournalpostForOppdatering() {
+        Journalpost journalpost = Journalpost.builder()
+                .journalstatus(JournalStatusCode.M)
+                .avsenderMottakerId(AVSENDER_ID_PERSON)
+                .avsenderMottaker(AVSENDER_NAVN)
+                .journalposttype(JournalpostTypeCode.I)
+                .fagomrade(FagomradeCode.FS22)
+                .innhold(INNHOLD)
+                .kanalReferanseId(KANALREFERANSE_ID)
+                .mottakskanal(MottaksKanalCode.ALTINN)
+                .mottattDato(Date.from(LOCAL_DATE_TIME.toInstant(ZoneOffset.UTC)))
+                .journalForendeEnhetId(JOURNALFOERENDE_ENHET)
+                .saksrelasjon(Saksrelasjon.builder()
+                        .sakId(SAK_ID)
+                        .fagsystem(FagsystemCode.FS22)
+                        .build())
+                .opprettetAvNavn(OPPRETTET_AV_NAVN)
+                .build();
 
-    private static JournalpostDokumentInfoRelasjon createJournalpostDokumentinfoRelasjon1() {
+        journalpost.addBruker(createPersonBruker());
+        journalpost.addJournalpostDokumentInfoRelasjon(createJournalpostDokumentinfoRelasjon1());
+        return journalpost;
+    }
+
+
+    public static JournalpostDokumentInfoRelasjon createJournalpostDokumentinfoRelasjon1() {
         return JournalpostDokumentInfoRelasjon.builder()
                 .tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.HOVEDDOKUMENT)
                 .dokumentInfo(DokumentInfo.builder()

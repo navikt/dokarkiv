@@ -1,33 +1,34 @@
 package no.nav.dokarkiv.journalfoerInngaaende.v1.service;
 
-import static no.nav.dok.tjenester.journalfoerinngaaende.PutJournalpostResponse.AvsenderId.MANGLER;
-import static no.nav.dok.tjenester.journalfoerinngaaende.PutJournalpostResponse.AvsenderId.MANGLER_IKKE;
+import static no.nav.dok.tjenester.journalfoerinngaaende.response.Mangler.AvsenderId.MANGLER;
+import static no.nav.dok.tjenester.journalfoerinngaaende.response.Mangler.AvsenderId.MANGLER_IKKE;
+import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
+import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
+import static no.nav.dokarkiv.journalfoerInngaaende.v1.service.support.JournalpostValidator.validateJournalpostStatuser;
+import static no.nav.dokarkiv.journalfoerInngaaende.v1.service.support.JournalpostValidator.validateJournalpostStrukturOgPaakrevdeAttributter;
 import static org.hibernate.annotations.common.util.StringHelper.isEmpty;
 
-import no.nav.dok.tjenester.journalfoerinngaaende.response.Dokument;
 import no.nav.dok.tjenester.journalfoerinngaaende.PutJournalpostRequest;
 import no.nav.dok.tjenester.journalfoerinngaaende.PutJournalpostResponse;
-import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
-import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
-import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
+import no.nav.dok.tjenester.journalfoerinngaaende.response.Dokument;
+import no.nav.dok.tjenester.journalfoerinngaaende.response.Mangler;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
-import no.nav.dokarkiv.core.domain.entities.Bruker;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
 import no.nav.dokarkiv.core.exceptions.DokarkivRestFunctionalException;
-import no.nav.dokarkiv.core.exceptions.InvalidJournalpostStructureException;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
+import no.nav.dokarkiv.journalfoerInngaaende.v1.map.PutInngaaendeJournalpostMapper;
 import no.nav.dokarkiv.journalfoerInngaaende.v1.util.Utils;
+import org.slf4j.MDC;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Set;
 
 /**
  * @author Paul Magne Lunde, Visma Consulting
@@ -35,144 +36,104 @@ import java.util.Set;
 @Service
 public class PersistInngaaendeJournalpostService {
 
-    private JoarkRepository joarkRepository;
+	private JoarkRepository joarkRepository;
 
-    @Inject
-    public PersistInngaaendeJournalpostService(JoarkRepository joarkRepository) {
-        this.joarkRepository = joarkRepository;
-    }
+	private final PutInngaaendeJournalpostMapper mapper;
 
-    public PutJournalpostResponse persist(String journalpostId, PutJournalpostRequest putJournalpostRequest) {
-        Journalpost journalpost = getJournalpost(journalpostId);
+	@Inject
+	public PersistInngaaendeJournalpostService(JoarkRepository joarkRepository, PutInngaaendeJournalpostMapper mapper) {
+		this.joarkRepository = joarkRepository;
+		this.mapper = mapper;
+	}
 
-        verifyMidlertidigJournalfoert(journalpost);
+	public PutJournalpostResponse persist(String journalpostId, PutJournalpostRequest putJournalpostRequest) {
+		Journalpost journalpost = getJournalpost(journalpostId);
 
-        if (!journalpost.isInngaende()) {
-            throw new DokarkivRestFunctionalException("Journalpost er ikke av type Inngaaende", HttpStatus.BAD_REQUEST);
-        }
+		validateJournalpostStatuser(journalpost);
 
-        verifyDokumentInfos(journalpost);
+		if (putJournalpostRequest.getForsoekEndeligJF()) {
+			validateJournalpostStrukturOgPaakrevdeAttributter(journalpost);
+		}
 
-        verifyHoveddokument(journalpost);
+		mapper.map(journalpost, putJournalpostRequest);
 
-        verifyFildetaljer(journalpost);
+		PutJournalpostResponse response = new PutJournalpostResponse();
+		response.setJournalpostId(journalpostId);
+		response.setForsoekEndeligJF(putJournalpostRequest.getForsoekEndeligJF());
 
-        verifyRequiredFields(journalpost);
+		// hvis endelig journalføring, kall ferdigstillForsendelse(?)
+		if (putJournalpostRequest.getForsoekEndeligJF()){
+			Mangler mangler = createMangler(journalpost);
+			if (containsMangler(mangler)) {
+				response.setMangler(createMangler(journalpost));
+			} else {
+				//ferdigstill
+				journalpost.setJournalstatus(JournalStatusCode.J);
+				journalpost.setJournalDato(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()));
+				journalpost.setJournalForendeEnhetId(putJournalpostRequest.getJournalfEnhet());
+				journalpost.setJournalfortAvNavn("journalførtAvNavn"); // TODO: hent fra MDC
+				journalpost.setEndretAvNavn("journalførtAvNavn");
+				journalpost.setEndretKildeNavn(MDC.get(MDC_CONSUMER_ID));
+			}
+		}
 
-        journalpost.setInnhold(putJournalpostRequest.getTittel());
-        journalpost.setFagomrade(FagomradeCode.valueOf(putJournalpostRequest.getTema()));
-        journalpost.setAvsenderMottaker(putJournalpostRequest.getAvsender().getNavn());
-        journalpost.setAvsenderMottakerId(putJournalpostRequest.getAvsender().getIdentifikator());
+		joarkRepository.save(journalpost);
 
-        if (putJournalpostRequest.getArkivSak() != null) {
-            Saksrelasjon saksrelasjon = new Saksrelasjon();
-            saksrelasjon.setSakId(putJournalpostRequest.getArkivSak().getArkivSakId());
-            saksrelasjon.setFagsystem(FagsystemCode.valueOf(putJournalpostRequest.getArkivSak().getArkivSakSystem().name()));
-            journalpost.setSaksrelasjon(saksrelasjon);
-        }
+		return response;
+	}
 
-        Set<Bruker> brukere = journalpost.getBrukere();
-        if (brukere.isEmpty() || brukere.size() > 1) {
-            Bruker bruker = new Bruker();
-            bruker.setBrukerId(putJournalpostRequest.getBruker().getIdentifikator());
-            bruker.setBrukerType(BrukerTypeCode.valueOf(putJournalpostRequest.getBruker().getBrukerType().name()));
-            journalpost.getBrukere().clear();
-            journalpost.getBrukere().add(bruker);
-        } else {
-            brukere.iterator().forEachRemaining(bruker -> {
-                bruker.setBrukerId(putJournalpostRequest.getBruker().getIdentifikator());
-                bruker.setBrukerType(BrukerTypeCode.valueOf(putJournalpostRequest.getBruker().getBrukerType().name()));
-            });
-        }
+	private Journalpost getJournalpost(String journalpostId) {
+		return joarkRepository.findById(Utils.convertStringToLong(journalpostId, "journalpostId"))
+				.orElseThrow(() -> new DokarkivRestFunctionalException(String.format("Oppgitt journalpostId %s eksisterer ikke", journalpostId), HttpStatus.NOT_FOUND));
+	}
 
-        if (putJournalpostRequest.getForsoekEndeligJF()) {
-            journalpost.setJournalstatus(JournalStatusCode.J);
-            journalpost.setJournalForendeEnhetId(putJournalpostRequest.getJournalfEnhet());
-            journalpost.setJournalDato(new Date());
-            journalpost.setEndretAvNavn("dfd"); //TODO Fra MDC
-            journalpost.setJournalfortAvNavn("dfdf"); //TODO
-        }
+	private Mangler createMangler(Journalpost jp) {
 
-        joarkRepository.save(journalpost);
+		List<Dokument> dokumentList = new ArrayList<>();
+		jp.getJournalpostDokumentInfoRelasjoner().forEach(d -> {
+			DokumentInfo dokumentInfo = d.getDokumentInfo();
+			if (dokumentInfo != null) {
+				dokumentList.add(
+						new Dokument()
+								.withDokumentId(dokumentInfo.getId().toString())
+								.withTittel(isEmpty(dokumentInfo.getTittel()) ? MANGLER : MANGLER_IKKE)
+								.withDokumentKategori(isEmpty(dokumentInfo.getKategori().name()) ? MANGLER : MANGLER_IKKE)
+				);
+			}
+		});
 
-        return createResponse(journalpost);
-    }
+		return new Mangler()
+				.withAvsenderId(isEmpty(jp.getAvsenderMottakerId()) ? MANGLER : MANGLER_IKKE)
+				.withAvsenderNavn(isEmpty(jp.getAvsenderMottaker()) ? MANGLER : MANGLER_IKKE)
+				.withArkivSak((jp.getSaksrelasjon() != null) ? MANGLER : MANGLER_IKKE)
+				.withTittel(isEmpty(jp.getInnhold()) ? MANGLER : MANGLER_IKKE)
+				.withTema((jp.getFagomrade() != null) ? MANGLER : MANGLER_IKKE)
+				.withBruker((jp.getBrukere().isEmpty()) ? MANGLER : MANGLER_IKKE)
+				.withDokumenter(dokumentList);
+	}
 
-    private Journalpost getJournalpost(String journalpostId) {
-        try {
-            return joarkRepository.findById(Utils.convertStringToLong(journalpostId, "journalpostId")).get();
-        } catch (NoSuchElementException e) {
-            throw new DokarkivRestFunctionalException(String.format("Oppgitt journalpostId %s eksisterer ikke", journalpostId), HttpStatus.NOT_FOUND);
-        }
-    }
-
-    private void verifyMidlertidigJournalfoert(Journalpost jp) {
-        if (!jp.hasMidlertidigInngaaendeJournalforingStatus()) {
-            throw new DokarkivRestFunctionalException("Journalposten er ikke midlertidig journalført", HttpStatus.BAD_REQUEST);
-        }
-    }
-
-    private void verifyDokumentInfos(Journalpost journalpost) {
-        try {
-            journalpost.verifyNoDokumentInfosUnderRedigering();
-        } catch (InvalidJournalpostStructureException e) {
-            throw new DokarkivRestFunctionalException("Ett eller flere av dokumentene som forsøkes oppdatert er ikke ferdigstilt", HttpStatus.BAD_REQUEST);
-        }
-    }
-
-    private void verifyHoveddokument(Journalpost journalpost) {
-        try {
-            journalpost.verifyOnlyOneHoveddokument();
-        } catch (InvalidJournalpostStructureException e) {
-            throw new DokarkivRestFunctionalException("Journalpost inneholder ikke ett hoveddokument", HttpStatus.BAD_REQUEST);
-        }
-    }
-
-    private void verifyFildetaljer(Journalpost journalpost) {
-        try {
-            journalpost.verifyArkivVariantOfAllDocuments();
-        } catch (InvalidJournalpostStructureException e) {
-            throw new DokarkivRestFunctionalException("Det mangler arkivvariant, dette er påkrevd for å ferdigstille journalposter", HttpStatus.BAD_REQUEST);
-        }
-        journalpost.getJournalpostDokumentInfoRelasjoner().forEach(dr -> {
-            try {
-                dr.getDokumentInfo().verifyNoVariantDuplicates();
-            } catch (InvalidJournalpostStructureException e) {
-                throw new DokarkivRestFunctionalException("Journalpost inneholder flere fildetaljer med samme variantformat", HttpStatus.BAD_REQUEST);
-            }
-        });
-    }
-
-    private void verifyRequiredFields(Journalpost journalpost) {
-        try {
-            journalpost.verifyMandatoryFieldsSkipJournalforendeEnhetId();
-        } catch (Exception e) {
-            throw new DokarkivRestFunctionalException("Journalpost mangler påkrevde felt for endelig journalføring", HttpStatus.BAD_REQUEST);
-        }
-    }
-
-    private PutJournalpostResponse createResponse(Journalpost jp) {
-
-        List<Dokument> dokumentList = new ArrayList<>();
-        jp.getJournalpostDokumentInfoRelasjoner().forEach(d -> {
-            DokumentInfo dokumentInfo = d.getDokumentInfo();
-            if (dokumentInfo != null) {
-                dokumentList.add(
-                        new Dokument()
-                        .withDokumentId(dokumentInfo.getId().toString())
-                        .withTittel(isEmpty(dokumentInfo.getTittel()) ? MANGLER : MANGLER_IKKE)
-                        .withDokumentKategori(isEmpty(dokumentInfo.getKategori().name()) ? MANGLER : MANGLER_IKKE)
-                );
-            }
-        });
-
-        return new PutJournalpostResponse()
-                .withAvsenderId(isEmpty(jp.getAvsenderMottakerId()) ? MANGLER : MANGLER_IKKE)
-                .withAvsenderNavn(isEmpty(jp.getAvsenderMottaker()) ? MANGLER : MANGLER_IKKE)
-                .withArkivSak((jp.getSaksrelasjon() != null) ? MANGLER : MANGLER_IKKE)
-                .withTittel(isEmpty(jp.getInnhold()) ? MANGLER : MANGLER_IKKE)
-                .withTema((jp.getFagomrade() != null) ? MANGLER : MANGLER_IKKE)
-                .withBruker((jp.getBrukere().isEmpty()) ? MANGLER : MANGLER_IKKE)
-                .withDokumenter(dokumentList);
-    }
+	private boolean containsMangler(Mangler mangler) {
+		if (mangler.getDokumenter().stream().anyMatch(dokument -> MANGLER.equals(dokument.getDokumentKategori()) || MANGLER.equals(dokument.getTittel()))) {
+			return true;
+		}
+		if (MANGLER.equals(mangler.getAvsenderId())){
+			return true;
+		}
+		if (MANGLER.equals(mangler.getAvsenderNavn())){
+			return true;
+		}
+		if (MANGLER.equals(mangler.getArkivSak())){
+			return true;
+		}
+		if (MANGLER.equals(mangler.getTittel())) {
+			return true;
+		}
+		if (MANGLER.equals(mangler.getTema())){
+			return true;
+		}
+		if (MANGLER.equals(mangler.getBruker())){
+			return true;
+		}
+		return false;
+	}
 }
