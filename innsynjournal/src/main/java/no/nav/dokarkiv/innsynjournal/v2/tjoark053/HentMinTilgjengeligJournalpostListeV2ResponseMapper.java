@@ -63,14 +63,14 @@ public class HentMinTilgjengeligJournalpostListeV2ResponseMapper {
 
 	private Journalpost mapJournalpost(InnsynJournalpostTo innsynJournalpostTo) {
 		Journalpost journalpost = null;
-		if (innsynJournalpostTo.getJournalpost().getJournalposttype() != null) {
+		if (innsynJournalpostTo.getJournalpost().getJournalposttype() == null) {
+			journalpost = mapUtgaaende(innsynJournalpostTo.getJournalpost());
+		} else {
 			if (innsynJournalpostTo.getJournalpost().getJournalposttype().equals(JournalpostTypeCode.I)) {
 				journalpost = mapInngaaende(innsynJournalpostTo.getJournalpost());
 			} else {
 				journalpost = mapUtgaaende(innsynJournalpostTo.getJournalpost());
 			}
-		} else {
-			journalpost = mapUtgaaende(innsynJournalpostTo.getJournalpost());
 		}
 		mapAvsenderMottaker(journalpost, innsynJournalpostTo);
 		mapSendtDato(journalpost, innsynJournalpostTo.getJournalpost());
@@ -194,7 +194,7 @@ public class HentMinTilgjengeligJournalpostListeV2ResponseMapper {
 				DokumentStatusCode.FERDIGSTILT);
 		Date journalDato = journalpost.getJournalDato();
 		mapped.setFerdigstilt(DateConverterUtil
-				.convertDateToXMLGregorianCalendar(journalDato != null ? journalDato : newestDateOfDokumenInfosWithStatus));
+				.convertDateToXMLGregorianCalendar(journalDato == null ? newestDateOfDokumenInfosWithStatus : journalDato));
 	}
 
 	private Date decideNewestDateOfDokumenInfosWithStatus(List<DokumentInfo> dokumentInfos, DokumentStatusCode status) {
@@ -202,7 +202,7 @@ public class HentMinTilgjengeligJournalpostListeV2ResponseMapper {
 		for (DokumentInfo dokumentInfo : dokumentInfos) {
 			if (dokumentInfo.getDokumentstatus() == status) {
 				Date dokumentFerdigDato = dokumentInfo.getDokumentFerdigDato();
-				if (newest == null || dokumentFerdigDato != null && dokumentFerdigDato.after(newest)) {
+				if (newest == null || (dokumentFerdigDato != null && dokumentFerdigDato.after(newest))) {
 					newest = dokumentFerdigDato;
 				}
 			}

@@ -9,8 +9,8 @@ import no.nav.dokarkiv.core.domain.entities.Bruker;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
+import no.nav.dokarkiv.core.domain.validator.FoedselsnummerValidator;
 import no.nav.dokarkiv.core.domain.validator.OrgnrValidator;
-import no.nav.dokarkiv.core.stelvio.Pid;
 import no.nav.tjeneste.virksomhet.journal.v3.informasjon.Aktoer;
 import no.nav.tjeneste.virksomhet.journal.v3.informasjon.Arkivfiltyper;
 import no.nav.tjeneste.virksomhet.journal.v3.informasjon.Dokumentkategorier;
@@ -155,7 +155,7 @@ public class HentKjerneJournalpostListeResponseMapper {
 		for (Bruker toBruker : toBrukere) {
 			if (toBruker.getBrukerType() == BrukerTypeCode.PERSON
 					|| (toBruker.getBrukerType() == BrukerTypeCode.SAMHANDLER
-							&& Pid.isValidPid(toBruker.getBrukerId()))) {
+							&& FoedselsnummerValidator.isValidPid(toBruker.getBrukerId()))) {
 				aktoer.add(new Person().withIdent(toBruker.getBrukerId()));
 			} else if (toBruker.getBrukerType() == BrukerTypeCode.ORGANISASJON
 					|| (toBruker.getBrukerType() == BrukerTypeCode.SAMHANDLER

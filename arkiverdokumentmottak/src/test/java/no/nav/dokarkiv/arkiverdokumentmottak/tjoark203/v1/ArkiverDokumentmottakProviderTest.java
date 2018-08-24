@@ -1,6 +1,6 @@
 package no.nav.dokarkiv.arkiverdokumentmottak.tjoark203.v1;
 
-import static no.nav.dokarkiv.arkiverdokumentmottak.ServiceConstants.FORSENDELSE_MOTTAK_ID_KEY;
+import static no.nav.dokarkiv.arkiverdokumentmottak.ArkiverDokumentmottakConstants.FORSENDELSE_MOTTAK_ID_KEY;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;

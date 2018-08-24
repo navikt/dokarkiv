@@ -362,10 +362,10 @@ public class FilDetaljer extends AbstractPersistentVersionedDomainObjectWithKild
 	 * @return the fileContent
 	 */
 	public byte[] getFileContent() {
-		if (!ArrayUtils.isEmpty(fileContent)) {
-			return Arrays.copyOf(fileContent, fileContent.length);
+		if (ArrayUtils.isEmpty(fileContent)) {
+			return null;
 		}
-		return null;
+		return Arrays.copyOf(fileContent, fileContent.length);
 	}
 
 	/**
@@ -374,10 +374,10 @@ public class FilDetaljer extends AbstractPersistentVersionedDomainObjectWithKild
 	 * @param fileContent the fileContent to set
 	 */
 	public void setFileContent(byte[] fileContent) {
-		if (!ArrayUtils.isEmpty(fileContent)) {
-			this.fileContent = Arrays.copyOf(fileContent, fileContent.length);
-		} else {
+		if (ArrayUtils.isEmpty(fileContent)) {
 			this.fileContent = null;
+		} else {
+			this.fileContent = Arrays.copyOf(fileContent, fileContent.length);
 		}
 	}
 

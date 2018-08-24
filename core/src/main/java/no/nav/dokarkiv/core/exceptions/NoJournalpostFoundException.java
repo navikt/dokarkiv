@@ -1,6 +1,5 @@
 package no.nav.dokarkiv.core.exceptions;
 
-import no.nav.dokarkiv.core.stelvio.FunctionalRecoverableException;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 /**
@@ -10,7 +9,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
  * 
  * @author Magnus Skuland, Sirius IT
  */
-public class NoJournalpostFoundException extends FunctionalRecoverableException {
+public class NoJournalpostFoundException extends DokarkivFunctionalException {
 
 	/** Id used for serialization. */
 	private static final long serialVersionUID = 1L;

@@ -9,7 +9,6 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.DokarkivFunctionalException;
 import no.nav.dokarkiv.core.exceptions.InvalidFilUuidException;
 import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
-import no.nav.dokarkiv.core.stelvio.FunctionalRecoverableException;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import no.nav.dokarkiv.hentdokument.dokument.HentDokument;
 import no.nav.dokarkiv.hentdokument.dokument.HentDokumentRequest;
@@ -62,7 +61,7 @@ public class HentDokumentController {
 					.contentType(MediaType.parseMediaType(mediaType))
 					.contentLength(document.length)
 					.body(document);
-		} catch (FunctionalRecoverableException | DokarkivFunctionalException e) {
+		} catch (DokarkivFunctionalException e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
 		}
 	}

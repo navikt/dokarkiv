@@ -1,11 +1,11 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions;
 
-import no.nav.dokarkiv.core.stelvio.FunctionalRecoverableException;
+import no.nav.dokarkiv.core.exceptions.DokarkivFunctionalException;
 
 /**
  * @author Leo-Andreas Ervik, Visma Consulting
  */
-public class AlleredeFerdigstiltException extends FunctionalRecoverableException {
+public class AlleredeFerdigstiltException extends DokarkivFunctionalException {
 
 	public AlleredeFerdigstiltException(String message, Long journalpostId) {
 		super(message + (". journalpostId=" + journalpostId));

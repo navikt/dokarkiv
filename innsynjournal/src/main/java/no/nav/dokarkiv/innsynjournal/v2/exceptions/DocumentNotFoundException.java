@@ -1,13 +1,13 @@
 package no.nav.dokarkiv.innsynjournal.v2.exceptions;
 
-import no.nav.dokarkiv.core.stelvio.FunctionalRecoverableException;
+import no.nav.dokarkiv.core.exceptions.DokarkivFunctionalException;
 
 /**
  * Thrown when a Journalpost or journalpost, document or variantformat that cannot be found.
  *
  * @author Thomas Eugen Bjørge, Visma Consulting
  */
-public class DocumentNotFoundException extends FunctionalRecoverableException {
+public class DocumentNotFoundException extends DokarkivFunctionalException {
 
 	/**
 	 * Serialization UID

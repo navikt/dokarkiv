@@ -4,6 +4,7 @@ package no.nav.dokarkiv.core.stelvio;
  * Has information that should be accessible anywhere in the system for a single request. Implementations decide how to
  * get to/store the information necessary for providing this functionality.
  *
+ * @deprecated vi bruker ikke alle disse feltene
  * @author Stig Kleppe-Jørgensen, Accenture
  * @author Morten Andersen-Gott, Accenture
  */

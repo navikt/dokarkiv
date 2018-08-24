@@ -1,6 +1,6 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark111;
 
-import static no.nav.dokarkiv.core.utils.DateUtil.getDateNow;
+import static no.nav.dokarkiv.core.util.DateUtil.getDateNow;
 
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;

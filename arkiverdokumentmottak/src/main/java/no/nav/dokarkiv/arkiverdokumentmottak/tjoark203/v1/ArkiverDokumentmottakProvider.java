@@ -1,8 +1,8 @@
 package no.nav.dokarkiv.arkiverdokumentmottak.tjoark203.v1;
 
 import lombok.extern.slf4j.Slf4j;
-import no.nav.dokarkiv.arkiverdokumentmottak.ServiceConstants;
-import no.nav.dokarkiv.core.stelvio.FunctionalUnrecoverableException;
+import no.nav.dokarkiv.arkiverdokumentmottak.ArkiverDokumentmottakConstants;
+import no.nav.dokarkiv.core.exceptions.DokarkivFunctionalException;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v1.ArkiverDokumentmottakV1;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v1.KanIkkeJournalfores;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v1.informasjon.arkiverdokumentmottak.Tilleggsopplysning;
@@ -42,7 +42,7 @@ public class ArkiverDokumentmottakProvider implements ArkiverDokumentmottakV1 {
 		try {
 			JournalforInngaaendeForsendelseResponseTo responseTo = journalforInngaaendeForsendelseService.journalforInngaaendeForsendelse(requestTo);
 			return journalforInngaaendeForsendelseResponseMapper.map(responseTo);
-		} catch (FunctionalUnrecoverableException | IllegalArgumentException e) {
+		} catch (DokarkivFunctionalException | IllegalArgumentException e) {
 			String tilleggsOpplysning = findTilleggsOpplysningForsendelseMottakId(request);
 			log.warn(String.format("Kan ikke journalføre inngående forsendelse. feilmelding=%s, tilleggsopplysning.forsendelseMottakId=%s", e
 					.getMessage(), tilleggsOpplysning), e);
@@ -60,7 +60,7 @@ public class ArkiverDokumentmottakProvider implements ArkiverDokumentmottakV1 {
 		if (request != null && request.getJournalpost() != null && request.getJournalpost()
 				.getJournalpostTilleggsopplysninger() != null) {
 			for (Tilleggsopplysning tilleggsopplysning : request.getJournalpost().getJournalpostTilleggsopplysninger()) {
-				if (tilleggsopplysning != null && ServiceConstants.FORSENDELSE_MOTTAK_ID_KEY.equals(tilleggsopplysning.getOpplysningsnoekkel())) {
+				if (tilleggsopplysning != null && ArkiverDokumentmottakConstants.FORSENDELSE_MOTTAK_ID_KEY.equals(tilleggsopplysning.getOpplysningsnoekkel())) {
 					return tilleggsopplysning.getOpplysningsverdi();
 				}
 			}

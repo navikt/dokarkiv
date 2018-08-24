@@ -1,13 +1,11 @@
 package no.nav.dokarkiv.core.exceptions;
 
-import no.nav.dokarkiv.core.stelvio.FunctionalUnrecoverableException;
-
 /**
  * Thrown when updating metadata xml in SettMetadataIDLF fails.
  *
  * @author Thomas Eugen Bjørge, Visma Consulting
  */
-public class MetadataXmlUpdateFailedException extends FunctionalUnrecoverableException {
+public class MetadataXmlUpdateFailedException extends DokarkivFunctionalException {
 
 	/**
 	 * Serialization UID

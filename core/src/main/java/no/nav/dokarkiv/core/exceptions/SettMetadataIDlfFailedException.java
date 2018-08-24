@@ -1,13 +1,11 @@
 package no.nav.dokarkiv.core.exceptions;
 
-import no.nav.dokarkiv.core.stelvio.FunctionalUnrecoverableException;
-
 /**
  * Thrown when an internal call to settMetadataIDLF fails.
  *
  * @author Thomas Eugen Bjørge, Visma Sirius
  */
-public class SettMetadataIDlfFailedException extends FunctionalUnrecoverableException {
+public class SettMetadataIDlfFailedException extends DokarkivFunctionalException {
 
 	/**
 	 * Serialization UID

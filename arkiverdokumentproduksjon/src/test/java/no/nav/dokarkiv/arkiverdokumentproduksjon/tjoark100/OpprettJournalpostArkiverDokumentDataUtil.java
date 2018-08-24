@@ -2,7 +2,7 @@ package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark100;
 
 import static java.util.Arrays.asList;
 
-import no.nav.dokarkiv.core.constants.ServiceConstants;
+import no.nav.dokarkiv.arkiverdokumentproduksjon.ArkiverDokumentproduksjonConstants;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
@@ -94,7 +94,7 @@ public class OpprettJournalpostArkiverDokumentDataUtil {
 		dokumentInfo.setDokumentTypeId(DOKUMENT_TYPE_ID);
 		dokumentInfo.getFildetaljerListe().add(createFildetaljer());
 		dokumentInfo.getTilleggsopplysninger().addAll(asList(
-				createTilleggsopplysning(ServiceConstants.BESTILLINGS_ID_KEY, BESTILLINGS_ID),
+				createTilleggsopplysning(ArkiverDokumentproduksjonConstants.BESTILLINGS_ID_KEY, BESTILLINGS_ID),
 				createTilleggsopplysning(TILLEGGSOPPLYSNING_KEY_2, TILLEGGSOPPLYSNING_VALUE_2)));
 		return dokumentInfo;
 	}

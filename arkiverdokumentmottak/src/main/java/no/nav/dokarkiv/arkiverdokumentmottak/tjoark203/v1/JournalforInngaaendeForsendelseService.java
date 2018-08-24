@@ -1,7 +1,7 @@
 package no.nav.dokarkiv.arkiverdokumentmottak.tjoark203.v1;
 
 
-import static no.nav.dokarkiv.arkiverdokumentmottak.ServiceConstants.FORSENDELSE_MOTTAK_ID_KEY;
+import static no.nav.dokarkiv.arkiverdokumentmottak.ArkiverDokumentmottakConstants.FORSENDELSE_MOTTAK_ID_KEY;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.arkiverdokumentmottak.DokumentInfoIdVedleggTo;

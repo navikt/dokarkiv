@@ -1,7 +1,7 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark111;
 
+import static no.nav.dokarkiv.core.util.ConverterUtils.stringToEnum;
 import static no.nav.dokarkiv.core.util.SpecialFilTypeConverter.convertFilType;
-import static no.nav.dokarkiv.core.utils.ConverterUtils.stringToEnum;
 
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;

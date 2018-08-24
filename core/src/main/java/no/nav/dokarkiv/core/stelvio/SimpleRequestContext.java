@@ -14,7 +14,8 @@ import java.io.Serializable;
  * 
  * While working on different tiers, the RequestContext must be exported in one tier, and then imported back again on the other
  * tier.
- * 
+ *
+ * @deprecated reduser antall felt til de vi faktisk bruker
  * @author Petter Skodvin, Accenture
  * @author Stig Kleppe-Jørgensen, Accenture
  * @version $Id: RequestContext.java 1979 2005-02-16 16:34:40Z psa2920 $
