@@ -35,7 +35,7 @@ public class JournalpostValidator {
 		try {
 			journalpost.verifyNoDokumentInfosUnderRedigering();
 		} catch (InvalidJournalpostStructureException e) {
-			throw new DokarkivRestFunctionalException("Ett eller flere av dokumentene som forsøkes oppdatert er ikke ferdigstilt", HttpStatus.BAD_REQUEST);
+			throw new DokarkivRestFunctionalException("Ett eller flere av dokumentene som forsøkes oppdatert er under redigering", HttpStatus.BAD_REQUEST);
 		}
 	}
 
@@ -68,11 +68,11 @@ public class JournalpostValidator {
 		} catch (Exception e) {
 			throw new DokarkivRestFunctionalException("Journalpost mangler påkrevde felt for endelig journalføring", HttpStatus.BAD_REQUEST);
 		}
-		if (journalpost.getSaksrelasjon() == null || (isEmpty(journalpost.getSaksrelasjon().getSakId()) || journalpost.getSaksrelasjon().getFagsystem() == null)) {
-			throw new DokarkivRestFunctionalException("Journalpost mangler påkrevde felt for endelig journalføring", HttpStatus.BAD_REQUEST);
-		}
-		if (journalpost.findAllDokumentInfos().stream().anyMatch(dokumentInfo -> dokumentInfo.getKategori() == null || dokumentInfo.getTittel() == null)){
-			throw new DokarkivRestFunctionalException("Journalpost mangler påkrevde felt for endelig journalføring", HttpStatus.BAD_REQUEST);
-		}
+//		if (journalpost.getSaksrelasjon() == null || (isEmpty(journalpost.getSaksrelasjon().getSakId()) || journalpost.getSaksrelasjon().getFagsystem() == null)) {
+//			throw new DokarkivRestFunctionalException("Journalpost mangler påkrevde felt for endelig journalføring", HttpStatus.BAD_REQUEST);
+//		}
+//		if (journalpost.findAllDokumentInfos().stream().anyMatch(dokumentInfo -> dokumentInfo.getKategori() == null || dokumentInfo.getTittel() == null)){
+//			throw new DokarkivRestFunctionalException("Journalpost mangler påkrevde felt for endelig journalføring", HttpStatus.BAD_REQUEST);
+//		}
 	}
 }

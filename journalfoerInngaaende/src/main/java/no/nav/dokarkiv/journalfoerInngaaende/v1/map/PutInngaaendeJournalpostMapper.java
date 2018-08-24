@@ -38,6 +38,7 @@ public class PutInngaaendeJournalpostMapper extends AbstractInngaaendeJournalpos
 			Saksrelasjon saksrelasjon = new Saksrelasjon();
 			saksrelasjon.setSakId(putJournalpostRequest.getArkivSak().getArkivSakId());
 			saksrelasjon.setFagsystem(mapArkivSakSystemToFagsystemCode(putJournalpostRequest.getArkivSak().getArkivSakSystem()));
+			saksrelasjon.setOpprettetKildeNavn("OpprettetAv"); //TODO: hent fra MDC
 			journalpost.setSaksrelasjon(saksrelasjon);
 		}
 
@@ -46,6 +47,7 @@ public class PutInngaaendeJournalpostMapper extends AbstractInngaaendeJournalpos
 			Bruker bruker = new Bruker();
 			bruker.setBrukerId(putJournalpostRequest.getBruker().getIdentifikator());
 			bruker.setBrukerType(BrukerTypeCode.valueOf(putJournalpostRequest.getBruker().getBrukerType().name()));
+			bruker.setOpprettetKildeNavn("OpprettetAv"); // TODO: hent fra MDC
 			journalpost.clearBrukere();
 			journalpost.addBruker(bruker);
 		} else {
@@ -55,14 +57,14 @@ public class PutInngaaendeJournalpostMapper extends AbstractInngaaendeJournalpos
 			});
 		}
 
-		// //TODO: endelig journalfør. !! kun dersom
-		if (putJournalpostRequest.getForsoekEndeligJF()) {
-			journalpost.setJournalstatus(JournalStatusCode.J);
-			journalpost.setJournalForendeEnhetId(putJournalpostRequest.getJournalfEnhet());
-			journalpost.setJournalDato(new Date());
-			journalpost.setEndretAvNavn("dfd"); //TODO Fra MDC
-			journalpost.setJournalfortAvNavn("dfdf"); //TODO
-		}
+//		// //TODO: endelig journalfør. !! kun dersom
+//		if (putJournalpostRequest.getForsoekEndeligJF()) {
+//			journalpost.setJournalstatus(JournalStatusCode.J);
+//			journalpost.setJournalForendeEnhetId(putJournalpostRequest.getJournalfEnhet());
+//			journalpost.setJournalDato(new Date());
+//			journalpost.setEndretAvNavn("dfd"); //TODO Fra MDC
+//			journalpost.setJournalfortAvNavn("dfdf"); //TODO
+//		}
 	}
 
 }

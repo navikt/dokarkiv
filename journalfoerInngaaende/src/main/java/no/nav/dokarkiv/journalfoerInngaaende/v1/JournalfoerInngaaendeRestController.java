@@ -92,6 +92,7 @@ public class JournalfoerInngaaendeRestController {
 		try {
 			validateId(journalpostId, "journalpostId");
 			assertAccessToJournalpost(journalpostId);
+			RequestContextUtil.createAndSetUsername("bruker", "consumerId"); //TODO: Disse feltene må settes!
 			PutJournalpostResponse inngaaendeResponseTo = persistInngaaendeJournalpostService.persist(journalpostId, request);
 			log.info("Oppdatert journalpost med journalpostId={} i Joark.", journalpostId);
 			return new ResponseEntity<>(inngaaendeResponseTo, HttpStatus.OK);

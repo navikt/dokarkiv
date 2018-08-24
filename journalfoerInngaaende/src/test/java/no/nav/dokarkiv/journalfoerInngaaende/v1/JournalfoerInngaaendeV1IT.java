@@ -6,17 +6,22 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static no.nav.dokarkiv.core.datautil.DokumentInfoTestDataProvider.createVedleggDokumentInfo;
 import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.StringContains.containsString;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import no.nav.dok.tjenester.journalfoerinngaaende.GetJournalpostResponse;
+import no.nav.dok.tjenester.journalfoerinngaaende.PutJournalpostRequest;
+import no.nav.dok.tjenester.journalfoerinngaaende.PutJournalpostResponse;
 import no.nav.dokarkiv.core.datautil.JournalpostTestDataProvider;
 import no.nav.dokarkiv.core.datautil.SkannetInnholdTestDataProvider;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import org.apache.http.client.methods.HttpHead;
 import org.junit.Test;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -26,6 +31,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.transaction.TestTransaction;
 
+import java.io.IOException;
+
 /**
  * @author Sigurd Midttun, Visma Consulting.
  */
@@ -34,6 +41,8 @@ public class JournalfoerInngaaendeV1IT extends AbstractJournalfoerInngaaendeV1It
 	/******************************
 	 ** GetInngaaendeJournalpost **
 	 ******************************/
+
+	private ObjectMapper mapper = new ObjectMapper();
 
 	@Test
 	public void shouldGetInngaaendeJournalpostByJournalpostId() throws Exception {
@@ -163,6 +172,60 @@ public class JournalfoerInngaaendeV1IT extends AbstractJournalfoerInngaaendeV1It
 		assertThat(responseEntity.getBody().getDokumentListe().get(0).getTittel(), is("Gi meg foreldrepenger")); //Hoveddok
 		assertThat(responseEntity.getBody().getDokumentListe().get(1).getTittel(), is("Takk skal du ha")); //Vedlegg1
 		assertThat(responseEntity.getBody().getDokumentListe().get(2).getTittel(), is("siste dokument inn")); //Vedlegg2
+	}
+/**
+		================= Opppdater journalpost ================
+		PUT /rest/journalfoer-inngaaende/v1/journalposter/{jpid}
+ 		========================================================
+*/
+
+	@Test
+	public void shouldFerdigstillJournalpostVedOppdatering() throws IOException {
+		abacPermit();
+
+		PutJournalpostRequest request = mapper.readValue(classpathToString("__files/put_journalpost/happy_input_request.json"), PutJournalpostRequest.class);
+
+		joarkRepository.deleteAll();
+		Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M).endretAvNavn("saksbehandlersen"));
+		String journalpostId = journalpost.getJournalpostId().toString();
+
+		HttpEntity<PutJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
+
+		ResponseEntity<PutJournalpostResponse> responseEntity = restTemplate.exchange(
+				"/rest/journalfoer-inngaaende/v1/journalposter/" + journalpostId, HttpMethod.PUT, requestHttpEntity, PutJournalpostResponse.class);
+
+		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
+//		verify(postRequestedFor(urlEqualTo("/abac")).withRequestBody(equalToJson(stringFromClasspath("abac/getInngaaendejournalpost.json"))));
+		assertThat(responseEntity.getBody().getJournalpostId(), is(journalpostId));
+		assertThat(responseEntity.getBody().getMangler(), is(nullValue()));
+		assertThat(responseEntity.getBody().getForsoekEndeligJF(), is(true));
+	}
+
+	@Test
+	public void shouldReturnManglerVedForsoektEndeligJF() throws IOException {
+		abacPermit();
+
+		PutJournalpostRequest request = mapper.readValue(classpathToString("__files/put_journalpost/happy_input_request_ikke_endeligJF.json"), PutJournalpostRequest.class);
+
+		joarkRepository.deleteAll();
+		Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M).endretAvNavn("saksbehandlersen"));
+		String journalpostId = journalpost.getJournalpostId().toString();
+
+		HttpEntity<PutJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
+
+		ResponseEntity<PutJournalpostResponse> responseEntity = restTemplate.exchange(
+				"/rest/journalfoer-inngaaende/v1/journalposter/" + journalpostId, HttpMethod.PUT, requestHttpEntity, PutJournalpostResponse.class);
+
+		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
+//		verify(postRequestedFor(urlEqualTo("/abac")).withRequestBody(equalToJson(stringFromClasspath("abac/getInngaaendejournalpost.json"))));
+		assertThat(responseEntity.getBody().getJournalpostId(), is(journalpostId));
+		assertThat(responseEntity.getBody().getMangler(), is(nullValue()));
+		assertThat(responseEntity.getBody().getForsoekEndeligJF(), is(false));
+	}
+
+	@Test
+	public void shouldReturnJournalpostIdVedOppdateringUtenEndeligJF() {
+
 	}
 
 
