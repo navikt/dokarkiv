@@ -163,7 +163,7 @@
 			<dependency>
 				<groupId>no.nav.tjenester.fim</groupId>
 				<artifactId>no-nav-dok-tjenester-journalfoerinngaaende</artifactId>
-				<version>0.0.9</version>
+				<version>0.0.10-SNAPSHOT</version>
 			</dependency>
 
 			<!--Swagger-->
