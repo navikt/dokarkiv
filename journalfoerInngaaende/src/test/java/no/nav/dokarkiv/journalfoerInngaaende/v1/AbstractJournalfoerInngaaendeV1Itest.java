@@ -49,7 +49,7 @@ import java.nio.charset.StandardCharsets;
 @AutoConfigureTestEntityManager
 @AutoConfigureWireMock(port = 0)
 @Transactional
-public class AbstractJournalfoerInngaaendeV1Itest {
+public abstract class AbstractJournalfoerInngaaendeV1Itest {
 
 	protected static final String OIDC_TOKEN_TEST = "Bearer oidc_header.oidc_body.oidc_signature";
 

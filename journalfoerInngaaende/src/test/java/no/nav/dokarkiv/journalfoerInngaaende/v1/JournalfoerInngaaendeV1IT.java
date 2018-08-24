@@ -182,10 +182,10 @@ public class JournalfoerInngaaendeV1IT extends AbstractJournalfoerInngaaendeV1It
 	@Test
 	public void shouldFerdigstillJournalpostVedOppdatering() throws IOException {
 		abacPermit();
+		joarkRepository.deleteAll();
 
 		PutJournalpostRequest request = mapper.readValue(classpathToString("__files/put_journalpost/happy_input_request.json"), PutJournalpostRequest.class);
 
-		joarkRepository.deleteAll();
 		Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M).endretAvNavn("saksbehandlersen"));
 		String journalpostId = journalpost.getJournalpostId().toString();
 
@@ -204,10 +204,10 @@ public class JournalfoerInngaaendeV1IT extends AbstractJournalfoerInngaaendeV1It
 	@Test
 	public void shouldReturnManglerVedForsoektEndeligJF() throws IOException {
 		abacPermit();
+		joarkRepository.deleteAll();
 
 		PutJournalpostRequest request = mapper.readValue(classpathToString("__files/put_journalpost/happy_input_request_ikke_endeligJF.json"), PutJournalpostRequest.class);
 
-		joarkRepository.deleteAll();
 		Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M).endretAvNavn("saksbehandlersen"));
 		String journalpostId = journalpost.getJournalpostId().toString();
 
