@@ -17,6 +17,7 @@ import java.util.UUID;
  * <p>
  * NB! CallIdHandler must be configured in order to make callId available in MDC.
  *
+ * @deprecated vi bruker ikke alle feltene i requestcontext
  * @author Thomas Eugen Bjørge, Visma Consulting
  */
 @Deprecated

@@ -121,10 +121,10 @@ public class DokumentFil extends AbstractPersistentVersionedDomainObjectWithKild
 	 * @return the fil
 	 */
 	public byte[] getFil() {
-		if (!ArrayUtils.isEmpty(fil)) {
-			return Arrays.copyOf(fil, fil.length);
+		if (ArrayUtils.isEmpty(fil)) {
+			return null;
 		}
-		return null;
+		return Arrays.copyOf(fil, fil.length);
 	}
 
 	/**
@@ -133,10 +133,10 @@ public class DokumentFil extends AbstractPersistentVersionedDomainObjectWithKild
 	 * @param fil the fil to set
 	 */
 	public void setFil(byte[] fil) {
-		if (!ArrayUtils.isEmpty(fil)) {
-			this.fil = Arrays.copyOf(fil, fil.length);
-		} else {
+		if (ArrayUtils.isEmpty(fil)) {
 			this.fil = null;
+		} else {
+			this.fil = Arrays.copyOf(fil, fil.length);
 		}
 	}
 

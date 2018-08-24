@@ -72,7 +72,7 @@ public final class OrgnrValidator {
 	private static int getExpectedControlNumber(int... fields) {
 		int productSum = getProductSum(fields);
 		int rest = productSum % 11;
-		return rest == 0 ? 0 : 11 - rest;
+		return rest == 0 ? 0 : (11 - rest);
 	}
 
 	private static int getProductSum(int... fields) {

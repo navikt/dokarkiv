@@ -12,10 +12,10 @@ public class InvalidArgumentException extends DokarkivFunctionalException {
 	private static final long serialVersionUID = ***gammelt_fnr***6L;
 
 	/* The name of the argument that is not used correctly */
-	private String argumentName;
+	private final String argumentName;
 
 	/* The value of the argument that is not used correctly */
-	private Object argumentValue;
+	private final Object argumentValue;
 
 	/**
 	 * Constructs an <code>InvalidArgumentException</code> with message.
@@ -25,6 +25,8 @@ public class InvalidArgumentException extends DokarkivFunctionalException {
 	 */
 	public InvalidArgumentException(String message) {
 		super(message);
+		argumentName = null;
+		argumentValue = null;
 	}
 
 	/**
@@ -37,6 +39,8 @@ public class InvalidArgumentException extends DokarkivFunctionalException {
 	 */
 	public InvalidArgumentException(String message, Throwable cause) {
 		super(message, cause);
+		argumentName = null;
+		argumentValue = null;
 	}
 
 	/**
@@ -81,16 +85,6 @@ public class InvalidArgumentException extends DokarkivFunctionalException {
 	}
 
 	/**
-	 * Set the argument name.
-	 *
-	 * @param argumentName
-	 *            the argument name to set
-	 */
-	public void setArgumentName(String argumentName) {
-		this.argumentName = argumentName;
-	}
-
-	/**
 	 * Get the argument value.
 	 *
 	 * @return the argument value to get
@@ -98,17 +92,6 @@ public class InvalidArgumentException extends DokarkivFunctionalException {
 	public Object getArgumentValue() {
 		return argumentValue;
 	}
-
-	/**
-	 * Set the argument value.
-	 *
-	 * @param argumentValue
-	 *            the argument value to set
-	 */
-	public void setArgumentValue(Object argumentValue) {
-		this.argumentValue = argumentValue;
-	}
-
 	/**
 	 * Returns a String representation of object properties.
 	 *

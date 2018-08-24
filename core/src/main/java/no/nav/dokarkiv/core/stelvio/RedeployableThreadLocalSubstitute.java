@@ -6,7 +6,8 @@ import java.util.WeakHashMap;
 
 /**
  * Defines a RedeployableThreadLocalSubstitute.
- * 
+ *
+ * @deprecated bruk noe som er mer standard
  * @author PC
  * 
  * @param <T>

@@ -440,10 +440,10 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 			DokumentInfo dokumentInfo = dokumentInfoRelasjon.getDokumentInfo();
 			if (dokumentInfo != null && dokumentInfo.getDokumentInfoId() != null) {
 				Integer count = dokumentInfoIdsCount.get(dokumentInfo.getDokumentInfoId());
-				if (count != null) {
-					dokumentInfoIdsCount.put(dokumentInfo.getDokumentInfoId(), count + 1);
-				} else {
+				if (count == null) {
 					dokumentInfoIdsCount.put(dokumentInfo.getDokumentInfoId(), 1);
+				} else {
+					dokumentInfoIdsCount.put(dokumentInfo.getDokumentInfoId(), count + 1);
 				}
 			}
 		}
