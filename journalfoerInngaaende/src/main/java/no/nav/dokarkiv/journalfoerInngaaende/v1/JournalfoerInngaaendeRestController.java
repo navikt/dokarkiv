@@ -19,6 +19,8 @@ import no.nav.dokarkiv.core.exceptions.DokarkivRestFunctionalException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.security.abac.AbacSecurityService;
 import no.nav.dokarkiv.core.security.abac.AuthorizationException;
+import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
+import no.nav.dokarkiv.journalfoerInngaaende.v1.service.DeleteLogiskVedleggService;
 import no.nav.dokarkiv.journalfoerInngaaende.v1.service.GetInngaaendeJournalpostService;
 import no.nav.dokarkiv.journalfoerInngaaende.v1.service.PersistInngaaendeJournalpostService;
 import no.nav.freg.abac.core.annotation.Abac;
@@ -27,6 +29,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -47,15 +50,18 @@ public class JournalfoerInngaaendeRestController {
 
 	private GetInngaaendeJournalpostService getInngaaendeJournalpostService;
 	private PersistInngaaendeJournalpostService persistInngaaendeJournalpostService;
+	private DeleteLogiskVedleggService deleteLogiskVedleggService;
 	private AbacSecurityService abacSecurityService;
 
 	@Inject
 	public JournalfoerInngaaendeRestController(GetInngaaendeJournalpostService getInngaaendeJournalpostService,
 											   PersistInngaaendeJournalpostService persistInngaaendeJournalpostService,
+											   DeleteLogiskVedleggService deleteLogiskVedleggService,
 											   AbacSecurityService abacSecurityService) {
 		this.getInngaaendeJournalpostService = getInngaaendeJournalpostService;
 		this.abacSecurityService = abacSecurityService;
 		this.persistInngaaendeJournalpostService = persistInngaaendeJournalpostService;
+		this.deleteLogiskVedleggService = deleteLogiskVedleggService;
 	}
 
 	@GetMapping("/{journalpostId}")
@@ -64,7 +70,7 @@ public class JournalfoerInngaaendeRestController {
 			resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_JOURNALPOST)})
 	public ResponseEntity getInngaaendeJournalpostByJournalpostId(@PathVariable String journalpostId) {
 		try {
-			validateJournalpostId(journalpostId);
+			validateId(journalpostId, "journalpostId");
 			assertAccessToJournalpost(journalpostId);
 			GetJournalpostResponse responseTo = getInngaaendeJournalpostService.getInngaaendeJournalpostByJournalpostId(journalpostId);
 			log.info("Hentet journalpost med journalpostId={}, dokumentinfoId(er)={} og dokumenttypeId(er)={} fra Joark.",
@@ -84,11 +90,34 @@ public class JournalfoerInngaaendeRestController {
 			resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_JOURNALPOST)})
 	public ResponseEntity persistInngaaendeJournalpost(@PathVariable String journalpostId, @RequestBody PutJournalpostRequest request) {
 		try {
-			validateJournalpostId(journalpostId);
+			validateId(journalpostId, "journalpostId");
 			assertAccessToJournalpost(journalpostId);
 			PutJournalpostResponse inngaaendeResponseTo = persistInngaaendeJournalpostService.persist(journalpostId, request);
 			log.info("Oppdatert journalpost med journalpostId={} i Joark.", journalpostId);
 			return new ResponseEntity<>(inngaaendeResponseTo, HttpStatus.OK);
+		} catch (DokarkivRestFunctionalException e) {
+			log.warn("Feilmelding={}, journalpostId={}. HttpStatus={}", e.getMessage(), journalpostId, e.getHttpStatus());
+			HttpHeaders headers = new HttpHeaders();
+			headers.setContentType(MediaType.TEXT_PLAIN);
+			return new ResponseEntity<>(e.getMessage() + ". journalpostId=" + journalpostId, headers, e.getHttpStatus());
+		}
+	}
+
+	@DeleteMapping(value = "{journalpostId}/dokumenter/{dokumentId}/logiskeVedlegg/{logiskVedleggId}")
+	@Transactional
+	@Abac(actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION),
+			resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_JOURNALPOST)})
+	public ResponseEntity deleteLogiskVedlegg(@PathVariable String journalpostId, @PathVariable String dokumentId, @PathVariable String logiskVedleggId) {
+		try {
+			validateId(journalpostId, "journalpostId");
+			validateId(dokumentId, "dokumentId");
+			validateId(logiskVedleggId, "logiskVedleggId");
+			RequestContextUtil.createAndSetUsername("bruker", "consumerId"); //TODO: Disse feltene må settes!
+			assertAccessToJournalpost(journalpostId);
+			deleteLogiskVedleggService.delete(journalpostId, dokumentId, logiskVedleggId);
+			log.info("Slettet logisk vedlegg fra journalpost, journalpostId={}, dokumentinfoId={}, logiskVedleggId={}.", journalpostId, dokumentId, logiskVedleggId);
+			return new ResponseEntity<>(String.format("Sleting av logiskVedlegg med logiskVedleggId=%s var vellykket. journalpostId=%s, dokumentId=%s",
+					logiskVedleggId, journalpostId, dokumentId), HttpStatus.OK);
 		} catch (DokarkivRestFunctionalException e) {
 			log.warn("Feilmelding={}, journalpostId={}. HttpStatus={}", e.getMessage(), journalpostId, e.getHttpStatus());
 			HttpHeaders headers = new HttpHeaders();
@@ -107,9 +136,9 @@ public class JournalfoerInngaaendeRestController {
 		}
 	}
 
-	private void validateJournalpostId(String journalpostId) {
-		hasText(journalpostId, "journalpostId");
-		convertStringToLong(journalpostId, "journalpostId");
+	private void validateId(String journalpostId, String feltnavn) {
+		hasText(journalpostId, feltnavn);
+		convertStringToLong(journalpostId, feltnavn);
 	}
 
 }

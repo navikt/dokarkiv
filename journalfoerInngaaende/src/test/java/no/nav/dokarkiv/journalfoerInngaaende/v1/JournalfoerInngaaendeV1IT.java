@@ -12,11 +12,11 @@ import static org.hamcrest.core.StringContains.containsString;
 
 import no.nav.dok.tjenester.journalfoerinngaaende.GetJournalpostResponse;
 import no.nav.dokarkiv.core.datautil.JournalpostTestDataProvider;
+import no.nav.dokarkiv.core.datautil.SkannetInnholdTestDataProvider;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -29,8 +29,11 @@ import org.springframework.test.context.transaction.TestTransaction;
 /**
  * @author Sigurd Midttun, Visma Consulting.
  */
-@Ignore("Fiks problemeer med kodeverdier i grensesnitt")
 public class JournalfoerInngaaendeV1IT extends AbstractJournalfoerInngaaendeV1Itest {
+
+	/******************************
+	 ** GetInngaaendeJournalpost **
+	 ******************************/
 
 	@Test
 	public void shouldGetInngaaendeJournalpostByJournalpostId() throws Exception {
@@ -45,7 +48,7 @@ public class JournalfoerInngaaendeV1IT extends AbstractJournalfoerInngaaendeV1It
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 		verify(postRequestedFor(urlEqualTo("/abac")).withRequestBody(equalToJson(stringFromClasspath("abac/getInngaaendejournalpost.json"))));
-		assertThat(responseEntity.getBody().getJournalTilstand(), is("ENDELIG"));
+		assertThat(responseEntity.getBody().getJournalTilstand(), is(GetJournalpostResponse.JournalTilstand.ENDELIG));
 	}
 
 	/**
@@ -161,5 +164,81 @@ public class JournalfoerInngaaendeV1IT extends AbstractJournalfoerInngaaendeV1It
 		assertThat(responseEntity.getBody().getDokumentListe().get(1).getTittel(), is("Takk skal du ha")); //Vedlegg1
 		assertThat(responseEntity.getBody().getDokumentListe().get(2).getTittel(), is("siste dokument inn")); //Vedlegg2
 	}
+
+
+	/*************************
+	 ** DeleteLogiskVedlegg **
+	 *************************/
+
+	@Test
+	public void shouldDeleteLogiskVedlegg() {
+		abacPermit();
+		joarkRepository.deleteAll();
+
+		//Create and save testdata
+		Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.J));
+		String journalpostId = journalpost.getJournalpostId().toString();
+		String dokumentId = journalpost.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
+				.iterator()
+				.next()
+				.getDokumentInfo()
+				.getDokumentInfoId()
+				.toString();
+		String logiskVedleggId = journalpost.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
+				.iterator()
+				.next()
+				.getDokumentInfo()
+				.getSkannetInnholdListe()
+				.iterator()
+				.next()
+				.getSkannetInnholdId()
+				.toString();
+
+		journalpost.getDokumentInfoFromJpDokInfoRelasjonerByDokumentInfoId(Long.parseLong(dokumentId))
+				.addSkannetInnhold(SkannetInnholdTestDataProvider.createSkannetInnhold().build());
+
+		TestTransaction.start();
+		joarkRepository.save(journalpost);
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
+
+		//Start test
+		assertThat(journalpost.getDokumentInfoFromJpDokInfoRelasjonerByDokumentInfoId(Long.parseLong(dokumentId))
+				.getSkannetInnholdListe().size(), is(2));
+
+		ResponseEntity<String> responseEntity = restTemplate.exchange(
+				"/rest/journalfoer-inngaaende/v1/journalposter/" + journalpostId + "/dokumenter/" + dokumentId + "/logiskeVedlegg/" + logiskVedleggId, HttpMethod.DELETE, createHeaders(), String.class);
+
+		TestTransaction.start();
+		Journalpost resultJournalpost = joarkRepository.findById(Long.parseLong(journalpostId)).get();
+		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
+		assertThat(resultJournalpost.getDokumentInfoFromJpDokInfoRelasjonerByDokumentInfoId(Long.parseLong(dokumentId))
+				.getSkannetInnholdListe().size(), is(1));
+		TestTransaction.end();
+	}
+
+	@Test
+	public void shouldReturnLogiskVedleggIdNotFoundException() {
+		abacPermit();
+		joarkRepository.deleteAll();
+
+		Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.J));
+
+		String journalpostId = journalpost.getJournalpostId().toString();
+		String dokumentId = journalpost.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
+				.iterator()
+				.next()
+				.getDokumentInfo()
+				.getDokumentInfoId()
+				.toString();
+		String logiskVedleggId = "***gammelt_fnr***7965";
+
+		ResponseEntity<String> responseEntity = restTemplate.exchange(
+				"/rest/journalfoer-inngaaende/v1/journalposter/" + journalpostId + "/dokumenter/" + dokumentId + "/logiskeVedlegg/" + logiskVedleggId, HttpMethod.DELETE, createHeaders(), String.class);
+
+		assertThat(responseEntity.getStatusCode(), is(HttpStatus.NOT_FOUND));
+		assertThat(responseEntity.getBody(), containsString("Kunne ikke finne logisk vedlegg"));
+	}
+
 }
 
