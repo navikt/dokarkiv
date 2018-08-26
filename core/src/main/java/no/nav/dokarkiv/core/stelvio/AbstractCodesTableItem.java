@@ -209,6 +209,7 @@ public abstract class AbstractCodesTableItem<K extends Enum, V> implements Seria
 	 *
 	 * @see Comparable
 	 */
+	@Override
 	public int compareTo(Object o) {
 
 		AbstractCodesTableItem cti = (AbstractCodesTableItem) o;

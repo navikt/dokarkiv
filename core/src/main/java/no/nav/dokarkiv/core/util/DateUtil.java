@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.core.utils;
+package no.nav.dokarkiv.core.util;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;

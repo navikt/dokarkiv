@@ -131,6 +131,6 @@ public class ValidateSamlInInterceptor extends WSS4JInInterceptor {
 					} else {
 						return "unknown";
 					}
-				}));
+				}, (name1, name2) -> name1));
 	}
 }

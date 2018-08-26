@@ -72,10 +72,10 @@ public class JournalpostManglerToMapper {
 	}
 
 	private JournalfoeringsbehovTo isNull(Collection<?> collection) {
-		if(collection != null && !collection.isEmpty()) {
-			return JournalfoeringsbehovTo.MANGLER_IKKE;
-		} else {
+		if(collection == null || collection.isEmpty()) {
 			return JournalfoeringsbehovTo.MANGLER;
+		} else {
+			return JournalfoeringsbehovTo.MANGLER_IKKE;
 		}
 	}
 }

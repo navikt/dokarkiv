@@ -8,8 +8,8 @@ import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import no.nav.dokarkiv.core.constants.ServiceConstants;
 import no.nav.dokarkiv.core.dokumenturl.DefaultHentDokumentUrl;
+import no.nav.dokarkiv.core.dokumenturl.HentDokumentUrlConstants;
 import no.nav.dokarkiv.core.dokumenturl.HentDokumentUrlRequest;
 import no.nav.dokarkiv.core.dokumenturl.HentDokumentUrlResponse;
 import no.nav.dokarkiv.core.domain.builder.BrukerBuilder;
@@ -215,7 +215,7 @@ public class DefaultHentDokumentUrlTest {
 
 	private void assertUrl(String servletUrl) {
 		assertThat(servletUrl, containsString(SERVLET_URL));
-		assertThat(servletUrl, containsString("?" + ServiceConstants.HENT_DOKUMENT_SERVLET_PARAM + "="));
+		assertThat(servletUrl, containsString("?" + HentDokumentUrlConstants.HENT_DOKUMENT_SERVLET_PARAM + "="));
 		assertThat(servletUrl, containsString("&mimetype="));
 	}
 

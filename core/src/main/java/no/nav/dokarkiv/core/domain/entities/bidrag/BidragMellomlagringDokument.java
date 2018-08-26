@@ -95,10 +95,10 @@ public class BidragMellomlagringDokument extends AbstractPersistentVersionedDoma
 	 * @return the dokument
 	 */
 	public byte[] getDokument() {
-		if (!ArrayUtils.isEmpty(dokument)) {
-			return Arrays.copyOf(dokument, dokument.length);
+		if (ArrayUtils.isEmpty(dokument)) {
+			return null;
 		}
-		return null;
+		return Arrays.copyOf(dokument, dokument.length);
 	}
 
 	/**
@@ -107,10 +107,10 @@ public class BidragMellomlagringDokument extends AbstractPersistentVersionedDoma
 	 * @param dokument the dokument to set
 	 */
 	public void setDokument(byte[] dokument) {
-		if (!ArrayUtils.isEmpty(dokument)) {
-			this.dokument = Arrays.copyOf(dokument, dokument.length);
-		} else {
+		if (ArrayUtils.isEmpty(dokument)) {
 			this.dokument = null;
+		} else {
+			this.dokument = Arrays.copyOf(dokument, dokument.length);
 		}
 	}
 

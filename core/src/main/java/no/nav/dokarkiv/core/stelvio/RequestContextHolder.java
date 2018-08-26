@@ -2,7 +2,8 @@ package no.nav.dokarkiv.core.stelvio;
 
 /**
  * Helper class to manage a thread-bound instance of the <code>RequestContext</code> class.
- * 
+
+ * @deprecated bruk det som er standard i spring boot
  * @author Stig Kleppe-Jørgensen
  * @see RequestContext
  */

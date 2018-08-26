@@ -2,7 +2,7 @@ package no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions;
 
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
-import no.nav.dokarkiv.core.stelvio.FunctionalRecoverableException;
+import no.nav.dokarkiv.core.exceptions.DokarkivFunctionalException;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
@@ -10,7 +10,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
  *
  * @author Andreas Johansson, Bekk Consulting
  */
-public class UgyldigJournalStatusOvergangException extends FunctionalRecoverableException {
+public class UgyldigJournalStatusOvergangException extends DokarkivFunctionalException {
 
 	/**
 	 * Unique serial version id.

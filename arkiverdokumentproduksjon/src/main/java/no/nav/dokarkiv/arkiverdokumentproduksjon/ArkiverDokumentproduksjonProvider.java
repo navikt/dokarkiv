@@ -157,6 +157,7 @@ public class ArkiverDokumentproduksjonProvider implements ArkiverDokumentproduks
 	private static final String FJERN_FERDIGSTILT_DOKUMENT = ARKIVER_DOKUMENTPRODUKSJON_V1 + ".fjernFerdigstiltDokument";
 	private static final String KNYTT_DOKUMENT_TIL_JOURNALPOST_SOM_VEDLEGG = ARKIVER_DOKUMENTPRODUKSJON_V1 + ".knyttDokumentTilJournalpostSomVedlegg";
 	private static final String OPPRETT_UTGAAENDE_JOURNALPOST_ARKIVER_DOKUMENT = ARKIVER_DOKUMENTPRODUKSJON_V1 + ".opprettUtgaaendeJournalpostArkiverDokument";
+	private static final String REQUEST_IS_NULL_MSG = "Request is null";
 
 	@Inject
 	private OpprettJournalpostArkiverDokumentRequestMapper opprettJournalpostArkiverDokumentRequestMapper;
@@ -236,7 +237,7 @@ public class ArkiverDokumentproduksjonProvider implements ArkiverDokumentproduks
 	@Transactional
 	public OpprettJournalpostArkiverDokumentResponse opprettJournalpostArkiverDokument(
 			OpprettJournalpostArkiverDokumentRequest request) {
-		Assert.notNull(request, "Request is null");
+		Assert.notNull(request, REQUEST_IS_NULL_MSG);
 		OpprettJournalpostArkiverDokumentRequestTo domeneRequest
 				= opprettJournalpostArkiverDokumentRequestMapper.map(request);
 		OpprettJournalpostArkiverDokumentResponseTo domeneResponse
@@ -250,7 +251,7 @@ public class ArkiverDokumentproduksjonProvider implements ArkiverDokumentproduks
 	@Transactional
 	public OpprettJournalpostResponse opprettJournalpost(
 			OpprettJournalpostRequest wsRequest) {
-		Assert.notNull(wsRequest, "Request is null");
+		Assert.notNull(wsRequest, REQUEST_IS_NULL_MSG);
 		OpprettJournalpostRequestTo domeneRequest = opprettJournalpostRequestMapper.map(wsRequest);
 		OpprettJournalpostResponseTo opprettJournalpost = opprettJournalpostService.opprettJournalpost(domeneRequest);
 
@@ -296,12 +297,9 @@ public class ArkiverDokumentproduksjonProvider implements ArkiverDokumentproduks
 	@Transactional
 	public void avbrytJournalpost(AvbrytJournalpostRequest wsRequest) throws AvbrytJournalpostJournalpostIkkeFunnet,
 			AvbrytJournalpostAvbrytelseIkkeTillatt, AvbrytJournalpostJournalpostAlleredeAvbrutt {
-		Assert.notNull(wsRequest, "Request is null");
+		Assert.notNull(wsRequest, REQUEST_IS_NULL_MSG);
 		String operationName = "avbrytJournalpost";
-		AvbrytJournalpostRequestTo domainRequest = null;
-		if (wsRequest != null) {
-			domainRequest = new AvbrytJournalpostRequestTo(wsRequest.getJournalpostId(), wsRequest.getEndretAvNavn());
-		}
+		AvbrytJournalpostRequestTo domainRequest = new AvbrytJournalpostRequestTo(wsRequest.getJournalpostId(), wsRequest.getEndretAvNavn());
 		try {
 			avbrytJournalpostService.avbrytJournalpost(domainRequest);
 			log.info("tjoark103 har avbrutt journalpost med journalpostId={}", domainRequest.getJournalpostId());
@@ -322,7 +320,7 @@ public class ArkiverDokumentproduksjonProvider implements ArkiverDokumentproduks
 	@Override
 	@Transactional
 	public void settDatoSendt(SettDatoSendtRequest settDatoSendtRequest) {
-		Assert.notNull(settDatoSendtRequest, "Request is null");
+		Assert.notNull(settDatoSendtRequest, REQUEST_IS_NULL_MSG);
 		SettDatoSendtRequestTo domainRequest = settDatoSendtRequestMapper.map(settDatoSendtRequest);
 		settDatoSendtService.settDatoSendt(domainRequest);
 		log.info("tjoark104 har oppdatert datoSendt for journalpost(er) med journalpostId(er)={}", domainRequest.getJournalpostIds());
@@ -333,7 +331,7 @@ public class ArkiverDokumentproduksjonProvider implements ArkiverDokumentproduks
 	@Transactional
 	public ArkiverVedleggResponse arkiverVedlegg(ArkiverVedleggRequest arkiverVedleggRequest)
 			throws ArkiverVedleggJournalpostIkkeFunnet, ArkiverVedleggJournalpostIkkeUnderArbeid {
-		Assert.notNull(arkiverVedleggRequest, "Request is null");
+		Assert.notNull(arkiverVedleggRequest, REQUEST_IS_NULL_MSG);
 		ArkiverVedleggRequestTo arkiverVedleggRequestTo = arkiverVedleggRequestMapper.map(arkiverVedleggRequest);
 		ArkiverVedleggResponseTo response;
 		try {
@@ -356,7 +354,7 @@ public class ArkiverDokumentproduksjonProvider implements ArkiverDokumentproduks
 	public void avbrytVedlegg(AvbrytVedleggRequest wsRequest) throws AvbrytVedleggDokumentIkkeFunnet,
 			AvbrytVedleggDokumentIkkeVedlegg, AvbrytVedleggJournalpostIkkeUnderArbeid, AvbrytVedleggDokumentAlleredeAvbrutt,
 			AvbrytVedleggJournalpostIkkeFunnet {
-		Assert.notNull(wsRequest, "Request is null");
+		Assert.notNull(wsRequest, REQUEST_IS_NULL_MSG);
 		try {
 			avbrytVedleggService.avbrytVedlegg(new AvbrytVedleggRequestTo(wsRequest.getJournalpostId(),
 					wsRequest.getDokumentInfoId(),
@@ -387,7 +385,7 @@ public class ArkiverDokumentproduksjonProvider implements ArkiverDokumentproduks
 			throws FjernFerdigstiltDokumentDokumentIkkeFunnet, FjernFerdigstiltDokumentDokumentAlleredeAvbrutt,
 			FjernFerdigstiltDokumentJournalpostIkkeUnderArbeid, FjernFerdigstiltDokumentJournalpostIkkeFunnet,
 			FjernFerdigstiltDokumentDokumentAlleredeRedigerbart {
-		Assert.notNull(wsRequest, "Request is null");
+		Assert.notNull(wsRequest, REQUEST_IS_NULL_MSG);
 		FjernFerdigstiltDokumentRequestTo domainRequest = new FjernFerdigstiltDokumentRequestTo(wsRequest.getJournalpostId(),
 				wsRequest.getDokumentInfoId(), wsRequest.getEndretAvNavn());
 		try {
@@ -422,7 +420,7 @@ public class ArkiverDokumentproduksjonProvider implements ArkiverDokumentproduks
 	public void ferdigstillJournalpost(FerdigstillJournalpostRequest wsRequest)
 			throws FerdigstillJournalpostJournalpostIkkeUnderArbeid, FerdigstillJournalpostInneholderDokumenterUnderRedigering,
 			FerdigstillJournalpostJournalpostIkkeFunnet {
-		Assert.notNull(wsRequest, "Request is null");
+		Assert.notNull(wsRequest, REQUEST_IS_NULL_MSG);
 		try {
 			FerdigstillJournalpostRequestTo domainRequest = ferdigstillJournalpostRequestMapper.map(wsRequest);
 			ferdigstillJournalpostService.ferdigstillJournalpost(domainRequest);
@@ -496,7 +494,7 @@ public class ArkiverDokumentproduksjonProvider implements ArkiverDokumentproduks
 	@Override
 	@Transactional
 	public void settJournalpostAttributter(SettJournalpostAttributterRequest settJournalpostAttributterRequest) {
-		Assert.notNull(settJournalpostAttributterRequest, "Request is null");
+		Assert.notNull(settJournalpostAttributterRequest, REQUEST_IS_NULL_MSG);
 		SettJournalpostAttributterRequestTo domainRequest = settJournalpostAttributterRequestMapper.map(settJournalpostAttributterRequest);
 		settJournalpostAttributterService.settJournalpostAttributter(domainRequest);
 		log.info("tjoark110 har satt journalpostattributter på journalpost(er) med journalpostId(er)={}", domainRequest.getJournalpostIds());

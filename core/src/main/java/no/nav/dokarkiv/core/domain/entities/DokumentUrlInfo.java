@@ -30,10 +30,6 @@ import java.util.Date;
 @Builder
 @AllArgsConstructor
 public class DokumentUrlInfo extends AbstractPersistentVersionedDomainObject {
-
-	/** ID used for serialization. */
-	private static final long serialVersionUID = 1L;
-
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "dokumentUrlInfo_seq")
 	@GenericGenerator(name = "dokumentUrlInfo_seq", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator", 

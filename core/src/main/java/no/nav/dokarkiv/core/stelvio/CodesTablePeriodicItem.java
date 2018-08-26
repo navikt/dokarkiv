@@ -41,6 +41,7 @@ public abstract class CodesTablePeriodicItem<K extends Enum, V> extends Abstract
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public String getCodeAsString() {
 		return code;
 	}

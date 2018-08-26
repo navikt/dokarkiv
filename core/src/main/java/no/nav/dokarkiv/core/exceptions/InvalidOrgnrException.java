@@ -1,13 +1,11 @@
 package no.nav.dokarkiv.core.exceptions;
 
-import no.nav.dokarkiv.core.stelvio.FunctionalUnrecoverableException;
-
 /**
  * Thrown when validating OrgNr.
  * 
  * @author Hans Olav Loftum, BEKK
  */
-public class InvalidOrgnrException extends FunctionalUnrecoverableException {
+public class InvalidOrgnrException extends DokarkivFunctionalException {
 
 	/** Serialization ID */
 	private static final long serialVersionUID = ***gammelt_fnr***41658110L;

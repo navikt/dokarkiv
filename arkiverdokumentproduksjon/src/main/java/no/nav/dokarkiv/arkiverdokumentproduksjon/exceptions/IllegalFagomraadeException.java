@@ -1,11 +1,11 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions;
 
-import no.nav.dokarkiv.core.stelvio.FunctionalRecoverableException;
+import no.nav.dokarkiv.core.exceptions.DokarkivFunctionalException;
 
 /**
  * @author Thomas Kåsene, Visma Consulting AS
  */
-public class IllegalFagomraadeException extends FunctionalRecoverableException {
+public class IllegalFagomraadeException extends DokarkivFunctionalException {
 
     public IllegalFagomraadeException(String message) {
         super(message);

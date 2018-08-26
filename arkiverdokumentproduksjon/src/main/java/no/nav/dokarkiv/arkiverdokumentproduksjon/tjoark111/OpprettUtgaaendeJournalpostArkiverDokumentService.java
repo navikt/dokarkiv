@@ -1,6 +1,6 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark111;
 
-import static no.nav.dokarkiv.core.utils.DateUtil.getDateNow;
+import static no.nav.dokarkiv.core.util.DateUtil.getDateNow;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.UgyldigInputException;
