@@ -19,6 +19,7 @@ import no.nav.dok.tjenester.journalfoerinngaaende.PutJournalpostRequest;
 import no.nav.dok.tjenester.journalfoerinngaaende.PutJournalpostResponse;
 import no.nav.dokarkiv.core.exceptions.DokarkivRestFunctionalException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
+import no.nav.dokarkiv.core.metrics.RestMetrics;
 import no.nav.dokarkiv.core.security.abac.AbacSecurityService;
 import no.nav.dokarkiv.core.security.abac.AuthorizationException;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
@@ -36,6 +37,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.inject.Inject;
@@ -106,22 +108,17 @@ public class JournalfoerInngaaendeRestController {
 
 	@PutMapping(value = "/{journalpostId}/dokumenter/{dokumentid}")
 	@Transactional
-	@Abac(actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION),
-			resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_JOURNALPOST)})
-	public ResponseEntity updateDokument(@PathVariable String journalpostId, @PathVariable String dokumentid, @RequestBody PutDokumentRequest request) {
-		try {
+//	@Abac(actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION),
+//			resources = {@Abac.Attr(key = RESOURCE_FELLE_RESOURCE_TYPE, value = RESOURCE_ARKIV_JOURNALPOST)})
+	@RestMetrics(value = "dok_request", extraTags = {"process_code", "tjoark070_oppdater_dokument"}, percentiles = {0.5, 0.95})
+	public @ResponseBody
+	PutDokumentResponse updateDokument(@PathVariable String journalpostId, @PathVariable String dokumentid, @RequestBody PutDokumentRequest request) {
 
-			RequestContextUtil.createAndSetUsername("user", "appid");
-			PutDokumentResponse inngaaendeResponseTo = updateInngaaendeJournalpostDokumentService.update(journalpostId, dokumentid, request);
-			log.info("Oppdatert dokument med journalpostId={} og dokumentId={} i Joark.", journalpostId, dokumentid);
-			return new ResponseEntity<>(inngaaendeResponseTo, HttpStatus.OK);
-		} catch (DokarkivRestFunctionalException e) {
-			log.warn("Feilmelding={}, HttpStatus={}", e.getMessage(), e
-					.getHttpStatus());
-			HttpHeaders headers = new HttpHeaders();
-			headers.setContentType(MediaType.TEXT_PLAIN);
-			return new ResponseEntity<>(e.getMessage(), headers, e.getHttpStatus());
-		}
+		RequestContextUtil.createAndSetUsername("user", "appid");
+		PutDokumentResponse inngaaendeResponseTo = updateInngaaendeJournalpostDokumentService.update(journalpostId, dokumentid, request);
+		log.info("Oppdatert dokument med journalpostId={} og dokumentId={} i Joark.", journalpostId, dokumentid);
+		return inngaaendeResponseTo;
+
 	}
 
 	private void assertAccessToJournalpost(String journalpostId) throws DokarkivRestFunctionalException {
