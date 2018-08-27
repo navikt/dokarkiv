@@ -13,13 +13,15 @@ import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.dokarkiv.core.stelvio.SimpleRequestContext;
 import org.apache.commons.io.IOUtils;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureDataJpa;
 import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
@@ -30,7 +32,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.transaction.TestTransaction;
-import org.springframework.web.context.annotation.SessionScope;
 
 import javax.inject.Inject;
 import javax.transaction.Transactional;
@@ -60,12 +61,37 @@ public abstract class AbstractJournalfoerInngaaendeV1Itest {
 	@Inject
 	protected TestRestTemplate restTemplate;
 
+	@Autowired
+	private TestEntityManager testEntityManager;
+
 	@BeforeClass
 	public static void setupItest() {
 		RequestContextSetter.setRequestContext(new SimpleRequestContext.Builder()
 				.userId("itestuser")
 				.componentId("itest")
 				.build());
+	}
+
+	public static String classpathToString(String path) {
+		return resourceUrlToString(Resources.getResource(path));
+	}
+
+	public static String resourceUrlToString(URL url) {
+		try {
+			return Resources.toString(url, StandardCharsets.UTF_8);
+		} catch (IOException e) {
+			throw new RuntimeException("Could not convert url to String" + url);
+		}
+	}
+
+	@Before
+	public void setUp() throws Exception {
+		deleteSaksrelasjoner();
+		joarkRepository.deleteAll();
+	}
+
+	private void deleteSaksrelasjoner() {
+		testEntityManager.getEntityManager().createQuery("delete from no.nav.dokarkiv.core.domain.entities.Saksrelasjon").executeUpdate();
 	}
 
 	protected Journalpost buildAndCommit(final JournalpostBuilder builder) {
@@ -105,17 +131,5 @@ public abstract class AbstractJournalfoerInngaaendeV1Itest {
 
 	protected String stringFromClasspath(String resourcename) throws IOException {
 		return IOUtils.toString(this.getClass().getClassLoader().getResourceAsStream(resourcename));
-	}
-
-	public static String classpathToString(String path) {
-		return resourceUrlToString(Resources.getResource(path));
-	}
-
-	public static String resourceUrlToString(URL url) {
-		try {
-			return Resources.toString(url, StandardCharsets.UTF_8);
-		} catch (IOException e) {
-			throw new RuntimeException("Could not convert url to String" + url);
-		}
 	}
 }
