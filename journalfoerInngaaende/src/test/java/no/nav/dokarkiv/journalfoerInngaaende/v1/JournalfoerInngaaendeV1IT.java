@@ -9,6 +9,7 @@ import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjo
 import static no.nav.dokarkiv.journalfoerInngaaende.v1.util.TestUtils.BREVKODE_UPDATE;
 import static no.nav.dokarkiv.journalfoerInngaaende.v1.util.TestUtils.DOKUMENT_TITTEL_UPDATE;
 import static no.nav.dokarkiv.journalfoerInngaaende.v1.util.TestUtils.DOKUMNETTYPE_ID_UPDATE;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
@@ -20,6 +21,7 @@ import no.nav.dok.tjenester.journalfoerinngaaende.PutDokumentRequest;
 import no.nav.dok.tjenester.journalfoerinngaaende.PutDokumentResponse;
 import no.nav.dok.tjenester.journalfoerinngaaende.PutJournalpostRequest;
 import no.nav.dok.tjenester.journalfoerinngaaende.PutJournalpostResponse;
+import no.nav.dok.tjenester.journalfoerinngaaende.response.Mangler;
 import no.nav.dokarkiv.core.datautil.JournalpostTestDataProvider;
 import no.nav.dokarkiv.core.datautil.SkannetInnholdTestDataProvider;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
@@ -27,7 +29,6 @@ import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import org.apache.http.client.methods.HttpHead;
 import org.junit.Test;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -54,7 +55,6 @@ public class JournalfoerInngaaendeV1IT extends AbstractJournalfoerInngaaendeV1It
 	public void shouldGetInngaaendeJournalpostByJournalpostId() throws Exception {
 		abacPermit();
 
-		joarkRepository.deleteAll();
 		Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.J));
 		String journalpostId = journalpost.getJournalpostId().toString();
 
@@ -69,7 +69,6 @@ public class JournalfoerInngaaendeV1IT extends AbstractJournalfoerInngaaendeV1It
 	/**
 	 * HVIS operasjonen kalles uten at alle påkrevde inputparametere er oppgitt SÅ skal feilmelding logges OG behandling avsluttes
 	 **/
-
 	@Test
 	public void shouldReturnBadRequestInvalidInput() {
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
@@ -84,8 +83,6 @@ public class JournalfoerInngaaendeV1IT extends AbstractJournalfoerInngaaendeV1It
 	 **/
 	@Test
 	public void shouldReturnJournalpostNotFound() {
-		joarkRepository.deleteAll();
-
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				"/rest/journalfoer-inngaaende/v1/journalposter/" + "123456", HttpMethod.GET, createHeaders(), String.class);
 
@@ -99,7 +96,6 @@ public class JournalfoerInngaaendeV1IT extends AbstractJournalfoerInngaaendeV1It
 	@Test
 	public void shouldReturnBadRequestJournalpostErIkkeAvTypenInngaaende() {
 		abacPermit();
-		joarkRepository.deleteAll();
 
 		Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.J)
 				.journalpostType(JournalpostTypeCode.U));
@@ -118,7 +114,6 @@ public class JournalfoerInngaaendeV1IT extends AbstractJournalfoerInngaaendeV1It
 	@Test
 	public void shouldReturnForbiddenBrukerHarIkkeTilgangTilJournalpost() {
 		abacDeny();
-		joarkRepository.deleteAll();
 
 		Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.J));
 		String journalpostId = journalpost.getJournalpostId().toString();
@@ -179,16 +174,17 @@ public class JournalfoerInngaaendeV1IT extends AbstractJournalfoerInngaaendeV1It
 		assertThat(responseEntity.getBody().getDokumentListe().get(1).getTittel(), is("Takk skal du ha")); //Vedlegg1
 		assertThat(responseEntity.getBody().getDokumentListe().get(2).getTittel(), is("siste dokument inn")); //Vedlegg2
 	}
-/**
-		================= Opppdater journalpost ================
-		PUT /rest/journalfoer-inngaaende/v1/journalposter/{jpid}
- 		========================================================
-*/
 
+	/******************************
+	 ** PutInngaaendeJournalpost **
+	 ******************************/
+
+	/**
+	 * HVIS forsoekEndeligJF == TRUE, og ingen felter mangler for å endelig journalføre => returner 200 OK og journalpostId.
+	 */
 	@Test
 	public void shouldFerdigstillJournalpostVedOppdatering() throws IOException {
 		abacPermit();
-		joarkRepository.deleteAll();
 
 		PutJournalpostRequest request = mapper.readValue(classpathToString("__files/put_journalpost/happy_input_request.json"), PutJournalpostRequest.class);
 
@@ -201,18 +197,43 @@ public class JournalfoerInngaaendeV1IT extends AbstractJournalfoerInngaaendeV1It
 				"/rest/journalfoer-inngaaende/v1/journalposter/" + journalpostId, HttpMethod.PUT, requestHttpEntity, PutJournalpostResponse.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
-//		verify(postRequestedFor(urlEqualTo("/abac")).withRequestBody(equalToJson(stringFromClasspath("abac/getInngaaendejournalpost.json"))));
 		assertThat(responseEntity.getBody().getJournalpostId(), is(journalpostId));
 		assertThat(responseEntity.getBody().getMangler(), is(nullValue()));
-		assertThat(responseEntity.getBody().getForsoekEndeligJF(), is(true));
+		assertThat(responseEntity.getBody().getHarEndeligJF(), is(true));
 	}
 
+	/**
+	 * HVIS forsoekEndeligJF == TRUE, og 1 eller flere felter mangler for endelig journalføring, returner 200 OK med Mangler-objekt
+	 */
 	@Test
 	public void shouldReturnManglerVedForsoektEndeligJF() throws IOException {
 		abacPermit();
-		joarkRepository.deleteAll();
 
-		PutJournalpostRequest request = mapper.readValue(classpathToString("__files/put_journalpost/happy_input_request_ikke_endeligJF.json"), PutJournalpostRequest.class);
+		PutJournalpostRequest request = mapper.readValue(classpathToString("__files/put_journalpost/request_med_mangler.json"), PutJournalpostRequest.class);
+
+		Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M).endretAvNavn("saksbehandlersen").innhold(null));
+		String journalpostId = journalpost.getJournalpostId().toString();
+
+		HttpEntity<PutJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
+
+		ResponseEntity<PutJournalpostResponse> responseEntity = restTemplate.exchange(
+				"/rest/journalfoer-inngaaende/v1/journalposter/" + journalpostId, HttpMethod.PUT, requestHttpEntity, PutJournalpostResponse.class);
+
+		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
+		assertThat(responseEntity.getBody().getJournalpostId(), is(journalpostId));
+		assertThat(responseEntity.getBody().getMangler(), is(notNullValue()));
+		assertThat(responseEntity.getBody().getMangler().getTittel(), is(Mangler.AvsenderId.MANGLER));
+		assertThat(responseEntity.getBody().getHarEndeligJF(), is(true));
+	}
+
+	/**
+	 * HVIS forsoekEndeligJF == FALSE, returner 200 OK
+	 */
+	@Test
+	public void shouldReturnOKJournalpostIdVedOppdateringUtenEndeligJF() throws IOException {
+		abacPermit();
+
+		PutJournalpostRequest request = mapper.readValue(classpathToString("__files/put_journalpost/request_ikke_endeligJF.json"), PutJournalpostRequest.class);
 
 		Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M).endretAvNavn("saksbehandlersen"));
 		String journalpostId = journalpost.getJournalpostId().toString();
@@ -223,17 +244,31 @@ public class JournalfoerInngaaendeV1IT extends AbstractJournalfoerInngaaendeV1It
 				"/rest/journalfoer-inngaaende/v1/journalposter/" + journalpostId, HttpMethod.PUT, requestHttpEntity, PutJournalpostResponse.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
-//		verify(postRequestedFor(urlEqualTo("/abac")).withRequestBody(equalToJson(stringFromClasspath("abac/getInngaaendejournalpost.json"))));
 		assertThat(responseEntity.getBody().getJournalpostId(), is(journalpostId));
 		assertThat(responseEntity.getBody().getMangler(), is(nullValue()));
-		assertThat(responseEntity.getBody().getForsoekEndeligJF(), is(false));
+		assertThat(responseEntity.getBody().getHarEndeligJF(), is(false));
 	}
 
+	/**
+	 * HVIS journalpostId tilhører en utgående journalpost SÅ skal det kastes en feil og gi 400 BadRequest
+	 */
 	@Test
-	public void shouldReturnJournalpostIdVedOppdateringUtenEndeligJF() {
+	public void shouldThrowExceptionHvisRequestvalideringFeiler() throws IOException {
+		abacPermit();
 
+		PutJournalpostRequest request = mapper.readValue(classpathToString("__files/put_journalpost/happy_input_request.json"), PutJournalpostRequest.class);
+
+		Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.U, JournalStatusCode.M).endretAvNavn("saksbehandlersen"));
+		String journalpostId = journalpost.getJournalpostId().toString();
+
+		HttpEntity<PutJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
+
+		ResponseEntity<String> responseEntity = restTemplate.exchange(
+				"/rest/journalfoer-inngaaende/v1/journalposter/" + journalpostId, HttpMethod.PUT, requestHttpEntity, String.class);
+
+		assertThat(responseEntity.getStatusCode(), is(HttpStatus.BAD_REQUEST));
+		assertThat(responseEntity.getBody(), containsString("Journalpost er ikke av type Inngaaende"));
 	}
-
 
 	/*************************
 	 ** DeleteLogiskVedlegg **
@@ -242,7 +277,6 @@ public class JournalfoerInngaaendeV1IT extends AbstractJournalfoerInngaaendeV1It
 	@Test
 	public void shouldDeleteLogiskVedlegg() {
 		abacPermit();
-		joarkRepository.deleteAll();
 
 		//Create and save testdata
 		Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.J));
@@ -289,7 +323,6 @@ public class JournalfoerInngaaendeV1IT extends AbstractJournalfoerInngaaendeV1It
 	@Test
 	public void shouldReturnLogiskVedleggIdNotFoundException() {
 		abacPermit();
-		joarkRepository.deleteAll();
 
 		Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.J));
 
@@ -308,6 +341,34 @@ public class JournalfoerInngaaendeV1IT extends AbstractJournalfoerInngaaendeV1It
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.NOT_FOUND));
 		assertThat(responseEntity.getBody(), containsString("Kunne ikke finne logisk vedlegg"));
 	}
+
+
+	@Test
+	public void shouldReturnDokumentinfoIdNotFoundException() {
+		abacPermit();
+		joarkRepository.deleteAll();
+
+		Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.J));
+
+		String journalpostId = journalpost.getJournalpostId().toString();
+		String dokumentId = "1234546636";
+		String logiskVedleggId = journalpost.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
+				.iterator()
+				.next()
+				.getDokumentInfo()
+				.getSkannetInnholdListe()
+				.iterator()
+				.next()
+				.getSkannetInnholdId()
+				.toString();
+
+		ResponseEntity<String> responseEntity = restTemplate.exchange(
+				"/rest/journalfoer-inngaaende/v1/journalposter/" + journalpostId + "/dokumenter/" + dokumentId + "/logiskeVedlegg/" + logiskVedleggId, HttpMethod.DELETE, createHeaders(), String.class);
+
+		assertThat(responseEntity.getStatusCode(), is(HttpStatus.NOT_FOUND));
+		assertThat(responseEntity.getBody(), containsString("Kunne ikke finne logisk vedlegg"));
+	}
+
 
 
 
