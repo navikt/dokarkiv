@@ -35,14 +35,13 @@ import java.util.List;
 @Service
 public class PersistInngaaendeJournalpostService {
 
-	private JoarkRepository joarkRepository;
-
-	private final PutInngaaendeJournalpostMapper mapper;
+	private final JoarkRepository joarkRepository;
+	private final PutInngaaendeJournalpostMapper putInngaaendeJournalpostMapper;
 
 	@Inject
-	public PersistInngaaendeJournalpostService(JoarkRepository joarkRepository, PutInngaaendeJournalpostMapper mapper) {
+	public PersistInngaaendeJournalpostService(JoarkRepository joarkRepository, PutInngaaendeJournalpostMapper putInngaaendeJournalpostMapper) {
 		this.joarkRepository = joarkRepository;
-		this.mapper = mapper;
+		this.putInngaaendeJournalpostMapper = putInngaaendeJournalpostMapper;
 	}
 
 	public PutJournalpostResponse persist(String journalpostId, PutJournalpostRequest putJournalpostRequest) {
@@ -54,25 +53,25 @@ public class PersistInngaaendeJournalpostService {
 			validateJournalpostStrukturOgPaakrevdeAttributter(journalpost);
 		}
 
-		mapper.map(journalpost, putJournalpostRequest);
+		putInngaaendeJournalpostMapper.oppdaterJournalpost(journalpost, putJournalpostRequest);
 
 		PutJournalpostResponse response = new PutJournalpostResponse();
 		response.setJournalpostId(journalpostId);
-		response.setHarEndeligJF(putJournalpostRequest.getForsoekEndeligJF()); //FIXME!
+		response.setHarEndeligJF(false);
 
-		// hvis endelig journalføring, kall ferdigstillForsendelse(?)
 		if (putJournalpostRequest.getForsoekEndeligJF()) {
 			Mangler mangler = createMangler(journalpost);
 			if (containsMangler(mangler)) {
 				response.setMangler(createMangler(journalpost));
 			} else {
-				//ferdigstill
+				// ferdigstill journalpost
 				journalpost.setJournalstatus(JournalStatusCode.J);
 				journalpost.setJournalDato(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()));
 				journalpost.setJournalForendeEnhetId(putJournalpostRequest.getJournalfEnhet());
 				journalpost.setJournalfortAvNavn("journalførtAvNavn"); // TODO: hent fra MDC
 				journalpost.setEndretAvNavn("journalførtAvNavn");
 				journalpost.setEndretKildeNavn(MDC.get(MDC_CONSUMER_ID));
+				response.setHarEndeligJF(true);
 			}
 		}
 
@@ -87,7 +86,6 @@ public class PersistInngaaendeJournalpostService {
 	}
 
 	private Mangler createMangler(Journalpost jp) {
-
 		List<Dokument> dokumentList = new ArrayList<>();
 		jp.getJournalpostDokumentInfoRelasjoner().forEach(d -> {
 			DokumentInfo dokumentInfo = d.getDokumentInfo();

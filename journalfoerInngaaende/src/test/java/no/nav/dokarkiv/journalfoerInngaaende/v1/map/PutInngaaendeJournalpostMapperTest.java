@@ -37,7 +37,7 @@ public class PutInngaaendeJournalpostMapperTest {
 
 		assertThat(journalpost.getBrukere(), hasSize(2));
 
-		mapper.map(journalpost, putJournalpostRequest);
+		mapper.oppdaterJournalpost(journalpost, putJournalpostRequest);
 
 		assertThat(journalpost.getFagomrade().name(), is(putJournalpostRequest.getTema()));
 		assertThat(journalpost.getInnhold(), is(putJournalpostRequest.getTittel()));
@@ -50,7 +50,7 @@ public class PutInngaaendeJournalpostMapperTest {
 
 		journalpost = createJournalpostForOppdatering();
 
-		mapper.map(journalpost, putJournalpostRequest);
+		mapper.oppdaterJournalpost(journalpost, putJournalpostRequest);
 
 		assertThat(journalpost.getBrukere(), hasSize(1));
 	}

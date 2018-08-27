@@ -18,8 +18,7 @@ import java.util.Set;
 @Component
 public class PutInngaaendeJournalpostMapper extends AbstractInngaaendeJournalpostMapper {
 
-	public void map(Journalpost journalpost, PutJournalpostRequest putJournalpostRequest) {
-		//TODO: Ikke sett felter hvis input er null?
+	public void oppdaterJournalpost(Journalpost journalpost, PutJournalpostRequest putJournalpostRequest) {
 		if (isNotBlank(putJournalpostRequest.getTittel())){
 			journalpost.setInnhold(putJournalpostRequest.getTittel());
 		}
@@ -56,15 +55,6 @@ public class PutInngaaendeJournalpostMapper extends AbstractInngaaendeJournalpos
 				bruker.setBrukerType(BrukerTypeCode.valueOf(putJournalpostRequest.getBruker().getBrukerType().name()));
 			});
 		}
-
-//		// //TODO: endelig journalfør. !! kun dersom
-//		if (putJournalpostRequest.getForsoekEndeligJF()) {
-//			journalpost.setJournalstatus(JournalStatusCode.J);
-//			journalpost.setJournalForendeEnhetId(putJournalpostRequest.getJournalfEnhet());
-//			journalpost.setJournalDato(new Date());
-//			journalpost.setEndretAvNavn("dfd"); //TODO Fra MDC
-//			journalpost.setJournalfortAvNavn("dfdf"); //TODO
-//		}
 	}
 
 }

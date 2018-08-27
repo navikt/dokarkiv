@@ -45,11 +45,13 @@ import java.io.IOException;
  */
 public class JournalfoerInngaaendeV1IT extends AbstractJournalfoerInngaaendeV1Itest {
 
+	private static final String JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER = "/rest/journalfoer-inngaaende/v1/journalposter/";
+
+	private ObjectMapper mapper = new ObjectMapper();
+
 	/******************************
 	 ** GetInngaaendeJournalpost **
 	 ******************************/
-
-	private ObjectMapper mapper = new ObjectMapper();
 
 	@Test
 	public void shouldGetInngaaendeJournalpostByJournalpostId() throws Exception {
@@ -59,7 +61,7 @@ public class JournalfoerInngaaendeV1IT extends AbstractJournalfoerInngaaendeV1It
 		String journalpostId = journalpost.getJournalpostId().toString();
 
 		ResponseEntity<GetJournalpostResponse> responseEntity = restTemplate.exchange(
-				"/rest/journalfoer-inngaaende/v1/journalposter/" + journalpostId, HttpMethod.GET, createHeaders(), GetJournalpostResponse.class);
+				JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER + journalpostId, HttpMethod.GET, createHeaders(), GetJournalpostResponse.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 		verify(postRequestedFor(urlEqualTo("/abac")).withRequestBody(equalToJson(stringFromClasspath("abac/getInngaaendejournalpost.json"))));
@@ -72,7 +74,7 @@ public class JournalfoerInngaaendeV1IT extends AbstractJournalfoerInngaaendeV1It
 	@Test
 	public void shouldReturnBadRequestInvalidInput() {
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
-				"/rest/journalfoer-inngaaende/v1/journalposter/" + "NOT_A_NUMBER", HttpMethod.GET, createHeaders(), String.class);
+				JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER + "NOT_A_NUMBER", HttpMethod.GET, createHeaders(), String.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.BAD_REQUEST));
 		assertThat(responseEntity.getBody(), is("journalpostId er ikke et tall. journalpostId=NOT_A_NUMBER"));
@@ -84,7 +86,7 @@ public class JournalfoerInngaaendeV1IT extends AbstractJournalfoerInngaaendeV1It
 	@Test
 	public void shouldReturnJournalpostNotFound() {
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
-				"/rest/journalfoer-inngaaende/v1/journalposter/" + "123456", HttpMethod.GET, createHeaders(), String.class);
+				JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER + "123456", HttpMethod.GET, createHeaders(), String.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.NOT_FOUND));
 		assertThat(responseEntity.getBody(), is("Kunne ikke finne journalpost i Joark. journalpostId=123456"));
@@ -102,7 +104,7 @@ public class JournalfoerInngaaendeV1IT extends AbstractJournalfoerInngaaendeV1It
 		String journalpostId = journalpost.getJournalpostId().toString();
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
-				"/rest/journalfoer-inngaaende/v1/journalposter/" + journalpostId, HttpMethod.GET, createHeaders(), String.class);
+				JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER + journalpostId, HttpMethod.GET, createHeaders(), String.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.BAD_REQUEST));
 		assertThat(responseEntity.getBody(), is("Journalpost er ikke av type Inngaaende. journalpostId=" + journalpostId));
@@ -119,7 +121,7 @@ public class JournalfoerInngaaendeV1IT extends AbstractJournalfoerInngaaendeV1It
 		String journalpostId = journalpost.getJournalpostId().toString();
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
-				"/rest/journalfoer-inngaaende/v1/journalposter/" + journalpostId, HttpMethod.GET, createHeaders(), String.class);
+				JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER + journalpostId, HttpMethod.GET, createHeaders(), String.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.FORBIDDEN));
 		assertThat(responseEntity.getBody(), is("Bruker har ikke tilgang til journalpost. journalpostId=" + journalpostId));
@@ -138,7 +140,7 @@ public class JournalfoerInngaaendeV1IT extends AbstractJournalfoerInngaaendeV1It
 		String journalpostId = journalpost.getJournalpostId().toString();
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
-				"/rest/journalfoer-inngaaende/v1/journalposter/" + journalpostId, HttpMethod.GET, new HttpEntity(headers), String.class);
+				JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER + journalpostId, HttpMethod.GET, new HttpEntity(headers), String.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.UNAUTHORIZED));
 		assertThat(responseEntity.getBody(), containsString("Kunne ikke autorisere forespoersel."));
@@ -168,7 +170,7 @@ public class JournalfoerInngaaendeV1IT extends AbstractJournalfoerInngaaendeV1It
 		String journalpostId = journalpost.getJournalpostId().toString();
 
 		ResponseEntity<GetJournalpostResponse> responseEntity = restTemplate.exchange(
-				"/rest/journalfoer-inngaaende/v1/journalposter/" + journalpostId, HttpMethod.GET, createHeaders(), GetJournalpostResponse.class);
+				JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER + journalpostId, HttpMethod.GET, createHeaders(), GetJournalpostResponse.class);
 
 		assertThat(responseEntity.getBody().getDokumentListe().get(0).getTittel(), is("Gi meg foreldrepenger")); //Hoveddok
 		assertThat(responseEntity.getBody().getDokumentListe().get(1).getTittel(), is("Takk skal du ha")); //Vedlegg1
@@ -189,17 +191,22 @@ public class JournalfoerInngaaendeV1IT extends AbstractJournalfoerInngaaendeV1It
 		PutJournalpostRequest request = mapper.readValue(classpathToString("__files/put_journalpost/happy_input_request.json"), PutJournalpostRequest.class);
 
 		Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M).endretAvNavn("saksbehandlersen"));
-		String journalpostId = journalpost.getJournalpostId().toString();
+		Long journalpostId = journalpost.getJournalpostId();
 
 		HttpEntity<PutJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
 
 		ResponseEntity<PutJournalpostResponse> responseEntity = restTemplate.exchange(
-				"/rest/journalfoer-inngaaende/v1/journalposter/" + journalpostId, HttpMethod.PUT, requestHttpEntity, PutJournalpostResponse.class);
+				JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER + journalpostId, HttpMethod.PUT, requestHttpEntity, PutJournalpostResponse.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
-		assertThat(responseEntity.getBody().getJournalpostId(), is(journalpostId));
+		assertThat(responseEntity.getBody().getJournalpostId(), is(String.valueOf(journalpostId)));
 		assertThat(responseEntity.getBody().getMangler(), is(nullValue()));
 		assertThat(responseEntity.getBody().getHarEndeligJF(), is(true));
+
+//		Optional<Journalpost> journalpostOptional = joarkRepository.findById(journalpostId);
+//		if (journalpostOptional.isPresent()) {
+////			assertThat()
+//		}
 	}
 
 	/**
@@ -217,13 +224,13 @@ public class JournalfoerInngaaendeV1IT extends AbstractJournalfoerInngaaendeV1It
 		HttpEntity<PutJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
 
 		ResponseEntity<PutJournalpostResponse> responseEntity = restTemplate.exchange(
-				"/rest/journalfoer-inngaaende/v1/journalposter/" + journalpostId, HttpMethod.PUT, requestHttpEntity, PutJournalpostResponse.class);
+				JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER + journalpostId, HttpMethod.PUT, requestHttpEntity, PutJournalpostResponse.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 		assertThat(responseEntity.getBody().getJournalpostId(), is(journalpostId));
 		assertThat(responseEntity.getBody().getMangler(), is(notNullValue()));
 		assertThat(responseEntity.getBody().getMangler().getTittel(), is(Mangler.AvsenderId.MANGLER));
-		assertThat(responseEntity.getBody().getHarEndeligJF(), is(true));
+		assertThat(responseEntity.getBody().getHarEndeligJF(), is(false));
 	}
 
 	/**
@@ -241,7 +248,7 @@ public class JournalfoerInngaaendeV1IT extends AbstractJournalfoerInngaaendeV1It
 		HttpEntity<PutJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
 
 		ResponseEntity<PutJournalpostResponse> responseEntity = restTemplate.exchange(
-				"/rest/journalfoer-inngaaende/v1/journalposter/" + journalpostId, HttpMethod.PUT, requestHttpEntity, PutJournalpostResponse.class);
+				JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER + journalpostId, HttpMethod.PUT, requestHttpEntity, PutJournalpostResponse.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 		assertThat(responseEntity.getBody().getJournalpostId(), is(journalpostId));
@@ -264,7 +271,7 @@ public class JournalfoerInngaaendeV1IT extends AbstractJournalfoerInngaaendeV1It
 		HttpEntity<PutJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
-				"/rest/journalfoer-inngaaende/v1/journalposter/" + journalpostId, HttpMethod.PUT, requestHttpEntity, String.class);
+				JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER + journalpostId, HttpMethod.PUT, requestHttpEntity, String.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.BAD_REQUEST));
 		assertThat(responseEntity.getBody(), containsString("Journalpost er ikke av type Inngaaende"));
@@ -310,7 +317,7 @@ public class JournalfoerInngaaendeV1IT extends AbstractJournalfoerInngaaendeV1It
 				.getSkannetInnholdListe().size(), is(2));
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
-				"/rest/journalfoer-inngaaende/v1/journalposter/" + journalpostId + "/dokumenter/" + dokumentId + "/logiskeVedlegg/" + logiskVedleggId, HttpMethod.DELETE, createHeaders(), String.class);
+				JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER + journalpostId + "/dokumenter/" + dokumentId + "/logiskeVedlegg/" + logiskVedleggId, HttpMethod.DELETE, createHeaders(), String.class);
 
 		TestTransaction.start();
 		Journalpost resultJournalpost = joarkRepository.findById(Long.parseLong(journalpostId)).get();
@@ -336,7 +343,7 @@ public class JournalfoerInngaaendeV1IT extends AbstractJournalfoerInngaaendeV1It
 		String logiskVedleggId = "***gammelt_fnr***7965";
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
-				"/rest/journalfoer-inngaaende/v1/journalposter/" + journalpostId + "/dokumenter/" + dokumentId + "/logiskeVedlegg/" + logiskVedleggId, HttpMethod.DELETE, createHeaders(), String.class);
+				JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER + journalpostId + "/dokumenter/" + dokumentId + "/logiskeVedlegg/" + logiskVedleggId, HttpMethod.DELETE, createHeaders(), String.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.NOT_FOUND));
 		assertThat(responseEntity.getBody(), containsString("Kunne ikke finne logisk vedlegg"));
@@ -346,7 +353,6 @@ public class JournalfoerInngaaendeV1IT extends AbstractJournalfoerInngaaendeV1It
 	@Test
 	public void shouldReturnDokumentinfoIdNotFoundException() {
 		abacPermit();
-		joarkRepository.deleteAll();
 
 		Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.J));
 
