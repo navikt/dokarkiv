@@ -157,7 +157,9 @@ public class JournalpostBuilder extends Builder<Journalpost> {
 			journalpost.addReturInfo(returInfo);
 		}
 		journalpost.getJournalpostDokumentInfoRelasjoner().forEach(relasjon -> {
-			relasjon.getDokumentInfo().setOriginalJournalpost(journalpost);
+			if (relasjon.getDokumentInfo() != null) {
+				relasjon.getDokumentInfo().setOriginalJournalpost(journalpost);
+			}
 		});
 		journalpost.setBehandlingsrelasjon(behandlingsrelasjon);
 		journalpost.setDokumentDato(dokumentDato);
