@@ -33,6 +33,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.transaction.TestTransaction;
 
 import java.io.IOException;
+import java.util.Optional;
 
 /**
  * @author Sigurd Midttun, Visma Consulting.
@@ -197,10 +198,18 @@ public class JournalfoerInngaaendeV1IT extends AbstractJournalfoerInngaaendeV1It
 		assertThat(responseEntity.getBody().getMangler(), is(nullValue()));
 		assertThat(responseEntity.getBody().getHarEndeligJF(), is(true));
 
-//		Optional<Journalpost> journalpostOptional = joarkRepository.findById(journalpostId);
-//		if (journalpostOptional.isPresent()) {
-////			assertThat()
-//		}
+		Optional<Journalpost> journalpostOptional = joarkRepository.findById(journalpostId);
+		if (journalpostOptional.isPresent()) {
+			Journalpost oppdatertJP = journalpostOptional.get();
+			assertThat(oppdatertJP.getInnhold(), is(request.getTittel()));
+			assertThat(oppdatertJP.getFagomrade().name(), is(request.getTema()));
+			assertThat(oppdatertJP.getJournalForendeEnhetId(), is(request.getJournalfEnhet()));
+			assertThat(oppdatertJP.getAvsenderMottakerId(), is(request.getAvsender().getIdentifikator()));
+			assertThat(oppdatertJP.getAvsenderMottaker(), is(request.getAvsender().getNavn()));
+			// sjekk på bruker
+			assertThat(oppdatertJP.getSaksrelasjon().getSakId(), is(request.getArkivSak().getArkivSakId()));
+			assertThat(oppdatertJP.getSaksrelasjon().getFagsystem().name(), is("FS22"));
+		}
 	}
 
 	/**

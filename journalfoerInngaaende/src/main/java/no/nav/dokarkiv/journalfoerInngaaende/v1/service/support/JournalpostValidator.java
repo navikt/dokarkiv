@@ -1,7 +1,5 @@
 package no.nav.dokarkiv.journalfoerInngaaende.v1.service.support;
 
-import static org.apache.cxf.common.util.StringUtils.isEmpty;
-
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.DokarkivRestFunctionalException;
 import no.nav.dokarkiv.core.exceptions.InvalidJournalpostStructureException;
@@ -68,11 +66,5 @@ public class JournalpostValidator {
 		} catch (Exception e) {
 			throw new DokarkivRestFunctionalException("Journalpost mangler påkrevde felt for endelig journalføring", HttpStatus.BAD_REQUEST);
 		}
-//		if (journalpost.getSaksrelasjon() == null || (isEmpty(journalpost.getSaksrelasjon().getSakId()) || journalpost.getSaksrelasjon().getFagsystem() == null)) {
-//			throw new DokarkivRestFunctionalException("Journalpost mangler påkrevde felt for endelig journalføring", HttpStatus.BAD_REQUEST);
-//		}
-//		if (journalpost.findAllDokumentInfos().stream().anyMatch(dokumentInfo -> dokumentInfo.getKategori() == null || dokumentInfo.getTittel() == null)){
-//			throw new DokarkivRestFunctionalException("Journalpost mangler påkrevde felt for endelig journalføring", HttpStatus.BAD_REQUEST);
-//		}
 	}
 }

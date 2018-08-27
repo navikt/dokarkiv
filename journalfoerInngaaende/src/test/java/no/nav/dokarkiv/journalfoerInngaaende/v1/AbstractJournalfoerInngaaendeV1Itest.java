@@ -86,12 +86,7 @@ public abstract class AbstractJournalfoerInngaaendeV1Itest {
 
 	@Before
 	public void cleanup() {
-		deleteSaksrelasjoner();
 		joarkRepository.deleteAll();
-	}
-
-	private void deleteSaksrelasjoner() {
-		testEntityManager.getEntityManager().createQuery("delete from no.nav.dokarkiv.core.domain.entities.Saksrelasjon").executeUpdate();
 	}
 
 	protected Journalpost buildAndCommit(final JournalpostBuilder builder) {
