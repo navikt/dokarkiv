@@ -33,7 +33,7 @@ public class UpdateInngaaendeJournalpostDokumentService {
 		validateDokumentKategori(request.getDokumentKategori(), journalpostId, dokumentId);
 
 		DokumentInfo dokumentInfo = dokumentinfoRepository.findDokumentInfoByJournalpostIdAndDokumentInfoId(journalpostId, dokumentId)
-				.orElseThrow(() -> new KunneIkkeFinneDokumentInfoException(String.format("Kunne ikke finne dokumentinfo med journalpostId = %s og dokumentId = %s", journalpostId, dokumentId)));
+				.orElseThrow(() -> new KunneIkkeFinneDokumentInfoException(String.format("Kunne ikke finne dokumentinfo med journalpostId=%s og dokumentId=%s", journalpostId, dokumentId)));
 
 		updateValues(request, dokumentInfo);
 
@@ -44,7 +44,7 @@ public class UpdateInngaaendeJournalpostDokumentService {
 
 	private void validateDokumentKategori(String kategori, String journalpostId, String dokumentId) {
 		if (isNotBlank(kategori) && !(validDokumentKategorier.contains(kategori))) {
-			throw new InputValideringFeiletException(String.format("%s er ugyldig verdi for dokumentKategori. Gyldige verdier er %s. JournalpostId = %s, dokumentId = %s", kategori, validDokumentKategorier, journalpostId, dokumentId));
+			throw new InputValideringFeiletException(String.format("%s er ugyldig verdi for dokumentKategori. Gyldige verdier er %s. JournalpostId=%s, dokumentId=%s", kategori, validDokumentKategorier, journalpostId, dokumentId));
 		}
 	}
 

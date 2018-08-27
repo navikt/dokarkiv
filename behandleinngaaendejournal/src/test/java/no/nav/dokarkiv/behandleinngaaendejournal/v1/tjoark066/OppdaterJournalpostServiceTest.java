@@ -32,8 +32,8 @@ import no.nav.dokarkiv.core.exceptions.UgyldigInputException;
 import no.nav.dokarkiv.core.jaxws.SubjectHandlerUtils;
 import no.nav.dokarkiv.core.jaxws.ThreadLocalSubjectHandler;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
+import no.nav.dokarkiv.core.security.ldap.NavLdapService;
 import no.nav.dokarkiv.core.security.ldap.NavUser;
-import no.nav.dokarkiv.core.security.ldap.NavUserLdapService;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -68,7 +68,7 @@ public class OppdaterJournalpostServiceTest {
 	@Rule
 	public ExpectedException expected = ExpectedException.none();
 	@Mock
-    private NavUserLdapService navUserLdapService;
+	private NavLdapService navLdapService;
 	@Mock
 	private JoarkRepository repository;
 	@InjectMocks
@@ -79,15 +79,15 @@ public class OppdaterJournalpostServiceTest {
 
 	@Before
 	public void setUp() throws Exception {
-		when(navUserLdapService.findByUserId(eq(USER_ID))).thenReturn(NavUser.builder().description(LDAP_NAME).build());
+		when(navLdapService.findByUserId(eq(USER_ID))).thenReturn(NavUser.builder().description(LDAP_NAME).build());
 		System.setProperty("no.nav.modig.security.systemuser.username", CONSUMER);
 		System.setProperty("no.nav.modig.core.context.subjectHandlerImplementationClass", ThreadLocalSubjectHandler.class.getName());
 		SubjectHandlerUtils.setInternBruker(USER_ID);
 
 		MDC.put(MDCConstants.MDC_USER_ID, USER_ID);
 		MDC.put(MDCConstants.MDC_CONSUMER_ID, CONSUMER);
-		
-		service = new OppdaterJournalpostService(repository, new OppdaterJournalpostValidator(), navUserLdapService);
+
+		service = new OppdaterJournalpostService(repository, new OppdaterJournalpostValidator(), navLdapService);
 		journalpost = BehandleInngaaendeJournalDataProvider.buildJournalpost().build();
 		requestTo = createRequest(false);
 	}

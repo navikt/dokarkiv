@@ -139,13 +139,13 @@ public class JournalfoerInngaaendeRestController {
 	@Transactional
 	@Abac(actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION),
 			resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_JOURNALPOST)})
-	@RestMetrics(value = "dok_request", extraTags = {"process_code", "tjoark070_oppdater_dokument"}, percentiles = {0.5, 0.95})
+	@RestMetrics(value = "dok_request", extraTags = {"process_code", "tjoark070"}, percentiles = {0.5, 0.95})
 	public @ResponseBody
 	PutDokumentResponse updateDokument(@PathVariable String journalpostId, @PathVariable String dokumentid, @RequestBody PutDokumentRequest request) {
-
+		log.info("tjoark070 har mottat kall om å oppdatere dokument med journalpostId={} og dokumentId={}", journalpostId, dokumentid);
 		RequestContextUtil.createAndSetUsername("user", "appid");
 		PutDokumentResponse inngaaendeResponseTo = updateInngaaendeJournalpostDokumentService.update(journalpostId, dokumentid, request);
-		log.info("Oppdatert dokument med journalpostId={} og dokumentId={} i Joark.", journalpostId, dokumentid);
+		log.info("tjoark070 har oppdatert dokument med journalpostId={} og dokumentId={} i Joark.", journalpostId, dokumentid);
 		return inngaaendeResponseTo;
 
 	}
