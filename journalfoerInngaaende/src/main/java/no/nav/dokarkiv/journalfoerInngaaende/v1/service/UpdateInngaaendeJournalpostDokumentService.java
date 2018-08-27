@@ -33,7 +33,7 @@ public class UpdateInngaaendeJournalpostDokumentService {
 		validateDokumentKategori(request.getDokumentKategori(), journalpostId, dokumentId);
 
 		DokumentInfo dokumentInfo = dokumentinfoRepository.findDokumentInfoByJournalpostIdAndDokumentInfoId(journalpostId, dokumentId)
-				.orElseThrow(() -> new KunneIkkeFinneDokumentInfoException(String.format("Kunde ikke finne dokumentinfo med journalpostId = %s og dokumentId = %s", journalpostId, dokumentId)));
+				.orElseThrow(() -> new KunneIkkeFinneDokumentInfoException(String.format("Kunne ikke finne dokumentinfo med journalpostId = %s og dokumentId = %s", journalpostId, dokumentId)));
 
 		updateValues(request, dokumentInfo);
 

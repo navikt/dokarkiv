@@ -24,9 +24,9 @@ import no.nav.dokarkiv.core.security.abac.AbacSecurityService;
 import no.nav.dokarkiv.core.security.abac.AuthorizationException;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import no.nav.dokarkiv.journalfoerInngaaende.v1.service.DeleteLogiskVedleggService;
-import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import no.nav.dokarkiv.journalfoerInngaaende.v1.service.GetInngaaendeJournalpostService;
 import no.nav.dokarkiv.journalfoerInngaaende.v1.service.PersistInngaaendeJournalpostService;
+import no.nav.dokarkiv.journalfoerInngaaende.v1.service.UpdateInngaaendeJournalpostDokumentService;
 import no.nav.freg.abac.core.annotation.Abac;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -57,12 +57,14 @@ public class JournalfoerInngaaendeRestController {
 	private PersistInngaaendeJournalpostService persistInngaaendeJournalpostService;
 	private DeleteLogiskVedleggService deleteLogiskVedleggService;
 	private AbacSecurityService abacSecurityService;
+	private UpdateInngaaendeJournalpostDokumentService updateInngaaendeJournalpostDokumentService;
 
 	@Inject
 	public JournalfoerInngaaendeRestController(GetInngaaendeJournalpostService getInngaaendeJournalpostService,
 											   PersistInngaaendeJournalpostService persistInngaaendeJournalpostService,
 											   DeleteLogiskVedleggService deleteLogiskVedleggService,
-											   AbacSecurityService abacSecurityService) {
+											   AbacSecurityService abacSecurityService,
+											   UpdateInngaaendeJournalpostDokumentService updateInngaaendeJournalpostDokumentService) {
 		this.getInngaaendeJournalpostService = getInngaaendeJournalpostService;
 		this.abacSecurityService = abacSecurityService;
 		this.updateInngaaendeJournalpostDokumentService = updateInngaaendeJournalpostDokumentService;
@@ -135,8 +137,8 @@ public class JournalfoerInngaaendeRestController {
 
 	@PutMapping(value = "/{journalpostId}/dokumenter/{dokumentid}")
 	@Transactional
-//	@Abac(actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION),
-//			resources = {@Abac.Attr(key = RESOURCE_FELLE_RESOURCE_TYPE, value = RESOURCE_ARKIV_JOURNALPOST)})
+	@Abac(actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION),
+			resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_JOURNALPOST)})
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "tjoark070_oppdater_dokument"}, percentiles = {0.5, 0.95})
 	public @ResponseBody
 	PutDokumentResponse updateDokument(@PathVariable String journalpostId, @PathVariable String dokumentid, @RequestBody PutDokumentRequest request) {
