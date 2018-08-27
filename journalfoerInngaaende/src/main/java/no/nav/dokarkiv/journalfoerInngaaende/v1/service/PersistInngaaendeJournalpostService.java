@@ -105,9 +105,9 @@ public class PersistInngaaendeJournalpostService {
 		return new Mangler()
 				.withAvsenderId(isEmpty(jp.getAvsenderMottakerId()) ? MANGLER : MANGLER_IKKE)
 				.withAvsenderNavn(isEmpty(jp.getAvsenderMottaker()) ? MANGLER : MANGLER_IKKE)
-				.withArkivSak((jp.getSaksrelasjon() != null) ? MANGLER : MANGLER_IKKE)
+				.withArkivSak((jp.getSaksrelasjon() == null) ? MANGLER : MANGLER_IKKE)
 				.withTittel(isEmpty(jp.getInnhold()) ? MANGLER : MANGLER_IKKE)
-				.withTema((jp.getFagomrade() != null) ? MANGLER : MANGLER_IKKE)
+				.withTema((jp.getFagomrade() == null) ? MANGLER : MANGLER_IKKE)
 				.withBruker((jp.getBrukere().isEmpty()) ? MANGLER : MANGLER_IKKE)
 				.withDokumenter(dokumentList);
 	}

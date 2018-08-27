@@ -57,8 +57,6 @@ import java.util.List;
 public class GetInngaaendeJournalpostMapperTest {
 
 	private static final String JOURNALTILSTAND_ENDELIG = "ENDELIG";
-	private static final String JOURNALTILSTAND_UTGAAR = "UTGAAR";
-	private static final String JOURNALTILSTAND_MIDLERTIDIG = "MIDLERTIDIG";
 	private static final String ARKIVSAK_SYSTEM_GSAK = "GSAK";
 	private static final String ARKIVSAK_SYSTEM_PSAK = "PSAK";
 
@@ -221,10 +219,12 @@ public class GetInngaaendeJournalpostMapperTest {
 		varianter.stream().forEach(variant -> {
 			if (variant.getArkivFilType().equals(FilTypeCode.XML.name())) {
 				assertThat("response.dokument1.variant1.arkivfiltype1", variant.getArkivFilType(), is(FilTypeCode.XML.name()));
-				assertThat("response.dokument1.variant1.variantformat1", variant.getVariantFormat(), is(VariantFormatCode.ORIGINAL.name()));
+				assertThat("response.dokument1.variant1.variantformat1", variant.getVariantFormat(), is(VariantFormatCode.ORIGINAL
+						.name()));
 			} else {
 				assertThat("response.dokument1.variant1.arkivfiltype2", variant.getArkivFilType(), is(FilTypeCode.PDFA.name()));
-				assertThat("response.dokument1.variant1.variantformat2", variant.getVariantFormat(), is(VariantFormatCode.ARKIV.name()));
+				assertThat("response.dokument1.variant1.variantformat2", variant.getVariantFormat(), is(VariantFormatCode.ARKIV
+						.name()));
 			}
 		});
 	}

@@ -60,7 +60,7 @@ public class JournalpostValidatorTest {
 	public void shouldFailWhenDokumentinfoErUnderRedigering() {
 		journalpost.getJournalpostDokumentInfoRelasjoner().iterator().next().getDokumentInfo().setDokumentstatus(DokumentStatusCode.UNDER_REDIGERING);
 
-		expectExceptionWithMessage("Ett eller flere av dokumentene som forsøkes oppdatert er ikke ferdigstilt");
+		expectExceptionWithMessage("Ett eller flere av dokumentene som forsøkes oppdatert er under redigering");
 	}
 
 	@Test

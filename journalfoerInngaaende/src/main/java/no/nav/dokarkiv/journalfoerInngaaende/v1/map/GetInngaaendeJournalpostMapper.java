@@ -15,7 +15,8 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
 import no.nav.dokarkiv.core.domain.entities.SkannetInnhold;
-import no.nav.dokarkiv.core.exceptions.DokarkivFunctionalException;
+import no.nav.dokarkiv.core.exceptions.DokarkivRestFunctionalException;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -35,7 +36,7 @@ public class GetInngaaendeJournalpostMapper extends AbstractInngaaendeJournalpos
 
 	public GetJournalpostResponse map(Journalpost journalpost) {
 		return new GetJournalpostResponse()
-				.withJournalTilstand(GetJournalpostResponse.JournalTilstand.fromValue(mapJournaltilstand(journalpost)))  //TODO: Valider eller endre grensesnintt!
+				.withJournalTilstand(mapJournaltilstand(journalpost))
 				.withAvsender(mapAvsender(journalpost))
 				.withBrukerListe(mapBrukere(journalpost.getBrukere()))
 				.withArkivSak(mapArkivsak(journalpost.getSaksrelasjon()))
@@ -48,19 +49,17 @@ public class GetInngaaendeJournalpostMapper extends AbstractInngaaendeJournalpos
 				.withDokumentListe(mapDokumenter(journalpost.getJournalpostDokumentInfoRelasjoner()));
 	}
 
-	//TODO: Avklar om dette skal valideres på, og om feil skal kastes eller ei. Returner GetJournalpostResponse.JournalTilstand direkte
-	private String mapJournaltilstand(Journalpost journalpost) {
+	private GetJournalpostResponse.JournalTilstand mapJournaltilstand(Journalpost journalpost) {
 		if (journalpost.isFeilregistrert()) {
-			return JournaltilstandKode.UTGAAR.name();
+			return GetJournalpostResponse.JournalTilstand.UTGAAR;
 		} else if (journalpost.hasEndeligJournalforingStatus()) {
-			return JournaltilstandKode.ENDELIG.name();
+			return GetJournalpostResponse.JournalTilstand.ENDELIG;
 		} else if (MIDLERTIDIG_STATUS.contains(journalpost.getJournalstatus())) {
-			return JournaltilstandKode.MIDLERTIDIG.name();
+			return GetJournalpostResponse.JournalTilstand.MIDLERTIDIG;
 		} else if (journalpost.hasUtgaattJournalforingStatus()) {
-			return JournaltilstandKode.UTGAAR.name();
+			return GetJournalpostResponse.JournalTilstand.UTGAAR;
 		} else {
-			throw new DokarkivFunctionalException("Ugyldig journalstatus for inngående Journalpost. journalpostId=" + journalpost
-					.getJournalpostId());
+			throw new DokarkivRestFunctionalException("Ugyldig journalstatus for inngående Journalpost.", HttpStatus.BAD_REQUEST); //TODO: Status!
 		}
 	}
 
@@ -80,7 +79,7 @@ public class GetInngaaendeJournalpostMapper extends AbstractInngaaendeJournalpos
 		} else {
 			return brukere.stream().map(bruker -> new no.nav.dok.tjenester.journalfoerinngaaende.Bruker()
 					.withIdentifikator(bruker.getBrukerId())
-					.withBrukerType(Bruker.BrukerType.fromValue(bruker.getBrukerType().name())))  //TODO: Valider eller endre grensesnintt!
+					.withBrukerType(utledBrukerType(bruker.getBrukerId())))
 					.collect(Collectors.toList());
 		}
 	}
@@ -127,10 +126,9 @@ public class GetInngaaendeJournalpostMapper extends AbstractInngaaendeJournalpos
 
 	private List<Variant> mapVarianter(Set<FilDetaljer> fildetaljer) {
 		return fildetaljer.stream().map(filDetaljer -> new Variant()
-				.withArkivFilType(filDetaljer.getFiltype().name()) //TODO: Valider eller endre grensesnintt!
-				.withVariantFormat(filDetaljer.getVariantFormat().name())) //TODO: Valider eller endre grensesnintt!
+				.withArkivFilType(filDetaljer.getFiltype().name())
+				.withVariantFormat(filDetaljer.getVariantFormat().name()))
 				.collect(Collectors.toList());
-
 	}
 
 	private List<LogiskVedlegg> mapLogiskeVedlegg(Set<SkannetInnhold> skannetInnholdSet) {
@@ -144,16 +142,21 @@ public class GetInngaaendeJournalpostMapper extends AbstractInngaaendeJournalpos
 	private Avsender.AvsenderType utledAvsenderType(String avsenderId) {
 		if (avsenderId == null) {
 			return null;
-		} else if (avsenderId != null && avsenderId.length() == 11) {
+		} else if (avsenderId.length() == 11) {
 			return Avsender.AvsenderType.PERSON;
 		} else {
 			return Avsender.AvsenderType.ORGANISASJON;
 		}
 	}
 
-	private enum JournaltilstandKode {
-		MIDLERTIDIG,
-		UTGAAR,
-		ENDELIG
+	private Bruker.BrukerType utledBrukerType(String brukerId) {
+		if (brukerId == null) {
+			return null;
+		} else if (brukerId.length() == 11) {
+			return Bruker.BrukerType.PERSON;
+		} else {
+			return Bruker.BrukerType.ORGANISASJON;
+		}
 	}
+
 }

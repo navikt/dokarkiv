@@ -41,7 +41,6 @@ public class PutInngaaendeJournalpostMapperTest {
 
 		assertThat(journalpost.getFagomrade().name(), is(putJournalpostRequest.getTema()));
 		assertThat(journalpost.getInnhold(), is(putJournalpostRequest.getTittel()));
-		assertThat(journalpost.getJournalForendeEnhetId(), is(putJournalpostRequest.getJournalfEnhet()));
 		assertThat(journalpost.getBrukere(), hasSize(1));
 	}
 
