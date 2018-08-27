@@ -34,7 +34,7 @@ public class LogiskVedleggService {
 	//TODO: Sporingsinfo
 	public void deleteLogiskVedlegg(String journalpostIdString, String dokumentIdString, String logiskVedleggIdString) throws DokarkivRestFunctionalException {
 		Long journalpostId = convertStringToLong(journalpostIdString, "journalpostId");
-		Long dokumentId = convertStringToLong(journalpostIdString, "dokumentId");
+		Long dokumentId = convertStringToLong(dokumentIdString, "dokumentId");
 
 		Journalpost journalpost = joarkRepository.findById(journalpostId)
 				.orElseThrow(() -> new DokarkivRestFunctionalException("Kunne ikke finne journalpost i Joark", HttpStatus.NOT_FOUND));
@@ -52,7 +52,7 @@ public class LogiskVedleggService {
 	//TODO: Sporingsinfo
 	public void updateLogiskVedlegg(String journalpostIdString, String dokumentIdString, String logiskVedleggIdString, PutLogiskVedleggRequest request) throws DokarkivRestFunctionalException {
 		Long journalpostId = convertStringToLong(journalpostIdString, "journalpostId");
-		Long dokumentId = convertStringToLong(journalpostIdString, "dokumentId");
+		Long dokumentId = convertStringToLong(dokumentIdString, "dokumentId");
 
 		Journalpost journalpost = joarkRepository.findById(journalpostId)
 				.orElseThrow(() -> new DokarkivRestFunctionalException("Kunne ikke finne journalpost i Joark", HttpStatus.NOT_FOUND));
@@ -73,7 +73,7 @@ public class LogiskVedleggService {
 	//TODO: Sporingsinfo
 	public Long persistLogiskVedlegg(String journalpostIdString, String dokumentIdString, PostLogiskVedleggRequest request) throws DokarkivRestFunctionalException {
 		Long journalpostId = convertStringToLong(journalpostIdString, "journalpostId");
-		Long dokumentId = convertStringToLong(journalpostIdString, "dokumentId");
+		Long dokumentId = convertStringToLong(dokumentIdString, "dokumentId");
 
 		Journalpost journalpost = joarkRepository.findById(journalpostId)
 				.orElseThrow(() -> new DokarkivRestFunctionalException("Kunne ikke finne journalpost i Joark", HttpStatus.NOT_FOUND));

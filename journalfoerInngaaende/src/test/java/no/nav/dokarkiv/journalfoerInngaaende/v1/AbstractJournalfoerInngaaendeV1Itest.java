@@ -5,7 +5,6 @@ import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 
-import com.google.common.io.Resources;
 import no.nav.dokarkiv.core.CoreConfig;
 import no.nav.dokarkiv.core.domain.builder.JournalpostBuilder;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
@@ -32,6 +31,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.transaction.TestTransaction;
+import wiremock.com.google.common.io.Resources;
 
 import javax.inject.Inject;
 import javax.transaction.Transactional;
@@ -85,7 +85,7 @@ public abstract class AbstractJournalfoerInngaaendeV1Itest {
 	}
 
 	@Before
-	public void setUp() throws Exception {
+	public void cleanup() {
 		deleteSaksrelasjoner();
 		joarkRepository.deleteAll();
 	}
