@@ -3,7 +3,6 @@ package no.nav.dokarkiv.journalfoerInngaaende.v1.service;
 import static no.nav.dok.tjenester.journalfoerinngaaende.response.Mangler.AvsenderId.MANGLER;
 import static no.nav.dok.tjenester.journalfoerinngaaende.response.Mangler.AvsenderId.MANGLER_IKKE;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
-import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
 import static no.nav.dokarkiv.journalfoerInngaaende.v1.service.support.JournalpostValidator.validateJournalpostStatuser;
 import static no.nav.dokarkiv.journalfoerInngaaende.v1.service.support.JournalpostValidator.validateJournalpostStrukturOgPaakrevdeAttributter;
 import static org.hibernate.annotations.common.util.StringHelper.isEmpty;
@@ -59,10 +58,10 @@ public class PersistInngaaendeJournalpostService {
 
 		PutJournalpostResponse response = new PutJournalpostResponse();
 		response.setJournalpostId(journalpostId);
-		response.setForsoekEndeligJF(putJournalpostRequest.getForsoekEndeligJF());
+		response.setHarEndeligJF(putJournalpostRequest.getForsoekEndeligJF()); //FIXME!
 
 		// hvis endelig journalføring, kall ferdigstillForsendelse(?)
-		if (putJournalpostRequest.getForsoekEndeligJF()){
+		if (putJournalpostRequest.getForsoekEndeligJF()) {
 			Mangler mangler = createMangler(journalpost);
 			if (containsMangler(mangler)) {
 				response.setMangler(createMangler(journalpost));
@@ -113,25 +112,27 @@ public class PersistInngaaendeJournalpostService {
 	}
 
 	private boolean containsMangler(Mangler mangler) {
-		if (mangler.getDokumenter().stream().anyMatch(dokument -> MANGLER.equals(dokument.getDokumentKategori()) || MANGLER.equals(dokument.getTittel()))) {
+		if (mangler.getDokumenter()
+				.stream()
+				.anyMatch(dokument -> MANGLER.equals(dokument.getDokumentKategori()) || MANGLER.equals(dokument.getTittel()))) {
 			return true;
 		}
-		if (MANGLER.equals(mangler.getAvsenderId())){
+		if (MANGLER.equals(mangler.getAvsenderId())) {
 			return true;
 		}
-		if (MANGLER.equals(mangler.getAvsenderNavn())){
+		if (MANGLER.equals(mangler.getAvsenderNavn())) {
 			return true;
 		}
-		if (MANGLER.equals(mangler.getArkivSak())){
+		if (MANGLER.equals(mangler.getArkivSak())) {
 			return true;
 		}
 		if (MANGLER.equals(mangler.getTittel())) {
 			return true;
 		}
-		if (MANGLER.equals(mangler.getTema())){
+		if (MANGLER.equals(mangler.getTema())) {
 			return true;
 		}
-		if (MANGLER.equals(mangler.getBruker())){
+		if (MANGLER.equals(mangler.getBruker())) {
 			return true;
 		}
 		return false;

@@ -193,7 +193,7 @@ public class JournalfoerInngaaendeV1IT extends AbstractJournalfoerInngaaendeV1It
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 		assertThat(responseEntity.getBody().getJournalpostId(), is(journalpostId));
 		assertThat(responseEntity.getBody().getMangler(), is(nullValue()));
-		assertThat(responseEntity.getBody().getForsoekEndeligJF(), is(true));
+		assertThat(responseEntity.getBody().getHarEndeligJF(), is(true));
 	}
 
 	/**
@@ -217,7 +217,7 @@ public class JournalfoerInngaaendeV1IT extends AbstractJournalfoerInngaaendeV1It
 		assertThat(responseEntity.getBody().getJournalpostId(), is(journalpostId));
 		assertThat(responseEntity.getBody().getMangler(), is(notNullValue()));
 		assertThat(responseEntity.getBody().getMangler().getTittel(), is(Mangler.AvsenderId.MANGLER));
-		assertThat(responseEntity.getBody().getForsoekEndeligJF(), is(true));
+		assertThat(responseEntity.getBody().getHarEndeligJF(), is(true));
 	}
 
 	/**
@@ -240,7 +240,7 @@ public class JournalfoerInngaaendeV1IT extends AbstractJournalfoerInngaaendeV1It
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 		assertThat(responseEntity.getBody().getJournalpostId(), is(journalpostId));
 		assertThat(responseEntity.getBody().getMangler(), is(nullValue()));
-		assertThat(responseEntity.getBody().getForsoekEndeligJF(), is(false));
+		assertThat(responseEntity.getBody().getHarEndeligJF(), is(false));
 	}
 
 	/**
@@ -335,6 +335,34 @@ public class JournalfoerInngaaendeV1IT extends AbstractJournalfoerInngaaendeV1It
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.NOT_FOUND));
 		assertThat(responseEntity.getBody(), containsString("Kunne ikke finne logisk vedlegg"));
 	}
+
+
+	@Test
+	public void shouldReturnDokumentinfoIdNotFoundException() {
+		abacPermit();
+		joarkRepository.deleteAll();
+
+		Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.J));
+
+		String journalpostId = journalpost.getJournalpostId().toString();
+		String dokumentId = "1234546636";
+		String logiskVedleggId = journalpost.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
+				.iterator()
+				.next()
+				.getDokumentInfo()
+				.getSkannetInnholdListe()
+				.iterator()
+				.next()
+				.getSkannetInnholdId()
+				.toString();
+
+		ResponseEntity<String> responseEntity = restTemplate.exchange(
+				"/rest/journalfoer-inngaaende/v1/journalposter/" + journalpostId + "/dokumenter/" + dokumentId + "/logiskeVedlegg/" + logiskVedleggId, HttpMethod.DELETE, createHeaders(), String.class);
+
+		assertThat(responseEntity.getStatusCode(), is(HttpStatus.NOT_FOUND));
+		assertThat(responseEntity.getBody(), containsString("Kunne ikke finne logisk vedlegg"));
+	}
+
 
 }
 
