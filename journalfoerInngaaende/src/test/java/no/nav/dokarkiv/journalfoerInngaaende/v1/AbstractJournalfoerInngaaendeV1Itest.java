@@ -91,6 +91,7 @@ public abstract class AbstractJournalfoerInngaaendeV1Itest {
 	public void cleanup() {
 		deleteSaksrelasjoner();
 		joarkRepository.deleteAll();
+		dokumentinfoRepository.deleteAll();
 	}
 
 	private void deleteSaksrelasjoner() {

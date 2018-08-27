@@ -148,6 +148,9 @@ public class JournalpostBuilder extends Builder<Journalpost> {
 			journalpost.addBruker(bruker);
 		}
 		for (JournalpostDokumentInfoRelasjon dokumentInfoRelasjon : dokumentInfoRelasjoner) {
+			if (dokumentInfoRelasjon.getDokumentInfo() != null) {
+				dokumentInfoRelasjon.getDokumentInfo().setOriginalJournalpost(journalpost);
+			}
 			journalpost.addJournalpostDokumentInfoRelasjon(dokumentInfoRelasjon);
 		}
 		for (Kryssreferanse kryssreferanse : kryssreferanser) {
@@ -156,11 +159,6 @@ public class JournalpostBuilder extends Builder<Journalpost> {
 		for (ReturInfo returInfo : returInfos) {
 			journalpost.addReturInfo(returInfo);
 		}
-		journalpost.getJournalpostDokumentInfoRelasjoner().forEach(relasjon -> {
-			if (relasjon.getDokumentInfo() != null) {
-				relasjon.getDokumentInfo().setOriginalJournalpost(journalpost);
-			}
-		});
 		journalpost.setBehandlingsrelasjon(behandlingsrelasjon);
 		journalpost.setDokumentDato(dokumentDato);
 		journalpost.setAvsenderMottaker(avsenderMottaker);
