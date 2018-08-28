@@ -7,12 +7,12 @@ import org.springframework.web.bind.annotation.ResponseStatus;
  * @author Joakim Bjørnstad, Jbit AS
  */
 @ResponseStatus(code = HttpStatus.BAD_REQUEST)
-public final class JournalpostIkkeInngaaendeException extends DokarkivFunctionalException {
-	public JournalpostIkkeInngaaendeException() {
+public final class KunneIkkeEndeligJournalfoereException extends DokarkivFunctionalException {
+	public KunneIkkeEndeligJournalfoereException() {
 		super();
 	}
 
-	public JournalpostIkkeInngaaendeException(String message) {
+	public KunneIkkeEndeligJournalfoereException(String message) {
 		super(message);
 	}
 }

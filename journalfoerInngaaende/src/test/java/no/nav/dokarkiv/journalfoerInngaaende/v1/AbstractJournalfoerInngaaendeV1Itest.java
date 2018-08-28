@@ -6,6 +6,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 
 import no.nav.dokarkiv.core.CoreConfig;
+import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.domain.builder.JournalpostBuilder;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
@@ -18,6 +19,7 @@ import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager;
@@ -67,8 +69,15 @@ public abstract class AbstractJournalfoerInngaaendeV1Itest {
 	@Autowired
 	private TestEntityManager testEntityManager;
 
+	@Before
+	public void setUp(){
+		MDC.put(MDCConstants.MDC_USER_ID, "itest_userId");
+		MDC.put(MDCConstants.MDC_CONSUMER_ID, "Itest_consumerId");
+	}
+
 	@BeforeClass
 	public static void setupItest() {
+
 		RequestContextSetter.setRequestContext(new SimpleRequestContext.Builder()
 				.userId("itestuser")
 				.componentId("itest")

@@ -7,7 +7,6 @@ import no.nav.dok.tjenester.journalfoerinngaaende.Dokument;
 import no.nav.dok.tjenester.journalfoerinngaaende.GetJournalpostResponse;
 import no.nav.dok.tjenester.journalfoerinngaaende.LogiskVedlegg;
 import no.nav.dok.tjenester.journalfoerinngaaende.Variant;
-import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
@@ -15,8 +14,7 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
 import no.nav.dokarkiv.core.domain.entities.SkannetInnhold;
-import no.nav.dokarkiv.core.exceptions.DokarkivRestFunctionalException;
-import org.springframework.http.HttpStatus;
+import no.nav.dokarkiv.core.exceptions.UgyldigJournalStatusException;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -59,7 +57,8 @@ public class GetInngaaendeJournalpostMapper extends AbstractInngaaendeJournalpos
 		} else if (journalpost.hasUtgaattJournalforingStatus()) {
 			return GetJournalpostResponse.JournalTilstand.UTGAAR;
 		} else {
-			throw new DokarkivRestFunctionalException("Ugyldig journalstatus for inngående Journalpost.", HttpStatus.BAD_REQUEST); //TODO: Status!
+			throw new UgyldigJournalStatusException(String.format("Journalstatus=%s er ugyldig status for inngaaende journalpost med journalpostId=%s", journalpost
+					.getJournalstatus(), journalpost.getJournalpostId()));
 		}
 	}
 
@@ -69,7 +68,7 @@ public class GetInngaaendeJournalpostMapper extends AbstractInngaaendeJournalpos
 		} else {
 			return new ArkivSak()
 					.withArkivSakId(saksrelasjon.getSakId())
-					.withArkivSakSystem(mapFagsystemCodeToArkivSakSystem(saksrelasjon.getFagsystem()));  //TODO: Valider eller endre grensesnintt!
+					.withArkivSakSystem(mapFagsystemCodeToArkivSakSystem(saksrelasjon.getFagsystem()));
 		}
 	}
 

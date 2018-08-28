@@ -108,7 +108,7 @@ public class JournalfoerInngaaendeV1IT extends AbstractJournalfoerInngaaendeV1It
 				JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER + journalpostId, HttpMethod.GET, createHeaders(), String.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.BAD_REQUEST));
-		assertThat(responseEntity.getBody(), is("Journalpost er ikke av type Inngaaende. journalpostId=" + journalpostId));
+		assertThat(responseEntity.getBody(),containsString("er ikke av type Inngaaende"));
 	}
 
 	/**

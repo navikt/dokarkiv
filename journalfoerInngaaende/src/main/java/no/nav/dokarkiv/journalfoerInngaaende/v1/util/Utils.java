@@ -2,9 +2,12 @@ package no.nav.dokarkiv.journalfoerInngaaende.v1.util;
 
 import no.nav.dok.tjenester.journalfoerinngaaende.Dokument;
 import no.nav.dok.tjenester.journalfoerinngaaende.GetJournalpostResponse;
-import no.nav.dokarkiv.core.exceptions.DokarkivRestFunctionalException;
+import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
+import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.exceptions.DokumentIkkeFunnetException;
+import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
+import no.nav.dokarkiv.core.exceptions.JournalpostIkkeInngaaendeException;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.http.HttpStatus;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -14,17 +17,64 @@ import java.util.stream.Collectors;
  */
 public class Utils {
 
-	public static Long convertStringToLong(String input, String feltnavn) throws DokarkivRestFunctionalException {
+	public static void validateIds(String journalpostId, String dokumentId, String logiskVedleggId) throws InputValideringFeiletException {
+		try {
+			hasText(journalpostId, "journalpostId");
+			hasText(dokumentId, "dokumentId");
+			hasText(logiskVedleggId, "logiskVedleggId");
+			convertStringToLong(journalpostId, "journalpostId");
+			convertStringToLong(dokumentId, "dokumentId");
+			convertStringToLong(logiskVedleggId, "logiskVedleggId");
+		} catch (IllegalArgumentException e) {
+			throw new InputValideringFeiletException(String.format("%s. journalpostId=%s, dokumentinfoId=%s, logiskVedleggId=%s", e
+					.getMessage(), journalpostId, dokumentId, logiskVedleggId));
+		}
+	}
+
+	public static void validateJournalpostIdAndDokumentId(String journalpostId, String dokumentId) throws InputValideringFeiletException {
+		try {
+			hasText(journalpostId, "journalpostId");
+			hasText(dokumentId, "dokumentId");
+			convertStringToLong(journalpostId, "journalpostId");
+			convertStringToLong(dokumentId, "dokumentId");
+		} catch (IllegalArgumentException e) {
+			throw new InputValideringFeiletException(String.format("%s. journalpostId=%s, dokumentinfoId=%s", e.getMessage(), journalpostId, dokumentId));
+		}
+	}
+
+	public static void validateId(String journalpostId, String feltnavn) throws InputValideringFeiletException {
+		try {
+			hasText(journalpostId, feltnavn);
+			convertStringToLong(journalpostId, feltnavn);
+		} catch (IllegalArgumentException e) {
+			throw new InputValideringFeiletException(String.format("%s. journalpostId=%s", e.getMessage(), journalpostId));
+		}
+	}
+
+	public static Long convertStringToLong(String input, String feltnavn) throws IllegalArgumentException {
 		try {
 			return Long.parseLong(input);
 		} catch (Exception e) {
-			throw new DokarkivRestFunctionalException(String.format("%s er ikke et tall", feltnavn), HttpStatus.BAD_REQUEST);
+			throw new IllegalArgumentException(String.format("%s er ikke et tall", feltnavn));
 		}
 	}
 
 	public static void hasText(String input, String feltnavn) {
 		if (StringUtils.isBlank(input)) {
-			throw new DokarkivRestFunctionalException(String.format("%s kan ikke være null eller tom", feltnavn), HttpStatus.BAD_REQUEST);
+			throw new IllegalArgumentException(String.format("%s kan ikke være null eller tom", feltnavn));
+		}
+	}
+
+	public static void assetJournalpostIsInngaaende(Journalpost journalpost) {
+		if (!journalpost.isInngaende()) {
+			throw new JournalpostIkkeInngaaendeException(String.format("Journalpost med journalpostId=%s er ikke av type Inngaaende", journalpost
+					.getJournalpostId())); //TODO Annen HttpStatus?
+		}
+	}
+
+	public static void assertDokumentInfoNotNull(DokumentInfo dokumentInfo, String journalpostId, String dokumentId) {
+		if (dokumentInfo == null) {
+			throw new DokumentIkkeFunnetException(String.format("Fant ingen dokument med dokumentId=%s paa journalpost med journalpostId=%s", dokumentId, journalpostId));
 		}
 	}
 
@@ -35,10 +85,4 @@ public class Utils {
 				.collect(Collectors.toList());
 	}
 
-	public static List<String> getDokumenttypeIds(GetJournalpostResponse response) {
-		return response.getDokumentListe().stream()
-				.filter(dokumentinfoTo -> dokumentinfoTo.getDokumentTypeId() != null)
-				.map(Dokument::getDokumentTypeId)
-				.collect(Collectors.toList());
-	}
 }
