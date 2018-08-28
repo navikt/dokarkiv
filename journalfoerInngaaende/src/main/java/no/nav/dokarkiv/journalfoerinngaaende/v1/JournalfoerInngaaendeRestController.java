@@ -9,13 +9,14 @@ import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.UPDATE_ACTI
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dok.tjenester.journalfoerinngaaende.GetJournalpostResponse;
-import no.nav.dok.tjenester.journalfoerinngaaende.PutDokumentRequest;
-import no.nav.dok.tjenester.journalfoerinngaaende.PutDokumentResponse;
 import no.nav.dok.tjenester.journalfoerinngaaende.PostLogiskVedleggRequest;
 import no.nav.dok.tjenester.journalfoerinngaaende.PostLogiskVedleggResponse;
+import no.nav.dok.tjenester.journalfoerinngaaende.PutDokumentRequest;
+import no.nav.dok.tjenester.journalfoerinngaaende.PutDokumentResponse;
 import no.nav.dok.tjenester.journalfoerinngaaende.PutJournalpostRequest;
 import no.nav.dok.tjenester.journalfoerinngaaende.PutJournalpostResponse;
 import no.nav.dok.tjenester.journalfoerinngaaende.PutLogiskVedleggRequest;
+import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.exceptions.DokarkivRestFunctionalException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.metrics.RestMetrics;
@@ -28,6 +29,7 @@ import no.nav.dokarkiv.journalfoerinngaaende.v1.service.LogiskVedleggService;
 import no.nav.dokarkiv.journalfoerinngaaende.v1.service.PersistInngaaendeJournalpostService;
 import no.nav.dokarkiv.journalfoerinngaaende.v1.service.UpdateInngaaendeJournalpostDokumentService;
 import no.nav.freg.abac.core.annotation.Abac;
+import org.slf4j.MDC;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -191,7 +193,7 @@ public class JournalfoerInngaaendeRestController {
 	public @ResponseBody
 	PutDokumentResponse updateDokument(@PathVariable String journalpostId, @PathVariable String dokumentid, @RequestBody PutDokumentRequest request) {
 		log.info("tjoark070 har mottat kall om å oppdatere dokument med journalpostId={} og dokumentId={}", journalpostId, dokumentid);
-		RequestContextUtil.createAndSetUsername("user", "appid");
+		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
 		PutDokumentResponse inngaaendeResponseTo = updateInngaaendeJournalpostDokumentService.update(journalpostId, dokumentid, request);
 		log.info("tjoark070 har oppdatert dokument med journalpostId={} og dokumentId={} i Joark.", journalpostId, dokumentid);
 		return inngaaendeResponseTo;
