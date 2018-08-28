@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.journalfoerInngaaende.v1;
+package no.nav.dokarkiv.journalfoerinngaaende.v1;
 
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Component;

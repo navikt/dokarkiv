@@ -1,10 +1,10 @@
-package no.nav.dokarkiv.journalfoerInngaaende.v1.service;
+package no.nav.dokarkiv.journalfoerinngaaende.v1.service;
 
 import static no.nav.dok.tjenester.journalfoerinngaaende.response.Mangler.AvsenderId.MANGLER;
 import static no.nav.dok.tjenester.journalfoerinngaaende.response.Mangler.AvsenderId.MANGLER_IKKE;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
-import static no.nav.dokarkiv.journalfoerInngaaende.v1.service.support.JournalpostValidator.validateJournalpostStatuser;
-import static no.nav.dokarkiv.journalfoerInngaaende.v1.service.support.JournalpostValidator.validateJournalpostStrukturOgPaakrevdeAttributter;
+import static no.nav.dokarkiv.journalfoerinngaaende.v1.service.support.JournalpostValidator.validateJournalpostStatuser;
+import static no.nav.dokarkiv.journalfoerinngaaende.v1.service.support.JournalpostValidator.validateJournalpostStrukturOgPaakrevdeAttributter;
 import static org.hibernate.annotations.common.util.StringHelper.isEmpty;
 
 import no.nav.dok.tjenester.journalfoerinngaaende.PutJournalpostRequest;
@@ -16,8 +16,8 @@ import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.DokarkivRestFunctionalException;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
-import no.nav.dokarkiv.journalfoerInngaaende.v1.map.PutInngaaendeJournalpostMapper;
-import no.nav.dokarkiv.journalfoerInngaaende.v1.util.Utils;
+import no.nav.dokarkiv.journalfoerinngaaende.v1.map.PutInngaaendeJournalpostMapper;
+import no.nav.dokarkiv.journalfoerinngaaende.v1.util.Utils;
 import org.slf4j.MDC;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;

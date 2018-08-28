@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.journalfoerInngaaende.v1.service.support;
+package no.nav.dokarkiv.journalfoerinngaaende.v1.service.support;
 
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.DokarkivRestFunctionalException;

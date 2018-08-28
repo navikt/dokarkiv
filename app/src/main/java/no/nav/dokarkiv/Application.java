@@ -11,7 +11,7 @@ import no.nav.dokarkiv.hentdokument.HentDokumentConfig;
 import no.nav.dokarkiv.inngaaendejournal.v1.InngaaendeJournalV1Config;
 import no.nav.dokarkiv.innsynjournal.v2.InnsynJournalV2Config;
 import no.nav.dokarkiv.journal.v3.JournalV3Config;
-import no.nav.dokarkiv.journalfoerInngaaende.v1.JournalfoerInngaaendeConfig;
+import no.nav.dokarkiv.journalfoerinngaaende.v1.JournalfoerInngaaendeConfig;
 import no.nav.dokarkiv.nais.NaisContract;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.annotation.Import;

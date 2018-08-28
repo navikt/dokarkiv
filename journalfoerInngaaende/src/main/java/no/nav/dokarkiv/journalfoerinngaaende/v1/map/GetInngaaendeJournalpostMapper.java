@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.journalfoerInngaaende.v1.map;
+package no.nav.dokarkiv.journalfoerinngaaende.v1.map;
 
 import no.nav.dok.tjenester.journalfoerinngaaende.ArkivSak;
 import no.nav.dok.tjenester.journalfoerinngaaende.Avsender;
@@ -7,7 +7,6 @@ import no.nav.dok.tjenester.journalfoerinngaaende.Dokument;
 import no.nav.dok.tjenester.journalfoerinngaaende.GetJournalpostResponse;
 import no.nav.dok.tjenester.journalfoerinngaaende.LogiskVedlegg;
 import no.nav.dok.tjenester.journalfoerinngaaende.Variant;
-import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;

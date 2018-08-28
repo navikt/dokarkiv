@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.journalfoerInngaaende.v1;
+package no.nav.dokarkiv.journalfoerinngaaende.v1;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;

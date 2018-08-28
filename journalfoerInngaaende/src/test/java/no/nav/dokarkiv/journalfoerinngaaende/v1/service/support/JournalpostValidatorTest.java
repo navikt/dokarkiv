@@ -1,9 +1,9 @@
-package no.nav.dokarkiv.journalfoerInngaaende.v1.service.support;
+package no.nav.dokarkiv.journalfoerinngaaende.v1.service.support;
 
-import static no.nav.dokarkiv.journalfoerInngaaende.v1.service.support.JournalpostValidator.validateJournalpostStatuser;
-import static no.nav.dokarkiv.journalfoerInngaaende.v1.service.support.JournalpostValidator.validateJournalpostStrukturOgPaakrevdeAttributter;
-import static no.nav.dokarkiv.journalfoerInngaaende.v1.util.TestUtils.createJournalpostDokumentinfoRelasjon1;
-import static no.nav.dokarkiv.journalfoerInngaaende.v1.util.TestUtils.createJournalpostForOppdatering;
+import static no.nav.dokarkiv.journalfoerinngaaende.v1.service.support.JournalpostValidator.validateJournalpostStatuser;
+import static no.nav.dokarkiv.journalfoerinngaaende.v1.service.support.JournalpostValidator.validateJournalpostStrukturOgPaakrevdeAttributter;
+import static no.nav.dokarkiv.journalfoerinngaaende.v1.util.TestUtils.createJournalpostDokumentinfoRelasjon1;
+import static no.nav.dokarkiv.journalfoerinngaaende.v1.util.TestUtils.createJournalpostForOppdatering;
 
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;

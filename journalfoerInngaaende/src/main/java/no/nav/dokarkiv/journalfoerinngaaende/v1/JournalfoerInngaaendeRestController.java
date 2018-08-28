@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.journalfoerInngaaende.v1;
+package no.nav.dokarkiv.journalfoerinngaaende.v1;
 
 
 import static no.nav.abac.xacml.NavAttributter.RESOURCE_ARKIV_JOURNALPOST;
@@ -6,10 +6,10 @@ import static no.nav.abac.xacml.NavAttributter.RESOURCE_FELLES_RESOURCE_TYPE;
 import static no.nav.abac.xacml.StandardAttributter.ACTION_ID;
 import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.READ_ACTION;
 import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.UPDATE_ACTION;
-import static no.nav.dokarkiv.journalfoerInngaaende.v1.util.Utils.convertStringToLong;
-import static no.nav.dokarkiv.journalfoerInngaaende.v1.util.Utils.getDokumentIds;
-import static no.nav.dokarkiv.journalfoerInngaaende.v1.util.Utils.getDokumenttypeIds;
-import static no.nav.dokarkiv.journalfoerInngaaende.v1.util.Utils.hasText;
+import static no.nav.dokarkiv.journalfoerinngaaende.v1.util.Utils.convertStringToLong;
+import static no.nav.dokarkiv.journalfoerinngaaende.v1.util.Utils.getDokumentIds;
+import static no.nav.dokarkiv.journalfoerinngaaende.v1.util.Utils.getDokumenttypeIds;
+import static no.nav.dokarkiv.journalfoerinngaaende.v1.util.Utils.hasText;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dok.tjenester.journalfoerinngaaende.GetJournalpostResponse;
@@ -26,9 +26,9 @@ import no.nav.dokarkiv.core.metrics.RestMetrics;
 import no.nav.dokarkiv.core.security.abac.AbacSecurityService;
 import no.nav.dokarkiv.core.security.abac.AuthorizationException;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
-import no.nav.dokarkiv.journalfoerInngaaende.v1.service.GetInngaaendeJournalpostService;
-import no.nav.dokarkiv.journalfoerInngaaende.v1.service.LogiskVedleggService;
-import no.nav.dokarkiv.journalfoerInngaaende.v1.service.PersistInngaaendeJournalpostService;
+import no.nav.dokarkiv.journalfoerinngaaende.v1.service.GetInngaaendeJournalpostService;
+import no.nav.dokarkiv.journalfoerinngaaende.v1.service.LogiskVedleggService;
+import no.nav.dokarkiv.journalfoerinngaaende.v1.service.PersistInngaaendeJournalpostService;
 import no.nav.dokarkiv.journalfoerInngaaende.v1.service.UpdateInngaaendeJournalpostDokumentService;
 import no.nav.freg.abac.core.annotation.Abac;
 import org.springframework.http.HttpHeaders;

@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.journalfoerInngaaende.v1.map;
+package no.nav.dokarkiv.journalfoerinngaaende.v1.map;
 
 import static org.apache.logging.log4j.util.Strings.isNotBlank;
 

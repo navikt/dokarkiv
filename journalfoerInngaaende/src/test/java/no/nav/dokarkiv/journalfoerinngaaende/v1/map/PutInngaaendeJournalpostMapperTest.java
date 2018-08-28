@@ -1,14 +1,14 @@
-package no.nav.dokarkiv.journalfoerInngaaende.v1.map;
+package no.nav.dokarkiv.journalfoerinngaaende.v1.map;
 
-import static no.nav.dokarkiv.journalfoerInngaaende.v1.util.TestUtils.AVSENDER_ID_ORGANISASJON;
-import static no.nav.dokarkiv.journalfoerInngaaende.v1.util.TestUtils.AVSENDER_ID_PERSON;
-import static no.nav.dokarkiv.journalfoerInngaaende.v1.util.TestUtils.AVSENDER_NAVN;
-import static no.nav.dokarkiv.journalfoerInngaaende.v1.util.TestUtils.AVSENDER_NAVN_ORGANISASJON;
-import static no.nav.dokarkiv.journalfoerInngaaende.v1.util.TestUtils.BRUKER_ID_ORGANISASJON;
-import static no.nav.dokarkiv.journalfoerInngaaende.v1.util.TestUtils.BRUKER_ID_PERSON;
-import static no.nav.dokarkiv.journalfoerInngaaende.v1.util.TestUtils.SAK_ID;
-import static no.nav.dokarkiv.journalfoerInngaaende.v1.util.TestUtils.createJournalpost;
-import static no.nav.dokarkiv.journalfoerInngaaende.v1.util.TestUtils.createJournalpostForOppdatering;
+import static no.nav.dokarkiv.journalfoerinngaaende.v1.util.TestUtils.AVSENDER_ID_ORGANISASJON;
+import static no.nav.dokarkiv.journalfoerinngaaende.v1.util.TestUtils.AVSENDER_ID_PERSON;
+import static no.nav.dokarkiv.journalfoerinngaaende.v1.util.TestUtils.AVSENDER_NAVN;
+import static no.nav.dokarkiv.journalfoerinngaaende.v1.util.TestUtils.AVSENDER_NAVN_ORGANISASJON;
+import static no.nav.dokarkiv.journalfoerinngaaende.v1.util.TestUtils.BRUKER_ID_ORGANISASJON;
+import static no.nav.dokarkiv.journalfoerinngaaende.v1.util.TestUtils.BRUKER_ID_PERSON;
+import static no.nav.dokarkiv.journalfoerinngaaende.v1.util.TestUtils.SAK_ID;
+import static no.nav.dokarkiv.journalfoerinngaaende.v1.util.TestUtils.createJournalpost;
+import static no.nav.dokarkiv.journalfoerinngaaende.v1.util.TestUtils.createJournalpostForOppdatering;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.junit.Assert.assertThat;

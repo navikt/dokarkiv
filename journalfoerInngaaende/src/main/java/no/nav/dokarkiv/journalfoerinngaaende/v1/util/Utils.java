@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.journalfoerInngaaende.v1.util;
+package no.nav.dokarkiv.journalfoerinngaaende.v1.util;
 
 import no.nav.dok.tjenester.journalfoerinngaaende.Dokument;
 import no.nav.dok.tjenester.journalfoerinngaaende.GetJournalpostResponse;
