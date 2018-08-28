@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.core.security.ldap;
 
+import static no.nav.dokarkiv.core.cache.CacheConfig.NAVSERVICEUSER_CACHE;
 import static no.nav.dokarkiv.core.cache.CacheConfig.NAVUSER_CACHE;
 import static org.springframework.ldap.query.LdapQueryBuilder.query;
 
@@ -42,7 +43,7 @@ public class NavLdapService {
 	}
 
 	@Retryable(backoff = @Backoff(delay = 500))
-	@Cacheable(NAVUSER_CACHE)
+	@Cacheable(NAVSERVICEUSER_CACHE)
 	public NavUser findByServiceuserId(final String serviceUserId) {
 		try {
 			return ldapTemplate.findOne(query().base(serviceuserBasedn).where("cn").is(serviceUserId), NavUser.class);
