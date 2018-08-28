@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.journalfoerinngaaende.v1.map;
 
+import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static org.apache.logging.log4j.util.Strings.isNotBlank;
 
 import no.nav.dok.tjenester.journalfoerinngaaende.PutJournalpostRequest;
@@ -8,6 +9,7 @@ import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.entities.Bruker;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
+import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 
 import java.util.Set;
@@ -30,19 +32,7 @@ public class PutInngaaendeJournalpostMapper extends AbstractInngaaendeJournalpos
 				journalpost.setAvsenderMottakerId(putJournalpostRequest.getAvsender().getIdentifikator());
 			}
 		}
-		if (putJournalpostRequest.getArkivSak() != null) {
-			if (journalpost.getSaksrelasjon() != null) {
-				journalpost.getSaksrelasjon().setSakId(putJournalpostRequest.getArkivSak().getArkivSakId());
-				journalpost.getSaksrelasjon().setFagsystem(mapArkivSakSystemToFagsystemCode(putJournalpostRequest.getArkivSak().getArkivSakSystem()));
-				journalpost.getSaksrelasjon().setEndretKildeNavn("ENDRET_AV"); //TODO: hent fra MDC
-			} else {
-				Saksrelasjon saksrelasjon = new Saksrelasjon();
-				saksrelasjon.setSakId(putJournalpostRequest.getArkivSak().getArkivSakId());
-				saksrelasjon.setFagsystem(mapArkivSakSystemToFagsystemCode(putJournalpostRequest.getArkivSak().getArkivSakSystem()));
-				saksrelasjon.setOpprettetKildeNavn("OpprettetAv"); //TODO: hent fra MDC
-				journalpost.setSaksrelasjon(saksrelasjon);
-			}
-		}
+		updateSaksrelasjonFields(journalpost, putJournalpostRequest);
 
 		Set<Bruker> brukere = journalpost.getBrukere();
 		if (brukere.isEmpty() || brukere.size() > 1) {
@@ -57,6 +47,27 @@ public class PutInngaaendeJournalpostMapper extends AbstractInngaaendeJournalpos
 				bruker.setBrukerId(putJournalpostRequest.getBruker().getIdentifikator());
 				bruker.setBrukerType(BrukerTypeCode.valueOf(putJournalpostRequest.getBruker().getBrukerType().name()));
 			});
+		}
+	}
+
+	private void updateSaksrelasjonFields(Journalpost journalpost, PutJournalpostRequest request) {
+		boolean newSak = false;
+		if (request.getArkivSak() != null) {
+			Saksrelasjon saksrelasjon;
+			if (journalpost.getSaksrelasjon() == null) {
+				saksrelasjon = new Saksrelasjon();
+				saksrelasjon.setOpprettetKildeNavn(MDC.get(MDC_CONSUMER_ID));
+				newSak = true;
+			} else {
+				saksrelasjon = journalpost.getSaksrelasjon();
+			}
+			saksrelasjon.setSakId(request.getArkivSak().getArkivSakId());
+			saksrelasjon.setFagsystem(mapArkivSakSystemToFagsystemCode(request.getArkivSak().getArkivSakSystem()));
+			saksrelasjon.setEndretAvNavn("Endret av"); // TODO: hent fra MDC
+			saksrelasjon.setEndretKildeNavn(MDC.get(MDC_CONSUMER_ID));
+			if (newSak) {
+				journalpost.setSaksrelasjon(saksrelasjon);
+			}
 		}
 	}
 
