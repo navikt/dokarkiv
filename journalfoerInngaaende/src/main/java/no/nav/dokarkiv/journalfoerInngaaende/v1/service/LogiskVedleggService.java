@@ -100,7 +100,7 @@ public class LogiskVedleggService {
 
 	private void assertDokumentinfo(DokumentInfo dokumentInfo, String journalpostId, String dokumentId) {
 		if (dokumentInfo == null) {
-			throw new DokarkivRestFunctionalException(String.format("Finner ingen dokumentmed dokumentId=%s paa journalpost med journalpostId=%s", dokumentId, journalpostId), HttpStatus.BAD_REQUEST); //TODO Annen HttpStatus?
+			throw new DokarkivRestFunctionalException(String.format("Finner ingen dokument med dokumentId=%s paa journalpost med journalpostId=%s", dokumentId, journalpostId), HttpStatus.NOT_FOUND); //TODO Annen HttpStatus?
 		}
 	}
 

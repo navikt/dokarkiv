@@ -39,6 +39,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.transaction.TestTransaction;
 
 import java.io.IOException;
+import java.util.Optional;
 
 /**
  * @author Sigurd Midttun, Visma Consulting.
@@ -203,10 +204,18 @@ public class JournalfoerInngaaendeV1IT extends AbstractJournalfoerInngaaendeV1It
 		assertThat(responseEntity.getBody().getMangler(), is(nullValue()));
 		assertThat(responseEntity.getBody().getHarEndeligJF(), is(true));
 
-//		Optional<Journalpost> journalpostOptional = joarkRepository.findById(journalpostId);
-//		if (journalpostOptional.isPresent()) {
-////			assertThat()
-//		}
+		Optional<Journalpost> journalpostOptional = joarkRepository.findById(journalpostId);
+		if (journalpostOptional.isPresent()) {
+			Journalpost oppdatertJP = journalpostOptional.get();
+			assertThat(oppdatertJP.getInnhold(), is(request.getTittel()));
+			assertThat(oppdatertJP.getFagomrade().name(), is(request.getTema()));
+			assertThat(oppdatertJP.getJournalForendeEnhetId(), is(request.getJournalfEnhet()));
+			assertThat(oppdatertJP.getAvsenderMottakerId(), is(request.getAvsender().getIdentifikator()));
+			assertThat(oppdatertJP.getAvsenderMottaker(), is(request.getAvsender().getNavn()));
+			// sjekk på bruker
+			assertThat(oppdatertJP.getSaksrelasjon().getSakId(), is(request.getArkivSak().getArkivSakId()));
+			assertThat(oppdatertJP.getSaksrelasjon().getFagsystem().name(), is("FS22"));
+		}
 	}
 
 	/**
@@ -370,8 +379,8 @@ public class JournalfoerInngaaendeV1IT extends AbstractJournalfoerInngaaendeV1It
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				"/rest/journalfoer-inngaaende/v1/journalposter/" + journalpostId + "/dokumenter/" + dokumentId + "/logiskeVedlegg/" + logiskVedleggId, HttpMethod.DELETE, createHeaders(), String.class);
 
-		assertThat(responseEntity.getStatusCode(), is(HttpStatus.BAD_REQUEST));
-		assertThat(responseEntity.getBody(), containsString("Kunne ikke finne logisk vedlegg"));
+		assertThat(responseEntity.getStatusCode(), is(HttpStatus.NOT_FOUND));
+		assertThat(responseEntity.getBody(), containsString("Finner ingen dokument med dokumentId=1234546636"));
 	}
 
 
@@ -480,6 +489,59 @@ public class JournalfoerInngaaendeV1IT extends AbstractJournalfoerInngaaendeV1It
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.BAD_REQUEST));
 		assertThat(responseEntity.getBody(), containsString("SJO er ugyldig verdi for dokumentKategori"));
 	}
+
+
+	/***************************
+	 ** OppdaterLogiskVedlegg **
+	 ***************************/
+	//TODO Skrive flere itester
+
+	@Test
+	public void shouldUpdateLogiskVedlegg() throws Exception {
+		abacPermit();
+		PutJournalpostRequest request = mapper.readValue(classpathToString("__files/put_logiskvedlegg/put_logisk_vedlegg_happy_input_request.json"), PutJournalpostRequest.class);
+
+		Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.J));
+
+		String journalpostId = journalpost.getJournalpostId().toString();
+		String dokumentId = journalpost.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
+				.iterator()
+				.next()
+				.getDokumentInfo()
+				.getDokumentInfoId()
+				.toString();
+		String logiskVedleggId = journalpost.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
+				.iterator()
+				.next()
+				.getDokumentInfo()
+				.getSkannetInnholdListe()
+				.iterator()
+				.next()
+				.getSkannetInnholdId()
+				.toString();
+
+		HttpEntity<PutJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
+
+		ResponseEntity<String> responseEntity = restTemplate.exchange(
+				"/rest/journalfoer-inngaaende/v1/journalposter/" + journalpostId + "/dokumenter/" + dokumentId + "/logiskeVedlegg/" + logiskVedleggId, HttpMethod.PUT, requestHttpEntity, String.class);
+
+		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
+		assertThat(responseEntity.getBody(), containsString("Oppdatering av logiskVedlegg med logiskVedleggId="));
+
+		TestTransaction.start();
+		Journalpost resultJournalpost = joarkRepository.findById(Long.parseLong(journalpostId)).get();
+		assertThat(resultJournalpost.getDokumentInfoFromJpDokInfoRelasjonerByDokumentInfoId(Long.parseLong(dokumentId))
+				.getSkannetInnholdListe().iterator().next().getVedleggInnhold(), is("Dette er en tittel"));
+		TestTransaction.end();
+	}
+
+
+	/***************************
+	 ** PostLogiskVedlegg **
+	 ***************************/
+
+	//TODO Skrive itester
+
 
 }
 

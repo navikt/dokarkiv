@@ -5,28 +5,25 @@ import static org.apache.logging.log4j.util.Strings.isNotBlank;
 import no.nav.dok.tjenester.journalfoerinngaaende.PutJournalpostRequest;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
-import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
-import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.entities.Bruker;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
 import org.springframework.stereotype.Component;
 
-import java.util.Date;
 import java.util.Set;
 
 @Component
 public class PutInngaaendeJournalpostMapper extends AbstractInngaaendeJournalpostMapper {
 
 	public void oppdaterJournalpost(Journalpost journalpost, PutJournalpostRequest putJournalpostRequest) {
-		if (isNotBlank(putJournalpostRequest.getTittel())){
+		if (isNotBlank(putJournalpostRequest.getTittel())) {
 			journalpost.setInnhold(putJournalpostRequest.getTittel());
 		}
 		if (isNotBlank(putJournalpostRequest.getTema())) {
 			journalpost.setFagomrade(FagomradeCode.valueOf(putJournalpostRequest.getTema()));
 		}
-		if (putJournalpostRequest.getAvsender() != null){
-			if (isNotBlank(putJournalpostRequest.getAvsender().getIdentifikator())){
+		if (putJournalpostRequest.getAvsender() != null) {
+			if (isNotBlank(putJournalpostRequest.getAvsender().getIdentifikator())) {
 				journalpost.setAvsenderMottaker(putJournalpostRequest.getAvsender().getNavn());
 			}
 			if (isNotBlank(putJournalpostRequest.getAvsender().getIdentifikator())) {
@@ -34,11 +31,17 @@ public class PutInngaaendeJournalpostMapper extends AbstractInngaaendeJournalpos
 			}
 		}
 		if (putJournalpostRequest.getArkivSak() != null) {
-			Saksrelasjon saksrelasjon = new Saksrelasjon();
-			saksrelasjon.setSakId(putJournalpostRequest.getArkivSak().getArkivSakId());
-			saksrelasjon.setFagsystem(mapArkivSakSystemToFagsystemCode(putJournalpostRequest.getArkivSak().getArkivSakSystem()));
-			saksrelasjon.setOpprettetKildeNavn("OpprettetAv"); //TODO: hent fra MDC
-			journalpost.setSaksrelasjon(saksrelasjon);
+			if (journalpost.getSaksrelasjon() != null) {
+				journalpost.getSaksrelasjon().setSakId(putJournalpostRequest.getArkivSak().getArkivSakId());
+				journalpost.getSaksrelasjon().setFagsystem(mapArkivSakSystemToFagsystemCode(putJournalpostRequest.getArkivSak().getArkivSakSystem()));
+				journalpost.getSaksrelasjon().setEndretKildeNavn("ENDRET_AV"); //TODO: hent fra MDC
+			} else {
+				Saksrelasjon saksrelasjon = new Saksrelasjon();
+				saksrelasjon.setSakId(putJournalpostRequest.getArkivSak().getArkivSakId());
+				saksrelasjon.setFagsystem(mapArkivSakSystemToFagsystemCode(putJournalpostRequest.getArkivSak().getArkivSakSystem()));
+				saksrelasjon.setOpprettetKildeNavn("OpprettetAv"); //TODO: hent fra MDC
+				journalpost.setSaksrelasjon(saksrelasjon);
+			}
 		}
 
 		Set<Bruker> brukere = journalpost.getBrukere();
