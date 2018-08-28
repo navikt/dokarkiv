@@ -1,7 +1,5 @@
 package no.nav.dokarkiv.journalfoerinngaaende.v1.service;
 
-import static no.nav.dokarkiv.journalfoerinngaaende.v1.util.Utils.convertStringToLong;
-
 import no.nav.dok.tjenester.journalfoerinngaaende.PostLogiskVedleggRequest;
 import no.nav.dok.tjenester.journalfoerinngaaende.PutLogiskVedleggRequest;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
@@ -10,6 +8,7 @@ import no.nav.dokarkiv.core.domain.entities.SkannetInnhold;
 import no.nav.dokarkiv.core.exceptions.DokarkivRestFunctionalException;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.core.repository.SkannetInnholdRepository;
+import no.nav.dokarkiv.journalfoerinngaaende.v1.util.Utils;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -33,8 +32,8 @@ public class LogiskVedleggService {
 
 	//TODO: Sporingsinfo
 	public void deleteLogiskVedlegg(String journalpostIdString, String dokumentIdString, String logiskVedleggIdString) throws DokarkivRestFunctionalException {
-		Long journalpostId = convertStringToLong(journalpostIdString, "journalpostId");
-		Long dokumentId = convertStringToLong(dokumentIdString, "dokumentId");
+		Long journalpostId = Utils.convertStringToLong(journalpostIdString, "journalpostId");
+		Long dokumentId = Utils.convertStringToLong(dokumentIdString, "dokumentId");
 
 		Journalpost journalpost = joarkRepository.findById(journalpostId)
 				.orElseThrow(() -> new DokarkivRestFunctionalException("Kunne ikke finne journalpost i Joark", HttpStatus.NOT_FOUND));
@@ -51,8 +50,8 @@ public class LogiskVedleggService {
 
 	//TODO: Sporingsinfo
 	public void updateLogiskVedlegg(String journalpostIdString, String dokumentIdString, String logiskVedleggIdString, PutLogiskVedleggRequest request) throws DokarkivRestFunctionalException {
-		Long journalpostId = convertStringToLong(journalpostIdString, "journalpostId");
-		Long dokumentId = convertStringToLong(dokumentIdString, "dokumentId");
+		Long journalpostId = Utils.convertStringToLong(journalpostIdString, "journalpostId");
+		Long dokumentId = Utils.convertStringToLong(dokumentIdString, "dokumentId");
 
 		Journalpost journalpost = joarkRepository.findById(journalpostId)
 				.orElseThrow(() -> new DokarkivRestFunctionalException("Kunne ikke finne journalpost i Joark", HttpStatus.NOT_FOUND));
@@ -72,8 +71,8 @@ public class LogiskVedleggService {
 
 	//TODO: Sporingsinfo
 	public Long persistLogiskVedlegg(String journalpostIdString, String dokumentIdString, PostLogiskVedleggRequest request) throws DokarkivRestFunctionalException {
-		Long journalpostId = convertStringToLong(journalpostIdString, "journalpostId");
-		Long dokumentId = convertStringToLong(dokumentIdString, "dokumentId");
+		Long journalpostId = Utils.convertStringToLong(journalpostIdString, "journalpostId");
+		Long dokumentId = Utils.convertStringToLong(dokumentIdString, "dokumentId");
 
 		Journalpost journalpost = joarkRepository.findById(journalpostId)
 				.orElseThrow(() -> new DokarkivRestFunctionalException("Kunne ikke finne journalpost i Joark", HttpStatus.NOT_FOUND));

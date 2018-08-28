@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.journalfoerInngaaende.v1.service;
+package no.nav.dokarkiv.journalfoerinngaaende.v1.service;
 
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 

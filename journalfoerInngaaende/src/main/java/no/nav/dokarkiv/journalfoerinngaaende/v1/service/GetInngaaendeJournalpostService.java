@@ -1,12 +1,11 @@
 package no.nav.dokarkiv.journalfoerinngaaende.v1.service;
 
-import static no.nav.dokarkiv.journalfoerinngaaende.v1.util.Utils.convertStringToLong;
-
 import no.nav.dok.tjenester.journalfoerinngaaende.GetJournalpostResponse;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.DokarkivRestFunctionalException;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.journalfoerinngaaende.v1.map.GetInngaaendeJournalpostMapper;
+import no.nav.dokarkiv.journalfoerinngaaende.v1.util.Utils;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -29,7 +28,7 @@ public class GetInngaaendeJournalpostService {
 	}
 
 	public GetJournalpostResponse getInngaaendeJournalpostByJournalpostId(String journalpostIdString) throws DokarkivRestFunctionalException {
-		Long journalpostId = convertStringToLong(journalpostIdString, "journalpostId");
+		Long journalpostId = Utils.convertStringToLong(journalpostIdString, "journalpostId");
 
 		Journalpost journalpost = joarkRepository.findById(journalpostId)
 				.orElseThrow(() -> new DokarkivRestFunctionalException("Kunne ikke finne journalpost i Joark", HttpStatus.NOT_FOUND));

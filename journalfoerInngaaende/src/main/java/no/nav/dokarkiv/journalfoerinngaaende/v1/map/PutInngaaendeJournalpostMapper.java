@@ -23,7 +23,7 @@ public class PutInngaaendeJournalpostMapper extends AbstractInngaaendeJournalpos
 			journalpost.setFagomrade(FagomradeCode.valueOf(putJournalpostRequest.getTema()));
 		}
 		if (putJournalpostRequest.getAvsender() != null) {
-			if (isNotBlank(putJournalpostRequest.getAvsender().getIdentifikator())) {
+			if (isNotBlank(putJournalpostRequest.getAvsender().getNavn())) {
 				journalpost.setAvsenderMottaker(putJournalpostRequest.getAvsender().getNavn());
 			}
 			if (isNotBlank(putJournalpostRequest.getAvsender().getIdentifikator())) {
