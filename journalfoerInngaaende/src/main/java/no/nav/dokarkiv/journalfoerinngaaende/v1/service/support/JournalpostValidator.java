@@ -1,6 +1,6 @@
-package no.nav.dokarkiv.journalfoerInngaaende.v1.service.support;
+package no.nav.dokarkiv.journalfoerinngaaende.v1.service.support;
 
-import static no.nav.dokarkiv.journalfoerInngaaende.v1.util.Utils.assetJournalpostIsInngaaende;
+import static no.nav.dokarkiv.journalfoerinngaaende.v1.util.Utils.assetJournalpostIsInngaaende;
 
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.DokumentUnderRedigeringException;

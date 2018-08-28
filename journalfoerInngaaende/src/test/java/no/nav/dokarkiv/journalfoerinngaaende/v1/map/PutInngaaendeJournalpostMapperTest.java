@@ -1,14 +1,5 @@
-package no.nav.dokarkiv.journalfoerInngaaende.v1.map;
+package no.nav.dokarkiv.journalfoerinngaaende.v1.map;
 
-import static no.nav.dokarkiv.journalfoerInngaaende.v1.util.TestUtils.AVSENDER_ID_ORGANISASJON;
-import static no.nav.dokarkiv.journalfoerInngaaende.v1.util.TestUtils.AVSENDER_ID_PERSON;
-import static no.nav.dokarkiv.journalfoerInngaaende.v1.util.TestUtils.AVSENDER_NAVN;
-import static no.nav.dokarkiv.journalfoerInngaaende.v1.util.TestUtils.AVSENDER_NAVN_ORGANISASJON;
-import static no.nav.dokarkiv.journalfoerInngaaende.v1.util.TestUtils.BRUKER_ID_ORGANISASJON;
-import static no.nav.dokarkiv.journalfoerInngaaende.v1.util.TestUtils.BRUKER_ID_PERSON;
-import static no.nav.dokarkiv.journalfoerInngaaende.v1.util.TestUtils.SAK_ID;
-import static no.nav.dokarkiv.journalfoerInngaaende.v1.util.TestUtils.createJournalpost;
-import static no.nav.dokarkiv.journalfoerInngaaende.v1.util.TestUtils.createJournalpostForOppdatering;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.junit.Assert.assertThat;
@@ -19,6 +10,7 @@ import no.nav.dok.tjenester.journalfoerinngaaende.Bruker;
 import no.nav.dok.tjenester.journalfoerinngaaende.PutJournalpostRequest;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.journalfoerinngaaende.v1.util.TestUtils;
 import org.junit.Test;
 
 public class PutInngaaendeJournalpostMapperTest {
@@ -33,7 +25,7 @@ public class PutInngaaendeJournalpostMapperTest {
 	public void shouldUpdateJournalpost() {
 		putJournalpostRequest = createPutJournalpostRequest();
 
-		journalpost = createJournalpost();
+		journalpost = TestUtils.createJournalpost();
 
 		assertThat(journalpost.getBrukere(), hasSize(2));
 
@@ -48,7 +40,7 @@ public class PutInngaaendeJournalpostMapperTest {
 	public void shouldNotClearBrukerListeVedOppdateringAvEksisterende() {
 		putJournalpostRequest = createPutJournalpostRequest();
 
-		journalpost = createJournalpostForOppdatering();
+		journalpost = TestUtils.createJournalpostForOppdatering();
 
 		mapper.oppdaterJournalpost(journalpost, putJournalpostRequest);
 
@@ -69,37 +61,37 @@ public class PutInngaaendeJournalpostMapperTest {
 
 	private static Avsender createAvsenderPerson() {
 		Avsender avsender = new Avsender();
-		avsender.setNavn(AVSENDER_NAVN);
+		avsender.setNavn(TestUtils.AVSENDER_NAVN);
 		avsender.setAvsenderType(Avsender.AvsenderType.PERSON);
-		avsender.setIdentifikator(AVSENDER_ID_PERSON);
+		avsender.setIdentifikator(TestUtils.AVSENDER_ID_PERSON);
 		return avsender;
 	}
 
 	private static Avsender createAvsenderOrganisasjon() {
 		Avsender avsender = new Avsender();
-		avsender.setNavn(AVSENDER_NAVN_ORGANISASJON);
+		avsender.setNavn(TestUtils.AVSENDER_NAVN_ORGANISASJON);
 		avsender.setAvsenderType(Avsender.AvsenderType.ORGANISASJON);
-		avsender.setIdentifikator(AVSENDER_ID_ORGANISASJON);
+		avsender.setIdentifikator(TestUtils.AVSENDER_ID_ORGANISASJON);
 		return avsender;
 	}
 
 	private static Bruker createBrukerPerson() {
 		Bruker bruker = new Bruker();
-		bruker.setIdentifikator(BRUKER_ID_PERSON);
+		bruker.setIdentifikator(TestUtils.BRUKER_ID_PERSON);
 		bruker.setBrukerType(Bruker.BrukerType.PERSON);
 		return bruker;
 	}
 
 	private static Bruker createBrukerOrganisasjon() {
 		Bruker bruker = new Bruker();
-		bruker.setIdentifikator(BRUKER_ID_ORGANISASJON);
+		bruker.setIdentifikator(TestUtils.BRUKER_ID_ORGANISASJON);
 		bruker.setBrukerType(Bruker.BrukerType.ORGANISASJON);
 		return bruker;
 	}
 
 	private static ArkivSak createArkivSak() {
 		ArkivSak arkivSak = new ArkivSak();
-		arkivSak.setArkivSakId(SAK_ID);
+		arkivSak.setArkivSakId(TestUtils.SAK_ID);
 		arkivSak.setArkivSakSystem("GSAK");
 		return arkivSak;
 	}

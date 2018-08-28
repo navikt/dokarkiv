@@ -1,14 +1,14 @@
-package no.nav.dokarkiv.journalfoerInngaaende.v1;
+package no.nav.dokarkiv.journalfoerinngaaende.v1;
 
 
 import static no.nav.abac.xacml.NavAttributter.RESOURCE_ARKIV_JOURNALPOST;
 import static no.nav.abac.xacml.NavAttributter.RESOURCE_FELLES_RESOURCE_TYPE;
 import static no.nav.abac.xacml.StandardAttributter.ACTION_ID;
 import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.UPDATE_ACTION;
-import static no.nav.dokarkiv.journalfoerInngaaende.v1.util.Utils.getDokumentIds;
-import static no.nav.dokarkiv.journalfoerInngaaende.v1.util.Utils.validateId;
-import static no.nav.dokarkiv.journalfoerInngaaende.v1.util.Utils.validateIds;
-import static no.nav.dokarkiv.journalfoerInngaaende.v1.util.Utils.validateJournalpostIdAndDokumentId;
+import static no.nav.dokarkiv.journalfoerinngaaende.v1.util.Utils.getDokumentIds;
+import static no.nav.dokarkiv.journalfoerinngaaende.v1.util.Utils.validateId;
+import static no.nav.dokarkiv.journalfoerinngaaende.v1.util.Utils.validateIds;
+import static no.nav.dokarkiv.journalfoerinngaaende.v1.util.Utils.validateJournalpostIdAndDokumentId;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dok.tjenester.journalfoerinngaaende.GetJournalpostResponse;
@@ -23,10 +23,10 @@ import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.metrics.RestMetrics;
 import no.nav.dokarkiv.core.security.abac.AbacSecurityService;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
-import no.nav.dokarkiv.journalfoerInngaaende.v1.service.GetInngaaendeJournalpostService;
-import no.nav.dokarkiv.journalfoerInngaaende.v1.service.LogiskVedleggService;
-import no.nav.dokarkiv.journalfoerInngaaende.v1.service.UpdateInngaaendeJournalpostDokumentService;
-import no.nav.dokarkiv.journalfoerInngaaende.v1.service.UpdateInngaaendeJournalpostService;
+import no.nav.dokarkiv.journalfoerinngaaende.v1.service.UpdateInngaaendeJournalpostService;
+import no.nav.dokarkiv.journalfoerinngaaende.v1.service.GetInngaaendeJournalpostService;
+import no.nav.dokarkiv.journalfoerinngaaende.v1.service.LogiskVedleggService;
+import no.nav.dokarkiv.journalfoerinngaaende.v1.service.UpdateInngaaendeJournalpostDokumentService;
 import no.nav.freg.abac.core.annotation.Abac;
 import org.slf4j.MDC;
 import org.springframework.transaction.annotation.Transactional;

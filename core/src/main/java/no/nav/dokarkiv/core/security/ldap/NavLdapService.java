@@ -48,7 +48,7 @@ public class NavLdapService {
 		try {
 			return ldapTemplate.findOne(query().base(serviceuserBasedn).where("cn").is(serviceUserId), NavUser.class);
 		} catch (IncorrectResultSizeDataAccessException e) {
-			return null;
+			return NavUser.builder().userId(serviceUserId).build();
 		}
 	}
 }

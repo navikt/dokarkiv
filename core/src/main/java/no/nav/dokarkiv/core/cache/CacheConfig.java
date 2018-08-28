@@ -31,7 +31,7 @@ public class CacheConfig {
 						.maximumSize(10000)
 						.build()),
 				new CaffeineCache(NAVSERVICEUSER_CACHE, Caffeine.newBuilder()
-						.expireAfterWrite(8, TimeUnit.HOURS)
+						.expireAfterWrite(2, TimeUnit.DAYS)
 						.maximumSize(10000)
 						.build()),
 				new CaffeineCache(USERNAME_TOKEN_CACHE, Caffeine.newBuilder()

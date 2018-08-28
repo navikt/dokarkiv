@@ -1,8 +1,8 @@
-package no.nav.dokarkiv.journalfoerInngaaende.v1.service;
+package no.nav.dokarkiv.journalfoerinngaaende.v1.service;
 
-import static no.nav.dokarkiv.journalfoerInngaaende.v1.util.Utils.assertDokumentInfoNotNull;
-import static no.nav.dokarkiv.journalfoerInngaaende.v1.util.Utils.assetJournalpostIsInngaaende;
-import static no.nav.dokarkiv.journalfoerInngaaende.v1.util.Utils.convertStringToLong;
+import static no.nav.dokarkiv.journalfoerinngaaende.v1.util.Utils.assertDokumentInfoNotNull;
+import static no.nav.dokarkiv.journalfoerinngaaende.v1.util.Utils.assetJournalpostIsInngaaende;
+import static no.nav.dokarkiv.journalfoerinngaaende.v1.util.Utils.convertStringToLong;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 import no.nav.dok.tjenester.journalfoerinngaaende.PutDokumentRequest;

@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.journalfoerInngaaende.v1;
+package no.nav.dokarkiv.journalfoerinngaaende.v1;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
@@ -6,9 +6,9 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static no.nav.dokarkiv.core.datautil.DokumentInfoTestDataProvider.createVedleggDokumentInfo;
 import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
-import static no.nav.dokarkiv.journalfoerInngaaende.v1.util.TestUtils.BREVKODE_UPDATE;
-import static no.nav.dokarkiv.journalfoerInngaaende.v1.util.TestUtils.DOKUMENT_TITTEL_UPDATE;
-import static no.nav.dokarkiv.journalfoerInngaaende.v1.util.TestUtils.DOKUMNETTYPE_ID_UPDATE;
+import static no.nav.dokarkiv.journalfoerinngaaende.v1.util.TestUtils.BREVKODE_UPDATE;
+import static no.nav.dokarkiv.journalfoerinngaaende.v1.util.TestUtils.DOKUMENT_TITTEL_UPDATE;
+import static no.nav.dokarkiv.journalfoerinngaaende.v1.util.TestUtils.DOKUMNETTYPE_ID_UPDATE;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -21,7 +21,7 @@ import no.nav.dok.tjenester.journalfoerinngaaende.PutDokumentRequest;
 import no.nav.dok.tjenester.journalfoerinngaaende.PutDokumentResponse;
 import no.nav.dok.tjenester.journalfoerinngaaende.PutJournalpostRequest;
 import no.nav.dok.tjenester.journalfoerinngaaende.PutJournalpostResponse;
-import no.nav.dok.tjenester.journalfoerinngaaende.response.Mangler;
+import no.nav.dok.tjenester.journalfoerinngaaende.response.Status;
 import no.nav.dokarkiv.core.datautil.JournalpostTestDataProvider;
 import no.nav.dokarkiv.core.datautil.SkannetInnholdTestDataProvider;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
@@ -238,7 +238,7 @@ public class JournalfoerInngaaendeV1IT extends AbstractJournalfoerInngaaendeV1It
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 		assertThat(responseEntity.getBody().getJournalpostId(), is(journalpostId));
 		assertThat(responseEntity.getBody().getMangler(), is(notNullValue()));
-		assertThat(responseEntity.getBody().getMangler().getTittel(), is(Mangler.AvsenderId.MANGLER));
+		assertThat(responseEntity.getBody().getMangler().getTittel(), is(Status.MANGLER));
 		assertThat(responseEntity.getBody().getHarEndeligJF(), is(false));
 	}
 
@@ -496,7 +496,6 @@ public class JournalfoerInngaaendeV1IT extends AbstractJournalfoerInngaaendeV1It
 	 ** OppdaterLogiskVedlegg **
 	 ***************************/
 	//TODO Skrive flere itester
-
 	@Test
 	public void shouldUpdateLogiskVedlegg() throws Exception {
 		abacPermit();

@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.journalfoerInngaaende.v1.map;
+package no.nav.dokarkiv.journalfoerinngaaende.v1.map;
 
 import no.nav.dok.tjenester.journalfoerinngaaende.ArkivSak;
 import no.nav.dok.tjenester.journalfoerinngaaende.Avsender;

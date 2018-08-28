@@ -31,6 +31,9 @@ public final class NavUser {
 	private String displayName;
 	private String description;
 
+	public boolean exists() {
+		return dn != null;
+	}
 	public String getFullname() {
 		if (isNotBlank(description)) {
 			return description;
