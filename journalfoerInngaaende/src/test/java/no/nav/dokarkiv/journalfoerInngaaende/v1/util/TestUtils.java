@@ -44,11 +44,14 @@ public class TestUtils {
     public static final String DOKUMNETTYPE_ID1 = "dokumenttypeID1";
     public static final String BREVKODE1 = "brevkode1";
     public static final String DOKUMENT_TITTEL1 = "dokumentTittel1";
+    public static final String DOKUMENT_TITTEL_UPDATE = "dokumentTittel_UPDATE";
     public static final String SKANNETINNHOLD_ID1 = "78547541";
     public static final String VEDLEGGINNHOLD1 = "vedlegginnhold1";
     public static final String DOKUMENTINFO_ID2 = "74545455";
     public static final String DOKUMNETTYPE_ID2 = "dokumenttypeID2";
+    public static final String DOKUMNETTYPE_ID_UPDATE = "dokumenttypeID_UPDATE";
     public static final String BREVKODE2 = "brevkode2";
+    public static final String BREVKODE_UPDATE = "brevkode_Update";
     public static final String DOKUMENT_TITTEL2 = "dokumentTittel2";
     public static final String SKANNETINNHOLD_ID2 = "9874564";
     public static final String VEDLEGGINNHOLD2 = "vedlegginnhold2";

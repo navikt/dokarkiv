@@ -3,7 +3,7 @@ package no.nav.dokarkiv.behandleinngaaendejournal.v1;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
 
 import lombok.extern.slf4j.Slf4j;
-import no.nav.dokarkiv.core.security.ldap.NavUserLdapService;
+import no.nav.dokarkiv.core.security.ldap.NavLdapService;
 import no.nav.modig.core.context.SubjectHandler;
 import no.nav.modig.core.domain.IdentType;
 import org.apache.commons.lang3.StringUtils;
@@ -15,10 +15,10 @@ import org.slf4j.MDC;
 @Slf4j
 public abstract class AbstractBehandleInngaaendeJournalService {
 	private static final String UKJENT_BRUKER = "Ukjent";
-	private final NavUserLdapService navUserLdapService;
+	private final NavLdapService navLdapService;
 
-	protected AbstractBehandleInngaaendeJournalService(NavUserLdapService navUserLdapService) {
-		this.navUserLdapService = navUserLdapService;
+	protected AbstractBehandleInngaaendeJournalService(NavLdapService navLdapService) {
+		this.navLdapService = navLdapService;
 	}
 
 	protected String hentLdapBrukernavn(Long journalpostId) {
@@ -31,7 +31,7 @@ public abstract class AbstractBehandleInngaaendeJournalService {
 		String ldapNavn = userId;
 		IdentType type = SubjectHandler.getSubjectHandler().getIdentType();
 		if (type.equals(IdentType.InternBruker)) {
-			ldapNavn = navUserLdapService.findByUserId(userId).getFullname();
+			ldapNavn = navLdapService.findByUserId(userId).getFullname();
 			if (ldapNavn.trim().equals(userId.trim())) {
 				log.warn(String.format("Feil ved søk mot LDAP. journalpostId=%s", journalpostId.toString()));
 			}

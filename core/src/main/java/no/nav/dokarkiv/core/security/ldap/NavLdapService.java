@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.core.security.ldap;
 
+import static no.nav.dokarkiv.core.cache.CacheConfig.NAVSERVICEUSER_CACHE;
 import static no.nav.dokarkiv.core.cache.CacheConfig.NAVUSER_CACHE;
 import static org.springframework.ldap.query.LdapQueryBuilder.query;
 
@@ -17,14 +18,16 @@ import javax.inject.Inject;
  * @author Joakim Bjørnstad, Jbit AS
  */
 @Component
-public class NavUserLdapService {
+public class NavLdapService {
 	private final String navuserBasedn;
+	private final String serviceuserBasedn;
 	private final LdapTemplate ldapTemplate;
 
 	@Inject
-	public NavUserLdapService(@Value("${ldap.navuser.basedn}") String navuserBasedn,
-							  LdapTemplate ldapTemplate) {
+	public NavLdapService(@Value("${ldap.navuser.basedn}") String navuserBasedn, @Value("${ldap.serviceuser.basedn}") String serviceuserBasedn,
+						  LdapTemplate ldapTemplate) {
 		this.navuserBasedn = navuserBasedn;
+		this.serviceuserBasedn = serviceuserBasedn;
 		this.ldapTemplate = ldapTemplate;
 	}
 
@@ -36,6 +39,16 @@ public class NavUserLdapService {
 		} catch(IncorrectResultSizeDataAccessException e) {
 			// fallback til userId
 			return NavUser.builder().userId(userId).build();
+		}
+	}
+
+	@Retryable(backoff = @Backoff(delay = 500))
+	@Cacheable(NAVSERVICEUSER_CACHE)
+	public NavUser findByServiceuserId(final String serviceUserId) {
+		try {
+			return ldapTemplate.findOne(query().base(serviceuserBasedn).where("cn").is(serviceUserId), NavUser.class);
+		} catch (IncorrectResultSizeDataAccessException e) {
+			return null;
 		}
 	}
 }

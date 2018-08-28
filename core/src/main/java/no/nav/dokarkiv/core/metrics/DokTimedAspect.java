@@ -26,6 +26,7 @@ import io.micrometer.core.instrument.Tags;
 import io.micrometer.core.instrument.Timer;
 import io.micrometer.core.lang.NonNullApi;
 import lombok.extern.slf4j.Slf4j;
+import no.nav.dokarkiv.core.exceptions.DokarkivFunctionalException;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -47,6 +48,7 @@ import java.util.function.Function;
 @NonNullApi
 @Incubating(since = "1.0.0")
 @Slf4j
+@SuppressWarnings("Duplicates")
 public class DokTimedAspect {
 	private final MeterRegistry registry;
 	private final Function<ProceedingJoinPoint, Iterable<Tag>> tagsBasedOnJoinpoint;
@@ -100,8 +102,46 @@ public class DokTimedAspect {
 		}
 	}
 
+
+	@Around("execution (@no.nav.dokarkiv.core.metrics.RestMetrics * *.*(..))")
+	public Object restMetrics(ProceedingJoinPoint pjp) throws Throwable {
+		Method method = ((MethodSignature) pjp.getSignature()).getMethod();
+		RestMetrics timed = method.getAnnotation(RestMetrics.class);
+
+		if (timed.value().isEmpty()) {
+			return pjp.proceed();
+		}
+
+		Timer.Sample sample = Timer.start(registry);
+		try {
+			return pjp.proceed();
+		} catch (Exception e) {
+			if (isFunctionalException(method, e)) {
+				log.warn(e.getMessage(), e);
+			} else {
+				log.error(e.getMessage(), e);
+			}
+			Counter.builder(timed.value() + "_exception")
+					.tags("error_type", isFunctionalException(method, e) ? "functional" : "technical")
+					.tags("exception_name", e.getClass().getSimpleName())
+					.tags(timed.extraTags())
+					.tags(tagsBasedOnJoinpoint.apply(pjp))
+					.register(registry)
+					.increment();
+			throw e;
+		} finally {
+			sample.stop(Timer.builder(timed.value())
+					.description(timed.description().isEmpty() ? null : timed.description())
+					.tags(timed.extraTags())
+					.tags(tagsBasedOnJoinpoint.apply(pjp))
+					.publishPercentileHistogram(timed.histogram())
+					.publishPercentiles(timed.percentiles().length == 0 ? null : timed.percentiles())
+					.register(registry));
+		}
+	}
+
 	private boolean isFunctionalException(Method method, Exception e) {
-		return asList(method.getExceptionTypes()).contains(e.getClass());
+		return asList(method.getExceptionTypes()).contains(e.getClass()) || e instanceof DokarkivFunctionalException;
 	}
 
 }

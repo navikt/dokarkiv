@@ -6,6 +6,9 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static no.nav.dokarkiv.core.datautil.DokumentInfoTestDataProvider.createVedleggDokumentInfo;
 import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
+import static no.nav.dokarkiv.journalfoerInngaaende.v1.util.TestUtils.BREVKODE_UPDATE;
+import static no.nav.dokarkiv.journalfoerInngaaende.v1.util.TestUtils.DOKUMENT_TITTEL_UPDATE;
+import static no.nav.dokarkiv.journalfoerInngaaende.v1.util.TestUtils.DOKUMNETTYPE_ID_UPDATE;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -14,6 +17,8 @@ import static org.hamcrest.core.StringContains.containsString;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import no.nav.dok.tjenester.journalfoerinngaaende.GetJournalpostResponse;
+import no.nav.dok.tjenester.journalfoerinngaaende.PutDokumentRequest;
+import no.nav.dok.tjenester.journalfoerinngaaende.PutDokumentResponse;
 import no.nav.dok.tjenester.journalfoerinngaaende.PutJournalpostRequest;
 import no.nav.dok.tjenester.journalfoerinngaaende.PutJournalpostResponse;
 import no.nav.dok.tjenester.journalfoerinngaaende.response.Mangler;
@@ -22,6 +27,7 @@ import no.nav.dokarkiv.core.datautil.SkannetInnholdTestDataProvider;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
+import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import org.junit.Test;
 import org.springframework.http.HttpEntity;
@@ -352,7 +358,6 @@ public class JournalfoerInngaaendeV1IT extends AbstractJournalfoerInngaaendeV1It
 		assertThat(responseEntity.getBody(), containsString("Kunne ikke finne logisk vedlegg"));
 	}
 
-
 	@Test
 	public void shouldReturnDokumentinfoIdNotFoundException() {
 		abacPermit();
@@ -377,6 +382,115 @@ public class JournalfoerInngaaendeV1IT extends AbstractJournalfoerInngaaendeV1It
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.NOT_FOUND));
 		assertThat(responseEntity.getBody(), containsString("Finner ingen dokument med dokumentId=1234546636"));
 	}
+
+	/******************************
+	 ** UpdateInngaaendeJournalpostDokument **
+	 ******************************/
+
+	@Test
+	public void shouldUpdateDocument() {
+		abacPermit();
+
+		Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.J));
+
+
+		String journalpostId = journalpost.getJournalpostId().toString();
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		headers.add(HttpHeaders.AUTHORIZATION, OIDC_TOKEN_TEST);
+		HttpEntity httpEntity = new HttpEntity(new PutDokumentRequest().withDokumentTypeId(DOKUMNETTYPE_ID_UPDATE)
+				.withNavSkjemaId(BREVKODE_UPDATE)
+				.withTittel(DOKUMENT_TITTEL_UPDATE)
+				.withDokumentKategori("SED"), headers);
+
+		Long dokumentId = journalpost.getJournalpostDokumentInfoRelasjoner()
+				.iterator()
+				.next()
+				.getDokumentInfo()
+				.getDokumentInfoId();
+
+		ResponseEntity<PutDokumentResponse> responseEntity = restTemplate.exchange(
+				"/rest/journalfoer-inngaaende/v1/journalposter/" + journalpostId + "/dokumenter/" + dokumentId, HttpMethod.PUT, httpEntity, PutDokumentResponse.class);
+
+		assertThat(responseEntity.getBody().getDokumentId(), is(dokumentId.toString()));
+		DokumentInfo dokumentInfo = dokumentinfoRepository.findById(dokumentId).get();
+		assertThat(dokumentInfo.getDokumenttypeId(), is(DOKUMNETTYPE_ID_UPDATE));
+		assertThat(dokumentInfo.getBrevkode(), is(BREVKODE_UPDATE));
+		assertThat(dokumentInfo.getTittel(), is(DOKUMENT_TITTEL_UPDATE));
+		assertThat(dokumentInfo.getKategori().name(), is("SED"));
+	}
+
+	@Test
+	public void shouldNotUpdateNotFilledValues() {
+		abacPermit();
+
+		Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.J));
+
+		String journalpostId = journalpost.getJournalpostId().toString();
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		headers.add(HttpHeaders.AUTHORIZATION, OIDC_TOKEN_TEST);
+		HttpEntity httpEntity = new HttpEntity(new PutDokumentRequest()
+				.withNavSkjemaId(BREVKODE_UPDATE)
+				.withTittel(DOKUMENT_TITTEL_UPDATE), headers);
+
+		Long dokumentId = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo()
+				.getDokumentInfoId();
+
+		ResponseEntity<PutDokumentResponse> responseEntity = restTemplate.exchange(
+				"/rest/journalfoer-inngaaende/v1/journalposter/" + journalpostId + "/dokumenter/" + dokumentId, HttpMethod.PUT, httpEntity, PutDokumentResponse.class);
+
+
+		assertThat(responseEntity.getBody().getDokumentId(), is(dokumentId.toString()));
+		DokumentInfo dokumentInfo = dokumentinfoRepository.findById(dokumentId).get();
+		assertThat(dokumentInfo.getDokumenttypeId(), is("I0001"));
+		assertThat(dokumentInfo.getBrevkode(), is(BREVKODE_UPDATE));
+		assertThat(dokumentInfo.getTittel(), is(DOKUMENT_TITTEL_UPDATE));
+		assertThat(dokumentInfo.getKategori().name(), is("SOK"));
+	}
+
+	@Test
+	public void shouldFailWhenDokumentInfoNotFound() {
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		headers.add(HttpHeaders.AUTHORIZATION, OIDC_TOKEN_TEST);
+		HttpEntity httpEntity = new HttpEntity(new PutDokumentRequest()
+				.withNavSkjemaId(BREVKODE_UPDATE)
+				.withTittel(DOKUMENT_TITTEL_UPDATE), headers);
+
+		ResponseEntity<String> responseEntity = restTemplate.exchange(
+				"/rest/journalfoer-inngaaende/v1/journalposter/" + "***gammelt_fnr***58468464" + "/dokumenter/" + "***gammelt_fnr******gammelt_fnr***48", HttpMethod.PUT, httpEntity, String.class);
+
+
+		assertThat(responseEntity.getStatusCode(), is(HttpStatus.NOT_FOUND));
+
+	}
+
+	@Test
+	public void shouldFailWhenInvalidDokumentKategori() {
+		abacPermit();
+
+		Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.J));
+
+		String journalpostId = journalpost.getJournalpostId().toString();
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		headers.add(HttpHeaders.AUTHORIZATION, OIDC_TOKEN_TEST);
+		HttpEntity httpEntity = new HttpEntity(new PutDokumentRequest().withDokumentKategori("SJO"), headers);
+
+
+		ResponseEntity<String> responseEntity = restTemplate.exchange(
+				"/rest/journalfoer-inngaaende/v1/journalposter/" + "1" + "/dokumenter/" + "1", HttpMethod.PUT, httpEntity, String.class);
+
+
+		assertThat(responseEntity.getStatusCode(), is(HttpStatus.BAD_REQUEST));
+		assertThat(responseEntity.getBody(), containsString("SJO er ugyldig verdi for dokumentKategori"));
+	}
+
 
 	/***************************
 	 ** OppdaterLogiskVedlegg **

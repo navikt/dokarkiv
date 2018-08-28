@@ -148,6 +148,9 @@ public class JournalpostBuilder extends Builder<Journalpost> {
 			journalpost.addBruker(bruker);
 		}
 		for (JournalpostDokumentInfoRelasjon dokumentInfoRelasjon : dokumentInfoRelasjoner) {
+			if (dokumentInfoRelasjon.getDokumentInfo() != null) {
+				dokumentInfoRelasjon.getDokumentInfo().setOriginalJournalpost(journalpost);
+			}
 			journalpost.addJournalpostDokumentInfoRelasjon(dokumentInfoRelasjon);
 		}
 		for (Kryssreferanse kryssreferanse : kryssreferanser) {
