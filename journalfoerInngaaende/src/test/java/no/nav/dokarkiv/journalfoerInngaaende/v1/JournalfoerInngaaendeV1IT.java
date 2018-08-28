@@ -383,8 +383,9 @@ public class JournalfoerInngaaendeV1IT extends AbstractJournalfoerInngaaendeV1It
 		assertThat(responseEntity.getBody(), containsString("Finner ingen dokument med dokumentId=1234546636"));
 	}
 
-
-
+	/******************************
+	 ** UpdateInngaaendeJournalpostDokument **
+	 ******************************/
 
 	@Test
 	public void shouldUpdateDocument() {
@@ -451,7 +452,7 @@ public class JournalfoerInngaaendeV1IT extends AbstractJournalfoerInngaaendeV1It
 	}
 
 	@Test
-	public void shouldFailBecauseNotFoundDokumentInfo() {
+	public void shouldFailWhenDokumentInfoNotFound() {
 
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
@@ -469,7 +470,7 @@ public class JournalfoerInngaaendeV1IT extends AbstractJournalfoerInngaaendeV1It
 	}
 
 	@Test
-	public void shouldFailBecauseInvalidDokumentKategori() {
+	public void shouldFailWhenInvalidDokumentKategori() {
 		abacPermit();
 
 		Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.J));
