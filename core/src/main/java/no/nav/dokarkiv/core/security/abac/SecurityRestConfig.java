@@ -1,22 +1,23 @@
 package no.nav.dokarkiv.core.security.abac;
 
+import no.nav.freg.security.oidc.auth.common.HttpSecurityConfigurer;
+import no.nav.freg.security.oidc.config.FregSecurityOidcAutoConfig;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.Order;
+import org.springframework.context.annotation.Import;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 @Configuration
-@EnableWebSecurity
-@Order(99)
-public class SecurityRestConfig extends WebSecurityConfigurerAdapter {
+@Import(value = {FregSecurityOidcAutoConfig.class})
+public class SecurityRestConfig {
 
-	@Override
-	protected void configure(HttpSecurity http) throws Exception {
-		http.antMatcher("/rest/**").authorizeRequests()
-				.anyRequest().authenticated().and()
-				.addFilterBefore(new OidcTokenAuthenticationFilter(), BasicAuthenticationFilter.class).authorizeRequests()
-				.and().csrf().disable(); //Innloggingen er stateless og uten cookies, så dette er trygt.
+	@Bean
+	public HttpSecurityConfigurer disableCsrfConfigurer() {
+		return new HttpSecurityConfigurer() {
+			@Override
+			public void configure(HttpSecurity http) throws Exception {
+				http.csrf().disable();
+			}
+		};
 	}
 }

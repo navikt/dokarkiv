@@ -24,6 +24,10 @@ resources:
     memory: 1024Mi
 fasitResources:
   used:
+  - alias: OpenIdConnect
+    resourceType: baseurl
+    propertyMap:
+      url: oidc.url
   - alias: dokarkivds
     resourceType: datasource
     propertyMap:

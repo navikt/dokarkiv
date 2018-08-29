@@ -56,6 +56,7 @@ public class MDCInHandlerRest implements HandlerInterceptor {
 
 			return true;
 		}
+
 	}
 
 	private boolean isServiceUser(String subjectId) {
