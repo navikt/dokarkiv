@@ -29,6 +29,7 @@ import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -78,7 +79,7 @@ public class JournalfoerInngaaendeV1IT extends AbstractJournalfoerInngaaendeV1It
 				JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER + "NOT_A_NUMBER", HttpMethod.GET, createHeaders(), String.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.BAD_REQUEST));
-		assertThat(responseEntity.getBody(), is("journalpostId er ikke et tall. journalpostId=NOT_A_NUMBER"));
+		assertThat(responseEntity.getBody(), containsString("journalpostId er ikke et tall. journalpostId=NOT_A_NUMBER"));
 	}
 
 	/**
@@ -90,7 +91,7 @@ public class JournalfoerInngaaendeV1IT extends AbstractJournalfoerInngaaendeV1It
 				JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER + "123456", HttpMethod.GET, createHeaders(), String.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.NOT_FOUND));
-		assertThat(responseEntity.getBody(), is("Kunne ikke finne journalpost i Joark. journalpostId=123456"));
+		assertThat(responseEntity.getBody(), containsString("Journalpost ikke funnet. journalpostId=123456"));
 	}
 
 	/**
@@ -125,7 +126,7 @@ public class JournalfoerInngaaendeV1IT extends AbstractJournalfoerInngaaendeV1It
 				JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER + journalpostId, HttpMethod.GET, createHeaders(), String.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.FORBIDDEN));
-		assertThat(responseEntity.getBody(), is("Bruker har ikke tilgang til journalpost. journalpostId=" + journalpostId));
+		assertThat(responseEntity.getBody(), containsString("Bruker har ikke tilgang til journalpost"));
 	}
 
 	/**
@@ -283,7 +284,7 @@ public class JournalfoerInngaaendeV1IT extends AbstractJournalfoerInngaaendeV1It
 				JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER + journalpostId, HttpMethod.PUT, requestHttpEntity, String.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.BAD_REQUEST));
-		assertThat(responseEntity.getBody(), containsString("Journalpost er ikke av type Inngaaende"));
+		assertThat(responseEntity.getBody(), containsString("ikke av type Inngaaende"));
 	}
 
 	/*************************
@@ -380,7 +381,7 @@ public class JournalfoerInngaaendeV1IT extends AbstractJournalfoerInngaaendeV1It
 				"/rest/journalfoer-inngaaende/v1/journalposter/" + journalpostId + "/dokumenter/" + dokumentId + "/logiskeVedlegg/" + logiskVedleggId, HttpMethod.DELETE, createHeaders(), String.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.NOT_FOUND));
-		assertThat(responseEntity.getBody(), containsString("Finner ingen dokument med dokumentId=1234546636"));
+		assertThat(responseEntity.getBody(), containsString("Fant ingen dokument med dokumentId=1234546636"));
 	}
 
 	/******************************
@@ -476,6 +477,7 @@ public class JournalfoerInngaaendeV1IT extends AbstractJournalfoerInngaaendeV1It
 		Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.J));
 
 		String journalpostId = journalpost.getJournalpostId().toString();
+		String dokumentId = journalpost.getJournalpostDokumentInfoRelasjoner().iterator().next().getDokumentInfo().getDokumentInfoId().toString();
 
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
@@ -484,7 +486,7 @@ public class JournalfoerInngaaendeV1IT extends AbstractJournalfoerInngaaendeV1It
 
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
-				"/rest/journalfoer-inngaaende/v1/journalposter/" + "1" + "/dokumenter/" + "1", HttpMethod.PUT, httpEntity, String.class);
+				"/rest/journalfoer-inngaaende/v1/journalposter/" + journalpostId + "/dokumenter/" + dokumentId, HttpMethod.PUT, httpEntity, String.class);
 
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.BAD_REQUEST));

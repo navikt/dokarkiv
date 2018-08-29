@@ -70,3 +70,14 @@ sn: Tidemann
 description: Stasjonsmester Tidemann
 displayName:
 userPassword: sesam
+
+# person
+dn: cn=Z990782,ou=BusinessUnits,dc=test,dc=local
+objectclass: top
+objectclass: person
+objectclass: organizationalPerson
+cn: z000002
+sn: Tidemann
+description: Stasjonsmester Tidemann
+displayName:
+userPassword: sesam

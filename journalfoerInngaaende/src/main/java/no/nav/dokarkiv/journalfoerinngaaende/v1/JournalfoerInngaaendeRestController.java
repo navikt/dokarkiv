@@ -4,6 +4,8 @@ package no.nav.dokarkiv.journalfoerinngaaende.v1;
 import static no.nav.abac.xacml.NavAttributter.RESOURCE_ARKIV_JOURNALPOST;
 import static no.nav.abac.xacml.NavAttributter.RESOURCE_FELLES_RESOURCE_TYPE;
 import static no.nav.abac.xacml.StandardAttributter.ACTION_ID;
+import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.CREATE_ACTION;
+import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.READ_ACTION;
 import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.UPDATE_ACTION;
 import static no.nav.dokarkiv.journalfoerinngaaende.v1.util.Utils.getDokumentIds;
 import static no.nav.dokarkiv.journalfoerinngaaende.v1.util.Utils.validateId;
@@ -23,10 +25,10 @@ import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.metrics.RestMetrics;
 import no.nav.dokarkiv.core.security.abac.AbacSecurityService;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
-import no.nav.dokarkiv.journalfoerinngaaende.v1.service.UpdateInngaaendeJournalpostService;
 import no.nav.dokarkiv.journalfoerinngaaende.v1.service.GetInngaaendeJournalpostService;
 import no.nav.dokarkiv.journalfoerinngaaende.v1.service.LogiskVedleggService;
 import no.nav.dokarkiv.journalfoerinngaaende.v1.service.UpdateInngaaendeJournalpostDokumentService;
+import no.nav.dokarkiv.journalfoerinngaaende.v1.service.UpdateInngaaendeJournalpostService;
 import no.nav.freg.abac.core.annotation.Abac;
 import org.slf4j.MDC;
 import org.springframework.transaction.annotation.Transactional;
@@ -73,7 +75,7 @@ public class JournalfoerInngaaendeRestController {
 	@Transactional(readOnly = true)
 	@ResponseBody
 	@GetMapping(value = "/{journalpostId}")
-	@Abac(actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION),
+	@Abac(actions = @Abac.Attr(key = ACTION_ID, value = READ_ACTION),
 			resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_JOURNALPOST)})
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "tjoark070_getInngaaendeJournalpost"}, percentiles = {0.5, 0.95})
 	public GetJournalpostResponse getInngaaendeJournalpost(@PathVariable String journalpostId) {
@@ -105,24 +107,24 @@ public class JournalfoerInngaaendeRestController {
 
 	@Transactional
 	@ResponseBody
-	@PutMapping(value = "/{journalpostId}/dokumenter/{dokumentid}")
+	@PutMapping(value = "/{journalpostId}/dokumenter/{dokumentId}")
 	@Abac(actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION),
 			resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_JOURNALPOST)})
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "tjoark070_updateDocument"}, percentiles = {0.5, 0.95})
-	public PutDokumentResponse updateDokument(@PathVariable String journalpostId, @PathVariable String dokumentid, @RequestBody PutDokumentRequest request) {
+	public PutDokumentResponse updateDokument(@PathVariable String journalpostId, @PathVariable String dokumentId, @RequestBody PutDokumentRequest request) {
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
-		log.info("tjoark070 har mottat kall om å oppdatere dokument med journalpostId={} og dokumentId={}", journalpostId, dokumentid);
-		validateJournalpostIdAndDokumentId(journalpostId, dokumentid);
+		log.info("tjoark070 har mottat kall om å oppdatere dokument med journalpostId={} og dokumentId={}", journalpostId, dokumentId);
+		validateJournalpostIdAndDokumentId(journalpostId, dokumentId);
 		abacSecurityService.assertAccessToJournalpost(journalpostId);
-		PutDokumentResponse responseTo = updateInngaaendeJournalpostDokumentService.update(journalpostId, dokumentid, request);
-		log.info("tjoark070 har oppdatert dokument med journalpostId={} og dokumentId={} i Joark.", journalpostId, dokumentid);
+		PutDokumentResponse responseTo = updateInngaaendeJournalpostDokumentService.update(journalpostId, dokumentId, request);
+		log.info("tjoark070 har oppdatert dokument med journalpostId={} og dokumentId={} i Joark.", journalpostId, dokumentId);
 		return responseTo;
 	}
 
 	@Transactional
 	@ResponseBody
-	@PostMapping(value = "/{journalpostId}/dokumenter/{dokumentid}/logiskeVedlegg")
-	@Abac(actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION),
+	@PostMapping(value = "/{journalpostId}/dokumenter/{dokumentId}/logiskeVedlegg")
+	@Abac(actions = @Abac.Attr(key = ACTION_ID, value = CREATE_ACTION),
 			resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_JOURNALPOST)})
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "tjoark070_persistLogiskVedlegg"}, percentiles = {0.5, 0.95})
 	public PostLogiskVedleggResponse persistLogiskVedlegg(@PathVariable String journalpostId, @PathVariable String dokumentId, @RequestBody PostLogiskVedleggRequest request) {
@@ -138,7 +140,7 @@ public class JournalfoerInngaaendeRestController {
 
 	@Transactional
 	@ResponseBody
-	@PutMapping(value = "/{journalpostId}/dokumenter/{dokumentid}/logiskeVedlegg/{logiskVedleggId}")
+	@PutMapping(value = "/{journalpostId}/dokumenter/{dokumentId}/logiskeVedlegg/{logiskVedleggId}")
 	@Abac(actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION),
 			resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_JOURNALPOST)})
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "tjoark070_updateLogiskVedlegg"}, percentiles = {0.5, 0.95})
@@ -153,9 +155,10 @@ public class JournalfoerInngaaendeRestController {
 				logiskVedleggId, journalpostId, dokumentId);
 	}
 
+	//TODO: Er UPDATE_ACTION for abac korrekt her?
 	@Transactional
 	@ResponseBody
-	@DeleteMapping(value = "/{journalpostId}/dokumenter/{dokumentid}/logiskeVedlegg/{logiskVedleggId}")
+	@DeleteMapping(value = "/{journalpostId}/dokumenter/{dokumentId}/logiskeVedlegg/{logiskVedleggId}")
 	@Abac(actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION),
 			resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_JOURNALPOST)})
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "tjoark070_deleteLogiskVedlegg"}, percentiles = {0.5, 0.95})

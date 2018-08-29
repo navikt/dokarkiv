@@ -21,7 +21,9 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.data.ldap.AutoConfigureDataLdap;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureDataJpa;
 import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -34,10 +36,10 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.transaction.TestTransaction;
+import org.springframework.transaction.annotation.Transactional;
 import wiremock.com.google.common.io.Resources;
 
 import javax.inject.Inject;
-import javax.transaction.Transactional;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -48,14 +50,16 @@ import java.nio.charset.StandardCharsets;
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
 		classes = {CoreConfig.class, JournalfoerInngaaendeConfig.class})
-@ActiveProfiles("itest,wiremock")
+@ActiveProfiles("itest,wiremock,ldap")
+@AutoConfigureDataJpa
 @AutoConfigureTestDatabase
 @AutoConfigureTestEntityManager
+@AutoConfigureDataLdap
 @AutoConfigureWireMock(port = 0)
 @Transactional
 public abstract class AbstractJournalfoerInngaaendeV1Itest {
 
-	protected static final String OIDC_TOKEN_TEST = "Bearer oidc_header.oidc_body.oidc_signature";
+	protected static final String OIDC_TOKEN_TEST = "Bearer eyAidHlwIjogIkpXVCIsICJraWQiOiAiU0gxSWVSU2sxT1VGSDNzd1orRXVVcTE5VHZRPSIsICJhbGciOiAiUlMyNTYiIH0.eyAiYXRfaGFzaCI6ICJLWENReU1JdUNHSkRaTzF3el9LM0d3IiwgInN1YiI6ICJaOTkwNzgyIiwgImF1ZGl0VHJhY2tpbmdJZCI6ICJmOTMzZTgxMy00ZDU5LTRjYjgtYTQ0OC0zMTliY2JlOWIzNTgtMjA0NzIwIiwgImlzcyI6ICJodHRwczovL2lzc28tdC5hZGVvLm5vOjQ0My9pc3NvL29hdXRoMiIsICJ0b2tlbk5hbWUiOiAiaWRfdG9rZW4iLCAiYXVkIjogImlkYS10IiwgImNfaGFzaCI6ICJRNzVsekZVanFlV09pZzNMdWxYOHlRIiwgIm9yZy5mb3JnZXJvY2sub3BlbmlkY29ubmVjdC5vcHMiOiAiMjg4NGFjY2MtYmU4My00MWFkLTk4NTctMWE2MWIyMDIzMTRkIiwgImF6cCI6ICJpZGEtdCIsICJhdXRoX3RpbWUiOiAxNTM1NDY0NDE4LCAicmVhbG0iOiAiLyIsICJleHAiOiAxNTM1NDY4MDE5LCAidG9rZW5UeXBlIjogIkpXVFRva2VuIiwgImlhdCI6IDE1MzU0NjQ0MTkgfQ.K9gDJI97u0A2mbF51qaS66AlXcVdzYYrIoUTXQ-Ol3nOdZ_XAEPSoQLi_uuccaniXZVjGCAOXXNuqdz9A-tY22cbiZ4SZ8HaSIA3WvRUOneES0r2RFg5oN3EAgt3okOHIShkPPjk7UwXqYe4D3dzZE6xaM7UmNMzyetvE4RMcti33bpXevonMxd-qHjWC9MuZBQdPwHvxIYgah0VGSp7WJ4KdizSW3ArPCWgZH-2UDvW8ugFVOigIOcEa93I3_HrBj6dTrlhn43WBo0q0G-Zvu0-Zya3Xts1QkJbRqmc6hpLF2attIPpqw8nwQv3S-gJidx_pLnPHK2OjjQgnMJruw";
 
 	@Rule
 	public ExpectedException expectedException = ExpectedException.none();
@@ -70,7 +74,7 @@ public abstract class AbstractJournalfoerInngaaendeV1Itest {
 	private TestEntityManager testEntityManager;
 
 	@Before
-	public void setUp(){
+	public void setUp() {
 		MDC.put(MDCConstants.MDC_USER_ID, "itest_userId");
 		MDC.put(MDCConstants.MDC_CONSUMER_ID, "Itest_consumerId");
 	}

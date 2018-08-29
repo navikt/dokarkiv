@@ -12,6 +12,7 @@ import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -29,31 +30,36 @@ public class MDCInHandlerRest implements HandlerInterceptor {
 	}
 
 	@Override
-	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
+	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws IOException {
 		List<String> headers = getOidcAuthHeaders(request.getHeaders("Authorization"));
 
 		if (headers.isEmpty()) {
 			log.warn("Kunne ikke autorisere forespoersel. Finner ingen header med key=Authorization og value=Bearer *oidcToken*.");
 			return true;
 		} else {
-			headers.forEach(header -> {
-				DecodedJWT decodedJWT = JWT.decode(header.substring(7));
-				String subject = decodedJWT.getSubject();
+			try {
+				headers.forEach(header -> {
+					DecodedJWT decodedJWT = JWT.decode(header.substring(7));
+					String subject = decodedJWT.getSubject();
 
-				if (isServiceUser(subject)) {
-					MDC.put(MDCConstants.MDC_CONSUMER_ID, subject);
-				} else if (isUser(subject)) {
-					MDC.put(MDCConstants.MDC_USER_ID, subject);
+					if (isServiceUser(subject)) {
+						MDC.put(MDCConstants.MDC_CONSUMER_ID, subject);
+					} else if (isUser(subject)) {
+						MDC.put(MDCConstants.MDC_USER_ID, subject);
+					}
+				});
+
+				if (isEmpty(MDC.get(MDCConstants.MDC_CONSUMER_ID))) {
+					MDC.put(MDCConstants.MDC_CONSUMER_ID, MDC.get(MDCConstants.MDC_USER_ID));
+				} else if (isEmpty(MDC.get(MDCConstants.MDC_USER_ID))) {
+					MDC.put(MDCConstants.MDC_USER_ID, MDC.get(MDCConstants.MDC_CONSUMER_ID));
 				}
-			});
-
-			if (isEmpty(MDC.get(MDCConstants.MDC_CONSUMER_ID))) {
-				MDC.put(MDCConstants.MDC_CONSUMER_ID, MDC.get(MDCConstants.MDC_USER_ID));
-			} else if (isEmpty(MDC.get(MDCConstants.MDC_USER_ID))) {
-				MDC.put(MDCConstants.MDC_USER_ID, MDC.get(MDCConstants.MDC_CONSUMER_ID));
+				return true;
+			} catch (Exception e) {
+				response.sendError(HttpServletResponse.SC_BAD_REQUEST,
+						"Kunne ikke utlede userId og/eller consumerId fra oidc-token.");
+				return false;
 			}
-
-			return true;
 		}
 	}
 

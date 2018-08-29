@@ -32,7 +32,7 @@
       "Attribute": [
         {
           "AttributeId": "no.nav.abac.attributter.environment.felles.oidc_token_body",
-          "Value": "oidc_body"
+          "Value": "eyAiYXRfaGFzaCI6ICJLWENReU1JdUNHSkRaTzF3el9LM0d3IiwgInN1YiI6ICJaOTkwNzgyIiwgImF1ZGl0VHJhY2tpbmdJZCI6ICJmOTMzZTgxMy00ZDU5LTRjYjgtYTQ0OC0zMTliY2JlOWIzNTgtMjA0NzIwIiwgImlzcyI6ICJodHRwczovL2lzc28tdC5hZGVvLm5vOjQ0My9pc3NvL29hdXRoMiIsICJ0b2tlbk5hbWUiOiAiaWRfdG9rZW4iLCAiYXVkIjogImlkYS10IiwgImNfaGFzaCI6ICJRNzVsekZVanFlV09pZzNMdWxYOHlRIiwgIm9yZy5mb3JnZXJvY2sub3BlbmlkY29ubmVjdC5vcHMiOiAiMjg4NGFjY2MtYmU4My00MWFkLTk4NTctMWE2MWIyMDIzMTRkIiwgImF6cCI6ICJpZGEtdCIsICJhdXRoX3RpbWUiOiAxNTM1NDY0NDE4LCAicmVhbG0iOiAiLyIsICJleHAiOiAxNTM1NDY4MDE5LCAidG9rZW5UeXBlIjogIkpXVFRva2VuIiwgImlhdCI6IDE1MzU0NjQ0MTkgfQ"
         },
         {
           "AttributeId": "no.nav.abac.attributter.environment.felles.pep_id",
