@@ -107,7 +107,6 @@ public class DokTimedAspect {
 	public Object restMetrics(ProceedingJoinPoint pjp) throws Throwable {
 		Method method = ((MethodSignature) pjp.getSignature()).getMethod();
 		RestMetrics timed = method.getAnnotation(RestMetrics.class);
-
 		if (timed.value().isEmpty()) {
 			return pjp.proceed();
 		}

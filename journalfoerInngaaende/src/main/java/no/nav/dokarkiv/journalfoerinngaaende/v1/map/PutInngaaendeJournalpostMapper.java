@@ -1,6 +1,7 @@
 package no.nav.dokarkiv.journalfoerinngaaende.v1.map;
 
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
+import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
 import static org.apache.logging.log4j.util.Strings.isNotBlank;
 
 import no.nav.dok.tjenester.journalfoerinngaaende.PutJournalpostRequest;
@@ -63,7 +64,7 @@ public class PutInngaaendeJournalpostMapper extends AbstractInngaaendeJournalpos
 			}
 			saksrelasjon.setSakId(request.getArkivSak().getArkivSakId());
 			saksrelasjon.setFagsystem(mapArkivSakSystemToFagsystemCode(request.getArkivSak().getArkivSakSystem()));
-			saksrelasjon.setEndretAvNavn("Endret av"); // TODO: hent fra MDC
+			saksrelasjon.setEndretAvNavn(MDC.get(MDC_USER_ID)); // TODO: hent fra MDC
 			saksrelasjon.setEndretKildeNavn(MDC.get(MDC_CONSUMER_ID));
 			if (newSak) {
 				journalpost.setSaksrelasjon(saksrelasjon);

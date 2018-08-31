@@ -133,7 +133,7 @@ public class AbacSecurityService {
 	}
 
 	/**
-	 * By default, both ENVIRONMENT_FELLES_SAML_TOKEN and ENVIRONMENT_FELLES_OIDC_TOKEN_BODY is set as environment in
+	 * By default, both ENVIRONMENT_FELLES_SAML_TOKEN and ENVIRONMENT_FELLES_OIDC_TOKEN_BODY are set as environment in
 	 * AbacDefaultConfig.java. At that point we do not know whether the incomming request is a SOAP or a REST request.
 	 * At this point we know, because either the value of ENVIRONMENT_FELLES_SAML_TOKEN or the value of ENVIRONMENT_FELLES_OIDC_TOKEN_BODY
 	 * should have been set, depending on the type of the incoming request.

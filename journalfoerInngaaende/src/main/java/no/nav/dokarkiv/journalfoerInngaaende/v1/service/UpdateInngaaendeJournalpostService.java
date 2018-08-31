@@ -3,6 +3,10 @@ package no.nav.dokarkiv.journalfoerinngaaende.v1.service;
 import static no.nav.dok.tjenester.journalfoerinngaaende.response.Status.MANGLER;
 import static no.nav.dok.tjenester.journalfoerinngaaende.response.Status.MANGLER_IKKE;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
+import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
+import static no.nav.dokarkiv.journalfoerinngaaende.v1.service.support.JournalpostValidator.validateJournalpostStatuser;
+import static no.nav.dokarkiv.journalfoerinngaaende.v1.service.support.JournalpostValidator.validateJournalpostStrukturOgPaakrevdeAttributter;
+import static no.nav.dokarkiv.journalfoerinngaaende.v1.util.Utils.convertStringToLong;
 import static org.hibernate.annotations.common.util.StringHelper.isEmpty;
 
 import no.nav.dok.tjenester.journalfoerinngaaende.PutJournalpostRequest;
@@ -12,13 +16,10 @@ import no.nav.dok.tjenester.journalfoerinngaaende.response.Mangler;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import no.nav.dokarkiv.core.exceptions.DokarkivRestFunctionalException;
+import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.journalfoerinngaaende.v1.map.PutInngaaendeJournalpostMapper;
-import no.nav.dokarkiv.journalfoerinngaaende.v1.service.support.JournalpostValidator;
-import no.nav.dokarkiv.journalfoerinngaaende.v1.util.Utils;
 import org.slf4j.MDC;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -32,24 +33,25 @@ import java.util.List;
  * @author Paul Magne Lunde, Visma Consulting
  */
 @Service
-public class PersistInngaaendeJournalpostService {
+public class UpdateInngaaendeJournalpostService {
 
 	private final JoarkRepository joarkRepository;
 	private final PutInngaaendeJournalpostMapper putInngaaendeJournalpostMapper;
 
 	@Inject
-	public PersistInngaaendeJournalpostService(JoarkRepository joarkRepository, PutInngaaendeJournalpostMapper putInngaaendeJournalpostMapper) {
+	public UpdateInngaaendeJournalpostService(JoarkRepository joarkRepository, PutInngaaendeJournalpostMapper putInngaaendeJournalpostMapper) {
 		this.joarkRepository = joarkRepository;
 		this.putInngaaendeJournalpostMapper = putInngaaendeJournalpostMapper;
 	}
 
-	public PutJournalpostResponse persist(String journalpostId, PutJournalpostRequest putJournalpostRequest) {
-		Journalpost journalpost = getJournalpost(journalpostId);
+	public PutJournalpostResponse updateInngaaendeJournalpost(String journalpostId, PutJournalpostRequest putJournalpostRequest) {
+		Journalpost journalpost = joarkRepository.findById(convertStringToLong(journalpostId, "journalpostId"))
+				.orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostId)));
 
-		JournalpostValidator.validateJournalpostStatuser(journalpost);
+		validateJournalpostStatuser(journalpost);
 
 		if (putJournalpostRequest.getForsoekEndeligJF()) {
-			JournalpostValidator.validateJournalpostStrukturOgPaakrevdeAttributter(journalpost);
+			validateJournalpostStrukturOgPaakrevdeAttributter(journalpost);
 		}
 
 		putInngaaendeJournalpostMapper.oppdaterJournalpost(journalpost, putJournalpostRequest);
@@ -67,21 +69,15 @@ public class PersistInngaaendeJournalpostService {
 				journalpost.setJournalstatus(JournalStatusCode.J);
 				journalpost.setJournalDato(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()));
 				journalpost.setJournalForendeEnhetId(putJournalpostRequest.getJournalfEnhet());
-				journalpost.setJournalfortAvNavn("journalførtAvNavn"); // TODO: hent fra MDC
-				journalpost.setEndretAvNavn("journalførtAvNavn");
+				journalpost.setJournalfortAvNavn(MDC_USER_ID);
+				journalpost.setEndretAvNavn(MDC_USER_ID);
 				journalpost.setEndretKildeNavn(MDC.get(MDC_CONSUMER_ID));
 				response.setHarEndeligJF(true);
 			}
 		}
-
 		joarkRepository.save(journalpost);
 
 		return response;
-	}
-
-	private Journalpost getJournalpost(String journalpostId) {
-		return joarkRepository.findById(Utils.convertStringToLong(journalpostId, "journalpostId"))
-				.orElseThrow(() -> new DokarkivRestFunctionalException(String.format("Oppgitt journalpostId %s eksisterer ikke", journalpostId), HttpStatus.NOT_FOUND));
 	}
 
 	private Mangler createMangler(Journalpost jp) {

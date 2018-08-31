@@ -1,9 +1,9 @@
-package no.nav.dokarkiv.journalfoerinngaaende.v1.service.support;
+package no.nav.dokarkiv.journalfoerInngaaende.v1.service.support;
 
-import static no.nav.dokarkiv.journalfoerinngaaende.v1.service.support.JournalpostValidator.validateJournalpostStatuser;
-import static no.nav.dokarkiv.journalfoerinngaaende.v1.service.support.JournalpostValidator.validateJournalpostStrukturOgPaakrevdeAttributter;
-import static no.nav.dokarkiv.journalfoerinngaaende.v1.util.TestUtils.createJournalpostDokumentinfoRelasjon1;
-import static no.nav.dokarkiv.journalfoerinngaaende.v1.util.TestUtils.createJournalpostForOppdatering;
+import static no.nav.dokarkiv.journalfoerInngaaende.v1.service.support.JournalpostValidator.validateJournalpostStatuser;
+import static no.nav.dokarkiv.journalfoerInngaaende.v1.service.support.JournalpostValidator.validateJournalpostStrukturOgPaakrevdeAttributter;
+import static no.nav.dokarkiv.journalfoerInngaaende.v1.util.TestUtils.createJournalpostDokumentinfoRelasjon1;
+import static no.nav.dokarkiv.journalfoerInngaaende.v1.util.TestUtils.createJournalpostForOppdatering;
 
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
@@ -11,10 +11,6 @@ import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import no.nav.dokarkiv.core.exceptions.DokumentUnderRedigeringException;
-import no.nav.dokarkiv.core.exceptions.JournalpostIkkeInngaaendeException;
-import no.nav.dokarkiv.core.exceptions.JournalpostIkkeMidlertidigException;
-import no.nav.dokarkiv.core.exceptions.KunneIkkeEndeligJournalfoereException;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -42,21 +38,21 @@ public class JournalpostValidatorTest {
 	public void shouldFailHvisJournalpostTypeIkkeErInngaaende() {
 		journalpost.setJournalposttype(JournalpostTypeCode.U);
 
-		expectExceptionWithMessage(JournalpostIkkeInngaaendeException.class);
+		expectExceptionWithMessage("Journalpost er ikke av type Inngaaende");
 	}
 
 	@Test
 	public void shouldFailHvisJournalpostIkkeErMidlertidigJournalfoert() {
 		journalpost.setJournalstatus(JournalStatusCode.J);
 
-		expectExceptionWithMessage(JournalpostIkkeMidlertidigException.class);
+		expectExceptionWithMessage("Journalposten er ikke midlertidig journalført");
 	}
 
 	@Test
 	public void shouldFailHvisSaksrelasjonErFeilregistrert() {
 		journalpost.getSaksrelasjon().setFeilregistrert(Boolean.TRUE);
 
-		expectExceptionWithMessage(JournalpostIkkeMidlertidigException.class);
+		expectExceptionWithMessage("Journalposten er ikke midlertidig journalført");
 	}
 
 	@Test
@@ -67,7 +63,7 @@ public class JournalpostValidatorTest {
 				.getDokumentInfo()
 				.setDokumentstatus(DokumentStatusCode.UNDER_REDIGERING);
 
-		expectExceptionWithMessage(DokumentUnderRedigeringException.class);
+		expectExceptionWithMessage("Ett eller flere av dokumentene som forsøkes oppdatert er under redigering");
 	}
 
 	@Test
@@ -77,33 +73,33 @@ public class JournalpostValidatorTest {
 				.next()
 				.setTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG);
 
-		expectExceptionWithMessage(KunneIkkeEndeligJournalfoereException.class);
+		expectExceptionWithMessage("Journalpost inneholder ikke ett hoveddokument");
 	}
 
 	@Test
 	public void shouldFailHvisJournalpostIkkeInneholderKunEttHoveddokument() {
 		journalpost.addJournalpostDokumentInfoRelasjon(createJournalpostDokumentinfoRelasjon1());
 
-		expectExceptionWithMessage(KunneIkkeEndeligJournalfoereException.class);
+		expectExceptionWithMessage("Journalpost inneholder ikke ett hoveddokument");
 	}
 
 	@Test
 	public void shouldFailHvisFildetaljerManglerVariantFormatArkiv() {
 		journalpost.findAllFilDetaljer().forEach(filDetaljer -> filDetaljer.setVariantFormat(VariantFormatCode.SLADDET));
 
-		expectExceptionWithMessage(KunneIkkeEndeligJournalfoereException.class);
+		expectExceptionWithMessage("Det mangler arkivvariant, dette er påkrevd for å ferdigstille journalposter");
 	}
 
 	@Test
 	public void shouldFailHvisFildetaljerHarSammeVariantFormat() {
 		journalpost.findAllFilDetaljer().forEach(filDetaljer -> filDetaljer.setVariantFormat(VariantFormatCode.ARKIV));
 
-		expectExceptionWithMessage(KunneIkkeEndeligJournalfoereException.class);
+		expectExceptionWithMessage("Journalpost inneholder flere fildetaljer med samme variantformat");
 	}
 
-
-	private void expectExceptionWithMessage(Class exceptionClass) {
-		expectedException.expect(exceptionClass);
+	private void expectExceptionWithMessage(String message) {
+//		expectedException.expect(DokarkivRestFunctionalException.class);
+		expectedException.expectMessage(message);
 
 		validateJournalpostStatuser(journalpost);
 		validateJournalpostStrukturOgPaakrevdeAttributter(journalpost);

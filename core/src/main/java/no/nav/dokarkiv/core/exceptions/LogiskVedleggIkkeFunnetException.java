@@ -7,12 +7,12 @@ import org.springframework.web.bind.annotation.ResponseStatus;
  * @author Joakim Bjørnstad, Jbit AS
  */
 @ResponseStatus(code = HttpStatus.NOT_FOUND)
-public final class JournalpostIkkeFunnetException extends DokarkivFunctionalException {
-	public JournalpostIkkeFunnetException() {
+public final class LogiskVedleggIkkeFunnetException extends DokarkivFunctionalException {
+	public LogiskVedleggIkkeFunnetException() {
 		super();
 	}
 
-	public JournalpostIkkeFunnetException(String message) {
+	public LogiskVedleggIkkeFunnetException(String message) {
 		super(message);
 	}
 }

@@ -1,17 +1,22 @@
 package no.nav.dokarkiv.journalfoerinngaaende.v1.service;
 
+import static no.nav.dokarkiv.journalfoerinngaaende.v1.util.Utils.assertDokumentInfoNotNull;
+import static no.nav.dokarkiv.journalfoerinngaaende.v1.util.Utils.assetJournalpostIsInngaaende;
+import static no.nav.dokarkiv.journalfoerinngaaende.v1.util.Utils.convertStringToLong;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 import no.nav.dok.tjenester.journalfoerinngaaende.PutDokumentRequest;
 import no.nav.dok.tjenester.journalfoerinngaaende.PutDokumentResponse;
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
-import no.nav.dokarkiv.core.exceptions.DokarkivRestFunctionalException;
+import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
-import no.nav.dokarkiv.core.exceptions.KunneIkkeFinneDokumentInfoException;
+import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
+import no.nav.dokarkiv.core.repository.JoarkRepository;
 import org.springframework.stereotype.Component;
 
+import javax.inject.Inject;
 import java.util.Arrays;
 import java.util.List;
 
@@ -24,22 +29,33 @@ public class UpdateInngaaendeJournalpostDokumentService {
 			.name(), DokumentKategoriCode.KA.name(), DokumentKategoriCode.IS.name());
 
 	private DokumentinfoRepository dokumentinfoRepository;
+	private JoarkRepository joarkRepository;
 
-	public UpdateInngaaendeJournalpostDokumentService(DokumentinfoRepository dokumentinfoRepository) {
+	@Inject
+	public UpdateInngaaendeJournalpostDokumentService(DokumentinfoRepository dokumentinfoRepository,
+													  JoarkRepository joarkRepository) {
 		this.dokumentinfoRepository = dokumentinfoRepository;
+		this.joarkRepository = joarkRepository;
 	}
 
-	public PutDokumentResponse update(String journalpostId, String dokumentId, PutDokumentRequest request) throws DokarkivRestFunctionalException {
-		validateDokumentKategori(request.getDokumentKategori(), journalpostId, dokumentId);
+	public PutDokumentResponse update(String journalpostIdString, String dokumentIdString, PutDokumentRequest request) {
+		Long journalpostId = convertStringToLong(journalpostIdString, "journalpostId");
+		Long dokumentId = convertStringToLong(dokumentIdString, "dokumentId");
 
-		DokumentInfo dokumentInfo = dokumentinfoRepository.findDokumentInfoByJournalpostIdAndDokumentInfoId(journalpostId, dokumentId)
-				.orElseThrow(() -> new KunneIkkeFinneDokumentInfoException(String.format("Kunne ikke finne dokumentinfo med journalpostId=%s og dokumentId=%s", journalpostId, dokumentId)));
+		validateDokumentKategori(request.getDokumentKategori(), journalpostIdString, dokumentIdString);
+
+		Journalpost journalpost = joarkRepository.findById(journalpostId)
+				.orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostIdString)));
+
+		assetJournalpostIsInngaaende(journalpost);
+
+		DokumentInfo dokumentInfo = journalpost.getDokumentInfoFromJpDokInfoRelasjonerByDokumentInfoId(dokumentId);
+		assertDokumentInfoNotNull(dokumentInfo, journalpostIdString, dokumentIdString);
 
 		updateValues(request, dokumentInfo);
-
 		dokumentinfoRepository.save(dokumentInfo);
 
-		return new PutDokumentResponse().withDokumentId(dokumentId);
+		return new PutDokumentResponse().withDokumentId(dokumentIdString);
 	}
 
 	private void validateDokumentKategori(String kategori, String journalpostId, String dokumentId) {
@@ -49,7 +65,6 @@ public class UpdateInngaaendeJournalpostDokumentService {
 	}
 
 	private void updateValues(PutDokumentRequest request, DokumentInfo dokumentInfo) {
-
 		if (isNotBlank(request.getDokumentTypeId())) {
 			dokumentInfo.setDokumenttypeId(request.getDokumentTypeId());
 		}
@@ -62,7 +77,6 @@ public class UpdateInngaaendeJournalpostDokumentService {
 		if (isNotBlank(request.getDokumentKategori())) {
 			dokumentInfo.setKategori(DokumentKategoriCode.valueOf(request.getDokumentKategori()));
 		}
-
 
 	}
 
