@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.core.security.abac;
+package no.nav.dokarkiv.core.security;
 
 import no.nav.freg.security.oidc.auth.common.HttpSecurityConfigurer;
 import no.nav.freg.security.oidc.config.FregSecurityOidcAutoConfig;

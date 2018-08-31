@@ -115,7 +115,7 @@
 		<dependency>
 			<groupId>no.nav.freg</groupId>
 			<artifactId>freg-security-oidc</artifactId>
-			<version>3.0.6</version>
+			<version>3.1.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
