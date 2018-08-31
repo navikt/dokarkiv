@@ -76,7 +76,7 @@ dn: cn=Z990782,ou=BusinessUnits,dc=test,dc=local
 objectclass: top
 objectclass: person
 objectclass: organizationalPerson
-cn: z000002
+cn: Z990782
 sn: Tidemann
 description: Stasjonsmester Tidemann
 displayName:
