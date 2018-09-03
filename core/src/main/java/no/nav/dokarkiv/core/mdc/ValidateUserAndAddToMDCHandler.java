@@ -1,7 +1,7 @@
 package no.nav.dokarkiv.core.mdc;
 
-import static java.lang.String.format;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
 import com.auth0.jwt.JWT;
 import lombok.extern.slf4j.Slf4j;
@@ -41,35 +41,55 @@ public class ValidateUserAndAddToMDCHandler implements HandlerInterceptor {
 		String consumerToken = headerTokenExtractor.getConsumerToken(request);
 		String userToken = headerTokenExtractor.getIdToken(request);
 
-		if (isEmpty(consumerToken) || isEmpty(userToken)) {
-			String message = "Finner ingen header med bruker eller consumer oidc-token. Requesten må ha oidc-token for bruker header key=Authorization og value=Bearer [oidc-token] og oidc-token for consumer i header med key=Nav-Consumer-Token og value=Bearer [oidc-token]";
+		if (isEmpty(userToken)) {
+			String message = "Finner ingen oidc token på Authentication header. Requesten må enten ha oidc-token for servicebruker på header med key=Authorization og value=Bearer [oidc-token] eller ha oidc-token for internbruker i Authentication header og servicebruker på header med key=Nav-Consumer-Token og value=Bearer [oidc-token]";
 			log.warn(message);
 			response.sendError(HttpServletResponse.SC_UNAUTHORIZED, message);
 			return false;
 		} else {
 
-			String userId = getSubjectFromToken(userToken);
-			NavUser user = navLdapService.findByUserId(userId);
-			if (user.isExists()) {
-				MDC.put(MDCConstants.MDC_USER_ID, userId);
-				MDC.put(MDCConstants.MDC_USER_NAME, user.getFullname());
-			} else {
-				String message = format("Fant ikke bruker med id=%s i LDAP", user.getFullname());
-				log.warn(message);
-				response.sendError(HttpServletResponse.SC_UNAUTHORIZED, message);
-				return false;
-			}
+		    if (isNotEmpty(userToken) && isNotEmpty(consumerToken)) {
 
-			String consumerID = getSubjectFromToken(consumerToken);
-			NavUser consumer = navLdapService.findByServiceuserId(consumerID);
-			if (consumer.isExists()) {
-				MDC.put(MDCConstants.MDC_CONSUMER_ID, consumerID);
-			} else {
-				String message = format("Fant ikke servicebruker med id=%s i LDAP", consumer.getFullname());
-				log.warn(message);
-				response.sendError(HttpServletResponse.SC_UNAUTHORIZED, message);
-				return false;
-			}
+                String userId = getSubjectFromToken(userToken);
+                NavUser user = navLdapService.findByUserId(userId);
+                if (user.isExists()) {
+                    MDC.put(MDCConstants.MDC_USER_ID, userId);
+                    MDC.put(MDCConstants.MDC_USER_NAME, user.getFullname());
+                } else {
+                    String message = "OIDC token på Authentication header må tilhøre en Internbruker når både Authentication og Nav-Consumer-Token header er satt";
+                    log.warn(message);
+                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED, message);
+                    return false;
+                }
+
+                String consumerID = getSubjectFromToken(consumerToken);
+                NavUser consumer = navLdapService.findByServiceuserId(consumerID);
+                if (consumer.isExists()) {
+                    MDC.put(MDCConstants.MDC_CONSUMER_ID, consumerID);
+                } else {
+                    String message = "OIDC token på Authentication header må tilhøre en Servicebruker når Nav-Consumer-Token header er satt";
+                    log.warn(message);
+                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED, message);
+                    return false;
+                }
+
+            } else {
+
+                String consumerID = getSubjectFromToken(consumerToken);
+                NavUser consumer = navLdapService.findByServiceuserId(consumerID);
+                if (consumer.isExists()) {
+                    MDC.put(MDCConstants.MDC_CONSUMER_ID, consumerID);
+                    MDC.put(MDCConstants.MDC_USER_ID, consumerID);
+                    MDC.put(MDCConstants.MDC_USER_NAME, consumerID);
+                } else {
+                    String message = "OIDC token på Authentication header må tilhøre en Servicebruker når Nav-Consumer-Token header ikke er satt";
+                    log.warn(message);
+                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED, message);
+                    return false;
+                }
+            }
+
+
 
 			return true;
 		}
