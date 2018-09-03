@@ -4,6 +4,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
+import static java.lang.String.format;
 import static no.nav.dokarkiv.core.datautil.DokumentInfoTestDataProvider.createVedleggDokumentInfo;
 import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
 import static no.nav.dokarkiv.journalfoerinngaaende.v1.util.TestUtils.BREVKODE_UPDATE;
@@ -29,6 +30,7 @@ import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.freg.security.oidc.auth.idtoken.extract.NavHttpHeaders;
 import org.junit.Test;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -65,7 +67,7 @@ public class JournalfoerInngaaendeV1IT extends AbstractJournalfoerInngaaendeV1It
 				JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER + journalpostId, HttpMethod.GET, createHeaders(), GetJournalpostResponse.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
-		verify(postRequestedFor(urlEqualTo("/abac")).withRequestBody(equalToJson(stringFromClasspath("abac/getInngaaendejournalpost.json"))));
+		verify(postRequestedFor(urlEqualTo("/abac")).withRequestBody(equalToJson(format(stringFromClasspath("abac/getInngaaendejournalpost.json"), getOidcTokenBody(OIDC_TOKEN_SERVICE_USER_TEST.replace("Bearer ", ""))))));
 		assertThat(responseEntity.getBody().getJournalTilstand(), is(GetJournalpostResponse.JournalTilstand.ENDELIG));
 	}
 
@@ -143,8 +145,8 @@ public class JournalfoerInngaaendeV1IT extends AbstractJournalfoerInngaaendeV1It
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER + journalpostId, HttpMethod.GET, new HttpEntity(headers), String.class);
 
-		assertThat(responseEntity.getStatusCode(), is(HttpStatus.UNAUTHORIZED));
-		assertThat(responseEntity.getBody(), containsString("Kunne ikke autorisere forespoersel."));
+		assertThat(responseEntity.getStatusCode(), is(HttpStatus.FORBIDDEN));
+		assertThat(responseEntity.getBody(), containsString("Access Denied"));
 	}
 
 	/**
@@ -559,44 +561,22 @@ public class JournalfoerInngaaendeV1IT extends AbstractJournalfoerInngaaendeV1It
 	 ******************************************/
 
 	@Test
-	public void shouldFailOnlyUserToken() {
+	public void shouldPersistJournalpostTwoInternalUserTokens() {
+		abacPermit();
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		headers.add(HttpHeaders.AUTHORIZATION, OIDC_TOKEN_PERSON_USER_TEST);
+		headers.add(NavHttpHeaders.NAV_CONSUMER_TOKEN_HEADER, OIDC_TOKEN_SERVICE_USER_TEST);
 
-		ResponseEntity<String> responseEntity = restTemplate.exchange(
-				JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER + "1234", HttpMethod.GET, new HttpEntity(headers), String.class);
+		Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.J));
 
-		assertThat(responseEntity.getStatusCode(), is(HttpStatus.BAD_REQUEST));
-		assertThat(responseEntity.getBody(), containsString("Bare ett oidc-token ble funnet på requesten"));
+		String journalpostId = journalpost.getJournalpostId().toString();
+
+		HttpEntity httpEntity = new HttpEntity(headers);
+		ResponseEntity<GetJournalpostResponse> responseEntity = restTemplate.exchange(
+				JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER + journalpostId, HttpMethod.GET, httpEntity, GetJournalpostResponse.class);
+
+		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 	}
-
-	@Test
-	public void shouldFailTooManyTokens() {
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_JSON);
-		headers.add(HttpHeaders.AUTHORIZATION, OIDC_TOKEN_PERSON_USER_TEST + ", " + OIDC_TOKEN_PERSON_USER_TEST + "," + OIDC_TOKEN_PERSON_USER_TEST);
-
-		ResponseEntity<String> responseEntity = restTemplate.exchange(
-				JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER + "1234", HttpMethod.GET, new HttpEntity(headers), String.class);
-
-		assertThat(responseEntity.getStatusCode(), is(HttpStatus.BAD_REQUEST));
-		assertThat(responseEntity.getBody(), containsString("Feil format på Authorization-header"));
-	}
-
-	@Test
-	public void shouldPersistJournalpostTwoInternalUserTokens() {
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_JSON);
-		headers.add(HttpHeaders.AUTHORIZATION, OIDC_TOKEN_PERSON_USER_TEST + ", " + OIDC_TOKEN_SERVICE_USER_TEST);
-
-		ResponseEntity<String> responseEntity = restTemplate.exchange(
-				JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER + "1234", HttpMethod.GET, new HttpEntity(headers), String.class);
-
-		assertThat(responseEntity.getStatusCode(), is(HttpStatus.BAD_REQUEST));
-		assertThat(responseEntity.getBody(), containsString("Kunne ikke utlede userId og/eller consumerId fra oidc-token."));
-	}
-
-
 }
 

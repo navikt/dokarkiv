@@ -1,6 +1,5 @@
 package no.nav.dokarkiv.core.security;
 
-import no.nav.dokarkiv.core.mdc.ValidateUserAndAddToMDCHandler;
 import no.nav.dokarkiv.core.security.ldap.NavLdapService;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;

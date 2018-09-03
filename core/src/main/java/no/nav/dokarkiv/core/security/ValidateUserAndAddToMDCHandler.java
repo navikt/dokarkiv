@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.core.mdc;
+package no.nav.dokarkiv.core.security;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
@@ -20,7 +20,6 @@ import javax.servlet.http.HttpServletResponse;
  * @author Sigurd Midttun, Visma Consulting.
  */
 @Slf4j
-
 public class ValidateUserAndAddToMDCHandler implements HandlerInterceptor {
 
 	private final NavLdapService navLdapService;
@@ -50,6 +49,7 @@ public class ValidateUserAndAddToMDCHandler implements HandlerInterceptor {
 
 		    if (isNotEmpty(authorizationToken) && isNotEmpty(navConsumerToken)) {
 
+		        //TODO: Kan dette også være en servicebruker?
                 String userId = getSubjectFromToken(authorizationToken);
                 NavUser navUser = navLdapService.findByUserId(userId);
                 if (navUser.isExists()) {
@@ -88,8 +88,6 @@ public class ValidateUserAndAddToMDCHandler implements HandlerInterceptor {
                     return false;
                 }
             }
-
-
 
 			return true;
 		}
