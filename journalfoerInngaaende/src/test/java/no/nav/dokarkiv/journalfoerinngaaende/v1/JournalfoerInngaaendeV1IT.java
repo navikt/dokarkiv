@@ -29,7 +29,6 @@ import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -109,7 +108,7 @@ public class JournalfoerInngaaendeV1IT extends AbstractJournalfoerInngaaendeV1It
 				JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER + journalpostId, HttpMethod.GET, createHeaders(), String.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.BAD_REQUEST));
-		assertThat(responseEntity.getBody(),containsString("er ikke av type Inngaaende"));
+		assertThat(responseEntity.getBody(), containsString("er ikke av type Inngaaende"));
 	}
 
 	/**
@@ -192,7 +191,8 @@ public class JournalfoerInngaaendeV1IT extends AbstractJournalfoerInngaaendeV1It
 
 		PutJournalpostRequest request = mapper.readValue(classpathToString("__files/put_journalpost/happy_input_request.json"), PutJournalpostRequest.class);
 
-		Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M).endretAvNavn("saksbehandlersen"));
+		Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
+				.endretAvNavn("saksbehandlersen"));
 		Long journalpostId = journalpost.getJournalpostId();
 
 		HttpEntity<PutJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
@@ -228,7 +228,9 @@ public class JournalfoerInngaaendeV1IT extends AbstractJournalfoerInngaaendeV1It
 
 		PutJournalpostRequest request = mapper.readValue(classpathToString("__files/put_journalpost/request_med_mangler.json"), PutJournalpostRequest.class);
 
-		Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M).endretAvNavn("saksbehandlersen").innhold(null));
+		Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
+				.endretAvNavn("saksbehandlersen")
+				.innhold(null));
 		String journalpostId = journalpost.getJournalpostId().toString();
 
 		HttpEntity<PutJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
@@ -252,7 +254,8 @@ public class JournalfoerInngaaendeV1IT extends AbstractJournalfoerInngaaendeV1It
 
 		PutJournalpostRequest request = mapper.readValue(classpathToString("__files/put_journalpost/request_ikke_endeligJF.json"), PutJournalpostRequest.class);
 
-		Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M).endretAvNavn("saksbehandlersen"));
+		Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
+				.endretAvNavn("saksbehandlersen"));
 		String journalpostId = journalpost.getJournalpostId().toString();
 
 		HttpEntity<PutJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
@@ -275,7 +278,8 @@ public class JournalfoerInngaaendeV1IT extends AbstractJournalfoerInngaaendeV1It
 
 		PutJournalpostRequest request = mapper.readValue(classpathToString("__files/put_journalpost/happy_input_request.json"), PutJournalpostRequest.class);
 
-		Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.U, JournalStatusCode.M).endretAvNavn("saksbehandlersen"));
+		Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.U, JournalStatusCode.M)
+				.endretAvNavn("saksbehandlersen"));
 		String journalpostId = journalpost.getJournalpostId().toString();
 
 		HttpEntity<PutJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
@@ -399,7 +403,7 @@ public class JournalfoerInngaaendeV1IT extends AbstractJournalfoerInngaaendeV1It
 
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
-		headers.add(HttpHeaders.AUTHORIZATION, OIDC_TOKEN_TEST);
+		headers.add(HttpHeaders.AUTHORIZATION, OIDC_TOKEN_SERVICE_USER_TEST);
 		HttpEntity httpEntity = new HttpEntity(new PutDokumentRequest().withDokumentTypeId(DOKUMNETTYPE_ID_UPDATE)
 				.withNavSkjemaId(BREVKODE_UPDATE)
 				.withTittel(DOKUMENT_TITTEL_UPDATE)
@@ -432,7 +436,7 @@ public class JournalfoerInngaaendeV1IT extends AbstractJournalfoerInngaaendeV1It
 
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
-		headers.add(HttpHeaders.AUTHORIZATION, OIDC_TOKEN_TEST);
+		headers.add(HttpHeaders.AUTHORIZATION, OIDC_TOKEN_SERVICE_USER_TEST);
 		HttpEntity httpEntity = new HttpEntity(new PutDokumentRequest()
 				.withNavSkjemaId(BREVKODE_UPDATE)
 				.withTittel(DOKUMENT_TITTEL_UPDATE), headers);
@@ -454,10 +458,9 @@ public class JournalfoerInngaaendeV1IT extends AbstractJournalfoerInngaaendeV1It
 
 	@Test
 	public void shouldFailWhenDokumentInfoNotFound() {
-
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
-		headers.add(HttpHeaders.AUTHORIZATION, OIDC_TOKEN_TEST);
+		headers.add(HttpHeaders.AUTHORIZATION, OIDC_TOKEN_SERVICE_USER_TEST);
 		HttpEntity httpEntity = new HttpEntity(new PutDokumentRequest()
 				.withNavSkjemaId(BREVKODE_UPDATE)
 				.withTittel(DOKUMENT_TITTEL_UPDATE), headers);
@@ -477,11 +480,16 @@ public class JournalfoerInngaaendeV1IT extends AbstractJournalfoerInngaaendeV1It
 		Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.J));
 
 		String journalpostId = journalpost.getJournalpostId().toString();
-		String dokumentId = journalpost.getJournalpostDokumentInfoRelasjoner().iterator().next().getDokumentInfo().getDokumentInfoId().toString();
+		String dokumentId = journalpost.getJournalpostDokumentInfoRelasjoner()
+				.iterator()
+				.next()
+				.getDokumentInfo()
+				.getDokumentInfoId()
+				.toString();
 
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
-		headers.add(HttpHeaders.AUTHORIZATION, OIDC_TOKEN_TEST);
+		headers.add(HttpHeaders.AUTHORIZATION, OIDC_TOKEN_SERVICE_USER_TEST);
 		HttpEntity httpEntity = new HttpEntity(new PutDokumentRequest().withDokumentKategori("SJO"), headers);
 
 
@@ -538,11 +546,56 @@ public class JournalfoerInngaaendeV1IT extends AbstractJournalfoerInngaaendeV1It
 	}
 
 
-	/***************************
+	/***********************
 	 ** PostLogiskVedlegg **
-	 ***************************/
+	 ***********************/
 
 	//TODO Skrive itester
+
+
+
+	/******************************************
+	 ** Tester for haandtering av OIDC-token **
+	 ******************************************/
+
+	@Test
+	public void shouldFailOnlyUserToken() {
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		headers.add(HttpHeaders.AUTHORIZATION, OIDC_TOKEN_PERSON_USER_TEST);
+
+		ResponseEntity<String> responseEntity = restTemplate.exchange(
+				JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER + "1234", HttpMethod.GET, new HttpEntity(headers), String.class);
+
+		assertThat(responseEntity.getStatusCode(), is(HttpStatus.BAD_REQUEST));
+		assertThat(responseEntity.getBody(), containsString("Bare ett oidc-token ble funnet på requesten"));
+	}
+
+	@Test
+	public void shouldFailTooManyTokens() {
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		headers.add(HttpHeaders.AUTHORIZATION, OIDC_TOKEN_PERSON_USER_TEST + ", " + OIDC_TOKEN_PERSON_USER_TEST + "," + OIDC_TOKEN_PERSON_USER_TEST);
+
+		ResponseEntity<String> responseEntity = restTemplate.exchange(
+				JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER + "1234", HttpMethod.GET, new HttpEntity(headers), String.class);
+
+		assertThat(responseEntity.getStatusCode(), is(HttpStatus.BAD_REQUEST));
+		assertThat(responseEntity.getBody(), containsString("Feil format på Authorization-header"));
+	}
+
+	@Test
+	public void shouldPersistJournalpostTwoInternalUserTokens() {
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		headers.add(HttpHeaders.AUTHORIZATION, OIDC_TOKEN_PERSON_USER_TEST + ", " + OIDC_TOKEN_SERVICE_USER_TEST);
+
+		ResponseEntity<String> responseEntity = restTemplate.exchange(
+				JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER + "1234", HttpMethod.GET, new HttpEntity(headers), String.class);
+
+		assertThat(responseEntity.getStatusCode(), is(HttpStatus.BAD_REQUEST));
+		assertThat(responseEntity.getBody(), containsString("Kunne ikke utlede userId og/eller consumerId fra oidc-token."));
+	}
 
 
 }
