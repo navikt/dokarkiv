@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.journalfoerinngaaende.v1.service.support;
+package no.nav.dokarkiv.journalfoerinngaaende.v1.support;
 
 import static no.nav.dokarkiv.journalfoerinngaaende.v1.util.Utils.assetJournalpostIsInngaaende;
 
