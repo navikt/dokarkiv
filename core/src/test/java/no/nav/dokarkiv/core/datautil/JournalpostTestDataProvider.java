@@ -99,6 +99,7 @@ public final class JournalpostTestDataProvider {
 
 	public static JournalpostBuilder buildJournalpost(JournalpostTypeCode journalpostType, JournalStatusCode journalStatus) {
 		return getJournalpostBuilder()
+                .addOriginalJournalpost(true)
 				.avsenderMottakerId("1")
 				.kanalReferanseId("kanalreferansseId")
 				.mottattDato(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()))
