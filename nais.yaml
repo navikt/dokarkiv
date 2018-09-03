@@ -24,6 +24,18 @@ resources:
     memory: 1024Mi
 fasitResources:
   used:
+  - alias: freg-security-oidc
+    resourceType: OpenIdConnect
+    propertyMap:
+      hostUrl: freg.security.oidc.idp.openAm.hostUrl
+      issuerUrl: freg.security.oidc.idp.openAm.issuerUrl
+      jwksUrl: freg.security.oidc.idp.openAm.jwksUrl
+  - alias: nav-sts-oidc
+    resourceType: OpenIdConnect
+    propertyMap:
+      hostUrl: freg.security.oidc.idp.navSts.hostUrl
+      issuerUrl: freg.security.oidc.idp.navSts.issuerUrl
+      jwksUrl: freg.security.oidc.idp.navSts.jwksUrl
   - alias: dokarkivds
     resourceType: datasource
     propertyMap:
