@@ -4,8 +4,8 @@ import static no.nav.dok.tjenester.journalfoerinngaaende.response.Status.MANGLER
 import static no.nav.dok.tjenester.journalfoerinngaaende.response.Status.MANGLER_IKKE;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
-import static no.nav.dokarkiv.journalfoerinngaaende.v1.service.support.JournalpostValidator.validateJournalpostStatuser;
-import static no.nav.dokarkiv.journalfoerinngaaende.v1.service.support.JournalpostValidator.validateJournalpostStrukturOgPaakrevdeAttributter;
+import static no.nav.dokarkiv.journalfoerinngaaende.v1.support.JournalpostValidator.validateJournalpostStatuser;
+import static no.nav.dokarkiv.journalfoerinngaaende.v1.support.JournalpostValidator.validateJournalpostStrukturOgPaakrevdeAttributter;
 import static no.nav.dokarkiv.journalfoerinngaaende.v1.util.Utils.convertStringToLong;
 import static org.hibernate.annotations.common.util.StringHelper.isEmpty;
 
