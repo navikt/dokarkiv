@@ -69,23 +69,23 @@ public class AbacDefaultConfig {
 	}
 
 	@Bean
-	AbacAttributeLocator oidcConsumerTokenLocator() {
+	AbacAttributeLocator authorizationHeaderOidcTokenLocator() {
 		return new ResolvingAbacAttributeLocator(NavAttributter.ENVIRONMENT_FELLES_OIDC_TOKEN_BODY, () -> {
 			if (SecurityContextHolder.getContext().getAuthentication() == null) {
 				return null;
 			} else {
-				return ((OidcTokenAuthentication)SecurityContextHolder.getContext().getAuthentication()).getConsumerTokenBody();
+				return ((OidcTokenAuthentication)SecurityContextHolder.getContext().getAuthentication()).getIdTokenBody();
 			}
 		});
 	}
 
 //	@Bean
-//	AbacAttributeLocator oidcUserTokenLocator() {
-//		return new ResolvingAbacAttributeLocator(NavAttributter.ENVIRONMENT_FELLES_OIDC_TOKEN_BODY, () -> {
+//	AbacAttributeLocator navConsumerHeaderOidcTokenLocator() {
+//		return new ResolvingAbacAttributeLocator(NavAttributter.SUBJECT_FELLES_CONSUMERID, () -> {
 //			if (SecurityContextHolder.getContext().getAuthentication() == null) {
 //				return null;
 //			} else {
-//				return ((OidcTokenAuthentication)SecurityContextHolder.getContext().getAuthentication()).getIdTokenBody();
+//				return ((OidcTokenAuthentication)SecurityContextHolder.getContext().getAuthentication()).getConsumerTokenBody();
 //			}
 //		});
 //	}
