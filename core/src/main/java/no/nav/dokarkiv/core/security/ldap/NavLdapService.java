@@ -38,7 +38,7 @@ public class NavLdapService {
 			return ldapTemplate.findOne(query().base(navuserBasedn).where("cn").is(userId), NavUser.class);
 		} catch(IncorrectResultSizeDataAccessException e) {
 			// fallback til userId
-			return NavUser.builder().userId(userId).build();
+			return NavUser.builder().userId(userId).exists(false).build();
 		}
 	}
 
@@ -48,7 +48,7 @@ public class NavLdapService {
 		try {
 			return ldapTemplate.findOne(query().base(serviceuserBasedn).where("cn").is(serviceUserId), NavUser.class);
 		} catch (IncorrectResultSizeDataAccessException e) {
-			return NavUser.builder().userId(serviceUserId).build();
+			return NavUser.builder().userId(serviceUserId).exists(false).build();
 		}
 	}
 }

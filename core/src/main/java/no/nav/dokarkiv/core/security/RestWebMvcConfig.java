@@ -1,6 +1,6 @@
 package no.nav.dokarkiv.core.security;
 
-import no.nav.dokarkiv.core.mdc.MDCInHandlerRest;
+import no.nav.dokarkiv.core.mdc.ValidateUserAndAddToMDCHandler;
 import no.nav.dokarkiv.core.security.ldap.NavLdapService;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -19,6 +19,7 @@ public class RestWebMvcConfig implements WebMvcConfigurer {
 
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
-		registry.addInterceptor(new MDCInHandlerRest(navLdapService)).addPathPatterns("/rest/journalfoer-inngaaende/**");
+		registry.addInterceptor(new ValidateUserAndAddToMDCHandler(navLdapService)).addPathPatterns("/rest/journalfoer-inngaaende/**") ;
 	}
+
 }
