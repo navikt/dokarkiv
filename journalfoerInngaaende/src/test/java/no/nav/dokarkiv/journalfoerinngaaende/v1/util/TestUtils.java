@@ -29,6 +29,7 @@ import java.util.HashSet;
  */
 public class TestUtils {
 
+    public static final long JOURNALPOST_ID = 1234L;
     public static final String AVSENDER_NAVN = "avsenderNavn";
     public static final String AVSENDER_NAVN_ORGANISASJON = "avsenderNavn_org";
     public static final String AVSENDER_ID_PERSON = "***gammelt_fnr***";
@@ -62,6 +63,7 @@ public class TestUtils {
 
     public static Journalpost createJournalpost() {
         Journalpost journalpost = Journalpost.builder()
+                .journalpostId(JOURNALPOST_ID)
                 .journalstatus(JournalStatusCode.J)
                 .avsenderMottakerId(AVSENDER_ID_PERSON)
                 .avsenderMottaker(AVSENDER_NAVN)
