@@ -68,7 +68,7 @@ public class Utils {
 	public static void assetJournalpostIsInngaaende(Journalpost journalpost) {
 		if (!journalpost.isInngaende()) {
 			throw new JournalpostIkkeInngaaendeException(String.format("Journalpost med journalpostId=%s er ikke av type Inngaaende", journalpost
-					.getJournalpostId())); //TODO Annen HttpStatus?
+					.getJournalpostId()));
 		}
 	}
 

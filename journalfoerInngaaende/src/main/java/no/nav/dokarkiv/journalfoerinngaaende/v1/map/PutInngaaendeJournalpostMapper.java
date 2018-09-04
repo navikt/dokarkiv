@@ -10,13 +10,18 @@ import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.entities.Bruker;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
+import no.nav.dokarkiv.core.repository.BrukerRepository;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 
+import javax.inject.Inject;
 import java.util.Set;
 
 @Component
 public class PutInngaaendeJournalpostMapper extends AbstractInngaaendeJournalpostMapper {
+
+	@Inject
+	private BrukerRepository brukerRepository;
 
 	public void oppdaterJournalpost(Journalpost journalpost, PutJournalpostRequest putJournalpostRequest) {
 		if (isNotBlank(putJournalpostRequest.getTittel())) {
@@ -37,11 +42,13 @@ public class PutInngaaendeJournalpostMapper extends AbstractInngaaendeJournalpos
 
 		Set<Bruker> brukere = journalpost.getBrukere();
 		if (brukere.isEmpty() || brukere.size() > 1) {
+			brukerRepository.deleteBrukerByJournalpostId(journalpost.getJournalpostId().toString());
+			journalpost.clearBrukere();
+
 			Bruker bruker = new Bruker();
 			bruker.setBrukerId(putJournalpostRequest.getBruker().getIdentifikator());
 			bruker.setBrukerType(BrukerTypeCode.valueOf(putJournalpostRequest.getBruker().getBrukerType().name()));
-			bruker.setOpprettetKildeNavn("OpprettetAv"); // TODO: hent fra MDC
-			journalpost.clearBrukere();
+			bruker.setOpprettetKildeNavn(MDC.get(MDC_CONSUMER_ID));
 			journalpost.addBruker(bruker);
 		} else {
 			brukere.iterator().forEachRemaining(bruker -> {
@@ -64,7 +71,7 @@ public class PutInngaaendeJournalpostMapper extends AbstractInngaaendeJournalpos
 			}
 			saksrelasjon.setSakId(request.getArkivSak().getArkivSakId());
 			saksrelasjon.setFagsystem(mapArkivSakSystemToFagsystemCode(request.getArkivSak().getArkivSakSystem()));
-			saksrelasjon.setEndretAvNavn(MDC.get(MDC_USER_ID)); // TODO: hent fra MDC
+			saksrelasjon.setEndretAvNavn(MDC.get(MDC_USER_ID));
 			saksrelasjon.setEndretKildeNavn(MDC.get(MDC_CONSUMER_ID));
 			if (newSak) {
 				journalpost.setSaksrelasjon(saksrelasjon);

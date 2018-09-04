@@ -7,6 +7,7 @@ import static no.nav.dokarkiv.journalfoerinngaaende.v1.util.Utils.convertStringT
 import no.nav.dok.tjenester.journalfoerinngaaende.PostLogiskVedleggRequest;
 import no.nav.dok.tjenester.journalfoerinngaaende.PostLogiskVedleggResponse;
 import no.nav.dok.tjenester.journalfoerinngaaende.PutLogiskVedleggRequest;
+import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.SkannetInnhold;
@@ -14,6 +15,7 @@ import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.LogiskVedleggIkkeFunnetException;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.core.repository.SkannetInnholdRepository;
+import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -34,7 +36,6 @@ public class LogiskVedleggService {
 		this.skannetInnholdRepository = skannetInnholdRepository;
 	}
 
-	//TODO: Sporingsinfo
 	public void deleteLogiskVedlegg(String journalpostIdString, String dokumentIdString, String logiskVedleggIdString) {
 		Long journalpostId = convertStringToLong(journalpostIdString, "journalpostId");
 		Long dokumentId = convertStringToLong(dokumentIdString, "dokumentId");
@@ -51,7 +52,6 @@ public class LogiskVedleggService {
 		skannetInnholdRepository.deleteSkannetInnholdBySkannetInnholdIdAndDokumentinfoId(logiskVedleggIdString, dokumentIdString);
 	}
 
-	//TODO: Sporingsinfo
 	public void updateLogiskVedlegg(String journalpostIdString, String dokumentIdString, String logiskVedleggIdString, PutLogiskVedleggRequest request) {
 		Long journalpostId = convertStringToLong(journalpostIdString, "journalpostId");
 		Long dokumentId = convertStringToLong(dokumentIdString, "dokumentId");
@@ -65,13 +65,11 @@ public class LogiskVedleggService {
 		SkannetInnhold skannetInnhold = skannetInnholdRepository.findSkannetInnholdBySkannetInnholdIdAndDokumentinfoId(logiskVedleggIdString, dokumentIdString)
 				.orElseThrow(() -> new LogiskVedleggIkkeFunnetException(String.format("Kunne ikke finne logisk vedlegg med logiskVedleggId=%s og dokumentId=%s i Joark", logiskVedleggIdString, dokumentIdString)));
 
-
 		skannetInnhold.setVedleggInnhold(request.getTittel());
-
+		skannetInnhold.setEndretKildeNavn(MDC.get(MDCConstants.MDC_CONSUMER_ID));
 		skannetInnholdRepository.save(skannetInnhold);
 	}
 
-	//TODO: Sporingsinfo
 	public PostLogiskVedleggResponse persistLogiskVedlegg(String journalpostIdString, String dokumentIdString, PostLogiskVedleggRequest request) {
 		Long journalpostId = convertStringToLong(journalpostIdString, "journalpostId");
 		Long dokumentId = convertStringToLong(dokumentIdString, "dokumentId");
@@ -85,11 +83,10 @@ public class LogiskVedleggService {
 		assertDokumentInfoNotNull(dokumentInfo, journalpostIdString, dokumentIdString);
 
 		SkannetInnhold skannetInnhold = SkannetInnhold.builder().vedleggInnhold(request.getTittel()).build();
-
-		skannetInnhold = skannetInnholdRepository.save(skannetInnhold);
-
+		skannetInnhold.setOpprettetKildeNavn(MDC.get(MDCConstants.MDC_CONSUMER_ID));
 		dokumentInfo.addSkannetInnhold(skannetInnhold);
 
+		skannetInnhold = skannetInnholdRepository.save(skannetInnhold);
 		return new PostLogiskVedleggResponse().withLogiskVedleggId(skannetInnhold.getSkannetInnholdId().toString());
 	}
 }

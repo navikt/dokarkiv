@@ -10,16 +10,27 @@ import no.nav.dok.tjenester.journalfoerinngaaende.Bruker;
 import no.nav.dok.tjenester.journalfoerinngaaende.PutJournalpostRequest;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.repository.BrukerRepository;
 import no.nav.dokarkiv.journalfoerinngaaende.v1.util.TestUtils;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
+@RunWith(MockitoJUnitRunner.class)
 public class PutInngaaendeJournalpostMapperTest {
+
+	@Mock
+	private BrukerRepository brukerRepositoryMock;
 
 	private PutJournalpostRequest putJournalpostRequest;
 
 	private Journalpost journalpost;
 
+	@InjectMocks
 	private PutInngaaendeJournalpostMapper mapper = new PutInngaaendeJournalpostMapper();
+
 
 	@Test
 	public void shouldUpdateJournalpost() {

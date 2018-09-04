@@ -17,6 +17,7 @@ import java.util.Set;
 public class AbacDefaultConfig {
 
 	@Bean
+		//TODO: Legge til abac environment for oidc-consumer-token
 	Set<String> abacDefaultEnvironment() {
 		Set<String> values = new HashSet<>();
 		values.add(NavAttributter.ENVIRONMENT_FELLES_PEP_ID);
@@ -74,19 +75,10 @@ public class AbacDefaultConfig {
 			if (SecurityContextHolder.getContext().getAuthentication() == null) {
 				return null;
 			} else {
-				return ((OidcTokenAuthentication)SecurityContextHolder.getContext().getAuthentication()).getIdTokenBody();
+				return ((OidcTokenAuthentication) SecurityContextHolder.getContext().getAuthentication()).getIdTokenBody();
 			}
 		});
 	}
 
-//	@Bean
-//	AbacAttributeLocator navConsumerHeaderOidcTokenLocator() {
-//		return new ResolvingAbacAttributeLocator(NavAttributter.SUBJECT_FELLES_CONSUMERID, () -> {
-//			if (SecurityContextHolder.getContext().getAuthentication() == null) {
-//				return null;
-//			} else {
-//				return ((OidcTokenAuthentication)SecurityContextHolder.getContext().getAuthentication()).getConsumerTokenBody();
-//			}
-//		});
-//	}
+	//TODO: Legge til abac environment for oidc-consumer-token|
 }

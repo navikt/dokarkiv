@@ -13,6 +13,7 @@ import no.nav.dokarkiv.core.domain.builder.JournalpostBuilder;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
+import no.nav.dokarkiv.core.repository.SkannetInnholdRepository;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.dokarkiv.core.stelvio.SimpleRequestContext;
 import no.nav.freg.security.test.oidc.tools.OidcTestService;
@@ -53,7 +54,7 @@ import java.nio.charset.StandardCharsets;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-        classes = {CoreConfig.class, JournalfoerInngaaendeConfig.class, TestToolsAutoConfig.class})
+		classes = {CoreConfig.class, JournalfoerInngaaendeConfig.class, TestToolsAutoConfig.class})
 @ActiveProfiles("itest,wiremock,ldap")
 @AutoConfigureDataJpa
 @AutoConfigureTestDatabase
@@ -63,100 +64,106 @@ import java.nio.charset.StandardCharsets;
 @Transactional
 public abstract class AbstractJournalfoerInngaaendeV1Itest {
 
-    protected String OIDC_TOKEN_PERSON_USER_TEST;
-    protected String OIDC_TOKEN_SERVICE_USER_TEST;
+	protected String OIDC_TOKEN_PERSON_USER_TEST;
+	protected String OIDC_TOKEN_SERVICE_USER_TEST;
+	protected final String SERVICE_USER_ID = "srvdokarkiv";
+	protected final String PERSON_USER_ID = "Z990782";
 
-    @Rule
-    public ExpectedException expectedException = ExpectedException.none();
-    @Inject
-    protected JoarkRepository joarkRepository;
-    @Inject
-    protected TestRestTemplate restTemplate;
-    @Inject
-    protected DokumentinfoRepository dokumentinfoRepository;
-    @Inject
-    protected OidcTestService oidcTestService;
+	@Rule
+	public ExpectedException expectedException = ExpectedException.none();
+	@Inject
+	protected JoarkRepository joarkRepository;
+	@Inject
+	protected SkannetInnholdRepository skannetInnholdRepository;
+	@Inject
+	protected TestRestTemplate restTemplate;
+	@Inject
+	protected DokumentinfoRepository dokumentinfoRepository;
+	@Inject
+	protected OidcTestService oidcTestService;
 
 
-    @Autowired
-    private TestEntityManager testEntityManager;
+	@Autowired
+	private TestEntityManager testEntityManager;
 
-    @Before
-    public void setUp() {
-        OIDC_TOKEN_PERSON_USER_TEST = "Bearer " + oidcTestService.createOidc(openAmClaimsBuilder().subject("Z990782").build());
-        OIDC_TOKEN_SERVICE_USER_TEST = "Bearer " + oidcTestService.createOidc(openAmClaimsBuilder().subject("srvdokarkiv")
-                .build());
-        MDC.put(MDCConstants.MDC_USER_ID, "itest_userId");
-        MDC.put(MDCConstants.MDC_CONSUMER_ID, "Itest_consumerId");
-    }
+	@Before
+	public void setUp() {
+		OIDC_TOKEN_PERSON_USER_TEST = "Bearer " + oidcTestService.createOidc(openAmClaimsBuilder().subject(PERSON_USER_ID)
+				.build());
+		OIDC_TOKEN_SERVICE_USER_TEST = "Bearer " + oidcTestService.createOidc(openAmClaimsBuilder().subject(SERVICE_USER_ID)
+				.build());
+		MDC.put(MDCConstants.MDC_USER_ID, "itest_userId");
+		MDC.put(MDCConstants.MDC_CONSUMER_ID, "Itest_consumerId");
+	}
 
-    @BeforeClass
-    public static void setupItest() {
+	@BeforeClass
+	public static void setupItest() {
 
-        RequestContextSetter.setRequestContext(new SimpleRequestContext.Builder()
-                .userId("itestuser")
-                .componentId("itest")
-                .build());
-    }
+		RequestContextSetter.setRequestContext(new SimpleRequestContext.Builder()
+				.userId("itestuser")
+				.componentId("itest")
+				.build());
+	}
 
-    public static String classpathToString(String path) {
-        return resourceUrlToString(Resources.getResource(path));
-    }
+	public static String classpathToString(String path) {
+		return resourceUrlToString(Resources.getResource(path));
+	}
 
-    public static String resourceUrlToString(URL url) {
-        try {
-            return Resources.toString(url, StandardCharsets.UTF_8);
-        } catch (IOException e) {
-            throw new RuntimeException("Could not convert url to String" + url);
-        }
-    }
+	public static String resourceUrlToString(URL url) {
+		try {
+			return Resources.toString(url, StandardCharsets.UTF_8);
+		} catch (IOException e) {
+			throw new RuntimeException("Could not convert url to String" + url);
+		}
+	}
 
-    @Before
-    public void cleanup() {
-        joarkRepository.deleteAll();
-        dokumentinfoRepository.deleteAll();
-    }
+	@Before
+	public void cleanup() {
+		joarkRepository.deleteAll();
+		dokumentinfoRepository.deleteAll();
+	}
 
-    protected Journalpost buildAndCommit(final JournalpostBuilder builder) {
-        Journalpost journalpost = joarkRepository.save(builder.build());
-        TestTransaction.flagForCommit();
-        TestTransaction.end();
-        return journalpost;
-    }
+	protected Journalpost buildAndCommit(final JournalpostBuilder builder) {
+		Journalpost journalpost = joarkRepository.save(builder.build());
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
+		return journalpost;
+	}
 
-    protected HttpEntity createHeaders() {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.TEXT_PLAIN);
-        headers.add(HttpHeaders.AUTHORIZATION, OIDC_TOKEN_SERVICE_USER_TEST);
-        return new HttpEntity(headers);
-    }
+	protected HttpEntity createHeaders() {
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.TEXT_PLAIN);
+		headers.add(HttpHeaders.AUTHORIZATION, OIDC_TOKEN_SERVICE_USER_TEST);
+		return new HttpEntity(headers);
+	}
 
-    protected HttpHeaders oidcHeaders() {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.add(HttpHeaders.AUTHORIZATION, OIDC_TOKEN_SERVICE_USER_TEST);
-        return headers;
-    }
+	protected HttpHeaders oidcHeaders() {
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		headers.add(HttpHeaders.AUTHORIZATION, OIDC_TOKEN_PERSON_USER_TEST);
+		headers.add("Nav-Consumer-Token", OIDC_TOKEN_SERVICE_USER_TEST);
+		return headers;
+	}
 
-    protected void abacDeny() {
-        stubFor(post(urlEqualTo("/abac"))
-                .willReturn(aResponse().withStatus(HttpStatus.OK.value())
-                        .withHeader(org.apache.http.HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                        .withBodyFile("abac/abac-deny.json")));
-    }
+	protected void abacDeny() {
+		stubFor(post(urlEqualTo("/abac"))
+				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
+						.withHeader(org.apache.http.HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+						.withBodyFile("abac/abac-deny.json")));
+	}
 
-    protected void abacPermit() {
-        stubFor(post(urlEqualTo("/abac"))
-                .willReturn(aResponse().withStatus(HttpStatus.OK.value())
-                        .withHeader(org.apache.http.HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                        .withBodyFile("abac/abac-permit.json")));
-    }
+	protected void abacPermit() {
+		stubFor(post(urlEqualTo("/abac"))
+				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
+						.withHeader(org.apache.http.HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+						.withBodyFile("abac/abac-permit.json")));
+	}
 
-    protected String stringFromClasspath(String resourcename) throws IOException {
-        return IOUtils.toString(this.getClass().getClassLoader().getResourceAsStream(resourcename));
-    }
+	protected String stringFromClasspath(String resourcename) throws IOException {
+		return IOUtils.toString(this.getClass().getClassLoader().getResourceAsStream(resourcename));
+	}
 
-    protected String getOidcTokenBody(String oidcToken) {
-        return JWT.decode(oidcToken).getPayload();
-    }
+	protected String getOidcTokenBody(String oidcToken) {
+		return JWT.decode(oidcToken).getPayload();
+	}
 }

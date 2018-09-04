@@ -39,7 +39,8 @@ public class UpdateInngaaendeJournalpostService {
 	private final PutInngaaendeJournalpostMapper putInngaaendeJournalpostMapper;
 
 	@Inject
-	public UpdateInngaaendeJournalpostService(JoarkRepository joarkRepository, PutInngaaendeJournalpostMapper putInngaaendeJournalpostMapper) {
+	public UpdateInngaaendeJournalpostService(JoarkRepository joarkRepository,
+											  PutInngaaendeJournalpostMapper putInngaaendeJournalpostMapper) {
 		this.joarkRepository = joarkRepository;
 		this.putInngaaendeJournalpostMapper = putInngaaendeJournalpostMapper;
 	}
@@ -69,8 +70,7 @@ public class UpdateInngaaendeJournalpostService {
 				journalpost.setJournalstatus(JournalStatusCode.J);
 				journalpost.setJournalDato(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()));
 				journalpost.setJournalForendeEnhetId(putJournalpostRequest.getJournalfEnhet());
-				journalpost.setJournalfortAvNavn(MDC_USER_ID);
-				journalpost.setEndretAvNavn(MDC_USER_ID);
+				journalpost.setEndretAvNavn(MDC.get(MDC_USER_ID));
 				journalpost.setEndretKildeNavn(MDC.get(MDC_CONSUMER_ID));
 				response.setHarEndeligJF(true);
 			}

@@ -1,5 +1,7 @@
 package no.nav.dokarkiv.journalfoerinngaaende.v1.service;
 
+import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
+import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
 import static no.nav.dokarkiv.journalfoerinngaaende.v1.util.Utils.assertDokumentInfoNotNull;
 import static no.nav.dokarkiv.journalfoerinngaaende.v1.util.Utils.assetJournalpostIsInngaaende;
 import static no.nav.dokarkiv.journalfoerinngaaende.v1.util.Utils.convertStringToLong;
@@ -14,6 +16,7 @@ import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
+import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
@@ -65,17 +68,26 @@ public class UpdateInngaaendeJournalpostDokumentService {
 	}
 
 	private void updateValues(PutDokumentRequest request, DokumentInfo dokumentInfo) {
+		boolean endret = false;
 		if (isNotBlank(request.getDokumentTypeId())) {
 			dokumentInfo.setDokumenttypeId(request.getDokumentTypeId());
+			endret = true;
 		}
 		if (isNotBlank(request.getNavSkjemaId())) {
 			dokumentInfo.setBrevkode(request.getNavSkjemaId());
+			endret = true;
 		}
 		if (isNotBlank(request.getTittel())) {
 			dokumentInfo.setTittel(request.getTittel());
+			endret = true;
 		}
 		if (isNotBlank(request.getDokumentKategori())) {
 			dokumentInfo.setKategori(DokumentKategoriCode.valueOf(request.getDokumentKategori()));
+			endret = true;
+		}
+		if (endret) {
+			dokumentInfo.setEndretAvNavn(MDC.get(MDC_USER_ID));
+			dokumentInfo.setEndretKildeNavn(MDC.get(MDC_CONSUMER_ID));
 		}
 
 	}

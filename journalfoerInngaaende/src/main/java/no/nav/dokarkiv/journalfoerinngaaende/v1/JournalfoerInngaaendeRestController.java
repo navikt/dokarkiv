@@ -79,7 +79,6 @@ public class JournalfoerInngaaendeRestController {
 			resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_JOURNALPOST)})
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "tjoark070_getInngaaendeJournalpost"}, percentiles = {0.5, 0.95})
 	public GetJournalpostResponse getInngaaendeJournalpost(@PathVariable String journalpostId) {
-		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
 		log.info("tjoark070 har mottatt kall om å hente journalpost med journalpostId={} fra Joark.", journalpostId);
 		validateId(journalpostId, "journalpostId");
 		abacSecurityService.assertAccessToJournalpost(journalpostId);
