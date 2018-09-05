@@ -50,7 +50,7 @@ import java.io.IOException;
  */
 public class JournalfoerInngaaendeV1IT extends AbstractJournalfoerInngaaendeV1Itest {
 
-	private static final String JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER = "/rest/journalfoer-inngaaende/v1/journalposter/";
+	private static final String JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER = "/rest/abac/journalfoer-inngaaende/v1/journalposter/";
 	private ObjectMapper mapper = new ObjectMapper();
 
 	/******************************
