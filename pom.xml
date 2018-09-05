@@ -26,7 +26,7 @@
 		<module>inngaaendejournal</module>
 		<module>behandleinngaaendejournal</module>
 		<module>journal</module>
-		<module>journalfoerInngaaende</module>
+		<module>journalfoerinngaaende</module>
 		<module>hentdokument</module>
 	</modules>
 
@@ -111,7 +111,7 @@
 			</dependency>
 			<dependency>
 				<groupId>no.nav.dokarkiv</groupId>
-				<artifactId>journalfoerInngaaende</artifactId>
+				<artifactId>journalfoerinngaaende</artifactId>
 				<version>1-SNAPSHOT</version>
 			</dependency>
 			<dependency>

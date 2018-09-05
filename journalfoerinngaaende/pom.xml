@@ -9,7 +9,7 @@
 		<version>1-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>journalfoerInngaaende</artifactId>
+	<artifactId>journalfoerinngaaende</artifactId>
 
 	<dependencies>
 		<dependency>
