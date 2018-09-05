@@ -518,7 +518,7 @@ public class JournalfoerInngaaendeV1IT extends AbstractJournalfoerInngaaendeV1It
 	@Test
 	public void shouldPostLogiskVedlegg() throws Exception {
 		abacPermit();
-		PostLogiskVedleggRequest request = mapper.readValue(classpathToString("__files/put_logiskvedlegg/post_logisk_vedlegg_happy_input_request.json"), PostLogiskVedleggRequest.class);
+		PostLogiskVedleggRequest request = mapper.readValue(classpathToString("__files/logiskvedlegg/post_logisk_vedlegg_happy_input_request.json"), PostLogiskVedleggRequest.class);
 
 		Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.J));
 
@@ -551,7 +551,7 @@ public class JournalfoerInngaaendeV1IT extends AbstractJournalfoerInngaaendeV1It
 	@Test
 	public void shouldReturnForbiddenBrukerHarIkkeTilgangTilJournalpostPostLogiskVedlegg() throws IOException {
 		abacDeny();
-		PostLogiskVedleggRequest request = mapper.readValue(classpathToString("__files/put_logiskvedlegg/post_logisk_vedlegg_happy_input_request.json"), PostLogiskVedleggRequest.class);
+		PostLogiskVedleggRequest request = mapper.readValue(classpathToString("__files/logiskvedlegg/post_logisk_vedlegg_happy_input_request.json"), PostLogiskVedleggRequest.class);
 
 		Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.J));
 
@@ -578,7 +578,7 @@ public class JournalfoerInngaaendeV1IT extends AbstractJournalfoerInngaaendeV1It
 	@Test
 	public void shouldReturnBadRequestJournalpostErIkkeAvTypenInngaaendePostLogiskVedlegg() throws IOException {
 		abacPermit();
-		PostLogiskVedleggRequest request = mapper.readValue(classpathToString("__files/put_logiskvedlegg/post_logisk_vedlegg_happy_input_request.json"), PostLogiskVedleggRequest.class);
+		PostLogiskVedleggRequest request = mapper.readValue(classpathToString("__files/logiskvedlegg/post_logisk_vedlegg_happy_input_request.json"), PostLogiskVedleggRequest.class);
 
 		Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.U, JournalStatusCode.J));
 
@@ -636,7 +636,7 @@ public class JournalfoerInngaaendeV1IT extends AbstractJournalfoerInngaaendeV1It
 	@Test
 	public void shouldUpdateLogiskVedlegg() throws Exception {
 		abacPermit();
-		PutLogiskVedleggRequest request = mapper.readValue(classpathToString("__files/put_logiskvedlegg/put_logisk_vedlegg_happy_input_request.json"), PutLogiskVedleggRequest.class);
+		PutLogiskVedleggRequest request = mapper.readValue(classpathToString("__files/logiskvedlegg/put_logisk_vedlegg_happy_input_request.json"), PutLogiskVedleggRequest.class);
 
 		Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.J));
 
@@ -679,7 +679,7 @@ public class JournalfoerInngaaendeV1IT extends AbstractJournalfoerInngaaendeV1It
 	@Test
 	public void shouldReturnForbiddenBrukerHarIkkeTilgangTilJournalpostPutLogiskVedlegg() throws IOException {
 		abacDeny();
-		PutLogiskVedleggRequest request = mapper.readValue(classpathToString("__files/put_logiskvedlegg/put_logisk_vedlegg_happy_input_request.json"), PutLogiskVedleggRequest.class);
+		PutLogiskVedleggRequest request = mapper.readValue(classpathToString("__files/logiskvedlegg/put_logisk_vedlegg_happy_input_request.json"), PutLogiskVedleggRequest.class);
 
 		Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.J));
 
@@ -715,7 +715,7 @@ public class JournalfoerInngaaendeV1IT extends AbstractJournalfoerInngaaendeV1It
 	@Test
 	public void shouldReturnBadRequestJournalpostErIkkeAvTypenInngaaendePutLogiskVedlegg() throws IOException {
 		abacPermit();
-		PutLogiskVedleggRequest request = mapper.readValue(classpathToString("__files/put_logiskvedlegg/put_logisk_vedlegg_happy_input_request.json"), PutLogiskVedleggRequest.class);
+		PutLogiskVedleggRequest request = mapper.readValue(classpathToString("__files/logiskvedlegg/put_logisk_vedlegg_happy_input_request.json"), PutLogiskVedleggRequest.class);
 
 		Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.U, JournalStatusCode.J));
 
