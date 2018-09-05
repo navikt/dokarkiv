@@ -2,9 +2,6 @@ package no.nav.dokarkiv.journalfoerinngaaende.v1.service;
 
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
-import static no.nav.dokarkiv.journalfoerinngaaende.v1.util.Utils.assertDokumentInfoNotNull;
-import static no.nav.dokarkiv.journalfoerinngaaende.v1.util.Utils.assetJournalpostIsInngaaende;
-import static no.nav.dokarkiv.journalfoerinngaaende.v1.util.Utils.convertStringToLong;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 import no.nav.dok.tjenester.journalfoerinngaaende.PutDokumentRequest;
@@ -16,6 +13,7 @@ import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
+import no.nav.dokarkiv.journalfoerinngaaende.v1.util.Utils;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 
@@ -42,18 +40,18 @@ public class UpdateInngaaendeJournalpostDokumentService {
 	}
 
 	public PutDokumentResponse update(String journalpostIdString, String dokumentIdString, PutDokumentRequest request) {
-		Long journalpostId = convertStringToLong(journalpostIdString, "journalpostId");
-		Long dokumentId = convertStringToLong(dokumentIdString, "dokumentId");
+		Long journalpostId = Utils.convertStringToLong(journalpostIdString, "journalpostId");
+		Long dokumentId = Utils.convertStringToLong(dokumentIdString, "dokumentId");
 
 		validateDokumentKategori(request.getDokumentKategori(), journalpostIdString, dokumentIdString);
 
 		Journalpost journalpost = joarkRepository.findById(journalpostId)
 				.orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostIdString)));
 
-		assetJournalpostIsInngaaende(journalpost);
+		Utils.assetJournalpostIsInngaaende(journalpost);
 
 		DokumentInfo dokumentInfo = journalpost.getDokumentInfoFromJpDokInfoRelasjonerByDokumentInfoId(dokumentId);
-		assertDokumentInfoNotNull(dokumentInfo, journalpostIdString, dokumentIdString);
+		Utils.assertDokumentInfoNotNull(dokumentInfo, journalpostIdString, dokumentIdString);
 
 		updateValues(request, dokumentInfo);
 		dokumentinfoRepository.save(dokumentInfo);

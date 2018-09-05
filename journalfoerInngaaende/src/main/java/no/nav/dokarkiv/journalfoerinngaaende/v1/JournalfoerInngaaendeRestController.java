@@ -7,10 +7,6 @@ import static no.nav.abac.xacml.StandardAttributter.ACTION_ID;
 import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.CREATE_ACTION;
 import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.READ_ACTION;
 import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.UPDATE_ACTION;
-import static no.nav.dokarkiv.journalfoerinngaaende.v1.util.Utils.getDokumentIds;
-import static no.nav.dokarkiv.journalfoerinngaaende.v1.util.Utils.validateId;
-import static no.nav.dokarkiv.journalfoerinngaaende.v1.util.Utils.validateIds;
-import static no.nav.dokarkiv.journalfoerinngaaende.v1.util.Utils.validateJournalpostIdAndDokumentId;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dok.tjenester.journalfoerinngaaende.GetJournalpostResponse;
@@ -25,6 +21,7 @@ import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.metrics.RestMetrics;
 import no.nav.dokarkiv.core.security.abac.AbacSecurityService;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
+import no.nav.dokarkiv.journalfoerinngaaende.v1.util.Utils;
 import no.nav.dokarkiv.journalfoerinngaaende.v1.service.GetInngaaendeJournalpostService;
 import no.nav.dokarkiv.journalfoerinngaaende.v1.service.LogiskVedleggService;
 import no.nav.dokarkiv.journalfoerinngaaende.v1.service.UpdateInngaaendeJournalpostDokumentService;
@@ -80,11 +77,11 @@ public class JournalfoerInngaaendeRestController {
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "tjoark070_getInngaaendeJournalpost"}, percentiles = {0.5, 0.95})
 	public GetJournalpostResponse getInngaaendeJournalpost(@PathVariable String journalpostId) {
 		log.info("tjoark070 har mottatt kall om å hente journalpost med journalpostId={} fra Joark.", journalpostId);
-		validateId(journalpostId, "journalpostId");
+		Utils.validateId(journalpostId, "journalpostId");
 		abacSecurityService.assertAccessToJournalpost(journalpostId);
 		GetJournalpostResponse responseTo = getInngaaendeJournalpostService.getInngaaendeJournalpostByJournalpostId(journalpostId);
 		log.info("tjoark070 har hentet journalpost med journalpostId={} og dokumentinfoId(er)={} fra Joark.",
-				journalpostId, getDokumentIds(responseTo));
+				journalpostId, Utils.getDokumentIds(responseTo));
 		return responseTo;
 	}
 
@@ -97,7 +94,7 @@ public class JournalfoerInngaaendeRestController {
 	public PutJournalpostResponse updateInngaaendeJournalpost(@PathVariable String journalpostId, @RequestBody PutJournalpostRequest request) {
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
 		log.info(String.format("tjoark070 har mottatt kall om å oppdatere inngaaende journalpost med journalpostId=%s", journalpostId));
-		validateId(journalpostId, "journalpostId");
+		Utils.validateId(journalpostId, "journalpostId");
 		abacSecurityService.assertAccessToJournalpost(journalpostId);
 		PutJournalpostResponse responseTo = updateInngaaendeJournalpostService.updateInngaaendeJournalpost(journalpostId, request);
 		log.info("tjoark070 har oppdatert journalpost med journalpostId={} i Joark.", journalpostId);
@@ -113,7 +110,7 @@ public class JournalfoerInngaaendeRestController {
 	public PutDokumentResponse updateDokument(@PathVariable String journalpostId, @PathVariable String dokumentId, @RequestBody PutDokumentRequest request) {
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
 		log.info("tjoark070 har mottat kall om å oppdatere dokument med journalpostId={} og dokumentId={}", journalpostId, dokumentId);
-		validateJournalpostIdAndDokumentId(journalpostId, dokumentId);
+		Utils.validateJournalpostIdAndDokumentId(journalpostId, dokumentId);
 		abacSecurityService.assertAccessToJournalpost(journalpostId);
 		PutDokumentResponse responseTo = updateInngaaendeJournalpostDokumentService.update(journalpostId, dokumentId, request);
 		log.info("tjoark070 har oppdatert dokument med journalpostId={} og dokumentId={} i Joark.", journalpostId, dokumentId);
@@ -129,7 +126,7 @@ public class JournalfoerInngaaendeRestController {
 	public PostLogiskVedleggResponse persistLogiskVedlegg(@PathVariable String journalpostId, @PathVariable String dokumentId, @RequestBody PostLogiskVedleggRequest request) {
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
 		log.info(String.format("tjoark070 har mottatt kall om å persistere logisk vedlegg på journalpost med journalpostId=%s og dokumentId=%s", journalpostId, dokumentId));
-		validateJournalpostIdAndDokumentId(journalpostId, dokumentId);
+		Utils.validateJournalpostIdAndDokumentId(journalpostId, dokumentId);
 		abacSecurityService.assertAccessToJournalpost(journalpostId);
 		PostLogiskVedleggResponse responseTo = logiskVedleggService.persistLogiskVedlegg(journalpostId, dokumentId, request);
 		log.info(String.format("tjoark070 persisterte logisk vedlegg med logiskVedleggId=%s. journalpostId=%s, dokumentId=%s",
@@ -146,7 +143,7 @@ public class JournalfoerInngaaendeRestController {
 	public String updateLogiskVedlegg(@PathVariable String journalpostId, @PathVariable String dokumentId, @PathVariable String logiskVedleggId, @RequestBody PutLogiskVedleggRequest request) {
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
 		log.info(String.format("tjoark070 har mottatt kall om å oppdatere logisk vedlegg med logiskVedleggId=%s på journalpost med journalpostId=%s og dokumentId=%s", logiskVedleggId, journalpostId, dokumentId));
-		validateIds(journalpostId, dokumentId, logiskVedleggId);
+		Utils.validateIds(journalpostId, dokumentId, logiskVedleggId);
 		abacSecurityService.assertAccessToJournalpost(journalpostId);
 		logiskVedleggService.updateLogiskVedlegg(journalpostId, dokumentId, logiskVedleggId, request);
 		log.info("tjoark070 oppdaterte logisk vedlegg på journalpost, journalpostId={}, dokumentinfoId={}, logiskVedleggId={}.", journalpostId, dokumentId, logiskVedleggId);
@@ -164,7 +161,7 @@ public class JournalfoerInngaaendeRestController {
 	public String deleteLogiskVedlegg(@PathVariable String journalpostId, @PathVariable String dokumentId, @PathVariable String logiskVedleggId) {
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
 		log.info(String.format("tjoark070 har mottatt kall om å slette logisk vedlegg med logiskVedleggId=%s fra journalpost med journalpostId=%s og dokumentId=%s", logiskVedleggId, journalpostId, dokumentId));
-		validateIds(journalpostId, dokumentId, logiskVedleggId);
+		Utils.validateIds(journalpostId, dokumentId, logiskVedleggId);
 		abacSecurityService.assertAccessToJournalpost(journalpostId);
 		logiskVedleggService.deleteLogiskVedlegg(journalpostId, dokumentId, logiskVedleggId);
 		log.info("tjoark070 har slettet logisk vedlegg fra journalpost, journalpostId={}, dokumentinfoId={}, logiskVedleggId={}.", journalpostId, dokumentId, logiskVedleggId);

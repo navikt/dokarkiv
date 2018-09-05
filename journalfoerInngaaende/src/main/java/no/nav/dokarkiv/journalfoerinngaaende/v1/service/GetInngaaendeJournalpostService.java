@@ -1,13 +1,11 @@
 package no.nav.dokarkiv.journalfoerinngaaende.v1.service;
 
-import static no.nav.dokarkiv.journalfoerinngaaende.v1.util.Utils.assetJournalpostIsInngaaende;
-import static no.nav.dokarkiv.journalfoerinngaaende.v1.util.Utils.convertStringToLong;
-
 import no.nav.dok.tjenester.journalfoerinngaaende.GetJournalpostResponse;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.journalfoerinngaaende.v1.map.GetInngaaendeJournalpostMapper;
+import no.nav.dokarkiv.journalfoerinngaaende.v1.util.Utils;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -29,12 +27,12 @@ public class GetInngaaendeJournalpostService {
 	}
 
 	public GetJournalpostResponse getInngaaendeJournalpostByJournalpostId(String journalpostIdString) {
-		Long journalpostId = convertStringToLong(journalpostIdString, "journalpostId");
+		Long journalpostId = Utils.convertStringToLong(journalpostIdString, "journalpostId");
 
 		Journalpost journalpost = joarkRepository.findById(journalpostId)
 				.orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostIdString)));
 
-		assetJournalpostIsInngaaende(journalpost);
+		Utils.assetJournalpostIsInngaaende(journalpost);
 
 		return getInngaaendeJournalpostMapper.map(journalpost);
 	}

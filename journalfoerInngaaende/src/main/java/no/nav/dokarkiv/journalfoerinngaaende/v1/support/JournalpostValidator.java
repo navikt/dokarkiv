@@ -1,17 +1,16 @@
 package no.nav.dokarkiv.journalfoerinngaaende.v1.support;
 
-import static no.nav.dokarkiv.journalfoerinngaaende.v1.util.Utils.assetJournalpostIsInngaaende;
-
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.DokumentUnderRedigeringException;
 import no.nav.dokarkiv.core.exceptions.InvalidJournalpostStructureException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeMidlertidigException;
 import no.nav.dokarkiv.core.exceptions.KunneIkkeEndeligJournalfoereException;
+import no.nav.dokarkiv.journalfoerinngaaende.v1.util.Utils;
 
 public class JournalpostValidator {
 
 	public static void validateJournalpostStatuser(Journalpost journalpost) {
-		assetJournalpostIsInngaaende(journalpost);
+		Utils.assetJournalpostIsInngaaende(journalpost);
 		verifyMidlertidigJournalfoert(journalpost);
 		verifyDokumentInfos(journalpost);
 	}

@@ -1,9 +1,5 @@
 package no.nav.dokarkiv.journalfoerinngaaende.v1.service;
 
-import static no.nav.dokarkiv.journalfoerinngaaende.v1.util.Utils.assertDokumentInfoNotNull;
-import static no.nav.dokarkiv.journalfoerinngaaende.v1.util.Utils.assetJournalpostIsInngaaende;
-import static no.nav.dokarkiv.journalfoerinngaaende.v1.util.Utils.convertStringToLong;
-
 import no.nav.dok.tjenester.journalfoerinngaaende.PostLogiskVedleggRequest;
 import no.nav.dok.tjenester.journalfoerinngaaende.PostLogiskVedleggResponse;
 import no.nav.dok.tjenester.journalfoerinngaaende.PutLogiskVedleggRequest;
@@ -15,6 +11,7 @@ import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.LogiskVedleggIkkeFunnetException;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.core.repository.SkannetInnholdRepository;
+import no.nav.dokarkiv.journalfoerinngaaende.v1.util.Utils;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
 
@@ -37,14 +34,14 @@ public class LogiskVedleggService {
 	}
 
 	public void deleteLogiskVedlegg(String journalpostIdString, String dokumentIdString, String logiskVedleggIdString) {
-		Long journalpostId = convertStringToLong(journalpostIdString, "journalpostId");
-		Long dokumentId = convertStringToLong(dokumentIdString, "dokumentId");
+		Long journalpostId = Utils.convertStringToLong(journalpostIdString, "journalpostId");
+		Long dokumentId = Utils.convertStringToLong(dokumentIdString, "dokumentId");
 
 		Journalpost journalpost = joarkRepository.findById(journalpostId)
 				.orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostIdString)));
 
-		assetJournalpostIsInngaaende(journalpost);
-		assertDokumentInfoNotNull(journalpost.getDokumentInfoFromJpDokInfoRelasjonerByDokumentInfoId(dokumentId), journalpostIdString, dokumentIdString);
+		Utils.assetJournalpostIsInngaaende(journalpost);
+		Utils.assertDokumentInfoNotNull(journalpost.getDokumentInfoFromJpDokInfoRelasjonerByDokumentInfoId(dokumentId), journalpostIdString, dokumentIdString);
 
 		skannetInnholdRepository.findSkannetInnholdBySkannetInnholdIdAndDokumentinfoId(logiskVedleggIdString, dokumentIdString)
 				.orElseThrow(() -> new LogiskVedleggIkkeFunnetException(String.format("Kunne ikke finne logisk vedlegg med logiskVedleggId=%s og dokumentId=%s i Joark", logiskVedleggIdString, dokumentIdString)));
@@ -53,14 +50,14 @@ public class LogiskVedleggService {
 	}
 
 	public void updateLogiskVedlegg(String journalpostIdString, String dokumentIdString, String logiskVedleggIdString, PutLogiskVedleggRequest request) {
-		Long journalpostId = convertStringToLong(journalpostIdString, "journalpostId");
-		Long dokumentId = convertStringToLong(dokumentIdString, "dokumentId");
+		Long journalpostId = Utils.convertStringToLong(journalpostIdString, "journalpostId");
+		Long dokumentId = Utils.convertStringToLong(dokumentIdString, "dokumentId");
 
 		Journalpost journalpost = joarkRepository.findById(journalpostId)
 				.orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostIdString)));
 
-		assetJournalpostIsInngaaende(journalpost);
-		assertDokumentInfoNotNull(journalpost.getDokumentInfoFromJpDokInfoRelasjonerByDokumentInfoId(dokumentId), journalpostIdString, dokumentIdString);
+		Utils.assetJournalpostIsInngaaende(journalpost);
+		Utils.assertDokumentInfoNotNull(journalpost.getDokumentInfoFromJpDokInfoRelasjonerByDokumentInfoId(dokumentId), journalpostIdString, dokumentIdString);
 
 		SkannetInnhold skannetInnhold = skannetInnholdRepository.findSkannetInnholdBySkannetInnholdIdAndDokumentinfoId(logiskVedleggIdString, dokumentIdString)
 				.orElseThrow(() -> new LogiskVedleggIkkeFunnetException(String.format("Kunne ikke finne logisk vedlegg med logiskVedleggId=%s og dokumentId=%s i Joark", logiskVedleggIdString, dokumentIdString)));
@@ -71,16 +68,16 @@ public class LogiskVedleggService {
 	}
 
 	public PostLogiskVedleggResponse persistLogiskVedlegg(String journalpostIdString, String dokumentIdString, PostLogiskVedleggRequest request) {
-		Long journalpostId = convertStringToLong(journalpostIdString, "journalpostId");
-		Long dokumentId = convertStringToLong(dokumentIdString, "dokumentId");
+		Long journalpostId = Utils.convertStringToLong(journalpostIdString, "journalpostId");
+		Long dokumentId = Utils.convertStringToLong(dokumentIdString, "dokumentId");
 
 		Journalpost journalpost = joarkRepository.findById(journalpostId)
 				.orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostIdString)));
 
-		assetJournalpostIsInngaaende(journalpost);
+		Utils.assetJournalpostIsInngaaende(journalpost);
 
 		DokumentInfo dokumentInfo = journalpost.getDokumentInfoFromJpDokInfoRelasjonerByDokumentInfoId(dokumentId);
-		assertDokumentInfoNotNull(dokumentInfo, journalpostIdString, dokumentIdString);
+		Utils.assertDokumentInfoNotNull(dokumentInfo, journalpostIdString, dokumentIdString);
 
 		SkannetInnhold skannetInnhold = SkannetInnhold.builder().vedleggInnhold(request.getTittel()).build();
 		skannetInnhold.setOpprettetKildeNavn(MDC.get(MDCConstants.MDC_CONSUMER_ID));
