@@ -1,0 +1,64 @@
+type Journalpost {
+    journalpostId: ID!
+    journalForendeEnhetId: String
+    kanalReferanseId: String
+    innhold: String
+    journalDato: String
+    fagomrade: String
+    journalstatus: String
+    tilleggsopplysninger: [GraphQlMap]
+    land: String
+    mottakskanal: String
+    utsendingskanal: String
+    avsenderMottaker: String
+    avsenderMottakerId: String
+    journalfortAvNavn: String
+    opprettetAvNavn: String
+    endretAvNavn: String
+    opprettetKildeNavn: String
+    endretKildeNavn: String
+    journalpostDokumentInfoRelasjoner: [JournalpostDokumentInfoRelasjon]
+}
+
+type DokumentInfo {
+    dokumentInfoId: ID!
+    #Dette er tittel på dokumentet
+    tittel: String
+    #Navnet på bruker som gjorde endring sist på dokumentet
+    dokumenttypeId: String
+    kategori: String
+    dokumentstatus: String
+    dokumentFerdigDato: String
+    opprettetKildeNavn: String
+    endretKildeNavn: String
+    endretAvNavn: String
+    originalJournalpost: Journalpost
+    tilleggsopplysninger: [GraphQlMap]
+    journalpostRelasjoner: [JournalpostDokumentInfoRelasjon]
+    fildetaljerListe: [FilDetaljer]
+}
+
+
+type JournalpostDokumentInfoRelasjon {
+    journalpostDokumentInfoRelasjonId: ID!
+    tilknyttetAvNavn: String
+    tilknyttetJournalpostSom: String
+    dokumentInfo: DokumentInfo
+    journalpost: Journalpost
+}
+
+type GraphQlMap {
+    key: String
+    value: String
+}
+
+type FilDetaljer {
+    fildetaljerId: ID!
+    filtype: String
+    filUuid: String
+    onDemandId: String
+    filnavn: String
+    batchNavn: String
+    filstorrelse: String
+    variantFormat: String
+}
