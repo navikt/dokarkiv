@@ -3,10 +3,12 @@ package no.nav.dokarkiv.core.security.abac;
 import no.nav.abac.xacml.NavAttributter;
 import no.nav.freg.abac.core.annotation.attribute.AbacAttributeLocator;
 import no.nav.freg.abac.core.annotation.attribute.ResolvingAbacAttributeLocator;
+import no.nav.freg.security.oidc.auth.common.OidcTokenAuthentication;
 import no.nav.modig.core.context.SubjectHandler;
 import org.apache.wss4j.common.util.DOM2Writer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -15,10 +17,12 @@ import java.util.Set;
 public class AbacDefaultConfig {
 
 	@Bean
+		//TODO: Legge til abac environment for oidc-consumer-token
 	Set<String> abacDefaultEnvironment() {
 		Set<String> values = new HashSet<>();
 		values.add(NavAttributter.ENVIRONMENT_FELLES_PEP_ID);
 		values.add(NavAttributter.ENVIRONMENT_FELLES_SAML_TOKEN);
+		values.add(NavAttributter.ENVIRONMENT_FELLES_OIDC_TOKEN_BODY);
 		return values;
 	}
 
@@ -64,4 +68,17 @@ public class AbacDefaultConfig {
 			}
 		});
 	}
+
+	@Bean
+	AbacAttributeLocator authorizationHeaderOidcTokenLocator() {
+		return new ResolvingAbacAttributeLocator(NavAttributter.ENVIRONMENT_FELLES_OIDC_TOKEN_BODY, () -> {
+			if (SecurityContextHolder.getContext().getAuthentication() == null) {
+				return null;
+			} else {
+				return ((OidcTokenAuthentication) SecurityContextHolder.getContext().getAuthentication()).getIdTokenBody();
+			}
+		});
+	}
+
+	//TODO: Legge til abac environment for oidc-consumer-token|
 }

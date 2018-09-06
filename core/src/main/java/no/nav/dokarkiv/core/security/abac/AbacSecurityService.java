@@ -1,5 +1,7 @@
 package no.nav.dokarkiv.core.security.abac;
 
+import static no.nav.abac.xacml.NavAttributter.ENVIRONMENT_FELLES_OIDC_TOKEN_BODY;
+import static no.nav.abac.xacml.NavAttributter.ENVIRONMENT_FELLES_SAML_TOKEN;
 import static no.nav.abac.xacml.NavAttributter.RESOURCE_ARKIV_GSAK_SAKSID;
 import static no.nav.abac.xacml.NavAttributter.RESOURCE_ARKIV_PENSJON_SAKSID;
 import static no.nav.abac.xacml.NavAttributter.RESOURCE_FELLES_PERSON_TILKNYTTET_FNR;
@@ -12,6 +14,7 @@ import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.logging.AbacLogger;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.freg.abac.core.annotation.context.AbacContext;
+import no.nav.freg.abac.core.dto.request.XacmlAttribute;
 import no.nav.freg.abac.core.dto.request.XacmlRequest;
 import no.nav.freg.abac.core.dto.response.Decision;
 import no.nav.freg.abac.core.dto.response.XacmlResponse;
@@ -55,6 +58,7 @@ public class AbacSecurityService {
 			throw new JournalpostIkkeFunnetException("Journalpost ikke funnet. journalpostId=" + journalpostId);
 		}
 
+		setAbacEnvironment(abacContext.getRequest());
 		AbacResources abacResources = jdbcAbacSecurityRepository.findAbacResources(journalpostId);
 		decorateJoarkResources(abacContext.getRequest(), abacResources, journalpostId);
 		XacmlResponse accessResponse = abacService.evaluate(abacContext.getRequest());
@@ -66,6 +70,7 @@ public class AbacSecurityService {
 	}
 
 	public Decision assertAccessToSak(XacmlRequest abacRequest, String sakId, FagsystemCode fagsystemCode) {
+		setAbacEnvironment(abacRequest);
 		AbacResources abacResources = new AbacResources();
 		abacResources.setFagsystem(fagsystemCode);
 		abacResources.setSakId(sakId);
@@ -124,6 +129,22 @@ public class AbacSecurityService {
 				abaclog.logAbacPermit(abacRequest, response, resources);
 			}
 			return response.getDecision();
+		}
+	}
+
+	/**
+	 * By default, both ENVIRONMENT_FELLES_SAML_TOKEN and ENVIRONMENT_FELLES_OIDC_TOKEN_BODY are set as environment in
+	 * AbacDefaultConfig.java. At that point we do not know whether the incomming request is a SOAP or a REST request.
+	 * At this point we know, because either the value of ENVIRONMENT_FELLES_SAML_TOKEN or the value of ENVIRONMENT_FELLES_OIDC_TOKEN_BODY
+	 * should have been set, depending on the type of the incoming request.
+	 **/
+	private void setAbacEnvironment(XacmlRequest request) {
+		XacmlAttribute oidcTokenAttribute = request.getEnvironment().get(ENVIRONMENT_FELLES_OIDC_TOKEN_BODY);
+
+		if (oidcTokenAttribute != null && oidcTokenAttribute.getValue().toString().isEmpty()) {
+			request.getEnvironment().remove(ENVIRONMENT_FELLES_OIDC_TOKEN_BODY);
+		} else if (oidcTokenAttribute != null) {
+			request.getEnvironment().remove(ENVIRONMENT_FELLES_SAML_TOKEN);
 		}
 	}
 
