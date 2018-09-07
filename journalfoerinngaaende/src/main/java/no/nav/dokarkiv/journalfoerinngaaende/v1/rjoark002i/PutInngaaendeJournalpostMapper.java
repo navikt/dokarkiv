@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.journalfoerinngaaende.v1.map;
+package no.nav.dokarkiv.journalfoerinngaaende.v1.rjoark002i;
 
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
@@ -7,6 +7,7 @@ import static org.apache.logging.log4j.util.Strings.isNotBlank;
 import no.nav.dok.tjenester.journalfoerinngaaende.PutJournalpostRequest;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
+import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
 import no.nav.dokarkiv.core.domain.entities.Bruker;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
@@ -18,7 +19,7 @@ import javax.inject.Inject;
 import java.util.Set;
 
 @Component
-public class PutInngaaendeJournalpostMapper extends AbstractInngaaendeJournalpostMapper {
+public class PutInngaaendeJournalpostMapper {
 
 	@Inject
 	private BrukerRepository brukerRepository;
@@ -76,6 +77,29 @@ public class PutInngaaendeJournalpostMapper extends AbstractInngaaendeJournalpos
 			if (newSak) {
 				journalpost.setSaksrelasjon(saksrelasjon);
 			}
+		}
+	}
+
+	protected String mapFagsystemCodeToArkivSakSystem(FagsystemCode fagsystemCode) {
+		if (fagsystemCode.equals(FagsystemCode.FS22)) {
+			return ArkivsystemKode.GSAK.name();
+		} else if (fagsystemCode.equals(FagsystemCode.PEN)) {
+			return ArkivsystemKode.PSAK.name();
+		} else {
+			return fagsystemCode.name();
+		}
+	}
+
+	private enum ArkivsystemKode {
+		GSAK,
+		PSAK
+	}
+
+	protected FagsystemCode mapArkivSakSystemToFagsystemCode(String arkivSakSystem) {
+		if (ArkivsystemKode.GSAK.name().equals(arkivSakSystem)) {
+			return FagsystemCode.FS22;
+		} else {
+			return FagsystemCode.PEN;
 		}
 	}
 

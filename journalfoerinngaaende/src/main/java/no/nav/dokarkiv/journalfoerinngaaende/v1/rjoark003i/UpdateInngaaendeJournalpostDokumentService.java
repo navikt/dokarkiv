@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.journalfoerinngaaende.v1.service;
+package no.nav.dokarkiv.journalfoerinngaaende.v1.rjoark003i;
 
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
@@ -29,8 +29,8 @@ public class UpdateInngaaendeJournalpostDokumentService {
 	private final List<String> validDokumentKategorier = Arrays.asList(DokumentKategoriCode.SED.name(), DokumentKategoriCode.SOK
 			.name(), DokumentKategoriCode.KA.name(), DokumentKategoriCode.IS.name());
 
-	private DokumentinfoRepository dokumentinfoRepository;
-	private JoarkRepository joarkRepository;
+	private final DokumentinfoRepository dokumentinfoRepository;
+	private final JoarkRepository joarkRepository;
 
 	@Inject
 	public UpdateInngaaendeJournalpostDokumentService(DokumentinfoRepository dokumentinfoRepository,
@@ -48,7 +48,7 @@ public class UpdateInngaaendeJournalpostDokumentService {
 		Journalpost journalpost = joarkRepository.findById(journalpostId)
 				.orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostIdString)));
 
-		Utils.assetJournalpostIsInngaaende(journalpost);
+		Utils.assertJournalpostIsInngaaende(journalpost);
 
 		DokumentInfo dokumentInfo = journalpost.getDokumentInfoFromJpDokInfoRelasjonerByDokumentInfoId(dokumentId);
 		Utils.assertDokumentInfoNotNull(dokumentInfo, journalpostIdString, dokumentIdString);

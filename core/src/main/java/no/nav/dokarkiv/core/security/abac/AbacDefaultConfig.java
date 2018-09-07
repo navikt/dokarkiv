@@ -16,8 +16,8 @@ import java.util.Set;
 @Configuration
 public class AbacDefaultConfig {
 
+	//TODO: Legge til abac environment for oidc-consumer-token
 	@Bean
-		//TODO: Legge til abac environment for oidc-consumer-token
 	Set<String> abacDefaultEnvironment() {
 		Set<String> values = new HashSet<>();
 		values.add(NavAttributter.ENVIRONMENT_FELLES_PEP_ID);

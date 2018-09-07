@@ -10,7 +10,7 @@ import no.nav.dokarkiv.journalfoerinngaaende.v1.util.Utils;
 public class JournalpostValidator {
 
 	public static void validateJournalpostStatuser(Journalpost journalpost) {
-		Utils.assetJournalpostIsInngaaende(journalpost);
+		Utils.assertJournalpostIsInngaaende(journalpost);
 		verifyMidlertidigJournalfoert(journalpost);
 		verifyDokumentInfos(journalpost);
 	}
@@ -42,7 +42,7 @@ public class JournalpostValidator {
 		try {
 			journalpost.verifyOnlyOneHoveddokument();
 		} catch (InvalidJournalpostStructureException e) {
-			throw new KunneIkkeEndeligJournalfoereException(String.format("Kunne ikke endelig journalfoere: Journalpost med journalpostId=%s inneholder null eller flere enn ett hoveddokument",
+			throw new KunneIkkeEndeligJournalfoereException(String.format("Kunne ikke endelig journalføre: Journalpost med journalpostId=%s inneholder null eller flere enn ett hoveddokument",
 					journalpost.getJournalpostId()));
 		}
 	}
@@ -51,14 +51,14 @@ public class JournalpostValidator {
 		try {
 			journalpost.verifyArkivVariantOfAllDocuments();
 		} catch (InvalidJournalpostStructureException e) {
-			throw new KunneIkkeEndeligJournalfoereException(String.format("Kunne ikke endelig journalfoere: Journalpost med journalpostId=%s mangler arkivvariant",
+			throw new KunneIkkeEndeligJournalfoereException(String.format("Kunne ikke endelig journalføre: Journalpost med journalpostId=%s mangler arkivvariant",
 					journalpost.getJournalpostId()));
 		}
 		journalpost.getJournalpostDokumentInfoRelasjoner().forEach(dr -> {
 			try {
 				dr.getDokumentInfo().verifyNoVariantDuplicates();
 			} catch (InvalidJournalpostStructureException e) {
-				throw new KunneIkkeEndeligJournalfoereException(String.format("Kunne ikke endelig journalfoere: Journalpost med journalpostId=%s inneholder flere fildetaljer med samme variantformat",
+				throw new KunneIkkeEndeligJournalfoereException(String.format("Kunne ikke endelig journalføre: Journalpost med journalpostId=%s inneholder flere fildetaljer med samme variantformat",
 						journalpost.getJournalpostId()));
 			}
 		});

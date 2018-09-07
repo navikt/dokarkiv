@@ -21,11 +21,11 @@ import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.metrics.RestMetrics;
 import no.nav.dokarkiv.core.security.abac.AbacSecurityService;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
+import no.nav.dokarkiv.journalfoerinngaaende.v1.rjoark001i.GetInngaaendeJournalpostService;
+import no.nav.dokarkiv.journalfoerinngaaende.v1.rjoark002i.UpdateInngaaendeJournalpostService;
+import no.nav.dokarkiv.journalfoerinngaaende.v1.rjoark003i.UpdateInngaaendeJournalpostDokumentService;
+import no.nav.dokarkiv.journalfoerinngaaende.v1.rjoark004i.LogiskVedleggService;
 import no.nav.dokarkiv.journalfoerinngaaende.v1.util.Utils;
-import no.nav.dokarkiv.journalfoerinngaaende.v1.service.GetInngaaendeJournalpostService;
-import no.nav.dokarkiv.journalfoerinngaaende.v1.service.LogiskVedleggService;
-import no.nav.dokarkiv.journalfoerinngaaende.v1.service.UpdateInngaaendeJournalpostDokumentService;
-import no.nav.dokarkiv.journalfoerinngaaende.v1.service.UpdateInngaaendeJournalpostService;
 import no.nav.freg.abac.core.annotation.Abac;
 import org.slf4j.MDC;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,11 +50,11 @@ import javax.inject.Inject;
 @RequestMapping("/rest/abac/journalfoer-inngaaende/v1/journalposter")
 public class JournalfoerInngaaendeRestController {
 
-	private GetInngaaendeJournalpostService getInngaaendeJournalpostService;
-	private UpdateInngaaendeJournalpostService updateInngaaendeJournalpostService;
-	private LogiskVedleggService logiskVedleggService;
-	private AbacSecurityService abacSecurityService;
-	private UpdateInngaaendeJournalpostDokumentService updateInngaaendeJournalpostDokumentService;
+	private final GetInngaaendeJournalpostService getInngaaendeJournalpostService;
+	private final UpdateInngaaendeJournalpostService updateInngaaendeJournalpostService;
+	private final LogiskVedleggService logiskVedleggService;
+	private final AbacSecurityService abacSecurityService;
+	private final UpdateInngaaendeJournalpostDokumentService updateInngaaendeJournalpostDokumentService;
 
 	@Inject
 	public JournalfoerInngaaendeRestController(GetInngaaendeJournalpostService getInngaaendeJournalpostService,
@@ -72,9 +72,9 @@ public class JournalfoerInngaaendeRestController {
 	@Transactional(readOnly = true)
 	@ResponseBody
 	@GetMapping(value = "/{journalpostId}")
-	@Abac(actions = @Abac.Attr(key = ACTION_ID, value = READ_ACTION),
-			resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_JOURNALPOST)})
-	@RestMetrics(value = "dok_request", extraTags = {"process_code", "tjoark070_getInngaaendeJournalpost"}, percentiles = {0.5, 0.95})
+	@Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_JOURNALPOST)},
+			actions = @Abac.Attr(key = ACTION_ID, value = READ_ACTION))
+	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark001i"}, percentiles = {0.5, 0.95})
 	public GetJournalpostResponse getInngaaendeJournalpost(@PathVariable String journalpostId) {
 		log.info("tjoark070 har mottatt kall om å hente journalpost med journalpostId={} fra Joark.", journalpostId);
 		Utils.validateId(journalpostId, "journalpostId");
@@ -88,9 +88,9 @@ public class JournalfoerInngaaendeRestController {
 	@Transactional
 	@ResponseBody
 	@PutMapping(value = "/{journalpostId}")
-	@Abac(actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION),
-			resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_JOURNALPOST)})
-	@RestMetrics(value = "dok_request", extraTags = {"process_code", "tjoark070_updateInngaaendeJournalpost"}, percentiles = {0.5, 0.95})
+	@Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_JOURNALPOST)},
+			actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION))
+	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark002i"}, percentiles = {0.5, 0.95})
 	public PutJournalpostResponse updateInngaaendeJournalpost(@PathVariable String journalpostId, @RequestBody PutJournalpostRequest request) {
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
 		log.info(String.format("tjoark070 har mottatt kall om å oppdatere inngaaende journalpost med journalpostId=%s", journalpostId));
@@ -104,9 +104,9 @@ public class JournalfoerInngaaendeRestController {
 	@Transactional
 	@ResponseBody
 	@PutMapping(value = "/{journalpostId}/dokumenter/{dokumentId}")
-	@Abac(actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION),
-			resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_JOURNALPOST)})
-	@RestMetrics(value = "dok_request", extraTags = {"process_code", "tjoark070_updateDocument"}, percentiles = {0.5, 0.95})
+	@Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_JOURNALPOST)},
+			actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION))
+	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark003i"}, percentiles = {0.5, 0.95})
 	public PutDokumentResponse updateDokument(@PathVariable String journalpostId, @PathVariable String dokumentId, @RequestBody PutDokumentRequest request) {
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
 		log.info("tjoark070 har mottat kall om å oppdatere dokument med journalpostId={} og dokumentId={}", journalpostId, dokumentId);
@@ -120,29 +120,29 @@ public class JournalfoerInngaaendeRestController {
 	@Transactional
 	@ResponseBody
 	@PostMapping(value = "/{journalpostId}/dokumenter/{dokumentId}/logiskeVedlegg")
-	@Abac(actions = @Abac.Attr(key = ACTION_ID, value = CREATE_ACTION),
-			resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_JOURNALPOST)})
-	@RestMetrics(value = "dok_request", extraTags = {"process_code", "tjoark070_persistLogiskVedlegg"}, percentiles = {0.5, 0.95})
+	@Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_JOURNALPOST)},
+			actions = @Abac.Attr(key = ACTION_ID, value = CREATE_ACTION))
+	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark004i_post"}, percentiles = {0.5, 0.95})
 	public PostLogiskVedleggResponse persistLogiskVedlegg(@PathVariable String journalpostId, @PathVariable String dokumentId, @RequestBody PostLogiskVedleggRequest request) {
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
-		log.info(String.format("tjoark070 har mottatt kall om å persistere logisk vedlegg på journalpost med journalpostId=%s og dokumentId=%s", journalpostId, dokumentId));
+		log.info("tjoark070 har mottatt kall om å persistere logisk vedlegg på journalpost med journalpostId={} og dokumentId={}", journalpostId, dokumentId);
 		Utils.validateJournalpostIdAndDokumentId(journalpostId, dokumentId);
 		abacSecurityService.assertAccessToJournalpost(journalpostId);
 		PostLogiskVedleggResponse responseTo = logiskVedleggService.persistLogiskVedlegg(journalpostId, dokumentId, request);
-		log.info(String.format("tjoark070 persisterte logisk vedlegg med logiskVedleggId=%s. journalpostId=%s, dokumentId=%s",
-				responseTo.getLogiskVedleggId(), journalpostId, dokumentId));
+		log.info("tjoark070 persisterte logisk vedlegg med logiskVedleggId={}. journalpostId={}, dokumentId=%{}",
+				responseTo.getLogiskVedleggId(), journalpostId, dokumentId);
 		return responseTo;
 	}
 
 	@Transactional
 	@ResponseBody
 	@PutMapping(value = "/{journalpostId}/dokumenter/{dokumentId}/logiskeVedlegg/{logiskVedleggId}")
-	@Abac(actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION),
-			resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_JOURNALPOST)})
-	@RestMetrics(value = "dok_request", extraTags = {"process_code", "tjoark070_updateLogiskVedlegg"}, percentiles = {0.5, 0.95})
+	@Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_JOURNALPOST)},
+			actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION))
+	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark004i_put"}, percentiles = {0.5, 0.95})
 	public String updateLogiskVedlegg(@PathVariable String journalpostId, @PathVariable String dokumentId, @PathVariable String logiskVedleggId, @RequestBody PutLogiskVedleggRequest request) {
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
-		log.info(String.format("tjoark070 har mottatt kall om å oppdatere logisk vedlegg med logiskVedleggId=%s på journalpost med journalpostId=%s og dokumentId=%s", logiskVedleggId, journalpostId, dokumentId));
+		log.info("tjoark070 har mottatt kall om å oppdatere logisk vedlegg med logiskVedleggId={} på journalpost med journalpostId={} og dokumentId={}", logiskVedleggId, journalpostId, dokumentId);
 		Utils.validateIds(journalpostId, dokumentId, logiskVedleggId);
 		abacSecurityService.assertAccessToJournalpost(journalpostId);
 		logiskVedleggService.updateLogiskVedlegg(journalpostId, dokumentId, logiskVedleggId, request);
@@ -155,12 +155,12 @@ public class JournalfoerInngaaendeRestController {
 	@Transactional
 	@ResponseBody
 	@DeleteMapping(value = "/{journalpostId}/dokumenter/{dokumentId}/logiskeVedlegg/{logiskVedleggId}")
-	@Abac(actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION),
-			resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_JOURNALPOST)})
-	@RestMetrics(value = "dok_request", extraTags = {"process_code", "tjoark070_deleteLogiskVedlegg"}, percentiles = {0.5, 0.95})
+	@Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_JOURNALPOST)},
+			actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION))
+	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark004i_delete"}, percentiles = {0.5, 0.95})
 	public String deleteLogiskVedlegg(@PathVariable String journalpostId, @PathVariable String dokumentId, @PathVariable String logiskVedleggId) {
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
-		log.info(String.format("tjoark070 har mottatt kall om å slette logisk vedlegg med logiskVedleggId=%s fra journalpost med journalpostId=%s og dokumentId=%s", logiskVedleggId, journalpostId, dokumentId));
+		log.info("tjoark070 har mottatt kall om å slette logisk vedlegg med logiskVedleggId={} fra journalpost med journalpostId={} og dokumentId={}", logiskVedleggId, journalpostId, dokumentId);
 		Utils.validateIds(journalpostId, dokumentId, logiskVedleggId);
 		abacSecurityService.assertAccessToJournalpost(journalpostId);
 		logiskVedleggService.deleteLogiskVedlegg(journalpostId, dokumentId, logiskVedleggId);

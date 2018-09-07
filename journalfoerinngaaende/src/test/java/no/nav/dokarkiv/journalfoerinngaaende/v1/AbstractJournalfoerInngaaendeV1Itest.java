@@ -7,6 +7,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static no.nav.dokarkiv.journalfoerinngaaende.v1.security.JwtClaimsBuilderProvider.openAmClaimsBuilder;
 
 import com.auth0.jwt.JWT;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import no.nav.dokarkiv.core.CoreConfig;
 import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.domain.builder.JournalpostBuilder;
@@ -68,7 +69,8 @@ public abstract class AbstractJournalfoerInngaaendeV1Itest {
 	protected String OIDC_TOKEN_SERVICE_USER_TEST;
 	protected final String SERVICE_USER_ID = "srvdokarkiv";
 	protected final String PERSON_USER_ID = "Z990782";
-
+	protected static final String JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER = "/rest/abac/journalfoer-inngaaende/v1/journalposter/";
+	protected static final  ObjectMapper mapper = new ObjectMapper();
 	@Rule
 	public ExpectedException expectedException = ExpectedException.none();
 	@Inject

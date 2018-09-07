@@ -10,7 +10,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 
 @Configuration
 @EnableWebSecurity
-@Import(value = {FregSecurityOidcAutoConfig.class})
+@Import(value = FregSecurityOidcAutoConfig.class)
 public class SecurityRestConfig {
 
 	@Bean

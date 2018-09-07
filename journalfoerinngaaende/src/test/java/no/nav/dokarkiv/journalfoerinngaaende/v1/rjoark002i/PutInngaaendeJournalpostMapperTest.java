@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.journalfoerinngaaende.v1.map;
+package no.nav.dokarkiv.journalfoerinngaaende.v1.rjoark002i;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
