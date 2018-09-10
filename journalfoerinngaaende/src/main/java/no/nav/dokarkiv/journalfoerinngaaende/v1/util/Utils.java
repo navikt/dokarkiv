@@ -17,9 +17,9 @@ import java.util.stream.Collectors;
  */
 public class Utils {
 
-	public final static String JOURNALPOST_ID = "journalpostId";
-	public final static String DOKUMENT_ID = "dokumentId";
-	public final static String LOGISK_VEDLEGG_ID = "logiskVedleggId";
+	public static final String JOURNALPOST_ID = "journalpostId";
+	public static final String DOKUMENT_ID = "dokumentId";
+	public static final String LOGISK_VEDLEGG_ID = "logiskVedleggId";
 
 	public static void validateIds(String journalpostId, String dokumentId, String logiskVedleggId) {
 		try {
@@ -46,7 +46,7 @@ public class Utils {
 		}
 	}
 
-	public static void validateId(String journalpostId, String feltnavn) throws InputValideringFeiletException {
+	public static void validateId(String journalpostId, String feltnavn) {
 		try {
 			hasText(journalpostId, feltnavn);
 			convertStringToLong(journalpostId, feltnavn);
@@ -55,7 +55,7 @@ public class Utils {
 		}
 	}
 
-	public static Long convertStringToLong(String input, String feltnavn) throws IllegalArgumentException {
+	public static Long convertStringToLong(String input, String feltnavn) {
 		try {
 			return Long.parseLong(input);
 		} catch (Exception e) {

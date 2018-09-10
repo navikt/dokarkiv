@@ -33,7 +33,7 @@ import org.springframework.test.context.transaction.TestTransaction;
 public class Rjoark001iIT extends AbstractJournalfoerInngaaendeV1Itest {
 
 	@Test
-	public void shouldGetInngaaendeJournalpostByJournalpostId() throws Exception {
+	public void shouldGetInngaaendeJournalpostByJournalpostIdUserTokenAndServiceUserToken() throws Exception {
 		abacPermit();
 
 		Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.J));
@@ -43,9 +43,47 @@ public class Rjoark001iIT extends AbstractJournalfoerInngaaendeV1Itest {
 				JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER + journalpostId, HttpMethod.GET, createHeaders(), GetJournalpostResponse.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
-		verify(postRequestedFor(urlEqualTo("/abac")).withRequestBody(equalToJson(format(stringFromClasspath("abac/getInngaaendejournalpost.json"), getOidcTokenBody(OIDC_TOKEN_SERVICE_USER_TEST
-				.replace("Bearer ", ""))))));
+		verify(postRequestedFor(urlEqualTo("/abac")).withRequestBody(equalToJson(format(stringFromClasspath("abac/getInngaaendejournalpost_PersonUser_and_ServiceUser.json"),
+				getOidcTokenBody(OIDC_TOKEN_PERSON_USER_TEST.replace("Bearer ", "")),
+				getOidcTokenBody(OIDC_TOKEN_SERVICE_USER_TEST.replace("Bearer ", ""))))));
 		assertThat(responseEntity.getBody().getJournalTilstand(), is(GetJournalpostResponse.JournalTilstand.ENDELIG));
+	}
+
+	@Test
+	public void shouldGetInngaaendeJournalpostByJournalpostIdOnlyServiceUserToken() throws Exception {
+		abacPermit();
+
+		Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.J));
+		String journalpostId = journalpost.getJournalpostId().toString();
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.TEXT_PLAIN);
+		headers.add(HttpHeaders.AUTHORIZATION, OIDC_TOKEN_SERVICE_USER_TEST);
+
+		ResponseEntity<GetJournalpostResponse> responseEntity = restTemplate.exchange(
+				JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER + journalpostId, HttpMethod.GET, new HttpEntity(headers), GetJournalpostResponse.class);
+
+		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
+		verify(postRequestedFor(urlEqualTo("/abac")).withRequestBody(equalToJson(format(stringFromClasspath("abac/getInngaaendejournalpost_only_ServiceUser.json"),
+				getOidcTokenBody(OIDC_TOKEN_SERVICE_USER_TEST.replace("Bearer ", ""))))));
+		assertThat(responseEntity.getBody().getJournalTilstand(), is(GetJournalpostResponse.JournalTilstand.ENDELIG));
+	}
+
+	@Test
+	public void shoulFailOnlyUserToken() {
+		abacPermit();
+
+		Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.J));
+		String journalpostId = journalpost.getJournalpostId().toString();
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.TEXT_PLAIN);
+		headers.add(HttpHeaders.AUTHORIZATION, OIDC_TOKEN_PERSON_USER_TEST);
+
+		ResponseEntity<GetJournalpostResponse> responseEntity = restTemplate.exchange(
+				JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER + journalpostId, HttpMethod.GET, new HttpEntity(headers), GetJournalpostResponse.class);
+
+		assertThat(responseEntity.getStatusCode(), is(HttpStatus.UNAUTHORIZED));
 	}
 
 	/**

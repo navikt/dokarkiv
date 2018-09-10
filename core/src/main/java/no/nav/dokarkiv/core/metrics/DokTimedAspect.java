@@ -32,7 +32,6 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.function.Function;
 
@@ -145,7 +144,7 @@ public class DokTimedAspect {
 	}
 
 
-	private enum MetricsType{
+	private enum MetricsType {
 		TIMED,
 		REST_METRICS
 	}

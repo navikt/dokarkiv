@@ -1,5 +1,10 @@
 package no.nav.dokarkiv.journalfoerinngaaende.v1.rjoark003i;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
+import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.verify;
+import static java.lang.String.format;
 import static no.nav.dokarkiv.journalfoerinngaaende.v1.util.TestUtils.BREVKODE_UPDATE;
 import static no.nav.dokarkiv.journalfoerinngaaende.v1.util.TestUtils.DOKUMENT_TITTEL_UPDATE;
 import static no.nav.dokarkiv.journalfoerinngaaende.v1.util.TestUtils.DOKUMNETTYPE_ID_UPDATE;
@@ -32,13 +37,12 @@ import java.io.IOException;
 public class Rjoark003iIT extends AbstractJournalfoerInngaaendeV1Itest {
 
 	@Test
-	public void shouldUpdateDocument() {
+	public void shouldUpdateDocumentUserTokenAndServiceUserToken() throws IOException {
 		abacPermit();
 
 		Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.J));
 		String journalpostId = journalpost.getJournalpostId().toString();
 
-		HttpHeaders headers = new HttpHeaders();
 		HttpEntity httpEntity = new HttpEntity(new PutDokumentRequest().withDokumentTypeId(DOKUMNETTYPE_ID_UPDATE)
 				.withNavSkjemaId(BREVKODE_UPDATE)
 				.withTittel(DOKUMENT_TITTEL_UPDATE)
@@ -55,6 +59,10 @@ public class Rjoark003iIT extends AbstractJournalfoerInngaaendeV1Itest {
 
 		assertThat(responseEntity.getBody().getDokumentId(), is(dokumentId.toString()));
 
+		verify(postRequestedFor(urlEqualTo("/abac")).withRequestBody(equalToJson(format(stringFromClasspath("abac/putInngaaendeDokument_PersonUser_and_ServiceUser.json"),
+				getOidcTokenBody(OIDC_TOKEN_PERSON_USER_TEST.replace("Bearer ", "")),
+				getOidcTokenBody(OIDC_TOKEN_SERVICE_USER_TEST.replace("Bearer ", ""))))));
+
 		TestTransaction.start();
 		DokumentInfo dokumentInfo = dokumentinfoRepository.findById(dokumentId).get();
 		assertThat(dokumentInfo.getDokumenttypeId(), is(DOKUMNETTYPE_ID_UPDATE));
@@ -64,6 +72,76 @@ public class Rjoark003iIT extends AbstractJournalfoerInngaaendeV1Itest {
 		assertThat(dokumentInfo.getEndretAvNavn(), is(PERSON_USER_ID));
 		assertThat(dokumentInfo.getEndretKildeNavn(), is(SERVICE_USER_ID));
 		TestTransaction.end();
+	}
+
+	@Test
+	public void shouldUpdateDocumentOnlyServiceUserToken() throws IOException {
+		abacPermit();
+
+		Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.J));
+		String journalpostId = journalpost.getJournalpostId().toString();
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		headers.add(HttpHeaders.AUTHORIZATION, OIDC_TOKEN_SERVICE_USER_TEST);
+
+		HttpEntity httpEntity = new HttpEntity(new PutDokumentRequest().withDokumentTypeId(DOKUMNETTYPE_ID_UPDATE)
+				.withNavSkjemaId(BREVKODE_UPDATE)
+				.withTittel(DOKUMENT_TITTEL_UPDATE)
+				.withDokumentKategori("SED"), headers);
+
+		Long dokumentId = journalpost.getJournalpostDokumentInfoRelasjoner()
+				.iterator()
+				.next()
+				.getDokumentInfo()
+				.getDokumentInfoId();
+
+		ResponseEntity<PutDokumentResponse> responseEntity = restTemplate.exchange(
+				JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER + journalpostId + "/dokumenter/" + dokumentId, HttpMethod.PUT, httpEntity, PutDokumentResponse.class);
+
+		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
+		assertThat(responseEntity.getBody().getDokumentId(), is(dokumentId.toString()));
+
+		verify(postRequestedFor(urlEqualTo("/abac")).withRequestBody(equalToJson(format(stringFromClasspath("abac/putInngaaendeDokument_only_ServiceUser.json"),
+				getOidcTokenBody(OIDC_TOKEN_SERVICE_USER_TEST.replace("Bearer ", ""))))));
+
+		TestTransaction.start();
+		DokumentInfo dokumentInfo = dokumentinfoRepository.findById(dokumentId).get();
+		assertThat(dokumentInfo.getDokumenttypeId(), is(DOKUMNETTYPE_ID_UPDATE));
+		assertThat(dokumentInfo.getBrevkode(), is(BREVKODE_UPDATE));
+		assertThat(dokumentInfo.getTittel(), is(DOKUMENT_TITTEL_UPDATE));
+		assertThat(dokumentInfo.getKategori().name(), is("SED"));
+		assertThat(dokumentInfo.getEndretAvNavn(), is(SERVICE_USER_ID));
+		assertThat(dokumentInfo.getEndretKildeNavn(), is(SERVICE_USER_ID));
+		TestTransaction.end();
+	}
+
+	@Test
+	public void shouldfailOnlyPersonUserToken() {
+		abacPermit();
+
+		Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.J));
+		String journalpostId = journalpost.getJournalpostId().toString();
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		headers.add(HttpHeaders.AUTHORIZATION, OIDC_TOKEN_PERSON_USER_TEST);
+
+		HttpEntity httpEntity = new HttpEntity(new PutDokumentRequest().withDokumentTypeId(DOKUMNETTYPE_ID_UPDATE)
+				.withNavSkjemaId(BREVKODE_UPDATE)
+				.withTittel(DOKUMENT_TITTEL_UPDATE)
+				.withDokumentKategori("SED"), headers);
+
+		Long dokumentId = journalpost.getJournalpostDokumentInfoRelasjoner()
+				.iterator()
+				.next()
+				.getDokumentInfo()
+				.getDokumentInfoId();
+
+		ResponseEntity<PutDokumentResponse> responseEntity = restTemplate.exchange(
+				JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER + journalpostId + "/dokumenter/" + dokumentId, HttpMethod.PUT, httpEntity, PutDokumentResponse.class);
+
+		assertThat(responseEntity.getStatusCode(), is(HttpStatus.UNAUTHORIZED));
 	}
 
 	@Test

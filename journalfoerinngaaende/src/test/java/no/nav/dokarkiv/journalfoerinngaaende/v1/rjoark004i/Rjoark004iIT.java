@@ -1,5 +1,10 @@
 package no.nav.dokarkiv.journalfoerinngaaende.v1.rjoark004i;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
+import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.verify;
+import static java.lang.String.format;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
@@ -18,8 +23,10 @@ import no.nav.dokarkiv.core.domain.entities.SkannetInnhold;
 import no.nav.dokarkiv.journalfoerinngaaende.v1.AbstractJournalfoerInngaaendeV1Itest;
 import org.junit.Test;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.transaction.TestTransaction;
 
@@ -30,8 +37,12 @@ import java.io.IOException;
  */
 public class Rjoark004iIT extends AbstractJournalfoerInngaaendeV1Itest {
 
+	/***************************
+	 ** PersistLogiskVedlegg **
+	 ***************************/
+
 	@Test
-	public void shouldPostLogiskVedlegg() throws Exception {
+	public void shouldPostLogiskVedleggUserTokenAndServiceUserToken() throws Exception {
 		abacPermit();
 		PostLogiskVedleggRequest request = mapper.readValue(classpathToString("__files/logiskvedlegg/post_logisk_vedlegg_happy_input_request.json"), PostLogiskVedleggRequest.class);
 
@@ -53,6 +64,10 @@ public class Rjoark004iIT extends AbstractJournalfoerInngaaendeV1Itest {
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 		assertThat(responseEntity.getBody(), is(notNullValue()));
 
+		verify(postRequestedFor(urlEqualTo("/abac")).withRequestBody(equalToJson(format(stringFromClasspath("abac/postLogiskVedlegg_PersonUser_and_ServiceUser.json"),
+				getOidcTokenBody(OIDC_TOKEN_PERSON_USER_TEST.replace("Bearer ", "")),
+				getOidcTokenBody(OIDC_TOKEN_SERVICE_USER_TEST.replace("Bearer ", ""))))));
+
 		TestTransaction.start();
 		SkannetInnhold skannetinnhold = skannetInnholdRepository.findById(Long.parseLong(responseEntity.getBody()
 				.getLogiskVedleggId())).get();
@@ -62,6 +77,75 @@ public class Rjoark004iIT extends AbstractJournalfoerInngaaendeV1Itest {
 		assertThat(skannetinnhold.getChangeStamp().getCreatedBy(), is(PERSON_USER_ID));
 		TestTransaction.end();
 	}
+
+	@Test
+	public void shouldPostLogiskVedleggOnlyServiceUserToken() throws Exception {
+		abacPermit();
+		PostLogiskVedleggRequest request = mapper.readValue(classpathToString("__files/logiskvedlegg/post_logisk_vedlegg_happy_input_request.json"), PostLogiskVedleggRequest.class);
+
+		Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.J));
+
+		String journalpostId = journalpost.getJournalpostId().toString();
+		String dokumentId = journalpost.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
+				.iterator()
+				.next()
+				.getDokumentInfo()
+				.getDokumentInfoId()
+				.toString();
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		headers.add(HttpHeaders.AUTHORIZATION, OIDC_TOKEN_SERVICE_USER_TEST);
+
+		HttpEntity<PostLogiskVedleggRequest> requestHttpEntity = new HttpEntity<>(request, headers);
+
+		ResponseEntity<PostLogiskVedleggResponse> responseEntity = restTemplate.exchange(
+				JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER + journalpostId + "/dokumenter/" + dokumentId + "/logiskeVedlegg", HttpMethod.POST, requestHttpEntity, PostLogiskVedleggResponse.class);
+
+		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
+		assertThat(responseEntity.getBody(), is(notNullValue()));
+
+		verify(postRequestedFor(urlEqualTo("/abac")).withRequestBody(equalToJson(format(stringFromClasspath("abac/postLogiskVedlegg_only_ServiceUser.json"),
+				getOidcTokenBody(OIDC_TOKEN_SERVICE_USER_TEST.replace("Bearer ", ""))))));
+
+		TestTransaction.start();
+		SkannetInnhold skannetinnhold = skannetInnholdRepository.findById(Long.parseLong(responseEntity.getBody()
+				.getLogiskVedleggId())).get();
+
+		assertThat(skannetinnhold, is(notNullValue()));
+		assertThat(skannetinnhold.getOpprettetKildeNavn(), is(SERVICE_USER_ID));
+		assertThat(skannetinnhold.getChangeStamp().getCreatedBy(), is(SERVICE_USER_ID));
+		TestTransaction.end();
+	}
+
+	@Test
+	public void shouldFailToPostLogiskVedleggOnlyPersonUserToken() throws Exception {
+		abacPermit();
+		PostLogiskVedleggRequest request = mapper.readValue(classpathToString("__files/logiskvedlegg/post_logisk_vedlegg_happy_input_request.json"), PostLogiskVedleggRequest.class);
+
+		Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.J));
+
+		String journalpostId = journalpost.getJournalpostId().toString();
+		String dokumentId = journalpost.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
+				.iterator()
+				.next()
+				.getDokumentInfo()
+				.getDokumentInfoId()
+				.toString();
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		headers.add(HttpHeaders.AUTHORIZATION, OIDC_TOKEN_PERSON_USER_TEST);
+
+		HttpEntity<PostLogiskVedleggRequest> requestHttpEntity = new HttpEntity<>(request, headers);
+
+		ResponseEntity<PostLogiskVedleggResponse> responseEntity = restTemplate.exchange(
+				JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER + journalpostId + "/dokumenter/" + dokumentId + "/logiskeVedlegg", HttpMethod.POST, requestHttpEntity, PostLogiskVedleggResponse.class);
+
+		assertThat(responseEntity.getStatusCode(), is(HttpStatus.UNAUTHORIZED));
+		assertThat(responseEntity.getBody(), is(notNullValue()));
+	}
+
 
 	@Test
 	public void shouldReturnForbiddenBrukerHarIkkeTilgangTilJournalpostPostLogiskVedlegg() throws IOException {
@@ -149,7 +233,7 @@ public class Rjoark004iIT extends AbstractJournalfoerInngaaendeV1Itest {
 	 ***************************/
 
 	@Test
-	public void shouldUpdateLogiskVedlegg() throws Exception {
+	public void shouldUpdateLogiskVedleggUserTokenAndServiceUserToken() throws Exception {
 		abacPermit();
 		PutLogiskVedleggRequest request = mapper.readValue(classpathToString("__files/logiskvedlegg/put_logisk_vedlegg_happy_input_request.json"), PutLogiskVedleggRequest.class);
 
@@ -180,6 +264,10 @@ public class Rjoark004iIT extends AbstractJournalfoerInngaaendeV1Itest {
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 		assertThat(responseEntity.getBody(), containsString("Oppdatering av logiskVedlegg med logiskVedleggId="));
 
+		verify(postRequestedFor(urlEqualTo("/abac")).withRequestBody(equalToJson(format(stringFromClasspath("abac/putLogiskVedlegg_PersonUser_and_ServiceUser.json"),
+				getOidcTokenBody(OIDC_TOKEN_PERSON_USER_TEST.replace("Bearer ", "")),
+				getOidcTokenBody(OIDC_TOKEN_SERVICE_USER_TEST.replace("Bearer ", ""))))));
+
 		TestTransaction.start();
 		Journalpost resultJournalpost = joarkRepository.findById(Long.parseLong(journalpostId)).get();
 		SkannetInnhold skannetInnhold = resultJournalpost.getDokumentInfoFromJpDokInfoRelasjonerByDokumentInfoId(Long.parseLong(dokumentId))
@@ -189,6 +277,93 @@ public class Rjoark004iIT extends AbstractJournalfoerInngaaendeV1Itest {
 		assertThat(skannetInnhold.getEndretKildeNavn(), is(SERVICE_USER_ID));
 		assertThat(skannetInnhold.getChangeStamp().getUpdatedBy(), is(PERSON_USER_ID));
 		TestTransaction.end();
+	}
+
+	@Test
+	public void shouldUpdateLogiskVedleggOnlyServiceUserToken() throws Exception {
+		abacPermit();
+		PutLogiskVedleggRequest request = mapper.readValue(classpathToString("__files/logiskvedlegg/put_logisk_vedlegg_happy_input_request.json"), PutLogiskVedleggRequest.class);
+
+		Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.J));
+
+		String journalpostId = journalpost.getJournalpostId().toString();
+		String dokumentId = journalpost.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
+				.iterator()
+				.next()
+				.getDokumentInfo()
+				.getDokumentInfoId()
+				.toString();
+		String logiskVedleggId = journalpost.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
+				.iterator()
+				.next()
+				.getDokumentInfo()
+				.getSkannetInnholdListe()
+				.iterator()
+				.next()
+				.getSkannetInnholdId()
+				.toString();
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		headers.add(HttpHeaders.AUTHORIZATION, OIDC_TOKEN_SERVICE_USER_TEST);
+
+
+		HttpEntity<PutLogiskVedleggRequest> requestHttpEntity = new HttpEntity<>(request, headers);
+
+		ResponseEntity<String> responseEntity = restTemplate.exchange(
+				JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER + journalpostId + "/dokumenter/" + dokumentId + "/logiskeVedlegg/" + logiskVedleggId, HttpMethod.PUT, requestHttpEntity, String.class);
+
+		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
+		assertThat(responseEntity.getBody(), containsString("Oppdatering av logiskVedlegg med logiskVedleggId="));
+
+		verify(postRequestedFor(urlEqualTo("/abac")).withRequestBody(equalToJson(format(stringFromClasspath("abac/putLogiskVedlegg_only_ServiceUser.json"),
+				getOidcTokenBody(OIDC_TOKEN_SERVICE_USER_TEST.replace("Bearer ", ""))))));
+
+		TestTransaction.start();
+		Journalpost resultJournalpost = joarkRepository.findById(Long.parseLong(journalpostId)).get();
+		SkannetInnhold skannetInnhold = resultJournalpost.getDokumentInfoFromJpDokInfoRelasjonerByDokumentInfoId(Long.parseLong(dokumentId))
+				.getSkannetInnholdListe().iterator().next();
+
+		assertThat(skannetInnhold.getVedleggInnhold(), is("Dette er en tittel"));
+		assertThat(skannetInnhold.getEndretKildeNavn(), is(SERVICE_USER_ID));
+		assertThat(skannetInnhold.getChangeStamp().getUpdatedBy(), is(SERVICE_USER_ID));
+		TestTransaction.end();
+	}
+
+	@Test
+	public void shouldFailToUpdateLogiskVedleggOnlyPersonUserToken() throws Exception {
+		abacPermit();
+		PutLogiskVedleggRequest request = mapper.readValue(classpathToString("__files/logiskvedlegg/put_logisk_vedlegg_happy_input_request.json"), PutLogiskVedleggRequest.class);
+
+		Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.J));
+
+		String journalpostId = journalpost.getJournalpostId().toString();
+		String dokumentId = journalpost.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
+				.iterator()
+				.next()
+				.getDokumentInfo()
+				.getDokumentInfoId()
+				.toString();
+		String logiskVedleggId = journalpost.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
+				.iterator()
+				.next()
+				.getDokumentInfo()
+				.getSkannetInnholdListe()
+				.iterator()
+				.next()
+				.getSkannetInnholdId()
+				.toString();
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		headers.add(HttpHeaders.AUTHORIZATION, OIDC_TOKEN_PERSON_USER_TEST);
+
+		HttpEntity<PutLogiskVedleggRequest> requestHttpEntity = new HttpEntity<>(request, headers);
+
+		ResponseEntity<String> responseEntity = restTemplate.exchange(
+				JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER + journalpostId + "/dokumenter/" + dokumentId + "/logiskeVedlegg/" + logiskVedleggId, HttpMethod.PUT, requestHttpEntity, String.class);
+
+		assertThat(responseEntity.getStatusCode(), is(HttpStatus.UNAUTHORIZED));
 	}
 
 	@Test
@@ -317,7 +492,7 @@ public class Rjoark004iIT extends AbstractJournalfoerInngaaendeV1Itest {
 	 *************************/
 
 	@Test
-	public void shouldDeleteLogiskVedlegg() {
+	public void shouldDeleteLogiskVedleggUserTokenAndServiceUserToken() throws IOException {
 		abacPermit();
 
 		//Create and save testdata
@@ -354,12 +529,115 @@ public class Rjoark004iIT extends AbstractJournalfoerInngaaendeV1Itest {
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER + journalpostId + "/dokumenter/" + dokumentId + "/logiskeVedlegg/" + logiskVedleggId, HttpMethod.DELETE, createHeaders(), String.class);
 
+		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
+		verify(postRequestedFor(urlEqualTo("/abac")).withRequestBody(equalToJson(format(stringFromClasspath("abac/deleteLogiskVedlegg_PersonUser_and_ServiceUser.json"),
+				getOidcTokenBody(OIDC_TOKEN_PERSON_USER_TEST.replace("Bearer ", "")),
+				getOidcTokenBody(OIDC_TOKEN_SERVICE_USER_TEST.replace("Bearer ", ""))))));
+
+		TestTransaction.start();
+		Journalpost resultJournalpost = joarkRepository.findById(Long.parseLong(journalpostId)).get();
+		assertThat(resultJournalpost.getDokumentInfoFromJpDokInfoRelasjonerByDokumentInfoId(Long.parseLong(dokumentId))
+				.getSkannetInnholdListe().size(), is(1));
+		TestTransaction.end();
+	}
+
+	@Test
+	public void shouldDeleteLogiskVedleggOnlyServiceUserToken() throws IOException {
+		abacPermit();
+
+		//Create and save testdata
+		Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.J));
+		String journalpostId = journalpost.getJournalpostId().toString();
+		String dokumentId = journalpost.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
+				.iterator()
+				.next()
+				.getDokumentInfo()
+				.getDokumentInfoId()
+				.toString();
+		String logiskVedleggId = journalpost.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
+				.iterator()
+				.next()
+				.getDokumentInfo()
+				.getSkannetInnholdListe()
+				.iterator()
+				.next()
+				.getSkannetInnholdId()
+				.toString();
+
+		journalpost.getDokumentInfoFromJpDokInfoRelasjonerByDokumentInfoId(Long.parseLong(dokumentId))
+				.addSkannetInnhold(SkannetInnholdTestDataProvider.createSkannetInnhold().build());
+
+		TestTransaction.start();
+		joarkRepository.save(journalpost);
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		headers.add(HttpHeaders.AUTHORIZATION, OIDC_TOKEN_SERVICE_USER_TEST);
+
+		//Start test
+		assertThat(journalpost.getDokumentInfoFromJpDokInfoRelasjonerByDokumentInfoId(Long.parseLong(dokumentId))
+				.getSkannetInnholdListe().size(), is(2));
+
+		ResponseEntity<String> responseEntity = restTemplate.exchange(
+				JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER + journalpostId + "/dokumenter/" + dokumentId + "/logiskeVedlegg/" + logiskVedleggId, HttpMethod.DELETE, new HttpEntity(headers), String.class);
+
+		verify(postRequestedFor(urlEqualTo("/abac")).withRequestBody(equalToJson(format(stringFromClasspath("abac/deleteLogiskVedlegg_only_ServiceUser.json"),
+				getOidcTokenBody(OIDC_TOKEN_SERVICE_USER_TEST.replace("Bearer ", ""))))));
+
 		TestTransaction.start();
 		Journalpost resultJournalpost = joarkRepository.findById(Long.parseLong(journalpostId)).get();
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 		assertThat(resultJournalpost.getDokumentInfoFromJpDokInfoRelasjonerByDokumentInfoId(Long.parseLong(dokumentId))
 				.getSkannetInnholdListe().size(), is(1));
 		TestTransaction.end();
+	}
+
+
+	@Test
+	public void shouldFailToDeleteLogiskVedleggOnlyPersonUserToken() throws IOException {
+		abacPermit();
+
+		//Create and save testdata
+		Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.J));
+		String journalpostId = journalpost.getJournalpostId().toString();
+		String dokumentId = journalpost.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
+				.iterator()
+				.next()
+				.getDokumentInfo()
+				.getDokumentInfoId()
+				.toString();
+		String logiskVedleggId = journalpost.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
+				.iterator()
+				.next()
+				.getDokumentInfo()
+				.getSkannetInnholdListe()
+				.iterator()
+				.next()
+				.getSkannetInnholdId()
+				.toString();
+
+		journalpost.getDokumentInfoFromJpDokInfoRelasjonerByDokumentInfoId(Long.parseLong(dokumentId))
+				.addSkannetInnhold(SkannetInnholdTestDataProvider.createSkannetInnhold().build());
+
+		TestTransaction.start();
+		joarkRepository.save(journalpost);
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		headers.add(HttpHeaders.AUTHORIZATION, OIDC_TOKEN_PERSON_USER_TEST);
+
+		//Start test
+		assertThat(journalpost.getDokumentInfoFromJpDokInfoRelasjonerByDokumentInfoId(Long.parseLong(dokumentId))
+				.getSkannetInnholdListe().size(), is(2));
+
+		ResponseEntity<String> responseEntity = restTemplate.exchange(
+				JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER + journalpostId + "/dokumenter/" + dokumentId + "/logiskeVedlegg/" + logiskVedleggId, HttpMethod.DELETE, new HttpEntity(headers), String.class);
+
+		assertThat(responseEntity.getStatusCode(), is(HttpStatus.UNAUTHORIZED));
 	}
 
 	@Test
