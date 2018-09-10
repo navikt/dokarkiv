@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.hentdokument.graphql.resolvers;
+package no.nav.dokarkiv.hentjournalinfo.resolvers;
 
 import com.coxautodev.graphql.tools.GraphQLResolver;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;

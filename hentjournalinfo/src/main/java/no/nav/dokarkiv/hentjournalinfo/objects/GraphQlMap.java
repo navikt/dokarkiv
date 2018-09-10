@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.hentdokument.graphql.objects;
+package no.nav.dokarkiv.hentjournalinfo.objects;
 
 import lombok.Builder;
 import lombok.Data;

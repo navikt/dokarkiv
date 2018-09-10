@@ -1,12 +1,12 @@
 type Journalpost {
     journalpostId: ID!
     journalForendeEnhetId: String
+    journalposttype: String
+    tema: String
     kanalReferanseId: String
     innhold: String
     journalDato: String
-    fagomrade: String
     journalstatus: String
-    tilleggsopplysninger: [GraphQlMap]
     land: String
     mottakskanal: String
     utsendingskanal: String
@@ -17,6 +17,12 @@ type Journalpost {
     endretAvNavn: String
     opprettetKildeNavn: String
     endretKildeNavn: String
+    saksrelasjon: Saksrelasjon
+    behandlingsrelasjon: Behandlingsrelasjon
+    brukere: [Bruker]
+    kryssreferanser: [Kryssreferanse]
+    tilleggsopplysninger: [GraphQlMap]
+    returInfos: [ReturInfo]
     journalpostDokumentInfoRelasjoner: [JournalpostDokumentInfoRelasjon]
 }
 
@@ -26,6 +32,8 @@ type DokumentInfo {
     tittel: String
     #Navnet på bruker som gjorde endring sist på dokumentet
     dokumenttypeId: String
+    brevkode: String
+    brevgruppe: String
     kategori: String
     dokumentstatus: String
     dokumentFerdigDato: String
@@ -36,8 +44,48 @@ type DokumentInfo {
     tilleggsopplysninger: [GraphQlMap]
     journalpostRelasjoner: [JournalpostDokumentInfoRelasjon]
     fildetaljerListe: [FilDetaljer]
+    skannetInnholdListe: [SkannetInnhold]
 }
 
+type Bruker {
+    brukerInfoId: ID!
+    brukerType: String
+    brukerId: String
+}
+
+type Saksrelasjon {
+    feilregistrert: Boolean
+    fagsystem: String
+    endretAvNavn: String
+}
+
+type Kryssreferanse {
+    kryssreferanseId: Long
+    referanseId: String
+    referanseNr: Long
+    referanseType: String
+}
+
+type Behandlingsrelasjon {
+    behandlingsrelasjonId: Long
+    behandlingsId: String
+    behandlingsType: String
+}
+
+type SkannetInnhold {
+    skannetInnholdId: Long
+    vedleggNr: Int
+    vedleggInnhold: String
+    dokumenttypeid: String
+}
+
+type ReturInfo {
+    returInfoId: Long
+    returDato: String
+    adresseSendtIgjen: String
+    sendtIgjenDato: String
+    arsakRetur: String
+}
 
 type JournalpostDokumentInfoRelasjon {
     journalpostDokumentInfoRelasjonId: ID!
@@ -45,11 +93,6 @@ type JournalpostDokumentInfoRelasjon {
     tilknyttetJournalpostSom: String
     dokumentInfo: DokumentInfo
     journalpost: Journalpost
-}
-
-type GraphQlMap {
-    key: String
-    value: String
 }
 
 type FilDetaljer {
@@ -62,3 +105,9 @@ type FilDetaljer {
     filstorrelse: String
     variantFormat: String
 }
+
+type GraphQlMap {
+    key: String
+    value: String
+}
+

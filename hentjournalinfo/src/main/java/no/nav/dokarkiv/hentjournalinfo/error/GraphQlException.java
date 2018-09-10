@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.hentdokument.graphql.error;
+package no.nav.dokarkiv.hentjournalinfo.error;
 
 import graphql.ErrorType;
 import graphql.GraphQLError;

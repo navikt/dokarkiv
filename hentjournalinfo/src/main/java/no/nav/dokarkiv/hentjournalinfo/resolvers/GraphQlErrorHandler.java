@@ -1,10 +1,10 @@
-package no.nav.dokarkiv.hentdokument.graphql.resolvers;
+package no.nav.dokarkiv.hentjournalinfo.resolvers;
 
 import graphql.ErrorType;
 import graphql.ExceptionWhileDataFetching;
 import graphql.GraphQLError;
 import graphql.servlet.GraphQLErrorHandler;
-import no.nav.dokarkiv.hentdokument.graphql.error.GraphQlException;
+import no.nav.dokarkiv.hentjournalinfo.error.GraphQlException;
 import org.springframework.stereotype.Component;
 
 import java.util.List;

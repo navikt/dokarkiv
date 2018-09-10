@@ -1,11 +1,12 @@
-package no.nav.dokarkiv.hentdokument.graphql.resolvers;
+package no.nav.dokarkiv.hentjournalinfo.resolvers;
 
 import com.coxautodev.graphql.tools.GraphQLResolver;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
+import no.nav.dokarkiv.core.domain.entities.SkannetInnhold;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
-import no.nav.dokarkiv.hentdokument.graphql.objects.GraphQlMap;
+import no.nav.dokarkiv.hentjournalinfo.objects.GraphQlMap;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -49,5 +50,12 @@ public class DokumentInfoResolver implements GraphQLResolver<DokumentInfo> {
         return new ArrayList<>(dokumentinfoRepository.findById(dokumentInfo.getId())
                 .orElse(new DokumentInfo())
                 .getJournalpostRelasjoner());
+    }
+
+    @Transactional
+    public List<SkannetInnhold> skannetInnholdListe(DokumentInfo dokumentInfo) {
+        return new ArrayList<>(dokumentinfoRepository.findById(dokumentInfo.getId())
+                .orElse(new DokumentInfo())
+                .getSkannetInnholdListe());
     }
 }

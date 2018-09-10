@@ -28,6 +28,7 @@
 		<module>journal</module>
 		<module>journalfoerinngaaende</module>
 		<module>hentdokument</module>
+		<module>hentjournalinfo</module>
 	</modules>
 
 	<distributionManagement>
@@ -121,6 +122,11 @@
 			<dependency>
 				<groupId>no.nav.dokarkiv</groupId>
 				<artifactId>hentdokument</artifactId>
+				<version>1-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>no.nav.dokarkiv</groupId>
+				<artifactId>hentjournalinfo</artifactId>
 				<version>1-SNAPSHOT</version>
 			</dependency>
 			<dependency>

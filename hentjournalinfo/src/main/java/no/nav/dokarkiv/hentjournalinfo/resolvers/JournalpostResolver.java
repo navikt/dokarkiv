@@ -1,10 +1,15 @@
-package no.nav.dokarkiv.hentdokument.graphql.resolvers;
+package no.nav.dokarkiv.hentjournalinfo.resolvers;
 
 import com.coxautodev.graphql.tools.GraphQLResolver;
+import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
+import no.nav.dokarkiv.core.domain.entities.Bruker;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
+import no.nav.dokarkiv.core.domain.entities.Kryssreferanse;
+import no.nav.dokarkiv.core.domain.entities.ReturInfo;
+import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
-import no.nav.dokarkiv.hentdokument.graphql.objects.GraphQlMap;
+import no.nav.dokarkiv.hentjournalinfo.objects.GraphQlMap;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,6 +35,35 @@ public class JournalpostResolver implements GraphQLResolver<Journalpost> {
                 .getJournalpostDokumentInfoRelasjoner());
     }
 
+    @Transactional
+    public List<Kryssreferanse> kryssreferanser(Journalpost journalpost) {
+        return new ArrayList<>(joarkRepository.findById(journalpost.getJournalpostId())
+                .orElse(new Journalpost())
+                .getKryssreferanser());
+    }
+
+    @Transactional
+    public List<ReturInfo> returInfos(Journalpost journalpost) {
+        return new ArrayList<>(joarkRepository.findById(journalpost.getJournalpostId())
+                .orElse(new Journalpost())
+                .getReturInfos());
+    }
+
+    @Transactional
+    public List<Bruker> brukere(Journalpost journalpost) {
+        return new ArrayList<>(joarkRepository.findById(journalpost.getJournalpostId())
+                .orElse(new Journalpost())
+                .getBrukere());
+    }
+
+    @Transactional
+    public Saksrelasjon saksrelasjon(Journalpost journalpost) {
+        return joarkRepository.findById(journalpost.getId()).orElse(new Journalpost()).getSaksrelasjon();
+    }
+
+    public FagomradeCode tema(Journalpost journalpost) {
+        return journalpost.getFagomrade();
+    }
 
     @Transactional
     public List<GraphQlMap> tilleggsopplysninger(Journalpost journalpost) {
