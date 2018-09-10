@@ -1,4 +1,7 @@
-package no.nav.dokarkiv.journalfoerinngaaende.v1.service;
+package no.nav.dokarkiv.journalfoerinngaaende.v1.rjoark004i;
+
+import static no.nav.dokarkiv.journalfoerinngaaende.v1.util.Utils.DOKUMENT_ID;
+import static no.nav.dokarkiv.journalfoerinngaaende.v1.util.Utils.JOURNALPOST_ID;
 
 import no.nav.dok.tjenester.journalfoerinngaaende.PostLogiskVedleggRequest;
 import no.nav.dok.tjenester.journalfoerinngaaende.PostLogiskVedleggResponse;
@@ -8,9 +11,9 @@ import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.SkannetInnhold;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
-import no.nav.dokarkiv.core.exceptions.LogiskVedleggIkkeFunnetException;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.core.repository.SkannetInnholdRepository;
+import no.nav.dokarkiv.journalfoerinngaaende.v1.exceptions.LogiskVedleggIkkeFunnetException;
 import no.nav.dokarkiv.journalfoerinngaaende.v1.util.Utils;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
@@ -23,8 +26,9 @@ import javax.inject.Inject;
 @Service
 public class LogiskVedleggService {
 
-	private JoarkRepository joarkRepository;
-	private SkannetInnholdRepository skannetInnholdRepository;
+	private final JoarkRepository joarkRepository;
+	private final SkannetInnholdRepository skannetInnholdRepository;
+	private static final String JOURNALPOST_IKKE_FUNNET = "Kunne ikke finne journalpost med journalpostId=%s i joark";
 
 	@Inject
 	public LogiskVedleggService(JoarkRepository joarkRepository,
@@ -34,13 +38,13 @@ public class LogiskVedleggService {
 	}
 
 	public void deleteLogiskVedlegg(String journalpostIdString, String dokumentIdString, String logiskVedleggIdString) {
-		Long journalpostId = Utils.convertStringToLong(journalpostIdString, "journalpostId");
-		Long dokumentId = Utils.convertStringToLong(dokumentIdString, "dokumentId");
+		Long journalpostId = Utils.convertStringToLong(journalpostIdString, JOURNALPOST_ID);
+		Long dokumentId = Utils.convertStringToLong(dokumentIdString, DOKUMENT_ID);
 
 		Journalpost journalpost = joarkRepository.findById(journalpostId)
-				.orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostIdString)));
+				.orElseThrow(() -> new JournalpostIkkeFunnetException(String.format(JOURNALPOST_IKKE_FUNNET, journalpostIdString)));
 
-		Utils.assetJournalpostIsInngaaende(journalpost);
+		Utils.assertJournalpostIsInngaaende(journalpost);
 		Utils.assertDokumentInfoNotNull(journalpost.getDokumentInfoFromJpDokInfoRelasjonerByDokumentInfoId(dokumentId), journalpostIdString, dokumentIdString);
 
 		skannetInnholdRepository.findSkannetInnholdBySkannetInnholdIdAndDokumentinfoId(logiskVedleggIdString, dokumentIdString)
@@ -50,13 +54,13 @@ public class LogiskVedleggService {
 	}
 
 	public void updateLogiskVedlegg(String journalpostIdString, String dokumentIdString, String logiskVedleggIdString, PutLogiskVedleggRequest request) {
-		Long journalpostId = Utils.convertStringToLong(journalpostIdString, "journalpostId");
-		Long dokumentId = Utils.convertStringToLong(dokumentIdString, "dokumentId");
+		Long journalpostId = Utils.convertStringToLong(journalpostIdString, JOURNALPOST_ID);
+		Long dokumentId = Utils.convertStringToLong(dokumentIdString, DOKUMENT_ID);
 
 		Journalpost journalpost = joarkRepository.findById(journalpostId)
-				.orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostIdString)));
+				.orElseThrow(() -> new JournalpostIkkeFunnetException(String.format(JOURNALPOST_IKKE_FUNNET, journalpostIdString)));
 
-		Utils.assetJournalpostIsInngaaende(journalpost);
+		Utils.assertJournalpostIsInngaaende(journalpost);
 		Utils.assertDokumentInfoNotNull(journalpost.getDokumentInfoFromJpDokInfoRelasjonerByDokumentInfoId(dokumentId), journalpostIdString, dokumentIdString);
 
 		SkannetInnhold skannetInnhold = skannetInnholdRepository.findSkannetInnholdBySkannetInnholdIdAndDokumentinfoId(logiskVedleggIdString, dokumentIdString)
@@ -68,21 +72,21 @@ public class LogiskVedleggService {
 	}
 
 	public PostLogiskVedleggResponse persistLogiskVedlegg(String journalpostIdString, String dokumentIdString, PostLogiskVedleggRequest request) {
-		Long journalpostId = Utils.convertStringToLong(journalpostIdString, "journalpostId");
-		Long dokumentId = Utils.convertStringToLong(dokumentIdString, "dokumentId");
+		Long journalpostId = Utils.convertStringToLong(journalpostIdString, JOURNALPOST_ID);
+		Long dokumentId = Utils.convertStringToLong(dokumentIdString, DOKUMENT_ID);
 
 		Journalpost journalpost = joarkRepository.findById(journalpostId)
-				.orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostIdString)));
+				.orElseThrow(() -> new JournalpostIkkeFunnetException(String.format(JOURNALPOST_IKKE_FUNNET, journalpostIdString)));
 
-		Utils.assetJournalpostIsInngaaende(journalpost);
+		Utils.assertJournalpostIsInngaaende(journalpost);
 
 		DokumentInfo dokumentInfo = journalpost.getDokumentInfoFromJpDokInfoRelasjonerByDokumentInfoId(dokumentId);
 		Utils.assertDokumentInfoNotNull(dokumentInfo, journalpostIdString, dokumentIdString);
 
 		SkannetInnhold skannetInnhold = SkannetInnhold.builder().vedleggInnhold(request.getTittel()).build();
 		skannetInnhold.setOpprettetKildeNavn(MDC.get(MDCConstants.MDC_CONSUMER_ID));
-		dokumentInfo.addSkannetInnhold(skannetInnhold);
 
+		dokumentInfo.addSkannetInnhold(skannetInnhold);
 		skannetInnhold = skannetInnholdRepository.save(skannetInnhold);
 		return new PostLogiskVedleggResponse().withLogiskVedleggId(skannetInnhold.getSkannetInnholdId().toString());
 	}

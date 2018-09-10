@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.journalfoerinngaaende.v1.map;
+package no.nav.dokarkiv.journalfoerinngaaende.v1.rjoark001i;
 
 import static no.nav.dokarkiv.journalfoerinngaaende.v1.util.TestUtils.AVSENDER_ID_ORGANISASJON;
 import static no.nav.dokarkiv.journalfoerinngaaende.v1.util.TestUtils.AVSENDER_ID_PERSON;

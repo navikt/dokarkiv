@@ -17,32 +17,36 @@ import java.util.stream.Collectors;
  */
 public class Utils {
 
-	public static void validateIds(String journalpostId, String dokumentId, String logiskVedleggId) throws InputValideringFeiletException {
+	public static final String JOURNALPOST_ID = "journalpostId";
+	public static final String DOKUMENT_ID = "dokumentId";
+	public static final String LOGISK_VEDLEGG_ID = "logiskVedleggId";
+
+	public static void validateIds(String journalpostId, String dokumentId, String logiskVedleggId) {
 		try {
-			hasText(journalpostId, "journalpostId");
-			hasText(dokumentId, "dokumentId");
-			hasText(logiskVedleggId, "logiskVedleggId");
-			convertStringToLong(journalpostId, "journalpostId");
-			convertStringToLong(dokumentId, "dokumentId");
-			convertStringToLong(logiskVedleggId, "logiskVedleggId");
+			hasText(journalpostId, JOURNALPOST_ID);
+			hasText(dokumentId, DOKUMENT_ID);
+			hasText(logiskVedleggId, LOGISK_VEDLEGG_ID);
+			convertStringToLong(journalpostId, JOURNALPOST_ID);
+			convertStringToLong(dokumentId, DOKUMENT_ID);
+			convertStringToLong(logiskVedleggId, LOGISK_VEDLEGG_ID);
 		} catch (IllegalArgumentException e) {
 			throw new InputValideringFeiletException(String.format("%s. journalpostId=%s, dokumentinfoId=%s, logiskVedleggId=%s", e
 					.getMessage(), journalpostId, dokumentId, logiskVedleggId));
 		}
 	}
 
-	public static void validateJournalpostIdAndDokumentId(String journalpostId, String dokumentId) throws InputValideringFeiletException {
+	public static void validateJournalpostIdAndDokumentId(String journalpostId, String dokumentId) {
 		try {
-			hasText(journalpostId, "journalpostId");
-			hasText(dokumentId, "dokumentId");
-			convertStringToLong(journalpostId, "journalpostId");
-			convertStringToLong(dokumentId, "dokumentId");
+			hasText(journalpostId, JOURNALPOST_ID);
+			hasText(dokumentId, DOKUMENT_ID);
+			convertStringToLong(journalpostId, JOURNALPOST_ID);
+			convertStringToLong(dokumentId, DOKUMENT_ID);
 		} catch (IllegalArgumentException e) {
 			throw new InputValideringFeiletException(String.format("%s. journalpostId=%s, dokumentinfoId=%s", e.getMessage(), journalpostId, dokumentId));
 		}
 	}
 
-	public static void validateId(String journalpostId, String feltnavn) throws InputValideringFeiletException {
+	public static void validateId(String journalpostId, String feltnavn) {
 		try {
 			hasText(journalpostId, feltnavn);
 			convertStringToLong(journalpostId, feltnavn);
@@ -51,7 +55,7 @@ public class Utils {
 		}
 	}
 
-	public static Long convertStringToLong(String input, String feltnavn) throws IllegalArgumentException {
+	public static Long convertStringToLong(String input, String feltnavn) {
 		try {
 			return Long.parseLong(input);
 		} catch (Exception e) {
@@ -65,7 +69,7 @@ public class Utils {
 		}
 	}
 
-	public static void assetJournalpostIsInngaaende(Journalpost journalpost) {
+	public static void assertJournalpostIsInngaaende(Journalpost journalpost) {
 		if (!journalpost.isInngaende()) {
 			throw new JournalpostIkkeInngaaendeException(String.format("Journalpost med journalpostId=%s er ikke av type Inngaaende", journalpost
 					.getJournalpostId()));

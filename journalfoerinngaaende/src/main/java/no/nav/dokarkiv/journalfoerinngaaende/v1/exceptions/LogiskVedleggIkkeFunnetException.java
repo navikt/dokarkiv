@@ -1,5 +1,6 @@
-package no.nav.dokarkiv.core.exceptions;
+package no.nav.dokarkiv.journalfoerinngaaende.v1.exceptions;
 
+import no.nav.dokarkiv.core.exceptions.DokarkivFunctionalException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 

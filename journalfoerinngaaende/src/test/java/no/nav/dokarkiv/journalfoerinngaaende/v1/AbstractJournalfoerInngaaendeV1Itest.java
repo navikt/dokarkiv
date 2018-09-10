@@ -7,8 +7,8 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static no.nav.dokarkiv.journalfoerinngaaende.v1.security.JwtClaimsBuilderProvider.openAmClaimsBuilder;
 
 import com.auth0.jwt.JWT;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import no.nav.dokarkiv.core.CoreConfig;
-import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.domain.builder.JournalpostBuilder;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
@@ -24,13 +24,10 @@ import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
-import org.slf4j.MDC;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.ldap.AutoConfigureDataLdap;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureDataJpa;
 import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
@@ -66,9 +63,11 @@ public abstract class AbstractJournalfoerInngaaendeV1Itest {
 
 	protected String OIDC_TOKEN_PERSON_USER_TEST;
 	protected String OIDC_TOKEN_SERVICE_USER_TEST;
+	protected String NAV_CONSUMER_TOKEN = "Nav-Consumer-Token";
 	protected final String SERVICE_USER_ID = "srvdokarkiv";
 	protected final String PERSON_USER_ID = "Z990782";
-
+	protected static final String JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER = "/rest/journalfoerinngaaende/v1/journalposter/";
+	protected static final ObjectMapper mapper = new ObjectMapper();
 	@Rule
 	public ExpectedException expectedException = ExpectedException.none();
 	@Inject
@@ -82,23 +81,16 @@ public abstract class AbstractJournalfoerInngaaendeV1Itest {
 	@Inject
 	protected OidcTestService oidcTestService;
 
-
-	@Autowired
-	private TestEntityManager testEntityManager;
-
 	@Before
 	public void setUp() {
 		OIDC_TOKEN_PERSON_USER_TEST = "Bearer " + oidcTestService.createOidc(openAmClaimsBuilder().subject(PERSON_USER_ID)
 				.build());
 		OIDC_TOKEN_SERVICE_USER_TEST = "Bearer " + oidcTestService.createOidc(openAmClaimsBuilder().subject(SERVICE_USER_ID)
 				.build());
-		MDC.put(MDCConstants.MDC_USER_ID, "itest_userId");
-		MDC.put(MDCConstants.MDC_CONSUMER_ID, "Itest_consumerId");
 	}
 
 	@BeforeClass
 	public static void setupItest() {
-
 		RequestContextSetter.setRequestContext(new SimpleRequestContext.Builder()
 				.userId("itestuser")
 				.componentId("itest")
@@ -133,7 +125,8 @@ public abstract class AbstractJournalfoerInngaaendeV1Itest {
 	protected HttpEntity createHeaders() {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.TEXT_PLAIN);
-		headers.add(HttpHeaders.AUTHORIZATION, OIDC_TOKEN_SERVICE_USER_TEST);
+		headers.add(HttpHeaders.AUTHORIZATION, OIDC_TOKEN_PERSON_USER_TEST);
+		headers.add(NAV_CONSUMER_TOKEN, OIDC_TOKEN_SERVICE_USER_TEST);
 		return new HttpEntity(headers);
 	}
 
@@ -141,7 +134,7 @@ public abstract class AbstractJournalfoerInngaaendeV1Itest {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		headers.add(HttpHeaders.AUTHORIZATION, OIDC_TOKEN_PERSON_USER_TEST);
-		headers.add("Nav-Consumer-Token", OIDC_TOKEN_SERVICE_USER_TEST);
+		headers.add(NAV_CONSUMER_TOKEN, OIDC_TOKEN_SERVICE_USER_TEST);
 		return headers;
 	}
 

@@ -59,4 +59,24 @@ public class NavLdapServiceIT {
 		NavUser saksbehandler = navLdapService.findByUserId("srvdokarkiv");
 		assertThat(saksbehandler.getFullname(), is("srvdokarkiv"));
 	}
+
+	@Test
+	public void shouldReturnNameWhenServiceUserIdLookedUp() {
+		NavUser saksbehandler = navLdapService.findByServiceuserId("srvdokarkiv");
+		assertThat(saksbehandler.getFullname(), is("Service account for srvdokarkiv"));
+	}
+
+	@Test
+	public void shouldReturnNameServiceUserIdWithNoDescriptionLookedUp() {
+		NavUser saksbehandler = navLdapService.findByServiceuserId("srvtestersen");
+		assertThat(saksbehandler.getFullname(), is("test testersen"));
+	}
+
+	@Test
+	public void shouldReturnServiceUserIdAsFallbackWhenNotFound() {
+		NavUser saksbehandler = navLdapService.findByServiceuserId("abcdefgh");
+		assertThat(saksbehandler.getFullname(), is("abcdefgh"));
+	}
+
+
 }

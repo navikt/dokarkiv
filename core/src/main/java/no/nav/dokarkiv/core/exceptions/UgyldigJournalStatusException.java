@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 /**
  * @author Joakim Bjørnstad, Jbit AS
  */
-@ResponseStatus(code = HttpStatus.BAD_REQUEST) //TODO: Har vi en bedre statusCode her?
+@ResponseStatus(code = HttpStatus.METHOD_NOT_ALLOWED)
 public final class UgyldigJournalStatusException extends DokarkivFunctionalException {
 	public UgyldigJournalStatusException() {
 		super();

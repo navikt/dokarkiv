@@ -42,7 +42,7 @@ public class NavLdapService {
 		} catch(IncorrectResultSizeDataAccessException e) {
 			log.warn(format("Feilet ved oppslag av navBruker=%s i LDAP. Feilmelding=%s", userId, e.getMessage()));
 			// fallback til userId
-			return NavUser.builder().userId(userId).exists(false).build();
+			return NavUser.builder().userId(userId).userExistsInLdap(false).build();
 		}
 	}
 
@@ -53,7 +53,7 @@ public class NavLdapService {
 			return ldapTemplate.findOne(query().base(serviceuserBasedn).where("cn").is(serviceUserId), NavUser.class);
 		} catch (IncorrectResultSizeDataAccessException e) {
 			log.warn(format("Feilet ved oppslag av servicebruker=%s i LDAP. Feilmelding=%s", serviceUserId, e.getMessage()));
-			return NavUser.builder().userId(serviceUserId).exists(false).build();
+			return NavUser.builder().userId(serviceUserId).userExistsInLdap(false).build();
 		}
 	}
 }

@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.journalfoerinngaaende.v1.service;
+package no.nav.dokarkiv.journalfoerinngaaende.v1.rjoark002i;
 
 import static no.nav.dok.tjenester.journalfoerinngaaende.response.Status.MANGLER;
 import static no.nav.dok.tjenester.journalfoerinngaaende.response.Status.MANGLER_IKKE;
@@ -13,12 +13,12 @@ import no.nav.dok.tjenester.journalfoerinngaaende.PutJournalpostRequest;
 import no.nav.dok.tjenester.journalfoerinngaaende.PutJournalpostResponse;
 import no.nav.dok.tjenester.journalfoerinngaaende.response.Dokument;
 import no.nav.dok.tjenester.journalfoerinngaaende.response.Mangler;
+import no.nav.dok.tjenester.journalfoerinngaaende.response.Status;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
-import no.nav.dokarkiv.journalfoerinngaaende.v1.map.PutInngaaendeJournalpostMapper;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
 
@@ -95,39 +95,48 @@ public class UpdateInngaaendeJournalpostService {
 		});
 
 		return new Mangler()
-				.withAvsenderId(isEmpty(jp.getAvsenderMottakerId()) ? MANGLER : MANGLER_IKKE)
-				.withAvsenderNavn(isEmpty(jp.getAvsenderMottaker()) ? MANGLER : MANGLER_IKKE)
+				.withAvsenderId(decideIfMangler(jp.getAvsenderMottakerId()))
+				.withAvsenderNavn(decideIfMangler(jp.getAvsenderMottaker()))
 				.withArkivSak((jp.getSaksrelasjon() == null) ? MANGLER : MANGLER_IKKE)
-				.withTittel(isEmpty(jp.getInnhold()) ? MANGLER : MANGLER_IKKE)
+				.withTittel(decideIfMangler(jp.getInnhold()))
 				.withTema((jp.getFagomrade() == null) ? MANGLER : MANGLER_IKKE)
 				.withBruker((jp.getBrukere().isEmpty()) ? MANGLER : MANGLER_IKKE)
 				.withDokumenter(dokumentList);
 	}
 
 	private boolean containsMangler(Mangler mangler) {
+		boolean containsMangler = false;
 		if (mangler.getDokumenter()
 				.stream()
 				.anyMatch(dokument -> MANGLER.equals(dokument.getDokumentKategori()) || MANGLER.equals(dokument.getTittel()))) {
-			return true;
+			containsMangler = true;
 		}
 		if (MANGLER.equals(mangler.getAvsenderId())) {
-			return true;
+			containsMangler = true;
 		}
 		if (MANGLER.equals(mangler.getAvsenderNavn())) {
-			return true;
+			containsMangler = true;
 		}
 		if (MANGLER.equals(mangler.getArkivSak())) {
-			return true;
+			containsMangler = true;
 		}
 		if (MANGLER.equals(mangler.getTittel())) {
-			return true;
+			containsMangler = true;
 		}
 		if (MANGLER.equals(mangler.getTema())) {
-			return true;
+			containsMangler = true;
 		}
 		if (MANGLER.equals(mangler.getBruker())) {
-			return true;
+			containsMangler = true;
 		}
-		return false;
+		return containsMangler;
+	}
+
+	private Status decideIfMangler(String string) {
+		if (string == null || string.isEmpty()) {
+			return MANGLER;
+		} else {
+			return MANGLER_IKKE;
+		}
 	}
 }

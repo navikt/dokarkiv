@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.journalfoerinngaaende.v1.map;
+package no.nav.dokarkiv.journalfoerinngaaende.v1.rjoark001i;
 
 import no.nav.dok.tjenester.journalfoerinngaaende.ArkivSak;
 import no.nav.dok.tjenester.journalfoerinngaaende.Avsender;
@@ -7,6 +7,7 @@ import no.nav.dok.tjenester.journalfoerinngaaende.Dokument;
 import no.nav.dok.tjenester.journalfoerinngaaende.GetJournalpostResponse;
 import no.nav.dok.tjenester.journalfoerinngaaende.LogiskVedlegg;
 import no.nav.dok.tjenester.journalfoerinngaaende.Variant;
+import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
@@ -28,7 +29,7 @@ import java.util.stream.Collectors;
  * @author Sigurd Midttun, Visma Consulting.
  */
 @Component
-public class GetInngaaendeJournalpostMapper extends AbstractInngaaendeJournalpostMapper {
+public class GetInngaaendeJournalpostMapper {
 
 	private static final List<JournalStatusCode> MIDLERTIDIG_STATUS = Arrays.asList(JournalStatusCode.M, JournalStatusCode.MO, JournalStatusCode.UB, JournalStatusCode.OD);
 
@@ -48,18 +49,20 @@ public class GetInngaaendeJournalpostMapper extends AbstractInngaaendeJournalpos
 	}
 
 	private GetJournalpostResponse.JournalTilstand mapJournaltilstand(Journalpost journalpost) {
+		GetJournalpostResponse.JournalTilstand journaltilstand;
 		if (journalpost.isFeilregistrert()) {
-			return GetJournalpostResponse.JournalTilstand.UTGAAR;
+			journaltilstand = GetJournalpostResponse.JournalTilstand.UTGAAR;
 		} else if (journalpost.hasEndeligJournalforingStatus()) {
-			return GetJournalpostResponse.JournalTilstand.ENDELIG;
+			journaltilstand = GetJournalpostResponse.JournalTilstand.ENDELIG;
 		} else if (MIDLERTIDIG_STATUS.contains(journalpost.getJournalstatus())) {
-			return GetJournalpostResponse.JournalTilstand.MIDLERTIDIG;
+			journaltilstand = GetJournalpostResponse.JournalTilstand.MIDLERTIDIG;
 		} else if (journalpost.hasUtgaattJournalforingStatus()) {
-			return GetJournalpostResponse.JournalTilstand.UTGAAR;
+			journaltilstand = GetJournalpostResponse.JournalTilstand.UTGAAR;
 		} else {
 			throw new UgyldigJournalStatusException(String.format("Journalstatus=%s er ugyldig status for inngaaende journalpost med journalpostId=%s", journalpost
 					.getJournalstatus(), journalpost.getJournalpostId()));
 		}
+		return journaltilstand;
 	}
 
 	private ArkivSak mapArkivsak(Saksrelasjon saksrelasjon) {
@@ -76,7 +79,7 @@ public class GetInngaaendeJournalpostMapper extends AbstractInngaaendeJournalpos
 		if (brukere.isEmpty()) {
 			return new ArrayList<>();
 		} else {
-			return brukere.stream().map(bruker -> new no.nav.dok.tjenester.journalfoerinngaaende.Bruker()
+			return brukere.stream().map(bruker -> new Bruker()
 					.withIdentifikator(bruker.getBrukerId())
 					.withBrukerType(utledBrukerType(bruker.getBrukerId())))
 					.collect(Collectors.toList());
@@ -99,13 +102,13 @@ public class GetInngaaendeJournalpostMapper extends AbstractInngaaendeJournalpos
 
 		dokumentList.addAll(journalpostDokumentInfoRelasjoner.stream()
 				.filter(relasjon -> relasjon.getTilknyttetJournalpostSom().equals(TilknyttetJournalpostSomCode.HOVEDDOKUMENT))
-				.map(relasjon -> mapDokumentinfoRelasjonToDokument(relasjon))
+				.map(this::mapDokumentinfoRelasjonToDokument)
 				.collect(Collectors.toList()));
 
 		dokumentList.addAll(journalpostDokumentInfoRelasjoner.stream()
 				.filter(relasjon -> relasjon.getTilknyttetJournalpostSom().equals(TilknyttetJournalpostSomCode.VEDLEGG))
 				.sorted(Comparator.comparing(relasjon -> relasjon.getDokumentInfo().getChangeStamp().getCreatedDate()))
-				.map(relasjon -> mapDokumentinfoRelasjonToDokument(relasjon))
+				.map(this::mapDokumentinfoRelasjonToDokument)
 				.collect(Collectors.toList()));
 
 		return dokumentList;
@@ -155,6 +158,29 @@ public class GetInngaaendeJournalpostMapper extends AbstractInngaaendeJournalpos
 			return Bruker.BrukerType.PERSON;
 		} else {
 			return Bruker.BrukerType.ORGANISASJON;
+		}
+	}
+
+	protected String mapFagsystemCodeToArkivSakSystem(FagsystemCode fagsystemCode) {
+		if (fagsystemCode.equals(FagsystemCode.FS22)) {
+			return ArkivsystemKode.GSAK.name();
+		} else if (fagsystemCode.equals(FagsystemCode.PEN)) {
+			return ArkivsystemKode.PSAK.name();
+		} else {
+			return fagsystemCode.name();
+		}
+	}
+
+	private enum ArkivsystemKode {
+		GSAK,
+		PSAK
+	}
+
+	protected FagsystemCode mapArkivSakSystemToFagsystemCode(String arkivSakSystem) {
+		if (ArkivsystemKode.GSAK.name().equals(arkivSakSystem)) {
+			return FagsystemCode.FS22;
+		} else {
+			return FagsystemCode.PEN;
 		}
 	}
 

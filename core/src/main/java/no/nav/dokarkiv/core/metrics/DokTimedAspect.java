@@ -102,10 +102,10 @@ public class DokTimedAspect {
 		}
 	}
 
-
 	@Around("execution (@no.nav.dokarkiv.core.metrics.RestMetrics * *.*(..))")
 	public Object restMetrics(ProceedingJoinPoint pjp) throws Throwable {
 		Method method = ((MethodSignature) pjp.getSignature()).getMethod();
+
 		RestMetrics timed = method.getAnnotation(RestMetrics.class);
 		if (timed.value().isEmpty()) {
 			return pjp.proceed();
@@ -143,4 +143,9 @@ public class DokTimedAspect {
 		return asList(method.getExceptionTypes()).contains(e.getClass()) || e instanceof DokarkivFunctionalException;
 	}
 
+
+	private enum MetricsType {
+		TIMED,
+		REST_METRICS
+	}
 }

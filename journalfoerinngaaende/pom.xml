@@ -11,6 +11,10 @@
 
 	<artifactId>journalfoerinngaaende</artifactId>
 
+	<properties>
+		<no-nav-dok-tjenester-journalfoerinngaaende.version>0.0.15</no-nav-dok-tjenester-journalfoerinngaaende.version>
+	</properties>
+
 	<dependencies>
 		<dependency>
 			<groupId>no.nav.dokarkiv</groupId>
@@ -20,21 +24,11 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
-
 		<dependency>
 			<groupId>no.nav.tjenester.fim</groupId>
 			<artifactId>no-nav-dok-tjenester-journalfoerinngaaende</artifactId>
+			<version>${no-nav-dok-tjenester-journalfoerinngaaende.version}</version>
 		</dependency>
-		<!--Swagger-->
-		<dependency>
-			<groupId>io.springfox</groupId>
-			<artifactId>springfox-swagger2</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>io.springfox</groupId>
-			<artifactId>springfox-swagger-ui</artifactId>
-		</dependency>
-
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
