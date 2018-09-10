@@ -76,11 +76,11 @@ public class JournalfoerInngaaendeRestController {
 			actions = @Abac.Attr(key = ACTION_ID, value = READ_ACTION))
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark001i"}, percentiles = {0.5, 0.95})
 	public GetJournalpostResponse getInngaaendeJournalpost(@PathVariable String journalpostId) {
-		log.info("tjoark070 har mottatt kall om å hente journalpost med journalpostId={} fra Joark.", journalpostId);
+		log.info("rjoark001i har mottatt kall om å hente journalpost med journalpostId={} fra Joark.", journalpostId);
 		Utils.validateId(journalpostId, "journalpostId");
 		abacSecurityService.assertAccessToJournalpost(journalpostId);
 		GetJournalpostResponse responseTo = getInngaaendeJournalpostService.getInngaaendeJournalpostByJournalpostId(journalpostId);
-		log.info("tjoark070 har hentet journalpost med journalpostId={} og dokumentinfoId(er)={} fra Joark.",
+		log.info("rjoark001i har hentet journalpost med journalpostId={} og dokumentinfoId(er)={} fra Joark.",
 				journalpostId, Utils.getDokumentIds(responseTo));
 		return responseTo;
 	}
@@ -93,11 +93,11 @@ public class JournalfoerInngaaendeRestController {
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark002i"}, percentiles = {0.5, 0.95})
 	public PutJournalpostResponse updateInngaaendeJournalpost(@PathVariable String journalpostId, @RequestBody PutJournalpostRequest request) {
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
-		log.info(String.format("tjoark070 har mottatt kall om å oppdatere inngaaende journalpost med journalpostId=%s", journalpostId));
+		log.info(String.format("rjoark002i har mottatt kall om å oppdatere inngaaende journalpost med journalpostId=%s", journalpostId));
 		Utils.validateId(journalpostId, "journalpostId");
 		abacSecurityService.assertAccessToJournalpost(journalpostId);
 		PutJournalpostResponse responseTo = updateInngaaendeJournalpostService.updateInngaaendeJournalpost(journalpostId, request);
-		log.info("tjoark070 har oppdatert journalpost med journalpostId={} i Joark.", journalpostId);
+		log.info("rjoark002i har oppdatert journalpost med journalpostId={} i Joark.", journalpostId);
 		return responseTo;
 	}
 
@@ -109,11 +109,11 @@ public class JournalfoerInngaaendeRestController {
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark003i"}, percentiles = {0.5, 0.95})
 	public PutDokumentResponse updateDokument(@PathVariable String journalpostId, @PathVariable String dokumentId, @RequestBody PutDokumentRequest request) {
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
-		log.info("tjoark070 har mottat kall om å oppdatere dokument med journalpostId={} og dokumentId={}", journalpostId, dokumentId);
+		log.info("rjoark003i har mottat kall om å oppdatere dokument med journalpostId={} og dokumentId={}", journalpostId, dokumentId);
 		Utils.validateJournalpostIdAndDokumentId(journalpostId, dokumentId);
 		abacSecurityService.assertAccessToJournalpost(journalpostId);
 		PutDokumentResponse responseTo = updateInngaaendeJournalpostDokumentService.update(journalpostId, dokumentId, request);
-		log.info("tjoark070 har oppdatert dokument med journalpostId={} og dokumentId={} i Joark.", journalpostId, dokumentId);
+		log.info("rjoark003i har oppdatert dokument med journalpostId={} og dokumentId={} i Joark.", journalpostId, dokumentId);
 		return responseTo;
 	}
 
@@ -125,11 +125,11 @@ public class JournalfoerInngaaendeRestController {
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark004i_post"}, percentiles = {0.5, 0.95})
 	public PostLogiskVedleggResponse persistLogiskVedlegg(@PathVariable String journalpostId, @PathVariable String dokumentId, @RequestBody PostLogiskVedleggRequest request) {
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
-		log.info("tjoark070 har mottatt kall om å persistere logisk vedlegg på journalpost med journalpostId={} og dokumentId={}", journalpostId, dokumentId);
+		log.info("rjoark004i har mottatt kall om å persistere logisk vedlegg på journalpost med journalpostId={} og dokumentId={}", journalpostId, dokumentId);
 		Utils.validateJournalpostIdAndDokumentId(journalpostId, dokumentId);
 		abacSecurityService.assertAccessToJournalpost(journalpostId);
 		PostLogiskVedleggResponse responseTo = logiskVedleggService.persistLogiskVedlegg(journalpostId, dokumentId, request);
-		log.info("tjoark070 persisterte logisk vedlegg med logiskVedleggId={}. journalpostId={}, dokumentId=%{}",
+		log.info("rjoark004i persisterte logisk vedlegg med logiskVedleggId={}. journalpostId={}, dokumentId=%{}",
 				responseTo.getLogiskVedleggId(), journalpostId, dokumentId);
 		return responseTo;
 	}
@@ -142,11 +142,11 @@ public class JournalfoerInngaaendeRestController {
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark004i_put"}, percentiles = {0.5, 0.95})
 	public String updateLogiskVedlegg(@PathVariable String journalpostId, @PathVariable String dokumentId, @PathVariable String logiskVedleggId, @RequestBody PutLogiskVedleggRequest request) {
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
-		log.info("tjoark070 har mottatt kall om å oppdatere logisk vedlegg med logiskVedleggId={} på journalpost med journalpostId={} og dokumentId={}", logiskVedleggId, journalpostId, dokumentId);
+		log.info("rjoark004i har mottatt kall om å oppdatere logisk vedlegg med logiskVedleggId={} på journalpost med journalpostId={} og dokumentId={}", logiskVedleggId, journalpostId, dokumentId);
 		Utils.validateIds(journalpostId, dokumentId, logiskVedleggId);
 		abacSecurityService.assertAccessToJournalpost(journalpostId);
 		logiskVedleggService.updateLogiskVedlegg(journalpostId, dokumentId, logiskVedleggId, request);
-		log.info("tjoark070 oppdaterte logisk vedlegg på journalpost, journalpostId={}, dokumentinfoId={}, logiskVedleggId={}.", journalpostId, dokumentId, logiskVedleggId);
+		log.info("rjoark004i oppdaterte logisk vedlegg på journalpost, journalpostId={}, dokumentinfoId={}, logiskVedleggId={}.", journalpostId, dokumentId, logiskVedleggId);
 		return String.format("Oppdatering av logiskVedlegg med logiskVedleggId=%s var vellykket. journalpostId=%s, dokumentId=%s",
 				logiskVedleggId, journalpostId, dokumentId);
 	}
@@ -160,11 +160,11 @@ public class JournalfoerInngaaendeRestController {
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark004i_delete"}, percentiles = {0.5, 0.95})
 	public String deleteLogiskVedlegg(@PathVariable String journalpostId, @PathVariable String dokumentId, @PathVariable String logiskVedleggId) {
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
-		log.info("tjoark070 har mottatt kall om å slette logisk vedlegg med logiskVedleggId={} fra journalpost med journalpostId={} og dokumentId={}", logiskVedleggId, journalpostId, dokumentId);
+		log.info("rjoark004i delete har mottatt kall om å slette logisk vedlegg med logiskVedleggId={} fra journalpost med journalpostId={} og dokumentId={}", logiskVedleggId, journalpostId, dokumentId);
 		Utils.validateIds(journalpostId, dokumentId, logiskVedleggId);
 		abacSecurityService.assertAccessToJournalpost(journalpostId);
 		logiskVedleggService.deleteLogiskVedlegg(journalpostId, dokumentId, logiskVedleggId);
-		log.info("tjoark070 har slettet logisk vedlegg fra journalpost, journalpostId={}, dokumentinfoId={}, logiskVedleggId={}.", journalpostId, dokumentId, logiskVedleggId);
+		log.info("rjoark004i har slettet logisk vedlegg fra journalpost, journalpostId={}, dokumentinfoId={}, logiskVedleggId={}.", journalpostId, dokumentId, logiskVedleggId);
 		return String.format("Sleting av logiskVedlegg med logiskVedleggId=%s var vellykket. journalpostId=%s, dokumentId=%s",
 				logiskVedleggId, journalpostId, dokumentId);
 	}

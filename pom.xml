@@ -160,11 +160,6 @@
 				<version>1.2.5.RELEASE</version>
 				<scope>test</scope>
 			</dependency>
-			<dependency>
-				<groupId>no.nav.tjenester.fim</groupId>
-				<artifactId>no-nav-dok-tjenester-journalfoerinngaaende</artifactId>
-				<version>${no-nav-dok-tjenester-journalfoerinngaaende.version}</version>
-			</dependency>
 
 			<!--Swagger-->
 			<dependency>
