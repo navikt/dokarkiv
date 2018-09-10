@@ -26,6 +26,17 @@ description: Service account for srvdokarkiv
 displayName: srvdokarkiv
 userPassword: hemmelig
 
+# service user
+dn: cn=srvtestersen,ou=ServiceAccounts,dc=test,dc=local
+objectclass: top
+objectclass: person
+objectclass: organizationalPerson
+cn: srvtestersen
+sn: srvtestersen
+description:
+displayName: test testersen
+userPassword: hemmelig
+
 # person
 dn: cn=b133337,ou=BusinessUnits,dc=test,dc=local
 objectclass: top

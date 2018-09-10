@@ -47,7 +47,7 @@ import javax.inject.Inject;
  */
 @Slf4j
 @RestController
-@RequestMapping("/rest/abac/journalfoer-inngaaende/v1/journalposter")
+@RequestMapping("/rest/journalfoerinngaaende/v1/journalposter")
 public class JournalfoerInngaaendeRestController {
 
 	private final GetInngaaendeJournalpostService getInngaaendeJournalpostService;

@@ -18,7 +18,8 @@ public class RestWebMvcConfig implements WebMvcConfigurer {
 
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
-		registry.addInterceptor(new ValidateUserAndAddToMDCHandler(navLdapService)).addPathPatterns("/rest/abac/**") ;
+		registry.addInterceptor(new ValidateUserAndAddToMDCHandler(navLdapService))
+				.addPathPatterns("/rest/journalfoerinngaaende/v1/**");
 	}
 
 }

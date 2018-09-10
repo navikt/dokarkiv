@@ -50,7 +50,7 @@ public class ValidateUserAndAddToMDCHandler implements HandlerInterceptor {
 				//TODO: Kan dette også være en servicebruker?
 				String userId = getSubjectFromToken(authorizationToken);
 				NavUser navUser = navLdapService.findByUserId(userId);
-				if (navUser.isExists()) {
+				if (navUser.isUserExistsInLdap()) {
 					MDC.put(MDCConstants.MDC_USER_ID, userId);
 					MDC.put(MDCConstants.MDC_USER_NAME, navUser.getFullname());
 				} else {
@@ -62,7 +62,7 @@ public class ValidateUserAndAddToMDCHandler implements HandlerInterceptor {
 
 				String consumerID = getSubjectFromToken(navConsumerToken);
 				NavUser consumer = navLdapService.findByServiceuserId(consumerID);
-				if (consumer.isExists()) {
+				if (consumer.isUserExistsInLdap()) {
 					MDC.put(MDCConstants.MDC_CONSUMER_ID, consumerID);
 				} else {
 					String message = "OIDC token på Nav-Consumer-Token header må tilhøre en Servicebruker når både Authorization og Nav-Consumer-Token header er satt";
@@ -73,7 +73,7 @@ public class ValidateUserAndAddToMDCHandler implements HandlerInterceptor {
 			} else {
 				String consumerID = getSubjectFromToken(authorizationToken);
 				NavUser consumer = navLdapService.findByServiceuserId(consumerID);
-				if (consumer.isExists()) {
+				if (consumer.isUserExistsInLdap()) {
 					MDC.put(MDCConstants.MDC_CONSUMER_ID, consumerID);
 					MDC.put(MDCConstants.MDC_USER_ID, consumerID);
 					MDC.put(MDCConstants.MDC_USER_NAME, consumerID);

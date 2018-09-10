@@ -138,3 +138,10 @@ fasitResources:
     wsdlVersion: 2.1.1
     securityToken: USERNAME_TOKEN
     description: Domenetjeneste for uthenting av informasjon ifm. dokumentproduksjon.
+  - alias: JournalfoerInngaaende_v1
+    resourceType: restservice
+    path: /rest/journalfoerinngaaende/v1
+    securityToken: OIDC_TOKEN
+    description: Rest-tjenester til bruk ifm. manuell journalføring.
+
+

@@ -21,7 +21,7 @@ import javax.naming.Name;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString(exclude = {"displayName", "description"})
-@Entry(objectClasses =  {"organizationalPerson"})
+@Entry(objectClasses = {"organizationalPerson"})
 public final class NavUser {
 	@Id
 	private Name dn;
@@ -31,7 +31,10 @@ public final class NavUser {
 	private String displayName;
 	private String description;
 
-	private boolean exists = true;
+	/**
+	 * Flagg som forteller hvorvidt brukeren ble funnet i ldap
+	 **/
+	private boolean userExistsInLdap = true;
 
 	public String getFullname() {
 		if (isNotBlank(description)) {
