@@ -4,7 +4,7 @@ import static java.lang.String.format;
 import static no.nav.abac.xacml.NavAttributter.RESOURCE_ARKIV_JOURNALPOST;
 import static no.nav.abac.xacml.NavAttributter.RESOURCE_FELLES_RESOURCE_TYPE;
 import static no.nav.abac.xacml.StandardAttributter.ACTION_ID;
-import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.CREATE_ACTION;
+import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.READ_ACTION;
 
 import com.coxautodev.graphql.tools.GraphQLQueryResolver;
 import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
@@ -47,32 +47,31 @@ public class Query implements GraphQLQueryResolver {
     private AbacSecurityService abacSecurityService;
 
     @Transactional
-    @RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark101"}, percentiles = {0.5, 0.95})
-    @Abac(actions = @Abac.Attr(key = ACTION_ID, value = CREATE_ACTION),
-            resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_JOURNALPOST)})
+    @RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark101g"}, percentiles = {0.5, 0.95})
+    @Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_JOURNALPOST)},
+            actions = @Abac.Attr(key = ACTION_ID, value = READ_ACTION))
     public DokumentInfo dokumentInfo(Long dokumentInfoId) {
         DokumentInfo dokumentInfo = dokumentinfoRepository.findById(dokumentInfoId)
                 .orElseThrow(() -> new DokarkivFunctionalException(format("Fant ingen dokumentInfo med id=%s i databasen", dokumentInfoId)));
 
-        abacSecurityService.assertAccessToJournalpost(String.valueOf(dokumentInfo.getOriginalJournalpost().getJournalpostId()));
+//        abacSecurityService.assertAccessToJournalpost(String.valueOf(dokumentInfo.getOriginalJournalpost().getJournalpostId()));
         return dokumentInfo;
-
     }
 
     @Transactional
-    @RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark102"}, percentiles = {0.5, 0.95})
-    @Abac(actions = @Abac.Attr(key = ACTION_ID, value = CREATE_ACTION),
-            resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_JOURNALPOST)})
+    @RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark102g"}, percentiles = {0.5, 0.95})
+    @Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_JOURNALPOST)},
+            actions = @Abac.Attr(key = ACTION_ID, value = READ_ACTION))
     public Journalpost journalpost(Long journalpostId) {
-//        abacSecurityService.assertAccessToJournalpost(String.valueOf(journalpostId));
+        abacSecurityService.assertAccessToJournalpost(String.valueOf(journalpostId));
         return joarkRepository.findById(journalpostId)
                 .orElseThrow(() -> new DokarkivFunctionalException((format("Fant ingen journalpost med id=%s i databasen", journalpostId))));
     }
 
     @Transactional
-    @RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark103"}, percentiles = {0.5, 0.95})
-    @Abac(actions = @Abac.Attr(key = ACTION_ID, value = CREATE_ACTION),
-            resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_JOURNALPOST)})
+    @RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark103g"}, percentiles = {0.5, 0.95})
+    @Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_JOURNALPOST)},
+            actions = @Abac.Attr(key = ACTION_ID, value = READ_ACTION))
     public String fil(Long dokumentInfoId, String filtype) {
         List<FilDetaljer> fildetaljerListe = new ArrayList<>(dokumentinfoRepository.findById(dokumentInfoId)
                 .orElse(new DokumentInfo())

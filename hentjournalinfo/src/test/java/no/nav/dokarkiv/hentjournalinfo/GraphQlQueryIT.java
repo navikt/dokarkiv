@@ -25,6 +25,7 @@ import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.DokumentUrlInfoRepository;
+import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.dokarkiv.core.stelvio.SimpleRequestContext;
@@ -82,6 +83,8 @@ public class GraphQlQueryIT {
     @Inject
     private DokumentFilRepository dokumentFilRepository;
     @Inject
+    private DokumentinfoRepository dokumentinfoRepository;
+    @Inject
     private TestRestTemplate testRestTemplate;
     @Inject
     private OidcTestService oidcTestService;
@@ -100,9 +103,8 @@ public class GraphQlQueryIT {
 
     @After
     public void deleteAll() {
-        dokumentUrlInfoRepository.deleteAll();
-        dokumentFilRepository.deleteAll();
         joarkRepository.deleteAll();
+        dokumentinfoRepository.deleteAll();
     }
 
     @Test
@@ -149,9 +151,12 @@ public class GraphQlQueryIT {
         TestTransaction.flagForCommit();
         TestTransaction.end();
 
-        String response = testRestTemplate.postForObject("/rest/graphql", createDokumentInfoRequest(journalpost.findHoveddokumentDokumentInfoRelasjon()
+
+        HttpEntity request = new HttpEntity<>(createDokumentInfoRequest(journalpost.findHoveddokumentDokumentInfoRelasjon()
                 .getDokumentInfo()
-                .getDokumentInfoId()), String.class);
+                .getDokumentInfoId()), oidcHeaders());
+
+        String response = testRestTemplate.postForObject("/rest/graphql", request, String.class);
         JsonObject jsonObject = new Gson().fromJson(response, JsonObject.class).getAsJsonObject("data");
         JsonObject dokumentInfoResponse = jsonObject.getAsJsonObject("dokumentInfo");
         assertThat(dokumentInfoResponse.get("tittel").getAsString(), is(HOVEDDOKUMENT_TITTEL));
@@ -189,9 +194,11 @@ public class GraphQlQueryIT {
         TestTransaction.flagForCommit();
         TestTransaction.end();
 
+        HttpEntity request = new HttpEntity<>(createFilRequest(journalpost.findHoveddokumentDokumentInfoRelasjon()
+                .getDokumentInfo()
+                .getDokumentInfoId(), "PDF"), oidcHeaders());
 
-        String response = testRestTemplate.postForObject("/rest/graphql", createFilRequest(journalpost
-                .findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId(), "PDF"), String.class);
+        String response = testRestTemplate.postForObject("/rest/graphql", request, String.class);
         JsonObject jsonObject = new Gson().fromJson(response, JsonObject.class).getAsJsonObject("data");
         assertThat(jsonObject.get("fil").getAsString(), is(new String(FIL_CONTENT, StandardCharsets.UTF_8)));
     }
@@ -203,11 +210,12 @@ public class GraphQlQueryIT {
         JSONObject request = new JSONObject();
         request.put("query", "query {journalpost(journalpostId: 1) {tema}}");
 
-        String response = testRestTemplate.postForObject("/rest/graphql", request.toString(), String.class);
+        HttpEntity httpEntity = new HttpEntity(request.toString(), oidcHeaders());
+        String response = testRestTemplate.postForObject("/rest/graphql", httpEntity, String.class);
         JsonElement jsonElement = new Gson().fromJson(response, JsonObject.class).getAsJsonArray("errors").get(0);
         assertThat(jsonElement.getAsJsonObject()
                 .get("message")
-                .getAsString(), is("Fant ingen journalpost med id=1 i databasen"));
+                .getAsString(), is("Journalpost ikke funnet. journalpostId=1"));
 
     }
 
@@ -217,8 +225,9 @@ public class GraphQlQueryIT {
 
         JSONObject request = new JSONObject();
         request.put("query", "query {dokumentInfo(dokumentInfoId: 1) {tittel}}");
+        HttpEntity httpEntity = new HttpEntity(request.toString(), oidcHeaders());
 
-        String response = testRestTemplate.postForObject("/rest/graphql", request.toString(), String.class);
+        String response = testRestTemplate.postForObject("/rest/graphql", httpEntity, String.class);
         JsonElement jsonElement = new Gson().fromJson(response, JsonObject.class).getAsJsonArray("errors").get(0);
         assertThat(jsonElement.getAsJsonObject()
                 .get("message")

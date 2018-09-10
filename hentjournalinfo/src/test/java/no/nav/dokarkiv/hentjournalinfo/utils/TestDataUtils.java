@@ -66,6 +66,7 @@ public class TestDataUtils {
                                                 .dokumentstatus(DokumentStatusCode.FERDIGSTILT)
                                                 .tittel(HOVEDDOKUMENT_TITTEL)
                                                 .tilleggsopplysninger(createTilleggsopplysninger())
+
                                                 .skannetInnhold(SkannetInnholdBuilder.getSkannetInnholdBuilder()
                                                         .vedleggNr(1)
                                                         .opprettetKildeNavn("test")
