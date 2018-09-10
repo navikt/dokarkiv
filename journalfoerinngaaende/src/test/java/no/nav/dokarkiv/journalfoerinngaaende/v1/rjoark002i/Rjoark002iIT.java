@@ -35,7 +35,6 @@ import java.io.IOException;
  */
 public class Rjoark002iIT extends AbstractJournalfoerInngaaendeV1Itest {
 
-
 	/**
 	 * HVIS forsoekEndeligJF == TRUE, og ingen felter mangler for å endelig journalføre => returner 200 OK og journalpostId.
 	 */
@@ -79,6 +78,7 @@ public class Rjoark002iIT extends AbstractJournalfoerInngaaendeV1Itest {
 		assertThat(oppdatertJP.getBrukere().iterator().next().getBrukerId(), is(request.getBruker().getIdentifikator()));
 		assertThat(oppdatertJP.getBrukere().iterator().next().getBrukerType().name(), is(request.getBruker()
 				.getBrukerType().value()));
+		assertThat(oppdatertJP.getBrukere().iterator().next().getOpprettetKildeNavn(), is(SERVICE_USER_ID));
 		assertThat(oppdatertJP.getSaksrelasjon().getSakId(), is(request.getArkivSak().getArkivSakId()));
 		assertThat(oppdatertJP.getSaksrelasjon().getFagsystem().name(), is("FS22"));
 
@@ -128,9 +128,9 @@ public class Rjoark002iIT extends AbstractJournalfoerInngaaendeV1Itest {
 		assertThat(oppdatertJP.getBrukere().iterator().next().getBrukerId(), is(request.getBruker().getIdentifikator()));
 		assertThat(oppdatertJP.getBrukere().iterator().next().getBrukerType().name(), is(request.getBruker()
 				.getBrukerType().value()));
+		assertThat(oppdatertJP.getBrukere().iterator().next().getOpprettetKildeNavn(), is(SERVICE_USER_ID));
 		assertThat(oppdatertJP.getSaksrelasjon().getSakId(), is(request.getArkivSak().getArkivSakId()));
 		assertThat(oppdatertJP.getSaksrelasjon().getFagsystem().name(), is("FS22"));
-
 		TestTransaction.end();
 	}
 
