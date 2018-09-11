@@ -54,6 +54,7 @@ public class Query implements GraphQLQueryResolver {
         DokumentInfo dokumentInfo = dokumentinfoRepository.findById(dokumentInfoId)
                 .orElseThrow(() -> new DokarkivFunctionalException(format("Fant ingen dokumentInfo med id=%s i databasen", dokumentInfoId)));
 
+        //FIXME: Abac?
 //        abacSecurityService.assertAccessToJournalpost(String.valueOf(dokumentInfo.getOriginalJournalpost().getJournalpostId()));
         return dokumentInfo;
     }
@@ -73,6 +74,11 @@ public class Query implements GraphQLQueryResolver {
     @Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_JOURNALPOST)},
             actions = @Abac.Attr(key = ACTION_ID, value = READ_ACTION))
     public String fil(Long dokumentInfoId, String filtype) {
+
+        //FIXME: Abac?
+//        abacSecurityService.assertAccessToJournalpost(String.valueOf(dokumentInfo.getOriginalJournalpost().getJournalpostId()));
+
+
         List<FilDetaljer> fildetaljerListe = new ArrayList<>(dokumentinfoRepository.findById(dokumentInfoId)
                 .orElse(new DokumentInfo())
                 .getFildetaljerListe());

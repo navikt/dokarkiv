@@ -36,7 +36,7 @@ public class TestDataUtils {
     public final static String HOVEDDOKUMENT_TITTEL = "hoveddok_tittel";
 
 
-    public static JournalpostBuilder createJournalpostBuilder() {
+    public static JournalpostBuilder createJournalpostBuilder(String filUuid) {
         return JournalpostBuilder
                 .getJournalpostBuilder()
                 .fagomrade(FagomradeCode.PEN)
@@ -44,6 +44,7 @@ public class TestDataUtils {
                 .journalpostType(JournalpostTypeCode.U)
                 .opprettetAvNavn("testuser")
                 .opprettetKildeNavn("test")
+                .addOriginalJournalpost(true)
                 .tilleggsopplysninger(createTilleggsopplysninger())
                 .kryssReferanser(KryssreferanseBuilder.getKryssreferanseBuilder()
                         .referanseId(REFERANSEID)
@@ -73,7 +74,7 @@ public class TestDataUtils {
                                                         .build())
                                                 .filDetaljerList(
                                                         FilDetaljerBuilder.getFilDetaljerBuilder().filtype(FilTypeCode.PDF)
-                                                                .filUuid(FIL_UUID).variantFormat(VARIANT_FORMAT)
+                                                                .filUuid(filUuid).variantFormat(VARIANT_FORMAT)
                                                                 .opprettetKildeNavn("test").build()).build()).build());
     }
 

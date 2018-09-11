@@ -8,6 +8,7 @@ import static no.nav.dokarkiv.core.datautil.DokumentFilTestDataProvider.FIL_UUID
 import static no.nav.dokarkiv.hentjournalinfo.security.JwtClaimsBuilderProvider.openAmClaimsBuilder;
 import static no.nav.dokarkiv.hentjournalinfo.utils.TestDataUtils.HOVEDDOKUMENT_TITTEL;
 import static no.nav.dokarkiv.hentjournalinfo.utils.TestDataUtils.REFERANSEID;
+import static no.nav.dokarkiv.hentjournalinfo.utils.TestDataUtils.TILLEGGSOPPLYSNING_KEY;
 import static no.nav.dokarkiv.hentjournalinfo.utils.TestDataUtils.TILLEGGSOPPLYSNING_VAL;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
@@ -22,9 +23,9 @@ import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
+import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
-import no.nav.dokarkiv.core.repository.DokumentUrlInfoRepository;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
@@ -42,6 +43,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEnti
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
+import org.springframework.context.annotation.Description;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -77,8 +79,6 @@ public class GraphQlQueryIT {
     protected final String PERSON_USER_ID = "Z990782";
 
     @Inject
-    private DokumentUrlInfoRepository dokumentUrlInfoRepository;
-    @Inject
     private JoarkRepository joarkRepository;
     @Inject
     private DokumentFilRepository dokumentFilRepository;
@@ -103,16 +103,95 @@ public class GraphQlQueryIT {
 
     @After
     public void deleteAll() {
-        joarkRepository.deleteAll();
-        dokumentinfoRepository.deleteAll();
+        //Feiler
+    }
+
+
+    @Test
+    @Description("Example request")
+    public void shouldGetAll() throws Exception {
+        abacPermit();
+        String filUuid = FilDetaljer.generateUuid();
+        Journalpost journalpost = joarkRepository.save(TestDataUtils.createJournalpostBuilder(filUuid).build());
+        dokumentFilRepository.save(DokumentFilBuilder.getDokumentFilBuilder()
+                .filUuid(filUuid)
+                .fil(FIL_CONTENT)
+                .opprettetKildeNavn("test")
+                .build());
+        TestTransaction.flagForCommit();
+        TestTransaction.end();
+
+        GraphQLRequest graphQLRequest = new GraphQLRequest();
+        Map<String, Object> variables = new HashMap<>();
+
+        variables.put("journalpostId", journalpost.getJournalpostId());
+        variables.put("dokumentInfoId", journalpost.findHoveddokumentDokumentInfoRelasjon()
+                .getDokumentInfo()
+                .getDokumentInfoId());
+        variables.put("type", "PDF");
+        graphQLRequest.setVariables(variables);
+        graphQLRequest.setQuery("query ($journalpostId: Long! $dokumentInfoId: Long! $type: String!) " +
+                "{" +
+
+                "journalpost(journalpostId: $journalpostId) " +
+                "{" +
+                "tema " +
+                "journalpostDokumentInfoRelasjoner{tilknyttetJournalpostSom}" +
+                "saksrelasjon{fagsystem} " +
+                "brukere{brukerType} " +
+                "tilleggsopplysninger{key value}" +
+                "kryssreferanser{referanseId}" +
+                "} " +
+
+                "dokumentInfo(dokumentInfoId: $dokumentInfoId) " +
+                "{" +
+                "tittel " +
+                "tilleggsopplysninger{key value} " +
+                "journalpostRelasjoner{tilknyttetJournalpostSom} " +
+                "fildetaljerListe{filtype} " +
+                "skannetInnholdListe{vedleggNr}" +
+                "} " +
+
+                "fil(dokumentInfoId: $dokumentInfoId filtype: $type)" +
+                "}");
+        String response = testRestTemplate.postForObject("/rest/graphql", new HttpEntity<>(graphQLRequest, oidcHeaders()), String.class);
+
+        GraphQlResponse jsonObject = new Gson().fromJson(response, GraphQlResponse.class);
+
+        assertThat(jsonObject.getData().getFil(), is(new String(FIL_CONTENT, StandardCharsets.UTF_8)));
+        assertThat(jsonObject.getData().getDokumentInfo().getTittel(), is(HOVEDDOKUMENT_TITTEL));
+        assertThat(jsonObject.getData().getDokumentInfo().getFildetaljerListe().get(0).getFiltype(), is("PDF"));
+        assertThat(jsonObject.getData()
+                .getDokumentInfo()
+                .getJournalpostRelasjoner()
+                .get(0)
+                .getTilknyttetJournalpostSom(), is(TilknyttetJournalpostSomCode.HOVEDDOKUMENT.name()));
+        assertThat(jsonObject.getData().getDokumentInfo().getSkannetInnholdListe().get(0).getVedleggNr(), is("1"));
+        assertThat(jsonObject.getData().getJournalpost().getBrukere().get(0).getBrukerType(), is(BrukerTypeCode.PERSON.name()));
+        assertThat(jsonObject.getData().getJournalpost().getKryssreferanser().get(0).getReferanseId(), is(REFERANSEID));
+        assertThat(jsonObject.getData()
+                .getJournalpost()
+                .getJournalpostDokumentInfoRelasjoner()
+                .get(0)
+                .getTilknyttetJournalpostSom(), is(TilknyttetJournalpostSomCode.HOVEDDOKUMENT.name()));
+        assertThat(jsonObject.getData().getJournalpost().getSaksrelasjon().getFagsystem(), is(FagsystemCode.AO01.name()));
+        assertThat(jsonObject.getData()
+                .getJournalpost()
+                .getTilleggsopplysninger()
+                .get(0)
+                .getValue(), is(TILLEGGSOPPLYSNING_VAL));
+        assertThat(jsonObject.getData().getJournalpost().getTilleggsopplysninger().get(0).getKey(), is(TILLEGGSOPPLYSNING_KEY));
+
+
     }
 
     @Test
     public void shouldGetJournalpostInfo() throws Exception {
         abacPermit();
-        Journalpost journalpost = joarkRepository.save(TestDataUtils.createJournalpostBuilder().build());
+        Journalpost journalpost = joarkRepository.save(TestDataUtils.createJournalpostBuilder(FIL_UUID).build());
         TestTransaction.flagForCommit();
         TestTransaction.end();
+
 
         String response = testRestTemplate.postForObject("/rest/graphql", new HttpEntity<>(createJournalpostRequest(journalpost.getJournalpostId()), oidcHeaders()), String.class);
 
@@ -147,10 +226,9 @@ public class GraphQlQueryIT {
     @Test
     public void shouldGetDokumentInfo() throws Exception {
         abacPermit();
-        Journalpost journalpost = joarkRepository.save(TestDataUtils.createJournalpostBuilder().build());
+        Journalpost journalpost = joarkRepository.save(TestDataUtils.createJournalpostBuilder(FIL_UUID).build());
         TestTransaction.flagForCommit();
         TestTransaction.end();
-
 
         HttpEntity request = new HttpEntity<>(createDokumentInfoRequest(journalpost.findHoveddokumentDokumentInfoRelasjon()
                 .getDokumentInfo()
@@ -185,7 +263,7 @@ public class GraphQlQueryIT {
     @Test
     public void shouldGetFil() throws Exception {
         abacPermit();
-        Journalpost journalpost = joarkRepository.save(TestDataUtils.createJournalpostBuilder().build());
+        Journalpost journalpost = joarkRepository.save(TestDataUtils.createJournalpostBuilder(FIL_UUID).build());
         dokumentFilRepository.save(DokumentFilBuilder.getDokumentFilBuilder()
                 .filUuid(FIL_UUID)
                 .fil(FIL_CONTENT)
