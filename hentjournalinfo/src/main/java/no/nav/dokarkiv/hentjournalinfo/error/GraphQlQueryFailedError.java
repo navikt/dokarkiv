@@ -4,16 +4,17 @@ import graphql.ErrorType;
 import graphql.GraphQLError;
 import graphql.language.SourceLocation;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
  */
-public class GraphQlException implements GraphQLError {
-    private String message;
-    private ErrorType errorType;
+public class GraphQlQueryFailedError implements GraphQLError {
+    private final String message;
+    private final ErrorType errorType;
 
-    public GraphQlException(String message, ErrorType errorType) {
+    public GraphQlQueryFailedError(String message, ErrorType errorType) {
         this.message = message;
         this.errorType = errorType;
     }
@@ -25,7 +26,7 @@ public class GraphQlException implements GraphQLError {
 
     @Override
     public List<SourceLocation> getLocations() {
-        return null;
+        return new ArrayList<>();
     }
 
     @Override
