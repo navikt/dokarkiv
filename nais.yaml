@@ -151,5 +151,3 @@ fasitResources:
     path: /rest/journalfoerinngaaende/v1
     securityToken: OIDC_TOKEN
     description: Rest-tjenester til bruk ifm. manuell journalføring.
-
-
