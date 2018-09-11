@@ -19,44 +19,64 @@ import javax.inject.Inject;
  * @author Joakim Bjørnstad, Jbit AS
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = {LdapConfig.class, NavUserLdapService.class})
+@SpringBootTest(classes = {LdapConfig.class, NavLdapService.class})
 @DataLdapTest
 @ActiveProfiles("itest,ldap")
-public class NavUserLdapServiceIT {
+public class NavLdapServiceIT {
 
 	@Inject
-	private NavUserLdapService navUserLdapService;
+	private NavLdapService navLdapService;
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
 
 	@Test
 	public void shouldReturnNameWhenUserIdLookedUp() {
-		NavUser saksbehandler = navUserLdapService.findByUserId("b133337");
+		NavUser saksbehandler = navLdapService.findByUserId("b133337");
 		assertThat(saksbehandler.getFullname(), is("Bjarne Betjent"));
 	}
 
 	@Test
 	public void shouldReturnNameUserIdWithNoDescriptionLookedUp() {
-		NavUser saksbehandler = navUserLdapService.findByUserId("z000001");
+		NavUser saksbehandler = navLdapService.findByUserId("z000001");
 		assertThat(saksbehandler.getFullname(), is("Kaptein Sabeltann"));
 	}
 
 	@Test
 	public void shouldReturnNameUserIdWithNoDisplayNameLookedUp() {
-		NavUser saksbehandler = navUserLdapService.findByUserId("z000002");
+		NavUser saksbehandler = navLdapService.findByUserId("z000002");
 		assertThat(saksbehandler.getFullname(), is("Stasjonsmester Tidemann"));
 	}
 
 	@Test
 	public void shouldReturnUserIdAsFallbackWhenNotFound() {
-		NavUser saksbehandler = navUserLdapService.findByUserId("abcdefgh");
+		NavUser saksbehandler = navLdapService.findByUserId("abcdefgh");
 		assertThat(saksbehandler.getFullname(), is("abcdefgh"));
 	}
 
 	@Test
 	public void shouldReturnServiceUserIdWhenInDifferentBasedn() {
-		NavUser saksbehandler = navUserLdapService.findByUserId("srvdokarkiv");
+		NavUser saksbehandler = navLdapService.findByUserId("srvdokarkiv");
 		assertThat(saksbehandler.getFullname(), is("srvdokarkiv"));
 	}
+
+	@Test
+	public void shouldReturnNameWhenServiceUserIdLookedUp() {
+		NavUser saksbehandler = navLdapService.findByServiceuserId("srvdokarkiv");
+		assertThat(saksbehandler.getFullname(), is("Service account for srvdokarkiv"));
+	}
+
+	@Test
+	public void shouldReturnNameServiceUserIdWithNoDescriptionLookedUp() {
+		NavUser saksbehandler = navLdapService.findByServiceuserId("srvtestersen");
+		assertThat(saksbehandler.getFullname(), is("test testersen"));
+	}
+
+	@Test
+	public void shouldReturnServiceUserIdAsFallbackWhenNotFound() {
+		NavUser saksbehandler = navLdapService.findByServiceuserId("abcdefgh");
+		assertThat(saksbehandler.getFullname(), is("abcdefgh"));
+	}
+
+
 }

@@ -78,6 +78,7 @@ public class JournalpostBuilder extends Builder<Journalpost> {
 	private String endretKildeNavn;
 	private JournalpostTypeCode journalpostType;
 	private ChangeStamp changeStamp;
+    private boolean addOriginalJournalpost;
 
 	public JournalpostBuilder journalpostId(Long value) { this.journalpostId = value; return this; }
 	public JournalpostBuilder journalForendeEnhetId(String value) { this.journalForendeEnhetId = value; return this; }
@@ -123,7 +124,12 @@ public class JournalpostBuilder extends Builder<Journalpost> {
 	public JournalpostBuilder changeStamp(ChangeStamp value) { this.changeStamp = value; return this; }
 	public JournalpostBuilder signatur(Boolean value) {this.signatur = value; return this; }
 	public JournalpostBuilder behandlingsrelasjon(Behandlingsrelasjon value) {this.behandlingsrelasjon = value; return this; }
-	
+
+    public JournalpostBuilder addOriginalJournalpost(boolean value) {
+        this.addOriginalJournalpost = value;
+        return this;
+    }
+
 	@Override
 	public Journalpost build() {
 		Journalpost journalpost = new Journalpost(journalpostId, 1);
@@ -148,6 +154,9 @@ public class JournalpostBuilder extends Builder<Journalpost> {
 			journalpost.addBruker(bruker);
 		}
 		for (JournalpostDokumentInfoRelasjon dokumentInfoRelasjon : dokumentInfoRelasjoner) {
+            if (dokumentInfoRelasjon.getDokumentInfo() != null && addOriginalJournalpost) {
+				dokumentInfoRelasjon.getDokumentInfo().setOriginalJournalpost(journalpost);
+			}
 			journalpost.addJournalpostDokumentInfoRelasjon(dokumentInfoRelasjon);
 		}
 		for (Kryssreferanse kryssreferanse : kryssreferanser) {

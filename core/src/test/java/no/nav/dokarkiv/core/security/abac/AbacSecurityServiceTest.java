@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.core.security.abac;
 
+import static no.nav.abac.xacml.NavAttributter.ENVIRONMENT_FELLES_OIDC_TOKEN_BODY;
 import static no.nav.abac.xacml.NavAttributter.RESOURCE_ARKIV_GSAK_SAKSID;
 import static no.nav.abac.xacml.NavAttributter.RESOURCE_ARKIV_PENSJON_SAKSID;
 import static no.nav.abac.xacml.NavAttributter.RESOURCE_FELLES_PERSON_TILKNYTTET_FNR;
@@ -53,6 +54,8 @@ public class AbacSecurityServiceTest {
 	public static final Long DEFAULT_JOURNALPOST = 1L;
 	private static final String SAK_ID = "123";
 
+	private static AbacContext abacContext;
+
 	@Mock
 	private AbacLogger abaclog;
 	@Mock
@@ -74,13 +77,12 @@ public class AbacSecurityServiceTest {
 				Collections.<Obligation>emptyList(),
 				Collections.<Advice>emptyList()));
 		when(joarkRepository.existsById(DEFAULT_JOURNALPOST)).thenReturn(true);
+		abacContext = new ThreadLocalAbacContext();
+		abacSecurityService.setAbacContext(abacContext);
 	}
 
 	@Test
 	public void shouldCreateValidAbacRequest() throws Exception {
-		AbacContext abacContext = new ThreadLocalAbacContext();
-		abacSecurityService.setAbacContext(abacContext);
-
 		AbacResources abacResources = new AbacResources();
 		abacResources.setBrukerIds(Arrays.asList("2", "3"));
 		when(jdbcAbacSecurityRepository.findAbacResources(DEFAULT_JOURNALPOST)).thenReturn(abacResources);
@@ -94,9 +96,6 @@ public class AbacSecurityServiceTest {
 
 	@Test
 	public void shouldNotcallAbacLogMethod() throws Exception {
-		AbacContext abacContext = new ThreadLocalAbacContext();
-		abacSecurityService.setAbacContext(abacContext);
-
 		AbacResources abacResources = new AbacResources();
 		abacResources.setBrukerIds(Arrays.asList("2", "3"));
 		when(jdbcAbacSecurityRepository.findAbacResources(DEFAULT_JOURNALPOST)).thenReturn(abacResources);
@@ -108,9 +107,6 @@ public class AbacSecurityServiceTest {
 
 	@Test
 	public void shouldIncludeResourceFellesTema() throws Exception {
-		AbacContext abacContext = new ThreadLocalAbacContext();
-		abacSecurityService.setAbacContext(abacContext);
-
 		AbacResources abacResources = new AbacResources();
 		abacResources.setFagomrade(FagomradeCode.FOR);
 
@@ -127,8 +123,6 @@ public class AbacSecurityServiceTest {
 				new XacmlResponse(Decision.DENY, Decision.DENY,
 						Collections.<Obligation>emptyList(),
 						Collections.<Advice>emptyList()));
-		AbacContext abacContext = new ThreadLocalAbacContext();
-		abacSecurityService.setAbacContext(abacContext);
 
 		AbacResources abacResources = new AbacResources();
 		abacResources.setBrukerIds(Arrays.asList("2", "3"));
@@ -145,9 +139,6 @@ public class AbacSecurityServiceTest {
 
 	@Test
 	public void shouldThrowJournalpostIkkeFunnetException() throws Exception {
-		AbacContext abacContext = new ThreadLocalAbacContext();
-		abacSecurityService.setAbacContext(abacContext);
-
 		AbacResources abacResources = new AbacResources();
 		abacResources.setBrukerIds(Arrays.asList("2", "3"));
 		when(joarkRepository.existsById(DEFAULT_JOURNALPOST)).thenReturn(false);
@@ -156,16 +147,13 @@ public class AbacSecurityServiceTest {
 			abacSecurityService.assertAccessToJournalpost(String.valueOf(DEFAULT_JOURNALPOST));
 			fail();
 		} catch (JournalpostIkkeFunnetException e) {
-			assertThat(e.getMessage(), equalTo("Journalpost ikke funnet. journalpostId="+DEFAULT_JOURNALPOST));
+			assertThat(e.getMessage(), equalTo("Journalpost ikke funnet. journalpostId=" + DEFAULT_JOURNALPOST));
 		}
 		verify(abaclog, never()).logAbacDeny(any(XacmlRequest.class), any(XacmlResponse.class), anyMap());
 	}
 
 	@Test
 	public void shouldLogAndOnlyAcceptOneFNR() throws Exception {
-		AbacContext abacContext = new ThreadLocalAbacContext();
-		abacSecurityService.setAbacContext(abacContext);
-
 		AbacResources abacResources = new AbacResources();
 		abacResources.setBrukerIds(Arrays.asList("2"));
 		when(jdbcAbacSecurityRepository.findAbacResources(DEFAULT_JOURNALPOST)).thenReturn(abacResources);
@@ -181,9 +169,6 @@ public class AbacSecurityServiceTest {
 
 	@Test
 	public void shouldNotIncludeBrukerWhenMultipleBrukere() throws Exception {
-		AbacContext abacContext = new ThreadLocalAbacContext();
-		abacSecurityService.setAbacContext(abacContext);
-
 		AbacResources abacResources = new AbacResources();
 		abacResources.setBrukerIds(Arrays.asList("2", "3"));
 		abacResources.setFagomrade(FagomradeCode.FOR);
@@ -194,9 +179,6 @@ public class AbacSecurityServiceTest {
 
 	@Test
 	public void shouldCreateValidAbacRequestForPenSak() throws Exception {
-		AbacContext abacContext = new ThreadLocalAbacContext();
-		abacSecurityService.setAbacContext(abacContext);
-
 		Decision decision = abacSecurityService.assertAccessToSak(SAK_ID, FagsystemCode.PEN);
 
 		XacmlRequest request = getXacmlRequestFromAbacServiceMock();
@@ -211,9 +193,6 @@ public class AbacSecurityServiceTest {
 
 	@Test
 	public void shouldCreateValidAbacRequestForGsakSak() throws Exception {
-		AbacContext abacContext = new ThreadLocalAbacContext();
-		abacSecurityService.setAbacContext(abacContext);
-
 		Decision decision = abacSecurityService.assertAccessToSak(SAK_ID, FagsystemCode.AO01);
 
 		XacmlRequest request = getXacmlRequestFromAbacServiceMock();
@@ -233,9 +212,6 @@ public class AbacSecurityServiceTest {
 						Collections.<Obligation>emptyList(),
 						Collections.<Advice>emptyList()));
 
-		AbacContext abacContext = new ThreadLocalAbacContext();
-		abacSecurityService.setAbacContext(abacContext);
-
 		Decision decision = abacSecurityService.assertAccessToSak(SAK_ID, FagsystemCode.AO01);
 
 		verify(abaclog).logAbacDeny(any(XacmlRequest.class), any(XacmlResponse.class), anyMap());
@@ -249,9 +225,6 @@ public class AbacSecurityServiceTest {
 						Collections.<Obligation>emptyList(),
 						Arrays.asList(new Advice("id1", Collections.<AttributeAssignment>emptyList()),
 								new Advice("id2", Collections.<AttributeAssignment>emptyList()))));
-
-		AbacContext abacContext = new ThreadLocalAbacContext();
-		abacSecurityService.setAbacContext(abacContext);
 
 		Decision decision = abacSecurityService.assertAccessToSak(SAK_ID, FagsystemCode.AO01);
 
