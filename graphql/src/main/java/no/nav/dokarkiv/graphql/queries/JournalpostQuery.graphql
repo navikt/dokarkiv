@@ -1,0 +1,6 @@
+query JournalpostQuery {
+    journalpost(journalpostId: 1) {
+        tema
+    }
+}
+
