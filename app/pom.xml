@@ -60,6 +60,10 @@
 			<groupId>no.nav.dokarkiv</groupId>
 			<artifactId>journalfoerinngaaende</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>no.nav.dokarkiv</groupId>
+			<artifactId>slettdokument</artifactId>
+		</dependency>
 		<!-- annet -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
