@@ -19,14 +19,9 @@ import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
-import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
 import org.junit.Test;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
 import org.springframework.test.context.transaction.TestTransaction;
 
 import javax.inject.Inject;
@@ -34,10 +29,6 @@ import java.util.Date;
 
 public class SlettDokumentIT extends AbstractSlettDokumentIT {
 
-	@Inject
-	private JoarkRepository joarkRepository;
-	@Inject
-	private DokumentinfoRepository dokumentinfoRepository;
 	@Inject
 	private JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository;
 
@@ -55,7 +46,7 @@ public class SlettDokumentIT extends AbstractSlettDokumentIT {
 
 	@Test
 	public void shouldDeleteDocumentInJoark() {
-//		abacPermit();
+		abacPermit();
 
 		Journalpost journalpost1 = joarkRepository.save(createJournalpostBuilder().build());
 		Journalpost journalpost2 = joarkRepository.save(createJournalpostBuilder().build());
@@ -63,16 +54,10 @@ public class SlettDokumentIT extends AbstractSlettDokumentIT {
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.TEXT_PLAIN);
-		headers.add(HttpHeaders.AUTHORIZATION, OIDC_TOKEN_SERVICE_USER_TEST);
-
-
-//		restTemplate.exchange("/rest/slettdokument/" + journalpost1.getJournalpostId() + "/"
-//				+ journalpost1.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId(), HttpMethod.DELETE, createHeaders(), String.class);
+		restTemplate.exchange("/rest/slettdokument/" + journalpost1.getJournalpostId() + "/"
+				+ journalpost1.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId(), HttpMethod.DELETE, createHeaders(), String.class);
 		restTemplate.exchange("/rest/slettdokument/" + journalpost2.getJournalpostId()
-				.toString(), HttpMethod.GET, new HttpEntity(headers), String.class);
-
+				.toString(), HttpMethod.DELETE, createHeaders(), String.class);
 
 		assertEquals(journalpostDokumentInfoRelasjonRepository.findByDokumentInfoId(
 				journalpost1.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId())
@@ -130,6 +115,8 @@ public class SlettDokumentIT extends AbstractSlettDokumentIT {
 
 	@Test
 	public void shouldFailToDeleteDocumentInJoarkBecauseDocumentAlreadyDeleted() {
+		abacPermit();
+
 		Journalpost journalpost1 = joarkRepository.save(createJournalpostBuilder().build());
 		Journalpost journalpost2 = joarkRepository.save(createJournalpostBuilder().build());
 
