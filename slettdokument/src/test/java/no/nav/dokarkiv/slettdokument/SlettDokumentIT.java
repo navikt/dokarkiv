@@ -50,12 +50,12 @@ public class SlettDokumentIT extends AbstractSlettDokumentIT {
 
 		Journalpost journalpost1 = joarkRepository.save(createJournalpostBuilder().build());
 		Journalpost journalpost2 = joarkRepository.save(createJournalpostBuilder().build());
-
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
 		restTemplate.exchange("/rest/slettdokument/" + journalpost1.getJournalpostId() + "/"
 				+ journalpost1.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId(), HttpMethod.DELETE, createHeaders(), String.class);
+
 		restTemplate.exchange("/rest/slettdokument/" + journalpost2.getJournalpostId()
 				.toString(), HttpMethod.DELETE, createHeaders(), String.class);
 
@@ -91,7 +91,6 @@ public class SlettDokumentIT extends AbstractSlettDokumentIT {
 				.dokumentInfo(journalpost3.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo())
 				.build()).build();
 		joarkRepository.save(journalpost4);
-
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
@@ -125,10 +124,8 @@ public class SlettDokumentIT extends AbstractSlettDokumentIT {
 
 		dokumentinfoRepository.save(journalpost1.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo());
 		dokumentinfoRepository.save(journalpost2.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo());
-
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
-
 
 		restTemplate.delete("/rest/slettdokument/" + journalpost1.getJournalpostId() + "/"
 				+ journalpost1.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId(), String.class);

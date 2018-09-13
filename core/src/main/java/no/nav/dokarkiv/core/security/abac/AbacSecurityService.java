@@ -21,6 +21,7 @@ import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -59,6 +60,18 @@ public class AbacSecurityService {
 		decorateJoarkResources(abacContext.getRequest(), abacResources, journalpostId);
 		XacmlResponse accessResponse = abacService.evaluate(abacContext.getRequest());
 		handleResponseForJournalpostId(abacContext.getRequest(), accessResponse, journalpostId);
+	}
+
+	public void assertAccessToDokumentInfoId(Long dokumentInfoId) {
+
+		if (!joarkRepository.existsById(dokumentInfoId)) {
+			throw new JournalpostIkkeFunnetException("DokumentInfo ikke funnet. dokumentInfoId=" + dokumentInfoId);
+		}
+
+		List<Long> journalpostIds = joarkRepository.findAllJournalpostIdsByDokumentInfoId(dokumentInfoId);
+		for (Long journalpostId:journalpostIds) {
+			assertAccessToJournalpost(journalpostId.toString());
+		}
 	}
 
 	Decision assertAccessToSak(String sakId, FagsystemCode fagsystemCode) {
