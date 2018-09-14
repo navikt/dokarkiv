@@ -40,7 +40,7 @@ public class StorageConfiguration {
 	private final static String REGION_TO_USE_FOR_S3_TO_WORK_ONPREM = "us-east-1";
 
 	public static final String BUCKET_NAME = "dokprodmellomlager";
-	public static final String S3_DIRECTORY_NAME = "dokarkiv";
+	public static final String S3_DIRECTORY_NAME = "dokprod";
 
 	@Bean
 	@Lazy
