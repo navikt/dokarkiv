@@ -16,15 +16,13 @@ import java.util.Set;
 @Configuration
 public class AbacDefaultConfig {
 
-	public static final String ENVIRONMENT_FELLES_CONSUMER_OIDC_TOKEN_BODY = "no.nav.abac.attributter.environment.felles.consumer_oidc_token_body";
-
 	@Bean
 	Set<String> abacDefaultEnvironment() {
 		Set<String> values = new HashSet<>();
 		values.add(NavAttributter.ENVIRONMENT_FELLES_PEP_ID);
 		values.add(NavAttributter.ENVIRONMENT_FELLES_SAML_TOKEN);
 		values.add(NavAttributter.ENVIRONMENT_FELLES_OIDC_TOKEN_BODY);
-		values.add(ENVIRONMENT_FELLES_CONSUMER_OIDC_TOKEN_BODY);
+		values.add(NavAttributter.ENVIRONMENT_FELLES_CONSUMER_OIDC_TOKEN_BODY);
 		return values;
 	}
 
@@ -84,7 +82,7 @@ public class AbacDefaultConfig {
 
 	@Bean
 	AbacAttributeLocator navConsumerHeaderOidcTokenLocator() {
-		return new ResolvingAbacAttributeLocator(ENVIRONMENT_FELLES_CONSUMER_OIDC_TOKEN_BODY, () -> {
+		return new ResolvingAbacAttributeLocator(NavAttributter.ENVIRONMENT_FELLES_CONSUMER_OIDC_TOKEN_BODY, () -> {
 			if (SecurityContextHolder.getContext().getAuthentication() == null) {
 				return null;
 			} else {
