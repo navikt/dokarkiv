@@ -22,10 +22,14 @@ import java.util.stream.Collectors;
 @Component
 public class DokumentInfoResolver implements GraphQLResolver<DokumentInfo> {
 
-    @Inject
-    private DokumentinfoRepository dokumentinfoRepository;
+    private final DokumentinfoRepository dokumentinfoRepository;
 
-    @Transactional
+    @Inject
+    public DokumentInfoResolver(DokumentinfoRepository dokumentinfoRepository) {
+        this.dokumentinfoRepository = dokumentinfoRepository;
+    }
+
+    @Transactional(readOnly = true)
     public List<GraphQlMap> tilleggsopplysninger(DokumentInfo dokumentInfo) {
         //Må hente på nytt fra databasen pågrunn av lazy initialisering
         Map<String, String> tilleggsopplysninger = dokumentinfoRepository.findById(dokumentInfo.getId())
@@ -38,21 +42,21 @@ public class DokumentInfoResolver implements GraphQLResolver<DokumentInfo> {
                 .collect(Collectors.toList());
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<FilDetaljer> fildetaljerListe(DokumentInfo dokumentInfo) {
         return new ArrayList<>(dokumentinfoRepository.findById(dokumentInfo.getId())
                 .orElse(new DokumentInfo())
                 .getFildetaljerListe());
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<JournalpostDokumentInfoRelasjon> journalpostRelasjoner(DokumentInfo dokumentInfo) {
         return new ArrayList<>(dokumentinfoRepository.findById(dokumentInfo.getId())
                 .orElse(new DokumentInfo())
                 .getJournalpostRelasjoner());
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<SkannetInnhold> skannetInnholdListe(DokumentInfo dokumentInfo) {
         return new ArrayList<>(dokumentinfoRepository.findById(dokumentInfo.getId())
                 .orElse(new DokumentInfo())

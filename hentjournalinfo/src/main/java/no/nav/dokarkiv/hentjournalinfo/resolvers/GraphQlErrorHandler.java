@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
  */
 @Component
 public class GraphQlErrorHandler implements GraphQLErrorHandler {
+
     @Override
     public boolean errorsPresent(List<GraphQLError> errors) {
         return !errors.isEmpty();

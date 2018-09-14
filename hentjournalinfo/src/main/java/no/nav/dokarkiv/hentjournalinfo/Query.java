@@ -34,19 +34,23 @@ import java.util.List;
 @Component
 public class Query implements GraphQLQueryResolver {
 
-    @Inject
-    private DokumentinfoRepository dokumentinfoRepository;
+    private final DokumentinfoRepository dokumentinfoRepository;
+
+    private final JoarkRepository joarkRepository;
+
+    private final DokumentFilRepository dokumentFilRepository;
+
+    private final AbacSecurityService abacSecurityService;
 
     @Inject
-    private JoarkRepository joarkRepository;
+    public Query(DokumentinfoRepository dokumentinfoRepository, JoarkRepository joarkRepository, DokumentFilRepository dokumentFilRepository, AbacSecurityService abacSecurityService) {
+        this.dokumentinfoRepository = dokumentinfoRepository;
+        this.joarkRepository = joarkRepository;
+        this.dokumentFilRepository = dokumentFilRepository;
+        this.abacSecurityService = abacSecurityService;
+    }
 
-    @Inject
-    private DokumentFilRepository dokumentFilRepository;
-
-    @Inject
-    private AbacSecurityService abacSecurityService;
-
-    @Transactional
+    @Transactional(readOnly = true)
     @RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark101g"}, percentiles = {0.5, 0.95})
     @Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_JOURNALPOST)},
             actions = @Abac.Attr(key = ACTION_ID, value = READ_ACTION))
@@ -59,7 +63,7 @@ public class Query implements GraphQLQueryResolver {
         return dokumentInfo;
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     @RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark102g"}, percentiles = {0.5, 0.95})
     @Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_JOURNALPOST)},
             actions = @Abac.Attr(key = ACTION_ID, value = READ_ACTION))
@@ -69,7 +73,7 @@ public class Query implements GraphQLQueryResolver {
                 .orElseThrow(() -> new DokarkivFunctionalException((format("Fant ingen journalpost med id=%s i databasen", journalpostId))));
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     @RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark103g"}, percentiles = {0.5, 0.95})
     @Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_JOURNALPOST)},
             actions = @Abac.Attr(key = ACTION_ID, value = READ_ACTION))

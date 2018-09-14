@@ -25,38 +25,42 @@ import java.util.stream.Collectors;
 @Component
 public class JournalpostResolver implements GraphQLResolver<Journalpost> {
 
-    @Inject
-    private JoarkRepository joarkRepository;
+    private final JoarkRepository joarkRepository;
 
-    @Transactional
+    @Inject
+    public JournalpostResolver(JoarkRepository joarkRepository) {
+        this.joarkRepository = joarkRepository;
+    }
+
+    @Transactional(readOnly = true)
     public List<JournalpostDokumentInfoRelasjon> journalpostDokumentInfoRelasjoner(Journalpost journalpost) {
         return new ArrayList<>(joarkRepository.findById(journalpost.getJournalpostId())
                 .orElse(new Journalpost())
                 .getJournalpostDokumentInfoRelasjoner());
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<Kryssreferanse> kryssreferanser(Journalpost journalpost) {
         return new ArrayList<>(joarkRepository.findById(journalpost.getJournalpostId())
                 .orElse(new Journalpost())
                 .getKryssreferanser());
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<ReturInfo> returInfos(Journalpost journalpost) {
         return new ArrayList<>(joarkRepository.findById(journalpost.getJournalpostId())
                 .orElse(new Journalpost())
                 .getReturInfos());
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<Bruker> brukere(Journalpost journalpost) {
         return new ArrayList<>(joarkRepository.findById(journalpost.getJournalpostId())
                 .orElse(new Journalpost())
                 .getBrukere());
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public Saksrelasjon saksrelasjon(Journalpost journalpost) {
         return joarkRepository.findById(journalpost.getId()).orElse(new Journalpost()).getSaksrelasjon();
     }
@@ -65,7 +69,7 @@ public class JournalpostResolver implements GraphQLResolver<Journalpost> {
         return journalpost.getFagomrade();
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<GraphQlMap> tilleggsopplysninger(Journalpost journalpost) {
         //Må hente på nytt fra databasen pågrunn av lazy initialisering
         Map<String, String> tilleggsopplysninger = joarkRepository.findById(journalpost.getId())
