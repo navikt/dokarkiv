@@ -63,6 +63,11 @@ import no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark111.OpprettUtgaaendeJourn
 import no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark111.OpprettUtgaaendeJournalpostArkiverDokumentResponseTo;
 import no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark111.OpprettUtgaaendeJournalpostArkiverDokumentService;
 import no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark111.OpprettUtgaaendeJournalpostArkiverDokumenterRequestMapper;
+import no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark112.OpprettJournalpostArkiverDokumenterRequestMapper;
+import no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark112.OpprettJournalpostArkiverDokumenterRequestTo;
+import no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark112.OpprettJournalpostArkiverDokumenterResponseMapper;
+import no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark112.OpprettJournalpostArkiverDokumenterResponseTo;
+import no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark112.OpprettJournalpostArkiverDokumenterService;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.exceptions.NoDokumentInfoFoundException;
 import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
@@ -129,6 +134,8 @@ import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.OppdaterJournalpostArkiverDokumentRequest;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.OpprettJournalpostArkiverDokumentRequest;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.OpprettJournalpostArkiverDokumentResponse;
+import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.OpprettJournalpostArkiverDokumenterRequest;
+import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.OpprettJournalpostArkiverDokumenterResponse;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.OpprettJournalpostRequest;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.OpprettJournalpostResponse;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.OpprettUtgaaendeJournalpostArkiverDokumentRequest;
@@ -166,10 +173,20 @@ public class ArkiverDokumentproduksjonProvider implements ArkiverDokumentproduks
 	private OpprettJournalpostArkiverDokumentResponseMapper opprettJournalpostArkiverDokumentResponseMapper;
 
 	@Inject
+	private OpprettJournalpostArkiverDokumenterRequestMapper opprettJournalpostArkiverDokumenterRequestMapper;
+
+	@Inject
+	private OpprettJournalpostArkiverDokumenterResponseMapper opprettJournalpostArkiverDokumenterResponseMapper;
+
+	@Inject
 	private OpprettJournalpostRequestMapper opprettJournalpostRequestMapper;
 
 	@Inject
 	private OpprettJournalpostArkiverDokumentService opprettJournalpostArkiverDokumentService;
+
+	@Inject
+	private OpprettJournalpostArkiverDokumenterService opprettJournalpostArkiverDokumenterService;
+
 
 	@Inject
 	private OpprettJournalpostService opprettJournalpostService;
@@ -337,7 +354,7 @@ public class ArkiverDokumentproduksjonProvider implements ArkiverDokumentproduks
 		try {
 			response = arkiverVedleggService.arkiverVedlegg(arkiverVedleggRequestTo);
 			log.info("tjoark105 har arkivert vedlegg med dokumentinfoId={} på journalpost med journalpostId={}",
-					response.getDokumentInfoId(),  arkiverVedleggRequestTo.getJournalpostId());
+					response.getDokumentInfoId(), arkiverVedleggRequestTo.getJournalpostId());
 		} catch (NoJournalpostFoundException e) {
 			throw new ArkiverVedleggJournalpostIkkeFunnet(e.getMessage(), faultInfoPopulator.populateFaultInfo(
 					new JournalpostIkkeFunnet(), e, ARKIVER_VEDLEGG));
@@ -523,6 +540,20 @@ public class ArkiverDokumentproduksjonProvider implements ArkiverDokumentproduks
 							OPPRETT_UTGAAENDE_JOURNALPOST_ARKIVER_DOKUMENT));
 		}
 
+	}
+
+	@Override
+	@Transactional
+	public OpprettJournalpostArkiverDokumenterResponse opprettJournalpostArkiverDokumenter(
+			OpprettJournalpostArkiverDokumenterRequest request) {
+		Assert.notNull(request, REQUEST_IS_NULL_MSG);
+		OpprettJournalpostArkiverDokumenterRequestTo domeneRequest
+				= opprettJournalpostArkiverDokumenterRequestMapper.map(request);
+		OpprettJournalpostArkiverDokumenterResponseTo domeneResponse
+				= opprettJournalpostArkiverDokumenterService.opprettJournalpostArkiverDokument(domeneRequest);
+		log.info("tjoark112 har opprettet journalpost med journalpostId={} og dokumentInfoId(er)={}", domeneResponse.getJournalpostId(), domeneResponse
+				.getDokumentInfoIdList());
+		return opprettJournalpostArkiverDokumenterResponseMapper.map(domeneResponse);
 	}
 
 	@Override
