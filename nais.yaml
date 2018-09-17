@@ -73,6 +73,10 @@ fasitResources:
     resourceType: baseurl
     propertyMap:
       url: DOKARKIV_HENTDOKUMENT_BASEURL
+  - alias: dokarkiv_s3_creds
+    resourceType: credential
+  - alias: dokprodmellomlager_s3_storage_crypto
+    resourceType: credential
   exposed:
   - alias: Journal_v3
     resourceType: webserviceendpoint
