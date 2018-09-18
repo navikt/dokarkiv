@@ -1,6 +1,0 @@
-# The Root Query for the application
-type Query {
-    dokumentInfo(dokumentInfoId: Long!): DokumentInfo!
-    journalpost(journalpostId: Long!): Journalpost!
-    fil(dokumentInfoId: Long!, filtype: String): String!
-}

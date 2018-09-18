@@ -234,7 +234,7 @@ public class GraphQlQueryIT {
                 .getDokumentInfo()
                 .getDokumentInfoId()), oidcHeaders());
 
-        String response = testRestTemplate.postForObject("/rest/graphql", request, String.class);
+        String response = testRestTemplate.postForObject("/graphql", request, String.class);
         JsonObject jsonObject = new Gson().fromJson(response, JsonObject.class).getAsJsonObject("data");
         JsonObject dokumentInfoResponse = jsonObject.getAsJsonObject("dokumentInfo");
         assertThat(dokumentInfoResponse.get("tittel").getAsString(), is(HOVEDDOKUMENT_TITTEL));
@@ -358,10 +358,6 @@ public class GraphQlQueryIT {
                 "dokumentInfo(dokumentInfoId: $id) " +
                 "{" +
                 "tittel " +
-                "tilleggsopplysninger{key value} " +
-                "journalpostRelasjoner{tilknyttetJournalpostSom} " +
-                "fildetaljerListe{filtype} " +
-                "skannetInnholdListe{vedleggNr}" +
                 "}" +
                 "}");
 
