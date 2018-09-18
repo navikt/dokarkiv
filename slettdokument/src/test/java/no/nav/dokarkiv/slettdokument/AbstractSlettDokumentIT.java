@@ -7,7 +7,6 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static no.nav.dokarkiv.slettdokument.security.JwtClaimsBuilderProvider.openAmClaimsBuilder;
 
 import com.auth0.jwt.JWT;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import no.nav.dokarkiv.core.CoreConfig;
 import no.nav.dokarkiv.core.domain.builder.JournalpostBuilder;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
@@ -56,13 +55,18 @@ import java.nio.charset.StandardCharsets;
 @AutoConfigureWireMock(port = 0)
 @Transactional
 public abstract class AbstractSlettDokumentIT {
+
+	protected static final String OPPRETTET_KILDE_NAVN = "Opprettet kilde";
+	protected static final String TILKNYTTET_AV_NAVN = "Tilknyttetnavn";
+	//	protected static final String URL_SLETTDOKUMENT = "/rest/slettdokument/";
+	protected static final String URL_SLETTDOKUMENT = "/slettdokument/";
 	protected String OIDC_TOKEN_PERSON_USER_TEST;
 	protected String OIDC_TOKEN_SERVICE_USER_TEST;
 	protected String NAV_CONSUMER_TOKEN = "Nav-Consumer-Token";
 	protected final String SERVICE_USER_ID = "srvdokarkiv";
 	protected final String PERSON_USER_ID = "Z990782";
-	protected static final String JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER = "/rest/journalfoerinngaaende/v1/journalposter/";
-	protected static final ObjectMapper mapper = new ObjectMapper();
+
+
 	@Rule
 	public ExpectedException expectedException = ExpectedException.none();
 	@Inject

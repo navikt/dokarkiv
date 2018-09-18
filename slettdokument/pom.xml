@@ -59,5 +59,17 @@
 			<version>3.1.0</version>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>no.nav.tjenester.fim</groupId>
+			<artifactId>no-nav-dok-tjenester-journalfoerinngaaende</artifactId>
+			<version>RELEASE</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>no.nav.tjenester.fim</groupId>
+			<artifactId>no-nav-dok-tjenester-journalfoerinngaaende</artifactId>
+			<version>RELEASE</version>
+			<scope>compile</scope>
+		</dependency>
 	</dependencies>
 </project>

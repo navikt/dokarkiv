@@ -5,9 +5,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(value = HttpStatus.BAD_REQUEST)
-public class IngenRelasjonMellomJournalpostIdOgDokumentInfoIdException extends DokarkivFunctionalException {
+public class JournalpostDokumentInfoRelasjontNotFoundException extends DokarkivFunctionalException {
 
-	public IngenRelasjonMellomJournalpostIdOgDokumentInfoIdException(String message) {
+	public JournalpostDokumentInfoRelasjontNotFoundException(String message) {
 		super(message);
 	}
 }
