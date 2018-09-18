@@ -74,9 +74,8 @@ public class OpprettJournalpostArkiverDokumenterDataUtil {
 
 	protected static Saksrelasjon createSaksrelasjon() {
 		return new Saksrelasjon()
-		.withFagsystem(FAGSYSTEMKODE);
+		.withFagsystem(FAGSYSTEMKODE)
 		.withSaksnummer(SAKSID);
-		return saksrelasjon;
 	}
 
 	private static no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasjon.opprettjournalpostarkiverdokumenter.DokumentInfo createDokumentInfo() {

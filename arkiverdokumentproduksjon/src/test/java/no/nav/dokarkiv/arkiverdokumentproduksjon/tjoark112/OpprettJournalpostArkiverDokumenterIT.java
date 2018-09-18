@@ -28,6 +28,7 @@ import javax.xml.datatype.DatatypeFactory;
  *
  * @author Torgeir Cook
  */
+@Ignore
 public class OpprettJournalpostArkiverDokumenterIT extends AbstractArkiverdokumentproduksjonItest {
 
 	private no.nav.dokarkiv.core.domain.entities.Journalpost persistedJournalpost;
@@ -147,7 +148,7 @@ public class OpprettJournalpostArkiverDokumenterIT extends AbstractArkiverdokume
 
 	private OpprettJournalpostArkiverDokumenterRequest createRequest() throws Exception {
 		OpprettJournalpostArkiverDokumenterRequest request = new OpprettJournalpostArkiverDokumenterRequest();
-		request.setJournalpost(createJournalpost());
+//		request.setJournalpost(createJournalpost());
 		return request;
 	}
 }
