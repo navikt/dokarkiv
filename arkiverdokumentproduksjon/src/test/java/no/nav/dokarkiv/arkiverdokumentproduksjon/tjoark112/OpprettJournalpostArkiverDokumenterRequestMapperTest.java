@@ -25,6 +25,7 @@ import org.mockito.junit.MockitoJUnitRunner;
  */
 @RunWith(MockitoJUnitRunner.class)
 @Ignore
+//FIXME
 public class OpprettJournalpostArkiverDokumenterRequestMapperTest {
 
 	@Mock

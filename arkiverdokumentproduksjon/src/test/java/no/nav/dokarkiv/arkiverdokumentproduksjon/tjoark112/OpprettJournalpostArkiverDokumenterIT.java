@@ -29,6 +29,7 @@ import javax.xml.datatype.DatatypeFactory;
  * @author Torgeir Cook
  */
 @Ignore
+//FIXME
 public class OpprettJournalpostArkiverDokumenterIT extends AbstractArkiverdokumentproduksjonItest {
 
 	private no.nav.dokarkiv.core.domain.entities.Journalpost persistedJournalpost;
