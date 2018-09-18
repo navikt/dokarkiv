@@ -47,7 +47,6 @@ public class S3Storage implements Storage {
 	@Override
 	@Retryable(include = DokarkivTechnicalException.class, maxAttempts = MAX_ATTEMPTS_SHORT, backoff = @Backoff(delay = DELAY_SHORT, multiplier = MULTIPLIER_SHORT))
 	public Optional<String> get(String directory, String key) {
-
 		try {
 			String encryptedValue = readString(directory, key);
 			return Optional.ofNullable(decrypt(encryptedValue, key));

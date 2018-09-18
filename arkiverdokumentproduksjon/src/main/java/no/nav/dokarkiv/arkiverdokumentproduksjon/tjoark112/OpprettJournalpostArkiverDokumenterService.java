@@ -1,5 +1,7 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark112;
 
+import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.OpprettJournalpostArkiverDokumenterRequest;
+
 /**
  * Interface for the operation OpprettJournalpostArkiverDokument
  *
@@ -14,5 +16,5 @@ public interface OpprettJournalpostArkiverDokumenterService {
 	 * @return The response object containing the persisted journalpostId and dokumentId.
 	 */
 	OpprettJournalpostArkiverDokumenterResponseTo opprettJournalpostArkiverDokument(
-			OpprettJournalpostArkiverDokumenterRequestTo request);
+			OpprettJournalpostArkiverDokumenterRequest request);
 }

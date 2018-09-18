@@ -1,7 +1,9 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark112;
 
-import static no.nav.dokarkiv.core.util.SpecialFilTypeConverter.convertFilType;
+import static no.nav.dokarkiv.core.storage.config.StorageConfiguration.S3_DIRECTORY_NAME;
 
+import lombok.extern.slf4j.Slf4j;
+import no.nav.dokarkiv.core.document.DoksysDokument;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
@@ -16,27 +18,36 @@ import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
+import no.nav.dokarkiv.core.exceptions.DokarkivTechnicalException;
 import no.nav.dokarkiv.core.sporing.KildeNavnPopulator;
 import no.nav.dokarkiv.core.stelvio.RequestContextHolder;
+import no.nav.dokarkiv.core.storage.Storage;
+import no.nav.dokarkiv.core.util.JsonSerializer;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasjon.arkiverdokumentproduksjon.Tilleggsopplysning;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.OpprettJournalpostArkiverDokumenterRequest;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
- * Implementation of OpprettJournalpostArkiverDokumentRequestMapper
- *
  * @author Sigurd Midttun
  */
+@Slf4j
 @Component
 public class OpprettJournalpostArkiverDokumenterRequestMapper {
 
+	private final KildeNavnPopulator kildeNavnPopulator;
+	private final Storage storage;
+
 	@Inject
-	private KildeNavnPopulator kildeNavnPopulator;
+	public OpprettJournalpostArkiverDokumenterRequestMapper(KildeNavnPopulator kildeNavnPopulator, Storage storage) {
+		this.kildeNavnPopulator = kildeNavnPopulator;
+		this.storage = storage;
+	}
 
 	public OpprettJournalpostArkiverDokumenterRequestTo map(OpprettJournalpostArkiverDokumenterRequest wsRequest) {
 		no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasjon.opprettjournalpostarkiverdokumenter.Journalpost journalpost = wsRequest
@@ -62,16 +73,14 @@ public class OpprettJournalpostArkiverDokumenterRequestMapper {
 	private Journalpost createDomainJournalpostBase(no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasjon.opprettjournalpostarkiverdokumenter.Journalpost journalpost) {
 		return Journalpost.builder()
 				.journalposttype(journalpost.getJournalpostType() == null ? null : JournalpostTypeCode.valueOf(journalpost
-						.getJournalpostType()
-						.name()))
+						.getJournalpostType().name()))
 				.fagomrade(journalpost.getFagomrade() == null ? null : FagomradeCode.valueOf(journalpost.getFagomrade()))
 				.opprettetAvNavn(journalpost.getOpprettetAvNavn())
 				.journalForendeEnhetId(journalpost.getJournalforendeEnhet())
 				.innhold(journalpost.getInnhold())
 				.dokumentDato(journalpost.getDatoDokument() == null || journalpost.getDatoDokument()
 						.toGregorianCalendar() == null ? null : journalpost.getDatoDokument()
-						.toGregorianCalendar()
-						.getTime())
+						.toGregorianCalendar().getTime())
 				.avsenderMottaker(journalpost.getAvsenderMottakerNavn())
 				.avsenderMottakerId(journalpost.getAvsenderMottakerId())
 				.land(journalpost.getLand())
@@ -126,18 +135,58 @@ public class OpprettJournalpostArkiverDokumenterRequestMapper {
 
 	private void addFildetaljer(JournalpostDokumentInfoRelasjon relasjon,
 								no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasjon.opprettjournalpostarkiverdokumenter.DokumentInfo dokumentInfo) {
-		dokumentInfo.getFildetaljerListe()
-				.stream()
-				.forEach(fildetaljer -> relasjon
-						.getDokumentInfo()
-						.addFilDetaljer(FilDetaljer.builder()
-								.filtype(convertFilType(fildetaljer.getFiltype()) == null ? null : FilTypeCode.valueOf(convertFilType(fildetaljer
-										.getFiltype())))
-								.variantFormat(fildetaljer.getVariantformat() == null ? null : VariantFormatCode.valueOf(fildetaljer
-										.getVariantformat()))
-//								.fileContent(fildetaljer.get()) TODO Settes etter s3-oppslag
-								.filUuid(UUID.randomUUID().toString())
-								.dokumentInfo(relasjon.getDokumentInfo())
-								.build()));
+
+		DoksysDokument doksysDokument = createDokumentResultWithDocumentsFromS3(dokumentInfo.getFilreferanse());
+		DokumentInfo domainDokumentInfo = relasjon.getDokumentInfo();
+
+		domainDokumentInfo.addFilDetaljer(FilDetaljer.builder()
+				.filtype(FilTypeCode.PDF)
+				.variantFormat(VariantFormatCode.ARKIV)
+				.fileContent(doksysDokument.getPdf())
+				.filUuid(UUID.randomUUID().toString())
+				.dokumentInfo(relasjon.getDokumentInfo())
+				.build());
+		domainDokumentInfo.addFilDetaljer(FilDetaljer.builder()
+				.filtype(FilTypeCode.AXML)
+				.variantFormat(VariantFormatCode.PRODUKSJON)
+				.fileContent(doksysDokument.getPdf())
+				.filUuid(UUID.randomUUID().toString())
+				.dokumentInfo(relasjon.getDokumentInfo())
+				.build());
+
+//		dokumentInfo.getFildetaljerListe()
+//				.stream()
+//				.forEach(fildetaljer -> relasjon
+//						.getDokumentInfo()
+//						.addFilDetaljer(FilDetaljer.builder()
+//								.filtype(convertFilType(fildetaljer.getFiltype()) == null ? null : FilTypeCode.valueOf(convertFilType(fildetaljer
+//										.getFiltype())))
+//								.variantFormat(fildetaljer.getVariantformat() == null ? null : VariantFormatCode.valueOf(fildetaljer
+//										.getVariantformat()))
+//
+////								.fileContent(fildetaljer.get()) TODO Settes etter s3-oppslag
+//								.filUuid(UUID.randomUUID().toString())
+//								.dokumentInfo(relasjon.getDokumentInfo())
+//								.build()));
 	}
+
+	private DoksysDokument createDokumentResultWithDocumentsFromS3(String bestillingsId) {
+		log.info(String.format("tjoark112 henter dokumenter fra S3. BestillingsId=%s", bestillingsId));
+		DoksysDokument doksysDokument = fetchDocumentFromS3(bestillingsId);
+		return DoksysDokument.builder()
+				.pdf(doksysDokument.getPdf())
+				.axml(doksysDokument.getAxml()).build();
+	}
+
+	private DoksysDokument fetchDocumentFromS3(String key) {
+		Optional<String> jsonPayload = storage.get(S3_DIRECTORY_NAME, key);
+
+		if (!jsonPayload.isPresent()) {
+			throw new DokarkivTechnicalException(String.format("qdok002 fant ingen dokument i S3 fra directory=%s med key=%s ", S3_DIRECTORY_NAME, key));
+		}
+
+		return JsonSerializer.deserialize(jsonPayload.get(), DoksysDokument.class);
+
+	}
+
 }

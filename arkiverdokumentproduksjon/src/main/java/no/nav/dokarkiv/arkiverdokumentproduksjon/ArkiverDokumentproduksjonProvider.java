@@ -64,7 +64,6 @@ import no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark111.OpprettUtgaaendeJourn
 import no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark111.OpprettUtgaaendeJournalpostArkiverDokumentService;
 import no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark111.OpprettUtgaaendeJournalpostArkiverDokumenterRequestMapper;
 import no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark112.OpprettJournalpostArkiverDokumenterRequestMapper;
-import no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark112.OpprettJournalpostArkiverDokumenterRequestTo;
 import no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark112.OpprettJournalpostArkiverDokumenterResponseMapper;
 import no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark112.OpprettJournalpostArkiverDokumenterResponseTo;
 import no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark112.OpprettJournalpostArkiverDokumenterService;
@@ -547,10 +546,7 @@ public class ArkiverDokumentproduksjonProvider implements ArkiverDokumentproduks
 	public OpprettJournalpostArkiverDokumenterResponse opprettJournalpostArkiverDokumenter(
 			OpprettJournalpostArkiverDokumenterRequest request) {
 		Assert.notNull(request, REQUEST_IS_NULL_MSG);
-		OpprettJournalpostArkiverDokumenterRequestTo domeneRequest
-				= opprettJournalpostArkiverDokumenterRequestMapper.map(request);
-		OpprettJournalpostArkiverDokumenterResponseTo domeneResponse
-				= opprettJournalpostArkiverDokumenterService.opprettJournalpostArkiverDokument(domeneRequest);
+		OpprettJournalpostArkiverDokumenterResponseTo domeneResponse = opprettJournalpostArkiverDokumenterService.opprettJournalpostArkiverDokument(request);
 		log.info("tjoark112 har opprettet journalpost med journalpostId={} og dokumentInfoId(er)={}", domeneResponse.getJournalpostId(), domeneResponse
 				.getDokumentInfoIdList());
 		return opprettJournalpostArkiverDokumenterResponseMapper.map(domeneResponse);

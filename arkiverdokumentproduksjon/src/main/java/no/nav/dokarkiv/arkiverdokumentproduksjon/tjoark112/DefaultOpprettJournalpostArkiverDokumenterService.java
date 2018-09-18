@@ -3,6 +3,7 @@ package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark112;
 import static no.nav.dokarkiv.arkiverdokumentproduksjon.ArkiverDokumentproduksjonConstants.BESTILLINGS_ID_KEY;
 import static org.assertj.core.util.Strings.isNullOrEmpty;
 
+import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
@@ -10,12 +11,13 @@ import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.util.DateProvider;
-import no.nav.dokarkiv.core.exceptions.ApplicationException;
 import no.nav.dokarkiv.core.journalbehandling.DokumentFilerDelegate;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
+import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.OpprettJournalpostArkiverDokumenterRequest;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -24,37 +26,42 @@ import java.util.stream.Collectors;
  * @author Cook, Torgeir
  */
 @Service
+@Slf4j
 public class DefaultOpprettJournalpostArkiverDokumenterService implements OpprettJournalpostArkiverDokumenterService {
 
+	private final JoarkRepository joarkRepository;
+	private final OpprettJournalpostArkiverDokumenterValidator opprettJournalpostArkiverDokumenterValidator;
+	private final DokumentFilerDelegate dokumentFilerDelegate;
+	private final OpprettJournalpostArkiverDokumenterRequestMapper opprettJournalpostArkiverDokumenterRequestMapper;
+
 	@Inject
-	private JoarkRepository joarkRepository;
-	@Inject
-	private OpprettJournalpostArkiverDokumenterValidator opprettJournalpostArkiverDokumentValidator;
-	@Inject
-	private DokumentFilerDelegate dokumentFilerDelegate;
+	public DefaultOpprettJournalpostArkiverDokumenterService(JoarkRepository joarkRepository,
+															 OpprettJournalpostArkiverDokumenterValidator opprettJournalpostArkiverDokumenterValidator,
+															 DokumentFilerDelegate dokumentFilerDelegate,
+															 OpprettJournalpostArkiverDokumenterRequestMapper opprettJournalpostArkiverDokumenterRequestMapper) {
+		this.joarkRepository = joarkRepository;
+		this.opprettJournalpostArkiverDokumenterValidator = opprettJournalpostArkiverDokumenterValidator;
+		this.dokumentFilerDelegate = dokumentFilerDelegate;
+		this.opprettJournalpostArkiverDokumenterRequestMapper = opprettJournalpostArkiverDokumenterRequestMapper;
+	}
 
 	@Override
-	public OpprettJournalpostArkiverDokumenterResponseTo opprettJournalpostArkiverDokument(
-			OpprettJournalpostArkiverDokumenterRequestTo requestTo) {
-		this.validateRequest(requestTo);
+	public OpprettJournalpostArkiverDokumenterResponseTo opprettJournalpostArkiverDokument(OpprettJournalpostArkiverDokumenterRequest wsRequest) {
+		OpprettJournalpostArkiverDokumenterRequestTo requestTo = opprettJournalpostArkiverDokumenterRequestMapper.map(wsRequest);
+
 		Journalpost storedJournalpost = findPreviousJournalforing(requestTo);
 		if (storedJournalpost == null) {
+
 			Journalpost journalpost = requestTo.getJournalpost();
 
 			updateJournalpost(journalpost);
 
-			opprettJournalpostArkiverDokumentValidator.validate(journalpost);
+			opprettJournalpostArkiverDokumenterValidator.validate(journalpost);
 
 			dokumentFilerDelegate.saveUpdateDokumentFiler(journalpost);
 			storedJournalpost = joarkRepository.save(journalpost);
 		}
 		return createResponse(storedJournalpost);
-	}
-
-	private void validateRequest(OpprettJournalpostArkiverDokumenterRequestTo request) {
-		if (request == null) {
-			throw new ApplicationException("Missing parameter: request");
-		}
 	}
 
 	private OpprettJournalpostArkiverDokumenterResponseTo createResponse(Journalpost journalpost) {
@@ -77,13 +84,14 @@ public class DefaultOpprettJournalpostArkiverDokumenterService implements Oppret
 			journalpost.setJournalposttype(JournalpostTypeCode.U);
 		}
 
-		JournalpostDokumentInfoRelasjon relasjon = journalpost.findHoveddokumentDokumentInfoRelasjon();
-		relasjon.setTilknyttetAvNavn(journalpost.getOpprettetAvNavn());
-
-		DokumentInfo dokumentInfo = relasjon.getDokumentInfo();
-		dokumentInfo.setDokumentstatus(DokumentStatusCode.FERDIGSTILT);
-		dokumentInfo.setDokumentFerdigDato(DateProvider.getToday());
-		dokumentInfo.setOriginalJournalpost(journalpost);
+		Set<JournalpostDokumentInfoRelasjon> relasjoner = journalpost.getJournalpostDokumentInfoRelasjoner();
+		relasjoner.stream().forEach(relasjon -> {
+			relasjon.setTilknyttetAvNavn(journalpost.getOpprettetAvNavn());
+			DokumentInfo dokumentInfo = relasjon.getDokumentInfo();
+			dokumentInfo.setDokumentstatus(DokumentStatusCode.FERDIGSTILT);
+			dokumentInfo.setDokumentFerdigDato(DateProvider.getToday());
+			dokumentInfo.setOriginalJournalpost(journalpost);
+		});
 	}
 
 	private Journalpost findPreviousJournalforing(OpprettJournalpostArkiverDokumenterRequestTo requestTo) {

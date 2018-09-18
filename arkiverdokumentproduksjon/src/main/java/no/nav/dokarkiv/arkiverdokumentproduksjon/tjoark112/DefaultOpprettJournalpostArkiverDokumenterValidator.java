@@ -20,8 +20,7 @@ import javax.inject.Inject;
  * @author Stig Strøm
  */
 @Component
-public class DefaultOpprettJournalpostArkiverDokumenterValidator implements
-		OpprettJournalpostArkiverDokumenterValidator {
+public class DefaultOpprettJournalpostArkiverDokumenterValidator implements OpprettJournalpostArkiverDokumenterValidator {
 
 	@Inject
 	protected JournalpostStructureVerifier verifier;
