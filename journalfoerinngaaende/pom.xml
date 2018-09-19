@@ -12,7 +12,7 @@
 	<artifactId>journalfoerinngaaende</artifactId>
 
 	<properties>
-		<no-nav-dok-tjenester-journalfoerinngaaende.version>0.0.15</no-nav-dok-tjenester-journalfoerinngaaende.version>
+		<no-nav-dok-tjenester-journalfoerinngaaende.version>0.0.16</no-nav-dok-tjenester-journalfoerinngaaende.version>
 	</properties>
 
 	<dependencies>
