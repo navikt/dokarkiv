@@ -6,6 +6,7 @@ import static no.nav.dokarkiv.hentjournalinfo.query.QueryNames.DOKUMENT;
 import io.leangen.graphql.annotations.GraphQLArgument;
 import io.leangen.graphql.annotations.GraphQLNonNull;
 import io.leangen.graphql.annotations.GraphQLQuery;
+import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentFil;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
@@ -16,7 +17,6 @@ import no.nav.dokarkiv.core.metrics.RestMetrics;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.security.abac.AbacSecurityService;
-import no.nav.dokarkiv.hentjournalinfo.exceptions.DokumentLogiskSlettetException;
 import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,6 +29,7 @@ import java.util.List;
  * @author Ugur Alpay Cenar, Visma Consulting.
  */
 @Component
+@Slf4j
 public class DokumentQuery implements Query {
 
     private final DokumentinfoRepository dokumentinfoRepository;
@@ -46,16 +47,17 @@ public class DokumentQuery implements Query {
 
     @GraphQLQuery(name = DOKUMENT, description = "Selve dokumentet i PDF/PDFA format")
     @Transactional(readOnly = true)
-    @RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark002g"}, percentiles = {0.5, 0.95})
-    public byte[] hentDokument(@GraphQLArgument(name = "dokumentInfoId") @GraphQLNonNull Long dokumentInfoId, @GraphQLArgument(name = "journalpostId") @GraphQLNonNull String journalpostId, @GraphQLArgument(name = "filtype") FilTypeCode filType) {
-
-//        abacSecurityService.assertAccessToJournalpost(journalpostId);
+    @RestMetrics(value = "dok_graphql_request", extraTags = {"query", DOKUMENT}, percentiles = {0.5, 0.95}, logException = false)
+    public byte[] hentDokument(@GraphQLArgument(name = "dokumentInfoId") @GraphQLNonNull Long dokumentInfoId, @GraphQLArgument(name = "journalpostId") @GraphQLNonNull Long journalpostId, @GraphQLArgument(name = "filtype") FilTypeCode filType) {
+        log.info(format("GraphQL har mottatt %s query med dokumentInfoId=%s, journalpostId=%s", DOKUMENT, dokumentInfoId, journalpostId));
+        abacSecurityService.assertAccessToJournalpost(journalpostId.toString());
 
         DokumentInfo dokumentInfo = dokumentinfoRepository.findById(dokumentInfoId)
                 .orElse(new no.nav.dokarkiv.core.domain.entities.DokumentInfo());
 
         if (BooleanUtils.isTrue(dokumentInfo.getSlettet())) {
-            throw new DokumentLogiskSlettetException(format("Dokument med dokumentInfoId=%s er satt som logisk slettet og kan derfor ikke hentes", dokumentInfoId));
+            abacSecurityService.assertAccessToKode6AndKode7();
+//            throw new DokumentLogiskSlettetException(format("Dokument med dokumentInfoId=%s er satt som logisk slettet og kan derfor ikke hentes", dokumentInfoId));
         }
 
         List<FilDetaljer> fildetaljerListe = new ArrayList<>(dokumentInfo.getFildetaljerListe());

@@ -33,4 +33,6 @@ public @interface RestMetrics {
 	boolean histogram() default false;
 
 	String description() default "";
+
+    boolean logException() default true;
 }

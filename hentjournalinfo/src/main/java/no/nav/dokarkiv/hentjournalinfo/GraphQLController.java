@@ -17,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.hentjournalinfo.handlers.GraphQLExceptionHandler;
 import no.nav.dokarkiv.hentjournalinfo.mock.MockQuery;
 import no.nav.dokarkiv.hentjournalinfo.query.Query;
+import no.nav.dokarkiv.hentjournalinfo.util.GraphQLFieldMetrics;
 import no.nav.dokarkiv.hentjournalinfo.util.GraphQLRequest;
 import no.nav.freg.abac.core.annotation.Abac;
 import org.springframework.http.MediaType;
@@ -37,12 +38,11 @@ import java.util.Map;
 @Slf4j
 public class GraphQLController {
 
-
     private final GraphQL graphQL;
     private final GraphQL mockGraphQL;
 
     @Inject
-    public GraphQLController(List<Query> queryList, MockQuery mockQuery) {
+    public GraphQLController(List<Query> queryList, MockQuery mockQuery, GraphQLFieldMetrics graphQLFieldMetrics) {
         //Schema generated from query classes
         GraphQLSchemaGenerator schemaGenerator = new GraphQLSchemaGenerator()
                 .withResolverBuilders(new AnnotatedResolverBuilder());
@@ -55,6 +55,7 @@ public class GraphQLController {
         graphQL = GraphQL.newGraphQL(schema)
                 .mutationExecutionStrategy(new AsyncSerialExecutionStrategy(new GraphQLExceptionHandler()))
                 .queryExecutionStrategy(new AsyncExecutionStrategy(new GraphQLExceptionHandler()))
+                .instrumentation(graphQLFieldMetrics)
                 .build();
 
         //Schema generated from mock query class
@@ -65,6 +66,7 @@ public class GraphQLController {
         mockGraphQL = GraphQL.newGraphQL(mockSchema)
                 .mutationExecutionStrategy(new AsyncSerialExecutionStrategy(new GraphQLExceptionHandler()))
                 .queryExecutionStrategy(new AsyncExecutionStrategy(new GraphQLExceptionHandler()))
+                .instrumentation(graphQLFieldMetrics)
                 .build();
     }
 

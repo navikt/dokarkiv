@@ -132,6 +132,11 @@
 			<artifactId>unboundid-ldapsdk</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<artifactId>freg-security-test-oidc-tools</artifactId>
+			<groupId>no.nav.freg</groupId>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>

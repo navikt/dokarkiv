@@ -78,11 +78,8 @@ public class DokTimedAspect {
 		try {
 			return pjp.proceed();
 		} catch (Exception e) {
-			if (isFunctionalException(method, e)) {
-				log.warn(e.getMessage(), e);
-			} else {
-				log.error(e.getMessage(), e);
-			}
+            logException(method, e);
+
 			Counter.builder(timed.value() + "_exception")
 					.tags("error_type", isFunctionalException(method, e) ? "functional" : "technical")
 					.tags("exception_name", e.getClass().getSimpleName())
@@ -106,8 +103,8 @@ public class DokTimedAspect {
 	public Object restMetrics(ProceedingJoinPoint pjp) throws Throwable {
 		Method method = ((MethodSignature) pjp.getSignature()).getMethod();
 
-		RestMetrics timed = method.getAnnotation(RestMetrics.class);
-		if (timed.value().isEmpty()) {
+        RestMetrics restMetrics = method.getAnnotation(RestMetrics.class);
+        if (restMetrics.value().isEmpty()) {
 			return pjp.proceed();
 		}
 
@@ -115,26 +112,26 @@ public class DokTimedAspect {
 		try {
 			return pjp.proceed();
 		} catch (Exception e) {
-			if (isFunctionalException(method, e)) {
-				log.warn(e.getMessage(), e);
-			} else {
-				log.error(e.getMessage(), e);
+
+            if (restMetrics.logException()) {
+                logException(method, e);
 			}
-			Counter.builder(timed.value() + "_exception")
+
+            Counter.builder(restMetrics.value() + "_exception")
 					.tags("error_type", isFunctionalException(method, e) ? "functional" : "technical")
 					.tags("exception_name", e.getClass().getSimpleName())
-					.tags(timed.extraTags())
+                    .tags(restMetrics.extraTags())
 					.tags(tagsBasedOnJoinpoint.apply(pjp))
 					.register(registry)
 					.increment();
 			throw e;
 		} finally {
-			sample.stop(Timer.builder(timed.value())
-					.description(timed.description().isEmpty() ? null : timed.description())
-					.tags(timed.extraTags())
+            sample.stop(Timer.builder(restMetrics.value())
+                    .description(restMetrics.description().isEmpty() ? null : restMetrics.description())
+                    .tags(restMetrics.extraTags())
 					.tags(tagsBasedOnJoinpoint.apply(pjp))
-					.publishPercentileHistogram(timed.histogram())
-					.publishPercentiles(timed.percentiles().length == 0 ? null : timed.percentiles())
+                    .publishPercentileHistogram(restMetrics.histogram())
+                    .publishPercentiles(restMetrics.percentiles().length == 0 ? null : restMetrics.percentiles())
 					.register(registry));
 		}
 	}
@@ -142,6 +139,14 @@ public class DokTimedAspect {
 	private boolean isFunctionalException(Method method, Exception e) {
 		return asList(method.getExceptionTypes()).contains(e.getClass()) || e instanceof DokarkivFunctionalException;
 	}
+
+    private void logException(Method method, Exception e) {
+        if (isFunctionalException(method, e)) {
+            log.warn(e.getMessage(), e);
+        } else {
+            log.error(e.getMessage(), e);
+        }
+    }
 
 
 	private enum MetricsType {

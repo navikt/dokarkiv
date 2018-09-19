@@ -12,7 +12,6 @@ public class DokumentInfoMapper {
                 .dokumentInfoId(dokumentInfo.getDokumentInfoId())
                 .status(dokumentInfo.getDokumentstatus() == null ? null : dokumentInfo.getDokumentstatus().name())
                 .tittel(dokumentInfo.getTittel())
-                .slettet(dokumentInfo.getSlettet())
                 .build();
     }
 }

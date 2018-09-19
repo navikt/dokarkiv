@@ -8,6 +8,7 @@ import static no.nav.dokarkiv.hentjournalinfo.query.QueryNames.JOURNALPOST;
 import io.leangen.graphql.annotations.GraphQLArgument;
 import io.leangen.graphql.annotations.GraphQLNonNull;
 import io.leangen.graphql.annotations.GraphQLQuery;
+import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
 import no.nav.dokarkiv.hentjournalinfo.dto.DokumentInfo;
 import no.nav.dokarkiv.hentjournalinfo.dto.Journalpost;
@@ -20,12 +21,15 @@ import org.springframework.stereotype.Component;
  * @author Ugur Alpay Cenar, Visma Consulting.
  */
 @Component
+@Slf4j
 public class MockQuery {
 
     private MockDataUtils mockDataUtils = new MockDataUtils();
 
-    @GraphQLQuery(name = DOKUMENTINFO, description = "Returnerer mock data for alle input. Vil kaste feil ved input=(dokumentInfoId: 0) og kan brukes for å simulere feil. Er ment til å brukes for å teste ut graphql apiet uten å gå gjennom sikkerhet")
+    @GraphQLQuery(name = DOKUMENTINFO, description = "Returnerer mock data for alle input. Vil kaste feil ved input=(dokumentInfoId: 0) som kan brukes for å simulere feil. Er ment til å brukes for å teste ut graphql apiet uten å gå gjennom sikkerhet")
     public DokumentInfo dokumentInfo(@GraphQLArgument(name = "dokumentInfoId") @GraphQLNonNull Long dokumentInfoId) {
+        log.info(format("GraphQL har mottat %s mock query med dokumentInfoId=%s", DOKUMENTINFO, dokumentInfoId));
+
         if (dokumentInfoId.equals(0L)) {
             throw new DokumentIkkeFunnetException(format("Fant ingen dokument med dokumentInfoId=%s i JOARK Databasen", dokumentInfoId));
         }
@@ -38,12 +42,15 @@ public class MockQuery {
     }
 
     @GraphQLQuery(name = DOKUMENT, description = "Returnerer base64 encoded mock fil. Er ment til å brukes for å teste ut graphql apiet uten å gå gjennom sikkerhet")
-    public byte[] hentDokument(@GraphQLArgument(name = "dokumentInfoId") @GraphQLNonNull Long dokumentInfoId, @GraphQLArgument(name = "journalpostId") @GraphQLNonNull String journalpostId, @GraphQLArgument(name = "filtype") FilTypeCode filType) {
+    public byte[] hentDokument(@GraphQLArgument(name = "dokumentInfoId") @GraphQLNonNull Long dokumentInfoId, @GraphQLArgument(name = "journalpostId") @GraphQLNonNull Long journalpostId, @GraphQLArgument(name = "filtype") FilTypeCode filType) {
+        log.info(format("GraphQL har mottat %s mock query med dokumentInfoId=%s, journalpostId=%s", DOKUMENT, dokumentInfoId, journalpostId));
+
         return new byte[123321];
     }
 
     @GraphQLQuery(name = JOURNALPOST, description = "Returnerer mock data for alle input. Er ment til å brukes for å teste ut graphql apiet uten å gå gjennom sikkerhet")
     public Journalpost journalpost(@GraphQLArgument(name = "journalpostId") Long journalpostId) {
+        log.info(format("GraphQL har mottat %s mock query med journalpostId=%s", JOURNALPOST, journalpostId));
 
         Journalpost journalpost = mockDataUtils.createJournalpost(journalpostId);
         journalpost.getKnyttetDokumentList().forEach(relasjon -> {

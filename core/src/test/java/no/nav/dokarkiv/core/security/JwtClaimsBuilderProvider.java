@@ -1,10 +1,10 @@
-package no.nav.dokarkiv.hentjournalinfo.security;
+package no.nav.dokarkiv.core.security;
 
 
-import static no.nav.dokarkiv.hentjournalinfo.security.SecurityConfig.AZURE_ISSUER_URL;
-import static no.nav.dokarkiv.hentjournalinfo.security.SecurityConfig.GOOGLE_ISSUER_URL;
-import static no.nav.dokarkiv.hentjournalinfo.security.SecurityConfig.NAV_STS_ISSUER_URL;
-import static no.nav.dokarkiv.hentjournalinfo.security.SecurityConfig.OPEN_AM_ISSUER_URL;
+import static no.nav.dokarkiv.core.security.SecurityConfig.AZURE_ISSUER_URL;
+import static no.nav.dokarkiv.core.security.SecurityConfig.GOOGLE_ISSUER_URL;
+import static no.nav.dokarkiv.core.security.SecurityConfig.NAV_STS_ISSUER_URL;
+import static no.nav.dokarkiv.core.security.SecurityConfig.OPEN_AM_ISSUER_URL;
 
 import lombok.experimental.UtilityClass;
 import no.nav.freg.security.test.oidc.tools.JwtClaimsBuilder;

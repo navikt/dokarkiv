@@ -9,6 +9,7 @@ import static org.apache.commons.lang3.BooleanUtils.isTrue;
 import io.leangen.graphql.annotations.GraphQLArgument;
 import io.leangen.graphql.annotations.GraphQLContext;
 import io.leangen.graphql.annotations.GraphQLQuery;
+import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.domain.entities.Bruker;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.metrics.RestMetrics;
@@ -28,6 +29,7 @@ import java.util.stream.Collectors;
  * @author Ugur Alpay Cenar, Visma Consulting.
  */
 @Component
+@Slf4j
 public class JournalpostQuery implements Query {
 
     private final JoarkRepository joarkRepository;
@@ -39,8 +41,10 @@ public class JournalpostQuery implements Query {
 
     @GraphQLQuery(name = JOURNALPOST)
     @Transactional(readOnly = true)
-    @RestMetrics(value = "dok_graphql_request", extraTags = {"query", JOURNALPOST, "subquery", "root"}, percentiles = {0.5, 0.95})
+    @RestMetrics(value = "dok_graphql_request", extraTags = {"query", JOURNALPOST}, percentiles = {0.5, 0.95}, logException = false)
     public Journalpost journalpost(@GraphQLArgument(name = "journalpostId") Long journalpostId) {
+        log.info(format("GraphQL har mottatt %s query med journalpostId=%s", JOURNALPOST, journalpostId));
+
         no.nav.dokarkiv.core.domain.entities.Journalpost journalpost = joarkRepository.findById(journalpostId)
                 .orElseThrow(() -> new JournalpostIkkeFunnetException(format("Fant ingen journalpost med journalpostId=%s i JOARK databasen", journalpostId)));
         return mapJournalpost(journalpost);

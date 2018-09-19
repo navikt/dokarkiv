@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.hentjournalinfo.mock;
 
+import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.hentjournalinfo.dto.DokumentInfo;
 import no.nav.dokarkiv.hentjournalinfo.dto.Journalpost;
@@ -49,7 +50,11 @@ public class MockDataUtils {
         return Arrays.asList(DokumentInfo.Fildetaljer.builder()
                 .variantFormat(VariantFormatCode.ARKIV.name())
                 .filtype("PDF").fildetaljerId(123L)
-                .build());
+                        .build(),
+                DokumentInfo.Fildetaljer.builder().variantFormat(VariantFormatCode.PRODUKSJON.name())
+                        .filtype(FilTypeCode.AXML.name()).fildetaljerId(124L)
+                        .build()
+        );
     }
 
     public List<JournalpostDokumentRelasjon> createJournalpostDokumentRelasjonList(Long hoveddokJournalpostId, Long hoveddokDokumentInfoId) {

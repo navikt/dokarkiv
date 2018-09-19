@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.hentjournalinfo.security;
+package no.nav.dokarkiv.core.security;
 
 import static java.lang.String.format;
 import static org.mockito.Mockito.mock;

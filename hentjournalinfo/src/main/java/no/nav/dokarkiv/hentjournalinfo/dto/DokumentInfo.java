@@ -1,7 +1,9 @@
 package no.nav.dokarkiv.hentjournalinfo.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 import java.util.Map;
@@ -11,6 +13,8 @@ import java.util.Map;
  */
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class DokumentInfo {
 
     private Long dokumentInfoId;
@@ -27,10 +31,10 @@ public class DokumentInfo {
 
     private List<Fildetaljer> filDetaljerList;
 
-    private Boolean slettet;
-
     @Data
     @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class Fildetaljer {
         private Long fildetaljerId;
         private String filtype;

@@ -2,12 +2,16 @@ package no.nav.dokarkiv.hentjournalinfo.util;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Builder;
+import lombok.Getter;
 
 import java.util.Map;
 
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
  */
+@Builder
+@Getter
 public class GraphQLRequest {
     private final String query;
     private final String operationName;
@@ -20,17 +24,5 @@ public class GraphQLRequest {
         this.query = query;
         this.operationName = operationName;
         this.variables = variables;
-    }
-
-    public String getQuery() {
-        return query;
-    }
-
-    public String getOperationName() {
-        return operationName;
-    }
-
-    public Map<String, Object> getVariables() {
-        return variables;
     }
 }

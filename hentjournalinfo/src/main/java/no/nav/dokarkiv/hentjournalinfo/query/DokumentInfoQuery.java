@@ -4,17 +4,18 @@ import static java.lang.String.format;
 import static no.nav.dokarkiv.hentjournalinfo.map.DokumentInfoMapper.mapDokumentInfo;
 import static no.nav.dokarkiv.hentjournalinfo.map.JournalpostMapper.mapJournalpost;
 import static no.nav.dokarkiv.hentjournalinfo.query.QueryNames.DOKUMENTINFO;
-import static no.nav.dokarkiv.hentjournalinfo.query.QueryNames.JOURNALPOST;
 import static org.apache.commons.lang3.BooleanUtils.isTrue;
 
 import io.leangen.graphql.annotations.GraphQLArgument;
 import io.leangen.graphql.annotations.GraphQLContext;
 import io.leangen.graphql.annotations.GraphQLNonNull;
 import io.leangen.graphql.annotations.GraphQLQuery;
+import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.metrics.RestMetrics;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
+import no.nav.dokarkiv.core.security.abac.AbacSecurityService;
 import no.nav.dokarkiv.hentjournalinfo.dto.DokumentInfo;
 import no.nav.dokarkiv.hentjournalinfo.dto.Journalpost;
 import no.nav.dokarkiv.hentjournalinfo.dto.JournalpostDokumentRelasjon;
@@ -35,21 +36,27 @@ import java.util.stream.Collectors;
  * @author Ugur Alpay Cenar, Visma Consulting.
  */
 @Component
+@Slf4j
 public class DokumentInfoQuery implements Query {
 
 
     private final DokumentinfoRepository dokumentinfoRepository;
 
+    private final AbacSecurityService abacSecurityService;
+
+
     @Inject
-    public DokumentInfoQuery(DokumentinfoRepository dokumentinfoRepository) {
+    public DokumentInfoQuery(DokumentinfoRepository dokumentinfoRepository, AbacSecurityService abacSecurityService) {
         this.dokumentinfoRepository = dokumentinfoRepository;
+        this.abacSecurityService = abacSecurityService;
     }
 
     @GraphQLQuery(name = DOKUMENTINFO)
     @Transactional(readOnly = true)
-    @RestMetrics(value = "dok_graphql_request", extraTags = {"query", JOURNALPOST, "subquery", "root"}, percentiles = {0.5, 0.95})
+    @RestMetrics(value = "dok_graphql_request", extraTags = {"query", DOKUMENTINFO}, percentiles = {0.5, 0.95}, logException = false)
     public DokumentInfo dokumentInfo(@GraphQLArgument(name = "dokumentInfoId") @GraphQLNonNull Long dokumentInfoId) {
-
+        log.info(format("GraphQL har mottatt %s query med dokumentInfoId=%s", DOKUMENTINFO, dokumentInfoId));
+        abacSecurityService.assertAccessToKode6AndKode7();
         no.nav.dokarkiv.core.domain.entities.DokumentInfo dokumentInfo = dokumentinfoRepository.findById(dokumentInfoId)
                 .orElseThrow(() -> new DokumentIkkeFunnetException(format("Fant ingen dokument med dokumentInfoId=%s i JOARK Databasen", dokumentInfoId)));
 

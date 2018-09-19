@@ -1,7 +1,9 @@
 package no.nav.dokarkiv.hentjournalinfo.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
@@ -10,6 +12,8 @@ import java.util.List;
  */
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Journalpost {
 
     private Long journalpostId;
@@ -28,6 +32,8 @@ public class Journalpost {
 
     @Data
     @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class Bruker {
         private String brukerId;
         private String brukerType;
