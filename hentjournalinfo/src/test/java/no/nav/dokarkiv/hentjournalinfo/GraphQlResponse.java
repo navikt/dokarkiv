@@ -31,9 +31,15 @@ public class GraphQlResponse {
 
     @JsonCreator
     public GraphQlResponse(@JsonProperty("data") JsonNode data) throws IOException {
-        dokumentInfo = new ObjectMapper().readValue(data.get("dokumentInfo").toString(), DokumentInfo.class);
-        journalpost = new ObjectMapper().readValue(data.get("journalpost").toString(), Journalpost.class);
-        dokumentFil = data.get("dokumentFil").toString();
+        dokumentInfo = mapToObject(data.get("dokumentInfo"), DokumentInfo.class);
+        journalpost = mapToObject(data.get("journalpost"), Journalpost.class);
+        dokumentFil = data.get("dokumentFil") == null ? null : data.get("dokumentFil").toString();
     }
 
+    private <T> T mapToObject(JsonNode data, Class<T> tClass) throws IOException {
+        if (data == null) {
+            return null;
+        }
+        return new ObjectMapper().readValue(data.toString(), tClass);
+    }
 }

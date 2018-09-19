@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.hentjournalinfo.handlers;
+package no.nav.dokarkiv.hentjournalinfo.dto;
 
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.

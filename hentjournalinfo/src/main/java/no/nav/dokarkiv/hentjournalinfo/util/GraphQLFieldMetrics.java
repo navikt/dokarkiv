@@ -29,7 +29,10 @@ public class GraphQLFieldMetrics extends SimpleInstrumentation {
 
         parameters.getExecutionStrategyParameters().getFields().forEach((queryName, fields) -> {
             SelectionSet selectionSet = fields.get(0).getSelectionSet();
-            if (!isNull(selectionSet) && !parameters.getExecutionStrategyParameters().getPath().toString().startsWith("/__")) {
+            if (!(isNull(selectionSet) || queryName.startsWith("/__") || parameters.getExecutionStrategyParameters()
+                    .getPath()
+                    .toString()
+                    .startsWith("/__"))) {
                 selectionSet.getSelections().forEach(selection -> {
                     Counter.builder("dok_graphql_request_fields")
                             .tag("query", queryName)

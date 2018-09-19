@@ -1,6 +1,10 @@
 package no.nav.dokarkiv.hentjournalinfo.query;
 
 import static java.lang.String.format;
+import static no.nav.abac.xacml.NavAttributter.RESOURCE_ARKIV_DOKUMENT;
+import static no.nav.abac.xacml.NavAttributter.RESOURCE_FELLES_RESOURCE_TYPE;
+import static no.nav.abac.xacml.StandardAttributter.ACTION_ID;
+import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.READ_ACTION;
 import static no.nav.dokarkiv.hentjournalinfo.map.DokumentInfoMapper.mapDokumentInfo;
 import static no.nav.dokarkiv.hentjournalinfo.map.JournalpostMapper.mapJournalpost;
 import static no.nav.dokarkiv.hentjournalinfo.query.QueryNames.DOKUMENTINFO;
@@ -20,8 +24,8 @@ import no.nav.dokarkiv.hentjournalinfo.dto.DokumentInfo;
 import no.nav.dokarkiv.hentjournalinfo.dto.Journalpost;
 import no.nav.dokarkiv.hentjournalinfo.dto.JournalpostDokumentRelasjon;
 import no.nav.dokarkiv.hentjournalinfo.exceptions.DokumentIkkeFunnetException;
-import no.nav.dokarkiv.hentjournalinfo.exceptions.DokumentLogiskSlettetException;
 import no.nav.dokarkiv.hentjournalinfo.exceptions.JournalpostIkkeFunnetException;
+import no.nav.freg.abac.core.annotation.Abac;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,11 +43,9 @@ import java.util.stream.Collectors;
 @Slf4j
 public class DokumentInfoQuery implements Query {
 
-
     private final DokumentinfoRepository dokumentinfoRepository;
 
     private final AbacSecurityService abacSecurityService;
-
 
     @Inject
     public DokumentInfoQuery(DokumentinfoRepository dokumentinfoRepository, AbacSecurityService abacSecurityService) {
@@ -54,14 +56,16 @@ public class DokumentInfoQuery implements Query {
     @GraphQLQuery(name = DOKUMENTINFO)
     @Transactional(readOnly = true)
     @RestMetrics(value = "dok_graphql_request", extraTags = {"query", DOKUMENTINFO}, percentiles = {0.5, 0.95}, logException = false)
+    @Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_DOKUMENT)},
+            actions = @Abac.Attr(key = ACTION_ID, value = READ_ACTION))
     public DokumentInfo dokumentInfo(@GraphQLArgument(name = "dokumentInfoId") @GraphQLNonNull Long dokumentInfoId) {
         log.info(format("GraphQL har mottatt %s query med dokumentInfoId=%s", DOKUMENTINFO, dokumentInfoId));
-        abacSecurityService.assertAccessToKode6AndKode7();
+        abacSecurityService.assertAccessToDokument(dokumentInfoId);
         no.nav.dokarkiv.core.domain.entities.DokumentInfo dokumentInfo = dokumentinfoRepository.findById(dokumentInfoId)
                 .orElseThrow(() -> new DokumentIkkeFunnetException(format("Fant ingen dokument med dokumentInfoId=%s i JOARK Databasen", dokumentInfoId)));
 
         if (isTrue(dokumentInfo.getSlettet())) {
-            throw new DokumentLogiskSlettetException(format("Dokument med dokumentInfoId=%s er satt som logisk slettet og kan derfor ikke hentes", dokumentInfoId));
+            throw new DokumentIkkeFunnetException(format("Fant ingen dokument med dokumentInfoId=%s i JOARK Databasen", dokumentInfoId));
         }
 
         return mapDokumentInfo(dokumentInfo);
@@ -71,8 +75,7 @@ public class DokumentInfoQuery implements Query {
     @Transactional(readOnly = true)
     public Journalpost originalJournalpost(@GraphQLContext DokumentInfo dokument) {
         no.nav.dokarkiv.core.domain.entities.DokumentInfo dokumentInfo = dokumentinfoRepository.findById(dokument.getDokumentInfoId())
-                .orElseThrow(() -> new DokumentIkkeFunnetException(format("Fant ingen dokument med dokumentInfoId=%s i joark Databasen", dokument
-                        .getDokumentInfoId())));
+                .orElse(new no.nav.dokarkiv.core.domain.entities.DokumentInfo());
         no.nav.dokarkiv.core.domain.entities.Journalpost originalJournalpost = dokumentInfo.getOriginalJournalpost();
         if (originalJournalpost == null) {
             throw new JournalpostIkkeFunnetException(format("Fant ingen tilhørende journalpost for dokument med dokumentInfoId=%s (Dette bør egentlig aldri være tilfelle)", dokument

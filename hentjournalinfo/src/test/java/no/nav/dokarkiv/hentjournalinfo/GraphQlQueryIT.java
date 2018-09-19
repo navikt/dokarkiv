@@ -4,9 +4,13 @@ import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static no.nav.dokarkiv.core.datautil.BrukerTestDataProvider.BRUKER_ID;
 import static no.nav.dokarkiv.core.datautil.DokumentFilTestDataProvider.FIL_UUID;
+import static no.nav.dokarkiv.core.domain.codes.DokumentStatusCode.FERDIGSTILT;
+import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.HOVEDDOKUMENT;
 import static no.nav.dokarkiv.core.security.JwtClaimsBuilderProvider.openAmClaimsBuilder;
-import static no.nav.dokarkiv.hentjournalinfo.utils.TestDataUtils.REFERANSEID;
+import static no.nav.dokarkiv.hentjournalinfo.utils.TestDataUtils.HOVEDDOKUMENT_TITTEL;
+import static no.nav.dokarkiv.hentjournalinfo.utils.TestDataUtils.TILLEGGSOPPLYSNING_KEY;
 import static no.nav.dokarkiv.hentjournalinfo.utils.TestDataUtils.TILLEGGSOPPLYSNING_VAL;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
@@ -17,9 +21,8 @@ import com.google.gson.JsonObject;
 import no.nav.dokarkiv.core.CoreConfig;
 import no.nav.dokarkiv.core.domain.builder.DokumentFilBuilder;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
-import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
-import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
+import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
@@ -27,15 +30,20 @@ import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.dokarkiv.core.stelvio.SimpleRequestContext;
+import no.nav.dokarkiv.hentjournalinfo.dto.DokumentInfo;
+import no.nav.dokarkiv.hentjournalinfo.dto.JournalpostStatus;
+import no.nav.dokarkiv.hentjournalinfo.dto.JournalpostType;
 import no.nav.dokarkiv.hentjournalinfo.util.GraphQLRequest;
 import no.nav.dokarkiv.hentjournalinfo.utils.TestDataUtils;
 import no.nav.freg.security.test.oidc.tools.OidcTestService;
 import no.nav.freg.security.test.oidc.tools.TestToolsAutoConfig;
+import org.apache.geronimo.mail.util.Base64;
 import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.boot.test.autoconfigure.data.ldap.AutoConfigureDataLdap;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -62,9 +70,10 @@ import java.util.Map;
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
         classes = {CoreConfig.class, HentJournalInfoConfig.class, TestToolsAutoConfig.class})
-@ActiveProfiles("itest,wiremock")
+@ActiveProfiles("itest,wiremock,ldap")
 @AutoConfigureTestDatabase
 @AutoConfigureTestEntityManager
+@AutoConfigureDataLdap
 @AutoConfigureWireMock(port = 0)
 @Transactional
 public class GraphQlQueryIT {
@@ -192,35 +201,20 @@ public class GraphQlQueryIT {
         TestTransaction.flagForCommit();
         TestTransaction.end();
 
+        HttpEntity request = new HttpEntity<>(createJournalpostRequest(journalpost.getJournalpostId()), oidcHeaders());
 
-        String response = testRestTemplate.postForObject("/rest/graphql", new HttpEntity<>(createJournalpostRequest(journalpost.getJournalpostId()), oidcHeaders()), String.class);
+        GraphQlResponse response = testRestTemplate.postForObject("/rest/graphql", request, GraphQlResponse.class);
+        no.nav.dokarkiv.hentjournalinfo.dto.Journalpost journalpostResponse = response.getJournalpost();
 
-        JsonObject jsonObject = new Gson().fromJson(response, JsonObject.class).getAsJsonObject("data");
-        JsonObject journalpostResponse = jsonObject.getAsJsonObject("journalpost");
-        assertThat(journalpostResponse.get("tema").getAsString(), is(FagomradeCode.PEN.name()));
-        assertThat(journalpostResponse.getAsJsonArray("journalpostDokumentInfoRelasjoner")
-                .get(0)
-                .getAsJsonObject()
-                .get("tilknyttetJournalpostSom")
-                .getAsString(), is(TilknyttetJournalpostSomCode.HOVEDDOKUMENT.name()));
-        assertThat(journalpostResponse.getAsJsonObject("saksrelasjon")
-                .get("fagsystem")
-                .getAsString(), is(FagsystemCode.AO01.name()));
-        assertThat(journalpostResponse.getAsJsonArray("brukere")
-                .get(0)
-                .getAsJsonObject()
-                .get("brukerType")
-                .getAsString(), is(BrukerTypeCode.PERSON.name()));
-        assertThat(journalpostResponse.getAsJsonArray("tilleggsopplysninger")
-                .get(0)
-                .getAsJsonObject()
-                .get("value")
-                .getAsString(), is(TILLEGGSOPPLYSNING_VAL));
-        assertThat(journalpostResponse.getAsJsonArray("kryssreferanser")
-                .get(0)
-                .getAsJsonObject()
-                .get("referanseId")
-                .getAsString(), is(REFERANSEID));
+        assertThat(journalpostResponse.getTema(), is(FagsystemCode.PEN.name()));
+        assertThat(journalpostResponse.getJournalpostStatus(), is(JournalpostStatus.FERDIGSTILT_SENTRALPRINT));
+        assertThat(journalpostResponse.getJournalpostType(), is(JournalpostType.UTGAAENDE));
+        assertThat(journalpostResponse.getBrukere().get(0).getBrukerId(), is(BRUKER_ID));
+        assertThat(journalpostResponse.getBrukere().get(0).getBrukerType(), is(BrukerTypeCode.PERSON.name()));
+        assertThat(journalpostResponse.getKnyttetDokumentList().get(0).getTilknyttetJournalpostSom(), is(HOVEDDOKUMENT.name()));
+        assertThat(journalpostResponse.getKnyttetDokumentList().get(0).getDokumentInfo().getTittel(), is(HOVEDDOKUMENT_TITTEL));
+        assertThat(journalpostResponse.getKnyttetDokumentList().get(0).getDokumentInfo().getStatus(), is(FERDIGSTILT.name()));
+
     }
 
     @Test
@@ -234,27 +228,23 @@ public class GraphQlQueryIT {
                 .getDokumentInfo()
                 .getDokumentInfoId()), oidcHeaders());
 
-        GraphQlResponse response = testRestTemplate.postForObject("/mock/graphql", request, GraphQlResponse.class);
-//        JsonObject jsonObject = new Gson().fromJson(response, JsonObject.class).getAsJsonObject("data");
-//        DokumentInfo dokumentInfo = new Gson().fromJson(jsonObject.getAsJsonObject("dokumentInfo").toString(), DokumentInfo.class);
+        GraphQlResponse response = testRestTemplate.postForObject("/rest/graphql", request, GraphQlResponse.class);
+        DokumentInfo dokumentInfo = response.getDokumentInfo();
 
-//        assertThat(dokumentInfo.getTittel(), is(HOVEDDOKUMENT_TITTEL));
-//        assertThat(dokumentInfo.getTilleggsopplysninger().get(TILLEGGSOPPLYSNING_KEY), is(TILLEGGSOPPLYSNING_VAL));
-//        assertThat(dokumentInfoResponse.getAsJsonArray("journalpostRelasjoner")
-//                .get(0)
-//                .getAsJsonObject()
-//                .get("tilknyttetJournalpostSom")
-//                .getAsString(), is(TilknyttetJournalpostSomCode.HOVEDDOKUMENT.name()));
-//        assertThat(dokumentInfoResponse.getAsJsonArray("fildetaljerListe")
-//                .get(0)
-//                .getAsJsonObject()
-//                .get("filtype")
-//                .getAsString(), is("PDF"));
-//        assertThat(dokumentInfoResponse.getAsJsonArray("skannetInnholdListe")
-//                .get(0)
-//                .getAsJsonObject()
-//                .get("vedleggNr")
-//                .getAsString(), is("1"));
+        assertThat(dokumentInfo.getTittel(), is(HOVEDDOKUMENT_TITTEL));
+        assertThat(dokumentInfo.getStatus(), is(FERDIGSTILT.name()));
+        assertThat(dokumentInfo.getTilleggsopplysninger().get(TILLEGGSOPPLYSNING_KEY), is(TILLEGGSOPPLYSNING_VAL));
+        assertThat(dokumentInfo.getKnyttetJournalpostList().get(0).getTilknyttetJournalpostSom(), is(HOVEDDOKUMENT.name()));
+        assertThat(dokumentInfo.getKnyttetJournalpostList().get(0).getJournalpost().getTema(), is(FagsystemCode.PEN.name()));
+        assertThat(dokumentInfo.getFilDetaljerList().get(0).getVariantFormat(), is(VariantFormatCode.ARKIV.name()));
+        assertThat(dokumentInfo.getFilDetaljerList().get(0).getFiltype(), is("PDF"));
+        assertThat(dokumentInfo.getOriginalJournalpost().getTema(), is(FagsystemCode.PEN.name()));
+        assertThat(dokumentInfo.getOriginalJournalpost()
+                .getJournalpostStatus(), is(JournalpostStatus.FERDIGSTILT_SENTRALPRINT));
+        assertThat(dokumentInfo.getOriginalJournalpost().getJournalpostType(), is(JournalpostType.UTGAAENDE));
+        assertThat(dokumentInfo.getOriginalJournalpost().getBrukere().get(0).getBrukerId(), is(BRUKER_ID));
+        assertThat(dokumentInfo.getOriginalJournalpost().getBrukere().get(0).getBrukerType(), is(BrukerTypeCode.PERSON.name()));
+
     }
 
     @Test
@@ -271,11 +261,11 @@ public class GraphQlQueryIT {
 
         HttpEntity request = new HttpEntity<>(createFilRequest(journalpost.findHoveddokumentDokumentInfoRelasjon()
                 .getDokumentInfo()
-                .getDokumentInfoId(), "PDF"), oidcHeaders());
+                .getDokumentInfoId(), journalpost.getJournalpostId()), oidcHeaders());
 
-        String response = testRestTemplate.postForObject("/rest/graphql", request, String.class);
-        JsonObject jsonObject = new Gson().fromJson(response, JsonObject.class).getAsJsonObject("data");
-        assertThat(jsonObject.get("fil").getAsString(), is(new String(FIL_CONTENT, StandardCharsets.UTF_8)));
+        GraphQlResponse response = testRestTemplate.postForObject("/rest/graphql", request, GraphQlResponse.class);
+        String fil = response.getDokumentFil();
+        assertThat(Base64.decode(fil), is(new String(FIL_CONTENT, StandardCharsets.UTF_8)));
     }
 
     @Test
@@ -310,14 +300,14 @@ public class GraphQlQueryIT {
 
     }
 
-    private GraphQLRequest createFilRequest(Long dokumentInfoId, String filType) {
+    private GraphQLRequest createFilRequest(Long dokumentInfoId, Long journalpostId) {
         Map<String, Object> variables = new HashMap<>();
 
-        variables.put("id", dokumentInfoId);
-        variables.put("type", filType);
+        variables.put("dokId", dokumentInfoId);
+        variables.put("jpId", journalpostId);
         return GraphQLRequest.builder()
                 .variables(variables)
-                .query("query ($id: Long! $type: String!) {fil(dokumentInfoId: $id filtype: $type)}")
+                .query("query ($dokId: Long! $jpId: Long!) {  dokumentFil(dokumentInfoId:$dokId, journalpostId:$jpId )}")
                 .build();
     }
 
@@ -330,15 +320,29 @@ public class GraphQlQueryIT {
                 .variables(variables)
                 .query("query ($id: Long!) " +
                         "{" +
-                        "journalpost(journalpostId: $id) " +
-                        "{" +
-                        "tema " +
-                        "journalpostDokumentInfoRelasjoner{tilknyttetJournalpostSom}" +
-                        "saksrelasjon{fagsystem} " +
-                        "brukere{brukerType} " +
-                        "tilleggsopplysninger{key value}" +
-                        "kryssreferanser{referanseId}" +
-                        "}" +
+                        "journalpost(journalpostId: $id) {" +
+                        "    journalpostId" +
+                        "    journalpostStatus" +
+                        "    journalpostType" +
+                        "    tema" +
+                        "    tittel" +
+                        "    brukere {" +
+                        "      brukerId" +
+                        "      brukerType" +
+                        "    }" +
+                        "    knyttetDokumentList {" +
+                        "      dokumentInfoId" +
+                        "      journalpostId" +
+                        "      tilknyttetJournalpostSom" +
+                        "      dokumentInfo {" +
+                        "        dokumentInfoId" +
+                        "        status" +
+                        "        tilleggsopplysninger" +
+                        "        tittel" +
+                        "      }" +
+                        "    }" +
+                        "    " +
+                        "  }" +
                         "}")
                 .build();
 
@@ -357,6 +361,11 @@ public class GraphQlQueryIT {
                         "    dokumentInfoId" +
                         "    tittel" +
                         "    status" +
+                        "   filDetaljerList {" +
+                        "      fildetaljerId" +
+                        "      filtype" +
+                        "      variantFormat" +
+                        "    }" +
                         "    tilleggsopplysninger" +
                         "    knyttetJournalpostList {" +
                         "      journalpost {" +

@@ -2,16 +2,16 @@ package no.nav.dokarkiv.core.security.abac;
 
 import static no.nav.abac.xacml.NavAttributter.RESOURCE_ARKIV_GSAK_SAKSID;
 import static no.nav.abac.xacml.NavAttributter.RESOURCE_ARKIV_PENSJON_SAKSID;
-import static no.nav.abac.xacml.NavAttributter.RESOURCE_DOKUMENTPRODUKSJON_DOKUMENT;
 import static no.nav.abac.xacml.NavAttributter.RESOURCE_FELLES_PERSON_TILKNYTTET_FNR;
 import static no.nav.abac.xacml.NavAttributter.RESOURCE_FELLES_TEMA;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
 import lombok.extern.slf4j.Slf4j;
-import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
+import no.nav.dokarkiv.core.exceptions.DokumentInfoIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.logging.AbacLogger;
+import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.freg.abac.core.annotation.context.AbacContext;
 import no.nav.freg.abac.core.dto.request.XacmlRequest;
@@ -19,11 +19,9 @@ import no.nav.freg.abac.core.dto.response.Decision;
 import no.nav.freg.abac.core.dto.response.XacmlResponse;
 import no.nav.freg.abac.core.service.AbacService;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -53,14 +51,8 @@ public class AbacSecurityService {
 	@Inject
 	private JoarkRepository joarkRepository;
 
-    public void assertAccessToKode6AndKode7() {
-        AbacResources abacResources = new AbacResources();
-        abacResources.setBrukerIds(Arrays.asList(MDC.get(MDCConstants.MDC_USER_ID)));
-
-        abacContext.getRequest().resource(RESOURCE_DOKUMENTPRODUKSJON_DOKUMENT, abacResources.getBrukerIds().get(0));
-        XacmlResponse accessResponse = abacService.evaluate(abacContext.getRequest());
-        handleResponseForBrukerId(abacContext.getRequest(), accessResponse, abacResources.getBrukerIds().get(0));
-    }
+    @Inject
+    private DokumentinfoRepository dokumentinfoRepository;
 
 	public void assertAccessToJournalpost(String journalpost) {
 		Long journalpostId = Long.parseLong(journalpost);
@@ -74,6 +66,16 @@ public class AbacSecurityService {
 		XacmlResponse accessResponse = abacService.evaluate(abacContext.getRequest());
 		handleResponseForJournalpostId(abacContext.getRequest(), accessResponse, journalpostId);
 	}
+
+    public void assertAccessToDokument(Long dokumentInfo) {
+
+        if (!dokumentinfoRepository.existsById(dokumentInfo)) {
+            throw new DokumentInfoIkkeFunnetException("DokumentInfo ikke funnet. dokumentInfoId=" + dokumentInfo);
+        }
+        Long journalpostId = joarkRepository.findJournalpostIdByDokumentinfoId(dokumentInfo.toString());
+        assertAccessToJournalpost(journalpostId.toString());
+    }
+
 
 	Decision assertAccessToSak(String sakId, FagsystemCode fagsystemCode) {
 		return assertAccessToSak(abacContext.getRequest(), sakId, fagsystemCode);

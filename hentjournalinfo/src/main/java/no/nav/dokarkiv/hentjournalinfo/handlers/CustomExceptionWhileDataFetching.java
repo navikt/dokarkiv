@@ -9,6 +9,8 @@ import graphql.GraphqlErrorHelper;
 import graphql.execution.ExecutionPath;
 import graphql.language.SourceLocation;
 import no.nav.dokarkiv.core.exceptions.DokarkivFunctionalException;
+import no.nav.dokarkiv.core.security.abac.AuthorizationException;
+import no.nav.dokarkiv.hentjournalinfo.dto.ExceptionType;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -42,7 +44,7 @@ public class CustomExceptionWhileDataFetching implements GraphQLError {
     }
 
     public ExceptionType getExceptionTypeFromThrowable(Throwable exception) {
-        if (exception instanceof DokarkivFunctionalException) {
+        if (exception instanceof DokarkivFunctionalException || exception instanceof AuthorizationException) {
             return ExceptionType.FUNCTIONAL;
         }
         return ExceptionType.TECHNICAL;

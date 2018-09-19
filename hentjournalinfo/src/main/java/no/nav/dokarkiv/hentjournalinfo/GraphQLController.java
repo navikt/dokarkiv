@@ -1,10 +1,5 @@
 package no.nav.dokarkiv.hentjournalinfo;
 
-import static no.nav.abac.xacml.NavAttributter.RESOURCE_ARKIV_JOURNALPOST;
-import static no.nav.abac.xacml.NavAttributter.RESOURCE_FELLES_RESOURCE_TYPE;
-import static no.nav.abac.xacml.StandardAttributter.ACTION_ID;
-import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.READ_ACTION;
-
 import graphql.ExecutionInput;
 import graphql.ExecutionResult;
 import graphql.GraphQL;
@@ -19,7 +14,6 @@ import no.nav.dokarkiv.hentjournalinfo.mock.MockQuery;
 import no.nav.dokarkiv.hentjournalinfo.query.Query;
 import no.nav.dokarkiv.hentjournalinfo.util.GraphQLFieldMetrics;
 import no.nav.dokarkiv.hentjournalinfo.util.GraphQLRequest;
-import no.nav.freg.abac.core.annotation.Abac;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -71,8 +65,6 @@ public class GraphQLController {
     }
 
     @PostMapping(value = "/rest/graphql", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    @Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_JOURNALPOST)},
-            actions = @Abac.Attr(key = ACTION_ID, value = READ_ACTION))
     @ResponseBody
     public Map<String, Object> graphQLRequest(@RequestBody GraphQLRequest request, HttpServletRequest raw) {
         ExecutionResult executionResult = graphQL.execute(ExecutionInput.newExecutionInput()

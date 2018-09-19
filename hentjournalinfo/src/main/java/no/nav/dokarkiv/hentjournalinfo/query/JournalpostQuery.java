@@ -1,22 +1,28 @@
 package no.nav.dokarkiv.hentjournalinfo.query;
 
 import static java.lang.String.format;
+import static no.nav.abac.xacml.NavAttributter.RESOURCE_ARKIV_JOURNALPOST;
+import static no.nav.abac.xacml.NavAttributter.RESOURCE_FELLES_RESOURCE_TYPE;
+import static no.nav.abac.xacml.StandardAttributter.ACTION_ID;
+import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.READ_ACTION;
 import static no.nav.dokarkiv.hentjournalinfo.map.DokumentInfoMapper.mapDokumentInfo;
 import static no.nav.dokarkiv.hentjournalinfo.map.JournalpostMapper.mapJournalpost;
 import static no.nav.dokarkiv.hentjournalinfo.query.QueryNames.JOURNALPOST;
-import static org.apache.commons.lang3.BooleanUtils.isTrue;
+import static org.apache.commons.lang3.BooleanUtils.isNotTrue;
 
 import io.leangen.graphql.annotations.GraphQLArgument;
 import io.leangen.graphql.annotations.GraphQLContext;
+import io.leangen.graphql.annotations.GraphQLNonNull;
 import io.leangen.graphql.annotations.GraphQLQuery;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.domain.entities.Bruker;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.metrics.RestMetrics;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
+import no.nav.dokarkiv.core.security.abac.AbacSecurityService;
 import no.nav.dokarkiv.hentjournalinfo.dto.Journalpost;
 import no.nav.dokarkiv.hentjournalinfo.dto.JournalpostDokumentRelasjon;
-import no.nav.dokarkiv.hentjournalinfo.exceptions.JournalpostIkkeFunnetException;
+import no.nav.freg.abac.core.annotation.Abac;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,20 +39,23 @@ import java.util.stream.Collectors;
 public class JournalpostQuery implements Query {
 
     private final JoarkRepository joarkRepository;
+    private final AbacSecurityService abacSecurityService;
 
     @Inject
-    public JournalpostQuery(JoarkRepository joarkRepository) {
+    public JournalpostQuery(JoarkRepository joarkRepository, AbacSecurityService abacSecurityService) {
         this.joarkRepository = joarkRepository;
+        this.abacSecurityService = abacSecurityService;
     }
 
     @GraphQLQuery(name = JOURNALPOST)
     @Transactional(readOnly = true)
     @RestMetrics(value = "dok_graphql_request", extraTags = {"query", JOURNALPOST}, percentiles = {0.5, 0.95}, logException = false)
-    public Journalpost journalpost(@GraphQLArgument(name = "journalpostId") Long journalpostId) {
+    @Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_JOURNALPOST)},
+            actions = @Abac.Attr(key = ACTION_ID, value = READ_ACTION))
+    public Journalpost journalpost(@GraphQLArgument(name = "journalpostId") @GraphQLNonNull Long journalpostId) {
         log.info(format("GraphQL har mottatt %s query med journalpostId=%s", JOURNALPOST, journalpostId));
-
-        no.nav.dokarkiv.core.domain.entities.Journalpost journalpost = joarkRepository.findById(journalpostId)
-                .orElseThrow(() -> new JournalpostIkkeFunnetException(format("Fant ingen journalpost med journalpostId=%s i JOARK databasen", journalpostId)));
+        abacSecurityService.assertAccessToJournalpost(journalpostId.toString());
+        no.nav.dokarkiv.core.domain.entities.Journalpost journalpost = joarkRepository.findById(journalpostId).get();
         return mapJournalpost(journalpost);
     }
 
@@ -71,18 +80,15 @@ public class JournalpostQuery implements Query {
                 .getJournalpostDokumentInfoRelasjoner();
 
 
-        return journalpostDokumentInfoRelasjons.stream().map(relasjon -> {
-            if (isTrue(relasjon.getDokumentInfo().getSlettet())) {
-                //Skip if slettet
-                return null;
-            }
-            return JournalpostDokumentRelasjon.builder()
-                    .tilknyttetJournalpostSom(relasjon.getTilknyttetJournalpostSom() == null ? null : relasjon.getTilknyttetJournalpostSom()
-                            .name())
-                    .journalpostId(journalpost.getJournalpostId())
-                    .dokumentInfo(mapDokumentInfo(relasjon.getDokumentInfo())) //Like greit å bare mappe dokumentinfo når den må hentes opp fra DB for å hente dokumentInfoId (ref: LazyFetching)
-                    .dokumentInfoId(relasjon.getDokumentInfo().getDokumentInfoId()).build();
-        }).collect(Collectors.toList());
+        return journalpostDokumentInfoRelasjons.stream()
+                .filter(relasjon -> isNotTrue(relasjon.getDokumentInfo().getSlettet()))
+                .map(relasjon -> JournalpostDokumentRelasjon.builder()
+                        .tilknyttetJournalpostSom(relasjon.getTilknyttetJournalpostSom() == null ? null : relasjon.getTilknyttetJournalpostSom()
+                                .name())
+                        .journalpostId(journalpost.getJournalpostId())
+                        .dokumentInfo(mapDokumentInfo(relasjon.getDokumentInfo())) //Like greit å bare mappe dokumentinfo når den må hentes opp fra DB for å hente dokumentInfoId (ref: LazyFetching)
+                        .dokumentInfoId(relasjon.getDokumentInfo().getDokumentInfoId()).build())
+                .collect(Collectors.toList());
 
     }
 }
