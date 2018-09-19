@@ -39,7 +39,7 @@ public class DefaultSlettDokumentValidator implements SlettDokumentValidator {
 		} else if (jpDokInfoRelasjoner.size() > 1) {
 			throw new ForMangeJournalpostDokumentInfoRelasjonerException(REQUEST_ID + " kan ikke slette dokument som har relasjoner med flere journalposter. " +
 					"DokumentinfoId=" + requestTo.getDokumentInfoId() + " har relasjoner med " + jpDokInfoRelasjoner.size() + " journalposter.");
-		} //else jpDokInfoRelasjoner.size()==1)
+		}
 	}
 
 

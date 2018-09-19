@@ -25,7 +25,7 @@ import javax.inject.Inject;
 
 @Slf4j
 @RestController
-@RequestMapping("/slettdokument")
+@RequestMapping("rest/slettdokument")
 public class SlettDokumentRestController {
 
 	public static final String REQUEST_ID = "slettdokument";
@@ -47,9 +47,7 @@ public class SlettDokumentRestController {
 	@DeleteMapping("/{journalpostId}/{dokumentInfoId}")
 	@ResponseBody
 	public SlettDokumentResponse deleteDocumentWithJournalpostIdAndDokumentInfoId(@PathVariable("journalpostId") Long journalpostId, @PathVariable("dokumentInfoId") Long dokumentInfoId) {
-		// log.info()
-		MDC.put(MDCConstants.MDC_USER_ID, "test");
-		MDC.put(MDCConstants.MDC_CONSUMER_ID, "test");
+		log.info(REQUEST_ID + " har mottat kall med journalpostId=" + journalpostId + " og dokumentInfoId=" + dokumentInfoId);
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
 		Utils.validateJournalpostIdAndDokumentId(journalpostId.toString(), dokumentInfoId.toString());
 //		abacSecurityService.assertAccessToJournalpost(journalpostId.toString());

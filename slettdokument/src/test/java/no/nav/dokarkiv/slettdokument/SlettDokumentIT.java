@@ -72,26 +72,27 @@ public class SlettDokumentIT extends AbstractSlettDokumentIT {
 		assertThat(responseEntity.getBody(), containsString(REQUEST_ID + " kan ikke finne noen journalpostDokumentInfoRelasjon for dokumentInfoId=" + feilDokumentInfoId));
 	}
 
+
 	@Test
 	public void shouldFailToDeleteDocumentInJoarkBecauseJournalpostIdAndDokumentInfoIdHasNoRelation() {
 		abacPermit();
 
 		Journalpost journalpost1 = joarkRepository.save(TestUtils.createJournalpostBuilder().build());
-
-		Long feilJournalpostId = journalpost1.getJournalpostId() + 13;
+		Journalpost journalpost2 = joarkRepository.save(TestUtils.createJournalpostBuilder().build());
 
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
-		ResponseEntity<String> responseEntity = restTemplate.exchange(URL_SLETTDOKUMENT + feilJournalpostId + "/"
-				+ journalpost1.findHoveddokumentDokumentInfoRelasjon()
+		ResponseEntity<String> responseEntity = restTemplate.exchange(URL_SLETTDOKUMENT + journalpost1.getJournalpostId() + "/"
+				+ journalpost2.findHoveddokumentDokumentInfoRelasjon()
 				.getDokumentInfo()
 				.getDokumentInfoId(), HttpMethod.DELETE, createHeaders(), String.class);
 
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.BAD_REQUEST));
-		assertThat(responseEntity.getBody(), containsString(REQUEST_ID + " finner ingen journalpostDokumentInfoRelasjon mellom journalpostId=" + feilJournalpostId +
-				" og dokumentInfoId=" + journalpost1.findHoveddokumentDokumentInfoRelasjon()
+		assertThat(responseEntity.getBody(), containsString(REQUEST_ID + " finner ingen journalpostDokumentInfoRelasjon mellom journalpostId=" + journalpost1
+				.getJournalpostId() +
+				" og dokumentInfoId=" + journalpost2.findHoveddokumentDokumentInfoRelasjon()
 				.getDokumentInfo()
 				.getDokumentInfoId()));
 	}
@@ -104,11 +105,11 @@ public class SlettDokumentIT extends AbstractSlettDokumentIT {
 		Journalpost journalpost1 = joarkRepository.save(TestUtils.createJournalpostBuilder().build());
 		Journalpost journalpost2 = TestUtils.createJournalpostBuilder()
 				.dokumentInfoRelasjoner(getJournalpostDokumentInfoRelasjonBuilder()
-				.opprettetKildeNavn(OPPRETTET_KILDE_NAVN)
-				.tilknyttetAvNavn(TILKNYTTET_AV_NAVN)
-				.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
-				.dokumentInfo(journalpost1.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo())
-				.build()).build();
+						.opprettetKildeNavn(OPPRETTET_KILDE_NAVN)
+						.tilknyttetAvNavn(TILKNYTTET_AV_NAVN)
+						.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
+						.dokumentInfo(journalpost1.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo())
+						.build()).build();
 		joarkRepository.save(journalpost2);
 
 		TestTransaction.flagForCommit();

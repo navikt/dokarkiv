@@ -3,11 +3,13 @@ package no.nav.dokarkiv.slettdokument.service;
 import static no.nav.dokarkiv.slettdokument.SlettDokumentRestController.REQUEST_ID;
 
 import lombok.extern.slf4j.Slf4j;
+import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
 import no.nav.dokarkiv.slettdokument.SlettDokumentResponse;
 import no.nav.dokarkiv.slettdokument.SlettDokumentResponseMapper;
+import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -41,10 +43,11 @@ public class DefaultSlettDokumentService implements SlettDokumentService {
 		validator.validateJournalpostIdBelongsToThisJournalpost(jpDokInfoRelasjon.getJournalpost(), requestTo);
 		validator.validateSletteStatusForDokument(jpDokInfoRelasjon.getDokumentInfo());
 
-		log.info(REQUEST_ID + " sletter dokument med journalpostId={}, dokumentInfoId={}", requestTo.getJournalpostId(), requestTo
-				.getDokumentInfoId());
 		jpDokInfoRelasjon.getDokumentInfo().setSlettet(true);
+		jpDokInfoRelasjon.getDokumentInfo().setEndretAvNavn(MDC.get(MDCConstants.MDC_USER_NAME));
 		dokumentinfoRepository.save(jpDokInfoRelasjon.getDokumentInfo());
+		log.info(REQUEST_ID + " har slettet dokument med journalpostId={}, dokumentInfoId={}", requestTo.getJournalpostId(), requestTo
+				.getDokumentInfoId());
 
 		return SlettDokumentResponseMapper.mapToSlettDokumentResponse(jpDokInfoRelasjon.getJournalpost(), jpDokInfoRelasjon.getDokumentInfo());
 	}
