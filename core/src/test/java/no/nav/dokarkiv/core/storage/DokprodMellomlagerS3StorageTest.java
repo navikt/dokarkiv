@@ -1,8 +1,8 @@
 package no.nav.dokarkiv.core.storage;
 
-import static no.nav.dokarkiv.core.storage.config.StorageConfiguration.BUCKET_NAME;
-import static no.nav.dokarkiv.core.storage.config.StorageConfiguration.S3_DIRECTORY_NAME;
-import static no.nav.dokarkiv.core.util.RetryConstants.MAX_ATTEMPTS_SHORT;
+import static no.nav.dokarkiv.core.storage.DokprodMellomlagerS3Storage.DOKPRODMELLOMLAGER_BUCKET;
+import static no.nav.dokarkiv.core.storage.DokprodMellomlagerS3Storage.DOKPRODMELLOMLAGER_DIRECTORY_NAME;
+import static no.nav.dokarkiv.core.storage.RetryConstants.MAX_ATTEMPTS_SHORT;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
@@ -14,12 +14,13 @@ import static org.mockito.Mockito.when;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.S3Object;
-import no.nav.dokarkiv.core.document.DoksysDokument;
 import no.nav.dokarkiv.core.exceptions.DokarkivTechnicalException;
 import no.nav.dokarkiv.core.storage.crypto.Crypto;
 import no.nav.dokarkiv.core.util.JsonSerializer;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -35,8 +36,8 @@ import java.io.ByteArrayInputStream;
  * @author Ugur Alpay Cenar, Visma Consulting.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = S3StorageTest.Config.class)
-public class S3StorageTest {
+@ContextConfiguration(classes = DokprodMellomlagerS3StorageTest.Config.class)
+public class DokprodMellomlagerS3StorageTest {
 
 	private final byte[] pdf = "PDF test document".getBytes();
 	private final byte[] xml = "XML test document".getBytes();
@@ -49,6 +50,9 @@ public class S3StorageTest {
 	@Inject
 	private Storage storage;
 
+	@Rule
+	public ExpectedException thrown = ExpectedException.none();
+
 	@Before
 	public void setUp() {
 		reset(s3);
@@ -56,9 +60,9 @@ public class S3StorageTest {
 
 	@Test
 	public void shouldEncryptAndPutObjectWithShortKey() {
-		storage.put(S3_DIRECTORY_NAME, "12", JsonSerializer.serialize(createDokument()));
+		thrown.expect(UnsupportedOperationException.class);
 
-		verify(s3).putObject(BUCKET_NAME, S3_DIRECTORY_NAME + "_" + "12", new Crypto(encryptPsw, "12").encrypt(JsonSerializer.serialize(createDokument())));
+		storage.put(DOKPRODMELLOMLAGER_DIRECTORY_NAME, "12", JsonSerializer.serialize(createDokument()));
 	}
 
 	/**
@@ -66,21 +70,9 @@ public class S3StorageTest {
 	 */
 	@Test
 	public void shouldEncryptAndPutObject() {
-		storage.put(S3_DIRECTORY_NAME, key, JsonSerializer.serialize(createDokument()));
+		thrown.expect(UnsupportedOperationException.class);
 
-		verify(s3).putObject(BUCKET_NAME, S3_DIRECTORY_NAME + "_" + key, new Crypto(encryptPsw, key).encrypt(JsonSerializer.serialize(createDokument())));
-	}
-
-
-	@Test
-	public void shouldRetryPutWhenFailed() {
-		when(s3.putObject(any(String.class), any(String.class), any(String.class))).thenThrow(new DokarkivTechnicalException("asd"));
-
-		try {
-			storage.put(S3_DIRECTORY_NAME, key, JsonSerializer.serialize(createDokument()));
-		} catch (Exception e) {
-			verify(s3, times(MAX_ATTEMPTS_SHORT)).putObject(any(String.class), any(String.class), any(String.class));
-		}
+		storage.put(DOKPRODMELLOMLAGER_DIRECTORY_NAME, key, JsonSerializer.serialize(createDokument()));
 	}
 
 	@Test
@@ -88,7 +80,7 @@ public class S3StorageTest {
 		when(s3.getObject(any(String.class), any(String.class))).thenThrow(new DokarkivTechnicalException("asd"));
 
 		try {
-			storage.get(S3_DIRECTORY_NAME, key);
+			storage.get(DOKPRODMELLOMLAGER_DIRECTORY_NAME, key);
 		} catch (Exception e) {
 			verify(s3, times(MAX_ATTEMPTS_SHORT)).getObject(any(String.class), any(String.class));
 		}
@@ -98,9 +90,9 @@ public class S3StorageTest {
 	@Test
 	public void shouldGetObjectAndDecrypt() {
 		when(s3.getObject(any(String.class), any(String.class))).thenReturn(createEncryptedS3Object());
-		String result = storage.get(S3_DIRECTORY_NAME, key).get();
+		String result = storage.get(DOKPRODMELLOMLAGER_DIRECTORY_NAME, key).get();
 
-		verify(s3).getObject(BUCKET_NAME, S3_DIRECTORY_NAME + "_" + key);
+		verify(s3).getObject(DOKPRODMELLOMLAGER_BUCKET, DOKPRODMELLOMLAGER_DIRECTORY_NAME + "_" + key);
 		assertThat(result, equalTo(JsonSerializer.serialize(createDokument())));
 	}
 
@@ -138,7 +130,7 @@ public class S3StorageTest {
 
 		@Bean
 		public Storage storage(AmazonS3 s3) {
-			return new S3Storage(s3, encryptPsw);
+			return new DokprodMellomlagerS3Storage(s3, encryptPsw);
 		}
 
 	}

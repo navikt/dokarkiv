@@ -95,7 +95,6 @@ public class UpdateInngaaendeJournalpostService {
 		});
 
 		return new Mangler()
-				.withAvsenderId(decideIfMangler(jp.getAvsenderMottakerId()))
 				.withAvsenderNavn(decideIfMangler(jp.getAvsenderMottaker()))
 				.withArkivSak((jp.getSaksrelasjon() == null) ? MANGLER : MANGLER_IKKE)
 				.withTittel(decideIfMangler(jp.getInnhold()))
@@ -109,9 +108,6 @@ public class UpdateInngaaendeJournalpostService {
 		if (mangler.getDokumenter()
 				.stream()
 				.anyMatch(dokument -> MANGLER.equals(dokument.getDokumentKategori()) || MANGLER.equals(dokument.getTittel()))) {
-			containsMangler = true;
-		}
-		if (MANGLER.equals(mangler.getAvsenderId())) {
 			containsMangler = true;
 		}
 		if (MANGLER.equals(mangler.getAvsenderNavn())) {

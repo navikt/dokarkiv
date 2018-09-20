@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.core.util;
+package no.nav.dokarkiv.core.storage;
 
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
