@@ -1,5 +1,7 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon;
 
+import static org.mockito.Mockito.mock;
+
 import no.nav.dokarkiv.core.CoreConfig;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
@@ -7,6 +9,7 @@ import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.dokarkiv.core.stelvio.SimpleRequestContext;
+import no.nav.dokarkiv.core.storage.Storage;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.ArkiverDokumentproduksjonV1;
 import org.junit.Before;
 import org.junit.Rule;
@@ -15,6 +18,7 @@ import org.junit.runner.RunWith;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -27,7 +31,7 @@ import javax.transaction.Transactional;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE,
-		classes = {CoreConfig.class, ArkiverDokumentproduksjonConfig.class})
+		classes = {CoreConfig.class, AbstractArkiverdokumentproduksjonItest.Config.class, ArkiverDokumentproduksjonConfig.class})
 @ActiveProfiles("itest")
 @AutoConfigureTestDatabase
 @AutoConfigureTestEntityManager
@@ -61,5 +65,12 @@ public abstract class AbstractArkiverdokumentproduksjonItest {
 				.userId(ITEST_USERID)
 				.componentId(ITEST_COMPONENTID)
 				.build());
+	}
+
+	static class Config {
+		@Bean
+		public Storage dokprodMellomlagerStorage() {
+			return mock(Storage.class);
+		}
 	}
 }

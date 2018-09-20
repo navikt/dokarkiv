@@ -19,6 +19,8 @@ import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasj
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
+import java.util.Base64;
+import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
@@ -43,6 +45,7 @@ public class OpprettJournalpostArkiverDokumenterDataUtil {
 	protected static final String INNHOLD = "Sanger fra verden";
 	protected static final UtsendingsKanalCode UTSENDINGSKANAL = UtsendingsKanalCode.NAV_NO;
 	protected static final String DOKUMENT_INNHOLD = "ustrukturertInnhold";
+	protected static final String DOKUMENT_INNHOLD_BASE64 = Base64.getEncoder().encodeToString(DOKUMENT_INNHOLD.getBytes());//"dXN0cnVrdHVyZXJ0SW5uaG9sZA==";
 	protected static final String VARIANTFORMAT = "ARKIV";
 	protected static final String PERSONIDENT = "***gammelt_fnr***";
 	protected static final String EKSTERNPART_NAVN = "Jippi Hurra";
@@ -54,6 +57,7 @@ public class OpprettJournalpostArkiverDokumenterDataUtil {
 	protected static final String TILLEGGSOPPLYSNING_KEY_2 = "tilleggsopplysning-2";
 	protected static final String BESTILLINGS_ID = "id010101";
 	protected static final String TILLEGGSOPPLYSNING_VALUE_2 = "Tillegg 2";
+	protected static final String FILREFERANSE_S3 = "filreferanseS3";
 
 	public static no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasjon.opprettjournalpostarkiverdokumenter.Journalpost createJournalpost() {
 		return new Journalpost()
@@ -67,8 +71,8 @@ public class OpprettJournalpostArkiverDokumenterDataUtil {
 				.withLand(LAND)
 				.withSaksrelasjon(createSaksrelasjon())
 				.withBruker(createBruker())
-				.withDokumentInfoHoveddokument(createDokumentInfo())
-				.withDokumentInfoVedlegg(createDokumentInfo())
+				.withDokumentInfoHoveddokument(createHovedDokumentInfo())
+				.withDokumentInfoVedlegg(createVedleggDokumentInfo())
 				.withDatoDokument(toXMLGregorianCalendar(DATO_DOKUMENT));
 	}
 
@@ -78,7 +82,7 @@ public class OpprettJournalpostArkiverDokumenterDataUtil {
 		.withSaksnummer(SAKSID);
 	}
 
-	private static no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasjon.opprettjournalpostarkiverdokumenter.DokumentInfo createDokumentInfo() {
+	private static no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasjon.opprettjournalpostarkiverdokumenter.DokumentInfo createHovedDokumentInfo() {
 		no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasjon.opprettjournalpostarkiverdokumenter.DokumentInfo dokumentInfo = new DokumentInfo();
 		dokumentInfo.setKategori(KATEGORI);
 		dokumentInfo.setTittel(TITTEL);
@@ -88,6 +92,19 @@ public class OpprettJournalpostArkiverDokumenterDataUtil {
 		dokumentInfo.getTilleggsopplysninger().addAll(asList(
 				createTilleggsopplysning(ArkiverDokumentproduksjonConstants.BESTILLINGS_ID_KEY, BESTILLINGS_ID),
 				createTilleggsopplysning(TILLEGGSOPPLYSNING_KEY_2, TILLEGGSOPPLYSNING_VALUE_2)));
+		dokumentInfo.setFilreferanse(FILREFERANSE_S3);
+		return dokumentInfo;
+	}
+
+	private static no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasjon.opprettjournalpostarkiverdokumenter.DokumentInfo createVedleggDokumentInfo() {
+		no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasjon.opprettjournalpostarkiverdokumenter.DokumentInfo dokumentInfo = new DokumentInfo();
+		dokumentInfo.setKategori(KATEGORI);
+		dokumentInfo.setTittel(TITTEL);
+		dokumentInfo.setBrevkode(BREVKODE);
+		dokumentInfo.setSensitivt(true);
+		dokumentInfo.setDokumentTypeId(DOKUMENT_TYPE_ID);
+		dokumentInfo.getTilleggsopplysninger().addAll(Collections.singletonList(createTilleggsopplysning(TILLEGGSOPPLYSNING_KEY_2, TILLEGGSOPPLYSNING_VALUE_2)));
+		dokumentInfo.setFilreferanse(FILREFERANSE_S3);
 		return dokumentInfo;
 	}
 

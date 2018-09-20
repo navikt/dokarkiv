@@ -1,7 +1,7 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark112;
 
-import static org.apache.commons.lang.StringUtils.contains;
-import static org.apache.commons.lang.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.contains;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
@@ -22,20 +22,21 @@ import javax.inject.Inject;
 @Component
 public class DefaultOpprettJournalpostArkiverDokumenterValidator implements OpprettJournalpostArkiverDokumenterValidator {
 
-	@Inject
-	protected JournalpostStructureVerifier verifier;
+	private final JournalpostStructureVerifier verifier;
+	private final MandatoryFieldsVerifier mandatoryFieldsVerifier;
 
 	@Inject
-	protected MandatoryFieldsVerifier mandatoryFieldsVerifier;
+	public DefaultOpprettJournalpostArkiverDokumenterValidator(JournalpostStructureVerifier verifier, MandatoryFieldsVerifier mandatoryFieldsVerifier) {
+		this.verifier = verifier;
+		this.mandatoryFieldsVerifier = mandatoryFieldsVerifier;
+	}
 
 	@Override
 	public void validate(Journalpost journalpost) {
 		verifier.verifyJournalpostStructure(journalpost);
 		verifyRequiredFields(journalpost);
 		validateJournalpostValues(journalpost);
-		journalpost.getJournalpostDokumentInfoRelasjoner()
-				.stream()
-				.forEach(relasjon -> validateCustomDokumentInfoValues(relasjon.getDokumentInfo()));
+		journalpost.getJournalpostDokumentInfoRelasjoner().forEach(relasjon -> validateCustomDokumentInfoValues(relasjon.getDokumentInfo()));
 	}
 
 	private void verifyRequiredFields(Journalpost journalpost) {

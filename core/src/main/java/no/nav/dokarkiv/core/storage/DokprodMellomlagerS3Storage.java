@@ -22,7 +22,7 @@ import java.util.Optional;
 @Slf4j
 public class DokprodMellomlagerS3Storage implements Storage {
 	static final String DOKPRODMELLOMLAGER_BUCKET = "dokprodmellomlager";
-	static final String DOKPRODMELLOMLAGER_DIRECTORY_NAME = "dokprod";
+	public static final String DOKPRODMELLOMLAGER_DIRECTORY_NAME = "dokprod";
 
 	private final AmazonS3 s3;
 	private final String encryptionPassphrase;

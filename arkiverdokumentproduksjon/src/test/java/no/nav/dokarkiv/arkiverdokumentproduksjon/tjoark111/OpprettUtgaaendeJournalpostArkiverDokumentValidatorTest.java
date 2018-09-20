@@ -145,7 +145,7 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentValidatorTest {
 
 	@Test
 	public void shouldThrowExceptionIfDokumentDatoIsMissing() {
-		expected.expect(IllegalArgumentException.class);
+		expected.expect(NullPointerException.class);
 		expected.expectMessage("Mangler påkrevd attributt: Journalpost.DokumentDato");
 
 		journalpost.setDokumentDato(null);
@@ -244,7 +244,7 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentValidatorTest {
 
 	@Test
 	public void shouldThrowExceptionNoUtsendingskanal() {
-		expected.expect(IllegalArgumentException.class);
+		expected.expect(NullPointerException.class);
 		expected.expectMessage("Mangler påkrevd attributt: Journalpost.Utsendingskanal");
 
 		journalpost.setUtsendingskanal(null);

@@ -7,8 +7,6 @@ import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalp
 import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
 import static no.nav.dokarkiv.core.domain.builder.SaksrelasjonBuilder.getSaksrelasjonBuilder;
 
-import no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark100.DefaultOpprettJournalpostArkiverDokumentValidator;
-import no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark101.OpprettJournalpostPostUpdateVerifier;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
@@ -38,18 +36,17 @@ import javax.inject.Inject;
 import java.util.Date;
 
 /**
- * Validator test for {@link DefaultOpprettJournalpostArkiverDokumentValidator}
+ * Validator test for
  *
  * @author Stig Strøm
  */
-//TODO: Legge til test med VEDLEGG
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {DefaultMandatoryFieldsVerifier.class,
 		DefaultOpprettJournalpostArkiverDokumenterValidator.class,
-		DefaultJournalpostStructureVerifier.class,
-		OpprettJournalpostPostUpdateVerifier.class})
+		DefaultJournalpostStructureVerifier.class})
 public class DefaultOpprettJournalpostArkiverDokumenterValidatorTest {
 	private static final Long DOKUMENTINFO_ID = 1L;
+	private static final Long DOKUMENTINFO_ID_VEDLEGG = 2L;
 	private static final boolean SENSITIVT_REQUEST = true;
 	private static final String OPPRETTET_AV_NAVN = "Saksbehandler";
 
@@ -313,6 +310,23 @@ public class DefaultOpprettJournalpostArkiverDokumenterValidatorTest {
 								.dokumentInfo(
 										getDokumentInfoBuilder()
 												.dokumentInfoId(DOKUMENTINFO_ID)
+												.dokumentstatus(DokumentStatusCode.FERDIGSTILT)
+												.kategori(DokumentKategoriCode.E_BLANKETT)
+												.dokumenttypeId("dokumenttypeid")
+												.tittel("Brev")
+												.sensitivt(SENSITIVT_REQUEST)
+												.brevkode("BREV")
+												.filDetaljerList(
+														getFilDetaljerBuilder().filtype(FilTypeCode.PDF)
+																.fileContent("file".getBytes())
+																.variantFormat(VariantFormatCode.ARKIV).build()).build())
+								.build(),
+						getJournalpostDokumentInfoRelasjonBuilder()
+								.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
+								.tilknyttetAvNavn("Tester")
+								.dokumentInfo(
+										getDokumentInfoBuilder()
+												.dokumentInfoId(DOKUMENTINFO_ID_VEDLEGG)
 												.dokumentstatus(DokumentStatusCode.FERDIGSTILT)
 												.kategori(DokumentKategoriCode.E_BLANKETT)
 												.dokumenttypeId("dokumenttypeid")

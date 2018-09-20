@@ -1,21 +1,22 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark112;
 
-import no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark100.OpprettJournalpostArkiverDokumentAssertUtil;
-import no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark100.OpprettJournalpostArkiverDokumentDataUtil;
-import no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark100.OpprettJournalpostArkiverDokumentRequestMapper;
-import no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark100.OpprettJournalpostArkiverDokumentRequestTo;
+import static no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark112.OpprettJournalpostArkiverDokumenterDataUtil.DOKUMENT_INNHOLD_BASE64;
+import static no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark112.OpprettJournalpostArkiverDokumenterDataUtil.FILREFERANSE_S3;
+import static no.nav.dokarkiv.core.storage.DokprodMellomlagerS3Storage.DOKPRODMELLOMLAGER_DIRECTORY_NAME;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import no.nav.dokarkiv.core.domain.util.DateProvider;
 import no.nav.dokarkiv.core.sporing.KildeNavnPopulator;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
-import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasjon.opprettjournalpostarkiverdokument.Journalpost;
-import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.OpprettJournalpostArkiverDokumentRequest;
+import no.nav.dokarkiv.core.storage.Storage;
+import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasjon.opprettjournalpostarkiverdokumenter.Journalpost;
+import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.OpprettJournalpostArkiverDokumenterRequest;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+
+import java.util.Optional;
 
 /**
  * Test class for
@@ -23,20 +24,12 @@ import org.mockito.junit.MockitoJUnitRunner;
  *
  * @author Stig Strøm
  */
-@RunWith(MockitoJUnitRunner.class)
-@Ignore
-//FIXME
 public class OpprettJournalpostArkiverDokumenterRequestMapperTest {
 
-	@Mock
-	private KildeNavnPopulator kildeNavnPopulator;
+	private KildeNavnPopulator kildeNavnPopulatorMock = mock(KildeNavnPopulator.class);
+	private Storage storageMock = mock(Storage.class);
 
-	@InjectMocks
-	private OpprettJournalpostArkiverDokumentRequestMapper requestMapper = new OpprettJournalpostArkiverDokumentRequestMapper();
-
-	private OpprettJournalpostArkiverDokumentRequest wsRequest;
-	private OpprettJournalpostArkiverDokumentRequestTo domainRequest;
-	private Journalpost inngaaendeWsJournalpost;
+	private OpprettJournalpostArkiverDokumenterRequestMapper requestMapper = new OpprettJournalpostArkiverDokumenterRequestMapper(kildeNavnPopulatorMock, storageMock);
 
 	@Before
 	public void setUp() throws Exception {
@@ -47,15 +40,21 @@ public class OpprettJournalpostArkiverDokumenterRequestMapperTest {
 
 	@Test
 	public void shouldMapOpprettOgFerdigstillRequestToTransferObject() throws Exception {
-		domainRequest = requestMapper.map(wsRequest);
+		when(storageMock.get(eq(DOKPRODMELLOMLAGER_DIRECTORY_NAME), eq(FILREFERANSE_S3))).thenReturn(Optional.of("{\n" +
+				"  \"axml\" : \"" + DOKUMENT_INNHOLD_BASE64 + "\",\n" +
+				"  \"pdf\": \"" + DOKUMENT_INNHOLD_BASE64 + "\"\n" +
+				"}"));
+
+		OpprettJournalpostArkiverDokumenterRequestTo domainRequest = requestMapper.map(createRequest());
 		no.nav.dokarkiv.core.domain.entities.Journalpost domainJournalpost = domainRequest.getJournalpost();
-		OpprettJournalpostArkiverDokumentAssertUtil.assertEqualJournalposts(domainJournalpost);
+		OpprettJournalpostArkiverDokumenterAssertUtil.assertEqualJournalposts(domainJournalpost);
 	}
 
-	private void createRequest() throws Exception {
-		inngaaendeWsJournalpost = OpprettJournalpostArkiverDokumentDataUtil.createJournalpost();
-		wsRequest = new OpprettJournalpostArkiverDokumentRequest();
+	private OpprettJournalpostArkiverDokumenterRequest createRequest() throws Exception {
+		Journalpost inngaaendeWsJournalpost = OpprettJournalpostArkiverDokumenterDataUtil.createJournalpost();
+		OpprettJournalpostArkiverDokumenterRequest wsRequest = new OpprettJournalpostArkiverDokumenterRequest();
 		wsRequest.setJournalpost(inngaaendeWsJournalpost);
+		return wsRequest;
 	}
 
 
