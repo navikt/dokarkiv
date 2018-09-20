@@ -13,11 +13,4 @@ import java.util.List;
 public interface JournalpostDokumentInfoRelasjonRepository extends CrudRepository<JournalpostDokumentInfoRelasjon, Long> {
 	@Query(value = "SELECT * FROM T_JP_DOK_INFO_REL dir WHERE dir.DOKUMENT_INFO_ID=:dokumentInfoId", nativeQuery = true)
 	List<JournalpostDokumentInfoRelasjon> findByDokumentInfoId(@Param("dokumentInfoId") Long dokumentInfoId);
-
-	@Query(value = "SELECT * FROM T_JP_DOK_INFO_REL dir WHERE dir.JOURNALPOST_ID=:journalpostId", nativeQuery = true)
-	List<JournalpostDokumentInfoRelasjon> findByJournalpostId(@Param("journalpostId") Long journalpostId);
-
-	@Query(value = "SELECT dir.DOKUMENT_INFO_ID FROM T_JP_DOK_INFO_REL dir WHERE dir.JOURNALPOST_ID=:journalpostId", nativeQuery = true)
-	Long findDokumentInfoIdByJournalpostId(@Param("journalpostId") Long journalpostId);
-
 }

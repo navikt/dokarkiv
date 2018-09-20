@@ -62,7 +62,7 @@
 		</dependency>
 		<dependency>
 			<groupId>no.nav.dokarkiv</groupId>
-			<artifactId>slettdokument</artifactId>
+			<artifactId>logiskslettdokument</artifactId>
 		</dependency>
 		<!-- annet -->
 		<dependency>

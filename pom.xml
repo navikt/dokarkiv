@@ -28,7 +28,7 @@
 		<module>journal</module>
 		<module>journalfoerinngaaende</module>
 		<module>hentdokument</module>
-		<module>slettdokument</module>
+		<module>logiskslettdokument</module>
 	</modules>
 
 	<distributionManagement>
@@ -125,7 +125,7 @@
 			</dependency>
 			<dependency>
 				<groupId>no.nav.dokarkiv</groupId>
-				<artifactId>slettdokument</artifactId>
+				<artifactId>logiskslettdokument</artifactId>
 				<version>1-SNAPSHOT</version>
 			</dependency>
 			<dependency>

@@ -12,8 +12,8 @@ import no.nav.dokarkiv.inngaaendejournal.v1.InngaaendeJournalV1Config;
 import no.nav.dokarkiv.innsynjournal.v2.InnsynJournalV2Config;
 import no.nav.dokarkiv.journal.v3.JournalV3Config;
 import no.nav.dokarkiv.journalfoerinngaaende.v1.JournalfoerInngaaendeConfig;
+import no.nav.dokarkiv.logiskslettdokument.LogiskSlettDokumentConfig;
 import no.nav.dokarkiv.nais.NaisContract;
-import no.nav.dokarkiv.slettdokument.SlettDokumentConfig;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.annotation.Import;
 
@@ -32,7 +32,7 @@ import org.springframework.context.annotation.Import;
 		JournalV3Config.class,
 		JournalfoerInngaaendeConfig.class,
 		HentDokumentConfig.class,
-		SlettDokumentConfig.class,
+		LogiskSlettDokumentConfig.class,
 		NaisContract.class})
 public class Application {
 	public static void main(String[] args) {
