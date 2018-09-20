@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.hentjournalinfo.util;
+package no.nav.dokarkiv.hentjournalinfo;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;

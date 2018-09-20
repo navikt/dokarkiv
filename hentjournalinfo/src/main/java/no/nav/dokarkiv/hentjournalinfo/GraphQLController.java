@@ -9,11 +9,9 @@ import graphql.schema.GraphQLSchema;
 import io.leangen.graphql.GraphQLSchemaGenerator;
 import io.leangen.graphql.metadata.strategy.query.AnnotatedResolverBuilder;
 import lombok.extern.slf4j.Slf4j;
-import no.nav.dokarkiv.hentjournalinfo.handlers.GraphQLExceptionHandler;
+import no.nav.dokarkiv.hentjournalinfo.graphql.GraphQLExceptionHandler;
+import no.nav.dokarkiv.hentjournalinfo.graphql.GraphQLMetrics;
 import no.nav.dokarkiv.hentjournalinfo.mock.MockQuery;
-import no.nav.dokarkiv.hentjournalinfo.query.Query;
-import no.nav.dokarkiv.hentjournalinfo.util.GraphQLFieldMetrics;
-import no.nav.dokarkiv.hentjournalinfo.util.GraphQLRequest;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -36,7 +34,7 @@ public class GraphQLController {
     private final GraphQL mockGraphQL;
 
     @Inject
-    public GraphQLController(List<Query> queryList, MockQuery mockQuery, GraphQLFieldMetrics graphQLFieldMetrics) {
+    public GraphQLController(List<Query> queryList, MockQuery mockQuery, GraphQLMetrics graphQLMetrics) {
         //Schema generated from query classes
         GraphQLSchemaGenerator schemaGenerator = new GraphQLSchemaGenerator()
                 .withResolverBuilders(new AnnotatedResolverBuilder());
@@ -49,7 +47,7 @@ public class GraphQLController {
         graphQL = GraphQL.newGraphQL(schema)
                 .mutationExecutionStrategy(new AsyncSerialExecutionStrategy(new GraphQLExceptionHandler()))
                 .queryExecutionStrategy(new AsyncExecutionStrategy(new GraphQLExceptionHandler()))
-                .instrumentation(graphQLFieldMetrics)
+                .instrumentation(graphQLMetrics)
                 .build();
 
         //Schema generated from mock query class
@@ -60,7 +58,7 @@ public class GraphQLController {
         mockGraphQL = GraphQL.newGraphQL(mockSchema)
                 .mutationExecutionStrategy(new AsyncSerialExecutionStrategy(new GraphQLExceptionHandler()))
                 .queryExecutionStrategy(new AsyncExecutionStrategy(new GraphQLExceptionHandler()))
-                .instrumentation(graphQLFieldMetrics)
+                .instrumentation(graphQLMetrics)
                 .build();
     }
 

@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.hentjournalinfo.handlers;
+package no.nav.dokarkiv.hentjournalinfo.graphql;
 
 import static graphql.Assert.assertNotNull;
 import static java.lang.String.format;
@@ -8,6 +8,7 @@ import graphql.GraphQLError;
 import graphql.GraphqlErrorHelper;
 import graphql.execution.ExecutionPath;
 import graphql.language.SourceLocation;
+import lombok.ToString;
 import no.nav.dokarkiv.core.exceptions.DokarkivFunctionalException;
 import no.nav.dokarkiv.core.security.abac.AuthorizationException;
 import no.nav.dokarkiv.hentjournalinfo.dto.ExceptionType;
@@ -22,6 +23,7 @@ import java.util.Map;
  *
  * @author Ugur Alpay Cenar, Visma Consulting.
  */
+@ToString
 public class CustomExceptionWhileDataFetching implements GraphQLError {
     private final String message;
     private final List<Object> path;
@@ -64,8 +66,7 @@ public class CustomExceptionWhileDataFetching implements GraphQLError {
         if (exception instanceof GraphQLError) {
             Map<String, Object> map = ((GraphQLError) exception).getExtensions();
             if (map != null) {
-                extensions = new LinkedHashMap<>();
-                extensions.putAll(map);
+                extensions = new LinkedHashMap<>(map);
             }
         }
         return extensions;
@@ -98,15 +99,6 @@ public class CustomExceptionWhileDataFetching implements GraphQLError {
     @Override
     public ErrorType getErrorType() {
         return ErrorType.DataFetchingException;
-    }
-
-    @Override
-    public String toString() {
-        return "ExceptionWhileDataFetching{" +
-                "path=" + path +
-                "exception=" + exception +
-                "locations=" + locations +
-                '}';
     }
 
     @Override

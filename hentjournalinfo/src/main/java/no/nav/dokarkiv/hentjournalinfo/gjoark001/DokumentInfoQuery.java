@@ -1,13 +1,15 @@
-package no.nav.dokarkiv.hentjournalinfo.query;
+package no.nav.dokarkiv.hentjournalinfo.gjoark001;
 
 import static java.lang.String.format;
 import static no.nav.abac.xacml.NavAttributter.RESOURCE_ARKIV_DOKUMENT;
 import static no.nav.abac.xacml.NavAttributter.RESOURCE_FELLES_RESOURCE_TYPE;
 import static no.nav.abac.xacml.StandardAttributter.ACTION_ID;
 import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.READ_ACTION;
-import static no.nav.dokarkiv.hentjournalinfo.map.DokumentInfoMapper.mapDokumentInfo;
-import static no.nav.dokarkiv.hentjournalinfo.map.JournalpostMapper.mapJournalpost;
-import static no.nav.dokarkiv.hentjournalinfo.query.QueryNames.DOKUMENTINFO;
+import static no.nav.dokarkiv.hentjournalinfo.QueryNames.DOKUMENTINFO;
+import static no.nav.dokarkiv.hentjournalinfo.gjoark001.DokumentInfoQueryMapper.mapDokumentInfo;
+import static no.nav.dokarkiv.hentjournalinfo.gjoark001.DokumentInfoQueryMapper.mapFildetaljer;
+import static no.nav.dokarkiv.hentjournalinfo.gjoark001.DokumentInfoQueryMapper.mapJournalpostDokumentRelasjon;
+import static no.nav.dokarkiv.hentjournalinfo.gjoark002.JournalpostQueryMapper.mapJournalpost;
 import static org.apache.commons.lang3.BooleanUtils.isTrue;
 
 import io.leangen.graphql.annotations.GraphQLArgument;
@@ -17,13 +19,14 @@ import io.leangen.graphql.annotations.GraphQLQuery;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
+import no.nav.dokarkiv.core.exceptions.DokumentInfoIkkeFunnetException;
 import no.nav.dokarkiv.core.metrics.RestMetrics;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.security.abac.AbacSecurityService;
+import no.nav.dokarkiv.hentjournalinfo.Query;
 import no.nav.dokarkiv.hentjournalinfo.dto.DokumentInfo;
 import no.nav.dokarkiv.hentjournalinfo.dto.Journalpost;
 import no.nav.dokarkiv.hentjournalinfo.dto.JournalpostDokumentRelasjon;
-import no.nav.dokarkiv.hentjournalinfo.exceptions.DokumentIkkeFunnetException;
 import no.nav.dokarkiv.hentjournalinfo.exceptions.JournalpostIkkeFunnetException;
 import no.nav.freg.abac.core.annotation.Abac;
 import org.springframework.stereotype.Component;
@@ -34,7 +37,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
@@ -55,17 +57,18 @@ public class DokumentInfoQuery implements Query {
 
     @GraphQLQuery(name = DOKUMENTINFO)
     @Transactional(readOnly = true)
-    @RestMetrics(value = "dok_graphql_request", extraTags = {"query", DOKUMENTINFO}, percentiles = {0.5, 0.95}, logException = false)
+    @RestMetrics(value = "dok_request", extraTags = {"process_code", "gjoark001"}, percentiles = {0.5, 0.95}, logException = false)
     @Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_DOKUMENT)},
             actions = @Abac.Attr(key = ACTION_ID, value = READ_ACTION))
     public DokumentInfo dokumentInfo(@GraphQLArgument(name = "dokumentInfoId") @GraphQLNonNull Long dokumentInfoId) {
         log.info(format("GraphQL har mottatt %s query med dokumentInfoId=%s", DOKUMENTINFO, dokumentInfoId));
         abacSecurityService.assertAccessToDokument(dokumentInfoId);
-        no.nav.dokarkiv.core.domain.entities.DokumentInfo dokumentInfo = dokumentinfoRepository.findById(dokumentInfoId)
-                .orElseThrow(() -> new DokumentIkkeFunnetException(format("Fant ingen dokument med dokumentInfoId=%s i JOARK Databasen", dokumentInfoId)));
+        //Om dokumentet eksiterer sjekkes i metoden over og kan derfor være sikker på dokumentInfo finnes i neste step
+        no.nav.dokarkiv.core.domain.entities.DokumentInfo dokumentInfo = dokumentinfoRepository.findById(dokumentInfoId).get();
 
         if (isTrue(dokumentInfo.getSlettet())) {
-            throw new DokumentIkkeFunnetException(format("Fant ingen dokument med dokumentInfoId=%s i JOARK Databasen", dokumentInfoId));
+            //Dette skal etterhvert sjekkes i ABAC istedenfor slik at ABAC returnerer deny hvis person ikke har tilgang til å se slettede dokumenter
+            throw new DokumentInfoIkkeFunnetException("DokumentInfo ikke funnet. dokumentInfoId=" + dokumentInfo.getDokumentInfoId());
         }
 
         return mapDokumentInfo(dokumentInfo);
@@ -92,13 +95,7 @@ public class DokumentInfoQuery implements Query {
                 .orElse(new no.nav.dokarkiv.core.domain.entities.DokumentInfo())
                 .getJournalpostRelasjoner();
 
-        return journalpostDokumentInfoRelasjons.stream().map(relasjon -> JournalpostDokumentRelasjon.builder()
-                .tilknyttetJournalpostSom(relasjon.getTilknyttetJournalpostSom() == null ? null : relasjon.getTilknyttetJournalpostSom()
-                        .name())
-                .journalpostId(relasjon.getJournalpost().getJournalpostId())
-                .journalpost(mapJournalpost(relasjon.getJournalpost())) //Like greit å bare mappe journalpost når den må hentes opp fra DB for å hente jpId (ref: LazyFetching)
-                .dokumentInfoId(dokumentInfo.getDokumentInfoId()).build()).collect(Collectors.toList());
-
+        return mapJournalpostDokumentRelasjon(journalpostDokumentInfoRelasjons, dokumentInfo.getDokumentInfoId());
     }
 
     @GraphQLQuery(name = "tilleggsopplysninger")
@@ -108,6 +105,7 @@ public class DokumentInfoQuery implements Query {
         Map<String, String> tilleggsopplysninger = dokumentinfoRepository.findById(dokumentInfo.getDokumentInfoId())
                 .orElse(new no.nav.dokarkiv.core.domain.entities.DokumentInfo())
                 .getTilleggsopplysninger();
+
         return new HashMap<>(tilleggsopplysninger);
     }
 
@@ -118,12 +116,8 @@ public class DokumentInfoQuery implements Query {
         Set<FilDetaljer> filDetaljerSet = dokumentinfoRepository.findById(dokumentInfo.getDokumentInfoId())
                 .orElse(new no.nav.dokarkiv.core.domain.entities.DokumentInfo())
                 .getFildetaljerListe();
-        return filDetaljerSet.stream()
-                .map(fildetaljer -> DokumentInfo.Fildetaljer.builder()
-                        .fildetaljerId(fildetaljer.getFildetaljerId())
-                        .filtype(fildetaljer.getFiltype() == null ? null : fildetaljer.getFiltype().name())
-                        .variantFormat(fildetaljer.getVariantFormat() == null ? null : fildetaljer.getVariantFormat().name())
-                        .build()).collect(Collectors.toList());
+
+        return mapFildetaljer(filDetaljerSet);
     }
 
 

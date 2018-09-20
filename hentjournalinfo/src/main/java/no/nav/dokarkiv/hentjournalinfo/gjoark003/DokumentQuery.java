@@ -1,11 +1,11 @@
-package no.nav.dokarkiv.hentjournalinfo.query;
+package no.nav.dokarkiv.hentjournalinfo.gjoark003;
 
 import static java.lang.String.format;
 import static no.nav.abac.xacml.NavAttributter.RESOURCE_ARKIV_DOKUMENT;
 import static no.nav.abac.xacml.NavAttributter.RESOURCE_FELLES_RESOURCE_TYPE;
 import static no.nav.abac.xacml.StandardAttributter.ACTION_ID;
 import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.READ_ACTION;
-import static no.nav.dokarkiv.hentjournalinfo.query.QueryNames.DOKUMENT;
+import static no.nav.dokarkiv.hentjournalinfo.QueryNames.DOKUMENT;
 
 import io.leangen.graphql.annotations.GraphQLArgument;
 import io.leangen.graphql.annotations.GraphQLNonNull;
@@ -22,6 +22,7 @@ import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.core.security.abac.AbacSecurityService;
+import no.nav.dokarkiv.hentjournalinfo.Query;
 import no.nav.dokarkiv.hentjournalinfo.exceptions.DokumentIkkeFunnetException;
 import no.nav.freg.abac.core.annotation.Abac;
 import org.apache.commons.lang3.BooleanUtils;
@@ -55,10 +56,10 @@ public class DokumentQuery implements Query {
 
     @GraphQLQuery(name = DOKUMENT, description = "Selve dokumentet i PDF/PDFA format")
     @Transactional(readOnly = true)
-    @RestMetrics(value = "dok_graphql_request", extraTags = {"query", DOKUMENT}, percentiles = {0.5, 0.95}, logException = false)
+    @RestMetrics(value = "dok_request", extraTags = {"process_code", "gjoark003"}, percentiles = {0.5, 0.95}, logException = false)
     @Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_DOKUMENT)},
             actions = @Abac.Attr(key = ACTION_ID, value = READ_ACTION))
-    public byte[] hentDokument(@GraphQLArgument(name = "dokumentInfoId") @GraphQLNonNull Long dokumentInfoId, @GraphQLArgument(name = "journalpostId") @GraphQLNonNull Long journalpostId, @GraphQLArgument(name = "filtype") FilTypeCode filType) {
+    public byte[] dokumentInfo(@GraphQLArgument(name = "dokumentInfoId") @GraphQLNonNull Long dokumentInfoId, @GraphQLArgument(name = "journalpostId") @GraphQLNonNull Long journalpostId, @GraphQLArgument(name = "filtype") FilTypeCode filType) {
         log.info(format("GraphQL har mottatt %s query med dokumentInfoId=%s, journalpostId=%s", DOKUMENT, dokumentInfoId, journalpostId));
         abacSecurityService.assertAccessToDokument(dokumentInfoId);
 

@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.hentjournalinfo.handlers;
+package no.nav.dokarkiv.hentjournalinfo.graphql;
 
 import graphql.execution.DataFetcherExceptionHandler;
 import graphql.execution.DataFetcherExceptionHandlerParameters;

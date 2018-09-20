@@ -2,15 +2,12 @@ package no.nav.dokarkiv.hentjournalinfo;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import no.nav.dokarkiv.hentjournalinfo.dto.DokumentInfo;
+import no.nav.dokarkiv.hentjournalinfo.dto.ExceptionType;
 import no.nav.dokarkiv.hentjournalinfo.dto.Journalpost;
 
-import java.io.IOException;
+import java.util.List;
 
 /**
  * Example response object for dokarkiv graphql response
@@ -19,27 +16,36 @@ import java.io.IOException;
  * @author Ugur Alpay Cenar, Visma Consulting.
  */
 @Data
-@Builder
-@AllArgsConstructor
 public class GraphQlResponse {
 
-    private DokumentInfo dokumentInfo;
-    private Journalpost journalpost;
-    private String dokumentFil;
-
-    private JsonNode data;
+    private DataWrapper dataWrapper;
+    private List<Error> errors;
 
     @JsonCreator
-    public GraphQlResponse(@JsonProperty("data") JsonNode data) throws IOException {
-        dokumentInfo = mapToObject(data.get("dokumentInfo"), DokumentInfo.class);
-        journalpost = mapToObject(data.get("journalpost"), Journalpost.class);
-        dokumentFil = data.get("dokumentFil") == null ? null : data.get("dokumentFil").toString();
+    public GraphQlResponse(@JsonProperty("data") DataWrapper dataWrapper, @JsonProperty("errors") List<Error> errors) {
+        this.dataWrapper = dataWrapper;
+        this.errors = errors;
     }
 
-    private <T> T mapToObject(JsonNode data, Class<T> tClass) throws IOException {
-        if (data == null) {
-            return null;
+    @Data
+    public static class DataWrapper {
+        private DokumentInfo dokumentInfo;
+        private Journalpost journalpost;
+        private String dokumentFil;
+    }
+
+    @Data
+    public static class Error {
+        private String message;
+        private List<String> path;
+        private ExceptionType exceptionType;
+        private String exception;
+        private List<Locations> locations;
+
+        @Data
+        public static class Locations {
+            private Long line;
+            private Long column;
         }
-        return new ObjectMapper().readValue(data.toString(), tClass);
     }
 }

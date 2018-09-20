@@ -1,14 +1,14 @@
-package no.nav.dokarkiv.hentjournalinfo.query;
+package no.nav.dokarkiv.hentjournalinfo.gjoark002;
 
 import static java.lang.String.format;
 import static no.nav.abac.xacml.NavAttributter.RESOURCE_ARKIV_JOURNALPOST;
 import static no.nav.abac.xacml.NavAttributter.RESOURCE_FELLES_RESOURCE_TYPE;
 import static no.nav.abac.xacml.StandardAttributter.ACTION_ID;
 import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.READ_ACTION;
-import static no.nav.dokarkiv.hentjournalinfo.map.DokumentInfoMapper.mapDokumentInfo;
-import static no.nav.dokarkiv.hentjournalinfo.map.JournalpostMapper.mapJournalpost;
-import static no.nav.dokarkiv.hentjournalinfo.query.QueryNames.JOURNALPOST;
-import static org.apache.commons.lang3.BooleanUtils.isNotTrue;
+import static no.nav.dokarkiv.hentjournalinfo.QueryNames.JOURNALPOST;
+import static no.nav.dokarkiv.hentjournalinfo.gjoark002.JournalpostQueryMapper.mapBrukere;
+import static no.nav.dokarkiv.hentjournalinfo.gjoark002.JournalpostQueryMapper.mapJournalpost;
+import static no.nav.dokarkiv.hentjournalinfo.gjoark002.JournalpostQueryMapper.mapKnyttetDokumentList;
 
 import io.leangen.graphql.annotations.GraphQLArgument;
 import io.leangen.graphql.annotations.GraphQLContext;
@@ -20,6 +20,7 @@ import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.metrics.RestMetrics;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.core.security.abac.AbacSecurityService;
+import no.nav.dokarkiv.hentjournalinfo.Query;
 import no.nav.dokarkiv.hentjournalinfo.dto.Journalpost;
 import no.nav.dokarkiv.hentjournalinfo.dto.JournalpostDokumentRelasjon;
 import no.nav.freg.abac.core.annotation.Abac;
@@ -29,7 +30,6 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.inject.Inject;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
@@ -49,7 +49,7 @@ public class JournalpostQuery implements Query {
 
     @GraphQLQuery(name = JOURNALPOST)
     @Transactional(readOnly = true)
-    @RestMetrics(value = "dok_graphql_request", extraTags = {"query", JOURNALPOST}, percentiles = {0.5, 0.95}, logException = false)
+    @RestMetrics(value = "dok_request", extraTags = {"process_code", "gjoark002"}, percentiles = {0.5, 0.95}, logException = false)
     @Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_JOURNALPOST)},
             actions = @Abac.Attr(key = ACTION_ID, value = READ_ACTION))
     public Journalpost journalpost(@GraphQLArgument(name = "journalpostId") @GraphQLNonNull Long journalpostId) {
@@ -65,10 +65,8 @@ public class JournalpostQuery implements Query {
         Set<Bruker> brukere = joarkRepository.findById(journalpost.getJournalpostId())
                 .orElse(new no.nav.dokarkiv.core.domain.entities.Journalpost())
                 .getBrukere();
-        return brukere.stream().map(bruker -> Journalpost.Bruker.builder()
-                .brukerId(bruker.getBrukerId())
-                .brukerType(bruker.getBrukerType() == null ? null : bruker.getBrukerType().name())
-                .build()).collect(Collectors.toList());
+
+        return mapBrukere(brukere);
 
     }
 
@@ -79,16 +77,6 @@ public class JournalpostQuery implements Query {
                 .orElse(new no.nav.dokarkiv.core.domain.entities.Journalpost())
                 .getJournalpostDokumentInfoRelasjoner();
 
-
-        return journalpostDokumentInfoRelasjons.stream()
-                .filter(relasjon -> isNotTrue(relasjon.getDokumentInfo().getSlettet()))
-                .map(relasjon -> JournalpostDokumentRelasjon.builder()
-                        .tilknyttetJournalpostSom(relasjon.getTilknyttetJournalpostSom() == null ? null : relasjon.getTilknyttetJournalpostSom()
-                                .name())
-                        .journalpostId(journalpost.getJournalpostId())
-                        .dokumentInfo(mapDokumentInfo(relasjon.getDokumentInfo())) //Like greit å bare mappe dokumentinfo når den må hentes opp fra DB for å hente dokumentInfoId (ref: LazyFetching)
-                        .dokumentInfoId(relasjon.getDokumentInfo().getDokumentInfoId()).build())
-                .collect(Collectors.toList());
-
+        return mapKnyttetDokumentList(journalpostDokumentInfoRelasjons, journalpost.getJournalpostId());
     }
 }

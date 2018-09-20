@@ -81,14 +81,15 @@
 			<artifactId>h2</artifactId>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<artifactId>freg-security-test-oidc-tools</artifactId>
-			<groupId>no.nav.freg</groupId>
-			<scope>test</scope>
-		</dependency>
+
 		<dependency>
 			<groupId>com.unboundid</groupId>
 			<artifactId>unboundid-ldapsdk</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>no.nav.freg</groupId>
+			<artifactId>freg-security-test-oidc-tools</artifactId>
 			<scope>test</scope>
 		</dependency>
 
