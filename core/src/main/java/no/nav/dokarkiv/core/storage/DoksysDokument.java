@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.core.document;
+package no.nav.dokarkiv.core.storage;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

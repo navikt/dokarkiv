@@ -1,6 +1,5 @@
 package no.nav.dokarkiv.core.storage.crypto;
 
-import no.nav.dokarkiv.core.exceptions.CryptoException;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.crypto.Cipher;
