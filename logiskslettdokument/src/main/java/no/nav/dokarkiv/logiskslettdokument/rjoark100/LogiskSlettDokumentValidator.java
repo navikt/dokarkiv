@@ -20,15 +20,6 @@ import java.util.List;
 @Component
 public class LogiskSlettDokumentValidator {
 
-//	public void validateInputRequest(LogiskSlettDokumentRequestTo requestTo) throws IllegalArgumentException {
-//		if (requestTo.getJournalpostId() == null) {
-//			throw new IllegalArgumentException(REQUEST_ID + " tillater ikke en journalpostId som er lik null");
-//		}
-//		if (requestTo.getDokumentInfoId() == null) {
-//			throw new IllegalArgumentException(REQUEST_ID + " tillater ikke en dokumentInfoId som er lik null");
-//		}
-//	}
-
 	public JournalpostDokumentInfoRelasjon validateLogiskSlettDokument(List<JournalpostDokumentInfoRelasjon> jpDokInfoRelasjoner, LogiskSlettDokumentRequestTo requestTo) {
 		JournalpostDokumentInfoRelasjon journalpostDokumentInfoRelasjon = validateJournalpostDokumentInfoRelasjoner(jpDokInfoRelasjoner, requestTo
 				.getDokumentInfoId());
@@ -63,8 +54,8 @@ public class LogiskSlettDokumentValidator {
 
 	public void validateDokumentIkkeLogiskSlettet(DokumentInfo dokumentInfo) throws DokumentAlleredeSlettetException {
 		if (isTrue(dokumentInfo.getSlettet())) {
-			throw new DokumentAlleredeSlettetException(String.format(REQUEST_ID + " har allerede slettet dokumentet med dokumentInfoId=%s", dokumentInfo
-					.getDokumentInfoId()));
+			throw new DokumentAlleredeSlettetException(String.format(REQUEST_ID + " prøver å utføre logisk sletting av et dokument " +
+					"som allerede er logisk slettet, dokumentInfoId=%s", dokumentInfo.getDokumentInfoId()));
 		}
 	}
 }
