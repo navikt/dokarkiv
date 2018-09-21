@@ -8,7 +8,6 @@ import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.READ_ACTION
 import static no.nav.dokarkiv.hentjournalinfo.QueryNames.DOKUMENTINFO;
 import static no.nav.dokarkiv.hentjournalinfo.gjoark001.DokumentInfoQueryMapper.mapDokumentInfo;
 import static no.nav.dokarkiv.hentjournalinfo.gjoark001.DokumentInfoQueryMapper.mapFildetaljer;
-import static no.nav.dokarkiv.hentjournalinfo.gjoark001.DokumentInfoQueryMapper.mapJournalpostDokumentRelasjon;
 import static no.nav.dokarkiv.hentjournalinfo.gjoark002.JournalpostQueryMapper.mapJournalpost;
 import static org.apache.commons.lang3.BooleanUtils.isTrue;
 
@@ -68,7 +67,7 @@ public class DokumentInfoQuery implements Query {
 
         if (isTrue(dokumentInfo.getSlettet())) {
             //Dette skal etterhvert sjekkes i ABAC istedenfor slik at ABAC returnerer deny hvis person ikke har tilgang til å se slettede dokumenter
-            throw new DokumentInfoIkkeFunnetException("DokumentInfo ikke funnet. dokumentInfoId=" + dokumentInfo.getDokumentInfoId());
+            throw new DokumentInfoIkkeFunnetException(format("DokumentInfo ikke funnet. dokumentInfoId=%s", dokumentInfo.getDokumentInfoId()));
         }
 
         return mapDokumentInfo(dokumentInfo);
@@ -78,10 +77,10 @@ public class DokumentInfoQuery implements Query {
     @Transactional(readOnly = true)
     public Journalpost originalJournalpost(@GraphQLContext DokumentInfo dokument) {
         no.nav.dokarkiv.core.domain.entities.DokumentInfo dokumentInfo = dokumentinfoRepository.findById(dokument.getDokumentInfoId())
-                .orElse(new no.nav.dokarkiv.core.domain.entities.DokumentInfo());
+                .orElse(no.nav.dokarkiv.core.domain.entities.DokumentInfo.builder().build());
         no.nav.dokarkiv.core.domain.entities.Journalpost originalJournalpost = dokumentInfo.getOriginalJournalpost();
         if (originalJournalpost == null) {
-            throw new JournalpostIkkeFunnetException(format("Fant ingen tilhørende journalpost for dokument med dokumentInfoId=%s (Dette bør egentlig aldri være tilfelle)", dokument
+            throw new JournalpostIkkeFunnetException(format("Fant ingen tilhørende original journalpost for dokumentInfo med dokumentInfoId=%s", dokument
                     .getDokumentInfoId()));
         }
         return mapJournalpost(originalJournalpost);
@@ -92,10 +91,10 @@ public class DokumentInfoQuery implements Query {
     @Transactional(readOnly = true)
     public List<JournalpostDokumentRelasjon> knyttetJournalpostList(@GraphQLContext DokumentInfo dokumentInfo) {
         Set<JournalpostDokumentInfoRelasjon> journalpostDokumentInfoRelasjons = dokumentinfoRepository.findById(dokumentInfo.getDokumentInfoId())
-                .orElse(new no.nav.dokarkiv.core.domain.entities.DokumentInfo())
+                .orElse(no.nav.dokarkiv.core.domain.entities.DokumentInfo.builder().build())
                 .getJournalpostRelasjoner();
 
-        return mapJournalpostDokumentRelasjon(journalpostDokumentInfoRelasjons, dokumentInfo.getDokumentInfoId());
+        return DokumentInfoQueryMapper.mapKnyttetJournalpostList(journalpostDokumentInfoRelasjons, dokumentInfo.getDokumentInfoId());
     }
 
     @GraphQLQuery(name = "tilleggsopplysninger")
@@ -103,7 +102,7 @@ public class DokumentInfoQuery implements Query {
     public Map<String, String> tilleggsopplysninger(@GraphQLContext DokumentInfo dokumentInfo) {
         //Må hente på nytt fra databasen pågrunn av lazy initialisering
         Map<String, String> tilleggsopplysninger = dokumentinfoRepository.findById(dokumentInfo.getDokumentInfoId())
-                .orElse(new no.nav.dokarkiv.core.domain.entities.DokumentInfo())
+                .orElse(no.nav.dokarkiv.core.domain.entities.DokumentInfo.builder().build())
                 .getTilleggsopplysninger();
 
         return new HashMap<>(tilleggsopplysninger);
@@ -114,7 +113,7 @@ public class DokumentInfoQuery implements Query {
     public List<DokumentInfo.Fildetaljer> filDetaljerList(@GraphQLContext DokumentInfo dokumentInfo) {
         //Må hente på nytt fra databasen pågrunn av lazy initialisering
         Set<FilDetaljer> filDetaljerSet = dokumentinfoRepository.findById(dokumentInfo.getDokumentInfoId())
-                .orElse(new no.nav.dokarkiv.core.domain.entities.DokumentInfo())
+                .orElse(no.nav.dokarkiv.core.domain.entities.DokumentInfo.builder().build())
                 .getFildetaljerListe();
 
         return mapFildetaljer(filDetaljerSet);

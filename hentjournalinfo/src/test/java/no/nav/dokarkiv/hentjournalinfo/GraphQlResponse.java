@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import no.nav.dokarkiv.hentjournalinfo.dto.DokumentInfo;
-import no.nav.dokarkiv.hentjournalinfo.dto.ExceptionType;
 import no.nav.dokarkiv.hentjournalinfo.dto.Journalpost;
+import no.nav.dokarkiv.hentjournalinfo.dto.kode.ExceptionType;
 
 import java.util.List;
 

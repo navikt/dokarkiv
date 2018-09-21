@@ -4,6 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import no.nav.dokarkiv.hentjournalinfo.dto.kode.DokumentStatus;
+import no.nav.dokarkiv.hentjournalinfo.dto.kode.FilType;
+import no.nav.dokarkiv.hentjournalinfo.dto.kode.VariantFormat;
 
 import java.util.List;
 import java.util.Map;
@@ -23,7 +26,7 @@ public class DokumentInfo {
 
     private Map<String, String> tilleggsopplysninger;
 
-    private String status;
+    private DokumentStatus dokumentStatus;
 
     private Journalpost originalJournalpost;
 
@@ -37,8 +40,8 @@ public class DokumentInfo {
     @AllArgsConstructor
     public static class Fildetaljer {
         private Long fildetaljerId;
-        private String filtype;
-        private String variantFormat;
+        private FilType filtype;
+        private VariantFormat variantFormat;
     }
 
 }

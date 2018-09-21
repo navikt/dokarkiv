@@ -5,7 +5,6 @@ import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.HOV
 
 import no.nav.dokarkiv.core.datautil.BrukerTestDataProvider;
 import no.nav.dokarkiv.core.datautil.SaksrelasjonTestDataProvider;
-import no.nav.dokarkiv.core.domain.builder.DokumentFilBuilder;
 import no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder;
 import no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder;
 import no.nav.dokarkiv.core.domain.builder.JournalpostBuilder;
@@ -21,7 +20,10 @@ import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
 import no.nav.dokarkiv.core.domain.codes.ReferanseTypeCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
+import no.nav.dokarkiv.core.domain.entities.Bruker;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
+import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
+import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 
 import java.util.HashMap;
@@ -50,24 +52,23 @@ public class TestDataUtils {
     public final static DokumentStatusCode DOKUMENT_STATUS = DokumentStatusCode.FERDIGSTILT;
     public final static FilTypeCode FIL_TYPE = FilTypeCode.PDF;
     public final static VariantFormatCode HOVEDDOKUMENT_VARIANTFORMAT = VariantFormatCode.ARKIV;
+    public final static Long DOKUMENTINFO_ID = 1133L;
+    public final static Long JOURNALPOST_ID = 1134L;
+    public final static Long FILDETALJER_ID = 1134L;
 
 
     public static Set<JournalpostDokumentInfoRelasjon> createJournalpostDokumentInfoRelasjon() {
         Set<JournalpostDokumentInfoRelasjon> journalpostDokumentInfoRelasjons = new HashSet<>();
         journalpostDokumentInfoRelasjons.add(JournalpostDokumentInfoRelasjon.builder()
                 .tilknyttetJournalpostSom(HOVEDDOKUMENT)
-                .dokumentInfo(DokumentInfo.builder()
-                        .tittel(HOVEDDOKUMENT_TITTEL)
-                        .dokumentInfoId(1L)
-                        .dokumentstatus(DOKUMENT_STATUS)
-                        .build()).build());
+                .journalpost(createJournalpost())
+                .dokumentInfo(createDokumentInfo()).build());
         return journalpostDokumentInfoRelasjons;
     }
 
     public static JournalpostBuilder createJournalpostBuilder(String filUuid) {
         return JournalpostBuilder
                 .getJournalpostBuilder()
-                .journalpostId(1L)
                 .fagomrade(TEMA)
                 .innhold(JOURNALPOST_INNHOLD)
                 .journalStatus(JOURNAL_STATUS)
@@ -107,9 +108,6 @@ public class TestDataUtils {
                                                                 .opprettetKildeNavn(KILDE_NAVN).build()).build()).build());
     }
 
-    public static DokumentFilBuilder createDokumentFilBuilder() {
-        return DokumentFilBuilder.getDokumentFilBuilder().fil(FILE).opprettetKildeNavn(KILDE_NAVN).filUuid(FIL_UUID);
-    }
 
     public static Map<String, String> createTilleggsopplysninger() {
         Map<String, String> map = new HashMap<>();
@@ -117,5 +115,34 @@ public class TestDataUtils {
         return map;
     }
 
+    public static Set<Bruker> createBrukerSet() {
+        Set<Bruker> brukers = new HashSet<>();
+        brukers.add(BrukerTestDataProvider.createBruker().build());
+        return brukers;
+    }
 
+    public static DokumentInfo createDokumentInfo() {
+        return DokumentInfo.builder()
+                .dokumentInfoId(DOKUMENTINFO_ID)
+                .tittel(HOVEDDOKUMENT_TITTEL)
+                .dokumentstatus(DOKUMENT_STATUS)
+                .build();
+    }
+
+    public static Set<FilDetaljer> createFildetaljer() {
+        Set<FilDetaljer> filDetaljerSet = new HashSet<>();
+        filDetaljerSet.add(FilDetaljer.builder()
+                .fildetaljerId(FILDETALJER_ID)
+                .filtype(FIL_TYPE)
+                .filUuid(FIL_UUID).variantFormat(HOVEDDOKUMENT_VARIANTFORMAT)
+                .build());
+        return filDetaljerSet;
+    }
+
+    public static Journalpost createJournalpost() {
+        return Journalpost.builder().journalpostId(JOURNALPOST_ID).fagomrade(TEMA)
+                .innhold(JOURNALPOST_INNHOLD)
+                .journalstatus(JOURNAL_STATUS)
+                .journalposttype(JOURNALPOST_TYPE).build();
+    }
 }

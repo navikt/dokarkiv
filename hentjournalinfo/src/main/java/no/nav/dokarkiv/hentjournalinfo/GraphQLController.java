@@ -9,8 +9,8 @@ import graphql.schema.GraphQLSchema;
 import io.leangen.graphql.GraphQLSchemaGenerator;
 import io.leangen.graphql.metadata.strategy.query.AnnotatedResolverBuilder;
 import lombok.extern.slf4j.Slf4j;
+import no.nav.dokarkiv.core.metrics.RestMetrics;
 import no.nav.dokarkiv.hentjournalinfo.graphql.GraphQLExceptionHandler;
-import no.nav.dokarkiv.hentjournalinfo.graphql.GraphQLMetrics;
 import no.nav.dokarkiv.hentjournalinfo.mock.MockQuery;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -34,7 +34,7 @@ public class GraphQLController {
     private final GraphQL mockGraphQL;
 
     @Inject
-    public GraphQLController(List<Query> queryList, MockQuery mockQuery, GraphQLMetrics graphQLMetrics) {
+    public GraphQLController(List<Query> queryList, MockQuery mockQuery) {
         //Schema generated from query classes
         GraphQLSchemaGenerator schemaGenerator = new GraphQLSchemaGenerator()
                 .withResolverBuilders(new AnnotatedResolverBuilder());
@@ -47,7 +47,6 @@ public class GraphQLController {
         graphQL = GraphQL.newGraphQL(schema)
                 .mutationExecutionStrategy(new AsyncSerialExecutionStrategy(new GraphQLExceptionHandler()))
                 .queryExecutionStrategy(new AsyncExecutionStrategy(new GraphQLExceptionHandler()))
-                .instrumentation(graphQLMetrics)
                 .build();
 
         //Schema generated from mock query class
@@ -58,12 +57,12 @@ public class GraphQLController {
         mockGraphQL = GraphQL.newGraphQL(mockSchema)
                 .mutationExecutionStrategy(new AsyncSerialExecutionStrategy(new GraphQLExceptionHandler()))
                 .queryExecutionStrategy(new AsyncExecutionStrategy(new GraphQLExceptionHandler()))
-                .instrumentation(graphQLMetrics)
                 .build();
     }
 
     @PostMapping(value = "/rest/graphql", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseBody
+    @RestMetrics(value = "dok_request", extraTags = {"process_code", "gjoark"}, percentiles = {0.5, 0.95}, logException = false)
     public Map<String, Object> graphQLRequest(@RequestBody GraphQLRequest request, HttpServletRequest raw) {
         ExecutionResult executionResult = graphQL.execute(ExecutionInput.newExecutionInput()
                 .query(request.getQuery())

@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.hentjournalinfo.dto;
+package no.nav.dokarkiv.hentjournalinfo.dto.kode;
 
 import static java.lang.String.format;
 

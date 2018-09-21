@@ -6,8 +6,10 @@ import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static no.nav.dokarkiv.core.datautil.DokumentFilTestDataProvider.FIL_UUID;
 import static no.nav.dokarkiv.core.security.JwtClaimsBuilderProvider.openAmClaimsBuilder;
+import static no.nav.dokarkiv.hentjournalinfo.utils.TestAssertUtils.assertBrukere;
 import static no.nav.dokarkiv.hentjournalinfo.utils.TestAssertUtils.assertDokumentInfo;
 import static no.nav.dokarkiv.hentjournalinfo.utils.TestAssertUtils.assertJournalpost;
+import static no.nav.dokarkiv.hentjournalinfo.utils.TestAssertUtils.assertKnyttetDokumentList;
 import static no.nav.dokarkiv.hentjournalinfo.utils.TestQueryUtils.createDokumentInfoRequest;
 import static no.nav.dokarkiv.hentjournalinfo.utils.TestQueryUtils.createFilRequest;
 import static no.nav.dokarkiv.hentjournalinfo.utils.TestQueryUtils.createJournalpostDokumentInfoRequest;
@@ -33,7 +35,7 @@ import no.nav.dokarkiv.core.security.abac.AuthorizationException;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.dokarkiv.core.stelvio.SimpleRequestContext;
 import no.nav.dokarkiv.hentjournalinfo.dto.DokumentInfo;
-import no.nav.dokarkiv.hentjournalinfo.dto.ExceptionType;
+import no.nav.dokarkiv.hentjournalinfo.dto.kode.ExceptionType;
 import no.nav.dokarkiv.hentjournalinfo.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.hentjournalinfo.utils.TestDataUtils;
 import no.nav.freg.security.test.oidc.tools.OidcTestService;
@@ -156,6 +158,8 @@ public class GraphQlQueryIT {
 
         no.nav.dokarkiv.hentjournalinfo.dto.Journalpost journalpostResponse = response.getDataWrapper().getJournalpost();
         assertJournalpost(journalpostResponse);
+        assertBrukere(journalpostResponse.getBrukere());
+        assertKnyttetDokumentList(journalpostResponse.getKnyttetDokumentList());
 
     }
 
@@ -300,6 +304,7 @@ public class GraphQlQueryIT {
         joarkRepository.save(journalpost);
         TestTransaction.flagForCommit();
         TestTransaction.end();
+
         HttpEntity request = new HttpEntity<>(createJournalpostRequest(journalpost.getJournalpostId()), oidcHeaders());
 
         GraphQlResponse response = testRestTemplate.postForObject("/rest/graphql", request, GraphQlResponse.class);

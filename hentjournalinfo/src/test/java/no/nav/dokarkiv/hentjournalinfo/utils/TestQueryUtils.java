@@ -31,7 +31,7 @@ public class TestQueryUtils {
                 "      tilknyttetJournalpostSom" +
                 "      dokumentInfo {" +
                 "        dokumentInfoId" +
-                "        status" +
+                "        dokumentStatus" +
                 "        tilleggsopplysninger" +
                 "        tittel" +
                 "      }" +
@@ -44,7 +44,7 @@ public class TestQueryUtils {
         return "dokumentInfo(dokumentInfoId: $dokumentInfoId) {" +
                 "    dokumentInfoId" +
                 "    tittel" +
-                "    status" +
+                "    dokumentStatus" +
                 "   filDetaljerList {" +
                 "      fildetaljerId" +
                 "      filtype" +

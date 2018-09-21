@@ -7,8 +7,11 @@ import no.nav.dokarkiv.core.domain.entities.Bruker;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.hentjournalinfo.dto.Journalpost;
 import no.nav.dokarkiv.hentjournalinfo.dto.JournalpostDokumentRelasjon;
-import no.nav.dokarkiv.hentjournalinfo.dto.JournalpostStatus;
-import no.nav.dokarkiv.hentjournalinfo.dto.JournalpostType;
+import no.nav.dokarkiv.hentjournalinfo.dto.kode.BrukerType;
+import no.nav.dokarkiv.hentjournalinfo.dto.kode.JournalpostStatus;
+import no.nav.dokarkiv.hentjournalinfo.dto.kode.JournalpostType;
+import no.nav.dokarkiv.hentjournalinfo.dto.kode.Tema;
+import no.nav.dokarkiv.hentjournalinfo.dto.kode.TilknyttetJournalpostSom;
 
 import java.util.List;
 import java.util.Set;
@@ -22,7 +25,7 @@ public class JournalpostQueryMapper {
     public static Journalpost mapJournalpost(no.nav.dokarkiv.core.domain.entities.Journalpost journalpost) {
         return Journalpost.builder()
                 .journalpostId(journalpost.getJournalpostId())
-                .tema(journalpost.getFagomrade() == null ? null : journalpost.getFagomrade().name())
+                .tema(Tema.mapFromFagomradeCode(journalpost.getFagomrade()))
                 .journalpostType(JournalpostType.mapFromJournalpostTypeCode(journalpost.getJournalposttype()))
                 .journalpostStatus(JournalpostStatus.mapFromJournalStatusCode(journalpost.getJournalstatus()))
                 .tittel(journalpost.getInnhold())
@@ -33,8 +36,7 @@ public class JournalpostQueryMapper {
         return journalpostDokumentInfoRelasjonSet.stream()
                 .filter(relasjon -> isNotTrue(relasjon.getDokumentInfo().getSlettet()))
                 .map(relasjon -> JournalpostDokumentRelasjon.builder()
-                        .tilknyttetJournalpostSom(relasjon.getTilknyttetJournalpostSom() == null ? null : relasjon.getTilknyttetJournalpostSom()
-                                .name())
+                        .tilknyttetJournalpostSom(TilknyttetJournalpostSom.mapTilknyttetJournalpostSomCode(relasjon.getTilknyttetJournalpostSom()))
                         .journalpostId(journalpostId)
                         .dokumentInfo(mapDokumentInfo(relasjon.getDokumentInfo()))
                         .dokumentInfoId(relasjon.getDokumentInfo().getDokumentInfoId()).build())
@@ -44,7 +46,7 @@ public class JournalpostQueryMapper {
     public static List<Journalpost.Bruker> mapBrukere(Set<Bruker> brukere) {
         return brukere.stream().map(bruker -> Journalpost.Bruker.builder()
                 .brukerId(bruker.getBrukerId())
-                .brukerType(bruker.getBrukerType() == null ? null : bruker.getBrukerType().name())
+                .brukerType(BrukerType.mapFromBrukerTypeCode(bruker.getBrukerType()))
                 .build()).collect(Collectors.toList());
     }
 }

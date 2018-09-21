@@ -16,7 +16,7 @@ import no.nav.dokarkiv.core.domain.entities.DokumentFil;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.exceptions.DokarkivFunctionalException;
-import no.nav.dokarkiv.core.exceptions.DokarkivTechnicalException;
+import no.nav.dokarkiv.core.exceptions.DokumentInfoIkkeFunnetException;
 import no.nav.dokarkiv.core.metrics.RestMetrics;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
@@ -67,27 +67,25 @@ public class DokumentQuery implements Query {
                 .orElse(new no.nav.dokarkiv.core.domain.entities.DokumentInfo());
 
         if (BooleanUtils.isTrue(dokumentInfo.getSlettet())) {
-            throw new DokumentIkkeFunnetException(format("Dokument med dokumentInfoId=%s er satt som logisk slettet og kan derfor ikke hentes", dokumentInfoId));
+            throw new DokumentInfoIkkeFunnetException(format("DokumentInfo ikke funnet. dokumentInfoId=%s", dokumentInfo.getDokumentInfoId()));
         }
 
         List<FilDetaljer> fildetaljerListe = new ArrayList<>(dokumentInfo.getFildetaljerListe());
         FilDetaljer filDetaljer = fildetaljerListe.stream()
                 .filter(detaljer -> detaljer.getFiltype() == FilTypeCode.PDFA || detaljer.getFiltype() == FilTypeCode.PDF)
                 .findAny()
-                .orElse(null);
+                .orElseThrow(() -> new DokumentIkkeFunnetException(format("Fant ingen fil med dokumentInfoId=%s og filtype=%s", dokumentInfoId, "PDF eller PDFA")));
 
         //TODO: Skal det hentes noe annet enn PDFA/PDF?
 
-        if (filDetaljer != null) {
-            String filUuid = filDetaljer.getFilUuid();
-            DokumentFil dokumentFil = dokumentFilRepository.findByFilUuid(filUuid);
-            if (dokumentFil == null) {
-                throw new DokarkivTechnicalException(format("Finner ikke fil med filUuid=%s i databasen", filUuid));
-            }
-            return dokumentFil.getFil();
+        String filUuid = filDetaljer.getFilUuid();
+        DokumentFil dokumentFil = dokumentFilRepository.findByFilUuid(filUuid);
+        if (dokumentFil == null) {
+            throw new DokarkivFunctionalException(format("Finner ikke fil med filUuid=%s i databasen", filUuid));
         }
+        return dokumentFil.getFil();
 
-        throw new DokarkivFunctionalException(format("Fant ingen fil med dokumentInfoId=%s og filtype=%s", dokumentInfoId, "PDF eller PDFA"));
+
     }
 
 

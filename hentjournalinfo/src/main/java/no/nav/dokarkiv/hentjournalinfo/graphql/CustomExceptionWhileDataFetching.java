@@ -11,7 +11,7 @@ import graphql.language.SourceLocation;
 import lombok.ToString;
 import no.nav.dokarkiv.core.exceptions.DokarkivFunctionalException;
 import no.nav.dokarkiv.core.security.abac.AuthorizationException;
-import no.nav.dokarkiv.hentjournalinfo.dto.ExceptionType;
+import no.nav.dokarkiv.hentjournalinfo.dto.kode.ExceptionType;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;

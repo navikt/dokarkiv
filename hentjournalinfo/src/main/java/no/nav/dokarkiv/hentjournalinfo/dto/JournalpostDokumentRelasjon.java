@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import no.nav.dokarkiv.hentjournalinfo.dto.kode.TilknyttetJournalpostSom;
 
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
@@ -17,7 +18,7 @@ public class JournalpostDokumentRelasjon {
     private Long dokumentInfoId;
     private Long journalpostId;
 
-    private String tilknyttetJournalpostSom;
+    private TilknyttetJournalpostSom tilknyttetJournalpostSom;
     private Journalpost journalpost;
     private DokumentInfo dokumentInfo;
 

@@ -1,12 +1,16 @@
 package no.nav.dokarkiv.hentjournalinfo.mock;
 
-import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
-import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.hentjournalinfo.dto.DokumentInfo;
 import no.nav.dokarkiv.hentjournalinfo.dto.Journalpost;
 import no.nav.dokarkiv.hentjournalinfo.dto.JournalpostDokumentRelasjon;
-import no.nav.dokarkiv.hentjournalinfo.dto.JournalpostStatus;
-import no.nav.dokarkiv.hentjournalinfo.dto.JournalpostType;
+import no.nav.dokarkiv.hentjournalinfo.dto.kode.BrukerType;
+import no.nav.dokarkiv.hentjournalinfo.dto.kode.DokumentStatus;
+import no.nav.dokarkiv.hentjournalinfo.dto.kode.FilType;
+import no.nav.dokarkiv.hentjournalinfo.dto.kode.JournalpostStatus;
+import no.nav.dokarkiv.hentjournalinfo.dto.kode.JournalpostType;
+import no.nav.dokarkiv.hentjournalinfo.dto.kode.Tema;
+import no.nav.dokarkiv.hentjournalinfo.dto.kode.TilknyttetJournalpostSom;
+import no.nav.dokarkiv.hentjournalinfo.dto.kode.VariantFormat;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -29,7 +33,7 @@ public class MockDataUtils {
         return DokumentInfo.builder()
                 .dokumentInfoId(dokumentInfoId)
                 .tittel("Mock tittel for dokument")
-                .status("FERDIGSTILT")
+                .dokumentStatus(DokumentStatus.FERDIGSTILT)
                 .tilleggsopplysninger(createTillegsopplysninger())
                 .knyttetJournalpostList(createJournalpostDokumentRelasjonList(JOURNALPOST_ID_HOVEDDOK, dokumentInfoId))
                 .filDetaljerList(createFildetaljerList())
@@ -37,7 +41,7 @@ public class MockDataUtils {
     }
 
     public List<Journalpost.Bruker> createBrukerList(String brukerId) {
-        return Arrays.asList(Journalpost.Bruker.builder().brukerType("PERSON").brukerId(brukerId).build());
+        return Arrays.asList(Journalpost.Bruker.builder().brukerType(BrukerType.PERSON).brukerId(brukerId).build());
     }
 
     public Map<String, String> createTillegsopplysninger() {
@@ -48,28 +52,28 @@ public class MockDataUtils {
 
     public List<DokumentInfo.Fildetaljer> createFildetaljerList() {
         return Arrays.asList(DokumentInfo.Fildetaljer.builder()
-                .variantFormat(VariantFormatCode.ARKIV.name())
-                .filtype("PDF").fildetaljerId(123L)
+                        .variantFormat(VariantFormat.ARKIV)
+                        .filtype(FilType.PDF).fildetaljerId(123L)
                         .build(),
-                DokumentInfo.Fildetaljer.builder().variantFormat(VariantFormatCode.PRODUKSJON.name())
-                        .filtype(FilTypeCode.AXML.name()).fildetaljerId(124L)
+                DokumentInfo.Fildetaljer.builder().variantFormat(VariantFormat.PRODUKSJON)
+                        .filtype(FilType.AXML).fildetaljerId(124L)
                         .build()
         );
     }
 
     public List<JournalpostDokumentRelasjon> createJournalpostDokumentRelasjonList(Long hoveddokJournalpostId, Long hoveddokDokumentInfoId) {
         return Arrays.asList(JournalpostDokumentRelasjon.builder()
-                        .tilknyttetJournalpostSom("HOVEDDOKUMENT")
+                        .tilknyttetJournalpostSom(TilknyttetJournalpostSom.HOVEDDOKUMENT)
                         .journalpostId(hoveddokJournalpostId)
                         .dokumentInfoId(hoveddokDokumentInfoId)
                         .build(),
                 JournalpostDokumentRelasjon.builder()
-                        .tilknyttetJournalpostSom("VEDLEGG")
+                        .tilknyttetJournalpostSom(TilknyttetJournalpostSom.VEDLEGG)
                         .journalpostId(JOURNALPOST_ID_1)
                         .dokumentInfoId(DOKUMENTINFO_ID_1)
                         .build(),
                 JournalpostDokumentRelasjon.builder()
-                        .tilknyttetJournalpostSom("VEDLEGG")
+                        .tilknyttetJournalpostSom(TilknyttetJournalpostSom.VEDLEGG)
                         .journalpostId(JOURNALPOST_ID_2)
                         .dokumentInfoId(DOKUMENTINFO_ID_2)
                         .build()
@@ -78,7 +82,7 @@ public class MockDataUtils {
 
     public Journalpost createJournalpost(Long journalpostId) {
         return Journalpost.builder()
-                .tema("FOR")
+                .tema(Tema.FOR)
                 .tittel("Mock tittel på journalpost")
                 .journalpostStatus(JournalpostStatus.JOURNALFOERT)
                 .journalpostType(JournalpostType.INNGAENDE)

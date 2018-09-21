@@ -4,6 +4,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import no.nav.dokarkiv.hentjournalinfo.dto.kode.BrukerType;
+import no.nav.dokarkiv.hentjournalinfo.dto.kode.JournalpostStatus;
+import no.nav.dokarkiv.hentjournalinfo.dto.kode.JournalpostType;
+import no.nav.dokarkiv.hentjournalinfo.dto.kode.Tema;
 
 import java.util.List;
 
@@ -22,7 +26,7 @@ public class Journalpost {
 
     private JournalpostStatus journalpostStatus;
 
-    private String tema;
+    private Tema tema;
 
     private String tittel;
 
@@ -36,7 +40,7 @@ public class Journalpost {
     @AllArgsConstructor
     public static class Bruker {
         private String brukerId;
-        private String brukerType;
+        private BrukerType brukerType;
     }
 
 }
