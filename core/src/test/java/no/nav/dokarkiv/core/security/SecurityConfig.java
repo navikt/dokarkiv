@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.journalfoerinngaaende.v1.security;
+package no.nav.dokarkiv.core.security;
 
 import static java.lang.String.format;
 import static org.mockito.Mockito.mock;
@@ -16,10 +16,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Profile;
 
 import java.util.Collections;
 
 @Configuration
+@Profile("oidc")
 public class SecurityConfig {
     // Note: These has to match the issuer url in application.properties (idp config).
     public static final String OPEN_AM_ISSUER_URL = "http://openAmIssuerUrl";
