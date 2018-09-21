@@ -6,7 +6,6 @@ import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import no.nav.dokarkiv.core.exceptions.DokarkivTechnicalException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -35,7 +34,6 @@ public class S3StorageConfiguration {
 	@Lazy
 	public Storage storage() {
 		AmazonS3 s3 = initS3Client();
-		ensureBucketExists(s3);
 		return new DokprodMellomlagerS3Storage(s3, encryptionPassphrase);
 	}
 
@@ -46,13 +44,5 @@ public class S3StorageConfiguration {
 				.withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(s3Endpoint, REGION_TO_USE_FOR_S3_TO_WORK_ONPREM))
 				.enablePathStyleAccess()
 				.withCredentials(new AWSStaticCredentialsProvider(credentials)).build();
-	}
-
-	private void ensureBucketExists(AmazonS3 s3) {
-		boolean bucketExists = s3.listBuckets().stream()
-				.anyMatch(b -> b.getName().equals(DokprodMellomlagerS3Storage.DOKPRODMELLOMLAGER_BUCKET));
-		if (!bucketExists) {
-			throw new DokarkivTechnicalException("Fant ikke " + DokprodMellomlagerS3Storage.DOKPRODMELLOMLAGER_BUCKET + " i s3");
-		}
 	}
 }

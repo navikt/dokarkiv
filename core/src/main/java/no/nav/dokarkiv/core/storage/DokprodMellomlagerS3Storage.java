@@ -55,12 +55,12 @@ public class DokprodMellomlagerS3Storage implements Storage {
 	}
 
 	private String readString(String directory, String key) {
-		String path = fileName(directory, key);
+		String objectId = fileName(directory, key);
 		S3Object object;
 		try {
-			object = s3.getObject(DOKPRODMELLOMLAGER_BUCKET, path);
+			object = s3.getObject(DOKPRODMELLOMLAGER_BUCKET, objectId);
 		} catch (AmazonS3Exception ex) {
-			log.warn("Unable to retrieve " + path + ", it probably doesn't exist");
+			log.warn("Kunne ikke hente objectId={}. errorCode={}", objectId, ex.getErrorCode());
 			return null;
 		}
 
