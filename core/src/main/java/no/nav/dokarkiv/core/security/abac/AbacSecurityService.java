@@ -8,8 +8,10 @@ import static org.springframework.util.CollectionUtils.isEmpty;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
+import no.nav.dokarkiv.core.exceptions.DokumentInfoIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.logging.AbacLogger;
+import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.freg.abac.core.annotation.context.AbacContext;
 import no.nav.freg.abac.core.dto.request.XacmlRequest;
@@ -31,6 +33,7 @@ import java.util.Map;
 public class AbacSecurityService {
 
 	public static final String ACCESS_DENIED_TO_JOURNALPOST = "Bruker har ikke tilgang til journalpost";
+    public static final String ACCESS_DENIED_TO_RESOURCE = "Bruker har ikke tilgang til ressurs";
 	public static final String ACCESS_DENIED = "Access Denied";
 
 	@Inject
@@ -48,6 +51,9 @@ public class AbacSecurityService {
 	@Inject
 	private JoarkRepository joarkRepository;
 
+    @Inject
+    private DokumentinfoRepository dokumentinfoRepository;
+
 	public void assertAccessToJournalpost(String journalpost) {
 		Long journalpostId = Long.parseLong(journalpost);
 
@@ -60,6 +66,16 @@ public class AbacSecurityService {
 		XacmlResponse accessResponse = abacService.evaluate(abacContext.getRequest());
 		handleResponseForJournalpostId(abacContext.getRequest(), accessResponse, journalpostId);
 	}
+
+    public void assertAccessToDokument(Long dokumentInfo) {
+
+        if (!dokumentinfoRepository.existsById(dokumentInfo)) {
+            throw new DokumentInfoIkkeFunnetException("DokumentInfo ikke funnet. dokumentInfoId=" + dokumentInfo);
+        }
+        Long journalpostId = joarkRepository.findJournalpostIdByDokumentinfoId(dokumentInfo.toString());
+        assertAccessToJournalpost(journalpostId.toString());
+    }
+
 
 	Decision assertAccessToSak(String sakId, FagsystemCode fagsystemCode) {
 		return assertAccessToSak(abacContext.getRequest(), sakId, fagsystemCode);
@@ -98,6 +114,20 @@ public class AbacSecurityService {
 		}
 		return request;
 	}
+
+    private void handleResponseForBrukerId(XacmlRequest request, XacmlResponse response, String brukerId) {
+        final Map<String, String> resources = new HashMap<>();
+        resources.put("brukerId", brukerId);
+        if (response.getDecision() == Decision.DENY) {
+            abaclog.logAbacDeny(request, response, resources);
+            throw new AuthorizationException(ACCESS_DENIED_TO_RESOURCE);
+        } else {
+            if (!isEmpty(response.getAdvices())) {
+                abaclog.logAbacPermit(request, response, resources);
+            }
+        }
+    }
+
 
 	private void handleResponseForJournalpostId(XacmlRequest request, XacmlResponse response, Long journalpostId) {
 		final Map<String, String> resources = new HashMap<>();
