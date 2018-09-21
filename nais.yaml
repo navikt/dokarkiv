@@ -155,3 +155,13 @@ fasitResources:
     path: /rest/journalfoerinngaaende/v1
     securityToken: OIDC_TOKEN
     description: Rest-tjenester til bruk ifm. manuell journalføring.
+  - alias: Logiskslettdokument
+    resourceType: restservice
+    path: /rest/logiskslettdokument
+    securityToken: OIDC_TOKEN
+    description: Rest-tjeneste til bruk for logisk sletting av dokument
+  - alias: HentJournalinfo
+    resourceType: restservice
+    path: /rest/graphql
+    securityToken: OIDC_TOKEN
+    description: Graphql tjeneste for henting av journalpost og dokument metadata
