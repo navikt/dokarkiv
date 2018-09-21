@@ -46,7 +46,7 @@ public class Rjoark100IT extends AbstractSlettDokumentIT {
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 		assertEquals(journalpostDokumentInfoRelasjonRepository.findByDokumentInfoId(
-				journalpost1.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId())
+				journalpost1.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId()).get()
 				.get(0)
 				.getDokumentInfo()
 				.getSlettet(), true);
@@ -125,7 +125,7 @@ public class Rjoark100IT extends AbstractSlettDokumentIT {
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.BAD_REQUEST));
 		assertThat(responseEntity.getBody(), containsString(REQUEST_ID + " kan ikke slette dokument som har relasjoner med flere journalposter."));
 		assertEquals(journalpostDokumentInfoRelasjonRepository.findByDokumentInfoId(
-				journalpost1.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId())
+				journalpost1.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId()).get()
 				.get(0)
 				.getDokumentInfo()
 				.getSlettet(), false);
@@ -151,7 +151,7 @@ public class Rjoark100IT extends AbstractSlettDokumentIT {
 		assertThat(responseEntity.getBody(), containsString(REQUEST_ID + " har allerede slettet dokumentet med dokumentInfoId="
 				+ journalpost1.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId()));
 		assertEquals(journalpostDokumentInfoRelasjonRepository.findByDokumentInfoId(
-				journalpost1.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId())
+				journalpost1.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId()).get()
 				.get(0)
 				.getDokumentInfo()
 				.getSlettet(), true);

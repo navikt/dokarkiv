@@ -20,36 +20,23 @@ import java.util.List;
 @Component
 public class LogiskSlettDokumentValidator {
 
-//	public void validateInputRequest(LogiskSlettDokumentRequestTo requestTo) throws IllegalArgumentException {
-//		if (requestTo.getJournalpostId() == null) {
-//			throw new IllegalArgumentException(REQUEST_ID + " tillater ikke en journalpostId som er lik null");
-//		}
-//		if (requestTo.getDokumentInfoId() == null) {
-//			throw new IllegalArgumentException(REQUEST_ID + " tillater ikke en dokumentInfoId som er lik null");
-//		}
-//	}
-
-	public JournalpostDokumentInfoRelasjon validateLogiskSlettDokument(List<JournalpostDokumentInfoRelasjon> jpDokInfoRelasjoner, LogiskSlettDokumentRequestTo requestTo) {
-		JournalpostDokumentInfoRelasjon journalpostDokumentInfoRelasjon = validateJournalpostDokumentInfoRelasjoner(jpDokInfoRelasjoner, requestTo
+	public void validateLogiskSlettDokument(List<JournalpostDokumentInfoRelasjon> jpDokInfoRelasjoner, LogiskSlettDokumentRequestTo requestTo) {
+		validateJournalpostDokumentInfoRelasjoner(jpDokInfoRelasjoner, requestTo
 				.getDokumentInfoId());
-		validateJournalpostIdBelongsToThisJournalpost(journalpostDokumentInfoRelasjon.getJournalpost(), requestTo);
-		validateDokumentIkkeLogiskSlettet(journalpostDokumentInfoRelasjon.getDokumentInfo());
-		return journalpostDokumentInfoRelasjon;
+		validateJournalpostIdBelongsToThisJournalpost(jpDokInfoRelasjoner.get(0).getJournalpost(), requestTo);
+		validateDokumentIkkeLogiskSlettet(jpDokInfoRelasjoner.get(0).getDokumentInfo());
 	}
 
 
-	public JournalpostDokumentInfoRelasjon validateJournalpostDokumentInfoRelasjoner(List<JournalpostDokumentInfoRelasjon> jpDokInfoRelasjoner, Long dokumentInfoId)
+	public void validateJournalpostDokumentInfoRelasjoner(List<JournalpostDokumentInfoRelasjon> jpDokInfoRelasjoner, Long dokumentInfoId)
 			throws JournalpostDokumentInfoRelasjonNotFoundException, ForMangeJournalpostDokumentInfoRelasjonerException {
 		if (jpDokInfoRelasjoner.isEmpty()) {
 			throw new JournalpostDokumentInfoRelasjonNotFoundException(String.format(REQUEST_ID + " kan ikke finne noen journalpostDokumentInfoRelasjon for dokumentInfoId=%s", dokumentInfoId));
 		} else if (jpDokInfoRelasjoner.size() > 1) {
 			throw new ForMangeJournalpostDokumentInfoRelasjonerException(String.format(REQUEST_ID + " kan ikke slette dokument som har relasjoner med flere journalposter. " +
 					"DokumentinfoId=%s har relasjoner med %s journalposter.", dokumentInfoId, jpDokInfoRelasjoner.size()));
-		} else {
-			return jpDokInfoRelasjoner.get(0);
 		}
 	}
-
 
 	public void validateJournalpostIdBelongsToThisJournalpost(Journalpost journalpost, LogiskSlettDokumentRequestTo requestTo)
 			throws IngenRelasjonMellomJournalpostIdOgDokumentInfoIdException {
@@ -59,7 +46,6 @@ public class LogiskSlettDokumentValidator {
 
 		}
 	}
-
 
 	public void validateDokumentIkkeLogiskSlettet(DokumentInfo dokumentInfo) throws DokumentAlleredeSlettetException {
 		if (isTrue(dokumentInfo.getSlettet())) {
