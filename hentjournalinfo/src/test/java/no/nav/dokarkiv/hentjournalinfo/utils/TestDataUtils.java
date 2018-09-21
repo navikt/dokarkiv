@@ -26,6 +26,7 @@ import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -56,14 +57,12 @@ public class TestDataUtils {
     public final static Long JOURNALPOST_ID = 1134L;
     public final static Long FILDETALJER_ID = 1134L;
 
-
-    public static Set<JournalpostDokumentInfoRelasjon> createJournalpostDokumentInfoRelasjon() {
-        Set<JournalpostDokumentInfoRelasjon> journalpostDokumentInfoRelasjons = new HashSet<>();
-        journalpostDokumentInfoRelasjons.add(JournalpostDokumentInfoRelasjon.builder()
+    public static Set<JournalpostDokumentInfoRelasjon> createJournalpostDokumentInfoRelasjonSet(Journalpost journalpost) {
+        return new HashSet<>(Arrays.asList(JournalpostDokumentInfoRelasjon.builder()
                 .tilknyttetJournalpostSom(HOVEDDOKUMENT)
-                .journalpost(createJournalpost())
-                .dokumentInfo(createDokumentInfo()).build());
-        return journalpostDokumentInfoRelasjons;
+                .tilknyttetAvNavn(OPPRETTET_AV_NAVN)
+                .journalpost(createJournalpost(JOURNALPOST_ID))
+                .dokumentInfo(createDokumentInfo(journalpost)).build()));
     }
 
     public static JournalpostBuilder createJournalpostBuilder(String filUuid) {
@@ -121,11 +120,13 @@ public class TestDataUtils {
         return brukers;
     }
 
-    public static DokumentInfo createDokumentInfo() {
+    public static DokumentInfo createDokumentInfo(Journalpost journalpost) {
         return DokumentInfo.builder()
                 .dokumentInfoId(DOKUMENTINFO_ID)
                 .tittel(HOVEDDOKUMENT_TITTEL)
                 .dokumentstatus(DOKUMENT_STATUS)
+                .originalJournalpost(journalpost)
+                .fildetaljerListe(createFildetaljer())
                 .build();
     }
 
@@ -139,10 +140,16 @@ public class TestDataUtils {
         return filDetaljerSet;
     }
 
-    public static Journalpost createJournalpost() {
-        return Journalpost.builder().journalpostId(JOURNALPOST_ID).fagomrade(TEMA)
+    public static Journalpost createJournalpost(Long journalpostId) {
+        return Journalpost.builder()
+                .journalpostId(journalpostId)
+                .fagomrade(TEMA)
                 .innhold(JOURNALPOST_INNHOLD)
                 .journalstatus(JOURNAL_STATUS)
-                .journalposttype(JOURNALPOST_TYPE).build();
+                .journalposttype(JOURNALPOST_TYPE)
+                .opprettetAvNavn(OPPRETTET_AV_NAVN)
+                .tilleggsopplysninger(createTilleggsopplysninger())
+                .saksrelasjon(SaksrelasjonTestDataProvider.createSaksrelasjon().build())
+                .mottakskanal(MOTTAKS_KANAL).build();
     }
 }

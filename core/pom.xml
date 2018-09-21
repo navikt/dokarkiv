@@ -16,6 +16,7 @@
 	</properties>
 
 	<dependencies>
+
 		<dependency>
 			<groupId>com.auth0</groupId>
 			<artifactId>java-jwt</artifactId>

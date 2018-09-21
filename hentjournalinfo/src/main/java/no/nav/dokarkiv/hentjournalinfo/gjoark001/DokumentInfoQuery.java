@@ -84,7 +84,6 @@ public class DokumentInfoQuery implements Query {
                     .getDokumentInfoId()));
         }
         return mapJournalpost(originalJournalpost);
-
     }
 
     @GraphQLQuery(name = "knyttetJournalpostList")

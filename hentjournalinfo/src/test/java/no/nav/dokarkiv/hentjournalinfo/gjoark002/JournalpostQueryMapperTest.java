@@ -7,10 +7,11 @@ import static no.nav.dokarkiv.hentjournalinfo.utils.TestAssertUtils.assertBruker
 import static no.nav.dokarkiv.hentjournalinfo.utils.TestAssertUtils.assertJournalpost;
 import static no.nav.dokarkiv.hentjournalinfo.utils.TestAssertUtils.assertKnyttetDokumentList;
 import static no.nav.dokarkiv.hentjournalinfo.utils.TestDataUtils.DOKUMENTINFO_ID;
+import static no.nav.dokarkiv.hentjournalinfo.utils.TestDataUtils.JOURNALPOST_ID;
 import static no.nav.dokarkiv.hentjournalinfo.utils.TestDataUtils.createBrukerSet;
 import static no.nav.dokarkiv.hentjournalinfo.utils.TestDataUtils.createJournalpost;
 import static no.nav.dokarkiv.hentjournalinfo.utils.TestDataUtils.createJournalpostBuilder;
-import static no.nav.dokarkiv.hentjournalinfo.utils.TestDataUtils.createJournalpostDokumentInfoRelasjon;
+import static no.nav.dokarkiv.hentjournalinfo.utils.TestDataUtils.createJournalpostDokumentInfoRelasjonSet;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -35,13 +36,13 @@ public class JournalpostQueryMapperTest {
 
     @Test
     public void shouldMapJournalpost() {
-        no.nav.dokarkiv.hentjournalinfo.dto.Journalpost journalpost = mapJournalpost(createJournalpost());
+        no.nav.dokarkiv.hentjournalinfo.dto.Journalpost journalpost = mapJournalpost(createJournalpost(JOURNALPOST_ID));
         assertJournalpost(journalpost);
     }
 
     @Test
     public void shouldMapKnyttetDokumentList() {
-        List<JournalpostDokumentRelasjon> journalpostDokumentInfoRelasjons = mapKnyttetDokumentList(createJournalpostDokumentInfoRelasjon(), 100L);
+        List<JournalpostDokumentRelasjon> journalpostDokumentInfoRelasjons = mapKnyttetDokumentList(createJournalpostDokumentInfoRelasjonSet(null), 100L);
         assertKnyttetDokumentList(journalpostDokumentInfoRelasjons);
         assertThat(journalpostDokumentInfoRelasjons.get(0).getDokumentInfoId(), is(DOKUMENTINFO_ID));
         assertThat(journalpostDokumentInfoRelasjons.get(0).getJournalpostId(), is(100L));
@@ -50,7 +51,7 @@ public class JournalpostQueryMapperTest {
 
     @Test
     public void shouldSkipDokumentInfoIfSlettetWhenMappingKnyttetDokumentList() {
-        Set<JournalpostDokumentInfoRelasjon> journalpostDokumentInfoRelasjonSet = createJournalpostDokumentInfoRelasjon();
+        Set<JournalpostDokumentInfoRelasjon> journalpostDokumentInfoRelasjonSet = createJournalpostDokumentInfoRelasjonSet(null);
         journalpostDokumentInfoRelasjonSet.add(JournalpostDokumentInfoRelasjon.builder()
                 .dokumentInfo(DokumentInfo.builder()
                         .dokumentInfoId(9323L)

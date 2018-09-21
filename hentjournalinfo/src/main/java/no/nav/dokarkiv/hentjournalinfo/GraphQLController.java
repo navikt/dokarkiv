@@ -10,7 +10,7 @@ import io.leangen.graphql.GraphQLSchemaGenerator;
 import io.leangen.graphql.metadata.strategy.query.AnnotatedResolverBuilder;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.metrics.RestMetrics;
-import no.nav.dokarkiv.hentjournalinfo.graphql.GraphQLExceptionHandler;
+import no.nav.dokarkiv.hentjournalinfo.exceptionhandler.GraphQLExceptionHandler;
 import no.nav.dokarkiv.hentjournalinfo.mock.MockQuery;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -75,6 +75,7 @@ public class GraphQLController {
 
     @PostMapping(value = "/mock/graphql", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseBody
+    @RestMetrics(value = "dok_request", extraTags = {"process_code", "gjoark_mock"}, percentiles = {0.5, 0.95}, logException = false)
     public Map<String, Object> mockGraphQL(@RequestBody GraphQLRequest request, HttpServletRequest raw) {
         ExecutionResult executionResult = mockGraphQL.execute(ExecutionInput.newExecutionInput()
                 .query(request.getQuery())

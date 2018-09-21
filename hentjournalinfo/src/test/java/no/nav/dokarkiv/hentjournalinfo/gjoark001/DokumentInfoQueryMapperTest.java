@@ -13,7 +13,8 @@ import static no.nav.dokarkiv.hentjournalinfo.utils.TestDataUtils.HOVEDDOKUMENT_
 import static no.nav.dokarkiv.hentjournalinfo.utils.TestDataUtils.JOURNALPOST_ID;
 import static no.nav.dokarkiv.hentjournalinfo.utils.TestDataUtils.createDokumentInfo;
 import static no.nav.dokarkiv.hentjournalinfo.utils.TestDataUtils.createFildetaljer;
-import static no.nav.dokarkiv.hentjournalinfo.utils.TestDataUtils.createJournalpostDokumentInfoRelasjon;
+import static no.nav.dokarkiv.hentjournalinfo.utils.TestDataUtils.createJournalpost;
+import static no.nav.dokarkiv.hentjournalinfo.utils.TestDataUtils.createJournalpostDokumentInfoRelasjonSet;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
@@ -35,7 +36,7 @@ public class DokumentInfoQueryMapperTest {
 
     @Test
     public void shouldMapDokumentInfo() {
-        DokumentInfo dokumentInfo = mapDokumentInfo(createDokumentInfo());
+        DokumentInfo dokumentInfo = mapDokumentInfo(createDokumentInfo(null));
         assertThat(dokumentInfo.getTittel(), is(HOVEDDOKUMENT_TITTEL));
         assertThat(dokumentInfo.getDokumentStatus(), is(DokumentStatus.mapFromDokumentStatusCode(DOKUMENT_STATUS)));
         assertThat(dokumentInfo.getDokumentInfoId(), is(DOKUMENTINFO_ID));
@@ -44,7 +45,7 @@ public class DokumentInfoQueryMapperTest {
     @Test
     public void shouldmapKnyttetJournalpostList() {
 
-        List<JournalpostDokumentRelasjon> journalpostDokumentInfoRelasjons = mapKnyttetJournalpostList(createJournalpostDokumentInfoRelasjon(), DOKUMENTINFO_ID);
+        List<JournalpostDokumentRelasjon> journalpostDokumentInfoRelasjons = mapKnyttetJournalpostList(createJournalpostDokumentInfoRelasjonSet(createJournalpost(JOURNALPOST_ID)), DOKUMENTINFO_ID);
         assertThat(journalpostDokumentInfoRelasjons.get(0)
                 .getTilknyttetJournalpostSom(), CoreMatchers.is(TilknyttetJournalpostSom.HOVEDDOKUMENT));
         assertThat(journalpostDokumentInfoRelasjons.get(0).getDokumentInfoId(), CoreMatchers.is(DOKUMENTINFO_ID));
