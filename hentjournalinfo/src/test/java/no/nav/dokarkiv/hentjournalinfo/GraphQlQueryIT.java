@@ -20,9 +20,6 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import no.nav.dokarkiv.core.CoreConfig;
 import no.nav.dokarkiv.core.domain.builder.DokumentFilBuilder;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
@@ -219,11 +216,10 @@ public class GraphQlQueryIT {
         request.put("query", "query {journalpost(journalpostId: 1) {tema}}");
 
         HttpEntity httpEntity = new HttpEntity(request.toString(), oidcHeaders());
-        String response = testRestTemplate.postForObject("/rest/graphql", httpEntity, String.class);
-        JsonElement jsonElement = new Gson().fromJson(response, JsonObject.class).getAsJsonArray("errors").get(0);
-        assertThat(jsonElement.getAsJsonObject()
-                .get("message")
-                .getAsString(), containsString("Journalpost ikke funnet. journalpostId=1"));
+        GraphQlResponse response = testRestTemplate.postForObject("/rest/graphql", httpEntity, GraphQlResponse.class);
+        assertThat(response.getErrors()
+                .get(0)
+                .getMessage(), containsString("Journalpost ikke funnet. journalpostId=1"));
 
     }
 
