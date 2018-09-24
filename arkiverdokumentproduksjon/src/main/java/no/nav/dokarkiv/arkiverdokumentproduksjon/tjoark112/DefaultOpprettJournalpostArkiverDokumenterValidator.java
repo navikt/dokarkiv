@@ -1,9 +1,8 @@
-package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark100;
+package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark112;
 
 import static org.apache.commons.lang3.StringUtils.contains;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
-import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
@@ -21,21 +20,23 @@ import javax.inject.Inject;
  * @author Stig Strøm
  */
 @Component
-public class DefaultOpprettJournalpostArkiverDokumentValidator implements
-		OpprettJournalpostArkiverDokumentValidator {
+public class DefaultOpprettJournalpostArkiverDokumenterValidator implements OpprettJournalpostArkiverDokumenterValidator {
+
+	private final JournalpostStructureVerifier verifier;
+	private final MandatoryFieldsVerifier mandatoryFieldsVerifier;
 
 	@Inject
-	protected JournalpostStructureVerifier verifier;
-
-	@Inject
-	protected MandatoryFieldsVerifier mandatoryFieldsVerifier;
+	public DefaultOpprettJournalpostArkiverDokumenterValidator(JournalpostStructureVerifier verifier, MandatoryFieldsVerifier mandatoryFieldsVerifier) {
+		this.verifier = verifier;
+		this.mandatoryFieldsVerifier = mandatoryFieldsVerifier;
+	}
 
 	@Override
-	public void validate(Journalpost journalpost, boolean ferdigstillJournalpost) {
+	public void validate(Journalpost journalpost) {
 		verifier.verifyJournalpostStructure(journalpost);
 		verifyRequiredFields(journalpost);
-		validateJournalpostValues(journalpost, ferdigstillJournalpost);
-		validateCustomDokumentInfoValues(journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo());
+		validateJournalpostValues(journalpost);
+		journalpost.getJournalpostDokumentInfoRelasjoner().forEach(relasjon -> validateCustomDokumentInfoValues(relasjon.getDokumentInfo()));
 	}
 
 	private void verifyRequiredFields(Journalpost journalpost) {
@@ -48,11 +49,7 @@ public class DefaultOpprettJournalpostArkiverDokumentValidator implements
 		}
 	}
 
-	private void validateJournalpostValues(Journalpost journalpost, boolean ferdigstillJournalpost) {
-		if (ferdigstillJournalpost && journalpost.getJournalposttype() == JournalpostTypeCode.U && journalpost.getUtsendingskanal() == null) {
-			throw new ApplicationException("Utsendingskanal must be set");
-		}
-
+	private void validateJournalpostValues(Journalpost journalpost) {
 		if (isBlank(journalpost.getJournalForendeEnhetId())) {
 			throw new ApplicationException(
 					"Field journalfoerendeEnhetId must be set");

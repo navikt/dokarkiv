@@ -2,7 +2,7 @@ package no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions;
 
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.exceptions.DokarkivFunctionalException;
-import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 /**
  * Exception that is thrown when there is an illegal DokumentStatus.

@@ -22,7 +22,7 @@ import java.util.Optional;
 @Slf4j
 public class DokprodMellomlagerS3Storage implements Storage {
 	static final String DOKPRODMELLOMLAGER_BUCKET = "dokprodmellomlager";
-	static final String DOKPRODMELLOMLAGER_DIRECTORY_NAME = "dokprod";
+	public static final String DOKPRODMELLOMLAGER_DIRECTORY_NAME = "dokprod";
 
 	private final AmazonS3 s3;
 	private final String encryptionPassphrase;
@@ -41,7 +41,6 @@ public class DokprodMellomlagerS3Storage implements Storage {
 	@Override
 	@Retryable(include = DokarkivTechnicalException.class, maxAttempts = MAX_ATTEMPTS_SHORT, backoff = @Backoff(delay = DELAY_SHORT, multiplier = MULTIPLIER_SHORT))
 	public Optional<String> get(String directory, String key) {
-
 		try {
 			String encryptedValue = readString(directory, key);
 			return Optional.ofNullable(decrypt(encryptedValue, key));
@@ -56,12 +55,12 @@ public class DokprodMellomlagerS3Storage implements Storage {
 	}
 
 	private String readString(String directory, String key) {
-		String path = fileName(directory, key);
+		String objectId = fileName(directory, key);
 		S3Object object;
 		try {
-			object = s3.getObject(DOKPRODMELLOMLAGER_BUCKET, path);
+			object = s3.getObject(DOKPRODMELLOMLAGER_BUCKET, objectId);
 		} catch (AmazonS3Exception ex) {
-			log.warn("Unable to retrieve " + path + ", it probably doesn't exist");
+			log.warn("Kunne ikke hente objectId={}. errorCode={}", objectId, ex.getErrorCode());
 			return null;
 		}
 

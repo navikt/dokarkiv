@@ -1,7 +1,7 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark111;
 
-import static org.apache.commons.lang.Validate.notNull;
 import static org.apache.commons.lang3.Validate.isTrue;
+import static org.apache.commons.lang3.Validate.notNull;
 import static org.springframework.util.Assert.hasLength;
 
 import com.google.common.base.Strings;
