@@ -15,6 +15,8 @@ import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @Slf4j
@@ -30,8 +32,13 @@ public class AngreLogiskSlettDokumentService {
 	private JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository;
 
 	public LogiskSlettDokumentResponse angreLogiskSlettDokument(LogiskSlettDokumentRequestTo requestTo) {
-		JournalpostDokumentInfoRelasjon journalpostDokumentInfoRelasjon = validator.validateAngreLogiskSlettDokument(
-				journalpostDokumentInfoRelasjonRepository.findByDokumentInfoId(requestTo.getDokumentInfoId()), requestTo);
+
+		List<JournalpostDokumentInfoRelasjon> journalpostDokumentInfoRelasjonList = journalpostDokumentInfoRelasjonRepository.findByDokumentInfoId(requestTo
+				.getDokumentInfoId()).orElse(new ArrayList<>());
+
+		validator.validateAngreLogiskSlettDokument(journalpostDokumentInfoRelasjonList, requestTo);
+
+		JournalpostDokumentInfoRelasjon journalpostDokumentInfoRelasjon = journalpostDokumentInfoRelasjonList.get(0);
 
 		setAngreDokumentLogiskSlettet(journalpostDokumentInfoRelasjon.getDokumentInfo());
 		log.info(REQUEST_ID + " har angret logisk sletting av dokument med journalpostId={}, dokumentInfoId={}",

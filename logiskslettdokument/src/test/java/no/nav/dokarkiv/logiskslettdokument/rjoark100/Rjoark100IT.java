@@ -148,8 +148,10 @@ public class Rjoark100IT extends AbstractSlettDokumentIT {
 				.getDokumentInfoId(), HttpMethod.PATCH, createHeaders(), String.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.BAD_REQUEST));
-		assertThat(responseEntity.getBody(), containsString(REQUEST_ID + " har allerede slettet dokumentet med dokumentInfoId="
-				+ journalpost1.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId()));
+		assertThat(responseEntity.getBody(), containsString(REQUEST_ID + " prøver å utføre logisk sletting av et dokument " +
+				"som allerede er logisk slettet, dokumentInfoId=" + journalpost1.findHoveddokumentDokumentInfoRelasjon()
+				.getDokumentInfo()
+				.getDokumentInfoId()));
 		assertEquals(journalpostDokumentInfoRelasjonRepository.findByDokumentInfoId(
 				journalpost1.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId()).get()
 				.get(0)

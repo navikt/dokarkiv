@@ -52,7 +52,7 @@ public class LogiskSlettDokumentRestController {
 	@Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_DOKUMENT)},
 			actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION))
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark100"}, percentiles = {0.5, 0.95})
-	public LogiskSlettDokumentResponse deleteDocumentLogicallyWithJournalpostIdAndDokumentInfoId(
+	public LogiskSlettDokumentResponse logiskSlettDokument(
 			@PathVariable("journalpostId") Long journalpostId, @PathVariable("dokumentInfoId") Long dokumentInfoId) {
 		abacSecurityService.assertAccessToJournalpost(journalpostId.toString());
 		REQUEST_ID = "rjoark100";
@@ -67,7 +67,7 @@ public class LogiskSlettDokumentRestController {
 
 	@Transactional
 	@ResponseBody
-	@PatchMapping("/angre/{journalpostId}/{dokumentInfoId}")
+	@PatchMapping("/{journalpostId}/{dokumentInfoId}/angre")
 	@Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_DOKUMENT)},
 			actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION))
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark101"}, percentiles = {0.5, 0.95})
