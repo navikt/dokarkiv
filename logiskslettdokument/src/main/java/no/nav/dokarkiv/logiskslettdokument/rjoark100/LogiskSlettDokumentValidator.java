@@ -20,8 +20,8 @@ import java.util.List;
 @Component
 public class LogiskSlettDokumentValidator {
 
-	public void validateLogiskSlettDokument(List<JournalpostDokumentInfoRelasjon> jpDokInfoRelasjoner, LogiskSlettDokumentRequestTo requestTo) {
-		validateJournalpostDokumentInfoRelasjoner(jpDokInfoRelasjoner, requestTo
+	public JournalpostDokumentInfoRelasjon validateLogiskSlettDokument(List<JournalpostDokumentInfoRelasjon> jpDokInfoRelasjoner, LogiskSlettDokumentRequestTo requestTo) {
+		JournalpostDokumentInfoRelasjon journalpostDokumentInfoRelasjon = validateJournalpostDokumentInfoRelasjoner(jpDokInfoRelasjoner, requestTo
 				.getDokumentInfoId());
 		validateJournalpostIdBelongsToThisJournalpost(jpDokInfoRelasjoner.get(0).getJournalpost(), requestTo);
 		validateDokumentIkkeLogiskSlettet(jpDokInfoRelasjoner.get(0).getDokumentInfo());
@@ -35,8 +35,11 @@ public class LogiskSlettDokumentValidator {
 		} else if (jpDokInfoRelasjoner.size() > 1) {
 			throw new ForMangeJournalpostDokumentInfoRelasjonerException(String.format(REQUEST_ID + " kan ikke slette dokument som har relasjoner med flere journalposter. " +
 					"DokumentinfoId=%s har relasjoner med %s journalposter.", dokumentInfoId, jpDokInfoRelasjoner.size()));
+		} else {
+			return jpDokInfoRelasjoner.get(0);
 		}
 	}
+
 
 	public void validateJournalpostIdBelongsToThisJournalpost(Journalpost journalpost, LogiskSlettDokumentRequestTo requestTo)
 			throws IngenRelasjonMellomJournalpostIdOgDokumentInfoIdException {
@@ -49,8 +52,8 @@ public class LogiskSlettDokumentValidator {
 
 	public void validateDokumentIkkeLogiskSlettet(DokumentInfo dokumentInfo) throws DokumentAlleredeSlettetException {
 		if (isTrue(dokumentInfo.getSlettet())) {
-			throw new DokumentAlleredeSlettetException(String.format(REQUEST_ID + " har allerede slettet dokumentet med dokumentInfoId=%s", dokumentInfo
-					.getDokumentInfoId()));
+			throw new DokumentAlleredeSlettetException(String.format(REQUEST_ID + " prøver å utføre logisk sletting av et dokument " +
+					"som allerede er logisk slettet, dokumentInfoId=%s", dokumentInfo.getDokumentInfoId()));
 		}
 	}
 }

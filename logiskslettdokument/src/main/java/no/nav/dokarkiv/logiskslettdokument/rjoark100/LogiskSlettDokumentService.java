@@ -15,9 +15,6 @@ import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Implementation of SlettDokument
- */
 @Service
 @Slf4j
 public class LogiskSlettDokumentService {
