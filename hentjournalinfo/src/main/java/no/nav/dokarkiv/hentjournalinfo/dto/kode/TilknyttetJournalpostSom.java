@@ -1,12 +1,10 @@
 package no.nav.dokarkiv.hentjournalinfo.dto.kode;
 
-import static java.lang.String.format;
-
 import io.leangen.graphql.annotations.GraphQLEnumValue;
 import lombok.Getter;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 
-import java.util.Optional;
+import java.util.Arrays;
 
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
@@ -26,13 +24,9 @@ public enum TilknyttetJournalpostSom {
     private final TilknyttetJournalpostSomCode mapFromValue;
 
     public static TilknyttetJournalpostSom mapTilknyttetJournalpostSomCode(TilknyttetJournalpostSomCode tilknyttetJournalpostSomCode) {
-        Optional<TilknyttetJournalpostSom> tilknyttetJournalpostSom = Optional.empty();
-        for (TilknyttetJournalpostSom tilknyttetJournalpostSomValue : TilknyttetJournalpostSom.values()) {
-            if (tilknyttetJournalpostSomCode == tilknyttetJournalpostSomValue.getMapFromValue()) {
-                tilknyttetJournalpostSom = Optional.of(tilknyttetJournalpostSomValue);
-            }
-        }
-
-        return tilknyttetJournalpostSom.orElseThrow(() -> new IllegalArgumentException(format("Kunne ikke mappe TilknyttetJournalpostSomCode=%s til TilknyttetJournalpostSom", tilknyttetJournalpostSomCode)));
+        return Arrays.stream(TilknyttetJournalpostSom.values())
+                .filter(tilknyttetJournalpostSom -> tilknyttetJournalpostSom.getMapFromValue() == tilknyttetJournalpostSomCode)
+                .findFirst()
+                .orElse(null);
     }
 }

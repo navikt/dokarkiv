@@ -1,11 +1,9 @@
 package no.nav.dokarkiv.hentjournalinfo.dto.kode;
 
-import static java.lang.String.format;
-
 import lombok.Getter;
 import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
 
-import java.util.Optional;
+import java.util.Arrays;
 
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
@@ -38,13 +36,9 @@ public enum FilType {
     }
 
     public static FilType mapFromFilTypeCode(FilTypeCode filTypeCode) {
-        Optional<FilType> filType = Optional.empty();
-        for (FilType filTypeValue : FilType.values()) {
-            if (filTypeCode == filTypeValue.getMapFromValue()) {
-                filType = Optional.of(filTypeValue);
-            }
-        }
-
-        return filType.orElseThrow(() -> new IllegalArgumentException(format("Kunne ikke mappe FilTypeCode=%s til FilType", filTypeCode)));
+        return Arrays.stream(FilType.values())
+                .filter(filType -> filType.getMapFromValue() == filTypeCode)
+                .findFirst()
+                .orElse(null);
     }
 }

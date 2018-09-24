@@ -1,12 +1,10 @@
 package no.nav.dokarkiv.hentjournalinfo.dto.kode;
 
-import static java.lang.String.format;
-
 import io.leangen.graphql.annotations.GraphQLEnumValue;
 import lombok.Getter;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 
-import java.util.Optional;
+import java.util.Arrays;
 
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
@@ -39,7 +37,7 @@ public enum Tema {
     @GraphQLEnumValue(description = "Gravferdsstønad")
     GRA(FagomradeCode.GRA),
     @GraphQLEnumValue(description = "Grunn- og hjelpestønad")
-    GRU(FagomradeCode.BID),
+    GRU(FagomradeCode.GRU),
     @GraphQLEnumValue(description = "Kontantstøtte")
     KON(FagomradeCode.KON),
     @GraphQLEnumValue(description = "Omsorgspenger, Pleiepenger og opplæringspenger")
@@ -142,13 +140,6 @@ public enum Tema {
     }
 
     public static Tema mapFromFagomradeCode(FagomradeCode fagomradeCode) {
-        Optional<Tema> tema = Optional.empty();
-        for (Tema temaValue : Tema.values()) {
-            if (fagomradeCode == temaValue.getMapFromValue()) {
-                tema = Optional.of(temaValue);
-            }
-        }
-
-        return tema.orElseThrow(() -> new IllegalArgumentException(format("Kunne ikke mappe FagomradeCode=%s til Tema", fagomradeCode)));
+        return Arrays.stream(Tema.values()).filter(tema -> tema.getMapFromValue() == fagomradeCode).findFirst().orElse(null);
     }
 }

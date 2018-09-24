@@ -22,15 +22,13 @@ import java.lang.annotation.Target;
 
 @Target({ElementType.ANNOTATION_TYPE, ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface RestMetrics {
+public @interface GraphQLMetrics {
 
-	String value() default "";
+    String value() default "";
 
-	String[] extraTags() default {};
+    String[] extraTags() default {};
 
-	double[] percentiles() default {};
+    boolean histogram() default false;
 
-	boolean histogram() default false;
-
-	String description() default "";
+    String description() default "";
 }

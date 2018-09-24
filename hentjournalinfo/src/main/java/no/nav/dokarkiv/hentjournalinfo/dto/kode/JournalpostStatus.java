@@ -1,12 +1,10 @@
 package no.nav.dokarkiv.hentjournalinfo.dto.kode;
 
-import static java.lang.String.format;
-
 import io.leangen.graphql.annotations.GraphQLEnumValue;
 import lombok.Getter;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 
-import java.util.Optional;
+import java.util.Arrays;
 
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
@@ -57,14 +55,10 @@ public enum JournalpostStatus {
     }
 
     public static JournalpostStatus mapFromJournalStatusCode(JournalStatusCode journalStatusCode) {
-        Optional<JournalpostStatus> journalpostType = Optional.empty();
-        for (JournalpostStatus journalpostStatusValue : JournalpostStatus.values()) {
-            if (journalStatusCode == journalpostStatusValue.getMapFromValue()) {
-                journalpostType = Optional.of(journalpostStatusValue);
-            }
-        }
-
-        return journalpostType.orElseThrow(() -> new IllegalArgumentException(format("Kunne ikke mappe JournalStatusCode=%s til JournalpostStatus", journalStatusCode)));
+        return Arrays.stream(JournalpostStatus.values())
+                .filter(journalStatus -> journalStatus.getMapFromValue() == journalStatusCode)
+                .findFirst()
+                .orElse(null);
     }
 
 

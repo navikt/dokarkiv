@@ -17,7 +17,7 @@ import io.leangen.graphql.annotations.GraphQLQuery;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.domain.entities.Bruker;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
-import no.nav.dokarkiv.core.metrics.RestMetrics;
+import no.nav.dokarkiv.core.metrics.GraphQLMetrics;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.core.security.abac.AbacSecurityService;
 import no.nav.dokarkiv.hentjournalinfo.Query;
@@ -49,13 +49,14 @@ public class JournalpostQuery implements Query {
 
     @GraphQLQuery(name = JOURNALPOST)
     @Transactional(readOnly = true)
-    @RestMetrics(value = "dok_request", extraTags = {"process_code", "gjoark002"}, percentiles = {0.5, 0.95}, logException = false)
+    @GraphQLMetrics(value = "dok_graphql_request", extraTags = {"process_code", "gjoark002", "query", JOURNALPOST})
     @Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_JOURNALPOST)},
             actions = @Abac.Attr(key = ACTION_ID, value = READ_ACTION))
     public Journalpost journalpost(@GraphQLArgument(name = "journalpostId") @GraphQLNonNull Long journalpostId) {
         log.info(format("GraphQL har mottatt %s query med journalpostId=%s", JOURNALPOST, journalpostId));
         abacSecurityService.assertAccessToJournalpost(journalpostId.toString());
         no.nav.dokarkiv.core.domain.entities.Journalpost journalpost = joarkRepository.findById(journalpostId).get();
+
         return mapJournalpost(journalpost);
     }
 
