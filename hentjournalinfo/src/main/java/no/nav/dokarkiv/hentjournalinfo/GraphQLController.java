@@ -34,7 +34,7 @@ public class GraphQLController {
     private final GraphQL mockGraphQL;
 
     @Inject
-    public GraphQLController(List<Query> queryList, MockQuery mockQuery) {
+    public GraphQLController(List<Query> queryList, MockQuery mockQuery, GraphQLExceptionHandler graphQLExceptionHandler) {
         //Schema generated from query classes
         GraphQLSchemaGenerator schemaGenerator = new GraphQLSchemaGenerator()
                 .withResolverBuilders(new AnnotatedResolverBuilder());
@@ -45,8 +45,8 @@ public class GraphQLController {
 
         GraphQLSchema schema = schemaGenerator.generate();
         graphQL = GraphQL.newGraphQL(schema)
-                .mutationExecutionStrategy(new AsyncSerialExecutionStrategy(new GraphQLExceptionHandler()))
-                .queryExecutionStrategy(new AsyncExecutionStrategy(new GraphQLExceptionHandler()))
+                .mutationExecutionStrategy(new AsyncSerialExecutionStrategy(graphQLExceptionHandler))
+                .queryExecutionStrategy(new AsyncExecutionStrategy(graphQLExceptionHandler))
                 .build();
 
         //Schema generated from mock query class
@@ -55,14 +55,14 @@ public class GraphQLController {
                 .withOperationsFromSingleton(mockQuery, MockQuery.class)
                 .generate();
         mockGraphQL = GraphQL.newGraphQL(mockSchema)
-                .mutationExecutionStrategy(new AsyncSerialExecutionStrategy(new GraphQLExceptionHandler()))
-                .queryExecutionStrategy(new AsyncExecutionStrategy(new GraphQLExceptionHandler()))
+                .mutationExecutionStrategy(new AsyncSerialExecutionStrategy(graphQLExceptionHandler))
+                .queryExecutionStrategy(new AsyncExecutionStrategy(graphQLExceptionHandler))
                 .build();
     }
 
     @PostMapping(value = "/rest/graphql", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseBody
-    @RestMetrics(value = "dok_request", extraTags = {"process_code", "gjoark"}, percentiles = {0.5, 0.95}, logException = false)
+    @RestMetrics(value = "dok_request", extraTags = {"process_code", "gjoark00x"}, percentiles = {0.5, 0.95})
     public Map<String, Object> graphQLRequest(@RequestBody GraphQLRequest request, HttpServletRequest raw) {
         ExecutionResult executionResult = graphQL.execute(ExecutionInput.newExecutionInput()
                 .query(request.getQuery())
@@ -75,7 +75,7 @@ public class GraphQLController {
 
     @PostMapping(value = "/mock/graphql", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseBody
-    @RestMetrics(value = "dok_request", extraTags = {"process_code", "gjoark_mock"}, percentiles = {0.5, 0.95}, logException = false)
+    @RestMetrics(value = "dok_request", extraTags = {"process_code", "gjoark00x_mock"}, percentiles = {0.5, 0.95})
     public Map<String, Object> mockGraphQL(@RequestBody GraphQLRequest request, HttpServletRequest raw) {
         ExecutionResult executionResult = mockGraphQL.execute(ExecutionInput.newExecutionInput()
                 .query(request.getQuery())

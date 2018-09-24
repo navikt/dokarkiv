@@ -1,11 +1,9 @@
 package no.nav.dokarkiv.hentjournalinfo.dto.kode;
 
-import static java.lang.String.format;
-
 import lombok.Getter;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 
-import java.util.Optional;
+import java.util.Arrays;
 
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
@@ -24,14 +22,11 @@ public enum JournalpostType {
     }
 
     public static JournalpostType mapFromJournalpostTypeCode(JournalpostTypeCode journalpostTypeCode) {
-        Optional<JournalpostType> journalpostType = Optional.empty();
-        for (JournalpostType journalpostTypeValue : JournalpostType.values()) {
-            if (journalpostTypeCode == journalpostTypeValue.getMapFromValue()) {
-                journalpostType = Optional.of(journalpostTypeValue);
-            }
-        }
+        return Arrays.stream(JournalpostType.values())
+                .filter(journalpostType -> journalpostType.getMapFromValue() == journalpostTypeCode)
+                .findFirst()
+                .orElse(null);
 
-        return journalpostType.orElseThrow(() -> new IllegalArgumentException(format("Kunne ikke mappe JournalpostTypeCode=%s til JournalpostType", journalpostTypeCode)));
     }
 
 }

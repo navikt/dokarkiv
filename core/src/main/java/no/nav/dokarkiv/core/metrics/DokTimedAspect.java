@@ -113,18 +113,18 @@ public class DokTimedAspect {
 			return pjp.proceed();
 		} catch (Exception e) {
 
-            if (restMetrics.logException()) {
-                logException(method, e);
-			}
+			logException(method, e);
 
-            Counter.builder(restMetrics.value() + "_exception")
+			Counter.builder(restMetrics.value() + "_exception")
 					.tags("error_type", isFunctionalException(method, e) ? "functional" : "technical")
 					.tags("exception_name", e.getClass().getSimpleName())
-                    .tags(restMetrics.extraTags())
+					.tags(restMetrics.extraTags())
 					.tags(tagsBasedOnJoinpoint.apply(pjp))
 					.register(registry)
 					.increment();
+
 			throw e;
+
 		} finally {
             sample.stop(Timer.builder(restMetrics.value())
                     .description(restMetrics.description().isEmpty() ? null : restMetrics.description())
@@ -136,8 +136,26 @@ public class DokTimedAspect {
 		}
 	}
 
+	@Around("execution (@no.nav.dokarkiv.core.metrics.GraphQLMetrics * *.*(..))")
+	public Object graphQLMetrics(ProceedingJoinPoint pjp) throws Throwable {
+		Method method = ((MethodSignature) pjp.getSignature()).getMethod();
+
+		GraphQLMetrics graphQLMetrics = method.getAnnotation(GraphQLMetrics.class);
+		if (graphQLMetrics.value().isEmpty()) {
+			return pjp.proceed();
+		}
+
+		MetricUtils.incrementCounter(registry, graphQLMetrics.value(), graphQLMetrics.extraTags());
+		return pjp.proceed();
+
+	}
+
 	private boolean isFunctionalException(Method method, Exception e) {
-		return asList(method.getExceptionTypes()).contains(e.getClass()) || e instanceof DokarkivFunctionalException;
+		return asList(method.getExceptionTypes()).contains(e.getClass()) || isFunctionalException(e);
+	}
+
+	public static boolean isFunctionalException(Throwable e) {
+		return e instanceof DokarkivFunctionalException;
 	}
 
     private void logException(Method method, Exception e) {

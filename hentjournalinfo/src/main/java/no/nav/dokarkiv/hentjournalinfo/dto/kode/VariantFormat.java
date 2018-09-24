@@ -1,12 +1,10 @@
 package no.nav.dokarkiv.hentjournalinfo.dto.kode;
 
-import static java.lang.String.format;
-
 import io.leangen.graphql.annotations.GraphQLEnumValue;
 import lombok.Getter;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 
-import java.util.Optional;
+import java.util.Arrays;
 
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
@@ -38,13 +36,9 @@ public enum VariantFormat {
     }
 
     public static VariantFormat mapFromVariantFormatCode(VariantFormatCode variantFormatCode) {
-        Optional<VariantFormat> variantFormat = Optional.empty();
-        for (VariantFormat variantFormatValue : VariantFormat.values()) {
-            if (variantFormatCode == variantFormatValue.getMapFromValue()) {
-                variantFormat = Optional.of(variantFormatValue);
-            }
-        }
-
-        return variantFormat.orElseThrow(() -> new IllegalArgumentException(format("Kunne ikke mappe VariantFormatCode=%s til VariantFormat", variantFormatCode)));
+        return Arrays.stream(VariantFormat.values())
+                .filter(variantFormat -> variantFormat.getMapFromValue() == variantFormatCode)
+                .findFirst()
+                .orElse(null);
     }
 }

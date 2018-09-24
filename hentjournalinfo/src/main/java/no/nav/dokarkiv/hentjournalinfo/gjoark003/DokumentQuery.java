@@ -17,7 +17,7 @@ import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.exceptions.DokarkivFunctionalException;
 import no.nav.dokarkiv.core.exceptions.DokumentInfoIkkeFunnetException;
-import no.nav.dokarkiv.core.metrics.RestMetrics;
+import no.nav.dokarkiv.core.metrics.GraphQLMetrics;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
@@ -56,7 +56,7 @@ public class DokumentQuery implements Query {
 
     @GraphQLQuery(name = DOKUMENT, description = "Selve dokumentet i PDF/PDFA format")
     @Transactional(readOnly = true)
-    @RestMetrics(value = "dok_request", extraTags = {"process_code", "gjoark003"}, percentiles = {0.5, 0.95}, logException = false)
+    @GraphQLMetrics(value = "dok_graphql_request", extraTags = {"process_code", "gjoark003", "query", DOKUMENT})
     @Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_DOKUMENT)},
             actions = @Abac.Attr(key = ACTION_ID, value = READ_ACTION))
     public byte[] dokumentInfo(@GraphQLArgument(name = "dokumentInfoId") @GraphQLNonNull Long dokumentInfoId, @GraphQLArgument(name = "journalpostId") @GraphQLNonNull Long journalpostId, @GraphQLArgument(name = "filtype") FilTypeCode filType) {
