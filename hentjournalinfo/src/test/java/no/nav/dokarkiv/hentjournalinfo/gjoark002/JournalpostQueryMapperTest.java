@@ -10,7 +10,6 @@ import static no.nav.dokarkiv.hentjournalinfo.utils.TestDataUtils.DOKUMENTINFO_I
 import static no.nav.dokarkiv.hentjournalinfo.utils.TestDataUtils.JOURNALPOST_ID;
 import static no.nav.dokarkiv.hentjournalinfo.utils.TestDataUtils.createBrukerSet;
 import static no.nav.dokarkiv.hentjournalinfo.utils.TestDataUtils.createJournalpost;
-import static no.nav.dokarkiv.hentjournalinfo.utils.TestDataUtils.createJournalpostBuilder;
 import static no.nav.dokarkiv.hentjournalinfo.utils.TestDataUtils.createJournalpostDokumentInfoRelasjonSet;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -82,25 +81,5 @@ public class JournalpostQueryMapperTest {
         List<JournalpostDokumentRelasjon> journalpostDokumentInfoRelasjons = mapKnyttetDokumentList(new Journalpost().getJournalpostDokumentInfoRelasjoner(), 100L);
         assertThat(journalpostDokumentInfoRelasjons.size(), is(0));
     }
-
-    @Test
-    public void shouldThrowWhenJournalpostStatusIsNull() {
-        expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("Kunne ikke mappe JournalStatusCode=null til JournalpostStatus");
-        Journalpost journalpost = createJournalpostBuilder("test").build();
-        journalpost.setJournalstatus(null);
-        mapJournalpost(journalpost);
-    }
-
-    @Test
-    public void shouldThrowWhenJournalpostTypeIsNull() {
-        expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("Kunne ikke mappe JournalpostTypeCode=null til JournalpostType");
-
-        Journalpost journalpost = createJournalpostBuilder("test").build();
-        journalpost.setJournalposttype(null);
-        mapJournalpost(journalpost);
-    }
-
 
 }
