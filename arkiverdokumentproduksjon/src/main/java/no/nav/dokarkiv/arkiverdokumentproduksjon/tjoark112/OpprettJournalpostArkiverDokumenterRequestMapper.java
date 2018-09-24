@@ -1,6 +1,7 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark112;
 
 
+import static no.nav.dokarkiv.arkiverdokumentproduksjon.ArkiverDokumentproduksjonConstants.FILREFERANSE_ID_KEY;
 import static no.nav.dokarkiv.core.storage.DokprodMellomlagerS3Storage.DOKPRODMELLOMLAGER_DIRECTORY_NAME;
 
 import lombok.extern.slf4j.Slf4j;
@@ -113,45 +114,44 @@ public class OpprettJournalpostArkiverDokumenterRequestMapper {
 													no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasjon.opprettjournalpostarkiverdokumenter.DokumentInfo dokumentInfo,
 													TilknyttetJournalpostSomCode tilknyttetJournalpostSom) {
 
+		DokumentInfo domainDokumentInfo = DokumentInfo.builder()
+				.kategori(dokumentInfo.getKategori() == null ? null : DokumentKategoriCode.valueOf(dokumentInfo.getKategori()))
+				.tittel(dokumentInfo.getTittel())
+				.brevkode(dokumentInfo.getBrevkode())
+				.dokumenttypeId(dokumentInfo.getDokumentTypeId())
+				.sensitivt(dokumentInfo.isSensitivt())
+				.tilleggsopplysninger(dokumentInfo.getTilleggsopplysninger() == null ? null :
+						dokumentInfo.getTilleggsopplysninger()
+								.stream()
+								.collect(Collectors.toMap(Tilleggsopplysning::getOpplysningsnoekkel, Tilleggsopplysning::getOpplysningsverdi)))
+				.build();
+		addFildetaljer(domainDokumentInfo);
 		JournalpostDokumentInfoRelasjon relasjon = JournalpostDokumentInfoRelasjon.builder()
 				.tilknyttetJournalpostSom(tilknyttetJournalpostSom)
 				.journalpost(domainJournalpost)
-				.dokumentInfo(DokumentInfo.builder()
-						.kategori(dokumentInfo.getKategori() == null ? null : DokumentKategoriCode.valueOf(dokumentInfo.getKategori()))
-						.tittel(dokumentInfo.getTittel())
-						.brevkode(dokumentInfo.getBrevkode())
-						.dokumenttypeId(dokumentInfo.getDokumentTypeId())
-						.sensitivt(dokumentInfo.isSensitivt())
-						.tilleggsopplysninger(dokumentInfo.getTilleggsopplysninger() == null ? null :
-								dokumentInfo.getTilleggsopplysninger()
-										.stream()
-										.collect(Collectors.toMap(Tilleggsopplysning::getOpplysningsnoekkel, Tilleggsopplysning::getOpplysningsverdi)))
-						.build())
+				.dokumentInfo(domainDokumentInfo)
 				.build();
 
-		addFildetaljer(relasjon, dokumentInfo);
 		domainJournalpost.addJournalpostDokumentInfoRelasjon(relasjon);
 	}
 
-	private void addFildetaljer(JournalpostDokumentInfoRelasjon relasjon,
-								no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasjon.opprettjournalpostarkiverdokumenter.DokumentInfo dokumentInfo) {
-
-		DoksysDokument doksysDokument = createDokumentResultWithDocumentsFromS3(dokumentInfo.getFilreferanse());
-		DokumentInfo domainDokumentInfo = relasjon.getDokumentInfo();
+	private void addFildetaljer(final DokumentInfo domainDokumentInfo) {
+		final String filreferanse = domainDokumentInfo.getTilleggsopplysninger().get(FILREFERANSE_ID_KEY);
+		final DoksysDokument doksysDokument = createDokumentResultWithDocumentsFromS3(filreferanse);
 
 		domainDokumentInfo.addFilDetaljer(FilDetaljer.builder()
 				.filtype(FilTypeCode.PDFA)
 				.variantFormat(VariantFormatCode.ARKIV)
 				.fileContent(doksysDokument.getPdf())
 				.filUuid(UUID.randomUUID().toString())
-				.dokumentInfo(relasjon.getDokumentInfo())
+				.dokumentInfo(domainDokumentInfo)
 				.build());
 		domainDokumentInfo.addFilDetaljer(FilDetaljer.builder()
 				.filtype(FilTypeCode.AXML)
 				.variantFormat(VariantFormatCode.PRODUKSJON)
 				.fileContent(doksysDokument.getAxml())
 				.filUuid(UUID.randomUUID().toString())
-				.dokumentInfo(relasjon.getDokumentInfo())
+				.dokumentInfo(domainDokumentInfo)
 				.build());
 	}
 

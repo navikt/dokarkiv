@@ -15,8 +15,19 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class OpprettJournalpostArkiverDokumenterResponseTo {
+	private final Long journalpostId;
+	private List<DokumentInfoIdEntryTo> dokumentInfoIds;
 
-	private Long journalpostId;
-	private List<Long> dokumentInfoIdList;
 
+	@Builder
+	@Data
+	static class DokumentInfoIdEntryTo {
+		private final String filreferanse;
+		private final long dokumentInfoId;
+
+		@Override
+		public String toString() {
+			return "(" + filreferanse + "," + dokumentInfoId + ")";
+		}
+	}
 }

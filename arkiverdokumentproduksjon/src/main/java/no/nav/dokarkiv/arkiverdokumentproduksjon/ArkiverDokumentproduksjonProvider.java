@@ -547,8 +547,8 @@ public class ArkiverDokumentproduksjonProvider implements ArkiverDokumentproduks
 			OpprettJournalpostArkiverDokumenterRequest request) {
 		Assert.notNull(request, REQUEST_IS_NULL_MSG);
 		OpprettJournalpostArkiverDokumenterResponseTo domeneResponse = opprettJournalpostArkiverDokumenterService.opprettJournalpostArkiverDokument(request);
-		log.info("tjoark112 har opprettet journalpost med journalpostId={} og dokumentInfoId(er)={}", domeneResponse.getJournalpostId(), domeneResponse
-				.getDokumentInfoIdList());
+		log.info("tjoark112 har opprettet journalpost med journalpostId={} og dokumentInfoIds={}", domeneResponse.getJournalpostId(), domeneResponse
+				.getDokumentInfoIds());
 		return opprettJournalpostArkiverDokumenterResponseMapper.map(domeneResponse);
 	}
 

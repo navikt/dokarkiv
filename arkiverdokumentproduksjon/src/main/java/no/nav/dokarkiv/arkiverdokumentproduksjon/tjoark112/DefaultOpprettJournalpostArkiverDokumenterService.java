@@ -1,6 +1,7 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark112;
 
 import static no.nav.dokarkiv.arkiverdokumentproduksjon.ArkiverDokumentproduksjonConstants.BESTILLINGS_ID_KEY;
+import static no.nav.dokarkiv.arkiverdokumentproduksjon.ArkiverDokumentproduksjonConstants.FILREFERANSE_ID_KEY;
 import static org.assertj.core.util.Strings.isNullOrEmpty;
 
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +18,7 @@ import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -67,8 +69,19 @@ public class DefaultOpprettJournalpostArkiverDokumenterService implements Oppret
 	private OpprettJournalpostArkiverDokumenterResponseTo createResponse(Journalpost journalpost) {
 		return OpprettJournalpostArkiverDokumenterResponseTo.builder()
 				.journalpostId(journalpost.getJournalpostId())
-				.dokumentInfoIdList(journalpost.getJournalpostDokumentInfoRelasjoner()
-						.stream().map(relasjon -> relasjon.getDokumentInfo().getDokumentInfoId())
+				.dokumentInfoIds(journalpost.getJournalpostDokumentInfoRelasjoner()
+						.stream().map(relasjon -> {
+							final String filreferanse = relasjon.getDokumentInfo().getTilleggsopplysninger().get(FILREFERANSE_ID_KEY);
+							if(filreferanse == null) {
+								return null;
+							}
+							final Long dokumentInfoId = relasjon.getDokumentInfo().getDokumentInfoId();
+							return OpprettJournalpostArkiverDokumenterResponseTo.DokumentInfoIdEntryTo.builder()
+									.filreferanse(filreferanse)
+									.dokumentInfoId(dokumentInfoId)
+									.build();
+						})
+						.filter(Objects::nonNull)
 						.collect(Collectors.toList()))
 				.build();
 	}

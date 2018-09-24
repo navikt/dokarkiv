@@ -1,9 +1,9 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark112;
 
 
+import static no.nav.dokarkiv.arkiverdokumentproduksjon.ArkiverDokumentproduksjonConstants.FILREFERANSE_ID_KEY;
 import static no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark112.OpprettJournalpostArkiverDokumenterDataUtil.BESTILLINGS_ID;
-import static no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark112.OpprettJournalpostArkiverDokumenterDataUtil.TILLEGGSOPPLYSNING_KEY_2;
-import static no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark112.OpprettJournalpostArkiverDokumenterDataUtil.TILLEGGSOPPLYSNING_VALUE_2;
+import static no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark112.OpprettJournalpostArkiverDokumenterDataUtil.FILREFERANSE_S3;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.Matchers.hasEntry;
@@ -98,7 +98,7 @@ public class OpprettJournalpostArkiverDokumenterAssertUtil {
 	}
 
 	private static void assertTilleggsopplysninger(Map<String, String> tilleggsopplysninger) {
-		assertThat(tilleggsopplysninger, hasEntry(TILLEGGSOPPLYSNING_KEY_2, TILLEGGSOPPLYSNING_VALUE_2));
+		assertThat(tilleggsopplysninger, hasEntry(FILREFERANSE_ID_KEY, FILREFERANSE_S3));
 	}
 
 	private static void assertBruker(Set<Bruker> domainBrukere) {

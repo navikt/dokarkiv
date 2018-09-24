@@ -1,10 +1,14 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark112;
 
+import static no.nav.dokarkiv.arkiverdokumentproduksjon.ArkiverDokumentproduksjonConstants.BESTILLINGS_ID_KEY;
+import static no.nav.dokarkiv.arkiverdokumentproduksjon.ArkiverDokumentproduksjonConstants.FILREFERANSE_ID_KEY;
 import static no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark112.OpprettJournalpostArkiverDokumenterDataUtil.DOKUMENT_INNHOLD_BASE64;
 import static no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark112.OpprettJournalpostArkiverDokumenterDataUtil.FILREFERANSE_S3;
 import static no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark112.OpprettJournalpostArkiverDokumenterDataUtil.createJournalpost;
+import static no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark112.OpprettJournalpostArkiverDokumenterDataUtil.createTilleggsopplysning;
 import static no.nav.dokarkiv.core.storage.DokprodMellomlagerS3Storage.DOKPRODMELLOMLAGER_DIRECTORY_NAME;
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
@@ -52,8 +56,11 @@ public class OpprettJournalpostArkiverDokumenterIT extends AbstractArkiverdokume
 	public void shouldVerifyResponseHasJournalpostAndDokumentId() throws Exception {
 		OpprettJournalpostArkiverDokumenterResponse response = arkiverDokumentproduksjonProvider.opprettJournalpostArkiverDokumenter(createRequest());
 		assertThat(response.getJournalpostId(), is(notNullValue()));
-		assertThat(response.getDokumentInfoIdListe(), is(notNullValue()));
-		assertThat(response.getDokumentInfoIdListe().get(0), is(notNullValue()));
+		assertThat(response.getDokumentInfoIdMap(), hasSize(2));
+		assertThat(response.getDokumentInfoIdMap().get(0).getFilreferanse(), is(FILREFERANSE_S3));
+		assertThat(response.getDokumentInfoIdMap().get(0).getDokumentInfoId(), notNullValue());
+		assertThat(response.getDokumentInfoIdMap().get(1).getFilreferanse(), is(FILREFERANSE_S3));
+		assertThat(response.getDokumentInfoIdMap().get(1).getDokumentInfoId(), notNullValue());
 	}
 
 	@Test
@@ -72,9 +79,11 @@ public class OpprettJournalpostArkiverDokumenterIT extends AbstractArkiverdokume
 	}
 
 	@Test
-	public void shouldVerifyNotEqualResponseWhenTryingToJournalforSameRequestTwiceAndIsMissingBestillingId() throws Exception {
+	public void shouldVerifyNotEqualResponseWhenTryingToJournalforSameRequestTwiceAndIsDifferentBestillingId() throws Exception {
 		OpprettJournalpostArkiverDokumenterRequest firstRequest = createRequest();
 		firstRequest.getJournalpost().getDokumentInfoHoveddokument().getTilleggsopplysninger().clear();
+		firstRequest.getJournalpost().getDokumentInfoHoveddokument().getTilleggsopplysninger().add(createTilleggsopplysning(BESTILLINGS_ID_KEY, "test"));
+		firstRequest.getJournalpost().getDokumentInfoHoveddokument().getTilleggsopplysninger().add(createTilleggsopplysning(FILREFERANSE_ID_KEY, FILREFERANSE_S3));
 		OpprettJournalpostArkiverDokumenterResponse firstResponse = arkiverDokumentproduksjonProvider.opprettJournalpostArkiverDokumenter(firstRequest);
 		OpprettJournalpostArkiverDokumenterRequest secondRequest = createRequest();
 		OpprettJournalpostArkiverDokumenterResponse secondResponse = arkiverDokumentproduksjonProvider.opprettJournalpostArkiverDokumenter(secondRequest);
@@ -111,7 +120,7 @@ public class OpprettJournalpostArkiverDokumenterIT extends AbstractArkiverdokume
 	public void shouldThrowExceptionIfRequestIsMissingDokumentFilReferanse() throws Exception {
 		expectedException.expect(DokarkivTechnicalException.class);
 		OpprettJournalpostArkiverDokumenterRequest request = createRequest();
-		request.getJournalpost().getDokumentInfoHoveddokument().setFilreferanse(null);
+		request.getJournalpost().getDokumentInfoHoveddokument().getTilleggsopplysninger().clear();
 		arkiverDokumentproduksjonProvider.opprettJournalpostArkiverDokumenter(request);
 	}
 

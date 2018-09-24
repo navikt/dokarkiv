@@ -1,6 +1,7 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark112;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 
 import no.nav.dokarkiv.arkiverdokumentproduksjon.ArkiverDokumentproduksjonConstants;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
@@ -20,7 +21,6 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.util.Base64;
-import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
@@ -78,8 +78,8 @@ public class OpprettJournalpostArkiverDokumenterDataUtil {
 
 	protected static Saksrelasjon createSaksrelasjon() {
 		return new Saksrelasjon()
-		.withFagsystem(FAGSYSTEMKODE)
-		.withSaksnummer(SAKSID);
+				.withFagsystem(FAGSYSTEMKODE)
+				.withSaksnummer(SAKSID);
 	}
 
 	private static no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasjon.opprettjournalpostarkiverdokumenter.DokumentInfo createHovedDokumentInfo() {
@@ -91,8 +91,7 @@ public class OpprettJournalpostArkiverDokumenterDataUtil {
 		dokumentInfo.setDokumentTypeId(DOKUMENT_TYPE_ID);
 		dokumentInfo.getTilleggsopplysninger().addAll(asList(
 				createTilleggsopplysning(ArkiverDokumentproduksjonConstants.BESTILLINGS_ID_KEY, BESTILLINGS_ID),
-				createTilleggsopplysning(TILLEGGSOPPLYSNING_KEY_2, TILLEGGSOPPLYSNING_VALUE_2)));
-		dokumentInfo.setFilreferanse(FILREFERANSE_S3);
+				createTilleggsopplysning(ArkiverDokumentproduksjonConstants.FILREFERANSE_ID_KEY, FILREFERANSE_S3)));
 		return dokumentInfo;
 	}
 
@@ -103,12 +102,12 @@ public class OpprettJournalpostArkiverDokumenterDataUtil {
 		dokumentInfo.setBrevkode(BREVKODE);
 		dokumentInfo.setSensitivt(true);
 		dokumentInfo.setDokumentTypeId(DOKUMENT_TYPE_ID);
-		dokumentInfo.getTilleggsopplysninger().addAll(Collections.singletonList(createTilleggsopplysning(TILLEGGSOPPLYSNING_KEY_2, TILLEGGSOPPLYSNING_VALUE_2)));
-		dokumentInfo.setFilreferanse(FILREFERANSE_S3);
+		dokumentInfo.getTilleggsopplysninger().addAll(singletonList(
+				createTilleggsopplysning(ArkiverDokumentproduksjonConstants.FILREFERANSE_ID_KEY, FILREFERANSE_S3)));
 		return dokumentInfo;
 	}
 
-	private static Tilleggsopplysning createTilleggsopplysning(String noekkel, String verdi) {
+	static Tilleggsopplysning createTilleggsopplysning(String noekkel, String verdi) {
 		Tilleggsopplysning tilleggsopplysning = new Tilleggsopplysning();
 		tilleggsopplysning.setOpplysningsnoekkel(noekkel);
 		tilleggsopplysning.setOpplysningsverdi(verdi);
