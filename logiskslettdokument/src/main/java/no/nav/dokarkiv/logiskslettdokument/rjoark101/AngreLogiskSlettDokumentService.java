@@ -1,7 +1,5 @@
 package no.nav.dokarkiv.logiskslettdokument.rjoark101;
 
-import static no.nav.dokarkiv.logiskslettdokument.LogiskSlettDokumentRestController.REQUEST_ID;
-
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
@@ -41,7 +39,7 @@ public class AngreLogiskSlettDokumentService {
 		JournalpostDokumentInfoRelasjon journalpostDokumentInfoRelasjon = journalpostDokumentInfoRelasjonList.get(0);
 
 		setAngreDokumentLogiskSlettet(journalpostDokumentInfoRelasjon.getDokumentInfo());
-		log.info(REQUEST_ID + " har angret logisk sletting av dokument med journalpostId={}, dokumentInfoId={}",
+		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har angret logisk sletting av dokument med journalpostId={}, dokumentInfoId={}",
 				requestTo.getJournalpostId(), requestTo.getDokumentInfoId());
 
 		return LogiskSlettDokumentResponseMapper.mapToSlettDokumentResponse(journalpostDokumentInfoRelasjon.getJournalpost(),

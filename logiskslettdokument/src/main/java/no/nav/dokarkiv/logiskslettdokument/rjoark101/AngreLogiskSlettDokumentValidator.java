@@ -1,13 +1,14 @@
 package no.nav.dokarkiv.logiskslettdokument.rjoark101;
 
-import static no.nav.dokarkiv.logiskslettdokument.LogiskSlettDokumentRestController.REQUEST_ID;
 import static org.apache.commons.lang3.BooleanUtils.isFalse;
 
+import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.logiskslettdokument.AbstractSlettDokumentValidator;
 import no.nav.dokarkiv.logiskslettdokument.exceptions.DokumentIkkeSlettetException;
 import no.nav.dokarkiv.logiskslettdokument.rjoark100.LogiskSlettDokumentRequestTo;
+import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -24,8 +25,8 @@ public class AngreLogiskSlettDokumentValidator extends AbstractSlettDokumentVali
 
 	public void validateDokumentErLogiskSlettet(DokumentInfo dokumentInfo) throws DokumentIkkeSlettetException {
 		if (isFalse(dokumentInfo.getSlettet())) {
-			throw new DokumentIkkeSlettetException(String.format(REQUEST_ID + " prøver å angre logisk sletting av et dokument " +
-					"som ikke er logisk slettet, dokumentInfoId=%s", dokumentInfo.getDokumentInfoId()));
+			throw new DokumentIkkeSlettetException(String.format(MDC.get(MDCConstants.MDC_REQUEST_ID) + " kan ikke angre logisk sletting av dokument med dokumentInfoId=%s. " +
+					"Dokumentet er ikke logisk slettet", dokumentInfo.getDokumentInfoId()));
 		}
 	}
 }

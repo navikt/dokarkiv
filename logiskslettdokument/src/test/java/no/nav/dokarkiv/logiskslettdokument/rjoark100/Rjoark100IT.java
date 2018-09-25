@@ -1,12 +1,12 @@
 package no.nav.dokarkiv.logiskslettdokument.rjoark100;
 
 import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
-import static no.nav.dokarkiv.logiskslettdokument.LogiskSlettDokumentRestController.REQUEST_ID;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 
+import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
@@ -15,6 +15,7 @@ import no.nav.dokarkiv.logiskslettdokument.util.TestUtils;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.slf4j.MDC;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -55,6 +56,7 @@ public class Rjoark100IT extends AbstractSlettDokumentIT {
 	@Test
 	public void shouldFailToDeleteDocumentInJoarkBecauseNoJournalpostDokumentInfoRelasjonFound() {
 		abacPermit();
+		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark100");
 
 		Journalpost journalpost1 = joarkRepository.save(TestUtils.createJournalpostBuilder().build());
 
@@ -70,13 +72,15 @@ public class Rjoark100IT extends AbstractSlettDokumentIT {
 
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.BAD_REQUEST));
-		assertThat(responseEntity.getBody(), containsString(REQUEST_ID + " kan ikke finne noen journalpostDokumentInfoRelasjon for dokumentInfoId=" + feilDokumentInfoId));
+		assertThat(responseEntity.getBody(), containsString(String.format("%s kan ikke finne noen journalpostDokumentInfoRelasjon for dokumentInfoId=%s",
+				MDC.get(MDCConstants.MDC_REQUEST_ID), feilDokumentInfoId)));
 	}
 
 
 	@Test
 	public void shouldFailToDeleteDocumentInJoarkBecauseJournalpostIdAndDokumentInfoIdHasNoRelation() {
 		abacPermit();
+		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark100");
 
 		Journalpost journalpost1 = joarkRepository.save(TestUtils.createJournalpostBuilder().build());
 		Journalpost journalpost2 = joarkRepository.save(TestUtils.createJournalpostBuilder().build());
@@ -91,17 +95,17 @@ public class Rjoark100IT extends AbstractSlettDokumentIT {
 
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.BAD_REQUEST));
-		assertThat(responseEntity.getBody(), containsString(REQUEST_ID + " finner ingen journalpostDokumentInfoRelasjon mellom journalpostId=" + journalpost1
-				.getJournalpostId() +
-				" og dokumentInfoId=" + journalpost2.findHoveddokumentDokumentInfoRelasjon()
-				.getDokumentInfo()
-				.getDokumentInfoId()));
+		assertThat(responseEntity.getBody(), containsString(String.format("%s finner ingen journalpostDokumentInfoRelasjon mellom journalpostId=%s og dokumentInfoId=%s",
+				MDC.get(MDCConstants.MDC_REQUEST_ID), journalpost1.getJournalpostId(), journalpost2.findHoveddokumentDokumentInfoRelasjon()
+						.getDokumentInfo()
+						.getDokumentInfoId())));
 	}
 
 
 	@Test
 	public void shouldFailToDeleteDocumentInJoarkBecauseTooManyRelations() {
 		abacPermit();
+		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark100");
 
 		Journalpost journalpost1 = joarkRepository.save(TestUtils.createJournalpostBuilder().build());
 		Journalpost journalpost2 = TestUtils.createJournalpostBuilder()
@@ -123,7 +127,8 @@ public class Rjoark100IT extends AbstractSlettDokumentIT {
 
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.BAD_REQUEST));
-		assertThat(responseEntity.getBody(), containsString(REQUEST_ID + " kan ikke slette dokument som har relasjoner med flere journalposter."));
+		assertThat(responseEntity.getBody(), containsString(String.format("%s kan ikke slette dokument som har relasjoner med flere journalposter.",
+				MDC.get(MDCConstants.MDC_REQUEST_ID))));
 		assertEquals(journalpostDokumentInfoRelasjonRepository.findByDokumentInfoId(
 				journalpost1.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId()).get()
 				.get(0)
@@ -134,6 +139,7 @@ public class Rjoark100IT extends AbstractSlettDokumentIT {
 	@Test
 	public void shouldFailToDeleteDocumentInJoarkBecauseDocumentAlreadyDeleted() {
 		abacPermit();
+		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark100");
 
 		Journalpost journalpost1 = joarkRepository.save(TestUtils.createJournalpostBuilder().build());
 		journalpost1.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().setSlettet(true);
@@ -148,10 +154,10 @@ public class Rjoark100IT extends AbstractSlettDokumentIT {
 				.getDokumentInfoId(), HttpMethod.PATCH, createHeaders(), String.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.BAD_REQUEST));
-		assertThat(responseEntity.getBody(), containsString(REQUEST_ID + " prøver å utføre logisk sletting av et dokument " +
-				"som allerede er logisk slettet, dokumentInfoId=" + journalpost1.findHoveddokumentDokumentInfoRelasjon()
+		assertThat(responseEntity.getBody(), containsString(String.format("%s kan ikke utføre logisk sletting av dokument med dokumentInfoId=%s. " +
+				"Dokumentet er allerede logisk slettet", MDC.get(MDCConstants.MDC_REQUEST_ID), journalpost1.findHoveddokumentDokumentInfoRelasjon()
 				.getDokumentInfo()
-				.getDokumentInfoId()));
+				.getDokumentInfoId())));
 		assertEquals(journalpostDokumentInfoRelasjonRepository.findByDokumentInfoId(
 				journalpost1.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId()).get()
 				.get(0)

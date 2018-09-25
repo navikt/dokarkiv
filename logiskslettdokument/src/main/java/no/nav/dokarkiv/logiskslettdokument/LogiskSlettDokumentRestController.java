@@ -30,8 +30,6 @@ import javax.inject.Inject;
 @RequestMapping("rest/logiskslettdokument")
 public class LogiskSlettDokumentRestController {
 
-	public static String REQUEST_ID = "request_id";
-
 	private final LogiskSlettDokumentService logiskSlettDokumentService;
 	private final AngreLogiskSlettDokumentService angreLogiskSlettDokumentService;
 	private final AbacSecurityService abacSecurityService;
@@ -55,8 +53,8 @@ public class LogiskSlettDokumentRestController {
 	public LogiskSlettDokumentResponse logiskSlettDokument(
 			@PathVariable("journalpostId") Long journalpostId, @PathVariable("dokumentInfoId") Long dokumentInfoId) {
 		abacSecurityService.assertAccessToJournalpost(journalpostId.toString());
-		REQUEST_ID = "rjoark100";
-		log.info(REQUEST_ID + " har mottat kall med journalpostId=" + journalpostId + " og dokumentInfoId=" + dokumentInfoId);
+		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark100");
+		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har mottat kall med journalpostId=" + journalpostId + " og dokumentInfoId=" + dokumentInfoId);
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
 
 		return logiskSlettDokumentService.slettDokumentLogisk(LogiskSlettDokumentRequestTo.builder()
@@ -74,8 +72,8 @@ public class LogiskSlettDokumentRestController {
 	public LogiskSlettDokumentResponse angreLogiskSlettDokument(@PathVariable("journalpostId") Long journalpostId,
 																@PathVariable("dokumentInfoId") Long dokumentInfoId) {
 		abacSecurityService.assertAccessToJournalpost(journalpostId.toString());
-		REQUEST_ID = "rjoark101";
-		log.info(REQUEST_ID + " har mottat kall med journalpostId=" + journalpostId + " og dokumentInfoId=" + dokumentInfoId);
+		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark101");
+		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har mottat kall med journalpostId=" + journalpostId + " og dokumentInfoId=" + dokumentInfoId);
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
 
 		return angreLogiskSlettDokumentService.angreLogiskSlettDokument(LogiskSlettDokumentRequestTo.builder()
