@@ -35,8 +35,8 @@ public class Rjoark101IT extends AbstractSlettDokumentIT {
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
-		ResponseEntity<LogiskSlettDokumentResponse> responseEntity = restTemplate.exchange(URL_SLETTDOKUMENT + journalpost.getJournalpostId()
-						+ "/" + journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId() + "/angre",
+		ResponseEntity<LogiskSlettDokumentResponse> responseEntity = restTemplate.exchange(URL_ANGRESLETTDOKUMENT + journalpost.getJournalpostId()
+						+ "/" + journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId(),
 				HttpMethod.PATCH, createHeaders(), LogiskSlettDokumentResponse.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
@@ -58,8 +58,8 @@ public class Rjoark101IT extends AbstractSlettDokumentIT {
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
-		ResponseEntity<String> responseEntity = restTemplate.exchange(URL_SLETTDOKUMENT + journalpost.getJournalpostId()
-						+ "/" + journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId() + "/angre",
+		ResponseEntity<String> responseEntity = restTemplate.exchange(URL_ANGRESLETTDOKUMENT + journalpost.getJournalpostId()
+						+ "/" + journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId(),
 				HttpMethod.PATCH, createHeaders(), String.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.BAD_REQUEST));

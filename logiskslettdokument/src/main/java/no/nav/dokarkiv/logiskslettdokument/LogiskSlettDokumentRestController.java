@@ -65,7 +65,7 @@ public class LogiskSlettDokumentRestController {
 
 	@Transactional
 	@ResponseBody
-	@PatchMapping("/{journalpostId}/{dokumentInfoId}/angre")
+	@PatchMapping("/angre/{journalpostId}/{dokumentInfoId}")
 	@Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_DOKUMENT)},
 			actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION))
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark101"}, percentiles = {0.5, 0.95})
