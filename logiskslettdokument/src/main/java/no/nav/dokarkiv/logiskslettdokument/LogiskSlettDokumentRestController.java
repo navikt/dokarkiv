@@ -13,6 +13,7 @@ import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import no.nav.dokarkiv.logiskslettdokument.rjoark100.LogiskSlettDokumentRequestTo;
 import no.nav.dokarkiv.logiskslettdokument.rjoark100.LogiskSlettDokumentResponse;
 import no.nav.dokarkiv.logiskslettdokument.rjoark100.LogiskSlettDokumentService;
+import no.nav.dokarkiv.logiskslettdokument.rjoark101.AngreLogiskSlettDokumentService;
 import no.nav.freg.abac.core.annotation.Abac;
 import org.slf4j.MDC;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,15 +30,16 @@ import javax.inject.Inject;
 @RequestMapping("rest/logiskslettdokument")
 public class LogiskSlettDokumentRestController {
 
-	public static final String REQUEST_ID = "rjoark100";
-
 	private final LogiskSlettDokumentService logiskSlettDokumentService;
+	private final AngreLogiskSlettDokumentService angreLogiskSlettDokumentService;
 	private final AbacSecurityService abacSecurityService;
 
 	@Inject
 	public LogiskSlettDokumentRestController(LogiskSlettDokumentService logiskSlettDokumentService,
+											 AngreLogiskSlettDokumentService angreLogiskSlettDokumentService,
 											 AbacSecurityService abacSecurityService) {
 		this.logiskSlettDokumentService = logiskSlettDokumentService;
+		this.angreLogiskSlettDokumentService = angreLogiskSlettDokumentService;
 		this.abacSecurityService = abacSecurityService;
 	}
 
@@ -48,13 +50,33 @@ public class LogiskSlettDokumentRestController {
 	@Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_DOKUMENT)},
 			actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION))
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark100"}, percentiles = {0.5, 0.95})
-	public LogiskSlettDokumentResponse deleteDocumentLogicallyWithJournalpostIdAndDokumentInfoId(
+	public LogiskSlettDokumentResponse logiskSlettDokument(
 			@PathVariable("journalpostId") Long journalpostId, @PathVariable("dokumentInfoId") Long dokumentInfoId) {
 		abacSecurityService.assertAccessToJournalpost(journalpostId.toString());
-		log.info(REQUEST_ID + " har mottat kall med journalpostId=" + journalpostId + " og dokumentInfoId=" + dokumentInfoId);
+		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark100");
+		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har mottat kall med journalpostId=" + journalpostId + " og dokumentInfoId=" + dokumentInfoId);
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
 
 		return logiskSlettDokumentService.slettDokumentLogisk(LogiskSlettDokumentRequestTo.builder()
+				.journalpostId(journalpostId)
+				.dokumentInfoId(dokumentInfoId)
+				.build());
+	}
+
+	@Transactional
+	@ResponseBody
+	@PatchMapping("/{journalpostId}/{dokumentInfoId}/angre")
+	@Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_DOKUMENT)},
+			actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION))
+	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark101"}, percentiles = {0.5, 0.95})
+	public LogiskSlettDokumentResponse angreLogiskSlettDokument(@PathVariable("journalpostId") Long journalpostId,
+																@PathVariable("dokumentInfoId") Long dokumentInfoId) {
+		abacSecurityService.assertAccessToJournalpost(journalpostId.toString());
+		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark101");
+		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har mottat kall med journalpostId=" + journalpostId + " og dokumentInfoId=" + dokumentInfoId);
+		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
+
+		return angreLogiskSlettDokumentService.angreLogiskSlettDokument(LogiskSlettDokumentRequestTo.builder()
 				.journalpostId(journalpostId)
 				.dokumentInfoId(dokumentInfoId)
 				.build());

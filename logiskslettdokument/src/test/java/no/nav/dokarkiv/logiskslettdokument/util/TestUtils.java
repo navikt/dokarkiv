@@ -1,6 +1,7 @@
 package no.nav.dokarkiv.logiskslettdokument.util;
 
 import static no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder.getDokumentInfoBuilder;
+import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalpostBuilder;
 import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
 
 import no.nav.dokarkiv.core.datautil.BrukerTestDataProvider;
@@ -16,7 +17,10 @@ import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
+import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
+import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.logiskslettdokument.rjoark100.LogiskSlettDokumentRequestTo;
 
 import java.util.Date;
 
@@ -31,6 +35,10 @@ public class TestUtils {
 	private static final String BREVGRUPPE = "Brevgruppe";
 	private static final String BREVKODE = "Brevkode";
 	private static final String FILNAVN = "filNavn";
+
+	public static final Long JOURNALPOST_ID = 42L;
+	public static final Long DOKUMENTINFO_ID = 1L;
+
 
 
 	public static JournalpostBuilder createJournalpostBuilder() {
@@ -81,4 +89,39 @@ public class TestUtils {
 				.opprettetKildeNavn(OPPRETTET_KILDE_NAVN)
 				.build();
 	}
+
+	public static LogiskSlettDokumentRequestTo createRequest(Long journalpostId, Long dokumentInfoId) {
+		return LogiskSlettDokumentRequestTo.builder()
+				.journalpostId(journalpostId)
+				.dokumentInfoId(dokumentInfoId)
+				.build();
+	}
+
+	public static DokumentInfo createDokumentInfo(boolean sletteStatus) {
+		return getDokumentInfoBuilder()
+				.slettet(sletteStatus)
+				.dokumentInfoId(DOKUMENTINFO_ID)
+				.build();
+	}
+
+	public static Journalpost createJournalpost() {
+		return getJournalpostBuilder()
+				.journalpostId(JOURNALPOST_ID)
+				.dokumentInfoRelasjoner(getJournalpostDokumentInfoRelasjonBuilder()
+						.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.HOVEDDOKUMENT)
+						.dokumentInfo(createDokumentInfo(false))
+						.build())
+				.build();
+	}
+
+	public static Journalpost createJournalpost(Boolean sletteStatus) {
+		return getJournalpostBuilder()
+				.journalpostId(JOURNALPOST_ID)
+				.dokumentInfoRelasjoner(getJournalpostDokumentInfoRelasjonBuilder()
+						.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.HOVEDDOKUMENT)
+						.dokumentInfo(createDokumentInfo(sletteStatus))
+						.build())
+				.build();
+	}
+
 }
