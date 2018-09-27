@@ -1,6 +1,7 @@
 package no.nav.dokarkiv.core.jaxws;
 
 import no.nav.modig.core.context.SubjectHandler;
+import org.slf4j.MDC;
 
 import javax.security.auth.Subject;
 
@@ -26,6 +27,7 @@ public class ThreadLocalSubjectHandler extends SubjectHandler {
 	}
 
 	public void reset() {
+		MDC.clear();
 		setSubject(null);
 	}
 }

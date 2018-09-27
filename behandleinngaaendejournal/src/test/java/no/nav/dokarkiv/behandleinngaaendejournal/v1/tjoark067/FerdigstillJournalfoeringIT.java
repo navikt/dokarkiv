@@ -159,6 +159,7 @@ public class FerdigstillJournalfoeringIT extends AbstractBehandleInngaaendeJourn
 		abacPermit();
 		SubjectHandlerUtils.reset();
 		MDC.put(MDCConstants.MDC_USER_ID, null);
+		MDC.put(MDCConstants.MDC_CONSUMER_ID, ENDRET_KILDE_NAVN);
 		Journalpost persistedJournalpost = buildAndCommit(buildJournalpost());
 
 		FerdigstillJournalfoeringRequest request = createRequest(persistedJournalpost.getJournalpostId());

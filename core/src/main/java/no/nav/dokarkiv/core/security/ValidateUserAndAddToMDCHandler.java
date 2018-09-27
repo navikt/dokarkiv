@@ -32,6 +32,7 @@ public class ValidateUserAndAddToMDCHandler implements HandlerInterceptor {
 
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+		MDC.clear();
 		if (response.getStatus() != HttpStatus.OK.value()) {
 			//This means that the validation of oidc tokens failed in IdTokenAuthenticationFilter and we should let the handler go through
 			return true;
