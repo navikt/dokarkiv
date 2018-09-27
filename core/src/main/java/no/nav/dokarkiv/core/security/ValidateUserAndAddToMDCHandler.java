@@ -6,9 +6,11 @@ import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import com.auth0.jwt.JWT;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.MDCConstants;
+import no.nav.dokarkiv.core.jaxws.ThreadLocalSubjectHandler;
 import no.nav.dokarkiv.core.security.ldap.NavLdapService;
 import no.nav.dokarkiv.core.security.ldap.NavUser;
 import no.nav.freg.security.oidc.auth.idtoken.extract.HeaderTokenExtractor;
+import no.nav.modig.core.context.SubjectHandler;
 import org.slf4j.MDC;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -32,7 +34,9 @@ public class ValidateUserAndAddToMDCHandler implements HandlerInterceptor {
 
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-		MDC.clear();
+
+		((ThreadLocalSubjectHandler) SubjectHandler.getSubjectHandler()).reset();
+
 		if (response.getStatus() != HttpStatus.OK.value()) {
 			//This means that the validation of oidc tokens failed in IdTokenAuthenticationFilter and we should let the handler go through
 			return true;

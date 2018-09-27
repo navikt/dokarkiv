@@ -54,8 +54,6 @@ public class AbacSecurityService {
     private DokumentinfoRepository dokumentinfoRepository;
 
 	public void assertAccessToJournalpost(String journalpost) {
-        abacContext.cleanUp();
-
 		Long journalpostId = Long.parseLong(journalpost);
 
 		if (!joarkRepository.existsById(journalpostId)) {

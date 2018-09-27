@@ -5,6 +5,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 import no.nav.dokarkiv.core.MDCConstants;
+import no.nav.dokarkiv.core.jaxws.ThreadLocalSubjectHandler;
 import no.nav.dokarkiv.core.security.ldap.NavLdapService;
 import no.nav.freg.security.oidc.auth.idtoken.extract.NavHttpHeaders;
 import org.junit.Before;
@@ -43,6 +44,7 @@ public class ValidateUserAndAddToMDCHandlerTest {
 
     @Before
     public void setUp() {
+        System.setProperty("no.nav.modig.core.context.subjectHandlerImplementationClass", ThreadLocalSubjectHandler.class.getName());
         validateUserAndAddToMDCHandler = new ValidateUserAndAddToMDCHandler(navLdapService);
     }
 
