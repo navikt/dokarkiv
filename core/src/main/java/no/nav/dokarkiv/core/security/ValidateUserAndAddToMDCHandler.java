@@ -38,6 +38,8 @@ public class ValidateUserAndAddToMDCHandler implements HandlerInterceptor {
 			return true;
 		}
 
+        putAbacMdcValues(request);
+
 		String navConsumerToken = headerTokenExtractor.getConsumerToken(request);
 		String authorizationToken = headerTokenExtractor.getIdToken(request);
 
@@ -88,6 +90,11 @@ public class ValidateUserAndAddToMDCHandler implements HandlerInterceptor {
 			return true;
 		}
 	}
+
+    private void putAbacMdcValues(HttpServletRequest request) {
+        MDC.put(MDCConstants.MDC_HTTP_ENDPOINT, request.getRequestURL().toString());
+        MDC.put(MDCConstants.MDC_HTTP_OPERATION, request.getMethod());
+    }
 
 	private String getSubjectFromToken(String token) {
 		if (isEmpty(token)) {

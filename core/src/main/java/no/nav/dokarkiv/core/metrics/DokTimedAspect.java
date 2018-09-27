@@ -26,7 +26,6 @@ import io.micrometer.core.instrument.Tags;
 import io.micrometer.core.instrument.Timer;
 import io.micrometer.core.lang.NonNullApi;
 import lombok.extern.slf4j.Slf4j;
-import no.nav.dokarkiv.core.exceptions.DokarkivFunctionalException;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -151,11 +150,7 @@ public class DokTimedAspect {
 	}
 
 	private boolean isFunctionalException(Method method, Exception e) {
-		return asList(method.getExceptionTypes()).contains(e.getClass()) || isFunctionalException(e);
-	}
-
-	public static boolean isFunctionalException(Throwable e) {
-		return e instanceof DokarkivFunctionalException;
+        return asList(method.getExceptionTypes()).contains(e.getClass()) || MetricUtils.isFunctionalException(e);
 	}
 
     private void logException(Method method, Exception e) {

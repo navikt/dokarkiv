@@ -33,7 +33,6 @@ import java.util.Map;
 public class AbacSecurityService {
 
 	public static final String ACCESS_DENIED_TO_JOURNALPOST = "Bruker har ikke tilgang til journalpost";
-    public static final String ACCESS_DENIED_TO_RESOURCE = "Bruker har ikke tilgang til ressurs";
 	public static final String ACCESS_DENIED = "Access Denied";
 
 	@Inject
@@ -55,6 +54,8 @@ public class AbacSecurityService {
     private DokumentinfoRepository dokumentinfoRepository;
 
 	public void assertAccessToJournalpost(String journalpost) {
+        abacContext.cleanUp();
+
 		Long journalpostId = Long.parseLong(journalpost);
 
 		if (!joarkRepository.existsById(journalpostId)) {
@@ -114,20 +115,6 @@ public class AbacSecurityService {
 		}
 		return request;
 	}
-
-    private void handleResponseForBrukerId(XacmlRequest request, XacmlResponse response, String brukerId) {
-        final Map<String, String> resources = new HashMap<>();
-        resources.put("brukerId", brukerId);
-        if (response.getDecision() == Decision.DENY) {
-            abaclog.logAbacDeny(request, response, resources);
-            throw new AuthorizationException(ACCESS_DENIED_TO_RESOURCE);
-        } else {
-            if (!isEmpty(response.getAdvices())) {
-                abaclog.logAbacPermit(request, response, resources);
-            }
-        }
-    }
-
 
 	private void handleResponseForJournalpostId(XacmlRequest request, XacmlResponse response, Long journalpostId) {
 		final Map<String, String> resources = new HashMap<>();

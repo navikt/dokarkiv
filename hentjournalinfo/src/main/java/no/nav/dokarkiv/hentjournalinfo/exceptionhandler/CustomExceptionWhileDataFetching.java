@@ -2,6 +2,7 @@ package no.nav.dokarkiv.hentjournalinfo.exceptionhandler;
 
 import static graphql.Assert.assertNotNull;
 import static java.lang.String.format;
+import static no.nav.dokarkiv.core.metrics.MetricUtils.isFunctionalException;
 
 import graphql.ErrorType;
 import graphql.GraphQLError;
@@ -9,8 +10,6 @@ import graphql.GraphqlErrorHelper;
 import graphql.execution.ExecutionPath;
 import graphql.language.SourceLocation;
 import lombok.ToString;
-import no.nav.dokarkiv.core.exceptions.DokarkivFunctionalException;
-import no.nav.dokarkiv.core.security.abac.AuthorizationException;
 import no.nav.dokarkiv.hentjournalinfo.dto.kode.ExceptionType;
 
 import java.util.Collections;
@@ -43,7 +42,7 @@ public class CustomExceptionWhileDataFetching implements GraphQLError {
     }
 
     public ExceptionType getExceptionTypeFromThrowable(Throwable exception) {
-        if (exception instanceof DokarkivFunctionalException || exception instanceof AuthorizationException) {
+        if (isFunctionalException(exception)) {
             return ExceptionType.FUNCTIONAL;
         }
         return ExceptionType.TECHNICAL;
