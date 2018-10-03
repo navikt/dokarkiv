@@ -13,6 +13,4 @@ VALUES ('INGEN_DISTRIBUSJON',
         NULL,
         '1',
         timestamp '2018-09-26 10:00:00',
-        'Mårten Elmgren',
-        timestamp '2018-09-26 10:00:00',
-        'Mårten Elmgren');
+        'Mårten Elmgren', NULL, NULL);
