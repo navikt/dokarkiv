@@ -1,0 +1,16 @@
+insert into T_K_UTSENDINGS_KANAL (k_utsendings_kanal,
+                                  dekode,
+                                  dato_fom,
+                                  dato_tom,
+                                  er_gyldig,
+                                  dato_opprettet,
+                                  opprettet_av,
+                                  dato_endret,
+                                  endret_av)
+VALUES ('INGEN_DISTRIBUSJON',
+        'Ingen Distribusjon',
+        date '1900-01-01',
+        NULL,
+        '1',
+        timestamp '2018-09-26 10:00:00',
+        'Mårten Elmgren', NULL, NULL);
