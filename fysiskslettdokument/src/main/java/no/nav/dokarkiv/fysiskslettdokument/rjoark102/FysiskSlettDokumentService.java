@@ -16,8 +16,8 @@ public class FysiskSlettDokumentService {
 	@Inject
 	private JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository;
 
-	@Inject
-	private FysiskSlettDokumentValidator validator;
+//	@Inject
+//	private FysiskSlettDokumentValidator validator;
 
 
 	//IKKE FERDIG, LOGIKK ER IKKE BESTEMT.
@@ -25,7 +25,7 @@ public class FysiskSlettDokumentService {
 		List<JournalpostDokumentInfoRelasjon> journalpostDokumentInfoRelasjonList = journalpostDokumentInfoRelasjonRepository.findByDokumentInfoId(requestTo
 				.getDokumentInfoId()).orElse(new ArrayList<>());
 
-		validator.validateFysiskSlettDokument(journalpostDokumentInfoRelasjonList, requestTo);
+//		validator.validateFysiskSlettDokument(journalpostDokumentInfoRelasjonList, requestTo);
 
 		//switch for å bestemme hvilken type av sletting. Styrt av hjemmel???
 //		fysiskSlettAvDokumenter(journalpostDokumentInfoRelasjonList);

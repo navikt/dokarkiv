@@ -30,7 +30,7 @@ public class Rjoark102IT extends AbstractFysiskSlettDokumentIT {
 	public void shouldPhysicallyDeleteDocumentInJoark() {
 		abacPermit();
 
-		Journalpost journalpost = joarkRepository.save(TestUtils.createJournalpostBuilder().build());
+		Journalpost journalpost = joarkRepository.save(TestUtils.createJournalpost(true));
 
 
 		TestTransaction.flagForCommit();
@@ -40,7 +40,7 @@ public class Rjoark102IT extends AbstractFysiskSlettDokumentIT {
 				.getJournalpostId() + "/"
 				+ journalpost.findHoveddokumentDokumentInfoRelasjon()
 				.getDokumentInfo()
-				.getDokumentInfoId(), HttpMethod.DELETE, createHeaders(), FysiskSlettDokumentResponse.class);
+				.getDokumentInfoId() + "/" + "hjemmel", HttpMethod.DELETE, createHeaders(), FysiskSlettDokumentResponse.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 		assertEquals(journalpostDokumentInfoRelasjonRepository.findByDokumentInfoId(
@@ -48,5 +48,6 @@ public class Rjoark102IT extends AbstractFysiskSlettDokumentIT {
 				.get(0)
 				.getDokumentInfo().getSlettet(), true);
 	}
+
 
 }

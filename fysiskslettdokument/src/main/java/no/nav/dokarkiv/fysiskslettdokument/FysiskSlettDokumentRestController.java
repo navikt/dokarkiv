@@ -48,7 +48,7 @@ public class FysiskSlettDokumentRestController {
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark102"}, percentiles = {0.5, 0.95})
 	public FysiskSlettDokumentResponse fysiskSlettDokument(
 			@PathVariable("journalpostId") Long journalpostId, @PathVariable("dokumentInfoId") Long dokumentInfoId, @PathVariable("hjemmel") String hjemmel) {
-		abacSecurityService.assertAccessToJournalpost(journalpostId.toString());
+//		abacSecurityService.assertAccessToJournalpost(journalpostId.toString());
 		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark102");
 		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har mottat kall med journalpostId=" + journalpostId + ", dokumentInfoId=" + dokumentInfoId + " og hjemmel=" + hjemmel);
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
