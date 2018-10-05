@@ -30,6 +30,7 @@
 		<module>hentdokument</module>
 		<module>logiskslettdokument</module>
 		<module>hentjournalinfo</module>
+		<module>fysiskslettdokument</module>
 	</modules>
 
 	<distributionManagement>
