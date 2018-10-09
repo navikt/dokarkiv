@@ -53,6 +53,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.transaction.TestTransaction;
@@ -77,8 +78,10 @@ public class GraphQlQueryIT {
     private static final byte[] FIL_CONTENT = "Test".getBytes();
 
     protected String OIDC_TOKEN_PERSON_USER_TEST;
-    protected String OIDC_TOKEN_SERVICE_USER_TEST;
-    protected final String SERVICE_USER_ID = "srvdokarkiv";
+    protected String OIDC_TOKEN_VALID_SERVICE_USER_TEST;
+    protected String OIDC_TOKEN_INVALID_SERVICE_USER_TEST;
+    protected final String VALID_SERVICE_USER_ID = "srvjoarkadmin";
+    protected final String INVALID_SERVICE_USER_ID = "srvdokarkiv";
     protected final String PERSON_USER_ID = "Z990782";
 
     @Inject
@@ -96,7 +99,9 @@ public class GraphQlQueryIT {
     public void setUp() {
         OIDC_TOKEN_PERSON_USER_TEST = "Bearer " + oidcTestService.createOidc(openAmClaimsBuilder().subject(PERSON_USER_ID)
                 .build());
-        OIDC_TOKEN_SERVICE_USER_TEST = "Bearer " + oidcTestService.createOidc(openAmClaimsBuilder().subject(SERVICE_USER_ID)
+        OIDC_TOKEN_VALID_SERVICE_USER_TEST = "Bearer " + oidcTestService.createOidc(openAmClaimsBuilder().subject(VALID_SERVICE_USER_ID)
+                .build());
+        OIDC_TOKEN_INVALID_SERVICE_USER_TEST = "Bearer " + oidcTestService.createOidc(openAmClaimsBuilder().subject(INVALID_SERVICE_USER_ID)
                 .build());
         RequestContextSetter.setRequestContext(new SimpleRequestContext.Builder()
                 .userId("itestuser")
@@ -321,6 +326,48 @@ public class GraphQlQueryIT {
         assertThat(response.getErrors().get(0).getExceptionType(), is(ExceptionType.FUNCTIONAL));
     }
 
+    @Test
+    public void shouldRunOKWhenauthTokenIsServiceuserJoarkadmin() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.add(HttpHeaders.AUTHORIZATION, OIDC_TOKEN_VALID_SERVICE_USER_TEST);
+
+        abacPermit();
+        Journalpost journalpost = TestDataUtils.createJournalpostBuilder(FIL_UUID).build();
+        joarkRepository.save(journalpost);
+        TestTransaction.flagForCommit();
+        TestTransaction.end();
+
+        HttpEntity request = new HttpEntity<>(createDokumentInfoRequest(journalpost.findHoveddokumentDokumentInfoRelasjon()
+                .getDokumentInfo()
+                .getDokumentInfoId()), headers);
+
+        GraphQlResponse response = testRestTemplate.postForObject("/rest/graphql", request, GraphQlResponse.class);
+        DokumentInfo dokumentInfo = response.getDataWrapper().getDokumentInfo();
+        assertDokumentInfo(dokumentInfo);
+    }
+
+    @Test
+    public void shouldRunOKWhenauthTokenIsServiceuserNOTJoarkadmin() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.add(HttpHeaders.AUTHORIZATION, OIDC_TOKEN_INVALID_SERVICE_USER_TEST);
+
+        abacPermit();
+        Journalpost journalpost = TestDataUtils.createJournalpostBuilder(FIL_UUID).build();
+        joarkRepository.save(journalpost);
+        TestTransaction.flagForCommit();
+        TestTransaction.end();
+
+        HttpEntity request = new HttpEntity<>(createDokumentInfoRequest(journalpost.findHoveddokumentDokumentInfoRelasjon()
+                .getDokumentInfo()
+                .getDokumentInfoId()), headers);
+
+        GraphQlResponse response = testRestTemplate.postForObject("/rest/graphql", request, GraphQlResponse.class);
+        assertThat(response.getErrors(), nullValue());
+        assertThat(response.getDataWrapper(), nullValue());
+    }
+
     protected void abacPermit() {
         stubFor(post(urlEqualTo("/abac"))
                 .willReturn(aResponse().withStatus(HttpStatus.OK.value())
@@ -340,7 +387,7 @@ public class GraphQlQueryIT {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.add(HttpHeaders.AUTHORIZATION, OIDC_TOKEN_PERSON_USER_TEST);
-        headers.add("Nav-Consumer-Token", OIDC_TOKEN_SERVICE_USER_TEST);
+        headers.add("Nav-Consumer-Token", OIDC_TOKEN_VALID_SERVICE_USER_TEST);
         return headers;
     }
 
