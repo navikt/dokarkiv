@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * @author Joakim Bjørnstad, Jbit AS
+ * @author Ketill Fenne, Visma Consulting AS
  */
 @Slf4j
 public class ValidateGraphqlNavConsumerInterceptor implements HandlerInterceptor {
