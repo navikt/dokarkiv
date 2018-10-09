@@ -57,18 +57,24 @@ public class DokumentInfoQuery implements Query {
     @GraphQLQuery(name = DOKUMENTINFO)
     @Transactional(readOnly = true)
     @GraphQLMetrics(value = "dok_graphql_request", extraTags = {"process_code", "gjoark001", "query", DOKUMENTINFO})
-    @Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_DOKUMENT)},
-            actions = @Abac.Attr(key = ACTION_ID, value = READ_ACTION))
+// Tar bort denne midlertidig til abac løsning for alle tema er klare
+//    @Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_DOKUMENT)},
+//            actions = @Abac.Attr(key = ACTION_ID, value = READ_ACTION))
     public DokumentInfo dokumentInfo(@GraphQLArgument(name = "dokumentInfoId") @GraphQLNonNull Long dokumentInfoId) {
         log.info(format("GraphQL har mottatt %s query med dokumentInfoId=%s", DOKUMENTINFO, dokumentInfoId));
-        abacSecurityService.assertAccessToDokument(dokumentInfoId);
+        //Som over, ikke noe ABAC foreløpig
+        //abacSecurityService.assertAccessToDokument(dokumentInfoId);
+        //Husk å ta bort denne når abac er tilbake:
+        if (!dokumentinfoRepository.existsById(dokumentInfoId)) {
+            throw new DokumentInfoIkkeFunnetException("DokumentInfo ikke funnet. dokumentInfoId=" + dokumentInfoId);
+        }
         //Om dokumentet eksiterer sjekkes i metoden over og kan derfor være sikker på dokumentInfo finnes i neste step
         no.nav.dokarkiv.core.domain.entities.DokumentInfo dokumentInfo = dokumentinfoRepository.findById(dokumentInfoId).get();
 
-        if (isTrue(dokumentInfo.getSlettet())) {
-            //Dette skal etterhvert sjekkes i ABAC istedenfor slik at ABAC returnerer deny hvis person ikke har tilgang til å se slettede dokumenter
-            throw new DokumentInfoIkkeFunnetException(format("DokumentInfo ikke funnet. dokumentInfoId=%s", dokumentInfo.getDokumentInfoId()));
-        }
+//        if (isTrue(dokumentInfo.getSlettet())) {
+//            //Dette skal etterhvert sjekkes i ABAC istedenfor slik at ABAC returnerer deny hvis person ikke har tilgang til å se slettede dokumenter
+//            throw new DokumentInfoIkkeFunnetException(format("DokumentInfo ikke funnet. dokumentInfoId=%s", dokumentInfo.getDokumentInfoId()));
+//        }
 
         return mapDokumentInfo(dokumentInfo);
     }

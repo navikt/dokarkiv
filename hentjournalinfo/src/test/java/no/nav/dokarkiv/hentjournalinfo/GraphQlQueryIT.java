@@ -136,6 +136,7 @@ public class GraphQlQueryIT {
 
         assertDokumentInfo(response.getDataWrapper().getDokumentInfo());
         assertJournalpost(response.getDataWrapper().getJournalpost());
+        assertThat(response.getDataWrapper().getDokumentInfo().getSlettet(), is(Boolean.FALSE));
 
     }
 
@@ -178,6 +179,8 @@ public class GraphQlQueryIT {
 
         DokumentInfo dokumentInfo = response.getDataWrapper().getDokumentInfo();
         assertDokumentInfo(dokumentInfo);
+        assertThat(dokumentInfo.getSlettet(), is(Boolean.FALSE));
+
     }
 
     @Test
@@ -224,7 +227,7 @@ public class GraphQlQueryIT {
     }
 
     @Test
-    public void shouldReturnDokumentNotFoundErrorWhenDokumentIsDeleted() throws Exception {
+    public void shouldReturnDokumentWhenDokumentIsDeleted() throws Exception {
         abacPermit();
         Journalpost journalpost = TestDataUtils.createJournalpostBuilder(FIL_UUID).build();
         journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().setSlettet(true);
@@ -237,10 +240,13 @@ public class GraphQlQueryIT {
                 .getDokumentInfoId()), oidcHeaders());
 
         GraphQlResponse response = testRestTemplate.postForObject("/rest/graphql", request, GraphQlResponse.class);
-        assertThat(response.getErrors().size(), is(1));
-        assertThat(response.getErrors().get(0).getMessage(), containsString("DokumentInfo ikke funnet. dokumentInfoId="));
-        assertThat(response.getErrors().get(0).getException(), is(DokumentInfoIkkeFunnetException.class.getSimpleName()));
-        assertThat(response.getErrors().get(0).getExceptionType(), is(ExceptionType.FUNCTIONAL));
+//        assertThat(response.getErrors().size(), is(1));
+//        assertThat(response.getErrors().get(0).getMessage(), containsString("DokumentInfo ikke funnet. dokumentInfoId="));
+//        assertThat(response.getErrors().get(0).getException(), is(DokumentInfoIkkeFunnetException.class.getSimpleName()));
+//        assertThat(response.getErrors().get(0).getExceptionType(), is(ExceptionType.FUNCTIONAL));
+        DokumentInfo dokumentInfo = response.getDataWrapper().getDokumentInfo();
+        assertDokumentInfo(dokumentInfo);
+        assertThat(dokumentInfo.getSlettet(), is(Boolean.TRUE));
     }
 
     @Test
@@ -269,7 +275,8 @@ public class GraphQlQueryIT {
         assertThat(response.getErrors().get(0).getExceptionType(), is(ExceptionType.FUNCTIONAL));
     }
 
-    @Test
+//    @Test
+    //ABAC er fjernet
     public void shouldReturnAuthorizationExceptionWhenAbacDenyForDokumentInfoQuery() throws Exception {
         abacDeny();
         Journalpost journalpost = TestDataUtils.createJournalpostBuilder(FIL_UUID).build();
