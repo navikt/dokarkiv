@@ -41,7 +41,7 @@ public class DefaultFerdigstillJournalpostService implements FerdigstillJournalp
 		validator.validate(journalpost);
 
 		UtsendingsKanalCode utsendingskanal = request.getUtsendingskanal();
-		if (utsendingskanal == UtsendingsKanalCode.L) {
+		if (utsendingskanal == UtsendingsKanalCode.L || utsendingskanal == UtsendingsKanalCode.INGEN_DISTRIBUSJON) {
 			journalpost.setJournalstatus(JournalStatusCode.FL);
 		} else {
 			journalpost.setJournalstatus(JournalStatusCode.FS);

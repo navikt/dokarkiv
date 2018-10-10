@@ -87,7 +87,7 @@ public class DefaultOppdaterJournalpostArkiverDokumentValidator implements Oppda
 	 * @param journalpost            List of DokumentInfo-objects on Journalpost
 	 * @param requestDokumentInfoId  DokumentInfoId from request
 	 */
-	public void validateThatAllDocumentStatusesAreFerdigstilt(Journalpost journalpost, DokumentInfo requestDokumentInfoId) throws KanIkkeFerdigstillesException {
+	void validateThatAllDocumentStatusesAreFerdigstilt(Journalpost journalpost, DokumentInfo requestDokumentInfoId) throws KanIkkeFerdigstillesException {
 		List<DokumentInfo> dokumentInfoNotInRequest = journalpost.findAllDokumentInfos();
 		dokumentInfoNotInRequest.remove(requestDokumentInfoId);
 		for (DokumentInfo dokumentInfo : dokumentInfoNotInRequest) {
@@ -105,7 +105,7 @@ public class DefaultOppdaterJournalpostArkiverDokumentValidator implements Oppda
 	 *
 	 * @param filDetaljer to be validated.
 	 */
-	public void validateNoDuplicateVariantFormats(Set<FilDetaljer> filDetaljer, Long journalpostId) throws FeilStrukturException {
+	void validateNoDuplicateVariantFormats(Set<FilDetaljer> filDetaljer, Long journalpostId) throws FeilStrukturException {
 		List<VariantFormatCode> variantList = getVariantFormatList(filDetaljer);
 		EnumSet<VariantFormatCode> uniqueSet = EnumSet.copyOf(variantList);
 
@@ -124,7 +124,7 @@ public class DefaultOppdaterJournalpostArkiverDokumentValidator implements Oppda
 	 * @param journalpost to be validated.
 	 * @param request     input request with dokument payloads for dokumentinfo
 	 */
-	public void validateJournalpostTypeAndStatus(Journalpost journalpost, OppdaterJournalpostArkiverDokumentRequestTo request) throws KanIkkeFerdigstillesException, AlleredeFerdigstiltException, UgyldigInputException {
+	void validateJournalpostTypeAndStatus(Journalpost journalpost, OppdaterJournalpostArkiverDokumentRequestTo request) throws KanIkkeFerdigstillesException, AlleredeFerdigstiltException, UgyldigInputException {
 		boolean ferdigstillJournalpost = request.isFerdigstillJournalpost();
 		if (journalpost.isInngaende()) {
 			throw new UgyldigInputException("Journalpost kan ikke være av typen INNGÅENDE", journalpost.getJournalpostId());
@@ -158,7 +158,7 @@ public class DefaultOppdaterJournalpostArkiverDokumentValidator implements Oppda
 	 *
 	 * @param dokumentInfo to be validated.
 	 */
-	public void validateDokumentInfoIsUnderRedigering(DokumentInfo dokumentInfo, Long journalpostId) throws KanIkkeFerdigstillesException {
+	void validateDokumentInfoIsUnderRedigering(DokumentInfo dokumentInfo, Long journalpostId) throws KanIkkeFerdigstillesException {
 		if (!dokumentInfo.isUnderRedigering()) {
 			throw new KanIkkeFerdigstillesException("DokumentInfo [" + dokumentInfo.getDokumentInfoId() + "] krever status UNDER REDIGERING", journalpostId);
 		}
@@ -170,7 +170,7 @@ public class DefaultOppdaterJournalpostArkiverDokumentValidator implements Oppda
 	 * @param journalpost    to be validated.
 	 * @param dokumentInfoId used for .
 	 */
-	public void validateJournalpostContainsDokumentInfoWithId(Journalpost journalpost, Long dokumentInfoId) throws ObjektIkkeFunnetException {
+	void validateJournalpostContainsDokumentInfoWithId(Journalpost journalpost, Long dokumentInfoId) throws ObjektIkkeFunnetException {
 		Set<Long> dokInfoIdSet = getDokumentInfoIdSet(journalpost);
 
 		if (!dokInfoIdSet.contains(dokumentInfoId)) {
@@ -185,7 +185,7 @@ public class DefaultOppdaterJournalpostArkiverDokumentValidator implements Oppda
 	 * @param dokumentInfo to be validated.
 	 * @param filDetaljer  to be validated.
 	 */
-	public void validateDokumentInfoOrFilDetaljerContainsArkivFormat(DokumentInfo dokumentInfo, Set<FilDetaljer> filDetaljer, Long journalpostId) throws FeilStrukturException {
+	void validateDokumentInfoOrFilDetaljerContainsArkivFormat(DokumentInfo dokumentInfo, Set<FilDetaljer> filDetaljer, Long journalpostId) throws FeilStrukturException {
 		Set<FilDetaljer> concatFilDetaljer = new HashSet<>();
 		concatFilDetaljer.addAll(dokumentInfo.getFildetaljerListe());
 		concatFilDetaljer.addAll(filDetaljer);
@@ -199,7 +199,7 @@ public class DefaultOppdaterJournalpostArkiverDokumentValidator implements Oppda
 	 * @param jpFileDetaljer to be validated.
 	 * @param filDetaljer    to be validated.
 	 */
-	public void validateNoDuplicateVariantFormatsExceptProduksjon(Set<FilDetaljer> jpFileDetaljer, Set<FilDetaljer> filDetaljer, Long journalpostId) throws FeilStrukturException {
+	void validateNoDuplicateVariantFormatsExceptProduksjon(Set<FilDetaljer> jpFileDetaljer, Set<FilDetaljer> filDetaljer, Long journalpostId) throws FeilStrukturException {
 		for (FilDetaljer filDetalj : filDetaljer) {
 			VariantFormatCode variantFormatCode = filDetalj.getVariantFormat();
 			if (!variantFormatCode.equals(VariantFormatCode.PRODUKSJON)) {
@@ -213,7 +213,7 @@ public class DefaultOppdaterJournalpostArkiverDokumentValidator implements Oppda
 	 *
 	 * @param journalpost to be validated.
 	 */
-	public void validateJournalpostContainsOneRealtedDokumenInfoOfTypeHoveddokument(Journalpost journalpost) throws FeilStrukturException {
+	void validateJournalpostContainsOneRealtedDokumenInfoOfTypeHoveddokument(Journalpost journalpost) throws FeilStrukturException {
 		Set<JournalpostDokumentInfoRelasjon> infoRels =
 				journalpost.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.HOVEDDOKUMENT);
 		int count = infoRels.size();
@@ -228,7 +228,7 @@ public class DefaultOppdaterJournalpostArkiverDokumentValidator implements Oppda
 	 *
 	 * @param request to be validated.
 	 */
-	public void validateDatoDokument(OppdaterJournalpostArkiverDokumentRequestTo request) throws UgyldigInputException {
+	void validateDatoDokument(OppdaterJournalpostArkiverDokumentRequestTo request) throws UgyldigInputException {
 		if (request.getDatoDokument() == null) {
 			throw new UgyldigInputException("Mangler påkrevd felt datoDokument", request.getJournalpostId());
 		}

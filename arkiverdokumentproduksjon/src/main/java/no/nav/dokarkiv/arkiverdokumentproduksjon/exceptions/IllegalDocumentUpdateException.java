@@ -1,6 +1,6 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions;
 
-import no.nav.dokarkiv.core.stelvio.FunctionalUnrecoverableException;
+import no.nav.dokarkiv.core.exceptions.DokarkivFunctionalException;
 
 /**
  * Thrown by oppdaterJournal operation when an attempt to add or update
@@ -8,7 +8,7 @@ import no.nav.dokarkiv.core.stelvio.FunctionalUnrecoverableException;
  *
  * @author Thomas Eugen Bjørge, Visma Sirius
  */
-public class IllegalDocumentUpdateException extends FunctionalUnrecoverableException {
+public class IllegalDocumentUpdateException extends DokarkivFunctionalException {
 
 	/**
 	 * Serialization UID

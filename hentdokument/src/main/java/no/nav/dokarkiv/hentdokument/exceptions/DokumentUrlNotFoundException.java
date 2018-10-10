@@ -1,6 +1,6 @@
 package no.nav.dokarkiv.hentdokument.exceptions;
 
-import no.nav.dokarkiv.core.stelvio.FunctionalUnrecoverableException;
+import no.nav.dokarkiv.core.exceptions.DokarkivFunctionalException;
 
 /**
  * Exception that is thrown when no DokumentUrlInfo could be found for a given doc
@@ -8,7 +8,7 @@ import no.nav.dokarkiv.core.stelvio.FunctionalUnrecoverableException;
  * 
  * @author Magnus Skuland, Sirius IT
  */
-public class DokumentUrlNotFoundException extends FunctionalUnrecoverableException {
+public class DokumentUrlNotFoundException extends DokarkivFunctionalException {
 
 	/** Serialization ID. */
 	private static final long serialVersionUID = 1L;

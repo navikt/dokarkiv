@@ -1,15 +1,15 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions;
 
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
-import no.nav.dokarkiv.core.stelvio.FunctionalRecoverableException;
-import org.apache.commons.lang.builder.ToStringBuilder;
+import no.nav.dokarkiv.core.exceptions.DokarkivFunctionalException;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 /**
  * Exception that is thrown when attempting to set Journalstatus to an illegal value
  * 
  * @author Magnus Skuland, Sirius IT
  */
-public class UgyldigJournalStatusVerdiException extends FunctionalRecoverableException {
+public class UgyldigJournalStatusVerdiException extends DokarkivFunctionalException {
 
 	/** Unique serial version id. */
 	private static final long serialVersionUID = 1L;

@@ -1,15 +1,15 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions;
 
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
-import no.nav.dokarkiv.core.stelvio.FunctionalRecoverableException;
-import org.apache.commons.lang.builder.ToStringBuilder;
+import no.nav.dokarkiv.core.exceptions.DokarkivFunctionalException;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 /**
  * Exception that is thrown when there is an illegal DokumentStatus.
  * 
  * @author Thao Thanh Nguyen, Visma Consulting
  */
-public class UgyldigDokumentStatusVerdiException extends FunctionalRecoverableException {
+public class UgyldigDokumentStatusVerdiException extends DokarkivFunctionalException {
 	
 	/** Unique serial version id. */
 	private static final long serialVersionUID = ***gammelt_fnr***0054658L;

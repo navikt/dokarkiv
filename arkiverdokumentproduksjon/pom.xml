@@ -12,13 +12,14 @@
 	<artifactId>arkiverdokumentproduksjon</artifactId>
 
 	<properties>
-		<arkiverdokumentproduksjon-tjenestespesifikasjon.version>3.2.1</arkiverdokumentproduksjon-tjenestespesifikasjon.version>
+		<arkiverdokumentproduksjon-tjenestespesifikasjon.version>3.3.2</arkiverdokumentproduksjon-tjenestespesifikasjon.version>
 	</properties>
 
 	<dependencies>
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>javax.inject</groupId>
@@ -33,6 +34,11 @@
 			<artifactId>arkiverdokumentproduksjon-tjenestespesifikasjon</artifactId>
 			<version>${arkiverdokumentproduksjon-tjenestespesifikasjon.version}</version>
 			<classifier>jaxws</classifier>
+		</dependency>
+		<dependency>
+			<groupId>org.jvnet.jaxb2_commons</groupId>
+			<artifactId>jaxb2-basics-runtime</artifactId>
+			<version>0.6.4</version>
 		</dependency>
 		<dependency>
 			<groupId>org.assertj</groupId>

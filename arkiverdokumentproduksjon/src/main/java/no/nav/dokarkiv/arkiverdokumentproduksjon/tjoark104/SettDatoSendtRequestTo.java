@@ -2,7 +2,7 @@ package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark104;
 
 import lombok.Data;
 import no.nav.dokarkiv.core.exceptions.ApplicationException;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.Date;
 import java.util.List;

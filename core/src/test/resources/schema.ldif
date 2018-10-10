@@ -26,6 +26,17 @@ description: Service account for srvdokarkiv
 displayName: srvdokarkiv
 userPassword: hemmelig
 
+# service user
+dn: cn=srvtestersen,ou=ServiceAccounts,dc=test,dc=local
+objectclass: top
+objectclass: person
+objectclass: organizationalPerson
+cn: srvtestersen
+sn: srvtestersen
+description:
+displayName: test testersen
+userPassword: hemmelig
+
 # person
 dn: cn=b133337,ou=BusinessUnits,dc=test,dc=local
 objectclass: top
@@ -66,6 +77,17 @@ objectclass: top
 objectclass: person
 objectclass: organizationalPerson
 cn: z000002
+sn: Tidemann
+description: Stasjonsmester Tidemann
+displayName:
+userPassword: sesam
+
+# person
+dn: cn=Z990782,ou=BusinessUnits,dc=test,dc=local
+objectclass: top
+objectclass: person
+objectclass: organizationalPerson
+cn: Z990782
 sn: Tidemann
 description: Stasjonsmester Tidemann
 displayName:

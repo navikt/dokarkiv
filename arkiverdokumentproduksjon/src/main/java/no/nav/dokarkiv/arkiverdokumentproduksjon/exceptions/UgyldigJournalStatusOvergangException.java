@@ -2,15 +2,15 @@ package no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions;
 
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
-import no.nav.dokarkiv.core.stelvio.FunctionalRecoverableException;
-import org.apache.commons.lang.builder.ToStringBuilder;
+import no.nav.dokarkiv.core.exceptions.DokarkivFunctionalException;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 /**
  * Exception that is thrown when there is an illegal journalstatus transition.
  *
  * @author Andreas Johansson, Bekk Consulting
  */
-public class UgyldigJournalStatusOvergangException extends FunctionalRecoverableException {
+public class UgyldigJournalStatusOvergangException extends DokarkivFunctionalException {
 
 	/**
 	 * Unique serial version id.

@@ -56,6 +56,18 @@
 			<groupId>no.nav.dokarkiv</groupId>
 			<artifactId>hentdokument</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>no.nav.dokarkiv</groupId>
+			<artifactId>hentjournalinfo</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>no.nav.dokarkiv</groupId>
+			<artifactId>journalfoerinngaaende</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>no.nav.dokarkiv</groupId>
+			<artifactId>logiskslettdokument</artifactId>
+		</dependency>
 		<!-- annet -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -91,7 +103,6 @@
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
-			<version>1.16.22</version>
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>

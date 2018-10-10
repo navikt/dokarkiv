@@ -61,8 +61,7 @@ public class DefaultKnyttDokumentTilJournalpostSomVedleggService implements Knyt
 	private static final String DELETED_DOKUMENT_INFO_FORMAT = "DokumentInfo with dokumentInfoId=%d must not be deleted";
 	private static final String ORGAN_INTERN_DOKUMENT_INFO_FORMAT = "DokumentInfo with dokumentInfoId=%d cannot be organ intern";
 	private static final String PARTSINNSYN_DOKUMENT_INFO_FORMAT = "DokumentInfo with dokumentInfoId=%d cannot have innskrenket partsinnsyn";
-	private static final String PARTSINNSYN_TREDJEPART_DOKUMENT_INFO_FORMAT = "DokumentInfo with dokumentInfoId=%d cannot have innskrenket partsinnsyn"
-			+ " fra tredjepart";
+	private static final String PARTSINNSYN_TREDJEPART_DOKUMENT_INFO_FORMAT = PARTSINNSYN_DOKUMENT_INFO_FORMAT + " fra tredjepart";
 	private static final String ON_DEMAND_FIL_DETALJER_FORMAT = "DokumentInfo with dokumentInfoId=%d cannot have fildetaljer with onDemandId defined";
 	private static final String VARIANT_FORMAT_FORMAT = "DokumentInfo with dokumentInfoId=%d requires at least one fildetalj with variantFormat '%s'";
 	private static final String FAGOMRAADE_MESSAGE = "Journalpost source with journalpostId=%d must have fagomrade 'OPP' or 'GEN', or it must be equal"

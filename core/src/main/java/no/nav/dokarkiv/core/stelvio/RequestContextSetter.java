@@ -7,7 +7,8 @@ import java.lang.reflect.Field;
 
 /**
  * Utility class to set and reset the RequestContext. Should only be used by the framework or when unit testing.
- * 
+ *
+ * @deprecated bruk standardfunksjonalitet
  * @author Tommy Trøen, Accenture
  * @version $Id$
  */

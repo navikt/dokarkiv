@@ -25,6 +25,7 @@ import javax.annotation.PostConstruct;
 @EnableAspectJAutoProxy
 @EnableRetry
 public class CoreConfig {
+
 	@Bean
 	public DokTimedAspect timedAspect(MeterRegistry meterRegistry) {
 		return new DokTimedAspect(meterRegistry);

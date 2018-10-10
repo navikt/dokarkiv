@@ -30,8 +30,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapKeyColumn;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -52,11 +50,6 @@ import java.util.Set;
  */
 @Entity
 @Table(name = "T_DOKUMENT_INFO")
-@NamedQueries({
-		@NamedQuery(name = "DokumentInfo.findDokumentInfoByFagsystemSakId",
-				query = "select distinct d from DokumentInfo d left join fetch d.journalpostRelasjoner jr "
-						+ "where jr.journalpost.saksrelasjon.sakId in (:sakIdListe)")
-})
 @Builder
 @AllArgsConstructor
 public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKilde {

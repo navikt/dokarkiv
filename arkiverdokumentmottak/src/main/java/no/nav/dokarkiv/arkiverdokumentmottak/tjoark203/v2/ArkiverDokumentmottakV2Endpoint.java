@@ -24,11 +24,11 @@ import javax.xml.ws.soap.Addressing;
  *
  * @author Sigurd Midttun, Visma Consulting.
  */
-@WebService(endpointInterface = "no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v2.ArkiverDokumentmottakV2",
-		wsdlLocation = "classpath:wsdl/no/nav/tjeneste/domene/brevogarkiv/arkiverdokumentmottak/v2/arkiverdokumentmottak.wsdl",
-		targetNamespace = "http://nav.no/tjeneste/domene/brevogarkiv/arkiverdokumentmottak/v2/",
+@WebService(targetNamespace = "http://nav.no/tjeneste/domene/brevogarkiv/arkiverdokumentmottak/v2/",
 		serviceName = "ArkiverDokumentmottakService_v2",
-		portName = "ArkiverDokumentmottakPort_v2")
+		portName = "ArkiverDokumentmottakPort_v2",
+		wsdlLocation = "classpath:wsdl/no/nav/tjeneste/domene/brevogarkiv/arkiverdokumentmottak/v2/arkiverdokumentmottak.wsdl",
+		endpointInterface = "no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v2.ArkiverDokumentmottakV2")
 @Addressing
 @HandlerChain(file = "classpath:tjoark203/v2/arkiverdokumentmottakhandler.xml")
 @Service

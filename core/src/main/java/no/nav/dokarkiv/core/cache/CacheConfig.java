@@ -20,6 +20,7 @@ public class CacheConfig {
 
 	public static final String USERNAME_TOKEN_CACHE = "usernameTokenCache";
 	public static final String NAVUSER_CACHE = "navuserCache";
+	public static final String NAVSERVICEUSER_CACHE = "navserviceuserCache";
 
 	@Bean
 	CacheManager cacheManager() {
@@ -27,6 +28,10 @@ public class CacheConfig {
 		manager.setCaches(Arrays.asList(
 				new CaffeineCache(NAVUSER_CACHE, Caffeine.newBuilder()
 						.expireAfterWrite(8, TimeUnit.HOURS)
+						.maximumSize(10000)
+						.build()),
+				new CaffeineCache(NAVSERVICEUSER_CACHE, Caffeine.newBuilder()
+						.expireAfterWrite(2, TimeUnit.DAYS)
 						.maximumSize(10000)
 						.build()),
 				new CaffeineCache(USERNAME_TOKEN_CACHE, Caffeine.newBuilder()

@@ -75,6 +75,7 @@ public class ValidateSamlInInterceptor extends WSS4JInInterceptor {
 
 	@Override
 	public void handleMessage(SoapMessage msg) {
+		((ThreadLocalSubjectHandler) SubjectHandler.getSubjectHandler()).reset();
 		super.handleMessage(msg);
 
 		if (!isPingCall(msg)) {

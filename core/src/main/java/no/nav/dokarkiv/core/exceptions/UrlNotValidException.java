@@ -1,7 +1,6 @@
 package no.nav.dokarkiv.core.exceptions;
 
 import no.nav.dokarkiv.core.domain.entities.DokumentUrlInfo;
-import no.nav.dokarkiv.core.stelvio.FunctionalUnrecoverableException;
 
 /**
  * Thrown in cases where an Url has exceeded its TTL.
@@ -9,7 +8,7 @@ import no.nav.dokarkiv.core.stelvio.FunctionalUnrecoverableException;
  * @author Magnus Skuland, Sirius IT
  * @author Eirik Bergande, Sirius IT
  */
-public class UrlNotValidException extends FunctionalUnrecoverableException {
+public class UrlNotValidException extends DokarkivFunctionalException {
 
 	/**
 	 * ID used for serialization.

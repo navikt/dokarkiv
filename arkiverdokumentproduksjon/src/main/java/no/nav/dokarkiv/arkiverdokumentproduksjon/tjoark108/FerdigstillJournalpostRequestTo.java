@@ -1,7 +1,7 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark108;
 
 import no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode;
-import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 
 /**

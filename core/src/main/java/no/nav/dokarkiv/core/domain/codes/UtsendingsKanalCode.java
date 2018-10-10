@@ -26,7 +26,11 @@ public enum UtsendingsKanalCode implements CtiRelationship<UtsendingsKanalCode, 
 	/** Sikker digital post */
 	SDP,
 	/** EIA */
-	EIA;
+	EIA,
+	/**
+	 * INGEN_DISTRIBUSJON
+	 */
+	INGEN_DISTRIBUSJON;
 
 	/** {@inheritDoc} */
 	@Override

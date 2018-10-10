@@ -1,6 +1,6 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark100;
 
-import static no.nav.dokarkiv.core.constants.ServiceConstants.BESTILLINGS_ID_KEY;
+import static no.nav.dokarkiv.arkiverdokumentproduksjon.ArkiverDokumentproduksjonConstants.BESTILLINGS_ID_KEY;
 import static org.assertj.core.util.Strings.isNullOrEmpty;
 
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
