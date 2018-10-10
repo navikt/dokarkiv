@@ -9,6 +9,7 @@ import no.nav.dokarkiv.core.CoreConfig;
 import no.nav.dokarkiv.dokumentproduksjoninfo.DokumentproduksjonInfoConfig;
 import no.nav.dokarkiv.hentdokument.HentDokumentConfig;
 import no.nav.dokarkiv.hentjournalinfo.HentJournalInfoConfig;
+import no.nav.dokarkiv.hentjournalsakinfo.HentJournalsakinfoConfig;
 import no.nav.dokarkiv.inngaaendejournal.v1.InngaaendeJournalV1Config;
 import no.nav.dokarkiv.innsynjournal.v2.InnsynJournalV2Config;
 import no.nav.dokarkiv.journal.v3.JournalV3Config;
@@ -33,7 +34,8 @@ import org.springframework.context.annotation.Import;
 		JournalV3Config.class,
 		JournalfoerInngaaendeConfig.class,
 		HentDokumentConfig.class,
-        HentJournalInfoConfig.class,
+		HentJournalInfoConfig.class,
+		HentJournalsakinfoConfig.class,
 		LogiskSlettDokumentConfig.class,
 		NaisContract.class})
 public class Application {
