@@ -19,13 +19,7 @@ import javax.servlet.http.HttpServletResponse;
 @Slf4j
 public class ValidateGraphqlNavConsumerInterceptor implements HandlerInterceptor {
 
-	private final NavLdapService navLdapService;
-
 	private final HeaderTokenExtractor headerTokenExtractor = new HeaderTokenExtractor();
-
-	public ValidateGraphqlNavConsumerInterceptor(NavLdapService navLdapService) {
-		this.navLdapService = navLdapService;
-	}
 
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
