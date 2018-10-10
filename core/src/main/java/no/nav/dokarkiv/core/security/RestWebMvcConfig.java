@@ -27,6 +27,6 @@ public class RestWebMvcConfig implements WebMvcConfigurer {
 				.excludePathPatterns(new ArrayList<>(oidcAuthProperties.getIgnoredPaths()))
 				.addPathPatterns(oidcAuthProperties.getSecuredPath());
 		registry.addInterceptor(new ValidateGraphqlNavConsumerInterceptor())
-				.addPathPatterns("/rest/graphql/**");
+				.addPathPatterns("/rest/graphql");
 	}
 }

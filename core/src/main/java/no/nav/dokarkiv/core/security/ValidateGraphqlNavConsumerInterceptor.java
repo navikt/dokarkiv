@@ -35,7 +35,7 @@ public class ValidateGraphqlNavConsumerInterceptor implements HandlerInterceptor
 		if (isNotEmpty(navConsumerToken)) {
 			String consumerID = getSubjectFromToken(navConsumerToken);
 			if (!"srvjoarkadmin".equalsIgnoreCase(consumerID)) {
-				String message = "OIDC token på Nav-Consumer-Token header må tilhøre serviceuser på joarkamin";
+				String message = "OIDC token på Nav-Consumer-Token header må tilhøre serviceuser på joarkadmin";
 				log.warn(message);
 				response.sendError(HttpServletResponse.SC_UNAUTHORIZED, message);
 				return false;
@@ -43,7 +43,7 @@ public class ValidateGraphqlNavConsumerInterceptor implements HandlerInterceptor
 		} else if (isNotEmpty(authorizationToken)) {
 				String consumerID = getSubjectFromToken(authorizationToken);
 				if (!"srvjoarkadmin".equalsIgnoreCase(consumerID)) {
-					String message = "OIDC token på Authorization-header må tilhøre servicebruker på joarkamin";
+					String message = "OIDC token på Authorization-header må tilhøre servicebruker på joarkadmin";
 					log.warn(message);
 					response.sendError(HttpServletResponse.SC_UNAUTHORIZED, message);
 					return false;
