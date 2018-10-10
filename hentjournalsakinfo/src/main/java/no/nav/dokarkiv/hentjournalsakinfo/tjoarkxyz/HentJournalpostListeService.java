@@ -38,7 +38,7 @@ public class HentJournalpostListeService {
 		List<Journalpost> journalpostList = new ArrayList<>();
 
 		gsakSakIdList.stream().forEach(sakId -> {
-			Journalpost journalpost = joarkRepository.findJournalpostIdBySakIdAndFagsystem(sakId, fagsystemCode.name())
+			Journalpost journalpost = joarkRepository.findJournalpostIdBySakIdAndFagsystem(sakId, fagsystemCode)
 					.orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Kunne ikke finne journalpost med sakId=%s og fagsystem=%s i joark", sakId, fagsystemCode
 							.name())));
 

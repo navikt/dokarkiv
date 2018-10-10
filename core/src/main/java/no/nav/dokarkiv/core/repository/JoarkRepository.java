@@ -1,7 +1,9 @@
 package no.nav.dokarkiv.core.repository;
 
+import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
 import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
@@ -29,8 +31,11 @@ public interface JoarkRepository extends CrudRepository<Journalpost, Long> {
 	@Query(value = "SELECT jt.ORIG_JOURNALPOST_ID FROM T_DOKUMENT_INFO jt WHERE jt.DOKUMENT_INFO_ID = :dokumentinfoId", nativeQuery = true)
 	Long findJournalpostIdByDokumentinfoId(@Param("dokumentinfoId") String dokumentinfoId);
 
-	@Query(value = "SELECT * FROM T_JOURNALPOST jp LEFT JOIN T_SAKSRELASJON sr ON jp.journalpost_id=sr.journalpost_id WHERE sr.SAK_NR_FK = :sakId AND sr.K_FAGSYSTEM = :fagsystem", nativeQuery = true)
-	Optional<Journalpost> findJournalpostIdBySakIdAndFagsystem(@Param("sakId") String sakId, @Param("fagsystem") String dokumentinfoId);
+	@Query(value = "select j from Journalpost j join j.saksrelasjon s where s.sakId = :sakId and s.fagsystem = :fagsystem")
+	@EntityGraph(attributePaths = {"brukere", "tilleggsopplysninger", "journalpostDokumentInfoRelasjoner", "kryssreferanser", "returInfos", "behandlingsrelasjon",
+			"journalpostDokumentInfoRelasjoner.dokumentInfo.tilleggsopplysninger", "journalpostDokumentInfoRelasjoner.dokumentInfo.skannetInnholdListe",
+			"journalpostDokumentInfoRelasjoner.dokumentInfo.fildetaljerListe", "journalpostDokumentInfoRelasjoner.dokumentInfo.journalpostRelasjoner"})
+	Optional<Journalpost> findJournalpostIdBySakIdAndFagsystem(@Param("sakId") String sakId, @Param("fagsystem") FagsystemCode fagsystemCode);
 
 	Optional<Journalpost> findJournalpostByKanalReferanseId(String kanalReferanseId);
 

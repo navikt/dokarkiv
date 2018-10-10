@@ -3,6 +3,7 @@ package no.nav.dokarkiv.core.domain.entities;
 import static org.apache.commons.lang3.BooleanUtils.isTrue;
 import static org.apache.commons.lang3.StringUtils.contains;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import no.nav.dokarkiv.core.domain.AbstractPersistentVersionedDomainObjectWithKilde;
@@ -127,6 +128,7 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	@Type(type = "org.hibernate.type.TrueFalseType")
 	private Boolean organInternt;
 
+	@JsonIgnore
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "orig_journalpost_id")
 	private Journalpost originalJournalpost;
@@ -147,6 +149,7 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	@Builder.Default
 	private Set<SkannetInnhold> skannetInnholdListe = new HashSet<>();
 
+	@JsonIgnore
 	@OneToMany(mappedBy = "dokumentInfo")
 	@Builder.Default
 	private Set<JournalpostDokumentInfoRelasjon> journalpostRelasjoner = new HashSet<>();
