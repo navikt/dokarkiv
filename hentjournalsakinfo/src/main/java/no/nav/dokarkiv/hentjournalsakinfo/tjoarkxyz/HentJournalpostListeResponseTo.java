@@ -1,9 +1,10 @@
 package no.nav.dokarkiv.hentjournalsakinfo.tjoarkxyz;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.hentjournalsakinfo.dto.Journalpost;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,9 +14,12 @@ import java.util.List;
  */
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class HentJournalpostListeResponseTo {
 
+	@Builder.Default
 	private final List<Journalpost> gsakJournalpostList = new ArrayList<>();
+	@Builder.Default
 	private final List<Journalpost> psakJournalpostList = new ArrayList<>();
 }

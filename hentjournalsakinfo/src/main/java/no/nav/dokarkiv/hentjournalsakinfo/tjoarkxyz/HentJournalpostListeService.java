@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author Sigurd Midttun, Visma Consulting.
@@ -19,33 +20,35 @@ import java.util.List;
 public class HentJournalpostListeService {
 
 	private final JoarkRepository joarkRepository;
+	private final JournalpostMapper journalpostMapper;
 
 	@Inject
-	public HentJournalpostListeService(JoarkRepository joarkRepository) {
+	public HentJournalpostListeService(JoarkRepository joarkRepository,
+									   JournalpostMapper journalpostMapper) {
 		this.joarkRepository = joarkRepository;
+		this.journalpostMapper = journalpostMapper;
 	}
 
 	public HentJournalpostListeResponseTo hentJournalpostListeByArkivIdAndFagsystem(HentJournalpostListeRequestTo hentJournalpostListeRequestTo) {
-		HentJournalpostListeResponseTo responseTo = new HentJournalpostListeResponseTo();
-		responseTo.getGsakJournalpostList()
-				.addAll(getJournalpostList(hentJournalpostListeRequestTo.getGsakSakIdList(), FagsystemCode.FS19));
-		responseTo.getPsakJournalpostList()
-				.addAll(getJournalpostList(hentJournalpostListeRequestTo.getGsakSakIdList(), FagsystemCode.FS19));
-		return responseTo;
+
+		return HentJournalpostListeResponseTo.builder()
+				.gsakJournalpostList(getJournalpostList(hentJournalpostListeRequestTo.getGsakSakIdList(), FagsystemCode.FS19).stream()
+						.map(journalpostMapper::map)
+						.collect(Collectors.toList()))
+				.psakJournalpostList(getJournalpostList(hentJournalpostListeRequestTo.getPsakSakIdList(), FagsystemCode.FS19).stream() //TODO: PSAK-kode!
+						.map(journalpostMapper::map)
+						.collect(Collectors.toList()))
+				.build();
 	}
 
-	private List<Journalpost> getJournalpostList(List<String> gsakSakIdList, FagsystemCode fagsystemCode) {
-		List<Journalpost> journalpostList = new ArrayList<>();
-
-		gsakSakIdList.stream().forEach(sakId -> {
-			Journalpost journalpost = joarkRepository.findJournalpostIdBySakIdAndFagsystem(sakId, fagsystemCode)
-					.orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Kunne ikke finne journalpost med sakId=%s og fagsystem=%s i joark", sakId, fagsystemCode
+	private List<Journalpost> getJournalpostList(List<String> sakIdList, FagsystemCode fagsystemCode) {
+		if (sakIdList == null || sakIdList.isEmpty()) {
+			return new ArrayList<>();
+		} else {
+			return joarkRepository.findJournalposterBySakIdAndFagsystem(sakIdList, fagsystemCode)
+					.orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Kunne ikke finne noen journalposter med sakId=%s og fagsystem=%s i joark", sakIdList, fagsystemCode
 							.name())));
-
-			journalpostList.add(journalpost);
-		});
-
-		return journalpostList;
+		}
 	}
 
 }

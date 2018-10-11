@@ -17,6 +17,8 @@ import java.util.List;
 @Builder
 public class HentJournalpostListeRequestTo {
 
-	private List<String> gsakSakIdList; //= new ArrayList<>();
-	private List<String> psakSakIdList; //= new ArrayList<>();
+	@Builder.Default
+	private final List<String> gsakSakIdList = new ArrayList<>();
+	@Builder.Default
+	private final List<String> psakSakIdList = new ArrayList<>();
 }
