@@ -26,7 +26,10 @@
 		<module>inngaaendejournal</module>
 		<module>behandleinngaaendejournal</module>
 		<module>journal</module>
+		<module>journalfoerinngaaende</module>
 		<module>hentdokument</module>
+		<module>logiskslettdokument</module>
+		<module>hentjournalinfo</module>
 	</modules>
 
 	<distributionManagement>
@@ -50,6 +53,8 @@
 		<oracle.version>12.2.0.1</oracle.version>
 		<cxf.version>3.2.6</cxf.version>
 		<flyway.version>4.2.0</flyway.version>
+		<swagger.version>2.8.0</swagger.version>
+		<freg.security.test.version>3.1.0</freg.security.test.version>
 	</properties>
 
 	<dependencyManagement>
@@ -107,12 +112,27 @@
 			</dependency>
 			<dependency>
 				<groupId>no.nav.dokarkiv</groupId>
+				<artifactId>journalfoerinngaaende</artifactId>
+				<version>1-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>no.nav.dokarkiv</groupId>
 				<artifactId>journal</artifactId>
 				<version>1-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>no.nav.dokarkiv</groupId>
 				<artifactId>hentdokument</artifactId>
+				<version>1-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>no.nav.dokarkiv</groupId>
+				<artifactId>logiskslettdokument</artifactId>
+				<version>1-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>no.nav.dokarkiv</groupId>
+				<artifactId>hentjournalinfo</artifactId>
 				<version>1-SNAPSHOT</version>
 			</dependency>
 			<dependency>
@@ -152,6 +172,25 @@
 				<version>1.2.5.RELEASE</version>
 				<scope>test</scope>
 			</dependency>
+			<dependency>
+				<artifactId>freg-security-test-oidc-tools</artifactId>
+				<groupId>no.nav.freg</groupId>
+				<version>${freg.security.test.version}</version>
+				<scope>test</scope>
+			</dependency>
+
+			<!--Swagger-->
+			<dependency>
+				<groupId>io.springfox</groupId>
+				<artifactId>springfox-swagger2</artifactId>
+				<version>${swagger.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.springfox</groupId>
+				<artifactId>springfox-swagger-ui</artifactId>
+				<version>${swagger.version}</version>
+			</dependency>
+
 		</dependencies>
 	</dependencyManagement>
 	<build>

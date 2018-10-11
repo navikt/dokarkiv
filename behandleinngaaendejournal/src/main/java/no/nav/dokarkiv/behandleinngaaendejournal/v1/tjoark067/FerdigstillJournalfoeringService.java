@@ -14,7 +14,7 @@ import no.nav.dokarkiv.core.exceptions.JournalpostIkkeInngaaendeException;
 import no.nav.dokarkiv.core.exceptions.UgyldigInputException;
 import no.nav.dokarkiv.core.journalbehandling.JournalpostStructureVerifier;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
-import no.nav.dokarkiv.core.security.ldap.NavUserLdapService;
+import no.nav.dokarkiv.core.security.ldap.NavLdapService;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 
@@ -35,8 +35,8 @@ public class FerdigstillJournalfoeringService extends AbstractBehandleInngaaende
 
 	@Inject
 	public FerdigstillJournalfoeringService(JoarkRepository repository, FerdigstillJournalfoeringFieldValidator fieldValidator,
-											JournalpostStructureVerifier structureVerifier, NavUserLdapService navUserLdapService) {
-		super(navUserLdapService);
+											JournalpostStructureVerifier structureVerifier, NavLdapService navLdapService) {
+		super(navLdapService);
 		this.repository = repository;
 		this.fieldValidator = fieldValidator;
 		this.structureVerifier = structureVerifier;

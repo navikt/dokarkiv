@@ -13,9 +13,16 @@
 
 	<properties>
 		<nav-fim-aktoer-v2-tjenestespesifikasjon.version>2.0.1</nav-fim-aktoer-v2-tjenestespesifikasjon.version>
+		<aws-java-sdk-s3.version>1.11.337</aws-java-sdk-s3.version>
 	</properties>
 
 	<dependencies>
+
+		<dependency>
+			<groupId>com.auth0</groupId>
+			<artifactId>java-jwt</artifactId>
+			<version>3.4.0</version>
+		</dependency>
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
@@ -28,6 +35,10 @@
 		<dependency>
 			<groupId>org.springframework.retry</groupId>
 			<artifactId>spring-retry</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.ldap</groupId>
@@ -101,7 +112,17 @@
 		<dependency>
 			<groupId>no.nav.freg</groupId>
 			<artifactId>abac-spring</artifactId>
-			<version>1.5.0</version>
+			<version>1.6.0</version>
+		</dependency>
+		<dependency>
+			<groupId>no.nav.freg</groupId>
+			<artifactId>freg-security-oidc</artifactId>
+			<version>3.1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.amazonaws</groupId>
+			<artifactId>aws-java-sdk-s3</artifactId>
+			<version>${aws-java-sdk-s3.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -116,6 +137,11 @@
 		<dependency>
 			<groupId>com.unboundid</groupId>
 			<artifactId>unboundid-ldapsdk</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<artifactId>freg-security-test-oidc-tools</artifactId>
+			<groupId>no.nav.freg</groupId>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>

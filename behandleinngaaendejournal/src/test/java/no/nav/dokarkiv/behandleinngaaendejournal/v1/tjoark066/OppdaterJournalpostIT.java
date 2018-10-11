@@ -193,6 +193,7 @@ public class OppdaterJournalpostIT extends AbstractBehandleInngaaendeJournalV1It
 		abacPermit();
 		SubjectHandlerUtils.reset();
 		MDC.put(MDCConstants.MDC_USER_ID, null);
+		MDC.put(MDCConstants.MDC_CONSUMER_ID, ENDRET_KILDE_NAVN);
 
 		String innhold = "innhold";
 		Journalpost persistedJournalpost = joarkRepository.save(buildJournalpost()

@@ -48,6 +48,8 @@ import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.OppdaterJournalpostArkiverDokumentRequest;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.OpprettJournalpostArkiverDokumentRequest;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.OpprettJournalpostArkiverDokumentResponse;
+import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.OpprettJournalpostArkiverDokumenterRequest;
+import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.OpprettJournalpostArkiverDokumenterResponse;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.OpprettJournalpostRequest;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.OpprettJournalpostResponse;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.OpprettUtgaaendeJournalpostArkiverDokumentRequest;
@@ -190,6 +192,14 @@ public class ArkiverDokumentproduksjonEndpoint implements ArkiverDokumentproduks
 	public OpprettUtgaaendeJournalpostArkiverDokumentResponse opprettUtgaaendeJournalpostArkiverDokument(OpprettUtgaaendeJournalpostArkiverDokumentRequest opprettUtgaaendeJournalpostArkiverDokumentRequest) throws OpprettUtgaaendeJournalpostUgyldigInput, OpprettUtgaaendeJournalpostValideringAvVedleggFeilet {
 		RequestContextUtil.createAndSetRequestContext(webServiceContext, findAppId());
 		return arkiverDokumentproduksjonProvider.opprettUtgaaendeJournalpostArkiverDokument(opprettUtgaaendeJournalpostArkiverDokumentRequest);
+	}
+
+	@Timed(value = "dok_request", extraTags = {"process_code", "tjoark112"}, percentiles = {0.5, 0.95})
+	@Override
+	public OpprettJournalpostArkiverDokumenterResponse opprettJournalpostArkiverDokumenter
+			(OpprettJournalpostArkiverDokumenterRequest request) {
+		RequestContextUtil.createAndSetRequestContext(webServiceContext, DOKPROS_APPID);
+		return arkiverDokumentproduksjonProvider.opprettJournalpostArkiverDokumenter(request);
 	}
 
 	@Override

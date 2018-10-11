@@ -31,9 +31,9 @@ public final class DokumentInfoTestDataProvider {
 
 	public static DokumentInfoBuilder createDokumentInfo(String dokumentTittel, String filuid) {
 		return createDokumentInfo(dokumentTittel,
-                getFilDetaljerBuilder().filtype(PDF)
-                        .filUuid(filuid).variantFormat(ARKIV)
-                        .opprettetKildeNavn("test"));
+				getFilDetaljerBuilder().filtype(PDF)
+						.filUuid(filuid).variantFormat(ARKIV)
+						.opprettetKildeNavn("test"));
 	}
 
 	public static DokumentInfoBuilder createDokumentInfo(String dokumentTittel, FilDetaljerBuilder filDetaljerBuilder) {
@@ -45,10 +45,10 @@ public final class DokumentInfoTestDataProvider {
 				.filDetaljerList(filDetaljerBuilder.build());
 	}
 
-    public static DokumentInfoBuilder createDokumentInfo(DokumentKategoriCode kategori) {
-        return createDokumentInfo()
-                .kategori(kategori);
-    }
+	public static DokumentInfoBuilder createDokumentInfo(DokumentKategoriCode kategori) {
+		return createDokumentInfo()
+				.kategori(kategori);
+	}
 
 	public static DokumentInfoBuilder createHovedDokumentInfoFP() {
 		return getDokumentInfoBuilder()
@@ -57,7 +57,8 @@ public final class DokumentInfoTestDataProvider {
 				.dokumenttypeId("I0001")
 				.tittel("Gi meg foreldrepenger")
 				.opprettetKildeNavn("itest")
-				.filDetaljerList(createFilDetaljerArkivPDFA(), createFilDetaljerProduksjonXML());
+				.filDetaljerList(createFilDetaljerArkivPDFA(), createFilDetaljerProduksjonXML())
+				.skannetInnhold(SkannetInnholdTestDataProvider.createSkannetInnhold().build());
 	}
 
 	public static DokumentInfoBuilder createVedleggDokumentInfo() {
@@ -67,7 +68,8 @@ public final class DokumentInfoTestDataProvider {
 				.dokumenttypeId("I0002")
 				.tittel("Takk skal du ha")
 				.opprettetKildeNavn("itest")
-				.filDetaljerList(createFilDetaljerArkivPDFA(), createFilDetaljerProduksjonXML());
+				.filDetaljerList(createFilDetaljerArkivPDFA(), createFilDetaljerProduksjonXML())
+				.skannetInnhold(SkannetInnholdTestDataProvider.createSkannetInnhold().build());
 	}
 
 

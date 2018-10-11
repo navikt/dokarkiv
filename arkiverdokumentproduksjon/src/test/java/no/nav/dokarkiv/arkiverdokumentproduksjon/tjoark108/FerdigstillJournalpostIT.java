@@ -89,6 +89,21 @@ public class FerdigstillJournalpostIT extends AbstractArkiverdokumentproduksjonI
 	}
 
 	@Test
+	public void shouldFerdigstillJournalpostIngenDistribusjon() throws Exception {
+		Journalpost ferdigstiltJournalpost = buildAndPersistJournalpost(FERDIGSTILT);
+
+		FerdigstillJournalpostRequest request = createRequest(ferdigstiltJournalpost);
+		request.setUtsendingskanal(UtsendingsKanalCode.INGEN_DISTRIBUSJON.toString());
+		arkiverDokumentproduksjonProvider.ferdigstillJournalpost(request);
+
+		Journalpost resultJournalpost = joarkRepository.findById(ferdigstiltJournalpost.getJournalpostId()).get();
+		assertThat(resultJournalpost.getJournalposttype(), is(JournalpostTypeCode.U));
+		assertThat(resultJournalpost.getJournalstatus(), is(JournalStatusCode.FL));
+		assertThat(resultJournalpost.getUtsendingskanal(), is(UtsendingsKanalCode.INGEN_DISTRIBUSJON));
+	}
+
+
+	@Test
 	public void shouldThrowException_missingInput() throws Exception {
 		expectedException.expect(IllegalArgumentException.class);
 
