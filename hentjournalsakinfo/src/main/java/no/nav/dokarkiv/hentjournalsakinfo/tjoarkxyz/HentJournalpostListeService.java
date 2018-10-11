@@ -35,7 +35,7 @@ public class HentJournalpostListeService {
 				.gsakJournalpostList(getJournalpostList(hentJournalpostListeRequestTo.getGsakSakIdList(), FagsystemCode.FS19).stream()
 						.map(journalpostMapper::map)
 						.collect(Collectors.toList()))
-				.psakJournalpostList(getJournalpostList(hentJournalpostListeRequestTo.getPsakSakIdList(), FagsystemCode.FS19).stream() //TODO: PSAK-kode!
+				.psakJournalpostList(getJournalpostList(hentJournalpostListeRequestTo.getPsakSakIdList(), FagsystemCode.PEN).stream()
 						.map(journalpostMapper::map)
 						.collect(Collectors.toList()))
 				.build();
