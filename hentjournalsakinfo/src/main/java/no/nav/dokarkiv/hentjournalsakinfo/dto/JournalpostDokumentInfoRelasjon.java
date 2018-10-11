@@ -3,7 +3,6 @@ package no.nav.dokarkiv.hentjournalsakinfo.dto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 
 /**
@@ -11,13 +10,12 @@ import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
  */
 @Data
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
 public class JournalpostDokumentInfoRelasjon {
 
-	private Long journalpostDokumentInfoRelasjonId;
-	private String tilknyttetAvNavn;
-	private TilknyttetJournalpostSomCode tilknyttetJournalpostSom;
-	private DokumentInfo dokumentInfo;
+	private final Long journalpostDokumentInfoRelasjonId;
+	private final String tilknyttetAvNavn;
+	private final TilknyttetJournalpostSomCode tilknyttetJournalpostSom;
+	private final DokumentInfo dokumentInfo;
 
 }

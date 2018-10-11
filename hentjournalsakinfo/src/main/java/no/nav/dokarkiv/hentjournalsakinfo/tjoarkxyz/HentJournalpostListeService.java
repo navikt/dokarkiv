@@ -3,7 +3,6 @@ package no.nav.dokarkiv.hentjournalsakinfo.tjoarkxyz;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import org.springframework.stereotype.Service;
 
@@ -46,8 +45,7 @@ public class HentJournalpostListeService {
 			return new ArrayList<>();
 		} else {
 			return joarkRepository.findJournalposterBySakIdAndFagsystem(sakIdList, fagsystemCode)
-					.orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Kunne ikke finne noen journalposter med sakId=%s og fagsystem=%s i joark", sakIdList, fagsystemCode
-							.name())));
+					.orElse(new ArrayList<>());
 		}
 	}
 

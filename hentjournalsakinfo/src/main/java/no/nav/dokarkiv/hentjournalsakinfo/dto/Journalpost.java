@@ -3,7 +3,6 @@ package no.nav.dokarkiv.hentjournalsakinfo.dto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
 import no.nav.dokarkiv.core.domain.codes.FaktiskDistribusjonskanalCode;
@@ -21,54 +20,53 @@ import java.util.Set;
  */
 @Data
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
 public class Journalpost {
 
-	private Long journalpostId;
-	private String journalForendeEnhetId;
-	private Date journalDato;
-	private Date sendtPrintDato;
-	private Integer antallRetur;
-	private Date avsendtReturDato;
-	private String innhold;
-	private String kravtype;
-	private String merknad;
-	private String fordeling;
-	private Boolean originaltBestilt;
-	private String kanalReferanseId;
-	private FagomradeCode fagomrade;
-	private JournalStatusCode journalstatus;
-	private Date dokumentDato;
-	private String avsenderMottaker;
-	private String avsenderMottakerId;
-	private String journalfortAvNavn;
-	private Date mottattDato;
-	private MottaksKanalCode mottakskanal;
-	private UtsendingsKanalCode utsendingskanal;
-	private String land;
-	private FaktiskDistribusjonskanalCode faktiskDistribusjonskanal;
-	private Boolean elektroniskDistribusjon;
-	private Date ekspedertDato;
-	private Date lestDato;
-	private Date mottattAdressatDato;
-	private JournalpostTypeCode journalposttype;
-	private Boolean signatur;
-	private Saksrelasjon saksrelasjon;
+	private final Long journalpostId;
+	private final String journalForendeEnhetId;
+	private final Date journalDato;
+	private final Date sendtPrintDato;
+	private final Integer antallRetur;
+	private final Date avsendtReturDato;
+	private final String innhold;
+	private final String kravtype;
+	private final String merknad;
+	private final String fordeling;
+	private final Boolean originaltBestilt;
+	private final String kanalReferanseId;
+	private final FagomradeCode fagomrade;
+	private final JournalStatusCode journalstatus;
+	private final Date dokumentDato;
+	private final String avsenderMottaker;
+	private final String avsenderMottakerId;
+	private final String journalfortAvNavn;
+	private final Date mottattDato;
+	private final MottaksKanalCode mottakskanal;
+	private final UtsendingsKanalCode utsendingskanal;
+	private final String land;
+	private final FaktiskDistribusjonskanalCode faktiskDistribusjonskanal;
+	private final Boolean elektroniskDistribusjon;
+	private final Date ekspedertDato;
+	private final Date lestDato;
+	private final Date mottattAdressatDato;
+	private final JournalpostTypeCode journalposttype;
+	private final Boolean signatur;
+	private final Saksrelasjon saksrelasjon;
 	@Builder.Default
 	private final Set<JournalpostDokumentInfoRelasjon> journalpostDokumentInfoRelasjoner = new HashSet<>();
-//	private final Set<Kryssreferanse> kryssreferanser = new HashSet<>(); TODO Trenger vi denne?
-//	private final Set<ReturInfo> returInfos = new HashSet<>(); TODO Trenger vi denne?
-//	private Behandlingsrelasjon behandlingsrelasjon; TODO Trenger vi denne?
+//	private final final Set<Kryssreferanse> kryssreferanser = new HashSet<>(); TODO Trenger vi denne?
+//	private final final Set<ReturInfo> returInfos = new HashSet<>(); TODO Trenger vi denne?
+//	private final Behandlingsrelasjon behandlingsrelasjon; TODO Trenger vi denne?
 
 	@Data
 	@Builder
 	public static class Saksrelasjon {
-		private Long saksrelasjonId;
-		private String sakId;
-		private Boolean feilregistrert;
-		private String endretAvNavn;
-		private FagsystemCode fagsystem;
+		private final Long saksrelasjonId;
+		private final String sakId;
+		private final Boolean feilregistrert;
+		private final String endretAvNavn;
+		private final FagsystemCode fagsystem;
 
 	}
 
