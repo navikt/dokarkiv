@@ -16,7 +16,7 @@ CREATE TABLE T_K_BEHANDLINGSTEMA
 ALTER TABLE T_JOURNALPOST ADD K_BEHANDLINGSTEMA VARCHAR2(200 CHAR);
 
 CREATE INDEX XIF7JOURNALP
-  ON T_JOURNALPOST (K_BEHANDLINGSTEMA) ;
+  ON T_JOURNALPOST (K_BEHANDLINGSTEMA);
 
 ALTER  TABLE T_JOURNALPOST
   ADD CONSTRAINT T_JOURNALPOST_R_56
@@ -42,10 +42,7 @@ INSERT INTO T_K_BEHANDLINGSTEMA (k_behandlingstema,dekode,dato_fom,dato_tom,er_g
 INSERT INTO T_K_BEHANDLINGSTEMA (k_behandlingstema,dekode,dato_fom,dato_tom,er_gyldig,dato_opprettet,opprettet_av,dato_endret,endret_av) VALUES ('ab0198','Skademelding sykdom - selvstendig næringsdrivende',date '1900-01-01',NULL,'1',timestamp '2018-10-05 13:00:00','Mathias Rasmussen',timestamp '2018-10-05 13:00:00','Mathias Rasmussen');
 INSERT INTO T_K_BEHANDLINGSTEMA (k_behandlingstema,dekode,dato_fom,dato_tom,er_gyldig,dato_opprettet,opprettet_av,dato_endret,endret_av) VALUES ('ab0199','Hjelpemidler dagliglivet barnehage',date '1900-01-01',NULL,'1',timestamp '2018-10-05 13:00:00','Mathias Rasmussen',timestamp '2018-10-05 13:00:00','Mathias Rasmussen');
 INSERT INTO T_K_BEHANDLINGSTEMA (k_behandlingstema,dekode,dato_fom,dato_tom,er_gyldig,dato_opprettet,opprettet_av,dato_endret,endret_av) VALUES ('ab0200','Risiko sykefravær',date '1900-01-01',NULL,'1',timestamp '2018-10-05 13:00:00','Mathias Rasmussen',timestamp '2018-10-05 13:00:00','Mathias Rasmussen');
-
 INSERT INTO T_K_BEHANDLINGSTEMA (k_behandlingstema,dekode,dato_fom,dato_tom,er_gyldig,dato_opprettet,opprettet_av,dato_endret,endret_av) VALUES ('ab0201','Supplerende stønad til enslig',date '1900-01-01',NULL,'1',timestamp '2018-10-05 13:00:00','Mathias Rasmussen',timestamp '2018-10-05 13:00:00','Mathias Rasmussen');
-INSERT INTO T_K_BEHANDLINGSTEMA (k_behandlingstema,dekode,dato_fom,dato_tom,er_gyldig,dato_opprettet,opprettet_av,dato_endret,endret_av) VALUES ('ab0201','Supplerende stønd til enslig',date '1900-01-01',NULL,'1',timestamp '2018-10-05 13:00:00','Mathias Rasmussen',timestamp '2018-10-05 13:00:00','Mathias Rasmussen');
-
 INSERT INTO T_K_BEHANDLINGSTEMA (k_behandlingstema,dekode,dato_fom,dato_tom,er_gyldig,dato_opprettet,opprettet_av,dato_endret,endret_av) VALUES ('ab0202','Menerstatning - arbeidstaker',date '1900-01-01',NULL,'1',timestamp '2018-10-05 13:00:00','Mathias Rasmussen',timestamp '2018-10-05 13:00:00','Mathias Rasmussen');
 INSERT INTO T_K_BEHANDLINGSTEMA (k_behandlingstema,dekode,dato_fom,dato_tom,er_gyldig,dato_opprettet,opprettet_av,dato_endret,endret_av) VALUES ('ab0203','Ventestønad',date '1900-01-01',NULL,'1',timestamp '2018-10-05 13:00:00','Mathias Rasmussen',timestamp '2018-10-05 13:00:00','Mathias Rasmussen');
 INSERT INTO T_K_BEHANDLINGSTEMA (k_behandlingstema,dekode,dato_fom,dato_tom,er_gyldig,dato_opprettet,opprettet_av,dato_endret,endret_av) VALUES ('ab0204','Reisetillegg',date '1900-01-01',NULL,'1',timestamp '2018-10-05 13:00:00','Mathias Rasmussen',timestamp '2018-10-05 13:00:00','Mathias Rasmussen');
@@ -81,13 +78,8 @@ INSERT INTO T_K_BEHANDLINGSTEMA (k_behandlingstema,dekode,dato_fom,dato_tom,er_g
 INSERT INTO T_K_BEHANDLINGSTEMA (k_behandlingstema,dekode,dato_fom,dato_tom,er_gyldig,dato_opprettet,opprettet_av,dato_endret,endret_av) VALUES ('ab0237','Reisetilskudd',date '1900-01-01',NULL,'1',timestamp '2018-10-05 13:00:00','Mathias Rasmussen',timestamp '2018-10-05 13:00:00','Mathias Rasmussen');
 INSERT INTO T_K_BEHANDLINGSTEMA (k_behandlingstema,dekode,dato_fom,dato_tom,er_gyldig,dato_opprettet,opprettet_av,dato_endret,endret_av) VALUES ('ab0238','Familiepleierstønad',date '1900-01-01',NULL,'1',timestamp '2018-10-05 13:00:00','Mathias Rasmussen',timestamp '2018-10-05 13:00:00','Mathias Rasmussen');
 INSERT INTO T_K_BEHANDLINGSTEMA (k_behandlingstema,dekode,dato_fom,dato_tom,er_gyldig,dato_opprettet,opprettet_av,dato_endret,endret_av) VALUES ('ab0239','Utlandet',date '1900-01-01',NULL,'1',timestamp '2018-10-05 13:00:00','Mathias Rasmussen',timestamp '2018-10-05 13:00:00','Mathias Rasmussen');
-
-INSERT INTO T_K_BEHANDLINGSTEMA (k_behandlingstema,dekode,dato_fom,dato_tom,er_gyldig,dato_opprettet,opprettet_av,dato_endret,endret_av) VALUES ('ab0240','Arbeidslivet',date '1900-01-01',NULL,'1',timestamp '2018-10-05 13:00:00','Mathias Rasmussen',timestamp '2018-10-05 13:00:00','Mathias Rasmussen');
 INSERT INTO T_K_BEHANDLINGSTEMA (k_behandlingstema,dekode,dato_fom,dato_tom,er_gyldig,dato_opprettet,opprettet_av,dato_endret,endret_av) VALUES ('ab0240','Hjelpemidler arbeidslivet',date '1900-01-01',NULL,'1',timestamp '2018-10-05 13:00:00','Mathias Rasmussen',timestamp '2018-10-05 13:00:00','Mathias Rasmussen');
-
-INSERT INTO T_K_BEHANDLINGSTEMA (k_behandlingstema,dekode,dato_fom,dato_tom,er_gyldig,dato_opprettet,opprettet_av,dato_endret,endret_av) VALUES ('ab0241','Dagliglivet',date '1900-01-01',NULL,'1',timestamp '2018-10-05 13:00:00','Mathias Rasmussen',timestamp '2018-10-05 13:00:00','Mathias Rasmussen');
 INSERT INTO T_K_BEHANDLINGSTEMA (k_behandlingstema,dekode,dato_fom,dato_tom,er_gyldig,dato_opprettet,opprettet_av,dato_endret,endret_av) VALUES ('ab0241','Hjelpemidler dagliglivet',date '1900-01-01',NULL,'1',timestamp '2018-10-05 13:00:00','Mathias Rasmussen',timestamp '2018-10-05 13:00:00','Mathias Rasmussen');
-
 INSERT INTO T_K_BEHANDLINGSTEMA (k_behandlingstema,dekode,dato_fom,dato_tom,er_gyldig,dato_opprettet,opprettet_av,dato_endret,endret_av) VALUES ('ab0242','Grunnmønster',date '1900-01-01',NULL,'1',timestamp '2018-10-05 13:00:00','Mathias Rasmussen',timestamp '2018-10-05 13:00:00','Mathias Rasmussen');
 INSERT INTO T_K_BEHANDLINGSTEMA (k_behandlingstema,dekode,dato_fom,dato_tom,er_gyldig,dato_opprettet,opprettet_av,dato_endret,endret_av) VALUES ('ab0243','Høreapparat',date '1900-01-01',NULL,'1',timestamp '2018-10-05 13:00:00','Mathias Rasmussen',timestamp '2018-10-05 13:00:00','Mathias Rasmussen');
 INSERT INTO T_K_BEHANDLINGSTEMA (k_behandlingstema,dekode,dato_fom,dato_tom,er_gyldig,dato_opprettet,opprettet_av,dato_endret,endret_av) VALUES ('ab0244','Tilskudd datahjelpemiddel',date '1900-01-01',NULL,'1',timestamp '2018-10-05 13:00:00','Mathias Rasmussen',timestamp '2018-10-05 13:00:00','Mathias Rasmussen');
@@ -275,11 +267,7 @@ INSERT INTO T_K_BEHANDLINGSTEMA (k_behandlingstema,dekode,dato_fom,dato_tom,er_g
 INSERT INTO T_K_BEHANDLINGSTEMA (k_behandlingstema,dekode,dato_fom,dato_tom,er_gyldig,dato_opprettet,opprettet_av,dato_endret,endret_av) VALUES ('ab0319','Bil',date '1900-01-01',NULL,'1',timestamp '2018-10-05 13:00:00','Mathias Rasmussen',timestamp '2018-10-05 13:00:00','Mathias Rasmussen');
 INSERT INTO T_K_BEHANDLINGSTEMA (k_behandlingstema,dekode,dato_fom,dato_tom,er_gyldig,dato_opprettet,opprettet_av,dato_endret,endret_av) VALUES ('ab0320','Pleiepenger sykt barn ny ordning fom 011017',date '1900-01-01',NULL,'1',timestamp '2018-10-05 13:00:00','Mathias Rasmussen',timestamp '2018-10-05 13:00:00','Mathias Rasmussen');
 INSERT INTO T_K_BEHANDLINGSTEMA (k_behandlingstema,dekode,dato_fom,dato_tom,er_gyldig,dato_opprettet,opprettet_av,dato_endret,endret_av) VALUES ('ab0321','Kjøreliste',date '1900-01-01',NULL,'1',timestamp '2018-10-05 13:00:00','Mathias Rasmussen',timestamp '2018-10-05 13:00:00','Mathias Rasmussen');
-
-
-INSERT INTO T_K_BEHANDLINGSTEMA (k_behandlingstema,dekode,dato_fom,dato_tom,er_gyldig,dato_opprettet,opprettet_av,dato_endret,endret_av) VALUES ('ab0322','Farskap',date '1900-01-01',NULL,'1',timestamp '2018-10-05 13:00:00','Mathias Rasmussen',timestamp '2018-10-05 13:00:00','Mathias Rasmussen');
 INSERT INTO T_K_BEHANDLINGSTEMA (k_behandlingstema,dekode,dato_fom,dato_tom,er_gyldig,dato_opprettet,opprettet_av,dato_endret,endret_av) VALUES ('ab0322','Bidrag inkl. farskap',date '1900-01-01',NULL,'1',timestamp '2018-10-05 13:00:00','Mathias Rasmussen',timestamp '2018-10-05 13:00:00','Mathias Rasmussen');
-
 INSERT INTO T_K_BEHANDLINGSTEMA (k_behandlingstema,dekode,dato_fom,dato_tom,er_gyldig,dato_opprettet,opprettet_av,dato_endret,endret_av) VALUES ('ab0323','Barnebortføring',date '1900-01-01',NULL,'1',timestamp '2018-10-05 13:00:00','Mathias Rasmussen',timestamp '2018-10-05 13:00:00','Mathias Rasmussen');
 INSERT INTO T_K_BEHANDLINGSTEMA (k_behandlingstema,dekode,dato_fom,dato_tom,er_gyldig,dato_opprettet,opprettet_av,dato_endret,endret_av) VALUES ('ab0324','Oppfostringsbidrag',date '1900-01-01',NULL,'1',timestamp '2018-10-05 13:00:00','Mathias Rasmussen',timestamp '2018-10-05 13:00:00','Mathias Rasmussen');
 INSERT INTO T_K_BEHANDLINGSTEMA (k_behandlingstema,dekode,dato_fom,dato_tom,er_gyldig,dato_opprettet,opprettet_av,dato_endret,endret_av) VALUES ('ab0325','Ektefelle',date '1900-01-01',NULL,'1',timestamp '2018-10-05 13:00:00','Mathias Rasmussen',timestamp '2018-10-05 13:00:00','Mathias Rasmussen');
@@ -342,10 +330,7 @@ INSERT INTO T_K_BEHANDLINGSTEMA (k_behandlingstema,dekode,dato_fom,dato_tom,er_g
 INSERT INTO T_K_BEHANDLINGSTEMA (k_behandlingstema,dekode,dato_fom,dato_tom,er_gyldig,dato_opprettet,opprettet_av,dato_endret,endret_av) VALUES ('ab0152','Høreapparat arbeidslivet',date '1900-01-01',NULL,'1',timestamp '2018-10-05 13:00:00','Mathias Rasmussen',timestamp '2018-10-05 13:00:00','Mathias Rasmussen');
 INSERT INTO T_K_BEHANDLINGSTEMA (k_behandlingstema,dekode,dato_fom,dato_tom,er_gyldig,dato_opprettet,opprettet_av,dato_endret,endret_av) VALUES ('ab0153','Pleiepenger  ved institusjonsopphold',date '1900-01-01',NULL,'1',timestamp '2018-10-05 13:00:00','Mathias Rasmussen',timestamp '2018-10-05 13:00:00','Mathias Rasmussen');
 INSERT INTO T_K_BEHANDLINGSTEMA (k_behandlingstema,dekode,dato_fom,dato_tom,er_gyldig,dato_opprettet,opprettet_av,dato_endret,endret_av) VALUES ('ab0154','Unntak medlemsskap',date '1900-01-01',NULL,'1',timestamp '2018-10-05 13:00:00','Mathias Rasmussen',timestamp '2018-10-05 13:00:00','Mathias Rasmussen');
-
-INSERT INTO T_K_BEHANDLINGSTEMA (k_behandlingstema,dekode,dato_fom,dato_tom,er_gyldig,dato_opprettet,opprettet_av,dato_endret,endret_av) VALUES ('ab0155','Dødfødt barn',date '1900-01-01',NULL,'1',timestamp '2018-10-05 13:00:00','Mathias Rasmussen',timestamp '2018-10-05 13:00:00','Mathias Rasmussen');
 INSERT INTO T_K_BEHANDLINGSTEMA (k_behandlingstema,dekode,dato_fom,dato_tom,er_gyldig,dato_opprettet,opprettet_av,dato_endret,endret_av) VALUES ('ab0155','Gravferdsstønad',date '1900-01-01',NULL,'1',timestamp '2018-10-05 13:00:00','Mathias Rasmussen',timestamp '2018-10-05 13:00:00','Mathias Rasmussen');
-
 INSERT INTO T_K_BEHANDLINGSTEMA (k_behandlingstema,dekode,dato_fom,dato_tom,er_gyldig,dato_opprettet,opprettet_av,dato_endret,endret_av) VALUES ('ab0156','Fadder',date '1900-01-01',NULL,'1',timestamp '2018-10-05 13:00:00','Mathias Rasmussen',timestamp '2018-10-05 13:00:00','Mathias Rasmussen');
 INSERT INTO T_K_BEHANDLINGSTEMA (k_behandlingstema,dekode,dato_fom,dato_tom,er_gyldig,dato_opprettet,opprettet_av,dato_endret,endret_av) VALUES ('ab0157','Tinnitusmaskerer arbeidslivet',date '1900-01-01',NULL,'1',timestamp '2018-10-05 13:00:00','Mathias Rasmussen',timestamp '2018-10-05 13:00:00','Mathias Rasmussen');
 INSERT INTO T_K_BEHANDLINGSTEMA (k_behandlingstema,dekode,dato_fom,dato_tom,er_gyldig,dato_opprettet,opprettet_av,dato_endret,endret_av) VALUES ('ab0158','Supplerende stønad med ektefelle over 67 år',date '1900-01-01',NULL,'1',timestamp '2018-10-05 13:00:00','Mathias Rasmussen',timestamp '2018-10-05 13:00:00','Mathias Rasmussen');
