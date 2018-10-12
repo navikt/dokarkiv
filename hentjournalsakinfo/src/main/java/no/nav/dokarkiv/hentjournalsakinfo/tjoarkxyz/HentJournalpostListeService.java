@@ -29,7 +29,6 @@ public class HentJournalpostListeService {
 	}
 
 	public HentJournalpostListeResponseTo hentJournalpostListeByArkivIdAndFagsystem(HentJournalpostListeRequestTo hentJournalpostListeRequestTo) {
-
 		return HentJournalpostListeResponseTo.builder()
 				.gsakJournalpostList(getJournalpostList(hentJournalpostListeRequestTo.getGsakSakIdList(), FagsystemCode.FS19).stream()
 						.map(journalpostMapper::map)

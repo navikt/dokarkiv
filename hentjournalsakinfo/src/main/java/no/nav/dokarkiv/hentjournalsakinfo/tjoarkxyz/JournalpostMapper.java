@@ -1,5 +1,7 @@
 package no.nav.dokarkiv.hentjournalsakinfo.tjoarkxyz;
 
+import static org.aspectj.runtime.internal.Conversions.booleanValue;
+
 import no.nav.dokarkiv.hentjournalsakinfo.dto.DokumentInfo;
 import no.nav.dokarkiv.hentjournalsakinfo.dto.Journalpost;
 import no.nav.dokarkiv.hentjournalsakinfo.dto.JournalpostDokumentInfoRelasjon;
@@ -39,12 +41,12 @@ public class JournalpostMapper {
 				.utsendingskanal(jp.getUtsendingskanal())
 				.land(jp.getLand())
 				.faktiskDistribusjonskanal(jp.getFaktiskDistribusjonskanal())
-				.elektroniskDistribusjon(jp.getElektroniskDistribusjon())
+				.elektroniskDistribusjon(booleanValue(jp.getElektroniskDistribusjon()))
 				.ekspedertDato(jp.getEkspedertDato())
 				.lestDato(jp.getLestDato())
 				.mottattAdressatDato(jp.getMottattAdressatDato())
 				.journalposttype(jp.getJournalposttype())
-				.signatur(jp.getSignatur())
+				.signatur(booleanValue(jp.getSignatur()))
 				.saksrelasjon(Journalpost.Saksrelasjon.builder()
 						.saksrelasjonId(jp.getSaksrelasjon().getSaksrelasjonId())
 						.sakId(jp.getSaksrelasjon().getSakId())
@@ -63,8 +65,8 @@ public class JournalpostMapper {
 												.brevkode(relasjon.getDokumentInfo().getBrevkode())
 												.brevgruppe(relasjon.getDokumentInfo().getBrevgruppe())
 												.konvertertFraSystem(relasjon.getDokumentInfo().getKonvertertFraSystem())
-												.sensitivt(relasjon.getDokumentInfo().getSensitivt())
-												.slettet(relasjon.getDokumentInfo().getSlettet())
+												.sensitivt(booleanValue(relasjon.getDokumentInfo().getSensitivt()))
+												.slettet(booleanValue(relasjon.getDokumentInfo().getSlettet()))
 												.endretAvNavn(relasjon.getDokumentInfo().getEndretAvNavn())
 												.kategori(relasjon.getDokumentInfo().getKategori())
 												.dokumentstatus(relasjon.getDokumentInfo().getDokumentstatus())
@@ -73,10 +75,11 @@ public class JournalpostMapper {
 												.konfidensialitet(relasjon.getDokumentInfo().getKonfidensialitet())
 												.integritet(relasjon.getDokumentInfo().getIntegritet())
 												.tilgjengelighet(relasjon.getDokumentInfo().getTilgjengelighet())
-												.innskrenketPartsinnsyn(relasjon.getDokumentInfo().getInnskrenketPartsinnsyn())
-												.innskrenketPartsinnsynFraTredjepart(relasjon.getDokumentInfo()
-														.getInnskrenketPartsinnsynFraTredjepart())
-												.organInternt(relasjon.getDokumentInfo().getOrganInternt())
+												.innskrenketPartsinnsyn(booleanValue(relasjon.getDokumentInfo()
+														.getInnskrenketPartsinnsyn()))
+												.innskrenketPartsinnsynFraTredjepart(booleanValue(relasjon.getDokumentInfo()
+														.getInnskrenketPartsinnsynFraTredjepart()))
+												.organInternt(booleanValue(relasjon.getDokumentInfo().getOrganInternt()))
 												.originalJournalpostId(relasjon.getDokumentInfo()
 														.getOriginalJournalpost()
 														.getJournalpostId())

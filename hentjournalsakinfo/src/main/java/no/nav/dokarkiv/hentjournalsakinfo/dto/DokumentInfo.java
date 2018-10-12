@@ -20,8 +20,8 @@ public class DokumentInfo {
 	private final String brevkode;
 	private final String brevgruppe;
 	private final String konvertertFraSystem;
-	private final Boolean sensitivt;
-	private final Boolean slettet;
+	private final boolean sensitivt;
+	private final boolean slettet;
 	private final String endretAvNavn;
 	private final DokumentKategoriCode kategori;
 	private final DokumentStatusCode dokumentstatus;
@@ -30,9 +30,9 @@ public class DokumentInfo {
 	private final String konfidensialitet;
 	private final String integritet;
 	private final String tilgjengelighet;
-	private final Boolean innskrenketPartsinnsyn;
-	private final Boolean innskrenketPartsinnsynFraTredjepart;
-	private final Boolean organInternt;
+	private final boolean innskrenketPartsinnsyn;
+	private final boolean innskrenketPartsinnsynFraTredjepart;
+	private final boolean organInternt;
 	private final Long originalJournalpostId;
 	private final String dokumenttypeId;
 //    private final Set<SkannetInnhold> skannetInnholdListe = new HashSet<>(); TODO Trenger vi denne?

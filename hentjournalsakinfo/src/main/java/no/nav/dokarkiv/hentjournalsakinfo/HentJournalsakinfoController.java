@@ -28,7 +28,7 @@ public class HentJournalsakinfoController {
 	@Transactional(readOnly = true)
 	@ResponseBody
 	@PostMapping(value = "/hentjournalposter")
-	HentJournalpostListeResponseTo hentJournalposter(@RequestBody HentJournalpostListeRequestTo hentJournalpostListeRequestTo) {
+	public HentJournalpostListeResponseTo hentJournalposter(@RequestBody HentJournalpostListeRequestTo hentJournalpostListeRequestTo) {
 		log.info("tjoarkxyz har mottatt forespørsel");
 		return hentJournalpostListeService.hentJournalpostListeByArkivIdAndFagsystem(hentJournalpostListeRequestTo);
 	}

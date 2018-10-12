@@ -46,12 +46,12 @@ public class Journalpost {
 	private final UtsendingsKanalCode utsendingskanal;
 	private final String land;
 	private final FaktiskDistribusjonskanalCode faktiskDistribusjonskanal;
-	private final Boolean elektroniskDistribusjon;
+	private final boolean elektroniskDistribusjon;
 	private final Date ekspedertDato;
 	private final Date lestDato;
 	private final Date mottattAdressatDato;
 	private final JournalpostTypeCode journalposttype;
-	private final Boolean signatur;
+	private final boolean signatur;
 	private final Saksrelasjon saksrelasjon;
 	@Builder.Default
 	private final Set<JournalpostDokumentInfoRelasjon> journalpostDokumentInfoRelasjoner = new HashSet<>();
