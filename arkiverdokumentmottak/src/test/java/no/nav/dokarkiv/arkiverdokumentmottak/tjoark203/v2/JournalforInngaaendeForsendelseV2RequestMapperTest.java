@@ -9,6 +9,7 @@ import static no.nav.dokarkiv.arkiverdokumentmottak.utils.ArkiverDokumentmottakV
 import static no.nav.dokarkiv.arkiverdokumentmottak.utils.ArkiverDokumentmottakV2RequestDataUtil.assertTilleggsopplysninger;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 import no.nav.dokarkiv.arkiverdokumentmottak.utils.JournalforInngaaendeForsendelseV2RequestDataUtil;
@@ -78,6 +79,13 @@ public class JournalforInngaaendeForsendelseV2RequestMapperTest {
 
 		assertTilleggsopplysninger(domainResult.getTilleggsopplysninger());
 		assertKryssreferanser(domainResult.getKryssreferanser().iterator().next());
+	}
+
+	@Test
+	public void shouldRunWhenBehandlingstemaIsNull() {
+		request.getJournalpost().setBehandlingstema(null);
+		JournalforInngaaendeForsendelseV2RequestTo requestTo = mapper.map(request);
+		assertEquals(requestTo.getJournalpost().getBehandlingstema(), null);
 	}
 
 	private void assertJournalpostDokumentInfoRelasjon(JournalpostDokumentInfoRelasjon dokumentInfoRelasjon) {
