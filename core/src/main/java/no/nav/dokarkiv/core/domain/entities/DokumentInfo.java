@@ -103,7 +103,7 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	@Column(name = "dato_dok_ferdig")
 	private Date dokumentFerdigDato;
 
-	@Column(name = "tittel")
+	@Column(name = "tittel", length = 500)
 	private String tittel;
 
 	@Column(name = "konfidensialitet")

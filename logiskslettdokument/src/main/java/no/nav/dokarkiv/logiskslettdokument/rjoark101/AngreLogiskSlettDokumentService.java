@@ -4,8 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
-import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
-import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
+import no.nav.dokarkiv.logiskslettdokument.AbstractSlettDokumentService;
 import no.nav.dokarkiv.logiskslettdokument.rjoark100.LogiskSlettDokumentRequestTo;
 import no.nav.dokarkiv.logiskslettdokument.rjoark100.LogiskSlettDokumentResponse;
 import no.nav.dokarkiv.logiskslettdokument.rjoark100.LogiskSlettDokumentResponseMapper;
@@ -18,21 +17,15 @@ import java.util.List;
 
 @Service
 @Slf4j
-public class AngreLogiskSlettDokumentService {
+public class AngreLogiskSlettDokumentService extends AbstractSlettDokumentService {
 
 	@Inject
 	private AngreLogiskSlettDokumentValidator validator;
 
-	@Inject
-	private DokumentinfoRepository dokumentinfoRepository;
-
-	@Inject
-	private JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository;
-
 	public LogiskSlettDokumentResponse angreLogiskSlettDokument(LogiskSlettDokumentRequestTo requestTo) {
-
-		List<JournalpostDokumentInfoRelasjon> journalpostDokumentInfoRelasjonList = journalpostDokumentInfoRelasjonRepository.findByDokumentInfoId(requestTo
-				.getDokumentInfoId()).orElse(new ArrayList<>());
+		List<JournalpostDokumentInfoRelasjon> journalpostDokumentInfoRelasjonList =
+				journalpostDokumentInfoRelasjonRepository.findByDokumentInfoId(requestTo.getDokumentInfoId())
+						.orElse(new ArrayList<>());
 
 		validator.validateAngreLogiskSlettDokument(journalpostDokumentInfoRelasjonList, requestTo);
 
@@ -49,6 +42,17 @@ public class AngreLogiskSlettDokumentService {
 	private void setAngreDokumentLogiskSlettet(DokumentInfo dokumentInfo) {
 		dokumentInfo.setSlettet(false);
 		dokumentInfo.setEndretAvNavn(MDC.get(MDCConstants.MDC_USER_NAME));
+		dokumentInfo.setTittel(fjernSlettemelding(dokumentInfo.getTittel()));
 		dokumentinfoRepository.save(dokumentInfo);
 	}
+
+	private String fjernSlettemelding(String tittel) {
+		String nyTittel = tittel;
+
+		if (tittel.endsWith(SLETTEMELDING)) {
+			nyTittel = tittel.substring(0, tittel.length() - SLETTEMELDING.length());
+		}
+		return nyTittel;
+	}
+
 }

@@ -3,12 +3,14 @@ package no.nav.dokarkiv.logiskslettdokument.rjoark101;
 import static no.nav.dokarkiv.logiskslettdokument.util.TestUtils.createJournalpostBuilder;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.endsWith;
+import static org.hamcrest.Matchers.not;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 
 import no.nav.dokarkiv.core.MDCConstants;
+import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
 import no.nav.dokarkiv.logiskslettdokument.AbstractSlettDokumentIT;
 import no.nav.dokarkiv.logiskslettdokument.rjoark100.LogiskSlettDokumentResponse;
 import org.junit.Test;
@@ -18,12 +20,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.transaction.TestTransaction;
 
-import javax.inject.Inject;
-
 public class Rjoark101IT extends AbstractSlettDokumentIT {
-
-	@Inject
-	private JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository;
 
 	@Test
 	public void shouldAngreLogiskSlettDokument() {
@@ -35,17 +32,19 @@ public class Rjoark101IT extends AbstractSlettDokumentIT {
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
-		ResponseEntity<LogiskSlettDokumentResponse> responseEntity = restTemplate.exchange(URL_ANGRESLETTDOKUMENT + journalpost.getJournalpostId()
-						+ "/" + journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId(),
-				HttpMethod.PATCH, createHeaders(), LogiskSlettDokumentResponse.class);
+		ResponseEntity<LogiskSlettDokumentResponse> responseEntity = restTemplate.exchange(
+				URL_ANGRESLETTDOKUMENT + journalpost.getJournalpostId() + "/" + journalpost.
+						findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId(),
+				HttpMethod.PATCH,
+				createHeaders(),
+				LogiskSlettDokumentResponse.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
-		assertEquals(journalpostDokumentInfoRelasjonRepository.findByDokumentInfoId(
-				journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId())
-				.get()
-				.get(0)
-				.getDokumentInfo()
-				.getSlettet(), false);
+
+		DokumentInfo angreLogiskSlettDokumentInfo = hentDokumentInfoEtterUtførtKall(journalpost);
+
+		assertEquals(angreLogiskSlettDokumentInfo.getSlettet(), false);
+		assertThat(angreLogiskSlettDokumentInfo.getTittel(), not(endsWith(SLETTEMELDING)));
 	}
 
 	@Test
@@ -58,27 +57,61 @@ public class Rjoark101IT extends AbstractSlettDokumentIT {
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
-		ResponseEntity<String> responseEntity = restTemplate.exchange(URL_ANGRESLETTDOKUMENT + journalpost.getJournalpostId()
-						+ "/" + journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId(),
-				HttpMethod.PATCH, createHeaders(), String.class);
+		ResponseEntity<String> responseEntity = restTemplate.exchange(
+				URL_ANGRESLETTDOKUMENT + journalpost.getJournalpostId() + "/" + journalpost.
+						findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId(),
+				HttpMethod.PATCH,
+				createHeaders(),
+				String.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.BAD_REQUEST));
-		assertThat(responseEntity.getBody(), containsString(String.format("%s kan ikke angre logisk sletting av dokument med dokumentInfoId=%s. Dokumentet er ikke logisk slettet",
-				MDC.get(MDCConstants.MDC_REQUEST_ID), journalpost.findHoveddokumentDokumentInfoRelasjon()
-						.getDokumentInfo()
-						.getDokumentInfoId())));
-		assertEquals(journalpostDokumentInfoRelasjonRepository.findByDokumentInfoId(journalpost.findHoveddokumentDokumentInfoRelasjon()
-				.getDokumentInfo().getDokumentInfoId()).get()
-				.get(0)
-				.getDokumentInfo()
-				.getSlettet(), false);
 
+		DokumentInfo dokumentInfoIkkeSlettet = hentDokumentInfoEtterUtførtKall(journalpost);
+
+		assertThat(responseEntity.getBody(), containsString(
+				String.format("%s kan ikke angre logisk sletting av dokument med dokumentInfoId=%s. Dokumentet er ikke logisk slettet",
+						MDC.get(MDCConstants.MDC_REQUEST_ID),
+						dokumentInfoIkkeSlettet.getDokumentInfoId())));
+		assertEquals(dokumentInfoIkkeSlettet.getSlettet(), false);
 	}
 
-	private void setJournalpostSlettet(Journalpost journalpost) {
+	@Test
+	public void shouldFailToAngreLogiskSlettDokumentBecauseSlettetDokumentWithoutSlettemelding() {
+		abacPermit();
+
+		Journalpost journalpost = createJournalpostBuilder().build();
+		setJournalpostSlettetWithoutSlettemelding(journalpost);
+
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
+
+		ResponseEntity<LogiskSlettDokumentResponse> responseEntity = restTemplate.exchange(
+				URL_ANGRESLETTDOKUMENT + journalpost.getJournalpostId() + "/" + journalpost.
+						findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId(),
+				HttpMethod.PATCH,
+				createHeaders(),
+				LogiskSlettDokumentResponse.class);
+
+		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
+
+		DokumentInfo angreLogiskSlettDokumentInfoWithoutSletteMelding = hentDokumentInfoEtterUtførtKall(journalpost);
+
+		assertEquals(angreLogiskSlettDokumentInfoWithoutSletteMelding.getSlettet(), false);
+		assertThat(angreLogiskSlettDokumentInfoWithoutSletteMelding.getTittel(), not(endsWith(SLETTEMELDING)));
+	}
+
+
+	private void setJournalpostSlettetWithoutSlettemelding(Journalpost journalpost) {
 		journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().setSlettet(true);
 		joarkRepository.save(journalpost);
 	}
 
+	private void setJournalpostSlettet(Journalpost journalpost) {
+		DokumentInfo dokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
+
+		dokumentInfo.setSlettet(true);
+		dokumentInfo.setTittel(setSlettemelding(dokumentInfo.getTittel()));
+		joarkRepository.save(journalpost);
+	}
 
 }

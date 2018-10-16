@@ -4,8 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
-import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
-import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
+import no.nav.dokarkiv.logiskslettdokument.AbstractSlettDokumentService;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
 
@@ -15,36 +14,42 @@ import java.util.List;
 
 @Service
 @Slf4j
-public class LogiskSlettDokumentService {
+public class LogiskSlettDokumentService extends AbstractSlettDokumentService {
 
-    @Inject
-    private LogiskSlettDokumentValidator validator;
+	@Inject
+	private LogiskSlettDokumentValidator validator;
 
-    @Inject
-    private DokumentinfoRepository dokumentinfoRepository;
+	public LogiskSlettDokumentResponse slettDokumentLogisk(LogiskSlettDokumentRequestTo requestTo) {
+		List<JournalpostDokumentInfoRelasjon> journalpostDokumentInfoRelasjonList =
+				journalpostDokumentInfoRelasjonRepository.findByDokumentInfoId(requestTo.getDokumentInfoId())
+						.orElse(new ArrayList<>());
 
-    @Inject
-    private JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository;
+		validator.validateLogiskSlettDokument(journalpostDokumentInfoRelasjonList, requestTo);
 
-    public LogiskSlettDokumentResponse slettDokumentLogisk(LogiskSlettDokumentRequestTo requestTo) {
-        List<JournalpostDokumentInfoRelasjon> journalpostDokumentInfoRelasjonList = journalpostDokumentInfoRelasjonRepository.findByDokumentInfoId(requestTo
-                .getDokumentInfoId()).orElse(new ArrayList<>());
+		JournalpostDokumentInfoRelasjon journalpostDokumentInfoRelasjon = journalpostDokumentInfoRelasjonList.get(0);
 
-        validator.validateLogiskSlettDokument(journalpostDokumentInfoRelasjonList, requestTo);
+		setDokumentLogiskSlettet(journalpostDokumentInfoRelasjon.getDokumentInfo());
+		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har utført logisk sletting av dokument med journalpostId={}, dokumentInfoId={}",
+				requestTo.getJournalpostId(), requestTo.getDokumentInfoId());
 
-        JournalpostDokumentInfoRelasjon journalpostDokumentInfoRelasjon = journalpostDokumentInfoRelasjonList.get(0);
+		return LogiskSlettDokumentResponseMapper.mapToSlettDokumentResponse(journalpostDokumentInfoRelasjon.getJournalpost(),
+				journalpostDokumentInfoRelasjon.getDokumentInfo());
+	}
 
-        setDokumentLogiskSlettet(journalpostDokumentInfoRelasjon.getDokumentInfo());
-        log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har utført logisk sletting av dokument med journalpostId={}, dokumentInfoId={}",
-                requestTo.getJournalpostId(), requestTo.getDokumentInfoId());
+	private void setDokumentLogiskSlettet(DokumentInfo dokumentInfo) {
+		dokumentInfo.setSlettet(true);
+		dokumentInfo.setEndretAvNavn(MDC.get(MDCConstants.MDC_USER_NAME));
+		dokumentInfo.setTittel(setSlettemelding(dokumentInfo.getTittel()));
+		dokumentinfoRepository.save(dokumentInfo);
+	}
 
-        return LogiskSlettDokumentResponseMapper.mapToSlettDokumentResponse(journalpostDokumentInfoRelasjon.getJournalpost(),
-                journalpostDokumentInfoRelasjon.getDokumentInfo());
-    }
+	private String setSlettemelding(String tittel) {
+		int minneAllokertForTittel = 500;
+		String nyTittel = tittel;
 
-    private void setDokumentLogiskSlettet(DokumentInfo dokumentInfo) {
-        dokumentInfo.setSlettet(true);
-        dokumentInfo.setEndretAvNavn(MDC.get(MDCConstants.MDC_USER_NAME));
-        dokumentinfoRepository.save(dokumentInfo);
-    }
+		if (nyTittel.length() + SLETTEMELDING.length() <= minneAllokertForTittel) {
+			nyTittel += SLETTEMELDING;
+		}
+		return nyTittel;
+	}
 }

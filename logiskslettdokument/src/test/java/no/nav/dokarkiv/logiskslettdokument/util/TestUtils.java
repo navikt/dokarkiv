@@ -38,6 +38,7 @@ public class TestUtils {
 
 	public static final Long JOURNALPOST_ID = 42L;
 	public static final Long DOKUMENTINFO_ID = 1L;
+	public final String SLETTEMELDING = " - slettet";
 
 
 
@@ -123,5 +124,4 @@ public class TestUtils {
 						.build())
 				.build();
 	}
-
 }
