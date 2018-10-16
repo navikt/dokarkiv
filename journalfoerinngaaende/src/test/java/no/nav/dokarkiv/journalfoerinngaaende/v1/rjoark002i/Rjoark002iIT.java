@@ -56,7 +56,7 @@ public class Rjoark002iIT extends AbstractJournalfoerInngaaendeV1Itest {
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 		assertThat(responseEntity.getBody().getJournalpostId(), is(String.valueOf(journalpostId)));
 		assertThat(responseEntity.getBody().getMangler(), is(nullValue()));
-		assertThat(responseEntity.getBody().getHarEndeligJF(), is(true));
+		assertThat(responseEntity.getBody().isHarEndeligJF(), is(true));
 
 		verify(postRequestedFor(urlEqualTo("/abac")).withRequestBody(equalToJson(format(stringFromClasspath("abac/putInngaaendejournalpost_PersonUser_and_ServiceUser.json"),
 				getOidcTokenBody(OIDC_TOKEN_PERSON_USER_TEST.replace("Bearer ", "")),
@@ -107,7 +107,7 @@ public class Rjoark002iIT extends AbstractJournalfoerInngaaendeV1Itest {
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 		assertThat(responseEntity.getBody().getJournalpostId(), is(String.valueOf(journalpostId)));
 		assertThat(responseEntity.getBody().getMangler(), is(nullValue()));
-		assertThat(responseEntity.getBody().getHarEndeligJF(), is(true));
+		assertThat(responseEntity.getBody().isHarEndeligJF(), is(true));
 
 		verify(postRequestedFor(urlEqualTo("/abac")).withRequestBody(equalToJson(format(stringFromClasspath("abac/putInngaaendejournalpost_only_ServiceUser.json"),
 				getOidcTokenBody(OIDC_TOKEN_SERVICE_USER_TEST.replace("Bearer ", ""))))));
@@ -196,7 +196,7 @@ public class Rjoark002iIT extends AbstractJournalfoerInngaaendeV1Itest {
 		assertThat(responseEntity.getBody().getJournalpostId(), is(journalpostId));
 		assertThat(responseEntity.getBody().getMangler(), is(notNullValue()));
 		assertThat(responseEntity.getBody().getMangler().getTittel(), is(Status.MANGLER));
-		assertThat(responseEntity.getBody().getHarEndeligJF(), is(false));
+		assertThat(responseEntity.getBody().isHarEndeligJF(), is(false));
 	}
 
 	/**
@@ -243,7 +243,7 @@ public class Rjoark002iIT extends AbstractJournalfoerInngaaendeV1Itest {
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 		assertThat(responseEntity.getBody().getJournalpostId(), is(journalpostId));
 		assertThat(responseEntity.getBody().getMangler(), is(nullValue()));
-		assertThat(responseEntity.getBody().getHarEndeligJF(), is(false));
+		assertThat(responseEntity.getBody().isHarEndeligJF(), is(false));
 	}
 
 	/**

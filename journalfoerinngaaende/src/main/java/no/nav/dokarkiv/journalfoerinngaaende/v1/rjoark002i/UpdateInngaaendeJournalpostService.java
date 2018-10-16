@@ -51,7 +51,7 @@ public class UpdateInngaaendeJournalpostService {
 
 		validateJournalpostStatuser(journalpost);
 
-		if (putJournalpostRequest.getForsoekEndeligJF()) {
+		if (putJournalpostRequest.isForsoekEndeligJF()) {
 			validateJournalpostStrukturOgPaakrevdeAttributter(journalpost);
 		}
 
@@ -61,7 +61,7 @@ public class UpdateInngaaendeJournalpostService {
 		response.setJournalpostId(journalpostId);
 		response.setHarEndeligJF(false);
 
-		if (putJournalpostRequest.getForsoekEndeligJF()) {
+		if (putJournalpostRequest.isForsoekEndeligJF()) {
 			Mangler mangler = createMangler(journalpost);
 			if (containsMangler(mangler)) {
 				response.setMangler(createMangler(journalpost));
