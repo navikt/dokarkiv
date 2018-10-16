@@ -5,7 +5,6 @@ import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
 import com.auth0.jwt.JWT;
 import lombok.extern.slf4j.Slf4j;
-import no.nav.dokarkiv.core.security.ldap.NavLdapService;
 import no.nav.freg.security.oidc.auth.idtoken.extract.HeaderTokenExtractor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.servlet.HandlerInterceptor;

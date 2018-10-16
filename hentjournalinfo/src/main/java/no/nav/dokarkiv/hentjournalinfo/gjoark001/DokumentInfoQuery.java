@@ -57,13 +57,13 @@ public class DokumentInfoQuery implements Query {
     @GraphQLQuery(name = DOKUMENTINFO)
     @Transactional(readOnly = true)
     @GraphQLMetrics(value = "dok_graphql_request", extraTags = {"process_code", "gjoark001", "query", DOKUMENTINFO})
-// Tar bort denne midlertidig til abac løsning for alle tema er klare
-//    @Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_DOKUMENT)},
-//            actions = @Abac.Attr(key = ACTION_ID, value = READ_ACTION))
+    @Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_DOKUMENT)},
+            actions = @Abac.Attr(key = ACTION_ID, value = READ_ACTION))
     public DokumentInfo dokumentInfo(@GraphQLArgument(name = "dokumentInfoId") @GraphQLNonNull Long dokumentInfoId) {
         log.info(format("GraphQL har mottatt %s query med dokumentInfoId=%s", DOKUMENTINFO, dokumentInfoId));
         //Som over, ikke noe ABAC foreløpig
         //abacSecurityService.assertAccessToDokument(dokumentInfoId);
+
         //Husk å ta bort denne når abac er tilbake:
         if (!dokumentinfoRepository.existsById(dokumentInfoId)) {
             throw new DokumentInfoIkkeFunnetException("DokumentInfo ikke funnet. dokumentInfoId=" + dokumentInfoId);
