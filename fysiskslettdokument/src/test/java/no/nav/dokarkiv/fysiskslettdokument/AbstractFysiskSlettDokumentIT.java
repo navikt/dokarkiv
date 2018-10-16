@@ -45,7 +45,7 @@ import javax.inject.Inject;
 @AutoConfigureDataLdap
 @AutoConfigureWireMock(port = 0)
 @Transactional
-public class AbstractFysiskSlettDokumentIT {
+public abstract class AbstractFysiskSlettDokumentIT {
 
 	protected static final String OPPRETTET_KILDE_NAVN = "Opprettet kilde";
 	protected static final String TILKNYTTET_AV_NAVN = "Tilknyttetnavn";
