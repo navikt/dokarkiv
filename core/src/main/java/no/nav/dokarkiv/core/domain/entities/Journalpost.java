@@ -10,6 +10,7 @@ import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.UB;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import no.nav.dokarkiv.core.domain.AbstractPersistentVersionedDomainObjectWithKilde;
+import no.nav.dokarkiv.core.domain.codes.Behandlingstema;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.FaktiskDistribusjonskanalCode;
@@ -192,6 +193,10 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	@Column(name = "signatur")
 	@Type(type = "org.hibernate.type.TrueFalseType")
 	private Boolean signatur;
+
+	@Enumerated(EnumType.STRING)
+	@Column(name = "k_behandlingstema")
+	private Behandlingstema behandlingstema;
 
 	@OneToMany
 	@JoinColumn(name = "journalpost_id", nullable = false)
@@ -1410,6 +1415,24 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	 */
 	public void setSignatur(Boolean signatur) {
 		this.signatur = signatur;
+	}
+
+	/**
+	 * Getter for the behandlingstema property.
+	 *
+	 * @return the behandlingstema
+	 */
+	public Behandlingstema getBehandlingstema() {
+		return behandlingstema;
+	}
+
+	/**
+	 * Setter for the behandlingstema property.
+	 *
+	 * @param behandlingstema the behandlingstema to set
+	 */
+	public void setBehandlingstema(Behandlingstema behandlingstema) {
+		this.behandlingstema = behandlingstema;
 	}
 
 	/**
