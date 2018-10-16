@@ -54,6 +54,7 @@ public class JournalpostMapper {
 						.endretAvNavn(jp.getSaksrelasjon().getEndretAvNavn())
 						.fagsystem(jp.getSaksrelasjon().getFagsystem())
 						.build())
+				.datoOpprettet(jp.getChangeStamp().getCreatedDate())
 				.journalpostDokumentInfoRelasjoner(new HashSet<>(
 						jp.getJournalpostDokumentInfoRelasjoner().stream().map(relasjon ->
 								JournalpostDokumentInfoRelasjon.builder()
