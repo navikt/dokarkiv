@@ -9,7 +9,6 @@ import static no.nav.dokarkiv.hentjournalinfo.QueryNames.DOKUMENTINFO;
 import static no.nav.dokarkiv.hentjournalinfo.gjoark001.DokumentInfoQueryMapper.mapDokumentInfo;
 import static no.nav.dokarkiv.hentjournalinfo.gjoark001.DokumentInfoQueryMapper.mapFildetaljer;
 import static no.nav.dokarkiv.hentjournalinfo.gjoark002.JournalpostQueryMapper.mapJournalpost;
-import static org.apache.commons.lang3.BooleanUtils.isTrue;
 
 import io.leangen.graphql.annotations.GraphQLArgument;
 import io.leangen.graphql.annotations.GraphQLContext;
@@ -18,7 +17,6 @@ import io.leangen.graphql.annotations.GraphQLQuery;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
-import no.nav.dokarkiv.core.exceptions.DokumentInfoIkkeFunnetException;
 import no.nav.dokarkiv.core.metrics.GraphQLMetrics;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.security.abac.AbacSecurityService;
@@ -61,13 +59,8 @@ public class DokumentInfoQuery implements Query {
             actions = @Abac.Attr(key = ACTION_ID, value = READ_ACTION))
     public DokumentInfo dokumentInfo(@GraphQLArgument(name = "dokumentInfoId") @GraphQLNonNull Long dokumentInfoId) {
         log.info(format("GraphQL har mottatt %s query med dokumentInfoId=%s", DOKUMENTINFO, dokumentInfoId));
-        //Som over, ikke noe ABAC foreløpig
-        //abacSecurityService.assertAccessToDokument(dokumentInfoId);
+        abacSecurityService.assertAccessToDokument(dokumentInfoId);
 
-        //Husk å ta bort denne når abac er tilbake:
-        if (!dokumentinfoRepository.existsById(dokumentInfoId)) {
-            throw new DokumentInfoIkkeFunnetException("DokumentInfo ikke funnet. dokumentInfoId=" + dokumentInfoId);
-        }
         //Om dokumentet eksiterer sjekkes i metoden over og kan derfor være sikker på dokumentInfo finnes i neste step
         no.nav.dokarkiv.core.domain.entities.DokumentInfo dokumentInfo = dokumentinfoRepository.findById(dokumentInfoId).get();
 
