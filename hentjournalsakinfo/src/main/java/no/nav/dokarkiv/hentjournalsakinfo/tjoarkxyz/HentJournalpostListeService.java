@@ -30,7 +30,7 @@ public class HentJournalpostListeService {
 
 	public HentJournalpostListeResponseTo hentJournalpostListeByArkivIdAndFagsystem(HentJournalpostListeRequestTo hentJournalpostListeRequestTo) {
 		return HentJournalpostListeResponseTo.builder()
-				.gsakJournalpostList(getJournalpostList(hentJournalpostListeRequestTo.getGsakSakIdList(), FagsystemCode.FS19).stream()
+				.gsakJournalpostList(getJournalpostList(hentJournalpostListeRequestTo.getGsakSakIdList(), FagsystemCode.FS22).stream()
 						.map(journalpostMapper::map)
 						.collect(Collectors.toList()))
 				.psakJournalpostList(getJournalpostList(hentJournalpostListeRequestTo.getPsakSakIdList(), FagsystemCode.PEN).stream()
