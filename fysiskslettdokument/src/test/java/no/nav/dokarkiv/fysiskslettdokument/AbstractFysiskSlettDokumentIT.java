@@ -8,6 +8,7 @@ import static no.nav.dokarkiv.core.security.JwtClaimsBuilderProvider.openAmClaim
 
 import no.nav.dokarkiv.core.CoreConfig;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
+import no.nav.dokarkiv.core.repository.JoarkDeleteRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.dokarkiv.core.stelvio.SimpleRequestContext;
@@ -45,7 +46,7 @@ import javax.inject.Inject;
 @AutoConfigureDataLdap
 @AutoConfigureWireMock(port = 0)
 @Transactional
-public class AbstractFysiskSlettDokumentIT {
+public abstract class AbstractFysiskSlettDokumentIT {
 
 	protected static final String OPPRETTET_KILDE_NAVN = "Opprettet kilde";
 	protected static final String TILKNYTTET_AV_NAVN = "Tilknyttetnavn";
@@ -60,6 +61,8 @@ public class AbstractFysiskSlettDokumentIT {
 
 	@Rule
 	public ExpectedException expectedException = ExpectedException.none();
+	@Inject
+	protected JoarkDeleteRepository joarkDeleteRepository;
 	@Inject
 	protected JoarkRepository joarkRepository;
 	@Inject
