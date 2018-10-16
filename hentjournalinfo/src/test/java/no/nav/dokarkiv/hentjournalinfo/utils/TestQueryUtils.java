@@ -44,6 +44,7 @@ public class TestQueryUtils {
         return "dokumentInfo(dokumentInfoId: $dokumentInfoId) {" +
                 "    dokumentInfoId" +
                 "    tittel" +
+                "    slettet" +
                 "    dokumentStatus" +
                 "   filDetaljerList {" +
                 "      fildetaljerId" +
