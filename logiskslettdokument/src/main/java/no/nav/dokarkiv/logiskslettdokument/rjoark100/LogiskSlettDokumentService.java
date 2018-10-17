@@ -21,12 +21,18 @@ public class LogiskSlettDokumentService {
 	@Value("${logiskslettdokument.slettemelding}")
 	private static String SLETTEMELDING;
 
+	private final LogiskSlettDokumentValidator validator;
+	private final DokumentinfoRepository dokumentinfoRepository;
+	private final JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository;
+
 	@Inject
-	private LogiskSlettDokumentValidator validator;
-	@Inject
-	private DokumentinfoRepository dokumentinfoRepository;
-	@Inject
-	private JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository;
+	public LogiskSlettDokumentService(LogiskSlettDokumentValidator validator,
+									  DokumentinfoRepository dokumentinfoRepository,
+									  JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository) {
+		this.validator = validator;
+		this.dokumentinfoRepository = dokumentinfoRepository;
+		this.journalpostDokumentInfoRelasjonRepository = journalpostDokumentInfoRelasjonRepository;
+	}
 
 	public LogiskSlettDokumentResponse slettDokumentLogisk(LogiskSlettDokumentRequestTo requestTo) {
 		List<JournalpostDokumentInfoRelasjon> journalpostDokumentInfoRelasjonList =
