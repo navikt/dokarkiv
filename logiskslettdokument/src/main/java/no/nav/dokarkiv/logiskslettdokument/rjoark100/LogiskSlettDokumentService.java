@@ -19,14 +19,14 @@ import java.util.List;
 public class LogiskSlettDokumentService {
 
 	@Value("${logiskslettdokument.slettemelding}")
-	private String SLETTEMELDING;
+	private static String SLETTEMELDING;
 
 	@Inject
 	private LogiskSlettDokumentValidator validator;
 	@Inject
-	protected DokumentinfoRepository dokumentinfoRepository;
+	private DokumentinfoRepository dokumentinfoRepository;
 	@Inject
-	protected JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository;
+	private JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository;
 
 	public LogiskSlettDokumentResponse slettDokumentLogisk(LogiskSlettDokumentRequestTo requestTo) {
 		List<JournalpostDokumentInfoRelasjon> journalpostDokumentInfoRelasjonList =

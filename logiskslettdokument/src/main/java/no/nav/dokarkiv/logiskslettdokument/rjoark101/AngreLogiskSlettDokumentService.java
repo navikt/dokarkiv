@@ -22,14 +22,14 @@ import java.util.List;
 public class AngreLogiskSlettDokumentService {
 
 	@Value("${logiskslettdokument.slettemelding}")
-	private String SLETTEMELDING;
+	private static String SLETTEMELDING;
 
 	@Inject
 	private AngreLogiskSlettDokumentValidator validator;
 	@Inject
-	protected DokumentinfoRepository dokumentinfoRepository;
+	private DokumentinfoRepository dokumentinfoRepository;
 	@Inject
-	protected JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository;
+	private JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository;
 
 	public LogiskSlettDokumentResponse angreLogiskSlettDokument(LogiskSlettDokumentRequestTo requestTo) {
 		List<JournalpostDokumentInfoRelasjon> journalpostDokumentInfoRelasjonList =
