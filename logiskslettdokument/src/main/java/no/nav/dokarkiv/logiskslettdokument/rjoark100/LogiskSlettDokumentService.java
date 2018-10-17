@@ -4,8 +4,10 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
-import no.nav.dokarkiv.logiskslettdokument.AbstractSlettDokumentService;
+import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
+import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
 import org.slf4j.MDC;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -14,10 +16,17 @@ import java.util.List;
 
 @Service
 @Slf4j
-public class LogiskSlettDokumentService extends AbstractSlettDokumentService {
+public class LogiskSlettDokumentService {
+
+	@Value("${logiskslettdokument.slettemelding}")
+	private String SLETTEMELDING;
 
 	@Inject
 	private LogiskSlettDokumentValidator validator;
+	@Inject
+	protected DokumentinfoRepository dokumentinfoRepository;
+	@Inject
+	protected JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository;
 
 	public LogiskSlettDokumentResponse slettDokumentLogisk(LogiskSlettDokumentRequestTo requestTo) {
 		List<JournalpostDokumentInfoRelasjon> journalpostDokumentInfoRelasjonList =

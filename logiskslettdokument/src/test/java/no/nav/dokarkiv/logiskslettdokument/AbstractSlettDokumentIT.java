@@ -67,8 +67,8 @@ public abstract class AbstractSlettDokumentIT {
 	private String NAV_CONSUMER_TOKEN = "Nav-Consumer-Token";
 	private final String SERVICE_USER_ID = "srvdokarkiv";
 	private final String PERSON_USER_ID = "Z990782";
-	protected final String SLETTEMELDING = " - slettet";
 
+	protected static final String SLETTEMELDING = " - slettet";
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
