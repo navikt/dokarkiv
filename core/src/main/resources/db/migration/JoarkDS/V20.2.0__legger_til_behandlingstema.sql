@@ -13,14 +13,12 @@ CREATE TABLE T_K_BEHANDLINGSTEMA
   ENDRET_AV          VARCHAR2(20)  NOT NULL
 );
 
-ALTER TABLE T_JOURNALPOST ADD K_BEHANDLINGSTEMA VARCHAR2(200 CHAR);
-
-CREATE INDEX XIF7JOURNALP
-  ON T_JOURNALPOST (K_BEHANDLINGSTEMA);
+ALTER TABLE T_JOURNALPOST
+  ADD K_BEHANDLINGSTEMA VARCHAR2(20 CHAR);
 
 ALTER  TABLE T_JOURNALPOST
   ADD CONSTRAINT T_JOURNALPOST_R_56
-FOREIGN KEY (K_BEHANDLINGSTEMA) REFERENCES T_K_BEHANDLINGSTEMA;
+FOREIGN KEY (K_BEHANDLINGSTEMA) REFERENCES T_K_BEHANDLINGSTEMA NOVALIDATE;
 
 INSERT INTO T_K_BEHANDLINGSTEMA (k_behandlingstema,dekode,dato_fom,dato_tom,er_gyldig,dato_opprettet,opprettet_av,dato_endret,endret_av) VALUES ('ab0181','Reparasjoner spesialutstyr arbeid',date '1900-01-01',NULL,'1',timestamp '2018-10-05 13:00:00','Mathias Rasmussen',timestamp '2018-10-05 13:00:00','Mathias Rasmussen');
 INSERT INTO T_K_BEHANDLINGSTEMA (k_behandlingstema,dekode,dato_fom,dato_tom,er_gyldig,dato_opprettet,opprettet_av,dato_endret,endret_av) VALUES ('ab0182','Stønad til flyttehjelp',date '1900-01-01',NULL,'1',timestamp '2018-10-05 13:00:00','Mathias Rasmussen',timestamp '2018-10-05 13:00:00','Mathias Rasmussen');
