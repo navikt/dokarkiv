@@ -19,7 +19,7 @@ import java.util.List;
 public class LogiskSlettDokumentService {
 
 	@Value("${logiskslettdokument.slettemelding}")
-	private static String SLETTEMELDING;
+	private String SLETTEMELDING;
 
 	private final LogiskSlettDokumentValidator validator;
 	private final DokumentinfoRepository dokumentinfoRepository;

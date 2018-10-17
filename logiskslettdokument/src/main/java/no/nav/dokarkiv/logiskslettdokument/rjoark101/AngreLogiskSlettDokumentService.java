@@ -13,6 +13,7 @@ import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,12 +22,13 @@ import java.util.List;
 public class AngreLogiskSlettDokumentService {
 
 	@Value("${logiskslettdokument.slettemelding}")
-	private static String SLETTEMELDING;
+	private String SLETTEMELDING;
 
 	private final AngreLogiskSlettDokumentValidator validator;
 	private final DokumentinfoRepository dokumentinfoRepository;
 	private final JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository;
 
+	@Inject
 	public AngreLogiskSlettDokumentService(AngreLogiskSlettDokumentValidator validator,
 										   DokumentinfoRepository dokumentinfoRepository,
 										   JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository) {
