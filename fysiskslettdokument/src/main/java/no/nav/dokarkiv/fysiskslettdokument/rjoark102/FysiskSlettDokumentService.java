@@ -31,8 +31,14 @@ public class FysiskSlettDokumentService {
 
 		validator.validateFysiskSlettDokument(journalpostDokumentInfoRelasjonList, requestTo);
 
-		//switch for å bestemme hvilken type av sletting. Styrt av hjemmel???
-//		fysiskSlettAvDokumenter(journalpostDokumentInfoRelasjonList);
+		//switch for å bestemme hvilken type av sletting.
+		if (journalpostDokumentInfoRelasjonList.get(0).isHoveddokument()) {
+			//alt skal slettes
+		} else {
+			//slett vedlegget
+		}
+
+		fysiskSlettAvDokumenter(journalpostDokumentInfoRelasjonList);
 
 		return FysiskSlettDokumentResponseMapper.mapToFysiskSlettDokumentResponse(journalpostDokumentInfoRelasjonList.get(0)
 						.getJournalpost(),
