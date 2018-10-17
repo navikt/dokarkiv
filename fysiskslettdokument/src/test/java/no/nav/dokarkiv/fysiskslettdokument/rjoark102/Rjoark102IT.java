@@ -32,7 +32,6 @@ public class Rjoark102IT extends AbstractFysiskSlettDokumentIT {
 
 		Journalpost journalpost = joarkRepository.save(TestUtils.createJournalpost(true));
 
-
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
@@ -48,6 +47,4 @@ public class Rjoark102IT extends AbstractFysiskSlettDokumentIT {
 				.get(0)
 				.getDokumentInfo().getSlettet(), true);
 	}
-
-
 }
