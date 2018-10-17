@@ -4,7 +4,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.junit.Assert.assertThat;
 
-import no.nav.dok.tjenester.journalfoerinngaaende.ArkivSak;
+import no.nav.dok.tjenester.journalfoerinngaaende.ArkivSakWithArkivsakSystemEnum;
 import no.nav.dok.tjenester.journalfoerinngaaende.Avsender;
 import no.nav.dok.tjenester.journalfoerinngaaende.Bruker;
 import no.nav.dok.tjenester.journalfoerinngaaende.PutJournalpostRequest;
@@ -100,10 +100,10 @@ public class PutInngaaendeJournalpostMapperTest {
 		return bruker;
 	}
 
-	private static ArkivSak createArkivSak() {
-		ArkivSak arkivSak = new ArkivSak();
+	private static ArkivSakWithArkivsakSystemEnum createArkivSak() {
+		ArkivSakWithArkivsakSystemEnum arkivSak = new ArkivSakWithArkivsakSystemEnum();
 		arkivSak.setArkivSakId(TestUtils.SAK_ID);
-		arkivSak.setArkivSakSystem("GSAK");
+		arkivSak.setArkivSakSystem(ArkivSakWithArkivsakSystemEnum.ArkivSakSystem.GSAK);
 		return arkivSak;
 	}
 }
