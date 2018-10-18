@@ -80,7 +80,7 @@ public class GraphQlQueryIT {
     protected String OIDC_TOKEN_PERSON_USER_TEST;
     protected String OIDC_TOKEN_VALID_SERVICE_USER_TEST;
     protected String OIDC_TOKEN_INVALID_SERVICE_USER_TEST;
-    protected final String VALID_SERVICE_USER_ID = "srvjoarkadmin";
+    protected final String VALID_SERVICE_USER_ID = "srvengangsstonad";
     protected final String INVALID_SERVICE_USER_ID = "srvdokarkiv";
     protected final String PERSON_USER_ID = "Z990782";
 
