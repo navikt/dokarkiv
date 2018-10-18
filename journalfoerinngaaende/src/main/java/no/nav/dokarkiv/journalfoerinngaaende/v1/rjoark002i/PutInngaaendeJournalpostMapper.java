@@ -57,11 +57,13 @@ public class PutInngaaendeJournalpostMapper {
 				journalpost.addBruker(bruker);
 			}
 		} else {
-			brukere.iterator().forEachRemaining(bruker -> {
-				bruker.setBrukerId(putJournalpostRequest.getBruker().getIdentifikator());
-				assertNotNull(putJournalpostRequest.getBruker().getBrukerType(), "bruker.brukerType");
-				bruker.setBrukerType(BrukerTypeCode.valueOf(putJournalpostRequest.getBruker().getBrukerType().name()));
-			});
+			if (putJournalpostRequest.getBruker() != null) {
+				brukere.iterator().forEachRemaining(bruker -> {
+					bruker.setBrukerId(putJournalpostRequest.getBruker().getIdentifikator());
+					assertNotNull(putJournalpostRequest.getBruker().getBrukerType(), "bruker.brukerType");
+					bruker.setBrukerType(BrukerTypeCode.valueOf(putJournalpostRequest.getBruker().getBrukerType().name()));
+				});
+			}
 		}
 	}
 
