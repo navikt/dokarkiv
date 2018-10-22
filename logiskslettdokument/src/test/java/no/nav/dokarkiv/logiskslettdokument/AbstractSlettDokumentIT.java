@@ -68,8 +68,6 @@ public abstract class AbstractSlettDokumentIT {
 	private final String SERVICE_USER_ID = "srvdokarkiv";
 	private final String PERSON_USER_ID = "Z990782";
 
-	protected static final String SLETTEMELDING = " - slettet";
-
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
 	@Inject
@@ -159,15 +157,5 @@ public abstract class AbstractSlettDokumentIT {
 		return journalpostDokumentInfoRelasjonRepository.findByDokumentInfoId(
 				journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId()).get()
 				.get(0).getDokumentInfo();
-	}
-
-	protected String setSlettemelding(String tittel) {
-		int minneAllokertForTittel = 500;
-		String nyTittel = tittel;
-
-		if (nyTittel.length() + SLETTEMELDING.length() <= minneAllokertForTittel) {
-			nyTittel += SLETTEMELDING;
-		}
-		return nyTittel;
 	}
 }

@@ -13,6 +13,7 @@ import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.logiskslettdokument.AbstractSlettDokumentIT;
 import no.nav.dokarkiv.logiskslettdokument.rjoark100.LogiskSlettDokumentResponse;
+import no.nav.dokarkiv.logiskslettdokument.util.Utils;
 import org.junit.Test;
 import org.slf4j.MDC;
 import org.springframework.http.HttpMethod;
@@ -21,6 +22,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.transaction.TestTransaction;
 
 public class Rjoark101IT extends AbstractSlettDokumentIT {
+
+	private static String SLETTEMELDING = Utils.getSlettemelding();
 
 	@Test
 	public void shouldAngreLogiskSlettDokument() {
@@ -108,9 +111,7 @@ public class Rjoark101IT extends AbstractSlettDokumentIT {
 
 	private void setJournalpostSlettet(Journalpost journalpost) {
 		DokumentInfo dokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
-
-		dokumentInfo.setSlettet(true);
-		dokumentInfo.setTittel(setSlettemelding(dokumentInfo.getTittel()));
+		Utils.setDokumentLogiskSlettet(dokumentInfo);
 		joarkRepository.save(journalpost);
 	}
 
