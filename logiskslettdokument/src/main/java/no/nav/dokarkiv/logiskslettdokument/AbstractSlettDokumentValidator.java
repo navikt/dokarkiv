@@ -21,7 +21,7 @@ public abstract class AbstractSlettDokumentValidator {
 		validerAtJournalpostDokumentInfoRelasjonKunErKnyttetTilEnJournalPost(jpDokInfoRelasjoner, dokumentInfoId);
 	}
 
-	private void validerAtJournalpostDokumentInfoRelasjonerFinnes(
+	protected void validerAtJournalpostDokumentInfoRelasjonerFinnes(
 			List<JournalpostDokumentInfoRelasjon> jpDokInfoRelasjoner,
 			Long dokumentInfoId)
 			throws JournalpostDokumentInfoRelasjonNotFoundException {
@@ -32,7 +32,7 @@ public abstract class AbstractSlettDokumentValidator {
 		}
 	}
 
-	private void validerAtJournalpostDokumentInfoRelasjonKunErKnyttetTilEnJournalPost(
+	protected void validerAtJournalpostDokumentInfoRelasjonKunErKnyttetTilEnJournalPost(
 			List<JournalpostDokumentInfoRelasjon> jpDokInfoRelasjoner,
 			Long dokumentInfoId)
 			throws ForMangeJournalpostDokumentInfoRelasjonerException {

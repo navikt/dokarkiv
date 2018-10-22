@@ -27,7 +27,7 @@ public class AngreLogiskSlettDokumentValidator extends AbstractSlettDokumentVali
 		validerAtDokumentErLogiskSlettet(jpDokInfoRelasjonList.get(0).getDokumentInfo());
 	}
 
-	private void validerAtDokumentErLogiskSlettet(DokumentInfo dokumentInfo) throws DokumentIkkeSlettetException {
+	protected void validerAtDokumentErLogiskSlettet(DokumentInfo dokumentInfo) throws DokumentIkkeSlettetException {
 		if (isFalse(dokumentInfo.getSlettet())) {
 			throw new DokumentIkkeSlettetException(String.format(MDC.get(MDCConstants.MDC_REQUEST_ID) + " kan ikke angre logisk sletting av dokument med dokumentInfoId=%s. " +
 					"Dokumentet er ikke logisk slettet", dokumentInfo.getDokumentInfoId()));

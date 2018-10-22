@@ -13,9 +13,9 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
-public class LogiskSlettDokumentValidator extends AbstractSlettDokumentValidator {
+class LogiskSlettDokumentValidator extends AbstractSlettDokumentValidator {
 
-	public void validerAtDokumentSomSkalSlettesLogiskErKnyttetTilKunEnJournalpost(
+	protected void validerAtDokumentSomSkalSlettesLogiskErKnyttetTilKunEnJournalpost(
 			List<JournalpostDokumentInfoRelasjon> jpDokInfoRelasjonList,
 			LogiskSlettDokumentRequestTo requestTo) {
 		validerAtKunEnGyldigJpDokInfoRelasjonFinnes(jpDokInfoRelasjonList, requestTo.getDokumentInfoId());
@@ -25,7 +25,7 @@ public class LogiskSlettDokumentValidator extends AbstractSlettDokumentValidator
 		validerAtDokumentIkkeErLogiskSlettet(jpDokInfoRelasjonList.get(0).getDokumentInfo());
 	}
 
-	private void validerAtDokumentIkkeErLogiskSlettet(DokumentInfo dokumentInfo) throws DokumentAlleredeSlettetException {
+	protected void validerAtDokumentIkkeErLogiskSlettet(DokumentInfo dokumentInfo) throws DokumentAlleredeSlettetException {
 		if (isTrue(dokumentInfo.getSlettet())) {
 			throw new DokumentAlleredeSlettetException(
 					String.format(MDC.get(MDCConstants.MDC_REQUEST_ID) + " kan ikke utføre logisk sletting av dokument med " +

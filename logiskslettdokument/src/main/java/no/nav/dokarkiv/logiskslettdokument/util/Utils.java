@@ -27,7 +27,7 @@ public class Utils {
 	}
 
 	public static String setSlettemelding(String tittel) {
-		int minneAllokertForTittel = DokumentInfo.getMaxTitleLength();
+		int minneAllokertForTittel = DokumentInfo.getMAX_TITLE_LENGTH();
 		String nyTittel = tittel;
 
 		if (nyTittel.length() + SLETTEMELDING.length() <= minneAllokertForTittel) {

@@ -67,7 +67,7 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	/**
 	 * Maximum length for elements in the column title.
 	 */
-	private static final int maxTitleLength = 500;
+	private static final int MAX_TITLE_LENGTH = 500;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "dokumentInfo_seq")
@@ -108,7 +108,7 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	@Column(name = "dato_dok_ferdig")
 	private Date dokumentFerdigDato;
 
-	@Column(name = "tittel", length = maxTitleLength)
+	@Column(name = "tittel", length = MAX_TITLE_LENGTH)
 	private String tittel;
 
 	@Column(name = "konfidensialitet")
@@ -643,7 +643,8 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	 * @return the length of tittel
 	 */
 	public static int getMaxTitleLength() {
-		return maxTitleLength;}
+		return MAX_TITLE_LENGTH;
+	}
 
 	/**
 	 * Getter for the konfidensialitet property.
