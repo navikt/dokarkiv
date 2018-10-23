@@ -14,4 +14,7 @@ import java.util.Optional;
 public interface JournalpostDokumentInfoRelasjonRepository extends CrudRepository<JournalpostDokumentInfoRelasjon, Long> {
 	@Query(value = "SELECT * FROM T_JP_DOK_INFO_REL dir WHERE dir.DOKUMENT_INFO_ID=:dokumentInfoId", nativeQuery = true)
     Optional<List<JournalpostDokumentInfoRelasjon>> findByDokumentInfoId(@Param("dokumentInfoId") Long dokumentInfoId);
+
+	@Query(value = "SELECT * FROM T_JP_DOK_INFO_REL dir WHERE dir.JOURNALPOST_ID=:journalpostId", nativeQuery = true)
+	JournalpostDokumentInfoRelasjon findByJournalpostId(@Param("journalpostId") Long journalpostId);
 }

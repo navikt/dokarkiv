@@ -1,52 +1,71 @@
 package no.nav.dokarkiv.fysiskslettdokument.rjoark102;
 
 import lombok.extern.slf4j.Slf4j;
+import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.repository.JoarkDeleteRepository;
 import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
+import no.nav.dokarkiv.fysiskslettdokument.exceptions.DokumentErIkkeVedleggException;
+import no.nav.dokarkiv.fysiskslettdokument.exceptions.UgyldigHjemmelException;
+import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.List;
 
 @Slf4j
 @Service
 public class FysiskSlettDokumentService {
 
-	@Inject
-	private JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository;
+	private final JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository;
+	private final JoarkDeleteRepository deleteRepository;
+	private final FysiskSlettDokumentValidator validator;
 
 	@Inject
-	private JoarkDeleteRepository deleteRepository;
-
-	@Inject
-	private FysiskSlettDokumentValidator validator;
-
-
-	//IKKE FERDIG, LOGIKK ER IKKE BESTEMT.
-	public FysiskSlettDokumentResponse slettDokumentFysisk(FysiskSlettDokumentRequestTo requestTo) {
-		List<JournalpostDokumentInfoRelasjon> journalpostDokumentInfoRelasjonList = journalpostDokumentInfoRelasjonRepository.findByDokumentInfoId(requestTo
-				.getDokumentInfoId()).orElse(new ArrayList<>());
-
-		validator.validateFysiskSlettDokument(journalpostDokumentInfoRelasjonList, requestTo);
-
-		//switch for å bestemme hvilken type av sletting.
-		if (journalpostDokumentInfoRelasjonList.get(0).isHoveddokument()) {
-			//alt skal slettes
-		} else {
-			//slett vedlegget
-		}
-
-		fysiskSlettAvDokumenter(journalpostDokumentInfoRelasjonList);
-
-		return FysiskSlettDokumentResponseMapper.mapToFysiskSlettDokumentResponse(journalpostDokumentInfoRelasjonList.get(0)
-						.getJournalpost(),
-				journalpostDokumentInfoRelasjonList.get(0).getDokumentInfo());
+	public FysiskSlettDokumentService(
+			JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository,
+			JoarkDeleteRepository deleteRepository,
+			FysiskSlettDokumentValidator validator) {
+		this.journalpostDokumentInfoRelasjonRepository = journalpostDokumentInfoRelasjonRepository;
+		this.deleteRepository = deleteRepository;
+		this.validator = validator;
 	}
 
-	private void fysiskSlettAvDokumenter(List<JournalpostDokumentInfoRelasjon> journalpostDokumentInfoRelasjonList) {
-		//her skal vi slette alle dokumenter i listen
+	public FysiskSlettDokumentResponse slettDokumentFysisk(FysiskSlettDokumentRequestTo requestTo)
+			throws UgyldigHjemmelException {
+		String hjemmelSomStyrerSletteMetode = requestTo.getHjemmel();
+
+		//TODO: Erstatt med HjemmelCode når det er avklart
+		switch (hjemmelSomStyrerSletteMetode) {
+			case "slettKunEttVedleggFraForsendeleKnyttetJP":
+				slettKunEttVedleggFraForsendelseKnyttetJP(requestTo);
+				break;
+			default:
+				throw new UgyldigHjemmelException(
+						String.format("%s kan ikke slette dokument pga. ugyldig hjemmel. hjemmel=%s, dokumentInfoId=%s, journalpostId=%s",
+								MDC.get(MDCConstants.MDC_REQUEST_ID),
+								hjemmelSomStyrerSletteMetode,
+								requestTo.getDokumentInfoId(),
+								requestTo.getJournalpostId()));
+		}
+
+		//TODO: Avklare informasjon i response
+		return FysiskSlettDokumentResponse.builder()
+				.journalpostId(requestTo.getJournalpostId())
+				.dokumentInfoId(requestTo.getDokumentInfoId())
+				.build();
+	}
+
+	private void slettKunEttVedleggFraForsendelseKnyttetJP(FysiskSlettDokumentRequestTo requestTo) throws DokumentErIkkeVedleggException {
+		JournalpostDokumentInfoRelasjon journalpostDokumentInfoRelasjon =
+				journalpostDokumentInfoRelasjonRepository.findByJournalpostId(requestTo.getJournalpostId());
+
+		validator.validerAtKunEtVedleggSkalSlettes(journalpostDokumentInfoRelasjon, requestTo);
+
+		slettEtDokumentMedAlleMetadata(requestTo.getDokumentInfoId());
+	}
+
+	private void slettEtDokumentMedAlleMetadata(Long dokumentInfoId) {
+		slettFilOgDokumentInfo(dokumentInfoId);
 	}
 
 

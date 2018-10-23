@@ -654,6 +654,21 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	}
 
 	/**
+	 * Returns the JournalpostDokumentInfoRelasjon where this objects journalpostId is used.
+	 *
+	 * @return The JournalpostDokumentInfoRelasjon.
+	 */
+	public JournalpostDokumentInfoRelasjon getThisJournalpostDokumentInfoRelasjon() {
+		for (JournalpostDokumentInfoRelasjon jpDokInfoRel : this.journalpostDokumentInfoRelasjoner) {
+			if (jpDokInfoRel != null
+					&& jpDokInfoRel.getJournalpost().getJournalpostId().equals(this.journalpostId)) {
+				return jpDokInfoRel;
+			}
+		}
+		return null;
+	}
+
+	/**
 	 * Finds all DokumentInfos that belongs to this Journalpost.
 	 *
 	 * @return A List with all DokumentInfos

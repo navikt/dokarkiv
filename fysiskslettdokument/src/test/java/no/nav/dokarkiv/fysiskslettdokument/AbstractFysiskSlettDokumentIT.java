@@ -53,14 +53,14 @@ public abstract class AbstractFysiskSlettDokumentIT {
 	protected static final String URL_SLETTDOKUMENT = "/rest/logiskslettdokument/";
 	protected static final String URL_ANGRESLETTDOKUMENT = "/rest/logiskslettdokument/angre/";
 	protected static final String URL_FYSISKSLETTDOKUMENT = "/rest/fysiskslettdokument/";
-	protected String OIDC_TOKEN_PERSON_USER_TEST;
-	protected String OIDC_TOKEN_SERVICE_USER_TEST;
-	protected String NAV_CONSUMER_TOKEN = "Nav-Consumer-Token";
-	protected final String SERVICE_USER_ID = "srvdokarkiv";
-	protected final String PERSON_USER_ID = "Z990782";
+	private String OIDC_TOKEN_PERSON_USER_TEST;
+	private String OIDC_TOKEN_SERVICE_USER_TEST;
+	private String NAV_CONSUMER_TOKEN = "Nav-Consumer-Token";
+	private final String SERVICE_USER_ID = "srvdokarkiv";
+	private final String PERSON_USER_ID = "Z990782";
 
 	@Rule
-	public ExpectedException expectedException = ExpectedException.none();
+	public ExpectedException thrown = ExpectedException.none();
 	@Inject
 	protected JoarkDeleteRepository joarkDeleteRepository;
 	@Inject
@@ -88,31 +88,11 @@ public abstract class AbstractFysiskSlettDokumentIT {
 				.build());
 	}
 
-
-//	public static String classpathToString(String path) {
-//		return resourceUrlToString(Resources.getResource(path));
-//	}
-//
-//	public static String resourceUrlToString(URL url) {
-//		try {
-//			return Resources.toString(url, StandardCharsets.UTF_8);
-//		} catch (IOException e) {
-//			throw new RuntimeException("Could not convert url to String" + url);
-//		}
-//	}
-
 	@Before
 	public void cleanup() {
 		joarkRepository.deleteAll();
 		dokumentinfoRepository.deleteAll();
 	}
-
-//	protected Journalpost buildAndCommit(final JournalpostBuilder builder) {
-//		Journalpost journalpost = joarkRepository.save(builder.build());
-//		TestTransaction.flagForCommit();
-//		TestTransaction.end();
-//		return journalpost;
-//	}
 
 	protected HttpEntity createHeaders() {
 		HttpHeaders headers = new HttpHeaders();
@@ -122,26 +102,10 @@ public abstract class AbstractFysiskSlettDokumentIT {
 		return new HttpEntity(headers);
 	}
 
-//	protected HttpHeaders oidcHeaders() {
-//		HttpHeaders headers = new HttpHeaders();
-//		headers.setContentType(MediaType.APPLICATION_JSON);
-//		headers.add(HttpHeaders.AUTHORIZATION, OIDC_TOKEN_PERSON_USER_TEST);
-//		headers.add(NAV_CONSUMER_TOKEN, OIDC_TOKEN_SERVICE_USER_TEST);
-//		return headers;
-//	}
-
 	protected void abacPermit() {
 		stubFor(post(urlEqualTo("/abac"))
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
 						.withHeader(org.apache.http.HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-						.withBodyFile("__files.abac/abac-permit.json")));
+						.withBodyFile("abac/abac-permit.json")));
 	}
-
-//	protected String stringFromClasspath(String resourcename) throws IOException {
-//		return IOUtils.toString(this.getClass().getClassLoader().getResourceAsStream(resourcename));
-//	}
-//
-//	protected String getOidcTokenBody(String oidcToken) {
-//		return JWT.decode(oidcToken).getPayload();
-//	}
 }

@@ -5,8 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Data;
 
-
-//IKKE AVKLART HVILKE ELEMENTER SOM SKAL SENDES I RESPONSE
+//TODO: Har ikke avklart hvilken informasjon en response skal inneholde
 
 @Data
 @Builder
