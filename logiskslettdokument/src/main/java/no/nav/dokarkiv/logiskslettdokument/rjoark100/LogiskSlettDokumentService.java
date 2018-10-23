@@ -1,6 +1,6 @@
 package no.nav.dokarkiv.logiskslettdokument.rjoark100;
 
-import static no.nav.dokarkiv.logiskslettdokument.util.Utils.setDokumentLogiskSlettet;
+import static no.nav.dokarkiv.logiskslettdokument.common.Slettemelding.setDokumentLogiskSlettet;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.MDCConstants;

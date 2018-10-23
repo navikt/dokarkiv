@@ -13,8 +13,8 @@ import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.logiskslettdokument.AbstractSlettDokumentIT;
+import no.nav.dokarkiv.logiskslettdokument.common.Slettemelding;
 import no.nav.dokarkiv.logiskslettdokument.util.TestUtils;
-import no.nav.dokarkiv.logiskslettdokument.util.Utils;
 import org.junit.Test;
 import org.slf4j.MDC;
 import org.springframework.http.HttpMethod;
@@ -24,7 +24,7 @@ import org.springframework.test.context.transaction.TestTransaction;
 
 public class Rjoark100IT extends AbstractSlettDokumentIT {
 
-	private static String SLETTEMELDING = Utils.getSlettemelding();
+	private static String SLETTEMELDING = Slettemelding.getSlettemelding();
 
 	@Test
 	public void shouldDeleteDocumentInJoark() {

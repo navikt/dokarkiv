@@ -1,10 +1,10 @@
-package no.nav.dokarkiv.logiskslettdokument.util;
+package no.nav.dokarkiv.logiskslettdokument.common;
 
 import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import org.slf4j.MDC;
 
-public class Utils {
+public class Slettemelding {
 
 	private static final String SLETTEMELDING = " - slettet";
 
