@@ -4,6 +4,7 @@ import static no.nav.dokarkiv.arkiverdokumentmottak.util.ConverterUtils.converTi
 import static no.nav.dokarkiv.arkiverdokumentmottak.util.ConverterUtils.stringToEnum;
 import static no.nav.dokarkiv.core.util.SpecialFilTypeConverter.convertFilType;
 
+import no.nav.dokarkiv.core.domain.codes.Behandlingstema;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
@@ -65,6 +66,7 @@ public class JournalforInngaaendeForsendelseV2RequestMapper {
 	private Journalpost mapJournalpost(no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v2.informasjon.arkiverdokumentmottak.Journalpost journalpost) {
 		return Journalpost.builder()
 				.fagomrade(stringToEnum(FagomradeCode.class, journalpost.getTema()))
+				.behandlingstema(stringToEnum(Behandlingstema.class, journalpost.getBehandlingstema()))
 				.journalForendeEnhetId(journalpost.getJournalforendeEnhet())
 				.opprettetAvNavn(journalpost.getOpprettetAvNavn())
 				.journalfortAvNavn(journalpost.getOpprettetAvNavn())

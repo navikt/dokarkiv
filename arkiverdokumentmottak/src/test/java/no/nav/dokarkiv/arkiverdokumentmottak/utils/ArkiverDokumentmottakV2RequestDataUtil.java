@@ -45,6 +45,7 @@ public class ArkiverDokumentmottakV2RequestDataUtil {
 	static final boolean SENSITIVITET = true;
 	static final String BREVKODE = "brevkode";
 	static final String DOKUMENT_TYPE_ID = "dokumentTypeId";
+	static final String BEHANDLINGSTEMA = "ab0001";
 	static final String JOURNALFOERENDE_ENHET_REF = "2009";
 	static final String OPPRETTET_AV_NAVN = "Banjo Kazooie";
 	static final String TITTEL = "Once Upon a Time In Mehico";

@@ -2,8 +2,10 @@ package no.nav.dokarkiv.journalfoerinngaaende.v1.rjoark002i;
 
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
+import static no.nav.dokarkiv.journalfoerinngaaende.v1.util.Utils.assertNotNull;
 import static org.apache.logging.log4j.util.Strings.isNotBlank;
 
+import no.nav.dok.tjenester.journalfoerinngaaende.ArkivSakWithArkivsakSystemEnum;
 import no.nav.dok.tjenester.journalfoerinngaaende.PutJournalpostRequest;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
@@ -46,16 +48,22 @@ public class PutInngaaendeJournalpostMapper {
 			brukerRepository.deleteBrukerByJournalpostId(journalpost.getJournalpostId().toString());
 			journalpost.clearBrukere();
 
-			Bruker bruker = new Bruker();
-			bruker.setBrukerId(putJournalpostRequest.getBruker().getIdentifikator());
-			bruker.setBrukerType(BrukerTypeCode.valueOf(putJournalpostRequest.getBruker().getBrukerType().name()));
-			bruker.setOpprettetKildeNavn(MDC.get(MDC_CONSUMER_ID));
-			journalpost.addBruker(bruker);
-		} else {
-			brukere.iterator().forEachRemaining(bruker -> {
+			if (putJournalpostRequest.getBruker() != null) {
+				Bruker bruker = new Bruker();
 				bruker.setBrukerId(putJournalpostRequest.getBruker().getIdentifikator());
+				assertNotNull(putJournalpostRequest.getBruker().getBrukerType(), "bruker.brukerType");
 				bruker.setBrukerType(BrukerTypeCode.valueOf(putJournalpostRequest.getBruker().getBrukerType().name()));
-			});
+				bruker.setOpprettetKildeNavn(MDC.get(MDC_CONSUMER_ID));
+				journalpost.addBruker(bruker);
+			}
+		} else {
+			if (putJournalpostRequest.getBruker() != null) {
+				brukere.iterator().forEachRemaining(bruker -> {
+					bruker.setBrukerId(putJournalpostRequest.getBruker().getIdentifikator());
+					assertNotNull(putJournalpostRequest.getBruker().getBrukerType(), "bruker.brukerType");
+					bruker.setBrukerType(BrukerTypeCode.valueOf(putJournalpostRequest.getBruker().getBrukerType().name()));
+				});
+			}
 		}
 	}
 
@@ -80,23 +88,14 @@ public class PutInngaaendeJournalpostMapper {
 		}
 	}
 
-	protected String mapFagsystemCodeToArkivSakSystem(FagsystemCode fagsystemCode) {
-		if (fagsystemCode.equals(FagsystemCode.FS22)) {
-			return ArkivsystemKode.GSAK.name();
-		} else if (fagsystemCode.equals(FagsystemCode.PEN)) {
-			return ArkivsystemKode.PSAK.name();
-		} else {
-			return fagsystemCode.name();
-		}
-	}
-
 	private enum ArkivsystemKode {
 		GSAK,
 		PSAK
 	}
 
-	protected FagsystemCode mapArkivSakSystemToFagsystemCode(String arkivSakSystem) {
-		if (ArkivsystemKode.GSAK.name().equals(arkivSakSystem)) {
+	protected FagsystemCode mapArkivSakSystemToFagsystemCode(ArkivSakWithArkivsakSystemEnum.ArkivSakSystem arkivSakSystem) {
+		assertNotNull(arkivSakSystem, "arkivsaksystem");
+		if (ArkivsystemKode.GSAK.name().equals(arkivSakSystem.name())) {
 			return FagsystemCode.FS22;
 		} else {
 			return FagsystemCode.PEN;

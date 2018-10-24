@@ -28,7 +28,7 @@ import static no.nav.dokarkiv.journalfoerinngaaende.v1.util.TestUtils.createJour
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
-import no.nav.dok.tjenester.journalfoerinngaaende.ArkivSak;
+import no.nav.dok.tjenester.journalfoerinngaaende.ArkivSakNoArkivsakSystemEnum;
 import no.nav.dok.tjenester.journalfoerinngaaende.Avsender;
 import no.nav.dok.tjenester.journalfoerinngaaende.Bruker;
 import no.nav.dok.tjenester.journalfoerinngaaende.Dokument;
@@ -189,7 +189,7 @@ public class GetInngaaendeJournalpostMapperTest {
 		assertThat("response.avsender.navn", avsender.getNavn(), is(AVSENDER_NAVN));
 	}
 
-	private void assertArkivsak(ArkivSak arkivsak) {
+	private void assertArkivsak(ArkivSakNoArkivsakSystemEnum arkivsak) {
 		assertThat("response.arkivsak.arkivsakId", arkivsak.getArkivSakId(), is(SAK_ID));
 		assertThat("response.brukerId", arkivsak.getArkivSakSystem(), is(ARKIVSAK_SYSTEM_GSAK));
 	}

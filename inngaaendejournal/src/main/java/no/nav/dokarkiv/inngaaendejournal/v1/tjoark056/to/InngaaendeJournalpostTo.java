@@ -19,6 +19,7 @@ public class InngaaendeJournalpostTo {
 	private LocalDateTime forsendelseMottatt;
 	private MottaksKanalCode mottakskanal;
 	private FagomradeCode tema;
+	private String kanalReferanseId;
 	@NonNull
 	private final JournaltilstandTo journaltilstand;
 	private String journalfEnhet;

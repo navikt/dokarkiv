@@ -1,6 +1,6 @@
 package no.nav.dokarkiv.journalfoerinngaaende.v1.rjoark001i;
 
-import no.nav.dok.tjenester.journalfoerinngaaende.ArkivSak;
+import no.nav.dok.tjenester.journalfoerinngaaende.ArkivSakNoArkivsakSystemEnum;
 import no.nav.dok.tjenester.journalfoerinngaaende.Avsender;
 import no.nav.dok.tjenester.journalfoerinngaaende.Bruker;
 import no.nav.dok.tjenester.journalfoerinngaaende.Dokument;
@@ -65,11 +65,11 @@ public class GetInngaaendeJournalpostMapper {
 		return journaltilstand;
 	}
 
-	private ArkivSak mapArkivsak(Saksrelasjon saksrelasjon) {
+	private ArkivSakNoArkivsakSystemEnum mapArkivsak(Saksrelasjon saksrelasjon) {
 		if (saksrelasjon == null) {
 			return null;
 		} else {
-			return new ArkivSak()
+			return new ArkivSakNoArkivsakSystemEnum()
 					.withArkivSakId(saksrelasjon.getSakId())
 					.withArkivSakSystem(mapFagsystemCodeToArkivSakSystem(saksrelasjon.getFagsystem()));
 		}

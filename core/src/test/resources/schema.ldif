@@ -38,6 +38,17 @@ displayName: srvjoarkadmin
 userPassword: hemmelig
 
 # service user
+dn: cn=srvengangsstonad,ou=ServiceAccounts,dc=test,dc=local
+objectclass: top
+objectclass: person
+objectclass: organizationalPerson
+cn: srvengangsstonad
+sn: srvengangsstonad
+description: Service account for srvengangsstonad
+displayName: srvengangsstonad
+userPassword: hemmelig
+
+# service user
 dn: cn=srvtestersen,ou=ServiceAccounts,dc=test,dc=local
 objectclass: top
 objectclass: person
