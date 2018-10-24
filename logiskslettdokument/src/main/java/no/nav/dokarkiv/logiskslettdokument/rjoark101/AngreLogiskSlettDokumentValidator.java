@@ -19,7 +19,6 @@ public class AngreLogiskSlettDokumentValidator extends AbstractSlettDokumentVali
 	public void validerAngreLogiskSlettAvEttDokument(
 			List<JournalpostDokumentInfoRelasjon> jpDokInfoRelasjonList,
 			LogiskSlettDokumentRequestTo requestTo) {
-
 		validerAtKunEnGyldigJpDokInfoRelasjonFinnes(jpDokInfoRelasjonList, requestTo.getDokumentInfoId());
 		validerAtJournalpostIdOgDokumentInfoIdFraInputHarEnRelasjon(jpDokInfoRelasjonList.get(0)
 				.getJournalpost()

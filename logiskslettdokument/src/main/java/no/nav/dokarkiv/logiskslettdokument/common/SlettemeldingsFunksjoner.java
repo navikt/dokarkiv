@@ -4,7 +4,7 @@ import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import org.slf4j.MDC;
 
-public class Slettemelding {
+public class SlettemeldingsFunksjoner {
 
 	private static final String SLETTEMELDING = " - slettet";
 
@@ -26,7 +26,7 @@ public class Slettemelding {
 		return dokumentInfo;
 	}
 
-	public static String setSlettemelding(String tittel) {
+	private static String setSlettemelding(String tittel) {
 		int minneAllokertForTittel = DokumentInfo.getMaxTitleLength();
 		String nyTittel = tittel;
 
@@ -36,7 +36,7 @@ public class Slettemelding {
 		return nyTittel;
 	}
 
-	public static String fjernSlettemelding(String tittel) {
+	private static String fjernSlettemelding(String tittel) {
 		String nyTittel = tittel;
 
 		if (tittel.endsWith(SLETTEMELDING)) {
