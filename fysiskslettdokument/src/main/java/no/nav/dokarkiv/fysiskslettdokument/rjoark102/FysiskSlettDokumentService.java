@@ -5,7 +5,6 @@ import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.repository.JoarkDeleteRepository;
 import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
-import no.nav.dokarkiv.fysiskslettdokument.exceptions.DokumentErIkkeVedleggException;
 import no.nav.dokarkiv.fysiskslettdokument.exceptions.UgyldigHjemmelException;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
@@ -55,7 +54,7 @@ public class FysiskSlettDokumentService {
 				.build();
 	}
 
-	private void slettKunEttVedleggFraForsendelseKnyttetJP(FysiskSlettDokumentRequestTo requestTo) throws DokumentErIkkeVedleggException {
+	private void slettKunEttVedleggFraForsendelseKnyttetJP(FysiskSlettDokumentRequestTo requestTo) {
 		JournalpostDokumentInfoRelasjon journalpostDokumentInfoRelasjon =
 				journalpostDokumentInfoRelasjonRepository.findByJournalpostId(requestTo.getJournalpostId());
 

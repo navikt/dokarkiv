@@ -25,9 +25,9 @@ public class FysiskSlettDokumentValidator {
 
 	private void validerAtJournalpostDokumentInfoRelasjonFinnes(
 			JournalpostDokumentInfoRelasjon jpDokInfoRelSomSkalSlettes,
-			Long journalpostId)
-			throws JournalpostDokumentInfoRelasjonIkkeFunnetException {
+			Long journalpostId) {
 		if (isNull(jpDokInfoRelSomSkalSlettes)) {
+			//TODO: Bruk denne også i logiskslettdokument modulen etter merge av branch visSletteStatusIDokumentInfoTittel
 			throw new JournalpostDokumentInfoRelasjonIkkeFunnetException(
 					String.format("%s kan ikke finne journalpostDokumentInfoRelasjon med journalpostId=%s",
 							MDC.get(MDCConstants.MDC_REQUEST_ID),
@@ -37,8 +37,7 @@ public class FysiskSlettDokumentValidator {
 
 	private static void validerAtDokumentErLogiskSlettet(
 			DokumentInfo dokumentInfo,
-			FysiskSlettDokumentRequestTo requestTo)
-			throws DokumentIkkeLogiskSlettetException {
+			FysiskSlettDokumentRequestTo requestTo) {
 		if (isNotTrue(dokumentInfo.getSlettet())) {
 			throw new DokumentIkkeLogiskSlettetException(String.format(
 					"%s kan ikke fysisk slette dokument som ikke er logisk slettet. dokumenInfoId=%s, journalpostId=%s",
@@ -50,9 +49,9 @@ public class FysiskSlettDokumentValidator {
 
 	private static void validerAtRelasjonErTilknyttetSomVedlegg(
 			JournalpostDokumentInfoRelasjon jpDokInfoRelSomSkalSlettes,
-			FysiskSlettDokumentRequestTo requestTo)
-			throws DokumentErIkkeVedleggException {
+			FysiskSlettDokumentRequestTo requestTo) {
 		if (isNotTrue(jpDokInfoRelSomSkalSlettes.isVedlegg())) {
+			//TODO: Se på gjennbruk av Exception fra logiskSlettdokument og denne modulen
 			throw new DokumentErIkkeVedleggException(
 					String.format("%s kan ikke slette dokument som ikke er et vedlegg når hjemmel=%s er brukt. " +
 									"dokumentInfoId=%s, journalpostId=%s",
