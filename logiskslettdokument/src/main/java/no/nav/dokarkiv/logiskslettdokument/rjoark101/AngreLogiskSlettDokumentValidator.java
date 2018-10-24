@@ -16,7 +16,7 @@ import java.util.List;
 @Component
 public class AngreLogiskSlettDokumentValidator extends AbstractSlettDokumentValidator {
 
-	public void validerAngreLogiskSlettAvEttDokument(
+	protected void validerAngreLogiskSlettAvEttDokument(
 			List<JournalpostDokumentInfoRelasjon> jpDokInfoRelasjonList,
 			LogiskSlettDokumentRequestTo requestTo) {
 		validerAtKunEnGyldigJpDokInfoRelasjonFinnes(jpDokInfoRelasjonList, requestTo.getDokumentInfoId());
@@ -26,7 +26,7 @@ public class AngreLogiskSlettDokumentValidator extends AbstractSlettDokumentVali
 		validerAtDokumentErLogiskSlettet(jpDokInfoRelasjonList.get(0).getDokumentInfo());
 	}
 
-	protected void validerAtDokumentErLogiskSlettet(DokumentInfo dokumentInfo) throws DokumentIkkeSlettetException {
+	protected void validerAtDokumentErLogiskSlettet(DokumentInfo dokumentInfo) {
 		if (isFalse(dokumentInfo.getSlettet())) {
 			throw new DokumentIkkeSlettetException(String.format(MDC.get(MDCConstants.MDC_REQUEST_ID) + " kan ikke angre logisk sletting av dokument med dokumentInfoId=%s. " +
 					"Dokumentet er ikke logisk slettet", dokumentInfo.getDokumentInfoId()));

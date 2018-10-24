@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
-class LogiskSlettDokumentValidator extends AbstractSlettDokumentValidator {
+public class LogiskSlettDokumentValidator extends AbstractSlettDokumentValidator {
 
 	protected void validerAtDokumentSomSkalSlettesLogiskErKnyttetTilKunEnJournalpost(
 			List<JournalpostDokumentInfoRelasjon> jpDokInfoRelasjonList,
@@ -25,7 +25,7 @@ class LogiskSlettDokumentValidator extends AbstractSlettDokumentValidator {
 		validerAtDokumentIkkeErLogiskSlettet(jpDokInfoRelasjonList.get(0).getDokumentInfo());
 	}
 
-	protected void validerAtDokumentIkkeErLogiskSlettet(DokumentInfo dokumentInfo) throws DokumentAlleredeSlettetException {
+	protected void validerAtDokumentIkkeErLogiskSlettet(DokumentInfo dokumentInfo) {
 		if (isTrue(dokumentInfo.getSlettet())) {
 			throw new DokumentAlleredeSlettetException(
 					String.format(MDC.get(MDCConstants.MDC_REQUEST_ID) + " kan ikke utføre logisk sletting av dokument med " +
