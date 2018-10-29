@@ -71,7 +71,7 @@ public class Rjoark100IT extends AbstractSlettDokumentIT {
 				createHeaders(),
 				String.class);
 
-		assertThat(responseEntity.getStatusCode(), is(HttpStatus.BAD_REQUEST));
+		assertThat(responseEntity.getStatusCode(), is(HttpStatus.NOT_FOUND));
 		assertThat(responseEntity.getBody(), containsString(
 				String.format("%s kan ikke finne noen journalpostDokumentInfoRelasjon for dokumentInfoId=%s",
 				MDC.get(MDCConstants.MDC_REQUEST_ID), feilDokumentInfoId)));
@@ -97,7 +97,7 @@ public class Rjoark100IT extends AbstractSlettDokumentIT {
 				String.class);
 
 
-		assertThat(responseEntity.getStatusCode(), is(HttpStatus.BAD_REQUEST));
+		assertThat(responseEntity.getStatusCode(), is(HttpStatus.NOT_FOUND));
 		assertThat(responseEntity.getBody(), containsString(
 				String.format("%s finner ingen journalpostDokumentInfoRelasjon mellom journalpostId=%s og dokumentInfoId=%s",
 						MDC.get(MDCConstants.MDC_REQUEST_ID),

@@ -8,7 +8,7 @@ import static no.nav.dokarkiv.logiskslettdokument.util.TestUtils.createRequest;
 import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
-import no.nav.dokarkiv.logiskslettdokument.exceptions.DokumentIkkeSlettetException;
+import no.nav.dokarkiv.core.exceptions.DokumentIkkeLogiskSlettetException;
 import no.nav.dokarkiv.logiskslettdokument.rjoark100.LogiskSlettDokumentRequestTo;
 import org.junit.Rule;
 import org.junit.Test;
@@ -47,7 +47,7 @@ public class AngreLogiskSlettDokumentValidatorTest {
 
 	@Test
 	public void shouldFailToValidateSletteStatusForDokument() {
-		thrown.expect(DokumentIkkeSlettetException.class);
+		thrown.expect(DokumentIkkeLogiskSlettetException.class);
 		thrown.expectMessage(MDC.get(MDCConstants.MDC_REQUEST_ID) + " kan ikke angre logisk sletting av dokument med dokumentInfoId=" + DOKUMENTINFO_ID + ". " +
 				"Dokumentet er ikke logisk slettet");
 

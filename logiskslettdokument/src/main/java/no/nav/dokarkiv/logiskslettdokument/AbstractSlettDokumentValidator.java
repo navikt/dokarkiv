@@ -4,9 +4,9 @@ import static org.apache.commons.lang3.BooleanUtils.isFalse;
 
 import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
-import no.nav.dokarkiv.logiskslettdokument.exceptions.ForMangeJournalpostDokumentInfoRelasjonerException;
-import no.nav.dokarkiv.logiskslettdokument.exceptions.IngenRelasjonMellomJournalpostIdOgDokumentInfoIdException;
-import no.nav.dokarkiv.logiskslettdokument.exceptions.JournalpostDokumentInfoRelasjonNotFoundException;
+import no.nav.dokarkiv.core.exceptions.ForMangeJournalpostDokumentInfoRelasjonerException;
+import no.nav.dokarkiv.core.exceptions.IngenRelasjonMellomJournalpostIdOgDokumentInfoIdException;
+import no.nav.dokarkiv.core.exceptions.JournalpostDokumentInfoRelasjonIkkeFunnetException;
 import no.nav.dokarkiv.logiskslettdokument.rjoark100.LogiskSlettDokumentRequestTo;
 import org.slf4j.MDC;
 
@@ -25,7 +25,7 @@ public abstract class AbstractSlettDokumentValidator {
 			List<JournalpostDokumentInfoRelasjon> jpDokInfoRelasjoner,
 			Long dokumentInfoId) {
 		if (jpDokInfoRelasjoner.isEmpty()) {
-			throw new JournalpostDokumentInfoRelasjonNotFoundException(
+			throw new JournalpostDokumentInfoRelasjonIkkeFunnetException(
 					String.format("%s kan ikke finne noen journalpostDokumentInfoRelasjon for dokumentInfoId=%s",
 							MDC.get(MDCConstants.MDC_REQUEST_ID), dokumentInfoId));
 		}
