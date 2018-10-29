@@ -30,6 +30,7 @@
 		<module>hentdokument</module>
 		<module>logiskslettdokument</module>
 		<module>hentjournalinfo</module>
+		<module>arkiverkorrigertdokument</module>
 	</modules>
 
 	<distributionManagement>
