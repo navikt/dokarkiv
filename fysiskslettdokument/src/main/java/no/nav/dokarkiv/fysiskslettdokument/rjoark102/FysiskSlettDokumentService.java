@@ -10,6 +10,8 @@ import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -35,8 +37,11 @@ public class FysiskSlettDokumentService {
 
 		//TODO: Erstatt med HjemmelCode når det er avklart
 		switch (hjemmelSomStyrerSletteMetode) {
-			case "slettKunEttVedleggFraForsendeleKnyttetJP":
-				slettKunEttVedleggFraForsendelseKnyttetJP(requestTo);
+			case "fysiskSlettAvKunEttVedleggKnyttetJP":
+				fysiskSlettAvKunEttVedleggKnyttetJP(requestTo);
+				break;
+			case "fysiskSlettAvKunEttHoveddokumentKnyttetJP":
+				fysiskSlettAvKunEttHoveddokumentKnyttetJP(requestTo);
 				break;
 			default:
 				throw new UgyldigHjemmelException(
@@ -54,23 +59,43 @@ public class FysiskSlettDokumentService {
 				.build();
 	}
 
-	private void slettKunEttVedleggFraForsendelseKnyttetJP(FysiskSlettDokumentRequestTo requestTo) {
+	private void fysiskSlettAvKunEttVedleggKnyttetJP(FysiskSlettDokumentRequestTo requestTo) {
 		JournalpostDokumentInfoRelasjon journalpostDokumentInfoRelasjon =
-				journalpostDokumentInfoRelasjonRepository.findByJournalpostId(requestTo.getJournalpostId());
+				journalpostDokumentInfoRelasjonRepository.findOneByJournalpostId(requestTo.getJournalpostId());
 
 		validator.validerAtKunEtVedleggSkalSlettes(journalpostDokumentInfoRelasjon, requestTo);
 
 		slettEtDokumentMedAlleMetadata(requestTo.getDokumentInfoId());
 	}
 
+	private void fysiskSlettAvKunEttHoveddokumentKnyttetJP(FysiskSlettDokumentRequestTo requestTo) {
+		List<JournalpostDokumentInfoRelasjon> listFoundByJournalpostId =
+				journalpostDokumentInfoRelasjonRepository.findByJournalpostId(requestTo.getDokumentInfoId())
+						.orElse(new ArrayList<>());
+
+		List<JournalpostDokumentInfoRelasjon> listFoundByDokumnentInfoId =
+				journalpostDokumentInfoRelasjonRepository.findByDokumentInfoId(requestTo.getDokumentInfoId())
+						.orElse(new ArrayList<>());
+
+		validator.validerAtKunEtHoveddokumentSkalSlettes(listFoundByJournalpostId, listFoundByDokumnentInfoId, requestTo);
+//		validator.validerFysiskSlettAvEtHoveddokument(listFoundByJournalpostId.iterator().next(), requestTo);
+
+		slettEnJournalpostOgEtDokumentMedAlleMetadata(requestTo);
+	}
+
 	private void slettEtDokumentMedAlleMetadata(Long dokumentInfoId) {
 		slettFilOgDokumentInfo(dokumentInfoId);
 	}
 
+	private void slettEnJournalpostOgEtDokumentMedAlleMetadata(FysiskSlettDokumentRequestTo requestTo) {
+		slettFilOgDokumentInfo(requestTo.getDokumentInfoId());
+		slettJournalpost(requestTo.getJournalpostId());
+	}
 
 	private void slettJournalpost(Long journalpostId) {
 		deleteRepository.deleteJPTilleggByJournalpostId(journalpostId);
 		deleteRepository.deleteSaksrelasjonByJournalpostId(journalpostId);
+		deleteRepository.deleteBrukerByJournalpostId(journalpostId);
 		deleteRepository.deleteJournalpostByJournalpostId(journalpostId);
 	}
 

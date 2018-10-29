@@ -1,37 +1,122 @@
 package no.nav.dokarkiv.fysiskslettdokument.rjoark102;
 
 import static java.util.Objects.isNull;
+import static org.apache.commons.lang3.BooleanUtils.isFalse;
 import static org.apache.commons.lang3.BooleanUtils.isNotTrue;
 
 import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
+import no.nav.dokarkiv.core.exceptions.DokumentIkkeLogiskSlettetException;
+import no.nav.dokarkiv.core.exceptions.ForMangeJournalpostDokumentInfoRelasjonerException;
+import no.nav.dokarkiv.core.exceptions.IngenRelasjonMellomJournalpostIdOgDokumentInfoIdException;
 import no.nav.dokarkiv.core.exceptions.JournalpostDokumentInfoRelasjonIkkeFunnetException;
+import no.nav.dokarkiv.fysiskslettdokument.exceptions.DokumentErIkkeHoveddokumentException;
 import no.nav.dokarkiv.fysiskslettdokument.exceptions.DokumentErIkkeVedleggException;
-import no.nav.dokarkiv.fysiskslettdokument.exceptions.DokumentIkkeLogiskSlettetException;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+import java.util.Set;
+
 @Component
 public class FysiskSlettDokumentValidator {
+
+	public void validerFysiskSlettAvEtVedlegg(
+			JournalpostDokumentInfoRelasjon relasjonSomSkalSlettes,
+			FysiskSlettDokumentRequestTo requestTo) {
+		validerAtDokumentErLogiskSlettet(relasjonSomSkalSlettes.getDokumentInfo(), requestTo);
+		validerAtRelasjonErTilknyttetSomVedlegg(relasjonSomSkalSlettes, requestTo);
+	}
 
 	public void validerAtKunEtVedleggSkalSlettes(
 			JournalpostDokumentInfoRelasjon jpDokInfoRelSomSkalSlettes,
 			FysiskSlettDokumentRequestTo requestTo) {
 		validerAtJournalpostDokumentInfoRelasjonFinnes(jpDokInfoRelSomSkalSlettes, requestTo.getJournalpostId());
 		validerAtDokumentErLogiskSlettet(jpDokInfoRelSomSkalSlettes.getDokumentInfo(), requestTo);
-		validerAtRelasjonErTilknyttetSomVedlegg(jpDokInfoRelSomSkalSlettes, requestTo);
+//		validerAtRelasjonErTilknyttetSomVedlegg(jpDokInfoRelSomSkalSlettes, requestTo);
 	}
 
-	private void validerAtJournalpostDokumentInfoRelasjonFinnes(
-			JournalpostDokumentInfoRelasjon jpDokInfoRelSomSkalSlettes,
-			Long journalpostId) {
-		if (isNull(jpDokInfoRelSomSkalSlettes)) {
-			//TODO: Bruk denne også i logiskslettdokument modulen etter merge av branch visSletteStatusIDokumentInfoTittel
+	public void validerFysiskSlettAvEtHoveddokument(
+			JournalpostDokumentInfoRelasjon relasjonSomSkalSlettes,
+			FysiskSlettDokumentRequestTo requestTo) {
+		validerAtDokumentErLogiskSlettet(relasjonSomSkalSlettes.getDokumentInfo(), requestTo);
+		validerAtRelasjonErTilknyttetSomHoveddokument(relasjonSomSkalSlettes, requestTo);
+	}
+
+	public void validerAtKunEtHoveddokumentSkalSlettes(
+			List<JournalpostDokumentInfoRelasjon> listFoundByJournalpostId,
+			List<JournalpostDokumentInfoRelasjon> listFoundByDokumentInfoId,
+			FysiskSlettDokumentRequestTo requestTo) {
+		validerKunEnGyldigRelasjonFunnet(listFoundByJournalpostId, listFoundByDokumentInfoId, requestTo);
+		validerFysiskSlettAvEtHoveddokument(listFoundByJournalpostId.get(0), requestTo);
+	}
+
+	// Private ---------------
+
+	private void validerKunEnGyldigRelasjonFunnet(
+			List<JournalpostDokumentInfoRelasjon> listFoundByJournalpostId,
+			List<JournalpostDokumentInfoRelasjon> listFoundByDokumentInfoId,
+			FysiskSlettDokumentRequestTo requestTo) {
+		validerAtJournalpostDokumentInfoRelasjonerFinnes(listFoundByJournalpostId, listFoundByDokumentInfoId, requestTo);
+		validerAtJournalpostDokumentInfoRelasjonKunErKnyttetTilEnRelasjon(listFoundByJournalpostId, listFoundByDokumentInfoId, requestTo);
+		validerAtJournalpostIdOgDokumentInfoIdFraInputPekerPaaSammeRelasjon(listFoundByJournalpostId, listFoundByDokumentInfoId, requestTo);
+	}
+
+	private void validerAtJournalpostDokumentInfoRelasjonerFinnes(
+			List<JournalpostDokumentInfoRelasjon> listFoundByJournalpostId,
+			List<JournalpostDokumentInfoRelasjon> listFoundByDokumentInfoId,
+			FysiskSlettDokumentRequestTo requestTo
+	) {
+		if (listFoundByJournalpostId.isEmpty()) {
 			throw new JournalpostDokumentInfoRelasjonIkkeFunnetException(
 					String.format("%s kan ikke finne journalpostDokumentInfoRelasjon med journalpostId=%s",
 							MDC.get(MDCConstants.MDC_REQUEST_ID),
-							journalpostId));
+							requestTo.getJournalpostId()));
+		}
+		if (listFoundByDokumentInfoId.isEmpty()) {
+			throw new JournalpostDokumentInfoRelasjonIkkeFunnetException(
+					String.format("%s kan ikke finne journalpostDokumentInfoRelasjon med dokumentInfoId=%s",
+							MDC.get(MDCConstants.MDC_REQUEST_ID),
+							requestTo.getDokumentInfoId()));
+		}
+	}
+
+	private void validerAtJournalpostDokumentInfoRelasjonKunErKnyttetTilEnRelasjon(
+			List<JournalpostDokumentInfoRelasjon> listFoundByJournalpostId,
+			List<JournalpostDokumentInfoRelasjon> listFoundByDokumentInfoId,
+			FysiskSlettDokumentRequestTo requestTo) {
+		if (listFoundByJournalpostId.size() > 1) {
+			throw new ForMangeJournalpostDokumentInfoRelasjonerException(
+					String.format("%s kan ikke slette en journalpost som har relasjoner med flere dokumenter. " +
+									"JournalpostId=%s har relasjoner med %s dokumenter.",
+							MDC.get(MDCConstants.MDC_REQUEST_ID),
+							requestTo.getJournalpostId(),
+							listFoundByJournalpostId.size()));
+		}
+		if (listFoundByDokumentInfoId.size() > 1) {
+			throw new ForMangeJournalpostDokumentInfoRelasjonerException(
+					String.format("%s kan ikke slette et dokument som har relasjoner med flere journalposter. " +
+									"DokumentInfoId=%s har relasjoner med %s journalposter.",
+							MDC.get(MDCConstants.MDC_REQUEST_ID),
+							requestTo.getDokumentInfoId(),
+							listFoundByDokumentInfoId.size()));
+		}
+	}
+
+	private void validerAtJournalpostIdOgDokumentInfoIdFraInputPekerPaaSammeRelasjon(
+			List<JournalpostDokumentInfoRelasjon> listFoundByJournalpostId,
+			List<JournalpostDokumentInfoRelasjon> listFoundByDokumentInfoId,
+			FysiskSlettDokumentRequestTo requestTo) {
+		Long relasjonsIdFraJournalpostId = listFoundByJournalpostId.get(0).getJournalpostDokumentInfoRelasjonId();
+		Long relasjonsIdFraDokumentInfoId = listFoundByDokumentInfoId.get(0).getJournalpostDokumentInfoRelasjonId();
+
+		if (isFalse(relasjonsIdFraJournalpostId.equals(relasjonsIdFraDokumentInfoId))) {
+			throw new IngenRelasjonMellomJournalpostIdOgDokumentInfoIdException(
+					String.format("%s finner ingen journalpostDokumentInfoRelasjon mellom journalpostId=%s og dokumentInfoId=%s",
+							MDC.get(MDCConstants.MDC_REQUEST_ID),
+							requestTo.getJournalpostId(),
+							requestTo.getDokumentInfoId()));
 		}
 	}
 
@@ -51,7 +136,6 @@ public class FysiskSlettDokumentValidator {
 			JournalpostDokumentInfoRelasjon jpDokInfoRelSomSkalSlettes,
 			FysiskSlettDokumentRequestTo requestTo) {
 		if (isNotTrue(jpDokInfoRelSomSkalSlettes.isVedlegg())) {
-			//TODO: Se på gjennbruk av Exception fra logiskSlettdokument og denne modulen
 			throw new DokumentErIkkeVedleggException(
 					String.format("%s kan ikke slette dokument som ikke er et vedlegg når hjemmel=%s er brukt. " +
 									"dokumentInfoId=%s, journalpostId=%s",
@@ -61,4 +145,54 @@ public class FysiskSlettDokumentValidator {
 							requestTo.getJournalpostId()));
 		}
 	}
+
+	private static void validerAtRelasjonErTilknyttetSomHoveddokument(
+			JournalpostDokumentInfoRelasjon jpDokInfoRelSomSkalSlettes,
+			FysiskSlettDokumentRequestTo requestTo) {
+		if (isNotTrue(jpDokInfoRelSomSkalSlettes.isHoveddokument())) {
+			throw new DokumentErIkkeHoveddokumentException(
+					String.format("%s kan ikke slette dokument som ikke er hoveddokument når hjemmel=%s er brukt. " +
+									"dokumentInfoId=%s, journalpostId=%s",
+							MDC.get(MDCConstants.MDC_REQUEST_ID),
+							requestTo.getHjemmel(),
+							requestTo.getDokumentInfoId(),
+							requestTo.getJournalpostId()));
+		}
+	}
+
+	//Endre eller slett --------------------------------------
+
+	private void validerAtHoveddokumentIkkeHarVedlegg(
+			JournalpostDokumentInfoRelasjon jpDokInfoRelSomSkalSlettes,
+			FysiskSlettDokumentRequestTo requestTo) {
+		Set<JournalpostDokumentInfoRelasjon> jpDokInfoRelasjoner = jpDokInfoRelSomSkalSlettes.getDokumentInfo()
+				.getJournalpostRelasjoner();
+		if (jpDokInfoRelasjoner.size() > 1) {
+			throw new ForMangeJournalpostDokumentInfoRelasjonerException(
+					String.format("s kan ikke slette et hoveddokument som har vedlegg når hjemmel=%s brukes. " +
+									"dokumentinfoId=%s, journalpostId=%s",
+							MDC.get(MDCConstants.MDC_REQUEST_ID),
+							requestTo.getDokumentInfoId(),
+							requestTo.getJournalpostId()));
+		}
+	}
+
+	private void validerAtJournalpostDokumentInfoRelasjonFinnes(
+			JournalpostDokumentInfoRelasjon jpDokInfoRelSomSkalSlettes,
+			Long journalpostId) {
+		if (isNull(jpDokInfoRelSomSkalSlettes)) {
+			//TODO: Bruk denne også i logiskslettdokument modulen etter merge av branch visSletteStatusIDokumentInfoTittel
+			throw new JournalpostDokumentInfoRelasjonIkkeFunnetException(
+					String.format("%s kan ikke finne journalpostDokumentInfoRelasjon med journalpostId=%s",
+							MDC.get(MDCConstants.MDC_REQUEST_ID),
+							journalpostId));
+		}
+	}
+
+
+
+
+
+
+
 }
