@@ -47,7 +47,7 @@ public class ArkiverKorrigertDokumentRestController {
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark103"}, percentiles = {0.5, 0.95})
 	public String arkiverKorrigertDokument(@PathVariable("journalpostId") Long journalpostId,
 										   @PathVariable("dokumentInfoId") Long dokumentInfoId,
-										   @PathVariable("binaerFil") String binaerFil) {
+										   @PathVariable("binaerFil") byte[] binaerFil) {
 		abacSecurityService.assertAccessToJournalpost(journalpostId.toString());
 		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark103");
 		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har mottat kall med journalpostId={} og dokumentInfoId={}",
@@ -57,7 +57,7 @@ public class ArkiverKorrigertDokumentRestController {
 		return arkiverKorrigertDokumentService.arkiverKorrigertDokument(ArkiverKorrigertDokumentRequestTo.builder()
 				.journalpostId(journalpostId)
 				.dokumentInfoId(dokumentInfoId)
-				.binaerFil("binærFil")
+				.binaerFil(binaerFil)
 				.build());
 	}
 

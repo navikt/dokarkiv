@@ -8,7 +8,5 @@ import lombok.Data;
 public class ArkiverKorrigertDokumentRequestTo {
 	private final Long journalpostId;
 	private final Long dokumentInfoId;
-	//TODO: Finn ut type for binærfilen
-	private final String binaerFil;
-
+	private final byte[] binaerFil;
 }
