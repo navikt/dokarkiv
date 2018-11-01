@@ -2,7 +2,6 @@ package no.nav.dokarkiv.logiskslettdokument.rjoark101;
 
 import static no.nav.dokarkiv.logiskslettdokument.util.TestUtils.DOKUMENTINFO_ID;
 import static no.nav.dokarkiv.logiskslettdokument.util.TestUtils.JOURNALPOST_ID;
-import static no.nav.dokarkiv.logiskslettdokument.util.TestUtils.createDokumentInfo;
 import static no.nav.dokarkiv.logiskslettdokument.util.TestUtils.createJournalpost;
 import static no.nav.dokarkiv.logiskslettdokument.util.TestUtils.createRequest;
 
@@ -42,13 +41,9 @@ public class AngreLogiskSlettDokumentValidatorTest {
 		List<JournalpostDokumentInfoRelasjon> journalpostDokumentInfoRelasjonList = new ArrayList<JournalpostDokumentInfoRelasjon>();
 		journalpostDokumentInfoRelasjonList.addAll(journalpost.getJournalpostDokumentInfoRelasjoner());
 
-		validator.validateAngreLogiskSlettDokument(journalpostDokumentInfoRelasjonList, requestTo);
+		validator.validerAngreLogiskSlettAvEttDokument(journalpostDokumentInfoRelasjonList, requestTo);
 	}
 
-	@Test
-	public void shouldValidateSletteStatusForDokument() throws Exception {
-		validator.validateDokumentErLogiskSlettet(createDokumentInfo(true));
-	}
 
 	@Test
 	public void shouldFailToValidateSletteStatusForDokument() {
@@ -56,7 +51,13 @@ public class AngreLogiskSlettDokumentValidatorTest {
 		thrown.expectMessage(MDC.get(MDCConstants.MDC_REQUEST_ID) + " kan ikke angre logisk sletting av dokument med dokumentInfoId=" + DOKUMENTINFO_ID + ". " +
 				"Dokumentet er ikke logisk slettet");
 
-		validator.validateDokumentErLogiskSlettet(createDokumentInfo(false));
+		LogiskSlettDokumentRequestTo requestTo = createRequest(JOURNALPOST_ID, DOKUMENTINFO_ID);
+		Journalpost journalpost = createJournalpost(false);
+
+		List<JournalpostDokumentInfoRelasjon> journalpostDokumentInfoRelasjonList = new ArrayList<JournalpostDokumentInfoRelasjon>();
+		journalpostDokumentInfoRelasjonList.addAll(journalpost.getJournalpostDokumentInfoRelasjoner());
+
+		validator.validerAngreLogiskSlettAvEttDokument(journalpostDokumentInfoRelasjonList, requestTo);
 	}
 
 

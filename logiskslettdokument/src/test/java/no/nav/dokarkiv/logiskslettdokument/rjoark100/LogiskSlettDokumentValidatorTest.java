@@ -4,7 +4,6 @@ import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalp
 import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
 import static no.nav.dokarkiv.logiskslettdokument.util.TestUtils.DOKUMENTINFO_ID;
 import static no.nav.dokarkiv.logiskslettdokument.util.TestUtils.JOURNALPOST_ID;
-import static no.nav.dokarkiv.logiskslettdokument.util.TestUtils.createDokumentInfo;
 import static no.nav.dokarkiv.logiskslettdokument.util.TestUtils.createJournalpost;
 import static no.nav.dokarkiv.logiskslettdokument.util.TestUtils.createRequest;
 
@@ -47,7 +46,7 @@ public class LogiskSlettDokumentValidatorTest {
 		List<JournalpostDokumentInfoRelasjon> jpDokInfoRelasjoner = new ArrayList<JournalpostDokumentInfoRelasjon>();
 		jpDokInfoRelasjoner.addAll(journalpost.getJournalpostDokumentInfoRelasjoner());
 
-		validator.validateLogiskSlettDokument(jpDokInfoRelasjoner, requestTo);
+		validator.validerAtDokumentSomSkalSlettesLogiskErKnyttetTilKunEnJournalpost(jpDokInfoRelasjoner, requestTo);
 	}
 
 	@Test
@@ -60,7 +59,7 @@ public class LogiskSlettDokumentValidatorTest {
 
 		List<JournalpostDokumentInfoRelasjon> emptyJpDokInfoRelasjoner = new ArrayList<JournalpostDokumentInfoRelasjon>();
 
-		validator.validateLogiskSlettDokument(emptyJpDokInfoRelasjoner, requestTo);
+		validator.validerAtDokumentSomSkalSlettesLogiskErKnyttetTilKunEnJournalpost(emptyJpDokInfoRelasjoner, requestTo);
 	}
 
 	@Test
@@ -91,7 +90,7 @@ public class LogiskSlettDokumentValidatorTest {
 		jpDokInfoRelasjoner.addAll(journalpost2.getJournalpostDokumentInfoRelasjoner());
 		jpDokInfoRelasjoner.addAll(journalpost3.getJournalpostDokumentInfoRelasjoner());
 
-		validator.validateLogiskSlettDokument(jpDokInfoRelasjoner, requestTo);
+		validator.validerAtDokumentSomSkalSlettesLogiskErKnyttetTilKunEnJournalpost(jpDokInfoRelasjoner, requestTo);
 	}
 
 	@Test
@@ -106,21 +105,22 @@ public class LogiskSlettDokumentValidatorTest {
 		List<JournalpostDokumentInfoRelasjon> jpDokInfoRelasjoner = new ArrayList<JournalpostDokumentInfoRelasjon>();
 		jpDokInfoRelasjoner.addAll(journalpost1.getJournalpostDokumentInfoRelasjoner());
 
-		validator.validateLogiskSlettDokument(jpDokInfoRelasjoner, feilRequestTo);
+		validator.validerAtDokumentSomSkalSlettesLogiskErKnyttetTilKunEnJournalpost(jpDokInfoRelasjoner, feilRequestTo);
 	}
 
 	@Test
-	public void shouldValidateSletteStatusForDokument() throws Exception {
-		validator.validateDokumentIkkeLogiskSlettet(createDokumentInfo(false));
-	}
-
-	@Test
-	public void shouldFailToValidateSletteStatusForDokument() {
+	public void shouldFailToValidateSletteStatusForDokument() throws DokumentAlleredeSlettetException {
 		thrown.expect(DokumentAlleredeSlettetException.class);
-		thrown.expectMessage(String.format("%s kan ikke utføre logisk sletting av dokument med dokumentInfoId=%s. Dokumentet er allerede logisk slettet",
+		thrown.expectMessage(String.format("%s kan ikke utføre logisk sletting av dokument med dokumentInfoId=%s. " +
+						"Dokumentet er allerede logisk slettet",
 				MDC.get(MDCConstants.MDC_REQUEST_ID), DOKUMENTINFO_ID));
 
-		validator.validateDokumentIkkeLogiskSlettet(createDokumentInfo(true));
-	}
+		LogiskSlettDokumentRequestTo requestTo = createRequest(JOURNALPOST_ID, DOKUMENTINFO_ID);
+		Journalpost journalpost = createJournalpost(true);
 
+		List<JournalpostDokumentInfoRelasjon> jpDokInfoRelasjoner = new ArrayList<JournalpostDokumentInfoRelasjon>();
+		jpDokInfoRelasjoner.addAll(journalpost.getJournalpostDokumentInfoRelasjoner());
+
+		validator.validerAtDokumentSomSkalSlettesLogiskErKnyttetTilKunEnJournalpost(jpDokInfoRelasjoner, requestTo);
+	}
 }

@@ -15,16 +15,22 @@ import java.util.List;
 @Component
 public class LogiskSlettDokumentValidator extends AbstractSlettDokumentValidator {
 
-	public void validateLogiskSlettDokument(List<JournalpostDokumentInfoRelasjon> jpDokInfoRelasjoner, LogiskSlettDokumentRequestTo requestTo) {
-		validateJournalpostDokumentInfoRelasjoner(jpDokInfoRelasjoner, requestTo.getDokumentInfoId());
-		validateJournalpostIdBelongsToThisJournalpost(jpDokInfoRelasjoner.get(0).getJournalpost(), requestTo);
-		validateDokumentIkkeLogiskSlettet(jpDokInfoRelasjoner.get(0).getDokumentInfo());
+	protected void validerAtDokumentSomSkalSlettesLogiskErKnyttetTilKunEnJournalpost(
+			List<JournalpostDokumentInfoRelasjon> jpDokInfoRelasjonList,
+			LogiskSlettDokumentRequestTo requestTo) {
+		validerAtKunEnGyldigJpDokInfoRelasjonFinnes(jpDokInfoRelasjonList, requestTo.getDokumentInfoId());
+		validerAtJournalpostIdOgDokumentInfoIdFraInputHarEnRelasjon(jpDokInfoRelasjonList.get(0)
+				.getJournalpost()
+				.getJournalpostId(), requestTo);
+		validerAtDokumentIkkeErLogiskSlettet(jpDokInfoRelasjonList.get(0).getDokumentInfo());
 	}
 
-	public void validateDokumentIkkeLogiskSlettet(DokumentInfo dokumentInfo) throws DokumentAlleredeSlettetException {
+	protected void validerAtDokumentIkkeErLogiskSlettet(DokumentInfo dokumentInfo) {
 		if (isTrue(dokumentInfo.getSlettet())) {
-			throw new DokumentAlleredeSlettetException(String.format(MDC.get(MDCConstants.MDC_REQUEST_ID) + " kan ikke utføre logisk sletting av dokument med dokumentInfoId=%s. " +
-					"Dokumentet er allerede logisk slettet", dokumentInfo.getDokumentInfoId()));
+			throw new DokumentAlleredeSlettetException(
+					String.format(MDC.get(MDCConstants.MDC_REQUEST_ID) + " kan ikke utføre logisk sletting av dokument med " +
+									"dokumentInfoId=%s. Dokumentet er allerede logisk slettet",
+							dokumentInfo.getDokumentInfoId()));
 		}
 	}
 }
