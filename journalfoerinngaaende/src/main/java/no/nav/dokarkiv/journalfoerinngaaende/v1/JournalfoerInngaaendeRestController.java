@@ -5,6 +5,7 @@ import static no.nav.abac.xacml.NavAttributter.RESOURCE_ARKIV_JOURNALPOST;
 import static no.nav.abac.xacml.NavAttributter.RESOURCE_FELLES_RESOURCE_TYPE;
 import static no.nav.abac.xacml.StandardAttributter.ACTION_ID;
 import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.CREATE_ACTION;
+import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.DELETE_ACTION;
 import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.READ_ACTION;
 import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.UPDATE_ACTION;
 
@@ -151,12 +152,11 @@ public class JournalfoerInngaaendeRestController {
 				logiskVedleggId, journalpostId, dokumentId);
 	}
 
-	//TODO: Er UPDATE_ACTION for abac korrekt her?
 	@Transactional
 	@ResponseBody
 	@DeleteMapping(value = "/{journalpostId}/dokumenter/{dokumentId}/logiskeVedlegg/{logiskVedleggId}")
 	@Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_JOURNALPOST)},
-			actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION))
+			actions = @Abac.Attr(key = ACTION_ID, value = DELETE_ACTION))
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark004i_delete"}, percentiles = {0.5, 0.95})
 	public String deleteLogiskVedlegg(@PathVariable String journalpostId, @PathVariable String dokumentId, @PathVariable String logiskVedleggId) {
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));

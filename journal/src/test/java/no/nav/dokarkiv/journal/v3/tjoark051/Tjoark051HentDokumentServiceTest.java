@@ -20,6 +20,7 @@ import no.nav.dokarkiv.core.domain.entities.DokumentFil;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.exceptions.DocumentNotFoundException;
 import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
 import no.nav.dokarkiv.core.exceptions.InvalidFilUuidException;
 import no.nav.dokarkiv.core.exceptions.NoDokumentInfoFoundException;
@@ -27,7 +28,7 @@ import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
 import no.nav.dokarkiv.core.ondemand.HentOndemandDokument;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
-import no.nav.dokarkiv.core.exceptions.DocumentNotFoundException;
+import no.nav.tjeneste.virksomhet.journal.v3.HentDokumentSikkerhetsbegrensning;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -119,6 +120,16 @@ public class Tjoark051HentDokumentServiceTest {
 		} catch (DocumentNotFoundException e) {
 			assertThat(e.getCause(), is(instanceOf(InvalidFilUuidException.class)));
 		}
+	}
+
+	@Test(expected = HentDokumentSikkerhetsbegrensning.class)
+	public void shouldThrowExceptionWhenDokumentIsDeleted() throws Exception {
+		Journalpost journalpost = createJournalPost();
+		journalpost.getJournalpostDokumentInfoRelasjoner().iterator().next().getDokumentInfo().setSlettet(true);
+
+		when(joarkRepositoryMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(journalpost));
+
+		service.hentDokument(request);
 	}
 
 	@Test

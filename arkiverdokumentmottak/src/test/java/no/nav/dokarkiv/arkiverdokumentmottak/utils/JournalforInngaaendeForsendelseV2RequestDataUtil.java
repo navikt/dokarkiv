@@ -5,6 +5,7 @@ import static no.nav.dokarkiv.arkiverdokumentmottak.utils.ArkiverDokumentmottakV
 import static no.nav.dokarkiv.arkiverdokumentmottak.utils.ArkiverDokumentmottakV2RequestDataUtil.createTilleggsopplysning2;
 import static no.nav.dokarkiv.arkiverdokumentmottak.utils.ArkiverDokumentmottakV2RequestDataUtil.populateFildetaljerBase;
 
+import no.nav.dokarkiv.core.domain.codes.Behandlingstema;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v2.informasjon.arkiverdokumentmottak.DokumentInfo;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v2.informasjon.arkiverdokumentmottak.Fildetaljer;
@@ -27,6 +28,7 @@ public class JournalforInngaaendeForsendelseV2RequestDataUtil {
 
 		ArkiverDokumentmottakV2RequestDataUtil.populateJournalpostBase(journalpost);
 		journalpost.setTema(ArkiverDokumentmottakV2RequestDataUtil.FAGOMRADE.name());
+		journalpost.setBehandlingstema(ArkiverDokumentmottakV2RequestDataUtil.BEHANDLINGSTEMA);
 		journalpost.setJournalforendeEnhet(ArkiverDokumentmottakV2RequestDataUtil.JOURNALFOERENDE_ENHET_REF);
 		journalpost.setInnhold(ArkiverDokumentmottakV2RequestDataUtil.INNHOLD);
 		journalpost.setAvsenderMottakerNavn(ArkiverDokumentmottakV2RequestDataUtil.EKSTERNPART_NAVN);

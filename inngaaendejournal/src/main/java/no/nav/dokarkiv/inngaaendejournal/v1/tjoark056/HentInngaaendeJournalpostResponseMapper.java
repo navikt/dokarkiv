@@ -58,6 +58,7 @@ public class HentInngaaendeJournalpostResponseMapper {
 		}
 		inngaaendeJournalpost.setMottakskanal(nullsafeEnumToKodeverdiMapper(to.getMottakskanal(), Mottakskanaler.class));
 		inngaaendeJournalpost.setTema(nullsafeEnumToKodeverdiMapper(to.getTema(), Tema.class));
+		inngaaendeJournalpost.setKanalReferanseId(to.getKanalReferanseId());
 		inngaaendeJournalpost.setJournaltilstand(mapJournaltilstand(to.getJournaltilstand()));
 		inngaaendeJournalpost.setJournalfEnhet(to.getJournalfEnhet());
 		inngaaendeJournalpost.setArkivSak(mapArkivSak(to.getArkivSak()));

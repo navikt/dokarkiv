@@ -98,6 +98,7 @@ public class InngaaendeJournalProviderTest {
 	static final String DOKUMENTTYPE_ID_VEDLEGG = "I00024";
 	private static final String HENT_JOURNALPOST_OPERATION_NAME = "JOARK:" + HENT_JOURNALPOST;
 	private static final String UTLED_JOURNALFOERINGSBEHOV_OPERATION_NAME = "JOARK:" + UTLED_JOURNALFOERINGSBEHOV;
+	public static final String KANAL_REFERANSE_ID = "kanalReferanseId";
 	@Rule
 	public ExpectedException expectedException = ExpectedException.none();
 	private UtledJournalfoeringsbehovRequest utledJournalfoeringsbehovRequest;

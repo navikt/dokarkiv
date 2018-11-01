@@ -89,4 +89,10 @@ public class Utils {
 				.collect(Collectors.toList());
 	}
 
+	public static void assertNotNull(Object object, String fieldName) throws IllegalArgumentException {
+		if (object == null) {
+			throw new InputValideringFeiletException(String.format("%s kan ikke være null", fieldName));
+		}
+	}
+
 }
