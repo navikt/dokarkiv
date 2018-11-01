@@ -14,6 +14,7 @@ public class LogiskSlettDokumentResponseMapper {
 				.journalpostId(journalpost.getJournalpostId())
 				.journalpostType(journalpost.getJournalposttype() == null ? null : journalpost.getJournalposttype().name())
 				.tema(journalpost.getFagomrade() == null ? null : journalpost.getFagomrade().name())
+				.slettet(dokumentInfo.getSlettet())
 				.build();
 	}
 }
