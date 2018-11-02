@@ -4,10 +4,11 @@ import no.nav.dokarkiv.core.domain.entities.DokumentFil;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.exceptions.DocumentNotFoundException;
 import no.nav.dokarkiv.core.exceptions.InvalidFilUuidException;
 import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
 import no.nav.dokarkiv.core.ondemand.HentOndemandDokument;
-import no.nav.dokarkiv.core.exceptions.DocumentNotFoundException;
+import no.nav.tjeneste.virksomhet.journal.v3.HentDokumentSikkerhetsbegrensning;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
@@ -32,12 +33,16 @@ public class Tjoark051HentDokumentService extends AbstractJournalOperations {
 	 * @return the byte array of the document
 	 * @throws DocumentNotFoundException Cannot find journalpost, dokumentinfo or fildetaljer
 	 */
-	public byte[] hentDokument(HentDokumentRequestTo request) throws DocumentNotFoundException {
+	public byte[] hentDokument(HentDokumentRequestTo request) throws DocumentNotFoundException, HentDokumentSikkerhetsbegrensning {
 		Journalpost journalpost = lookupJournalpost(request.getJournalpostId());
 
 		DokumentInfo dokumentInfo = getDokumentInfo(journalpost, request.getDokumentInfoId());
 		FilDetaljer filDetaljer = getFilDetaljer(dokumentInfo, request.getVariantFormat());
 		generateAuditLogIfDokumentIsSensitivt(journalpost, filDetaljer, "hentDokument");
+
+		if (dokumentInfo.getSlettet() != null && dokumentInfo.getSlettet()) {
+			throw new HentDokumentSikkerhetsbegrensning("Dokument med journalpostId=" + request.getJournalpostId() + " er slettet.");
+		}
 
 		if (StringUtils.isNotEmpty(filDetaljer.getOnDemandId())) {
 			try {

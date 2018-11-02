@@ -50,14 +50,14 @@ public class LogiskSlettDokumentRestController {
 	@Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_DOKUMENT)},
 			actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION))
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark100"}, percentiles = {0.5, 0.95})
-	public LogiskSlettDokumentResponse logiskSlettDokument(
+	public LogiskSlettDokumentResponse logiskSlettDokumentKnyttetKunEnJournalpost(
 			@PathVariable("journalpostId") Long journalpostId, @PathVariable("dokumentInfoId") Long dokumentInfoId) {
 		abacSecurityService.assertAccessToJournalpost(journalpostId.toString());
 		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark100");
 		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har mottat kall med journalpostId=" + journalpostId + " og dokumentInfoId=" + dokumentInfoId);
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
 
-		return logiskSlettDokumentService.slettDokumentLogisk(LogiskSlettDokumentRequestTo.builder()
+		return logiskSlettDokumentService.logiskSlettDokumentKnyttetKunEnJournalpost(LogiskSlettDokumentRequestTo.builder()
 				.journalpostId(journalpostId)
 				.dokumentInfoId(dokumentInfoId)
 				.build());

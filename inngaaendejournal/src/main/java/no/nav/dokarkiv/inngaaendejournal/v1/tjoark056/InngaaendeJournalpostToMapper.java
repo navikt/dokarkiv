@@ -51,6 +51,7 @@ public final class InngaaendeJournalpostToMapper {
 				.forsendelseMottatt(journalpost.getMottattDato() == null ? null : LocalDateTime.ofInstant(journalpost.getMottattDato().toInstant(), ZoneId.systemDefault()))
 				.mottakskanal(journalpost.getMottakskanal())
 				.tema(journalpost.getFagomrade())
+				.kanalReferanseId(journalpost.getKanalReferanseId())
 				.journaltilstand(mapJournaltilstand(journalpost))
 				.journalfEnhet(journalpost.getJournalForendeEnhetId())
 				.arkivSak(mapArkivSak(journalpost.getSaksrelasjon()))

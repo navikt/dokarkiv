@@ -70,7 +70,7 @@ public class BehandleJournalEndpoint implements BehandleJournalV2 {
 		behandleJournalProvider.ferdigstillDokumentopplasting(request);
 	}
 
-	@Timed(value = "dok_request", extraTags = {"process_code", "tjoark063"}, percentiles = {0.5, 0.95})
+	@Timed(value = "dok_request", extraTags = {"process_code", "tjoark065"}, percentiles = {0.5, 0.95})
 	@Override
 	public JournalfoerNotatResponse journalfoerNotat(
 			JournalfoerNotatRequest request) {
@@ -86,7 +86,7 @@ public class BehandleJournalEndpoint implements BehandleJournalV2 {
 		return behandleJournalProvider.journalfoerUtgaaendeHenvendelse(request);
 	}
 
-	@Timed(value = "dok_request", extraTags = {"process_code", "tjoark065"}, percentiles = {0.5, 0.95})
+	@Timed(value = "dok_request", extraTags = {"process_code", "tjoark063"}, percentiles = {0.5, 0.95})
 	@Override
 	public JournalfoerInngaaendeHenvendelseResponse journalfoerInngaaendeHenvendelse(
 			JournalfoerInngaaendeHenvendelseRequest request) {

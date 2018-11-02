@@ -830,6 +830,7 @@ public class JournalforInngaaendeForsendelseV2IT extends AbstractArkiverDokument
 
 	private void assertJournalpost(no.nav.dokarkiv.core.domain.entities.Journalpost domain, Journalpost request) {
 		assertThat(domain.getFagomrade().name(), is(request.getTema()));
+		assertThat(domain.getBehandlingstema().name(), is(request.getBehandlingstema()));
 		assertThat(domain.getAvsenderMottaker(), is(request.getAvsenderMottakerNavn()));
 		assertThat(domain.getAvsenderMottakerId(), is(request.getAvsenderMottakerId()));
 		assertThat(domain.getJournalForendeEnhetId(), is(request.getJournalforendeEnhet()));
