@@ -6,6 +6,7 @@ import static org.apache.commons.lang3.StringUtils.contains;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import no.nav.dokarkiv.core.domain.AbstractPersistentVersionedDomainObjectWithKilde;
+import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
@@ -152,6 +153,11 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	@Builder.Default
 	private Set<SkannetInnhold> skannetInnholdListe = new HashSet<>();
 
+	@OneToMany(mappedBy = "dokumentInfo", orphanRemoval = true)
+	@Cascade({CascadeType.PERSIST, CascadeType.MERGE, CascadeType.SAVE_UPDATE, CascadeType.DETACH})
+	@Builder.Default
+	private Set<Begrensning> begrensninger= new HashSet<>();
+
 	@OneToMany(mappedBy = "dokumentInfo")
 	@Builder.Default
 	private Set<JournalpostDokumentInfoRelasjon> journalpostRelasjoner = new HashSet<>();
@@ -171,7 +177,7 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	 * Constructor that assigns immutable properties. Used for testing.
 	 *
 	 * @param dokumentInfoId DB-id for the instance.
-	 * @param version DB-version for the instance.
+	 * @param version        DB-version for the instance.
 	 */
 	public DokumentInfo(Long dokumentInfoId, long version) {
 		this.dokumentInfoId = dokumentInfoId;
@@ -181,6 +187,7 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 		this.journalpostRelasjoner = new HashSet<>();
 		this.tilleggsopplysninger = new HashMap<>();
 		this.skannetInnholdListe = new HashSet<>();
+		this.begrensninger = new HashSet<>();
 
 	}
 
@@ -249,6 +256,26 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 			throw new InvalidArgumentException("DokumentInfo must have at least one FilDetaljer");
 		}
 	}
+
+	/**
+	 * Checks if DokumentInfo is Begrenset, either alone, or in relationto a paricular journalpost.
+	 *
+	 * @param journalpostId       The journalpostId.
+	 * @param begrensningTypeCode The begrensningTypeCode.
+	 * @return boolean.
+	 */
+	public Boolean isBegrenset(final Long journalpostId, final BegrensningTypeCode begrensningTypeCode) {
+		for (Begrensning begrensning : begrensninger) {
+			if (begrensning.getBegrensningType().equals(begrensningTypeCode) && begrensning.getDokumentInfo().getDokumentInfoId().equals(dokumentInfoId) && begrensning.getJournalpost() == null) {
+				return true;
+			}
+			if (begrensning.getBegrensningType().equals(begrensningTypeCode) && begrensning.getJournalpost() != null && begrensning.getDokumentInfo().equals(dokumentInfoId) && begrensning.getJournalpost().getJournalpostId() == journalpostId) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 
 	/**
 	 * Checks that there are no duplicates among the varianter of documents
@@ -727,7 +754,7 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	 * Sets whether or not a third-party source has marked this document as unviewable.
 	 *
 	 * @param innskrenketPartsinnsyn The boolean value to which the innskrenketPartsinnsynFraTredjepart
-	 * property should be set.
+	 *                               property should be set.
 	 */
 	public void setInnskrenketPartsinnsynFraTredjepart(Boolean innskrenketPartsinnsyn) {
 		this.innskrenketPartsinnsynFraTredjepart = innskrenketPartsinnsyn;
