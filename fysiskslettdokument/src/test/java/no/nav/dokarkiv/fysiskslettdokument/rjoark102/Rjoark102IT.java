@@ -63,22 +63,22 @@ public class Rjoark102IT extends AbstractFysiskSlettDokumentIT {
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 
-		assertTrue(journalpostDokumentInfoRelasjonRepository.findByJournalpostId(journalpost.getJournalpostId()).isPresent());
-		assertTrue(journalpostDokumentInfoRelasjonRepository.findByDokumentInfoId(dokumentInfoHoveddokument.getDokumentInfoId())
-				.isPresent());
-		assertFalse(journalpostDokumentInfoRelasjonRepository.findByDokumentInfoId(dokInfoVedlegg.getDokumentInfoId())
-				.isPresent());
+		assertTrue(journalpostDokumentInfoRelasjonRepository
+				.findAllByJournalpostJournalpostId(journalpost.getJournalpostId()).isPresent());
+		assertTrue(journalpostDokumentInfoRelasjonRepository
+				.findAllByDokumentInfoDokumentInfoId(dokumentInfoHoveddokument.getDokumentInfoId()).isPresent());
+		assertFalse(journalpostDokumentInfoRelasjonRepository
+				.findAllByDokumentInfoDokumentInfoId(dokInfoVedlegg.getDokumentInfoId()).isPresent());
 
-		assertTrue(dokumentinfoRepository.findDokumentInfoByJournalpostIdAndDokumentInfoId(
+		assertTrue(dokumentinfoRepository.findAllByOriginalJournalpostJournalpostIdAndDokumentInfoId(
 				journalpost.getJournalpostId(), dokumentInfoHoveddokument.getDokumentInfoId()).isPresent());
-		assertFalse(dokumentinfoRepository.findDokumentInfoByJournalpostIdAndDokumentInfoId(
+		assertFalse(dokumentinfoRepository.findAllByOriginalJournalpostJournalpostIdAndDokumentInfoId(
 				journalpost.getJournalpostId(), dokInfoVedlegg.getDokumentInfoId()).isPresent());
 
 		assertTrue(joarkRepository.findAllJournalpostIdsByDokumentInfoId(
 				dokumentInfoHoveddokument.getDokumentInfoId()).size() > 0);
 		assertFalse(joarkRepository.findAllJournalpostIdsByDokumentInfoId(
 				dokInfoVedlegg.getDokumentInfoId()).size() > 0);
-
 	}
 
 	@Test
@@ -152,20 +152,24 @@ public class Rjoark102IT extends AbstractFysiskSlettDokumentIT {
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 
-		assertTrue(journalpostDokumentInfoRelasjonRepository.findByJournalpostId(journalpost.getJournalpostId()).isPresent());
-		assertTrue(journalpostDokumentInfoRelasjonRepository.findByDokumentInfoId(dokumentInfoHoveddokument.getDokumentInfoId())
-				.isPresent());
-		assertTrue(journalpostDokumentInfoRelasjonRepository.findByDokumentInfoId(vedlegg1.getDokumentInfoId()).isPresent());
-		assertFalse(journalpostDokumentInfoRelasjonRepository.findByDokumentInfoId(vedlegg2.getDokumentInfoId()).isPresent());
-		assertTrue(journalpostDokumentInfoRelasjonRepository.findByDokumentInfoId(vedlegg3.getDokumentInfoId()).isPresent());
+		assertTrue(journalpostDokumentInfoRelasjonRepository
+				.findAllByJournalpostJournalpostId(journalpost.getJournalpostId()).isPresent());
+		assertTrue(journalpostDokumentInfoRelasjonRepository
+				.findAllByDokumentInfoDokumentInfoId(dokumentInfoHoveddokument.getDokumentInfoId()).isPresent());
+		assertTrue(journalpostDokumentInfoRelasjonRepository
+				.findAllByDokumentInfoDokumentInfoId(vedlegg1.getDokumentInfoId()).isPresent());
+		assertFalse(journalpostDokumentInfoRelasjonRepository
+				.findAllByDokumentInfoDokumentInfoId(vedlegg2.getDokumentInfoId()).isPresent());
+		assertTrue(journalpostDokumentInfoRelasjonRepository
+				.findAllByDokumentInfoDokumentInfoId(vedlegg3.getDokumentInfoId()).isPresent());
 
-		assertTrue(dokumentinfoRepository.findDokumentInfoByJournalpostIdAndDokumentInfoId(
+		assertTrue(dokumentinfoRepository.findAllByOriginalJournalpostJournalpostIdAndDokumentInfoId(
 				journalpost.getJournalpostId(), dokumentInfoHoveddokument.getDokumentInfoId()).isPresent());
-		assertTrue(dokumentinfoRepository.findDokumentInfoByJournalpostIdAndDokumentInfoId(
+		assertTrue(dokumentinfoRepository.findAllByOriginalJournalpostJournalpostIdAndDokumentInfoId(
 				journalpost.getJournalpostId(), vedlegg1.getDokumentInfoId()).isPresent());
-		assertFalse(dokumentinfoRepository.findDokumentInfoByJournalpostIdAndDokumentInfoId(
+		assertFalse(dokumentinfoRepository.findAllByOriginalJournalpostJournalpostIdAndDokumentInfoId(
 				journalpost.getJournalpostId(), vedlegg2.getDokumentInfoId()).isPresent());
-		assertTrue(dokumentinfoRepository.findDokumentInfoByJournalpostIdAndDokumentInfoId(
+		assertTrue(dokumentinfoRepository.findAllByOriginalJournalpostJournalpostIdAndDokumentInfoId(
 				journalpost.getJournalpostId(), vedlegg3.getDokumentInfoId()).isPresent());
 
 		assertTrue(joarkRepository.findAllJournalpostIdsByDokumentInfoId(

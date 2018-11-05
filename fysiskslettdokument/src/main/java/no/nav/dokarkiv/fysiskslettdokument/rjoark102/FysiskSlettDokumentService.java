@@ -31,8 +31,7 @@ public class FysiskSlettDokumentService {
 		this.validator = validator;
 	}
 
-	public FysiskSlettDokumentResponse slettDokumentFysisk(FysiskSlettDokumentRequestTo requestTo)
-			throws UgyldigHjemmelException {
+	public FysiskSlettDokumentResponse slettDokumentFysisk(FysiskSlettDokumentRequestTo requestTo) {
 		String hjemmelSomStyrerSletteMetode = requestTo.getHjemmel();
 
 		//TODO: Erstatt med HjemmelCode når det er avklart
@@ -64,7 +63,7 @@ public class FysiskSlettDokumentService {
 
 	private void fysiskSlettEtVedleggKnyttetEnJP(FysiskSlettDokumentRequestTo requestTo) {
 		List<JournalpostDokumentInfoRelasjon> listFoundByDokumentInfoId =
-				journalpostDokumentInfoRelasjonRepository.findByDokumentInfoId(requestTo.getDokumentInfoId())
+				journalpostDokumentInfoRelasjonRepository.findAllByDokumentInfoDokumentInfoId(requestTo.getDokumentInfoId())
 						.orElse(new ArrayList<>());
 
 		validator.validerFysiskSlettEtVedleggKnyttetEnJP(listFoundByDokumentInfoId, requestTo);
@@ -72,12 +71,14 @@ public class FysiskSlettDokumentService {
 		JournalpostDokumentInfoRelasjon vedleggRelasjonSomSkalSlettes = listFoundByDokumentInfoId.get(0);
 
 		slettEtDokumentMedAllMetadata(vedleggRelasjonSomSkalSlettes.getDokumentInfo().getDokumentInfoId());
+		log.info("{} har utført fysisk sletting av vedlegg med journalpostId={}, dokumentInfoId={}",
+				MDC.get(MDCConstants.MDC_REQUEST_ID), requestTo.getJournalpostId(), requestTo.getDokumentInfoId());
 	}
 
 
 	private void fysiskSlettEtHoveddokumentKnyttetEnJP(FysiskSlettDokumentRequestTo requestTo) {
 		List<JournalpostDokumentInfoRelasjon> listFoundByDokumnentInfoId =
-				journalpostDokumentInfoRelasjonRepository.findByDokumentInfoId(requestTo.getDokumentInfoId())
+				journalpostDokumentInfoRelasjonRepository.findAllByDokumentInfoDokumentInfoId(requestTo.getDokumentInfoId())
 						.orElse(new ArrayList<>());
 
 		validator.validerFysiskSlettEtHoveddokumentKnyttetEnJP(listFoundByDokumnentInfoId, requestTo);
@@ -87,11 +88,13 @@ public class FysiskSlettDokumentService {
 		slettEventuelleVedleggKnyttetHoveddokumentValidertForSletting(hoveddokumentRelasjon);
 
 		slettEnJournalpostOgEtDokumentMedAllMetadata(hoveddokumentRelasjon);
+		log.info("{} har utført fysisk sletting av hoveddokument med journalpostId={}, dokumentInfoId={}",
+				MDC.get(MDCConstants.MDC_REQUEST_ID), requestTo.getJournalpostId(), requestTo.getDokumentInfoId());
 	}
 
 	private void slettEventuelleVedleggKnyttetHoveddokumentValidertForSletting(JournalpostDokumentInfoRelasjon hoveddokumentRelasjon) {
 		List<JournalpostDokumentInfoRelasjon> listFoundByJournalpostId =
-				journalpostDokumentInfoRelasjonRepository.findByJournalpostId(hoveddokumentRelasjon.getJournalpost()
+				journalpostDokumentInfoRelasjonRepository.findAllByJournalpostJournalpostId(hoveddokumentRelasjon.getJournalpost()
 						.getJournalpostId())
 						.orElse(new ArrayList<>());
 
