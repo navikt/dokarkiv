@@ -22,11 +22,8 @@ import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.fysiskslettdokument.rjoark102.FysiskSlettDokumentRequestTo;
-import no.nav.dokarkiv.logiskslettdokument.common.SlettemeldingsFunksjoner;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 public class TestUtils {
 
@@ -90,7 +87,7 @@ public class TestUtils {
 				.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
 				.tilknyttetAvNavn(TILKNYTTET_AV_NAVN)
 				.dokumentInfo(
-						opprettDokumentInfoBuilder(slettestatus, TITTEL)
+						opprettDokumentInfoBuilder(slettestatus)
 								.dokumentInfoId(dokumentInfoId++)
 								.originalJournalpost(hoveddokument)
 								.build())
@@ -100,28 +97,13 @@ public class TestUtils {
 				.iterator().next();
 	}
 
-	public static JournalpostDokumentInfoRelasjon opprettOgReturnerHoveddokumentMedKnyttetVedleggForIt() {
-//		Journalpost hoveddokument = opprettHoveddokumentForIT(false);
-//		hoveddokument.addJournalpostDokumentInfoRelasjon(getBaseJournalpostDokumentInfoRelasjonBuilder()
-//				.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
-//				.tilknyttetAvNavn(TILKNYTTET_AV_NAVN)
-//				.dokumentInfo(
-//						opprettDokumentInfoBuilder(slettestatus, TITTEL)
-//								.originalJournalpost(hoveddokument)
-//								.build())
-//				.build());
-
-		Journalpost hoveddokument = oppretteDokumentMedEtVedleggForIT(false, true);
-		return hoveddokument.findHoveddokumentDokumentInfoRelasjon();
-	}
-
 	public static Journalpost oppretteDokumentMedEtVedleggForIT(Boolean sletteHoveddokument, Boolean sletteVedlegg) {
 		Journalpost hoveddokument = opprettHoveddokumentForIT(sletteHoveddokument);
 		hoveddokument.addJournalpostDokumentInfoRelasjon(getBaseJournalpostDokumentInfoRelasjonBuilder()
 				.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
 				.tilknyttetAvNavn(TILKNYTTET_AV_NAVN)
 				.dokumentInfo(
-						opprettDokumentInfoBuilder(sletteVedlegg, TITTEL)
+						opprettDokumentInfoBuilder(sletteVedlegg)
 								.originalJournalpost(hoveddokument)
 								.build())
 				.build());
@@ -137,7 +119,7 @@ public class TestUtils {
 					.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
 					.tilknyttetAvNavn(TILKNYTTET_AV_NAVN)
 					.dokumentInfo(
-							opprettDokumentInfoBuilder(false, TITTEL)
+							opprettDokumentInfoBuilder(false)
 									.originalJournalpost(hoveddokument)
 									.build())
 					.build());
@@ -145,24 +127,6 @@ public class TestUtils {
 		}
 		return hoveddokument;
 	}
-
-
-	public static JournalpostDokumentInfoRelasjon opprettOgReturnerVedleggRelasjonForIT(Boolean slettestatus) {
-//		Journalpost hoveddokument = opprettHoveddokumentForIT(false);
-//		hoveddokument.addJournalpostDokumentInfoRelasjon(getBaseJournalpostDokumentInfoRelasjonBuilder()
-//				.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
-//				.tilknyttetAvNavn(TILKNYTTET_AV_NAVN)
-//				.dokumentInfo(
-//						opprettDokumentInfoBuilder(slettestatus, TITTEL)
-//								.originalJournalpost(hoveddokument)
-//								.build())
-//				.build());
-
-		Journalpost hoveddokument = oppretteDokumentMedEtVedleggForIT(false, true);
-		return hoveddokument.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
-				.iterator().next();
-	}
-
 
 	public static JournalpostDokumentInfoRelasjon opprettOgReturnerHoveddokumentRelasjonForEnhetstest(Boolean slettestatus) {
 		return opprettHoveddokumentForEnhetstest(slettestatus).findHoveddokumentDokumentInfoRelasjon();
@@ -175,7 +139,7 @@ public class TestUtils {
 						getBaseJournalpostDokumentInfoRelasjonBuilder()
 								.journalpostDokumentInfoRelasjonId(journalpostDokumentinfoRelasjonId++)
 								.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.HOVEDDOKUMENT)
-								.dokumentInfo(opprettDokumentInfoBuilder(sletteStatus, TITTEL)
+								.dokumentInfo(opprettDokumentInfoBuilder(sletteStatus)
 										.dokumentInfoId(dokumentInfoId++)
 										.build())
 								.build())
@@ -187,7 +151,7 @@ public class TestUtils {
 				.dokumentInfoRelasjoner(
 						getBaseJournalpostDokumentInfoRelasjonBuilder()
 								.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.HOVEDDOKUMENT)
-								.dokumentInfo(opprettDokumentInfoBuilder(sletteStatus, TITTEL).build())
+								.dokumentInfo(opprettDokumentInfoBuilder(sletteStatus).build())
 								.build())
 				.build();
 	}
@@ -201,17 +165,6 @@ public class TestUtils {
 						.build());
 	}
 
-
-	public static Journalpost opprettDokumentMedEtVedleggSomSkalSlettesForIT(Boolean sletteStatus) {
-		return getBaseJournalpostBuilder()
-				.dokumentInfoRelasjoner(
-						getBaseJournalpostDokumentInfoRelasjonBuilder()
-								.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.HOVEDDOKUMENT)
-								.dokumentInfo(opprettDokumentInfoBuilder(sletteStatus, TITTEL)
-										.build())
-								.build())
-				.build();
-	}
 
 	private static JournalpostBuilder getBaseJournalpostBuilder() {
 		return JournalpostBuilder.getJournalpostBuilder()
@@ -238,13 +191,10 @@ public class TestUtils {
 				.tilknyttetAvNavn(TILKNYTTET_AV_NAVN);
 	}
 
-	private static DokumentInfoBuilder opprettDokumentInfoBuilder(Boolean sletteStatus, String tittel) {
-		//TODO: Etter bekreftet at vi ikke skal ha kvar - slettet i tittel så fjern denne
-		tittel = setSletteTittelINyDokumentInfo(sletteStatus, tittel);
-
+	private static DokumentInfoBuilder opprettDokumentInfoBuilder(Boolean sletteStatus) {
 		return DokumentInfoBuilder.getDokumentInfoBuilder()
 				.slettet(sletteStatus)
-				.tittel(tittel)
+				.tittel(TITTEL)
 				.dokumentstatus(DokumentStatusCode.FERDIGSTILT)
 				.endretAvNavn(ENDRET_AV_NAVN)
 				.brevgruppe(BREVGRUPPE)
@@ -266,174 +216,4 @@ public class TestUtils {
 				.opprettetKildeNavn(OPPRETTET_KILDE_NAVN)
 				.build();
 	}
-
-
-	//Usikker om er i bruk ----------------------------------------------------------
-
-
-	public static void setLogiskSlettetByDokumentInfo(DokumentInfo dokumentInfo) {
-		dokumentInfo.setTittel(dokumentInfo.getTittel() + SlettemeldingsFunksjoner.getSlettemelding());
-		dokumentInfo.setSlettet(true);
-	}
-
-	private static String setSletteTittelINyDokumentInfo(Boolean sletteStatus, String tittel) {
-		if (sletteStatus) {
-			tittel += SlettemeldingsFunksjoner.getSlettemelding();
-		}
-		return tittel;
-	}
-
-
-	public static void knyttJournalpostSomVedleggTilJournalpostForIT(Journalpost vedlegg, Journalpost hoveddokument) {
-		hoveddokument.addJournalpostDokumentInfoRelasjon(
-				getBaseJournalpostDokumentInfoRelasjonBuilder()
-						.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
-						.tilknyttetAvNavn(TILKNYTTET_AV_NAVN)
-						.dokumentInfo(vedlegg.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo())
-						.build());
-	}
-
-	public static void knyttJournalpostSomVedleggTilJournalpostForEnhetstest(Journalpost vedlegg, Journalpost hoveddokument) {
-		hoveddokument.addJournalpostDokumentInfoRelasjon(
-				getBaseJournalpostDokumentInfoRelasjonBuilder()
-						.journalpostDokumentInfoRelasjonId(journalpostDokumentinfoRelasjonId++)
-						.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
-						.tilknyttetAvNavn(TILKNYTTET_AV_NAVN)
-						.dokumentInfo(vedlegg.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo())
-						.build());
-	}
-
-	public static Journalpost opprettDokumentForIT(Boolean sletteStatus) {
-		return getBaseJournalpostBuilder()
-				.dokumentInfoRelasjoner(
-						getBaseJournalpostDokumentInfoRelasjonBuilder()
-								.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.HOVEDDOKUMENT)
-								.dokumentInfo(opprettDokumentInfoBuilder(sletteStatus, TITTEL)
-										.build())
-								.build())
-				.build();
-	}
-
-
-	//SLETTELINJE
-
-
-	public static List<JournalpostDokumentInfoRelasjon> opprettJournalpostDokumentInfoRelasjonerFraJournalposter(List<Journalpost> jpList) {
-		List<JournalpostDokumentInfoRelasjon> jpDokInfoRelasjoner = new ArrayList<JournalpostDokumentInfoRelasjon>();
-
-		for (Journalpost journalpost : jpList) {
-			while (journalpost.getJournalpostDokumentInfoRelasjoner().iterator().hasNext()) {
-				jpDokInfoRelasjoner.add(journalpost.getJournalpostDokumentInfoRelasjoner().iterator().next());
-			}
-		}
-
-		return jpDokInfoRelasjoner;
-	}
-
-	//SLETT HVIS IKKE I BRUK
-	public static List<Journalpost> opprettHoveddokumentOgKnyttVedleggForEnhetstest(int antallVedlegg) {
-		List<Journalpost> journalpostList = new ArrayList<Journalpost>();
-
-		while (antallVedlegg > 0) {
-			Journalpost vedlegg = opprettHoveddokumentForEnhetstest(false);
-			journalpostList.add(vedlegg);
-			antallVedlegg--;
-		}
-
-		Journalpost hoveddokument = opprettHoveddokumentForEnhetstest(false);
-
-//		journalpostList.forEach(vedlegg-> hoveddokument.addJournalpostDokumentInfoRelasjon(
-//				getBaseJournalpostDokumentInfoRelasjonBuilder()
-//						.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
-//						.dokumentInfo(vedlegg.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo())
-//				.build()));
-
-//		journalpostList.forEach(vedlegg -> knyttJournalpostSomVedleggTilJournalpostForEnhetstest(vedlegg, hoveddokument));
-
-		journalpostList.add(hoveddokument);
-
-		return journalpostList;
-	}
-
-	/**
-
-	 public static Journalpost opprettHoveddokumentForEnhetsTest(Boolean sletteStatus) {
-	 return getBaseJournalpostBuilder()
-	 .journalpostId(journalpostId++)
-	 .dokumentInfoRelasjoner(
-	 getBaseJournalpostDokumentInfoRelasjonBuilder(TilknyttetJournalpostSomCode.HOVEDDOKUMENT)
-	 .journalpostDokumentInfoRelasjonId(journalpostDokumentinfoRelasjonId++)
-	 .dokumentInfo(opprettDokumentInfoBuilder(sletteStatus, HOVEDDOKUMENT_TITTEL)
-	 .dokumentInfoId(dokumentInfoId++)
-	 .build())
-	 .build())
-	 .build();
-	 }
-
-
-	 public static Journalpost opprettKnyttetVedleggForEnhetsTest(Boolean sletteStatus, Journalpost originalJournalpost) {
-	 Journalpost vedlegg = getBaseJournalpostBuilder()
-	 .journalpostId(journalpostId++)
-	 .dokumentInfoRelasjoner(
-	 getBaseJournalpostDokumentInfoRelasjonBuilder(TilknyttetJournalpostSomCode.VEDLEGG)
-	 .journalpostDokumentInfoRelasjonId(journalpostDokumentinfoRelasjonId++)
-	 .dokumentInfo(opprettDokumentInfoBuilder(sletteStatus, VEDLEGG_TITTEL)
-	 .dokumentInfoId(dokumentInfoId++)
-	 .originalJournalpost(originalJournalpost)
-	 .build())
-	 .build())
-	 .build();
-	 originalJournalpost.getJournalpostDokumentInfoRelasjoner().add(vedlegg.getThisJournalpostDokumentInfoRelasjon());
-
-	 return  vedlegg;
-	 }
-
-	 public static Journalpost opprettKnyttetVedleggForIT(Boolean sletteStatus) {
-	 return getBaseJournalpostBuilder()
-	 .opprettetKildeNavn(OPPRETTET_KILDE_NAVN)
-	 .dokumentInfoRelasjoner(
-	 getBaseJournalpostDokumentInfoRelasjonBuilder(TilknyttetJournalpostSomCode.VEDLEGG)
-	 .tilknyttetAvNavn(TILKNYTTET_AV_NAVN)
-	 .dokumentInfo(opprettDokumentInfoBuilder(sletteStatus, VEDLEGG_TITTEL)
-	 .build())
-	 .build())
-	 .build();
-	 }
-
-	 public static Journalpost opprettVedleggForEnhetsTest(Boolean sletteStatus) {
-	 return getBaseJournalpostBuilder()
-	 .journalpostId(journalpostId++)
-	 .dokumentInfoRelasjoner(
-	 getBaseJournalpostDokumentInfoRelasjonBuilder(TilknyttetJournalpostSomCode.VEDLEGG)
-	 .journalpostDokumentInfoRelasjonId(journalpostDokumentinfoRelasjonId++)
-	 .dokumentInfo(opprettDokumentInfoBuilder(sletteStatus, VEDLEGG_TITTEL)
-	 .dokumentInfoId(dokumentInfoId++)
-	 .build())
-	 .build())
-	 .build();
-	 }
-
-
-	 private static JournalpostDokumentInfoRelasjonBuilder getBaseJournalpostDokumentInfoRelasjonBuilder(TilknyttetJournalpostSomCode tilknyttetSom, Boolean enhetstest) {
-	 return getBaseJournalpostDokumentInfoRelasjonBuilder(tilknyttetSom)
-	 .journalpostDokumentInfoRelasjonId(journalpostDokumentinfoRelasjonId++);
-	 }
-
-	 private static DokumentInfoBuilder opprettDokumentInfoBuilder(Boolean sletteStatus, String tittel, Boolean enhetstest) {
-	 return opprettDokumentInfoBuilder(sletteStatus, tittel)
-	 .dokumentInfoId(dokumentInfoId++);
-	 }
-
-	 private static DokumentInfoBuilder opprettDokumentInfoBuilder(Boolean sletteStatus, String tittel, Journalpost originalJournalpost) {
-	 return opprettDokumentInfoBuilder(sletteStatus, tittel)
-	 .originalJournalpost(originalJournalpost);
-	 }
-
-	 private static DokumentInfoBuilder opprettDokumentInfoBuilder(Boolean sletteStatus, String tittel, Boolean enhetstest, Journalpost originalJournalpost) {
-	 return opprettDokumentInfoBuilder(sletteStatus, tittel, enhetstest)
-	 .originalJournalpost(originalJournalpost);
-	 }
-	 */
-
-
 }
