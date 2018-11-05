@@ -7,6 +7,8 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static no.nav.dokarkiv.core.security.JwtClaimsBuilderProvider.openAmClaimsBuilder;
 
 import no.nav.dokarkiv.core.CoreConfig;
+import no.nav.dokarkiv.core.MDCConstants;
+import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkDeleteRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
@@ -19,6 +21,7 @@ import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
+import org.slf4j.MDC;
 import org.springframework.boot.test.autoconfigure.data.ldap.AutoConfigureDataLdap;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureDataJpa;
@@ -68,6 +71,8 @@ public abstract class AbstractFysiskSlettDokumentIT {
 	@Inject
 	protected DokumentinfoRepository dokumentinfoRepository;
 	@Inject
+	protected DokumentFilRepository dokumentFilRepository;
+	@Inject
 	protected OidcTestService oidcTestService;
 
 	@Before
@@ -76,6 +81,8 @@ public abstract class AbstractFysiskSlettDokumentIT {
 				.build());
 		OIDC_TOKEN_SERVICE_USER_TEST = "Bearer " + oidcTestService.createOidc(openAmClaimsBuilder().subject(SERVICE_USER_ID)
 				.build());
+
+		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark102");
 	}
 
 	@BeforeClass
