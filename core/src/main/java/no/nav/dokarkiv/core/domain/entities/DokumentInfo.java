@@ -276,6 +276,42 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 		return false;
 	}
 
+	/**
+	 * Getter for the begrensninger property.
+	 *
+	 * @return the Begrensninger
+	 */
+	public Set<Begrensning> getBegrensninger() {
+		return Collections.unmodifiableSet(begrensninger);
+	}
+
+	/**
+	 * Removes a subset from begrensninger
+	 *
+	 * @return true if begrensninger was modified, otherwise false
+	 */
+	public boolean removeBegrensninger(Set<Begrensning> begrensningerToRemove) {
+		return begrensninger.removeAll(begrensningerToRemove);
+	}
+
+	/**
+	 * Add a Begrensning to the Begrensning Set.
+	 *
+	 * @param begrensning The Begrensning to add,
+	 */
+	public void addBegrensning(Begrensning begrensning) {
+		if (begrensning != null) {
+			begrensninger.add(begrensning);
+		}
+	}
+
+	/**
+	 * Empties the Begrensninger set
+	 */
+	public void clearBegrensninger() {
+		begrensninger.clear();
+	}
+
 
 	/**
 	 * Checks that there are no duplicates among the varianter of documents

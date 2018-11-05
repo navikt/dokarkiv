@@ -1102,7 +1102,7 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	}
 
 	/**
-	 * Add a Begresning to the Begrensning Set.
+	 * Add a Begrensning to the Begrensning Set.
 	 *
 	 * @param begrensning The Begrensning to add,
 	 */
