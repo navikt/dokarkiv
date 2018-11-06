@@ -17,11 +17,11 @@ public class SlettemeldingsFunksjoner {
 	public static DokumentInfo setDokumentLogiskSlettet(Journalpost journalpost, DokumentInfo dokumentInfo, TilknyttetJournalpostSomCode tilknytning) {
 		if (TilknyttetJournalpostSomCode.HOVEDDOKUMENT.equals(tilknytning)) {
 			Begrensning begrensning = Begrensning.builder().begrensningType(BegrensningTypeCode.UTILGJENGELIGGJORT).journalpost(journalpost).build();
-			begrensning.setOpprettetKildeNavn(MDC.get(MDCConstants.MDC_USER_NAME));
+			begrensning.setOpprettetKildeNavn(MDC.get(MDCConstants.MDC_CONSUMER_ID));
 			dokumentInfo.addBegrensning(begrensning);
 		} else {
 			Begrensning begrensning = Begrensning.builder().begrensningType(BegrensningTypeCode.UTILGJENGELIGGJORT).dokumentInfo(dokumentInfo).build();
-			begrensning.setOpprettetKildeNavn(MDC.get(MDCConstants.MDC_USER_NAME));
+			begrensning.setOpprettetKildeNavn(MDC.get(MDCConstants.MDC_CONSUMER_ID));
 			dokumentInfo.addBegrensning(begrensning);
 		}
 		dokumentInfo.setEndretAvNavn(MDC.get(MDCConstants.MDC_USER_NAME));
