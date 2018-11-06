@@ -6,6 +6,8 @@ import static no.nav.dokarkiv.logiskslettdokument.util.TestUtils.createJournalpo
 import static no.nav.dokarkiv.logiskslettdokument.util.TestUtils.createRequest;
 
 import no.nav.dokarkiv.core.MDCConstants;
+import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
+import no.nav.dokarkiv.core.domain.entities.Begrensning;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.logiskslettdokument.exceptions.DokumentIkkeSlettetException;
@@ -36,7 +38,10 @@ public class AngreLogiskSlettDokumentValidatorTest {
 	@Test
 	public void shouldValidateAngreLogiskSlettDokument() throws Exception {
 		LogiskSlettDokumentRequestTo requestTo = createRequest(JOURNALPOST_ID, DOKUMENTINFO_ID);
-		Journalpost journalpost = createJournalpost(true);
+		Journalpost journalpost = createJournalpost();
+		Begrensning begrensning = Begrensning.builder().journalpost(journalpost).begrensningType(BegrensningTypeCode.UTILGJENGELIGGJORT).build();
+		begrensning.setOpprettetKildeNavn("Opprettet kilde");
+		journalpost.addBegrensning(begrensning);
 
 		List<JournalpostDokumentInfoRelasjon> journalpostDokumentInfoRelasjonList = new ArrayList<JournalpostDokumentInfoRelasjon>();
 		journalpostDokumentInfoRelasjonList.addAll(journalpost.getJournalpostDokumentInfoRelasjoner());
@@ -48,11 +53,11 @@ public class AngreLogiskSlettDokumentValidatorTest {
 	@Test
 	public void shouldFailToValidateSletteStatusForDokument() {
 		thrown.expect(DokumentIkkeSlettetException.class);
-		thrown.expectMessage(MDC.get(MDCConstants.MDC_REQUEST_ID) + " kan ikke angre logisk sletting av dokument med dokumentInfoId=" + DOKUMENTINFO_ID + ". " +
-				"Dokumentet er ikke logisk slettet");
+		thrown.expectMessage(MDC.get(MDCConstants.MDC_REQUEST_ID) + " kan ikke angre logisk sletting av journalpost med journalpostId=" + JOURNALPOST_ID + ". " +
+				"Journalposten er ikke logisk slettet");
 
 		LogiskSlettDokumentRequestTo requestTo = createRequest(JOURNALPOST_ID, DOKUMENTINFO_ID);
-		Journalpost journalpost = createJournalpost(false);
+		Journalpost journalpost = createJournalpost();
 
 		List<JournalpostDokumentInfoRelasjon> journalpostDokumentInfoRelasjonList = new ArrayList<JournalpostDokumentInfoRelasjon>();
 		journalpostDokumentInfoRelasjonList.addAll(journalpost.getJournalpostDokumentInfoRelasjoner());

@@ -3,17 +3,14 @@ package no.nav.dokarkiv.logiskslettdokument.rjoark100;
 import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.endsWith;
-import static org.hamcrest.Matchers.not;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertEquals;
 
 import no.nav.dokarkiv.core.MDCConstants;
+import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
-import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
+import no.nav.dokarkiv.core.domain.entities.Begrensning;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.logiskslettdokument.AbstractSlettDokumentIT;
-import no.nav.dokarkiv.logiskslettdokument.common.SlettemeldingsFunksjoner;
 import no.nav.dokarkiv.logiskslettdokument.util.TestUtils;
 import org.junit.Test;
 import org.slf4j.MDC;
@@ -22,13 +19,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.transaction.TestTransaction;
 
+import java.util.List;
+
 public class Rjoark100IT extends AbstractSlettDokumentIT {
-
-	private static String SLETTEMELDING = SlettemeldingsFunksjoner.getSlettemelding();
-
 	@Test
 	public void shouldDeleteDocumentInJoark() {
 		abacPermit();
+
 
 		Journalpost journalpost = joarkRepository.save(TestUtils.createJournalpostBuilder().build());
 
@@ -44,10 +41,9 @@ public class Rjoark100IT extends AbstractSlettDokumentIT {
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 
-		DokumentInfo logiskSlettetDokumentInfo = hentDokumentInfoEtterUtførtKall(journalpost);
+		List<Begrensning> begrensninger = hentHoveddokumentBegrensningEtterUtførtKall(journalpost);
+		assertThat(begrensninger.size(), is(1));
 
-		assertEquals(logiskSlettetDokumentInfo.getSlettet(), true);
-		assertThat(logiskSlettetDokumentInfo.getTittel(), endsWith(SLETTEMELDING));
 	}
 
 	@Test
@@ -138,10 +134,6 @@ public class Rjoark100IT extends AbstractSlettDokumentIT {
 		assertThat(responseEntity.getBody(), containsString(
 				String.format("%s kan ikke slette dokument som har relasjoner med flere journalposter.",
 						MDC.get(MDCConstants.MDC_REQUEST_ID))));
-
-		DokumentInfo dokumentInfoMedForMangeRelasjoner = hentDokumentInfoEtterUtførtKall(journalpost1);
-
-		assertEquals(dokumentInfoMedForMangeRelasjoner.getSlettet(), false);
 	}
 
 	@Test
@@ -149,8 +141,11 @@ public class Rjoark100IT extends AbstractSlettDokumentIT {
 		abacPermit();
 		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark100");
 
-		Journalpost journalpost = joarkRepository.save(TestUtils.createJournalpostBuilder().build());
-		journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().setSlettet(true);
+		Journalpost journalpost = TestUtils.createJournalpostBuilder().build();
+		Begrensning jpBegrensning = Begrensning.builder().journalpost(journalpost).begrensningType(BegrensningTypeCode.UTILGJENGELIGGJORT).build();
+		jpBegrensning.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
+		journalpost.addBegrensning(jpBegrensning);
+		journalpost = joarkRepository.save(journalpost);
 		dokumentinfoRepository.save(journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo());
 
 		TestTransaction.flagForCommit();
@@ -165,45 +160,10 @@ public class Rjoark100IT extends AbstractSlettDokumentIT {
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.BAD_REQUEST));
 		assertThat(responseEntity.getBody(), containsString(
-				String.format("%s kan ikke utføre logisk sletting av dokument med dokumentInfoId=%s. Dokumentet er allerede logisk slettet",
+				String.format("%s kan ikke utføre logisk sletting av journalpost med journalpostId=%s. Journalposten er allerede logisk slettet",
 						MDC.get(MDCConstants.MDC_REQUEST_ID),
-						journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId())));
+						journalpost.getJournalpostId())));
 
-		DokumentInfo alleredeSlettetDokumentInfo = hentDokumentInfoEtterUtførtKall(journalpost);
-
-		assertEquals(alleredeSlettetDokumentInfo.getSlettet(), true);
-	}
-
-	@Test
-	public void shouldFailToDeleteDocumentInJoarkBecauseTittelIsToLong() {
-		abacPermit();
-
-		String forLangTittel = "Dette er en tittel som ikke bare er lang, den er faktisk for lang. " +
-				"Vi har valgt å gjøre denne tittelen lang fordi vi vill sikkerstille at vi ikke legger til suffikset " +
-				"' - slettet' i sluttet av lange titler. Målet vi skal nå er straks over 490 tegn slik at vi vet at når " +
-				"vi legger til slettemeldingen ' - slettet' i sluttet av strengen, så vil slettemeldingen med sin lengde " +
-				"av ti tegn komme over den for det her testet magiske grensen på firehundreognittio tegn. " +
-				"Nå så er vi akkurat ferdige.";
-
-		Journalpost journalpost = TestUtils.createJournalpostBuilder().build();
-		journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().setTittel(forLangTittel);
-
-		joarkRepository.save(journalpost);
-
-		TestTransaction.flagForCommit();
-		TestTransaction.end();
-
-		ResponseEntity<LogiskSlettDokumentResponse> responseEntity = restTemplate.exchange(URL_SLETTDOKUMENT + journalpost.getJournalpostId() + "/"
-				+ journalpost.findHoveddokumentDokumentInfoRelasjon()
-				.getDokumentInfo()
-				.getDokumentInfoId(), HttpMethod.PATCH, createHeaders(), LogiskSlettDokumentResponse.class);
-
-		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
-
-		DokumentInfo dokumentInfoMedForLangTittel = hentDokumentInfoEtterUtførtKall(journalpost);
-
-		assertEquals(dokumentInfoMedForLangTittel.getSlettet(), true);
-		assertThat(dokumentInfoMedForLangTittel.getTittel(), not(endsWith(SLETTEMELDING)));
 	}
 
 }

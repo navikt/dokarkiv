@@ -4,13 +4,18 @@ import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode.UTILGJENGELIGGJORT;
 import static no.nav.dokarkiv.core.security.JwtClaimsBuilderProvider.openAmClaimsBuilder;
 
 import com.auth0.jwt.JWT;
 import no.nav.dokarkiv.core.CoreConfig;
 import no.nav.dokarkiv.core.domain.builder.JournalpostBuilder;
+import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
+import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
+import no.nav.dokarkiv.core.domain.entities.Begrensning;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.repository.BegrensningRepository;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
@@ -19,6 +24,7 @@ import no.nav.dokarkiv.core.stelvio.SimpleRequestContext;
 import no.nav.freg.security.test.oidc.tools.OidcTestService;
 import no.nav.freg.security.test.oidc.tools.TestToolsAutoConfig;
 import org.apache.commons.io.IOUtils;
+import org.hibernate.Hibernate;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -45,6 +51,10 @@ import javax.inject.Inject;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Set;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
@@ -80,6 +90,8 @@ public abstract class AbstractSlettDokumentIT {
 	protected DokumentinfoRepository dokumentinfoRepository;
 	@Inject
 	protected OidcTestService oidcTestService;
+	@Inject
+	private BegrensningRepository begrensningRepository;
 
 	@Before
 	public void setUp() {
@@ -113,6 +125,7 @@ public abstract class AbstractSlettDokumentIT {
 	public void cleanup() {
 		joarkRepository.deleteAll();
 		dokumentinfoRepository.deleteAll();
+		begrensningRepository.deleteAll();
 	}
 
 	protected Journalpost buildAndCommit(final JournalpostBuilder builder) {
@@ -153,9 +166,29 @@ public abstract class AbstractSlettDokumentIT {
 		return JWT.decode(oidcToken).getPayload();
 	}
 
+	public List<Begrensning> hentHoveddokumentBegrensningEtterUtførtKall(Journalpost journalpost) {
+		return begrensningRepository.findByJournalpostIdOnly(
+				journalpost.getJournalpostId(), UTILGJENGELIGGJORT.name()).get();
+	}
+
+	public List<Begrensning> hentVedleggBegrensningEtterUtførtKall(Journalpost journalpost) {
+		return begrensningRepository.findByDokumentInfoIdJournalpostId(journalpost.getJournalpostId(),
+				journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId(), UTILGJENGELIGGJORT.name()).get();
+	}
+
 	public DokumentInfo hentDokumentInfoEtterUtførtKall(Journalpost journalpost) {
 		return journalpostDokumentInfoRelasjonRepository.findByDokumentInfoId(
 				journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId()).get()
 				.get(0).getDokumentInfo();
 	}
+
+	public List<Begrensning> hentJournalpostEtterUtførtKall(Long journalpostId) {
+		try {
+			return begrensningRepository.findByJournalpostIdOnly(
+					journalpostId, UTILGJENGELIGGJORT.name()).get();
+		} catch (NoSuchElementException e) {
+			return new ArrayList<>();
+		}
+	}
+
 }

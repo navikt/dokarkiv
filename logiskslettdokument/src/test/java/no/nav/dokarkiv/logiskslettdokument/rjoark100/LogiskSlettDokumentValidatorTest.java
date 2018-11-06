@@ -8,7 +8,9 @@ import static no.nav.dokarkiv.logiskslettdokument.util.TestUtils.createJournalpo
 import static no.nav.dokarkiv.logiskslettdokument.util.TestUtils.createRequest;
 
 import no.nav.dokarkiv.core.MDCConstants;
+import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
+import no.nav.dokarkiv.core.domain.entities.Begrensning;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.logiskslettdokument.exceptions.DokumentAlleredeSlettetException;
@@ -111,12 +113,15 @@ public class LogiskSlettDokumentValidatorTest {
 	@Test
 	public void shouldFailToValidateSletteStatusForDokument() throws DokumentAlleredeSlettetException {
 		thrown.expect(DokumentAlleredeSlettetException.class);
-		thrown.expectMessage(String.format("%s kan ikke utføre logisk sletting av dokument med dokumentInfoId=%s. " +
-						"Dokumentet er allerede logisk slettet",
-				MDC.get(MDCConstants.MDC_REQUEST_ID), DOKUMENTINFO_ID));
+		thrown.expectMessage(String.format("%s kan ikke utføre logisk sletting av journalpost med journalpostId=%s. " +
+						"Journalposten er allerede logisk slettet",
+				MDC.get(MDCConstants.MDC_REQUEST_ID), JOURNALPOST_ID));
 
 		LogiskSlettDokumentRequestTo requestTo = createRequest(JOURNALPOST_ID, DOKUMENTINFO_ID);
-		Journalpost journalpost = createJournalpost(true);
+		Journalpost journalpost = createJournalpost();
+		Begrensning jpBegrensning = Begrensning.builder().journalpost(journalpost).begrensningType(BegrensningTypeCode.UTILGJENGELIGGJORT).build();
+		jpBegrensning.setOpprettetKildeNavn("OPPRETTET KILDE");
+		journalpost.addBegrensning(jpBegrensning);
 
 		List<JournalpostDokumentInfoRelasjon> jpDokInfoRelasjoner = new ArrayList<JournalpostDokumentInfoRelasjon>();
 		jpDokInfoRelasjoner.addAll(journalpost.getJournalpostDokumentInfoRelasjoner());

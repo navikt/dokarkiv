@@ -3,7 +3,10 @@ package no.nav.dokarkiv.logiskslettdokument.rjoark100;
 import static org.apache.commons.lang3.BooleanUtils.isTrue;
 
 import no.nav.dokarkiv.core.MDCConstants;
+import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
+import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
+import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.logiskslettdokument.AbstractSlettDokumentValidator;
 import no.nav.dokarkiv.logiskslettdokument.exceptions.DokumentAlleredeSlettetException;
@@ -22,15 +25,31 @@ public class LogiskSlettDokumentValidator extends AbstractSlettDokumentValidator
 		validerAtJournalpostIdOgDokumentInfoIdFraInputHarEnRelasjon(jpDokInfoRelasjonList.get(0)
 				.getJournalpost()
 				.getJournalpostId(), requestTo);
-		validerAtDokumentIkkeErLogiskSlettet(jpDokInfoRelasjonList.get(0).getDokumentInfo());
+		if (TilknyttetJournalpostSomCode.HOVEDDOKUMENT.equals(jpDokInfoRelasjonList.get(0).getTilknyttetJournalpostSom())) {
+			validerAtJournalpostIkkeErLogiskSlettet(jpDokInfoRelasjonList.get(0)
+					.getJournalpost());
+		} else {
+			validerAtDokumentIkkeErLogiskSlettet(jpDokInfoRelasjonList.get(0)
+					.getJournalpost(), jpDokInfoRelasjonList.get(0).getDokumentInfo());
+		}
 	}
 
-	protected void validerAtDokumentIkkeErLogiskSlettet(DokumentInfo dokumentInfo) {
-		if (isTrue(dokumentInfo.getSlettet())) {
+	protected void validerAtDokumentIkkeErLogiskSlettet(Journalpost journalpost, DokumentInfo dokumentInfo) {
+		if (isTrue(dokumentInfo.isBegrenset(journalpost.getJournalpostId(), BegrensningTypeCode.UTILGJENGELIGGJORT))) {
 			throw new DokumentAlleredeSlettetException(
 					String.format(MDC.get(MDCConstants.MDC_REQUEST_ID) + " kan ikke utføre logisk sletting av dokument med " +
 									"dokumentInfoId=%s. Dokumentet er allerede logisk slettet",
 							dokumentInfo.getDokumentInfoId()));
 		}
 	}
+
+	protected void validerAtJournalpostIkkeErLogiskSlettet(Journalpost journalpost) {
+		if (isTrue(journalpost.isBegrenset(BegrensningTypeCode.UTILGJENGELIGGJORT))) {
+			throw new DokumentAlleredeSlettetException(
+					String.format(MDC.get(MDCConstants.MDC_REQUEST_ID) + " kan ikke utføre logisk sletting av journalpost med " +
+									"journalpostId=%s. Journalposten er allerede logisk slettet",
+							journalpost.getJournalpostId()));
+		}
+	}
+
 }

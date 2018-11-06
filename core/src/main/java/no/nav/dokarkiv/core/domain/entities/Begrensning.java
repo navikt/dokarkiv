@@ -32,7 +32,6 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "T_BEGRENSNING")
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
 public class Begrensning extends AbstractPersistentVersionedDomainObjectWithKilde {
 
@@ -57,6 +56,13 @@ public class Begrensning extends AbstractPersistentVersionedDomainObjectWithKild
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "dokument_info_id")
 	private DokumentInfo dokumentInfo;
+
+	/**
+	 * Default constructor.
+	 */
+	public Begrensning() {
+	}
+
 
 	public Long getId() {
 		return begrensningId;

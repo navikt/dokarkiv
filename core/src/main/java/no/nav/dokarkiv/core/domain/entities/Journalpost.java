@@ -247,7 +247,7 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	 * Constructor that assigns immutable properties. Used for testing.
 	 *
 	 * @param journalpostId DB-id for the instance.
-	 * @param version DB-version for the instance.
+	 * @param version       DB-version for the instance.
 	 */
 	public Journalpost(Long journalpostId, long version) {
 		this.journalpostId = journalpostId;
@@ -375,14 +375,70 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	 * @return boolean.
 	 */
 	public Boolean isBegrenset(final BegrensningTypeCode begrensningTypeCode) {
-		for (Begrensning begrensning : begrensninger) {
-			if (begrensning.getBegrensningType().equals(begrensningTypeCode) && begrensning.getJournalpost().getJournalpostId().equals(journalpostId) && begrensning.getDokumentInfo() == null) {
-				return true;
+		if (begrensninger != null) {
+			for (Begrensning begrensning : begrensninger) {
+				if (begrensning.getBegrensningType().equals(begrensningTypeCode) && begrensning.getJournalpost().getJournalpostId().equals(journalpostId) && begrensning.getDokumentInfo() == null) {
+					return true;
+				}
 			}
 		}
 		return false;
 	}
 
+	/**
+	 * Getter for the begrensninger property.
+	 *
+	 * @return the Begrensninger
+	 */
+	public Set<Begrensning> getBegrensninger() {
+		return Collections.unmodifiableSet(begrensninger);
+	}
+
+	/**
+	 * Removes a subset from begrensninger
+	 *
+	 * @return true if begrensninger was modified, otherwise false
+	 */
+	public boolean removeBegrensninger(Set<Begrensning> begrensningerToRemove) {
+		return begrensninger.removeAll(begrensningerToRemove);
+	}
+
+	/**
+	 * Add a Begrensning to the Begrensning Set.
+	 *
+	 * @param begrensning The Begrensning to add,
+	 */
+	public void addBegrensning(Begrensning begrensning) {
+		if (begrensning != null) {
+			if (begrensninger == null) {
+				begrensninger = new HashSet<>();
+			}
+			begrensninger.add(begrensning);
+		}
+	}
+
+	/**
+	 * Empties the Begrensninger set
+	 */
+	public void clearBegrensninger() {
+		begrensninger.clear();
+	}
+
+	/**
+	 * Get Begrensning by dokumentInfo and begreningType, no relation to journalpost
+	 *
+	 * @param journalpost
+	 * @param begrensningType
+	 * @return Begrensning
+	 */
+	public Begrensning getBegrensningnerByJournalpostIdOnly(Journalpost journalpost, BegrensningTypeCode begrensningType) {
+		for (Begrensning begrensning : journalpost.getBegrensninger()) {
+			if (begrensningType.equals(begrensning.getBegrensningType()) && begrensning.getJournalpost().equals(journalpost) && begrensning.getDokumentInfo() == null) {
+				return begrensning;
+			}
+		}
+		return null;
+	}
 
 	/**
 	 * Checks that none of this Journalposts documents contain duplicate
@@ -1081,42 +1137,6 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	 */
 	public void clearBrukere() {
 		brukere.clear();
-	}
-
-	/**
-	 * Getter for the begrensninger property.
-	 *
-	 * @return the Begrensninger
-	 */
-	public Set<Begrensning> getBegrensninger() {
-		return Collections.unmodifiableSet(begrensninger);
-	}
-
-	/**
-	 * Removes a subset from begrensninger
-	 *
-	 * @return true if begrensninger was modified, otherwise false
-	 */
-	public boolean removeBegrensninger(Set<Begrensning> begrensningerToRemove) {
-		return begrensninger.removeAll(begrensningerToRemove);
-	}
-
-	/**
-	 * Add a Begrensning to the Begrensning Set.
-	 *
-	 * @param begrensning The Begrensning to add,
-	 */
-	public void addBegrensning(Begrensning begrensning) {
-		if (begrensning != null) {
-			begrensninger.add(begrensning);
-		}
-	}
-
-	/**
-	 * Empties the Begrensninger set
-	 */
-	public void clearBegrensninger() {
-		begrensninger.clear();
 	}
 
 

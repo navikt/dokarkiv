@@ -39,7 +39,7 @@ public class LogiskSlettDokumentService {
 		validator.validerAtDokumentSomSkalSlettesLogiskErKnyttetTilKunEnJournalpost(journalpostDokumentInfoRelasjonList, requestTo);
 		JournalpostDokumentInfoRelasjon validertJpDokInfoRelasjon = journalpostDokumentInfoRelasjonList.get(0);
 
-		setDokumentLogiskSlettet(validertJpDokInfoRelasjon.getDokumentInfo());
+		setDokumentLogiskSlettet(validertJpDokInfoRelasjon.getJournalpost(),validertJpDokInfoRelasjon.getDokumentInfo(), validertJpDokInfoRelasjon.getTilknyttetJournalpostSom());
 		dokumentinfoRepository.save(validertJpDokInfoRelasjon.getDokumentInfo());
 		log.info("{} har utført logisk sletting av dokument med journalpostId={}, dokumentInfoId={}",
 				MDC.get(MDCConstants.MDC_REQUEST_ID), requestTo.getJournalpostId(), requestTo.getDokumentInfoId());

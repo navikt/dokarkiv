@@ -42,7 +42,7 @@ public class AngreLogiskSlettDokumentService {
 		validator.validerAngreLogiskSlettAvEttDokument(journalpostDokumentInfoRelasjonList, requestTo);
 		JournalpostDokumentInfoRelasjon validertJpDokInfoRelasjon = journalpostDokumentInfoRelasjonList.get(0);
 
-		setAngreDokumentLogiskSlettet(validertJpDokInfoRelasjon.getDokumentInfo());
+		setAngreDokumentLogiskSlettet(validertJpDokInfoRelasjon.getJournalpost(),validertJpDokInfoRelasjon.getDokumentInfo(), validertJpDokInfoRelasjon.getTilknyttetJournalpostSom());
 		dokumentinfoRepository.save(validertJpDokInfoRelasjon.getDokumentInfo());
 		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har angret logisk sletting av dokument med journalpostId={}, dokumentInfoId={}",
 				requestTo.getJournalpostId(), requestTo.getDokumentInfoId());

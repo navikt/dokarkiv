@@ -3,12 +3,13 @@ package no.nav.dokarkiv.logiskslettdokument.rjoark101;
 import static no.nav.dokarkiv.logiskslettdokument.util.TestUtils.createJournalpostBuilder;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.endsWith;
-import static org.hamcrest.Matchers.not;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 
 import no.nav.dokarkiv.core.MDCConstants;
+import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
+import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
+import no.nav.dokarkiv.core.domain.entities.Begrensning;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.logiskslettdokument.AbstractSlettDokumentIT;
@@ -21,16 +22,18 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.transaction.TestTransaction;
 
-public class Rjoark101IT extends AbstractSlettDokumentIT {
+import java.util.List;
 
-	private static String SLETTEMELDING = SlettemeldingsFunksjoner.getSlettemelding();
+public class Rjoark101IT extends AbstractSlettDokumentIT {
 
 	@Test
 	public void shouldAngreLogiskSlettDokument() {
 		abacPermit();
+		MDC.put(MDCConstants.MDC_USER_NAME, OPPRETTET_KILDE_NAVN);
 
 		Journalpost journalpost = createJournalpostBuilder().build();
 		setJournalpostSlettet(journalpost);
+		joarkRepository.save(journalpost);
 
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
@@ -44,10 +47,8 @@ public class Rjoark101IT extends AbstractSlettDokumentIT {
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 
-		DokumentInfo angreLogiskSlettDokumentInfo = hentDokumentInfoEtterUtførtKall(journalpost);
-
-		assertEquals(angreLogiskSlettDokumentInfo.getSlettet(), false);
-		assertThat(angreLogiskSlettDokumentInfo.getTittel(), not(endsWith(SLETTEMELDING)));
+		List<Begrensning> begrensetJp = hentJournalpostEtterUtførtKall (journalpost.getJournalpostId());
+		assertEquals(begrensetJp.size(), 1L);
 	}
 
 	@Test
@@ -69,13 +70,14 @@ public class Rjoark101IT extends AbstractSlettDokumentIT {
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.BAD_REQUEST));
 
-		DokumentInfo dokumentInfoIkkeSlettet = hentDokumentInfoEtterUtførtKall(journalpost);
-
 		assertThat(responseEntity.getBody(), containsString(
-				String.format("%s kan ikke angre logisk sletting av dokument med dokumentInfoId=%s. Dokumentet er ikke logisk slettet",
+				String.format("%s kan ikke angre logisk sletting av journalpost med journalpostId=%s. Journalposten er ikke logisk slettet",
 						MDC.get(MDCConstants.MDC_REQUEST_ID),
-						dokumentInfoIkkeSlettet.getDokumentInfoId())));
-		assertEquals(dokumentInfoIkkeSlettet.getSlettet(), false);
+						journalpost.getJournalpostId())));
+
+
+		List<Begrensning> begrensetJp = hentJournalpostEtterUtførtKall (journalpost.getJournalpostId());
+		assertEquals(begrensetJp.size(), 0L);
 	}
 
 	@Test
@@ -97,21 +99,23 @@ public class Rjoark101IT extends AbstractSlettDokumentIT {
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 
-		DokumentInfo angreLogiskSlettDokumentInfoWithoutSletteMelding = hentDokumentInfoEtterUtførtKall(journalpost);
+		List<Begrensning> angreLogiskSlettJournalpostWithoutSletteMelding = hentJournalpostEtterUtførtKall(journalpost.getJournalpostId());
 
-		assertEquals(angreLogiskSlettDokumentInfoWithoutSletteMelding.getSlettet(), false);
-		assertThat(angreLogiskSlettDokumentInfoWithoutSletteMelding.getTittel(), not(endsWith(SLETTEMELDING)));
+		assertEquals(angreLogiskSlettJournalpostWithoutSletteMelding.size(), 1l);
 	}
 
 
 	private void setJournalpostSlettetWithoutSlettemelding(Journalpost journalpost) {
-		journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().setSlettet(true);
+		Begrensning jpBegrensning = Begrensning.builder().journalpost(journalpost).begrensningType(BegrensningTypeCode.UTILGJENGELIGGJORT).build();
+		jpBegrensning.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
+		journalpost.addBegrensning(jpBegrensning);
 		joarkRepository.save(journalpost);
 	}
 
 	private void setJournalpostSlettet(Journalpost journalpost) {
-		DokumentInfo dokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
-		SlettemeldingsFunksjoner.setDokumentLogiskSlettet(dokumentInfo);
+		Begrensning jpBegrensning = Begrensning.builder().journalpost(journalpost).begrensningType(BegrensningTypeCode.UTILGJENGELIGGJORT).build();
+		jpBegrensning.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
+		journalpost.addBegrensning(jpBegrensning);
 		joarkRepository.save(journalpost);
 	}
 
