@@ -11,7 +11,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
@@ -19,7 +18,6 @@ import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
 import no.nav.dokarkiv.fysiskslettdokument.AbstractFysiskSlettDokumentIT;
 import org.junit.Test;
-import org.slf4j.MDC;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -92,12 +90,9 @@ public class Rjoark102IT_hoveddokument extends AbstractFysiskSlettDokumentIT {
 				String.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.BAD_REQUEST));
-		assertThat(responseEntity.getBody(), containsString(
-				String.format("%s kan ikke slette et dokument som er knyttet til flere journalposter. " +
-								"dokumentInfoId=%s har relasjoner med %s journalposter.",
-						MDC.get(MDCConstants.MDC_REQUEST_ID),
-						dokumentSomSkalSlettes.getDokumentInfoId(),
-						2)));
+		assertThat(responseEntity.getBody(), containsString(String.format(
+				"Kan ikke slette dokument med dokumentInfoId=%s fordi dokumentet er knyttet til flere journalposter.",
+				dokumentSomSkalSlettes.getDokumentInfoId())));
 	}
 
 	@Test
@@ -165,10 +160,6 @@ public class Rjoark102IT_hoveddokument extends AbstractFysiskSlettDokumentIT {
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
-		assertEquals(4L, journalpostDokumentInfoRelasjonRepository.findAllByJournalpostJournalpostId(journalpost.getJournalpostId())
-				.get()
-				.size());
-
 		//TODO: Valider med responseEntity etter kvitteringsmelding er avklart
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_FYSISKSLETTDOKUMENT + journalpost.getJournalpostId() + "/"
@@ -178,11 +169,10 @@ public class Rjoark102IT_hoveddokument extends AbstractFysiskSlettDokumentIT {
 				String.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.BAD_REQUEST));
-		assertThat(responseEntity.getBody(), containsString(
-				String.format("%s kan ikke fysisk slette dokument som ikke er logisk slettet. dokumenInfoId=%s, journalpostId=%s",
-						MDC.get(MDCConstants.MDC_REQUEST_ID),
-						vedlegg2.getDokumentInfoId(),
-						journalpost.getJournalpostId())));
+		assertThat(responseEntity.getBody(), containsString(String.format(
+				"Kan ikke fysisk slette dokument som ikke har blitt logisk slettet først. dokumenInfoId=%s, journalpostId=%s",
+				vedlegg2.getDokumentInfoId(),
+				journalpost.getJournalpostId())));
 	}
 
 	@Test
@@ -212,9 +202,6 @@ public class Rjoark102IT_hoveddokument extends AbstractFysiskSlettDokumentIT {
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
-		assertEquals(4L, journalpostDokumentInfoRelasjonRepository.findAllByJournalpostJournalpostId(
-				journalpost.getJournalpostId()).get().size());
-
 		//TODO: Valider med responseEntity etter kvitteringsmelding er avklart
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_FYSISKSLETTDOKUMENT + journalpost.getJournalpostId() + "/"
@@ -224,11 +211,8 @@ public class Rjoark102IT_hoveddokument extends AbstractFysiskSlettDokumentIT {
 				String.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.BAD_REQUEST));
-		assertThat(responseEntity.getBody(), containsString(
-				String.format("%s kan ikke slette et dokument som er knyttet til flere journalposter. " +
-								"dokumentInfoId=%s har relasjoner med %s journalposter.",
-						MDC.get(MDCConstants.MDC_REQUEST_ID),
-						vedlegg2.getDokumentInfoId(),
-						2)));
+		assertThat(responseEntity.getBody(), containsString(String.format(
+				"Kan ikke slette dokument med dokumentInfoId=%s fordi dokumentet er knyttet til flere journalposter.",
+				vedlegg2.getDokumentInfoId())));
 	}
 }
