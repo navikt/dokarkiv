@@ -50,7 +50,7 @@ public class LogiskSlettDokumentValidatorTest {
 	@Test
 	public void shouldThrowExceptionIfJournalpostDokumentInfoRelasjonerFoundByDokumentInfoIdIsNull() throws Exception {
 		thrown.expect(JournalpostDokumentInfoRelasjonIkkeFunnetException.class);
-		thrown.expectMessage(String.format("kan ikke finne noen journalpostDokumentInfoRelasjon for dokumentInfoId=%s",
+		thrown.expectMessage(String.format("Kan ikke finne noen journalpostDokumentInfoRelasjon for dokumentInfoId=%s",
 				DOKUMENTINFO_ID));
 
 		LogiskSlettDokumentRequestTo requestTo = createRequest(JOURNALPOST_ID, DOKUMENTINFO_ID);
@@ -63,7 +63,7 @@ public class LogiskSlettDokumentValidatorTest {
 	@Test
 	public void shouldThrowExceptionIfTooManyRelations() {
 		thrown.expect(ForMangeJournalpostDokumentInfoRelasjonerException.class);
-		thrown.expectMessage(String.format("kan ikke slette dokument som har relasjoner med flere journalposter. DokumentinfoId=%s har relasjoner med 3 journalposter.",
+		thrown.expectMessage(String.format("Kan ikke slette dokument med dokumentInfoId=%s fordi dokumentet er knyttet til flere journalposter.",
 				DOKUMENTINFO_ID));
 
 		LogiskSlettDokumentRequestTo requestTo = createRequest(JOURNALPOST_ID, DOKUMENTINFO_ID);
@@ -94,7 +94,8 @@ public class LogiskSlettDokumentValidatorTest {
 	@Test
 	public void shouldFailToValidateJournalpostIfJournalpostIdDoesNotMatch() {
 		thrown.expect(IngenRelasjonMellomJournalpostIdOgDokumentInfoIdException.class);
-		thrown.expectMessage(String.format("finner ingen journalpostDokumentInfoRelasjon mellom journalpostId=500 og dokumentInfoId=%s",
+		thrown.expectMessage(String.format("Kan ikke finne noen relasjon mellom journalpost med journalpostId=%s og dokument med dokumentInfoId=%s",
+				500,
 				DOKUMENTINFO_ID));
 
 		LogiskSlettDokumentRequestTo feilRequestTo = createRequest(500L, DOKUMENTINFO_ID);
@@ -109,7 +110,7 @@ public class LogiskSlettDokumentValidatorTest {
 	@Test
 	public void shouldFailToValidateSletteStatusForDokument() throws DokumentAlleredeSlettetException {
 		thrown.expect(DokumentAlleredeSlettetException.class);
-		thrown.expectMessage(String.format("kan ikke utføre logisk sletting av dokument med dokumentInfoId=%s. " +
+		thrown.expectMessage(String.format("Kan ikke utføre logisk sletting av dokument med dokumentInfoId=%s. " +
 						"Dokumentet er allerede logisk slettet",
 				DOKUMENTINFO_ID));
 

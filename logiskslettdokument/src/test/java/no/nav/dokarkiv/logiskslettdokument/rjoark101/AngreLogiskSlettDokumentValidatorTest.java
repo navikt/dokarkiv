@@ -46,8 +46,9 @@ public class AngreLogiskSlettDokumentValidatorTest {
 	@Test
 	public void shouldFailToValidateSletteStatusForDokument() {
 		thrown.expect(DokumentIkkeLogiskSlettetException.class);
-		thrown.expectMessage("kan ikke angre logisk sletting av dokument med dokumentInfoId=" + DOKUMENTINFO_ID + ". " +
-				"Dokumentet er ikke logisk slettet");
+		thrown.expectMessage(String.format(
+				"Kan ikke angre logisk sletting av dokument med dokumentInfoId=%s, fordi dokumentet ikke er logisk slettet.",
+				DOKUMENTINFO_ID));
 
 		LogiskSlettDokumentRequestTo requestTo = createRequest(JOURNALPOST_ID, DOKUMENTINFO_ID);
 		Journalpost journalpost = createJournalpost(false);

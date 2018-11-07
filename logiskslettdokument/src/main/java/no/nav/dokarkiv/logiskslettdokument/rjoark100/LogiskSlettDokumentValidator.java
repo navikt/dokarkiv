@@ -26,7 +26,7 @@ public class LogiskSlettDokumentValidator extends AbstractSlettDokumentValidator
 	protected void validerAtDokumentIkkeErLogiskSlettet(DokumentInfo dokumentInfo) {
 		if (isTrue(dokumentInfo.getSlettet())) {
 			throw new DokumentAlleredeSlettetException(
-					String.format("kan ikke utføre logisk sletting av dokument med " +
+					String.format("Kan ikke utføre logisk sletting av dokument med " +
 									"dokumentInfoId=%s. Dokumentet er allerede logisk slettet",
 							dokumentInfo.getDokumentInfoId()));
 		}

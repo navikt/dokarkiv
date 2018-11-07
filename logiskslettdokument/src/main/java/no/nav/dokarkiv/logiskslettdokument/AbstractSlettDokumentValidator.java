@@ -24,7 +24,7 @@ public abstract class AbstractSlettDokumentValidator {
 			Long dokumentInfoId) {
 		if (jpDokInfoRelasjoner.isEmpty()) {
 			throw new JournalpostDokumentInfoRelasjonIkkeFunnetException(
-					String.format("kan ikke finne noen journalpostDokumentInfoRelasjon for dokumentInfoId=%s",
+					String.format("Kan ikke finne noen journalpostDokumentInfoRelasjon for dokumentInfoId=%s",
 							dokumentInfoId));
 		}
 	}
@@ -34,10 +34,8 @@ public abstract class AbstractSlettDokumentValidator {
 			Long dokumentInfoId) {
 		if (jpDokInfoRelasjoner.size() > 1) {
 			throw new ForMangeJournalpostDokumentInfoRelasjonerException(
-					String.format("kan ikke slette dokument som har relasjoner med flere journalposter. " +
-									"DokumentinfoId=%s har relasjoner med %s journalposter.",
-							dokumentInfoId,
-							jpDokInfoRelasjoner.size()));
+					String.format("Kan ikke slette dokument med dokumentInfoId=%s fordi dokumentet er knyttet til flere journalposter.",
+							dokumentInfoId));
 		}
 	}
 
@@ -46,7 +44,7 @@ public abstract class AbstractSlettDokumentValidator {
 			LogiskSlettDokumentRequestTo requestTo) {
 		if (isFalse(journalpostIdFunnetMedDokumentInfoId.equals(requestTo.getJournalpostId()))) {
 			throw new IngenRelasjonMellomJournalpostIdOgDokumentInfoIdException(
-					String.format("finner ingen journalpostDokumentInfoRelasjon mellom journalpostId=%s og dokumentInfoId=%s",
+					String.format("Kan ikke finne noen relasjon mellom journalpost med journalpostId=%s og dokument med dokumentInfoId=%s",
 							requestTo.getJournalpostId(),
 							requestTo.getDokumentInfoId()));
 		}

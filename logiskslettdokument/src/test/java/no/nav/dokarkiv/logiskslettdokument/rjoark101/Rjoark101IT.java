@@ -68,7 +68,7 @@ public class Rjoark101IT extends AbstractSlettDokumentIT {
 		DokumentInfo dokumentInfoIkkeSlettet = hentDokumentInfoEtterUtførtKall(journalpost);
 
 		assertThat(responseEntity.getBody(), containsString(
-				String.format("kan ikke angre logisk sletting av dokument med dokumentInfoId=%s. Dokumentet er ikke logisk slettet",
+				String.format("Kan ikke angre logisk sletting av dokument med dokumentInfoId=%s, fordi dokumentet ikke er logisk slettet.",
 						dokumentInfoIkkeSlettet.getDokumentInfoId())));
 		assertEquals(dokumentInfoIkkeSlettet.getSlettet(), false);
 	}

@@ -2,15 +2,15 @@ package no.nav.dokarkiv.fysiskslettdokument.rjoark102;
 
 import static no.nav.dokarkiv.fysiskslettdokument.util.TestUtils.DOKUMENT_INFO_ID_TEST;
 import static no.nav.dokarkiv.fysiskslettdokument.util.TestUtils.DOKUMENT_INFO_ID_TEST_VEDLEGG;
-import static no.nav.dokarkiv.fysiskslettdokument.util.TestUtils.HJEMMEL;
+import static no.nav.dokarkiv.fysiskslettdokument.util.TestUtils.HOVEDDOKUMENT;
 import static no.nav.dokarkiv.fysiskslettdokument.util.TestUtils.JOURNALPOST_ID_TEST;
 import static no.nav.dokarkiv.fysiskslettdokument.util.TestUtils.TILKNYTTET_AV_NAVN;
+import static no.nav.dokarkiv.fysiskslettdokument.util.TestUtils.VEDLEGG;
 import static no.nav.dokarkiv.fysiskslettdokument.util.TestUtils.createRequest;
 import static no.nav.dokarkiv.fysiskslettdokument.util.TestUtils.opprettOgReturnerHoveddokumentRelasjonForEnhetstest;
 import static no.nav.dokarkiv.fysiskslettdokument.util.TestUtils.opprettOgReturnerVedleggRelasjonForEnhetstest;
 import static no.nav.dokarkiv.fysiskslettdokument.util.TestUtils.resetIds;
 
-import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.exceptions.DokumentIkkeLogiskSlettetException;
@@ -26,7 +26,6 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.slf4j.MDC;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -65,12 +64,12 @@ public class FysiskSlettDokumentValidatorTest {
 	@Test
 	public void shouldFailToValiderFysiskSlettAvEtVedleggBecauseDokumentErIkkeTilknyttetSomVedlegg() {
 		thrown.expect(DokumentErIkkeVedleggException.class);
-		thrown.expectMessage(String.format("%s kan ikke slette dokument som ikke er et vedlegg når hjemmel=%s er brukt. " +
-						"dokumentInfoId=%s, journalpostId=%s",
-				MDC.get(MDCConstants.MDC_REQUEST_ID),
-				HJEMMEL,
+		thrown.expectMessage(String.format(
+				"Kan ikke slette dokument med dokumentInfoId=%s og journalpostId=%s som vedlegg fordi dokumentet er tilknyttet som %s",
 				DOKUMENT_INFO_ID_TEST,
-				JOURNALPOST_ID_TEST));
+				JOURNALPOST_ID_TEST,
+				HOVEDDOKUMENT));
+
 		FysiskSlettDokumentRequestTo requestTo = createRequest();
 		JournalpostDokumentInfoRelasjon hoveddokumentRelasjon = opprettOgReturnerHoveddokumentRelasjonForEnhetstest(true);
 
@@ -85,9 +84,9 @@ public class FysiskSlettDokumentValidatorTest {
 	@Test
 	public void shouldFailToValiderFysiskSlettEtDokumentKnyttetEnJPBecauseJournalpostDokumentInfoRelasjonerFinnesIkke() {
 		thrown.expect(JournalpostDokumentInfoRelasjonIkkeFunnetException.class);
-		thrown.expectMessage(String.format("%s kan ikke finne journalpostDokumentInfoRelasjon med dokumentInfoId=%s",
-				MDC.get(MDCConstants.MDC_REQUEST_ID),
+		thrown.expectMessage(String.format("Kan ikke finne journalpostDokumentInfoRelasjon med dokumentInfoId=%s",
 				DOKUMENT_INFO_ID_TEST));
+
 		FysiskSlettDokumentRequestTo requestTo = createRequest();
 
 		List<JournalpostDokumentInfoRelasjon> relasjonList = new ArrayList<>();
@@ -98,11 +97,9 @@ public class FysiskSlettDokumentValidatorTest {
 	@Test
 	public void shouldFailToValiderFysiskSlettEtDokumentKnyttetEnJPBecauseJournalpostDokumentInfoRelasjonerErKnyttetTilFlereJournalposter() {
 		thrown.expect(ForMangeJournalpostDokumentInfoRelasjonerException.class);
-		thrown.expectMessage(String.format("%s kan ikke slette et dokument som er knyttet til flere journalposter. " +
-						"dokumentInfoId=%s har relasjoner med %s journalposter.",
-				MDC.get(MDCConstants.MDC_REQUEST_ID),
-				DOKUMENT_INFO_ID_TEST_VEDLEGG,
-				2L));
+		thrown.expectMessage(String.format(
+				"Kan ikke slette dokument med dokumentInfoId=%s fordi dokumentet er knyttet til flere journalposter.",
+				DOKUMENT_INFO_ID_TEST_VEDLEGG));
 
 		JournalpostDokumentInfoRelasjon vedleggRelasjon1 = opprettOgReturnerVedleggRelasjonForEnhetstest(true);
 		JournalpostDokumentInfoRelasjon vedleggRelasjon2 = opprettOgReturnerVedleggRelasjonForEnhetstest(true);
@@ -128,10 +125,11 @@ public class FysiskSlettDokumentValidatorTest {
 	@Test
 	public void shouldFailToValiderFysiskSlettEtDokumentKnyttetEnJPBecauseFinnesIkkeRelasjonMellomInputParametere() {
 		thrown.expect(IngenRelasjonMellomJournalpostIdOgDokumentInfoIdException.class);
-		thrown.expectMessage(String.format("%s finner ingen journalpostDokumentInfoRelasjon mellom journalpostId=%s og dokumentInfoId=%s",
-				MDC.get(MDCConstants.MDC_REQUEST_ID),
+		thrown.expectMessage(String.format(
+				"Kan ikke finne noen relasjon mellom journalpost med journalpostId=%s og dokument med dokumentInfoId=%s",
 				JOURNALPOST_ID_TEST + 10,
 				DOKUMENT_INFO_ID_TEST_VEDLEGG));
+
 		JournalpostDokumentInfoRelasjon vedleggRelasjon = opprettOgReturnerVedleggRelasjonForEnhetstest(true);
 
 		FysiskSlettDokumentRequestTo requestMedFeilJP = createRequest(JOURNALPOST_ID_TEST + 10, vedleggRelasjon.getDokumentInfo()
@@ -146,10 +144,11 @@ public class FysiskSlettDokumentValidatorTest {
 	@Test
 	public void shouldFailToValiderFysiskSlettEtDokumentKnyttetEnJPBecauseDokumentErIkkeLogiskSlettet() {
 		thrown.expect(DokumentIkkeLogiskSlettetException.class);
-		thrown.expectMessage(String.format("%s kan ikke fysisk slette dokument som ikke er logisk slettet. dokumenInfoId=%s, journalpostId=%s",
-				MDC.get(MDCConstants.MDC_REQUEST_ID),
+		thrown.expectMessage(String.format(
+				"Kan ikke fysisk slette dokument som ikke har blitt logisk slettet først. dokumenInfoId=%s, journalpostId=%s",
 				DOKUMENT_INFO_ID_TEST_VEDLEGG,
 				JOURNALPOST_ID_TEST));
+
 		JournalpostDokumentInfoRelasjon vedleggRelasjon = opprettOgReturnerVedleggRelasjonForEnhetstest(false);
 
 		FysiskSlettDokumentRequestTo requestTo = createRequest(vedleggRelasjon);
@@ -176,12 +175,12 @@ public class FysiskSlettDokumentValidatorTest {
 	@Test
 	public void shouldFailToValiderFysiskSlettAvEtHoveddokumentBecauseDokumentErIkkeTilknyttetSomHoveddokument() {
 		thrown.expect(DokumentErIkkeHoveddokumentException.class);
-		thrown.expectMessage(String.format("%s kan ikke slette dokument som ikke er hoveddokument når hjemmel=%s er brukt. " +
-						"dokumentInfoId=%s, journalpostId=%s",
-				MDC.get(MDCConstants.MDC_REQUEST_ID),
-				HJEMMEL,
+		thrown.expectMessage(String.format(
+				"Kan ikke slette dokument med dokumentInfoId=%s og journalpostId=%s som hoveddokument fordi dokumentet er tilknyttet som %s.",
 				DOKUMENT_INFO_ID_TEST,
-				JOURNALPOST_ID_TEST));
+				JOURNALPOST_ID_TEST,
+				VEDLEGG));
+
 		FysiskSlettDokumentRequestTo requestTo = createRequest();
 		JournalpostDokumentInfoRelasjon vedleggRelasjon = opprettOgReturnerVedleggRelasjonForEnhetstest(true);
 

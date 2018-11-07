@@ -63,7 +63,7 @@ public class Rjoark100IT extends AbstractSlettDokumentIT {
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.NOT_FOUND));
 		assertThat(responseEntity.getBody(), containsString(
-				String.format("kan ikke finne noen journalpostDokumentInfoRelasjon for dokumentInfoId=%s",
+				String.format("Kan ikke finne noen journalpostDokumentInfoRelasjon for dokumentInfoId=%s",
 						feilDokumentInfoId)));
 	}
 
@@ -88,7 +88,7 @@ public class Rjoark100IT extends AbstractSlettDokumentIT {
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.NOT_FOUND));
 		assertThat(responseEntity.getBody(), containsString(
-				String.format("finner ingen journalpostDokumentInfoRelasjon mellom journalpostId=%s og dokumentInfoId=%s",
+				String.format("Kan ikke finne noen relasjon mellom journalpost med journalpostId=%s og dokument med dokumentInfoId=%s",
 						journalpost1.getJournalpostId(),
 						journalpost2.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId())));
 	}
@@ -122,9 +122,12 @@ public class Rjoark100IT extends AbstractSlettDokumentIT {
 
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.BAD_REQUEST));
-		assertThat(responseEntity.getBody(), containsString("kan ikke slette dokument som har relasjoner med flere journalposter."));
 
 		DokumentInfo dokumentInfoMedForMangeRelasjoner = hentDokumentInfoEtterUtførtKall(journalpost1);
+
+		assertThat(responseEntity.getBody(), containsString(String.format(
+				"Kan ikke slette dokument med dokumentInfoId=%s fordi dokumentet er knyttet til flere journalposter.",
+				dokumentInfoMedForMangeRelasjoner.getDokumentInfoId())));
 
 		assertEquals(dokumentInfoMedForMangeRelasjoner.getSlettet(), false);
 	}
@@ -149,7 +152,7 @@ public class Rjoark100IT extends AbstractSlettDokumentIT {
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.BAD_REQUEST));
 		assertThat(responseEntity.getBody(), containsString(
-				String.format("kan ikke utføre logisk sletting av dokument med dokumentInfoId=%s. Dokumentet er allerede logisk slettet",
+				String.format("Kan ikke utføre logisk sletting av dokument med dokumentInfoId=%s. Dokumentet er allerede logisk slettet",
 						journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId())));
 
 		DokumentInfo alleredeSlettetDokumentInfo = hentDokumentInfoEtterUtførtKall(journalpost);
