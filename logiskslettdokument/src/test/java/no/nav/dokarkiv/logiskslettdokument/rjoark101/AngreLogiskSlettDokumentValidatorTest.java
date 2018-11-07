@@ -36,8 +36,8 @@ public class AngreLogiskSlettDokumentValidatorTest {
 		LogiskSlettDokumentRequestTo requestTo = createRequest(JOURNALPOST_ID, DOKUMENTINFO_ID);
 		Journalpost journalpost = createJournalpost(true);
 
-		List<JournalpostDokumentInfoRelasjon> journalpostDokumentInfoRelasjonList = new ArrayList<JournalpostDokumentInfoRelasjon>();
-		journalpostDokumentInfoRelasjonList.addAll(journalpost.getJournalpostDokumentInfoRelasjoner());
+		List<JournalpostDokumentInfoRelasjon> journalpostDokumentInfoRelasjonList =
+				new ArrayList<JournalpostDokumentInfoRelasjon>(journalpost.getJournalpostDokumentInfoRelasjoner());
 
 		validator.validerAngreLogiskSlettAvEttDokument(journalpostDokumentInfoRelasjonList, requestTo);
 	}
@@ -52,8 +52,8 @@ public class AngreLogiskSlettDokumentValidatorTest {
 		LogiskSlettDokumentRequestTo requestTo = createRequest(JOURNALPOST_ID, DOKUMENTINFO_ID);
 		Journalpost journalpost = createJournalpost(false);
 
-		List<JournalpostDokumentInfoRelasjon> journalpostDokumentInfoRelasjonList = new ArrayList<JournalpostDokumentInfoRelasjon>();
-		journalpostDokumentInfoRelasjonList.addAll(journalpost.getJournalpostDokumentInfoRelasjoner());
+		List<JournalpostDokumentInfoRelasjon> journalpostDokumentInfoRelasjonList =
+				new ArrayList<JournalpostDokumentInfoRelasjon>(journalpost.getJournalpostDokumentInfoRelasjoner());
 
 		validator.validerAngreLogiskSlettAvEttDokument(journalpostDokumentInfoRelasjonList, requestTo);
 	}
