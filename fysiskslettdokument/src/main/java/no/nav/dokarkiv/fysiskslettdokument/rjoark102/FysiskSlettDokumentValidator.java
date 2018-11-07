@@ -33,7 +33,6 @@ public class FysiskSlettDokumentValidator {
 		validerAtRelasjonErTilknyttetSomHoveddokument(listFoundByDokumentInfoId.get(0), requestTo);
 	}
 
-	//private
 	private void validerKunEnGyldigRelasjonFoundByDokumentInfoId(
 			List<JournalpostDokumentInfoRelasjon> listFoundByDokumentInfoId,
 			FysiskSlettDokumentRequestTo requestTo) {
@@ -45,7 +44,6 @@ public class FysiskSlettDokumentValidator {
 		validerAtRelasjonMellomInputParametereFinnes(relasjonSomValideres, requestTo);
 		validerAtDokumentErLogiskSlettet(relasjonSomValideres.getDokumentInfo(), requestTo);
 	}
-
 
 	private void validerAtRelasjonFoundByDokumentInfoIdFinnes(
 			List<JournalpostDokumentInfoRelasjon> listFoundByDokumentInfoId,
@@ -122,130 +120,4 @@ public class FysiskSlettDokumentValidator {
 					requestTo.getJournalpostId()));
 		}
 	}
-
-
-/**
- // MULIG SLETTING
-
- public void validerFysiskSlettAvEtVedlegg(
- JournalpostDokumentInfoRelasjon relasjonSomSkalSlettes,
- FysiskSlettDokumentRequestTo requestTo) {
- validerAtDokumentErLogiskSlettet(relasjonSomSkalSlettes.getDokumentInfo(), requestTo);
- validerAtRelasjonErTilknyttetSomVedlegg(relasjonSomSkalSlettes, requestTo);
- }
-
- public void validerAtKunEtVedleggSkalSlettes(
- JournalpostDokumentInfoRelasjon jpDokInfoRelSomSkalSlettes,
- FysiskSlettDokumentRequestTo requestTo) {
- validerAtRelasjonFoundByDokumentInfoIdFinnes(jpDokInfoRelSomSkalSlettes, requestTo.getJournalpostId());
- validerAtDokumentErLogiskSlettet(jpDokInfoRelSomSkalSlettes.getDokumentInfo(), requestTo);
-//		validerAtRelasjonErTilknyttetSomVedlegg(jpDokInfoRelSomSkalSlettes, requestTo);
- }
-
- public void validerFysiskSlettAvEtHoveddokument(
- JournalpostDokumentInfoRelasjon relasjonSomSkalSlettes,
- FysiskSlettDokumentRequestTo requestTo) {
- validerAtDokumentErLogiskSlettet(relasjonSomSkalSlettes.getDokumentInfo(), requestTo);
- validerAtRelasjonErTilknyttetSomHoveddokument(relasjonSomSkalSlettes, requestTo);
- }
-
- public void validerAtKunEtHoveddokumentSkalSlettes(
- List<JournalpostDokumentInfoRelasjon> listFoundByJournalpostId,
- List<JournalpostDokumentInfoRelasjon> listFoundByDokumentInfoId,
- FysiskSlettDokumentRequestTo requestTo) {
- validerKunEnGyldigRelasjonFunnet(listFoundByJournalpostId, listFoundByDokumentInfoId, requestTo);
- validerFysiskSlettAvEtHoveddokument(listFoundByJournalpostId.get(0), requestTo);
- }
-
- // Private ---------------
-
- private void validerKunEnGyldigRelasjonFunnet(
- List<JournalpostDokumentInfoRelasjon> listFoundByJournalpostId,
- List<JournalpostDokumentInfoRelasjon> listFoundByDokumentInfoId,
- FysiskSlettDokumentRequestTo requestTo) {
- validerAtJournalpostDokumentInfoRelasjonerFinnes(listFoundByJournalpostId, listFoundByDokumentInfoId, requestTo);
- validerAtJournalpostDokumentInfoRelasjonKunErKnyttetTilEnRelasjon(listFoundByJournalpostId, listFoundByDokumentInfoId, requestTo);
- validerAtJournalpostIdOgDokumentInfoIdFraInputPekerPaaSammeRelasjon(listFoundByJournalpostId, listFoundByDokumentInfoId, requestTo);
- }
-
- private void validerAtJournalpostDokumentInfoRelasjonerFinnes(
- List<JournalpostDokumentInfoRelasjon> listFoundByJournalpostId,
- List<JournalpostDokumentInfoRelasjon> listFoundByDokumentInfoId,
- FysiskSlettDokumentRequestTo requestTo
- ) {
- if (listFoundByJournalpostId.isEmpty()) {
- throw new JournalpostDokumentInfoRelasjonIkkeFunnetException(
- String.format("%s kan ikke finne journalpostDokumentInfoRelasjon med journalpostId=%s",
- MDC.get(MDCConstants.MDC_REQUEST_ID),
- requestTo.getJournalpostId()));
- }
- if (listFoundByDokumentInfoId.isEmpty()) {
- throw new JournalpostDokumentInfoRelasjonIkkeFunnetException(
- String.format("%s kan ikke finne journalpostDokumentInfoRelasjon med dokumentInfoId=%s",
- MDC.get(MDCConstants.MDC_REQUEST_ID),
- requestTo.getDokumentInfoId()));
- }
- }
-
- private void validerAtJournalpostDokumentInfoRelasjonKunErKnyttetTilEnRelasjon(
- List<JournalpostDokumentInfoRelasjon> listFoundByJournalpostId,
- List<JournalpostDokumentInfoRelasjon> listFoundByDokumentInfoId,
- FysiskSlettDokumentRequestTo requestTo) {
- if (listFoundByJournalpostId.size() > 1) {
- throw new ForMangeJournalpostDokumentInfoRelasjonerException(
- String.format("%s kan ikke slette en journalpost som har relasjoner med flere dokumenter. " +
- "JournalpostId=%s har relasjoner med %s dokumenter.",
- MDC.get(MDCConstants.MDC_REQUEST_ID),
- requestTo.getJournalpostId(),
- listFoundByJournalpostId.size()));
- }
- if (listFoundByDokumentInfoId.size() > 1) {
- throw new ForMangeJournalpostDokumentInfoRelasjonerException(
- String.format("%s kan ikke slette et dokument som har relasjoner med flere journalposter. " +
- "DokumentInfoId=%s har relasjoner med %s journalposter.",
- MDC.get(MDCConstants.MDC_REQUEST_ID),
- requestTo.getDokumentInfoId(),
- listFoundByDokumentInfoId.size()));
- }
- }
-
- private void validerAtJournalpostIdOgDokumentInfoIdFraInputPekerPaaSammeRelasjon(
- List<JournalpostDokumentInfoRelasjon> listFoundByJournalpostId,
- List<JournalpostDokumentInfoRelasjon> listFoundByDokumentInfoId,
- FysiskSlettDokumentRequestTo requestTo) {
- Long relasjonsIdFraJournalpostId = listFoundByJournalpostId.get(0).getJournalpostDokumentInfoRelasjonId();
- Long relasjonsIdFraDokumentInfoId = listFoundByDokumentInfoId.get(0).getJournalpostDokumentInfoRelasjonId();
-
- if (isFalse(relasjonsIdFraJournalpostId.equals(relasjonsIdFraDokumentInfoId))) {
- throw new IngenRelasjonMellomJournalpostIdOgDokumentInfoIdException(
- String.format("%s finner ingen journalpostDokumentInfoRelasjon mellom journalpostId=%s og dokumentInfoId=%s",
- MDC.get(MDCConstants.MDC_REQUEST_ID),
- requestTo.getJournalpostId(),
- requestTo.getDokumentInfoId()));
- }
- }
-
-
-
-
-
-
- //Endre eller slett --------------------------------------
-
- private void validerAtHoveddokumentIkkeHarVedlegg(
- JournalpostDokumentInfoRelasjon jpDokInfoRelSomSkalSlettes,
- FysiskSlettDokumentRequestTo requestTo) {
- Set<JournalpostDokumentInfoRelasjon> jpDokInfoRelasjoner = jpDokInfoRelSomSkalSlettes.getDokumentInfo()
- .getJournalpostRelasjoner();
- if (jpDokInfoRelasjoner.size() > 1) {
- throw new ForMangeJournalpostDokumentInfoRelasjonerException(
- String.format("s kan ikke slette et hoveddokument som har vedlegg når hjemmel=%s brukes. " +
- "dokumentinfoId=%s, journalpostId=%s",
- MDC.get(MDCConstants.MDC_REQUEST_ID),
- requestTo.getDokumentInfoId(),
- requestTo.getJournalpostId()));
- }
- }
-
- */
 }

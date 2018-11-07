@@ -165,7 +165,6 @@ public class TestUtils {
 						.build());
 	}
 
-
 	private static JournalpostBuilder getBaseJournalpostBuilder() {
 		return JournalpostBuilder.getJournalpostBuilder()
 				.avsenderMottakerId(AVSENDER_MOTTAKER_ID)
