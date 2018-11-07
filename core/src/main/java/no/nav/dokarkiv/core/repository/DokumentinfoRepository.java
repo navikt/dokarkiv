@@ -10,11 +10,6 @@ import java.util.Optional;
  */
 public interface DokumentinfoRepository extends CrudRepository<DokumentInfo, Long> {
 
-//	@Query(value = "SELECT * FROM T_DOKUMENT_INFO jt WHERE jt.DOKUMENT_INFO_ID = :dokumentinfoId and jt.ORIG_JOURNALPOST_ID = :originalJournalpostId", nativeQuery = true)
-//	Optional<DokumentInfo> findDokumentInfoByJournalpostIdAndDokumentInfoId(@Param("originalJournalpostId") Long originalJournalpostId, @Param("dokumentinfoId") Long dokumentinfoId);
-
 	Optional<DokumentInfo> findAllByOriginalJournalpostJournalpostIdAndDokumentInfoId(Long journalpostId, Long dokumentInfoId);
-
-
 }
 

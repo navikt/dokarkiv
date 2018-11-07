@@ -45,6 +45,8 @@ public class TestUtils {
 	public static final String HJEMMEL = "hjemmel fra XYZ";
 	public static final String HJEMMEL_VEDLEGG = "fysiskSlettEtVedleggKnyttetEnJP";
 	public static final String HJEMMEL_HOVEDDOKUMENT = "fysiskSlettEtHoveddokumentKnyttetEnJP";
+	public static final String HOVEDDOKUMENT = "hoveddokument";
+	public static final String VEDLEGG = "vedlegg";
 
 	private static Long journalpostId = 1L;
 	private static Long dokumentInfoId = 1L;

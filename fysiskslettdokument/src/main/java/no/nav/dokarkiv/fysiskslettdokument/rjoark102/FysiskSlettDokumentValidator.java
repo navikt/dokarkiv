@@ -2,7 +2,6 @@ package no.nav.dokarkiv.fysiskslettdokument.rjoark102;
 
 import static org.apache.commons.lang3.BooleanUtils.isNotTrue;
 
-import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.exceptions.DokumentIkkeLogiskSlettetException;
@@ -11,7 +10,6 @@ import no.nav.dokarkiv.core.exceptions.IngenRelasjonMellomJournalpostIdOgDokumen
 import no.nav.dokarkiv.core.exceptions.JournalpostDokumentInfoRelasjonIkkeFunnetException;
 import no.nav.dokarkiv.fysiskslettdokument.exceptions.DokumentErIkkeHoveddokumentException;
 import no.nav.dokarkiv.fysiskslettdokument.exceptions.DokumentErIkkeVedleggException;
-import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -50,8 +48,7 @@ public class FysiskSlettDokumentValidator {
 			Long dokumentInfoId) {
 		if (listFoundByDokumentInfoId.isEmpty()) {
 			throw new JournalpostDokumentInfoRelasjonIkkeFunnetException(
-					String.format("%s kan ikke finne journalpostDokumentInfoRelasjon med dokumentInfoId=%s",
-							MDC.get(MDCConstants.MDC_REQUEST_ID),
+					String.format("Kan ikke finne journalpostDokumentInfoRelasjon med dokumentInfoId=%s",
 							dokumentInfoId));
 		}
 	}
@@ -60,12 +57,9 @@ public class FysiskSlettDokumentValidator {
 			List<JournalpostDokumentInfoRelasjon> listFoundByDokumentInfoId,
 			Long dokumentInfoId) {
 		if (listFoundByDokumentInfoId.size() > 1) {
-			throw new ForMangeJournalpostDokumentInfoRelasjonerException(
-					String.format("%s kan ikke slette et dokument som er knyttet til flere journalposter. " +
-									"dokumentInfoId=%s har relasjoner med %s journalposter.",
-							MDC.get(MDCConstants.MDC_REQUEST_ID),
-							dokumentInfoId,
-							listFoundByDokumentInfoId.size()));
+			throw new ForMangeJournalpostDokumentInfoRelasjonerException(String.format(
+					"Kan ikke slette dokument med dokumentInfoId=%s fordi dokumentet er knyttet til flere journalposter.",
+					dokumentInfoId));
 		}
 	}
 
@@ -73,11 +67,10 @@ public class FysiskSlettDokumentValidator {
 			JournalpostDokumentInfoRelasjon relasjonFoundByDokumentInfoId,
 			FysiskSlettDokumentRequestTo requestTo) {
 		if (isNotTrue(relasjonFoundByDokumentInfoId.getJournalpost().getJournalpostId().equals(requestTo.getJournalpostId()))) {
-			throw new IngenRelasjonMellomJournalpostIdOgDokumentInfoIdException(
-					String.format("%s finner ingen journalpostDokumentInfoRelasjon mellom journalpostId=%s og dokumentInfoId=%s",
-							MDC.get(MDCConstants.MDC_REQUEST_ID),
-							requestTo.getJournalpostId(),
-							requestTo.getDokumentInfoId()));
+			throw new IngenRelasjonMellomJournalpostIdOgDokumentInfoIdException(String.format(
+					"Kan ikke finne noen relasjon mellom journalpost med journalpostId=%s og dokument med dokumentInfoId=%s",
+					requestTo.getJournalpostId(),
+					requestTo.getDokumentInfoId()));
 		}
 	}
 
@@ -85,13 +78,12 @@ public class FysiskSlettDokumentValidator {
 			JournalpostDokumentInfoRelasjon jpDokInfoRelSomSkalSlettes,
 			FysiskSlettDokumentRequestTo requestTo) {
 		if (isNotTrue(jpDokInfoRelSomSkalSlettes.isVedlegg())) {
-			throw new DokumentErIkkeVedleggException(
-					String.format("%s kan ikke slette dokument som ikke er et vedlegg når hjemmel=%s er brukt. " +
-									"dokumentInfoId=%s, journalpostId=%s",
-							MDC.get(MDCConstants.MDC_REQUEST_ID),
-							requestTo.getHjemmel(),
-							requestTo.getDokumentInfoId(),
-							requestTo.getJournalpostId()));
+			throw new DokumentErIkkeVedleggException(String.format(
+					"Kan ikke slette dokument med dokumentInfoId=%s og journalpostId=%s som vedlegg " +
+							"fordi dokumentet er tilknyttet som %s",
+					requestTo.getDokumentInfoId(),
+					requestTo.getJournalpostId(),
+					jpDokInfoRelSomSkalSlettes.getTilknyttetJournalpostSom().toString().toLowerCase()));
 		}
 	}
 
@@ -99,13 +91,12 @@ public class FysiskSlettDokumentValidator {
 			JournalpostDokumentInfoRelasjon jpDokInfoRelSomSkalSlettes,
 			FysiskSlettDokumentRequestTo requestTo) {
 		if (isNotTrue(jpDokInfoRelSomSkalSlettes.isHoveddokument())) {
-			throw new DokumentErIkkeHoveddokumentException(
-					String.format("%s kan ikke slette dokument som ikke er hoveddokument når hjemmel=%s er brukt. " +
-									"dokumentInfoId=%s, journalpostId=%s",
-							MDC.get(MDCConstants.MDC_REQUEST_ID),
-							requestTo.getHjemmel(),
-							requestTo.getDokumentInfoId(),
-							requestTo.getJournalpostId()));
+			throw new DokumentErIkkeHoveddokumentException(String.format(
+					"Kan ikke slette dokument med dokumentInfoId=%s og journalpostId=%s som hoveddokument " +
+							"fordi dokumentet er tilknyttet som %s.",
+					requestTo.getDokumentInfoId(),
+					requestTo.getJournalpostId(),
+					jpDokInfoRelSomSkalSlettes.getTilknyttetJournalpostSom().toString().toLowerCase()));
 		}
 	}
 
@@ -114,8 +105,7 @@ public class FysiskSlettDokumentValidator {
 			FysiskSlettDokumentRequestTo requestTo) {
 		if (isNotTrue(dokumentInfo.getSlettet())) {
 			throw new DokumentIkkeLogiskSlettetException(String.format(
-					"%s kan ikke fysisk slette dokument som ikke er logisk slettet. dokumenInfoId=%s, journalpostId=%s",
-					MDC.get(MDCConstants.MDC_REQUEST_ID),
+					"Kan ikke fysisk slette dokument som ikke har blitt logisk slettet først. dokumenInfoId=%s, journalpostId=%s",
 					requestTo.getDokumentInfoId(),
 					requestTo.getJournalpostId()));
 		}
