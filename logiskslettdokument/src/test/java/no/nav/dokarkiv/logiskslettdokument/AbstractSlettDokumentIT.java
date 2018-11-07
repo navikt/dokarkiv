@@ -72,6 +72,7 @@ public abstract class AbstractSlettDokumentIT {
 	protected static final String TILKNYTTET_AV_NAVN = "Tilknyttetnavn";
 	protected static final String URL_SLETTDOKUMENT = "/rest/logiskslettdokument/";
 	protected static final String URL_ANGRESLETTDOKUMENT = "/rest/logiskslettdokument/angre/";
+	protected Long JOURNALPOST_ID = 200000000L;
 	private String OIDC_TOKEN_PERSON_USER_TEST;
 	private String OIDC_TOKEN_SERVICE_USER_TEST;
 	private String NAV_CONSUMER_TOKEN = "Nav-Consumer-Token";
@@ -126,6 +127,7 @@ public abstract class AbstractSlettDokumentIT {
 		joarkRepository.deleteAll();
 		dokumentinfoRepository.deleteAll();
 		begrensningRepository.deleteAll();
+		journalpostDokumentInfoRelasjonRepository.deleteAll();
 	}
 
 	protected Journalpost buildAndCommit(final JournalpostBuilder builder) {
@@ -167,13 +169,20 @@ public abstract class AbstractSlettDokumentIT {
 	}
 
 	public List<Begrensning> hentHoveddokumentBegrensningEtterUtførtKall(Journalpost journalpost) {
-		return begrensningRepository.findByJournalpostIdOnly(
-				journalpost.getJournalpostId(), UTILGJENGELIGGJORT.name()).get();
+		try {
+			return begrensningRepository.findByJournalpostIdOnly(
+					journalpost.getJournalpostId(), UTILGJENGELIGGJORT.name()).get();
+		} catch (NoSuchElementException e) {
+			return new ArrayList<>();
+		}
 	}
 
-	public List<Begrensning> hentVedleggBegrensningEtterUtførtKall(Journalpost journalpost) {
-		return begrensningRepository.findByDokumentInfoIdJournalpostId(journalpost.getJournalpostId(),
-				journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId(), UTILGJENGELIGGJORT.name()).get();
+	public List<Begrensning> hentVedleggBegrensningEtterUtførtKall(long dokumentInfoId) {
+		try {
+			return begrensningRepository.findByDokumentInfoIdOnly(dokumentInfoId, UTILGJENGELIGGJORT.name()).get();
+		} catch (NoSuchElementException e) {
+			return new ArrayList<>();
+		}
 	}
 
 	public DokumentInfo hentDokumentInfoEtterUtførtKall(Journalpost journalpost) {

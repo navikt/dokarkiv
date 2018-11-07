@@ -37,7 +37,7 @@ public class TestUtils {
 	private static final String FILNAVN = "filNavn";
 
 	public static final Long JOURNALPOST_ID = 42L;
-	public static final Long DOKUMENTINFO_ID = 1L;
+	public static final Long DOKUMENTINFO_ID = 200000000L;
 
 
 
@@ -64,9 +64,20 @@ public class TestUtils {
 								.build());
 	}
 
-	private static DokumentInfo createDokumentInfo() {
+	public static DokumentInfo createDokumentInfo() {
 		return getDokumentInfoBuilder()
-				.slettet(false)
+				.dokumentstatus(DokumentStatusCode.FERDIGSTILT)
+				.tittel(DOKUMENT_TITTEL)
+				.endretAvNavn(ENDRET_AV_NAVN)
+				.brevgruppe(BREVGRUPPE)
+				.brevkode(BREVKODE)
+				.filDetaljerList(createFildetaljer())
+				.opprettetKildeNavn(OPPRETTET_KILDE_NAVN).build();
+	}
+
+	public static DokumentInfo createDokumentInfo(Long dokumentInfoId) {
+		return getDokumentInfoBuilder()
+				.dokumentInfoId(dokumentInfoId)
 				.dokumentstatus(DokumentStatusCode.FERDIGSTILT)
 				.tittel(DOKUMENT_TITTEL)
 				.endretAvNavn(ENDRET_AV_NAVN)
@@ -97,12 +108,12 @@ public class TestUtils {
 				.build();
 	}
 
-	public static Journalpost createJournalpost() {
+	public static Journalpost createJournalpost(Long dokumentInfoId) {
 		return getJournalpostBuilder()
 				.journalpostId(JOURNALPOST_ID)
 				.dokumentInfoRelasjoner(getJournalpostDokumentInfoRelasjonBuilder()
 						.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.HOVEDDOKUMENT)
-						.dokumentInfo(createDokumentInfo())
+						.dokumentInfo(createDokumentInfo(dokumentInfoId))
 						.build())
 				.build();
 	}

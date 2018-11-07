@@ -34,7 +34,7 @@ public abstract class AbstractSlettDokumentValidator {
 	protected void validerAtJournalpostDokumentInfoRelasjonKunErKnyttetTilEnJournalPost(
 			List<JournalpostDokumentInfoRelasjon> jpDokInfoRelasjoner,
 			Long dokumentInfoId) {
-		if (jpDokInfoRelasjoner.size() > 1) {
+		if (jpDokInfoRelasjoner.get(0).getDokumentInfo().isRelatedToMultipleJournalposts()) {
 			throw new ForMangeJournalpostDokumentInfoRelasjonerException(
 					String.format("%s kan ikke slette dokument som har relasjoner med flere journalposter. " +
 									"DokumentinfoId=%s har relasjoner med %s journalposter.",

@@ -26,8 +26,7 @@ public class Rjoark100IT extends AbstractSlettDokumentIT {
 	public void shouldDeleteDocumentInJoark() {
 		abacPermit();
 
-
-		Journalpost journalpost = joarkRepository.save(TestUtils.createJournalpostBuilder().build());
+		Journalpost journalpost = joarkRepository.save(TestUtils.createJournalpostBuilder().journalpostId(JOURNALPOST_ID).build());
 
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
@@ -43,7 +42,6 @@ public class Rjoark100IT extends AbstractSlettDokumentIT {
 
 		List<Begrensning> begrensninger = hentHoveddokumentBegrensningEtterUtførtKall(journalpost);
 		assertThat(begrensninger.size(), is(1));
-
 	}
 
 	@Test
@@ -52,7 +50,7 @@ public class Rjoark100IT extends AbstractSlettDokumentIT {
 		//Disse blir satt i controller, men er null i testet og settes derfor her også. Hvorfor blir de null?
 		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark100");
 
-		Journalpost journalpost1 = joarkRepository.save(TestUtils.createJournalpostBuilder().build());
+		Journalpost journalpost1 = joarkRepository.save(TestUtils.createJournalpostBuilder().journalpostId(JOURNALPOST_ID).build());
 
 		Long feilDokumentInfoId = journalpost1.findHoveddokumentDokumentInfoRelasjon()
 				.getDokumentInfo()
@@ -107,8 +105,8 @@ public class Rjoark100IT extends AbstractSlettDokumentIT {
 		abacPermit();
 		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark100");
 
-		Journalpost journalpost1 = joarkRepository.save(TestUtils.createJournalpostBuilder().build());
-		Journalpost journalpost2 = TestUtils.createJournalpostBuilder()
+		Journalpost journalpost1 = joarkRepository.save(TestUtils.createJournalpostBuilder().journalpostId(JOURNALPOST_ID).build());
+		Journalpost journalpost2 = TestUtils.createJournalpostBuilder().journalpostId(2L)
 				.dokumentInfoRelasjoner(
 						getJournalpostDokumentInfoRelasjonBuilder()
 								.opprettetKildeNavn(OPPRETTET_KILDE_NAVN)
@@ -141,7 +139,7 @@ public class Rjoark100IT extends AbstractSlettDokumentIT {
 		abacPermit();
 		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark100");
 
-		Journalpost journalpost = TestUtils.createJournalpostBuilder().build();
+		Journalpost journalpost = TestUtils.createJournalpostBuilder().journalpostId(JOURNALPOST_ID).build();
 		Begrensning jpBegrensning = Begrensning.builder().journalpost(journalpost).begrensningType(BegrensningTypeCode.UTILGJENGELIGGJORT).build();
 		jpBegrensning.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
 		journalpost.addBegrensning(jpBegrensning);

@@ -154,7 +154,7 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	private Set<SkannetInnhold> skannetInnholdListe = new HashSet<>();
 
 	@OneToMany(mappedBy = "dokumentInfo", orphanRemoval = true)
-	@Cascade({CascadeType.PERSIST, CascadeType.MERGE, CascadeType.SAVE_UPDATE, CascadeType.DETACH})
+	@Cascade({CascadeType.PERSIST, CascadeType.MERGE, CascadeType.SAVE_UPDATE, CascadeType.DELETE, CascadeType.DETACH})
 	@Builder.Default
 	private Set<Begrensning> begrensninger = new HashSet<>();
 
@@ -188,7 +188,6 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 		this.tilleggsopplysninger = new HashMap<>();
 		this.skannetInnholdListe = new HashSet<>();
 		this.begrensninger = new HashSet<>();
-
 	}
 
 	/**
@@ -270,7 +269,7 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 				if (begrensning.getBegrensningType().equals(begrensningTypeCode) && begrensning.getDokumentInfo().getDokumentInfoId().equals(dokumentInfoId) && begrensning.getJournalpost() == null) {
 					return true;
 				}
-				if (begrensning.getBegrensningType().equals(begrensningTypeCode) && begrensning.getJournalpost() != null && begrensning.getDokumentInfo().equals(dokumentInfoId) && begrensning.getJournalpost().getJournalpostId() == journalpostId) {
+				if (begrensning.getBegrensningType().equals(begrensningTypeCode) && begrensning.getJournalpost() != null && begrensning.getDokumentInfo().getDokumentInfoId().equals(dokumentInfoId) && begrensning.getJournalpost().getJournalpostId() == journalpostId) {
 					return true;
 				}
 			}

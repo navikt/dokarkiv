@@ -204,7 +204,7 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	@Cascade({CascadeType.PERSIST, CascadeType.MERGE, CascadeType.SAVE_UPDATE, CascadeType.DELETE, CascadeType.DETACH})
 	private final Set<Bruker> brukere = new HashSet<>();
 
-	@OneToMany(mappedBy = "journalpost")
+	@OneToMany(mappedBy = "journalpost", orphanRemoval = true)
 	@Cascade({CascadeType.PERSIST, CascadeType.MERGE, CascadeType.SAVE_UPDATE, CascadeType.DELETE, CascadeType.DETACH})
 	@Builder.Default
 	private Set<Begrensning> begrensninger = new HashSet<>();
@@ -252,6 +252,7 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	public Journalpost(Long journalpostId, long version) {
 		this.journalpostId = journalpostId;
 		setVersion(version);
+		this.begrensninger = new HashSet<>();
 	}
 
 	/**
@@ -410,9 +411,6 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	 */
 	public void addBegrensning(Begrensning begrensning) {
 		if (begrensning != null) {
-			if (begrensninger == null) {
-				begrensninger = new HashSet<>();
-			}
 			begrensninger.add(begrensning);
 		}
 	}

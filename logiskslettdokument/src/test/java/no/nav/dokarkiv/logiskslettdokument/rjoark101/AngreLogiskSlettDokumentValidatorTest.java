@@ -38,7 +38,7 @@ public class AngreLogiskSlettDokumentValidatorTest {
 	@Test
 	public void shouldValidateAngreLogiskSlettDokument() throws Exception {
 		LogiskSlettDokumentRequestTo requestTo = createRequest(JOURNALPOST_ID, DOKUMENTINFO_ID);
-		Journalpost journalpost = createJournalpost();
+		Journalpost journalpost = createJournalpost(DOKUMENTINFO_ID);
 		Begrensning begrensning = Begrensning.builder().journalpost(journalpost).begrensningType(BegrensningTypeCode.UTILGJENGELIGGJORT).build();
 		begrensning.setOpprettetKildeNavn("Opprettet kilde");
 		journalpost.addBegrensning(begrensning);
@@ -57,7 +57,7 @@ public class AngreLogiskSlettDokumentValidatorTest {
 				"Journalposten er ikke logisk slettet");
 
 		LogiskSlettDokumentRequestTo requestTo = createRequest(JOURNALPOST_ID, DOKUMENTINFO_ID);
-		Journalpost journalpost = createJournalpost();
+		Journalpost journalpost = createJournalpost(DOKUMENTINFO_ID);
 
 		List<JournalpostDokumentInfoRelasjon> journalpostDokumentInfoRelasjonList = new ArrayList<JournalpostDokumentInfoRelasjon>();
 		journalpostDokumentInfoRelasjonList.addAll(journalpost.getJournalpostDokumentInfoRelasjoner());
