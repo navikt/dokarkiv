@@ -26,10 +26,12 @@ import io.micrometer.core.instrument.Tags;
 import io.micrometer.core.instrument.Timer;
 import io.micrometer.core.lang.NonNullApi;
 import lombok.extern.slf4j.Slf4j;
+import no.nav.dokarkiv.core.MDCConstants;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.slf4j.MDC;
 
 import java.lang.reflect.Method;
 import java.util.function.Function;
@@ -154,10 +156,13 @@ public class DokTimedAspect {
 	}
 
     private void logException(Method method, Exception e) {
+		String mdcRequestId = MDC.get(MDCConstants.MDC_REQUEST_ID)
+				.equals("requestId") ? "" : MDC.get(MDCConstants.MDC_REQUEST_ID) + " ";
+
         if (isFunctionalException(method, e)) {
-            log.warn(e.getMessage(), e);
+			log.warn(mdcRequestId + e.getMessage(), e);
         } else {
-            log.error(e.getMessage(), e);
+			log.error(mdcRequestId + e.getMessage(), e);
         }
     }
 

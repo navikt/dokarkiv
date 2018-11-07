@@ -8,14 +8,12 @@ import static org.hamcrest.Matchers.not;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 
-import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.logiskslettdokument.AbstractSlettDokumentIT;
 import no.nav.dokarkiv.logiskslettdokument.common.SlettemeldingsFunksjoner;
 import no.nav.dokarkiv.logiskslettdokument.rjoark100.LogiskSlettDokumentResponse;
 import org.junit.Test;
-import org.slf4j.MDC;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -53,7 +51,6 @@ public class Rjoark101IT extends AbstractSlettDokumentIT {
 	@Test
 	public void shouldFailToAngreLogiskSlettDokumentBecauseDocumentWasNotDeleted() {
 		abacPermit();
-		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark101");
 
 		Journalpost journalpost = joarkRepository.save(createJournalpostBuilder().build());
 
@@ -72,8 +69,7 @@ public class Rjoark101IT extends AbstractSlettDokumentIT {
 		DokumentInfo dokumentInfoIkkeSlettet = hentDokumentInfoEtterUtførtKall(journalpost);
 
 		assertThat(responseEntity.getBody(), containsString(
-				String.format("%s kan ikke angre logisk sletting av dokument med dokumentInfoId=%s. Dokumentet er ikke logisk slettet",
-						MDC.get(MDCConstants.MDC_REQUEST_ID),
+				String.format("kan ikke angre logisk sletting av dokument med dokumentInfoId=%s. Dokumentet er ikke logisk slettet",
 						dokumentInfoIkkeSlettet.getDokumentInfoId())));
 		assertEquals(dokumentInfoIkkeSlettet.getSlettet(), false);
 	}
