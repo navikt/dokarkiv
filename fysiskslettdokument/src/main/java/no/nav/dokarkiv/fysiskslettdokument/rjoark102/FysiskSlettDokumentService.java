@@ -20,6 +20,7 @@ public class FysiskSlettDokumentService {
 	private final JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository;
 	private final JoarkDeleteRepository deleteRepository;
 	private final FysiskSlettDokumentValidator validator;
+	private final ArrayList<FysiskSlettDokumentResponse> responses;
 
 	@Inject
 	public FysiskSlettDokumentService(
@@ -29,21 +30,19 @@ public class FysiskSlettDokumentService {
 		this.journalpostDokumentInfoRelasjonRepository = journalpostDokumentInfoRelasjonRepository;
 		this.deleteRepository = deleteRepository;
 		this.validator = validator;
+		this.responses = new ArrayList<FysiskSlettDokumentResponse>();
 	}
 
-	public FysiskSlettDokumentResponse slettDokumentFysisk(FysiskSlettDokumentRequestTo requestTo) {
+	public ArrayList<FysiskSlettDokumentResponse> slettDokumentFysisk(FysiskSlettDokumentRequestTo requestTo) {
 		String hjemmelSomStyrerSletteMetode = requestTo.getHjemmel();
 
 		//TODO: Erstatt med HjemmelCode når det er avklart
 		switch (hjemmelSomStyrerSletteMetode) {
 			case "fysiskSlettEtVedleggKnyttetEnJP":
-				fysiskSlettEtVedleggKnyttetEnJP(requestTo);
+				responses.add(fysiskSlettEtVedleggKnyttetEnJP(requestTo));
 				break;
 			case "fysiskSlettEtHoveddokumentKnyttetEnJP":
-				fysiskSlettEtHoveddokumentKnyttetEnJP(requestTo);
-				break;
-			case "slettFilBeholdDokumentInfo":
-				slettFilBeholdDokumentInfo(requestTo.getDokumentInfoId());
+				responses.add(fysiskSlettEtHoveddokumentKnyttetEnJP(requestTo));
 				break;
 			default:
 				throw new UgyldigHjemmelException(
@@ -54,14 +53,10 @@ public class FysiskSlettDokumentService {
 								requestTo.getJournalpostId()));
 		}
 
-		//TODO: Avklare informasjon i response
-		return FysiskSlettDokumentResponse.builder()
-				.journalpostId(requestTo.getJournalpostId())
-				.dokumentInfoId(requestTo.getDokumentInfoId())
-				.build();
+		return responses;
 	}
 
-	private void fysiskSlettEtVedleggKnyttetEnJP(FysiskSlettDokumentRequestTo requestTo) {
+	private FysiskSlettDokumentResponse fysiskSlettEtVedleggKnyttetEnJP(FysiskSlettDokumentRequestTo requestTo) {
 		List<JournalpostDokumentInfoRelasjon> listFoundByDokumentInfoId =
 				journalpostDokumentInfoRelasjonRepository.findAllByDokumentInfoDokumentInfoId(requestTo.getDokumentInfoId())
 						.orElse(new ArrayList<>());
@@ -73,10 +68,12 @@ public class FysiskSlettDokumentService {
 		slettEtDokumentMedAllMetadata(vedleggRelasjonSomSkalSlettes.getDokumentInfo().getDokumentInfoId());
 		log.info("{} har utført fysisk sletting av vedlegg med journalpostId={}, dokumentInfoId={}",
 				MDC.get(MDCConstants.MDC_REQUEST_ID), requestTo.getJournalpostId(), requestTo.getDokumentInfoId());
+
+		return FysiskSlettDokumentResponseMapper.mapToFysiskSlettDokumentResponse(vedleggRelasjonSomSkalSlettes);
 	}
 
 
-	private void fysiskSlettEtHoveddokumentKnyttetEnJP(FysiskSlettDokumentRequestTo requestTo) {
+	private FysiskSlettDokumentResponse fysiskSlettEtHoveddokumentKnyttetEnJP(FysiskSlettDokumentRequestTo requestTo) {
 		List<JournalpostDokumentInfoRelasjon> listFoundByDokumnentInfoId =
 				journalpostDokumentInfoRelasjonRepository.findAllByDokumentInfoDokumentInfoId(requestTo.getDokumentInfoId())
 						.orElse(new ArrayList<>());
@@ -90,6 +87,8 @@ public class FysiskSlettDokumentService {
 		slettEnJournalpostOgEtDokumentMedAllMetadata(hoveddokumentRelasjon);
 		log.info("{} har utført fysisk sletting av hoveddokument med journalpostId={}, dokumentInfoId={}",
 				MDC.get(MDCConstants.MDC_REQUEST_ID), requestTo.getJournalpostId(), requestTo.getDokumentInfoId());
+
+		return FysiskSlettDokumentResponseMapper.mapToFysiskSlettDokumentResponse(hoveddokumentRelasjon);
 	}
 
 	private void slettEventuelleVedleggKnyttetHoveddokumentValidertForSletting(JournalpostDokumentInfoRelasjon hoveddokumentRelasjon) {
@@ -100,18 +99,18 @@ public class FysiskSlettDokumentService {
 
 		for (JournalpostDokumentInfoRelasjon relasjon : listFoundByJournalpostId) {
 			if (relasjon.isVedlegg()) {
-				opprettRequestTilFysiskSlettEtVedleggKnyttetEnJPFraEnVedleggsRelasjon(relasjon);
+				slettVedleggKnyttetHovedokumentSomSkalSlettes(relasjon);
 			}
 		}
 	}
 
-	private void opprettRequestTilFysiskSlettEtVedleggKnyttetEnJPFraEnVedleggsRelasjon(JournalpostDokumentInfoRelasjon vedleggRelasjon) {
+	private void slettVedleggKnyttetHovedokumentSomSkalSlettes(JournalpostDokumentInfoRelasjon vedleggRelasjon) {
 		FysiskSlettDokumentRequestTo requestTo = FysiskSlettDokumentRequestTo.builder()
 				.journalpostId(vedleggRelasjon.getJournalpost().getJournalpostId())
 				.dokumentInfoId(vedleggRelasjon.getDokumentInfo().getDokumentInfoId())
 				.hjemmel("fysiskSlettEtVedleggKnyttetEnJP")
 				.build();
-		fysiskSlettEtVedleggKnyttetEnJP(requestTo);
+		responses.add(fysiskSlettEtVedleggKnyttetEnJP(requestTo));
 	}
 
 	private void slettEtDokumentMedAllMetadata(Long dokumentInfoId) {
