@@ -6,14 +6,13 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 
 public class LogiskSlettDokumentResponseMapper {
 
-	public static LogiskSlettDokumentResponse mapToSlettDokumentResponse(Journalpost journalpost, DokumentInfo dokumentInfo) {
+	public static LogiskSlettDokumentResponse mapToSlettDokumentResponse(
+			Journalpost journalpost,
+			DokumentInfo dokumentInfo) {
 		return LogiskSlettDokumentResponse.builder()
 				.tittel(dokumentInfo.getTittel())
 				.dokumentInfoId(dokumentInfo.getDokumentInfoId())
-				.journalStatus(journalpost.getJournalstatus() == null ? null : journalpost.getJournalstatus().name())
 				.journalpostId(journalpost.getJournalpostId())
-				.journalpostType(journalpost.getJournalposttype() == null ? null : journalpost.getJournalposttype().name())
-				.tema(journalpost.getFagomrade() == null ? null : journalpost.getFagomrade().name())
 				.slettet(dokumentInfo.getSlettet())
 				.build();
 	}
