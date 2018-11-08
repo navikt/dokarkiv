@@ -44,6 +44,7 @@ public class TestDataUtils {
     public final static String TILLEGGSOPPLYSNING_VALUE = "123345";
     public final static String REFERANSEID = "refId";
     public final static String HOVEDDOKUMENT_TITTEL = "hoveddok_tittel";
+    public final static String VEDLEGG_TITTEL = "vedlegg_tittel";
     public final static String KILDE_NAVN = "testuser";
     public final static String OPPRETTET_AV_NAVN = "testuser";
     public final static String JOURNALPOST_INNHOLD = "journalpost tittel";
@@ -98,6 +99,27 @@ public class TestDataUtils {
                                                 .opprettetKildeNavn(KILDE_NAVN)
                                                 .dokumentstatus(DOKUMENT_STATUS)
                                                 .tittel(HOVEDDOKUMENT_TITTEL)
+                                                .tilleggsopplysninger(createTilleggsopplysninger())
+                                                .skannetInnhold(SkannetInnholdBuilder.getSkannetInnholdBuilder()
+                                                        .vedleggNr(1)
+                                                        .opprettetKildeNavn(KILDE_NAVN)
+                                                        .build())
+                                                .filDetaljerList(
+                                                        FilDetaljerBuilder.getFilDetaljerBuilder().filtype(FIL_TYPE)
+                                                                .filUuid(filUuid).variantFormat(HOVEDDOKUMENT_VARIANTFORMAT)
+                                                                .opprettetKildeNavn(KILDE_NAVN).build()).build()).build())
+                .dokumentInfoRelasjoner(
+                        JournalpostDokumentInfoRelasjonBuilder
+                                .getJournalpostDokumentInfoRelasjonBuilder()
+                                .tilknyttetAvNavn(OPPRETTET_AV_NAVN)
+                                .tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
+                                .opprettetKildeNavn(KILDE_NAVN)
+                                .dokumentInfo(
+                                        DokumentInfoBuilder
+                                                .getDokumentInfoBuilder()
+                                                .opprettetKildeNavn(KILDE_NAVN)
+                                                .dokumentstatus(DOKUMENT_STATUS)
+                                                .tittel(VEDLEGG_TITTEL)
                                                 .tilleggsopplysninger(createTilleggsopplysninger())
                                                 .skannetInnhold(SkannetInnholdBuilder.getSkannetInnholdBuilder()
                                                         .vedleggNr(1)

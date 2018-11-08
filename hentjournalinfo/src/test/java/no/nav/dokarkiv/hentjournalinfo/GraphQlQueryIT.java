@@ -10,6 +10,7 @@ import static no.nav.dokarkiv.hentjournalinfo.utils.TestAssertUtils.assertBruker
 import static no.nav.dokarkiv.hentjournalinfo.utils.TestAssertUtils.assertDokumentInfo;
 import static no.nav.dokarkiv.hentjournalinfo.utils.TestAssertUtils.assertJournalpost;
 import static no.nav.dokarkiv.hentjournalinfo.utils.TestAssertUtils.assertKnyttetDokumentList;
+import static no.nav.dokarkiv.hentjournalinfo.utils.TestAssertUtils.assertVedleggDokumentInfo;
 import static no.nav.dokarkiv.hentjournalinfo.utils.TestQueryUtils.createDokumentInfoRequest;
 import static no.nav.dokarkiv.hentjournalinfo.utils.TestQueryUtils.createFilRequest;
 import static no.nav.dokarkiv.hentjournalinfo.utils.TestQueryUtils.createJournalpostDokumentInfoRequest;
@@ -23,6 +24,7 @@ import static org.junit.Assert.assertThat;
 import no.nav.dokarkiv.core.CoreConfig;
 import no.nav.dokarkiv.core.domain.builder.DokumentFilBuilder;
 import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
+import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.entities.Begrensning;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
@@ -249,14 +251,32 @@ public class GraphQlQueryIT {
                 .getDokumentInfoId()), oidcHeaders());
 
         GraphQlResponse response = testRestTemplate.postForObject("/rest/graphql", request, GraphQlResponse.class);
-//        assertThat(response.getErrors().size(), is(1));
-//        assertThat(response.getErrors().get(0).getMessage(), containsString("DokumentInfo ikke funnet. dokumentInfoId="));
-//        assertThat(response.getErrors().get(0).getException(), is(DokumentInfoIkkeFunnetException.class.getSimpleName()));
-//        assertThat(response.getErrors().get(0).getExceptionType(), is(ExceptionType.FUNCTIONAL));
         DokumentInfo dokumentInfo = response.getDataWrapper().getDokumentInfo();
         assertDokumentInfo(dokumentInfo);
         assertThat(response.getDataWrapper().getDokumentInfo().getKnyttetJournalpostList().get(0).getSlettet(), is(Boolean.TRUE));
     }
+
+    @Test
+    public void shouldReturnDokumentWhenVedleggIsDeleted() throws Exception {
+        abacPermit();
+        Journalpost journalpost = TestDataUtils.createJournalpostBuilder(FIL_UUID).build();
+        no.nav.dokarkiv.core.domain.entities.DokumentInfo vedlegg = journalpost.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG).iterator().next().getDokumentInfo();
+        Begrensning begrensning = Begrensning.builder().dokumentInfo(vedlegg).begrensningType(BegrensningTypeCode.UTILGJENGELIGGJORT).build();
+        begrensning.setOpprettetKildeNavn("Opprettet av");
+        journalpost.getDokumentInfoFromJpDokInfoRelasjoner(1).addBegrensning(begrensning);
+        joarkRepository.save(journalpost);
+        TestTransaction.flagForCommit();
+        TestTransaction.end();
+
+        HttpEntity request = new HttpEntity<>(createDokumentInfoRequest(vedlegg
+                .getDokumentInfoId()), oidcHeaders());
+
+        GraphQlResponse response = testRestTemplate.postForObject("/rest/graphql", request, GraphQlResponse.class);
+        DokumentInfo dokumentInfo = response.getDataWrapper().getDokumentInfo();
+        assertVedleggDokumentInfo(dokumentInfo);
+        assertThat(response.getDataWrapper().getDokumentInfo().getSlettet(), is(Boolean.TRUE));
+    }
+
 
     @Test
     public void shouldReturnDokumentNotFoundError() throws Exception {

@@ -2,6 +2,7 @@ package no.nav.dokarkiv.hentjournalinfo.utils;
 
 import static no.nav.dokarkiv.core.datautil.BrukerTestDataProvider.BRUKER_ID;
 import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.HOVEDDOKUMENT;
+import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.VEDLEGG;
 import static no.nav.dokarkiv.hentjournalinfo.utils.TestDataUtils.DOKUMENT_STATUS;
 import static no.nav.dokarkiv.hentjournalinfo.utils.TestDataUtils.FIL_TYPE;
 import static no.nav.dokarkiv.hentjournalinfo.utils.TestDataUtils.HOVEDDOKUMENT_TITTEL;
@@ -10,6 +11,7 @@ import static no.nav.dokarkiv.hentjournalinfo.utils.TestDataUtils.JOURNALPOST_IN
 import static no.nav.dokarkiv.hentjournalinfo.utils.TestDataUtils.TEMA;
 import static no.nav.dokarkiv.hentjournalinfo.utils.TestDataUtils.TILLEGGSOPPLYSNING_KEY;
 import static no.nav.dokarkiv.hentjournalinfo.utils.TestDataUtils.TILLEGGSOPPLYSNING_VALUE;
+import static no.nav.dokarkiv.hentjournalinfo.utils.TestDataUtils.VEDLEGG_TITTEL;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
@@ -53,19 +55,51 @@ public class TestAssertUtils {
         assertBrukere(journalpost.getBrukere());
     }
 
+    public static void assertVedleggDokumentInfo(DokumentInfo dokumentInfo) {
+        assertThat(dokumentInfo.getTittel(), is(VEDLEGG_TITTEL));
+        assertThat(dokumentInfo.getDokumentStatus(), is(DokumentStatus.mapFromDokumentStatusCode(DOKUMENT_STATUS)));
+        assertThat(dokumentInfo.getTilleggsopplysninger().get(TILLEGGSOPPLYSNING_KEY), is(TILLEGGSOPPLYSNING_VALUE));
+        assertThat(dokumentInfo.getKnyttetJournalpostList()
+                .get(0)
+                .getTilknyttetJournalpostSom(), is(TilknyttetJournalpostSom.mapTilknyttetJournalpostSomCode(VEDLEGG)));
+        assertThat(dokumentInfo.getKnyttetJournalpostList()
+                .get(0)
+                .getJournalpost()
+                .getTema(), is(Tema.mapFromFagomradeCode(TEMA)));
+        assertThat(dokumentInfo.getFilDetaljerList()
+                .get(0)
+                .getVariantFormat(), is(VariantFormat.mapFromVariantFormatCode(HOVEDDOKUMENT_VARIANTFORMAT)));
+        assertThat(dokumentInfo.getFilDetaljerList().get(0).getFiltype(), is(FilType.mapFromFilTypeCode(FIL_TYPE)));
+
+        Journalpost journalpost = dokumentInfo.getOriginalJournalpost();
+        assertJournalpost(journalpost);
+        assertBrukere(journalpost.getBrukere());
+    }
+
     public static void assertBrukere(List<Journalpost.Bruker> bruker) {
         assertThat(bruker.get(0).getBrukerId(), is(BRUKER_ID));
         assertThat(bruker.get(0).getBrukerType(), is(BrukerType.PERSON));
     }
 
     public static void assertKnyttetDokumentList(List<JournalpostDokumentRelasjon> dokumentRelasjons) {
-        assertThat(dokumentRelasjons.get(0)
-                .getTilknyttetJournalpostSom(), is(TilknyttetJournalpostSom.mapTilknyttetJournalpostSomCode(HOVEDDOKUMENT)));
-        assertThat(dokumentRelasjons.get(0).getDokumentInfo().getTittel(), is(HOVEDDOKUMENT_TITTEL));
-        assertThat(dokumentRelasjons
-                .get(0)
-                .getDokumentInfo()
-                .getDokumentStatus(), is(DokumentStatus.mapFromDokumentStatusCode(DOKUMENT_STATUS)));
+        for (JournalpostDokumentRelasjon dokumentRelasjon:dokumentRelasjons) {
+            if (dokumentRelasjon.getTilknyttetJournalpostSom().equals(TilknyttetJournalpostSom.HOVEDDOKUMENT)) {
+                assertThat(dokumentRelasjon
+                        .getTilknyttetJournalpostSom(), is(TilknyttetJournalpostSom.mapTilknyttetJournalpostSomCode(HOVEDDOKUMENT)));
+                assertThat(dokumentRelasjon.getDokumentInfo().getTittel(), is(HOVEDDOKUMENT_TITTEL));
+                assertThat(dokumentRelasjon
+                        .getDokumentInfo()
+                        .getDokumentStatus(), is(DokumentStatus.mapFromDokumentStatusCode(DOKUMENT_STATUS)));
+            } else {
+                assertThat(dokumentRelasjon
+                        .getTilknyttetJournalpostSom(), is(TilknyttetJournalpostSom.mapTilknyttetJournalpostSomCode(VEDLEGG)));
+                assertThat(dokumentRelasjon.getDokumentInfo().getTittel(), is(VEDLEGG_TITTEL));
+                assertThat(dokumentRelasjon
+                        .getDokumentInfo()
+                        .getDokumentStatus(), is(DokumentStatus.mapFromDokumentStatusCode(DOKUMENT_STATUS)));
+
+            }
+        }
     }
 
     public static void assertJournalpost(Journalpost journalpost) {
