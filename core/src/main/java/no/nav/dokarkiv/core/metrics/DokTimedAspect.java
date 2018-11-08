@@ -26,10 +26,12 @@ import io.micrometer.core.instrument.Tags;
 import io.micrometer.core.instrument.Timer;
 import io.micrometer.core.lang.NonNullApi;
 import lombok.extern.slf4j.Slf4j;
+import no.nav.dokarkiv.core.MDCConstants;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.slf4j.MDC;
 
 import java.lang.reflect.Method;
 import java.util.function.Function;
@@ -77,7 +79,7 @@ public class DokTimedAspect {
 		try {
 			return pjp.proceed();
 		} catch (Exception e) {
-            logException(method, e);
+			logException(method, e);
 
 			Counter.builder(timed.value() + "_exception")
 					.tags("error_type", isFunctionalException(method, e) ? "functional" : "technical")
@@ -102,8 +104,8 @@ public class DokTimedAspect {
 	public Object restMetrics(ProceedingJoinPoint pjp) throws Throwable {
 		Method method = ((MethodSignature) pjp.getSignature()).getMethod();
 
-        RestMetrics restMetrics = method.getAnnotation(RestMetrics.class);
-        if (restMetrics.value().isEmpty()) {
+		RestMetrics restMetrics = method.getAnnotation(RestMetrics.class);
+		if (restMetrics.value().isEmpty()) {
 			return pjp.proceed();
 		}
 
@@ -125,12 +127,12 @@ public class DokTimedAspect {
 			throw e;
 
 		} finally {
-            sample.stop(Timer.builder(restMetrics.value())
-                    .description(restMetrics.description().isEmpty() ? null : restMetrics.description())
-                    .tags(restMetrics.extraTags())
+			sample.stop(Timer.builder(restMetrics.value())
+					.description(restMetrics.description().isEmpty() ? null : restMetrics.description())
+					.tags(restMetrics.extraTags())
 					.tags(tagsBasedOnJoinpoint.apply(pjp))
-                    .publishPercentileHistogram(restMetrics.histogram())
-                    .publishPercentiles(restMetrics.percentiles().length == 0 ? null : restMetrics.percentiles())
+					.publishPercentileHistogram(restMetrics.histogram())
+					.publishPercentiles(restMetrics.percentiles().length == 0 ? null : restMetrics.percentiles())
 					.register(registry));
 		}
 	}
@@ -150,16 +152,18 @@ public class DokTimedAspect {
 	}
 
 	private boolean isFunctionalException(Method method, Exception e) {
-        return asList(method.getExceptionTypes()).contains(e.getClass()) || MetricUtils.isFunctionalException(e);
+		return asList(method.getExceptionTypes()).contains(e.getClass()) || MetricUtils.isFunctionalException(e);
 	}
 
-    private void logException(Method method, Exception e) {
-        if (isFunctionalException(method, e)) {
-            log.warn(e.getMessage(), e);
-        } else {
-            log.error(e.getMessage(), e);
-        }
-    }
+	private void logException(Method method, Exception e) {
+		String mdcRequestId = (MDC.get(MDCConstants.MDC_REQUEST_ID) == null) ? "" : (MDC.get(MDCConstants.MDC_REQUEST_ID) + " ");
+
+		if (isFunctionalException(method, e)) {
+			log.warn(mdcRequestId + e.getMessage(), e);
+		} else {
+			log.error(mdcRequestId + e.getMessage(), e);
+		}
+	}
 
 
 	private enum MetricsType {

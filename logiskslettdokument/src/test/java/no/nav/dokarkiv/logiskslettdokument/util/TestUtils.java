@@ -40,7 +40,6 @@ public class TestUtils {
 	public static final Long DOKUMENTINFO_ID = 1L;
 
 
-
 	public static JournalpostBuilder createJournalpostBuilder() {
 		return JournalpostBuilder.getJournalpostBuilder()
 				.avsenderMottakerId(AVSENDER_MOTTAKER_ID)
