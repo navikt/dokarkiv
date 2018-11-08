@@ -22,6 +22,8 @@ import static org.junit.Assert.assertThat;
 
 import no.nav.dokarkiv.core.CoreConfig;
 import no.nav.dokarkiv.core.domain.builder.DokumentFilBuilder;
+import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
+import no.nav.dokarkiv.core.domain.entities.Begrensning;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.DokumentInfoIkkeFunnetException;
@@ -232,10 +234,12 @@ public class GraphQlQueryIT {
     }
 
     @Test
-    public void shouldReturnDokumentWhenDokumentIsDeleted() throws Exception {
+    public void shouldReturnDokumentWhenHoveddokumentIsDeleted() throws Exception {
         abacPermit();
         Journalpost journalpost = TestDataUtils.createJournalpostBuilder(FIL_UUID).build();
-        journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().setSlettet(true);
+        Begrensning begrensning = Begrensning.builder().journalpost(journalpost).begrensningType(BegrensningTypeCode.UTILGJENGELIGGJORT).build();
+        begrensning.setOpprettetKildeNavn("Opprettet av");
+        journalpost.addBegrensning(begrensning);
         joarkRepository.save(journalpost);
         TestTransaction.flagForCommit();
         TestTransaction.end();
@@ -251,7 +255,7 @@ public class GraphQlQueryIT {
 //        assertThat(response.getErrors().get(0).getExceptionType(), is(ExceptionType.FUNCTIONAL));
         DokumentInfo dokumentInfo = response.getDataWrapper().getDokumentInfo();
         assertDokumentInfo(dokumentInfo);
-        assertThat(dokumentInfo.getSlettet(), is(Boolean.TRUE));
+        assertThat(response.getDataWrapper().getDokumentInfo().getKnyttetJournalpostList().get(0).getSlettet(), is(Boolean.TRUE));
     }
 
     @Test

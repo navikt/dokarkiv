@@ -269,7 +269,7 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 				if (begrensning.getBegrensningType().equals(begrensningTypeCode) && begrensning.getDokumentInfo().getDokumentInfoId().equals(dokumentInfoId) && begrensning.getJournalpost() == null) {
 					return true;
 				}
-				if (begrensning.getBegrensningType().equals(begrensningTypeCode) && begrensning.getJournalpost() != null && begrensning.getDokumentInfo().getDokumentInfoId().equals(dokumentInfoId) && begrensning.getJournalpost().getJournalpostId() == journalpostId) {
+				if (journalpostId != null && begrensning.getBegrensningType().equals(begrensningTypeCode) && begrensning.getJournalpost() != null && begrensning.getDokumentInfo().getDokumentInfoId().equals(dokumentInfoId) && begrensning.getJournalpost().getJournalpostId() == journalpostId) {
 					return true;
 				}
 			}

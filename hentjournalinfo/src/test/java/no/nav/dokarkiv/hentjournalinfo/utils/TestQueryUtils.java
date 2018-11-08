@@ -21,6 +21,7 @@ public class TestQueryUtils {
                 "    journalpostType" +
                 "    tema" +
                 "    tittel" +
+                "    slettet" +
                 "    brukere {" +
                 "      brukerId" +
                 "      brukerType" +
@@ -29,6 +30,7 @@ public class TestQueryUtils {
                 "      dokumentInfoId" +
                 "      journalpostId" +
                 "      tilknyttetJournalpostSom" +
+                "      slettet" +
                 "      dokumentInfo {" +
                 "        dokumentInfoId" +
                 "        dokumentStatus" +
@@ -57,6 +59,7 @@ public class TestQueryUtils {
                 "        tema" +
                 "      }" +
                 "      journalpostId" +
+                "      slettet" +
                 "      tilknyttetJournalpostSom" +
                 "    }" +
                 "    originalJournalpost {" +
@@ -65,6 +68,7 @@ public class TestQueryUtils {
                 "      journalpostType" +
                 "      tema" +
                 "      tittel" +
+                "      slettet" +
                 "      brukere {" +
                 "        brukerId" +
                 "        brukerType" +

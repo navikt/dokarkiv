@@ -1,7 +1,9 @@
 package no.nav.dokarkiv.hentjournalinfo.gjoark001;
 
+import static no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode.UTILGJENGELIGGJORT;
 import static no.nav.dokarkiv.hentjournalinfo.gjoark002.JournalpostQueryMapper.mapJournalpost;
 
+import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.hentjournalinfo.dto.DokumentInfo;
@@ -26,7 +28,7 @@ public class DokumentInfoQueryMapper {
                 .dokumentInfoId(dokumentInfo.getDokumentInfoId())
                 .dokumentStatus(DokumentStatus.mapFromDokumentStatusCode(dokumentInfo.getDokumentstatus()))
                 .tittel(dokumentInfo.getTittel())
-                .slettet(Optional.ofNullable(dokumentInfo.getSlettet()).orElse(Boolean.FALSE))
+                .slettet(dokumentInfo.isBegrenset(null, UTILGJENGELIGGJORT))
                 .build();
     }
 
@@ -34,6 +36,7 @@ public class DokumentInfoQueryMapper {
         return journalpostDokumentInfoRelasjonSet.stream().map(relasjon -> JournalpostDokumentRelasjon.builder()
                 .tilknyttetJournalpostSom(TilknyttetJournalpostSom.mapTilknyttetJournalpostSomCode(relasjon.getTilknyttetJournalpostSom()))
                 .journalpostId(relasjon.getJournalpost().getJournalpostId())
+                .slettet(relasjon.getJournalpost().isBegrenset(UTILGJENGELIGGJORT) || relasjon.getDokumentInfo().isBegrenset(relasjon.getJournalpost().getJournalpostId(), UTILGJENGELIGGJORT))
                 .journalpost(mapJournalpost(relasjon.getJournalpost())) //Like greit å bare mappe journalpost når den må hentes opp fra DB for å hente jpId (ref: LazyFetching)
                 .dokumentInfoId(dokumentInfoId).build()).collect(Collectors.toList());
     }

@@ -64,11 +64,6 @@ public class DokumentInfoQuery implements Query {
         //Om dokumentet eksiterer sjekkes i metoden over og kan derfor være sikker på dokumentInfo finnes i neste step
         no.nav.dokarkiv.core.domain.entities.DokumentInfo dokumentInfo = dokumentinfoRepository.findById(dokumentInfoId).get();
 
-//        if (isTrue(dokumentInfo.getSlettet())) {
-//            //Dette skal etterhvert sjekkes i ABAC istedenfor slik at ABAC returnerer deny hvis person ikke har tilgang til å se slettede dokumenter
-//            throw new DokumentInfoIkkeFunnetException(format("DokumentInfo ikke funnet. dokumentInfoId=%s", dokumentInfo.getDokumentInfoId()));
-//        }
-
         return mapDokumentInfo(dokumentInfo);
     }
 
