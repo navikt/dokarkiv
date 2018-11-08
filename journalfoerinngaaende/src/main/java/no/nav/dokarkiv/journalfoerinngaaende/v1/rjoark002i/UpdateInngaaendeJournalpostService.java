@@ -64,12 +64,12 @@ public class UpdateInngaaendeJournalpostService {
 		//TODO: hva blir korrekt behandling av manglende journalfEnhet i request (ved endeligJF)
 
 		if (putJournalpostRequest.isForsoekEndeligJF()) {
-			if (isEmpty(putJournalpostRequest.getJournalfEnhet())){
+			if (isEmpty(putJournalpostRequest.getJournalfEnhet())) {
 				throw new KunneIkkeEndeligJournalfoereException(String.format("Kunne ikke endelig journalføre journalpost med journalpostId=%s. Mangler journalfEnhet", journalpostId));
 			}
 			Mangler mangler = createMangler(journalpost);
 			if (containsManglerForEndeligJournalfoering(mangler)) {
-				response.setMangler(createMangler(journalpost));
+				response.setMangler(mangler);
 			} else {
 				// ferdigstill journalpost
 				journalpost.setJournalstatus(JournalStatusCode.J);
@@ -92,7 +92,7 @@ public class UpdateInngaaendeJournalpostService {
 						new Dokument()
 								.withDokumentId(dokumentInfo.getId().toString())
 								.withTittel(isEmpty(dokumentInfo.getTittel()) ? MANGLER : MANGLER_IKKE)
-								.withDokumentKategori(isEmpty(dokumentInfo.getKategori().name()) ? MANGLER : MANGLER_IKKE)
+								.withDokumentKategori(dokumentInfo.getKategori() == null ? MANGLER : MANGLER_IKKE)
 				);
 			}
 		});
@@ -140,10 +140,8 @@ public class UpdateInngaaendeJournalpostService {
 	}
 
 	private Status decideIfArkivSakMangler(Saksrelasjon saksrelasjon) {
-		if (saksrelasjon != null) {
-			if (isNotEmpty(saksrelasjon.getSakId()) || saksrelasjon.getFagsystem() != null) {
-				return MANGLER_IKKE;
-			}
+		if (saksrelasjon != null && isNotEmpty(saksrelasjon.getSakId()) && saksrelasjon.getFagsystem() != null) {
+			return MANGLER_IKKE;
 		}
 		return MANGLER;
 	}

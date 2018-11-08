@@ -51,6 +51,19 @@ public class PutInngaaendeJournalpostMapper {
 
 		updateSaksrelasjonFields(journalpost, putJournalpostRequest);
 
+		boolean brukerEndret = updateBrukerFraRequest(journalpost, putJournalpostRequest);
+		if (brukerEndret) {
+			endret = true;
+		}
+
+		if (endret) {
+			journalpost.setEndretAvNavn(MDC.get(MDC_USER_ID));
+			journalpost.setEndretKildeNavn(MDC.get(MDC_CONSUMER_ID));
+		}
+	}
+
+	private boolean updateBrukerFraRequest(Journalpost journalpost, PutJournalpostRequest putJournalpostRequest) {
+		boolean endret = false;
 		Set<Bruker> brukere = journalpost.getBrukere();
 		if (brukere.isEmpty() || brukere.size() > 1) {
 			brukerRepository.deleteBrukerByJournalpostId(journalpost.getJournalpostId().toString());
@@ -76,11 +89,7 @@ public class PutInngaaendeJournalpostMapper {
 				endret = true;
 			}
 		}
-
-		if (endret) {
-			journalpost.setEndretAvNavn(MDC.get(MDC_USER_ID));
-			journalpost.setEndretKildeNavn(MDC.get(MDC_CONSUMER_ID));
-		}
+		return endret;
 	}
 
 	private void updateSaksrelasjonFields(Journalpost journalpost, PutJournalpostRequest request) {
