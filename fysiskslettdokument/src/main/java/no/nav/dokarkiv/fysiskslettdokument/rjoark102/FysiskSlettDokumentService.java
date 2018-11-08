@@ -42,9 +42,6 @@ public class FysiskSlettDokumentService {
 			case "fysiskSlettEtHoveddokumentKnyttetEnJP":
 				fysiskSlettEtHoveddokumentKnyttetEnJP(requestTo);
 				break;
-			case "slettFilBeholdDokumentInfo":
-				slettFilBeholdDokumentInfo(requestTo.getDokumentInfoId());
-				break;
 			default:
 				throw new UgyldigHjemmelException(
 						String.format("%s kan ikke slette dokument pga. ugyldig hjemmel. hjemmel=%s, dokumentInfoId=%s, journalpostId=%s",
