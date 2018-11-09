@@ -258,31 +258,26 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
         }
     }
 
-    /**
-     * Checks if DokumentInfo is Begrenset, either alone, or in relationto a paricular journalpost.
-     *
-     * @param journalpostId The journalpostId.
-     * @param begrensningTypeCode The begrensningTypeCode.
-     * @return boolean.
-     */
-    public Boolean isBegrenset(final Long journalpostId, final BegrensningTypeCode begrensningTypeCode) {
-        if (begrensninger != null) {
-            for (Begrensning begrensning : begrensninger) {
-                if (begrensning.getBegrensningType().equals(begrensningTypeCode) && begrensning.getDokumentInfo()
-                        .getDokumentInfoId()
-                        .equals(dokumentInfoId) && begrensning.getJournalpost() == null) {
-                    return true;
-                }
-                if (begrensning.getBegrensningType()
-                        .equals(begrensningTypeCode) && begrensning.getJournalpost() != null && begrensning.getDokumentInfo()
-                        .getDokumentInfoId()
-                        .equals(dokumentInfoId) && begrensning.getJournalpost().getJournalpostId() == journalpostId) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
+	/**
+	 * Checks if DokumentInfo is Begrenset, either alone, or in relationto a paricular journalpost.
+	 *
+	 * @param journalpostId       The journalpostId.
+	 * @param begrensningTypeCode The begrensningTypeCode.
+	 * @return boolean.
+	 */
+	public Boolean isBegrenset(final Long journalpostId, final BegrensningTypeCode begrensningTypeCode) {
+		if (begrensninger != null) {
+			for (Begrensning begrensning : begrensninger) {
+				if (begrensning.getBegrensningType().equals(begrensningTypeCode) && begrensning.getDokumentInfo().getDokumentInfoId().equals(dokumentInfoId) && begrensning.getJournalpost() == null) {
+					return true;
+				}
+				if (begrensning.getBegrensningType().equals(begrensningTypeCode) && begrensning.getJournalpost() != null && begrensning.getDokumentInfo().getDokumentInfoId().equals(dokumentInfoId) && begrensning.getJournalpost().getJournalpostId().equals(journalpostId)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
 
     /**
      * Getter for the begrensninger property.
@@ -320,40 +315,32 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
         begrensninger.clear();
     }
 
-    /**
-     * Get Begrensning by dokumentInfo and begreningType, no relation to journalpost
-     *
-     * @param dokumentInfo
-     * @param begrensningType
-     * @return Begrensning
-     */
-    public Begrensning getBegrensningnerByDokumentInfoIdOnly(DokumentInfo dokumentInfo, BegrensningTypeCode begrensningType) {
-        for (Begrensning begrensning : dokumentInfo.getBegrensninger()) {
-            if (begrensningType.equals(begrensning.getBegrensningType()) && begrensning.getDokumentInfo()
-                    .equals(dokumentInfo) && begrensning.getJournalpost() == null) {
-                return begrensning;
-            }
-        }
-        return null;
-    }
+	/**
+	 * Get Begrensning by dokumentInfo and begreningType, no relation to journalpost
+	 *
+	 * @param begrensningType
+	 * @return Begrensning
+	 */
+	public Begrensning getBegrensningnerByDokumentInfoIdOnly(BegrensningTypeCode begrensningType) {
+		return begrensninger.stream().filter(
+				begrensning -> begrensningType.equals(begrensning.getBegrensningType()) && begrensning.getJournalpost() == null)
+				.findAny()
+				.orElse(null);
+	}
 
-    /**
-     * Get Begrensning by dokumentInfo and begreningType, no relation to journalpost
-     *
-     * @param dokumentInfo
-     * @param begrensningType
-     * @param journalpost
-     * @return Begrensning
-     */
-    public Begrensning getBegrensningnerByDokumentInfoAndJournalpost(DokumentInfo dokumentInfo, BegrensningTypeCode begrensningType, Journalpost journalpost) {
-        for (Begrensning begrensning : dokumentInfo.getBegrensninger()) {
-            if (begrensningType.equals(begrensning.getBegrensningType()) && begrensning.getDokumentInfo()
-                    .equals(dokumentInfo) && journalpost.equals(begrensning.getJournalpost())) {
-                return begrensning;
-            }
-        }
-        return null;
-    }
+	/**
+	 * Get Begrensning by dokumentInfo and begreningType, no relation to journalpost
+	 *
+	 * @param begrensningType
+	 * @param journalpost
+	 * @return Begrensning
+	 */
+	public Begrensning getBegrensningnerByDokumentInfoAndJournalpost(BegrensningTypeCode begrensningType, Journalpost journalpost) {
+		return begrensninger.stream().filter(
+				begrensning -> begrensningType.equals(begrensning.getBegrensningType()) && journalpost.equals(begrensning.getJournalpost()))
+				.findAny()
+				.orElse(null);
+	}
 
 
     /**
