@@ -19,6 +19,7 @@ import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.journalfoerinngaaende.v1.AbstractJournalfoerInngaaendeV1Itest;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -180,10 +181,13 @@ public class Rjoark002iIT extends AbstractJournalfoerInngaaendeV1Itest {
 	public void shouldReturnManglerVedForsoektEndeligJF() throws IOException {
 		abacPermit();
 
+		// request mangler "tittel" og "avsenderNavn"
 		PutJournalpostRequest request = mapper.readValue(classpathToString("__files/put_journalpost/request_med_mangler.json"), PutJournalpostRequest.class);
 
+		// journalpost mangler "avsenderMottaker" og "innhold"
 		Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
-				.endretAvNavn("saksbehandlersen")
+				.endretAvNavn(null)
+				.avsenderMottaker(null)
 				.innhold(null));
 		String journalpostId = journalpost.getJournalpostId().toString();
 
@@ -196,6 +200,7 @@ public class Rjoark002iIT extends AbstractJournalfoerInngaaendeV1Itest {
 		assertThat(responseEntity.getBody().getJournalpostId(), is(journalpostId));
 		assertThat(responseEntity.getBody().getMangler(), is(notNullValue()));
 		assertThat(responseEntity.getBody().getMangler().getTittel(), is(Status.MANGLER));
+		assertThat(responseEntity.getBody().getMangler().getAvsenderNavn(), is(Status.MANGLER));
 		assertThat(responseEntity.getBody().isHarEndeligJF(), is(false));
 	}
 
@@ -232,8 +237,8 @@ public class Rjoark002iIT extends AbstractJournalfoerInngaaendeV1Itest {
 		PutJournalpostRequest request = mapper.readValue(classpathToString("__files/put_journalpost/request_ikke_endeligJF.json"), PutJournalpostRequest.class);
 
 		Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
-				.endretAvNavn("saksbehandlersen"));
-		String journalpostId = journalpost.getJournalpostId().toString();
+				.endretAvNavn(null));
+		Long journalpostId = journalpost.getJournalpostId();
 
 		HttpEntity<PutJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
 
@@ -241,9 +246,54 @@ public class Rjoark002iIT extends AbstractJournalfoerInngaaendeV1Itest {
 				JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER + journalpostId, HttpMethod.PUT, requestHttpEntity, PutJournalpostResponse.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
-		assertThat(responseEntity.getBody().getJournalpostId(), is(journalpostId));
+		assertThat(responseEntity.getBody().getJournalpostId(), is(journalpostId.toString()));
 		assertThat(responseEntity.getBody().getMangler(), is(nullValue()));
 		assertThat(responseEntity.getBody().isHarEndeligJF(), is(false));
+
+		TestTransaction.start();
+		Journalpost oppdatertJP = joarkRepository.findById(journalpostId).get();
+
+		// assert at sporingsinfo er oppdatert
+		assertThat(oppdatertJP.getEndretAvNavn(), is(PERSON_USER_ID));
+		assertThat(oppdatertJP.getEndretKildeNavn(), is(SERVICE_USER_ID));
+		assertThat(oppdatertJP.getChangeStamp().getUpdatedBy(), is(PERSON_USER_ID));
+
+		TestTransaction.end();
+	}
+
+	/**
+	 * HVIS forsoekEndeligJF == TRUE, men journalfEnhet == null, returner ???
+	 */
+	@Test
+	@Ignore("TODO: Endre når oppførsel er avklart.")
+	public void shouldReturnOKWhenEndeligJFAndJournalfEnhetMangler() throws IOException {
+		abacPermit();
+
+		PutJournalpostRequest request = mapper.readValue(classpathToString("__files/put_journalpost/request_mangler_journalfEnhet.json"), PutJournalpostRequest.class);
+
+		Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
+				.endretAvNavn(null));
+		Long journalpostId = journalpost.getJournalpostId();
+
+		HttpEntity<PutJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
+
+		ResponseEntity<PutJournalpostResponse> responseEntity = restTemplate.exchange(
+				JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER + journalpostId, HttpMethod.PUT, requestHttpEntity, PutJournalpostResponse.class);
+
+		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
+		assertThat(responseEntity.getBody().getJournalpostId(), is(journalpostId.toString()));
+		assertThat(responseEntity.getBody().getMangler(), is(nullValue()));
+		assertThat(responseEntity.getBody().isHarEndeligJF(), is(false));
+
+		TestTransaction.start();
+		Journalpost oppdatertJP = joarkRepository.findById(journalpostId).get();
+
+		// assert at sporingsinfo er oppdatert
+		assertThat(oppdatertJP.getEndretAvNavn(), is(PERSON_USER_ID));
+		assertThat(oppdatertJP.getEndretKildeNavn(), is(SERVICE_USER_ID));
+		assertThat(oppdatertJP.getChangeStamp().getUpdatedBy(), is(PERSON_USER_ID));
+		assertThat(oppdatertJP.getJournalForendeEnhetId(), is(notNullValue()));
+		TestTransaction.end();
 	}
 
 	/**
