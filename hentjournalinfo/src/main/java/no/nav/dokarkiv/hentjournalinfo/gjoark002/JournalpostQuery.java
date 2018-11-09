@@ -54,7 +54,7 @@ public class JournalpostQuery implements Query {
             actions = @Abac.Attr(key = ACTION_ID, value = READ_ACTION))
     public Journalpost journalpost(@GraphQLArgument(name = "journalpostId") @GraphQLNonNull Long journalpostId) {
         log.info(format("GraphQL har mottatt %s query med journalpostId=%s", JOURNALPOST, journalpostId));
-        abacSecurityService.assertAccessToJournalpost(journalpostId.toString());
+        abacSecurityService.assertAccessToJournalpostNotBegrenset(journalpostId.toString());
         no.nav.dokarkiv.core.domain.entities.Journalpost journalpost = joarkRepository.findById(journalpostId).get();
 
         return mapJournalpost(journalpost);
@@ -76,7 +76,7 @@ public class JournalpostQuery implements Query {
     public List<JournalpostDokumentRelasjon> knyttetDokumentList(@GraphQLContext Journalpost journalpost) {
         Set<JournalpostDokumentInfoRelasjon> journalpostDokumentInfoRelasjons = joarkRepository.findById(journalpost.getJournalpostId())
                 .orElse(new no.nav.dokarkiv.core.domain.entities.Journalpost())
-                .getJournalpostDokumentInfoRelasjoner();
+                .getJournalpostDokumentInfoRelasjonerAlsoBegrenset();
 
         return mapKnyttetDokumentList(journalpostDokumentInfoRelasjons, journalpost.getJournalpostId());
     }

@@ -48,7 +48,7 @@ public class LogiskSlettDokumentValidatorTest {
 		Journalpost journalpost = createJournalpost(DOKUMENTINFO_ID);
 
 		List<JournalpostDokumentInfoRelasjon> jpDokInfoRelasjoner = new ArrayList<JournalpostDokumentInfoRelasjon>();
-		jpDokInfoRelasjoner.addAll(journalpost.getJournalpostDokumentInfoRelasjoner());
+        jpDokInfoRelasjoner.addAll(journalpost.getJournalpostDokumentInfoRelasjonerAlsoBegrenset());
 
 		validator.validerAtDokumentSomSkalSlettesLogiskErKnyttetTilKunEnJournalpost(jpDokInfoRelasjoner, requestTo);
 	}
@@ -90,9 +90,9 @@ public class LogiskSlettDokumentValidatorTest {
 
 
 		List<JournalpostDokumentInfoRelasjon> jpDokInfoRelasjoner = new ArrayList<JournalpostDokumentInfoRelasjon>();
-		jpDokInfoRelasjoner.addAll(journalpost1.getJournalpostDokumentInfoRelasjoner());
-		jpDokInfoRelasjoner.addAll(journalpost2.getJournalpostDokumentInfoRelasjoner());
-		jpDokInfoRelasjoner.addAll(journalpost3.getJournalpostDokumentInfoRelasjoner());
+        jpDokInfoRelasjoner.addAll(journalpost1.getJournalpostDokumentInfoRelasjonerAlsoBegrenset());
+        jpDokInfoRelasjoner.addAll(journalpost2.getJournalpostDokumentInfoRelasjonerAlsoBegrenset());
+        jpDokInfoRelasjoner.addAll(journalpost3.getJournalpostDokumentInfoRelasjonerAlsoBegrenset());
 
 		validator.validerAtDokumentSomSkalSlettesLogiskErKnyttetTilKunEnJournalpost(jpDokInfoRelasjoner, requestTo);
 	}
@@ -107,7 +107,7 @@ public class LogiskSlettDokumentValidatorTest {
 		Journalpost journalpost1 = createJournalpost(DOKUMENTINFO_ID);
 
 		List<JournalpostDokumentInfoRelasjon> jpDokInfoRelasjoner = new ArrayList<JournalpostDokumentInfoRelasjon>();
-		jpDokInfoRelasjoner.addAll(journalpost1.getJournalpostDokumentInfoRelasjoner());
+        jpDokInfoRelasjoner.addAll(journalpost1.getJournalpostDokumentInfoRelasjonerAlsoBegrenset());
 
 		validator.validerAtDokumentSomSkalSlettesLogiskErKnyttetTilKunEnJournalpost(jpDokInfoRelasjoner, feilRequestTo);
 	}
@@ -126,7 +126,7 @@ public class LogiskSlettDokumentValidatorTest {
 		journalpost.addBegrensning(jpBegrensning);
 
 		List<JournalpostDokumentInfoRelasjon> jpDokInfoRelasjoner = new ArrayList<JournalpostDokumentInfoRelasjon>();
-		jpDokInfoRelasjoner.addAll(journalpost.getJournalpostDokumentInfoRelasjoner());
+        jpDokInfoRelasjoner.addAll(journalpost.getJournalpostDokumentInfoRelasjonerAlsoBegrenset());
 
 		validator.validerAtDokumentSomSkalSlettesLogiskErKnyttetTilKunEnJournalpost(jpDokInfoRelasjoner, requestTo);
 	}

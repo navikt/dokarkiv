@@ -1,6 +1,5 @@
 package no.nav.dokarkiv.core.repository.journalpostliste;
 
-import com.google.common.collect.Lists;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
@@ -9,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -26,10 +26,9 @@ public class JournalpostListeRepository {
 
 	@SuppressWarnings("unchecked")
 	public List<Journalpost> findJournalpostListe(HentMinJPListeParameters hentMinJPListeParameters) {
-		List<Journalpost> foundJournalposts = Lists.newArrayList();
 		// If empty saksliste, return empty list
 		if (hentMinJPListeParameters.getSaksListe().isEmpty()) {
-			return foundJournalposts;
+			return new ArrayList<>();
 		}
 		Session session = entityManager.unwrap(Session.class);
 		JournalpostCriterionBuilder criterionBuilder = new JournalpostCriterionBuilder(session);
@@ -43,8 +42,8 @@ public class JournalpostListeRepository {
 		if (hentMinJPListeParameters.getMaxResults() > 0 && hentMinJPListeParameters.getPageNr() > 0) {
 			criteria.setFirstResult((int) (hentMinJPListeParameters.getMaxResults() * hentMinJPListeParameters.getPageNr()));
 		}
-		foundJournalposts = criteria.list();
-		return foundJournalposts;
+
+		return criteria.list();
 	}
 
 	public long findTotalNumberOfJournalposts(HentMinJPListeParameters hentMinJPListeParameters) {

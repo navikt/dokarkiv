@@ -5,7 +5,7 @@ import no.nav.dokarkiv.core.domain.entities.DokumentUrlInfo;
 import no.nav.dokarkiv.core.domain.util.DateProvider;
 import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
 import no.nav.dokarkiv.core.exceptions.UrlNotValidException;
-import no.nav.dokarkiv.core.repository.DokumentUrlInfoRepository;
+import no.nav.dokarkiv.core.repository.DokumentUrlInfoRepositoryBegrenset;
 import no.nav.dokarkiv.hentdokument.exceptions.DokumentUrlNotFoundException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -24,11 +24,11 @@ import java.util.concurrent.TimeUnit;
 public class DefaultHentDokumentUrlInfo extends AbstractDocumentOperation implements HentDokumentUrlInfo {
 
 	private final long defaultTimeToLiveMillis;
-	private final DokumentUrlInfoRepository dokumentUrlInfoRepository;
+    private final DokumentUrlInfoRepositoryBegrenset dokumentUrlInfoRepository;
 
 	@Inject
 	public DefaultHentDokumentUrlInfo(@Value("${hentdokument.dokumenturl.urlTimeToLiveMinutes:1}") long urlTimeToLiveMinutes,
-			DokumentUrlInfoRepository dokumentUrlInfoRepository) {
+                                      DokumentUrlInfoRepositoryBegrenset dokumentUrlInfoRepository) {
 		this.defaultTimeToLiveMillis = minutesToMillis(urlTimeToLiveMinutes);
 		this.dokumentUrlInfoRepository = dokumentUrlInfoRepository;
 	}

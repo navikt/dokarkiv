@@ -18,7 +18,7 @@ import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
-import no.nav.dokarkiv.core.repository.JoarkRepository;
+import no.nav.dokarkiv.core.repository.JoarkRepositoryBegrenset;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
 
@@ -35,11 +35,11 @@ import java.util.List;
 @Service
 public class UpdateInngaaendeJournalpostService {
 
-	private final JoarkRepository joarkRepository;
+	private final JoarkRepositoryBegrenset joarkRepository;
 	private final PutInngaaendeJournalpostMapper putInngaaendeJournalpostMapper;
 
 	@Inject
-	public UpdateInngaaendeJournalpostService(JoarkRepository joarkRepository,
+	public UpdateInngaaendeJournalpostService(JoarkRepositoryBegrenset joarkRepository,
 											  PutInngaaendeJournalpostMapper putInngaaendeJournalpostMapper) {
 		this.joarkRepository = joarkRepository;
 		this.putInngaaendeJournalpostMapper = putInngaaendeJournalpostMapper;

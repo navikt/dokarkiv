@@ -2,6 +2,7 @@ package no.nav.dokarkiv.hentjournalinfo.gjoark001;
 
 import static no.nav.dokarkiv.hentjournalinfo.gjoark002.JournalpostQueryMapper.mapJournalpost;
 
+import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.hentjournalinfo.dto.DokumentInfo;
@@ -12,7 +13,6 @@ import no.nav.dokarkiv.hentjournalinfo.dto.kode.TilknyttetJournalpostSom;
 import no.nav.dokarkiv.hentjournalinfo.dto.kode.VariantFormat;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -26,7 +26,7 @@ public class DokumentInfoQueryMapper {
                 .dokumentInfoId(dokumentInfo.getDokumentInfoId())
                 .dokumentStatus(DokumentStatus.mapFromDokumentStatusCode(dokumentInfo.getDokumentstatus()))
                 .tittel(dokumentInfo.getTittel())
-                .slettet(Optional.ofNullable(dokumentInfo.getSlettet()).orElse(Boolean.FALSE))
+                .slettet(dokumentInfo.getOriginalJournalpost().isBegrenset(BegrensningTypeCode.UTILGJENGELIGGJORT))
                 .build();
     }
 

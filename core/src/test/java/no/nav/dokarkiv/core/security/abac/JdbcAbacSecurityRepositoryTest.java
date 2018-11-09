@@ -28,7 +28,7 @@ import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
-import no.nav.dokarkiv.core.repository.JoarkRepository;
+import no.nav.dokarkiv.core.repository.JoarkRepositoryBegrenset;
 import no.nav.dokarkiv.core.repository.RepositoryConfig;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import org.junit.Before;
@@ -60,7 +60,7 @@ public class JdbcAbacSecurityRepositoryTest {
 	@Inject
 	private JdbcAbacSecurityRepository jdbcAbacSecurityRepository;
 	@Inject
-	private JoarkRepository joarkRepository;
+	private JoarkRepositoryBegrenset joarkRepository;
 
 	@Before
 	public void setUp() throws Exception {

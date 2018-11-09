@@ -69,6 +69,7 @@ public class TestDataUtils {
 
     public static JournalpostBuilder createJournalpost(String saksNr, Date journalDato, JournalStatusCode journalStatusCode, FagomradeCode fagomrade) {
         return JournalpostBuilder.getJournalpostBuilder()
+                .addOriginalJournalpost(true)
                 .saksrelasjon(SaksrelasjonBuilder.getSaksrelasjonBuilder()
                         .opprettetKildeNavn("test")
                         .sakId(saksNr)
@@ -103,6 +104,10 @@ public class TestDataUtils {
                 .journalpostType(journalpostType)
                 .opprettetKildeNavn("test")
                 .journalForendeEnhetId(journalfEnhet);
+    }
+
+    public static JournalpostBuilder createJournalpost() {
+        return createJournalpost("123", DateTime.now().toDate(), JournalStatusCode.J, FagomradeCode.PEN);
     }
 
 }

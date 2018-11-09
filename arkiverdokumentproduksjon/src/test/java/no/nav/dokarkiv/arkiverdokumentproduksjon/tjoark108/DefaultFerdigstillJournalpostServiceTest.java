@@ -22,7 +22,7 @@ import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.util.DateProvider;
 import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
-import no.nav.dokarkiv.core.repository.JoarkRepository;
+import no.nav.dokarkiv.core.repository.JoarkRepositoryBegrenset;
 import no.nav.dokarkiv.core.sporing.SporingPopulator;
 import org.junit.Before;
 import org.junit.Rule;
@@ -58,7 +58,7 @@ public class DefaultFerdigstillJournalpostServiceTest {
 	private SporingPopulator sporingPopulator;
 
 	@Mock
-	private JoarkRepository joarkRepository;
+    private JoarkRepositoryBegrenset joarkRepository;
 
 	@InjectMocks
 	private DefaultFerdigstillJournalpostService service;
