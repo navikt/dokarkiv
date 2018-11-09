@@ -376,9 +376,9 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	 * @return boolean.
 	 */
 	public Boolean isBegrenset(final BegrensningTypeCode begrensningTypeCode) {
-		if (begrensninger != null) {
-			for (Begrensning begrensning : begrensninger) {
-				if (begrensning.getBegrensningType().equals(begrensningTypeCode) && begrensning.getJournalpost().getJournalpostId().equals(journalpostId) && begrensning.getDokumentInfo() == null) {
+		if (this.begrensninger != null) {
+			for (Begrensning begrensning : this.begrensninger) {
+				if (begrensning.getBegrensningType().equals(begrensningTypeCode) && begrensning.getDokumentInfo() == null) {
 					return true;
 				}
 			}
@@ -420,22 +420,6 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	 */
 	public void clearBegrensninger() {
 		begrensninger.clear();
-	}
-
-	/**
-	 * Get Begrensning by dokumentInfo and begreningType, no relation to journalpost
-	 *
-	 * @param journalpost
-	 * @param begrensningType
-	 * @return Begrensning
-	 */
-	public Begrensning getBegrensningnerByJournalpostIdOnly(Journalpost journalpost, BegrensningTypeCode begrensningType) {
-		for (Begrensning begrensning : journalpost.getBegrensninger()) {
-			if (begrensningType.equals(begrensning.getBegrensningType()) && begrensning.getJournalpost().equals(journalpost) && begrensning.getDokumentInfo() == null) {
-				return begrensning;
-			}
-		}
-		return null;
 	}
 
 	/**

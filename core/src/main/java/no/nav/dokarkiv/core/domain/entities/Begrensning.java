@@ -2,13 +2,11 @@ package no.nav.dokarkiv.core.domain.entities;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import no.nav.dokarkiv.core.domain.AbstractPersistentVersionedDomainObjectWithKilde;
 import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
-import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
-import no.nav.dokarkiv.core.domain.validator.BrukerValidator;
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 
@@ -32,7 +30,10 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "T_BEGRENSNING")
 @Builder
+@Getter
+@Setter
 @AllArgsConstructor
+@NoArgsConstructor
 public class Begrensning extends AbstractPersistentVersionedDomainObjectWithKilde {
 
 	/** ID used for serialization. */
@@ -46,7 +47,7 @@ public class Begrensning extends AbstractPersistentVersionedDomainObjectWithKild
 	private Long begrensningId;
 
 	@Enumerated(EnumType.STRING)
-	@Column(name = "begrensning_type", length = 50, nullable = false)
+	@Column(name = "begrensning_type", nullable = false, length = 50)
 	private BegrensningTypeCode begrensningType;
 
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -57,38 +58,7 @@ public class Begrensning extends AbstractPersistentVersionedDomainObjectWithKild
 	@JoinColumn(name = "dokument_info_id")
 	private DokumentInfo dokumentInfo;
 
-	/**
-	 * Default constructor.
-	 */
-	public Begrensning() {
-	}
-
-
 	public Long getId() {
 		return begrensningId;
-	}
-
-	public BegrensningTypeCode getBegrensningType() {
-		return begrensningType;
-	}
-
-	public void setBegrensningType(BegrensningTypeCode begrensningType) {
-		this.begrensningType = begrensningType;
-	}
-
-	public Journalpost getJournalpost() {
-		return journalpost;
-	}
-
-	public void setJournalpost(Journalpost journalpost) {
-		this.journalpost = journalpost;
-	}
-
-	public DokumentInfo getDokumentInfo() {
-		return dokumentInfo;
-	}
-
-	public void setDokumentInfo(DokumentInfo dokumentInfo) {
-		this.dokumentInfo = dokumentInfo;
 	}
 }

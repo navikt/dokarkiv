@@ -1,8 +1,6 @@
 package no.nav.dokarkiv.core.repository;
 
-import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
 import no.nav.dokarkiv.core.domain.entities.Begrensning;
-import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
