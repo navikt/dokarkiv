@@ -31,7 +31,6 @@ public class Rjoark101IT extends AbstractSlettDokumentIT {
 	@Test
 	public void shouldAngreLogiskSlettVedlegg() {
 		abacPermit();
-		MDC.put(MDCConstants.MDC_USER_NAME, OPPRETTET_KILDE_NAVN);
 
 		Journalpost journalpost = createJournalpostBuilder().build();
 		DokumentInfo vedlegg = createDokumentInfo();
@@ -71,7 +70,6 @@ public class Rjoark101IT extends AbstractSlettDokumentIT {
 	@Test
 	public void shouldAngreLogiskSlettHoveddokument() {
 		abacPermit();
-		MDC.put(MDCConstants.MDC_USER_NAME, OPPRETTET_KILDE_NAVN);
 
 		Journalpost journalpost = createJournalpostBuilder().build();
 		joarkRepository.save(journalpost);
@@ -107,7 +105,6 @@ public class Rjoark101IT extends AbstractSlettDokumentIT {
 	@Test
 	public void shouldFailToAngreLogiskSlettDokumentBecauseDocumentWasNotDeleted() {
 		abacPermit();
-		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark101");
 
 		Journalpost journalpost = joarkRepository.save(createJournalpostBuilder().build());
 
@@ -124,8 +121,7 @@ public class Rjoark101IT extends AbstractSlettDokumentIT {
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.BAD_REQUEST));
 
 		assertThat(responseEntity.getBody(), containsString(
-				String.format("%s kan ikke angre logisk sletting av journalpost med journalpostId=%s. Journalposten er ikke logisk slettet",
-						MDC.get(MDCConstants.MDC_REQUEST_ID),
+				String.format("Kan ikke angre logisk sletting av journalpost med journalpostId=%s. Journalposten er ikke logisk slettet",
 						journalpost.getJournalpostId())));
 
 		List<Begrensning> begrensetJp = hentJournalpostEtterUtførtKall (journalpost.getJournalpostId());

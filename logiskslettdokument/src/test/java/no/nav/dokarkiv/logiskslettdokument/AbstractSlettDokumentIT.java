@@ -10,8 +10,6 @@ import static no.nav.dokarkiv.core.security.JwtClaimsBuilderProvider.openAmClaim
 import com.auth0.jwt.JWT;
 import no.nav.dokarkiv.core.CoreConfig;
 import no.nav.dokarkiv.core.domain.builder.JournalpostBuilder;
-import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
-import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.entities.Begrensning;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
@@ -24,7 +22,6 @@ import no.nav.dokarkiv.core.stelvio.SimpleRequestContext;
 import no.nav.freg.security.test.oidc.tools.OidcTestService;
 import no.nav.freg.security.test.oidc.tools.TestToolsAutoConfig;
 import org.apache.commons.io.IOUtils;
-import org.hibernate.Hibernate;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -54,7 +51,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Set;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
