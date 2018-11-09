@@ -261,10 +261,10 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	public Boolean isBegrenset(final Long journalpostId, final BegrensningTypeCode begrensningTypeCode) {
 		if (begrensninger != null) {
 			for (Begrensning begrensning : begrensninger) {
-				if (begrensning.getBegrensningType().equals(begrensningTypeCode) && begrensning.getDokumentInfo().getDokumentInfoId().equals(dokumentInfoId) && begrensning.getJournalpost() == null) {
+				if (begrensning.getBegrensningType().equals(begrensningTypeCode) && begrensning.getJournalpost() == null) {
 					return true;
 				}
-				if (begrensning.getBegrensningType().equals(begrensningTypeCode) && begrensning.getJournalpost() != null && begrensning.getDokumentInfo().getDokumentInfoId().equals(dokumentInfoId) && begrensning.getJournalpost().getJournalpostId().equals(journalpostId)) {
+				if (begrensning.getBegrensningType().equals(begrensningTypeCode) && begrensning.getJournalpost() != null && begrensning.getJournalpost().getJournalpostId().equals(journalpostId)) {
 					return true;
 				}
 			}

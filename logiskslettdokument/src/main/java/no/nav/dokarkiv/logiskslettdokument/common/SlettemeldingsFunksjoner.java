@@ -14,7 +14,7 @@ import java.util.Set;
 public class SlettemeldingsFunksjoner {
 
 	public static DokumentInfo setDokumentLogiskSlettet(Journalpost journalpost, DokumentInfo dokumentInfo) {
-		Begrensning begrensning = Begrensning.builder().begrensningType(BegrensningTypeCode.UTILGJENGELIGGJORT).dokumentInfo(dokumentInfo).build();
+		Begrensning begrensning = Begrensning.builder().begrensningType(BegrensningTypeCode.UTILGJENGELIGGJORT).journalpost(journalpost).dokumentInfo(dokumentInfo).build();
 		begrensning.setOpprettetKildeNavn(MDC.get(MDCConstants.MDC_CONSUMER_ID));
 		dokumentInfo.addBegrensning(begrensning);
 		dokumentInfo.setEndretAvNavn(MDC.get(MDCConstants.MDC_USER_NAME));
@@ -30,14 +30,11 @@ public class SlettemeldingsFunksjoner {
 
 
 	public static DokumentInfo setAngreDokumentLogiskSlettet(Journalpost journalpost, DokumentInfo dokumentInfo) {
-		Begrensning begrensning = dokumentInfo.getBegrensningnerByDokumentInfoIdOnly(BegrensningTypeCode.UTILGJENGELIGGJORT);
+		Begrensning begrensning = dokumentInfo.getBegrensningnerByDokumentInfoAndJournalpost(BegrensningTypeCode.UTILGJENGELIGGJORT, journalpost);
 		if (begrensning == null) {
-			begrensning = dokumentInfo.getBegrensningnerByDokumentInfoAndJournalpost(BegrensningTypeCode.UTILGJENGELIGGJORT, journalpost);
-			if (begrensning == null) {
-				throw new BegrensningIkkeFunnetException(String.format("Fant ikke forventet begrensning for journalpostId %s, dokumentInfoId %s og begreningstype %s.", journalpost.getJournalpostId(), dokumentInfo.getDokumentInfoId(), BegrensningTypeCode.UTILGJENGELIGGJORT.name()));
-			}
+			throw new BegrensningIkkeFunnetException(String.format("Fant ikke forventet begrensning for journalpostId %s, dokumentInfoId %s og begreningstype %s.", journalpost.getJournalpostId(), dokumentInfo.getDokumentInfoId(), BegrensningTypeCode.UTILGJENGELIGGJORT.name()));
 		} else {
-			Set<Begrensning> begrensninger = new HashSet<Begrensning>();
+			Set<Begrensning> begrensninger = new HashSet<>();
 			begrensninger.add(begrensning);
 			dokumentInfo.removeBegrensninger(begrensninger);
 		}

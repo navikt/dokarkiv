@@ -173,9 +173,9 @@ public abstract class AbstractSlettDokumentIT {
 		}
 	}
 
-	public List<Begrensning> hentVedleggBegrensningEtterUtførtKall(long dokumentInfoId) {
+	public List<Begrensning> hentVedleggBegrensningEtterUtførtKall(Long journalpostId, Long dokumentInfoId) {
 		try {
-			return begrensningRepository.findByDokumentInfoIdOnly(dokumentInfoId, UTILGJENGELIGGJORT.name()).get();
+			return begrensningRepository.findByDokumentInfoIdJournalpostId(journalpostId, dokumentInfoId, UTILGJENGELIGGJORT.name()).get();
 		} catch (NoSuchElementException e) {
 			return new ArrayList<>();
 		}

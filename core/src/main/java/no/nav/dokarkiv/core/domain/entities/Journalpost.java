@@ -376,14 +376,8 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	 * @return boolean.
 	 */
 	public Boolean isBegrenset(final BegrensningTypeCode begrensningTypeCode) {
-		if (this.begrensninger != null) {
-			for (Begrensning begrensning : this.begrensninger) {
-				if (begrensning.getBegrensningType().equals(begrensningTypeCode) && begrensning.getDokumentInfo() == null) {
-					return true;
-				}
-			}
-		}
-		return false;
+		return begrensninger.stream().anyMatch(
+				begrensning -> begrensning.getBegrensningType().equals(begrensningTypeCode) && begrensning.getDokumentInfo() == null);
 	}
 
 	/**

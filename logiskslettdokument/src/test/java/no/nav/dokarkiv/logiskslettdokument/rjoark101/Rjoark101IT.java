@@ -52,7 +52,7 @@ public class Rjoark101IT extends AbstractSlettDokumentIT {
 				createHeaders(),
 				LogiskSlettDokumentResponse.class);
 
-		List<Begrensning> begrensetJp = hentVedleggBegrensningEtterUtførtKall(vedleggId);
+		List<Begrensning> begrensetJp = hentVedleggBegrensningEtterUtførtKall(journalpost.getJournalpostId(), vedleggId);
 		assertEquals(1L, begrensetJp.size());
 
 		responseEntity = restTemplate.exchange(
@@ -63,7 +63,7 @@ public class Rjoark101IT extends AbstractSlettDokumentIT {
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 
-		begrensetJp = hentVedleggBegrensningEtterUtførtKall(vedleggId);
+		begrensetJp = hentVedleggBegrensningEtterUtførtKall(journalpost.getJournalpostId(), vedleggId);
 		assertEquals(0L, begrensetJp.size());
 	}
 
