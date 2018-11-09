@@ -7,9 +7,9 @@ import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.logiskslettdokument.exceptions.DokumentIkkeSlettetException;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.logiskslettdokument.AbstractSlettDokumentValidator;
-import no.nav.dokarkiv.logiskslettdokument.exceptions.DokumentIkkeSlettetException;
 import no.nav.dokarkiv.logiskslettdokument.rjoark100.LogiskSlettDokumentRequestTo;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
@@ -48,5 +48,4 @@ public class AngreLogiskSlettDokumentValidator extends AbstractSlettDokumentVali
 					"Dokumentet er ikke logisk slettet", dokumentInfo.getDokumentInfoId()));
 		}
 	}
-
 }

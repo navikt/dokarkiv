@@ -27,22 +27,43 @@ public class PutInngaaendeJournalpostMapper {
 	private BrukerRepository brukerRepository;
 
 	public void oppdaterJournalpost(Journalpost journalpost, PutJournalpostRequest putJournalpostRequest) {
+
+		boolean endret = false;
+
 		if (isNotBlank(putJournalpostRequest.getTittel())) {
 			journalpost.setInnhold(putJournalpostRequest.getTittel());
+			endret = true;
 		}
 		if (isNotBlank(putJournalpostRequest.getTema())) {
 			journalpost.setFagomrade(FagomradeCode.valueOf(putJournalpostRequest.getTema()));
+			endret = true;
 		}
 		if (putJournalpostRequest.getAvsender() != null) {
 			if (isNotBlank(putJournalpostRequest.getAvsender().getNavn())) {
 				journalpost.setAvsenderMottaker(putJournalpostRequest.getAvsender().getNavn());
+				endret = true;
 			}
 			if (isNotBlank(putJournalpostRequest.getAvsender().getIdentifikator())) {
 				journalpost.setAvsenderMottakerId(putJournalpostRequest.getAvsender().getIdentifikator());
+				endret = true;
 			}
 		}
+
 		updateSaksrelasjonFields(journalpost, putJournalpostRequest);
 
+		boolean brukerEndret = updateBrukerFraRequest(journalpost, putJournalpostRequest);
+		if (brukerEndret) {
+			endret = true;
+		}
+
+		if (endret) {
+			journalpost.setEndretAvNavn(MDC.get(MDC_USER_ID));
+			journalpost.setEndretKildeNavn(MDC.get(MDC_CONSUMER_ID));
+		}
+	}
+
+	private boolean updateBrukerFraRequest(Journalpost journalpost, PutJournalpostRequest putJournalpostRequest) {
+		boolean endret = false;
 		Set<Bruker> brukere = journalpost.getBrukere();
 		if (brukere.isEmpty() || brukere.size() > 1) {
 			brukerRepository.deleteBrukerByJournalpostId(journalpost.getJournalpostId().toString());
@@ -55,6 +76,8 @@ public class PutInngaaendeJournalpostMapper {
 				bruker.setBrukerType(BrukerTypeCode.valueOf(putJournalpostRequest.getBruker().getBrukerType().name()));
 				bruker.setOpprettetKildeNavn(MDC.get(MDC_CONSUMER_ID));
 				journalpost.addBruker(bruker);
+
+				endret = true;
 			}
 		} else {
 			if (putJournalpostRequest.getBruker() != null) {
@@ -63,11 +86,14 @@ public class PutInngaaendeJournalpostMapper {
 					assertNotNull(putJournalpostRequest.getBruker().getBrukerType(), "bruker.brukerType");
 					bruker.setBrukerType(BrukerTypeCode.valueOf(putJournalpostRequest.getBruker().getBrukerType().name()));
 				});
+				endret = true;
 			}
 		}
+		return endret;
 	}
 
 	private void updateSaksrelasjonFields(Journalpost journalpost, PutJournalpostRequest request) {
+		boolean endret = false;
 		boolean newSak = false;
 		if (request.getArkivSak() != null) {
 			Saksrelasjon saksrelasjon;
@@ -78,19 +104,22 @@ public class PutInngaaendeJournalpostMapper {
 			} else {
 				saksrelasjon = journalpost.getSaksrelasjon();
 			}
-			saksrelasjon.setSakId(request.getArkivSak().getArkivSakId());
-			saksrelasjon.setFagsystem(mapArkivSakSystemToFagsystemCode(request.getArkivSak().getArkivSakSystem()));
-			saksrelasjon.setEndretAvNavn(MDC.get(MDC_USER_ID));
-			saksrelasjon.setEndretKildeNavn(MDC.get(MDC_CONSUMER_ID));
+			if (isNotBlank(request.getArkivSak().getArkivSakId())) {
+				saksrelasjon.setSakId(request.getArkivSak().getArkivSakId());
+				endret = true;
+			}
+			if (request.getArkivSak().getArkivSakSystem() != null) {
+				saksrelasjon.setFagsystem(mapArkivSakSystemToFagsystemCode(request.getArkivSak().getArkivSakSystem()));
+				endret = true;
+			}
+			if (endret && !newSak) {
+				saksrelasjon.setEndretAvNavn(MDC.get(MDC_USER_ID));
+				saksrelasjon.setEndretKildeNavn(MDC.get(MDC_CONSUMER_ID));
+			}
 			if (newSak) {
 				journalpost.setSaksrelasjon(saksrelasjon);
 			}
 		}
-	}
-
-	private enum ArkivsystemKode {
-		GSAK,
-		PSAK
 	}
 
 	protected FagsystemCode mapArkivSakSystemToFagsystemCode(ArkivSakWithArkivsakSystemEnum.ArkivSakSystem arkivSakSystem) {
@@ -100,6 +129,11 @@ public class PutInngaaendeJournalpostMapper {
 		} else {
 			return FagsystemCode.PEN;
 		}
+	}
+
+	private enum ArkivsystemKode {
+		GSAK,
+		PSAK
 	}
 
 }

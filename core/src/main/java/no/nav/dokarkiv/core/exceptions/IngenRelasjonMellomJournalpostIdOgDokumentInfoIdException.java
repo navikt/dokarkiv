@@ -1,10 +1,9 @@
-package no.nav.dokarkiv.logiskslettdokument.exceptions;
+package no.nav.dokarkiv.core.exceptions;
 
-import no.nav.dokarkiv.core.exceptions.DokarkivFunctionalException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-@ResponseStatus(value = HttpStatus.BAD_REQUEST)
+@ResponseStatus(value = HttpStatus.NOT_FOUND)
 public class IngenRelasjonMellomJournalpostIdOgDokumentInfoIdException extends DokarkivFunctionalException {
 
 	public IngenRelasjonMellomJournalpostIdOgDokumentInfoIdException(String message) {

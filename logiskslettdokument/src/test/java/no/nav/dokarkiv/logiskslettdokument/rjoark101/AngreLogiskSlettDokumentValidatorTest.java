@@ -10,7 +10,7 @@ import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
 import no.nav.dokarkiv.core.domain.entities.Begrensning;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
-import no.nav.dokarkiv.logiskslettdokument.exceptions.DokumentIkkeSlettetException;
+import no.nav.dokarkiv.core.exceptions.DokumentIkkeLogiskSlettetException;
 import no.nav.dokarkiv.logiskslettdokument.rjoark100.LogiskSlettDokumentRequestTo;
 import org.junit.Rule;
 import org.junit.Test;
