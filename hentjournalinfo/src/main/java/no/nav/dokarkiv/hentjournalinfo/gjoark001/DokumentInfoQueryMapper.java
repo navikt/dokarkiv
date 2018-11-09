@@ -28,7 +28,6 @@ public class DokumentInfoQueryMapper {
                 .dokumentInfoId(dokumentInfo.getDokumentInfoId())
                 .dokumentStatus(DokumentStatus.mapFromDokumentStatusCode(dokumentInfo.getDokumentstatus()))
                 .tittel(dokumentInfo.getTittel())
-                .slettet(dokumentInfo.isBegrenset(null, UTILGJENGELIGGJORT))
                 .build();
     }
 

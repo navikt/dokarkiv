@@ -57,7 +57,6 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.transaction.TestTransaction;
@@ -145,7 +144,7 @@ public class GraphQlQueryIT {
 
         assertDokumentInfo(response.getDataWrapper().getDokumentInfo());
         assertJournalpost(response.getDataWrapper().getJournalpost());
-        assertThat(response.getDataWrapper().getDokumentInfo().getSlettet(), is(Boolean.FALSE));
+        assertThat(response.getDataWrapper().getDokumentInfo().getKnyttetJournalpostList().get(0).getSlettet(), is(Boolean.FALSE));
 
     }
 
@@ -188,7 +187,7 @@ public class GraphQlQueryIT {
 
         DokumentInfo dokumentInfo = response.getDataWrapper().getDokumentInfo();
         assertDokumentInfo(dokumentInfo);
-        assertThat(dokumentInfo.getSlettet(), is(Boolean.FALSE));
+        assertThat(dokumentInfo.getKnyttetJournalpostList().get(0).getSlettet(), is(Boolean.FALSE));
 
     }
 
@@ -215,9 +214,6 @@ public class GraphQlQueryIT {
                 .get(0)
                 .getMessage(), containsString("Validation error of type FieldUndefined: Field 'dokumentFil' in type 'Query' is undefined @ 'dokumentFil'"));
 
-//        String fil = response.getDataWrapper().getDokumentFil();
-//        assertThat(response.getDataWrapper(), notNullValue());
-//        assertThat(Base64.decode(fil), is(new String(FIL_CONTENT, StandardCharsets.UTF_8)));
     }
 
     @Test
@@ -253,7 +249,7 @@ public class GraphQlQueryIT {
         GraphQlResponse response = testRestTemplate.postForObject("/rest/graphql", request, GraphQlResponse.class);
         DokumentInfo dokumentInfo = response.getDataWrapper().getDokumentInfo();
         assertDokumentInfo(dokumentInfo);
-        assertThat(response.getDataWrapper().getDokumentInfo().getKnyttetJournalpostList().get(0).getSlettet(), is(Boolean.TRUE));
+        assertThat(dokumentInfo.getKnyttetJournalpostList().get(0).getSlettet(), is(Boolean.TRUE));
     }
 
     @Test
@@ -274,7 +270,7 @@ public class GraphQlQueryIT {
         GraphQlResponse response = testRestTemplate.postForObject("/rest/graphql", request, GraphQlResponse.class);
         DokumentInfo dokumentInfo = response.getDataWrapper().getDokumentInfo();
         assertVedleggDokumentInfo(dokumentInfo);
-        assertThat(response.getDataWrapper().getDokumentInfo().getSlettet(), is(Boolean.TRUE));
+        assertThat(response.getDataWrapper().getDokumentInfo().getKnyttetJournalpostList().get(0).getSlettet(), is(Boolean.TRUE));
     }
 
 
