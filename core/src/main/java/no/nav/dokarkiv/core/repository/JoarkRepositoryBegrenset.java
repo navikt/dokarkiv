@@ -5,8 +5,6 @@ import static org.apache.commons.lang3.BooleanUtils.isFalse;
 import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
 import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -17,13 +15,11 @@ import java.util.stream.StreamSupport;
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
  */
-@Component
 @Transactional
 public class JoarkRepositoryBegrenset {
 
     private final JoarkRepository joarkRepository;
 
-    @Lazy
     public JoarkRepositoryBegrenset(JoarkRepository joarkRepository) {
         this.joarkRepository = joarkRepository;
     }

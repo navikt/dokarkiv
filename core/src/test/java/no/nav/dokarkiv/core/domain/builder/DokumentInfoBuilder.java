@@ -3,6 +3,7 @@ package no.nav.dokarkiv.core.domain.builder;
 import no.nav.dokarkiv.core.domain.ChangeStamp;
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
+import no.nav.dokarkiv.core.domain.entities.Begrensning;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
@@ -56,6 +57,7 @@ public class DokumentInfoBuilder extends Builder<DokumentInfo> {
 	private String endretKildeNavn;
 	private Boolean slettet;
 	private String dokumenttypeId;
+	private Begrensning begrensning;
 	private Map<String, String> tilleggsopplysninger = new HashMap<>();
 	private List<SkannetInnhold> skannetInnholdList = new ArrayList<>();
 	private Set<FilDetaljer> filDetaljerList = new HashSet<>();
@@ -82,6 +84,11 @@ public class DokumentInfoBuilder extends Builder<DokumentInfo> {
 	public DokumentInfoBuilder dokumenttypeId(String value) { this.dokumenttypeId = value; return this; }
 	public DokumentInfoBuilder opprettetKildeNavn(String value) { this.opprettetKildeNavn = value; return this; }
 	public DokumentInfoBuilder endretKildeNavn(String value) { this.endretKildeNavn = value; return this; }
+
+	public DokumentInfoBuilder begrensning(Begrensning begrensning) {
+		this.begrensning = begrensning;
+		return this;
+	}
 	public DokumentInfoBuilder slettet(Boolean value) { this.slettet = value; return this; }
 	public DokumentInfoBuilder skannetInnhold(SkannetInnhold... value) { 
 		this.skannetInnholdList = Arrays.asList(value); return this; }
@@ -122,6 +129,13 @@ public class DokumentInfoBuilder extends Builder<DokumentInfo> {
 			dokumentInfo.addFilDetaljer(filDetaljer);
 		}
 		dokumentInfo.setChangeStamp(changeStamp);
+
+		if (begrensning != null) {
+			begrensning.setOpprettetKildeNavn(opprettetKildeNavn);
+			begrensning.setEndretKildeNavn(endretKildeNavn);
+			begrensning.setDokumentInfo(dokumentInfo);
+		}
+		dokumentInfo.addBegrensning(begrensning);
 		return dokumentInfo;
 	}
 

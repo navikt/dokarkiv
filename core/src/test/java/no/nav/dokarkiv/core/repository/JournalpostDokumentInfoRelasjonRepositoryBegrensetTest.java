@@ -1,10 +1,17 @@
 package no.nav.dokarkiv.core.repository;
 
-import static no.nav.dokarkiv.core.repository.journalpostliste.TestDataUtils.createJournalpost;
+import static no.nav.dokarkiv.core.util.TestDataUtils.createJournalpost;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
+import no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder;
+import no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder;
+import no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder;
 import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
+import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
+import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
+import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
+import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.Begrensning;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
@@ -44,22 +51,36 @@ public class JournalpostDokumentInfoRelasjonRepositoryBegrensetTest {
     @Inject
     private JoarkRepository joarkRepository;
 
+    @Inject
+    private DokumentinfoRepository dokumentinfoRepository;
+
 
     @Before
     public void setUp() {
+        journalpostDokumentInfoRelasjonRepository.deleteAll();
+        dokumentinfoRepository.deleteAll();
+        joarkRepository.deleteAll();
         RequestContextUtil.createAndSetUsername("itest", "itest");
     }
 
     @Test
-    public void shouldNotReturnJournalpostDokumentRelasjonWhereJournalpostIsBegrenset() {
+    public void shouldReturnJournalpostDokumentRelasjonWhenNotBegrenset() {
         Journalpost journalpost = createJournalpost().build();
-        Begrensning begrensning = Begrensning.builder()
-                .begrensningType(BegrensningTypeCode.UTILGJENGELIGGJORT)
-                .journalpost(journalpost)
-                .build();
-        begrensning.setOpprettetKildeNavn("taaaaaaaaaaaaaaaa");
-        journalpost.addBegrensning(begrensning);
+        journalpost = joarkRepository.save(journalpost);
+        TestTransaction.flagForCommit();
+        TestTransaction.end();
 
+        assertThat(journalpostDokumentInfoRelasjonRepositoryBegrenset.findByDokumentInfoId(journalpost.findHoveddokumentDokumentInfoRelasjon()
+                .getDokumentInfo()
+                .getDokumentInfoId()).get().size(), is(1));
+        assertThat(journalpostDokumentInfoRelasjonRepository.findByDokumentInfoId(journalpost.findHoveddokumentDokumentInfoRelasjon()
+                .getDokumentInfo()
+                .getDokumentInfoId()).get().size(), is(1));
+    }
+
+    @Test
+    public void shouldNotReturnJournalpostDokumentRelasjonWhereJournalpostIsBegrenset() {
+        Journalpost journalpost = createJournalpostWithTwoRelasjonerWhereOneIsBegrenset();
         journalpost = joarkRepository.save(journalpost);
         TestTransaction.flagForCommit();
         TestTransaction.end();
@@ -76,5 +97,31 @@ public class JournalpostDokumentInfoRelasjonRepositoryBegrensetTest {
 
         assertThat(journalpostDokumentInfoRelasjons.get().size(), is(1));
         assertThat(journalpostDokumentInfoRelasjonsBegrenset.get().size(), is(0));
+    }
+
+    private Journalpost createJournalpostWithTwoRelasjonerWhereOneIsBegrenset() {
+        Journalpost journalpost = createJournalpost().build();
+        Begrensning begrensning = Begrensning.builder()
+                .begrensningType(BegrensningTypeCode.UTILGJENGELIGGJORT)
+                .journalpost(journalpost)
+                .build();
+        begrensning.setOpprettetKildeNavn("kildenavn");
+        journalpost.addBegrensning(begrensning);
+        journalpost.addJournalpostDokumentInfoRelasjon(JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder()
+                .tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
+                .opprettetKildeNavn("test")
+                .tilknyttetAvNavn("test")
+                .dokumentInfo(DokumentInfoBuilder.getDokumentInfoBuilder()
+                        .dokumentstatus(DokumentStatusCode.FERDIGSTILT)
+                        .opprettetKildeNavn("test")
+                        .filDetaljerList(FilDetaljerBuilder.getFilDetaljerBuilder()
+                                .filtype(FilTypeCode.PDF)
+                                .filUuid("uuid")
+                                .variantFormat(VariantFormatCode.PRODUKSJON)
+                                .opprettetKildeNavn("test")
+                                .build()
+                        )
+                        .build()).build());
+        return journalpost;
     }
 }

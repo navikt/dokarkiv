@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.core.repository.journalpostliste;
+package no.nav.dokarkiv.core.util;
 
 import no.nav.dokarkiv.core.domain.builder.BrukerBuilder;
 import no.nav.dokarkiv.core.domain.builder.ChangeStampBuilder;
@@ -7,6 +7,7 @@ import no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder;
 import no.nav.dokarkiv.core.domain.builder.JournalpostBuilder;
 import no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder;
 import no.nav.dokarkiv.core.domain.builder.SaksrelasjonBuilder;
+import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
@@ -14,11 +15,16 @@ import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
 import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
+import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
+import no.nav.dokarkiv.core.domain.entities.Begrensning;
+import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import org.joda.time.DateTime;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Class for generating test data for Joark repository tests
@@ -35,6 +41,49 @@ public class TestDataUtils {
     private static final String journalfEnhet = "test";
     private static Boolean isFeilregistrert = null;
     private static final JournalpostTypeCode journalpostType = JournalpostTypeCode.U;
+
+    public static final String KANAL_REFERANSE_ID = "kanal";
+    public static final String TILLEGGSOPPLYSNINGER_KEY = "keey";
+    public static final String TILLEGGSOPPLYSNINGER_VALUE = "value";
+
+    public static Journalpost createJournalpostWithBegrensning(boolean withBegrensning) {
+        Journalpost journalpost = TestDataUtils.createJournalpost().build();
+
+        Map<String, String> map = new HashMap<>();
+        map.put(TILLEGGSOPPLYSNINGER_KEY, TILLEGGSOPPLYSNINGER_VALUE);
+        journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().setTilleggsopplysninger(map);
+        journalpost.setTilleggsopplysninger(map);
+
+        journalpost.setKanalReferanseId(KANAL_REFERANSE_ID);
+        journalpost.setMottakskanal(MottaksKanalCode.NAV_NO);
+
+
+        if (withBegrensning) {
+            Begrensning begrensning = Begrensning.builder()
+                    .begrensningType(BegrensningTypeCode.UTILGJENGELIGGJORT)
+                    .journalpost(journalpost)
+                    .build();
+            begrensning.setOpprettetKildeNavn("Kilde navn");
+            journalpost.addBegrensning(begrensning);
+
+            journalpost.removeJournalpostDokumentInfoRelasjon(journalpost.findHoveddokumentDokumentInfoRelasjon());
+            journalpost.addJournalpostDokumentInfoRelasjon(JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder()
+                    .tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.HOVEDDOKUMENT)
+                    .opprettetKildeNavn("test")
+                    .tilknyttetAvNavn("test")
+                    .dokumentInfo(DokumentInfoBuilder.getDokumentInfoBuilder()
+                            .dokumentstatus(DokumentStatusCode.FERDIGSTILT)
+                            .opprettetKildeNavn("test")
+                            .originalJournalpost(journalpost)
+                            .begrensning(Begrensning.builder()
+                                    .begrensningType(BegrensningTypeCode.UTILGJENGELIGGJORT)
+                                    .build())
+                            .build())
+                    .build());
+        }
+
+        return journalpost;
+    }
 
     public static JournalpostBuilder createJournalpostWithSaksrelasjon(String saksnr, boolean isFeilregistrert, FagomradeCode fagomrade,
                                                                        FagsystemCode fagsystem, JournalpostTypeCode journalpostType) {

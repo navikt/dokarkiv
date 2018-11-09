@@ -4,8 +4,6 @@ import static org.apache.commons.lang3.BooleanUtils.isFalse;
 
 import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentUrlInfo;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
@@ -13,13 +11,11 @@ import java.util.Optional;
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
  */
-@Component
 @Transactional
 public class DokumentUrlInfoRepositoryBegrenset {
 
     private final DokumentUrlInfoRepository dokumentUrlInfoRepository;
 
-    @Lazy
     public DokumentUrlInfoRepositoryBegrenset(DokumentUrlInfoRepository dokumentUrlInfoRepository) {
         this.dokumentUrlInfoRepository = dokumentUrlInfoRepository;
     }

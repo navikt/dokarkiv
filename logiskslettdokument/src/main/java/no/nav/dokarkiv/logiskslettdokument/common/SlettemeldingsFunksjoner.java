@@ -30,9 +30,9 @@ public class SlettemeldingsFunksjoner {
 
 
 	public static DokumentInfo setAngreDokumentLogiskSlettet(Journalpost journalpost, DokumentInfo dokumentInfo) {
-		Begrensning begrensning = dokumentInfo.getBegrensningnerByDokumentInfoIdOnly(BegrensningTypeCode.UTILGJENGELIGGJORT);
+        Begrensning begrensning = dokumentInfo.getBegrensningnerByDokumentInfoIdOnly(BegrensningTypeCode.UTILGJENGELIGGJORT);
 		if (begrensning == null) {
-			begrensning = dokumentInfo.getBegrensningnerByDokumentInfoAndJournalpost(BegrensningTypeCode.UTILGJENGELIGGJORT, journalpost);
+            begrensning = dokumentInfo.getBegrensningnerByDokumentInfoAndJournalpost(BegrensningTypeCode.UTILGJENGELIGGJORT, journalpost);
 			if (begrensning == null) {
 				throw new BegrensningIkkeFunnetException(String.format("Fant ikke forventet begrensning for journalpostId %s, dokumentInfoId %s og begreningstype %s.", journalpost.getJournalpostId(), dokumentInfo.getDokumentInfoId(), BegrensningTypeCode.UTILGJENGELIGGJORT.name()));
 			}

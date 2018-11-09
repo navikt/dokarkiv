@@ -56,6 +56,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -377,11 +378,9 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
      * @return boolean.
      */
     public Boolean isBegrenset(final BegrensningTypeCode begrensningTypeCode) {
-        if (begrensninger != null) {
-            for (Begrensning begrensning : begrensninger) {
-                if (begrensning.getBegrensningType().equals(begrensningTypeCode) && begrensning.getJournalpost()
-                        .getJournalpostId()
-                        .equals(journalpostId) && begrensning.getDokumentInfo() == null) {
+        if (this.begrensninger != null) {
+            for (Begrensning begrensning : this.begrensninger) {
+                if (begrensning.getBegrensningType().equals(begrensningTypeCode) && begrensning.getDokumentInfo() == null) {
                     return true;
                 }
             }
@@ -1545,7 +1544,7 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
      */
     public Set<JournalpostDokumentInfoRelasjon> getJournalpostDokumentInfoRelasjoner() {
         return Collections.unmodifiableSet(journalpostDokumentInfoRelasjoner.stream()
-                .filter(relasjon -> isFalse(relasjon.getDokumentInfo()
+                .filter(relasjon -> Objects.isNull(relasjon.getDokumentInfo()) || isFalse(relasjon.getDokumentInfo()
                         .isBegrenset(journalpostId, BegrensningTypeCode.UTILGJENGELIGGJORT))).collect(Collectors.toSet()));
     }
 

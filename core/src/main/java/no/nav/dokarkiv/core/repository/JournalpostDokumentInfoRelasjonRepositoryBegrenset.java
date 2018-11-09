@@ -4,8 +4,6 @@ import static org.apache.commons.lang3.BooleanUtils.isFalse;
 
 import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
@@ -16,13 +14,11 @@ import java.util.stream.Collectors;
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
  */
-@Component
 @Transactional
 public class JournalpostDokumentInfoRelasjonRepositoryBegrenset {
 
     private final JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository;
 
-    @Lazy
     public JournalpostDokumentInfoRelasjonRepositoryBegrenset(JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository) {
         this.journalpostDokumentInfoRelasjonRepository = journalpostDokumentInfoRelasjonRepository;
     }
