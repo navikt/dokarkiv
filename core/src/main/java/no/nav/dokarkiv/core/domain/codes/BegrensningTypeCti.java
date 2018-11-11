@@ -9,7 +9,6 @@ import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.Table;
-import java.io.Serializable;
 
 /**
  * CodesTableItem representing the T_K_BEGRENSNING_TYPE DB table.

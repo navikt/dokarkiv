@@ -2,16 +2,14 @@ package no.nav.dokarkiv.logiskslettdokument.rjoark101;
 
 import static org.apache.commons.lang3.BooleanUtils.isFalse;
 
-import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
+import no.nav.dokarkiv.core.exceptions.DokumentIkkeLogiskSlettetException;
 import no.nav.dokarkiv.logiskslettdokument.AbstractSlettDokumentValidator;
-import no.nav.dokarkiv.logiskslettdokument.exceptions.DokumentIkkeSlettetException;
 import no.nav.dokarkiv.logiskslettdokument.rjoark100.LogiskSlettDokumentRequestTo;
-import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -37,16 +35,15 @@ public class AngreLogiskSlettDokumentValidator extends AbstractSlettDokumentVali
 
 	protected void validerAtJournalpostErLogiskSlettet(Journalpost journalpost) {
 		if (isFalse(journalpost.isBegrenset(BegrensningTypeCode.UTILGJENGELIGGJORT))) {
-			throw new DokumentIkkeSlettetException(String.format(MDC.get(MDCConstants.MDC_REQUEST_ID) + " kan ikke angre logisk sletting av journalpost med journalpostId=%s. " +
+			throw new DokumentIkkeLogiskSlettetException(String.format("Kan ikke angre logisk sletting av journalpost med journalpostId=%s. " +
 					"Journalposten er ikke logisk slettet", journalpost.getJournalpostId()));
 		}
 	}
 
 	protected void validerAtDokumentErLogiskSlettet(Journalpost journalpost, DokumentInfo dokumentInfo) {
-		if (isFalse(dokumentInfo.isBegrenset(journalpost.getJournalpostId(),BegrensningTypeCode.UTILGJENGELIGGJORT))) {
-			throw new DokumentIkkeSlettetException(String.format(MDC.get(MDCConstants.MDC_REQUEST_ID) + " kan ikke angre logisk sletting av dokument med dokumentInfoId=%s. " +
+		if (isFalse(dokumentInfo.isBegrenset(journalpost.getJournalpostId(), BegrensningTypeCode.UTILGJENGELIGGJORT))) {
+			throw new DokumentIkkeLogiskSlettetException(String.format("Kan ikke angre logisk sletting av dokument med dokumentInfoId=%s. " +
 					"Dokumentet er ikke logisk slettet", dokumentInfo.getDokumentInfoId()));
 		}
 	}
-
 }

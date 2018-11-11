@@ -30,6 +30,7 @@
 		<module>hentdokument</module>
 		<module>logiskslettdokument</module>
 		<module>hentjournalinfo</module>
+		<module>fysiskslettdokument</module>
 	</modules>
 
 	<distributionManagement>
@@ -128,6 +129,11 @@
 			<dependency>
 				<groupId>no.nav.dokarkiv</groupId>
 				<artifactId>logiskslettdokument</artifactId>
+				<version>1-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>no.nav.dokarkiv</groupId>
+				<artifactId>fysiskslettdokument</artifactId>
 				<version>1-SNAPSHOT</version>
 			</dependency>
 			<dependency>

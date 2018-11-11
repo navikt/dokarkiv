@@ -15,10 +15,9 @@ public class JournalpostValidator {
 		verifyDokumentInfos(journalpost);
 	}
 
-	public static void validateJournalpostStrukturOgPaakrevdeAttributter(Journalpost journalpost) {
+	public static void validateJournalpostStruktur(Journalpost journalpost) {
 		verifyHoveddokument(journalpost);
 		verifyFildetaljer(journalpost);
-		verifyRequiredFields(journalpost);
 	}
 
 	private static void verifyMidlertidigJournalfoert(Journalpost jp) {
@@ -62,15 +61,6 @@ public class JournalpostValidator {
 						journalpost.getJournalpostId()));
 			}
 		});
-	}
-
-	private static void verifyRequiredFields(Journalpost journalpost) {
-		try {
-			journalpost.verifyMandatoryFieldsSkipJournalforendeEnhetId();
-		} catch (Exception e) {
-			throw new KunneIkkeEndeligJournalfoereException(String.format("Kunne ikke endelig journalfoere: Journalpost med journalpostId=%s mangler paakrevde felt for endelig journalføring. %s",
-					journalpost.getJournalpostId(), e.getMessage()));
-		}
 	}
 
 }
