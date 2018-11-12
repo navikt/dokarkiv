@@ -3,12 +3,10 @@ package no.nav.dokarkiv.core.domain.entities;
 import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalpostBuilder;
 import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
 import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.VEDLEGG;
-import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
 
 import no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder;
 import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
@@ -17,7 +15,6 @@ import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
-import no.nav.dokarkiv.core.exceptions.InvalidJournalpostStructureException;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -116,15 +113,5 @@ public class JournalpostBegrensetTest {
                                 .tilknyttetJournalpostSom(VEDLEGG).build()).build();
     }
 
-    private void assertExceptionThrownWithMessage(Journalpost journalpost, String... messages) {
-        try {
-            journalpost.verifyStructureForEndeligJournalforing();
-            fail();
-        } catch (InvalidJournalpostStructureException e) {
-            for (String message : messages) {
-                assertThat(e.getMessage(), containsString(message));
-            }
-        }
-    }
 
 }
