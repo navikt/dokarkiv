@@ -5,12 +5,11 @@ import static no.nav.dokarkiv.logiskslettdokument.util.TestUtils.JOURNALPOST_ID;
 import static no.nav.dokarkiv.logiskslettdokument.util.TestUtils.createJournalpost;
 import static no.nav.dokarkiv.logiskslettdokument.util.TestUtils.createRequest;
 
-import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
 import no.nav.dokarkiv.core.domain.entities.Begrensning;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
-import no.nav.dokarkiv.logiskslettdokument.exceptions.DokumentIkkeSlettetException;
+import no.nav.dokarkiv.core.exceptions.DokumentIkkeLogiskSlettetException;
 import no.nav.dokarkiv.logiskslettdokument.rjoark100.LogiskSlettDokumentRequestTo;
 import org.junit.Rule;
 import org.junit.Test;
@@ -18,7 +17,6 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.slf4j.MDC;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,7 +39,7 @@ public class AngreLogiskSlettDokumentValidatorTest {
 		Journalpost journalpost = createJournalpost(DOKUMENTINFO_ID);
 		Begrensning begrensning = Begrensning.builder().journalpost(journalpost).begrensningType(BegrensningTypeCode.UTILGJENGELIGGJORT).build();
 		begrensning.setOpprettetKildeNavn("Opprettet kilde");
-		journalpost.addBegrensning(begrensning);
+//		journalpost.addBegrensning(begrensning);
 
 		List<JournalpostDokumentInfoRelasjon> journalpostDokumentInfoRelasjonList = new ArrayList<JournalpostDokumentInfoRelasjon>();
 		journalpostDokumentInfoRelasjonList.addAll(journalpost.getJournalpostDokumentInfoRelasjoner());
@@ -52,8 +50,8 @@ public class AngreLogiskSlettDokumentValidatorTest {
 
 	@Test
 	public void shouldFailToValidateSletteStatusForDokument() {
-		thrown.expect(DokumentIkkeSlettetException.class);
-		thrown.expectMessage(MDC.get(MDCConstants.MDC_REQUEST_ID) + " kan ikke angre logisk sletting av journalpost med journalpostId=" + JOURNALPOST_ID + ". " +
+		thrown.expect(DokumentIkkeLogiskSlettetException.class);
+		thrown.expectMessage("Kan ikke angre logisk sletting av journalpost med journalpostId=" + JOURNALPOST_ID + ". " +
 				"Journalposten er ikke logisk slettet");
 
 		LogiskSlettDokumentRequestTo requestTo = createRequest(JOURNALPOST_ID, DOKUMENTINFO_ID);

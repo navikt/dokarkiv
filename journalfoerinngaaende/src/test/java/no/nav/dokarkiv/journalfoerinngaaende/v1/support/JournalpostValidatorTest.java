@@ -33,7 +33,7 @@ public class JournalpostValidatorTest {
     @Test
     public void happyPath() {
         JournalpostValidator.validateJournalpostStatuser(journalpost);
-        JournalpostValidator.validateJournalpostStrukturOgPaakrevdeAttributter(journalpost);
+        JournalpostValidator.validateJournalpostStruktur(journalpost);
     }
 
     @Test
@@ -104,6 +104,6 @@ public class JournalpostValidatorTest {
         expectedException.expect(exceptionClass);
 
         JournalpostValidator.validateJournalpostStatuser(journalpost);
-        JournalpostValidator.validateJournalpostStrukturOgPaakrevdeAttributter(journalpost);
+        JournalpostValidator.validateJournalpostStruktur(journalpost);
     }
 }
