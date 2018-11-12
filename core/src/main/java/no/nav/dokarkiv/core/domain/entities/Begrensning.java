@@ -3,7 +3,6 @@ package no.nav.dokarkiv.core.domain.entities;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import no.nav.dokarkiv.core.domain.AbstractPersistentVersionedDomainObjectWithKilde;
 import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
@@ -30,10 +29,9 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "T_BEGRENSNING")
 @Builder
+@AllArgsConstructor
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
 public class Begrensning extends AbstractPersistentVersionedDomainObjectWithKilde {
 
 	/** ID used for serialization. */
@@ -47,7 +45,7 @@ public class Begrensning extends AbstractPersistentVersionedDomainObjectWithKild
 	private Long begrensningId;
 
 	@Enumerated(EnumType.STRING)
-	@Column(name = "begrensning_type", nullable = false, length = 50)
+	@Column(name = "begrensning_type", length = 50, nullable = false)
 	private BegrensningTypeCode begrensningType;
 
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -61,4 +59,6 @@ public class Begrensning extends AbstractPersistentVersionedDomainObjectWithKild
 	public Long getId() {
 		return begrensningId;
 	}
+
+
 }

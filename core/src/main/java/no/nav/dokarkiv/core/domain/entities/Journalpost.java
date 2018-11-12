@@ -10,7 +10,6 @@ import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.UB;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import no.nav.dokarkiv.core.domain.AbstractPersistentVersionedDomainObjectWithKilde;
-import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
 import no.nav.dokarkiv.core.domain.codes.Behandlingstema;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
@@ -204,11 +203,6 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	@Cascade({CascadeType.PERSIST, CascadeType.MERGE, CascadeType.SAVE_UPDATE, CascadeType.DELETE, CascadeType.DETACH})
 	private final Set<Bruker> brukere = new HashSet<>();
 
-	@OneToMany(mappedBy = "journalpost", orphanRemoval = true)
-	@Cascade({CascadeType.PERSIST, CascadeType.MERGE, CascadeType.SAVE_UPDATE, CascadeType.DELETE, CascadeType.DETACH})
-	@Builder.Default
-	private Set<Begrensning> begrensninger = new HashSet<>();
-
 	@OneToOne(mappedBy = "journalpost", fetch = FetchType.LAZY)
 	@Cascade({CascadeType.PERSIST, CascadeType.MERGE, CascadeType.SAVE_UPDATE, CascadeType.DELETE, CascadeType.DETACH})
 	private Saksrelasjon saksrelasjon;
@@ -252,7 +246,6 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	public Journalpost(Long journalpostId, long version) {
 		this.journalpostId = journalpostId;
 		setVersion(version);
-		this.begrensninger = new HashSet<>();
 	}
 
 	/**
@@ -367,53 +360,6 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 				throw new InvalidArgumentException("Journalpost must have at least one DokumentInfoRelasjon");
 			}
 		}
-	}
-
-	/**
-	 * Checks if DokumentInfo is Begrenset, either alone, or in relationto a paricular journalpost.
-	 *
-	 * @param begrensningTypeCode The begrensningTypeCode.
-	 * @return boolean.
-	 */
-	public Boolean isBegrenset(final BegrensningTypeCode begrensningTypeCode) {
-		return begrensninger.stream().anyMatch(
-				begrensning -> begrensning.getBegrensningType().equals(begrensningTypeCode) && begrensning.getDokumentInfo() == null);
-	}
-
-	/**
-	 * Getter for the begrensninger property.
-	 *
-	 * @return the Begrensninger
-	 */
-	public Set<Begrensning> getBegrensninger() {
-		return Collections.unmodifiableSet(begrensninger);
-	}
-
-	/**
-	 * Removes a subset from begrensninger
-	 *
-	 * @return true if begrensninger was modified, otherwise false
-	 */
-	public boolean removeBegrensninger(Set<Begrensning> begrensningerToRemove) {
-		return begrensninger.removeAll(begrensningerToRemove);
-	}
-
-	/**
-	 * Add a Begrensning to the Begrensning Set.
-	 *
-	 * @param begrensning The Begrensning to add,
-	 */
-	public void addBegrensning(Begrensning begrensning) {
-		if (begrensning != null) {
-			begrensninger.add(begrensning);
-		}
-	}
-
-	/**
-	 * Empties the Begrensninger set
-	 */
-	public void clearBegrensninger() {
-		begrensninger.clear();
 	}
 
 	/**

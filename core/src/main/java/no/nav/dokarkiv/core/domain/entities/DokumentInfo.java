@@ -6,7 +6,6 @@ import static org.apache.commons.lang3.StringUtils.contains;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import no.nav.dokarkiv.core.domain.AbstractPersistentVersionedDomainObjectWithKilde;
-import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
@@ -148,11 +147,6 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	@Builder.Default
 	private Set<SkannetInnhold> skannetInnholdListe = new HashSet<>();
 
-	@OneToMany(mappedBy = "dokumentInfo", orphanRemoval = true)
-	@Cascade({CascadeType.PERSIST, CascadeType.MERGE, CascadeType.SAVE_UPDATE, CascadeType.DELETE, CascadeType.DETACH})
-	@Builder.Default
-	private Set<Begrensning> begrensninger = new HashSet<>();
-
 	@OneToMany(mappedBy = "dokumentInfo")
 	@Builder.Default
 	private Set<JournalpostDokumentInfoRelasjon> journalpostRelasjoner = new HashSet<>();
@@ -182,7 +176,6 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 		this.journalpostRelasjoner = new HashSet<>();
 		this.tilleggsopplysninger = new HashMap<>();
 		this.skannetInnholdListe = new HashSet<>();
-		this.begrensninger = new HashSet<>();
 	}
 
 	/**
@@ -249,90 +242,6 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 		if (fildetaljerListe.isEmpty()) {
 			throw new InvalidArgumentException("DokumentInfo must have at least one FilDetaljer");
 		}
-	}
-
-	/**
-	 * Checks if DokumentInfo is Begrenset, either alone, or in relationto a paricular journalpost.
-	 *
-	 * @param journalpostId       The journalpostId.
-	 * @param begrensningTypeCode The begrensningTypeCode.
-	 * @return boolean.
-	 */
-	public Boolean isBegrenset(final Long journalpostId, final BegrensningTypeCode begrensningTypeCode) {
-		if (begrensninger != null) {
-			for (Begrensning begrensning : begrensninger) {
-				if (begrensning.getBegrensningType().equals(begrensningTypeCode) && begrensning.getJournalpost() == null) {
-					return true;
-				}
-				if (begrensning.getBegrensningType().equals(begrensningTypeCode) && begrensning.getJournalpost() != null && begrensning.getJournalpost().getJournalpostId().equals(journalpostId)) {
-					return true;
-				}
-			}
-		}
-		return false;
-	}
-
-	/**
-	 * Getter for the begrensninger property.
-	 *
-	 * @return the Begrensninger
-	 */
-	public Set<Begrensning> getBegrensninger() {
-		return Collections.unmodifiableSet(begrensninger);
-	}
-
-	/**
-	 * Removes a subset from begrensninger
-	 *
-	 * @return true if begrensninger was modified, otherwise false
-	 */
-	public boolean removeBegrensninger(Set<Begrensning> begrensningerToRemove) {
-		return begrensninger.removeAll(begrensningerToRemove);
-	}
-
-	/**
-	 * Add a Begrensning to the Begrensning Set.
-	 *
-	 * @param begrensning The Begrensning to add,
-	 */
-	public void addBegrensning(Begrensning begrensning) {
-		if (begrensning != null) {
-			begrensninger.add(begrensning);
-		}
-	}
-
-	/**
-	 * Empties the Begrensninger set
-	 */
-	public void clearBegrensninger() {
-		begrensninger.clear();
-	}
-
-	/**
-	 * Get Begrensning by dokumentInfo and begreningType, no relation to journalpost
-	 *
-	 * @param begrensningType
-	 * @return Begrensning
-	 */
-	public Begrensning getBegrensningnerByDokumentInfoIdOnly(BegrensningTypeCode begrensningType) {
-		return begrensninger.stream().filter(
-				begrensning -> begrensningType.equals(begrensning.getBegrensningType()) && begrensning.getJournalpost() == null)
-				.findAny()
-				.orElse(null);
-	}
-
-	/**
-	 * Get Begrensning by dokumentInfo and begreningType, no relation to journalpost
-	 *
-	 * @param begrensningType
-	 * @param journalpost
-	 * @return Begrensning
-	 */
-	public Begrensning getBegrensningnerByDokumentInfoAndJournalpost(BegrensningTypeCode begrensningType, Journalpost journalpost) {
-		return begrensninger.stream().filter(
-				begrensning -> begrensningType.equals(begrensning.getBegrensningType()) && journalpost.equals(begrensning.getJournalpost()))
-				.findAny()
-				.orElse(null);
 	}
 
 
