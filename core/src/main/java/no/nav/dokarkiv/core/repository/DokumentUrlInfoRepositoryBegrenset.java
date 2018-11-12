@@ -33,7 +33,8 @@ public class DokumentUrlInfoRepositoryBegrenset {
 
     public DokumentUrlInfo findByFilUuid(String filUuid) {
         DokumentUrlInfo dokumentUrlInfo = dokumentUrlInfoRepository.findByFilUuid(filUuid);
-        return dokumentUrlInfo.getJournalpost().isBegrenset(BegrensningTypeCode.UTILGJENGELIGGJORT) ? null : dokumentUrlInfo;
+        return dokumentUrlInfo == null ? null : dokumentUrlInfo.getJournalpost()
+                .isBegrenset(BegrensningTypeCode.UTILGJENGELIGGJORT) ? null : dokumentUrlInfo;
     }
 
     public Optional<DokumentUrlInfo> findByDoctoken(String doctoken) {

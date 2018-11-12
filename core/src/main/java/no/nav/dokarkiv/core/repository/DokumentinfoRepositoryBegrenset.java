@@ -37,7 +37,14 @@ public class DokumentinfoRepositoryBegrenset {
     }
 
     public boolean existsById(Long id) {
-        return dokumentinfoRepository.findById(id).filter(dokInfo -> dokInfo.getBegrensninger().isEmpty()).isPresent();
+        return dokumentinfoRepository.findById(id)
+                .filter(dokInfo -> isFalse(dokInfo.isBegrenset(null, BegrensningTypeCode.UTILGJENGELIGGJORT)))
+                .isPresent();
+    }
+
+    public Optional<DokumentInfo> findById(Long id) {
+        return dokumentinfoRepository.findById(id)
+                .filter(dokumentInfo -> isFalse(dokumentInfo.isBegrenset(null, BegrensningTypeCode.UTILGJENGELIGGJORT)));
     }
 
 }

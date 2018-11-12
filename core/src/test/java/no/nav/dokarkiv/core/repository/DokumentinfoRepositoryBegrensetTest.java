@@ -49,6 +49,14 @@ public class DokumentinfoRepositoryBegrensetTest {
     }
 
     @Test
+    public void shouldReturnNullWhenNotFound() {
+        assertThat(dokumentinfoRepositoryBegrenset.findById(123L).isPresent(), is(false));
+        assertThat(dokumentinfoRepositoryBegrenset.existsById(123L), is(false));
+        assertThat(dokumentinfoRepositoryBegrenset.findDokumentInfoByJournalpostIdAndDokumentInfoId("123", "123")
+                .isPresent(), is(false));
+    }
+
+    @Test
     public void shouldFindDokumentInfoByJournalpostIdAndDokumentInfoIdWhenNotBegrenset() {
 
         Journalpost journalpost = createJournalpostWithBegrensning(false);
@@ -71,6 +79,13 @@ public class DokumentinfoRepositoryBegrensetTest {
                 .getDokumentInfo()
                 .getId()), is(true));
 
+        assertThat(dokumentinfoRepositoryBegrenset.findById(journalpost
+                .getJournalpostDokumentInfoRelasjonerAlsoBegrenset()
+                .iterator()
+                .next()
+                .getDokumentInfo()
+                .getId()).isPresent(), is(true));
+
     }
 
     @Test
@@ -80,6 +95,14 @@ public class DokumentinfoRepositoryBegrensetTest {
         journalpost = joarkRepository.save(journalpost);
         TestTransaction.flagForCommit();
         TestTransaction.end();
+
+        assertThat(dokumentinfoRepository.findDokumentInfoByJournalpostIdAndDokumentInfoId(journalpost.getJournalpostId()
+                .toString(), journalpost
+                .getJournalpostDokumentInfoRelasjonerAlsoBegrenset()
+                .iterator()
+                .next()
+                .getDokumentInfo()
+                .getId().toString()).isPresent(), is(true));
 
         assertThat(dokumentinfoRepositoryBegrenset.findDokumentInfoByJournalpostIdAndDokumentInfoId(journalpost.getJournalpostId()
                 .toString(), journalpost
@@ -99,6 +122,13 @@ public class DokumentinfoRepositoryBegrensetTest {
         TestTransaction.flagForCommit();
         TestTransaction.end();
 
+        assertThat(dokumentinfoRepository.existsById(journalpost
+                .getJournalpostDokumentInfoRelasjonerAlsoBegrenset()
+                .iterator()
+                .next()
+                .getDokumentInfo()
+                .getId()), is(true));
+
         assertThat(dokumentinfoRepositoryBegrenset.existsById(journalpost
                 .getJournalpostDokumentInfoRelasjonerAlsoBegrenset()
                 .iterator()
@@ -109,4 +139,26 @@ public class DokumentinfoRepositoryBegrensetTest {
 
     }
 
+    @Test
+    public void shouldNotFindDocumentWhenBegrenset() {
+
+        Journalpost journalpost = createJournalpostWithBegrensning(true);
+        journalpost = joarkRepository.save(journalpost);
+        TestTransaction.flagForCommit();
+        TestTransaction.end();
+
+        assertThat(dokumentinfoRepository.findById(journalpost
+                .getJournalpostDokumentInfoRelasjonerAlsoBegrenset()
+                .iterator()
+                .next()
+                .getDokumentInfo()
+                .getId()).isPresent(), is(true));
+
+        assertThat(dokumentinfoRepositoryBegrenset.findById(journalpost
+                .getJournalpostDokumentInfoRelasjonerAlsoBegrenset()
+                .iterator()
+                .next()
+                .getDokumentInfo()
+                .getId()).isPresent(), is(false));
+    }
 }

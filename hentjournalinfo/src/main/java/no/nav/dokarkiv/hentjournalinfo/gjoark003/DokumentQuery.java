@@ -24,7 +24,6 @@ import no.nav.dokarkiv.core.security.abac.AbacSecurityService;
 import no.nav.dokarkiv.hentjournalinfo.Query;
 import no.nav.dokarkiv.hentjournalinfo.exceptions.DokumentIkkeFunnetException;
 import no.nav.freg.abac.core.annotation.Abac;
-import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
@@ -36,7 +35,6 @@ import java.util.List;
  *
  * @author Ugur Alpay Cenar, Visma Consulting.
  */
-@Component
 @Slf4j
 public class DokumentQuery implements Query {
 

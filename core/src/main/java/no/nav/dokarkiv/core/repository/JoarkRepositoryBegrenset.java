@@ -55,7 +55,7 @@ public class JoarkRepositoryBegrenset {
 
     public Long findJournalpostIdByTilleggsopplysningerNokkelAndVerdi(String nokkel, String verdi) {
         Long jpId = joarkRepository.findJournalpostIdByTilleggsopplysningerNokkelAndVerdi(nokkel, verdi);
-        return joarkRepository.findById(jpId)
+        return jpId == null ? null : joarkRepository.findById(jpId)
                 .filter(jp -> jp.isBegrenset(BegrensningTypeCode.UTILGJENGELIGGJORT))
                 .isPresent() ? null : jpId;
     }
