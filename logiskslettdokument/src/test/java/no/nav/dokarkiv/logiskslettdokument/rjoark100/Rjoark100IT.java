@@ -5,7 +5,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.core.Is.is;
 
-import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.entities.Begrensning;
@@ -13,7 +12,6 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.logiskslettdokument.AbstractSlettDokumentIT;
 import no.nav.dokarkiv.logiskslettdokument.util.TestUtils;
 import org.junit.Test;
-import org.slf4j.MDC;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -136,7 +134,7 @@ public class Rjoark100IT extends AbstractSlettDokumentIT {
 		Journalpost journalpost = TestUtils.createJournalpostBuilder().journalpostId(JOURNALPOST_ID).build();
 		Begrensning jpBegrensning = Begrensning.builder().journalpost(journalpost).begrensningType(BegrensningTypeCode.UTILGJENGELIGGJORT).build();
 		jpBegrensning.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
-		journalpost.addBegrensning(jpBegrensning);
+//		journalpost.addBegrensning(jpBegrensning);
 		journalpost = joarkRepository.save(journalpost);
 		dokumentinfoRepository.save(journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo());
 

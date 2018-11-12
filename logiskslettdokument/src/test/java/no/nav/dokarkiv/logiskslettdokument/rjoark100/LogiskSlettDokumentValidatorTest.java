@@ -120,7 +120,7 @@ public class LogiskSlettDokumentValidatorTest {
 		Journalpost journalpost = createJournalpost(DOKUMENTINFO_ID);
 		Begrensning jpBegrensning = Begrensning.builder().journalpost(journalpost).begrensningType(BegrensningTypeCode.UTILGJENGELIGGJORT).build();
 		jpBegrensning.setOpprettetKildeNavn("OPPRETTET KILDE");
-		journalpost.addBegrensning(jpBegrensning);
+//		journalpost.addBegrensning(jpBegrensning);
 
 		List<JournalpostDokumentInfoRelasjon> jpDokInfoRelasjoner = new ArrayList<JournalpostDokumentInfoRelasjon>();
 		jpDokInfoRelasjoner.addAll(journalpost.getJournalpostDokumentInfoRelasjoner());
@@ -141,7 +141,7 @@ public class LogiskSlettDokumentValidatorTest {
 		journalpost.addJournalpostDokumentInfoRelasjon(rel);
 		Begrensning jpBegrensning = Begrensning.builder().dokumentInfo(vedlegg).begrensningType(BegrensningTypeCode.UTILGJENGELIGGJORT).build();
 		jpBegrensning.setOpprettetKildeNavn("OPPRETTET KILDE");
-		vedlegg.addBegrensning(jpBegrensning);
+//		vedlegg.addBegrensning(jpBegrensning);
 
 		List<JournalpostDokumentInfoRelasjon> jpDokInfoRelasjoner = new ArrayList<>();
 		jpDokInfoRelasjoner.add(rel);

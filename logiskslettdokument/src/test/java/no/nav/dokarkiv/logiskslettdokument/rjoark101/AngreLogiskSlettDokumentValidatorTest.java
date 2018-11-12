@@ -39,7 +39,7 @@ public class AngreLogiskSlettDokumentValidatorTest {
 		Journalpost journalpost = createJournalpost(DOKUMENTINFO_ID);
 		Begrensning begrensning = Begrensning.builder().journalpost(journalpost).begrensningType(BegrensningTypeCode.UTILGJENGELIGGJORT).build();
 		begrensning.setOpprettetKildeNavn("Opprettet kilde");
-		journalpost.addBegrensning(begrensning);
+//		journalpost.addBegrensning(begrensning);
 
 		List<JournalpostDokumentInfoRelasjon> journalpostDokumentInfoRelasjonList = new ArrayList<JournalpostDokumentInfoRelasjon>();
 		journalpostDokumentInfoRelasjonList.addAll(journalpost.getJournalpostDokumentInfoRelasjoner());

@@ -50,7 +50,7 @@ public class AngreLogiskSlettDokumentService {
 
 		if (validertJpDokInfoRelasjon.getTilknyttetJournalpostSom().equals(TilknyttetJournalpostSomCode.HOVEDDOKUMENT)){
 			Journalpost jp = validertJpDokInfoRelasjon.getJournalpost();
-			jp.clearBegrensninger();
+//			jp.clearBegrensninger();
 			joarkRepository.save(jp);
 		} else {
 			setAngreDokumentLogiskSlettet(validertJpDokInfoRelasjon.getJournalpost(), validertJpDokInfoRelasjon.getDokumentInfo());
