@@ -5,6 +5,7 @@ import com.google.common.cache.CacheBuilder;
 import no.nav.dokarkiv.core.security.STSConfig;
 import no.nav.tjeneste.virksomhet.aktoer.v2.binding.AktoerV2;
 import no.nav.tjeneste.virksomhet.aktoer.v2.meldinger.HentAktoerIdForIdentResponse;
+import no.nav.tjeneste.virksomhet.aktoer.v2.meldinger.HentIdentForAktoerIdResponse;
 import org.apache.cxf.endpoint.Client;
 import org.apache.cxf.frontend.ClientProxy;
 import org.apache.cxf.jaxws.JaxWsProxyFactoryBean;
@@ -55,4 +56,13 @@ public class AktoerV2Config {
 				.maximumSize(CACHE_MAX_SIZE)
 				.build();
 	}
+
+	@Bean
+	public Cache<String, HentIdentForAktoerIdResponse> identResponseCache() {
+		return CacheBuilder.newBuilder()
+				.expireAfterAccess(CACHE_EXPIRES_AFTER, TimeUnit.MINUTES)
+				.maximumSize(CACHE_MAX_SIZE)
+				.build();
+	}
+
 }
