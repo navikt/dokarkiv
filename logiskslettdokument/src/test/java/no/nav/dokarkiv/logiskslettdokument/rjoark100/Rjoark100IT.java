@@ -131,12 +131,17 @@ public class Rjoark100IT extends AbstractSlettDokumentIT {
 	public void shouldFailToDeleteDocumentInJoarkBecauseDocumentAlreadyDeleted() {
 		abacPermit();
 
-		Journalpost journalpost = TestUtils.createJournalpostBuilder().journalpostId(JOURNALPOST_ID).build();
-		Begrensning jpBegrensning = Begrensning.builder().journalpost(journalpost).begrensningType(BegrensningTypeCode.UTILGJENGELIGGJORT).build();
+		Journalpost journalpost = joarkRepository.save(TestUtils.createJournalpostBuilder()
+				.journalpostId(JOURNALPOST_ID)
+				.build());
+		Begrensning jpBegrensning = Begrensning.builder()
+				.journalpostId(journalpost.getJournalpostId())
+				.begrensningType(BegrensningTypeCode.UTILGJENGELIGGJORT)
+				.build();
 		jpBegrensning.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
-//		journalpost.addBegrensning(jpBegrensning);
-		journalpost = joarkRepository.save(journalpost);
-		dokumentinfoRepository.save(journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo());
+//		journalpost = joarkRepository.save(journalpost);
+//		dokumentinfoRepository.save(journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo());
+		begrensningRepository.save(jpBegrensning);
 
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
@@ -150,7 +155,7 @@ public class Rjoark100IT extends AbstractSlettDokumentIT {
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.BAD_REQUEST));
 		assertThat(responseEntity.getBody(), containsString(
-				String.format("Kan ikke utføre logisk sletting av journalpost med journalpostId=%s. Journalposten er allerede logisk slettet",
+				String.format("Kan ikke utføre logisk sletting av journalpost med journalpostId=%s. Journalposten er utilgjengeliggjort",
 						journalpost.getJournalpostId())));
 
 	}

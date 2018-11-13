@@ -88,7 +88,7 @@ public abstract class AbstractSlettDokumentIT {
 	@Inject
 	protected OidcTestService oidcTestService;
 	@Inject
-	private BegrensningRepository begrensningRepository;
+	protected BegrensningRepository begrensningRepository;
 
 	@Before
 	public void setUp() {
@@ -166,8 +166,8 @@ public abstract class AbstractSlettDokumentIT {
 
 	public List<Begrensning> hentHoveddokumentBegrensningEtterUtførtKall(Journalpost journalpost) {
 		try {
-			return begrensningRepository.findByJournalpostIdOnly(
-					journalpost.getJournalpostId(), UTILGJENGELIGGJORT.name()).get();
+			return begrensningRepository.findAllByJournalpostIdAndBegrensningTypeAndDokumentInfoIdIsNull(
+					journalpost.getJournalpostId(), UTILGJENGELIGGJORT).get();
 		} catch (NoSuchElementException e) {
 			return new ArrayList<>();
 		}
@@ -175,7 +175,9 @@ public abstract class AbstractSlettDokumentIT {
 
 	public List<Begrensning> hentVedleggBegrensningEtterUtførtKall(Long journalpostId, Long dokumentInfoId) {
 		try {
-			return begrensningRepository.findByDokumentInfoIdJournalpostId(journalpostId, dokumentInfoId, UTILGJENGELIGGJORT.name()).get();
+//			return begrensningRepository.findByDokumentInfoIdJournalpostId(journalpostId, dokumentInfoId, UTILGJENGELIGGJORT.name()).get();
+			return begrensningRepository.findAllByJournalpostIdAndDokumentInfoIdAndBegrensningType(journalpostId, dokumentInfoId, UTILGJENGELIGGJORT)
+					.get();
 		} catch (NoSuchElementException e) {
 			return new ArrayList<>();
 		}
@@ -189,8 +191,8 @@ public abstract class AbstractSlettDokumentIT {
 
 	public List<Begrensning> hentJournalpostEtterUtførtKall(Long journalpostId) {
 		try {
-			return begrensningRepository.findByJournalpostIdOnly(
-					journalpostId, UTILGJENGELIGGJORT.name()).get();
+			return begrensningRepository.findAllByJournalpostIdAndBegrensningTypeAndDokumentInfoIdIsNull(
+					journalpostId, UTILGJENGELIGGJORT).get();
 		} catch (NoSuchElementException e) {
 			return new ArrayList<>();
 		}

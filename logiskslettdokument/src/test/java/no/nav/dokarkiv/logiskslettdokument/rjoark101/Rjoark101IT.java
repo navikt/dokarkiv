@@ -7,7 +7,6 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 
-import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.entities.Begrensning;
@@ -17,7 +16,6 @@ import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.logiskslettdokument.AbstractSlettDokumentIT;
 import no.nav.dokarkiv.logiskslettdokument.rjoark100.LogiskSlettDokumentResponse;
 import org.junit.Test;
-import org.slf4j.MDC;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -121,8 +119,10 @@ public class Rjoark101IT extends AbstractSlettDokumentIT {
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.BAD_REQUEST));
 
 		assertThat(responseEntity.getBody(), containsString(
-				String.format("Kan ikke angre logisk sletting av journalpost med journalpostId=%s. Journalposten er ikke logisk slettet",
-						journalpost.getJournalpostId())));
+				String.format("Fant ikke forventet begrensning for journalpostId=%s, dokumentInfoId=%s og begrensningsType=%s.",
+						journalpost.getJournalpostId(),
+						journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId(),
+						BegrensningTypeCode.UTILGJENGELIGGJORT)));
 
 		List<Begrensning> begrensetJp = hentJournalpostEtterUtførtKall (journalpost.getJournalpostId());
 		assertEquals(begrensetJp.size(), 0L);

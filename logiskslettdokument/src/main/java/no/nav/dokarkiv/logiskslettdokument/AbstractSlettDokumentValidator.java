@@ -19,7 +19,7 @@ public abstract class AbstractSlettDokumentValidator {
 		validerAtJournalpostDokumentInfoRelasjonKunErKnyttetTilEnJournalPost(jpDokInfoRelasjoner, dokumentInfoId);
 	}
 
-	protected void validerAtJournalpostDokumentInfoRelasjonerFinnes(
+	private void validerAtJournalpostDokumentInfoRelasjonerFinnes(
 			List<JournalpostDokumentInfoRelasjon> jpDokInfoRelasjoner,
 			Long dokumentInfoId) {
 		if (jpDokInfoRelasjoner.isEmpty()) {
@@ -29,7 +29,7 @@ public abstract class AbstractSlettDokumentValidator {
 		}
 	}
 
-	protected void validerAtJournalpostDokumentInfoRelasjonKunErKnyttetTilEnJournalPost(
+	private void validerAtJournalpostDokumentInfoRelasjonKunErKnyttetTilEnJournalPost(
 			List<JournalpostDokumentInfoRelasjon> jpDokInfoRelasjoner,
 			Long dokumentInfoId) {
 		if (jpDokInfoRelasjoner.get(0).getDokumentInfo().isRelatedToMultipleJournalposts()) {

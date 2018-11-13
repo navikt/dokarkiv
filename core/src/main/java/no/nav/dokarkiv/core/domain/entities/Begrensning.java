@@ -3,6 +3,7 @@ package no.nav.dokarkiv.core.domain.entities;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import no.nav.dokarkiv.core.domain.AbstractPersistentVersionedDomainObjectWithKilde;
 import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
@@ -13,12 +14,9 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 /**
@@ -29,6 +27,7 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "T_BEGRENSNING")
 @Builder
+@NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
@@ -48,17 +47,13 @@ public class Begrensning extends AbstractPersistentVersionedDomainObjectWithKild
 	@Column(name = "begrensning_type", length = 50, nullable = false)
 	private BegrensningTypeCode begrensningType;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "journalpost_id")
-	private Journalpost journalpost;
+	@Column(name = "journalpost_id")
+	private Long journalpostId;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "dokument_info_id")
-	private DokumentInfo dokumentInfo;
+	@Column(name = "dokument_info_id")
+	private Long dokumentInfoId;
 
 	public Long getId() {
 		return begrensningId;
 	}
-
-
 }
