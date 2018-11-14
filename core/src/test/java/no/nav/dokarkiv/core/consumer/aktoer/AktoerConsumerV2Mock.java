@@ -27,32 +27,16 @@ import java.util.List;
 public class AktoerConsumerV2Mock implements AktoerV2 {
 
 	private static volatile List<HentAktoerIdForIdentRequest> identInspectionObjects = Lists.newArrayList();
-	private static volatile List<HentIdentForAktoerIdRequest> aktoerInspectionObjects = Lists.newArrayList();
 
 	public static final String AKTOER_ID = "***gammelt_fnr******gammelt_fnr***00";
 	public static final String CURRENT_IDENT = "***gammelt_fnr***1";
 	public static final String FAIL_IDENT = "***gammelt_fnr***067";
 	public static final List<String> HISTORICAL_IDENTS = Lists.newArrayList("***gammelt_fnr***0", "234567810");
-	public static final String IDENT = "***gammelt_fnr***1";
 
-	public static List<HentAktoerIdForIdentRequest> getIdentInspectionObjects() {
-		return identInspectionObjects;
-	}
-	public static List<HentIdentForAktoerIdRequest> getAktoerIdInspectionObjects() {
-		return aktoerInspectionObjects;
-	}
 
 	@Override
 	public HentIdentForAktoerIdResponse hentIdentForAktoerId(HentIdentForAktoerIdRequest hentIdentForAktoerIdRequest) throws HentIdentForAktoerIdPersonIkkeFunnet {
-		aktoerInspectionObjects.add(hentIdentForAktoerIdRequest);
-
-		if (FAIL_IDENT.equals(hentIdentForAktoerIdRequest.getAktoerId())) {
-			throw new HentIdentForAktoerIdPersonIkkeFunnet(hentIdentForAktoerIdRequest.getAktoerId(), null);
-		}
-		HentIdentForAktoerIdResponse response = new HentIdentForAktoerIdResponse();
-		response.setIdent(IDENT);
-		return response;
-	}
+		throw new UnsupportedOperationException("not supported");	}
 
 	@Override
 	public HentAktoerIdForIdentResponse hentAktoerIdForIdent(HentAktoerIdForIdentRequest request) throws HentAktoerIdForIdentPersonIkkeFunnet {

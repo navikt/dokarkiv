@@ -65,10 +65,6 @@ fasitResources:
     resourceType: restservice
     propertyMap:
       url: ABAC_URL
-  - alias: "sak.saker"
-    resourceType: restservice
-    propertyMap:
-      url: SAK_URL
   - alias: joarkhentdokumentbaseurl
     resourceType: baseurl
     propertyMap:
