@@ -1,9 +1,10 @@
 package no.nav.dokarkiv.core.repository;
 
-import static org.apache.commons.lang3.BooleanUtils.isFalse;
+import static org.apache.cxf.common.util.PropertyUtils.isFalse;
 
 import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentUrlInfo;
+import no.nav.dokarkiv.core.domain.service.BegrensningService;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
@@ -15,9 +16,11 @@ import java.util.Optional;
 public class DokumentUrlInfoRepositoryBegrenset {
 
     private final DokumentUrlInfoRepository dokumentUrlInfoRepository;
+    private final BegrensningService begrensningService;
 
-    public DokumentUrlInfoRepositoryBegrenset(DokumentUrlInfoRepository dokumentUrlInfoRepository) {
+    public DokumentUrlInfoRepositoryBegrenset(DokumentUrlInfoRepository dokumentUrlInfoRepository, BegrensningService begrensningService) {
         this.dokumentUrlInfoRepository = dokumentUrlInfoRepository;
+        this.begrensningService = begrensningService;
     }
 
     public DokumentUrlInfo save(DokumentUrlInfo dokumentUrlInfo) {
@@ -33,14 +36,15 @@ public class DokumentUrlInfoRepositoryBegrenset {
 
     public DokumentUrlInfo findByFilUuid(String filUuid) {
         DokumentUrlInfo dokumentUrlInfo = dokumentUrlInfoRepository.findByFilUuid(filUuid);
-        return dokumentUrlInfo == null ? null : dokumentUrlInfo.getJournalpost()
-                .isBegrenset(BegrensningTypeCode.UTILGJENGELIGGJORT) ? null : dokumentUrlInfo;
+        return dokumentUrlInfo != null && isFalse(begrensningService.isJournalpostBegrenset(dokumentUrlInfo.getJournalpost()
+                .getJournalpostId(), BegrensningTypeCode.UTILGJENGELIGGJORT)) ? dokumentUrlInfo : null;
     }
 
     public Optional<DokumentUrlInfo> findByDoctoken(String doctoken) {
         Optional<DokumentUrlInfo> dokumentUrlInfo = dokumentUrlInfoRepository.findByDoctoken(doctoken);
-        return dokumentUrlInfo.filter(dokUrlInfo -> isFalse(dokUrlInfo.getJournalpost()
-                .isBegrenset(BegrensningTypeCode.UTILGJENGELIGGJORT))).isPresent() ? dokumentUrlInfo : Optional.empty();
+        return dokumentUrlInfo.isPresent() && isFalse(begrensningService.isJournalpostBegrenset(dokumentUrlInfo.get()
+                .getJournalpost()
+                .getJournalpostId(), BegrensningTypeCode.UTILGJENGELIGGJORT)) ? dokumentUrlInfo : Optional.empty();
     }
 
 

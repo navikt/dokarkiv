@@ -132,7 +132,10 @@ public class Rjoark100IT extends AbstractSlettDokumentIT {
 		abacPermit();
 
 		Journalpost journalpost = TestUtils.createJournalpostBuilder().journalpostId(JOURNALPOST_ID).build();
-		Begrensning jpBegrensning = Begrensning.builder().journalpost(journalpost).begrensningType(BegrensningTypeCode.UTILGJENGELIGGJORT).build();
+        Begrensning jpBegrensning = Begrensning.builder()
+                .journalpostId(journalpost.getJournalpostId())
+                .begrensningType(BegrensningTypeCode.UTILGJENGELIGGJORT)
+                .build();
 		jpBegrensning.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
 //		journalpost.addBegrensning(jpBegrensning);
 		journalpost = joarkRepository.save(journalpost);

@@ -4,9 +4,14 @@ import static org.apache.commons.lang3.BooleanUtils.isFalse;
 
 import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
+import no.nav.dokarkiv.core.domain.service.BegrensningService;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
@@ -16,16 +21,19 @@ public class DokumentinfoRepositoryBegrenset {
 
 
     private final DokumentinfoRepository dokumentinfoRepository;
+    private final BegrensningService begrensningService;
+    private final JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository;
 
-    public DokumentinfoRepositoryBegrenset(DokumentinfoRepository dokumentinfoRepository) {
+    public DokumentinfoRepositoryBegrenset(DokumentinfoRepository dokumentinfoRepository, BegrensningService begrensningService, JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository) {
         this.dokumentinfoRepository = dokumentinfoRepository;
+        this.begrensningService = begrensningService;
+        this.journalpostDokumentInfoRelasjonRepository = journalpostDokumentInfoRelasjonRepository;
     }
 
-    public Optional<DokumentInfo> findDokumentInfoByJournalpostIdAndDokumentInfoId(String originalJournalpostId, String dokumentinfoId) {
-        Optional<DokumentInfo> dokumentInfo = dokumentinfoRepository.findDokumentInfoByJournalpostIdAndDokumentInfoId(originalJournalpostId, dokumentinfoId);
-
-        return dokumentInfo.filter(dokInfo -> isFalse(dokInfo.isBegrenset(Long.valueOf(originalJournalpostId), BegrensningTypeCode.UTILGJENGELIGGJORT)))
-                .isPresent() ? dokumentInfo : Optional.empty();
+    public Optional<DokumentInfo> findDokumentInfoByJournalpostIdAndDokumentInfoId(Long journalpostId, Long dokumentinfoId) {
+        Optional<DokumentInfo> dokumentInfo = dokumentinfoRepository.findAllByJournalpostRelasjonerJournalpostJournalpostIdAndDokumentInfoId(journalpostId, dokumentinfoId);
+        return isFalse(dokumentInfo.isPresent()) ? Optional.empty() : begrensningService.isDokumentInfoBegrenset(dokumentinfoId, BegrensningTypeCode.UTILGJENGELIGGJORT) ? Optional
+                .empty() : Optional.of(setBegrensetRelasjoner(dokumentInfo.get()));
     }
 
     public DokumentInfo save(DokumentInfo dokumentInfo) {
@@ -37,14 +45,25 @@ public class DokumentinfoRepositoryBegrenset {
     }
 
     public boolean existsById(Long id) {
-        return dokumentinfoRepository.findById(id)
-                .filter(dokInfo -> isFalse(dokInfo.isBegrenset(null, BegrensningTypeCode.UTILGJENGELIGGJORT)))
-                .isPresent();
+        return dokumentinfoRepository.existsById(id) && isFalse(begrensningService.isDokumentInfoBegrenset(id, BegrensningTypeCode.UTILGJENGELIGGJORT));
     }
 
     public Optional<DokumentInfo> findById(Long id) {
-        return dokumentinfoRepository.findById(id)
-                .filter(dokumentInfo -> isFalse(dokumentInfo.isBegrenset(null, BegrensningTypeCode.UTILGJENGELIGGJORT)));
+        Optional<DokumentInfo> dokumentInfo = dokumentinfoRepository.findById(id);
+        return isFalse(dokumentInfo.isPresent()) ? Optional.empty() : begrensningService.isDokumentInfoBegrenset(id, BegrensningTypeCode.UTILGJENGELIGGJORT) ? Optional
+                .empty() : Optional.of(setBegrensetRelasjoner(dokumentInfo.get()));
     }
+
+    private DokumentInfo setBegrensetRelasjoner(DokumentInfo dokumentInfo) {
+        List<Long> begrensetDokumentInfoIds = journalpostDokumentInfoRelasjonRepository.findBegrensetRelasjonJournalpostIdByDokumentInfoId(dokumentInfo
+                .getDokumentInfoId())
+                .orElseGet(ArrayList::new)
+                .stream()
+                .map(BigInteger::longValue)
+                .collect(Collectors.toList());
+        dokumentInfo.addAllbegrensetRelasjonJournalpostIds(begrensetDokumentInfoIds);
+        return dokumentInfo;
+    }
+
 
 }

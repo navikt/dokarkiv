@@ -166,7 +166,7 @@ public abstract class AbstractSlettDokumentIT {
 
 	public List<Begrensning> hentHoveddokumentBegrensningEtterUtførtKall(Journalpost journalpost) {
 		try {
-			return begrensningRepository.findByJournalpostIdOnly(
+			return begrensningRepository.findByJournalpostIdAndBegrensningTypeAndDokumentInfoIdIsNull(
 					journalpost.getJournalpostId(), UTILGJENGELIGGJORT.name()).get();
 		} catch (NoSuchElementException e) {
 			return new ArrayList<>();
@@ -175,7 +175,8 @@ public abstract class AbstractSlettDokumentIT {
 
 	public List<Begrensning> hentVedleggBegrensningEtterUtførtKall(Long journalpostId, Long dokumentInfoId) {
 		try {
-			return begrensningRepository.findByDokumentInfoIdJournalpostId(journalpostId, dokumentInfoId, UTILGJENGELIGGJORT.name()).get();
+			return begrensningRepository.findAllByJournalpostIdAndDokumentInfoIdAndBegrensningType(journalpostId, dokumentInfoId, UTILGJENGELIGGJORT)
+					.get();
 		} catch (NoSuchElementException e) {
 			return new ArrayList<>();
 		}
@@ -189,7 +190,7 @@ public abstract class AbstractSlettDokumentIT {
 
 	public List<Begrensning> hentJournalpostEtterUtførtKall(Long journalpostId) {
 		try {
-			return begrensningRepository.findByJournalpostIdOnly(
+			return begrensningRepository.findByJournalpostIdAndBegrensningTypeAndDokumentInfoIdIsNull(
 					journalpostId, UTILGJENGELIGGJORT.name()).get();
 		} catch (NoSuchElementException e) {
 			return new ArrayList<>();

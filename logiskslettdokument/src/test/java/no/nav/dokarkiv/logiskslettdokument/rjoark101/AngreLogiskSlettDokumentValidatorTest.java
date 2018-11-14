@@ -37,7 +37,10 @@ public class AngreLogiskSlettDokumentValidatorTest {
 	public void shouldValidateAngreLogiskSlettDokument() throws Exception {
 		LogiskSlettDokumentRequestTo requestTo = createRequest(JOURNALPOST_ID, DOKUMENTINFO_ID);
 		Journalpost journalpost = createJournalpost(DOKUMENTINFO_ID);
-		Begrensning begrensning = Begrensning.builder().journalpost(journalpost).begrensningType(BegrensningTypeCode.UTILGJENGELIGGJORT).build();
+		Begrensning begrensning = Begrensning.builder()
+				.journalpostId(journalpost.getJournalpostId())
+				.begrensningType(BegrensningTypeCode.UTILGJENGELIGGJORT)
+				.build();
 		begrensning.setOpprettetKildeNavn("Opprettet kilde");
 //		journalpost.addBegrensning(begrensning);
 

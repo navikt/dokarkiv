@@ -46,43 +46,16 @@ public class TestDataUtils {
     public static final String TILLEGGSOPPLYSNINGER_KEY = "keey";
     public static final String TILLEGGSOPPLYSNINGER_VALUE = "value";
 
-    public static Journalpost createJournalpostWithBegrensning(boolean withBegrensning) {
-        Journalpost journalpost = TestDataUtils.createJournalpost().build();
+    public static Begrensning createBegrensning(Long journalpostId, Long dokumentInfoId, BegrensningTypeCode begrensningTypeCode) {
 
-        Map<String, String> map = new HashMap<>();
-        map.put(TILLEGGSOPPLYSNINGER_KEY, TILLEGGSOPPLYSNINGER_VALUE);
-        journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().setTilleggsopplysninger(map);
-        journalpost.setTilleggsopplysninger(map);
+        Begrensning begrensning = Begrensning.builder()
+                .begrensningType(begrensningTypeCode)
+                .journalpostId(journalpostId)
+                .dokumentInfoId(dokumentInfoId).build();
 
-        journalpost.setKanalReferanseId(KANAL_REFERANSE_ID);
-        journalpost.setMottakskanal(MottaksKanalCode.NAV_NO);
+        begrensning.setOpprettetKildeNavn("test navn");
 
-
-        if (withBegrensning) {
-            Begrensning begrensning = Begrensning.builder()
-                    .begrensningType(BegrensningTypeCode.UTILGJENGELIGGJORT)
-                    .journalpost(journalpost)
-                    .build();
-            begrensning.setOpprettetKildeNavn("Kilde navn");
-            journalpost.addBegrensning(begrensning);
-
-            journalpost.removeJournalpostDokumentInfoRelasjon(journalpost.findHoveddokumentDokumentInfoRelasjon());
-            journalpost.addJournalpostDokumentInfoRelasjon(JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder()
-                    .tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.HOVEDDOKUMENT)
-                    .opprettetKildeNavn("test")
-                    .tilknyttetAvNavn("test")
-                    .dokumentInfo(DokumentInfoBuilder.getDokumentInfoBuilder()
-                            .dokumentstatus(DokumentStatusCode.FERDIGSTILT)
-                            .opprettetKildeNavn("test")
-                            .originalJournalpost(journalpost)
-                            .begrensning(Begrensning.builder()
-                                    .begrensningType(BegrensningTypeCode.UTILGJENGELIGGJORT)
-                                    .build())
-                            .build())
-                    .build());
-        }
-
-        return journalpost;
+        return begrensning;
     }
 
     public static JournalpostBuilder createJournalpostWithSaksrelasjon(String saksnr, boolean isFeilregistrert, FagomradeCode fagomrade,
@@ -117,8 +90,14 @@ public class TestDataUtils {
     }
 
     public static JournalpostBuilder createJournalpost(String saksNr, Date journalDato, JournalStatusCode journalStatusCode, FagomradeCode fagomrade) {
+        Map<String, String> tilleggsopplysninger = new HashMap<>();
+        tilleggsopplysninger.put(TILLEGGSOPPLYSNINGER_KEY, TILLEGGSOPPLYSNINGER_VALUE);
+
         return JournalpostBuilder.getJournalpostBuilder()
                 .addOriginalJournalpost(true)
+                .kanalReferanseId(KANAL_REFERANSE_ID)
+                .mottakskanal(MottaksKanalCode.NAV_NO)
+                .tilleggsopplysninger(tilleggsopplysninger)
                 .saksrelasjon(SaksrelasjonBuilder.getSaksrelasjonBuilder()
                         .opprettetKildeNavn("test")
                         .sakId(saksNr)
@@ -144,6 +123,7 @@ public class TestDataUtils {
                                         .opprettetKildeNavn("test")
                                         .build()
                                 )
+                                .tilleggsopplysninger(tilleggsopplysninger)
                                 .build())
                         .build())
                 .journalDato(journalDato)
@@ -155,8 +135,8 @@ public class TestDataUtils {
                 .journalForendeEnhetId(journalfEnhet);
     }
 
-    public static JournalpostBuilder createJournalpost() {
-        return createJournalpost("123", DateTime.now().toDate(), JournalStatusCode.J, FagomradeCode.PEN);
+    public static Journalpost createJournalpost() {
+        return createJournalpost("123", DateTime.now().toDate(), JournalStatusCode.J, FagomradeCode.PEN).build();
     }
 
 }

@@ -1,12 +1,16 @@
 package no.nav.dokarkiv.core.repository;
 
-import static no.nav.dokarkiv.core.util.TestDataUtils.createJournalpostWithBegrensning;
+import static no.nav.dokarkiv.core.util.TestDataUtils.createBegrensning;
+import static no.nav.dokarkiv.core.util.TestDataUtils.createJournalpost;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
+import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
+import no.nav.dokarkiv.core.domain.entities.Begrensning;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.security.abac.JdbcAbacSecurityRepository;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,47 +44,55 @@ public class DokumentinfoRepositoryBegrensetTest {
     @Inject
     private DokumentinfoRepositoryBegrenset dokumentinfoRepositoryBegrenset;
 
+    @Inject
+    private BegrensningRepository begrensningRepository;
+
     @Before
     public void setUp() {
         RequestContextUtil.createAndSetUsername("itest", "itest");
+    }
+
+    @After
+    public void cleanUp() {
         journalpostDokumentInfoRelasjonRepository.deleteAll();
         dokumentinfoRepository.deleteAll();
         joarkRepository.deleteAll();
+        begrensningRepository.deleteAll();
     }
+
 
     @Test
     public void shouldReturnNullWhenNotFound() {
         assertThat(dokumentinfoRepositoryBegrenset.findById(123L).isPresent(), is(false));
         assertThat(dokumentinfoRepositoryBegrenset.existsById(123L), is(false));
-        assertThat(dokumentinfoRepositoryBegrenset.findDokumentInfoByJournalpostIdAndDokumentInfoId("123", "123")
+        assertThat(dokumentinfoRepositoryBegrenset.findDokumentInfoByJournalpostIdAndDokumentInfoId(123L, 123L)
                 .isPresent(), is(false));
     }
 
     @Test
     public void shouldFindDokumentInfoByJournalpostIdAndDokumentInfoIdWhenNotBegrenset() {
 
-        Journalpost journalpost = createJournalpostWithBegrensning(false);
+        Journalpost journalpost = createJournalpost();
         journalpost = joarkRepository.save(journalpost);
         TestTransaction.flagForCommit();
         TestTransaction.end();
 
-        assertThat(dokumentinfoRepositoryBegrenset.findDokumentInfoByJournalpostIdAndDokumentInfoId(journalpost.getJournalpostId()
-                .toString(), journalpost
-                .getJournalpostDokumentInfoRelasjonerAlsoBegrenset()
+        assertThat(dokumentinfoRepositoryBegrenset.findDokumentInfoByJournalpostIdAndDokumentInfoId(journalpost.getJournalpostId(), journalpost
+                .getJournalpostDokumentInfoRelasjoner()
                 .iterator()
                 .next()
                 .getDokumentInfo()
-                .getId().toString()).isPresent(), is(true));
+                .getId()).isPresent(), is(true));
 
         assertThat(dokumentinfoRepositoryBegrenset.existsById(journalpost
-                .getJournalpostDokumentInfoRelasjonerAlsoBegrenset()
+                .getJournalpostDokumentInfoRelasjoner()
                 .iterator()
                 .next()
                 .getDokumentInfo()
                 .getId()), is(true));
 
         assertThat(dokumentinfoRepositoryBegrenset.findById(journalpost
-                .getJournalpostDokumentInfoRelasjonerAlsoBegrenset()
+                .getJournalpostDokumentInfoRelasjoner()
                 .iterator()
                 .next()
                 .getDokumentInfo()
@@ -91,46 +103,53 @@ public class DokumentinfoRepositoryBegrensetTest {
     @Test
     public void shouldNotFindDokumentInfoByJournalpostIdAndDokumentInfoIdWhenBegrenset() {
 
-        Journalpost journalpost = createJournalpostWithBegrensning(true);
+        Journalpost journalpost = createJournalpost();
         journalpost = joarkRepository.save(journalpost);
+        Begrensning begrensning = createBegrensning(null, journalpost.findHoveddokumentDokumentInfoRelasjon()
+                .getDokumentInfo()
+                .getDokumentInfoId(), BegrensningTypeCode.UTILGJENGELIGGJORT);
+        begrensningRepository.save(begrensning);
         TestTransaction.flagForCommit();
         TestTransaction.end();
 
-        assertThat(dokumentinfoRepository.findDokumentInfoByJournalpostIdAndDokumentInfoId(journalpost.getJournalpostId()
-                .toString(), journalpost
-                .getJournalpostDokumentInfoRelasjonerAlsoBegrenset()
+        assertThat(dokumentinfoRepository.findAllByJournalpostRelasjonerJournalpostJournalpostIdAndDokumentInfoId(journalpost.getJournalpostId(), journalpost
+                .getJournalpostDokumentInfoRelasjoner()
                 .iterator()
                 .next()
                 .getDokumentInfo()
-                .getId().toString()).isPresent(), is(true));
+                .getId()).isPresent(), is(true));
 
         assertThat(dokumentinfoRepositoryBegrenset.findDokumentInfoByJournalpostIdAndDokumentInfoId(journalpost.getJournalpostId()
-                .toString(), journalpost
-                .getJournalpostDokumentInfoRelasjonerAlsoBegrenset()
+                , journalpost
+                        .getJournalpostDokumentInfoRelasjoner()
                 .iterator()
                 .next()
                 .getDokumentInfo()
-                .getId().toString()).isPresent(), is(false));
+                        .getId()).isPresent(), is(false));
 
     }
 
     @Test
     public void shouldReturnFalseForExistsByIdWhenDokumentIsBegrenset() {
 
-        Journalpost journalpost = createJournalpostWithBegrensning(true);
+        Journalpost journalpost = createJournalpost();
         journalpost = joarkRepository.save(journalpost);
+        Begrensning begrensning = createBegrensning(null, journalpost.findHoveddokumentDokumentInfoRelasjon()
+                .getDokumentInfo()
+                .getDokumentInfoId(), BegrensningTypeCode.UTILGJENGELIGGJORT);
+        begrensningRepository.save(begrensning);
         TestTransaction.flagForCommit();
         TestTransaction.end();
 
         assertThat(dokumentinfoRepository.existsById(journalpost
-                .getJournalpostDokumentInfoRelasjonerAlsoBegrenset()
+                .getJournalpostDokumentInfoRelasjoner()
                 .iterator()
                 .next()
                 .getDokumentInfo()
                 .getId()), is(true));
 
         assertThat(dokumentinfoRepositoryBegrenset.existsById(journalpost
-                .getJournalpostDokumentInfoRelasjonerAlsoBegrenset()
+                .getJournalpostDokumentInfoRelasjoner()
                 .iterator()
                 .next()
                 .getDokumentInfo()
@@ -142,20 +161,24 @@ public class DokumentinfoRepositoryBegrensetTest {
     @Test
     public void shouldNotFindDocumentWhenBegrenset() {
 
-        Journalpost journalpost = createJournalpostWithBegrensning(true);
+        Journalpost journalpost = createJournalpost();
         journalpost = joarkRepository.save(journalpost);
+        Begrensning begrensning = createBegrensning(null, journalpost.findHoveddokumentDokumentInfoRelasjon()
+                .getDokumentInfo()
+                .getDokumentInfoId(), BegrensningTypeCode.UTILGJENGELIGGJORT);
+        begrensningRepository.save(begrensning);
         TestTransaction.flagForCommit();
         TestTransaction.end();
 
         assertThat(dokumentinfoRepository.findById(journalpost
-                .getJournalpostDokumentInfoRelasjonerAlsoBegrenset()
+                .getJournalpostDokumentInfoRelasjoner()
                 .iterator()
                 .next()
                 .getDokumentInfo()
                 .getId()).isPresent(), is(true));
 
         assertThat(dokumentinfoRepositoryBegrenset.findById(journalpost
-                .getJournalpostDokumentInfoRelasjonerAlsoBegrenset()
+                .getJournalpostDokumentInfoRelasjoner()
                 .iterator()
                 .next()
                 .getDokumentInfo()

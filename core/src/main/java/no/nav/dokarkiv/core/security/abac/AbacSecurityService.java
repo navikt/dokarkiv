@@ -61,7 +61,7 @@ public class AbacSecurityService {
 	@Inject
 	private JoarkRepositoryBegrenset joarkRepositoryBegrenset;
 
-	public void assertAccessToJournalpostNotBegrenset(String journalpost) {
+	public void assertAccessToJournalpostIncludingBegrenset(String journalpost) {
 		Long journalpostId = Long.parseLong(journalpost);
 
 		if (!joarkRepository.existsById(journalpostId)) {
@@ -74,7 +74,7 @@ public class AbacSecurityService {
 		handleResponseForJournalpostId(abacContext.getRequest(), accessResponse, journalpostId);
 	}
 
-	public void assertAccessToDokumentNotBegrenset(Long dokumentInfo) {
+	public void assertAccessToDokumentIncludingBegrenset(Long dokumentInfo) {
 
 		if (!dokumentinfoRepository.existsById(dokumentInfo)) {
 			throw new DokumentInfoIkkeFunnetException("DokumentInfo ikke funnet. dokumentInfoId=" + dokumentInfo);

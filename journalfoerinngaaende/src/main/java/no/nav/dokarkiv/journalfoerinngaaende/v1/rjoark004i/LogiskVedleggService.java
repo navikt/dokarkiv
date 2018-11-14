@@ -11,7 +11,7 @@ import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.SkannetInnhold;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
-import no.nav.dokarkiv.core.repository.JoarkRepositoryBegrenset;
+import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.core.repository.SkannetInnholdRepository;
 import no.nav.dokarkiv.journalfoerinngaaende.v1.exceptions.LogiskVedleggIkkeFunnetException;
 import no.nav.dokarkiv.journalfoerinngaaende.v1.util.Utils;
@@ -26,13 +26,13 @@ import javax.inject.Inject;
 @Service
 public class LogiskVedleggService {
 
-	private final JoarkRepositoryBegrenset joarkRepository;
+    private final JoarkRepository joarkRepository;
 	private final SkannetInnholdRepository skannetInnholdRepository;
 	private static final String JOURNALPOST_IKKE_FUNNET = "Kunne ikke finne journalpost med journalpostId=%s i joark";
 
 	@Inject
-	public LogiskVedleggService(JoarkRepositoryBegrenset joarkRepository,
-								SkannetInnholdRepository skannetInnholdRepository) {
+    public LogiskVedleggService(JoarkRepository joarkRepository,
+                                SkannetInnholdRepository skannetInnholdRepository) {
 		this.joarkRepository = joarkRepository;
 		this.skannetInnholdRepository = skannetInnholdRepository;
 	}

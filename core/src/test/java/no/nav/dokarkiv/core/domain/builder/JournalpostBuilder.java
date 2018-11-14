@@ -127,11 +127,6 @@ public class JournalpostBuilder extends Builder<Journalpost> {
 	public JournalpostBuilder signatur(Boolean value) {this.signatur = value; return this; }
 	public JournalpostBuilder behandlingsrelasjon(Behandlingsrelasjon value) {this.behandlingsrelasjon = value; return this; }
 
-	public JournalpostBuilder begrensning(Begrensning begrensning) {
-		this.begrensning = begrensning;
-		return this;
-	}
-
     public JournalpostBuilder addOriginalJournalpost(boolean value) {
         this.addOriginalJournalpost = value;
         return this;
@@ -191,13 +186,6 @@ public class JournalpostBuilder extends Builder<Journalpost> {
 		journalpost.setJournalposttype(journalpostType);
 		journalpost.setChangeStamp(changeStamp);
 		journalpost.setSignatur(signatur);
-
-		if (begrensning != null) {
-			begrensning.setOpprettetKildeNavn(opprettetKildeNavn);
-			begrensning.setEndretKildeNavn(endretKildeNavn);
-			begrensning.setJournalpost(journalpost);
-		}
-		journalpost.addBegrensning(begrensning);
 		return journalpost;
 	}
 

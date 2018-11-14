@@ -46,7 +46,7 @@ public class LogiskSlettDokumentValidatorTest {
 		Journalpost journalpost = createJournalpost(DOKUMENTINFO_ID);
 
 		List<JournalpostDokumentInfoRelasjon> jpDokInfoRelasjoner = new ArrayList<JournalpostDokumentInfoRelasjon>();
-        jpDokInfoRelasjoner.addAll(journalpost.getJournalpostDokumentInfoRelasjonerAlsoBegrenset());
+//        jpDokInfoRelasjoner.addAll(journalpost.getJournalpostDokumentInfoRelasjonerAlsoBegrenset());
 
 		validator.validerAtDokumentSomSkalSlettesLogiskErKnyttetTilKunEnJournalpost(jpDokInfoRelasjoner, requestTo);
 	}
@@ -87,9 +87,9 @@ public class LogiskSlettDokumentValidatorTest {
 
 
 		List<JournalpostDokumentInfoRelasjon> jpDokInfoRelasjoner = new ArrayList<JournalpostDokumentInfoRelasjon>();
-        jpDokInfoRelasjoner.addAll(journalpost1.getJournalpostDokumentInfoRelasjonerAlsoBegrenset());
-        jpDokInfoRelasjoner.addAll(journalpost2.getJournalpostDokumentInfoRelasjonerAlsoBegrenset());
-        jpDokInfoRelasjoner.addAll(journalpost3.getJournalpostDokumentInfoRelasjonerAlsoBegrenset());
+//        jpDokInfoRelasjoner.addAll(journalpost1.getJournalpostDokumentInfoRelasjonerAlsoBegrenset());
+//        jpDokInfoRelasjoner.addAll(journalpost2.getJournalpostDokumentInfoRelasjonerAlsoBegrenset());
+//        jpDokInfoRelasjoner.addAll(journalpost3.getJournalpostDokumentInfoRelasjonerAlsoBegrenset());
 
 		validator.validerAtDokumentSomSkalSlettesLogiskErKnyttetTilKunEnJournalpost(jpDokInfoRelasjoner, requestTo);
 	}
@@ -104,7 +104,7 @@ public class LogiskSlettDokumentValidatorTest {
 		Journalpost journalpost1 = createJournalpost(DOKUMENTINFO_ID);
 
 		List<JournalpostDokumentInfoRelasjon> jpDokInfoRelasjoner = new ArrayList<JournalpostDokumentInfoRelasjon>();
-        jpDokInfoRelasjoner.addAll(journalpost1.getJournalpostDokumentInfoRelasjonerAlsoBegrenset());
+//        jpDokInfoRelasjoner.addAll(journalpost1.getJournalpostDokumentInfoRelasjonerAlsoBegrenset());
 
 		validator.validerAtDokumentSomSkalSlettesLogiskErKnyttetTilKunEnJournalpost(jpDokInfoRelasjoner, feilRequestTo);
 	}
@@ -118,12 +118,15 @@ public class LogiskSlettDokumentValidatorTest {
 
 		LogiskSlettDokumentRequestTo requestTo = createRequest(JOURNALPOST_ID, DOKUMENTINFO_ID);
 		Journalpost journalpost = createJournalpost(DOKUMENTINFO_ID);
-		Begrensning jpBegrensning = Begrensning.builder().journalpost(journalpost).begrensningType(BegrensningTypeCode.UTILGJENGELIGGJORT).build();
+		Begrensning jpBegrensning = Begrensning.builder()
+				.journalpostId(journalpost.getJournalpostId())
+				.begrensningType(BegrensningTypeCode.UTILGJENGELIGGJORT)
+				.build();
 		jpBegrensning.setOpprettetKildeNavn("OPPRETTET KILDE");
 //		journalpost.addBegrensning(jpBegrensning);
 
 		List<JournalpostDokumentInfoRelasjon> jpDokInfoRelasjoner = new ArrayList<JournalpostDokumentInfoRelasjon>();
-        jpDokInfoRelasjoner.addAll(journalpost.getJournalpostDokumentInfoRelasjonerAlsoBegrenset());
+//        jpDokInfoRelasjoner.addAll(journalpost.getJournalpostDokumentInfoRelasjonerAlsoBegrenset());
 
 		validator.validerAtDokumentSomSkalSlettesLogiskErKnyttetTilKunEnJournalpost(jpDokInfoRelasjoner, requestTo);
 	}
@@ -139,7 +142,10 @@ public class LogiskSlettDokumentValidatorTest {
 		DokumentInfo vedlegg = createDokumentInfo(2L);
 		JournalpostDokumentInfoRelasjon rel = JournalpostDokumentInfoRelasjon.builder().dokumentInfo(vedlegg).journalpost(journalpost).tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG).build();
 		journalpost.addJournalpostDokumentInfoRelasjon(rel);
-		Begrensning jpBegrensning = Begrensning.builder().dokumentInfo(vedlegg).begrensningType(BegrensningTypeCode.UTILGJENGELIGGJORT).build();
+		Begrensning jpBegrensning = Begrensning.builder()
+				.dokumentInfoId(vedlegg.getDokumentInfoId())
+				.begrensningType(BegrensningTypeCode.UTILGJENGELIGGJORT)
+				.build();
 		jpBegrensning.setOpprettetKildeNavn("OPPRETTET KILDE");
 //		vedlegg.addBegrensning(jpBegrensning);
 

@@ -58,7 +58,7 @@ public class DokumentQuery implements Query {
             actions = @Abac.Attr(key = ACTION_ID, value = READ_ACTION))
     public byte[] dokumentInfo(@GraphQLArgument(name = "dokumentInfoId") @GraphQLNonNull Long dokumentInfoId, @GraphQLArgument(name = "journalpostId") Long journalpostId, @GraphQLArgument(name = "filtype") FilTypeCode filType) {
         log.info(format("GraphQL har mottatt %s query med dokumentInfoId=%s, journalpostId=%s", DOKUMENT, dokumentInfoId, journalpostId));
-        abacSecurityService.assertAccessToDokumentNotBegrenset(dokumentInfoId);
+        abacSecurityService.assertAccessToDokumentIncludingBegrenset(dokumentInfoId);
 
         DokumentInfo dokumentInfo = dokumentinfoRepository.findById(dokumentInfoId)
                 .orElse(DokumentInfo.builder().build());

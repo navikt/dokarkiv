@@ -84,11 +84,6 @@ public class DokumentInfoBuilder extends Builder<DokumentInfo> {
 	public DokumentInfoBuilder dokumenttypeId(String value) { this.dokumenttypeId = value; return this; }
 	public DokumentInfoBuilder opprettetKildeNavn(String value) { this.opprettetKildeNavn = value; return this; }
 	public DokumentInfoBuilder endretKildeNavn(String value) { this.endretKildeNavn = value; return this; }
-
-	public DokumentInfoBuilder begrensning(Begrensning begrensning) {
-		this.begrensning = begrensning;
-		return this;
-	}
 	public DokumentInfoBuilder slettet(Boolean value) { this.slettet = value; return this; }
 	public DokumentInfoBuilder skannetInnhold(SkannetInnhold... value) { 
 		this.skannetInnholdList = Arrays.asList(value); return this; }
@@ -130,12 +125,6 @@ public class DokumentInfoBuilder extends Builder<DokumentInfo> {
 		}
 		dokumentInfo.setChangeStamp(changeStamp);
 
-		if (begrensning != null) {
-			begrensning.setOpprettetKildeNavn(opprettetKildeNavn);
-			begrensning.setEndretKildeNavn(endretKildeNavn);
-			begrensning.setDokumentInfo(dokumentInfo);
-		}
-		dokumentInfo.addBegrensning(begrensning);
 		return dokumentInfo;
 	}
 

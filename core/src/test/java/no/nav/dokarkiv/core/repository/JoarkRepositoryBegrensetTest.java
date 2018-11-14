@@ -1,5 +1,7 @@
 package no.nav.dokarkiv.core.repository;
 
+import static no.nav.dokarkiv.core.util.TestDataUtils.createBegrensning;
+import static no.nav.dokarkiv.core.util.TestDataUtils.createJournalpost;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.hamcrest.core.IsNull.nullValue;
@@ -13,7 +15,7 @@ import no.nav.dokarkiv.core.domain.entities.Begrensning;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.security.abac.JdbcAbacSecurityRepository;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
-import no.nav.dokarkiv.core.util.TestDataUtils;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,15 +28,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = {RepositoryConfig.class, JoarkRepositoryBegrenset.class, JdbcAbacSecurityRepository.class})
+@SpringBootTest(classes = {RepositoryConfig.class, JdbcAbacSecurityRepository.class})
 @DataJpaTest
 @Transactional
 @ActiveProfiles("itest")
@@ -52,6 +52,8 @@ public class JoarkRepositoryBegrensetTest {
     @Inject
     private JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository;
 
+    @Inject
+    private BegrensningRepository begrensningRepository;
 
     public static final String KANAL_REFERANSE_ID = "kanal";
     public static final String TILLEGGSOPPLYSNINGER_KEY = "keey";
@@ -60,15 +62,37 @@ public class JoarkRepositoryBegrensetTest {
     @Before
     public void setUp() {
         RequestContextUtil.createAndSetUsername("itest", "itest");
+    }
+
+    @After
+    public void cleanUp() {
         journalpostDokumentInfoRelasjonRepository.deleteAll();
         dokumentinfoRepository.deleteAll();
         joarkRepository.deleteAll();
+        begrensningRepository.deleteAll();
     }
 
-    @Test
-    public void shouldReturnSimilarResultAsJoarkRepositoryWhenNotBegrenset() {
 
-        Journalpost journalpost = createJournalpost(false);
+    @Test
+    public void shouldReturnNullOrFalseWhenNotFound() {
+        assertThat(joarkRepositoryBegrenset.findById(123L).isPresent(), is(false));
+        assertThat(joarkRepositoryBegrenset.existsById(123L), is(false));
+        assertThat(joarkRepositoryBegrenset.findAll().spliterator().estimateSize(), is(0L));
+        assertThat(joarkRepositoryBegrenset.findJournalpostByKanalReferanseIdAndMottakskanal("test", "test")
+                .isPresent(), is(false));
+        assertThat(joarkRepositoryBegrenset.findJournalpostByKanalReferanseId("test").isPresent(), is(false));
+        assertThat(joarkRepositoryBegrenset.findJournalpostIdByTilleggsopplysningerNokkelAndVerdi("test", "test"), nullValue());
+        assertThat(joarkRepositoryBegrenset.findJournalpostIdByDokumentinfoId("213"), nullValue());
+        assertThat(joarkRepositoryBegrenset.findDokumentinfoIdIdByDokumentinfoTilleggsopplysningerNokkelAndVerdi("213", "313"), nullValue());
+        assertThat(joarkRepositoryBegrenset.findJournalpostByKanalReferanseIdAndMottakskanal("213", MottaksKanalCode.NAV_NO)
+                .size(), is(0));
+    }
+
+
+    @Test
+    public void shouldReturnSameResultAsJoarkRepositoryWhenNotBegrenset() {
+
+        Journalpost journalpost = createJournalpost();
         journalpost = joarkRepository.save(journalpost);
         TestTransaction.flagForCommit();
         TestTransaction.end();
@@ -123,11 +147,13 @@ public class JoarkRepositoryBegrensetTest {
 
     @Test
     public void shouldNotFindBegrensetDokument() {
-        Journalpost journalpost = createJournalpost(false);
-        Journalpost journalpostBegrenset = createJournalpost(true);
+        Journalpost journalpost = createJournalpost();
+        Journalpost journalpostBegrenset = createJournalpost();
 
         journalpost = joarkRepository.save(journalpost);
         journalpostBegrenset = joarkRepository.save(journalpostBegrenset);
+        Begrensning begrensning = createBegrensning(journalpostBegrenset.getJournalpostId(), null, BegrensningTypeCode.UTILGJENGELIGGJORT);
+        begrensningRepository.save(begrensning);
         TestTransaction.flagForCommit();
         TestTransaction.end();
 
@@ -143,9 +169,13 @@ public class JoarkRepositoryBegrensetTest {
 
     @Test
     public void shouldNotExistsWhenJournalpostIsBegrenset() {
-        Journalpost journalpost = createJournalpost(true);
+        Journalpost journalpost = createJournalpost();
 
         journalpost = joarkRepository.save(journalpost);
+        Begrensning begrensning = createBegrensning(journalpost.getJournalpostId(), null, BegrensningTypeCode.UTILGJENGELIGGJORT);
+
+        begrensningRepository.save(begrensning);
+
         TestTransaction.flagForCommit();
         TestTransaction.end();
 
@@ -155,8 +185,12 @@ public class JoarkRepositoryBegrensetTest {
 
     @Test
     public void shouldNotfindJournalpostIdByDokumentinfoIdWhenJournalpostIsBegrenset() {
-        Journalpost journalpost = createJournalpost(true);
+        Journalpost journalpost = createJournalpost();
+
         journalpost = joarkRepository.save(journalpost);
+        Begrensning begrensning = createBegrensning(journalpost.getJournalpostId(), null, BegrensningTypeCode.UTILGJENGELIGGJORT);
+        begrensningRepository.save(begrensning);
+
         TestTransaction.flagForCommit();
         TestTransaction.end();
 
@@ -172,9 +206,12 @@ public class JoarkRepositoryBegrensetTest {
 
     @Test
     public void shouldNotfindDokumentinfoIdIdByDokumentinfoTilleggsopplysningerNokkelAndVerdiWhenJournalpostIsBegrenset() {
-        Journalpost journalpost = createJournalpost(true);
+        Journalpost journalpost = createJournalpost();
 
         joarkRepository.save(journalpost);
+        Begrensning begrensning = createBegrensning(journalpost.getJournalpostId(), null, BegrensningTypeCode.UTILGJENGELIGGJORT);
+        begrensningRepository.save(begrensning);
+
         TestTransaction.flagForCommit();
         TestTransaction.end();
 
@@ -185,9 +222,13 @@ public class JoarkRepositoryBegrensetTest {
     @Test
     public void shouldNotfindJournalpostIdByTilleggsopplysningerNokkelAndVerdiWhenJournalpostIsBegrenset() {
 
-        Journalpost journalpost = createJournalpost(true);
+        Journalpost journalpost = createJournalpost();
 
         joarkRepository.save(journalpost);
+        Begrensning begrensning = createBegrensning(journalpost.getJournalpostId(), null, BegrensningTypeCode.UTILGJENGELIGGJORT);
+
+        begrensningRepository.save(begrensning);
+
         TestTransaction.flagForCommit();
         TestTransaction.end();
 
@@ -197,9 +238,12 @@ public class JoarkRepositoryBegrensetTest {
 
     @Test
     public void shouldNotfindJournalpostIdByKanalReferanseIdAndMottakskanalWhenJournalpostIsBegrenset() {
-        Journalpost journalpost = createJournalpost(true);
+        Journalpost journalpost = createJournalpost();
 
         joarkRepository.save(journalpost);
+        Begrensning begrensning = createBegrensning(journalpost.getJournalpostId(), null, BegrensningTypeCode.UTILGJENGELIGGJORT);
+        begrensningRepository.save(begrensning);
+
         TestTransaction.flagForCommit();
         TestTransaction.end();
 
@@ -208,48 +252,29 @@ public class JoarkRepositoryBegrensetTest {
         assertThat(joarkRepositoryBegrenset.findJournalpostByKanalReferanseIdAndMottakskanal(KANAL_REFERANSE_ID, MottaksKanalCode.NAV_NO)
                 .size(), is(0));
 
-        assertTrue(joarkRepository.findJournalpostByKanalReferanseIdAndMottakskanal(KANAL_REFERANSE_ID, MottaksKanalCode.NAV_NO.name())
-                .isPresent());
-        assertFalse(joarkRepositoryBegrenset.findJournalpostByKanalReferanseIdAndMottakskanal(KANAL_REFERANSE_ID, MottaksKanalCode.NAV_NO
-                .name()).isPresent());
+        assertThat(joarkRepository.findJournalpostByKanalReferanseIdAndMottakskanal(KANAL_REFERANSE_ID, MottaksKanalCode.NAV_NO.name())
+                .isPresent(), is(true));
+        assertThat(joarkRepositoryBegrenset.findJournalpostByKanalReferanseIdAndMottakskanal(KANAL_REFERANSE_ID, MottaksKanalCode.NAV_NO
+                .name()).isPresent(), is(false));
     }
 
     @Test
     public void shouldNotfindJournalpostByKanalReferanseIdWhenJournalpostIsBegrenset() {
 
-        Journalpost journalpost = createJournalpost(true);
+        Journalpost journalpost = createJournalpost();
 
         joarkRepository.save(journalpost);
+        Begrensning begrensning = createBegrensning(journalpost.getJournalpostId(), null, BegrensningTypeCode.UTILGJENGELIGGJORT);
+
+        begrensningRepository.save(begrensning);
+
         TestTransaction.flagForCommit();
         TestTransaction.end();
 
-        assertTrue(joarkRepository.findJournalpostByKanalReferanseId(KANAL_REFERANSE_ID).isPresent());
-        assertFalse(joarkRepositoryBegrenset.findJournalpostByKanalReferanseId(KANAL_REFERANSE_ID).isPresent());
+        assertThat(joarkRepository.findJournalpostByKanalReferanseId(KANAL_REFERANSE_ID).isPresent(), is(true));
+        assertThat(joarkRepositoryBegrenset.findJournalpostByKanalReferanseId(KANAL_REFERANSE_ID).isPresent(), is(false));
     }
 
-
-    private Journalpost createJournalpost(boolean withBegrensning) {
-        Journalpost journalpost = TestDataUtils.createJournalpost().build();
-
-        Map<String, String> map = new HashMap<>();
-        map.put(TILLEGGSOPPLYSNINGER_KEY, TILLEGGSOPPLYSNINGER_VALUE);
-        journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().setTilleggsopplysninger(map);
-        journalpost.setTilleggsopplysninger(map);
-
-        journalpost.setKanalReferanseId(KANAL_REFERANSE_ID);
-        journalpost.setMottakskanal(MottaksKanalCode.NAV_NO);
-
-        if (withBegrensning) {
-            Begrensning begrensning = Begrensning.builder()
-                    .begrensningType(BegrensningTypeCode.UTILGJENGELIGGJORT)
-                    .journalpost(journalpost)
-                    .build();
-            begrensning.setOpprettetKildeNavn("Kilde navn");
-            journalpost.addBegrensning(begrensning);
-        }
-
-        return journalpost;
-    }
 
 
 }

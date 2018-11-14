@@ -1,7 +1,5 @@
 package no.nav.dokarkiv.core.repository.journalpostliste;
 
-import static org.apache.commons.lang3.BooleanUtils.isFalse;
-
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
@@ -53,10 +51,11 @@ public class JournalpostCriterionBuilder extends CriterionBuilder {
 
 		}
 
-        if (isFalse(parameters.isWithBegrensetJP())) {
-            criteria.setFetchMode("begrensninger", FetchMode.JOIN);
-            criteria.add(Restrictions.isEmpty("begrensninger"));
-        }
+//        if (isFalse(parameters.isWithBegrensetJP())) {
+//            criteria.setFetchMode("begrensninger", FetchMode.JOIN);
+//            criteria.add(Restrictions.isNull("begrensninger.dokument_info_id"));
+//            criteria.add(Restrictions.isNotNull("begrensninger.journalpost_id"));
+//        }
 
 		// Note that an empty saksliste would possibly return all journalposts, so we need
 		// to return an empty resultset from query if this list is empty.

@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.core.repository;
 
+import static no.nav.dokarkiv.core.util.TestDataUtils.createBegrensning;
 import static no.nav.dokarkiv.core.util.TestDataUtils.createJournalpost;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -17,6 +18,7 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.security.abac.JdbcAbacSecurityRepository;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,6 +30,7 @@ import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -54,44 +57,49 @@ public class JournalpostDokumentInfoRelasjonRepositoryBegrensetTest {
     @Inject
     private DokumentinfoRepository dokumentinfoRepository;
 
+    @Inject
+    private BegrensningRepository begrensningRepository;
 
     @Before
     public void setUp() {
-        journalpostDokumentInfoRelasjonRepository.deleteAll();
-        dokumentinfoRepository.deleteAll();
-        joarkRepository.deleteAll();
         RequestContextUtil.createAndSetUsername("itest", "itest");
     }
 
+    @After
+    public void cleanUp() {
+        journalpostDokumentInfoRelasjonRepository.deleteAll();
+        dokumentinfoRepository.deleteAll();
+        joarkRepository.deleteAll();
+        begrensningRepository.deleteAll();
+    }
+
+
     @Test
     public void shouldReturnJournalpostDokumentRelasjonWhenNotBegrenset() {
-        Journalpost journalpost = createJournalpost().build();
+        Journalpost journalpost = createJournalpost();
         journalpost = joarkRepository.save(journalpost);
         TestTransaction.flagForCommit();
         TestTransaction.end();
 
-        assertThat(journalpostDokumentInfoRelasjonRepositoryBegrenset.findByDokumentInfoId(journalpost.findHoveddokumentDokumentInfoRelasjon()
+        assertThat(journalpostDokumentInfoRelasjonRepositoryBegrenset.findAllByDokumentInfoDokumentInfoId(journalpost.findHoveddokumentDokumentInfoRelasjon()
                 .getDokumentInfo()
                 .getDokumentInfoId()).get().size(), is(1));
-        assertThat(journalpostDokumentInfoRelasjonRepository.findByDokumentInfoId(journalpost.findHoveddokumentDokumentInfoRelasjon()
+        assertThat(journalpostDokumentInfoRelasjonRepository.findAllByDokumentInfoDokumentInfoId(journalpost.findHoveddokumentDokumentInfoRelasjon()
                 .getDokumentInfo()
                 .getDokumentInfoId()).get().size(), is(1));
     }
 
     @Test
     public void shouldNotReturnJournalpostDokumentRelasjonWhereJournalpostIsBegrenset() {
-        Journalpost journalpost = createJournalpostWithTwoRelasjonerWhereOneIsBegrenset();
-        journalpost = joarkRepository.save(journalpost);
-        TestTransaction.flagForCommit();
-        TestTransaction.end();
+        Journalpost journalpost = createAndSaveJournalpostWithTwoRelasjonerWhereOneIsBegrenset();
 
         Optional<List<JournalpostDokumentInfoRelasjon>> journalpostDokumentInfoRelasjonsBegrenset = journalpostDokumentInfoRelasjonRepositoryBegrenset
-                .findByDokumentInfoId(journalpost.findHoveddokumentDokumentInfoRelasjon()
+                .findAllByDokumentInfoDokumentInfoId(journalpost.findHoveddokumentDokumentInfoRelasjon()
                         .getDokumentInfo()
                         .getDokumentInfoId());
 
         Optional<List<JournalpostDokumentInfoRelasjon>> journalpostDokumentInfoRelasjons = journalpostDokumentInfoRelasjonRepository
-                .findByDokumentInfoId(journalpost.findHoveddokumentDokumentInfoRelasjon()
+                .findAllByDokumentInfoDokumentInfoId(journalpost.findHoveddokumentDokumentInfoRelasjon()
                         .getDokumentInfo()
                         .getDokumentInfoId());
 
@@ -99,14 +107,33 @@ public class JournalpostDokumentInfoRelasjonRepositoryBegrensetTest {
         assertThat(journalpostDokumentInfoRelasjonsBegrenset.get().size(), is(0));
     }
 
-    private Journalpost createJournalpostWithTwoRelasjonerWhereOneIsBegrenset() {
-        Journalpost journalpost = createJournalpost().build();
-        Begrensning begrensning = Begrensning.builder()
-                .begrensningType(BegrensningTypeCode.UTILGJENGELIGGJORT)
-                .journalpost(journalpost)
-                .build();
-        begrensning.setOpprettetKildeNavn("kildenavn");
-        journalpost.addBegrensning(begrensning);
+    @Test
+    public void shouldGetAllBegrensetJournalpostIdsByDokumentInfoId() {
+        Journalpost journalpost = createAndSaveJournalpostWithTwoRelasjonerWhereOneIsBegrenset();
+        Long hoveddokumentInfoId = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId();
+
+        List<Long> journalpostIds = journalpostDokumentInfoRelasjonRepository.findBegrensetRelasjonJournalpostIdByDokumentInfoId(hoveddokumentInfoId)
+                .orElse(new ArrayList());
+
+        assertThat(journalpostIds.size(), is(1));
+        assertThat(String.valueOf(journalpostIds.get(0)), is(String.valueOf(journalpost.getJournalpostId())));
+    }
+
+    @Test
+    public void shouldGetAllBegrensetDokumentInfoIdsByJournalpostId() {
+        Journalpost journalpost = createAndSaveJournalpostWithTwoRelasjonerWhereOneIsBegrenset();
+        Long hoveddokumentInfoId = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId();
+
+        List<Long> dokumentInfoIds = journalpostDokumentInfoRelasjonRepository.findBegrensetRelasjonDokumentInfoIdByJournalpostId(journalpost
+                .getJournalpostId()).orElse(new ArrayList());
+
+        assertThat(dokumentInfoIds.size(), is(1));
+        assertThat(String.valueOf(dokumentInfoIds.get(0)), is(String.valueOf(hoveddokumentInfoId)));
+    }
+
+    private Journalpost createAndSaveJournalpostWithTwoRelasjonerWhereOneIsBegrenset() {
+        Journalpost journalpost = createJournalpost();
+
         journalpost.addJournalpostDokumentInfoRelasjon(JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder()
                 .tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
                 .opprettetKildeNavn("test")
@@ -122,6 +149,17 @@ public class JournalpostDokumentInfoRelasjonRepositoryBegrensetTest {
                                 .build()
                         )
                         .build()).build());
+
+
+        journalpost = joarkRepository.save(journalpost);
+        Begrensning begrensning = createBegrensning(journalpost.getJournalpostId(), journalpost.findHoveddokumentDokumentInfoRelasjon()
+                .getDokumentInfo()
+                .getDokumentInfoId(), BegrensningTypeCode.UTILGJENGELIGGJORT);
+        begrensningRepository.save(begrensning);
+
+        TestTransaction.flagForCommit();
+        TestTransaction.end();
+
         return journalpost;
     }
 }

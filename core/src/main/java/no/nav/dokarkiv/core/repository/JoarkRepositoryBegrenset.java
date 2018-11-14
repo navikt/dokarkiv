@@ -5,8 +5,11 @@ import static org.apache.commons.lang3.BooleanUtils.isFalse;
 import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
 import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.domain.service.BegrensningService;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -19,15 +22,23 @@ import java.util.stream.StreamSupport;
 public class JoarkRepositoryBegrenset {
 
     private final JoarkRepository joarkRepository;
+    private final BegrensningService begrensningService;
+    private final JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository;
 
-    public JoarkRepositoryBegrenset(JoarkRepository joarkRepository) {
+    public JoarkRepositoryBegrenset(JoarkRepository joarkRepository, BegrensningService begrensningService, JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository) {
         this.joarkRepository = joarkRepository;
+        this.begrensningService = begrensningService;
+        this.journalpostDokumentInfoRelasjonRepository = journalpostDokumentInfoRelasjonRepository;
     }
 
     public Optional<Journalpost> findById(Long id) {
+        if (begrensningService.isJournalpostBegrenset(id, BegrensningTypeCode.UTILGJENGELIGGJORT)) {
+            return Optional.empty();
+        }
+
         Optional<Journalpost> journalpost = joarkRepository.findById(id);
-        return journalpost.filter(jp -> jp.isBegrenset(BegrensningTypeCode.UTILGJENGELIGGJORT))
-                .isPresent() ? Optional.empty() : journalpost;
+        return journalpost.isPresent() ? Optional.of(setBegrensetRelasjoner(joarkRepository
+                .findById(id).get())) : Optional.empty();
     }
 
     public Journalpost save(Journalpost journalpost) {
@@ -35,9 +46,8 @@ public class JoarkRepositoryBegrenset {
     }
 
     public boolean existsById(Long id) {
-        return joarkRepository.findById(id)
-                .filter(jp -> isFalse(jp.isBegrenset(BegrensningTypeCode.UTILGJENGELIGGJORT)))
-                .isPresent();
+        return isFalse(begrensningService.isJournalpostBegrenset(id, BegrensningTypeCode.UTILGJENGELIGGJORT)) && joarkRepository
+                .existsById(id);
     }
 
     /**
@@ -49,50 +59,57 @@ public class JoarkRepositoryBegrenset {
 
     public Iterable<Journalpost> findAll() {
         return StreamSupport.stream(joarkRepository.findAll().spliterator(), true)
-                .filter(journalpost -> isFalse(journalpost.isBegrenset(BegrensningTypeCode.UTILGJENGELIGGJORT)))
+                .filter(journalpost -> isFalse(begrensningService.isJournalpostBegrenset(journalpost.getJournalpostId(), BegrensningTypeCode.UTILGJENGELIGGJORT)))
+                .map(this::setBegrensetRelasjoner)
                 .collect(Collectors.toList());
     }
 
     public Long findJournalpostIdByTilleggsopplysningerNokkelAndVerdi(String nokkel, String verdi) {
         Long jpId = joarkRepository.findJournalpostIdByTilleggsopplysningerNokkelAndVerdi(nokkel, verdi);
-        return jpId == null ? null : joarkRepository.findById(jpId)
-                .filter(jp -> jp.isBegrenset(BegrensningTypeCode.UTILGJENGELIGGJORT))
-                .isPresent() ? null : jpId;
+        return begrensningService.isJournalpostBegrenset(jpId, BegrensningTypeCode.UTILGJENGELIGGJORT) ? null : jpId;
     }
 
     public Optional<Journalpost> findJournalpostByKanalReferanseIdAndMottakskanal(String kanalReferanseId, String mottakskanal) {
         Optional<Journalpost> journalpost = joarkRepository.findJournalpostByKanalReferanseIdAndMottakskanal(kanalReferanseId, mottakskanal);
-        return journalpost.filter(jp -> jp.isBegrenset(BegrensningTypeCode.UTILGJENGELIGGJORT))
-                .isPresent() ? Optional.empty() : journalpost;
+        return journalpost.isPresent() ? begrensningService.isJournalpostBegrenset(journalpost.get()
+                .getJournalpostId(), BegrensningTypeCode.UTILGJENGELIGGJORT) ? Optional.empty() : Optional.of(setBegrensetRelasjoner(journalpost
+                .get())) : Optional.empty();
     }
 
     public Long findDokumentinfoIdIdByDokumentinfoTilleggsopplysningerNokkelAndVerdi(String nokkel, String verdi) {
         Long jpId = joarkRepository.findDokumentinfoIdIdByDokumentinfoTilleggsopplysningerNokkelAndVerdi(nokkel, verdi);
-        return jpId == null ? null : joarkRepository.findById(jpId)
-                .filter(jp -> jp.isBegrenset(BegrensningTypeCode.UTILGJENGELIGGJORT))
-                .isPresent() ? null : jpId;
+        return begrensningService.isJournalpostBegrenset(jpId, BegrensningTypeCode.UTILGJENGELIGGJORT) ? null : jpId;
     }
 
     public Long findJournalpostIdByDokumentinfoId(String dokumentinfoId) {
         Long jpId = joarkRepository.findJournalpostIdByDokumentinfoId(dokumentinfoId);
-        return jpId == null ? null : joarkRepository.findById(jpId)
-                .filter(jp -> jp.isBegrenset(BegrensningTypeCode.UTILGJENGELIGGJORT))
-                .isPresent() ? null : jpId;
+        return begrensningService.isJournalpostBegrenset(jpId, BegrensningTypeCode.UTILGJENGELIGGJORT) ? null : jpId;
     }
 
     public Optional<Journalpost> findJournalpostByKanalReferanseId(String kanalReferanseId) {
         Optional<Journalpost> journalpost = joarkRepository.findJournalpostByKanalReferanseId(kanalReferanseId);
-        return journalpost.filter(jp -> jp.isBegrenset(BegrensningTypeCode.UTILGJENGELIGGJORT))
-                .isPresent() ? Optional.empty() : journalpost;
+
+        if (journalpost.isPresent()) {
+            return begrensningService.isJournalpostBegrenset(journalpost.get()
+                    .getJournalpostId(), BegrensningTypeCode.UTILGJENGELIGGJORT) ? Optional.empty() : Optional.of(setBegrensetRelasjoner(journalpost
+                    .get()));
+        }
+        return Optional.empty();
     }
 
     public List<Journalpost> findJournalpostByKanalReferanseIdAndMottakskanal(String kanalReferanseId, MottaksKanalCode mottaksKanalCode) {
         List<Journalpost> journalpostList = joarkRepository.findJournalpostByKanalReferanseIdAndMottakskanal(kanalReferanseId, mottaksKanalCode);
         return journalpostList.stream()
-                .filter(journalpost -> isFalse(journalpost.isBegrenset(BegrensningTypeCode.UTILGJENGELIGGJORT)))
-                .collect(Collectors
-                        .toList());
+                .filter(journalpost -> isFalse(begrensningService.isJournalpostBegrenset(journalpost.getJournalpostId(), BegrensningTypeCode.UTILGJENGELIGGJORT)))
+                .map(this::setBegrensetRelasjoner)
+                .collect(Collectors.toList());
     }
 
+    private Journalpost setBegrensetRelasjoner(Journalpost journalpost) {
+        List<Long> begrensetDokumentInfoIds = journalpostDokumentInfoRelasjonRepository.findBegrensetRelasjonDokumentInfoIdByJournalpostId(journalpost
+                .getJournalpostId()).orElseGet(ArrayList::new).stream().map(BigInteger::longValue).collect(Collectors.toList());
+        journalpost.addAllbegrensetRelasjonDokumentInfoIds(begrensetDokumentInfoIds);
+        return journalpost;
+    }
 
 }

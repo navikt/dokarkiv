@@ -18,7 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.metrics.GraphQLMetrics;
-import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
+import no.nav.dokarkiv.core.repository.DokumentinfoRepositoryBegrenset;
 import no.nav.dokarkiv.core.security.abac.AbacSecurityService;
 import no.nav.dokarkiv.hentjournalinfo.Query;
 import no.nav.dokarkiv.hentjournalinfo.dto.DokumentInfo;
@@ -42,12 +42,12 @@ import java.util.Set;
 @Slf4j
 public class DokumentInfoQuery implements Query {
 
-    private final DokumentinfoRepository dokumentinfoRepository;
+    private final DokumentinfoRepositoryBegrenset dokumentinfoRepository;
 
     private final AbacSecurityService abacSecurityService;
 
     @Inject
-    public DokumentInfoQuery(DokumentinfoRepository dokumentinfoRepository, AbacSecurityService abacSecurityService) {
+    public DokumentInfoQuery(DokumentinfoRepositoryBegrenset dokumentinfoRepository, AbacSecurityService abacSecurityService) {
         this.dokumentinfoRepository = dokumentinfoRepository;
         this.abacSecurityService = abacSecurityService;
     }
@@ -59,7 +59,7 @@ public class DokumentInfoQuery implements Query {
             actions = @Abac.Attr(key = ACTION_ID, value = READ_ACTION))
     public DokumentInfo dokumentInfo(@GraphQLArgument(name = "dokumentInfoId") @GraphQLNonNull Long dokumentInfoId) {
         log.info(format("GraphQL har mottatt %s query med dokumentInfoId=%s", DOKUMENTINFO, dokumentInfoId));
-        abacSecurityService.assertAccessToDokumentNotBegrenset(dokumentInfoId);
+        abacSecurityService.assertAccessToDokumentIncludingBegrenset(dokumentInfoId);
 
         //Om dokumentet eksiterer sjekkes i metoden over og kan derfor være sikker på dokumentInfo finnes i neste step
         no.nav.dokarkiv.core.domain.entities.DokumentInfo dokumentInfo = dokumentinfoRepository.findById(dokumentInfoId).get();
@@ -85,7 +85,7 @@ public class DokumentInfoQuery implements Query {
     public List<JournalpostDokumentRelasjon> knyttetJournalpostList(@GraphQLContext DokumentInfo dokumentInfo) {
         Set<JournalpostDokumentInfoRelasjon> journalpostDokumentInfoRelasjons = dokumentinfoRepository.findById(dokumentInfo.getDokumentInfoId())
                 .orElse(no.nav.dokarkiv.core.domain.entities.DokumentInfo.builder().build())
-                .getJournalpostRelasjonerAlsoBegrenset();
+                .getJournalpostRelasjoner();
 
         return DokumentInfoQueryMapper.mapKnyttetJournalpostList(journalpostDokumentInfoRelasjons, dokumentInfo.getDokumentInfoId());
     }

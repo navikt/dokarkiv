@@ -28,7 +28,7 @@ public class DefaultHentDokumentUrlInfo extends AbstractDocumentOperation implem
 
 	@Inject
 	public DefaultHentDokumentUrlInfo(@Value("${hentdokument.dokumenturl.urlTimeToLiveMinutes:1}") long urlTimeToLiveMinutes,
-                                      DokumentUrlInfoRepositoryBegrenset dokumentUrlInfoRepository) {
+									  DokumentUrlInfoRepositoryBegrenset dokumentUrlInfoRepository) {
 		this.defaultTimeToLiveMillis = minutesToMillis(urlTimeToLiveMinutes);
 		this.dokumentUrlInfoRepository = dokumentUrlInfoRepository;
 	}
