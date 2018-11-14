@@ -154,7 +154,7 @@ public class JournalpostBuilder extends Builder<Journalpost> {
 			journalpost.addBruker(bruker);
 		}
 		for (JournalpostDokumentInfoRelasjon dokumentInfoRelasjon : dokumentInfoRelasjoner) {
-            if (dokumentInfoRelasjon.getDokumentInfo() != null && addOriginalJournalpost) {
+			if (dokumentInfoRelasjon.getDokumentInfo() != null && addOriginalJournalpost) {
 				dokumentInfoRelasjon.getDokumentInfo().setOriginalJournalpost(journalpost);
 			}
 			journalpost.addJournalpostDokumentInfoRelasjon(dokumentInfoRelasjon);
