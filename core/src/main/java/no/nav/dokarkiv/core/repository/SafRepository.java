@@ -1,11 +1,9 @@
 package no.nav.dokarkiv.core.repository;
 
-import javafx.util.Pair;
+import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
-import java.util.Base64;
-import java.util.List;
 
 /**
  * @author Joakim Bjørnstad, Jbit AS
@@ -14,29 +12,26 @@ import java.util.List;
 public class SafRepository {
 
 	private final EntityManager entityManager;
-	private static final String DOKUMENT_BY_ID_AND_VARIANT_SQL = "SELECT f.FIL, fd.K_FIL_T" +
-			"from T_FIL_DETALJER fd" +
-			"join T_DOKUMENT_FIL f on fd.FIL_UUID = f.FIL_UUID" +
-			"where fd.DOKUMENT_INFO_ID = :dokumentinfoId" +
-			"and fd.K_VARIANT_FORMAT = :dokumentVariant"; //	441359809, ARKIV
+	private static final String DOKUMENT_BY_ID_AND_VARIANT_SQL = "select new " +
+			" no.nav.dokarkiv.core.repository.SafHentDokumentDto(" +
+			" f.fil," +
+			" fd.filtype" +
+			" ) " +
+			" from FilDetaljer fd" +
+			" join DokumentFil f on fd.filUuid = f.filUuid" +
+			" where fd.dokumentInfo.dokumentInfoId = :dokumentinfoId" +
+			" and fd.variantFormat = :dokumentVariant";
 
 
 	public SafRepository(EntityManager entityManager) {
 		this.entityManager = entityManager;
 	}
 
-	public Pair<Base64, String> hentDokumentAndType(String dokumentInfoId, String variantFormat) {
-
-		SafHentDokumentTo safDto = queryForDokumentAndDokumenttype(dokumentInfoId, variantFormat).get(0);
-
-		return new Pair<>(safDto.getDokumentinfoId(), safDto.getDokumentVariant());
-	}
-
-	private List<SafHentDokumentTo> queryForDokumentAndDokumenttype(String dokumentInfoId, String variantFormat) {
+	public SafHentDokumentDto queryForDokumentAndDokumenttype(Long dokumentInfoId, VariantFormatCode variantFormat) {
 		return entityManager
-				.createNativeQuery(DOKUMENT_BY_ID_AND_VARIANT_SQL, SafHentDokumentTo.class)
+				.createQuery(DOKUMENT_BY_ID_AND_VARIANT_SQL, SafHentDokumentDto.class)
 				.setParameter("dokumentinfoId", dokumentInfoId)
-				.setParameter("dokumentinfoVariant", variantFormat)
-				.getResultList(); //.getSingleResult eksisterer, men gir return type Object.
+				.setParameter("dokumentVariant", variantFormat)
+				.getSingleResult();
 	}
 }

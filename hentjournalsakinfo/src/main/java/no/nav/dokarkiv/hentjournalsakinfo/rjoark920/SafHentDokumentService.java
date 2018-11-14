@@ -1,10 +1,11 @@
 package no.nav.dokarkiv.hentjournalsakinfo.rjoark920;
 
-import javafx.util.Pair;
+import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
+import no.nav.dokarkiv.core.repository.SafHentDokumentDto;
 import no.nav.dokarkiv.core.repository.SafRepository;
+import org.springframework.stereotype.Component;
 
-import java.util.Base64;
-
+@Component
 public class SafHentDokumentService {
 
 	private final SafRepository safRepository;
@@ -13,15 +14,13 @@ public class SafHentDokumentService {
 		this.safRepository = safRepository;
 	}
 
-	public SafHentDokumentResponse hentDokumentByDokumentinfoIdAndVariant(String dokumentinfoId, String variant) {
-		Pair<Base64, String> dokumentAndType = safRepository.hentDokumentAndType(dokumentinfoId, variant);
+	public SafHentDokumentResponse hentDokumentByDokumentinfoIdAndVariant(Long dokumentinfoId, VariantFormatCode variant) {
+		SafHentDokumentDto safHentDokumentTo = safRepository.queryForDokumentAndDokumenttype(dokumentinfoId, variant);
 
 		return SafHentDokumentResponse.builder()
-				.dokument(dokumentAndType.)
-				.filtype(dokumentAndType.)
+				.dokument(safHentDokumentTo.getDokument())
+				.filtype(safHentDokumentTo.getDokumentVariant())
 				.build();
 	}
-
-	// Den skal gjøre mappinga
-	// samt utforme kallet, slik at selve getMappingen kan være så enkel som mulig.
 }
+

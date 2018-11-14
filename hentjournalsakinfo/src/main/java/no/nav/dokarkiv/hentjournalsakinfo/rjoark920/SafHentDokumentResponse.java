@@ -4,8 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.Base64;
+import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
 
 /**
  * @author Sigurd Midttun, Visma Consulting.
@@ -16,7 +15,7 @@ import java.util.Base64;
 @Builder
 public class SafHentDokumentResponse {
 	@Builder.Default
-	private final Base64 dokument = null;
+	private final byte[] dokument = null;
 	@Builder.Default
-	private final String filtype = null;
+	private final FilTypeCode filtype = null;
 }

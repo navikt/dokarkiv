@@ -1,11 +1,14 @@
 package no.nav.dokarkiv.hentjournalsakinfo;
 
 import lombok.extern.slf4j.Slf4j;
+import no.nav.dokarkiv.core.dokumenturl.MimeTypeMapper;
+import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.hentjournalsakinfo.rjoark920.SafHentDokumentResponse;
 import no.nav.dokarkiv.hentjournalsakinfo.rjoark920.SafHentDokumentService;
 import no.nav.dokarkiv.hentjournalsakinfo.tjoarkxyz.HentJournalpostListeRequestTo;
 import no.nav.dokarkiv.hentjournalsakinfo.tjoarkxyz.HentJournalpostListeResponseTo;
 import no.nav.dokarkiv.hentjournalsakinfo.tjoarkxyz.HentJournalpostListeService;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,6 +30,7 @@ public class HentJournalsakinfoController {
 
 	private final HentJournalpostListeService hentJournalpostListeService;
 	private final SafHentDokumentService safHentDokumentService;
+	private final MimeTypeMapper mimeTypeMapper = new MimeTypeMapper();
 
 	public HentJournalsakinfoController(HentJournalpostListeService hentJournalpostListeService,
 										SafHentDokumentService safHentDokumentService) {
@@ -44,14 +48,15 @@ public class HentJournalsakinfoController {
 
 	@ResponseBody
 	@RequestMapping(value = "/hentdokument/{dokumentinfoId}/{variant}")
-	public ResponseEntity<Base64> safHentDokument(@PathVariable(value = "dokumentinfoId") String dokumentinfoId,
-												  @PathVariable(value = "variant") String variant) {
-		log.info("rjoark920 har mottatt forespørsel");
+	public ResponseEntity<String> safHentDokument(@PathVariable(value = "dokumentinfoId") Long dokumentinfoId,
+												  @PathVariable(value = "variant") VariantFormatCode variant) {
 
+		log.info(String.format("rjoark920 har mottatt forespørsel om dokument med dokumentinfoId=%s og variant=%s", dokumentinfoId, variant));
 		SafHentDokumentResponse safHentDokumentResponse = safHentDokumentService.hentDokumentByDokumentinfoIdAndVariant(dokumentinfoId, variant);
-
 		return ResponseEntity.ok()
-				.header(safHentDokumentResponse.getFiltype()) //mapping her
-				.body(safHentDokumentResponse.getDokument());
+				.header(HttpHeaders.CONTENT_TYPE, mimeTypeMapper.getMimeTypeForFileExtension(safHentDokumentResponse.getFiltype().toString()))
+				.body(Base64.getEncoder().encodeToString(safHentDokumentResponse.getDokument()));
 	}
+
+
 }
