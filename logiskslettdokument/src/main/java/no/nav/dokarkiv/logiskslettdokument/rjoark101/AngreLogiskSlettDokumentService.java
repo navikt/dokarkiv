@@ -38,8 +38,6 @@ public class AngreLogiskSlettDokumentService {
 	}
 
 	public LogiskSlettDokumentResponse angreLogiskSlettDokument(LogiskSlettDokumentRequestTo requestTo) {
-		sjekkErUtilgjengliggjort(requestTo.getJournalpostId(), requestTo.getDokumentInfoId());
-
 		List<JournalpostDokumentInfoRelasjon> relasjonerDerSlettingSkalAngres =
 				journalpostDokumentInfoRelasjonRepository.findAllByJournalpostJournalpostIdAndDokumentInfoDokumentInfoId(
 						requestTo.getJournalpostId(), requestTo.getDokumentInfoId()).orElse(new ArrayList<>());
@@ -49,25 +47,48 @@ public class AngreLogiskSlettDokumentService {
 		JournalpostDokumentInfoRelasjon angreSlettRelasjon = relasjonerDerSlettingSkalAngres.get(0);
 
 		if (TilknyttetJournalpostSomCode.HOVEDDOKUMENT.equals(angreSlettRelasjon.getTilknyttetJournalpostSom())) {
-			begrensningService.deleteValidertJournalpostBegrensning(requestTo.getJournalpostId(), BegrensningTypeCode.UTILGJENGELIGGJORT);
+			sjekkAtJournalpostErUtilgjengeliggjort(angreSlettRelasjon.getJournalpost().getJournalpostId());
+			begrensningService.deleteValidertJournalpostBegrensning(
+					requestTo.getJournalpostId(),
+					BegrensningTypeCode.UTILGJENGELIGGJORT);
 			log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har angret logisk sletting av journalpost med journalpostId={}",
 					requestTo.getJournalpostId());
 		} else {
-			begrensningService.deleteValidertJournalpostDokumentInfoRelasjonBegrensning(requestTo.getJournalpostId(), requestTo.getDokumentInfoId(), BegrensningTypeCode.UTILGJENGELIGGJORT);
-			log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har angret logisk sletting av dokument med journalpostId={}, dokumentInfoId={}",
+			sjekkAtDokumentErUtilgjengeliggjort(
+					angreSlettRelasjon.getJournalpost().getJournalpostId(),
+					angreSlettRelasjon.getDokumentInfo().getDokumentInfoId());
+			begrensningService.deleteValidertJournalpostDokumentInfoRelasjonBegrensning(
+					requestTo.getJournalpostId(),
+					requestTo.getDokumentInfoId(),
+					BegrensningTypeCode.UTILGJENGELIGGJORT);
+			log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) +
+							" har angret logisk sletting av dokument med journalpostId={}, dokumentInfoId={}",
 					requestTo.getJournalpostId(), requestTo.getDokumentInfoId());
 		}
 
 		return LogiskSlettDokumentResponseMapper.mapToSlettDokumentResponse(angreSlettRelasjon);
 	}
 
-	private void sjekkErUtilgjengliggjort(Long journalpostId, Long dokumentInfoId) {
-		if (isFalse(begrensningService.isJournalpostBegrenset(journalpostId, BegrensningTypeCode.UTILGJENGELIGGJORT) ||
-				begrensningService.isJournalpostDokumentInfoRelasjonBegrenset(journalpostId, dokumentInfoId, BegrensningTypeCode.UTILGJENGELIGGJORT))) {
+	private void sjekkAtDokumentErUtilgjengeliggjort(Long journalpostId, Long dokumentInfoId) {
+		if (isFalse(begrensningService.isJournalpostDokumentInfoRelasjonBegrenset(
+				journalpostId,
+				dokumentInfoId,
+				BegrensningTypeCode.UTILGJENGELIGGJORT))) {
 			throw new BegrensningIkkeFunnetException(String.format(
-					"Fant ikke forventet begrensning for journalpostId=%s, dokumentInfoId=%s og begrensningsType=%s.",
+					"Fant ikke forventet begrensning for dokument med journalpostId=%s, dokumentInfoId=%s og begrensningsType=%s.",
 					journalpostId,
 					dokumentInfoId,
+					BegrensningTypeCode.UTILGJENGELIGGJORT.name()));
+		}
+	}
+
+	private void sjekkAtJournalpostErUtilgjengeliggjort(Long journalpostId) {
+		if (isFalse(begrensningService.isJournalpostBegrenset(
+				journalpostId,
+				BegrensningTypeCode.UTILGJENGELIGGJORT))) {
+			throw new BegrensningIkkeFunnetException(String.format(
+					"Fant ikke forventet begrensning for journalpost med journalpostId=%s og begrensningsType=%s.",
+					journalpostId,
 					BegrensningTypeCode.UTILGJENGELIGGJORT.name()));
 		}
 	}
