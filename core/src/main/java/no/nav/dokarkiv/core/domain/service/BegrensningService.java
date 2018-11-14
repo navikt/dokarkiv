@@ -19,8 +19,12 @@ import java.util.List;
 @Component
 public class BegrensningService {
 
+	private final BegrensningRepository begrensningRepository;
+
 	@Inject
-	private BegrensningRepository begrensningRepository;
+	public BegrensningService(BegrensningRepository begrensningRepository) {
+		this.begrensningRepository = begrensningRepository;
+	}
 
 	public boolean isJournalpostBegrenset(Long journalpostId, BegrensningTypeCode begrensningTypeCode) {
 		List<Begrensning> begrensning = begrensningRepository.findAllByJournalpostIdAndBegrensningTypeAndDokumentInfoIdIsNull(
