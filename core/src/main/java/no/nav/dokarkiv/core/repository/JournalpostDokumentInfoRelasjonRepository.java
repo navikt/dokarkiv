@@ -14,4 +14,5 @@ public interface JournalpostDokumentInfoRelasjonRepository extends CrudRepositor
 
 	Optional<List<JournalpostDokumentInfoRelasjon>> findAllByDokumentInfoDokumentInfoId(Long dokumentInfoId);
 
+	Optional<List<JournalpostDokumentInfoRelasjon>> findAllByJournalpostJournalpostIdAndDokumentInfoDokumentInfoId(Long journalpostId, Long dokumentInfoId);
 }

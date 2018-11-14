@@ -241,7 +241,7 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	 * Constructor that assigns immutable properties. Used for testing.
 	 *
 	 * @param journalpostId DB-id for the instance.
-	 * @param version DB-version for the instance.
+	 * @param version       DB-version for the instance.
 	 */
 	public Journalpost(Long journalpostId, long version) {
 		this.journalpostId = journalpostId;
@@ -1060,6 +1060,7 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	public void clearBrukere() {
 		brukere.clear();
 	}
+
 
 	/**
 	 * Getter for the saksrelasjon property.

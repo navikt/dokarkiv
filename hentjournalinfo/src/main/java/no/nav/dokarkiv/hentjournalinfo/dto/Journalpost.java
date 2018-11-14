@@ -31,6 +31,8 @@ public class Journalpost {
 
     private String tittel;
 
+    private Boolean slettet;
+
     private List<Bruker> brukere;
 
     private Saksrelasjon saksrelasjon;

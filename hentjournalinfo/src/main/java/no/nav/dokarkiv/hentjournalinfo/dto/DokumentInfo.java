@@ -24,8 +24,6 @@ public class DokumentInfo {
 
     private String tittel;
 
-    private Boolean slettet;
-
     private Map<String, String> tilleggsopplysninger;
 
     private DokumentStatus dokumentStatus;

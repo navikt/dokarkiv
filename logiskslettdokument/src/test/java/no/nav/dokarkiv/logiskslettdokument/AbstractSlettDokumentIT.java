@@ -4,13 +4,15 @@ import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode.UTILGJENGELIGGJORT;
 import static no.nav.dokarkiv.core.security.JwtClaimsBuilderProvider.openAmClaimsBuilder;
 
 import com.auth0.jwt.JWT;
 import no.nav.dokarkiv.core.CoreConfig;
-import no.nav.dokarkiv.core.domain.builder.JournalpostBuilder;
+import no.nav.dokarkiv.core.domain.entities.Begrensning;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.repository.BegrensningRepository;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
@@ -37,7 +39,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.transaction.annotation.Transactional;
 import wiremock.com.google.common.io.Resources;
 
@@ -45,6 +46,9 @@ import javax.inject.Inject;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.NoSuchElementException;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
@@ -62,6 +66,7 @@ public abstract class AbstractSlettDokumentIT {
 	protected static final String TILKNYTTET_AV_NAVN = "Tilknyttetnavn";
 	protected static final String URL_SLETTDOKUMENT = "/rest/logiskslettdokument/";
 	protected static final String URL_ANGRESLETTDOKUMENT = "/rest/logiskslettdokument/angre/";
+	protected Long JOURNALPOST_ID = 200000000L;
 	private String OIDC_TOKEN_PERSON_USER_TEST;
 	private String OIDC_TOKEN_SERVICE_USER_TEST;
 	private String NAV_CONSUMER_TOKEN = "Nav-Consumer-Token";
@@ -80,6 +85,8 @@ public abstract class AbstractSlettDokumentIT {
 	protected DokumentinfoRepository dokumentinfoRepository;
 	@Inject
 	protected OidcTestService oidcTestService;
+	@Inject
+	protected BegrensningRepository begrensningRepository;
 
 	@Before
 	public void setUp() {
@@ -113,13 +120,8 @@ public abstract class AbstractSlettDokumentIT {
 	public void cleanup() {
 		joarkRepository.deleteAll();
 		dokumentinfoRepository.deleteAll();
-	}
-
-	protected Journalpost buildAndCommit(final JournalpostBuilder builder) {
-		Journalpost journalpost = joarkRepository.save(builder.build());
-		TestTransaction.flagForCommit();
-		TestTransaction.end();
-		return journalpost;
+		begrensningRepository.deleteAll();
+		journalpostDokumentInfoRelasjonRepository.deleteAll();
 	}
 
 	protected HttpEntity createHeaders() {
@@ -153,9 +155,40 @@ public abstract class AbstractSlettDokumentIT {
 		return JWT.decode(oidcToken).getPayload();
 	}
 
-	public DokumentInfo hentDokumentInfoEtterUtførtKall(Journalpost journalpost) {
+	public List<Begrensning> hentHoveddokumentBegrensningEtterUtfoertKall(Journalpost journalpost) {
+		try {
+			return begrensningRepository.findAllByJournalpostIdAndBegrensningTypeAndDokumentInfoIdIsNull(
+					journalpost.getJournalpostId(), UTILGJENGELIGGJORT).get();
+		} catch (NoSuchElementException e) {
+			return new ArrayList<>();
+		}
+	}
+
+	public List<Begrensning> hentVedleggBegrensningEtterUtfoertKall(Long journalpostId, Long dokumentInfoId) {
+		try {
+			return begrensningRepository.findAllByJournalpostIdAndDokumentInfoIdAndBegrensningType(
+					journalpostId, dokumentInfoId, UTILGJENGELIGGJORT).get();
+		} catch (NoSuchElementException e) {
+			return new ArrayList<>();
+		}
+	}
+
+	public Long hentAntallBegrensninger() {
+		return begrensningRepository.count();
+	}
+
+	public DokumentInfo hentDokumentInfoEtterUtfoertKall(Journalpost journalpost) {
 		return journalpostDokumentInfoRelasjonRepository.findAllByDokumentInfoDokumentInfoId(
 				journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId()).get()
 				.get(0).getDokumentInfo();
+	}
+
+	public List<Begrensning> hentJournalpostEtterUtfoertKall(Long journalpostId) {
+		try {
+			return begrensningRepository.findAllByJournalpostIdAndBegrensningTypeAndDokumentInfoIdIsNull(
+					journalpostId, UTILGJENGELIGGJORT).get();
+		} catch (NoSuchElementException e) {
+			return new ArrayList<>();
+		}
 	}
 }

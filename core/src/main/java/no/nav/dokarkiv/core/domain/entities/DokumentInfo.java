@@ -166,7 +166,7 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	 * Constructor that assigns immutable properties. Used for testing.
 	 *
 	 * @param dokumentInfoId DB-id for the instance.
-	 * @param version DB-version for the instance.
+	 * @param version        DB-version for the instance.
 	 */
 	public DokumentInfo(Long dokumentInfoId, long version) {
 		this.dokumentInfoId = dokumentInfoId;
@@ -176,7 +176,6 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 		this.journalpostRelasjoner = new HashSet<>();
 		this.tilleggsopplysninger = new HashMap<>();
 		this.skannetInnholdListe = new HashSet<>();
-
 	}
 
 	/**
@@ -244,6 +243,7 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 			throw new InvalidArgumentException("DokumentInfo must have at least one FilDetaljer");
 		}
 	}
+
 
 	/**
 	 * Checks that there are no duplicates among the varianter of documents
@@ -713,7 +713,7 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	 * Sets whether or not a third-party source has marked this document as unviewable.
 	 *
 	 * @param innskrenketPartsinnsyn The boolean value to which the innskrenketPartsinnsynFraTredjepart
-	 * property should be set.
+	 *                               property should be set.
 	 */
 	public void setInnskrenketPartsinnsynFraTredjepart(Boolean innskrenketPartsinnsyn) {
 		this.innskrenketPartsinnsynFraTredjepart = innskrenketPartsinnsyn;
