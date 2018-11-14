@@ -59,8 +59,7 @@ public class HentJournalsakinfoController {
 	@Transactional(readOnly = true)
 	@ResponseBody
 	@PostMapping(value = "/hentjournalpostbulk")
-	public HentJournalpostBulkResponseTo hentJournalpostBulk(@RequestBody HentJournalpostBulkRequestTo
-																	 hentJournalpostBulkRequestTo) {
+	public HentJournalpostBulkResponseTo hentJournalpostBulk(@RequestBody HentJournalpostBulkRequestTo hentJournalpostBulkRequestTo) {
 		log.info("rjoark900 henter journalpostbulk.");
 		return hentJournalpostBulkService.hentJournalpostBulk(hentJournalpostBulkRequestTo);
 	}
@@ -68,8 +67,7 @@ public class HentJournalsakinfoController {
 	@Transactional(readOnly = true)
 	@ResponseBody
 	@PostMapping(value = "/visningjournalpostbulk")
-	public VisningJournalpostBulkResponseTo visningsJournalpostBulk(@RequestBody VisningJournalpostBulkRequestTo
-																			visningJournalpostBulkRequestTo) {
+	public VisningJournalpostBulkResponseTo visningsJournalpostBulk(@RequestBody VisningJournalpostBulkRequestTo visningJournalpostBulkRequestTo) {
 		log.info("rjoark910 henter journalposter.");
 		return visningJournalpostBulkService.visningJournalpostBulk(visningJournalpostBulkRequestTo);
 	}
