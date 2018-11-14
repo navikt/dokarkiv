@@ -9,7 +9,6 @@ import no.nav.dokarkiv.core.fasit.ServiceuserAlias;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -18,8 +17,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
 
+import javax.inject.Inject;
 import java.util.UUID;
 
 @Slf4j
@@ -30,6 +29,7 @@ public class GsakConsumer {
 	private final RestTemplate restTemplate;
 	private final String gsakApiUrl;
 
+	@Inject
 	public GsakConsumer(RestTemplateBuilder restTemplateBuilder,
 						@Value("${sak.saker.url}") String gsakApiUrl,
 						ServiceuserAlias serviceuserAlias) {
@@ -40,10 +40,17 @@ public class GsakConsumer {
 				.basicAuthorization(serviceuserAlias.getUsername(), serviceuserAlias.getPassword()).build();
 	}
 
+	public GsakConsumer(RestTemplate restTemplate,
+						String gsakApiUrl) {
+		this.restTemplate = restTemplate;
+		this.gsakApiUrl = gsakApiUrl;
+	}
+
+
 	@Cacheable(cacheNames = CacheConfig.GSAK_SAK_CACHE)
 	public SakInfoTo hentSakInfo(final String sakId) {
 		String url = gsakApiUrl + "/" + sakId;
-		return hentSakInfo(url);
+		return hentSaker(url);
 	}
 
 	private SakInfoTo hentSaker(final String uri) {
