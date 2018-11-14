@@ -45,11 +45,7 @@ public class DefaultAktoerConsumerServiceTest {
 	@Mock
 	private HentAktoerIdForIdentRequestMapper requestMapperIdent;
 	@Mock
-	private HentIdentForAktoerIdRequestMapper requestMapperAktoer;
-	@Mock
 	private HentAktoerIdForIdentResponseMapper responseMapperIdent;
-	@Mock
-	private HentIdentForAktoerIdResponseMapper responseMapperAktoerId;
 	@Mock
 	private AktoerV2 aktoerV2;
 	@Mock
@@ -64,7 +60,6 @@ public class DefaultAktoerConsumerServiceTest {
 	@Before
 	public void setUpMocks() {
 		when(requestMapperIdent.map(any(HentAktoerIdForIdentRequestTo.class))).thenReturn(createHentAktoerIdForIdentWsRequest());
-		when(requestMapperAktoer.map(any(HentIdentForAktoerIdRequestTo.class))).thenReturn(createHentIdentForAktoerIdRequest());
 	}
 
 	@Test
@@ -75,22 +70,9 @@ public class DefaultAktoerConsumerServiceTest {
 	}
 
 	@Test
-	public void shouldCallServiceAktoerId() throws Exception {
-		consumerService.hentIdentForAktoerId(createHentIdentForAktoerIdRequestTo());
-
-		verify(aktoerV2).hentIdentForAktoerId(any(HentIdentForAktoerIdRequest.class));
-	}
-
-	@Test
 	public void shouldGetResponseFromAktoerCacheIfPresent() throws PersonIkkeFunnetException {
 		consumerService.hentAktoerIdForIdent(createHentAktoerIdForIdentRequestTo());
 		verify(aktoerResponseCache).getIfPresent(IDENT);
-	}
-
-	@Test
-	public void shouldGetResponseFromIdentCacheIfPresent() throws PersonIkkeFunnetException {
-		consumerService.hentIdentForAktoerId(createHentIdentForAktoerIdRequestTo());
-		verify(identResponseCache).getIfPresent(AKTOERID);
 	}
 
 	@Test
@@ -104,16 +86,6 @@ public class DefaultAktoerConsumerServiceTest {
 	}
 
 	@Test
-	public void shouldCacheIdentConsumerResponse() throws HentIdentForAktoerIdPersonIkkeFunnet, PersonIkkeFunnetException {
-		HentIdentForAktoerIdResponse response = new HentIdentForAktoerIdResponse();
-		when(identResponseCache.getIfPresent(AKTOERID)).thenReturn(null);
-		when(aktoerV2.hentIdentForAktoerId(any(HentIdentForAktoerIdRequest.class))).thenReturn(response);
-
-		consumerService.hentIdentForAktoerId(createHentIdentForAktoerIdRequestTo());
-		verify(identResponseCache).put(AKTOERID, response);
-	}
-
-	@Test
 	public void shouldCallHentAktoerIdForIdentWithCorrectIdent() throws Exception {
 		consumerService.hentAktoerIdForIdent(createHentAktoerIdForIdentRequestTo());
 
@@ -121,16 +93,6 @@ public class DefaultAktoerConsumerServiceTest {
 		verify(aktoerV2).hentAktoerIdForIdent(captor.capture());
 		assertThat(captor.getValue().getIdent(), is(IDENT));
 	}
-
-	@Test
-	public void shouldCallHentIdentForAktoerIdWithCorrectAktoerid() throws Exception {
-		consumerService.hentIdentForAktoerId(createHentIdentForAktoerIdRequestTo());
-
-		ArgumentCaptor<HentIdentForAktoerIdRequest> captor = ArgumentCaptor.forClass(HentIdentForAktoerIdRequest.class);
-		verify(aktoerV2).hentIdentForAktoerId(captor.capture());
-		assertThat(captor.getValue().getAktoerId(), is(AKTOERID));
-	}
-
 
 	@Test
 	public void shouldCallWithCorrectIdent() throws Exception {
@@ -142,31 +104,12 @@ public class DefaultAktoerConsumerServiceTest {
 	}
 
 	@Test
-	public void shouldCallWithCorrectAktoerId() throws Exception {
-		consumerService.hentIdentForAktoerId(createHentIdentForAktoerIdRequestTo());
-
-		ArgumentCaptor<HentIdentForAktoerIdRequestTo> captor = ArgumentCaptor.forClass(HentIdentForAktoerIdRequestTo.class);
-		verify(requestMapperAktoer).map(captor.capture());
-		assertThat(captor.getValue().getAktoerId(), is(AKTOERID));
-	}
-
-	@Test
 	public void shouldIdentThrowPersonIkkeFunnetException() throws Exception {
 		when(aktoerV2.hentAktoerIdForIdent(any(HentAktoerIdForIdentRequest.class)))
 				.thenThrow(new HentAktoerIdForIdentPersonIkkeFunnet("", new PersonIkkeFunnet()));
 
 		thrown.expect(PersonIkkeFunnetException.class);
 		consumerService.hentAktoerIdForIdent(createHentAktoerIdForIdentRequestTo());
-	}
-
-
-	@Test
-	public void shouldAktoerThrowPersonIkkeFunnetException() throws Exception {
-		when(aktoerV2.hentIdentForAktoerId(any(HentIdentForAktoerIdRequest.class)))
-				.thenThrow(new HentIdentForAktoerIdPersonIkkeFunnet("", new PersonIkkeFunnet()));
-
-		thrown.expect(PersonIkkeFunnetException.class);
-		consumerService.hentIdentForAktoerId(createHentIdentForAktoerIdRequestTo());
 	}
 
 	@Test
@@ -179,15 +122,6 @@ public class DefaultAktoerConsumerServiceTest {
 	}
 
 	@Test
-	public void shouldMapIdentResponse() throws Exception {
-		HentIdentForAktoerIdResponse wsResponse = new HentIdentForAktoerIdResponse();
-		when(aktoerV2.hentIdentForAktoerId(any(HentIdentForAktoerIdRequest.class))).thenReturn(wsResponse);
-
-		consumerService.hentIdentForAktoerId(createHentIdentForAktoerIdRequestTo());
-		verify(responseMapperAktoerId).map(wsResponse);
-	}
-
-	@Test
 	public void shouldReturnIdentResponseTo() throws Exception {
 		HentAktoerIdForIdentResponseTo mappedResponseTo = new HentAktoerIdForIdentResponseTo(null, new ArrayList<>());
 		when(responseMapperIdent.map(any())).thenReturn(mappedResponseTo);
@@ -197,22 +131,8 @@ public class DefaultAktoerConsumerServiceTest {
 		assertThat(result, is(sameInstance(mappedResponseTo)));
 	}
 
-	@Test
-	public void shouldReturnAktoerIdResponseTo() throws Exception {
-		HentIdentForAktoerIdResponseTo mappedResponseTo = new HentIdentForAktoerIdResponseTo(null);
-		when(responseMapperAktoerId.map(any())).thenReturn(mappedResponseTo);
-
-		HentIdentForAktoerIdResponseTo result = consumerService.hentIdentForAktoerId(createHentIdentForAktoerIdRequestTo());
-
-		assertThat(result, is(sameInstance(mappedResponseTo)));
-	}
-
 	private HentAktoerIdForIdentRequestTo createHentAktoerIdForIdentRequestTo() {
 		return new HentAktoerIdForIdentRequestTo(IDENT);
-	}
-
-	private HentIdentForAktoerIdRequestTo createHentIdentForAktoerIdRequestTo() {
-		return new HentIdentForAktoerIdRequestTo(AKTOERID);
 	}
 
 	private HentAktoerIdForIdentRequest createHentAktoerIdForIdentWsRequest() {
