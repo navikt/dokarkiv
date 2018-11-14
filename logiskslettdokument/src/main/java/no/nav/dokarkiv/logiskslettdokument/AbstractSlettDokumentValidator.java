@@ -16,10 +16,10 @@ public abstract class AbstractSlettDokumentValidator {
 			List<JournalpostDokumentInfoRelasjon> jpDokInfoRelasjoner,
 			Long dokumentInfoId) {
 		validerAtJournalpostDokumentInfoRelasjonerFinnes(jpDokInfoRelasjoner, dokumentInfoId);
-		validerAtJournalpostDokumentInfoRelasjonKunErKnyttetTilEnJournalPost(jpDokInfoRelasjoner, dokumentInfoId);
+		validerAtJournalpostDokumentInfoRelasjonKunErKnyttetTilEnJournalpost(jpDokInfoRelasjoner, dokumentInfoId);
 	}
 
-	protected void validerAtJournalpostDokumentInfoRelasjonerFinnes(
+	private void validerAtJournalpostDokumentInfoRelasjonerFinnes(
 			List<JournalpostDokumentInfoRelasjon> jpDokInfoRelasjoner,
 			Long dokumentInfoId) {
 		if (jpDokInfoRelasjoner.isEmpty()) {
@@ -29,10 +29,10 @@ public abstract class AbstractSlettDokumentValidator {
 		}
 	}
 
-	protected void validerAtJournalpostDokumentInfoRelasjonKunErKnyttetTilEnJournalPost(
+	private void validerAtJournalpostDokumentInfoRelasjonKunErKnyttetTilEnJournalpost(
 			List<JournalpostDokumentInfoRelasjon> jpDokInfoRelasjoner,
 			Long dokumentInfoId) {
-		if (jpDokInfoRelasjoner.size() > 1) {
+		if (jpDokInfoRelasjoner.get(0).getDokumentInfo().isRelatedToMultipleJournalposts()) {
 			throw new ForMangeJournalpostDokumentInfoRelasjonerException(
 					String.format("Kan ikke slette dokument med dokumentInfoId=%s fordi dokumentet er knyttet til flere journalposter.",
 							dokumentInfoId));
