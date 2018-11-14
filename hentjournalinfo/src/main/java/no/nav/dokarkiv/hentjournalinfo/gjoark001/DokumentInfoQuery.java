@@ -18,7 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.metrics.GraphQLMetrics;
-import no.nav.dokarkiv.core.repository.DokumentinfoRepositoryBegrenset;
+import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.security.abac.AbacSecurityService;
 import no.nav.dokarkiv.hentjournalinfo.Query;
 import no.nav.dokarkiv.hentjournalinfo.dto.DokumentInfo;
@@ -42,12 +42,12 @@ import java.util.Set;
 @Slf4j
 public class DokumentInfoQuery implements Query {
 
-    private final DokumentinfoRepositoryBegrenset dokumentinfoRepository;
+    private final DokumentinfoRepository dokumentinfoRepository;
 
     private final AbacSecurityService abacSecurityService;
 
     @Inject
-    public DokumentInfoQuery(DokumentinfoRepositoryBegrenset dokumentinfoRepository, AbacSecurityService abacSecurityService) {
+    public DokumentInfoQuery(DokumentinfoRepository dokumentinfoRepository, AbacSecurityService abacSecurityService) {
         this.dokumentinfoRepository = dokumentinfoRepository;
         this.abacSecurityService = abacSecurityService;
     }

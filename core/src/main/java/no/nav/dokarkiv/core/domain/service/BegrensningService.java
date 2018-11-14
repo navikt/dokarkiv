@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
@@ -31,6 +32,12 @@ public class BegrensningService {
 				journalpostId, begrensningTypeCode).orElse(new ArrayList<>());
 		return isFalse(begrensning.isEmpty());
 	}
+
+    public boolean isDokumentInfoBegrenset(Long dokumentInfoId, BegrensningTypeCode begrensningTypeCode) {
+        Optional<Begrensning> begrensning = begrensningRepository.findByDokumentInfoIdAndBegrensningTypeAndJournalpostIdIsNull(
+                dokumentInfoId, begrensningTypeCode);
+        return begrensning.isPresent();
+    }
 
 	public boolean isJournalpostDokumentInfoRelasjonBegrenset(
 			Long journalpostId,

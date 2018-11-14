@@ -80,7 +80,7 @@ public class AbacSecurityService {
 			throw new DokumentInfoIkkeFunnetException("DokumentInfo ikke funnet. dokumentInfoId=" + dokumentInfo);
 		}
 		Long journalpostId = joarkRepository.findJournalpostIdByDokumentinfoId(dokumentInfo.toString());
-		assertAccessToJournalpost(journalpostId.toString());
+        assertAccessToJournalpostIncludingBegrenset(journalpostId.toString());
 	}
 
 

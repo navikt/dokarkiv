@@ -29,7 +29,6 @@ import javax.persistence.Table;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@NoArgsConstructor
 @Getter
 @Setter
 public class Begrensning extends AbstractPersistentVersionedDomainObjectWithKilde {
