@@ -8,14 +8,11 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.google.common.cache.Cache;
-import no.nav.tjeneste.virksomhet.aktoer.v2.meldinger.HentIdentForAktoerIdResponse;
 import no.nav.tjeneste.virksomhet.aktoer.v2.binding.AktoerV2;
 import no.nav.tjeneste.virksomhet.aktoer.v2.binding.HentAktoerIdForIdentPersonIkkeFunnet;
-import no.nav.tjeneste.virksomhet.aktoer.v2.binding.HentIdentForAktoerIdPersonIkkeFunnet;
 import no.nav.tjeneste.virksomhet.aktoer.v2.feil.PersonIkkeFunnet;
 import no.nav.tjeneste.virksomhet.aktoer.v2.meldinger.HentAktoerIdForIdentRequest;
 import no.nav.tjeneste.virksomhet.aktoer.v2.meldinger.HentAktoerIdForIdentResponse;
-import no.nav.tjeneste.virksomhet.aktoer.v2.meldinger.HentIdentForAktoerIdRequest;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -37,7 +34,6 @@ import java.util.ArrayList;
 public class DefaultAktoerConsumerServiceTest {
 
 	private static final String IDENT = "Ident";
-	private static final String AKTOERID = "aktoerId";
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
@@ -50,9 +46,6 @@ public class DefaultAktoerConsumerServiceTest {
 	private AktoerV2 aktoerV2;
 	@Mock
 	private Cache<String, HentAktoerIdForIdentResponse> aktoerResponseCache;
-
-	@Mock
-	private Cache<String, HentIdentForAktoerIdResponse> identResponseCache;
 
 	@InjectMocks
 	private DefaultAktoerConsumerService consumerService;
@@ -138,12 +131,6 @@ public class DefaultAktoerConsumerServiceTest {
 	private HentAktoerIdForIdentRequest createHentAktoerIdForIdentWsRequest() {
 		HentAktoerIdForIdentRequest request = new HentAktoerIdForIdentRequest();
 		request.setIdent(IDENT);
-		return request;
-	}
-
-	private HentIdentForAktoerIdRequest createHentIdentForAktoerIdRequest() {
-		HentIdentForAktoerIdRequest request = new HentIdentForAktoerIdRequest();
-		request.setAktoerId(AKTOERID);
 		return request;
 	}
 }
