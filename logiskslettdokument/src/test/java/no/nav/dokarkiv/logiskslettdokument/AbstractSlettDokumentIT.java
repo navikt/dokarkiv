@@ -9,7 +9,6 @@ import static no.nav.dokarkiv.core.security.JwtClaimsBuilderProvider.openAmClaim
 
 import com.auth0.jwt.JWT;
 import no.nav.dokarkiv.core.CoreConfig;
-import no.nav.dokarkiv.core.domain.builder.JournalpostBuilder;
 import no.nav.dokarkiv.core.domain.entities.Begrensning;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
@@ -40,7 +39,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.transaction.annotation.Transactional;
 import wiremock.com.google.common.io.Resources;
 
@@ -88,7 +86,7 @@ public abstract class AbstractSlettDokumentIT {
 	@Inject
 	protected OidcTestService oidcTestService;
 	@Inject
-	private BegrensningRepository begrensningRepository;
+	protected BegrensningRepository begrensningRepository;
 
 	@Before
 	public void setUp() {
@@ -126,13 +124,6 @@ public abstract class AbstractSlettDokumentIT {
 		journalpostDokumentInfoRelasjonRepository.deleteAll();
 	}
 
-	protected Journalpost buildAndCommit(final JournalpostBuilder builder) {
-		Journalpost journalpost = joarkRepository.save(builder.build());
-		TestTransaction.flagForCommit();
-		TestTransaction.end();
-		return journalpost;
-	}
-
 	protected HttpEntity createHeaders() {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.TEXT_PLAIN);
@@ -164,36 +155,40 @@ public abstract class AbstractSlettDokumentIT {
 		return JWT.decode(oidcToken).getPayload();
 	}
 
-	public List<Begrensning> hentHoveddokumentBegrensningEtterUtførtKall(Journalpost journalpost) {
+	public List<Begrensning> hentHoveddokumentBegrensningEtterUtfoertKall(Journalpost journalpost) {
 		try {
-			return begrensningRepository.findByJournalpostIdOnly(
-					journalpost.getJournalpostId(), UTILGJENGELIGGJORT.name()).get();
+			return begrensningRepository.findAllByJournalpostIdAndBegrensningTypeAndDokumentInfoIdIsNull(
+					journalpost.getJournalpostId(), UTILGJENGELIGGJORT).get();
 		} catch (NoSuchElementException e) {
 			return new ArrayList<>();
 		}
 	}
 
-	public List<Begrensning> hentVedleggBegrensningEtterUtførtKall(Long journalpostId, Long dokumentInfoId) {
+	public List<Begrensning> hentVedleggBegrensningEtterUtfoertKall(Long journalpostId, Long dokumentInfoId) {
 		try {
-			return begrensningRepository.findByDokumentInfoIdJournalpostId(journalpostId, dokumentInfoId, UTILGJENGELIGGJORT.name()).get();
+			return begrensningRepository.findAllByJournalpostIdAndDokumentInfoIdAndBegrensningType(
+					journalpostId, dokumentInfoId, UTILGJENGELIGGJORT).get();
 		} catch (NoSuchElementException e) {
 			return new ArrayList<>();
 		}
 	}
 
-	public DokumentInfo hentDokumentInfoEtterUtførtKall(Journalpost journalpost) {
+	public Long hentAntallBegrensninger() {
+		return begrensningRepository.count();
+	}
+
+	public DokumentInfo hentDokumentInfoEtterUtfoertKall(Journalpost journalpost) {
 		return journalpostDokumentInfoRelasjonRepository.findAllByDokumentInfoDokumentInfoId(
 				journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId()).get()
 				.get(0).getDokumentInfo();
 	}
 
-	public List<Begrensning> hentJournalpostEtterUtførtKall(Long journalpostId) {
+	public List<Begrensning> hentJournalpostEtterUtfoertKall(Long journalpostId) {
 		try {
-			return begrensningRepository.findByJournalpostIdOnly(
-					journalpostId, UTILGJENGELIGGJORT.name()).get();
+			return begrensningRepository.findAllByJournalpostIdAndBegrensningTypeAndDokumentInfoIdIsNull(
+					journalpostId, UTILGJENGELIGGJORT).get();
 		} catch (NoSuchElementException e) {
 			return new ArrayList<>();
 		}
 	}
-
 }

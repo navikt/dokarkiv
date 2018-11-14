@@ -1,14 +1,13 @@
 package no.nav.dokarkiv.logiskslettdokument.rjoark100;
 
-import static no.nav.dokarkiv.logiskslettdokument.common.SlettemeldingsFunksjoner.setDokumentLogiskSlettet;
-import static no.nav.dokarkiv.logiskslettdokument.common.SlettemeldingsFunksjoner.setJournalpostLogiskSlettet;
-
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.MDCConstants;
+import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
+import no.nav.dokarkiv.core.domain.entities.Begrensning;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
-import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
-import no.nav.dokarkiv.core.repository.JoarkRepository;
+import no.nav.dokarkiv.core.domain.service.BegrensningService;
+import no.nav.dokarkiv.core.exceptions.ErBegrensetException;
 import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
@@ -22,40 +21,79 @@ import java.util.List;
 public class LogiskSlettDokumentService {
 
 	private final LogiskSlettDokumentValidator validator;
-	private final DokumentinfoRepository dokumentinfoRepository;
-	private final JoarkRepository joarkRepository;
 	private final JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository;
+	private final BegrensningService begrensningService;
 
 	@Inject
 	public LogiskSlettDokumentService(LogiskSlettDokumentValidator validator,
-									  DokumentinfoRepository dokumentinfoRepository,
 									  JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository,
-									  JoarkRepository joarkRepository) {
+									  BegrensningService begrensningService) {
 		this.validator = validator;
-		this.dokumentinfoRepository = dokumentinfoRepository;
 		this.journalpostDokumentInfoRelasjonRepository = journalpostDokumentInfoRelasjonRepository;
-		this.joarkRepository = joarkRepository;
+		this.begrensningService = begrensningService;
 	}
 
-	public LogiskSlettDokumentResponse logiskSlettDokumentKnyttetKunEnJournalpost(LogiskSlettDokumentRequestTo requestTo) {
-		List<JournalpostDokumentInfoRelasjon> journalpostDokumentInfoRelasjonList =
+	public LogiskSlettDokumentResponse logiskSletteDokumentKnyttetKunEnJournalpost(LogiskSlettDokumentRequestTo requestTo) {
+		sjekkAtDokumentIkkeErUtilgjengeliggjort(requestTo.getJournalpostId(), requestTo.getDokumentInfoId());
+
+		List<JournalpostDokumentInfoRelasjon> jpDokInfoRelasjonerFoundByDokumentInfoId =
 				journalpostDokumentInfoRelasjonRepository.findAllByDokumentInfoDokumentInfoId(requestTo.getDokumentInfoId())
 						.orElse(new ArrayList<>());
 
-		validator.validerAtDokumentSomSkalSlettesLogiskErKnyttetTilKunEnJournalpost(journalpostDokumentInfoRelasjonList, requestTo);
-		JournalpostDokumentInfoRelasjon validertJpDokInfoRelasjon = journalpostDokumentInfoRelasjonList.get(0);
+		validator.validerAtDokumentSomSkalSlettesLogiskErKnyttetTilKunEnJournalpost(jpDokInfoRelasjonerFoundByDokumentInfoId, requestTo);
+		JournalpostDokumentInfoRelasjon validertJpDokInfoRelasjon = jpDokInfoRelasjonerFoundByDokumentInfoId.get(0);
 
 		if (validertJpDokInfoRelasjon.getTilknyttetJournalpostSom().equals(TilknyttetJournalpostSomCode.HOVEDDOKUMENT)) {
-			setJournalpostLogiskSlettet((validertJpDokInfoRelasjon.getJournalpost()));
-			joarkRepository.save(validertJpDokInfoRelasjon.getJournalpost());
+			utilgjengeliggjoerHoveddokument(validertJpDokInfoRelasjon.getJournalpost().getJournalpostId());
+			log.info("{} har utført logisk sletting av hoveddokument med journalpostId={}",
+					MDC.get(MDCConstants.MDC_REQUEST_ID), requestTo.getJournalpostId());
 		} else {
-			setDokumentLogiskSlettet(validertJpDokInfoRelasjon.getJournalpost(), validertJpDokInfoRelasjon.getDokumentInfo());
-			dokumentinfoRepository.save(validertJpDokInfoRelasjon.getDokumentInfo());
+			utilgjengeliggjoerVedlegg(
+					validertJpDokInfoRelasjon.getJournalpost().getJournalpostId(),
+					validertJpDokInfoRelasjon.getDokumentInfo().getDokumentInfoId());
+			log.info("{} har utført logisk sletting av vedlegg med journalpostId={} og dokumentInfoId={}",
+					MDC.get(MDCConstants.MDC_REQUEST_ID), requestTo.getJournalpostId(), requestTo.getDokumentInfoId());
 		}
-		log.info("{} har utført logisk sletting av dokument med journalpostId={}, dokumentInfoId={}",
-				MDC.get(MDCConstants.MDC_REQUEST_ID), requestTo.getJournalpostId(), requestTo.getDokumentInfoId());
 
-		return LogiskSlettDokumentResponseMapper.mapToSlettDokumentResponse(validertJpDokInfoRelasjon.getJournalpost(),
-				validertJpDokInfoRelasjon.getDokumentInfo());
+		return LogiskSlettDokumentResponseMapper.mapToSlettDokumentResponse(validertJpDokInfoRelasjon);
+	}
+
+	private void sjekkAtDokumentIkkeErUtilgjengeliggjort(Long journalpostId, Long dokumentInfoId) {
+		sjekkAtJournalpostIkkeErUtilgjengeliggjort(journalpostId);
+		if (begrensningService.isJournalpostDokumentInfoRelasjonBegrenset(journalpostId, dokumentInfoId, BegrensningTypeCode.UTILGJENGELIGGJORT)) {
+			throw new ErBegrensetException(String.format(
+					"Kan ikke utføre logisk sletting av dokument med journalpostId=%s og dokumentInfoId=%s. Dokumentet er utilgjengeliggjort.",
+					journalpostId,
+					dokumentInfoId));
+		}
+	}
+
+	private void sjekkAtJournalpostIkkeErUtilgjengeliggjort(Long journalpostId) {
+		if (begrensningService.isJournalpostBegrenset(journalpostId, BegrensningTypeCode.UTILGJENGELIGGJORT)) {
+			throw new ErBegrensetException(String.format(
+					"Kan ikke utføre logisk sletting av dokument med journalpostId=%s. Journalposten er utilgjengeliggjort",
+					journalpostId));
+		}
+	}
+
+	private void utilgjengeliggjoerHoveddokument(Long journalpostId) {
+		Begrensning begrensning = Begrensning.builder()
+				.begrensningType(BegrensningTypeCode.UTILGJENGELIGGJORT)
+				.journalpostId(journalpostId)
+				.build();
+		begrensning.setOpprettetKildeNavn(MDC.get(MDCConstants.MDC_CONSUMER_ID));
+
+		begrensningService.saveBegrensning(begrensning);
+	}
+
+	private void utilgjengeliggjoerVedlegg(Long journalpostId, Long dokumentInfoId) {
+		Begrensning begrensning = Begrensning.builder()
+				.begrensningType(BegrensningTypeCode.UTILGJENGELIGGJORT)
+				.journalpostId(journalpostId)
+				.dokumentInfoId(dokumentInfoId)
+				.build();
+		begrensning.setOpprettetKildeNavn(MDC.get(MDCConstants.MDC_CONSUMER_ID));
+
+		begrensningService.saveBegrensning(begrensning);
 	}
 }
