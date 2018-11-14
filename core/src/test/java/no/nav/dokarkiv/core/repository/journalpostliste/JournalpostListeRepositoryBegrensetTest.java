@@ -15,6 +15,7 @@ import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository
 import no.nav.dokarkiv.core.repository.RepositoryConfig;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import no.nav.dokarkiv.core.util.TestDataUtils;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -62,9 +63,14 @@ public class JournalpostListeRepositoryBegrensetTest {
     @Before
     public void setUp() {
         RequestContextUtil.createAndSetUsername("itest", "itest");
+    }
+
+    @After
+    public void cleanUp() {
         journalpostDokumentInfoRelasjonRepository.deleteAll();
         dokumentinfoRepository.deleteAll();
         joarkRepository.deleteAll();
+        begrensningRepository.deleteAll();
     }
 
     @Test
