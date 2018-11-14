@@ -4,6 +4,9 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.hentjournalsakinfo.rjoark900.TilgangJournalpostBulkRequestTo;
 import no.nav.dokarkiv.hentjournalsakinfo.rjoark900.TilgangJournalpostBulkResponseTo;
 import no.nav.dokarkiv.hentjournalsakinfo.rjoark900.TilgangJournalpostBulkService;
+import no.nav.dokarkiv.hentjournalsakinfo.rjoark910.VisningJournalpostBulkRequestTo;
+import no.nav.dokarkiv.hentjournalsakinfo.rjoark910.VisningJournalpostBulkResponseTo;
+import no.nav.dokarkiv.hentjournalsakinfo.rjoark910.VisningJournalpostBulkService;
 import no.nav.dokarkiv.hentjournalsakinfo.tjoarkxyz.HentJournalpostListeRequestTo;
 import no.nav.dokarkiv.hentjournalsakinfo.tjoarkxyz.HentJournalpostListeResponseTo;
 import no.nav.dokarkiv.hentjournalsakinfo.tjoarkxyz.HentJournalpostListeService;
@@ -13,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.inject.Inject;
 
 /**
  * @author Sigurd Midttun, Visma Consulting.
@@ -24,11 +29,15 @@ public class HentJournalsakinfoController {
 
 	private final HentJournalpostListeService hentJournalpostListeService;
 	private final TilgangJournalpostBulkService tilgangJournalpostBulkService;
+	private final VisningJournalpostBulkService visningJournalpostBulkService;
 
+	@Inject
 	public HentJournalsakinfoController(HentJournalpostListeService hentJournalpostListeService,
-										TilgangJournalpostBulkService tilgangJournalpostBulkService) {
+										TilgangJournalpostBulkService tilgangJournalpostBulkService,
+										VisningJournalpostBulkService visningJournalpostBulkService) {
 		this.hentJournalpostListeService = hentJournalpostListeService;
 		this.tilgangJournalpostBulkService = tilgangJournalpostBulkService;
+		this.visningJournalpostBulkService = visningJournalpostBulkService;
 	}
 
 	@Transactional(readOnly = true)
@@ -45,5 +54,13 @@ public class HentJournalsakinfoController {
 	public TilgangJournalpostBulkResponseTo hentJournalposter(@RequestBody TilgangJournalpostBulkRequestTo tilgangJournalpostBulkRequestTo) {
 		log.info("rjoark900 henter tilgangjournalpost.");
 		return tilgangJournalpostBulkService.tilgangJournalpostBulk(tilgangJournalpostBulkRequestTo);
+	}
+
+	@Transactional(readOnly = true)
+	@ResponseBody
+	@PostMapping(value = "/visningjournalpostbulk")
+	public VisningJournalpostBulkResponseTo hentJournalposter(@RequestBody VisningJournalpostBulkRequestTo visningJournalpostBulkRequestTo) {
+		log.info("rjoark910 henter journalposter.");
+		return visningJournalpostBulkService.visningJournalpostBulk(visningJournalpostBulkRequestTo);
 	}
 }
