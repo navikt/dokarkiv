@@ -72,6 +72,7 @@ public class HentJournalsakinfoController {
 		return visningJournalpostBulkService.visningJournalpostBulk(visningJournalpostBulkRequestTo);
 	}
 
+	@Transactional(readOnly = true)
 	@ResponseBody
 	@GetMapping(value = "/henttilgangjournalpost/{journalpostId}/{dokumentInfoId}/{variantFormat}")
 	public TilgangJournalpostDto hentTilgangJournalpost(@PathVariable Long journalpostId,
