@@ -1,11 +1,11 @@
 package no.nav.dokarkiv.hentjournalsakinfo;
 
 import lombok.extern.slf4j.Slf4j;
+import no.nav.dokarkiv.core.dokumenturl.MimeTypeMapper;
+import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.hentjournalsakinfo.rjoark900.TilgangJournalpostBulkRequestTo;
 import no.nav.dokarkiv.hentjournalsakinfo.rjoark900.TilgangJournalpostBulkResponseTo;
 import no.nav.dokarkiv.hentjournalsakinfo.rjoark900.TilgangJournalpostBulkService;
-import no.nav.dokarkiv.core.dokumenturl.MimeTypeMapper;
-import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.hentjournalsakinfo.rjoark920.SafHentDokumentResponse;
 import no.nav.dokarkiv.hentjournalsakinfo.rjoark920.SafHentDokumentService;
 import no.nav.dokarkiv.hentjournalsakinfo.tjoarkxyz.HentJournalpostListeRequestTo;
@@ -37,9 +37,8 @@ public class HentJournalsakinfoController {
 	private final TilgangJournalpostBulkService tilgangJournalpostBulkService;
 
 	public HentJournalsakinfoController(HentJournalpostListeService hentJournalpostListeService,
+										TilgangJournalpostBulkService tilgangJournalpostBulkService,
 										SafHentDokumentService safHentDokumentService) {
-	public HentJournalsakinfoController(HentJournalpostListeService hentJournalpostListeService,
-										TilgangJournalpostBulkService tilgangJournalpostBulkService) {
 		this.hentJournalpostListeService = hentJournalpostListeService;
 		this.safHentDokumentService = safHentDokumentService;
 		this.tilgangJournalpostBulkService = tilgangJournalpostBulkService;
