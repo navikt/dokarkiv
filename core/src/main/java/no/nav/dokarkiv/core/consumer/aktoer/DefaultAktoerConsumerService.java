@@ -19,9 +19,9 @@ public class DefaultAktoerConsumerService implements AktoerConsumerService {
 	@Inject
 	private AktoerV2 aktoerV2;
 	@Inject
-	private HentAktoerIdForIdentRequestMapper requestMapper;
+	private HentAktoerIdForIdentRequestMapper requestAktoerMapper;
 	@Inject
-	private HentAktoerIdForIdentResponseMapper responseMapper;
+	private HentAktoerIdForIdentResponseMapper responseAktoerMapper;
 	@Inject
 	private Cache<String, HentAktoerIdForIdentResponse> aktoerResponseCache;
 
@@ -33,12 +33,12 @@ public class DefaultAktoerConsumerService implements AktoerConsumerService {
 		HentAktoerIdForIdentResponse response = aktoerResponseCache.getIfPresent(request.getIdent());
 		if (response == null) {
 			try {
-				response = aktoerV2.hentAktoerIdForIdent(requestMapper.map(request));
+				response = aktoerV2.hentAktoerIdForIdent(requestAktoerMapper.map(request));
 				aktoerResponseCache.put(request.getIdent(), response);
 			} catch (HentAktoerIdForIdentPersonIkkeFunnet e) {
 				throw new PersonIkkeFunnetException(e, "Fant ikke person med ident: " + request.getIdent());
 			}
 		}
-		return responseMapper.map(response);
+		return responseAktoerMapper.map(response);
 	}
 }
