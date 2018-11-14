@@ -22,23 +22,25 @@ import java.util.stream.Collectors;
  */
 public class JournalpostQueryMapper {
 
-    public static Journalpost mapJournalpost(no.nav.dokarkiv.core.domain.entities.Journalpost journalpost) {
+    public static Journalpost mapJournalpost(no.nav.dokarkiv.core.domain.entities.Journalpost journalpost, boolean isBegrenset) {
         return Journalpost.builder()
                 .journalpostId(journalpost.getJournalpostId())
                 .tema(Tema.mapFromFagomradeCode(journalpost.getFagomrade()))
                 .journalpostType(JournalpostType.mapFromJournalpostTypeCode(journalpost.getJournalposttype()))
                 .journalpostStatus(JournalpostStatus.mapFromJournalStatusCode(journalpost.getJournalstatus()))
                 .tittel(journalpost.getInnhold())
+                .slettet(isBegrenset)
                 .build();
     }
 
-    public static List<JournalpostDokumentRelasjon> mapKnyttetDokumentList(Set<JournalpostDokumentInfoRelasjon> journalpostDokumentInfoRelasjonSet, Long journalpostId) {
+    public static List<JournalpostDokumentRelasjon> mapKnyttetDokumentList(Set<JournalpostDokumentInfoRelasjon> journalpostDokumentInfoRelasjonSet, Long journalpostId, List<Long> begrensetDokumentInfoRelasjon) {
         return journalpostDokumentInfoRelasjonSet.stream()
                 .filter(relasjon -> isNotTrue(relasjon.getDokumentInfo().getSlettet()))
                 .map(relasjon -> JournalpostDokumentRelasjon.builder()
                         .tilknyttetJournalpostSom(TilknyttetJournalpostSom.mapTilknyttetJournalpostSomCode(relasjon.getTilknyttetJournalpostSom()))
                         .journalpostId(journalpostId)
                         .dokumentInfo(mapDokumentInfo(relasjon.getDokumentInfo()))
+                        .slettet(begrensetDokumentInfoRelasjon.contains(relasjon.getDokumentInfo().getDokumentInfoId()))
                         .dokumentInfoId(relasjon.getDokumentInfo().getDokumentInfoId()).build())
                 .collect(Collectors.toList());
     }

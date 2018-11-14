@@ -19,6 +19,7 @@ public class JournalpostDokumentRelasjon {
     private Long journalpostId;
 
     private TilknyttetJournalpostSom tilknyttetJournalpostSom;
+    private Boolean slettet;
     private Journalpost journalpost;
     private DokumentInfo dokumentInfo;
 

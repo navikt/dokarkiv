@@ -39,7 +39,12 @@ public class BegrensningService {
         return begrensning.isPresent();
     }
 
-	public boolean isJournalpostDokumentInfoRelasjonBegrenset(
+    public boolean isJournalpostDokumentInfoRelasjonOrJournalpostBegrenset(Long journalpostId, Long dokumentInfoId, BegrensningTypeCode begrensningTypeCode) {
+        return isJournalpostDokumentInfoRelasjonBegrenset(journalpostId, dokumentInfoId, begrensningTypeCode) || isJournalpostBegrenset(journalpostId, begrensningTypeCode);
+    }
+
+
+    public boolean isJournalpostDokumentInfoRelasjonBegrenset(
 			Long journalpostId,
 			Long dokumentInfoId,
 			BegrensningTypeCode begrensningTypeCode) {
