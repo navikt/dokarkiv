@@ -140,7 +140,10 @@ public class TestDataUtils {
 
     public static Set<Begrensning> createBegrensningSet(Journalpost journalpost) {
         Set<Begrensning> begrensninger = new HashSet<>();
-        begrensninger.add(Begrensning.builder().journalpost(journalpost).begrensningType(BegrensningTypeCode.UTILGJENGELIGGJORT).build());
+        begrensninger.add(Begrensning.builder()
+                .journalpostId(journalpost.getJournalpostId())
+                .begrensningType(BegrensningTypeCode.UTILGJENGELIGGJORT)
+                .build());
         return begrensninger;
     }
 

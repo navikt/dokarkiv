@@ -29,6 +29,7 @@ import no.nav.dokarkiv.core.domain.entities.Begrensning;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.DokumentInfoIkkeFunnetException;
+import no.nav.dokarkiv.core.repository.BegrensningRepository;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
@@ -93,6 +94,8 @@ public class GraphQlQueryIT {
     private DokumentFilRepository dokumentFilRepository;
     @Inject
     private DokumentinfoRepository dokumentinfoRepository;
+    @Inject
+    private BegrensningRepository begrensningRepository;
     @Inject
     private TestRestTemplate testRestTemplate;
     @Inject
@@ -235,10 +238,14 @@ public class GraphQlQueryIT {
     public void shouldReturnDokumentWhenHoveddokumentIsDeleted() throws Exception {
         abacPermit();
         Journalpost journalpost = TestDataUtils.createJournalpostBuilder(FIL_UUID).build();
-        Begrensning begrensning = Begrensning.builder().journalpost(journalpost).begrensningType(BegrensningTypeCode.UTILGJENGELIGGJORT).build();
-        begrensning.setOpprettetKildeNavn("Opprettet av");
-        journalpost.addBegrensning(begrensning);
         joarkRepository.save(journalpost);
+        Begrensning begrensning = Begrensning.builder()
+                .journalpostId(journalpost.getJournalpostId())
+                .begrensningType(BegrensningTypeCode.UTILGJENGELIGGJORT)
+                .build();
+        begrensning.setOpprettetKildeNavn("Opprettet av");
+        begrensningRepository.save(begrensning);
+
         TestTransaction.flagForCommit();
         TestTransaction.end();
 
@@ -256,11 +263,18 @@ public class GraphQlQueryIT {
     public void shouldReturnDokumentWhenVedleggIsDeleted() throws Exception {
         abacPermit();
         Journalpost journalpost = TestDataUtils.createJournalpostBuilder(FIL_UUID).build();
+
+        journalpost = joarkRepository.save(journalpost);
+
         no.nav.dokarkiv.core.domain.entities.DokumentInfo vedlegg = journalpost.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG).iterator().next().getDokumentInfo();
-        Begrensning begrensning = Begrensning.builder().dokumentInfo(vedlegg).begrensningType(BegrensningTypeCode.UTILGJENGELIGGJORT).build();
+        Begrensning begrensning = Begrensning.builder()
+                .journalpostId(journalpost.getJournalpostId())
+                .dokumentInfoId(vedlegg.getDokumentInfoId())
+                .begrensningType(BegrensningTypeCode.UTILGJENGELIGGJORT)
+                .build();
         begrensning.setOpprettetKildeNavn("Opprettet av");
-        journalpost.getDokumentInfoFromJpDokInfoRelasjoner(1).addBegrensning(begrensning);
-        joarkRepository.save(journalpost);
+        begrensningRepository.save(begrensning);
+
         TestTransaction.flagForCommit();
         TestTransaction.end();
 

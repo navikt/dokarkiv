@@ -1,9 +1,7 @@
 package no.nav.dokarkiv.hentjournalinfo.gjoark001;
 
-import static no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode.UTILGJENGELIGGJORT;
 import static no.nav.dokarkiv.hentjournalinfo.gjoark002.JournalpostQueryMapper.mapJournalpost;
 
-import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.hentjournalinfo.dto.DokumentInfo;
@@ -14,7 +12,6 @@ import no.nav.dokarkiv.hentjournalinfo.dto.kode.TilknyttetJournalpostSom;
 import no.nav.dokarkiv.hentjournalinfo.dto.kode.VariantFormat;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -31,12 +28,13 @@ public class DokumentInfoQueryMapper {
                 .build();
     }
 
-    public static List<JournalpostDokumentRelasjon> mapKnyttetJournalpostList(Set<JournalpostDokumentInfoRelasjon> journalpostDokumentInfoRelasjonSet, Long dokumentInfoId) {
+    public static List<JournalpostDokumentRelasjon> mapKnyttetJournalpostList(Set<JournalpostDokumentInfoRelasjon> journalpostDokumentInfoRelasjonSet, Long dokumentInfoId, List<Long> begrensetJournalpostRelasjon, List<Long> begrensetJournalpost) {
         return journalpostDokumentInfoRelasjonSet.stream().map(relasjon -> JournalpostDokumentRelasjon.builder()
                 .tilknyttetJournalpostSom(TilknyttetJournalpostSom.mapTilknyttetJournalpostSomCode(relasjon.getTilknyttetJournalpostSom()))
                 .journalpostId(relasjon.getJournalpost().getJournalpostId())
-                .slettet(relasjon.getJournalpost().isBegrenset(UTILGJENGELIGGJORT) || relasjon.getDokumentInfo().isBegrenset(relasjon.getJournalpost().getJournalpostId(), UTILGJENGELIGGJORT))
-                .journalpost(mapJournalpost(relasjon.getJournalpost())) //Like greit å bare mappe journalpost når den må hentes opp fra DB for å hente jpId (ref: LazyFetching)
+                .slettet(begrensetJournalpostRelasjon.contains(relasjon.getJournalpost().getJournalpostId()))
+                .journalpost(mapJournalpost(relasjon.getJournalpost(), begrensetJournalpost.contains(relasjon.getJournalpost()
+                        .getJournalpostId()))) //Like greit å bare mappe journalpost når den må hentes opp fra DB for å hente jpId (ref: LazyFetching)
                 .dokumentInfoId(dokumentInfoId).build()).collect(Collectors.toList());
     }
 
@@ -48,4 +46,6 @@ public class DokumentInfoQueryMapper {
                         .variantFormat(VariantFormat.mapFromVariantFormatCode(fildetaljer.getVariantFormat()))
                         .build()).collect(Collectors.toList());
     }
+
+
 }

@@ -22,6 +22,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -35,16 +37,18 @@ public class JournalpostQueryMapperTest {
 
     @Test
     public void shouldMapJournalpost() {
-        no.nav.dokarkiv.hentjournalinfo.dto.Journalpost journalpost = mapJournalpost(createJournalpost(JOURNALPOST_ID));
+        no.nav.dokarkiv.hentjournalinfo.dto.Journalpost journalpost = mapJournalpost(createJournalpost(JOURNALPOST_ID), false);
         assertJournalpost(journalpost);
     }
 
     @Test
     public void shouldMapKnyttetDokumentList() {
-        List<JournalpostDokumentRelasjon> journalpostDokumentInfoRelasjons = mapKnyttetDokumentList(createJournalpostDokumentInfoRelasjonSet(null), 100L);
+        List<JournalpostDokumentRelasjon> journalpostDokumentInfoRelasjons = mapKnyttetDokumentList(createJournalpostDokumentInfoRelasjonSet(null), 100L, Arrays
+                .asList(DOKUMENTINFO_ID));
         assertKnyttetDokumentList(journalpostDokumentInfoRelasjons);
         assertThat(journalpostDokumentInfoRelasjons.get(0).getDokumentInfoId(), is(DOKUMENTINFO_ID));
         assertThat(journalpostDokumentInfoRelasjons.get(0).getJournalpostId(), is(100L));
+        assertThat(journalpostDokumentInfoRelasjons.get(0).getSlettet(), is(true));
 
     }
 
@@ -57,7 +61,7 @@ public class JournalpostQueryMapperTest {
                         .slettet(true)
                         .build())
                 .build());
-        List<JournalpostDokumentRelasjon> journalpostDokumentInfoRelasjons = mapKnyttetDokumentList(journalpostDokumentInfoRelasjonSet, 100L);
+        List<JournalpostDokumentRelasjon> journalpostDokumentInfoRelasjons = mapKnyttetDokumentList(journalpostDokumentInfoRelasjonSet, 100L, new ArrayList<>());
         assertThat(journalpostDokumentInfoRelasjons.size(), is(1));
         assertThat(journalpostDokumentInfoRelasjons.get(0).getDokumentInfoId(), is(DOKUMENTINFO_ID));
         assertThat(journalpostDokumentInfoRelasjons.get(0).getJournalpostId(), is(100L));
@@ -78,7 +82,7 @@ public class JournalpostQueryMapperTest {
 
     @Test
     public void shouldMapWhenKnyttetDokumentListIsEmpty() {
-        List<JournalpostDokumentRelasjon> journalpostDokumentInfoRelasjons = mapKnyttetDokumentList(new Journalpost().getJournalpostDokumentInfoRelasjoner(), 100L);
+        List<JournalpostDokumentRelasjon> journalpostDokumentInfoRelasjons = mapKnyttetDokumentList(new Journalpost().getJournalpostDokumentInfoRelasjoner(), 100L, new ArrayList<>());
         assertThat(journalpostDokumentInfoRelasjons.size(), is(0));
     }
 
