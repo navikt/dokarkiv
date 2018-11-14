@@ -1,9 +1,8 @@
 package no.nav.dokarkiv.logiskslettdokument.rjoark100;
 
-import static no.nav.dokarkiv.logiskslettdokument.common.SlettemeldingsFunksjoner.setDokumentLogiskSlettet;
-
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.MDCConstants;
+import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
@@ -33,7 +32,7 @@ public class LogiskSlettDokumentService {
 
 	public LogiskSlettDokumentResponse logiskSlettDokumentKnyttetKunEnJournalpost(LogiskSlettDokumentRequestTo requestTo) {
 		List<JournalpostDokumentInfoRelasjon> journalpostDokumentInfoRelasjonList =
-				journalpostDokumentInfoRelasjonRepository.findByDokumentInfoId(requestTo.getDokumentInfoId())
+				journalpostDokumentInfoRelasjonRepository.findAllByDokumentInfoDokumentInfoId(requestTo.getDokumentInfoId())
 						.orElse(new ArrayList<>());
 
 		validator.validerAtDokumentSomSkalSlettesLogiskErKnyttetTilKunEnJournalpost(journalpostDokumentInfoRelasjonList, requestTo);
@@ -47,4 +46,10 @@ public class LogiskSlettDokumentService {
 		return LogiskSlettDokumentResponseMapper.mapToSlettDokumentResponse(validertJpDokInfoRelasjon.getJournalpost(),
 				validertJpDokInfoRelasjon.getDokumentInfo());
 	}
+
+	private void setDokumentLogiskSlettet(DokumentInfo dokumentInfo) {
+		dokumentInfo.setSlettet(true);
+		dokumentInfo.setEndretAvNavn(MDC.get(MDCConstants.MDC_USER_NAME));
+	}
+
 }
