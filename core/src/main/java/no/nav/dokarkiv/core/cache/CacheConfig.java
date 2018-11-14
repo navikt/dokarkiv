@@ -21,7 +21,6 @@ public class CacheConfig {
 	public static final String USERNAME_TOKEN_CACHE = "usernameTokenCache";
 	public static final String NAVUSER_CACHE = "navuserCache";
 	public static final String NAVSERVICEUSER_CACHE = "navserviceuserCache";
-	public static final String GSAK_SAK_CACHE = "gsakSakCache";
 
 	@Bean
 	CacheManager cacheManager() {
@@ -32,10 +31,6 @@ public class CacheConfig {
 						.maximumSize(10000)
 						.build()),
 				new CaffeineCache(NAVSERVICEUSER_CACHE, Caffeine.newBuilder()
-						.expireAfterWrite(2, TimeUnit.DAYS)
-						.maximumSize(10000)
-						.build()),
-				new CaffeineCache(GSAK_SAK_CACHE, Caffeine.newBuilder()
 						.expireAfterWrite(2, TimeUnit.DAYS)
 						.maximumSize(10000)
 						.build()),
