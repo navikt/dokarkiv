@@ -213,10 +213,11 @@ public class JoarkRepositoryBegrensetTest {
         begrensningRepository.save(begrensning);
 
         TestTransaction.flagForCommit();
-        TestTransaction.end();
 
         assertThat(joarkRepository.findDokumentinfoIdIdByDokumentinfoTilleggsopplysningerNokkelAndVerdi(TILLEGGSOPPLYSNINGER_KEY, TILLEGGSOPPLYSNINGER_VALUE), notNullValue());
         assertThat(joarkRepositoryBegrenset.findDokumentinfoIdIdByDokumentinfoTilleggsopplysningerNokkelAndVerdi(TILLEGGSOPPLYSNINGER_KEY, TILLEGGSOPPLYSNINGER_VALUE), nullValue());
+
+        TestTransaction.end();
     }
 
     @Test
