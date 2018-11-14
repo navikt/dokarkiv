@@ -1,6 +1,9 @@
 package no.nav.dokarkiv.hentjournalsakinfo;
 
 import lombok.extern.slf4j.Slf4j;
+import no.nav.dokarkiv.hentjournalsakinfo.rjoark900.TilgangJournalpostBulkRequestTo;
+import no.nav.dokarkiv.hentjournalsakinfo.rjoark900.TilgangJournalpostBulkResponseTo;
+import no.nav.dokarkiv.hentjournalsakinfo.rjoark900.TilgangJournalpostBulkService;
 import no.nav.dokarkiv.core.dokumenturl.MimeTypeMapper;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.hentjournalsakinfo.rjoark920.SafHentDokumentResponse;
@@ -31,11 +34,15 @@ public class HentJournalsakinfoController {
 	private final HentJournalpostListeService hentJournalpostListeService;
 	private final SafHentDokumentService safHentDokumentService;
 	private final MimeTypeMapper mimeTypeMapper = new MimeTypeMapper();
+	private final TilgangJournalpostBulkService tilgangJournalpostBulkService;
 
 	public HentJournalsakinfoController(HentJournalpostListeService hentJournalpostListeService,
 										SafHentDokumentService safHentDokumentService) {
+	public HentJournalsakinfoController(HentJournalpostListeService hentJournalpostListeService,
+										TilgangJournalpostBulkService tilgangJournalpostBulkService) {
 		this.hentJournalpostListeService = hentJournalpostListeService;
 		this.safHentDokumentService = safHentDokumentService;
+		this.tilgangJournalpostBulkService = tilgangJournalpostBulkService;
 	}
 
 	@Transactional(readOnly = true)
@@ -58,4 +65,11 @@ public class HentJournalsakinfoController {
 	}
 
 
+	@Transactional(readOnly = true)
+	@ResponseBody
+	@PostMapping(value = "/tilgangjournalpostbulk")
+	public TilgangJournalpostBulkResponseTo hentJournalposter(@RequestBody TilgangJournalpostBulkRequestTo tilgangJournalpostBulkRequestTo) {
+		log.info("rjoark900 henter tilgangjournalpost.");
+		return tilgangJournalpostBulkService.tilgangJournalpostBulk(tilgangJournalpostBulkRequestTo);
+	}
 }
