@@ -1,9 +1,9 @@
 package no.nav.dokarkiv.hentjournalsakinfo;
 
 import lombok.extern.slf4j.Slf4j;
-import no.nav.dokarkiv.hentjournalsakinfo.rjoark900.TilgangJournalpostBulkRequestTo;
-import no.nav.dokarkiv.hentjournalsakinfo.rjoark900.TilgangJournalpostBulkResponseTo;
-import no.nav.dokarkiv.hentjournalsakinfo.rjoark900.TilgangJournalpostBulkService;
+import no.nav.dokarkiv.hentjournalsakinfo.rjoark900.HentJournalpostBulkRequestTo;
+import no.nav.dokarkiv.hentjournalsakinfo.rjoark900.HentJournalpostBulkResponseTo;
+import no.nav.dokarkiv.hentjournalsakinfo.rjoark900.HentJournalpostBulkService;
 import no.nav.dokarkiv.hentjournalsakinfo.rjoark910.VisningJournalpostBulkRequestTo;
 import no.nav.dokarkiv.hentjournalsakinfo.rjoark910.VisningJournalpostBulkResponseTo;
 import no.nav.dokarkiv.hentjournalsakinfo.rjoark910.VisningJournalpostBulkService;
@@ -28,15 +28,15 @@ import javax.inject.Inject;
 public class HentJournalsakinfoController {
 
 	private final HentJournalpostListeService hentJournalpostListeService;
-	private final TilgangJournalpostBulkService tilgangJournalpostBulkService;
+	private final HentJournalpostBulkService hentJournalpostBulkService;
 	private final VisningJournalpostBulkService visningJournalpostBulkService;
 
 	@Inject
 	public HentJournalsakinfoController(HentJournalpostListeService hentJournalpostListeService,
-										TilgangJournalpostBulkService tilgangJournalpostBulkService,
+										HentJournalpostBulkService hentJournalpostBulkService,
 										VisningJournalpostBulkService visningJournalpostBulkService) {
 		this.hentJournalpostListeService = hentJournalpostListeService;
-		this.tilgangJournalpostBulkService = tilgangJournalpostBulkService;
+		this.hentJournalpostBulkService = hentJournalpostBulkService;
 		this.visningJournalpostBulkService = visningJournalpostBulkService;
 	}
 
@@ -50,16 +50,16 @@ public class HentJournalsakinfoController {
 
 	@Transactional(readOnly = true)
 	@ResponseBody
-	@PostMapping(value = "/tilgangjournalpostbulk")
-	public TilgangJournalpostBulkResponseTo hentJournalposter(@RequestBody TilgangJournalpostBulkRequestTo tilgangJournalpostBulkRequestTo) {
-		log.info("rjoark900 henter tilgangjournalpost.");
-		return tilgangJournalpostBulkService.tilgangJournalpostBulk(tilgangJournalpostBulkRequestTo);
+	@PostMapping(value = "/hentjournalpostbulk")
+	public HentJournalpostBulkResponseTo hentJournalpostBulk(@RequestBody HentJournalpostBulkRequestTo hentJournalpostBulkRequestTo) {
+		log.info("rjoark900 henter journalpostbulk.");
+		return hentJournalpostBulkService.hentJournalpostBulk(hentJournalpostBulkRequestTo);
 	}
 
 	@Transactional(readOnly = true)
 	@ResponseBody
 	@PostMapping(value = "/visningjournalpostbulk")
-	public VisningJournalpostBulkResponseTo hentJournalposter(@RequestBody VisningJournalpostBulkRequestTo visningJournalpostBulkRequestTo) {
+	public VisningJournalpostBulkResponseTo visningsJournalpostBulk(@RequestBody VisningJournalpostBulkRequestTo visningJournalpostBulkRequestTo) {
 		log.info("rjoark910 henter journalposter.");
 		return visningJournalpostBulkService.visningJournalpostBulk(visningJournalpostBulkRequestTo);
 	}

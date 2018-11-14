@@ -15,21 +15,21 @@ import java.util.List;
  * @author Joakim Bjørnstad, Jbit AS
  */
 @Repository
-public class TilgangJournalpostBulkRepository {
+public class HentJournalpostBulkRepository {
 	private static final List<Boolean> NO_FEILREGISTRERT_JOURNALPOST = Arrays.asList(false);
 	private static final List<Boolean> ALL_JOURNALPOST = Arrays.asList(true, false);
 
 	private final EntityManager entityManager;
 
 	@Inject
-	public TilgangJournalpostBulkRepository(EntityManager entityManager) {
+	public HentJournalpostBulkRepository(EntityManager entityManager) {
 		this.entityManager = entityManager;
 	}
 
 	@SuppressWarnings("unchecked")
 	public List<Journalpost> tilgangJournalposter(final List<String> sakIds,
 												  final Arkivsaksystem arkivsaksystem,
-												  TilgangJournalposterFilter tilgangJournalposterFilter) {
+												  BulkJournalposterFilter bulkJournalposterFilter) {
 		return entityManager.createQuery(
 				"select j " +
 						"from Journalpost j " +
@@ -48,17 +48,17 @@ public class TilgangJournalpostBulkRepository {
 				.setResultTransformer(DistinctRootEntityResultTransformer.INSTANCE)
 				.setParameter("sakIds", sakIds)
 				.setParameter("arkivsaksystem", arkivsaksystem.getJoarkMapping())
-				.setParameter("fraDato", Timestamp.valueOf(tilgangJournalposterFilter.getFraDato().atStartOfDay()))
-				.setParameter("inkluderTema", tilgangJournalposterFilter.getInkluderTema())
-				.setParameter("inkluderJournalpostType", tilgangJournalposterFilter.getInkluderJournalpostType())
-				.setParameter("inkluderJournalStatus", tilgangJournalposterFilter.getInkluderJournalStatus())
-				.setParameter("visFeilregistrert", tilgangJournalposterFilter.isVisFeilregistrerte() ? ALL_JOURNALPOST : NO_FEILREGISTRERT_JOURNALPOST)
+				.setParameter("fraDato", Timestamp.valueOf(bulkJournalposterFilter.getFraDato().atStartOfDay()))
+				.setParameter("inkluderTema", bulkJournalposterFilter.getInkluderTema())
+				.setParameter("inkluderJournalpostType", bulkJournalposterFilter.getInkluderJournalpostType())
+				.setParameter("inkluderJournalStatus", bulkJournalposterFilter.getInkluderJournalStatus())
+				.setParameter("visFeilregistrert", bulkJournalposterFilter.isVisFeilregistrerte() ? ALL_JOURNALPOST : NO_FEILREGISTRERT_JOURNALPOST)
 				.getResultList();
 	}
 
 	@SuppressWarnings("unchecked")
 	public List<Journalpost> tilgangMidlertidigeJournalposter(List<String> alleIdenter,
-															  TilgangJournalposterFilter tilgangJournalposterFilter) {
+															  BulkJournalposterFilter bulkJournalposterFilter) {
 		return entityManager.createQuery(
 				"select j " +
 						"from Journalpost j " +
@@ -75,10 +75,10 @@ public class TilgangJournalpostBulkRepository {
 				.unwrap(Query.class)
 				.setResultTransformer(DistinctRootEntityResultTransformer.INSTANCE)
 				.setParameter("alleIdenter", alleIdenter)
-				.setParameter("fraDato", Timestamp.valueOf(tilgangJournalposterFilter.getFraDato().atStartOfDay()))
-				.setParameter("inkluderTema", tilgangJournalposterFilter.getInkluderTema())
-				.setParameter("inkluderJournalpostType", tilgangJournalposterFilter.getInkluderJournalpostType())
-				.setParameter("inkluderJournalStatus", tilgangJournalposterFilter.getInkluderJournalStatus())
+				.setParameter("fraDato", Timestamp.valueOf(bulkJournalposterFilter.getFraDato().atStartOfDay()))
+				.setParameter("inkluderTema", bulkJournalposterFilter.getInkluderTema())
+				.setParameter("inkluderJournalpostType", bulkJournalposterFilter.getInkluderJournalpostType())
+				.setParameter("inkluderJournalStatus", bulkJournalposterFilter.getInkluderJournalStatus())
 				.getResultList();
 	}
 }
