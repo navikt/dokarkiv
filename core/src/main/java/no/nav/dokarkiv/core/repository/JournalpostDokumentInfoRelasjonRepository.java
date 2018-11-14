@@ -22,4 +22,6 @@ public interface JournalpostDokumentInfoRelasjonRepository extends CrudRepositor
 
 	@Query(value = "select JOURNALPOST_ID from T_JP_DOK_INFO_REL rel where DOKUMENT_INFO_ID=:dokumentInfoId and exists (select * from T_BEGRENSNING where T_BEGRENSNING.JOURNALPOST_ID=rel.JOURNALPOST_ID and T_BEGRENSNING.DOKUMENT_INFO_ID=rel.DOKUMENT_INFO_ID and BEGRENSNING_TYPE='UTILGJENGELIGGJORT')", nativeQuery = true)
 	Optional<List<BigInteger>> findBegrensetRelasjonJournalpostIdByDokumentInfoId(@Param("dokumentInfoId") Long dokumentInfoId);
+
+	Optional<List<JournalpostDokumentInfoRelasjon>> findAllByJournalpostJournalpostIdAndDokumentInfoDokumentInfoId(Long journalpostId, Long dokumentInfoId);
 }

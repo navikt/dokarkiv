@@ -27,6 +27,7 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "T_BEGRENSNING")
 @Builder
+@NoArgsConstructor
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -44,7 +45,7 @@ public class Begrensning extends AbstractPersistentVersionedDomainObjectWithKild
 	private Long begrensningId;
 
 	@Enumerated(EnumType.STRING)
-	@Column(name = "begrensning_type", length = 50, nullable = false)
+	@Column(name = "begrensning_type", nullable = false, length = 50)
 	private BegrensningTypeCode begrensningType;
 
 	@Column(name = "journalpost_id")
@@ -56,6 +57,4 @@ public class Begrensning extends AbstractPersistentVersionedDomainObjectWithKild
 	public Long getId() {
 		return begrensningId;
 	}
-
-
 }

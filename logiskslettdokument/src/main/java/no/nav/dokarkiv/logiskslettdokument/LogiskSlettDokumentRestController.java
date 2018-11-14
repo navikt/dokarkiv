@@ -57,7 +57,7 @@ public class LogiskSlettDokumentRestController {
 		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har mottat kall med journalpostId=" + journalpostId + " og dokumentInfoId=" + dokumentInfoId);
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
 
-		return logiskSlettDokumentService.logiskSlettDokumentKnyttetKunEnJournalpost(LogiskSlettDokumentRequestTo.builder()
+		return logiskSlettDokumentService.logiskSletteDokumentKnyttetKunEnJournalpost(LogiskSlettDokumentRequestTo.builder()
 				.journalpostId(journalpostId)
 				.dokumentInfoId(dokumentInfoId)
 				.build());
