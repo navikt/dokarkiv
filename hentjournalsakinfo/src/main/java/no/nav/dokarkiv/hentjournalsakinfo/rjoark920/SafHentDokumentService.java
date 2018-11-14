@@ -1,26 +1,36 @@
 package no.nav.dokarkiv.hentjournalsakinfo.rjoark920;
 
+import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
-import no.nav.dokarkiv.core.repository.SafHentDokumentDto;
-import no.nav.dokarkiv.core.repository.SafRepository;
+import no.nav.dokarkiv.core.exceptions.DocumentNotFoundException;
+import no.nav.dokarkiv.hentjournalsakinfo.dto.SafHentDokumentDto;
 import org.springframework.stereotype.Component;
 
 @Component
+@Slf4j
 public class SafHentDokumentService {
 
-	private final SafRepository safRepository;
+	private final HentDokumentRepository hentDokumentRepository;
 
-	public SafHentDokumentService(SafRepository safRepository) {
-		this.safRepository = safRepository;
+	public SafHentDokumentService(HentDokumentRepository hentDokumentRepository) {
+		this.hentDokumentRepository = hentDokumentRepository;
 	}
 
 	public SafHentDokumentResponse hentDokumentByDokumentinfoIdAndVariant(Long dokumentinfoId, VariantFormatCode variant) {
-		SafHentDokumentDto safHentDokumentTo = safRepository.queryForDokumentAndDokumenttype(dokumentinfoId, variant);
+		SafHentDokumentDto safHentDokumentDto = new SafHentDokumentDto(null, null);
+		try {
+			safHentDokumentDto = hentDokumentRepository.queryForDokumentAndDokumenttype(dokumentinfoId, variant);
+		} catch (Exception e) {
+			log.warn("Dokument med dokumentinfoId={}, variant={} ikke funnet.", dokumentinfoId, variant);
+			throw new DocumentNotFoundException("Dokument med dokumentinfoId=" + dokumentinfoId.toString() + " og  variant=" + variant.toString() + " ikke funnet.", e);
+		}
 
 		return SafHentDokumentResponse.builder()
-				.dokument(safHentDokumentTo.getDokument())
-				.filtype(safHentDokumentTo.getDokumentVariant())
+				.dokument(safHentDokumentDto.getDokument())
+				.filtype(safHentDokumentDto.getDokumentVariant())
 				.build();
+
+
 	}
 }
 

@@ -1,6 +1,7 @@
-package no.nav.dokarkiv.core.repository;
+package no.nav.dokarkiv.hentjournalsakinfo.rjoark920;
 
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
+import no.nav.dokarkiv.hentjournalsakinfo.dto.SafHentDokumentDto;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -9,7 +10,7 @@ import javax.persistence.EntityManager;
  * @author Joakim Bjørnstad, Jbit AS
  */
 @Repository
-public class SafRepository {
+public class HentDokumentRepository {
 
 	private final EntityManager entityManager;
 	private static final String DOKUMENT_BY_ID_AND_VARIANT_SQL = "select new " +
@@ -23,7 +24,7 @@ public class SafRepository {
 			" and fd.variantFormat = :dokumentVariant";
 
 
-	public SafRepository(EntityManager entityManager) {
+	public HentDokumentRepository(EntityManager entityManager) {
 		this.entityManager = entityManager;
 	}
 

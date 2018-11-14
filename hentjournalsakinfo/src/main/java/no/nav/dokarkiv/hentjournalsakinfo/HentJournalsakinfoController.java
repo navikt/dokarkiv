@@ -39,7 +39,6 @@ public class HentJournalsakinfoController {
 	}
 
 	@Transactional(readOnly = true)
-	@ResponseBody
 	@PostMapping(value = "/hentjournalposter")
 	public HentJournalpostListeResponseTo hentJournalposter(@RequestBody HentJournalpostListeRequestTo hentJournalpostListeRequestTo) {
 		log.info("tjoarkxyz har mottatt forespørsel");
@@ -48,10 +47,10 @@ public class HentJournalsakinfoController {
 
 	@ResponseBody
 	@RequestMapping(value = "/hentdokument/{dokumentinfoId}/{variant}")
-	public ResponseEntity<String> safHentDokument(@PathVariable(value = "dokumentinfoId") Long dokumentinfoId,
-												  @PathVariable(value = "variant") VariantFormatCode variant) {
+	public ResponseEntity<String> safHentDokument(@PathVariable Long dokumentinfoId,
+												  @PathVariable VariantFormatCode variant) {
 
-		log.info(String.format("rjoark920 har mottatt forespørsel om dokument med dokumentinfoId=%s og variant=%s", dokumentinfoId, variant));
+		log.info("rjoark920 har mottatt forespørsel om dokument med dokumentinfoId={} og variant={}", dokumentinfoId, variant);
 		SafHentDokumentResponse safHentDokumentResponse = safHentDokumentService.hentDokumentByDokumentinfoIdAndVariant(dokumentinfoId, variant);
 		return ResponseEntity.ok()
 				.header(HttpHeaders.CONTENT_TYPE, mimeTypeMapper.getMimeTypeForFileExtension(safHentDokumentResponse.getFiltype().toString()))

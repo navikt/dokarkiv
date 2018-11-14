@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.core.repository;
+package no.nav.dokarkiv.hentjournalsakinfo.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Value;
