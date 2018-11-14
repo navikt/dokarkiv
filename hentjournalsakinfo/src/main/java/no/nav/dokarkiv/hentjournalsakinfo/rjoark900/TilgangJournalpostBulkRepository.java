@@ -1,13 +1,14 @@
 package no.nav.dokarkiv.hentjournalsakinfo.rjoark900;
 
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import org.hibernate.query.Query;
+import org.hibernate.transform.DistinctRootEntityResultTransformer;
 import org.springframework.stereotype.Repository;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import java.sql.Timestamp;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -15,7 +16,7 @@ import java.util.List;
  */
 @Repository
 public class TilgangJournalpostBulkRepository {
-	private static final List<Boolean> NO_FEILREGISTRERT_JOURNALPOST = Collections.singletonList(false);
+	private static final List<Boolean> NO_FEILREGISTRERT_JOURNALPOST = Arrays.asList(false);
 	private static final List<Boolean> ALL_JOURNALPOST = Arrays.asList(true, false);
 
 	private final EntityManager entityManager;
@@ -32,11 +33,19 @@ public class TilgangJournalpostBulkRepository {
 		return entityManager.createQuery(
 				"select j " +
 						"from Journalpost j " +
-						"join j.saksrelasjon s on s.sakId in :sakIds and s.fagsystem = :arkivsaksystem and s.feilregistrert in(:visFeilregistrert) " +
-						"where j.changeStamp.createdDate > :fraDato " +
+						"join fetch j.saksrelasjon s " +
+						"left outer join fetch j.behandlingsrelasjon " +
+						"join fetch j.journalpostDokumentInfoRelasjoner jprel " +
+						"join fetch jprel.dokumentInfo " +
+						"where " +
+						"s.sakId in :sakIds and s.fagsystem = :arkivsaksystem " +
+						"and (s.feilregistrert is null or s.feilregistrert in :visFeilregistrert) " +
+						"and j.changeStamp.createdDate > :fraDato " +
 						"and j.fagomrade in :inkluderTema " +
 						"and j.journalposttype in :inkluderJournalpostType " +
 						"and j.journalstatus in :inkluderJournalStatus", Journalpost.class)
+				.unwrap(Query.class)
+				.setResultTransformer(DistinctRootEntityResultTransformer.INSTANCE)
 				.setParameter("sakIds", sakIds)
 				.setParameter("arkivsaksystem", arkivsaksystem.getJoarkMapping())
 				.setParameter("fraDato", Timestamp.valueOf(tilgangJournalposterFilter.getFraDato().atStartOfDay()))
@@ -49,20 +58,27 @@ public class TilgangJournalpostBulkRepository {
 
 	@SuppressWarnings("unchecked")
 	public List<Journalpost> tilgangMidlertidigeJournalposter(List<String> alleIdenter,
-															  TilgangMidlertidigeJournalposterFilter tilgangMidlertidigeJournalposterFilter) {
+															  TilgangJournalposterFilter tilgangJournalposterFilter) {
 		return entityManager.createQuery(
 				"select j " +
 						"from Journalpost j " +
-						"left join j.brukere b on b.brukerId in :alleIdenter " +
-						"where j.changeStamp.createdDate > :fraDato " +
+						"join j.brukere b on b.brukerId in :alleIdenter " +
+						"left outer join fetch j.saksrelasjon s " +
+						"left outer join fetch j.behandlingsrelasjon " +
+						"join fetch j.journalpostDokumentInfoRelasjoner jprel " +
+						"join fetch jprel.dokumentInfo " +
+						"where " +
+						"j.changeStamp.createdDate > :fraDato " +
 						"and j.fagomrade in :inkluderTema " +
 						"and j.journalposttype in :inkluderJournalpostType " +
 						"and j.journalstatus in :inkluderJournalStatus", Journalpost.class)
+				.unwrap(Query.class)
+				.setResultTransformer(DistinctRootEntityResultTransformer.INSTANCE)
 				.setParameter("alleIdenter", alleIdenter)
-				.setParameter("fraDato", Timestamp.valueOf(tilgangMidlertidigeJournalposterFilter.getFraDato().atStartOfDay()))
-				.setParameter("inkluderTema", tilgangMidlertidigeJournalposterFilter.getInkluderTema())
-				.setParameter("inkluderJournalpostType", tilgangMidlertidigeJournalposterFilter.getInkluderJournalpostType())
-				.setParameter("inkluderJournalStatus", tilgangMidlertidigeJournalposterFilter.getInkluderJournalStatus())
+				.setParameter("fraDato", Timestamp.valueOf(tilgangJournalposterFilter.getFraDato().atStartOfDay()))
+				.setParameter("inkluderTema", tilgangJournalposterFilter.getInkluderTema())
+				.setParameter("inkluderJournalpostType", tilgangJournalposterFilter.getInkluderJournalpostType())
+				.setParameter("inkluderJournalStatus", tilgangJournalposterFilter.getInkluderJournalStatus())
 				.getResultList();
 	}
 }
