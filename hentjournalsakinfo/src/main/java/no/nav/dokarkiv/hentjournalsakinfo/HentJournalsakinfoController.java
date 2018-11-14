@@ -1,6 +1,9 @@
 package no.nav.dokarkiv.hentjournalsakinfo;
 
 import lombok.extern.slf4j.Slf4j;
+import no.nav.dokarkiv.hentjournalsakinfo.rjoark900.TilgangJournalpostBulkRequestTo;
+import no.nav.dokarkiv.hentjournalsakinfo.rjoark900.TilgangJournalpostBulkResponseTo;
+import no.nav.dokarkiv.hentjournalsakinfo.rjoark900.TilgangJournalpostBulkService;
 import no.nav.dokarkiv.hentjournalsakinfo.tjoarkxyz.HentJournalpostListeRequestTo;
 import no.nav.dokarkiv.hentjournalsakinfo.tjoarkxyz.HentJournalpostListeResponseTo;
 import no.nav.dokarkiv.hentjournalsakinfo.tjoarkxyz.HentJournalpostListeService;
@@ -20,9 +23,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class HentJournalsakinfoController {
 
 	private final HentJournalpostListeService hentJournalpostListeService;
+	private final TilgangJournalpostBulkService tilgangJournalpostBulkService;
 
-	public HentJournalsakinfoController(HentJournalpostListeService hentJournalpostListeService) {
+	public HentJournalsakinfoController(HentJournalpostListeService hentJournalpostListeService,
+										TilgangJournalpostBulkService tilgangJournalpostBulkService) {
 		this.hentJournalpostListeService = hentJournalpostListeService;
+		this.tilgangJournalpostBulkService = tilgangJournalpostBulkService;
 	}
 
 	@Transactional(readOnly = true)
@@ -33,4 +39,11 @@ public class HentJournalsakinfoController {
 		return hentJournalpostListeService.hentJournalpostListeByArkivIdAndFagsystem(hentJournalpostListeRequestTo);
 	}
 
+	@Transactional(readOnly = true)
+	@ResponseBody
+	@PostMapping(value = "/tilgangjournalpostbulk")
+	public TilgangJournalpostBulkResponseTo hentJournalposter(@RequestBody TilgangJournalpostBulkRequestTo tilgangJournalpostBulkRequestTo) {
+		log.info("rjoark900 henter tilgangjournalpost.");
+		return tilgangJournalpostBulkService.tilgangJournalpostBulk(tilgangJournalpostBulkRequestTo);
+	}
 }
