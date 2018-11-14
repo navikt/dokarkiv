@@ -27,6 +27,8 @@ import no.nav.dokarkiv.hentjournalinfo.dto.kode.VariantFormat;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -45,7 +47,7 @@ public class DokumentInfoQueryMapperTest {
     @Test
     public void shouldmapKnyttetJournalpostList() {
 
-        List<JournalpostDokumentRelasjon> journalpostDokumentInfoRelasjons = mapKnyttetJournalpostList(createJournalpostDokumentInfoRelasjonSet(createJournalpost(JOURNALPOST_ID)), DOKUMENTINFO_ID);
+        List<JournalpostDokumentRelasjon> journalpostDokumentInfoRelasjons = mapKnyttetJournalpostList(createJournalpostDokumentInfoRelasjonSet(createJournalpost(JOURNALPOST_ID)), DOKUMENTINFO_ID, new ArrayList<>(), new ArrayList<>());
         assertThat(journalpostDokumentInfoRelasjons.get(0)
                 .getTilknyttetJournalpostSom(), CoreMatchers.is(TilknyttetJournalpostSom.HOVEDDOKUMENT));
         assertThat(journalpostDokumentInfoRelasjons.get(0).getDokumentInfoId(), CoreMatchers.is(DOKUMENTINFO_ID));
@@ -55,6 +57,17 @@ public class DokumentInfoQueryMapperTest {
                 .getJournalpost()
                 .getJournalpostId(), CoreMatchers.is(JOURNALPOST_ID));
         assertJournalpost(journalpostDokumentInfoRelasjons.get(0).getJournalpost());
+        assertThat(journalpostDokumentInfoRelasjons.get(0).getSlettet(), is(false));
+        assertThat(journalpostDokumentInfoRelasjons.get(0).getJournalpost().getSlettet(), is(false));
+    }
+
+    @Test
+    public void shouldSetSlettetWhenMappingKnyttetJournalpostList() {
+        List<JournalpostDokumentRelasjon> journalpostDokumentInfoRelasjons = mapKnyttetJournalpostList(createJournalpostDokumentInfoRelasjonSet(createJournalpost(JOURNALPOST_ID)), DOKUMENTINFO_ID, Arrays
+                .asList(JOURNALPOST_ID), Arrays
+                .asList(JOURNALPOST_ID));
+        assertThat(journalpostDokumentInfoRelasjons.get(0).getSlettet(), is(true));
+        assertThat(journalpostDokumentInfoRelasjons.get(0).getJournalpost().getSlettet(), is(true));
     }
 
     @Test
@@ -80,7 +93,7 @@ public class DokumentInfoQueryMapperTest {
         List<JournalpostDokumentRelasjon> journalpostDokumentInfoRelasjons = mapKnyttetJournalpostList(no.nav.dokarkiv.core.domain.entities.DokumentInfo
                 .builder()
                 .build()
-                .getJournalpostRelasjoner(), DOKUMENTINFO_ID);
+                .getJournalpostRelasjoner(), DOKUMENTINFO_ID, new ArrayList<>(), new ArrayList<>());
         assertThat(journalpostDokumentInfoRelasjons.size(), is(0));
     }
 

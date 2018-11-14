@@ -32,10 +32,11 @@ public class BegrensningService {
 		return isFalse(begrensning.isEmpty());
 	}
 
-	public boolean isJournalpostDokumentInfoRelasjonBegrenset(
-			Long journalpostId,
-			Long dokumentInfoId,
-			BegrensningTypeCode begrensningTypeCode) {
+    public boolean isJournalpostDokumentInfoRelasjonOrJournalpostBegrenset(Long journalpostId, Long dokumentInfoId, BegrensningTypeCode begrensningTypeCode) {
+        return isJournalpostDokumentInfoRelasjonBegrenset(journalpostId, dokumentInfoId, begrensningTypeCode) || isJournalpostBegrenset(journalpostId, begrensningTypeCode);
+    }
+
+    public boolean isJournalpostDokumentInfoRelasjonBegrenset(Long journalpostId, Long dokumentInfoId, BegrensningTypeCode begrensningTypeCode) {
 		List<Begrensning> begrensning = begrensningRepository.findAllByJournalpostIdAndDokumentInfoIdAndBegrensningType(
 				journalpostId, dokumentInfoId, begrensningTypeCode).orElse(new ArrayList<>());
 		return isFalse(begrensning.isEmpty());
