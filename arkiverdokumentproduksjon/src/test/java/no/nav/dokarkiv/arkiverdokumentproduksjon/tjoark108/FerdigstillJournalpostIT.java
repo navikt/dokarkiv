@@ -102,7 +102,6 @@ public class FerdigstillJournalpostIT extends AbstractArkiverdokumentproduksjonI
 		assertThat(resultJournalpost.getUtsendingskanal(), is(UtsendingsKanalCode.INGEN_DISTRIBUSJON));
 	}
 
-
 	@Test
 	public void shouldThrowException_missingInput() throws Exception {
 		expectedException.expect(IllegalArgumentException.class);

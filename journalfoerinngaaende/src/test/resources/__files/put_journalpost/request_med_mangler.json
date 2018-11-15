@@ -2,7 +2,7 @@
   "forsoekEndeligJF": true,
   "avsender": {
     "identifikator": "***gammelt_fnr***",
-    "navn": "etternavn, fornavn"
+    "navn": null
   },
   "bruker": {
     "brukerType": "PERSON",
@@ -12,7 +12,7 @@
     "arkivSakSystem": "GSAK",
     "arkivSakId": "123123"
   },
-  "tema": "FOR",
+  "tema": "PEN",
   "tittel": null,
   "journalfEnhet": "1337"
 }

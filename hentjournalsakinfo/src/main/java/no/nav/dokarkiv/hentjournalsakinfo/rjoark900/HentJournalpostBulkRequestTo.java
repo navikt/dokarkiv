@@ -16,7 +16,7 @@ import java.util.List;
  */
 @Data
 @NoArgsConstructor
-public class TilgangJournalpostBulkRequestTo {
+public class HentJournalpostBulkRequestTo {
 	private List<String> gsakSakIds;
 	private List<String> psakSakIds;
 	private String fraDato;

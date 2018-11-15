@@ -6,26 +6,28 @@ import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 
 import java.time.LocalDate;
-import java.util.Arrays;
 import java.util.List;
 
 /**
  * @author Joakim Bjørnstad, Jbit AS
  */
 @Value
-public class TilgangMidlertidigeJournalposterFilter {
-	private static final List<JournalStatusCode> MIDLERTIDIGE_JOURNALPOSTER = Arrays.asList(JournalStatusCode.M, JournalStatusCode.MO);
+public class BulkJournalposterFilter {
 	private final LocalDate fraDato;
 	private final List<FagomradeCode> inkluderTema;
 	private final List<JournalStatusCode> inkluderJournalStatus;
 	private final List<JournalpostTypeCode> inkluderJournalpostType;
+	private final boolean visFeilregistrerte;
 
-	public TilgangMidlertidigeJournalposterFilter(String fraDato,
-												  List<FagomradeCode> inkluderTema,
-												  List<JournalpostTypeCode> inkluderJournalpostType) {
+	public BulkJournalposterFilter(String fraDato,
+								   List<FagomradeCode> inkluderTema,
+								   List<JournalStatusCode> inkluderJournalStatus,
+								   List<JournalpostTypeCode> inkluderJournalpostType,
+								   boolean visFeilregistrerte) {
 		this.fraDato = LocalDate.parse(fraDato);
 		this.inkluderTema = inkluderTema;
-		this.inkluderJournalStatus = MIDLERTIDIGE_JOURNALPOSTER;
+		this.inkluderJournalStatus = inkluderJournalStatus;
 		this.inkluderJournalpostType = inkluderJournalpostType;
+		this.visFeilregistrerte = visFeilregistrerte;
 	}
 }

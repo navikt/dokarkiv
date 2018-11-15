@@ -8,6 +8,6 @@ import java.util.List;
  * @author Joakim Bjørnstad, Jbit AS
  */
 @Value
-public class TilgangJournalpostBulkResponseTo {
-	private final List<TilgangJournalpostDto> tilgangJournalposter;
+public class HentJournalpostBulkResponseTo {
+	private final List<JournalpostDto> tilgangJournalposter;
 }
