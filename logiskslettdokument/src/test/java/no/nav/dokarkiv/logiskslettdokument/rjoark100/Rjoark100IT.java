@@ -311,4 +311,31 @@ public class Rjoark100IT extends AbstractSlettDokumentIT {
 				String.format("Kan ikke slette dokument med dokumentInfoId=%s fordi dokumentet er knyttet til flere journalposter.",
 						journalpost1.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId())));
 	}
+
+	@Test
+	public void noAccess() {
+		abacPermit();
+
+		Journalpost journalpost = joarkRepository.save(TestUtils.createJournalpostBuilder()
+				.build());
+		Begrensning jpBegrensning = Begrensning.builder()
+				.journalpostId(journalpost.getJournalpostId())
+				.begrensningType(BegrensningTypeCode.UTILGJENGELIGGJORT)
+				.build();
+		jpBegrensning.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
+		begrensningRepository.save(jpBegrensning);
+
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
+
+		ResponseEntity<String> responseEntity = restTemplate.exchange(
+				URL_SLETTDOKUMENT + journalpost.getJournalpostId() + "/" + journalpost.
+						findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId(),
+				HttpMethod.PATCH,
+				createNoAccesHeaders(),
+				String.class);
+
+		assertThat(responseEntity.getStatusCode(), is(HttpStatus.UNAUTHORIZED));
+	}
+
 }

@@ -15,6 +15,7 @@ import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.logiskslettdokument.AbstractSlettDokumentIT;
 import no.nav.dokarkiv.logiskslettdokument.rjoark100.LogiskSlettDokumentResponse;
+import no.nav.dokarkiv.logiskslettdokument.util.TestUtils;
 import org.junit.Test;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -274,6 +275,32 @@ public class Rjoark101IT extends AbstractSlettDokumentIT {
 		begrensetJp = hentVedleggBegrensningEtterUtfoertKall(journalpost.getJournalpostId(), vedlegg.getDokumentInfoId());
 		assertEquals(begrensetJp.size(), 1L);
 		assertThat(hentAntallBegrensninger(), is(1L));
+	}
+
+	@Test
+	public void noAccess() {
+		abacPermit();
+
+		Journalpost journalpost = joarkRepository.save(TestUtils.createJournalpostBuilder()
+				.build());
+		Begrensning jpBegrensning = Begrensning.builder()
+				.journalpostId(journalpost.getJournalpostId())
+				.begrensningType(BegrensningTypeCode.UTILGJENGELIGGJORT)
+				.build();
+		jpBegrensning.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
+		begrensningRepository.save(jpBegrensning);
+
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
+
+		ResponseEntity<String> responseEntity = restTemplate.exchange(
+				URL_ANGRESLETTDOKUMENT + journalpost.getJournalpostId() + "/" + journalpost.
+						findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId(),
+				HttpMethod.PATCH,
+				createNoAccesHeaders(),
+				String.class);
+
+		assertThat(responseEntity.getStatusCode(), is(HttpStatus.UNAUTHORIZED));
 	}
 
 }
