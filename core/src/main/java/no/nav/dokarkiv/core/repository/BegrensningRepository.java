@@ -4,7 +4,6 @@ import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
 import no.nav.dokarkiv.core.domain.entities.Begrensning;
 import org.springframework.data.repository.CrudRepository;
 
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -16,8 +15,6 @@ public interface BegrensningRepository extends CrudRepository<Begrensning, Long>
 	Optional<Begrensning> findByJournalpostIdAndBegrensningTypeAndDokumentInfoIdIsNull(Long journalpostId, BegrensningTypeCode begrensningTypeCode);
 
 	void deleteByJournalpostIdAndBegrensningTypeAndDokumentInfoIdIsNull(Long journalpostId, BegrensningTypeCode begrensningTypeCode);
-
-	Begrensning findByJournalpostIdAndBegrensningTypeAndDokumentInfoIdIsNull(Long journalpostId, BegrensningTypeCode begrensningTypeCode);
 
     Optional<Begrensning> findByDokumentInfoIdAndBegrensningTypeAndJournalpostIdIsNull(Long dokumentInfoId, BegrensningTypeCode begrensningTypeCode);
 	void deleteByJournalpostIdAndDokumentInfoIdAndBegrensningType(Long journalpostId, Long dokumentInfoId, BegrensningTypeCode begrensningTypeCode);
