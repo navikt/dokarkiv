@@ -205,13 +205,14 @@ public class JoarkRepositoryBegrensetTest {
     public void shouldNotfindDokumentinfoIdIdByDokumentinfoTilleggsopplysningerNokkelAndVerdiWhenJournalpostIsBegrenset() {
         Journalpost journalpost = createJournalpost();
 
-        joarkRepository.save(journalpost);
+        journalpost = joarkRepository.save(journalpost);
         Begrensning begrensning = createBegrensning(journalpost.getJournalpostId(), null, BegrensningTypeCode.UTILGJENGELIGGJORT);
         begrensningRepository.save(begrensning);
 
         TestTransaction.flagForCommit();
 
-        assertThat(joarkRepository.findDokumentinfoIdIdByDokumentinfoTilleggsopplysningerNokkelAndVerdi(TILLEGGSOPPLYSNINGER_KEY, TILLEGGSOPPLYSNINGER_VALUE), notNullValue());
+        assertThat(joarkRepository.findDokumentinfoIdIdByDokumentinfoTilleggsopplysningerNokkelAndVerdi(TILLEGGSOPPLYSNINGER_KEY, TILLEGGSOPPLYSNINGER_VALUE), is(journalpost
+                .getJournalpostId()));
         assertThat(joarkRepositoryBegrenset.findDokumentinfoIdIdByDokumentinfoTilleggsopplysningerNokkelAndVerdi(TILLEGGSOPPLYSNINGER_KEY, TILLEGGSOPPLYSNINGER_VALUE), nullValue());
 
     }
@@ -221,7 +222,7 @@ public class JoarkRepositoryBegrensetTest {
 
         Journalpost journalpost = createJournalpost();
 
-        journalpost = joarkRepository.save(journalpost);
+        joarkRepository.save(journalpost);
         Begrensning begrensning = createBegrensning(journalpost.getJournalpostId(), null, BegrensningTypeCode.UTILGJENGELIGGJORT);
         begrensningRepository.save(begrensning);
 
@@ -236,7 +237,7 @@ public class JoarkRepositoryBegrensetTest {
     public void shouldNotfindJournalpostIdByKanalReferanseIdAndMottakskanalWhenJournalpostIsBegrenset() {
         Journalpost journalpost = createJournalpost();
 
-        joarkRepository.save(journalpost);
+        journalpost = joarkRepository.save(journalpost);
         Begrensning begrensning = createBegrensning(journalpost.getJournalpostId(), null, BegrensningTypeCode.UTILGJENGELIGGJORT);
         begrensningRepository.save(begrensning);
 
