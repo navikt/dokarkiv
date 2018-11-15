@@ -7,6 +7,7 @@ import no.nav.dokarkiv.core.domain.entities.DokumentUrlInfo;
 import no.nav.dokarkiv.core.domain.service.BegrensningService;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -36,7 +37,7 @@ public class DokumentUrlInfoRepositoryBegrenset {
 
     public DokumentUrlInfo findByFilUuid(String filUuid) {
         DokumentUrlInfo dokumentUrlInfo = dokumentUrlInfoRepository.findByFilUuid(filUuid);
-        return dokumentUrlInfo != null && isFalse(begrensningService.isJournalpostBegrenset(dokumentUrlInfo.getJournalpost()
+		return Objects.nonNull(dokumentUrlInfo) && isFalse(begrensningService.isJournalpostBegrenset(dokumentUrlInfo.getJournalpost()
                 .getJournalpostId(), BegrensningTypeCode.UTILGJENGELIGGJORT)) ? dokumentUrlInfo : null;
     }
 
