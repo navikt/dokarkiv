@@ -33,7 +33,7 @@ import java.util.Map;
  */
 public class TestDataUtils {
 
-    private static final FagsystemCode fagsystem = FagsystemCode.PEN;
+	public static final FagsystemCode fagsystem = FagsystemCode.PEN;
     private static final FagomradeCode fagomrade = FagomradeCode.PEN;
     private static final DateTime journalDato = new DateTime(2016, 5, 1, 0, 0);
     private static final BrukerTypeCode brukerType = BrukerTypeCode.PERSON;

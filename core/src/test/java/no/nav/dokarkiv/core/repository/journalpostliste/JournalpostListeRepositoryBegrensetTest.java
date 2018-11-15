@@ -4,7 +4,8 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
-import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
+import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
+import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.entities.Begrensning;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.repository.BegrensningRepository;
@@ -14,9 +15,9 @@ import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository
 import no.nav.dokarkiv.core.repository.RepositoryConfig;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import no.nav.dokarkiv.core.util.TestDataUtils;
+import org.joda.time.DateTime;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -63,6 +64,10 @@ public class JournalpostListeRepositoryBegrensetTest {
         RequestContextUtil.createAndSetUsername("itest", "itest");
     }
 
+	private final String SAKID = "123";
+	private final FagomradeCode FAGOMRADE = FagomradeCode.PEN;
+
+
     @After
     public void cleanUp() {
         TestTransaction.end();
@@ -73,23 +78,24 @@ public class JournalpostListeRepositoryBegrensetTest {
     }
 
     @Test
-    @Ignore("Doesnt work. Fix this ASAP!!")
     public void shouldNotCountJournalpostWhenBegrenset() {
-        Journalpost journalpostBegrenset = TestDataUtils.createJournalpost();
-        Journalpost journalpost = TestDataUtils.createJournalpost();
-        journalpost = joarkRepository.save(journalpost);
-        journalpostBegrenset = joarkRepository.save(journalpostBegrenset);
+		Journalpost journalpostBegrenset = TestDataUtils.createJournalpost(SAKID, DateTime.now()
+				.toDate(), JournalStatusCode.J, FAGOMRADE).build();
+		Journalpost journalpost = TestDataUtils.createJournalpost(SAKID, DateTime.now()
+				.toDate(), JournalStatusCode.J, FAGOMRADE).build();
+		joarkRepository.save(journalpost);
+		joarkRepository.save(journalpostBegrenset);
         Begrensning begrensning = TestDataUtils.createBegrensning(journalpostBegrenset.getJournalpostId(), null, BegrensningTypeCode.UTILGJENGELIGGJORT);
         begrensningRepository.save(begrensning);
         TestTransaction.flagForCommit();
 
         HentMinJPListeParameters hentMinJPListeParameters = new HentMinJPListeParameters();
-        hentMinJPListeParameters.setSaksListe(Arrays.asList(new SakFagsystem(FagsystemCode.PEN, "123")));
+		hentMinJPListeParameters.setSaksListe(Arrays.asList(new SakFagsystem(TestDataUtils.fagsystem, SAKID)));
 
         Long totalNumberOfJournalpostsBegrenset = journalpostListeRepository.findTotalNumberOfJournalposts(hentMinJPListeParameters);
 
 
-        hentMinJPListeParameters.setWithBegrensetJP(true);
+		hentMinJPListeParameters.setIncludeBegrensetJournalpost(true);
         Long totalNumberOfJournalpostsAll = journalpostListeRepository.findTotalNumberOfJournalposts(hentMinJPListeParameters);
 
         assertThat(totalNumberOfJournalpostsBegrenset, is(1L));
@@ -98,24 +104,27 @@ public class JournalpostListeRepositoryBegrensetTest {
 
     @Test
     public void shouldNotGetJournalpostWhenBegrenset() {
-        Journalpost journalpostBegrenset = TestDataUtils.createJournalpost();
-        Journalpost journalpost = TestDataUtils.createJournalpost();
-        journalpost = joarkRepository.save(journalpost);
-        journalpostBegrenset = joarkRepository.save(journalpostBegrenset);
+		Journalpost journalpostBegrenset = TestDataUtils.createJournalpost(SAKID, DateTime.now()
+				.toDate(), JournalStatusCode.J, FAGOMRADE).build();
+		Journalpost journalpost = TestDataUtils.createJournalpost(SAKID, DateTime.now()
+				.toDate(), JournalStatusCode.J, FAGOMRADE).build();
+		joarkRepository.save(journalpost);
+		joarkRepository.save(journalpostBegrenset);
         Begrensning begrensning = TestDataUtils.createBegrensning(journalpostBegrenset.getJournalpostId(), null, BegrensningTypeCode.UTILGJENGELIGGJORT);
         begrensningRepository.save(begrensning);
         TestTransaction.flagForCommit();
 
         HentMinJPListeParameters hentMinJPListeParameters = new HentMinJPListeParameters();
-        hentMinJPListeParameters.setSaksListe(Arrays.asList(new SakFagsystem(FagsystemCode.PEN, "123")));
+		hentMinJPListeParameters.setSaksListe(Arrays.asList(new SakFagsystem(TestDataUtils.fagsystem, SAKID)));
 
         List<Journalpost> journalpostListBegrenset = journalpostListeRepository.findJournalpostListe(hentMinJPListeParameters);
 
 
-        hentMinJPListeParameters.setWithBegrensetJP(true);
+		hentMinJPListeParameters.setIncludeBegrensetJournalpost(true);
         List<Journalpost> journalpostListBegrensetAll = journalpostListeRepository.findJournalpostListe(hentMinJPListeParameters);
 
         assertThat(journalpostListBegrenset.size(), is(1));
+		assertThat(journalpostListBegrenset.get(0).getJournalpostId(), is(journalpost.getJournalpostId()));
         assertThat(journalpostListBegrensetAll.size(), is(2));
     }
 
