@@ -1,6 +1,5 @@
 package no.nav.dokarkiv.core.domain.entities;
 
-import static org.apache.commons.lang3.BooleanUtils.isFalse;
 import static org.apache.commons.lang3.BooleanUtils.isTrue;
 import static org.apache.commons.lang3.StringUtils.contains;
 
@@ -35,17 +34,13 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import javax.persistence.Transient;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * Domain entity class that represents document info.
@@ -161,28 +156,10 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	@Builder.Default
 	private Set<FilDetaljer> fildetaljerListe = new HashSet<>();
 
-	@Transient
-	private List<Long> begrensetRelasjonerJournalpostId = new ArrayList<>();
-
 	/**
 	 * Default constructor.
 	 */
 	public DokumentInfo() {
-	}
-
-	public void addAllbegrensetRelasjonJournalpostIds(List<Long> journalpostId) {
-		if (begrensetRelasjonerJournalpostId == null) {
-			begrensetRelasjonerJournalpostId = new ArrayList<>();
-		}
-
-		begrensetRelasjonerJournalpostId.addAll(journalpostId);
-	}
-
-	public List<Long> getBegrensetRelasjonerJournalpostId() {
-		if (begrensetRelasjonerJournalpostId == null) {
-			return new ArrayList<>();
-		}
-		return begrensetRelasjonerJournalpostId;
 	}
 
 	/**
@@ -829,12 +806,7 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	 * @return the journalpostRelasjoner
 	 */
 	public Set<JournalpostDokumentInfoRelasjon> getJournalpostRelasjoner() {
-		return Collections.unmodifiableSet(journalpostRelasjoner.stream()
-				.filter(relasjon -> relasjon.getJournalpost() == null || relasjon.getJournalpost()
-						.getJournalpostId() == null || isFalse(getBegrensetRelasjonerJournalpostId().contains(relasjon
-						.getJournalpost()
-						.getJournalpostId())))
-				.collect(Collectors.toSet()));
+		return Collections.unmodifiableSet(journalpostRelasjoner);
 	}
 
 	/**

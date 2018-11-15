@@ -32,12 +32,8 @@ public class JoarkRepositoryBegrenset {
 	}
 
 	public Optional<Journalpost> findById(Long id) {
-		if (begrensningService.isJournalpostBegrenset(id, BegrensningTypeCode.UTILGJENGELIGGJORT)) {
-			return Optional.empty();
-		}
-
-		Optional<Journalpost> journalpost = joarkRepository.findById(id);
-		return journalpost.map(this::addBegrensetRelasjonerToJournalpost);
+		return begrensningService.isJournalpostBegrenset(id, BegrensningTypeCode.UTILGJENGELIGGJORT) ? Optional.empty() :
+				joarkRepository.findById(id).map(this::addBegrensetRelasjonerToJournalpost);
 	}
 
 	public Journalpost save(Journalpost journalpost) {

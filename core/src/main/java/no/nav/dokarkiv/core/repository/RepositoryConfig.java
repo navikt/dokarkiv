@@ -38,8 +38,6 @@ import java.util.Properties;
 @EnableConfigurationProperties(DataSourceProperties.class)
 @Configuration
 @Import(value = {
-		DokumentinfoRepositoryBegrenset.class,
-		JournalpostDokumentInfoRelasjonRepositoryBegrenset.class,
 		JoarkRepositoryBegrenset.class,
 		DokumentUrlInfoRepositoryBegrenset.class,
 		BegrensningService.class
