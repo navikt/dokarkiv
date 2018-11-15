@@ -66,9 +66,12 @@ public class JoarkRepositoryBegrenset {
 
 	public Optional<Journalpost> findJournalpostByKanalReferanseIdAndMottakskanal(String kanalReferanseId, String mottakskanal) {
 		Optional<Journalpost> journalpost = joarkRepository.findJournalpostByKanalReferanseIdAndMottakskanal(kanalReferanseId, mottakskanal);
-		return journalpost.isPresent() ? begrensningService.isJournalpostBegrenset(journalpost.get()
-				.getJournalpostId(), BegrensningTypeCode.UTILGJENGELIGGJORT) ? Optional.empty() : Optional.of(addBegrensetRelasjonerToJournalpost(journalpost
-				.get())) : Optional.empty();
+
+		if (journalpost.isPresent()) {
+			return begrensningService.isJournalpostBegrenset(journalpost.get()
+					.getJournalpostId(), BegrensningTypeCode.UTILGJENGELIGGJORT) ? Optional.empty() : journalpost.map(this::addBegrensetRelasjonerToJournalpost);
+		}
+		return Optional.empty();
 	}
 
 	public Long findDokumentinfoIdIdByDokumentinfoTilleggsopplysningerNokkelAndVerdi(String nokkel, String verdi) {
