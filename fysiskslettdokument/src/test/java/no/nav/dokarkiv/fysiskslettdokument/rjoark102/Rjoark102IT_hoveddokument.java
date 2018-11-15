@@ -1,6 +1,6 @@
 package no.nav.dokarkiv.fysiskslettdokument.rjoark102;
 
-import static no.nav.dokarkiv.fysiskslettdokument.util.TestUtils.HJEMMEL_HOVEDDOKUMENT;
+import static no.nav.dokarkiv.fysiskslettdokument.util.TestUtils.BEGRENSNINGTYPE_UTILGJENGELIGGJORT;
 import static no.nav.dokarkiv.fysiskslettdokument.util.TestUtils.knyttDokumentInfoSomVedleggTilJournalpostForIT;
 import static no.nav.dokarkiv.fysiskslettdokument.util.TestUtils.opprettHoveddokumentForIT;
 import static no.nav.dokarkiv.fysiskslettdokument.util.TestUtils.oppretteDokumentOgKnyttVedleggForIt;
@@ -48,7 +48,7 @@ public class Rjoark102IT_hoveddokument extends AbstractFysiskSlettDokumentIT {
 		//TODO: Valider med responseEntity etter kvitteringsmelding er avklart
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_FYSISKSLETTDOKUMENT + journalpost.getJournalpostId() + "/"
-						+ hoveddokument.getDokumentInfoId() + "/" + HJEMMEL_HOVEDDOKUMENT,
+						+ hoveddokument.getDokumentInfoId() + "/" + BEGRENSNINGTYPE_UTILGJENGELIGGJORT,
 				HttpMethod.DELETE,
 				createHeaders(),
 				String.class);
@@ -60,7 +60,7 @@ public class Rjoark102IT_hoveddokument extends AbstractFysiskSlettDokumentIT {
 		assertFalse(journalpostDokumentInfoRelasjonRepository.findAllByDokumentInfoDokumentInfoId(hoveddokument.getDokumentInfoId())
 				.isPresent());
 
-		assertFalse(dokumentinfoRepository.findAllByOriginalJournalpostJournalpostIdAndDokumentInfoId(
+		assertFalse(dokumentinfoRepository.findAllByJournalpostRelasjonerJournalpostJournalpostIdAndDokumentInfoId(
 				journalpost.getJournalpostId(), hoveddokument.getDokumentInfoId()).isPresent());
 
 		assertTrue(joarkRepository.findAllJournalpostIdsByDokumentInfoId(hoveddokument.getDokumentInfoId()).isEmpty());
@@ -84,7 +84,7 @@ public class Rjoark102IT_hoveddokument extends AbstractFysiskSlettDokumentIT {
 		//TODO: Valider med responseEntity etter kvitteringsmelding er avklart
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_FYSISKSLETTDOKUMENT + journalpostSomSkalSlettes.getJournalpostId() + "/"
-						+ dokumentSomSkalSlettes.getDokumentInfoId() + "/" + HJEMMEL_HOVEDDOKUMENT,
+						+ dokumentSomSkalSlettes.getDokumentInfoId() + "/" + BEGRENSNINGTYPE_UTILGJENGELIGGJORT,
 				HttpMethod.DELETE,
 				createHeaders(),
 				String.class);
@@ -118,7 +118,7 @@ public class Rjoark102IT_hoveddokument extends AbstractFysiskSlettDokumentIT {
 		//TODO: Valider med responseEntity etter kvitteringsmelding er avklart
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_FYSISKSLETTDOKUMENT + journalpost.getJournalpostId() + "/"
-						+ hoveddokument.getDokumentInfoId() + "/" + HJEMMEL_HOVEDDOKUMENT,
+						+ hoveddokument.getDokumentInfoId() + "/" + BEGRENSNINGTYPE_UTILGJENGELIGGJORT,
 				HttpMethod.DELETE,
 				createHeaders(),
 				String.class);
@@ -130,7 +130,7 @@ public class Rjoark102IT_hoveddokument extends AbstractFysiskSlettDokumentIT {
 		assertFalse(journalpostDokumentInfoRelasjonRepository.findAllByDokumentInfoDokumentInfoId(hoveddokument.getDokumentInfoId())
 				.isPresent());
 
-		assertFalse(dokumentinfoRepository.findAllByOriginalJournalpostJournalpostIdAndDokumentInfoId(
+		assertFalse(dokumentinfoRepository.findAllByJournalpostRelasjonerJournalpostJournalpostIdAndDokumentInfoId(
 				journalpost.getJournalpostId(), hoveddokument.getDokumentInfoId()).isPresent());
 
 		assertTrue(joarkRepository.findAllJournalpostIdsByDokumentInfoId(hoveddokument.getDokumentInfoId()).isEmpty());
@@ -163,7 +163,7 @@ public class Rjoark102IT_hoveddokument extends AbstractFysiskSlettDokumentIT {
 		//TODO: Valider med responseEntity etter kvitteringsmelding er avklart
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_FYSISKSLETTDOKUMENT + journalpost.getJournalpostId() + "/"
-						+ hoveddokument.getDokumentInfoId() + "/" + HJEMMEL_HOVEDDOKUMENT,
+						+ hoveddokument.getDokumentInfoId() + "/" + BEGRENSNINGTYPE_UTILGJENGELIGGJORT,
 				HttpMethod.DELETE,
 				createHeaders(),
 				String.class);
@@ -205,7 +205,7 @@ public class Rjoark102IT_hoveddokument extends AbstractFysiskSlettDokumentIT {
 		//TODO: Valider med responseEntity etter kvitteringsmelding er avklart
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_FYSISKSLETTDOKUMENT + journalpost.getJournalpostId() + "/"
-						+ hoveddokument.getDokumentInfoId() + "/" + HJEMMEL_HOVEDDOKUMENT,
+						+ hoveddokument.getDokumentInfoId() + "/" + BEGRENSNINGTYPE_UTILGJENGELIGGJORT,
 				HttpMethod.DELETE,
 				createHeaders(),
 				String.class);

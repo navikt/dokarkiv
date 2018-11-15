@@ -211,7 +211,6 @@ public class Rjoark101IT extends AbstractSlettDokumentIT {
 				String.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.BAD_REQUEST));
-
 		assertThat(responseEntity.getBody(), containsString(
 				String.format("Fant ikke forventet begrensning for journalpost med journalpostId=%s og begrensningsType=%s.",
 						journalpost.getJournalpostId(),
