@@ -17,7 +17,7 @@ public class TilgangJournalpostDto {
 	private final String tema;
 	private final LocalDateTime datoOpprettet;
 	private final String mottakskanal;
-	private final String avsenderMottaker;
+	private final String avsenderMottakerId;
 	//	private final Boolean kvalitetssikretForInnsyn; TODO Finne ut av denne
 	private final TilgangBrukerDto bruker;
 	private final TilgangSakDto sak;

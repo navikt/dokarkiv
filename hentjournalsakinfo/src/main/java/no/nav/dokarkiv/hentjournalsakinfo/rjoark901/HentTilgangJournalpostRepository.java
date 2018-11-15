@@ -43,7 +43,7 @@ public class HentTilgangJournalpostRepository {
 								"jp.fagomrade, " +
 								"cs.createdDate, " +
 								"jp.mottakskanal, " +
-								"jp.avsenderMottaker, " +
+								"jp.avsenderMottakerId, " +
 								"br.brukerId, " +
 								"sr.sakId, " +
 								"sr.fagsystem, " +
