@@ -85,7 +85,7 @@ public class JoarkRepositoryBegrensetTest {
         assertThat(joarkRepositoryBegrenset.findJournalpostIdByDokumentinfoId("213"), nullValue());
         assertThat(joarkRepositoryBegrenset.findDokumentinfoIdIdByDokumentinfoTilleggsopplysningerNokkelAndVerdi("213", "313"), nullValue());
         assertThat(joarkRepositoryBegrenset.findJournalpostByKanalReferanseIdAndMottakskanal("213", MottaksKanalCode.NAV_NO)
-                .size(), is(0));
+                .isPresent(), is(false));
     }
 
 
@@ -115,14 +115,14 @@ public class JoarkRepositoryBegrensetTest {
         assertThat(joarkRepositoryBegrenset.findJournalpostIdByTilleggsopplysningerNokkelAndVerdi(TILLEGGSOPPLYSNINGER_KEY, TILLEGGSOPPLYSNINGER_VALUE), notNullValue());
 
         assertThat(joarkRepository.findJournalpostByKanalReferanseIdAndMottakskanal(KANAL_REFERANSE_ID, MottaksKanalCode.NAV_NO)
-                .size(), is(1));
+                .get().size(), is(1));
         assertThat(joarkRepositoryBegrenset.findJournalpostByKanalReferanseIdAndMottakskanal(KANAL_REFERANSE_ID, MottaksKanalCode.NAV_NO)
-                .size(), is(1));
+                .get().size(), is(1));
 
         assertThat(joarkRepository.findJournalpostByKanalReferanseIdAndMottakskanal(KANAL_REFERANSE_ID, MottaksKanalCode.NAV_NO)
-                .size(), is(1));
+                .get().size(), is(1));
         assertThat(joarkRepositoryBegrenset.findJournalpostByKanalReferanseIdAndMottakskanal(KANAL_REFERANSE_ID, MottaksKanalCode.NAV_NO)
-                .size(), is(1));
+                .get().size(), is(1));
 
         assertTrue(joarkRepository.findJournalpostByKanalReferanseIdAndMottakskanal(KANAL_REFERANSE_ID, MottaksKanalCode.NAV_NO.name())
                 .isPresent());
@@ -249,9 +249,9 @@ public class JoarkRepositoryBegrensetTest {
         TestTransaction.end();
 
         assertThat(joarkRepository.findJournalpostByKanalReferanseIdAndMottakskanal(KANAL_REFERANSE_ID, MottaksKanalCode.NAV_NO)
-                .size(), is(1));
+                .get().size(), is(1));
         assertThat(joarkRepositoryBegrenset.findJournalpostByKanalReferanseIdAndMottakskanal(KANAL_REFERANSE_ID, MottaksKanalCode.NAV_NO)
-                .size(), is(0));
+                .get().size(), is(0));
 
         assertThat(joarkRepository.findJournalpostByKanalReferanseIdAndMottakskanal(KANAL_REFERANSE_ID, MottaksKanalCode.NAV_NO.name())
                 .isPresent(), is(true));

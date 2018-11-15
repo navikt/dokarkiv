@@ -11,7 +11,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import no.nav.dokarkiv.core.CoreConfig;
 import no.nav.dokarkiv.core.domain.builder.JournalpostBuilder;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import no.nav.dokarkiv.core.repository.DokumentinfoRepositoryBegrenset;
+import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepositoryBegrenset;
 import no.nav.dokarkiv.core.repository.SkannetInnholdRepository;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
@@ -77,7 +77,7 @@ public abstract class AbstractJournalfoerInngaaendeV1Itest {
 	@Inject
 	protected TestRestTemplate restTemplate;
 	@Inject
-	protected DokumentinfoRepositoryBegrenset dokumentinfoRepository;
+    protected DokumentinfoRepository dokumentinfoRepository;
 	@Inject
 	protected OidcTestService oidcTestService;
 

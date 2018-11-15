@@ -45,7 +45,8 @@ public class DokumentinfoRepositoryBegrenset {
     }
 
     public boolean existsById(Long id) {
-        return dokumentinfoRepository.existsById(id) && isFalse(begrensningService.isDokumentInfoBegrenset(id, BegrensningTypeCode.UTILGJENGELIGGJORT));
+        return isFalse(begrensningService.isDokumentInfoBegrenset(id, BegrensningTypeCode.UTILGJENGELIGGJORT)) && dokumentinfoRepository
+                .existsById(id);
     }
 
     public Optional<DokumentInfo> findById(Long id) {

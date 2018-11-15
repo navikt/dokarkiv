@@ -9,7 +9,6 @@ import no.nav.dokarkiv.core.domain.entities.Begrensning;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.repository.BegrensningRepository;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
-import no.nav.dokarkiv.core.repository.DokumentinfoRepositoryBegrenset;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
 import no.nav.dokarkiv.core.repository.RepositoryConfig;
@@ -39,7 +38,6 @@ import java.util.List;
 @DataJpaTest
 @Transactional
 @ActiveProfiles("itest")
-@Ignore
 public class JournalpostListeRepositoryBegrensetTest {
 
     @Inject
@@ -52,7 +50,7 @@ public class JournalpostListeRepositoryBegrensetTest {
     private JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository;
 
     @Inject
-    private DokumentinfoRepositoryBegrenset dokumentinfoRepositoryBegrenset;
+    private DokumentinfoRepository dokumentinfoRepositoryBegrenset;
 
     @Inject
     private JournalpostListeRepository journalpostListeRepository;
@@ -67,6 +65,7 @@ public class JournalpostListeRepositoryBegrensetTest {
 
     @After
     public void cleanUp() {
+        TestTransaction.end();
         journalpostDokumentInfoRelasjonRepository.deleteAll();
         dokumentinfoRepository.deleteAll();
         joarkRepository.deleteAll();
@@ -74,13 +73,15 @@ public class JournalpostListeRepositoryBegrensetTest {
     }
 
     @Test
+    @Ignore("Doesnt work. Fix this ASAP!!")
     public void shouldNotCountJournalpostWhenBegrenset() {
-        Journalpost journalpostBegrenset = createJournalpost(true);
-        Journalpost journalpost = createJournalpost(false);
+        Journalpost journalpostBegrenset = TestDataUtils.createJournalpost();
+        Journalpost journalpost = TestDataUtils.createJournalpost();
         journalpost = joarkRepository.save(journalpost);
         journalpostBegrenset = joarkRepository.save(journalpostBegrenset);
+        Begrensning begrensning = TestDataUtils.createBegrensning(journalpostBegrenset.getJournalpostId(), null, BegrensningTypeCode.UTILGJENGELIGGJORT);
+        begrensningRepository.save(begrensning);
         TestTransaction.flagForCommit();
-        TestTransaction.end();
 
         HentMinJPListeParameters hentMinJPListeParameters = new HentMinJPListeParameters();
         hentMinJPListeParameters.setSaksListe(Arrays.asList(new SakFagsystem(FagsystemCode.PEN, "123")));
@@ -97,12 +98,13 @@ public class JournalpostListeRepositoryBegrensetTest {
 
     @Test
     public void shouldNotGetJournalpostWhenBegrenset() {
-        Journalpost journalpostBegrenset = createJournalpost(true);
-        Journalpost journalpost = createJournalpost(false);
+        Journalpost journalpostBegrenset = TestDataUtils.createJournalpost();
+        Journalpost journalpost = TestDataUtils.createJournalpost();
         journalpost = joarkRepository.save(journalpost);
         journalpostBegrenset = joarkRepository.save(journalpostBegrenset);
+        Begrensning begrensning = TestDataUtils.createBegrensning(journalpostBegrenset.getJournalpostId(), null, BegrensningTypeCode.UTILGJENGELIGGJORT);
+        begrensningRepository.save(begrensning);
         TestTransaction.flagForCommit();
-        TestTransaction.end();
 
         HentMinJPListeParameters hentMinJPListeParameters = new HentMinJPListeParameters();
         hentMinJPListeParameters.setSaksListe(Arrays.asList(new SakFagsystem(FagsystemCode.PEN, "123")));
@@ -117,20 +119,5 @@ public class JournalpostListeRepositoryBegrensetTest {
         assertThat(journalpostListBegrensetAll.size(), is(2));
     }
 
-
-    private Journalpost createJournalpost(boolean withBegrensning) {
-        Journalpost journalpost = TestDataUtils.createJournalpost();
-
-        if (withBegrensning) {
-            Begrensning begrensning = Begrensning.builder()
-                    .begrensningType(BegrensningTypeCode.UTILGJENGELIGGJORT)
-                    .journalpostId(journalpost.getJournalpostId())
-                    .build();
-            begrensning.setOpprettetKildeNavn("Kilde navn");
-            begrensningRepository.save(begrensning);
-        }
-
-        return journalpost;
-    }
 
 }

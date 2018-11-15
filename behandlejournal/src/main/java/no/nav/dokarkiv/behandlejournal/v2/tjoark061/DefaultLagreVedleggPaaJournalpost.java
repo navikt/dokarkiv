@@ -20,7 +20,7 @@ import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
 import no.nav.dokarkiv.core.repository.BidragMellomlagringDokumentRepository;
 import no.nav.dokarkiv.core.repository.BidragMellomlagringRepository;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
-import no.nav.dokarkiv.core.repository.DokumentinfoRepositoryBegrenset;
+import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepositoryBegrenset;
 import no.nav.dokarkiv.core.sporing.KildeNavnPopulator;
 import no.nav.dokarkiv.core.stelvio.RequestContextHolder;
@@ -42,7 +42,7 @@ public class DefaultLagreVedleggPaaJournalpost implements LagreVedleggPaaJournal
 	@Inject
 	private JoarkRepositoryBegrenset joarkRepository;
 	@Inject
-	private DokumentinfoRepositoryBegrenset dokumentinfoRepository;
+    private DokumentinfoRepository dokumentinfoRepository;
 	@Inject
 	private DokumentFilRepository dokumentFilRepository;
 	@Inject

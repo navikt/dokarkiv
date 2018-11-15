@@ -11,7 +11,7 @@ import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
-import no.nav.dokarkiv.core.repository.DokumentinfoRepositoryBegrenset;
+import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepositoryBegrenset;
 import no.nav.dokarkiv.journalfoerinngaaende.v1.util.Utils;
 import org.slf4j.MDC;
@@ -29,11 +29,11 @@ public class UpdateInngaaendeJournalpostDokumentService {
 	private final List<String> validDokumentKategorier = Arrays.asList(DokumentKategoriCode.SED.name(), DokumentKategoriCode.SOK
 			.name(), DokumentKategoriCode.KA.name(), DokumentKategoriCode.IS.name());
 
-	private final DokumentinfoRepositoryBegrenset dokumentinfoRepository;
+	private final DokumentinfoRepository dokumentinfoRepository;
 	private final JoarkRepositoryBegrenset joarkRepository;
 
 	@Inject
-	public UpdateInngaaendeJournalpostDokumentService(DokumentinfoRepositoryBegrenset dokumentinfoRepository,
+	public UpdateInngaaendeJournalpostDokumentService(DokumentinfoRepository dokumentinfoRepository,
 													  JoarkRepositoryBegrenset joarkRepository) {
 		this.dokumentinfoRepository = dokumentinfoRepository;
 		this.joarkRepository = joarkRepository;

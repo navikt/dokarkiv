@@ -10,7 +10,7 @@ import no.nav.dokarkiv.core.domain.util.DateProvider;
 import no.nav.dokarkiv.core.exceptions.ApplicationException;
 import no.nav.dokarkiv.core.repository.BidragMellomlagringRepository;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
-import no.nav.dokarkiv.core.repository.DokumentinfoRepositoryBegrenset;
+import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepositoryBegrenset;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.dokarkiv.core.stelvio.SimpleRequestContext;
@@ -49,7 +49,7 @@ public abstract class AbstractBehandleJournalV2Itest {
 	@Inject
     protected JoarkRepositoryBegrenset joarkRepository;
 	@Inject
-    protected DokumentinfoRepositoryBegrenset dokumentinfoRepository;
+    protected DokumentinfoRepository dokumentinfoRepository;
 	@Inject
 	protected DokumentFilRepository dokumentFilRepository;
 	@Inject

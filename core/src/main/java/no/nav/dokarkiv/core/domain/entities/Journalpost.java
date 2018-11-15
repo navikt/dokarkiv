@@ -46,6 +46,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -232,22 +233,22 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
     @Cascade({CascadeType.PERSIST, CascadeType.MERGE, CascadeType.SAVE_UPDATE, CascadeType.DELETE, CascadeType.DETACH})
     private Behandlingsrelasjon behandlingsrelasjon;
 
+    @Transient
     private transient List<Long> begrensetRelasjonerDokumentInfoId = new ArrayList<>();
 
-    public void addAllbegrensetRelasjonDokumentInfoIds(List<Long> dokumentInfoId) {
+    public void addAllbegrensetRelasjonerDokumentInfoIds(List<Long> dokumentInfoId) {
         begrensetRelasjonerDokumentInfoId = new ArrayList<>();
         begrensetRelasjonerDokumentInfoId.addAll(dokumentInfoId);
     }
 
     public List<Long> getBegrensetRelasjonerDokumentInfoId() {
-        return begrensetRelasjonerDokumentInfoId;
+        return begrensetRelasjonerDokumentInfoId == null ? new ArrayList<>() : begrensetRelasjonerDokumentInfoId;
     }
 
     /**
      * Default constructor.
      */
     public Journalpost() {
-        begrensetRelasjonerDokumentInfoId = new ArrayList<>();
     }
 
     /**
@@ -1478,7 +1479,8 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
      */
     public Set<JournalpostDokumentInfoRelasjon> getJournalpostDokumentInfoRelasjoner() {
         return Collections.unmodifiableSet(journalpostDokumentInfoRelasjoner.stream()
-                .filter(relasjon -> relasjon.getDokumentInfo() == null || isFalse(getBegrensetRelasjonerDokumentInfoId().contains(relasjon
+                .filter(relasjon -> relasjon.getDokumentInfo() == null || relasjon.getDokumentInfo()
+                        .getDokumentInfoId() == null || isFalse(getBegrensetRelasjonerDokumentInfoId().contains(relasjon
                         .getDokumentInfo()
                         .getDokumentInfoId())))
                 .collect(Collectors.toSet()));

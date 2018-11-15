@@ -21,7 +21,7 @@ import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.exceptions.NoDokumentInfoFoundException;
 import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
 import no.nav.dokarkiv.core.repository.JoarkRepositoryBegrenset;
-import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepositoryBegrenset;
+import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
 import no.nav.dokarkiv.core.sporing.SporingPopulator;
 import org.junit.Before;
 import org.junit.Rule;
@@ -52,7 +52,7 @@ public class DefaultAvbrytVedleggServiceTest {
 	private JoarkRepositoryBegrenset joarkRepository;
 
 	@Mock
-	private JournalpostDokumentInfoRelasjonRepositoryBegrenset journalpostDokumentInfoRelasjonRepository;
+	private JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository;
 
 	@Mock
 	private SporingPopulator sporingPopulator;

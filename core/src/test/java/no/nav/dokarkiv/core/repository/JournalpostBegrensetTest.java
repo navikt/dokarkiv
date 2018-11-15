@@ -117,7 +117,7 @@ public class JournalpostBegrensetTest {
         assertThat(journalpostWithBegrensning.findAllDokumentInfos().size(), is(2));
 
         //Test behaviour when not begrenset
-        journalpostWithBegrensning.addAllbegrensetRelasjonDokumentInfoIds(new ArrayList<>());
+        journalpostWithBegrensning.addAllbegrensetRelasjonerDokumentInfoIds(new ArrayList<>());
         Journalpost journalpostWithoutBegrensning = joarkRepository.findById(journalpost.getJournalpostId()).get();
 
         assertThat(journalpostWithoutBegrensning.getJournalpostDokumentInfoRelasjoner().size(), is(3));
