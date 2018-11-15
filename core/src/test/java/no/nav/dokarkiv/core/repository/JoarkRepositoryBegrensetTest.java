@@ -28,6 +28,7 @@ import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
+import javax.persistence.EntityManager;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,6 +58,9 @@ public class JoarkRepositoryBegrensetTest {
     @Inject
     private BegrensningRepository begrensningRepository;
 
+    @Inject
+    private EntityManager entityManager;
+
     public static final String KANAL_REFERANSE_ID = "kanal";
     public static final String TILLEGGSOPPLYSNINGER_KEY = "keey";
     public static final String TILLEGGSOPPLYSNINGER_VALUE = "value";
@@ -64,10 +68,6 @@ public class JoarkRepositoryBegrensetTest {
     @Before
     public void setUp() {
         RequestContextUtil.createAndSetUsername("itest", "itest");
-        journalpostDokumentInfoRelasjonRepository.deleteAll();
-        dokumentinfoRepository.deleteAll();
-        joarkRepository.deleteAll();
-        begrensningRepository.deleteAll();
     }
 
     @After
@@ -77,6 +77,8 @@ public class JoarkRepositoryBegrensetTest {
         dokumentinfoRepository.deleteAll();
         joarkRepository.deleteAll();
         begrensningRepository.deleteAll();
+        entityManager.createNativeQuery("Delete from t_jp_tillegg");
+
     }
 
 
