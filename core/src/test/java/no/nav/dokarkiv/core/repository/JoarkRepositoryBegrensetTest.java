@@ -66,6 +66,7 @@ public class JoarkRepositoryBegrensetTest {
 
     @After
     public void cleanUp() {
+        TestTransaction.end();
         journalpostDokumentInfoRelasjonRepository.deleteAll();
         dokumentinfoRepository.deleteAll();
         joarkRepository.deleteAll();
@@ -95,7 +96,6 @@ public class JoarkRepositoryBegrensetTest {
         Journalpost journalpost = createJournalpost();
         journalpost = joarkRepository.save(journalpost);
         TestTransaction.flagForCommit();
-        TestTransaction.end();
 
         assertTrue(joarkRepository.existsById(journalpost.getId()));
         assertTrue(joarkRepositoryBegrenset.existsById(journalpost.getId()));
@@ -155,7 +155,6 @@ public class JoarkRepositoryBegrensetTest {
         Begrensning begrensning = createBegrensning(journalpostBegrenset.getJournalpostId(), null, BegrensningTypeCode.UTILGJENGELIGGJORT);
         begrensningRepository.save(begrensning);
         TestTransaction.flagForCommit();
-        TestTransaction.end();
 
         List<Journalpost> journalpostList = new ArrayList<>();
         List<Journalpost> journalpostListBegrenset = new ArrayList<>();
@@ -177,7 +176,6 @@ public class JoarkRepositoryBegrensetTest {
         begrensningRepository.save(begrensning);
 
         TestTransaction.flagForCommit();
-        TestTransaction.end();
 
         assertTrue(joarkRepository.existsById(journalpost.getId()));
         assertFalse(joarkRepositoryBegrenset.existsById(journalpost.getId()));
@@ -192,7 +190,6 @@ public class JoarkRepositoryBegrensetTest {
         begrensningRepository.save(begrensning);
 
         TestTransaction.flagForCommit();
-        TestTransaction.end();
 
         assertThat(joarkRepository.findJournalpostIdByDokumentinfoId(journalpost.findHoveddokumentDokumentInfoRelasjon()
                 .getDokumentInfo()
@@ -217,7 +214,6 @@ public class JoarkRepositoryBegrensetTest {
         assertThat(joarkRepository.findDokumentinfoIdIdByDokumentinfoTilleggsopplysningerNokkelAndVerdi(TILLEGGSOPPLYSNINGER_KEY, TILLEGGSOPPLYSNINGER_VALUE), notNullValue());
         assertThat(joarkRepositoryBegrenset.findDokumentinfoIdIdByDokumentinfoTilleggsopplysningerNokkelAndVerdi(TILLEGGSOPPLYSNINGER_KEY, TILLEGGSOPPLYSNINGER_VALUE), nullValue());
 
-        TestTransaction.end();
     }
 
     @Test
@@ -231,7 +227,6 @@ public class JoarkRepositoryBegrensetTest {
         begrensningRepository.save(begrensning);
 
         TestTransaction.flagForCommit();
-        TestTransaction.end();
 
         assertThat(joarkRepository.findJournalpostIdByTilleggsopplysningerNokkelAndVerdi(TILLEGGSOPPLYSNINGER_KEY, TILLEGGSOPPLYSNINGER_VALUE), notNullValue());
         assertThat(joarkRepositoryBegrenset.findJournalpostIdByTilleggsopplysningerNokkelAndVerdi(TILLEGGSOPPLYSNINGER_KEY, TILLEGGSOPPLYSNINGER_VALUE), nullValue());
@@ -246,7 +241,6 @@ public class JoarkRepositoryBegrensetTest {
         begrensningRepository.save(begrensning);
 
         TestTransaction.flagForCommit();
-        TestTransaction.end();
 
         assertThat(joarkRepository.findJournalpostByKanalReferanseIdAndMottakskanal(KANAL_REFERANSE_ID, MottaksKanalCode.NAV_NO)
                 .get().size(), is(1));
@@ -270,7 +264,6 @@ public class JoarkRepositoryBegrensetTest {
         begrensningRepository.save(begrensning);
 
         TestTransaction.flagForCommit();
-        TestTransaction.end();
 
         assertThat(joarkRepository.findJournalpostByKanalReferanseId(KANAL_REFERANSE_ID).isPresent(), is(true));
         assertThat(joarkRepositoryBegrenset.findJournalpostByKanalReferanseId(KANAL_REFERANSE_ID).isPresent(), is(false));
