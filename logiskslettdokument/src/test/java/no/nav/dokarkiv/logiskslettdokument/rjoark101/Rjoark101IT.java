@@ -7,6 +7,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
@@ -51,8 +53,8 @@ public class Rjoark101IT extends AbstractSlettDokumentIT {
 				createHeaders(),
 				LogiskSlettDokumentResponse.class);
 
-		List<Begrensning> begrensetJp = hentVedleggBegrensningEtterUtfoertKall(journalpost.getJournalpostId(), vedlegg.getDokumentInfoId());
-		assertEquals(1L, begrensetJp.size());
+		Begrensning begrensetJp = hentVedleggBegrensningEtterUtfoertKall(journalpost.getJournalpostId(), vedlegg.getDokumentInfoId());
+		assertNotNull(begrensetJp);
 		assertThat(hentAntallBegrensninger(), is(1L));
 
 		ResponseEntity<LogiskSlettDokumentResponse> responseEntity = restTemplate.exchange(
@@ -64,7 +66,7 @@ public class Rjoark101IT extends AbstractSlettDokumentIT {
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 
 		begrensetJp = hentVedleggBegrensningEtterUtfoertKall(journalpost.getJournalpostId(), vedlegg.getDokumentInfoId());
-		assertEquals(0L, begrensetJp.size());
+		assertNull(begrensetJp);
 		assertThat(hentAntallBegrensninger(), is(0L));
 	}
 
@@ -100,8 +102,8 @@ public class Rjoark101IT extends AbstractSlettDokumentIT {
 						vedlegg.getDokumentInfoId(),
 						BegrensningTypeCode.UTILGJENGELIGGJORT)));
 
-		List<Begrensning> begrensetJp = hentVedleggBegrensningEtterUtfoertKall(journalpost.getJournalpostId(), vedlegg.getDokumentInfoId());
-		assertEquals(begrensetJp.size(), 0L);
+		Begrensning begrensetJp = hentVedleggBegrensningEtterUtfoertKall(journalpost.getJournalpostId(), vedlegg.getDokumentInfoId());
+		assertNull(begrensetJp);
 		assertThat(hentAntallBegrensninger(), is(0L));
 	}
 
@@ -137,10 +139,10 @@ public class Rjoark101IT extends AbstractSlettDokumentIT {
 				createHeaders(),
 				LogiskSlettDokumentResponse.class);
 
-		List<Begrensning> begrensetJp = hentHoveddokumentBegrensningEtterUtfoertKall(journalpost);
-		assertEquals(begrensetJp.size(), 1L);
+		Begrensning begrensetJp = hentHoveddokumentBegrensningEtterUtfoertKall(journalpost);
+		assertNotNull(begrensetJp);
 		begrensetJp = hentVedleggBegrensningEtterUtfoertKall(journalpost.getJournalpostId(), vedlegg.getDokumentInfoId());
-		assertEquals(begrensetJp.size(), 1L);
+		assertNotNull(begrensetJp);
 		assertThat(hentAntallBegrensninger(), is(2L));
 
 		ResponseEntity<LogiskSlettDokumentResponse> responseEntity = restTemplate.exchange(
@@ -152,9 +154,9 @@ public class Rjoark101IT extends AbstractSlettDokumentIT {
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 
 		begrensetJp = hentHoveddokumentBegrensningEtterUtfoertKall(journalpost);
-		assertEquals(begrensetJp.size(), 1L);
+		assertNotNull(begrensetJp);
 		begrensetJp = hentVedleggBegrensningEtterUtfoertKall(journalpost.getJournalpostId(), vedlegg.getDokumentInfoId());
-		assertEquals(begrensetJp.size(), 0L);
+		assertNull(begrensetJp);
 		assertThat(hentAntallBegrensninger(), is(1L));
 	}
 
@@ -176,9 +178,9 @@ public class Rjoark101IT extends AbstractSlettDokumentIT {
 				createHeaders(),
 				LogiskSlettDokumentResponse.class);
 
-		List<Begrensning> begrensetJp = hentHoveddokumentBegrensningEtterUtfoertKall(journalpost);
+		Begrensning begrensetJp = hentHoveddokumentBegrensningEtterUtfoertKall(journalpost);
 
-		assertEquals(begrensetJp.size(), 1L);
+		assertNotNull(begrensetJp);
 		assertThat(hentAntallBegrensninger(), is(1L));
 
 		ResponseEntity<LogiskSlettDokumentResponse> responseEntity = restTemplate.exchange(
@@ -191,7 +193,7 @@ public class Rjoark101IT extends AbstractSlettDokumentIT {
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 
 		begrensetJp = hentHoveddokumentBegrensningEtterUtfoertKall(journalpost);
-		assertEquals(begrensetJp.size(), 0L);
+		assertNull(begrensetJp);
 		assertThat(hentAntallBegrensninger(), is(0L));
 	}
 
@@ -218,8 +220,8 @@ public class Rjoark101IT extends AbstractSlettDokumentIT {
 						journalpost.getJournalpostId(),
 						BegrensningTypeCode.UTILGJENGELIGGJORT)));
 
-		List<Begrensning> begrensetJp = hentJournalpostEtterUtfoertKall(journalpost.getJournalpostId());
-		assertEquals(begrensetJp.size(), 0L);
+		Begrensning begrensetJp = hentJournalpostEtterUtfoertKall(journalpost.getJournalpostId());
+		assertNull(begrensetJp);
 		assertThat(hentAntallBegrensninger(), is(0L));
 	}
 
@@ -255,10 +257,10 @@ public class Rjoark101IT extends AbstractSlettDokumentIT {
 				createHeaders(),
 				LogiskSlettDokumentResponse.class);
 
-		List<Begrensning> begrensetJp = hentHoveddokumentBegrensningEtterUtfoertKall(journalpost);
-		assertEquals(begrensetJp.size(), 1L);
+		Begrensning begrensetJp = hentHoveddokumentBegrensningEtterUtfoertKall(journalpost);
+		assertNotNull(begrensetJp);
 		begrensetJp = hentVedleggBegrensningEtterUtfoertKall(journalpost.getJournalpostId(), vedlegg.getDokumentInfoId());
-		assertEquals(begrensetJp.size(), 1L);
+		assertNotNull(begrensetJp);
 		assertThat(hentAntallBegrensninger(), is(2L));
 
 		ResponseEntity<LogiskSlettDokumentResponse> responseEntity = restTemplate.exchange(
@@ -271,9 +273,9 @@ public class Rjoark101IT extends AbstractSlettDokumentIT {
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 
 		begrensetJp = hentHoveddokumentBegrensningEtterUtfoertKall(journalpost);
-		assertEquals(begrensetJp.size(), 0L);
+		assertNull(begrensetJp);
 		begrensetJp = hentVedleggBegrensningEtterUtfoertKall(journalpost.getJournalpostId(), vedlegg.getDokumentInfoId());
-		assertEquals(begrensetJp.size(), 1L);
+		assertNotNull(begrensetJp);
 		assertThat(hentAntallBegrensninger(), is(1L));
 	}
 

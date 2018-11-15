@@ -27,9 +27,9 @@ public class BegrensningService {
 	}
 
 	public boolean isJournalpostBegrenset(Long journalpostId, BegrensningTypeCode begrensningTypeCode) {
-		List<Begrensning> begrensning = begrensningRepository.findAllByJournalpostIdAndBegrensningTypeAndDokumentInfoIdIsNull(
-				journalpostId, begrensningTypeCode).orElse(new ArrayList<>());
-		return isFalse(begrensning.isEmpty());
+		Begrensning begrensning = begrensningRepository.findByJournalpostIdAndBegrensningTypeAndDokumentInfoIdIsNull(
+				journalpostId, begrensningTypeCode).orElse(null);
+		return isFalse(begrensning == null);
 	}
 
     public boolean isJournalpostDokumentInfoRelasjonOrJournalpostBegrenset(Long journalpostId, Long dokumentInfoId, BegrensningTypeCode begrensningTypeCode) {
@@ -37,9 +37,9 @@ public class BegrensningService {
     }
 
     public boolean isJournalpostDokumentInfoRelasjonBegrenset(Long journalpostId, Long dokumentInfoId, BegrensningTypeCode begrensningTypeCode) {
-		List<Begrensning> begrensning = begrensningRepository.findAllByJournalpostIdAndDokumentInfoIdAndBegrensningType(
-				journalpostId, dokumentInfoId, begrensningTypeCode).orElse(new ArrayList<>());
-		return isFalse(begrensning.isEmpty());
+		Begrensning begrensning = begrensningRepository.findByJournalpostIdAndDokumentInfoIdAndBegrensningType(
+				journalpostId, dokumentInfoId, begrensningTypeCode).orElse(null);
+		return isFalse(begrensning == null);
 	}
 
 	public void saveBegrensning(Begrensning begrensning) {
@@ -49,16 +49,17 @@ public class BegrensningService {
 	public void deleteValidertJournalpostBegrensning(
 			Long journalpostId,
 			BegrensningTypeCode begrensningTypeCode) {
-		Begrensning begrensning = begrensningRepository.findByJournalpostIdAndBegrensningTypeAndDokumentInfoIdIsNull(
-				journalpostId, begrensningTypeCode);
-		begrensningRepository.delete(begrensning);
+		begrensningRepository.deleteByJournalpostIdAndBegrensningTypeAndDokumentInfoIdIsNull(journalpostId, begrensningTypeCode);
+//		Begrensning begrensning = begrensningRepository.findByJournalpostIdAndBegrensningTypeAndDokumentInfoIdIsNull(
+//				journalpostId, begrensningTypeCode);
+//		begrensningRepository.delete(begrensning);
 	}
 
 	public void deleteValidertJournalpostDokumentInfoRelasjonBegrensning(
 			Long journalpostId, Long dokumentInfoId, BegrensningTypeCode begrensningTypeCode) {
-		Begrensning begrensning = begrensningRepository.findByJournalpostIdAndDokumentInfoIdAndBegrensningType(
-				journalpostId, dokumentInfoId, begrensningTypeCode);
-		begrensningRepository.delete(begrensning);
+//		Begrensning begrensning = begrensningRepository.findByJournalpostIdAndDokumentInfoIdAndBegrensningType(
+//				journalpostId, dokumentInfoId, begrensningTypeCode);
+//		begrensningRepository.delete(begrensning);
+		begrensningRepository.deleteByJournalpostIdAndDokumentInfoIdAndBegrensningType(journalpostId, dokumentInfoId, begrensningTypeCode);
 	}
-
 }

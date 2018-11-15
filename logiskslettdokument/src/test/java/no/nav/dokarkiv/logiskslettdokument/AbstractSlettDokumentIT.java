@@ -151,21 +151,21 @@ public abstract class AbstractSlettDokumentIT {
 						.withBodyFile("abac/abac-permit.json")));
 	}
 
-	public List<Begrensning> hentHoveddokumentBegrensningEtterUtfoertKall(Journalpost journalpost) {
+	public Begrensning hentHoveddokumentBegrensningEtterUtfoertKall(Journalpost journalpost) {
 		try {
-			return begrensningRepository.findAllByJournalpostIdAndBegrensningTypeAndDokumentInfoIdIsNull(
+			return begrensningRepository.findByJournalpostIdAndBegrensningTypeAndDokumentInfoIdIsNull(
 					journalpost.getJournalpostId(), UTILGJENGELIGGJORT).get();
 		} catch (NoSuchElementException e) {
-			return new ArrayList<>();
+			return null;
 		}
 	}
 
-	public List<Begrensning> hentVedleggBegrensningEtterUtfoertKall(Long journalpostId, Long dokumentInfoId) {
+	public Begrensning hentVedleggBegrensningEtterUtfoertKall(Long journalpostId, Long dokumentInfoId) {
 		try {
-			return begrensningRepository.findAllByJournalpostIdAndDokumentInfoIdAndBegrensningType(
+			return begrensningRepository.findByJournalpostIdAndDokumentInfoIdAndBegrensningType(
 					journalpostId, dokumentInfoId, UTILGJENGELIGGJORT).get();
 		} catch (NoSuchElementException e) {
-			return new ArrayList<>();
+			return null;
 		}
 	}
 
@@ -179,12 +179,12 @@ public abstract class AbstractSlettDokumentIT {
 				.get(0).getDokumentInfo();
 	}
 
-	public List<Begrensning> hentJournalpostEtterUtfoertKall(Long journalpostId) {
+	public Begrensning hentJournalpostEtterUtfoertKall(Long journalpostId) {
 		try {
-			return begrensningRepository.findAllByJournalpostIdAndBegrensningTypeAndDokumentInfoIdIsNull(
+			return begrensningRepository.findByJournalpostIdAndBegrensningTypeAndDokumentInfoIdIsNull(
 					journalpostId, UTILGJENGELIGGJORT).get();
 		} catch (NoSuchElementException e) {
-			return new ArrayList<>();
+			return null;
 		}
 	}
 }

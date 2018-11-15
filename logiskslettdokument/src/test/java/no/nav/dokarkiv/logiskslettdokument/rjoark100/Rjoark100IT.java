@@ -5,6 +5,7 @@ import static no.nav.dokarkiv.logiskslettdokument.util.TestUtils.createDokumentI
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertNotNull;
 
 import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
@@ -50,8 +51,8 @@ public class Rjoark100IT extends AbstractSlettDokumentIT {
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 
-		List<Begrensning> begrensninger = hentVedleggBegrensningEtterUtfoertKall(journalpost.getJournalpostId(), vedlegg.getDokumentInfoId());
-		assertThat(begrensninger.size(), is(1));
+		Begrensning begrensninger = hentVedleggBegrensningEtterUtfoertKall(journalpost.getJournalpostId(), vedlegg.getDokumentInfoId());
+		assertNotNull(begrensninger);
 
 
 		assertThat(hentAntallBegrensninger(), is(1L));
@@ -153,8 +154,8 @@ public class Rjoark100IT extends AbstractSlettDokumentIT {
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 
-		List<Begrensning> begrensninger = hentHoveddokumentBegrensningEtterUtfoertKall(journalpost);
-		assertThat(begrensninger.size(), is(1));
+		Begrensning begrensninger = hentHoveddokumentBegrensningEtterUtfoertKall(journalpost);
+		assertNotNull(begrensninger);
 
 		assertThat(hentAntallBegrensninger(), is(1L));
 	}
@@ -224,11 +225,11 @@ public class Rjoark100IT extends AbstractSlettDokumentIT {
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 
-		List<Begrensning> hoveddokumentBegrensninger = hentHoveddokumentBegrensningEtterUtfoertKall(journalpost);
-		assertThat(hoveddokumentBegrensninger.size(), is(1));
+		Begrensning hoveddokumentBegrensninger = hentHoveddokumentBegrensningEtterUtfoertKall(journalpost);
+		assertNotNull(hoveddokumentBegrensninger);
 
-		List<Begrensning> vedleggBegrensninger = hentVedleggBegrensningEtterUtfoertKall(journalpost.getJournalpostId(), vedlegg.getDokumentInfoId());
-		assertThat(vedleggBegrensninger.size(), is(1));
+		Begrensning vedleggBegrensninger = hentVedleggBegrensningEtterUtfoertKall(journalpost.getJournalpostId(), vedlegg.getDokumentInfoId());
+		assertNotNull(vedleggBegrensninger);
 
 		assertThat(hentAntallBegrensninger(), is(2L));
 	}
