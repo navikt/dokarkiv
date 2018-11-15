@@ -11,13 +11,15 @@ import java.util.Optional;
  * @author Ketill Fenne, Visma Consulting
  */
 public interface BegrensningRepository extends CrudRepository<Begrensning, Long> {
-	Optional<List<Begrensning>> findAllByJournalpostIdAndDokumentInfoIdAndBegrensningType(Long journalpostId, Long dokumentInfoId, BegrensningTypeCode begrensningTypeCode);
+	Optional<Begrensning> findByJournalpostIdAndDokumentInfoIdAndBegrensningType(Long journalpostId, Long dokumentInfoId, BegrensningTypeCode begrensningTypeCode);
 
-	Begrensning findByJournalpostIdAndDokumentInfoIdAndBegrensningType(Long journalpostId, Long dokumentInfoId, BegrensningTypeCode begrensningTypeCode);
+	Optional<Begrensning> findByJournalpostIdAndBegrensningTypeAndDokumentInfoIdIsNull(Long journalpostId, BegrensningTypeCode begrensningTypeCode);
 
-	Optional<List<Begrensning>> findAllByJournalpostIdAndBegrensningTypeAndDokumentInfoIdIsNull(Long journalpostId, BegrensningTypeCode begrensningTypeCode);
+	void deleteByJournalpostIdAndBegrensningTypeAndDokumentInfoIdIsNull(Long journalpostId, BegrensningTypeCode begrensningTypeCode);
 
 	Begrensning findByJournalpostIdAndBegrensningTypeAndDokumentInfoIdIsNull(Long journalpostId, BegrensningTypeCode begrensningTypeCode);
 
     Optional<Begrensning> findByDokumentInfoIdAndBegrensningTypeAndJournalpostIdIsNull(Long dokumentInfoId, BegrensningTypeCode begrensningTypeCode);
+	void deleteByJournalpostIdAndDokumentInfoIdAndBegrensningType(Long journalpostId, Long dokumentInfoId, BegrensningTypeCode begrensningTypeCode);
+
 }

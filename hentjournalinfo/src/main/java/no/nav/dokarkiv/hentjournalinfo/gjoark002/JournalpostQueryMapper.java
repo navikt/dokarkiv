@@ -29,6 +29,7 @@ public class JournalpostQueryMapper {
                 .journalpostType(JournalpostType.mapFromJournalpostTypeCode(journalpost.getJournalposttype()))
                 .journalpostStatus(JournalpostStatus.mapFromJournalStatusCode(journalpost.getJournalstatus()))
                 .tittel(journalpost.getInnhold())
+                .saksrelasjon(journalpost.getSaksrelasjon())
                 .slettet(isBegrenset)
                 .build();
     }
@@ -51,4 +52,5 @@ public class JournalpostQueryMapper {
                 .brukerType(BrukerType.mapFromBrukerTypeCode(bruker.getBrukerType()))
                 .build()).collect(Collectors.toList());
     }
+
 }
