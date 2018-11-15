@@ -8,7 +8,9 @@ import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.service.BegrensningService;
+import no.nav.dokarkiv.core.exceptions.DokumentInfoIkkeTilknyttetJournalpostSomGyldigVerdiException;
 import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
+import no.nav.dokarkiv.logiskslettdokument.LogiskSlettDokumentValidator;
 import no.nav.dokarkiv.logiskslettdokument.exceptions.BegrensningIkkeFunnetException;
 import no.nav.dokarkiv.logiskslettdokument.rjoark100.LogiskSlettDokumentRequestTo;
 import no.nav.dokarkiv.logiskslettdokument.rjoark100.LogiskSlettDokumentResponse;
@@ -17,19 +19,17 @@ import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.List;
 
 @Service
 @Slf4j
 public class AngreLogiskSlettDokumentService {
 
-	private final AngreLogiskSlettDokumentValidator validator;
+	private final LogiskSlettDokumentValidator validator;
 	private final JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository;
 	private final BegrensningService begrensningService;
 
 	@Inject
-	public AngreLogiskSlettDokumentService(AngreLogiskSlettDokumentValidator validator,
+	public AngreLogiskSlettDokumentService(LogiskSlettDokumentValidator validator,
 										   JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository,
 										   BegrensningService begrensningService) {
 		this.validator = validator;
@@ -38,35 +38,48 @@ public class AngreLogiskSlettDokumentService {
 	}
 
 	public LogiskSlettDokumentResponse angreLogiskSlettDokument(LogiskSlettDokumentRequestTo requestTo) {
-		List<JournalpostDokumentInfoRelasjon> relasjonerDerSlettingSkalAngres =
-				journalpostDokumentInfoRelasjonRepository.findAllByJournalpostJournalpostIdAndDokumentInfoDokumentInfoId(
-						requestTo.getJournalpostId(), requestTo.getDokumentInfoId()).orElse(new ArrayList<>());
+		JournalpostDokumentInfoRelasjon relasjonDerSlettingSkalAngres =
+				journalpostDokumentInfoRelasjonRepository.findByJournalpostJournalpostIdAndDokumentInfoDokumentInfoId(
+						requestTo.getJournalpostId(), requestTo.getDokumentInfoId()).orElse(null);
 
-		validator.validerAngreLogiskSlettAvEttDokument(relasjonerDerSlettingSkalAngres, requestTo);
+		validator.validerAtJournalpostDokumentInfoRelasjonerFinnes(relasjonDerSlettingSkalAngres, requestTo);
 
-		JournalpostDokumentInfoRelasjon angreSlettRelasjon = relasjonerDerSlettingSkalAngres.get(0);
+		Long journalpostId = relasjonDerSlettingSkalAngres.getJournalpost().getJournalpostId();
+		Long dokumentInfoId = relasjonDerSlettingSkalAngres.getDokumentInfo().getDokumentInfoId();
 
-		if (TilknyttetJournalpostSomCode.HOVEDDOKUMENT.equals(angreSlettRelasjon.getTilknyttetJournalpostSom())) {
-			sjekkAtJournalpostErUtilgjengeliggjort(angreSlettRelasjon.getJournalpost().getJournalpostId());
-			begrensningService.deleteValidertJournalpostBegrensning(
-					requestTo.getJournalpostId(),
-					BegrensningTypeCode.UTILGJENGELIGGJORT);
-			log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har angret logisk sletting av journalpost med journalpostId={}",
-					requestTo.getJournalpostId());
-		} else {
-			sjekkAtDokumentErUtilgjengeliggjort(
-					angreSlettRelasjon.getJournalpost().getJournalpostId(),
-					angreSlettRelasjon.getDokumentInfo().getDokumentInfoId());
-			begrensningService.deleteValidertJournalpostDokumentInfoRelasjonBegrensning(
-					requestTo.getJournalpostId(),
-					requestTo.getDokumentInfoId(),
-					BegrensningTypeCode.UTILGJENGELIGGJORT);
-			log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) +
-							" har angret logisk sletting av dokument med journalpostId={}, dokumentInfoId={}",
-					requestTo.getJournalpostId(), requestTo.getDokumentInfoId());
+		switch (relasjonDerSlettingSkalAngres.getTilknyttetJournalpostSom()) {
+			case HOVEDDOKUMENT:
+				sjekkAtJournalpostErUtilgjengeliggjort(journalpostId);
+				begrensningService.deleteValidertJournalpostBegrensning(
+						journalpostId,
+						BegrensningTypeCode.UTILGJENGELIGGJORT);
+				log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har angret logisk sletting av journalpost med journalpostId={}",
+						journalpostId);
+				break;
+			case VEDLEGG:
+				sjekkAtDokumentErUtilgjengeliggjort(
+						journalpostId,
+						dokumentInfoId);
+				begrensningService.deleteValidertJournalpostDokumentInfoRelasjonBegrensning(
+						journalpostId,
+						dokumentInfoId,
+						BegrensningTypeCode.UTILGJENGELIGGJORT);
+				log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) +
+								" har angret logisk sletting av dokument med journalpostId={}, dokumentInfoId={}",
+						journalpostId, dokumentInfoId);
+				break;
+			default:
+				throw new DokumentInfoIkkeTilknyttetJournalpostSomGyldigVerdiException(String.format(
+						"Dokument med dokumentInfoId=%s er tilknyttet journalpost med journalpostId=%s som %s. " +
+								"Gyldige verdier er %s eller %s.",
+						dokumentInfoId,
+						journalpostId,
+						relasjonDerSlettingSkalAngres.getTilknyttetJournalpostSom().name(),
+						TilknyttetJournalpostSomCode.HOVEDDOKUMENT.name(),
+						TilknyttetJournalpostSomCode.VEDLEGG.name()));
 		}
 
-		return LogiskSlettDokumentResponseMapper.mapToSlettDokumentResponse(angreSlettRelasjon);
+		return LogiskSlettDokumentResponseMapper.mapToSlettDokumentResponse(relasjonDerSlettingSkalAngres);
 	}
 
 	private void sjekkAtDokumentErUtilgjengeliggjort(Long journalpostId, Long dokumentInfoId) {

@@ -62,7 +62,6 @@ public abstract class AbstractSlettDokumentIT {
 	protected static final String TILKNYTTET_AV_NAVN = "Tilknyttetnavn";
 	protected static final String URL_SLETTDOKUMENT = "/rest/logiskslettdokument/";
 	protected static final String URL_ANGRESLETTDOKUMENT = "/rest/logiskslettdokument/angre/";
-	protected Long JOURNALPOST_ID = 200000000L;
 	private String OIDC_TOKEN_PERSON_USER_TEST;
 	private String OIDC_TOKEN_SERVICE_USER_TEST;
 	private String OIDC_TOKEN_SERVICE_NO_ACCESS_USER_TEST;

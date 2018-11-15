@@ -7,14 +7,14 @@ import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.entities.Begrensning;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.service.BegrensningService;
+import no.nav.dokarkiv.core.exceptions.DokumentInfoIkkeTilknyttetJournalpostSomGyldigVerdiException;
 import no.nav.dokarkiv.core.exceptions.ErBegrensetException;
 import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
+import no.nav.dokarkiv.logiskslettdokument.LogiskSlettDokumentValidator;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.List;
 
 @Service
 @Slf4j
@@ -33,29 +33,40 @@ public class LogiskSlettDokumentService {
 		this.begrensningService = begrensningService;
 	}
 
-	public LogiskSlettDokumentResponse logiskSletteDokumentKnyttetKunEnJournalpost(LogiskSlettDokumentRequestTo requestTo) {
+	public LogiskSlettDokumentResponse logiskSletteDokument(LogiskSlettDokumentRequestTo requestTo) {
 		sjekkAtDokumentIkkeErUtilgjengeliggjort(requestTo.getJournalpostId(), requestTo.getDokumentInfoId());
 
-		List<JournalpostDokumentInfoRelasjon> jpDokInfoRelasjonerFoundByDokumentInfoId =
-				journalpostDokumentInfoRelasjonRepository.findAllByDokumentInfoDokumentInfoId(requestTo.getDokumentInfoId())
-						.orElse(new ArrayList<>());
+		JournalpostDokumentInfoRelasjon relasjonSomSkalSlettesLogisk =
+				journalpostDokumentInfoRelasjonRepository.findByJournalpostJournalpostIdAndDokumentInfoDokumentInfoId(
+						requestTo.getJournalpostId(), requestTo.getDokumentInfoId()).orElse(null);
 
-		validator.validerAtDokumentSomSkalSlettesLogiskErKnyttetTilKunEnJournalpost(jpDokInfoRelasjonerFoundByDokumentInfoId, requestTo);
-		JournalpostDokumentInfoRelasjon validertJpDokInfoRelasjon = jpDokInfoRelasjonerFoundByDokumentInfoId.get(0);
+		validator.validerAtJournalpostDokumentInfoRelasjonerFinnes(relasjonSomSkalSlettesLogisk, requestTo);
 
-		if (validertJpDokInfoRelasjon.getTilknyttetJournalpostSom().equals(TilknyttetJournalpostSomCode.HOVEDDOKUMENT)) {
-			utilgjengeliggjoerHoveddokument(validertJpDokInfoRelasjon.getJournalpost().getJournalpostId());
-			log.info("{} har utført logisk sletting av hoveddokument med journalpostId={}",
-					MDC.get(MDCConstants.MDC_REQUEST_ID), requestTo.getJournalpostId());
-		} else {
-			utilgjengeliggjoerVedlegg(
-					validertJpDokInfoRelasjon.getJournalpost().getJournalpostId(),
-					validertJpDokInfoRelasjon.getDokumentInfo().getDokumentInfoId());
-			log.info("{} har utført logisk sletting av vedlegg med journalpostId={} og dokumentInfoId={}",
-					MDC.get(MDCConstants.MDC_REQUEST_ID), requestTo.getJournalpostId(), requestTo.getDokumentInfoId());
+		switch (relasjonSomSkalSlettesLogisk.getTilknyttetJournalpostSom()) {
+			case HOVEDDOKUMENT:
+				utilgjengeliggjoerHoveddokument(relasjonSomSkalSlettesLogisk.getJournalpost().getJournalpostId());
+				log.info("{} har utført logisk sletting av hoveddokument med journalpostId={}",
+						MDC.get(MDCConstants.MDC_REQUEST_ID), requestTo.getJournalpostId());
+				break;
+			case VEDLEGG:
+				utilgjengeliggjoerVedlegg(
+						relasjonSomSkalSlettesLogisk.getJournalpost().getJournalpostId(),
+						relasjonSomSkalSlettesLogisk.getDokumentInfo().getDokumentInfoId());
+				log.info("{} har utført logisk sletting av vedlegg med journalpostId={} og dokumentInfoId={}",
+						MDC.get(MDCConstants.MDC_REQUEST_ID), requestTo.getJournalpostId(), requestTo.getDokumentInfoId());
+				break;
+			default:
+				throw new DokumentInfoIkkeTilknyttetJournalpostSomGyldigVerdiException(String.format(
+						"Dokument med dokumentInfoId=%s er tilknyttet journalpost med journalpostId=%s som %s. " +
+								"Gyldige verdier er %s eller %s.",
+						relasjonSomSkalSlettesLogisk.getDokumentInfo().getDokumentInfoId(),
+						relasjonSomSkalSlettesLogisk.getJournalpost().getJournalpostId(),
+						relasjonSomSkalSlettesLogisk.getTilknyttetJournalpostSom().name(),
+						TilknyttetJournalpostSomCode.HOVEDDOKUMENT.name(),
+						TilknyttetJournalpostSomCode.VEDLEGG.name()));
 		}
 
-		return LogiskSlettDokumentResponseMapper.mapToSlettDokumentResponse(validertJpDokInfoRelasjon);
+		return LogiskSlettDokumentResponseMapper.mapToSlettDokumentResponse(relasjonSomSkalSlettesLogisk);
 	}
 
 	private void sjekkAtDokumentIkkeErUtilgjengeliggjort(Long journalpostId, Long dokumentInfoId) {
