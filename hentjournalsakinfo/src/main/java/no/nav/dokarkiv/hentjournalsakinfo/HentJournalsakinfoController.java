@@ -1,6 +1,10 @@
 package no.nav.dokarkiv.hentjournalsakinfo;
 
 import lombok.extern.slf4j.Slf4j;
+import no.nav.dokarkiv.core.dokumenturl.MimeTypeMapper;
+import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
+import no.nav.dokarkiv.hentjournalsakinfo.rjoark920.SafHentDokumentResponse;
+import no.nav.dokarkiv.hentjournalsakinfo.rjoark920.SafHentDokumentService;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.hentjournalsakinfo.rjoark900.HentJournalpostBulkRequestTo;
 import no.nav.dokarkiv.hentjournalsakinfo.rjoark900.HentJournalpostBulkResponseTo;
@@ -13,7 +17,10 @@ import no.nav.dokarkiv.hentjournalsakinfo.rjoark910.VisningJournalpostBulkServic
 import no.nav.dokarkiv.hentjournalsakinfo.tjoarkxyz.HentJournalpostListeRequestTo;
 import no.nav.dokarkiv.hentjournalsakinfo.tjoarkxyz.HentJournalpostListeResponseTo;
 import no.nav.dokarkiv.hentjournalsakinfo.tjoarkxyz.HentJournalpostListeService;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,6 +28,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Base64;
 
 import javax.inject.Inject;
 
@@ -33,28 +42,44 @@ import javax.inject.Inject;
 public class HentJournalsakinfoController {
 
 	private final HentJournalpostListeService hentJournalpostListeService;
+	private final SafHentDokumentService safHentDokumentService;
+	private final MimeTypeMapper mimeTypeMapper = new MimeTypeMapper();
 	private final HentJournalpostBulkService hentJournalpostBulkService;
 	private final VisningJournalpostBulkService visningJournalpostBulkService;
 	private final HentTilgangJournalpostService hentTilgangJournalpostService;
 
 	@Inject
 	public HentJournalsakinfoController(HentJournalpostListeService hentJournalpostListeService,
+										SafHentDokumentService safHentDokumentService,
 										HentJournalpostBulkService hentJournalpostBulkService,
 										VisningJournalpostBulkService visningJournalpostBulkService,
 										HentTilgangJournalpostService hentTilgangJournalpostService) {
 		this.hentJournalpostListeService = hentJournalpostListeService;
+		this.safHentDokumentService = safHentDokumentService;
 		this.hentJournalpostBulkService = hentJournalpostBulkService;
 		this.visningJournalpostBulkService = visningJournalpostBulkService;
 		this.hentTilgangJournalpostService = hentTilgangJournalpostService;
+
 	}
 
 	@Transactional(readOnly = true)
-	@ResponseBody
 	@PostMapping(value = "/hentjournalposter")
 	public HentJournalpostListeResponseTo hentJournalposter(@RequestBody HentJournalpostListeRequestTo hentJournalpostListeRequestTo) {
 		log.info("tjoarkxyz har mottatt forespørsel");
 		return hentJournalpostListeService.hentJournalpostListeByArkivIdAndFagsystem(hentJournalpostListeRequestTo);
 	}
+
+	@ResponseBody
+	@RequestMapping(value = "/hentdokument/{dokumentinfoId}/{variant}")
+	public ResponseEntity<String> safHentDokument(@PathVariable Long dokumentinfoId,
+												  @PathVariable VariantFormatCode variant) {
+		log.info("rjoark920 har mottatt forespørsel om dokument med dokumentinfoId={} og variant={}", dokumentinfoId, variant);
+		SafHentDokumentResponse safHentDokumentResponse = safHentDokumentService.hentDokumentByDokumentinfoIdAndVariant(dokumentinfoId, variant);
+		return ResponseEntity.ok()
+				.header(HttpHeaders.CONTENT_TYPE, mimeTypeMapper.getMimeTypeForFileExtension(safHentDokumentResponse.getFiltype().toString()))
+				.body(Base64.getEncoder().encodeToString(safHentDokumentResponse.getDokument()));
+	}
+
 
 	@Transactional(readOnly = true)
 	@ResponseBody
