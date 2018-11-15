@@ -47,3 +47,7 @@ create sequence T_BEGRENSNING_ID_SEQ;
 
 insert into t_k_begrensning_type (BEGRENSNING_TYPE, BEGRENSNING_BESKRIVELSE, DATO_FOM, DATO_TOM, ER_GYLDIG, DATO_OPPRETTET, OPPRETTET_AV)
 values ('UTILGJENGELIGGJORT','Utilgjengelig for saksbehandling uten privilegier',sysdate, null, 1, sysdate, 'Ketill Fenne');
+
+create index t_begresning_jp_id_idx on t_begrensning (begrensning_type, journalpost_id);
+
+create unique index t_begresning_jpid_dokid_idx on t_begrensning (begrensning_type, journalpost_id, dokument_info_id);
