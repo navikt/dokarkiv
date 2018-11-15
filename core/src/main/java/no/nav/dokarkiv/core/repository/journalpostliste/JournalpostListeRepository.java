@@ -54,7 +54,7 @@ public class JournalpostListeRepository {
 
         List<Journalpost> journalpostList = criteria.list();
 
-        if (isFalse(hentMinJPListeParameters.isWithBegrensetJP())) {
+        if (isFalse(hentMinJPListeParameters.isIncludeBegrensetJournalpost())) {
             journalpostList = journalpostList.stream()
                     .filter(journalpost -> isFalse(begrensningService.isJournalpostBegrenset(journalpost.getJournalpostId(), BegrensningTypeCode.UTILGJENGELIGGJORT)))
                     .collect(Collectors.toList());

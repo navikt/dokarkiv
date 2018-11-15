@@ -51,6 +51,8 @@ public class JournalpostCriterionBuilder extends CriterionBuilder {
 
 		}
 
+		criteria.add()
+
 		// Note that an empty saksliste would possibly return all journalposts, so we need
 		// to return an empty resultset from query if this list is empty.
 		if (!parameters.getSaksListe().isEmpty()) {

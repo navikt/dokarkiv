@@ -38,7 +38,7 @@ public class HentMinJPListeParameters {
 	private boolean eagerFetchDokInfo = true;
 	private long maxResults;
 	private int pageNr;
-    private boolean withBegrensetJP = false;
+	private boolean includeBegrensetJournalpost = false;
 
 	public void addFagsystemSak(String sakid, FagsystemCode fagsystem) {
 		saksListe.add(new SakFagsystem(fagsystem, sakid));

@@ -830,7 +830,8 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
      */
     public Set<JournalpostDokumentInfoRelasjon> getJournalpostRelasjoner() {
         return Collections.unmodifiableSet(journalpostRelasjoner.stream()
-                .filter(relasjon -> relasjon.getJournalpost() == null || isFalse(getBegrensetRelasjonerJournalpostId().contains(relasjon
+                .filter(relasjon -> relasjon.getJournalpost() == null || relasjon.getJournalpost()
+                        .getJournalpostId() == null || isFalse(getBegrensetRelasjonerJournalpostId().contains(relasjon
                         .getJournalpost()
                         .getJournalpostId())))
                 .collect(Collectors.toSet()));
