@@ -221,14 +221,14 @@ public class JoarkRepositoryBegrensetTest {
 
         Journalpost journalpost = createJournalpost();
 
-        joarkRepository.save(journalpost);
+        journalpost = joarkRepository.save(journalpost);
         Begrensning begrensning = createBegrensning(journalpost.getJournalpostId(), null, BegrensningTypeCode.UTILGJENGELIGGJORT);
-
         begrensningRepository.save(begrensning);
 
         TestTransaction.flagForCommit();
 
-        assertThat(joarkRepository.findJournalpostIdByTilleggsopplysningerNokkelAndVerdi(TILLEGGSOPPLYSNINGER_KEY, TILLEGGSOPPLYSNINGER_VALUE), notNullValue());
+        assertThat(joarkRepository.findJournalpostIdByTilleggsopplysningerNokkelAndVerdi(TILLEGGSOPPLYSNINGER_KEY, TILLEGGSOPPLYSNINGER_VALUE), is(journalpost
+                .getJournalpostId()));
         assertThat(joarkRepositoryBegrenset.findJournalpostIdByTilleggsopplysningerNokkelAndVerdi(TILLEGGSOPPLYSNINGER_KEY, TILLEGGSOPPLYSNINGER_VALUE), nullValue());
     }
 
