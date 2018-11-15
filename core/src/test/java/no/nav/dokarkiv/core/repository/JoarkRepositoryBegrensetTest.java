@@ -77,7 +77,7 @@ public class JoarkRepositoryBegrensetTest {
         dokumentinfoRepository.deleteAll();
         joarkRepository.deleteAll();
         begrensningRepository.deleteAll();
-        entityManager.createNativeQuery("Delete from t_jp_tillegg");
+        entityManager.createNativeQuery("Delete from t_jp_tillegg").getFirstResult();
 
     }
 
