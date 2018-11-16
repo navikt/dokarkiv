@@ -9,8 +9,8 @@ import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.service.BegrensningService;
 import no.nav.dokarkiv.core.exceptions.DokumentInfoIkkeTilknyttetJournalpostSomGyldigVerdiException;
+import no.nav.dokarkiv.core.exceptions.JournalpostDokumentInfoRelasjonIkkeFunnetException;
 import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
-import no.nav.dokarkiv.logiskslettdokument.LogiskSlettDokumentValidator;
 import no.nav.dokarkiv.logiskslettdokument.exceptions.BegrensningIkkeFunnetException;
 import no.nav.dokarkiv.logiskslettdokument.rjoark100.LogiskSlettDokumentRequestTo;
 import no.nav.dokarkiv.logiskslettdokument.rjoark100.LogiskSlettDokumentResponse;
@@ -24,15 +24,12 @@ import javax.inject.Inject;
 @Slf4j
 public class AngreLogiskSlettDokumentService {
 
-	private final LogiskSlettDokumentValidator validator;
 	private final JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository;
 	private final BegrensningService begrensningService;
 
 	@Inject
-	public AngreLogiskSlettDokumentService(LogiskSlettDokumentValidator validator,
-										   JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository,
+	public AngreLogiskSlettDokumentService(JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository,
 										   BegrensningService begrensningService) {
-		this.validator = validator;
 		this.journalpostDokumentInfoRelasjonRepository = journalpostDokumentInfoRelasjonRepository;
 		this.begrensningService = begrensningService;
 	}
@@ -42,7 +39,12 @@ public class AngreLogiskSlettDokumentService {
 				journalpostDokumentInfoRelasjonRepository.findByJournalpostJournalpostIdAndDokumentInfoDokumentInfoId(
 						requestTo.getJournalpostId(), requestTo.getDokumentInfoId()).orElse(null);
 
-		validator.validerAtJournalpostDokumentInfoRelasjonerFinnes(relasjonDerSlettingSkalAngres, requestTo);
+		if (relasjonDerSlettingSkalAngres == null) {
+			throw new JournalpostDokumentInfoRelasjonIkkeFunnetException(
+					String.format("Kan ikke finne noen relasjon mellom journalpost med journalpostId=%s og dokument med dokumentInfoId=%s",
+							requestTo.getJournalpostId(),
+							requestTo.getDokumentInfoId()));
+		}
 
 		Long journalpostId = relasjonDerSlettingSkalAngres.getJournalpost().getJournalpostId();
 		Long dokumentInfoId = relasjonDerSlettingSkalAngres.getDokumentInfo().getDokumentInfoId();
