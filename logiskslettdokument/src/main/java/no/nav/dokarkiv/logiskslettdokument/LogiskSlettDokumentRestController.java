@@ -19,7 +19,6 @@ import org.slf4j.MDC;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -44,7 +43,6 @@ public class LogiskSlettDokumentRestController {
 		this.abacSecurityService = abacSecurityService;
 	}
 
-
 	@Transactional
 	@ResponseBody
 	@PatchMapping("/{journalpostId}/{dokumentInfoId}")
@@ -58,31 +56,11 @@ public class LogiskSlettDokumentRestController {
 		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har mottat kall med journalpostId=" + journalpostId + " og dokumentInfoId=" + dokumentInfoId);
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
 
-		return logiskSlettDokumentService.logiskSletteDokumentKnyttetKunEnJournalpost(LogiskSlettDokumentRequestTo.builder()
+		return logiskSlettDokumentService.logiskSletteDokument(LogiskSlettDokumentRequestTo.builder()
 				.journalpostId(journalpostId)
 				.dokumentInfoId(dokumentInfoId)
 				.build());
 	}
-
-	@Transactional
-	@ResponseBody
-	@PostMapping("/{journalpostId}/{dokumentInfoId}")
-	@Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_DOKUMENT)},
-			actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION))
-	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark100"}, percentiles = {0.5, 0.95})
-	public LogiskSlettDokumentResponse logiskSlettDokumentKnyttetKunEnJournalpostPost(
-			@PathVariable("journalpostId") Long journalpostId, @PathVariable("dokumentInfoId") Long dokumentInfoId) {
-		abacSecurityService.assertAccessToJournalpost(journalpostId.toString());
-		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark100");
-		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har mottat kall med journalpostId=" + journalpostId + " og dokumentInfoId=" + dokumentInfoId);
-		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
-
-		return logiskSlettDokumentService.logiskSletteDokumentKnyttetKunEnJournalpost(LogiskSlettDokumentRequestTo.builder()
-				.journalpostId(journalpostId)
-				.dokumentInfoId(dokumentInfoId)
-				.build());
-	}
-
 
 	@Transactional
 	@ResponseBody
@@ -93,25 +71,6 @@ public class LogiskSlettDokumentRestController {
 	public LogiskSlettDokumentResponse angreLogiskSlettDokument(@PathVariable("journalpostId") Long journalpostId,
 																@PathVariable("dokumentInfoId") Long dokumentInfoId) {
 		abacSecurityService.assertAccessToJournalpostIncludingBegrenset(journalpostId.toString());
-		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark101");
-		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har mottat kall med journalpostId=" + journalpostId + " og dokumentInfoId=" + dokumentInfoId);
-		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
-
-		return angreLogiskSlettDokumentService.angreLogiskSlettDokument(LogiskSlettDokumentRequestTo.builder()
-				.journalpostId(journalpostId)
-				.dokumentInfoId(dokumentInfoId)
-				.build());
-	}
-
-	@Transactional
-	@ResponseBody
-	@PostMapping("/angre/{journalpostId}/{dokumentInfoId}")
-	@Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_DOKUMENT)},
-			actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION))
-	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark101"}, percentiles = {0.5, 0.95})
-	public LogiskSlettDokumentResponse angreLogiskSlettDokumentPost(@PathVariable("journalpostId") Long journalpostId,
-																@PathVariable("dokumentInfoId") Long dokumentInfoId) {
-		abacSecurityService.assertAccessToJournalpost(journalpostId.toString());
 		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark101");
 		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har mottat kall med journalpostId=" + journalpostId + " og dokumentInfoId=" + dokumentInfoId);
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));

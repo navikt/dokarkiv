@@ -6,6 +6,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Skal ikke brukes noen andre steder enn i slett/logiskslett/hentjournalinfo tjenestene
@@ -25,4 +26,7 @@ public interface JournalpostDokumentInfoRelasjonRepository extends CrudRepositor
 	List<Object> findBegrensetRelasjonDokumentInfoIdByJournalpostId(@Param("journalpostId") Long journalpostId);
 
 	List<JournalpostDokumentInfoRelasjon> findAllByJournalpostJournalpostIdAndDokumentInfoDokumentInfoId(Long journalpostId, Long dokumentInfoId);
+
+	Optional<JournalpostDokumentInfoRelasjon> findByJournalpostJournalpostIdAndDokumentInfoDokumentInfoId(Long journalpostId, Long dokumentInfoId);
+
 }
