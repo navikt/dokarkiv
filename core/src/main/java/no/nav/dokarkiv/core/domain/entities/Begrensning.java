@@ -47,7 +47,7 @@ public class Begrensning extends AbstractPersistentVersionedDomainObjectWithKild
 	@Column(name = "begrensning_type", nullable = false, length = 50)
 	private BegrensningTypeCode begrensningType;
 
-	@Column(name = "journalpost_id")
+	@Column(name = "journalpost_id", nullable = false)
 	private Long journalpostId;
 
 	@Column(name = "dokument_info_id")
