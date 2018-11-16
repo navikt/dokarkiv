@@ -26,6 +26,30 @@ import org.springframework.test.context.transaction.TestTransaction;
 public class Rjoark101IT extends AbstractSlettDokumentIT {
 
 	@Test
+	public void skalIkkeAngreLogiskSlettDokument_ettersomJournalpostDokumentInfoRelasjonIkkeFinnes() {
+		abacPermit();
+
+		Journalpost journalpost = joarkRepository.save(opprettHoveddokumentMedEtKnyttetVedleggForIT());
+
+		Long ikkeEksisterendeDokumentInfoId = 13L;
+
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
+
+		ResponseEntity<String> responseEntity = restTemplate.exchange(
+				URL_ANGRESLETTDOKUMENT + journalpost.getJournalpostId() + "/" + ikkeEksisterendeDokumentInfoId,
+				HttpMethod.PATCH,
+				createHeaders(),
+				String.class);
+
+		assertThat(responseEntity.getStatusCode(), is(HttpStatus.NOT_FOUND));
+		assertThat(responseEntity.getBody(), containsString(
+				String.format("Kan ikke finne noen relasjon mellom journalpost med journalpostId=%s og dokument med dokumentInfoId=%s",
+						journalpost.getJournalpostId(),
+						ikkeEksisterendeDokumentInfoId)));
+	}
+
+	@Test
 	public void skalAngreLogiskSlettDokument_avVedlegg_medVedleggUtilgjengeliggjort() {
 		abacPermit();
 

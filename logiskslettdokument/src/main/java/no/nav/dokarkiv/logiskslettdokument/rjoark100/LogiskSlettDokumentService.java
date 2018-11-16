@@ -9,8 +9,8 @@ import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.service.BegrensningService;
 import no.nav.dokarkiv.core.exceptions.DokumentInfoIkkeTilknyttetJournalpostSomGyldigVerdiException;
 import no.nav.dokarkiv.core.exceptions.ErBegrensetException;
+import no.nav.dokarkiv.core.exceptions.JournalpostDokumentInfoRelasjonIkkeFunnetException;
 import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
-import no.nav.dokarkiv.logiskslettdokument.LogiskSlettDokumentValidator;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
 
@@ -20,15 +20,12 @@ import javax.inject.Inject;
 @Slf4j
 public class LogiskSlettDokumentService {
 
-	private final LogiskSlettDokumentValidator validator;
 	private final JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository;
 	private final BegrensningService begrensningService;
 
 	@Inject
-	public LogiskSlettDokumentService(LogiskSlettDokumentValidator validator,
-									  JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository,
+	public LogiskSlettDokumentService(JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository,
 									  BegrensningService begrensningService) {
-		this.validator = validator;
 		this.journalpostDokumentInfoRelasjonRepository = journalpostDokumentInfoRelasjonRepository;
 		this.begrensningService = begrensningService;
 	}
@@ -40,7 +37,12 @@ public class LogiskSlettDokumentService {
 				journalpostDokumentInfoRelasjonRepository.findByJournalpostJournalpostIdAndDokumentInfoDokumentInfoId(
 						requestTo.getJournalpostId(), requestTo.getDokumentInfoId()).orElse(null);
 
-		validator.validerAtJournalpostDokumentInfoRelasjonerFinnes(relasjonSomSkalSlettesLogisk, requestTo);
+		if (relasjonSomSkalSlettesLogisk == null) {
+			throw new JournalpostDokumentInfoRelasjonIkkeFunnetException(
+					String.format("Kan ikke finne noen relasjon mellom journalpost med journalpostId=%s og dokument med dokumentInfoId=%s",
+							requestTo.getJournalpostId(),
+							requestTo.getDokumentInfoId()));
+		}
 
 		switch (relasjonSomSkalSlettesLogisk.getTilknyttetJournalpostSom()) {
 			case HOVEDDOKUMENT:
