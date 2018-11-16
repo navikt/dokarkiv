@@ -1,5 +1,8 @@
 package no.nav.dokarkiv.core.domain.entities;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
 import no.nav.dokarkiv.core.domain.AbstractPersistentVersionedDomainObjectWithKilde;
 import org.apache.commons.lang3.ArrayUtils;
 import org.hibernate.annotations.GenericGenerator;
@@ -21,6 +24,9 @@ import java.util.Arrays;
  */
 @Entity
 @Table(name = "T_DOKUMENT_FIL")
+@Builder
+@Data
+@AllArgsConstructor
 public class DokumentFil extends AbstractPersistentVersionedDomainObjectWithKilde {
 	
 	/** Named Parameter */

@@ -1,12 +1,15 @@
 package no.nav.dokarkiv.hentjournalsakinfo.dto;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
 import lombok.Value;
 import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
 
-@Value
+@Data
+@Builder
 @AllArgsConstructor
 public class SafHentDokumentDto {
 	private byte[] dokument;
-	private FilTypeCode dokumentVariant;
+	private FilTypeCode variantFormat;
 }
