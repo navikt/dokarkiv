@@ -9,8 +9,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
@@ -19,22 +17,27 @@ import java.util.List;
 @Component
 public class BegrensningService {
 
-	@Inject
-	private BegrensningRepository begrensningRepository;
+	private final BegrensningRepository begrensningRepository;
 
-	public boolean isJournalpostBegrenset(Long journalpostId, BegrensningTypeCode begrensningTypeCode) {
-		List<Begrensning> begrensning = begrensningRepository.findAllByJournalpostIdAndBegrensningTypeAndDokumentInfoIdIsNull(
-				journalpostId, begrensningTypeCode).orElse(new ArrayList<>());
-		return isFalse(begrensning.isEmpty());
+	@Inject
+	public BegrensningService(BegrensningRepository begrensningRepository) {
+		this.begrensningRepository = begrensningRepository;
 	}
 
-	public boolean isJournalpostDokumentInfoRelasjonBegrenset(
-			Long journalpostId,
-			Long dokumentInfoId,
-			BegrensningTypeCode begrensningTypeCode) {
-		List<Begrensning> begrensning = begrensningRepository.findAllByJournalpostIdAndDokumentInfoIdAndBegrensningType(
-				journalpostId, dokumentInfoId, begrensningTypeCode).orElse(new ArrayList<>());
-		return isFalse(begrensning.isEmpty());
+	public boolean isJournalpostBegrenset(Long journalpostId, BegrensningTypeCode begrensningTypeCode) {
+		Begrensning begrensning = begrensningRepository.findByJournalpostIdAndBegrensningTypeAndDokumentInfoIdIsNull(
+				journalpostId, begrensningTypeCode).orElse(null);
+		return isFalse(begrensning == null);
+	}
+
+	public boolean isJournalpostDokumentInfoRelasjonOrJournalpostBegrenset(Long journalpostId, Long dokumentInfoId, BegrensningTypeCode begrensningTypeCode) {
+		return isJournalpostDokumentInfoRelasjonBegrenset(journalpostId, dokumentInfoId, begrensningTypeCode) || isJournalpostBegrenset(journalpostId, begrensningTypeCode);
+	}
+
+	public boolean isJournalpostDokumentInfoRelasjonBegrenset(Long journalpostId, Long dokumentInfoId, BegrensningTypeCode begrensningTypeCode) {
+		Begrensning begrensning = begrensningRepository.findByJournalpostIdAndDokumentInfoIdAndBegrensningType(
+				journalpostId, dokumentInfoId, begrensningTypeCode).orElse(null);
+		return isFalse(begrensning == null);
 	}
 
 	public void saveBegrensning(Begrensning begrensning) {
@@ -44,16 +47,11 @@ public class BegrensningService {
 	public void deleteValidertJournalpostBegrensning(
 			Long journalpostId,
 			BegrensningTypeCode begrensningTypeCode) {
-		Begrensning begrensning = begrensningRepository.findByJournalpostIdAndBegrensningTypeAndDokumentInfoIdIsNull(
-				journalpostId, begrensningTypeCode);
-		begrensningRepository.delete(begrensning);
+		begrensningRepository.deleteByJournalpostIdAndBegrensningTypeAndDokumentInfoIdIsNull(journalpostId, begrensningTypeCode);
 	}
 
 	public void deleteValidertJournalpostDokumentInfoRelasjonBegrensning(
 			Long journalpostId, Long dokumentInfoId, BegrensningTypeCode begrensningTypeCode) {
-		Begrensning begrensning = begrensningRepository.findByJournalpostIdAndDokumentInfoIdAndBegrensningType(
-				journalpostId, dokumentInfoId, begrensningTypeCode);
-		begrensningRepository.delete(begrensning);
+		begrensningRepository.deleteByJournalpostIdAndDokumentInfoIdAndBegrensningType(journalpostId, dokumentInfoId, begrensningTypeCode);
 	}
-
 }

@@ -43,7 +43,6 @@ public class LogiskSlettDokumentRestController {
 		this.abacSecurityService = abacSecurityService;
 	}
 
-
 	@Transactional
 	@ResponseBody
 	@PatchMapping("/{journalpostId}/{dokumentInfoId}")
@@ -57,7 +56,7 @@ public class LogiskSlettDokumentRestController {
 		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har mottat kall med journalpostId=" + journalpostId + " og dokumentInfoId=" + dokumentInfoId);
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
 
-		return logiskSlettDokumentService.logiskSletteDokumentKnyttetKunEnJournalpost(LogiskSlettDokumentRequestTo.builder()
+		return logiskSlettDokumentService.logiskSletteDokument(LogiskSlettDokumentRequestTo.builder()
 				.journalpostId(journalpostId)
 				.dokumentInfoId(dokumentInfoId)
 				.build());
