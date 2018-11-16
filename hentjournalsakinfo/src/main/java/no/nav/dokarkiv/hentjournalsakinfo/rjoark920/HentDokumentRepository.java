@@ -13,8 +13,10 @@ import javax.persistence.EntityManager;
 public class HentDokumentRepository {
 
 	private final EntityManager entityManager;
+	public static final String SAFHENDOKUMENTDTO_PACKAGE_NAME = SafHentDokumentDto.class.getPackage().getName();
 	private static final String DOKUMENT_BY_ID_AND_VARIANT_SQL = "select new " +
-			" no.nav.dokarkiv.core.repository.SafHentDokumentDto(" +
+			SAFHENDOKUMENTDTO_PACKAGE_NAME +
+			"(" +
 			" f.fil," +
 			" fd.filtype" +
 			" ) " +
