@@ -12,6 +12,7 @@ import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
 import no.nav.dokarkiv.core.domain.entities.Begrensning;
 import no.nav.dokarkiv.core.domain.entities.DokumentUrlInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.domain.service.BegrensningService;
 import no.nav.dokarkiv.core.security.abac.JdbcAbacSecurityRepository;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import org.junit.After;
@@ -33,7 +34,7 @@ import java.util.UUID;
  * @author Ugur Alpay Cenar, Visma Consulting.
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = {RepositoryConfig.class, JdbcAbacSecurityRepository.class})
+@SpringBootTest(classes = {RepositoryConfig.class, BegrensningService.class, JdbcAbacSecurityRepository.class})
 @DataJpaTest
 @Transactional
 @ActiveProfiles("itest")

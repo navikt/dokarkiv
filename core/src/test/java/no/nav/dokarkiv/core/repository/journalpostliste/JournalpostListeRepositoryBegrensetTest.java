@@ -8,6 +8,7 @@ import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.entities.Begrensning;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.domain.service.BegrensningService;
 import no.nav.dokarkiv.core.repository.BegrensningRepository;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
@@ -35,7 +36,7 @@ import java.util.List;
  * @author Ugur Alpay Cenar, Visma Consulting.
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = {RepositoryConfig.class, JournalpostListeRepository.class})
+@SpringBootTest(classes = {RepositoryConfig.class, BegrensningService.class, JournalpostListeRepository.class})
 @DataJpaTest
 @Transactional
 @ActiveProfiles("itest")

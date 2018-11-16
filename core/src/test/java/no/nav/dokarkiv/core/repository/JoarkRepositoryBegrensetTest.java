@@ -15,11 +15,11 @@ import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.entities.Begrensning;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.domain.service.BegrensningService;
 import no.nav.dokarkiv.core.security.abac.JdbcAbacSecurityRepository;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -38,7 +38,7 @@ import java.util.List;
  * @author Ugur Alpay Cenar, Visma Consulting.
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = {RepositoryConfig.class, JdbcAbacSecurityRepository.class})
+@SpringBootTest(classes = {RepositoryConfig.class, BegrensningService.class, JdbcAbacSecurityRepository.class})
 @DataJpaTest
 @Transactional
 @ActiveProfiles("itest")
@@ -234,7 +234,6 @@ public class JoarkRepositoryBegrensetTest {
     }
 
     @Test
-    @Ignore
     public void shouldNotfindDokumentinfoIdIdByDokumentinfoTilleggsopplysningerNokkelAndVerdiWhenJournalpostIsBegrenset() {
         Journalpost journalpost = createJournalpost();
 

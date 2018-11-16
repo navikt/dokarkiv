@@ -1,6 +1,5 @@
 package no.nav.dokarkiv.core.repository;
 
-import no.nav.dokarkiv.core.domain.service.BegrensningService;
 import oracle.net.ns.SQLnetDef;
 import oracle.ucp.jdbc.PoolDataSource;
 import oracle.ucp.jdbc.PoolDataSourceFactory;
@@ -39,8 +38,7 @@ import java.util.Properties;
 @Configuration
 @Import(value = {
 		JoarkRepositoryBegrenset.class,
-		DokumentUrlInfoRepositoryBegrenset.class,
-		BegrensningService.class
+		DokumentUrlInfoRepositoryBegrenset.class
 })
 public class RepositoryConfig {
 	@Bean
