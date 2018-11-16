@@ -22,10 +22,8 @@ public interface JournalpostDokumentInfoRelasjonRepository extends CrudRepositor
 	/**
 	 * Denne metoden returnerer BigDecimal eller BigInteger så må returnere Object også konvertere til Long etterpå
 	 */
-	@Query(value = "select rel.DOKUMENT_INFO_ID from T_JP_DOK_INFO_REL rel where JOURNALPOST_ID=:journalpostId and exists (select BEGRENSNING_ID from T_BEGRENSNING where T_BEGRENSNING.JOURNALPOST_ID=rel.JOURNALPOST_ID and T_BEGRENSNING.DOKUMENT_INFO_ID=rel.DOKUMENT_INFO_ID and BEGRENSNING_TYPE='UTILGJENGELIGGJORT')", nativeQuery = true)
+	@Query(value = "select rel.DOKUMENT_INFO_ID from T_JP_DOK_INFO_REL rel where JOURNALPOST_ID=:journalpostId and exists (select 'begrensning' from T_BEGRENSNING where T_BEGRENSNING.JOURNALPOST_ID=rel.JOURNALPOST_ID and T_BEGRENSNING.DOKUMENT_INFO_ID=rel.DOKUMENT_INFO_ID and BEGRENSNING_TYPE='UTILGJENGELIGGJORT')", nativeQuery = true)
 	List<Object> findBegrensetRelasjonDokumentInfoIdByJournalpostId(@Param("journalpostId") Long journalpostId);
-
-	List<JournalpostDokumentInfoRelasjon> findAllByJournalpostJournalpostIdAndDokumentInfoDokumentInfoId(Long journalpostId, Long dokumentInfoId);
 
 	Optional<JournalpostDokumentInfoRelasjon> findByJournalpostJournalpostIdAndDokumentInfoDokumentInfoId(Long journalpostId, Long dokumentInfoId);
 
