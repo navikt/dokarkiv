@@ -6,6 +6,8 @@ import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.hentjournalsakinfo.rjoark900.HentJournalpostBulkRequestTo;
 import no.nav.dokarkiv.hentjournalsakinfo.rjoark900.HentJournalpostBulkResponseTo;
 import no.nav.dokarkiv.hentjournalsakinfo.rjoark900.HentJournalpostBulkService;
+import no.nav.dokarkiv.hentjournalsakinfo.rjoark901.HentTilgangJournalpostResponse;
+import no.nav.dokarkiv.hentjournalsakinfo.rjoark901.HentTilgangJournalpostService;
 import no.nav.dokarkiv.hentjournalsakinfo.rjoark910.VisningJournalpostBulkRequestTo;
 import no.nav.dokarkiv.hentjournalsakinfo.rjoark910.VisningJournalpostBulkResponseTo;
 import no.nav.dokarkiv.hentjournalsakinfo.rjoark910.VisningJournalpostBulkService;
@@ -17,6 +19,7 @@ import no.nav.dokarkiv.hentjournalsakinfo.tjoarkxyz.HentJournalpostListeService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -40,16 +43,20 @@ public class HentJournalsakinfoController {
 	private final MimeTypeMapper mimeTypeMapper = new MimeTypeMapper();
 	private final HentJournalpostBulkService hentJournalpostBulkService;
 	private final VisningJournalpostBulkService visningJournalpostBulkService;
+	private final HentTilgangJournalpostService hentTilgangJournalpostService;
 
 	@Inject
 	public HentJournalsakinfoController(HentJournalpostListeService hentJournalpostListeService,
 										SafHentDokumentService safHentDokumentService,
 										HentJournalpostBulkService hentJournalpostBulkService,
-										VisningJournalpostBulkService visningJournalpostBulkService) {
+										VisningJournalpostBulkService visningJournalpostBulkService,
+										HentTilgangJournalpostService hentTilgangJournalpostService) {
 		this.hentJournalpostListeService = hentJournalpostListeService;
 		this.safHentDokumentService = safHentDokumentService;
 		this.hentJournalpostBulkService = hentJournalpostBulkService;
 		this.visningJournalpostBulkService = visningJournalpostBulkService;
+		this.hentTilgangJournalpostService = hentTilgangJournalpostService;
+
 	}
 
 	@Transactional(readOnly = true)
@@ -64,7 +71,6 @@ public class HentJournalsakinfoController {
 	@RequestMapping(value = "/hentdokument/{dokumentinfoId}/{variant}")
 	public ResponseEntity<String> safHentDokument(@PathVariable Long dokumentinfoId,
 												  @PathVariable VariantFormatCode variant) {
-
 		log.info("rjoark920 har mottatt forespørsel om dokument med dokumentinfoId={} og variant={}", dokumentinfoId, variant);
 		SafHentDokumentResponse safHentDokumentResponse = safHentDokumentService.hentDokumentByDokumentinfoIdAndVariant(dokumentinfoId, variant);
 		return ResponseEntity.ok()
@@ -88,4 +94,16 @@ public class HentJournalsakinfoController {
 		log.info("rjoark910 henter journalposter.");
 		return visningJournalpostBulkService.visningJournalpostBulk(visningJournalpostBulkRequestTo);
 	}
+
+	@Transactional(readOnly = true)
+	@ResponseBody
+	@GetMapping(value = "/henttilgangjournalpost/{journalpostId}/{dokumentInfoId}/{variantFormat}")
+	public HentTilgangJournalpostResponse hentTilgangJournalpost(@PathVariable Long journalpostId,
+																 @PathVariable Long dokumentInfoId,
+																 @PathVariable VariantFormatCode variantFormat) {
+		log.info("rjoark901 har mottatt forespørsel om å hente TilgangJournalpost for journalpost med journalpostId={}, dokumentInfoId={} og variantFormat={}",
+				journalpostId, dokumentInfoId, variantFormat.name());
+		return hentTilgangJournalpostService.hentTilgangJournalpost(journalpostId, dokumentInfoId, variantFormat);
+	}
+
 }
