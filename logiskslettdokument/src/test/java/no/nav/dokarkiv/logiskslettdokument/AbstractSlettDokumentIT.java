@@ -163,7 +163,7 @@ public abstract class AbstractSlettDokumentIT {
 
 	public DokumentInfo hentDokumentInfoEtterUtfoertKall(Journalpost journalpost) {
 		return journalpostDokumentInfoRelasjonRepository.findAllByDokumentInfoDokumentInfoId(
-				journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId()).get()
+				journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId())
 				.get(0).getDokumentInfo();
 	}
 

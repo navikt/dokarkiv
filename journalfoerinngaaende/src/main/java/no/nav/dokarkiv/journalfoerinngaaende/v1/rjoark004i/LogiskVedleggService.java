@@ -26,13 +26,13 @@ import javax.inject.Inject;
 @Service
 public class LogiskVedleggService {
 
-    private final JoarkRepository joarkRepository;
+	private final JoarkRepository joarkRepository;
 	private final SkannetInnholdRepository skannetInnholdRepository;
 	private static final String JOURNALPOST_IKKE_FUNNET = "Kunne ikke finne journalpost med journalpostId=%s i joark";
 
 	@Inject
-    public LogiskVedleggService(JoarkRepository joarkRepository,
-                                SkannetInnholdRepository skannetInnholdRepository) {
+	public LogiskVedleggService(JoarkRepository joarkRepository,
+								SkannetInnholdRepository skannetInnholdRepository) {
 		this.joarkRepository = joarkRepository;
 		this.skannetInnholdRepository = skannetInnholdRepository;
 	}

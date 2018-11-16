@@ -5,7 +5,6 @@ import static org.apache.cxf.common.util.PropertyUtils.isFalse;
 import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentUrlInfo;
 import no.nav.dokarkiv.core.domain.service.BegrensningService;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -13,7 +12,6 @@ import java.util.Optional;
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
  */
-@Transactional
 public class DokumentUrlInfoRepositoryBegrenset {
 
     private final DokumentUrlInfoRepository dokumentUrlInfoRepository;

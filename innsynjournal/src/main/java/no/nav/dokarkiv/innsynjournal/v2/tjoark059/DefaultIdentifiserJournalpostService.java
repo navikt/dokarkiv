@@ -28,7 +28,7 @@ public class DefaultIdentifiserJournalpostService implements IdentifiserJournalp
 	throws JournalpostNotSupportedException, JournalpostIkkeFunnetException, UgyldigInputException, JournalpostIkkeInngaaendeException {
 		validateInput(identifiserJournalpostToRequest);
 		List<Journalpost> journalposts = joarkRepository.findJournalpostByKanalReferanseIdAndMottakskanal(identifiserJournalpostToRequest
-				.getKanalReferanseId(), identifiserJournalpostToRequest.getMottaksKanal()).orElse(null);
+				.getKanalReferanseId(), identifiserJournalpostToRequest.getMottaksKanal());
 		if (!(journalposts == null) && journalposts.size() == 1) {
 			validateJournalpost(journalposts.get(0));
 			return journalposts.get(0);

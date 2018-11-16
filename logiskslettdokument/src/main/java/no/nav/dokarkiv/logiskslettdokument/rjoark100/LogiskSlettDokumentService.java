@@ -13,7 +13,6 @@ import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -37,8 +36,7 @@ public class LogiskSlettDokumentService {
 		sjekkAtDokumentIkkeErUtilgjengeliggjort(requestTo.getJournalpostId(), requestTo.getDokumentInfoId());
 
 		List<JournalpostDokumentInfoRelasjon> jpDokInfoRelasjonerFoundByDokumentInfoId =
-				journalpostDokumentInfoRelasjonRepository.findAllByDokumentInfoDokumentInfoId(requestTo.getDokumentInfoId())
-						.orElse(new ArrayList<>());
+				journalpostDokumentInfoRelasjonRepository.findAllByDokumentInfoDokumentInfoId(requestTo.getDokumentInfoId());
 
 		validator.validerAtDokumentSomSkalSlettesLogiskErKnyttetTilKunEnJournalpost(jpDokInfoRelasjonerFoundByDokumentInfoId, requestTo);
 		JournalpostDokumentInfoRelasjon validertJpDokInfoRelasjon = jpDokInfoRelasjonerFoundByDokumentInfoId.get(0);

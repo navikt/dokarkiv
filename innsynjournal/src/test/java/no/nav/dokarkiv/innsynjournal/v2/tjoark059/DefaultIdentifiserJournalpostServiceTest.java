@@ -30,7 +30,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Unit tests for {@link IdentifiserJournalpostService}
@@ -68,7 +67,7 @@ public class DefaultIdentifiserJournalpostServiceTest {
 		ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
 		ArgumentCaptor<MottaksKanalCode> captorMottaksKanalCode = ArgumentCaptor.forClass(MottaksKanalCode.class);
 		when(joarkRepository.findJournalpostByKanalReferanseIdAndMottakskanal(captor.capture(), captorMottaksKanalCode.capture()))
-				.thenReturn(Optional.of(journalposts));
+				.thenReturn(journalposts);
 
 		service.identifiserJournalpost(createRequest(KANAL_REFERANSE_ID, MOTTAKSKANAL));
 
@@ -91,7 +90,7 @@ public class DefaultIdentifiserJournalpostServiceTest {
 		ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
 		ArgumentCaptor<MottaksKanalCode> captorMottaksKanalCode = ArgumentCaptor.forClass(MottaksKanalCode.class);
 		when(joarkRepository.findJournalpostByKanalReferanseIdAndMottakskanal(captor.capture(), captorMottaksKanalCode.capture()))
-				.thenReturn(Optional.of(journalposts));
+				.thenReturn(journalposts);
 
 		service.identifiserJournalpost(createRequest(KANAL_REFERANSE_ID, MOTTAKSKANAL));
 	}
@@ -104,7 +103,7 @@ public class DefaultIdentifiserJournalpostServiceTest {
 		ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
 		ArgumentCaptor<MottaksKanalCode> captorMottaksKanalCode = ArgumentCaptor.forClass(MottaksKanalCode.class);
 		when(joarkRepository.findJournalpostByKanalReferanseIdAndMottakskanal(captor.capture(), captorMottaksKanalCode.capture()))
-				.thenReturn(Optional.of(journalposts));
+				.thenReturn(journalposts);
 
 		service.identifiserJournalpost(createRequest(KANAL_REFERANSE_ID, MOTTAKSKANAL));
 	}

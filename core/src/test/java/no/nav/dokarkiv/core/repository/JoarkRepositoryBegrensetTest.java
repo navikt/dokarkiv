@@ -9,8 +9,10 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
+import no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder;
 import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
 import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
+import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.entities.Begrensning;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.security.abac.JdbcAbacSecurityRepository;
@@ -22,7 +24,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.transaction.TestTransaction;
@@ -41,7 +42,6 @@ import java.util.List;
 @DataJpaTest
 @Transactional
 @ActiveProfiles("itest")
-@DirtiesContext
 public class JoarkRepositoryBegrensetTest {
 
     @Inject
@@ -95,7 +95,7 @@ public class JoarkRepositoryBegrensetTest {
         assertThat(joarkRepositoryBegrenset.findJournalpostIdByDokumentinfoId("213"), nullValue());
         assertThat(joarkRepositoryBegrenset.findDokumentinfoIdIdByDokumentinfoTilleggsopplysningerNokkelAndVerdi("213", "313"), nullValue());
         assertThat(joarkRepositoryBegrenset.findJournalpostByKanalReferanseIdAndMottakskanal("213", MottaksKanalCode.NAV_NO)
-                .isPresent(), is(false));
+                .size(), is(0));
     }
 
 
@@ -117,21 +117,28 @@ public class JoarkRepositoryBegrensetTest {
         assertThat(journalpostList.size(), is(1));
         assertThat(journalpostListBegrenset.size(), is(1));
 
-        assertThat(joarkRepository.findById(journalpost.getId()), notNullValue());
-        assertThat(joarkRepositoryBegrenset.findById(journalpost.getId()), notNullValue());
+        assertThat(joarkRepository.findById(journalpost.getId()).isPresent(), is(true));
+        assertThat(joarkRepositoryBegrenset.findById(journalpost.getId()).isPresent(), is(true));
+
+        assertThat(joarkRepository.findAllJournalpostIdsByDokumentInfoId(journalpost.findHoveddokumentDokumentInfoRelasjon()
+                .getDokumentInfo()
+                .getDokumentInfoId()).size(), is(1));
+        assertThat(joarkRepositoryBegrenset.findAllJournalpostIdsByDokumentInfoId(journalpost.findHoveddokumentDokumentInfoRelasjon()
+                .getDokumentInfo()
+                .getDokumentInfoId()).size(), is(1));
 
         assertThat(joarkRepository.findJournalpostIdByTilleggsopplysningerNokkelAndVerdi(TILLEGGSOPPLYSNINGER_KEY, TILLEGGSOPPLYSNINGER_VALUE), notNullValue());
         assertThat(joarkRepositoryBegrenset.findJournalpostIdByTilleggsopplysningerNokkelAndVerdi(TILLEGGSOPPLYSNINGER_KEY, TILLEGGSOPPLYSNINGER_VALUE), notNullValue());
 
         assertThat(joarkRepository.findJournalpostByKanalReferanseIdAndMottakskanal(KANAL_REFERANSE_ID, MottaksKanalCode.NAV_NO)
-                .get().size(), is(1));
+                .size(), is(1));
         assertThat(joarkRepositoryBegrenset.findJournalpostByKanalReferanseIdAndMottakskanal(KANAL_REFERANSE_ID, MottaksKanalCode.NAV_NO)
-                .get().size(), is(1));
+                .size(), is(1));
 
         assertThat(joarkRepository.findJournalpostByKanalReferanseIdAndMottakskanal(KANAL_REFERANSE_ID, MottaksKanalCode.NAV_NO)
-                .get().size(), is(1));
+                .size(), is(1));
         assertThat(joarkRepositoryBegrenset.findJournalpostByKanalReferanseIdAndMottakskanal(KANAL_REFERANSE_ID, MottaksKanalCode.NAV_NO)
-                .get().size(), is(1));
+                .size(), is(1));
 
         assertTrue(joarkRepository.findJournalpostByKanalReferanseIdAndMottakskanal(KANAL_REFERANSE_ID, MottaksKanalCode.NAV_NO.name())
                 .isPresent());
@@ -152,6 +159,22 @@ public class JoarkRepositoryBegrensetTest {
 
         assertTrue(joarkRepository.findJournalpostByKanalReferanseId(KANAL_REFERANSE_ID).isPresent());
         assertTrue(joarkRepositoryBegrenset.findJournalpostByKanalReferanseId(KANAL_REFERANSE_ID).isPresent());
+    }
+
+    @Test
+    public void shouldReturnBegrensetJournalpostForFindById() {
+        Journalpost journalpost = createJournalpost();
+
+        journalpost = joarkRepository.save(journalpost);
+        Begrensning begrensning = createBegrensning(journalpost.getJournalpostId(), null, BegrensningTypeCode.UTILGJENGELIGGJORT);
+
+        begrensningRepository.save(begrensning);
+
+        TestTransaction.flagForCommit();
+
+        assertThat(joarkRepository.findById(journalpost.getId()).isPresent(), is(true));
+        assertThat(joarkRepositoryBegrenset.findById(journalpost.getId()).isPresent(), is(false));
+
     }
 
     @Test
@@ -254,9 +277,9 @@ public class JoarkRepositoryBegrensetTest {
         TestTransaction.flagForCommit();
 
         assertThat(joarkRepository.findJournalpostByKanalReferanseIdAndMottakskanal(KANAL_REFERANSE_ID, MottaksKanalCode.NAV_NO)
-                .get().size(), is(1));
+                .size(), is(1));
         assertThat(joarkRepositoryBegrenset.findJournalpostByKanalReferanseIdAndMottakskanal(KANAL_REFERANSE_ID, MottaksKanalCode.NAV_NO)
-                .get().size(), is(0));
+                .size(), is(0));
 
         assertThat(joarkRepository.findJournalpostByKanalReferanseIdAndMottakskanal(KANAL_REFERANSE_ID, MottaksKanalCode.NAV_NO.name())
                 .isPresent(), is(true));
@@ -280,6 +303,36 @@ public class JoarkRepositoryBegrensetTest {
         assertThat(joarkRepositoryBegrenset.findJournalpostByKanalReferanseId(KANAL_REFERANSE_ID).isPresent(), is(false));
     }
 
+
+    @Test
+    public void shouldReturnBegrensetJournalpostIdForFindAllJournalpostIdsByDokumentInfoId() {
+        Journalpost journalpost = createJournalpost();
+        joarkRepository.save(journalpost);
+
+        Journalpost journalpostBegrenset = createJournalpost();
+
+        Long dokumentInfoId = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId();
+
+        //Legg til dokumentInfo som vedlegg til begrenset journalpost
+        journalpostBegrenset.addJournalpostDokumentInfoRelasjon(JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder()
+                .tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
+                .opprettetKildeNavn("test")
+                .tilknyttetAvNavn("test")
+                .dokumentInfo(journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo())
+                .build());
+
+        journalpostBegrenset = joarkRepository.save(journalpostBegrenset);
+        Begrensning begrensning = createBegrensning(journalpostBegrenset.getJournalpostId(), null, BegrensningTypeCode.UTILGJENGELIGGJORT);
+        begrensningRepository.save(begrensning);
+        TestTransaction.flagForCommit();
+
+
+        assertThat(joarkRepository.findAllJournalpostIdsByDokumentInfoId(dokumentInfoId).size(), is(2));
+        assertThat(joarkRepositoryBegrenset.findAllJournalpostIdsByDokumentInfoId(dokumentInfoId).size(), is(1));
+        assertThat(joarkRepositoryBegrenset.findAllJournalpostIdsByDokumentInfoId(dokumentInfoId)
+                .get(0), is(journalpost.getJournalpostId()));
+
+    }
 
 
 }

@@ -236,9 +236,9 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	@Transient
 	private transient List<Long> begrensetRelasjonerDokumentInfoId = new ArrayList<>();
 
-	public void addAllbegrensetRelasjonerDokumentInfoIds(List<Long> dokumentInfoId) {
+	public void addAllbegrensetRelasjonerDokumentInfoIds(List<Long> dokumentInfoIdList) {
 		begrensetRelasjonerDokumentInfoId = new ArrayList<>();
-		begrensetRelasjonerDokumentInfoId.addAll(dokumentInfoId);
+		begrensetRelasjonerDokumentInfoId.addAll(dokumentInfoIdList);
 	}
 
 	public List<Long> getBegrensetRelasjonerDokumentInfoId() {
@@ -369,10 +369,8 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	}
 
 	private void verifyFieldsForEndeligJournalforing() {
-		if (hasEndeligJournalforingStatus()) {
-			if (getJournalpostDokumentInfoRelasjoner().isEmpty()) {
-				throw new InvalidArgumentException("Journalpost must have at least one DokumentInfoRelasjon");
-			}
+		if (hasEndeligJournalforingStatus() && getJournalpostDokumentInfoRelasjoner().isEmpty()) {
+			throw new InvalidArgumentException("Journalpost must have at least one DokumentInfoRelasjon");
 		}
 	}
 
@@ -1480,9 +1478,8 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	public Set<JournalpostDokumentInfoRelasjon> getJournalpostDokumentInfoRelasjoner() {
 		return Collections.unmodifiableSet(journalpostDokumentInfoRelasjoner.stream()
 				.filter(relasjon -> relasjon.getDokumentInfo() == null || relasjon.getDokumentInfo()
-						.getDokumentInfoId() == null || isFalse(getBegrensetRelasjonerDokumentInfoId().contains(relasjon
-						.getDokumentInfo()
-						.getDokumentInfoId())))
+						.getDokumentInfoId() == null || isFalse(getBegrensetRelasjonerDokumentInfoId().stream()
+						.anyMatch(dokumentInfoId -> dokumentInfoId.equals(relasjon.getDokumentInfo().getDokumentInfoId()))))
 				.collect(Collectors.toSet()));
 	}
 
