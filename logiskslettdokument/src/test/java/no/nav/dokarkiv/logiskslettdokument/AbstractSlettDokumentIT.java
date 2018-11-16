@@ -7,7 +7,6 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode.UTILGJENGELIGGJORT;
 import static no.nav.dokarkiv.core.security.JwtClaimsBuilderProvider.openAmClaimsBuilder;
 
-import com.auth0.jwt.JWT;
 import no.nav.dokarkiv.core.CoreConfig;
 import no.nav.dokarkiv.core.domain.entities.Begrensning;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
@@ -20,7 +19,6 @@ import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.dokarkiv.core.stelvio.SimpleRequestContext;
 import no.nav.freg.security.test.oidc.tools.OidcTestService;
 import no.nav.freg.security.test.oidc.tools.TestToolsAutoConfig;
-import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -46,8 +44,6 @@ import javax.inject.Inject;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.NoSuchElementException;
 
 @RunWith(SpringRunner.class)
@@ -66,7 +62,6 @@ public abstract class AbstractSlettDokumentIT {
 	protected static final String TILKNYTTET_AV_NAVN = "Tilknyttetnavn";
 	protected static final String URL_SLETTDOKUMENT = "/rest/logiskslettdokument/";
 	protected static final String URL_ANGRESLETTDOKUMENT = "/rest/logiskslettdokument/angre/";
-	protected Long JOURNALPOST_ID = 200000000L;
 	private String OIDC_TOKEN_PERSON_USER_TEST;
 	private String OIDC_TOKEN_SERVICE_USER_TEST;
 	private String OIDC_TOKEN_SERVICE_NO_ACCESS_USER_TEST;
@@ -152,21 +147,13 @@ public abstract class AbstractSlettDokumentIT {
 	}
 
 	public Begrensning hentHoveddokumentBegrensningEtterUtfoertKall(Journalpost journalpost) {
-		try {
-			return begrensningRepository.findByJournalpostIdAndBegrensningTypeAndDokumentInfoIdIsNull(
-					journalpost.getJournalpostId(), UTILGJENGELIGGJORT).get();
-		} catch (NoSuchElementException e) {
-			return null;
-		}
+		return begrensningRepository.findByJournalpostIdAndBegrensningTypeAndDokumentInfoIdIsNull(
+				journalpost.getJournalpostId(), UTILGJENGELIGGJORT).orElse(null);
 	}
 
 	public Begrensning hentVedleggBegrensningEtterUtfoertKall(Long journalpostId, Long dokumentInfoId) {
-		try {
-			return begrensningRepository.findByJournalpostIdAndDokumentInfoIdAndBegrensningType(
-					journalpostId, dokumentInfoId, UTILGJENGELIGGJORT).get();
-		} catch (NoSuchElementException e) {
-			return null;
-		}
+		return begrensningRepository.findByJournalpostIdAndDokumentInfoIdAndBegrensningType(
+				journalpostId, dokumentInfoId, UTILGJENGELIGGJORT).orElse(null);
 	}
 
 	public Long hentAntallBegrensninger() {
