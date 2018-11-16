@@ -13,9 +13,9 @@ import javax.persistence.EntityManager;
 public class HentDokumentRepository {
 
 	private final EntityManager entityManager;
-	public static final String SAFHENDOKUMENTDTO_PACKAGE_NAME = SafHentDokumentDto.class.getPackage().getName();
+	public static final String SAFHENDOKUMENTDTO_CANONICAL_NAME = SafHentDokumentDto.class.getCanonicalName();
 	private static final String DOKUMENT_BY_ID_AND_VARIANT_SQL = "select new " +
-			SAFHENDOKUMENTDTO_PACKAGE_NAME +
+			SAFHENDOKUMENTDTO_CANONICAL_NAME +
 			"(" +
 			" f.fil," +
 			" fd.filtype" +
