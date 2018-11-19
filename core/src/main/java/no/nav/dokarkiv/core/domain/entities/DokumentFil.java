@@ -24,9 +24,6 @@ import java.util.Arrays;
  */
 @Entity
 @Table(name = "T_DOKUMENT_FIL")
-@Builder
-@Data
-@AllArgsConstructor
 public class DokumentFil extends AbstractPersistentVersionedDomainObjectWithKilde {
 	
 	/** Named Parameter */
