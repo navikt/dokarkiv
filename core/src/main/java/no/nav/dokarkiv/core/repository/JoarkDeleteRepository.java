@@ -21,6 +21,10 @@ public interface JoarkDeleteRepository extends Repository<Journalpost, Long> {
 	void deleteDokInfoJPRelByDokumentInfoId(@Param("dokumentInfoId") Long dokumentInfoId);
 
 	@Modifying
+	@Query(value = "delete from T_JP_DOK_INFO_REL where journalpost_id = :journalpostId AND dokument_info_id = :dokumentInfoId", nativeQuery = true)
+	void deleteJournalpostDokumentInfoRelasjonByJournalpostIdAndDokumentInfoId(@Param("journalpostId") Long journalpostid, @Param("dokumentInfoId") Long dokumentInfoId);
+
+	@Modifying
 	@Query(value = "delete from t_dok_info_tillegg where dokument_info_id = :dokumentInfoId", nativeQuery = true)
 	void deleteDokInfoTilleggByDokumentInfoId(@Param("dokumentInfoId") Long dokumentInfoId);
 

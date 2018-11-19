@@ -8,9 +8,10 @@ import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.service.BegrensningService;
 import no.nav.dokarkiv.core.exceptions.BegrensningIkkeFunnetException;
+import no.nav.dokarkiv.core.exceptions.JournalpostDokumentInfoRelasjonIkkeFunnetException;
+import no.nav.dokarkiv.core.exceptions.UgyldigTilknyttetJournalpostSomException;
 import no.nav.dokarkiv.core.repository.JoarkDeleteRepository;
 import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
-import no.nav.dokarkiv.fysiskslettdokument.exceptions.UgyldigTilknyttetJournalpostSomException;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
 
@@ -24,40 +25,52 @@ public class FysiskSlettDokumentService {
 
 	private final JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository;
 	private final JoarkDeleteRepository deleteRepository;
-	private final FysiskSlettDokumentValidator validator;
 	private final BegrensningService begrensningService;
 
 	@Inject
 	public FysiskSlettDokumentService(
 			JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository,
 			JoarkDeleteRepository deleteRepository,
-			FysiskSlettDokumentValidator validator,
 			BegrensningService begrensningService) {
 		this.journalpostDokumentInfoRelasjonRepository = journalpostDokumentInfoRelasjonRepository;
 		this.deleteRepository = deleteRepository;
-		this.validator = validator;
 		this.begrensningService = begrensningService;
 	}
 
 	public FysiskSlettDokumentResponse sletteDokumentFysisk(FysiskSlettDokumentRequestTo requestTo) {
-		List<JournalpostDokumentInfoRelasjon> listFoundByJournalpostdAndDokumentInfoId =
-				journalpostDokumentInfoRelasjonRepository.findAllByJournalpostJournalpostIdAndDokumentInfoDokumentInfoId(
-						requestTo.getJournalpostId(), requestTo.getDokumentInfoId()).orElse(new ArrayList<>());
+		JournalpostDokumentInfoRelasjon relasjonSomSkalSlettesFysisk =
+				journalpostDokumentInfoRelasjonRepository.findByJournalpostJournalpostIdAndDokumentInfoDokumentInfoId(
+						requestTo.getJournalpostId(), requestTo.getDokumentInfoId()).orElse(null);
 
-		validator.validerAtRequestReferererTilGyldigJournalpostDokumentInfoRelasjon(listFoundByJournalpostdAndDokumentInfoId, requestTo);
+		if (relasjonSomSkalSlettesFysisk == null) {
+			throw new JournalpostDokumentInfoRelasjonIkkeFunnetException(
+					String.format("Kan ikke finne noen relasjon mellom journalpost med journalpostId=%s og dokument med dokumentInfoId=%s",
+							requestTo.getJournalpostId(),
+							requestTo.getDokumentInfoId()));
+		}
 
-		JournalpostDokumentInfoRelasjon relasjonSomSkalSlettes = listFoundByJournalpostdAndDokumentInfoId.get(0);
-
-		switch (relasjonSomSkalSlettes.getTilknyttetJournalpostSom()) {
+		switch (relasjonSomSkalSlettesFysisk.getTilknyttetJournalpostSom()) {
 			case HOVEDDOKUMENT:
-				sjekkAtJournalpostErUtilgjengeliggjort(relasjonSomSkalSlettes.getJournalpost().getJournalpostId());
-				fysiskSlettEtHoveddokument(relasjonSomSkalSlettes);
+				sjekkAtJournalpostErUtilgjengeliggjort(relasjonSomSkalSlettesFysisk.getJournalpost().getJournalpostId());
+				fysiskSlettEtHoveddokument(relasjonSomSkalSlettesFysisk);
+				begrensningService.deleteValidertJournalpostBegrensning(
+						relasjonSomSkalSlettesFysisk.getJournalpost().getJournalpostId(),
+						BegrensningTypeCode.UTILGJENGELIGGJORT);
+				log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har fysisk slettet journalpost med journalpostId={}",
+						requestTo.getJournalpostId());
 				break;
 			case VEDLEGG:
 				sjekkAtDokumentErUtilgjengeliggjort(
-						relasjonSomSkalSlettes.getJournalpost().getJournalpostId(),
-						relasjonSomSkalSlettes.getDokumentInfo().getDokumentInfoId());
-				fysiskSlettEtVedlegg(relasjonSomSkalSlettes);
+						relasjonSomSkalSlettesFysisk.getJournalpost().getJournalpostId(),
+						relasjonSomSkalSlettesFysisk.getDokumentInfo().getDokumentInfoId());
+				fysiskSlettEtVedlegg(relasjonSomSkalSlettesFysisk);
+				begrensningService.deleteValidertJournalpostDokumentInfoRelasjonBegrensning(
+						relasjonSomSkalSlettesFysisk.getJournalpost().getJournalpostId(),
+						relasjonSomSkalSlettesFysisk.getDokumentInfo().getDokumentInfoId(),
+						BegrensningTypeCode.UTILGJENGELIGGJORT);
+				log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) +
+								" har fysisk slettet dokument med journalpostId={}, dokumentInfoId={}",
+						requestTo.getJournalpostId(), requestTo.getDokumentInfoId());
 				break;
 			default:
 				throw new UgyldigTilknyttetJournalpostSomException(String.format(
@@ -99,43 +112,12 @@ public class FysiskSlettDokumentService {
 	}
 
 	private void fysiskSlettEtHoveddokument(JournalpostDokumentInfoRelasjon relasjonSomSkalSlettes) {
-	}
-
-	private void fysiskSlettEtVedlegg(JournalpostDokumentInfoRelasjon relasjonSomSkalSlettes) {
-	}
-
-
-	// SLETTELINJE ----------------------------------------------------------
-
-	private void fysiskSlettEtVedleggKnyttetEnJP(FysiskSlettDokumentRequestTo requestTo) {
-		List<JournalpostDokumentInfoRelasjon> listFoundByDokumentInfoId =
-				journalpostDokumentInfoRelasjonRepository.findAllByDokumentInfoDokumentInfoId(requestTo.getDokumentInfoId())
-						.orElse(new ArrayList<>());
-
-//		validator.validerFysiskSlettEtVedleggKnyttetEnJP(listFoundByDokumentInfoId, requestTo);
-
-		JournalpostDokumentInfoRelasjon vedleggRelasjonSomSkalSlettes = listFoundByDokumentInfoId.get(0);
-
-		slettEtDokumentMedAllMetadata(vedleggRelasjonSomSkalSlettes.getDokumentInfo().getDokumentInfoId());
-		log.info("{} har utført fysisk sletting av vedlegg med journalpostId={}, dokumentInfoId={}",
-				MDC.get(MDCConstants.MDC_REQUEST_ID), requestTo.getJournalpostId(), requestTo.getDokumentInfoId());
-	}
-
-
-	private void fysiskSlettEtHoveddokumentKnyttetEnJP(FysiskSlettDokumentRequestTo requestTo) {
-		List<JournalpostDokumentInfoRelasjon> listFoundByDokumnentInfoId =
-				journalpostDokumentInfoRelasjonRepository.findAllByDokumentInfoDokumentInfoId(requestTo.getDokumentInfoId())
-						.orElse(new ArrayList<>());
-
-//		validator.validerFysiskSlettEtHoveddokumentKnyttetEnJP(listFoundByDokumnentInfoId, requestTo);
-
-		JournalpostDokumentInfoRelasjon hoveddokumentRelasjon = listFoundByDokumnentInfoId.get(0);
-
-		slettEventuelleVedleggKnyttetHoveddokumentValidertForSletting(hoveddokumentRelasjon);
-
-		slettEnJournalpostOgEtDokumentMedAllMetadata(hoveddokumentRelasjon);
-		log.info("{} har utført fysisk sletting av hoveddokument med journalpostId={}, dokumentInfoId={}",
-				MDC.get(MDCConstants.MDC_REQUEST_ID), requestTo.getJournalpostId(), requestTo.getDokumentInfoId());
+		slettEventuelleVedleggKnyttetHoveddokumentValidertForSletting(relasjonSomSkalSlettes);
+		if (relasjonSomSkalSlettes.getDokumentInfo().isRelatedToMultipleJournalposts()) {
+			slettJournalpostOgJournalpostDokumentInfoRelasjon(relasjonSomSkalSlettes);
+		} else {
+			slettJournalpostOgDokumentInfoOgJournalpostDokumentInfoRelasjon(relasjonSomSkalSlettes);
+		}
 	}
 
 	private void slettEventuelleVedleggKnyttetHoveddokumentValidertForSletting(JournalpostDokumentInfoRelasjon hoveddokumentRelasjon) {
@@ -146,27 +128,35 @@ public class FysiskSlettDokumentService {
 
 		for (JournalpostDokumentInfoRelasjon relasjon : listFoundByJournalpostId) {
 			if (relasjon.isVedlegg()) {
-				opprettRequestTilFysiskSlettEtVedleggKnyttetEnJPFraEnVedleggsRelasjon(relasjon);
+				fysiskSlettEtVedlegg(relasjon);
 			}
 		}
 	}
 
-	private void opprettRequestTilFysiskSlettEtVedleggKnyttetEnJPFraEnVedleggsRelasjon(JournalpostDokumentInfoRelasjon vedleggRelasjon) {
-		FysiskSlettDokumentRequestTo requestTo = FysiskSlettDokumentRequestTo.builder()
-				.journalpostId(vedleggRelasjon.getJournalpost().getJournalpostId())
-				.dokumentInfoId(vedleggRelasjon.getDokumentInfo().getDokumentInfoId())
-				.begrensningType(BegrensningTypeCode.UTILGJENGELIGGJORT)
-				.build();
-		fysiskSlettEtVedleggKnyttetEnJP(requestTo);
+	private void fysiskSlettEtVedlegg(JournalpostDokumentInfoRelasjon relasjonSomSkalSlettes) {
+		if (relasjonSomSkalSlettes.getDokumentInfo().isRelatedToMultipleJournalposts()) {
+			slettJournalpostDokumentInfoRelasjon(relasjonSomSkalSlettes);
+		} else {
+			slettFilOgDokumentInfo(relasjonSomSkalSlettes.getDokumentInfo().getDokumentInfoId());
+		}
 	}
 
-	private void slettEtDokumentMedAllMetadata(Long dokumentInfoId) {
-		slettFilOgDokumentInfo(dokumentInfoId);
+	private void slettJournalpostOgJournalpostDokumentInfoRelasjon(JournalpostDokumentInfoRelasjon relasjon) {
+		deleteRepository.deleteJournalpostDokumentInfoRelasjonByJournalpostIdAndDokumentInfoId(
+				relasjon.getJournalpost().getJournalpostId(),
+				relasjon.getDokumentInfo().getDokumentInfoId());
+		slettJournalpost(relasjon.getJournalpost().getJournalpostId());
 	}
 
-	private void slettEnJournalpostOgEtDokumentMedAllMetadata(JournalpostDokumentInfoRelasjon relasjon) {
+	private void slettJournalpostOgDokumentInfoOgJournalpostDokumentInfoRelasjon(JournalpostDokumentInfoRelasjon relasjon) {
 		slettFilOgDokumentInfo(relasjon.getDokumentInfo().getDokumentInfoId());
 		slettJournalpost(relasjon.getJournalpost().getJournalpostId());
+	}
+
+	private void slettJournalpostDokumentInfoRelasjon(JournalpostDokumentInfoRelasjon relasjon) {
+		deleteRepository.deleteJournalpostDokumentInfoRelasjonByJournalpostIdAndDokumentInfoId(
+				relasjon.getJournalpost().getJournalpostId(),
+				relasjon.getDokumentInfo().getDokumentInfoId());
 	}
 
 	private void slettJournalpost(Long journalpostId) {

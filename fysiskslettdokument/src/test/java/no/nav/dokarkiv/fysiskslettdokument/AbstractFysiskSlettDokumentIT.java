@@ -4,14 +4,19 @@ import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode.UTILGJENGELIGGJORT;
 import static no.nav.dokarkiv.core.security.JwtClaimsBuilderProvider.openAmClaimsBuilder;
 
 import no.nav.dokarkiv.core.CoreConfig;
-import no.nav.dokarkiv.core.MDCConstants;
+import no.nav.dokarkiv.core.domain.entities.Begrensning;
+import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
+import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.repository.BegrensningRepository;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkDeleteRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
+import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.dokarkiv.core.stelvio.SimpleRequestContext;
 import no.nav.freg.security.test.oidc.tools.OidcTestService;
@@ -21,7 +26,6 @@ import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
-import org.slf4j.MDC;
 import org.springframework.boot.test.autoconfigure.data.ldap.AutoConfigureDataLdap;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureDataJpa;
@@ -38,6 +42,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
+import java.util.NoSuchElementException;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
@@ -51,14 +56,14 @@ import javax.inject.Inject;
 @Transactional
 public abstract class AbstractFysiskSlettDokumentIT {
 
-	protected static final String OPPRETTET_KILDE_NAVN = "Opprettet kilde";
-	protected static final String TILKNYTTET_AV_NAVN = "Tilknyttetnavn";
 	protected static final String URL_FYSISKSLETTDOKUMENT = "/rest/fysiskslettdokument/";
 	private String OIDC_TOKEN_PERSON_USER_TEST;
 	private String OIDC_TOKEN_SERVICE_USER_TEST;
+	private String OIDC_TOKEN_SERVICE_NO_ACCESS_USER_TEST;
 	private String NAV_CONSUMER_TOKEN = "Nav-Consumer-Token";
 	private final String SERVICE_USER_ID = "srvdokarkiv";
 	private final String PERSON_USER_ID = "Z990782";
+	private final String NO_ACCESS_SERVICE_USER_ID = "srvdokarkiv";
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
@@ -67,6 +72,8 @@ public abstract class AbstractFysiskSlettDokumentIT {
 	@Inject
 	protected JoarkRepository joarkRepository;
 	@Inject
+	protected JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository;
+	@Inject
 	protected TestRestTemplate restTemplate;
 	@Inject
 	protected DokumentinfoRepository dokumentinfoRepository;
@@ -74,6 +81,8 @@ public abstract class AbstractFysiskSlettDokumentIT {
 	protected DokumentFilRepository dokumentFilRepository;
 	@Inject
 	protected OidcTestService oidcTestService;
+	@Inject
+	protected BegrensningRepository begrensningRepository;
 
 	@Before
 	public void setUp() {
@@ -81,8 +90,8 @@ public abstract class AbstractFysiskSlettDokumentIT {
 				.build());
 		OIDC_TOKEN_SERVICE_USER_TEST = "Bearer " + oidcTestService.createOidc(openAmClaimsBuilder().subject(SERVICE_USER_ID)
 				.build());
-
-		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark102");
+		OIDC_TOKEN_SERVICE_NO_ACCESS_USER_TEST = "Bearer " + oidcTestService.createOidc(openAmClaimsBuilder().subject(NO_ACCESS_SERVICE_USER_ID)
+				.build());
 	}
 
 	@BeforeClass
@@ -97,6 +106,7 @@ public abstract class AbstractFysiskSlettDokumentIT {
 	public void cleanup() {
 		joarkRepository.deleteAll();
 		dokumentinfoRepository.deleteAll();
+		begrensningRepository.deleteAll();
 	}
 
 	protected HttpEntity createHeaders() {
@@ -107,10 +117,47 @@ public abstract class AbstractFysiskSlettDokumentIT {
 		return new HttpEntity(headers);
 	}
 
+	protected HttpEntity createNoAccesHeaders() {
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.TEXT_PLAIN);
+		headers.add(HttpHeaders.AUTHORIZATION, OIDC_TOKEN_PERSON_USER_TEST);
+		headers.add(NAV_CONSUMER_TOKEN, OIDC_TOKEN_SERVICE_NO_ACCESS_USER_TEST);
+		return new HttpEntity(headers);
+	}
+
 	protected void abacPermit() {
 		stubFor(post(urlEqualTo("/abac"))
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
 						.withHeader(org.apache.http.HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
 						.withBodyFile("abac/abac-permit.json")));
+	}
+
+	public Begrensning hentHoveddokumentBegrensningEtterUtfoertKall(Long journalpostId) {
+		return begrensningRepository.findByJournalpostIdAndBegrensningTypeAndDokumentInfoIdIsNull(
+				journalpostId, UTILGJENGELIGGJORT).orElse(null);
+	}
+
+	public Begrensning hentVedleggBegrensningEtterUtfoertKall(Long journalpostId, Long dokumentInfoId) {
+		return begrensningRepository.findByJournalpostIdAndDokumentInfoIdAndBegrensningType(
+				journalpostId, dokumentInfoId, UTILGJENGELIGGJORT).orElse(null);
+	}
+
+	public Long hentAntallBegrensninger() {
+		return begrensningRepository.count();
+	}
+
+	public DokumentInfo hentDokumentInfoEtterUtfoertKall(Journalpost journalpost) {
+		return journalpostDokumentInfoRelasjonRepository.findAllByDokumentInfoDokumentInfoId(
+				journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId()).get()
+				.get(0).getDokumentInfo();
+	}
+
+	public Begrensning hentJournalpostEtterUtfoertKall(Long journalpostId) {
+		try {
+			return begrensningRepository.findByJournalpostIdAndBegrensningTypeAndDokumentInfoIdIsNull(
+					journalpostId, UTILGJENGELIGGJORT).get();
+		} catch (NoSuchElementException e) {
+			return null;
+		}
 	}
 }
