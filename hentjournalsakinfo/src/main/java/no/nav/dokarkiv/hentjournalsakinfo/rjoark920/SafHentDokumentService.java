@@ -27,7 +27,7 @@ public class SafHentDokumentService {
 
 		return SafHentDokumentResponse.builder()
 				.dokument(safHentDokumentDto.getDokument())
-				.filtype(safHentDokumentDto.getDokumentVariant())
+				.filtype(safHentDokumentDto.getVariantFormat())
 				.build();
 
 

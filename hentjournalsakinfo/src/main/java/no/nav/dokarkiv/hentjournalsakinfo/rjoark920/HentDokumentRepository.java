@@ -12,6 +12,7 @@ import javax.persistence.EntityManager;
 @Repository
 public class HentDokumentRepository {
 
+
 	private final EntityManager entityManager;
 	public static final String SAFHENDOKUMENTDTO_CANONICAL_NAME = SafHentDokumentDto.class.getCanonicalName();
 	private static final String DOKUMENT_BY_ID_AND_VARIANT_SQL = "select new " +
@@ -23,7 +24,7 @@ public class HentDokumentRepository {
 			" from FilDetaljer fd" +
 			" join DokumentFil f on fd.filUuid = f.filUuid" +
 			" where fd.dokumentInfo.dokumentInfoId = :dokumentinfoId" +
-			" and fd.variantFormat = :dokumentVariant";
+			" and fd.variantFormat = :variantFormat";
 
 
 	public HentDokumentRepository(EntityManager entityManager) {
@@ -34,7 +35,7 @@ public class HentDokumentRepository {
 		return entityManager
 				.createQuery(DOKUMENT_BY_ID_AND_VARIANT_SQL, SafHentDokumentDto.class)
 				.setParameter("dokumentinfoId", dokumentInfoId)
-				.setParameter("dokumentVariant", variantFormat)
+				.setParameter("variantFormat", variantFormat)
 				.getSingleResult();
 	}
 }
