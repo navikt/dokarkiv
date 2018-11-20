@@ -1061,6 +1061,7 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 		brukere.clear();
 	}
 
+
 	/**
 	 * Getter for the saksrelasjon property.
 	 *

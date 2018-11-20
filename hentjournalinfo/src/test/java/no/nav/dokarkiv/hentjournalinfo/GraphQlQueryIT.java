@@ -10,6 +10,7 @@ import static no.nav.dokarkiv.hentjournalinfo.utils.TestAssertUtils.assertBruker
 import static no.nav.dokarkiv.hentjournalinfo.utils.TestAssertUtils.assertDokumentInfo;
 import static no.nav.dokarkiv.hentjournalinfo.utils.TestAssertUtils.assertJournalpost;
 import static no.nav.dokarkiv.hentjournalinfo.utils.TestAssertUtils.assertKnyttetDokumentList;
+import static no.nav.dokarkiv.hentjournalinfo.utils.TestAssertUtils.assertVedleggDokumentInfo;
 import static no.nav.dokarkiv.hentjournalinfo.utils.TestQueryUtils.createDokumentInfoRequest;
 import static no.nav.dokarkiv.hentjournalinfo.utils.TestQueryUtils.createFilRequest;
 import static no.nav.dokarkiv.hentjournalinfo.utils.TestQueryUtils.createJournalpostDokumentInfoRequest;
@@ -22,9 +23,13 @@ import static org.junit.Assert.assertThat;
 
 import no.nav.dokarkiv.core.CoreConfig;
 import no.nav.dokarkiv.core.domain.builder.DokumentFilBuilder;
+import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
+import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
+import no.nav.dokarkiv.core.domain.entities.Begrensning;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.DokumentInfoIkkeFunnetException;
+import no.nav.dokarkiv.core.repository.BegrensningRepository;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
@@ -53,7 +58,6 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.transaction.TestTransaction;
@@ -90,6 +94,8 @@ public class GraphQlQueryIT {
     private DokumentFilRepository dokumentFilRepository;
     @Inject
     private DokumentinfoRepository dokumentinfoRepository;
+    @Inject
+    private BegrensningRepository begrensningRepository;
     @Inject
     private TestRestTemplate testRestTemplate;
     @Inject
@@ -141,7 +147,7 @@ public class GraphQlQueryIT {
 
         assertDokumentInfo(response.getDataWrapper().getDokumentInfo());
         assertJournalpost(response.getDataWrapper().getJournalpost());
-        assertThat(response.getDataWrapper().getDokumentInfo().getSlettet(), is(Boolean.FALSE));
+        assertThat(response.getDataWrapper().getDokumentInfo().getKnyttetJournalpostList().get(0).getSlettet(), is(Boolean.FALSE));
 
     }
 
@@ -184,7 +190,7 @@ public class GraphQlQueryIT {
 
         DokumentInfo dokumentInfo = response.getDataWrapper().getDokumentInfo();
         assertDokumentInfo(dokumentInfo);
-        assertThat(dokumentInfo.getSlettet(), is(Boolean.FALSE));
+        assertThat(dokumentInfo.getKnyttetJournalpostList().get(0).getSlettet(), is(Boolean.FALSE));
 
     }
 
@@ -211,9 +217,6 @@ public class GraphQlQueryIT {
                 .get(0)
                 .getMessage(), containsString("Validation error of type FieldUndefined: Field 'dokumentFil' in type 'Query' is undefined @ 'dokumentFil'"));
 
-//        String fil = response.getDataWrapper().getDokumentFil();
-//        assertThat(response.getDataWrapper(), notNullValue());
-//        assertThat(Base64.decode(fil), is(new String(FIL_CONTENT, StandardCharsets.UTF_8)));
     }
 
     @Test
@@ -232,11 +235,17 @@ public class GraphQlQueryIT {
     }
 
     @Test
-    public void shouldReturnDokumentWhenDokumentIsDeleted() throws Exception {
+    public void shouldReturnDokumentWhenHoveddokumentIsDeleted() throws Exception {
         abacPermit();
         Journalpost journalpost = TestDataUtils.createJournalpostBuilder(FIL_UUID).build();
-        journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().setSlettet(true);
         joarkRepository.save(journalpost);
+        Begrensning begrensning = Begrensning.builder()
+                .journalpostId(journalpost.getJournalpostId())
+                .begrensningType(BegrensningTypeCode.UTILGJENGELIGGJORT)
+                .build();
+        begrensning.setOpprettetKildeNavn("Opprettet av");
+        begrensningRepository.save(begrensning);
+
         TestTransaction.flagForCommit();
         TestTransaction.end();
 
@@ -245,14 +254,39 @@ public class GraphQlQueryIT {
                 .getDokumentInfoId()), oidcHeaders());
 
         GraphQlResponse response = testRestTemplate.postForObject("/rest/graphql", request, GraphQlResponse.class);
-//        assertThat(response.getErrors().size(), is(1));
-//        assertThat(response.getErrors().get(0).getMessage(), containsString("DokumentInfo ikke funnet. dokumentInfoId="));
-//        assertThat(response.getErrors().get(0).getException(), is(DokumentInfoIkkeFunnetException.class.getSimpleName()));
-//        assertThat(response.getErrors().get(0).getExceptionType(), is(ExceptionType.FUNCTIONAL));
         DokumentInfo dokumentInfo = response.getDataWrapper().getDokumentInfo();
         assertDokumentInfo(dokumentInfo);
-        assertThat(dokumentInfo.getSlettet(), is(Boolean.TRUE));
+        assertThat(dokumentInfo.getKnyttetJournalpostList().get(0).getSlettet(), is(Boolean.TRUE));
     }
+
+    @Test
+    public void shouldReturnDokumentWhenVedleggIsDeleted() throws Exception {
+        abacPermit();
+        Journalpost journalpost = TestDataUtils.createJournalpostBuilder(FIL_UUID).build();
+
+        journalpost = joarkRepository.save(journalpost);
+
+        no.nav.dokarkiv.core.domain.entities.DokumentInfo vedlegg = journalpost.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG).iterator().next().getDokumentInfo();
+        Begrensning begrensning = Begrensning.builder()
+                .journalpostId(journalpost.getJournalpostId())
+                .dokumentInfoId(vedlegg.getDokumentInfoId())
+                .begrensningType(BegrensningTypeCode.UTILGJENGELIGGJORT)
+                .build();
+        begrensning.setOpprettetKildeNavn("Opprettet av");
+        begrensningRepository.save(begrensning);
+
+        TestTransaction.flagForCommit();
+        TestTransaction.end();
+
+        HttpEntity request = new HttpEntity<>(createDokumentInfoRequest(vedlegg
+                .getDokumentInfoId()), oidcHeaders());
+
+        GraphQlResponse response = testRestTemplate.postForObject("/rest/graphql", request, GraphQlResponse.class);
+        DokumentInfo dokumentInfo = response.getDataWrapper().getDokumentInfo();
+        assertVedleggDokumentInfo(dokumentInfo);
+        assertThat(response.getDataWrapper().getDokumentInfo().getKnyttetJournalpostList().get(0).getSlettet(), is(Boolean.TRUE));
+    }
+
 
     @Test
     public void shouldReturnDokumentNotFoundError() throws Exception {

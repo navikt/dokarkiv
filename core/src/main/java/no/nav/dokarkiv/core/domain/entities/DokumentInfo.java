@@ -176,7 +176,6 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 		this.journalpostRelasjoner = new HashSet<>();
 		this.tilleggsopplysninger = new HashMap<>();
 		this.skannetInnholdListe = new HashSet<>();
-
 	}
 
 	/**
@@ -244,6 +243,7 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 			throw new InvalidArgumentException("DokumentInfo must have at least one FilDetaljer");
 		}
 	}
+
 
 	/**
 	 * Checks that there are no duplicates among the varianter of documents

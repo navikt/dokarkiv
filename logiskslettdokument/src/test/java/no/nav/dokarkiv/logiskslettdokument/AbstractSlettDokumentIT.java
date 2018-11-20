@@ -4,13 +4,14 @@ import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode.UTILGJENGELIGGJORT;
 import static no.nav.dokarkiv.core.security.JwtClaimsBuilderProvider.openAmClaimsBuilder;
 
-import com.auth0.jwt.JWT;
 import no.nav.dokarkiv.core.CoreConfig;
-import no.nav.dokarkiv.core.domain.builder.JournalpostBuilder;
+import no.nav.dokarkiv.core.domain.entities.Begrensning;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.repository.BegrensningRepository;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
@@ -18,7 +19,6 @@ import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.dokarkiv.core.stelvio.SimpleRequestContext;
 import no.nav.freg.security.test.oidc.tools.OidcTestService;
 import no.nav.freg.security.test.oidc.tools.TestToolsAutoConfig;
-import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -37,7 +37,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.transaction.annotation.Transactional;
 import wiremock.com.google.common.io.Resources;
 
@@ -45,6 +44,7 @@ import javax.inject.Inject;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.NoSuchElementException;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
@@ -64,9 +64,11 @@ public abstract class AbstractSlettDokumentIT {
 	protected static final String URL_ANGRESLETTDOKUMENT = "/rest/logiskslettdokument/angre/";
 	private String OIDC_TOKEN_PERSON_USER_TEST;
 	private String OIDC_TOKEN_SERVICE_USER_TEST;
+	private String OIDC_TOKEN_SERVICE_NO_ACCESS_USER_TEST;
 	private String NAV_CONSUMER_TOKEN = "Nav-Consumer-Token";
-	private final String SERVICE_USER_ID = "srvdokarkiv";
+	private final String SERVICE_USER_ID = "srvjoarkadmin";
 	private final String PERSON_USER_ID = "Z990782";
+	private final String NO_ACCESS_SERVICE_USER_ID = "srvdokarkiv";
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
@@ -80,12 +82,16 @@ public abstract class AbstractSlettDokumentIT {
 	protected DokumentinfoRepository dokumentinfoRepository;
 	@Inject
 	protected OidcTestService oidcTestService;
+	@Inject
+	protected BegrensningRepository begrensningRepository;
 
 	@Before
 	public void setUp() {
 		OIDC_TOKEN_PERSON_USER_TEST = "Bearer " + oidcTestService.createOidc(openAmClaimsBuilder().subject(PERSON_USER_ID)
 				.build());
 		OIDC_TOKEN_SERVICE_USER_TEST = "Bearer " + oidcTestService.createOidc(openAmClaimsBuilder().subject(SERVICE_USER_ID)
+				.build());
+		OIDC_TOKEN_SERVICE_NO_ACCESS_USER_TEST = "Bearer " + oidcTestService.createOidc(openAmClaimsBuilder().subject(NO_ACCESS_SERVICE_USER_ID)
 				.build());
 	}
 
@@ -113,13 +119,16 @@ public abstract class AbstractSlettDokumentIT {
 	public void cleanup() {
 		joarkRepository.deleteAll();
 		dokumentinfoRepository.deleteAll();
+		begrensningRepository.deleteAll();
+		journalpostDokumentInfoRelasjonRepository.deleteAll();
 	}
 
-	protected Journalpost buildAndCommit(final JournalpostBuilder builder) {
-		Journalpost journalpost = joarkRepository.save(builder.build());
-		TestTransaction.flagForCommit();
-		TestTransaction.end();
-		return journalpost;
+	protected HttpEntity createNoAccesHeaders() {
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.TEXT_PLAIN);
+		headers.add(HttpHeaders.AUTHORIZATION, OIDC_TOKEN_PERSON_USER_TEST);
+		headers.add(NAV_CONSUMER_TOKEN, OIDC_TOKEN_SERVICE_NO_ACCESS_USER_TEST);
+		return new HttpEntity(headers);
 	}
 
 	protected HttpEntity createHeaders() {
@@ -130,14 +139,6 @@ public abstract class AbstractSlettDokumentIT {
 		return new HttpEntity(headers);
 	}
 
-	protected HttpHeaders oidcHeaders() {
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_JSON);
-		headers.add(HttpHeaders.AUTHORIZATION, OIDC_TOKEN_PERSON_USER_TEST);
-		headers.add(NAV_CONSUMER_TOKEN, OIDC_TOKEN_SERVICE_USER_TEST);
-		return headers;
-	}
-
 	protected void abacPermit() {
 		stubFor(post(urlEqualTo("/abac"))
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
@@ -145,17 +146,32 @@ public abstract class AbstractSlettDokumentIT {
 						.withBodyFile("abac/abac-permit.json")));
 	}
 
-	protected String stringFromClasspath(String resourcename) throws IOException {
-		return IOUtils.toString(this.getClass().getClassLoader().getResourceAsStream(resourcename));
+	public Begrensning hentHoveddokumentBegrensningEtterUtfoertKall(Journalpost journalpost) {
+		return begrensningRepository.findByJournalpostIdAndBegrensningTypeAndDokumentInfoIdIsNull(
+				journalpost.getJournalpostId(), UTILGJENGELIGGJORT).orElse(null);
 	}
 
-	protected String getOidcTokenBody(String oidcToken) {
-		return JWT.decode(oidcToken).getPayload();
+	public Begrensning hentVedleggBegrensningEtterUtfoertKall(Long journalpostId, Long dokumentInfoId) {
+		return begrensningRepository.findByJournalpostIdAndDokumentInfoIdAndBegrensningType(
+				journalpostId, dokumentInfoId, UTILGJENGELIGGJORT).orElse(null);
 	}
 
-	public DokumentInfo hentDokumentInfoEtterUtførtKall(Journalpost journalpost) {
+	public Long hentAntallBegrensninger() {
+		return begrensningRepository.count();
+	}
+
+	public DokumentInfo hentDokumentInfoEtterUtfoertKall(Journalpost journalpost) {
 		return journalpostDokumentInfoRelasjonRepository.findAllByDokumentInfoDokumentInfoId(
 				journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId()).get()
 				.get(0).getDokumentInfo();
+	}
+
+	public Begrensning hentJournalpostEtterUtfoertKall(Long journalpostId) {
+		try {
+			return begrensningRepository.findByJournalpostIdAndBegrensningTypeAndDokumentInfoIdIsNull(
+					journalpostId, UTILGJENGELIGGJORT).get();
+		} catch (NoSuchElementException e) {
+			return null;
+		}
 	}
 }
