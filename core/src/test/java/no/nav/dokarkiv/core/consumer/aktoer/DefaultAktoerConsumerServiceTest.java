@@ -39,9 +39,9 @@ public class DefaultAktoerConsumerServiceTest {
 	public ExpectedException thrown = ExpectedException.none();
 
 	@Mock
-	private HentAktoerIdForIdentRequestMapper requestMapper;
+	private HentAktoerIdForIdentRequestMapper requestMapperIdent;
 	@Mock
-	private HentAktoerIdForIdentResponseMapper responseMapper;
+	private HentAktoerIdForIdentResponseMapper responseMapperIdent;
 	@Mock
 	private AktoerV2 aktoerV2;
 	@Mock
@@ -52,18 +52,18 @@ public class DefaultAktoerConsumerServiceTest {
 
 	@Before
 	public void setUpMocks() {
-		when(requestMapper.map(any(HentAktoerIdForIdentRequestTo.class))).thenReturn(createHentAktoerIdForIdentWsRequest());
+		when(requestMapperIdent.map(any(HentAktoerIdForIdentRequestTo.class))).thenReturn(createHentAktoerIdForIdentWsRequest());
 	}
 
 	@Test
-	public void shouldCallService() throws Exception {
+	public void shouldCallServiceIdent() throws Exception {
 		consumerService.hentAktoerIdForIdent(createHentAktoerIdForIdentRequestTo());
 
 		verify(aktoerV2).hentAktoerIdForIdent(any(HentAktoerIdForIdentRequest.class));
 	}
 
 	@Test
-	public void shouldGetResponseFromCacheIfPresent() throws PersonIkkeFunnetException {
+	public void shouldGetResponseFromAktoerCacheIfPresent() throws PersonIkkeFunnetException {
 		consumerService.hentAktoerIdForIdent(createHentAktoerIdForIdentRequestTo());
 		verify(aktoerResponseCache).getIfPresent(IDENT);
 	}
@@ -79,7 +79,7 @@ public class DefaultAktoerConsumerServiceTest {
 	}
 
 	@Test
-	public void shouldCallHentIdentForAktoerIdWithCorrectIdent() throws Exception {
+	public void shouldCallHentAktoerIdForIdentWithCorrectIdent() throws Exception {
 		consumerService.hentAktoerIdForIdent(createHentAktoerIdForIdentRequestTo());
 
 		ArgumentCaptor<HentAktoerIdForIdentRequest> captor = ArgumentCaptor.forClass(HentAktoerIdForIdentRequest.class);
@@ -92,12 +92,12 @@ public class DefaultAktoerConsumerServiceTest {
 		consumerService.hentAktoerIdForIdent(createHentAktoerIdForIdentRequestTo());
 
 		ArgumentCaptor<HentAktoerIdForIdentRequestTo> captor = ArgumentCaptor.forClass(HentAktoerIdForIdentRequestTo.class);
-		verify(requestMapper).map(captor.capture());
+		verify(requestMapperIdent).map(captor.capture());
 		assertThat(captor.getValue().getIdent(), is(IDENT));
 	}
 
 	@Test
-	public void shouldThrowPersonIkkeFunnetException() throws Exception {
+	public void shouldIdentThrowPersonIkkeFunnetException() throws Exception {
 		when(aktoerV2.hentAktoerIdForIdent(any(HentAktoerIdForIdentRequest.class)))
 				.thenThrow(new HentAktoerIdForIdentPersonIkkeFunnet("", new PersonIkkeFunnet()));
 
@@ -106,19 +106,18 @@ public class DefaultAktoerConsumerServiceTest {
 	}
 
 	@Test
-	public void shouldMapResponse() throws Exception {
+	public void shouldMapAktoerIdResponse() throws Exception {
 		HentAktoerIdForIdentResponse wsResponse = new HentAktoerIdForIdentResponse();
 		when(aktoerV2.hentAktoerIdForIdent(any(HentAktoerIdForIdentRequest.class))).thenReturn(wsResponse);
 
 		consumerService.hentAktoerIdForIdent(createHentAktoerIdForIdentRequestTo());
-		verify(responseMapper).map(wsResponse);
+		verify(responseMapperIdent).map(wsResponse);
 	}
 
-
 	@Test
-	public void shouldReturnResponseTo() throws Exception {
+	public void shouldReturnIdentResponseTo() throws Exception {
 		HentAktoerIdForIdentResponseTo mappedResponseTo = new HentAktoerIdForIdentResponseTo(null, new ArrayList<>());
-		when(responseMapper.map(any())).thenReturn(mappedResponseTo);
+		when(responseMapperIdent.map(any())).thenReturn(mappedResponseTo);
 
 		HentAktoerIdForIdentResponseTo result = consumerService.hentAktoerIdForIdent(createHentAktoerIdForIdentRequestTo());
 
