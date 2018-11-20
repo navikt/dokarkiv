@@ -13,7 +13,7 @@ import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeInngaaendeException;
 import no.nav.dokarkiv.core.exceptions.UgyldigInputException;
 import no.nav.dokarkiv.core.journalbehandling.JournalpostStructureVerifier;
-import no.nav.dokarkiv.core.repository.JoarkRepository;
+import no.nav.dokarkiv.core.repository.JoarkRepositoryBegrenset;
 import no.nav.dokarkiv.core.security.ldap.NavLdapService;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
@@ -29,13 +29,13 @@ import java.util.Date;
 @Slf4j
 @Component
 public class FerdigstillJournalfoeringService extends AbstractBehandleInngaaendeJournalService {
-	private final JoarkRepository repository;
+    private final JoarkRepositoryBegrenset repository;
 	private final FerdigstillJournalfoeringFieldValidator fieldValidator;
 	private final JournalpostStructureVerifier structureVerifier;
 
 	@Inject
-	public FerdigstillJournalfoeringService(JoarkRepository repository, FerdigstillJournalfoeringFieldValidator fieldValidator,
-											JournalpostStructureVerifier structureVerifier, NavLdapService navLdapService) {
+    public FerdigstillJournalfoeringService(JoarkRepositoryBegrenset repository, FerdigstillJournalfoeringFieldValidator fieldValidator,
+                                            JournalpostStructureVerifier structureVerifier, NavLdapService navLdapService) {
 		super(navLdapService);
 		this.repository = repository;
 		this.fieldValidator = fieldValidator;

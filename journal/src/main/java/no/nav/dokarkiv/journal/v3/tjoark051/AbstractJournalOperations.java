@@ -12,7 +12,7 @@ import no.nav.dokarkiv.core.exceptions.NoDokumentInfoFoundException;
 import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
 import no.nav.dokarkiv.core.logging.AuditLogger;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
-import no.nav.dokarkiv.core.repository.JoarkRepository;
+import no.nav.dokarkiv.core.repository.JoarkRepositoryBegrenset;
 import org.apache.commons.lang3.BooleanUtils;
 
 import javax.inject.Inject;
@@ -26,7 +26,7 @@ import javax.inject.Inject;
 public abstract class AbstractJournalOperations {
 
 	@Inject
-	private JoarkRepository joarkRepository;
+    private JoarkRepositoryBegrenset joarkRepository;
 
 	@Inject
 	private DokumentFilRepository dokumentFilRepository;

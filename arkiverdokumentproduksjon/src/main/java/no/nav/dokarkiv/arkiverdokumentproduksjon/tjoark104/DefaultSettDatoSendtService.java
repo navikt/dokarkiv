@@ -2,7 +2,7 @@ package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark104;
 
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.ApplicationException;
-import no.nav.dokarkiv.core.repository.JoarkRepository;
+import no.nav.dokarkiv.core.repository.JoarkRepositoryBegrenset;
 import no.nav.dokarkiv.core.sporing.SporingPopulator;
 import org.springframework.stereotype.Component;
 
@@ -17,7 +17,7 @@ import javax.inject.Inject;
 public class DefaultSettDatoSendtService implements SettDatoSendtService {
 
 	@Inject
-	private JoarkRepository joarkRepository;
+    private JoarkRepositoryBegrenset joarkRepository;
 
 	@Inject
 	private SporingPopulator sporingPopulator;

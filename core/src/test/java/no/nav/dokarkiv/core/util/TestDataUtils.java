@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.core.repository.journalpostliste;
+package no.nav.dokarkiv.core.util;
 
 import no.nav.dokarkiv.core.domain.builder.BrukerBuilder;
 import no.nav.dokarkiv.core.domain.builder.ChangeStampBuilder;
@@ -7,6 +7,7 @@ import no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder;
 import no.nav.dokarkiv.core.domain.builder.JournalpostBuilder;
 import no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder;
 import no.nav.dokarkiv.core.domain.builder.SaksrelasjonBuilder;
+import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
@@ -14,11 +15,16 @@ import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
 import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
+import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
+import no.nav.dokarkiv.core.domain.entities.Begrensning;
+import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import org.joda.time.DateTime;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Class for generating test data for Joark repository tests
@@ -27,7 +33,7 @@ import java.util.Date;
  */
 public class TestDataUtils {
 
-    private static final FagsystemCode fagsystem = FagsystemCode.PEN;
+	public static final FagsystemCode fagsystem = FagsystemCode.PEN;
     private static final FagomradeCode fagomrade = FagomradeCode.PEN;
     private static final DateTime journalDato = new DateTime(2016, 5, 1, 0, 0);
     private static final BrukerTypeCode brukerType = BrukerTypeCode.PERSON;
@@ -35,6 +41,22 @@ public class TestDataUtils {
     private static final String journalfEnhet = "test";
     private static Boolean isFeilregistrert = null;
     private static final JournalpostTypeCode journalpostType = JournalpostTypeCode.U;
+
+    public static final String KANAL_REFERANSE_ID = "kanal";
+    public static final String TILLEGGSOPPLYSNINGER_KEY = "keey";
+    public static final String TILLEGGSOPPLYSNINGER_VALUE = "value";
+
+    public static Begrensning createBegrensning(Long journalpostId, Long dokumentInfoId, BegrensningTypeCode begrensningTypeCode) {
+
+        Begrensning begrensning = Begrensning.builder()
+                .begrensningType(begrensningTypeCode)
+                .journalpostId(journalpostId)
+                .dokumentInfoId(dokumentInfoId).build();
+
+        begrensning.setOpprettetKildeNavn("test navn");
+
+        return begrensning;
+    }
 
     public static JournalpostBuilder createJournalpostWithSaksrelasjon(String saksnr, boolean isFeilregistrert, FagomradeCode fagomrade,
                                                                        FagsystemCode fagsystem, JournalpostTypeCode journalpostType) {
@@ -68,7 +90,14 @@ public class TestDataUtils {
     }
 
     public static JournalpostBuilder createJournalpost(String saksNr, Date journalDato, JournalStatusCode journalStatusCode, FagomradeCode fagomrade) {
+        Map<String, String> tilleggsopplysninger = new HashMap<>();
+        tilleggsopplysninger.put(TILLEGGSOPPLYSNINGER_KEY, TILLEGGSOPPLYSNINGER_VALUE);
+
         return JournalpostBuilder.getJournalpostBuilder()
+                .addOriginalJournalpost(true)
+                .kanalReferanseId(KANAL_REFERANSE_ID)
+                .mottakskanal(MottaksKanalCode.NAV_NO)
+                .tilleggsopplysninger(tilleggsopplysninger)
                 .saksrelasjon(SaksrelasjonBuilder.getSaksrelasjonBuilder()
                         .opprettetKildeNavn("test")
                         .sakId(saksNr)
@@ -94,6 +123,7 @@ public class TestDataUtils {
                                         .opprettetKildeNavn("test")
                                         .build()
                                 )
+                                .tilleggsopplysninger(tilleggsopplysninger)
                                 .build())
                         .build())
                 .journalDato(journalDato)
@@ -103,6 +133,10 @@ public class TestDataUtils {
                 .journalpostType(journalpostType)
                 .opprettetKildeNavn("test")
                 .journalForendeEnhetId(journalfEnhet);
+    }
+
+    public static Journalpost createJournalpost() {
+        return createJournalpost("123", DateTime.now().toDate(), JournalStatusCode.J, FagomradeCode.PEN).build();
     }
 
 }

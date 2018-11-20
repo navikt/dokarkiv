@@ -3,7 +3,7 @@ package no.nav.dokarkiv.innsynjournal.v2;
 import no.nav.dokarkiv.core.CoreConfig;
 import no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerV2Mock;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
-import no.nav.dokarkiv.core.repository.JoarkRepository;
+import no.nav.dokarkiv.core.repository.JoarkRepositoryBegrenset;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.dokarkiv.core.stelvio.SimpleRequestContext;
 import no.nav.tjeneste.virksomhet.aktoer.v2.binding.AktoerV2;
@@ -37,7 +37,7 @@ public abstract class AbstractInnsynJournalV2Itest {
 	@Inject
 	protected InnsynJournalV2 innsynJournalV2Provider;
 	@Inject
-	protected JoarkRepository joarkRepository;
+    protected JoarkRepositoryBegrenset joarkRepository;
 	@Inject
 	protected DokumentFilRepository dokumentFilRepository;
 

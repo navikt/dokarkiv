@@ -32,7 +32,7 @@ import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
 import no.nav.dokarkiv.core.domain.entities.SkannetInnhold;
 import no.nav.dokarkiv.core.journalbehandling.DokumentFilerDelegate;
-import no.nav.dokarkiv.core.repository.JoarkRepository;
+import no.nav.dokarkiv.core.repository.JoarkRepositoryBegrenset;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -71,7 +71,7 @@ public class JournalforInngaaendeForsendelseV2ServiceTest {
 	@Rule
 	public ExpectedException expected = ExpectedException.none();
 	@Mock
-	private JoarkRepository repositoryMock;
+	private JoarkRepositoryBegrenset repositoryMock;
 	@Mock
 	private DokumentFilerDelegate dokumentFilerDelegateMock;
 	@Mock
@@ -103,7 +103,7 @@ public class JournalforInngaaendeForsendelseV2ServiceTest {
 		}
 
 		verify(repositoryMock).save(journalpost);
-		verify(repositoryMock).findJournalpostIdByKanalReferanseIdAndMottakskanal(KANAL_REFERANSE_ID, MOTTAKSKANAL.name());
+		verify(repositoryMock).findJournalpostByKanalReferanseIdAndMottakskanal(KANAL_REFERANSE_ID, MOTTAKSKANAL.name());
 		verifyNoMoreInteractions(repositoryMock);
 		verify(validator).validate(journalpost);
 		verify(validator).validateVariantFormaterAndHoveddokument(journalpost);
@@ -134,7 +134,7 @@ public class JournalforInngaaendeForsendelseV2ServiceTest {
 		}
 
 		verify(repositoryMock).save(journalpost);
-		verify(repositoryMock).findJournalpostIdByKanalReferanseIdAndMottakskanal(KANAL_REFERANSE_ID, MOTTAKSKANAL.name());
+		verify(repositoryMock).findJournalpostByKanalReferanseIdAndMottakskanal(KANAL_REFERANSE_ID, MOTTAKSKANAL.name());
 		verifyNoMoreInteractions(repositoryMock);
 		verify(validator).validateVariantFormaterAndHoveddokument(journalpost);
 		verifyNoMoreInteractions(validator);
@@ -148,14 +148,14 @@ public class JournalforInngaaendeForsendelseV2ServiceTest {
 		JournalforInngaaendeForsendelseV2RequestTo requestTo = new JournalforInngaaendeForsendelseV2RequestTo(FORSOK_ENDELIG_JF_TRUE,
 				createJournalpost());
 
-		when(repositoryMock.findJournalpostIdByKanalReferanseIdAndMottakskanal(KANAL_REFERANSE_ID, MOTTAKSKANAL.name())).thenReturn(Optional
+		when(repositoryMock.findJournalpostByKanalReferanseIdAndMottakskanal(KANAL_REFERANSE_ID, MOTTAKSKANAL.name())).thenReturn(Optional
 				.ofNullable(journalpost));
 
 		JournalforInngaaendeForsendelseV2ResponseTo response = service.journalforInngaaendeForsendelseV2(requestTo);
 
 		assertNotNull(response);
 
-		verify(repositoryMock).findJournalpostIdByKanalReferanseIdAndMottakskanal(KANAL_REFERANSE_ID, MOTTAKSKANAL.name());
+		verify(repositoryMock).findJournalpostByKanalReferanseIdAndMottakskanal(KANAL_REFERANSE_ID, MOTTAKSKANAL.name());
 		verifyNoMoreInteractions(repositoryMock);
 		verifyNoMoreInteractions(validator);
 		verifyNoMoreInteractions(dokumentFilerDelegateMock);
@@ -184,7 +184,7 @@ public class JournalforInngaaendeForsendelseV2ServiceTest {
 		}
 
 		verify(repositoryMock).save(journalpost);
-		verify(repositoryMock).findJournalpostIdByKanalReferanseIdAndMottakskanal(KANAL_REFERANSE_ID, MOTTAKSKANAL.name());
+		verify(repositoryMock).findJournalpostByKanalReferanseIdAndMottakskanal(KANAL_REFERANSE_ID, MOTTAKSKANAL.name());
 		verifyNoMoreInteractions(repositoryMock);
 		verify(validator).validate(journalpost);
 		verify(validator).validateVariantFormaterAndHoveddokument(journalpost);
