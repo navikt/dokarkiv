@@ -2,7 +2,7 @@ package no.nav.dokarkiv.fysiskslettdokument.rjoark102;
 
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 
-public class FysiskSlettDokumentResponseMapper {
+class FysiskSlettDokumentResponseMapper {
 
 	public static FysiskSlettDokumentResponse mapToFysiskSlettDokumentResponse(
 			JournalpostDokumentInfoRelasjon relasjon) {

@@ -80,11 +80,7 @@ public class FysiskSlettDokumentService {
 						requestTo.getDokumentInfoId()));
 		}
 
-		//TODO: Avklare informasjon i response
-		return FysiskSlettDokumentResponse.builder()
-				.journalpostId(requestTo.getJournalpostId())
-				.dokumentInfoId(requestTo.getDokumentInfoId())
-				.build();
+		return FysiskSlettDokumentResponseMapper.mapToFysiskSlettDokumentResponse(relasjonSomSkalSlettesFysisk);
 	}
 
 	private void sjekkAtJournalpostErUtilgjengeliggjort(Long journalpostId) {
