@@ -18,10 +18,10 @@ public interface JoarkRepository extends CrudRepository<Journalpost, Long> {
 	Long findJournalpostIdByTilleggsopplysningerNokkelAndVerdi(@Param("nokkel") String nokkel, @Param("verdi") String verdi);
 
 	@Query(value = "SELECT * FROM t_journalpost j WHERE j.k_mottaks_kanal = :mottakskanal AND j.kanal_referanse_id = :kanalReferanseId", nativeQuery = true)
-	Optional<Journalpost> findJournalpostIdByKanalReferanseIdAndMottakskanal(@Param("kanalReferanseId") String kanalReferanseId, @Param("mottakskanal") String mottakskanal);
+	Optional<Journalpost> findJournalpostByKanalReferanseIdAndMottakskanal(@Param("kanalReferanseId") String kanalReferanseId, @Param("mottakskanal") String mottakskanal);
 
-	@Query(value = "SELECT journalpost_id FROM t_jp_dok_info_rel j WHERE j.dokument_info_id = :dokumentInfoId", nativeQuery = true)
-	List<Long> findAllJournalpostIdsByDokumentInfoId(@Param("dokumentInfoId") Long dokumentInfoId);
+	@Query(value = "SELECT JOURNALPOST_ID FROM t_jp_dok_info_rel j WHERE j.dokument_info_id = :dokumentInfoId", nativeQuery = true)
+	List<Object> findAllJournalpostIdsByDokumentInfoId(@Param("dokumentInfoId") Long dokumentInfoId);
 
 	@Query(value = "SELECT jt.DOKUMENT_INFO_ID FROM t_dok_info_tillegg jt WHERE jt.nokkel = :nokkel AND jt.verdi = :verdi", nativeQuery = true)
 	Long findDokumentinfoIdIdByDokumentinfoTilleggsopplysningerNokkelAndVerdi(@Param("nokkel") String nokkel, @Param("verdi") String verdi);

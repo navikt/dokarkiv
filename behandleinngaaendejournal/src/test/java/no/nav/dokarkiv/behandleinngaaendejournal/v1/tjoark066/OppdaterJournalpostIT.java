@@ -390,12 +390,13 @@ public class OppdaterJournalpostIT extends AbstractBehandleInngaaendeJournalV1It
 
 		behandleInngaaendeJournalProvider.oppdaterJournalpost(oppdaterRequest);
 
-		Journalpost resultJournalpost = getPersistedJournalpostById(persistedJournalpost.getJournalpostId());
 
-		Bruker bruker = resultJournalpost.getBrukere().iterator().next();
+		Journalpost resultJournalpost = getPersistedJournalpostById(persistedJournalpost.getJournalpostId());
+		Bruker bruker = resultJournalpost.getBrukere().stream().iterator().next();
+
 		assertThat(bruker.getBrukerId(), is(ORGNR));
 		assertThat(bruker.getBrukerType(), is(BrukerTypeCode.ORGANISASJON));
-		assertThat(bruker.getChangeStamp().getUpdatedDate(), nullValue());
+		assertThat(bruker.getChangeStamp().getUpdatedDate(), notNullValue());
 		assertThat(bruker.getEndretKildeNavn(), is(equalTo(ENDRET_KILDE_NAVN)));
 		assertThat(resultJournalpost.getEndretAvNavn(), nullValue());
 	}

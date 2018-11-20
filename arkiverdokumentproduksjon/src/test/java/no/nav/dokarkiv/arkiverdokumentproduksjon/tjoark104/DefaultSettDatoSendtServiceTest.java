@@ -8,7 +8,7 @@ import static org.mockito.Mockito.when;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.util.DateProvider;
 import no.nav.dokarkiv.core.exceptions.ApplicationException;
-import no.nav.dokarkiv.core.repository.JoarkRepository;
+import no.nav.dokarkiv.core.repository.JoarkRepositoryBegrenset;
 import no.nav.dokarkiv.core.sporing.SporingPopulator;
 import org.junit.After;
 import org.junit.Before;
@@ -39,7 +39,7 @@ public class DefaultSettDatoSendtServiceTest {
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
 	@Mock
-	private JoarkRepository joarkRepositoryMock;
+    private JoarkRepositoryBegrenset joarkRepositoryMock;
 	@Mock
 	private SporingPopulator sporingPopulatorMock;
 	@InjectMocks

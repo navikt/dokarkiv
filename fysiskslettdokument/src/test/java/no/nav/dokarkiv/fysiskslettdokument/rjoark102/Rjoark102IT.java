@@ -61,12 +61,12 @@ public class Rjoark102IT extends AbstractFysiskSlettDokumentIT {
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 
-		assertTrue(journalpostDokumentInfoRelasjonRepository
-				.findAllByJournalpostJournalpostId(journalpost.getJournalpostId()).isPresent());
-		assertTrue(journalpostDokumentInfoRelasjonRepository
-				.findAllByDokumentInfoDokumentInfoId(dokumentInfoHoveddokument.getDokumentInfoId()).isPresent());
 		assertFalse(journalpostDokumentInfoRelasjonRepository
-				.findAllByDokumentInfoDokumentInfoId(dokInfoVedlegg.getDokumentInfoId()).isPresent());
+				.findAllByJournalpostJournalpostId(journalpost.getJournalpostId()).isEmpty());
+		assertFalse(journalpostDokumentInfoRelasjonRepository
+				.findAllByDokumentInfoDokumentInfoId(dokumentInfoHoveddokument.getDokumentInfoId()).isEmpty());
+		assertTrue(journalpostDokumentInfoRelasjonRepository
+				.findAllByDokumentInfoDokumentInfoId(dokInfoVedlegg.getDokumentInfoId()).isEmpty());
 
 		assertTrue(dokumentinfoRepository.findAllByJournalpostRelasjonerJournalpostJournalpostIdAndDokumentInfoId(
 				journalpost.getJournalpostId(), dokumentInfoHoveddokument.getDokumentInfoId()).isPresent());
@@ -147,16 +147,16 @@ public class Rjoark102IT extends AbstractFysiskSlettDokumentIT {
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 
-		assertTrue(journalpostDokumentInfoRelasjonRepository
-				.findAllByJournalpostJournalpostId(journalpost.getJournalpostId()).isPresent());
-		assertTrue(journalpostDokumentInfoRelasjonRepository
-				.findAllByDokumentInfoDokumentInfoId(dokumentInfoHoveddokument.getDokumentInfoId()).isPresent());
-		assertTrue(journalpostDokumentInfoRelasjonRepository
-				.findAllByDokumentInfoDokumentInfoId(vedlegg1.getDokumentInfoId()).isPresent());
 		assertFalse(journalpostDokumentInfoRelasjonRepository
-				.findAllByDokumentInfoDokumentInfoId(vedlegg2.getDokumentInfoId()).isPresent());
+				.findAllByJournalpostJournalpostId(journalpost.getJournalpostId()).isEmpty());
+		assertFalse(journalpostDokumentInfoRelasjonRepository
+				.findAllByDokumentInfoDokumentInfoId(dokumentInfoHoveddokument.getDokumentInfoId()).isEmpty());
+		assertFalse(journalpostDokumentInfoRelasjonRepository
+				.findAllByDokumentInfoDokumentInfoId(vedlegg1.getDokumentInfoId()).isEmpty());
 		assertTrue(journalpostDokumentInfoRelasjonRepository
-				.findAllByDokumentInfoDokumentInfoId(vedlegg3.getDokumentInfoId()).isPresent());
+				.findAllByDokumentInfoDokumentInfoId(vedlegg2.getDokumentInfoId()).isEmpty());
+		assertFalse(journalpostDokumentInfoRelasjonRepository
+				.findAllByDokumentInfoDokumentInfoId(vedlegg3.getDokumentInfoId()).isEmpty());
 
 		assertTrue(dokumentinfoRepository.findAllByJournalpostRelasjonerJournalpostJournalpostIdAndDokumentInfoId(
 				journalpost.getJournalpostId(), dokumentInfoHoveddokument.getDokumentInfoId()).isPresent());

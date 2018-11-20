@@ -12,7 +12,7 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
-import no.nav.dokarkiv.core.repository.JoarkRepository;
+import no.nav.dokarkiv.core.repository.JoarkRepositoryBegrenset;
 import no.nav.dokarkiv.journalfoerinngaaende.v1.util.Utils;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
@@ -30,11 +30,11 @@ public class UpdateInngaaendeJournalpostDokumentService {
 			.name(), DokumentKategoriCode.KA.name(), DokumentKategoriCode.IS.name());
 
 	private final DokumentinfoRepository dokumentinfoRepository;
-	private final JoarkRepository joarkRepository;
+	private final JoarkRepositoryBegrenset joarkRepository;
 
 	@Inject
 	public UpdateInngaaendeJournalpostDokumentService(DokumentinfoRepository dokumentinfoRepository,
-													  JoarkRepository joarkRepository) {
+													  JoarkRepositoryBegrenset joarkRepository) {
 		this.dokumentinfoRepository = dokumentinfoRepository;
 		this.joarkRepository = joarkRepository;
 	}

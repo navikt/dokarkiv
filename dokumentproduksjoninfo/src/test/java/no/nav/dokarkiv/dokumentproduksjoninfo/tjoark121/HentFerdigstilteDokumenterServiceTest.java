@@ -14,7 +14,7 @@ import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentFil;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
-import no.nav.dokarkiv.core.repository.JoarkRepository;
+import no.nav.dokarkiv.core.repository.JoarkRepositoryBegrenset;
 import no.nav.dokarkiv.dokumentproduksjoninfo.exceptions.FilDetaljerNotFoundException;
 import org.junit.Rule;
 import org.junit.Test;
@@ -50,7 +50,7 @@ public class HentFerdigstilteDokumenterServiceTest {
 	public ExpectedException exception = ExpectedException.none();
 
 	@Mock
-	private JoarkRepository joarkRepository;
+    private JoarkRepositoryBegrenset joarkRepository;
 
 	@Mock
 	private DokumentFilRepository dokumentFilRepository;
