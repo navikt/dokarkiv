@@ -1,5 +1,7 @@
 package no.nav.dokarkiv.core.repository.journalpostliste;
 
+import static org.apache.commons.lang3.BooleanUtils.isFalse;
+
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
@@ -51,6 +53,9 @@ public class JournalpostCriterionBuilder extends CriterionBuilder {
 
 		}
 
+		if (isFalse(parameters.isIncludeBegrensetJournalpost())) {
+			criteria.add(Restrictions.sqlRestriction("not exists (select 'begrenset' from t_begrensning bg where bg.journalpost_id = this_.journalpost_id and bg.begrensning_type = 'UTILGJENGELIGGJORT' and bg.dokument_info_id is null)"));
+		}
 		// Note that an empty saksliste would possibly return all journalposts, so we need
 		// to return an empty resultset from query if this list is empty.
 		if (!parameters.getSaksListe().isEmpty()) {
@@ -61,7 +66,7 @@ public class JournalpostCriterionBuilder extends CriterionBuilder {
 		}
 		if (!parameters.getSkjulFagomraade().isEmpty()) {
 			addSkjulFagomraadeListe(parameters.getSkjulFagomraade());
-		}		
+		}
 		if (!parameters.getFagomraade().isEmpty()) {
 			addFagomradeListe(parameters.getFagomraade());
 		}
@@ -106,7 +111,7 @@ public class JournalpostCriterionBuilder extends CriterionBuilder {
 			));
 		}
 	}
-	
+
 
 	private void addSkjulFeilRegistrert() {
 		// Requires alias "saksrelasjon"

@@ -7,6 +7,7 @@ import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
 import no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode;
+import no.nav.dokarkiv.core.domain.entities.Begrensning;
 import no.nav.dokarkiv.core.domain.entities.Behandlingsrelasjon;
 import no.nav.dokarkiv.core.domain.entities.Bruker;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
@@ -73,6 +74,7 @@ public class JournalpostBuilder extends Builder<Journalpost> {
 	private Boolean signatur;
 	private Date ekspedertDato;
 	private Date lestDato;
+	private Begrensning begrensning;
 	private Date mottattAdressatDato;
 	private String opprettetKildeNavn;
 	private String endretKildeNavn;

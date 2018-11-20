@@ -10,7 +10,7 @@ import no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerV2Mock;
 import no.nav.dokarkiv.core.domain.builder.JournalpostBuilder;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
-import no.nav.dokarkiv.core.repository.JoarkRepository;
+import no.nav.dokarkiv.core.repository.JoarkRepositoryBegrenset;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.dokarkiv.core.stelvio.SimpleRequestContext;
 import no.nav.tjeneste.virksomhet.aktoer.v2.binding.AktoerV2;
@@ -51,7 +51,7 @@ public abstract class AbstractInngaaendeJournalV1Itest {
 	@Inject
 	protected InngaaendeJournalV1 inngaaendeJournalProvider;
 	@Inject
-	protected JoarkRepository joarkRepository;
+	protected JoarkRepositoryBegrenset joarkRepository;
 	@Inject
 	protected DokumentFilRepository dokumentFilRepository;
 

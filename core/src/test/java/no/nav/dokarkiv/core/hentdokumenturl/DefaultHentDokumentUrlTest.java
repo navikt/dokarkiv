@@ -30,8 +30,8 @@ import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
 import no.nav.dokarkiv.core.exceptions.InvalidFilUuidException;
 import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
-import no.nav.dokarkiv.core.repository.DokumentUrlInfoRepository;
-import no.nav.dokarkiv.core.repository.JoarkRepository;
+import no.nav.dokarkiv.core.repository.DokumentUrlInfoRepositoryBegrenset;
+import no.nav.dokarkiv.core.repository.JoarkRepositoryBegrenset;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -56,11 +56,11 @@ public class DefaultHentDokumentUrlTest {
 	private static final String FIL_UUID = "456b166e-5f9f-430f-8e35-09a732156562";
 
 	@Mock
-	private JoarkRepository joarkRepositoryMock;
+	private JoarkRepositoryBegrenset joarkRepositoryMock;
 	@Mock
 	private DokumentFilRepository dokumentFilRepositoryMock;
 	@Mock
-	private DokumentUrlInfoRepository dokumentUrlInfoRepositoryMock;
+	private DokumentUrlInfoRepositoryBegrenset dokumentUrlInfoRepositoryMock;
 	@Captor
 	ArgumentCaptor<DokumentUrlInfo> dokumentUrlInfoCaptor;
 

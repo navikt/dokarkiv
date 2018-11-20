@@ -35,7 +35,7 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
 import no.nav.dokarkiv.core.jaxws.SubjectHandlerUtils;
 import no.nav.dokarkiv.core.jaxws.ThreadLocalSubjectHandler;
-import no.nav.dokarkiv.core.repository.JoarkRepository;
+import no.nav.dokarkiv.core.repository.JoarkRepositoryBegrenset;
 import no.nav.dokarkiv.innsynjournal.v2.exceptions.DocumentNotFoundException;
 import no.nav.dokarkiv.innsynjournal.v2.exceptions.SecurityLimitationAttributeException;
 import no.nav.dokarkiv.innsynjournal.v2.tjoark053.HentJournalpostListeToRequest;
@@ -86,7 +86,7 @@ public class InnsynJournalV2SecurityFacadeTest {
 	public ExpectedException expectedException = ExpectedException.none();
 
 	@Mock
-	private JoarkRepository joarkRepository;
+    private JoarkRepositoryBegrenset joarkRepository;
 	@Mock
 	private Tjoark054HentDokumentService tjoark054HentDokumentService;
 	@Mock

@@ -65,7 +65,7 @@ public class DokumentInfoQuery implements Query {
             actions = @Abac.Attr(key = ACTION_ID, value = READ_ACTION))
     public DokumentInfo dokumentInfo(@GraphQLArgument(name = "dokumentInfoId") @GraphQLNonNull Long dokumentInfoId) {
         log.info(format("GraphQL har mottatt %s query med dokumentInfoId=%s", DOKUMENTINFO, dokumentInfoId));
-        abacSecurityService.assertAccessToDokument(dokumentInfoId);
+        abacSecurityService.assertAccessToDokumentIncludingBegrenset(dokumentInfoId);
 
         //Om dokumentet eksiterer sjekkes i metoden over og kan derfor være sikker på dokumentInfo finnes i neste step
         no.nav.dokarkiv.core.domain.entities.DokumentInfo dokumentInfo = dokumentinfoRepository.findById(dokumentInfoId).get();

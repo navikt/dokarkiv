@@ -37,7 +37,7 @@ import no.nav.dokarkiv.core.exceptions.ApplicationException;
 import no.nav.dokarkiv.core.exceptions.InvalidBrukerException;
 import no.nav.dokarkiv.core.journalbehandling.DokumentFilerDelegate;
 import no.nav.dokarkiv.core.repository.BidragMellomlagringRepository;
-import no.nav.dokarkiv.core.repository.JoarkRepository;
+import no.nav.dokarkiv.core.repository.JoarkRepositoryBegrenset;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -69,7 +69,7 @@ public class DefaultArkiverUstrukturertKravTest {
 	@InjectMocks
 	private DefaultArkiverUstrukturertKrav service;
 	@Mock
-	private JoarkRepository repositoryMock;
+    private JoarkRepositoryBegrenset repositoryMock;
 	@Mock
 	private BidragMellomlagringRepository bidragMellomlagringRepositoryMock;
 	@Mock

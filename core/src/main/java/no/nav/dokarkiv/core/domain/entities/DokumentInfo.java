@@ -379,7 +379,7 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	 * @return The JournalpostDokumentInfoRelasjon.
 	 */
 	public JournalpostDokumentInfoRelasjon findJournalpostRelasjonByJournalpostId(final Long journalpostId) {
-		for (JournalpostDokumentInfoRelasjon journalpostRelasjon : journalpostRelasjoner) {
+		for (JournalpostDokumentInfoRelasjon journalpostRelasjon : getJournalpostRelasjoner()) {
 			if (journalpostRelasjon.getJournalpost() != null
 					&& journalpostRelasjon.getJournalpost().getJournalpostId().equals(journalpostId)) {
 				return journalpostRelasjon;
@@ -394,7 +394,7 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	 * @return true if this dokumentInfo has more than one journalpostrelasjon, otherwise false
 	 */
 	public boolean isRelatedToMultipleJournalposts() {
-		return journalpostRelasjoner.size() > 1;
+		return getJournalpostRelasjoner().size() > 1;
 	}
 
 	/**

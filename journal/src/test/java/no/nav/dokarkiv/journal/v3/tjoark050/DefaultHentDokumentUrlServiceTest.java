@@ -23,7 +23,7 @@ import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
 import no.nav.dokarkiv.core.exceptions.InvalidFilUuidException;
 import no.nav.dokarkiv.core.exceptions.NoDokumentInfoFoundException;
 import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
-import no.nav.dokarkiv.core.repository.JoarkRepository;
+import no.nav.dokarkiv.core.repository.JoarkRepositoryBegrenset;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -55,7 +55,7 @@ public class DefaultHentDokumentUrlServiceTest {
 	@Mock
 	private DefaultHentDokumentUrl hentDokumentUrlMock;
 	@Mock
-	private JoarkRepository joarkRepositoryMock;
+    private JoarkRepositoryBegrenset joarkRepositoryMock;
 
 	@Captor
 	private ArgumentCaptor<HentDokumentUrlRequest> delegateRequestCaptor;
