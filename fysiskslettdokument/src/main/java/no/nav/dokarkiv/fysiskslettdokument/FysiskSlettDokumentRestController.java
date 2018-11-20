@@ -51,7 +51,7 @@ public class FysiskSlettDokumentRestController {
 			@PathVariable("journalpostId") Long journalpostId,
 			@PathVariable("dokumentInfoId") Long dokumentInfoId,
 			@PathVariable("begrensningType") BegrensningTypeCode begrensningType) {
-		abacSecurityService.assertAccessToJournalpost(journalpostId.toString());
+		abacSecurityService.assertAccessToJournalpostIncludingBegrenset(journalpostId.toString());
 		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark102");
 		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har mottat kall med journalpostId=" + journalpostId + ", dokumentInfoId=" + dokumentInfoId + " og begrensningType=" + begrensningType);
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));

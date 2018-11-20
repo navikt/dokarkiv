@@ -11,7 +11,6 @@ class FysiskSlettDokumentResponseMapper {
 				.dokumentInfoId(relasjon.getDokumentInfo().getDokumentInfoId())
 				.tittel(relasjon.getDokumentInfo().getTittel())
 				.tilknyttetJournalpostSomCode(relasjon.getTilknyttetJournalpostSom())
-				.slettet(relasjon.getDokumentInfo().getSlettet())
 				.build();
 	}
 }

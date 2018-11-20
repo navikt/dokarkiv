@@ -148,8 +148,9 @@ public abstract class AbstractFysiskSlettDokumentIT {
 
 	public DokumentInfo hentDokumentInfoEtterUtfoertKall(Journalpost journalpost) {
 		return journalpostDokumentInfoRelasjonRepository.findAllByDokumentInfoDokumentInfoId(
-				journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId()).get()
-				.get(0).getDokumentInfo();
+				journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId())
+				.get(0)
+				.getDokumentInfo();
 	}
 
 	public Begrensning hentJournalpostEtterUtfoertKall(Long journalpostId) {

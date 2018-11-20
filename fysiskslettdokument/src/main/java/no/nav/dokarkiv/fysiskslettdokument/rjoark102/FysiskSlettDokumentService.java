@@ -16,7 +16,6 @@ import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -119,8 +118,7 @@ public class FysiskSlettDokumentService {
 	private void slettEventuelleVedleggKnyttetHoveddokumentValidertForSletting(JournalpostDokumentInfoRelasjon hoveddokumentRelasjon) {
 		List<JournalpostDokumentInfoRelasjon> listFoundByJournalpostId =
 				journalpostDokumentInfoRelasjonRepository.findAllByJournalpostJournalpostId(hoveddokumentRelasjon.getJournalpost()
-						.getJournalpostId())
-						.orElse(new ArrayList<>());
+						.getJournalpostId());
 
 		for (JournalpostDokumentInfoRelasjon relasjon : listFoundByJournalpostId) {
 			if (relasjon.isVedlegg()) {
