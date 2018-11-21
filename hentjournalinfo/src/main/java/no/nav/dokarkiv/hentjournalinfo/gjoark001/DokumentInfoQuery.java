@@ -46,90 +46,92 @@ import java.util.stream.Collectors;
 @Slf4j
 public class DokumentInfoQuery implements Query {
 
-    private final DokumentinfoRepository dokumentinfoRepository;
+	private final DokumentinfoRepository dokumentinfoRepository;
 
-    private final AbacSecurityService abacSecurityService;
-    private final BegrensningService begrensningService;
+	private final AbacSecurityService abacSecurityService;
+	private final BegrensningService begrensningService;
 
-    @Inject
-    public DokumentInfoQuery(DokumentinfoRepository dokumentinfoRepository, AbacSecurityService abacSecurityService, BegrensningService begrensningService) {
-        this.dokumentinfoRepository = dokumentinfoRepository;
-        this.abacSecurityService = abacSecurityService;
-        this.begrensningService = begrensningService;
-    }
+	@Inject
+	public DokumentInfoQuery(DokumentinfoRepository dokumentinfoRepository, AbacSecurityService abacSecurityService, BegrensningService begrensningService) {
+		this.dokumentinfoRepository = dokumentinfoRepository;
+		this.abacSecurityService = abacSecurityService;
+		this.begrensningService = begrensningService;
+	}
 
-    @GraphQLQuery(name = DOKUMENTINFO)
-    @Transactional(readOnly = true)
-    @GraphQLMetrics(value = "dok_graphql_request", extraTags = {"process_code", "gjoark001", "query", DOKUMENTINFO})
-    @Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_DOKUMENT)},
-            actions = @Abac.Attr(key = ACTION_ID, value = READ_ACTION))
-    public DokumentInfo dokumentInfo(@GraphQLArgument(name = "dokumentInfoId") @GraphQLNonNull Long dokumentInfoId) {
-        log.info(format("GraphQL har mottatt %s query med dokumentInfoId=%s", DOKUMENTINFO, dokumentInfoId));
-        abacSecurityService.assertAccessToDokumentIncludingBegrenset(dokumentInfoId);
+	@GraphQLQuery(name = DOKUMENTINFO)
+	@Transactional(readOnly = true)
+	@GraphQLMetrics(value = "dok_graphql_request", extraTags = {"process_code", "gjoark001", "query", DOKUMENTINFO})
+	@Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_DOKUMENT)},
+			actions = @Abac.Attr(key = ACTION_ID, value = READ_ACTION))
+	public DokumentInfo dokumentInfo(@GraphQLArgument(name = "dokumentInfoId") @GraphQLNonNull Long dokumentInfoId) {
+		log.info(format("GraphQL har mottatt %s query med dokumentInfoId=%s", DOKUMENTINFO, dokumentInfoId));
+		abacSecurityService.assertAccessToDokumentIncludingBegrenset(dokumentInfoId);
 
-        //Om dokumentet eksiterer sjekkes i metoden over og kan derfor være sikker på dokumentInfo finnes i neste step
-        no.nav.dokarkiv.core.domain.entities.DokumentInfo dokumentInfo = dokumentinfoRepository.findById(dokumentInfoId).get();
+		//Om dokumentet eksiterer sjekkes i metoden over og kan derfor være sikker på dokumentInfo finnes i neste step
+		no.nav.dokarkiv.core.domain.entities.DokumentInfo dokumentInfo = dokumentinfoRepository.findById(dokumentInfoId).get();
 
-        return mapDokumentInfo(dokumentInfo);
-    }
+		return mapDokumentInfo(dokumentInfo);
+	}
 
-    @GraphQLQuery(name = "originalJournalpost")
-    @Transactional(readOnly = true)
-    public Journalpost originalJournalpost(@GraphQLContext DokumentInfo dokument) {
-        no.nav.dokarkiv.core.domain.entities.DokumentInfo dokumentInfo = dokumentinfoRepository.findById(dokument.getDokumentInfoId())
-                .orElse(no.nav.dokarkiv.core.domain.entities.DokumentInfo.builder().build());
-        no.nav.dokarkiv.core.domain.entities.Journalpost originalJournalpost = dokumentInfo.getOriginalJournalpost();
-        if (originalJournalpost == null) {
-            throw new JournalpostIkkeFunnetException(format("Fant ingen tilhørende original journalpost for dokumentInfo med dokumentInfoId=%s", dokument
-                    .getDokumentInfoId()));
-        }
-        return mapJournalpost(originalJournalpost, begrensningService.isJournalpostBegrenset(originalJournalpost.getJournalpostId(), BegrensningTypeCode.UTILGJENGELIGGJORT));
-    }
+	@GraphQLQuery(name = "originalJournalpost")
+	@Transactional(readOnly = true)
+	public Journalpost originalJournalpost(@GraphQLContext DokumentInfo dokument) {
+		no.nav.dokarkiv.core.domain.entities.DokumentInfo dokumentInfo = dokumentinfoRepository.findById(dokument.getDokumentInfoId())
+				.orElse(no.nav.dokarkiv.core.domain.entities.DokumentInfo.builder().build());
+		no.nav.dokarkiv.core.domain.entities.Journalpost originalJournalpost = dokumentInfo.getOriginalJournalpost();
+		if (originalJournalpost == null) {
+			throw new JournalpostIkkeFunnetException(format("Fant ingen tilhørende original journalpost for dokumentInfo med dokumentInfoId=%s", dokument
+					.getDokumentInfoId()));
+		}
+		return mapJournalpost(originalJournalpost, begrensningService.isJournalpostBegrenset(originalJournalpost.getJournalpostId(), BegrensningTypeCode.UTILGJENGELIGGJORT));
+	}
 
-    @GraphQLQuery(name = "knyttetJournalpostList")
-    @Transactional(readOnly = true)
-    public List<JournalpostDokumentRelasjon> knyttetJournalpostList(@GraphQLContext DokumentInfo dokumentInfo) {
-        Set<JournalpostDokumentInfoRelasjon> journalpostDokumentInfoRelasjons = dokumentinfoRepository.findById(dokumentInfo.getDokumentInfoId())
-                .orElse(no.nav.dokarkiv.core.domain.entities.DokumentInfo.builder().build())
-                .getJournalpostRelasjoner();
+	@GraphQLQuery(name = "knyttetJournalpostList")
+	@Transactional(readOnly = true)
+	public List<JournalpostDokumentRelasjon> knyttetJournalpostList(@GraphQLContext DokumentInfo dokumentInfo) {
+		Set<JournalpostDokumentInfoRelasjon> journalpostDokumentInfoRelasjons = dokumentinfoRepository.findById(dokumentInfo.getDokumentInfoId())
+				.orElse(no.nav.dokarkiv.core.domain.entities.DokumentInfo.builder().build())
+				.getJournalpostRelasjoner();
 
-        List<Long> begrensetJournalpostRelasjon = journalpostDokumentInfoRelasjons.stream()
-                .filter(relasjon -> begrensningService.isJournalpostDokumentInfoRelasjonOrJournalpostBegrenset(relasjon.getJournalpost()
-                        .getJournalpostId(), relasjon.getDokumentInfo()
-                        .getDokumentInfoId(), BegrensningTypeCode.UTILGJENGELIGGJORT))
-                .map(relasjon -> relasjon.getJournalpost().getJournalpostId())
-                .collect(Collectors.toList());
+		List<Long> begrensetJournalpostRelasjon = journalpostDokumentInfoRelasjons.stream()
+				.filter(relasjon -> begrensningService.isJournalpostDokumentInfoRelasjonBegrenset(relasjon.getJournalpost()
+						.getJournalpostId(), relasjon.getDokumentInfo()
+						.getDokumentInfoId(), BegrensningTypeCode.UTILGJENGELIGGJORT) || begrensningService.isJournalpostBegrenset(relasjon
+						.getJournalpost()
+						.getJournalpostId(), BegrensningTypeCode.UTILGJENGELIGGJORT))
+				.map(relasjon -> relasjon.getJournalpost().getJournalpostId())
+				.collect(Collectors.toList());
 
-        List<Long> begrensetJournalpost = journalpostDokumentInfoRelasjons.stream()
-                .filter(relasjon -> begrensningService.isJournalpostBegrenset(relasjon.getJournalpost()
-                        .getJournalpostId(), BegrensningTypeCode.UTILGJENGELIGGJORT))
-                .map(relasjon -> relasjon.getJournalpost().getJournalpostId())
-                .collect(Collectors.toList());
+		List<Long> begrensetJournalpost = journalpostDokumentInfoRelasjons.stream()
+				.filter(relasjon -> begrensningService.isJournalpostBegrenset(relasjon.getJournalpost()
+						.getJournalpostId(), BegrensningTypeCode.UTILGJENGELIGGJORT))
+				.map(relasjon -> relasjon.getJournalpost().getJournalpostId())
+				.collect(Collectors.toList());
 
-        return mapKnyttetJournalpostList(journalpostDokumentInfoRelasjons, dokumentInfo.getDokumentInfoId(), begrensetJournalpostRelasjon, begrensetJournalpost);
-    }
+		return mapKnyttetJournalpostList(journalpostDokumentInfoRelasjons, dokumentInfo.getDokumentInfoId(), begrensetJournalpostRelasjon, begrensetJournalpost);
+	}
 
-    @GraphQLQuery(name = "tilleggsopplysninger")
-    @Transactional(readOnly = true)
-    public Map<String, String> tilleggsopplysninger(@GraphQLContext DokumentInfo dokumentInfo) {
-        //Må hente på nytt fra databasen pågrunn av lazy initialisering
-        Map<String, String> tilleggsopplysninger = dokumentinfoRepository.findById(dokumentInfo.getDokumentInfoId())
-                .orElse(no.nav.dokarkiv.core.domain.entities.DokumentInfo.builder().build())
-                .getTilleggsopplysninger();
+	@GraphQLQuery(name = "tilleggsopplysninger")
+	@Transactional(readOnly = true)
+	public Map<String, String> tilleggsopplysninger(@GraphQLContext DokumentInfo dokumentInfo) {
+		//Må hente på nytt fra databasen pågrunn av lazy initialisering
+		Map<String, String> tilleggsopplysninger = dokumentinfoRepository.findById(dokumentInfo.getDokumentInfoId())
+				.orElse(no.nav.dokarkiv.core.domain.entities.DokumentInfo.builder().build())
+				.getTilleggsopplysninger();
 
-        return new HashMap<>(tilleggsopplysninger);
-    }
+		return new HashMap<>(tilleggsopplysninger);
+	}
 
-    @GraphQLQuery(name = "filDetaljerList")
-    @Transactional(readOnly = true)
-    public List<DokumentInfo.Fildetaljer> filDetaljerList(@GraphQLContext DokumentInfo dokumentInfo) {
-        //Må hente på nytt fra databasen pågrunn av lazy initialisering
-        Set<FilDetaljer> filDetaljerSet = dokumentinfoRepository.findById(dokumentInfo.getDokumentInfoId())
-                .orElse(no.nav.dokarkiv.core.domain.entities.DokumentInfo.builder().build())
-                .getFildetaljerListe();
+	@GraphQLQuery(name = "filDetaljerList")
+	@Transactional(readOnly = true)
+	public List<DokumentInfo.Fildetaljer> filDetaljerList(@GraphQLContext DokumentInfo dokumentInfo) {
+		//Må hente på nytt fra databasen pågrunn av lazy initialisering
+		Set<FilDetaljer> filDetaljerSet = dokumentinfoRepository.findById(dokumentInfo.getDokumentInfoId())
+				.orElse(no.nav.dokarkiv.core.domain.entities.DokumentInfo.builder().build())
+				.getFildetaljerListe();
 
-        return mapFildetaljer(filDetaljerSet);
-    }
+		return mapFildetaljer(filDetaljerSet);
+	}
 
 
 }

@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
 import no.nav.dokarkiv.hentjournalinfo.dto.kode.BrukerType;
 import no.nav.dokarkiv.hentjournalinfo.dto.kode.JournalpostStatus;
 import no.nav.dokarkiv.hentjournalinfo.dto.kode.JournalpostType;
@@ -35,7 +34,7 @@ public class Journalpost {
 
     private List<Bruker> brukere;
 
-    private Saksrelasjon saksrelasjon;
+    private String sakId;
 
     private List<JournalpostDokumentRelasjon> knyttetDokumentList;
 
