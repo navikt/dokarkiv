@@ -41,7 +41,6 @@ public class HentJournalpostBulkRepository {
 						"s.sakId in :sakIds and s.fagsystem = :arkivsaksystem " +
 						"and (s.feilregistrert is null or s.feilregistrert in :visFeilregistrert) " +
 						"and j.changeStamp.createdDate > :fraDato " +
-						"and j.fagomrade in :inkluderTema " +
 						"and j.journalposttype in :inkluderJournalpostType " +
 						"and j.journalstatus in :inkluderJournalStatus", Journalpost.class)
 				.unwrap(Query.class)
@@ -49,7 +48,6 @@ public class HentJournalpostBulkRepository {
 				.setParameter("sakIds", sakIds)
 				.setParameter("arkivsaksystem", arkivsaksystem.getJoarkMapping())
 				.setParameter("fraDato", Timestamp.valueOf(bulkJournalposterFilter.getFraDato().atStartOfDay()))
-				.setParameter("inkluderTema", bulkJournalposterFilter.getInkluderTema())
 				.setParameter("inkluderJournalpostType", bulkJournalposterFilter.getInkluderJournalpostType())
 				.setParameter("inkluderJournalStatus", bulkJournalposterFilter.getInkluderJournalStatus())
 				.setParameter("visFeilregistrert", bulkJournalposterFilter.isVisFeilregistrerte() ? ALL_JOURNALPOST : NO_FEILREGISTRERT_JOURNALPOST)
@@ -69,14 +67,12 @@ public class HentJournalpostBulkRepository {
 						"join fetch jprel.dokumentInfo " +
 						"where " +
 						"j.changeStamp.createdDate > :fraDato " +
-						"and j.fagomrade in :inkluderTema " +
 						"and j.journalposttype in :inkluderJournalpostType " +
 						"and j.journalstatus in :inkluderJournalStatus", Journalpost.class)
 				.unwrap(Query.class)
 				.setResultTransformer(DistinctRootEntityResultTransformer.INSTANCE)
 				.setParameter("alleIdenter", alleIdenter)
 				.setParameter("fraDato", Timestamp.valueOf(bulkJournalposterFilter.getFraDato().atStartOfDay()))
-				.setParameter("inkluderTema", bulkJournalposterFilter.getInkluderTema())
 				.setParameter("inkluderJournalpostType", bulkJournalposterFilter.getInkluderJournalpostType())
 				.setParameter("inkluderJournalStatus", bulkJournalposterFilter.getInkluderJournalStatus())
 				.getResultList();
