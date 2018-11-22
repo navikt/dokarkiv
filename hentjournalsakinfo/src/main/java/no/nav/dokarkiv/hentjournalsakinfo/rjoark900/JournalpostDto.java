@@ -26,7 +26,7 @@ public class JournalpostDto {
 	private final FagomradeCode fagomrade;
 	private final JournalStatusCode journalstatus;
 	private final Date dokumentDato;
-	private final String avsenderMottakerId;
+	private final String avsenderMottakerNavn;
 	private final String journalfortAvNavn;
 	private final Date mottattDato;
 	private final MottaksKanalCode mottakskanal;
@@ -57,7 +57,7 @@ public class JournalpostDto {
 		this.fagomrade = journalpost.getFagomrade();
 		this.datoOpprettet = journalpost.getChangeStamp().getCreatedDate();
 		this.mottakskanal = journalpost.getMottakskanal();
-		this.avsenderMottakerId = journalpost.getAvsenderMottakerId();
+		this.avsenderMottakerNavn = journalpost.getAvsenderMottaker();
 		this.saksrelasjon = SaksrelasjonDto.builder()
 				.sakId(journalpost.getSaksrelasjon().getSakId())
 				.fagsystem(journalpost.getSaksrelasjon().getFagsystem())
