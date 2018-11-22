@@ -2,7 +2,7 @@ package no.nav.dokarkiv.dokumentproduksjoninfo;
 
 import no.nav.dokarkiv.core.CoreConfig;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
-import no.nav.dokarkiv.core.repository.JoarkRepository;
+import no.nav.dokarkiv.core.repository.JoarkRepositoryBegrenset;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.dokarkiv.core.stelvio.SimpleRequestContext;
 import no.nav.tjeneste.domene.brevogarkiv.dokumentproduksjoninfo.v1.DokumentproduksjonInfoV1;
@@ -34,7 +34,7 @@ public abstract class AbstractDokumentproduksjoninfoItest {
 	@Inject
 	protected DokumentproduksjonInfoV1 dokumentproduksjonInfoProvider;
 	@Inject
-	protected JoarkRepository joarkRepository;
+    protected JoarkRepositoryBegrenset joarkRepository;
 	@Inject
 	protected DokumentFilRepository dokumentFilRepository;
 

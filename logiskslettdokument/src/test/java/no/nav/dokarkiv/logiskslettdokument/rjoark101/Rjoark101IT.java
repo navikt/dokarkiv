@@ -1,18 +1,23 @@
 package no.nav.dokarkiv.logiskslettdokument.rjoark101;
 
-import static no.nav.dokarkiv.logiskslettdokument.util.TestUtils.createJournalpostBuilder;
+import static no.nav.dokarkiv.logiskslettdokument.util.TestUtils.opprettHoveddokumentForIT;
+import static no.nav.dokarkiv.logiskslettdokument.util.TestUtils.opprettHoveddokumentMedEtKnyttetVedleggForIT;
+import static no.nav.dokarkiv.logiskslettdokument.util.TestUtils.utilgjengeliggjoerHoveddokument;
+import static no.nav.dokarkiv.logiskslettdokument.util.TestUtils.utilgjengeliggjoerVedlegg;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
-import no.nav.dokarkiv.core.MDCConstants;
+import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
+import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
+import no.nav.dokarkiv.core.domain.entities.Begrensning;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.logiskslettdokument.AbstractSlettDokumentIT;
 import no.nav.dokarkiv.logiskslettdokument.rjoark100.LogiskSlettDokumentResponse;
 import org.junit.Test;
-import org.slf4j.MDC;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,17 +26,140 @@ import org.springframework.test.context.transaction.TestTransaction;
 public class Rjoark101IT extends AbstractSlettDokumentIT {
 
 	@Test
-	public void shouldAngreLogiskSlettDokument() {
+	public void skalIkkeAngreLogiskSlettDokument_ettersomJournalpostDokumentInfoRelasjonIkkeFinnes() {
 		abacPermit();
 
-		Journalpost journalpost = joarkRepository.save(createJournalpostBuilder().build());
+		Journalpost journalpost = joarkRepository.save(opprettHoveddokumentMedEtKnyttetVedleggForIT());
 
-		DokumentInfo dokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
-		dokumentInfo.setSlettet(true);
-		dokumentInfo.setEndretAvNavn(MDC.get(MDCConstants.MDC_USER_NAME));
+		Long ikkeEksisterendeDokumentInfoId = 13L;
 
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
+
+		ResponseEntity<String> responseEntity = restTemplate.exchange(
+				URL_ANGRESLETTDOKUMENT + journalpost.getJournalpostId() + "/" + ikkeEksisterendeDokumentInfoId,
+				HttpMethod.PATCH,
+				createHeaders(),
+				String.class);
+
+		assertThat(responseEntity.getStatusCode(), is(HttpStatus.NOT_FOUND));
+		assertThat(responseEntity.getBody(), containsString(
+				String.format("Kan ikke finne noen relasjon mellom journalpost med journalpostId=%s og dokument med dokumentInfoId=%s",
+						journalpost.getJournalpostId(),
+						ikkeEksisterendeDokumentInfoId)));
+	}
+
+	@Test
+	public void skalAngreLogiskSlettDokument_avVedlegg_medVedleggUtilgjengeliggjort() {
+		abacPermit();
+
+		Journalpost journalpost = joarkRepository.save(opprettHoveddokumentMedEtKnyttetVedleggForIT());
+
+		DokumentInfo vedlegg = journalpost.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
+				.iterator().next().getDokumentInfo();
+
+		begrensningRepository.save(utilgjengeliggjoerVedlegg(journalpost.getJournalpostId(), vedlegg.getDokumentInfoId()));
+
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
+
+		Begrensning begrensetJp = hentVedleggBegrensningEtterUtfoertKall(journalpost.getJournalpostId(), vedlegg.getDokumentInfoId());
+		assertNotNull(begrensetJp);
+		assertThat(hentAntallBegrensninger(), is(1L));
+
+		ResponseEntity<LogiskSlettDokumentResponse> responseEntity = restTemplate.exchange(
+				URL_ANGRESLETTDOKUMENT + journalpost.getJournalpostId() + "/" + vedlegg.getDokumentInfoId(),
+				HttpMethod.PATCH,
+				createHeaders(),
+				LogiskSlettDokumentResponse.class);
+
+		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
+
+		begrensetJp = hentVedleggBegrensningEtterUtfoertKall(journalpost.getJournalpostId(), vedlegg.getDokumentInfoId());
+		assertNull(begrensetJp);
+		assertThat(hentAntallBegrensninger(), is(0L));
+	}
+
+	@Test
+	public void skalIkkeAngreLogiskSlettDokument_avVedlegg_ettersomVedleggIkkeErUtilgjengeliggjort() {
+		abacPermit();
+
+		Journalpost journalpost = joarkRepository.save(opprettHoveddokumentMedEtKnyttetVedleggForIT());
+
+		DokumentInfo vedlegg = journalpost.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
+				.iterator().next().getDokumentInfo();
+
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
+
+		ResponseEntity<String> responseEntity = restTemplate.exchange(
+				URL_ANGRESLETTDOKUMENT + journalpost.getJournalpostId() + "/" + vedlegg.getDokumentInfoId(),
+				HttpMethod.PATCH,
+				createHeaders(),
+				String.class);
+
+		assertThat(responseEntity.getStatusCode(), is(HttpStatus.BAD_REQUEST));
+		assertThat(responseEntity.getBody(), containsString(
+				String.format("Fant ikke forventet begrensning for dokument med journalpostId=%s, dokumentInfoId=%s og begrensningsType=%s.",
+						journalpost.getJournalpostId(),
+						vedlegg.getDokumentInfoId(),
+						BegrensningTypeCode.UTILGJENGELIGGJORT)));
+
+		Begrensning begrensetJp = hentVedleggBegrensningEtterUtfoertKall(journalpost.getJournalpostId(), vedlegg.getDokumentInfoId());
+		assertNull(begrensetJp);
+		assertThat(hentAntallBegrensninger(), is(0L));
+	}
+
+	@Test
+	public void skalAngreLogiskSlettDokument_avKunVedleggBegrensningen_naarVedleggOgHoveddokumentErUtilgjengeliggjort() {
+		abacPermit();
+
+		Journalpost journalpost = joarkRepository.save(opprettHoveddokumentMedEtKnyttetVedleggForIT());
+
+		DokumentInfo vedlegg = journalpost.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
+				.iterator().next().getDokumentInfo();
+
+		begrensningRepository.save(utilgjengeliggjoerVedlegg(journalpost.getJournalpostId(), vedlegg.getDokumentInfoId()));
+		begrensningRepository.save(utilgjengeliggjoerHoveddokument(journalpost.getJournalpostId()));
+
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
+
+		Begrensning begrensetJp = hentHoveddokumentBegrensningEtterUtfoertKall(journalpost);
+		assertNotNull(begrensetJp);
+		begrensetJp = hentVedleggBegrensningEtterUtfoertKall(journalpost.getJournalpostId(), vedlegg.getDokumentInfoId());
+		assertNotNull(begrensetJp);
+		assertThat(hentAntallBegrensninger(), is(2L));
+
+		ResponseEntity<LogiskSlettDokumentResponse> responseEntity = restTemplate.exchange(
+				URL_ANGRESLETTDOKUMENT + journalpost.getJournalpostId() + "/" + vedlegg.getDokumentInfoId(),
+				HttpMethod.PATCH,
+				createHeaders(),
+				LogiskSlettDokumentResponse.class);
+
+		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
+
+		begrensetJp = hentHoveddokumentBegrensningEtterUtfoertKall(journalpost);
+		assertNotNull(begrensetJp);
+		begrensetJp = hentVedleggBegrensningEtterUtfoertKall(journalpost.getJournalpostId(), vedlegg.getDokumentInfoId());
+		assertNull(begrensetJp);
+		assertThat(hentAntallBegrensninger(), is(1L));
+	}
+
+	@Test
+	public void skalAngreLogiskSlettDokument_avHoveddokument_medHoveddokumentUtilgjengeliggjort() {
+		abacPermit();
+
+		Journalpost journalpost = joarkRepository.save(opprettHoveddokumentForIT());
+
+		begrensningRepository.save(utilgjengeliggjoerHoveddokument(journalpost.getJournalpostId()));
+
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
+
+		Begrensning begrensetJp = hentHoveddokumentBegrensningEtterUtfoertKall(journalpost);
+		assertNotNull(begrensetJp);
+		assertThat(hentAntallBegrensninger(), is(1L));
 
 		ResponseEntity<LogiskSlettDokumentResponse> responseEntity = restTemplate.exchange(
 				URL_ANGRESLETTDOKUMENT + journalpost.getJournalpostId() + "/" + journalpost.
@@ -42,16 +170,16 @@ public class Rjoark101IT extends AbstractSlettDokumentIT {
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 
-		DokumentInfo angreLogiskSlettDokumentInfo = hentDokumentInfoEtterUtførtKall(journalpost);
-
-		assertEquals(angreLogiskSlettDokumentInfo.getSlettet(), false);
+		begrensetJp = hentHoveddokumentBegrensningEtterUtfoertKall(journalpost);
+		assertNull(begrensetJp);
+		assertThat(hentAntallBegrensninger(), is(0L));
 	}
 
 	@Test
-	public void shouldFailToAngreLogiskSlettDokumentBecauseDocumentWasNotDeleted() {
+	public void skalIkkeAngreLogiskSlettDokument_medHoveddokument_ettersomHoveddokumentIkkeErUtilgjengeliggjort() {
 		abacPermit();
 
-		Journalpost journalpost = joarkRepository.save(createJournalpostBuilder().build());
+		Journalpost journalpost = joarkRepository.save(opprettHoveddokumentForIT());
 
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
@@ -65,19 +193,71 @@ public class Rjoark101IT extends AbstractSlettDokumentIT {
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.BAD_REQUEST));
 
-		DokumentInfo dokumentInfoIkkeSlettet = hentDokumentInfoEtterUtførtKall(journalpost);
-
 		assertThat(responseEntity.getBody(), containsString(
-				String.format("Kan ikke angre logisk sletting av dokument med dokumentInfoId=%s, fordi dokumentet ikke er logisk slettet.",
-						dokumentInfoIkkeSlettet.getDokumentInfoId())));
-		assertEquals(dokumentInfoIkkeSlettet.getSlettet(), false);
+				String.format("Fant ikke forventet begrensning for journalpost med journalpostId=%s og begrensningsType=%s.",
+						journalpost.getJournalpostId(),
+						BegrensningTypeCode.UTILGJENGELIGGJORT)));
+
+		Begrensning begrensetJp = hentJournalpostEtterUtfoertKall(journalpost.getJournalpostId());
+		assertNull(begrensetJp);
+		assertThat(hentAntallBegrensninger(), is(0L));
 	}
 
-	private void setJournalpostSlettet(Journalpost journalpost) {
-		DokumentInfo dokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
-		dokumentInfo.setSlettet(true);
-		dokumentInfo.setEndretAvNavn(MDC.get(MDCConstants.MDC_USER_NAME));
-		joarkRepository.save(journalpost);
+	@Test
+	public void skalAngreLogiskSlettDokument_avKunHoveddokumentBegrensningen_naarVedleggOgHoveddokumentErUtilgjengeliggjort() {
+		abacPermit();
+
+		Journalpost journalpost = joarkRepository.save(opprettHoveddokumentMedEtKnyttetVedleggForIT());
+
+		DokumentInfo vedlegg = journalpost.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
+				.iterator().next().getDokumentInfo();
+
+		begrensningRepository.save(utilgjengeliggjoerHoveddokument(journalpost.getJournalpostId()));
+		begrensningRepository.save(utilgjengeliggjoerVedlegg(journalpost.getJournalpostId(), vedlegg.getDokumentInfoId()));
+
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
+
+		Begrensning begrensetJp = hentHoveddokumentBegrensningEtterUtfoertKall(journalpost);
+		assertNotNull(begrensetJp);
+		begrensetJp = hentVedleggBegrensningEtterUtfoertKall(journalpost.getJournalpostId(), vedlegg.getDokumentInfoId());
+		assertNotNull(begrensetJp);
+		assertThat(hentAntallBegrensninger(), is(2L));
+
+		ResponseEntity<LogiskSlettDokumentResponse> responseEntity = restTemplate.exchange(
+				URL_ANGRESLETTDOKUMENT + journalpost.getJournalpostId() + "/" +
+						journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId(),
+				HttpMethod.PATCH,
+				createHeaders(),
+				LogiskSlettDokumentResponse.class);
+
+		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
+
+		begrensetJp = hentHoveddokumentBegrensningEtterUtfoertKall(journalpost);
+		assertNull(begrensetJp);
+		begrensetJp = hentVedleggBegrensningEtterUtfoertKall(journalpost.getJournalpostId(), vedlegg.getDokumentInfoId());
+		assertNotNull(begrensetJp);
+		assertThat(hentAntallBegrensninger(), is(1L));
+	}
+
+	@Test
+	public void noAccess() {
+		abacPermit();
+
+		Journalpost journalpost = joarkRepository.save(opprettHoveddokumentForIT());
+		begrensningRepository.save(utilgjengeliggjoerHoveddokument(journalpost.getJournalpostId()));
+
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
+
+		ResponseEntity<String> responseEntity = restTemplate.exchange(
+				URL_ANGRESLETTDOKUMENT + journalpost.getJournalpostId() + "/" + journalpost.
+						findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId(),
+				HttpMethod.PATCH,
+				createNoAccesHeaders(),
+				String.class);
+
+		assertThat(responseEntity.getStatusCode(), is(HttpStatus.UNAUTHORIZED));
 	}
 
 }

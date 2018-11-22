@@ -5,7 +5,7 @@ import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeInngaaendeException;
 import no.nav.dokarkiv.core.exceptions.UgyldigInputException;
-import no.nav.dokarkiv.core.repository.JoarkRepository;
+import no.nav.dokarkiv.core.repository.JoarkRepositoryBegrenset;
 import no.nav.dokarkiv.innsynjournal.v2.exceptions.JournalpostNotSupportedException;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
@@ -21,13 +21,14 @@ import java.util.Objects;
 public class DefaultIdentifiserJournalpostService implements IdentifiserJournalpostService {
 
 	@Inject
-	private JoarkRepository joarkRepository;
+	private JoarkRepositoryBegrenset joarkRepository;
 
 	@Override
 	public Journalpost identifiserJournalpost(IdentifiserJournalpostToRequest identifiserJournalpostToRequest)
 	throws JournalpostNotSupportedException, JournalpostIkkeFunnetException, UgyldigInputException, JournalpostIkkeInngaaendeException {
 		validateInput(identifiserJournalpostToRequest);
-		List<Journalpost> journalposts = joarkRepository.findJournalpostByKanalReferanseIdAndMottakskanal(identifiserJournalpostToRequest.getKanalReferanseId(), identifiserJournalpostToRequest.getMottaksKanal());
+		List<Journalpost> journalposts = joarkRepository.findJournalpostByKanalReferanseIdAndMottakskanal(identifiserJournalpostToRequest
+				.getKanalReferanseId(), identifiserJournalpostToRequest.getMottaksKanal());
 		if (!(journalposts == null) && journalposts.size() == 1) {
 			validateJournalpost(journalposts.get(0));
 			return journalposts.get(0);

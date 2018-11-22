@@ -3,6 +3,7 @@ package no.nav.dokarkiv.core.domain.builder;
 import no.nav.dokarkiv.core.domain.ChangeStamp;
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
+import no.nav.dokarkiv.core.domain.entities.Begrensning;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
@@ -56,6 +57,7 @@ public class DokumentInfoBuilder extends Builder<DokumentInfo> {
 	private String endretKildeNavn;
 	private Boolean slettet;
 	private String dokumenttypeId;
+	private Begrensning begrensning;
 	private Map<String, String> tilleggsopplysninger = new HashMap<>();
 	private List<SkannetInnhold> skannetInnholdList = new ArrayList<>();
 	private Set<FilDetaljer> filDetaljerList = new HashSet<>();
@@ -122,6 +124,7 @@ public class DokumentInfoBuilder extends Builder<DokumentInfo> {
 			dokumentInfo.addFilDetaljer(filDetaljer);
 		}
 		dokumentInfo.setChangeStamp(changeStamp);
+
 		return dokumentInfo;
 	}
 

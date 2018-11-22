@@ -17,7 +17,7 @@ import no.nav.dokarkiv.core.domain.validator.BrukerValidator;
 import no.nav.dokarkiv.core.exceptions.ApplicationException;
 import no.nav.dokarkiv.core.journalbehandling.DokumentFilerDelegate;
 import no.nav.dokarkiv.core.repository.BidragMellomlagringRepository;
-import no.nav.dokarkiv.core.repository.JoarkRepository;
+import no.nav.dokarkiv.core.repository.JoarkRepositoryBegrenset;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
@@ -32,7 +32,7 @@ import javax.inject.Inject;
 public class DefaultArkiverUstrukturertKrav implements ArkiverUstrukturertKrav {
 
 	@Inject
-	private JoarkRepository joarkRepository;
+    private JoarkRepositoryBegrenset joarkRepository;
 	@Inject
 	private BidragMellomlagringRepository bidragMellomlagringRepository;
 	@Inject

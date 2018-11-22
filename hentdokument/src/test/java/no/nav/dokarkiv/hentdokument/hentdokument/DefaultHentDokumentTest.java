@@ -37,7 +37,7 @@ import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
 import no.nav.dokarkiv.core.exceptions.SettMetadataIDlfFailedException;
 import no.nav.dokarkiv.core.ondemand.HentOndemandDokument;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
-import no.nav.dokarkiv.core.repository.JoarkRepository;
+import no.nav.dokarkiv.core.repository.JoarkRepositoryBegrenset;
 import no.nav.dokarkiv.hentdokument.dlf.SettMetadataIDLF;
 import no.nav.dokarkiv.hentdokument.dlf.to.SettMetadataIDLFRequest;
 import no.nav.dokarkiv.hentdokument.dlf.to.SettMetadataIDLFResponse;
@@ -72,7 +72,7 @@ public class DefaultHentDokumentTest {
 	ArgumentCaptor<SettMetadataIDLFRequest> settMetadataIDLFRequestCaptor;
 	private DefaultHentDokument hentDokument;
 	@Mock
-	private JoarkRepository joarkRepositoryMock;
+	private JoarkRepositoryBegrenset joarkRepositoryMock;
 	@Mock
 	private HentOndemandDokument hentOndemandDokument;
 	@Mock

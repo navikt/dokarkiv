@@ -12,7 +12,6 @@ import no.nav.dokarkiv.hentjournalinfo.dto.kode.TilknyttetJournalpostSom;
 import no.nav.dokarkiv.hentjournalinfo.dto.kode.VariantFormat;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -26,15 +25,16 @@ public class DokumentInfoQueryMapper {
                 .dokumentInfoId(dokumentInfo.getDokumentInfoId())
                 .dokumentStatus(DokumentStatus.mapFromDokumentStatusCode(dokumentInfo.getDokumentstatus()))
                 .tittel(dokumentInfo.getTittel())
-                .slettet(Optional.ofNullable(dokumentInfo.getSlettet()).orElse(Boolean.FALSE))
                 .build();
     }
 
-    public static List<JournalpostDokumentRelasjon> mapKnyttetJournalpostList(Set<JournalpostDokumentInfoRelasjon> journalpostDokumentInfoRelasjonSet, Long dokumentInfoId) {
+    public static List<JournalpostDokumentRelasjon> mapKnyttetJournalpostList(Set<JournalpostDokumentInfoRelasjon> journalpostDokumentInfoRelasjonSet, Long dokumentInfoId, List<Long> begrensetJournalpostRelasjon, List<Long> begrensetJournalpost) {
         return journalpostDokumentInfoRelasjonSet.stream().map(relasjon -> JournalpostDokumentRelasjon.builder()
                 .tilknyttetJournalpostSom(TilknyttetJournalpostSom.mapTilknyttetJournalpostSomCode(relasjon.getTilknyttetJournalpostSom()))
                 .journalpostId(relasjon.getJournalpost().getJournalpostId())
-                .journalpost(mapJournalpost(relasjon.getJournalpost())) //Like greit å bare mappe journalpost når den må hentes opp fra DB for å hente jpId (ref: LazyFetching)
+                .slettet(begrensetJournalpostRelasjon.contains(relasjon.getJournalpost().getJournalpostId()))
+                .journalpost(mapJournalpost(relasjon.getJournalpost(), begrensetJournalpost.contains(relasjon.getJournalpost()
+                        .getJournalpostId()))) //Like greit å bare mappe journalpost når den må hentes opp fra DB for å hente jpId (ref: LazyFetching)
                 .dokumentInfoId(dokumentInfoId).build()).collect(Collectors.toList());
     }
 
@@ -46,4 +46,6 @@ public class DokumentInfoQueryMapper {
                         .variantFormat(VariantFormat.mapFromVariantFormatCode(fildetaljer.getVariantFormat()))
                         .build()).collect(Collectors.toList());
     }
+
+
 }

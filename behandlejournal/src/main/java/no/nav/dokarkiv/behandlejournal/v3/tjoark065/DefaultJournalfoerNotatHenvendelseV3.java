@@ -9,7 +9,7 @@ import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.util.DateProvider;
 import no.nav.dokarkiv.core.exceptions.ApplicationException;
 import no.nav.dokarkiv.core.journalbehandling.DokumentFilerDelegate;
-import no.nav.dokarkiv.core.repository.JoarkRepository;
+import no.nav.dokarkiv.core.repository.JoarkRepositoryBegrenset;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
@@ -26,7 +26,7 @@ public class DefaultJournalfoerNotatHenvendelseV3 implements JournalfoerNotatHen
 	@Inject
 	private DokumentFilerDelegate dokumentFilerDelegate;
 	@Inject
-	private JoarkRepository joarkRepository;
+    private JoarkRepositoryBegrenset joarkRepository;
 
 	@Override
 	public JournalfoerNotatHenvendelseResponse journalfoerNotatHenvendelse(

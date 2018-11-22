@@ -13,7 +13,7 @@ import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
-import no.nav.dokarkiv.core.repository.JoarkRepository;
+import no.nav.dokarkiv.core.repository.JoarkRepositoryBegrenset;
 import no.nav.dokarkiv.core.sporing.SporingPopulator;
 import org.junit.Rule;
 import org.junit.Test;
@@ -45,7 +45,7 @@ public class DefaultFjernFerdigstiltDokumentServiceTest {
 	private SporingPopulator sporingPopulator;
 
 	@Mock
-	private JoarkRepository joarkRepository;
+    private JoarkRepositoryBegrenset joarkRepository;
 
 	@Mock
 	private DokumentFilRepository dokumentFilRepository;

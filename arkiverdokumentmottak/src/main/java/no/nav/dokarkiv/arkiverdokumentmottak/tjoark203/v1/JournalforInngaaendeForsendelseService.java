@@ -11,7 +11,7 @@ import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.journalbehandling.DokumentFilerDelegate;
-import no.nav.dokarkiv.core.repository.JoarkRepository;
+import no.nav.dokarkiv.core.repository.JoarkRepositoryBegrenset;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -25,7 +25,7 @@ import java.time.ZoneId;
 public class JournalforInngaaendeForsendelseService {
 
 	@Inject
-	private JoarkRepository joarkRepository;
+	private JoarkRepositoryBegrenset joarkRepository;
 	@Inject
 	private DokumentFilerDelegate dokumentFilerDelegate;
 	@Inject

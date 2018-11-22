@@ -21,6 +21,7 @@ public class TestQueryUtils {
                 "    journalpostType" +
                 "    tema" +
                 "    tittel" +
+                "    slettet" +
                 "    brukere {" +
                 "      brukerId" +
                 "      brukerType" +
@@ -29,6 +30,7 @@ public class TestQueryUtils {
                 "      dokumentInfoId" +
                 "      journalpostId" +
                 "      tilknyttetJournalpostSom" +
+                "      slettet" +
                 "      dokumentInfo {" +
                 "        dokumentInfoId" +
                 "        dokumentStatus" +
@@ -44,7 +46,6 @@ public class TestQueryUtils {
         return "dokumentInfo(dokumentInfoId: $dokumentInfoId) {" +
                 "    dokumentInfoId" +
                 "    tittel" +
-                "    slettet" +
                 "    dokumentStatus" +
                 "   filDetaljerList {" +
                 "      fildetaljerId" +
@@ -57,6 +58,7 @@ public class TestQueryUtils {
                 "        tema" +
                 "      }" +
                 "      journalpostId" +
+                "      slettet" +
                 "      tilknyttetJournalpostSom" +
                 "    }" +
                 "    originalJournalpost {" +
@@ -65,6 +67,7 @@ public class TestQueryUtils {
                 "      journalpostType" +
                 "      tema" +
                 "      tittel" +
+                "      slettet" +
                 "      brukere {" +
                 "        brukerId" +
                 "        brukerType" +

@@ -21,7 +21,7 @@ import no.nav.dokarkiv.core.repository.BidragMellomlagringDokumentRepository;
 import no.nav.dokarkiv.core.repository.BidragMellomlagringRepository;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
-import no.nav.dokarkiv.core.repository.JoarkRepository;
+import no.nav.dokarkiv.core.repository.JoarkRepositoryBegrenset;
 import no.nav.dokarkiv.core.sporing.KildeNavnPopulator;
 import no.nav.dokarkiv.core.stelvio.RequestContextHolder;
 import org.springframework.beans.factory.annotation.Value;
@@ -40,7 +40,7 @@ import java.util.List;
 public class DefaultLagreVedleggPaaJournalpostV3 implements LagreVedleggPaaJournalpost {
 
 	@Inject
-	private JoarkRepository joarkRepository;
+	private JoarkRepositoryBegrenset joarkRepository;
 	@Inject
 	private DokumentinfoRepository dokumentinfoRepository;
 	@Inject

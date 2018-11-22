@@ -10,7 +10,6 @@ import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -60,8 +59,7 @@ public class FysiskSlettDokumentService {
 
 	private void fysiskSlettEtVedleggKnyttetEnJP(FysiskSlettDokumentRequestTo requestTo) {
 		List<JournalpostDokumentInfoRelasjon> listFoundByDokumentInfoId =
-				journalpostDokumentInfoRelasjonRepository.findAllByDokumentInfoDokumentInfoId(requestTo.getDokumentInfoId())
-						.orElse(new ArrayList<>());
+				journalpostDokumentInfoRelasjonRepository.findAllByDokumentInfoDokumentInfoId(requestTo.getDokumentInfoId());
 
 		validator.validerFysiskSlettEtVedleggKnyttetEnJP(listFoundByDokumentInfoId, requestTo);
 
@@ -75,8 +73,7 @@ public class FysiskSlettDokumentService {
 
 	private void fysiskSlettEtHoveddokumentKnyttetEnJP(FysiskSlettDokumentRequestTo requestTo) {
 		List<JournalpostDokumentInfoRelasjon> listFoundByDokumnentInfoId =
-				journalpostDokumentInfoRelasjonRepository.findAllByDokumentInfoDokumentInfoId(requestTo.getDokumentInfoId())
-						.orElse(new ArrayList<>());
+				journalpostDokumentInfoRelasjonRepository.findAllByDokumentInfoDokumentInfoId(requestTo.getDokumentInfoId());
 
 		validator.validerFysiskSlettEtHoveddokumentKnyttetEnJP(listFoundByDokumnentInfoId, requestTo);
 
@@ -92,8 +89,7 @@ public class FysiskSlettDokumentService {
 	private void slettEventuelleVedleggKnyttetHoveddokumentValidertForSletting(JournalpostDokumentInfoRelasjon hoveddokumentRelasjon) {
 		List<JournalpostDokumentInfoRelasjon> listFoundByJournalpostId =
 				journalpostDokumentInfoRelasjonRepository.findAllByJournalpostJournalpostId(hoveddokumentRelasjon.getJournalpost()
-						.getJournalpostId())
-						.orElse(new ArrayList<>());
+						.getJournalpostId());
 
 		for (JournalpostDokumentInfoRelasjon relasjon : listFoundByJournalpostId) {
 			if (relasjon.isVedlegg()) {
