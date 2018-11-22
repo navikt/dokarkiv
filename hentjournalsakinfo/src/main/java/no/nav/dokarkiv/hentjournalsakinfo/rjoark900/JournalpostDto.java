@@ -7,6 +7,7 @@ import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
 import no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
 import no.nav.dokarkiv.hentjournalsakinfo.rjoark910.SaksrelasjonDto;
 
 import java.util.Date;
@@ -58,9 +59,11 @@ public class JournalpostDto {
 		this.datoOpprettet = journalpost.getChangeStamp().getCreatedDate();
 		this.mottakskanal = journalpost.getMottakskanal();
 		this.avsenderMottakerNavn = journalpost.getAvsenderMottaker();
-		this.saksrelasjon = SaksrelasjonDto.builder()
-				.sakId(journalpost.getSaksrelasjon().getSakId())
-				.fagsystem(journalpost.getSaksrelasjon().getFagsystem())
+		Saksrelasjon saksrelasjon = journalpost.getSaksrelasjon();
+		this.saksrelasjon = saksrelasjon == null ?
+				null : SaksrelasjonDto.builder()
+				.sakId(saksrelasjon.getSakId())
+				.fagsystem(saksrelasjon.getFagsystem())
 				.feilregistrert(journalpost.isFeilregistrert())
 				.build();
 		this.dokumenter = journalpost.getJournalpostDokumentInfoRelasjoner()
