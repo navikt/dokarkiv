@@ -229,10 +229,6 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	@Cascade({CascadeType.PERSIST, CascadeType.MERGE, CascadeType.SAVE_UPDATE, CascadeType.DELETE, CascadeType.DETACH})
 	private final Set<ReturInfo> returInfos = new HashSet<>();
 
-	@OneToOne(mappedBy = "journalpost", fetch = FetchType.LAZY)
-	@Cascade({CascadeType.PERSIST, CascadeType.MERGE, CascadeType.SAVE_UPDATE, CascadeType.DELETE, CascadeType.DETACH})
-	private Behandlingsrelasjon behandlingsrelasjon;
-
 	@Transient
 	private transient List<Long> begrensetRelasjonerDokumentInfoId = new ArrayList<>();
 
@@ -255,7 +251,7 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	 * Constructor that assigns immutable properties. Used for testing.
 	 *
 	 * @param journalpostId DB-id for the instance.
-	 * @param version DB-version for the instance.
+	 * @param version       DB-version for the instance.
 	 */
 	public Journalpost(Long journalpostId, long version) {
 		this.journalpostId = journalpostId;
@@ -1101,27 +1097,6 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 		this.saksrelasjon = saksrelasjon;
 		if (saksrelasjon != null) {
 			saksrelasjon.setJournalpost(this);
-		}
-	}
-
-	/**
-	 * Getter for the behandlingsrelasjon property.
-	 *
-	 * @return the behandlingsrelasjon
-	 */
-	public Behandlingsrelasjon getBehandlingsrelasjon() {
-		return behandlingsrelasjon;
-	}
-
-	/**
-	 * Setter for the behandlingsrelasjon property.
-	 *
-	 * @param behandlingsrelasjon the behandlingsrelasjon to set
-	 */
-	public void setBehandlingsrelasjon(Behandlingsrelasjon behandlingsrelasjon) {
-		this.behandlingsrelasjon = behandlingsrelasjon;
-		if (behandlingsrelasjon != null) {
-			behandlingsrelasjon.setJournalpost(this);
 		}
 	}
 

@@ -1,7 +1,6 @@
 package no.nav.dokarkiv.core.sporing;
 
 import no.nav.dokarkiv.core.domain.AbstractPersistentVersionedDomainObjectWithKilde;
-import no.nav.dokarkiv.core.domain.entities.Behandlingsrelasjon;
 import no.nav.dokarkiv.core.domain.entities.Bruker;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
@@ -17,18 +16,19 @@ import java.util.Set;
 
 /**
  * Implementation of KildeNavnPopulator.
- * 
+ *
  * @author Thomas Eugen Bjørge, Visma Sirius
  */
 @Component
 public class DefaultKildeNavnPopulator implements KildeNavnPopulator {
 
-	/** {@inheritDoc} */
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void populateKildeNavnForEntireJournalStructure(Journalpost journalpost, String kildeNavn) {
 		populateJournalpost(journalpost, kildeNavn);
 		populateSaksrelasjon(journalpost.getSaksrelasjon(), kildeNavn);
-		populateBehandlingsrelasjon(journalpost.getBehandlingsrelasjon(), kildeNavn);
 		populateBruker(journalpost.getBrukere(), kildeNavn);
 		populateReturInfo(journalpost.getReturInfos(), kildeNavn);
 		populateKryssreferanse(journalpost.getKryssreferanser(), kildeNavn);
@@ -40,12 +40,6 @@ public class DefaultKildeNavnPopulator implements KildeNavnPopulator {
 		populateKilde(kilde, journalpost);
 	}
 
-	private void populateBehandlingsrelasjon(Behandlingsrelasjon behandlingsrelasjon, String kilde) {
-		if (behandlingsrelasjon != null) {
-			populateKilde(kilde, behandlingsrelasjon);
-		}
-	}
-	
 	private void populateSaksrelasjon(Saksrelasjon saksrelasjon, String kilde) {
 		if (saksrelasjon != null) {
 			populateKilde(kilde, saksrelasjon);
