@@ -55,6 +55,8 @@ CREATE PACKAGE BODY kode_6_7 AS
 
       DELETE FROM T_SAKSRELASJON
       WHERE journalpost_id = p_journalpost_id;
+      DELETE FROM T_BEHANDLINGSRELASJON
+      WHERE journalpost_id = p_journalpost_id;
       DELETE FROM T_BRUKER
       WHERE journalpost_id = p_journalpost_id;
       DELETE FROM T_KRYSSREFERANSE
