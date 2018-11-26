@@ -8,7 +8,6 @@ import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
 import no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode;
 import no.nav.dokarkiv.core.domain.entities.Begrensning;
-import no.nav.dokarkiv.core.domain.entities.Behandlingsrelasjon;
 import no.nav.dokarkiv.core.domain.entities.Bruker;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
@@ -60,7 +59,6 @@ public class JournalpostBuilder extends Builder<Journalpost> {
 	private Set<JournalpostDokumentInfoRelasjon> dokumentInfoRelasjoner = new HashSet<JournalpostDokumentInfoRelasjon>();
 	private Set<Kryssreferanse> kryssreferanser = new HashSet<Kryssreferanse>();
 	private Set<ReturInfo> returInfos = new HashSet<ReturInfo>();
-	private Behandlingsrelasjon behandlingsrelasjon;
 	private Date dokumentDato;
 	private String avsenderMottaker;
 	private String avsenderMottakerId;
@@ -125,7 +123,6 @@ public class JournalpostBuilder extends Builder<Journalpost> {
 	public JournalpostBuilder journalpostType(JournalpostTypeCode value) { this.journalpostType = value; return this; }
 	public JournalpostBuilder changeStamp(ChangeStamp value) { this.changeStamp = value; return this; }
 	public JournalpostBuilder signatur(Boolean value) {this.signatur = value; return this; }
-	public JournalpostBuilder behandlingsrelasjon(Behandlingsrelasjon value) {this.behandlingsrelasjon = value; return this; }
 
     public JournalpostBuilder addOriginalJournalpost(boolean value) {
         this.addOriginalJournalpost = value;
@@ -167,7 +164,6 @@ public class JournalpostBuilder extends Builder<Journalpost> {
 		for (ReturInfo returInfo : returInfos) {
 			journalpost.addReturInfo(returInfo);
 		}
-		journalpost.setBehandlingsrelasjon(behandlingsrelasjon);
 		journalpost.setDokumentDato(dokumentDato);
 		journalpost.setAvsenderMottaker(avsenderMottaker);
 		journalpost.setAvsenderMottakerId(avsenderMottakerId);

@@ -86,10 +86,10 @@ public class AngreLogiskSlettDokumentService {
 				dokumentInfoId,
 				BegrensningTypeCode.UTILGJENGELIGGJORT))) {
 			throw new BegrensningIkkeFunnetException(String.format(
-					"Fant ikke forventet begrensning for dokument med journalpostId=%s, dokumentInfoId=%s og begrensningsType=%s.",
+					"Fant ikke forventet begrensning for dokument med journalpostId=%s, dokumentInfoId=%s og begrensningsType=%s. Det kan hende journalpost med journalpostId=%s er allerede utilgjengeliggjort.",
 					journalpostId,
 					dokumentInfoId,
-					BegrensningTypeCode.UTILGJENGELIGGJORT.name()));
+					BegrensningTypeCode.UTILGJENGELIGGJORT.name(), journalpostId));
 		}
 	}
 

@@ -29,7 +29,7 @@ public class JournalpostQueryMapper {
                 .journalpostType(JournalpostType.mapFromJournalpostTypeCode(journalpost.getJournalposttype()))
                 .journalpostStatus(JournalpostStatus.mapFromJournalStatusCode(journalpost.getJournalstatus()))
                 .tittel(journalpost.getInnhold())
-                .saksrelasjon(journalpost.getSaksrelasjon())
+                .sakId(journalpost.getSaksrelasjon() == null ? null : journalpost.getSaksrelasjon().getSakId())
                 .slettet(isBegrenset)
                 .build();
     }

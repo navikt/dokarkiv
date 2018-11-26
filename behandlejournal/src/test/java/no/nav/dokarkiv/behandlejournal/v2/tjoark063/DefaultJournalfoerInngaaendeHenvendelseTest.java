@@ -8,7 +8,6 @@ import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjo
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
-import no.nav.dokarkiv.core.domain.builder.BehandlingsrelasjonBuilder;
 import no.nav.dokarkiv.core.domain.builder.SaksrelasjonBuilder;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
@@ -120,9 +119,6 @@ public class DefaultJournalfoerInngaaendeHenvendelseTest {
 				.brukere(getBrukerBuilder().brukerId("***gammelt_fnr***").build())
 				.saksrelasjon(
 						SaksrelasjonBuilder.getSaksrelasjonBuilder().sakId("1").fagsystem(FagsystemCode.BID).build())
-				.behandlingsrelasjon(
-						BehandlingsrelasjonBuilder.getBehandlingsrelasjonBuilder().behandlingsId("1")
-								.behandlingsType("TEST").build())
 				.signatur(true)
 				.mottattDato(new Date())
 				.journalpostType(JournalpostTypeCode.I)
