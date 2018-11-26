@@ -23,6 +23,7 @@ import static no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark111.OpprettUtgaaen
 import static no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark111.OpprettUtgaaendeJournalpostArkiverDokumentDataUtil.createVedlegg;
 import static no.nav.dokarkiv.core.domain.codes.DokumentStatusCode.FERDIGSTILT;
 import static no.nav.dokarkiv.core.domain.codes.DokumentStatusCode.UNDER_REDIGERING;
+import static no.nav.dokarkiv.core.domain.codes.OnDemandInstansCode.SYFO;
 import static no.nav.dokarkiv.core.util.DateUtil.getDateNow;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
@@ -34,9 +35,11 @@ import static org.junit.Assert.assertTrue;
 import no.nav.dokarkiv.arkiverdokumentproduksjon.AbstractArkiverdokumentproduksjonItest;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
+import no.nav.dokarkiv.core.domain.codes.OnDemandInstansCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
+import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.OpprettUtgaaendeJournalpostUgyldigInput;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.OpprettUtgaaendeJournalpostValideringAvVedleggFeilet;
@@ -368,14 +371,15 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentIT extends AbstractArkive
 		expectedException.expect(isA(OpprettUtgaaendeJournalpostValideringAvVedleggFeilet.class));
 		expectedException.expectMessage("Fildetaljer.OnDemandId kan ikke være satt");
 
-		persistedJournalpost.getJournalpostDokumentInfoRelasjoner()
+		FilDetaljer detaljer = persistedJournalpost.getJournalpostDokumentInfoRelasjoner()
 				.iterator()
 				.next()
 				.getDokumentInfo()
 				.getFildetaljerListe()
 				.iterator()
-				.next()
-				.setOnDemandId("ads");
+				.next();
+		detaljer.setOnDemandInstans(SYFO);
+		detaljer.setOnDemandId("ondemandid");
 		persistedJournalpost = joarkRepository.save(persistedJournalpost);
 
 		OpprettUtgaaendeJournalpostArkiverDokumentRequest request = createRequest();

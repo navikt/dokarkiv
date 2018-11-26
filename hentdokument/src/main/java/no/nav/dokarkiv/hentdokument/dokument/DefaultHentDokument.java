@@ -69,7 +69,7 @@ public class DefaultHentDokument extends AbstractDocumentOperation implements He
 	}
 
 	private byte[] getDocumentFromRepository(Journalpost journalpost, FilDetaljer filDetaljer, String docToken) throws InvalidFilUuidException {
-		if (isNotEmpty(filDetaljer.getOnDemandId()) && isNotEmpty(docToken)) {
+		if (isNotEmpty(filDetaljer.getOnDemandId()) && (filDetaljer.getOnDemandInstans() != null) && isNotEmpty(docToken)) {
 			return getDocumentFromOnDemand(filDetaljer, docToken);
 		} else {
 			DokumentFil dokumentFil = getDocumentFromDBRepository(filDetaljer.getFilUuid());

@@ -29,6 +29,7 @@ import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
+import no.nav.dokarkiv.core.domain.codes.OnDemandInstansCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
@@ -371,6 +372,7 @@ public class InnsynJournalV2SecurityFacadeTest {
 		dokumentInfo.addFilDetaljer(
 				getFilDetaljerBuilder()
 						.variantFormat(VariantFormatCode.ARKIV)
+						.onDemandInstans(OnDemandInstansCode.SYFO)
 						.onDemandId("not null").build());
 
 		mockJournalpost(legalJournalpost);
