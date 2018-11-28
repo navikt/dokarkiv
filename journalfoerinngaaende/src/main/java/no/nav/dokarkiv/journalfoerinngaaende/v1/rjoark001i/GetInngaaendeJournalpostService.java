@@ -33,6 +33,8 @@ public class GetInngaaendeJournalpostService {
 
 		Utils.assertJournalpostIsInngaaende(journalpost);
 
+		Utils.filterFildetaljer(journalpost);
+
 		return getInngaaendeJournalpostMapper.map(journalpost);
 	}
 }
