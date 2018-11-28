@@ -13,6 +13,7 @@ import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentFil;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.domain.service.BegrensningService;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepositoryBegrenset;
 import no.nav.dokarkiv.dokumentproduksjoninfo.exceptions.FilDetaljerNotFoundException;
@@ -38,6 +39,8 @@ public class HentFerdigstilteDokumenterServiceTest {
 
 	private static final String FILUUID_1 = "filuuid1";
 	private static final String FILUUID_2 = "filuuid2";
+	private static final String FILUUID_SLADDET_1 = "filuuidSladdet1";
+	private static final String FILUUID_SLADDET_2 = "filuuidSladdet2";
 	private static final String FILCONTENT_1 = "filcontent1";
 	private static final String FILCONTENT_2 = "filcontent1";
 	private static final String TITTEL_1 = "brevtittel1";
@@ -50,7 +53,7 @@ public class HentFerdigstilteDokumenterServiceTest {
 	public ExpectedException exception = ExpectedException.none();
 
 	@Mock
-    private JoarkRepositoryBegrenset joarkRepository;
+	private JoarkRepositoryBegrenset joarkRepository;
 
 	@Mock
 	private DokumentFilRepository dokumentFilRepository;
@@ -58,8 +61,12 @@ public class HentFerdigstilteDokumenterServiceTest {
 	@Mock
 	private HentFerdigstilteDokumenterValidator hentFerdigstilteRokumenterValidator;
 
+	@Mock
+	private BegrensningService begrensningService;
+
 	@InjectMocks
 	private HentFerdigstilteDokumenterService service;
+
 
 	@Test
 	public void shouldFetchFerdigstilteDokumenter() throws Exception {
@@ -102,8 +109,14 @@ public class HentFerdigstilteDokumenterServiceTest {
 												.dokumentInfoId(DOKUMENT_1)
 												.tittel(TITTEL_1)
 												.filDetaljerList(
-														getFilDetaljerBuilder().filUuid(FILUUID_1)
-																.variantFormat(VariantFormatCode.ARKIV).build()).build())
+														getFilDetaljerBuilder()
+																.filUuid(FILUUID_1)
+																.variantFormat(VariantFormatCode.ARKIV).build(),
+														getFilDetaljerBuilder()
+																.filUuid(FILUUID_SLADDET_1)
+																.variantFormat(VariantFormatCode.SLADDET)
+																.build())
+												.build())
 								.build())
 				.dokumentInfoRelasjoner(
 						getJournalpostDokumentInfoRelasjonBuilder()
@@ -115,7 +128,10 @@ public class HentFerdigstilteDokumenterServiceTest {
 												.filDetaljerList(
 														getFilDetaljerBuilder()
 																.filUuid(FILUUID_2)
-																.variantFormat(VariantFormatCode.ARKIV)
+																.variantFormat(VariantFormatCode.ARKIV).build(),
+														getFilDetaljerBuilder()
+																.filUuid(FILUUID_SLADDET_2)
+																.variantFormat(VariantFormatCode.SLADDET)
 																.build())
 												.build())
 								.build()

@@ -1,6 +1,7 @@
 package no.nav.dokarkiv.dokumentproduksjoninfo;
 
 import no.nav.dokarkiv.core.CoreConfig;
+import no.nav.dokarkiv.core.domain.service.BegrensningService;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepositoryBegrenset;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
@@ -37,6 +38,8 @@ public abstract class AbstractDokumentproduksjoninfoItest {
     protected JoarkRepositoryBegrenset joarkRepository;
 	@Inject
 	protected DokumentFilRepository dokumentFilRepository;
+	@Inject
+	BegrensningService begrensningService;
 
 	@Inject
 	protected TransactionTemplate transactionTemplate;
