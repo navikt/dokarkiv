@@ -1,8 +1,10 @@
 package no.nav.dokarkiv.core.domain.service;
 
 import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
+import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.Begrensning;
 import no.nav.dokarkiv.core.repository.BegrensningRepository;
+import no.nav.modig.core.context.SubjectHandler;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,6 +40,20 @@ public class BegrensningService {
                 journalpostId, dokumentInfoId, begrensningTypeCode);
         return begrensning.isPresent();
 	}
+
+	public boolean isVariantSkjermet(Long journalpostId, Long dokumentInfoId, VariantFormatCode variant, BegrensningTypeCode begrensningTypeCode) {
+		Optional<Begrensning> variantSkjermet = begrensningRepository.findByJournalpostIdAndDokumentInfoIdAndVariantFormatAndBegrensningType(
+				journalpostId, dokumentInfoId, variant, begrensningTypeCode);
+		if (SubjectHandler.getSubjectHandler().getUid().equals("OlaNordmann")) {
+			//Dersom den er skjermet, returneres TRUE
+			return variantSkjermet.isPresent();
+		} else {
+			//Har rettighet til å se skjermet
+			return false;
+		}
+
+	}
+
 
 	public void saveBegrensning(Begrensning begrensning) {
 		begrensningRepository.save(begrensning);

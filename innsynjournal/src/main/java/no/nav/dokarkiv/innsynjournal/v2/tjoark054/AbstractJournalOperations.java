@@ -1,10 +1,12 @@
 package no.nav.dokarkiv.innsynjournal.v2.tjoark054;
 
+import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentFil;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.domain.service.BegrensningService;
 import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
 import no.nav.dokarkiv.core.exceptions.InvalidFilUuidException;
 import no.nav.dokarkiv.core.exceptions.NoDokumentInfoFoundException;
@@ -30,6 +32,10 @@ public abstract class AbstractJournalOperations {
 
 	@Inject
 	private DokumentFilRepository dokumentFilRepository;
+
+	@Inject
+	private BegrensningService begrensningService;
+
 
 	/**
 	 * Finds the journalpost for a journalpostId
@@ -68,9 +74,14 @@ public abstract class AbstractJournalOperations {
 	 * @return filDetaljer
 	 * @throws DocumentNotFoundException with the root cause InvalidArgumentException
 	 */
-	protected FilDetaljer getFilDetaljer(DokumentInfo dokumentInfo, VariantFormatCode variantFormat)
+	protected FilDetaljer getFilDetaljer(Long journalpostId, DokumentInfo dokumentInfo, VariantFormatCode variantFormat)
 			throws DocumentNotFoundException {
-		FilDetaljer filDetaljer = dokumentInfo.findFilDetaljerByVariantFormat(variantFormat);
+		FilDetaljer filDetaljer = null;
+		if (begrensningService.isVariantSkjermet(journalpostId, dokumentInfo.getDokumentInfoId(), variantFormat, BegrensningTypeCode.SKJERMET)) {
+			filDetaljer = dokumentInfo.findFilDetaljerByVariantFormat(VariantFormatCode.SLADDET);
+		} else {
+			filDetaljer = dokumentInfo.findFilDetaljerByVariantFormat(variantFormat);
+		}
 		if (filDetaljer == null) {
 			throw new DocumentNotFoundException(new InvalidArgumentException("DokumentInfo with dokumentInfoId="
 					+ dokumentInfo.getDokumentInfoId() + " has no FilDetaljer with variant: " + variantFormat));
