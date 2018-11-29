@@ -2,8 +2,6 @@ package no.nav.dokarkiv.core.repository;
 
 import static org.apache.commons.lang3.BooleanUtils.isFalse;
 
-import javafx.util.Pair;
-import no.nav.dokarkiv.core.domain.SkjermetVariant;
 import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
 import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
@@ -56,7 +54,6 @@ public class JoarkRepositoryBegrenset {
 		return StreamSupport.stream(joarkRepository.findAll().spliterator(), true)
 				.filter(journalpost -> isFalse(begrensningService.isJournalpostBegrenset(journalpost.getJournalpostId(), BegrensningTypeCode.UTILGJENGELIGGJORT)))
 				.map(this::addBegrensetRelasjonerToJournalpost)
-				.map(this::addSkjermetVarianterToJournalpost)
 				.collect(Collectors.toList());
 	}
 
@@ -118,14 +115,6 @@ public class JoarkRepositoryBegrenset {
 		journalpost.addAllbegrensetRelasjonerDokumentInfoIds(begrensetDokumentInfoIdList);
 		return journalpost;
 	}
-
-	private Journalpost addSkjermetVarianterToJournalpost(Journalpost journalpost) {
-		List<SkjermetVariant> begrensetDokumentInfoIdList = journalpostDokumentInfoRelasjonRepository.findSkjermetRelasjonDokumentInfoIdAndVariantByJournalpostId(journalpost
-				.getJournalpostId()).stream().collect(Collectors.toList());
-		journalpost.addAllSkjermetRelasjonerDokumentInfoIdVariants (begrensetDokumentInfoIdList);
-		return journalpost;
-	}
-
 
 	private Long convertBigToLong(Object value) {
 		if (value instanceof BigDecimal) {

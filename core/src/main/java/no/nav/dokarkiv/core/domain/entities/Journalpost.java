@@ -11,7 +11,6 @@ import static org.apache.commons.lang3.BooleanUtils.isFalse;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import no.nav.dokarkiv.core.domain.AbstractPersistentVersionedDomainObjectWithKilde;
-import no.nav.dokarkiv.core.domain.SkjermetVariant;
 import no.nav.dokarkiv.core.domain.codes.Behandlingstema;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
@@ -233,9 +232,6 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	@Transient
 	private transient List<Long> begrensetRelasjonerDokumentInfoId = new ArrayList<>();
 
-	@Transient
-	private transient List<SkjermetVariant> skjermetRelasjonerDokumentInfoIdVariantFormat = new ArrayList<>();
-
 	public void addAllbegrensetRelasjonerDokumentInfoIds(List<Long> dokumentInfoIdList) {
 		begrensetRelasjonerDokumentInfoId = new ArrayList<>();
 		begrensetRelasjonerDokumentInfoId.addAll(dokumentInfoIdList);
@@ -243,15 +239,6 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 
 	public List<Long> getBegrensetRelasjonerDokumentInfoId() {
 		return begrensetRelasjonerDokumentInfoId == null ? new ArrayList<>() : begrensetRelasjonerDokumentInfoId;
-	}
-
-	public void addAllSkjermetRelasjonerDokumentInfoIdVariants(List<SkjermetVariant> skjermetVariantList) {
-		skjermetRelasjonerDokumentInfoIdVariantFormat = new ArrayList<>();
-		skjermetRelasjonerDokumentInfoIdVariantFormat.addAll(skjermetVariantList);
-	}
-
-	public List<SkjermetVariant> getSkjermetRelasjonerDokumentInfoIdVariants() {
-		return skjermetRelasjonerDokumentInfoIdVariantFormat == null ? new ArrayList<>() : skjermetRelasjonerDokumentInfoIdVariantFormat;
 	}
 
 	/**
