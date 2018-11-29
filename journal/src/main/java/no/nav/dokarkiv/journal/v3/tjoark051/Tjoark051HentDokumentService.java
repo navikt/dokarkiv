@@ -37,7 +37,7 @@ public class Tjoark051HentDokumentService extends AbstractJournalOperations {
 		Journalpost journalpost = lookupJournalpost(request.getJournalpostId());
 
 		DokumentInfo dokumentInfo = getDokumentInfo(journalpost, request.getDokumentInfoId());
-		FilDetaljer filDetaljer = getFilDetaljer(dokumentInfo, request.getVariantFormat());
+		FilDetaljer filDetaljer = getFilDetaljer(journalpost.getJournalpostId(), dokumentInfo, request.getVariantFormat());
 		generateAuditLogIfDokumentIsSensitivt(journalpost, filDetaljer, "hentDokument");
 
 		if (dokumentInfo.getSlettet() != null && dokumentInfo.getSlettet()) {

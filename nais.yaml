@@ -1,4 +1,4 @@
-image: "docker.adeo.no:5000/dok/dokarkiv"
+image: "repo.adeo.no:5443/dok/dokarkiv"
 replicas:
   min: 2
   max: 10

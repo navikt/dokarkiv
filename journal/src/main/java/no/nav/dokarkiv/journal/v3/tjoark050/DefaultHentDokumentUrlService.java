@@ -42,7 +42,7 @@ public class DefaultHentDokumentUrlService extends AbstractJournalOperations imp
 		Journalpost journalpost = lookupJournalpost(hentDokumentUrlRequest.getJournalpostId());
 		
 		DokumentInfo dokumentInfo = getDokumentInfo(journalpost, hentDokumentUrlRequest.getDokumentInfoId());
-		FilDetaljer filDetaljer = getFilDetaljer(dokumentInfo, hentDokumentUrlRequest.getVariantFormat());
+		FilDetaljer filDetaljer = getFilDetaljer(journalpost.getJournalpostId(), dokumentInfo, hentDokumentUrlRequest.getVariantFormat());
 		
 		return filDetaljer.getFilUuid();
 	}

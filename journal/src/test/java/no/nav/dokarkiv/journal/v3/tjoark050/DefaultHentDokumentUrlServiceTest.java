@@ -18,6 +18,7 @@ import no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilde
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.domain.service.BegrensningService;
 import no.nav.dokarkiv.core.exceptions.DocumentNotFoundException;
 import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
 import no.nav.dokarkiv.core.exceptions.InvalidFilUuidException;
@@ -56,6 +57,8 @@ public class DefaultHentDokumentUrlServiceTest {
 	private DefaultHentDokumentUrl hentDokumentUrlMock;
 	@Mock
     private JoarkRepositoryBegrenset joarkRepositoryMock;
+	@Mock
+	private BegrensningService begrensningService;
 
 	@Captor
 	private ArgumentCaptor<HentDokumentUrlRequest> delegateRequestCaptor;
