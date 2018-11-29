@@ -59,7 +59,7 @@ public class DokumentQuery implements Query {
 	@GraphQLMetrics(value = "dok_graphql_request", extraTags = {"process_code", "gjoark003", "query", DOKUMENT})
 	@Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_DOKUMENT)},
 			actions = @Abac.Attr(key = ACTION_ID, value = READ_ACTION))
-	public byte[] dokumentInfo(@GraphQLArgument(name = "dokumentInfoId") @GraphQLNonNull Long dokumentInfoId, @GraphQLArgument(name = "variantFormat") VariantFormat variantFormat) {
+	public byte[] dokumentInfo(@GraphQLArgument(name = "dokumentInfoId") @GraphQLNonNull Long dokumentInfoId, @GraphQLArgument(name = "variantFormat") @GraphQLNonNull VariantFormat variantFormat) {
 		log.info(format("GraphQL har mottatt %s query med dokumentInfoId=%s og variantFormat=%s", DOKUMENT, dokumentInfoId, variantFormat));
 		abacSecurityService.assertAccessToDokumentIncludingBegrenset(dokumentInfoId);
 
