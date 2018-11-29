@@ -157,6 +157,11 @@
 				<version>${oracle.version}</version>
 			</dependency>
 			<dependency>
+				<groupId>org.simpleflatmapper</groupId>
+				<artifactId>sfm-springjdbc</artifactId>
+				<version>6.0.9</version>
+			</dependency>
+			<dependency>
 				<groupId>javax.inject</groupId>
 				<artifactId>javax.inject</artifactId>
 				<version>1</version>
