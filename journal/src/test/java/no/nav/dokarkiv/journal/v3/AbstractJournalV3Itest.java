@@ -75,7 +75,7 @@ public abstract class AbstractJournalV3Itest {
 		dokumentFilRepository.deleteAll();
 		joarkRepository.deleteAll();
 		RequestContextSetter.setRequestContext(new SimpleRequestContext.Builder()
-				.userId("srvjoarkadmin")
+				.userId("testuser")
 				.componentId("itest")
 				.build());
 	}

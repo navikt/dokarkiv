@@ -52,7 +52,7 @@ public abstract class AbstractDokumentproduksjoninfoItest {
 		joarkRepository.deleteAll();
 		dokumentFilRepository.deleteAll();
 		RequestContextSetter.setRequestContext(new SimpleRequestContext.Builder()
-				.userId("srvjoarkadmin")
+				.userId("testuser")
 				.componentId("itest")
 				.build());
 	}

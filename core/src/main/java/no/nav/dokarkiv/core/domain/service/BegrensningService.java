@@ -46,13 +46,13 @@ public class BegrensningService {
 	public boolean isVariantSkjermet(Long journalpostId, Long dokumentInfoId, VariantFormatCode variant, BegrensningTypeCode begrensningTypeCode) {
 		Optional<Begrensning> variantSkjermet = begrensningRepository.findByJournalpostIdAndDokumentInfoIdAndVariantFormatAndBegrensningType(
 				journalpostId, dokumentInfoId, variant, begrensningTypeCode);
-		String brukerSomKaller = hentBrukerSomKaller();
-		if (brukerSomKaller.equals("srvjoarkadmin")) {
+		String consumer = hentBrukerSomKaller();
+		if (consumer.equalsIgnoreCase("srvjoarkadmin")) {
+			//Har rettighet til å se originalen uansett
+			return false;
+		} else {
 			//Dersom den er skjermet, returneres TRUE
 			return variantSkjermet.isPresent();
-		} else {
-			//Har rettighet til å se skjermet
-			return false;
 		}
 
 	}
@@ -74,19 +74,19 @@ public class BegrensningService {
 	}
 
 	private String hentBrukerSomKaller() {
-		String brukerSomKaller = "";
-		if (SubjectHandler.getSubjectHandler().getUid() == null) {
-			if (MDC.get(MDCConstants.MDC_USER_ID) != null) {
-				brukerSomKaller = MDC.get(MDCConstants.MDC_USER_ID).toString();
+		String consumer;
+		if (SubjectHandler.getSubjectHandler().getConsumerId() == null) {
+			if (MDC.get(MDCConstants.MDC_CONSUMER_ID) != null) {
+				consumer = MDC.get(MDCConstants.MDC_CONSUMER_ID).toString();
 			} else if (MDC.get("user") != null) {
-				brukerSomKaller = MDC.get("user").toString();
+				consumer = MDC.get("user").toString();
 			} else {
-				brukerSomKaller = MDC.get(MDCConstants.MDC_CONSUMER_ID).toString();
+				consumer = MDC.get(MDCConstants.MDC_USER_ID).toString();
 			}
 		} else {
-			brukerSomKaller = SubjectHandler.getSubjectHandler().getUid();
+			consumer = SubjectHandler.getSubjectHandler().getConsumerId();
 		}
-		return brukerSomKaller;
+		return consumer;
 	}
 
 }
