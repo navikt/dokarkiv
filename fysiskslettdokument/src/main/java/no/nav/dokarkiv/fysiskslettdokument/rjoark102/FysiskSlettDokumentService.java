@@ -51,10 +51,10 @@ public class FysiskSlettDokumentService {
 		switch (relasjonSomSkalSlettesFysisk.getTilknyttetJournalpostSom()) {
 			case HOVEDDOKUMENT:
 				sjekkAtJournalpostErUtilgjengeliggjort(relasjonSomSkalSlettesFysisk.getJournalpost().getJournalpostId());
-				fysiskSlettEtHoveddokument(relasjonSomSkalSlettesFysisk);
 				begrensningService.deleteValidertJournalpostBegrensning(
 						relasjonSomSkalSlettesFysisk.getJournalpost().getJournalpostId(),
 						BegrensningTypeCode.UTILGJENGELIGGJORT);
+				fysiskSlettEtHoveddokument(relasjonSomSkalSlettesFysisk);
 				log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har fysisk slettet journalpost med journalpostId={}",
 						requestTo.getJournalpostId());
 				break;
@@ -62,11 +62,11 @@ public class FysiskSlettDokumentService {
 				sjekkAtDokumentErUtilgjengeliggjort(
 						relasjonSomSkalSlettesFysisk.getJournalpost().getJournalpostId(),
 						relasjonSomSkalSlettesFysisk.getDokumentInfo().getDokumentInfoId());
-				fysiskSlettEtVedlegg(relasjonSomSkalSlettesFysisk);
 				begrensningService.deleteValidertJournalpostDokumentInfoRelasjonBegrensning(
 						relasjonSomSkalSlettesFysisk.getJournalpost().getJournalpostId(),
 						relasjonSomSkalSlettesFysisk.getDokumentInfo().getDokumentInfoId(),
 						BegrensningTypeCode.UTILGJENGELIGGJORT);
+				fysiskSlettEtVedlegg(relasjonSomSkalSlettesFysisk);
 				log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) +
 								" har fysisk slettet dokument med journalpostId={}, dokumentInfoId={}",
 						requestTo.getJournalpostId(), requestTo.getDokumentInfoId());
@@ -162,6 +162,7 @@ public class FysiskSlettDokumentService {
 
 	private void slettFilOgDokumentInfo(Long dokumentInfoId) {
 		slettFilBeholdDokumentInfo(dokumentInfoId);
+		deleteRepository.deleteSkannetInnholdByDokumentInfoId(dokumentInfoId);
 		deleteRepository.deleteDokInfoTilleggByDokumentInfoId(dokumentInfoId);
 		deleteRepository.deleteDokInfoJPRelByDokumentInfoId(dokumentInfoId);
 		deleteRepository.deleteDokInfoByDokumentInfoId(dokumentInfoId);
