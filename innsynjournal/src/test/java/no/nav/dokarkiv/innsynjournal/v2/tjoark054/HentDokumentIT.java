@@ -21,6 +21,7 @@ import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
+import no.nav.dokarkiv.core.domain.codes.OnDemandInstansCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.jaxws.SubjectHandlerUtils;
 import no.nav.dokarkiv.core.jaxws.ThreadLocalSubjectHandler;
@@ -204,6 +205,7 @@ public class HentDokumentIT extends AbstractInnsynJournalV2Itest {
 		Journalpost journalpost = joarkRepository.save(buildDokInfoStructure(
 				createDokumentInfo(DOKUMENT_TITTEL,
 						createFildetaljerFil(DokumentFilTestDataProvider.FIL_UUID)
+								.onDemandInstans(OnDemandInstansCode.SYFO)
 								.onDemandId("1232131"))).build());
 
 		expectAccessDenied();

@@ -4,6 +4,7 @@ import static java.lang.String.format;
 import static no.nav.dokarkiv.hentjournalinfo.QueryNames.DOKUMENT;
 
 import no.nav.dokarkiv.hentjournalinfo.GraphQLRequest;
+import no.nav.dokarkiv.hentjournalinfo.dto.kode.VariantFormat;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -114,14 +115,14 @@ public class TestQueryUtils {
                 .build();
     }
 
-    public static GraphQLRequest createFilRequest(Long dokumentInfoId, Long journalpostId) {
+    public static GraphQLRequest createFilRequest(Long dokumentInfoId, VariantFormat variantFormat) {
         Map<String, Object> variables = new HashMap<>();
 
         variables.put("dokId", dokumentInfoId);
-        variables.put("jpId", journalpostId);
+        variables.put("varFor", variantFormat);
         return GraphQLRequest.builder()
                 .variables(variables)
-                .query(format("query ($dokId: Long! $jpId: Long!) {  %s(dokumentInfoId:$dokId, journalpostId:$jpId )}", DOKUMENT))
+                .query(format("query ($dokId: Long! $varFor: VariantFormatInput!) {  %s(dokumentInfoId:$dokId, variantFormat:$varFor) }", DOKUMENT))
                 .build();
     }
 

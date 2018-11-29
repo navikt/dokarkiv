@@ -168,7 +168,7 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentValidator {
 	}
 
 	private boolean hasFildetaljerWithOnDemandId(DokumentInfo dokumentInfo) {
-		return dokumentInfo.getFildetaljerListe().stream().anyMatch(filDetaljer -> filDetaljer.getOnDemandId() != null);
+		return dokumentInfo.getFildetaljerListe().stream().anyMatch(filDetaljer -> (filDetaljer.getOnDemandId() != null && filDetaljer.getOnDemandInstans() != null));
 	}
 
 	private void isFalse(Boolean statement, String message) {

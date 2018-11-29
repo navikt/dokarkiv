@@ -302,7 +302,7 @@ public class InnsynJournalV2SecurityFacade {
 					+ " har ikke en fildetaljer med VariantFormat=ARKIV");
 		}
 
-		if (StringUtils.isNotEmpty(filDetaljer.getOnDemandId())) {
+		if (StringUtils.isNotEmpty(filDetaljer.getOnDemandId()) && filDetaljer.getOnDemandInstans() != null) {
 			throw new SecurityLimitationAttributeException(journalpostId,
 					dokumentInfo.getDokumentInfoId(),
 					singletonMap("DokumentInfo.Fildetaljer.OnDemandId", filDetaljer.getOnDemandId()));

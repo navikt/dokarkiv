@@ -213,7 +213,7 @@ public class DefaultKnyttDokumentTilJournalpostSomVedleggService implements Knyt
 
 	private void checkIfDokumentInfoDoesNotHaveFildetaljerWithOnDemandId(DokumentInfo dokumentInfo) throws FilDetaljerOnDemandException {
 		for (FilDetaljer detaljer : dokumentInfo.getFildetaljerListe()) {
-			if (detaljer.getOnDemandId() != null) {
+			if (detaljer.getOnDemandId() != null && detaljer.getOnDemandInstans() != null) {
 				String message = String.format(ON_DEMAND_FIL_DETALJER_FORMAT, dokumentInfo.getDokumentInfoId());
 				throw new FilDetaljerOnDemandException(message);
 			}
