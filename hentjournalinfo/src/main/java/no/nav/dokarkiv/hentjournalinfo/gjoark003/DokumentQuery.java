@@ -22,8 +22,10 @@ import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.core.security.abac.AbacSecurityService;
 import no.nav.dokarkiv.hentjournalinfo.Query;
+import no.nav.dokarkiv.hentjournalinfo.dto.kode.VariantFormat;
 import no.nav.dokarkiv.hentjournalinfo.exceptions.DokumentIkkeFunnetException;
 import no.nav.freg.abac.core.annotation.Abac;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
@@ -35,49 +37,51 @@ import java.util.List;
  *
  * @author Ugur Alpay Cenar, Visma Consulting.
  */
+@Component
 @Slf4j
 public class DokumentQuery implements Query {
 
-    private final DokumentinfoRepository dokumentinfoRepository;
+	private final DokumentinfoRepository dokumentinfoRepository;
 
-    private final DokumentFilRepository dokumentFilRepository;
+	private final DokumentFilRepository dokumentFilRepository;
 
-    private final AbacSecurityService abacSecurityService;
+	private final AbacSecurityService abacSecurityService;
 
-    @Inject
-    public DokumentQuery(DokumentinfoRepository dokumentinfoRepository, DokumentFilRepository dokumentFilRepository, AbacSecurityService abacSecurityService, JoarkRepository joarkRepository) {
-        this.dokumentinfoRepository = dokumentinfoRepository;
-        this.dokumentFilRepository = dokumentFilRepository;
-        this.abacSecurityService = abacSecurityService;
-    }
+	@Inject
+	public DokumentQuery(DokumentinfoRepository dokumentinfoRepository, DokumentFilRepository dokumentFilRepository, AbacSecurityService abacSecurityService, JoarkRepository joarkRepository) {
+		this.dokumentinfoRepository = dokumentinfoRepository;
+		this.dokumentFilRepository = dokumentFilRepository;
+		this.abacSecurityService = abacSecurityService;
+	}
 
-    @GraphQLQuery(name = DOKUMENT, description = "Selve dokumentet i PDF/PDFA format")
-    @Transactional(readOnly = true)
-    @GraphQLMetrics(value = "dok_graphql_request", extraTags = {"process_code", "gjoark003", "query", DOKUMENT})
-    @Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_DOKUMENT)},
-            actions = @Abac.Attr(key = ACTION_ID, value = READ_ACTION))
-    public byte[] dokumentInfo(@GraphQLArgument(name = "dokumentInfoId") @GraphQLNonNull Long dokumentInfoId, @GraphQLArgument(name = "journalpostId") Long journalpostId, @GraphQLArgument(name = "filtype") FilTypeCode filType) {
-        log.info(format("GraphQL har mottatt %s query med dokumentInfoId=%s, journalpostId=%s", DOKUMENT, dokumentInfoId, journalpostId));
-        abacSecurityService.assertAccessToDokumentIncludingBegrenset(dokumentInfoId);
+	@GraphQLQuery(name = DOKUMENT, description = "Selve dokumentet i PDF/PDFA format")
+	@Transactional(readOnly = true)
+	@GraphQLMetrics(value = "dok_graphql_request", extraTags = {"process_code", "gjoark003", "query", DOKUMENT})
+	@Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_DOKUMENT)},
+			actions = @Abac.Attr(key = ACTION_ID, value = READ_ACTION))
+	public byte[] dokumentInfo(@GraphQLArgument(name = "dokumentInfoId") @GraphQLNonNull Long dokumentInfoId, @GraphQLArgument(name = "variantFormat") VariantFormat variantFormat) {
+		log.info(format("GraphQL har mottatt %s query med dokumentInfoId=%s og variantFormat=%s", DOKUMENT, dokumentInfoId, variantFormat));
+		abacSecurityService.assertAccessToDokumentIncludingBegrenset(dokumentInfoId);
 
-        DokumentInfo dokumentInfo = dokumentinfoRepository.findById(dokumentInfoId)
-                .orElse(DokumentInfo.builder().build());
+		DokumentInfo dokumentInfo = dokumentinfoRepository.findById(dokumentInfoId)
+				.orElse(DokumentInfo.builder().build());
 
-        List<FilDetaljer> fildetaljerListe = new ArrayList<>(dokumentInfo.getFildetaljerListe());
-        FilDetaljer filDetaljer = fildetaljerListe.stream()
-                .filter(detaljer -> detaljer.getFiltype() == FilTypeCode.PDFA || detaljer.getFiltype() == FilTypeCode.PDF)
-                .findAny()
-                .orElseThrow(() -> new DokumentIkkeFunnetException(format("Fant ingen fil med dokumentInfoId=%s og filtype=%s", dokumentInfoId, "PDF eller PDFA")));
+		List<FilDetaljer> fildetaljerListe = new ArrayList<>(dokumentInfo.getFildetaljerListe());
+		FilDetaljer filDetaljer = fildetaljerListe.stream()
+				.filter(detaljer -> VariantFormat.mapFromVariantFormatCode(detaljer.getVariantFormat()) == variantFormat)
+				.filter(detaljer -> detaljer.getFiltype() == FilTypeCode.PDFA || detaljer.getFiltype() == FilTypeCode.PDF)
+				.findAny()
+				.orElseThrow(() -> new DokumentIkkeFunnetException(format("Fant ingen fil med dokumentInfoId=%s og filtype=%s", dokumentInfoId, "PDF eller PDFA")));
 
-        String filUuid = filDetaljer.getFilUuid();
-        DokumentFil dokumentFil = dokumentFilRepository.findByFilUuid(filUuid);
-        if (dokumentFil == null) {
-            throw new DokarkivFunctionalException(format("Finner ikke fil med filUuid=%s i databasen", filUuid));
-        }
-        return dokumentFil.getFil();
+		String filUuid = filDetaljer.getFilUuid();
+		DokumentFil dokumentFil = dokumentFilRepository.findByFilUuid(filUuid);
+		if (dokumentFil == null) {
+			throw new DokarkivFunctionalException(format("Finner ikke fil med filUuid=%s i databasen", filUuid));
+		}
+		return dokumentFil.getFil();
 
 
-    }
+	}
 
 
 }
