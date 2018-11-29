@@ -12,7 +12,6 @@ import static no.nav.dokarkiv.core.domain.builder.SkannetInnholdBuilder.getSkann
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
-import no.nav.dokarkiv.core.domain.builder.BehandlingsrelasjonBuilder;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import org.junit.Before;
@@ -56,7 +55,6 @@ public class DefaultKildeNavnPopulatorTest {
 	private void assertOpprettetKildeNavnSet(Journalpost journalpost) {
 		assertThat(journalpost.getOpprettetKildeNavn(), is(kildeNavn));
 		assertThat(journalpost.getSaksrelasjon().getOpprettetKildeNavn(), is(kildeNavn));
-		assertThat(journalpost.getBehandlingsrelasjon().getOpprettetKildeNavn(), is(kildeNavn));
 		assertThat(journalpost.getBrukere().iterator().next().getOpprettetKildeNavn(), is(kildeNavn));
 		assertThat(journalpost.getReturInfos().iterator().next().getOpprettetKildeNavn(), is(kildeNavn));
 		assertThat(journalpost.getKryssreferanser().iterator().next().getOpprettetKildeNavn(), is(kildeNavn));
@@ -70,7 +68,6 @@ public class DefaultKildeNavnPopulatorTest {
 	private void assertEndretKildeNavnSet(Journalpost journalpost) {
 		assertThat(journalpost.getEndretKildeNavn(), is(kildeNavn));
 		assertThat(journalpost.getSaksrelasjon().getEndretKildeNavn(), is(kildeNavn));
-		assertThat(journalpost.getBehandlingsrelasjon().getEndretKildeNavn(), is(kildeNavn));
 		assertThat(journalpost.getBrukere().iterator().next().getEndretKildeNavn(), is(kildeNavn));
 		assertThat(journalpost.getReturInfos().iterator().next().getEndretKildeNavn(), is(kildeNavn));
 		assertThat(journalpost.getKryssreferanser().iterator().next().getEndretKildeNavn(), is(kildeNavn));
@@ -90,9 +87,6 @@ public class DefaultKildeNavnPopulatorTest {
 				.journalpostId(id)
 				.saksrelasjon(getSaksrelasjonBuilder()
 						.saksrelasjonId(id)
-						.build())
-				.behandlingsrelasjon(BehandlingsrelasjonBuilder.getBehandlingsrelasjonBuilder()
-						.behandlingsrelasjonId(id)
 						.build())
 				.brukere(getBrukerBuilder()
 						.brukerInfoId(id)

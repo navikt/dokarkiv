@@ -47,7 +47,6 @@ public class JournalpostCriterionBuilder extends CriterionBuilder {
 		// To avoid separate select queries for associated entities, we include everything in criteria
 		if (parameters.isEagerFetchDokInfo()) {
 			// include the following associasions in the query, avoiding separate fetch operations.
-			criteria.setFetchMode("behandlingsrelasjon", FetchMode.JOIN);
 			criteria.setFetchMode("journalpostDokumentInfoRelasjoner", FetchMode.JOIN);
 			criteria.setFetchMode("journalpostDokumentInfoRelasjoner.dokumentInfo.fildetaljerListe", FetchMode.JOIN);
 

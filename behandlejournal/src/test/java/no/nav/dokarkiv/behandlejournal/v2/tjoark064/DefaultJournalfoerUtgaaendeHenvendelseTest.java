@@ -9,7 +9,6 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.verify;
 
-import no.nav.dokarkiv.core.domain.builder.BehandlingsrelasjonBuilder;
 import no.nav.dokarkiv.core.domain.builder.SaksrelasjonBuilder;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
@@ -159,9 +158,6 @@ public class DefaultJournalfoerUtgaaendeHenvendelseTest {
 				.brukere(getBrukerBuilder().brukerId("***gammelt_fnr***").build())
 				.saksrelasjon(
 						SaksrelasjonBuilder.getSaksrelasjonBuilder().sakId("1").fagsystem(FagsystemCode.BID).build())
-				.behandlingsrelasjon(
-						BehandlingsrelasjonBuilder.getBehandlingsrelasjonBuilder().behandlingsId("1")
-								.behandlingsType("TEST").build())
 				.signatur(true)
 				.innhold("innhold")
 				.mottattDato(new Date())

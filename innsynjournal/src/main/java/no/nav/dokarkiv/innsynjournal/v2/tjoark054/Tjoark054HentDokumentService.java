@@ -34,7 +34,7 @@ public class Tjoark054HentDokumentService extends AbstractJournalOperations {
 		FilDetaljer filDetaljer = getFilDetaljer(dokumentInfo, request.getVariantFormat());
 		generateAuditLogIfDokumentIsSensitivt(journalpost, filDetaljer, "hentDokument");
 
-		if (StringUtils.isNotEmpty(filDetaljer.getOnDemandId())) {
+		if (StringUtils.isNotEmpty(filDetaljer.getOnDemandId()) && filDetaljer.getOnDemandInstans() != null) {
 			// pga lisens tillater man ikke henting fra OnDemand
 			throw new SecurityLimitationAttributeException(request.getJournalpostId(),
 					request.getDokumentInfoId(),
