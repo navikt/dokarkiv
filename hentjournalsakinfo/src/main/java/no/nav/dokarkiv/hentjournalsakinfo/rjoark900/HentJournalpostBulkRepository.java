@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -27,14 +28,13 @@ public class HentJournalpostBulkRepository {
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<Journalpost> tilgangJournalposter(final List<String> sakIds,
-												  final Arkivsaksystem arkivsaksystem,
-												  BulkJournalposterFilter bulkJournalposterFilter) {
+	public List<Journalpost> hentJournalposter(final List<String> sakIds,
+											   final Arkivsaksystem arkivsaksystem,
+											   BulkJournalposterFilter bulkJournalposterFilter) {
 		return entityManager.createQuery(
 				"select j " +
 						"from Journalpost j " +
 						"join fetch j.saksrelasjon s " +
-						"left outer join fetch j.behandlingsrelasjon " +
 						"join fetch j.journalpostDokumentInfoRelasjoner jprel " +
 						"join fetch jprel.dokumentInfo " +
 						"where " +
@@ -55,24 +55,28 @@ public class HentJournalpostBulkRepository {
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<Journalpost> tilgangMidlertidigeJournalposter(List<String> alleIdenter,
-															  BulkJournalposterFilter bulkJournalposterFilter) {
+	public List<Journalpost> hentMidlertidigeJournalposter(List<String> alleIdenter,
+														   BulkJournalposterFilter bulkJournalposterFilter) {
+		if(bulkJournalposterFilter.getInkluderTema() == null || bulkJournalposterFilter.getInkluderTema().isEmpty()) {
+			return new ArrayList<>();
+		}
 		return entityManager.createQuery(
 				"select j " +
 						"from Journalpost j " +
 						"join j.brukere b on b.brukerId in :alleIdenter " +
 						"left outer join fetch j.saksrelasjon s " +
-						"left outer join fetch j.behandlingsrelasjon " +
 						"join fetch j.journalpostDokumentInfoRelasjoner jprel " +
 						"join fetch jprel.dokumentInfo " +
 						"where " +
 						"j.changeStamp.createdDate > :fraDato " +
+						"and j.fagomrade in :inkluderTema " +
 						"and j.journalposttype in :inkluderJournalpostType " +
 						"and j.journalstatus in :inkluderJournalStatus", Journalpost.class)
 				.unwrap(Query.class)
 				.setResultTransformer(DistinctRootEntityResultTransformer.INSTANCE)
 				.setParameter("alleIdenter", alleIdenter)
 				.setParameter("fraDato", Timestamp.valueOf(bulkJournalposterFilter.getFraDato().atStartOfDay()))
+				.setParameter("inkluderTema", bulkJournalposterFilter.getInkluderTema())
 				.setParameter("inkluderJournalpostType", bulkJournalposterFilter.getInkluderJournalpostType())
 				.setParameter("inkluderJournalStatus", bulkJournalposterFilter.getInkluderJournalStatus())
 				.getResultList();
