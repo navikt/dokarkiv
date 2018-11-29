@@ -118,13 +118,20 @@ public class InngaaendeJournalDataProvider {
 
 	public static DokumentInfoBuilder createVedleggDokumentInfo() {
 		return createBaseVedleggDokumentInfo()
-				.filDetaljerList(createFilDetaljerArkiv(), createFilDetaljerProduksjon());
+				.filDetaljerList(createFilDetaljerArkiv(), createFilDetaljerProduksjon(), createFilDetaljerSladdet());
 	}
 
 	public static FilDetaljer createFilDetaljerArkiv() {
 		return getFilDetaljerBuilder()
 				.filtype(FilTypeCode.PDFA)
 				.variantFormat(VariantFormatCode.ARKIV)
+				.build();
+	}
+
+	public static FilDetaljer createFilDetaljerSladdet() {
+		return getFilDetaljerBuilder()
+				.filtype(FilTypeCode.PDFA)
+				.variantFormat(VariantFormatCode.SLADDET)
 				.build();
 	}
 

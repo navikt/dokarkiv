@@ -25,6 +25,7 @@ import no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder;
 import no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder;
 import no.nav.dokarkiv.core.domain.builder.JournalpostBuilder;
 import no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder;
+import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
@@ -34,6 +35,7 @@ import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
 import no.nav.dokarkiv.core.domain.codes.OnDemandInstansCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
+import no.nav.dokarkiv.core.domain.entities.Begrensning;
 import no.nav.dokarkiv.core.domain.entities.DokumentUrlInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
@@ -68,6 +70,11 @@ public class HentDokumentIT extends AbstractJournalV3Itest {
 	private static final String FIL_UUID = FilDetaljer.generateUuid();
 	private static final VariantFormatCode VARIANT_FORMAT = VariantFormatCode.ARKIV;
 	private static final byte[] FIL_CONTENT = "Test".getBytes();
+
+	private static final String FIL_UUID_SLADDET = FilDetaljer.generateUuid();
+	private static final VariantFormatCode VARIANT_FORMAT_SLADDET = VariantFormatCode.SLADDET;
+	private static final byte[] FIL_CONTENT_SLADDET = "sladdet".getBytes();
+
 
 	private static final OnDemandInstansCode ON_DEMAND_INSTANS = OnDemandInstansCode.PESYS;
 	private static final String ON_DEMAND_ID = "onDemandId";
@@ -213,6 +220,29 @@ public class HentDokumentIT extends AbstractJournalV3Itest {
 	}
 
 	@Test
+	public void shouldGetSladdetDokument() throws Exception {
+		abacPermit();
+
+		Journalpost journalpost = buildAndPersistJournalpost("Dokumenttittel");
+		HentDokumentRequest request = createRequest(journalpost);
+		persistDokumentFil();
+		persistDokumentFilSladdet();
+		Begrensning begrensning = Begrensning.builder().begrensningId(1L)
+				.begrensningType(BegrensningTypeCode.SKJERMET)
+				.journalpostId(journalpost.getJournalpostId())
+				.dokumentInfoId(journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId())
+				.variantFormat(VariantFormatCode.ARKIV)
+				.build();
+		begrensning.setOpprettetKildeNavn("Clark Kentolini");
+		begrensningRepository.save(begrensning);
+
+		HentDokumentResponse response = journalV3Provider.hentDokument(request);
+
+		assertThat(response.getDokument(), is(FIL_CONTENT_SLADDET));
+	}
+
+
+	@Test
 	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public void shouldGetOnDemandDokument() throws Exception {
 		resetAllRequests();
@@ -283,7 +313,11 @@ public class HentDokumentIT extends AbstractJournalV3Itest {
 												.filDetaljerList(
 														FilDetaljerBuilder.getFilDetaljerBuilder().filtype(FilTypeCode.PDF)
 																.filUuid(FIL_UUID).variantFormat(VARIANT_FORMAT)
-																.opprettetKildeNavn("test").build()).build()).build());
+																.opprettetKildeNavn("test").build(),
+														FilDetaljerBuilder.getFilDetaljerBuilder().filtype(FilTypeCode.PDF)
+																.filUuid(FIL_UUID_SLADDET).variantFormat(VARIANT_FORMAT_SLADDET)
+																.opprettetKildeNavn("test").build()
+												).build()).build());
 	}
 
 	private JournalpostBuilder createOnDemandJournalpostBuilder() {
@@ -313,6 +347,10 @@ public class HentDokumentIT extends AbstractJournalV3Itest {
 																.filUuid(FIL_UUID).variantFormat(VARIANT_FORMAT)
 																.onDemandId(ON_DEMAND_ID).onDemandInstans(ON_DEMAND_INSTANS)
 																.opprettetKildeNavn("test").build()).build()).build());
+	}
+
+	private void persistDokumentFilSladdet() {
+		dokumentFilRepository.save(DokumentFilBuilder.getDokumentFilBuilder().filUuid(FIL_UUID_SLADDET).fil(FIL_CONTENT_SLADDET).opprettetKildeNavn("test").build());
 	}
 
 	private void persistDokumentFil() {

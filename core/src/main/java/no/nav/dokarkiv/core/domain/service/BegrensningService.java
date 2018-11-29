@@ -84,7 +84,7 @@ public class BegrensningService {
 				brukerSomKaller = MDC.get(MDCConstants.MDC_CONSUMER_ID).toString();
 			}
 		} else {
-			SubjectHandler.getSubjectHandler().getUid();
+			brukerSomKaller = SubjectHandler.getSubjectHandler().getUid();
 		}
 		return brukerSomKaller;
 	}
