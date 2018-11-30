@@ -21,57 +21,17 @@ public class HentJournalpostBulkService {
 	}
 
 	public HentJournalpostBulkResponseTo hentJournalpostBulk(HentJournalpostBulkRequestTo hentJournalpostBulkRequestTo) {
-		List<JournalpostDto> tilgangJournalposter = hentJournalpostBulkSpringJdbcRepository.hentJournalposter(hentJournalpostBulkRequestTo.getGsakSakIds(),
+		List<JournalpostDto> journalpostDtos = hentJournalpostBulkSpringJdbcRepository.hentJournalposter(
+				hentJournalpostBulkRequestTo.getGsakSakIds(),
 				hentJournalpostBulkRequestTo.getPsakSakIds(),
 				new BulkJournalposterFilter(
 						hentJournalpostBulkRequestTo.getFraDato(),
+						hentJournalpostBulkRequestTo.getAlleIdenter(),
 						hentJournalpostBulkRequestTo.getInkluderTema(),
 						hentJournalpostBulkRequestTo.getInkluderJournalStatus(),
 						hentJournalpostBulkRequestTo.getInkluderJournalpostType(),
-						hentJournalpostBulkRequestTo.isVisFeilregistrerte()
-				)
+						hentJournalpostBulkRequestTo.isVisFeilregistrerte())
 		);
-//		final List<JournalpostDto> tilgangJournalposter = new ArrayList<>();
-//		// TODO jdbc sql unions
-//		if (!hentJournalpostBulkRequestTo.getGsakSakIds().isEmpty()) {
-//			List<JournalpostDto> journalposts = hentJournalpostBulkRepository.hentJournalposter(hentJournalpostBulkRequestTo.getGsakSakIds(),
-//					Arkivsaksystem.GSAK,
-//					new BulkJournalposterFilter(
-//							hentJournalpostBulkRequestTo.getFraDato(),
-//							new ArrayList<>(),
-//							hentJournalpostBulkRequestTo.getInkluderJournalStatus(),
-//							hentJournalpostBulkRequestTo.getInkluderJournalpostType(),
-//							hentJournalpostBulkRequestTo.isVisFeilregistrerte()
-//					)
-//			).stream().map(JournalpostDto::new).collect(Collectors.toList());
-//			tilgangJournalposter.addAll(journalposts);
-//		}
-//
-//		if (!hentJournalpostBulkRequestTo.getPsakSakIds().isEmpty()) {
-//			List<JournalpostDto> journalposts = hentJournalpostBulkRepository.hentJournalposter(hentJournalpostBulkRequestTo.getPsakSakIds(),
-//					Arkivsaksystem.PSAK,
-//					new BulkJournalposterFilter(
-//							hentJournalpostBulkRequestTo.getFraDato(),
-//							new ArrayList<>(),
-//							hentJournalpostBulkRequestTo.getInkluderJournalStatus(),
-//							hentJournalpostBulkRequestTo.getInkluderJournalpostType(),
-//							hentJournalpostBulkRequestTo.isVisFeilregistrerte()
-//					)
-//			).stream().map(JournalpostDto::new).collect(Collectors.toList());
-//			tilgangJournalposter.addAll(journalposts);
-//		}
-//		if (hentJournalpostBulkRequestTo.isInkluderMidlertidigeJournalposter()) {
-//			List<JournalpostDto> journalposts = hentJournalpostBulkRepository.hentMidlertidigeJournalposter(hentJournalpostBulkRequestTo.getAlleIdenter(),
-//					new BulkJournalposterFilter(
-//							hentJournalpostBulkRequestTo.getFraDato(),
-//							hentJournalpostBulkRequestTo.getInkluderTema(),
-//							hentJournalpostBulkRequestTo.getInkluderJournalStatus().stream().filter(js -> js == JournalStatusCode.M || js == JournalStatusCode.MO).collect(Collectors.toList()),
-//							hentJournalpostBulkRequestTo.getInkluderJournalpostType(),
-//							hentJournalpostBulkRequestTo.isVisFeilregistrerte()
-//					)
-//			).stream().map(JournalpostDto::new).collect(Collectors.toList());
-//			tilgangJournalposter.addAll(journalposts);
-//		}
-		return new HentJournalpostBulkResponseTo(tilgangJournalposter);
+		return new HentJournalpostBulkResponseTo(journalpostDtos);
 	}
 }

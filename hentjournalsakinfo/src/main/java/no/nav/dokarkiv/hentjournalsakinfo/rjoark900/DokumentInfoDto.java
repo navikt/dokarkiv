@@ -14,12 +14,4 @@ public class DokumentInfoDto {
 	private final String brevkode;
 	private final VariantFormatCode variantFormat = VariantFormatCode.ARKIV;
 	private final String tittel;
-
-//	public DokumentInfoDto(DokumentInfo dokumentInfo) {
-//		this.dokumentInfoId = dokumentInfo.getDokumentInfoId().toString();
-//		this.dokumentstatus = dokumentInfo.getDokumentstatus();
-//		this.brevkode = dokumentInfo.getBrevkode();
-//		this.tittel = dokumentInfo.getTittel();
-//		this.variantFormat = VariantFormatCode.ARKIV;
-//	}
 }
