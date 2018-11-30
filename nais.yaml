@@ -1,3 +1,4 @@
+team: teamdokumenthandtering
 image: "repo.adeo.no:5443/dok/dokarkiv"
 replicas:
   min: 2
