@@ -15,11 +15,12 @@ import java.util.List;
 /**
  * @author Joakim Bjørnstad, Jbit AS
  */
+// TODO fjern denne
+@Deprecated
 @Repository
 public class HentJournalpostBulkRepository {
 	private static final List<Boolean> NO_FEILREGISTRERT_JOURNALPOST = Arrays.asList(false);
 	private static final List<Boolean> ALL_JOURNALPOST = Arrays.asList(true, false);
-
 	private final EntityManager entityManager;
 
 	@Inject
@@ -39,7 +40,7 @@ public class HentJournalpostBulkRepository {
 						"join fetch jprel.dokumentInfo " +
 						"where " +
 						"s.sakId in :sakIds and s.fagsystem = :arkivsaksystem " +
-						"and (s.feilregistrert is null or s.feilregistrert in :visFeilregistrert) " +
+						"and (s.feilregistrert is null or s.feilregistrert = 0) " +
 						"and j.changeStamp.createdDate > :fraDato " +
 						"and j.journalposttype in :inkluderJournalpostType " +
 						"and j.journalstatus in :inkluderJournalStatus", Journalpost.class)
@@ -50,7 +51,6 @@ public class HentJournalpostBulkRepository {
 				.setParameter("fraDato", Timestamp.valueOf(bulkJournalposterFilter.getFraDato().atStartOfDay()))
 				.setParameter("inkluderJournalpostType", bulkJournalposterFilter.getInkluderJournalpostType())
 				.setParameter("inkluderJournalStatus", bulkJournalposterFilter.getInkluderJournalStatus())
-				.setParameter("visFeilregistrert", bulkJournalposterFilter.isVisFeilregistrerte() ? ALL_JOURNALPOST : NO_FEILREGISTRERT_JOURNALPOST)
 				.getResultList();
 	}
 
