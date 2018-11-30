@@ -47,7 +47,7 @@ public class BegrensningService {
 		Optional<Begrensning> variantSkjermet = begrensningRepository.findByJournalpostIdAndDokumentInfoIdAndVariantFormatAndBegrensningType(
 				journalpostId, dokumentInfoId, variant, begrensningTypeCode);
 		String consumer = hentBrukerSomKaller();
-		if (consumer.equalsIgnoreCase("srvjoarkadmin")) {
+		if ("srvjoarkadmin".equalsIgnoreCase(consumer)) {
 			//Har rettighet til å se originalen uansett
 			return false;
 		} else {
