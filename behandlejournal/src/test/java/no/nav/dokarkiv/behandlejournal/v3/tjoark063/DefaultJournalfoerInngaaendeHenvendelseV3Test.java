@@ -8,7 +8,6 @@ import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjo
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
-import no.nav.dokarkiv.core.domain.builder.BehandlingsrelasjonBuilder;
 import no.nav.dokarkiv.core.domain.builder.SaksrelasjonBuilder;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
@@ -23,7 +22,7 @@ import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.util.DateProvider;
 import no.nav.dokarkiv.core.exceptions.ApplicationException;
 import no.nav.dokarkiv.core.journalbehandling.DokumentFilerDelegate;
-import no.nav.dokarkiv.core.repository.JoarkRepository;
+import no.nav.dokarkiv.core.repository.JoarkRepositoryBegrenset;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -54,7 +53,7 @@ public class DefaultJournalfoerInngaaendeHenvendelseV3Test {
 	@Mock
 	private DokumentFilerDelegate dokumentFilerDelegateMock;
 	@Mock
-	private JoarkRepository joarkRepositoryMock;
+    private JoarkRepositoryBegrenset joarkRepositoryMock;
 	@InjectMocks
 	private DefaultJournalfoerInngaaendeHenvendelseV3 service;
 	private JournalfoerInngaaendeHenvendelseRequest request;
@@ -120,9 +119,6 @@ public class DefaultJournalfoerInngaaendeHenvendelseV3Test {
 				.brukere(getBrukerBuilder().brukerId("***gammelt_fnr***").build())
 				.saksrelasjon(
 						SaksrelasjonBuilder.getSaksrelasjonBuilder().sakId("1").fagsystem(FagsystemCode.BID).build())
-				.behandlingsrelasjon(
-						BehandlingsrelasjonBuilder.getBehandlingsrelasjonBuilder().behandlingsId("1")
-								.behandlingsType("TEST").build())
 				.signatur(true)
 				.mottattDato(new Date())
 				.journalpostType(JournalpostTypeCode.I)

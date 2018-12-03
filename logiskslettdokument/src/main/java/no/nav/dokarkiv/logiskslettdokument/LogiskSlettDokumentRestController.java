@@ -43,7 +43,6 @@ public class LogiskSlettDokumentRestController {
 		this.abacSecurityService = abacSecurityService;
 	}
 
-
 	@Transactional
 	@ResponseBody
 	@PatchMapping("/{journalpostId}/{dokumentInfoId}")
@@ -52,12 +51,12 @@ public class LogiskSlettDokumentRestController {
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark100"}, percentiles = {0.5, 0.95})
 	public LogiskSlettDokumentResponse logiskSlettDokumentKnyttetKunEnJournalpost(
 			@PathVariable("journalpostId") Long journalpostId, @PathVariable("dokumentInfoId") Long dokumentInfoId) {
-		abacSecurityService.assertAccessToJournalpost(journalpostId.toString());
+		abacSecurityService.assertAccessToJournalpostIncludingBegrenset(journalpostId.toString());
 		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark100");
 		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har mottat kall med journalpostId=" + journalpostId + " og dokumentInfoId=" + dokumentInfoId);
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
 
-		return logiskSlettDokumentService.logiskSlettDokumentKnyttetKunEnJournalpost(LogiskSlettDokumentRequestTo.builder()
+		return logiskSlettDokumentService.logiskSletteDokument(LogiskSlettDokumentRequestTo.builder()
 				.journalpostId(journalpostId)
 				.dokumentInfoId(dokumentInfoId)
 				.build());
@@ -71,7 +70,7 @@ public class LogiskSlettDokumentRestController {
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark101"}, percentiles = {0.5, 0.95})
 	public LogiskSlettDokumentResponse angreLogiskSlettDokument(@PathVariable("journalpostId") Long journalpostId,
 																@PathVariable("dokumentInfoId") Long dokumentInfoId) {
-		abacSecurityService.assertAccessToJournalpost(journalpostId.toString());
+		abacSecurityService.assertAccessToJournalpostIncludingBegrenset(journalpostId.toString());
 		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark101");
 		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har mottat kall med journalpostId=" + journalpostId + " og dokumentInfoId=" + dokumentInfoId);
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));

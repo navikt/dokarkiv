@@ -1,8 +1,8 @@
 package no.nav.dokarkiv.behandlejournal.v3.tjoark063;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.RequiredArgsConstructor;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.ApplicationException;
 
@@ -12,7 +12,7 @@ import no.nav.dokarkiv.core.exceptions.ApplicationException;
  * @author Rune Romundstad, Visma Consulting
  */
 @Builder
-@RequiredArgsConstructor
+@AllArgsConstructor
 @Data
 public class JournalfoerInngaaendeHenvendelseRequest {
 

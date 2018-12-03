@@ -29,7 +29,7 @@ import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.util.DateProvider;
 import no.nav.dokarkiv.core.journalbehandling.DokumentFilerDelegate;
-import no.nav.dokarkiv.core.repository.JoarkRepository;
+import no.nav.dokarkiv.core.repository.JoarkRepositoryBegrenset;
 import no.nav.dokarkiv.core.sporing.SporingPopulator;
 import org.junit.Before;
 import org.junit.Rule;
@@ -63,7 +63,7 @@ public class DefaultOppdaterJournalpostArkiverDokumentServiceTest {
 	@Rule
 	public ExpectedException expected = ExpectedException.none();
 	@Mock
-	private JoarkRepository repositoryMock;
+    private JoarkRepositoryBegrenset repositoryMock;
 	@Mock
 	private DokumentFilerDelegate dokumentFilerDelegateMock;
 	@Mock

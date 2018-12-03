@@ -64,11 +64,6 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	 */
 	public static final String DELETED_DOCUMENT_TITLE = "Slettet dokument";
 
-	/**
-	 * Maximum length for elements in the column title.
-	 */
-	private static final int MAX_TITLE_LENGTH = 500;
-
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "dokumentInfo_seq")
 	@GenericGenerator(name = "dokumentInfo_seq", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
@@ -108,7 +103,7 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	@Column(name = "dato_dok_ferdig")
 	private Date dokumentFerdigDato;
 
-	@Column(name = "tittel", length = MAX_TITLE_LENGTH)
+	@Column(name = "tittel")
 	private String tittel;
 
 	@Column(name = "konfidensialitet")
@@ -181,7 +176,6 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 		this.journalpostRelasjoner = new HashSet<>();
 		this.tilleggsopplysninger = new HashMap<>();
 		this.skannetInnholdListe = new HashSet<>();
-
 	}
 
 	/**
@@ -249,6 +243,7 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 			throw new InvalidArgumentException("DokumentInfo must have at least one FilDetaljer");
 		}
 	}
+
 
 	/**
 	 * Checks that there are no duplicates among the varianter of documents
@@ -381,7 +376,7 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	 * @return The JournalpostDokumentInfoRelasjon.
 	 */
 	public JournalpostDokumentInfoRelasjon findJournalpostRelasjonByJournalpostId(final Long journalpostId) {
-		for (JournalpostDokumentInfoRelasjon journalpostRelasjon : journalpostRelasjoner) {
+		for (JournalpostDokumentInfoRelasjon journalpostRelasjon : getJournalpostRelasjoner()) {
 			if (journalpostRelasjon.getJournalpost() != null
 					&& journalpostRelasjon.getJournalpost().getJournalpostId().equals(journalpostId)) {
 				return journalpostRelasjon;
@@ -396,7 +391,7 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	 * @return true if this dokumentInfo has more than one journalpostrelasjon, otherwise false
 	 */
 	public boolean isRelatedToMultipleJournalposts() {
-		return journalpostRelasjoner.size() > 1;
+		return getJournalpostRelasjoner().size() > 1;
 	}
 
 	/**
@@ -635,15 +630,6 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	 */
 	public void setTittel(String tittel) {
 		this.tittel = tittel;
-	}
-
-	/**
-	 * Getter for the maximum length of tittel
-	 *
-	 * @return the length of tittel
-	 */
-	public static int getMaxTitleLength() {
-		return MAX_TITLE_LENGTH;
 	}
 
 	/**

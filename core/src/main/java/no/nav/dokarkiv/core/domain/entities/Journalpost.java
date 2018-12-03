@@ -6,6 +6,7 @@ import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.MO;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.OD;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.U;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.UB;
+import static org.apache.commons.lang3.BooleanUtils.isFalse;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -45,6 +46,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -227,9 +229,17 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	@Cascade({CascadeType.PERSIST, CascadeType.MERGE, CascadeType.SAVE_UPDATE, CascadeType.DELETE, CascadeType.DETACH})
 	private final Set<ReturInfo> returInfos = new HashSet<>();
 
-	@OneToOne(mappedBy = "journalpost", fetch = FetchType.LAZY)
-	@Cascade({CascadeType.PERSIST, CascadeType.MERGE, CascadeType.SAVE_UPDATE, CascadeType.DELETE, CascadeType.DETACH})
-	private Behandlingsrelasjon behandlingsrelasjon;
+	@Transient
+	private transient List<Long> begrensetRelasjonerDokumentInfoId = new ArrayList<>();
+
+	public void addAllbegrensetRelasjonerDokumentInfoIds(List<Long> dokumentInfoIdList) {
+		begrensetRelasjonerDokumentInfoId = new ArrayList<>();
+		begrensetRelasjonerDokumentInfoId.addAll(dokumentInfoIdList);
+	}
+
+	public List<Long> getBegrensetRelasjonerDokumentInfoId() {
+		return begrensetRelasjonerDokumentInfoId == null ? new ArrayList<>() : begrensetRelasjonerDokumentInfoId;
+	}
 
 	/**
 	 * Default constructor.
@@ -241,7 +251,7 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	 * Constructor that assigns immutable properties. Used for testing.
 	 *
 	 * @param journalpostId DB-id for the instance.
-	 * @param version DB-version for the instance.
+	 * @param version       DB-version for the instance.
 	 */
 	public Journalpost(Long journalpostId, long version) {
 		this.journalpostId = journalpostId;
@@ -355,10 +365,8 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	}
 
 	private void verifyFieldsForEndeligJournalforing() {
-		if (hasEndeligJournalforingStatus()) {
-			if (journalpostDokumentInfoRelasjoner.isEmpty()) {
-				throw new InvalidArgumentException("Journalpost must have at least one DokumentInfoRelasjon");
-			}
+		if (hasEndeligJournalforingStatus() && getJournalpostDokumentInfoRelasjoner().isEmpty()) {
+			throw new InvalidArgumentException("Journalpost must have at least one DokumentInfoRelasjon");
 		}
 	}
 
@@ -452,9 +460,9 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	}
 
 	public void verifyOnlyOneHoveddokOrSammensattDok() {
-		int hovedDokumentCount = getTilknyttetSomCount(journalpostDokumentInfoRelasjoner,
+		int hovedDokumentCount = getTilknyttetSomCount(getJournalpostDokumentInfoRelasjoner(),
 				TilknyttetJournalpostSomCode.HOVEDDOKUMENT);
-		int sammensattDokCount = getTilknyttetSomCount(journalpostDokumentInfoRelasjoner,
+		int sammensattDokCount = getTilknyttetSomCount(getJournalpostDokumentInfoRelasjoner(),
 				TilknyttetJournalpostSomCode.SAMMENSATT_DOK);
 
 		if (hovedDokumentCount == 0 && sammensattDokCount == 0) {
@@ -476,7 +484,7 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	}
 
 	public void verifyOnlyOneHoveddokument() {
-		int hovedDokumentCount = getTilknyttetSomCount(journalpostDokumentInfoRelasjoner,
+		int hovedDokumentCount = getTilknyttetSomCount(getJournalpostDokumentInfoRelasjoner(),
 				TilknyttetJournalpostSomCode.HOVEDDOKUMENT);
 
 		if (hovedDokumentCount == 0) {
@@ -616,7 +624,7 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	 * @return The JournalpostDokumentInfoRelasjon.
 	 */
 	public JournalpostDokumentInfoRelasjon findDokumentInfoRelasjonById(final Long journalpostDokumentInfoRelasjonId) {
-		return journalpostDokumentInfoRelasjoner.stream()
+		return getJournalpostDokumentInfoRelasjoner().stream()
 				.filter(journalpostDokumentInfoRelasjon -> journalpostDokumentInfoRelasjonId.equals(journalpostDokumentInfoRelasjon
 						.getId())).findAny().orElse(null);
 	}
@@ -641,7 +649,7 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	 */
 	public Set<JournalpostDokumentInfoRelasjon> findDokumentInfoRelasjonByTilknyttetJournalpostSom(
 			final TilknyttetJournalpostSomCode tilknyttetJournalpostSom) {
-		return journalpostDokumentInfoRelasjoner.stream()
+		return getJournalpostDokumentInfoRelasjoner().stream()
 				.filter(journalpostDokumentInfoRelasjon -> tilknyttetJournalpostSom.equals(journalpostDokumentInfoRelasjon.getTilknyttetJournalpostSom()))
 				.collect(Collectors.toSet());
 	}
@@ -680,7 +688,7 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	 * @return The DokumentInfo.
 	 */
 	public DokumentInfo findDokumentInfoById(final Long dokumentInfoId) {
-		for (JournalpostDokumentInfoRelasjon dokumentInfoRelasjon : journalpostDokumentInfoRelasjoner) {
+		for (JournalpostDokumentInfoRelasjon dokumentInfoRelasjon : getJournalpostDokumentInfoRelasjoner()) {
 			DokumentInfo dokumentInfo = dokumentInfoRelasjon.getDokumentInfo();
 			if (dokumentInfo != null && dokumentInfoId.equals(dokumentInfo.getDokumentInfoId())) {
 				return dokumentInfo;
@@ -1061,6 +1069,7 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 		brukere.clear();
 	}
 
+
 	/**
 	 * Getter for the saksrelasjon property.
 	 *
@@ -1088,27 +1097,6 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 		this.saksrelasjon = saksrelasjon;
 		if (saksrelasjon != null) {
 			saksrelasjon.setJournalpost(this);
-		}
-	}
-
-	/**
-	 * Getter for the behandlingsrelasjon property.
-	 *
-	 * @return the behandlingsrelasjon
-	 */
-	public Behandlingsrelasjon getBehandlingsrelasjon() {
-		return behandlingsrelasjon;
-	}
-
-	/**
-	 * Setter for the behandlingsrelasjon property.
-	 *
-	 * @param behandlingsrelasjon the behandlingsrelasjon to set
-	 */
-	public void setBehandlingsrelasjon(Behandlingsrelasjon behandlingsrelasjon) {
-		this.behandlingsrelasjon = behandlingsrelasjon;
-		if (behandlingsrelasjon != null) {
-			behandlingsrelasjon.setJournalpost(this);
 		}
 	}
 
@@ -1463,7 +1451,11 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	 * @return the journalpostDokumentInfoRelasjoner
 	 */
 	public Set<JournalpostDokumentInfoRelasjon> getJournalpostDokumentInfoRelasjoner() {
-		return Collections.unmodifiableSet(journalpostDokumentInfoRelasjoner);
+		return Collections.unmodifiableSet(journalpostDokumentInfoRelasjoner.stream()
+				.filter(relasjon -> relasjon.getDokumentInfo() == null || relasjon.getDokumentInfo()
+						.getDokumentInfoId() == null || isFalse(getBegrensetRelasjonerDokumentInfoId().stream()
+						.anyMatch(dokumentInfoId -> dokumentInfoId.equals(relasjon.getDokumentInfo().getDokumentInfoId()))))
+				.collect(Collectors.toSet()));
 	}
 
 	/**
@@ -1473,7 +1465,7 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	 */
 	public DokumentInfo getDokumentInfoFromJpDokInfoRelasjoner(int nr) {
 		JournalpostDokumentInfoRelasjon dokumentInfoRel;
-		java.util.Iterator<JournalpostDokumentInfoRelasjon> dokInfoRelIterator = journalpostDokumentInfoRelasjoner.iterator();
+		java.util.Iterator<JournalpostDokumentInfoRelasjon> dokInfoRelIterator = getJournalpostDokumentInfoRelasjoner().iterator();
 		for (int i = 0; dokInfoRelIterator.hasNext(); i++) {
 			dokumentInfoRel = dokInfoRelIterator.next();
 			if (i == nr) {
@@ -1490,7 +1482,7 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	 * @return
 	 */
 	public DokumentInfo getDokumentInfoFromJpDokInfoRelasjonerByDokumentInfoId(Long dokumentInfoId) {
-		for (JournalpostDokumentInfoRelasjon rel : journalpostDokumentInfoRelasjoner) {
+		for (JournalpostDokumentInfoRelasjon rel : getJournalpostDokumentInfoRelasjoner()) {
 			DokumentInfo dokumentInfo = rel.getDokumentInfo();
 			if (dokumentInfo.getDokumentInfoId().equals(dokumentInfoId)) {
 				return dokumentInfo;
@@ -1596,7 +1588,7 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 
 	public List<FilDetaljer> findAllFilDetaljerByFilTypeCode(FilTypeCode type) {
 		List<FilDetaljer> list = new ArrayList<>();
-		for (JournalpostDokumentInfoRelasjon rel : journalpostDokumentInfoRelasjoner) {
+		for (JournalpostDokumentInfoRelasjon rel : getJournalpostDokumentInfoRelasjoner()) {
 			for (FilDetaljer fd : rel.getDokumentInfo().getFildetaljerListe()) {
 				if (fd.getFiltype().equals(type)) {
 					list.add(fd);

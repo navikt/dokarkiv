@@ -8,8 +8,8 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import no.nav.dokarkiv.core.CoreConfig;
 import no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerV2Mock;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
-import no.nav.dokarkiv.core.repository.DokumentUrlInfoRepository;
-import no.nav.dokarkiv.core.repository.JoarkRepository;
+import no.nav.dokarkiv.core.repository.DokumentUrlInfoRepositoryBegrenset;
+import no.nav.dokarkiv.core.repository.JoarkRepositoryBegrenset;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.dokarkiv.core.stelvio.SimpleRequestContext;
 import no.nav.tjeneste.virksomhet.aktoer.v2.binding.AktoerV2;
@@ -52,11 +52,11 @@ public abstract class AbstractJournalV3Itest {
 	@Inject
 	protected JournalV3 journalV3Provider;
 	@Inject
-	protected JoarkRepository joarkRepository;
+    protected JoarkRepositoryBegrenset joarkRepository;
 	@Inject
 	protected DokumentFilRepository dokumentFilRepository;
 	@Inject
-	protected DokumentUrlInfoRepository dokumentUrlInfoRepository;
+    protected DokumentUrlInfoRepositoryBegrenset dokumentUrlInfoRepository;
 
 	@Configuration
 	public static class TestConfig {

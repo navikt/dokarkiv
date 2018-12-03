@@ -13,6 +13,7 @@ import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.logging.AbacLogger;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
+import no.nav.dokarkiv.core.repository.JoarkRepositoryBegrenset;
 import no.nav.freg.abac.core.annotation.context.AbacContext;
 import no.nav.freg.abac.core.dto.request.XacmlRequest;
 import no.nav.freg.abac.core.dto.response.Decision;
@@ -53,7 +54,10 @@ public class AbacSecurityService {
     @Inject
     private DokumentinfoRepository dokumentinfoRepository;
 
-	public void assertAccessToJournalpost(String journalpost) {
+	@Inject
+	private JoarkRepositoryBegrenset joarkRepositoryBegrenset;
+
+	public void assertAccessToJournalpostIncludingBegrenset(String journalpost) {
 		Long journalpostId = Long.parseLong(journalpost);
 
 		if (!joarkRepository.existsById(journalpostId)) {
@@ -66,14 +70,33 @@ public class AbacSecurityService {
 		handleResponseForJournalpostId(abacContext.getRequest(), accessResponse, journalpostId);
 	}
 
-    public void assertAccessToDokument(Long dokumentInfo) {
+	public void assertAccessToDokumentIncludingBegrenset(Long dokumentInfoId) {
 
-        if (!dokumentinfoRepository.existsById(dokumentInfo)) {
-            throw new DokumentInfoIkkeFunnetException("DokumentInfo ikke funnet. dokumentInfoId=" + dokumentInfo);
-        }
-        Long journalpostId = joarkRepository.findJournalpostIdByDokumentinfoId(dokumentInfo.toString());
-        assertAccessToJournalpost(journalpostId.toString());
-    }
+		if (!dokumentinfoRepository.existsById(dokumentInfoId)) {
+			throw new DokumentInfoIkkeFunnetException("DokumentInfo ikke funnet. dokumentInfoId=" + dokumentInfoId);
+		}
+		Long journalpostId = joarkRepository.findJournalpostIdByDokumentinfoId(dokumentInfoId.toString());
+		if (journalpostId == null) {
+			log.warn(String.format("DokumentInfo med dokumentInfoId=%s mangler originalJournalpost", dokumentInfoId));
+			throw new DokumentInfoIkkeFunnetException(String.format("DokumentInfo med dokumentInfoId=%s mangler originalJournalpost", dokumentInfoId));
+		}
+
+        assertAccessToJournalpostIncludingBegrenset(journalpostId.toString());
+	}
+
+
+	public void assertAccessToJournalpost(String journalpost) {
+		Long journalpostId = Long.parseLong(journalpost);
+
+		if (!joarkRepositoryBegrenset.existsById(journalpostId)) {
+			throw new JournalpostIkkeFunnetException("Journalpost ikke funnet. journalpostId=" + journalpostId);
+		}
+
+		AbacResources abacResources = jdbcAbacSecurityRepository.findAbacResources(journalpostId);
+		decorateJoarkResources(abacContext.getRequest(), abacResources, journalpostId);
+		XacmlResponse accessResponse = abacService.evaluate(abacContext.getRequest());
+		handleResponseForJournalpostId(abacContext.getRequest(), accessResponse, journalpostId);
+	}
 
 
 	Decision assertAccessToSak(String sakId, FagsystemCode fagsystemCode) {

@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.core.ondemand;
 
+import io.micrometer.core.annotation.Timed;
 import no.nav.dokarkiv.core.dokumenturl.HentDokumentUrl;
 import no.nav.dokarkiv.core.dokumenturl.HentDokumentUrlRequest;
 import no.nav.dokarkiv.core.dokumenturl.HentDokumentUrlResponse;
@@ -26,6 +27,7 @@ public class HentOndemandDokument {
 		this.hentDokumentUrl = hentDokumentUrl;
 	}
 
+	@Timed(value = "dok_consumer_request", extraTags = {"process_code", "hentOnDemandDokument"}, percentiles = {0.5, 0.95})
 	public byte[] hentOndemandDokumentFromJoark(String dokumentUrl) {
 		return restTemplate.getForObject(dokumentUrl, byte[].class);
 	}

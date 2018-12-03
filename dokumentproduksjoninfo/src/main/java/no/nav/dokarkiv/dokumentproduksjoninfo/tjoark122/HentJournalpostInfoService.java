@@ -9,7 +9,7 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
 import no.nav.dokarkiv.core.exceptions.NoDokumentInfoFoundException;
 import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
-import no.nav.dokarkiv.core.repository.JoarkRepository;
+import no.nav.dokarkiv.core.repository.JoarkRepositoryBegrenset;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -23,7 +23,7 @@ import java.util.Set;
 public class HentJournalpostInfoService {
 
 	@Inject
-	private JoarkRepository joarkRepository;
+    private JoarkRepositoryBegrenset joarkRepository;
 
 	public HentJournalpostInfoResponseTo hentJournalOgDokumentStatus(HentJournalpostInfoRequestTo request)
 			throws NoJournalpostFoundException, NoDokumentInfoFoundException {

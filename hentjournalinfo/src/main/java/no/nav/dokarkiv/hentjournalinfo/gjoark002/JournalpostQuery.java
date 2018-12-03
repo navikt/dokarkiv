@@ -15,8 +15,10 @@ import io.leangen.graphql.annotations.GraphQLContext;
 import io.leangen.graphql.annotations.GraphQLNonNull;
 import io.leangen.graphql.annotations.GraphQLQuery;
 import lombok.extern.slf4j.Slf4j;
+import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
 import no.nav.dokarkiv.core.domain.entities.Bruker;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
+import no.nav.dokarkiv.core.domain.service.BegrensningService;
 import no.nav.dokarkiv.core.metrics.GraphQLMetrics;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.core.security.abac.AbacSecurityService;
@@ -30,6 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.inject.Inject;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
@@ -40,11 +43,13 @@ public class JournalpostQuery implements Query {
 
     private final JoarkRepository joarkRepository;
     private final AbacSecurityService abacSecurityService;
+    private final BegrensningService begrensningService;
 
     @Inject
-    public JournalpostQuery(JoarkRepository joarkRepository, AbacSecurityService abacSecurityService) {
+    public JournalpostQuery(JoarkRepository joarkRepository, AbacSecurityService abacSecurityService, BegrensningService begrensningService) {
         this.joarkRepository = joarkRepository;
         this.abacSecurityService = abacSecurityService;
+        this.begrensningService = begrensningService;
     }
 
     @GraphQLQuery(name = JOURNALPOST)
@@ -54,10 +59,10 @@ public class JournalpostQuery implements Query {
             actions = @Abac.Attr(key = ACTION_ID, value = READ_ACTION))
     public Journalpost journalpost(@GraphQLArgument(name = "journalpostId") @GraphQLNonNull Long journalpostId) {
         log.info(format("GraphQL har mottatt %s query med journalpostId=%s", JOURNALPOST, journalpostId));
-        abacSecurityService.assertAccessToJournalpost(journalpostId.toString());
+        abacSecurityService.assertAccessToJournalpostIncludingBegrenset(journalpostId.toString());
         no.nav.dokarkiv.core.domain.entities.Journalpost journalpost = joarkRepository.findById(journalpostId).get();
 
-        return mapJournalpost(journalpost);
+        return mapJournalpost(journalpost, begrensningService.isJournalpostBegrenset(journalpostId, BegrensningTypeCode.UTILGJENGELIGGJORT));
     }
 
     @GraphQLQuery(name = "brukere")
@@ -78,6 +83,13 @@ public class JournalpostQuery implements Query {
                 .orElse(new no.nav.dokarkiv.core.domain.entities.Journalpost())
                 .getJournalpostDokumentInfoRelasjoner();
 
-        return mapKnyttetDokumentList(journalpostDokumentInfoRelasjons, journalpost.getJournalpostId());
+        List<Long> begrensetDokumentInfoRelasjon = journalpostDokumentInfoRelasjons.stream()
+                .filter(relasjon -> begrensningService.isJournalpostDokumentInfoRelasjonOrJournalpostBegrenset(relasjon.getJournalpost()
+                        .getJournalpostId(), relasjon.getDokumentInfo()
+                        .getDokumentInfoId(), BegrensningTypeCode.UTILGJENGELIGGJORT))
+                .map(relasjon -> relasjon.getJournalpost().getJournalpostId())
+                .collect(Collectors.toList());
+
+        return mapKnyttetDokumentList(journalpostDokumentInfoRelasjons, journalpost.getJournalpostId(), begrensetDokumentInfoRelasjon);
     }
 }

@@ -6,9 +6,9 @@ import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjo
 
 import no.nav.dokarkiv.core.datautil.BrukerTestDataProvider;
 import no.nav.dokarkiv.core.datautil.SaksrelasjonTestDataProvider;
-import no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder;
 import no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder;
 import no.nav.dokarkiv.core.domain.builder.JournalpostBuilder;
+import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
@@ -17,6 +17,7 @@ import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
+import no.nav.dokarkiv.core.domain.entities.Begrensning;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
@@ -35,13 +36,13 @@ public class TestUtils {
 	private static final String BREVGRUPPE = "Brevgruppe";
 	private static final String BREVKODE = "Brevkode";
 	private static final String FILNAVN = "filNavn";
+	private static final Long RELASJON_ID = 300L;
 
 	public static final Long JOURNALPOST_ID = 42L;
-	public static final Long DOKUMENTINFO_ID = 1L;
+	public static final Long DOKUMENTINFO_ID = 200000000L;
 
 
-
-	public static JournalpostBuilder createJournalpostBuilder() {
+	private static JournalpostBuilder createJournalpostBuilder() {
 		return JournalpostBuilder.getJournalpostBuilder()
 				.avsenderMottakerId(AVSENDER_MOTTAKER_ID)
 				.dokumentDato(new Date())
@@ -60,20 +61,31 @@ public class TestUtils {
 								.opprettetKildeNavn(OPPRETTET_KILDE_NAVN)
 								.tilknyttetAvNavn(TILKNYTTET_AV_NAVN)
 								.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.HOVEDDOKUMENT)
-								.dokumentInfo(createDokumentInfo().build())
+								.dokumentInfo(createDokumentInfo())
 								.build());
 	}
 
-	private static DokumentInfoBuilder createDokumentInfo() {
+	private static DokumentInfo createDokumentInfo() {
 		return getDokumentInfoBuilder()
-				.slettet(false)
 				.dokumentstatus(DokumentStatusCode.FERDIGSTILT)
 				.tittel(DOKUMENT_TITTEL)
 				.endretAvNavn(ENDRET_AV_NAVN)
 				.brevgruppe(BREVGRUPPE)
 				.brevkode(BREVKODE)
 				.filDetaljerList(createFildetaljer())
-				.opprettetKildeNavn(OPPRETTET_KILDE_NAVN);
+				.opprettetKildeNavn(OPPRETTET_KILDE_NAVN).build();
+	}
+
+	private static DokumentInfo createDokumentInfo(Long dokumentInfoId) {
+		return getDokumentInfoBuilder()
+				.dokumentInfoId(dokumentInfoId)
+				.dokumentstatus(DokumentStatusCode.FERDIGSTILT)
+				.tittel(DOKUMENT_TITTEL)
+				.endretAvNavn(ENDRET_AV_NAVN)
+				.brevgruppe(BREVGRUPPE)
+				.brevkode(BREVKODE)
+				.filDetaljerList(createFildetaljer())
+				.opprettetKildeNavn(OPPRETTET_KILDE_NAVN).build();
 	}
 
 	private static FilDetaljer createFildetaljer() {
@@ -97,30 +109,59 @@ public class TestUtils {
 				.build();
 	}
 
-	public static DokumentInfo createDokumentInfo(boolean sletteStatus) {
-		return getDokumentInfoBuilder()
-				.slettet(sletteStatus)
-				.dokumentInfoId(DOKUMENTINFO_ID)
-				.build();
-	}
-
-	public static Journalpost createJournalpost() {
+	public static Journalpost createJournalpost(Long dokumentInfoId) {
 		return getJournalpostBuilder()
 				.journalpostId(JOURNALPOST_ID)
 				.dokumentInfoRelasjoner(getJournalpostDokumentInfoRelasjonBuilder()
+						.journalpostDokumentInfoRelasjonId(RELASJON_ID)
 						.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.HOVEDDOKUMENT)
-						.dokumentInfo(createDokumentInfo(false))
+						.dokumentInfo(createDokumentInfo(dokumentInfoId))
 						.build())
 				.build();
 	}
 
-	public static Journalpost createJournalpost(Boolean sletteStatus) {
-		return getJournalpostBuilder()
-				.journalpostId(JOURNALPOST_ID)
-				.dokumentInfoRelasjoner(getJournalpostDokumentInfoRelasjonBuilder()
-						.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.HOVEDDOKUMENT)
-						.dokumentInfo(createDokumentInfo(sletteStatus))
-						.build())
+	public static Journalpost opprettHoveddokumentMedEtKnyttetVedleggForIT() {
+		Journalpost journalpost = createJournalpostBuilder().build();
+		journalpost.addJournalpostDokumentInfoRelasjon(getJournalpostDokumentInfoRelasjonBuilder()
+				.opprettetKildeNavn(OPPRETTET_KILDE_NAVN)
+				.tilknyttetAvNavn(TILKNYTTET_AV_NAVN)
+				.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
+				.dokumentInfo(createDokumentInfo())
+				.build());
+		return journalpost;
+	}
+
+	public static Journalpost opprettHoveddokumentForIT() {
+		return createJournalpostBuilder().build();
+	}
+
+	public static Begrensning utilgjengeliggjoerHoveddokument(Long journalpostId) {
+		Begrensning begrensning = Begrensning.builder()
+				.journalpostId(journalpostId)
+				.begrensningType(BegrensningTypeCode.UTILGJENGELIGGJORT)
 				.build();
+		begrensning.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
+		return begrensning;
+	}
+
+	public static Begrensning utilgjengeliggjoerVedlegg(Long journalpostId, Long dokumentInfoId) {
+		Begrensning begrensning = Begrensning.builder()
+				.journalpostId(journalpostId)
+				.dokumentInfoId(dokumentInfoId)
+				.begrensningType(BegrensningTypeCode.UTILGJENGELIGGJORT)
+				.build();
+		begrensning.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
+		return begrensning;
+	}
+
+	public static Journalpost opprettHoveddokumentMedSammensattDokForIT() {
+		Journalpost journalpost = createJournalpostBuilder().build();
+		journalpost.addJournalpostDokumentInfoRelasjon(getJournalpostDokumentInfoRelasjonBuilder()
+				.opprettetKildeNavn(OPPRETTET_KILDE_NAVN)
+				.tilknyttetAvNavn(TILKNYTTET_AV_NAVN)
+				.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.SAMMENSATT_DOK)
+				.dokumentInfo(createDokumentInfo())
+				.build());
+		return journalpost;
 	}
 }

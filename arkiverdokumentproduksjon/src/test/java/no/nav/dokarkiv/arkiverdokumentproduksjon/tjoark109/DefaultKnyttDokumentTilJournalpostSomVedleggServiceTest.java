@@ -37,6 +37,7 @@ import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.JournalpostNotFoundE
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
+import no.nav.dokarkiv.core.domain.codes.OnDemandInstansCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
@@ -44,7 +45,7 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
 import no.nav.dokarkiv.core.exceptions.ApplicationException;
-import no.nav.dokarkiv.core.repository.JoarkRepository;
+import no.nav.dokarkiv.core.repository.JoarkRepositoryBegrenset;
 import no.nav.dokarkiv.core.sporing.SporingPopulator;
 import org.junit.Before;
 import org.junit.Rule;
@@ -84,7 +85,7 @@ public class DefaultKnyttDokumentTilJournalpostSomVedleggServiceTest {
 	private KnyttDokumentTilJournalpostSomVedleggValidator validatorMock;
 
 	@Mock
-	private JoarkRepository repositoryMock;
+    private JoarkRepositoryBegrenset repositoryMock;
 
 	@Mock
 	private SporingPopulator sporingpopulatorMock;
@@ -574,6 +575,7 @@ public class DefaultKnyttDokumentTilJournalpostSomVedleggServiceTest {
 	private void mockFildetaljerWithOnDemandId(DokumentInfo dokumentInfoMock) {
 		FilDetaljer fildetaljerMock = mock(FilDetaljer.class);
 		when(fildetaljerMock.getOnDemandId()).thenReturn("on-demand-id");
+		when(fildetaljerMock.getOnDemandInstans()).thenReturn(OnDemandInstansCode.SYFO);
 
 		mockNoFildetaljerOnDemandId(dokumentInfoMock);
 		dokumentInfoMock.getFildetaljerListe().add(fildetaljerMock);

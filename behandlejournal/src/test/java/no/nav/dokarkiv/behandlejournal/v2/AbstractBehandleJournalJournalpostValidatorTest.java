@@ -1,6 +1,5 @@
 package no.nav.dokarkiv.behandlejournal.v2;
 
-import static no.nav.dokarkiv.core.domain.builder.BehandlingsrelasjonBuilder.getBehandlingsrelasjonBuilder;
 import static no.nav.dokarkiv.core.domain.builder.BrukerBuilder.getBrukerBuilder;
 import static no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder.getDokumentInfoBuilder;
 import static no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder.getFilDetaljerBuilder;
@@ -75,11 +74,6 @@ public abstract class AbstractBehandleJournalJournalpostValidatorTest {
 				.fagomrade(FagomradeCode.AAP)
 				.journalStatus(JournalStatusCode.FS)
 				.journalForendeEnhetId("9999")
-				.behandlingsrelasjon(
-						getBehandlingsrelasjonBuilder()
-								.behandlingsId("behandlingsId")
-								.behandlingsType("behandlingsType")
-								.build())
 				.dokumentInfoRelasjoner(
 						getJournalpostDokumentInfoRelasjonBuilder()
 								.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.HOVEDDOKUMENT)
@@ -119,11 +113,6 @@ public abstract class AbstractBehandleJournalJournalpostValidatorTest {
 				.fagomrade(FagomradeCode.AAP)
 				.journalStatus(JournalStatusCode.FS)
 				.journalForendeEnhetId("9999")
-				.behandlingsrelasjon(
-						getBehandlingsrelasjonBuilder()
-								.behandlingsId("behandlingsId")
-								.behandlingsType("behandlingsType")
-								.build())
 				.dokumentInfoRelasjoner(
 						getJournalpostDokumentInfoRelasjonBuilder()
 								.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.HOVEDDOKUMENT)

@@ -11,20 +11,21 @@ public class LogiskSlettDokumentResponse {
 
 	private final String tittel;
 	private final Long dokumentInfoId;
-	private final String journalStatus;
 	private final Long journalpostId;
-	private final String journalpostType;
-	private final String tema;
+	private final Boolean slettet;
+	private final String tilknyttetJournalpostSom;
 
 	@JsonCreator
-	public LogiskSlettDokumentResponse(@JsonProperty("tittel") String tittel, @JsonProperty("dokumentInfoId") Long dokumentInfoId,
-									   @JsonProperty("journalStatus") String journalStatus, @JsonProperty("journalpostId") Long journalpostId,
-									   @JsonProperty("journalpostType") String journalpostType, @JsonProperty("tema") String tema) {
+	public LogiskSlettDokumentResponse(
+			@JsonProperty("tittel") String tittel,
+			@JsonProperty("dokumentInfoId") Long dokumentInfoId,
+			@JsonProperty("journalpostId") Long journalpostId,
+			@JsonProperty("slettet") Boolean slettet,
+			@JsonProperty("tilknyttetJournalpostSom") String tilknyttetJournalpostSom) {
 		this.tittel = tittel;
 		this.dokumentInfoId = dokumentInfoId;
-		this.journalStatus = journalStatus;
 		this.journalpostId = journalpostId;
-		this.journalpostType = journalpostType;
-		this.tema = tema;
+		this.slettet = slettet;
+		this.tilknyttetJournalpostSom = tilknyttetJournalpostSom;
 	}
 }

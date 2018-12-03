@@ -8,6 +8,7 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
@@ -29,11 +30,16 @@ import java.util.Properties;
 		DokumentinfoRepository.class,
 		JournalpostDokumentInfoRelasjonRepository.class,
 		BidragMellomlagringRepository.class,
-		BidragMellomlagringDokumentRepository.class
+		BidragMellomlagringDokumentRepository.class,
+		JoarkDeleteRepository.class
 })
 @EnableTransactionManagement
 @EnableConfigurationProperties(DataSourceProperties.class)
 @Configuration
+@Import(value = {
+		JoarkRepositoryBegrenset.class,
+		DokumentUrlInfoRepositoryBegrenset.class
+})
 public class RepositoryConfig {
 	@Bean
 	@Primary

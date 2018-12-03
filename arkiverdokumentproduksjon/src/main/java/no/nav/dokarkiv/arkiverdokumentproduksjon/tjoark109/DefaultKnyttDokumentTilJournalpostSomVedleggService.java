@@ -33,7 +33,7 @@ import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
-import no.nav.dokarkiv.core.repository.JoarkRepository;
+import no.nav.dokarkiv.core.repository.JoarkRepositoryBegrenset;
 import no.nav.dokarkiv.core.sporing.SporingPopulator;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
@@ -71,7 +71,7 @@ public class DefaultKnyttDokumentTilJournalpostSomVedleggService implements Knyt
 	private KnyttDokumentTilJournalpostSomVedleggValidator validator;
 
 	@Inject
-	private JoarkRepository joarkRepository;
+    private JoarkRepositoryBegrenset joarkRepository;
 
 	@Inject
 	private SporingPopulator sporingPopulator;
@@ -213,7 +213,7 @@ public class DefaultKnyttDokumentTilJournalpostSomVedleggService implements Knyt
 
 	private void checkIfDokumentInfoDoesNotHaveFildetaljerWithOnDemandId(DokumentInfo dokumentInfo) throws FilDetaljerOnDemandException {
 		for (FilDetaljer detaljer : dokumentInfo.getFildetaljerListe()) {
-			if (detaljer.getOnDemandId() != null) {
+			if (detaljer.getOnDemandId() != null && detaljer.getOnDemandInstans() != null) {
 				String message = String.format(ON_DEMAND_FIL_DETALJER_FORMAT, dokumentInfo.getDokumentInfoId());
 				throw new FilDetaljerOnDemandException(message);
 			}

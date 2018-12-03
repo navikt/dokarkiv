@@ -27,7 +27,7 @@ import no.nav.dokarkiv.core.exceptions.NoDokumentInfoFoundException;
 import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
 import no.nav.dokarkiv.core.ondemand.HentOndemandDokument;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
-import no.nav.dokarkiv.core.repository.JoarkRepository;
+import no.nav.dokarkiv.core.repository.JoarkRepositoryBegrenset;
 import no.nav.tjeneste.virksomhet.journal.v3.HentDokumentSikkerhetsbegrensning;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -58,7 +58,7 @@ public class Tjoark051HentDokumentServiceTest {
 	private HentDokumentRequestTo request = new HentDokumentRequestTo(JOURNALPOST_ID, DOKUMENT_INFO_ID, VARIANT_FORMAT);
 
 	@Mock
-	private JoarkRepository joarkRepositoryMock;
+	private JoarkRepositoryBegrenset joarkRepositoryMock;
 	@Mock
 	private DokumentFilRepository dokumentFilRepository;
 	@Mock

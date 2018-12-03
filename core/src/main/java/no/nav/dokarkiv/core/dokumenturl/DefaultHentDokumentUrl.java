@@ -8,7 +8,7 @@ import no.nav.dokarkiv.core.exceptions.DokarkivTechnicalException;
 import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
 import no.nav.dokarkiv.core.exceptions.InvalidFilUuidException;
 import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
-import no.nav.dokarkiv.core.repository.DokumentUrlInfoRepository;
+import no.nav.dokarkiv.core.repository.DokumentUrlInfoRepositoryBegrenset;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -35,7 +35,7 @@ public class DefaultHentDokumentUrl extends AbstractDocumentOperation implements
 	private final MimeTypeMapper mimeTypeMapper = new MimeTypeMapper();
 
 	@Inject
-	private DokumentUrlInfoRepository dokumentUrlInfoRepository;
+    private DokumentUrlInfoRepositoryBegrenset dokumentUrlInfoRepository;
 
 	public HentDokumentUrlResponse hentDokumentUrl(HentDokumentUrlRequest hentDokumentUrlRequest)
 			throws NoJournalpostFoundException, InvalidFilUuidException {
@@ -77,7 +77,9 @@ public class DefaultHentDokumentUrl extends AbstractDocumentOperation implements
 	private String generateUrl(String baseUrl, Journalpost journalpost, FilDetaljer fildetaljer, Long timeToLiveMinutes)
 			throws InvalidFilUuidException {
 		String filUuid = fildetaljer.getFilUuid();
-		if (fildetaljer.getOnDemandId() == null) {
+		if (fildetaljer.getOnDemandId() != null && fildetaljer.getOnDemandInstans() != null) {
+			//dokumentet ligger inntil videre i OnDemand
+		} else {
 			verifyThatDocumentExistsInDB(filUuid);
 		}
 		String url = createDokumentUrlInfoAndUrl(baseUrl, journalpost, filUuid, timeToLiveMinutes);
@@ -130,7 +132,7 @@ public class DefaultHentDokumentUrl extends AbstractDocumentOperation implements
 		this.servletUrl = servletUrl;
 	}
 
-	public void setDokumentUrlInfoRepository(DokumentUrlInfoRepository dokumentUrlInfoRepository) {
+    public void setDokumentUrlInfoRepository(DokumentUrlInfoRepositoryBegrenset dokumentUrlInfoRepository) {
 		this.dokumentUrlInfoRepository = dokumentUrlInfoRepository;
 	}
 }

@@ -30,7 +30,11 @@ public class Journalpost {
 
     private String tittel;
 
+    private Boolean slettet;
+
     private List<Bruker> brukere;
+
+    private String sakId;
 
     private List<JournalpostDokumentRelasjon> knyttetDokumentList;
 
