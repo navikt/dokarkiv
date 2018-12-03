@@ -3,6 +3,7 @@ package no.nav.dokarkiv.hentjournalsakinfo;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.dokumenturl.MimeTypeMapper;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
+import no.nav.dokarkiv.core.metrics.RestMetrics;
 import no.nav.dokarkiv.hentjournalsakinfo.rjoark900.HentJournalpostBulkRequestTo;
 import no.nav.dokarkiv.hentjournalsakinfo.rjoark900.HentJournalpostBulkResponseTo;
 import no.nav.dokarkiv.hentjournalsakinfo.rjoark900.HentJournalpostBulkService;
@@ -69,6 +70,7 @@ public class HentJournalsakinfoController {
 	@Transactional(readOnly = true)
 	@ResponseBody
 	@RequestMapping(value = "/hentdokument/{dokumentinfoId}/{variant}")
+	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark920"}, percentiles = {0.5, 0.95})
 	public ResponseEntity<String> safHentDokument(@PathVariable Long dokumentinfoId,
 												  @PathVariable VariantFormatCode variant) {
 		log.info("rjoark920 har mottatt forespørsel om dokument med dokumentinfoId={} og variant={}", dokumentinfoId, variant);
@@ -82,6 +84,7 @@ public class HentJournalsakinfoController {
 	@Transactional(readOnly = true)
 	@ResponseBody
 	@PostMapping(value = "/hentjournalpostbulk")
+	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark900"}, percentiles = {0.5, 0.95})
 	public HentJournalpostBulkResponseTo hentJournalpostBulk(@RequestBody HentJournalpostBulkRequestTo hentJournalpostBulkRequestTo) {
 		log.info("rjoark900 henter journalpostbulk.");
 		return hentJournalpostBulkService.hentJournalpostBulk(hentJournalpostBulkRequestTo);
@@ -98,6 +101,7 @@ public class HentJournalsakinfoController {
 	@Transactional(readOnly = true)
 	@ResponseBody
 	@GetMapping(value = "/henttilgangjournalpost/{journalpostId}/{dokumentInfoId}/{variantFormat}")
+	@RestMetrics(value = "dok_request", extraTags = {"process_code", "tjoark901"}, percentiles = {0.5, 0.95})
 	public HentTilgangJournalpostResponse hentTilgangJournalpost(@PathVariable Long journalpostId,
 																 @PathVariable Long dokumentInfoId,
 																 @PathVariable VariantFormatCode variantFormat) {
