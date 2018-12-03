@@ -77,7 +77,9 @@ public class DefaultHentDokumentUrl extends AbstractDocumentOperation implements
 	private String generateUrl(String baseUrl, Journalpost journalpost, FilDetaljer fildetaljer, Long timeToLiveMinutes)
 			throws InvalidFilUuidException {
 		String filUuid = fildetaljer.getFilUuid();
-		if (fildetaljer.getOnDemandId() == null) {
+		if (fildetaljer.getOnDemandId() != null && fildetaljer.getOnDemandInstans() != null) {
+			//dokumentet ligger inntil videre i OnDemand
+		} else {
 			verifyThatDocumentExistsInDB(filUuid);
 		}
 		String url = createDokumentUrlInfoAndUrl(baseUrl, journalpost, filUuid, timeToLiveMinutes);

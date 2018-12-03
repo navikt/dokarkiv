@@ -23,6 +23,7 @@ import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
 import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
+import no.nav.dokarkiv.core.domain.codes.OnDemandInstansCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
@@ -358,6 +359,7 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentValidatorTest {
 		expected.expectMessage("Fildetaljer.OnDemandId kan ikke være satt");
 		DokumentInfo dokumentInfo = createDokumentInfoWithFildetaljer();
 		dokumentInfo.getFildetaljerListe().iterator().next().setOnDemandId("adsad");
+		dokumentInfo.getFildetaljerListe().iterator().next().setOnDemandInstans(OnDemandInstansCode.SYFO);
 		validator.validateVedleggFildetaljer(dokumentInfo);
 	}
 

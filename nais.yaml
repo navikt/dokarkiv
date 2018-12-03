@@ -1,4 +1,5 @@
-image: "docker.adeo.no:5000/dok/dokarkiv"
+team: teamdokumenthandtering
+image: "repo.adeo.no:5443/dok/dokarkiv"
 replicas:
   min: 2
   max: 10
