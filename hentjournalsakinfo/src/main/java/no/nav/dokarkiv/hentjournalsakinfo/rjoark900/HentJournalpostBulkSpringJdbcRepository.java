@@ -140,7 +140,7 @@ public class HentJournalpostBulkSpringJdbcRepository {
 	}
 
 	private String generateCteUnionSql(List<String> cteAliases) {
-		return cteAliases.stream().map(cteAlias -> "SELECT journalpost_id FROM " + cteAlias).collect(Collectors.joining(" UNION "));
+		return cteAliases.stream().map(cteAlias -> "SELECT journalpost_id FROM " + cteAlias).collect(Collectors.joining(" UNION ALL "));
 	}
 
 	private String generateFeilregistrertSelectionSql(BulkJournalposterFilter bulkJournalposterFilter) {
