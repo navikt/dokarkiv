@@ -5,6 +5,8 @@ import static org.apache.commons.lang3.BooleanUtils.isFalse;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
+import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
+import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.service.BegrensningService;
 import no.nav.dokarkiv.core.exceptions.BegrensningIkkeFunnetException;
@@ -120,8 +122,17 @@ public class FysiskSlettDokumentService {
 				journalpostDokumentInfoRelasjonRepository.findAllByJournalpostJournalpostId(hoveddokumentRelasjon.getJournalpost()
 						.getJournalpostId());
 
+		Long jpIdTilJpSomSkalSlettes = hoveddokumentRelasjon.getJournalpost().getJournalpostId();
+
 		for (JournalpostDokumentInfoRelasjon relasjon : listFoundByJournalpostId) {
 			if (relasjon.isVedlegg()) {
+				if (relasjon.getDokumentInfo().isRelatedToMultipleJournalposts() &&
+						relasjon.getDokumentInfo()
+								.getOriginalJournalpost()
+								.getJournalpostId()
+								.equals(jpIdTilJpSomSkalSlettes)) {
+					endreOriginalJournalpostIDokumentInfo(relasjon.getDokumentInfo(), jpIdTilJpSomSkalSlettes);
+				}
 				fysiskSlettEtVedlegg(relasjon);
 			}
 		}
@@ -136,10 +147,22 @@ public class FysiskSlettDokumentService {
 	}
 
 	private void slettJournalpostOgJournalpostDokumentInfoRelasjon(JournalpostDokumentInfoRelasjon relasjon) {
+		endreOriginalJournalpostIDokumentInfo(relasjon.getDokumentInfo(), relasjon.getJournalpost().getJournalpostId());
 		deleteRepository.deleteJournalpostDokumentInfoRelasjonByJournalpostIdAndDokumentInfoId(
 				relasjon.getJournalpost().getJournalpostId(),
 				relasjon.getDokumentInfo().getDokumentInfoId());
 		slettJournalpost(relasjon.getJournalpost().getJournalpostId());
+	}
+
+	private void endreOriginalJournalpostIDokumentInfo(DokumentInfo dokInfoMedJpSomSkalSlettes, Long jpIdTilJpSomSkalSlettes) {
+		Journalpost nyOriginalJournalpost = null;
+		for (JournalpostDokumentInfoRelasjon relasjon : dokInfoMedJpSomSkalSlettes.getJournalpostRelasjoner()) {
+			if (nyOriginalJournalpost == null &&
+					isFalse(relasjon.getJournalpost().getJournalpostId().equals(jpIdTilJpSomSkalSlettes))) {
+				nyOriginalJournalpost = relasjon.getJournalpost();
+			}
+		}
+		dokInfoMedJpSomSkalSlettes.setOriginalJournalpost(nyOriginalJournalpost);
 	}
 
 	private void slettJournalpostOgDokumentInfoOgJournalpostDokumentInfoRelasjon(JournalpostDokumentInfoRelasjon relasjon) {
@@ -157,6 +180,7 @@ public class FysiskSlettDokumentService {
 		deleteRepository.deleteJPTilleggByJournalpostId(journalpostId);
 		deleteRepository.deleteSaksrelasjonByJournalpostId(journalpostId);
 		deleteRepository.deleteBrukerByJournalpostId(journalpostId);
+		System.out.println("kommer hit");
 		deleteRepository.deleteJournalpostByJournalpostId(journalpostId);
 	}
 

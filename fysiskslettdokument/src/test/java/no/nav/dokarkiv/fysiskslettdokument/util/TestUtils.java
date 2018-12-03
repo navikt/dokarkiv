@@ -65,6 +65,7 @@ public class TestUtils {
 				.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
 				.tilknyttetAvNavn(TILKNYTTET_AV_NAVN)
 				.dokumentInfo(getBaseDokumentInfoBuilder()
+						.originalJournalpost(journalpost)
 						.build())
 				.build());
 		return journalpost;
@@ -88,7 +89,7 @@ public class TestUtils {
 						.tilknyttetAvNavn(TILKNYTTET_AV_NAVN)
 						.dokumentInfo(dokInfoVedlegg)
 						.build());
-		dokInfoVedlegg.setOriginalJournalpost(jpHovedokument);
+//		dokInfoVedlegg.setOriginalJournalpost(jpHovedokument);
 	}
 
 	public static Begrensning utilgjengeliggjoerHoveddokument(Long journalpostId) {

@@ -99,8 +99,7 @@ public class Rjoark102IT extends AbstractFysiskSlettDokumentIT {
 				String.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.INTERNAL_SERVER_ERROR));
-		assertThat(responseEntity.getBody(), containsString(
-				String.format("query did not return a unique result")));
+		assertThat(responseEntity.getBody(), containsString("query did not return a unique result"));
 	}
 
 	@Test
@@ -447,6 +446,7 @@ public class Rjoark102IT extends AbstractFysiskSlettDokumentIT {
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
+		// Assert riktig datastruktur før sletting
 		assertTrue(vedlegg.isRelatedToMultipleJournalposts());
 		assertThat(hentAntallBegrensninger(), is(1L));
 
@@ -474,6 +474,11 @@ public class Rjoark102IT extends AbstractFysiskSlettDokumentIT {
 		assertFalse(joarkRepository.findAllJournalpostIdsByDokumentInfoId(hoveddokument1.getDokumentInfoId()).isEmpty());
 		assertFalse(joarkRepository.findAllJournalpostIdsByDokumentInfoId(hoveddokument2.getDokumentInfoId()).isEmpty());
 
+		// Assert originalJournalpost er journalpost1
+		assertThat(dokumentinfoRepository.findAllByJournalpostRelasjonerJournalpostJournalpostIdAndDokumentInfoId(
+				journalpost2.getJournalpostId(), vedlegg.getDokumentInfoId()).get().getOriginalJournalpost().getJournalpostId(),
+				is(journalpost1.getJournalpostId()));
+
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_FYSISKSLETTDOKUMENT + journalpost1.getJournalpostId() + "/"
 						+ hoveddokument1.getDokumentInfoId() + "/" + BEGRENSNINGTYPE_UTILGJENGELIGGJORT,
@@ -483,10 +488,12 @@ public class Rjoark102IT extends AbstractFysiskSlettDokumentIT {
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 
+		// Assert sletting av begrensning
 		Begrensning begrensninger = hentHoveddokumentBegrensningEtterUtfoertKall(journalpost1.getJournalpostId());
 		assertNull(begrensninger);
 		assertThat(hentAntallBegrensninger(), is(0L));
 
+		// Assert sletting av relasjoner for journalpost1 og hoveddokument1 og at vedlegg kun har en relasjon
 		assertTrue(journalpostDokumentInfoRelasjonRepository
 				.findAllByJournalpostJournalpostId(journalpost1.getJournalpostId()).isEmpty());
 		assertEquals(2L, journalpostDokumentInfoRelasjonRepository
@@ -499,6 +506,7 @@ public class Rjoark102IT extends AbstractFysiskSlettDokumentIT {
 				journalpostDokumentInfoRelasjonRepository.findAllByDokumentInfoDokumentInfoId(vedlegg.getDokumentInfoId())
 						.size());
 
+		// Assert sletting av hoveddokument1, men hoveddokument2 og vedlegg finnes kvar
 		assertFalse(dokumentinfoRepository.findAllByJournalpostRelasjonerJournalpostJournalpostIdAndDokumentInfoId(
 				journalpost1.getJournalpostId(), hoveddokument1.getDokumentInfoId()).isPresent());
 		assertTrue(dokumentinfoRepository.findAllByJournalpostRelasjonerJournalpostJournalpostIdAndDokumentInfoId(
@@ -508,8 +516,14 @@ public class Rjoark102IT extends AbstractFysiskSlettDokumentIT {
 		assertTrue(dokumentinfoRepository.findAllByJournalpostRelasjonerJournalpostJournalpostIdAndDokumentInfoId(
 				journalpost2.getJournalpostId(), vedlegg.getDokumentInfoId()).isPresent());
 
+		//Assert sletting av journalpost1
 		assertTrue(joarkRepository.findAllJournalpostIdsByDokumentInfoId(hoveddokument1.getDokumentInfoId()).isEmpty());
 		assertFalse(joarkRepository.findAllJournalpostIdsByDokumentInfoId(hoveddokument2.getDokumentInfoId()).isEmpty());
+
+		// Assert originalJournalpost er skiftet til journalpost2
+		assertThat(dokumentinfoRepository.findAllByJournalpostRelasjonerJournalpostJournalpostIdAndDokumentInfoId(
+				journalpost2.getJournalpostId(), vedlegg.getDokumentInfoId()).get().getOriginalJournalpost().getJournalpostId(),
+				is(journalpost2.getJournalpostId()));
 	}
 
 	@Test
@@ -532,6 +546,7 @@ public class Rjoark102IT extends AbstractFysiskSlettDokumentIT {
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
+		// Assert riktig datastruktur før sletting
 		assertTrue(hoveddokument1.isRelatedToMultipleJournalposts());
 		assertThat(hentAntallBegrensninger(), is(1L));
 
@@ -552,6 +567,14 @@ public class Rjoark102IT extends AbstractFysiskSlettDokumentIT {
 		assertFalse(joarkRepository.findAllJournalpostIdsByDokumentInfoId(hoveddokument1.getDokumentInfoId()).isEmpty());
 		assertFalse(joarkRepository.findAllJournalpostIdsByDokumentInfoId(hoveddokument2.getDokumentInfoId()).isEmpty());
 
+		// Assert originalJournalpost er journalpost1
+		assertThat(dokumentinfoRepository.findAllByJournalpostRelasjonerJournalpostJournalpostIdAndDokumentInfoId(
+				journalpost2.getJournalpostId(), hoveddokument1.getDokumentInfoId())
+						.get()
+						.getOriginalJournalpost()
+						.getJournalpostId(),
+				is(journalpost1.getJournalpostId()));
+
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_FYSISKSLETTDOKUMENT + journalpost1.getJournalpostId() + "/"
 						+ hoveddokument1.getDokumentInfoId() + "/" + BEGRENSNINGTYPE_UTILGJENGELIGGJORT,
@@ -561,10 +584,12 @@ public class Rjoark102IT extends AbstractFysiskSlettDokumentIT {
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 
+		// Assert sletting av begrensning
 		Begrensning begrensninger = hentHoveddokumentBegrensningEtterUtfoertKall(journalpost1.getJournalpostId());
 		assertNull(begrensninger);
 		assertThat(hentAntallBegrensninger(), is(0L));
 
+		// Assert sletting av relasjoner for journalpost1, og at hoveddokument1 ikke er slettet
 		assertTrue(journalpostDokumentInfoRelasjonRepository
 				.findAllByJournalpostJournalpostId(journalpost1.getJournalpostId()).isEmpty());
 		assertEquals(2L, journalpostDokumentInfoRelasjonRepository
@@ -574,6 +599,7 @@ public class Rjoark102IT extends AbstractFysiskSlettDokumentIT {
 		assertFalse(journalpostDokumentInfoRelasjonRepository.findAllByDokumentInfoDokumentInfoId(hoveddokument2.getDokumentInfoId())
 				.isEmpty());
 
+		// Assert sletting av hoveddokument1 sett fra journalpost1 men ikke fra journalpost2
 		assertFalse(dokumentinfoRepository.findAllByJournalpostRelasjonerJournalpostJournalpostIdAndDokumentInfoId(
 				journalpost1.getJournalpostId(), hoveddokument1.getDokumentInfoId()).isPresent());
 		assertTrue(dokumentinfoRepository.findAllByJournalpostRelasjonerJournalpostJournalpostIdAndDokumentInfoId(
@@ -581,8 +607,20 @@ public class Rjoark102IT extends AbstractFysiskSlettDokumentIT {
 		assertTrue(dokumentinfoRepository.findAllByJournalpostRelasjonerJournalpostJournalpostIdAndDokumentInfoId(
 				journalpost2.getJournalpostId(), hoveddokument2.getDokumentInfoId()).isPresent());
 
+		// Assert at begge hoveddokumenter ikke er slettede, men at journalpost1 er slettet
 		assertFalse(joarkRepository.findAllJournalpostIdsByDokumentInfoId(hoveddokument1.getDokumentInfoId()).isEmpty());
 		assertFalse(joarkRepository.findAllJournalpostIdsByDokumentInfoId(hoveddokument2.getDokumentInfoId()).isEmpty());
+		assertFalse(joarkRepository.findById(journalpost1.getJournalpostId()).isPresent());
+		assertTrue(joarkRepository.findById(journalpost2.getJournalpostId()).isPresent());
+
+		// Assert originalJournalpost er skiftet til journalpost2
+		assertThat(dokumentinfoRepository.findAllByJournalpostRelasjonerJournalpostJournalpostIdAndDokumentInfoId(
+				journalpost2.getJournalpostId(), hoveddokument1.getDokumentInfoId())
+						.get()
+						.getOriginalJournalpost()
+						.getJournalpostId(),
+				is(journalpost2.getJournalpostId()));
+
 	}
 
 }
