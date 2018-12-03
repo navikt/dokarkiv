@@ -180,7 +180,6 @@ public class FysiskSlettDokumentService {
 		deleteRepository.deleteJPTilleggByJournalpostId(journalpostId);
 		deleteRepository.deleteSaksrelasjonByJournalpostId(journalpostId);
 		deleteRepository.deleteBrukerByJournalpostId(journalpostId);
-		System.out.println("kommer hit");
 		deleteRepository.deleteJournalpostByJournalpostId(journalpostId);
 	}
 
