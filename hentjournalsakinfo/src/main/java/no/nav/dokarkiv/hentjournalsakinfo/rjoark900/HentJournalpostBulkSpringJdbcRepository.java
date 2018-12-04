@@ -91,7 +91,7 @@ public class HentJournalpostBulkSpringJdbcRepository {
 				"       ),\n" +
 				"     midlertidige AS (SELECT b.journalpost_id\n" +
 				"                      FROM t_bruker b\n" +
-				"                             JOIN t_journalpost tj ON b.journalpost_id = tj.journalpost_id AND tj.k_fagomrade IN ('M', 'MO')\n" +
+				"                             JOIN t_journalpost tj ON b.journalpost_id = tj.journalpost_id AND tj.k_journal_s IN ('M', 'MO')\n" +
 				"                      WHERE b.bruker_id IN (:alleIdenter)\n" +
 				"     ),\n" +
 				"     fellesprojeksjon AS (SELECT j.journalpost_id      AS journalpostid,\n" +
