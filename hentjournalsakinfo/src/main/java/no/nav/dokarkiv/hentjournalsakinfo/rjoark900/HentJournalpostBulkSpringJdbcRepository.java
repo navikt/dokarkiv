@@ -24,10 +24,12 @@ public class HentJournalpostBulkSpringJdbcRepository {
 	private static final ResultSetExtractor<List<JournalpostDto>> JOURNALPOST_DTO_RESULT_SET_EXTRACTOR = JdbcTemplateMapperFactory.newInstance()
 			.addKeys("journalpostid", "dokumenter_dokumentinfoid")
 			.newResultSetExtractor(JournalpostDto.class);
-	private static final String NOOP_LIST = "NOOP_LIST";
+	private static final List<String> NOT_USED = Collections.singletonList("notused");
 	private static final List<String> ALL_JOURNALSTATUS = Stream.of(JournalStatusCode.values()).map(Enum::name).collect(Collectors.toList());
 	private static final List<Boolean> NO_FEILREGISTRERT_JOURNALPOST = Collections.singletonList(false);
 	private static final List<Boolean> ALL_JOURNALPOST = Arrays.asList(true, false);
+	public static final String GSAK_IDS_PARAM = "gsakIds";
+	public static final String PSAK_IDS_PARAM = "psakIds";
 
 	private final NamedParameterJdbcTemplate jdbcTemplate;
 
@@ -42,22 +44,22 @@ public class HentJournalpostBulkSpringJdbcRepository {
 		List<String> cteAliases = new ArrayList<>();
 		MapSqlParameterSource namedParams = new MapSqlParameterSource();
 		if (gsakIds == null || gsakIds.isEmpty()) {
-			namedParams.addValue("gsakIds", Collections.singletonList(NOOP_LIST));
+			namedParams.addValue(GSAK_IDS_PARAM, NOT_USED);
 		} else {
-			namedParams.addValue("gsakIds", gsakIds);
+			namedParams.addValue(GSAK_IDS_PARAM, gsakIds);
 			cteAliases.add("gsaksaker");
 		}
 		if (gsakIds == null || psakIds.isEmpty()) {
-			namedParams.addValue("psakIds", Collections.singletonList(NOOP_LIST));
+			namedParams.addValue(PSAK_IDS_PARAM, NOT_USED);
 		} else {
-			namedParams.addValue("psakIds", psakIds);
+			namedParams.addValue(PSAK_IDS_PARAM, psakIds);
 			cteAliases.add("psaksaker");
 		}
 		if (bulkJournalposterFilter.isInkluderMidlertidigeJournalposter()) {
 			cteAliases.add("midlertidige");
 		}
 		if(bulkJournalposterFilter.isKunFeilregistrerte()) {
-			namedParams.addValue("inkluderJournalStatus", Collections.singletonList(NOOP_LIST));
+			namedParams.addValue("inkluderJournalStatus", NOT_USED);
 		} else {
 			namedParams.addValue("inkluderJournalStatus", bulkJournalposterFilter.getInkluderJournalStatus());
 		}
@@ -96,22 +98,19 @@ public class HentJournalpostBulkSpringJdbcRepository {
 				"     ),\n" +
 				"     fellesprojeksjon AS (SELECT j.journalpost_id      AS journalpostid,\n" +
 				"                                 j.journalf_enhet      AS journalforendeenhetid,\n" +
-				"                                 j.dato_journal        AS journaldato,\n" +
-				"                                 j.dato_sendt_print    AS sendtprintdato,\n" +
 				"                                 j.innhold             AS innhold,\n" +
 				"                                 j.k_fagomrade         AS fagomrade,\n" +
 				"                                 j.k_journal_s         AS journalstatus,\n" +
-				"                                 j.dato_dokument       AS dokumentdato,\n" +
 				"                                 j.avsend_mottaker     AS avsendermottakernavn,\n" +
 				"                                 j.journalfort_av_navn AS journalfortavnavn,\n" +
-				"                                 j.dato_mottatt        AS mottattdato,\n" +
 				"                                 j.k_mottaks_kanal     AS mottakskanal,\n" +
 				"                                 j.k_utsendings_kanal  AS utsendingskanal,\n" +
-				"                                 j.dato_ekspedert      AS ekspedertdato,\n" +
-				"                                 j.dato_lest           AS lestdato,\n" +
-				"                                 j.mottatt_adressat    AS mottattadressatdato,\n" +
 				"                                 j.k_journalpost_t     AS journalposttype,\n" +
 				"                                 j.dato_opprettet      AS datoopprettet,\n" +
+				"                                 j.dato_ekspedert      AS ekspedertdato,\n" +
+				"                                 j.dato_mottatt        AS mottattdato,\n" +
+				"                                 j.dato_journal        AS journaldato,\n" +
+				"                                 j.dato_sendt_print    AS sendtprintdato,\n" +
 				"                                 s.sak_nr_fk           AS saksrelasjon_sakid,\n" +
 				"                                 s.feilregistrert      AS saksrelasjon_feilregistrert,\n" +
 				"                                 s.k_fagsystem         AS saksrelasjon_fagsystem,\n" +
