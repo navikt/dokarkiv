@@ -87,7 +87,9 @@ public class HentJournalsakinfoController {
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark900"}, percentiles = {0.5, 0.95})
 	public HentJournalpostBulkResponseTo hentJournalpostBulk(@RequestBody HentJournalpostBulkRequestTo hentJournalpostBulkRequestTo) {
 		log.info("rjoark900 henter journalpostbulk.");
-		return hentJournalpostBulkService.hentJournalpostBulk(hentJournalpostBulkRequestTo);
+		HentJournalpostBulkResponseTo hentJournalpostBulkResponseTo = hentJournalpostBulkService.hentJournalpostBulk(hentJournalpostBulkRequestTo);
+		log.info("rjoark900 fant og returnerer {} journalposter.", hentJournalpostBulkResponseTo.getTilgangJournalposter().size());
+		return hentJournalpostBulkResponseTo;
 	}
 
 	@Transactional(readOnly = true)
