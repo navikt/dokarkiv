@@ -3,7 +3,6 @@ package no.nav.dokarkiv.arkiverdokumentmottak.tjoark203.v2;
 import static org.apache.commons.lang.Validate.notNull;
 import static org.springframework.util.Assert.hasLength;
 
-import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.journalbehandling.MandatoryFieldsVerifier;
@@ -43,10 +42,8 @@ public class JournalforInngaaendeForsendelseV2Validator {
 
 	private void validateDokumentInfoRelasjonList(Set<JournalpostDokumentInfoRelasjon> dokumentInfoRelasjonList) {
 		for (JournalpostDokumentInfoRelasjon jdir : dokumentInfoRelasjonList) {
-			if (TilknyttetJournalpostSomCode.HOVEDDOKUMENT.equals(jdir.getTilknyttetJournalpostSom())) {
-				hasLength(jdir.getDokumentInfo()
-						.getDokumenttypeId(), "Missing required field in request: DokumentInfo.DokumenttypeId");
-			}
+			hasLength(jdir.getDokumentInfo()
+					.getDokumenttypeId(), "Missing required field in request: DokumentInfo.DokumenttypeId");
 		}
 	}
 }

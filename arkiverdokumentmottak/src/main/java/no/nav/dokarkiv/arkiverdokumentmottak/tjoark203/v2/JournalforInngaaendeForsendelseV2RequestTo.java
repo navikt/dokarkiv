@@ -4,7 +4,6 @@ import static java.lang.String.format;
 
 import lombok.Builder;
 import lombok.Data;
-import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.entities.Bruker;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
@@ -75,10 +74,8 @@ public class JournalforInngaaendeForsendelseV2RequestTo {
 		Assert.notNull(relasjon.getDokumentInfo(), ERROR_DESC + "JournalpostDokumentInfoRelasjoner.DokumentInfo");
 		Assert.notNull(relasjon.getDokumentInfo()
 				.getKategori(), ERROR_DESC + "JournalpostDokumentInfoRelasjoner.DokumentInfo.Kategori");
-		if (TilknyttetJournalpostSomCode.HOVEDDOKUMENT.equals(relasjon.getTilknyttetJournalpostSom())) {
-			Assert.notNull(relasjon.getDokumentInfo()
-					.getDokumenttypeId(), ERROR_DESC + "JournalpostDokumentInfoRelasjoner.DokumentInfo.DokumenttypeId");
-		}
+		Assert.notNull(relasjon.getDokumentInfo()
+				.getDokumenttypeId(), ERROR_DESC + "JournalpostDokumentInfoRelasjoner.DokumentInfo.DokumenttypeId");
 	}
 
 	private void validateFildetaljer(JournalpostDokumentInfoRelasjon relasjon) {
