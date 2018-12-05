@@ -1,14 +1,21 @@
 package no.nav.dokarkiv.journal.v3.tjoark058;
 
+import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.SLADDET;
+
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
+import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
+import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.repository.journalpostliste.HentMinJPListeParameters;
 import no.nav.dokarkiv.core.repository.journalpostliste.JournalpostListeRepository;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Service for TJOARK058
@@ -37,6 +44,7 @@ public class DefaultHentKjerneJournalpostListeService implements HentKjerneJourn
 		params.setPageNr(requestTo.getResultatSettNr());
 
 		List<Journalpost> journalposts = journalpostListeRepository.findJournalpostListe(params);
+		evictSladdetVariant(journalposts);
 		long totalNrJournalposts = journalpostListeRepository.findTotalNumberOfJournalposts(params);
 
 		return HentKjerneJournalpostListeResponseTo.builder().journalpostListe(journalposts)
@@ -56,5 +64,21 @@ public class DefaultHentKjerneJournalpostListeService implements HentKjerneJourn
 		int lastPageNumber = (int) ((totalNrJournalposts + requestTo.getResultatSettStoerrelse() - 1)
                         / requestTo.getResultatSettStoerrelse());
 		return lastPageNumber == requestTo.getResultatSettNr() + 1;
+	}
+
+	private void evictSladdetVariant(List<Journalpost> journalposts) {
+		if (journalposts != null) {
+			for (Journalpost journalpost : journalposts) {
+				Iterator<JournalpostDokumentInfoRelasjon> rel = journalpost.getJournalpostDokumentInfoRelasjoner().iterator();
+				DokumentInfo dokumentInfo;
+				while (rel.hasNext()) {
+					dokumentInfo = rel.next().getDokumentInfo();
+					List<FilDetaljer> sladdetDetaljer = dokumentInfo.getFildetaljerListe().stream().filter(filDetaljer -> SLADDET.equals(filDetaljer.getVariantFormat())).collect(Collectors.toList());
+					for (FilDetaljer removeDetaljer : sladdetDetaljer) {
+						dokumentInfo.removeFilDetaljer(removeDetaljer);
+					}
+				}
+			}
+		}
 	}
 }
