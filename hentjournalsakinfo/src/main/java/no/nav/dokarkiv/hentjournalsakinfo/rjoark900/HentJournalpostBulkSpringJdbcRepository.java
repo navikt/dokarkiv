@@ -58,7 +58,7 @@ public class HentJournalpostBulkSpringJdbcRepository {
 		if (bulkJournalposterFilter.isInkluderMidlertidigeJournalposter()) {
 			cteAliases.add("midlertidige");
 		}
-		if(bulkJournalposterFilter.isKunFeilregistrerte()) {
+		if (bulkJournalposterFilter.isKunFeilregistrerte()) {
 			namedParams.addValue("inkluderJournalStatus", NOT_USED);
 		} else {
 			namedParams.addValue("inkluderJournalStatus", bulkJournalposterFilter.getInkluderJournalStatus());
@@ -81,7 +81,7 @@ public class HentJournalpostBulkSpringJdbcRepository {
 	}
 
 	private String journalpostbulkSql(BulkJournalposterFilter bulkJournalposterFilter, List<String> cteAliases) {
-		return "WITH psaksaker AS\n" +
+		return "WITH pensjonssaker AS\n" +
 				"       (SELECT s.journalpost_id\n" +
 				"        FROM t_saksrelasjon s\n" +
 				"        WHERE (s.k_fagsystem = 'PEN' AND s.sak_nr_fk IN (:psakIds))\n" +
@@ -95,8 +95,9 @@ public class HentJournalpostBulkSpringJdbcRepository {
 				"       ),\n" +
 				"     midlertidige AS (SELECT b.journalpost_id\n" +
 				"                      FROM t_bruker b\n" +
-				"                             JOIN t_journalpost tj ON b.journalpost_id = tj.journalpost_id AND tj.k_journal_s IN ('M', 'MO')\n" +
+				"                             JOIN t_journalpost tj ON b.journalpost_id = tj.journalpost_id\n" +
 				"                      WHERE b.bruker_id IN (:alleIdenter)\n" +
+				"                        AND tj.k_journal_s IN ('M', 'MO')\n" +
 				"     ),\n" +
 				"     fellesprojeksjon AS (SELECT j.journalpost_id      AS journalpostid,\n" +
 				"                                 j.journalf_enhet      AS journalforendeenhetid,\n" +
@@ -116,6 +117,7 @@ public class HentJournalpostBulkSpringJdbcRepository {
 				"                                 s.sak_nr_fk           AS saksrelasjon_sakid,\n" +
 				"                                 s.feilregistrert      AS saksrelasjon_feilregistrert,\n" +
 				"                                 s.k_fagsystem         AS saksrelasjon_fagsystem,\n" +
+				"                                 rel.k_tilkn_jp_som    AS tilknyttet_som,\n" +
 				"                                 d.dokument_info_id    AS dokumenter_dokumentinfoid,\n" +
 				"                                 d.k_dokument_s        AS dokumenter_dokumentstatus,\n" +
 				"                                 d.brev_kode           AS dokumenter_brevkode,\n" +
@@ -124,22 +126,46 @@ public class HentJournalpostBulkSpringJdbcRepository {
 				"                                 JOIN t_journalpost j ON s.journalpost_id = j.journalpost_id\n" +
 				"                                 JOIN t_jp_dok_info_rel rel ON j.journalpost_id = rel.journalpost_id\n" +
 				"                                 JOIN t_dokument_info d ON rel.dokument_info_id = d.dokument_info_id)\n" +
-				"SELECT *\n" +
-				"FROM fellesprojeksjon fpj\n" +
-				"WHERE fpj.journalpostid IN (" + generateCteUnionSql(cteAliases) + ")\n" +
-				"  AND fpj.journalpostid < :journalpostIdPeker\n" +
-				"  AND fpj.fagomrade IN (:inkluderTema)\n" +
-				"  AND fpj.journalposttype IN (:inkluderJournalpostType)\n" +
-				"  AND fpj.datoopprettet > :fraDato\n" +
-				"  AND (\n" +
-				"    (\n" +
-				"        fpj.saksrelasjon_feilregistrert = 1 AND\n" +
-				"        fpj.journalstatus IN (:allJournalStatus))\n" +
-				"    OR (fpj.saksrelasjon_feilregistrert IS NULL AND fpj.journalstatus IN (:inkluderJournalStatus))\n" +
-				"    OR (fpj.saksrelasjon_feilregistrert = 0 AND fpj.journalstatus IN (:inkluderJournalStatus))\n" +
-				"  )\n" +
-				"ORDER BY fpj.journalpostid DESC " +
-				"FETCH FIRST :antallRader ROWS ONLY";
+				"SELECT t.journalpostid,\n" +
+				"       t.journalforendeenhetid,\n" +
+				"       t.innhold,\n" +
+				"       t.fagomrade,\n" +
+				"       t.journalstatus,\n" +
+				"       t.avsendermottakernavn,\n" +
+				"       t.journalfortavnavn,\n" +
+				"       t.mottakskanal,\n" +
+				"       t.utsendingskanal,\n" +
+				"       t.journalposttype,\n" +
+				"       t.datoopprettet,\n" +
+				"       t.ekspedertdato,\n" +
+				"       t.mottattdato,\n" +
+				"       t.journaldato,\n" +
+				"       t.sendtprintdato,\n" +
+				"       t.saksrelasjon_sakid,\n" +
+				"       t.saksrelasjon_feilregistrert,\n" +
+				"       t.saksrelasjon_fagsystem,\n" +
+				"       t.dokumenter_dokumentinfoid,\n" +
+				"       t.dokumenter_dokumentstatus,\n" +
+				"       t.dokumenter_brevkode,\n" +
+				"       t.dokumenter_tittel " +
+				"FROM (\n" +
+				"       SELECT *\n" +
+				"       FROM fellesprojeksjon fpj\n" +
+				"       WHERE fpj.journalpostid IN (" + generateCteUnionSql(cteAliases) + ")\n" +
+				"         AND fpj.fagomrade IN (:inkluderTema)\n" +
+				"         AND fpj.journalposttype IN (:inkluderJournalpostType)\n" +
+				"         AND fpj.datoopprettet > :fraDato\n" +
+				"         AND (\n" +
+				"           (\n" +
+				"               fpj.saksrelasjon_feilregistrert = 1 AND\n" +
+				"               fpj.journalstatus IN (:allJournalStatus))\n" +
+				"           OR (fpj.saksrelasjon_feilregistrert IS NULL AND fpj.journalstatus IN (:inkluderJournalStatus))\n" +
+				"           OR (fpj.saksrelasjon_feilregistrert = 0 AND fpj.journalstatus IN (:inkluderJournalStatus))\n" +
+				"         )\n" +
+				"       ORDER BY fpj.journalpostid DESC, tilknyttet_som ASC\n" +
+				"     ) t\n" +
+				"WHERE t.journalpostid < :journalpostIdPeker\n" +
+				"  AND rownum <= :antallRader\n";
 	}
 
 	private String generateCteUnionSql(List<String> cteAliases) {
