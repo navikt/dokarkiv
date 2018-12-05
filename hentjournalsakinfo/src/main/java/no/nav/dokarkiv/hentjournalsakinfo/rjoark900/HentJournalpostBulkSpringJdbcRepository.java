@@ -70,6 +70,8 @@ public class HentJournalpostBulkSpringJdbcRepository {
 		namedParams.addValue("inkluderJournalpostType", bulkJournalposterFilter.getInkluderJournalpostType());
 		namedParams.addValue("allJournalStatus", ALL_JOURNALSTATUS);
 		namedParams.addValue("visFeilregistrert", bulkJournalposterFilter.isVisFeilregistrerte() ? ALL_JOURNALPOST : NO_FEILREGISTRERT_JOURNALPOST);
+		namedParams.addValue("antallRader", bulkJournalposterFilter.getAntallRader());
+		namedParams.addValue("journalpostIdPeker", bulkJournalposterFilter.getJournalpostIdPeker());
 
 		if (cteAliases.isEmpty()) {
 			return new ArrayList<>();
@@ -125,6 +127,7 @@ public class HentJournalpostBulkSpringJdbcRepository {
 				"SELECT *\n" +
 				"FROM fellesprojeksjon fpj\n" +
 				"WHERE fpj.journalpostid IN (" + generateCteUnionSql(cteAliases) + ")\n" +
+				"  AND fpj.journalpostid < :journalpostIdPeker\n" +
 				"  AND fpj.fagomrade IN (:inkluderTema)\n" +
 				"  AND fpj.journalposttype IN (:inkluderJournalpostType)\n" +
 				"  AND fpj.datoopprettet > :fraDato\n" +
@@ -135,7 +138,8 @@ public class HentJournalpostBulkSpringJdbcRepository {
 				"    OR (fpj.saksrelasjon_feilregistrert IS NULL AND fpj.journalstatus IN (:inkluderJournalStatus))\n" +
 				"    OR (fpj.saksrelasjon_feilregistrert = 0 AND fpj.journalstatus IN (:inkluderJournalStatus))\n" +
 				"  )\n" +
-				"ORDER BY fpj.journalpostid DESC";
+				"ORDER BY fpj.journalpostid DESC " +
+				"FETCH FIRST :antallRader ROWS ONLY";
 	}
 
 	private String generateCteUnionSql(List<String> cteAliases) {

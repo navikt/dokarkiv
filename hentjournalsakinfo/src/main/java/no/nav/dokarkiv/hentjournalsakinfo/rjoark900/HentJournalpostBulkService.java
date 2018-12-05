@@ -24,13 +24,7 @@ public class HentJournalpostBulkService {
 		List<JournalpostDto> journalpostDtos = hentJournalpostBulkSpringJdbcRepository.hentJournalposter(
 				hentJournalpostBulkRequestTo.getGsakSakIds(),
 				hentJournalpostBulkRequestTo.getPsakSakIds(),
-				new BulkJournalposterFilter(
-						hentJournalpostBulkRequestTo.getFraDato(),
-						hentJournalpostBulkRequestTo.getAlleIdenter(),
-						hentJournalpostBulkRequestTo.getInkluderTema(),
-						hentJournalpostBulkRequestTo.getInkluderJournalStatus(),
-						hentJournalpostBulkRequestTo.getInkluderJournalpostType(),
-						hentJournalpostBulkRequestTo.isVisFeilregistrerte())
+				new BulkJournalposterFilter(hentJournalpostBulkRequestTo)
 		);
 		return new HentJournalpostBulkResponseTo(journalpostDtos);
 	}
