@@ -81,7 +81,7 @@ public class HentJournalpostBulkSpringJdbcRepository {
 	}
 
 	private String journalpostbulkSql(BulkJournalposterFilter bulkJournalposterFilter, List<String> cteAliases) {
-		return "WITH pensjonssaker AS\n" +
+		return "WITH psaksaker AS\n" +
 				"       (SELECT s.journalpost_id\n" +
 				"        FROM t_saksrelasjon s\n" +
 				"        WHERE (s.k_fagsystem = 'PEN' AND s.sak_nr_fk IN (:psakIds))\n" +
