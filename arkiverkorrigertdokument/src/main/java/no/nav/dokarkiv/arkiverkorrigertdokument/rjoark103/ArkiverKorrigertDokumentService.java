@@ -3,9 +3,12 @@ package no.nav.dokarkiv.arkiverkorrigertdokument.rjoark103;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.MDCConstants;
+import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
+import no.nav.dokarkiv.core.domain.entities.Begrensning;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
+import no.nav.dokarkiv.core.domain.service.BegrensningService;
 import no.nav.dokarkiv.core.exceptions.DokumentInfoIkkeFunnetException;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
@@ -22,11 +25,13 @@ public class ArkiverKorrigertDokumentService {
 
 	private final DokumentinfoRepository dokumentinfoRepository;
 	private final DokumentFilRepository dokumentFilRepository;
+	private final BegrensningService begrensningService;
 
 	@Inject
-	public ArkiverKorrigertDokumentService(DokumentinfoRepository dokumentinfoRepository, DokumentFilRepository dokumentFilRepository) {
+	public ArkiverKorrigertDokumentService(DokumentinfoRepository dokumentinfoRepository, DokumentFilRepository dokumentFilRepository, BegrensningService begrensningService) {
 		this.dokumentinfoRepository = dokumentinfoRepository;
 		this.dokumentFilRepository = dokumentFilRepository;
+		this.begrensningService = begrensningService;
 	}
 
 	public ArkiverKorrigertDokumentRespons arkiverKorrigertDokument(ArkiverKorrigertDokumentRequest requestTo) {
@@ -39,6 +44,7 @@ public class ArkiverKorrigertDokumentService {
 
 		byte[] decodedFil = decodeBodyInBase64(requestTo.getFil());
 		lagreKorrigertDokumentSomSladdetVariantFormat(dokumentInfo, decodedFil);
+		kanskjeOpprettBegrensing(dokumentInfo);
 
 		log.info("{} har arkivert korrigert dokument med dokumentInfoId={}",
 				MDC.get(MDCConstants.MDC_REQUEST_ID), requestTo.getDokumentInfoId());
@@ -48,6 +54,15 @@ public class ArkiverKorrigertDokumentService {
 						.getJournalpostId())
 				.tittel(dokumentInfo.getTittel())
 				.build();
+	}
+
+	private void kanskjeOpprettBegrensing(DokumentInfo dokumentInfo) {
+
+		begrensningService.saveBegrensning(Begrensning.builder()
+				.journalpostId(dokumentInfo.getOriginalJournalpost().getJournalpostId())
+				.dokumentInfoId(dokumentInfo.getDokumentInfoId())
+				.begrensningType(BegrensningTypeCode.SKJERMET)
+				.build());
 	}
 
 	private DokumentInfo kanskjeSlettEksisterendeSladdetFilOgFilDetaljer(DokumentInfo dokumentInfo) {
