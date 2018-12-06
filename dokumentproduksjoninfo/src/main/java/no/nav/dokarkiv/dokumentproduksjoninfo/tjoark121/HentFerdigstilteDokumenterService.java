@@ -5,6 +5,7 @@ import no.nav.dokarkiv.core.domain.entities.DokumentFil;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.domain.service.BegrensningService;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepositoryBegrenset;
 import no.nav.dokarkiv.dokumentproduksjoninfo.exceptions.DokumentInfoNotFoundException;
@@ -38,6 +39,9 @@ public class HentFerdigstilteDokumenterService {
 	@Inject
 	private HentFerdigstilteDokumenterValidator hentFerdigstilteRokumenterValidator;
 
+	@Inject
+	private BegrensningService begrensningService;
+
 	/**
 	 * 
 	 * @param journalpostId
@@ -57,7 +61,13 @@ public class HentFerdigstilteDokumenterService {
 				DokumentInfo dokumentInfo = journalpost.findDokumentInfoById(dokumentInfoId);
 				hentFerdigstilteRokumenterValidator.validateDokumentInfo(journalpostId, dokumentInfoId, dokumentInfo);
 
-				FilDetaljer filDetaljer = dokumentInfo.findFilDetaljerByVariantFormat(VariantFormatCode.ARKIV);
+				FilDetaljer filDetaljer;
+				if (begrensningService.isVariantSkjermet(dokumentInfoId, VariantFormatCode.ARKIV)) {
+					filDetaljer = dokumentInfo.findFilDetaljerByVariantFormat(VariantFormatCode.SLADDET);
+				} else {
+					filDetaljer = dokumentInfo.findFilDetaljerByVariantFormat(VariantFormatCode.ARKIV);
+				}
+
 				hentFerdigstilteRokumenterValidator.validateFildetaljer(dokumentInfoId, filDetaljer);
 
 				DokumentFil dokumentFil = dokumentFilRepository.findByFilUuid(filDetaljer.getFilUuid());

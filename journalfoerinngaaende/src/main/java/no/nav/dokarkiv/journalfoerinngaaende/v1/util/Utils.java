@@ -94,5 +94,4 @@ public class Utils {
 			throw new InputValideringFeiletException(String.format("%s kan ikke være null", fieldName));
 		}
 	}
-
 }

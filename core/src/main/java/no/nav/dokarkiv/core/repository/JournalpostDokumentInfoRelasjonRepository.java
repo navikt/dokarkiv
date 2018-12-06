@@ -26,5 +26,4 @@ public interface JournalpostDokumentInfoRelasjonRepository extends CrudRepositor
 	List<Object> findBegrensetRelasjonDokumentInfoIdByJournalpostId(@Param("journalpostId") Long journalpostId);
 
 	Optional<JournalpostDokumentInfoRelasjon> findByJournalpostJournalpostIdAndDokumentInfoDokumentInfoId(Long journalpostId, Long dokumentInfoId);
-
 }

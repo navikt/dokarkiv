@@ -15,9 +15,12 @@ import no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder;
 import no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder;
 import no.nav.dokarkiv.core.domain.builder.JournalpostBuilder;
 import no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder;
+import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
+import no.nav.dokarkiv.core.domain.entities.Begrensning;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.domain.service.BegrensningService;
 import no.nav.dokarkiv.core.exceptions.DocumentNotFoundException;
 import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
 import no.nav.dokarkiv.core.exceptions.InvalidFilUuidException;
@@ -48,6 +51,9 @@ public class DefaultHentDokumentUrlServiceTest {
 	private static final long DOKUMENT_INFO_ID = 1L;
 	private static final VariantFormatCode VARIANT_FORMAT = VariantFormatCode.ARKIV;
 	private static final String FIL_UUID = "456b166e-5f9f-430f-8e35-09a732156562";
+	private static final VariantFormatCode VARIANT_FORMAT_SLADDET = VariantFormatCode.SLADDET;
+	private static final String FIL_UUID_SLADDET = "456b166e-5f9f-430f-8e35-09a732156563";
+
 	@Rule
 	public ExpectedException expectedException = ExpectedException.none();
 	HentDokumentUrlRequestTo hentDokumentUrlRequest = new HentDokumentUrlRequestTo(
@@ -55,7 +61,9 @@ public class DefaultHentDokumentUrlServiceTest {
 	@Mock
 	private DefaultHentDokumentUrl hentDokumentUrlMock;
 	@Mock
-    private JoarkRepositoryBegrenset joarkRepositoryMock;
+	private JoarkRepositoryBegrenset joarkRepositoryMock;
+	@Mock
+	private BegrensningService begrensningService;
 
 	@Captor
 	private ArgumentCaptor<HentDokumentUrlRequest> delegateRequestCaptor;
@@ -173,6 +181,22 @@ public class DefaultHentDokumentUrlServiceTest {
 	}
 
 	@Test
+	public void shouldCallDelegateWithCorrectValuesSkjermet() throws Exception {
+		when(begrensningService.isVariantSkjermet(DOKUMENT_INFO_ID, VariantFormatCode.ARKIV)).thenReturn(true);
+		when(joarkRepositoryMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(createJournalPost()));
+		when(hentDokumentUrlMock.hentDokumentUrl(isA(HentDokumentUrlRequest.class))).thenReturn(
+				new HentDokumentUrlResponse("Test"));
+		hentDokumentUrlService.hentDokumentUrl(hentDokumentUrlRequest);
+
+		verify(hentDokumentUrlMock).hentDokumentUrl(delegateRequestCaptor.capture());
+
+		HentDokumentUrlRequest delegateRequest = delegateRequestCaptor.getValue();
+		assertThat(delegateRequest.getJournalpostId(), is(JOURNALPOST_ID));
+		assertThat(delegateRequest.getFilUuid(), is(FIL_UUID_SLADDET));
+	}
+
+
+	@Test
 	public void shouldReturnDokumentUrl() throws Exception {
 		String dokumentUrl = "nav.no/joark/dokument123";
 
@@ -193,9 +217,12 @@ public class DefaultHentDokumentUrlServiceTest {
 						.dokumentInfo(DokumentInfoBuilder.getDokumentInfoBuilder()
 								.dokumentInfoId(DOKUMENT_INFO_ID)
 								.filDetaljerList(FilDetaljerBuilder.getFilDetaljerBuilder()
-										.filUuid(FIL_UUID)
-										.variantFormat(VARIANT_FORMAT)
-										.build())
+												.filUuid(FIL_UUID)
+												.variantFormat(VARIANT_FORMAT).build(),
+										FilDetaljerBuilder.getFilDetaljerBuilder()
+												.filUuid(FIL_UUID_SLADDET)
+												.variantFormat(VARIANT_FORMAT_SLADDET)
+												.build())
 								.build())
 						.build())
 				.build();

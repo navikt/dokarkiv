@@ -49,15 +49,14 @@ public class DefaultFjernFerdigstiltDokumentService implements FjernFerdigstiltD
 		dokumentInfo.setDokumentstatus(DokumentStatusCode.UNDER_REDIGERING);
 		dokumentInfo.setDokumentFerdigDato(null);
 
-
-		FilDetaljer arkivFilDetaljer = dokumentInfo.findFilDetaljerByVariantFormat(VariantFormatCode.ARKIV);
-		if (arkivFilDetaljer != null) {
-			dokumentFilRepository.deleteByFilUuid(arkivFilDetaljer.getFilUuid());
-			dokumentInfo.removeFilDetaljer(arkivFilDetaljer);
+		for (FilDetaljer filDetaljer : dokumentInfo.getFildetaljerListe()) {
+			if (filDetaljer.getVariantFormat().equals(VariantFormatCode.ARKIV) || filDetaljer.getVariantFormat().equals(VariantFormatCode.SLADDET)) {
+				dokumentFilRepository.deleteByFilUuid(filDetaljer.getFilUuid());
+				dokumentInfo.removeFilDetaljer(filDetaljer);
+			}
 		}
 		sporingPopulator.populateSporingInfo(journalpost, request.getEndretAvNavn());
 	}
-
 
 	private Journalpost findJournalpost(Long journalpostId) throws NoJournalpostFoundException {
 		return joarkRepository.findById(journalpostId).orElseThrow(() -> new NoJournalpostFoundException("Journalpost with id: " + journalpostId + " does not exist", journalpostId));

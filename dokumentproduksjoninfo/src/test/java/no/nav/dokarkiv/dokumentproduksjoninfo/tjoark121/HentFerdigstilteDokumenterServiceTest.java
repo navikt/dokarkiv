@@ -7,12 +7,16 @@ import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalp
 import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
+import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentFil;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.domain.service.BegrensningService;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepositoryBegrenset;
 import no.nav.dokarkiv.dokumentproduksjoninfo.exceptions.FilDetaljerNotFoundException;
@@ -38,8 +42,12 @@ public class HentFerdigstilteDokumenterServiceTest {
 
 	private static final String FILUUID_1 = "filuuid1";
 	private static final String FILUUID_2 = "filuuid2";
+	private static final String FILUUID_SLADDET_1 = "filuuidSladdet1";
+	private static final String FILUUID_SLADDET_2 = "filuuidSladdet2";
 	private static final String FILCONTENT_1 = "filcontent1";
 	private static final String FILCONTENT_2 = "filcontent1";
+	private static final String FILCONTENT_SLADDET_1 = "filcontentSladdet1";
+	private static final String FILCONTENT_SLADDET_2 = "filcontentSladdet2";
 	private static final String TITTEL_1 = "brevtittel1";
 	private static final String TITTEL_2 = "brevtittel2";
 	private static final long JOURNALPOST_ID = 42L;
@@ -50,7 +58,7 @@ public class HentFerdigstilteDokumenterServiceTest {
 	public ExpectedException exception = ExpectedException.none();
 
 	@Mock
-    private JoarkRepositoryBegrenset joarkRepository;
+	private JoarkRepositoryBegrenset joarkRepository;
 
 	@Mock
 	private DokumentFilRepository dokumentFilRepository;
@@ -58,8 +66,12 @@ public class HentFerdigstilteDokumenterServiceTest {
 	@Mock
 	private HentFerdigstilteDokumenterValidator hentFerdigstilteRokumenterValidator;
 
+	@Mock
+	private BegrensningService begrensningService;
+
 	@InjectMocks
 	private HentFerdigstilteDokumenterService service;
+
 
 	@Test
 	public void shouldFetchFerdigstilteDokumenter() throws Exception {
@@ -73,6 +85,25 @@ public class HentFerdigstilteDokumenterServiceTest {
 		assertThat(hentFerdigstilteDokumenter.size(), is(2));
 		assertThat(hentFerdigstilteDokumenter.get(0).getDokumentInfoId(), is(DOKUMENT_1));
 		assertThat(hentFerdigstilteDokumenter.get(0).getFil(), is(FILCONTENT_1.getBytes()));
+		assertThat(hentFerdigstilteDokumenter.get(0).getTittel(), is(TITTEL_1));
+		assertThat(hentFerdigstilteDokumenter.get(1).getDokumentInfoId(), is(DOKUMENT_2));
+		assertThat(hentFerdigstilteDokumenter.get(1).getFil(), is(FILCONTENT_2.getBytes()));
+		assertThat(hentFerdigstilteDokumenter.get(1).getTittel(), is(TITTEL_2));
+	}
+
+	@Test
+	public void shouldFetchFerdigstilteDokumenterSkjermet() throws Exception {
+		when(joarkRepository.findById(JOURNALPOST_ID)).thenReturn(Optional.of(createJournalpost()));
+		when(dokumentFilRepository.findByFilUuid(FILUUID_2)).thenReturn(createFildetaljer(FILCONTENT_2));
+		when(dokumentFilRepository.findByFilUuid(FILUUID_SLADDET_1)).thenReturn(createFildetaljer(FILCONTENT_SLADDET_1));
+		when(begrensningService.isVariantSkjermet(DOKUMENT_1, VariantFormatCode.ARKIV)).thenReturn(true);
+
+		List<HentFerdigstilteDokumenterResponseTo> hentFerdigstilteDokumenter = service.hentFerdigstilteDokumenter(
+				JOURNALPOST_ID, Arrays.asList(DOKUMENT_1, DOKUMENT_2));
+
+		assertThat(hentFerdigstilteDokumenter.size(), is(2));
+		assertThat(hentFerdigstilteDokumenter.get(0).getDokumentInfoId(), is(DOKUMENT_1));
+		assertThat(hentFerdigstilteDokumenter.get(0).getFil(), is(FILCONTENT_SLADDET_1.getBytes()));
 		assertThat(hentFerdigstilteDokumenter.get(0).getTittel(), is(TITTEL_1));
 		assertThat(hentFerdigstilteDokumenter.get(1).getDokumentInfoId(), is(DOKUMENT_2));
 		assertThat(hentFerdigstilteDokumenter.get(1).getFil(), is(FILCONTENT_2.getBytes()));
@@ -102,8 +133,14 @@ public class HentFerdigstilteDokumenterServiceTest {
 												.dokumentInfoId(DOKUMENT_1)
 												.tittel(TITTEL_1)
 												.filDetaljerList(
-														getFilDetaljerBuilder().filUuid(FILUUID_1)
-																.variantFormat(VariantFormatCode.ARKIV).build()).build())
+														getFilDetaljerBuilder()
+																.filUuid(FILUUID_1)
+																.variantFormat(VariantFormatCode.ARKIV).build(),
+														getFilDetaljerBuilder()
+																.filUuid(FILUUID_SLADDET_1)
+																.variantFormat(VariantFormatCode.SLADDET)
+																.build())
+												.build())
 								.build())
 				.dokumentInfoRelasjoner(
 						getJournalpostDokumentInfoRelasjonBuilder()
@@ -115,7 +152,10 @@ public class HentFerdigstilteDokumenterServiceTest {
 												.filDetaljerList(
 														getFilDetaljerBuilder()
 																.filUuid(FILUUID_2)
-																.variantFormat(VariantFormatCode.ARKIV)
+																.variantFormat(VariantFormatCode.ARKIV).build(),
+														getFilDetaljerBuilder()
+																.filUuid(FILUUID_SLADDET_2)
+																.variantFormat(VariantFormatCode.SLADDET)
 																.build())
 												.build())
 								.build()
