@@ -4,32 +4,26 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Data;
-
-//TODO: Har ikke avklart hvilken informasjon en response skal inneholde
+import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 
 @Data
 @Builder
 public class FysiskSlettDokumentResponse {
 
-	private final String tittel;
-	private final Long dokumentInfoId;
-	private final Boolean slettet;
-	private final String journalStatus;
 	private final Long journalpostId;
-	private final String journalpostType;
-	private final String tema;
+	private final Long dokumentInfoId;
+	private final String tittel;
+	private final TilknyttetJournalpostSomCode tilknyttetJournalpostSomCode;
 
 	@JsonCreator
-	public FysiskSlettDokumentResponse(@JsonProperty("tittel") String tittel, @JsonProperty("dokumentInfoId") Long dokumentInfoId,
-									   @JsonProperty("slettet") Boolean slettet, @JsonProperty("journalStatus") String journalStatus,
-									   @JsonProperty("journalpostId") Long journalpostId,
-									   @JsonProperty("journalpostType") String journalpostType, @JsonProperty("tema") String tema) {
-		this.tittel = tittel;
-		this.dokumentInfoId = dokumentInfoId;
-		this.slettet = slettet;
-		this.journalStatus = journalStatus;
+	public FysiskSlettDokumentResponse(
+			@JsonProperty("journalpostId") Long journalpostId,
+			@JsonProperty("dokumentInfoId") Long dokumentInfoId,
+			@JsonProperty("tittel") String tittel,
+			@JsonProperty("tittel") TilknyttetJournalpostSomCode tilknyttetJournalpostSomCode) {
 		this.journalpostId = journalpostId;
-		this.journalpostType = journalpostType;
-		this.tema = tema;
+		this.dokumentInfoId = dokumentInfoId;
+		this.tittel = tittel;
+		this.tilknyttetJournalpostSomCode = tilknyttetJournalpostSomCode;
 	}
 }

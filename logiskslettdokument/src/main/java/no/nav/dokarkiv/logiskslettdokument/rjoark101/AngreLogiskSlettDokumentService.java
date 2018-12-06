@@ -5,13 +5,12 @@ import static org.apache.commons.lang3.BooleanUtils.isFalse;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
-import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.service.BegrensningService;
-import no.nav.dokarkiv.core.exceptions.DokumentInfoIkkeTilknyttetJournalpostSomGyldigVerdiException;
+import no.nav.dokarkiv.core.exceptions.BegrensningIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.JournalpostDokumentInfoRelasjonIkkeFunnetException;
+import no.nav.dokarkiv.core.exceptions.UgyldigTilknyttetJournalpostSomException;
 import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
-import no.nav.dokarkiv.logiskslettdokument.exceptions.BegrensningIkkeFunnetException;
 import no.nav.dokarkiv.logiskslettdokument.rjoark100.LogiskSlettDokumentRequestTo;
 import no.nav.dokarkiv.logiskslettdokument.rjoark100.LogiskSlettDokumentResponse;
 import no.nav.dokarkiv.logiskslettdokument.rjoark100.LogiskSlettDokumentResponseMapper;
@@ -71,14 +70,11 @@ public class AngreLogiskSlettDokumentService {
 						journalpostId, dokumentInfoId);
 				break;
 			default:
-				throw new DokumentInfoIkkeTilknyttetJournalpostSomGyldigVerdiException(String.format(
-						"Dokument med dokumentInfoId=%s er tilknyttet journalpost med journalpostId=%s som %s. " +
-								"Gyldige verdier er %s eller %s.",
-						dokumentInfoId,
-						journalpostId,
-						relasjonDerSlettingSkalAngres.getTilknyttetJournalpostSom().name(),
-						TilknyttetJournalpostSomCode.HOVEDDOKUMENT.name(),
-						TilknyttetJournalpostSomCode.VEDLEGG.name()));
+				throw new UgyldigTilknyttetJournalpostSomException(String.format(
+						"Kan ikke angre logisk sletting av dokument med journalpostId=%s, dokumentInfoId=%s fordi " +
+								"dokumentet er ikke tilknyttet journalposten som hoveddokument eller vedlegg.",
+						requestTo.getJournalpostId(),
+						requestTo.getDokumentInfoId()));
 		}
 
 		return LogiskSlettDokumentResponseMapper.mapToSlettDokumentResponse(relasjonDerSlettingSkalAngres);
