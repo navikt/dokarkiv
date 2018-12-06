@@ -36,21 +36,18 @@ public class ArkiverKorrigertDokumentService {
 		this.begrensningRepository = begrensningRepository;
 	}
 
-	public ArkiverKorrigertDokumentRespons arkiverKorrigertDokument(ArkiverKorrigertDokumentRequest requestTo) {
-		DokumentInfo dokumentInfo = dokumentinfoRepository.findByDokumentInfoId(requestTo.getDokumentInfoId())
+	public ArkiverKorrigertDokumentRespons arkiverKorrigertDokument(ArkiverKorrigertDokumentRequest request) {
+		DokumentInfo dokumentInfo = dokumentinfoRepository.findByDokumentInfoId(request.getDokumentInfoId())
 				.orElseThrow(() -> new DokumentInfoIkkeFunnetException(String.format("Kan ikke finne dokumentInfo med dokumentInfoId=%s",
-						requestTo.getDokumentInfoId())));
-
+						request.getDokumentInfoId())));
 
 		kanskjeSlettEksisterendeSladdetFilOgFilDetaljer(dokumentInfo);
 
-		byte[] decodedFil = decodeBodyInBase64(requestTo.getFil());
+		byte[] decodedFil = decodeBodyInBase64(request.getFil());
 		lagreKorrigertDokumentSomSladdetVariantFormat(dokumentInfo, decodedFil);
 
 		kanskjeOpprettBegrensingSkjermet(dokumentInfo);
 
-		log.info("{} har arkivert korrigert dokument med dokumentInfoId={}",
-				MDC.get(MDCConstants.MDC_REQUEST_ID), requestTo.getDokumentInfoId());
 		return ArkiverKorrigertDokumentRespons.builder()
 				.dokumentInfoId(dokumentInfo.getDokumentInfoId())
 				.journalpostId(dokumentInfo.getOriginalJournalpost() == null ? null : dokumentInfo.getOriginalJournalpost()
@@ -96,7 +93,7 @@ public class ArkiverKorrigertDokumentService {
 				.fileContent(fil)
 				.dokumentInfo(dokumentInfo)
 				.build();
-		filDetaljer.setOpprettetKildeNavn(MDC.get(MDCConstants.MDC_CONSUMER_ID)); // Er dette system / funksjon som har opprettet dataposten?
+		filDetaljer.setOpprettetKildeNavn(MDC.get(MDCConstants.MDC_CONSUMER_ID));
 
 		dokumentInfo.addFilDetaljer(filDetaljer);
 

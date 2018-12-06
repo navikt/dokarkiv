@@ -52,7 +52,10 @@ public class ArkiverKorrigertDokumentRestController {
 		validator.validateArkiverKorrigertDokumentRequest(request);
 		abacSecurityService.assertAccessToDokumentIncludingBegrenset(request.getDokumentInfoId());
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
-		return arkiverKorrigertDokumentService.arkiverKorrigertDokument(request);
+		ArkiverKorrigertDokumentRespons respons = arkiverKorrigertDokumentService.arkiverKorrigertDokument(request);
+		log.info("{} har arkivert korrigert dokument med dokumentInfoId={}",
+				MDC.get(MDCConstants.MDC_REQUEST_ID), request.getDokumentInfoId());
+		return respons;
 	}
 
 }
