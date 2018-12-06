@@ -72,7 +72,7 @@ public abstract class AbstractJournalOperations {
 	 * @return filDetaljer
 	 * @throws DocumentNotFoundException with the root cause InvalidArgumentException
 	 */
-	protected FilDetaljer getFilDetaljer(Long journalpostId, DokumentInfo dokumentInfo, VariantFormatCode variantFormat)
+	protected FilDetaljer getFilDetaljer(DokumentInfo dokumentInfo, VariantFormatCode variantFormat)
 			throws DocumentNotFoundException {
 		FilDetaljer filDetaljer;
 		if (begrensningService.isVariantSkjermet(dokumentInfo.getDokumentInfoId(), variantFormat)) {

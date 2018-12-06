@@ -1,6 +1,5 @@
 package no.nav.dokarkiv.dokumentproduksjoninfo.tjoark121;
 
-import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentFil;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;

@@ -1,6 +1,5 @@
 package no.nav.dokarkiv.inngaaendejournal.v1.tjoark056;
 
-import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeInngaaendeException;
@@ -13,7 +12,6 @@ import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * @author Joakim Bjørnstad, Jbit AS

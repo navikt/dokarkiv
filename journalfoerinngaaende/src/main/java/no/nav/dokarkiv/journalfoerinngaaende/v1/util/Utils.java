@@ -1,20 +1,15 @@
 package no.nav.dokarkiv.journalfoerinngaaende.v1.util;
 
-import com.google.common.collect.Lists;
 import no.nav.dok.tjenester.journalfoerinngaaende.Dokument;
 import no.nav.dok.tjenester.journalfoerinngaaende.GetJournalpostResponse;
-import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
-import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.exceptions.DokumentIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeInngaaendeException;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
