@@ -1,6 +1,8 @@
 package no.nav.dokarkiv.arkiverkorrigertdokument.rjoark103;
 
 
+import static org.apache.commons.lang3.BooleanUtils.isFalse;
+
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
@@ -8,8 +10,8 @@ import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.Begrensning;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
-import no.nav.dokarkiv.core.domain.service.BegrensningService;
 import no.nav.dokarkiv.core.exceptions.DokumentInfoIkkeFunnetException;
+import no.nav.dokarkiv.core.repository.BegrensningRepository;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import org.apache.commons.codec.binary.Base64;
@@ -25,13 +27,13 @@ public class ArkiverKorrigertDokumentService {
 
 	private final DokumentinfoRepository dokumentinfoRepository;
 	private final DokumentFilRepository dokumentFilRepository;
-	private final BegrensningService begrensningService;
+	private final BegrensningRepository begrensningRepository;
 
 	@Inject
-	public ArkiverKorrigertDokumentService(DokumentinfoRepository dokumentinfoRepository, DokumentFilRepository dokumentFilRepository, BegrensningService begrensningService) {
+	public ArkiverKorrigertDokumentService(DokumentinfoRepository dokumentinfoRepository, DokumentFilRepository dokumentFilRepository, BegrensningRepository begrensningRepository) {
 		this.dokumentinfoRepository = dokumentinfoRepository;
 		this.dokumentFilRepository = dokumentFilRepository;
-		this.begrensningService = begrensningService;
+		this.begrensningRepository = begrensningRepository;
 	}
 
 	public ArkiverKorrigertDokumentRespons arkiverKorrigertDokument(ArkiverKorrigertDokumentRequest requestTo) {
@@ -44,7 +46,8 @@ public class ArkiverKorrigertDokumentService {
 
 		byte[] decodedFil = decodeBodyInBase64(requestTo.getFil());
 		lagreKorrigertDokumentSomSladdetVariantFormat(dokumentInfo, decodedFil);
-		kanskjeOpprettBegrensing(dokumentInfo);
+
+		kanskjeOpprettBegrensingSkjermet(dokumentInfo);
 
 		log.info("{} har arkivert korrigert dokument med dokumentInfoId={}",
 				MDC.get(MDCConstants.MDC_REQUEST_ID), requestTo.getDokumentInfoId());
@@ -56,22 +59,27 @@ public class ArkiverKorrigertDokumentService {
 				.build();
 	}
 
-	private void kanskjeOpprettBegrensing(DokumentInfo dokumentInfo) {
-
-		begrensningService.saveBegrensning(Begrensning.builder()
-				.journalpostId(dokumentInfo.getOriginalJournalpost().getJournalpostId())
-				.dokumentInfoId(dokumentInfo.getDokumentInfoId())
-				.begrensningType(BegrensningTypeCode.SKJERMET)
-				.build());
+	private void kanskjeOpprettBegrensingSkjermet(DokumentInfo dokumentInfo) {
+		boolean begrengsningExists = begrensningRepository.findByDokumentInfoIdAndVariantFormatAndBegrensningType(dokumentInfo.getDokumentInfoId(), VariantFormatCode.ARKIV, BegrensningTypeCode.SKJERMET)
+				.isPresent();
+		if (isFalse(begrengsningExists)) {
+			Begrensning begrensning = Begrensning.builder()
+					.journalpostId(dokumentInfo.getOriginalJournalpost().getJournalpostId())
+					.dokumentInfoId(dokumentInfo.getDokumentInfoId())
+					.begrensningType(BegrensningTypeCode.SKJERMET)
+					.variantFormat(VariantFormatCode.ARKIV)
+					.build();
+			begrensning.setOpprettetKildeNavn(MDC.get(MDCConstants.MDC_CONSUMER_ID));
+			begrensningRepository.save(begrensning);
+		}
 	}
 
-	private DokumentInfo kanskjeSlettEksisterendeSladdetFilOgFilDetaljer(DokumentInfo dokumentInfo) {
+	private void kanskjeSlettEksisterendeSladdetFilOgFilDetaljer(DokumentInfo dokumentInfo) {
 		FilDetaljer sladdetFildetaljer = dokumentInfo.findFilDetaljerByVariantFormat(VariantFormatCode.SLADDET);
 		if (Objects.nonNull(sladdetFildetaljer)) {
 			dokumentFilRepository.deleteByFilUuid(sladdetFildetaljer.getFilUuid());
 			dokumentInfo.removeFilDetaljer(sladdetFildetaljer);
 		}
-		return dokumentInfo;
 	}
 
 	private byte[] decodeBodyInBase64(String dokumentFilBase64) {

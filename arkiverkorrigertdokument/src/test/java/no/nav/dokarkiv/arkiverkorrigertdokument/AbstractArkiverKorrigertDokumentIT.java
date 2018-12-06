@@ -7,6 +7,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static no.nav.dokarkiv.core.security.JwtClaimsBuilderProvider.openAmClaimsBuilder;
 
 import no.nav.dokarkiv.core.CoreConfig;
+import no.nav.dokarkiv.core.repository.BegrensningRepository;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
@@ -79,6 +80,8 @@ public abstract class AbstractArkiverKorrigertDokumentIT {
 	protected OidcTestService oidcTestService;
 	@Inject
 	protected DokumentFilRepository dokumentFilRepository;
+	@Inject
+	protected BegrensningRepository begrensningRepository;
 	@Before
 	public void setUp() {
 		OIDC_TOKEN_PERSON_USER_TEST = "Bearer " + oidcTestService.createOidc(openAmClaimsBuilder().subject(PERSON_USER_ID)
@@ -114,6 +117,7 @@ public abstract class AbstractArkiverKorrigertDokumentIT {
 		joarkRepository.deleteAll();
 		dokumentinfoRepository.deleteAll();
 		journalpostDokumentInfoRelasjonRepository.deleteAll();
+		begrensningRepository.deleteAll();
 	}
 
 	protected HttpEntity createNoAccesHeaders() {
