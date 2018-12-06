@@ -14,6 +14,7 @@ import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import java.util.Objects;
 
 @Slf4j
 @Service
@@ -34,6 +35,8 @@ public class ArkiverKorrigertDokumentService {
 						requestTo.getDokumentInfoId())));
 
 
+		dokumentInfo = kanskjeSlettEksisterendeSladdetFilOgFilDetaljer(dokumentInfo);
+
 		byte[] decodedFil = decodeBodyInBase64(requestTo.getFil());
 		lagreKorrigertDokumentSomSladdetVariantFormat(dokumentInfo, decodedFil);
 
@@ -45,6 +48,15 @@ public class ArkiverKorrigertDokumentService {
 						.getJournalpostId())
 				.tittel(dokumentInfo.getTittel())
 				.build();
+	}
+
+	private DokumentInfo kanskjeSlettEksisterendeSladdetFilOgFilDetaljer(DokumentInfo dokumentInfo) {
+		FilDetaljer sladdetFildetaljer = dokumentInfo.findFilDetaljerByVariantFormat(VariantFormatCode.SLADDET);
+		if (Objects.nonNull(sladdetFildetaljer)) {
+			dokumentFilRepository.deleteByFilUuid(sladdetFildetaljer.getFilUuid());
+			dokumentInfo.removeFilDetaljer(sladdetFildetaljer);
+		}
+		return dokumentInfo;
 	}
 
 	private byte[] decodeBodyInBase64(String dokumentFilBase64) {

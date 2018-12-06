@@ -47,13 +47,11 @@ public class ArkiverKorrigertDokumentRestController {
 			actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION))
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark103"}, percentiles = {0.5, 0.95})
 	public ArkiverKorrigertDokumentRespons arkiverKorrigertDokument(@RequestBody ArkiverKorrigertDokumentRequest request) {
-
-		validator.validateArkiverKorrigertDokumentRequest(request);
-		abacSecurityService.assertAccessToDokumentIncludingBegrenset(request.getDokumentInfoId());
 		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark103");
 		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har mottat kall med dokumentInfoId={}", request.getDokumentInfoId());
+		validator.validateArkiverKorrigertDokumentRequest(request);
+		abacSecurityService.assertAccessToDokumentIncludingBegrenset(request.getDokumentInfoId());
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
-
 		return arkiverKorrigertDokumentService.arkiverKorrigertDokument(request);
 	}
 
