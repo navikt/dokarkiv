@@ -35,7 +35,7 @@ public class ArkiverKorrigertDokumentService {
 						requestTo.getDokumentInfoId())));
 
 
-		dokumentInfo = kanskjeSlettEksisterendeSladdetFilOgFilDetaljer(dokumentInfo);
+		kanskjeSlettEksisterendeSladdetFilOgFilDetaljer(dokumentInfo);
 
 		byte[] decodedFil = decodeBodyInBase64(requestTo.getFil());
 		lagreKorrigertDokumentSomSladdetVariantFormat(dokumentInfo, decodedFil);
