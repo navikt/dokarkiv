@@ -3,13 +3,12 @@ package no.nav.dokarkiv.logiskslettdokument.rjoark100;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
-import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.entities.Begrensning;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.service.BegrensningService;
-import no.nav.dokarkiv.core.exceptions.DokumentInfoIkkeTilknyttetJournalpostSomGyldigVerdiException;
 import no.nav.dokarkiv.core.exceptions.ErBegrensetException;
 import no.nav.dokarkiv.core.exceptions.JournalpostDokumentInfoRelasjonIkkeFunnetException;
+import no.nav.dokarkiv.core.exceptions.UgyldigTilknyttetJournalpostSomException;
 import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
@@ -58,14 +57,11 @@ public class LogiskSlettDokumentService {
 						MDC.get(MDCConstants.MDC_REQUEST_ID), requestTo.getJournalpostId(), requestTo.getDokumentInfoId());
 				break;
 			default:
-				throw new DokumentInfoIkkeTilknyttetJournalpostSomGyldigVerdiException(String.format(
-						"Dokument med dokumentInfoId=%s er tilknyttet journalpost med journalpostId=%s som %s. " +
-								"Gyldige verdier er %s eller %s.",
-						relasjonSomSkalSlettesLogisk.getDokumentInfo().getDokumentInfoId(),
-						relasjonSomSkalSlettesLogisk.getJournalpost().getJournalpostId(),
-						relasjonSomSkalSlettesLogisk.getTilknyttetJournalpostSom().name(),
-						TilknyttetJournalpostSomCode.HOVEDDOKUMENT.name(),
-						TilknyttetJournalpostSomCode.VEDLEGG.name()));
+				throw new UgyldigTilknyttetJournalpostSomException(String.format(
+						"Kan ikke logisk slette dokument med journalpostId=%s, dokumentInfoId=%s fordi " +
+								"dokumentet er ikke tilknyttet journalposten som hoveddokument eller vedlegg.",
+						requestTo.getJournalpostId(),
+						requestTo.getDokumentInfoId()));
 		}
 
 		return LogiskSlettDokumentResponseMapper.mapToSlettDokumentResponse(relasjonSomSkalSlettesLogisk);

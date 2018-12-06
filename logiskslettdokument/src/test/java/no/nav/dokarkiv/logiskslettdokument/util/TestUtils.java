@@ -154,4 +154,14 @@ public class TestUtils {
 		return begrensning;
 	}
 
+	public static Journalpost opprettHoveddokumentMedSammensattDokForIT() {
+		Journalpost journalpost = createJournalpostBuilder().build();
+		journalpost.addJournalpostDokumentInfoRelasjon(getJournalpostDokumentInfoRelasjonBuilder()
+				.opprettetKildeNavn(OPPRETTET_KILDE_NAVN)
+				.tilknyttetAvNavn(TILKNYTTET_AV_NAVN)
+				.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.SAMMENSATT_DOK)
+				.dokumentInfo(createDokumentInfo())
+				.build());
+		return journalpost;
+	}
 }
