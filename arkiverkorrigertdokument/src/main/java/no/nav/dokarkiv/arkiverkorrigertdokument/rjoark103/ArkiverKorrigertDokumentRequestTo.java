@@ -8,5 +8,6 @@ import lombok.Data;
 public class ArkiverKorrigertDokumentRequestTo {
 	private final Long journalpostId;
 	private final Long dokumentInfoId;
-	private final byte[] binaerFil;
+	private final byte[] body;
+
 }

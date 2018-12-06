@@ -1,17 +1,32 @@
 package no.nav.dokarkiv.arkiverkorrigertdokument.util;
 
-import no.nav.dokarkiv.arkiverkorrigertdokument.rjoark103.ArkiverKorrigertDokumentRequestTo;
-import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
-import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
-import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
-import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
-import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
+import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import no.nav.dokarkiv.core.datautil.BrukerTestDataProvider;
+import no.nav.dokarkiv.core.datautil.SaksrelasjonTestDataProvider;
+import no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder;
+import no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder;
+import no.nav.dokarkiv.core.domain.builder.JournalpostBuilder;
+import no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder;
+import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
+import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
+import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
+import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
+import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
+import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
+import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
+import no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode;
+import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
+import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
+import no.nav.dokarkiv.core.domain.entities.Journalpost;
+
+import java.util.Date;
 
 public class TestUtils {
+
+
+//	SLETTELINJE --------------------------------------------------
+
 
 	private static final String OPPRETTET_KILDE_NAVN = "Opprettet kilde";
 	private static final String OPPRETTET_AV_NAVN = "Opprettet navn";
@@ -22,53 +37,70 @@ public class TestUtils {
 	private static final String BREVGRUPPE = "Brevgruppe";
 	private static final String BREVKODE = "Brevkode";
 	private static final String FILNAVN = "filNavn";
+	private static final String TITTEL = "Tittel";
 
 	public static final Long JOURNALPOST_ID = 42L;
 	public static final Long DOKUMENTINFO_ID = 1L;
-	public static final byte[] BINAER_FIL = "Test av binærfil".getBytes();
 
 
-	public static ArkiverKorrigertDokumentRequestTo createRequest(Long journalpostId, Long dokumentInfoId, byte[] binaerFil) {
-		return ArkiverKorrigertDokumentRequestTo.builder()
-				.journalpostId(journalpostId)
-				.dokumentInfoId(dokumentInfoId)
-				.binaerFil(binaerFil)
+	public static Journalpost opprettHoveddokumentForIT() {
+		return getBaseJournalpostBuilder()
+				.dokumentInfoRelasjoner(
+						getBaseJournalpostDokumentInfoRelasjonBuilder()
+								.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.HOVEDDOKUMENT)
+								.dokumentInfo(getBaseDokumentInfoBuilder().build())
+								.build())
 				.build();
 	}
 
-	public static ArkiverKorrigertDokumentRequestTo createRequest() {
-		return createRequest(JOURNALPOST_ID, DOKUMENTINFO_ID, BINAER_FIL);
+	private static JournalpostBuilder getBaseJournalpostBuilder() {
+		return JournalpostBuilder.getJournalpostBuilder()
+				.avsenderMottakerId(AVSENDER_MOTTAKER_ID)
+				.dokumentDato(new Date())
+				.utsendingskanal(UtsendingsKanalCode.NAV_NO)
+				.journalStatus(JournalStatusCode.FS)
+				.journalpostType(JournalpostTypeCode.U)
+				.opprettetKildeNavn(OPPRETTET_KILDE_NAVN)
+				.opprettetAvNavn(OPPRETTET_AV_NAVN)
+				.opprettetKildeNavn(OPPRETTET_KILDE_NAVN)
+				.addOriginalJournalpost(true)
+				.fagomrade(FagomradeCode.RPO)
+				.saksrelasjon(
+						SaksrelasjonTestDataProvider.createSaksrelasjon().build())
+				.brukere(
+						BrukerTestDataProvider.createBruker().build())
+				.mottakskanal(MottaksKanalCode.NAV_NO);
 	}
 
-	public static DokumentInfo createDokumentInfo() {
-		return DokumentInfo.builder()
-				.slettet(false)
+	private static JournalpostDokumentInfoRelasjonBuilder getBaseJournalpostDokumentInfoRelasjonBuilder() {
+		return getJournalpostDokumentInfoRelasjonBuilder()
+				.opprettetKildeNavn(OPPRETTET_KILDE_NAVN)
+				.tilknyttetAvNavn(TILKNYTTET_AV_NAVN);
+	}
+
+	private static DokumentInfoBuilder getBaseDokumentInfoBuilder() {
+		return DokumentInfoBuilder.getDokumentInfoBuilder()
+				.tittel(TITTEL)
 				.dokumentstatus(DokumentStatusCode.FERDIGSTILT)
-				.tittel(DOKUMENT_TITTEL)
 				.endretAvNavn(ENDRET_AV_NAVN)
 				.brevgruppe(BREVGRUPPE)
 				.brevkode(BREVKODE)
-				.fildetaljerListe(createSetOfFildetaljer())
-				.build();
+				.filDetaljerList(createFildetaljer())
+				.opprettetKildeNavn(OPPRETTET_KILDE_NAVN);
 	}
 
-	public static Set<FilDetaljer> createSetOfFildetaljer() {
-		return new HashSet<>(Arrays.asList(createFildetaljer(FilDetaljer.generateUuid())));
+	private static FilDetaljer createFildetaljer() {
+		return createFildetaljer(FilDetaljer.generateUuid());
 	}
 
 	private static FilDetaljer createFildetaljer(String filUuid) {
-		return FilDetaljer.builder()
+		return FilDetaljerBuilder.getFilDetaljerBuilder()
 				.filUuid(filUuid)
-//				.filnavn(FILNAVN)
+				.filnavn(FILNAVN)
 				.filtype(FilTypeCode.PDF)
 				.variantFormat(VariantFormatCode.ARKIV)
-				.build();
-	}
-
-	public static FilDetaljer createFildetaljerVariantFormat(VariantFormatCode variantFormat) {
-		return FilDetaljer.builder()
-				.filUuid(FilDetaljer.generateUuid())
-				.variantFormat(variantFormat)
+				.opprettetKildeNavn(OPPRETTET_KILDE_NAVN)
+				.fileContent("ARKIV variant".getBytes())
 				.build();
 	}
 }

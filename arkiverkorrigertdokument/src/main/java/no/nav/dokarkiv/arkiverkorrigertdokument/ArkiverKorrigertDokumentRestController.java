@@ -15,8 +15,8 @@ import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import no.nav.freg.abac.core.annotation.Abac;
 import org.slf4j.MDC;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -41,14 +41,14 @@ public class ArkiverKorrigertDokumentRestController {
 
 	@Transactional
 	@ResponseBody
-	@PatchMapping("/{journalpostId}/{dokumentInfoId}/{binaerFil}")
+	@PostMapping("/{journalpostId}/{dokumentInfoId}")
 	@Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_DOKUMENT)},
 			actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION))
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark103"}, percentiles = {0.5, 0.95})
 	public String arkiverKorrigertDokument(@PathVariable("journalpostId") Long journalpostId,
 										   @PathVariable("dokumentInfoId") Long dokumentInfoId,
-										   @PathVariable("binaerFil") byte[] binaerFil) {
-		abacSecurityService.assertAccessToJournalpost(journalpostId.toString());
+										   @PathVariable("dokumentInfoId") byte[] body) {
+		abacSecurityService.assertAccessToJournalpostIncludingBegrenset(journalpostId.toString());
 		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark103");
 		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har mottat kall med journalpostId={} og dokumentInfoId={}",
 				journalpostId, dokumentInfoId);
@@ -57,7 +57,6 @@ public class ArkiverKorrigertDokumentRestController {
 		return arkiverKorrigertDokumentService.arkiverKorrigertDokument(ArkiverKorrigertDokumentRequestTo.builder()
 				.journalpostId(journalpostId)
 				.dokumentInfoId(dokumentInfoId)
-				.binaerFil(binaerFil)
 				.build());
 	}
 
