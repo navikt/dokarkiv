@@ -1,33 +1,22 @@
 package no.nav.dokarkiv.arkiverkorrigertdokument.rjoark103;
 
-import static org.apache.commons.lang3.BooleanUtils.isTrue;
-
-import no.nav.dokarkiv.core.domain.entities.DokumentFil;
-import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
-import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
+import no.nav.dokarkiv.arkiverkorrigertdokument.exception.UgyldigInputException;
 import org.springframework.stereotype.Component;
+
+import java.util.Objects;
 
 @Component
 public class ArkiverKorrigertDokumentValidator {
 
-	public void validerArkiverKorrigertDokument(DokumentInfo dokumentInfo, ArkiverKorrigertDokumentRequestTo requestTo) {
+	public void validateArkiverKorrigertDokumentRequest(ArkiverKorrigertDokumentRequest request) {
+		if (Objects.isNull(request.getDokumentInfoId())) {
+			throw new UgyldigInputException("DokumentInfoId kan ikke være null");
+		}
 
-	}
-
-	public void validerDokumentFil(DokumentFil dokumentFil, ArkiverKorrigertDokumentRequestTo requestTo) {
-
-	}
-
-
-	public static void validerAtVariantFormatCodeEndresFraArkivTilOriginal(DokumentInfo dokumentInfo, ArkiverKorrigertDokumentRequestTo requestTo) {
-
-
-	}
-
-	public void temp(FilDetaljer skalBliOriginal, FilDetaljer skalBliArkiv) {
-		if (isTrue(skalBliOriginal.equals(skalBliArkiv))) {
-			System.out.println("OK");
+		if (Objects.isNull(request.getFil())) {
+			throw new UgyldigInputException("Fil kan ikke være null");
 		}
 	}
+
 
 }

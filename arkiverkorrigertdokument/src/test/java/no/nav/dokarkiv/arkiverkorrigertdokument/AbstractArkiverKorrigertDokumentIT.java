@@ -7,6 +7,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static no.nav.dokarkiv.core.security.JwtClaimsBuilderProvider.openAmClaimsBuilder;
 
 import no.nav.dokarkiv.core.CoreConfig;
+import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
@@ -76,7 +77,8 @@ public class AbstractArkiverKorrigertDokumentIT {
 	protected DokumentinfoRepository dokumentinfoRepository;
 	@Inject
 	protected OidcTestService oidcTestService;
-
+	@Inject
+	protected DokumentFilRepository dokumentFilRepository;
 	@Before
 	public void setUp() {
 		OIDC_TOKEN_PERSON_USER_TEST = "Bearer " + oidcTestService.createOidc(openAmClaimsBuilder().subject(PERSON_USER_ID)
@@ -116,18 +118,18 @@ public class AbstractArkiverKorrigertDokumentIT {
 
 	protected HttpEntity createNoAccesHeaders() {
 		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.TEXT_PLAIN);
+		headers.setContentType(MediaType.APPLICATION_JSON);
 		headers.add(HttpHeaders.AUTHORIZATION, OIDC_TOKEN_PERSON_USER_TEST);
 		headers.add(NAV_CONSUMER_TOKEN, OIDC_TOKEN_SERVICE_NO_ACCESS_USER_TEST);
 		return new HttpEntity(headers);
 	}
 
-	protected HttpEntity createHeaders() {
+	protected HttpHeaders createHeaders() {
 		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.TEXT_PLAIN);
+		headers.setContentType(MediaType.APPLICATION_JSON);
 		headers.add(HttpHeaders.AUTHORIZATION, OIDC_TOKEN_PERSON_USER_TEST);
 		headers.add(NAV_CONSUMER_TOKEN, OIDC_TOKEN_SERVICE_USER_TEST);
-		return new HttpEntity(headers);
+		return headers;
 	}
 
 	protected void abacPermit() {
