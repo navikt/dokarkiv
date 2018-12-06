@@ -44,11 +44,12 @@ public class DefaultHentKjerneJournalpostListeService implements HentKjerneJourn
 		params.setPageNr(requestTo.getResultatSettNr());
 
 		List<Journalpost> journalposts = journalpostListeRepository.findJournalpostListe(params);
-		evictSladdetVariant(journalposts);
 		long totalNrJournalposts = journalpostListeRepository.findTotalNumberOfJournalposts(params);
 
-		return HentKjerneJournalpostListeResponseTo.builder().journalpostListe(journalposts)
+		HentKjerneJournalpostListeResponseTo responseTo = HentKjerneJournalpostListeResponseTo.builder().journalpostListe(journalposts)
 				.sisteIntervall(isSisteIntervall(journalposts, totalNrJournalposts, requestTo)).build();
+
+		return evictSladdetVariant(responseTo);
 	}
 
 	private boolean isSisteIntervall(List<Journalpost> journalpostListe, long totalNrJournalposts,
@@ -66,9 +67,9 @@ public class DefaultHentKjerneJournalpostListeService implements HentKjerneJourn
 		return lastPageNumber == requestTo.getResultatSettNr() + 1;
 	}
 
-	private void evictSladdetVariant(List<Journalpost> journalposts) {
-		if (journalposts != null) {
-			for (Journalpost journalpost : journalposts) {
+	private HentKjerneJournalpostListeResponseTo evictSladdetVariant(HentKjerneJournalpostListeResponseTo journalposts) {
+		if (journalposts != null && journalposts.getJournalpostListe() != null) {
+			for (Journalpost journalpost : journalposts.getJournalpostListe()) {
 				Iterator<JournalpostDokumentInfoRelasjon> rel = journalpost.getJournalpostDokumentInfoRelasjoner().iterator();
 				DokumentInfo dokumentInfo;
 				while (rel.hasNext()) {
@@ -80,5 +81,6 @@ public class DefaultHentKjerneJournalpostListeService implements HentKjerneJourn
 				}
 			}
 		}
+		return journalposts;
 	}
 }
