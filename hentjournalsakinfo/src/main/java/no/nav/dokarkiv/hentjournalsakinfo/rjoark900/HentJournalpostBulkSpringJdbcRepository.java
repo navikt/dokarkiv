@@ -28,8 +28,8 @@ public class HentJournalpostBulkSpringJdbcRepository {
 	private static final List<String> ALL_JOURNALSTATUS = Stream.of(JournalStatusCode.values()).map(Enum::name).collect(Collectors.toList());
 	private static final List<Boolean> NO_FEILREGISTRERT_JOURNALPOST = Collections.singletonList(false);
 	private static final List<Boolean> ALL_JOURNALPOST = Arrays.asList(true, false);
-	public static final String GSAK_IDS_PARAM = "gsakIds";
-	public static final String PSAK_IDS_PARAM = "psakIds";
+	private static final String GSAK_IDS_PARAM = "gsakIds";
+	private static final String PSAK_IDS_PARAM = "psakIds";
 
 	private final NamedParameterJdbcTemplate jdbcTemplate;
 
@@ -162,10 +162,23 @@ public class HentJournalpostBulkSpringJdbcRepository {
 				"           OR (fpj.saksrelasjon_feilregistrert IS NULL AND fpj.journalstatus IN (:inkluderJournalStatus))\n" +
 				"           OR (fpj.saksrelasjon_feilregistrert = 0 AND fpj.journalstatus IN (:inkluderJournalStatus))\n" +
 				"         )\n" +
-				"       ORDER BY fpj.journalpostid DESC, tilknyttet_som ASC\n" +
+				"         AND " + paginate(bulkJournalposterFilter.getSlice()) + " \n" +
 				"     ) t\n" +
-				"WHERE t.journalpostid < :journalpostIdPeker\n" +
-				"  AND rownum <= :antallRader\n";
+				"WHERE rownum <= :antallRader \n" +
+				"ORDER BY t.journalpostid DESC\n";
+	}
+
+	private String paginate(BulkJournalposterFilter.Slice slice) {
+		switch (slice) {
+			case FOERSTE:
+				return "fpj.journalpostid < :journalpostIdPeker " +
+						"ORDER BY fpj.journalpostid DESC, tilknyttet_som ASC";
+			case SISTE:
+				return "fpj.journalpostid > :journalpostIdPeker " +
+						"ORDER BY fpj.journalpostid ASC, tilknyttet_som ASC";
+			default:
+				return "";
+		}
 	}
 
 	private String generateCteUnionSql(List<String> cteAliases) {
