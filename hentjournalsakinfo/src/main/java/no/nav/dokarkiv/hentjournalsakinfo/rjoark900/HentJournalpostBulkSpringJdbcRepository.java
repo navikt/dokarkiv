@@ -22,7 +22,7 @@ import java.util.stream.Stream;
 @Repository
 public class HentJournalpostBulkSpringJdbcRepository {
 	private static final ResultSetExtractor<List<JournalpostDto>> JOURNALPOST_DTO_RESULT_SET_EXTRACTOR = JdbcTemplateMapperFactory.newInstance()
-			.addKeys("journalpostid", "dokumenter_dokumentinfoid")
+			.addKeys("journalpostid", "saksrelasjon_sakid", "dokumenter_dokumentinfoid", "dokumenter_logiske_tittel")
 			.newResultSetExtractor(JournalpostDto.class);
 	private static final List<String> NOT_USED = Collections.singletonList("notused");
 	private static final List<String> ALL_JOURNALSTATUS = Stream.of(JournalStatusCode.values()).map(Enum::name).collect(Collectors.toList());
@@ -90,7 +90,8 @@ public class HentJournalpostBulkSpringJdbcRepository {
 				"     gsaksaker AS\n" +
 				"       (SELECT s.journalpost_id\n" +
 				"        FROM t_saksrelasjon s\n" +
-				"        WHERE (s.k_fagsystem = 'FS22' AND s.sak_nr_fk IN (:gsakIds))\n" +
+				"        WHERE (s.k_fagsystem = 'FS22' AND\n" +
+				"               s.sak_nr_fk IN (:gsakIds))\n" +
 				"          AND " + generateFeilregistrertSelectionSql(bulkJournalposterFilter) + "\n" +
 				"       ),\n" +
 				"     midlertidige AS (SELECT b.journalpost_id\n" +
@@ -99,86 +100,80 @@ public class HentJournalpostBulkSpringJdbcRepository {
 				"                      WHERE b.bruker_id IN (:alleIdenter)\n" +
 				"                        AND tj.k_journal_s IN ('M', 'MO')\n" +
 				"     ),\n" +
-				"     fellesprojeksjon AS (SELECT j.journalpost_id      AS journalpostid,\n" +
-				"                                 j.journalf_enhet      AS journalforendeenhetid,\n" +
-				"                                 j.innhold             AS innhold,\n" +
-				"                                 j.k_fagomrade         AS fagomrade,\n" +
-				"                                 j.k_journal_s         AS journalstatus,\n" +
-				"                                 j.avsend_mottaker     AS avsendermottakernavn,\n" +
-				"                                 j.journalfort_av_navn AS journalfortavnavn,\n" +
-				"                                 j.k_mottaks_kanal     AS mottakskanal,\n" +
-				"                                 j.k_utsendings_kanal  AS utsendingskanal,\n" +
-				"                                 j.k_journalpost_t     AS journalposttype,\n" +
-				"                                 j.dato_opprettet      AS datoopprettet,\n" +
-				"                                 j.dato_ekspedert      AS ekspedertdato,\n" +
-				"                                 j.dato_mottatt        AS mottattdato,\n" +
-				"                                 j.dato_journal        AS journaldato,\n" +
-				"                                 j.dato_sendt_print    AS sendtprintdato,\n" +
-				"                                 s.sak_nr_fk           AS saksrelasjon_sakid,\n" +
-				"                                 s.feilregistrert      AS saksrelasjon_feilregistrert,\n" +
-				"                                 s.k_fagsystem         AS saksrelasjon_fagsystem,\n" +
-				"                                 rel.k_tilkn_jp_som    AS tilknyttet_som,\n" +
-				"                                 d.dokument_info_id    AS dokumenter_dokumentinfoid,\n" +
-				"                                 d.k_dokument_s        AS dokumenter_dokumentstatus,\n" +
-				"                                 d.brev_kode           AS dokumenter_brevkode,\n" +
-				"                                 d.tittel              AS dokumenter_tittel\n" +
-				"                          FROM t_saksrelasjon s\n" +
-				"                                 JOIN t_journalpost j ON s.journalpost_id = j.journalpost_id\n" +
-				"                                 JOIN t_jp_dok_info_rel rel ON j.journalpost_id = rel.journalpost_id\n" +
-				"                                 JOIN t_dokument_info d ON rel.dokument_info_id = d.dokument_info_id)\n" +
-				"SELECT t.journalpostid,\n" +
-				"       t.prevjournalpostid,\n" +
-				"       t.nextjournalpostid,\n" +
-				"       t.innhold,\n" +
-				"       t.fagomrade,\n" +
-				"       t.journalstatus,\n" +
-				"       t.avsendermottakernavn,\n" +
-				"       t.journalfortavnavn,\n" +
-				"       t.mottakskanal,\n" +
-				"       t.utsendingskanal,\n" +
-				"       t.journalposttype,\n" +
-				"       t.datoopprettet,\n" +
-				"       t.ekspedertdato,\n" +
-				"       t.mottattdato,\n" +
-				"       t.journaldato,\n" +
-				"       t.sendtprintdato,\n" +
-				"       t.saksrelasjon_sakid,\n" +
-				"       t.saksrelasjon_feilregistrert,\n" +
-				"       t.saksrelasjon_fagsystem,\n" +
-				"       t.dokumenter_dokumentinfoid,\n" +
-				"       t.dokumenter_dokumentstatus,\n" +
-				"       t.dokumenter_brevkode,\n" +
-				"       t.dokumenter_tittel " +
-				"FROM (\n" +
-				"       SELECT * FROM(SELECT fpj.*,\n" +
-				"                           LEAD(journalpostid) OVER (ORDER BY journalpostid) AS prevjournalpostid,\n" +
-				"                           LAG(journalpostid) OVER (ORDER BY journalpostid)  AS nextjournalpostid\n" +
-				"       FROM fellesprojeksjon fpj\n" +
-				"       WHERE fpj.journalpostid IN (" + generateCteUnionSql(cteAliases) + ")\n" +
-				"         AND fpj.fagomrade IN (:inkluderTema)\n" +
-				"         AND fpj.journalposttype IN (:inkluderJournalpostType)\n" +
-				"         AND fpj.datoopprettet > :fraDato\n" +
-				"         AND (\n" +
-				"           (\n" +
-				"               fpj.saksrelasjon_feilregistrert = 1 AND\n" +
-				"               fpj.journalstatus IN (:allJournalStatus))\n" +
-				"           OR (fpj.saksrelasjon_feilregistrert IS NULL AND fpj.journalstatus IN (:inkluderJournalStatus))\n" +
-				"           OR (fpj.saksrelasjon_feilregistrert = 0 AND fpj.journalstatus IN (:inkluderJournalStatus))\n" +
-				"         )) p\n" +
-				"         WHERE " + paginate(bulkJournalposterFilter.getSlice()) + " \n" +
-				"     ) t\n" +
-				"WHERE rownum <= :antallRader \n" +
-				"ORDER BY t.journalpostid DESC\n";
+				"     relevantedata AS (SELECT j.journalpost_id      AS journalpostid,\n" +
+				"                              j.journalf_enhet      AS journalforendeenhetid,\n" +
+				"                              j.innhold             AS innhold,\n" +
+				"                              j.k_fagomrade         AS fagomrade,\n" +
+				"                              j.k_journal_s         AS journalstatus,\n" +
+				"                              j.avsend_mottaker     AS avsendermottakernavn,\n" +
+				"                              j.journalfort_av_navn AS journalfortavnavn,\n" +
+				"                              j.k_mottaks_kanal     AS mottakskanal,\n" +
+				"                              j.k_utsendings_kanal  AS utsendingskanal,\n" +
+				"                              j.k_journalpost_t     AS journalposttype,\n" +
+				"                              j.dato_opprettet      AS datoopprettet,\n" +
+				"                              j.dato_ekspedert      AS ekspedertdato,\n" +
+				"                              j.dato_mottatt        AS mottattdato,\n" +
+				"                              j.dato_journal        AS journaldato,\n" +
+				"                              j.dato_sendt_print    AS sendtprintdato,\n" +
+				"                              s.sak_nr_fk           AS saksrelasjon_sakid,\n" +
+				"                              s.feilregistrert      AS saksrelasjon_feilregistrert,\n" +
+				"                              s.k_fagsystem         AS saksrelasjon_fagsystem,\n" +
+				"                              d.dokument_info_id    AS dokumenter_dokumentinfoid,\n" +
+				"                              rel.k_tilkn_jp_som    AS dokumenter_tilknyttetsom,\n" +
+				"                              d.k_dokument_s        AS dokumenter_dokumentstatus,\n" +
+				"                              d.brev_kode           AS dokumenter_brevkode,\n" +
+				"                              d.tittel              AS dokumenter_tittel,\n" +
+				"                              tsi.vedlegg_innhold   AS dokumenter_logiske_tittel\n" +
+				"\n" +
+				"                       FROM t_journalpost j\n" +
+				"                              LEFT JOIN t_saksrelasjon s ON s.journalpost_id = j.journalpost_id\n" +
+				"                              JOIN t_jp_dok_info_rel rel ON j.journalpost_id = rel.journalpost_id\n" +
+				"                              JOIN t_dokument_info d ON rel.dokument_info_id = d.dokument_info_id\n" +
+				"                              LEFT JOIN t_skannet_innhold tsi ON d.dokument_info_id = tsi.dokument_info_id)\n" +
+				"SELECT r.*,\n" +
+				"       journalposter.prevjournalpostid,\n" +
+				"       journalposter.nextjournalpostid\n" +
+				"FROM relevantedata r\n" +
+				"       JOIN\n" +
+				"       (\n" +
+				"         SELECT *\n" +
+				"         FROM (\n" +
+				"                SELECT *\n" +
+				"                FROM (\n" +
+				"                       SELECT j.journalpost_id,\n" +
+				"                              LEAD(j.journalpost_id) OVER (ORDER BY j.journalpost_id) AS prevjournalpostid,\n" +
+				"                              LAG(j.journalpost_id) OVER (ORDER BY j.journalpost_id)  AS nextjournalpostid\n" +
+				"                       FROM (" + generateCteUnionSql(cteAliases) + ") jps\n" +
+				"                              JOIN t_journalpost j ON jps.journalpost_id = j.journalpost_id\n" +
+				"                              LEFT JOIN t_saksrelasjon ts ON j.journalpost_id = ts.journalpost_id\n" +
+				"\n" +
+				"                       WHERE j.k_fagomrade IN (:inkluderTema)\n" +
+				"                         AND j.k_journalpost_t IN (:inkluderJournalpostType)\n" +
+				"                         AND j.dato_opprettet > :fraDato\n" +
+				"                         AND (\n" +
+				"                           (ts.feilregistrert = 1 AND\n" +
+				"                            j.k_journal_s IN (:allJournalStatus))\n" +
+				"                           OR (ts.feilregistrert IS NULL AND\n" +
+				"                               j.k_journal_s IN (:inkluderJournalStatus))\n" +
+				"                           OR (ts.feilregistrert = 0 AND\n" +
+				"                               j.k_journal_s IN (:inkluderJournalStatus))\n" +
+				"                         )\n" +
+				"                     ) p\n" +
+				"                WHERE " + paginate(bulkJournalposterFilter.getSlice()) +
+				"              ) t\n" +
+				"         WHERE rownum <= :antallRader\n" +
+				"       ) journalposter ON journalposter.journalpost_id = r.journalpostid\n" +
+				"ORDER BY journalpostid DESC, dokumenter_tilknyttetsom ASC";
 	}
 
 	private String paginate(BulkJournalposterFilter.Slice slice) {
 		switch (slice) {
 			case FOERSTE:
-				return "p.journalpostid < :journalpostIdPeker " +
-						"ORDER BY p.journalpostid DESC, tilknyttet_som ASC";
+				return "p.journalpost_id < :journalpostIdPeker " +
+						"ORDER BY p.journalpost_id DESC";
 			case SISTE:
-				return "p.journalpostid > :journalpostIdPeker " +
-						"ORDER BY p.journalpostid ASC, tilknyttet_som ASC";
+				return "p.journalpost_id > :journalpostIdPeker " +
+						"ORDER BY p.journalpost_id ASC";
 			default:
 				return "";
 		}
