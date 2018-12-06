@@ -127,7 +127,8 @@ public class HentJournalpostBulkSpringJdbcRepository {
 				"                                 JOIN t_jp_dok_info_rel rel ON j.journalpost_id = rel.journalpost_id\n" +
 				"                                 JOIN t_dokument_info d ON rel.dokument_info_id = d.dokument_info_id)\n" +
 				"SELECT t.journalpostid,\n" +
-				"       t.journalforendeenhetid,\n" +
+				"       t.prevjournalpostid,\n" +
+				"       t.nextjournalpostid,\n" +
 				"       t.innhold,\n" +
 				"       t.fagomrade,\n" +
 				"       t.journalstatus,\n" +
@@ -149,7 +150,9 @@ public class HentJournalpostBulkSpringJdbcRepository {
 				"       t.dokumenter_brevkode,\n" +
 				"       t.dokumenter_tittel " +
 				"FROM (\n" +
-				"       SELECT *\n" +
+				"       SELECT * FROM(SELECT fpj.*,\n" +
+				"                           LEAD(journalpostid) OVER (ORDER BY journalpostid) AS prevjournalpostid,\n" +
+				"                           LAG(journalpostid) OVER (ORDER BY journalpostid)  AS nextjournalpostid\n" +
 				"       FROM fellesprojeksjon fpj\n" +
 				"       WHERE fpj.journalpostid IN (" + generateCteUnionSql(cteAliases) + ")\n" +
 				"         AND fpj.fagomrade IN (:inkluderTema)\n" +
@@ -161,8 +164,8 @@ public class HentJournalpostBulkSpringJdbcRepository {
 				"               fpj.journalstatus IN (:allJournalStatus))\n" +
 				"           OR (fpj.saksrelasjon_feilregistrert IS NULL AND fpj.journalstatus IN (:inkluderJournalStatus))\n" +
 				"           OR (fpj.saksrelasjon_feilregistrert = 0 AND fpj.journalstatus IN (:inkluderJournalStatus))\n" +
-				"         )\n" +
-				"         AND " + paginate(bulkJournalposterFilter.getSlice()) + " \n" +
+				"         )) p\n" +
+				"         WHERE " + paginate(bulkJournalposterFilter.getSlice()) + " \n" +
 				"     ) t\n" +
 				"WHERE rownum <= :antallRader \n" +
 				"ORDER BY t.journalpostid DESC\n";
@@ -171,11 +174,11 @@ public class HentJournalpostBulkSpringJdbcRepository {
 	private String paginate(BulkJournalposterFilter.Slice slice) {
 		switch (slice) {
 			case FOERSTE:
-				return "fpj.journalpostid < :journalpostIdPeker " +
-						"ORDER BY fpj.journalpostid DESC, tilknyttet_som ASC";
+				return "p.journalpostid < :journalpostIdPeker " +
+						"ORDER BY p.journalpostid DESC, tilknyttet_som ASC";
 			case SISTE:
-				return "fpj.journalpostid > :journalpostIdPeker " +
-						"ORDER BY fpj.journalpostid ASC, tilknyttet_som ASC";
+				return "p.journalpostid > :journalpostIdPeker " +
+						"ORDER BY p.journalpostid ASC, tilknyttet_som ASC";
 			default:
 				return "";
 		}
