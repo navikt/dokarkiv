@@ -112,7 +112,7 @@ public class Rjoark103IT extends AbstractArkiverKorrigertDokumentIT {
 		assertThat(persistedDokumentInfo.getFildetaljerListe()
 				.stream()
 				.filter(detalj -> detalj.getVariantFormat().equals(VariantFormatCode.SLADDET))
-				.count(), is(1));
+				.count(), is(1L));
 		assertThat(persistedDokumentInfo.findFilDetaljerByVariantFormat(VariantFormatCode.ARKIV), notNullValue());
 		assertThat(persistedDokumentInfo.findFilDetaljerByVariantFormat(VariantFormatCode.SLADDET), notNullValue());
 		assertThat(persistedDokumentInfo.findFilDetaljerByVariantFormat(VariantFormatCode.SLADDET)
