@@ -65,14 +65,67 @@ public class Rjoark103IT extends AbstractArkiverKorrigertDokumentIT {
 	}
 
 	@Test
-	public void shouldFailWithBadRequestWhenDokumentInfoIdIsNull() {
+	public void shouldDeleteExistingSladdetDokumentWhenSavingNew() {
 		abacPermit();
 
 		Journalpost journalpost = joarkRepository.save(opprettHoveddokumentForIT());
 
+		DokumentInfo dokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
+
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
+
+		HttpEntity httpEntity = new HttpEntity(ArkiverKorrigertDokumentRequest.builder()
+				.dokumentInfoId(dokumentInfo.getDokumentInfoId())
+				.fil(Base64.encodeBase64String(FIL))
+				.build(), createHeaders());
+
+		ResponseEntity<ArkiverKorrigertDokumentRespons> responseEntity = restTemplate.exchange(
+				URL_ARKIVERKORRIGERTDOKUMENT,
+				HttpMethod.POST,
+				httpEntity,
+				ArkiverKorrigertDokumentRespons.class);
+
+		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
+
+		byte[] FIL2 = "NEW FILE".getBytes();
+		HttpEntity httpEntity2 = new HttpEntity(ArkiverKorrigertDokumentRequest.builder()
+				.dokumentInfoId(dokumentInfo.getDokumentInfoId())
+				.fil(Base64.encodeBase64String(FIL2))
+				.build(), createHeaders());
+
+		ResponseEntity<ArkiverKorrigertDokumentRespons> responseEntity2 = restTemplate.exchange(
+				URL_ARKIVERKORRIGERTDOKUMENT,
+				HttpMethod.POST,
+				httpEntity2,
+				ArkiverKorrigertDokumentRespons.class);
+
+		assertThat(responseEntity2.getStatusCode(), is(HttpStatus.OK));
+
+
+		TestTransaction.start();
+		assertTrue(dokumentinfoRepository.findByDokumentInfoId(dokumentInfo.getDokumentInfoId()).isPresent());
+		DokumentInfo persistedDokumentInfo = dokumentinfoRepository.findByDokumentInfoId(dokumentInfo.getDokumentInfoId())
+				.get();
+		assertThat(persistedDokumentInfo.getFildetaljerListe().size(), is(2));
+		assertThat(persistedDokumentInfo.getFildetaljerListe()
+				.stream()
+				.filter(detalj -> detalj.getVariantFormat().equals(VariantFormatCode.SLADDET))
+				.count(), is(1));
+		assertThat(persistedDokumentInfo.findFilDetaljerByVariantFormat(VariantFormatCode.ARKIV), notNullValue());
+		assertThat(persistedDokumentInfo.findFilDetaljerByVariantFormat(VariantFormatCode.SLADDET), notNullValue());
+		assertThat(persistedDokumentInfo.findFilDetaljerByVariantFormat(VariantFormatCode.SLADDET)
+				.getFiltype(), is(FilTypeCode.PDF));
+		DokumentFil dokumentFil = dokumentFilRepository.findByFilUuid(persistedDokumentInfo.findFilDetaljerByVariantFormat(VariantFormatCode.SLADDET)
+				.getFilUuid());
+		assertThat(dokumentFil.getFil(), is(FIL2));
+		TestTransaction.end();
+	}
+
+	@Test
+	public void shouldFailWithBadRequestWhenDokumentInfoIdIsNull() {
+		abacPermit();
 
 		HttpEntity httpEntity = new HttpEntity(ArkiverKorrigertDokumentRequest.builder()
 				.dokumentInfoId(null)
@@ -105,6 +158,34 @@ public class Rjoark103IT extends AbstractArkiverKorrigertDokumentIT {
 				ArkiverKorrigertDokumentRespons.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.NOT_FOUND));
+
+	}
+
+	@Test
+	public void shouldNotAllowOperationIfNotSrvJoarkadminConsumer() {
+		abacPermit();
+
+		Journalpost journalpost = joarkRepository.save(opprettHoveddokumentForIT());
+
+		DokumentInfo dokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
+
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
+
+
+		HttpEntity httpEntity = new HttpEntity(ArkiverKorrigertDokumentRequest.builder()
+				.dokumentInfoId(dokumentInfo.getDokumentInfoId())
+				.fil(Base64.encodeBase64String(FIL))
+				.build(), createHeadersNotSrvJoarkadmin());
+
+		ResponseEntity<ArkiverKorrigertDokumentRespons> responseEntity = restTemplate.exchange(
+				URL_ARKIVERKORRIGERTDOKUMENT,
+				HttpMethod.POST,
+				httpEntity,
+				ArkiverKorrigertDokumentRespons.class);
+
+		assertThat(responseEntity.getStatusCode(), is(HttpStatus.UNAUTHORIZED));
+
 
 	}
 

@@ -51,7 +51,7 @@ import java.nio.charset.StandardCharsets;
 @AutoConfigureDataLdap
 @AutoConfigureWireMock(port = 0)
 @Transactional
-public class AbstractArkiverKorrigertDokumentIT {
+public abstract class AbstractArkiverKorrigertDokumentIT {
 
 	protected static final String OPPRETTET_KILDE_NAVN = "Opprettet kilde";
 	protected static final String TILKNYTTET_AV_NAVN = "Tilknyttetnavn";
@@ -129,6 +129,15 @@ public class AbstractArkiverKorrigertDokumentIT {
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		headers.add(HttpHeaders.AUTHORIZATION, OIDC_TOKEN_PERSON_USER_TEST);
 		headers.add(NAV_CONSUMER_TOKEN, OIDC_TOKEN_SERVICE_USER_TEST);
+		return headers;
+	}
+
+	protected HttpHeaders createHeadersNotSrvJoarkadmin() {
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		headers.add(HttpHeaders.AUTHORIZATION, OIDC_TOKEN_PERSON_USER_TEST);
+		headers.add(NAV_CONSUMER_TOKEN, "Bearer " + oidcTestService.createOidc(openAmClaimsBuilder().subject("srvWrong")
+				.build()));
 		return headers;
 	}
 
