@@ -9,6 +9,10 @@ import org.springframework.data.repository.query.Param;
 public interface JoarkDeleteRepository extends Repository<Journalpost, Long> {
 
 	@Modifying
+	@Query(value = "delete from t_skannet_innhold where dokument_info_id = :dokumentInfoId", nativeQuery = true)
+	void deleteSkannetInnholdByDokumentInfoId(@Param("dokumentInfoId") Long dokumentInfoId);
+
+	@Modifying
 	@Query(value = "delete from t_dokument_fil where fil_uuid in (select fil_uuid from t_fil_detaljer where dokument_info_id = :dokumentInfoId)", nativeQuery = true)
 	void deleteDokumentFilByDokumentInfoId(@Param("dokumentInfoId") Long dokumentInfoId);
 
@@ -19,6 +23,10 @@ public interface JoarkDeleteRepository extends Repository<Journalpost, Long> {
 	@Modifying
 	@Query(value = "delete from T_JP_DOK_INFO_REL where dokument_info_id = :dokumentInfoId", nativeQuery = true)
 	void deleteDokInfoJPRelByDokumentInfoId(@Param("dokumentInfoId") Long dokumentInfoId);
+
+	@Modifying
+	@Query(value = "delete from T_JP_DOK_INFO_REL where journalpost_id = :journalpostId AND dokument_info_id = :dokumentInfoId", nativeQuery = true)
+	void deleteJournalpostDokumentInfoRelasjonByJournalpostIdAndDokumentInfoId(@Param("journalpostId") Long journalpostid, @Param("dokumentInfoId") Long dokumentInfoId);
 
 	@Modifying
 	@Query(value = "delete from t_dok_info_tillegg where dokument_info_id = :dokumentInfoId", nativeQuery = true)

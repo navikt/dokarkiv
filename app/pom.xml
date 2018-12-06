@@ -70,6 +70,10 @@
 		</dependency>
 		<dependency>
 			<groupId>no.nav.dokarkiv</groupId>
+			<artifactId>arkiverkorrigertdokument</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>no.nav.dokarkiv</groupId>
 			<artifactId>fysiskslettdokument</artifactId>
 		</dependency>
 		<!-- annet -->
