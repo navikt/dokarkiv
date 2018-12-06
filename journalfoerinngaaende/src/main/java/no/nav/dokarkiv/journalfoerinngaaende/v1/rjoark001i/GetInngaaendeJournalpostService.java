@@ -1,6 +1,8 @@
 package no.nav.dokarkiv.journalfoerinngaaende.v1.rjoark001i;
 
 import no.nav.dok.tjenester.journalfoerinngaaende.GetJournalpostResponse;
+import no.nav.dok.tjenester.journalfoerinngaaende.Dokument;
+import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.repository.JoarkRepositoryBegrenset;
@@ -8,6 +10,8 @@ import no.nav.dokarkiv.journalfoerinngaaende.v1.util.Utils;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author Sigurd Midttun, Visma Consulting.
@@ -33,8 +37,17 @@ public class GetInngaaendeJournalpostService {
 
 		Utils.assertJournalpostIsInngaaende(journalpost);
 
-		Utils.filterFildetaljer(journalpost);
+		GetJournalpostResponse response = getInngaaendeJournalpostMapper.map(journalpost);
 
-		return getInngaaendeJournalpostMapper.map(journalpost);
+		return filterFildetaljer(response);
 	}
+
+	private GetJournalpostResponse filterFildetaljer(GetJournalpostResponse journalpost) {
+		List<Dokument> dokumentListe = journalpost.getDokumentListe();
+		for (Dokument dokument:dokumentListe){
+			dokument.setVariant(dokument.getVariant().stream().filter(variant -> !variant.getVariantFormat().equalsIgnoreCase(VariantFormatCode.SLADDET.name())).collect(Collectors.toList()));
+		}
+		return journalpost;
+	}
+
 }

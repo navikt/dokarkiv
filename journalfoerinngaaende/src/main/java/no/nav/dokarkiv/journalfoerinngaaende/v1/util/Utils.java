@@ -99,22 +99,4 @@ public class Utils {
 			throw new InputValideringFeiletException(String.format("%s kan ikke være null", fieldName));
 		}
 	}
-
-	public static void filterFildetaljer(Journalpost journalpost) {
-		Set<JournalpostDokumentInfoRelasjon> infoRelasjoner = journalpost.getJournalpostDokumentInfoRelasjoner();
-
-		for (JournalpostDokumentInfoRelasjon dokInfoRel : infoRelasjoner) {
-			List<FilDetaljer> fdToRemove = Lists.newArrayList();
-			for (FilDetaljer fd : dokInfoRel.getDokumentInfo().getFildetaljerListe()) {
-				if (VariantFormatCode.SLADDET.equals(fd.getVariantFormat())) {
-					fdToRemove.add(fd);
-				}
-			}
-			for (FilDetaljer fd : fdToRemove) {
-				dokInfoRel.getDokumentInfo().removeFilDetaljer(fd);
-			}
-		}
-	}
-
-
 }

@@ -222,9 +222,13 @@ public class GetInngaaendeJournalpostMapperTest {
 				assertThat("response.dokument1.variant1.variantformat1", variant.getVariantFormat(), is(VariantFormatCode.ORIGINAL
 						.name()));
 			} else {
-				assertThat("response.dokument1.variant1.arkivfiltype2", variant.getArkivFilType(), is(FilTypeCode.PDFA.name()));
-				assertThat("response.dokument1.variant1.variantformat2", variant.getVariantFormat(), is(VariantFormatCode.ARKIV
-						.name()));
+				if (variant.getVariantFormat().equalsIgnoreCase(VariantFormatCode.SLADDET.name())) {
+					assertThat("response.dokument1.variant1.arkivfiltype2", variant.getArkivFilType(), is(FilTypeCode.PDFA.name()));
+					assertThat("response.dokument1.variant1.variantformat2", variant.getVariantFormat(), is(VariantFormatCode.SLADDET.name()));
+				} else {
+					assertThat("response.dokument1.variant1.arkivfiltype2", variant.getArkivFilType(), is(FilTypeCode.PDFA.name()));
+					assertThat("response.dokument1.variant1.variantformat2", variant.getVariantFormat(), is(VariantFormatCode.ARKIV.name()));
+				}
 			}
 		});
 	}
@@ -253,9 +257,21 @@ public class GetInngaaendeJournalpostMapperTest {
 	}
 
 	private void assertVarianterDokument2(List<Variant> varianter) {
-		Variant variant = varianter.get(0);
-		assertThat("response.dokument2.variant.arkivfiltype1", variant.getArkivFilType(), is(FilTypeCode.PDFA.name()));
-		assertThat("response.dokument2.variant.variantformat1", variant.getVariantFormat(), is(VariantFormatCode.ARKIV.name()));
+		varianter.stream().forEach(variant -> {
+			if (variant.getArkivFilType().equals(FilTypeCode.XML.name())) {
+				assertThat("response.dokument1.variant1.arkivfiltype1", variant.getArkivFilType(), is(FilTypeCode.XML.name()));
+				assertThat("response.dokument1.variant1.variantformat1", variant.getVariantFormat(), is(VariantFormatCode.ORIGINAL
+						.name()));
+			} else {
+				if (variant.getVariantFormat().equalsIgnoreCase(VariantFormatCode.SLADDET.name())) {
+					assertThat("response.dokument1.variant1.arkivfiltype2", variant.getArkivFilType(), is(FilTypeCode.PDFA.name()));
+					assertThat("response.dokument1.variant1.variantformat2", variant.getVariantFormat(), is(VariantFormatCode.SLADDET.name()));
+				} else {
+					assertThat("response.dokument1.variant1.arkivfiltype2", variant.getArkivFilType(), is(FilTypeCode.PDFA.name()));
+					assertThat("response.dokument1.variant1.variantformat2", variant.getVariantFormat(), is(VariantFormatCode.ARKIV.name()));
+				}
+			}
+		});
 	}
 
 	private void assertLogiskVedleggDokument2(List<LogiskVedlegg> logiskeVedlegg) {
