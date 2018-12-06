@@ -1,6 +1,5 @@
 package no.nav.dokarkiv.journal.v3.tjoark051;
 
-import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentFil;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
@@ -76,7 +75,7 @@ public abstract class AbstractJournalOperations {
 	protected FilDetaljer getFilDetaljer(Long journalpostId, DokumentInfo dokumentInfo, VariantFormatCode variantFormat)
 			throws DocumentNotFoundException {
 		FilDetaljer filDetaljer;
-		if (begrensningService.isVariantSkjermet(journalpostId, dokumentInfo.getDokumentInfoId(), variantFormat, BegrensningTypeCode.SKJERMET)) {
+		if (begrensningService.isVariantSkjermet(dokumentInfo.getDokumentInfoId(), variantFormat)) {
 			filDetaljer = dokumentInfo.findFilDetaljerByVariantFormat(VariantFormatCode.SLADDET);
 		} else {
 			filDetaljer = dokumentInfo.findFilDetaljerByVariantFormat(variantFormat);

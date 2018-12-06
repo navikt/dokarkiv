@@ -63,7 +63,7 @@ public class HentFerdigstilteDokumenterService {
 				hentFerdigstilteRokumenterValidator.validateDokumentInfo(journalpostId, dokumentInfoId, dokumentInfo);
 
 				FilDetaljer filDetaljer;
-				if (begrensningService.isVariantSkjermet(journalpostId, dokumentInfoId, VariantFormatCode.ARKIV, BegrensningTypeCode.SKJERMET)) {
+				if (begrensningService.isVariantSkjermet(dokumentInfoId, VariantFormatCode.ARKIV)) {
 					filDetaljer = dokumentInfo.findFilDetaljerByVariantFormat(VariantFormatCode.SLADDET);
 				} else {
 					filDetaljer = dokumentInfo.findFilDetaljerByVariantFormat(VariantFormatCode.ARKIV);

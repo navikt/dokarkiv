@@ -43,10 +43,10 @@ public class BegrensningService {
         return begrensning.isPresent();
 	}
 
-	public boolean isVariantSkjermet(Long journalpostId, Long dokumentInfoId, VariantFormatCode variant, BegrensningTypeCode begrensningTypeCode) {
-		Optional<Begrensning> variantSkjermet = begrensningRepository.findByJournalpostIdAndDokumentInfoIdAndVariantFormatAndBegrensningType(
-				journalpostId, dokumentInfoId, variant, begrensningTypeCode);
+	public boolean isVariantSkjermet(Long dokumentInfoId, VariantFormatCode variant) {
+		Optional<Begrensning> variantSkjermet = begrensningRepository.findByDokumentInfoIdAndVariantFormatAndBegrensningType(dokumentInfoId, variant, BegrensningTypeCode.SKJERMET);
 		String consumer = hentBrukerSomKaller();
+		//Midlertidig løsning i påvente av SAF
 		if ("srvjoarkadmin".equalsIgnoreCase(consumer)) {
 			//Har rettighet til å se originalen uansett
 			return false;
@@ -54,9 +54,7 @@ public class BegrensningService {
 			//Dersom den er skjermet, returneres TRUE
 			return variantSkjermet.isPresent();
 		}
-
 	}
-
 
 	public void saveBegrensning(Begrensning begrensning) {
 		begrensningRepository.save(begrensning);

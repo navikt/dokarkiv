@@ -12,7 +12,6 @@ import no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder;
 import no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder;
 import no.nav.dokarkiv.core.domain.builder.JournalpostBuilder;
 import no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder;
-import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
 import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
 import no.nav.dokarkiv.core.domain.codes.OnDemandInstansCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
@@ -154,7 +153,7 @@ public class Tjoark051HentDokumentServiceTest {
 	public void shouldReturnSladdetDokument() throws Exception {
 		DokumentFil dokumentFil = getDokumentFilBuilder().fil(BYTES).build();
 
-		when(begrensningService.isVariantSkjermet(JOURNALPOST_ID, DOKUMENT_INFO_ID, VariantFormatCode.ARKIV, BegrensningTypeCode.SKJERMET)).thenReturn(true);
+		when(begrensningService.isVariantSkjermet(DOKUMENT_INFO_ID, VariantFormatCode.ARKIV)).thenReturn(true);
 		when(joarkRepositoryMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(createJournalPost()));
 		when(dokumentFilRepository.findByFilUuid(FIL_UUID_SLADDET)).thenReturn(dokumentFil);
 

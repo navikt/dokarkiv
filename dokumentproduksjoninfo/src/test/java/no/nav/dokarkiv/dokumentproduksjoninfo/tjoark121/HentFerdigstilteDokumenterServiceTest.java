@@ -96,7 +96,7 @@ public class HentFerdigstilteDokumenterServiceTest {
 		when(joarkRepository.findById(JOURNALPOST_ID)).thenReturn(Optional.of(createJournalpost()));
 		when(dokumentFilRepository.findByFilUuid(FILUUID_2)).thenReturn(createFildetaljer(FILCONTENT_2));
 		when(dokumentFilRepository.findByFilUuid(FILUUID_SLADDET_1)).thenReturn(createFildetaljer(FILCONTENT_SLADDET_1));
-		when(begrensningService.isVariantSkjermet(JOURNALPOST_ID, DOKUMENT_1, VariantFormatCode.ARKIV, BegrensningTypeCode.SKJERMET)).thenReturn(true);
+		when(begrensningService.isVariantSkjermet(DOKUMENT_1, VariantFormatCode.ARKIV)).thenReturn(true);
 
 		List<HentFerdigstilteDokumenterResponseTo> hentFerdigstilteDokumenter = service.hentFerdigstilteDokumenter(
 				JOURNALPOST_ID, Arrays.asList(DOKUMENT_1, DOKUMENT_2));
