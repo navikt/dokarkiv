@@ -6,13 +6,12 @@ import static no.nav.dokarkiv.hentjournalinfo.QueryNames.DOKUMENTINFO;
 import static no.nav.dokarkiv.hentjournalinfo.QueryNames.JOURNALPOST;
 
 import io.leangen.graphql.annotations.GraphQLArgument;
-import io.leangen.graphql.annotations.GraphQLIgnore;
 import io.leangen.graphql.annotations.GraphQLNonNull;
 import io.leangen.graphql.annotations.GraphQLQuery;
 import lombok.extern.slf4j.Slf4j;
-import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
 import no.nav.dokarkiv.hentjournalinfo.dto.DokumentInfo;
 import no.nav.dokarkiv.hentjournalinfo.dto.Journalpost;
+import no.nav.dokarkiv.hentjournalinfo.dto.kode.VariantFormat;
 import no.nav.dokarkiv.hentjournalinfo.exceptions.DokumentIkkeFunnetException;
 import org.springframework.stereotype.Component;
 
@@ -43,9 +42,8 @@ public class MockQuery {
     }
 
     @GraphQLQuery(name = DOKUMENT, description = "Returnerer base64 encoded mock fil. Er ment til å brukes for å teste ut graphql apiet uten å gå gjennom sikkerhet")
-    @GraphQLIgnore
-    public byte[] hentDokument(@GraphQLArgument(name = "dokumentInfoId") @GraphQLNonNull Long dokumentInfoId, @GraphQLArgument(name = "journalpostId") @GraphQLNonNull Long journalpostId, @GraphQLArgument(name = "filtype") FilTypeCode filType) {
-        log.info(format("GraphQL har mottat %s mock query med dokumentInfoId=%s, journalpostId=%s", DOKUMENT, dokumentInfoId, journalpostId));
+    public byte[] dokumentFil(@GraphQLArgument(name = "dokumentInfoId") @GraphQLNonNull Long dokumentInfoId, @GraphQLArgument(name = "variantFormat") @GraphQLNonNull VariantFormat variantFormat) {
+        log.info(format("GraphQL har mottat %s mock query med dokumentInfoId=%s, journalpostId=%s", DOKUMENT, dokumentInfoId, 1L));
 
         return new byte[123321];
     }

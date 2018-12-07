@@ -10,5 +10,7 @@ import java.util.Optional;
  */
 public interface DokumentinfoRepository extends CrudRepository<DokumentInfo, Long> {
 	Optional<DokumentInfo> findAllByJournalpostRelasjonerJournalpostJournalpostIdAndDokumentInfoId(Long journalpostId, Long dokumentInfoId);
+
+	Optional<DokumentInfo> findByDokumentInfoId(Long dokumentInfoId);
 }
 

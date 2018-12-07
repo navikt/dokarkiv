@@ -2,6 +2,7 @@ package no.nav.dokarkiv;
 
 import no.nav.dokarkiv.arkiverdokumentmottak.ArkiverDokumentmottakConfig;
 import no.nav.dokarkiv.arkiverdokumentproduksjon.ArkiverDokumentproduksjonConfig;
+import no.nav.dokarkiv.arkiverkorrigertdokument.ArkiverKorrigertDokumentConfig;
 import no.nav.dokarkiv.behandleinngaaendejournal.v1.BehandleInngaaendeJournalV1Config;
 import no.nav.dokarkiv.behandlejournal.v2.BehandleJournalV2Config;
 import no.nav.dokarkiv.behandlejournal.v3.BehandleJournalV3Config;
@@ -37,6 +38,7 @@ import org.springframework.context.annotation.Import;
         HentJournalInfoConfig.class,
 		LogiskSlettDokumentConfig.class,
 		FysiskSlettDokumentConfig.class,
+		ArkiverKorrigertDokumentConfig.class,
 		NaisContract.class})
 public class Application {
 	public static void main(String[] args) {
