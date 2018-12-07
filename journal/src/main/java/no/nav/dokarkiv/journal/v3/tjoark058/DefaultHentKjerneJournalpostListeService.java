@@ -1,14 +1,21 @@
 package no.nav.dokarkiv.journal.v3.tjoark058;
 
+import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.SLADDET;
+
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
+import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
+import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.repository.journalpostliste.HentMinJPListeParameters;
 import no.nav.dokarkiv.core.repository.journalpostliste.JournalpostListeRepository;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Service for TJOARK058
@@ -39,8 +46,11 @@ public class DefaultHentKjerneJournalpostListeService implements HentKjerneJourn
 		List<Journalpost> journalposts = journalpostListeRepository.findJournalpostListe(params);
 		long totalNrJournalposts = journalpostListeRepository.findTotalNumberOfJournalposts(params);
 
-		return HentKjerneJournalpostListeResponseTo.builder().journalpostListe(journalposts)
+		//Mapperen filtrerer bort SLADDET variant
+		HentKjerneJournalpostListeResponseTo responseTo = HentKjerneJournalpostListeResponseTo.builder().journalpostListe(journalposts)
 				.sisteIntervall(isSisteIntervall(journalposts, totalNrJournalposts, requestTo)).build();
+
+		return responseTo;
 	}
 
 	private boolean isSisteIntervall(List<Journalpost> journalpostListe, long totalNrJournalposts,
@@ -57,4 +67,5 @@ public class DefaultHentKjerneJournalpostListeService implements HentKjerneJourn
                         / requestTo.getResultatSettStoerrelse());
 		return lastPageNumber == requestTo.getResultatSettNr() + 1;
 	}
+
 }

@@ -4,8 +4,10 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NonNull;
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
+import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author Joakim Bjørnstad, Jbit AS
@@ -19,5 +21,9 @@ public class DokumentinformasjonTo {
 	private final Long dokumentId;
 	private DokumenttilstandTo dokumenttilstand;
 	@NonNull
-	private final List<DokumentInnholdTo> dokumentInnhold;
+	private List<DokumentInnholdTo> dokumentInnhold;
+
+	public List<DokumentInnholdTo> getDokumentInnhold() {
+		return dokumentInnhold.stream().filter(innhold -> !innhold.getVariantFormat().equals(VariantFormatCode.SLADDET)).collect(Collectors.toList());
+	}
 }
