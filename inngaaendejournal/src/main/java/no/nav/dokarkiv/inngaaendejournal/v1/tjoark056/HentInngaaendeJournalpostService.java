@@ -48,9 +48,10 @@ public class HentInngaaendeJournalpostService {
 			throw new JournalpostIkkeInngaaendeException("Journalpost er ikke av type Inngående. journalpostId=" + journalpostId);
 		}
 
-		InngaaendeJournalpostTo inngaaendeJournalpostTo = mapper.map(journalpost);
+		//Getter i DokumentinformasjonTo tar bort SLADDET - variant
+		InngaaendeJournalpostTo inngaaendeJournalpostToFilterSladdet = mapper.map(journalpost);
 
-		return filterFildetaljer(inngaaendeJournalpostTo);
+		return inngaaendeJournalpostToFilterSladdet;
 	}
 
 	public void assertJournalpostIdIsNotNull(String journalpostId) {
@@ -58,15 +59,4 @@ public class HentInngaaendeJournalpostService {
 			throw new UgyldigInputException("Tjenesten kan ikke utføres fordi input er ugyldig. journalpostId=null");
 		}
 	}
-
-	private InngaaendeJournalpostTo filterFildetaljer(InngaaendeJournalpostTo journalpost) {
-		List<DokumentInnholdTo> filtererdDokumentInnhold = journalpost.getHoveddokument().getFilteredDokumentInnholdTo();
-		journalpost.getHoveddokument().setDokumentInnhold(filtererdDokumentInnhold);
-		for(DokumentinformasjonTo vedlegg:journalpost.getVedlegg()) {
-			filtererdDokumentInnhold = vedlegg.getFilteredDokumentInnholdTo();
-			vedlegg.setDokumentInnhold(filtererdDokumentInnhold);
-		}
-		return journalpost;
-	}
-
 }

@@ -23,7 +23,7 @@ public class DokumentinformasjonTo {
 	@NonNull
 	private List<DokumentInnholdTo> dokumentInnhold;
 
-	public List<DokumentInnholdTo> getFilteredDokumentInnholdTo() {
+	public List<DokumentInnholdTo> getDokumentInnhold() {
 		return dokumentInnhold.stream().filter(innhold -> !innhold.getVariantFormat().equals(VariantFormatCode.SLADDET)).collect(Collectors.toList());
 	}
 }
