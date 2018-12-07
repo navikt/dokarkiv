@@ -5,6 +5,7 @@ import static no.nav.dokarkiv.core.util.DateConverterUtil.convertDateToXMLGregor
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
+import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.Bruker;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
@@ -181,10 +182,12 @@ public class HentKjerneJournalpostListeResponseMapper {
 	private List<DokumentInnhold> mapDokumentInnhold(Set<no.nav.dokarkiv.core.domain.entities.FilDetaljer> filDetaljer) {
 		List<DokumentInnhold> dokumentInnhold = new ArrayList<>();
 		for(no.nav.dokarkiv.core.domain.entities.FilDetaljer filDetalj : filDetaljer) {
-			dokumentInnhold.add(new DokumentInnhold()
-					.withArkivfiltype(new Arkivfiltyper().withValue(getEnumName(filDetalj.getFiltype())))
-					.withVariantformat(new Variantformater().withValue(getEnumName(filDetalj.getVariantFormat())))
-					);
+			if (!filDetalj.getVariantFormat().equals(VariantFormatCode.SLADDET)) {
+				dokumentInnhold.add(new DokumentInnhold()
+						.withArkivfiltype(new Arkivfiltyper().withValue(getEnumName(filDetalj.getFiltype())))
+						.withVariantformat(new Variantformater().withValue(getEnumName(filDetalj.getVariantFormat())))
+				);
+			}
 		}
 		return dokumentInnhold;
 	}

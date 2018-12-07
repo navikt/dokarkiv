@@ -46,10 +46,11 @@ public class DefaultHentKjerneJournalpostListeService implements HentKjerneJourn
 		List<Journalpost> journalposts = journalpostListeRepository.findJournalpostListe(params);
 		long totalNrJournalposts = journalpostListeRepository.findTotalNumberOfJournalposts(params);
 
+		//Mapperen filtrerer bort SLADDET variant
 		HentKjerneJournalpostListeResponseTo responseTo = HentKjerneJournalpostListeResponseTo.builder().journalpostListe(journalposts)
 				.sisteIntervall(isSisteIntervall(journalposts, totalNrJournalposts, requestTo)).build();
 
-		return evictSladdetVariant(responseTo);
+		return responseTo;
 	}
 
 	private boolean isSisteIntervall(List<Journalpost> journalpostListe, long totalNrJournalposts,
@@ -67,20 +68,4 @@ public class DefaultHentKjerneJournalpostListeService implements HentKjerneJourn
 		return lastPageNumber == requestTo.getResultatSettNr() + 1;
 	}
 
-	private HentKjerneJournalpostListeResponseTo evictSladdetVariant(HentKjerneJournalpostListeResponseTo journalposts) {
-		if (journalposts != null && journalposts.getJournalpostListe() != null) {
-			for (Journalpost journalpost : journalposts.getJournalpostListe()) {
-				Iterator<JournalpostDokumentInfoRelasjon> rel = journalpost.getJournalpostDokumentInfoRelasjoner().iterator();
-				DokumentInfo dokumentInfo;
-				while (rel.hasNext()) {
-					dokumentInfo = rel.next().getDokumentInfo();
-					List<FilDetaljer> sladdetDetaljer = dokumentInfo.getFildetaljerListe().stream().filter(filDetaljer -> SLADDET.equals(filDetaljer.getVariantFormat())).collect(Collectors.toList());
-					for (FilDetaljer removeDetaljer : sladdetDetaljer) {
-						dokumentInfo.removeFilDetaljer(removeDetaljer);
-					}
-				}
-			}
-		}
-		return journalposts;
-	}
 }
