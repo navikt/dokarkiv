@@ -43,7 +43,7 @@ public class ArkiverKorrigertDokumentService {
 
 		kanskjeSlettEksisterendeSladdetFilOgFilDetaljer(dokumentInfo);
 
-		byte[] decodedFil = decodeBodyInBase64(request.getFil());
+		byte[] decodedFil = base64ToByte(request.getFil());
 		lagreKorrigertDokumentSomSladdetVariantFormat(dokumentInfo, decodedFil);
 
 		kanskjeOpprettBegrensingSkjermet(dokumentInfo);
@@ -79,7 +79,7 @@ public class ArkiverKorrigertDokumentService {
 		}
 	}
 
-	private byte[] decodeBodyInBase64(String dokumentFilBase64) {
+	private byte[] base64ToByte(String dokumentFilBase64) {
 		return Base64.decodeBase64(dokumentFilBase64);
 	}
 
