@@ -5,6 +5,7 @@ import no.nav.dokarkiv.core.stelvio.CodesTablePeriodicItem;
 /**
  * @author Paul Magne Lunde, Visma Consulting
  */
+@SuppressWarnings("squid:S00115")
 public enum Behandlingstema implements CtiRelationship<Behandlingstema, String> {
     ab0001,
     ab0002,
