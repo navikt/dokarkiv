@@ -10,13 +10,10 @@ import java.util.List;
  */
 @Component
 public class HentJournalpostBulkService {
-	private final HentJournalpostBulkRepository hentJournalpostBulkRepository;
 	private final HentJournalpostBulkSpringJdbcRepository hentJournalpostBulkSpringJdbcRepository;
 
 	@Inject
-	public HentJournalpostBulkService(HentJournalpostBulkRepository hentJournalpostBulkRepository,
-									  HentJournalpostBulkSpringJdbcRepository hentJournalpostBulkSpringJdbcRepository) {
-		this.hentJournalpostBulkRepository = hentJournalpostBulkRepository;
+	public HentJournalpostBulkService(HentJournalpostBulkSpringJdbcRepository hentJournalpostBulkSpringJdbcRepository) {
 		this.hentJournalpostBulkSpringJdbcRepository = hentJournalpostBulkSpringJdbcRepository;
 	}
 

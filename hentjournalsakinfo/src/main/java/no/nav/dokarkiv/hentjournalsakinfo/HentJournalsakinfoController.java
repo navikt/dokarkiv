@@ -14,9 +14,6 @@ import no.nav.dokarkiv.hentjournalsakinfo.rjoark910.VisningJournalpostBulkRespon
 import no.nav.dokarkiv.hentjournalsakinfo.rjoark910.VisningJournalpostBulkService;
 import no.nav.dokarkiv.hentjournalsakinfo.rjoark920.SafHentDokumentResponse;
 import no.nav.dokarkiv.hentjournalsakinfo.rjoark920.SafHentDokumentService;
-import no.nav.dokarkiv.hentjournalsakinfo.tjoarkxyz.HentJournalpostListeRequestTo;
-import no.nav.dokarkiv.hentjournalsakinfo.tjoarkxyz.HentJournalpostListeResponseTo;
-import no.nav.dokarkiv.hentjournalsakinfo.tjoarkxyz.HentJournalpostListeService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,8 +35,6 @@ import java.util.Base64;
 @RestController
 @RequestMapping("/hentjournalsakinfo")
 public class HentJournalsakinfoController {
-
-	private final HentJournalpostListeService hentJournalpostListeService;
 	private final SafHentDokumentService safHentDokumentService;
 	private final MimeTypeMapper mimeTypeMapper = new MimeTypeMapper();
 	private final HentJournalpostBulkService hentJournalpostBulkService;
@@ -47,24 +42,15 @@ public class HentJournalsakinfoController {
 	private final HentTilgangJournalpostService hentTilgangJournalpostService;
 
 	@Inject
-	public HentJournalsakinfoController(HentJournalpostListeService hentJournalpostListeService,
-										SafHentDokumentService safHentDokumentService,
+	public HentJournalsakinfoController(SafHentDokumentService safHentDokumentService,
 										HentJournalpostBulkService hentJournalpostBulkService,
 										VisningJournalpostBulkService visningJournalpostBulkService,
 										HentTilgangJournalpostService hentTilgangJournalpostService) {
-		this.hentJournalpostListeService = hentJournalpostListeService;
 		this.safHentDokumentService = safHentDokumentService;
 		this.hentJournalpostBulkService = hentJournalpostBulkService;
 		this.visningJournalpostBulkService = visningJournalpostBulkService;
 		this.hentTilgangJournalpostService = hentTilgangJournalpostService;
 
-	}
-
-	@Transactional(readOnly = true)
-	@PostMapping(value = "/hentjournalposter")
-	public HentJournalpostListeResponseTo hentJournalposter(@RequestBody HentJournalpostListeRequestTo hentJournalpostListeRequestTo) {
-		log.info("tjoarkxyz har mottatt forespørsel");
-		return hentJournalpostListeService.hentJournalpostListeByArkivIdAndFagsystem(hentJournalpostListeRequestTo);
 	}
 
 	@Transactional(readOnly = true)
