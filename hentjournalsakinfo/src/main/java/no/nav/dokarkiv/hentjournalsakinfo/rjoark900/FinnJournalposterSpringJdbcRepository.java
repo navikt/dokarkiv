@@ -132,7 +132,8 @@ public class FinnJournalposterSpringJdbcRepository {
 				"                              LEFT JOIN t_skannet_innhold tsi ON d.dokument_info_id = tsi.dokument_info_id)\n" +
 				"SELECT r.*,\n" +
 				"       journalposter.prevjournalpostid,\n" +
-				"       journalposter.nextjournalpostid\n" +
+				"       journalposter.nextjournalpostid,\n" +
+				"       journalposter.totaltAntall\n" +
 				"FROM relevantedata r\n" +
 				"       JOIN\n" +
 				"       (\n" +
@@ -142,7 +143,8 @@ public class FinnJournalposterSpringJdbcRepository {
 				"                FROM (\n" +
 				"                       SELECT j.journalpost_id,\n" +
 				"                              LEAD(j.journalpost_id) OVER (ORDER BY j.journalpost_id) AS prevjournalpostid,\n" +
-				"                              LAG(j.journalpost_id) OVER (ORDER BY j.journalpost_id)  AS nextjournalpostid\n" +
+				"                              LAG(j.journalpost_id) OVER (ORDER BY j.journalpost_id)  AS nextjournalpostid,\n" +
+				"                              COUNT(*) OVER ()  AS totaltAntall\n" +
 				"                       FROM (" + generateCteUnionSql(cteAliases) + ") jps\n" +
 				"                              JOIN t_journalpost j ON jps.journalpost_id = j.journalpost_id\n" +
 				"                              LEFT JOIN t_saksrelasjon ts ON j.journalpost_id = ts.journalpost_id\n" +
