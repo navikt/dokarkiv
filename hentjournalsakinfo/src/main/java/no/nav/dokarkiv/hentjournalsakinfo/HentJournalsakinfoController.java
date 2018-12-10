@@ -4,8 +4,8 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.dokumenturl.MimeTypeMapper;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.metrics.RestMetrics;
-import no.nav.dokarkiv.hentjournalsakinfo.rjoark900.HentJournalpostBulkRequestTo;
-import no.nav.dokarkiv.hentjournalsakinfo.rjoark900.HentJournalpostBulkResponseTo;
+import no.nav.dokarkiv.hentjournalsakinfo.rjoark900.FinnJournalposterRequestTo;
+import no.nav.dokarkiv.hentjournalsakinfo.rjoark900.FinnJournalposterResponseTo;
 import no.nav.dokarkiv.hentjournalsakinfo.rjoark900.HentJournalpostBulkService;
 import no.nav.dokarkiv.hentjournalsakinfo.rjoark901.HentTilgangJournalpostResponse;
 import no.nav.dokarkiv.hentjournalsakinfo.rjoark901.HentTilgangJournalpostService;
@@ -55,35 +55,13 @@ public class HentJournalsakinfoController {
 
 	@Transactional(readOnly = true)
 	@ResponseBody
-	@RequestMapping(value = "/hentdokument/{dokumentinfoId}/{variant}")
-	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark920"}, percentiles = {0.5, 0.95})
-	public ResponseEntity<String> safHentDokument(@PathVariable Long dokumentinfoId,
-												  @PathVariable VariantFormatCode variant) {
-		log.info("rjoark920 har mottatt forespørsel om dokument med dokumentinfoId={} og variant={}", dokumentinfoId, variant);
-		SafHentDokumentResponse safHentDokumentResponse = safHentDokumentService.hentDokumentByDokumentinfoIdAndVariant(dokumentinfoId, variant);
-		return ResponseEntity.ok()
-				.header(HttpHeaders.CONTENT_TYPE, mimeTypeMapper.getMimeTypeForFileExtension(safHentDokumentResponse.getFiltype().toString()))
-				.body(Base64.getEncoder().encodeToString(safHentDokumentResponse.getDokument()));
-	}
-
-
-	@Transactional(readOnly = true)
-	@ResponseBody
-	@PostMapping(value = "/hentjournalpostbulk")
+	@PostMapping(value = "/finnjournalposter")
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark900"}, percentiles = {0.5, 0.95})
-	public HentJournalpostBulkResponseTo hentJournalpostBulk(@RequestBody HentJournalpostBulkRequestTo hentJournalpostBulkRequestTo) {
-		log.info("rjoark900 henter journalpostbulk.");
-		HentJournalpostBulkResponseTo hentJournalpostBulkResponseTo = hentJournalpostBulkService.hentJournalpostBulk(hentJournalpostBulkRequestTo);
-		log.info("rjoark900 fant og returnerer {} journalposter.", hentJournalpostBulkResponseTo.getTilgangJournalposter().size());
-		return hentJournalpostBulkResponseTo;
-	}
-
-	@Transactional(readOnly = true)
-	@ResponseBody
-	@PostMapping(value = "/visningjournalpostbulk")
-	public VisningJournalpostBulkResponseTo visningsJournalpostBulk(@RequestBody VisningJournalpostBulkRequestTo visningJournalpostBulkRequestTo) {
-		log.info("rjoark910 henter journalposter.");
-		return visningJournalpostBulkService.visningJournalpostBulk(visningJournalpostBulkRequestTo);
+	public FinnJournalposterResponseTo finnJournalposter(@RequestBody FinnJournalposterRequestTo finnJournalposterRequestTo) {
+		log.info("rjoark900 finner journalposter.");
+		FinnJournalposterResponseTo finnJournalposterResponseTo = hentJournalpostBulkService.hentJournalpostBulk(finnJournalposterRequestTo);
+		log.info("rjoark900 fant og returnerer {} journalposter.", finnJournalposterResponseTo.getTilgangJournalposter().size());
+		return finnJournalposterResponseTo;
 	}
 
 	@Transactional(readOnly = true)
@@ -98,4 +76,26 @@ public class HentJournalsakinfoController {
 		return hentTilgangJournalpostService.hentTilgangJournalpost(journalpostId, dokumentInfoId, variantFormat);
 	}
 
+	@Transactional(readOnly = true)
+	@ResponseBody
+	@PostMapping(value = "/hentjournalposter")
+	public VisningJournalpostBulkResponseTo visningsJournalpostBulk(@RequestBody VisningJournalpostBulkRequestTo visningJournalpostBulkRequestTo) {
+		log.info("rjoark910 henter journalposter.");
+		VisningJournalpostBulkResponseTo responseTo = visningJournalpostBulkService.visningJournalpostBulk(visningJournalpostBulkRequestTo);
+		log.info("rjoark910 hentet {} journalposter.", responseTo.getJournalposter().size());
+		return responseTo;
+	}
+
+	@Transactional(readOnly = true)
+	@ResponseBody
+	@RequestMapping(value = "/hentdokument/{dokumentinfoId}/{variant}")
+	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark920"}, percentiles = {0.5, 0.95})
+	public ResponseEntity<String> safHentDokument(@PathVariable Long dokumentinfoId,
+												  @PathVariable VariantFormatCode variant) {
+		log.info("rjoark920 har mottatt forespørsel om dokument med dokumentinfoId={} og variant={}", dokumentinfoId, variant);
+		SafHentDokumentResponse safHentDokumentResponse = safHentDokumentService.hentDokumentByDokumentinfoIdAndVariant(dokumentinfoId, variant);
+		return ResponseEntity.ok()
+				.header(HttpHeaders.CONTENT_TYPE, mimeTypeMapper.getMimeTypeForFileExtension(safHentDokumentResponse.getFiltype().toString()))
+				.body(Base64.getEncoder().encodeToString(safHentDokumentResponse.getDokument()));
+	}
 }

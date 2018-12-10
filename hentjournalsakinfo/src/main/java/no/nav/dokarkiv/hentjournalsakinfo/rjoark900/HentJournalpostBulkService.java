@@ -10,19 +10,19 @@ import java.util.List;
  */
 @Component
 public class HentJournalpostBulkService {
-	private final HentJournalpostBulkSpringJdbcRepository hentJournalpostBulkSpringJdbcRepository;
+	private final FinnJournalposterSpringJdbcRepository finnJournalposterSpringJdbcRepository;
 
 	@Inject
-	public HentJournalpostBulkService(HentJournalpostBulkSpringJdbcRepository hentJournalpostBulkSpringJdbcRepository) {
-		this.hentJournalpostBulkSpringJdbcRepository = hentJournalpostBulkSpringJdbcRepository;
+	public HentJournalpostBulkService(FinnJournalposterSpringJdbcRepository finnJournalposterSpringJdbcRepository) {
+		this.finnJournalposterSpringJdbcRepository = finnJournalposterSpringJdbcRepository;
 	}
 
-	public HentJournalpostBulkResponseTo hentJournalpostBulk(HentJournalpostBulkRequestTo hentJournalpostBulkRequestTo) {
-		List<JournalpostDto> journalpostDtos = hentJournalpostBulkSpringJdbcRepository.hentJournalposter(
-				hentJournalpostBulkRequestTo.getGsakSakIds(),
-				hentJournalpostBulkRequestTo.getPsakSakIds(),
-				new BulkJournalposterFilter(hentJournalpostBulkRequestTo)
+	public FinnJournalposterResponseTo hentJournalpostBulk(FinnJournalposterRequestTo finnJournalposterRequestTo) {
+		List<JournalpostDto> journalpostDtos = finnJournalposterSpringJdbcRepository.hentJournalposter(
+				finnJournalposterRequestTo.getGsakSakIds(),
+				finnJournalposterRequestTo.getPsakSakIds(),
+				new JournalpostFilter(finnJournalposterRequestTo)
 		);
-		return new HentJournalpostBulkResponseTo(journalpostDtos);
+		return new FinnJournalposterResponseTo(journalpostDtos);
 	}
 }

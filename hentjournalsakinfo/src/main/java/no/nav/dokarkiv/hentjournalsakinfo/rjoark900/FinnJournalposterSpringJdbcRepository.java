@@ -20,7 +20,7 @@ import java.util.stream.Stream;
  * @author Joakim Bjørnstad, Jbit AS
  */
 @Repository
-public class HentJournalpostBulkSpringJdbcRepository {
+public class FinnJournalposterSpringJdbcRepository {
 	private static final ResultSetExtractor<List<JournalpostDto>> JOURNALPOST_DTO_RESULT_SET_EXTRACTOR = JdbcTemplateMapperFactory.newInstance()
 			.addKeys("journalpostid", "saksrelasjon_sakid", "dokumenter_dokumentinfoid", "dokumenter_logiske_tittel")
 			.newResultSetExtractor(JournalpostDto.class);
@@ -34,13 +34,13 @@ public class HentJournalpostBulkSpringJdbcRepository {
 	private final NamedParameterJdbcTemplate jdbcTemplate;
 
 	@Inject
-	public HentJournalpostBulkSpringJdbcRepository(NamedParameterJdbcTemplate jdbcTemplate) {
+	public FinnJournalposterSpringJdbcRepository(NamedParameterJdbcTemplate jdbcTemplate) {
 		this.jdbcTemplate = jdbcTemplate;
 	}
 
 	public List<JournalpostDto> hentJournalposter(final List<String> gsakIds,
 												  final List<String> psakIds,
-												  BulkJournalposterFilter bulkJournalposterFilter) {
+												  JournalpostFilter journalpostFilter) {
 		List<String> cteAliases = new ArrayList<>();
 		MapSqlParameterSource namedParams = new MapSqlParameterSource();
 		if (gsakIds == null || gsakIds.isEmpty()) {
@@ -55,44 +55,44 @@ public class HentJournalpostBulkSpringJdbcRepository {
 			namedParams.addValue(PSAK_IDS_PARAM, psakIds);
 			cteAliases.add("psaksaker");
 		}
-		if (bulkJournalposterFilter.isInkluderMidlertidigeJournalposter()) {
+		if (journalpostFilter.isInkluderMidlertidigeJournalposter()) {
 			cteAliases.add("midlertidige");
 		}
-		if (bulkJournalposterFilter.isKunFeilregistrerte()) {
+		if (journalpostFilter.isKunFeilregistrerte()) {
 			namedParams.addValue("inkluderJournalStatus", NOT_USED);
 		} else {
-			namedParams.addValue("inkluderJournalStatus", bulkJournalposterFilter.getInkluderJournalStatus());
+			namedParams.addValue("inkluderJournalStatus", journalpostFilter.getInkluderJournalStatus());
 		}
 
-		namedParams.addValue("alleIdenter", bulkJournalposterFilter.getAlleIdenter());
-		namedParams.addValue("fraDato", Timestamp.valueOf(bulkJournalposterFilter.getFraDato().atStartOfDay()));
-		namedParams.addValue("inkluderTema", bulkJournalposterFilter.getInkluderTema());
-		namedParams.addValue("inkluderJournalpostType", bulkJournalposterFilter.getInkluderJournalpostType());
+		namedParams.addValue("alleIdenter", journalpostFilter.getAlleIdenter());
+		namedParams.addValue("fraDato", Timestamp.valueOf(journalpostFilter.getFraDato().atStartOfDay()));
+		namedParams.addValue("inkluderTema", journalpostFilter.getInkluderTema());
+		namedParams.addValue("inkluderJournalpostType", journalpostFilter.getInkluderJournalpostType());
 		namedParams.addValue("allJournalStatus", ALL_JOURNALSTATUS);
-		namedParams.addValue("visFeilregistrert", bulkJournalposterFilter.isVisFeilregistrerte() ? ALL_JOURNALPOST : NO_FEILREGISTRERT_JOURNALPOST);
-		namedParams.addValue("antallRader", bulkJournalposterFilter.getAntallRader());
-		namedParams.addValue("journalpostIdPeker", bulkJournalposterFilter.getJournalpostIdPeker());
+		namedParams.addValue("visFeilregistrert", journalpostFilter.isVisFeilregistrerte() ? ALL_JOURNALPOST : NO_FEILREGISTRERT_JOURNALPOST);
+		namedParams.addValue("antallRader", journalpostFilter.getAntallRader());
+		namedParams.addValue("journalpostIdPeker", journalpostFilter.getJournalpostIdPeker());
 
 		if (cteAliases.isEmpty()) {
 			return new ArrayList<>();
 		}
 
-		return jdbcTemplate.query(journalpostbulkSql(bulkJournalposterFilter, cteAliases), namedParams, JOURNALPOST_DTO_RESULT_SET_EXTRACTOR);
+		return jdbcTemplate.query(journalpostbulkSql(journalpostFilter, cteAliases), namedParams, JOURNALPOST_DTO_RESULT_SET_EXTRACTOR);
 	}
 
-	private String journalpostbulkSql(BulkJournalposterFilter bulkJournalposterFilter, List<String> cteAliases) {
+	private String journalpostbulkSql(JournalpostFilter journalpostFilter, List<String> cteAliases) {
 		return "WITH psaksaker AS\n" +
 				"       (SELECT s.journalpost_id\n" +
 				"        FROM t_saksrelasjon s\n" +
 				"        WHERE (s.k_fagsystem = 'PEN' AND s.sak_nr_fk IN (:psakIds))\n" +
-				"          AND " + generateFeilregistrertSelectionSql(bulkJournalposterFilter) + "\n" +
+				"          AND " + generateFeilregistrertSelectionSql(journalpostFilter) + "\n" +
 				"       ),\n" +
 				"     gsaksaker AS\n" +
 				"       (SELECT s.journalpost_id\n" +
 				"        FROM t_saksrelasjon s\n" +
 				"        WHERE (s.k_fagsystem = 'FS22' AND\n" +
 				"               s.sak_nr_fk IN (:gsakIds))\n" +
-				"          AND " + generateFeilregistrertSelectionSql(bulkJournalposterFilter) + "\n" +
+				"          AND " + generateFeilregistrertSelectionSql(journalpostFilter) + "\n" +
 				"       ),\n" +
 				"     midlertidige AS (SELECT b.journalpost_id\n" +
 				"                      FROM t_bruker b\n" +
@@ -159,14 +159,14 @@ public class HentJournalpostBulkSpringJdbcRepository {
 				"                               j.k_journal_s IN (:inkluderJournalStatus))\n" +
 				"                         )\n" +
 				"                     ) p\n" +
-				"                WHERE " + paginate(bulkJournalposterFilter.getSlice()) +
+				"                WHERE " + paginate(journalpostFilter.getSlice()) +
 				"              ) t\n" +
 				"         WHERE rownum <= :antallRader\n" +
 				"       ) journalposter ON journalposter.journalpost_id = r.journalpostid\n" +
 				"ORDER BY journalpostid DESC, dokumenter_tilknyttetsom ASC";
 	}
 
-	private String paginate(BulkJournalposterFilter.Slice slice) {
+	private String paginate(JournalpostFilter.Slice slice) {
 		switch (slice) {
 			case FOERSTE:
 				return "p.journalpost_id < :journalpostIdPeker " +
@@ -183,8 +183,8 @@ public class HentJournalpostBulkSpringJdbcRepository {
 		return cteAliases.stream().map(cteAlias -> "SELECT journalpost_id FROM " + cteAlias).collect(Collectors.joining(" UNION ALL "));
 	}
 
-	private String generateFeilregistrertSelectionSql(BulkJournalposterFilter bulkJournalposterFilter) {
-		if (bulkJournalposterFilter.isKunFeilregistrerte()) {
+	private String generateFeilregistrertSelectionSql(JournalpostFilter journalpostFilter) {
+		if (journalpostFilter.isKunFeilregistrerte()) {
 			return "(s.feilregistrert = 1)";
 		} else {
 			return "(s.feilregistrert IS NULL OR (s.feilregistrert IN (:visFeilregistrert)))";

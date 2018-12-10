@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
  * @author Joakim Bjørnstad, Jbit AS
  */
 @Value
-class BulkJournalposterFilter {
+class JournalpostFilter {
 	public static final long JOURNALPOST_ID_MAX = 999999999L;
 	public static final long JOURNALPOST_ID_MIN = 0L;
 	private final LocalDate fraDato;
@@ -32,35 +32,35 @@ class BulkJournalposterFilter {
 		SISTE
 	}
 
-	BulkJournalposterFilter(HentJournalpostBulkRequestTo hentJournalpostBulkRequestTo) {
-		this.fraDato = LocalDate.parse(hentJournalpostBulkRequestTo.getFraDato());
-		this.alleIdenter = hentJournalpostBulkRequestTo.getAlleIdenter();
-		this.inkluderTema = hentJournalpostBulkRequestTo.getInkluderTema().stream().map(Enum::name).collect(Collectors.toList());
-		this.inkluderJournalStatus = hentJournalpostBulkRequestTo.getInkluderJournalStatus().stream().map(Enum::name).collect(Collectors.toList());
-		this.inkluderJournalpostType = hentJournalpostBulkRequestTo.getInkluderJournalpostType().stream().map(Enum::name).collect(Collectors.toList());
-		this.visFeilregistrerte = hentJournalpostBulkRequestTo.isVisFeilregistrerte();
-		this.antallRader = getAntallRader(hentJournalpostBulkRequestTo);
-		this.slice = getSlice(hentJournalpostBulkRequestTo);
-		this.journalpostIdPeker = getPeker(this.slice, hentJournalpostBulkRequestTo);
+	JournalpostFilter(FinnJournalposterRequestTo finnJournalposterRequestTo) {
+		this.fraDato = LocalDate.parse(finnJournalposterRequestTo.getFraDato());
+		this.alleIdenter = finnJournalposterRequestTo.getAlleIdenter();
+		this.inkluderTema = finnJournalposterRequestTo.getInkluderTema().stream().map(Enum::name).collect(Collectors.toList());
+		this.inkluderJournalStatus = finnJournalposterRequestTo.getInkluderJournalStatus().stream().map(Enum::name).collect(Collectors.toList());
+		this.inkluderJournalpostType = finnJournalposterRequestTo.getInkluderJournalpostType().stream().map(Enum::name).collect(Collectors.toList());
+		this.visFeilregistrerte = finnJournalposterRequestTo.isVisFeilregistrerte();
+		this.antallRader = getAntallRader(finnJournalposterRequestTo);
+		this.slice = getSlice(finnJournalposterRequestTo);
+		this.journalpostIdPeker = getPeker(this.slice, finnJournalposterRequestTo);
 	}
 
-	private Integer getAntallRader(HentJournalpostBulkRequestTo hentJournalpostBulkRequestTo) {
-		if(hentJournalpostBulkRequestTo.getFoerste() == null) {
-			return hentJournalpostBulkRequestTo.getSiste();
+	private Integer getAntallRader(FinnJournalposterRequestTo finnJournalposterRequestTo) {
+		if(finnJournalposterRequestTo.getFoerste() == null) {
+			return finnJournalposterRequestTo.getSiste();
 		} else {
-			return hentJournalpostBulkRequestTo.getFoerste();
+			return finnJournalposterRequestTo.getFoerste();
 		}
 	}
 
-	private Slice getSlice(HentJournalpostBulkRequestTo hentJournalpostBulkRequestTo) {
-		if(hentJournalpostBulkRequestTo.getFoerste() == null) {
+	private Slice getSlice(FinnJournalposterRequestTo finnJournalposterRequestTo) {
+		if(finnJournalposterRequestTo.getFoerste() == null) {
 			return Slice.SISTE;
 		} else {
 			return Slice.FOERSTE;
 		}
 	}
 
-	private Long getPeker(Slice slice, HentJournalpostBulkRequestTo requestTo) {
+	private Long getPeker(Slice slice, FinnJournalposterRequestTo requestTo) {
 		switch(slice) {
 			case FOERSTE:
 				return getPeker(requestTo.getEtterPeker(), JOURNALPOST_ID_MAX);
