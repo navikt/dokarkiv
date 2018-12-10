@@ -1,7 +1,7 @@
 team: teamdokumenthandtering
 image: "repo.adeo.no:5443/dok/dokarkiv"
 replicas:
-  min: 2
+  min: 4
   max: 10
   cpuThresholdPercentage: 70
 port: 8080
