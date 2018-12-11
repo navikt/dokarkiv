@@ -9,15 +9,15 @@ import java.util.List;
  * @author Joakim Bjørnstad, Jbit AS
  */
 @Component
-public class HentJournalpostBulkService {
+public class FinnJournalposterService {
 	private final FinnJournalposterSpringJdbcRepository finnJournalposterSpringJdbcRepository;
 
 	@Inject
-	public HentJournalpostBulkService(FinnJournalposterSpringJdbcRepository finnJournalposterSpringJdbcRepository) {
+	public FinnJournalposterService(FinnJournalposterSpringJdbcRepository finnJournalposterSpringJdbcRepository) {
 		this.finnJournalposterSpringJdbcRepository = finnJournalposterSpringJdbcRepository;
 	}
 
-	public FinnJournalposterResponseTo hentJournalpostBulk(FinnJournalposterRequestTo finnJournalposterRequestTo) {
+	public FinnJournalposterResponseTo finnJournalposter(FinnJournalposterRequestTo finnJournalposterRequestTo) {
 		List<JournalpostDto> journalpostDtos = finnJournalposterSpringJdbcRepository.hentJournalposter(
 				finnJournalposterRequestTo.getGsakSakIds(),
 				finnJournalposterRequestTo.getPsakSakIds(),

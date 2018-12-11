@@ -1,5 +1,7 @@
 package no.nav.dokarkiv.hentjournalsakinfo.rjoark900;
 
+import static no.nav.dokarkiv.hentjournalsakinfo.rjoark900.FinnJournalpostSqlGenerator.feilregistrertSelectionSql;
+
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import org.simpleflatmapper.jdbc.spring.JdbcTemplateMapperFactory;
 import org.springframework.jdbc.core.ResultSetExtractor;
@@ -31,10 +33,12 @@ public class FinnJournalposterSpringJdbcRepository {
 	private static final String GSAK_IDS_PARAM = "gsakIds";
 	private static final String PSAK_IDS_PARAM = "psakIds";
 
+	private final GsakCteMapper gsakCteMapper;
 	private final NamedParameterJdbcTemplate jdbcTemplate;
 
 	@Inject
 	public FinnJournalposterSpringJdbcRepository(NamedParameterJdbcTemplate jdbcTemplate) {
+		this.gsakCteMapper = new GsakCteMapper();
 		this.jdbcTemplate = jdbcTemplate;
 	}
 
@@ -43,13 +47,12 @@ public class FinnJournalposterSpringJdbcRepository {
 												  JournalpostFilter journalpostFilter) {
 		List<String> cteAliases = new ArrayList<>();
 		MapSqlParameterSource namedParams = new MapSqlParameterSource();
-		if (gsakIds == null || gsakIds.isEmpty()) {
-			namedParams.addValue(GSAK_IDS_PARAM, NOT_USED);
-		} else {
-			namedParams.addValue(GSAK_IDS_PARAM, gsakIds);
+		GsakCteMapper.GsakCte gsakCte = gsakCteMapper.mapCte(gsakIds, journalpostFilter.isKunFeilregistrerte());
+		namedParams.addValues(gsakCte.getGsakIdParams());
+		if (gsakCte.isGsakerExists()) {
 			cteAliases.add("gsaksaker");
 		}
-		if (gsakIds == null || psakIds.isEmpty()) {
+		if (psakIds == null || psakIds.isEmpty()) {
 			namedParams.addValue(PSAK_IDS_PARAM, NOT_USED);
 		} else {
 			namedParams.addValue(PSAK_IDS_PARAM, psakIds);
@@ -77,23 +80,17 @@ public class FinnJournalposterSpringJdbcRepository {
 			return new ArrayList<>();
 		}
 
-		return jdbcTemplate.query(journalpostbulkSql(journalpostFilter, cteAliases), namedParams, JOURNALPOST_DTO_RESULT_SET_EXTRACTOR);
+		return jdbcTemplate.query(finnJournalposterSql(journalpostFilter, cteAliases, gsakCte.getCteSql()), namedParams, JOURNALPOST_DTO_RESULT_SET_EXTRACTOR);
 	}
 
-	private String journalpostbulkSql(JournalpostFilter journalpostFilter, List<String> cteAliases) {
+	private String finnJournalposterSql(JournalpostFilter journalpostFilter, List<String> cteAliases, String gsakCte) {
 		return "WITH psaksaker AS\n" +
 				"       (SELECT s.journalpost_id\n" +
 				"        FROM t_saksrelasjon s\n" +
 				"        WHERE (s.k_fagsystem = 'PEN' AND s.sak_nr_fk IN (:psakIds))\n" +
-				"          AND " + generateFeilregistrertSelectionSql(journalpostFilter) + "\n" +
+				"          AND " + feilregistrertSelectionSql(journalpostFilter.isKunFeilregistrerte()) + "\n" +
 				"       ),\n" +
-				"     gsaksaker AS\n" +
-				"       (SELECT s.journalpost_id\n" +
-				"        FROM t_saksrelasjon s\n" +
-				"        WHERE (s.k_fagsystem = 'FS22' AND\n" +
-				"               s.sak_nr_fk IN (:gsakIds))\n" +
-				"          AND " + generateFeilregistrertSelectionSql(journalpostFilter) + "\n" +
-				"       ),\n" +
+				gsakCte +
 				"     midlertidige AS (SELECT b.journalpost_id\n" +
 				"                      FROM t_bruker b\n" +
 				"                             JOIN t_journalpost tj ON b.journalpost_id = tj.journalpost_id\n" +
@@ -124,7 +121,6 @@ public class FinnJournalposterSpringJdbcRepository {
 				"                              d.brev_kode           AS dokumenter_brevkode,\n" +
 				"                              d.tittel              AS dokumenter_tittel,\n" +
 				"                              tsi.vedlegg_innhold   AS dokumenter_logiske_tittel\n" +
-				"\n" +
 				"                       FROM t_journalpost j\n" +
 				"                              LEFT JOIN t_saksrelasjon s ON s.journalpost_id = j.journalpost_id\n" +
 				"                              JOIN t_jp_dok_info_rel rel ON j.journalpost_id = rel.journalpost_id\n" +
@@ -161,14 +157,14 @@ public class FinnJournalposterSpringJdbcRepository {
 				"                               j.k_journal_s IN (:inkluderJournalStatus))\n" +
 				"                         )\n" +
 				"                     ) p\n" +
-				"                WHERE " + paginate(journalpostFilter.getSlice()) +
+				"                WHERE " + paginateSql(journalpostFilter.getSlice()) +
 				"              ) t\n" +
 				"         WHERE rownum <= :antallRader\n" +
 				"       ) journalposter ON journalposter.journalpost_id = r.journalpostid\n" +
 				"ORDER BY journalpostid DESC, dokumenter_tilknyttetsom ASC";
 	}
 
-	private String paginate(JournalpostFilter.Slice slice) {
+	private String paginateSql(JournalpostFilter.Slice slice) {
 		switch (slice) {
 			case FOERSTE:
 				return "p.journalpost_id < :journalpostIdPeker " +
@@ -183,13 +179,5 @@ public class FinnJournalposterSpringJdbcRepository {
 
 	private String generateCteUnionSql(List<String> cteAliases) {
 		return cteAliases.stream().map(cteAlias -> "SELECT journalpost_id FROM " + cteAlias).collect(Collectors.joining(" UNION ALL "));
-	}
-
-	private String generateFeilregistrertSelectionSql(JournalpostFilter journalpostFilter) {
-		if (journalpostFilter.isKunFeilregistrerte()) {
-			return "(s.feilregistrert = 1)";
-		} else {
-			return "(s.feilregistrert IS NULL OR (s.feilregistrert IN (:visFeilregistrert)))";
-		}
 	}
 }

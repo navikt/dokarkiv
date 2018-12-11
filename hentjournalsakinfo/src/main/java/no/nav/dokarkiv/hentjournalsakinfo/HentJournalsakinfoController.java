@@ -6,7 +6,7 @@ import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.metrics.RestMetrics;
 import no.nav.dokarkiv.hentjournalsakinfo.rjoark900.FinnJournalposterRequestTo;
 import no.nav.dokarkiv.hentjournalsakinfo.rjoark900.FinnJournalposterResponseTo;
-import no.nav.dokarkiv.hentjournalsakinfo.rjoark900.HentJournalpostBulkService;
+import no.nav.dokarkiv.hentjournalsakinfo.rjoark900.FinnJournalposterService;
 import no.nav.dokarkiv.hentjournalsakinfo.rjoark901.HentTilgangJournalpostResponse;
 import no.nav.dokarkiv.hentjournalsakinfo.rjoark901.HentTilgangJournalpostService;
 import no.nav.dokarkiv.hentjournalsakinfo.rjoark910.VisningJournalpostBulkRequestTo;
@@ -37,17 +37,17 @@ import java.util.Base64;
 public class HentJournalsakinfoController {
 	private final SafHentDokumentService safHentDokumentService;
 	private final MimeTypeMapper mimeTypeMapper = new MimeTypeMapper();
-	private final HentJournalpostBulkService hentJournalpostBulkService;
+	private final FinnJournalposterService finnJournalposterService;
 	private final VisningJournalpostBulkService visningJournalpostBulkService;
 	private final HentTilgangJournalpostService hentTilgangJournalpostService;
 
 	@Inject
 	public HentJournalsakinfoController(SafHentDokumentService safHentDokumentService,
-										HentJournalpostBulkService hentJournalpostBulkService,
+										FinnJournalposterService finnJournalposterService,
 										VisningJournalpostBulkService visningJournalpostBulkService,
 										HentTilgangJournalpostService hentTilgangJournalpostService) {
 		this.safHentDokumentService = safHentDokumentService;
-		this.hentJournalpostBulkService = hentJournalpostBulkService;
+		this.finnJournalposterService = finnJournalposterService;
 		this.visningJournalpostBulkService = visningJournalpostBulkService;
 		this.hentTilgangJournalpostService = hentTilgangJournalpostService;
 
@@ -59,7 +59,7 @@ public class HentJournalsakinfoController {
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark900"}, percentiles = {0.5, 0.95})
 	public FinnJournalposterResponseTo finnJournalposter(@RequestBody FinnJournalposterRequestTo finnJournalposterRequestTo) {
 		log.info("rjoark900 finner journalposter.");
-		FinnJournalposterResponseTo finnJournalposterResponseTo = hentJournalpostBulkService.hentJournalpostBulk(finnJournalposterRequestTo);
+		FinnJournalposterResponseTo finnJournalposterResponseTo = finnJournalposterService.finnJournalposter(finnJournalposterRequestTo);
 		log.info("rjoark900 fant og returnerer {} journalposter.", finnJournalposterResponseTo.getTilgangJournalposter().size());
 		return finnJournalposterResponseTo;
 	}

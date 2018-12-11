@@ -87,6 +87,6 @@ class JournalpostFilter {
 	}
 
 	boolean isInkluderMidlertidigeJournalposter() {
-		return inkluderJournalStatus.contains(MO.name()) || inkluderJournalStatus.contains(M.name());
+		return !alleIdenter.isEmpty() && (inkluderJournalStatus.contains(MO.name()) || inkluderJournalStatus.contains(M.name()));
 	}
 }
