@@ -17,13 +17,15 @@ import no.nav.dokarkiv.journal.v3.JournalV3Config;
 import no.nav.dokarkiv.journalfoerinngaaende.v1.JournalfoerInngaaendeConfig;
 import no.nav.dokarkiv.logiskslettdokument.LogiskSlettDokumentConfig;
 import no.nav.dokarkiv.nais.NaisContract;
+import no.nav.dokarkiv.platform.TomcatConfig;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.annotation.Import;
 
 /**
  * @author Joakim Bjørnstad, Jbit AS
  */
-@Import({CoreConfig.class,
+@Import({TomcatConfig.class,
+		CoreConfig.class,
 		DokumentproduksjonInfoConfig.class,
 		ArkiverDokumentproduksjonConfig.class,
 		ArkiverDokumentmottakConfig.class,
