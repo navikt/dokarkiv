@@ -59,7 +59,10 @@ public class FinnJournalposterSpringJdbcRepository {
 			cteAliases.add("psaksaker");
 		}
 		if (journalpostFilter.isInkluderMidlertidigeJournalposter()) {
+			namedParams.addValue("alleIdenter", journalpostFilter.getAlleIdenter());
 			cteAliases.add("midlertidige");
+		} else {
+			namedParams.addValue("alleIdenter", NOT_USED);
 		}
 		if (journalpostFilter.isKunFeilregistrerte()) {
 			namedParams.addValue("inkluderJournalStatus", NOT_USED);
@@ -67,7 +70,6 @@ public class FinnJournalposterSpringJdbcRepository {
 			namedParams.addValue("inkluderJournalStatus", journalpostFilter.getInkluderJournalStatus());
 		}
 
-		namedParams.addValue("alleIdenter", journalpostFilter.getAlleIdenter());
 		namedParams.addValue("fraDato", Timestamp.valueOf(journalpostFilter.getFraDato().atStartOfDay()));
 		namedParams.addValue("inkluderTema", journalpostFilter.getInkluderTema());
 		namedParams.addValue("inkluderJournalpostType", journalpostFilter.getInkluderJournalpostType());
