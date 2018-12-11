@@ -9,14 +9,22 @@ import java.util.Objects;
 public class ArkiverKorrigertDokumentValidator {
 
 	public void validateArkiverKorrigertDokumentRequest(ArkiverKorrigertDokumentRequest request) {
-		if (Objects.isNull(request.getDokumentInfoId())) {
-			throw new UgyldigInputException("DokumentInfoId kan ikke være null");
-		}
+		validateDokumentInfoIkkeNull(request);
 
 		if (Objects.isNull(request.getFil())) {
 			throw new UgyldigInputException("Fil kan ikke være null");
 		}
 	}
 
+	public void validateAngreArkiverKorrigertDokumentRequest(ArkiverKorrigertDokumentRequest request) {
+		validateDokumentInfoIkkeNull(request);
+	}
+
+
+	private void validateDokumentInfoIkkeNull(ArkiverKorrigertDokumentRequest request) {
+		if (Objects.isNull(request.getDokumentInfoId())) {
+			throw new UgyldigInputException("DokumentInfoId kan ikke være null");
+		}
+	}
 
 }
