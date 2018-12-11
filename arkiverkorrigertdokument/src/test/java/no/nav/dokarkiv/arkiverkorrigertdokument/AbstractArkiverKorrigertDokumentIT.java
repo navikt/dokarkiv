@@ -57,6 +57,7 @@ public abstract class AbstractArkiverKorrigertDokumentIT {
 	protected static final String OPPRETTET_KILDE_NAVN = "Opprettet kilde";
 	protected static final String TILKNYTTET_AV_NAVN = "Tilknyttetnavn";
 	protected static final String URL_ARKIVERKORRIGERTDOKUMENT = "/rest/arkiverkorrigertdokument/";
+	protected static final String URL_ANGREARKIVERKORRIGERTDOKUMENT = "/rest/arkiverkorrigertdokument/angre/";
 	protected static final String URL_SLETTDOKUMENT = "/rest/logiskslettdokument/";
 	private String OIDC_TOKEN_PERSON_USER_TEST;
 	private String OIDC_TOKEN_SERVICE_USER_TEST;

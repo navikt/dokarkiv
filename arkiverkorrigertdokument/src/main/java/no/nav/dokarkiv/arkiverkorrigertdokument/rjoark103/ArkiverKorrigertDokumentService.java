@@ -61,6 +61,7 @@ public class ArkiverKorrigertDokumentService {
 				.isPresent();
 		if (isFalse(begrengsningExists)) {
 			Begrensning begrensning = Begrensning.builder()
+					//TODO: Er det ok å bruker originalJp her?
 					.journalpostId(dokumentInfo.getOriginalJournalpost().getJournalpostId())
 					.dokumentInfoId(dokumentInfo.getDokumentInfoId())
 					.begrensningType(BegrensningTypeCode.SKJERMET)
@@ -88,16 +89,17 @@ public class ArkiverKorrigertDokumentService {
 		FilDetaljer filDetaljer = FilDetaljer.builder()
 				.filUuid(FilDetaljer.generateUuid())
 				.filnavn(arkivFildetaljer.getFilnavn())
+				//TODO: Kan vi være sikre på at det er samme filtype her? Burde vi ikke alltid sette PDF?
 				.filtype(arkivFildetaljer.getFiltype())
 				.variantFormat(VariantFormatCode.SLADDET)
 				.fileContent(fil)
 				.dokumentInfo(dokumentInfo)
 				.build();
 		filDetaljer.setOpprettetKildeNavn(MDC.get(MDCConstants.MDC_CONSUMER_ID));
-
 		dokumentInfo.addFilDetaljer(filDetaljer);
 
 		dokumentFilRepository.save(filDetaljer.createDokumentFil());
-		dokumentinfoRepository.save(dokumentInfo);
+		//TODO: Trengs denne? Før jeg kommer hit har dokuementInfoRepository oppdatert fildetaljerListe = 2, blir oppdatert i steg dokumentInfo.addFilDetaljer(fildetaljer);
+//		dokumentinfoRepository.save(dokumentInfo);
 	}
 }

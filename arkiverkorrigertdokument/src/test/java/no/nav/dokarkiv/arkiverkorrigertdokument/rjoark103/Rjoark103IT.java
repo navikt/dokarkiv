@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.arkiverkorrigertdokument.rjoark103;
 
+import static no.nav.dokarkiv.arkiverkorrigertdokument.util.TestUtils.FIL;
 import static no.nav.dokarkiv.arkiverkorrigertdokument.util.TestUtils.opprettHoveddokumentForIT;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
@@ -23,8 +24,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.transaction.TestTransaction;
 
 public class Rjoark103IT extends AbstractArkiverKorrigertDokumentIT {
-
-	private byte[] FIL = "TEEEST".getBytes();
 
 	@Test
 	public void shouldSaveFileAsSladdetVariant() {
