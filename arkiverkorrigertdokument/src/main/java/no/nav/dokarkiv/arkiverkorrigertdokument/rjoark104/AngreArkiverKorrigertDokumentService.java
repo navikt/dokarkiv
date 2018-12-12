@@ -48,8 +48,6 @@ public class AngreArkiverKorrigertDokumentService {
 
 		slettBegrensning(dokumentInfo);
 		slettSladdetFilOgFilDetaljer(dokumentInfo);
-//		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) +
-//				" har angret arkivering av korrigert dokument med dokumentInfoId={}", dokumentInfo.getDokumentInfoId());
 
 		return ArkiverKorrigertDokumentRespons.builder()
 				.dokumentInfoId(dokumentInfo.getDokumentInfoId())
