@@ -31,7 +31,9 @@ public class ArkiverKorrigertDokumentService {
 	private final BegrensningRepository begrensningRepository;
 
 	@Inject
-	public ArkiverKorrigertDokumentService(DokumentinfoRepository dokumentinfoRepository, DokumentFilRepository dokumentFilRepository, BegrensningRepository begrensningRepository) {
+	public ArkiverKorrigertDokumentService(DokumentinfoRepository dokumentinfoRepository,
+										   DokumentFilRepository dokumentFilRepository,
+										   BegrensningRepository begrensningRepository) {
 		this.dokumentinfoRepository = dokumentinfoRepository;
 		this.dokumentFilRepository = dokumentFilRepository;
 		this.begrensningRepository = begrensningRepository;
@@ -58,7 +60,8 @@ public class ArkiverKorrigertDokumentService {
 	}
 
 	private void kanskjeOpprettBegrensingSkjermet(DokumentInfo dokumentInfo) {
-		boolean begrengsningExists = begrensningRepository.findByDokumentInfoIdAndVariantFormatAndBegrensningType(dokumentInfo.getDokumentInfoId(), VariantFormatCode.ARKIV, BegrensningTypeCode.SKJERMET)
+		boolean begrengsningExists = begrensningRepository.findByDokumentInfoIdAndVariantFormatAndBegrensningType(
+				dokumentInfo.getDokumentInfoId(), VariantFormatCode.ARKIV, BegrensningTypeCode.SKJERMET)
 				.isPresent();
 		if (isFalse(begrengsningExists)) {
 			Begrensning begrensning = Begrensning.builder()
@@ -99,7 +102,6 @@ public class ArkiverKorrigertDokumentService {
 		dokumentInfo.addFilDetaljer(filDetaljer);
 
 		dokumentFilRepository.save(filDetaljer.createDokumentFil());
-		//TODO: Trengs denne? Før jeg kommer hit har dokuementInfoRepository oppdatert fildetaljerListe = 2, blir oppdatert i steg dokumentInfo.addFilDetaljer(fildetaljer);
-//		dokumentinfoRepository.save(dokumentInfo);
+		dokumentinfoRepository.save(dokumentInfo);
 	}
 }

@@ -108,13 +108,13 @@ public class TestUtils {
 				.build();
 	}
 
-	public static Begrensning begrensDokumentSomSkjermetOgSladdet(DokumentInfo dokumentInfo) {
+	public static Begrensning begrensArkivVariantAvDokumentSomSkjermet(DokumentInfo dokumentInfo) {
 		Begrensning begrensning = Begrensning.builder()
 				.journalpostId(dokumentInfo.getOriginalJournalpost() == null ? null : dokumentInfo.getOriginalJournalpost()
 						.getJournalpostId())
 				.dokumentInfoId(dokumentInfo.getDokumentInfoId())
 				.begrensningType(BegrensningTypeCode.SKJERMET)
-				.variantFormat(VariantFormatCode.SLADDET)
+				.variantFormat(VariantFormatCode.ARKIV)
 				.build();
 		begrensning.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
 		return begrensning;

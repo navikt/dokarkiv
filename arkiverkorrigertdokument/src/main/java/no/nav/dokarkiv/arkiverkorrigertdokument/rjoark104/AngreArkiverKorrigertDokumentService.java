@@ -5,9 +5,7 @@ import static org.apache.commons.lang3.BooleanUtils.isFalse;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.arkiverkorrigertdokument.exception.VariantFormatNotFoundException;
-import no.nav.dokarkiv.arkiverkorrigertdokument.rjoark103.ArkiverKorrigertDokumentRequest;
 import no.nav.dokarkiv.arkiverkorrigertdokument.rjoark103.ArkiverKorrigertDokumentRespons;
-import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
@@ -17,7 +15,6 @@ import no.nav.dokarkiv.core.exceptions.DokumentInfoIkkeFunnetException;
 import no.nav.dokarkiv.core.repository.BegrensningRepository;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
-import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -41,18 +38,18 @@ public class AngreArkiverKorrigertDokumentService {
 		this.begrensningRepository = begrensningRepository;
 	}
 
-	public ArkiverKorrigertDokumentRespons angreArkiverKorrigertDokument(ArkiverKorrigertDokumentRequest request) {
-		DokumentInfo dokumentInfo = dokumentinfoRepository.findByDokumentInfoId(request.getDokumentInfoId())
+	public ArkiverKorrigertDokumentRespons angreArkiverKorrigertDokument(Long dokumentInfoId) {
+		DokumentInfo dokumentInfo = dokumentinfoRepository.findByDokumentInfoId(dokumentInfoId)
 				.orElseThrow(() -> new DokumentInfoIkkeFunnetException(String.format("Kan ikke finne dokumentInfo med dokumentInfoId=%s",
-						request.getDokumentInfoId())));
+						dokumentInfoId)));
 
 		sjekkAtArkivVariantAvDokumentErSkjermet(dokumentInfo.getDokumentInfoId());
 		sjekkAtSladdetVariantAvDokumentFinnes(dokumentInfo);
 
 		slettBegrensning(dokumentInfo);
 		slettSladdetFilOgFilDetaljer(dokumentInfo);
-		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) +
-				" har angret arkivering av korrigert dokument med dokumentInfoId={}", dokumentInfo.getDokumentInfoId());
+//		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) +
+//				" har angret arkivering av korrigert dokument med dokumentInfoId={}", dokumentInfo.getDokumentInfoId());
 
 		return ArkiverKorrigertDokumentRespons.builder()
 				.dokumentInfoId(dokumentInfo.getDokumentInfoId())

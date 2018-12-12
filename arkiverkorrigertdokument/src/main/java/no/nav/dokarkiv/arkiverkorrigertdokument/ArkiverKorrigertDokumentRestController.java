@@ -19,6 +19,7 @@ import no.nav.freg.abac.core.annotation.Abac;
 import org.slf4j.MDC;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -66,19 +67,19 @@ public class ArkiverKorrigertDokumentRestController {
 
 	@Transactional
 	@ResponseBody
-	@PatchMapping("/angre/")
+	@PatchMapping("/angre/{dokumentInfoId}")
 	@Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_DOKUMENT)},
 			actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION))
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark103"}, percentiles = {0.5, 0.95})
-	public ArkiverKorrigertDokumentRespons angreArkiverKorrigertDokument(@RequestBody ArkiverKorrigertDokumentRequest request) {
+	public ArkiverKorrigertDokumentRespons angreArkiverKorrigertDokument(@PathVariable("dokumentInfoId") Long dokumentInfoId) {
 		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark104");
-		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har mottat kall med dokumentInfoId={}", request.getDokumentInfoId());
-		validator.validateAngreArkiverKorrigertDokumentRequest(request);
-		abacSecurityService.assertAccessToDokumentIncludingBegrenset(request.getDokumentInfoId());
+		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har mottat kall med dokumentInfoId={}", dokumentInfoId);
+		validator.validateAngreArkiverKorrigertDokument(dokumentInfoId);
+		abacSecurityService.assertAccessToDokumentIncludingBegrenset(dokumentInfoId);
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
-		ArkiverKorrigertDokumentRespons respons = angreArkiverKorrigertDokumentService.angreArkiverKorrigertDokument(request);
-		log.info("{} har arkivert korrigert dokument med dokumentInfoId={}",
-				MDC.get(MDCConstants.MDC_REQUEST_ID), request.getDokumentInfoId());
+		ArkiverKorrigertDokumentRespons respons = angreArkiverKorrigertDokumentService.angreArkiverKorrigertDokument(dokumentInfoId);
+		log.info("{} har angret arkivering av korrigert dokument med dokumentInfoId={}",
+				MDC.get(MDCConstants.MDC_REQUEST_ID), dokumentInfoId);
 		return respons;
 	}
 

@@ -1,7 +1,7 @@
 package no.nav.dokarkiv.arkiverkorrigertdokument.rjoark104;
 
 import static no.nav.dokarkiv.arkiverkorrigertdokument.util.TestUtils.FIL;
-import static no.nav.dokarkiv.arkiverkorrigertdokument.util.TestUtils.begrensDokumentSomSkjermetOgSladdet;
+import static no.nav.dokarkiv.arkiverkorrigertdokument.util.TestUtils.begrensArkivVariantAvDokumentSomSkjermet;
 import static no.nav.dokarkiv.arkiverkorrigertdokument.util.TestUtils.opprettHoveddokumentForIT;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
@@ -34,12 +34,12 @@ public class Rjoark104IT extends AbstractArkiverKorrigertDokumentIT {
 	public void skallIkkeAngreArkiverKorrigertDokument_ettersomDokumentInfoErNull() {
 		abacPermit();
 
-		HttpEntity httpEntity = opprettHttpEntityUtenFil(null);
+		Long dokumentInfoId = null;
 
 		ResponseEntity<ArkiverKorrigertDokumentRespons> responseEntity = restTemplate.exchange(
-				URL_ANGREARKIVERKORRIGERTDOKUMENT,
+				URL_ANGREARKIVERKORRIGERTDOKUMENT + dokumentInfoId,
 				HttpMethod.PATCH,
-				httpEntity,
+				createHttpEntityHeaders(),
 				ArkiverKorrigertDokumentRespons.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.BAD_REQUEST));
@@ -49,12 +49,12 @@ public class Rjoark104IT extends AbstractArkiverKorrigertDokumentIT {
 	public void skallIkkeAngreArkiverKorrigertDokument_ettersomDokumentInfoIkkeFinnes() {
 		abacPermit();
 
-		HttpEntity httpEntity = opprettHttpEntityUtenFil(213213L);
+		Long dokumentInfoId = 23042304L;
 
 		ResponseEntity<ArkiverKorrigertDokumentRespons> responseEntity = restTemplate.exchange(
-				URL_ANGREARKIVERKORRIGERTDOKUMENT,
+				URL_ANGREARKIVERKORRIGERTDOKUMENT + dokumentInfoId,
 				HttpMethod.PATCH,
-				httpEntity,
+				createHttpEntityHeaders(),
 				ArkiverKorrigertDokumentRespons.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.NOT_FOUND));
@@ -68,12 +68,10 @@ public class Rjoark104IT extends AbstractArkiverKorrigertDokumentIT {
 
 		DokumentInfo dokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 
-		HttpEntity httpEntity = opprettHttpEntityUtenFil(dokumentInfo.getDokumentInfoId());
-
 		ResponseEntity<ArkiverKorrigertDokumentRespons> responseEntity = restTemplate.exchange(
-				URL_ANGREARKIVERKORRIGERTDOKUMENT,
+				URL_ANGREARKIVERKORRIGERTDOKUMENT + dokumentInfo.getDokumentInfoId(),
 				HttpMethod.PATCH,
-				httpEntity,
+				createHttpEntityHeaders(),
 				ArkiverKorrigertDokumentRespons.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.NOT_FOUND));
@@ -87,14 +85,12 @@ public class Rjoark104IT extends AbstractArkiverKorrigertDokumentIT {
 
 		DokumentInfo dokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 
-		begrensningRepository.save(begrensDokumentSomSkjermetOgSladdet(dokumentInfo));
-
-		HttpEntity httpEntity = opprettHttpEntityUtenFil(dokumentInfo.getDokumentInfoId());
+		begrensningRepository.save(begrensArkivVariantAvDokumentSomSkjermet(dokumentInfo));
 
 		ResponseEntity<ArkiverKorrigertDokumentRespons> responseEntity = restTemplate.exchange(
 				URL_ANGREARKIVERKORRIGERTDOKUMENT,
 				HttpMethod.PATCH,
-				httpEntity,
+				createHttpEntityHeaders(),
 				ArkiverKorrigertDokumentRespons.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.NOT_FOUND));
@@ -146,12 +142,12 @@ public class Rjoark104IT extends AbstractArkiverKorrigertDokumentIT {
 				.getFilUuid()), notNullValue());
 		TestTransaction.end();
 
-		httpEntity = opprettHttpEntityUtenFil(dokumentInfo.getDokumentInfoId());
+//		httpEntity = opprettHttpEntityUtenFil(dokumentInfo.getDokumentInfoId());
 
 		responseEntity = restTemplate.exchange(
-				URL_ANGREARKIVERKORRIGERTDOKUMENT,
+				URL_ANGREARKIVERKORRIGERTDOKUMENT + dokumentInfo.getDokumentInfoId(),
 				HttpMethod.PATCH,
-				httpEntity,
+				createHttpEntityHeaders(),
 				ArkiverKorrigertDokumentRespons.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
@@ -172,12 +168,5 @@ public class Rjoark104IT extends AbstractArkiverKorrigertDokumentIT {
 				dokumentInfo.getDokumentInfoId(), VariantFormatCode.SLADDET, BegrensningTypeCode.SKJERMET).isPresent());
 		assertThat(Iterables.size(begrensningRepository.findAll()), is(0));
 		TestTransaction.end();
-
-	}
-
-	private HttpEntity opprettHttpEntityUtenFil(Long dokumentInfoId) {
-		return new HttpEntity(ArkiverKorrigertDokumentRequest.builder()
-				.dokumentInfoId(dokumentInfoId)
-				.build(), createHeaders());
 	}
 }

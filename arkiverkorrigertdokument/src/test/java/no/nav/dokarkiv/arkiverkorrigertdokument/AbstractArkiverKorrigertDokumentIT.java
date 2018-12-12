@@ -137,6 +137,14 @@ public abstract class AbstractArkiverKorrigertDokumentIT {
 		return headers;
 	}
 
+	protected HttpEntity createHttpEntityHeaders() {
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		headers.add(HttpHeaders.AUTHORIZATION, OIDC_TOKEN_PERSON_USER_TEST);
+		headers.add(NAV_CONSUMER_TOKEN, OIDC_TOKEN_SERVICE_USER_TEST);
+		return new HttpEntity(headers);
+	}
+
 	protected HttpHeaders createHeadersNotSrvJoarkadmin() {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
