@@ -4,7 +4,7 @@ import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.BooleanUtils.isFalse;
 
 import lombok.extern.slf4j.Slf4j;
-import no.nav.dokarkiv.arkiverkorrigertdokument.exception.VariantFormatCodeNotFoundException;
+import no.nav.dokarkiv.arkiverkorrigertdokument.exception.VariantFormatNotFoundException;
 import no.nav.dokarkiv.arkiverkorrigertdokument.rjoark103.ArkiverKorrigertDokumentRequest;
 import no.nav.dokarkiv.arkiverkorrigertdokument.rjoark103.ArkiverKorrigertDokumentRespons;
 import no.nav.dokarkiv.core.MDCConstants;
@@ -64,7 +64,7 @@ public class AngreArkiverKorrigertDokumentService {
 
 	private void sjekkAtSladdetVariantAvDokumentFinnes(DokumentInfo dokumentInfo) {
 		if (isNull(dokumentInfo.findFilDetaljerByVariantFormat(VariantFormatCode.SLADDET))) {
-			throw new VariantFormatCodeNotFoundException(String.format("Kan ikke finne %s variantFormat for dokument med dokumentInfoId=%s",
+			throw new VariantFormatNotFoundException(String.format("Kan ikke finne %s variantFormat for dokument med dokumentInfoId=%s",
 					VariantFormatCode.SLADDET,
 					dokumentInfo.getDokumentInfoId()));
 		}

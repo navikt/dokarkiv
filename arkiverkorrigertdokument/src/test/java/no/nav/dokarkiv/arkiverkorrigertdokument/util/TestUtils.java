@@ -110,8 +110,8 @@ public class TestUtils {
 
 	public static Begrensning begrensDokumentSomSkjermetOgSladdet(DokumentInfo dokumentInfo) {
 		Begrensning begrensning = Begrensning.builder()
-				//TODO: Er det ok å bruker originalJp her?
-				.journalpostId(dokumentInfo.getOriginalJournalpost().getJournalpostId())
+				.journalpostId(dokumentInfo.getOriginalJournalpost() == null ? null : dokumentInfo.getOriginalJournalpost()
+						.getJournalpostId())
 				.dokumentInfoId(dokumentInfo.getDokumentInfoId())
 				.begrensningType(BegrensningTypeCode.SKJERMET)
 				.variantFormat(VariantFormatCode.SLADDET)

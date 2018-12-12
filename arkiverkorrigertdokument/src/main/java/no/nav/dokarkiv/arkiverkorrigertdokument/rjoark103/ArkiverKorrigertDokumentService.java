@@ -6,6 +6,7 @@ import static org.apache.commons.lang3.BooleanUtils.isFalse;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
+import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.Begrensning;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
@@ -61,8 +62,8 @@ public class ArkiverKorrigertDokumentService {
 				.isPresent();
 		if (isFalse(begrengsningExists)) {
 			Begrensning begrensning = Begrensning.builder()
-					//TODO: Er det ok å bruker originalJp her?
-					.journalpostId(dokumentInfo.getOriginalJournalpost().getJournalpostId())
+					.journalpostId(dokumentInfo.getOriginalJournalpost() == null ? null : dokumentInfo.getOriginalJournalpost()
+							.getJournalpostId())
 					.dokumentInfoId(dokumentInfo.getDokumentInfoId())
 					.begrensningType(BegrensningTypeCode.SKJERMET)
 					.variantFormat(VariantFormatCode.ARKIV)
@@ -89,8 +90,7 @@ public class ArkiverKorrigertDokumentService {
 		FilDetaljer filDetaljer = FilDetaljer.builder()
 				.filUuid(FilDetaljer.generateUuid())
 				.filnavn(arkivFildetaljer.getFilnavn())
-				//TODO: Kan vi være sikre på at det er samme filtype her? Burde vi ikke alltid sette PDF?
-				.filtype(arkivFildetaljer.getFiltype())
+				.filtype(FilTypeCode.PDF)
 				.variantFormat(VariantFormatCode.SLADDET)
 				.fileContent(fil)
 				.dokumentInfo(dokumentInfo)
