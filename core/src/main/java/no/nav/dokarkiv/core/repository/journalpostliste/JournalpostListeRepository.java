@@ -2,7 +2,7 @@ package no.nav.dokarkiv.core.repository.journalpostliste;
 
 import com.google.common.collect.Lists;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import no.nav.dokarkiv.core.exceptions.UgyldigInputException;
+import no.nav.dokarkiv.core.domain.service.BegrensningService;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.Projections;
@@ -22,10 +22,12 @@ import java.util.List;
 public class JournalpostListeRepository {
 
 	private final EntityManager entityManager;
+	private BegrensningService begrensningService;
 
 	@Inject
-	public JournalpostListeRepository(EntityManager entityManager) {
+	public JournalpostListeRepository(EntityManager entityManager, BegrensningService begrensningService) {
 		this.entityManager = entityManager;
+		this.begrensningService = begrensningService;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -52,14 +54,14 @@ public class JournalpostListeRepository {
 				return new ArrayList<>();
 			}
 			int maxResult = Math.min(criteria.list().size(), firstResult + (int) hentMinJPListeParameters.getMaxResults());
-				foundJournalposts = criteria.list().subList(firstResult, maxResult);
+			foundJournalposts = criteria.list().subList(firstResult, maxResult);
 		}
 
 		if (foundJournalposts.isEmpty()) {
 			foundJournalposts = (List<Journalpost>) criteria.list();
 		}
 
-		return foundJournalposts;
+		return begrensningService.addBegrensetDokumentInfoIdsToJournalpostList(foundJournalposts);
 	}
 
 	public long findTotalNumberOfJournalposts(HentMinJPListeParameters hentMinJPListeParameters) {

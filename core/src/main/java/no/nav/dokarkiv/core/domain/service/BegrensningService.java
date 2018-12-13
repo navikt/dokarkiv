@@ -4,13 +4,20 @@ import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.Begrensning;
+import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.repository.BegrensningRepository;
+import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
 import no.nav.modig.core.context.SubjectHandler;
+import org.apache.commons.lang3.BooleanUtils;
 import org.jboss.logging.MDC;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -21,26 +28,28 @@ import java.util.Optional;
 public class BegrensningService {
 
 	private final BegrensningRepository begrensningRepository;
+	private final JournalpostDokumentInfoRelasjonRepository relasjonRepository;
 
 	@Inject
-	public BegrensningService(BegrensningRepository begrensningRepository) {
+	public BegrensningService(BegrensningRepository begrensningRepository, JournalpostDokumentInfoRelasjonRepository relasjonRepository) {
 		this.begrensningRepository = begrensningRepository;
+		this.relasjonRepository = relasjonRepository;
 	}
 
 	public boolean isJournalpostBegrenset(Long journalpostId, BegrensningTypeCode begrensningTypeCode) {
-        Optional<Begrensning> begrensning = begrensningRepository.findByJournalpostIdAndBegrensningTypeAndDokumentInfoIdIsNull(
-                journalpostId, begrensningTypeCode);
-        return begrensning.isPresent();
+		Optional<Begrensning> begrensning = begrensningRepository.findByJournalpostIdAndBegrensningTypeAndDokumentInfoIdIsNull(
+				journalpostId, begrensningTypeCode);
+		return begrensning.isPresent();
 	}
 
 	public boolean isJournalpostDokumentInfoRelasjonOrJournalpostBegrenset(Long journalpostId, Long dokumentInfoId, BegrensningTypeCode begrensningTypeCode) {
 		return isJournalpostDokumentInfoRelasjonBegrenset(journalpostId, dokumentInfoId, begrensningTypeCode) || isJournalpostBegrenset(journalpostId, begrensningTypeCode);
 	}
 
-    public boolean isJournalpostDokumentInfoRelasjonBegrenset(Long journalpostId, Long dokumentInfoId, BegrensningTypeCode begrensningTypeCode) {
-        Optional<Begrensning> begrensning = begrensningRepository.findByJournalpostIdAndDokumentInfoIdAndBegrensningType(
-                journalpostId, dokumentInfoId, begrensningTypeCode);
-        return begrensning.isPresent();
+	public boolean isJournalpostDokumentInfoRelasjonBegrenset(Long journalpostId, Long dokumentInfoId, BegrensningTypeCode begrensningTypeCode) {
+		Optional<Begrensning> begrensning = begrensningRepository.findByJournalpostIdAndDokumentInfoIdAndBegrensningType(
+				journalpostId, dokumentInfoId, begrensningTypeCode);
+		return begrensning.isPresent();
 	}
 
 	public boolean isVariantSkjermet(Long dokumentInfoId, VariantFormatCode variant) {
@@ -86,5 +95,35 @@ public class BegrensningService {
 		}
 		return consumer;
 	}
+
+	public static Long convertBigToLong(Object value) {
+		if (value instanceof BigDecimal) {
+			return ((BigDecimal) value).longValue();
+		} else if (value instanceof BigInteger) {
+			return ((BigInteger) value).longValue();
+		}
+		return (Long) value;
+	}
+
+
+	public List<Long> getBegrensetDokumentInfoIdsByJournalpostId(Long journalpostId) {
+		List<Object> begrensetDokumentInfoIdListAsObject = relasjonRepository.findBegrensetRelasjonDokumentInfoIdByJournalpostId(journalpostId);
+		List<Long> begrensetDokumentInfoIdListAsLong = new ArrayList<Long>();
+		for (Object dokInfoId : begrensetDokumentInfoIdListAsObject) {
+			begrensetDokumentInfoIdListAsLong.add(convertBigToLong(dokInfoId));
+		}
+		return begrensetDokumentInfoIdListAsLong;
+	}
+
+
+	public List<Journalpost> addBegrensetDokumentInfoIdsToJournalpostList(List<Journalpost> journalpostList) {
+		if (BooleanUtils.isFalse((journalpostList == null || journalpostList.isEmpty()))) {
+			for (Journalpost journalpost : journalpostList) {
+				journalpost.addAllbegrensetRelasjonerDokumentInfoIds(getBegrensetDokumentInfoIdsByJournalpostId(journalpost.getJournalpostId()));
+			}
+		}
+		return journalpostList;
+	}
+
 
 }
