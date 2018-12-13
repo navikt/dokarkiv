@@ -10,9 +10,9 @@ import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.metrics.RestMetrics;
 import no.nav.dokarkiv.core.security.abac.AbacSecurityService;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
-import no.nav.dokarkiv.tidligkassasjon.rjoark106.TidligKassasjonResponse;
-import no.nav.dokarkiv.tidligkassasjon.rjoark106.TidligKassasjonService;
-import no.nav.dokarkiv.tidligkassasjon.rjoark106.TidligKassasjonValidator;
+import no.nav.dokarkiv.tidligkassasjon.rjoark107.TidligKassasjonResponse;
+import no.nav.dokarkiv.tidligkassasjon.rjoark107.TidligKassasjonService;
+import no.nav.dokarkiv.tidligkassasjon.rjoark107.TidligKassasjonValidator;
 import no.nav.freg.abac.core.annotation.Abac;
 import org.slf4j.MDC;
 import org.springframework.transaction.annotation.Transactional;
@@ -48,9 +48,9 @@ public class TidligKassasjonRestController {
 	@PatchMapping("/{dokumentInfoId}")
 	@Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_DOKUMENT)},
 			actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION))
-	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark106"}, percentiles = {0.5, 0.95})
+	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark107"}, percentiles = {0.5, 0.95})
 	public TidligKassasjonResponse tidligKassasjon(@PathVariable("dokumentInfoId") Long dokumentInfoId) {
-		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark106");
+		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark107");
 		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har mottat kall med dokumentInfoId={}", dokumentInfoId);
 		validator.validerTidligKassasjonRequest(dokumentInfoId);
 		abacSecurityService.assertAccessToDokumentIncludingBegrenset(dokumentInfoId);

@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.tidligkassasjon.rjoark106;
+package no.nav.dokarkiv.tidligkassasjon.rjoark107;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;

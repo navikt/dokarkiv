@@ -17,7 +17,6 @@ import javax.inject.Inject;
 @Service
 public class LogiskKassasjonService {
 
-
 	private final DokumentinfoRepository dokumentInfoRepository;
 	private final BegrensningRepository begrensningRepository;
 
@@ -43,6 +42,10 @@ public class LogiskKassasjonService {
 		logiskKassasjonAvEtDokument(dokumentInfoSomSkalKasseres);
 
 		return LogiskKassasjonResponse.builder()
+				.journalpostId(dokumentInfoSomSkalKasseres.getOriginalJournalpost()
+						== null ? null : dokumentInfoSomSkalKasseres.getOriginalJournalpost().getJournalpostId())
+				.dokumentInfoId(dokumentInfoSomSkalKasseres.getDokumentInfoId())
+				.tittel(dokumentInfoSomSkalKasseres.getTittel())
 				.build();
 	}
 

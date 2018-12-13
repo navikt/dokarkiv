@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.tidligkassasjon.rjoark106;
+package no.nav.dokarkiv.tidligkassasjon.rjoark107;
 
 import static org.apache.cxf.common.util.PropertyUtils.isFalse;
 

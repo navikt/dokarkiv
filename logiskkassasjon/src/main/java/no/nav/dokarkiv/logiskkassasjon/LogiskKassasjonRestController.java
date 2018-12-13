@@ -13,6 +13,7 @@ import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import no.nav.dokarkiv.logiskkassasjon.rjoark105.LogiskKassasjonResponse;
 import no.nav.dokarkiv.logiskkassasjon.rjoark105.LogiskKassasjonService;
 import no.nav.dokarkiv.logiskkassasjon.rjoark105.LogiskKassasjonValidator;
+import no.nav.dokarkiv.logiskkassasjon.rjoark106.AngreLogiskKassasjonService;
 import no.nav.freg.abac.core.annotation.Abac;
 import org.slf4j.MDC;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,15 +32,18 @@ public class LogiskKassasjonRestController {
 
 	private final LogiskKassasjonValidator validator;
 	private final LogiskKassasjonService logiskKassasjonService;
+	private final AngreLogiskKassasjonService angreLogiskKassasjonService;
 	private final AbacSecurityService abacSecurityService;
 
 	@Inject
 	public LogiskKassasjonRestController(
 			LogiskKassasjonValidator validator,
 			LogiskKassasjonService logiskKassasjonService,
+			AngreLogiskKassasjonService angreLogiskKassasjonService,
 			AbacSecurityService abacSecurityService) {
 		this.validator = validator;
 		this.logiskKassasjonService = logiskKassasjonService;
+		this.angreLogiskKassasjonService = angreLogiskKassasjonService;
 		this.abacSecurityService = abacSecurityService;
 	}
 
@@ -60,4 +64,23 @@ public class LogiskKassasjonRestController {
 				MDC.get(MDCConstants.MDC_REQUEST_ID), dokumentInfoId);
 		return response;
 	}
+
+	@Transactional
+	@ResponseBody
+	@PatchMapping("/angre/{dokumentInfoId}")
+	@Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_DOKUMENT)},
+			actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION))
+	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark106"}, percentiles = {0.5, 0.95})
+	public LogiskKassasjonResponse angreLogiskKassasjon(@PathVariable("dokumentInfoId") Long dokumentInfoId) {
+		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark106");
+		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har mottat kall med dokumentInfoId={}", dokumentInfoId);
+		validator.validerLogiskKassasjonRequest(dokumentInfoId);
+		abacSecurityService.assertAccessToDokumentIncludingBegrenset(dokumentInfoId);
+		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
+		LogiskKassasjonResponse response = angreLogiskKassasjonService.angreLogiskKassasjonAvDokument(dokumentInfoId);
+		log.info("{} har angret logisk kassering av dokument med dokumentInfoId={}",
+				MDC.get(MDCConstants.MDC_REQUEST_ID), dokumentInfoId);
+		return response;
+	}
+
 }

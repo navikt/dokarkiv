@@ -23,4 +23,6 @@ public interface BegrensningRepository extends CrudRepository<Begrensning, Long>
 
 	void deleteByJournalpostIdAndDokumentInfoIdAndBegrensningType(Long journalpostId, Long dokumentInfoId, BegrensningTypeCode begrensningTypeCode);
 
+	void deleteByDokumentInfoIdAndBegrensningType(Long dokumentInfoId, BegrensningTypeCode begrensningTypeCode);
+
 }
