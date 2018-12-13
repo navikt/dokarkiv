@@ -3,6 +3,7 @@ package no.nav.dokarkiv.core.dokumenturl;
 import no.nav.dokarkiv.core.domain.entities.DokumentFil;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.domain.service.BegrensningService;
 import no.nav.dokarkiv.core.exceptions.InvalidFilUuidException;
 import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
 import no.nav.dokarkiv.core.logging.AuditLogger;
@@ -24,12 +25,19 @@ public abstract class AbstractDocumentOperation {
 	@Inject
 	protected DokumentFilRepository dokumentFilRepository;
 
+	@Inject
+	protected BegrensningService begrensningService;
+
 	public void setJoarkRepository(JoarkRepositoryBegrenset joarkRepository) {
 		this.joarkRepository = joarkRepository;
 	}
 
 	public void setDokumentFilRepository(DokumentFilRepository dokumentFilRepository) {
 		this.dokumentFilRepository = dokumentFilRepository;
+	}
+
+	public void setBegrensningService(BegrensningService begrensningService) {
+		this.begrensningService= begrensningService;
 	}
 
 	/**

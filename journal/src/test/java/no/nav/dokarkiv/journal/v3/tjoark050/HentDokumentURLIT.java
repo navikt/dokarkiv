@@ -19,6 +19,7 @@ import no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder;
 import no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder;
 import no.nav.dokarkiv.core.domain.builder.JournalpostBuilder;
 import no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder;
+import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
@@ -27,6 +28,7 @@ import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
+import no.nav.dokarkiv.core.domain.entities.Begrensning;
 import no.nav.dokarkiv.core.domain.entities.DokumentUrlInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
@@ -52,7 +54,8 @@ import org.junit.Test;
 public class HentDokumentURLIT extends AbstractJournalV3Itest {
 
 	private static final String FIL_UUID = FilDetaljer.generateUuid();
-	
+	private static final String FIL_UUID_SLADDET = FilDetaljer.generateUuid();
+
 	private static final VariantFormatCode VARIANT_FORMAT = VariantFormatCode.ARKIV;
 	private String journalpostId;
 	private String dokumentInfoId;
@@ -144,7 +147,26 @@ public class HentDokumentURLIT extends AbstractJournalV3Itest {
 		HentDokumentURLResponse response = journalV3Provider.hentDokumentURL(request);
 			
 		assertThat(response.getDokumentURL(), containsString("docToken"));
-		assertDokumentUrlInfoIsPersisted();
+		assertDokumentUrlInfoIsPersisted(FIL_UUID);
+	}
+
+	@Test
+	public void shouldGetSladdetDokumentUrl() throws Exception {
+		abacPermit();
+		persistDokumentFil();
+
+		Begrensning skjermet = new Begrensning();
+		skjermet.setId(1L);
+		skjermet.setBegrensningType(BegrensningTypeCode.SKJERMET);
+		skjermet.setVariantFormat(VariantFormatCode.ARKIV);
+		skjermet.setDokumentInfoId(journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId());
+		skjermet.setOpprettetKildeNavn("test");
+		begrensningRepository.save(skjermet);
+
+		HentDokumentURLResponse response = journalV3Provider.hentDokumentURL(request);
+
+		assertThat(response.getDokumentURL(), containsString("docToken"));
+		assertDokumentUrlInfoIsPersisted(FIL_UUID_SLADDET);
 	}
 
 	private HentDokumentURLRequest createRequest() {
@@ -163,10 +185,10 @@ public class HentDokumentURLIT extends AbstractJournalV3Itest {
 				hasProperty("feilaarsak", containsString(rootCause))));
 	}
 	
-	private void assertDokumentUrlInfoIsPersisted() {
-		DokumentUrlInfo dokUrlInfo = dokumentUrlInfoRepository.findByFilUuid(FIL_UUID);
+	private void assertDokumentUrlInfoIsPersisted(String filuuid) {
+		DokumentUrlInfo dokUrlInfo = dokumentUrlInfoRepository.findByFilUuid(filuuid);
 		assertThat(dokUrlInfo.getDoctoken(), notNullValue());
-		assertThat(dokUrlInfo.getFilUuid(), is(FIL_UUID));
+		assertThat(dokUrlInfo.getFilUuid(), is(filuuid));
 	}
 	
 	private void createRequestFromJournalpost(Journalpost journalpost) { // hentet fra HentDokumentTest
@@ -206,6 +228,9 @@ public class HentDokumentURLIT extends AbstractJournalV3Itest {
 												.filDetaljerList(
 														FilDetaljerBuilder.getFilDetaljerBuilder().filtype(FilTypeCode.PDF)
 																.filUuid(FIL_UUID).variantFormat(VARIANT_FORMAT)
+																.opprettetKildeNavn("test").build(),
+														FilDetaljerBuilder.getFilDetaljerBuilder().filtype(FilTypeCode.PDF)
+																.filUuid(FIL_UUID_SLADDET).variantFormat(VariantFormatCode.SLADDET)
 																.opprettetKildeNavn("test").build()).build()).build());
 	}
 
@@ -215,6 +240,11 @@ public class HentDokumentURLIT extends AbstractJournalV3Itest {
 							.fil("Test".getBytes())
 							.opprettetKildeNavn("test")
 							.build());
+		dokumentFilRepository.save(DokumentFilBuilder.getDokumentFilBuilder()
+				.filUuid(FIL_UUID_SLADDET)
+				.fil("Test".getBytes())
+				.opprettetKildeNavn("test")
+				.build());
 	}
 
 }

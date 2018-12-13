@@ -25,9 +25,11 @@ import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.OnDemandInstansCode;
+import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentFil;
 import no.nav.dokarkiv.core.domain.entities.DokumentUrlInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.domain.service.BegrensningService;
 import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
 import no.nav.dokarkiv.core.exceptions.InvalidFilUuidException;
 import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
@@ -56,6 +58,7 @@ public class DefaultHentDokumentUrlTest {
 	private static final String SERVLET_URL = "https://10.33.1.62/joark/HentDokument";
 	private static final Long JOURNALPOST_ID = 1L;
 	private static final String FIL_UUID = "456b166e-5f9f-430f-8e35-09a732156562";
+	private static final String FIL_UUID_SLADDET = "456b166e-5f9f-430f-8e35-09a732156563";
 
 	@Mock
 	private JoarkRepositoryBegrenset joarkRepositoryMock;
@@ -63,6 +66,8 @@ public class DefaultHentDokumentUrlTest {
 	private DokumentFilRepository dokumentFilRepositoryMock;
 	@Mock
 	private DokumentUrlInfoRepositoryBegrenset dokumentUrlInfoRepositoryMock;
+	@Mock
+	private BegrensningService begrensningService;
 	@Captor
 	ArgumentCaptor<DokumentUrlInfo> dokumentUrlInfoCaptor;
 
@@ -78,6 +83,7 @@ public class DefaultHentDokumentUrlTest {
 		hentDokumentUrl.setDokumentFilRepository(dokumentFilRepositoryMock);
 		hentDokumentUrl.setServletUrl(SERVLET_URL);
 		hentDokumentUrl.setDokumentUrlInfoRepository(dokumentUrlInfoRepositoryMock);
+		hentDokumentUrl.setBegrensningService(begrensningService);
 		request = new HentDokumentUrlRequest(JOURNALPOST_ID, FIL_UUID);
 	}
 
@@ -118,7 +124,7 @@ public class DefaultHentDokumentUrlTest {
 	 */
 	@Test
 	public void shouldGetDokumentUrlForOnDemand() throws Exception {
-		Journalpost journalpost = createJournalPost("10", SYFO, FIL_UUID);
+		Journalpost journalpost = createJournalPost("10", SYFO, FIL_UUID, FIL_UUID_SLADDET);
 		when(joarkRepositoryMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(journalpost));
 
 		HentDokumentUrlResponse response = hentDokumentUrl.hentDokumentUrl(request);
@@ -134,7 +140,7 @@ public class DefaultHentDokumentUrlTest {
 	 */
 	@Test
 	public void shouldGetDokumentUrlForDokumentInDB() throws Exception {
-		Journalpost journalpost = createJournalPost(null, null, FIL_UUID);
+		Journalpost journalpost = createJournalPost(null, null, FIL_UUID, FIL_UUID_SLADDET);
 		when(joarkRepositoryMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(journalpost));
 
 		when(dokumentFilRepositoryMock.findByFilUuid(FIL_UUID)).thenReturn(new DokumentFil());
@@ -150,9 +156,8 @@ public class DefaultHentDokumentUrlTest {
 	@Test
 	public void shouldCreateDokumentUrlInfoWithCustomTimeToLive() throws Exception {
 		long timeToLive = 60;
-		
 		when(joarkRepositoryMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(
-				createJournalPost(null, null,  FIL_UUID)));
+				createJournalPost(null, null,  FIL_UUID, FIL_UUID_SLADDET)));
 		when(dokumentFilRepositoryMock.findByFilUuid(FIL_UUID)).thenReturn(new DokumentFil());
 		
 		request = new HentDokumentUrlRequest(JOURNALPOST_ID, FIL_UUID, timeToLive);
@@ -166,7 +171,7 @@ public class DefaultHentDokumentUrlTest {
 	
 	@Test
 	public void shouldThrowExceptionForMissingFilDetaljer() throws Exception {
-		Journalpost journalpost = createJournalPost(null, null, "562b166e-5f9f");
+		Journalpost journalpost = createJournalPost(null, null, "562b166e-5f9f", FIL_UUID_SLADDET);
 		when(joarkRepositoryMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(journalpost));
 
 		assertInvalidFilUuidExceptionThrown(FIL_UUID);	
@@ -174,7 +179,7 @@ public class DefaultHentDokumentUrlTest {
 	
 	@Test
 	public void shouldThrowExceptionForMissingDokumentFil() throws Exception {
-		Journalpost journalpost = createJournalPost(null, null, FIL_UUID);
+		Journalpost journalpost = createJournalPost(null, null, FIL_UUID, FIL_UUID_SLADDET);
 		when(joarkRepositoryMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(journalpost));
 
 		when(dokumentFilRepositoryMock.findByFilUuid(FIL_UUID)).thenReturn(null);
@@ -221,7 +226,7 @@ public class DefaultHentDokumentUrlTest {
 		assertThat(servletUrl, containsString("&mimetype="));
 	}
 
-	private Journalpost createJournalPost(String onDemandId, OnDemandInstansCode onDemandInstans, String filUuid) {
+	private Journalpost createJournalPost(String onDemandId, OnDemandInstansCode onDemandInstans, String filUuid, String filUuidSladdet) {
 		return JournalpostBuilder.getJournalpostBuilder()
 				.journalpostId(1L)
 				.journalStatus(JournalStatusCode.J)
@@ -237,8 +242,15 @@ public class DefaultHentDokumentUrlTest {
 								.filDetaljerList(FilDetaljerBuilder.getFilDetaljerBuilder()
 										.filUuid(filUuid)
 										.filtype(FilTypeCode.PDF)
+										.variantFormat(VariantFormatCode.ARKIV)
 										.onDemandId(onDemandId)
-										.onDemandInstans(onDemandInstans).build())
+										.onDemandInstans(onDemandInstans).build(),
+										FilDetaljerBuilder.getFilDetaljerBuilder()
+												.filUuid(filUuidSladdet)
+												.filtype(FilTypeCode.PDF)
+												.variantFormat(VariantFormatCode.SLADDET)
+												.onDemandId(onDemandId)
+												.onDemandInstans(onDemandInstans).build())
 								.build())
 						.build())
 				.build();

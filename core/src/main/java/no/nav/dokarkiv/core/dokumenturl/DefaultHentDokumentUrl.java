@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.core.dokumenturl;
 
+import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentUrlInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
@@ -76,6 +77,9 @@ public class DefaultHentDokumentUrl extends AbstractDocumentOperation implements
 
 	private String generateUrl(String baseUrl, Journalpost journalpost, FilDetaljer fildetaljer, Long timeToLiveMinutes)
 			throws InvalidFilUuidException {
+		if (begrensningService.isVariantSkjermet(fildetaljer.getDokumentInfo().getDokumentInfoId(), fildetaljer.getVariantFormat())) {
+			fildetaljer = fildetaljer.getDokumentInfo().findFilDetaljerByVariantFormat(VariantFormatCode.SLADDET);
+		}
 		String filUuid = fildetaljer.getFilUuid();
 		if (fildetaljer.getOnDemandId() != null && fildetaljer.getOnDemandInstans() != null) {
 			//dokumentet ligger inntil videre i OnDemand
