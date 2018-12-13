@@ -49,7 +49,7 @@ public class JournalpostListeRepository {
 		if (hentMinJPListeParameters.getMaxResults() > 0 && hentMinJPListeParameters.getPageNr() > 0) {
 			int firstResult = (int) (hentMinJPListeParameters.getMaxResults() * hentMinJPListeParameters.getPageNr());
 			if (firstResult > criteria.list().size()) {
-				throw new UgyldigInputException("Kombinasjonen av \"resultatSettStoerrelse\" og \"resultatSettNr\" er utenfor størrelsen på antall treff søket gir");
+				return new ArrayList<>();
 			}
 			int maxResult = Math.min(criteria.list().size(), firstResult + (int) hentMinJPListeParameters.getMaxResults());
 				foundJournalposts = criteria.list().subList(firstResult, maxResult);
