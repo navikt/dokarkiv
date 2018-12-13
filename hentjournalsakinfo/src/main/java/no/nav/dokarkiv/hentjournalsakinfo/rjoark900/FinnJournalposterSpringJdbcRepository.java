@@ -113,6 +113,8 @@ public class FinnJournalposterSpringJdbcRepository {
 				"                              j.dato_ekspedert      AS ekspedertdato,\n" +
 				"                              j.dato_mottatt        AS mottattdato,\n" +
 				"                              j.dato_journal        AS journaldato,\n" +
+				"                              j.dato_dokument       AS dokumentdato,\n" +
+				"                              j.dato_avs_retur      AS avsreturdato,\n" +
 				"                              j.dato_sendt_print    AS sendtprintdato,\n" +
 				"                              s.sak_nr_fk           AS saksrelasjon_sakid,\n" +
 				"                              s.feilregistrert      AS saksrelasjon_feilregistrert,\n" +
