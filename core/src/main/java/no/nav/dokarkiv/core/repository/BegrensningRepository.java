@@ -17,6 +17,8 @@ public interface BegrensningRepository extends CrudRepository<Begrensning, Long>
 
 	Optional<Begrensning> findByDokumentInfoIdAndVariantFormatAndBegrensningType(Long dokumentInfoId, VariantFormatCode variant, BegrensningTypeCode begrensningTypeCode);
 
+	Optional<Begrensning> findByDokumentInfoIdAndBegrensningType(Long dokumentInfoId, BegrensningTypeCode begrensningTypeCode);
+
 	void deleteByJournalpostIdAndBegrensningTypeAndDokumentInfoIdIsNull(Long journalpostId, BegrensningTypeCode begrensningTypeCode);
 
 	void deleteByJournalpostIdAndDokumentInfoIdAndBegrensningType(Long journalpostId, Long dokumentInfoId, BegrensningTypeCode begrensningTypeCode);

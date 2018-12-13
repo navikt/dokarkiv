@@ -3,7 +3,6 @@ package no.nav.dokarkiv.arkiverkorrigertdokument.rjoark103;
 
 import static org.apache.commons.lang3.BooleanUtils.isFalse;
 
-import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
@@ -21,7 +20,7 @@ import org.springframework.stereotype.Service;
 import javax.inject.Inject;
 import java.util.Objects;
 
-@Slf4j
+
 @Service
 public class ArkiverKorrigertDokumentService {
 

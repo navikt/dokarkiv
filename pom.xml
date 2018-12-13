@@ -32,6 +32,8 @@
 		<module>hentjournalinfo</module>
 		<module>arkiverkorrigertdokument</module>
 		<module>fysiskslettdokument</module>
+		<module>tidligkassasjon</module>
+		<module>logiskkassasjon</module>
 	</modules>
 
 	<distributionManagement>
@@ -140,6 +142,16 @@
 			<dependency>
 				<groupId>no.nav.dokarkiv</groupId>
 				<artifactId>fysiskslettdokument</artifactId>
+				<version>1-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>no.nav.dokarkiv</groupId>
+				<artifactId>logiskkassasjon</artifactId>
+				<version>1-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>no.nav.dokarkiv</groupId>
+				<artifactId>tidligKassasjon</artifactId>
 				<version>1-SNAPSHOT</version>
 			</dependency>
 			<dependency>
