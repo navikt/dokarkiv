@@ -115,7 +115,6 @@ public class BegrensningService {
 		return begrensetDokumentInfoIdListAsLong;
 	}
 
-
 	public List<Journalpost> addBegrensetDokumentInfoIdsToJournalpostList(List<Journalpost> journalpostList) {
 		if (BooleanUtils.isFalse((journalpostList == null || journalpostList.isEmpty()))) {
 			for (Journalpost journalpost : journalpostList) {

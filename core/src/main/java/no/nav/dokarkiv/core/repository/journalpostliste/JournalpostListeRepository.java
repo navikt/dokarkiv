@@ -1,6 +1,5 @@
 package no.nav.dokarkiv.core.repository.journalpostliste;
 
-import com.google.common.collect.Lists;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.service.BegrensningService;
 import org.hibernate.Criteria;
@@ -32,7 +31,7 @@ public class JournalpostListeRepository {
 
 	@SuppressWarnings("unchecked")
 	public List<Journalpost> findJournalpostListe(HentMinJPListeParameters hentMinJPListeParameters) {
-		List<Journalpost> foundJournalposts = Lists.newArrayList();
+		List<Journalpost> foundJournalposts = new ArrayList<>();
 
 		// If empty saksliste, return empty list
 		if (hentMinJPListeParameters.getSaksListe().isEmpty()) {
