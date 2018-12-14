@@ -6,7 +6,7 @@ import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.Begrensning;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.repository.BegrensningRepository;
-import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
+import no.nav.dokarkiv.core.repository.JoarkRepositoryBegrenset;
 import no.nav.modig.core.context.SubjectHandler;
 import org.apache.commons.lang3.BooleanUtils;
 import org.jboss.logging.MDC;
@@ -14,9 +14,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,12 +25,15 @@ import java.util.Optional;
 public class BegrensningService {
 
 	private final BegrensningRepository begrensningRepository;
-	private final JournalpostDokumentInfoRelasjonRepository relasjonRepository;
+	private JoarkRepositoryBegrenset joarkRepositoryBegrenset;
 
 	@Inject
-	public BegrensningService(BegrensningRepository begrensningRepository, JournalpostDokumentInfoRelasjonRepository relasjonRepository) {
+	public BegrensningService(BegrensningRepository begrensningRepository) {
 		this.begrensningRepository = begrensningRepository;
-		this.relasjonRepository = relasjonRepository;
+	}
+
+	public void setJoarkRepositoryBegrenset(JoarkRepositoryBegrenset joarkRepositoryBegrenset) {
+		this.joarkRepositoryBegrenset = joarkRepositoryBegrenset;
 	}
 
 	public boolean isJournalpostBegrenset(Long journalpostId, BegrensningTypeCode begrensningTypeCode) {
@@ -96,29 +96,10 @@ public class BegrensningService {
 		return consumer;
 	}
 
-	public static Long convertBigToLong(Object value) {
-		if (value instanceof BigDecimal) {
-			return ((BigDecimal) value).longValue();
-		} else if (value instanceof BigInteger) {
-			return ((BigInteger) value).longValue();
-		}
-		return (Long) value;
-	}
-
-
-	public List<Long> getBegrensetDokumentInfoIdsByJournalpostId(Long journalpostId) {
-		List<Object> begrensetDokumentInfoIdListAsObject = relasjonRepository.findBegrensetRelasjonDokumentInfoIdByJournalpostId(journalpostId);
-		List<Long> begrensetDokumentInfoIdListAsLong = new ArrayList<Long>();
-		for (Object dokInfoId : begrensetDokumentInfoIdListAsObject) {
-			begrensetDokumentInfoIdListAsLong.add(convertBigToLong(dokInfoId));
-		}
-		return begrensetDokumentInfoIdListAsLong;
-	}
-
 	public List<Journalpost> addBegrensetDokumentInfoIdsToJournalpostList(List<Journalpost> journalpostList) {
 		if (BooleanUtils.isFalse((journalpostList == null || journalpostList.isEmpty()))) {
 			for (Journalpost journalpost : journalpostList) {
-				journalpost.addAllbegrensetRelasjonerDokumentInfoIds(getBegrensetDokumentInfoIdsByJournalpostId(journalpost.getJournalpostId()));
+				joarkRepositoryBegrenset.addBegrensetRelasjonerToJournalpost(journalpost);
 			}
 		}
 		return journalpostList;

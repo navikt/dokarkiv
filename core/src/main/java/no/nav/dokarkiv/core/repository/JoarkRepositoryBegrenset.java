@@ -7,6 +7,8 @@ import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.service.BegrensningService;
 
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.List;
@@ -23,10 +25,16 @@ public class JoarkRepositoryBegrenset {
 	private final BegrensningService begrensningService;
 	private final JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository;
 
-	public JoarkRepositoryBegrenset(JoarkRepository joarkRepository, BegrensningService begrensningService, JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository) {
+	@Inject
+	public JoarkRepositoryBegrenset(JoarkRepository joarkRepository, JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository, BegrensningService begrensningService) {
 		this.joarkRepository = joarkRepository;
 		this.begrensningService = begrensningService;
 		this.journalpostDokumentInfoRelasjonRepository = journalpostDokumentInfoRelasjonRepository;
+	}
+
+	@PostConstruct
+	public void init() {
+		begrensningService.setJoarkRepositoryBegrenset(this);
 	}
 
 	public Optional<Journalpost> findById(Long id) {
@@ -109,7 +117,7 @@ public class JoarkRepositoryBegrenset {
 				.collect(Collectors.toList());
 	}
 
-	private Journalpost addBegrensetRelasjonerToJournalpost(Journalpost journalpost) {
+	public Journalpost addBegrensetRelasjonerToJournalpost(Journalpost journalpost) {
 		List<Long> begrensetDokumentInfoIdList = journalpostDokumentInfoRelasjonRepository.findBegrensetRelasjonDokumentInfoIdByJournalpostId(journalpost
 				.getJournalpostId()).stream().map(this::convertBigToLong).collect(Collectors.toList());
 		journalpost.addAllbegrensetRelasjonerDokumentInfoIds(begrensetDokumentInfoIdList);
