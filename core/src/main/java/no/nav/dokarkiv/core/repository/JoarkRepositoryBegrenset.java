@@ -7,8 +7,7 @@ import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.service.BegrensningService;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
+import javax.inject.Inject;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -21,17 +20,16 @@ public class JoarkRepositoryBegrenset {
 
 	private final JoarkRepository joarkRepository;
 	private final BegrensningService begrensningService;
-	private final JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository;
 
-	public JoarkRepositoryBegrenset(JoarkRepository joarkRepository, BegrensningService begrensningService, JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository) {
+	@Inject
+	public JoarkRepositoryBegrenset(JoarkRepository joarkRepository, BegrensningService begrensningService) {
 		this.joarkRepository = joarkRepository;
 		this.begrensningService = begrensningService;
-		this.journalpostDokumentInfoRelasjonRepository = journalpostDokumentInfoRelasjonRepository;
 	}
 
 	public Optional<Journalpost> findById(Long id) {
 		return begrensningService.isJournalpostBegrenset(id, BegrensningTypeCode.UTILGJENGELIGGJORT) ? Optional.empty() :
-				joarkRepository.findById(id).map(this::addBegrensetRelasjonerToJournalpost);
+				joarkRepository.findById(id).map(begrensningService::addBegrensetDokumentInfoIdsToJournalpost);
 	}
 
 	public Journalpost save(Journalpost journalpost) {
@@ -53,7 +51,7 @@ public class JoarkRepositoryBegrenset {
 	public Iterable<Journalpost> findAll() {
 		return StreamSupport.stream(joarkRepository.findAll().spliterator(), true)
 				.filter(journalpost -> isFalse(begrensningService.isJournalpostBegrenset(journalpost.getJournalpostId(), BegrensningTypeCode.UTILGJENGELIGGJORT)))
-				.map(this::addBegrensetRelasjonerToJournalpost)
+				.map(begrensningService::addBegrensetDokumentInfoIdsToJournalpost)
 				.collect(Collectors.toList());
 	}
 
@@ -67,7 +65,7 @@ public class JoarkRepositoryBegrenset {
 
 		if (journalpost.isPresent()) {
 			return begrensningService.isJournalpostBegrenset(journalpost.get()
-					.getJournalpostId(), BegrensningTypeCode.UTILGJENGELIGGJORT) ? Optional.empty() : journalpost.map(this::addBegrensetRelasjonerToJournalpost);
+					.getJournalpostId(), BegrensningTypeCode.UTILGJENGELIGGJORT) ? Optional.empty() : journalpost.map(begrensningService::addBegrensetDokumentInfoIdsToJournalpost);
 		}
 		return Optional.empty();
 	}
@@ -84,7 +82,7 @@ public class JoarkRepositoryBegrenset {
 
 	public List<Long> findAllJournalpostIdsByDokumentInfoId(Long dokumentInfoId) {
 		List<Long> journalpostIds = joarkRepository.findAllJournalpostIdsByDokumentInfoId(dokumentInfoId)
-				.stream().map(this::convertBigToLong).collect(Collectors.toList());
+				.stream().map(BegrensningService::convertBigToLong).collect(Collectors.toList());
 		return journalpostIds.stream()
 				.filter(journalpostId -> isFalse(begrensningService.isJournalpostBegrenset(journalpostId, BegrensningTypeCode.UTILGJENGELIGGJORT)))
 				.collect(Collectors.toList());
@@ -95,8 +93,8 @@ public class JoarkRepositoryBegrenset {
 
 		if (journalpost.isPresent()) {
 			return begrensningService.isJournalpostBegrenset(journalpost.get()
-					.getJournalpostId(), BegrensningTypeCode.UTILGJENGELIGGJORT) ? Optional.empty() : Optional.of(addBegrensetRelasjonerToJournalpost(journalpost
-					.get()));
+					.getJournalpostId(), BegrensningTypeCode.UTILGJENGELIGGJORT) ? Optional.empty() : Optional.of(begrensningService.addBegrensetDokumentInfoIdsToJournalpost((journalpost
+					.get())));
 		}
 		return Optional.empty();
 	}
@@ -105,23 +103,8 @@ public class JoarkRepositoryBegrenset {
 		List<Journalpost> journalpostList = joarkRepository.findJournalpostByKanalReferanseIdAndMottakskanal(kanalReferanseId, mottaksKanalCode);
 		return journalpostList.stream()
 				.filter(journalpost -> isFalse(begrensningService.isJournalpostBegrenset(journalpost.getJournalpostId(), BegrensningTypeCode.UTILGJENGELIGGJORT)))
-				.map(this::addBegrensetRelasjonerToJournalpost)
+				.map(begrensningService::addBegrensetDokumentInfoIdsToJournalpost)
 				.collect(Collectors.toList());
 	}
 
-	private Journalpost addBegrensetRelasjonerToJournalpost(Journalpost journalpost) {
-		List<Long> begrensetDokumentInfoIdList = journalpostDokumentInfoRelasjonRepository.findBegrensetRelasjonDokumentInfoIdByJournalpostId(journalpost
-				.getJournalpostId()).stream().map(this::convertBigToLong).collect(Collectors.toList());
-		journalpost.addAllbegrensetRelasjonerDokumentInfoIds(begrensetDokumentInfoIdList);
-		return journalpost;
-	}
-
-	private Long convertBigToLong(Object value) {
-		if (value instanceof BigDecimal) {
-			return ((BigDecimal) value).longValue();
-		} else if (value instanceof BigInteger) {
-			return ((BigInteger) value).longValue();
-		}
-		return (Long) value;
-	}
 }

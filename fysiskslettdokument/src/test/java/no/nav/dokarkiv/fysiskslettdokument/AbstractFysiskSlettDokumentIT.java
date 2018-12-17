@@ -61,7 +61,7 @@ public abstract class AbstractFysiskSlettDokumentIT {
 	private String OIDC_TOKEN_SERVICE_USER_TEST;
 	private String OIDC_TOKEN_SERVICE_NO_ACCESS_USER_TEST;
 	private String NAV_CONSUMER_TOKEN = "Nav-Consumer-Token";
-	private final String SERVICE_USER_ID = "srvdokarkiv";
+	private final String SERVICE_USER_ID = "srvjoarkadmin";
 	private final String PERSON_USER_ID = "Z990782";
 	private final String NO_ACCESS_SERVICE_USER_ID = "srvdokarkiv";
 

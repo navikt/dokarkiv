@@ -52,7 +52,8 @@ public class FysiskSlettDokumentRestController {
 			@PathVariable("journalpostId") Long journalpostId,
 			@PathVariable("dokumentInfoId") Long dokumentInfoId,
 			@PathVariable("begrensningType") BegrensningTypeCode begrensningType) {
-		abacSecurityService.assertAccessToJournalpostIncludingBegrenset(journalpostId.toString());
+		//Kan ikke sjekke tilgang til journalpost med servicebruker. Denne tjenesten kalles 6 mnd etter at logisk slett er gjort.
+		//abacSecurityService.assertAccessToJournalpostIncludingBegrenset(journalpostId.toString());
 		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark102");
 		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har mottat kall med journalpostId=" + journalpostId + ", dokumentInfoId=" + dokumentInfoId + " og begrensningType=" + begrensningType);
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
