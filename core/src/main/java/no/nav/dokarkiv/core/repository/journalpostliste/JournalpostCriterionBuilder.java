@@ -38,6 +38,7 @@ public class JournalpostCriterionBuilder extends CriterionBuilder {
 	}
 
 	protected Criteria buildCriteria(HentMinJPListeParameters parameters) {
+
 		criteria = createCriteria(Journalpost.class, "journalpost");
 		// Filter out duplicates due to outer join (FetchType.JOIN) on the many-to-many associations
 		criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
@@ -49,7 +50,6 @@ public class JournalpostCriterionBuilder extends CriterionBuilder {
 			// include the following associasions in the query, avoiding separate fetch operations.
 			criteria.setFetchMode("journalpostDokumentInfoRelasjoner", FetchMode.JOIN);
 			criteria.setFetchMode("journalpostDokumentInfoRelasjoner.dokumentInfo.fildetaljerListe", FetchMode.JOIN);
-
 		}
 
 		if (isFalse(parameters.isIncludeBegrensetJournalpost())) {
