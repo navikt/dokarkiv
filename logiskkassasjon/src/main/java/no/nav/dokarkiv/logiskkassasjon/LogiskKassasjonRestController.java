@@ -27,7 +27,7 @@ import javax.inject.Inject;
 
 @Slf4j
 @RestController
-@RequestMapping("rest/logiskkassasjon")
+@RequestMapping("/rest/logiskkassasjon")
 public class LogiskKassasjonRestController {
 
 	private final LogiskKassasjonValidator validator;

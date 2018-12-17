@@ -50,7 +50,8 @@ public class AngreLogiskKassasjonService {
 	}
 
 	private void sjekkAtDokumentErLogiskKassert(Long dokumentInfoId) {
-		if (isFalse(begrensningRepository)) {
+		if (isFalse(begrensningRepository.findByDokumentInfoIdAndBegrensningType(dokumentInfoId, BegrensningTypeCode.UTILGJENGELIGGJORT)
+				.isPresent())) {
 			throw new BegrensningIkkeFunnetException(
 					String.format("Fant ikke forventet begrensning for dokument med dokumentInfoId=%s og begrensningsType=%s",
 							dokumentInfoId,

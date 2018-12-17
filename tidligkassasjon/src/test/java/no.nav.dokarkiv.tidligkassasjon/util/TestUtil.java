@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.arkiverkorrigertdokument.util;
+package no.nav.dokarkiv.tidligkassasjon.util;
 
 import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
 
@@ -8,6 +8,7 @@ import no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder;
 import no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder;
 import no.nav.dokarkiv.core.domain.builder.JournalpostBuilder;
 import no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder;
+import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
@@ -17,28 +18,26 @@ import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
+import no.nav.dokarkiv.core.domain.entities.Begrensning;
+import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 
 import java.util.Date;
 
-public class TestUtils {
-
-
+public class TestUtil {
 	private static final String OPPRETTET_KILDE_NAVN = "Opprettet kilde";
 	private static final String OPPRETTET_AV_NAVN = "Opprettet navn";
 	private static final String TILKNYTTET_AV_NAVN = "Tilknyttetnavn";
 	private static final String ENDRET_AV_NAVN = "Endret av navn";
 	private static final String AVSENDER_MOTTAKER_ID = "***gammelt_fnr***";
-	private static final String DOKUMENT_TITTEL = "SlettDokumentTittel";
 	private static final String BREVGRUPPE = "Brevgruppe";
 	private static final String BREVKODE = "Brevkode";
 	private static final String FILNAVN = "filNavn";
 	private static final String TITTEL = "Tittel";
-
-	public static final Long JOURNALPOST_ID = 42L;
-	public static final Long DOKUMENTINFO_ID = 1L;
-
+	private static Long JOURNALPOST_ID = 2000000L;
+	private static Long JPDOKINFORELAJSON_ID = 2000000L;
+	private static Long DOKUMENTINFO_ID = 2000000L;
 
 	public static Journalpost opprettHoveddokumentForIT() {
 		return getBaseJournalpostBuilder()
@@ -48,6 +47,42 @@ public class TestUtils {
 								.dokumentInfo(getBaseDokumentInfoBuilder().build())
 								.build())
 				.build();
+	}
+
+	public static Journalpost opprettHoveddokumentForEnhetstest() {
+		return getBaseJournalpostBuilder()
+				.journalpostId(JOURNALPOST_ID++)
+				.dokumentInfoRelasjoner(
+						getBaseJournalpostDokumentInfoRelasjonBuilder()
+								.journalpostDokumentInfoRelasjonId(JPDOKINFORELAJSON_ID++)
+								.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.HOVEDDOKUMENT)
+								.dokumentInfo(getBaseDokumentInfoBuilder()
+										.dokumentInfoId(DOKUMENTINFO_ID)
+										.build())
+								.build())
+				.build();
+	}
+
+
+	public static Journalpost opprettHoveddokumentMedEtKnyttetVedleggForIT() {
+		Journalpost journalpost = opprettHoveddokumentForIT();
+		journalpost.addJournalpostDokumentInfoRelasjon(getBaseJournalpostDokumentInfoRelasjonBuilder()
+				.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
+				.tilknyttetAvNavn(TILKNYTTET_AV_NAVN)
+				.dokumentInfo(getBaseDokumentInfoBuilder()
+						.originalJournalpost(journalpost)
+						.build())
+				.build());
+		return journalpost;
+	}
+
+	public static void knyttDokumentInfoSomVedleggTilJournalpostForIT(DokumentInfo dokInfoVedlegg, Journalpost jpHovedokument) {
+		jpHovedokument.addJournalpostDokumentInfoRelasjon(
+				getBaseJournalpostDokumentInfoRelasjonBuilder()
+						.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
+						.tilknyttetAvNavn(TILKNYTTET_AV_NAVN)
+						.dokumentInfo(dokInfoVedlegg)
+						.build());
 	}
 
 	private static JournalpostBuilder getBaseJournalpostBuilder() {
@@ -100,4 +135,20 @@ public class TestUtils {
 				.fileContent("ARKIV variant".getBytes())
 				.build();
 	}
+
+
+	public static Begrensning kasserDokumentLogisk(DokumentInfo dokumentInfo) {
+		Begrensning begrensning = Begrensning.builder()
+				//TODO: JournalpostId skal ikke være med her men er obligatorisk når man oppretter begrensning. Må endres!!! Etter endring holder det med dokId som input
+				.journalpostId(dokumentInfo.getOriginalJournalpost() == null ? null : dokumentInfo.getOriginalJournalpost()
+						.getJournalpostId())
+				.dokumentInfoId(dokumentInfo.getDokumentInfoId())
+				//TODO: Husk å endre til begrensningsType for kassasjon
+				.begrensningType(BegrensningTypeCode.UTILGJENGELIGGJORT)
+				.build();
+		begrensning.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
+		return begrensning;
+	}
+
 }
+

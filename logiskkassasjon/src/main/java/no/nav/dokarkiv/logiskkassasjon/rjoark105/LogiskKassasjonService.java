@@ -56,7 +56,6 @@ public class LogiskKassasjonService {
 	}
 
 	//TODO: Husk å endre til begrensningsType for kassasjon
-
 	private void sjekkAtDokumentIkkeErKassert(Long dokumentInfoId) {
 		if (begrensningRepository.findByDokumentInfoIdAndBegrensningType(dokumentInfoId, BegrensningTypeCode.UTILGJENGELIGGJORT)
 				.isPresent()) {
@@ -76,6 +75,8 @@ public class LogiskKassasjonService {
 		}
 
 		Begrensning begrensning = Begrensning.builder()
+				.journalpostId(dokumentInfoSomSkalKasseres.getOriginalJournalpost()
+						== null ? null : dokumentInfoSomSkalKasseres.getOriginalJournalpost().getJournalpostId())
 				.dokumentInfoId(dokumentInfoSomSkalKasseres.getDokumentInfoId())
 				//TODO: Sett riktig begrensningsType for kassasjon
 				.begrensningType(BegrensningTypeCode.UTILGJENGELIGGJORT)

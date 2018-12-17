@@ -10,7 +10,6 @@ import no.nav.dokarkiv.core.exceptions.KassasjonAvDokumentKnyttetFlereJPExceptio
 import no.nav.dokarkiv.core.repository.BegrensningRepository;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkDeleteRepository;
-import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -21,26 +20,26 @@ public class TidligKassasjonService {
 
 	private final DokumentinfoRepository dokumentInfoRepository;
 	private final BegrensningRepository begrensningRepository;
-	private final JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository;
+	//	private final JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository;
 	private final JoarkDeleteRepository deleteRepository;
 
 	@Inject
 	public TidligKassasjonService(
 			DokumentinfoRepository dokumentinfoRepository,
 			BegrensningRepository begrensningRepository,
-			JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository,
+//			JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository,
 			JoarkDeleteRepository deleteRepository) {
 		this.dokumentInfoRepository = dokumentinfoRepository;
 		this.begrensningRepository = begrensningRepository;
-		this.journalpostDokumentInfoRelasjonRepository = journalpostDokumentInfoRelasjonRepository;
+//		this.journalpostDokumentInfoRelasjonRepository = journalpostDokumentInfoRelasjonRepository;
 		this.deleteRepository = deleteRepository;
 	}
 
 
 	public TidligKassasjonResponse tidligKassasjonAvDokument(Long dokumentInfoId) {
-		DokumentInfo dokumentInfoSomSkalKasseres = dokumentInfoRepository.findByDokumentInfoId(dokumentInfoId).orElse(null);
+		DokumentInfo dokumentInfoTilTidligKassering = dokumentInfoRepository.findByDokumentInfoId(dokumentInfoId).orElse(null);
 
-		if (dokumentInfoSomSkalKasseres == null) {
+		if (dokumentInfoTilTidligKassering == null) {
 			throw new DokumentInfoIkkeFunnetException(
 					String.format("Kan ikke finne dokumentInfo med dokumentInfoId=%s",
 							dokumentInfoId));
@@ -48,7 +47,7 @@ public class TidligKassasjonService {
 
 		sjekkAtDokumentErLogiskKassert(dokumentInfoId);
 
-		if (dokumentInfoSomSkalKasseres.isRelatedToMultipleJournalposts()) {
+		if (dokumentInfoTilTidligKassering.isRelatedToMultipleJournalposts()) {
 			throw new KassasjonAvDokumentKnyttetFlereJPException(
 					String.format("Kan ikke utføre tidlig kassasjon av dokument med dokumentInfoId=%s fordi " +
 									"dokumentet er knyttet til flere journalposter og den funksjonaliteten er ikke implementert",
@@ -79,15 +78,16 @@ public class TidligKassasjonService {
 		 **/
 
 		return TidligKassasjonResponse.builder()
-				.journalpostId(dokumentInfoSomSkalKasseres.getOriginalJournalpost()
-						== null ? null : dokumentInfoSomSkalKasseres.getOriginalJournalpost().getJournalpostId())
+				.journalpostId(dokumentInfoTilTidligKassering.getOriginalJournalpost()
+						== null ? null : dokumentInfoTilTidligKassering.getOriginalJournalpost().getJournalpostId())
 				.dokumentInfoId(dokumentInfoId)
-				.tittel(dokumentInfoSomSkalKasseres.getTittel())
+				.tittel(dokumentInfoTilTidligKassering.getTittel())
 				.build();
 	}
 
 	private void sjekkAtDokumentErLogiskKassert(Long dokumentInfoId) {
-		if (isFalse(begrensningRepository)) {
+		if (isFalse(begrensningRepository.findByDokumentInfoIdAndBegrensningType(dokumentInfoId, BegrensningTypeCode.UTILGJENGELIGGJORT)
+				.isPresent())) {
 			throw new BegrensningIkkeFunnetException(
 					String.format("Fant ikke forventet begrensning for dokument med dokumentInfoId=%s og begrensningsType=%s",
 							dokumentInfoId,
