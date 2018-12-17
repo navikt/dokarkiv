@@ -16,9 +16,9 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.inject.Inject;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
@@ -28,12 +28,12 @@ import java.util.Optional;
 public class BegrensningService {
 
 	private final BegrensningRepository begrensningRepository;
-	private final JournalpostDokumentInfoRelasjonRepository relasjonRepository;
+	private JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository;
 
 	@Inject
-	public BegrensningService(BegrensningRepository begrensningRepository, JournalpostDokumentInfoRelasjonRepository relasjonRepository) {
+	public BegrensningService(BegrensningRepository begrensningRepository, JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository) {
 		this.begrensningRepository = begrensningRepository;
-		this.relasjonRepository = relasjonRepository;
+		this.journalpostDokumentInfoRelasjonRepository = journalpostDokumentInfoRelasjonRepository;
 	}
 
 	public boolean isJournalpostBegrenset(Long journalpostId, BegrensningTypeCode begrensningTypeCode) {
@@ -96,6 +96,25 @@ public class BegrensningService {
 		return consumer;
 	}
 
+	public Journalpost addBegrensetDokumentInfoIdsToJournalpost(Journalpost journalpost) {
+		List<Long> begrensetDokumentInfoIdList = journalpostDokumentInfoRelasjonRepository.findBegrensetRelasjonDokumentInfoIdByJournalpostId(journalpost
+				.getJournalpostId()).stream().map(BegrensningService::convertBigToLong).collect(Collectors.toList());
+		journalpost.addAllbegrensetRelasjonerDokumentInfoIds(begrensetDokumentInfoIdList);
+		return journalpost;
+	}
+
+
+	public List<Journalpost> addBegrensetDokumentInfoIdsToJournalpostList(List<Journalpost> journalpostList) {
+		if (BooleanUtils.isFalse((journalpostList == null || journalpostList.isEmpty()))) {
+			for (Journalpost journalpost : journalpostList) {
+				List<Long> begrensetDokumentInfoIdList = journalpostDokumentInfoRelasjonRepository.findBegrensetRelasjonDokumentInfoIdByJournalpostId(journalpost
+						.getJournalpostId()).stream().map(BegrensningService::convertBigToLong).collect(Collectors.toList());
+				journalpost.addAllbegrensetRelasjonerDokumentInfoIds(begrensetDokumentInfoIdList);
+			}
+		}
+		return journalpostList;
+	}
+
 	public static Long convertBigToLong(Object value) {
 		if (value instanceof BigDecimal) {
 			return ((BigDecimal) value).longValue();
@@ -104,26 +123,4 @@ public class BegrensningService {
 		}
 		return (Long) value;
 	}
-
-
-	public List<Long> getBegrensetDokumentInfoIdsByJournalpostId(Long journalpostId) {
-		List<Object> begrensetDokumentInfoIdListAsObject = relasjonRepository.findBegrensetRelasjonDokumentInfoIdByJournalpostId(journalpostId);
-		List<Long> begrensetDokumentInfoIdListAsLong = new ArrayList<Long>();
-		for (Object dokInfoId : begrensetDokumentInfoIdListAsObject) {
-			begrensetDokumentInfoIdListAsLong.add(convertBigToLong(dokInfoId));
-		}
-		return begrensetDokumentInfoIdListAsLong;
-	}
-
-
-	public List<Journalpost> addBegrensetDokumentInfoIdsToJournalpostList(List<Journalpost> journalpostList) {
-		if (BooleanUtils.isFalse((journalpostList == null || journalpostList.isEmpty()))) {
-			for (Journalpost journalpost : journalpostList) {
-				journalpost.addAllbegrensetRelasjonerDokumentInfoIds(getBegrensetDokumentInfoIdsByJournalpostId(journalpost.getJournalpostId()));
-			}
-		}
-		return journalpostList;
-	}
-
-
 }
