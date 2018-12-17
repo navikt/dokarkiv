@@ -3,7 +3,6 @@ package no.nav.dokarkiv.tidligkassasjon.rjoark107;
 import static junit.framework.TestCase.assertTrue;
 import static no.nav.dokarkiv.tidligkassasjon.util.TestUtil.knyttDokumentInfoSomVedleggTilJournalpostForIT;
 import static no.nav.dokarkiv.tidligkassasjon.util.TestUtil.opprettHoveddokumentForEnhetstest;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
 import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
@@ -11,7 +10,6 @@ import no.nav.dokarkiv.core.domain.entities.Begrensning;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.BegrensningIkkeFunnetException;
-import no.nav.dokarkiv.core.exceptions.DokumentInfoIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.KassasjonAvDokumentKnyttetFlereJPException;
 import no.nav.dokarkiv.core.repository.BegrensningRepository;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
@@ -36,7 +34,7 @@ public class TidligKassasjonServiceTest {
 	private static final Begrensning begrensning =
 			Begrensning.builder()
 					.dokumentInfoId(DOKUMENTINFO_ID)
-					.begrensningType(BegrensningTypeCode.UTILGJENGELIGGJORT)
+					.begrensningType(BegrensningTypeCode.KASSERT)
 					.build();
 
 	@Mock
@@ -58,26 +56,15 @@ public class TidligKassasjonServiceTest {
 	}
 
 	@Test()
-	public void skalIkkeTidligKassereDokument_hvisDokumentInfoIdIkkeFinnesIRepoet() {
-		thrown.expect(DokumentInfoIkkeFunnetException.class);
-		thrown.expectMessage("Kan ikke finne dokumentInfo med dokumentInfoId=" + DOKUMENTINFO_ID);
-
-		when(dokumentinfoRepository.findByDokumentInfoId(anyLong())).thenReturn(Optional.empty());
-
-		TidligKassasjonResponse response = tidligKassasjonService.tidligKassasjonAvDokument(DOKUMENTINFO_ID);
-	}
-
-	@Test()
 	public void skalIkkeTidligKassereDokument_hvisDokumentInfoIkkeErBegrensetSomKassert() {
 		thrown.expect(BegrensningIkkeFunnetException.class);
 		thrown.expectMessage(String.format(
 				"Fant ikke forventet begrensning for dokument med dokumentInfoId=%s og begrensningsType=%s",
 				DOKUMENTINFO_ID,
-				//TODO: Endre til kassering
-				BegrensningTypeCode.UTILGJENGELIGGJORT));
+				BegrensningTypeCode.KASSERT));
 
 		when(dokumentinfoRepository.findByDokumentInfoId(DOKUMENTINFO_ID)).thenReturn(Optional.of(dokumentInfo));
-		when(begrensningRepository.findByDokumentInfoIdAndBegrensningType(DOKUMENTINFO_ID, BegrensningTypeCode.UTILGJENGELIGGJORT))
+		when(begrensningRepository.findByDokumentInfoIdAndBegrensningType(DOKUMENTINFO_ID, BegrensningTypeCode.KASSERT))
 				.thenReturn(Optional.empty());
 
 		TidligKassasjonResponse response = tidligKassasjonService.tidligKassasjonAvDokument(DOKUMENTINFO_ID);
@@ -96,7 +83,7 @@ public class TidligKassasjonServiceTest {
 		assertTrue(dokumentInfo.isRelatedToMultipleJournalposts());
 
 		when(dokumentinfoRepository.findByDokumentInfoId(DOKUMENTINFO_ID)).thenReturn(Optional.of(dokumentInfo));
-		when(begrensningRepository.findByDokumentInfoIdAndBegrensningType(DOKUMENTINFO_ID, BegrensningTypeCode.UTILGJENGELIGGJORT))
+		when(begrensningRepository.findByDokumentInfoIdAndBegrensningType(DOKUMENTINFO_ID, BegrensningTypeCode.KASSERT))
 				.thenReturn(Optional.of(begrensning));
 
 		TidligKassasjonResponse response = tidligKassasjonService.tidligKassasjonAvDokument(DOKUMENTINFO_ID);
@@ -105,7 +92,7 @@ public class TidligKassasjonServiceTest {
 	@Test
 	public void skallTidligKassereDokument_utenKastAvExceptions() {
 		when(dokumentinfoRepository.findByDokumentInfoId(DOKUMENTINFO_ID)).thenReturn(Optional.of(dokumentInfo));
-		when(begrensningRepository.findByDokumentInfoIdAndBegrensningType(DOKUMENTINFO_ID, BegrensningTypeCode.UTILGJENGELIGGJORT))
+		when(begrensningRepository.findByDokumentInfoIdAndBegrensningType(DOKUMENTINFO_ID, BegrensningTypeCode.KASSERT))
 				.thenReturn(Optional.of(begrensning));
 
 		TidligKassasjonResponse response = tidligKassasjonService.tidligKassasjonAvDokument(DOKUMENTINFO_ID);

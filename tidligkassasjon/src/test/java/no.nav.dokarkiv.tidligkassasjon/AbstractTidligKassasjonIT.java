@@ -92,10 +92,9 @@ public abstract class AbstractTidligKassasjonIT {
 
 	@Before
 	public void cleanup() {
-		dokumentinfoRepository.deleteAll();
 		joarkRepository.deleteAll();
+		dokumentinfoRepository.deleteAll();
 		begrensningRepository.deleteAll();
-//		journalpostDokumentInfoRelasjonRepository.deleteAll();
 	}
 
 	protected HttpEntity createHeaders() {

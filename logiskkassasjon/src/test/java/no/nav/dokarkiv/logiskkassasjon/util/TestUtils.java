@@ -137,15 +137,10 @@ public class TestUtils {
 				.build();
 	}
 
-
-	public static Begrensning kasserDokumentLogisk(DokumentInfo dokumentInfo) {
+	public static Begrensning kassereDokumentLogisk(DokumentInfo dokumentInfo) {
 		Begrensning begrensning = Begrensning.builder()
-				//TODO: JournalpostId skal ikke være med her men er obligatorisk når man oppretter begrensning. Må endres!!! Etter endring holder det med dokId som input
-				.journalpostId(dokumentInfo.getOriginalJournalpost() == null ? null : dokumentInfo.getOriginalJournalpost()
-						.getJournalpostId())
 				.dokumentInfoId(dokumentInfo.getDokumentInfoId())
-				//TODO: Husk å endre til begrensningsType for kassasjon
-				.begrensningType(BegrensningTypeCode.UTILGJENGELIGGJORT)
+				.begrensningType(BegrensningTypeCode.KASSERT)
 				.build();
 		begrensning.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
 		return begrensning;

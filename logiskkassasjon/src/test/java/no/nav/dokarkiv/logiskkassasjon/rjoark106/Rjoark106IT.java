@@ -1,7 +1,7 @@
 package no.nav.dokarkiv.logiskkassasjon.rjoark106;
 
 import static junit.framework.TestCase.assertTrue;
-import static no.nav.dokarkiv.logiskkassasjon.util.TestUtils.kasserDokumentLogisk;
+import static no.nav.dokarkiv.logiskkassasjon.util.TestUtils.kassereDokumentLogisk;
 import static no.nav.dokarkiv.logiskkassasjon.util.TestUtils.knyttDokumentInfoSomVedleggTilJournalpostForIT;
 import static no.nav.dokarkiv.logiskkassasjon.util.TestUtils.opprettHoveddokumentForIT;
 import static no.nav.dokarkiv.logiskkassasjon.util.TestUtils.opprettHoveddokumentMedEtKnyttetVedleggForIT;
@@ -58,8 +58,7 @@ public class Rjoark106IT extends AbstractLogiskKassasjonIT {
 		assertThat(responseEntity.getBody(), containsString(
 				String.format("Fant ikke forventet begrensning for dokument med dokumentInfoId=%s og begrensningsType=%s",
 						dokumentInfo.getDokumentInfoId(),
-						//TODO: Endre til begrensningsType for kassasjon
-						BegrensningTypeCode.UTILGJENGELIGGJORT)));
+						BegrensningTypeCode.KASSERT)));
 	}
 
 	@Test
@@ -76,7 +75,7 @@ public class Rjoark106IT extends AbstractLogiskKassasjonIT {
 
 		joarkRepository.save(journalpost2);
 
-		begrensningRepository.save(kasserDokumentLogisk(vedlegg));
+		begrensningRepository.save(kassereDokumentLogisk(vedlegg));
 
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
@@ -84,7 +83,6 @@ public class Rjoark106IT extends AbstractLogiskKassasjonIT {
 		assertThat(begrensningRepository.count(), is(1L));
 		assertThat(joarkRepository.count(), is(2L));
 		assertThat(dokumentinfoRepository.count(), is(3L));
-
 		assertTrue(vedlegg.isRelatedToMultipleJournalposts());
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
@@ -94,7 +92,39 @@ public class Rjoark106IT extends AbstractLogiskKassasjonIT {
 				String.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
+		assertThat(begrensningRepository.count(), is(0L));
+	}
 
+	@Test
+	public void skalAngreLogiskKasseringAvDokument_medHoveddokumentKnyttetFlereJournalposter() {
+		abacPermit();
+
+		Journalpost journalpost1 = joarkRepository.save(opprettHoveddokumentForIT());
+		Journalpost journalpost2 = opprettHoveddokumentForIT();
+
+		DokumentInfo hoveddokument1 = journalpost1.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
+
+		knyttDokumentInfoSomVedleggTilJournalpostForIT(hoveddokument1, journalpost2);
+
+		joarkRepository.save(journalpost2);
+
+		begrensningRepository.save(kassereDokumentLogisk(hoveddokument1));
+
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
+
+		assertThat(begrensningRepository.count(), is(1L));
+		assertThat(joarkRepository.count(), is(2L));
+		assertThat(dokumentinfoRepository.count(), is(2L));
+		assertTrue(hoveddokument1.isRelatedToMultipleJournalposts());
+
+		ResponseEntity<String> responseEntity = restTemplate.exchange(
+				URL_ANGRE_LOGISKKASSASJON + hoveddokument1.getDokumentInfoId(),
+				HttpMethod.PATCH,
+				createHeaders(),
+				String.class);
+
+		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 		assertThat(begrensningRepository.count(), is(0L));
 	}
 }

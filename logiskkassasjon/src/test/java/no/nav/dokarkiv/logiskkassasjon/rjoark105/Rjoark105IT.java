@@ -1,11 +1,14 @@
 package no.nav.dokarkiv.logiskkassasjon.rjoark105;
 
-import static no.nav.dokarkiv.logiskkassasjon.util.TestUtils.kasserDokumentLogisk;
+import static junit.framework.TestCase.assertTrue;
+import static no.nav.dokarkiv.logiskkassasjon.util.TestUtils.kassereDokumentLogisk;
+import static no.nav.dokarkiv.logiskkassasjon.util.TestUtils.knyttDokumentInfoSomVedleggTilJournalpostForIT;
 import static no.nav.dokarkiv.logiskkassasjon.util.TestUtils.opprettHoveddokumentForIT;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.core.Is.is;
 
+import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.logiskkassasjon.AbstractLogiskKassasjonIT;
@@ -40,7 +43,7 @@ public class Rjoark105IT extends AbstractLogiskKassasjonIT {
 		Journalpost journalpost = joarkRepository.save(opprettHoveddokumentForIT());
 		DokumentInfo dokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 
-		begrensningRepository.save(kasserDokumentLogisk(dokumentInfo));
+		begrensningRepository.save(kassereDokumentLogisk(dokumentInfo));
 
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
@@ -55,33 +58,27 @@ public class Rjoark105IT extends AbstractLogiskKassasjonIT {
 		assertThat(responseEntity.getBody(), containsString(String.format(
 				"Kan ikke utføre logisk kassasjon av dokument med dokumentInfoId=%s. Dokumentet er allerede logisk kassert",
 				dokumentInfo.getDokumentInfoId())));
-
 	}
 
-//	@Test
-//	public void skallIkkeLogiskKassereDokument_ettersomJournalpostDokumentInfoRelasjonIkkeErKassert(){}
-
-
-	//TODO: Avklare hva som skal skje når dokument er knyttet flere journalposter
-	/**
-	 @Test public void skallIkkeLogiskKassereDokument_ettersomDokumentErKnyttetFlereJournalposter(){
+	@Test
+	public void skallIkkeLogiskKassereDokument_ettersomDokumentErKnyttetFlereJournalposter() {
 	 abacPermit();
 
-	 Journalpost journalpost1 = joarkRepository.save(opprettHoveddokumentMedEtKnyttetVedleggForIT());
+		Journalpost journalpost1 = joarkRepository.save(opprettHoveddokumentForIT());
 	 Journalpost journalpost2 = opprettHoveddokumentForIT();
 
-	 DokumentInfo vedlegg = journalpost1.findDokumentInfoRelasjonByTilknyttetJournalpostSom(
-	 TilknyttetJournalpostSomCode.VEDLEGG).iterator().next().getDokumentInfo();
+		DokumentInfo hoveddokument1 = journalpost1.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 
-	 knyttDokumentInfoSomVedleggTilJournalpostForIT(vedlegg, journalpost2);
+		knyttDokumentInfoSomVedleggTilJournalpostForIT(hoveddokument1, journalpost2);
 
 	 joarkRepository.save(journalpost2);
+		assertTrue(hoveddokument1.isRelatedToMultipleJournalposts());
 
 	 TestTransaction.flagForCommit();
 	 TestTransaction.end();
 
 	 ResponseEntity<String> responseEntity = restTemplate.exchange(
-	 URL_LOGISKKASSASJON + vedlegg.getDokumentInfoId(),
+			 URL_LOGISKKASSASJON + hoveddokument1.getDokumentInfoId(),
 	 HttpMethod.PATCH,
 	 createHeaders(),
 	 String.class);
@@ -89,7 +86,7 @@ public class Rjoark105IT extends AbstractLogiskKassasjonIT {
 	 assertThat(responseEntity.getStatusCode(), is(HttpStatus.NOT_IMPLEMENTED));
 	 assertThat(responseEntity.getBody(), containsString(String.format(
 	 "Kan ikke utføre tidlig kassasjon av dokument med dokumentInfoId=%s fordi dokumentet er knyttet til flere " +
-	 "journalposter og den funksjonaliteten er ikke implementert", vedlegg.getDokumentInfoId())));
+			 "journalposter og den funksjonaliteten er ikke implementert", hoveddokument1.getDokumentInfoId())));
 	 }
 
 	 @Test public void skallLogiskKassereDokument(){
@@ -102,6 +99,8 @@ public class Rjoark105IT extends AbstractLogiskKassasjonIT {
 	 TestTransaction.flagForCommit();
 	 TestTransaction.end();
 
+		 assertThat(begrensningRepository.count(), is(0L));
+
 	 ResponseEntity<String> responseEntity = restTemplate.exchange(
 	 URL_LOGISKKASSASJON + dokumentInfo.getDokumentInfoId(),
 	 HttpMethod.PATCH,
@@ -109,6 +108,10 @@ public class Rjoark105IT extends AbstractLogiskKassasjonIT {
 	 String.class);
 
 	 assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
+
+		 assertThat(begrensningRepository.count(), is(1L));
+		 assertTrue(begrensningRepository.findByDokumentInfoIdAndBegrensningType(dokumentInfo.getDokumentInfoId(), BegrensningTypeCode.KASSERT)
+				 .isPresent());
+
 	 }
-	 **/
 }

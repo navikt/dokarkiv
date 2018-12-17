@@ -5,7 +5,6 @@ import static org.apache.cxf.common.util.PropertyUtils.isFalse;
 import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.exceptions.BegrensningIkkeFunnetException;
-import no.nav.dokarkiv.core.exceptions.DokumentInfoIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.KassasjonAvDokumentKnyttetFlereJPException;
 import no.nav.dokarkiv.core.repository.BegrensningRepository;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
@@ -20,30 +19,21 @@ public class TidligKassasjonService {
 
 	private final DokumentinfoRepository dokumentInfoRepository;
 	private final BegrensningRepository begrensningRepository;
-	//	private final JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository;
 	private final JoarkDeleteRepository deleteRepository;
 
 	@Inject
 	public TidligKassasjonService(
 			DokumentinfoRepository dokumentinfoRepository,
 			BegrensningRepository begrensningRepository,
-//			JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository,
 			JoarkDeleteRepository deleteRepository) {
 		this.dokumentInfoRepository = dokumentinfoRepository;
 		this.begrensningRepository = begrensningRepository;
-//		this.journalpostDokumentInfoRelasjonRepository = journalpostDokumentInfoRelasjonRepository;
 		this.deleteRepository = deleteRepository;
 	}
 
 
 	public TidligKassasjonResponse tidligKassasjonAvDokument(Long dokumentInfoId) {
-		DokumentInfo dokumentInfoTilTidligKassering = dokumentInfoRepository.findByDokumentInfoId(dokumentInfoId).orElse(null);
-
-		if (dokumentInfoTilTidligKassering == null) {
-			throw new DokumentInfoIkkeFunnetException(
-					String.format("Kan ikke finne dokumentInfo med dokumentInfoId=%s",
-							dokumentInfoId));
-		}
+		DokumentInfo dokumentInfoTilTidligKassering = dokumentInfoRepository.findByDokumentInfoId(dokumentInfoId).get();
 
 		sjekkAtDokumentErLogiskKassert(dokumentInfoId);
 
@@ -86,18 +76,19 @@ public class TidligKassasjonService {
 	}
 
 	private void sjekkAtDokumentErLogiskKassert(Long dokumentInfoId) {
-		if (isFalse(begrensningRepository.findByDokumentInfoIdAndBegrensningType(dokumentInfoId, BegrensningTypeCode.UTILGJENGELIGGJORT)
+		if (isFalse(begrensningRepository.findByDokumentInfoIdAndBegrensningType(dokumentInfoId, BegrensningTypeCode.KASSERT)
 				.isPresent())) {
 			throw new BegrensningIkkeFunnetException(
 					String.format("Fant ikke forventet begrensning for dokument med dokumentInfoId=%s og begrensningsType=%s",
 							dokumentInfoId,
-							//TODO: Endre til begrensningsType for kassasjon
-							BegrensningTypeCode.UTILGJENGELIGGJORT));
+							BegrensningTypeCode.KASSERT));
 		}
 	}
 
 	private void tidligKassasjonAvEtDokument(Long dokumentInfoId) {
+		begrensningRepository.deleteByDokumentInfoIdAndBegrensningType(dokumentInfoId, BegrensningTypeCode.KASSERT);
 		slettFilOgBeholdMetadata(dokumentInfoId);
+
 	}
 
 	private void slettFilOgBeholdMetadata(Long dokumentInfoId) {

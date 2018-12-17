@@ -4,7 +4,6 @@ import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
 import no.nav.dokarkiv.core.domain.entities.Begrensning;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
-import no.nav.dokarkiv.core.exceptions.DokumentInfoIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.ErBegrensetException;
 import no.nav.dokarkiv.core.exceptions.KassasjonAvDokumentKnyttetFlereJPException;
 import no.nav.dokarkiv.core.repository.BegrensningRepository;
@@ -29,13 +28,7 @@ public class LogiskKassasjonService {
 	}
 
 	public LogiskKassasjonResponse logiskKassasjonAvDokument(Long dokumentInfoId) {
-		DokumentInfo dokumentInfoSomSkalKasseres = dokumentInfoRepository.findByDokumentInfoId(dokumentInfoId).orElse(null);
-
-		if (dokumentInfoSomSkalKasseres == null) {
-			throw new DokumentInfoIkkeFunnetException(
-					String.format("Kan ikke finne dokumentInfo med dokumentInfoId=%s",
-							dokumentInfoId));
-		}
+		DokumentInfo dokumentInfoSomSkalKasseres = dokumentInfoRepository.findByDokumentInfoId(dokumentInfoId).get();
 
 		sjekkAtDokumentIkkeErBegrensetSomKassert(dokumentInfoId);
 
@@ -55,9 +48,8 @@ public class LogiskKassasjonService {
 		sjekkAtDokumentIkkeErKassert(dokumentInfoId);
 	}
 
-	//TODO: Husk å endre til begrensningsType for kassasjon
 	private void sjekkAtDokumentIkkeErKassert(Long dokumentInfoId) {
-		if (begrensningRepository.findByDokumentInfoIdAndBegrensningType(dokumentInfoId, BegrensningTypeCode.UTILGJENGELIGGJORT)
+		if (begrensningRepository.findByDokumentInfoIdAndBegrensningType(dokumentInfoId, BegrensningTypeCode.KASSERT)
 				.isPresent()) {
 			throw new ErBegrensetException(String.format(
 					"Kan ikke utføre logisk kassasjon av dokument med dokumentInfoId=%s. Dokumentet er allerede logisk kassert",
@@ -78,8 +70,7 @@ public class LogiskKassasjonService {
 				.journalpostId(dokumentInfoSomSkalKasseres.getOriginalJournalpost()
 						== null ? null : dokumentInfoSomSkalKasseres.getOriginalJournalpost().getJournalpostId())
 				.dokumentInfoId(dokumentInfoSomSkalKasseres.getDokumentInfoId())
-				//TODO: Sett riktig begrensningsType for kassasjon
-				.begrensningType(BegrensningTypeCode.UTILGJENGELIGGJORT)
+				.begrensningType(BegrensningTypeCode.KASSERT)
 				.build();
 		begrensning.setOpprettetKildeNavn(MDC.get(MDCConstants.MDC_CONSUMER_ID));
 

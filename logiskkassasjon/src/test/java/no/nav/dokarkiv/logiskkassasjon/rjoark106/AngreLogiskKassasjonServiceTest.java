@@ -41,7 +41,7 @@ public class AngreLogiskKassasjonServiceTest {
 	private static final Begrensning begrensning =
 			Begrensning.builder()
 					.dokumentInfoId(DOKUMENTINFO_ID)
-					.begrensningType(BegrensningTypeCode.UTILGJENGELIGGJORT)
+					.begrensningType(BegrensningTypeCode.KASSERT)
 					.build();
 
 	@Before
@@ -67,11 +67,10 @@ public class AngreLogiskKassasjonServiceTest {
 		thrown.expectMessage(String.format(
 				"Fant ikke forventet begrensning for dokument med dokumentInfoId=%s og begrensningsType=%s",
 				DOKUMENTINFO_ID,
-				//TODO: Endre til kassering
-				BegrensningTypeCode.UTILGJENGELIGGJORT));
+				BegrensningTypeCode.KASSERT));
 
 		when(dokumentinfoRepository.findByDokumentInfoId(DOKUMENTINFO_ID)).thenReturn(Optional.of(dokumentInfo));
-		when(begrensningRepository.findByDokumentInfoIdAndBegrensningType(DOKUMENTINFO_ID, BegrensningTypeCode.UTILGJENGELIGGJORT))
+		when(begrensningRepository.findByDokumentInfoIdAndBegrensningType(DOKUMENTINFO_ID, BegrensningTypeCode.KASSERT))
 				.thenReturn(Optional.empty());
 
 		LogiskKassasjonResponse response = angreLogiskKassasjonService.angreLogiskKassasjonAvDokument(DOKUMENTINFO_ID);
@@ -80,7 +79,7 @@ public class AngreLogiskKassasjonServiceTest {
 	@Test()
 	public void skalAngreLogiskKassereDokument_utenKastAvExceptions() {
 		when(dokumentinfoRepository.findByDokumentInfoId(DOKUMENTINFO_ID)).thenReturn(Optional.of(dokumentInfo));
-		when(begrensningRepository.findByDokumentInfoIdAndBegrensningType(DOKUMENTINFO_ID, BegrensningTypeCode.UTILGJENGELIGGJORT))
+		when(begrensningRepository.findByDokumentInfoIdAndBegrensningType(DOKUMENTINFO_ID, BegrensningTypeCode.KASSERT))
 				.thenReturn(Optional.of(begrensning));
 
 		LogiskKassasjonResponse response = angreLogiskKassasjonService.angreLogiskKassasjonAvDokument(DOKUMENTINFO_ID);

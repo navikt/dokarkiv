@@ -38,8 +38,7 @@ public class AngreLogiskKassasjonService {
 		}
 
 		sjekkAtDokumentErLogiskKassert(dokumentInfoId);
-		//TODO: Endre til begrensningsType for kassasjon
-		begrensningRepository.deleteByDokumentInfoIdAndBegrensningType(dokumentInfoId, BegrensningTypeCode.UTILGJENGELIGGJORT);
+		begrensningRepository.deleteByDokumentInfoIdAndBegrensningType(dokumentInfoId, BegrensningTypeCode.KASSERT);
 
 		return LogiskKassasjonResponse.builder()
 				.journalpostId(dokumentInfoDerKasseringSkalAngres.getOriginalJournalpost()
@@ -50,13 +49,12 @@ public class AngreLogiskKassasjonService {
 	}
 
 	private void sjekkAtDokumentErLogiskKassert(Long dokumentInfoId) {
-		if (isFalse(begrensningRepository.findByDokumentInfoIdAndBegrensningType(dokumentInfoId, BegrensningTypeCode.UTILGJENGELIGGJORT)
+		if (isFalse(begrensningRepository.findByDokumentInfoIdAndBegrensningType(dokumentInfoId, BegrensningTypeCode.KASSERT)
 				.isPresent())) {
 			throw new BegrensningIkkeFunnetException(
 					String.format("Fant ikke forventet begrensning for dokument med dokumentInfoId=%s og begrensningsType=%s",
 							dokumentInfoId,
-							//TODO: Endre til begrensningsType for kassasjon
-							BegrensningTypeCode.UTILGJENGELIGGJORT));
+							BegrensningTypeCode.KASSERT));
 		}
 	}
 }
