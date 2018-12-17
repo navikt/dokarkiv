@@ -20,13 +20,11 @@ public class JoarkRepositoryBegrenset {
 
 	private final JoarkRepository joarkRepository;
 	private final BegrensningService begrensningService;
-	private final JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository;
 
 	@Inject
-	public JoarkRepositoryBegrenset(JoarkRepository joarkRepository, JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository, BegrensningService begrensningService) {
+	public JoarkRepositoryBegrenset(JoarkRepository joarkRepository, BegrensningService begrensningService) {
 		this.joarkRepository = joarkRepository;
 		this.begrensningService = begrensningService;
-		this.journalpostDokumentInfoRelasjonRepository = journalpostDokumentInfoRelasjonRepository;
 	}
 
 	public Optional<Journalpost> findById(Long id) {
