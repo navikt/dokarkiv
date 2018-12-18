@@ -18,7 +18,6 @@ import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
-import java.util.Objects;
 
 @Slf4j
 @Service
@@ -84,10 +83,8 @@ public class AngreArkiverKorrigertDokumentService {
 
 	private void slettSladdetFilOgFilDetaljer(DokumentInfo dokumentInfo) {
 		FilDetaljer sladdetFildetaljer = dokumentInfo.findFilDetaljerByVariantFormat(VariantFormatCode.SLADDET);
-		if (Objects.nonNull(sladdetFildetaljer)) {
-			dokumentInfo.removeFilDetaljer(sladdetFildetaljer);
-			dokumentFilRepository.deleteByFilUuid(sladdetFildetaljer.getFilUuid());
-		}
+		dokumentInfo.removeFilDetaljer(sladdetFildetaljer);
+		dokumentFilRepository.deleteByFilUuid(sladdetFildetaljer.getFilUuid());
 	}
 
 }

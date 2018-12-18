@@ -20,6 +20,7 @@ import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import java.util.Objects;
 
 @Slf4j
 @Service
@@ -75,8 +76,10 @@ public class ArkiverKorrigertDokumentService {
 
 	private void kanskjeSlettEksisterendeSladdetFilOgFilDetaljer(DokumentInfo dokumentInfo) {
 		FilDetaljer sladdetFildetaljer = dokumentInfo.findFilDetaljerByVariantFormat(VariantFormatCode.SLADDET);
-		dokumentFilRepository.deleteByFilUuid(sladdetFildetaljer.getFilUuid());
-		dokumentInfo.removeFilDetaljer(sladdetFildetaljer);
+		if (Objects.nonNull(sladdetFildetaljer)) {
+			dokumentFilRepository.deleteByFilUuid(sladdetFildetaljer.getFilUuid());
+			dokumentInfo.removeFilDetaljer(sladdetFildetaljer);
+		}
 
 	}
 
