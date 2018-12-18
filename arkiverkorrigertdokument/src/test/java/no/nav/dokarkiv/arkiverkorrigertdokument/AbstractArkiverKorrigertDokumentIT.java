@@ -57,6 +57,7 @@ public abstract class AbstractArkiverKorrigertDokumentIT {
 	protected static final String OPPRETTET_KILDE_NAVN = "Opprettet kilde";
 	protected static final String TILKNYTTET_AV_NAVN = "Tilknyttetnavn";
 	protected static final String URL_ARKIVERKORRIGERTDOKUMENT = "/rest/arkiverkorrigertdokument/";
+	protected static final String URL_ANGREARKIVERKORRIGERTDOKUMENT = "/rest/arkiverkorrigertdokument/angre/";
 	protected static final String URL_SLETTDOKUMENT = "/rest/logiskslettdokument/";
 	private String OIDC_TOKEN_PERSON_USER_TEST;
 	private String OIDC_TOKEN_SERVICE_USER_TEST;
@@ -134,6 +135,14 @@ public abstract class AbstractArkiverKorrigertDokumentIT {
 		headers.add(HttpHeaders.AUTHORIZATION, OIDC_TOKEN_PERSON_USER_TEST);
 		headers.add(NAV_CONSUMER_TOKEN, OIDC_TOKEN_SERVICE_USER_TEST);
 		return headers;
+	}
+
+	protected HttpEntity createHttpEntityHeaders() {
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		headers.add(HttpHeaders.AUTHORIZATION, OIDC_TOKEN_PERSON_USER_TEST);
+		headers.add(NAV_CONSUMER_TOKEN, OIDC_TOKEN_SERVICE_USER_TEST);
+		return new HttpEntity(headers);
 	}
 
 	protected HttpHeaders createHeadersNotSrvJoarkadmin() {

@@ -6,6 +6,7 @@ import static org.apache.commons.lang3.BooleanUtils.isFalse;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
+import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.Begrensning;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
@@ -30,7 +31,9 @@ public class ArkiverKorrigertDokumentService {
 	private final BegrensningRepository begrensningRepository;
 
 	@Inject
-	public ArkiverKorrigertDokumentService(DokumentinfoRepository dokumentinfoRepository, DokumentFilRepository dokumentFilRepository, BegrensningRepository begrensningRepository) {
+	public ArkiverKorrigertDokumentService(DokumentinfoRepository dokumentinfoRepository,
+										   DokumentFilRepository dokumentFilRepository,
+										   BegrensningRepository begrensningRepository) {
 		this.dokumentinfoRepository = dokumentinfoRepository;
 		this.dokumentFilRepository = dokumentFilRepository;
 		this.begrensningRepository = begrensningRepository;
@@ -57,11 +60,11 @@ public class ArkiverKorrigertDokumentService {
 	}
 
 	private void kanskjeOpprettBegrensingSkjermet(DokumentInfo dokumentInfo) {
-		boolean begrengsningExists = begrensningRepository.findByDokumentInfoIdAndVariantFormatAndBegrensningType(dokumentInfo.getDokumentInfoId(), VariantFormatCode.ARKIV, BegrensningTypeCode.SKJERMET)
+		boolean begrengsningExists = begrensningRepository.findByDokumentInfoIdAndVariantFormatAndBegrensningType(
+				dokumentInfo.getDokumentInfoId(), VariantFormatCode.ARKIV, BegrensningTypeCode.SKJERMET)
 				.isPresent();
 		if (isFalse(begrengsningExists)) {
 			Begrensning begrensning = Begrensning.builder()
-					.journalpostId(dokumentInfo.getOriginalJournalpost().getJournalpostId())
 					.dokumentInfoId(dokumentInfo.getDokumentInfoId())
 					.begrensningType(BegrensningTypeCode.SKJERMET)
 					.variantFormat(VariantFormatCode.ARKIV)
@@ -77,6 +80,7 @@ public class ArkiverKorrigertDokumentService {
 			dokumentFilRepository.deleteByFilUuid(sladdetFildetaljer.getFilUuid());
 			dokumentInfo.removeFilDetaljer(sladdetFildetaljer);
 		}
+
 	}
 
 	private byte[] base64ToByte(String dokumentFilBase64) {
@@ -88,13 +92,12 @@ public class ArkiverKorrigertDokumentService {
 		FilDetaljer filDetaljer = FilDetaljer.builder()
 				.filUuid(FilDetaljer.generateUuid())
 				.filnavn(arkivFildetaljer.getFilnavn())
-				.filtype(arkivFildetaljer.getFiltype())
+				.filtype(FilTypeCode.PDF)
 				.variantFormat(VariantFormatCode.SLADDET)
 				.fileContent(fil)
 				.dokumentInfo(dokumentInfo)
 				.build();
 		filDetaljer.setOpprettetKildeNavn(MDC.get(MDCConstants.MDC_CONSUMER_ID));
-
 		dokumentInfo.addFilDetaljer(filDetaljer);
 
 		dokumentFilRepository.save(filDetaljer.createDokumentFil());

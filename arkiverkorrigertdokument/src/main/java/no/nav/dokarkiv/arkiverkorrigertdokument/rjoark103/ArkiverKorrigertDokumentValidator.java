@@ -18,5 +18,9 @@ public class ArkiverKorrigertDokumentValidator {
 		}
 	}
 
-
+	public void validateAngreArkiverKorrigertDokument(Long dokumentInfoId) {
+		if (dokumentInfoId == null) {
+			throw new UgyldigInputException("DokumentInfoId kan ikke være null");
+		}
+	}
 }
