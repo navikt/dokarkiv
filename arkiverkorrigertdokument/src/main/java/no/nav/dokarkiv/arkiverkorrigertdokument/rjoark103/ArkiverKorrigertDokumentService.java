@@ -65,8 +65,6 @@ public class ArkiverKorrigertDokumentService {
 				.isPresent();
 		if (isFalse(begrengsningExists)) {
 			Begrensning begrensning = Begrensning.builder()
-					.journalpostId(dokumentInfo.getOriginalJournalpost() == null ? null : dokumentInfo.getOriginalJournalpost()
-							.getJournalpostId())
 					.dokumentInfoId(dokumentInfo.getDokumentInfoId())
 					.begrensningType(BegrensningTypeCode.SKJERMET)
 					.variantFormat(VariantFormatCode.ARKIV)
