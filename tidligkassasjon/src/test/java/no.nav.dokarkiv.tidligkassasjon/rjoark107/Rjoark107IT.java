@@ -53,7 +53,7 @@ public class Rjoark107IT extends AbstractTidligKassasjonIT {
 				createHeaders(),
 				String.class);
 
-		assertThat(responseEntity.getStatusCode(), is(HttpStatus.BAD_REQUEST));
+		assertThat(responseEntity.getStatusCode(), is(HttpStatus.NOT_FOUND));
 		assertThat(responseEntity.getBody(), containsString(String.format(
 				"Fant ikke forventet begrensning for dokument med dokumentInfoId=%s og begrensningsType=%s",
 				dokumentInfo.getDokumentInfoId(),
