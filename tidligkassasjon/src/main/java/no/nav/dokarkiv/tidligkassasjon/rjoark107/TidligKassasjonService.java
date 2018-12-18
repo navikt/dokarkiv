@@ -5,7 +5,6 @@ import static org.apache.cxf.common.util.PropertyUtils.isFalse;
 import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.exceptions.BegrensningIkkeFunnetException;
-import no.nav.dokarkiv.core.exceptions.KassasjonAvDokumentKnyttetFlereJPException;
 import no.nav.dokarkiv.core.repository.BegrensningRepository;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkDeleteRepository;
@@ -15,7 +14,6 @@ import javax.inject.Inject;
 
 @Service
 public class TidligKassasjonService {
-
 
 	private final DokumentinfoRepository dokumentInfoRepository;
 	private final BegrensningRepository begrensningRepository;
@@ -31,45 +29,14 @@ public class TidligKassasjonService {
 		this.deleteRepository = deleteRepository;
 	}
 
-
 	public TidligKassasjonResponse tidligKassasjonAvDokument(Long dokumentInfoId) {
 		DokumentInfo dokumentInfoTilTidligKassering = dokumentInfoRepository.findByDokumentInfoId(dokumentInfoId).get();
 
 		sjekkAtDokumentErLogiskKassert(dokumentInfoId);
 
-		if (dokumentInfoTilTidligKassering.isRelatedToMultipleJournalposts()) {
-			throw new KassasjonAvDokumentKnyttetFlereJPException(
-					String.format("Kan ikke utføre tidlig kassasjon av dokument med dokumentInfoId=%s fordi " +
-									"dokumentet er knyttet til flere journalposter og den funksjonaliteten er ikke implementert",
-							dokumentInfoId));
-		}
-
 		tidligKassasjonAvEtDokument(dokumentInfoId);
 
-		//TODO: Hvis dokumentInfo må være knyttet en journalpost så kan vi skippe og kontrollere mot 0 relasjoner
-		/**
-		 int antallRelasjoner =
-		 journalpostDokumentInfoRelasjonRepository.findAllByDokumentInfoDokumentInfoId(dokumentInfoId).size();
-
-		 if (antallRelasjoner > 1) {
-		 throw new KassasjonAvDokumentKnyttetFlereJPException(
-		 String.format("Kan ikke utføre tidlig kassasjon av dokument med dokumentInfoId=%s fordi " +
-		 "dokumentet er knyttet til flere journalposter og den funksjonaliteten er ikke implementert",
-		 dokumentInfoId));
-		 }
-		 else if (antallRelasjoner == 0){
-		 throw new JournalpostDokumentInfoRelasjonIkkeFunnetException(
-		 String.format("Kan ikke finne relasjon til journalpost for dokument med dokumentInfoId=%s",
-		 dokumentInfoId));
-		 }
-		 else if (antallRelasjoner == 1){
-		 tidligKassasjonAvEtDokument(dokumentInfoId);
-		 }
-		 **/
-
 		return TidligKassasjonResponse.builder()
-				.journalpostId(dokumentInfoTilTidligKassering.getOriginalJournalpost()
-						== null ? null : dokumentInfoTilTidligKassering.getOriginalJournalpost().getJournalpostId())
 				.dokumentInfoId(dokumentInfoId)
 				.tittel(dokumentInfoTilTidligKassering.getTittel())
 				.build();
@@ -88,12 +55,10 @@ public class TidligKassasjonService {
 	private void tidligKassasjonAvEtDokument(Long dokumentInfoId) {
 		begrensningRepository.deleteByDokumentInfoIdAndBegrensningType(dokumentInfoId, BegrensningTypeCode.KASSERT);
 		slettFilOgBeholdMetadata(dokumentInfoId);
-
 	}
 
 	private void slettFilOgBeholdMetadata(Long dokumentInfoId) {
 		deleteRepository.deleteDokumentFilByDokumentInfoId(dokumentInfoId);
 		deleteRepository.deleteFilDetaljerByDokumentInfoId(dokumentInfoId);
 	}
-
 }

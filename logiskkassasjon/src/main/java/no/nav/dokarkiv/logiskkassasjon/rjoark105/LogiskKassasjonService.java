@@ -5,7 +5,6 @@ import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
 import no.nav.dokarkiv.core.domain.entities.Begrensning;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.exceptions.ErBegrensetException;
-import no.nav.dokarkiv.core.exceptions.KassasjonAvDokumentKnyttetFlereJPException;
 import no.nav.dokarkiv.core.repository.BegrensningRepository;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import org.slf4j.MDC;
@@ -35,16 +34,12 @@ public class LogiskKassasjonService {
 		logiskKassasjonAvEtDokument(dokumentInfoSomSkalKasseres);
 
 		return LogiskKassasjonResponse.builder()
-				.journalpostId(dokumentInfoSomSkalKasseres.getOriginalJournalpost()
-						== null ? null : dokumentInfoSomSkalKasseres.getOriginalJournalpost().getJournalpostId())
 				.dokumentInfoId(dokumentInfoSomSkalKasseres.getDokumentInfoId())
 				.tittel(dokumentInfoSomSkalKasseres.getTittel())
 				.build();
 	}
 
 	private void sjekkAtDokumentIkkeErBegrensetSomKassert(Long dokumentInfoId) {
-		//TODO: Implementere kassering på relasjoner?
-//		sjekkAtJournalpostDokumentInfoRelasjonIkkeErKassert(dokumentInfoId);
 		sjekkAtDokumentIkkeErKassert(dokumentInfoId);
 	}
 
@@ -58,23 +53,12 @@ public class LogiskKassasjonService {
 	}
 
 	private void logiskKassasjonAvEtDokument(DokumentInfo dokumentInfoSomSkalKasseres) {
-		//TODO: Se over denne kontrollen etter avklaring av kassasjon
-		if (dokumentInfoSomSkalKasseres.isRelatedToMultipleJournalposts()) {
-			throw new KassasjonAvDokumentKnyttetFlereJPException(
-					String.format("Kan ikke utføre tidlig kassasjon av dokument med dokumentInfoId=%s fordi " +
-									"dokumentet er knyttet til flere journalposter og den funksjonaliteten er ikke implementert",
-							dokumentInfoSomSkalKasseres.getDokumentInfoId()));
-		}
-
 		Begrensning begrensning = Begrensning.builder()
-				.journalpostId(dokumentInfoSomSkalKasseres.getOriginalJournalpost()
-						== null ? null : dokumentInfoSomSkalKasseres.getOriginalJournalpost().getJournalpostId())
 				.dokumentInfoId(dokumentInfoSomSkalKasseres.getDokumentInfoId())
 				.begrensningType(BegrensningTypeCode.KASSERT)
 				.build();
 		begrensning.setOpprettetKildeNavn(MDC.get(MDCConstants.MDC_CONSUMER_ID));
 
 		begrensningRepository.save(begrensning);
-
 	}
 }

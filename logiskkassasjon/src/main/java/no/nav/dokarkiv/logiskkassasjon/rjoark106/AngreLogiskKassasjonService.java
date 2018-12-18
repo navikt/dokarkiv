@@ -41,8 +41,6 @@ public class AngreLogiskKassasjonService {
 		begrensningRepository.deleteByDokumentInfoIdAndBegrensningType(dokumentInfoId, BegrensningTypeCode.KASSERT);
 
 		return LogiskKassasjonResponse.builder()
-				.journalpostId(dokumentInfoDerKasseringSkalAngres.getOriginalJournalpost()
-						== null ? null : dokumentInfoDerKasseringSkalAngres.getOriginalJournalpost().getJournalpostId())
 				.dokumentInfoId(dokumentInfoDerKasseringSkalAngres.getDokumentInfoId())
 				.tittel(dokumentInfoDerKasseringSkalAngres.getTittel())
 				.build();
