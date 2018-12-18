@@ -123,5 +123,4 @@ public class Rjoark107IT extends AbstractTidligKassasjonIT {
 		assertThat("Feil antall journalposter etter kall", joarkRepository.count(), is(1L));
 		assertThat("Feil antall dokumenter etter kall", dokumentinfoRepository.count(), is(1L));
 	}
-
 }

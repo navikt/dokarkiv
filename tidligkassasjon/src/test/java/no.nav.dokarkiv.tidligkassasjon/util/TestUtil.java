@@ -63,7 +63,6 @@ public class TestUtil {
 				.build();
 	}
 
-
 	public static Journalpost opprettHoveddokumentMedEtKnyttetVedleggForIT() {
 		Journalpost journalpost = opprettHoveddokumentForIT();
 		journalpost.addJournalpostDokumentInfoRelasjon(getBaseJournalpostDokumentInfoRelasjonBuilder()

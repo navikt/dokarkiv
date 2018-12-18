@@ -112,5 +112,4 @@ public abstract class AbstractLogiskKassasjonIT {
 						.withHeader(org.apache.http.HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
 						.withBodyFile("abac/abac-permit.json")));
 	}
-
 }
