@@ -61,7 +61,7 @@ public class Rjoark107IT extends AbstractTidligKassasjonIT {
 	}
 
 	@Test
-	public void skallIkkeTidligtKassereDokument_ettersomDokmentErKnyttetFlereJournalposter() {
+	public void skallTidligtKassereDokument_medDokmentKnyttetFlereJournalposter() {
 		abacPermit();
 
 		Journalpost journalpost1 = joarkRepository.save(opprettHoveddokumentForIT());
@@ -88,11 +88,10 @@ public class Rjoark107IT extends AbstractTidligKassasjonIT {
 				createHeaders(),
 				String.class);
 
-		assertThat(responseEntity.getStatusCode(), is(HttpStatus.NOT_IMPLEMENTED));
-		assertThat(responseEntity.getBody(), containsString(String.format(
-				"Kan ikke utføre tidlig kassasjon av dokument med dokumentInfoId=%s fordi " +
-						"dokumentet er knyttet til flere journalposter og den funksjonaliteten er ikke implementert",
-				dokumentInfo1.getDokumentInfoId())));
+		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
+		assertThat("Feil antall begrensninger etter kall", begrensningRepository.count(), is(0L));
+		assertThat("Feil antall journalposter etter kall", joarkRepository.count(), is(2L));
+		assertThat("Feil antall dokumenter etter kall", dokumentinfoRepository.count(), is(2L));
 	}
 
 	@Test
@@ -123,19 +122,6 @@ public class Rjoark107IT extends AbstractTidligKassasjonIT {
 		assertThat("Feil antall begrensninger etter kall", begrensningRepository.count(), is(0L));
 		assertThat("Feil antall journalposter etter kall", joarkRepository.count(), is(1L));
 		assertThat("Feil antall dokumenter etter kall", dokumentinfoRepository.count(), is(1L));
-
-//		DokumentInfo dokumentInfoEtterKall = dokumentinfoRepository.findByDokumentInfoId(dokumentInfo.getDokumentInfoId()).get();
-
-		//Eventuelt
-
-		//		Set<FilDetaljer> filDetaljerSet = dokumentInfo.getFildetaljerListe();
-//
-//		filDetaljerSet.forEach((filDetaljer -> filDetaljer.getFilUuid(), ));
-
-//		assertThat(dokumentInfoEtterKall.getFildetaljerListe().iterator().hasNext(), is(0L));
-//		assertThat(dokumentInfoEtterKall.getFildetaljerListe().size(), is(0L));
-//		assertTrue(dokumentInfo.getFildetaljerListe().isEmpty());
-
 	}
 
 }

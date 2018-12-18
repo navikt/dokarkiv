@@ -61,57 +61,52 @@ public class Rjoark105IT extends AbstractLogiskKassasjonIT {
 	}
 
 	@Test
-	public void skallIkkeLogiskKassereDokument_ettersomDokumentErKnyttetFlereJournalposter() {
-	 abacPermit();
-
+	public void skallLogiskKassereDokument_medDokumentKnyttetFlereJournalposter() {
+		abacPermit();
 		Journalpost journalpost1 = joarkRepository.save(opprettHoveddokumentForIT());
-	 Journalpost journalpost2 = opprettHoveddokumentForIT();
+		Journalpost journalpost2 = opprettHoveddokumentForIT();
 
 		DokumentInfo hoveddokument1 = journalpost1.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
-
 		knyttDokumentInfoSomVedleggTilJournalpostForIT(hoveddokument1, journalpost2);
 
-	 joarkRepository.save(journalpost2);
+		joarkRepository.save(journalpost2);
 		assertTrue(hoveddokument1.isRelatedToMultipleJournalposts());
 
-	 TestTransaction.flagForCommit();
-	 TestTransaction.end();
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
 
-	 ResponseEntity<String> responseEntity = restTemplate.exchange(
-			 URL_LOGISKKASSASJON + hoveddokument1.getDokumentInfoId(),
-	 HttpMethod.PATCH,
-	 createHeaders(),
-	 String.class);
+		ResponseEntity<String> responseEntity = restTemplate.exchange(
+				URL_LOGISKKASSASJON + hoveddokument1.getDokumentInfoId(),
+				HttpMethod.PATCH,
+				createHeaders(),
+				String.class);
 
-	 assertThat(responseEntity.getStatusCode(), is(HttpStatus.NOT_IMPLEMENTED));
-	 assertThat(responseEntity.getBody(), containsString(String.format(
-	 "Kan ikke utføre tidlig kassasjon av dokument med dokumentInfoId=%s fordi dokumentet er knyttet til flere " +
-			 "journalposter og den funksjonaliteten er ikke implementert", hoveddokument1.getDokumentInfoId())));
-	 }
+		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
+		assertThat(begrensningRepository.count(), is(1L));
+		assertTrue(begrensningRepository.findByDokumentInfoIdAndBegrensningType(hoveddokument1.getDokumentInfoId(), BegrensningTypeCode.KASSERT)
+				.isPresent());
+	}
 
-	 @Test public void skallLogiskKassereDokument(){
-	 abacPermit();
+	@Test
+	public void skallLogiskKassereDokument_medDokumentKnyttetEnJournalpost() {
+		abacPermit();
 
-	 Journalpost journalpost = joarkRepository.save(opprettHoveddokumentForIT());
-	 DokumentInfo dokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
+		Journalpost journalpost = joarkRepository.save(opprettHoveddokumentForIT());
+		DokumentInfo dokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
 
-	 TestTransaction.flagForCommit();
-	 TestTransaction.end();
+		assertThat(begrensningRepository.count(), is(0L));
+		ResponseEntity<String> responseEntity = restTemplate.exchange(
+				URL_LOGISKKASSASJON + dokumentInfo.getDokumentInfoId(),
+				HttpMethod.PATCH,
+				createHeaders(),
+				String.class);
 
-		 assertThat(begrensningRepository.count(), is(0L));
-
-	 ResponseEntity<String> responseEntity = restTemplate.exchange(
-	 URL_LOGISKKASSASJON + dokumentInfo.getDokumentInfoId(),
-	 HttpMethod.PATCH,
-	 createHeaders(),
-	 String.class);
-
-	 assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
-
-		 assertThat(begrensningRepository.count(), is(1L));
-		 assertTrue(begrensningRepository.findByDokumentInfoIdAndBegrensningType(dokumentInfo.getDokumentInfoId(), BegrensningTypeCode.KASSERT)
-				 .isPresent());
-
-	 }
+		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
+		assertThat(begrensningRepository.count(), is(1L));
+		assertTrue(begrensningRepository.findByDokumentInfoIdAndBegrensningType(dokumentInfo.getDokumentInfoId(), BegrensningTypeCode.KASSERT)
+				.isPresent());
+	}
 }

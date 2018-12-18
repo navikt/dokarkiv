@@ -10,7 +10,6 @@ import no.nav.dokarkiv.core.domain.entities.Begrensning;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.BegrensningIkkeFunnetException;
-import no.nav.dokarkiv.core.exceptions.KassasjonAvDokumentKnyttetFlereJPException;
 import no.nav.dokarkiv.core.repository.BegrensningRepository;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkDeleteRepository;
@@ -71,13 +70,7 @@ public class TidligKassasjonServiceTest {
 	}
 
 	@Test
-	public void skalIkkeTidligKasserDokument_hvisDokumentErKnyttetFlereJournalposter() {
-		thrown.expect(KassasjonAvDokumentKnyttetFlereJPException.class);
-		thrown.expectMessage(String.format(
-				"Kan ikke utføre tidlig kassasjon av dokument med dokumentInfoId=%s fordi dokumentet er knyttet til flere " +
-						"journalposter og den funksjonaliteten er ikke implementert",
-				DOKUMENTINFO_ID));
-
+	public void skalTidligKasserDokument_medDokumentKnyttetFlereJournalposter() {
 		Journalpost journalpost2 = opprettHoveddokumentForEnhetstest();
 		knyttDokumentInfoSomVedleggTilJournalpostForIT(dokumentInfo, journalpost2);
 		assertTrue(dokumentInfo.isRelatedToMultipleJournalposts());
@@ -90,12 +83,11 @@ public class TidligKassasjonServiceTest {
 	}
 
 	@Test
-	public void skallTidligKassereDokument_utenKastAvExceptions() {
+	public void skallTidligKassereDokument_medDokumentKnyttetEnJournalpost() {
 		when(dokumentinfoRepository.findByDokumentInfoId(DOKUMENTINFO_ID)).thenReturn(Optional.of(dokumentInfo));
 		when(begrensningRepository.findByDokumentInfoIdAndBegrensningType(DOKUMENTINFO_ID, BegrensningTypeCode.KASSERT))
 				.thenReturn(Optional.of(begrensning));
 
 		TidligKassasjonResponse response = tidligKassasjonService.tidligKassasjonAvDokument(DOKUMENTINFO_ID);
 	}
-
 }

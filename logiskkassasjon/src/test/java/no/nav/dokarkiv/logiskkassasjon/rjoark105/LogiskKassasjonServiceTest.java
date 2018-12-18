@@ -12,7 +12,6 @@ import no.nav.dokarkiv.core.domain.entities.Begrensning;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.ErBegrensetException;
-import no.nav.dokarkiv.core.exceptions.KassasjonAvDokumentKnyttetFlereJPException;
 import no.nav.dokarkiv.core.repository.BegrensningRepository;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import org.junit.Before;
@@ -37,7 +36,6 @@ public class LogiskKassasjonServiceTest {
 					.dokumentInfoId(DOKUMENTINFO_ID)
 					.begrensningType(BegrensningTypeCode.KASSERT)
 					.build();
-
 
 	@Mock
 	private DokumentinfoRepository dokumentinfoRepository;
@@ -70,7 +68,7 @@ public class LogiskKassasjonServiceTest {
 	}
 
 	@Test
-	public void skalLogiskKasserDokument_utenKastAvExceptions() {
+	public void skalLogiskKasserDokument_medDokumentKnyttetEnJournalpost() {
 		when(dokumentinfoRepository.findByDokumentInfoId(DOKUMENTINFO_ID)).thenReturn(Optional.of(dokumentInfo));
 		when(begrensningRepository.findByDokumentInfoIdAndBegrensningType(DOKUMENTINFO_ID, BegrensningTypeCode.KASSERT))
 				.thenReturn(Optional.empty());
@@ -80,17 +78,8 @@ public class LogiskKassasjonServiceTest {
 		assertThat("Wrong tittel", response.getTittel(), is(TITTEL));
 	}
 
-
-	//dokumentet er knyttet flere journalposter
-	//TODO: Skal denne regel implementeres
 	@Test
-	public void skalIkkeLogiskKasserDokument_hvisDokumentErKnyttetFlereJournalposter() {
-		thrown.expect(KassasjonAvDokumentKnyttetFlereJPException.class);
-		thrown.expectMessage(String.format(
-				"Kan ikke utføre tidlig kassasjon av dokument med dokumentInfoId=%s fordi dokumentet er knyttet til flere " +
-						"journalposter og den funksjonaliteten er ikke implementert",
-				DOKUMENTINFO_ID));
-
+	public void skalLogiskKasserDokument_medDokumentKnyttetFlereJournalposter() {
 		Journalpost journalpost2 = opprettHoveddokumentForEnhetstest();
 		knyttDokumentInfoSomVedleggTilJournalpostForIT(dokumentInfo, journalpost2);
 		assertTrue(dokumentInfo.isRelatedToMultipleJournalposts());
@@ -101,5 +90,4 @@ public class LogiskKassasjonServiceTest {
 
 		LogiskKassasjonResponse response = logiskKassasjonService.logiskKassasjonAvDokument(DOKUMENTINFO_ID);
 	}
-
 }
