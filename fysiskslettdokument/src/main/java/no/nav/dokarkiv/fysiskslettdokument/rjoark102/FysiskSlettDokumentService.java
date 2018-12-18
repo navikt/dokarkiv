@@ -126,11 +126,10 @@ public class FysiskSlettDokumentService {
 
 		for (JournalpostDokumentInfoRelasjon relasjon : listFoundByJournalpostId) {
 			if (relasjon.isVedlegg()) {
+				Long originalJournalpostId = relasjon.getDokumentInfo().getOriginalJournalpost() ==
+						null ? -1 : relasjon.getDokumentInfo().getOriginalJournalpost().getJournalpostId();
 				if (relasjon.getDokumentInfo().isRelatedToMultipleJournalposts() &&
-						relasjon.getDokumentInfo()
-								.getOriginalJournalpost()
-								.getJournalpostId()
-								.equals(jpIdTilJpSomSkalSlettes)) {
+						originalJournalpostId.equals(jpIdTilJpSomSkalSlettes)) {
 					endreOriginalJournalpostIDokumentInfo(relasjon.getDokumentInfo(), jpIdTilJpSomSkalSlettes);
 				}
 				fysiskSlettEtVedlegg(relasjon);

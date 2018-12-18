@@ -20,7 +20,7 @@ public class FysiskSlettDokumentResponse {
 			@JsonProperty("journalpostId") Long journalpostId,
 			@JsonProperty("dokumentInfoId") Long dokumentInfoId,
 			@JsonProperty("tittel") String tittel,
-			@JsonProperty("tittel") TilknyttetJournalpostSomCode tilknyttetJournalpostSomCode) {
+			@JsonProperty("tilknyttetJournalpostSomCode") TilknyttetJournalpostSomCode tilknyttetJournalpostSomCode) {
 		this.journalpostId = journalpostId;
 		this.dokumentInfoId = dokumentInfoId;
 		this.tittel = tittel;
