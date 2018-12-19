@@ -22,22 +22,29 @@ public class RestWebMvcConfig implements WebMvcConfigurer {
 	private final OidcAuthProperties oidcAuthProperties;
 	private final CacheManager cacheManager;
 
-	@Value("${ldap.serviceuser.basedn}")
-	private String serviceuserBasedn;
+	private final String serviceuserBasedn;
+	private final String baseDn;
+	private final String authReadRequiredMemberOf;
 
 	public RestWebMvcConfig(LdapTemplate ldapTemplate,
 							NavLdapService navLdapService,
 							OidcAuthProperties oidcAuthProperties,
-							CacheManager cacheManager) {
+							CacheManager cacheManager,
+							@Value("${ldap.basedn}") String baseDn,
+							@Value("${ldap.serviceuser.basedn}") String serviceuserBaseDn,
+							@Value("${auth.group.lesetilgang.joark}") String authReadRequiredMemberOf) {
 		this.ldapTemplate = ldapTemplate;
 		this.navLdapService = navLdapService;
 		this.oidcAuthProperties = oidcAuthProperties;
 		this.cacheManager = cacheManager;
+		this.baseDn = baseDn;
+		this.serviceuserBasedn = serviceuserBaseDn;
+		this.authReadRequiredMemberOf = authReadRequiredMemberOf;
 	}
 
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
-		registry.addInterceptor(new BasicAuthRestInterceptor(serviceuserBasedn, ldapTemplate, cacheManager))
+		registry.addInterceptor(new BasicAuthRestInterceptor(baseDn, serviceuserBasedn, authReadRequiredMemberOf, ldapTemplate, cacheManager))
 				.addPathPatterns("/hentjournalsakinfo/**");
 
 		registry.addInterceptor(new ValidateUserAndAddToMDCHandler(navLdapService))

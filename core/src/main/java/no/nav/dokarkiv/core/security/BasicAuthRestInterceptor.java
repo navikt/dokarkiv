@@ -9,6 +9,9 @@ import org.slf4j.MDC;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.ldap.core.LdapTemplate;
+import org.springframework.ldap.filter.AndFilter;
+import org.springframework.ldap.filter.EqualsFilter;
+import org.springframework.ldap.filter.HardcodedFilter;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.servlet.HandlerInterceptor;
 
@@ -29,15 +32,23 @@ public class BasicAuthRestInterceptor implements HandlerInterceptor {
 	private static final String CHARSET = "UTF-8";
 
 	private final String serviceuserBasedn;
+	private final String requiredGroupMember;
 	private final LdapTemplate ldapTemplate;
 	private final CacheManager cacheManager;
 
 
 	@Inject
-	public BasicAuthRestInterceptor(String serviceuserBasedn,
+	public BasicAuthRestInterceptor(String baseDn,
+									String serviceuserBasedn,
+									String requiredGroupMember,
 									LdapTemplate ldapTemplate,
 									CacheManager cacheManager) {
 		this.serviceuserBasedn = serviceuserBasedn;
+		if(requiredGroupMember == null) {
+			this.requiredGroupMember = null;
+		} else {
+			this.requiredGroupMember = requiredGroupMember + "," + baseDn;
+		}
 		this.ldapTemplate = ldapTemplate;
 		this.cacheManager = cacheManager;
 	}
@@ -72,7 +83,7 @@ public class BasicAuthRestInterceptor implements HandlerInterceptor {
 
 		if (cachedAuthHash == null) {
 			try {
-				ldapTemplate.authenticate(query().base(serviceuserBasedn).where("cn").is(username), password);
+				authenticateWithLdap(username, password);
 				usernameTokenCache.put(username, Objects.hash(username, password));
 			} catch (Exception e) {
 				response.sendError(HttpServletResponse.SC_FORBIDDEN, String.format("Innlogging feilet for bruker med navn %s", username));
@@ -87,6 +98,17 @@ public class BasicAuthRestInterceptor implements HandlerInterceptor {
 
 		MDC.put(MDC_CONSUMER_ID, username);
 		return true;
+	}
+
+	private void authenticateWithLdap(String username, String password) {
+		if (requiredGroupMember == null) {
+			ldapTemplate.authenticate(query().base(serviceuserBasedn).where("cn").is(username), password);
+		} else {
+			AndFilter filter = new AndFilter();
+			filter.and(new EqualsFilter("cn", username));
+			filter.and(new HardcodedFilter("(memberOf=" + requiredGroupMember + ")"));
+			ldapTemplate.authenticate(query().base(serviceuserBasedn).filter(filter), password);
+		}
 	}
 
 	private String getBasicAuthToken(HttpServletRequest request) {

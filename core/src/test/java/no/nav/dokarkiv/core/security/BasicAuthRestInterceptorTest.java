@@ -32,14 +32,16 @@ public class BasicAuthRestInterceptorTest {
 
 	private static final String USERNAME = "username";
 	private static final String ***passord=gammelt_passord***";
-	private final static String SERVICE_USER_BASE_DN = "ou=ServiceAccounts,dc=test,dc=local";
+	private static final String BASE_DN = "dc=test,dc=local";
+	private static final String SERVICE_USER_BASE_DN = "ou=ServiceAccounts,dc=test,dc=local";
+	private static final String SERVICE_USER_GROUP_DN = "0000-GA-test";
 	private final LdapTemplate ldapTemplateMock = mock(LdapTemplate.class);
 	private final CacheManager cacheManagerMock = mock(CacheManager.class);
 	private final HttpServletRequest httpServletRequestMock = mock(HttpServletRequest.class);
 	private final HttpServletResponse httpServletResponseMock = mock(HttpServletResponse.class);
 	private final Object handlerMock = mock(Object.class);
 	private final Cache cacheMock = mock(Cache.class);
-	private final BasicAuthRestInterceptor basicAuthRestInterceptor = new BasicAuthRestInterceptor(SERVICE_USER_BASE_DN, ldapTemplateMock, cacheManagerMock);
+	private final BasicAuthRestInterceptor basicAuthRestInterceptor = new BasicAuthRestInterceptor(BASE_DN, SERVICE_USER_BASE_DN, SERVICE_USER_GROUP_DN, ldapTemplateMock, cacheManagerMock);
 
 
 	@Test
