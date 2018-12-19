@@ -3,25 +3,33 @@ package no.nav.dokarkiv.hentjournalsakinfo;
 import no.nav.dokarkiv.core.CoreConfig;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
+import no.nav.dokarkiv.core.security.BasicAuthRestInterceptor;
 import no.nav.dokarkiv.core.security.LdapConfig;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.dokarkiv.core.stelvio.SimpleRequestContext;
 import org.junit.Before;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.data.ldap.AutoConfigureDataLdap;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.cache.CacheManager;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Base64Utils;
+import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
@@ -30,7 +38,7 @@ import javax.persistence.PersistenceContext;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-		classes = {CoreConfig.class, HentJournalsakinfoConfig.class, LdapConfig.class})
+		classes = {CoreConfig.class, HentJournalsakinfoConfig.class, LdapConfig.class, AbstractHentjournalsakinfoItest.Config.class})
 @ActiveProfiles("itest,ldap")
 @AutoConfigureDataLdap
 @AutoConfigureTestDatabase
@@ -38,7 +46,20 @@ import javax.persistence.PersistenceContext;
 @Transactional
 public abstract class AbstractHentjournalsakinfoItest {
 
-	protected static final String USERNAME = "srvdokarkiv";
+	@Configuration
+	static class Config {
+		@Bean
+		@Named("basicAuthReadAccessRestInterceptor")
+		HandlerInterceptor basicAuthReadAccessRestInterceptor(LdapTemplate ldapTemplate,
+															  CacheManager cacheManager,
+															  @Value("${ldap.basedn}") String baseDn,
+															  @Value("${ldap.serviceuser.basedn}") String serviceuserBaseDn) {
+			// kan ikke teste gruppemedlemskap pga embedded unboundid ldap server ikke støtter det.
+			return new BasicAuthRestInterceptor(baseDn, serviceuserBaseDn, null, ldapTemplate, cacheManager);
+		}
+	}
+
+	protected static final String USERNAME = "srvsaf";
 	protected static final String ***passord=gammelt_passord***";
 
 	@Inject

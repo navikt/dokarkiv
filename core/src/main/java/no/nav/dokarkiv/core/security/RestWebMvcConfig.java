@@ -2,13 +2,12 @@ package no.nav.dokarkiv.core.security;
 
 import no.nav.dokarkiv.core.security.ldap.NavLdapService;
 import no.nav.freg.security.oidc.auth.OidcAuthProperties;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.ldap.core.LdapTemplate;
+import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import javax.inject.Named;
 import java.util.ArrayList;
 
 /**
@@ -17,40 +16,27 @@ import java.util.ArrayList;
 @Configuration
 public class RestWebMvcConfig implements WebMvcConfigurer {
 
-	private final LdapTemplate ldapTemplate;
 	private final NavLdapService navLdapService;
 	private final OidcAuthProperties oidcAuthProperties;
-	private final CacheManager cacheManager;
+	private final HandlerInterceptor basicAuthReadAccessRestInterceptor;
 
-	private final String serviceuserBasedn;
-	private final String baseDn;
-	private final String authReadRequiredMemberOf;
-
-	public RestWebMvcConfig(LdapTemplate ldapTemplate,
-							NavLdapService navLdapService,
+	public RestWebMvcConfig(NavLdapService navLdapService,
 							OidcAuthProperties oidcAuthProperties,
-							CacheManager cacheManager,
-							@Value("${ldap.basedn}") String baseDn,
-							@Value("${ldap.serviceuser.basedn}") String serviceuserBaseDn,
-							@Value("${auth.group.lesetilgang.joark}") String authReadRequiredMemberOf) {
-		this.ldapTemplate = ldapTemplate;
+							@Named("basicAuthReadAccessRestInterceptor") HandlerInterceptor basicAuthReadAccessRestInterceptor) {
 		this.navLdapService = navLdapService;
 		this.oidcAuthProperties = oidcAuthProperties;
-		this.cacheManager = cacheManager;
-		this.baseDn = baseDn;
-		this.serviceuserBasedn = serviceuserBaseDn;
-		this.authReadRequiredMemberOf = authReadRequiredMemberOf;
+		this.basicAuthReadAccessRestInterceptor = basicAuthReadAccessRestInterceptor;
 	}
 
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
-		registry.addInterceptor(new BasicAuthRestInterceptor(baseDn, serviceuserBasedn, authReadRequiredMemberOf, ldapTemplate, cacheManager))
+		registry.addInterceptor(basicAuthReadAccessRestInterceptor)
 				.addPathPatterns("/hentjournalsakinfo/**");
 
 		registry.addInterceptor(new ValidateUserAndAddToMDCHandler(navLdapService))
 				.excludePathPatterns(new ArrayList<>(oidcAuthProperties.getIgnoredPaths()))
 				.addPathPatterns(oidcAuthProperties.getSecuredPath());
 		registry.addInterceptor(new ValidateGraphqlNavConsumerInterceptor())
-				.addPathPatterns(new String[] {"/rest/graphql", "/rest/logiskslettdokument/**"});
+				.addPathPatterns(new String[]{"/rest/graphql", "/rest/logiskslettdokument/**"});
 	}
 }
