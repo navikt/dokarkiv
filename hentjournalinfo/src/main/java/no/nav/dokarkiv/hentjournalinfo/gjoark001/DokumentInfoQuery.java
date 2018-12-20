@@ -73,6 +73,12 @@ public class DokumentInfoQuery implements Query {
 		return mapDokumentInfo(dokumentInfo);
 	}
 
+	@GraphQLQuery(name = "kassert")
+	@Transactional(readOnly = true)
+	public boolean kassert(@GraphQLContext DokumentInfo dokument) {
+		return begrensningService.isDokumentKassert(dokument.getDokumentInfoId());
+	}
+
 	@GraphQLQuery(name = "originalJournalpost")
 	@Transactional(readOnly = true)
 	public Journalpost originalJournalpost(@GraphQLContext DokumentInfo dokument) {
