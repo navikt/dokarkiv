@@ -11,7 +11,7 @@ import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
 import no.nav.dokarkiv.core.domain.entities.Begrensning;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import no.nav.dokarkiv.core.exceptions.ErBegrensetException;
+import no.nav.dokarkiv.core.exceptions.DokumentAlleredeKassertException;
 import no.nav.dokarkiv.core.repository.BegrensningRepository;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import org.junit.Before;
@@ -55,7 +55,7 @@ public class LogiskKassasjonServiceTest {
 
 	@Test()
 	public void skalIkkeLogiskKassereDokument_hvisDokumentInfoAlleredeErKassert() {
-		thrown.expect(ErBegrensetException.class);
+		thrown.expect(DokumentAlleredeKassertException.class);
 		thrown.expectMessage(String.format(
 				"Kan ikke utføre logisk kassasjon av dokument med dokumentInfoId=%s. Dokumentet er allerede logisk kassert",
 				DOKUMENTINFO_ID));

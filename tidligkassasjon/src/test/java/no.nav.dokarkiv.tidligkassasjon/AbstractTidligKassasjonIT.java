@@ -105,6 +105,14 @@ public abstract class AbstractTidligKassasjonIT {
 		return new HttpEntity(headers);
 	}
 
+	protected HttpEntity createNoAccessHeaders() {
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.TEXT_PLAIN);
+		headers.add(HttpHeaders.AUTHORIZATION, OIDC_TOKEN_PERSON_USER_TEST);
+		headers.add(NAV_CONSUMER_TOKEN, OIDC_TOKEN_SERVICE_NO_ACCESS_USER_TEST);
+		return new HttpEntity(headers);
+	}
+
 	protected void abacPermit() {
 		stubFor(post(urlEqualTo("/abac"))
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())

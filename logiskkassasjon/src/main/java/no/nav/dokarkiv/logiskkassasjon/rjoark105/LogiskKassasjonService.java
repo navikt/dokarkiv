@@ -4,7 +4,8 @@ import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
 import no.nav.dokarkiv.core.domain.entities.Begrensning;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
-import no.nav.dokarkiv.core.exceptions.ErBegrensetException;
+import no.nav.dokarkiv.core.exceptions.DokumentAlleredeKassertException;
+import no.nav.dokarkiv.core.exceptions.DokumentInfoIkkeFunnetException;
 import no.nav.dokarkiv.core.repository.BegrensningRepository;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import org.slf4j.MDC;
@@ -27,7 +28,9 @@ public class LogiskKassasjonService {
 	}
 
 	public LogiskKassasjonResponse logiskKassasjonAvDokument(Long dokumentInfoId) {
-		DokumentInfo dokumentInfoSomSkalKasseres = dokumentInfoRepository.findByDokumentInfoId(dokumentInfoId).get();
+		DokumentInfo dokumentInfoSomSkalKasseres = dokumentInfoRepository.findByDokumentInfoId(dokumentInfoId).orElseThrow(
+				() -> new DokumentInfoIkkeFunnetException(String.format("Kan ikke finne dokumentInfo med dokumentInfoId=%s",
+						dokumentInfoId)));
 
 		sjekkAtDokumentIkkeErBegrensetSomKassert(dokumentInfoId);
 
@@ -46,7 +49,7 @@ public class LogiskKassasjonService {
 	private void sjekkAtDokumentIkkeErKassert(Long dokumentInfoId) {
 		if (begrensningRepository.findByDokumentInfoIdAndBegrensningType(dokumentInfoId, BegrensningTypeCode.KASSERT)
 				.isPresent()) {
-			throw new ErBegrensetException(String.format(
+			throw new DokumentAlleredeKassertException(String.format(
 					"Kan ikke utføre logisk kassasjon av dokument med dokumentInfoId=%s. Dokumentet er allerede logisk kassert",
 					dokumentInfoId));
 		}

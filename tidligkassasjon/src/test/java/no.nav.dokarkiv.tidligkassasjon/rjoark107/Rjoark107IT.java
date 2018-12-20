@@ -123,4 +123,28 @@ public class Rjoark107IT extends AbstractTidligKassasjonIT {
 		assertThat("Feil antall journalposter etter kall", joarkRepository.count(), is(1L));
 		assertThat("Feil antall dokumenter etter kall", dokumentinfoRepository.count(), is(1L));
 	}
+
+	@Test
+	public void noAccess() {
+		abacPermit();
+
+		Journalpost journalpost = joarkRepository.save(opprettHoveddokumentForIT());
+		DokumentInfo dokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
+
+		begrensningRepository.save(kassereDokumentLogisk(dokumentInfo));
+
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
+
+		ResponseEntity<String> responseEntity = restTemplate.exchange(
+				URL_TIDLIGKASSASJON + dokumentInfo.getDokumentInfoId(),
+				HttpMethod.PATCH,
+				createNoAccessHeaders(),
+				String.class);
+
+
+		assertThat(responseEntity.getStatusCode(), is(HttpStatus.UNAUTHORIZED));
+	}
+
+
 }

@@ -127,4 +127,26 @@ public class Rjoark106IT extends AbstractLogiskKassasjonIT {
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 		assertThat(begrensningRepository.count(), is(0L));
 	}
+
+	@Test
+	public void noAccess() {
+		abacPermit();
+
+		Journalpost journalpost = joarkRepository.save(opprettHoveddokumentForIT());
+		DokumentInfo dokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
+
+		begrensningRepository.save(kassereDokumentLogisk(dokumentInfo));
+
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
+
+		ResponseEntity<String> responseEntity = restTemplate.exchange(
+				URL_ANGRE_LOGISKKASSASJON + dokumentInfo.getDokumentInfoId(),
+				HttpMethod.PATCH,
+				createNoAccessHeaders(),
+				String.class);
+
+
+		assertThat(responseEntity.getStatusCode(), is(HttpStatus.UNAUTHORIZED));
+	}
 }

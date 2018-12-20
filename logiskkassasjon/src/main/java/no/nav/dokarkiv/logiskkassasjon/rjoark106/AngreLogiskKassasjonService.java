@@ -29,13 +29,9 @@ public class AngreLogiskKassasjonService {
 
 	public LogiskKassasjonResponse angreLogiskKassasjonAvDokument(Long dokumentInfoId) {
 		DokumentInfo dokumentInfoDerKasseringSkalAngres = dokumentInfoRepository.findByDokumentInfoId(dokumentInfoId)
-				.orElse(null);
-
-		if (dokumentInfoDerKasseringSkalAngres == null) {
-			throw new DokumentInfoIkkeFunnetException(
-					String.format("Kan ikke finne dokumentInfo med dokumentInfoId=%s",
-							dokumentInfoId));
-		}
+				.orElseThrow(() -> new DokumentInfoIkkeFunnetException(
+						String.format("Kan ikke finne dokumentInfo med dokumentInfoId=%s",
+								dokumentInfoId)));
 
 		sjekkAtDokumentErLogiskKassert(dokumentInfoId);
 		begrensningRepository.deleteByDokumentInfoIdAndBegrensningType(dokumentInfoId, BegrensningTypeCode.KASSERT);

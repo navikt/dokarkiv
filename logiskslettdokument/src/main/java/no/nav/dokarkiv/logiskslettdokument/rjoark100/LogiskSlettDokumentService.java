@@ -6,7 +6,7 @@ import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
 import no.nav.dokarkiv.core.domain.entities.Begrensning;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.service.BegrensningService;
-import no.nav.dokarkiv.core.exceptions.ErBegrensetException;
+import no.nav.dokarkiv.core.exceptions.DokumentAlleredeUtilgjengeliggjortException;
 import no.nav.dokarkiv.core.exceptions.JournalpostDokumentInfoRelasjonIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.UgyldigTilknyttetJournalpostSomException;
 import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
@@ -70,7 +70,7 @@ public class LogiskSlettDokumentService {
 	private void sjekkAtDokumentIkkeErUtilgjengeliggjort(Long journalpostId, Long dokumentInfoId) {
 		sjekkAtJournalpostIkkeErUtilgjengeliggjort(journalpostId);
 		if (begrensningService.isJournalpostDokumentInfoRelasjonBegrenset(journalpostId, dokumentInfoId, BegrensningTypeCode.UTILGJENGELIGGJORT)) {
-			throw new ErBegrensetException(String.format(
+			throw new DokumentAlleredeUtilgjengeliggjortException(String.format(
 					"Kan ikke utføre logisk sletting av dokument med journalpostId=%s og dokumentInfoId=%s. Dokumentet er utilgjengeliggjort.",
 					journalpostId,
 					dokumentInfoId));
@@ -79,7 +79,7 @@ public class LogiskSlettDokumentService {
 
 	private void sjekkAtJournalpostIkkeErUtilgjengeliggjort(Long journalpostId) {
 		if (begrensningService.isJournalpostBegrenset(journalpostId, BegrensningTypeCode.UTILGJENGELIGGJORT)) {
-			throw new ErBegrensetException(String.format(
+			throw new DokumentAlleredeUtilgjengeliggjortException(String.format(
 					"Kan ikke utføre logisk sletting av dokument med journalpostId=%s. Journalposten er utilgjengeliggjort",
 					journalpostId));
 		}
