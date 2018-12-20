@@ -13,5 +13,9 @@ public enum BegrensningTypeCode {
 	/**
 	 * Skjermet
 	 */
-	SKJERMET;
+	SKJERMET,
+	/**
+	 * Kassert
+	 */
+	KASSERT;
 }

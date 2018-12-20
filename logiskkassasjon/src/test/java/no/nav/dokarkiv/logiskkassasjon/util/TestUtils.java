@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.arkiverkorrigertdokument.util;
+package no.nav.dokarkiv.logiskkassasjon.util;
 
 import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
 
@@ -27,22 +27,18 @@ import java.util.Date;
 
 public class TestUtils {
 
-
 	private static final String OPPRETTET_KILDE_NAVN = "Opprettet kilde";
 	private static final String OPPRETTET_AV_NAVN = "Opprettet navn";
 	private static final String TILKNYTTET_AV_NAVN = "Tilknyttetnavn";
 	private static final String ENDRET_AV_NAVN = "Endret av navn";
 	private static final String AVSENDER_MOTTAKER_ID = "***gammelt_fnr***";
-	private static final String DOKUMENT_TITTEL = "SlettDokumentTittel";
 	private static final String BREVGRUPPE = "Brevgruppe";
 	private static final String BREVKODE = "Brevkode";
 	private static final String FILNAVN = "filNavn";
 	private static final String TITTEL = "Tittel";
-
-	public static final Long JOURNALPOST_ID = 42L;
-	public static final Long DOKUMENTINFO_ID = 1L;
-	public static byte[] FIL = "TEEEST".getBytes();
-
+	private static Long JOURNALPOST_ID = 2000000L;
+	private static Long JPDOKINFORELAJSON_ID = 2000000L;
+	private static Long DOKUMENTINFO_ID = 2000000L;
 
 	public static Journalpost opprettHoveddokumentForIT() {
 		return getBaseJournalpostBuilder()
@@ -52,6 +48,42 @@ public class TestUtils {
 								.dokumentInfo(getBaseDokumentInfoBuilder().build())
 								.build())
 				.build();
+	}
+
+	public static Journalpost opprettHoveddokumentForEnhetstest() {
+		return getBaseJournalpostBuilder()
+				.journalpostId(JOURNALPOST_ID++)
+				.dokumentInfoRelasjoner(
+						getBaseJournalpostDokumentInfoRelasjonBuilder()
+								.journalpostDokumentInfoRelasjonId(JPDOKINFORELAJSON_ID++)
+								.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.HOVEDDOKUMENT)
+								.dokumentInfo(getBaseDokumentInfoBuilder()
+										.dokumentInfoId(DOKUMENTINFO_ID)
+										.build())
+								.build())
+				.build();
+	}
+
+
+	public static Journalpost opprettHoveddokumentMedEtKnyttetVedleggForIT() {
+		Journalpost journalpost = opprettHoveddokumentForIT();
+		journalpost.addJournalpostDokumentInfoRelasjon(getBaseJournalpostDokumentInfoRelasjonBuilder()
+				.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
+				.tilknyttetAvNavn(TILKNYTTET_AV_NAVN)
+				.dokumentInfo(getBaseDokumentInfoBuilder()
+						.originalJournalpost(journalpost)
+						.build())
+				.build());
+		return journalpost;
+	}
+
+	public static void knyttDokumentInfoSomVedleggTilJournalpostForIT(DokumentInfo dokInfoVedlegg, Journalpost jpHovedokument) {
+		jpHovedokument.addJournalpostDokumentInfoRelasjon(
+				getBaseJournalpostDokumentInfoRelasjonBuilder()
+						.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
+						.tilknyttetAvNavn(TILKNYTTET_AV_NAVN)
+						.dokumentInfo(dokInfoVedlegg)
+						.build());
 	}
 
 	private static JournalpostBuilder getBaseJournalpostBuilder() {
@@ -105,15 +137,13 @@ public class TestUtils {
 				.build();
 	}
 
-	public static Begrensning begrensArkivVariantAvDokumentSomSkjermet(DokumentInfo dokumentInfo) {
+	public static Begrensning kassereDokumentLogisk(DokumentInfo dokumentInfo) {
 		Begrensning begrensning = Begrensning.builder()
-				.journalpostId(dokumentInfo.getOriginalJournalpost() == null ? null : dokumentInfo.getOriginalJournalpost()
-						.getJournalpostId())
 				.dokumentInfoId(dokumentInfo.getDokumentInfoId())
-				.begrensningType(BegrensningTypeCode.SKJERMET)
-				.variantFormat(VariantFormatCode.ARKIV)
+				.begrensningType(BegrensningTypeCode.KASSERT)
 				.build();
 		begrensning.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
 		return begrensning;
 	}
+
 }
