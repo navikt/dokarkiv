@@ -61,16 +61,14 @@ public class BegrensningService {
 		Optional<Begrensning> variantSkjermet = begrensningRepository.findByDokumentInfoIdAndVariantFormatAndBegrensningType(dokumentInfoId, variant, BegrensningTypeCode.SKJERMET);
 		String consumer = hentBrukerSomKaller();
 
-		return variantSkjermet.isPresent();
-
-//		//Midlertidig løsning i påvente av SAF
-//		if ("srvjoarkadmin".equalsIgnoreCase(consumer)) {
-//			//Har rettighet til å se originalen uansett
-//			return false;
-//		} else {
-//			//Dersom den er skjermet, returneres TRUE
-//			return variantSkjermet.isPresent();
-//		}
+		//Midlertidig løsning i påvente av SAF
+		if ("srvjoarkadmin".equalsIgnoreCase(consumer)) {
+			//Har rettighet til å se originalen uansett
+			return false;
+		} else {
+			//Dersom den er skjermet, returneres TRUE
+			return variantSkjermet.isPresent();
+		}
 	}
 
 	public void saveBegrensning(Begrensning begrensning) {
