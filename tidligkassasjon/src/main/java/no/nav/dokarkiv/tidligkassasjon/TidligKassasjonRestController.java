@@ -31,7 +31,6 @@ public class TidligKassasjonRestController {
 
 	private final TidligKassasjonValidator validator;
 	private final TidligKassasjonService tidligKassasjonService;
-	private final AbacSecurityService abacSecurityService;
 
 	@Inject
 	public TidligKassasjonRestController(
@@ -40,7 +39,6 @@ public class TidligKassasjonRestController {
 			AbacSecurityService abacSecurityService) {
 		this.validator = validator;
 		this.tidligKassasjonService = service;
-		this.abacSecurityService = abacSecurityService;
 	}
 
 	@Transactional
@@ -53,7 +51,6 @@ public class TidligKassasjonRestController {
 		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark107");
 		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har mottat kall med dokumentInfoId={}", dokumentInfoId);
 		validator.validerTidligKassasjonRequest(dokumentInfoId);
-		abacSecurityService.assertAccessToDokumentIncludingBegrenset(dokumentInfoId);
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
 		TidligKassasjonResponse response = tidligKassasjonService.tidligKassasjonAvDokument(dokumentInfoId);
 		log.info("{} har tidlig kassert dokument med dokumentInfoId={}",

@@ -10,7 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
 import no.nav.dokarkiv.core.metrics.RestMetrics;
-import no.nav.dokarkiv.core.security.abac.AbacSecurityService;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import no.nav.dokarkiv.fysiskslettdokument.rjoark102.FysiskSlettDokumentRequestTo;
 import no.nav.dokarkiv.fysiskslettdokument.rjoark102.FysiskSlettDokumentResponse;
@@ -32,13 +31,10 @@ import javax.inject.Inject;
 public class FysiskSlettDokumentRestController {
 
 	private final FysiskSlettDokumentService fysiskSlettDokumentService;
-	private final AbacSecurityService abacSecurityService;
 
 	@Inject
-	public FysiskSlettDokumentRestController(FysiskSlettDokumentService fysiskSlettDokumentService,
-											 AbacSecurityService abacSecurityService) {
+	public FysiskSlettDokumentRestController(FysiskSlettDokumentService fysiskSlettDokumentService) {
 		this.fysiskSlettDokumentService = fysiskSlettDokumentService;
-		this.abacSecurityService = abacSecurityService;
 	}
 
 	@Transactional
@@ -52,8 +48,6 @@ public class FysiskSlettDokumentRestController {
 			@PathVariable("journalpostId") Long journalpostId,
 			@PathVariable("dokumentInfoId") Long dokumentInfoId,
 			@PathVariable("begrensningType") BegrensningTypeCode begrensningType) {
-		//Kan ikke sjekke tilgang til journalpost med servicebruker. Denne tjenesten kalles 6 mnd etter at logisk slett er gjort.
-		//abacSecurityService.assertAccessToJournalpostIncludingBegrenset(journalpostId.toString());
 		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark102");
 		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har mottat kall med journalpostId=" + journalpostId + ", dokumentInfoId=" + dokumentInfoId + " og begrensningType=" + begrensningType);
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));

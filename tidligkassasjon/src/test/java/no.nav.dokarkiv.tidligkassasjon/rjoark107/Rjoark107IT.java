@@ -34,7 +34,7 @@ public class Rjoark107IT extends AbstractTidligKassasjonIT {
 				String.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.NOT_FOUND));
-		assertThat(responseEntity.getBody(), containsString("DokumentInfo ikke funnet. dokumentInfoId=" + dokumentInfoId));
+		assertThat(responseEntity.getBody(), containsString("Kan ikke finne dokument med dokumentInfoId=" + dokumentInfoId));
 	}
 
 	@Test
