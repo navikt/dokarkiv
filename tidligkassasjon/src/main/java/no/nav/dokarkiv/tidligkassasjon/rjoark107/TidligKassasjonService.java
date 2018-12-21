@@ -5,6 +5,7 @@ import static org.apache.cxf.common.util.PropertyUtils.isFalse;
 import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.exceptions.BegrensningIkkeFunnetException;
+import no.nav.dokarkiv.core.exceptions.DokumentInfoIkkeFunnetException;
 import no.nav.dokarkiv.core.repository.BegrensningRepository;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkDeleteRepository;
@@ -30,7 +31,9 @@ public class TidligKassasjonService {
 	}
 
 	public TidligKassasjonResponse tidligKassasjonAvDokument(Long dokumentInfoId) {
-		DokumentInfo dokumentInfoTilTidligKassering = dokumentInfoRepository.findByDokumentInfoId(dokumentInfoId).get();
+		DokumentInfo dokumentInfoTilTidligKassering = dokumentInfoRepository.findByDokumentInfoId(dokumentInfoId).orElseThrow(
+				() -> new DokumentInfoIkkeFunnetException(String.format(
+						"Kan ikke finne dokument med dokumentInfoId=%s", dokumentInfoId)));
 
 		sjekkAtDokumentErLogiskKassert(dokumentInfoId);
 

@@ -41,14 +41,11 @@ public class FysiskSlettDokumentService {
 	public FysiskSlettDokumentResponse sletteDokumentFysisk(FysiskSlettDokumentRequestTo requestTo) {
 		JournalpostDokumentInfoRelasjon relasjonSomSkalSlettesFysisk =
 				journalpostDokumentInfoRelasjonRepository.findByJournalpostJournalpostIdAndDokumentInfoDokumentInfoId(
-						requestTo.getJournalpostId(), requestTo.getDokumentInfoId()).orElse(null);
-
-		if (relasjonSomSkalSlettesFysisk == null) {
-			throw new JournalpostDokumentInfoRelasjonIkkeFunnetException(
-					String.format("Kan ikke finne noen relasjon mellom journalpost med journalpostId=%s og dokument med dokumentInfoId=%s",
-							requestTo.getJournalpostId(),
-							requestTo.getDokumentInfoId()));
-		}
+						requestTo.getJournalpostId(), requestTo.getDokumentInfoId()).orElseThrow(() ->
+						new JournalpostDokumentInfoRelasjonIkkeFunnetException(String.format(
+								"Kan ikke finne noen relasjon mellom journalpost med journalpostId=%s og dokument med dokumentInfoId=%s",
+								requestTo.getJournalpostId(),
+								requestTo.getDokumentInfoId())));
 
 		switch (relasjonSomSkalSlettesFysisk.getTilknyttetJournalpostSom()) {
 			case HOVEDDOKUMENT:
