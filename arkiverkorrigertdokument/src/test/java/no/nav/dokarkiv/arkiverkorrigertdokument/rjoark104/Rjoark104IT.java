@@ -38,7 +38,7 @@ public class Rjoark104IT extends AbstractArkiverKorrigertDokumentIT {
 
 		ResponseEntity<ArkiverKorrigertDokumentRespons> responseEntity = restTemplate.exchange(
 				URL_ANGREARKIVERKORRIGERTDOKUMENT + dokumentInfoId,
-				HttpMethod.PATCH,
+				HttpMethod.POST,
 				createHttpEntityHeaders(),
 				ArkiverKorrigertDokumentRespons.class);
 
@@ -53,7 +53,7 @@ public class Rjoark104IT extends AbstractArkiverKorrigertDokumentIT {
 
 		ResponseEntity<ArkiverKorrigertDokumentRespons> responseEntity = restTemplate.exchange(
 				URL_ANGREARKIVERKORRIGERTDOKUMENT + dokumentInfoId,
-				HttpMethod.PATCH,
+				HttpMethod.POST,
 				createHttpEntityHeaders(),
 				ArkiverKorrigertDokumentRespons.class);
 
@@ -70,7 +70,7 @@ public class Rjoark104IT extends AbstractArkiverKorrigertDokumentIT {
 
 		ResponseEntity<ArkiverKorrigertDokumentRespons> responseEntity = restTemplate.exchange(
 				URL_ANGREARKIVERKORRIGERTDOKUMENT + dokumentInfo.getDokumentInfoId(),
-				HttpMethod.PATCH,
+				HttpMethod.POST,
 				createHttpEntityHeaders(),
 				ArkiverKorrigertDokumentRespons.class);
 
@@ -89,7 +89,7 @@ public class Rjoark104IT extends AbstractArkiverKorrigertDokumentIT {
 
 		ResponseEntity<ArkiverKorrigertDokumentRespons> responseEntity = restTemplate.exchange(
 				URL_ANGREARKIVERKORRIGERTDOKUMENT,
-				HttpMethod.PATCH,
+				HttpMethod.POST,
 				createHttpEntityHeaders(),
 				ArkiverKorrigertDokumentRespons.class);
 
@@ -146,7 +146,7 @@ public class Rjoark104IT extends AbstractArkiverKorrigertDokumentIT {
 
 		responseEntity = restTemplate.exchange(
 				URL_ANGREARKIVERKORRIGERTDOKUMENT + dokumentInfo.getDokumentInfoId(),
-				HttpMethod.PATCH,
+				HttpMethod.POST,
 				createHttpEntityHeaders(),
 				ArkiverKorrigertDokumentRespons.class);
 

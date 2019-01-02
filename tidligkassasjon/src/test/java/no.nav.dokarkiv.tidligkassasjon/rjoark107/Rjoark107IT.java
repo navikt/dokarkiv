@@ -29,7 +29,7 @@ public class Rjoark107IT extends AbstractTidligKassasjonIT {
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_TIDLIGKASSASJON + dokumentInfoId,
-				HttpMethod.PATCH,
+				HttpMethod.POST,
 				createHeaders(),
 				String.class);
 
@@ -49,7 +49,7 @@ public class Rjoark107IT extends AbstractTidligKassasjonIT {
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_TIDLIGKASSASJON + dokumentInfo.getDokumentInfoId(),
-				HttpMethod.PATCH,
+				HttpMethod.POST,
 				createHeaders(),
 				String.class);
 
@@ -84,7 +84,7 @@ public class Rjoark107IT extends AbstractTidligKassasjonIT {
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_TIDLIGKASSASJON + dokumentInfo1.getDokumentInfoId(),
-				HttpMethod.PATCH,
+				HttpMethod.POST,
 				createHeaders(),
 				String.class);
 
@@ -114,7 +114,7 @@ public class Rjoark107IT extends AbstractTidligKassasjonIT {
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_TIDLIGKASSASJON + dokumentInfo.getDokumentInfoId(),
-				HttpMethod.PATCH,
+				HttpMethod.POST,
 				createHeaders(),
 				String.class);
 
@@ -138,7 +138,7 @@ public class Rjoark107IT extends AbstractTidligKassasjonIT {
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_TIDLIGKASSASJON + dokumentInfo.getDokumentInfoId(),
-				HttpMethod.PATCH,
+				HttpMethod.POST,
 				createNoAccessHeaders(),
 				String.class);
 

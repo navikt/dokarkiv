@@ -17,8 +17,8 @@ import no.nav.dokarkiv.logiskslettdokument.rjoark101.AngreLogiskSlettDokumentSer
 import no.nav.freg.abac.core.annotation.Abac;
 import org.slf4j.MDC;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -45,7 +45,7 @@ public class LogiskSlettDokumentRestController {
 
 	@Transactional
 	@ResponseBody
-	@PatchMapping("/{journalpostId}/{dokumentInfoId}")
+	@PostMapping("/{journalpostId}/{dokumentInfoId}")
 	@Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_DOKUMENT)},
 			actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION))
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark100"}, percentiles = {0.5, 0.95})
@@ -64,7 +64,7 @@ public class LogiskSlettDokumentRestController {
 
 	@Transactional
 	@ResponseBody
-	@PatchMapping("/angre/{journalpostId}/{dokumentInfoId}")
+	@PostMapping("/angre/{journalpostId}/{dokumentInfoId}")
 	@Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_DOKUMENT)},
 			actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION))
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark101"}, percentiles = {0.5, 0.95})

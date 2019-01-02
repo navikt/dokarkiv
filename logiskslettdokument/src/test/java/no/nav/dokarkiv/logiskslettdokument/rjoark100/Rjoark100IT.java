@@ -38,7 +38,7 @@ public class Rjoark100IT extends AbstractSlettDokumentIT {
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_SLETTDOKUMENT + journalpost.getJournalpostId() + "/" + vedlegg.getDokumentInfoId(),
-				HttpMethod.PATCH,
+				HttpMethod.POST,
 				createHeaders(),
 				String.class);
 
@@ -66,7 +66,7 @@ public class Rjoark100IT extends AbstractSlettDokumentIT {
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_SLETTDOKUMENT + journalpost.getJournalpostId() + "/" + vedlegg.getDokumentInfoId(),
-				HttpMethod.PATCH,
+				HttpMethod.POST,
 				createHeaders(),
 				String.class);
 
@@ -93,7 +93,7 @@ public class Rjoark100IT extends AbstractSlettDokumentIT {
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_SLETTDOKUMENT + journalpost.getJournalpostId() + "/" + vedlegg.getDokumentInfoId(),
-				HttpMethod.PATCH,
+				HttpMethod.POST,
 				createHeaders(),
 				String.class);
 
@@ -115,7 +115,7 @@ public class Rjoark100IT extends AbstractSlettDokumentIT {
 		ResponseEntity<LogiskSlettDokumentResponse> responseEntity = restTemplate.exchange(
 				URL_SLETTDOKUMENT + journalpost.getJournalpostId() + "/" + journalpost.
 						findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId(),
-				HttpMethod.PATCH,
+				HttpMethod.POST,
 				createHeaders(),
 				LogiskSlettDokumentResponse.class);
 
@@ -141,7 +141,7 @@ public class Rjoark100IT extends AbstractSlettDokumentIT {
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_SLETTDOKUMENT + journalpost.getJournalpostId() + "/" + journalpost.
 						findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId(),
-				HttpMethod.PATCH,
+				HttpMethod.POST,
 				createHeaders(),
 				String.class);
 
@@ -168,7 +168,7 @@ public class Rjoark100IT extends AbstractSlettDokumentIT {
 		ResponseEntity<LogiskSlettDokumentResponse> responseEntity = restTemplate.exchange(
 				URL_SLETTDOKUMENT + journalpost.getJournalpostId() + "/" + journalpost.
 						findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId(),
-				HttpMethod.PATCH,
+				HttpMethod.POST,
 				createHeaders(),
 				LogiskSlettDokumentResponse.class);
 
@@ -195,7 +195,7 @@ public class Rjoark100IT extends AbstractSlettDokumentIT {
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_SLETTDOKUMENT + ikkeEksisterendeJournalpostId + "/" + ikkeEksisterendeDokumentInfoId,
-				HttpMethod.PATCH,
+				HttpMethod.POST,
 				createHeaders(),
 				String.class);
 
@@ -218,7 +218,7 @@ public class Rjoark100IT extends AbstractSlettDokumentIT {
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_SLETTDOKUMENT + journalpost.getJournalpostId() + "/" + ikkeEksisterendeDokumentInfoId,
-				HttpMethod.PATCH,
+				HttpMethod.POST,
 				createHeaders(),
 				String.class);
 
@@ -242,7 +242,7 @@ public class Rjoark100IT extends AbstractSlettDokumentIT {
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_SLETTDOKUMENT + journalpost1.getJournalpostId() + "/" + journalpost2
 						.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId(),
-				HttpMethod.PATCH,
+				HttpMethod.POST,
 				createHeaders(),
 				String.class);
 
@@ -267,7 +267,7 @@ public class Rjoark100IT extends AbstractSlettDokumentIT {
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_SLETTDOKUMENT + journalpost.getJournalpostId() + "/" + sammensattDok.getDokumentInfoId(),
-				HttpMethod.PATCH,
+				HttpMethod.POST,
 				createHeaders(),
 				String.class);
 
@@ -297,7 +297,7 @@ public class Rjoark100IT extends AbstractSlettDokumentIT {
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_SLETTDOKUMENT + journalpost.getJournalpostId() + "/" + journalpost.
 						findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId(),
-				HttpMethod.PATCH,
+				HttpMethod.POST,
 				createNoAccesHeaders(),
 				String.class);
 
