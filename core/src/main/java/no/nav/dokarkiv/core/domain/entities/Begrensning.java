@@ -58,6 +58,10 @@ public class Begrensning extends AbstractPersistentVersionedDomainObjectWithKild
 	@Column(name = "k_variant_format")
 	private VariantFormatCode variantFormat;
 
+	public void setId(Long id) {
+		this.begrensningId = id;
+	}
+
 	public Long getId() {
 		return begrensningId;
 	}
