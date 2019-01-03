@@ -28,7 +28,7 @@ public class Rjoark105IT extends AbstractLogiskKassasjonIT {
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_LOGISKKASSASJON + dokumentInfoId,
-				HttpMethod.PATCH,
+				HttpMethod.POST,
 				createHeaders(),
 				String.class);
 
@@ -50,7 +50,7 @@ public class Rjoark105IT extends AbstractLogiskKassasjonIT {
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_LOGISKKASSASJON + dokumentInfo.getDokumentInfoId(),
-				HttpMethod.PATCH,
+				HttpMethod.POST,
 				createHeaders(),
 				String.class);
 
@@ -77,7 +77,7 @@ public class Rjoark105IT extends AbstractLogiskKassasjonIT {
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_LOGISKKASSASJON + hoveddokument1.getDokumentInfoId(),
-				HttpMethod.PATCH,
+				HttpMethod.POST,
 				createHeaders(),
 				String.class);
 
@@ -100,7 +100,7 @@ public class Rjoark105IT extends AbstractLogiskKassasjonIT {
 		assertThat(begrensningRepository.count(), is(0L));
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_LOGISKKASSASJON + dokumentInfo.getDokumentInfoId(),
-				HttpMethod.PATCH,
+				HttpMethod.POST,
 				createHeaders(),
 				String.class);
 
@@ -124,7 +124,7 @@ public class Rjoark105IT extends AbstractLogiskKassasjonIT {
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_LOGISKKASSASJON + dokumentInfo.getDokumentInfoId(),
-				HttpMethod.PATCH,
+				HttpMethod.POST,
 				createNoAccessHeaders(),
 				String.class);
 
