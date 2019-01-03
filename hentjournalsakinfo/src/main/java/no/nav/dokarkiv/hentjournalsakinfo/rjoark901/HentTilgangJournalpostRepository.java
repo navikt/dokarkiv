@@ -76,7 +76,7 @@ public class HentTilgangJournalpostRepository {
 										isNull(tuple[2]) ? null : ((JournalpostTypeCode) tuple[2]).name(),
 										isNull(tuple[3]) ? null : ((FagomradeCode) tuple[3]).name(),
 										isNull(tuple[4]) ? null : ((Timestamp) tuple[4]).toLocalDateTime(),
-										isNull(tuple[5]) ? null : ((MottaksKanalCode) tuple[4]).name(),
+										isNull(tuple[5]) ? null : ((MottaksKanalCode) tuple[5]).name(),
 										(String) tuple[6],
 										new TilgangBrukerDto((String) tuple[7]),
 										new TilgangSakDto((String) tuple[8], isNull(tuple[9]) ? null : ((FagsystemCode) tuple[9])
