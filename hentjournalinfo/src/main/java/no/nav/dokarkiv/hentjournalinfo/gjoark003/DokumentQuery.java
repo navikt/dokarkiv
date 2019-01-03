@@ -59,7 +59,7 @@ public class DokumentQuery implements Query {
 	@GraphQLMetrics(value = "dok_graphql_request", extraTags = {"process_code", "gjoark003", "query", DOKUMENT})
 	@Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_DOKUMENT)},
 			actions = @Abac.Attr(key = ACTION_ID, value = READ_ACTION))
-	public byte[] dokumentInfo(@GraphQLArgument(name = "dokumentInfoId") @GraphQLNonNull Long dokumentInfoId, @GraphQLArgument(name = "variantFormat") @GraphQLNonNull VariantFormat variantFormat) {
+	public byte[] dokumentFil(@GraphQLArgument(name = "dokumentInfoId") @GraphQLNonNull Long dokumentInfoId, @GraphQLArgument(name = "variantFormat") @GraphQLNonNull VariantFormat variantFormat) {
 		log.info(format("GraphQL har mottatt %s query med dokumentInfoId=%s og variantFormat=%s", DOKUMENT, dokumentInfoId, variantFormat));
 		abacSecurityService.assertAccessToDokumentIncludingBegrenset(dokumentInfoId);
 
@@ -71,7 +71,7 @@ public class DokumentQuery implements Query {
 				.filter(detaljer -> VariantFormat.mapFromVariantFormatCode(detaljer.getVariantFormat()) == variantFormat)
 				.filter(detaljer -> detaljer.getFiltype() == FilTypeCode.PDFA || detaljer.getFiltype() == FilTypeCode.PDF)
 				.findAny()
-				.orElseThrow(() -> new DokumentIkkeFunnetException(format("Fant ingen fil med dokumentInfoId=%s og filtype=%s", dokumentInfoId, "PDF eller PDFA")));
+				.orElseThrow(() -> new DokumentIkkeFunnetException(format("Fant ingen fil med dokumentInfoId=%s, variantFormat=%s og filtype=%s", dokumentInfoId, variantFormat, "PDF eller PDFA")));
 
 		String filUuid = filDetaljer.getFilUuid();
 		DokumentFil dokumentFil = dokumentFilRepository.findByFilUuid(filUuid);
@@ -79,8 +79,6 @@ public class DokumentQuery implements Query {
 			throw new DokarkivFunctionalException(format("Finner ikke fil med filUuid=%s i databasen", filUuid));
 		}
 		return dokumentFil.getFil();
-
-
 	}
 
 

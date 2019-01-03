@@ -5,6 +5,7 @@ import no.nav.dokarkiv.core.domain.entities.DokumentFil;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.domain.service.BegrensningService;
 import no.nav.dokarkiv.core.exceptions.DocumentNotFoundException;
 import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
 import no.nav.dokarkiv.core.exceptions.InvalidFilUuidException;
@@ -26,10 +27,13 @@ import javax.inject.Inject;
 public abstract class AbstractJournalOperations {
 
 	@Inject
-    private JoarkRepositoryBegrenset joarkRepository;
+	private JoarkRepositoryBegrenset joarkRepository;
 
 	@Inject
 	private DokumentFilRepository dokumentFilRepository;
+
+	@Inject
+	private BegrensningService begrensningService;
 
 	/**
 	 * Finds the journalpost for a journalpostId
@@ -70,7 +74,12 @@ public abstract class AbstractJournalOperations {
 	 */
 	protected FilDetaljer getFilDetaljer(DokumentInfo dokumentInfo, VariantFormatCode variantFormat)
 			throws DocumentNotFoundException {
-		FilDetaljer filDetaljer = dokumentInfo.findFilDetaljerByVariantFormat(variantFormat);
+		FilDetaljer filDetaljer;
+		if (begrensningService.isVariantSkjermet(dokumentInfo.getDokumentInfoId(), variantFormat)) {
+			filDetaljer = dokumentInfo.findFilDetaljerByVariantFormat(VariantFormatCode.SLADDET);
+		} else {
+			filDetaljer = dokumentInfo.findFilDetaljerByVariantFormat(variantFormat);
+		}
 		if (filDetaljer == null) {
 			throw new DocumentNotFoundException(new InvalidArgumentException("DokumentInfo with dokumentInfoId="
 					+ dokumentInfo.getDokumentInfoId() + " has no FilDetaljer with variant: " + variantFormat));

@@ -68,4 +68,13 @@ public final class FildetaljerTestDataProvider {
 				.opprettetKildeNavn("itest")
 				.build();
 	}
+
+	public static FilDetaljer createFilDetaljerSladdetPDFA() {
+		return getFilDetaljerBuilder()
+				.filtype(FilTypeCode.PDFA)
+				.variantFormat(VariantFormatCode.SLADDET)
+				.opprettetKildeNavn("itest")
+				.build();
+	}
+
 }

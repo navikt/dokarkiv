@@ -34,6 +34,8 @@ public class DokumentInfo {
 
     private List<Fildetaljer> filDetaljerList;
 
+    private Boolean kassert;
+
     @Data
     @Builder
     @NoArgsConstructor

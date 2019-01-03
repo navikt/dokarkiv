@@ -2,6 +2,7 @@ package no.nav.dokarkiv.logiskslettdokument.rjoark101;
 
 import static no.nav.dokarkiv.logiskslettdokument.util.TestUtils.opprettHoveddokumentForIT;
 import static no.nav.dokarkiv.logiskslettdokument.util.TestUtils.opprettHoveddokumentMedEtKnyttetVedleggForIT;
+import static no.nav.dokarkiv.logiskslettdokument.util.TestUtils.opprettHoveddokumentMedSammensattDokForIT;
 import static no.nav.dokarkiv.logiskslettdokument.util.TestUtils.utilgjengeliggjoerHoveddokument;
 import static no.nav.dokarkiv.logiskslettdokument.util.TestUtils.utilgjengeliggjoerVedlegg;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -38,7 +39,7 @@ public class Rjoark101IT extends AbstractSlettDokumentIT {
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_ANGRESLETTDOKUMENT + journalpost.getJournalpostId() + "/" + ikkeEksisterendeDokumentInfoId,
-				HttpMethod.PATCH,
+				HttpMethod.POST,
 				createHeaders(),
 				String.class);
 
@@ -69,7 +70,7 @@ public class Rjoark101IT extends AbstractSlettDokumentIT {
 
 		ResponseEntity<LogiskSlettDokumentResponse> responseEntity = restTemplate.exchange(
 				URL_ANGRESLETTDOKUMENT + journalpost.getJournalpostId() + "/" + vedlegg.getDokumentInfoId(),
-				HttpMethod.PATCH,
+				HttpMethod.POST,
 				createHeaders(),
 				LogiskSlettDokumentResponse.class);
 
@@ -94,11 +95,11 @@ public class Rjoark101IT extends AbstractSlettDokumentIT {
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_ANGRESLETTDOKUMENT + journalpost.getJournalpostId() + "/" + vedlegg.getDokumentInfoId(),
-				HttpMethod.PATCH,
+				HttpMethod.POST,
 				createHeaders(),
 				String.class);
 
-		assertThat(responseEntity.getStatusCode(), is(HttpStatus.BAD_REQUEST));
+		assertThat(responseEntity.getStatusCode(), is(HttpStatus.NOT_FOUND));
 		assertThat(responseEntity.getBody(), containsString(
 				String.format("Fant ikke forventet begrensning for dokument med journalpostId=%s, dokumentInfoId=%s og begrensningsType=%s.",
 						journalpost.getJournalpostId(),
@@ -133,7 +134,7 @@ public class Rjoark101IT extends AbstractSlettDokumentIT {
 
 		ResponseEntity<LogiskSlettDokumentResponse> responseEntity = restTemplate.exchange(
 				URL_ANGRESLETTDOKUMENT + journalpost.getJournalpostId() + "/" + vedlegg.getDokumentInfoId(),
-				HttpMethod.PATCH,
+				HttpMethod.POST,
 				createHeaders(),
 				LogiskSlettDokumentResponse.class);
 
@@ -164,7 +165,7 @@ public class Rjoark101IT extends AbstractSlettDokumentIT {
 		ResponseEntity<LogiskSlettDokumentResponse> responseEntity = restTemplate.exchange(
 				URL_ANGRESLETTDOKUMENT + journalpost.getJournalpostId() + "/" + journalpost.
 						findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId(),
-				HttpMethod.PATCH,
+				HttpMethod.POST,
 				createHeaders(),
 				LogiskSlettDokumentResponse.class);
 
@@ -187,12 +188,11 @@ public class Rjoark101IT extends AbstractSlettDokumentIT {
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_ANGRESLETTDOKUMENT + journalpost.getJournalpostId() + "/" + journalpost.
 						findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId(),
-				HttpMethod.PATCH,
+				HttpMethod.POST,
 				createHeaders(),
 				String.class);
 
-		assertThat(responseEntity.getStatusCode(), is(HttpStatus.BAD_REQUEST));
-
+		assertThat(responseEntity.getStatusCode(), is(HttpStatus.NOT_FOUND));
 		assertThat(responseEntity.getBody(), containsString(
 				String.format("Fant ikke forventet begrensning for journalpost med journalpostId=%s og begrensningsType=%s.",
 						journalpost.getJournalpostId(),
@@ -227,7 +227,7 @@ public class Rjoark101IT extends AbstractSlettDokumentIT {
 		ResponseEntity<LogiskSlettDokumentResponse> responseEntity = restTemplate.exchange(
 				URL_ANGRESLETTDOKUMENT + journalpost.getJournalpostId() + "/" +
 						journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId(),
-				HttpMethod.PATCH,
+				HttpMethod.POST,
 				createHeaders(),
 				LogiskSlettDokumentResponse.class);
 
@@ -238,6 +238,34 @@ public class Rjoark101IT extends AbstractSlettDokumentIT {
 		begrensetJp = hentVedleggBegrensningEtterUtfoertKall(journalpost.getJournalpostId(), vedlegg.getDokumentInfoId());
 		assertNotNull(begrensetJp);
 		assertThat(hentAntallBegrensninger(), is(1L));
+	}
+
+	@Test
+	public void skalIkkeAngreLogiskSletteDokument_ettersomDokumentetErTilknyttetJournalpostSomSammensattDokument() {
+		abacPermit();
+
+		Journalpost journalpost = joarkRepository.save(opprettHoveddokumentMedSammensattDokForIT());
+
+		DokumentInfo sammensattDok = journalpost.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.SAMMENSATT_DOK)
+				.iterator().next().getDokumentInfo();
+
+		begrensningRepository.save(utilgjengeliggjoerVedlegg(journalpost.getJournalpostId(), sammensattDok.getDokumentInfoId()));
+
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
+
+		ResponseEntity<String> responseEntity = restTemplate.exchange(
+				URL_ANGRESLETTDOKUMENT + journalpost.getJournalpostId() + "/" + sammensattDok.getDokumentInfoId(),
+				HttpMethod.POST,
+				createHeaders(),
+				String.class);
+
+		assertThat(responseEntity.getStatusCode(), is(HttpStatus.BAD_REQUEST));
+		assertThat(responseEntity.getBody(), containsString(
+				String.format("Kan ikke angre logisk sletting av dokument med journalpostId=%s, dokumentInfoId=%s fordi " +
+								"dokumentet er ikke tilknyttet journalposten som hoveddokument eller vedlegg.",
+						journalpost.getJournalpostId(),
+						sammensattDok.getDokumentInfoId())));
 	}
 
 	@Test
@@ -253,7 +281,7 @@ public class Rjoark101IT extends AbstractSlettDokumentIT {
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_ANGRESLETTDOKUMENT + journalpost.getJournalpostId() + "/" + journalpost.
 						findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId(),
-				HttpMethod.PATCH,
+				HttpMethod.POST,
 				createNoAccesHeaders(),
 				String.class);
 

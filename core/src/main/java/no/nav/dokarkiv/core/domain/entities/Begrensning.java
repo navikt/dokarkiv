@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import no.nav.dokarkiv.core.domain.AbstractPersistentVersionedDomainObjectWithKilde;
 import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
+import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 
@@ -47,11 +48,19 @@ public class Begrensning extends AbstractPersistentVersionedDomainObjectWithKild
 	@Column(name = "begrensning_type", nullable = false, length = 50)
 	private BegrensningTypeCode begrensningType;
 
-	@Column(name = "journalpost_id", nullable = false)
+	@Column(name = "journalpost_id")
 	private Long journalpostId;
 
 	@Column(name = "dokument_info_id")
 	private Long dokumentInfoId;
+
+	@Enumerated(EnumType.STRING)
+	@Column(name = "k_variant_format")
+	private VariantFormatCode variantFormat;
+
+	public void setId(Long id) {
+		this.begrensningId = id;
+	}
 
 	public Long getId() {
 		return begrensningId;

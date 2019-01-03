@@ -74,7 +74,19 @@
 		</dependency>
 		<dependency>
 			<groupId>no.nav.dokarkiv</groupId>
+			<artifactId>arkiverkorrigertdokument</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>no.nav.dokarkiv</groupId>
 			<artifactId>fysiskslettdokument</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>no.nav.dokarkiv</groupId>
+			<artifactId>logiskkassasjon</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>no.nav.dokarkiv</groupId>
+			<artifactId>tidligkassasjon</artifactId>
 		</dependency>
 		<!-- annet -->
 		<dependency>
@@ -112,6 +124,12 @@
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>no.nav.dokarkiv</groupId>
+			<artifactId>tidligkassasjon</artifactId>
+			<version>1-SNAPSHOT</version>
+			<scope>compile</scope>
 		</dependency>
 	</dependencies>
 	<build>

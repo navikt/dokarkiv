@@ -20,6 +20,7 @@ import no.nav.dokarkiv.core.domain.entities.DokumentFil;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.domain.service.BegrensningService;
 import no.nav.dokarkiv.core.exceptions.DocumentNotFoundException;
 import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
 import no.nav.dokarkiv.core.exceptions.InvalidFilUuidException;
@@ -49,6 +50,8 @@ public class Tjoark051HentDokumentServiceTest {
 	private static final long DOKUMENT_INFO_ID = 1L;
 	private static final VariantFormatCode VARIANT_FORMAT = VariantFormatCode.ARKIV;
 	private static final String FIL_UUID = "456b166e-5f9f-430f-8e35-09a732156562";
+	private static final VariantFormatCode VARIANT_FORMAT_SLADDET = VariantFormatCode.SLADDET;
+	private static final String FIL_UUID_SLADDET = "456b166e-5f9f-430f-8e35-09a732156563";
 
 	private static final OnDemandInstansCode ON_DEMAND_INSTANS = OnDemandInstansCode.PESYS;
 	private static final String ON_DEMAND_ID = "onDemandId";
@@ -63,6 +66,8 @@ public class Tjoark051HentDokumentServiceTest {
 	private DokumentFilRepository dokumentFilRepository;
 	@Mock
 	private HentOndemandDokument hentOndemandDokument;
+	@Mock
+	private BegrensningService begrensningService;
 
 	@InjectMocks
 	private Tjoark051HentDokumentService service;
@@ -145,6 +150,19 @@ public class Tjoark051HentDokumentServiceTest {
 	}
 
 	@Test
+	public void shouldReturnSladdetDokument() throws Exception {
+		DokumentFil dokumentFil = getDokumentFilBuilder().fil(BYTES).build();
+
+		when(begrensningService.isVariantSkjermet(DOKUMENT_INFO_ID, VariantFormatCode.ARKIV)).thenReturn(true);
+		when(joarkRepositoryMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(createJournalPost()));
+		when(dokumentFilRepository.findByFilUuid(FIL_UUID_SLADDET)).thenReturn(dokumentFil);
+
+		byte[] dokument = service.hentDokument(request);
+
+		assertThat(dokument, is(BYTES));
+	}
+
+	@Test
 	public void shouldReturnOnDemandDokument() throws Exception {
 		Journalpost journalPost = createWithOndemand(ON_DEMAND_ID, ON_DEMAND_INSTANS);
 
@@ -181,7 +199,10 @@ public class Tjoark051HentDokumentServiceTest {
 												.dokumentInfoId(DOKUMENT_INFO_ID)
 												.filDetaljerList(
 														FilDetaljerBuilder.getFilDetaljerBuilder().filUuid(FIL_UUID)
-																.variantFormat(VARIANT_FORMAT).build()).build()).build())
+																.variantFormat(VARIANT_FORMAT).build(),
+														FilDetaljerBuilder.getFilDetaljerBuilder().filUuid(FIL_UUID_SLADDET)
+																.variantFormat(VARIANT_FORMAT_SLADDET).build()
+														).build()).build())
 				.build();
 	}
 }

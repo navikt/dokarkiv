@@ -1,6 +1,8 @@
 package no.nav.dokarkiv.innsynjournal.v2.tjoark054;
 
+import static no.nav.dokarkiv.core.datautil.DokumentFilTestDataProvider.FIL_UUID_SLADDET;
 import static no.nav.dokarkiv.core.datautil.DokumentFilTestDataProvider.createDokumentFil;
+import static no.nav.dokarkiv.core.datautil.DokumentFilTestDataProvider.createDokumentFilSladdet;
 import static no.nav.dokarkiv.core.datautil.DokumentInfoTestDataProvider.DOKUMENT_TITTEL;
 import static no.nav.dokarkiv.core.datautil.DokumentInfoTestDataProvider.createDokumentInfo;
 import static no.nav.dokarkiv.core.datautil.FildetaljerTestDataProvider.createFildetaljerFil;
@@ -15,6 +17,7 @@ import no.nav.dokarkiv.core.datautil.SaksrelasjonTestDataProvider;
 import no.nav.dokarkiv.core.domain.ChangeStamp;
 import no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder;
 import no.nav.dokarkiv.core.domain.builder.JournalpostBuilder;
+import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
@@ -22,6 +25,8 @@ import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
 import no.nav.dokarkiv.core.domain.codes.OnDemandInstansCode;
+import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
+import no.nav.dokarkiv.core.domain.entities.Begrensning;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.jaxws.SubjectHandlerUtils;
 import no.nav.dokarkiv.core.jaxws.ThreadLocalSubjectHandler;
@@ -206,7 +211,7 @@ public class HentDokumentIT extends AbstractInnsynJournalV2Itest {
 				createDokumentInfo(DOKUMENT_TITTEL,
 						createFildetaljerFil(DokumentFilTestDataProvider.FIL_UUID)
 								.onDemandInstans(OnDemandInstansCode.SYFO)
-								.onDemandId("1232131"))).build());
+								.onDemandId("1232131"), FIL_UUID_SLADDET)).build());
 
 		expectAccessDenied();
 
@@ -247,6 +252,26 @@ public class HentDokumentIT extends AbstractInnsynJournalV2Itest {
 		assertThat(response.getDokument(), is(DokumentFilTestDataProvider.FIL_CONTENT));
 	}
 
+	@Test
+	public void shouldReturnSladdetDocumentWithCorrectDokumentstatus() throws Exception {
+		Journalpost journalpost = joarkRepository.save(buildDokInfoStructure(
+				createDokumentInfo()
+						.dokumentstatus(DokumentStatusCode.FERDIGSTILT))
+				.journalpostType(JournalpostTypeCode.U).build());
+
+		Begrensning skjermet = new Begrensning();
+		skjermet.setId(1L);
+		skjermet.setBegrensningType(BegrensningTypeCode.SKJERMET);
+		skjermet.setVariantFormat(VariantFormatCode.ARKIV);
+		skjermet.setDokumentInfoId(journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId());
+		skjermet.setOpprettetKildeNavn("test");
+		begrensningRepository.save(skjermet);
+
+		HentDokumentResponse response = innsynJournalV2Provider.hentDokument(createRequestFromJournalpost(journalpost));
+
+		assertThat(response.getDokument(), is(DokumentFilTestDataProvider.FIL_CONTENT_SLADDET));
+	}
+
 	private void expectAccessDenied() {
 		expectedException.expect(isA(HentDokumentSikkerhetsbegrensning.class));
 		expectedException.expectMessage("Access denied");
@@ -261,6 +286,7 @@ public class HentDokumentIT extends AbstractInnsynJournalV2Itest {
 	
 	private JournalpostBuilder buildDokInfoStructure(DokumentInfoBuilder dokumentInfoBuilder) {
 		dokumentFilRepository.save(createDokumentFil().build());
+		dokumentFilRepository.save(createDokumentFilSladdet().build());
 		return appendServiceSpecificAttributes(JournalpostTestDataProvider
 				.createJournalpost(dokumentInfoBuilder)
 				.mottakskanal(MottaksKanalCode.E_POST));
@@ -269,6 +295,7 @@ public class HentDokumentIT extends AbstractInnsynJournalV2Itest {
 
 	private JournalpostBuilder buildJournalpost(MottaksKanalCode mottaksKanalCode) {
 		dokumentFilRepository.save(createDokumentFil().build());
+		dokumentFilRepository.save(createDokumentFilSladdet().build());
 		return appendServiceSpecificAttributes(JournalpostTestDataProvider
 				.createJournalpost(DokumentFilTestDataProvider.FIL_UUID)
 				.mottakskanal(mottaksKanalCode));

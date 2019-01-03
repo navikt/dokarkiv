@@ -4,6 +4,7 @@ import static no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerV2Mock.CURRENT_
 import static no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerV2Mock.FAIL_IDENT;
 import static no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerV2Mock.HISTORICAL_IDENTS;
 import static no.nav.dokarkiv.core.datautil.DokumentFilTestDataProvider.FIL_UUID;
+import static no.nav.dokarkiv.core.datautil.DokumentFilTestDataProvider.FIL_UUID_SLADDET;
 import static no.nav.dokarkiv.core.datautil.DokumentInfoTestDataProvider.DOKUMENT_TITTEL;
 import static no.nav.dokarkiv.core.datautil.DokumentInfoTestDataProvider.createDokumentInfo;
 import static no.nav.dokarkiv.core.datautil.FildetaljerTestDataProvider.FIL_TYPE;
@@ -614,8 +615,8 @@ public class HentMinTilgjengeligeJournalpostListeIT extends AbstractInnsynJourna
 		SubjectHandlerUtils.setEksternBruker(CURRENT_IDENT, 4, "");
 		Journalpost journalpost = buildAndPersist(aJournalpost()
 				.dokumentInfoRelasjoner(
-						createVedleggRelasjon(createDokumentInfo(DOKUMENT_TITTEL, createFildetaljer(FIL_UUID, "")).build()).build(),
-						createVedleggRelasjon(createDokumentInfo(DOKUMENT_TITTEL, createFildetaljer(FIL_UUID, "1234")).build()).build()
+						createVedleggRelasjon(createDokumentInfo(DOKUMENT_TITTEL, createFildetaljer(FIL_UUID, ""), FIL_UUID_SLADDET).build()).build(),
+						createVedleggRelasjon(createDokumentInfo(DOKUMENT_TITTEL, createFildetaljer(FIL_UUID, "1234"), FIL_UUID_SLADDET).build()).build()
 				)
 		);
 
@@ -749,13 +750,13 @@ public class HentMinTilgjengeligeJournalpostListeIT extends AbstractInnsynJourna
 		Journalpost journalpost = buildAndPersist(aJournalpostWithoutHoveddokument()
 				.dokumentInfoRelasjoner(
 						createVedleggRelasjon(
-								createDokumentInfo("Tidligste_vedlegg", FIL_UUID)
+								createDokumentInfo("Tidligste_vedlegg", FIL_UUID, FIL_UUID_SLADDET)
 										.build()).build(),
 						createHoveddokumentRelasjon(
-								createDokumentInfo("Hoveddokument", FIL_UUID)
+								createDokumentInfo("Hoveddokument", FIL_UUID, FIL_UUID_SLADDET)
 										.build()).build(),
 						createVedleggRelasjon(
-								createDokumentInfo("Seneste_vedlegg", FIL_UUID)
+								createDokumentInfo("Seneste_vedlegg", FIL_UUID, FIL_UUID_SLADDET)
 										.build()).build()
 				));
 

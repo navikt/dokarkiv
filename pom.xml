@@ -30,7 +30,10 @@
 		<module>hentdokument</module>
 		<module>logiskslettdokument</module>
 		<module>hentjournalinfo</module>
+		<module>arkiverkorrigertdokument</module>
 		<module>fysiskslettdokument</module>
+		<module>tidligkassasjon</module>
+		<module>logiskkassasjon</module>
 		<module>hentjournalsakinfo</module>
 	</modules>
 
@@ -93,6 +96,11 @@
 			</dependency>
 			<dependency>
 				<groupId>no.nav.dokarkiv</groupId>
+				<artifactId>arkiverkorrigertdokument</artifactId>
+				<version>1-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>no.nav.dokarkiv</groupId>
 				<artifactId>behandlejournal</artifactId>
 				<version>1-SNAPSHOT</version>
 			</dependency>
@@ -139,6 +147,16 @@
 			<dependency>
 				<groupId>no.nav.dokarkiv</groupId>
 				<artifactId>fysiskslettdokument</artifactId>
+				<version>1-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>no.nav.dokarkiv</groupId>
+				<artifactId>logiskkassasjon</artifactId>
+				<version>1-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>no.nav.dokarkiv</groupId>
+				<artifactId>tidligkassasjon</artifactId>
 				<version>1-SNAPSHOT</version>
 			</dependency>
 			<dependency>

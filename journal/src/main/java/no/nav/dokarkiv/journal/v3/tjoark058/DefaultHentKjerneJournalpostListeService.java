@@ -39,8 +39,11 @@ public class DefaultHentKjerneJournalpostListeService implements HentKjerneJourn
 		List<Journalpost> journalposts = journalpostListeRepository.findJournalpostListe(params);
 		long totalNrJournalposts = journalpostListeRepository.findTotalNumberOfJournalposts(params);
 
-		return HentKjerneJournalpostListeResponseTo.builder().journalpostListe(journalposts)
+		//Mapperen filtrerer bort SLADDET variant
+		HentKjerneJournalpostListeResponseTo responseTo = HentKjerneJournalpostListeResponseTo.builder().journalpostListe(journalposts)
 				.sisteIntervall(isSisteIntervall(journalposts, totalNrJournalposts, requestTo)).build();
+
+		return responseTo;
 	}
 
 	private boolean isSisteIntervall(List<Journalpost> journalpostListe, long totalNrJournalposts,
@@ -57,4 +60,5 @@ public class DefaultHentKjerneJournalpostListeService implements HentKjerneJourn
                         / requestTo.getResultatSettStoerrelse());
 		return lastPageNumber == requestTo.getResultatSettNr() + 1;
 	}
+
 }

@@ -248,23 +248,47 @@ public class JournalforInngaaendeForsendelseV2ValidatorTest {
 	}
 
 	@Test
-	public void shouldFailOnNullDokumenttypeId() throws Exception {
+	public void shouldFailOnNullDokumenttypeIdForHoveddokument() throws Exception {
 		expectedException.expect(IllegalArgumentException.class);
 		expectedException.expectMessage("Missing required field in request: DokumentInfo.DokumenttypeId");
 
 		for (JournalpostDokumentInfoRelasjon jdir : journalpost.getJournalpostDokumentInfoRelasjoner()) {
-			jdir.getDokumentInfo().setDokumenttypeId(null);
+			if (HOVEDDOKUMENT.equals(jdir.getTilknyttetJournalpostSom())) {
+				jdir.getDokumentInfo().setDokumenttypeId(null);
+			}
 		}
 		validator.validate(journalpost);
 	}
 
 	@Test
-	public void shouldFailOnEmptyDokumenttypeId() throws Exception {
+	public void shouldFailOnEmptyDokumenttypeIdForHoveddokument() throws Exception {
 		expectedException.expect(IllegalArgumentException.class);
 		expectedException.expectMessage("Missing required field in request: DokumentInfo.DokumenttypeId");
 
 		for (JournalpostDokumentInfoRelasjon jdir : journalpost.getJournalpostDokumentInfoRelasjoner()) {
-			jdir.getDokumentInfo().setDokumenttypeId("");
+			if (HOVEDDOKUMENT.equals(jdir.getTilknyttetJournalpostSom())) {
+				jdir.getDokumentInfo().setDokumenttypeId("");
+			}
+		}
+		validator.validate(journalpost);
+	}
+
+	@Test
+	public void shouldNotFailOnNullDokumenttypeIdForVedlegg() throws Exception {
+		for (JournalpostDokumentInfoRelasjon jdir : journalpost.getJournalpostDokumentInfoRelasjoner()) {
+			if (VEDLEGG.equals(jdir.getTilknyttetJournalpostSom())) {
+				jdir.getDokumentInfo().setDokumenttypeId(null);
+			}
+		}
+		validator.validate(journalpost);
+	}
+
+	@Test
+	public void shouldNotFailOnEmptyDokumenttypeIdForVedlegg() throws Exception {
+		for (JournalpostDokumentInfoRelasjon jdir : journalpost.getJournalpostDokumentInfoRelasjoner()) {
+			if (VEDLEGG.equals(jdir.getTilknyttetJournalpostSom())) {
+				jdir.getDokumentInfo().setDokumenttypeId("");
+			}
 		}
 		validator.validate(journalpost);
 	}

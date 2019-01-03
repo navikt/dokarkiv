@@ -10,6 +10,7 @@ import static no.nav.dokarkiv.inngaaendejournal.v1.InngaaendeJournalDataProvider
 import static no.nav.dokarkiv.inngaaendejournal.v1.InngaaendeJournalDataProvider.createHovedDokumentInfo;
 import static no.nav.dokarkiv.inngaaendejournal.v1.InngaaendeJournalDataProvider.createSaksrelasjon;
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
@@ -102,6 +103,7 @@ public class HentInngaaendeJournalpostServiceTest {
 		assertThat(to.getVedlegg().get(0).getDokumenttilstand(), is(DokumenttilstandTo.FERDIGSTILT));
 		assertThat(findDokumentinnholdByVariant(to.getVedlegg().get(0).getDokumentInnhold(), VariantFormatCode.ARKIV).getArkivFiltype(), is(FilTypeCode.PDFA));
 		assertThat(findDokumentinnholdByVariant(to.getVedlegg().get(0).getDokumentInnhold(), VariantFormatCode.PRODUKSJON).getArkivFiltype(), is(FilTypeCode.XML));
+		assertNull(findDokumentinnholdByVariant(to.getVedlegg().get(0).getDokumentInnhold(), VariantFormatCode.SLADDET));
 	}
 
 	@Test
@@ -276,7 +278,7 @@ public class HentInngaaendeJournalpostServiceTest {
 			public boolean apply(DokumentInnholdTo dokumentInnholdTo) {
 				return variantFormat == dokumentInnholdTo.getVariantFormat();
 			}
-		});
+		}, null);
 	}
 
 	private void assertUtgaarJournaltilstand(String journalpostId) throws Exception {

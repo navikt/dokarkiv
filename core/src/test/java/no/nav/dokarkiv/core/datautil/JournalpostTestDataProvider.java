@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.core.datautil;
 
+import static no.nav.dokarkiv.core.datautil.DokumentFilTestDataProvider.FIL_UUID_SLADDET;
 import static no.nav.dokarkiv.core.datautil.DokumentInfoTestDataProvider.createDokumentInfo;
 import static no.nav.dokarkiv.core.datautil.DokumentInfoTestDataProvider.createHovedDokumentInfoFP;
 import static no.nav.dokarkiv.core.datautil.DokumentInfoTestDataProvider.createVedleggDokumentInfo;
@@ -60,11 +61,11 @@ public final class JournalpostTestDataProvider {
 	}
 
 	public static JournalpostBuilder createJournalpost(String dokumentTittel, String filuid) {
-		return createJournalpost(createDokumentInfo(dokumentTittel, filuid));
+		return createJournalpost(createDokumentInfo(dokumentTittel, filuid, FIL_UUID_SLADDET));
 	}
 
 	public static JournalpostBuilder createJournalpost(String dokumentTittel, String filuid, Date hoveddokumentFerdigDato) {
-		return createJournalpost(createDokumentInfo(dokumentTittel, filuid).dokumentFerdigDato(hoveddokumentFerdigDato));
+		return createJournalpost(createDokumentInfo(dokumentTittel, filuid, FIL_UUID_SLADDET).dokumentFerdigDato(hoveddokumentFerdigDato));
 	}
 
 	public static JournalpostBuilder createJournalpost(DokumentKategoriCode hoveddokumentKategori) {

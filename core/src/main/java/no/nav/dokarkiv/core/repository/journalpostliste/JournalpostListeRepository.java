@@ -1,6 +1,7 @@
 package no.nav.dokarkiv.core.repository.journalpostliste;
 
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.domain.service.BegrensningService;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.Projections;
@@ -20,14 +21,18 @@ import java.util.List;
 public class JournalpostListeRepository {
 
 	private final EntityManager entityManager;
+	private BegrensningService begrensningService;
 
 	@Inject
-	public JournalpostListeRepository(EntityManager entityManager) {
+	public JournalpostListeRepository(EntityManager entityManager, BegrensningService begrensningService) {
 		this.entityManager = entityManager;
+		this.begrensningService = begrensningService;
 	}
 
 	@SuppressWarnings("unchecked")
 	public List<Journalpost> findJournalpostListe(HentMinJPListeParameters hentMinJPListeParameters) {
+		List<Journalpost> foundJournalposts = new ArrayList<>();
+
 		// If empty saksliste, return empty list
 		if (hentMinJPListeParameters.getSaksListe().isEmpty()) {
 			return new ArrayList<>();
@@ -37,15 +42,25 @@ public class JournalpostListeRepository {
 
 		Criteria criteria = criterionBuilder.buildCriteria(hentMinJPListeParameters);
 
-		if (hentMinJPListeParameters.getMaxResults() > 0) {
-			criteria.setMaxResults((int) hentMinJPListeParameters.getMaxResults());
+		if (hentMinJPListeParameters.getMaxResults() > 0 && hentMinJPListeParameters.getPageNr() == 0) {
+			int maxResult = Math.min(criteria.list().size(), (int) hentMinJPListeParameters.getMaxResults());
+			foundJournalposts = criteria.list().subList(0, maxResult);
 		}
 
 		if (hentMinJPListeParameters.getMaxResults() > 0 && hentMinJPListeParameters.getPageNr() > 0) {
-			criteria.setFirstResult((int) (hentMinJPListeParameters.getMaxResults() * hentMinJPListeParameters.getPageNr()));
+			int firstResult = (int) (hentMinJPListeParameters.getMaxResults() * hentMinJPListeParameters.getPageNr());
+			if (firstResult > criteria.list().size()) {
+				return new ArrayList<>();
+			}
+			int maxResult = Math.min(criteria.list().size(), firstResult + (int) hentMinJPListeParameters.getMaxResults());
+			foundJournalposts = criteria.list().subList(firstResult, maxResult);
 		}
 
-		return (List<Journalpost>) criteria.list();
+		if (foundJournalposts.isEmpty()) {
+			foundJournalposts = (List<Journalpost>) criteria.list();
+		}
+
+		return begrensningService.addBegrensetDokumentInfoIdsToJournalpostList(foundJournalposts);
 	}
 
 	public long findTotalNumberOfJournalposts(HentMinJPListeParameters hentMinJPListeParameters) {

@@ -7,6 +7,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 
 import no.nav.dokarkiv.core.CoreConfig;
 import no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerV2Mock;
+import no.nav.dokarkiv.core.repository.BegrensningRepository;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.DokumentUrlInfoRepositoryBegrenset;
 import no.nav.dokarkiv.core.repository.JoarkRepositoryBegrenset;
@@ -45,7 +46,7 @@ import java.io.IOException;
 @Transactional
 public abstract class AbstractJournalV3Itest {
 
-	protected static final String INTERN_BRUKER_USER_ID = "internBruker";
+	protected static final String INTERN_BRUKER_USER_ID = "srvjoarkadmin";
 
 	@Rule
 	public ExpectedException expectedException = ExpectedException.none();
@@ -57,6 +58,8 @@ public abstract class AbstractJournalV3Itest {
 	protected DokumentFilRepository dokumentFilRepository;
 	@Inject
     protected DokumentUrlInfoRepositoryBegrenset dokumentUrlInfoRepository;
+	@Inject
+	protected BegrensningRepository begrensningRepository;
 
 	@Configuration
 	public static class TestConfig {
@@ -72,7 +75,7 @@ public abstract class AbstractJournalV3Itest {
 		dokumentFilRepository.deleteAll();
 		joarkRepository.deleteAll();
 		RequestContextSetter.setRequestContext(new SimpleRequestContext.Builder()
-				.userId("itestuser")
+				.userId("testuser")
 				.componentId("itest")
 				.build());
 	}

@@ -8,8 +8,8 @@ import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.UPDATE_ACTI
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.MDCConstants;
+import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
 import no.nav.dokarkiv.core.metrics.RestMetrics;
-import no.nav.dokarkiv.core.security.abac.AbacSecurityService;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import no.nav.dokarkiv.fysiskslettdokument.rjoark102.FysiskSlettDokumentRequestTo;
 import no.nav.dokarkiv.fysiskslettdokument.rjoark102.FysiskSlettDokumentResponse;
@@ -31,34 +31,31 @@ import javax.inject.Inject;
 public class FysiskSlettDokumentRestController {
 
 	private final FysiskSlettDokumentService fysiskSlettDokumentService;
-	private final AbacSecurityService abacSecurityService;
 
 	@Inject
-	public FysiskSlettDokumentRestController(FysiskSlettDokumentService fysiskSlettDokumentService,
-											 AbacSecurityService abacSecurityService) {
+	public FysiskSlettDokumentRestController(FysiskSlettDokumentService fysiskSlettDokumentService) {
 		this.fysiskSlettDokumentService = fysiskSlettDokumentService;
-		this.abacSecurityService = abacSecurityService;
 	}
 
 	@Transactional
 	@ResponseBody
-	@DeleteMapping("/{journalpostId}/{dokumentInfoId}/{hjemmel}")
+	@DeleteMapping("/{journalpostId}/{dokumentInfoId}/{begrensningType}")
+	//TODO: MÅ endre fra value = UPDATE_ACTION til DELETE_ACTION. Men joarkadmin har ikke tilgang.
 	@Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_DOKUMENT)},
 			actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION))
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark102"}, percentiles = {0.5, 0.95})
 	public FysiskSlettDokumentResponse fysiskSlettDokument(
 			@PathVariable("journalpostId") Long journalpostId,
 			@PathVariable("dokumentInfoId") Long dokumentInfoId,
-			@PathVariable("hjemmel") String hjemmel) {
-		abacSecurityService.assertAccessToJournalpost(journalpostId.toString());
+			@PathVariable("begrensningType") BegrensningTypeCode begrensningType) {
 		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark102");
-		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har mottat kall med journalpostId=" + journalpostId + ", dokumentInfoId=" + dokumentInfoId + " og hjemmel=" + hjemmel);
+		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har mottat kall med journalpostId=" + journalpostId + ", dokumentInfoId=" + dokumentInfoId + " og begrensningType=" + begrensningType);
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
 
-		return fysiskSlettDokumentService.slettDokumentFysisk(FysiskSlettDokumentRequestTo.builder()
+		return fysiskSlettDokumentService.sletteDokumentFysisk(FysiskSlettDokumentRequestTo.builder()
 				.journalpostId(journalpostId)
 				.dokumentInfoId(dokumentInfoId)
-				.hjemmel(hjemmel)
+				.begrensningType(begrensningType)
 				.build());
 	}
 
