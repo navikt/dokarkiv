@@ -10,7 +10,6 @@ public class LogiskSlettDokumentResponseMapper {
 				.tittel(relasjon.getDokumentInfo().getTittel())
 				.dokumentInfoId(relasjon.getDokumentInfo().getDokumentInfoId())
 				.journalpostId(relasjon.getJournalpost().getJournalpostId())
-				.slettet(relasjon.getDokumentInfo().getSlettet())
 				.tilknyttetJournalpostSom(relasjon.getTilknyttetJournalpostSom().name())
 				.build();
 	}

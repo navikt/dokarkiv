@@ -139,26 +139,6 @@ public class HentInngaaendeJournalpostServiceTest {
 	}
 
 	@Test
-	public void dto_hoveddokument_should_have_dokumenttilstand_slettet() throws Exception {
-		Journalpost build = buildJournalpost().build();
-		build.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().setSlettet(true);
-		when(repository.findById(eq(1L))).thenReturn(Optional.of(build));
-
-		InngaaendeJournalpostTo to = service.hentJournalpost("1");
-		assertThat(to.getHoveddokument().getDokumenttilstand(), is(DokumenttilstandTo.SLETTET));
-	}
-
-	@Test
-	public void dto_vedlegg_should_have_dokumenttilstand_slettet() throws Exception {
-		Journalpost build = buildJournalpost().build();
-		build.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG).iterator().next().getDokumentInfo().setSlettet(true);
-		when(repository.findById(eq(1L))).thenReturn(Optional.of(build));
-
-		InngaaendeJournalpostTo to = service.hentJournalpost("1");
-		assertThat(to.getVedlegg().get(0).getDokumenttilstand(), is(DokumenttilstandTo.SLETTET));
-	}
-
-	@Test
 	public void dto_hoveddokument_should_have_dokumenttilstand_avbrutt() throws Exception {
 		Journalpost build = buildJournalpost().build();
 		build.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().setDokumentstatus(DokumentStatusCode.AVBRUTT);

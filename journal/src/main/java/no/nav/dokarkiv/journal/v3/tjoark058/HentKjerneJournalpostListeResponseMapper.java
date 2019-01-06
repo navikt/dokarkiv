@@ -194,10 +194,6 @@ public class HentKjerneJournalpostListeResponseMapper {
 	
 
 	private Dokumenttilstand mapDokumenttilstand(DokumentInfo dokumentInfo) {
-		if (dokumentInfo.isFunksjoneltSlettet()) {
-			return Dokumenttilstand.SLETTET;
-		}
-		
 		if (dokumentInfo.isAvbrutt()) {
 			return Dokumenttilstand.AVBRUTT;
 		} else if (dokumentInfo.isFerdigstilt()) {

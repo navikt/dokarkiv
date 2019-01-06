@@ -470,17 +470,6 @@ public class InnsynJournalV2SecurityFacadeTest {
 	}
 
 	@Test
-	public void shouldNotAllowDokInfoSlettet() throws Exception {
-		Journalpost legalJournalpost = createLegalJournalpost();
-		legalJournalpost.getDokumentInfoFromJpDokInfoRelasjonerByDokumentInfoId(DOKUMENT_INFO_ID)
-				.setSlettet(true);
-		mockJournalpost(legalJournalpost);
-		expectedException.expect(SecurityLimitationAttributeException.class);
-
-		securityFacade.hentDokument(JOURNALPOST_ID, DOKUMENT_INFO_ID);
-	}
-
-	@Test
 	public void shouldNotAllowDifferentAvsenderMottaker() throws Exception {
 		Journalpost legalJournalpost = createLegalJournalpost();
 		legalJournalpost.setAvsenderMottakerId("***gammelt_fnr***");

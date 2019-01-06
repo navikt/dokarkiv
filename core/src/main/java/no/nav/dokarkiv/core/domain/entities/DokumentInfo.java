@@ -84,10 +84,6 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	@Column(name = "sensitivt")
 	private Boolean sensitivt;
 
-	@Column(name = "slettet")
-	@Type(type = "org.hibernate.type.TrueFalseType")
-	private Boolean slettet;
-
 	@Column(name = "endret_av_navn")
 	private String endretAvNavn;
 
@@ -105,15 +101,6 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 
 	@Column(name = "tittel")
 	private String tittel;
-
-	@Column(name = "konfidensialitet")
-	private String konfidensialitet;
-
-	@Column(name = "integritet")
-	private String integritet;
-
-	@Column(name = "tilgjengelighet")
-	private String tilgjengelighet;
 
 	@Column(name = "innskr_partsinnsyn")
 	@Type(type = "org.hibernate.type.TrueFalseType")
@@ -395,20 +382,6 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	}
 
 	/**
-	 * <p>Checks if the document is deleted. A document is considered deleted if {@link #getSlettet()}
-	 * returns {@code true} or if the value returned by {@link #getTittel()} contains
-	 * &quot;{@value #DELETED_DOCUMENT_TITLE}&quot;.</p>
-	 * <p/>
-	 * <p>The old method of deleting a document included changing the title to contain the text
-	 * &quot;{@value #DELETED_DOCUMENT_TITLE}&quot;, which is why we check for that here.</p>
-	 *
-	 * @return {@code true} if the document has been marked as deleted, otherwise {@code false}.
-	 */
-	public boolean isFunksjoneltSlettet() {
-		return isTrue(slettet) || contains(getTittel(), DELETED_DOCUMENT_TITLE);
-	}
-
-	/**
 	 * Getter for the brevGruppe property.
 	 *
 	 * @return the brevGruppe
@@ -496,25 +469,6 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	 */
 	public void setSensitivt(Boolean sensitivt) {
 		this.sensitivt = sensitivt;
-	}
-
-	/**
-	 * Getter for the {@link #slettet} property.
-	 *
-	 * @return The value of the {@link #slettet} property.
-	 * @see #isFunksjoneltSlettet()
-	 */
-	public Boolean getSlettet() {
-		return slettet;
-	}
-
-	/**
-	 * Sets whether or not this document should be marked as deleted.
-	 *
-	 * @param slettet The boolean value to which the slettet property should be set.
-	 */
-	public void setSlettet(Boolean slettet) {
-		this.slettet = slettet;
 	}
 
 	/**
@@ -630,60 +584,6 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	 */
 	public void setTittel(String tittel) {
 		this.tittel = tittel;
-	}
-
-	/**
-	 * Getter for the konfidensialitet property.
-	 *
-	 * @return the konfidensialitet
-	 */
-	public String getKonfidensialitet() {
-		return konfidensialitet;
-	}
-
-	/**
-	 * Setter for the konfidensialitet property.
-	 *
-	 * @param konfidensialitet the konfidensialitet to set
-	 */
-	public void setKonfidensialitet(String konfidensialitet) {
-		this.konfidensialitet = konfidensialitet;
-	}
-
-	/**
-	 * Getter for the integritet property.
-	 *
-	 * @return the integritet
-	 */
-	public String getIntegritet() {
-		return integritet;
-	}
-
-	/**
-	 * Setter for the integritet property.
-	 *
-	 * @param integritet the integritet to set
-	 */
-	public void setIntegritet(String integritet) {
-		this.integritet = integritet;
-	}
-
-	/**
-	 * Getter for the tilgjengelighet property.
-	 *
-	 * @return the tilgjengelighet
-	 */
-	public String getTilgjengelighet() {
-		return tilgjengelighet;
-	}
-
-	/**
-	 * Setter for the tilgjengelighet property.
-	 *
-	 * @param tilgjengelighet the tilgjengelighet to set
-	 */
-	public void setTilgjengelighet(String tilgjengelighet) {
-		this.tilgjengelighet = tilgjengelighet;
 	}
 
 	/**

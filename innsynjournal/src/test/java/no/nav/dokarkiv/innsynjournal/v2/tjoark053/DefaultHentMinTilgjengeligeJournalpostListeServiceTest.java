@@ -181,17 +181,6 @@ public class DefaultHentMinTilgjengeligeJournalpostListeServiceTest {
 	}
 
 	@Test
-	public void shouldRemoveJournalpostIfHovedDokIsSlettet() {
-		Journalpost journalpost = createLegalJournalpost();
-		journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().setSlettet(true);
-		journalposts.add(journalpost);
-		journalposts.add(createLegalJournalpost());
-		journalposts = service.hentMineTilgjengeligeJournalposter(createRequest(new SakFagsystem(FagsystemCode.BID, "1")));
-
-		assertThat(journalposts.size(), is(1));
-	}
-
-	@Test
 	public void shouldRemoveVedleggIfNotForvaltningsNotat() {
 		Journalpost journalpost = createJournalpostWithInfoRelasjon
 				(createDokumentInfoRelasjonVedlegg(true, true, DokumentStatusCode.AVBRUTT));
