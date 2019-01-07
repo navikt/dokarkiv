@@ -31,12 +31,14 @@ fasitResources:
       hostUrl: freg.security.oidc.idp.openAm.hostUrl
       issuerUrl: freg.security.oidc.idp.openAm.issuerUrl
       jwksUrl: freg.security.oidc.idp.openAm.jwksUrl
-  - alias: nav-sts-oidc
-    resourceType: OpenIdConnect
-    propertyMap:
-      hostUrl: freg.security.oidc.idp.navSts.hostUrl
-      issuerUrl: freg.security.oidc.idp.navSts.issuerUrl
-      jwksUrl: freg.security.oidc.idp.navSts.jwksUrl
+  - alias: security-token-service-issuer
+      resourceType: BaseUrl
+      propertyMap:
+        url: freg.security.oidc.idp.navSts.issuerUrl
+  - alias: security-token-service-jwks
+      resourceType: RestService
+      propertyMap:
+        url: freg.security.oidc.idp.navSts.jwksUrl
   - alias: dokarkivds
     resourceType: datasource
     propertyMap:
@@ -48,7 +50,7 @@ fasitResources:
     propertyMap:
       url: SPRING_LDAP_URLS
       username: SPRING_LDAP_USERNAME
-      password: SPRING_LDAP_PASSWORD
+      password: SHentKjerneJournalpostListeResponseMapperPRING_LDAP_PASSWORD
       user.basedn: LDAP_NAVUSER_BASEDN
       serviceuser.basedn: LDAP_SERVICEUSER_BASEDN
   - alias: srvdokarkiv
