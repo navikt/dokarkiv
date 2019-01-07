@@ -50,7 +50,7 @@ fasitResources:
     propertyMap:
       url: SPRING_LDAP_URLS
       username: SPRING_LDAP_USERNAME
-      password: SHentKjerneJournalpostListeResponseMapperPRING_LDAP_PASSWORD
+      password: SPRING_LDAP_PASSWORD
       user.basedn: LDAP_NAVUSER_BASEDN
       serviceuser.basedn: LDAP_SERVICEUSER_BASEDN
   - alias: srvdokarkiv
