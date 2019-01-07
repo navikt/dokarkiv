@@ -32,13 +32,13 @@ fasitResources:
       issuerUrl: freg.security.oidc.idp.openAm.issuerUrl
       jwksUrl: freg.security.oidc.idp.openAm.jwksUrl
   - alias: security-token-service-issuer
-      resourceType: BaseUrl
-      propertyMap:
-        url: freg.security.oidc.idp.navSts.issuerUrl
+    resourceType: BaseUrl
+    propertyMap:
+      url: freg.security.oidc.idp.navSts.issuerUrl
   - alias: security-token-service-jwks
-      resourceType: RestService
-      propertyMap:
-        url: freg.security.oidc.idp.navSts.jwksUrl
+    resourceType: RestService
+    propertyMap:
+      url: freg.security.oidc.idp.navSts.jwksUrl
   - alias: dokarkivds
     resourceType: datasource
     propertyMap:
