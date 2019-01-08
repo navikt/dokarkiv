@@ -1,7 +1,6 @@
 package no.nav.dokarkiv.hentjournalsakinfo.rjoark920;
 
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
-import no.nav.dokarkiv.hentjournalsakinfo.dto.SafHentDokumentDto;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;

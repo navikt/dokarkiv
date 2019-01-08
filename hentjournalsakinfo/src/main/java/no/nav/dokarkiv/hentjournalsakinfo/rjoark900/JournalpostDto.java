@@ -6,7 +6,6 @@ import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
 import no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode;
-import no.nav.dokarkiv.hentjournalsakinfo.rjoark910.SaksrelasjonDto;
 
 import java.util.Date;
 import java.util.List;

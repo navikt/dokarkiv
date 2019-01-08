@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.hentjournalsakinfo.dto;
+package no.nav.dokarkiv.hentjournalsakinfo.rjoark901;
 
 import lombok.Value;
 

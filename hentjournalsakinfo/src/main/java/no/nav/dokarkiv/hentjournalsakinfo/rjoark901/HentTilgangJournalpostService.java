@@ -3,7 +3,6 @@ package no.nav.dokarkiv.hentjournalsakinfo.rjoark901;
 import static no.nav.modig.security.tilgangskontroll.policy.pip.PicketLinkAttributeCacheLocator.log;
 
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
-import no.nav.dokarkiv.hentjournalsakinfo.dto.TilgangJournalpostDto;
 import no.nav.dokarkiv.hentjournalsakinfo.exceptions.TilgangJournalpostException;
 import org.springframework.stereotype.Service;
 

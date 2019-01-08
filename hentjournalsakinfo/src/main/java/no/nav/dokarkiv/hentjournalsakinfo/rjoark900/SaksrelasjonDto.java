@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.hentjournalsakinfo.rjoark910;
+package no.nav.dokarkiv.hentjournalsakinfo.rjoark900;
 
 import lombok.Builder;
 import lombok.Data;

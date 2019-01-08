@@ -9,9 +9,6 @@ import no.nav.dokarkiv.hentjournalsakinfo.rjoark900.FinnJournalposterResponseTo;
 import no.nav.dokarkiv.hentjournalsakinfo.rjoark900.FinnJournalposterService;
 import no.nav.dokarkiv.hentjournalsakinfo.rjoark901.HentTilgangJournalpostResponse;
 import no.nav.dokarkiv.hentjournalsakinfo.rjoark901.HentTilgangJournalpostService;
-import no.nav.dokarkiv.hentjournalsakinfo.rjoark910.VisningJournalpostBulkRequestTo;
-import no.nav.dokarkiv.hentjournalsakinfo.rjoark910.VisningJournalpostBulkResponseTo;
-import no.nav.dokarkiv.hentjournalsakinfo.rjoark910.VisningJournalpostBulkService;
 import no.nav.dokarkiv.hentjournalsakinfo.rjoark920.SafHentDokumentResponse;
 import no.nav.dokarkiv.hentjournalsakinfo.rjoark920.SafHentDokumentService;
 import org.springframework.http.HttpHeaders;
@@ -38,17 +35,14 @@ public class HentJournalsakinfoController {
 	private final SafHentDokumentService safHentDokumentService;
 	private final MimeTypeMapper mimeTypeMapper = new MimeTypeMapper();
 	private final FinnJournalposterService finnJournalposterService;
-	private final VisningJournalpostBulkService visningJournalpostBulkService;
 	private final HentTilgangJournalpostService hentTilgangJournalpostService;
 
 	@Inject
 	public HentJournalsakinfoController(SafHentDokumentService safHentDokumentService,
 										FinnJournalposterService finnJournalposterService,
-										VisningJournalpostBulkService visningJournalpostBulkService,
 										HentTilgangJournalpostService hentTilgangJournalpostService) {
 		this.safHentDokumentService = safHentDokumentService;
 		this.finnJournalposterService = finnJournalposterService;
-		this.visningJournalpostBulkService = visningJournalpostBulkService;
 		this.hentTilgangJournalpostService = hentTilgangJournalpostService;
 
 	}
@@ -74,16 +68,6 @@ public class HentJournalsakinfoController {
 		log.info("rjoark901 har mottatt forespørsel om å hente TilgangJournalpost for journalpost med journalpostId={}, dokumentInfoId={} og variantFormat={}",
 				journalpostId, dokumentInfoId, variantFormat.name());
 		return hentTilgangJournalpostService.hentTilgangJournalpost(journalpostId, dokumentInfoId, variantFormat);
-	}
-
-	@Transactional(readOnly = true)
-	@ResponseBody
-	@PostMapping(value = "/hentjournalposter")
-	public VisningJournalpostBulkResponseTo visningsJournalpostBulk(@RequestBody VisningJournalpostBulkRequestTo visningJournalpostBulkRequestTo) {
-		log.info("rjoark910 henter journalposter.");
-		VisningJournalpostBulkResponseTo responseTo = visningJournalpostBulkService.visningJournalpostBulk(visningJournalpostBulkRequestTo);
-		log.info("rjoark910 hentet {} journalposter.", responseTo.getJournalposter().size());
-		return responseTo;
 	}
 
 	@Transactional(readOnly = true)
