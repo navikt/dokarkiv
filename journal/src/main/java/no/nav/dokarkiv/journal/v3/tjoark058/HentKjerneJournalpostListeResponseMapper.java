@@ -2,6 +2,7 @@ package no.nav.dokarkiv.journal.v3.tjoark058;
 
 import static no.nav.dokarkiv.core.util.DateConverterUtil.convertDateToXMLGregorianCalendar;
 
+import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
@@ -42,6 +43,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+@Slf4j
 @Component
 public class HentKjerneJournalpostListeResponseMapper {
 	public static final String KORRESPODANSE_TYPE_MOTTAKER = "Mottaker";
@@ -64,8 +66,26 @@ public class HentKjerneJournalpostListeResponseMapper {
 				wsJournalpost.setGjelderArkivSak(mapArkivSak(toJournalpost.getSaksrelasjon()));
 				wsJournalpost.getKryssreferanseListe().addAll(mapKryssreferanse(toJournalpost.getKryssreferanser()));
 				wsJournalpost.setKorrespondansePart(mapKorrespondansePart(toJournalpost));
-				wsJournalpost.setHoveddokument(mapDetaljerDokumentinformasjon(
-						toJournalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo()));
+
+				if(toJournalpost.findHoveddokumentDokumentInfoRelasjon() != null &&
+				   toJournalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo() != null) {
+					DetaljertDokumentinformasjon detaljertDokumentinformasjon = mapDetaljerDokumentinformasjon(
+							toJournalpost
+									.findHoveddokumentDokumentInfoRelasjon()
+									.getDokumentInfo());
+					if(detaljertDokumentinformasjon != null) {
+						wsJournalpost
+								.setHoveddokument(detaljertDokumentinformasjon);
+					}
+					else {
+						log.warn("Detaljert dokumentInformasjon er null for {}",
+								toJournalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId());
+					}
+				}
+				else {
+					log.warn("Journalpost {} mangler HOVEDDUKUMENT med DokumentInfo", toJournalpost.getJournalpostId());
+				}
+
 				wsJournalpost.getVedleggListe().addAll(mapVedleggsListe(toJournalpost
 						.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)));
 				wsJournalpost.getBrukerListe().addAll(mapBrukere(toJournalpost.getBrukere()));
