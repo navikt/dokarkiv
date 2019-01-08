@@ -55,13 +55,13 @@ public class LogiskSlettDokumentRestController {
 	@Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_DOKUMENT)},
 			actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION))
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark100"}, percentiles = {0.5, 0.95})
-	public LogiskSlettDokumentResponse logiskSlettDokumentKnyttetKunEnJournalpost(@RequestHeader(value = HENDELSE_INFO_HEADER, required = false) String hendelseInfoHeader,
+	public LogiskSlettDokumentResponse logiskSlettDokumentKnyttetKunEnJournalpost(@RequestHeader(value = HENDELSE_INFO_HEADER) String hendelseInfoHeader,
 																				  @PathVariable("journalpostId") Long journalpostId, @PathVariable("dokumentInfoId") Long dokumentInfoId) throws UgyldigHendelseLoggInfoException {
 		abacSecurityService.assertAccessToJournalpostIncludingBegrenset(journalpostId.toString());
 		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark100");
 		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har mottat kall med journalpostId=" + journalpostId + " og dokumentInfoId=" + dokumentInfoId);
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
-		hendelseLoggService.lagreHendelse(hendelseInfoHeader);
+		hendelseLoggService.validerOgLagreHendelse(hendelseInfoHeader);
 		return logiskSlettDokumentService.logiskSletteDokument(LogiskSlettDokumentRequestTo.builder()
 				.journalpostId(journalpostId)
 				.dokumentInfoId(dokumentInfoId)
@@ -74,14 +74,14 @@ public class LogiskSlettDokumentRestController {
 	@Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_DOKUMENT)},
 			actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION))
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark101"}, percentiles = {0.5, 0.95})
-	public LogiskSlettDokumentResponse angreLogiskSlettDokument(@RequestHeader(value = HENDELSE_INFO_HEADER, required = false) String hendelseInfoHeader,
+	public LogiskSlettDokumentResponse angreLogiskSlettDokument(@RequestHeader(value = HENDELSE_INFO_HEADER) String hendelseInfoHeader,
 																@PathVariable("journalpostId") Long journalpostId,
 																@PathVariable("dokumentInfoId") Long dokumentInfoId) throws UgyldigHendelseLoggInfoException {
 		abacSecurityService.assertAccessToJournalpostIncludingBegrenset(journalpostId.toString());
 		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark101");
 		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har mottat kall med journalpostId=" + journalpostId + " og dokumentInfoId=" + dokumentInfoId);
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
-		hendelseLoggService.lagreHendelse(hendelseInfoHeader);
+		hendelseLoggService.validerOgLagreHendelse(hendelseInfoHeader);
 		return angreLogiskSlettDokumentService.angreLogiskSlettDokument(LogiskSlettDokumentRequestTo.builder()
 				.journalpostId(journalpostId)
 				.dokumentInfoId(dokumentInfoId)

@@ -1,5 +1,7 @@
 package no.nav.dokarkiv.core.domain.entities;
 
+import com.fasterxml.jackson.annotation.JsonSetter;
+import com.fasterxml.jackson.databind.JsonNode;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -53,4 +55,13 @@ public class Hendelselogg extends AbstractPersistentVersionedDomainObject {
 
 	@Column(name = "annen_info", length = 4000)
 	private String annenInfo;
+
+	@JsonSetter("annenInfo")
+	public void setAnnenInfo(JsonNode jsonNode) {
+		this.annenInfo = jsonNode.toString();
+	}
+
+	public void setAnnenInfo(String annenInfo) {
+		this.annenInfo = annenInfo;
+	}
 }

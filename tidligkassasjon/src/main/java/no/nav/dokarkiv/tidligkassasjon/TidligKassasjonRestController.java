@@ -58,7 +58,7 @@ public class TidligKassasjonRestController {
 		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har mottat kall med dokumentInfoId={}", dokumentInfoId);
 		validator.validerTidligKassasjonRequest(dokumentInfoId);
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
-		hendelseLoggService.lagreHendelse(hendelseInfoHeader);
+		hendelseLoggService.validerOgLagreHendelse(hendelseInfoHeader);
 		TidligKassasjonResponse response = tidligKassasjonService.tidligKassasjonAvDokument(dokumentInfoId);
 		log.info("{} har tidlig kassert dokument med dokumentInfoId={}",
 				MDC.get(MDCConstants.MDC_REQUEST_ID), dokumentInfoId);

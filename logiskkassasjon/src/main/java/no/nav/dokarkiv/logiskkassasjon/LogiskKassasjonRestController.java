@@ -65,7 +65,7 @@ public class LogiskKassasjonRestController {
 		validator.validerLogiskKassasjonRequest(dokumentInfoId);
 		abacSecurityService.assertAccessToDokumentIncludingBegrenset(dokumentInfoId);
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
-		hendelseLoggService.lagreHendelse(hendelseInfoHeader);
+		hendelseLoggService.validerOgLagreHendelse(hendelseInfoHeader);
 		LogiskKassasjonResponse response = logiskKassasjonService.logiskKassasjonAvDokument(dokumentInfoId);
 		log.info("{} har logisk kassert dokument med dokumentInfoId={}",
 				MDC.get(MDCConstants.MDC_REQUEST_ID), dokumentInfoId);
@@ -85,7 +85,7 @@ public class LogiskKassasjonRestController {
 		validator.validerLogiskKassasjonRequest(dokumentInfoId);
 		abacSecurityService.assertAccessToDokumentIncludingBegrenset(dokumentInfoId);
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
-		hendelseLoggService.lagreHendelse(hendelseInfoHeader);
+		hendelseLoggService.validerOgLagreHendelse(hendelseInfoHeader);
 		LogiskKassasjonResponse response = angreLogiskKassasjonService.angreLogiskKassasjonAvDokument(dokumentInfoId);
 		log.info("{} har angret logisk kassering av dokument med dokumentInfoId={}",
 				MDC.get(MDCConstants.MDC_REQUEST_ID), dokumentInfoId);

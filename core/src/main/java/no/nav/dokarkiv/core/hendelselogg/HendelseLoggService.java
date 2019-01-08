@@ -26,10 +26,10 @@ public class HendelseLoggService {
 		this.hendelseloggrepository = hendelseloggrepository;
 	}
 
-	public void lagreHendelse(String hendelseInfo) throws UgyldigHendelseLoggInfoException {
+	public void validerOgLagreHendelse(String hendelseInfo) throws UgyldigHendelseLoggInfoException {
 
 		if (isBlank(hendelseInfo)) {
-			return;
+			throw new UgyldigHendelseLoggInfoException(String.format("Meldingen mangler påkrevd %s header.", HENDELSE_INFO_HEADER));
 		}
 
 		Hendelselogg hendelselogg = convertToHendelseLoggObject(hendelseInfo);
@@ -49,7 +49,7 @@ public class HendelseLoggService {
 		try {
 			return mapper.readValue(hendelseInfoHeader, Hendelselogg.class);
 		} catch (IOException e) {
-			throw new UgyldigHendelseLoggInfoException(String.format("Kunne ikke lese hendelse %s header", HENDELSE_INFO_HEADER), e);
+			throw new UgyldigHendelseLoggInfoException(String.format("Kunne ikke lese %s header. Sjekk om headeren er i gyldig JSON format", HENDELSE_INFO_HEADER), e);
 		}
 	}
 

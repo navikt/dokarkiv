@@ -8,4 +8,9 @@ public class UgyldigHendelseLoggInfoException extends Exception {
 	public UgyldigHendelseLoggInfoException(String message, Throwable cause) {
 		super(message, cause);
 	}
+
+
+	public UgyldigHendelseLoggInfoException(String message) {
+		super(message);
+	}
 }

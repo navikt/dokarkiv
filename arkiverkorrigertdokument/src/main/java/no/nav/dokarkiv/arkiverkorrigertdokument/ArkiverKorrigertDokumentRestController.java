@@ -65,7 +65,7 @@ public class ArkiverKorrigertDokumentRestController {
 		validator.validateArkiverKorrigertDokumentRequest(request);
 		abacSecurityService.assertAccessToDokumentIncludingBegrenset(request.getDokumentInfoId());
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
-		hendelseLoggService.lagreHendelse(hendelseInfoHeader);
+		hendelseLoggService.validerOgLagreHendelse(hendelseInfoHeader);
 
 		ArkiverKorrigertDokumentRespons respons = arkiverKorrigertDokumentService.arkiverKorrigertDokument(request);
 		log.info("{} har arkivert korrigert dokument med dokumentInfoId={}",
@@ -88,7 +88,7 @@ public class ArkiverKorrigertDokumentRestController {
 		validator.validateAngreArkiverKorrigertDokument(dokumentInfoId);
 		abacSecurityService.assertAccessToDokumentIncludingBegrenset(dokumentInfoId);
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
-		hendelseLoggService.lagreHendelse(hendelseInfoHeader);
+		hendelseLoggService.validerOgLagreHendelse(hendelseInfoHeader);
 
 		ArkiverKorrigertDokumentRespons respons = angreArkiverKorrigertDokumentService.angreArkiverKorrigertDokument(dokumentInfoId);
 		log.info("{} har angret arkivering av korrigert dokument med dokumentInfoId={}",

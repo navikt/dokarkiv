@@ -58,7 +58,7 @@ public class FysiskSlettDokumentRestController {
 		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark102");
 		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har mottat kall med journalpostId=" + journalpostId + ", dokumentInfoId=" + dokumentInfoId + " og begrensningType=" + begrensningType);
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
-		hendelseLoggService.lagreHendelse(hendelseInfoHeader);
+		hendelseLoggService.validerOgLagreHendelse(hendelseInfoHeader);
 
 		return fysiskSlettDokumentService.sletteDokumentFysisk(FysiskSlettDokumentRequestTo.builder()
 				.journalpostId(journalpostId)
