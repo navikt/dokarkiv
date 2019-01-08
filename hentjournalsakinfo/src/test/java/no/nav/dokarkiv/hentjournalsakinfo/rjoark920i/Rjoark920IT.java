@@ -47,7 +47,7 @@ public class Rjoark920IT extends AbstractHentjournalsakinfoItest {
 		VariantFormatCode variantFormat = VariantFormatCode.ARKIV;
 
 		String uri = HENTJOURNALSAKINFO_HENTDOKUMENT + dokumentInfoId + "/" + variantFormat.toString();
-		ResponseEntity<String> responseEntity = restTemplate.exchange(uri, HttpMethod.GET, createHeaders(), String.class);
+		ResponseEntity<String> responseEntity = restTemplate.exchange(uri, HttpMethod.GET, createHeaderEntity(), String.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 		assertThat(new String(Base64.getDecoder().decode(responseEntity.getBody())), is(TEST_FILE_CONTENT));
@@ -60,7 +60,7 @@ public class Rjoark920IT extends AbstractHentjournalsakinfoItest {
 
 		String uri = HENTJOURNALSAKINFO_HENTDOKUMENT + "123456789/ARKIV";
 
-		ResponseEntity<String> responseEntity = restTemplate.exchange(uri, HttpMethod.GET, createHeaders(), String.class);
+		ResponseEntity<String> responseEntity = restTemplate.exchange(uri, HttpMethod.GET, createHeaderEntity(), String.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.NOT_FOUND));
 	}

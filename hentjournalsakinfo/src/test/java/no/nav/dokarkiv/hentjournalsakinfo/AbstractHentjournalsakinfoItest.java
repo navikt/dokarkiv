@@ -1,6 +1,7 @@
 package no.nav.dokarkiv.hentjournalsakinfo;
 
 import no.nav.dokarkiv.core.CoreConfig;
+import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.core.security.BasicAuthRestInterceptor;
@@ -30,8 +31,7 @@ import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import java.util.Arrays;
 
 /**
  * @author Sigurd Midttun, Visma Consulting.
@@ -71,9 +71,6 @@ public abstract class AbstractHentjournalsakinfoItest {
 	@Inject
 	protected DokumentFilRepository dokumentFilRepository;
 
-	@PersistenceContext
-	protected EntityManager entityManager;
-
 	@Before
 	public void setUpItest() {
 		RequestContextSetter.setRequestContext(new SimpleRequestContext.Builder()
@@ -83,15 +80,19 @@ public abstract class AbstractHentjournalsakinfoItest {
 
 	}
 
-	protected HttpEntity createHeaders() {
-		String basicAuthHeader = "Basic " + Base64Utils.encodeToString(String.format("%s:%s", USERNAME, PASSWORD)
-				.getBytes());
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.TEXT_PLAIN);
-		headers.add(HttpHeaders.AUTHORIZATION, basicAuthHeader);
-
-		return new HttpEntity(headers);
+	protected HttpEntity createHeaderEntity() {
+		return new HttpEntity(createDefaultHeaders());
 	}
 
+	protected HttpHeaders createDefaultHeaders() {
+		String basicAuthHeader = "Basic " + Base64Utils.encodeToString(String.format("%s:%s", USERNAME, PASSWORD).getBytes());
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
+		headers.add(HttpHeaders.AUTHORIZATION, basicAuthHeader);
+		return headers;
+	}
 
+	protected void persist(Journalpost... journalposts) {
+		joarkRepository.saveAll(Arrays.asList(journalposts));
+	}
 }

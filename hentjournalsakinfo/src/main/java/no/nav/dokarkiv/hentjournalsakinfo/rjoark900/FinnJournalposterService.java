@@ -18,7 +18,7 @@ public class FinnJournalposterService {
 	}
 
 	public FinnJournalposterResponseTo finnJournalposter(FinnJournalposterRequestTo finnJournalposterRequestTo) {
-		List<JournalpostDto> journalpostDtos = finnJournalposterSpringJdbcRepository.hentJournalposter(
+		List<JournalpostDto> journalpostDtos = finnJournalposterSpringJdbcRepository.finnJournalposter(
 				finnJournalposterRequestTo.getGsakSakIds(),
 				finnJournalposterRequestTo.getPsakSakIds(),
 				new JournalpostFilter(finnJournalposterRequestTo)
