@@ -79,7 +79,7 @@ public class HentTilgangJournalpostRepository {
 										new TilgangBrukerDto((String) tuple[7], isNull(tuple[8]) ? null : ((BrukerTypeCode) tuple[8]).name()),
 										new TilgangSakDto((String) tuple[9], isNull(tuple[10]) ? null : ((FagsystemCode) tuple[10]).name()),
 										new TilgangDokumentInfoDto(isNull(tuple[11]) ? null : ((Long) tuple[11]).toString(), isNull(tuple[12]) ? null : ((DokumentStatusCode) tuple[12])
-												.name(), (String) tuple[13], isNull(tuple[14]) ? null : ((VariantFormatCode) tuple[15]).name()));
+												.name(), (String) tuple[13], isNull(tuple[14]) ? null : ((VariantFormatCode) tuple[14]).name()));
 							}
 
 							@Override
