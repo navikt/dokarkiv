@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.hentjournalsakinfo.rjoark901;
 
+import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
@@ -75,7 +76,7 @@ public class HentTilgangJournalpostRepository {
 										isNull(tuple[4]) ? null : ((Timestamp) tuple[4]).toLocalDateTime(),
 										isNull(tuple[5]) ? null : ((MottaksKanalCode) tuple[5]).name(),
 										(String) tuple[6],
-										new TilgangBrukerDto((String) tuple[7], isNull(tuple[8]) ? null : ((JournalStatusCode) tuple[8]).name()),
+										new TilgangBrukerDto((String) tuple[7], isNull(tuple[8]) ? null : ((BrukerTypeCode) tuple[8]).name()),
 										new TilgangSakDto((String) tuple[9], isNull(tuple[10]) ? null : ((FagsystemCode) tuple[10]).name()),
 										new TilgangDokumentInfoDto(isNull(tuple[11]) ? null : ((Long) tuple[11]).toString(), isNull(tuple[12]) ? null : ((DokumentStatusCode) tuple[12])
 												.name(), (String) tuple[13], isNull(tuple[14]) ? null : ((VariantFormatCode) tuple[15]).name()));
