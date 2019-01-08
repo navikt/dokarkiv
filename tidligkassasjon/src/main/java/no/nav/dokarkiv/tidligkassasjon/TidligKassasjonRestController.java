@@ -3,10 +3,13 @@ package no.nav.dokarkiv.tidligkassasjon;
 import static no.nav.abac.xacml.NavAttributter.RESOURCE_ARKIV_DOKUMENT;
 import static no.nav.abac.xacml.NavAttributter.RESOURCE_FELLES_RESOURCE_TYPE;
 import static no.nav.abac.xacml.StandardAttributter.ACTION_ID;
+import static no.nav.dokarkiv.core.hendelselogg.HendelseLoggService.HENDELSE_INFO_HEADER;
 import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.UPDATE_ACTION;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.MDCConstants;
+import no.nav.dokarkiv.core.exceptions.UgyldigHendelseLoggInfoException;
+import no.nav.dokarkiv.core.hendelselogg.HendelseLoggService;
 import no.nav.dokarkiv.core.metrics.RestMetrics;
 import no.nav.dokarkiv.core.security.abac.AbacSecurityService;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
@@ -18,6 +21,7 @@ import org.slf4j.MDC;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -31,14 +35,15 @@ public class TidligKassasjonRestController {
 
 	private final TidligKassasjonValidator validator;
 	private final TidligKassasjonService tidligKassasjonService;
-
+	private final HendelseLoggService hendelseLoggService;
 	@Inject
 	public TidligKassasjonRestController(
 			TidligKassasjonValidator validator,
 			TidligKassasjonService service,
-			AbacSecurityService abacSecurityService) {
+			AbacSecurityService abacSecurityService, HendelseLoggService hendelseLoggService) {
 		this.validator = validator;
 		this.tidligKassasjonService = service;
+		this.hendelseLoggService = hendelseLoggService;
 	}
 
 	@Transactional
@@ -47,11 +52,13 @@ public class TidligKassasjonRestController {
 	@Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_DOKUMENT)},
 			actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION))
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark107"}, percentiles = {0.5, 0.95})
-	public TidligKassasjonResponse tidligKassasjon(@PathVariable("dokumentInfoId") Long dokumentInfoId) {
+	public TidligKassasjonResponse tidligKassasjon(@RequestHeader(value = HENDELSE_INFO_HEADER, required = false) String hendelseInfoHeader,
+												   @PathVariable("dokumentInfoId") Long dokumentInfoId) throws UgyldigHendelseLoggInfoException {
 		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark107");
 		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har mottat kall med dokumentInfoId={}", dokumentInfoId);
 		validator.validerTidligKassasjonRequest(dokumentInfoId);
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
+		hendelseLoggService.lagreHendelse(hendelseInfoHeader);
 		TidligKassasjonResponse response = tidligKassasjonService.tidligKassasjonAvDokument(dokumentInfoId);
 		log.info("{} har tidlig kassert dokument med dokumentInfoId={}",
 				MDC.get(MDCConstants.MDC_REQUEST_ID), dokumentInfoId);
