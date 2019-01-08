@@ -124,10 +124,6 @@ public class OppdaterJournalpostValidator {
 				throw new DokumentInfoIkkeTilknyttetJournalpostException(
 						"Innsendt vedlegg er ikke knyttet til journalposten. journalpostId=" + journalpostId);
 			}
-			if (dokumentInfo.isFunksjoneltSlettet()) {
-				throw new OppdaterJournalpostIkkeMuligException("Dokumentet som forsøkes oppdatert er slettet. journalpostId="
-						+ journalpostId + ",dokumentInfoId=" + dokumentInfo.getDokumentInfoId());
-			}
 			if (dokumentInfo.getDokumentstatus() != null && (dokumentInfo.isUnderRedigering() || dokumentInfo.isAvbrutt())) {
 				throw new OppdaterJournalpostIkkeMuligException(
 						"Dokument har ugyldig status for oppdatering. dokumentStatus="

@@ -108,7 +108,6 @@ public class DefaultKnyttDokumentTilJournalpostSomVedleggService implements Knyt
 
 		DokumentInfo dokumentInfo = findRelevantDokumentInfo(request.getDokumentInfoId(), journalpostSource);
 		checkIfDokumentInfoHasLegalDokumentStatus(dokumentInfo);
-		checkIfDokumentInfoIsSlettet(dokumentInfo);
 		checkIfDokumentInfoIsOrganIntern(dokumentInfo);
 		checkIfDokumentInfoHasInnskrenketPartsinnsyn(dokumentInfo);
 		checkIfDokumentInfoHasInnskrenketPartsinnsynFraTredjepart(dokumentInfo);
@@ -180,13 +179,6 @@ public class DefaultKnyttDokumentTilJournalpostSomVedleggService implements Knyt
 		if (dokumentInfo.getDokumentstatus() != null && dokumentInfo.getDokumentstatus() != FERDIGSTILT) {
 			String message = String.format(REQUIRED_DOKUMENTSTATUS_FORMAT, dokumentInfo.getDokumentInfoId(), FERDIGSTILT.name());
 			throw new IllegalDokumentstatusException(message);
-		}
-	}
-
-	private void checkIfDokumentInfoIsSlettet(DokumentInfo dokumentInfo) throws DokumentInfoSlettetException {
-		if (isTrue(dokumentInfo.getSlettet())) {
-			String message = String.format(DELETED_DOKUMENT_INFO_FORMAT, dokumentInfo.getDokumentInfoId());
-			throw new DokumentInfoSlettetException(message);
 		}
 	}
 

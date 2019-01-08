@@ -110,9 +110,7 @@ public final class InngaaendeJournalpostToMapper {
 	}
 
 	private DokumenttilstandTo mapDokumenttilstand(DokumentInfo dokumentInfo) {
-		if(dokumentInfo.isFunksjoneltSlettet()) {
-			return DokumenttilstandTo.SLETTET;
-		} else if(dokumentInfo.isFerdigstilt()) {
+		if(dokumentInfo.isFerdigstilt()) {
 			return DokumenttilstandTo.FERDIGSTILT;
 		} else if(dokumentInfo.isAvbrutt()) {
 			return DokumenttilstandTo.AVBRUTT;

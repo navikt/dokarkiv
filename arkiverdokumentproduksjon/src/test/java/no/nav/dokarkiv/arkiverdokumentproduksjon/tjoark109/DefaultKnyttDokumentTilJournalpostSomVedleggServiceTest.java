@@ -353,23 +353,9 @@ public class DefaultKnyttDokumentTilJournalpostSomVedleggServiceTest {
 		assertThatProcessingWasNotCompleted();
 	}
 
-	@Test
-	public void throwsDokumentInfoSlettetExceptionWhenDokumentInfoIsSlettet() throws Exception {
-		mockSlettet(dokumentInfoMock, true);
-
-		expectedException.expect(DokumentInfoSlettetException.class);
-		expectedException.expectMessage("DokumentInfo with dokumentInfoId=123 must not be deleted");
-
-		service.knyttDokumentTilJournalpostSomVedlegg(request);
-
-		assertThatProcessingWasNotCompleted();
-	}
-
 	@Theory
 	public void performsProcessingWhenDokumentInfoIsNotSlettet(Boolean slettetValue) throws Exception {
 		assumeThat(slettetValue, is(not(TRUE)));
-
-		mockSlettet(dokumentInfoMock, slettetValue);
 
 		service.knyttDokumentTilJournalpostSomVedlegg(request);
 
@@ -527,7 +513,6 @@ public class DefaultKnyttDokumentTilJournalpostSomVedleggServiceTest {
 		when(dokumentInfoMock.getDokumentInfoId()).thenReturn(DOKUMENT_INFO_ID);
 
 		mockDokumentstatus(dokumentInfoMock, null);
-		mockSlettet(dokumentInfoMock, false);
 		mockOrganInternt(dokumentInfoMock, false);
 		mockInnskrenketPartsinnsyn(dokumentInfoMock, false);
 		mockInnskrenketPartsinnsynFraTredjepart(dokumentInfoMock, false);
@@ -554,10 +539,6 @@ public class DefaultKnyttDokumentTilJournalpostSomVedleggServiceTest {
 
 	private void mockDokumentstatus(DokumentInfo dokumentInfoMock, DokumentStatusCode dokumentstatus) {
 		when(dokumentInfoMock.getDokumentstatus()).thenReturn(dokumentstatus);
-	}
-
-	private void mockSlettet(DokumentInfo dokumentInfoMock, Boolean slettet) {
-		when(dokumentInfoMock.getSlettet()).thenReturn(slettet);
 	}
 
 	private void mockOrganInternt(DokumentInfo dokumentInfoMock, Boolean organInternt) {

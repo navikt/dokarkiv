@@ -117,7 +117,6 @@ public class InnsynJournalV2SecurityFacade {
 		verifyDokumentstatus(journalpost, dokumentInfo);
 		verifyFildetaljer(journalpostId, dokumentInfo);
 		verifyInnskrenketPartsinnsyn(journalpostId, dokumentInfo);
-		verifyNotSlettet(journalpostId, dokumentInfo);
 
 		return hentDokumentBytes(journalpostId, dokumentInfoId);
 	}
@@ -314,14 +313,6 @@ public class InnsynJournalV2SecurityFacade {
 			throw new SecurityLimitationAttributeException(journalpostId,
 					dokumentInfo.getDokumentInfoId(),
 					singletonMap("DokumentInfo.InnskrenketPartsinnsyn", dokumentInfo.getInnskrenketPartsinnsyn()));
-		}
-	}
-
-	private void verifyNotSlettet(Long journalpostId, DokumentInfo dokumentInfo) {
-		if (dokumentInfo.isFunksjoneltSlettet()) {
-			throw new SecurityLimitationAttributeException(journalpostId,
-					dokumentInfo.getDokumentInfoId(),
-					singletonMap("DokumentInfo.Slettet", dokumentInfo.isFunksjoneltSlettet()));
 		}
 	}
 

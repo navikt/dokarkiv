@@ -53,21 +53,6 @@ public class JournalpostQueryMapperTest {
     }
 
     @Test
-    public void shouldSkipDokumentInfoIfSlettetWhenMappingKnyttetDokumentList() {
-        Set<JournalpostDokumentInfoRelasjon> journalpostDokumentInfoRelasjonSet = createJournalpostDokumentInfoRelasjonSet(null);
-        journalpostDokumentInfoRelasjonSet.add(JournalpostDokumentInfoRelasjon.builder()
-                .dokumentInfo(DokumentInfo.builder()
-                        .dokumentInfoId(9323L)
-                        .slettet(true)
-                        .build())
-                .build());
-        List<JournalpostDokumentRelasjon> journalpostDokumentInfoRelasjons = mapKnyttetDokumentList(journalpostDokumentInfoRelasjonSet, 100L, new ArrayList<>());
-        assertThat(journalpostDokumentInfoRelasjons.size(), is(1));
-        assertThat(journalpostDokumentInfoRelasjons.get(0).getDokumentInfoId(), is(DOKUMENTINFO_ID));
-        assertThat(journalpostDokumentInfoRelasjons.get(0).getJournalpostId(), is(100L));
-    }
-
-    @Test
     public void shouldMapBruker() {
         List<no.nav.dokarkiv.hentjournalinfo.dto.Journalpost.Bruker> brukere = mapBrukere(createBrukerSet());
         assertBrukere(brukere);

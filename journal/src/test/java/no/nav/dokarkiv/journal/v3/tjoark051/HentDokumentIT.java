@@ -115,19 +115,6 @@ public class HentDokumentIT extends AbstractJournalV3Itest {
 	}
 
 	@Test
-	public void shouldThrowExceptionWhenDokumentIsDeleted() throws Exception {
-		abacPermit();
-		Journalpost journalpost = createJournalpostBuilder("Dokumenttittel").build();
-		journalpost.getJournalpostDokumentInfoRelasjoner().iterator().next().getDokumentInfo().setSlettet(true);
-		joarkRepository.save(journalpost);
-		HentDokumentRequest request = createRequest(journalpost);
-
-		expectedException.expect(HentDokumentSikkerhetsbegrensning.class);
-		journalV3Provider.hentDokument(request);
-	}
-
-
-	@Test
 	public void shouldThrowExceptionWhenJournalpostNotFound() throws Exception {
 		abacPermit();
 		Journalpost journalpost = buildAndPersistJournalpost("Dokumenttittel");

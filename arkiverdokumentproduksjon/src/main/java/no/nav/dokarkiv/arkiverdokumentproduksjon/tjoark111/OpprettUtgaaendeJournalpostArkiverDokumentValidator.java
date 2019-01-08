@@ -156,7 +156,6 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentValidator {
 
 		isTrue(DokumentStatusCode.FERDIGSTILT == dokumentInfo.getDokumentstatus(), String.format("DokumentInfo.Dokumentstatus må være FERDIGSTILT men var %s", dokumentInfo
 				.getDokumentstatus()));
-		isFalse(dokumentInfo.getSlettet(), "DokumentInfo.Slettet kan ikke være Sann");
 		isFalse(dokumentInfo.getOrganInternt(), "DokumentInfo.OrganInternt kan ikke være Sann");
 		isFalse(dokumentInfo.getInnskrenketPartsinnsyn(), "DokumentInfo.InnskrenketPartsinnsyn kan ikke være Sann");
 		isFalse(dokumentInfo.getInnskrenketPartsinnsynFraTredjepart(), "DokumentInfo.InnskrenketPartsinnsynFraTredjepart kan ikke være Sann");
