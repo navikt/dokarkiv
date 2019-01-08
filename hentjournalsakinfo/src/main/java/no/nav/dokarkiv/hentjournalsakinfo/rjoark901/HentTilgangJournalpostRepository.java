@@ -45,6 +45,7 @@ public class HentTilgangJournalpostRepository {
 								"jp.mottakskanal, " +
 								"jp.avsenderMottakerId, " +
 								"br.brukerId, " +
+								"br.brukerType, " +
 								"sr.sakId, " +
 								"sr.fagsystem, " +
 								"di.dokumentInfoId, " +
@@ -52,9 +53,9 @@ public class HentTilgangJournalpostRepository {
 								"di.brevkode, " +
 								"fd.variantFormat " +
 								"from Journalpost jp " +
-								"join jp.brukere br " +
+								"left join jp.brukere br " +
 								"join jp.changeStamp cs " +
-								"join jp.saksrelasjon sr on sr.journalpost.journalpostId = :journalpostId " +
+								"left join jp.saksrelasjon sr on sr.journalpost.journalpostId = :journalpostId " +
 								"join jp.journalpostDokumentInfoRelasjoner jr " +
 								"join jr.dokumentInfo di on di.dokumentInfoId = :dokumentInfoId and jr.journalpost.journalpostId = :journalpostId " +
 								"join FilDetaljer fd on fd.dokumentInfo.dokumentInfoId = :dokumentInfoId and fd.variantFormat = :variantFormat " +
@@ -78,12 +79,10 @@ public class HentTilgangJournalpostRepository {
 										isNull(tuple[4]) ? null : ((Timestamp) tuple[4]).toLocalDateTime(),
 										isNull(tuple[5]) ? null : ((MottaksKanalCode) tuple[5]).name(),
 										(String) tuple[6],
-										new TilgangBrukerDto((String) tuple[7]),
-										new TilgangSakDto((String) tuple[8], isNull(tuple[9]) ? null : ((FagsystemCode) tuple[9])
-												.name()),
-										new TilgangDokumentInfoDto(isNull(tuple[10]) ? null : ((Long) tuple[10]).toString(), isNull(tuple[11]) ? null : ((DokumentStatusCode) tuple[11])
-												.name(), (String) tuple[12], isNull(tuple[13]) ? null : ((VariantFormatCode) tuple[13])
-												.name()));
+										new TilgangBrukerDto((String) tuple[7], isNull(tuple[8]) ? null : ((JournalStatusCode) tuple[8]).name()),
+										new TilgangSakDto((String) tuple[9], isNull(tuple[10]) ? null : ((FagsystemCode) tuple[10]).name()),
+										new TilgangDokumentInfoDto(isNull(tuple[11]) ? null : ((Long) tuple[11]).toString(), isNull(tuple[12]) ? null : ((DokumentStatusCode) tuple[12])
+												.name(), (String) tuple[13], isNull(tuple[14]) ? null : ((VariantFormatCode) tuple[15]).name()));
 							}
 
 							@Override

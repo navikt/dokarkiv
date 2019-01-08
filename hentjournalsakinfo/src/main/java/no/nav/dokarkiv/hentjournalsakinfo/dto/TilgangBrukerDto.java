@@ -9,4 +9,5 @@ import lombok.Value;
 public class TilgangBrukerDto {
 
 	String brukerId;
+	String brukerType;
 }
