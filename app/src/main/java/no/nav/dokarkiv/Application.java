@@ -18,6 +18,7 @@ import no.nav.dokarkiv.journalfoerinngaaende.v1.JournalfoerInngaaendeConfig;
 import no.nav.dokarkiv.logiskkassasjon.LogiskKassasjonConfig;
 import no.nav.dokarkiv.logiskslettdokument.LogiskSlettDokumentConfig;
 import no.nav.dokarkiv.nais.NaisContract;
+import no.nav.dokarkiv.platform.TomcatConfig;
 import no.nav.dokarkiv.tidligkassasjon.TidligKassasjonConfig;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.annotation.Import;
@@ -25,7 +26,8 @@ import org.springframework.context.annotation.Import;
 /**
  * @author Joakim Bjørnstad, Jbit AS
  */
-@Import({CoreConfig.class,
+@Import({TomcatConfig.class,
+		CoreConfig.class,
 		DokumentproduksjonInfoConfig.class,
 		ArkiverDokumentproduksjonConfig.class,
 		ArkiverDokumentmottakConfig.class,
