@@ -1,6 +1,5 @@
 package no.nav.dokarkiv.core.security;
 
-import no.nav.dokarkiv.core.hendelselogg.HendelseloggInterceptor;
 import no.nav.dokarkiv.core.security.ldap.NavLdapService;
 import no.nav.freg.security.oidc.auth.OidcAuthProperties;
 import org.springframework.context.annotation.Configuration;
@@ -21,9 +20,6 @@ public class RestWebMvcConfig implements WebMvcConfigurer {
 
 	@Inject
 	private OidcAuthProperties oidcAuthProperties;
-
-	@Inject
-	private HendelseloggInterceptor hendelseloggInterceptor;
 
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {

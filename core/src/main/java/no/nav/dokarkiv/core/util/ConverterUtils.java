@@ -1,5 +1,9 @@
 package no.nav.dokarkiv.core.util;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.io.IOException;
+
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
  */
@@ -13,4 +17,10 @@ public class ConverterUtils {
 		return Enum.valueOf(clazz, value);
 	}
 
+	public static <T> T jsonStringToObject(String hendelseInfoHeader, Class<T> tClass) throws IOException {
+		ObjectMapper mapper = new ObjectMapper();
+
+		return mapper.readValue(hendelseInfoHeader, tClass);
+
+	}
 }

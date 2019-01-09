@@ -44,24 +44,30 @@ public class Hendelselogg extends AbstractPersistentVersionedDomainObject {
 	@Column(name = "dokument_info_id")
 	private Long dokumentInfoId;
 
-	@Column(name = "hendelse_type", length = 50, nullable = false)
-	private String hendelseType;
+	@Column(name = "applikasjon", length = 20, nullable = false)
+	private String applikasjon;
 
-	@Column(name = "bruker", length = 20, nullable = false)
+	@Column(name = "aksjon", length = 50, nullable = false)
+	private String aksjon;
+
+	@Column(name = "hjemmel", length = 20)
+	private String hjemmel;
+
+	@Column(name = "sak", length = 20)
+	private String sak;
+
+	@Column(name = "bruker", length = 20)
 	private String bruker;
 
-	@Column(name = "opprettet_av_tjeneste", length = 20, nullable = false)
-	private String opprettetAvTjeneste;
+	@Column(name = "melding", length = 4000)
+	private String melding;
 
-	@Column(name = "annen_info", length = 4000)
-	private String annenInfo;
-
-	@JsonSetter("annenInfo")
-	public void setAnnenInfo(JsonNode jsonNode) {
-		this.annenInfo = jsonNode.toString();
+	@JsonSetter("melding")
+	public void setMelding(JsonNode jsonNode) {
+		this.melding = jsonNode.toString();
 	}
 
-	public void setAnnenInfo(String annenInfo) {
-		this.annenInfo = annenInfo;
+	public void setMelding(String annenInfo) {
+		this.melding = annenInfo;
 	}
 }
