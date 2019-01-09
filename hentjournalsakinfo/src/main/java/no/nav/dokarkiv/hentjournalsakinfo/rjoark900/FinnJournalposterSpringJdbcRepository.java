@@ -22,7 +22,7 @@ import java.util.stream.Stream;
  * @author Joakim Bjørnstad, Jbit AS
  */
 @Repository
-public class FinnJournalposterSpringJdbcRepository {
+class FinnJournalposterSpringJdbcRepository {
 	private static final ResultSetExtractor<List<JournalpostDto>> JOURNALPOST_DTO_RESULT_SET_EXTRACTOR = JdbcTemplateMapperFactory.newInstance()
 			.addKeys("journalpostid", "saksrelasjon_sakid", "dokumenter_dokumentinfoid", "dokumenter_logiske_tittel")
 			.newResultSetExtractor(JournalpostDto.class);
@@ -31,6 +31,9 @@ public class FinnJournalposterSpringJdbcRepository {
 	private static final List<Boolean> NO_FEILREGISTRERT_JOURNALPOST = Collections.singletonList(false);
 	private static final List<Boolean> ALL_JOURNALPOST = Arrays.asList(true, false);
 	private static final String PSAK_IDS_PARAM = "psakIds";
+	private static final String CTE_ALIAS_GSAKSAKER = "gsaksaker";
+	private static final String CTE_ALIAS_PSAKSAKER = "psaksaker";
+	private static final String CTE_ALIAS_MIDLERTIDIGE = "midlertidige";
 
 	private final GsakCteMapper gsakCteMapper;
 	private final NamedParameterJdbcTemplate jdbcTemplate;
@@ -41,25 +44,31 @@ public class FinnJournalposterSpringJdbcRepository {
 		this.jdbcTemplate = jdbcTemplate;
 	}
 
-	public List<JournalpostDto> finnJournalposter(final List<String> gsakIds,
-												  final List<String> psakIds,
-												  final JournalpostFilter journalpostFilter) {
-		List<String> cteAliases = new ArrayList<>();
-		MapSqlParameterSource namedParams = new MapSqlParameterSource();
+	List<JournalpostDto> finnJournalposter(final List<String> gsakIds,
+										   final List<String> psakIds,
+										   final JournalpostFilter journalpostFilter) {
 		GsakCteMapper.GsakCte gsakCte = gsakCteMapper.mapCte(gsakIds, journalpostFilter.isKunFeilregistrerte());
-		namedParams.addValues(gsakCte.getGsakIdParams());
-		if (gsakCte.isGsakerExists()) {
-			cteAliases.add("gsaksaker");
+		List<String> cteAliases = buildCteAliases(psakIds, journalpostFilter, gsakCte);
+		MapSqlParameterSource namedParams = buildNamedParams(psakIds, journalpostFilter, gsakCte);
+
+		if (cteAliases.isEmpty()) {
+			return new ArrayList<>();
 		}
+
+		String finnJournalposterSql = finnJournalposterSql(journalpostFilter, cteAliases, gsakCte.getCteSql());
+		return jdbcTemplate.query(finnJournalposterSql, namedParams, JOURNALPOST_DTO_RESULT_SET_EXTRACTOR);
+	}
+
+	private MapSqlParameterSource buildNamedParams(final List<String> psakIds, final JournalpostFilter journalpostFilter, final GsakCteMapper.GsakCte gsakCte) {
+		MapSqlParameterSource namedParams = new MapSqlParameterSource();
+		namedParams.addValues(gsakCte.getGsakIdParams());
 		if (psakIds == null || psakIds.isEmpty()) {
 			namedParams.addValue(PSAK_IDS_PARAM, NOT_USED);
 		} else {
 			namedParams.addValue(PSAK_IDS_PARAM, psakIds);
-			cteAliases.add("psaksaker");
 		}
 		if (journalpostFilter.isInkluderMidlertidigeJournalposter()) {
 			namedParams.addValue("alleIdenter", journalpostFilter.getAlleIdenter());
-			cteAliases.add("midlertidige");
 		} else {
 			namedParams.addValue("alleIdenter", NOT_USED);
 		}
@@ -76,12 +85,20 @@ public class FinnJournalposterSpringJdbcRepository {
 		namedParams.addValue("visFeilregistrert", journalpostFilter.isVisFeilregistrerte() ? ALL_JOURNALPOST : NO_FEILREGISTRERT_JOURNALPOST);
 		namedParams.addValue("antallRader", journalpostFilter.getAntallRader());
 		namedParams.addValue("journalpostIdPeker", journalpostFilter.getJournalpostIdPeker());
+		return namedParams;
+	}
 
-		if (cteAliases.isEmpty()) {
-			return new ArrayList<>();
+	private List<String> buildCteAliases(final List<String> psakIds, final JournalpostFilter journalpostFilter, final GsakCteMapper.GsakCte gsakCte) {
+		List<String> cteAliases = new ArrayList<>();
+		if (gsakCte.isGsakerExists()) {
+			cteAliases.add(CTE_ALIAS_GSAKSAKER);
 		}
-
-		String finnJournalposterSql = finnJournalposterSql(journalpostFilter, cteAliases, gsakCte.getCteSql());
-		return jdbcTemplate.query(finnJournalposterSql, namedParams, JOURNALPOST_DTO_RESULT_SET_EXTRACTOR);
+		if (psakIds != null && !psakIds.isEmpty()) {
+			cteAliases.add(CTE_ALIAS_PSAKSAKER);
+		}
+		if (journalpostFilter.isInkluderMidlertidigeJournalposter()) {
+			cteAliases.add(CTE_ALIAS_MIDLERTIDIGE);
+		}
+		return cteAliases;
 	}
 }

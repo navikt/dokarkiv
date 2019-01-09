@@ -19,6 +19,7 @@ final class FinnJournalpostSqlGenerator {
 		}
 	}
 
+	// Spørringen finner journalposter tilknyttet sak og midlertidige journalposter.
 	static String finnJournalposterSql(JournalpostFilter journalpostFilter, List<String> cteAliases, String gsakCte) {
 		return "WITH psaksaker AS\n" +
 				"       (SELECT s.journalpost_id\n" +
