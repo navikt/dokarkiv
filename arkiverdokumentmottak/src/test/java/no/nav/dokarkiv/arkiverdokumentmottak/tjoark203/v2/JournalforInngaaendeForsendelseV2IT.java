@@ -651,23 +651,6 @@ public class JournalforInngaaendeForsendelseV2IT extends AbstractArkiverDokument
 		arkiverDokumentmottakV2Provider.journalforInngaaendeForsendelse(request);
 	}
 
-	@Test
-	public void shouldThrowExceptionMissingSkannetInnholdDokumenttypeId() throws Exception {
-		expectedException.expect(KanIkkeJournalfores.class);
-		expectedException.expectMessage("DokumenttypeId");
-
-		request.getJournalpost()
-				.getJournalpostDokumentInfoRelasjon()
-				.iterator()
-				.next()
-				.getDokumentInfo()
-				.getSkannetInnholdListe()
-				.iterator()
-				.next()
-				.setDokumentTypeId(null);
-		arkiverDokumentmottakV2Provider.journalforInngaaendeForsendelse(request);
-	}
-
 	/**
 	 * HVIS operasjonen kalles med en ugyldig kodeverdi i input SÅ skal det returneres en feil (2)
 	 * HVIS operasjonen kalles uten at alle påkrevde inputparametere er oppgitt SÅ skal det returneres en feil (1)

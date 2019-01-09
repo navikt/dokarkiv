@@ -294,24 +294,6 @@ public class JournalforInngaaendeForsendelseV2RequestToTest {
 		requestTo.validate();
 	}
 
-	@Test
-	public void shouldThrowExceptionMissingSkannetInnholdDokumenttypeId() {
-		expectedException.expect(IllegalArgumentException.class);
-		expectedException.expectMessage("DokumenttypeId");
-
-		requestTo.getJournalpost()
-				.getJournalpostDokumentInfoRelasjoner()
-				.iterator()
-				.next()
-				.getDokumentInfo()
-				.getSkannetInnholdListe()
-				.iterator()
-				.next()
-				.setDokumenttypeid(null);
-		requestTo.validate();
-	}
-
-
 	private JournalforInngaaendeForsendelseV2RequestTo createRequestTo(boolean forsokEndeligJf) {
 		return new JournalforInngaaendeForsendelseV2RequestTo(
 				forsokEndeligJf,
