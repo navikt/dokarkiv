@@ -19,6 +19,7 @@ import no.nav.dokarkiv.journalfoerinngaaende.v1.JournalfoerInngaaendeConfig;
 import no.nav.dokarkiv.logiskkassasjon.LogiskKassasjonConfig;
 import no.nav.dokarkiv.logiskslettdokument.LogiskSlettDokumentConfig;
 import no.nav.dokarkiv.nais.NaisContract;
+import no.nav.dokarkiv.platform.TomcatConfig;
 import no.nav.dokarkiv.tidligkassasjon.TidligKassasjonConfig;
 import no.nav.dokarkiv.platform.TomcatConfig;
 import org.springframework.boot.SpringApplication;
