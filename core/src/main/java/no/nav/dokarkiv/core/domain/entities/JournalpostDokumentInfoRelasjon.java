@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.core.domain.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import no.nav.dokarkiv.core.domain.AbstractPersistentVersionedDomainObjectWithKilde;
@@ -57,6 +58,7 @@ public class JournalpostDokumentInfoRelasjon extends AbstractPersistentVersioned
 	@Cascade({CascadeType.PERSIST, CascadeType.MERGE, CascadeType.SAVE_UPDATE, CascadeType.DETACH})
 	private DokumentInfo dokumentInfo;
 
+	@JsonIgnore
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "journalpost_id", nullable = false)
 	private Journalpost journalpost;

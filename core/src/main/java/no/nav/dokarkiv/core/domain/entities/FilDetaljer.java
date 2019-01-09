@@ -2,6 +2,7 @@ package no.nav.dokarkiv.core.domain.entities;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import no.nav.dokarkiv.core.domain.AbstractPersistentVersionedDomainObjectWithKilde;
@@ -77,7 +78,8 @@ public class FilDetaljer extends AbstractPersistentVersionedDomainObjectWithKild
 	@Enumerated(EnumType.STRING)
 	@Column(name = "k_variant_format", nullable = false)
 	private VariantFormatCode variantFormat;
-	
+
+	@JsonIgnore
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "dokument_info_id", nullable = false)
 	private DokumentInfo dokumentInfo;
