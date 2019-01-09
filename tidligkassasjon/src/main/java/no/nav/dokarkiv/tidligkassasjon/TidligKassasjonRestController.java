@@ -52,7 +52,7 @@ public class TidligKassasjonRestController {
 	@Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_DOKUMENT)},
 			actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION))
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark107"}, percentiles = {0.5, 0.95})
-	public TidligKassasjonResponse tidligKassasjon(@RequestHeader(value = HENDELSE_INFO_HEADER, required = false) String hendelseInfoHeader,
+	public TidligKassasjonResponse tidligKassasjon(@RequestHeader(value = HENDELSE_INFO_HEADER) String hendelseInfoHeader,
 												   @PathVariable("dokumentInfoId") Long dokumentInfoId) throws UgyldigHendelseLoggInfoException {
 		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark107");
 		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har mottat kall med dokumentInfoId={}", dokumentInfoId);

@@ -58,7 +58,7 @@ public class ArkiverKorrigertDokumentRestController {
 			actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION))
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark103"}, percentiles = {0.5, 0.95})
 	public ArkiverKorrigertDokumentRespons arkiverKorrigertDokument(
-			@RequestHeader(value = HENDELSE_INFO_HEADER, required = false) String hendelseInfoHeader,
+			@RequestHeader(value = HENDELSE_INFO_HEADER) String hendelseInfoHeader,
 			@RequestBody ArkiverKorrigertDokumentRequest request) throws UgyldigHendelseLoggInfoException {
 		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark103");
 		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har mottat kall med dokumentInfoId={}", request.getDokumentInfoId());
@@ -81,7 +81,7 @@ public class ArkiverKorrigertDokumentRestController {
 			actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION))
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark103"}, percentiles = {0.5, 0.95})
 	public ArkiverKorrigertDokumentRespons angreArkiverKorrigertDokument(
-			@RequestHeader(value = HENDELSE_INFO_HEADER, required = false) String hendelseInfoHeader,
+			@RequestHeader(value = HENDELSE_INFO_HEADER) String hendelseInfoHeader,
 			@PathVariable("dokumentInfoId") Long dokumentInfoId) throws UgyldigHendelseLoggInfoException {
 		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark104");
 		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har mottat kall med dokumentInfoId={}", dokumentInfoId);

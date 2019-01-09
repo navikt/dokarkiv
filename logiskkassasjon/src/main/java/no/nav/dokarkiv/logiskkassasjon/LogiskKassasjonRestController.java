@@ -58,7 +58,7 @@ public class LogiskKassasjonRestController {
 	@Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_DOKUMENT)},
 			actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION))
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark105"}, percentiles = {0.5, 0.95})
-	public LogiskKassasjonResponse logiskKassasjon(@RequestHeader(value = HENDELSE_INFO_HEADER, required = false) String hendelseInfoHeader,
+	public LogiskKassasjonResponse logiskKassasjon(@RequestHeader(value = HENDELSE_INFO_HEADER) String hendelseInfoHeader,
 												   @PathVariable("dokumentInfoId") Long dokumentInfoId) throws UgyldigHendelseLoggInfoException {
 		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark105");
 		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har mottat kall med dokumentInfoId={}", dokumentInfoId);
@@ -78,7 +78,7 @@ public class LogiskKassasjonRestController {
 	@Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_DOKUMENT)},
 			actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION))
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark106"}, percentiles = {0.5, 0.95})
-	public LogiskKassasjonResponse angreLogiskKassasjon(@RequestHeader(value = HENDELSE_INFO_HEADER, required = false) String hendelseInfoHeader,
+	public LogiskKassasjonResponse angreLogiskKassasjon(@RequestHeader(value = HENDELSE_INFO_HEADER) String hendelseInfoHeader,
 														@PathVariable("dokumentInfoId") Long dokumentInfoId) throws UgyldigHendelseLoggInfoException {
 		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark106");
 		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har mottat kall med dokumentInfoId={}", dokumentInfoId);
