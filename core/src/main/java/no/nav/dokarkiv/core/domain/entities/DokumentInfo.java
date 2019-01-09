@@ -114,6 +114,10 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	@Type(type = "org.hibernate.type.TrueFalseType")
 	private Boolean organInternt;
 
+	@Column(name = "er_begrenset")
+	@Type(type = "org.hibernate.type.TrueFalseType")
+	private Boolean erBegrenset;
+
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "orig_journalpost_id")
 	private Journalpost originalJournalpost;
@@ -635,6 +639,14 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	 */
 	public void setOrganInternt(Boolean organInternt) {
 		this.organInternt = organInternt;
+	}
+
+	public Boolean getErBegrenset() {
+		return erBegrenset;
+	}
+
+	public void setErBegrenset(Boolean erBegrenset) {
+		this.erBegrenset = erBegrenset;
 	}
 
 	/**

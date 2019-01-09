@@ -11,6 +11,7 @@ import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import org.apache.commons.lang3.ArrayUtils;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -77,7 +78,12 @@ public class FilDetaljer extends AbstractPersistentVersionedDomainObjectWithKild
 	@Enumerated(EnumType.STRING)
 	@Column(name = "k_variant_format", nullable = false)
 	private VariantFormatCode variantFormat;
-	
+
+	@Column(name = "er_begrenset")
+	@Type(type = "org.hibernate.type.TrueFalseType")
+	private Boolean erBegrenset;
+
+
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "dokument_info_id", nullable = false)
 	private DokumentInfo dokumentInfo;
@@ -336,6 +342,14 @@ public class FilDetaljer extends AbstractPersistentVersionedDomainObjectWithKild
 	 */
 	public void setVariantFormat(VariantFormatCode variantFormat) {
 		this.variantFormat = variantFormat;
+	}
+
+	public Boolean getErBegrenset() {
+		return erBegrenset;
+	}
+
+	public void setErBegrenset(Boolean erBegrenset) {
+		this.erBegrenset = erBegrenset;
 	}
 
 	/**

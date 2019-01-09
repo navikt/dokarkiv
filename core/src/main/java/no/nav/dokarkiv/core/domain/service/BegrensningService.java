@@ -1,11 +1,17 @@
 package no.nav.dokarkiv.core.domain.service;
 
+import static org.apache.commons.lang3.BooleanUtils.isFalse;
+
 import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.Begrensning;
+import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
+import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.repository.BegrensningRepository;
+import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
 import no.nav.modig.core.context.SubjectHandler;
 import org.apache.commons.lang3.BooleanUtils;
@@ -29,11 +35,13 @@ public class BegrensningService {
 
 	private final BegrensningRepository begrensningRepository;
 	private JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository;
+	private JoarkRepository joarkRepository;
 
 	@Inject
-	public BegrensningService(BegrensningRepository begrensningRepository, JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository) {
+	public BegrensningService(BegrensningRepository begrensningRepository, JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository,JoarkRepository joarkRepository) {
 		this.begrensningRepository = begrensningRepository;
 		this.journalpostDokumentInfoRelasjonRepository = journalpostDokumentInfoRelasjonRepository;
+		this.joarkRepository = joarkRepository;
 	}
 
 	public boolean isJournalpostBegrenset(Long journalpostId, BegrensningTypeCode begrensningTypeCode) {
@@ -61,7 +69,7 @@ public class BegrensningService {
 		Optional<Begrensning> variantSkjermet = begrensningRepository.findByDokumentInfoIdAndVariantFormatAndBegrensningType(dokumentInfoId, variant, BegrensningTypeCode.SKJERMET);
 		String consumer = hentBrukerSomKaller();
 
-		//Midlertidig løsning i påvente av SAF
+		//TODO Midlertidig løsning i påvente av SAF
 		if ("srvjoarkadmin".equalsIgnoreCase(consumer)) {
 			//Har rettighet til å se originalen uansett
 			return false;
@@ -73,6 +81,7 @@ public class BegrensningService {
 
 	public void saveBegrensning(Begrensning begrensning) {
 		begrensningRepository.save(begrensning);
+		setJoarkBegrensning(begrensning);
 	}
 
 	public void deleteValidertJournalpostBegrensning(
@@ -128,5 +137,28 @@ public class BegrensningService {
 			return ((BigInteger) value).longValue();
 		}
 		return (Long) value;
+	}
+
+	private void setJoarkBegrensning(Begrensning begrensning) {
+		if (begrensning.getJournalpostId() != null && begrensning.getDokumentInfoId() == null) {
+			Journalpost journalpost = joarkRepository.findById(begrensning.getJournalpostId()).orElse(null);
+			DokumentInfo dokumentInfo = null;
+			List<JournalpostDokumentInfoRelasjon> rel = journalpostDokumentInfoRelasjonRepository.findAllByDokumentInfoDokumentInfoId(begrensning.getDokumentInfoId());
+			if (!rel.isEmpty()) {
+				dokumentInfo = rel.get(0).getDokumentInfo();
+			}
+			if (journalpost != null && dokumentInfo == null && isFalse(journalpost.getErBegrenset())) {
+				journalpost.setErBegrenset(true);
+			}
+			if (dokumentInfo != null && begrensning.getVariantFormat() == null && isFalse(dokumentInfo.getErBegrenset())) {
+				dokumentInfo.setErBegrenset(true);
+			}
+			if (begrensning.getVariantFormat() != null) {
+				FilDetaljer filDetaljer = dokumentInfo.findFilDetaljerByVariantFormat(begrensning.getVariantFormat());
+				if (filDetaljer != null && isFalse(filDetaljer.getErBegrenset())) {
+					filDetaljer.setErBegrenset(true);
+				}
+			}
+		}
 	}
 }

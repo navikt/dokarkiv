@@ -200,6 +200,11 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	@Column(name = "k_behandlingstema")
 	private Behandlingstema behandlingstema;
 
+	@Column(name = "er_begrenset")
+	@Type(type = "org.hibernate.type.TrueFalseType")
+	private Boolean erBegrenset;
+
+
 	@OneToMany
 	@JoinColumn(name = "journalpost_id", nullable = false)
 	@Cascade({CascadeType.PERSIST, CascadeType.MERGE, CascadeType.SAVE_UPDATE, CascadeType.DELETE, CascadeType.DETACH})
@@ -1421,6 +1426,14 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	 */
 	public void setBehandlingstema(Behandlingstema behandlingstema) {
 		this.behandlingstema = behandlingstema;
+	}
+
+	public Boolean getErBegrenset() {
+		return erBegrenset;
+	}
+
+	public void setErBegrenset(Boolean erBegrenset) {
+		this.erBegrenset = erBegrenset;
 	}
 
 	/**
