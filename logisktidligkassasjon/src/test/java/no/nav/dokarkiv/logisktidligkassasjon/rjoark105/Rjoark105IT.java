@@ -1,9 +1,9 @@
-package no.nav.dokarkiv.logiskkassasjon.rjoark105;
+package no.nav.dokarkiv.logisktidligkassasjon.rjoark105;
 
 import static junit.framework.TestCase.assertTrue;
-import static no.nav.dokarkiv.logiskkassasjon.util.TestUtils.kassereDokumentLogisk;
-import static no.nav.dokarkiv.logiskkassasjon.util.TestUtils.knyttDokumentInfoSomVedleggTilJournalpostForIT;
-import static no.nav.dokarkiv.logiskkassasjon.util.TestUtils.opprettHoveddokumentForIT;
+import static no.nav.dokarkiv.logisktidligkassasjon.util.TestUtils.kassereDokumentLogisk;
+import static no.nav.dokarkiv.logisktidligkassasjon.util.TestUtils.knyttDokumentInfoSomVedleggTilJournalpostForIT;
+import static no.nav.dokarkiv.logisktidligkassasjon.util.TestUtils.opprettHoveddokumentForIT;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.core.Is.is;
@@ -11,23 +11,23 @@ import static org.hamcrest.core.Is.is;
 import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import no.nav.dokarkiv.logiskkassasjon.AbstractLogiskKassasjonIT;
+import no.nav.dokarkiv.logisktidligkassasjon.AbstractLogiskTidligKassasjonIT;
 import org.junit.Test;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.transaction.TestTransaction;
 
-public class Rjoark105IT extends AbstractLogiskKassasjonIT {
+public class Rjoark105IT extends AbstractLogiskTidligKassasjonIT {
 
 	@Test
-	public void skallIkkeLogiskKassereDokument_ettersomDokumentInfoIdIkkeFinnes() {
+	public void skallIkkeLogiskTidligKassereDokument_ettersomDokumentInfoIdIkkeFinnes() {
 		abacPermit();
 
 		Long dokumentInfoId = 13L;
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
-				URL_LOGISKKASSASJON + dokumentInfoId,
+				URL_LOGISKTIDLIGKASSASJON + dokumentInfoId,
 				HttpMethod.POST,
 				createHeaders(),
 				String.class);
@@ -37,7 +37,7 @@ public class Rjoark105IT extends AbstractLogiskKassasjonIT {
 	}
 
 	@Test
-	public void skallIkkeLogiskKassereDokument_ettersomDokumentErKassert() {
+	public void skallIkkeLogiskTidligKassereDokument_ettersomDokumentErKassert() {
 		abacPermit();
 
 		Journalpost journalpost = joarkRepository.save(opprettHoveddokumentForIT());
@@ -49,7 +49,7 @@ public class Rjoark105IT extends AbstractLogiskKassasjonIT {
 		TestTransaction.end();
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
-				URL_LOGISKKASSASJON + dokumentInfo.getDokumentInfoId(),
+				URL_LOGISKTIDLIGKASSASJON + dokumentInfo.getDokumentInfoId(),
 				HttpMethod.POST,
 				createHeaders(),
 				String.class);
@@ -61,7 +61,7 @@ public class Rjoark105IT extends AbstractLogiskKassasjonIT {
 	}
 
 	@Test
-	public void skallLogiskKassereDokument_medDokumentKnyttetFlereJournalposter() {
+	public void skallLogiskTidligKassereDokument_medDokumentKnyttetFlereJournalposter() {
 		abacPermit();
 		Journalpost journalpost1 = joarkRepository.save(opprettHoveddokumentForIT());
 		Journalpost journalpost2 = opprettHoveddokumentForIT();
@@ -76,7 +76,7 @@ public class Rjoark105IT extends AbstractLogiskKassasjonIT {
 		TestTransaction.end();
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
-				URL_LOGISKKASSASJON + hoveddokument1.getDokumentInfoId(),
+				URL_LOGISKTIDLIGKASSASJON + hoveddokument1.getDokumentInfoId(),
 				HttpMethod.POST,
 				createHeaders(),
 				String.class);
@@ -88,7 +88,7 @@ public class Rjoark105IT extends AbstractLogiskKassasjonIT {
 	}
 
 	@Test
-	public void skallLogiskKassereDokument_medDokumentKnyttetEnJournalpost() {
+	public void skallLogiskTidligKassereDokument_medDokumentKnyttetEnJournalpost() {
 		abacPermit();
 
 		Journalpost journalpost = joarkRepository.save(opprettHoveddokumentForIT());
@@ -99,7 +99,7 @@ public class Rjoark105IT extends AbstractLogiskKassasjonIT {
 
 		assertThat(begrensningRepository.count(), is(0L));
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
-				URL_LOGISKKASSASJON + dokumentInfo.getDokumentInfoId(),
+				URL_LOGISKTIDLIGKASSASJON + dokumentInfo.getDokumentInfoId(),
 				HttpMethod.POST,
 				createHeaders(),
 				String.class);
@@ -123,7 +123,7 @@ public class Rjoark105IT extends AbstractLogiskKassasjonIT {
 		TestTransaction.end();
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
-				URL_LOGISKKASSASJON + dokumentInfo.getDokumentInfoId(),
+				URL_LOGISKTIDLIGKASSASJON + dokumentInfo.getDokumentInfoId(),
 				HttpMethod.POST,
 				createNoAccessHeaders(),
 				String.class);

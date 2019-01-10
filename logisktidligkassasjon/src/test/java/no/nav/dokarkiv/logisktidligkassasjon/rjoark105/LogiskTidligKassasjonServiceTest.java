@@ -1,8 +1,8 @@
-package no.nav.dokarkiv.logiskkassasjon.rjoark105;
+package no.nav.dokarkiv.logisktidligkassasjon.rjoark105;
 
 import static junit.framework.TestCase.assertTrue;
-import static no.nav.dokarkiv.logiskkassasjon.util.TestUtils.knyttDokumentInfoSomVedleggTilJournalpostForIT;
-import static no.nav.dokarkiv.logiskkassasjon.util.TestUtils.opprettHoveddokumentForEnhetstest;
+import static no.nav.dokarkiv.logisktidligkassasjon.util.TestUtils.knyttDokumentInfoSomVedleggTilJournalpostForIT;
+import static no.nav.dokarkiv.logisktidligkassasjon.util.TestUtils.opprettHoveddokumentForEnhetstest;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.when;
@@ -25,7 +25,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.util.Optional;
 
 @RunWith(MockitoJUnitRunner.class)
-public class LogiskKassasjonServiceTest {
+public class LogiskTidligKassasjonServiceTest {
 
 	private static final Long DOKUMENTINFO_ID = 2000000L;
 	private static final String TITTEL = "Tittel";
@@ -44,17 +44,17 @@ public class LogiskKassasjonServiceTest {
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
 
-	private LogiskKassasjonService logiskKassasjonService;
+	private LogiskTidligKassasjonService logiskTidligKassasjonService;
 
 	@Before
 	public void setUp() {
-		logiskKassasjonService = new LogiskKassasjonService(dokumentinfoRepository, begrensningRepository);
+		logiskTidligKassasjonService = new LogiskTidligKassasjonService(dokumentinfoRepository, begrensningRepository);
 		journalpost = opprettHoveddokumentForEnhetstest();
 		dokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 	}
 
 	@Test()
-	public void skalIkkeLogiskKassereDokument_hvisDokumentInfoAlleredeErKassert() {
+	public void skalIkkeLogiskTidligKassereDokument_hvisDokumentInfoAlleredeErKassert() {
 		thrown.expect(DokumentAlleredeKassertException.class);
 		thrown.expectMessage(String.format(
 				"Kan ikke utføre logisk kassasjon av dokument med dokumentInfoId=%s. Dokumentet er allerede logisk kassert",
@@ -64,22 +64,22 @@ public class LogiskKassasjonServiceTest {
 		when(begrensningRepository.findByDokumentInfoIdAndBegrensningType(DOKUMENTINFO_ID, BegrensningTypeCode.KASSERT))
 				.thenReturn(Optional.of(begrensning));
 
-		LogiskKassasjonResponse response = logiskKassasjonService.logiskKassasjonAvDokument(DOKUMENTINFO_ID);
+		LogiskTidligKassasjonResponse response = logiskTidligKassasjonService.logiskTidligKassasjonAvDokument(DOKUMENTINFO_ID);
 	}
 
 	@Test
-	public void skalLogiskKasserDokument_medDokumentKnyttetEnJournalpost() {
+	public void skalLogiskTidligKasserDokument_medDokumentKnyttetEnJournalpost() {
 		when(dokumentinfoRepository.findByDokumentInfoId(DOKUMENTINFO_ID)).thenReturn(Optional.of(dokumentInfo));
 		when(begrensningRepository.findByDokumentInfoIdAndBegrensningType(DOKUMENTINFO_ID, BegrensningTypeCode.KASSERT))
 				.thenReturn(Optional.empty());
 
-		LogiskKassasjonResponse response = logiskKassasjonService.logiskKassasjonAvDokument(DOKUMENTINFO_ID);
+		LogiskTidligKassasjonResponse response = logiskTidligKassasjonService.logiskTidligKassasjonAvDokument(DOKUMENTINFO_ID);
 
 		assertThat("Wrong tittel", response.getTittel(), is(TITTEL));
 	}
 
 	@Test
-	public void skalLogiskKasserDokument_medDokumentKnyttetFlereJournalposter() {
+	public void skalLogiskTidligKasserDokument_medDokumentKnyttetFlereJournalposter() {
 		Journalpost journalpost2 = opprettHoveddokumentForEnhetstest();
 		knyttDokumentInfoSomVedleggTilJournalpostForIT(dokumentInfo, journalpost2);
 		assertTrue(dokumentInfo.isRelatedToMultipleJournalposts());
@@ -88,6 +88,6 @@ public class LogiskKassasjonServiceTest {
 		when(begrensningRepository.findByDokumentInfoIdAndBegrensningType(DOKUMENTINFO_ID, BegrensningTypeCode.KASSERT))
 				.thenReturn(Optional.empty());
 
-		LogiskKassasjonResponse response = logiskKassasjonService.logiskKassasjonAvDokument(DOKUMENTINFO_ID);
+		LogiskTidligKassasjonResponse response = logiskTidligKassasjonService.logiskTidligKassasjonAvDokument(DOKUMENTINFO_ID);
 	}
 }

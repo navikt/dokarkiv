@@ -17,8 +17,8 @@ import no.nav.dokarkiv.inngaaendejournal.v1.InngaaendeJournalV1Config;
 import no.nav.dokarkiv.innsynjournal.v2.InnsynJournalV2Config;
 import no.nav.dokarkiv.journal.v3.JournalV3Config;
 import no.nav.dokarkiv.journalfoerinngaaende.v1.JournalfoerInngaaendeConfig;
-import no.nav.dokarkiv.logiskkassasjon.LogiskKassasjonConfig;
 import no.nav.dokarkiv.logiskslettdokument.LogiskSlettDokumentConfig;
+import no.nav.dokarkiv.logisktidligkassasjon.LogiskTidligKassasjonConfig;
 import no.nav.dokarkiv.nais.NaisContract;
 import no.nav.dokarkiv.platform.TomcatConfig;
 import org.springframework.boot.SpringApplication;
@@ -45,7 +45,7 @@ import org.springframework.context.annotation.Import;
 		LogiskSlettDokumentConfig.class,
 		FysiskSlettDokumentConfig.class,
 		ArkiverKorrigertDokumentConfig.class,
-		LogiskKassasjonConfig.class,
+		LogiskTidligKassasjonConfig.class,
 		FysiskTidligKassasjonConfig.class,
 		NaisContract.class})
 public class Application {

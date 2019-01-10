@@ -82,7 +82,7 @@
 		</dependency>
 		<dependency>
 			<groupId>no.nav.dokarkiv</groupId>
-			<artifactId>logiskkassasjon</artifactId>
+			<artifactId>logisktidligkassasjon</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>no.nav.dokarkiv</groupId>

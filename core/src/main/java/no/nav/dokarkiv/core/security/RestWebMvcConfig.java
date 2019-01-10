@@ -42,7 +42,7 @@ public class RestWebMvcConfig implements WebMvcConfigurer {
 						"/rest/arkiverkorrigertdokument/",
 						"/rest/arkiverkorrigertdokument/angre/**",
 						"/rest/fysiskslettdokument/**",
-						"/rest/logiskkassasjon/**",
+						"/rest/logisktidligkassasjon/**",
 						"/rest/logiskslettdokument/**",
 						"/rest/fysisktidligkassasjon/**");
 	}

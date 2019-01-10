@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.logiskkassasjon.rjoark105;
+package no.nav.dokarkiv.logisktidligkassasjon.rjoark105;
 
 import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
@@ -14,29 +14,29 @@ import org.springframework.stereotype.Service;
 import javax.inject.Inject;
 
 @Service
-public class LogiskKassasjonService {
+public class LogiskTidligKassasjonService {
 
 	private final DokumentinfoRepository dokumentInfoRepository;
 	private final BegrensningRepository begrensningRepository;
 
 	@Inject
-	public LogiskKassasjonService(
+	public LogiskTidligKassasjonService(
 			DokumentinfoRepository dokumentInfoRepository,
 			BegrensningRepository begrensningRepository) {
 		this.dokumentInfoRepository = dokumentInfoRepository;
 		this.begrensningRepository = begrensningRepository;
 	}
 
-	public LogiskKassasjonResponse logiskKassasjonAvDokument(Long dokumentInfoId) {
+	public LogiskTidligKassasjonResponse logiskTidligKassasjonAvDokument(Long dokumentInfoId) {
 		DokumentInfo dokumentInfoSomSkalKasseres = dokumentInfoRepository.findByDokumentInfoId(dokumentInfoId).orElseThrow(
 				() -> new DokumentInfoIkkeFunnetException(String.format("Kan ikke finne dokumentInfo med dokumentInfoId=%s",
 						dokumentInfoId)));
 
 		sjekkAtDokumentIkkeErBegrensetSomKassert(dokumentInfoId);
 
-		logiskKassasjonAvEtDokument(dokumentInfoSomSkalKasseres);
+		logiskTidligKassasjonAvEtDokument(dokumentInfoSomSkalKasseres);
 
-		return LogiskKassasjonResponse.builder()
+		return LogiskTidligKassasjonResponse.builder()
 				.dokumentInfoId(dokumentInfoSomSkalKasseres.getDokumentInfoId())
 				.tittel(dokumentInfoSomSkalKasseres.getTittel())
 				.build();
@@ -55,7 +55,7 @@ public class LogiskKassasjonService {
 		}
 	}
 
-	private void logiskKassasjonAvEtDokument(DokumentInfo dokumentInfoSomSkalKasseres) {
+	private void logiskTidligKassasjonAvEtDokument(DokumentInfo dokumentInfoSomSkalKasseres) {
 		Begrensning begrensning = Begrensning.builder()
 				.dokumentInfoId(dokumentInfoSomSkalKasseres.getDokumentInfoId())
 				.begrensningType(BegrensningTypeCode.KASSERT)

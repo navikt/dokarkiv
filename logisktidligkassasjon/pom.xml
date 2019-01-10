@@ -10,7 +10,7 @@
 		<version>1-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>logiskkassasjon</artifactId>
+	<artifactId>logisktidligkassasjon</artifactId>
 
 	<dependencies>
 		<dependency>

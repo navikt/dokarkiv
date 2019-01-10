@@ -1,9 +1,9 @@
-package no.nav.dokarkiv.logiskkassasjon;
+package no.nav.dokarkiv.logisktidligkassasjon;
 
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @ComponentScan
-public class LogiskKassasjonConfig {
+public class LogiskTidligKassasjonConfig {
 }

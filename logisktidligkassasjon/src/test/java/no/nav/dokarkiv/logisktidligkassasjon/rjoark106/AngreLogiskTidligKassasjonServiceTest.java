@@ -1,6 +1,6 @@
-package no.nav.dokarkiv.logiskkassasjon.rjoark106;
+package no.nav.dokarkiv.logisktidligkassasjon.rjoark106;
 
-import static no.nav.dokarkiv.logiskkassasjon.util.TestUtils.opprettHoveddokumentForEnhetstest;
+import static no.nav.dokarkiv.logisktidligkassasjon.util.TestUtils.opprettHoveddokumentForEnhetstest;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
@@ -12,7 +12,6 @@ import no.nav.dokarkiv.core.exceptions.BegrensningIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.DokumentInfoIkkeFunnetException;
 import no.nav.dokarkiv.core.repository.BegrensningRepository;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
-import no.nav.dokarkiv.logiskkassasjon.rjoark105.LogiskKassasjonResponse;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -24,7 +23,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.util.Optional;
 
 @RunWith(MockitoJUnitRunner.class)
-public class AngreLogiskKassasjonServiceTest {
+public class AngreLogiskTidligKassasjonServiceTest {
 
 	private static final Long DOKUMENTINFO_ID = 2000000L;
 
@@ -35,7 +34,7 @@ public class AngreLogiskKassasjonServiceTest {
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
 
-	private AngreLogiskKassasjonService angreLogiskKassasjonService;
+	private AngreLogiskTidligKassasjonService angreLogiskTidligKassasjonService;
 	private Journalpost journalpost;
 	private DokumentInfo dokumentInfo;
 	private static final Begrensning begrensning =
@@ -46,23 +45,23 @@ public class AngreLogiskKassasjonServiceTest {
 
 	@Before
 	public void setUp() {
-		angreLogiskKassasjonService = new AngreLogiskKassasjonService(dokumentinfoRepository, begrensningRepository);
+		angreLogiskTidligKassasjonService = new AngreLogiskTidligKassasjonService(dokumentinfoRepository, begrensningRepository);
 		journalpost = opprettHoveddokumentForEnhetstest();
 		dokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 	}
 
 	@Test()
-	public void skalIkkeAngreLogiskKassereDokument_hvisDokumentInfoIdIkkeFinnesIRepoet() {
+	public void skalIkkeAngreLogiskTidligKassereDokument_hvisDokumentInfoIdIkkeFinnesIRepoet() {
 		thrown.expect(DokumentInfoIkkeFunnetException.class);
 		thrown.expectMessage("Kan ikke finne dokumentInfo med dokumentInfoId=" + DOKUMENTINFO_ID);
 
 		when(dokumentinfoRepository.findByDokumentInfoId(anyLong())).thenReturn(Optional.empty());
 
-		LogiskKassasjonResponse response = angreLogiskKassasjonService.angreLogiskKassasjonAvDokument(DOKUMENTINFO_ID);
+		angreLogiskTidligKassasjonService.angreLogiskTidligKassasjonAvDokument(DOKUMENTINFO_ID);
 	}
 
 	@Test()
-	public void skalIkkeAngreLogiskKassereDokument_hvisDokumentInfoIkkeErBegrensetSomKassert() {
+	public void skalIkkeAngreLogiskTidligKassereDokument_hvisDokumentInfoIkkeErBegrensetSomKassert() {
 		thrown.expect(BegrensningIkkeFunnetException.class);
 		thrown.expectMessage(String.format(
 				"Fant ikke forventet begrensning for dokument med dokumentInfoId=%s og begrensningsType=%s",
@@ -73,16 +72,16 @@ public class AngreLogiskKassasjonServiceTest {
 		when(begrensningRepository.findByDokumentInfoIdAndBegrensningType(DOKUMENTINFO_ID, BegrensningTypeCode.KASSERT))
 				.thenReturn(Optional.empty());
 
-		LogiskKassasjonResponse response = angreLogiskKassasjonService.angreLogiskKassasjonAvDokument(DOKUMENTINFO_ID);
+		angreLogiskTidligKassasjonService.angreLogiskTidligKassasjonAvDokument(DOKUMENTINFO_ID);
 	}
 
 	@Test()
-	public void skalAngreLogiskKassereDokument_utenKastAvExceptions() {
+	public void skalAngreLogiskTidligKassereDokument_utenKastAvExceptions() {
 		when(dokumentinfoRepository.findByDokumentInfoId(DOKUMENTINFO_ID)).thenReturn(Optional.of(dokumentInfo));
 		when(begrensningRepository.findByDokumentInfoIdAndBegrensningType(DOKUMENTINFO_ID, BegrensningTypeCode.KASSERT))
 				.thenReturn(Optional.of(begrensning));
 
-		LogiskKassasjonResponse response = angreLogiskKassasjonService.angreLogiskKassasjonAvDokument(DOKUMENTINFO_ID);
+		angreLogiskTidligKassasjonService.angreLogiskTidligKassasjonAvDokument(DOKUMENTINFO_ID);
 	}
 
 }
