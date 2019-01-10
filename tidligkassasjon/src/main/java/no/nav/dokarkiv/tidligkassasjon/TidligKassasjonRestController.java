@@ -43,16 +43,16 @@ public class TidligKassasjonRestController {
 
 	@Transactional
 	@ResponseBody
-	@PostMapping("/{dokumentInfoId}")
+	@PostMapping("/{dokumentInfoId}/{kassertAvNavn}")
 	@Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_DOKUMENT)},
 			actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION))
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark107"}, percentiles = {0.5, 0.95})
-	public TidligKassasjonResponse tidligKassasjon(@PathVariable("dokumentInfoId") Long dokumentInfoId) {
+	public TidligKassasjonResponse tidligKassasjon(@PathVariable("dokumentInfoId") Long dokumentInfoId, @PathVariable("kassertAvNavn") String kassertAvNavn) {
 		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark107");
 		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har mottat kall med dokumentInfoId={}", dokumentInfoId);
 		validator.validerTidligKassasjonRequest(dokumentInfoId);
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
-		TidligKassasjonResponse response = tidligKassasjonService.tidligKassasjonAvDokument(dokumentInfoId);
+		TidligKassasjonResponse response = tidligKassasjonService.tidligKassasjonAvDokument(dokumentInfoId, kassertAvNavn);
 		log.info("{} har tidlig kassert dokument med dokumentInfoId={}",
 				MDC.get(MDCConstants.MDC_REQUEST_ID), dokumentInfoId);
 		return response;

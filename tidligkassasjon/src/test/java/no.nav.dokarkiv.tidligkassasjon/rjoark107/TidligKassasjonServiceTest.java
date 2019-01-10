@@ -30,6 +30,7 @@ public class TidligKassasjonServiceTest {
 	private static final String TITTEL = "Tittel";
 	private static Journalpost journalpost = null;
 	private static DokumentInfo dokumentInfo = null;
+	private static String KASSERTAVBRUKER = "Kassertavbruker";
 	private static final Begrensning begrensning =
 			Begrensning.builder()
 					.dokumentInfoId(DOKUMENTINFO_ID)
@@ -66,7 +67,7 @@ public class TidligKassasjonServiceTest {
 		when(begrensningRepository.findByDokumentInfoIdAndBegrensningType(DOKUMENTINFO_ID, BegrensningTypeCode.KASSERT))
 				.thenReturn(Optional.empty());
 
-		TidligKassasjonResponse response = tidligKassasjonService.tidligKassasjonAvDokument(DOKUMENTINFO_ID);
+		TidligKassasjonResponse response = tidligKassasjonService.tidligKassasjonAvDokument(DOKUMENTINFO_ID, KASSERTAVBRUKER);
 	}
 
 	@Test
@@ -79,7 +80,7 @@ public class TidligKassasjonServiceTest {
 		when(begrensningRepository.findByDokumentInfoIdAndBegrensningType(DOKUMENTINFO_ID, BegrensningTypeCode.KASSERT))
 				.thenReturn(Optional.of(begrensning));
 
-		TidligKassasjonResponse response = tidligKassasjonService.tidligKassasjonAvDokument(DOKUMENTINFO_ID);
+		TidligKassasjonResponse response = tidligKassasjonService.tidligKassasjonAvDokument(DOKUMENTINFO_ID, KASSERTAVBRUKER);
 	}
 
 	@Test
@@ -88,6 +89,6 @@ public class TidligKassasjonServiceTest {
 		when(begrensningRepository.findByDokumentInfoIdAndBegrensningType(DOKUMENTINFO_ID, BegrensningTypeCode.KASSERT))
 				.thenReturn(Optional.of(begrensning));
 
-		TidligKassasjonResponse response = tidligKassasjonService.tidligKassasjonAvDokument(DOKUMENTINFO_ID);
+		TidligKassasjonResponse response = tidligKassasjonService.tidligKassasjonAvDokument(DOKUMENTINFO_ID,KASSERTAVBRUKER);
 	}
 }

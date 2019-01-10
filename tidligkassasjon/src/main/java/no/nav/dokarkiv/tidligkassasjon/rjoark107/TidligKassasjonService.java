@@ -9,9 +9,14 @@ import no.nav.dokarkiv.core.exceptions.DokumentInfoIkkeFunnetException;
 import no.nav.dokarkiv.core.repository.BegrensningRepository;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkDeleteRepository;
+import no.nav.dokarkiv.core.stelvio.RequestContextHolder;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.util.Date;
 
 @Service
 public class TidligKassasjonService {
@@ -30,7 +35,7 @@ public class TidligKassasjonService {
 		this.deleteRepository = deleteRepository;
 	}
 
-	public TidligKassasjonResponse tidligKassasjonAvDokument(Long dokumentInfoId) {
+	public TidligKassasjonResponse tidligKassasjonAvDokument(Long dokumentInfoId, String kassertAvNavn) {
 		DokumentInfo dokumentInfoTilTidligKassering = dokumentInfoRepository.findByDokumentInfoId(dokumentInfoId).orElseThrow(
 				() -> new DokumentInfoIkkeFunnetException(String.format(
 						"Kan ikke finne dokument med dokumentInfoId=%s", dokumentInfoId)));
@@ -38,6 +43,10 @@ public class TidligKassasjonService {
 		sjekkAtDokumentErLogiskKassert(dokumentInfoId);
 
 		tidligKassasjonAvEtDokument(dokumentInfoId);
+
+		dokumentInfoTilTidligKassering.setDatoKassert(Date.from(LocalDateTime.now().toInstant(ZoneOffset.UTC)));
+		dokumentInfoTilTidligKassering.setKassertAvNavn(kassertAvNavn);
+		dokumentInfoRepository.save(dokumentInfoTilTidligKassering);
 
 		return TidligKassasjonResponse.builder()
 				.dokumentInfoId(dokumentInfoId)

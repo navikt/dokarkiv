@@ -50,6 +50,7 @@ public abstract class AbstractTidligKassasjonIT {
 
 	protected static final String OPPRETTET_KILDE_NAVN = "Opprettet kilde";
 	protected static final String TILKNYTTET_AV_NAVN = "Tilknyttetnavn";
+	protected static final String KASSERT_AV_NAVN = "Kassertavnavn";
 	protected static final String URL_TIDLIGKASSASJON = "/rest/tidligkassasjon/";
 	private String OIDC_TOKEN_PERSON_USER_TEST;
 	private String OIDC_TOKEN_SERVICE_USER_TEST;
