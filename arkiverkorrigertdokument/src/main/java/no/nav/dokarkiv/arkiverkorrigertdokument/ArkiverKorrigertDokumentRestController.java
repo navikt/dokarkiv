@@ -3,7 +3,7 @@ package no.nav.dokarkiv.arkiverkorrigertdokument;
 import static no.nav.abac.xacml.NavAttributter.RESOURCE_ARKIV_DOKUMENT;
 import static no.nav.abac.xacml.NavAttributter.RESOURCE_FELLES_RESOURCE_TYPE;
 import static no.nav.abac.xacml.StandardAttributter.ACTION_ID;
-import static no.nav.dokarkiv.core.hendelselogg.HendelseLoggService.HENDELSE_INFO_HEADER;
+import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_INFO_HEADER;
 import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.UPDATE_ACTION;
 
 import lombok.extern.slf4j.Slf4j;
@@ -13,8 +13,8 @@ import no.nav.dokarkiv.arkiverkorrigertdokument.rjoark103.ArkiverKorrigertDokume
 import no.nav.dokarkiv.arkiverkorrigertdokument.rjoark103.ArkiverKorrigertDokumentValidator;
 import no.nav.dokarkiv.arkiverkorrigertdokument.rjoark104.AngreArkiverKorrigertDokumentService;
 import no.nav.dokarkiv.core.MDCConstants;
+import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService;
 import no.nav.dokarkiv.core.exceptions.UgyldigHendelseLoggInfoException;
-import no.nav.dokarkiv.core.hendelselogg.HendelseLoggService;
 import no.nav.dokarkiv.core.metrics.RestMetrics;
 import no.nav.dokarkiv.core.security.abac.AbacSecurityService;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
@@ -38,17 +38,17 @@ public class ArkiverKorrigertDokumentRestController {
 	private final AngreArkiverKorrigertDokumentService angreArkiverKorrigertDokumentService;
 	private final AbacSecurityService abacSecurityService;
 	private final ArkiverKorrigertDokumentValidator validator;
-	private final HendelseLoggService hendelseLoggService;
+	private final AksjonsLoggService aksjonsLoggService;
 
 	public ArkiverKorrigertDokumentRestController(
 			ArkiverKorrigertDokumentService arkiverKorrigertDokumentService,
 			AngreArkiverKorrigertDokumentService angreArkiverKorrigertDokumentService,
-			AbacSecurityService abacSecurityService, ArkiverKorrigertDokumentValidator validator, HendelseLoggService hendelseLoggService) {
+			AbacSecurityService abacSecurityService, ArkiverKorrigertDokumentValidator validator, AksjonsLoggService aksjonsLoggService) {
 		this.arkiverKorrigertDokumentService = arkiverKorrigertDokumentService;
 		this.angreArkiverKorrigertDokumentService = angreArkiverKorrigertDokumentService;
 		this.abacSecurityService = abacSecurityService;
 		this.validator = validator;
-		this.hendelseLoggService = hendelseLoggService;
+		this.aksjonsLoggService = aksjonsLoggService;
 	}
 
 	@Transactional
@@ -58,14 +58,14 @@ public class ArkiverKorrigertDokumentRestController {
 			actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION))
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark103"}, percentiles = {0.5, 0.95})
 	public ArkiverKorrigertDokumentRespons arkiverKorrigertDokument(
-			@RequestHeader(value = HENDELSE_INFO_HEADER) String hendelseInfoHeader,
+			@RequestHeader(value = AKSJONS_INFO_HEADER) String aksjonsInfoHeader,
 			@RequestBody ArkiverKorrigertDokumentRequest request) throws UgyldigHendelseLoggInfoException {
 		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark103");
 		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har mottat kall med dokumentInfoId={}", request.getDokumentInfoId());
 		validator.validateArkiverKorrigertDokumentRequest(request);
 		abacSecurityService.assertAccessToDokumentIncludingBegrenset(request.getDokumentInfoId());
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
-		hendelseLoggService.validerOgLagreHendelse(hendelseInfoHeader);
+		aksjonsLoggService.validerOgLagreAksjon(aksjonsInfoHeader);
 
 		ArkiverKorrigertDokumentRespons respons = arkiverKorrigertDokumentService.arkiverKorrigertDokument(request);
 		log.info("{} har arkivert korrigert dokument med dokumentInfoId={}",
@@ -81,14 +81,14 @@ public class ArkiverKorrigertDokumentRestController {
 			actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION))
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark103"}, percentiles = {0.5, 0.95})
 	public ArkiverKorrigertDokumentRespons angreArkiverKorrigertDokument(
-			@RequestHeader(value = HENDELSE_INFO_HEADER) String hendelseInfoHeader,
+			@RequestHeader(value = AKSJONS_INFO_HEADER) String aksjonsInfoHeader,
 			@PathVariable("dokumentInfoId") Long dokumentInfoId) throws UgyldigHendelseLoggInfoException {
 		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark104");
 		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har mottat kall med dokumentInfoId={}", dokumentInfoId);
 		validator.validateAngreArkiverKorrigertDokument(dokumentInfoId);
 		abacSecurityService.assertAccessToDokumentIncludingBegrenset(dokumentInfoId);
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
-		hendelseLoggService.validerOgLagreHendelse(hendelseInfoHeader);
+		aksjonsLoggService.validerOgLagreAksjon(aksjonsInfoHeader);
 
 		ArkiverKorrigertDokumentRespons respons = angreArkiverKorrigertDokumentService.angreArkiverKorrigertDokument(dokumentInfoId);
 		log.info("{} har angret arkivering av korrigert dokument med dokumentInfoId={}",

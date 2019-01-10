@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.core.hendelselogg;
+package no.nav.dokarkiv.core.aksjonslogg;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,14 +12,14 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class HendelseLoggRequest {
+public class AksjonsLoggRequest {
 
 	private Long journalpostId;
 	private Long dokumentInfoId;
 	private String applikasjon;
 	private String aksjon;
 	private String hjemmel;
-	private String sak;
 	private String bruker;
 	private String melding;
+	private String utfoertAv;
 }

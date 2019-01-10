@@ -22,21 +22,21 @@ import javax.persistence.Table;
  * @author Ugur Alpay Cenar, Visma Consulting.
  */
 @Entity
-@Table(name = "T_HENDELSELOGG")
+@Table(name = "T_AKSJONSLOGG")
 @Builder
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Hendelselogg extends AbstractPersistentVersionedDomainObject {
+public class AksjonsLogg extends AbstractPersistentVersionedDomainObject {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "hendelselogg_seq")
 	@GenericGenerator(name = "hendelselogg_seq", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
-			parameters = {@Parameter(name = "sequence_name", value = "t_hendelselogg_seq"),
+			parameters = {@Parameter(name = "sequence_name", value = "t_aksjonslogg_seq"),
 					@Parameter(name = "initial_value", value = "200000000")})
-	@Column(name = "hendelselogg_id", nullable = false)
-	private Long hendelseloggId;
+	@Column(name = "aksjonslogg_id", nullable = false)
+	private Long aksjonsloggId;
 
 	@Column(name = "journalpost_id")
 	private Long journalpostId;
@@ -53,11 +53,11 @@ public class Hendelselogg extends AbstractPersistentVersionedDomainObject {
 	@Column(name = "hjemmel", length = 20)
 	private String hjemmel;
 
-	@Column(name = "sak", length = 20)
-	private String sak;
-
 	@Column(name = "bruker", length = 20)
 	private String bruker;
+
+	@Column(name = "utfoert_av", length = 20)
+	private String utfoertAv;
 
 	@Column(name = "melding", length = 4000)
 	private String melding;
@@ -67,7 +67,7 @@ public class Hendelselogg extends AbstractPersistentVersionedDomainObject {
 		this.melding = jsonNode.toString();
 	}
 
-	public void setMelding(String annenInfo) {
-		this.melding = annenInfo;
+	public void setMelding(String melding) {
+		this.melding = melding;
 	}
 }

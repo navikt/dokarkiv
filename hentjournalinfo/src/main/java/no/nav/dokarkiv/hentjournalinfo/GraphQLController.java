@@ -9,7 +9,6 @@ import graphql.schema.GraphQLSchema;
 import io.leangen.graphql.GraphQLSchemaGenerator;
 import io.leangen.graphql.metadata.strategy.query.AnnotatedResolverBuilder;
 import lombok.extern.slf4j.Slf4j;
-import no.nav.dokarkiv.core.hendelselogg.HendelseLoggService;
 import no.nav.dokarkiv.core.metrics.RestMetrics;
 import no.nav.dokarkiv.hentjournalinfo.exceptionhandler.GraphQLExceptionHandler;
 import no.nav.dokarkiv.hentjournalinfo.mock.MockQuery;
@@ -34,11 +33,9 @@ public class GraphQLController {
 
     private final GraphQL graphQL;
     private final GraphQL mockGraphQL;
-	private final HendelseLoggService hendelseLoggService;
 
     @Inject
-	public GraphQLController(List<Query> queryList, MockQuery mockQuery, GraphQLExceptionHandler graphQLExceptionHandler, HendelseLoggService hendelseLoggService) {
-		this.hendelseLoggService = hendelseLoggService;
+    public GraphQLController(List<Query> queryList, MockQuery mockQuery, GraphQLExceptionHandler graphQLExceptionHandler) {
         //Schema generated from query classes
         GraphQLSchemaGenerator schemaGenerator = new GraphQLSchemaGenerator()
                 .withResolverBuilders(new AnnotatedResolverBuilder());
@@ -67,7 +64,7 @@ public class GraphQLController {
     @PostMapping(value = "/rest/graphql", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseBody
     @RestMetrics(value = "dok_request", extraTags = {"process_code", "gjoark00x"}, percentiles = {0.5, 0.95})
-	public Map<String, Object> graphQLRequest(@RequestBody GraphQLRequest request, HttpServletRequest raw) throws Exception {
+    public Map<String, Object> graphQLRequest(@RequestBody GraphQLRequest request, HttpServletRequest raw) {
         ExecutionResult executionResult = graphQL.execute(ExecutionInput.newExecutionInput()
                 .query(request.getQuery())
                 .operationName(request.getOperationName())
