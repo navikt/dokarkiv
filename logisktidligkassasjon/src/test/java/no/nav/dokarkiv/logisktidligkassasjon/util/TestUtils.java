@@ -36,9 +36,13 @@ public class TestUtils {
 	private static final String BREVKODE = "Brevkode";
 	private static final String FILNAVN = "filNavn";
 	private static final String TITTEL = "Tittel";
-	private static Long JOURNALPOST_ID = 2000000L;
-	private static Long JPDOKINFORELAJSON_ID = 2000000L;
-	private static Long DOKUMENTINFO_ID = 2000000L;
+	private static Long journalpostId = 2000000L;
+	private static Long jpDokInfoRelasjonId = 2000000L;
+	private static Long dokumentInfoId = 2000000L;
+
+	private TestUtils() {
+		throw new IllegalStateException("Utility Class");
+	}
 
 	public static Journalpost opprettHoveddokumentForIT() {
 		return getBaseJournalpostBuilder()
@@ -52,13 +56,13 @@ public class TestUtils {
 
 	public static Journalpost opprettHoveddokumentForEnhetstest() {
 		return getBaseJournalpostBuilder()
-				.journalpostId(JOURNALPOST_ID++)
+				.journalpostId(journalpostId++)
 				.dokumentInfoRelasjoner(
 						getBaseJournalpostDokumentInfoRelasjonBuilder()
-								.journalpostDokumentInfoRelasjonId(JPDOKINFORELAJSON_ID++)
+								.journalpostDokumentInfoRelasjonId(jpDokInfoRelasjonId++)
 								.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.HOVEDDOKUMENT)
 								.dokumentInfo(getBaseDokumentInfoBuilder()
-										.dokumentInfoId(DOKUMENTINFO_ID)
+										.dokumentInfoId(dokumentInfoId)
 										.build())
 								.build())
 				.build();

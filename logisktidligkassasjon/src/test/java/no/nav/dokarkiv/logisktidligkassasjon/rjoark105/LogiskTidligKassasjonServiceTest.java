@@ -29,8 +29,6 @@ public class LogiskTidligKassasjonServiceTest {
 
 	private static final Long DOKUMENTINFO_ID = 2000000L;
 	private static final String TITTEL = "Tittel";
-	private static Journalpost journalpost = null;
-	private static DokumentInfo dokumentInfo = null;
 	private static final Begrensning begrensning =
 			Begrensning.builder()
 					.dokumentInfoId(DOKUMENTINFO_ID)
@@ -49,8 +47,6 @@ public class LogiskTidligKassasjonServiceTest {
 	@Before
 	public void setUp() {
 		logiskTidligKassasjonService = new LogiskTidligKassasjonService(dokumentinfoRepository, begrensningRepository);
-		journalpost = opprettHoveddokumentForEnhetstest();
-		dokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 	}
 
 	@Test()
@@ -60,15 +56,21 @@ public class LogiskTidligKassasjonServiceTest {
 				"Kan ikke utføre logisk kassasjon av dokument med dokumentInfoId=%s. Dokumentet er allerede logisk kassert",
 				DOKUMENTINFO_ID));
 
+		Journalpost journalpost = opprettHoveddokumentForEnhetstest();
+		DokumentInfo dokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
+
 		when(dokumentinfoRepository.findByDokumentInfoId(DOKUMENTINFO_ID)).thenReturn(Optional.of(dokumentInfo));
 		when(begrensningRepository.findByDokumentInfoIdAndBegrensningType(DOKUMENTINFO_ID, BegrensningTypeCode.KASSERT))
 				.thenReturn(Optional.of(begrensning));
 
-		LogiskTidligKassasjonResponse response = logiskTidligKassasjonService.logiskTidligKassasjonAvDokument(DOKUMENTINFO_ID);
+		logiskTidligKassasjonService.logiskTidligKassasjonAvDokument(DOKUMENTINFO_ID);
 	}
 
 	@Test
 	public void skalLogiskTidligKasserDokument_medDokumentKnyttetEnJournalpost() {
+		Journalpost journalpost = opprettHoveddokumentForEnhetstest();
+		DokumentInfo dokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
+
 		when(dokumentinfoRepository.findByDokumentInfoId(DOKUMENTINFO_ID)).thenReturn(Optional.of(dokumentInfo));
 		when(begrensningRepository.findByDokumentInfoIdAndBegrensningType(DOKUMENTINFO_ID, BegrensningTypeCode.KASSERT))
 				.thenReturn(Optional.empty());
@@ -80,6 +82,8 @@ public class LogiskTidligKassasjonServiceTest {
 
 	@Test
 	public void skalLogiskTidligKasserDokument_medDokumentKnyttetFlereJournalposter() {
+		Journalpost journalpost = opprettHoveddokumentForEnhetstest();
+		DokumentInfo dokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 		Journalpost journalpost2 = opprettHoveddokumentForEnhetstest();
 		knyttDokumentInfoSomVedleggTilJournalpostForIT(dokumentInfo, journalpost2);
 		assertTrue(dokumentInfo.isRelatedToMultipleJournalposts());
@@ -88,6 +92,6 @@ public class LogiskTidligKassasjonServiceTest {
 		when(begrensningRepository.findByDokumentInfoIdAndBegrensningType(DOKUMENTINFO_ID, BegrensningTypeCode.KASSERT))
 				.thenReturn(Optional.empty());
 
-		LogiskTidligKassasjonResponse response = logiskTidligKassasjonService.logiskTidligKassasjonAvDokument(DOKUMENTINFO_ID);
+		logiskTidligKassasjonService.logiskTidligKassasjonAvDokument(DOKUMENTINFO_ID);
 	}
 }

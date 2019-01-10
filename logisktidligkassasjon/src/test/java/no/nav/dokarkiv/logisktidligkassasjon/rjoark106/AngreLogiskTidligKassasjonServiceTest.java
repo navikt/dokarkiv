@@ -35,8 +35,6 @@ public class AngreLogiskTidligKassasjonServiceTest {
 	public ExpectedException thrown = ExpectedException.none();
 
 	private AngreLogiskTidligKassasjonService angreLogiskTidligKassasjonService;
-	private Journalpost journalpost;
-	private DokumentInfo dokumentInfo;
 	private static final Begrensning begrensning =
 			Begrensning.builder()
 					.dokumentInfoId(DOKUMENTINFO_ID)
@@ -46,8 +44,6 @@ public class AngreLogiskTidligKassasjonServiceTest {
 	@Before
 	public void setUp() {
 		angreLogiskTidligKassasjonService = new AngreLogiskTidligKassasjonService(dokumentinfoRepository, begrensningRepository);
-		journalpost = opprettHoveddokumentForEnhetstest();
-		dokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 	}
 
 	@Test()
@@ -68,6 +64,9 @@ public class AngreLogiskTidligKassasjonServiceTest {
 				DOKUMENTINFO_ID,
 				BegrensningTypeCode.KASSERT));
 
+		Journalpost journalpost = opprettHoveddokumentForEnhetstest();
+		DokumentInfo dokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
+
 		when(dokumentinfoRepository.findByDokumentInfoId(DOKUMENTINFO_ID)).thenReturn(Optional.of(dokumentInfo));
 		when(begrensningRepository.findByDokumentInfoIdAndBegrensningType(DOKUMENTINFO_ID, BegrensningTypeCode.KASSERT))
 				.thenReturn(Optional.empty());
@@ -77,9 +76,13 @@ public class AngreLogiskTidligKassasjonServiceTest {
 
 	@Test()
 	public void skalAngreLogiskTidligKassereDokument_utenKastAvExceptions() {
+		Journalpost journalpost = opprettHoveddokumentForEnhetstest();
+		DokumentInfo dokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
+
 		when(dokumentinfoRepository.findByDokumentInfoId(DOKUMENTINFO_ID)).thenReturn(Optional.of(dokumentInfo));
 		when(begrensningRepository.findByDokumentInfoIdAndBegrensningType(DOKUMENTINFO_ID, BegrensningTypeCode.KASSERT))
 				.thenReturn(Optional.of(begrensning));
+
 
 		angreLogiskTidligKassasjonService.angreLogiskTidligKassasjonAvDokument(DOKUMENTINFO_ID);
 	}
