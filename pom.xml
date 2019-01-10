@@ -32,7 +32,7 @@
 		<module>hentjournalinfo</module>
 		<module>arkiverkorrigertdokument</module>
 		<module>fysiskslettdokument</module>
-		<module>tidligkassasjon</module>
+		<module>fysisktidligkassasjon</module>
 		<module>logiskkassasjon</module>
 		<module>hentjournalsakinfo</module>
 	</modules>
@@ -156,7 +156,7 @@
 			</dependency>
 			<dependency>
 				<groupId>no.nav.dokarkiv</groupId>
-				<artifactId>tidligkassasjon</artifactId>
+				<artifactId>fysisktidligkassasjon</artifactId>
 				<version>1-SNAPSHOT</version>
 			</dependency>
 			<dependency>

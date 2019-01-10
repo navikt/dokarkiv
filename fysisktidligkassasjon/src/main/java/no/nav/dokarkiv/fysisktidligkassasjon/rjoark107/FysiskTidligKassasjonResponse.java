@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.tidligkassasjon.rjoark107;
+package no.nav.dokarkiv.fysisktidligkassasjon.rjoark107;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -7,12 +7,12 @@ import lombok.Data;
 
 @Data
 @Builder
-public class TidligKassasjonResponse {
+public class FysiskTidligKassasjonResponse {
 	private final Long dokumentInfoId;
 	private final String tittel;
 
 	@JsonCreator
-	public TidligKassasjonResponse(
+	public FysiskTidligKassasjonResponse(
 			@JsonProperty("dokumentInfoId") Long dokumentInfoId,
 			@JsonProperty("tittel") String tittel) {
 		this.dokumentInfoId = dokumentInfoId;

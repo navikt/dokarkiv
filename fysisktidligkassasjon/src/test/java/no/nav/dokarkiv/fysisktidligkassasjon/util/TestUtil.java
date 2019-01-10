@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.tidligkassasjon.util;
+package no.nav.dokarkiv.fysisktidligkassasjon.util;
 
 import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
 

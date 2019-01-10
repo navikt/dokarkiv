@@ -1,8 +1,8 @@
-package no.nav.dokarkiv.tidligkassasjon.rjoark107;
+package no.nav.dokarkiv.fysisktidligkassasjon.rjoark107;
 
 import static junit.framework.TestCase.assertTrue;
-import static no.nav.dokarkiv.tidligkassasjon.util.TestUtil.knyttDokumentInfoSomVedleggTilJournalpostForIT;
-import static no.nav.dokarkiv.tidligkassasjon.util.TestUtil.opprettHoveddokumentForEnhetstest;
+import static no.nav.dokarkiv.fysisktidligkassasjon.util.TestUtil.knyttDokumentInfoSomVedleggTilJournalpostForIT;
+import static no.nav.dokarkiv.fysisktidligkassasjon.util.TestUtil.opprettHoveddokumentForEnhetstest;
 import static org.mockito.Mockito.when;
 
 import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
@@ -24,7 +24,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.util.Optional;
 
 @RunWith(MockitoJUnitRunner.class)
-public class TidligKassasjonServiceTest {
+public class FysiskTidligKassasjonServiceTest {
 
 	private static final Long DOKUMENTINFO_ID = 2000000L;
 	private static final String TITTEL = "Tittel";
@@ -45,11 +45,11 @@ public class TidligKassasjonServiceTest {
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
 
-	private TidligKassasjonService tidligKassasjonService;
+	private FysiskTidligKassasjonService fysiskTidligKassasjonService;
 
 	@Before
 	public void setUp() {
-		tidligKassasjonService = new TidligKassasjonService(dokumentinfoRepository, begrensningRepository, deleteRepository);
+		fysiskTidligKassasjonService = new FysiskTidligKassasjonService(dokumentinfoRepository, begrensningRepository, deleteRepository);
 		journalpost = opprettHoveddokumentForEnhetstest();
 		dokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 	}
@@ -66,7 +66,7 @@ public class TidligKassasjonServiceTest {
 		when(begrensningRepository.findByDokumentInfoIdAndBegrensningType(DOKUMENTINFO_ID, BegrensningTypeCode.KASSERT))
 				.thenReturn(Optional.empty());
 
-		TidligKassasjonResponse response = tidligKassasjonService.tidligKassasjonAvDokument(DOKUMENTINFO_ID);
+		FysiskTidligKassasjonResponse response = fysiskTidligKassasjonService.fysiskTidligKassasjonAvDokument(DOKUMENTINFO_ID);
 	}
 
 	@Test
@@ -79,7 +79,7 @@ public class TidligKassasjonServiceTest {
 		when(begrensningRepository.findByDokumentInfoIdAndBegrensningType(DOKUMENTINFO_ID, BegrensningTypeCode.KASSERT))
 				.thenReturn(Optional.of(begrensning));
 
-		TidligKassasjonResponse response = tidligKassasjonService.tidligKassasjonAvDokument(DOKUMENTINFO_ID);
+		FysiskTidligKassasjonResponse response = fysiskTidligKassasjonService.fysiskTidligKassasjonAvDokument(DOKUMENTINFO_ID);
 	}
 
 	@Test
@@ -88,6 +88,6 @@ public class TidligKassasjonServiceTest {
 		when(begrensningRepository.findByDokumentInfoIdAndBegrensningType(DOKUMENTINFO_ID, BegrensningTypeCode.KASSERT))
 				.thenReturn(Optional.of(begrensning));
 
-		TidligKassasjonResponse response = tidligKassasjonService.tidligKassasjonAvDokument(DOKUMENTINFO_ID);
+		FysiskTidligKassasjonResponse response = fysiskTidligKassasjonService.fysiskTidligKassasjonAvDokument(DOKUMENTINFO_ID);
 	}
 }

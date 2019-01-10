@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.tidligkassasjon.rjoark107;
+package no.nav.dokarkiv.fysisktidligkassasjon.rjoark107;
 
 import static org.apache.cxf.common.util.PropertyUtils.isFalse;
 
@@ -14,14 +14,14 @@ import org.springframework.stereotype.Service;
 import javax.inject.Inject;
 
 @Service
-public class TidligKassasjonService {
+public class FysiskTidligKassasjonService {
 
 	private final DokumentinfoRepository dokumentInfoRepository;
 	private final BegrensningRepository begrensningRepository;
 	private final JoarkDeleteRepository deleteRepository;
 
 	@Inject
-	public TidligKassasjonService(
+	public FysiskTidligKassasjonService(
 			DokumentinfoRepository dokumentinfoRepository,
 			BegrensningRepository begrensningRepository,
 			JoarkDeleteRepository deleteRepository) {
@@ -30,16 +30,16 @@ public class TidligKassasjonService {
 		this.deleteRepository = deleteRepository;
 	}
 
-	public TidligKassasjonResponse tidligKassasjonAvDokument(Long dokumentInfoId) {
+	public FysiskTidligKassasjonResponse fysiskTidligKassasjonAvDokument(Long dokumentInfoId) {
 		DokumentInfo dokumentInfoTilTidligKassering = dokumentInfoRepository.findByDokumentInfoId(dokumentInfoId).orElseThrow(
 				() -> new DokumentInfoIkkeFunnetException(String.format(
 						"Kan ikke finne dokument med dokumentInfoId=%s", dokumentInfoId)));
 
 		sjekkAtDokumentErLogiskKassert(dokumentInfoId);
 
-		tidligKassasjonAvEtDokument(dokumentInfoId);
+		fysiskTidligKassasjonAvEtDokument(dokumentInfoId);
 
-		return TidligKassasjonResponse.builder()
+		return FysiskTidligKassasjonResponse.builder()
 				.dokumentInfoId(dokumentInfoId)
 				.tittel(dokumentInfoTilTidligKassering.getTittel())
 				.build();
@@ -55,7 +55,7 @@ public class TidligKassasjonService {
 		}
 	}
 
-	private void tidligKassasjonAvEtDokument(Long dokumentInfoId) {
+	private void fysiskTidligKassasjonAvEtDokument(Long dokumentInfoId) {
 		begrensningRepository.deleteByDokumentInfoIdAndBegrensningType(dokumentInfoId, BegrensningTypeCode.KASSERT);
 		slettFilOgBeholdMetadata(dokumentInfoId);
 	}

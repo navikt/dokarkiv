@@ -1,8 +1,8 @@
-package no.nav.dokarkiv.tidligkassasjon.rjoark107;
+package no.nav.dokarkiv.fysisktidligkassasjon.rjoark107;
 
-import static no.nav.dokarkiv.tidligkassasjon.util.TestUtil.kassereDokumentLogisk;
-import static no.nav.dokarkiv.tidligkassasjon.util.TestUtil.knyttDokumentInfoSomVedleggTilJournalpostForIT;
-import static no.nav.dokarkiv.tidligkassasjon.util.TestUtil.opprettHoveddokumentForIT;
+import static no.nav.dokarkiv.fysisktidligkassasjon.util.TestUtil.kassereDokumentLogisk;
+import static no.nav.dokarkiv.fysisktidligkassasjon.util.TestUtil.knyttDokumentInfoSomVedleggTilJournalpostForIT;
+import static no.nav.dokarkiv.fysisktidligkassasjon.util.TestUtil.opprettHoveddokumentForIT;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.core.Is.is;
@@ -12,14 +12,14 @@ import static org.junit.Assert.assertTrue;
 import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import no.nav.dokarkiv.tidligkassasjon.AbstractTidligKassasjonIT;
+import no.nav.dokarkiv.fysisktidligkassasjon.AbstractFysiskTidligKassasjonIT;
 import org.junit.Test;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.transaction.TestTransaction;
 
-public class Rjoark107IT extends AbstractTidligKassasjonIT {
+public class Rjoark107IT extends AbstractFysiskTidligKassasjonIT {
 
 	@Test
 	public void skallIkkeTidligtKassereDokument_ettersomDokmentInfoIdIkkeFinnes() {
@@ -28,7 +28,7 @@ public class Rjoark107IT extends AbstractTidligKassasjonIT {
 		Long dokumentInfoId = 13L;
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
-				URL_TIDLIGKASSASJON + dokumentInfoId,
+				URL_FYSISKTIDLIGKASSASJON + dokumentInfoId,
 				HttpMethod.POST,
 				createHeaders(),
 				String.class);
@@ -48,7 +48,7 @@ public class Rjoark107IT extends AbstractTidligKassasjonIT {
 		TestTransaction.end();
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
-				URL_TIDLIGKASSASJON + dokumentInfo.getDokumentInfoId(),
+				URL_FYSISKTIDLIGKASSASJON + dokumentInfo.getDokumentInfoId(),
 				HttpMethod.POST,
 				createHeaders(),
 				String.class);
@@ -83,7 +83,7 @@ public class Rjoark107IT extends AbstractTidligKassasjonIT {
 		assertTrue(dokumentInfo1.isRelatedToMultipleJournalposts());
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
-				URL_TIDLIGKASSASJON + dokumentInfo1.getDokumentInfoId(),
+				URL_FYSISKTIDLIGKASSASJON + dokumentInfo1.getDokumentInfoId(),
 				HttpMethod.POST,
 				createHeaders(),
 				String.class);
@@ -113,7 +113,7 @@ public class Rjoark107IT extends AbstractTidligKassasjonIT {
 		assertFalse(dokumentInfo.getFildetaljerListe().isEmpty());
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
-				URL_TIDLIGKASSASJON + dokumentInfo.getDokumentInfoId(),
+				URL_FYSISKTIDLIGKASSASJON + dokumentInfo.getDokumentInfoId(),
 				HttpMethod.POST,
 				createHeaders(),
 				String.class);
@@ -137,7 +137,7 @@ public class Rjoark107IT extends AbstractTidligKassasjonIT {
 		TestTransaction.end();
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
-				URL_TIDLIGKASSASJON + dokumentInfo.getDokumentInfoId(),
+				URL_FYSISKTIDLIGKASSASJON + dokumentInfo.getDokumentInfoId(),
 				HttpMethod.POST,
 				createNoAccessHeaders(),
 				String.class);

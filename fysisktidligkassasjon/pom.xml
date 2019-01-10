@@ -9,7 +9,7 @@
 		<version>1-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>tidligkassasjon</artifactId>
+	<artifactId>fysisktidligkassasjon</artifactId>
 
 	<dependencies>
 		<dependency>

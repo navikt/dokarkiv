@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.tidligkassasjon;
+package no.nav.dokarkiv.fysisktidligkassasjon;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
@@ -38,7 +38,7 @@ import javax.inject.Inject;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-		classes = {CoreConfig.class, TidligKassasjonConfig.class, TestToolsAutoConfig.class})
+		classes = {CoreConfig.class, FysiskTidligKassasjonConfig.class, TestToolsAutoConfig.class})
 @ActiveProfiles("itest,wiremock,ldap,oidc")
 @AutoConfigureDataJpa
 @AutoConfigureTestDatabase
@@ -46,11 +46,11 @@ import javax.inject.Inject;
 @AutoConfigureDataLdap
 @AutoConfigureWireMock(port = 0)
 @Transactional
-public abstract class AbstractTidligKassasjonIT {
+public abstract class AbstractFysiskTidligKassasjonIT {
 
 	protected static final String OPPRETTET_KILDE_NAVN = "Opprettet kilde";
 	protected static final String TILKNYTTET_AV_NAVN = "Tilknyttetnavn";
-	protected static final String URL_TIDLIGKASSASJON = "/rest/tidligkassasjon/";
+	protected static final String URL_FYSISKTIDLIGKASSASJON = "/rest/fysisktidligkassasjon/";
 	private String OIDC_TOKEN_PERSON_USER_TEST;
 	private String OIDC_TOKEN_SERVICE_USER_TEST;
 	private String OIDC_TOKEN_SERVICE_NO_ACCESS_USER_TEST;
