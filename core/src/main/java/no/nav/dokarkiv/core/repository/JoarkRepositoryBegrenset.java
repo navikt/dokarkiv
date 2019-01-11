@@ -1,6 +1,7 @@
 package no.nav.dokarkiv.core.repository;
 
 import static org.apache.commons.lang3.BooleanUtils.isFalse;
+import static org.springframework.util.StringUtils.isEmpty;
 
 import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
 import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
@@ -72,7 +73,9 @@ public class JoarkRepositoryBegrenset {
 
 	public Long findDokumentinfoIdIdByDokumentinfoTilleggsopplysningerNokkelAndVerdi(String nokkel, String verdi) {
 		Long jpId = joarkRepository.findDokumentinfoIdIdByDokumentinfoTilleggsopplysningerNokkelAndVerdi(nokkel, verdi);
-		return begrensningService.isJournalpostBegrenset(jpId, BegrensningTypeCode.UTILGJENGELIGGJORT) ? null : jpId;
+		if (!isEmpty(jpId)) {
+			return begrensningService.isJournalpostBegrenset(jpId, BegrensningTypeCode.UTILGJENGELIGGJORT) ? null : jpId;
+		} else return null;
 	}
 
 	public Long findJournalpostIdByDokumentinfoId(String dokumentinfoId) {
