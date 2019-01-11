@@ -79,9 +79,9 @@ public class FilDetaljer extends AbstractPersistentVersionedDomainObjectWithKild
 	@Column(name = "k_variant_format", nullable = false)
 	private VariantFormatCode variantFormat;
 
-	@Column(name = "er_begrenset")
+	@Column(name = "begrensning")
 	@Type(type = "org.hibernate.type.TrueFalseType")
-	private Boolean erBegrenset;
+	private Boolean begrensning;
 
 
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -344,12 +344,12 @@ public class FilDetaljer extends AbstractPersistentVersionedDomainObjectWithKild
 		this.variantFormat = variantFormat;
 	}
 
-	public Boolean getErBegrenset() {
-		return erBegrenset;
+	public Boolean getBegrensning() {
+		return begrensning;
 	}
 
-	public void setErBegrenset(Boolean erBegrenset) {
-		this.erBegrenset = erBegrenset;
+	public void setBegrensning(Boolean begrensning) {
+		throw new UnsupportedOperationException("Begrensning skal bare settes gjennom BegrensningService");
 	}
 
 	/**

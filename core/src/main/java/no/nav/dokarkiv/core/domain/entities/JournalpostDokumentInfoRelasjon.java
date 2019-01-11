@@ -8,6 +8,7 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -51,6 +52,10 @@ public class JournalpostDokumentInfoRelasjon extends AbstractPersistentVersioned
 	@Enumerated(EnumType.STRING)
 	@Column(name = "k_tilkn_jp_som", nullable = false)
 	private TilknyttetJournalpostSomCode tilknyttetJournalpostSom;
+
+	@Column(name = "begrensning")
+	@Type(type = "org.hibernate.type.TrueFalseType")
+	private Boolean begrensning;
 
 	@ManyToOne
 	@JoinColumn(name = "dokument_info_id", nullable = false)
@@ -174,6 +179,14 @@ public class JournalpostDokumentInfoRelasjon extends AbstractPersistentVersioned
 	 */
 	public void setTilknyttetJournalpostSom(TilknyttetJournalpostSomCode tilknyttetJournalpostSom) {
 		this.tilknyttetJournalpostSom = tilknyttetJournalpostSom;
+	}
+
+	public Boolean getBegrensning() {
+		return begrensning;
+	}
+
+	public void setBegrensning(Boolean begrensning) {
+		throw new UnsupportedOperationException("Begrensning skal bare settes gjennom BegrensningService");
 	}
 
 	/**

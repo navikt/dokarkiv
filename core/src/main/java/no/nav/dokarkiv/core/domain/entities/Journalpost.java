@@ -200,9 +200,9 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	@Column(name = "k_behandlingstema")
 	private Behandlingstema behandlingstema;
 
-	@Column(name = "er_begrenset")
+	@Column(name = "begrensning")
 	@Type(type = "org.hibernate.type.TrueFalseType")
-	private Boolean erBegrenset;
+	private Boolean begrensning;
 
 
 	@OneToMany
@@ -1428,12 +1428,12 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 		this.behandlingstema = behandlingstema;
 	}
 
-	public Boolean getErBegrenset() {
-		return erBegrenset;
+	public Boolean getBegrensning() {
+		return begrensning;
 	}
 
-	public void setErBegrenset(Boolean erBegrenset) {
-		this.erBegrenset = erBegrenset;
+	public void setBegrensning(Boolean begrensning) {
+		throw new UnsupportedOperationException("Begrensning skal bare settes gjennom BegrensningService");
 	}
 
 	/**

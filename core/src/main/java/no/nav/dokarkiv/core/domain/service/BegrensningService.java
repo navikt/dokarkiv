@@ -20,6 +20,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.List;
@@ -38,7 +40,10 @@ public class BegrensningService {
 	private JoarkRepository joarkRepository;
 
 	@Inject
-	public BegrensningService(BegrensningRepository begrensningRepository, JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository,JoarkRepository joarkRepository) {
+	private EntityManager entityManager;
+
+	@Inject
+	public BegrensningService(BegrensningRepository begrensningRepository, JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository, JoarkRepository joarkRepository) {
 		this.begrensningRepository = begrensningRepository;
 		this.journalpostDokumentInfoRelasjonRepository = journalpostDokumentInfoRelasjonRepository;
 		this.joarkRepository = joarkRepository;
@@ -140,25 +145,54 @@ public class BegrensningService {
 	}
 
 	private void setJoarkBegrensning(Begrensning begrensning) {
-		if (begrensning.getJournalpostId() != null && begrensning.getDokumentInfoId() == null) {
-			Journalpost journalpost = joarkRepository.findById(begrensning.getJournalpostId()).orElse(null);
+		Journalpost journalpost = joarkRepository.findById(begrensning.getJournalpostId()).orElse(null);
+		if (journalpost != null && begrensning.getDokumentInfoId() == null && isFalse(journalpost.getBegrensning())) {
+			setJournalpostBegrensning(journalpost, true);
+		}
+		//TODO Kassasjon - har bare kobling til dokumentinfo, må vurdere å begrense alle varianter
+		else if (journalpost != null && begrensning.getDokumentInfoId() != null) {
+			JournalpostDokumentInfoRelasjon rel = journalpostDokumentInfoRelasjonRepository.findByJournalpostJournalpostIdAndDokumentInfoDokumentInfoId(journalpost.getJournalpostId(), begrensning.getDokumentInfoId()).orElse(null);
+			if (begrensning.getVariantFormat() == null) {
+				if (isFalse(rel.getBegrensning())) {
+					setJpDokInfoRelBegrensning(rel,true);
+				}
+			} else {
+				FilDetaljer filDetaljer = rel.getDokumentInfo().findFilDetaljerByVariantFormat(begrensning.getVariantFormat());
+				if (filDetaljer != null && isFalse(filDetaljer.getBegrensning())) {
+					setFildetaljerBegrensning(filDetaljer,true);
+				}
+			}
+		} else if (journalpost == null && begrensning.getDokumentInfoId() != null) {
 			DokumentInfo dokumentInfo = null;
 			List<JournalpostDokumentInfoRelasjon> rel = journalpostDokumentInfoRelasjonRepository.findAllByDokumentInfoDokumentInfoId(begrensning.getDokumentInfoId());
 			if (!rel.isEmpty()) {
 				dokumentInfo = rel.get(0).getDokumentInfo();
 			}
-			if (journalpost != null && dokumentInfo == null && isFalse(journalpost.getErBegrenset())) {
-				journalpost.setErBegrenset(true);
-			}
-			if (dokumentInfo != null && begrensning.getVariantFormat() == null && isFalse(dokumentInfo.getErBegrenset())) {
-				dokumentInfo.setErBegrenset(true);
-			}
-			if (begrensning.getVariantFormat() != null) {
-				FilDetaljer filDetaljer = dokumentInfo.findFilDetaljerByVariantFormat(begrensning.getVariantFormat());
-				if (filDetaljer != null && isFalse(filDetaljer.getErBegrenset())) {
-					filDetaljer.setErBegrenset(true);
+			if (dokumentInfo != null) {
+				for (FilDetaljer filDetaljer: dokumentInfo.getFildetaljerListe()) {
+					if (isFalse(filDetaljer.getBegrensning())) {
+						setFildetaljerBegrensning(filDetaljer,true);
+					}
 				}
 			}
 		}
+	}
+
+	private void setJournalpostBegrensning(Journalpost journalpost, Boolean begrensning) {
+		String begrensningString = begrensning?"T":"F";
+		Query q = entityManager.createQuery("update t_journalpost set begrensning = :begrenset where journalpost_id = :journalpostId").setParameter("journalpostId", journalpost.getJournalpostId()).setParameter("begrenset", begrensningString);
+		q.executeUpdate();
+	}
+
+	private void setJpDokInfoRelBegrensning(JournalpostDokumentInfoRelasjon rel, Boolean begrensning) {
+		String begrensningString = begrensning?"T":"F";
+		Query q = entityManager.createQuery("update t_jp_dok_info_rel set begrensning = :begrenset where jp_dok_info_rel_id = :relId").setParameter("relId", rel.getJournalpostDokumentInfoRelasjonId()).setParameter("begrenset", begrensningString);
+		q.executeUpdate();
+	}
+
+	private void setFildetaljerBegrensning(FilDetaljer filDetaljer, Boolean begrensning) {
+		String begrensningString = begrensning?"T":"F";
+		Query q = entityManager.createQuery("update t_fil_detaljer set begrensning = :begrenset where fil_detaljer_id = :filDetaljerId").setParameter("filDetaljerId", filDetaljer.getFildetaljerId()).setParameter("begrenset", begrensningString);
+		q.executeUpdate();
 	}
 }
