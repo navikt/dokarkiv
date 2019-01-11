@@ -5,8 +5,14 @@ import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static no.nav.dokarkiv.core.security.JwtClaimsBuilderProvider.openAmClaimsBuilder;
+import static no.nav.dokarkiv.core.util.ConverterUtils.objectToJsonString;
+import static no.nav.dokarkiv.core.util.TestDataUtils.createAksjonsLoggRequest;
+import static no.nav.dokarkiv.tidligkassasjon.util.TestUtil.DOKUMENTINFO_ID;
+import static no.nav.dokarkiv.tidligkassasjon.util.TestUtil.JOURNALPOST_ID;
 
 import no.nav.dokarkiv.core.CoreConfig;
+import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService;
+import no.nav.dokarkiv.core.repository.AksjonsLoggRepository;
 import no.nav.dokarkiv.core.repository.BegrensningRepository;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
@@ -35,6 +41,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
+import java.io.IOException;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
@@ -71,6 +78,8 @@ public abstract class AbstractTidligKassasjonIT {
 	protected TestRestTemplate restTemplate;
 	@Inject
 	protected BegrensningRepository begrensningRepository;
+	@Inject
+	protected AksjonsLoggRepository aksjonsLoggRepository;
 
 	@Before
 	public void setUp() {
@@ -95,6 +104,7 @@ public abstract class AbstractTidligKassasjonIT {
 		joarkRepository.deleteAll();
 		dokumentinfoRepository.deleteAll();
 		begrensningRepository.deleteAll();
+		aksjonsLoggRepository.deleteAll();
 	}
 
 	protected HttpEntity createHeaders() {
@@ -103,6 +113,15 @@ public abstract class AbstractTidligKassasjonIT {
 		headers.add(HttpHeaders.AUTHORIZATION, OIDC_TOKEN_PERSON_USER_TEST);
 		headers.add(NAV_CONSUMER_TOKEN, OIDC_TOKEN_SERVICE_USER_TEST);
 		return new HttpEntity(headers);
+	}
+
+	protected HttpHeaders createHeadersWithAksjon(String aksjon) throws IOException {
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.TEXT_PLAIN);
+		headers.add(HttpHeaders.AUTHORIZATION, OIDC_TOKEN_PERSON_USER_TEST);
+		headers.add(NAV_CONSUMER_TOKEN, OIDC_TOKEN_SERVICE_USER_TEST);
+		headers.add(AksjonsLoggService.AKSJONS_INFO_HEADER, objectToJsonString(createAksjonsLoggRequest(JOURNALPOST_ID, DOKUMENTINFO_ID, aksjon)));
+		return headers;
 	}
 
 	protected HttpEntity createNoAccessHeaders() {

@@ -5,7 +5,7 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.cxf.common.util.PropertyUtils.isFalse;
 
 import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
-import no.nav.dokarkiv.core.exceptions.UgyldigHendelseLoggInfoException;
+import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggInfoException;
 import no.nav.dokarkiv.core.repository.AksjonsLoggRepository;
 import org.springframework.stereotype.Component;
 
@@ -30,10 +30,10 @@ public class AksjonsLoggService {
 		this.aksjonsLoggMapper = new AksjonsLoggMapper();
 	}
 
-	public void validerOgLagreAksjon(String aksjonsInfo) throws UgyldigHendelseLoggInfoException {
+	public void validerOgLagreAksjon(String aksjonsInfo) throws UgyldigAksjonsLoggInfoException {
 
 		if (isBlank(aksjonsInfo)) {
-			throw new UgyldigHendelseLoggInfoException(String.format("Meldingen mangler påkrevd %s header.", AKSJONS_INFO_HEADER));
+			throw new UgyldigAksjonsLoggInfoException(String.format("Meldingen mangler påkrevd %s header.", AKSJONS_INFO_HEADER));
 		}
 
 		try {
@@ -44,13 +44,13 @@ public class AksjonsLoggService {
 
 			aksjonsLoggRepository.save(aksjonsLogg);
 		} catch (IOException e) {
-			throw new UgyldigHendelseLoggInfoException(String.format("Feilet ved lesing av %s header. Sjekk om headeren er i gyldig JSON format.", AKSJONS_INFO_HEADER), e);
+			throw new UgyldigAksjonsLoggInfoException(String.format("Feilet ved lesing av %s header. Sjekk om headeren er i gyldig JSON format.", AKSJONS_INFO_HEADER), e);
 		}
 
 	}
 
 
-	private void validateAksjonslogg(AksjonsLoggRequest aksjonsLoggRequest) throws UgyldigHendelseLoggInfoException {
+	private void validateAksjonslogg(AksjonsLoggRequest aksjonsLoggRequest) throws UgyldigAksjonsLoggInfoException {
 
 		List<String> parameters = new ArrayList<>();
 		addMessageWhenNullOrEmpty(aksjonsLoggRequest.getJournalpostId(), "journalpostId", parameters);
@@ -59,7 +59,7 @@ public class AksjonsLoggService {
 		addMessageWhenNullOrEmpty(aksjonsLoggRequest.getUtfoertAv(), "utfoertAv", parameters);
 
 		if (isFalse(parameters.isEmpty())) {
-			throw new UgyldigHendelseLoggInfoException("AksjonsLogg mangler påkrevde parametere: " + String.join(", ", parameters));
+			throw new UgyldigAksjonsLoggInfoException("AksjonsLogg mangler påkrevde parametere: " + String.join(", ", parameters));
 		}
 
 	}

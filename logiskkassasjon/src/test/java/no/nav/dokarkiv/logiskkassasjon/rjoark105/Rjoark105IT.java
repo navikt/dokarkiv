@@ -1,6 +1,8 @@
 package no.nav.dokarkiv.logiskkassasjon.rjoark105;
 
 import static junit.framework.TestCase.assertTrue;
+import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_INFO_HEADER;
+import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_LOGISK_TIDLIG_KASSASJON;
 import static no.nav.dokarkiv.logiskkassasjon.util.TestUtils.kassereDokumentLogisk;
 import static no.nav.dokarkiv.logiskkassasjon.util.TestUtils.knyttDokumentInfoSomVedleggTilJournalpostForIT;
 import static no.nav.dokarkiv.logiskkassasjon.util.TestUtils.opprettHoveddokumentForIT;
@@ -9,19 +11,100 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.core.Is.is;
 
 import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
+import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.logiskkassasjon.AbstractLogiskKassasjonIT;
+import org.apache.commons.collections15.IteratorUtils;
 import org.junit.Test;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.transaction.TestTransaction;
 
+import java.io.IOException;
+import java.util.List;
+
 public class Rjoark105IT extends AbstractLogiskKassasjonIT {
 
 	@Test
-	public void skallIkkeLogiskKassereDokument_ettersomDokumentInfoIdIkkeFinnes() {
+	public void skalLagreAksjonVedLogiskSlett() throws IOException {
+		abacPermit();
+
+		Journalpost journalpost = joarkRepository.save(opprettHoveddokumentForIT());
+		DokumentInfo dokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
+
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
+
+		assertThat(begrensningRepository.count(), is(0L));
+		List<AksjonsLogg> aksjonsLoggListBefore = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
+		assertThat(aksjonsLoggListBefore.size(), is(0));
+
+		ResponseEntity<String> responseEntity = restTemplate.exchange(
+				URL_LOGISKKASSASJON + dokumentInfo.getDokumentInfoId(),
+				HttpMethod.POST,
+				new HttpEntity<>(createHeadersWithAksjon(AKSJON_LOGISK_TIDLIG_KASSASJON)),
+				String.class);
+
+		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
+
+		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
+		assertThat(aksjonsLoggList.size(), is(1));
+		assertThat(aksjonsLoggList.get(0).getAksjon(), is(AKSJON_LOGISK_TIDLIG_KASSASJON));
+	}
+
+	@Test
+	public void skalFeileNårAksjonsLoggHeaderIkkeErSatt() throws IOException {
+		abacPermit();
+
+		Journalpost journalpost = joarkRepository.save(opprettHoveddokumentForIT());
+		DokumentInfo dokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
+
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
+
+		assertThat(begrensningRepository.count(), is(0L));
+		List<AksjonsLogg> aksjonsLoggListBefore = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
+		assertThat(aksjonsLoggListBefore.size(), is(0));
+
+		ResponseEntity<String> responseEntity = restTemplate.exchange(
+				URL_LOGISKKASSASJON + dokumentInfo.getDokumentInfoId(),
+				HttpMethod.POST,
+				createHeaders(),
+				String.class);
+
+		assertThat(responseEntity.getStatusCode(), is(HttpStatus.BAD_REQUEST));
+		assertThat(responseEntity.getBody(), containsString(String.format("Missing request header '%s'", AKSJONS_INFO_HEADER)));
+
+		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
+		assertThat(aksjonsLoggList.size(), is(0));
+	}
+
+	@Test
+	public void skalIkkeLagreAksjonsLoggVedFeil() throws IOException {
+		abacPermit();
+
+		List<AksjonsLogg> aksjonsLoggListBefore = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
+		assertThat(aksjonsLoggListBefore.size(), is(0));
+
+		Long dokumentInfoId = 13L;
+
+		ResponseEntity<String> responseEntity = restTemplate.exchange(
+				URL_LOGISKKASSASJON + dokumentInfoId,
+				HttpMethod.POST,
+				new HttpEntity<>(createHeadersWithAksjon(AKSJON_LOGISK_TIDLIG_KASSASJON)),
+				String.class);
+
+		assertThat(responseEntity.getStatusCode(), is(HttpStatus.NOT_FOUND));
+
+		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
+		assertThat(aksjonsLoggList.size(), is(0));
+	}
+
+	@Test
+	public void skallIkkeLogiskKassereDokument_ettersomDokumentInfoIdIkkeFinnes() throws IOException {
 		abacPermit();
 
 		Long dokumentInfoId = 13L;
@@ -29,7 +112,7 @@ public class Rjoark105IT extends AbstractLogiskKassasjonIT {
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_LOGISKKASSASJON + dokumentInfoId,
 				HttpMethod.POST,
-				createHeaders(),
+				new HttpEntity<>(createHeadersWithAksjon(AKSJON_LOGISK_TIDLIG_KASSASJON)),
 				String.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.NOT_FOUND));
@@ -37,7 +120,7 @@ public class Rjoark105IT extends AbstractLogiskKassasjonIT {
 	}
 
 	@Test
-	public void skallIkkeLogiskKassereDokument_ettersomDokumentErKassert() {
+	public void skallIkkeLogiskKassereDokument_ettersomDokumentErKassert() throws IOException {
 		abacPermit();
 
 		Journalpost journalpost = joarkRepository.save(opprettHoveddokumentForIT());
@@ -51,7 +134,7 @@ public class Rjoark105IT extends AbstractLogiskKassasjonIT {
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_LOGISKKASSASJON + dokumentInfo.getDokumentInfoId(),
 				HttpMethod.POST,
-				createHeaders(),
+				new HttpEntity<>(createHeadersWithAksjon(AKSJON_LOGISK_TIDLIG_KASSASJON)),
 				String.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.BAD_REQUEST));
@@ -61,7 +144,7 @@ public class Rjoark105IT extends AbstractLogiskKassasjonIT {
 	}
 
 	@Test
-	public void skallLogiskKassereDokument_medDokumentKnyttetFlereJournalposter() {
+	public void skallLogiskKassereDokument_medDokumentKnyttetFlereJournalposter() throws IOException {
 		abacPermit();
 		Journalpost journalpost1 = joarkRepository.save(opprettHoveddokumentForIT());
 		Journalpost journalpost2 = opprettHoveddokumentForIT();
@@ -78,7 +161,7 @@ public class Rjoark105IT extends AbstractLogiskKassasjonIT {
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_LOGISKKASSASJON + hoveddokument1.getDokumentInfoId(),
 				HttpMethod.POST,
-				createHeaders(),
+				new HttpEntity<>(createHeadersWithAksjon(AKSJON_LOGISK_TIDLIG_KASSASJON)),
 				String.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
@@ -88,7 +171,7 @@ public class Rjoark105IT extends AbstractLogiskKassasjonIT {
 	}
 
 	@Test
-	public void skallLogiskKassereDokument_medDokumentKnyttetEnJournalpost() {
+	public void skallLogiskKassereDokument_medDokumentKnyttetEnJournalpost() throws IOException {
 		abacPermit();
 
 		Journalpost journalpost = joarkRepository.save(opprettHoveddokumentForIT());
@@ -101,7 +184,7 @@ public class Rjoark105IT extends AbstractLogiskKassasjonIT {
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_LOGISKKASSASJON + dokumentInfo.getDokumentInfoId(),
 				HttpMethod.POST,
-				createHeaders(),
+				new HttpEntity<>(createHeadersWithAksjon(AKSJON_LOGISK_TIDLIG_KASSASJON)),
 				String.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));

@@ -35,9 +35,9 @@ public class TestUtil {
 	private static final String BREVKODE = "Brevkode";
 	private static final String FILNAVN = "filNavn";
 	private static final String TITTEL = "Tittel";
-	private static Long JOURNALPOST_ID = 2000000L;
-	private static Long JPDOKINFORELAJSON_ID = 2000000L;
-	private static Long DOKUMENTINFO_ID = 2000000L;
+	public static Long JOURNALPOST_ID = 2000000L;
+	public static Long JPDOKINFORELAJSON_ID = 2000000L;
+	public static Long DOKUMENTINFO_ID = 2000000L;
 
 	public static Journalpost opprettHoveddokumentForIT() {
 		return getBaseJournalpostBuilder()

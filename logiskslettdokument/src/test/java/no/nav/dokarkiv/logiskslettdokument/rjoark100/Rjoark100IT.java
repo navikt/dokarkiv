@@ -1,5 +1,7 @@
 package no.nav.dokarkiv.logiskslettdokument.rjoark100;
 
+import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_INFO_HEADER;
+import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_LOGISK_SLETT;
 import static no.nav.dokarkiv.logiskslettdokument.util.TestUtils.opprettHoveddokumentForIT;
 import static no.nav.dokarkiv.logiskslettdokument.util.TestUtils.opprettHoveddokumentMedEtKnyttetVedleggForIT;
 import static no.nav.dokarkiv.logiskslettdokument.util.TestUtils.opprettHoveddokumentMedSammensattDokForIT;
@@ -12,20 +14,111 @@ import static org.junit.Assert.assertNotNull;
 
 import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
+import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
 import no.nav.dokarkiv.core.domain.entities.Begrensning;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.logiskslettdokument.AbstractSlettDokumentIT;
+import org.apache.commons.collections15.IteratorUtils;
 import org.junit.Test;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.transaction.TestTransaction;
 
+import java.io.IOException;
+import java.util.List;
+
 public class Rjoark100IT extends AbstractSlettDokumentIT {
 
 	@Test
-	public void skalLogiskSletteDokument_avVedlegg() {
+	public void skalLagreAksjonVedLogiskSlett() throws IOException {
+		abacPermit();
+
+		Journalpost journalpost = joarkRepository.save(opprettHoveddokumentMedEtKnyttetVedleggForIT());
+
+		DokumentInfo vedlegg = journalpost.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
+				.iterator().next().getDokumentInfo();
+
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
+
+		List<AksjonsLogg> aksjonsLoggListBefore = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
+		assertThat(aksjonsLoggListBefore.size(), is(0));
+
+		ResponseEntity<String> responseEntity = restTemplate.exchange(
+				URL_SLETTDOKUMENT + journalpost.getJournalpostId() + "/" + vedlegg.getDokumentInfoId(),
+				HttpMethod.POST,
+				new HttpEntity<>(createHeadersWithAksjon(AKSJON_LOGISK_SLETT)),
+				String.class);
+
+		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
+
+		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
+		assertThat(aksjonsLoggList.size(), is(1));
+		assertThat(aksjonsLoggList.get(0).getAksjon(), is(AKSJON_LOGISK_SLETT));
+	}
+
+	@Test
+	public void skalFeileNårAksjonsLoggHeaderIkkeErSatt() {
+		abacPermit();
+
+		Journalpost journalpost = joarkRepository.save(opprettHoveddokumentMedEtKnyttetVedleggForIT());
+
+		DokumentInfo vedlegg = journalpost.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
+				.iterator().next().getDokumentInfo();
+
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
+
+		List<AksjonsLogg> aksjonsLoggListBefore = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
+		assertThat(aksjonsLoggListBefore.size(), is(0));
+
+		ResponseEntity<String> responseEntity = restTemplate.exchange(
+				URL_SLETTDOKUMENT + journalpost.getJournalpostId() + "/" + vedlegg.getDokumentInfoId(),
+				HttpMethod.POST,
+				new HttpEntity<>(createHeaders()),
+				String.class);
+
+		assertThat(responseEntity.getStatusCode(), is(HttpStatus.BAD_REQUEST));
+		assertThat(responseEntity.getBody(), containsString(String.format("Missing request header '%s'", AKSJONS_INFO_HEADER)));
+
+		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
+		assertThat(aksjonsLoggList.size(), is(0));
+	}
+
+	@Test
+	public void skalIkkeLagreAksjonsLoggVedFeil() {
+		abacPermit();
+
+		Journalpost journalpost = joarkRepository.save(opprettHoveddokumentMedEtKnyttetVedleggForIT());
+
+		DokumentInfo vedlegg = journalpost.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
+				.iterator().next().getDokumentInfo();
+
+		begrensningRepository.save(utilgjengeliggjoerVedlegg(journalpost.getJournalpostId(), vedlegg.getDokumentInfoId()));
+
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
+
+		List<AksjonsLogg> aksjonsLoggListBefore = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
+		assertThat(aksjonsLoggListBefore.size(), is(0));
+
+		ResponseEntity<String> responseEntity = restTemplate.exchange(
+				URL_SLETTDOKUMENT + journalpost.getJournalpostId() + "/" + vedlegg.getDokumentInfoId(),
+				HttpMethod.POST,
+				new HttpEntity<>(createHeaders()),
+				String.class);
+
+		assertThat(responseEntity.getStatusCode(), is(HttpStatus.BAD_REQUEST));
+
+		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
+		assertThat(aksjonsLoggList.size(), is(0));
+	}
+
+	@Test
+	public void skalLogiskSletteDokument_avVedlegg() throws IOException {
 		abacPermit();
 
 		Journalpost journalpost = joarkRepository.save(opprettHoveddokumentMedEtKnyttetVedleggForIT());
@@ -39,7 +132,7 @@ public class Rjoark100IT extends AbstractSlettDokumentIT {
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_SLETTDOKUMENT + journalpost.getJournalpostId() + "/" + vedlegg.getDokumentInfoId(),
 				HttpMethod.POST,
-				createHeaders(),
+				new HttpEntity<>(createHeadersWithAksjon(AKSJON_LOGISK_SLETT)),
 				String.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
@@ -51,7 +144,7 @@ public class Rjoark100IT extends AbstractSlettDokumentIT {
 	}
 
 	@Test
-	public void skalIkkeLogiskSletteDokument_avVedlegg_ettersomVedleggErUtilgjengeliggjort() {
+	public void skalIkkeLogiskSletteDokument_avVedlegg_ettersomVedleggErUtilgjengeliggjort() throws IOException {
 		abacPermit();
 
 		Journalpost journalpost = joarkRepository.save(opprettHoveddokumentMedEtKnyttetVedleggForIT());
@@ -67,7 +160,7 @@ public class Rjoark100IT extends AbstractSlettDokumentIT {
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_SLETTDOKUMENT + journalpost.getJournalpostId() + "/" + vedlegg.getDokumentInfoId(),
 				HttpMethod.POST,
-				createHeaders(),
+				new HttpEntity<>(createHeadersWithAksjon(AKSJON_LOGISK_SLETT)),
 				String.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.BAD_REQUEST));
@@ -78,7 +171,7 @@ public class Rjoark100IT extends AbstractSlettDokumentIT {
 	}
 
 	@Test
-	public void skalIkkeLogiskSletteDokument_avVedlegg_ettersomHoveddokumentErUtilgjengeliggjort() {
+	public void skalIkkeLogiskSletteDokument_avVedlegg_ettersomHoveddokumentErUtilgjengeliggjort() throws IOException {
 		abacPermit();
 
 		Journalpost journalpost = joarkRepository.save(opprettHoveddokumentMedEtKnyttetVedleggForIT());
@@ -94,7 +187,7 @@ public class Rjoark100IT extends AbstractSlettDokumentIT {
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_SLETTDOKUMENT + journalpost.getJournalpostId() + "/" + vedlegg.getDokumentInfoId(),
 				HttpMethod.POST,
-				createHeaders(),
+				new HttpEntity<>(createHeadersWithAksjon(AKSJON_LOGISK_SLETT)),
 				String.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.BAD_REQUEST));
@@ -104,7 +197,7 @@ public class Rjoark100IT extends AbstractSlettDokumentIT {
 	}
 
 	@Test
-	public void skalLogiskSletteDokument_avHoveddokument() {
+	public void skalLogiskSletteDokument_avHoveddokument() throws IOException {
 		abacPermit();
 
 		Journalpost journalpost = joarkRepository.save(opprettHoveddokumentForIT());
@@ -116,7 +209,7 @@ public class Rjoark100IT extends AbstractSlettDokumentIT {
 				URL_SLETTDOKUMENT + journalpost.getJournalpostId() + "/" + journalpost.
 						findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId(),
 				HttpMethod.POST,
-				createHeaders(),
+				new HttpEntity<>(createHeadersWithAksjon(AKSJON_LOGISK_SLETT)),
 				LogiskSlettDokumentResponse.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
@@ -128,7 +221,7 @@ public class Rjoark100IT extends AbstractSlettDokumentIT {
 	}
 
 	@Test
-	public void skalIkkeLogiskSletteDokument_avHoveddokument_ettersomHoveddokumentErUtilgjengeliggjort() {
+	public void skalIkkeLogiskSletteDokument_avHoveddokument_ettersomHoveddokumentErUtilgjengeliggjort() throws IOException {
 		abacPermit();
 
 		Journalpost journalpost = joarkRepository.save(opprettHoveddokumentForIT());
@@ -142,7 +235,7 @@ public class Rjoark100IT extends AbstractSlettDokumentIT {
 				URL_SLETTDOKUMENT + journalpost.getJournalpostId() + "/" + journalpost.
 						findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId(),
 				HttpMethod.POST,
-				createHeaders(),
+				new HttpEntity<>(createHeadersWithAksjon(AKSJON_LOGISK_SLETT)),
 				String.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.BAD_REQUEST));
@@ -152,7 +245,7 @@ public class Rjoark100IT extends AbstractSlettDokumentIT {
 	}
 
 	@Test
-	public void skalLogiskSletteDokument_avHoveddokument_evenNaarVedleggErUtilgjengeliggjort() {
+	public void skalLogiskSletteDokument_avHoveddokument_evenNaarVedleggErUtilgjengeliggjort() throws IOException {
 		abacPermit();
 
 		Journalpost journalpost = joarkRepository.save(opprettHoveddokumentMedEtKnyttetVedleggForIT());
@@ -169,7 +262,7 @@ public class Rjoark100IT extends AbstractSlettDokumentIT {
 				URL_SLETTDOKUMENT + journalpost.getJournalpostId() + "/" + journalpost.
 						findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId(),
 				HttpMethod.POST,
-				createHeaders(),
+				new HttpEntity<>(createHeadersWithAksjon(AKSJON_LOGISK_SLETT)),
 				LogiskSlettDokumentResponse.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
@@ -184,7 +277,7 @@ public class Rjoark100IT extends AbstractSlettDokumentIT {
 	}
 
 	@Test
-	public void skalIkkeLogiskSletteDokument_ettersomJournalpostIdIkkeFinnes() {
+	public void skalIkkeLogiskSletteDokument_ettersomJournalpostIdIkkeFinnes() throws IOException {
 		abacPermit();
 
 		Long ikkeEksisterendeJournalpostId = 13L;
@@ -196,7 +289,7 @@ public class Rjoark100IT extends AbstractSlettDokumentIT {
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_SLETTDOKUMENT + ikkeEksisterendeJournalpostId + "/" + ikkeEksisterendeDokumentInfoId,
 				HttpMethod.POST,
-				createHeaders(),
+				new HttpEntity<>(createHeadersWithAksjon(AKSJON_LOGISK_SLETT)),
 				String.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.NOT_FOUND));
@@ -206,7 +299,7 @@ public class Rjoark100IT extends AbstractSlettDokumentIT {
 	}
 
 	@Test
-	public void skalIkkeLogiskSletteDokument_ettersomJournalpostDokumentInfoRelasjonIkkeFinnes() {
+	public void skalIkkeLogiskSletteDokument_ettersomJournalpostDokumentInfoRelasjonIkkeFinnes() throws IOException {
 		abacPermit();
 
 		Journalpost journalpost = joarkRepository.save(opprettHoveddokumentForIT());
@@ -219,7 +312,7 @@ public class Rjoark100IT extends AbstractSlettDokumentIT {
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_SLETTDOKUMENT + journalpost.getJournalpostId() + "/" + ikkeEksisterendeDokumentInfoId,
 				HttpMethod.POST,
-				createHeaders(),
+				new HttpEntity<>(createHeadersWithAksjon(AKSJON_LOGISK_SLETT)),
 				String.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.NOT_FOUND));
@@ -230,7 +323,7 @@ public class Rjoark100IT extends AbstractSlettDokumentIT {
 	}
 
 	@Test
-	public void skalIkkeLogiskSletteDokument_ettersomIngenRelasjonMellomInputJournalpostIdOgInputDokumentInfoIdFinnes() {
+	public void skalIkkeLogiskSletteDokument_ettersomIngenRelasjonMellomInputJournalpostIdOgInputDokumentInfoIdFinnes() throws IOException {
 		abacPermit();
 
 		Journalpost journalpost1 = joarkRepository.save(opprettHoveddokumentForIT());
@@ -243,7 +336,7 @@ public class Rjoark100IT extends AbstractSlettDokumentIT {
 				URL_SLETTDOKUMENT + journalpost1.getJournalpostId() + "/" + journalpost2
 						.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId(),
 				HttpMethod.POST,
-				createHeaders(),
+				new HttpEntity<>(createHeadersWithAksjon(AKSJON_LOGISK_SLETT)),
 				String.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.NOT_FOUND));
@@ -254,7 +347,7 @@ public class Rjoark100IT extends AbstractSlettDokumentIT {
 	}
 
 	@Test
-	public void skalIkkeLogiskSletteDokument_ettersomDokumentetErTilknyttetJournalpostSomSammensattDokument() {
+	public void skalIkkeLogiskSletteDokument_ettersomDokumentetErTilknyttetJournalpostSomSammensattDokument() throws IOException {
 		abacPermit();
 
 		Journalpost journalpost = joarkRepository.save(opprettHoveddokumentMedSammensattDokForIT());
@@ -268,7 +361,7 @@ public class Rjoark100IT extends AbstractSlettDokumentIT {
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_SLETTDOKUMENT + journalpost.getJournalpostId() + "/" + sammensattDok.getDokumentInfoId(),
 				HttpMethod.POST,
-				createHeaders(),
+				new HttpEntity<>(createHeadersWithAksjon(AKSJON_LOGISK_SLETT)),
 				String.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.BAD_REQUEST));
@@ -280,7 +373,7 @@ public class Rjoark100IT extends AbstractSlettDokumentIT {
 	}
 
 	@Test
-	public void noAccess() {
+	public void noAccess() throws IOException {
 		abacPermit();
 
 		Journalpost journalpost = joarkRepository.save(opprettHoveddokumentForIT());
@@ -298,7 +391,7 @@ public class Rjoark100IT extends AbstractSlettDokumentIT {
 				URL_SLETTDOKUMENT + journalpost.getJournalpostId() + "/" + journalpost.
 						findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId(),
 				HttpMethod.POST,
-				createNoAccesHeaders(),
+				new HttpEntity<>(createHeadersWithAksjon(AKSJON_LOGISK_SLETT)),
 				String.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.UNAUTHORIZED));

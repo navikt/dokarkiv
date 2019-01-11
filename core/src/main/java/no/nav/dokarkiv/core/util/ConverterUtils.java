@@ -23,4 +23,12 @@ public class ConverterUtils {
 		return mapper.readValue(hendelseInfoHeader, tClass);
 
 	}
+
+
+	public static String objectToJsonString(Object object) throws IOException {
+		ObjectMapper mapper = new ObjectMapper();
+
+		return mapper.writeValueAsString(object);
+
+	}
 }

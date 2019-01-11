@@ -14,7 +14,7 @@ import no.nav.dokarkiv.arkiverkorrigertdokument.rjoark103.ArkiverKorrigertDokume
 import no.nav.dokarkiv.arkiverkorrigertdokument.rjoark104.AngreArkiverKorrigertDokumentService;
 import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService;
-import no.nav.dokarkiv.core.exceptions.UgyldigHendelseLoggInfoException;
+import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggInfoException;
 import no.nav.dokarkiv.core.metrics.RestMetrics;
 import no.nav.dokarkiv.core.security.abac.AbacSecurityService;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
@@ -59,7 +59,7 @@ public class ArkiverKorrigertDokumentRestController {
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark103"}, percentiles = {0.5, 0.95})
 	public ArkiverKorrigertDokumentRespons arkiverKorrigertDokument(
 			@RequestHeader(value = AKSJONS_INFO_HEADER) String aksjonsInfoHeader,
-			@RequestBody ArkiverKorrigertDokumentRequest request) throws UgyldigHendelseLoggInfoException {
+			@RequestBody ArkiverKorrigertDokumentRequest request) throws UgyldigAksjonsLoggInfoException {
 		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark103");
 		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har mottat kall med dokumentInfoId={}", request.getDokumentInfoId());
 		validator.validateArkiverKorrigertDokumentRequest(request);
@@ -82,7 +82,7 @@ public class ArkiverKorrigertDokumentRestController {
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark103"}, percentiles = {0.5, 0.95})
 	public ArkiverKorrigertDokumentRespons angreArkiverKorrigertDokument(
 			@RequestHeader(value = AKSJONS_INFO_HEADER) String aksjonsInfoHeader,
-			@PathVariable("dokumentInfoId") Long dokumentInfoId) throws UgyldigHendelseLoggInfoException {
+			@PathVariable("dokumentInfoId") Long dokumentInfoId) throws UgyldigAksjonsLoggInfoException {
 		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark104");
 		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har mottat kall med dokumentInfoId={}", dokumentInfoId);
 		validator.validateAngreArkiverKorrigertDokument(dokumentInfoId);

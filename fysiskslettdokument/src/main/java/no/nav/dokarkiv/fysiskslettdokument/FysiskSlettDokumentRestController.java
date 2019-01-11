@@ -11,7 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService;
 import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
-import no.nav.dokarkiv.core.exceptions.UgyldigHendelseLoggInfoException;
+import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggInfoException;
 import no.nav.dokarkiv.core.metrics.RestMetrics;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import no.nav.dokarkiv.fysiskslettdokument.rjoark102.FysiskSlettDokumentRequestTo;
@@ -51,10 +51,10 @@ public class FysiskSlettDokumentRestController {
 			actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION))
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark102"}, percentiles = {0.5, 0.95})
 	public FysiskSlettDokumentResponse fysiskSlettDokument(
-			@RequestHeader(value = AKSJONS_INFO_HEADER, required = false) String aksjonsInfoHeader,
+			@RequestHeader(value = AKSJONS_INFO_HEADER) String aksjonsInfoHeader,
 			@PathVariable("journalpostId") Long journalpostId,
 			@PathVariable("dokumentInfoId") Long dokumentInfoId,
-			@PathVariable("begrensningType") BegrensningTypeCode begrensningType) throws UgyldigHendelseLoggInfoException {
+			@PathVariable("begrensningType") BegrensningTypeCode begrensningType) throws UgyldigAksjonsLoggInfoException {
 		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark102");
 		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har mottat kall med journalpostId=" + journalpostId + ", dokumentInfoId=" + dokumentInfoId + " og begrensningType=" + begrensningType);
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
