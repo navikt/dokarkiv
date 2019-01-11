@@ -391,7 +391,7 @@ public class Rjoark100IT extends AbstractSlettDokumentIT {
 				URL_SLETTDOKUMENT + journalpost.getJournalpostId() + "/" + journalpost.
 						findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId(),
 				HttpMethod.POST,
-				new HttpEntity<>(createHeadersWithAksjon(AKSJON_LOGISK_SLETT)),
+				createNoAccesHeaders(),
 				String.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.UNAUTHORIZED));
