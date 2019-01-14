@@ -53,10 +53,10 @@ public class AksjonsLoggService {
 	private void validateAksjonslogg(AksjonsLoggRequest aksjonsLoggRequest) throws UgyldigAksjonsLoggInfoException {
 
 		List<String> parameters = new ArrayList<>();
-		addMessageWhenNullOrEmpty(aksjonsLoggRequest.getJournalpostId(), "journalpostId", parameters);
-		addMessageWhenNullOrEmpty(aksjonsLoggRequest.getApplikasjon(), "applikasjon", parameters);
-		addMessageWhenNullOrEmpty(aksjonsLoggRequest.getAksjon(), "aksjon", parameters);
-		addMessageWhenNullOrEmpty(aksjonsLoggRequest.getUtfoertAv(), "utfoertAv", parameters);
+		addMessageWhenNullOrEmpty(parameters, aksjonsLoggRequest.getJournalpostId(), "journalpostId");
+		addMessageWhenNullOrEmpty(parameters, aksjonsLoggRequest.getApplikasjon(), "applikasjon");
+		addMessageWhenNullOrEmpty(parameters, aksjonsLoggRequest.getAksjon(), "aksjon");
+		addMessageWhenNullOrEmpty(parameters, aksjonsLoggRequest.getUtfoertAv(), "utfoertAv");
 
 		if (isFalse(parameters.isEmpty())) {
 			throw new UgyldigAksjonsLoggInfoException("AksjonsLogg mangler påkrevde parametere: " + String.join(", ", parameters));
@@ -64,7 +64,7 @@ public class AksjonsLoggService {
 
 	}
 
-	private void addMessageWhenNullOrEmpty(Object value, String parameter, List<String> parameters) {
+	private void addMessageWhenNullOrEmpty(List<String> parameters, Object value, String parameter) {
 		if (Objects.isNull(value) || (value instanceof String && isBlank((String) value))) {
 			parameters.add(parameter);
 		}
