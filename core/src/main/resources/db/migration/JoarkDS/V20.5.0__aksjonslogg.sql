@@ -3,7 +3,7 @@ create table t_aksjonslogg
   aksjonslogg_id   number(11)     not null,
   applikasjon      varchar2(20)   not null,
   aksjon           varchar2(50)   not null,
-  journalpost_id   number(11)     null,
+  journalpost_id   number(11)     not null,
   dokument_info_id number(11)     null,
   bruker           number(11)     null,
   hjemmel          varchar2(20)   null,

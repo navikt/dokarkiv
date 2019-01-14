@@ -38,7 +38,7 @@ public class AksjonsLogg extends AbstractPersistentVersionedDomainObject {
 	@Column(name = "aksjonslogg_id", nullable = false)
 	private Long aksjonsloggId;
 
-	@Column(name = "journalpost_id")
+	@Column(name = "journalpost_id", nullable = false)
 	private Long journalpostId;
 
 	@Column(name = "dokument_info_id")
@@ -61,13 +61,4 @@ public class AksjonsLogg extends AbstractPersistentVersionedDomainObject {
 
 	@Column(name = "melding", length = 4000)
 	private String melding;
-
-	@JsonSetter("melding")
-	public void setMelding(JsonNode jsonNode) {
-		this.melding = jsonNode.toString();
-	}
-
-	public void setMelding(String melding) {
-		this.melding = melding;
-	}
 }
