@@ -5,7 +5,7 @@ create table t_aksjonslogg
   aksjon           varchar2(50)   not null,
   journalpost_id   number(11)     not null,
   dokument_info_id number(11)     null,
-  bruker           number(11)     null,
+  bruker           varchar2(20)   null,
   hjemmel          varchar2(20)   null,
   utfoert_av       varchar2(20)   null,
   melding          varchar2(4000) null,
