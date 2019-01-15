@@ -22,29 +22,35 @@ import java.util.Arrays;
 @Entity
 @Table(name = "T_DOKUMENT_FIL")
 public class DokumentFil extends AbstractPersistentVersionedDomainObjectWithKilde {
-	
-	/** Named Parameter */
+
+	/**
+	 * Named Parameter
+	 */
 	public static final String NP_FIL_UUID = "filUuid";
-	/** Named Query */
+	/**
+	 * Named Query
+	 */
 	public static final String NQ_FIND_BY_FIL_UUID = "DokumentFil.findDokumentFilByFilUuid";
-	
-	/** ID used for serialization. */
+
+	/**
+	 * ID used for serialization.
+	 */
 	private static final long serialVersionUID = ***gammelt_fnr***42760135L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "dokumentFil_seq")
-	@GenericGenerator(name = "dokumentFil_seq", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator", 
-					  parameters = { @Parameter(name = "sequence_name", value = "T_DOKUMENT_FIL_SEQ") })
+	@GenericGenerator(name = "dokumentFil_seq", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
+			parameters = {@Parameter(name = "sequence_name", value = "T_DOKUMENT_FIL_SEQ")})
 	@Column(name = "dokument_fil_id", nullable = false)
 	private Long id;
-	
+
 	@Column(name = "fil_uuid", nullable = false, length = 36)
 	private String filUuid;
-	
+
 	@Column(name = "fil", nullable = false)
 	@Lob
 	private byte[] fil;
-	
+
 	/**
 	 * Constructs a new DokumentFil.
 	 */
@@ -54,7 +60,7 @@ public class DokumentFil extends AbstractPersistentVersionedDomainObjectWithKild
 	/**
 	 * Constructs a new DokumentFil.
 	 *
-	 * @param id The database Id
+	 * @param id      The database Id
 	 * @param version The database version
 	 */
 	public DokumentFil(Long id, long version) {
@@ -66,7 +72,7 @@ public class DokumentFil extends AbstractPersistentVersionedDomainObjectWithKild
 	 * Constructs a new DokumentFil.
 	 *
 	 * @param filUuid The file identifier.
-	 * @param fil The actual file.
+	 * @param fil     The actual file.
 	 */
 	public DokumentFil(String filUuid, byte[] fil) {
 		this.filUuid = filUuid;

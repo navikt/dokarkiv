@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.core;
 
+import com.fasterxml.jackson.module.afterburner.AfterburnerModule;
 import io.micrometer.core.instrument.MeterRegistry;
 import no.nav.dokarkiv.core.fasit.ServiceuserAlias;
 import no.nav.dokarkiv.core.jaxws.ThreadLocalSubjectHandler;
@@ -29,6 +30,13 @@ public class CoreConfig {
 	@Bean
 	public DokTimedAspect timedAspect(MeterRegistry meterRegistry) {
 		return new DokTimedAspect(meterRegistry);
+	}
+
+	// Raskere JSON serialisering og deserialisering.
+	// Se https://github.com/FasterXML/jackson-docs/wiki/Presentation:-Jackson-Performance
+	@Bean
+	AfterburnerModule afterburnerModule() {
+		return new AfterburnerModule();
 	}
 
 	@PostConstruct

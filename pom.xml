@@ -32,8 +32,9 @@
 		<module>hentjournalinfo</module>
 		<module>arkiverkorrigertdokument</module>
 		<module>fysiskslettdokument</module>
-		<module>tidligkassasjon</module>
-		<module>logiskkassasjon</module>
+		<module>fysisktidligkassasjon</module>
+		<module>logisktidligkassasjon</module>
+		<module>hentjournalsakinfo</module>
 	</modules>
 
 	<distributionManagement>
@@ -60,7 +61,6 @@
 		<swagger.version>2.8.0</swagger.version>
 		<freg.security.test.version>3.1.0</freg.security.test.version>
 	</properties>
-
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
@@ -136,6 +136,11 @@
 			</dependency>
 			<dependency>
 				<groupId>no.nav.dokarkiv</groupId>
+				<artifactId>hentjournalsakinfo</artifactId>
+				<version>1-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>no.nav.dokarkiv</groupId>
 				<artifactId>logiskslettdokument</artifactId>
 				<version>1-SNAPSHOT</version>
 			</dependency>
@@ -146,12 +151,12 @@
 			</dependency>
 			<dependency>
 				<groupId>no.nav.dokarkiv</groupId>
-				<artifactId>logiskkassasjon</artifactId>
+				<artifactId>logisktidligkassasjon</artifactId>
 				<version>1-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>no.nav.dokarkiv</groupId>
-				<artifactId>tidligkassasjon</artifactId>
+				<artifactId>fysisktidligkassasjon</artifactId>
 				<version>1-SNAPSHOT</version>
 			</dependency>
 			<dependency>
@@ -170,6 +175,11 @@
 				<version>${oracle.version}</version>
 			</dependency>
 			<dependency>
+				<groupId>org.simpleflatmapper</groupId>
+				<artifactId>sfm-springjdbc</artifactId>
+				<version>6.0.9</version>
+			</dependency>
+			<dependency>
 				<groupId>javax.inject</groupId>
 				<artifactId>javax.inject</artifactId>
 				<version>1</version>
@@ -183,6 +193,11 @@
 				<groupId>org.apache.cxf</groupId>
 				<artifactId>cxf-rt-ws-security</artifactId>
 				<version>${cxf.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-collections4</artifactId>
+				<version>4.2</version>
 			</dependency>
 			<dependency>
 				<groupId>org.projectlombok</groupId>
