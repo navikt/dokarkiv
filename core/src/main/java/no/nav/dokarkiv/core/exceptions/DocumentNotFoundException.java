@@ -1,10 +1,14 @@
 package no.nav.dokarkiv.core.exceptions;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ResponseStatus;
+
 /**
  * Thrown when a Journalpost or journalpost, document or variantformat that cannot be found.
  *
  * @author Thomas Eugen Bjørge, Visma Consulting
  */
+@ResponseStatus(HttpStatus.NOT_FOUND)
 public class DocumentNotFoundException extends DokarkivFunctionalException {
 
 	/**
