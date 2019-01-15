@@ -18,6 +18,7 @@ import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.dokarkiv.core.stelvio.SimpleRequestContext;
+import no.nav.dokarkiv.fysisktidligkassasjon.util.TestUtil;
 import no.nav.freg.security.test.oidc.tools.OidcTestService;
 import no.nav.freg.security.test.oidc.tools.TestToolsAutoConfig;
 import org.junit.Before;
@@ -122,6 +123,7 @@ public abstract class AbstractFysiskTidligKassasjonIT {
 		headers.add(HttpHeaders.AUTHORIZATION, oidcTokenPersonUserTest);
 		headers.add(NAV_CONSUMER_TOKEN, oidcTokenServiceUserTest);
 		headers.add(AksjonsLoggService.AKSJONS_INFO_HEADER, objectToJsonString(createAksjonsLoggRequest(JOURNALPOST_ID, DOKUMENTINFO_ID, aksjon)));
+		headers.add(AksjonsLoggService.AKSJONS_INFO_HEADER, objectToJsonString(createAksjonsLoggRequest(JOURNALPOST_ID, TestUtil.DOKUMENTINFO_ID, aksjon)));
 		return headers;
 	}
 

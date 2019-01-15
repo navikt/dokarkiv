@@ -39,6 +39,7 @@ public class LogiskTidligKassasjonRestController {
 	private final AngreLogiskTidligKassasjonService angreLogiskTidligKassasjonService;
 	private final AbacSecurityService abacSecurityService;
 	private final AksjonsLoggService aksjonsLoggService;
+
 	@Inject
 	public LogiskTidligKassasjonRestController(
 			LogiskTidligKassasjonValidator validator,
@@ -60,14 +61,14 @@ public class LogiskTidligKassasjonRestController {
 			actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION))
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark105"}, percentiles = {0.5, 0.95})
 	public LogiskTidligKassasjonResponse logiskTidligKassasjon(
-			@RequestHeader(value = AKSJONS_INFO_HEADER) String hendelseInfoHeader,
+			@RequestHeader(value = AKSJONS_INFO_HEADER) String aksjonsInfoHeader,
 			@PathVariable("dokumentInfoId") Long dokumentInfoId) throws UgyldigAksjonsLoggInfoException {
 		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark105");
 		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har mottat kall med dokumentInfoId={}", dokumentInfoId);
 		validator.validerLogiskTidligKassasjonRequest(dokumentInfoId);
 		abacSecurityService.assertAccessToDokumentIncludingBegrenset(dokumentInfoId);
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
-		aksjonsLoggService.validerOgLagreAksjon(hendelseInfoHeader);
+		aksjonsLoggService.validerOgLagreAksjon(aksjonsInfoHeader);
 		LogiskTidligKassasjonResponse response = logiskTidligKassasjonService.logiskTidligKassasjonAvDokument(dokumentInfoId);
 		log.info("{} har logisk tidlig kassert dokument med dokumentInfoId={}",
 				MDC.get(MDCConstants.MDC_REQUEST_ID), dokumentInfoId);
@@ -81,14 +82,14 @@ public class LogiskTidligKassasjonRestController {
 			actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION))
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark106"}, percentiles = {0.5, 0.95})
 	public LogiskTidligKassasjonResponse angreLogiskTidligKassasjon(
-			@RequestHeader(value = AKSJONS_INFO_HEADER) String hendelseInfoHeader,
+			@RequestHeader(value = AKSJONS_INFO_HEADER) String aksjonsInfoHeader,
 			@PathVariable("dokumentInfoId") Long dokumentInfoId) throws UgyldigAksjonsLoggInfoException {
 		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark106");
 		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har mottat kall med dokumentInfoId={}", dokumentInfoId);
 		validator.validerLogiskTidligKassasjonRequest(dokumentInfoId);
 		abacSecurityService.assertAccessToDokumentIncludingBegrenset(dokumentInfoId);
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
-		aksjonsLoggService.validerOgLagreAksjon(hendelseInfoHeader);
+		aksjonsLoggService.validerOgLagreAksjon(aksjonsInfoHeader);
 		LogiskTidligKassasjonResponse response = angreLogiskTidligKassasjonService.angreLogiskTidligKassasjonAvDokument(dokumentInfoId);
 		log.info("{} har angret logisk tidlig kassering av dokument med dokumentInfoId={}",
 				MDC.get(MDCConstants.MDC_REQUEST_ID), dokumentInfoId);

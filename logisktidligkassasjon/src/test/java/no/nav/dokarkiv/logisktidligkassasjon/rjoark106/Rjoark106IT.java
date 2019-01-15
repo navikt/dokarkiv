@@ -16,8 +16,8 @@ import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import org.apache.commons.collections15.IteratorUtils;
 import no.nav.dokarkiv.logisktidligkassasjon.AbstractLogiskTidligKassasjonIT;
+import org.apache.commons.collections15.IteratorUtils;
 import org.junit.Test;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -31,7 +31,7 @@ import java.util.List;
 public class Rjoark106IT extends AbstractLogiskTidligKassasjonIT {
 
 	@Test
-	public void skalLagreAksjonVedLogiskSlett() throws IOException {
+	public void skalLagreAksjon() throws IOException {
 		abacPermit();
 
 		Journalpost journalpost1 = joarkRepository.save(opprettHoveddokumentMedEtKnyttetVedleggForIT());
@@ -108,7 +108,7 @@ public class Rjoark106IT extends AbstractLogiskTidligKassasjonIT {
 	}
 
 	@Test
-	public void skalIkkeLagreAksjonsLoggVedFeil() {
+	public void skalIkkeLagreAksjonsLoggVedFeil() throws IOException {
 		abacPermit();
 
 		Journalpost journalpost1 = joarkRepository.save(opprettHoveddokumentMedEtKnyttetVedleggForIT());
@@ -130,9 +130,10 @@ public class Rjoark106IT extends AbstractLogiskTidligKassasjonIT {
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_ANGRE_LOGISKTIDLIGKASSASJON + vedlegg.getDokumentInfoId(),
 				HttpMethod.POST,
-				createHeaders(),
+				new HttpEntity<>(createHeadersWithAksjon(AKSJON_ANGRE_LOGISK_TIDLIG_KASSASJON)),
 				String.class);
-		assertThat(responseEntity.getStatusCode(), is(HttpStatus.BAD_REQUEST));
+
+		assertThat(responseEntity.getStatusCode(), is(HttpStatus.NOT_FOUND));
 
 		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
 		assertThat(aksjonsLoggList.size(), is(0));

@@ -33,7 +33,7 @@ import java.util.List;
 public class Rjoark100IT extends AbstractSlettDokumentIT {
 
 	@Test
-	public void skalLagreAksjonVedLogiskSlett() throws IOException {
+	public void skalLagreAksjon() throws IOException {
 		abacPermit();
 
 		Journalpost journalpost = joarkRepository.save(opprettHoveddokumentMedEtKnyttetVedleggForIT());

@@ -32,9 +32,9 @@ import javax.inject.Inject;
 @RequestMapping("rest/fysisktidligkassasjon")
 public class FysiskTidligKassasjonRestController {
 
-	private final AksjonsLoggService aksjonsLoggService;
 	private final FysiskTidligKassasjonValidator validator;
 	private final FysiskTidligKassasjonService fysiskTidligKassasjonService;
+	private final AksjonsLoggService aksjonsLoggService;
 
 	@Inject
 	public FysiskTidligKassasjonRestController(
