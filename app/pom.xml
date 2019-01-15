@@ -82,11 +82,11 @@
 		</dependency>
 		<dependency>
 			<groupId>no.nav.dokarkiv</groupId>
-			<artifactId>logiskkassasjon</artifactId>
+			<artifactId>logisktidligkassasjon</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>no.nav.dokarkiv</groupId>
-			<artifactId>tidligkassasjon</artifactId>
+			<artifactId>fysisktidligkassasjon</artifactId>
 		</dependency>
 		<!-- annet -->
 		<dependency>
@@ -124,12 +124,6 @@
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>no.nav.dokarkiv</groupId>
-			<artifactId>tidligkassasjon</artifactId>
-			<version>1-SNAPSHOT</version>
-			<scope>compile</scope>
 		</dependency>
 	</dependencies>
 	<build>
