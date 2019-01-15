@@ -7,8 +7,8 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static no.nav.dokarkiv.core.security.JwtClaimsBuilderProvider.openAmClaimsBuilder;
 import static no.nav.dokarkiv.core.util.ConverterUtils.objectToJsonString;
 import static no.nav.dokarkiv.core.util.TestDataUtils.createAksjonsLoggRequest;
-import static no.nav.dokarkiv.tidligkassasjon.util.TestUtil.DOKUMENTINFO_ID;
-import static no.nav.dokarkiv.tidligkassasjon.util.TestUtil.JOURNALPOST_ID;
+import static no.nav.dokarkiv.fysisktidligkassasjon.util.TestUtil.DOKUMENTINFO_ID;
+import static no.nav.dokarkiv.fysisktidligkassasjon.util.TestUtil.JOURNALPOST_ID;
 
 import no.nav.dokarkiv.core.CoreConfig;
 import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService;
@@ -58,13 +58,14 @@ public abstract class AbstractFysiskTidligKassasjonIT {
 	protected static final String OPPRETTET_KILDE_NAVN = "Opprettet kilde";
 	protected static final String TILKNYTTET_AV_NAVN = "Tilknyttetnavn";
 	protected static final String URL_FYSISKTIDLIGKASSASJON = "/rest/fysisktidligkassasjon/";
-	private String OIDC_TOKEN_PERSON_USER_TEST;
-	private String OIDC_TOKEN_SERVICE_USER_TEST;
-	private String OIDC_TOKEN_SERVICE_NO_ACCESS_USER_TEST;
-	private String NAV_CONSUMER_TOKEN = "Nav-Consumer-Token";
-	private final String SERVICE_USER_ID = "srvjoarkadmin";
-	private final String PERSON_USER_ID = "Z990782";
-	private final String NO_ACCESS_SERVICE_USER_ID = "srvdokarkiv";
+	private static final String NAV_CONSUMER_TOKEN = "Nav-Consumer-Token";
+	private static final String SERVICE_USER_ID = "srvjoarkadmin";
+	private static final String PERSON_USER_ID = "Z990782";
+	private static final String NO_ACCESS_SERVICE_USER_ID = "srvdokarkiv";
+	private static final String BEARER = "Bearer ";
+	private String oidcTokenPersonUserTest;
+	private String oidcTokenServiceUserTest;
+	private String oidcTokenServiceNoAccessUserTest;
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
@@ -83,11 +84,11 @@ public abstract class AbstractFysiskTidligKassasjonIT {
 
 	@Before
 	public void setUp() {
-		OIDC_TOKEN_PERSON_USER_TEST = "Bearer " + oidcTestService.createOidc(openAmClaimsBuilder().subject(PERSON_USER_ID)
+		oidcTokenPersonUserTest = BEARER + oidcTestService.createOidc(openAmClaimsBuilder().subject(PERSON_USER_ID)
 				.build());
-		OIDC_TOKEN_SERVICE_USER_TEST = "Bearer " + oidcTestService.createOidc(openAmClaimsBuilder().subject(SERVICE_USER_ID)
+		oidcTokenServiceUserTest = BEARER + oidcTestService.createOidc(openAmClaimsBuilder().subject(SERVICE_USER_ID)
 				.build());
-		OIDC_TOKEN_SERVICE_NO_ACCESS_USER_TEST = "Bearer " + oidcTestService.createOidc(openAmClaimsBuilder().subject(NO_ACCESS_SERVICE_USER_ID)
+		oidcTokenServiceNoAccessUserTest = BEARER + oidcTestService.createOidc(openAmClaimsBuilder().subject(NO_ACCESS_SERVICE_USER_ID)
 				.build());
 	}
 
@@ -110,16 +111,16 @@ public abstract class AbstractFysiskTidligKassasjonIT {
 	protected HttpEntity createHeaders() {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.TEXT_PLAIN);
-		headers.add(HttpHeaders.AUTHORIZATION, OIDC_TOKEN_PERSON_USER_TEST);
-		headers.add(NAV_CONSUMER_TOKEN, OIDC_TOKEN_SERVICE_USER_TEST);
+		headers.add(HttpHeaders.AUTHORIZATION, oidcTokenPersonUserTest);
+		headers.add(NAV_CONSUMER_TOKEN, oidcTokenServiceUserTest);
 		return new HttpEntity(headers);
 	}
 
 	protected HttpHeaders createHeadersWithAksjon(String aksjon) throws IOException {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.TEXT_PLAIN);
-		headers.add(HttpHeaders.AUTHORIZATION, OIDC_TOKEN_PERSON_USER_TEST);
-		headers.add(NAV_CONSUMER_TOKEN, OIDC_TOKEN_SERVICE_USER_TEST);
+		headers.add(HttpHeaders.AUTHORIZATION, oidcTokenPersonUserTest);
+		headers.add(NAV_CONSUMER_TOKEN, oidcTokenServiceUserTest);
 		headers.add(AksjonsLoggService.AKSJONS_INFO_HEADER, objectToJsonString(createAksjonsLoggRequest(JOURNALPOST_ID, DOKUMENTINFO_ID, aksjon)));
 		return headers;
 	}
@@ -127,8 +128,8 @@ public abstract class AbstractFysiskTidligKassasjonIT {
 	protected HttpEntity createNoAccessHeaders() {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.TEXT_PLAIN);
-		headers.add(HttpHeaders.AUTHORIZATION, OIDC_TOKEN_PERSON_USER_TEST);
-		headers.add(NAV_CONSUMER_TOKEN, OIDC_TOKEN_SERVICE_NO_ACCESS_USER_TEST);
+		headers.add(HttpHeaders.AUTHORIZATION, oidcTokenPersonUserTest);
+		headers.add(NAV_CONSUMER_TOKEN, oidcTokenServiceNoAccessUserTest);
 		return new HttpEntity(headers);
 	}
 

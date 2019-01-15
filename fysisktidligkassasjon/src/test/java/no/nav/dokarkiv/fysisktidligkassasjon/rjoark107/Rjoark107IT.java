@@ -15,8 +15,8 @@ import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
 import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import org.apache.commons.collections15.IteratorUtils;
 import no.nav.dokarkiv.fysisktidligkassasjon.AbstractFysiskTidligKassasjonIT;
+import org.apache.commons.collections15.IteratorUtils;
 import org.junit.Test;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -128,7 +128,7 @@ public class Rjoark107IT extends AbstractFysiskTidligKassasjonIT {
 		Long dokumentInfoId = 13L;
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
-				URL_TIDLIGKASSASJON + dokumentInfoId,
+				URL_FYSISKTIDLIGKASSASJON + dokumentInfoId,
 				HttpMethod.POST,
 				new HttpEntity<>(createHeadersWithAksjon(AKSJON_FYSISK_TIDLIG_KASSASJON)),
 				String.class);

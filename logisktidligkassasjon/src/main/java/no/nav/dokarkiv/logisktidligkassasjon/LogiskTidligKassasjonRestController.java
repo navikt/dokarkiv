@@ -69,7 +69,7 @@ public class LogiskTidligKassasjonRestController {
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
 		aksjonsLoggService.validerOgLagreAksjon(hendelseInfoHeader);
 		LogiskTidligKassasjonResponse response = logiskTidligKassasjonService.logiskTidligKassasjonAvDokument(dokumentInfoId);
-		log.info("{} har logisk kassert dokument med dokumentInfoId={}",
+		log.info("{} har logisk tidlig kassert dokument med dokumentInfoId={}",
 				MDC.get(MDCConstants.MDC_REQUEST_ID), dokumentInfoId);
 		return response;
 	}
@@ -90,7 +90,7 @@ public class LogiskTidligKassasjonRestController {
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
 		aksjonsLoggService.validerOgLagreAksjon(hendelseInfoHeader);
 		LogiskTidligKassasjonResponse response = angreLogiskTidligKassasjonService.angreLogiskTidligKassasjonAvDokument(dokumentInfoId);
-		log.info("{} har angret logisk kassering av dokument med dokumentInfoId={}",
+		log.info("{} har angret logisk tidlig kassering av dokument med dokumentInfoId={}",
 				MDC.get(MDCConstants.MDC_REQUEST_ID), dokumentInfoId);
 		return response;
 	}

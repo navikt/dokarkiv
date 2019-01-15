@@ -139,7 +139,7 @@ public class Rjoark105IT extends AbstractLogiskTidligKassasjonIT {
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.BAD_REQUEST));
 		assertThat(responseEntity.getBody(), containsString(String.format(
-				"Kan ikke utføre logisk kassasjon av dokument med dokumentInfoId=%s. Dokumentet er allerede logisk kassert",
+				"Kan ikke utføre logisk tidlig kassasjon av dokument med dokumentInfoId=%s. Dokumentet er allerede logisk tidlig kassert",
 				dokumentInfo.getDokumentInfoId())));
 	}
 

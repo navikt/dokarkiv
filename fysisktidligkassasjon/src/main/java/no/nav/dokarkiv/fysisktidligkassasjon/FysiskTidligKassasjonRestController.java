@@ -61,7 +61,7 @@ public class FysiskTidligKassasjonRestController {
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
 		aksjonsLoggService.validerOgLagreAksjon(aksjonsInfoHeader);
 		FysiskTidligKassasjonResponse response = fysiskTidligKassasjonService.fysiskTidligKassasjonAvDokument(dokumentInfoId);
-		log.info("{} har tidlig kassert dokument med dokumentInfoId={}",
+		log.info("{} har fysisk tidlig kassert dokument med dokumentInfoId={}",
 				MDC.get(MDCConstants.MDC_REQUEST_ID), dokumentInfoId);
 		return response;
 	}

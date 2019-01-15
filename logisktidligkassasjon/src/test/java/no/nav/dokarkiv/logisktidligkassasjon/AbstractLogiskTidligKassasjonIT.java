@@ -7,8 +7,8 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static no.nav.dokarkiv.core.security.JwtClaimsBuilderProvider.openAmClaimsBuilder;
 import static no.nav.dokarkiv.core.util.ConverterUtils.objectToJsonString;
 import static no.nav.dokarkiv.core.util.TestDataUtils.createAksjonsLoggRequest;
-import static no.nav.dokarkiv.logiskkassasjon.util.TestUtils.DOKUMENTINFO_ID;
-import static no.nav.dokarkiv.logiskkassasjon.util.TestUtils.JOURNALPOST_ID;
+import static no.nav.dokarkiv.logisktidligkassasjon.util.TestUtils.getDokumentInfoId;
+import static no.nav.dokarkiv.logisktidligkassasjon.util.TestUtils.getJournalpostId;
 
 import no.nav.dokarkiv.core.CoreConfig;
 import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService;
@@ -60,13 +60,13 @@ public abstract class AbstractLogiskTidligKassasjonIT {
 	protected static final String URL_LOGISKTIDLIGKASSASJON = "/rest/logisktidligkassasjon/";
 	protected static final String URL_ANGRE_LOGISKTIDLIGKASSASJON = "/rest/logisktidligkassasjon/angre/";
 	protected static final String BEARER = "Bearer ";
+	private static final String NAV_CONSUMER_TOKEN = "Nav-Consumer-Token";
+	private static final String SERVICE_USER_ID = "srvjoarkadmin";
+	private static final String PERSON_USER_ID = "Z990782";
+	private static final String NO_ACCESS_SERVICE_USER_ID = "srvdokarkiv";
 	private String oidcTokenPersonUserTest;
 	private String oidcTokenServiceUserTest;
 	private String oidcTokenServiceNoAccessUserTest;
-	private static final String NAV_CONSUMER_TOKEN = "Nav-Consumer-Token";
-	private final static String SERVICE_USER_ID = "srvjoarkadmin";
-	private final static String PERSON_USER_ID = "Z990782";
-	private final static String NO_ACCESS_SERVICE_USER_ID = "srvdokarkiv";
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
@@ -121,9 +121,9 @@ public abstract class AbstractLogiskTidligKassasjonIT {
 	protected HttpHeaders createHeadersWithAksjon(String aksjon) throws IOException {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.TEXT_PLAIN);
-		headers.add(HttpHeaders.AUTHORIZATION, OIDC_TOKEN_PERSON_USER_TEST);
-		headers.add(NAV_CONSUMER_TOKEN, OIDC_TOKEN_SERVICE_USER_TEST);
-		headers.add(AksjonsLoggService.AKSJONS_INFO_HEADER, objectToJsonString(createAksjonsLoggRequest(JOURNALPOST_ID, DOKUMENTINFO_ID, aksjon)));
+		headers.add(HttpHeaders.AUTHORIZATION, oidcTokenPersonUserTest);
+		headers.add(NAV_CONSUMER_TOKEN, oidcTokenServiceUserTest);
+		headers.add(AksjonsLoggService.AKSJONS_INFO_HEADER, objectToJsonString(createAksjonsLoggRequest(getJournalpostId(), getDokumentInfoId(), aksjon)));
 		return headers;
 	}
 
