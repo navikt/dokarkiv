@@ -31,7 +31,7 @@ import java.util.List;
 public class Rjoark106IT extends AbstractLogiskTidligKassasjonIT {
 
 	@Test
-	public void skalLagreAksjonVedLogiskSlett() throws IOException {
+	public void skalLagreAksjon() throws IOException {
 		abacPermit();
 
 		Journalpost journalpost1 = joarkRepository.save(opprettHoveddokumentMedEtKnyttetVedleggForIT());

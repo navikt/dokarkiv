@@ -31,7 +31,7 @@ public class Rjoark107IT extends AbstractFysiskTidligKassasjonIT {
 
 
 	@Test
-	public void skalLagreAksjonVedLogiskSlett() throws IOException {
+	public void skalLagreAksjon() throws IOException {
 		abacPermit();
 
 		Journalpost journalpost1 = joarkRepository.save(opprettHoveddokumentForIT());
