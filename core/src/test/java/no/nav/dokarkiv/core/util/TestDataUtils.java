@@ -23,6 +23,7 @@ import no.nav.dokarkiv.core.domain.entities.Begrensning;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import org.joda.time.DateTime;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -47,23 +48,22 @@ public class TestDataUtils {
 	public static final String TILLEGGSOPPLYSNINGER_KEY = "keey";
 	public static final String TILLEGGSOPPLYSNINGER_VALUE = "value";
 
-	public static final String AKSJON_LOGISK_SLETT = "LOGISK_SLETT";
-	public static final String AKSJON_FYSISK_SLETT = "FYSISK_SLETT";
-	public static final String AKSJON_ANGRE_LOGISK_SLETT = "LOGISK_SLETT";
-	public static final String AKSJON_ANGRE_LOGISK_TIDLIG_KASSASJON = "ANGRE_LOGISK_TIDLIG_KASSASJON";
-	public static final String AKSJON_LOGISK_TIDLIG_KASSASJON = "LOGISK_TIDLIG_KASSASJON";
-	public static final String AKSJON_FYSISK_TIDLIG_KASSASJON = "FYSISK_TIDLIG_KASSASJON";
-	public static final String AKSJON_ARKIVER_DOKUMENT = "ARKIVER_DOKUMENT";
-	public static final String AKSJON_ANGRE_ARKIVER_DOKUMENT = "ANGRE_ARKIVER_DOKUMENT";
-
 	public static final String AKSJON_APPLIKASJON = "Dokarkiv";
 	public static final String AKSJON_HJEMMEL = "POL";
 	public static final String AKSJON_UTFOERT_AV = "Z142455";
 	public static final String AKSJON_BRUKER = "144411133";
 	public static final String AKSJON_MELDING = "Test";
+	public static final String AKSJON_FRA_VERDI = "Test1";
+	public static final String AKSJON_TIL_VERDI = "Test2";
+	public static final String AKSJON_ARKIVELEMENT= "Journalpost";
 
 	public static AksjonsLoggRequest createAksjonsLoggRequest(Long journalpostId, Long dokumentInfoId, String aksjon) {
 		return AksjonsLoggRequest.builder()
+				.aksjonListe(Arrays.asList(createAksjonsLoggRequestAksjon(journalpostId,dokumentInfoId,aksjon))).build();
+	}
+
+	public static AksjonsLoggRequest.Aksjon createAksjonsLoggRequestAksjon(Long journalpostId, Long dokumentInfoId, String aksjon) {
+		return AksjonsLoggRequest.Aksjon.builder()
 				.aksjon(aksjon)
 				.bruker(AKSJON_BRUKER)
 				.melding(AKSJON_MELDING)
@@ -72,6 +72,9 @@ public class TestDataUtils {
 				.applikasjon(AKSJON_APPLIKASJON)
 				.hjemmel(AKSJON_HJEMMEL)
 				.utfoertAv(AKSJON_UTFOERT_AV)
+				.fraVerdi(AKSJON_FRA_VERDI)
+				.tilVerdi(AKSJON_TIL_VERDI)
+				.arkivElement(AKSJON_ARKIVELEMENT)
 				.build();
 	}
 

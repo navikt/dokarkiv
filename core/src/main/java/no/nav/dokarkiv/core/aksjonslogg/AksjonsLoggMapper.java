@@ -1,5 +1,8 @@
 package no.nav.dokarkiv.core.aksjonslogg;
 
+import static no.nav.dokarkiv.core.util.ConverterUtils.stringToEnum;
+
+import no.nav.dokarkiv.core.domain.codes.AksjonTypeCode;
 import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
 
 /**
@@ -8,16 +11,19 @@ import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
 public class AksjonsLoggMapper {
 
 
-	public AksjonsLogg mapToHendelseLogg(AksjonsLoggRequest aksjonsLoggRequest) {
+	public AksjonsLogg mapToAksjonsLogg(AksjonsLoggRequest.Aksjon aksjon) {
 		return AksjonsLogg.builder()
-				.aksjon(aksjonsLoggRequest.getAksjon())
-				.applikasjon(aksjonsLoggRequest.getApplikasjon())
-				.bruker(aksjonsLoggRequest.getBruker())
-				.dokumentInfoId(aksjonsLoggRequest.getDokumentInfoId())
-				.journalpostId(aksjonsLoggRequest.getJournalpostId())
-				.hjemmel(aksjonsLoggRequest.getHjemmel())
-				.melding(aksjonsLoggRequest.getMelding())
-				.utfoertAv(aksjonsLoggRequest.getUtfoertAv())
+				.aksjon(stringToEnum(AksjonTypeCode.class, aksjon.getAksjon()))
+				.applikasjon(aksjon.getApplikasjon())
+				.bruker(aksjon.getBruker())
+				.arkivElement(aksjon.getArkivElement())
+				.fraVerdi(aksjon.getFraVerdi())
+				.tilVerdi(aksjon.getTilVerdi())
+				.dokumentInfoId(aksjon.getDokumentInfoId())
+				.journalpostId(aksjon.getJournalpostId())
+				.hjemmel(aksjon.getHjemmel())
+				.melding(aksjon.getMelding())
+				.utfoertAv(aksjon.getUtfoertAv())
 				.build();
 	}
 

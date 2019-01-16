@@ -4,6 +4,7 @@ import static no.nav.dokarkiv.core.util.ConverterUtils.jsonStringToObject;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.cxf.common.util.PropertyUtils.isFalse;
 
+import no.nav.dokarkiv.core.domain.codes.AksjonTypeCode;
 import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
 import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggInfoException;
 import no.nav.dokarkiv.core.repository.AksjonsLoggRepository;
@@ -13,6 +14,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
@@ -40,9 +42,12 @@ public class AksjonsLoggService {
 			AksjonsLoggRequest aksjonsLoggRequest = jsonStringToObject(aksjonsInfo, AksjonsLoggRequest.class);
 			validateAksjonslogg(aksjonsLoggRequest);
 
-			AksjonsLogg aksjonsLogg = aksjonsLoggMapper.mapToHendelseLogg(aksjonsLoggRequest);
+			Iterable<AksjonsLogg> aksjonsLoggIterable = aksjonsLoggRequest.getAksjonListe()
+					.stream()
+					.map(aksjonsLoggMapper::mapToAksjonsLogg)
+					.collect(Collectors.toSet());
 
-			aksjonsLoggRepository.save(aksjonsLogg);
+			aksjonsLoggRepository.saveAll(aksjonsLoggIterable);
 		} catch (IOException e) {
 			throw new UgyldigAksjonsLoggInfoException(String.format("Feilet ved lesing av %s header. Sjekk om headeren er i gyldig JSON format.", AKSJONS_INFO_HEADER), e);
 		}
@@ -52,22 +57,33 @@ public class AksjonsLoggService {
 
 	private void validateAksjonslogg(AksjonsLoggRequest aksjonsLoggRequest) throws UgyldigAksjonsLoggInfoException {
 
-		List<String> parameters = new ArrayList<>();
-		addMessageWhenNullOrEmpty(parameters, aksjonsLoggRequest.getJournalpostId(), "journalpostId");
-		addMessageWhenNullOrEmpty(parameters, aksjonsLoggRequest.getApplikasjon(), "applikasjon");
-		addMessageWhenNullOrEmpty(parameters, aksjonsLoggRequest.getAksjon(), "aksjon");
-		addMessageWhenNullOrEmpty(parameters, aksjonsLoggRequest.getUtfoertAv(), "utfoertAv");
+		for (AksjonsLoggRequest.Aksjon aksjon : aksjonsLoggRequest.getAksjonListe()) {
+			assertNullOrEmpty(aksjon.getJournalpostId(), "journalpostId");
+			assertNullOrEmpty(aksjon.getApplikasjon(), "applikasjon");
+			assertNullOrEmpty(aksjon.getAksjon(), "aksjon");
+			assertNullOrEmpty(aksjon.getUtfoertAv(), "utfoertAv");
 
-		if (isFalse(parameters.isEmpty())) {
-			throw new UgyldigAksjonsLoggInfoException("AksjonsLogg mangler påkrevde parametere: " + String.join(", ", parameters));
+			assertInvalidEnum(aksjon.getAksjon(), "aksjon", AksjonTypeCode.values());
 		}
-
 	}
 
-	private void addMessageWhenNullOrEmpty(List<String> parameters, Object value, String parameter) {
+	private void assertNullOrEmpty(Object value, String parameter) throws UgyldigAksjonsLoggInfoException{
 		if (Objects.isNull(value) || (value instanceof String && isBlank((String) value))) {
-			parameters.add(parameter);
+			throw new UgyldigAksjonsLoggInfoException("AksjonsLogg mangler påkrevd parameter: " + parameter);
 		}
 	}
 
+	private void assertInvalidEnum(Object value, String parameter, Enum[] allowedValues) throws UgyldigAksjonsLoggInfoException {
+		boolean invalid = true;
+		for(Enum e: allowedValues){
+			if (e.name().equals(value)) {
+				invalid = false;
+				break;
+			}
+		}
+
+		if (invalid) {
+			throw new UgyldigAksjonsLoggInfoException(String.format("AksjonsLogg inneholder ugyldig verdi: %s er ikke en gyldig verdi for %s", value, parameter));
+		}
+	}
 }

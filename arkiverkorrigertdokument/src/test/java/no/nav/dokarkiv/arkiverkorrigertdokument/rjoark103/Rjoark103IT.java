@@ -3,7 +3,6 @@ package no.nav.dokarkiv.arkiverkorrigertdokument.rjoark103;
 import static no.nav.dokarkiv.arkiverkorrigertdokument.util.TestUtils.FIL;
 import static no.nav.dokarkiv.arkiverkorrigertdokument.util.TestUtils.opprettHoveddokumentForIT;
 import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_INFO_HEADER;
-import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_ARKIVER_DOKUMENT;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.core.Is.is;
@@ -12,6 +11,7 @@ import static org.junit.Assert.assertTrue;
 
 import com.google.common.collect.Iterables;
 import no.nav.dokarkiv.arkiverkorrigertdokument.AbstractArkiverKorrigertDokumentIT;
+import no.nav.dokarkiv.core.domain.codes.AksjonTypeCode;
 import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
 import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
@@ -50,7 +50,7 @@ public class Rjoark103IT extends AbstractArkiverKorrigertDokumentIT {
 		HttpEntity httpEntity = new HttpEntity(ArkiverKorrigertDokumentRequest.builder()
 				.dokumentInfoId(dokumentInfo.getDokumentInfoId())
 				.fil(Base64.encodeBase64String(FIL))
-				.build(), createHeadersWithAksjon(AKSJON_ARKIVER_DOKUMENT));
+				.build(), createHeadersWithAksjon(AksjonTypeCode.ARKIVERING.name()));
 
 		ResponseEntity<ArkiverKorrigertDokumentRespons> responseEntity = restTemplate.exchange(
 				URL_ARKIVERKORRIGERTDOKUMENT,
@@ -62,7 +62,7 @@ public class Rjoark103IT extends AbstractArkiverKorrigertDokumentIT {
 
 		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
 		assertThat(aksjonsLoggList.size(), is(1));
-		assertThat(aksjonsLoggList.get(0).getAksjon(), is(AKSJON_ARKIVER_DOKUMENT));
+		assertThat(aksjonsLoggList.get(0).getAksjon(), is(AksjonTypeCode.ARKIVERING));
 	}
 
 	@Test
@@ -113,7 +113,7 @@ public class Rjoark103IT extends AbstractArkiverKorrigertDokumentIT {
 
 		HttpEntity httpEntity = new HttpEntity(ArkiverKorrigertDokumentRequest.builder()
 				.dokumentInfoId(dokumentInfo.getDokumentInfoId())
-				.build(), createHeadersWithAksjon(AKSJON_ARKIVER_DOKUMENT));
+				.build(), createHeadersWithAksjon(AksjonTypeCode.ARKIVERING.name()));
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_ARKIVERKORRIGERTDOKUMENT,
@@ -142,7 +142,7 @@ public class Rjoark103IT extends AbstractArkiverKorrigertDokumentIT {
 		HttpEntity httpEntity = new HttpEntity(ArkiverKorrigertDokumentRequest.builder()
 				.dokumentInfoId(dokumentInfo.getDokumentInfoId())
 				.fil(Base64.encodeBase64String(FIL))
-				.build(), createHeadersWithAksjon(AKSJON_ARKIVER_DOKUMENT));
+				.build(),createHeadersWithAksjon(AksjonTypeCode.ARKIVERING.name()));
 
 		ResponseEntity<ArkiverKorrigertDokumentRespons> responseEntity = restTemplate.exchange(
 				URL_ARKIVERKORRIGERTDOKUMENT,
@@ -186,7 +186,7 @@ public class Rjoark103IT extends AbstractArkiverKorrigertDokumentIT {
 		HttpEntity httpEntity = new HttpEntity(ArkiverKorrigertDokumentRequest.builder()
 				.dokumentInfoId(dokumentInfo.getDokumentInfoId())
 				.fil(Base64.encodeBase64String(FIL))
-				.build(), createHeadersWithAksjon(AKSJON_ARKIVER_DOKUMENT));
+				.build(),createHeadersWithAksjon(AksjonTypeCode.ARKIVERING.name()));
 
 		ResponseEntity<ArkiverKorrigertDokumentRespons> responseEntity = restTemplate.exchange(
 				URL_ARKIVERKORRIGERTDOKUMENT,
@@ -200,7 +200,7 @@ public class Rjoark103IT extends AbstractArkiverKorrigertDokumentIT {
 		HttpEntity httpEntity2 = new HttpEntity(ArkiverKorrigertDokumentRequest.builder()
 				.dokumentInfoId(dokumentInfo.getDokumentInfoId())
 				.fil(Base64.encodeBase64String(FIL2))
-				.build(), createHeadersWithAksjon(AKSJON_ARKIVER_DOKUMENT));
+				.build(), createHeadersWithAksjon(AksjonTypeCode.ARKIVERING.name()));
 
 		ResponseEntity<ArkiverKorrigertDokumentRespons> responseEntity2 = restTemplate.exchange(
 				URL_ARKIVERKORRIGERTDOKUMENT,
@@ -240,7 +240,7 @@ public class Rjoark103IT extends AbstractArkiverKorrigertDokumentIT {
 		HttpEntity httpEntity = new HttpEntity(ArkiverKorrigertDokumentRequest.builder()
 				.dokumentInfoId(null)
 				.fil(Base64.encodeBase64String(FIL))
-				.build(), createHeadersWithAksjon(AKSJON_ARKIVER_DOKUMENT));
+				.build(),createHeadersWithAksjon(AksjonTypeCode.ARKIVERING.name()));
 
 		ResponseEntity<ArkiverKorrigertDokumentRespons> responseEntity = restTemplate.exchange(
 				URL_ARKIVERKORRIGERTDOKUMENT,
@@ -259,7 +259,7 @@ public class Rjoark103IT extends AbstractArkiverKorrigertDokumentIT {
 		HttpEntity httpEntity = new HttpEntity(ArkiverKorrigertDokumentRequest.builder()
 				.dokumentInfoId(213213L)
 				.fil(Base64.encodeBase64String(FIL))
-				.build(), createHeadersWithAksjon(AKSJON_ARKIVER_DOKUMENT));
+				.build(), createHeadersWithAksjon(AksjonTypeCode.ARKIVERING.name()));
 
 		ResponseEntity<ArkiverKorrigertDokumentRespons> responseEntity = restTemplate.exchange(
 				URL_ARKIVERKORRIGERTDOKUMENT,
