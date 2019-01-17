@@ -1,7 +1,9 @@
 package no.nav.dokarkiv.core.domain.entities;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import no.nav.dokarkiv.core.domain.codes.AksjonTypeCode;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Immutable;
@@ -25,15 +27,19 @@ import java.time.LocalDateTime;
 @Builder
 @Data
 @Immutable
+@NoArgsConstructor
+@AllArgsConstructor
 public class AksjonsLogg {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "hendelselogg_seq")
 	@GenericGenerator(name = "hendelselogg_seq", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
 			parameters = {@Parameter(name = "sequence_name", value = "t_aksjonslogg_seq")})
-
 	@Column(name = "aksjonslogg_id", nullable = false, length = 11)
 	private Long aksjonsloggId;
+
+	@Column(name = "tidspunkt", nullable = false)
+	private LocalDateTime tidspunkt;
 
 	@Column(name = "journalpost_id", nullable = false, length = 11)
 	private Long journalpostId;
@@ -71,7 +77,4 @@ public class AksjonsLogg {
 
 	@Column(name = "opprettet_av", nullable = false)
 	private String opprettetAv;
-
-	@Column(name = "dato_opprettet", nullable = false)
-	private LocalDateTime datoOpprettet;
 }

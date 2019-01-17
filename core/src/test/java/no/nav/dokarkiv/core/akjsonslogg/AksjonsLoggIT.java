@@ -87,7 +87,7 @@ public class AksjonsLoggIT {
 			assertThat(aksjonsLogg.getArkivElement(), is(TestDataUtils.AKSJON_ARKIVELEMENT));
 			assertThat(aksjonsLogg.getFraVerdi(), is(TestDataUtils.AKSJON_FRA_VERDI));
 			assertThat(aksjonsLogg.getTilVerdi(), is(TestDataUtils.AKSJON_TIL_VERDI));
-			assertThat(Duration.between(aksjonsLogg.getDatoOpprettet(), LocalDateTime.now()).getSeconds(), lessThan(10L));
+			assertThat(Duration.between(aksjonsLogg.getTidspunkt(), LocalDateTime.now()).getSeconds(), lessThan(10L));
 			assertThat(aksjonsLogg.getOpprettetAv(), is("appId"));
 		});
 	}

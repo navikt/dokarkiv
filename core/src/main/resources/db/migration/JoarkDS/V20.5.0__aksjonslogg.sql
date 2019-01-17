@@ -11,8 +11,9 @@ create table T_K_AKSJON_TYPE
 create table t_aksjonslogg
 (
   aksjonslogg_id   number(11)     not null,
+  tidspunkt        timestamp(6)   not null,
   applikasjon      varchar2(50)   not null,
-  aksjon           varchar2(50)   not null references T_K_AKSJON_TYPE(AKSJON_TYPE),
+  aksjon           varchar2(50)   not null references T_K_AKSJON_TYPE (AKSJON_TYPE),
   journalpost_id   number(11)     not null,
   dokument_info_id number(11)     null,
   bruker           varchar2(50)   null,
@@ -22,25 +23,24 @@ create table t_aksjonslogg
   til_verdi        varchar2(50)   null,
   utfoert_av       varchar2(50)   not null,
   melding          varchar2(4000) null,
-  dato_opprettet   timestamp(6)   not null,
   opprettet_av     varchar2(50)   not null,
   CONSTRAINT aksjonslogg_pk PRIMARY KEY (aksjonslogg_id)
 );
 
 INSERT INTO T_K_AKSJON_TYPE (AKSJON_TYPE, BESKRIVELSE, DATO_OPPRETTET, OPPRETTET_AV)
-VALUES ('ENDRE_BEGRENSNING','Endre begrensning på et arkivelement',sysdate, 'Ugur Alpay Cenar');
+VALUES ('ENDRE_BEGRENSNING', 'Endre begrensning på et arkivelement', sysdate, 'Ugur Alpay Cenar');
 
 INSERT INTO T_K_AKSJON_TYPE (AKSJON_TYPE, BESKRIVELSE, DATO_OPPRETTET, OPPRETTET_AV)
-VALUES ('KASSASJON','Kassering av et dokument',sysdate, 'Ugur Alpay Cenar');
+VALUES ('KASSASJON', 'Kassering av et dokument', sysdate, 'Ugur Alpay Cenar');
 
 INSERT INTO T_K_AKSJON_TYPE (AKSJON_TYPE, BESKRIVELSE, DATO_OPPRETTET, OPPRETTET_AV)
-VALUES ('SLETT','Sletting av et arkivelement',sysdate, 'Ugur Alpay Cenar');
+VALUES ('SLETT', 'Sletting av et arkivelement', sysdate, 'Ugur Alpay Cenar');
 
 INSERT INTO T_K_AKSJON_TYPE (AKSJON_TYPE, BESKRIVELSE, DATO_OPPRETTET, OPPRETTET_AV)
-VALUES ('ARKIVERING','Arkivering av et nytt dokument',sysdate, 'Ugur Alpay Cenar');
+VALUES ('ARKIVERING', 'Arkivering av et nytt dokument', sysdate, 'Ugur Alpay Cenar');
 
 CREATE INDEX xiaksjon
-  ON t_aksjonslogg (dato_opprettet);
+  ON t_aksjonslogg (tidspunkt);
 
 CREATE INDEX xibruker
   ON t_aksjonslogg (bruker);
