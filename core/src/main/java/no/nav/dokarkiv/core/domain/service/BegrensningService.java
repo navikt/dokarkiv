@@ -1,16 +1,12 @@
 package no.nav.dokarkiv.core.domain.service;
 
-import static org.apache.commons.lang3.BooleanUtils.isFalse;
-
 import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
-import no.nav.dokarkiv.core.domain.entities.Begrensning;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
-import no.nav.dokarkiv.core.repository.BegrensningRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
 import no.nav.modig.core.context.SubjectHandler;
@@ -35,7 +31,6 @@ import java.util.stream.Collectors;
 @Component
 public class BegrensningService {
 
-	private final BegrensningRepository begrensningRepository;
 	private JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository;
 	private JoarkRepository joarkRepository;
 
@@ -43,16 +38,16 @@ public class BegrensningService {
 	private EntityManager entityManager;
 
 	@Inject
-	public BegrensningService(BegrensningRepository begrensningRepository, JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository, JoarkRepository joarkRepository) {
-		this.begrensningRepository = begrensningRepository;
+	public BegrensningService(JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository, JoarkRepository joarkRepository) {
 		this.journalpostDokumentInfoRelasjonRepository = journalpostDokumentInfoRelasjonRepository;
 		this.joarkRepository = joarkRepository;
 	}
 
 	public boolean isJournalpostBegrenset(Long journalpostId, BegrensningTypeCode begrensningTypeCode) {
-		Optional<Begrensning> begrensning = begrensningRepository.findByJournalpostIdAndBegrensningTypeAndDokumentInfoIdIsNull(
-				journalpostId, begrensningTypeCode);
-		return begrensning.isPresent();
+		Journalpost journalpost = joarkRepository.findById(journalpostId).orElse(null);
+		if (journalpost != null) {
+			return begrensningTypeCode.equals(journalpost.getBegrensning());
+		} else return false;
 	}
 
 	public boolean isJournalpostDokumentInfoRelasjonOrJournalpostBegrenset(Long journalpostId, Long dokumentInfoId, BegrensningTypeCode begrensningTypeCode) {
@@ -60,44 +55,36 @@ public class BegrensningService {
 	}
 
 	public boolean isJournalpostDokumentInfoRelasjonBegrenset(Long journalpostId, Long dokumentInfoId, BegrensningTypeCode begrensningTypeCode) {
-		Optional<Begrensning> begrensning = begrensningRepository.findByJournalpostIdAndDokumentInfoIdAndBegrensningType(
-				journalpostId, dokumentInfoId, begrensningTypeCode);
-		return begrensning.isPresent();
+		Optional<JournalpostDokumentInfoRelasjon> rel = journalpostDokumentInfoRelasjonRepository.findByJournalpostJournalpostIdAndDokumentInfoDokumentInfoId(
+				journalpostId, dokumentInfoId);
+		if (rel.isPresent()) {
+			return begrensningTypeCode.equals(rel.get().getBegrensning());
+		} else
+			return false;
 	}
 
-	public boolean isDokumentKassert(Long dokumentInfoId) {
-		return begrensningRepository.findByDokumentInfoIdAndBegrensningType(dokumentInfoId, BegrensningTypeCode.KASSERT)
-				.isPresent();
-	}
-
-	public boolean isVariantSkjermet(Long dokumentInfoId, VariantFormatCode variant) {
-		Optional<Begrensning> variantSkjermet = begrensningRepository.findByDokumentInfoIdAndVariantFormatAndBegrensningType(dokumentInfoId, variant, BegrensningTypeCode.SKJERMET);
-		String consumer = hentBrukerSomKaller();
-
-		//TODO Midlertidig løsning i påvente av SAF
-		if ("srvjoarkadmin".equalsIgnoreCase(consumer)) {
-			//Har rettighet til å se originalen uansett
+	public boolean isDokumentInfoIdKassert(Long dokumentInfoId) {
+		List<JournalpostDokumentInfoRelasjon> rel = journalpostDokumentInfoRelasjonRepository.findAllByDokumentInfoDokumentInfoId(dokumentInfoId);
+		if (rel.isEmpty()) {
 			return false;
 		} else {
-			//Dersom den er skjermet, returneres TRUE
-			return variantSkjermet.isPresent();
+			return isDokumentInfoKassert(rel.get(0).getDokumentInfo());
 		}
 	}
 
-	public void saveBegrensning(Begrensning begrensning) {
-		begrensningRepository.save(begrensning);
-		setJoarkBegrensning(begrensning);
-	}
+	public FilDetaljer getVariantSkjermet(DokumentInfo dokumentInfo, VariantFormatCode variant) {
+		String consumer = hentBrukerSomKaller();
 
-	public void deleteValidertJournalpostBegrensning(
-			Long journalpostId,
-			BegrensningTypeCode begrensningTypeCode) {
-		begrensningRepository.deleteByJournalpostIdAndBegrensningTypeAndDokumentInfoIdIsNull(journalpostId, begrensningTypeCode);
-	}
-
-	public void deleteValidertJournalpostDokumentInfoRelasjonBegrensning(
-			Long journalpostId, Long dokumentInfoId, BegrensningTypeCode begrensningTypeCode) {
-		begrensningRepository.deleteByJournalpostIdAndDokumentInfoIdAndBegrensningType(journalpostId, dokumentInfoId, begrensningTypeCode);
+		FilDetaljer filDetaljer = dokumentInfo.findFilDetaljerByVariantFormat(variant);
+		if (!consumer.equals("srvjoarkadmin") && filDetaljer != null) {
+			if (BegrensningTypeCode.POL.equals(filDetaljer.getBegrensning())) {
+				filDetaljer = dokumentInfo.findFilDetaljerByVariantFormat(VariantFormatCode.SLADDET);
+				if (BegrensningTypeCode.POL.equals(filDetaljer.getBegrensning())) {
+					filDetaljer = null;
+				}
+			}
+		}
+		return filDetaljer;
 	}
 
 	private String hentBrukerSomKaller() {
@@ -123,12 +110,13 @@ public class BegrensningService {
 		return journalpost;
 	}
 
-
 	public List<Journalpost> addBegrensetDokumentInfoIdsToJournalpostList(List<Journalpost> journalpostList) {
 		if (BooleanUtils.isFalse((journalpostList == null || journalpostList.isEmpty()))) {
 			for (Journalpost journalpost : journalpostList) {
-				List<Long> begrensetDokumentInfoIdList = journalpostDokumentInfoRelasjonRepository.findBegrensetRelasjonDokumentInfoIdByJournalpostId(journalpost
-						.getJournalpostId()).stream().map(BegrensningService::convertBigToLong).collect(Collectors.toList());
+				List<Long> begrensetDokumentInfoIdList = journalpost.getJournalpostDokumentInfoRelasjoner().stream()
+						.filter(rel -> BegrensningTypeCode.POL.equals(rel.getBegrensning()))
+						.map(rel -> rel.getDokumentInfo().getDokumentInfoId())
+						.collect(Collectors.toList());
 				journalpost.addAllbegrensetRelasjonerDokumentInfoIds(begrensetDokumentInfoIdList);
 			}
 		}
@@ -144,55 +132,37 @@ public class BegrensningService {
 		return (Long) value;
 	}
 
-	private void setJoarkBegrensning(Begrensning begrensning) {
-		Journalpost journalpost = joarkRepository.findById(begrensning.getJournalpostId()).orElse(null);
-		if (journalpost != null && begrensning.getDokumentInfoId() == null && isFalse(journalpost.getBegrensning())) {
-			setJournalpostBegrensning(journalpost, true);
-		}
-		//TODO Kassasjon - har bare kobling til dokumentinfo, må vurdere å begrense alle varianter
-		else if (journalpost != null && begrensning.getDokumentInfoId() != null) {
-			JournalpostDokumentInfoRelasjon rel = journalpostDokumentInfoRelasjonRepository.findByJournalpostJournalpostIdAndDokumentInfoDokumentInfoId(journalpost.getJournalpostId(), begrensning.getDokumentInfoId()).orElse(null);
-			if (begrensning.getVariantFormat() == null) {
-				if (isFalse(rel.getBegrensning())) {
-					setJpDokInfoRelBegrensning(rel,true);
-				}
-			} else {
-				FilDetaljer filDetaljer = rel.getDokumentInfo().findFilDetaljerByVariantFormat(begrensning.getVariantFormat());
-				if (filDetaljer != null && isFalse(filDetaljer.getBegrensning())) {
-					setFildetaljerBegrensning(filDetaljer,true);
-				}
-			}
-		} else if (journalpost == null && begrensning.getDokumentInfoId() != null) {
-			DokumentInfo dokumentInfo = null;
-			List<JournalpostDokumentInfoRelasjon> rel = journalpostDokumentInfoRelasjonRepository.findAllByDokumentInfoDokumentInfoId(begrensning.getDokumentInfoId());
-			if (!rel.isEmpty()) {
-				dokumentInfo = rel.get(0).getDokumentInfo();
-			}
-			if (dokumentInfo != null) {
-				for (FilDetaljer filDetaljer: dokumentInfo.getFildetaljerListe()) {
-					if (isFalse(filDetaljer.getBegrensning())) {
-						setFildetaljerBegrensning(filDetaljer,true);
-					}
-				}
-			}
+	public Boolean isDokumentInfoKassert(DokumentInfo dokumentInfo) {
+		return dokumentInfo.getFildetaljerListe().stream().allMatch(filDetaljer -> BegrensningTypeCode.POL.equals(filDetaljer.getBegrensning()));
+	}
+
+	public void setVariantSkjermet(DokumentInfo dokumentInfo, VariantFormatCode variantFormatCode, BegrensningTypeCode begrensningTypeCode) {
+		FilDetaljer filDetaljer = dokumentInfo.findFilDetaljerByVariantFormat(variantFormatCode);
+		setFildetaljerBegrensning(filDetaljer, begrensningTypeCode);
+	}
+
+
+	public void setJournalpostBegrensning(Journalpost journalpost, BegrensningTypeCode begrensningTypeCode) {
+		Query q = entityManager.createQuery("update Journalpost set begrensning = :begrenset where journalpostId = :journalpostId").setParameter("journalpostId", journalpost.getJournalpostId()).setParameter("begrenset", begrensningTypeCode);
+		q.executeUpdate();
+		entityManager.flush();
+	}
+
+	public void setJpDokInfoRelBegrensning(JournalpostDokumentInfoRelasjon rel, BegrensningTypeCode begrensningTypeCode) {
+		Query q = entityManager.createQuery("update JournalpostDokumentInfoRelasjon set begrensning = :begrenset where journalpostDokumentInfoRelasjonId = :relId").setParameter("relId", rel.getJournalpostDokumentInfoRelasjonId()).setParameter("begrenset", begrensningTypeCode);
+		q.executeUpdate();
+		entityManager.flush();
+	}
+
+	public void setDokumentKassert(DokumentInfo dokumentInfo, BegrensningTypeCode begrensningTypeCode) {
+		for (FilDetaljer filDetaljer : dokumentInfo.getFildetaljerListe()) {
+			setFildetaljerBegrensning(filDetaljer, begrensningTypeCode);
 		}
 	}
 
-	private void setJournalpostBegrensning(Journalpost journalpost, Boolean begrensning) {
-		String begrensningString = begrensning?"T":"F";
-		Query q = entityManager.createQuery("update t_journalpost set begrensning = :begrenset where journalpost_id = :journalpostId").setParameter("journalpostId", journalpost.getJournalpostId()).setParameter("begrenset", begrensningString);
-		q.executeUpdate();
-	}
 
-	private void setJpDokInfoRelBegrensning(JournalpostDokumentInfoRelasjon rel, Boolean begrensning) {
-		String begrensningString = begrensning?"T":"F";
-		Query q = entityManager.createQuery("update t_jp_dok_info_rel set begrensning = :begrenset where jp_dok_info_rel_id = :relId").setParameter("relId", rel.getJournalpostDokumentInfoRelasjonId()).setParameter("begrenset", begrensningString);
-		q.executeUpdate();
-	}
-
-	private void setFildetaljerBegrensning(FilDetaljer filDetaljer, Boolean begrensning) {
-		String begrensningString = begrensning?"T":"F";
-		Query q = entityManager.createQuery("update t_fil_detaljer set begrensning = :begrenset where fil_detaljer_id = :filDetaljerId").setParameter("filDetaljerId", filDetaljer.getFildetaljerId()).setParameter("begrenset", begrensningString);
+	public void setFildetaljerBegrensning(FilDetaljer filDetaljer, BegrensningTypeCode begrensningTypeCode) {
+		Query q = entityManager.createQuery("update FilDetaljer set begrensning = :begrenset where fildetaljerId = :filDetaljerId").setParameter("filDetaljerId", filDetaljer.getFildetaljerId()).setParameter("begrenset", begrensningTypeCode);
 		q.executeUpdate();
 	}
 }

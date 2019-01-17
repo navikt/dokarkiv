@@ -7,11 +7,10 @@ import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
 import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
-import no.nav.dokarkiv.core.domain.entities.Begrensning;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
+import no.nav.dokarkiv.core.domain.service.BegrensningService;
 import no.nav.dokarkiv.core.exceptions.DokumentInfoIkkeFunnetException;
-import no.nav.dokarkiv.core.repository.BegrensningRepository;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import org.apache.commons.codec.binary.Base64;
@@ -27,15 +26,15 @@ public class ArkiverKorrigertDokumentService {
 
 	private final DokumentinfoRepository dokumentinfoRepository;
 	private final DokumentFilRepository dokumentFilRepository;
-	private final BegrensningRepository begrensningRepository;
+	private final BegrensningService begrensningService;
 
 	@Inject
 	public ArkiverKorrigertDokumentService(DokumentinfoRepository dokumentinfoRepository,
 										   DokumentFilRepository dokumentFilRepository,
-										   BegrensningRepository begrensningRepository) {
+										   BegrensningService begrensningService) {
 		this.dokumentinfoRepository = dokumentinfoRepository;
 		this.dokumentFilRepository = dokumentFilRepository;
-		this.begrensningRepository = begrensningRepository;
+		this.begrensningService = begrensningService;
 	}
 
 	public ArkiverKorrigertDokumentRespons arkiverKorrigertDokument(ArkiverKorrigertDokumentRequest request) {
@@ -59,17 +58,9 @@ public class ArkiverKorrigertDokumentService {
 	}
 
 	private void kanskjeOpprettBegrensingSkjermet(DokumentInfo dokumentInfo) {
-		boolean begrengsningExists = begrensningRepository.findByDokumentInfoIdAndVariantFormatAndBegrensningType(
-				dokumentInfo.getDokumentInfoId(), VariantFormatCode.ARKIV, BegrensningTypeCode.SKJERMET)
-				.isPresent();
-		if (isFalse(begrengsningExists)) {
-			Begrensning begrensning = Begrensning.builder()
-					.dokumentInfoId(dokumentInfo.getDokumentInfoId())
-					.begrensningType(BegrensningTypeCode.SKJERMET)
-					.variantFormat(VariantFormatCode.ARKIV)
-					.build();
-			begrensning.setOpprettetKildeNavn(MDC.get(MDCConstants.MDC_CONSUMER_ID));
-			begrensningRepository.save(begrensning);
+		FilDetaljer filDetaljer = dokumentInfo.findFilDetaljerByVariantFormat(VariantFormatCode.ARKIV);
+		if (filDetaljer.getBegrensning() == null) {
+			begrensningService.setVariantSkjermet(dokumentInfo, VariantFormatCode.ARKIV, BegrensningTypeCode.POL);
 		}
 	}
 

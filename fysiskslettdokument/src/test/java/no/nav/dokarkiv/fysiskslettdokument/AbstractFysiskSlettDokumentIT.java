@@ -4,14 +4,12 @@ import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
-import static no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode.UTILGJENGELIGGJORT;
 import static no.nav.dokarkiv.core.security.JwtClaimsBuilderProvider.openAmClaimsBuilder;
 
 import no.nav.dokarkiv.core.CoreConfig;
-import no.nav.dokarkiv.core.domain.entities.Begrensning;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import no.nav.dokarkiv.core.repository.BegrensningRepository;
+import no.nav.dokarkiv.core.domain.service.BegrensningService;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkDeleteRepository;
@@ -42,7 +40,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
-import java.util.NoSuchElementException;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
@@ -82,7 +79,7 @@ public abstract class AbstractFysiskSlettDokumentIT {
 	@Inject
 	protected OidcTestService oidcTestService;
 	@Inject
-	protected BegrensningRepository begrensningRepository;
+	protected BegrensningService begrensningService;
 
 	@Before
 	public void setUp() {
@@ -106,7 +103,6 @@ public abstract class AbstractFysiskSlettDokumentIT {
 	public void cleanup() {
 		joarkRepository.deleteAll();
 		dokumentinfoRepository.deleteAll();
-		begrensningRepository.deleteAll();
 	}
 
 	protected HttpEntity createHeaders() {
@@ -132,19 +128,19 @@ public abstract class AbstractFysiskSlettDokumentIT {
 						.withBodyFile("abac/abac-permit.json")));
 	}
 
-	public Begrensning hentHoveddokumentBegrensningEtterUtfoertKall(Long journalpostId) {
-		return begrensningRepository.findByJournalpostIdAndBegrensningTypeAndDokumentInfoIdIsNull(
-				journalpostId, UTILGJENGELIGGJORT).orElse(null);
-	}
-
-	public Begrensning hentVedleggBegrensningEtterUtfoertKall(Long journalpostId, Long dokumentInfoId) {
-		return begrensningRepository.findByJournalpostIdAndDokumentInfoIdAndBegrensningType(
-				journalpostId, dokumentInfoId, UTILGJENGELIGGJORT).orElse(null);
-	}
-
-	public Long hentAntallBegrensninger() {
-		return begrensningRepository.count();
-	}
+//	public Begrensning hentHoveddokumentBegrensningEtterUtfoertKall(Long journalpostId) {
+//		return begrensningRepository.findByJournalpostIdAndBegrensningTypeAndDokumentInfoIdIsNull(
+//				journalpostId, UTILGJENGELIGGJORT).orElse(null);
+//	}
+//
+//	public Begrensning hentVedleggBegrensningEtterUtfoertKall(Long journalpostId, Long dokumentInfoId) {
+//		return begrensningRepository.findByJournalpostIdAndDokumentInfoIdAndBegrensningType(
+//				journalpostId, dokumentInfoId, UTILGJENGELIGGJORT).orElse(null);
+//	}
+//
+//	public Long hentAntallBegrensninger() {
+//		return begrensningRepository.count();
+//	}
 
 	public DokumentInfo hentDokumentInfoEtterUtfoertKall(Journalpost journalpost) {
 		return journalpostDokumentInfoRelasjonRepository.findAllByDokumentInfoDokumentInfoId(
@@ -153,12 +149,12 @@ public abstract class AbstractFysiskSlettDokumentIT {
 				.getDokumentInfo();
 	}
 
-	public Begrensning hentJournalpostEtterUtfoertKall(Long journalpostId) {
-		try {
-			return begrensningRepository.findByJournalpostIdAndBegrensningTypeAndDokumentInfoIdIsNull(
-					journalpostId, UTILGJENGELIGGJORT).get();
-		} catch (NoSuchElementException e) {
-			return null;
-		}
-	}
+//	public Begrensning hentJournalpostEtterUtfoertKall(Long journalpostId) {
+//		try {
+//			return begrensningRepository.findByJournalpostIdAndBegrensningTypeAndDokumentInfoIdIsNull(
+//					journalpostId, UTILGJENGELIGGJORT).get();
+//		} catch (NoSuchElementException e) {
+//			return null;
+//		}
+//	}
 }

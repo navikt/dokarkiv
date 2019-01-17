@@ -271,7 +271,6 @@ public class DefaultHentMinTilgjengeligeJournalpostListeServiceTest {
 						.kategori(DokumentKategoriCode.FORVALTNINGSNOTAT)
 						.organInternt(false)
 						.dokumentstatus(DokumentStatusCode.FERDIGSTILT)
-						.slettet(false)
 						.filDetaljerList(
 								FilDetaljerBuilder.getFilDetaljerBuilder()
 										.variantFormat(VariantFormatCode.PRODUKSJON)
@@ -294,7 +293,6 @@ public class DefaultHentMinTilgjengeligeJournalpostListeServiceTest {
 						.kategori(DokumentKategoriCode.B)
 						.organInternt(organInternt)
 						.dokumentstatus(dokumentStatusCode)
-						.slettet(isSlettet)
 						.filDetaljerList(FilDetaljerBuilder.getFilDetaljerBuilder()
 								.variantFormat(VariantFormatCode.ARKIV)
 								.filtype(FilTypeCode.PDF)

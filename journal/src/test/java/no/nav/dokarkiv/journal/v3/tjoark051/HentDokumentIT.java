@@ -35,7 +35,6 @@ import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
 import no.nav.dokarkiv.core.domain.codes.OnDemandInstansCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
-import no.nav.dokarkiv.core.domain.entities.Begrensning;
 import no.nav.dokarkiv.core.domain.entities.DokumentUrlInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
@@ -57,6 +56,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -214,14 +214,10 @@ public class HentDokumentIT extends AbstractJournalV3Itest {
 		HentDokumentRequest request = createRequest(journalpost);
 		persistDokumentFil();
 		persistDokumentFilSladdet();
-		Begrensning begrensning = Begrensning.builder().begrensningId(1L)
-				.begrensningType(BegrensningTypeCode.SKJERMET)
-				.journalpostId(journalpost.getJournalpostId())
-				.dokumentInfoId(journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId())
-				.variantFormat(VariantFormatCode.ARKIV)
-				.build();
-		begrensning.setOpprettetKildeNavn("Clark Kentolini");
-		begrensningRepository.save(begrensning);
+		begrensningService.setVariantSkjermet(journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo(), VariantFormatCode.ARKIV, BegrensningTypeCode.POL);
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
+		TestTransaction.start();
 
 		HentDokumentResponse response = journalV3Provider.hentDokument(request);
 

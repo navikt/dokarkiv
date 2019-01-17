@@ -50,9 +50,9 @@ public class FysiskSlettDokumentService {
 		switch (relasjonSomSkalSlettesFysisk.getTilknyttetJournalpostSom()) {
 			case HOVEDDOKUMENT:
 				sjekkAtJournalpostErUtilgjengeliggjort(relasjonSomSkalSlettesFysisk.getJournalpost().getJournalpostId());
-				begrensningService.deleteValidertJournalpostBegrensning(
-						relasjonSomSkalSlettesFysisk.getJournalpost().getJournalpostId(),
-						BegrensningTypeCode.UTILGJENGELIGGJORT);
+				begrensningService.setJournalpostBegrensning(
+						relasjonSomSkalSlettesFysisk.getJournalpost(),
+						null);
 				fysiskSlettEtHoveddokument(relasjonSomSkalSlettesFysisk);
 				log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har fysisk slettet journalpost med journalpostId={}",
 						requestTo.getJournalpostId());
@@ -61,10 +61,9 @@ public class FysiskSlettDokumentService {
 				sjekkAtDokumentErUtilgjengeliggjort(
 						relasjonSomSkalSlettesFysisk.getJournalpost().getJournalpostId(),
 						relasjonSomSkalSlettesFysisk.getDokumentInfo().getDokumentInfoId());
-				begrensningService.deleteValidertJournalpostDokumentInfoRelasjonBegrensning(
-						relasjonSomSkalSlettesFysisk.getJournalpost().getJournalpostId(),
-						relasjonSomSkalSlettesFysisk.getDokumentInfo().getDokumentInfoId(),
-						BegrensningTypeCode.UTILGJENGELIGGJORT);
+				begrensningService.setJpDokInfoRelBegrensning(
+						relasjonSomSkalSlettesFysisk,
+						null);
 				fysiskSlettEtVedlegg(relasjonSomSkalSlettesFysisk);
 				log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) +
 								" har fysisk slettet dokument med journalpostId={}, dokumentInfoId={}",
@@ -84,11 +83,11 @@ public class FysiskSlettDokumentService {
 	private void sjekkAtJournalpostErUtilgjengeliggjort(Long journalpostId) {
 		if (isFalse(begrensningService.isJournalpostBegrenset(
 				journalpostId,
-				BegrensningTypeCode.UTILGJENGELIGGJORT))) {
+				BegrensningTypeCode.POL))) {
 			throw new BegrensningIkkeFunnetException(String.format(
 					"Fant ikke forventet begrensning for journalpost med journalpostId=%s og begrensningsType=%s.",
 					journalpostId,
-					BegrensningTypeCode.UTILGJENGELIGGJORT.name()));
+					BegrensningTypeCode.POL.name()));
 		}
 	}
 
@@ -96,12 +95,12 @@ public class FysiskSlettDokumentService {
 		if (isFalse(begrensningService.isJournalpostDokumentInfoRelasjonBegrenset(
 				journalpostId,
 				dokumentInfoId,
-				BegrensningTypeCode.UTILGJENGELIGGJORT))) {
+				BegrensningTypeCode.POL))) {
 			throw new BegrensningIkkeFunnetException(String.format(
 					"Fant ikke forventet begrensning for dokument med journalpostId=%s, dokumentInfoId=%s og begrensningsType=%s.",
 					journalpostId,
 					dokumentInfoId,
-					BegrensningTypeCode.UTILGJENGELIGGJORT.name()));
+					BegrensningTypeCode.POL.name()));
 		}
 	}
 

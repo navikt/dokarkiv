@@ -1,6 +1,5 @@
 package no.nav.dokarkiv.core.repository;
 
-import static no.nav.dokarkiv.core.util.TestDataUtils.createBegrensning;
 import static no.nav.dokarkiv.core.util.TestDataUtils.createJournalpost;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -9,7 +8,6 @@ import static org.junit.Assert.assertThat;
 
 import no.nav.dokarkiv.core.domain.builder.DokumentUrlInfoBuilder;
 import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
-import no.nav.dokarkiv.core.domain.entities.Begrensning;
 import no.nav.dokarkiv.core.domain.entities.DokumentUrlInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.service.BegrensningService;
@@ -39,14 +37,14 @@ import java.util.UUID;
 @Transactional
 @ActiveProfiles("itest")
 public class DokumentUrlInfoRepositoryBegrensetTest {
-    @Inject
-    private JoarkRepository joarkRepository;
+	@Inject
+	private JoarkRepository joarkRepository;
 
-    @Inject
-    private DokumentinfoRepository dokumentinfoRepository;
+	@Inject
+	private DokumentinfoRepository dokumentinfoRepository;
 
-    @Inject
-    private JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository;
+	@Inject
+	private JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository;
 
 
     @Inject
@@ -55,26 +53,25 @@ public class DokumentUrlInfoRepositoryBegrensetTest {
     @Inject
     private DokumentUrlInfoRepository dokumentUrlInfoRepository;
 
-    @Inject
-    private BegrensningRepository begrensningRepository;
+	@Inject
+	private BegrensningService begrensningService;
 
-    public static final String DOC_TOKEN = "token";
-    public static final String FILUUID = UUID.randomUUID().toString();
+	public static final String DOC_TOKEN = "token";
+	public static final String FILUUID = UUID.randomUUID().toString();
 
-    @Before
-    public void setUp() {
-        RequestContextUtil.createAndSetUsername("itest", "itest");
-    }
+	@Before
+	public void setUp() {
+		RequestContextUtil.createAndSetUsername("itest", "itest");
+	}
 
-    @After
-    public void cleanUp() {
-        TestTransaction.end();
-        journalpostDokumentInfoRelasjonRepository.deleteAll();
-        dokumentinfoRepository.deleteAll();
-        dokumentUrlInfoRepository.deleteAll();
-        joarkRepository.deleteAll();
-        begrensningRepository.deleteAll();
-    }
+	@After
+	public void cleanUp() {
+		TestTransaction.end();
+		journalpostDokumentInfoRelasjonRepository.deleteAll();
+		dokumentinfoRepository.deleteAll();
+		dokumentUrlInfoRepository.deleteAll();
+		joarkRepository.deleteAll();
+	}
 
     @Test
     public void shouldReturnNullOrFalseWhenNotFound() {
@@ -83,47 +80,51 @@ public class DokumentUrlInfoRepositoryBegrensetTest {
     }
 
 
-    @Test
-    public void shouldNotFindByFilUUidWhenBegrenset() {
+	@Test
+	public void shouldNotFindByFilUUidWhenBegrenset() {
 
-        Journalpost journalpost = createJournalpost();
+		Journalpost journalpost = createJournalpost();
 
-        joarkRepository.save(journalpost);
-        Begrensning begrensning = createBegrensning(journalpost.getJournalpostId(), null, BegrensningTypeCode.UTILGJENGELIGGJORT);
+		joarkRepository.save(journalpost);
+		begrensningService.setJournalpostBegrensning(journalpost, BegrensningTypeCode.POL);
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
 
-        begrensningRepository.save(begrensning);
-
-        DokumentUrlInfo dokumentUrlInfo = DokumentUrlInfoBuilder.getDokumentUrlInfoBuilder()
-                .journalpost(journalpost)
-                .docToken(DOC_TOKEN)
-                .filUuid(FILUUID)
-                .tidspunkt(Calendar.getInstance().getTime())
-                .build();
-        dokumentUrlInfoRepositoryBegrenset.save(dokumentUrlInfo);
-        TestTransaction.flagForCommit();
+		TestTransaction.start();
+		DokumentUrlInfo dokumentUrlInfo = DokumentUrlInfoBuilder.getDokumentUrlInfoBuilder()
+				.journalpost(journalpost)
+				.docToken(DOC_TOKEN)
+				.filUuid(FILUUID)
+				.tidspunkt(Calendar.getInstance().getTime())
+				.build();
+		dokumentUrlInfoRepository.save(dokumentUrlInfo);
+		TestTransaction.flagForCommit();
 
         assertThat(dokumentUrlInfoRepositoryBegrenset.findByFilUuid(FILUUID), nullValue());
         assertThat(dokumentUrlInfoRepository.findByFilUuid(FILUUID), notNullValue());
 
 
-    }
+	}
 
-    @Test
-    public void shouldNotFindByDocTokenWhenBegrenset() {
+	@Test
+	public void shouldNotFindByDocTokenWhenBegrenset() {
 
-        Journalpost journalpost = createJournalpost();
+		Journalpost journalpost = createJournalpost();
 
-        joarkRepository.save(journalpost);
-        Begrensning begrensning = createBegrensning(journalpost.getJournalpostId(), null, BegrensningTypeCode.UTILGJENGELIGGJORT);
-        begrensningRepository.save(begrensning);
-        DokumentUrlInfo dokumentUrlInfo = DokumentUrlInfoBuilder.getDokumentUrlInfoBuilder()
-                .journalpost(journalpost)
-                .docToken(DOC_TOKEN)
-                .filUuid(FILUUID)
-                .tidspunkt(Calendar.getInstance().getTime())
-                .build();
-        dokumentUrlInfoRepositoryBegrenset.save(dokumentUrlInfo);
-        TestTransaction.flagForCommit();
+		joarkRepository.save(journalpost);
+		begrensningService.setJournalpostBegrensning(journalpost, BegrensningTypeCode.POL);
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
+
+		TestTransaction.start();
+		DokumentUrlInfo dokumentUrlInfo = DokumentUrlInfoBuilder.getDokumentUrlInfoBuilder()
+				.journalpost(journalpost)
+				.docToken(DOC_TOKEN)
+				.filUuid(FILUUID)
+				.tidspunkt(Calendar.getInstance().getTime())
+				.build();
+		dokumentUrlInfoRepository.save(dokumentUrlInfo);
+		TestTransaction.flagForCommit();
 
         assertThat(dokumentUrlInfoRepositoryBegrenset.findByDoctoken(DOC_TOKEN).isPresent(), is(false));
         assertThat(dokumentUrlInfoRepository.findByDoctoken(DOC_TOKEN).isPresent(), is(true));

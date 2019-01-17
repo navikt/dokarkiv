@@ -1,16 +1,13 @@
 package no.nav.dokarkiv.arkiverkorrigertdokument.rjoark104;
 
 import static no.nav.dokarkiv.arkiverkorrigertdokument.util.TestUtils.FIL;
-import static no.nav.dokarkiv.arkiverkorrigertdokument.util.TestUtils.begrensArkivVariantAvDokumentSomSkjermet;
 import static no.nav.dokarkiv.arkiverkorrigertdokument.util.TestUtils.opprettHoveddokumentForIT;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import com.google.common.collect.Iterables;
 import no.nav.dokarkiv.arkiverkorrigertdokument.AbstractArkiverKorrigertDokumentIT;
 import no.nav.dokarkiv.arkiverkorrigertdokument.rjoark103.ArkiverKorrigertDokumentRequest;
 import no.nav.dokarkiv.arkiverkorrigertdokument.rjoark103.ArkiverKorrigertDokumentRespons;
@@ -85,7 +82,7 @@ public class Rjoark104IT extends AbstractArkiverKorrigertDokumentIT {
 
 		DokumentInfo dokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 
-		begrensningRepository.save(begrensArkivVariantAvDokumentSomSkjermet(dokumentInfo));
+		begrensningService.setJpDokInfoRelBegrensning(journalpost.findHoveddokumentDokumentInfoRelasjon(), BegrensningTypeCode.POL);
 
 		ResponseEntity<ArkiverKorrigertDokumentRespons> responseEntity = restTemplate.exchange(
 				URL_ANGREARKIVERKORRIGERTDOKUMENT,
@@ -112,6 +109,7 @@ public class Rjoark104IT extends AbstractArkiverKorrigertDokumentIT {
 
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
+		TestTransaction.start();
 
 		HttpEntity httpEntity = new HttpEntity(ArkiverKorrigertDokumentRequest.builder()
 				.dokumentInfoId(dokumentInfo.getDokumentInfoId())
@@ -126,9 +124,12 @@ public class Rjoark104IT extends AbstractArkiverKorrigertDokumentIT {
 				httpEntity,
 				ArkiverKorrigertDokumentRespons.class);
 
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
+		TestTransaction.start();
+
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 
-		TestTransaction.start();
 		assertTrue(dokumentinfoRepository.findByDokumentInfoId(dokumentInfo.getDokumentInfoId()).isPresent());
 		DokumentInfo persistedDokumentInfo = dokumentinfoRepository.findByDokumentInfoId(dokumentInfo.getDokumentInfoId())
 				.get();
@@ -145,7 +146,7 @@ public class Rjoark104IT extends AbstractArkiverKorrigertDokumentIT {
 //		httpEntity = opprettHttpEntityUtenFil(dokumentInfo.getDokumentInfoId());
 
 		responseEntity = restTemplate.exchange(
-				URL_ANGREARKIVERKORRIGERTDOKUMENT + dokumentInfo.getDokumentInfoId(),
+				URL_ANGREARKIVERKORRIGERTDOKUMENT + persistedDokumentInfo.getDokumentInfoId(),
 				HttpMethod.POST,
 				createHttpEntityHeaders(),
 				ArkiverKorrigertDokumentRespons.class);
@@ -164,9 +165,7 @@ public class Rjoark104IT extends AbstractArkiverKorrigertDokumentIT {
 				.getFilUuid()), notNullValue());
 
 		// Begrensning er slettet
-		assertFalse(begrensningRepository.findByDokumentInfoIdAndVariantFormatAndBegrensningType(
-				dokumentInfo.getDokumentInfoId(), VariantFormatCode.SLADDET, BegrensningTypeCode.SKJERMET).isPresent());
-		assertThat(Iterables.size(begrensningRepository.findAll()), is(0));
+		assertNull(persistedDokumentInfo.findFilDetaljerByVariantFormat(VariantFormatCode.ARKIV).getBegrensning());
 		TestTransaction.end();
 	}
 }

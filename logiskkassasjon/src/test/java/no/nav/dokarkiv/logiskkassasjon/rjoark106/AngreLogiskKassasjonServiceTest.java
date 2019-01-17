@@ -5,12 +5,11 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
 import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
-import no.nav.dokarkiv.core.domain.entities.Begrensning;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.domain.service.BegrensningService;
 import no.nav.dokarkiv.core.exceptions.BegrensningIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.DokumentInfoIkkeFunnetException;
-import no.nav.dokarkiv.core.repository.BegrensningRepository;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.logiskkassasjon.rjoark105.LogiskKassasjonResponse;
 import org.junit.Before;
@@ -31,22 +30,17 @@ public class AngreLogiskKassasjonServiceTest {
 	@Mock
 	private DokumentinfoRepository dokumentinfoRepository;
 	@Mock
-	private BegrensningRepository begrensningRepository;
+	private BegrensningService begrensningService;
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
 
 	private AngreLogiskKassasjonService angreLogiskKassasjonService;
 	private Journalpost journalpost;
 	private DokumentInfo dokumentInfo;
-	private static final Begrensning begrensning =
-			Begrensning.builder()
-					.dokumentInfoId(DOKUMENTINFO_ID)
-					.begrensningType(BegrensningTypeCode.KASSERT)
-					.build();
 
 	@Before
 	public void setUp() {
-		angreLogiskKassasjonService = new AngreLogiskKassasjonService(dokumentinfoRepository, begrensningRepository);
+		angreLogiskKassasjonService = new AngreLogiskKassasjonService(dokumentinfoRepository, begrensningService);
 		journalpost = opprettHoveddokumentForEnhetstest();
 		dokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 	}
@@ -67,11 +61,11 @@ public class AngreLogiskKassasjonServiceTest {
 		thrown.expectMessage(String.format(
 				"Fant ikke forventet begrensning for dokument med dokumentInfoId=%s og begrensningsType=%s",
 				DOKUMENTINFO_ID,
-				BegrensningTypeCode.KASSERT));
+				BegrensningTypeCode.POL));
 
 		when(dokumentinfoRepository.findByDokumentInfoId(DOKUMENTINFO_ID)).thenReturn(Optional.of(dokumentInfo));
-		when(begrensningRepository.findByDokumentInfoIdAndBegrensningType(DOKUMENTINFO_ID, BegrensningTypeCode.KASSERT))
-				.thenReturn(Optional.empty());
+		when(begrensningService.isDokumentInfoIdKassert(DOKUMENTINFO_ID))
+				.thenReturn(false);
 
 		LogiskKassasjonResponse response = angreLogiskKassasjonService.angreLogiskKassasjonAvDokument(DOKUMENTINFO_ID);
 	}
@@ -79,8 +73,8 @@ public class AngreLogiskKassasjonServiceTest {
 	@Test()
 	public void skalAngreLogiskKassereDokument_utenKastAvExceptions() {
 		when(dokumentinfoRepository.findByDokumentInfoId(DOKUMENTINFO_ID)).thenReturn(Optional.of(dokumentInfo));
-		when(begrensningRepository.findByDokumentInfoIdAndBegrensningType(DOKUMENTINFO_ID, BegrensningTypeCode.KASSERT))
-				.thenReturn(Optional.of(begrensning));
+		when(begrensningService.isDokumentInfoIdKassert(DOKUMENTINFO_ID))
+				.thenReturn(true);
 
 		LogiskKassasjonResponse response = angreLogiskKassasjonService.angreLogiskKassasjonAvDokument(DOKUMENTINFO_ID);
 	}

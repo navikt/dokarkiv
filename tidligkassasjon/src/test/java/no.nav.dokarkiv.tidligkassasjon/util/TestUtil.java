@@ -8,7 +8,6 @@ import no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder;
 import no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder;
 import no.nav.dokarkiv.core.domain.builder.JournalpostBuilder;
 import no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder;
-import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
@@ -18,7 +17,6 @@ import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
-import no.nav.dokarkiv.core.domain.entities.Begrensning;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
@@ -135,15 +133,13 @@ public class TestUtil {
 				.build();
 	}
 
-
-	public static Begrensning kassereDokumentLogisk(DokumentInfo dokumentInfo) {
-		Begrensning begrensning = Begrensning.builder()
-				.dokumentInfoId(dokumentInfo.getDokumentInfoId())
-				.begrensningType(BegrensningTypeCode.KASSERT)
-				.build();
-		begrensning.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
-		return begrensning;
-	}
-
+//	public static Begrensning kassereDokumentLogisk(DokumentInfo dokumentInfo) {
+//		Begrensning begrensning = Begrensning.builder()
+//				.dokumentInfoId(dokumentInfo.getDokumentInfoId())
+//				.begrensningType(BegrensningTypeCode.KASSERT)
+//				.build();
+//		begrensning.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
+//		return begrensning;
+//	}
 }
 

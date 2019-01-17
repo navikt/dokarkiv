@@ -1,12 +1,12 @@
 package no.nav.dokarkiv.logiskkassasjon.rjoark105;
 
 import static junit.framework.TestCase.assertTrue;
-import static no.nav.dokarkiv.logiskkassasjon.util.TestUtils.kassereDokumentLogisk;
 import static no.nav.dokarkiv.logiskkassasjon.util.TestUtils.knyttDokumentInfoSomVedleggTilJournalpostForIT;
 import static no.nav.dokarkiv.logiskkassasjon.util.TestUtils.opprettHoveddokumentForIT;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertFalse;
 
 import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
@@ -17,6 +17,8 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.transaction.TestTransaction;
+
+import java.util.Optional;
 
 public class Rjoark105IT extends AbstractLogiskKassasjonIT {
 
@@ -43,7 +45,7 @@ public class Rjoark105IT extends AbstractLogiskKassasjonIT {
 		Journalpost journalpost = joarkRepository.save(opprettHoveddokumentForIT());
 		DokumentInfo dokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 
-		begrensningRepository.save(kassereDokumentLogisk(dokumentInfo));
+		begrensningService.setDokumentKassert(dokumentInfo, BegrensningTypeCode.POL);
 
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
@@ -74,6 +76,7 @@ public class Rjoark105IT extends AbstractLogiskKassasjonIT {
 
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
+		TestTransaction.start();
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_LOGISKKASSASJON + hoveddokument1.getDokumentInfoId(),
@@ -81,10 +84,14 @@ public class Rjoark105IT extends AbstractLogiskKassasjonIT {
 				createHeaders(),
 				String.class);
 
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
+		TestTransaction.start();
+
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
-		assertThat(begrensningRepository.count(), is(1L));
-		assertTrue(begrensningRepository.findByDokumentInfoIdAndBegrensningType(hoveddokument1.getDokumentInfoId(), BegrensningTypeCode.KASSERT)
-				.isPresent());
+		Optional<DokumentInfo> dokumentInfo = dokumentinfoRepository.findByDokumentInfoId(hoveddokument1.getDokumentInfoId());
+		assertTrue(dokumentInfo.isPresent());
+		assertTrue(begrensningService.isDokumentInfoKassert(dokumentInfo.get()));
 	}
 
 	@Test
@@ -96,18 +103,23 @@ public class Rjoark105IT extends AbstractLogiskKassasjonIT {
 
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
+		TestTransaction.start();
 
-		assertThat(begrensningRepository.count(), is(0L));
+		assertFalse(begrensningService.isDokumentInfoKassert(dokumentInfo));
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_LOGISKKASSASJON + dokumentInfo.getDokumentInfoId(),
 				HttpMethod.POST,
 				createHeaders(),
 				String.class);
 
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
+		TestTransaction.start();
+
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
-		assertThat(begrensningRepository.count(), is(1L));
-		assertTrue(begrensningRepository.findByDokumentInfoIdAndBegrensningType(dokumentInfo.getDokumentInfoId(), BegrensningTypeCode.KASSERT)
-				.isPresent());
+		Optional<DokumentInfo> dokumentInfoRep = dokumentinfoRepository.findByDokumentInfoId(dokumentInfo.getDokumentInfoId());
+		assertTrue(dokumentInfoRep.isPresent());
+		assertTrue(begrensningService.isDokumentInfoKassert(dokumentInfoRep.get()));
 	}
 
 	@Test
@@ -117,7 +129,7 @@ public class Rjoark105IT extends AbstractLogiskKassasjonIT {
 		Journalpost journalpost = joarkRepository.save(opprettHoveddokumentForIT());
 		DokumentInfo dokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 
-		begrensningRepository.save(kassereDokumentLogisk(dokumentInfo));
+		begrensningService.setDokumentKassert(dokumentInfo, BegrensningTypeCode.POL);
 
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
@@ -127,7 +139,6 @@ public class Rjoark105IT extends AbstractLogiskKassasjonIT {
 				HttpMethod.POST,
 				createNoAccessHeaders(),
 				String.class);
-
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.UNAUTHORIZED));
 	}

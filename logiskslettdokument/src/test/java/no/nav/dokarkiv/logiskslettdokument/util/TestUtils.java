@@ -8,7 +8,6 @@ import no.nav.dokarkiv.core.datautil.BrukerTestDataProvider;
 import no.nav.dokarkiv.core.datautil.SaksrelasjonTestDataProvider;
 import no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder;
 import no.nav.dokarkiv.core.domain.builder.JournalpostBuilder;
-import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
@@ -17,7 +16,6 @@ import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
-import no.nav.dokarkiv.core.domain.entities.Begrensning;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
@@ -133,25 +131,6 @@ public class TestUtils {
 
 	public static Journalpost opprettHoveddokumentForIT() {
 		return createJournalpostBuilder().build();
-	}
-
-	public static Begrensning utilgjengeliggjoerHoveddokument(Long journalpostId) {
-		Begrensning begrensning = Begrensning.builder()
-				.journalpostId(journalpostId)
-				.begrensningType(BegrensningTypeCode.UTILGJENGELIGGJORT)
-				.build();
-		begrensning.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
-		return begrensning;
-	}
-
-	public static Begrensning utilgjengeliggjoerVedlegg(Long journalpostId, Long dokumentInfoId) {
-		Begrensning begrensning = Begrensning.builder()
-				.journalpostId(journalpostId)
-				.dokumentInfoId(dokumentInfoId)
-				.begrensningType(BegrensningTypeCode.UTILGJENGELIGGJORT)
-				.build();
-		begrensning.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
-		return begrensning;
 	}
 
 	public static Journalpost opprettHoveddokumentMedSammensattDokForIT() {

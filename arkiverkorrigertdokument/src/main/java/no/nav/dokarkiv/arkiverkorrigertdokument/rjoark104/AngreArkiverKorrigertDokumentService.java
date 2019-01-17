@@ -10,9 +10,9 @@ import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
+import no.nav.dokarkiv.core.domain.service.BegrensningService;
 import no.nav.dokarkiv.core.exceptions.BegrensningIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.DokumentInfoIkkeFunnetException;
-import no.nav.dokarkiv.core.repository.BegrensningRepository;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import org.springframework.stereotype.Service;
@@ -25,16 +25,16 @@ public class AngreArkiverKorrigertDokumentService {
 
 	private final DokumentinfoRepository dokumentinfoRepository;
 	private final DokumentFilRepository dokumentFilRepository;
-	private final BegrensningRepository begrensningRepository;
+	private final BegrensningService begrensningService;
 
 	@Inject
 	public AngreArkiverKorrigertDokumentService(
 			DokumentinfoRepository dokumentinfoRepository,
 			DokumentFilRepository dokumentFilRepository,
-			BegrensningRepository begrensningRepository) {
+			BegrensningService begrensningService) {
 		this.dokumentinfoRepository = dokumentinfoRepository;
 		this.dokumentFilRepository = dokumentFilRepository;
-		this.begrensningRepository = begrensningRepository;
+		this.begrensningService = begrensningService;
 	}
 
 	public ArkiverKorrigertDokumentRespons angreArkiverKorrigertDokument(Long dokumentInfoId) {
@@ -42,7 +42,7 @@ public class AngreArkiverKorrigertDokumentService {
 				.orElseThrow(() -> new DokumentInfoIkkeFunnetException(String.format("Kan ikke finne dokumentInfo med dokumentInfoId=%s",
 						dokumentInfoId)));
 
-		sjekkAtArkivVariantAvDokumentErSkjermet(dokumentInfo.getDokumentInfoId());
+		sjekkAtArkivVariantAvDokumentErSkjermet(dokumentInfo);
 		sjekkAtSladdetVariantAvDokumentFinnes(dokumentInfo);
 
 		slettBegrensning(dokumentInfo);
@@ -65,20 +65,20 @@ public class AngreArkiverKorrigertDokumentService {
 	}
 
 
-	private void sjekkAtArkivVariantAvDokumentErSkjermet(Long dokumentInfoId) {
-		if (isFalse(begrensningRepository.findByDokumentInfoIdAndVariantFormatAndBegrensningType(
-				dokumentInfoId, VariantFormatCode.ARKIV, BegrensningTypeCode.SKJERMET).isPresent())) {
+	private void sjekkAtArkivVariantAvDokumentErSkjermet(DokumentInfo dokumentInfo) {
+		FilDetaljer filDetaljer = dokumentInfo.findFilDetaljerByVariantFormat(VariantFormatCode.ARKIV);
+		if (!BegrensningTypeCode.POL.equals(filDetaljer.getBegrensning())) {
 			throw new BegrensningIkkeFunnetException(String.format(
 					"Korrigering av dokumentet kan ikke oppheves fordi dokument med dokumentInfoId=%s og variantFormat=%s " +
 							"ikke er begrenset som et %s dokument.",
-					dokumentInfoId,
+					dokumentInfo.getDokumentInfoId(),
 					VariantFormatCode.ARKIV,
-					BegrensningTypeCode.SKJERMET));
+					BegrensningTypeCode.POL));
 		}
 	}
 
 	private void slettBegrensning(DokumentInfo dokumentInfo) {
-		begrensningRepository.deleteByDokumentInfoIdAndBegrensningType(dokumentInfo.getDokumentInfoId(), BegrensningTypeCode.SKJERMET);
+		begrensningService.setVariantSkjermet(dokumentInfo, VariantFormatCode.ARKIV, null);
 	}
 
 	private void slettSladdetFilOgFilDetaljer(DokumentInfo dokumentInfo) {

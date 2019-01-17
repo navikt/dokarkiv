@@ -36,15 +36,13 @@ public class DokumentUrlInfoRepositoryBegrenset {
     public DokumentUrlInfo findByFilUuid(String filUuid) {
         DokumentUrlInfo dokumentUrlInfo = dokumentUrlInfoRepository.findByFilUuid(filUuid);
 		return Objects.nonNull(dokumentUrlInfo) && isFalse(begrensningService.isJournalpostBegrenset(dokumentUrlInfo.getJournalpost()
-                .getJournalpostId(), BegrensningTypeCode.UTILGJENGELIGGJORT)) ? dokumentUrlInfo : null;
+                .getJournalpostId(), BegrensningTypeCode.POL)) ? dokumentUrlInfo : null;
     }
 
     public Optional<DokumentUrlInfo> findByDoctoken(String doctoken) {
         Optional<DokumentUrlInfo> dokumentUrlInfo = dokumentUrlInfoRepository.findByDoctoken(doctoken);
         return dokumentUrlInfo.isPresent() && isFalse(begrensningService.isJournalpostBegrenset(dokumentUrlInfo.get()
                 .getJournalpost()
-                .getJournalpostId(), BegrensningTypeCode.UTILGJENGELIGGJORT)) ? dokumentUrlInfo : Optional.empty();
+                .getJournalpostId(), BegrensningTypeCode.POL)) ? dokumentUrlInfo : Optional.empty();
     }
-
-
 }

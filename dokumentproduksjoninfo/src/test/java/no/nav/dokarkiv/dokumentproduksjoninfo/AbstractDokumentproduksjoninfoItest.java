@@ -2,9 +2,9 @@ package no.nav.dokarkiv.dokumentproduksjoninfo;
 
 import no.nav.dokarkiv.core.CoreConfig;
 import no.nav.dokarkiv.core.domain.service.BegrensningService;
-import no.nav.dokarkiv.core.repository.BegrensningRepository;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepositoryBegrenset;
+import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.dokarkiv.core.stelvio.SimpleRequestContext;
 import no.nav.tjeneste.domene.brevogarkiv.dokumentproduksjoninfo.v1.DokumentproduksjonInfoV1;
@@ -38,11 +38,11 @@ public abstract class AbstractDokumentproduksjoninfoItest {
 	@Inject
     protected JoarkRepositoryBegrenset joarkRepository;
 	@Inject
+	protected JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository;
+	@Inject
 	protected DokumentFilRepository dokumentFilRepository;
 	@Inject
-	BegrensningService begrensningService;
-	@Inject
-	protected BegrensningRepository begrensningRepository;
+	protected BegrensningService begrensningService;
 
 	@Inject
 	protected TransactionTemplate transactionTemplate;

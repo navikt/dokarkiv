@@ -3,24 +3,23 @@ package no.nav.dokarkiv.logiskslettdokument.rjoark100;
 import static no.nav.dokarkiv.logiskslettdokument.util.TestUtils.opprettHoveddokumentForIT;
 import static no.nav.dokarkiv.logiskslettdokument.util.TestUtils.opprettHoveddokumentMedEtKnyttetVedleggForIT;
 import static no.nav.dokarkiv.logiskslettdokument.util.TestUtils.opprettHoveddokumentMedSammensattDokForIT;
-import static no.nav.dokarkiv.logiskslettdokument.util.TestUtils.utilgjengeliggjoerHoveddokument;
-import static no.nav.dokarkiv.logiskslettdokument.util.TestUtils.utilgjengeliggjoerVedlegg;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertNotNull;
 
 import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
-import no.nav.dokarkiv.core.domain.entities.Begrensning;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.logiskslettdokument.AbstractSlettDokumentIT;
 import org.junit.Test;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.transaction.TestTransaction;
+
+import java.util.Optional;
 
 public class Rjoark100IT extends AbstractSlettDokumentIT {
 
@@ -44,10 +43,10 @@ public class Rjoark100IT extends AbstractSlettDokumentIT {
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 
-		Begrensning begrensninger = hentVedleggBegrensningEtterUtfoertKall(journalpost.getJournalpostId(), vedlegg.getDokumentInfoId());
-		assertNotNull(begrensninger);
+		Optional<JournalpostDokumentInfoRelasjon> rel = journalpostDokumentInfoRelasjonRepository.findByJournalpostJournalpostIdAndDokumentInfoDokumentInfoId(journalpost.getJournalpostId(), vedlegg.getDokumentInfoId());
 
-		assertThat(hentAntallBegrensninger(), is(1L));
+		assertThat(rel.isPresent(), is(true));
+		assertThat(rel.get().getBegrensning(), is(BegrensningTypeCode.POL));
 	}
 
 	@Test
@@ -56,16 +55,15 @@ public class Rjoark100IT extends AbstractSlettDokumentIT {
 
 		Journalpost journalpost = joarkRepository.save(opprettHoveddokumentMedEtKnyttetVedleggForIT());
 
-		DokumentInfo vedlegg = journalpost.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
-				.iterator().next().getDokumentInfo();
+		JournalpostDokumentInfoRelasjon rel = journalpost.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
+				.iterator().next();
 
-		begrensningRepository.save(utilgjengeliggjoerVedlegg(journalpost.getJournalpostId(), vedlegg.getDokumentInfoId()));
-
+		begrensningService.setJpDokInfoRelBegrensning(rel, BegrensningTypeCode.POL);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
-				URL_SLETTDOKUMENT + journalpost.getJournalpostId() + "/" + vedlegg.getDokumentInfoId(),
+				URL_SLETTDOKUMENT + journalpost.getJournalpostId() + "/" + rel.getDokumentInfo().getDokumentInfoId(),
 				HttpMethod.POST,
 				createHeaders(),
 				String.class);
@@ -74,7 +72,7 @@ public class Rjoark100IT extends AbstractSlettDokumentIT {
 		assertThat(responseEntity.getBody(), containsString(
 				String.format("Kan ikke utføre logisk sletting av dokument med journalpostId=%s og dokumentInfoId=%s. Dokumentet er utilgjengeliggjort.",
 						journalpost.getJournalpostId(),
-						vedlegg.getDokumentInfoId())));
+						rel.getDokumentInfo().getDokumentInfoId())));
 	}
 
 	@Test
@@ -83,24 +81,23 @@ public class Rjoark100IT extends AbstractSlettDokumentIT {
 
 		Journalpost journalpost = joarkRepository.save(opprettHoveddokumentMedEtKnyttetVedleggForIT());
 
-		DokumentInfo vedlegg = journalpost.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
-				.iterator().next().getDokumentInfo();
+		JournalpostDokumentInfoRelasjon rel = journalpost.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
+				.iterator().next();
 
-		begrensningRepository.save(utilgjengeliggjoerHoveddokument(journalpost.getJournalpostId()));
-
+		begrensningService.setJournalpostBegrensning(journalpost, BegrensningTypeCode.POL);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
-				URL_SLETTDOKUMENT + journalpost.getJournalpostId() + "/" + vedlegg.getDokumentInfoId(),
+				URL_SLETTDOKUMENT + journalpost.getJournalpostId() + "/" + rel.getDokumentInfo().getDokumentInfoId(),
 				HttpMethod.POST,
 				createHeaders(),
 				String.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.BAD_REQUEST));
 		assertThat(responseEntity.getBody(), containsString(
-				String.format("Kan ikke utføre logisk sletting av dokument med journalpostId=%s. Journalposten er utilgjengeliggjort",
-						journalpost.getJournalpostId())));
+				String.format("\"Kan ikke utføre logisk sletting av dokument med journalpostId=%s og dokumentInfoId=%s. Dokumentet er utilgjengeliggjort.",
+						journalpost.getJournalpostId(), rel.getDokumentInfo().getDokumentInfoId())));
 	}
 
 	@Test
@@ -121,10 +118,9 @@ public class Rjoark100IT extends AbstractSlettDokumentIT {
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 
-		Begrensning begrensninger = hentHoveddokumentBegrensningEtterUtfoertKall(journalpost);
-		assertNotNull(begrensninger);
-
-		assertThat(hentAntallBegrensninger(), is(1L));
+		Optional<Journalpost> jp = joarkRepository.findById (journalpost.getJournalpostId());
+		assertThat(jp.isPresent(), is(true));
+		assertThat(jp.get().getBegrensning(), is(BegrensningTypeCode.POL));
 	}
 
 	@Test
@@ -133,7 +129,7 @@ public class Rjoark100IT extends AbstractSlettDokumentIT {
 
 		Journalpost journalpost = joarkRepository.save(opprettHoveddokumentForIT());
 
-		begrensningRepository.save(utilgjengeliggjoerHoveddokument(journalpost.getJournalpostId()));
+		begrensningService.setJournalpostBegrensning(journalpost, BegrensningTypeCode.POL);
 
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
@@ -147,8 +143,8 @@ public class Rjoark100IT extends AbstractSlettDokumentIT {
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.BAD_REQUEST));
 		assertThat(responseEntity.getBody(), containsString(
-				String.format("Kan ikke utføre logisk sletting av dokument med journalpostId=%s. Journalposten er utilgjengeliggjort",
-						journalpost.getJournalpostId())));
+				String.format("Kan ikke utføre logisk sletting av dokument med journalpostId=%s og dokumentInfoId=%s. Dokumentet er utilgjengeliggjort.",
+						journalpost.getJournalpostId(), journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId())));
 	}
 
 	@Test
@@ -157,10 +153,10 @@ public class Rjoark100IT extends AbstractSlettDokumentIT {
 
 		Journalpost journalpost = joarkRepository.save(opprettHoveddokumentMedEtKnyttetVedleggForIT());
 
-		DokumentInfo vedlegg = journalpost.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
-				.iterator().next().getDokumentInfo();
+		JournalpostDokumentInfoRelasjon rel = journalpost.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
+				.iterator().next();
 
-		begrensningRepository.save(utilgjengeliggjoerVedlegg(journalpost.getJournalpostId(), vedlegg.getDokumentInfoId()));
+		begrensningService.setJpDokInfoRelBegrensning(rel, BegrensningTypeCode.POL);
 
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
@@ -174,13 +170,14 @@ public class Rjoark100IT extends AbstractSlettDokumentIT {
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 
-		Begrensning hoveddokumentBegrensninger = hentHoveddokumentBegrensningEtterUtfoertKall(journalpost);
-		assertNotNull(hoveddokumentBegrensninger);
+		Optional<Journalpost> jp = joarkRepository.findById (journalpost.getJournalpostId());
+		assertThat(jp.isPresent(), is(true));
+		assertThat(jp.get().getBegrensning(), is(BegrensningTypeCode.POL));
 
-		Begrensning vedleggBegrensninger = hentVedleggBegrensningEtterUtfoertKall(journalpost.getJournalpostId(), vedlegg.getDokumentInfoId());
-		assertNotNull(vedleggBegrensninger);
 
-		assertThat(hentAntallBegrensninger(), is(2L));
+		Optional<JournalpostDokumentInfoRelasjon> relRepositury = journalpostDokumentInfoRelasjonRepository.findByJournalpostJournalpostIdAndDokumentInfoDokumentInfoId(journalpost.getJournalpostId(), rel.getDokumentInfo().getDokumentInfoId());
+		assertThat(relRepositury.isPresent(), is(true));
+		assertThat(relRepositury.get().getBegrensning(), is(BegrensningTypeCode.POL));
 	}
 
 	@Test
@@ -284,12 +281,8 @@ public class Rjoark100IT extends AbstractSlettDokumentIT {
 		abacPermit();
 
 		Journalpost journalpost = joarkRepository.save(opprettHoveddokumentForIT());
-		Begrensning jpBegrensning = Begrensning.builder()
-				.journalpostId(journalpost.getJournalpostId())
-				.begrensningType(BegrensningTypeCode.UTILGJENGELIGGJORT)
-				.build();
-		jpBegrensning.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
-		begrensningRepository.save(jpBegrensning);
+
+		begrensningService.setJournalpostBegrensning(journalpost, BegrensningTypeCode.POL);
 
 		TestTransaction.flagForCommit();
 		TestTransaction.end();

@@ -26,7 +26,7 @@ import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
 import no.nav.dokarkiv.core.domain.codes.OnDemandInstansCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
-import no.nav.dokarkiv.core.domain.entities.Begrensning;
+import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.jaxws.SubjectHandlerUtils;
 import no.nav.dokarkiv.core.jaxws.ThreadLocalSubjectHandler;
@@ -38,6 +38,7 @@ import no.nav.tjeneste.virksomhet.innsynjournal.v2.meldinger.HentDokumentRespons
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.test.context.transaction.TestTransaction;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -248,13 +249,10 @@ public class HentDokumentIT extends AbstractInnsynJournalV2Itest {
 						.dokumentstatus(DokumentStatusCode.FERDIGSTILT))
 				.journalpostType(JournalpostTypeCode.U).build());
 
-		Begrensning skjermet = new Begrensning();
-		skjermet.setId(1L);
-		skjermet.setBegrensningType(BegrensningTypeCode.SKJERMET);
-		skjermet.setVariantFormat(VariantFormatCode.ARKIV);
-		skjermet.setDokumentInfoId(journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId());
-		skjermet.setOpprettetKildeNavn("test");
-		begrensningRepository.save(skjermet);
+		begrensningService.setVariantSkjermet(journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo(), VariantFormatCode.ARKIV, BegrensningTypeCode.POL);
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
+		TestTransaction.start();
 
 		HentDokumentResponse response = innsynJournalV2Provider.hentDokument(createRequestFromJournalpost(journalpost));
 

@@ -5,13 +5,13 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import no.nav.dokarkiv.core.domain.AbstractPersistentVersionedDomainObjectWithKilde;
+import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
 import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
 import no.nav.dokarkiv.core.domain.codes.OnDemandInstansCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import org.apache.commons.lang3.ArrayUtils;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
-import org.hibernate.annotations.Type;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -80,8 +80,8 @@ public class FilDetaljer extends AbstractPersistentVersionedDomainObjectWithKild
 	private VariantFormatCode variantFormat;
 
 	@Column(name = "begrensning")
-	@Type(type = "org.hibernate.type.TrueFalseType")
-	private Boolean begrensning;
+	@Enumerated(EnumType.STRING)
+	private BegrensningTypeCode begrensning;
 
 
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -344,11 +344,11 @@ public class FilDetaljer extends AbstractPersistentVersionedDomainObjectWithKild
 		this.variantFormat = variantFormat;
 	}
 
-	public Boolean getBegrensning() {
+	public BegrensningTypeCode getBegrensning() {
 		return begrensning;
 	}
 
-	public void setBegrensning(Boolean begrensning) {
+	public void setBegrensning(BegrensningTypeCode begrensning) {
 		throw new UnsupportedOperationException("Begrensning skal bare settes gjennom BegrensningService");
 	}
 

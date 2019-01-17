@@ -1,14 +1,11 @@
 package no.nav.dokarkiv.logiskkassasjon.rjoark105;
 
-import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
-import no.nav.dokarkiv.core.domain.entities.Begrensning;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
+import no.nav.dokarkiv.core.domain.service.BegrensningService;
 import no.nav.dokarkiv.core.exceptions.DokumentAlleredeKassertException;
 import no.nav.dokarkiv.core.exceptions.DokumentInfoIkkeFunnetException;
-import no.nav.dokarkiv.core.repository.BegrensningRepository;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
-import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -17,14 +14,14 @@ import javax.inject.Inject;
 public class LogiskKassasjonService {
 
 	private final DokumentinfoRepository dokumentInfoRepository;
-	private final BegrensningRepository begrensningRepository;
+	private final BegrensningService begrensningService;
 
 	@Inject
 	public LogiskKassasjonService(
 			DokumentinfoRepository dokumentInfoRepository,
-			BegrensningRepository begrensningRepository) {
+			BegrensningService begrensningService) {
 		this.dokumentInfoRepository = dokumentInfoRepository;
-		this.begrensningRepository = begrensningRepository;
+		this.begrensningService = begrensningService;
 	}
 
 	public LogiskKassasjonResponse logiskKassasjonAvDokument(Long dokumentInfoId) {
@@ -47,8 +44,7 @@ public class LogiskKassasjonService {
 	}
 
 	private void sjekkAtDokumentIkkeErKassert(Long dokumentInfoId) {
-		if (begrensningRepository.findByDokumentInfoIdAndBegrensningType(dokumentInfoId, BegrensningTypeCode.KASSERT)
-				.isPresent()) {
+		if (begrensningService.isDokumentInfoIdKassert(dokumentInfoId)) {
 			throw new DokumentAlleredeKassertException(String.format(
 					"Kan ikke utføre logisk kassasjon av dokument med dokumentInfoId=%s. Dokumentet er allerede logisk kassert",
 					dokumentInfoId));
@@ -56,12 +52,6 @@ public class LogiskKassasjonService {
 	}
 
 	private void logiskKassasjonAvEtDokument(DokumentInfo dokumentInfoSomSkalKasseres) {
-		Begrensning begrensning = Begrensning.builder()
-				.dokumentInfoId(dokumentInfoSomSkalKasseres.getDokumentInfoId())
-				.begrensningType(BegrensningTypeCode.KASSERT)
-				.build();
-		begrensning.setOpprettetKildeNavn(MDC.get(MDCConstants.MDC_CONSUMER_ID));
-
-		begrensningRepository.save(begrensning);
+		begrensningService.setDokumentKassert(dokumentInfoSomSkalKasseres, BegrensningTypeCode.POL);
 	}
 }

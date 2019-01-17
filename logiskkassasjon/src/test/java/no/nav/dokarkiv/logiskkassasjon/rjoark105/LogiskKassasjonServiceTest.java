@@ -7,12 +7,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.when;
 
-import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
-import no.nav.dokarkiv.core.domain.entities.Begrensning;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.domain.service.BegrensningService;
 import no.nav.dokarkiv.core.exceptions.DokumentAlleredeKassertException;
-import no.nav.dokarkiv.core.repository.BegrensningRepository;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import org.junit.Before;
 import org.junit.Rule;
@@ -31,16 +29,11 @@ public class LogiskKassasjonServiceTest {
 	private static final String TITTEL = "Tittel";
 	private static Journalpost journalpost = null;
 	private static DokumentInfo dokumentInfo = null;
-	private static final Begrensning begrensning =
-			Begrensning.builder()
-					.dokumentInfoId(DOKUMENTINFO_ID)
-					.begrensningType(BegrensningTypeCode.KASSERT)
-					.build();
 
 	@Mock
 	private DokumentinfoRepository dokumentinfoRepository;
 	@Mock
-	private BegrensningRepository begrensningRepository;
+	private BegrensningService begrensningService;
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
 
@@ -48,7 +41,7 @@ public class LogiskKassasjonServiceTest {
 
 	@Before
 	public void setUp() {
-		logiskKassasjonService = new LogiskKassasjonService(dokumentinfoRepository, begrensningRepository);
+		logiskKassasjonService = new LogiskKassasjonService(dokumentinfoRepository, begrensningService);
 		journalpost = opprettHoveddokumentForEnhetstest();
 		dokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 	}
@@ -61,17 +54,15 @@ public class LogiskKassasjonServiceTest {
 				DOKUMENTINFO_ID));
 
 		when(dokumentinfoRepository.findByDokumentInfoId(DOKUMENTINFO_ID)).thenReturn(Optional.of(dokumentInfo));
-		when(begrensningRepository.findByDokumentInfoIdAndBegrensningType(DOKUMENTINFO_ID, BegrensningTypeCode.KASSERT))
-				.thenReturn(Optional.of(begrensning));
+		when(begrensningService.isDokumentInfoIdKassert(DOKUMENTINFO_ID)).thenReturn(true);
 
-		LogiskKassasjonResponse response = logiskKassasjonService.logiskKassasjonAvDokument(DOKUMENTINFO_ID);
+		logiskKassasjonService.logiskKassasjonAvDokument(DOKUMENTINFO_ID);
 	}
 
 	@Test
 	public void skalLogiskKasserDokument_medDokumentKnyttetEnJournalpost() {
 		when(dokumentinfoRepository.findByDokumentInfoId(DOKUMENTINFO_ID)).thenReturn(Optional.of(dokumentInfo));
-		when(begrensningRepository.findByDokumentInfoIdAndBegrensningType(DOKUMENTINFO_ID, BegrensningTypeCode.KASSERT))
-				.thenReturn(Optional.empty());
+		when(begrensningService.isDokumentInfoIdKassert(DOKUMENTINFO_ID)).thenReturn(false);
 
 		LogiskKassasjonResponse response = logiskKassasjonService.logiskKassasjonAvDokument(DOKUMENTINFO_ID);
 
@@ -85,9 +76,8 @@ public class LogiskKassasjonServiceTest {
 		assertTrue(dokumentInfo.isRelatedToMultipleJournalposts());
 
 		when(dokumentinfoRepository.findByDokumentInfoId(DOKUMENTINFO_ID)).thenReturn(Optional.of(dokumentInfo));
-		when(begrensningRepository.findByDokumentInfoIdAndBegrensningType(DOKUMENTINFO_ID, BegrensningTypeCode.KASSERT))
-				.thenReturn(Optional.empty());
+		when(begrensningService.isDokumentInfoIdKassert(DOKUMENTINFO_ID)).thenReturn(false);
 
-		LogiskKassasjonResponse response = logiskKassasjonService.logiskKassasjonAvDokument(DOKUMENTINFO_ID);
+		logiskKassasjonService.logiskKassasjonAvDokument(DOKUMENTINFO_ID);
 	}
 }

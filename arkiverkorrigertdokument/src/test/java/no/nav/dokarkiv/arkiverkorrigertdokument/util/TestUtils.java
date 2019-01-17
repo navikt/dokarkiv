@@ -8,7 +8,6 @@ import no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder;
 import no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder;
 import no.nav.dokarkiv.core.domain.builder.JournalpostBuilder;
 import no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder;
-import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
@@ -18,8 +17,6 @@ import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
-import no.nav.dokarkiv.core.domain.entities.Begrensning;
-import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 
@@ -105,15 +102,15 @@ public class TestUtils {
 				.build();
 	}
 
-	public static Begrensning begrensArkivVariantAvDokumentSomSkjermet(DokumentInfo dokumentInfo) {
-		Begrensning begrensning = Begrensning.builder()
-				.journalpostId(dokumentInfo.getOriginalJournalpost() == null ? null : dokumentInfo.getOriginalJournalpost()
-						.getJournalpostId())
-				.dokumentInfoId(dokumentInfo.getDokumentInfoId())
-				.begrensningType(BegrensningTypeCode.SKJERMET)
-				.variantFormat(VariantFormatCode.ARKIV)
-				.build();
-		begrensning.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
-		return begrensning;
-	}
+//	public static Begrensning begrensArkivVariantAvDokumentSomSkjermet(DokumentInfo dokumentInfo) {
+//		Begrensning begrensning = Begrensning.builder()
+//				.journalpostId(dokumentInfo.getOriginalJournalpost() == null ? null : dokumentInfo.getOriginalJournalpost()
+//						.getJournalpostId())
+//				.dokumentInfoId(dokumentInfo.getDokumentInfoId())
+//				.begrensningType(BegrensningTypeCode.POL)
+//				.variantFormat(VariantFormatCode.ARKIV)
+//				.build();
+//		begrensning.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
+//		return begrensning;
+//	}
 }

@@ -1,6 +1,5 @@
 package no.nav.dokarkiv.tidligkassasjon.rjoark107;
 
-import static no.nav.dokarkiv.tidligkassasjon.util.TestUtil.kassereDokumentLogisk;
 import static no.nav.dokarkiv.tidligkassasjon.util.TestUtil.knyttDokumentInfoSomVedleggTilJournalpostForIT;
 import static no.nav.dokarkiv.tidligkassasjon.util.TestUtil.opprettHoveddokumentForIT;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -57,7 +56,7 @@ public class Rjoark107IT extends AbstractTidligKassasjonIT {
 		assertThat(responseEntity.getBody(), containsString(String.format(
 				"Fant ikke forventet begrensning for dokument med dokumentInfoId=%s og begrensningsType=%s",
 				dokumentInfo.getDokumentInfoId(),
-				BegrensningTypeCode.KASSERT)));
+				BegrensningTypeCode.POL)));
 	}
 
 	@Test
@@ -70,14 +69,13 @@ public class Rjoark107IT extends AbstractTidligKassasjonIT {
 
 		knyttDokumentInfoSomVedleggTilJournalpostForIT(dokumentInfo1, journalpost2);
 
-		begrensningRepository.save(kassereDokumentLogisk(dokumentInfo1));
+		begrensningService.setDokumentKassert(dokumentInfo1, BegrensningTypeCode.POL);
 
 		joarkRepository.save(journalpost2);
 
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
-		assertThat("Feil antall begrensninger", begrensningRepository.count(), is(1L));
 		assertThat("Feil antall journalposter", joarkRepository.count(), is(2L));
 		assertThat("Feil antall dokumenter", dokumentinfoRepository.count(), is(2L));
 		assertTrue(dokumentInfo1.isRelatedToMultipleJournalposts());
@@ -89,7 +87,6 @@ public class Rjoark107IT extends AbstractTidligKassasjonIT {
 				String.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
-		assertThat("Feil antall begrensninger etter kall", begrensningRepository.count(), is(0L));
 		assertThat("Feil antall journalposter etter kall", joarkRepository.count(), is(2L));
 		assertThat("Feil antall dokumenter etter kall", dokumentinfoRepository.count(), is(2L));
 	}
@@ -101,12 +98,11 @@ public class Rjoark107IT extends AbstractTidligKassasjonIT {
 		Journalpost journalpost = joarkRepository.save(opprettHoveddokumentForIT());
 		DokumentInfo dokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 
-		begrensningRepository.save(kassereDokumentLogisk(dokumentInfo));
+		begrensningService.setDokumentKassert(dokumentInfo, BegrensningTypeCode.POL);
 
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
-		assertThat("Feil antall begrensninger", begrensningRepository.count(), is(1L));
 		assertThat("Feil antall journalposter", joarkRepository.count(), is(1L));
 		assertThat("Feil antall dokumenter", dokumentinfoRepository.count(), is(1L));
 		assertFalse(dokumentInfo.isRelatedToMultipleJournalposts());
@@ -119,7 +115,6 @@ public class Rjoark107IT extends AbstractTidligKassasjonIT {
 				String.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
-		assertThat("Feil antall begrensninger etter kall", begrensningRepository.count(), is(0L));
 		assertThat("Feil antall journalposter etter kall", joarkRepository.count(), is(1L));
 		assertThat("Feil antall dokumenter etter kall", dokumentinfoRepository.count(), is(1L));
 	}
@@ -131,7 +126,7 @@ public class Rjoark107IT extends AbstractTidligKassasjonIT {
 		Journalpost journalpost = joarkRepository.save(opprettHoveddokumentForIT());
 		DokumentInfo dokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 
-		begrensningRepository.save(kassereDokumentLogisk(dokumentInfo));
+		begrensningService.setDokumentKassert(dokumentInfo, BegrensningTypeCode.POL);
 
 		TestTransaction.flagForCommit();
 		TestTransaction.end();

@@ -76,7 +76,7 @@ public class DokumentInfoQuery implements Query {
 	@GraphQLQuery(name = "kassert")
 	@Transactional(readOnly = true)
 	public boolean kassert(@GraphQLContext DokumentInfo dokument) {
-		return begrensningService.isDokumentKassert(dokument.getDokumentInfoId());
+		return begrensningService.isDokumentInfoIdKassert(dokument.getDokumentInfoId());
 	}
 
 	@GraphQLQuery(name = "originalJournalpost")
@@ -89,7 +89,7 @@ public class DokumentInfoQuery implements Query {
 			throw new JournalpostIkkeFunnetException(format("Fant ingen tilhørende original journalpost for dokumentInfo med dokumentInfoId=%s", dokument
 					.getDokumentInfoId()));
 		}
-		return mapJournalpost(originalJournalpost, begrensningService.isJournalpostBegrenset(originalJournalpost.getJournalpostId(), BegrensningTypeCode.UTILGJENGELIGGJORT));
+		return mapJournalpost(originalJournalpost, begrensningService.isJournalpostBegrenset(originalJournalpost.getJournalpostId(), BegrensningTypeCode.POL));
 	}
 
 	@GraphQLQuery(name = "knyttetJournalpostList")
@@ -102,15 +102,15 @@ public class DokumentInfoQuery implements Query {
 		List<Long> begrensetJournalpostRelasjon = journalpostDokumentInfoRelasjons.stream()
 				.filter(relasjon -> begrensningService.isJournalpostDokumentInfoRelasjonBegrenset(relasjon.getJournalpost()
 						.getJournalpostId(), relasjon.getDokumentInfo()
-						.getDokumentInfoId(), BegrensningTypeCode.UTILGJENGELIGGJORT) || begrensningService.isJournalpostBegrenset(relasjon
+						.getDokumentInfoId(), BegrensningTypeCode.POL) || begrensningService.isJournalpostBegrenset(relasjon
 						.getJournalpost()
-						.getJournalpostId(), BegrensningTypeCode.UTILGJENGELIGGJORT))
+						.getJournalpostId(), BegrensningTypeCode.POL))
 				.map(relasjon -> relasjon.getJournalpost().getJournalpostId())
 				.collect(Collectors.toList());
 
 		List<Long> begrensetJournalpost = journalpostDokumentInfoRelasjons.stream()
 				.filter(relasjon -> begrensningService.isJournalpostBegrenset(relasjon.getJournalpost()
-						.getJournalpostId(), BegrensningTypeCode.UTILGJENGELIGGJORT))
+						.getJournalpostId(), BegrensningTypeCode.POL))
 				.map(relasjon -> relasjon.getJournalpost().getJournalpostId())
 				.collect(Collectors.toList());
 

@@ -7,15 +7,7 @@ package no.nav.dokarkiv.core.domain.codes;
  */
 public enum BegrensningTypeCode {
 	/**
-	 * Utilgjengeliggjort
+	 * Personopplysningsloven
 	 */
-	UTILGJENGELIGGJORT,
-	/**
-	 * Skjermet
-	 */
-	SKJERMET,
-	/**
-	 * Kassert
-	 */
-	KASSERT;
+	POL
 }

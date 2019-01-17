@@ -11,6 +11,7 @@ import static org.apache.commons.lang3.BooleanUtils.isFalse;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import no.nav.dokarkiv.core.domain.AbstractPersistentVersionedDomainObjectWithKilde;
+import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
 import no.nav.dokarkiv.core.domain.codes.Behandlingstema;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
@@ -201,8 +202,8 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	private Behandlingstema behandlingstema;
 
 	@Column(name = "begrensning")
-	@Type(type = "org.hibernate.type.TrueFalseType")
-	private Boolean begrensning;
+	@Enumerated(EnumType.STRING)
+	private BegrensningTypeCode begrensning;
 
 
 	@OneToMany
@@ -1428,11 +1429,11 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 		this.behandlingstema = behandlingstema;
 	}
 
-	public Boolean getBegrensning() {
+	public BegrensningTypeCode getBegrensning() {
 		return begrensning;
 	}
 
-	public void setBegrensning(Boolean begrensning) {
+	public void setBegrensning(BegrensningTypeCode begrensning) {
 		throw new UnsupportedOperationException("Begrensning skal bare settes gjennom BegrensningService");
 	}
 

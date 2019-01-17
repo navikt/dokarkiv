@@ -2,7 +2,7 @@ package no.nav.dokarkiv.innsynjournal.v2;
 
 import no.nav.dokarkiv.core.CoreConfig;
 import no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerV2Mock;
-import no.nav.dokarkiv.core.repository.BegrensningRepository;
+import no.nav.dokarkiv.core.domain.service.BegrensningService;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepositoryBegrenset;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
@@ -42,7 +42,7 @@ public abstract class AbstractInnsynJournalV2Itest {
 	@Inject
 	protected DokumentFilRepository dokumentFilRepository;
 	@Inject
-	protected BegrensningRepository begrensningRepository;
+	protected BegrensningService begrensningService;
 
 	@Configuration
 	public static class TestConfig {

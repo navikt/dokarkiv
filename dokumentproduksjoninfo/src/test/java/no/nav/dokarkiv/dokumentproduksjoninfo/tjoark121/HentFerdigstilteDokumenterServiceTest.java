@@ -9,17 +9,21 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentFil;
+import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
+import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.service.BegrensningService;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepositoryBegrenset;
 import no.nav.dokarkiv.dokumentproduksjoninfo.exceptions.FilDetaljerNotFoundException;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -72,12 +76,15 @@ public class HentFerdigstilteDokumenterServiceTest {
 	@InjectMocks
 	private HentFerdigstilteDokumenterService service;
 
+	@Before
+	public void setUp() {
+		when(begrensningService.getVariantSkjermet(any(DokumentInfo.class), eq(VariantFormatCode.ARKIV))).thenReturn(FilDetaljer.builder().filUuid(FILUUID_1).build());
+	}
 
 	@Test
 	public void shouldFetchFerdigstilteDokumenter() throws Exception {
 		when(joarkRepository.findById(JOURNALPOST_ID)).thenReturn(Optional.of(createJournalpost()));
 		when(dokumentFilRepository.findByFilUuid(FILUUID_1)).thenReturn(createFildetaljer(FILCONTENT_1));
-		when(dokumentFilRepository.findByFilUuid(FILUUID_2)).thenReturn(createFildetaljer(FILCONTENT_2));
 
 		List<HentFerdigstilteDokumenterResponseTo> hentFerdigstilteDokumenter = service.hentFerdigstilteDokumenter(
 				JOURNALPOST_ID, Arrays.asList(DOKUMENT_1, DOKUMENT_2));
@@ -93,10 +100,12 @@ public class HentFerdigstilteDokumenterServiceTest {
 
 	@Test
 	public void shouldFetchFerdigstilteDokumenterSkjermet() throws Exception {
-		when(joarkRepository.findById(JOURNALPOST_ID)).thenReturn(Optional.of(createJournalpost()));
+		Journalpost journalpost = createJournalpost();
+		when(joarkRepository.findById(JOURNALPOST_ID)).thenReturn(Optional.of(journalpost));
 		when(dokumentFilRepository.findByFilUuid(FILUUID_2)).thenReturn(createFildetaljer(FILCONTENT_2));
 		when(dokumentFilRepository.findByFilUuid(FILUUID_SLADDET_1)).thenReturn(createFildetaljer(FILCONTENT_SLADDET_1));
-		when(begrensningService.isVariantSkjermet(DOKUMENT_1, VariantFormatCode.ARKIV)).thenReturn(true);
+		when(begrensningService.getVariantSkjermet(eq(journalpost.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG).iterator().next().getDokumentInfo()), eq(VariantFormatCode.ARKIV))).thenReturn(FilDetaljer.builder().filUuid(FILUUID_2).build());
+		when(begrensningService.getVariantSkjermet(eq(journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo()), eq(VariantFormatCode.ARKIV))).thenReturn(FilDetaljer.builder().filUuid(FILUUID_SLADDET_1).build());
 
 		List<HentFerdigstilteDokumenterResponseTo> hentFerdigstilteDokumenter = service.hentFerdigstilteDokumenter(
 				JOURNALPOST_ID, Arrays.asList(DOKUMENT_1, DOKUMENT_2));

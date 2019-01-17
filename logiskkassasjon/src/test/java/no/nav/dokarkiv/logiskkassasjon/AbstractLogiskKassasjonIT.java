@@ -7,9 +7,10 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static no.nav.dokarkiv.core.security.JwtClaimsBuilderProvider.openAmClaimsBuilder;
 
 import no.nav.dokarkiv.core.CoreConfig;
-import no.nav.dokarkiv.core.repository.BegrensningRepository;
+import no.nav.dokarkiv.core.domain.service.BegrensningService;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
+import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.dokarkiv.core.stelvio.SimpleRequestContext;
 import no.nav.freg.security.test.oidc.tools.OidcTestService;
@@ -65,13 +66,15 @@ public abstract class AbstractLogiskKassasjonIT {
 	@Inject
 	protected DokumentinfoRepository dokumentinfoRepository;
 	@Inject
+	protected JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository;
+	@Inject
 	protected OidcTestService oidcTestService;
 	@Inject
 	protected JoarkRepository joarkRepository;
 	@Inject
 	protected TestRestTemplate restTemplate;
 	@Inject
-	protected BegrensningRepository begrensningRepository;
+	protected BegrensningService begrensningService;
 
 	@Before
 	public void setUp() {
@@ -95,7 +98,6 @@ public abstract class AbstractLogiskKassasjonIT {
 	public void cleanup() {
 		joarkRepository.deleteAll();
 		dokumentinfoRepository.deleteAll();
-		begrensningRepository.deleteAll();
 	}
 
 	protected HttpEntity createHeaders() {
