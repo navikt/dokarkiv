@@ -17,11 +17,14 @@ import com.google.common.collect.Iterables;
 import no.nav.dokarkiv.arkiverkorrigertdokument.AbstractArkiverKorrigertDokumentIT;
 import no.nav.dokarkiv.arkiverkorrigertdokument.rjoark103.ArkiverKorrigertDokumentRequest;
 import no.nav.dokarkiv.arkiverkorrigertdokument.rjoark103.ArkiverKorrigertDokumentRespons;
+import no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder;
 import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
+import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
 import no.nav.dokarkiv.core.domain.entities.DokumentFil;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
+import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.collections15.IteratorUtils;
@@ -41,20 +44,35 @@ public class Rjoark104IT extends AbstractArkiverKorrigertDokumentIT {
 	public void skalLagreAksjon() throws IOException {
 		abacPermit();
 
-		Journalpost journalpost = joarkRepository.save(opprettHoveddokumentForIT());
+		Journalpost journalpost = opprettHoveddokumentForIT();
+		journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().addFilDetaljer(
+				FilDetaljerBuilder.getFilDetaljerBuilder()
+						.filUuid(FilDetaljer.generateUuid())
+						.filnavn("Test")
+						.filtype(FilTypeCode.PDF)
+						.variantFormat(VariantFormatCode.SLADDET)
+						.opprettetKildeNavn(OPPRETTET_KILDE_NAVN)
+						.fileContent("SLADDET variant".getBytes())
+						.build()
+		);
+
+		journalpost = joarkRepository.save(journalpost);
 
 		DokumentInfo dokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 
 		DokumentFil dokumentFil = dokumentInfo.findFilDetaljerByVariantFormat(VariantFormatCode.ARKIV).createDokumentFil();
 		dokumentFil.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
 
+		DokumentFil dokumentFilSladdet = dokumentInfo.findFilDetaljerByVariantFormat(VariantFormatCode.SLADDET).createDokumentFil();
+		dokumentFilSladdet.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
+
 		dokumentFilRepository.save(dokumentFil);
+		dokumentFilRepository.save(dokumentFilSladdet);
+
+		begrensningRepository.save(begrensArkivVariantAvDokumentSomSkjermet(dokumentInfo));
 
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
-
-		assertArkiverKorrigertDokument(dokumentInfo);
-		aksjonsLoggRepository.deleteAll();
 
 		List<AksjonsLogg> aksjonsLoggListBefore = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
 		assertThat(aksjonsLoggListBefore.size(), is(0));
@@ -183,7 +201,7 @@ public class Rjoark104IT extends AbstractArkiverKorrigertDokumentIT {
 		begrensningRepository.save(begrensArkivVariantAvDokumentSomSkjermet(dokumentInfo));
 
 		ResponseEntity<ArkiverKorrigertDokumentRespons> responseEntity = restTemplate.exchange(
-				URL_ANGREARKIVERKORRIGERTDOKUMENT,
+				URL_ANGREARKIVERKORRIGERTDOKUMENT+dokumentInfo.getDokumentInfoId(),
 				HttpMethod.POST,
 				new HttpEntity<>(createHeadersWithAksjon(SLETT.name())),
 				ArkiverKorrigertDokumentRespons.class);
@@ -208,29 +226,33 @@ public class Rjoark104IT extends AbstractArkiverKorrigertDokumentIT {
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
+
+		HttpEntity httpEntity = new HttpEntity(Base64.encodeBase64String(FIL), createHeadersWithAksjon(SLETT.name()));
+
+
+		ResponseEntity<ArkiverKorrigertDokumentRespons> responseEntityArkiver = restTemplate.exchange(
+				URL_ARKIVERKORRIGERTDOKUMENT+dokumentInfo.getDokumentInfoId(),
+				HttpMethod.POST,
+				httpEntity,
+				ArkiverKorrigertDokumentRespons.class);
+
+		assertThat(responseEntityArkiver.getStatusCode(), is(HttpStatus.OK));
+
 		assertArkiverKorrigertDokument(dokumentInfo);
+
+		ResponseEntity<ArkiverKorrigertDokumentRespons> responseEntity = restTemplate.exchange(
+				URL_ANGREARKIVERKORRIGERTDOKUMENT + dokumentInfo.getDokumentInfoId(),
+				HttpMethod.POST,
+				new HttpEntity<>(createHeadersWithAksjon(SLETT.name())),
+				ArkiverKorrigertDokumentRespons.class);
+
+		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
+
 		assertAngreArkiverKorrigertDokument(dokumentInfo);
 
 	}
 
 	public void assertArkiverKorrigertDokument(DokumentInfo dokumentInfo) throws IOException {
-		HttpEntity httpEntity = new HttpEntity(ArkiverKorrigertDokumentRequest.builder()
-				.dokumentInfoId(dokumentInfo.getDokumentInfoId())
-				.fil(Base64.encodeBase64String(FIL))
-				.build(),
-				createHeadersWithAksjon(SLETT.name())
-
-				);
-
-
-		ResponseEntity<ArkiverKorrigertDokumentRespons> responseEntity = restTemplate.exchange(
-				URL_ARKIVERKORRIGERTDOKUMENT,
-				HttpMethod.POST,
-				httpEntity,
-				ArkiverKorrigertDokumentRespons.class);
-
-		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
-
 		TestTransaction.start();
 		assertTrue(dokumentinfoRepository.findByDokumentInfoId(dokumentInfo.getDokumentInfoId()).isPresent());
 		DokumentInfo persistedDokumentInfo = dokumentinfoRepository.findByDokumentInfoId(dokumentInfo.getDokumentInfoId())
@@ -248,13 +270,6 @@ public class Rjoark104IT extends AbstractArkiverKorrigertDokumentIT {
 	}
 
 	public void assertAngreArkiverKorrigertDokument(DokumentInfo dokumentInfo) throws IOException {
-		ResponseEntity<ArkiverKorrigertDokumentRespons> responseEntity = restTemplate.exchange(
-				URL_ANGREARKIVERKORRIGERTDOKUMENT + dokumentInfo.getDokumentInfoId(),
-				HttpMethod.POST,
-				new HttpEntity<>(createHeadersWithAksjon(SLETT.name())),
-				ArkiverKorrigertDokumentRespons.class);
-
-		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 
 		TestTransaction.start();
 		assertTrue(dokumentinfoRepository.findByDokumentInfoId(dokumentInfo.getDokumentInfoId()).isPresent());
