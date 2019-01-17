@@ -53,23 +53,24 @@ public class ArkiverKorrigertDokumentRestController {
 
 	@Transactional
 	@ResponseBody
-	@PostMapping("/")
+	@PostMapping("/{dokumentInfoId}")
 	@Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_DOKUMENT)},
 			actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION))
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark103"}, percentiles = {0.5, 0.95})
 	public ArkiverKorrigertDokumentRespons arkiverKorrigertDokument(
 			@RequestHeader(value = AKSJONS_INFO_HEADER) String aksjonsInfoHeader,
-			@RequestBody ArkiverKorrigertDokumentRequest request) throws UgyldigAksjonsLoggInfoException {
+			@PathVariable("dokumentInfoId") Long dokumentInfoId,
+			@RequestBody String fil) throws UgyldigAksjonsLoggInfoException {
 		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark103");
-		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har mottat kall med dokumentInfoId={}", request.getDokumentInfoId());
-		validator.validateArkiverKorrigertDokumentRequest(request);
-		abacSecurityService.assertAccessToDokumentIncludingBegrenset(request.getDokumentInfoId());
+
+		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har mottat kall for arkivering av korrigert dokument med dokumentInfoId={}", dokumentInfoId);
+		abacSecurityService.assertAccessToDokumentIncludingBegrenset(dokumentInfoId);
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
 		aksjonsLoggService.validerOgLagreAksjon(aksjonsInfoHeader);
 
-		ArkiverKorrigertDokumentRespons respons = arkiverKorrigertDokumentService.arkiverKorrigertDokument(request);
+		ArkiverKorrigertDokumentRespons respons = arkiverKorrigertDokumentService.arkiverKorrigertDokument(dokumentInfoId, fil);
 		log.info("{} har arkivert korrigert dokument med dokumentInfoId={}",
-				MDC.get(MDCConstants.MDC_REQUEST_ID), request.getDokumentInfoId());
+				MDC.get(MDCConstants.MDC_REQUEST_ID), dokumentInfoId);
 		return respons;
 	}
 
@@ -84,8 +85,7 @@ public class ArkiverKorrigertDokumentRestController {
 			@RequestHeader(value = AKSJONS_INFO_HEADER) String aksjonsInfoHeader,
 			@PathVariable("dokumentInfoId") Long dokumentInfoId) throws UgyldigAksjonsLoggInfoException {
 		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark104");
-		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har mottat kall med dokumentInfoId={}", dokumentInfoId);
-		validator.validateAngreArkiverKorrigertDokument(dokumentInfoId);
+		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har mottat kall for angre korrigering av dokument med dokumentInfoId={}", dokumentInfoId);
 		abacSecurityService.assertAccessToDokumentIncludingBegrenset(dokumentInfoId);
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
 		aksjonsLoggService.validerOgLagreAksjon(aksjonsInfoHeader);

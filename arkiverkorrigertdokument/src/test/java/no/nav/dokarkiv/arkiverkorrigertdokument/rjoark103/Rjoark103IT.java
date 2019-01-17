@@ -34,38 +34,6 @@ import java.util.List;
 public class Rjoark103IT extends AbstractArkiverKorrigertDokumentIT {
 
 	@Test
-	public void skalLagreAksjon() throws IOException {
-		abacPermit();
-
-		Journalpost journalpost = joarkRepository.save(opprettHoveddokumentForIT());
-
-		DokumentInfo dokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
-
-		TestTransaction.flagForCommit();
-		TestTransaction.end();
-
-		List<AksjonsLogg> aksjonsLoggListBefore = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
-		assertThat(aksjonsLoggListBefore.size(), is(0));
-
-		HttpEntity httpEntity = new HttpEntity(ArkiverKorrigertDokumentRequest.builder()
-				.dokumentInfoId(dokumentInfo.getDokumentInfoId())
-				.fil(Base64.encodeBase64String(FIL))
-				.build(), createHeadersWithAksjon(AksjonTypeCode.ARKIVERING.name()));
-
-		ResponseEntity<ArkiverKorrigertDokumentRespons> responseEntity = restTemplate.exchange(
-				URL_ARKIVERKORRIGERTDOKUMENT,
-				HttpMethod.POST,
-				httpEntity,
-				ArkiverKorrigertDokumentRespons.class);
-
-		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
-
-		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
-		assertThat(aksjonsLoggList.size(), is(1));
-		assertThat(aksjonsLoggList.get(0).getAksjon(), is(AksjonTypeCode.ARKIVERING));
-	}
-
-	@Test
 	public void skalFeileNårAksjonsLoggHeaderIkkeErSatt() throws IOException {
 		abacPermit();
 
@@ -79,13 +47,10 @@ public class Rjoark103IT extends AbstractArkiverKorrigertDokumentIT {
 		List<AksjonsLogg> aksjonsLoggListBefore = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
 		assertThat(aksjonsLoggListBefore.size(), is(0));
 
-		HttpEntity httpEntity = new HttpEntity(ArkiverKorrigertDokumentRequest.builder()
-				.dokumentInfoId(dokumentInfo.getDokumentInfoId())
-				.fil(Base64.encodeBase64String(FIL))
-				.build(), createHeaders());
+		HttpEntity httpEntity = new HttpEntity(Base64.encodeBase64String(FIL), createHeaders());
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
-				URL_ARKIVERKORRIGERTDOKUMENT,
+				URL_ARKIVERKORRIGERTDOKUMENT+dokumentInfo.getDokumentInfoId(),
 				HttpMethod.POST,
 				httpEntity,
 				String.class);
@@ -101,27 +66,18 @@ public class Rjoark103IT extends AbstractArkiverKorrigertDokumentIT {
 	public void skalIkkeLagreAksjonsLoggVedFeil() throws IOException {
 		abacPermit();
 
-		Journalpost journalpost = joarkRepository.save(opprettHoveddokumentForIT());
-
-		DokumentInfo dokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
-
-		TestTransaction.flagForCommit();
-		TestTransaction.end();
-
 		List<AksjonsLogg> aksjonsLoggListBefore = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
 		assertThat(aksjonsLoggListBefore.size(), is(0));
 
-		HttpEntity httpEntity = new HttpEntity(ArkiverKorrigertDokumentRequest.builder()
-				.dokumentInfoId(dokumentInfo.getDokumentInfoId())
-				.build(), createHeadersWithAksjon(AksjonTypeCode.ARKIVERING.name()));
+		HttpEntity httpEntity = new HttpEntity(Base64.encodeBase64String(FIL), createHeadersWithAksjon(AksjonTypeCode.ARKIVERING.name()));
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
-				URL_ARKIVERKORRIGERTDOKUMENT,
+				URL_ARKIVERKORRIGERTDOKUMENT+13123L,
 				HttpMethod.POST,
 				httpEntity,
 				String.class);
 
-		assertThat(responseEntity.getStatusCode(), is(HttpStatus.BAD_REQUEST));
+		assertThat(responseEntity.getStatusCode(), is(HttpStatus.NOT_FOUND));
 
 		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
 		assertThat(aksjonsLoggList.size(), is(0));
@@ -139,13 +95,10 @@ public class Rjoark103IT extends AbstractArkiverKorrigertDokumentIT {
 		TestTransaction.end();
 
 
-		HttpEntity httpEntity = new HttpEntity(ArkiverKorrigertDokumentRequest.builder()
-				.dokumentInfoId(dokumentInfo.getDokumentInfoId())
-				.fil(Base64.encodeBase64String(FIL))
-				.build(),createHeadersWithAksjon(AksjonTypeCode.ARKIVERING.name()));
+		HttpEntity httpEntity = new HttpEntity(Base64.encodeBase64String(FIL), createHeadersWithAksjon(AksjonTypeCode.ARKIVERING.name()));
 
 		ResponseEntity<ArkiverKorrigertDokumentRespons> responseEntity = restTemplate.exchange(
-				URL_ARKIVERKORRIGERTDOKUMENT,
+				URL_ARKIVERKORRIGERTDOKUMENT+dokumentInfo.getDokumentInfoId(),
 				HttpMethod.POST,
 				httpEntity,
 				ArkiverKorrigertDokumentRespons.class);
@@ -169,6 +122,10 @@ public class Rjoark103IT extends AbstractArkiverKorrigertDokumentIT {
 				.isPresent(), is(true));
 		assertThat(Iterables.size(begrensningRepository.findAll()), is(1));
 		TestTransaction.end();
+
+		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
+		assertThat(aksjonsLoggList.size(), is(1));
+		assertThat(aksjonsLoggList.get(0).getAksjon(), is(AksjonTypeCode.ARKIVERING));
 	}
 
 	@Test
@@ -183,13 +140,10 @@ public class Rjoark103IT extends AbstractArkiverKorrigertDokumentIT {
 		TestTransaction.end();
 
 
-		HttpEntity httpEntity = new HttpEntity(ArkiverKorrigertDokumentRequest.builder()
-				.dokumentInfoId(dokumentInfo.getDokumentInfoId())
-				.fil(Base64.encodeBase64String(FIL))
-				.build(),createHeadersWithAksjon(AksjonTypeCode.ARKIVERING.name()));
+		HttpEntity httpEntity = new HttpEntity(Base64.encodeBase64String(FIL), createHeadersWithAksjon(AksjonTypeCode.ARKIVERING.name()));
 
 		ResponseEntity<ArkiverKorrigertDokumentRespons> responseEntity = restTemplate.exchange(
-				URL_ARKIVERKORRIGERTDOKUMENT,
+				URL_ARKIVERKORRIGERTDOKUMENT+dokumentInfo.getDokumentInfoId(),
 				HttpMethod.POST,
 				httpEntity,
 				ArkiverKorrigertDokumentRespons.class);
@@ -197,13 +151,11 @@ public class Rjoark103IT extends AbstractArkiverKorrigertDokumentIT {
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 
 		byte[] FIL2 = "NEW FILE".getBytes();
-		HttpEntity httpEntity2 = new HttpEntity(ArkiverKorrigertDokumentRequest.builder()
-				.dokumentInfoId(dokumentInfo.getDokumentInfoId())
-				.fil(Base64.encodeBase64String(FIL2))
-				.build(), createHeadersWithAksjon(AksjonTypeCode.ARKIVERING.name()));
+		HttpEntity httpEntity2 = new HttpEntity(Base64.encodeBase64String(FIL2), createHeadersWithAksjon(AksjonTypeCode.ARKIVERING.name()));
+
 
 		ResponseEntity<ArkiverKorrigertDokumentRespons> responseEntity2 = restTemplate.exchange(
-				URL_ARKIVERKORRIGERTDOKUMENT,
+				URL_ARKIVERKORRIGERTDOKUMENT+dokumentInfo.getDokumentInfoId(),
 				HttpMethod.POST,
 				httpEntity2,
 				ArkiverKorrigertDokumentRespons.class);
@@ -237,13 +189,10 @@ public class Rjoark103IT extends AbstractArkiverKorrigertDokumentIT {
 	public void shouldFailWithBadRequestWhenDokumentInfoIdIsNull() throws IOException {
 		abacPermit();
 
-		HttpEntity httpEntity = new HttpEntity(ArkiverKorrigertDokumentRequest.builder()
-				.dokumentInfoId(null)
-				.fil(Base64.encodeBase64String(FIL))
-				.build(),createHeadersWithAksjon(AksjonTypeCode.ARKIVERING.name()));
+		HttpEntity httpEntity = new HttpEntity(Base64.encodeBase64String(FIL), createHeadersWithAksjon(AksjonTypeCode.ARKIVERING.name()));
 
 		ResponseEntity<ArkiverKorrigertDokumentRespons> responseEntity = restTemplate.exchange(
-				URL_ARKIVERKORRIGERTDOKUMENT,
+				URL_ARKIVERKORRIGERTDOKUMENT+"asd",
 				HttpMethod.POST,
 				httpEntity,
 				ArkiverKorrigertDokumentRespons.class);
@@ -256,13 +205,11 @@ public class Rjoark103IT extends AbstractArkiverKorrigertDokumentIT {
 	public void shouldFailWithNotFoundWhenDokumentInfoIsNotFound() throws IOException {
 		abacPermit();
 
-		HttpEntity httpEntity = new HttpEntity(ArkiverKorrigertDokumentRequest.builder()
-				.dokumentInfoId(213213L)
-				.fil(Base64.encodeBase64String(FIL))
-				.build(), createHeadersWithAksjon(AksjonTypeCode.ARKIVERING.name()));
+		HttpEntity httpEntity = new HttpEntity(Base64.encodeBase64String(FIL), createHeadersWithAksjon(AksjonTypeCode.ARKIVERING.name()));
+
 
 		ResponseEntity<ArkiverKorrigertDokumentRespons> responseEntity = restTemplate.exchange(
-				URL_ARKIVERKORRIGERTDOKUMENT,
+				URL_ARKIVERKORRIGERTDOKUMENT+1231223L,
 				HttpMethod.POST,
 				httpEntity,
 				ArkiverKorrigertDokumentRespons.class);
@@ -282,14 +229,10 @@ public class Rjoark103IT extends AbstractArkiverKorrigertDokumentIT {
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
-
-		HttpEntity httpEntity = new HttpEntity(ArkiverKorrigertDokumentRequest.builder()
-				.dokumentInfoId(dokumentInfo.getDokumentInfoId())
-				.fil(Base64.encodeBase64String(FIL))
-				.build(), createHeadersNotSrvJoarkadmin());
+		HttpEntity httpEntity = new HttpEntity(Base64.encodeBase64String(FIL), createHeadersNotSrvJoarkadmin());
 
 		ResponseEntity<ArkiverKorrigertDokumentRespons> responseEntity = restTemplate.exchange(
-				URL_ARKIVERKORRIGERTDOKUMENT,
+				URL_ARKIVERKORRIGERTDOKUMENT+dokumentInfo.getDokumentInfoId(),
 				HttpMethod.POST,
 				httpEntity,
 				ArkiverKorrigertDokumentRespons.class);
