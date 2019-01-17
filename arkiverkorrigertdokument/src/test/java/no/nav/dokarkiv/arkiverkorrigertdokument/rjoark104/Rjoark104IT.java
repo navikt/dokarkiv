@@ -41,7 +41,7 @@ import java.util.List;
 public class Rjoark104IT extends AbstractArkiverKorrigertDokumentIT {
 
 	@Test
-	public void skalLagreAksjon() throws IOException {
+	public void skalAngreArkiverKorrigertDokumentOgLagreAksjon() throws IOException {
 		abacPermit();
 
 		Journalpost journalpost = opprettHoveddokumentForIT();
