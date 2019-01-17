@@ -14,7 +14,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AksjonsLoggRequest {
+public class AksjonsLoggHeader {
 
 	List<Aksjon> aksjonListe;
 

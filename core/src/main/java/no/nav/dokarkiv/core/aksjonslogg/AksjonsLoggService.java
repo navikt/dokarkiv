@@ -1,6 +1,5 @@
 package no.nav.dokarkiv.core.aksjonslogg;
 
-import static no.nav.dokarkiv.core.util.ConverterUtils.jsonStringToObject;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.cxf.common.util.PropertyUtils.isFalse;
 
@@ -10,9 +9,6 @@ import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggInfoException;
 import no.nav.dokarkiv.core.repository.AksjonsLoggRepository;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -22,7 +18,7 @@ import java.util.stream.Collectors;
 @Component
 public class AksjonsLoggService {
 
-	public static final String AKSJONS_INFO_HEADER = "dok_aksjonsinfo";
+	public static final String AKSJONS_LOGG_HEADER = "dok_aksjonslogg";
 
 	private final AksjonsLoggRepository aksjonsLoggRepository;
 	private final AksjonsLoggMapper aksjonsLoggMapper;
@@ -32,32 +28,22 @@ public class AksjonsLoggService {
 		this.aksjonsLoggMapper = new AksjonsLoggMapper();
 	}
 
-	public void validerOgLagreAksjon(String aksjonsInfo) throws UgyldigAksjonsLoggInfoException {
+	public void validateAndSaveAksjon(AksjonsLoggHeader aksjonsLoggHeader) throws UgyldigAksjonsLoggInfoException {
 
-		if (isBlank(aksjonsInfo)) {
-			throw new UgyldigAksjonsLoggInfoException(String.format("Meldingen mangler påkrevd %s header.", AKSJONS_INFO_HEADER));
-		}
+		validateAksjonslogg(aksjonsLoggHeader);
 
-		try {
-			AksjonsLoggRequest aksjonsLoggRequest = jsonStringToObject(aksjonsInfo, AksjonsLoggRequest.class);
-			validateAksjonslogg(aksjonsLoggRequest);
+		Iterable<AksjonsLogg> aksjonsLoggIterable = aksjonsLoggHeader.getAksjonListe()
+				.stream()
+				.map(aksjonsLoggMapper::mapToAksjonsLogg)
+				.collect(Collectors.toSet());
 
-			Iterable<AksjonsLogg> aksjonsLoggIterable = aksjonsLoggRequest.getAksjonListe()
-					.stream()
-					.map(aksjonsLoggMapper::mapToAksjonsLogg)
-					.collect(Collectors.toSet());
-
-			aksjonsLoggRepository.saveAll(aksjonsLoggIterable);
-		} catch (IOException e) {
-			throw new UgyldigAksjonsLoggInfoException(String.format("Feilet ved lesing av %s header. Sjekk om headeren er i gyldig JSON format.", AKSJONS_INFO_HEADER), e);
-		}
-
+		aksjonsLoggRepository.saveAll(aksjonsLoggIterable);
 	}
 
 
-	private void validateAksjonslogg(AksjonsLoggRequest aksjonsLoggRequest) throws UgyldigAksjonsLoggInfoException {
+	private void validateAksjonslogg(AksjonsLoggHeader aksjonsLoggHeader) throws UgyldigAksjonsLoggInfoException {
 
-		for (AksjonsLoggRequest.Aksjon aksjon : aksjonsLoggRequest.getAksjonListe()) {
+		for (AksjonsLoggHeader.Aksjon aksjon : aksjonsLoggHeader.getAksjonListe()) {
 			assertNullOrEmpty(aksjon.getJournalpostId(), "journalpostId");
 			assertNullOrEmpty(aksjon.getApplikasjon(), "applikasjon");
 			assertNullOrEmpty(aksjon.getAksjon(), "aksjon");

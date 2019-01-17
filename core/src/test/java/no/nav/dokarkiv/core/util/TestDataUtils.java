@@ -1,6 +1,6 @@
 package no.nav.dokarkiv.core.util;
 
-import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggRequest;
+import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggHeader;
 import no.nav.dokarkiv.core.domain.builder.BrukerBuilder;
 import no.nav.dokarkiv.core.domain.builder.ChangeStampBuilder;
 import no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder;
@@ -57,13 +57,13 @@ public class TestDataUtils {
 	public static final String AKSJON_TIL_VERDI = "Test2";
 	public static final String AKSJON_ARKIVELEMENT= "Journalpost";
 
-	public static AksjonsLoggRequest createAksjonsLoggRequest(Long journalpostId, Long dokumentInfoId, String aksjon) {
-		return AksjonsLoggRequest.builder()
+	public static AksjonsLoggHeader createAksjonsLoggRequest(Long journalpostId, Long dokumentInfoId, String aksjon) {
+		return AksjonsLoggHeader.builder()
 				.aksjonListe(Arrays.asList(createAksjonsLoggRequestAksjon(journalpostId,dokumentInfoId,aksjon))).build();
 	}
 
-	public static AksjonsLoggRequest.Aksjon createAksjonsLoggRequestAksjon(Long journalpostId, Long dokumentInfoId, String aksjon) {
-		return AksjonsLoggRequest.Aksjon.builder()
+	public static AksjonsLoggHeader.Aksjon createAksjonsLoggRequestAksjon(Long journalpostId, Long dokumentInfoId, String aksjon) {
+		return AksjonsLoggHeader.Aksjon.builder()
 				.aksjon(aksjon)
 				.bruker(AKSJON_BRUKER)
 				.melding(AKSJON_MELDING)

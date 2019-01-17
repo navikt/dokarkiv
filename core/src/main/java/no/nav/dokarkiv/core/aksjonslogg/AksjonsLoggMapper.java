@@ -4,6 +4,9 @@ import static no.nav.dokarkiv.core.util.ConverterUtils.stringToEnum;
 
 import no.nav.dokarkiv.core.domain.codes.AksjonTypeCode;
 import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
+import no.nav.dokarkiv.core.stelvio.RequestContextHolder;
+
+import java.time.LocalDateTime;
 
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
@@ -11,7 +14,9 @@ import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
 public class AksjonsLoggMapper {
 
 
-	public AksjonsLogg mapToAksjonsLogg(AksjonsLoggRequest.Aksjon aksjon) {
+	public AksjonsLogg mapToAksjonsLogg(AksjonsLoggHeader.Aksjon aksjon) {
+		String componentId = RequestContextHolder.currentRequestContext().getComponentId();
+
 		return AksjonsLogg.builder()
 				.aksjon(stringToEnum(AksjonTypeCode.class, aksjon.getAksjon()))
 				.applikasjon(aksjon.getApplikasjon())
@@ -24,6 +29,8 @@ public class AksjonsLoggMapper {
 				.hjemmel(aksjon.getHjemmel())
 				.melding(aksjon.getMelding())
 				.utfoertAv(aksjon.getUtfoertAv())
+				.datoOpprettet(LocalDateTime.now())
+				.opprettetAv(componentId)
 				.build();
 	}
 

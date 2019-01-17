@@ -6,7 +6,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.lessThan;
 import static org.hamcrest.core.Is.is;
 
-import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggRequest;
+import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggHeader;
 import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService;
 import no.nav.dokarkiv.core.domain.codes.AksjonTypeCode;
 import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
@@ -32,9 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.inject.Inject;
 import java.io.IOException;
 import java.time.Duration;
-import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.List;
 
@@ -67,13 +65,13 @@ public class AksjonsLoggIT {
 	public void shouldSaveAksjonsLogg() throws IOException, UgyldigAksjonsLoggInfoException {
 
 
-		String aksjonLoggRequest = objectToJsonString(AksjonsLoggRequest.builder()
+		AksjonsLoggHeader aksjonLoggRequest = AksjonsLoggHeader.builder()
 				.aksjonListe(Arrays.asList(
 						createAksjonsLoggRequestAksjon(1L, 1L, AksjonTypeCode.ENDRE_BEGRENSNING.name()),
 						createAksjonsLoggRequestAksjon(1L, 1L, AksjonTypeCode.ENDRE_BEGRENSNING.name())
 				))
-				.build());
-		aksjonsLoggService.validerOgLagreAksjon(aksjonLoggRequest);
+				.build();
+		aksjonsLoggService.validateAndSaveAksjon(aksjonLoggRequest);
 
 		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
 		assertThat(aksjonsLoggList.size(), is(2));
@@ -89,10 +87,8 @@ public class AksjonsLoggIT {
 			assertThat(aksjonsLogg.getArkivElement(), is(TestDataUtils.AKSJON_ARKIVELEMENT));
 			assertThat(aksjonsLogg.getFraVerdi(), is(TestDataUtils.AKSJON_FRA_VERDI));
 			assertThat(aksjonsLogg.getTilVerdi(), is(TestDataUtils.AKSJON_TIL_VERDI));
-			assertThat(Duration.between(Instant.ofEpochMilli(aksjonsLogg.getChangeStamp().getCreatedDate().getTime())
-					.atZone(ZoneId.systemDefault())
-					.toLocalDateTime(), LocalDateTime.now()).getSeconds(), lessThan(10L));
-			assertThat(aksjonsLogg.getChangeStamp().getCreatedBy(), is("username"));
+			assertThat(Duration.between(aksjonsLogg.getDatoOpprettet(), LocalDateTime.now()).getSeconds(), lessThan(10L));
+			assertThat(aksjonsLogg.getOpprettetAv(), is("username"));
 		});
 	}
 
@@ -100,29 +96,13 @@ public class AksjonsLoggIT {
 	public void shouldThrowWhenOneOfAksjonIsMissingJournalpostId() throws IOException, UgyldigAksjonsLoggInfoException {
 		expectedException.expect(UgyldigAksjonsLoggInfoException.class);
 		expectedException.expectMessage("journalpostId");
-		String request = objectToJsonString(AksjonsLoggRequest.builder()
+		AksjonsLoggHeader aksjonsLoggHeader = AksjonsLoggHeader.builder()
 				.aksjonListe(Arrays.asList(
 						createAksjonsLoggRequestAksjon(1L, 1L, AksjonTypeCode.ENDRE_BEGRENSNING.name()),
 						createAksjonsLoggRequestAksjon(null, 1L, AksjonTypeCode.ENDRE_BEGRENSNING.name())
 				))
-				.build());
-		aksjonsLoggService.validerOgLagreAksjon(request);
-	}
-
-	@Test
-	public void shouldThrowWhenMissingAksjonHeaderValue() throws UgyldigAksjonsLoggInfoException {
-		expectedException.expect(UgyldigAksjonsLoggInfoException.class);
-		expectedException.expectMessage("Meldingen mangler påkrevd");
-
-		aksjonsLoggService.validerOgLagreAksjon("");
-	}
-
-	@Test
-	public void shouldThrowWhenInvalidJsonValue() throws UgyldigAksjonsLoggInfoException {
-		expectedException.expect(UgyldigAksjonsLoggInfoException.class);
-		expectedException.expectMessage("Sjekk om headeren er i gyldig JSON format");
-
-		aksjonsLoggService.validerOgLagreAksjon("not valid");
+				.build();
+		aksjonsLoggService.validateAndSaveAksjon(aksjonsLoggHeader);
 	}
 
 	@Test
@@ -130,9 +110,8 @@ public class AksjonsLoggIT {
 		expectedException.expect(UgyldigAksjonsLoggInfoException.class);
 		expectedException.expectMessage("journalpostId");
 
-		AksjonsLoggRequest request = TestDataUtils.createAksjonsLoggRequest(null, 1L, AksjonTypeCode.ENDRE_BEGRENSNING.name());
-		String aksjonLoggRequest = objectToJsonString(request);
-		aksjonsLoggService.validerOgLagreAksjon(aksjonLoggRequest);
+		AksjonsLoggHeader aksjonsLoggHeader = TestDataUtils.createAksjonsLoggRequest(null, 1L, AksjonTypeCode.ENDRE_BEGRENSNING.name());
+		aksjonsLoggService.validateAndSaveAksjon(aksjonsLoggHeader);
 	}
 
 	@Test
@@ -140,10 +119,9 @@ public class AksjonsLoggIT {
 		expectedException.expect(UgyldigAksjonsLoggInfoException.class);
 		expectedException.expectMessage("applikasjon");
 
-		AksjonsLoggRequest request = TestDataUtils.createAksjonsLoggRequest(1L, 1L, AksjonTypeCode.ENDRE_BEGRENSNING.name());
-		request.getAksjonListe().get(0).setApplikasjon(null);
-		String aksjonLoggRequest = objectToJsonString(request);
-		aksjonsLoggService.validerOgLagreAksjon(aksjonLoggRequest);
+		AksjonsLoggHeader aksjonsLoggHeader = TestDataUtils.createAksjonsLoggRequest(1L, 1L, AksjonTypeCode.ENDRE_BEGRENSNING.name());
+		aksjonsLoggHeader.getAksjonListe().get(0).setApplikasjon(null);
+		aksjonsLoggService.validateAndSaveAksjon(aksjonsLoggHeader);
 	}
 
 	@Test
@@ -151,10 +129,9 @@ public class AksjonsLoggIT {
 		expectedException.expect(UgyldigAksjonsLoggInfoException.class);
 		expectedException.expectMessage("aksjon");
 
-		AksjonsLoggRequest request = TestDataUtils.createAksjonsLoggRequest(1L, 1L, AksjonTypeCode.ENDRE_BEGRENSNING.name());
-		request.getAksjonListe().get(0).setAksjon(null);
-		String aksjonLoggRequest = objectToJsonString(request);
-		aksjonsLoggService.validerOgLagreAksjon(aksjonLoggRequest);
+		AksjonsLoggHeader aksjonsLoggHeader = TestDataUtils.createAksjonsLoggRequest(1L, 1L, AksjonTypeCode.ENDRE_BEGRENSNING.name());
+		aksjonsLoggHeader.getAksjonListe().get(0).setAksjon(null);
+		aksjonsLoggService.validateAndSaveAksjon(aksjonsLoggHeader);
 	}
 
 	@Test
@@ -162,10 +139,9 @@ public class AksjonsLoggIT {
 		expectedException.expect(UgyldigAksjonsLoggInfoException.class);
 		expectedException.expectMessage("utfoertAv");
 
-		AksjonsLoggRequest request = TestDataUtils.createAksjonsLoggRequest(1L, 1L, AksjonTypeCode.ENDRE_BEGRENSNING.name());
-		request.getAksjonListe().get(0).setUtfoertAv(null);
-		String aksjonLoggRequest = objectToJsonString(request);
-		aksjonsLoggService.validerOgLagreAksjon(aksjonLoggRequest);
+		AksjonsLoggHeader aksjonsLoggHeader = TestDataUtils.createAksjonsLoggRequest(1L, 1L, AksjonTypeCode.ENDRE_BEGRENSNING.name());
+		aksjonsLoggHeader.getAksjonListe().get(0).setUtfoertAv(null);
+		aksjonsLoggService.validateAndSaveAksjon(aksjonsLoggHeader);
 	}
 
 
@@ -174,8 +150,7 @@ public class AksjonsLoggIT {
 		expectedException.expect(UgyldigAksjonsLoggInfoException.class);
 		expectedException.expectMessage("AAA er ikke en gyldig verdi for aksjon");
 
-		AksjonsLoggRequest request = TestDataUtils.createAksjonsLoggRequest(1L, 1L, "AAA");
-		String aksjonLoggRequest = objectToJsonString(request);
-		aksjonsLoggService.validerOgLagreAksjon(aksjonLoggRequest);
+		AksjonsLoggHeader aksjonsLoggHeader = TestDataUtils.createAksjonsLoggRequest(1L, 1L, "AAA");
+		aksjonsLoggService.validateAndSaveAksjon(aksjonsLoggHeader);
 	}
 }

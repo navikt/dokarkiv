@@ -1,16 +1,10 @@
 package no.nav.dokarkiv.core.domain.entities;
 
-import com.fasterxml.jackson.annotation.JsonSetter;
-import com.fasterxml.jackson.databind.JsonNode;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import no.nav.dokarkiv.core.domain.AbstractPersistentVersionedDomainObject;
+import lombok.Data;
 import no.nav.dokarkiv.core.domain.codes.AksjonTypeCode;
-import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Immutable;
 import org.hibernate.annotations.Parameter;
 
 import javax.persistence.Column;
@@ -21,6 +15,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.time.LocalDateTime;
 
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
@@ -28,17 +23,15 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "T_AKSJONSLOGG")
 @Builder
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
-public class AksjonsLogg extends AbstractPersistentVersionedDomainObject {
+@Data
+@Immutable
+public class AksjonsLogg {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "hendelselogg_seq")
 	@GenericGenerator(name = "hendelselogg_seq", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
-			parameters = {@Parameter(name = "sequence_name", value = "t_aksjonslogg_seq"),
-					@Parameter(name = "initial_value", value = "200000000")})
+			parameters = {@Parameter(name = "sequence_name", value = "t_aksjonslogg_seq")})
+
 	@Column(name = "aksjonslogg_id", nullable = false, length = 11)
 	private Long aksjonsloggId;
 
@@ -70,9 +63,15 @@ public class AksjonsLogg extends AbstractPersistentVersionedDomainObject {
 	@Column(name = "til_verdi", length = 50)
 	private String tilVerdi;
 
-	@Column(name = "utfoert_av", length = 50)
+	@Column(name = "utfoert_av", length = 50, nullable = false)
 	private String utfoertAv;
 
 	@Column(name = "melding", length = 4000)
 	private String melding;
+
+	@Column(name = "opprettet_av", nullable = false)
+	private String opprettetAv;
+
+	@Column(name = "dato_opprettet", nullable = false)
+	private LocalDateTime datoOpprettet;
 }
