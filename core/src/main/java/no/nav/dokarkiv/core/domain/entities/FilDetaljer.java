@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import no.nav.dokarkiv.core.domain.AbstractPersistentVersionedDomainObjectWithKilde;
+import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
 import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
 import no.nav.dokarkiv.core.domain.codes.OnDemandInstansCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
@@ -78,6 +79,10 @@ public class FilDetaljer extends AbstractPersistentVersionedDomainObjectWithKild
 	@Enumerated(EnumType.STRING)
 	@Column(name = "k_variant_format", nullable = false)
 	private VariantFormatCode variantFormat;
+
+	@Column(name = "begrensning_type")
+	@Enumerated(EnumType.STRING)
+	private BegrensningTypeCode begrensningType;
 
 	@JsonIgnore
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -338,6 +343,14 @@ public class FilDetaljer extends AbstractPersistentVersionedDomainObjectWithKild
 	 */
 	public void setVariantFormat(VariantFormatCode variantFormat) {
 		this.variantFormat = variantFormat;
+	}
+
+	public BegrensningTypeCode getBegrensningType() {
+		return begrensningType;
+	}
+
+	public void setBegrensningType(BegrensningTypeCode begrensningType) {
+		throw new UnsupportedOperationException("Begrensning skal bare settes gjennom BegrensningService");
 	}
 
 	/**

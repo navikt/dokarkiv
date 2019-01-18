@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import no.nav.dokarkiv.core.domain.AbstractPersistentVersionedDomainObjectWithKilde;
+import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
@@ -52,6 +53,10 @@ public class JournalpostDokumentInfoRelasjon extends AbstractPersistentVersioned
 	@Enumerated(EnumType.STRING)
 	@Column(name = "k_tilkn_jp_som", nullable = false)
 	private TilknyttetJournalpostSomCode tilknyttetJournalpostSom;
+
+	@Column(name = "begrensning_type")
+	@Enumerated(EnumType.STRING)
+	private BegrensningTypeCode begrensningType;
 
 	@ManyToOne
 	@JoinColumn(name = "dokument_info_id", nullable = false)
@@ -176,6 +181,14 @@ public class JournalpostDokumentInfoRelasjon extends AbstractPersistentVersioned
 	 */
 	public void setTilknyttetJournalpostSom(TilknyttetJournalpostSomCode tilknyttetJournalpostSom) {
 		this.tilknyttetJournalpostSom = tilknyttetJournalpostSom;
+	}
+
+	public BegrensningTypeCode getBegrensningType() {
+		return begrensningType;
+	}
+
+	public void setBegrensningType(BegrensningTypeCode begrensningType) {
+		throw new UnsupportedOperationException("Begrensning skal bare settes gjennom BegrensningService");
 	}
 
 	/**

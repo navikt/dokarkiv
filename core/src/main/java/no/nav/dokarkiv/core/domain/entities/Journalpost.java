@@ -11,6 +11,7 @@ import static org.apache.commons.lang3.BooleanUtils.isFalse;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import no.nav.dokarkiv.core.domain.AbstractPersistentVersionedDomainObjectWithKilde;
+import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
 import no.nav.dokarkiv.core.domain.codes.Behandlingstema;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
@@ -199,6 +200,10 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	@Enumerated(EnumType.STRING)
 	@Column(name = "k_behandlingstema")
 	private Behandlingstema behandlingstema;
+
+	@Column(name = "begrensning_type")
+	@Enumerated(EnumType.STRING)
+	private BegrensningTypeCode begrensningType;
 
 	@OneToMany
 	@JoinColumn(name = "journalpost_id", nullable = false)
@@ -1421,6 +1426,14 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	 */
 	public void setBehandlingstema(Behandlingstema behandlingstema) {
 		this.behandlingstema = behandlingstema;
+	}
+
+	public BegrensningTypeCode getBegrensningType() {
+		return begrensningType;
+	}
+
+	public void setBegrensningType(BegrensningTypeCode begrensningType) {
+		throw new UnsupportedOperationException("Begrensning skal bare settes gjennom BegrensningService");
 	}
 
 	/**
