@@ -1,7 +1,7 @@
 package no.nav.dokarkiv.core.domain.service;
 
 import no.nav.dokarkiv.core.MDCConstants;
-import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
+import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.Begrensning;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
@@ -25,40 +25,40 @@ import java.util.stream.Collectors;
  */
 @Transactional
 @Component
-public class BegrensningService {
+public class SkjermingService {
 
 	private final BegrensningRepository begrensningRepository;
 	private JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository;
 
 	@Inject
-	public BegrensningService(BegrensningRepository begrensningRepository, JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository) {
+	public SkjermingService(BegrensningRepository begrensningRepository, JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository) {
 		this.begrensningRepository = begrensningRepository;
 		this.journalpostDokumentInfoRelasjonRepository = journalpostDokumentInfoRelasjonRepository;
 	}
 
-	public boolean isJournalpostBegrenset(Long journalpostId, BegrensningTypeCode begrensningTypeCode) {
+	public boolean isJournalpostBegrenset(Long journalpostId, SkjermingTypeCode skjermingTypeCode) {
 		Optional<Begrensning> begrensning = begrensningRepository.findByJournalpostIdAndBegrensningTypeAndDokumentInfoIdIsNull(
-				journalpostId, begrensningTypeCode);
+				journalpostId, skjermingTypeCode);
 		return begrensning.isPresent();
 	}
 
-	public boolean isJournalpostDokumentInfoRelasjonOrJournalpostBegrenset(Long journalpostId, Long dokumentInfoId, BegrensningTypeCode begrensningTypeCode) {
-		return isJournalpostDokumentInfoRelasjonBegrenset(journalpostId, dokumentInfoId, begrensningTypeCode) || isJournalpostBegrenset(journalpostId, begrensningTypeCode);
+	public boolean isJournalpostDokumentInfoRelasjonOrJournalpostBegrenset(Long journalpostId, Long dokumentInfoId, SkjermingTypeCode skjermingTypeCode) {
+		return isJournalpostDokumentInfoRelasjonBegrenset(journalpostId, dokumentInfoId, skjermingTypeCode) || isJournalpostBegrenset(journalpostId, skjermingTypeCode);
 	}
 
-	public boolean isJournalpostDokumentInfoRelasjonBegrenset(Long journalpostId, Long dokumentInfoId, BegrensningTypeCode begrensningTypeCode) {
+	public boolean isJournalpostDokumentInfoRelasjonBegrenset(Long journalpostId, Long dokumentInfoId, SkjermingTypeCode skjermingTypeCode) {
 		Optional<Begrensning> begrensning = begrensningRepository.findByJournalpostIdAndDokumentInfoIdAndBegrensningType(
-				journalpostId, dokumentInfoId, begrensningTypeCode);
+				journalpostId, dokumentInfoId, skjermingTypeCode);
 		return begrensning.isPresent();
 	}
 
 	public boolean isDokumentKassert(Long dokumentInfoId) {
-		return begrensningRepository.findByDokumentInfoIdAndBegrensningType(dokumentInfoId, BegrensningTypeCode.KASSERT)
+		return begrensningRepository.findByDokumentInfoIdAndBegrensningType(dokumentInfoId, SkjermingTypeCode.POL)
 				.isPresent();
 	}
 
 	public boolean isVariantSkjermet(Long dokumentInfoId, VariantFormatCode variant) {
-		Optional<Begrensning> variantSkjermet = begrensningRepository.findByDokumentInfoIdAndVariantFormatAndBegrensningType(dokumentInfoId, variant, BegrensningTypeCode.SKJERMET);
+		Optional<Begrensning> variantSkjermet = begrensningRepository.findByDokumentInfoIdAndVariantFormatAndBegrensningType(dokumentInfoId, variant, SkjermingTypeCode.POL);
 		String consumer = hentBrukerSomKaller();
 
 		//Midlertidig løsning i påvente av SAF
@@ -77,13 +77,13 @@ public class BegrensningService {
 
 	public void deleteValidertJournalpostBegrensning(
 			Long journalpostId,
-			BegrensningTypeCode begrensningTypeCode) {
-		begrensningRepository.deleteByJournalpostIdAndBegrensningTypeAndDokumentInfoIdIsNull(journalpostId, begrensningTypeCode);
+			SkjermingTypeCode skjermingTypeCode) {
+		begrensningRepository.deleteByJournalpostIdAndBegrensningTypeAndDokumentInfoIdIsNull(journalpostId, skjermingTypeCode);
 	}
 
 	public void deleteValidertJournalpostDokumentInfoRelasjonBegrensning(
-			Long journalpostId, Long dokumentInfoId, BegrensningTypeCode begrensningTypeCode) {
-		begrensningRepository.deleteByJournalpostIdAndDokumentInfoIdAndBegrensningType(journalpostId, dokumentInfoId, begrensningTypeCode);
+			Long journalpostId, Long dokumentInfoId, SkjermingTypeCode skjermingTypeCode) {
+		begrensningRepository.deleteByJournalpostIdAndDokumentInfoIdAndBegrensningType(journalpostId, dokumentInfoId, skjermingTypeCode);
 	}
 
 	private String hentBrukerSomKaller() {
@@ -104,7 +104,7 @@ public class BegrensningService {
 
 	public Journalpost addBegrensetDokumentInfoIdsToJournalpost(Journalpost journalpost) {
 		List<Long> begrensetDokumentInfoIdList = journalpostDokumentInfoRelasjonRepository.findBegrensetRelasjonDokumentInfoIdByJournalpostId(journalpost
-				.getJournalpostId()).stream().map(BegrensningService::convertBigToLong).collect(Collectors.toList());
+				.getJournalpostId()).stream().map(SkjermingService::convertBigToLong).collect(Collectors.toList());
 		journalpost.addAllbegrensetRelasjonerDokumentInfoIds(begrensetDokumentInfoIdList);
 		return journalpost;
 	}
@@ -114,7 +114,7 @@ public class BegrensningService {
 		if (BooleanUtils.isFalse((journalpostList == null || journalpostList.isEmpty()))) {
 			for (Journalpost journalpost : journalpostList) {
 				List<Long> begrensetDokumentInfoIdList = journalpostDokumentInfoRelasjonRepository.findBegrensetRelasjonDokumentInfoIdByJournalpostId(journalpost
-						.getJournalpostId()).stream().map(BegrensningService::convertBigToLong).collect(Collectors.toList());
+						.getJournalpostId()).stream().map(SkjermingService::convertBigToLong).collect(Collectors.toList());
 				journalpost.addAllbegrensetRelasjonerDokumentInfoIds(begrensetDokumentInfoIdList);
 			}
 		}

@@ -10,7 +10,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertNotNull;
 
-import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
+import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.entities.Begrensning;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
@@ -51,7 +51,7 @@ public class Rjoark100IT extends AbstractSlettDokumentIT {
 	}
 
 	@Test
-	public void skalIkkeLogiskSletteDokument_avVedlegg_ettersomVedleggErUtilgjengeliggjort() {
+	public void skalIkkeLogiskSletteDokument_avVedlegg_ettersomVedleggErPOL() {
 		abacPermit();
 
 		Journalpost journalpost = joarkRepository.save(opprettHoveddokumentMedEtKnyttetVedleggForIT());
@@ -72,13 +72,13 @@ public class Rjoark100IT extends AbstractSlettDokumentIT {
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.BAD_REQUEST));
 		assertThat(responseEntity.getBody(), containsString(
-				String.format("Kan ikke utføre logisk sletting av dokument med journalpostId=%s og dokumentInfoId=%s. Dokumentet er utilgjengeliggjort.",
+				String.format("Kan ikke utføre logisk sletting av dokument med journalpostId=%s og dokumentInfoId=%s. Dokumentet er POL.",
 						journalpost.getJournalpostId(),
 						vedlegg.getDokumentInfoId())));
 	}
 
 	@Test
-	public void skalIkkeLogiskSletteDokument_avVedlegg_ettersomHoveddokumentErUtilgjengeliggjort() {
+	public void skalIkkeLogiskSletteDokument_avVedlegg_ettersomHoveddokumentErPOL() {
 		abacPermit();
 
 		Journalpost journalpost = joarkRepository.save(opprettHoveddokumentMedEtKnyttetVedleggForIT());
@@ -99,7 +99,7 @@ public class Rjoark100IT extends AbstractSlettDokumentIT {
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.BAD_REQUEST));
 		assertThat(responseEntity.getBody(), containsString(
-				String.format("Kan ikke utføre logisk sletting av dokument med journalpostId=%s. Journalposten er utilgjengeliggjort",
+				String.format("Kan ikke utføre logisk sletting av dokument med journalpostId=%s. Journalposten er POL",
 						journalpost.getJournalpostId())));
 	}
 
@@ -128,7 +128,7 @@ public class Rjoark100IT extends AbstractSlettDokumentIT {
 	}
 
 	@Test
-	public void skalIkkeLogiskSletteDokument_avHoveddokument_ettersomHoveddokumentErUtilgjengeliggjort() {
+	public void skalIkkeLogiskSletteDokument_avHoveddokument_ettersomHoveddokumentErPOL() {
 		abacPermit();
 
 		Journalpost journalpost = joarkRepository.save(opprettHoveddokumentForIT());
@@ -147,12 +147,12 @@ public class Rjoark100IT extends AbstractSlettDokumentIT {
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.BAD_REQUEST));
 		assertThat(responseEntity.getBody(), containsString(
-				String.format("Kan ikke utføre logisk sletting av dokument med journalpostId=%s. Journalposten er utilgjengeliggjort",
+				String.format("Kan ikke utføre logisk sletting av dokument med journalpostId=%s. Journalposten er POL",
 						journalpost.getJournalpostId())));
 	}
 
 	@Test
-	public void skalLogiskSletteDokument_avHoveddokument_evenNaarVedleggErUtilgjengeliggjort() {
+	public void skalLogiskSletteDokument_avHoveddokument_evenNaarVedleggErPOL() {
 		abacPermit();
 
 		Journalpost journalpost = joarkRepository.save(opprettHoveddokumentMedEtKnyttetVedleggForIT());
@@ -286,7 +286,7 @@ public class Rjoark100IT extends AbstractSlettDokumentIT {
 		Journalpost journalpost = joarkRepository.save(opprettHoveddokumentForIT());
 		Begrensning jpBegrensning = Begrensning.builder()
 				.journalpostId(journalpost.getJournalpostId())
-				.begrensningType(BegrensningTypeCode.UTILGJENGELIGGJORT)
+				.begrensningType(SkjermingTypeCode.POL)
 				.build();
 		jpBegrensning.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
 		begrensningRepository.save(jpBegrensning);

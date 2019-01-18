@@ -1,6 +1,6 @@
 package no.nav.dokarkiv.fysiskslettdokument.rjoark102;
 
-import static no.nav.dokarkiv.fysiskslettdokument.util.TestUtils.BEGRENSNINGTYPE_UTILGJENGELIGGJORT;
+import static no.nav.dokarkiv.fysiskslettdokument.util.TestUtils.BEGRENSNINGTYPE_POL;
 import static no.nav.dokarkiv.fysiskslettdokument.util.TestUtils.knyttDokumentInfoSomVedleggTilJournalpostForIT;
 import static no.nav.dokarkiv.fysiskslettdokument.util.TestUtils.opprettDuplikatRelasjon;
 import static no.nav.dokarkiv.fysiskslettdokument.util.TestUtils.opprettHoveddokumentForIT;
@@ -16,7 +16,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
+import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.entities.Begrensning;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
@@ -43,7 +43,7 @@ public class Rjoark102IT extends AbstractFysiskSlettDokumentIT {
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_FYSISKSLETTDOKUMENT + journalpost.getJournalpostId() + "/"
-						+ feilDokumentInfoId + "/" + BEGRENSNINGTYPE_UTILGJENGELIGGJORT,
+						+ feilDokumentInfoId + "/" + BEGRENSNINGTYPE_POL,
 				HttpMethod.DELETE,
 				createHeaders(),
 				String.class);
@@ -68,7 +68,7 @@ public class Rjoark102IT extends AbstractFysiskSlettDokumentIT {
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_FYSISKSLETTDOKUMENT + journalpost1.getJournalpostId() + "/"
 						+ journalpost2.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId() + "/"
-						+ BEGRENSNINGTYPE_UTILGJENGELIGGJORT,
+						+ BEGRENSNINGTYPE_POL,
 				HttpMethod.DELETE,
 				createHeaders(),
 				String.class);
@@ -93,7 +93,7 @@ public class Rjoark102IT extends AbstractFysiskSlettDokumentIT {
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_FYSISKSLETTDOKUMENT + journalpost.getJournalpostId() + "/"
 						+ journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId() +
-						"/" + BEGRENSNINGTYPE_UTILGJENGELIGGJORT,
+						"/" + BEGRENSNINGTYPE_POL,
 				HttpMethod.DELETE,
 				createHeaders(),
 				String.class);
@@ -118,7 +118,7 @@ public class Rjoark102IT extends AbstractFysiskSlettDokumentIT {
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_FYSISKSLETTDOKUMENT + journalpost.getJournalpostId() + "/"
-						+ sammensattDok.getDokumentInfoId() + "/" + BEGRENSNINGTYPE_UTILGJENGELIGGJORT,
+						+ sammensattDok.getDokumentInfoId() + "/" + BEGRENSNINGTYPE_POL,
 				HttpMethod.DELETE,
 				createHeaders(),
 				String.class);
@@ -132,7 +132,7 @@ public class Rjoark102IT extends AbstractFysiskSlettDokumentIT {
 	}
 
 	@Test
-	public void skalIkkeSletteDokumentFysisk_avVedlegg_ettersomVedleggIkkeErUtilgjengeliggjort() {
+	public void skalIkkeSletteDokumentFysisk_avVedlegg_ettersomVedleggIkkeErPOL() {
 		abacPermit();
 
 		Journalpost journalpost = joarkRepository.save(opprettHoveddokumentMedEtKnyttetVedleggForIT());
@@ -145,7 +145,7 @@ public class Rjoark102IT extends AbstractFysiskSlettDokumentIT {
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_FYSISKSLETTDOKUMENT + journalpost.getJournalpostId() + "/" + vedlegg.getDokumentInfoId() +
-						"/" + BEGRENSNINGTYPE_UTILGJENGELIGGJORT,
+						"/" + BEGRENSNINGTYPE_POL,
 				HttpMethod.DELETE,
 				createHeaders(),
 				String.class);
@@ -154,7 +154,7 @@ public class Rjoark102IT extends AbstractFysiskSlettDokumentIT {
 				String.format("Fant ikke forventet begrensning for dokument med journalpostId=%s, dokumentInfoId=%s og begrensningsType=%s.",
 						journalpost.getJournalpostId(),
 						vedlegg.getDokumentInfoId(),
-						BegrensningTypeCode.UTILGJENGELIGGJORT)));
+						SkjermingTypeCode.POL)));
 	}
 
 	@Test
@@ -184,7 +184,7 @@ public class Rjoark102IT extends AbstractFysiskSlettDokumentIT {
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_FYSISKSLETTDOKUMENT + journalpost.getJournalpostId() + "/" + vedlegg.getDokumentInfoId() +
-						"/" + BEGRENSNINGTYPE_UTILGJENGELIGGJORT,
+						"/" + BEGRENSNINGTYPE_POL,
 				HttpMethod.DELETE,
 				createHeaders(),
 				String.class);
@@ -242,7 +242,7 @@ public class Rjoark102IT extends AbstractFysiskSlettDokumentIT {
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_FYSISKSLETTDOKUMENT + journalpost1.getJournalpostId() + "/" + vedlegg.getDokumentInfoId() +
-						"/" + BEGRENSNINGTYPE_UTILGJENGELIGGJORT,
+						"/" + BEGRENSNINGTYPE_POL,
 				HttpMethod.DELETE,
 				createHeaders(),
 				String.class);
@@ -267,7 +267,7 @@ public class Rjoark102IT extends AbstractFysiskSlettDokumentIT {
 	}
 
 	@Test
-	public void skalIkkeSletteDokumentFysisk_medHoveddokument_ettersomHoveddokumentIkkeErUtilgjengeliggjort() {
+	public void skalIkkeSletteDokumentFysisk_medHoveddokument_ettersomHoveddokumentIkkeErPOL() {
 		abacPermit();
 
 		Journalpost journalpost = joarkRepository.save(opprettHoveddokumentForIT());
@@ -278,7 +278,7 @@ public class Rjoark102IT extends AbstractFysiskSlettDokumentIT {
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_FYSISKSLETTDOKUMENT + journalpost.getJournalpostId() + "/"
 						+ journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId() +
-						"/" + BEGRENSNINGTYPE_UTILGJENGELIGGJORT,
+						"/" + BEGRENSNINGTYPE_POL,
 				HttpMethod.DELETE,
 				createHeaders(),
 				String.class);
@@ -287,7 +287,7 @@ public class Rjoark102IT extends AbstractFysiskSlettDokumentIT {
 		assertThat(responseEntity.getBody(), containsString(
 				String.format("Fant ikke forventet begrensning for journalpost med journalpostId=%s og begrensningsType=%s.",
 						journalpost.getJournalpostId(),
-						BegrensningTypeCode.UTILGJENGELIGGJORT)));
+						SkjermingTypeCode.POL)));
 	}
 
 	@Test
@@ -314,7 +314,7 @@ public class Rjoark102IT extends AbstractFysiskSlettDokumentIT {
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_FYSISKSLETTDOKUMENT + journalpost.getJournalpostId() + "/"
-						+ hoveddokument.getDokumentInfoId() + "/" + BEGRENSNINGTYPE_UTILGJENGELIGGJORT,
+						+ hoveddokument.getDokumentInfoId() + "/" + BEGRENSNINGTYPE_POL,
 				HttpMethod.DELETE,
 				createHeaders(),
 				String.class);
@@ -368,7 +368,7 @@ public class Rjoark102IT extends AbstractFysiskSlettDokumentIT {
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_FYSISKSLETTDOKUMENT + journalpost.getJournalpostId() + "/"
-						+ hoveddokument.getDokumentInfoId() + "/" + BEGRENSNINGTYPE_UTILGJENGELIGGJORT,
+						+ hoveddokument.getDokumentInfoId() + "/" + BEGRENSNINGTYPE_POL,
 				HttpMethod.DELETE,
 				createHeaders(),
 				String.class);
@@ -413,7 +413,7 @@ public class Rjoark102IT extends AbstractFysiskSlettDokumentIT {
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_FYSISKSLETTDOKUMENT + journalpost.getJournalpostId() + "/"
-						+ hoveddokument.getDokumentInfoId() + "/" + BEGRENSNINGTYPE_UTILGJENGELIGGJORT,
+						+ hoveddokument.getDokumentInfoId() + "/" + BEGRENSNINGTYPE_POL,
 				HttpMethod.DELETE,
 				createHeaders(),
 				String.class);
@@ -422,7 +422,7 @@ public class Rjoark102IT extends AbstractFysiskSlettDokumentIT {
 		assertThat(responseEntity.getBody(), containsString(
 				String.format("Fant ikke forventet begrensning for journalpost med journalpostId=%s og begrensningsType=%s.",
 						journalpost.getJournalpostId(),
-						BegrensningTypeCode.UTILGJENGELIGGJORT)));
+						SkjermingTypeCode.POL)));
 	}
 
 	@Test
@@ -481,7 +481,7 @@ public class Rjoark102IT extends AbstractFysiskSlettDokumentIT {
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_FYSISKSLETTDOKUMENT + journalpost1.getJournalpostId() + "/"
-						+ hoveddokument1.getDokumentInfoId() + "/" + BEGRENSNINGTYPE_UTILGJENGELIGGJORT,
+						+ hoveddokument1.getDokumentInfoId() + "/" + BEGRENSNINGTYPE_POL,
 				HttpMethod.DELETE,
 				createHeaders(),
 				String.class);
@@ -577,7 +577,7 @@ public class Rjoark102IT extends AbstractFysiskSlettDokumentIT {
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_FYSISKSLETTDOKUMENT + journalpost1.getJournalpostId() + "/"
-						+ hoveddokument1.getDokumentInfoId() + "/" + BEGRENSNINGTYPE_UTILGJENGELIGGJORT,
+						+ hoveddokument1.getDokumentInfoId() + "/" + BEGRENSNINGTYPE_POL,
 				HttpMethod.DELETE,
 				createHeaders(),
 				String.class);

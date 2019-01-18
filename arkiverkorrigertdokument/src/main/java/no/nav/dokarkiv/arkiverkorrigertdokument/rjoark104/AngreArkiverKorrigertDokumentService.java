@@ -6,11 +6,11 @@ import static org.apache.commons.lang3.BooleanUtils.isFalse;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.arkiverkorrigertdokument.exception.VariantFormatNotFoundException;
 import no.nav.dokarkiv.arkiverkorrigertdokument.rjoark103.ArkiverKorrigertDokumentRespons;
-import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
+import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
-import no.nav.dokarkiv.core.exceptions.BegrensningIkkeFunnetException;
+import no.nav.dokarkiv.core.exceptions.SkjermingIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.DokumentInfoIkkeFunnetException;
 import no.nav.dokarkiv.core.repository.BegrensningRepository;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
@@ -67,18 +67,18 @@ public class AngreArkiverKorrigertDokumentService {
 
 	private void sjekkAtArkivVariantAvDokumentErSkjermet(Long dokumentInfoId) {
 		if (isFalse(begrensningRepository.findByDokumentInfoIdAndVariantFormatAndBegrensningType(
-				dokumentInfoId, VariantFormatCode.ARKIV, BegrensningTypeCode.SKJERMET).isPresent())) {
-			throw new BegrensningIkkeFunnetException(String.format(
+				dokumentInfoId, VariantFormatCode.ARKIV, SkjermingTypeCode.POL).isPresent())) {
+			throw new SkjermingIkkeFunnetException(String.format(
 					"Korrigering av dokumentet kan ikke oppheves fordi dokument med dokumentInfoId=%s og variantFormat=%s " +
 							"ikke er begrenset som et %s dokument.",
 					dokumentInfoId,
 					VariantFormatCode.ARKIV,
-					BegrensningTypeCode.SKJERMET));
+					SkjermingTypeCode.POL));
 		}
 	}
 
 	private void slettBegrensning(DokumentInfo dokumentInfo) {
-		begrensningRepository.deleteByDokumentInfoIdAndBegrensningType(dokumentInfo.getDokumentInfoId(), BegrensningTypeCode.SKJERMET);
+		begrensningRepository.deleteByDokumentInfoIdAndBegrensningType(dokumentInfo.getDokumentInfoId(), SkjermingTypeCode.POL);
 	}
 
 	private void slettSladdetFilOgFilDetaljer(DokumentInfo dokumentInfo) {

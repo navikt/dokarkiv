@@ -11,7 +11,7 @@ import static org.apache.commons.lang3.BooleanUtils.isFalse;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import no.nav.dokarkiv.core.domain.AbstractPersistentVersionedDomainObjectWithKilde;
-import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
+import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.Behandlingstema;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
@@ -201,9 +201,9 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	@Column(name = "k_behandlingstema")
 	private Behandlingstema behandlingstema;
 
-	@Column(name = "begrensning_type")
+	@Column(name = "skjerming_type")
 	@Enumerated(EnumType.STRING)
-	private BegrensningTypeCode begrensningType;
+	private SkjermingTypeCode skjermingType;
 
 	@OneToMany
 	@JoinColumn(name = "journalpost_id", nullable = false)
@@ -1428,12 +1428,12 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 		this.behandlingstema = behandlingstema;
 	}
 
-	public BegrensningTypeCode getBegrensningType() {
-		return begrensningType;
+	public SkjermingTypeCode getSkjermingType() {
+		return skjermingType;
 	}
 
-	public void setBegrensningType(BegrensningTypeCode begrensningType) {
-		throw new UnsupportedOperationException("Begrensning skal bare settes gjennom BegrensningService");
+	public void setSkjermingType(SkjermingTypeCode skjermingType) {
+		throw new UnsupportedOperationException("Skjerming  skal bare settes gjennom SkjermingService");
 	}
 
 	/**

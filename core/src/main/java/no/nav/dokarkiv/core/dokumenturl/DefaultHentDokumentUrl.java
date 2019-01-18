@@ -77,7 +77,7 @@ public class DefaultHentDokumentUrl extends AbstractDocumentOperation implements
 
 	private String generateUrl(String baseUrl, Journalpost journalpost, FilDetaljer fildetaljer, Long timeToLiveMinutes)
 			throws InvalidFilUuidException {
-		if (begrensningService.isVariantSkjermet(fildetaljer.getDokumentInfo().getDokumentInfoId(), fildetaljer.getVariantFormat())) {
+		if (skjermingService.isVariantSkjermet(fildetaljer.getDokumentInfo().getDokumentInfoId(), fildetaljer.getVariantFormat())) {
 			fildetaljer = fildetaljer.getDokumentInfo().findFilDetaljerByVariantFormat(VariantFormatCode.SLADDET);
 		}
 		String filUuid = fildetaljer.getFilUuid();

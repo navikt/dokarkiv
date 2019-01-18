@@ -8,11 +8,11 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 import no.nav.dokarkiv.core.domain.builder.DokumentUrlInfoBuilder;
-import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
+import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.entities.Begrensning;
 import no.nav.dokarkiv.core.domain.entities.DokumentUrlInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import no.nav.dokarkiv.core.domain.service.BegrensningService;
+import no.nav.dokarkiv.core.domain.service.SkjermingService;
 import no.nav.dokarkiv.core.security.abac.JdbcAbacSecurityRepository;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import org.junit.After;
@@ -34,7 +34,7 @@ import java.util.UUID;
  * @author Ugur Alpay Cenar, Visma Consulting.
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = {RepositoryConfig.class, BegrensningService.class, JdbcAbacSecurityRepository.class})
+@SpringBootTest(classes = {RepositoryConfig.class, SkjermingService.class, JdbcAbacSecurityRepository.class})
 @DataJpaTest
 @Transactional
 @ActiveProfiles("itest")
@@ -89,7 +89,7 @@ public class DokumentUrlInfoRepositoryBegrensetTest {
         Journalpost journalpost = createJournalpost();
 
         joarkRepository.save(journalpost);
-        Begrensning begrensning = createBegrensning(journalpost.getJournalpostId(), null, BegrensningTypeCode.UTILGJENGELIGGJORT);
+        Begrensning begrensning = createBegrensning(journalpost.getJournalpostId(), null, SkjermingTypeCode.POL);
 
         begrensningRepository.save(begrensning);
 
@@ -114,7 +114,7 @@ public class DokumentUrlInfoRepositoryBegrensetTest {
         Journalpost journalpost = createJournalpost();
 
         joarkRepository.save(journalpost);
-        Begrensning begrensning = createBegrensning(journalpost.getJournalpostId(), null, BegrensningTypeCode.UTILGJENGELIGGJORT);
+        Begrensning begrensning = createBegrensning(journalpost.getJournalpostId(), null, SkjermingTypeCode.POL);
         begrensningRepository.save(begrensning);
         DokumentUrlInfo dokumentUrlInfo = DokumentUrlInfoBuilder.getDokumentUrlInfoBuilder()
                 .journalpost(journalpost)

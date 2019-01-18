@@ -8,7 +8,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.core.Is.is;
 
-import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
+import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.logisktidligkassasjon.AbstractLogiskTidligKassasjonIT;
@@ -83,7 +83,7 @@ public class Rjoark105IT extends AbstractLogiskTidligKassasjonIT {
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 		assertThat(begrensningRepository.count(), is(1L));
-		assertTrue(begrensningRepository.findByDokumentInfoIdAndBegrensningType(hoveddokument1.getDokumentInfoId(), BegrensningTypeCode.KASSERT)
+		assertTrue(begrensningRepository.findByDokumentInfoIdAndBegrensningType(hoveddokument1.getDokumentInfoId(), SkjermingTypeCode.POL)
 				.isPresent());
 	}
 
@@ -106,7 +106,7 @@ public class Rjoark105IT extends AbstractLogiskTidligKassasjonIT {
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 		assertThat(begrensningRepository.count(), is(1L));
-		assertTrue(begrensningRepository.findByDokumentInfoIdAndBegrensningType(dokumentInfo.getDokumentInfoId(), BegrensningTypeCode.KASSERT)
+		assertTrue(begrensningRepository.findByDokumentInfoIdAndBegrensningType(dokumentInfo.getDokumentInfoId(), SkjermingTypeCode.POL)
 				.isPresent());
 	}
 

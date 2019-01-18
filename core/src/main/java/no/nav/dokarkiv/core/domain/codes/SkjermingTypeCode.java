@@ -5,17 +5,9 @@ package no.nav.dokarkiv.core.domain.codes;
  * 
  * @author Ketill Fenne, Visma Consulting
  */
-public enum BegrensningTypeCode {
+public enum SkjermingTypeCode {
 	/**
-	 * Utilgjengeliggjort
+	 * POL
 	 */
-	UTILGJENGELIGGJORT,
-	/**
-	 * Skjermet
-	 */
-	SKJERMET,
-	/**
-	 * Kassert
-	 */
-	KASSERT;
+	POL
 }

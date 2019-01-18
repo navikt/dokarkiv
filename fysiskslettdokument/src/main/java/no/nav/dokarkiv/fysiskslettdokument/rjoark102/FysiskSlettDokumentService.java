@@ -4,12 +4,12 @@ import static org.apache.commons.lang3.BooleanUtils.isFalse;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.MDCConstants;
-import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
+import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
-import no.nav.dokarkiv.core.domain.service.BegrensningService;
-import no.nav.dokarkiv.core.exceptions.BegrensningIkkeFunnetException;
+import no.nav.dokarkiv.core.domain.service.SkjermingService;
+import no.nav.dokarkiv.core.exceptions.SkjermingIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.JournalpostDokumentInfoRelasjonIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.UgyldigTilknyttetJournalpostSomException;
 import no.nav.dokarkiv.core.repository.JoarkDeleteRepository;
@@ -26,16 +26,16 @@ public class FysiskSlettDokumentService {
 
 	private final JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository;
 	private final JoarkDeleteRepository deleteRepository;
-	private final BegrensningService begrensningService;
+	private final SkjermingService skjermingService;
 
 	@Inject
 	public FysiskSlettDokumentService(
 			JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository,
 			JoarkDeleteRepository deleteRepository,
-			BegrensningService begrensningService) {
+			SkjermingService skjermingService) {
 		this.journalpostDokumentInfoRelasjonRepository = journalpostDokumentInfoRelasjonRepository;
 		this.deleteRepository = deleteRepository;
-		this.begrensningService = begrensningService;
+		this.skjermingService = skjermingService;
 	}
 
 	public FysiskSlettDokumentResponse sletteDokumentFysisk(FysiskSlettDokumentRequestTo requestTo) {
@@ -49,22 +49,22 @@ public class FysiskSlettDokumentService {
 
 		switch (relasjonSomSkalSlettesFysisk.getTilknyttetJournalpostSom()) {
 			case HOVEDDOKUMENT:
-				sjekkAtJournalpostErUtilgjengeliggjort(relasjonSomSkalSlettesFysisk.getJournalpost().getJournalpostId());
-				begrensningService.deleteValidertJournalpostBegrensning(
+				sjekkAtJournalpostErPOL(relasjonSomSkalSlettesFysisk.getJournalpost().getJournalpostId());
+				skjermingService.deleteValidertJournalpostBegrensning(
 						relasjonSomSkalSlettesFysisk.getJournalpost().getJournalpostId(),
-						BegrensningTypeCode.UTILGJENGELIGGJORT);
+						SkjermingTypeCode.POL);
 				fysiskSlettEtHoveddokument(relasjonSomSkalSlettesFysisk);
 				log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har fysisk slettet journalpost med journalpostId={}",
 						requestTo.getJournalpostId());
 				break;
 			case VEDLEGG:
-				sjekkAtDokumentErUtilgjengeliggjort(
+				sjekkAtDokumentErPOL(
 						relasjonSomSkalSlettesFysisk.getJournalpost().getJournalpostId(),
 						relasjonSomSkalSlettesFysisk.getDokumentInfo().getDokumentInfoId());
-				begrensningService.deleteValidertJournalpostDokumentInfoRelasjonBegrensning(
+				skjermingService.deleteValidertJournalpostDokumentInfoRelasjonBegrensning(
 						relasjonSomSkalSlettesFysisk.getJournalpost().getJournalpostId(),
 						relasjonSomSkalSlettesFysisk.getDokumentInfo().getDokumentInfoId(),
-						BegrensningTypeCode.UTILGJENGELIGGJORT);
+						SkjermingTypeCode.POL);
 				fysiskSlettEtVedlegg(relasjonSomSkalSlettesFysisk);
 				log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) +
 								" har fysisk slettet dokument med journalpostId={}, dokumentInfoId={}",
@@ -81,27 +81,27 @@ public class FysiskSlettDokumentService {
 		return FysiskSlettDokumentResponseMapper.mapToFysiskSlettDokumentResponse(relasjonSomSkalSlettesFysisk);
 	}
 
-	private void sjekkAtJournalpostErUtilgjengeliggjort(Long journalpostId) {
-		if (isFalse(begrensningService.isJournalpostBegrenset(
+	private void sjekkAtJournalpostErPOL(Long journalpostId) {
+		if (isFalse(skjermingService.isJournalpostBegrenset(
 				journalpostId,
-				BegrensningTypeCode.UTILGJENGELIGGJORT))) {
-			throw new BegrensningIkkeFunnetException(String.format(
+				SkjermingTypeCode.POL))) {
+			throw new SkjermingIkkeFunnetException(String.format(
 					"Fant ikke forventet begrensning for journalpost med journalpostId=%s og begrensningsType=%s.",
 					journalpostId,
-					BegrensningTypeCode.UTILGJENGELIGGJORT.name()));
+					SkjermingTypeCode.POL.name()));
 		}
 	}
 
-	private void sjekkAtDokumentErUtilgjengeliggjort(Long journalpostId, Long dokumentInfoId) {
-		if (isFalse(begrensningService.isJournalpostDokumentInfoRelasjonBegrenset(
+	private void sjekkAtDokumentErPOL(Long journalpostId, Long dokumentInfoId) {
+		if (isFalse(skjermingService.isJournalpostDokumentInfoRelasjonBegrenset(
 				journalpostId,
 				dokumentInfoId,
-				BegrensningTypeCode.UTILGJENGELIGGJORT))) {
-			throw new BegrensningIkkeFunnetException(String.format(
+				SkjermingTypeCode.POL))) {
+			throw new SkjermingIkkeFunnetException(String.format(
 					"Fant ikke forventet begrensning for dokument med journalpostId=%s, dokumentInfoId=%s og begrensningsType=%s.",
 					journalpostId,
 					dokumentInfoId,
-					BegrensningTypeCode.UTILGJENGELIGGJORT.name()));
+					SkjermingTypeCode.POL.name()));
 		}
 	}
 

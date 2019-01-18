@@ -9,7 +9,7 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
+import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.fysisktidligkassasjon.AbstractFysiskTidligKassasjonIT;
@@ -57,7 +57,7 @@ public class Rjoark107IT extends AbstractFysiskTidligKassasjonIT {
 		assertThat(responseEntity.getBody(), containsString(String.format(
 				"Fant ikke forventet begrensning for dokument med dokumentInfoId=%s og begrensningsType=%s",
 				dokumentInfo.getDokumentInfoId(),
-				BegrensningTypeCode.KASSERT)));
+				SkjermingTypeCode.POL)));
 	}
 
 	@Test

@@ -16,10 +16,10 @@ import io.leangen.graphql.annotations.GraphQLContext;
 import io.leangen.graphql.annotations.GraphQLNonNull;
 import io.leangen.graphql.annotations.GraphQLQuery;
 import lombok.extern.slf4j.Slf4j;
-import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
+import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
-import no.nav.dokarkiv.core.domain.service.BegrensningService;
+import no.nav.dokarkiv.core.domain.service.SkjermingService;
 import no.nav.dokarkiv.core.metrics.GraphQLMetrics;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.security.abac.AbacSecurityService;
@@ -49,13 +49,13 @@ public class DokumentInfoQuery implements Query {
 	private final DokumentinfoRepository dokumentinfoRepository;
 
 	private final AbacSecurityService abacSecurityService;
-	private final BegrensningService begrensningService;
+	private final SkjermingService skjermingService;
 
 	@Inject
-	public DokumentInfoQuery(DokumentinfoRepository dokumentinfoRepository, AbacSecurityService abacSecurityService, BegrensningService begrensningService) {
+	public DokumentInfoQuery(DokumentinfoRepository dokumentinfoRepository, AbacSecurityService abacSecurityService, SkjermingService skjermingService) {
 		this.dokumentinfoRepository = dokumentinfoRepository;
 		this.abacSecurityService = abacSecurityService;
-		this.begrensningService = begrensningService;
+		this.skjermingService = skjermingService;
 	}
 
 	@GraphQLQuery(name = DOKUMENTINFO)
@@ -76,7 +76,7 @@ public class DokumentInfoQuery implements Query {
 	@GraphQLQuery(name = "kassert")
 	@Transactional(readOnly = true)
 	public boolean kassert(@GraphQLContext DokumentInfo dokument) {
-		return begrensningService.isDokumentKassert(dokument.getDokumentInfoId());
+		return skjermingService.isDokumentKassert(dokument.getDokumentInfoId());
 	}
 
 	@GraphQLQuery(name = "originalJournalpost")
@@ -89,7 +89,7 @@ public class DokumentInfoQuery implements Query {
 			throw new JournalpostIkkeFunnetException(format("Fant ingen tilhørende original journalpost for dokumentInfo med dokumentInfoId=%s", dokument
 					.getDokumentInfoId()));
 		}
-		return mapJournalpost(originalJournalpost, begrensningService.isJournalpostBegrenset(originalJournalpost.getJournalpostId(), BegrensningTypeCode.UTILGJENGELIGGJORT));
+		return mapJournalpost(originalJournalpost, skjermingService.isJournalpostBegrenset(originalJournalpost.getJournalpostId(), SkjermingTypeCode.POL));
 	}
 
 	@GraphQLQuery(name = "knyttetJournalpostList")
@@ -100,17 +100,17 @@ public class DokumentInfoQuery implements Query {
 				.getJournalpostRelasjoner();
 
 		List<Long> begrensetJournalpostRelasjon = journalpostDokumentInfoRelasjons.stream()
-				.filter(relasjon -> begrensningService.isJournalpostDokumentInfoRelasjonBegrenset(relasjon.getJournalpost()
+				.filter(relasjon -> skjermingService.isJournalpostDokumentInfoRelasjonBegrenset(relasjon.getJournalpost()
 						.getJournalpostId(), relasjon.getDokumentInfo()
-						.getDokumentInfoId(), BegrensningTypeCode.UTILGJENGELIGGJORT) || begrensningService.isJournalpostBegrenset(relasjon
+						.getDokumentInfoId(), SkjermingTypeCode.POL) || skjermingService.isJournalpostBegrenset(relasjon
 						.getJournalpost()
-						.getJournalpostId(), BegrensningTypeCode.UTILGJENGELIGGJORT))
+						.getJournalpostId(), SkjermingTypeCode.POL))
 				.map(relasjon -> relasjon.getJournalpost().getJournalpostId())
 				.collect(Collectors.toList());
 
 		List<Long> begrensetJournalpost = journalpostDokumentInfoRelasjons.stream()
-				.filter(relasjon -> begrensningService.isJournalpostBegrenset(relasjon.getJournalpost()
-						.getJournalpostId(), BegrensningTypeCode.UTILGJENGELIGGJORT))
+				.filter(relasjon -> skjermingService.isJournalpostBegrenset(relasjon.getJournalpost()
+						.getJournalpostId(), SkjermingTypeCode.POL))
 				.map(relasjon -> relasjon.getJournalpost().getJournalpostId())
 				.collect(Collectors.toList());
 

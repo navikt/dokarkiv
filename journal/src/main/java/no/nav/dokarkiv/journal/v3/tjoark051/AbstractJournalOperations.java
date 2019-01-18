@@ -5,7 +5,7 @@ import no.nav.dokarkiv.core.domain.entities.DokumentFil;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import no.nav.dokarkiv.core.domain.service.BegrensningService;
+import no.nav.dokarkiv.core.domain.service.SkjermingService;
 import no.nav.dokarkiv.core.exceptions.DocumentNotFoundException;
 import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
 import no.nav.dokarkiv.core.exceptions.InvalidFilUuidException;
@@ -33,7 +33,7 @@ public abstract class AbstractJournalOperations {
 	private DokumentFilRepository dokumentFilRepository;
 
 	@Inject
-	private BegrensningService begrensningService;
+	private SkjermingService skjermingService;
 
 	/**
 	 * Finds the journalpost for a journalpostId
@@ -75,7 +75,7 @@ public abstract class AbstractJournalOperations {
 	protected FilDetaljer getFilDetaljer(DokumentInfo dokumentInfo, VariantFormatCode variantFormat)
 			throws DocumentNotFoundException {
 		FilDetaljer filDetaljer;
-		if (begrensningService.isVariantSkjermet(dokumentInfo.getDokumentInfoId(), variantFormat)) {
+		if (skjermingService.isVariantSkjermet(dokumentInfo.getDokumentInfoId(), variantFormat)) {
 			filDetaljer = dokumentInfo.findFilDetaljerByVariantFormat(VariantFormatCode.SLADDET);
 		} else {
 			filDetaljer = dokumentInfo.findFilDetaljerByVariantFormat(variantFormat);

@@ -10,12 +10,12 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder;
-import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
+import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.entities.Begrensning;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import no.nav.dokarkiv.core.domain.service.BegrensningService;
+import no.nav.dokarkiv.core.domain.service.SkjermingService;
 import no.nav.dokarkiv.core.security.abac.JdbcAbacSecurityRepository;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import org.junit.After;
@@ -39,7 +39,7 @@ import java.util.List;
  * @author Ugur Alpay Cenar, Visma Consulting.
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = {RepositoryConfig.class, BegrensningService.class, JdbcAbacSecurityRepository.class})
+@SpringBootTest(classes = {RepositoryConfig.class, SkjermingService.class, JdbcAbacSecurityRepository.class})
 @DataJpaTest
 @Transactional
 @ActiveProfiles("itest")
@@ -167,7 +167,7 @@ public class JoarkRepositoryBegrensetTest {
         Journalpost journalpost = createJournalpost();
 
         journalpost = joarkRepository.save(journalpost);
-        Begrensning begrensning = createBegrensning(journalpost.getJournalpostId(), null, BegrensningTypeCode.UTILGJENGELIGGJORT);
+        Begrensning begrensning = createBegrensning(journalpost.getJournalpostId(), null, SkjermingTypeCode.POL);
 
         begrensningRepository.save(begrensning);
 
@@ -185,7 +185,7 @@ public class JoarkRepositoryBegrensetTest {
 
         journalpost = joarkRepository.save(journalpost);
         journalpostBegrenset = joarkRepository.save(journalpostBegrenset);
-        Begrensning begrensning = createBegrensning(journalpostBegrenset.getJournalpostId(), null, BegrensningTypeCode.UTILGJENGELIGGJORT);
+        Begrensning begrensning = createBegrensning(journalpostBegrenset.getJournalpostId(), null, SkjermingTypeCode.POL);
         begrensningRepository.save(begrensning);
         TestTransaction.flagForCommit();
 
@@ -204,7 +204,7 @@ public class JoarkRepositoryBegrensetTest {
         Journalpost journalpost = createJournalpost();
 
         journalpost = joarkRepository.save(journalpost);
-        Begrensning begrensning = createBegrensning(journalpost.getJournalpostId(), null, BegrensningTypeCode.UTILGJENGELIGGJORT);
+        Begrensning begrensning = createBegrensning(journalpost.getJournalpostId(), null, SkjermingTypeCode.POL);
 
         begrensningRepository.save(begrensning);
 
@@ -219,7 +219,7 @@ public class JoarkRepositoryBegrensetTest {
         Journalpost journalpost = createJournalpost();
 
         journalpost = joarkRepository.save(journalpost);
-        Begrensning begrensning = createBegrensning(journalpost.getJournalpostId(), null, BegrensningTypeCode.UTILGJENGELIGGJORT);
+        Begrensning begrensning = createBegrensning(journalpost.getJournalpostId(), null, SkjermingTypeCode.POL);
         begrensningRepository.save(begrensning);
 
         TestTransaction.flagForCommit();
@@ -240,7 +240,7 @@ public class JoarkRepositoryBegrensetTest {
         Journalpost journalpost = createJournalpost();
 
         journalpost = joarkRepository.save(journalpost);
-        Begrensning begrensning = createBegrensning(journalpost.getJournalpostId(), null, BegrensningTypeCode.UTILGJENGELIGGJORT);
+        Begrensning begrensning = createBegrensning(journalpost.getJournalpostId(), null, SkjermingTypeCode.POL);
         begrensningRepository.save(begrensning);
 
         TestTransaction.flagForCommit();
@@ -257,7 +257,7 @@ public class JoarkRepositoryBegrensetTest {
         Journalpost journalpost = createJournalpost();
 
         joarkRepository.save(journalpost);
-        Begrensning begrensning = createBegrensning(journalpost.getJournalpostId(), null, BegrensningTypeCode.UTILGJENGELIGGJORT);
+        Begrensning begrensning = createBegrensning(journalpost.getJournalpostId(), null, SkjermingTypeCode.POL);
         begrensningRepository.save(begrensning);
 
         TestTransaction.flagForCommit();
@@ -272,7 +272,7 @@ public class JoarkRepositoryBegrensetTest {
         Journalpost journalpost = createJournalpost();
 
         journalpost = joarkRepository.save(journalpost);
-        Begrensning begrensning = createBegrensning(journalpost.getJournalpostId(), null, BegrensningTypeCode.UTILGJENGELIGGJORT);
+        Begrensning begrensning = createBegrensning(journalpost.getJournalpostId(), null, SkjermingTypeCode.POL);
         begrensningRepository.save(begrensning);
 
         TestTransaction.flagForCommit();
@@ -294,7 +294,7 @@ public class JoarkRepositoryBegrensetTest {
         Journalpost journalpost = createJournalpost();
 
         joarkRepository.save(journalpost);
-        Begrensning begrensning = createBegrensning(journalpost.getJournalpostId(), null, BegrensningTypeCode.UTILGJENGELIGGJORT);
+        Begrensning begrensning = createBegrensning(journalpost.getJournalpostId(), null, SkjermingTypeCode.POL);
 
         begrensningRepository.save(begrensning);
 
@@ -323,7 +323,7 @@ public class JoarkRepositoryBegrensetTest {
                 .build());
 
         journalpostBegrenset = joarkRepository.save(journalpostBegrenset);
-        Begrensning begrensning = createBegrensning(journalpostBegrenset.getJournalpostId(), null, BegrensningTypeCode.UTILGJENGELIGGJORT);
+        Begrensning begrensning = createBegrensning(journalpostBegrenset.getJournalpostId(), null, SkjermingTypeCode.POL);
         begrensningRepository.save(begrensning);
         TestTransaction.flagForCommit();
 

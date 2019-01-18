@@ -5,11 +5,11 @@ import static no.nav.dokarkiv.fysisktidligkassasjon.util.TestUtil.knyttDokumentI
 import static no.nav.dokarkiv.fysisktidligkassasjon.util.TestUtil.opprettHoveddokumentForEnhetstest;
 import static org.mockito.Mockito.when;
 
-import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
+import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.entities.Begrensning;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import no.nav.dokarkiv.core.exceptions.BegrensningIkkeFunnetException;
+import no.nav.dokarkiv.core.exceptions.SkjermingIkkeFunnetException;
 import no.nav.dokarkiv.core.repository.BegrensningRepository;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkDeleteRepository;
@@ -33,7 +33,7 @@ public class FysiskTidligKassasjonServiceTest {
 	private static final Begrensning begrensning =
 			Begrensning.builder()
 					.dokumentInfoId(DOKUMENTINFO_ID)
-					.begrensningType(BegrensningTypeCode.KASSERT)
+					.begrensningType(SkjermingTypeCode.POL)
 					.build();
 
 	@Mock
@@ -56,14 +56,14 @@ public class FysiskTidligKassasjonServiceTest {
 
 	@Test()
 	public void skalIkkeTidligKassereDokument_hvisDokumentInfoIkkeErBegrensetSomKassert() {
-		thrown.expect(BegrensningIkkeFunnetException.class);
+		thrown.expect(SkjermingIkkeFunnetException.class);
 		thrown.expectMessage(String.format(
 				"Fant ikke forventet begrensning for dokument med dokumentInfoId=%s og begrensningsType=%s",
 				DOKUMENTINFO_ID,
-				BegrensningTypeCode.KASSERT));
+				SkjermingTypeCode.POL));
 
 		when(dokumentinfoRepository.findByDokumentInfoId(DOKUMENTINFO_ID)).thenReturn(Optional.of(dokumentInfo));
-		when(begrensningRepository.findByDokumentInfoIdAndBegrensningType(DOKUMENTINFO_ID, BegrensningTypeCode.KASSERT))
+		when(begrensningRepository.findByDokumentInfoIdAndBegrensningType(DOKUMENTINFO_ID, SkjermingTypeCode.POL))
 				.thenReturn(Optional.empty());
 
 		FysiskTidligKassasjonResponse response = fysiskTidligKassasjonService.fysiskTidligKassasjonAvDokument(DOKUMENTINFO_ID);
@@ -76,7 +76,7 @@ public class FysiskTidligKassasjonServiceTest {
 		assertTrue(dokumentInfo.isRelatedToMultipleJournalposts());
 
 		when(dokumentinfoRepository.findByDokumentInfoId(DOKUMENTINFO_ID)).thenReturn(Optional.of(dokumentInfo));
-		when(begrensningRepository.findByDokumentInfoIdAndBegrensningType(DOKUMENTINFO_ID, BegrensningTypeCode.KASSERT))
+		when(begrensningRepository.findByDokumentInfoIdAndBegrensningType(DOKUMENTINFO_ID, SkjermingTypeCode.POL))
 				.thenReturn(Optional.of(begrensning));
 
 		FysiskTidligKassasjonResponse response = fysiskTidligKassasjonService.fysiskTidligKassasjonAvDokument(DOKUMENTINFO_ID);
@@ -85,7 +85,7 @@ public class FysiskTidligKassasjonServiceTest {
 	@Test
 	public void skallTidligKassereDokument_medDokumentKnyttetEnJournalpost() {
 		when(dokumentinfoRepository.findByDokumentInfoId(DOKUMENTINFO_ID)).thenReturn(Optional.of(dokumentInfo));
-		when(begrensningRepository.findByDokumentInfoIdAndBegrensningType(DOKUMENTINFO_ID, BegrensningTypeCode.KASSERT))
+		when(begrensningRepository.findByDokumentInfoIdAndBegrensningType(DOKUMENTINFO_ID, SkjermingTypeCode.POL))
 				.thenReturn(Optional.of(begrensning));
 
 		FysiskTidligKassasjonResponse response = fysiskTidligKassasjonService.fysiskTidligKassasjonAvDokument(DOKUMENTINFO_ID);

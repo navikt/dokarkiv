@@ -9,7 +9,7 @@ import static org.junit.Assert.assertTrue;
 
 import com.google.common.collect.Iterables;
 import no.nav.dokarkiv.arkiverkorrigertdokument.AbstractArkiverKorrigertDokumentIT;
-import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
+import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentFil;
@@ -63,7 +63,7 @@ public class Rjoark103IT extends AbstractArkiverKorrigertDokumentIT {
 				.getFilUuid());
 		assertThat(dokumentFil.getFil(), is(FIL));
 
-		assertThat(begrensningRepository.findByDokumentInfoIdAndVariantFormatAndBegrensningType(dokumentInfo.getDokumentInfoId(), VariantFormatCode.ARKIV, BegrensningTypeCode.SKJERMET)
+		assertThat(begrensningRepository.findByDokumentInfoIdAndVariantFormatAndBegrensningType(dokumentInfo.getDokumentInfoId(), VariantFormatCode.ARKIV, SkjermingTypeCode.POL)
 				.isPresent(), is(true));
 		assertThat(Iterables.size(begrensningRepository.findAll()), is(1));
 		TestTransaction.end();
@@ -125,7 +125,7 @@ public class Rjoark103IT extends AbstractArkiverKorrigertDokumentIT {
 		DokumentFil dokumentFil = dokumentFilRepository.findByFilUuid(persistedDokumentInfo.findFilDetaljerByVariantFormat(VariantFormatCode.SLADDET)
 				.getFilUuid());
 		assertThat(dokumentFil.getFil(), is(FIL2));
-		assertThat(begrensningRepository.findByDokumentInfoIdAndVariantFormatAndBegrensningType(dokumentInfo.getDokumentInfoId(), VariantFormatCode.ARKIV, BegrensningTypeCode.SKJERMET)
+		assertThat(begrensningRepository.findByDokumentInfoIdAndVariantFormatAndBegrensningType(dokumentInfo.getDokumentInfoId(), VariantFormatCode.ARKIV, SkjermingTypeCode.POL)
 				.isPresent(), is(true));
 		assertThat(Iterables.size(begrensningRepository.findAll()), is(1));
 		TestTransaction.end();
@@ -170,7 +170,7 @@ public class Rjoark103IT extends AbstractArkiverKorrigertDokumentIT {
 //				.getFilUuid());
 //		assertThat(dokumentFil.getFil(), is(FIL));
 //
-//		assertThat(begrensningRepository.findByDokumentInfoIdAndVariantFormatAndBegrensningType(dokumentInfo.getDokumentInfoId(), VariantFormatCode.ARKIV, BegrensningTypeCode.SKJERMET)
+//		assertThat(begrensningRepository.findByDokumentInfoIdAndVariantFormatAndBegrensningType(dokumentInfo.getDokumentInfoId(), VariantFormatCode.ARKIV, SkjermingTypeCode.POL)
 //				.isPresent(), is(true));
 //		assertThat(Iterables.size(begrensningRepository.findAll()), is(1));
 //		TestTransaction.end();

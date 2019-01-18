@@ -8,7 +8,7 @@ import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.UPDATE_ACTI
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.MDCConstants;
-import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
+import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.metrics.RestMetrics;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import no.nav.dokarkiv.fysiskslettdokument.rjoark102.FysiskSlettDokumentRequestTo;
@@ -47,9 +47,9 @@ public class FysiskSlettDokumentRestController {
 	public FysiskSlettDokumentResponse fysiskSlettDokument(
 			@PathVariable("journalpostId") Long journalpostId,
 			@PathVariable("dokumentInfoId") Long dokumentInfoId,
-			@PathVariable("begrensningType") BegrensningTypeCode begrensningType) {
+			@PathVariable("begrensningType") SkjermingTypeCode begrensningType) {
 		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark102");
-		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har mottat kall med journalpostId=" + journalpostId + ", dokumentInfoId=" + dokumentInfoId + " og begrensningType=" + begrensningType);
+		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har mottat kall med journalpostId=" + journalpostId + ", dokumentInfoId=" + dokumentInfoId + " og skjermingType=" + begrensningType);
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
 
 		return fysiskSlettDokumentService.sletteDokumentFysisk(FysiskSlettDokumentRequestTo.builder()

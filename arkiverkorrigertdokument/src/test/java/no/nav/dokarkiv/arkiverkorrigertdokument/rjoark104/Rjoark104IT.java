@@ -14,7 +14,7 @@ import com.google.common.collect.Iterables;
 import no.nav.dokarkiv.arkiverkorrigertdokument.AbstractArkiverKorrigertDokumentIT;
 import no.nav.dokarkiv.arkiverkorrigertdokument.rjoark103.ArkiverKorrigertDokumentRequest;
 import no.nav.dokarkiv.arkiverkorrigertdokument.rjoark103.ArkiverKorrigertDokumentRespons;
-import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
+import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentFil;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
@@ -165,7 +165,7 @@ public class Rjoark104IT extends AbstractArkiverKorrigertDokumentIT {
 
 		// Begrensning er slettet
 		assertFalse(begrensningRepository.findByDokumentInfoIdAndVariantFormatAndBegrensningType(
-				dokumentInfo.getDokumentInfoId(), VariantFormatCode.SLADDET, BegrensningTypeCode.SKJERMET).isPresent());
+				dokumentInfo.getDokumentInfoId(), VariantFormatCode.SLADDET, SkjermingTypeCode.POL).isPresent());
 		assertThat(Iterables.size(begrensningRepository.findAll()), is(0));
 		TestTransaction.end();
 	}

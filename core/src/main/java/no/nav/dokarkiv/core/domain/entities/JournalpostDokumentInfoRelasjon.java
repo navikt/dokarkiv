@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import no.nav.dokarkiv.core.domain.AbstractPersistentVersionedDomainObjectWithKilde;
-import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
+import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
@@ -54,9 +54,9 @@ public class JournalpostDokumentInfoRelasjon extends AbstractPersistentVersioned
 	@Column(name = "k_tilkn_jp_som", nullable = false)
 	private TilknyttetJournalpostSomCode tilknyttetJournalpostSom;
 
-	@Column(name = "begrensning_type")
+	@Column(name = "skjerming_type")
 	@Enumerated(EnumType.STRING)
-	private BegrensningTypeCode begrensningType;
+	private SkjermingTypeCode skjermingType;
 
 	@ManyToOne
 	@JoinColumn(name = "dokument_info_id", nullable = false)
@@ -183,12 +183,12 @@ public class JournalpostDokumentInfoRelasjon extends AbstractPersistentVersioned
 		this.tilknyttetJournalpostSom = tilknyttetJournalpostSom;
 	}
 
-	public BegrensningTypeCode getBegrensningType() {
-		return begrensningType;
+	public SkjermingTypeCode getSkjermingType() {
+		return skjermingType;
 	}
 
-	public void setBegrensningType(BegrensningTypeCode begrensningType) {
-		throw new UnsupportedOperationException("Begrensning skal bare settes gjennom BegrensningService");
+	public void setSkjermingType(SkjermingTypeCode skjermingType) {
+		throw new UnsupportedOperationException("Skjerming skal bare settes gjennom SkjermingService");
 	}
 
 	/**

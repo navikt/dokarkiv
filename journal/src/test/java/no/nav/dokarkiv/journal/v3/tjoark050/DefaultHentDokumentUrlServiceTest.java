@@ -15,12 +15,10 @@ import no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder;
 import no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder;
 import no.nav.dokarkiv.core.domain.builder.JournalpostBuilder;
 import no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder;
-import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
-import no.nav.dokarkiv.core.domain.entities.Begrensning;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import no.nav.dokarkiv.core.domain.service.BegrensningService;
+import no.nav.dokarkiv.core.domain.service.SkjermingService;
 import no.nav.dokarkiv.core.exceptions.DocumentNotFoundException;
 import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
 import no.nav.dokarkiv.core.exceptions.InvalidFilUuidException;
@@ -63,7 +61,7 @@ public class DefaultHentDokumentUrlServiceTest {
 	@Mock
 	private JoarkRepositoryBegrenset joarkRepositoryMock;
 	@Mock
-	private BegrensningService begrensningService;
+	private SkjermingService skjermingService;
 
 	@Captor
 	private ArgumentCaptor<HentDokumentUrlRequest> delegateRequestCaptor;
@@ -182,7 +180,7 @@ public class DefaultHentDokumentUrlServiceTest {
 
 	@Test
 	public void shouldCallDelegateWithCorrectValuesSkjermet() throws Exception {
-		when(begrensningService.isVariantSkjermet(DOKUMENT_INFO_ID, VariantFormatCode.ARKIV)).thenReturn(true);
+		when(skjermingService.isVariantSkjermet(DOKUMENT_INFO_ID, VariantFormatCode.ARKIV)).thenReturn(true);
 		when(joarkRepositoryMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(createJournalPost()));
 		when(hentDokumentUrlMock.hentDokumentUrl(isA(HentDokumentUrlRequest.class))).thenReturn(
 				new HentDokumentUrlResponse("Test"));

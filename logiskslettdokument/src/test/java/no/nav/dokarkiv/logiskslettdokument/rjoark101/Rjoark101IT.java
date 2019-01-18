@@ -11,7 +11,7 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
-import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
+import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.entities.Begrensning;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
@@ -51,7 +51,7 @@ public class Rjoark101IT extends AbstractSlettDokumentIT {
 	}
 
 	@Test
-	public void skalAngreLogiskSlettDokument_avVedlegg_medVedleggUtilgjengeliggjort() {
+	public void skalAngreLogiskSlettDokument_avVedlegg_medVedleggPOL() {
 		abacPermit();
 
 		Journalpost journalpost = joarkRepository.save(opprettHoveddokumentMedEtKnyttetVedleggForIT());
@@ -82,7 +82,7 @@ public class Rjoark101IT extends AbstractSlettDokumentIT {
 	}
 
 	@Test
-	public void skalIkkeAngreLogiskSlettDokument_avVedlegg_ettersomVedleggIkkeErUtilgjengeliggjort() {
+	public void skalIkkeAngreLogiskSlettDokument_avVedlegg_ettersomVedleggIkkeErPOL() {
 		abacPermit();
 
 		Journalpost journalpost = joarkRepository.save(opprettHoveddokumentMedEtKnyttetVedleggForIT());
@@ -104,7 +104,7 @@ public class Rjoark101IT extends AbstractSlettDokumentIT {
 				String.format("Fant ikke forventet begrensning for dokument med journalpostId=%s, dokumentInfoId=%s og begrensningsType=%s.",
 						journalpost.getJournalpostId(),
 						vedlegg.getDokumentInfoId(),
-						BegrensningTypeCode.UTILGJENGELIGGJORT)));
+						SkjermingTypeCode.POL)));
 
 		Begrensning begrensetJp = hentVedleggBegrensningEtterUtfoertKall(journalpost.getJournalpostId(), vedlegg.getDokumentInfoId());
 		assertNull(begrensetJp);
@@ -112,7 +112,7 @@ public class Rjoark101IT extends AbstractSlettDokumentIT {
 	}
 
 	@Test
-	public void skalAngreLogiskSlettDokument_avKunVedleggBegrensningen_naarVedleggOgHoveddokumentErUtilgjengeliggjort() {
+	public void skalAngreLogiskSlettDokument_avKunVedleggBegrensningen_naarVedleggOgHoveddokumentErPOL() {
 		abacPermit();
 
 		Journalpost journalpost = joarkRepository.save(opprettHoveddokumentMedEtKnyttetVedleggForIT());
@@ -148,7 +148,7 @@ public class Rjoark101IT extends AbstractSlettDokumentIT {
 	}
 
 	@Test
-	public void skalAngreLogiskSlettDokument_avHoveddokument_medHoveddokumentUtilgjengeliggjort() {
+	public void skalAngreLogiskSlettDokument_avHoveddokument_medHoveddokumentPOL() {
 		abacPermit();
 
 		Journalpost journalpost = joarkRepository.save(opprettHoveddokumentForIT());
@@ -177,7 +177,7 @@ public class Rjoark101IT extends AbstractSlettDokumentIT {
 	}
 
 	@Test
-	public void skalIkkeAngreLogiskSlettDokument_medHoveddokument_ettersomHoveddokumentIkkeErUtilgjengeliggjort() {
+	public void skalIkkeAngreLogiskSlettDokument_medHoveddokument_ettersomHoveddokumentIkkeErPOL() {
 		abacPermit();
 
 		Journalpost journalpost = joarkRepository.save(opprettHoveddokumentForIT());
@@ -196,7 +196,7 @@ public class Rjoark101IT extends AbstractSlettDokumentIT {
 		assertThat(responseEntity.getBody(), containsString(
 				String.format("Fant ikke forventet begrensning for journalpost med journalpostId=%s og begrensningsType=%s.",
 						journalpost.getJournalpostId(),
-						BegrensningTypeCode.UTILGJENGELIGGJORT)));
+						SkjermingTypeCode.POL)));
 
 		Begrensning begrensetJp = hentJournalpostEtterUtfoertKall(journalpost.getJournalpostId());
 		assertNull(begrensetJp);
@@ -204,7 +204,7 @@ public class Rjoark101IT extends AbstractSlettDokumentIT {
 	}
 
 	@Test
-	public void skalAngreLogiskSlettDokument_avKunHoveddokumentBegrensningen_naarVedleggOgHoveddokumentErUtilgjengeliggjort() {
+	public void skalAngreLogiskSlettDokument_avKunHoveddokumentBegrensningen_naarVedleggOgHoveddokumentErPOL() {
 		abacPermit();
 
 		Journalpost journalpost = joarkRepository.save(opprettHoveddokumentMedEtKnyttetVedleggForIT());

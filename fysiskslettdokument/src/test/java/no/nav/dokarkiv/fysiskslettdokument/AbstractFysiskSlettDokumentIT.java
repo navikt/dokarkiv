@@ -4,7 +4,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
-import static no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode.UTILGJENGELIGGJORT;
+import static no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode.POL;
 import static no.nav.dokarkiv.core.security.JwtClaimsBuilderProvider.openAmClaimsBuilder;
 
 import no.nav.dokarkiv.core.CoreConfig;
@@ -134,12 +134,12 @@ public abstract class AbstractFysiskSlettDokumentIT {
 
 	public Begrensning hentHoveddokumentBegrensningEtterUtfoertKall(Long journalpostId) {
 		return begrensningRepository.findByJournalpostIdAndBegrensningTypeAndDokumentInfoIdIsNull(
-				journalpostId, UTILGJENGELIGGJORT).orElse(null);
+				journalpostId, POL).orElse(null);
 	}
 
 	public Begrensning hentVedleggBegrensningEtterUtfoertKall(Long journalpostId, Long dokumentInfoId) {
 		return begrensningRepository.findByJournalpostIdAndDokumentInfoIdAndBegrensningType(
-				journalpostId, dokumentInfoId, UTILGJENGELIGGJORT).orElse(null);
+				journalpostId, dokumentInfoId, POL).orElse(null);
 	}
 
 	public Long hentAntallBegrensninger() {
@@ -156,7 +156,7 @@ public abstract class AbstractFysiskSlettDokumentIT {
 	public Begrensning hentJournalpostEtterUtfoertKall(Long journalpostId) {
 		try {
 			return begrensningRepository.findByJournalpostIdAndBegrensningTypeAndDokumentInfoIdIsNull(
-					journalpostId, UTILGJENGELIGGJORT).get();
+					journalpostId, POL).get();
 		} catch (NoSuchElementException e) {
 			return null;
 		}

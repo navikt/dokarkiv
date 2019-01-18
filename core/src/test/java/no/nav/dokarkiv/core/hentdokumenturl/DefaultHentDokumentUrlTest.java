@@ -29,7 +29,7 @@ import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentFil;
 import no.nav.dokarkiv.core.domain.entities.DokumentUrlInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import no.nav.dokarkiv.core.domain.service.BegrensningService;
+import no.nav.dokarkiv.core.domain.service.SkjermingService;
 import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
 import no.nav.dokarkiv.core.exceptions.InvalidFilUuidException;
 import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
@@ -67,7 +67,7 @@ public class DefaultHentDokumentUrlTest {
 	@Mock
 	private DokumentUrlInfoRepositoryBegrenset dokumentUrlInfoRepositoryMock;
 	@Mock
-	private BegrensningService begrensningService;
+	private SkjermingService skjermingService;
 	@Captor
 	ArgumentCaptor<DokumentUrlInfo> dokumentUrlInfoCaptor;
 
@@ -83,7 +83,7 @@ public class DefaultHentDokumentUrlTest {
 		hentDokumentUrl.setDokumentFilRepository(dokumentFilRepositoryMock);
 		hentDokumentUrl.setServletUrl(SERVLET_URL);
 		hentDokumentUrl.setDokumentUrlInfoRepository(dokumentUrlInfoRepositoryMock);
-		hentDokumentUrl.setBegrensningService(begrensningService);
+		hentDokumentUrl.setSkjermingService(skjermingService);
 		request = new HentDokumentUrlRequest(JOURNALPOST_ID, FIL_UUID);
 	}
 

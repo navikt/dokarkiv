@@ -25,7 +25,7 @@ import no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder;
 import no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder;
 import no.nav.dokarkiv.core.domain.builder.JournalpostBuilder;
 import no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder;
-import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
+import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
@@ -228,8 +228,7 @@ public class HentDokumentIT extends AbstractJournalV3Itest {
 		persistDokumentFil();
 		persistDokumentFilSladdet();
 		Begrensning begrensning = Begrensning.builder().begrensningId(1L)
-				.begrensningType(BegrensningTypeCode.SKJERMET)
-				.journalpostId(journalpost.getJournalpostId())
+				.begrensningType(SkjermingTypeCode.POL)
 				.dokumentInfoId(journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId())
 				.variantFormat(VariantFormatCode.ARKIV)
 				.build();

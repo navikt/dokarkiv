@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import no.nav.dokarkiv.core.domain.AbstractPersistentVersionedDomainObjectWithKilde;
-import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
+import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
 import no.nav.dokarkiv.core.domain.codes.OnDemandInstansCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
@@ -80,9 +80,9 @@ public class FilDetaljer extends AbstractPersistentVersionedDomainObjectWithKild
 	@Column(name = "k_variant_format", nullable = false)
 	private VariantFormatCode variantFormat;
 
-	@Column(name = "begrensning_type")
+	@Column(name = "skjerming_type")
 	@Enumerated(EnumType.STRING)
-	private BegrensningTypeCode begrensningType;
+	private SkjermingTypeCode skjermingType;
 
 	@JsonIgnore
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -345,12 +345,12 @@ public class FilDetaljer extends AbstractPersistentVersionedDomainObjectWithKild
 		this.variantFormat = variantFormat;
 	}
 
-	public BegrensningTypeCode getBegrensningType() {
-		return begrensningType;
+	public SkjermingTypeCode getSkjermingType() {
+		return skjermingType;
 	}
 
-	public void setBegrensningType(BegrensningTypeCode begrensningType) {
-		throw new UnsupportedOperationException("Begrensning skal bare settes gjennom BegrensningService");
+	public void setSkjermingType(SkjermingTypeCode skjermingType) {
+		throw new UnsupportedOperationException("Skjerming skal bare settes gjennom SkjermingService");
 	}
 
 	/**
