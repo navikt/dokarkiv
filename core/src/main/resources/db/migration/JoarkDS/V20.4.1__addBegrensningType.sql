@@ -23,4 +23,4 @@ ALTER  TABLE T_JP_DOK_INFO_REL
 FOREIGN KEY (SKJERMING_TYPE) REFERENCES T_K_BEGRENSNING_TYPE;
 
 INSERT INTO T_K_BEGRENSNING_TYPE (BEGRENSNING_TYPE, BEGRENSNING_BESKRIVELSE, DATO_OPPRETTET, OPPRETTET_AV)
-VALUES ('POL','Begrenset med hjemmel i Personopplysningsloven',sysdate, 'Ketill Fenne');
+VALUES ('POL','Skjerming med hjemmel i Personopplysningsloven',sysdate, 'Ketill Fenne');
