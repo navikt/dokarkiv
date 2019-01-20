@@ -57,7 +57,7 @@ public class LogiskTidligKassasjonRestController {
 		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark105");
 		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har mottat kall med dokumentInfoId={}", dokumentInfoId);
 		validator.validerLogiskTidligKassasjonRequest(dokumentInfoId);
-		abacSecurityService.assertAccessToDokumentIncludingBegrenset(dokumentInfoId);
+		abacSecurityService.assertAccessToDokumentIncludingSkjermet(dokumentInfoId);
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
 		LogiskTidligKassasjonResponse response = logiskTidligKassasjonService.logiskTidligKassasjonAvDokument(dokumentInfoId);
 		log.info("{} har logisk kassert dokument med dokumentInfoId={}",
@@ -75,7 +75,7 @@ public class LogiskTidligKassasjonRestController {
 		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark106");
 		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har mottat kall med dokumentInfoId={}", dokumentInfoId);
 		validator.validerLogiskTidligKassasjonRequest(dokumentInfoId);
-		abacSecurityService.assertAccessToDokumentIncludingBegrenset(dokumentInfoId);
+		abacSecurityService.assertAccessToDokumentIncludingSkjermet(dokumentInfoId);
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
 		LogiskTidligKassasjonResponse response = angreLogiskTidligKassasjonService.angreLogiskTidligKassasjonAvDokument(dokumentInfoId);
 		log.info("{} har angret logisk kassering av dokument med dokumentInfoId={}",

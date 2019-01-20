@@ -36,17 +36,17 @@ public class SkjermingService {
 		this.journalpostDokumentInfoRelasjonRepository = journalpostDokumentInfoRelasjonRepository;
 	}
 
-	public boolean isJournalpostBegrenset(Long journalpostId, SkjermingTypeCode skjermingTypeCode) {
+	public boolean isJournalpostSkjermet(Long journalpostId, SkjermingTypeCode skjermingTypeCode) {
 		Optional<Begrensning> begrensning = begrensningRepository.findByJournalpostIdAndBegrensningTypeAndDokumentInfoIdIsNull(
 				journalpostId, skjermingTypeCode);
 		return begrensning.isPresent();
 	}
 
 	public boolean isJournalpostDokumentInfoRelasjonOrJournalpostBegrenset(Long journalpostId, Long dokumentInfoId, SkjermingTypeCode skjermingTypeCode) {
-		return isJournalpostDokumentInfoRelasjonBegrenset(journalpostId, dokumentInfoId, skjermingTypeCode) || isJournalpostBegrenset(journalpostId, skjermingTypeCode);
+		return isJournalpostDokumentInfoRelasjonSkjermet(journalpostId, dokumentInfoId, skjermingTypeCode) || isJournalpostSkjermet(journalpostId, skjermingTypeCode);
 	}
 
-	public boolean isJournalpostDokumentInfoRelasjonBegrenset(Long journalpostId, Long dokumentInfoId, SkjermingTypeCode skjermingTypeCode) {
+	public boolean isJournalpostDokumentInfoRelasjonSkjermet(Long journalpostId, Long dokumentInfoId, SkjermingTypeCode skjermingTypeCode) {
 		Optional<Begrensning> begrensning = begrensningRepository.findByJournalpostIdAndDokumentInfoIdAndBegrensningType(
 				journalpostId, dokumentInfoId, skjermingTypeCode);
 		return begrensning.isPresent();
@@ -105,7 +105,7 @@ public class SkjermingService {
 	public Journalpost addBegrensetDokumentInfoIdsToJournalpost(Journalpost journalpost) {
 		List<Long> begrensetDokumentInfoIdList = journalpostDokumentInfoRelasjonRepository.findBegrensetRelasjonDokumentInfoIdByJournalpostId(journalpost
 				.getJournalpostId()).stream().map(SkjermingService::convertBigToLong).collect(Collectors.toList());
-		journalpost.addAllbegrensetRelasjonerDokumentInfoIds(begrensetDokumentInfoIdList);
+		journalpost.addAllSkjermetRelasjonerDokumentInfoIds(begrensetDokumentInfoIdList);
 		return journalpost;
 	}
 
@@ -115,7 +115,7 @@ public class SkjermingService {
 			for (Journalpost journalpost : journalpostList) {
 				List<Long> begrensetDokumentInfoIdList = journalpostDokumentInfoRelasjonRepository.findBegrensetRelasjonDokumentInfoIdByJournalpostId(journalpost
 						.getJournalpostId()).stream().map(SkjermingService::convertBigToLong).collect(Collectors.toList());
-				journalpost.addAllbegrensetRelasjonerDokumentInfoIds(begrensetDokumentInfoIdList);
+				journalpost.addAllSkjermetRelasjonerDokumentInfoIds(begrensetDokumentInfoIdList);
 			}
 		}
 		return journalpostList;

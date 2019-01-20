@@ -20,7 +20,7 @@ import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.logging.AbacLogger;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
-import no.nav.dokarkiv.core.repository.JoarkRepositoryBegrenset;
+import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import no.nav.freg.abac.core.annotation.context.AbacContext;
 import no.nav.freg.abac.core.annotation.context.ThreadLocalAbacContext;
 import no.nav.freg.abac.core.dto.request.XacmlAttribute;
@@ -72,14 +72,14 @@ public class AbacSecurityServiceTest {
 	private JoarkRepository joarkRepository;
 
 	@Mock
-	private JoarkRepositoryBegrenset joarkRepositoryBegrenset;
+	private JoarkRepositorySkjermet joarkRepositorySkjermet;
 
 	@Before
 	public void setUp() throws Exception {
 		when(abacService.evaluate(any(XacmlRequest.class))).thenReturn(new XacmlResponse(Decision.PERMIT, Decision.PERMIT,
 				Collections.<Obligation>emptyList(),
 				Collections.<Advice>emptyList()));
-		when(joarkRepositoryBegrenset.existsById(DEFAULT_JOURNALPOST)).thenReturn(true);
+		when(joarkRepositorySkjermet.existsById(DEFAULT_JOURNALPOST)).thenReturn(true);
 		abacContext = new ThreadLocalAbacContext();
 		abacSecurityService.setAbacContext(abacContext);
 	}
@@ -144,7 +144,7 @@ public class AbacSecurityServiceTest {
 	public void shouldThrowJournalpostIkkeFunnetException() throws Exception {
 		AbacResources abacResources = new AbacResources();
 		abacResources.setBrukerIds(Arrays.asList("2", "3"));
-		when(joarkRepositoryBegrenset.existsById(DEFAULT_JOURNALPOST)).thenReturn(false);
+		when(joarkRepositorySkjermet.existsById(DEFAULT_JOURNALPOST)).thenReturn(false);
 
 		try {
 			abacSecurityService.assertAccessToJournalpost(String.valueOf(DEFAULT_JOURNALPOST));

@@ -19,7 +19,7 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.KunneIkkeEndeligJournalfoereException;
-import no.nav.dokarkiv.core.repository.JoarkRepositoryBegrenset;
+import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -35,12 +35,12 @@ import java.util.List;
 @Service
 public class UpdateInngaaendeJournalpostService {
 
-    private final JoarkRepositoryBegrenset joarkRepository;
+    private final JoarkRepositorySkjermet joarkRepository;
 	private final PutInngaaendeJournalpostMapper putInngaaendeJournalpostMapper;
 
 	@Inject
-    public UpdateInngaaendeJournalpostService(JoarkRepositoryBegrenset joarkRepository,
-                                              PutInngaaendeJournalpostMapper putInngaaendeJournalpostMapper) {
+    public UpdateInngaaendeJournalpostService(JoarkRepositorySkjermet joarkRepository,
+											  PutInngaaendeJournalpostMapper putInngaaendeJournalpostMapper) {
 		this.joarkRepository = joarkRepository;
 		this.putInngaaendeJournalpostMapper = putInngaaendeJournalpostMapper;
 	}

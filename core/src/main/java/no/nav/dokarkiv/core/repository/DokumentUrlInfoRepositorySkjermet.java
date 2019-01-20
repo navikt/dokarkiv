@@ -12,12 +12,12 @@ import java.util.Optional;
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
  */
-public class DokumentUrlInfoRepositoryBegrenset {
+public class DokumentUrlInfoRepositorySkjermet {
 
     private final DokumentUrlInfoRepository dokumentUrlInfoRepository;
     private final SkjermingService skjermingService;
 
-    public DokumentUrlInfoRepositoryBegrenset(DokumentUrlInfoRepository dokumentUrlInfoRepository, SkjermingService skjermingService) {
+    public DokumentUrlInfoRepositorySkjermet(DokumentUrlInfoRepository dokumentUrlInfoRepository, SkjermingService skjermingService) {
         this.dokumentUrlInfoRepository = dokumentUrlInfoRepository;
         this.skjermingService = skjermingService;
     }
@@ -35,13 +35,13 @@ public class DokumentUrlInfoRepositoryBegrenset {
 
     public DokumentUrlInfo findByFilUuid(String filUuid) {
         DokumentUrlInfo dokumentUrlInfo = dokumentUrlInfoRepository.findByFilUuid(filUuid);
-		return Objects.nonNull(dokumentUrlInfo) && isFalse(skjermingService.isJournalpostBegrenset(dokumentUrlInfo.getJournalpost()
+		return Objects.nonNull(dokumentUrlInfo) && isFalse(skjermingService.isJournalpostSkjermet(dokumentUrlInfo.getJournalpost()
                 .getJournalpostId(), SkjermingTypeCode.POL)) ? dokumentUrlInfo : null;
     }
 
     public Optional<DokumentUrlInfo> findByDoctoken(String doctoken) {
         Optional<DokumentUrlInfo> dokumentUrlInfo = dokumentUrlInfoRepository.findByDoctoken(doctoken);
-        return dokumentUrlInfo.isPresent() && isFalse(skjermingService.isJournalpostBegrenset(dokumentUrlInfo.get()
+        return dokumentUrlInfo.isPresent() && isFalse(skjermingService.isJournalpostSkjermet(dokumentUrlInfo.get()
                 .getJournalpost()
                 .getJournalpostId(), SkjermingTypeCode.POL)) ? dokumentUrlInfo : Optional.empty();
     }

@@ -5,7 +5,7 @@ import static org.mockito.Mockito.mock;
 import no.nav.dokarkiv.core.CoreConfig;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
-import no.nav.dokarkiv.core.repository.JoarkRepositoryBegrenset;
+import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.dokarkiv.core.stelvio.SimpleRequestContext;
@@ -47,7 +47,7 @@ public abstract class AbstractArkiverdokumentproduksjonItest {
 	@Inject
 	protected ArkiverDokumentproduksjonV1 arkiverDokumentproduksjonProvider;
 	@Inject
-	protected JoarkRepositoryBegrenset joarkRepository;
+	protected JoarkRepositorySkjermet joarkRepository;
 	@Inject
 	protected DokumentinfoRepository dokumentinfoRepository;
 	@Inject

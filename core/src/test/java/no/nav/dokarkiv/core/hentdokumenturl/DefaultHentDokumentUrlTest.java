@@ -34,8 +34,8 @@ import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
 import no.nav.dokarkiv.core.exceptions.InvalidFilUuidException;
 import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
-import no.nav.dokarkiv.core.repository.DokumentUrlInfoRepositoryBegrenset;
-import no.nav.dokarkiv.core.repository.JoarkRepositoryBegrenset;
+import no.nav.dokarkiv.core.repository.DokumentUrlInfoRepositorySkjermet;
+import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -61,11 +61,11 @@ public class DefaultHentDokumentUrlTest {
 	private static final String FIL_UUID_SLADDET = "456b166e-5f9f-430f-8e35-09a732156563";
 
 	@Mock
-	private JoarkRepositoryBegrenset joarkRepositoryMock;
+	private JoarkRepositorySkjermet joarkRepositoryMock;
 	@Mock
 	private DokumentFilRepository dokumentFilRepositoryMock;
 	@Mock
-	private DokumentUrlInfoRepositoryBegrenset dokumentUrlInfoRepositoryMock;
+	private DokumentUrlInfoRepositorySkjermet dokumentUrlInfoRepositoryMock;
 	@Mock
 	private SkjermingService skjermingService;
 	@Captor

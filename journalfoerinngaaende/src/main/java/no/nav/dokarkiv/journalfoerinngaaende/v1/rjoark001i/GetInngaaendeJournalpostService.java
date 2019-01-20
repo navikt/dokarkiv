@@ -5,7 +5,7 @@ import no.nav.dok.tjenester.journalfoerinngaaende.Dokument;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
-import no.nav.dokarkiv.core.repository.JoarkRepositoryBegrenset;
+import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import no.nav.dokarkiv.journalfoerinngaaende.v1.util.Utils;
 import org.springframework.stereotype.Service;
 
@@ -19,12 +19,12 @@ import java.util.stream.Collectors;
 @Service
 public class GetInngaaendeJournalpostService {
 
-    private final JoarkRepositoryBegrenset joarkRepository;
+    private final JoarkRepositorySkjermet joarkRepository;
 	private final GetInngaaendeJournalpostMapper getInngaaendeJournalpostMapper;
 
 	@Inject
-    public GetInngaaendeJournalpostService(JoarkRepositoryBegrenset joarkRepository,
-                                           GetInngaaendeJournalpostMapper getInngaaendeJournalpostMapper) {
+    public GetInngaaendeJournalpostService(JoarkRepositorySkjermet joarkRepository,
+										   GetInngaaendeJournalpostMapper getInngaaendeJournalpostMapper) {
 		this.joarkRepository = joarkRepository;
 		this.getInngaaendeJournalpostMapper = getInngaaendeJournalpostMapper;
 	}

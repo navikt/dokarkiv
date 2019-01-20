@@ -82,7 +82,7 @@ public class FysiskSlettDokumentService {
 	}
 
 	private void sjekkAtJournalpostErPOL(Long journalpostId) {
-		if (isFalse(skjermingService.isJournalpostBegrenset(
+		if (isFalse(skjermingService.isJournalpostSkjermet(
 				journalpostId,
 				SkjermingTypeCode.POL))) {
 			throw new SkjermingIkkeFunnetException(String.format(
@@ -93,7 +93,7 @@ public class FysiskSlettDokumentService {
 	}
 
 	private void sjekkAtDokumentErPOL(Long journalpostId, Long dokumentInfoId) {
-		if (isFalse(skjermingService.isJournalpostDokumentInfoRelasjonBegrenset(
+		if (isFalse(skjermingService.isJournalpostDokumentInfoRelasjonSkjermet(
 				journalpostId,
 				dokumentInfoId,
 				SkjermingTypeCode.POL))) {

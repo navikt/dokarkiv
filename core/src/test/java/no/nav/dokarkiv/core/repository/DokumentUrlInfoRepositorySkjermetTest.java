@@ -38,7 +38,7 @@ import java.util.UUID;
 @DataJpaTest
 @Transactional
 @ActiveProfiles("itest")
-public class DokumentUrlInfoRepositoryBegrensetTest {
+public class DokumentUrlInfoRepositorySkjermetTest {
     @Inject
     private JoarkRepository joarkRepository;
 
@@ -50,7 +50,7 @@ public class DokumentUrlInfoRepositoryBegrensetTest {
 
 
     @Inject
-    private DokumentUrlInfoRepositoryBegrenset dokumentUrlInfoRepositoryBegrenset;
+    private DokumentUrlInfoRepositorySkjermet dokumentUrlInfoRepositorySkjermet;
 
     @Inject
     private DokumentUrlInfoRepository dokumentUrlInfoRepository;
@@ -78,8 +78,8 @@ public class DokumentUrlInfoRepositoryBegrensetTest {
 
     @Test
     public void shouldReturnNullOrFalseWhenNotFound() {
-        assertThat(dokumentUrlInfoRepositoryBegrenset.findByFilUuid("tead"), nullValue());
-        assertThat(dokumentUrlInfoRepositoryBegrenset.findByDoctoken("asdasd").isPresent(), is(false));
+        assertThat(dokumentUrlInfoRepositorySkjermet.findByFilUuid("tead"), nullValue());
+        assertThat(dokumentUrlInfoRepositorySkjermet.findByDoctoken("asdasd").isPresent(), is(false));
     }
 
 
@@ -99,10 +99,10 @@ public class DokumentUrlInfoRepositoryBegrensetTest {
                 .filUuid(FILUUID)
                 .tidspunkt(Calendar.getInstance().getTime())
                 .build();
-        dokumentUrlInfoRepositoryBegrenset.save(dokumentUrlInfo);
+        dokumentUrlInfoRepositorySkjermet.save(dokumentUrlInfo);
         TestTransaction.flagForCommit();
 
-        assertThat(dokumentUrlInfoRepositoryBegrenset.findByFilUuid(FILUUID), nullValue());
+        assertThat(dokumentUrlInfoRepositorySkjermet.findByFilUuid(FILUUID), nullValue());
         assertThat(dokumentUrlInfoRepository.findByFilUuid(FILUUID), notNullValue());
 
 
@@ -122,10 +122,10 @@ public class DokumentUrlInfoRepositoryBegrensetTest {
                 .filUuid(FILUUID)
                 .tidspunkt(Calendar.getInstance().getTime())
                 .build();
-        dokumentUrlInfoRepositoryBegrenset.save(dokumentUrlInfo);
+        dokumentUrlInfoRepositorySkjermet.save(dokumentUrlInfo);
         TestTransaction.flagForCommit();
 
-        assertThat(dokumentUrlInfoRepositoryBegrenset.findByDoctoken(DOC_TOKEN).isPresent(), is(false));
+        assertThat(dokumentUrlInfoRepositorySkjermet.findByDoctoken(DOC_TOKEN).isPresent(), is(false));
         assertThat(dokumentUrlInfoRepository.findByDoctoken(DOC_TOKEN).isPresent(), is(true));
 
 

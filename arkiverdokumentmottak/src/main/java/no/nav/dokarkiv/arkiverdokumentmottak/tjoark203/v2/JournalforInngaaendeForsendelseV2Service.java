@@ -9,7 +9,7 @@ import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.journalbehandling.DokumentFilerDelegate;
-import no.nav.dokarkiv.core.repository.JoarkRepositoryBegrenset;
+import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
@@ -31,7 +31,7 @@ public class JournalforInngaaendeForsendelseV2Service {
 	private static final String JOURNALFORENDE_ENHET_9999 = "9999";
 
 	@Inject
-    private JoarkRepositoryBegrenset joarkRepository;
+    private JoarkRepositorySkjermet joarkRepository;
 	@Inject
 	private DokumentFilerDelegate dokumentFilerDelegate;
 	@Inject

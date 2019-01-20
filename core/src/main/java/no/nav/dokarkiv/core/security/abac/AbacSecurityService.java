@@ -13,7 +13,7 @@ import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.logging.AbacLogger;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
-import no.nav.dokarkiv.core.repository.JoarkRepositoryBegrenset;
+import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import no.nav.freg.abac.core.annotation.context.AbacContext;
 import no.nav.freg.abac.core.dto.request.XacmlRequest;
 import no.nav.freg.abac.core.dto.response.Decision;
@@ -55,7 +55,7 @@ public class AbacSecurityService {
     private DokumentinfoRepository dokumentinfoRepository;
 
 	@Inject
-	private JoarkRepositoryBegrenset joarkRepositoryBegrenset;
+	private JoarkRepositorySkjermet joarkRepositorySkjermet;
 
 	public void assertAccessToJournalpostIncludingBegrenset(String journalpost) {
 		Long journalpostId = Long.parseLong(journalpost);
@@ -70,7 +70,7 @@ public class AbacSecurityService {
 		handleResponseForJournalpostId(abacContext.getRequest(), accessResponse, journalpostId);
 	}
 
-	public void assertAccessToDokumentIncludingBegrenset(Long dokumentInfoId) {
+	public void assertAccessToDokumentIncludingSkjermet(Long dokumentInfoId) {
 
 		if (!dokumentinfoRepository.existsById(dokumentInfoId)) {
 			throw new DokumentInfoIkkeFunnetException("DokumentInfo ikke funnet. dokumentInfoId=" + dokumentInfoId);
@@ -88,7 +88,7 @@ public class AbacSecurityService {
 	public void assertAccessToJournalpost(String journalpost) {
 		Long journalpostId = Long.parseLong(journalpost);
 
-		if (!joarkRepositoryBegrenset.existsById(journalpostId)) {
+		if (!joarkRepositorySkjermet.existsById(journalpostId)) {
 			throw new JournalpostIkkeFunnetException("Journalpost ikke funnet. journalpostId=" + journalpostId);
 		}
 

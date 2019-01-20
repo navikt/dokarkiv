@@ -10,7 +10,7 @@ import no.nav.dokarkiv.core.domain.entities.bidrag.BidragMellomlagringStatus;
 import no.nav.dokarkiv.core.exceptions.ApplicationException;
 import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
 import no.nav.dokarkiv.core.repository.BidragMellomlagringRepository;
-import no.nav.dokarkiv.core.repository.JoarkRepositoryBegrenset;
+import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import no.nav.dokarkiv.core.sporing.SporingPopulator;
 import org.springframework.stereotype.Component;
 
@@ -25,7 +25,7 @@ import javax.inject.Inject;
 @Component
 public class DefaultFerdigstillDokumentopplasting implements FerdigstillDokumentopplasting {
 	@Inject
-    private JoarkRepositoryBegrenset joarkRepository;
+    private JoarkRepositorySkjermet joarkRepository;
 	@Inject
 	private BidragMellomlagringRepository bidragMellomlagringRepository;
 	@Inject

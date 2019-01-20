@@ -4,7 +4,7 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeInngaaendeException;
 import no.nav.dokarkiv.core.exceptions.UgyldigInputException;
-import no.nav.dokarkiv.core.repository.JoarkRepositoryBegrenset;
+import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import no.nav.dokarkiv.inngaaendejournal.v1.common.JournalpostManglerTo;
 import no.nav.dokarkiv.inngaaendejournal.v1.exceptions.JournalpostKanIkkeBehandlesException;
 import no.nav.dokarkiv.inngaaendejournal.v1.tjoark056.JournalpostManglerToMapper;
@@ -18,11 +18,11 @@ import javax.inject.Inject;
 @Component
 public class UtledJournalfoeringsbehovService {
 
-	private final JoarkRepositoryBegrenset repository;
+	private final JoarkRepositorySkjermet repository;
 	private final JournalpostManglerToMapper mapper;
 
 	@Inject
-	public UtledJournalfoeringsbehovService(JoarkRepositoryBegrenset repository, JournalpostManglerToMapper mapper) {
+	public UtledJournalfoeringsbehovService(JoarkRepositorySkjermet repository, JournalpostManglerToMapper mapper) {
 		this.repository = repository;
 		this.mapper = mapper;
 	}

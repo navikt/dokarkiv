@@ -17,19 +17,19 @@ import java.util.stream.StreamSupport;
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
  */
-public class JoarkRepositoryBegrenset {
+public class JoarkRepositorySkjermet {
 
 	private final JoarkRepository joarkRepository;
 	private final SkjermingService skjermingService;
 
 	@Inject
-	public JoarkRepositoryBegrenset(JoarkRepository joarkRepository, SkjermingService skjermingService) {
+	public JoarkRepositorySkjermet(JoarkRepository joarkRepository, SkjermingService skjermingService) {
 		this.joarkRepository = joarkRepository;
 		this.skjermingService = skjermingService;
 	}
 
 	public Optional<Journalpost> findById(Long id) {
-		return skjermingService.isJournalpostBegrenset(id, SkjermingTypeCode.POL) ? Optional.empty() :
+		return skjermingService.isJournalpostSkjermet(id, SkjermingTypeCode.POL) ? Optional.empty() :
 				joarkRepository.findById(id).map(skjermingService::addBegrensetDokumentInfoIdsToJournalpost);
 	}
 
@@ -38,7 +38,7 @@ public class JoarkRepositoryBegrenset {
 	}
 
 	public boolean existsById(Long id) {
-		return isFalse(skjermingService.isJournalpostBegrenset(id, SkjermingTypeCode.POL)) && joarkRepository
+		return isFalse(skjermingService.isJournalpostSkjermet(id, SkjermingTypeCode.POL)) && joarkRepository
 				.existsById(id);
 	}
 
@@ -51,21 +51,21 @@ public class JoarkRepositoryBegrenset {
 
 	public Iterable<Journalpost> findAll() {
 		return StreamSupport.stream(joarkRepository.findAll().spliterator(), true)
-				.filter(journalpost -> isFalse(skjermingService.isJournalpostBegrenset(journalpost.getJournalpostId(), SkjermingTypeCode.POL)))
+				.filter(journalpost -> isFalse(skjermingService.isJournalpostSkjermet(journalpost.getJournalpostId(), SkjermingTypeCode.POL)))
 				.map(skjermingService::addBegrensetDokumentInfoIdsToJournalpost)
 				.collect(Collectors.toList());
 	}
 
 	public Long findJournalpostIdByTilleggsopplysningerNokkelAndVerdi(String nokkel, String verdi) {
 		Long jpId = joarkRepository.findJournalpostIdByTilleggsopplysningerNokkelAndVerdi(nokkel, verdi);
-		return skjermingService.isJournalpostBegrenset(jpId, SkjermingTypeCode.POL) ? null : jpId;
+		return skjermingService.isJournalpostSkjermet(jpId, SkjermingTypeCode.POL) ? null : jpId;
 	}
 
 	public Optional<Journalpost> findJournalpostByKanalReferanseIdAndMottakskanal(String kanalReferanseId, String mottakskanal) {
 		Optional<Journalpost> journalpost = joarkRepository.findJournalpostByKanalReferanseIdAndMottakskanal(kanalReferanseId, mottakskanal);
 
 		if (journalpost.isPresent()) {
-			return skjermingService.isJournalpostBegrenset(journalpost.get()
+			return skjermingService.isJournalpostSkjermet(journalpost.get()
 					.getJournalpostId(), SkjermingTypeCode.POL) ? Optional.empty() : journalpost.map(skjermingService::addBegrensetDokumentInfoIdsToJournalpost);
 		}
 		return Optional.empty();
@@ -74,20 +74,20 @@ public class JoarkRepositoryBegrenset {
 	public Long findDokumentinfoIdIdByDokumentinfoTilleggsopplysningerNokkelAndVerdi(String nokkel, String verdi) {
 		Long jpId = joarkRepository.findDokumentinfoIdIdByDokumentinfoTilleggsopplysningerNokkelAndVerdi(nokkel, verdi);
 		if (nonNull(jpId)) {
-			return skjermingService.isJournalpostBegrenset(jpId, SkjermingTypeCode.POL) ? null : jpId;
+			return skjermingService.isJournalpostSkjermet(jpId, SkjermingTypeCode.POL) ? null : jpId;
 		} else return null;
 	}
 
 	public Long findJournalpostIdByDokumentinfoId(String dokumentinfoId) {
 		Long jpId = joarkRepository.findJournalpostIdByDokumentinfoId(dokumentinfoId);
-		return skjermingService.isJournalpostBegrenset(jpId, SkjermingTypeCode.POL) ? null : jpId;
+		return skjermingService.isJournalpostSkjermet(jpId, SkjermingTypeCode.POL) ? null : jpId;
 	}
 
 	public List<Long> findAllJournalpostIdsByDokumentInfoId(Long dokumentInfoId) {
 		List<Long> journalpostIds = joarkRepository.findAllJournalpostIdsByDokumentInfoId(dokumentInfoId)
 				.stream().map(SkjermingService::convertBigToLong).collect(Collectors.toList());
 		return journalpostIds.stream()
-				.filter(journalpostId -> isFalse(skjermingService.isJournalpostBegrenset(journalpostId, SkjermingTypeCode.POL)))
+				.filter(journalpostId -> isFalse(skjermingService.isJournalpostSkjermet(journalpostId, SkjermingTypeCode.POL)))
 				.collect(Collectors.toList());
 	}
 
@@ -95,7 +95,7 @@ public class JoarkRepositoryBegrenset {
 		Optional<Journalpost> journalpost = joarkRepository.findJournalpostByKanalReferanseId(kanalReferanseId);
 
 		if (journalpost.isPresent()) {
-			return skjermingService.isJournalpostBegrenset(journalpost.get()
+			return skjermingService.isJournalpostSkjermet(journalpost.get()
 					.getJournalpostId(), SkjermingTypeCode.POL) ? Optional.empty() : Optional.of(skjermingService.addBegrensetDokumentInfoIdsToJournalpost((journalpost
 					.get())));
 		}
@@ -105,7 +105,7 @@ public class JoarkRepositoryBegrenset {
 	public List<Journalpost> findJournalpostByKanalReferanseIdAndMottakskanal(String kanalReferanseId, MottaksKanalCode mottaksKanalCode) {
 		List<Journalpost> journalpostList = joarkRepository.findJournalpostByKanalReferanseIdAndMottakskanal(kanalReferanseId, mottaksKanalCode);
 		return journalpostList.stream()
-				.filter(journalpost -> isFalse(skjermingService.isJournalpostBegrenset(journalpost.getJournalpostId(), SkjermingTypeCode.POL)))
+				.filter(journalpost -> isFalse(skjermingService.isJournalpostSkjermet(journalpost.getJournalpostId(), SkjermingTypeCode.POL)))
 				.map(skjermingService::addBegrensetDokumentInfoIdsToJournalpost)
 				.collect(Collectors.toList());
 	}

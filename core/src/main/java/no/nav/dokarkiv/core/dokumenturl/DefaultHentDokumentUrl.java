@@ -9,7 +9,7 @@ import no.nav.dokarkiv.core.exceptions.DokarkivTechnicalException;
 import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
 import no.nav.dokarkiv.core.exceptions.InvalidFilUuidException;
 import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
-import no.nav.dokarkiv.core.repository.DokumentUrlInfoRepositoryBegrenset;
+import no.nav.dokarkiv.core.repository.DokumentUrlInfoRepositorySkjermet;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -36,7 +36,7 @@ public class DefaultHentDokumentUrl extends AbstractDocumentOperation implements
 	private final MimeTypeMapper mimeTypeMapper = new MimeTypeMapper();
 
 	@Inject
-    private DokumentUrlInfoRepositoryBegrenset dokumentUrlInfoRepository;
+    private DokumentUrlInfoRepositorySkjermet dokumentUrlInfoRepository;
 
 	public HentDokumentUrlResponse hentDokumentUrl(HentDokumentUrlRequest hentDokumentUrlRequest)
 			throws NoJournalpostFoundException, InvalidFilUuidException {
@@ -136,7 +136,7 @@ public class DefaultHentDokumentUrl extends AbstractDocumentOperation implements
 		this.servletUrl = servletUrl;
 	}
 
-    public void setDokumentUrlInfoRepository(DokumentUrlInfoRepositoryBegrenset dokumentUrlInfoRepository) {
+    public void setDokumentUrlInfoRepository(DokumentUrlInfoRepositorySkjermet dokumentUrlInfoRepository) {
 		this.dokumentUrlInfoRepository = dokumentUrlInfoRepository;
 	}
 }

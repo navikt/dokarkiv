@@ -69,7 +69,7 @@ public class LogiskSlettDokumentService {
 
 	private void sjekkAtDokumentIkkeErPOL(Long journalpostId, Long dokumentInfoId) {
 		sjekkAtJournalpostIkkeErPOL(journalpostId);
-		if (skjermingService.isJournalpostDokumentInfoRelasjonBegrenset(journalpostId, dokumentInfoId, SkjermingTypeCode.POL)) {
+		if (skjermingService.isJournalpostDokumentInfoRelasjonSkjermet(journalpostId, dokumentInfoId, SkjermingTypeCode.POL)) {
 			throw new DokumentAlleredeSkjermetException(String.format(
 					"Kan ikke utføre logisk sletting av dokument med journalpostId=%s og dokumentInfoId=%s. Dokumentet er POL.",
 					journalpostId,
@@ -78,7 +78,7 @@ public class LogiskSlettDokumentService {
 	}
 
 	private void sjekkAtJournalpostIkkeErPOL(Long journalpostId) {
-		if (skjermingService.isJournalpostBegrenset(journalpostId, SkjermingTypeCode.POL)) {
+		if (skjermingService.isJournalpostSkjermet(journalpostId, SkjermingTypeCode.POL)) {
 			throw new DokumentAlleredeSkjermetException(String.format(
 					"Kan ikke utføre logisk sletting av dokument med journalpostId=%s. Journalposten er POL",
 					journalpostId));

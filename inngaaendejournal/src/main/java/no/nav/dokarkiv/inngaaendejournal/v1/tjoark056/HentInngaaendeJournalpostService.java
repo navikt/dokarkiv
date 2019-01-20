@@ -4,14 +4,11 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeInngaaendeException;
 import no.nav.dokarkiv.core.exceptions.UgyldigInputException;
-import no.nav.dokarkiv.core.repository.JoarkRepositoryBegrenset;
-import no.nav.dokarkiv.inngaaendejournal.v1.tjoark056.to.DokumentInnholdTo;
-import no.nav.dokarkiv.inngaaendejournal.v1.tjoark056.to.DokumentinformasjonTo;
+import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import no.nav.dokarkiv.inngaaendejournal.v1.tjoark056.to.InngaaendeJournalpostTo;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
-import java.util.List;
 
 /**
  * @author Joakim Bjørnstad, Jbit AS
@@ -19,11 +16,11 @@ import java.util.List;
 @Component
 public class HentInngaaendeJournalpostService {
 
-	private final JoarkRepositoryBegrenset repository;
+	private final JoarkRepositorySkjermet repository;
 	private final InngaaendeJournalpostToMapper mapper;
 
 	@Inject
-	public HentInngaaendeJournalpostService(JoarkRepositoryBegrenset repository, InngaaendeJournalpostToMapper mapper) {
+	public HentInngaaendeJournalpostService(JoarkRepositorySkjermet repository, InngaaendeJournalpostToMapper mapper) {
 		this.repository = repository;
 		this.mapper = mapper;
 	}

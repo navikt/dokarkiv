@@ -17,7 +17,7 @@ import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
 import no.nav.dokarkiv.core.domain.validator.BrukerValidator;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
-import no.nav.dokarkiv.core.repository.JoarkRepositoryBegrenset;
+import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import no.nav.dokarkiv.core.security.ldap.NavLdapService;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
@@ -37,11 +37,11 @@ import java.util.Set;
 @Slf4j
 @Component
 public class OppdaterJournalpostService extends AbstractBehandleInngaaendeJournalService {
-	private final JoarkRepositoryBegrenset repository;
+	private final JoarkRepositorySkjermet repository;
 	private final OppdaterJournalpostValidator validator;
 
 	@Inject
-	public OppdaterJournalpostService(JoarkRepositoryBegrenset repository, OppdaterJournalpostValidator validator, NavLdapService navLdapService) {
+	public OppdaterJournalpostService(JoarkRepositorySkjermet repository, OppdaterJournalpostValidator validator, NavLdapService navLdapService) {
 		super(navLdapService);
 		this.repository = repository;
 		this.validator = validator;

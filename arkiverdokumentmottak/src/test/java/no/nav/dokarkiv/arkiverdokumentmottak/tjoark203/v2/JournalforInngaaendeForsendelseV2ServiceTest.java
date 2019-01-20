@@ -32,7 +32,7 @@ import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
 import no.nav.dokarkiv.core.domain.entities.SkannetInnhold;
 import no.nav.dokarkiv.core.journalbehandling.DokumentFilerDelegate;
-import no.nav.dokarkiv.core.repository.JoarkRepositoryBegrenset;
+import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -71,7 +71,7 @@ public class JournalforInngaaendeForsendelseV2ServiceTest {
 	@Rule
 	public ExpectedException expected = ExpectedException.none();
 	@Mock
-	private JoarkRepositoryBegrenset repositoryMock;
+	private JoarkRepositorySkjermet repositoryMock;
 	@Mock
 	private DokumentFilerDelegate dokumentFilerDelegateMock;
 	@Mock

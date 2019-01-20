@@ -12,7 +12,7 @@ import no.nav.dokarkiv.core.CoreConfig;
 import no.nav.dokarkiv.core.domain.builder.JournalpostBuilder;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
-import no.nav.dokarkiv.core.repository.JoarkRepositoryBegrenset;
+import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import no.nav.dokarkiv.core.repository.SkannetInnholdRepository;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.dokarkiv.core.stelvio.SimpleRequestContext;
@@ -71,7 +71,7 @@ public abstract class AbstractJournalfoerInngaaendeV1Itest {
 	@Rule
 	public ExpectedException expectedException = ExpectedException.none();
 	@Inject
-	protected JoarkRepositoryBegrenset joarkRepository;
+	protected JoarkRepositorySkjermet joarkRepository;
 	@Inject
 	protected SkannetInnholdRepository skannetInnholdRepository;
 	@Inject
