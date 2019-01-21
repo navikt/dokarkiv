@@ -9,13 +9,12 @@ import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.UPDATE_ACTI
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.arkiverkorrigertdokument.rjoark103.ArkiverKorrigertDokumentRespons;
 import no.nav.dokarkiv.arkiverkorrigertdokument.rjoark103.ArkiverKorrigertDokumentService;
-import no.nav.dokarkiv.arkiverkorrigertdokument.rjoark103.ArkiverKorrigertDokumentValidator;
 import no.nav.dokarkiv.arkiverkorrigertdokument.rjoark104.AngreArkiverKorrigertDokumentService;
 import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggHeader;
 import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggHeaderMapper;
 import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService;
-import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggInfoException;
+import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggHeaderException;
 import no.nav.dokarkiv.core.metrics.RestMetrics;
 import no.nav.dokarkiv.core.security.abac.AbacSecurityService;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
@@ -29,6 +28,8 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -61,14 +62,14 @@ public class ArkiverKorrigertDokumentRestController {
 	public ArkiverKorrigertDokumentRespons arkiverKorrigertDokument(
 			@RequestHeader(value = AKSJONS_LOGG_HEADER) String aksjonsLoggHeaderString,
 			@PathVariable("dokumentInfoId") Long dokumentInfoId,
-			@RequestBody String fil) throws UgyldigAksjonsLoggInfoException {
+			@RequestBody String fil) throws UgyldigAksjonsLoggHeaderException {
 		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark103");
 
 		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har mottat kall for arkivering av korrigert dokument med dokumentInfoId={}", dokumentInfoId);
 		abacSecurityService.assertAccessToDokumentIncludingBegrenset(dokumentInfoId);
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
 
-		AksjonsLoggHeader aksjonsLoggHeader = aksjonsLoggHeaderMapper.mapAksjonsLoggHeader(aksjonsLoggHeaderString);
+		List<AksjonsLoggHeader> aksjonsLoggHeader = aksjonsLoggHeaderMapper.mapAksjonsLoggHeader(aksjonsLoggHeaderString);
 		aksjonsLoggService.validateAndSaveAksjon(aksjonsLoggHeader);
 
 		ArkiverKorrigertDokumentRespons respons = arkiverKorrigertDokumentService.arkiverKorrigertDokument(dokumentInfoId, fil);
@@ -86,13 +87,13 @@ public class ArkiverKorrigertDokumentRestController {
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark103"}, percentiles = {0.5, 0.95})
 	public ArkiverKorrigertDokumentRespons angreArkiverKorrigertDokument(
 			@RequestHeader(value = AKSJONS_LOGG_HEADER) String aksjonsLoggHeaderString,
-			@PathVariable("dokumentInfoId") Long dokumentInfoId) throws UgyldigAksjonsLoggInfoException {
+			@PathVariable("dokumentInfoId") Long dokumentInfoId) throws UgyldigAksjonsLoggHeaderException {
 		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark104");
 		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har mottat kall for angre korrigering av dokument med dokumentInfoId={}", dokumentInfoId);
 		abacSecurityService.assertAccessToDokumentIncludingBegrenset(dokumentInfoId);
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
 
-		AksjonsLoggHeader aksjonsLoggHeader = aksjonsLoggHeaderMapper.mapAksjonsLoggHeader(aksjonsLoggHeaderString);
+		List<AksjonsLoggHeader> aksjonsLoggHeader = aksjonsLoggHeaderMapper.mapAksjonsLoggHeader(aksjonsLoggHeaderString);
 		aksjonsLoggService.validateAndSaveAksjon(aksjonsLoggHeader);
 
 		ArkiverKorrigertDokumentRespons respons = angreArkiverKorrigertDokumentService.angreArkiverKorrigertDokument(dokumentInfoId);

@@ -1,17 +1,16 @@
 package no.nav.dokarkiv.core.aksjonslogg;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
-import static org.apache.cxf.common.util.PropertyUtils.isFalse;
 
 import no.nav.dokarkiv.core.domain.codes.AksjonTypeCode;
 import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
-import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggInfoException;
+import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggHeaderException;
 import no.nav.dokarkiv.core.repository.AksjonsLoggRepository;
 import org.springframework.stereotype.Component;
 
 import javax.validation.constraints.NotNull;
+import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
@@ -29,21 +28,21 @@ public class AksjonsLoggService {
 		this.aksjonsLoggMapper = new AksjonsLoggMapper();
 	}
 
-	public void validateAndSaveAksjon(AksjonsLoggHeader aksjonsLoggHeader) throws UgyldigAksjonsLoggInfoException {
+	public void validateAndSaveAksjon(List<AksjonsLoggHeader> aksjonsLoggHeaderList) throws UgyldigAksjonsLoggHeaderException {
 
-		for (AksjonsLoggHeader.Aksjon aksjon: aksjonsLoggHeader.getAksjonListe()) {
+		for (AksjonsLoggHeader aksjonsLoggHeader: aksjonsLoggHeaderList) {
 			validateAndSaveAksjon(
-					aksjon.getJournalpostId(),
-					aksjon.getApplikasjon(),
-					aksjon.getAksjon(),
-					aksjon.getUtfoertAv(),
-					aksjon.getDokumentInfoId(),
-					aksjon.getHjemmel(),
-					aksjon.getBruker(),
-					aksjon.getArkivElement(),
-					aksjon.getFraVerdi(),
-					aksjon.getTilVerdi(),
-					aksjon.getMelding()
+					aksjonsLoggHeader.getJournalpostId(),
+					aksjonsLoggHeader.getApplikasjon(),
+					aksjonsLoggHeader.getAksjon(),
+					aksjonsLoggHeader.getUtfoertAv(),
+					aksjonsLoggHeader.getDokumentInfoId(),
+					aksjonsLoggHeader.getHjemmel(),
+					aksjonsLoggHeader.getBruker(),
+					aksjonsLoggHeader.getArkivElement(),
+					aksjonsLoggHeader.getFraVerdi(),
+					aksjonsLoggHeader.getTilVerdi(),
+					aksjonsLoggHeader.getMelding()
 			);
 		}
 	}
@@ -58,7 +57,7 @@ public class AksjonsLoggService {
 									  String arkivElement,
 									  String fraVerdi,
 									  String tilVerdi,
-									  String melding) throws UgyldigAksjonsLoggInfoException {
+									  String melding) throws UgyldigAksjonsLoggHeaderException {
 
 		validateAksjonslogg(journalpostId, applikasjon, aksjon, utfoertAv);
 
@@ -71,7 +70,7 @@ public class AksjonsLoggService {
 	private void validateAksjonslogg(Long journalpostId,
 									 String applikasjon,
 									 String aksjon,
-									 String utfoertAv) throws UgyldigAksjonsLoggInfoException {
+									 String utfoertAv) throws UgyldigAksjonsLoggHeaderException {
 
 			assertNullOrEmpty(journalpostId, "journalpostId");
 			assertNullOrEmpty(applikasjon, "applikasjon");
@@ -82,13 +81,13 @@ public class AksjonsLoggService {
 
 	}
 
-	private void assertNullOrEmpty(Object value, String parameter) throws UgyldigAksjonsLoggInfoException {
+	private void assertNullOrEmpty(Object value, String parameter) throws UgyldigAksjonsLoggHeaderException {
 		if (Objects.isNull(value) || (value instanceof String && isBlank((String) value))) {
-			throw new UgyldigAksjonsLoggInfoException("AksjonsLogg mangler påkrevd parameter: " + parameter);
+			throw new UgyldigAksjonsLoggHeaderException("AksjonsLogg mangler påkrevd parameter: " + parameter);
 		}
 	}
 
-	private void assertInvalidEnum(Object value, String parameter, Enum[] allowedValues) throws UgyldigAksjonsLoggInfoException {
+	private void assertInvalidEnum(Object value, String parameter, Enum[] allowedValues) throws UgyldigAksjonsLoggHeaderException {
 		boolean invalid = true;
 		for (Enum e : allowedValues) {
 			if (e.name().equals(value)) {
@@ -98,7 +97,7 @@ public class AksjonsLoggService {
 		}
 
 		if (invalid) {
-			throw new UgyldigAksjonsLoggInfoException(String.format("AksjonsLogg inneholder ugyldig verdi: %s er ikke en gyldig verdi for %s", value, parameter));
+			throw new UgyldigAksjonsLoggHeaderException(String.format("AksjonsLogg inneholder ugyldig verdi: %s er ikke en gyldig verdi for %s", value, parameter));
 		}
 	}
 }

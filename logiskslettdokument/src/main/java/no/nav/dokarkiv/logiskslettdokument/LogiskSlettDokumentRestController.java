@@ -11,7 +11,7 @@ import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggHeader;
 import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggHeaderMapper;
 import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService;
-import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggInfoException;
+import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggHeaderException;
 import no.nav.dokarkiv.core.metrics.RestMetrics;
 import no.nav.dokarkiv.core.security.abac.AbacSecurityService;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
@@ -30,6 +30,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.inject.Inject;
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -60,12 +61,12 @@ public class LogiskSlettDokumentRestController {
 			actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION))
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark100"}, percentiles = {0.5, 0.95})
 	public LogiskSlettDokumentResponse logiskSlettDokumentKnyttetKunEnJournalpost(@RequestHeader(value = AKSJONS_LOGG_HEADER) String aksjonsLoggHeaderString,
-																				  @PathVariable("journalpostId") Long journalpostId, @PathVariable("dokumentInfoId") Long dokumentInfoId) throws UgyldigAksjonsLoggInfoException {
+																				  @PathVariable("journalpostId") Long journalpostId, @PathVariable("dokumentInfoId") Long dokumentInfoId) throws UgyldigAksjonsLoggHeaderException {
 		abacSecurityService.assertAccessToJournalpostIncludingBegrenset(journalpostId.toString());
 		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark100");
 		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har mottat kall med journalpostId=" + journalpostId + " og dokumentInfoId=" + dokumentInfoId);
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
-		AksjonsLoggHeader aksjonsLoggHeader = aksjonsLoggHeaderMapper.mapAksjonsLoggHeader(aksjonsLoggHeaderString);
+		List<AksjonsLoggHeader> aksjonsLoggHeader = aksjonsLoggHeaderMapper.mapAksjonsLoggHeader(aksjonsLoggHeaderString);
 		aksjonsLoggService.validateAndSaveAksjon(aksjonsLoggHeader);
 		return logiskSlettDokumentService.logiskSletteDokument(LogiskSlettDokumentRequestTo.builder()
 				.journalpostId(journalpostId)
@@ -81,12 +82,12 @@ public class LogiskSlettDokumentRestController {
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark101"}, percentiles = {0.5, 0.95})
 	public LogiskSlettDokumentResponse angreLogiskSlettDokument(@RequestHeader(value = AKSJONS_LOGG_HEADER) String aksjonsLoggHeaderString,
 																@PathVariable("journalpostId") Long journalpostId,
-																@PathVariable("dokumentInfoId") Long dokumentInfoId) throws UgyldigAksjonsLoggInfoException {
+																@PathVariable("dokumentInfoId") Long dokumentInfoId) throws UgyldigAksjonsLoggHeaderException {
 		abacSecurityService.assertAccessToJournalpostIncludingBegrenset(journalpostId.toString());
 		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark101");
 		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har mottat kall med journalpostId=" + journalpostId + " og dokumentInfoId=" + dokumentInfoId);
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
-		AksjonsLoggHeader aksjonsLoggHeader = aksjonsLoggHeaderMapper.mapAksjonsLoggHeader(aksjonsLoggHeaderString);
+		List<AksjonsLoggHeader> aksjonsLoggHeader = aksjonsLoggHeaderMapper.mapAksjonsLoggHeader(aksjonsLoggHeaderString);
 		aksjonsLoggService.validateAndSaveAksjon(aksjonsLoggHeader);
 		return angreLogiskSlettDokumentService.angreLogiskSlettDokument(LogiskSlettDokumentRequestTo.builder()
 				.journalpostId(journalpostId)

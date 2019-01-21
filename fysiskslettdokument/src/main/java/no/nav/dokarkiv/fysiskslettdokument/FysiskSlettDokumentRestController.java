@@ -13,7 +13,7 @@ import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggHeader;
 import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggHeaderMapper;
 import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService;
 import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
-import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggInfoException;
+import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggHeaderException;
 import no.nav.dokarkiv.core.metrics.RestMetrics;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import no.nav.dokarkiv.fysiskslettdokument.rjoark102.FysiskSlettDokumentRequestTo;
@@ -30,6 +30,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.inject.Inject;
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -58,12 +59,12 @@ public class FysiskSlettDokumentRestController {
 			@RequestHeader(value = AKSJONS_LOGG_HEADER) String aksjonsLoggHeaderString,
 			@PathVariable("journalpostId") Long journalpostId,
 			@PathVariable("dokumentInfoId") Long dokumentInfoId,
-			@PathVariable("begrensningType") BegrensningTypeCode begrensningType) throws UgyldigAksjonsLoggInfoException {
+			@PathVariable("begrensningType") BegrensningTypeCode begrensningType) throws UgyldigAksjonsLoggHeaderException {
 		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark102");
 		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har mottat kall med journalpostId=" + journalpostId + ", dokumentInfoId=" + dokumentInfoId + " og begrensningType=" + begrensningType);
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
 
-		AksjonsLoggHeader aksjonsLoggHeader = aksjonsLoggHeaderMapper.mapAksjonsLoggHeader(aksjonsLoggHeaderString);
+		List<AksjonsLoggHeader> aksjonsLoggHeader = aksjonsLoggHeaderMapper.mapAksjonsLoggHeader(aksjonsLoggHeaderString);
 		aksjonsLoggService.validateAndSaveAksjon(aksjonsLoggHeader);
 
 		return fysiskSlettDokumentService.sletteDokumentFysisk(FysiskSlettDokumentRequestTo.builder()

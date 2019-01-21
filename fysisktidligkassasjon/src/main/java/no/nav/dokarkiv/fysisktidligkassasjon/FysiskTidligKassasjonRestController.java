@@ -11,7 +11,7 @@ import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggHeader;
 import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggHeaderMapper;
 import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService;
-import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggInfoException;
+import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggHeaderException;
 import no.nav.dokarkiv.core.metrics.RestMetrics;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import no.nav.dokarkiv.fysisktidligkassasjon.rjoark107.FysiskTidligKassasjonResponse;
@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.inject.Inject;
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -58,12 +59,12 @@ public class FysiskTidligKassasjonRestController {
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark107"}, percentiles = {0.5, 0.95})
 	public FysiskTidligKassasjonResponse fysiskTidligKassasjon(
 			@RequestHeader(value = AKSJONS_LOGG_HEADER) String aksjonsLoggHeaderString,
-			@PathVariable("dokumentInfoId") Long dokumentInfoId) throws UgyldigAksjonsLoggInfoException {
+			@PathVariable("dokumentInfoId") Long dokumentInfoId) throws UgyldigAksjonsLoggHeaderException {
 		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark107");
 		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har mottat kall med dokumentInfoId={}", dokumentInfoId);
 		validator.validerFysiskTidligKassasjonRequest(dokumentInfoId);
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
-		AksjonsLoggHeader aksjonsLoggHeader = aksjonsLoggHeaderMapper.mapAksjonsLoggHeader(aksjonsLoggHeaderString);
+		List<AksjonsLoggHeader> aksjonsLoggHeader = aksjonsLoggHeaderMapper.mapAksjonsLoggHeader(aksjonsLoggHeaderString);
 		aksjonsLoggService.validateAndSaveAksjon(aksjonsLoggHeader);
 		FysiskTidligKassasjonResponse response = fysiskTidligKassasjonService.fysiskTidligKassasjonAvDokument(dokumentInfoId);
 		log.info("{} har fysisk tidlig kassert dokument med dokumentInfoId={}",

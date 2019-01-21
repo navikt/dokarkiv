@@ -7,14 +7,14 @@ import org.springframework.web.bind.annotation.ResponseStatus;
  * @author Ugur Alpay Cenar, Visma Consulting.
  */
 @ResponseStatus(HttpStatus.BAD_REQUEST)
-public class UgyldigAksjonsLoggInfoException extends Exception {
+public class UgyldigAksjonsLoggHeaderException extends Exception {
 
-	public UgyldigAksjonsLoggInfoException(String message, Throwable cause) {
+	public UgyldigAksjonsLoggHeaderException(String message, Throwable cause) {
 		super(message, cause);
 	}
 
 
-	public UgyldigAksjonsLoggInfoException(String message) {
+	public UgyldigAksjonsLoggHeaderException(String message) {
 		super(message);
 	}
 }

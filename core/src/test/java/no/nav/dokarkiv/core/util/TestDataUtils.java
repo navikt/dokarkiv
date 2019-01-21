@@ -59,11 +59,22 @@ public class TestDataUtils {
 
 	public static AksjonsLoggHeader createAksjonsLoggRequest(Long journalpostId, Long dokumentInfoId, String aksjon) {
 		return AksjonsLoggHeader.builder()
-				.aksjonListe(Arrays.asList(createAksjonsLoggRequestAksjon(journalpostId,dokumentInfoId,aksjon))).build();
+				.aksjon(aksjon)
+				.bruker(AKSJON_BRUKER)
+				.melding(AKSJON_MELDING)
+				.journalpostId(journalpostId)
+				.dokumentInfoId(dokumentInfoId)
+				.applikasjon(AKSJON_APPLIKASJON)
+				.hjemmel(AKSJON_HJEMMEL)
+				.utfoertAv(AKSJON_UTFOERT_AV)
+				.fraVerdi(AKSJON_FRA_VERDI)
+				.tilVerdi(AKSJON_TIL_VERDI)
+				.arkivElement(AKSJON_ARKIVELEMENT)
+				.build();
 	}
 
-	public static AksjonsLoggHeader.Aksjon createAksjonsLoggRequestAksjon(Long journalpostId, Long dokumentInfoId, String aksjon) {
-		return AksjonsLoggHeader.Aksjon.builder()
+	public static AksjonsLoggHeader createAksjonsLoggRequestAksjon(Long journalpostId, Long dokumentInfoId, String aksjon) {
+		return AksjonsLoggHeader.builder()
 				.aksjon(aksjon)
 				.bruker(AKSJON_BRUKER)
 				.melding(AKSJON_MELDING)

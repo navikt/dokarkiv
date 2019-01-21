@@ -15,24 +15,15 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AksjonsLoggHeader {
-
-	List<Aksjon> aksjonListe;
-
-	@Data
-	@Builder
-	@AllArgsConstructor
-	@NoArgsConstructor
-	public static class Aksjon {
-		private Long journalpostId;
-		private Long dokumentInfoId;
-		private String applikasjon;
-		private String aksjon;
-		private String hjemmel;
-		private String bruker;
-		private String arkivElement;
-		private String fraVerdi;
-		private String tilVerdi;
-		private String melding;
-		private String utfoertAv;
-	}
+	private Long journalpostId;
+	private Long dokumentInfoId;
+	private String applikasjon;
+	private String aksjon;
+	private String hjemmel;
+	private String bruker;
+	private String arkivElement;
+	private String fraVerdi;
+	private String tilVerdi;
+	private String melding;
+	private String utfoertAv;
 }
