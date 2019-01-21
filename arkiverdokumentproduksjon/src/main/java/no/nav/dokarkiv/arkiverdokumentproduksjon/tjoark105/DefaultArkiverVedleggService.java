@@ -8,7 +8,7 @@ import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.util.DateProvider;
 import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
 import no.nav.dokarkiv.core.journalbehandling.DokumentFilerDelegate;
-import no.nav.dokarkiv.core.repository.JoarkRepositoryBegrenset;
+import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import no.nav.dokarkiv.core.sporing.SporingPopulator;
 import org.springframework.stereotype.Component;
 
@@ -23,7 +23,7 @@ import javax.inject.Inject;
 public class DefaultArkiverVedleggService implements ArkiverVedleggService {
 
 	@Inject
-	private JoarkRepositoryBegrenset joarkRepository;
+	private JoarkRepositorySkjermet joarkRepository;
 
 	@Inject
 	private ArkiverVedleggValidator arkiverVedleggValidator;

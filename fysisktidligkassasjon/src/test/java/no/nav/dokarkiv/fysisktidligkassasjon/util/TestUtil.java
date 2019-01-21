@@ -8,7 +8,7 @@ import no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder;
 import no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder;
 import no.nav.dokarkiv.core.domain.builder.JournalpostBuilder;
 import no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder;
-import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
+import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
@@ -139,7 +139,7 @@ public class TestUtil {
 	public static Begrensning kassereDokumentLogisk(DokumentInfo dokumentInfo) {
 		Begrensning begrensning = Begrensning.builder()
 				.dokumentInfoId(dokumentInfo.getDokumentInfoId())
-				.begrensningType(BegrensningTypeCode.KASSERT)
+				.begrensningType(SkjermingTypeCode.POL)
 				.build();
 		begrensning.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
 		return begrensning;

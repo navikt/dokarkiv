@@ -11,7 +11,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.core.Is.is;
 
 import no.nav.dokarkiv.core.domain.codes.AksjonTypeCode;
-import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
+import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
@@ -175,7 +175,7 @@ public class Rjoark106IT extends AbstractLogiskTidligKassasjonIT {
 		assertThat(responseEntity.getBody(), containsString(
 				String.format("Fant ikke forventet begrensning for dokument med dokumentInfoId=%s og begrensningsType=%s",
 						dokumentInfo.getDokumentInfoId(),
-						BegrensningTypeCode.KASSERT)));
+						SkjermingTypeCode.POL)));
 	}
 
 	@Test

@@ -5,9 +5,9 @@ import no.nav.dokarkiv.core.domain.entities.DokumentFil;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import no.nav.dokarkiv.core.domain.service.BegrensningService;
+import no.nav.dokarkiv.core.domain.service.SkjermingService;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
-import no.nav.dokarkiv.core.repository.JoarkRepositoryBegrenset;
+import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import no.nav.dokarkiv.dokumentproduksjoninfo.exceptions.DokumentInfoNotFoundException;
 import no.nav.dokarkiv.dokumentproduksjoninfo.exceptions.FilDetaljerNotFoundException;
 import no.nav.dokarkiv.dokumentproduksjoninfo.exceptions.IllegalDokumentstatusException;
@@ -31,7 +31,7 @@ import java.util.List;
 public class HentFerdigstilteDokumenterService {
 
 	@Inject
-	private JoarkRepositoryBegrenset joarkRepository;
+	private JoarkRepositorySkjermet joarkRepository;
 
 	@Inject
 	private DokumentFilRepository dokumentFilRepository;
@@ -40,7 +40,7 @@ public class HentFerdigstilteDokumenterService {
 	private HentFerdigstilteDokumenterValidator hentFerdigstilteRokumenterValidator;
 
 	@Inject
-	private BegrensningService begrensningService;
+	private SkjermingService skjermingService;
 
 	/**
 	 * 
@@ -62,7 +62,7 @@ public class HentFerdigstilteDokumenterService {
 				hentFerdigstilteRokumenterValidator.validateDokumentInfo(journalpostId, dokumentInfoId, dokumentInfo);
 
 				FilDetaljer filDetaljer;
-				if (begrensningService.isVariantSkjermet(dokumentInfoId, VariantFormatCode.ARKIV)) {
+				if (skjermingService.isVariantSkjermet(dokumentInfoId, VariantFormatCode.ARKIV)) {
 					filDetaljer = dokumentInfo.findFilDetaljerByVariantFormat(VariantFormatCode.SLADDET);
 				} else {
 					filDetaljer = dokumentInfo.findFilDetaljerByVariantFormat(VariantFormatCode.ARKIV);

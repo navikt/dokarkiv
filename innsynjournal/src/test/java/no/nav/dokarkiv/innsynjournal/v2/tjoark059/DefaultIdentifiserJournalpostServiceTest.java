@@ -17,7 +17,7 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeInngaaendeException;
 import no.nav.dokarkiv.core.exceptions.UgyldigInputException;
-import no.nav.dokarkiv.core.repository.JoarkRepositoryBegrenset;
+import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import no.nav.dokarkiv.innsynjournal.v2.exceptions.JournalpostNotSupportedException;
 import org.junit.Rule;
 import org.junit.Test;
@@ -54,7 +54,7 @@ public class DefaultIdentifiserJournalpostServiceTest {
 	public ExpectedException thrown = ExpectedException.none();
 
 	@Mock
-    private JoarkRepositoryBegrenset joarkRepository;
+    private JoarkRepositorySkjermet joarkRepository;
 
 	@InjectMocks
 	private DefaultIdentifiserJournalpostService service;

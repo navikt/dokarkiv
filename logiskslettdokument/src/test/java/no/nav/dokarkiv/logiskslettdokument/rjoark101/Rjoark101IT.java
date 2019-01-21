@@ -13,7 +13,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import no.nav.dokarkiv.core.domain.codes.AksjonTypeCode;
-import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
+import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
 import no.nav.dokarkiv.core.domain.entities.Begrensning;
@@ -207,7 +207,7 @@ public class Rjoark101IT extends AbstractSlettDokumentIT {
 				String.format("Fant ikke forventet begrensning for dokument med journalpostId=%s, dokumentInfoId=%s og begrensningsType=%s.",
 						journalpost.getJournalpostId(),
 						vedlegg.getDokumentInfoId(),
-						BegrensningTypeCode.UTILGJENGELIGGJORT)));
+						SkjermingTypeCode.POL)));
 
 		Begrensning begrensetJp = hentVedleggBegrensningEtterUtfoertKall(journalpost.getJournalpostId(), vedlegg.getDokumentInfoId());
 		assertNull(begrensetJp);
@@ -299,7 +299,7 @@ public class Rjoark101IT extends AbstractSlettDokumentIT {
 		assertThat(responseEntity.getBody(), containsString(
 				String.format("Fant ikke forventet begrensning for journalpost med journalpostId=%s og begrensningsType=%s.",
 						journalpost.getJournalpostId(),
-						BegrensningTypeCode.UTILGJENGELIGGJORT)));
+						SkjermingTypeCode.POL)));
 
 		Begrensning begrensetJp = hentJournalpostEtterUtfoertKall(journalpost.getJournalpostId());
 		assertNull(begrensetJp);

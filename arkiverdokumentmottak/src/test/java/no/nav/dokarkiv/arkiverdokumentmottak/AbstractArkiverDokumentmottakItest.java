@@ -5,7 +5,7 @@ import no.nav.dokarkiv.arkiverdokumentmottak.tjoark203.v2.ArkiverDokumentmottakV
 import no.nav.dokarkiv.core.CoreConfig;
 import no.nav.dokarkiv.core.domain.util.DateProvider;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
-import no.nav.dokarkiv.core.repository.JoarkRepositoryBegrenset;
+import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.dokarkiv.core.stelvio.SimpleRequestContext;
 import org.junit.Before;
@@ -36,7 +36,7 @@ public abstract class AbstractArkiverDokumentmottakItest {
 	@Rule
 	public ExpectedException expectedException = ExpectedException.none();
 	@Inject
-    protected JoarkRepositoryBegrenset joarkRepository;
+    protected JoarkRepositorySkjermet joarkRepository;
 	@Inject
 	protected DokumentFilRepository dokumentFilRepository;
 	@Inject

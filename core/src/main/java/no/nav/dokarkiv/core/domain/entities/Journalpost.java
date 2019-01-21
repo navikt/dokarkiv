@@ -11,6 +11,7 @@ import static org.apache.commons.lang3.BooleanUtils.isFalse;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import no.nav.dokarkiv.core.domain.AbstractPersistentVersionedDomainObjectWithKilde;
+import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.Behandlingstema;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
@@ -200,6 +201,10 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	@Column(name = "k_behandlingstema")
 	private Behandlingstema behandlingstema;
 
+	@Column(name = "skjerming_type")
+	@Enumerated(EnumType.STRING)
+	private SkjermingTypeCode skjermingType;
+
 	@OneToMany
 	@JoinColumn(name = "journalpost_id", nullable = false)
 	@Cascade({CascadeType.PERSIST, CascadeType.MERGE, CascadeType.SAVE_UPDATE, CascadeType.DELETE, CascadeType.DETACH})
@@ -230,15 +235,15 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	private final Set<ReturInfo> returInfos = new HashSet<>();
 
 	@Transient
-	private transient List<Long> begrensetRelasjonerDokumentInfoId = new ArrayList<>();
+	private transient List<Long> skjermetRelasjonerDokumentInfoId = new ArrayList<>();
 
-	public void addAllbegrensetRelasjonerDokumentInfoIds(List<Long> dokumentInfoIdList) {
-		begrensetRelasjonerDokumentInfoId = new ArrayList<>();
-		begrensetRelasjonerDokumentInfoId.addAll(dokumentInfoIdList);
+	public void addAllSkjermetRelasjonerDokumentInfoIds(List<Long> dokumentInfoIdList) {
+		skjermetRelasjonerDokumentInfoId = new ArrayList<>();
+		skjermetRelasjonerDokumentInfoId.addAll(dokumentInfoIdList);
 	}
 
-	public List<Long> getBegrensetRelasjonerDokumentInfoId() {
-		return begrensetRelasjonerDokumentInfoId == null ? new ArrayList<>() : begrensetRelasjonerDokumentInfoId;
+	public List<Long> getSkjermetRelasjonerDokumentInfoId() {
+		return skjermetRelasjonerDokumentInfoId == null ? new ArrayList<>() : skjermetRelasjonerDokumentInfoId;
 	}
 
 	/**
@@ -1423,6 +1428,14 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 		this.behandlingstema = behandlingstema;
 	}
 
+	public SkjermingTypeCode getSkjermingType() {
+		return skjermingType;
+	}
+
+	public void setSkjermingType(SkjermingTypeCode skjermingType) {
+		throw new UnsupportedOperationException("Skjerming  skal bare settes gjennom SkjermingService");
+	}
+
 	/**
 	 * Add a JournalpostDokumentInfoRelasjon to relasjon Set.
 	 *
@@ -1453,7 +1466,7 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	public Set<JournalpostDokumentInfoRelasjon> getJournalpostDokumentInfoRelasjoner() {
 		return Collections.unmodifiableSet(journalpostDokumentInfoRelasjoner.stream()
 				.filter(relasjon -> relasjon.getDokumentInfo() == null || relasjon.getDokumentInfo()
-						.getDokumentInfoId() == null || isFalse(getBegrensetRelasjonerDokumentInfoId().stream()
+						.getDokumentInfoId() == null || isFalse(getSkjermetRelasjonerDokumentInfoId().stream()
 						.anyMatch(dokumentInfoId -> dokumentInfoId.equals(relasjon.getDokumentInfo().getDokumentInfoId()))))
 				.collect(Collectors.toSet()));
 	}

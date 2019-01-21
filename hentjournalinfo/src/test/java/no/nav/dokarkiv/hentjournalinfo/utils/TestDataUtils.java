@@ -11,7 +11,7 @@ import no.nav.dokarkiv.core.domain.builder.JournalpostBuilder;
 import no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder;
 import no.nav.dokarkiv.core.domain.builder.KryssreferanseBuilder;
 import no.nav.dokarkiv.core.domain.builder.SkannetInnholdBuilder;
-import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
+import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
@@ -142,7 +142,7 @@ public class TestDataUtils {
         Set<Begrensning> begrensninger = new HashSet<>();
         begrensninger.add(Begrensning.builder()
                 .journalpostId(journalpost.getJournalpostId())
-                .begrensningType(BegrensningTypeCode.UTILGJENGELIGGJORT)
+                .begrensningType(SkjermingTypeCode.POL)
                 .build());
         return begrensninger;
     }

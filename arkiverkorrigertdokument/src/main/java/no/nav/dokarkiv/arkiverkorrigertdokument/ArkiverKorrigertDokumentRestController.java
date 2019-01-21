@@ -66,7 +66,7 @@ public class ArkiverKorrigertDokumentRestController {
 		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark103");
 
 		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har mottat kall for arkivering av korrigert dokument med dokumentInfoId={}", dokumentInfoId);
-		abacSecurityService.assertAccessToDokumentIncludingBegrenset(dokumentInfoId);
+		abacSecurityService.assertAccessToDokumentIncludingSkjermet(dokumentInfoId);
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
 
 		List<AksjonsLoggHeader> aksjonsLoggHeader = aksjonsLoggHeaderMapper.mapAksjonsLoggHeader(aksjonsLoggHeaderString);
@@ -90,7 +90,7 @@ public class ArkiverKorrigertDokumentRestController {
 			@PathVariable("dokumentInfoId") Long dokumentInfoId) throws UgyldigAksjonsLoggHeaderException {
 		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark104");
 		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har mottat kall for angre korrigering av dokument med dokumentInfoId={}", dokumentInfoId);
-		abacSecurityService.assertAccessToDokumentIncludingBegrenset(dokumentInfoId);
+		abacSecurityService.assertAccessToDokumentIncludingSkjermet(dokumentInfoId);
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
 
 		List<AksjonsLoggHeader> aksjonsLoggHeader = aksjonsLoggHeaderMapper.mapAksjonsLoggHeader(aksjonsLoggHeaderString);

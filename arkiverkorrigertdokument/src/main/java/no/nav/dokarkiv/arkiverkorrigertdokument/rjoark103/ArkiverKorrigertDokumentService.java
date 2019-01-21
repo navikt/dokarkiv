@@ -4,7 +4,7 @@ package no.nav.dokarkiv.arkiverkorrigertdokument.rjoark103;
 import static org.apache.commons.lang3.BooleanUtils.isFalse;
 
 import no.nav.dokarkiv.core.MDCConstants;
-import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
+import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.Begrensning;
@@ -60,12 +60,12 @@ public class ArkiverKorrigertDokumentService {
 
 	private void kanskjeOpprettBegrensingSkjermet(DokumentInfo dokumentInfo) {
 		boolean begrengsningExists = begrensningRepository.findByDokumentInfoIdAndVariantFormatAndBegrensningType(
-				dokumentInfo.getDokumentInfoId(), VariantFormatCode.ARKIV, BegrensningTypeCode.SKJERMET)
+				dokumentInfo.getDokumentInfoId(), VariantFormatCode.ARKIV, SkjermingTypeCode.POL)
 				.isPresent();
 		if (isFalse(begrengsningExists)) {
 			Begrensning begrensning = Begrensning.builder()
 					.dokumentInfoId(dokumentInfo.getDokumentInfoId())
-					.begrensningType(BegrensningTypeCode.SKJERMET)
+					.begrensningType(SkjermingTypeCode.POL)
 					.variantFormat(VariantFormatCode.ARKIV)
 					.build();
 			begrensning.setOpprettetKildeNavn(MDC.get(MDCConstants.MDC_CONSUMER_ID));

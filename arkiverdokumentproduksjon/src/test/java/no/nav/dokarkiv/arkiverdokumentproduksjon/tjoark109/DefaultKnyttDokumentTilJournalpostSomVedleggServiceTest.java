@@ -45,7 +45,7 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
 import no.nav.dokarkiv.core.exceptions.ApplicationException;
-import no.nav.dokarkiv.core.repository.JoarkRepositoryBegrenset;
+import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import no.nav.dokarkiv.core.sporing.SporingPopulator;
 import org.junit.Before;
 import org.junit.Rule;
@@ -85,7 +85,7 @@ public class DefaultKnyttDokumentTilJournalpostSomVedleggServiceTest {
 	private KnyttDokumentTilJournalpostSomVedleggValidator validatorMock;
 
 	@Mock
-    private JoarkRepositoryBegrenset repositoryMock;
+    private JoarkRepositorySkjermet repositoryMock;
 
 	@Mock
 	private SporingPopulator sporingpopulatorMock;

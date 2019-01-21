@@ -33,7 +33,7 @@ import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
-import no.nav.dokarkiv.core.repository.JoarkRepositoryBegrenset;
+import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import no.nav.dokarkiv.core.sporing.SporingPopulator;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
@@ -71,7 +71,7 @@ public class DefaultKnyttDokumentTilJournalpostSomVedleggService implements Knyt
 	private KnyttDokumentTilJournalpostSomVedleggValidator validator;
 
 	@Inject
-    private JoarkRepositoryBegrenset joarkRepository;
+    private JoarkRepositorySkjermet joarkRepository;
 
 	@Inject
 	private SporingPopulator sporingPopulator;

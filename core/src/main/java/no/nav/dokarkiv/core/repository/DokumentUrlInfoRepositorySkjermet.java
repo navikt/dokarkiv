@@ -2,9 +2,9 @@ package no.nav.dokarkiv.core.repository;
 
 import static org.apache.cxf.common.util.PropertyUtils.isFalse;
 
-import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
+import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentUrlInfo;
-import no.nav.dokarkiv.core.domain.service.BegrensningService;
+import no.nav.dokarkiv.core.domain.service.SkjermingService;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -12,14 +12,14 @@ import java.util.Optional;
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
  */
-public class DokumentUrlInfoRepositoryBegrenset {
+public class DokumentUrlInfoRepositorySkjermet {
 
     private final DokumentUrlInfoRepository dokumentUrlInfoRepository;
-    private final BegrensningService begrensningService;
+    private final SkjermingService skjermingService;
 
-    public DokumentUrlInfoRepositoryBegrenset(DokumentUrlInfoRepository dokumentUrlInfoRepository, BegrensningService begrensningService) {
+    public DokumentUrlInfoRepositorySkjermet(DokumentUrlInfoRepository dokumentUrlInfoRepository, SkjermingService skjermingService) {
         this.dokumentUrlInfoRepository = dokumentUrlInfoRepository;
-        this.begrensningService = begrensningService;
+        this.skjermingService = skjermingService;
     }
 
     public DokumentUrlInfo save(DokumentUrlInfo dokumentUrlInfo) {
@@ -35,15 +35,15 @@ public class DokumentUrlInfoRepositoryBegrenset {
 
     public DokumentUrlInfo findByFilUuid(String filUuid) {
         DokumentUrlInfo dokumentUrlInfo = dokumentUrlInfoRepository.findByFilUuid(filUuid);
-		return Objects.nonNull(dokumentUrlInfo) && isFalse(begrensningService.isJournalpostBegrenset(dokumentUrlInfo.getJournalpost()
-                .getJournalpostId(), BegrensningTypeCode.UTILGJENGELIGGJORT)) ? dokumentUrlInfo : null;
+		return Objects.nonNull(dokumentUrlInfo) && isFalse(skjermingService.isJournalpostSkjermet(dokumentUrlInfo.getJournalpost()
+                .getJournalpostId(), SkjermingTypeCode.POL)) ? dokumentUrlInfo : null;
     }
 
     public Optional<DokumentUrlInfo> findByDoctoken(String doctoken) {
         Optional<DokumentUrlInfo> dokumentUrlInfo = dokumentUrlInfoRepository.findByDoctoken(doctoken);
-        return dokumentUrlInfo.isPresent() && isFalse(begrensningService.isJournalpostBegrenset(dokumentUrlInfo.get()
+        return dokumentUrlInfo.isPresent() && isFalse(skjermingService.isJournalpostSkjermet(dokumentUrlInfo.get()
                 .getJournalpost()
-                .getJournalpostId(), BegrensningTypeCode.UTILGJENGELIGGJORT)) ? dokumentUrlInfo : Optional.empty();
+                .getJournalpostId(), SkjermingTypeCode.POL)) ? dokumentUrlInfo : Optional.empty();
     }
 
 

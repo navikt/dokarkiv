@@ -8,7 +8,7 @@ import no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder;
 import no.nav.dokarkiv.core.domain.builder.JournalpostBuilder;
 import no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder;
 import no.nav.dokarkiv.core.domain.builder.SaksrelasjonBuilder;
-import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
+import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
@@ -90,12 +90,12 @@ public class TestDataUtils {
 				.build();
 	}
 
-	public static Begrensning createBegrensning(Long journalpostId, Long dokumentInfoId, BegrensningTypeCode begrensningTypeCode) {
+    public static Begrensning createBegrensning(Long journalpostId, Long dokumentInfoId, SkjermingTypeCode skjermingTypeCode) {
 
-		Begrensning begrensning = Begrensning.builder()
-				.begrensningType(begrensningTypeCode)
-				.journalpostId(journalpostId)
-				.dokumentInfoId(dokumentInfoId).build();
+        Begrensning begrensning = Begrensning.builder()
+                .begrensningType(skjermingTypeCode)
+                .journalpostId(journalpostId)
+                .dokumentInfoId(dokumentInfoId).build();
 
 		begrensning.setOpprettetKildeNavn("test navn");
 

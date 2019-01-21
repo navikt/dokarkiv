@@ -23,7 +23,7 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.util.DateProvider;
 import no.nav.dokarkiv.core.exceptions.ApplicationException;
 import no.nav.dokarkiv.core.journalbehandling.DokumentFilerDelegate;
-import no.nav.dokarkiv.core.repository.JoarkRepositoryBegrenset;
+import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -54,7 +54,7 @@ public class DefaultJournalfoerNotatHenvendelseTest {
 	@Mock
 	private DokumentFilerDelegate dokumentFilerDelegateMock;
 	@Mock
-    private JoarkRepositoryBegrenset joarkRepositoryMock;
+    private JoarkRepositorySkjermet joarkRepositoryMock;
 	@InjectMocks
 	private DefaultJournalfoerNotatHenvendelse service;
 	private JournalfoerNotatHenvendelseRequest request;

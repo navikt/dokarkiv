@@ -2,9 +2,9 @@ package no.nav.dokarkiv.logisktidligkassasjon.rjoark106;
 
 import static org.apache.cxf.common.util.PropertyUtils.isFalse;
 
-import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
+import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
-import no.nav.dokarkiv.core.exceptions.BegrensningIkkeFunnetException;
+import no.nav.dokarkiv.core.exceptions.SkjermingIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.DokumentInfoIkkeFunnetException;
 import no.nav.dokarkiv.core.repository.BegrensningRepository;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
@@ -34,7 +34,7 @@ public class AngreLogiskTidligKassasjonService {
 								dokumentInfoId)));
 
 		sjekkAtDokumentErLogiskKassert(dokumentInfoId);
-		begrensningRepository.deleteByDokumentInfoIdAndBegrensningType(dokumentInfoId, BegrensningTypeCode.KASSERT);
+		begrensningRepository.deleteByDokumentInfoIdAndBegrensningType(dokumentInfoId, SkjermingTypeCode.POL);
 
 		return LogiskTidligKassasjonResponse.builder()
 				.dokumentInfoId(dokumentInfoDerKasseringSkalAngres.getDokumentInfoId())
@@ -43,12 +43,12 @@ public class AngreLogiskTidligKassasjonService {
 	}
 
 	private void sjekkAtDokumentErLogiskKassert(Long dokumentInfoId) {
-		if (isFalse(begrensningRepository.findByDokumentInfoIdAndBegrensningType(dokumentInfoId, BegrensningTypeCode.KASSERT)
+		if (isFalse(begrensningRepository.findByDokumentInfoIdAndBegrensningType(dokumentInfoId, SkjermingTypeCode.POL)
 				.isPresent())) {
-			throw new BegrensningIkkeFunnetException(
+			throw new SkjermingIkkeFunnetException(
 					String.format("Fant ikke forventet begrensning for dokument med dokumentInfoId=%s og begrensningsType=%s",
 							dokumentInfoId,
-							BegrensningTypeCode.KASSERT));
+							SkjermingTypeCode.POL));
 		}
 	}
 }

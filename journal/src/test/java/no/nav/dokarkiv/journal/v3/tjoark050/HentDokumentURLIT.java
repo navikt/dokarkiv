@@ -19,7 +19,7 @@ import no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder;
 import no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder;
 import no.nav.dokarkiv.core.domain.builder.JournalpostBuilder;
 import no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder;
-import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
+import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
@@ -157,7 +157,7 @@ public class HentDokumentURLIT extends AbstractJournalV3Itest {
 
 		Begrensning skjermet = new Begrensning();
 		skjermet.setId(1L);
-		skjermet.setBegrensningType(BegrensningTypeCode.SKJERMET);
+		skjermet.setBegrensningType(SkjermingTypeCode.POL);
 		skjermet.setVariantFormat(VariantFormatCode.ARKIV);
 		skjermet.setDokumentInfoId(journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId());
 		skjermet.setOpprettetKildeNavn("test");

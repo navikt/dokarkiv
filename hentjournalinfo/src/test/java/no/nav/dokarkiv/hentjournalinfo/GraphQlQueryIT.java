@@ -24,7 +24,7 @@ import static org.junit.Assert.assertThat;
 import com.amazonaws.util.Base64;
 import no.nav.dokarkiv.core.CoreConfig;
 import no.nav.dokarkiv.core.domain.builder.DokumentFilBuilder;
-import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
+import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.Begrensning;
@@ -249,7 +249,7 @@ public class GraphQlQueryIT {
 		joarkRepository.save(journalpost);
 		Begrensning begrensning = Begrensning.builder()
 				.journalpostId(journalpost.getJournalpostId())
-				.begrensningType(BegrensningTypeCode.UTILGJENGELIGGJORT)
+				.begrensningType(SkjermingTypeCode.POL)
 				.build();
 		begrensning.setOpprettetKildeNavn("Opprettet av");
 		begrensningRepository.save(begrensning);
@@ -278,7 +278,7 @@ public class GraphQlQueryIT {
 		Begrensning begrensning = Begrensning.builder()
 				.journalpostId(journalpost.getJournalpostId())
 				.dokumentInfoId(vedlegg.getDokumentInfoId())
-				.begrensningType(BegrensningTypeCode.UTILGJENGELIGGJORT)
+				.begrensningType(SkjermingTypeCode.POL)
 				.build();
 		begrensning.setOpprettetKildeNavn("Opprettet av");
 		begrensningRepository.save(begrensning);

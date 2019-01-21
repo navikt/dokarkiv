@@ -8,17 +8,15 @@ import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjo
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
-import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentFil;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import no.nav.dokarkiv.core.domain.service.BegrensningService;
+import no.nav.dokarkiv.core.domain.service.SkjermingService;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
-import no.nav.dokarkiv.core.repository.JoarkRepositoryBegrenset;
+import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import no.nav.dokarkiv.dokumentproduksjoninfo.exceptions.FilDetaljerNotFoundException;
 import org.junit.Rule;
 import org.junit.Test;
@@ -58,7 +56,7 @@ public class HentFerdigstilteDokumenterServiceTest {
 	public ExpectedException exception = ExpectedException.none();
 
 	@Mock
-	private JoarkRepositoryBegrenset joarkRepository;
+	private JoarkRepositorySkjermet joarkRepository;
 
 	@Mock
 	private DokumentFilRepository dokumentFilRepository;
@@ -67,7 +65,7 @@ public class HentFerdigstilteDokumenterServiceTest {
 	private HentFerdigstilteDokumenterValidator hentFerdigstilteRokumenterValidator;
 
 	@Mock
-	private BegrensningService begrensningService;
+	private SkjermingService skjermingService;
 
 	@InjectMocks
 	private HentFerdigstilteDokumenterService service;
@@ -96,7 +94,7 @@ public class HentFerdigstilteDokumenterServiceTest {
 		when(joarkRepository.findById(JOURNALPOST_ID)).thenReturn(Optional.of(createJournalpost()));
 		when(dokumentFilRepository.findByFilUuid(FILUUID_2)).thenReturn(createFildetaljer(FILCONTENT_2));
 		when(dokumentFilRepository.findByFilUuid(FILUUID_SLADDET_1)).thenReturn(createFildetaljer(FILCONTENT_SLADDET_1));
-		when(begrensningService.isVariantSkjermet(DOKUMENT_1, VariantFormatCode.ARKIV)).thenReturn(true);
+		when(skjermingService.isVariantSkjermet(DOKUMENT_1, VariantFormatCode.ARKIV)).thenReturn(true);
 
 		List<HentFerdigstilteDokumenterResponseTo> hentFerdigstilteDokumenter = service.hentFerdigstilteDokumenter(
 				JOURNALPOST_ID, Arrays.asList(DOKUMENT_1, DOKUMENT_2));

@@ -40,7 +40,7 @@ import no.nav.dokarkiv.core.repository.BidragMellomlagringDokumentRepository;
 import no.nav.dokarkiv.core.repository.BidragMellomlagringRepository;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
-import no.nav.dokarkiv.core.repository.JoarkRepositoryBegrenset;
+import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import no.nav.dokarkiv.core.sporing.KildeNavnPopulator;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.dokarkiv.core.stelvio.SimpleRequestContext;
@@ -80,7 +80,7 @@ public class DefaultLagreVedleggPaaJournalpostV3Test {
 	private static final Long VEDLEGG_BIDRAG_MELLOMLAGRING_ID = 1001L;
 
 	@Mock
-    private JoarkRepositoryBegrenset joarkRepositoryMock;
+    private JoarkRepositorySkjermet joarkRepositoryMock;
 	@Mock
     private DokumentinfoRepository dokumentinfoRepositoryMock;
 	@Mock

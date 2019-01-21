@@ -30,7 +30,7 @@ import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeInngaaendeException;
 import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
 import no.nav.dokarkiv.core.exceptions.UgyldigInputException;
-import no.nav.dokarkiv.core.repository.JoarkRepositoryBegrenset;
+import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import no.nav.dokarkiv.innsynjournal.v2.exceptions.DocumentNotFoundException;
 import no.nav.dokarkiv.innsynjournal.v2.exceptions.JournalpostNotSupportedException;
 import no.nav.dokarkiv.innsynjournal.v2.exceptions.SecurityLimitationAttributeException;
@@ -77,7 +77,7 @@ public class InnsynJournalV2SecurityFacade {
 	@Inject
 	private AktoerConsumerService aktoerConsumerService;
 	@Inject
-	private JoarkRepositoryBegrenset joarkRepository;
+	private JoarkRepositorySkjermet joarkRepository;
 	@Inject
 	private HentMinTilgjengeligeJournalpostListeService hentMinTilgjengeligeJournalpostListeService;
 	@Inject

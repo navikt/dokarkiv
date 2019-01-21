@@ -61,7 +61,7 @@ public class DokumentQuery implements Query {
 			actions = @Abac.Attr(key = ACTION_ID, value = READ_ACTION))
 	public byte[] dokumentFil(@GraphQLArgument(name = "dokumentInfoId") @GraphQLNonNull Long dokumentInfoId, @GraphQLArgument(name = "variantFormat") @GraphQLNonNull VariantFormat variantFormat) {
 		log.info(format("GraphQL har mottatt %s query med dokumentInfoId=%s og variantFormat=%s", DOKUMENT, dokumentInfoId, variantFormat));
-		abacSecurityService.assertAccessToDokumentIncludingBegrenset(dokumentInfoId);
+		abacSecurityService.assertAccessToDokumentIncludingSkjermet(dokumentInfoId);
 
 		DokumentInfo dokumentInfo = dokumentinfoRepository.findById(dokumentInfoId)
 				.orElse(DokumentInfo.builder().build());

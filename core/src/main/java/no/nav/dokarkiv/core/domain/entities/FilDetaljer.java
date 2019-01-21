@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import no.nav.dokarkiv.core.domain.AbstractPersistentVersionedDomainObjectWithKilde;
+import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
 import no.nav.dokarkiv.core.domain.codes.OnDemandInstansCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
@@ -78,6 +79,10 @@ public class FilDetaljer extends AbstractPersistentVersionedDomainObjectWithKild
 	@Enumerated(EnumType.STRING)
 	@Column(name = "k_variant_format", nullable = false)
 	private VariantFormatCode variantFormat;
+
+	@Column(name = "skjerming_type")
+	@Enumerated(EnumType.STRING)
+	private SkjermingTypeCode skjermingType;
 
 	@JsonIgnore
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -338,6 +343,14 @@ public class FilDetaljer extends AbstractPersistentVersionedDomainObjectWithKild
 	 */
 	public void setVariantFormat(VariantFormatCode variantFormat) {
 		this.variantFormat = variantFormat;
+	}
+
+	public SkjermingTypeCode getSkjermingType() {
+		return skjermingType;
+	}
+
+	public void setSkjermingType(SkjermingTypeCode skjermingType) {
+		throw new UnsupportedOperationException("Skjerming skal bare settes gjennom SkjermingService");
 	}
 
 	/**

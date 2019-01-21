@@ -17,7 +17,7 @@ import no.nav.dokarkiv.core.datautil.SaksrelasjonTestDataProvider;
 import no.nav.dokarkiv.core.domain.ChangeStamp;
 import no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder;
 import no.nav.dokarkiv.core.domain.builder.JournalpostBuilder;
-import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
+import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
@@ -261,7 +261,7 @@ public class HentDokumentIT extends AbstractInnsynJournalV2Itest {
 
 		Begrensning skjermet = new Begrensning();
 		skjermet.setId(1L);
-		skjermet.setBegrensningType(BegrensningTypeCode.SKJERMET);
+		skjermet.setBegrensningType(SkjermingTypeCode.POL);
 		skjermet.setVariantFormat(VariantFormatCode.ARKIV);
 		skjermet.setDokumentInfoId(journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId());
 		skjermet.setOpprettetKildeNavn("test");

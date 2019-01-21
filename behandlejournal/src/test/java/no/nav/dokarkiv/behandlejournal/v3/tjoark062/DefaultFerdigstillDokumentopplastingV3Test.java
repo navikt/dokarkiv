@@ -33,7 +33,7 @@ import no.nav.dokarkiv.core.domain.util.DateProvider;
 import no.nav.dokarkiv.core.exceptions.ApplicationException;
 import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
 import no.nav.dokarkiv.core.repository.BidragMellomlagringRepository;
-import no.nav.dokarkiv.core.repository.JoarkRepositoryBegrenset;
+import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import no.nav.dokarkiv.core.sporing.SporingPopulator;
 import org.junit.Before;
 import org.junit.Rule;
@@ -66,7 +66,7 @@ public class DefaultFerdigstillDokumentopplastingV3Test {
 	@InjectMocks
 	private DefaultFerdigstillDokumentopplastingV3 service;
 	@Mock
-    private JoarkRepositoryBegrenset repositoryMock;
+    private JoarkRepositorySkjermet repositoryMock;
 	@Mock
 	private BidragMellomlagringRepository bidragMellomlagringRepositoryMock;
 	@Mock

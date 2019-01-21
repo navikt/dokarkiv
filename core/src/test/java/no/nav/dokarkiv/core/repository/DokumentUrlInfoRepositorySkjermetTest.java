@@ -8,11 +8,11 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 import no.nav.dokarkiv.core.domain.builder.DokumentUrlInfoBuilder;
-import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
+import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.entities.Begrensning;
 import no.nav.dokarkiv.core.domain.entities.DokumentUrlInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import no.nav.dokarkiv.core.domain.service.BegrensningService;
+import no.nav.dokarkiv.core.domain.service.SkjermingService;
 import no.nav.dokarkiv.core.security.abac.JdbcAbacSecurityRepository;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import org.junit.After;
@@ -34,11 +34,11 @@ import java.util.UUID;
  * @author Ugur Alpay Cenar, Visma Consulting.
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = {RepositoryConfig.class, BegrensningService.class, JdbcAbacSecurityRepository.class})
+@SpringBootTest(classes = {RepositoryConfig.class, SkjermingService.class, JdbcAbacSecurityRepository.class})
 @DataJpaTest
 @Transactional
 @ActiveProfiles("itest")
-public class DokumentUrlInfoRepositoryBegrensetTest {
+public class DokumentUrlInfoRepositorySkjermetTest {
     @Inject
     private JoarkRepository joarkRepository;
 
@@ -50,7 +50,7 @@ public class DokumentUrlInfoRepositoryBegrensetTest {
 
 
     @Inject
-    private DokumentUrlInfoRepositoryBegrenset dokumentUrlInfoRepositoryBegrenset;
+    private DokumentUrlInfoRepositorySkjermet dokumentUrlInfoRepositorySkjermet;
 
     @Inject
     private DokumentUrlInfoRepository dokumentUrlInfoRepository;
@@ -78,8 +78,8 @@ public class DokumentUrlInfoRepositoryBegrensetTest {
 
     @Test
     public void shouldReturnNullOrFalseWhenNotFound() {
-        assertThat(dokumentUrlInfoRepositoryBegrenset.findByFilUuid("tead"), nullValue());
-        assertThat(dokumentUrlInfoRepositoryBegrenset.findByDoctoken("asdasd").isPresent(), is(false));
+        assertThat(dokumentUrlInfoRepositorySkjermet.findByFilUuid("tead"), nullValue());
+        assertThat(dokumentUrlInfoRepositorySkjermet.findByDoctoken("asdasd").isPresent(), is(false));
     }
 
 
@@ -89,7 +89,7 @@ public class DokumentUrlInfoRepositoryBegrensetTest {
         Journalpost journalpost = createJournalpost();
 
         joarkRepository.save(journalpost);
-        Begrensning begrensning = createBegrensning(journalpost.getJournalpostId(), null, BegrensningTypeCode.UTILGJENGELIGGJORT);
+        Begrensning begrensning = createBegrensning(journalpost.getJournalpostId(), null, SkjermingTypeCode.POL);
 
         begrensningRepository.save(begrensning);
 
@@ -99,10 +99,10 @@ public class DokumentUrlInfoRepositoryBegrensetTest {
                 .filUuid(FILUUID)
                 .tidspunkt(Calendar.getInstance().getTime())
                 .build();
-        dokumentUrlInfoRepositoryBegrenset.save(dokumentUrlInfo);
+        dokumentUrlInfoRepositorySkjermet.save(dokumentUrlInfo);
         TestTransaction.flagForCommit();
 
-        assertThat(dokumentUrlInfoRepositoryBegrenset.findByFilUuid(FILUUID), nullValue());
+        assertThat(dokumentUrlInfoRepositorySkjermet.findByFilUuid(FILUUID), nullValue());
         assertThat(dokumentUrlInfoRepository.findByFilUuid(FILUUID), notNullValue());
 
 
@@ -114,7 +114,7 @@ public class DokumentUrlInfoRepositoryBegrensetTest {
         Journalpost journalpost = createJournalpost();
 
         joarkRepository.save(journalpost);
-        Begrensning begrensning = createBegrensning(journalpost.getJournalpostId(), null, BegrensningTypeCode.UTILGJENGELIGGJORT);
+        Begrensning begrensning = createBegrensning(journalpost.getJournalpostId(), null, SkjermingTypeCode.POL);
         begrensningRepository.save(begrensning);
         DokumentUrlInfo dokumentUrlInfo = DokumentUrlInfoBuilder.getDokumentUrlInfoBuilder()
                 .journalpost(journalpost)
@@ -122,10 +122,10 @@ public class DokumentUrlInfoRepositoryBegrensetTest {
                 .filUuid(FILUUID)
                 .tidspunkt(Calendar.getInstance().getTime())
                 .build();
-        dokumentUrlInfoRepositoryBegrenset.save(dokumentUrlInfo);
+        dokumentUrlInfoRepositorySkjermet.save(dokumentUrlInfo);
         TestTransaction.flagForCommit();
 
-        assertThat(dokumentUrlInfoRepositoryBegrenset.findByDoctoken(DOC_TOKEN).isPresent(), is(false));
+        assertThat(dokumentUrlInfoRepositorySkjermet.findByDoctoken(DOC_TOKEN).isPresent(), is(false));
         assertThat(dokumentUrlInfoRepository.findByDoctoken(DOC_TOKEN).isPresent(), is(true));
 
 

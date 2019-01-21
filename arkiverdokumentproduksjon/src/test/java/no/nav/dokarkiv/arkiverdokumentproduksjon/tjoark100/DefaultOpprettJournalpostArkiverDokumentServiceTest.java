@@ -27,7 +27,7 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.util.DateProvider;
 import no.nav.dokarkiv.core.exceptions.ApplicationException;
 import no.nav.dokarkiv.core.journalbehandling.DokumentFilerDelegate;
-import no.nav.dokarkiv.core.repository.JoarkRepositoryBegrenset;
+import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Rule;
@@ -59,7 +59,7 @@ public class DefaultOpprettJournalpostArkiverDokumentServiceTest {
 	@Mock
 	private DokumentFilerDelegate dokumentFilerDelegateMock;
 	@Mock
-    private JoarkRepositoryBegrenset joarkRepositoryMock;
+    private JoarkRepositorySkjermet joarkRepositoryMock;
 	@Mock
 	private OpprettJournalpostArkiverDokumentValidator opprettJournalpostArkiverDokumentValidator;
 	@InjectMocks

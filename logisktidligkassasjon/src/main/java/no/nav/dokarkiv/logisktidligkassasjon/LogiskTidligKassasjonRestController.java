@@ -71,7 +71,7 @@ public class LogiskTidligKassasjonRestController {
 		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark105");
 		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har mottat kall med dokumentInfoId={}", dokumentInfoId);
 		validator.validerLogiskTidligKassasjonRequest(dokumentInfoId);
-		abacSecurityService.assertAccessToDokumentIncludingBegrenset(dokumentInfoId);
+		abacSecurityService.assertAccessToDokumentIncludingSkjermet(dokumentInfoId);
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
 
 		List<AksjonsLoggHeader> aksjonsLoggHeader = aksjonsLoggHeaderMapper.mapAksjonsLoggHeader(aksjonsLoggHeaderString);
@@ -95,7 +95,7 @@ public class LogiskTidligKassasjonRestController {
 		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark106");
 		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har mottat kall med dokumentInfoId={}", dokumentInfoId);
 		validator.validerLogiskTidligKassasjonRequest(dokumentInfoId);
-		abacSecurityService.assertAccessToDokumentIncludingBegrenset(dokumentInfoId);
+		abacSecurityService.assertAccessToDokumentIncludingSkjermet(dokumentInfoId);
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
 
 		List<AksjonsLoggHeader> aksjonsLoggHeader = aksjonsLoggHeaderMapper.mapAksjonsLoggHeader(aksjonsLoggHeaderString);

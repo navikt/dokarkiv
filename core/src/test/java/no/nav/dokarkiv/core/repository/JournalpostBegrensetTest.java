@@ -10,7 +10,7 @@ import static org.junit.Assert.assertThat;
 import no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder;
 import no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder;
 import no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder;
-import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
+import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
@@ -18,7 +18,7 @@ import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.Begrensning;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
-import no.nav.dokarkiv.core.domain.service.BegrensningService;
+import no.nav.dokarkiv.core.domain.service.SkjermingService;
 import no.nav.dokarkiv.core.security.abac.JdbcAbacSecurityRepository;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import org.junit.After;
@@ -38,13 +38,13 @@ import java.util.ArrayList;
  * @author Ugur Alpay Cenar, Visma Consulting.
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = {RepositoryConfig.class, BegrensningService.class, JdbcAbacSecurityRepository.class})
+@SpringBootTest(classes = {RepositoryConfig.class, SkjermingService.class, JdbcAbacSecurityRepository.class})
 @DataJpaTest
 @ActiveProfiles("itest")
 public class JournalpostBegrensetTest {
 
     @Inject
-    private JoarkRepositoryBegrenset joarkRepositoryBegrenset;
+    private JoarkRepositorySkjermet joarkRepositorySkjermet;
 
     @Inject
     private JoarkRepository joarkRepository;
@@ -89,13 +89,13 @@ public class JournalpostBegrensetTest {
                 .next()
                 .getFildetaljerId();
 
-        Begrensning begrensning = createBegrensning(journalpost.getJournalpostId(), begrensetDokumentInfoId, BegrensningTypeCode.UTILGJENGELIGGJORT);
+        Begrensning begrensning = createBegrensning(journalpost.getJournalpostId(), begrensetDokumentInfoId, SkjermingTypeCode.POL);
         begrensningRepository.save(begrensning);
 
         TestTransaction.flagForCommit();
 
         //Test behaviour when begrenset
-        Journalpost journalpostWithBegrensning = joarkRepositoryBegrenset.findById(journalpost.getJournalpostId()).get();
+        Journalpost journalpostWithBegrensning = joarkRepositorySkjermet.findById(journalpost.getJournalpostId()).get();
 
         assertThat(journalpostWithBegrensning.getJournalpostDokumentInfoRelasjoner().size(), is(2));
         assertThat(journalpostWithBegrensning.getJournalpostDokumentInfoRelasjoner()
@@ -103,7 +103,7 @@ public class JournalpostBegrensetTest {
                 .anyMatch(rel -> rel.getDokumentInfo().getDokumentInfoId().equals(begrensetDokumentInfoId)), is(false));
         assertThat(journalpostWithBegrensning.getDokumentInfoFromJpDokInfoRelasjonerByDokumentInfoId(begrensetDokumentInfoId), nullValue());
         assertThat(journalpostWithBegrensning.findDokumentInfoById(begrensetDokumentInfoId), nullValue());
-        assertThat(journalpostWithBegrensning.getBegrensetRelasjonerDokumentInfoId().size(), is(1));
+        assertThat(journalpostWithBegrensning.getSkjermetRelasjonerDokumentInfoId().size(), is(1));
         assertThat(journalpostWithBegrensning.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
                 .size(), is(1));
         assertThat(journalpostWithBegrensning.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
@@ -118,14 +118,14 @@ public class JournalpostBegrensetTest {
         assertThat(journalpostWithBegrensning.findAllDokumentInfos().size(), is(2));
 
         //Test behaviour when not begrenset
-        journalpostWithBegrensning.addAllbegrensetRelasjonerDokumentInfoIds(new ArrayList<>());
+        journalpostWithBegrensning.addAllSkjermetRelasjonerDokumentInfoIds(new ArrayList<>());
         Journalpost journalpostWithoutBegrensning = joarkRepository.findById(journalpost.getJournalpostId()).get();
 
         assertThat(journalpostWithoutBegrensning.getJournalpostDokumentInfoRelasjoner().size(), is(3));
         assertThat(journalpostWithoutBegrensning.getJournalpostDokumentInfoRelasjoner()
                 .stream()
                 .anyMatch(rel -> rel.getDokumentInfo().getDokumentInfoId().equals(begrensetDokumentInfoId)), is(true));
-        assertThat(journalpostWithoutBegrensning.getBegrensetRelasjonerDokumentInfoId().size(), is(0));
+        assertThat(journalpostWithoutBegrensning.getSkjermetRelasjonerDokumentInfoId().size(), is(0));
         assertThat(journalpostWithBegrensning.getDokumentInfoFromJpDokInfoRelasjonerByDokumentInfoId(begrensetDokumentInfoId), notNullValue());
         assertThat(journalpostWithBegrensning.findDokumentInfoById(begrensetDokumentInfoId), notNullValue());
         assertThat(journalpostWithBegrensning.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)

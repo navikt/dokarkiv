@@ -13,7 +13,7 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.util.DateProvider;
 import no.nav.dokarkiv.core.journalbehandling.DokumentFilerDelegate;
-import no.nav.dokarkiv.core.repository.JoarkRepositoryBegrenset;
+import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.OpprettJournalpostArkiverDokumenterRequest;
 import org.springframework.stereotype.Component;
 
@@ -31,13 +31,13 @@ import java.util.stream.Collectors;
 @Slf4j
 public class DefaultOpprettJournalpostArkiverDokumenterService implements OpprettJournalpostArkiverDokumenterService {
 
-	private final JoarkRepositoryBegrenset joarkRepository;
+	private final JoarkRepositorySkjermet joarkRepository;
 	private final OpprettJournalpostArkiverDokumenterValidator opprettJournalpostArkiverDokumenterValidator;
 	private final DokumentFilerDelegate dokumentFilerDelegate;
 	private final OpprettJournalpostArkiverDokumenterRequestMapper opprettJournalpostArkiverDokumenterRequestMapper;
 
 	@Inject
-	public DefaultOpprettJournalpostArkiverDokumenterService(JoarkRepositoryBegrenset joarkRepository,
+	public DefaultOpprettJournalpostArkiverDokumenterService(JoarkRepositorySkjermet joarkRepository,
 															 OpprettJournalpostArkiverDokumenterValidator opprettJournalpostArkiverDokumenterValidator,
 															 DokumentFilerDelegate dokumentFilerDelegate,
 															 OpprettJournalpostArkiverDokumenterRequestMapper opprettJournalpostArkiverDokumenterRequestMapper) {

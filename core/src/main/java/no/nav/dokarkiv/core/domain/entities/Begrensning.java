@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import no.nav.dokarkiv.core.domain.AbstractPersistentVersionedDomainObjectWithKilde;
-import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
+import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
@@ -46,7 +46,7 @@ public class Begrensning extends AbstractPersistentVersionedDomainObjectWithKild
 
 	@Enumerated(EnumType.STRING)
 	@Column(name = "begrensning_type", nullable = false, length = 50)
-	private BegrensningTypeCode begrensningType;
+	private SkjermingTypeCode begrensningType;
 
 	@Column(name = "journalpost_id")
 	private Long journalpostId;

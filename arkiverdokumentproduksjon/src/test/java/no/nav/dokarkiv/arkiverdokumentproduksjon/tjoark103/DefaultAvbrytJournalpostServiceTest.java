@@ -7,7 +7,7 @@ import static org.mockito.Mockito.when;
 
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
-import no.nav.dokarkiv.core.repository.JoarkRepositoryBegrenset;
+import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import org.junit.Before;
 import org.junit.Rule;
@@ -36,7 +36,7 @@ public class DefaultAvbrytJournalpostServiceTest {
 	@Rule
 	public ExpectedException expected = ExpectedException.none();
 	@Mock
-    private JoarkRepositoryBegrenset repositoryMock;
+    private JoarkRepositorySkjermet repositoryMock;
 	@Mock
 	private AvbrytJournalpostValidator avbrytJournalpostValidator;
 	@Mock
