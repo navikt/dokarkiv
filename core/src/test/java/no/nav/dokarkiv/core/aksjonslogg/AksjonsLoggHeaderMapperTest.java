@@ -39,8 +39,8 @@ public class AksjonsLoggHeaderMapperTest {
 	@Test
 	public void shouldMap() throws IOException, UgyldigAksjonsLoggHeaderException {
 		String aksjonsLoggHeaderString = objectToJsonString(Arrays.asList(
-				createAksjonsLoggRequest(1L, 1L, AksjonTypeCode.ENDRE_BEGRENSNING.name()),
-				createAksjonsLoggRequest(1L, 1L, AksjonTypeCode.ENDRE_BEGRENSNING.name())
+				createAksjonsLoggRequest(1L, 1L, AksjonTypeCode.ENDRE_BEGRENSNING.name()).get(0),
+				createAksjonsLoggRequest(1L, 1L, AksjonTypeCode.ENDRE_BEGRENSNING.name()).get(0)
 				));
 		List<AksjonsLoggHeader> aksjonsLoggHeaderListe = aksjonsLoggHeaderMapper.mapAksjonsLoggHeader(aksjonsLoggHeaderString);
 		assertThat(aksjonsLoggHeaderListe.size(), is(2));
