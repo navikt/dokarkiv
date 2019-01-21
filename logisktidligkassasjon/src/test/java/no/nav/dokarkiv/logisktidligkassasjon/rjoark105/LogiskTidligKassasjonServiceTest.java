@@ -53,7 +53,7 @@ public class LogiskTidligKassasjonServiceTest {
 	public void skalIkkeLogiskTidligKassereDokument_hvisDokumentInfoAlleredeErKassert() {
 		thrown.expect(DokumentAlleredeKassertException.class);
 		thrown.expectMessage(String.format(
-				"Kan ikke utføre logisk kassasjon av dokument med dokumentInfoId=%s. Dokumentet er allerede logisk kassert",
+				"Kan ikke utføre logisk tidlig kassasjon av dokument med dokumentInfoId=%s. Dokumentet er allerede logisk tidlig kassert",
 				DOKUMENTINFO_ID));
 
 		Journalpost journalpost = opprettHoveddokumentForEnhetstest();

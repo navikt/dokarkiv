@@ -6,11 +6,17 @@ import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode.UTILGJENGELIGGJORT;
 import static no.nav.dokarkiv.core.security.JwtClaimsBuilderProvider.openAmClaimsBuilder;
+import static no.nav.dokarkiv.core.util.ConverterUtils.objectToJsonString;
+import static no.nav.dokarkiv.core.util.TestDataUtils.createAksjonsLoggRequest;
+import static no.nav.dokarkiv.logiskslettdokument.util.TestUtils.DOKUMENTINFO_ID;
+import static no.nav.dokarkiv.logiskslettdokument.util.TestUtils.JOURNALPOST_ID;
 
 import no.nav.dokarkiv.core.CoreConfig;
+import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService;
 import no.nav.dokarkiv.core.domain.entities.Begrensning;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.repository.AksjonsLoggRepository;
 import no.nav.dokarkiv.core.repository.BegrensningRepository;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
@@ -84,6 +90,8 @@ public abstract class AbstractSlettDokumentIT {
 	protected OidcTestService oidcTestService;
 	@Inject
 	protected BegrensningRepository begrensningRepository;
+	@Inject
+	protected AksjonsLoggRepository aksjonsLoggRepository;
 
 	@Before
 	public void setUp() {
@@ -121,6 +129,7 @@ public abstract class AbstractSlettDokumentIT {
 		dokumentinfoRepository.deleteAll();
 		begrensningRepository.deleteAll();
 		journalpostDokumentInfoRelasjonRepository.deleteAll();
+		aksjonsLoggRepository.deleteAll();
 	}
 
 	protected HttpEntity createNoAccesHeaders() {
@@ -131,13 +140,23 @@ public abstract class AbstractSlettDokumentIT {
 		return new HttpEntity(headers);
 	}
 
-	protected HttpEntity createHeaders() {
+	protected HttpHeaders createHeadersWithAksjon(String aksjon) throws IOException {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.TEXT_PLAIN);
 		headers.add(HttpHeaders.AUTHORIZATION, OIDC_TOKEN_PERSON_USER_TEST);
 		headers.add(NAV_CONSUMER_TOKEN, OIDC_TOKEN_SERVICE_USER_TEST);
-		return new HttpEntity(headers);
+		headers.add(AksjonsLoggService.AKSJONS_LOGG_HEADER, objectToJsonString(createAksjonsLoggRequest(JOURNALPOST_ID, DOKUMENTINFO_ID, aksjon)));
+		return headers;
 	}
+
+	protected HttpHeaders createHeaders() {
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.TEXT_PLAIN);
+		headers.add(HttpHeaders.AUTHORIZATION, OIDC_TOKEN_PERSON_USER_TEST);
+		headers.add(NAV_CONSUMER_TOKEN, OIDC_TOKEN_SERVICE_USER_TEST);
+		return headers;
+	}
+
 
 	protected void abacPermit() {
 		stubFor(post(urlEqualTo("/abac"))
