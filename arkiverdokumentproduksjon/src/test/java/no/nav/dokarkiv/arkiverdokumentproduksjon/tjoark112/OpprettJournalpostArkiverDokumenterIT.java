@@ -72,7 +72,6 @@ public class OpprettJournalpostArkiverDokumenterIT extends AbstractArkiverdokume
 	}
 
 	@Test
-	@Ignore("MÅ FIKSES!!!")
 	public void shouldVerifyEqualResponseWhenTryingToJournalforSameRequestTwice() throws Exception {
 		OpprettJournalpostArkiverDokumenterResponse firstResponse = arkiverDokumentproduksjonProvider.opprettJournalpostArkiverDokumenter(createRequest());
 		OpprettJournalpostArkiverDokumenterResponse secondResponse = arkiverDokumentproduksjonProvider.opprettJournalpostArkiverDokumenter(createRequest());

@@ -73,11 +73,7 @@ public class JoarkRepositoryBegrenset {
 	}
 
 	public Long findDokumentinfoIdIdByDokumentinfoTilleggsopplysningerNokkelAndVerdi(String nokkel, String verdi) {
-		Long dokumentInfoId = joarkRepository.findDokumentinfoIdIdByDokumentinfoTilleggsopplysningerNokkelAndVerdi(nokkel, verdi);
-		if (dokumentInfoId == null) {
-			return null;
-		}
-		return findJournalpostIdByDokumentinfoId(Long.toString(dokumentInfoId));
+		return joarkRepository.findDokumentinfoIdIdByDokumentinfoTilleggsopplysningerNokkelAndVerdi(nokkel, verdi);
 	}
 
 	public Long findJournalpostIdByDokumentinfoId(String dokumentinfoId) {

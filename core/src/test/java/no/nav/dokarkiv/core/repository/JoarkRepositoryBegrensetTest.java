@@ -237,23 +237,6 @@ public class JoarkRepositoryBegrensetTest {
 	}
 
 	@Test
-	@DirtiesContext(methodMode = DirtiesContext.MethodMode.BEFORE_METHOD)
-	public void shouldNotfindDokumentinfoIdIdByDokumentinfoTilleggsopplysningerNokkelAndVerdiWhenJournalpostIsBegrenset() {
-		Journalpost journalpost = createJournalpost();
-
-		journalpost = joarkRepository.save(journalpost);
-		begrensningService.setJournalpostBegrensning(journalpost, BegrensningTypeCode.POL);
-		TestTransaction.flagForCommit();
-		TestTransaction.end();
-
-		TestTransaction.start();
-		assertThat(joarkRepository.findDokumentinfoIdIdByDokumentinfoTilleggsopplysningerNokkelAndVerdi(TILLEGGSOPPLYSNINGER_KEY, TILLEGGSOPPLYSNINGER_VALUE), is(journalpost
-				.getJournalpostId()));
-		assertThat(joarkRepositoryBegrenset.findDokumentinfoIdIdByDokumentinfoTilleggsopplysningerNokkelAndVerdi(TILLEGGSOPPLYSNINGER_KEY, TILLEGGSOPPLYSNINGER_VALUE), nullValue());
-
-	}
-
-	@Test
 	public void shouldNotfindJournalpostIdByTilleggsopplysningerNokkelAndVerdiWhenJournalpostIsBegrenset() {
 
 		Journalpost journalpost = createJournalpost();
