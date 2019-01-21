@@ -2,7 +2,7 @@ package no.nav.dokarkiv.fysiskslettdokument.rjoark102;
 
 import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_LOGG_HEADER;
 import static no.nav.dokarkiv.core.domain.codes.AksjonTypeCode.SLETT;
-import static no.nav.dokarkiv.fysiskslettdokument.util.TestUtils.BEGRENSNINGTYPE_UTILGJENGELIGGJORT;
+import static no.nav.dokarkiv.fysiskslettdokument.util.TestUtils.BEGRENSNINGTYPE_POL;
 import static no.nav.dokarkiv.fysiskslettdokument.util.TestUtils.knyttDokumentInfoSomVedleggTilJournalpostForIT;
 import static no.nav.dokarkiv.fysiskslettdokument.util.TestUtils.opprettDuplikatRelasjon;
 import static no.nav.dokarkiv.fysiskslettdokument.util.TestUtils.opprettHoveddokumentForIT;
@@ -69,7 +69,7 @@ public class Rjoark102IT extends AbstractFysiskSlettDokumentIT {
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_FYSISKSLETTDOKUMENT + journalpost.getJournalpostId() + "/" + vedlegg.getDokumentInfoId() +
-						"/" + BEGRENSNINGTYPE_UTILGJENGELIGGJORT,
+						"/" + BEGRENSNINGTYPE_POL,
 				HttpMethod.DELETE,
 				new HttpEntity<>(createHeadersWithAksjon(SLETT.name())),
 				String.class);
@@ -112,7 +112,7 @@ public class Rjoark102IT extends AbstractFysiskSlettDokumentIT {
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_FYSISKSLETTDOKUMENT + journalpost.getJournalpostId() + "/" + vedlegg.getDokumentInfoId() +
-						"/" + BEGRENSNINGTYPE_UTILGJENGELIGGJORT,
+						"/" + BEGRENSNINGTYPE_POL,
 				HttpMethod.DELETE,
 				createHeaders(),
 				String.class);
@@ -130,7 +130,7 @@ public class Rjoark102IT extends AbstractFysiskSlettDokumentIT {
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_FYSISKSLETTDOKUMENT + 1 + "/" + 1 +
-						"/" + BEGRENSNINGTYPE_UTILGJENGELIGGJORT,
+						"/" + BEGRENSNINGTYPE_POL,
 				HttpMethod.DELETE,
 				new HttpEntity<>(createHeadersWithAksjon(SLETT.name())),
 				String.class);
@@ -148,7 +148,7 @@ public class Rjoark102IT extends AbstractFysiskSlettDokumentIT {
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_FYSISKSLETTDOKUMENT + 1 + "/" + 1 +
-						"/" + BEGRENSNINGTYPE_UTILGJENGELIGGJORT,
+						"/" + BEGRENSNINGTYPE_POL,
 				HttpMethod.DELETE,
 				createNoAccesHeaders(),
 				String.class);

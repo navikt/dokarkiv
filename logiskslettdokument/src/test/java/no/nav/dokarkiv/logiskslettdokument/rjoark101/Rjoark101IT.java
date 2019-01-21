@@ -299,7 +299,7 @@ public class Rjoark101IT extends AbstractSlettDokumentIT {
 		assertThat(responseEntity.getBody(), containsString(
 				String.format("Fant ikke forventet begrensning for journalpost med journalpostId=%s og begrensningsType=%s.",
 						journalpost.getJournalpostId(),
-						BegrensningTypeCode.UTILGJENGELIGGJORT)));
+						SkjermingTypeCode.POL)));
 
 		Begrensning begrensetJp = hentJournalpostEtterUtfoertKall(journalpost.getJournalpostId());
 		assertNull(begrensetJp);

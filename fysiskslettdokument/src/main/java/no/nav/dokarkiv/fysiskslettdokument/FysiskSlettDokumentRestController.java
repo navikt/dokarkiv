@@ -59,7 +59,7 @@ public class FysiskSlettDokumentRestController {
 			@RequestHeader(value = AKSJONS_LOGG_HEADER) String aksjonsLoggHeaderString,
 			@PathVariable("journalpostId") Long journalpostId,
 			@PathVariable("dokumentInfoId") Long dokumentInfoId,
-			@PathVariable("begrensningType") SkjermingTypeCode begrensningType) {
+			@PathVariable("begrensningType") SkjermingTypeCode begrensningType) throws UgyldigAksjonsLoggHeaderException{
 		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark102");
 		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har mottat kall med journalpostId=" + journalpostId + ", dokumentInfoId=" + dokumentInfoId + " og begrensningType=" + begrensningType);
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));

@@ -165,7 +165,7 @@ public class Rjoark100IT extends AbstractSlettDokumentIT {
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.BAD_REQUEST));
 		assertThat(responseEntity.getBody(), containsString(
-				String.format("Kan ikke utføre logisk sletting av dokument med journalpostId=%s og dokumentInfoId=%s. Dokumentet er utilgjengeliggjort.",
+				String.format("Kan ikke utføre logisk sletting av dokument med journalpostId=%s og dokumentInfoId=%s. Dokumentet er skjermet.",
 						journalpost.getJournalpostId(),
 						vedlegg.getDokumentInfoId())));
 	}
@@ -192,7 +192,7 @@ public class Rjoark100IT extends AbstractSlettDokumentIT {
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.BAD_REQUEST));
 		assertThat(responseEntity.getBody(), containsString(
-				String.format("Kan ikke utføre logisk sletting av dokument med journalpostId=%s. Journalposten er utilgjengeliggjort",
+				String.format("Kan ikke utføre logisk sletting av dokument med journalpostId=%s. Journalposten er skjermet",
 						journalpost.getJournalpostId())));
 	}
 
@@ -240,7 +240,7 @@ public class Rjoark100IT extends AbstractSlettDokumentIT {
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.BAD_REQUEST));
 		assertThat(responseEntity.getBody(), containsString(
-				String.format("Kan ikke utføre logisk sletting av dokument med journalpostId=%s. Journalposten er utilgjengeliggjort",
+				String.format("Kan ikke utføre logisk sletting av dokument med journalpostId=%s. Journalposten er skjermet",
 						journalpost.getJournalpostId())));
 	}
 
