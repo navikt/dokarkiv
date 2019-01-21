@@ -72,14 +72,12 @@ public class JournalpostBegrensetTest {
 	@Test
 	public void shouldNotReturnBegrensetJournalpostDokumentInfoRelasjons() {
 
-		Journalpost journalpost = createJournalpostWithTwoVedlegg();
-
-		journalpost = joarkRepository.save(journalpost);
-		JournalpostDokumentInfoRelasjon begrensetJournalpostDokumentInfoRelasjon = journalpost.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
+		Journalpost journalpost1 = joarkRepository.save(createJournalpostWithTwoVedlegg());
+		JournalpostDokumentInfoRelasjon begrensetJournalpostDokumentInfoRelasjon = journalpost1.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
 				.iterator()
 				.next();
 		Long begrensetDokumentInfoId = begrensetJournalpostDokumentInfoRelasjon.getDokumentInfo().getDokumentInfoId();
-		Long begrensetDokumentFildetaljId = journalpost.findDokumentInfoById(begrensetDokumentInfoId)
+		Long begrensetDokumentFildetaljId = journalpost1.findDokumentInfoById(begrensetDokumentInfoId)
 				.getFildetaljerListe()
 				.iterator()
 				.next()
@@ -92,7 +90,7 @@ public class JournalpostBegrensetTest {
 		TestTransaction.start();
 
 		//Test behaviour when begrenset
-		Journalpost journalpostWithBegrensning = joarkRepositoryBegrenset.findById(journalpost.getJournalpostId()).get();
+		Journalpost journalpostWithBegrensning = joarkRepositoryBegrenset.findById(journalpost1.getJournalpostId()).get();
 
 		assertThat(journalpostWithBegrensning.getJournalpostDokumentInfoRelasjoner().size(), is(2));
 		assertThat(journalpostWithBegrensning.getJournalpostDokumentInfoRelasjoner()
@@ -100,7 +98,6 @@ public class JournalpostBegrensetTest {
 				.anyMatch(rel -> rel.getDokumentInfo().getDokumentInfoId().equals(begrensetDokumentInfoId)), is(false));
 		assertThat(journalpostWithBegrensning.getDokumentInfoFromJpDokInfoRelasjonerByDokumentInfoId(begrensetDokumentInfoId), nullValue());
 		assertThat(journalpostWithBegrensning.findDokumentInfoById(begrensetDokumentInfoId), nullValue());
-		assertThat(journalpostWithBegrensning.getBegrensetRelasjonerDokumentInfoId().size(), is(1));
 		assertThat(journalpostWithBegrensning.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
 				.size(), is(1));
 		assertThat(journalpostWithBegrensning.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
@@ -114,29 +111,15 @@ public class JournalpostBegrensetTest {
 		assertThat(journalpostWithBegrensning.findDokumentInfoRelasjonById(begrensetJournalpostDokumentInfoRelasjon.getJournalpostDokumentInfoRelasjonId()), nullValue());
 		assertThat(journalpostWithBegrensning.findAllDokumentInfos().size(), is(2));
 
-		//Test behaviour when not begrenset
-		journalpostWithBegrensning.addAllbegrensetRelasjonerDokumentInfoIds(new ArrayList<>());
-		Journalpost journalpostWithoutBegrensning = joarkRepository.findById(journalpost.getJournalpostId()).get();
+		Journalpost journalpost2 = joarkRepository.save(createJournalpostWithTwoVedlegg());
+		Journalpost journalpostWithoutBegrensning = joarkRepository.findById(journalpost2.getJournalpostId()).get();
 
 		assertThat(journalpostWithoutBegrensning.getJournalpostDokumentInfoRelasjoner().size(), is(3));
-		assertThat(journalpostWithoutBegrensning.getJournalpostDokumentInfoRelasjoner()
-				.stream()
-				.anyMatch(rel -> rel.getDokumentInfo().getDokumentInfoId().equals(begrensetDokumentInfoId)), is(true));
-		assertThat(journalpostWithoutBegrensning.getBegrensetRelasjonerDokumentInfoId().size(), is(0));
-		assertThat(journalpostWithBegrensning.getDokumentInfoFromJpDokInfoRelasjonerByDokumentInfoId(begrensetDokumentInfoId), notNullValue());
-		assertThat(journalpostWithBegrensning.findDokumentInfoById(begrensetDokumentInfoId), notNullValue());
-		assertThat(journalpostWithBegrensning.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
+		assertThat(journalpostWithoutBegrensning.getDokumentInfoFromJpDokInfoRelasjonerByDokumentInfoId(begrensetDokumentInfoId), nullValue());
+		assertThat(journalpostWithoutBegrensning.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
 				.size(), is(2));
-		assertThat(journalpostWithBegrensning.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
-				.stream()
-				.anyMatch(rel -> rel.getDokumentInfo().getDokumentInfoId().equals(begrensetDokumentInfoId)), is(true));
-		assertThat(journalpostWithBegrensning.findAllFilDetaljer().size(), is(3));
-		assertThat(journalpostWithBegrensning.findAllFilDetaljer()
-				.stream()
-				.anyMatch(detalj -> detalj.getDokumentInfo().getDokumentInfoId().equals(begrensetDokumentInfoId)), is(true));
-		assertThat(journalpostWithBegrensning.findFilDetaljerByFilDetaljerId(begrensetDokumentFildetaljId), notNullValue());
-		assertThat(journalpostWithBegrensning.findDokumentInfoRelasjonById(begrensetJournalpostDokumentInfoRelasjon.getJournalpostDokumentInfoRelasjonId()), notNullValue());
-		assertThat(journalpostWithBegrensning.findAllDokumentInfos().size(), is(3));
+		assertThat(journalpostWithoutBegrensning.findAllFilDetaljer().size(), is(3));
+		assertThat(journalpostWithoutBegrensning.findAllDokumentInfos().size(), is(3));
 
 	}
 

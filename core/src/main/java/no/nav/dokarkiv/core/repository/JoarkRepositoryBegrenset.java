@@ -29,7 +29,8 @@ public class JoarkRepositoryBegrenset {
 
 	public Optional<Journalpost> findById(Long id) {
 		return begrensningService.isJournalpostBegrenset(id, BegrensningTypeCode.POL) ? Optional.empty() :
-				joarkRepository.findById(id).map(begrensningService::addBegrensetDokumentInfoIdsToJournalpost);
+//				joarkRepository.findById(id).map(begrensningService::addBegrensetDokumentInfoIdsToJournalpost);
+		joarkRepository.findById(id);
 	}
 
 	public Journalpost save(Journalpost journalpost) {
@@ -51,7 +52,7 @@ public class JoarkRepositoryBegrenset {
 	public Iterable<Journalpost> findAll() {
 		return StreamSupport.stream(joarkRepository.findAll().spliterator(), true)
 				.filter(journalpost -> isFalse(BegrensningTypeCode.POL.equals(journalpost.getBegrensning())))
-				.map(begrensningService::addBegrensetDokumentInfoIdsToJournalpost)
+	//			.map(begrensningService::addBegrensetDokumentInfoIdsToJournalpost)
 				.collect(Collectors.toList());
 	}
 
@@ -67,7 +68,7 @@ public class JoarkRepositoryBegrenset {
 
 		if (journalpost.isPresent()) {
 			return begrensningService.isJournalpostBegrenset(journalpost.get()
-					.getJournalpostId(), BegrensningTypeCode.POL) ? Optional.empty() : journalpost.map(begrensningService::addBegrensetDokumentInfoIdsToJournalpost);
+					.getJournalpostId(), BegrensningTypeCode.POL) ? Optional.empty() : journalpost;
 		}
 		return Optional.empty();
 	}
@@ -97,8 +98,7 @@ public class JoarkRepositoryBegrenset {
 
 		if (journalpost.isPresent()) {
 			return begrensningService.isJournalpostBegrenset(journalpost.get()
-					.getJournalpostId(), BegrensningTypeCode.POL) ? Optional.empty() : Optional.of(begrensningService.addBegrensetDokumentInfoIdsToJournalpost((journalpost
-					.get())));
+					.getJournalpostId(), BegrensningTypeCode.POL) ? Optional.empty() : journalpost;
 		}
 		return Optional.empty();
 	}
@@ -107,7 +107,7 @@ public class JoarkRepositoryBegrenset {
 		List<Journalpost> journalpostList = joarkRepository.findJournalpostByKanalReferanseIdAndMottakskanal(kanalReferanseId, mottaksKanalCode);
 		return journalpostList.stream()
 				.filter(journalpost -> isFalse(begrensningService.isJournalpostBegrenset(journalpost.getJournalpostId(), BegrensningTypeCode.POL)))
-				.map(begrensningService::addBegrensetDokumentInfoIdsToJournalpost)
+//				.map(begrensningService::addBegrensetDokumentInfoIdsToJournalpost)
 				.collect(Collectors.toList());
 	}
 }

@@ -79,6 +79,9 @@ public class DefaultHentDokumentUrl extends AbstractDocumentOperation implements
 			throws InvalidFilUuidException {
 
 		fildetaljer = begrensningService.getVariantSkjermet(fildetaljer.getDokumentInfo(), fildetaljer.getVariantFormat());
+		if (fildetaljer == null) {
+			throw new InvalidFilUuidException(String.format("Finner ikke FilDetaljer tilhørende dokumentInfoId: %s og variant %s", fildetaljer.getDokumentInfo().getDokumentInfoId(), fildetaljer.getVariantFormat().name()), null);
+		}
 		String filUuid = fildetaljer.getFilUuid();
 		if (fildetaljer.getOnDemandId() != null && fildetaljer.getOnDemandInstans() != null) {
 			//dokumentet ligger inntil videre i OnDemand

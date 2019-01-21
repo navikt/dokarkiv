@@ -26,7 +26,6 @@ import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasj
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.OpprettJournalpostArkiverDokumenterRequest;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.OpprettJournalpostArkiverDokumenterResponse;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.inject.Inject;

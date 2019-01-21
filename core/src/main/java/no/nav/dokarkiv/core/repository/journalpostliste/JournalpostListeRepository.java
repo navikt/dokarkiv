@@ -60,7 +60,8 @@ public class JournalpostListeRepository {
 			foundJournalposts = (List<Journalpost>) criteria.list();
 		}
 
-		return begrensningService.addBegrensetDokumentInfoIdsToJournalpostList(foundJournalposts);
+		return foundJournalposts;
+//		return begrensningService.addBegrensetDokumentInfoIdsToJournalpostList(foundJournalposts);
 	}
 
 	public long findTotalNumberOfJournalposts(HentMinJPListeParameters hentMinJPListeParameters) {

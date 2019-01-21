@@ -10,7 +10,6 @@ import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
 import no.nav.modig.core.context.SubjectHandler;
-import org.apache.commons.lang3.BooleanUtils;
 import org.jboss.logging.MDC;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,7 +21,6 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
@@ -103,26 +101,6 @@ public class BegrensningService {
 		return consumer;
 	}
 
-	public Journalpost addBegrensetDokumentInfoIdsToJournalpost(Journalpost journalpost) {
-		List<Long> begrensetDokumentInfoIdList = journalpostDokumentInfoRelasjonRepository.findBegrensetRelasjonDokumentInfoIdByJournalpostId(journalpost
-				.getJournalpostId()).stream().map(BegrensningService::convertBigToLong).collect(Collectors.toList());
-		journalpost.addAllbegrensetRelasjonerDokumentInfoIds(begrensetDokumentInfoIdList);
-		return journalpost;
-	}
-
-	public List<Journalpost> addBegrensetDokumentInfoIdsToJournalpostList(List<Journalpost> journalpostList) {
-		if (BooleanUtils.isFalse((journalpostList == null || journalpostList.isEmpty()))) {
-			for (Journalpost journalpost : journalpostList) {
-				List<Long> begrensetDokumentInfoIdList = journalpost.getJournalpostDokumentInfoRelasjoner().stream()
-						.filter(rel -> BegrensningTypeCode.POL.equals(rel.getBegrensning()))
-						.map(rel -> rel.getDokumentInfo().getDokumentInfoId())
-						.collect(Collectors.toList());
-				journalpost.addAllbegrensetRelasjonerDokumentInfoIds(begrensetDokumentInfoIdList);
-			}
-		}
-		return journalpostList;
-	}
-
 	public static Long convertBigToLong(Object value) {
 		if (value instanceof BigDecimal) {
 			return ((BigDecimal) value).longValue();
@@ -145,13 +123,11 @@ public class BegrensningService {
 	public void setJournalpostBegrensning(Journalpost journalpost, BegrensningTypeCode begrensningTypeCode) {
 		Query q = entityManager.createQuery("update Journalpost set begrensning = :begrenset where journalpostId = :journalpostId").setParameter("journalpostId", journalpost.getJournalpostId()).setParameter("begrenset", begrensningTypeCode);
 		q.executeUpdate();
-		entityManager.flush();
 	}
 
 	public void setJpDokInfoRelBegrensning(JournalpostDokumentInfoRelasjon rel, BegrensningTypeCode begrensningTypeCode) {
 		Query q = entityManager.createQuery("update JournalpostDokumentInfoRelasjon set begrensning = :begrenset where journalpostDokumentInfoRelasjonId = :relId").setParameter("relId", rel.getJournalpostDokumentInfoRelasjonId()).setParameter("begrenset", begrensningTypeCode);
 		q.executeUpdate();
-		entityManager.flush();
 	}
 
 	public void setDokumentKassert(DokumentInfo dokumentInfo, BegrensningTypeCode begrensningTypeCode) {
@@ -159,7 +135,6 @@ public class BegrensningService {
 			setFildetaljerBegrensning(filDetaljer, begrensningTypeCode);
 		}
 	}
-
 
 	public void setFildetaljerBegrensning(FilDetaljer filDetaljer, BegrensningTypeCode begrensningTypeCode) {
 		Query q = entityManager.createQuery("update FilDetaljer set begrensning = :begrenset where fildetaljerId = :filDetaljerId").setParameter("filDetaljerId", filDetaljer.getFildetaljerId()).setParameter("begrenset", begrensningTypeCode);

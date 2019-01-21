@@ -24,20 +24,16 @@ import java.util.Date;
 
 public class TestUtils {
 
-
 	private static final String OPPRETTET_KILDE_NAVN = "Opprettet kilde";
 	private static final String OPPRETTET_AV_NAVN = "Opprettet navn";
 	private static final String TILKNYTTET_AV_NAVN = "Tilknyttetnavn";
 	private static final String ENDRET_AV_NAVN = "Endret av navn";
 	private static final String AVSENDER_MOTTAKER_ID = "***gammelt_fnr***";
-	private static final String DOKUMENT_TITTEL = "SlettDokumentTittel";
 	private static final String BREVGRUPPE = "Brevgruppe";
 	private static final String BREVKODE = "Brevkode";
 	private static final String FILNAVN = "filNavn";
 	private static final String TITTEL = "Tittel";
 
-	public static final Long JOURNALPOST_ID = 42L;
-	public static final Long DOKUMENTINFO_ID = 1L;
 	public static byte[] FIL = "TEEEST".getBytes();
 
 
@@ -101,16 +97,4 @@ public class TestUtils {
 				.fileContent("ARKIV variant".getBytes())
 				.build();
 	}
-
-//	public static Begrensning begrensArkivVariantAvDokumentSomSkjermet(DokumentInfo dokumentInfo) {
-//		Begrensning begrensning = Begrensning.builder()
-//				.journalpostId(dokumentInfo.getOriginalJournalpost() == null ? null : dokumentInfo.getOriginalJournalpost()
-//						.getJournalpostId())
-//				.dokumentInfoId(dokumentInfo.getDokumentInfoId())
-//				.begrensningType(BegrensningTypeCode.POL)
-//				.variantFormat(VariantFormatCode.ARKIV)
-//				.build();
-//		begrensning.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
-//		return begrensning;
-//	}
 }

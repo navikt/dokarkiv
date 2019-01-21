@@ -235,17 +235,17 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	@Cascade({CascadeType.PERSIST, CascadeType.MERGE, CascadeType.SAVE_UPDATE, CascadeType.DELETE, CascadeType.DETACH})
 	private final Set<ReturInfo> returInfos = new HashSet<>();
 
-	@Transient
-	private transient List<Long> begrensetRelasjonerDokumentInfoId = new ArrayList<>();
-
-	public void addAllbegrensetRelasjonerDokumentInfoIds(List<Long> dokumentInfoIdList) {
-		begrensetRelasjonerDokumentInfoId = new ArrayList<>();
-		begrensetRelasjonerDokumentInfoId.addAll(dokumentInfoIdList);
-	}
-
-	public List<Long> getBegrensetRelasjonerDokumentInfoId() {
-		return begrensetRelasjonerDokumentInfoId == null ? new ArrayList<>() : begrensetRelasjonerDokumentInfoId;
-	}
+//	@Transient
+//	private transient List<Long> begrensetRelasjonerDokumentInfoId = new ArrayList<>();
+//
+//	public void addAllbegrensetRelasjonerDokumentInfoIds(List<Long> dokumentInfoIdList) {
+//		begrensetRelasjonerDokumentInfoId = new ArrayList<>();
+//		begrensetRelasjonerDokumentInfoId.addAll(dokumentInfoIdList);
+//	}
+//
+//	public List<Long> getBegrensetRelasjonerDokumentInfoId() {
+//		return begrensetRelasjonerDokumentInfoId == null ? new ArrayList<>() : begrensetRelasjonerDokumentInfoId;
+//	}
 
 	/**
 	 * Default constructor.
@@ -1466,9 +1466,7 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	 */
 	public Set<JournalpostDokumentInfoRelasjon> getJournalpostDokumentInfoRelasjoner() {
 		return Collections.unmodifiableSet(journalpostDokumentInfoRelasjoner.stream()
-				.filter(relasjon -> relasjon.getDokumentInfo() == null || relasjon.getDokumentInfo()
-						.getDokumentInfoId() == null || isFalse(getBegrensetRelasjonerDokumentInfoId().stream()
-						.anyMatch(dokumentInfoId -> dokumentInfoId.equals(relasjon.getDokumentInfo().getDokumentInfoId()))))
+				.filter(relasjon -> relasjon.getBegrensning() == null)
 				.collect(Collectors.toSet()));
 	}
 

@@ -211,7 +211,6 @@ public class JoarkRepositoryBegrensetTest {
 		TestTransaction.end();
 
 		TestTransaction.start();
-
 		assertTrue(joarkRepository.existsById(journalpost.getId()));
 		assertFalse(joarkRepositoryBegrenset.existsById(journalpost.getId()));
 	}
