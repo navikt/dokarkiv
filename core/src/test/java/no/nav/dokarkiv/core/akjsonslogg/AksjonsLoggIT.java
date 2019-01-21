@@ -107,7 +107,7 @@ public class AksjonsLoggIT {
 		expectedException.expect(UgyldigAksjonsLoggHeaderException.class);
 		expectedException.expectMessage("journalpostId");
 
-		List<AksjonsLoggHeader> aksjonsLoggHeaderList = Arrays.asList(TestDataUtils.createAksjonsLoggRequest(null, 1L, AksjonTypeCode.ENDRE_BEGRENSNING.name()));
+		List<AksjonsLoggHeader> aksjonsLoggHeaderList = TestDataUtils.createAksjonsLoggRequest(null, 1L, AksjonTypeCode.ENDRE_BEGRENSNING.name());
 		aksjonsLoggService.validateAndSaveAksjon(aksjonsLoggHeaderList);
 	}
 
@@ -116,7 +116,7 @@ public class AksjonsLoggIT {
 		expectedException.expect(UgyldigAksjonsLoggHeaderException.class);
 		expectedException.expectMessage("applikasjon");
 
-		List<AksjonsLoggHeader> aksjonsLoggHeaderList = Arrays.asList(TestDataUtils.createAksjonsLoggRequest(1L, 1L, AksjonTypeCode.ENDRE_BEGRENSNING.name()));
+		List<AksjonsLoggHeader> aksjonsLoggHeaderList = TestDataUtils.createAksjonsLoggRequest(1L, 1L, AksjonTypeCode.ENDRE_BEGRENSNING.name());
 		aksjonsLoggHeaderList.get(0).setApplikasjon(null);
 		aksjonsLoggService.validateAndSaveAksjon(aksjonsLoggHeaderList);
 	}
@@ -126,7 +126,7 @@ public class AksjonsLoggIT {
 		expectedException.expect(UgyldigAksjonsLoggHeaderException.class);
 		expectedException.expectMessage("aksjon");
 
-		List<AksjonsLoggHeader> aksjonsLoggHeaderList = Arrays.asList(TestDataUtils.createAksjonsLoggRequest(1L, 1L, AksjonTypeCode.ENDRE_BEGRENSNING.name()));
+		List<AksjonsLoggHeader> aksjonsLoggHeaderList = TestDataUtils.createAksjonsLoggRequest(1L, 1L, AksjonTypeCode.ENDRE_BEGRENSNING.name());
 		aksjonsLoggHeaderList.get(0).setAksjon(null);
 		aksjonsLoggService.validateAndSaveAksjon(aksjonsLoggHeaderList);
 	}
@@ -136,7 +136,7 @@ public class AksjonsLoggIT {
 		expectedException.expect(UgyldigAksjonsLoggHeaderException.class);
 		expectedException.expectMessage("utfoertAv");
 
-		List<AksjonsLoggHeader> aksjonsLoggHeaderList = Arrays.asList(TestDataUtils.createAksjonsLoggRequest(1L, 1L, AksjonTypeCode.ENDRE_BEGRENSNING.name()));
+		List<AksjonsLoggHeader> aksjonsLoggHeaderList = TestDataUtils.createAksjonsLoggRequest(1L, 1L, AksjonTypeCode.ENDRE_BEGRENSNING.name());
 		aksjonsLoggHeaderList.get(0).setUtfoertAv(null);
 		aksjonsLoggService.validateAndSaveAksjon(aksjonsLoggHeaderList);
 	}
@@ -146,7 +146,7 @@ public class AksjonsLoggIT {
 	public void shouldThrowWhenInvalidAksjonValue() throws IOException, UgyldigAksjonsLoggHeaderException {
 		expectedException.expect(UgyldigAksjonsLoggHeaderException.class);
 		expectedException.expectMessage("AAA er ikke en gyldig verdi for aksjon");
-		List<AksjonsLoggHeader> aksjonsLoggHeaderList = Arrays.asList(TestDataUtils.createAksjonsLoggRequest(1L, 1L, "AAA"));
+		List<AksjonsLoggHeader> aksjonsLoggHeaderList = TestDataUtils.createAksjonsLoggRequest(1L, 1L, "AAA");
 		aksjonsLoggService.validateAndSaveAksjon(aksjonsLoggHeaderList);
 	}
 }

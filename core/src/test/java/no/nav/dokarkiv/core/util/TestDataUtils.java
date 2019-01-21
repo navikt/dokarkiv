@@ -26,6 +26,7 @@ import org.joda.time.DateTime;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -57,8 +58,8 @@ public class TestDataUtils {
 	public static final String AKSJON_TIL_VERDI = "Test2";
 	public static final String AKSJON_ARKIVELEMENT= "Journalpost";
 
-	public static AksjonsLoggHeader createAksjonsLoggRequest(Long journalpostId, Long dokumentInfoId, String aksjon) {
-		return AksjonsLoggHeader.builder()
+	public static List<AksjonsLoggHeader> createAksjonsLoggRequest(Long journalpostId, Long dokumentInfoId, String aksjon) {
+		return Arrays.asList(AksjonsLoggHeader.builder()
 				.aksjon(aksjon)
 				.bruker(AKSJON_BRUKER)
 				.melding(AKSJON_MELDING)
@@ -70,7 +71,7 @@ public class TestDataUtils {
 				.fraVerdi(AKSJON_FRA_VERDI)
 				.tilVerdi(AKSJON_TIL_VERDI)
 				.arkivElement(AKSJON_ARKIVELEMENT)
-				.build();
+				.build());
 	}
 
 	public static AksjonsLoggHeader createAksjonsLoggRequestAksjon(Long journalpostId, Long dokumentInfoId, String aksjon) {
