@@ -5,8 +5,14 @@ import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static no.nav.dokarkiv.core.security.JwtClaimsBuilderProvider.openAmClaimsBuilder;
+import static no.nav.dokarkiv.core.util.ConverterUtils.objectToJsonString;
+import static no.nav.dokarkiv.core.util.TestDataUtils.createAksjonsLoggRequest;
+import static no.nav.dokarkiv.logisktidligkassasjon.util.TestUtils.getDokumentInfoId;
+import static no.nav.dokarkiv.logisktidligkassasjon.util.TestUtils.getJournalpostId;
 
 import no.nav.dokarkiv.core.CoreConfig;
+import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService;
+import no.nav.dokarkiv.core.repository.AksjonsLoggRepository;
 import no.nav.dokarkiv.core.repository.BegrensningRepository;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
@@ -35,6 +41,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
+import java.io.IOException;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
@@ -53,13 +60,13 @@ public abstract class AbstractLogiskTidligKassasjonIT {
 	protected static final String URL_LOGISKTIDLIGKASSASJON = "/rest/logisktidligkassasjon/";
 	protected static final String URL_ANGRE_LOGISKTIDLIGKASSASJON = "/rest/logisktidligkassasjon/angre/";
 	protected static final String BEARER = "Bearer ";
+	private static final String NAV_CONSUMER_TOKEN = "Nav-Consumer-Token";
+	private static final String SERVICE_USER_ID = "srvjoarkadmin";
+	private static final String PERSON_USER_ID = "Z990782";
+	private static final String NO_ACCESS_SERVICE_USER_ID = "srvdokarkiv";
 	private String oidcTokenPersonUserTest;
 	private String oidcTokenServiceUserTest;
 	private String oidcTokenServiceNoAccessUserTest;
-	private static final String NAV_CONSUMER_TOKEN = "Nav-Consumer-Token";
-	private final static String SERVICE_USER_ID = "srvjoarkadmin";
-	private final static String PERSON_USER_ID = "Z990782";
-	private final static String NO_ACCESS_SERVICE_USER_ID = "srvdokarkiv";
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
@@ -73,6 +80,9 @@ public abstract class AbstractLogiskTidligKassasjonIT {
 	protected TestRestTemplate restTemplate;
 	@Inject
 	protected BegrensningRepository begrensningRepository;
+
+	@Inject
+	protected AksjonsLoggRepository aksjonsLoggRepository;
 
 	@Before
 	public void setUp() {
@@ -97,6 +107,7 @@ public abstract class AbstractLogiskTidligKassasjonIT {
 		joarkRepository.deleteAll();
 		dokumentinfoRepository.deleteAll();
 		begrensningRepository.deleteAll();
+		aksjonsLoggRepository.deleteAll();
 	}
 
 	protected HttpEntity createHeaders() {
@@ -105,6 +116,15 @@ public abstract class AbstractLogiskTidligKassasjonIT {
 		headers.add(HttpHeaders.AUTHORIZATION, oidcTokenPersonUserTest);
 		headers.add(NAV_CONSUMER_TOKEN, oidcTokenServiceUserTest);
 		return new HttpEntity(headers);
+	}
+
+	protected HttpHeaders createHeadersWithAksjon(String aksjon) throws IOException {
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.TEXT_PLAIN);
+		headers.add(HttpHeaders.AUTHORIZATION, oidcTokenPersonUserTest);
+		headers.add(NAV_CONSUMER_TOKEN, oidcTokenServiceUserTest);
+		headers.add(AksjonsLoggService.AKSJONS_LOGG_HEADER, objectToJsonString(createAksjonsLoggRequest(getJournalpostId(), getDokumentInfoId(), aksjon)));
+		return headers;
 	}
 
 	protected HttpEntity createNoAccessHeaders() {

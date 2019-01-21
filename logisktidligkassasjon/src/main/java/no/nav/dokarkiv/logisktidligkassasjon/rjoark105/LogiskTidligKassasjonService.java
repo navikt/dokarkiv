@@ -50,7 +50,7 @@ public class LogiskTidligKassasjonService {
 		if (begrensningRepository.findByDokumentInfoIdAndBegrensningType(dokumentInfoId, SkjermingTypeCode.POL)
 				.isPresent()) {
 			throw new DokumentAlleredeKassertException(String.format(
-					"Kan ikke utføre logisk kassasjon av dokument med dokumentInfoId=%s. Dokumentet er allerede logisk kassert",
+					"Kan ikke utføre logisk tidlig kassasjon av dokument med dokumentInfoId=%s. Dokumentet er allerede logisk tidlig kassert",
 					dokumentInfoId));
 		}
 	}

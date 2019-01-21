@@ -4,9 +4,15 @@ import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static no.nav.dokarkiv.arkiverkorrigertdokument.util.TestUtils.DOKUMENTINFO_ID;
+import static no.nav.dokarkiv.arkiverkorrigertdokument.util.TestUtils.JOURNALPOST_ID;
 import static no.nav.dokarkiv.core.security.JwtClaimsBuilderProvider.openAmClaimsBuilder;
+import static no.nav.dokarkiv.core.util.ConverterUtils.objectToJsonString;
+import static no.nav.dokarkiv.core.util.TestDataUtils.createAksjonsLoggRequest;
 
 import no.nav.dokarkiv.core.CoreConfig;
+import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService;
+import no.nav.dokarkiv.core.repository.AksjonsLoggRepository;
 import no.nav.dokarkiv.core.repository.BegrensningRepository;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
@@ -83,6 +89,8 @@ public abstract class AbstractArkiverKorrigertDokumentIT {
 	protected DokumentFilRepository dokumentFilRepository;
 	@Inject
 	protected BegrensningRepository begrensningRepository;
+	@Inject
+	protected AksjonsLoggRepository aksjonsLoggRepository;
 	@Before
 	public void setUp() {
 		OIDC_TOKEN_PERSON_USER_TEST = "Bearer " + oidcTestService.createOidc(openAmClaimsBuilder().subject(PERSON_USER_ID)
@@ -119,6 +127,7 @@ public abstract class AbstractArkiverKorrigertDokumentIT {
 		dokumentinfoRepository.deleteAll();
 		journalpostDokumentInfoRelasjonRepository.deleteAll();
 		begrensningRepository.deleteAll();
+		aksjonsLoggRepository.deleteAll();
 	}
 
 	protected HttpEntity createNoAccesHeaders() {
@@ -137,13 +146,15 @@ public abstract class AbstractArkiverKorrigertDokumentIT {
 		return headers;
 	}
 
-	protected HttpEntity createHttpEntityHeaders() {
+	protected HttpHeaders createHeadersWithAksjon(String aksjon) throws IOException {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		headers.add(HttpHeaders.AUTHORIZATION, OIDC_TOKEN_PERSON_USER_TEST);
 		headers.add(NAV_CONSUMER_TOKEN, OIDC_TOKEN_SERVICE_USER_TEST);
-		return new HttpEntity(headers);
+		headers.add(AksjonsLoggService.AKSJONS_LOGG_HEADER, objectToJsonString(createAksjonsLoggRequest(JOURNALPOST_ID, DOKUMENTINFO_ID, aksjon)));
+		return headers;
 	}
+
 
 	protected HttpHeaders createHeadersNotSrvJoarkadmin() {
 		HttpHeaders headers = new HttpHeaders();

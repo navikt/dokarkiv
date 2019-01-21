@@ -38,14 +38,14 @@ public class ArkiverKorrigertDokumentService {
 		this.begrensningRepository = begrensningRepository;
 	}
 
-	public ArkiverKorrigertDokumentRespons arkiverKorrigertDokument(ArkiverKorrigertDokumentRequest request) {
-		DokumentInfo dokumentInfo = dokumentinfoRepository.findByDokumentInfoId(request.getDokumentInfoId())
+	public ArkiverKorrigertDokumentRespons arkiverKorrigertDokument(Long dokumentInfoId, String fil) {
+		DokumentInfo dokumentInfo = dokumentinfoRepository.findByDokumentInfoId(dokumentInfoId)
 				.orElseThrow(() -> new DokumentInfoIkkeFunnetException(String.format("Kan ikke finne dokumentInfo med dokumentInfoId=%s",
-						request.getDokumentInfoId())));
+						dokumentInfoId)));
 
 		kanskjeSlettEksisterendeSladdetFilOgFilDetaljer(dokumentInfo);
 
-		byte[] decodedFil = base64ToByte(request.getFil());
+		byte[] decodedFil = base64ToByte(fil);
 		lagreKorrigertDokumentSomSladdetVariantFormat(dokumentInfo, decodedFil);
 
 		kanskjeOpprettBegrensingSkjermet(dokumentInfo);

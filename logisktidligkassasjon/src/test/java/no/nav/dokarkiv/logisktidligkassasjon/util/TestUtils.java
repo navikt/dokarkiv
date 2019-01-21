@@ -150,4 +150,11 @@ public class TestUtils {
 		return begrensning;
 	}
 
+	public static Long getJournalpostId() {
+		return journalpostId;
+	}
+
+	public static Long getDokumentInfoId() {
+		return dokumentInfoId;
+	}
 }
