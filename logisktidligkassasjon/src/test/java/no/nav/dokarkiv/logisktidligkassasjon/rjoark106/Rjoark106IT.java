@@ -2,13 +2,13 @@ package no.nav.dokarkiv.logisktidligkassasjon.rjoark106;
 
 import static junit.framework.TestCase.assertTrue;
 import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_LOGG_HEADER;
-import static no.nav.dokarkiv.logisktidligkassasjon.util.TestUtils.kassereDokumentLogisk;
 import static no.nav.dokarkiv.logisktidligkassasjon.util.TestUtils.knyttDokumentInfoSomVedleggTilJournalpostForIT;
 import static no.nav.dokarkiv.logisktidligkassasjon.util.TestUtils.opprettHoveddokumentForIT;
 import static no.nav.dokarkiv.logisktidligkassasjon.util.TestUtils.opprettHoveddokumentMedEtKnyttetVedleggForIT;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertFalse;
 
 import no.nav.dokarkiv.core.domain.codes.AksjonTypeCode;
 import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
@@ -27,6 +27,7 @@ import org.springframework.test.context.transaction.TestTransaction;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 public class Rjoark106IT extends AbstractLogiskTidligKassasjonIT {
 
@@ -44,12 +45,15 @@ public class Rjoark106IT extends AbstractLogiskTidligKassasjonIT {
 
 		joarkRepository.save(journalpost2);
 
-		begrensningRepository.save(kassereDokumentLogisk(vedlegg));
+		kassereDokumentLogisk(vedlegg);
 
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
+		TestTransaction.start();
 
-		assertThat(begrensningRepository.count(), is(1L));
+		Optional<DokumentInfo> dokumentInfoRep = dokumentinfoRepository.findByDokumentInfoId(vedlegg.getDokumentInfoId());
+		assertTrue(dokumentInfoRep.isPresent());
+		assertTrue(skjermingService.isDokumentInfoKassert(dokumentInfoRep.get()));
 		assertThat(joarkRepository.count(), is(2L));
 		assertThat(dokumentinfoRepository.count(), is(3L));
 		assertTrue(vedlegg.isRelatedToMultipleJournalposts());
@@ -62,6 +66,11 @@ public class Rjoark106IT extends AbstractLogiskTidligKassasjonIT {
 				HttpMethod.POST,
 				new HttpEntity<>(createHeadersWithAksjon(AksjonTypeCode.ENDRE_BEGRENSNING.name())),
 				String.class);
+
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
+		TestTransaction.start();
+
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 
 		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
@@ -82,12 +91,15 @@ public class Rjoark106IT extends AbstractLogiskTidligKassasjonIT {
 		knyttDokumentInfoSomVedleggTilJournalpostForIT(vedlegg, journalpost2);
 
 		joarkRepository.save(journalpost2);
-		begrensningRepository.save(kassereDokumentLogisk(vedlegg));
+		kassereDokumentLogisk(vedlegg);
 
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
+		TestTransaction.start();
 
-		assertThat(begrensningRepository.count(), is(1L));
+		Optional<DokumentInfo> dokumentInfoRep = dokumentinfoRepository.findByDokumentInfoId(vedlegg.getDokumentInfoId());
+		assertTrue(dokumentInfoRep.isPresent());
+		assertTrue(skjermingService.isDokumentInfoKassert(dokumentInfoRep.get()));
 		assertThat(joarkRepository.count(), is(2L));
 		assertThat(dokumentinfoRepository.count(), is(3L));
 		assertTrue(vedlegg.isRelatedToMultipleJournalposts());
@@ -100,6 +112,10 @@ public class Rjoark106IT extends AbstractLogiskTidligKassasjonIT {
 				HttpMethod.POST,
 				createHeaders(),
 				String.class);
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
+		TestTransaction.start();
+
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.BAD_REQUEST));
 		assertThat(responseEntity.getBody(), containsString(String.format("Missing request header '%s'", AKSJONS_LOGG_HEADER)));
 
@@ -192,12 +208,15 @@ public class Rjoark106IT extends AbstractLogiskTidligKassasjonIT {
 
 		joarkRepository.save(journalpost2);
 
-		begrensningRepository.save(kassereDokumentLogisk(vedlegg));
+		kassereDokumentLogisk(vedlegg);
 
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
+		TestTransaction.start();
 
-		assertThat(begrensningRepository.count(), is(1L));
+		Optional<DokumentInfo> dokumentInfoRep = dokumentinfoRepository.findByDokumentInfoId(vedlegg.getDokumentInfoId());
+		assertTrue(dokumentInfoRep.isPresent());
+		assertTrue(skjermingService.isDokumentInfoKassert(dokumentInfoRep.get()));
 		assertThat(joarkRepository.count(), is(2L));
 		assertThat(dokumentinfoRepository.count(), is(3L));
 		assertTrue(vedlegg.isRelatedToMultipleJournalposts());
@@ -208,8 +227,14 @@ public class Rjoark106IT extends AbstractLogiskTidligKassasjonIT {
 				new HttpEntity<>(createHeadersWithAksjon(AksjonTypeCode.ENDRE_BEGRENSNING.name())),
 				String.class);
 
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
+		TestTransaction.start();
+
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
-		assertThat(begrensningRepository.count(), is(0L));
+		dokumentInfoRep = dokumentinfoRepository.findByDokumentInfoId(vedlegg.getDokumentInfoId());
+		assertTrue(dokumentInfoRep.isPresent());
+		assertFalse(skjermingService.isDokumentInfoKassert(dokumentInfoRep.get()));
 	}
 
 	@Test
@@ -225,12 +250,15 @@ public class Rjoark106IT extends AbstractLogiskTidligKassasjonIT {
 
 		joarkRepository.save(journalpost2);
 
-		begrensningRepository.save(kassereDokumentLogisk(hoveddokument1));
+		kassereDokumentLogisk(hoveddokument1);
 
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
+		TestTransaction.start();
 
-		assertThat(begrensningRepository.count(), is(1L));
+		Optional<DokumentInfo> dokumentInfoRep = dokumentinfoRepository.findByDokumentInfoId(hoveddokument1.getDokumentInfoId());
+		assertTrue(dokumentInfoRep.isPresent());
+		assertTrue(skjermingService.isDokumentInfoKassert(dokumentInfoRep.get()));
 		assertThat(joarkRepository.count(), is(2L));
 		assertThat(dokumentinfoRepository.count(), is(2L));
 		assertTrue(hoveddokument1.isRelatedToMultipleJournalposts());
@@ -240,9 +268,14 @@ public class Rjoark106IT extends AbstractLogiskTidligKassasjonIT {
 				HttpMethod.POST,
 				new HttpEntity<>(createHeadersWithAksjon(AksjonTypeCode.ENDRE_BEGRENSNING.name())),
 				String.class);
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
+		TestTransaction.start();
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
-		assertThat(begrensningRepository.count(), is(0L));
+		dokumentInfoRep = dokumentinfoRepository.findByDokumentInfoId(hoveddokument1.getDokumentInfoId());
+		assertTrue(dokumentInfoRep.isPresent());
+		assertFalse(skjermingService.isDokumentInfoKassert(dokumentInfoRep.get()));
 	}
 
 	@Test
@@ -252,7 +285,7 @@ public class Rjoark106IT extends AbstractLogiskTidligKassasjonIT {
 		Journalpost journalpost = joarkRepository.save(opprettHoveddokumentForIT());
 		DokumentInfo dokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 
-		begrensningRepository.save(kassereDokumentLogisk(dokumentInfo));
+		kassereDokumentLogisk(dokumentInfo);
 
 		TestTransaction.flagForCommit();
 		TestTransaction.end();

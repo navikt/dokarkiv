@@ -5,14 +5,12 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
 import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
-import no.nav.dokarkiv.core.domain.entities.Begrensning;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import no.nav.dokarkiv.core.domain.service.BegrensningService;
-import no.nav.dokarkiv.core.exceptions.BegrensningIkkeFunnetException;
+import no.nav.dokarkiv.core.domain.service.SkjermingService;
 import no.nav.dokarkiv.core.exceptions.DokumentInfoIkkeFunnetException;
+import no.nav.dokarkiv.core.exceptions.SkjermingIkkeFunnetException;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
-import no.nav.dokarkiv.logiskkassasjon.rjoark105.LogiskKassasjonResponse;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -31,23 +29,17 @@ public class AngreLogiskTidligKassasjonServiceTest {
 	@Mock
 	private DokumentinfoRepository dokumentinfoRepository;
 	@Mock
-	private BegrensningService begrensningService;
+	private SkjermingService skjermingService;
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
 
 	private AngreLogiskTidligKassasjonService angreLogiskTidligKassasjonService;
-	private static final Begrensning begrensning =
-			Begrensning.builder()
-					.dokumentInfoId(DOKUMENTINFO_ID)
-					.begrensningType(SkjermingTypeCode.POL)
-					.build();
-	private AngreLogiskKassasjonService angreLogiskKassasjonService;
 	private Journalpost journalpost;
 	private DokumentInfo dokumentInfo;
 
 	@Before
 	public void setUp() {
-		angreLogiskKassasjonService = new AngreLogiskKassasjonService(dokumentinfoRepository, begrensningService);
+		angreLogiskTidligKassasjonService = new AngreLogiskTidligKassasjonService(dokumentinfoRepository, skjermingService);
 		journalpost = opprettHoveddokumentForEnhetstest();
 		dokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 	}
@@ -72,10 +64,9 @@ public class AngreLogiskTidligKassasjonServiceTest {
 
 		Journalpost journalpost = opprettHoveddokumentForEnhetstest();
 		DokumentInfo dokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
-				BegrensningTypeCode.POL));
 
 		when(dokumentinfoRepository.findByDokumentInfoId(DOKUMENTINFO_ID)).thenReturn(Optional.of(dokumentInfo));
-		when(begrensningService.isDokumentInfoIdKassert(DOKUMENTINFO_ID))
+		when(skjermingService.isDokumentInfoIdKassert(DOKUMENTINFO_ID))
 				.thenReturn(false);
 
 		angreLogiskTidligKassasjonService.angreLogiskTidligKassasjonAvDokument(DOKUMENTINFO_ID);
@@ -87,7 +78,7 @@ public class AngreLogiskTidligKassasjonServiceTest {
 		DokumentInfo dokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 
 		when(dokumentinfoRepository.findByDokumentInfoId(DOKUMENTINFO_ID)).thenReturn(Optional.of(dokumentInfo));
-		when(begrensningService.isDokumentInfoIdKassert(DOKUMENTINFO_ID))
+		when(skjermingService.isDokumentInfoIdKassert(DOKUMENTINFO_ID))
 				.thenReturn(true);
 
 

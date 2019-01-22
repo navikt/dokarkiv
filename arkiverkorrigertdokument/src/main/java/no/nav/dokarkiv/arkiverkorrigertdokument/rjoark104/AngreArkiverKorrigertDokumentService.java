@@ -1,7 +1,6 @@
 package no.nav.dokarkiv.arkiverkorrigertdokument.rjoark104;
 
 import static java.util.Objects.isNull;
-import static org.apache.commons.lang3.BooleanUtils.isFalse;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.arkiverkorrigertdokument.exception.VariantFormatNotFoundException;
@@ -10,9 +9,9 @@ import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
-import no.nav.dokarkiv.core.exceptions.SkjermingIkkeFunnetException;
+import no.nav.dokarkiv.core.domain.service.SkjermingService;
 import no.nav.dokarkiv.core.exceptions.DokumentInfoIkkeFunnetException;
-import no.nav.dokarkiv.core.repository.BegrensningRepository;
+import no.nav.dokarkiv.core.exceptions.SkjermingIkkeFunnetException;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import org.springframework.stereotype.Service;
@@ -25,16 +24,16 @@ public class AngreArkiverKorrigertDokumentService {
 
 	private final DokumentinfoRepository dokumentinfoRepository;
 	private final DokumentFilRepository dokumentFilRepository;
-	private final BegrensningService begrensningService;
+	private final SkjermingService skjermingService;
 
 	@Inject
 	public AngreArkiverKorrigertDokumentService(
 			DokumentinfoRepository dokumentinfoRepository,
 			DokumentFilRepository dokumentFilRepository,
-			BegrensningService begrensningService) {
+			SkjermingService skjermingService) {
 		this.dokumentinfoRepository = dokumentinfoRepository;
 		this.dokumentFilRepository = dokumentFilRepository;
-		this.begrensningService = begrensningService;
+		this.skjermingService = skjermingService;
 	}
 
 	public ArkiverKorrigertDokumentRespons angreArkiverKorrigertDokument(Long dokumentInfoId) {
@@ -67,8 +66,8 @@ public class AngreArkiverKorrigertDokumentService {
 
 	private void sjekkAtArkivVariantAvDokumentErSkjermet(DokumentInfo dokumentInfo) {
 		FilDetaljer filDetaljer = dokumentInfo.findFilDetaljerByVariantFormat(VariantFormatCode.ARKIV);
-		if (!BegrensningTypeCode.POL.equals(filDetaljer.getBegrensning())) {
-			throw new BegrensningIkkeFunnetException(String.format(
+		if (!SkjermingTypeCode.POL.equals(filDetaljer.getSkjermingType())) {
+			throw new SkjermingIkkeFunnetException(String.format(
 					"Korrigering av dokumentet kan ikke oppheves fordi dokument med dokumentInfoId=%s og variantFormat=%s " +
 							"ikke er begrenset som et %s dokument.",
 					dokumentInfo.getDokumentInfoId(),
@@ -78,7 +77,7 @@ public class AngreArkiverKorrigertDokumentService {
 	}
 
 	private void slettBegrensning(DokumentInfo dokumentInfo) {
-		begrensningService.setVariantSkjermet(dokumentInfo, VariantFormatCode.ARKIV, null);
+		skjermingService.setVariantSkjermet(dokumentInfo, VariantFormatCode.ARKIV, null);
 	}
 
 	private void slettSladdetFilOgFilDetaljer(DokumentInfo dokumentInfo) {

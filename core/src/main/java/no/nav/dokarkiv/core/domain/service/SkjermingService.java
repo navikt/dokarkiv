@@ -21,7 +21,6 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
@@ -37,15 +36,15 @@ public class SkjermingService {
 	private EntityManager entityManager;
 
 	@Inject
-	public BegrensningService(JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository, JoarkRepository joarkRepository) {
+	public SkjermingService(JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository, JoarkRepository joarkRepository) {
 		this.journalpostDokumentInfoRelasjonRepository = journalpostDokumentInfoRelasjonRepository;
 		this.joarkRepository = joarkRepository;
 	}
 
-	public boolean isJournalpostBegrenset(Long journalpostId, BegrensningTypeCode begrensningTypeCode) {
+	public boolean isJournalpostSkjermet(Long journalpostId, SkjermingTypeCode skjermingTypeCode) {
 		Journalpost journalpost = joarkRepository.findById(journalpostId).orElse(null);
 		if (journalpost != null) {
-			return begrensningTypeCode.equals(journalpost.getBegrensning());
+			return skjermingTypeCode.equals(journalpost.getSkjermingType());
 		} else return false;
 	}
 
@@ -53,11 +52,11 @@ public class SkjermingService {
 		return isJournalpostDokumentInfoRelasjonSkjermet(journalpostId, dokumentInfoId, skjermingTypeCode) || isJournalpostSkjermet(journalpostId, skjermingTypeCode);
 	}
 
-	public boolean isJournalpostDokumentInfoRelasjonBegrenset(Long journalpostId, Long dokumentInfoId, BegrensningTypeCode begrensningTypeCode) {
+	public boolean isJournalpostDokumentInfoRelasjonSkjermet(Long journalpostId, Long dokumentInfoId, SkjermingTypeCode skjermingTypeCode) {
 		Optional<JournalpostDokumentInfoRelasjon> rel = journalpostDokumentInfoRelasjonRepository.findByJournalpostJournalpostIdAndDokumentInfoDokumentInfoId(
 				journalpostId, dokumentInfoId);
 		if (rel.isPresent()) {
-			return begrensningTypeCode.equals(rel.get().getBegrensning());
+			return skjermingTypeCode.equals(rel.get().getSkjermingType());
 		} else
 			return false;
 	}
@@ -76,9 +75,9 @@ public class SkjermingService {
 
 		FilDetaljer filDetaljer = dokumentInfo.findFilDetaljerByVariantFormat(variant);
 		if (!consumer.equals("srvjoarkadmin") && filDetaljer != null) {
-			if (BegrensningTypeCode.POL.equals(filDetaljer.getBegrensning())) {
+			if (SkjermingTypeCode.POL.equals(filDetaljer.getSkjermingType())) {
 				filDetaljer = dokumentInfo.findFilDetaljerByVariantFormat(VariantFormatCode.SLADDET);
-				if (BegrensningTypeCode.POL.equals(filDetaljer.getBegrensning())) {
+				if (SkjermingTypeCode.POL.equals(filDetaljer.getSkjermingType())) {
 					filDetaljer = null;
 				}
 			}
@@ -112,33 +111,33 @@ public class SkjermingService {
 	}
 
 	public Boolean isDokumentInfoKassert(DokumentInfo dokumentInfo) {
-		return dokumentInfo.getFildetaljerListe().stream().allMatch(filDetaljer -> BegrensningTypeCode.POL.equals(filDetaljer.getBegrensning()));
+		return dokumentInfo.getFildetaljerListe().stream().allMatch(filDetaljer -> SkjermingTypeCode.POL.equals(filDetaljer.getSkjermingType()));
 	}
 
-	public void setVariantSkjermet(DokumentInfo dokumentInfo, VariantFormatCode variantFormatCode, BegrensningTypeCode begrensningTypeCode) {
+	public void setVariantSkjermet(DokumentInfo dokumentInfo, VariantFormatCode variantFormatCode, SkjermingTypeCode SkjermingTypeCode) {
 		FilDetaljer filDetaljer = dokumentInfo.findFilDetaljerByVariantFormat(variantFormatCode);
-		setFildetaljerBegrensning(filDetaljer, begrensningTypeCode);
+		setFildetaljerBegrensning(filDetaljer, SkjermingTypeCode);
 	}
 
 
-	public void setJournalpostBegrensning(Journalpost journalpost, BegrensningTypeCode begrensningTypeCode) {
-		Query q = entityManager.createQuery("update Journalpost set begrensning = :begrenset where journalpostId = :journalpostId").setParameter("journalpostId", journalpost.getJournalpostId()).setParameter("begrenset", begrensningTypeCode);
+	public void setJournalpostBegrensning(Journalpost journalpost, SkjermingTypeCode SkjermingTypeCode) {
+		Query q = entityManager.createQuery("update Journalpost set skjermingType = :begrenset where journalpostId = :journalpostId").setParameter("journalpostId", journalpost.getJournalpostId()).setParameter("begrenset", SkjermingTypeCode);
 		q.executeUpdate();
 	}
 
-	public void setJpDokInfoRelBegrensning(JournalpostDokumentInfoRelasjon rel, BegrensningTypeCode begrensningTypeCode) {
-		Query q = entityManager.createQuery("update JournalpostDokumentInfoRelasjon set begrensning = :begrenset where journalpostDokumentInfoRelasjonId = :relId").setParameter("relId", rel.getJournalpostDokumentInfoRelasjonId()).setParameter("begrenset", begrensningTypeCode);
+	public void setJpDokInfoRelBegrensning(JournalpostDokumentInfoRelasjon rel, SkjermingTypeCode SkjermingTypeCode) {
+		Query q = entityManager.createQuery("update JournalpostDokumentInfoRelasjon set skjermingType = :begrenset where journalpostDokumentInfoRelasjonId = :relId").setParameter("relId", rel.getJournalpostDokumentInfoRelasjonId()).setParameter("begrenset", SkjermingTypeCode);
 		q.executeUpdate();
 	}
 
-	public void setDokumentKassert(DokumentInfo dokumentInfo, BegrensningTypeCode begrensningTypeCode) {
+	public void setDokumentKassert(DokumentInfo dokumentInfo, SkjermingTypeCode SkjermingTypeCode) {
 		for (FilDetaljer filDetaljer : dokumentInfo.getFildetaljerListe()) {
-			setFildetaljerBegrensning(filDetaljer, begrensningTypeCode);
+			setFildetaljerBegrensning(filDetaljer, SkjermingTypeCode);
 		}
 	}
 
-	public void setFildetaljerBegrensning(FilDetaljer filDetaljer, BegrensningTypeCode begrensningTypeCode) {
-		Query q = entityManager.createQuery("update FilDetaljer set begrensning = :begrenset where fildetaljerId = :filDetaljerId").setParameter("filDetaljerId", filDetaljer.getFildetaljerId()).setParameter("begrenset", begrensningTypeCode);
+	public void setFildetaljerBegrensning(FilDetaljer filDetaljer, SkjermingTypeCode SkjermingTypeCode) {
+		Query q = entityManager.createQuery("update FilDetaljer set skjermingType = :begrenset where fildetaljerId = :filDetaljerId").setParameter("filDetaljerId", filDetaljer.getFildetaljerId()).setParameter("begrenset", SkjermingTypeCode);
 		q.executeUpdate();
 	}
 }

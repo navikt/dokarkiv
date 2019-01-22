@@ -1,11 +1,12 @@
-package no.nav.dokarkiv.logiskkassasjon.rjoark105;
+package no.nav.dokarkiv.logisktidligkassasjon.rjoark105;
 
-import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
+import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
-import no.nav.dokarkiv.core.domain.service.BegrensningService;
+import no.nav.dokarkiv.core.domain.service.SkjermingService;
 import no.nav.dokarkiv.core.exceptions.DokumentAlleredeKassertException;
 import no.nav.dokarkiv.core.exceptions.DokumentInfoIkkeFunnetException;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
+import no.nav.dokarkiv.logisktidligkassasjon.rjoark105.LogiskTidligKassasjonResponse;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -14,14 +15,14 @@ import javax.inject.Inject;
 public class LogiskTidligKassasjonService {
 
 	private final DokumentinfoRepository dokumentInfoRepository;
-	private final BegrensningService begrensningService;
+	private final SkjermingService skjermingService;
 
 	@Inject
 	public LogiskTidligKassasjonService(
 			DokumentinfoRepository dokumentInfoRepository,
-			BegrensningService begrensningService) {
+			SkjermingService skjermingService) {
 		this.dokumentInfoRepository = dokumentInfoRepository;
-		this.begrensningService = begrensningService;
+		this.skjermingService = skjermingService;
 	}
 
 	public LogiskTidligKassasjonResponse logiskTidligKassasjonAvDokument(Long dokumentInfoId) {
@@ -44,14 +45,14 @@ public class LogiskTidligKassasjonService {
 	}
 
 	private void sjekkAtDokumentIkkeErKassert(Long dokumentInfoId) {
-		if (begrensningService.isDokumentInfoIdKassert(dokumentInfoId)) {
+		if (skjermingService.isDokumentInfoIdKassert(dokumentInfoId)) {
 			throw new DokumentAlleredeKassertException(String.format(
 					"Kan ikke utføre logisk tidlig kassasjon av dokument med dokumentInfoId=%s. Dokumentet er allerede logisk tidlig kassert",
 					dokumentInfoId));
 		}
 	}
 
-	private void logiskKassasjonAvEtDokument(DokumentInfo dokumentInfoSomSkalKasseres) {
-		begrensningService.setDokumentKassert(dokumentInfoSomSkalKasseres, BegrensningTypeCode.POL);
+	private void logiskTidligKassasjonAvEtDokument(DokumentInfo dokumentInfoSomSkalKasseres) {
+		skjermingService.setDokumentKassert(dokumentInfoSomSkalKasseres, SkjermingTypeCode.POL);
 	}
 }

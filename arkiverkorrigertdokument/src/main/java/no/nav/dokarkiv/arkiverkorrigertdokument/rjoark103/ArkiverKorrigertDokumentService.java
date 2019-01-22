@@ -9,7 +9,7 @@ import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
-import no.nav.dokarkiv.core.domain.service.BegrensningService;
+import no.nav.dokarkiv.core.domain.service.SkjermingService;
 import no.nav.dokarkiv.core.exceptions.DokumentInfoIkkeFunnetException;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
@@ -26,15 +26,15 @@ public class ArkiverKorrigertDokumentService {
 
 	private final DokumentinfoRepository dokumentinfoRepository;
 	private final DokumentFilRepository dokumentFilRepository;
-	private final BegrensningService begrensningService;
+	private final SkjermingService skjermingService;
 
 	@Inject
 	public ArkiverKorrigertDokumentService(DokumentinfoRepository dokumentinfoRepository,
 										   DokumentFilRepository dokumentFilRepository,
-										   BegrensningService begrensningService) {
+										   SkjermingService skjermingService) {
 		this.dokumentinfoRepository = dokumentinfoRepository;
 		this.dokumentFilRepository = dokumentFilRepository;
-		this.begrensningService = begrensningService;
+		this.skjermingService = skjermingService;
 	}
 
 	public ArkiverKorrigertDokumentRespons arkiverKorrigertDokument(Long dokumentInfoId, String fil) {
@@ -59,8 +59,8 @@ public class ArkiverKorrigertDokumentService {
 
 	private void kanskjeOpprettBegrensingSkjermet(DokumentInfo dokumentInfo) {
 		FilDetaljer filDetaljer = dokumentInfo.findFilDetaljerByVariantFormat(VariantFormatCode.ARKIV);
-		if (filDetaljer.getBegrensning() == null) {
-			begrensningService.setVariantSkjermet(dokumentInfo, VariantFormatCode.ARKIV, BegrensningTypeCode.POL);
+		if (filDetaljer.getSkjermingType() == null) {
+			skjermingService.setVariantSkjermet(dokumentInfo, VariantFormatCode.ARKIV, SkjermingTypeCode.POL);
 		}
 	}
 

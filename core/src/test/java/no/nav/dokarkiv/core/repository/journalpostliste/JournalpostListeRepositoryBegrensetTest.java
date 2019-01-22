@@ -3,11 +3,11 @@ package no.nav.dokarkiv.core.repository.journalpostliste;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
+import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import no.nav.dokarkiv.core.domain.service.BegrensningService;
+import no.nav.dokarkiv.core.domain.service.SkjermingService;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
@@ -53,7 +53,7 @@ public class JournalpostListeRepositoryBegrensetTest {
 	private JournalpostListeRepository journalpostListeRepository;
 
 	@Inject
-	BegrensningService begrensningService;
+	private SkjermingService skjermingService;
 
 	@Before
 	public void setUp() {
@@ -80,7 +80,7 @@ public class JournalpostListeRepositoryBegrensetTest {
 				.toDate(), JournalStatusCode.J, FAGOMRADE).build();
 		joarkRepository.save(journalpost);
 		joarkRepository.save(journalpostBegrenset);
-		begrensningService.setJournalpostBegrensning(journalpostBegrenset, BegrensningTypeCode.POL);
+		skjermingService.setJournalpostBegrensning(journalpostBegrenset, SkjermingTypeCode.POL);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
@@ -107,7 +107,7 @@ public class JournalpostListeRepositoryBegrensetTest {
 				.toDate(), JournalStatusCode.J, FAGOMRADE).build();
 		joarkRepository.save(journalpost);
 		joarkRepository.save(journalpostBegrenset);
-		begrensningService.setJournalpostBegrensning(journalpostBegrenset, BegrensningTypeCode.POL);
+		skjermingService.setJournalpostBegrensning(journalpostBegrenset, SkjermingTypeCode.POL);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 

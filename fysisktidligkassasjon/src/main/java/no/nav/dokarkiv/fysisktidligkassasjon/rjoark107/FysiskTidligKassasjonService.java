@@ -1,12 +1,11 @@
-package no.nav.dokarkiv.tidligkassasjon.rjoark107;
+package no.nav.dokarkiv.fysisktidligkassasjon.rjoark107;
 
-import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
+import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
-import no.nav.dokarkiv.core.domain.service.BegrensningService;
-import no.nav.dokarkiv.core.exceptions.BegrensningIkkeFunnetException;
-import no.nav.dokarkiv.core.exceptions.SkjermingIkkeFunnetException;
+import no.nav.dokarkiv.core.domain.service.SkjermingService;
 import no.nav.dokarkiv.core.exceptions.DokumentInfoIkkeFunnetException;
+import no.nav.dokarkiv.core.exceptions.SkjermingIkkeFunnetException;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkDeleteRepository;
 import org.springframework.stereotype.Service;
@@ -18,16 +17,16 @@ public class FysiskTidligKassasjonService {
 
 	private final DokumentinfoRepository dokumentInfoRepository;
 	private final JoarkDeleteRepository deleteRepository;
-	private final BegrensningService begrensningService;
+	private final SkjermingService skjermingService;
 
 	@Inject
 	public FysiskTidligKassasjonService(
 			DokumentinfoRepository dokumentinfoRepository,
 			JoarkDeleteRepository deleteRepository,
-			BegrensningService begrensningService) {
+			SkjermingService skjermingService) {
 		this.dokumentInfoRepository = dokumentinfoRepository;
 		this.deleteRepository = deleteRepository;
-		this.begrensningService = begrensningService;
+		this.skjermingService = skjermingService;
 	}
 
 	public FysiskTidligKassasjonResponse fysiskTidligKassasjonAvDokument(Long dokumentInfoId) {
@@ -47,18 +46,18 @@ public class FysiskTidligKassasjonService {
 
 	private void sjekkAtDokumentErLogiskKassert(Long dokumentInfoId) {
 		DokumentInfo dokumentInfo = dokumentInfoRepository.findByDokumentInfoId(dokumentInfoId).orElse(null);
-		if (!begrensningService.isDokumentInfoKassert(dokumentInfo)) {
-			throw new BegrensningIkkeFunnetException(
+		if (!skjermingService.isDokumentInfoKassert(dokumentInfo)) {
+			throw new SkjermingIkkeFunnetException(
 					String.format("Fant ikke forventet begrensning for dokument med dokumentInfoId=%s og begrensningsType=%s",
 							dokumentInfoId,
 							SkjermingTypeCode.POL));
 		}
 	}
 
-	private void tidligKassasjonAvEtDokument(Long dokumentInfoId) {
+	private void fysiskTidligKassasjonAvEtDokument(Long dokumentInfoId) {
 		DokumentInfo dokumentInfo = dokumentInfoRepository.findByDokumentInfoId(dokumentInfoId).orElse(null);
 		for (FilDetaljer filDetaljer:dokumentInfo.getFildetaljerListe()) {
-			begrensningService.setFildetaljerBegrensning(filDetaljer, BegrensningTypeCode.POL);
+			skjermingService.setFildetaljerBegrensning(filDetaljer, SkjermingTypeCode.POL);
 		}
 		slettFilOgBeholdMetadata(dokumentInfoId);
 	}

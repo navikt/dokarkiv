@@ -50,7 +50,7 @@ public class FysiskSlettDokumentService {
 		switch (relasjonSomSkalSlettesFysisk.getTilknyttetJournalpostSom()) {
 			case HOVEDDOKUMENT:
 				sjekkAtJournalpostErUtilgjengeliggjort(relasjonSomSkalSlettesFysisk.getJournalpost().getJournalpostId());
-				begrensningService.setJournalpostBegrensning(
+				skjermingService.setJournalpostBegrensning(
 						relasjonSomSkalSlettesFysisk.getJournalpost(),
 						null);
 				fysiskSlettEtHoveddokument(relasjonSomSkalSlettesFysisk);
@@ -61,7 +61,7 @@ public class FysiskSlettDokumentService {
 				sjekkAtDokumentErUtilgjengeliggjort(
 						relasjonSomSkalSlettesFysisk.getJournalpost().getJournalpostId(),
 						relasjonSomSkalSlettesFysisk.getDokumentInfo().getDokumentInfoId());
-				begrensningService.setJpDokInfoRelBegrensning(
+				skjermingService.setJpDokInfoRelBegrensning(
 						relasjonSomSkalSlettesFysisk,
 						null);
 				fysiskSlettEtVedlegg(relasjonSomSkalSlettesFysisk);
@@ -81,18 +81,18 @@ public class FysiskSlettDokumentService {
 	}
 
 	private void sjekkAtJournalpostErUtilgjengeliggjort(Long journalpostId) {
-		if (isFalse(begrensningService.isJournalpostBegrenset(
+		if (isFalse(skjermingService.isJournalpostSkjermet(
 				journalpostId,
 				SkjermingTypeCode.POL))) {
 			throw new SkjermingIkkeFunnetException(String.format(
 					"Fant ikke forventet begrensning for journalpost med journalpostId=%s og begrensningsType=%s.",
 					journalpostId,
-					BegrensningTypeCode.UTILGJENGELIGGJORT.name()));
+					SkjermingTypeCode.POL.name()));
 		}
 	}
 
 	private void sjekkAtDokumentErUtilgjengeliggjort(Long journalpostId, Long dokumentInfoId) {
-		if (isFalse(begrensningService.isJournalpostDokumentInfoRelasjonBegrenset(
+		if (isFalse(skjermingService.isJournalpostDokumentInfoRelasjonSkjermet(
 				journalpostId,
 				dokumentInfoId,
 				SkjermingTypeCode.POL))) {

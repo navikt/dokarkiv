@@ -35,8 +35,8 @@ public class DokumentUrlInfoRepositorySkjermet {
 
     public DokumentUrlInfo findByFilUuid(String filUuid) {
         DokumentUrlInfo dokumentUrlInfo = dokumentUrlInfoRepository.findByFilUuid(filUuid);
-		return Objects.nonNull(dokumentUrlInfo) && isFalse(begrensningService.isJournalpostBegrenset(dokumentUrlInfo.getJournalpost()
-                .getJournalpostId(), BegrensningTypeCode.POL)) ? dokumentUrlInfo : null;
+		return Objects.nonNull(dokumentUrlInfo) && isFalse(skjermingService.isJournalpostSkjermet(dokumentUrlInfo.getJournalpost()
+                .getJournalpostId(), SkjermingTypeCode.POL)) ? dokumentUrlInfo : null;
     }
 
     public Optional<DokumentUrlInfo> findByDoctoken(String doctoken) {

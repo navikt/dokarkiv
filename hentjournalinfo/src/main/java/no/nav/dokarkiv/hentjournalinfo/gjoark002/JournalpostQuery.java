@@ -62,7 +62,7 @@ public class JournalpostQuery implements Query {
         abacSecurityService.assertAccessToJournalpostIncludingBegrenset(journalpostId.toString());
         no.nav.dokarkiv.core.domain.entities.Journalpost journalpost = joarkRepository.findById(journalpostId).get();
 
-        return mapJournalpost(journalpost, begrensningService.isJournalpostBegrenset(journalpostId, BegrensningTypeCode.POL));
+        return mapJournalpost(journalpost, skjermingService.isJournalpostSkjermet(journalpostId, SkjermingTypeCode.POL));
     }
 
     @GraphQLQuery(name = "brukere")
@@ -86,7 +86,7 @@ public class JournalpostQuery implements Query {
         List<Long> begrensetDokumentInfoRelasjon = journalpostDokumentInfoRelasjons.stream()
                 .filter(relasjon -> skjermingService.isJournalpostDokumentInfoRelasjonOrJournalpostBegrenset(relasjon.getJournalpost()
                         .getJournalpostId(), relasjon.getDokumentInfo()
-                        .getDokumentInfoId(), BegrensningTypeCode.POL))
+                        .getDokumentInfoId(), SkjermingTypeCode.POL))
                 .map(relasjon -> relasjon.getJournalpost().getJournalpostId())
                 .collect(Collectors.toList());
 

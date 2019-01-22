@@ -12,7 +12,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
-import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
+import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentFil;
@@ -78,7 +78,7 @@ public class HentFerdigstilteDokumenterServiceTest {
 
 	@Before
 	public void setUp() {
-		when(begrensningService.getVariantSkjermet(any(DokumentInfo.class), eq(VariantFormatCode.ARKIV))).thenReturn(FilDetaljer.builder().filUuid(FILUUID_1).build());
+		when(skjermingService.getVariantSkjermet(any(DokumentInfo.class), eq(VariantFormatCode.ARKIV))).thenReturn(FilDetaljer.builder().filUuid(FILUUID_1).build());
 	}
 
 	@Test
@@ -104,8 +104,8 @@ public class HentFerdigstilteDokumenterServiceTest {
 		when(joarkRepository.findById(JOURNALPOST_ID)).thenReturn(Optional.of(journalpost));
 		when(dokumentFilRepository.findByFilUuid(FILUUID_2)).thenReturn(createFildetaljer(FILCONTENT_2));
 		when(dokumentFilRepository.findByFilUuid(FILUUID_SLADDET_1)).thenReturn(createFildetaljer(FILCONTENT_SLADDET_1));
-		when(begrensningService.getVariantSkjermet(eq(journalpost.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG).iterator().next().getDokumentInfo()), eq(VariantFormatCode.ARKIV))).thenReturn(FilDetaljer.builder().filUuid(FILUUID_2).build());
-		when(begrensningService.getVariantSkjermet(eq(journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo()), eq(VariantFormatCode.ARKIV))).thenReturn(FilDetaljer.builder().filUuid(FILUUID_SLADDET_1).build());
+		when(skjermingService.getVariantSkjermet(eq(journalpost.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG).iterator().next().getDokumentInfo()), eq(VariantFormatCode.ARKIV))).thenReturn(FilDetaljer.builder().filUuid(FILUUID_2).build());
+		when(skjermingService.getVariantSkjermet(eq(journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo()), eq(VariantFormatCode.ARKIV))).thenReturn(FilDetaljer.builder().filUuid(FILUUID_SLADDET_1).build());
 
 		List<HentFerdigstilteDokumenterResponseTo> hentFerdigstilteDokumenter = service.hentFerdigstilteDokumenter(
 				JOURNALPOST_ID, Arrays.asList(DOKUMENT_1, DOKUMENT_2));

@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.logiskkassasjon.util;
+package no.nav.dokarkiv.logisktidligkassasjon.util;
 
 import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
 
@@ -139,15 +139,6 @@ public class TestUtils {
 				.fileContent("ARKIV variant".getBytes())
 				.build();
 	}
-
-//	public static Begrensning kassereDokumentLogisk(DokumentInfo dokumentInfo) {
-//		Begrensning begrensning = Begrensning.builder()
-//				.dokumentInfoId(dokumentInfo.getDokumentInfoId())
-//				.begrensningType(BegrensningTypeCode.KASSERT)
-//				.build();
-//		begrensning.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
-//		return begrensning;
-//	}
 
 	public static Long getJournalpostId() {
 		return journalpostId;

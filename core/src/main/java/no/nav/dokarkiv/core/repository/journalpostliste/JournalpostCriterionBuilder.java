@@ -53,7 +53,7 @@ public class JournalpostCriterionBuilder extends CriterionBuilder {
 		}
 
 		if (isFalse(parameters.isIncludeBegrensetJournalpost())) {
-			criteria.add(Restrictions.isNull("begrensning"));
+			criteria.add(Restrictions.isNull("skjermingType"));
 		}
 		// Note that an empty saksliste would possibly return all journalposts, so we need
 		// to return an empty resultset from query if this list is empty.

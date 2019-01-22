@@ -54,7 +54,7 @@ public class JournalpostBegrensetTest {
 	private JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository;
 
 	@Inject
-	private BegrensningService begrensningService;
+	private SkjermingService skjermingService;
 
 	@Before
 	public void setUp() {
@@ -83,14 +83,14 @@ public class JournalpostBegrensetTest {
 				.next()
 				.getFildetaljerId();
 
-		begrensningService.setJpDokInfoRelBegrensning(begrensetJournalpostDokumentInfoRelasjon, BegrensningTypeCode.POL);
+		skjermingService.setJpDokInfoRelBegrensning(begrensetJournalpostDokumentInfoRelasjon, SkjermingTypeCode.POL);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
 		TestTransaction.start();
 
 		//Test behaviour when begrenset
-		Journalpost journalpostWithBegrensning = joarkRepositoryBegrenset.findById(journalpost1.getJournalpostId()).get();
+		Journalpost journalpostWithBegrensning = joarkRepositorySkjermet.findById(journalpost1.getJournalpostId()).get();
 
 		assertThat(journalpostWithBegrensning.getJournalpostDokumentInfoRelasjoner().size(), is(2));
 		assertThat(journalpostWithBegrensning.getJournalpostDokumentInfoRelasjoner()

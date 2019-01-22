@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.tidligkassasjon;
+package no.nav.dokarkiv.fysisktidligkassasjon;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
@@ -11,7 +11,9 @@ import static no.nav.dokarkiv.fysisktidligkassasjon.util.TestUtil.DOKUMENTINFO_I
 import static no.nav.dokarkiv.fysisktidligkassasjon.util.TestUtil.JOURNALPOST_ID;
 
 import no.nav.dokarkiv.core.CoreConfig;
-import no.nav.dokarkiv.core.repository.BegrensningRepository;
+import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService;
+import no.nav.dokarkiv.core.domain.service.SkjermingService;
+import no.nav.dokarkiv.core.repository.AksjonsLoggRepository;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
@@ -77,7 +79,7 @@ public abstract class AbstractFysiskTidligKassasjonIT {
 	@Inject
 	protected TestRestTemplate restTemplate;
 	@Inject
-	protected BegrensningService begrensningService;
+	protected SkjermingService skjermingService;
 	@Inject
 	protected AksjonsLoggRepository aksjonsLoggRepository;
 
@@ -103,7 +105,6 @@ public abstract class AbstractFysiskTidligKassasjonIT {
 	public void cleanup() {
 		joarkRepository.deleteAll();
 		dokumentinfoRepository.deleteAll();
-		begrensningRepository.deleteAll();
 		aksjonsLoggRepository.deleteAll();
 	}
 

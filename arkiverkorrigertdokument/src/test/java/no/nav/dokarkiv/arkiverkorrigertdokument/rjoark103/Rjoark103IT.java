@@ -117,7 +117,7 @@ public class Rjoark103IT extends AbstractArkiverKorrigertDokumentIT {
 				.getFilUuid());
 		assertThat(dokumentFil.getFil(), is(FIL));
 
-		assertThat(persistedDokumentInfo.findFilDetaljerByVariantFormat(VariantFormatCode.ARKIV).getBegrensning(), is(BegrensningTypeCode.POL));
+		assertThat(persistedDokumentInfo.findFilDetaljerByVariantFormat(VariantFormatCode.ARKIV).getSkjermingType(), is(SkjermingTypeCode.POL));
 		TestTransaction.end();
 
 		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
@@ -176,7 +176,7 @@ public class Rjoark103IT extends AbstractArkiverKorrigertDokumentIT {
 		DokumentFil dokumentFil = dokumentFilRepository.findByFilUuid(persistedDokumentInfo.findFilDetaljerByVariantFormat(VariantFormatCode.SLADDET)
 				.getFilUuid());
 		assertThat(dokumentFil.getFil(), is(FIL2));
-		assertThat(persistedDokumentInfo.findFilDetaljerByVariantFormat(VariantFormatCode.ARKIV).getBegrensning(), is(BegrensningTypeCode.POL));
+		assertThat(persistedDokumentInfo.findFilDetaljerByVariantFormat(VariantFormatCode.ARKIV).getSkjermingType(), is(SkjermingTypeCode.POL));
 		TestTransaction.end();
 	}
 
@@ -219,7 +219,7 @@ public class Rjoark103IT extends AbstractArkiverKorrigertDokumentIT {
 //				.getFilUuid());
 //		assertThat(dokumentFil.getFil(), is(FIL));
 //
-//		assertThat(begrensningRepository.findByDokumentInfoIdAndVariantFormatAndBegrensningType(dokumentInfo.getDokumentInfoId(), VariantFormatCode.ARKIV, BegrensningTypeCode.POL)
+//		assertThat(begrensningRepository.findByDokumentInfoIdAndVariantFormatAndBegrensningType(dokumentInfo.getDokumentInfoId(), VariantFormatCode.ARKIV, SkjermingTypeCode.POL)
 //				.isPresent(), is(true));
 //		assertThat(Iterables.size(begrensningRepository.findAll()), is(1));
 //		TestTransaction.end();

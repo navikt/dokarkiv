@@ -29,7 +29,7 @@ import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import no.nav.dokarkiv.core.domain.service.BegrensningService;
+import no.nav.dokarkiv.core.domain.service.SkjermingService;
 import no.nav.dokarkiv.core.exceptions.DokumentInfoIkkeFunnetException;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
@@ -98,7 +98,7 @@ public class GraphQlQueryIT {
 	@Inject
 	private DokumentinfoRepository dokumentinfoRepository;
 	@Inject
-	private BegrensningService begrensningService;
+	private SkjermingService skjermingService;
 	@Inject
 	private TestRestTemplate testRestTemplate;
 	@Inject
@@ -246,7 +246,7 @@ public class GraphQlQueryIT {
 		abacPermit();
 		Journalpost journalpost = TestDataUtils.createJournalpostBuilder(FIL_UUID).build();
 		joarkRepository.save(journalpost);
-		begrensningService.setJournalpostBegrensning(journalpost, BegrensningTypeCode.POL);
+		skjermingService.setJournalpostBegrensning(journalpost, SkjermingTypeCode.POL);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
@@ -268,7 +268,7 @@ public class GraphQlQueryIT {
 		journalpost = joarkRepository.save(journalpost);
 
 		no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon rel = journalpost.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG).iterator().next();
-		begrensningService.setJpDokInfoRelBegrensning(rel, BegrensningTypeCode.POL);
+		skjermingService.setJpDokInfoRelBegrensning(rel, SkjermingTypeCode.POL);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
@@ -313,7 +313,7 @@ public class GraphQlQueryIT {
 	public void shouldReturnAuthorizationExceptionWhenAbacDenyForDokumentInfoQuery() throws Exception {
 		abacDeny();
 		Journalpost journalpost = TestDataUtils.createJournalpostBuilder(FIL_UUID).build();
-		journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().setSlettet(true);
+//		journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().setSlettet(true);
 		joarkRepository.save(journalpost);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();

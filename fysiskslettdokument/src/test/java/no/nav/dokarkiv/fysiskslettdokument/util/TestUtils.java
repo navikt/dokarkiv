@@ -38,7 +38,7 @@ public class TestUtils {
 	public static final String FILNAVN = "filNavn";
 
 
-	public static final SkjermingTypeCode BEGRENSNINGTYPE_POL = SkjermingTypeCode.POL;
+	public static final SkjermingTypeCode SKJERMINGTYPE_POL = SkjermingTypeCode.POL;
 
 	public static Journalpost opprettHoveddokumentForIT() {
 		return getBaseJournalpostBuilder()

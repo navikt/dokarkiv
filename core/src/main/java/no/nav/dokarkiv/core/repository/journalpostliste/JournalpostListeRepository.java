@@ -61,7 +61,7 @@ public class JournalpostListeRepository {
 		}
 
 		return foundJournalposts;
-//		return begrensningService.addBegrensetDokumentInfoIdsToJournalpostList(foundJournalposts);
+//		return skjermingService.addBegrensetDokumentInfoIdsToJournalpostList(foundJournalposts);
 	}
 
 	public long findTotalNumberOfJournalposts(HentMinJPListeParameters hentMinJPListeParameters) {

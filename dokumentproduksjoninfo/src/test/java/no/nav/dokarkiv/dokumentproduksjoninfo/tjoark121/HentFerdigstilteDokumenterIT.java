@@ -46,6 +46,7 @@ public class HentFerdigstilteDokumenterIT extends AbstractDokumentproduksjoninfo
 
 	private Long journalpostId;
 	private Long dokumentInfoId;
+	private Journalpost journalpost;
 
 	private HentFerdigstilteDokumenterRequest request;
 
@@ -82,7 +83,7 @@ public class HentFerdigstilteDokumenterIT extends AbstractDokumentproduksjoninfo
 	@Test
 	public void shouldHentFerdigstilteDokumenterSkjermet() throws Exception {
 
-		begrensningService.setVariantSkjermet(journalpost.findAllDokumentInfos().iterator().next(), VariantFormatCode.ARKIV, BegrensningTypeCode.POL);
+		skjermingService.setVariantSkjermet(journalpost.findAllDokumentInfos().iterator().next(), VariantFormatCode.ARKIV, SkjermingTypeCode.POL);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 		TestTransaction.start();

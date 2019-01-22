@@ -29,7 +29,7 @@ public class LogiskSlettDokumentService {
 	}
 
 	public LogiskSlettDokumentResponse logiskSletteDokument(LogiskSlettDokumentRequestTo requestTo) {
-		sjekkAtDokumentIkkeErPOL(requestTo.getJournalpostId(), requestTo.getDokumentInfoId());
+		sjekkAtDokumentIkkeErSkjermet(requestTo.getJournalpostId(), requestTo.getDokumentInfoId());
 
 		JournalpostDokumentInfoRelasjon relasjonSomSkalSlettesLogisk =
 				journalpostDokumentInfoRelasjonRepository.findByJournalpostJournalpostIdAndDokumentInfoDokumentInfoId(
@@ -41,22 +41,22 @@ public class LogiskSlettDokumentService {
 							requestTo.getJournalpostId(),
 							requestTo.getDokumentInfoId()));
 		}
-		if (BegrensningTypeCode.POL.equals(relasjonSomSkalSlettesLogisk.getJournalpost().getBegrensning()) || BegrensningTypeCode.POL.equals(relasjonSomSkalSlettesLogisk.getBegrensning())) {
-			throw new DokumentAlleredeUtilgjengeliggjortException(String.format(
-					"Kan ikke utføre logisk sletting av dokument med journalpostId=%s og dokumentInfoId=%s. Dokumentet er utilgjengeliggjort.",
+		if (SkjermingTypeCode.POL.equals(relasjonSomSkalSlettesLogisk.getJournalpost().getSkjermingType()) || SkjermingTypeCode.POL.equals(relasjonSomSkalSlettesLogisk.getSkjermingType())) {
+			throw new DokumentAlleredeSkjermetException(String.format(
+					"Kan ikke utføre logisk sletting av dokument med journalpostId=%s og dokumentInfoId=%s. Dokumentet er skjermet.",
 					requestTo.getJournalpostId(),
 					requestTo.getDokumentInfoId()));
 		}
 
 		switch (relasjonSomSkalSlettesLogisk.getTilknyttetJournalpostSom()) {
 			case HOVEDDOKUMENT:
-				begrensningService.setJournalpostBegrensning (relasjonSomSkalSlettesLogisk.getJournalpost(), BegrensningTypeCode.POL);
+				skjermingService.setJournalpostBegrensning (relasjonSomSkalSlettesLogisk.getJournalpost(), SkjermingTypeCode.POL);
 				log.info("{} har utført logisk sletting av hoveddokument med journalpostId={}",
 						MDC.get(MDCConstants.MDC_REQUEST_ID), requestTo.getJournalpostId());
 				break;
 			case VEDLEGG:
-				begrensningService.setJpDokInfoRelBegrensning(
-						relasjonSomSkalSlettesLogisk, BegrensningTypeCode.POL);
+				skjermingService.setJpDokInfoRelBegrensning(
+						relasjonSomSkalSlettesLogisk, SkjermingTypeCode.POL);
 				log.info("{} har utført logisk sletting av vedlegg med journalpostId={} og dokumentInfoId={}",
 						MDC.get(MDCConstants.MDC_REQUEST_ID), requestTo.getJournalpostId(), requestTo.getDokumentInfoId());
 				break;
@@ -71,42 +71,42 @@ public class LogiskSlettDokumentService {
 		return LogiskSlettDokumentResponseMapper.mapToSlettDokumentResponse(relasjonSomSkalSlettesLogisk);
 	}
 
-	private void sjekkAtDokumentIkkeErUtilgjengeliggjort(Long journalpostId, Long dokumentInfoId) {
-		sjekkAtJournalpostIkkeErUtilgjengeliggjort(journalpostId);
-		if (begrensningService.isJournalpostDokumentInfoRelasjonBegrenset(journalpostId, dokumentInfoId, BegrensningTypeCode.POL)) {
-			throw new DokumentAlleredeUtilgjengeliggjortException(String.format(
-					"Kan ikke utføre logisk sletting av dokument med journalpostId=%s og dokumentInfoId=%s. Dokumentet er utilgjengeliggjort.",
+	private void sjekkAtDokumentIkkeErSkjermet(Long journalpostId, Long dokumentInfoId) {
+		sjekkAtJournalpostIkkeErSkjermet(journalpostId);
+		if (skjermingService.isJournalpostDokumentInfoRelasjonSkjermet(journalpostId, dokumentInfoId, SkjermingTypeCode.POL)) {
+			throw new DokumentAlleredeSkjermetException(String.format(
+					"Kan ikke utføre logisk sletting av dokument med journalpostId=%s og dokumentInfoId=%s. Dokumentet er skjermet.",
 					journalpostId,
 					dokumentInfoId));
 		}
 	}
 
-	private void sjekkAtJournalpostIkkeErUtilgjengeliggjort(Long journalpostId) {
-		if (begrensningService.isJournalpostBegrenset(journalpostId, BegrensningTypeCode.POL)) {
-			throw new DokumentAlleredeUtilgjengeliggjortException(String.format(
-					"Kan ikke utføre logisk sletting av dokument med journalpostId=%s. Journalposten er utilgjengeliggjort",
+	private void sjekkAtJournalpostIkkeErSkjermet(Long journalpostId) {
+		if (skjermingService.isJournalpostSkjermet(journalpostId, SkjermingTypeCode.POL)) {
+			throw new DokumentAlleredeSkjermetException(String.format(
+					"Kan ikke utføre logisk sletting av dokument med journalpostId=%s. Journalposten er skjermet",
 					journalpostId));
 		}
 	}
 
 //	private void utilgjengeliggjoerHoveddokument(Long journalpostId) {
 //		Begrensning begrensning = Begrensning.builder()
-//				.begrensningType(BegrensningTypeCode.UTILGJENGELIGGJORT)
+//				.begrensningType(SkjermingTypeCode.UTILGJENGELIGGJORT)
 //				.journalpostId(journalpostId)
 //				.build();
 //		begrensning.setOpprettetKildeNavn(MDC.get(MDCConstants.MDC_CONSUMER_ID));
 //
-//		begrensningService.saveBegrensning(begrensning);
+//		skjermingService.saveBegrensning(begrensning);
 //	}
 //
 //	private void utilgjengeliggjoerVedlegg(Long journalpostId, Long dokumentInfoId) {
 //		Begrensning begrensning = Begrensning.builder()
-//				.begrensningType(BegrensningTypeCode.UTILGJENGELIGGJORT)
+//				.begrensningType(SkjermingTypeCode.UTILGJENGELIGGJORT)
 //				.journalpostId(journalpostId)
 //				.dokumentInfoId(dokumentInfoId)
 //				.build();
 //		begrensning.setOpprettetKildeNavn(MDC.get(MDCConstants.MDC_CONSUMER_ID));
 //
-//		begrensningService.saveBegrensning(begrensning);
+//		skjermingService.saveBegrensning(begrensning);
 //	}
 }

@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.logiskkassasjon;
+package no.nav.dokarkiv.logisktidligkassasjon;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
@@ -11,10 +11,13 @@ import static no.nav.dokarkiv.logisktidligkassasjon.util.TestUtils.getDokumentIn
 import static no.nav.dokarkiv.logisktidligkassasjon.util.TestUtils.getJournalpostId;
 
 import no.nav.dokarkiv.core.CoreConfig;
-import no.nav.dokarkiv.core.domain.service.BegrensningService;
+import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService;
+import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
+import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
+import no.nav.dokarkiv.core.domain.service.SkjermingService;
+import no.nav.dokarkiv.core.repository.AksjonsLoggRepository;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
-import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.dokarkiv.core.stelvio.SimpleRequestContext;
 import no.nav.freg.security.test.oidc.tools.OidcTestService;
@@ -41,6 +44,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
 import java.io.IOException;
+
+;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
@@ -78,8 +83,7 @@ public abstract class AbstractLogiskTidligKassasjonIT {
 	@Inject
 	protected TestRestTemplate restTemplate;
 	@Inject
-	protected BegrensningService begrensningService;
-
+	protected SkjermingService skjermingService;
 	@Inject
 	protected AksjonsLoggRepository aksjonsLoggRepository;
 
@@ -105,7 +109,7 @@ public abstract class AbstractLogiskTidligKassasjonIT {
 	public void cleanup() {
 		joarkRepository.deleteAll();
 		dokumentinfoRepository.deleteAll();
-		begrensningRepository.deleteAll();
+		aksjonsLoggRepository.deleteAll();
 	}
 
 	protected HttpEntity createHeaders() {
@@ -138,5 +142,9 @@ public abstract class AbstractLogiskTidligKassasjonIT {
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
 						.withHeader(org.apache.http.HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
 						.withBodyFile("abac/abac-permit.json")));
+	}
+
+	protected void kassereDokumentLogisk(DokumentInfo dokumentInfo) {
+		skjermingService.setDokumentKassert(dokumentInfo, SkjermingTypeCode.POL);
 	}
 }

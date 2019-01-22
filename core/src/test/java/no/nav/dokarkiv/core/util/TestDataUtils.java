@@ -8,7 +8,6 @@ import no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder;
 import no.nav.dokarkiv.core.domain.builder.JournalpostBuilder;
 import no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder;
 import no.nav.dokarkiv.core.domain.builder.SaksrelasjonBuilder;
-import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
@@ -87,18 +86,6 @@ public class TestDataUtils {
 				.tilVerdi(AKSJON_TIL_VERDI)
 				.arkivElement(AKSJON_ARKIVELEMENT)
 				.build();
-	}
-
-    public static Begrensning createBegrensning(Long journalpostId, Long dokumentInfoId, SkjermingTypeCode skjermingTypeCode) {
-
-        Begrensning begrensning = Begrensning.builder()
-                .begrensningType(skjermingTypeCode)
-                .journalpostId(journalpostId)
-                .dokumentInfoId(dokumentInfoId).build();
-
-		begrensning.setOpprettetKildeNavn("test navn");
-
-		return begrensning;
 	}
 
 	public static JournalpostBuilder createJournalpostWithSaksrelasjon(String saksnr, boolean isFeilregistrert, FagomradeCode fagomrade,

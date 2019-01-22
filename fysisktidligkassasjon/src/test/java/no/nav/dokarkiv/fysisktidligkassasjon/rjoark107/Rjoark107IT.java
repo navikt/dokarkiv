@@ -2,7 +2,6 @@ package no.nav.dokarkiv.fysisktidligkassasjon.rjoark107;
 
 import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_LOGG_HEADER;
 import static no.nav.dokarkiv.core.domain.codes.AksjonTypeCode.SLETT;
-import static no.nav.dokarkiv.fysisktidligkassasjon.util.TestUtil.kassereDokumentLogisk;
 import static no.nav.dokarkiv.fysisktidligkassasjon.util.TestUtil.knyttDokumentInfoSomVedleggTilJournalpostForIT;
 import static no.nav.dokarkiv.fysisktidligkassasjon.util.TestUtil.opprettHoveddokumentForIT;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -26,6 +25,7 @@ import org.springframework.test.context.transaction.TestTransaction;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 public class Rjoark107IT extends AbstractFysiskTidligKassasjonIT {
 
@@ -39,14 +39,16 @@ public class Rjoark107IT extends AbstractFysiskTidligKassasjonIT {
 
 		knyttDokumentInfoSomVedleggTilJournalpostForIT(dokumentInfo1, journalpost2);
 
-		begrensningRepository.save(kassereDokumentLogisk(dokumentInfo1));
-
 		joarkRepository.save(journalpost2);
-
+		skjermingService.setDokumentKassert(dokumentInfo1, SkjermingTypeCode.POL);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
+		TestTransaction.start();
 
-		assertThat("Feil antall begrensninger", begrensningRepository.count(), is(1L));
+		Optional<DokumentInfo> dokumentInfoRep = dokumentinfoRepository.findByDokumentInfoId(dokumentInfo1.getDokumentInfoId());
+		assertTrue(dokumentInfoRep.isPresent());
+		assertTrue(skjermingService.isDokumentInfoKassert(dokumentInfoRep.get()));
+
 		assertThat("Feil antall journalposter", joarkRepository.count(), is(2L));
 		assertThat("Feil antall dokumenter", dokumentinfoRepository.count(), is(2L));
 		assertTrue(dokumentInfo1.isRelatedToMultipleJournalposts());
@@ -60,6 +62,9 @@ public class Rjoark107IT extends AbstractFysiskTidligKassasjonIT {
 				new HttpEntity<>(createHeadersWithAksjon(SLETT.name())),
 				String.class);
 
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
+		TestTransaction.start();
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 
 		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
@@ -77,9 +82,8 @@ public class Rjoark107IT extends AbstractFysiskTidligKassasjonIT {
 
 		knyttDokumentInfoSomVedleggTilJournalpostForIT(dokumentInfo1, journalpost2);
 
-		begrensningRepository.save(kassereDokumentLogisk(dokumentInfo1));
-
 		joarkRepository.save(journalpost2);
+		skjermingService.setDokumentKassert(dokumentInfo1, SkjermingTypeCode.POL);
 
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
@@ -170,14 +174,17 @@ public class Rjoark107IT extends AbstractFysiskTidligKassasjonIT {
 
 		knyttDokumentInfoSomVedleggTilJournalpostForIT(dokumentInfo1, journalpost2);
 
-		begrensningRepository.save(kassereDokumentLogisk(dokumentInfo1));
-
 		joarkRepository.save(journalpost2);
+
+		skjermingService.setDokumentKassert(dokumentInfo1, SkjermingTypeCode.POL);
 
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
+		TestTransaction.start();
 
-		assertThat("Feil antall begrensninger", begrensningRepository.count(), is(1L));
+		Optional<DokumentInfo> dokumentInfoRep = dokumentinfoRepository.findByDokumentInfoId(dokumentInfo1.getDokumentInfoId());
+		assertTrue(dokumentInfoRep.isPresent());
+		assertTrue(skjermingService.isDokumentInfoKassert(dokumentInfoRep.get()));
 		assertThat("Feil antall journalposter", joarkRepository.count(), is(2L));
 		assertThat("Feil antall dokumenter", dokumentinfoRepository.count(), is(2L));
 		assertTrue(dokumentInfo1.isRelatedToMultipleJournalposts());
@@ -188,8 +195,14 @@ public class Rjoark107IT extends AbstractFysiskTidligKassasjonIT {
 				new HttpEntity<>(createHeadersWithAksjon(SLETT.name())),
 				String.class);
 
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
+		TestTransaction.start();
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
-		assertThat("Feil antall begrensninger etter kall", begrensningRepository.count(), is(0L));
+		dokumentInfoRep = dokumentinfoRepository.findByDokumentInfoId(dokumentInfo1.getDokumentInfoId());
+		assertTrue(dokumentInfoRep.isPresent());
+		assertTrue(skjermingService.isDokumentInfoKassert(dokumentInfoRep.get()));
+
 		assertThat("Feil antall journalposter etter kall", joarkRepository.count(), is(2L));
 		assertThat("Feil antall dokumenter etter kall", dokumentinfoRepository.count(), is(2L));
 	}
@@ -201,12 +214,15 @@ public class Rjoark107IT extends AbstractFysiskTidligKassasjonIT {
 		Journalpost journalpost = joarkRepository.save(opprettHoveddokumentForIT());
 		DokumentInfo dokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 
-		begrensningRepository.save(kassereDokumentLogisk(dokumentInfo));
+		skjermingService.setDokumentKassert(dokumentInfo, SkjermingTypeCode.POL);
 
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
+		TestTransaction.start();
 
-		assertThat("Feil antall begrensninger", begrensningRepository.count(), is(1L));
+		Optional<DokumentInfo> dokumentInfoRep = dokumentinfoRepository.findByDokumentInfoId(dokumentInfo.getDokumentInfoId());
+		assertTrue(dokumentInfoRep.isPresent());
+		assertTrue(skjermingService.isDokumentInfoKassert(dokumentInfoRep.get()));
 		assertThat("Feil antall journalposter", joarkRepository.count(), is(1L));
 		assertThat("Feil antall dokumenter", dokumentinfoRepository.count(), is(1L));
 		assertFalse(dokumentInfo.isRelatedToMultipleJournalposts());
@@ -218,8 +234,13 @@ public class Rjoark107IT extends AbstractFysiskTidligKassasjonIT {
 				new HttpEntity<>(createHeadersWithAksjon(SLETT.name())),
 				String.class);
 
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
+		TestTransaction.start();
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
-		assertThat("Feil antall begrensninger etter kall", begrensningRepository.count(), is(0L));
+		dokumentInfoRep = dokumentinfoRepository.findByDokumentInfoId(dokumentInfo.getDokumentInfoId());
+		assertTrue(dokumentInfoRep.isPresent());
+		assertTrue(skjermingService.isDokumentInfoKassert(dokumentInfoRep.get()));
 		assertThat("Feil antall journalposter etter kall", joarkRepository.count(), is(1L));
 		assertThat("Feil antall dokumenter etter kall", dokumentinfoRepository.count(), is(1L));
 	}
@@ -231,7 +252,7 @@ public class Rjoark107IT extends AbstractFysiskTidligKassasjonIT {
 		Journalpost journalpost = joarkRepository.save(opprettHoveddokumentForIT());
 		DokumentInfo dokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 
-		begrensningRepository.save(kassereDokumentLogisk(dokumentInfo));
+		skjermingService.setDokumentKassert(dokumentInfo, SkjermingTypeCode.POL);
 
 		TestTransaction.flagForCommit();
 		TestTransaction.end();

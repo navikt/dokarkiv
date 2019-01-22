@@ -6,12 +6,10 @@ import static no.nav.dokarkiv.fysisktidligkassasjon.util.TestUtil.opprettHoveddo
 import static org.mockito.Mockito.when;
 
 import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
-import no.nav.dokarkiv.core.domain.entities.Begrensning;
-import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import no.nav.dokarkiv.core.domain.service.BegrensningService;
-import no.nav.dokarkiv.core.exceptions.BegrensningIkkeFunnetException;
+import no.nav.dokarkiv.core.domain.service.SkjermingService;
+import no.nav.dokarkiv.core.exceptions.SkjermingIkkeFunnetException;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkDeleteRepository;
 import org.junit.Before;
@@ -37,7 +35,7 @@ public class FysiskTidligKassasjonServiceTest {
 	@Mock
 	private JoarkDeleteRepository deleteRepository;
 	@Mock
-	private BegrensningService begrensningService;
+	private SkjermingService skjermingService;
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
 
@@ -45,7 +43,7 @@ public class FysiskTidligKassasjonServiceTest {
 
 	@Before
 	public void setUp() {
-		fysiskTidligKassasjonService = new FysiskTidligKassasjonService(dokumentinfoRepository, begrensningRepository, deleteRepository);
+		fysiskTidligKassasjonService = new FysiskTidligKassasjonService(dokumentinfoRepository, deleteRepository, skjermingService);
 		journalpost = opprettHoveddokumentForEnhetstest();
 		dokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 	}
@@ -56,7 +54,7 @@ public class FysiskTidligKassasjonServiceTest {
 		thrown.expectMessage(String.format(
 				"Fant ikke forventet begrensning for dokument med dokumentInfoId=%s og begrensningsType=%s",
 				DOKUMENTINFO_ID,
-				BegrensningTypeCode.POL));
+				SkjermingTypeCode.POL));
 
 		when(dokumentinfoRepository.findByDokumentInfoId(DOKUMENTINFO_ID)).thenReturn(Optional.of(dokumentInfo));
 
@@ -70,16 +68,16 @@ public class FysiskTidligKassasjonServiceTest {
 		assertTrue(dokumentInfo.isRelatedToMultipleJournalposts());
 
 		when(dokumentinfoRepository.findByDokumentInfoId(DOKUMENTINFO_ID)).thenReturn(Optional.of(dokumentInfo));
-		when(begrensningService.isDokumentInfoKassert(dokumentInfo)).thenReturn(true);
+		when(skjermingService.isDokumentInfoKassert(dokumentInfo)).thenReturn(true);
 
-		tidligKassasjonService.tidligKassasjonAvDokument(DOKUMENTINFO_ID);
+		fysiskTidligKassasjonService.fysiskTidligKassasjonAvDokument(DOKUMENTINFO_ID);
 	}
 
 	@Test
 	public void skallTidligKassereDokument_medDokumentKnyttetEnJournalpost() {
 		when(dokumentinfoRepository.findByDokumentInfoId(DOKUMENTINFO_ID)).thenReturn(Optional.of(dokumentInfo));
-		when(begrensningService.isDokumentInfoKassert(dokumentInfo)).thenReturn(true);
+		when(skjermingService.isDokumentInfoKassert(dokumentInfo)).thenReturn(true);
 
-		tidligKassasjonService.tidligKassasjonAvDokument(DOKUMENTINFO_ID);
+		fysiskTidligKassasjonService.fysiskTidligKassasjonAvDokument(DOKUMENTINFO_ID);
 	}
 }

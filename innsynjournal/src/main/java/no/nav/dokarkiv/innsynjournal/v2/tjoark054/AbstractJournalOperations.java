@@ -75,7 +75,7 @@ public abstract class AbstractJournalOperations {
 	 */
 	protected FilDetaljer getFilDetaljer(DokumentInfo dokumentInfo, VariantFormatCode variantFormat)
 			throws DocumentNotFoundException {
-		FilDetaljer filDetaljer = begrensningService.getVariantSkjermet(dokumentInfo, variantFormat);
+		FilDetaljer filDetaljer = skjermingService.getVariantSkjermet(dokumentInfo, variantFormat);
 		if (filDetaljer == null) {
 			throw new DocumentNotFoundException(new InvalidArgumentException("DokumentInfo with dokumentInfoId="
 					+ dokumentInfo.getDokumentInfoId() + " has no FilDetaljer with variant: " + variantFormat));

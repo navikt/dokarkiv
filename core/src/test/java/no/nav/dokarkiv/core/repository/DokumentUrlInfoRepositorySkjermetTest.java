@@ -1,6 +1,5 @@
 package no.nav.dokarkiv.core.repository;
 
-import static no.nav.dokarkiv.core.util.TestDataUtils.createBegrensning;
 import static no.nav.dokarkiv.core.util.TestDataUtils.createJournalpost;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -8,8 +7,7 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 import no.nav.dokarkiv.core.domain.builder.DokumentUrlInfoBuilder;
-import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
-import no.nav.dokarkiv.core.domain.entities.Begrensning;
+import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentUrlInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.service.SkjermingService;
@@ -56,7 +54,7 @@ public class DokumentUrlInfoRepositorySkjermetTest {
     private DokumentUrlInfoRepository dokumentUrlInfoRepository;
 
 	@Inject
-	private BegrensningService begrensningService;
+	private SkjermingService skjermingService;
 
 	public static final String DOC_TOKEN = "token";
 	public static final String FILUUID = UUID.randomUUID().toString();
@@ -88,7 +86,7 @@ public class DokumentUrlInfoRepositorySkjermetTest {
         Journalpost journalpost = createJournalpost();
 
 		joarkRepository.save(journalpost);
-		begrensningService.setJournalpostBegrensning(journalpost, BegrensningTypeCode.POL);
+		skjermingService.setJournalpostBegrensning(journalpost, SkjermingTypeCode.POL);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
@@ -102,7 +100,7 @@ public class DokumentUrlInfoRepositorySkjermetTest {
 		dokumentUrlInfoRepository.save(dokumentUrlInfo);
 		TestTransaction.flagForCommit();
 
-        assertThat(dokumentUrlInfoRepositoryBegrenset.findByFilUuid(FILUUID), nullValue());
+        assertThat(dokumentUrlInfoRepositorySkjermet.findByFilUuid(FILUUID), nullValue());
         assertThat(dokumentUrlInfoRepository.findByFilUuid(FILUUID), notNullValue());
 
 
@@ -114,7 +112,7 @@ public class DokumentUrlInfoRepositorySkjermetTest {
         Journalpost journalpost = createJournalpost();
 
 		joarkRepository.save(journalpost);
-		begrensningService.setJournalpostBegrensning(journalpost, BegrensningTypeCode.POL);
+		skjermingService.setJournalpostBegrensning(journalpost, SkjermingTypeCode.POL);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
@@ -128,7 +126,7 @@ public class DokumentUrlInfoRepositorySkjermetTest {
 		dokumentUrlInfoRepository.save(dokumentUrlInfo);
 		TestTransaction.flagForCommit();
 
-        assertThat(dokumentUrlInfoRepositoryBegrenset.findByDoctoken(DOC_TOKEN).isPresent(), is(false));
+        assertThat(dokumentUrlInfoRepositorySkjermet.findByDoctoken(DOC_TOKEN).isPresent(), is(false));
         assertThat(dokumentUrlInfoRepository.findByDoctoken(DOC_TOKEN).isPresent(), is(true));
 
 

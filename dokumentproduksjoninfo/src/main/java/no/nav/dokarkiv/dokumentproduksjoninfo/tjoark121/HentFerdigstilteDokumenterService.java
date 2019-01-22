@@ -1,6 +1,5 @@
 package no.nav.dokarkiv.dokumentproduksjoninfo.tjoark121;
 
-import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentFil;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
@@ -62,7 +61,11 @@ public class HentFerdigstilteDokumenterService {
 				DokumentInfo dokumentInfo = journalpost.findDokumentInfoById(dokumentInfoId);
 				hentFerdigstilteRokumenterValidator.validateDokumentInfo(journalpostId, dokumentInfoId, dokumentInfo);
 
-				FilDetaljer filDetaljer = begrensningService.getVariantSkjermet(dokumentInfo, VariantFormatCode.ARKIV);
+				FilDetaljer filDetaljer = skjermingService.getVariantSkjermet(dokumentInfo, VariantFormatCode.ARKIV);
+				if (filDetaljer == null) {
+					throw new FilDetaljerNotFoundException("Fildetaljer ikke funnet for journalpostId=" + journalpostId + ", + dokumentInfoId=" + dokumentInfoId
+							+ ",variant=" + VariantFormatCode.ARKIV.name());
+				}
 
 				hentFerdigstilteRokumenterValidator.validateFildetaljer(dokumentInfoId, filDetaljer);
 
