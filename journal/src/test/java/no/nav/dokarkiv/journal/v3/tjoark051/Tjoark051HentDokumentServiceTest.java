@@ -22,7 +22,7 @@ import no.nav.dokarkiv.core.domain.entities.DokumentFil;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import no.nav.dokarkiv.core.domain.service.BegrensningService;
+import no.nav.dokarkiv.core.domain.service.SkjermingService;
 import no.nav.dokarkiv.core.exceptions.DocumentNotFoundException;
 import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
 import no.nav.dokarkiv.core.exceptions.InvalidFilUuidException;
@@ -62,13 +62,13 @@ public class Tjoark051HentDokumentServiceTest {
 	private HentDokumentRequestTo request = new HentDokumentRequestTo(JOURNALPOST_ID, DOKUMENT_INFO_ID, VARIANT_FORMAT);
 
 	@Mock
-	private JoarkRepositoryBegrenset joarkRepositoryMock;
+	private JoarkRepositorySkjermet joarkRepositoryMock;
 	@Mock
 	private DokumentFilRepository dokumentFilRepository;
 	@Mock
 	private HentOndemandDokument hentOndemandDokument;
 	@Mock
-	private BegrensningService begrensningService;
+	private SkjermingService skjermingService;
 
 	@InjectMocks
 	private Tjoark051HentDokumentService service;
@@ -118,7 +118,6 @@ public class Tjoark051HentDokumentServiceTest {
 	public void shouldThrowExceptionWhenDokumentFilNotFound() throws Exception {
 		Journalpost journalpost = createJournalPost();
 
-		when(begrensningService.getVariantSkjermet(any(DokumentInfo.class), eq(VARIANT_FORMAT))).thenReturn(FilDetaljer.builder().filUuid(FIL_UUID).dokumentInfo(journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo()).build());
 		when(joarkRepositoryMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(journalpost));
 		when(dokumentFilRepository.findByFilUuid(FIL_UUID)).thenReturn(null);
 		try {

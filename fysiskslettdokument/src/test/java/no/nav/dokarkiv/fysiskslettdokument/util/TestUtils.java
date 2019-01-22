@@ -8,7 +8,7 @@ import no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder;
 import no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder;
 import no.nav.dokarkiv.core.domain.builder.JournalpostBuilder;
 import no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder;
-import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
+import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
@@ -38,7 +38,7 @@ public class TestUtils {
 	public static final String FILNAVN = "filNavn";
 
 
-	public static final BegrensningTypeCode BEGRENSNINGTYPE_UTILGJENGELIGGJORT = BegrensningTypeCode.POL;
+	public static final SkjermingTypeCode BEGRENSNINGTYPE_POL = SkjermingTypeCode.POL;
 
 	public static Journalpost opprettHoveddokumentForIT() {
 		return getBaseJournalpostBuilder()

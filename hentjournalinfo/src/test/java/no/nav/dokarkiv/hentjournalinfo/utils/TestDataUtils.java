@@ -11,6 +11,7 @@ import no.nav.dokarkiv.core.domain.builder.JournalpostBuilder;
 import no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder;
 import no.nav.dokarkiv.core.domain.builder.KryssreferanseBuilder;
 import no.nav.dokarkiv.core.domain.builder.SkannetInnholdBuilder;
+import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.FilTypeCode;

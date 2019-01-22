@@ -21,13 +21,13 @@ import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import no.nav.dokarkiv.core.domain.service.BegrensningService;
+import no.nav.dokarkiv.core.domain.service.SkjermingService;
 import no.nav.dokarkiv.core.exceptions.DocumentNotFoundException;
 import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
 import no.nav.dokarkiv.core.exceptions.InvalidFilUuidException;
 import no.nav.dokarkiv.core.exceptions.NoDokumentInfoFoundException;
 import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
-import no.nav.dokarkiv.core.repository.JoarkRepositoryBegrenset;
+import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -62,9 +62,9 @@ public class DefaultHentDokumentUrlServiceTest {
 	@Mock
 	private DefaultHentDokumentUrl hentDokumentUrlMock;
 	@Mock
-	private JoarkRepositoryBegrenset joarkRepositoryMock;
+	private JoarkRepositorySkjermet joarkRepositoryMock;
 	@Mock
-	private BegrensningService begrensningService;
+	private SkjermingService skjermingService;
 
 	@Captor
 	private ArgumentCaptor<HentDokumentUrlRequest> delegateRequestCaptor;

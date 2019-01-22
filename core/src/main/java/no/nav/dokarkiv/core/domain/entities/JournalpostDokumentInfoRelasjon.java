@@ -1,9 +1,10 @@
 package no.nav.dokarkiv.core.domain.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import no.nav.dokarkiv.core.domain.AbstractPersistentVersionedDomainObjectWithKilde;
-import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
+import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
@@ -53,15 +54,16 @@ public class JournalpostDokumentInfoRelasjon extends AbstractPersistentVersioned
 	@Column(name = "k_tilkn_jp_som", nullable = false)
 	private TilknyttetJournalpostSomCode tilknyttetJournalpostSom;
 
-	@Column(name = "begrensning")
+	@Column(name = "skjerming_type")
 	@Enumerated(EnumType.STRING)
-	private BegrensningTypeCode begrensning;
+	private SkjermingTypeCode skjermingType;
 
 	@ManyToOne
 	@JoinColumn(name = "dokument_info_id", nullable = false)
 	@Cascade({CascadeType.PERSIST, CascadeType.MERGE, CascadeType.SAVE_UPDATE, CascadeType.DETACH})
 	private DokumentInfo dokumentInfo;
 
+	@JsonIgnore
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "journalpost_id", nullable = false)
 	private Journalpost journalpost;
@@ -181,12 +183,12 @@ public class JournalpostDokumentInfoRelasjon extends AbstractPersistentVersioned
 		this.tilknyttetJournalpostSom = tilknyttetJournalpostSom;
 	}
 
-	public BegrensningTypeCode getBegrensning() {
-		return begrensning;
+	public SkjermingTypeCode getSkjermingType() {
+		return skjermingType;
 	}
 
-	public void setBegrensning(BegrensningTypeCode begrensning) {
-		throw new UnsupportedOperationException("Begrensning skal bare settes gjennom BegrensningService");
+	public void setSkjermingType(SkjermingTypeCode skjermingType) {
+		throw new UnsupportedOperationException("Skjerming skal bare settes gjennom SkjermingService");
 	}
 
 	/**

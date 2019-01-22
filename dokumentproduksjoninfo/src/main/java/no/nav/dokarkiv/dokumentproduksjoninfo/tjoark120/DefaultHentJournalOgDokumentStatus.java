@@ -8,7 +8,7 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
 import no.nav.dokarkiv.core.exceptions.NoDokumentInfoFoundException;
 import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
-import no.nav.dokarkiv.core.repository.JoarkRepositoryBegrenset;
+import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -22,7 +22,7 @@ import javax.inject.Inject;
 public class DefaultHentJournalOgDokumentStatus implements HentJournalOgDokumentStatus {
 
 	@Inject
-    private JoarkRepositoryBegrenset joarkRepository;
+    private JoarkRepositorySkjermet joarkRepository;
 
 	@Override
 	public HentJournalOgDokumentStatusResponseTo hentJournalOgDokumentStatus(HentJournalOgDokumentStatusRequestTo request)

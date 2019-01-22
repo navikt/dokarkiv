@@ -17,7 +17,7 @@ import no.nav.dokarkiv.core.datautil.SaksrelasjonTestDataProvider;
 import no.nav.dokarkiv.core.domain.ChangeStamp;
 import no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder;
 import no.nav.dokarkiv.core.domain.builder.JournalpostBuilder;
-import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
+import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;

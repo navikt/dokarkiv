@@ -5,7 +5,7 @@ import no.nav.dokarkiv.core.domain.entities.DokumentFil;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import no.nav.dokarkiv.core.domain.service.BegrensningService;
+import no.nav.dokarkiv.core.domain.service.SkjermingService;
 import no.nav.dokarkiv.core.exceptions.DocumentNotFoundException;
 import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
 import no.nav.dokarkiv.core.exceptions.InvalidFilUuidException;
@@ -13,7 +13,7 @@ import no.nav.dokarkiv.core.exceptions.NoDokumentInfoFoundException;
 import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
 import no.nav.dokarkiv.core.logging.AuditLogger;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
-import no.nav.dokarkiv.core.repository.JoarkRepositoryBegrenset;
+import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import org.apache.commons.lang3.BooleanUtils;
 
 import javax.inject.Inject;
@@ -27,13 +27,13 @@ import javax.inject.Inject;
 public abstract class AbstractJournalOperations {
 
 	@Inject
-	private JoarkRepositoryBegrenset joarkRepository;
+	private JoarkRepositorySkjermet joarkRepository;
 
 	@Inject
 	private DokumentFilRepository dokumentFilRepository;
 
 	@Inject
-	private BegrensningService begrensningService;
+	private SkjermingService skjermingService;
 
 	/**
 	 * Finds the journalpost for a journalpostId

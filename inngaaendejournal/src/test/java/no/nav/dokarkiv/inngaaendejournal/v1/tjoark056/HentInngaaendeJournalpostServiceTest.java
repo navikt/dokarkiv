@@ -35,7 +35,7 @@ import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeInngaaendeException;
 import no.nav.dokarkiv.core.exceptions.UgyldigInputException;
-import no.nav.dokarkiv.core.repository.JoarkRepositoryBegrenset;
+import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import no.nav.dokarkiv.inngaaendejournal.v1.InngaaendeJournalDataProvider;
 import no.nav.dokarkiv.inngaaendejournal.v1.tjoark056.to.AktoerTo;
 import no.nav.dokarkiv.inngaaendejournal.v1.tjoark056.to.DokumentInnholdTo;
@@ -63,7 +63,7 @@ import java.util.Optional;
 public class HentInngaaendeJournalpostServiceTest {
 
 	@Mock
-    private JoarkRepositoryBegrenset repository;
+    private JoarkRepositorySkjermet repository;
 
 	private HentInngaaendeJournalpostService service;
 

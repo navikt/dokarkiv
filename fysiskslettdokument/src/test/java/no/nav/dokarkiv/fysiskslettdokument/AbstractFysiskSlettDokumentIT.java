@@ -4,12 +4,19 @@ import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode.POL;
 import static no.nav.dokarkiv.core.security.JwtClaimsBuilderProvider.openAmClaimsBuilder;
+import static no.nav.dokarkiv.core.util.ConverterUtils.objectToJsonString;
+import static no.nav.dokarkiv.core.util.TestDataUtils.createAksjonsLoggRequest;
 
 import no.nav.dokarkiv.core.CoreConfig;
+import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService;
+import no.nav.dokarkiv.core.domain.entities.Begrensning;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.service.BegrensningService;
+import no.nav.dokarkiv.core.repository.AksjonsLoggRepository;
+import no.nav.dokarkiv.core.repository.BegrensningRepository;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkDeleteRepository;
@@ -40,6 +47,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
+import java.io.IOException;
+import java.util.NoSuchElementException;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
@@ -79,7 +88,9 @@ public abstract class AbstractFysiskSlettDokumentIT {
 	@Inject
 	protected OidcTestService oidcTestService;
 	@Inject
-	protected BegrensningService begrensningService;
+	protected BegrensningService begrensningServic;
+	@Inject
+	protected AksjonsLoggRepository aksjonsLoggRepository;
 
 	@Before
 	public void setUp() {
@@ -103,6 +114,8 @@ public abstract class AbstractFysiskSlettDokumentIT {
 	public void cleanup() {
 		joarkRepository.deleteAll();
 		dokumentinfoRepository.deleteAll();
+		begrensningRepository.deleteAll();
+		aksjonsLoggRepository.deleteAll();
 	}
 
 	protected HttpEntity createHeaders() {
@@ -119,6 +132,15 @@ public abstract class AbstractFysiskSlettDokumentIT {
 		headers.add(HttpHeaders.AUTHORIZATION, OIDC_TOKEN_PERSON_USER_TEST);
 		headers.add(NAV_CONSUMER_TOKEN, OIDC_TOKEN_SERVICE_NO_ACCESS_USER_TEST);
 		return new HttpEntity(headers);
+	}
+
+	protected HttpHeaders createHeadersWithAksjon(String aksjon) throws IOException {
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.TEXT_PLAIN);
+		headers.add(HttpHeaders.AUTHORIZATION, OIDC_TOKEN_PERSON_USER_TEST);
+		headers.add(NAV_CONSUMER_TOKEN, OIDC_TOKEN_SERVICE_USER_TEST);
+		headers.add(AksjonsLoggService.AKSJONS_LOGG_HEADER, objectToJsonString(createAksjonsLoggRequest(1L, 1L, aksjon)));
+		return headers;
 	}
 
 	protected void abacPermit() {

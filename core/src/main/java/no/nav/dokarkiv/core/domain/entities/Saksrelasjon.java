@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.core.domain.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import no.nav.dokarkiv.core.domain.AbstractPersistentVersionedDomainObjectWithKilde;
@@ -53,7 +54,8 @@ public class Saksrelasjon extends AbstractPersistentVersionedDomainObjectWithKil
 	@Enumerated(EnumType.STRING)
 	@Column(name = "k_fagsystem", nullable = false)
 	private FagsystemCode fagsystem;
-	
+
+	@JsonIgnore
 	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "journalpost_id", nullable = false)
 	private Journalpost journalpost;

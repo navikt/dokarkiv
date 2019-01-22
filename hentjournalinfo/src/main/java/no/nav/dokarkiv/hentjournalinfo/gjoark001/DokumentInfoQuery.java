@@ -16,10 +16,10 @@ import io.leangen.graphql.annotations.GraphQLContext;
 import io.leangen.graphql.annotations.GraphQLNonNull;
 import io.leangen.graphql.annotations.GraphQLQuery;
 import lombok.extern.slf4j.Slf4j;
-import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
+import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
-import no.nav.dokarkiv.core.domain.service.BegrensningService;
+import no.nav.dokarkiv.core.domain.service.SkjermingService;
 import no.nav.dokarkiv.core.metrics.GraphQLMetrics;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.security.abac.AbacSecurityService;
@@ -49,13 +49,13 @@ public class DokumentInfoQuery implements Query {
 	private final DokumentinfoRepository dokumentinfoRepository;
 
 	private final AbacSecurityService abacSecurityService;
-	private final BegrensningService begrensningService;
+	private final SkjermingService skjermingService;
 
 	@Inject
-	public DokumentInfoQuery(DokumentinfoRepository dokumentinfoRepository, AbacSecurityService abacSecurityService, BegrensningService begrensningService) {
+	public DokumentInfoQuery(DokumentinfoRepository dokumentinfoRepository, AbacSecurityService abacSecurityService, SkjermingService skjermingService) {
 		this.dokumentinfoRepository = dokumentinfoRepository;
 		this.abacSecurityService = abacSecurityService;
-		this.begrensningService = begrensningService;
+		this.skjermingService = skjermingService;
 	}
 
 	@GraphQLQuery(name = DOKUMENTINFO)
@@ -65,7 +65,7 @@ public class DokumentInfoQuery implements Query {
 			actions = @Abac.Attr(key = ACTION_ID, value = READ_ACTION))
 	public DokumentInfo dokumentInfo(@GraphQLArgument(name = "dokumentInfoId") @GraphQLNonNull Long dokumentInfoId) {
 		log.info(format("GraphQL har mottatt %s query med dokumentInfoId=%s", DOKUMENTINFO, dokumentInfoId));
-		abacSecurityService.assertAccessToDokumentIncludingBegrenset(dokumentInfoId);
+		abacSecurityService.assertAccessToDokumentIncludingSkjermet(dokumentInfoId);
 
 		//Om dokumentet eksiterer sjekkes i metoden over og kan derfor være sikker på dokumentInfo finnes i neste step
 		no.nav.dokarkiv.core.domain.entities.DokumentInfo dokumentInfo = dokumentinfoRepository.findById(dokumentInfoId).get();
@@ -99,22 +99,25 @@ public class DokumentInfoQuery implements Query {
 				.orElse(no.nav.dokarkiv.core.domain.entities.DokumentInfo.builder().build())
 				.getJournalpostRelasjoner();
 
-		List<Long> begrensetJournalpostRelasjon = journalpostDokumentInfoRelasjons.stream()
-				.filter(relasjon -> begrensningService.isJournalpostDokumentInfoRelasjonBegrenset(relasjon.getJournalpost()
+		List<Long> skjermetJournalpostRelasjon = journalpostDokumentInfoRelasjons.stream()
+				.filter(relasjon -> skjermingService.isJournalpostDokumentInfoRelasjonSkjermet(relasjon.getJournalpost()
 						.getJournalpostId(), relasjon.getDokumentInfo()
-						.getDokumentInfoId(), BegrensningTypeCode.POL) || begrensningService.isJournalpostBegrenset(relasjon
+						.getDokumentInfoId(), SkjermingTypeCode.POL) || skjermingService.isJournalpostSkjermet(relasjon
 						.getJournalpost()
-						.getJournalpostId(), BegrensningTypeCode.POL))
+						.getJournalpostId(), SkjermingTypeCode.POL))
 				.map(relasjon -> relasjon.getJournalpost().getJournalpostId())
 				.collect(Collectors.toList());
 
+		List<Long> skjermetJournalpost = journalpostDokumentInfoRelasjons.stream()
+				.filter(relasjon -> skjermingService.isJournalpostSkjermet(relasjon.getJournalpost()
+						.getJournalpostId(), SkjermingTypeCode.POL))
 		List<Long> begrensetJournalpost = journalpostDokumentInfoRelasjons.stream()
 				.filter(relasjon -> begrensningService.isJournalpostBegrenset(relasjon.getJournalpost()
 						.getJournalpostId(), BegrensningTypeCode.POL))
 				.map(relasjon -> relasjon.getJournalpost().getJournalpostId())
 				.collect(Collectors.toList());
 
-		return mapKnyttetJournalpostList(journalpostDokumentInfoRelasjons, dokumentInfo.getDokumentInfoId(), begrensetJournalpostRelasjon, begrensetJournalpost);
+		return mapKnyttetJournalpostList(journalpostDokumentInfoRelasjons, dokumentInfo.getDokumentInfoId(), skjermetJournalpostRelasjon, skjermetJournalpost);
 	}
 
 	@GraphQLQuery(name = "tilleggsopplysninger")

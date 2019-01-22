@@ -6,13 +6,13 @@ import static org.apache.commons.lang3.BooleanUtils.isFalse;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.arkiverkorrigertdokument.exception.VariantFormatNotFoundException;
 import no.nav.dokarkiv.arkiverkorrigertdokument.rjoark103.ArkiverKorrigertDokumentRespons;
-import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
+import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
-import no.nav.dokarkiv.core.domain.service.BegrensningService;
-import no.nav.dokarkiv.core.exceptions.BegrensningIkkeFunnetException;
+import no.nav.dokarkiv.core.exceptions.SkjermingIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.DokumentInfoIkkeFunnetException;
+import no.nav.dokarkiv.core.repository.BegrensningRepository;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import org.springframework.stereotype.Service;
@@ -73,7 +73,7 @@ public class AngreArkiverKorrigertDokumentService {
 							"ikke er begrenset som et %s dokument.",
 					dokumentInfo.getDokumentInfoId(),
 					VariantFormatCode.ARKIV,
-					BegrensningTypeCode.POL));
+					SkjermingTypeCode.POL));
 		}
 	}
 

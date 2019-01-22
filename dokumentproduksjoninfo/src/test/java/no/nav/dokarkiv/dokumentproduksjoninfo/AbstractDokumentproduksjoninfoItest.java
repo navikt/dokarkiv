@@ -1,8 +1,11 @@
 package no.nav.dokarkiv.dokumentproduksjoninfo;
 
 import no.nav.dokarkiv.core.CoreConfig;
+import no.nav.dokarkiv.core.domain.service.SkjermingService;
+import no.nav.dokarkiv.core.repository.BegrensningRepository;
 import no.nav.dokarkiv.core.domain.service.BegrensningService;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
+import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import no.nav.dokarkiv.core.repository.JoarkRepositoryBegrenset;
 import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
@@ -36,13 +39,13 @@ public abstract class AbstractDokumentproduksjoninfoItest {
 	@Inject
 	protected DokumentproduksjonInfoV1 dokumentproduksjonInfoProvider;
 	@Inject
-    protected JoarkRepositoryBegrenset joarkRepository;
+    protected JoarkRepositorySkjermet joarkRepository;
 	@Inject
 	protected JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository;
 	@Inject
 	protected DokumentFilRepository dokumentFilRepository;
 	@Inject
-	protected BegrensningService begrensningService;
+	protected SkjermingService skjermingService;
 
 	@Inject
 	protected TransactionTemplate transactionTemplate;

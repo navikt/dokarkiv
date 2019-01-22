@@ -22,7 +22,7 @@ import no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder;
 import no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder;
 import no.nav.dokarkiv.core.domain.builder.JournalpostBuilder;
 import no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder;
-import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
+import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
@@ -48,7 +48,6 @@ import no.nav.tjeneste.virksomhet.journal.v3.meldinger.HentDokumentURLRequest;
 import no.nav.tjeneste.virksomhet.journal.v3.meldinger.HentDokumentURLResponse;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.test.context.transaction.TestTransaction;
 
 /**
  * Integration test for HentDokumentURL in 3rd gen. Journal service.
@@ -74,7 +73,7 @@ public class HentDokumentURLIT extends AbstractJournalV3Itest {
 		SubjectHandlerUtils.setSubject(new SubjectHandlerUtils.SubjectBuilder(INTERN_BRUKER_USER_ID, IdentType.InternBruker).getSubject());
 	}
 
-
+	
 	@Test
 	public void shouldFailWhenABACDenies() throws Exception {
 		abacDeny();
@@ -99,7 +98,7 @@ public class HentDokumentURLIT extends AbstractJournalV3Itest {
 
 		journalV3Provider.hentDokumentURL(request);
 	}
-
+	
 	@Test
 	public void shouldThrowExceptionWhenJournalpostNotFound() throws Exception {
 		abacPermit();
@@ -112,7 +111,7 @@ public class HentDokumentURLIT extends AbstractJournalV3Itest {
 
 		journalV3Provider.hentDokumentURL(request);
 	}
-
+	
 	@Test
 	public void shouldThrowExceptionWhenDokumentInfoNotFoundOnJournalpost() throws Exception {
 		abacPermit();
@@ -134,7 +133,7 @@ public class HentDokumentURLIT extends AbstractJournalV3Itest {
 
 		journalV3Provider.hentDokumentURL(request);
 	}
-
+	
 	@Test
 	public void shouldThrowExceptionWhenDokumentFilNotFound() throws Exception {
 		abacPermit();
@@ -142,14 +141,14 @@ public class HentDokumentURLIT extends AbstractJournalV3Itest {
 
 		journalV3Provider.hentDokumentURL(request);
 	}
-
+	
 	@Test
 	public void shouldGetDokumentUrl() throws Exception {
 		abacPermit();
 		persistDokumentFil();
-
+		
 		HentDokumentURLResponse response = journalV3Provider.hentDokumentURL(request);
-
+			
 		assertThat(response.getDokumentURL(), containsString("docToken"));
 		assertDokumentUrlInfoIsPersisted(FIL_UUID);
 	}
@@ -178,32 +177,32 @@ public class HentDokumentURLIT extends AbstractJournalV3Itest {
 		request.setVariantformat(variantFormat);
 		return request;
 	}
-
+	
 	private void setupExpectedException(String rootCause) {
 		expectedException.expect(HentDokumentURLDokumentIkkeFunnet.class);
 		expectedException.expectMessage("Could not find document");
 		expectedException.expect(hasProperty("faultInfo",
 				hasProperty("feilaarsak", containsString(rootCause))));
 	}
-
+	
 	private void assertDokumentUrlInfoIsPersisted(String filuuid) {
 		DokumentUrlInfo dokUrlInfo = dokumentUrlInfoRepository.findByFilUuid(filuuid);
 		assertThat(dokUrlInfo.getDoctoken(), notNullValue());
 		assertThat(dokUrlInfo.getFilUuid(), is(filuuid));
 	}
-
+	
 	private void createRequestFromJournalpost(Journalpost journalpost) { // hentet fra HentDokumentTest
 		journalpostId = journalpost.getId().toString();
 		dokumentInfoId = journalpost.findAllDokumentInfos().iterator().next().getId().toString();
 		createRequest();
 	}
-
+	
 	private Journalpost buildAndPersistJournalpost(String dokumentTittel) { // hentet fra HentDokumentTest
 		return joarkRepository.save(createJournalpostBuilder(dokumentTittel)
 				.fagomrade(FagomradeCode.FOR).build());
 	}
-
-
+	
+	
 	private JournalpostBuilder createJournalpostBuilder(String dokumentTittel) { // hentet fra HentDokumentTest
 		return JournalpostBuilder
 				.getJournalpostBuilder()
@@ -237,10 +236,10 @@ public class HentDokumentURLIT extends AbstractJournalV3Itest {
 
 	private void persistDokumentFil() {
 		dokumentFilRepository.save(DokumentFilBuilder.getDokumentFilBuilder()
-				.filUuid(FIL_UUID)
-				.fil("Test".getBytes())
-				.opprettetKildeNavn("test")
-				.build());
+							.filUuid(FIL_UUID)
+							.fil("Test".getBytes())
+							.opprettetKildeNavn("test")
+							.build());
 		dokumentFilRepository.save(DokumentFilBuilder.getDokumentFilBuilder()
 				.filUuid(FIL_UUID_SLADDET)
 				.fil("Test".getBytes())

@@ -11,7 +11,7 @@ import static org.junit.Assert.assertThat;
 
 import no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder;
 import no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder;
-import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
+import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
@@ -46,7 +46,6 @@ public class HentFerdigstilteDokumenterIT extends AbstractDokumentproduksjoninfo
 
 	private Long journalpostId;
 	private Long dokumentInfoId;
-	private Journalpost journalpost;
 
 	private HentFerdigstilteDokumenterRequest request;
 

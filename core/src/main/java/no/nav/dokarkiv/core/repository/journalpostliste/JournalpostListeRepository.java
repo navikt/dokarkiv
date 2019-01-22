@@ -1,7 +1,7 @@
 package no.nav.dokarkiv.core.repository.journalpostliste;
 
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import no.nav.dokarkiv.core.domain.service.BegrensningService;
+import no.nav.dokarkiv.core.domain.service.SkjermingService;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.Projections;
@@ -21,12 +21,12 @@ import java.util.List;
 public class JournalpostListeRepository {
 
 	private final EntityManager entityManager;
-	private BegrensningService begrensningService;
+	private SkjermingService skjermingService;
 
 	@Inject
-	public JournalpostListeRepository(EntityManager entityManager, BegrensningService begrensningService) {
+	public JournalpostListeRepository(EntityManager entityManager, SkjermingService skjermingService) {
 		this.entityManager = entityManager;
-		this.begrensningService = begrensningService;
+		this.skjermingService = skjermingService;
 	}
 
 	@SuppressWarnings("unchecked")

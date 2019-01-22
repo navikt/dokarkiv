@@ -3,12 +3,12 @@ package no.nav.dokarkiv.core.dokumenturl;
 import no.nav.dokarkiv.core.domain.entities.DokumentFil;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import no.nav.dokarkiv.core.domain.service.BegrensningService;
+import no.nav.dokarkiv.core.domain.service.SkjermingService;
 import no.nav.dokarkiv.core.exceptions.InvalidFilUuidException;
 import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
 import no.nav.dokarkiv.core.logging.AuditLogger;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
-import no.nav.dokarkiv.core.repository.JoarkRepositoryBegrenset;
+import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 
 import javax.inject.Inject;
 
@@ -20,15 +20,15 @@ import javax.inject.Inject;
 public abstract class AbstractDocumentOperation {
 
 	@Inject
-	protected JoarkRepositoryBegrenset joarkRepository;
+	protected JoarkRepositorySkjermet joarkRepository;
 
 	@Inject
 	protected DokumentFilRepository dokumentFilRepository;
 
 	@Inject
-	protected BegrensningService begrensningService;
+	protected SkjermingService skjermingService;
 
-	public void setJoarkRepository(JoarkRepositoryBegrenset joarkRepository) {
+	public void setJoarkRepository(JoarkRepositorySkjermet joarkRepository) {
 		this.joarkRepository = joarkRepository;
 	}
 
@@ -36,8 +36,8 @@ public abstract class AbstractDocumentOperation {
 		this.dokumentFilRepository = dokumentFilRepository;
 	}
 
-	public void setBegrensningService(BegrensningService begrensningService) {
-		this.begrensningService= begrensningService;
+	public void setSkjermingService(SkjermingService skjermingService) {
+		this.skjermingService = skjermingService;
 	}
 
 	/**

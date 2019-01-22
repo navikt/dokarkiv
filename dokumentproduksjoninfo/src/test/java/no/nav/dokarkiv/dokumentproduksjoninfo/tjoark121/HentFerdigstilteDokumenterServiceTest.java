@@ -19,9 +19,9 @@ import no.nav.dokarkiv.core.domain.entities.DokumentFil;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import no.nav.dokarkiv.core.domain.service.BegrensningService;
+import no.nav.dokarkiv.core.domain.service.SkjermingService;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
-import no.nav.dokarkiv.core.repository.JoarkRepositoryBegrenset;
+import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import no.nav.dokarkiv.dokumentproduksjoninfo.exceptions.FilDetaljerNotFoundException;
 import org.junit.Before;
 import org.junit.Rule;
@@ -62,7 +62,7 @@ public class HentFerdigstilteDokumenterServiceTest {
 	public ExpectedException exception = ExpectedException.none();
 
 	@Mock
-	private JoarkRepositoryBegrenset joarkRepository;
+	private JoarkRepositorySkjermet joarkRepository;
 
 	@Mock
 	private DokumentFilRepository dokumentFilRepository;
@@ -71,7 +71,7 @@ public class HentFerdigstilteDokumenterServiceTest {
 	private HentFerdigstilteDokumenterValidator hentFerdigstilteRokumenterValidator;
 
 	@Mock
-	private BegrensningService begrensningService;
+	private SkjermingService skjermingService;
 
 	@InjectMocks
 	private HentFerdigstilteDokumenterService service;

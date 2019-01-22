@@ -4,7 +4,11 @@ import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static no.nav.dokarkiv.arkiverkorrigertdokument.util.TestUtils.DOKUMENTINFO_ID;
+import static no.nav.dokarkiv.arkiverkorrigertdokument.util.TestUtils.JOURNALPOST_ID;
 import static no.nav.dokarkiv.core.security.JwtClaimsBuilderProvider.openAmClaimsBuilder;
+import static no.nav.dokarkiv.core.util.ConverterUtils.objectToJsonString;
+import static no.nav.dokarkiv.core.util.TestDataUtils.createAksjonsLoggRequest;
 
 import no.nav.dokarkiv.core.CoreConfig;
 import no.nav.dokarkiv.core.domain.service.BegrensningService;
@@ -82,6 +86,9 @@ public abstract class AbstractArkiverKorrigertDokumentIT {
 	@Inject
 	protected DokumentFilRepository dokumentFilRepository;
 	@Inject
+	protected BegrensningRepository begrensningRepository;
+	@Inject
+	protected AksjonsLoggRepository aksjonsLoggRepository;
 	protected BegrensningService begrensningService;
 	@Before
 	public void setUp() {
@@ -118,6 +125,7 @@ public abstract class AbstractArkiverKorrigertDokumentIT {
 		joarkRepository.deleteAll();
 		dokumentinfoRepository.deleteAll();
 		journalpostDokumentInfoRelasjonRepository.deleteAll();
+		aksjonsLoggRepository.deleteAll();
 	}
 
 	protected HttpEntity createNoAccesHeaders() {
@@ -141,8 +149,10 @@ public abstract class AbstractArkiverKorrigertDokumentIT {
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		headers.add(HttpHeaders.AUTHORIZATION, OIDC_TOKEN_PERSON_USER_TEST);
 		headers.add(NAV_CONSUMER_TOKEN, OIDC_TOKEN_SERVICE_USER_TEST);
-		return new HttpEntity(headers);
+		headers.add(AksjonsLoggService.AKSJONS_LOGG_HEADER, objectToJsonString(createAksjonsLoggRequest(JOURNALPOST_ID, DOKUMENTINFO_ID, aksjon)));
+		return headers;
 	}
+
 
 	protected HttpHeaders createHeadersNotSrvJoarkadmin() {
 		HttpHeaders headers = new HttpHeaders();

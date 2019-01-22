@@ -15,7 +15,7 @@ import no.nav.dokarkiv.core.exceptions.ApplicationException;
 import no.nav.dokarkiv.core.repository.BidragMellomlagringRepository;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
-import no.nav.dokarkiv.core.repository.JoarkRepositoryBegrenset;
+import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.dokarkiv.core.stelvio.SimpleRequestContext;
 import no.nav.tjeneste.virksomhet.behandlejournal.v3.binding.BehandleJournalV3;
@@ -58,7 +58,7 @@ public abstract class AbstractBehandleJournalV3Itest {
 	@Inject
 	protected BehandleJournalV3 behandleJournalV3Provider;
 	@Inject
-    protected JoarkRepositoryBegrenset joarkRepository;
+    protected JoarkRepositorySkjermet joarkRepository;
 	@Inject
     protected DokumentinfoRepository dokumentinfoRepository;
 	@Inject

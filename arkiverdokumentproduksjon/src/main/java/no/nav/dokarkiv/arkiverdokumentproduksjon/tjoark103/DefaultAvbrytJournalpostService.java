@@ -3,7 +3,7 @@ package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark103;
 import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.UgyldigJournalStatusOvergangException;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
-import no.nav.dokarkiv.core.repository.JoarkRepositoryBegrenset;
+import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
@@ -18,7 +18,7 @@ import javax.inject.Inject;
 public class DefaultAvbrytJournalpostService implements AvbrytJournalpostService {
 
 	@Inject
-	private JoarkRepositoryBegrenset joarkRepository;
+	private JoarkRepositorySkjermet joarkRepository;
 
 	@Inject
 	private AvbrytJournalpostUpdater avbrytJournalpostUpdater;

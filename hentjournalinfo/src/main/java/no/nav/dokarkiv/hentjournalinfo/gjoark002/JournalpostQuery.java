@@ -15,10 +15,10 @@ import io.leangen.graphql.annotations.GraphQLContext;
 import io.leangen.graphql.annotations.GraphQLNonNull;
 import io.leangen.graphql.annotations.GraphQLQuery;
 import lombok.extern.slf4j.Slf4j;
-import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
+import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.entities.Bruker;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
-import no.nav.dokarkiv.core.domain.service.BegrensningService;
+import no.nav.dokarkiv.core.domain.service.SkjermingService;
 import no.nav.dokarkiv.core.metrics.GraphQLMetrics;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.core.security.abac.AbacSecurityService;
@@ -43,13 +43,13 @@ public class JournalpostQuery implements Query {
 
     private final JoarkRepository joarkRepository;
     private final AbacSecurityService abacSecurityService;
-    private final BegrensningService begrensningService;
+    private final SkjermingService skjermingService;
 
     @Inject
-    public JournalpostQuery(JoarkRepository joarkRepository, AbacSecurityService abacSecurityService, BegrensningService begrensningService) {
+    public JournalpostQuery(JoarkRepository joarkRepository, AbacSecurityService abacSecurityService, SkjermingService skjermingService) {
         this.joarkRepository = joarkRepository;
         this.abacSecurityService = abacSecurityService;
-        this.begrensningService = begrensningService;
+        this.skjermingService = skjermingService;
     }
 
     @GraphQLQuery(name = JOURNALPOST)
@@ -84,7 +84,7 @@ public class JournalpostQuery implements Query {
                 .getJournalpostDokumentInfoRelasjoner();
 
         List<Long> begrensetDokumentInfoRelasjon = journalpostDokumentInfoRelasjons.stream()
-                .filter(relasjon -> begrensningService.isJournalpostDokumentInfoRelasjonOrJournalpostBegrenset(relasjon.getJournalpost()
+                .filter(relasjon -> skjermingService.isJournalpostDokumentInfoRelasjonOrJournalpostBegrenset(relasjon.getJournalpost()
                         .getJournalpostId(), relasjon.getDokumentInfo()
                         .getDokumentInfoId(), BegrensningTypeCode.POL))
                 .map(relasjon -> relasjon.getJournalpost().getJournalpostId())

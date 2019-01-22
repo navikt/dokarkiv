@@ -21,7 +21,7 @@ import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeInngaaendeException;
 import no.nav.dokarkiv.core.exceptions.UgyldigInputException;
-import no.nav.dokarkiv.core.repository.JoarkRepositoryBegrenset;
+import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import no.nav.dokarkiv.inngaaendejournal.v1.common.JournalpostManglerTo;
 import no.nav.dokarkiv.inngaaendejournal.v1.exceptions.JournalpostKanIkkeBehandlesException;
 import no.nav.dokarkiv.inngaaendejournal.v1.tjoark056.JournalpostManglerToMapper;
@@ -42,7 +42,7 @@ import java.util.Optional;
 public class UtledJournalfoeringsbehovServiceTest {
 
 	@Mock
-    private JoarkRepositoryBegrenset repository;
+    private JoarkRepositorySkjermet repository;
 
 	private UtledJournalfoeringsbehovService utledJournalfoeringsbehovService;
 

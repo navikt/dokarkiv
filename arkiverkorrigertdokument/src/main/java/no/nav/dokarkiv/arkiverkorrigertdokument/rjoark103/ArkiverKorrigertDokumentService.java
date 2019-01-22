@@ -4,7 +4,7 @@ package no.nav.dokarkiv.arkiverkorrigertdokument.rjoark103;
 import static org.apache.commons.lang3.BooleanUtils.isFalse;
 
 import no.nav.dokarkiv.core.MDCConstants;
-import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
+import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
@@ -37,14 +37,14 @@ public class ArkiverKorrigertDokumentService {
 		this.begrensningService = begrensningService;
 	}
 
-	public ArkiverKorrigertDokumentRespons arkiverKorrigertDokument(ArkiverKorrigertDokumentRequest request) {
-		DokumentInfo dokumentInfo = dokumentinfoRepository.findByDokumentInfoId(request.getDokumentInfoId())
+	public ArkiverKorrigertDokumentRespons arkiverKorrigertDokument(Long dokumentInfoId, String fil) {
+		DokumentInfo dokumentInfo = dokumentinfoRepository.findByDokumentInfoId(dokumentInfoId)
 				.orElseThrow(() -> new DokumentInfoIkkeFunnetException(String.format("Kan ikke finne dokumentInfo med dokumentInfoId=%s",
-						request.getDokumentInfoId())));
+						dokumentInfoId)));
 
 		kanskjeSlettEksisterendeSladdetFilOgFilDetaljer(dokumentInfo);
 
-		byte[] decodedFil = base64ToByte(request.getFil());
+		byte[] decodedFil = base64ToByte(fil);
 		lagreKorrigertDokumentSomSladdetVariantFormat(dokumentInfo, decodedFil);
 
 		kanskjeOpprettBegrensingSkjermet(dokumentInfo);

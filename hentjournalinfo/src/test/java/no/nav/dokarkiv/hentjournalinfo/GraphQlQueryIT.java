@@ -24,7 +24,7 @@ import static org.junit.Assert.assertThat;
 import com.amazonaws.util.Base64;
 import no.nav.dokarkiv.core.CoreConfig;
 import no.nav.dokarkiv.core.domain.builder.DokumentFilBuilder;
-import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
+import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
@@ -313,6 +313,7 @@ public class GraphQlQueryIT {
 	public void shouldReturnAuthorizationExceptionWhenAbacDenyForDokumentInfoQuery() throws Exception {
 		abacDeny();
 		Journalpost journalpost = TestDataUtils.createJournalpostBuilder(FIL_UUID).build();
+		journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().setSlettet(true);
 		joarkRepository.save(journalpost);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();

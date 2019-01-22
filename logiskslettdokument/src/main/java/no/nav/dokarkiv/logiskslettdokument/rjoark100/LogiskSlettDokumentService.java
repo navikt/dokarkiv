@@ -2,10 +2,10 @@ package no.nav.dokarkiv.logiskslettdokument.rjoark100;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.MDCConstants;
-import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
+import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
-import no.nav.dokarkiv.core.domain.service.BegrensningService;
-import no.nav.dokarkiv.core.exceptions.DokumentAlleredeUtilgjengeliggjortException;
+import no.nav.dokarkiv.core.domain.service.SkjermingService;
+import no.nav.dokarkiv.core.exceptions.DokumentAlleredeSkjermetException;
 import no.nav.dokarkiv.core.exceptions.JournalpostDokumentInfoRelasjonIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.UgyldigTilknyttetJournalpostSomException;
 import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
@@ -19,16 +19,18 @@ import javax.inject.Inject;
 public class LogiskSlettDokumentService {
 
 	private final JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository;
-	private final BegrensningService begrensningService;
+	private final SkjermingService skjermingService;
 
 	@Inject
 	public LogiskSlettDokumentService(JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository,
-									  BegrensningService begrensningService) {
+									  SkjermingService skjermingService) {
 		this.journalpostDokumentInfoRelasjonRepository = journalpostDokumentInfoRelasjonRepository;
-		this.begrensningService = begrensningService;
+		this.skjermingService = skjermingService;
 	}
 
 	public LogiskSlettDokumentResponse logiskSletteDokument(LogiskSlettDokumentRequestTo requestTo) {
+		sjekkAtDokumentIkkeErPOL(requestTo.getJournalpostId(), requestTo.getDokumentInfoId());
+
 		JournalpostDokumentInfoRelasjon relasjonSomSkalSlettesLogisk =
 				journalpostDokumentInfoRelasjonRepository.findByJournalpostJournalpostIdAndDokumentInfoDokumentInfoId(
 						requestTo.getJournalpostId(), requestTo.getDokumentInfoId()).orElse(null);

@@ -1,12 +1,13 @@
 package no.nav.dokarkiv.logiskslettdokument.rjoark101;
 
+import static org.apache.commons.lang3.BooleanUtils.isFalse;
+
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.MDCConstants;
-import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
-import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
-import no.nav.dokarkiv.core.domain.service.BegrensningService;
-import no.nav.dokarkiv.core.exceptions.BegrensningIkkeFunnetException;
+import no.nav.dokarkiv.core.domain.service.SkjermingService;
+import no.nav.dokarkiv.core.exceptions.SkjermingIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.JournalpostDokumentInfoRelasjonIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.UgyldigTilknyttetJournalpostSomException;
 import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
@@ -23,13 +24,13 @@ import javax.inject.Inject;
 public class AngreLogiskSlettDokumentService {
 
 	private final JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository;
-	private final BegrensningService begrensningService;
+	private final SkjermingService skjermingService;
 
 	@Inject
 	public AngreLogiskSlettDokumentService(JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository,
-										   BegrensningService begrensningService) {
+										   SkjermingService skjermingService) {
 		this.journalpostDokumentInfoRelasjonRepository = journalpostDokumentInfoRelasjonRepository;
-		this.begrensningService = begrensningService;
+		this.skjermingService = skjermingService;
 	}
 
 	public LogiskSlettDokumentResponse angreLogiskSlettDokument(LogiskSlettDokumentRequestTo requestTo) {

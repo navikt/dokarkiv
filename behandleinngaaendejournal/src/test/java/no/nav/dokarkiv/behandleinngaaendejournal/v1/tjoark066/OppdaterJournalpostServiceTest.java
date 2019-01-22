@@ -31,7 +31,7 @@ import no.nav.dokarkiv.core.exceptions.JournalpostIkkeMidlertidigException;
 import no.nav.dokarkiv.core.exceptions.UgyldigInputException;
 import no.nav.dokarkiv.core.jaxws.SubjectHandlerUtils;
 import no.nav.dokarkiv.core.jaxws.ThreadLocalSubjectHandler;
-import no.nav.dokarkiv.core.repository.JoarkRepositoryBegrenset;
+import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import no.nav.dokarkiv.core.security.ldap.NavLdapService;
 import no.nav.dokarkiv.core.security.ldap.NavUser;
 import org.junit.Assert;
@@ -70,7 +70,7 @@ public class OppdaterJournalpostServiceTest {
 	@Mock
 	private NavLdapService navLdapService;
 	@Mock
-    private JoarkRepositoryBegrenset repository;
+    private JoarkRepositorySkjermet repository;
 	@InjectMocks
 	private OppdaterJournalpostService service;
 	

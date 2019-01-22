@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.sql.DataSource;
@@ -31,14 +32,14 @@ import java.util.Properties;
 		JournalpostDokumentInfoRelasjonRepository.class,
 		BidragMellomlagringRepository.class,
 		BidragMellomlagringDokumentRepository.class,
-		JoarkDeleteRepository.class
+		JoarkDeleteRepository.class, AksjonsLoggRepository.class
 })
 @EnableTransactionManagement
 @EnableConfigurationProperties(DataSourceProperties.class)
 @Configuration
 @Import(value = {
-		JoarkRepositoryBegrenset.class,
-		DokumentUrlInfoRepositoryBegrenset.class
+		JoarkRepositorySkjermet.class,
+		DokumentUrlInfoRepositorySkjermet.class
 })
 public class RepositoryConfig {
 	@Bean
@@ -62,6 +63,12 @@ public class RepositoryConfig {
 		poolDataSource.setMaxConnectionReuseCount(100);
 		poolDataSource.setConnectionProperties(connProperties);
 		return poolDataSource;
+	}
+
+	@Bean
+	@Primary
+	NamedParameterJdbcTemplate namedParameterJdbcTemplate(final DataSource dataSource) {
+		return new NamedParameterJdbcTemplate(dataSource);
 	}
 }
 

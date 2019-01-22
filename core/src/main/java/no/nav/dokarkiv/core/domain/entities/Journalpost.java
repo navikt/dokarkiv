@@ -11,7 +11,7 @@ import static org.apache.commons.lang3.BooleanUtils.isFalse;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import no.nav.dokarkiv.core.domain.AbstractPersistentVersionedDomainObjectWithKilde;
-import no.nav.dokarkiv.core.domain.codes.BegrensningTypeCode;
+import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.Behandlingstema;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
@@ -201,10 +201,9 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	@Column(name = "k_behandlingstema")
 	private Behandlingstema behandlingstema;
 
-	@Column(name = "begrensning")
+	@Column(name = "skjerming_type")
 	@Enumerated(EnumType.STRING)
-	private BegrensningTypeCode begrensning;
-
+	private SkjermingTypeCode skjermingType;
 
 	@OneToMany
 	@JoinColumn(name = "journalpost_id", nullable = false)
@@ -1429,14 +1428,6 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 		this.behandlingstema = behandlingstema;
 	}
 
-	public BegrensningTypeCode getBegrensning() {
-		return begrensning;
-	}
-
-	public void setBegrensning(BegrensningTypeCode begrensning) {
-		throw new UnsupportedOperationException("Begrensning skal bare settes gjennom BegrensningService");
-	}
-
 	/**
 	 * Add a JournalpostDokumentInfoRelasjon to relasjon Set.
 	 *
@@ -1466,7 +1457,9 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	 */
 	public Set<JournalpostDokumentInfoRelasjon> getJournalpostDokumentInfoRelasjoner() {
 		return Collections.unmodifiableSet(journalpostDokumentInfoRelasjoner.stream()
-				.filter(relasjon -> relasjon.getBegrensning() == null)
+				.filter(relasjon -> relasjon.getDokumentInfo() == null || relasjon.getDokumentInfo()
+						.getDokumentInfoId() == null || isFalse(getBegrensetRelasjonerDokumentInfoId().stream()
+						.anyMatch(dokumentInfoId -> dokumentInfoId.equals(relasjon.getDokumentInfo().getDokumentInfoId()))))
 				.collect(Collectors.toSet()));
 	}
 
