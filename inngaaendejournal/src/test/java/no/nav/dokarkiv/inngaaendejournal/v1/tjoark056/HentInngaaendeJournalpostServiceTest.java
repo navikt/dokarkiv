@@ -30,8 +30,10 @@ import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
+import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
+import no.nav.dokarkiv.core.domain.service.SkjermingService;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeInngaaendeException;
 import no.nav.dokarkiv.core.exceptions.UgyldigInputException;
@@ -64,6 +66,8 @@ public class HentInngaaendeJournalpostServiceTest {
 
 	@Mock
     private JoarkRepositorySkjermet repository;
+	@Mock
+	private SkjermingService skjermingService;
 
 	private HentInngaaendeJournalpostService service;
 
@@ -72,7 +76,7 @@ public class HentInngaaendeJournalpostServiceTest {
 
 	@Before
 	public void setUp() throws Exception {
-		service = new HentInngaaendeJournalpostService(repository, new InngaaendeJournalpostToMapper());
+		service = new HentInngaaendeJournalpostService(repository, new InngaaendeJournalpostToMapper(skjermingService));
 	}
 
 	@Test
@@ -241,6 +245,33 @@ public class HentInngaaendeJournalpostServiceTest {
 		thrown.expect(JournalpostIkkeInngaaendeException.class);
 
 		service.hentJournalpost("1");
+	}
+
+	@Test
+	public void should_map_journalpost_to_dto_kassert() throws Exception {
+		when(repository.findById(any(Long.class))).thenReturn(Optional.of(buildJournalpost().build()));
+		when(skjermingService.isDokumentInfoKassert(any(DokumentInfo.class))).thenReturn(true);
+
+		InngaaendeJournalpostTo to = service.hentJournalpost("1");
+
+		assertThat(to.getAvsenderId(), is(InngaaendeJournalDataProvider.AVSENDER_MOTTAKERID));
+		assertThat(to.getForsendelseMottatt(), is(InngaaendeJournalDataProvider.NOW));
+		assertThat(to.getMottakskanal(), is(MottaksKanalCode.NAV_NO));
+		assertThat(to.getTema(), is(FagomradeCode.PEN));
+		assertThat(to.getKanalReferanseId(), is(InngaaendeJournalDataProvider.KANAL_REFERANSE_ID));
+		assertThat(to.getJournaltilstand(), is(JournaltilstandTo.ENDELIG));
+		assertThat(to.getArkivSak().getArkivSakId(), is(InngaaendeJournalDataProvider.ARKIV_SAKID));
+		assertThat(to.getArkivSak().getFagsystem(), is(FagsystemCode.PEN));
+		assertThat(findAktoerByType(to.getBrukere(), BrukerTypeCode.PERSON).getAktoerId(), is(InngaaendeJournalDataProvider.FNR));
+		assertThat(findAktoerByType(to.getBrukere(), BrukerTypeCode.ORGANISASJON).getAktoerId(), is(InngaaendeJournalDataProvider.ORGNR));
+		assertThat(to.getHoveddokument().getDokumentkategori(), is(DokumentKategoriCode.SOK));
+		assertThat(to.getHoveddokument().getDokumenttypeId(), is(InngaaendeJournalDataProvider.DOKUMENTTYPE_ID));
+		assertThat(to.getHoveddokument().getDokumentId(), is(InngaaendeJournalDataProvider.DOKUMENT_INFO_ID));
+		assertThat(to.getHoveddokument().getDokumenttilstand(), is(DokumenttilstandTo.FERDIGSTILT));
+		assertThat(to.getHoveddokument().getDokumentInnhold().size(), is(0));
+		assertThat(to.getVedlegg().get(0).getDokumenttilstand(), is(DokumenttilstandTo.FERDIGSTILT));
+		assertThat(to.getVedlegg().get(0).getDokumenttypeId(), is(InngaaendeJournalDataProvider.DOKUMENTTYPE_ID_VEDLEGG));
+		assertThat(to.getVedlegg().get(0).getDokumentInnhold().size(), is(0));
 	}
 
 	private AktoerTo findAktoerByType(final List<AktoerTo> brukere, final BrukerTypeCode brukerType) {

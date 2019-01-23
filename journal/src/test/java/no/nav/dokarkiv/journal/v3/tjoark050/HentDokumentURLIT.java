@@ -162,12 +162,25 @@ public class HentDokumentURLIT extends AbstractJournalV3Itest {
 		skjermingService.setVariantSkjermet(journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo(), VariantFormatCode.ARKIV, SkjermingTypeCode.POL);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
-		TestTransaction.start();
 
 		HentDokumentURLResponse response = journalV3Provider.hentDokumentURL(request);
 
 		assertThat(response.getDokumentURL(), containsString("docToken"));
 		assertDokumentUrlInfoIsPersisted(FIL_UUID_SLADDET);
+	}
+
+	@Test
+	public void shouldThrowExceptionWhenKassert() throws Exception {
+		expectedException.expect(HentDokumentURLDokumentIkkeFunnet.class);
+		expectedException.expectMessage("Could not find document");
+		abacPermit();
+		persistDokumentFil();
+
+		skjermingService.setDokumentKassert(journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo(), SkjermingTypeCode.POL);
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
+
+		journalV3Provider.hentDokumentURL(request);
 	}
 
 	private HentDokumentURLRequest createRequest() {

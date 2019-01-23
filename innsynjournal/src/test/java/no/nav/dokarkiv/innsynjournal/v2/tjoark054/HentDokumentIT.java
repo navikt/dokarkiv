@@ -252,13 +252,26 @@ public class HentDokumentIT extends AbstractInnsynJournalV2Itest {
 		skjermingService.setVariantSkjermet(journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo(), VariantFormatCode.ARKIV, SkjermingTypeCode.POL);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
-		TestTransaction.start();
 
 		HentDokumentResponse response = innsynJournalV2Provider.hentDokument(createRequestFromJournalpost(journalpost));
 
 		assertThat(response.getDokument(), is(DokumentFilTestDataProvider.FIL_CONTENT_SLADDET));
 	}
 
+	@Test
+	public void shouldThrowDokumentIkkeFinnetWhenKassert() throws Exception {
+		expectedException.expect(HentDokumentDokumentIkkeFunnet.class);
+		Journalpost journalpost = joarkRepository.save(buildDokInfoStructure(
+				createDokumentInfo()
+						.dokumentstatus(DokumentStatusCode.FERDIGSTILT))
+				.journalpostType(JournalpostTypeCode.U).build());
+
+		skjermingService.setDokumentKassert(journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo(), SkjermingTypeCode.POL);
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
+
+		innsynJournalV2Provider.hentDokument(createRequestFromJournalpost(journalpost));
+	}
 	private void expectAccessDenied() {
 		expectedException.expect(isA(HentDokumentSikkerhetsbegrensning.class));
 		expectedException.expectMessage("Access denied");

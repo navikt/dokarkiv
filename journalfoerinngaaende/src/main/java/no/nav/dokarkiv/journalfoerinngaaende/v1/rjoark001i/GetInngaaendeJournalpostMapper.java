@@ -1,5 +1,8 @@
 package no.nav.dokarkiv.journalfoerinngaaende.v1.rjoark001i;
 
+import static no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode.POL;
+import static org.apache.cxf.common.util.PropertyUtils.isFalse;
+
 import no.nav.dok.tjenester.journalfoerinngaaende.ArkivSakNoArkivsakSystemEnum;
 import no.nav.dok.tjenester.journalfoerinngaaende.Avsender;
 import no.nav.dok.tjenester.journalfoerinngaaende.Bruker;
@@ -10,16 +13,20 @@ import no.nav.dok.tjenester.journalfoerinngaaende.Variant;
 import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
+import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
 import no.nav.dokarkiv.core.domain.entities.SkannetInnhold;
+import no.nav.dokarkiv.core.domain.service.SkjermingService;
 import no.nav.dokarkiv.core.exceptions.UgyldigJournalStatusException;
 import org.springframework.stereotype.Component;
 
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
@@ -30,6 +37,9 @@ import java.util.stream.Collectors;
  */
 @Component
 public class GetInngaaendeJournalpostMapper {
+
+	@Inject
+	SkjermingService skjermingService;
 
 	private static final List<JournalStatusCode> MIDLERTIDIG_STATUS = Arrays.asList(JournalStatusCode.M, JournalStatusCode.MO, JournalStatusCode.UB, JournalStatusCode.OD);
 
@@ -122,12 +132,17 @@ public class GetInngaaendeJournalpostMapper {
 				.withTittel(relasjon.getDokumentInfo().getTittel())
 				.withDokumentKategori(relasjon.getDokumentInfo().getKategori() == null ? null : relasjon.getDokumentInfo()
 						.getKategori().name())
-				.withVariant(mapVarianter(relasjon.getDokumentInfo().getFildetaljerListe()))
+				.withVariant(mapVarianter(relasjon.getDokumentInfo(), relasjon.getDokumentInfo().getFildetaljerListe()))
 				.withLogiskVedleggListe(mapLogiskeVedlegg(relasjon.getDokumentInfo().getSkannetInnholdListe()));
 	}
 
-	private List<Variant> mapVarianter(Set<FilDetaljer> fildetaljer) {
-		return fildetaljer.stream().map(filDetaljer -> new Variant()
+	private List<Variant> mapVarianter(DokumentInfo dokumentInfo, Set<FilDetaljer> fildetaljer) {
+		if (skjermingService.isDokumentInfoKassert(dokumentInfo)) {
+			return Collections.EMPTY_LIST;
+		}
+		return fildetaljer.stream()
+				.filter(filDetaljer -> isFalse(POL.equals(filDetaljer.getSkjermingType())))
+				.map(filDetaljer -> new Variant()
 				.withArkivFilType(filDetaljer.getFiltype().name())
 				.withVariantFormat(filDetaljer.getVariantFormat().name()))
 				.collect(Collectors.toList());

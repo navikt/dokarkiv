@@ -75,12 +75,12 @@ public class DefaultHentDokumentUrl extends AbstractDocumentOperation implements
 		hentDokumentUrlRequest.validate();
 	}
 
-	private String generateUrl(String baseUrl, Journalpost journalpost, FilDetaljer fildetaljer, Long timeToLiveMinutes)
+	private String generateUrl(String baseUrl, Journalpost journalpost, FilDetaljer pfildetaljer, Long timeToLiveMinutes)
 			throws InvalidFilUuidException {
 
-		fildetaljer = skjermingService.getVariantSkjermet(fildetaljer.getDokumentInfo(), fildetaljer.getVariantFormat());
+		FilDetaljer fildetaljer = skjermingService.getVariantSkjermet(pfildetaljer.getDokumentInfo(), pfildetaljer.getVariantFormat());
 		if (fildetaljer == null) {
-			throw new InvalidFilUuidException(String.format("Finner ikke FilDetaljer tilhørende dokumentInfoId: %s og variant %s", fildetaljer.getDokumentInfo().getDokumentInfoId(), fildetaljer.getVariantFormat().name()), null);
+			throw new InvalidFilUuidException(String.format("Finner ikke FilDetaljer tilhørende dokumentInfoId: %s og variant %s", pfildetaljer.getDokumentInfo().getDokumentInfoId(), pfildetaljer.getVariantFormat().name()), null);
 		}
 		String filUuid = fildetaljer.getFilUuid();
 		if (fildetaljer.getOnDemandId() != null && fildetaljer.getOnDemandInstans() != null) {

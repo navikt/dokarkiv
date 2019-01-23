@@ -217,13 +217,30 @@ public class HentDokumentIT extends AbstractJournalV3Itest {
 		skjermingService.setVariantSkjermet(journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo(), VariantFormatCode.ARKIV, SkjermingTypeCode.POL);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
-		TestTransaction.start();
 
 		HentDokumentResponse response = journalV3Provider.hentDokument(request);
 
 		assertThat(response.getDokument(), is(FIL_CONTENT_SLADDET));
 	}
 
+	@Test
+	public void shouldThrowNotFoundWhenDokumentKassert() throws Exception {
+		expectedException.expect(HentDokumentDokumentIkkeFunnet.class);
+		expectedException.expectMessage("Could not find document");
+
+		abacPermit();
+
+		Journalpost journalpost = buildAndPersistJournalpost("Dokumenttittel");
+		HentDokumentRequest request = createRequest(journalpost);
+		persistDokumentFil();
+		persistDokumentFilSladdet();
+
+		skjermingService.setDokumentKassert(journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo(), SkjermingTypeCode.POL);
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
+
+		journalV3Provider.hentDokument(request);
+	}
 
 	@Test
 	@Transactional(propagation = Propagation.NOT_SUPPORTED)

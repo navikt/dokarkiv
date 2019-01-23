@@ -34,6 +34,7 @@ import no.nav.dokarkiv.core.domain.entities.DokumentUrlInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.service.SkjermingService;
+import no.nav.dokarkiv.core.exceptions.DokumentIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
 import no.nav.dokarkiv.core.exceptions.InvalidFilUuidException;
 import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
@@ -158,7 +159,39 @@ public class DefaultHentDokumentUrlTest {
 		
 		verify(dokumentUrlInfoRepositoryMock).save(isA(DokumentUrlInfo.class));
 	}
-	
+
+	@Test
+	public void shouldGetSkjermetDokumentUrlForDokumentInDB() throws Exception {
+		Journalpost journalpost = createJournalPost(null, null, FIL_UUID, FIL_UUID_SLADDET);
+		when(skjermingService.getVariantSkjermet(any(DokumentInfo.class), eq(VariantFormatCode.ARKIV))).thenReturn(FilDetaljer.builder().filUuid(FIL_UUID_SLADDET).filtype(FilTypeCode.PDF).build());
+		when(joarkRepositoryMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(journalpost));
+
+		when(dokumentFilRepositoryMock.findByFilUuid(FIL_UUID_SLADDET)).thenReturn(new DokumentFil());
+
+		HentDokumentUrlResponse response = hentDokumentUrl.hentDokumentUrl(request);
+		String servletUrl = response.getDokumentUrl();
+
+		assertUrl(servletUrl);
+
+		verify(dokumentUrlInfoRepositoryMock).save(isA(DokumentUrlInfo.class));
+	}
+
+	@Test
+	public void shouldThrowDokumentNotFoundForKassertDokument() throws Exception {
+
+		Journalpost journalpost = createJournalPost(null, null, FIL_UUID, FIL_UUID_SLADDET);
+		when(skjermingService.getVariantSkjermet(any(DokumentInfo.class), eq(VariantFormatCode.ARKIV))).thenReturn(null);
+		when(joarkRepositoryMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(journalpost));
+
+		when(dokumentFilRepositoryMock.findByFilUuid(FIL_UUID)).thenReturn(new DokumentFil());
+
+		try {
+			hentDokumentUrl.hentDokumentUrl(request);
+		} catch (InvalidFilUuidException e) {
+			assertThat(e.getMessage(), containsString("Finner ikke FilDetaljer tilhørende dokumentInfoId"));
+		}
+	}
+
 	@Test
 	public void shouldCreateDokumentUrlInfoWithCustomTimeToLive() throws Exception {
 		long timeToLive = 60;
