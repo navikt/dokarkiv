@@ -49,7 +49,7 @@ public class FysiskSlettDokumentRestController {
 
 	@Transactional
 	@ResponseBody
-	@DeleteMapping("/{journalpostId}/{dokumentInfoId}/{begrensningType}")
+	@DeleteMapping("/{journalpostId}/{dokumentInfoId}")
 	//TODO: MÅ endre fra value = UPDATE_ACTION til DELETE_ACTION. Men joarkadmin har ikke tilgang.
 	@Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_DOKUMENT)},
 			actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION))
