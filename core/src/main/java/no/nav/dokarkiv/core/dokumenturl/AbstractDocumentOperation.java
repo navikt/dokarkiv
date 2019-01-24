@@ -50,7 +50,7 @@ public abstract class AbstractDocumentOperation {
 	 */
 	protected FilDetaljer getFilDetaljer(String filUuid, Journalpost journalpost) throws InvalidFilUuidException {
 		FilDetaljer filDetaljer = journalpost.findFilDetaljerByFilUuid(filUuid);
-		if (filDetaljer == null) {
+		if (filDetaljer == null || filDetaljer.getSkjermingType() != null) {
 			throw new InvalidFilUuidException("Could not find FilDetaljer with filUuid " + filUuid + " for Journalpost "
 					+ journalpost.getId(), filUuid);
 		}

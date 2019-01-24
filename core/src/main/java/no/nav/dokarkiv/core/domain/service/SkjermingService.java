@@ -77,7 +77,7 @@ public class SkjermingService {
 		if (!consumer.equals("srvjoarkadmin") && filDetaljer != null) {
 			if (SkjermingTypeCode.POL.equals(filDetaljer.getSkjermingType())) {
 				filDetaljer = dokumentInfo.findFilDetaljerByVariantFormat(VariantFormatCode.SLADDET);
-				if (SkjermingTypeCode.POL.equals(filDetaljer.getSkjermingType())) {
+				if (filDetaljer != null && SkjermingTypeCode.POL.equals(filDetaljer.getSkjermingType())) {
 					filDetaljer = null;
 				}
 			}
