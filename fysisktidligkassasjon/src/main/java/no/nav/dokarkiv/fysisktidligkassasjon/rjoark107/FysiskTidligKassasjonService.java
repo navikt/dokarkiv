@@ -56,10 +56,12 @@ public class FysiskTidligKassasjonService {
 
 	private void fysiskTidligKassasjonAvEtDokument(Long dokumentInfoId) {
 		DokumentInfo dokumentInfo = dokumentInfoRepository.findByDokumentInfoId(dokumentInfoId).orElse(null);
-		for (FilDetaljer filDetaljer:dokumentInfo.getFildetaljerListe()) {
-			skjermingService.setFildetaljerBegrensning(filDetaljer, SkjermingTypeCode.POL);
+		if (dokumentInfo != null) {
+			for (FilDetaljer filDetaljer : dokumentInfo.getFildetaljerListe()) {
+				skjermingService.setFildetaljerBegrensning(filDetaljer, SkjermingTypeCode.POL);
+			}
+			slettFilOgBeholdMetadata(dokumentInfoId);
 		}
-		slettFilOgBeholdMetadata(dokumentInfoId);
 	}
 
 	private void slettFilOgBeholdMetadata(Long dokumentInfoId) {

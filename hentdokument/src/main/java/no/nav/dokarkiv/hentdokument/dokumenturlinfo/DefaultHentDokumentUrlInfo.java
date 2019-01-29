@@ -63,7 +63,6 @@ public class DefaultHentDokumentUrlInfo extends AbstractDocumentOperation implem
 			throw new UrlNotValidException(dokumentUrlInfo);
 		}
 	}
-
 	private long minutesToMillis(long timeToLiveMinutes) {
 		return TimeUnit.MINUTES.toMillis(timeToLiveMinutes);
 	}

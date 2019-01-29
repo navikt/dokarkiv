@@ -29,7 +29,6 @@ public class JoarkRepositorySkjermet {
 
 	public Optional<Journalpost> findById(Long id) {
 		return skjermingService.isJournalpostSkjermet(id, SkjermingTypeCode.POL) ? Optional.empty() :
-//				joarkRepository.findById(id).map(skjermingService::addBegrensetDokumentInfoIdsToJournalpost);
 		joarkRepository.findById(id);
 	}
 
@@ -52,7 +51,6 @@ public class JoarkRepositorySkjermet {
 	public Iterable<Journalpost> findAll() {
 		return StreamSupport.stream(joarkRepository.findAll().spliterator(), true)
 				.filter(journalpost -> isFalse(SkjermingTypeCode.POL.equals(journalpost.getSkjermingType())))
-	//			.map(skjermingService::addBegrensetDokumentInfoIdsToJournalpost)
 				.collect(Collectors.toList());
 	}
 
@@ -107,7 +105,6 @@ public class JoarkRepositorySkjermet {
 		List<Journalpost> journalpostList = joarkRepository.findJournalpostByKanalReferanseIdAndMottakskanal(kanalReferanseId, mottaksKanalCode);
 		return journalpostList.stream()
 				.filter(journalpost -> isFalse(skjermingService.isJournalpostSkjermet(journalpost.getJournalpostId(), SkjermingTypeCode.POL)))
-//				.map(skjermingService::addBegrensetDokumentInfoIdsToJournalpost)
 				.collect(Collectors.toList());
 	}
 }

@@ -45,7 +45,8 @@ public class SkjermingService {
 		Journalpost journalpost = joarkRepository.findById(journalpostId).orElse(null);
 		if (journalpost != null) {
 			return skjermingTypeCode.equals(journalpost.getSkjermingType());
-		} else return false;
+		}
+		return false;
 	}
 
 	public boolean isJournalpostDokumentInfoRelasjonOrJournalpostBegrenset(Long journalpostId, Long dokumentInfoId, SkjermingTypeCode skjermingTypeCode) {
@@ -57,17 +58,16 @@ public class SkjermingService {
 				journalpostId, dokumentInfoId);
 		if (rel.isPresent()) {
 			return skjermingTypeCode.equals(rel.get().getSkjermingType());
-		} else
-			return false;
+		}
+		return false;
 	}
 
 	public boolean isDokumentInfoIdKassert(Long dokumentInfoId) {
 		List<JournalpostDokumentInfoRelasjon> rel = journalpostDokumentInfoRelasjonRepository.findAllByDokumentInfoDokumentInfoId(dokumentInfoId);
-		if (rel.isEmpty()) {
-			return false;
-		} else {
+		if (!rel.isEmpty()) {
 			return isDokumentInfoKassert(rel.get(0).getDokumentInfo());
 		}
+		return false;
 	}
 
 	public FilDetaljer getVariantSkjermet(DokumentInfo dokumentInfo, VariantFormatCode variant) {
