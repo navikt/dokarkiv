@@ -80,7 +80,7 @@ public class FilDetaljer extends AbstractPersistentVersionedDomainObjectWithKild
 	@Column(name = "k_variant_format", nullable = false)
 	private VariantFormatCode variantFormat;
 
-	@Column(name = "k_skjerming_type")
+	@Column(name = "skjerming_type")
 	@Enumerated(EnumType.STRING)
 	private SkjermingTypeCode skjermingType;
 

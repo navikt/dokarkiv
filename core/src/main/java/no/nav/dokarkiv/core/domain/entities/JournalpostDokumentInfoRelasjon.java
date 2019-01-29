@@ -54,7 +54,7 @@ public class JournalpostDokumentInfoRelasjon extends AbstractPersistentVersioned
 	@Column(name = "k_tilkn_jp_som", nullable = false)
 	private TilknyttetJournalpostSomCode tilknyttetJournalpostSom;
 
-	@Column(name = "k_skjerming_type")
+	@Column(name = "skjerming_type")
 	@Enumerated(EnumType.STRING)
 	private SkjermingTypeCode skjermingType;
 
