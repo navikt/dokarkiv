@@ -88,25 +88,4 @@ public class LogiskSlettDokumentService {
 					journalpostId));
 		}
 	}
-
-//	private void utilgjengeliggjoerHoveddokument(Long journalpostId) {
-//		Begrensning begrensning = Begrensning.builder()
-//				.begrensningType(SkjermingTypeCode.UTILGJENGELIGGJORT)
-//				.journalpostId(journalpostId)
-//				.build();
-//		begrensning.setOpprettetKildeNavn(MDC.get(MDCConstants.MDC_CONSUMER_ID));
-//
-//		skjermingService.saveBegrensning(begrensning);
-//	}
-//
-//	private void utilgjengeliggjoerVedlegg(Long journalpostId, Long dokumentInfoId) {
-//		Begrensning begrensning = Begrensning.builder()
-//				.begrensningType(SkjermingTypeCode.UTILGJENGELIGGJORT)
-//				.journalpostId(journalpostId)
-//				.dokumentInfoId(dokumentInfoId)
-//				.build();
-//		begrensning.setOpprettetKildeNavn(MDC.get(MDCConstants.MDC_CONSUMER_ID));
-//
-//		skjermingService.saveBegrensning(begrensning);
-//	}
 }
