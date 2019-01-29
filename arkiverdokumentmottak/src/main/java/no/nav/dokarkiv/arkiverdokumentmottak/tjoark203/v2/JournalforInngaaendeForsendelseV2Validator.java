@@ -26,7 +26,6 @@ public class JournalforInngaaendeForsendelseV2Validator {
 	public void validate(final Journalpost journalpost) {
 		mandatoryFieldsVerifier.verifyFieldsSkipJournalForendeEnhetId(journalpost);
 		validateJournalpost(journalpost);
-		validateDokumentInfoRelasjonList(journalpost.getJournalpostDokumentInfoRelasjoner());
 	}
 
 	public void validateVariantFormaterAndHoveddokument(Journalpost journalpost) {
@@ -39,14 +38,5 @@ public class JournalforInngaaendeForsendelseV2Validator {
 		notNull(journalpost.getDokumentDato(), "Missing required field in request: Journalpost.DokumentDato");
 		notNull(journalpost.getMottattDato(), "Missing required field in request: Journalpost.MottatDato");
 		notNull(journalpost.getMottakskanal(), "Missing required field in request: Journalpost.Mottakskanal");
-	}
-
-	private void validateDokumentInfoRelasjonList(Set<JournalpostDokumentInfoRelasjon> dokumentInfoRelasjonList) {
-		for (JournalpostDokumentInfoRelasjon jdir : dokumentInfoRelasjonList) {
-			if (TilknyttetJournalpostSomCode.HOVEDDOKUMENT.equals(jdir.getTilknyttetJournalpostSom())) {
-				hasLength(jdir.getDokumentInfo()
-						.getDokumenttypeId(), "Missing required field in request: DokumentInfo.DokumenttypeId");
-			}
-		}
 	}
 }
