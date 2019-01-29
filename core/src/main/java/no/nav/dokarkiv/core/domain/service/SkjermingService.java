@@ -52,6 +52,11 @@ public class SkjermingService {
 		return begrensning.isPresent();
 	}
 
+	public boolean isDokumentSkjermet(Long dokumentInfoId, SkjermingTypeCode skjermingTypeCode) {
+		Optional<Begrensning> begrensning = begrensningRepository.findByDokumentInfoIdAndBegrensningType(dokumentInfoId, skjermingTypeCode);
+		return begrensning.isPresent();
+	}
+
 	public boolean isDokumentKassert(Long dokumentInfoId) {
 		return begrensningRepository.findByDokumentInfoIdAndBegrensningType(dokumentInfoId, SkjermingTypeCode.POL)
 				.isPresent();
