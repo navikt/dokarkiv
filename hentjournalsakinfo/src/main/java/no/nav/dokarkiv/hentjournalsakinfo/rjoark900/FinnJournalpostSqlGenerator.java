@@ -51,7 +51,7 @@ final class FinnJournalpostSqlGenerator {
 				"                              j.dato_dokument       AS dokumentdato,\n" +
 				"                              j.dato_avs_retur      AS avsreturdato,\n" +
 				"                              j.dato_sendt_print    AS sendtprintdato,\n" +
-				"                              j.skjerming_type      AS skjerming,\n" +
+				"                              j.k_skjerming_type    AS skjerming,\n" +
 				"                              s.sak_nr_fk           AS saksrelasjon_sakid,\n" +
 				"                              s.feilregistrert      AS saksrelasjon_feilregistrert,\n" +
 				"                              s.k_fagsystem         AS saksrelasjon_fagsystem,\n" +
@@ -60,6 +60,9 @@ final class FinnJournalpostSqlGenerator {
 				"                              d.k_dokument_s        AS dokumenter_dokumentstatus,\n" +
 				"                              d.brev_kode           AS dokumenter_brevkode,\n" +
 				"                              d.tittel              AS dokumenter_tittel,\n" +
+				"                              rel.k_skjerming_type  AS dokumenter_skjerming,\n" +
+				"                              fd.k_skjerming_type   AS dokumenter_varianter_skjerming,\n" +
+				"                              fd.k_variant_format   AS dokumenter_varianter_variantf,\n" +
 				"                              tsi.vedlegg_innhold   AS dokumenter_logiske_tittel\n" +
 				"                       FROM t_journalpost j\n" +
 				"                              LEFT JOIN t_saksrelasjon s ON s.journalpost_id = j.journalpost_id\n" +
@@ -88,6 +91,7 @@ final class FinnJournalpostSqlGenerator {
 				"\n" +
 				"                       WHERE j.k_fagomrade IN (:inkluderTema)\n" +
 				"                         AND j.k_journalpost_t IN (:inkluderJournalpostType)\n" +
+				"                         AND j.dato_opprettet > :fraDato\n" +
 				"                         AND j.dato_opprettet > :fraDato\n" +
 				"                         AND (\n" +
 				"                           (ts.feilregistrert = 1 AND\n" +

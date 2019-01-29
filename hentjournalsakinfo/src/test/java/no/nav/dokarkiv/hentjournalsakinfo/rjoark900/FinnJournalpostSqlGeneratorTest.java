@@ -88,7 +88,7 @@ public class FinnJournalpostSqlGeneratorTest {
 						"                              j.dato_dokument       AS dokumentdato,\n" +
 						"                              j.dato_avs_retur      AS avsreturdato,\n" +
 						"                              j.dato_sendt_print    AS sendtprintdato,\n" +
-						"                              j.skjerming_type      AS skjerming,\n" +
+						"                              j.k_skjerming_type    AS skjerming,\n" +
 						"                              s.sak_nr_fk           AS saksrelasjon_sakid,\n" +
 						"                              s.feilregistrert      AS saksrelasjon_feilregistrert,\n" +
 						"                              s.k_fagsystem         AS saksrelasjon_fagsystem,\n" +
@@ -97,6 +97,9 @@ public class FinnJournalpostSqlGeneratorTest {
 						"                              d.k_dokument_s        AS dokumenter_dokumentstatus,\n" +
 						"                              d.brev_kode           AS dokumenter_brevkode,\n" +
 						"                              d.tittel              AS dokumenter_tittel,\n" +
+						"                              rel.k_skjerming_type  AS dokumenter_skjerming,\n" +
+						"                              fd.k_skjerming_type   AS dokumenter_varianter_skjerming,\n" +
+						"                              fd.k_variant_format   AS dokumenter_varianter_variantf,\n" +
 						"                              tsi.vedlegg_innhold   AS dokumenter_logiske_tittel\n" +
 						"                       FROM t_journalpost j\n" +
 						"                              LEFT JOIN t_saksrelasjon s ON s.journalpost_id = j.journalpost_id\n" +
@@ -126,6 +129,7 @@ public class FinnJournalpostSqlGeneratorTest {
 						"                       WHERE j.k_fagomrade IN (:inkluderTema)\n" +
 						"                         AND j.k_journalpost_t IN (:inkluderJournalpostType)\n" +
 						"                         AND j.dato_opprettet > :fraDato\n" +
+						"                         AND j.dato_opprettet > :fraDato\n" +
 						"                         AND (\n" +
 						"                           (ts.feilregistrert = 1 AND\n" +
 						"                            j.k_journal_s IN (:allJournalStatus))\n" +
@@ -138,6 +142,8 @@ public class FinnJournalpostSqlGeneratorTest {
 						"                WHERE p.journalpost_id < :journalpostIdPeker ORDER BY p.journalpost_id DESC              ) t\n" +
 						"         WHERE rownum <= :antallRader\n" +
 						"       ) journalposter ON journalposter.journalpost_id = r.journalpostid\n" +
-						"ORDER BY journalpostid DESC, dokumenter_tilknyttetsom ASC"));
+						"ORDER BY journalpostid DESC, dokumenter_tilknyttetsom ASC"
+
+		));
 	}
 }
