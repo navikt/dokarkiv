@@ -248,19 +248,6 @@ public class JournalforInngaaendeForsendelseV2ValidatorTest {
 	}
 
 	@Test
-	public void shouldFailOnNullDokumenttypeIdForHoveddokument() throws Exception {
-		expectedException.expect(IllegalArgumentException.class);
-		expectedException.expectMessage("Missing required field in request: DokumentInfo.DokumenttypeId");
-
-		for (JournalpostDokumentInfoRelasjon jdir : journalpost.getJournalpostDokumentInfoRelasjoner()) {
-			if (HOVEDDOKUMENT.equals(jdir.getTilknyttetJournalpostSom())) {
-				jdir.getDokumentInfo().setDokumenttypeId(null);
-			}
-		}
-		validator.validate(journalpost);
-	}
-
-	@Test
 	public void shouldNotFailOnNullDokumenttypeIdForVedlegg() throws Exception {
 		for (JournalpostDokumentInfoRelasjon jdir : journalpost.getJournalpostDokumentInfoRelasjoner()) {
 			if (VEDLEGG.equals(jdir.getTilknyttetJournalpostSom())) {
