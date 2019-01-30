@@ -92,7 +92,7 @@ final class FinnJournalpostSqlGenerator {
 				"                       WHERE j.k_fagomrade IN (:inkluderTema)\n" +
 				"                         AND j.k_journalpost_t IN (:inkluderJournalpostType)\n" +
 				"                         AND j.dato_opprettet > :fraDato\n" +
-				"                         AND j.dato_opprettet > :fraDato\n" +
+				"                         AND fpj.dokumenter_varianter_variantf IN ('ARKIV', 'SLADDET')\n" +
 				"                         AND (\n" +
 				"                           (ts.feilregistrert = 1 AND\n" +
 				"                            j.k_journal_s IN (:allJournalStatus))\n" +

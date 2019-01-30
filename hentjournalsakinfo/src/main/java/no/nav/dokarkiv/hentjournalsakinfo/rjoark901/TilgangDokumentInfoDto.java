@@ -4,7 +4,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Value;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
+import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
+
+import java.util.List;
 
 /**
  * @author Sigurd Midttun, Visma Consulting.
@@ -17,6 +20,7 @@ public class TilgangDokumentInfoDto {
 	private final String dokumentinfoId;
 	private final DokumentStatusCode dokumentstatus;
 	private final String brevkode;
-	private final VariantFormatCode variantFormat;
+	private final SkjermingTypeCode skjerming;
+	private final TilgangVariantDto variant;
 
 }
