@@ -189,7 +189,7 @@ public class Rjoark106IT extends AbstractLogiskTidligKassasjonIT {
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.NOT_FOUND));
 		assertThat(responseEntity.getBody(), containsString(
-				String.format("Fant ikke forventet begrensning for dokument med dokumentInfoId=%s og begrensningsType=%s",
+				String.format("Fant ikke forventet skjerming for dokument med dokumentInfoId=%s og skjermingType=%s",
 						dokumentInfo.getDokumentInfoId(),
 						SkjermingTypeCode.POL)));
 	}
@@ -207,7 +207,6 @@ public class Rjoark106IT extends AbstractLogiskTidligKassasjonIT {
 		knyttDokumentInfoSomVedleggTilJournalpostForIT(vedlegg, journalpost2);
 
 		joarkRepository.save(journalpost2);
-
 		kassereDokumentLogisk(vedlegg);
 
 		TestTransaction.flagForCommit();
@@ -227,11 +226,12 @@ public class Rjoark106IT extends AbstractLogiskTidligKassasjonIT {
 				new HttpEntity<>(createHeadersWithAksjon(AksjonTypeCode.ENDRE_BEGRENSNING.name())),
 				String.class);
 
+
+		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 		TestTransaction.start();
 
-		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 		dokumentInfoRep = dokumentinfoRepository.findByDokumentInfoId(vedlegg.getDokumentInfoId());
 		assertTrue(dokumentInfoRep.isPresent());
 		assertFalse(skjermingService.isDokumentInfoKassert(dokumentInfoRep.get()));

@@ -49,7 +49,7 @@ public class AngreLogiskSlettDokumentService {
 
 		switch (relasjonDerSlettingSkalAngres.getTilknyttetJournalpostSom()) {
 			case HOVEDDOKUMENT:
-				sjekkAtJournalpostErUtilgjengeliggjort(relasjonDerSlettingSkalAngres.getJournalpost());
+				sjekkAtJournalpostErSkjermet(relasjonDerSlettingSkalAngres.getJournalpost());
 				skjermingService.setJournalpostBegrensning(
 						relasjonDerSlettingSkalAngres.getJournalpost(),
 						null);
@@ -57,7 +57,7 @@ public class AngreLogiskSlettDokumentService {
 						journalpostId);
 				break;
 			case VEDLEGG:
-				sjekkAtDokumentErUtilgjengeliggjort(
+				sjekkAtDokumentErSkjermet(
 						relasjonDerSlettingSkalAngres);
 				skjermingService.setJpDokInfoRelBegrensning(
 						relasjonDerSlettingSkalAngres,
@@ -77,20 +77,20 @@ public class AngreLogiskSlettDokumentService {
 		return LogiskSlettDokumentResponseMapper.mapToSlettDokumentResponse(relasjonDerSlettingSkalAngres);
 	}
 
-	private void sjekkAtDokumentErUtilgjengeliggjort(JournalpostDokumentInfoRelasjon rel) {
+	private void sjekkAtDokumentErSkjermet(JournalpostDokumentInfoRelasjon rel) {
 		if (!SkjermingTypeCode.POL.equals(rel.getSkjermingType())) {
 			throw new SkjermingIkkeFunnetException(String.format(
-					"Fant ikke forventet begrensning for dokument med journalpostId=%s, dokumentInfoId=%s og begrensningsType=%s. Det kan hende journalpost med journalpostId=%s er allerede utilgjengeliggjort.",
+					"Fant ikke forventet skjerming for dokument med journalpostId=%s, dokumentInfoId=%s og skjermingType=%s. Det kan hende journalpost med journalpostId=%s er allerede utilgjengeliggjort.",
 					rel.getJournalpost().getJournalpostId(),
 					rel.getDokumentInfo().getDokumentInfoId(),
 					SkjermingTypeCode.POL.name(), rel.getJournalpost().getJournalpostId()));
 		}
 	}
 
-	private void sjekkAtJournalpostErUtilgjengeliggjort(Journalpost journalpost) {
+	private void sjekkAtJournalpostErSkjermet(Journalpost journalpost) {
 		if (!SkjermingTypeCode.POL.equals(journalpost.getSkjermingType())) {
 			throw new SkjermingIkkeFunnetException(String.format(
-					"Fant ikke forventet begrensning for journalpost med journalpostId=%s og begrensningsType=%s.",
+					"Fant ikke forventet skjerming for journalpost med journalpostId=%s og skjermingType=%s.",
 					journalpost.getJournalpostId(),
 					SkjermingTypeCode.POL.name()));
 		}

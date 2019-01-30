@@ -7,6 +7,7 @@ import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
+import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
 import no.nav.modig.core.context.SubjectHandler;
@@ -19,7 +20,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -31,14 +31,16 @@ public class SkjermingService {
 
 	private JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository;
 	private JoarkRepository joarkRepository;
+	private DokumentinfoRepository dokumentinfoRepository;
 
 	@Inject
 	private EntityManager entityManager;
 
 	@Inject
-	public SkjermingService(JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository, JoarkRepository joarkRepository) {
+	public SkjermingService(JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository, JoarkRepository joarkRepository, DokumentinfoRepository dokumentinfoRepository) {
 		this.journalpostDokumentInfoRelasjonRepository = journalpostDokumentInfoRelasjonRepository;
 		this.joarkRepository = joarkRepository;
+		this.dokumentinfoRepository = dokumentinfoRepository;
 	}
 
 	public boolean isJournalpostSkjermet(Long journalpostId, SkjermingTypeCode skjermingTypeCode) {
@@ -63,9 +65,9 @@ public class SkjermingService {
 	}
 
 	public boolean isDokumentInfoIdKassert(Long dokumentInfoId) {
-		List<JournalpostDokumentInfoRelasjon> rel = journalpostDokumentInfoRelasjonRepository.findAllByDokumentInfoDokumentInfoId(dokumentInfoId);
-		if (!rel.isEmpty()) {
-			return isDokumentInfoKassert(rel.get(0).getDokumentInfo());
+		Optional<DokumentInfo> dokumentInfo = dokumentinfoRepository.findByDokumentInfoId(dokumentInfoId);
+		if (dokumentInfo.isPresent()) {
+			return isDokumentInfoKassert(dokumentInfo.get());
 		}
 		return false;
 	}

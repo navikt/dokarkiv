@@ -203,7 +203,7 @@ public class Rjoark101IT extends AbstractSlettDokumentIT {
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.NOT_FOUND));
 		assertThat(responseEntity.getBody(), containsString(
-				String.format("Fant ikke forventet begrensning for dokument med journalpostId=%s, dokumentInfoId=%s og begrensningsType=%s.",
+				String.format("Fant ikke forventet skjerming for dokument med journalpostId=%s, dokumentInfoId=%s og skjermingType=%s.",
 						journalpost.getJournalpostId(),
 						vedlegg.getDokumentInfoId(),
 						SkjermingTypeCode.POL)));
@@ -293,7 +293,7 @@ public class Rjoark101IT extends AbstractSlettDokumentIT {
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.NOT_FOUND));
 		assertThat(responseEntity.getBody(), containsString(
-				String.format("Fant ikke forventet begrensning for journalpost med journalpostId=%s og begrensningsType=%s.",
+				String.format("Fant ikke forventet skjerming for journalpost med journalpostId=%s og skjermingType=%s.",
 						journalpost.getJournalpostId(),
 						SkjermingTypeCode.POL)));
 

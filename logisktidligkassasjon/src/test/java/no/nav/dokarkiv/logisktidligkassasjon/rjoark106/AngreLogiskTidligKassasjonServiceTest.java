@@ -58,7 +58,7 @@ public class AngreLogiskTidligKassasjonServiceTest {
 	public void skalIkkeAngreLogiskTidligKassereDokument_hvisDokumentInfoIkkeErBegrensetSomKassert() {
 		thrown.expect(SkjermingIkkeFunnetException.class);
 		thrown.expectMessage(String.format(
-				"Fant ikke forventet begrensning for dokument med dokumentInfoId=%s og begrensningsType=%s",
+				"Fant ikke forventet skjerming for dokument med dokumentInfoId=%s og skjermingType=%s",
 				DOKUMENTINFO_ID,
 				SkjermingTypeCode.POL));
 

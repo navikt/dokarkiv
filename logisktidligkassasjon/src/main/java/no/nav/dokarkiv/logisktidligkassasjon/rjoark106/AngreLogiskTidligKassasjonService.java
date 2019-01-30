@@ -43,7 +43,7 @@ public class AngreLogiskTidligKassasjonService {
 	private void sjekkAtDokumentErLogiskKassert(Long dokumentInfoId) {
 		if (!skjermingService.isDokumentInfoIdKassert(dokumentInfoId)) {
 			throw new SkjermingIkkeFunnetException(
-					String.format("Fant ikke forventet begrensning for dokument med dokumentInfoId=%s og begrensningsType=%s",
+					String.format("Fant ikke forventet skjerming for dokument med dokumentInfoId=%s og skjermingType=%s",
 							dokumentInfoId,
 							SkjermingTypeCode.POL));
 		}
