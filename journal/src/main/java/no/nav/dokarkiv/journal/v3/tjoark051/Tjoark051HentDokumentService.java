@@ -33,7 +33,7 @@ public class Tjoark051HentDokumentService extends AbstractJournalOperations {
 	 * @return the byte array of the document
 	 * @throws DocumentNotFoundException Cannot find journalpost, dokumentinfo or fildetaljer
 	 */
-	public byte[] hentDokument(HentDokumentRequestTo request) throws DocumentNotFoundException, HentDokumentSikkerhetsbegrensning {
+	public byte[] hentDokument(HentDokumentRequestTo request) throws DocumentNotFoundException {
 		Journalpost journalpost = lookupJournalpost(request.getJournalpostId());
 
 		DokumentInfo dokumentInfo = getDokumentInfo(journalpost, request.getDokumentInfoId());
