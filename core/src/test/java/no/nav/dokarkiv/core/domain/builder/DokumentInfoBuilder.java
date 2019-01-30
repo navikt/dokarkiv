@@ -99,9 +99,6 @@ public class DokumentInfoBuilder extends Builder<DokumentInfo> {
 		dokumentInfo.setBrevkode(brevkode);
 		dokumentInfo.setBrevgruppe(brevgruppe);
 		dokumentInfo.setOriginalJournalpost(originalJournalpost);
-		dokumentInfo.setKonfidensialitet(konfidensialitet);
-		dokumentInfo.setIntegritet(integritet);
-		dokumentInfo.setTilgjengelighet(tilgjengelighet);
         dokumentInfo.setInnskrenketPartsinnsyn(innskrenketPartsinnsyn);
         dokumentInfo.setInnskrenketPartsinnsynFraTredjepart(innskrenketPartsinnsynFraTredjepart);
 		dokumentInfo.setOrganInternt(organInternt);
@@ -114,7 +111,6 @@ public class DokumentInfoBuilder extends Builder<DokumentInfo> {
 		dokumentInfo.setTittel(StringUtils.isEmpty(brukeroppgittTittel) ? tittel: brukeroppgittTittel);
 		dokumentInfo.setOpprettetKildeNavn(opprettetKildeNavn);
 		dokumentInfo.setEndretKildeNavn(endretKildeNavn);
-		dokumentInfo.setSlettet(slettet);
 		dokumentInfo.setTilleggsopplysninger(tilleggsopplysninger);
 		dokumentInfo.setDokumenttypeId(dokumenttypeId);
 		for (SkannetInnhold skannetInnhold : skannetInnholdList) {

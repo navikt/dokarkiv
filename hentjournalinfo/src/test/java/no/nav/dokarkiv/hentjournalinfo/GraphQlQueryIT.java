@@ -327,7 +327,6 @@ public class GraphQlQueryIT {
 	public void shouldReturnAuthorizationExceptionWhenAbacDenyForDokumentInfoQuery() throws Exception {
 		abacDeny();
 		Journalpost journalpost = TestDataUtils.createJournalpostBuilder(FIL_UUID).build();
-		journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().setSlettet(true);
 		joarkRepository.save(journalpost);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
@@ -350,7 +349,6 @@ public class GraphQlQueryIT {
 	public void shouldReturnAuthorizationExceptionWhenAbacDenyForJournalpostQuery() throws Exception {
 		abacDeny();
 		Journalpost journalpost = TestDataUtils.createJournalpostBuilder(FIL_UUID).build();
-		journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().setSlettet(true);
 		joarkRepository.save(journalpost);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();

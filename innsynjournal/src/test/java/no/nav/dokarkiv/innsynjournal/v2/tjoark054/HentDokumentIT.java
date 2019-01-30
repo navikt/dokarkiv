@@ -230,17 +230,6 @@ public class HentDokumentIT extends AbstractInnsynJournalV2Itest {
 	}
 
 	@Test
-	public void shouldNotReturnSlettetDokument() throws Exception {
-		Journalpost journalpost = joarkRepository.save(buildDokInfoStructure(
-				createDokumentInfo()
-						.slettet(Boolean.TRUE)).build());
-
-		expectAccessDenied();
-
-		innsynJournalV2Provider.hentDokument(createRequestFromJournalpost(journalpost));
-	}
-
-	@Test
 	public void shouldReturnDocumentWithCorrectDokumentstatus() throws Exception {
 		Journalpost journalpost = joarkRepository.save(buildDokInfoStructure(
 				createDokumentInfo()

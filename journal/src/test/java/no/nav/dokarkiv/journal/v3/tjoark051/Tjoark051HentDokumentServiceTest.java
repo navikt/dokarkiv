@@ -127,16 +127,6 @@ public class Tjoark051HentDokumentServiceTest {
 		}
 	}
 
-	@Test(expected = HentDokumentSikkerhetsbegrensning.class)
-	public void shouldThrowExceptionWhenDokumentIsDeleted() throws Exception {
-		Journalpost journalpost = createJournalPost();
-		journalpost.getJournalpostDokumentInfoRelasjoner().iterator().next().getDokumentInfo().setSlettet(true);
-
-		when(joarkRepositoryMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(journalpost));
-
-		service.hentDokument(request);
-	}
-
 	@Test
 	public void shouldReturnDokument() throws Exception {
 		DokumentFil dokumentFil = getDokumentFilBuilder().fil(BYTES).build();

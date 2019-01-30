@@ -402,48 +402,6 @@ public class HentMinTilgjengeligeJournalpostListeIT extends AbstractInnsynJourna
 	}
 
 	/**
-	 * Hvis hoveddokument er markert som slettet
-	 * s&aring; skal journalpost ikke returneres.
-	 */
-	@Test
-	public void shouldNotReturnJournalpostWhenHoveddokumentIsSlettet() throws Exception {
-		Journalpost journalpost = buildAndPersist(aJournalpostWithoutHoveddokument()
-				.dokumentInfoRelasjoner(
-						createHoveddokumentRelasjon(createDokumentInfo().slettet(true).build()).build())
-		);
-
-		String sakId = journalpost.getSaksrelasjon().getSakId();
-
-		HentTilgjengeligJournalpostListeRequest request = createRequest(false, sakId);
-
-		HentTilgjengeligJournalpostListeResponse response = innsynJournalV2Provider.hentTilgjengeligJournalpostListe(request);
-
-		assertEmptyJournalpostListeIn(response);
-	}
-
-	/**
-	 * Hvis et journalpostvedlegg er markert som slettet
-	 * s&aring; skal vedlegget ikke returneres som en del av resultatet.
-	 */
-	@Test
-	public void shouldNotIncludeSlettedeVedleggOnJournalpost() throws Exception {
-		Journalpost journalpost = buildAndPersist(aJournalpost()
-				.dokumentInfoRelasjoner(
-						createVedleggRelasjon(createDokumentInfo().slettet(true).build()).build(),
-						createVedleggRelasjon(createDokumentInfo().slettet(true).build()).build())
-		);
-
-		String sakId = journalpost.getSaksrelasjon().getSakId();
-
-		HentTilgjengeligJournalpostListeRequest request = createRequest(false, sakId);
-
-		HentTilgjengeligJournalpostListeResponse response = innsynJournalV2Provider.hentTilgjengeligJournalpostListe(request);
-
-		assertThat(response.getJournalpostListe(), hasSize(1));
-		assertThatJournalpostOnlyHasHoveddokument(response.getJournalpostListe().get(0));
-	}
-
-	/**
 	 * Hvis inputparameter {@code merkInnsynDokument} er lik {@code false}
 	 * s&aring; skal {@code Dokumentbeskrivelse.innsynDokument} ikke settes.
 	 */

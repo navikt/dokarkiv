@@ -269,18 +269,6 @@ public class HentKjerneJournalpostListeIT extends AbstractJournalV3Itest {
 	}
 
 	@Test
-	public void shouldReturnDokumenttilstandSlettet() throws Exception {
-		abacPermit();
-		Journalpost storedJournalpost = joarkRepository.save(createJournalpost(DELETED_DOCUMENT_TITLE, FIL_UUID).build());
-
-		HentKjerneJournalpostListeResponse response = journalV3Provider.hentKjerneJournalpostListe(createRequest());
-
-		assertThat(response.getJournalpostListe(), hasSize(1));
-		assertThat(response.isSisteIntervall(), is(true));
-		assertJournalpost(response.getJournalpostListe().get(0), storedJournalpost, Dokumenttilstand.SLETTET, DELETED_DOCUMENT_TITLE);
-	}
-
-	@Test
 	public void shouldThrowUgyldigInputException_whenSakIdIsMissing() throws Exception {
 		abacPermit();
 		expectedException.expect(HentKjerneJournalpostListeUgyldigInput.class);

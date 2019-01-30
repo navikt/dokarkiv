@@ -299,42 +299,6 @@ public class DokumentInfoTest {
 		assertThat(dokumentInfo.isRelatedToMultipleJournalposts(), is(false));
 	}
 
-	@Test
-	public void shouldBeMarkedAsDeletedWhenSlettetIsTrue() {
-		DokumentInfo dokumentInfo = getDokumentInfoBuilder().slettet(true).build();
-
-		boolean result = dokumentInfo.isFunksjoneltSlettet();
-
-		assertThat(result, is(true));
-	}
-
-	@Test
-	public void shouldBeMarkedAsDeletedWhenTittelContainsSlettetDokument() {
-		DokumentInfo dokumentInfo = getDokumentInfoBuilder().slettet(null).tittel("Test - Slettet dokument").build();
-
-		boolean result = dokumentInfo.isFunksjoneltSlettet();
-
-		assertThat(result, is(true));
-	}
-
-	@Test
-	public void shouldNotBeMarkedAsDeletedWhenSlettetIsFalseAndTittelDoesNotContainSlettetDokument() {
-		DokumentInfo dokumentInfo = getDokumentInfoBuilder().slettet(false).tittel("Test").build();
-
-		boolean result = dokumentInfo.isFunksjoneltSlettet();
-
-		assertThat(result, is(false));
-	}
-
-	@Test
-	public void shouldNotBeMarkedAsDeletedWhenSlettetIsNullAndTittelDoesNotContainSlettetDokument() {
-		DokumentInfo dokumentInfo = getDokumentInfoBuilder().slettet(null).tittel("Test").build();
-
-		boolean result = dokumentInfo.isFunksjoneltSlettet();
-
-		assertThat(result, is(false));
-	}
-
 	private void assertExceptionThrownWhenVerifyingMandatoryFields(DokumentInfo dokumentInfo, Journalpost journalpost,
 																   String fieldName) {
 		try {
