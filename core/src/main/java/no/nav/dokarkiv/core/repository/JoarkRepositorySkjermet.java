@@ -58,7 +58,8 @@ public class JoarkRepositorySkjermet {
 		Journalpost journalpost = joarkRepository.findJournalpostByTilleggsopplysningerNokkelAndVerdi(nokkel, verdi).orElse(null);
 		if (journalpost != null && journalpost.getSkjermingType() == null) {
 			return journalpost.getJournalpostId();
-		} else return null;
+		}
+		return null;
 	}
 
 	public Optional<Journalpost> findJournalpostByKanalReferanseIdAndMottakskanal(String kanalReferanseId, String mottakskanal) {

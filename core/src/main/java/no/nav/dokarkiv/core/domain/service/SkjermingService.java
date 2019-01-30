@@ -74,7 +74,7 @@ public class SkjermingService {
 		String consumer = hentBrukerSomKaller();
 
 		FilDetaljer filDetaljer = dokumentInfo.findFilDetaljerByVariantFormat(variant);
-		if (!consumer.equals("srvjoarkadmin") && filDetaljer != null) {
+		if (!"srvjoarkadmin".equals(consumer) && filDetaljer != null) {
 			if (SkjermingTypeCode.POL.equals(filDetaljer.getSkjermingType())) {
 				filDetaljer = dokumentInfo.findFilDetaljerByVariantFormat(VariantFormatCode.SLADDET);
 				if (filDetaljer != null && SkjermingTypeCode.POL.equals(filDetaljer.getSkjermingType())) {
