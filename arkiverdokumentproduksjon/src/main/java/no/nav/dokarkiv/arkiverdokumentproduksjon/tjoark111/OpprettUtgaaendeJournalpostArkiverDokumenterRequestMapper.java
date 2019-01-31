@@ -10,7 +10,6 @@ import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
 import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
-import no.nav.dokarkiv.core.domain.codes.ReferanseTypeCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
@@ -22,7 +21,7 @@ import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
 import no.nav.dokarkiv.core.sporing.KildeNavnPopulator;
 import no.nav.dokarkiv.core.stelvio.RequestContextHolder;
-import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasjon.arkiverdokumentproduksjon.Kryssreferanse;
+import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasjon.arkiverdokumentproduksjon.Tilleggsopplysning;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasjon.opprettutgaaendejournalpostarkiverdokument.Vedlegg;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.OpprettUtgaaendeJournalpostArkiverDokumentRequest;
 import org.springframework.stereotype.Component;
@@ -32,7 +31,9 @@ import java.sql.Date;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -50,7 +51,6 @@ public class OpprettUtgaaendeJournalpostArkiverDokumenterRequestMapper {
 		addBruker(domainJournalpost, wsRequest.getBruker());
 		setSaksrelasjon(domainJournalpost, wsRequest.getSaksrelasjon());
 		addJournalpostDokumentInfoRelasjon(domainJournalpost, wsRequest.getJournalpostDokumentInfoRelasjon());
-		addKryssreferanse(domainJournalpost, wsRequest.getKryssreferanse());
 
 		kildeNavnPopulator.populateKildeNavnForEntireJournalStructure(domainJournalpost, RequestContextHolder
 				.currentRequestContext().getComponentId());
@@ -63,17 +63,6 @@ public class OpprettUtgaaendeJournalpostArkiverDokumenterRequestMapper {
 				.vedleggList(mapVedlegg(wsRequest.getVedlegg()))
 				.build();
 
-	}
-
-	private void addKryssreferanse(Journalpost domainJournalpost, Kryssreferanse kryssreferanse) {
-		if (kryssreferanse == null) {
-			return;
-		}
-
-		domainJournalpost.addKryssReferanse(no.nav.dokarkiv.core.domain.entities.Kryssreferanse.builder()
-				.referanseId(kryssreferanse.getReferanseId())
-				.referanseType(stringToEnum(ReferanseTypeCode.class, kryssreferanse.getReferanseType()))
-				.build());
 	}
 
 	private List<OpprettUtgaaendeJournalpostArkiverDokumentRequestTo.Vedlegg> mapVedlegg(List<Vedlegg> vedleggList) {
@@ -111,9 +100,9 @@ public class OpprettUtgaaendeJournalpostArkiverDokumenterRequestMapper {
 				.utsendingskanal(journalpost.getUtsendingskanal() == null ? null : UtsendingsKanalCode.valueOf(journalpost
 						.getUtsendingskanal()))
 				.kanalReferanseId(journalpost.getKanalreferanseId())
+				.tilleggsopplysninger(addTilleggsopplysningAsMap(journalpost.getTilleggsopplysninger()))
 				.build();
 	}
-
 
 	private void addBruker(Journalpost domainJournalpost,
 						   no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasjon.arkiverdokumentproduksjon.Bruker bruker) {
@@ -181,5 +170,13 @@ public class OpprettUtgaaendeJournalpostArkiverDokumenterRequestMapper {
 						.build()));
 	}
 
+	private Map<String, String> addTilleggsopplysningAsMap(Tilleggsopplysning tilleggsopplysning) {
+		if (tilleggsopplysning == null) {
+			return new HashMap<>();
+		}
+		Map<String, String> tilleggsopplysningMap = new HashMap<>();
+		tilleggsopplysningMap.put(tilleggsopplysning.getOpplysningsnoekkel(), tilleggsopplysning.getOpplysningsverdi());
+		return tilleggsopplysningMap;
+	}
 
 }

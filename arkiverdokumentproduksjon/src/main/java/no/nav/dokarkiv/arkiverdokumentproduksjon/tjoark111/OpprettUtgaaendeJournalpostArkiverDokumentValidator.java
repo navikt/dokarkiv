@@ -13,7 +13,6 @@ import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
-import no.nav.dokarkiv.core.domain.entities.Kryssreferanse;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
 import no.nav.dokarkiv.core.exceptions.InvalidJournalpostStructureException;
 import no.nav.dokarkiv.core.journalbehandling.MandatoryFieldsVerifier;
@@ -32,17 +31,15 @@ import java.util.Set;
 @Component
 public class OpprettUtgaaendeJournalpostArkiverDokumentValidator {
 
+	private static final List<JournalStatusCode> VEDLEGG_EXPECTED_JOURNALSTATUSES = Arrays.asList(JournalStatusCode.J, JournalStatusCode.FS, JournalStatusCode.FL, JournalStatusCode.E);
 	@Inject
 	protected MandatoryFieldsVerifier mandatoryFieldsVerifier;
-
-	private final static List<JournalStatusCode> VEDLEGG_EXPECTED_JOURNALSTATUSES = Arrays.asList(JournalStatusCode.J, JournalStatusCode.FS, JournalStatusCode.FL, JournalStatusCode.E);
 
 	public void validateRequiredFields(final OpprettUtgaaendeJournalpostArkiverDokumentRequestTo requestTo) throws UgyldigInputException {
 		StringBuilder message = new StringBuilder();
 		addMessageIfTrue(Strings.isNullOrEmpty(requestTo.getJournalpost().getKanalReferanseId()), message, "kanalReferanseId");
 		addMessageIfTrue(Strings.isNullOrEmpty(requestTo.getJournalpost().getOpprettetAvNavn()), message, "opprettetAvNavn");
 		validateRequiredFieldsSaksrelasjon(requestTo.getJournalpost().getSaksrelasjon(), message);
-		validateRequiredFieldsKryssreferanse(requestTo.getJournalpost().getKryssreferanser(), message);
 		validateRequiredFieldsJournalpostDokumentInfoRelasjonFields(requestTo, message);
 		validateRequiredFieldsVedlegg(requestTo.getVedleggList(), message);
 
@@ -73,13 +70,6 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentValidator {
 
 		addMessageIfTrue(saksrelasjon.getSakId() == null, message, "Saksrelasjon.Saksnummer");
 		addMessageIfTrue(saksrelasjon.getFagsystem() == null, message, "Saksrelasjon.Fagsystem");
-	}
-
-	private void validateRequiredFieldsKryssreferanse(final Set<Kryssreferanse> kryssreferanseList, StringBuilder message) {
-		kryssreferanseList.forEach(kryssreferanse -> {
-			addMessageIfTrue(kryssreferanse.getReferanseId() == null, message, "Kryssreferanse.ReferanseId");
-			addMessageIfTrue(kryssreferanse.getReferanseType() == null, message, "Kryssreferanse.ReferanseType");
-		});
 	}
 
 	private void validateRequiredFieldsDokumentInfo(final DokumentInfo dokumentInfo, StringBuilder message) {
