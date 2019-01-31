@@ -201,7 +201,7 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	@Column(name = "k_behandlingstema")
 	private Behandlingstema behandlingstema;
 
-	@Column(name = "skjerming_type")
+	@Column(name = "k_skjerming_type")
 	@Enumerated(EnumType.STRING)
 	private SkjermingTypeCode skjermingType;
 
