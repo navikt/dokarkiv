@@ -18,7 +18,6 @@ import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
-import no.nav.dokarkiv.core.domain.entities.Begrensning;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
@@ -134,16 +133,5 @@ public class TestUtil {
 				.fileContent("ARKIV variant".getBytes())
 				.build();
 	}
-
-
-	public static Begrensning kassereDokumentLogisk(DokumentInfo dokumentInfo) {
-		Begrensning begrensning = Begrensning.builder()
-				.dokumentInfoId(dokumentInfo.getDokumentInfoId())
-				.begrensningType(SkjermingTypeCode.POL)
-				.build();
-		begrensning.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
-		return begrensning;
-	}
-
 }
 

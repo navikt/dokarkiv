@@ -26,7 +26,7 @@ import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
 import no.nav.dokarkiv.core.domain.codes.OnDemandInstansCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
-import no.nav.dokarkiv.core.domain.entities.Begrensning;
+import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.jaxws.SubjectHandlerUtils;
 import no.nav.dokarkiv.core.jaxws.ThreadLocalSubjectHandler;
@@ -38,6 +38,7 @@ import no.nav.tjeneste.virksomhet.innsynjournal.v2.meldinger.HentDokumentRespons
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.test.context.transaction.TestTransaction;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -248,19 +249,29 @@ public class HentDokumentIT extends AbstractInnsynJournalV2Itest {
 						.dokumentstatus(DokumentStatusCode.FERDIGSTILT))
 				.journalpostType(JournalpostTypeCode.U).build());
 
-		Begrensning skjermet = new Begrensning();
-		skjermet.setId(1L);
-		skjermet.setBegrensningType(SkjermingTypeCode.POL);
-		skjermet.setVariantFormat(VariantFormatCode.ARKIV);
-		skjermet.setDokumentInfoId(journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId());
-		skjermet.setOpprettetKildeNavn("test");
-		begrensningRepository.save(skjermet);
+		skjermingService.setVariantSkjermet(journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo(), VariantFormatCode.ARKIV, SkjermingTypeCode.POL);
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
 
 		HentDokumentResponse response = innsynJournalV2Provider.hentDokument(createRequestFromJournalpost(journalpost));
 
 		assertThat(response.getDokument(), is(DokumentFilTestDataProvider.FIL_CONTENT_SLADDET));
 	}
 
+	@Test
+	public void shouldThrowDokumentIkkeFinnetWhenKassert() throws Exception {
+		expectedException.expect(HentDokumentDokumentIkkeFunnet.class);
+		Journalpost journalpost = joarkRepository.save(buildDokInfoStructure(
+				createDokumentInfo()
+						.dokumentstatus(DokumentStatusCode.FERDIGSTILT))
+				.journalpostType(JournalpostTypeCode.U).build());
+
+		skjermingService.setDokumentKassert(journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo(), SkjermingTypeCode.POL);
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
+
+		innsynJournalV2Provider.hentDokument(createRequestFromJournalpost(journalpost));
+	}
 	private void expectAccessDenied() {
 		expectedException.expect(isA(HentDokumentSikkerhetsbegrensning.class));
 		expectedException.expectMessage("Access denied");

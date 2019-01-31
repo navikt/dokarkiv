@@ -60,7 +60,7 @@ public class JournalpostListeRepository {
 			foundJournalposts = (List<Journalpost>) criteria.list();
 		}
 
-		return skjermingService.addBegrensetDokumentInfoIdsToJournalpostList(foundJournalposts);
+		return foundJournalposts;
 	}
 
 	public long findTotalNumberOfJournalposts(HentMinJPListeParameters hentMinJPListeParameters) {

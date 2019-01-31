@@ -101,6 +101,7 @@ public class DefaultHentDokumentTest {
 		FilDetaljer fildetaljer = journalpost.findFilDetaljerByFilUuid(filUuid);
 
 		fildetaljer.setOnDemandId("10");
+		fildetaljer.setOnDemandInstans(OnDemandInstansCode.PESYS);
 		when(joarkRepositoryMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(journalpost));
 		when(hentOndemandDokument.hentOndemandDokumentFromJoark(anyString())).thenReturn(BYTES);
 
@@ -345,7 +346,6 @@ public class DefaultHentDokumentTest {
 				.filUuid(filUuid)
 				.filnavn("filNavn")
 				.filtype(FilTypeCode.AFP)
-				.onDemandInstans(OnDemandInstansCode.PESYS)
 				.variantFormat(VariantFormatCode.ARKIV)
 				.opprettetKildeNavn("NAV")
 				.build();

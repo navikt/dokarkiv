@@ -4,6 +4,7 @@ import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
+import no.nav.dokarkiv.core.domain.service.SkjermingService;
 import no.nav.dokarkiv.core.util.DateConverterUtil;
 import no.nav.dokarkiv.innsynjournal.v2.InnsynJournalpostTo;
 import no.nav.tjeneste.virksomhet.innsynjournal.v2.informasjon.Arkivfiltyper;
@@ -23,6 +24,7 @@ import no.nav.tjeneste.virksomhet.innsynjournal.v2.informasjon.Variantformater;
 import no.nav.tjeneste.virksomhet.innsynjournal.v2.meldinger.HentTilgjengeligJournalpostListeResponse;
 import org.springframework.stereotype.Component;
 
+import javax.inject.Inject;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -36,6 +38,13 @@ import java.util.Optional;
  */
 @Component
 public class HentMinTilgjengeligJournalpostListeV2ResponseMapper {
+
+	@Inject
+	private SkjermingService skjermingService;
+
+	public HentMinTilgjengeligJournalpostListeV2ResponseMapper(SkjermingService skjermingService) {
+		this.skjermingService = skjermingService;
+	}
 
 	/**
 	 * Mapping of domain journalpost to ws-journalpost
@@ -121,7 +130,7 @@ public class HentMinTilgjengeligJournalpostListeV2ResponseMapper {
 
 	private JournalfoertDokumentInfo mapJournalfoertDokumentInfo(DokumentInfo dokumentInfo) {
 		final Optional<FilDetaljer> filDetaljer = dokumentInfo.getFildetaljerListe().stream().findFirst();
-		if(filDetaljer.isPresent()) {
+		if(filDetaljer.isPresent() && !skjermingService.isDokumentInfoKassert(dokumentInfo)) {
 			DokumentInnhold dokumentInnhold = mapDokumentInnhold(filDetaljer.get());
 			return new JournalfoertDokumentInfo()
 					.withDokumentId(dokumentInfo.getDokumentInfoId().toString())

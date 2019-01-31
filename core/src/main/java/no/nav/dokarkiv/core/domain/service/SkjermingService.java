@@ -3,22 +3,24 @@ package no.nav.dokarkiv.core.domain.service;
 import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
-import no.nav.dokarkiv.core.domain.entities.Begrensning;
+import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
+import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import no.nav.dokarkiv.core.repository.BegrensningRepository;
+import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
+import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
+import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
 import no.nav.modig.core.context.SubjectHandler;
-import org.apache.commons.lang3.BooleanUtils;
 import org.jboss.logging.MDC;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
@@ -27,19 +29,26 @@ import java.util.stream.Collectors;
 @Component
 public class SkjermingService {
 
-	private final BegrensningRepository begrensningRepository;
 	private JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository;
+	private JoarkRepository joarkRepository;
+	private DokumentinfoRepository dokumentinfoRepository;
 
 	@Inject
-	public SkjermingService(BegrensningRepository begrensningRepository, JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository) {
-		this.begrensningRepository = begrensningRepository;
+	private EntityManager entityManager;
+
+	@Inject
+	public SkjermingService(JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository, JoarkRepository joarkRepository, DokumentinfoRepository dokumentinfoRepository) {
 		this.journalpostDokumentInfoRelasjonRepository = journalpostDokumentInfoRelasjonRepository;
+		this.joarkRepository = joarkRepository;
+		this.dokumentinfoRepository = dokumentinfoRepository;
 	}
 
 	public boolean isJournalpostSkjermet(Long journalpostId, SkjermingTypeCode skjermingTypeCode) {
-		Optional<Begrensning> begrensning = begrensningRepository.findByJournalpostIdAndBegrensningTypeAndDokumentInfoIdIsNull(
-				journalpostId, skjermingTypeCode);
-		return begrensning.isPresent();
+		Journalpost journalpost = joarkRepository.findById(journalpostId).orElse(null);
+		if (journalpost != null) {
+			return skjermingTypeCode.equals(journalpost.getSkjermingType());
+		}
+		return false;
 	}
 
 	public boolean isJournalpostDokumentInfoRelasjonOrJournalpostBegrenset(Long journalpostId, Long dokumentInfoId, SkjermingTypeCode skjermingTypeCode) {
@@ -47,43 +56,35 @@ public class SkjermingService {
 	}
 
 	public boolean isJournalpostDokumentInfoRelasjonSkjermet(Long journalpostId, Long dokumentInfoId, SkjermingTypeCode skjermingTypeCode) {
-		Optional<Begrensning> begrensning = begrensningRepository.findByJournalpostIdAndDokumentInfoIdAndBegrensningType(
-				journalpostId, dokumentInfoId, skjermingTypeCode);
-		return begrensning.isPresent();
+		Optional<JournalpostDokumentInfoRelasjon> rel = journalpostDokumentInfoRelasjonRepository.findByJournalpostJournalpostIdAndDokumentInfoDokumentInfoId(
+				journalpostId, dokumentInfoId);
+		if (rel.isPresent()) {
+			return skjermingTypeCode.equals(rel.get().getSkjermingType());
+		}
+		return false;
 	}
 
-	public boolean isDokumentKassert(Long dokumentInfoId) {
-		return begrensningRepository.findByDokumentInfoIdAndBegrensningType(dokumentInfoId, SkjermingTypeCode.POL)
-				.isPresent();
+	public boolean isDokumentInfoIdKassert(Long dokumentInfoId) {
+		Optional<DokumentInfo> dokumentInfo = dokumentinfoRepository.findByDokumentInfoId(dokumentInfoId);
+		if (dokumentInfo.isPresent()) {
+			return isDokumentInfoKassert(dokumentInfo.get());
+		}
+		return false;
 	}
 
-	public boolean isVariantSkjermet(Long dokumentInfoId, VariantFormatCode variant) {
-		Optional<Begrensning> variantSkjermet = begrensningRepository.findByDokumentInfoIdAndVariantFormatAndBegrensningType(dokumentInfoId, variant, SkjermingTypeCode.POL);
+	public FilDetaljer getVariantSkjermet(DokumentInfo dokumentInfo, VariantFormatCode variant) {
 		String consumer = hentBrukerSomKaller();
 
-		//Midlertidig løsning i påvente av SAF
-		if ("srvjoarkadmin".equalsIgnoreCase(consumer)) {
-			//Har rettighet til å se originalen uansett
-			return false;
-		} else {
-			//Dersom den er skjermet, returneres TRUE
-			return variantSkjermet.isPresent();
+		FilDetaljer filDetaljer = dokumentInfo.findFilDetaljerByVariantFormat(variant);
+		if (!"srvjoarkadmin".equals(consumer) && filDetaljer != null) {
+			if (SkjermingTypeCode.POL.equals(filDetaljer.getSkjermingType())) {
+				filDetaljer = dokumentInfo.findFilDetaljerByVariantFormat(VariantFormatCode.SLADDET);
+				if (filDetaljer != null && SkjermingTypeCode.POL.equals(filDetaljer.getSkjermingType())) {
+					filDetaljer = null;
+				}
+			}
 		}
-	}
-
-	public void saveBegrensning(Begrensning begrensning) {
-		begrensningRepository.save(begrensning);
-	}
-
-	public void deleteValidertJournalpostBegrensning(
-			Long journalpostId,
-			SkjermingTypeCode skjermingTypeCode) {
-		begrensningRepository.deleteByJournalpostIdAndBegrensningTypeAndDokumentInfoIdIsNull(journalpostId, skjermingTypeCode);
-	}
-
-	public void deleteValidertJournalpostDokumentInfoRelasjonBegrensning(
-			Long journalpostId, Long dokumentInfoId, SkjermingTypeCode skjermingTypeCode) {
-		begrensningRepository.deleteByJournalpostIdAndDokumentInfoIdAndBegrensningType(journalpostId, dokumentInfoId, skjermingTypeCode);
+		return filDetaljer;
 	}
 
 	private String hentBrukerSomKaller() {
@@ -102,25 +103,6 @@ public class SkjermingService {
 		return consumer;
 	}
 
-	public Journalpost addBegrensetDokumentInfoIdsToJournalpost(Journalpost journalpost) {
-		List<Long> begrensetDokumentInfoIdList = journalpostDokumentInfoRelasjonRepository.findBegrensetRelasjonDokumentInfoIdByJournalpostId(journalpost
-				.getJournalpostId()).stream().map(SkjermingService::convertBigToLong).collect(Collectors.toList());
-		journalpost.addAllSkjermetRelasjonerDokumentInfoIds(begrensetDokumentInfoIdList);
-		return journalpost;
-	}
-
-
-	public List<Journalpost> addBegrensetDokumentInfoIdsToJournalpostList(List<Journalpost> journalpostList) {
-		if (BooleanUtils.isFalse((journalpostList == null || journalpostList.isEmpty()))) {
-			for (Journalpost journalpost : journalpostList) {
-				List<Long> begrensetDokumentInfoIdList = journalpostDokumentInfoRelasjonRepository.findBegrensetRelasjonDokumentInfoIdByJournalpostId(journalpost
-						.getJournalpostId()).stream().map(SkjermingService::convertBigToLong).collect(Collectors.toList());
-				journalpost.addAllSkjermetRelasjonerDokumentInfoIds(begrensetDokumentInfoIdList);
-			}
-		}
-		return journalpostList;
-	}
-
 	public static Long convertBigToLong(Object value) {
 		if (value instanceof BigDecimal) {
 			return ((BigDecimal) value).longValue();
@@ -128,5 +110,36 @@ public class SkjermingService {
 			return ((BigInteger) value).longValue();
 		}
 		return (Long) value;
+	}
+
+	public Boolean isDokumentInfoKassert(DokumentInfo dokumentInfo) {
+		return dokumentInfo.getFildetaljerListe().stream().allMatch(filDetaljer -> SkjermingTypeCode.POL.equals(filDetaljer.getSkjermingType()));
+	}
+
+	public void setVariantSkjermet(DokumentInfo dokumentInfo, VariantFormatCode variantFormatCode, SkjermingTypeCode SkjermingTypeCode) {
+		FilDetaljer filDetaljer = dokumentInfo.findFilDetaljerByVariantFormat(variantFormatCode);
+		setFildetaljerBegrensning(filDetaljer, SkjermingTypeCode);
+	}
+
+
+	public void setJournalpostBegrensning(Journalpost journalpost, SkjermingTypeCode SkjermingTypeCode) {
+		Query q = entityManager.createQuery("update Journalpost set skjermingType = :begrenset where journalpostId = :journalpostId").setParameter("journalpostId", journalpost.getJournalpostId()).setParameter("begrenset", SkjermingTypeCode);
+		q.executeUpdate();
+	}
+
+	public void setJpDokInfoRelBegrensning(JournalpostDokumentInfoRelasjon rel, SkjermingTypeCode SkjermingTypeCode) {
+		Query q = entityManager.createQuery("update JournalpostDokumentInfoRelasjon set skjermingType = :begrenset where journalpostDokumentInfoRelasjonId = :relId").setParameter("relId", rel.getJournalpostDokumentInfoRelasjonId()).setParameter("begrenset", SkjermingTypeCode);
+		q.executeUpdate();
+	}
+
+	public void setDokumentKassert(DokumentInfo dokumentInfo, SkjermingTypeCode SkjermingTypeCode) {
+		for (FilDetaljer filDetaljer : dokumentInfo.getFildetaljerListe()) {
+			setFildetaljerBegrensning(filDetaljer, SkjermingTypeCode);
+		}
+	}
+
+	public void setFildetaljerBegrensning(FilDetaljer filDetaljer, SkjermingTypeCode SkjermingTypeCode) {
+		Query q = entityManager.createQuery("update FilDetaljer set skjermingType = :begrenset where fildetaljerId = :filDetaljerId").setParameter("filDetaljerId", filDetaljer.getFildetaljerId()).setParameter("begrenset", SkjermingTypeCode);
+		q.executeUpdate();
 	}
 }

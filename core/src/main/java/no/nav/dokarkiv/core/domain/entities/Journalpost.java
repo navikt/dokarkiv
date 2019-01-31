@@ -201,7 +201,7 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	@Column(name = "k_behandlingstema")
 	private Behandlingstema behandlingstema;
 
-	@Column(name = "skjerming_type")
+	@Column(name = "k_skjerming_type")
 	@Enumerated(EnumType.STRING)
 	private SkjermingTypeCode skjermingType;
 
@@ -233,18 +233,6 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	@JoinColumn(name = "journalpost_id", nullable = false)
 	@Cascade({CascadeType.PERSIST, CascadeType.MERGE, CascadeType.SAVE_UPDATE, CascadeType.DELETE, CascadeType.DETACH})
 	private final Set<ReturInfo> returInfos = new HashSet<>();
-
-	@Transient
-	private transient List<Long> skjermetRelasjonerDokumentInfoId = new ArrayList<>();
-
-	public void addAllSkjermetRelasjonerDokumentInfoIds(List<Long> dokumentInfoIdList) {
-		skjermetRelasjonerDokumentInfoId = new ArrayList<>();
-		skjermetRelasjonerDokumentInfoId.addAll(dokumentInfoIdList);
-	}
-
-	public List<Long> getSkjermetRelasjonerDokumentInfoId() {
-		return skjermetRelasjonerDokumentInfoId == null ? new ArrayList<>() : skjermetRelasjonerDokumentInfoId;
-	}
 
 	/**
 	 * Default constructor.
@@ -1433,8 +1421,10 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	}
 
 	public void setSkjermingType(SkjermingTypeCode skjermingType) {
-		throw new UnsupportedOperationException("Skjerming  skal bare settes gjennom SkjermingService");
+		throw new UnsupportedOperationException("Skjerming skal bare settes gjennom SkjermingService");
 	}
+
+
 
 	/**
 	 * Add a JournalpostDokumentInfoRelasjon to relasjon Set.
@@ -1465,12 +1455,9 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	 */
 	public Set<JournalpostDokumentInfoRelasjon> getJournalpostDokumentInfoRelasjoner() {
 		return Collections.unmodifiableSet(journalpostDokumentInfoRelasjoner.stream()
-				.filter(relasjon -> relasjon.getDokumentInfo() == null || relasjon.getDokumentInfo()
-						.getDokumentInfoId() == null || isFalse(getSkjermetRelasjonerDokumentInfoId().stream()
-						.anyMatch(dokumentInfoId -> dokumentInfoId.equals(relasjon.getDokumentInfo().getDokumentInfoId()))))
+				.filter(relasjon -> relasjon.getSkjermingType() == null)
 				.collect(Collectors.toSet()));
 	}
-
 	/**
 	 * Getter for the journalpostDokumentInfoRelasjoner property.
 	 *

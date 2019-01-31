@@ -115,7 +115,6 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	@Type(type = "org.hibernate.type.TrueFalseType")
 	private Boolean organInternt;
 
-	@JsonIgnore
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "orig_journalpost_id")
 	private Journalpost originalJournalpost;

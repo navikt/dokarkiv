@@ -18,7 +18,6 @@ import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
-import no.nav.dokarkiv.core.domain.entities.Begrensning;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
@@ -39,7 +38,7 @@ public class TestUtils {
 	public static final String FILNAVN = "filNavn";
 
 
-	public static final SkjermingTypeCode BEGRENSNINGTYPE_POL = SkjermingTypeCode.POL;
+	public static final SkjermingTypeCode SKJERMINGTYPE_POL = SkjermingTypeCode.POL;
 
 	public static Journalpost opprettHoveddokumentForIT() {
 		return getBaseJournalpostBuilder()
@@ -91,26 +90,6 @@ public class TestUtils {
 						.build());
 //		dokInfoVedlegg.setOriginalJournalpost(jpHovedokument);
 	}
-
-	public static Begrensning utilgjengeliggjoerHoveddokument(Long journalpostId) {
-		Begrensning begrensning = Begrensning.builder()
-				.journalpostId(journalpostId)
-				.begrensningType(SkjermingTypeCode.POL)
-				.build();
-		begrensning.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
-		return begrensning;
-	}
-
-	public static Begrensning utilgjengeliggjoerVedlegg(Long journalpostId, Long dokumentInfoId) {
-		Begrensning begrensning = Begrensning.builder()
-				.journalpostId(journalpostId)
-				.dokumentInfoId(dokumentInfoId)
-				.begrensningType(SkjermingTypeCode.POL)
-				.build();
-		begrensning.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
-		return begrensning;
-	}
-
 
 	private static JournalpostBuilder getBaseJournalpostBuilder() {
 		return JournalpostBuilder.getJournalpostBuilder()

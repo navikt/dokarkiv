@@ -76,7 +76,7 @@ public class DokumentInfoQuery implements Query {
 	@GraphQLQuery(name = "kassert")
 	@Transactional(readOnly = true)
 	public boolean kassert(@GraphQLContext DokumentInfo dokument) {
-		return skjermingService.isDokumentKassert(dokument.getDokumentInfoId());
+		return skjermingService.isDokumentInfoIdKassert(dokument.getDokumentInfoId());
 	}
 
 	@GraphQLQuery(name = "originalJournalpost")
