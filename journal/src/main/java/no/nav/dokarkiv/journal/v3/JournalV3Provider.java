@@ -9,6 +9,7 @@ import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.READ_ACTION
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
+import no.nav.dokarkiv.core.domain.service.SkjermingService;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.security.abac.AbacSecurityService;
 import no.nav.dokarkiv.core.security.abac.AuthorizationException;
@@ -85,9 +86,12 @@ public class JournalV3Provider implements JournalV3 {
 	private HentDokumentUrlService hentDokumentUrlService;
 	@Inject
 	private AbacContext abacContext;
-	
+	@Inject
+	private SkjermingService skjermingService;
+	@Inject
+	private HentKjerneJournalpostListeResponseMapper hentKjerneJournalpostListeResponseMapper;
+
 	private HentKjerneJournalpostListeRequestMapper hentKjerneJournalpostListeRequestMapper = new HentKjerneJournalpostListeRequestMapper();
-	private HentKjerneJournalpostListeResponseMapper hentKjerneJournalpostListeResponseMapper = new HentKjerneJournalpostListeResponseMapper();
 	private HentDokumentV3RequestMapper hentDokumentRequestMapper = new HentDokumentV3RequestMapper();
 	private HentDokumentURLV3RequestMapper hentDokumentURLV3RequestMapper = new HentDokumentURLV3RequestMapper();
 	

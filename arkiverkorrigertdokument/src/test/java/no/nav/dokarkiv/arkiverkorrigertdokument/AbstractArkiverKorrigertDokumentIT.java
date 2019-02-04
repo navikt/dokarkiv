@@ -12,8 +12,8 @@ import static no.nav.dokarkiv.core.util.TestDataUtils.createAksjonsLoggRequest;
 
 import no.nav.dokarkiv.core.CoreConfig;
 import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService;
+import no.nav.dokarkiv.core.domain.service.SkjermingService;
 import no.nav.dokarkiv.core.repository.AksjonsLoggRepository;
-import no.nav.dokarkiv.core.repository.BegrensningRepository;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
@@ -88,9 +88,9 @@ public abstract class AbstractArkiverKorrigertDokumentIT {
 	@Inject
 	protected DokumentFilRepository dokumentFilRepository;
 	@Inject
-	protected BegrensningRepository begrensningRepository;
-	@Inject
 	protected AksjonsLoggRepository aksjonsLoggRepository;
+	@Inject
+	protected SkjermingService skjermingService;
 	@Before
 	public void setUp() {
 		OIDC_TOKEN_PERSON_USER_TEST = "Bearer " + oidcTestService.createOidc(openAmClaimsBuilder().subject(PERSON_USER_ID)
@@ -126,7 +126,6 @@ public abstract class AbstractArkiverKorrigertDokumentIT {
 		joarkRepository.deleteAll();
 		dokumentinfoRepository.deleteAll();
 		journalpostDokumentInfoRelasjonRepository.deleteAll();
-		begrensningRepository.deleteAll();
 		aksjonsLoggRepository.deleteAll();
 	}
 

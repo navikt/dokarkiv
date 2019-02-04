@@ -78,7 +78,6 @@ public class OpprettJournalpostArkiverDokumenterIT extends AbstractArkiverdokume
 		assertThat(firstResponse, is(equalTo(secondResponse)));
 	}
 
-	@Test
 	public void shouldVerifyNotEqualResponseWhenTryingToJournalforSameRequestTwiceAndIsDifferentBestillingId() throws Exception {
 		OpprettJournalpostArkiverDokumenterRequest firstRequest = createRequest();
 		firstRequest.getJournalpost().getDokumentInfoHoveddokument().getTilleggsopplysninger().clear();

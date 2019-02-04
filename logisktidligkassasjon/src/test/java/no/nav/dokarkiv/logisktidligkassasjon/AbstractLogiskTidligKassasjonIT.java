@@ -12,8 +12,10 @@ import static no.nav.dokarkiv.logisktidligkassasjon.util.TestUtils.getJournalpos
 
 import no.nav.dokarkiv.core.CoreConfig;
 import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService;
+import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
+import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
+import no.nav.dokarkiv.core.domain.service.SkjermingService;
 import no.nav.dokarkiv.core.repository.AksjonsLoggRepository;
-import no.nav.dokarkiv.core.repository.BegrensningRepository;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
@@ -42,6 +44,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
 import java.io.IOException;
+
+;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
@@ -79,8 +83,7 @@ public abstract class AbstractLogiskTidligKassasjonIT {
 	@Inject
 	protected TestRestTemplate restTemplate;
 	@Inject
-	protected BegrensningRepository begrensningRepository;
-
+	protected SkjermingService skjermingService;
 	@Inject
 	protected AksjonsLoggRepository aksjonsLoggRepository;
 
@@ -106,7 +109,6 @@ public abstract class AbstractLogiskTidligKassasjonIT {
 	public void cleanup() {
 		joarkRepository.deleteAll();
 		dokumentinfoRepository.deleteAll();
-		begrensningRepository.deleteAll();
 		aksjonsLoggRepository.deleteAll();
 	}
 
@@ -140,5 +142,9 @@ public abstract class AbstractLogiskTidligKassasjonIT {
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
 						.withHeader(org.apache.http.HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
 						.withBodyFile("abac/abac-permit.json")));
+	}
+
+	protected void kassereDokumentLogisk(DokumentInfo dokumentInfo) {
+		skjermingService.setDokumentKassert(dokumentInfo, SkjermingTypeCode.POL);
 	}
 }

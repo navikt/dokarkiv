@@ -1,7 +1,6 @@
 package no.nav.dokarkiv.arkiverkorrigertdokument.rjoark104;
 
 import static no.nav.dokarkiv.arkiverkorrigertdokument.util.TestUtils.FIL;
-import static no.nav.dokarkiv.arkiverkorrigertdokument.util.TestUtils.begrensArkivVariantAvDokumentSomSkjermet;
 import static no.nav.dokarkiv.arkiverkorrigertdokument.util.TestUtils.opprettHoveddokumentForIT;
 import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_LOGG_HEADER;
 import static no.nav.dokarkiv.core.domain.codes.AksjonTypeCode.SLETT;
@@ -9,11 +8,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import com.google.common.collect.Iterables;
 import no.nav.dokarkiv.arkiverkorrigertdokument.AbstractArkiverKorrigertDokumentIT;
 import no.nav.dokarkiv.arkiverkorrigertdokument.rjoark103.ArkiverKorrigertDokumentRespons;
 import no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder;
@@ -36,6 +33,7 @@ import org.springframework.test.context.transaction.TestTransaction;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 public class Rjoark104IT extends AbstractArkiverKorrigertDokumentIT {
 
@@ -68,7 +66,7 @@ public class Rjoark104IT extends AbstractArkiverKorrigertDokumentIT {
 		dokumentFilRepository.save(dokumentFil);
 		dokumentFilRepository.save(dokumentFilSladdet);
 
-		begrensningRepository.save(begrensArkivVariantAvDokumentSomSkjermet(dokumentInfo));
+		skjermingService.setVariantSkjermet(dokumentInfo, VariantFormatCode.ARKIV, SkjermingTypeCode.POL);
 
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
@@ -197,7 +195,7 @@ public class Rjoark104IT extends AbstractArkiverKorrigertDokumentIT {
 
 		DokumentInfo dokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 
-		begrensningRepository.save(begrensArkivVariantAvDokumentSomSkjermet(dokumentInfo));
+		skjermingService.setJpDokInfoRelBegrensning(journalpost.findHoveddokumentDokumentInfoRelasjon(), SkjermingTypeCode.POL);
 
 		ResponseEntity<ArkiverKorrigertDokumentRespons> responseEntity = restTemplate.exchange(
 				URL_ANGREARKIVERKORRIGERTDOKUMENT+dokumentInfo.getDokumentInfoId(),
@@ -264,6 +262,7 @@ public class Rjoark104IT extends AbstractArkiverKorrigertDokumentIT {
 				.getFilUuid()), notNullValue());
 		assertThat(dokumentFilRepository.findByFilUuid(persistedDokumentInfo.findFilDetaljerByVariantFormat(VariantFormatCode.SLADDET)
 				.getFilUuid()), notNullValue());
+		assertThat(persistedDokumentInfo.findFilDetaljerByVariantFormat(VariantFormatCode.ARKIV).getSkjermingType(), is(SkjermingTypeCode.POL));
 		TestTransaction.end();
 
 	}
@@ -283,9 +282,9 @@ public class Rjoark104IT extends AbstractArkiverKorrigertDokumentIT {
 				.getFilUuid()), notNullValue());
 
 		// Begrensning er slettet
-		assertFalse(begrensningRepository.findByDokumentInfoIdAndVariantFormatAndBegrensningType(
-				dokumentInfo.getDokumentInfoId(), VariantFormatCode.SLADDET, SkjermingTypeCode.POL).isPresent());
-		assertThat(Iterables.size(begrensningRepository.findAll()), is(0));
+		Optional<DokumentInfo> dokumentInfo1 = dokumentinfoRepository.findByDokumentInfoId(dokumentInfo.getDokumentInfoId());
+		assertTrue(dokumentInfo1.isPresent());
+		assertNull(persistedDokumentInfo.findFilDetaljerByVariantFormat(VariantFormatCode.ARKIV).getSkjermingType());
 		TestTransaction.end();
 	}
 

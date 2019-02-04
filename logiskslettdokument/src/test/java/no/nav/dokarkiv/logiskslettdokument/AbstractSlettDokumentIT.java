@@ -4,7 +4,6 @@ import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
-import static no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode.POL;
 import static no.nav.dokarkiv.core.security.JwtClaimsBuilderProvider.openAmClaimsBuilder;
 import static no.nav.dokarkiv.core.util.ConverterUtils.objectToJsonString;
 import static no.nav.dokarkiv.core.util.TestDataUtils.createAksjonsLoggRequest;
@@ -13,11 +12,10 @@ import static no.nav.dokarkiv.logiskslettdokument.util.TestUtils.JOURNALPOST_ID;
 
 import no.nav.dokarkiv.core.CoreConfig;
 import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService;
-import no.nav.dokarkiv.core.domain.entities.Begrensning;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.domain.service.SkjermingService;
 import no.nav.dokarkiv.core.repository.AksjonsLoggRepository;
-import no.nav.dokarkiv.core.repository.BegrensningRepository;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
@@ -50,7 +48,6 @@ import javax.inject.Inject;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.NoSuchElementException;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
@@ -89,7 +86,7 @@ public abstract class AbstractSlettDokumentIT {
 	@Inject
 	protected OidcTestService oidcTestService;
 	@Inject
-	protected BegrensningRepository begrensningRepository;
+	protected SkjermingService skjermingService;
 	@Inject
 	protected AksjonsLoggRepository aksjonsLoggRepository;
 
@@ -127,7 +124,6 @@ public abstract class AbstractSlettDokumentIT {
 	public void cleanup() {
 		joarkRepository.deleteAll();
 		dokumentinfoRepository.deleteAll();
-		begrensningRepository.deleteAll();
 		journalpostDokumentInfoRelasjonRepository.deleteAll();
 		aksjonsLoggRepository.deleteAll();
 	}
@@ -165,19 +161,19 @@ public abstract class AbstractSlettDokumentIT {
 						.withBodyFile("abac/abac-permit.json")));
 	}
 
-	public Begrensning hentHoveddokumentBegrensningEtterUtfoertKall(Journalpost journalpost) {
-		return begrensningRepository.findByJournalpostIdAndBegrensningTypeAndDokumentInfoIdIsNull(
-				journalpost.getJournalpostId(), POL).orElse(null);
-	}
-
-	public Begrensning hentVedleggBegrensningEtterUtfoertKall(Long journalpostId, Long dokumentInfoId) {
-		return begrensningRepository.findByJournalpostIdAndDokumentInfoIdAndBegrensningType(
-				journalpostId, dokumentInfoId, POL).orElse(null);
-	}
-
-	public Long hentAntallBegrensninger() {
-		return begrensningRepository.count();
-	}
+//	public Begrensning hentHoveddokumentBegrensningEtterUtfoertKall(Journalpost journalpost) {
+//		return begrensningRepository.findByJournalpostIdAndBegrensningTypeAndDokumentInfoIdIsNull(
+//				journalpost.getJournalpostId(), UTILGJENGELIGGJORT).orElse(null);
+//	}
+//
+//	public Begrensning hentVedleggBegrensningEtterUtfoertKall(Long journalpostId, Long dokumentInfoId) {
+//		return begrensningRepository.findByJournalpostIdAndDokumentInfoIdAndBegrensningType(
+//				journalpostId, dokumentInfoId, UTILGJENGELIGGJORT).orElse(null);
+//	}
+//
+//	public Long hentAntallBegrensninger() {
+//		return begrensningRepository.count();
+//	}
 
 	public DokumentInfo hentDokumentInfoEtterUtfoertKall(Journalpost journalpost) {
 		return journalpostDokumentInfoRelasjonRepository.findAllByDokumentInfoDokumentInfoId(
@@ -185,12 +181,12 @@ public abstract class AbstractSlettDokumentIT {
 				.get(0).getDokumentInfo();
 	}
 
-	public Begrensning hentJournalpostEtterUtfoertKall(Long journalpostId) {
-		try {
-			return begrensningRepository.findByJournalpostIdAndBegrensningTypeAndDokumentInfoIdIsNull(
-					journalpostId, POL).get();
-		} catch (NoSuchElementException e) {
-			return null;
-		}
-	}
+//	public Begrensning hentJournalpostEtterUtfoertKall(Long journalpostId) {
+//		try {
+//			return begrensningRepository.findByJournalpostIdAndBegrensningTypeAndDokumentInfoIdIsNull(
+//					journalpostId, UTILGJENGELIGGJORT).get();
+//		} catch (NoSuchElementException e) {
+//			return null;
+//		}
+//	}
 }

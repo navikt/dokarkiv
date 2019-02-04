@@ -1,14 +1,13 @@
 package no.nav.dokarkiv.logiskslettdokument.rjoark101;
 
-import static org.apache.commons.lang3.BooleanUtils.isFalse;
-
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
+import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.service.SkjermingService;
-import no.nav.dokarkiv.core.exceptions.SkjermingIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.JournalpostDokumentInfoRelasjonIkkeFunnetException;
+import no.nav.dokarkiv.core.exceptions.SkjermingIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.UgyldigTilknyttetJournalpostSomException;
 import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
 import no.nav.dokarkiv.logiskslettdokument.rjoark100.LogiskSlettDokumentRequestTo;
@@ -50,21 +49,19 @@ public class AngreLogiskSlettDokumentService {
 
 		switch (relasjonDerSlettingSkalAngres.getTilknyttetJournalpostSom()) {
 			case HOVEDDOKUMENT:
-				sjekkAtJournalpostErPOL(journalpostId);
-				skjermingService.deleteValidertJournalpostBegrensning(
-						journalpostId,
-						SkjermingTypeCode.POL);
+				sjekkAtJournalpostErSkjermet(relasjonDerSlettingSkalAngres.getJournalpost());
+				skjermingService.setJournalpostBegrensning(
+						relasjonDerSlettingSkalAngres.getJournalpost(),
+						null);
 				log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har angret logisk sletting av journalpost med journalpostId={}",
 						journalpostId);
 				break;
 			case VEDLEGG:
-				sjekkAtDokumentErPOL(
-						journalpostId,
-						dokumentInfoId);
-				skjermingService.deleteValidertJournalpostDokumentInfoRelasjonBegrensning(
-						journalpostId,
-						dokumentInfoId,
-						SkjermingTypeCode.POL);
+				sjekkAtDokumentErSkjermet(
+						relasjonDerSlettingSkalAngres);
+				skjermingService.setJpDokInfoRelBegrensning(
+						relasjonDerSlettingSkalAngres,
+						null);
 				log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) +
 								" har angret logisk sletting av dokument med journalpostId={}, dokumentInfoId={}",
 						journalpostId, dokumentInfoId);
@@ -80,26 +77,21 @@ public class AngreLogiskSlettDokumentService {
 		return LogiskSlettDokumentResponseMapper.mapToSlettDokumentResponse(relasjonDerSlettingSkalAngres);
 	}
 
-	private void sjekkAtDokumentErPOL(Long journalpostId, Long dokumentInfoId) {
-		if (isFalse(skjermingService.isJournalpostDokumentInfoRelasjonSkjermet(
-				journalpostId,
-				dokumentInfoId,
-				SkjermingTypeCode.POL))) {
+	private void sjekkAtDokumentErSkjermet(JournalpostDokumentInfoRelasjon rel) {
+		if (!SkjermingTypeCode.POL.equals(rel.getSkjermingType())) {
 			throw new SkjermingIkkeFunnetException(String.format(
-					"Fant ikke forventet begrensning for dokument med journalpostId=%s, dokumentInfoId=%s og begrensningsType=%s. Det kan hende journalpost med journalpostId=%s er allerede POL.",
-					journalpostId,
-					dokumentInfoId,
-					SkjermingTypeCode.POL.name(), journalpostId));
+					"Fant ikke forventet skjerming for dokument med journalpostId=%s, dokumentInfoId=%s og skjermingType=%s. Det kan hende journalpost med journalpostId=%s er allerede utilgjengeliggjort.",
+					rel.getJournalpost().getJournalpostId(),
+					rel.getDokumentInfo().getDokumentInfoId(),
+					SkjermingTypeCode.POL.name(), rel.getJournalpost().getJournalpostId()));
 		}
 	}
 
-	private void sjekkAtJournalpostErPOL(Long journalpostId) {
-		if (isFalse(skjermingService.isJournalpostSkjermet(
-				journalpostId,
-				SkjermingTypeCode.POL))) {
+	private void sjekkAtJournalpostErSkjermet(Journalpost journalpost) {
+		if (!SkjermingTypeCode.POL.equals(journalpost.getSkjermingType())) {
 			throw new SkjermingIkkeFunnetException(String.format(
-					"Fant ikke forventet begrensning for journalpost med journalpostId=%s og begrensningsType=%s.",
-					journalpostId,
+					"Fant ikke forventet skjerming for journalpost med journalpostId=%s og skjermingType=%s.",
+					journalpost.getJournalpostId(),
 					SkjermingTypeCode.POL.name()));
 		}
 	}

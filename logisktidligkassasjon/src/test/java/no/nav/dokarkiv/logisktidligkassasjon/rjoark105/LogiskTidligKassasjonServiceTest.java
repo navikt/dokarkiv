@@ -7,12 +7,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.when;
 
-import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
-import no.nav.dokarkiv.core.domain.entities.Begrensning;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.domain.service.SkjermingService;
 import no.nav.dokarkiv.core.exceptions.DokumentAlleredeKassertException;
-import no.nav.dokarkiv.core.repository.BegrensningRepository;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import org.junit.Before;
 import org.junit.Rule;
@@ -29,16 +27,13 @@ public class LogiskTidligKassasjonServiceTest {
 
 	private static final Long DOKUMENTINFO_ID = 2000000L;
 	private static final String TITTEL = "Tittel";
-	private static final Begrensning begrensning =
-			Begrensning.builder()
-					.dokumentInfoId(DOKUMENTINFO_ID)
-					.begrensningType(SkjermingTypeCode.POL)
-					.build();
+	private static Journalpost journalpost = null;
+	private static DokumentInfo dokumentInfo = null;
 
 	@Mock
 	private DokumentinfoRepository dokumentinfoRepository;
 	@Mock
-	private BegrensningRepository begrensningRepository;
+	private SkjermingService skjermingService;
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
 
@@ -46,7 +41,10 @@ public class LogiskTidligKassasjonServiceTest {
 
 	@Before
 	public void setUp() {
-		logiskTidligKassasjonService = new LogiskTidligKassasjonService(dokumentinfoRepository, begrensningRepository);
+		logiskTidligKassasjonService = new LogiskTidligKassasjonService(dokumentinfoRepository, skjermingService);
+		journalpost = opprettHoveddokumentForEnhetstest();
+		dokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
+		logiskTidligKassasjonService = new LogiskTidligKassasjonService(dokumentinfoRepository, skjermingService);
 	}
 
 	@Test()
@@ -60,8 +58,7 @@ public class LogiskTidligKassasjonServiceTest {
 		DokumentInfo dokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 
 		when(dokumentinfoRepository.findByDokumentInfoId(DOKUMENTINFO_ID)).thenReturn(Optional.of(dokumentInfo));
-		when(begrensningRepository.findByDokumentInfoIdAndBegrensningType(DOKUMENTINFO_ID, SkjermingTypeCode.POL))
-				.thenReturn(Optional.of(begrensning));
+		when(skjermingService.isDokumentInfoIdKassert(DOKUMENTINFO_ID)).thenReturn(true);
 
 		logiskTidligKassasjonService.logiskTidligKassasjonAvDokument(DOKUMENTINFO_ID);
 	}
@@ -72,8 +69,7 @@ public class LogiskTidligKassasjonServiceTest {
 		DokumentInfo dokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 
 		when(dokumentinfoRepository.findByDokumentInfoId(DOKUMENTINFO_ID)).thenReturn(Optional.of(dokumentInfo));
-		when(begrensningRepository.findByDokumentInfoIdAndBegrensningType(DOKUMENTINFO_ID, SkjermingTypeCode.POL))
-				.thenReturn(Optional.empty());
+		when(skjermingService.isDokumentInfoIdKassert(DOKUMENTINFO_ID)).thenReturn(false);
 
 		LogiskTidligKassasjonResponse response = logiskTidligKassasjonService.logiskTidligKassasjonAvDokument(DOKUMENTINFO_ID);
 
@@ -89,8 +85,7 @@ public class LogiskTidligKassasjonServiceTest {
 		assertTrue(dokumentInfo.isRelatedToMultipleJournalposts());
 
 		when(dokumentinfoRepository.findByDokumentInfoId(DOKUMENTINFO_ID)).thenReturn(Optional.of(dokumentInfo));
-		when(begrensningRepository.findByDokumentInfoIdAndBegrensningType(DOKUMENTINFO_ID, SkjermingTypeCode.POL))
-				.thenReturn(Optional.empty());
+		when(skjermingService.isDokumentInfoIdKassert(DOKUMENTINFO_ID)).thenReturn(false);
 
 		logiskTidligKassasjonService.logiskTidligKassasjonAvDokument(DOKUMENTINFO_ID);
 	}

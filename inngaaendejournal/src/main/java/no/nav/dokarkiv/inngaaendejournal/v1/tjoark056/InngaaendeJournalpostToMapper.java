@@ -10,6 +10,7 @@ import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
+import no.nav.dokarkiv.core.domain.service.SkjermingService;
 import no.nav.dokarkiv.core.exceptions.DokarkivFunctionalException;
 import no.nav.dokarkiv.inngaaendejournal.v1.tjoark056.to.AktoerTo;
 import no.nav.dokarkiv.inngaaendejournal.v1.tjoark056.to.ArkivSakTo;
@@ -20,6 +21,7 @@ import no.nav.dokarkiv.inngaaendejournal.v1.tjoark056.to.InngaaendeJournalpostTo
 import no.nav.dokarkiv.inngaaendejournal.v1.tjoark056.to.JournaltilstandTo;
 import org.springframework.stereotype.Component;
 
+import javax.inject.Inject;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -36,7 +38,14 @@ import java.util.stream.Collectors;
 @Component
 public final class InngaaendeJournalpostToMapper {
 
+	@Inject
+	private SkjermingService skjermingService;
+
 	private static final List<JournalStatusCode> MIDLERTIDIG_STATUS = Arrays.asList(JournalStatusCode.M, JournalStatusCode.MO, JournalStatusCode.UB, JournalStatusCode.OD);
+
+	public InngaaendeJournalpostToMapper(SkjermingService skjermingService) {
+		this.skjermingService = skjermingService;
+	}
 
 	public InngaaendeJournalpostTo map(Journalpost journalpost) {
 		try {
@@ -105,14 +114,12 @@ public final class InngaaendeJournalpostToMapper {
 				.dokumenttypeId(dokumentInfo.getDokumenttypeId())
 				.dokumentId(dokumentInfo.getDokumentInfoId())
 				.dokumenttilstand(mapDokumenttilstand(dokumentInfo))
-				.dokumentInnhold(mapDokumentinnhold(dokumentInfo.getFildetaljerListe()))
+				.dokumentInnhold(mapDokumentinnhold(dokumentInfo, dokumentInfo.getFildetaljerListe()))
 				.build();
 	}
 
 	private DokumenttilstandTo mapDokumenttilstand(DokumentInfo dokumentInfo) {
-		if(dokumentInfo.isFunksjoneltSlettet()) {
-			return DokumenttilstandTo.SLETTET;
-		} else if(dokumentInfo.isFerdigstilt()) {
+		if(dokumentInfo.isFerdigstilt()) {
 			return DokumenttilstandTo.FERDIGSTILT;
 		} else if(dokumentInfo.isAvbrutt()) {
 			return DokumenttilstandTo.AVBRUTT;
@@ -123,15 +130,19 @@ public final class InngaaendeJournalpostToMapper {
 		}
 	}
 
-	private List<DokumentInnholdTo> mapDokumentinnhold(Set<FilDetaljer> filDetaljers) {
+	private List<DokumentInnholdTo> mapDokumentinnhold(DokumentInfo dokumentInfo, Set<FilDetaljer> filDetaljers) {
 		if(filDetaljers.isEmpty()) {
 			return Collections.emptyList();
 		} else {
-			return filDetaljers.stream().filter(filDetaljer -> !filDetaljer.getVariantFormat().equals(VariantFormatCode.SLADDET))
-					.map(filDetaljer -> DokumentInnholdTo.builder()
-					.arkivFiltype(filDetaljer.getFiltype())
-					.variantFormat(filDetaljer.getVariantFormat())
-					.build()).collect(Collectors.toList());
+			if (!skjermingService.isDokumentInfoKassert(dokumentInfo)) {
+				return filDetaljers.stream().filter(filDetaljer -> !filDetaljer.getVariantFormat().equals(VariantFormatCode.SLADDET))
+						.map(filDetaljer -> DokumentInnholdTo.builder()
+								.arkivFiltype(filDetaljer.getFiltype())
+								.variantFormat(filDetaljer.getVariantFormat())
+								.build()).collect(Collectors.toList());
+			} else {
+				return Collections.emptyList();
+			}
 		}
 	}
 
@@ -153,7 +164,7 @@ public final class InngaaendeJournalpostToMapper {
 						.dokumenttypeId(dokumentInfo.getDokumenttypeId())
 						.dokumentId(dokumentInfo.getDokumentInfoId())
 						.dokumenttilstand(mapDokumenttilstand(dokumentInfo))
-						.dokumentInnhold(mapDokumentinnhold(dokumentInfo.getFildetaljerListe()))
+						.dokumentInnhold(mapDokumentinnhold(dokumentInfo, dokumentInfo.getFildetaljerListe()))
 						.build();
 			}).collect(Collectors.toList());
 		}

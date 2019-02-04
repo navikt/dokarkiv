@@ -2,7 +2,11 @@ package no.nav.dokarkiv.fysiskslettdokument.rjoark102;
 
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 
-class FysiskSlettDokumentResponseMapper {
+final class FysiskSlettDokumentResponseMapper {
+
+	private FysiskSlettDokumentResponseMapper() {
+		throw new IllegalStateException("Utility class");
+	}
 
 	public static FysiskSlettDokumentResponse mapToFysiskSlettDokumentResponse(
 			JournalpostDokumentInfoRelasjon relasjon) {

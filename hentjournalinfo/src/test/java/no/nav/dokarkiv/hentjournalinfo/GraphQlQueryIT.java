@@ -27,11 +27,10 @@ import no.nav.dokarkiv.core.domain.builder.DokumentFilBuilder;
 import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
-import no.nav.dokarkiv.core.domain.entities.Begrensning;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.domain.service.SkjermingService;
 import no.nav.dokarkiv.core.exceptions.DokumentInfoIkkeFunnetException;
-import no.nav.dokarkiv.core.repository.BegrensningRepository;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
@@ -99,7 +98,7 @@ public class GraphQlQueryIT {
 	@Inject
 	private DokumentinfoRepository dokumentinfoRepository;
 	@Inject
-	private BegrensningRepository begrensningRepository;
+	private SkjermingService skjermingService;
 	@Inject
 	private TestRestTemplate testRestTemplate;
 	@Inject
@@ -247,13 +246,7 @@ public class GraphQlQueryIT {
 		abacPermit();
 		Journalpost journalpost = TestDataUtils.createJournalpostBuilder(FIL_UUID).build();
 		joarkRepository.save(journalpost);
-		Begrensning begrensning = Begrensning.builder()
-				.journalpostId(journalpost.getJournalpostId())
-				.begrensningType(SkjermingTypeCode.POL)
-				.build();
-		begrensning.setOpprettetKildeNavn("Opprettet av");
-		begrensningRepository.save(begrensning);
-
+		skjermingService.setJournalpostBegrensning(journalpost, SkjermingTypeCode.POL);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
@@ -274,19 +267,12 @@ public class GraphQlQueryIT {
 
 		journalpost = joarkRepository.save(journalpost);
 
-		no.nav.dokarkiv.core.domain.entities.DokumentInfo vedlegg = journalpost.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG).iterator().next().getDokumentInfo();
-		Begrensning begrensning = Begrensning.builder()
-				.journalpostId(journalpost.getJournalpostId())
-				.dokumentInfoId(vedlegg.getDokumentInfoId())
-				.begrensningType(SkjermingTypeCode.POL)
-				.build();
-		begrensning.setOpprettetKildeNavn("Opprettet av");
-		begrensningRepository.save(begrensning);
-
+		no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon rel = journalpost.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG).iterator().next();
+		skjermingService.setJpDokInfoRelBegrensning(rel, SkjermingTypeCode.POL);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
-		HttpEntity request = new HttpEntity<>(createDokumentInfoRequest(vedlegg
+		HttpEntity request = new HttpEntity<>(createDokumentInfoRequest(rel.getDokumentInfo()
 				.getDokumentInfoId()), oidcHeaders());
 
 		GraphQlResponse response = testRestTemplate.postForObject("/rest/graphql", request, GraphQlResponse.class);
@@ -327,7 +313,7 @@ public class GraphQlQueryIT {
 	public void shouldReturnAuthorizationExceptionWhenAbacDenyForDokumentInfoQuery() throws Exception {
 		abacDeny();
 		Journalpost journalpost = TestDataUtils.createJournalpostBuilder(FIL_UUID).build();
-		journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().setSlettet(true);
+//		journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().setSlettet(true);
 		joarkRepository.save(journalpost);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
@@ -350,7 +336,6 @@ public class GraphQlQueryIT {
 	public void shouldReturnAuthorizationExceptionWhenAbacDenyForJournalpostQuery() throws Exception {
 		abacDeny();
 		Journalpost journalpost = TestDataUtils.createJournalpostBuilder(FIL_UUID).build();
-		journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().setSlettet(true);
 		joarkRepository.save(journalpost);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();

@@ -66,6 +66,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
 import no.nav.dokarkiv.core.datautil.SaksrelasjonTestDataProvider;
@@ -76,6 +77,7 @@ import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
+import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.jaxws.SubjectHandlerUtils;
@@ -96,6 +98,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.springframework.test.context.transaction.TestTransaction;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.time.LocalDate;
@@ -399,48 +402,6 @@ public class HentMinTilgjengeligeJournalpostListeIT extends AbstractInnsynJourna
 		assertThat(response.getJournalpostListe(), hasSize(2));
 		assertThatJournalpostOnlyHasHoveddokument(response.getJournalpostListe().get(0));
 		assertThatJournalpostOnlyHasHoveddokument(response.getJournalpostListe().get(1));
-	}
-
-	/**
-	 * Hvis hoveddokument er markert som slettet
-	 * s&aring; skal journalpost ikke returneres.
-	 */
-	@Test
-	public void shouldNotReturnJournalpostWhenHoveddokumentIsSlettet() throws Exception {
-		Journalpost journalpost = buildAndPersist(aJournalpostWithoutHoveddokument()
-				.dokumentInfoRelasjoner(
-						createHoveddokumentRelasjon(createDokumentInfo().slettet(true).build()).build())
-		);
-
-		String sakId = journalpost.getSaksrelasjon().getSakId();
-
-		HentTilgjengeligJournalpostListeRequest request = createRequest(false, sakId);
-
-		HentTilgjengeligJournalpostListeResponse response = innsynJournalV2Provider.hentTilgjengeligJournalpostListe(request);
-
-		assertEmptyJournalpostListeIn(response);
-	}
-
-	/**
-	 * Hvis et journalpostvedlegg er markert som slettet
-	 * s&aring; skal vedlegget ikke returneres som en del av resultatet.
-	 */
-	@Test
-	public void shouldNotIncludeSlettedeVedleggOnJournalpost() throws Exception {
-		Journalpost journalpost = buildAndPersist(aJournalpost()
-				.dokumentInfoRelasjoner(
-						createVedleggRelasjon(createDokumentInfo().slettet(true).build()).build(),
-						createVedleggRelasjon(createDokumentInfo().slettet(true).build()).build())
-		);
-
-		String sakId = journalpost.getSaksrelasjon().getSakId();
-
-		HentTilgjengeligJournalpostListeRequest request = createRequest(false, sakId);
-
-		HentTilgjengeligJournalpostListeResponse response = innsynJournalV2Provider.hentTilgjengeligJournalpostListe(request);
-
-		assertThat(response.getJournalpostListe(), hasSize(1));
-		assertThatJournalpostOnlyHasHoveddokument(response.getJournalpostListe().get(0));
 	}
 
 	/**
@@ -816,6 +777,36 @@ public class HentMinTilgjengeligeJournalpostListeIT extends AbstractInnsynJourna
 
 		assertSak(responseJp.getGjelderSak());
 		assertDokumentInfoRels(responseJp.getDokumentinfoRelasjonListe());
+	}
+
+	@Test
+	public void shouldVerifyResponseValuesKassert() throws Exception {
+		Journalpost journalpost = buildAndPersist(journalpostMaxResponse());
+		skjermingService.setDokumentKassert(journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo(), SkjermingTypeCode.POL);
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
+
+		String sakId = journalpost.getSaksrelasjon().getSakId();
+		HentTilgjengeligJournalpostListeRequest request = createRequest(true, sakId);
+		HentTilgjengeligJournalpostListeResponse response = innsynJournalV2Provider.hentTilgjengeligJournalpostListe(request);
+
+		List<no.nav.tjeneste.virksomhet.innsynjournal.v2.informasjon.Journalpost> journalpostListe = response.getJournalpostListe();
+		assertThat(journalpostListe, hasSize(1));
+		no.nav.tjeneste.virksomhet.innsynjournal.v2.informasjon.Journalpost responseJp = journalpostListe.get(0);
+
+		XMLGregorianCalendar expectedMottattDato = DateConverterUtil.convertDateToXMLGregorianCalendar(JANUARY_1_2020);
+		XMLGregorianCalendar expectedSendtDato = DateConverterUtil.convertDateToXMLGregorianCalendar(JANUARY_1_2020);
+
+		assertThat(responseJp.getArkivtema().getValue(), is(JP_FAGOMRADE.name()));
+		assertThat(responseJp.getEksternPart(), is(JP_AVSENDER_MOTTAKER));
+		assertThat(responseJp.getMottatt(), is(expectedMottattDato));
+		assertThat(responseJp.getSendt(), is(expectedSendtDato));
+		assertThat(Long.valueOf(responseJp.getJournalpostId()), is(journalpost.getJournalpostId()));
+		assertThat(responseJp.getKommunikasjonsretning().getValue(), is(JP_TYPE.name()));
+		assertThat(responseJp.getOpprettet(), is(DateConverterUtil.convertDateToXMLGregorianCalendar(journalpost.getChangeStamp().getCreatedDate())));
+
+		assertSak(responseJp.getGjelderSak());
+		assertNull(responseJp.getDokumentinfoRelasjonListe().get(0).getJournalfoertDokument().getBeskriverInnhold());
 	}
 
 	private void assertSak(Sak gjelderSak) {

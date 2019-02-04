@@ -4,6 +4,8 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -17,6 +19,7 @@ import no.nav.dokarkiv.core.domain.builder.JournalpostBuilder;
 import no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
+import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.service.SkjermingService;
 import no.nav.dokarkiv.core.exceptions.DocumentNotFoundException;
@@ -147,8 +150,6 @@ public class DefaultHentDokumentUrlServiceTest {
 		expectedException.expect(DocumentNotFoundException.class);
 
 		when(joarkRepositoryMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(createJournalPost()));
-		when(hentDokumentUrlMock.hentDokumentUrl(isA(HentDokumentUrlRequest.class))).thenThrow(
-				new NoJournalpostFoundException("Test", JOURNALPOST_ID));
 
 		hentDokumentUrlService.hentDokumentUrl(hentDokumentUrlRequest);
 	}
@@ -158,14 +159,13 @@ public class DefaultHentDokumentUrlServiceTest {
 		expectedException.expect(DocumentNotFoundException.class);
 
 		when(joarkRepositoryMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(createJournalPost()));
-		when(hentDokumentUrlMock.hentDokumentUrl(isA(HentDokumentUrlRequest.class))).thenThrow(
-				new InvalidFilUuidException("Test", FIL_UUID));
 
 		hentDokumentUrlService.hentDokumentUrl(hentDokumentUrlRequest);
 	}
 
 	@Test
 	public void shouldCallDelegateWithCorrectValues() throws Exception {
+		when(skjermingService.getVariantSkjermet(any(DokumentInfo.class), eq(VariantFormatCode.ARKIV))).thenReturn(FilDetaljer.builder().filUuid(FIL_UUID).build());
 		when(joarkRepositoryMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(createJournalPost()));
 		when(hentDokumentUrlMock.hentDokumentUrl(isA(HentDokumentUrlRequest.class))).thenReturn(
 				new HentDokumentUrlResponse("Test"));
@@ -180,7 +180,7 @@ public class DefaultHentDokumentUrlServiceTest {
 
 	@Test
 	public void shouldCallDelegateWithCorrectValuesSkjermet() throws Exception {
-		when(skjermingService.isVariantSkjermet(DOKUMENT_INFO_ID, VariantFormatCode.ARKIV)).thenReturn(true);
+		when(skjermingService.getVariantSkjermet(any(DokumentInfo.class), eq(VariantFormatCode.ARKIV))).thenReturn(FilDetaljer.builder().filUuid(FIL_UUID_SLADDET).build());
 		when(joarkRepositoryMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(createJournalPost()));
 		when(hentDokumentUrlMock.hentDokumentUrl(isA(HentDokumentUrlRequest.class))).thenReturn(
 				new HentDokumentUrlResponse("Test"));
@@ -197,8 +197,9 @@ public class DefaultHentDokumentUrlServiceTest {
 	@Test
 	public void shouldReturnDokumentUrl() throws Exception {
 		String dokumentUrl = "nav.no/joark/dokument123";
-
-		when(joarkRepositoryMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(createJournalPost()));
+		Journalpost journalpost = createJournalPost();
+		when(skjermingService.getVariantSkjermet(any(DokumentInfo.class), eq(VariantFormatCode.ARKIV))).thenReturn(FilDetaljer.builder().filUuid(FIL_UUID).build());
+		when(joarkRepositoryMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(journalpost));
 		when(hentDokumentUrlMock.hentDokumentUrl(isA(HentDokumentUrlRequest.class))).thenReturn(
 				new HentDokumentUrlResponse(dokumentUrl));
 

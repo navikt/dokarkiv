@@ -9,8 +9,10 @@ import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.Bruker;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
+import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
+import no.nav.dokarkiv.core.domain.service.SkjermingService;
 import no.nav.dokarkiv.core.domain.validator.FoedselsnummerValidator;
 import no.nav.dokarkiv.core.domain.validator.OrgnrValidator;
 import no.nav.tjeneste.virksomhet.journal.v3.informasjon.Aktoer;
@@ -46,6 +48,13 @@ import java.util.Set;
 @Slf4j
 @Component
 public class HentKjerneJournalpostListeResponseMapper {
+
+	private SkjermingService skjermingService;
+
+	public HentKjerneJournalpostListeResponseMapper(SkjermingService skjermingService) {
+		this.skjermingService = skjermingService;
+	}
+
 	public static final String KORRESPODANSE_TYPE_MOTTAKER = "Mottaker";
 	public static final String KORRESPODANSE_TYPE_AVSENDER = "Avsender";
 
@@ -190,7 +199,7 @@ public class HentKjerneJournalpostListeResponseMapper {
 	private DetaljertDokumentinformasjon mapDetaljerDokumentinformasjon(DokumentInfo dokumentInfo) {
 		return new DetaljertDokumentinformasjon()
 			.withDokumentId(String.valueOf(dokumentInfo.getDokumentInfoId()))
-			.withDokumentInnholdListe(mapDokumentInnhold(dokumentInfo.getFildetaljerListe()))
+			.withDokumentInnholdListe(mapDokumentInnhold(dokumentInfo, dokumentInfo.getFildetaljerListe()))
 			.withDokumentTypeId(new DokumenttypeIder().withValue(dokumentInfo.getDokumenttypeId()))
 			.withTittel(dokumentInfo.getTittel())
 			.withDokumentkategori(new Dokumentkategorier().withValue(getEnumName(dokumentInfo.getKategori())))
@@ -199,8 +208,11 @@ public class HentKjerneJournalpostListeResponseMapper {
 	}
 	
 
-	private List<DokumentInnhold> mapDokumentInnhold(Set<no.nav.dokarkiv.core.domain.entities.FilDetaljer> filDetaljer) {
+	private List<DokumentInnhold> mapDokumentInnhold(DokumentInfo dokumentInfo, Set<FilDetaljer> filDetaljer) {
 		List<DokumentInnhold> dokumentInnhold = new ArrayList<>();
+		if (skjermingService.isDokumentInfoKassert(dokumentInfo)) {
+			return dokumentInnhold;
+		}
 		for(no.nav.dokarkiv.core.domain.entities.FilDetaljer filDetalj : filDetaljer) {
 			if (!filDetalj.getVariantFormat().equals(VariantFormatCode.SLADDET)) {
 				dokumentInnhold.add(new DokumentInnhold()
@@ -214,10 +226,6 @@ public class HentKjerneJournalpostListeResponseMapper {
 	
 
 	private Dokumenttilstand mapDokumenttilstand(DokumentInfo dokumentInfo) {
-		if (dokumentInfo.isFunksjoneltSlettet()) {
-			return Dokumenttilstand.SLETTET;
-		}
-		
 		if (dokumentInfo.isAvbrutt()) {
 			return Dokumenttilstand.AVBRUTT;
 		} else if (dokumentInfo.isFerdigstilt()) {

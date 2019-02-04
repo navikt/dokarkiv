@@ -49,22 +49,21 @@ public class FysiskSlettDokumentService {
 
 		switch (relasjonSomSkalSlettesFysisk.getTilknyttetJournalpostSom()) {
 			case HOVEDDOKUMENT:
-				sjekkAtJournalpostErPOL(relasjonSomSkalSlettesFysisk.getJournalpost().getJournalpostId());
-				skjermingService.deleteValidertJournalpostBegrensning(
-						relasjonSomSkalSlettesFysisk.getJournalpost().getJournalpostId(),
-						SkjermingTypeCode.POL);
+				sjekkAtJournalpostErUtilgjengeliggjort(relasjonSomSkalSlettesFysisk.getJournalpost().getJournalpostId());
+				skjermingService.setJournalpostBegrensning(
+						relasjonSomSkalSlettesFysisk.getJournalpost(),
+						null);
 				fysiskSlettEtHoveddokument(relasjonSomSkalSlettesFysisk);
 				log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har fysisk slettet journalpost med journalpostId={}",
 						requestTo.getJournalpostId());
 				break;
 			case VEDLEGG:
-				sjekkAtDokumentErPOL(
+				sjekkAtDokumentErUtilgjengeliggjort(
 						relasjonSomSkalSlettesFysisk.getJournalpost().getJournalpostId(),
 						relasjonSomSkalSlettesFysisk.getDokumentInfo().getDokumentInfoId());
-				skjermingService.deleteValidertJournalpostDokumentInfoRelasjonBegrensning(
-						relasjonSomSkalSlettesFysisk.getJournalpost().getJournalpostId(),
-						relasjonSomSkalSlettesFysisk.getDokumentInfo().getDokumentInfoId(),
-						SkjermingTypeCode.POL);
+				skjermingService.setJpDokInfoRelBegrensning(
+						relasjonSomSkalSlettesFysisk,
+						null);
 				fysiskSlettEtVedlegg(relasjonSomSkalSlettesFysisk);
 				log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) +
 								" har fysisk slettet dokument med journalpostId={}, dokumentInfoId={}",
@@ -81,7 +80,7 @@ public class FysiskSlettDokumentService {
 		return FysiskSlettDokumentResponseMapper.mapToFysiskSlettDokumentResponse(relasjonSomSkalSlettesFysisk);
 	}
 
-	private void sjekkAtJournalpostErPOL(Long journalpostId) {
+	private void sjekkAtJournalpostErUtilgjengeliggjort(Long journalpostId) {
 		if (isFalse(skjermingService.isJournalpostSkjermet(
 				journalpostId,
 				SkjermingTypeCode.POL))) {
@@ -92,7 +91,7 @@ public class FysiskSlettDokumentService {
 		}
 	}
 
-	private void sjekkAtDokumentErPOL(Long journalpostId, Long dokumentInfoId) {
+	private void sjekkAtDokumentErUtilgjengeliggjort(Long journalpostId, Long dokumentInfoId) {
 		if (isFalse(skjermingService.isJournalpostDokumentInfoRelasjonSkjermet(
 				journalpostId,
 				dokumentInfoId,

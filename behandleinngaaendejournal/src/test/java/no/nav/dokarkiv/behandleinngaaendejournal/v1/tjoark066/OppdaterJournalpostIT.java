@@ -56,6 +56,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.MDC;
+import org.springframework.test.context.transaction.TestTransaction;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -389,7 +390,9 @@ public class OppdaterJournalpostIT extends AbstractBehandleInngaaendeJournalV1It
 		oppdaterRequest.setInngaaendeJournalpost(inngaaendeJournalpost);
 
 		behandleInngaaendeJournalProvider.oppdaterJournalpost(oppdaterRequest);
-
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
+		TestTransaction.start();
 
 		Journalpost resultJournalpost = getPersistedJournalpostById(persistedJournalpost.getJournalpostId());
 		Bruker bruker = resultJournalpost.getBrukere().stream().iterator().next();

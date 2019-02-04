@@ -3,7 +3,6 @@ package no.nav.dokarkiv.core.domain.builder;
 import no.nav.dokarkiv.core.domain.ChangeStamp;
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
-import no.nav.dokarkiv.core.domain.entities.Begrensning;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
@@ -55,9 +54,7 @@ public class DokumentInfoBuilder extends Builder<DokumentInfo> {
 	private String brukeroppgittTittel;
 	private String opprettetKildeNavn;
 	private String endretKildeNavn;
-	private Boolean slettet;
 	private String dokumenttypeId;
-	private Begrensning begrensning;
 	private Map<String, String> tilleggsopplysninger = new HashMap<>();
 	private List<SkannetInnhold> skannetInnholdList = new ArrayList<>();
 	private Set<FilDetaljer> filDetaljerList = new HashSet<>();
@@ -84,8 +81,7 @@ public class DokumentInfoBuilder extends Builder<DokumentInfo> {
 	public DokumentInfoBuilder dokumenttypeId(String value) { this.dokumenttypeId = value; return this; }
 	public DokumentInfoBuilder opprettetKildeNavn(String value) { this.opprettetKildeNavn = value; return this; }
 	public DokumentInfoBuilder endretKildeNavn(String value) { this.endretKildeNavn = value; return this; }
-	public DokumentInfoBuilder slettet(Boolean value) { this.slettet = value; return this; }
-	public DokumentInfoBuilder skannetInnhold(SkannetInnhold... value) { 
+	public DokumentInfoBuilder skannetInnhold(SkannetInnhold... value) {
 		this.skannetInnholdList = Arrays.asList(value); return this; }
 	public DokumentInfoBuilder filDetaljerList(FilDetaljer... value) { 
 		this.filDetaljerList.addAll(Arrays.asList(value)); return this; }
@@ -99,9 +95,6 @@ public class DokumentInfoBuilder extends Builder<DokumentInfo> {
 		dokumentInfo.setBrevkode(brevkode);
 		dokumentInfo.setBrevgruppe(brevgruppe);
 		dokumentInfo.setOriginalJournalpost(originalJournalpost);
-		dokumentInfo.setKonfidensialitet(konfidensialitet);
-		dokumentInfo.setIntegritet(integritet);
-		dokumentInfo.setTilgjengelighet(tilgjengelighet);
         dokumentInfo.setInnskrenketPartsinnsyn(innskrenketPartsinnsyn);
         dokumentInfo.setInnskrenketPartsinnsynFraTredjepart(innskrenketPartsinnsynFraTredjepart);
 		dokumentInfo.setOrganInternt(organInternt);
@@ -114,7 +107,6 @@ public class DokumentInfoBuilder extends Builder<DokumentInfo> {
 		dokumentInfo.setTittel(StringUtils.isEmpty(brukeroppgittTittel) ? tittel: brukeroppgittTittel);
 		dokumentInfo.setOpprettetKildeNavn(opprettetKildeNavn);
 		dokumentInfo.setEndretKildeNavn(endretKildeNavn);
-		dokumentInfo.setSlettet(slettet);
 		dokumentInfo.setTilleggsopplysninger(tilleggsopplysninger);
 		dokumentInfo.setDokumenttypeId(dokumenttypeId);
 		for (SkannetInnhold skannetInnhold : skannetInnholdList) {
