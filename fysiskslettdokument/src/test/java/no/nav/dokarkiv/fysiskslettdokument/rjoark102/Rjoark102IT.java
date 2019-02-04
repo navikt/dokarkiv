@@ -2,22 +2,25 @@ package no.nav.dokarkiv.fysiskslettdokument.rjoark102;
 
 import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_LOGG_HEADER;
 import static no.nav.dokarkiv.core.domain.codes.AksjonTypeCode.SLETT;
-import static no.nav.dokarkiv.fysiskslettdokument.util.TestUtils.SKJERMINGTYPE_POL;
 import static no.nav.dokarkiv.fysiskslettdokument.util.TestUtils.knyttDokumentInfoSomVedleggTilJournalpostForIT;
 import static no.nav.dokarkiv.fysiskslettdokument.util.TestUtils.opprettDuplikatRelasjon;
 import static no.nav.dokarkiv.fysiskslettdokument.util.TestUtils.opprettHoveddokumentForIT;
 import static no.nav.dokarkiv.fysiskslettdokument.util.TestUtils.opprettHoveddokumentMedEtKnyttetVedleggForIT;
 import static no.nav.dokarkiv.fysiskslettdokument.util.TestUtils.opprettHoveddokumentMedSammensattDokForIT;
+import static no.nav.dokarkiv.fysiskslettdokument.util.TestUtils.utilgjengeliggjoerHoveddokument;
+import static no.nav.dokarkiv.fysiskslettdokument.util.TestUtils.utilgjengeliggjoerVedlegg;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
+import no.nav.dokarkiv.core.domain.entities.Begrensning;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
@@ -32,7 +35,6 @@ import org.springframework.test.context.transaction.TestTransaction;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 
 public class Rjoark102IT extends AbstractFysiskSlettDokumentIT {
 
@@ -42,30 +44,30 @@ public class Rjoark102IT extends AbstractFysiskSlettDokumentIT {
 
 		Journalpost journalpost = joarkRepository.save(opprettHoveddokumentMedEtKnyttetVedleggForIT());
 
-		JournalpostDokumentInfoRelasjon rel = journalpost.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
-				.iterator().next();
+		DokumentInfo vedlegg = journalpost.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
+				.iterator().next().getDokumentInfo();
 
-		skjermingService.setJpDokInfoRelBegrensning(rel, SkjermingTypeCode.POL);
+		begrensningRepository.save(utilgjengeliggjoerVedlegg(journalpost.getJournalpostId(), vedlegg.getDokumentInfoId()));
 
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
-		assertFalse(rel.getDokumentInfo().isRelatedToMultipleJournalposts());
+		assertFalse(vedlegg.isRelatedToMultipleJournalposts());
+		assertThat(hentAntallBegrensninger(), is(1L));
 
 		assertFalse(journalpostDokumentInfoRelasjonRepository
-				.findAllByDokumentInfoDokumentInfoId(rel.getDokumentInfo().getDokumentInfoId()).isEmpty());
+				.findAllByDokumentInfoDokumentInfoId(vedlegg.getDokumentInfoId()).isEmpty());
 		assertTrue(dokumentinfoRepository.findAllByJournalpostRelasjonerJournalpostJournalpostIdAndDokumentInfoId(
-				journalpost.getJournalpostId(), rel.getDokumentInfo().getDokumentInfoId()).isPresent());
+				journalpost.getJournalpostId(), vedlegg.getDokumentInfoId()).isPresent());
 		assertTrue(joarkRepository.findAllJournalpostIdsByDokumentInfoId(
-				rel.getDokumentInfo().getDokumentInfoId()).size() > 0);
+				vedlegg.getDokumentInfoId()).size() > 0);
 
 
 		List<AksjonsLogg> aksjonsLoggListBefore = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
 		assertThat(aksjonsLoggListBefore.size(), is(0));
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
-				URL_FYSISKSLETTDOKUMENT + journalpost.getJournalpostId() + "/" + rel.getDokumentInfo().getDokumentInfoId() +
-						"/" + SKJERMINGTYPE_POL,
+				URL_FYSISKSLETTDOKUMENT + journalpost.getJournalpostId() + "/" + vedlegg.getDokumentInfoId(),
 				HttpMethod.DELETE,
 				new HttpEntity<>(createHeadersWithAksjon(SLETT.name())),
 				String.class);
@@ -84,30 +86,30 @@ public class Rjoark102IT extends AbstractFysiskSlettDokumentIT {
 
 		Journalpost journalpost = joarkRepository.save(opprettHoveddokumentMedEtKnyttetVedleggForIT());
 
-		JournalpostDokumentInfoRelasjon rel = journalpost.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
-				.iterator().next();
+		DokumentInfo vedlegg = journalpost.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
+				.iterator().next().getDokumentInfo();
 
-		skjermingService.setJpDokInfoRelBegrensning(rel, SkjermingTypeCode.POL);
+		begrensningRepository.save(utilgjengeliggjoerVedlegg(journalpost.getJournalpostId(), vedlegg.getDokumentInfoId()));
 
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
-		assertFalse(rel.getDokumentInfo().isRelatedToMultipleJournalposts());
+		assertFalse(vedlegg.isRelatedToMultipleJournalposts());
+		assertThat(hentAntallBegrensninger(), is(1L));
 
 		assertFalse(journalpostDokumentInfoRelasjonRepository
-				.findAllByDokumentInfoDokumentInfoId(rel.getDokumentInfo().getDokumentInfoId()).isEmpty());
+				.findAllByDokumentInfoDokumentInfoId(vedlegg.getDokumentInfoId()).isEmpty());
 		assertTrue(dokumentinfoRepository.findAllByJournalpostRelasjonerJournalpostJournalpostIdAndDokumentInfoId(
-				journalpost.getJournalpostId(), rel.getDokumentInfo().getDokumentInfoId()).isPresent());
+				journalpost.getJournalpostId(), vedlegg.getDokumentInfoId()).isPresent());
 		assertTrue(joarkRepository.findAllJournalpostIdsByDokumentInfoId(
-				rel.getDokumentInfo().getDokumentInfoId()).size() > 0);
+				vedlegg.getDokumentInfoId()).size() > 0);
 
 
 		List<AksjonsLogg> aksjonsLoggListBefore = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
 		assertThat(aksjonsLoggListBefore.size(), is(0));
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
-				URL_FYSISKSLETTDOKUMENT + journalpost.getJournalpostId() + "/" + rel.getDokumentInfo().getDokumentInfoId() +
-						"/" + SKJERMINGTYPE_POL,
+				URL_FYSISKSLETTDOKUMENT + journalpost.getJournalpostId() + "/" + vedlegg.getDokumentInfoId(),
 				HttpMethod.DELETE,
 				createHeaders(),
 				String.class);
@@ -124,8 +126,7 @@ public class Rjoark102IT extends AbstractFysiskSlettDokumentIT {
 		abacPermit();
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
-				URL_FYSISKSLETTDOKUMENT + 1 + "/" + 1 +
-						"/" + SKJERMINGTYPE_POL,
+				URL_FYSISKSLETTDOKUMENT + 1 + "/" + 1,
 				HttpMethod.DELETE,
 				new HttpEntity<>(createHeadersWithAksjon(SLETT.name())),
 				String.class);
@@ -142,8 +143,7 @@ public class Rjoark102IT extends AbstractFysiskSlettDokumentIT {
 		abacPermit();
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
-				URL_FYSISKSLETTDOKUMENT + 1 + "/" + 1 +
-						"/" + SKJERMINGTYPE_POL,
+				URL_FYSISKSLETTDOKUMENT + 1 + "/" + 1,
 				HttpMethod.DELETE,
 				createNoAccesHeaders(),
 				String.class);
@@ -164,7 +164,7 @@ public class Rjoark102IT extends AbstractFysiskSlettDokumentIT {
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_FYSISKSLETTDOKUMENT + journalpost.getJournalpostId() + "/"
-						+ feilDokumentInfoId + "/" + SKJERMINGTYPE_POL,
+						+ feilDokumentInfoId,
 				HttpMethod.DELETE,
 				new HttpEntity<>(createHeadersWithAksjon(SLETT.name())),
 				String.class);
@@ -188,8 +188,7 @@ public class Rjoark102IT extends AbstractFysiskSlettDokumentIT {
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_FYSISKSLETTDOKUMENT + journalpost1.getJournalpostId() + "/"
-						+ journalpost2.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId() + "/"
-						+ SKJERMINGTYPE_POL,
+						+ journalpost2.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId() + "/",
 				HttpMethod.DELETE,
 				new HttpEntity<>(createHeadersWithAksjon(SLETT.name())),
 				String.class);
@@ -213,8 +212,7 @@ public class Rjoark102IT extends AbstractFysiskSlettDokumentIT {
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_FYSISKSLETTDOKUMENT + journalpost.getJournalpostId() + "/"
-						+ journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId() +
-						"/" + SKJERMINGTYPE_POL,
+						+ journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId(),
 				HttpMethod.DELETE,
 				new HttpEntity<>(createHeadersWithAksjon(SLETT.name())),
 				String.class);
@@ -229,16 +227,17 @@ public class Rjoark102IT extends AbstractFysiskSlettDokumentIT {
 
 		Journalpost journalpost = joarkRepository.save(opprettHoveddokumentMedSammensattDokForIT());
 
-		JournalpostDokumentInfoRelasjon rel = journalpost.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.SAMMENSATT_DOK)
-				.iterator().next();
+		DokumentInfo sammensattDok = journalpost.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.SAMMENSATT_DOK)
+				.iterator().next().getDokumentInfo();
 
-		skjermingService.setJpDokInfoRelBegrensning(rel, SkjermingTypeCode.POL);
+		begrensningRepository.save(utilgjengeliggjoerVedlegg(journalpost.getJournalpostId(), sammensattDok.getDokumentInfoId()));
+
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_FYSISKSLETTDOKUMENT + journalpost.getJournalpostId() + "/"
-						+ rel.getDokumentInfo().getDokumentInfoId() + "/" + SKJERMINGTYPE_POL,
+						+ sammensattDok.getDokumentInfoId() + "/",
 				HttpMethod.DELETE,
 				new HttpEntity<>(createHeadersWithAksjon(SLETT.name())),
 				String.class);
@@ -248,7 +247,7 @@ public class Rjoark102IT extends AbstractFysiskSlettDokumentIT {
 				String.format("Kan ikke fysisk slette dokument med journalpostId=%s, dokumentInfoId=%s fordi " +
 								"dokumentet er ikke tilknyttet journalposten som hoveddokument eller vedlegg.",
 						journalpost.getJournalpostId(),
-						rel.getDokumentInfo().getDokumentInfoId())));
+						sammensattDok.getDokumentInfoId())));
 	}
 
 	@Test
@@ -264,8 +263,7 @@ public class Rjoark102IT extends AbstractFysiskSlettDokumentIT {
 		TestTransaction.end();
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
-				URL_FYSISKSLETTDOKUMENT + journalpost.getJournalpostId() + "/" + vedlegg.getDokumentInfoId() +
-						"/" + SKJERMINGTYPE_POL,
+				URL_FYSISKSLETTDOKUMENT + journalpost.getJournalpostId() + "/" + vedlegg.getDokumentInfoId(),
 				HttpMethod.DELETE,
 				new HttpEntity<>(createHeadersWithAksjon(SLETT.name())),
 				String.class);
@@ -283,31 +281,27 @@ public class Rjoark102IT extends AbstractFysiskSlettDokumentIT {
 
 		Journalpost journalpost = joarkRepository.save(opprettHoveddokumentMedEtKnyttetVedleggForIT());
 
-		JournalpostDokumentInfoRelasjon rel = journalpost.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
-				.iterator().next();
+		DokumentInfo vedlegg = journalpost.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
+				.iterator().next().getDokumentInfo();
 
-		skjermingService.setJpDokInfoRelBegrensning(rel, SkjermingTypeCode.POL);
+		begrensningRepository.save(utilgjengeliggjoerVedlegg(journalpost.getJournalpostId(), vedlegg.getDokumentInfoId()));
+
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
-		assertFalse(rel.getDokumentInfo().isRelatedToMultipleJournalposts());
-		Optional<JournalpostDokumentInfoRelasjon> relRep1 = journalpostDokumentInfoRelasjonRepository.findByJournalpostJournalpostIdAndDokumentInfoDokumentInfoId(
-				journalpost.getJournalpostId(), rel.getDokumentInfo().getDokumentInfoId());
-
-		assertTrue(relRep1.isPresent());
-		assertThat(relRep1.get().getSkjermingType(), is(SkjermingTypeCode.POL));
+		assertFalse(vedlegg.isRelatedToMultipleJournalposts());
+		assertThat(hentAntallBegrensninger(), is(1L));
 
 		assertFalse(journalpostDokumentInfoRelasjonRepository
-				.findAllByDokumentInfoDokumentInfoId(rel.getDokumentInfo().getDokumentInfoId()).isEmpty());
+				.findAllByDokumentInfoDokumentInfoId(vedlegg.getDokumentInfoId()).isEmpty());
 		assertTrue(dokumentinfoRepository.findAllByJournalpostRelasjonerJournalpostJournalpostIdAndDokumentInfoId(
-				journalpost.getJournalpostId(), rel.getDokumentInfo().getDokumentInfoId()).isPresent());
+				journalpost.getJournalpostId(), vedlegg.getDokumentInfoId()).isPresent());
 		assertTrue(joarkRepository.findAllJournalpostIdsByDokumentInfoId(
-				rel.getDokumentInfo().getDokumentInfoId()).size() > 0);
+				vedlegg.getDokumentInfoId()).size() > 0);
 
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
-				URL_FYSISKSLETTDOKUMENT + journalpost.getJournalpostId() + "/" + rel.getDokumentInfo().getDokumentInfoId() +
-						"/" + SKJERMINGTYPE_POL,
+				URL_FYSISKSLETTDOKUMENT + journalpost.getJournalpostId() + "/" + vedlegg.getDokumentInfoId(),
 				HttpMethod.DELETE,
 				new HttpEntity<>(createHeadersWithAksjon(SLETT.name())),
 				String.class);
@@ -315,18 +309,18 @@ public class Rjoark102IT extends AbstractFysiskSlettDokumentIT {
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 
-		Optional<JournalpostDokumentInfoRelasjon> relRep2 = journalpostDokumentInfoRelasjonRepository.findByJournalpostJournalpostIdAndDokumentInfoDokumentInfoId(journalpost.getJournalpostId(), rel.getDokumentInfo().getDokumentInfoId());
-
-		assertFalse(relRep2.isPresent());
+		Begrensning begrensninger = hentVedleggBegrensningEtterUtfoertKall(journalpost.getJournalpostId(), vedlegg.getDokumentInfoId());
+		assertNull(begrensninger);
+		assertThat(hentAntallBegrensninger(), is(0L));
 
 		assertFalse(journalpostDokumentInfoRelasjonRepository.findAllByJournalpostJournalpostId(
 				journalpost.getJournalpostId()).isEmpty());
 		assertTrue(journalpostDokumentInfoRelasjonRepository
-				.findAllByDokumentInfoDokumentInfoId(rel.getDokumentInfo().getDokumentInfoId()).isEmpty());
+				.findAllByDokumentInfoDokumentInfoId(vedlegg.getDokumentInfoId()).isEmpty());
 		assertFalse(dokumentinfoRepository.findAllByJournalpostRelasjonerJournalpostJournalpostIdAndDokumentInfoId(
-				journalpost.getJournalpostId(), rel.getDokumentInfo().getDokumentInfoId()).isPresent());
+				journalpost.getJournalpostId(), vedlegg.getDokumentInfoId()).isPresent());
 		assertFalse(joarkRepository.findAllJournalpostIdsByDokumentInfoId(
-				rel.getDokumentInfo().getDokumentInfoId()).size() > 0);
+				vedlegg.getDokumentInfoId()).size() > 0);
 	}
 
 	@Test
@@ -336,60 +330,56 @@ public class Rjoark102IT extends AbstractFysiskSlettDokumentIT {
 		Journalpost journalpost1 = joarkRepository.save(opprettHoveddokumentMedEtKnyttetVedleggForIT());
 		Journalpost journalpost2 = opprettHoveddokumentForIT();
 
-		JournalpostDokumentInfoRelasjon rel = journalpost1.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
-				.iterator().next();
+		DokumentInfo vedlegg = journalpost1.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
+				.iterator().next().getDokumentInfo();
 
-		knyttDokumentInfoSomVedleggTilJournalpostForIT(rel.getDokumentInfo(), journalpost2);
+		knyttDokumentInfoSomVedleggTilJournalpostForIT(vedlegg, journalpost2);
 
 		joarkRepository.save(journalpost2);
 
-		skjermingService.setJpDokInfoRelBegrensning(rel, SkjermingTypeCode.POL);
+		begrensningRepository.save(utilgjengeliggjoerVedlegg(journalpost1.getJournalpostId(), vedlegg.getDokumentInfoId()));
 
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
-		assertTrue(rel.getDokumentInfo().isRelatedToMultipleJournalposts());
-
-		Optional<JournalpostDokumentInfoRelasjon> relRep1 = journalpostDokumentInfoRelasjonRepository.findByJournalpostJournalpostIdAndDokumentInfoDokumentInfoId(journalpost1.getJournalpostId(), rel.getDokumentInfo().getDokumentInfoId());
-		assertTrue(relRep1.isPresent());
-		assertThat(relRep1.get().getSkjermingType(), is(SkjermingTypeCode.POL));
+		assertTrue(vedlegg.isRelatedToMultipleJournalposts());
+		assertThat(hentAntallBegrensninger(), is(1L));
 
 		assertEquals(2L, journalpostDokumentInfoRelasjonRepository
-				.findAllByDokumentInfoDokumentInfoId(rel.getDokumentInfo().getDokumentInfoId()).size());
+				.findAllByDokumentInfoDokumentInfoId(vedlegg.getDokumentInfoId()).size());
 
 		assertTrue(dokumentinfoRepository.findAllByJournalpostRelasjonerJournalpostJournalpostIdAndDokumentInfoId(
-				journalpost1.getJournalpostId(), rel.getDokumentInfo().getDokumentInfoId()).isPresent());
+				journalpost1.getJournalpostId(), vedlegg.getDokumentInfoId()).isPresent());
 		assertTrue(dokumentinfoRepository.findAllByJournalpostRelasjonerJournalpostJournalpostIdAndDokumentInfoId(
-				journalpost2.getJournalpostId(), rel.getDokumentInfo().getDokumentInfoId()).isPresent());
+				journalpost2.getJournalpostId(), vedlegg.getDokumentInfoId()).isPresent());
 
 
 		assertEquals(2L, joarkRepository.findAllJournalpostIdsByDokumentInfoId(
-				rel.getDokumentInfo().getDokumentInfoId()).size());
+				vedlegg.getDokumentInfoId()).size());
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
-				URL_FYSISKSLETTDOKUMENT + journalpost1.getJournalpostId() + "/" + rel.getDokumentInfo().getDokumentInfoId() +
-						"/" + SKJERMINGTYPE_POL,
+				URL_FYSISKSLETTDOKUMENT + journalpost1.getJournalpostId() + "/" + vedlegg.getDokumentInfoId(),
 				HttpMethod.DELETE,
 				new HttpEntity<>(createHeadersWithAksjon(SLETT.name())),
 				String.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 
-		Optional<JournalpostDokumentInfoRelasjon> relRep = journalpostDokumentInfoRelasjonRepository.findByJournalpostJournalpostIdAndDokumentInfoDokumentInfoId(journalpost1.getJournalpostId(), rel.getDokumentInfo().getDokumentInfoId());
-
-		assertFalse(relRep.isPresent());
+		Begrensning begrensninger = hentVedleggBegrensningEtterUtfoertKall(journalpost1.getJournalpostId(), vedlegg.getDokumentInfoId());
+		assertNull(begrensninger);
+		assertThat(hentAntallBegrensninger(), is(0L));
 
 		assertFalse(journalpostDokumentInfoRelasjonRepository.findAllByJournalpostJournalpostId(
 				journalpost1.getJournalpostId()).isEmpty());
 		assertEquals(1L, journalpostDokumentInfoRelasjonRepository
-				.findAllByDokumentInfoDokumentInfoId(rel.getDokumentInfo().getDokumentInfoId()).size());
+				.findAllByDokumentInfoDokumentInfoId(vedlegg.getDokumentInfoId()).size());
 
 		assertFalse(dokumentinfoRepository.findAllByJournalpostRelasjonerJournalpostJournalpostIdAndDokumentInfoId(
-				journalpost1.getJournalpostId(), rel.getDokumentInfo().getDokumentInfoId()).isPresent());
+				journalpost1.getJournalpostId(), vedlegg.getDokumentInfoId()).isPresent());
 		assertTrue(dokumentinfoRepository.findAllByJournalpostRelasjonerJournalpostJournalpostIdAndDokumentInfoId(
-				journalpost2.getJournalpostId(), rel.getDokumentInfo().getDokumentInfoId()).isPresent());
+				journalpost2.getJournalpostId(), vedlegg.getDokumentInfoId()).isPresent());
 		assertEquals(1L, joarkRepository.findAllJournalpostIdsByDokumentInfoId(
-				rel.getDokumentInfo().getDokumentInfoId()).size());
+				vedlegg.getDokumentInfoId()).size());
 	}
 
 	@Test
@@ -403,8 +393,7 @@ public class Rjoark102IT extends AbstractFysiskSlettDokumentIT {
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_FYSISKSLETTDOKUMENT + journalpost.getJournalpostId() + "/"
-						+ journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId() +
-						"/" + SKJERMINGTYPE_POL,
+						+ journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId(),
 				HttpMethod.DELETE,
 				new HttpEntity<>(createHeadersWithAksjon(SLETT.name())),
 				String.class);
@@ -424,14 +413,12 @@ public class Rjoark102IT extends AbstractFysiskSlettDokumentIT {
 
 		DokumentInfo hoveddokument = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 
-		skjermingService.setJournalpostBegrensning(journalpost, SkjermingTypeCode.POL);
+		begrensningRepository.save(utilgjengeliggjoerHoveddokument(journalpost.getJournalpostId()));
 
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
-		Optional<Journalpost> jpRep = joarkRepository.findById(journalpost.getJournalpostId());
-		assertTrue(jpRep.isPresent());
-		assertThat(jpRep.get().getSkjermingType(), is(SkjermingTypeCode.POL));
+		assertThat(hentAntallBegrensninger(), is(1L));
 
 		assertFalse(journalpostDokumentInfoRelasjonRepository
 				.findAllByJournalpostJournalpostId(journalpost.getJournalpostId()).isEmpty());
@@ -442,15 +429,16 @@ public class Rjoark102IT extends AbstractFysiskSlettDokumentIT {
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_FYSISKSLETTDOKUMENT + journalpost.getJournalpostId() + "/"
-						+ hoveddokument.getDokumentInfoId() + "/" + SKJERMINGTYPE_POL,
+						+ hoveddokument.getDokumentInfoId(),
 				HttpMethod.DELETE,
 				new HttpEntity<>(createHeadersWithAksjon(SLETT.name())),
 				String.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 
-		Optional<Journalpost> jpRep1 = joarkRepository.findById(journalpost.getJournalpostId());
-		assertFalse(jpRep1.isPresent());
+		Begrensning begrensninger = hentHoveddokumentBegrensningEtterUtfoertKall(journalpost.getJournalpostId());
+		assertNull(begrensninger);
+		assertThat(hentAntallBegrensninger(), is(0L));
 
 		assertTrue(journalpostDokumentInfoRelasjonRepository.findAllByJournalpostJournalpostId(
 				journalpost.getJournalpostId()).isEmpty());
@@ -472,13 +460,13 @@ public class Rjoark102IT extends AbstractFysiskSlettDokumentIT {
 		DokumentInfo vedlegg = journalpost.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
 				.iterator().next().getDokumentInfo();
 
-		skjermingService.setJournalpostBegrensning(journalpost, SkjermingTypeCode.POL);
+		begrensningRepository.save(utilgjengeliggjoerHoveddokument(journalpost.getJournalpostId()));
+
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
-		Optional<Journalpost> jpRep = joarkRepository.findById(journalpost.getJournalpostId());
-		assertTrue(jpRep.isPresent());
-		assertThat(jpRep.get().getSkjermingType(), is(SkjermingTypeCode.POL));
+		assertThat(hentAntallBegrensninger(), is(1L));
+
 		assertEquals(2L, journalpostDokumentInfoRelasjonRepository
 				.findAllByJournalpostJournalpostId(journalpost.getJournalpostId()).size());
 		assertFalse(journalpostDokumentInfoRelasjonRepository.findAllByDokumentInfoDokumentInfoId(hoveddokument.getDokumentInfoId())
@@ -495,15 +483,16 @@ public class Rjoark102IT extends AbstractFysiskSlettDokumentIT {
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_FYSISKSLETTDOKUMENT + journalpost.getJournalpostId() + "/"
-						+ hoveddokument.getDokumentInfoId() + "/" + SKJERMINGTYPE_POL,
+						+ hoveddokument.getDokumentInfoId(),
 				HttpMethod.DELETE,
 				new HttpEntity<>(createHeadersWithAksjon(SLETT.name())),
 				String.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 
-		Optional<Journalpost> jpRep1 = joarkRepository.findById(journalpost.getJournalpostId());
-		assertFalse(jpRep1.isPresent());
+		Begrensning begrensninger = hentHoveddokumentBegrensningEtterUtfoertKall(journalpost.getJournalpostId());
+		assertNull(begrensninger);
+		assertThat(hentAntallBegrensninger(), is(0L));
 
 		assertTrue(journalpostDokumentInfoRelasjonRepository
 				.findAllByJournalpostJournalpostId(journalpost.getJournalpostId()).isEmpty());
@@ -527,21 +516,19 @@ public class Rjoark102IT extends AbstractFysiskSlettDokumentIT {
 		Journalpost journalpost = joarkRepository.save(opprettHoveddokumentMedEtKnyttetVedleggForIT());
 
 		DokumentInfo hoveddokument = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
-		JournalpostDokumentInfoRelasjon rel = journalpost.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
-				.iterator().next();
+		DokumentInfo vedlegg = journalpost.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
+				.iterator().next().getDokumentInfo();
 
-		skjermingService.setJpDokInfoRelBegrensning(rel, SkjermingTypeCode.POL);
+		begrensningRepository.save(utilgjengeliggjoerVedlegg(journalpost.getJournalpostId(), vedlegg.getDokumentInfoId()));
 
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
-		Optional<JournalpostDokumentInfoRelasjon> relRep = journalpostDokumentInfoRelasjonRepository.findByJournalpostJournalpostIdAndDokumentInfoDokumentInfoId(rel.getJournalpost().getJournalpostId(), rel.getDokumentInfo().getDokumentInfoId());
-		assertTrue(relRep.isPresent());
-		assertThat(relRep.get().getSkjermingType(), is(SkjermingTypeCode.POL));
+		assertThat(hentAntallBegrensninger(), is(1L));
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_FYSISKSLETTDOKUMENT + journalpost.getJournalpostId() + "/"
-						+ hoveddokument.getDokumentInfoId() + "/" + SKJERMINGTYPE_POL,
+						+ hoveddokument.getDokumentInfoId(),
 				HttpMethod.DELETE,
 				new HttpEntity<>(createHeadersWithAksjon(SLETT.name())),
 				String.class);
@@ -569,17 +556,14 @@ public class Rjoark102IT extends AbstractFysiskSlettDokumentIT {
 
 		joarkRepository.save(journalpost2);
 
-		skjermingService.setJournalpostBegrensning(journalpost1, SkjermingTypeCode.POL);
+		begrensningRepository.save(utilgjengeliggjoerHoveddokument(journalpost1.getJournalpostId()));
 
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
 		// Assert riktig datastruktur før sletting
 		assertTrue(vedlegg.isRelatedToMultipleJournalposts());
-
-		Optional<Journalpost> jpRep = joarkRepository.findById(journalpost1.getJournalpostId());
-		assertTrue(jpRep.isPresent());
-		assertThat(jpRep.get().getSkjermingType(), is(SkjermingTypeCode.POL));
+		assertThat(hentAntallBegrensninger(), is(1L));
 
 		assertEquals(2L, journalpostDokumentInfoRelasjonRepository
 				.findAllByJournalpostJournalpostId(journalpost1.getJournalpostId()).size());
@@ -612,7 +596,7 @@ public class Rjoark102IT extends AbstractFysiskSlettDokumentIT {
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_FYSISKSLETTDOKUMENT + journalpost1.getJournalpostId() + "/"
-						+ hoveddokument1.getDokumentInfoId() + "/" + SKJERMINGTYPE_POL,
+						+ hoveddokument1.getDokumentInfoId(),
 				HttpMethod.DELETE,
 				new HttpEntity<>(createHeadersWithAksjon(SLETT.name())),
 				String.class);
@@ -620,8 +604,9 @@ public class Rjoark102IT extends AbstractFysiskSlettDokumentIT {
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 
 		// Assert sletting av begrensning
-		Optional<Journalpost> jpRep1 = joarkRepository.findById(journalpost1.getJournalpostId());
-		assertFalse(jpRep1.isPresent());
+		Begrensning begrensninger = hentHoveddokumentBegrensningEtterUtfoertKall(journalpost1.getJournalpostId());
+		assertNull(begrensninger);
+		assertThat(hentAntallBegrensninger(), is(0L));
 
 		// Assert sletting av relasjoner for journalpost1 og hoveddokument1 og at vedlegg kun har en relasjon
 		assertTrue(journalpostDokumentInfoRelasjonRepository
@@ -671,16 +656,14 @@ public class Rjoark102IT extends AbstractFysiskSlettDokumentIT {
 				.getJournalpostId());
 		journalpostDokumentInfoRelasjonRepository.save(jp1RelasjonSomVedleggTilJp2);
 
-		skjermingService.setJournalpostBegrensning(journalpost1, SkjermingTypeCode.POL);
+		begrensningRepository.save(utilgjengeliggjoerHoveddokument(journalpost1.getJournalpostId()));
 
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
 		// Assert riktig datastruktur før sletting
 		assertTrue(hoveddokument1.isRelatedToMultipleJournalposts());
-		Optional<Journalpost> jpRep = joarkRepository.findById(journalpost1.getJournalpostId());
-		assertTrue(jpRep.isPresent());
-		assertThat(jpRep.get().getSkjermingType(), is(SkjermingTypeCode.POL));
+		assertThat(hentAntallBegrensninger(), is(1L));
 
 		assertEquals(1L, journalpostDokumentInfoRelasjonRepository
 				.findAllByJournalpostJournalpostId(journalpost1.getJournalpostId()).size());
@@ -709,7 +692,7 @@ public class Rjoark102IT extends AbstractFysiskSlettDokumentIT {
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_FYSISKSLETTDOKUMENT + journalpost1.getJournalpostId() + "/"
-						+ hoveddokument1.getDokumentInfoId() + "/" + SKJERMINGTYPE_POL,
+						+ hoveddokument1.getDokumentInfoId(),
 				HttpMethod.DELETE,
 				new HttpEntity<>(createHeadersWithAksjon(SLETT.name())),
 				String.class);
@@ -717,8 +700,9 @@ public class Rjoark102IT extends AbstractFysiskSlettDokumentIT {
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 
 		// Assert sletting av begrensning
-		Optional<Journalpost> jpRep1 = joarkRepository.findById(journalpost1.getJournalpostId());
-		assertFalse(jpRep1.isPresent());
+		Begrensning begrensninger = hentHoveddokumentBegrensningEtterUtfoertKall(journalpost1.getJournalpostId());
+		assertNull(begrensninger);
+		assertThat(hentAntallBegrensninger(), is(0L));
 
 		// Assert sletting av relasjoner for journalpost1, og at hoveddokument1 ikke er slettet
 		assertTrue(journalpostDokumentInfoRelasjonRepository

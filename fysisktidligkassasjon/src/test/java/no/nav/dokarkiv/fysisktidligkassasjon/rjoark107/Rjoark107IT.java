@@ -58,7 +58,7 @@ public class Rjoark107IT extends AbstractFysiskTidligKassasjonIT {
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_FYSISKTIDLIGKASSASJON + dokumentInfo1.getDokumentInfoId(),
-				HttpMethod.POST,
+				HttpMethod.DELETE,
 				new HttpEntity<>(createHeadersWithAksjon(SLETT.name())),
 				String.class);
 
@@ -93,7 +93,7 @@ public class Rjoark107IT extends AbstractFysiskTidligKassasjonIT {
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_FYSISKTIDLIGKASSASJON + dokumentInfo1.getDokumentInfoId(),
-				HttpMethod.POST,
+				HttpMethod.DELETE,
 				createHeaders(),
 				String.class);
 
@@ -115,7 +115,7 @@ public class Rjoark107IT extends AbstractFysiskTidligKassasjonIT {
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_FYSISKTIDLIGKASSASJON + dokumentInfoId,
-				HttpMethod.POST,
+				HttpMethod.DELETE,
 				new HttpEntity<>(createHeadersWithAksjon(SLETT.name())),
 				String.class);
 
@@ -133,7 +133,7 @@ public class Rjoark107IT extends AbstractFysiskTidligKassasjonIT {
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_FYSISKTIDLIGKASSASJON + dokumentInfoId,
-				HttpMethod.POST,
+				HttpMethod.DELETE,
 				new HttpEntity<>(createHeadersWithAksjon(SLETT.name())),
 				String.class);
 
@@ -153,7 +153,7 @@ public class Rjoark107IT extends AbstractFysiskTidligKassasjonIT {
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_FYSISKTIDLIGKASSASJON + dokumentInfo.getDokumentInfoId(),
-				HttpMethod.POST,
+				HttpMethod.DELETE,
 				new HttpEntity<>(createHeadersWithAksjon(SLETT.name())),
 				String.class);
 
@@ -191,7 +191,7 @@ public class Rjoark107IT extends AbstractFysiskTidligKassasjonIT {
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_FYSISKTIDLIGKASSASJON + dokumentInfo1.getDokumentInfoId(),
-				HttpMethod.POST,
+				HttpMethod.DELETE,
 				new HttpEntity<>(createHeadersWithAksjon(SLETT.name())),
 				String.class);
 
@@ -230,7 +230,7 @@ public class Rjoark107IT extends AbstractFysiskTidligKassasjonIT {
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_FYSISKTIDLIGKASSASJON + dokumentInfo.getDokumentInfoId(),
-				HttpMethod.POST,
+				HttpMethod.DELETE,
 				new HttpEntity<>(createHeadersWithAksjon(SLETT.name())),
 				String.class);
 
@@ -259,7 +259,7 @@ public class Rjoark107IT extends AbstractFysiskTidligKassasjonIT {
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_FYSISKTIDLIGKASSASJON + dokumentInfo.getDokumentInfoId(),
-				HttpMethod.POST,
+				HttpMethod.DELETE,
 				createNoAccessHeaders(),
 				String.class);
 
