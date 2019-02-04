@@ -3,7 +3,7 @@ package no.nav.dokarkiv.logiskslettdokument.rjoark100;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 
 
-final class LogiskSlettDokumentResponseMapper {
+public final class LogiskSlettDokumentResponseMapper {
 
 	private LogiskSlettDokumentResponseMapper() {
 		throw new IllegalStateException("Utility class");
