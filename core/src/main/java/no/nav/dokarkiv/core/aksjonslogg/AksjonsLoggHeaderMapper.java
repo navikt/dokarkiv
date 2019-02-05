@@ -5,15 +5,16 @@ import static no.nav.dokarkiv.core.util.ConverterUtils.jsonStringToObject;
 import static no.nav.dokarkiv.core.util.ConverterUtils.jsonStringToObjectList;
 
 import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggHeaderException;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
  */
+@Component
 public class AksjonsLoggHeaderMapper {
 
 	public List<AksjonsLoggHeader> mapAksjonsLoggHeader(String aksjonsLoggHeaderString) throws UgyldigAksjonsLoggHeaderException {
