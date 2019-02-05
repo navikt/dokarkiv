@@ -1,13 +1,12 @@
 package no.nav.dokarkiv.skjermarkivenhet.rjoark100;
 
 import no.nav.dokarkiv.core.MDCConstants;
-import no.nav.dokarkiv.core.domain.codes.ArkivenhetCode;
 import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
-import no.nav.dokarkiv.core.domain.entities.Begrensning;
 import no.nav.dokarkiv.core.domain.service.SkjermingService;
 import no.nav.dokarkiv.core.exceptions.DokumentAlleredeSkjermetException;
 import no.nav.dokarkiv.core.exceptions.UgyldigInputException;
+import no.nav.dokarkiv.skjermarkivenhet.SkjermArkivenhetHeader;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
 
@@ -24,43 +23,36 @@ public class SkjermArkivenhetService {
 		this.skjermingService = skjermingService;
 	}
 
-	public SkjermArkivenhetResponse skjermArkivenhet(SkjermArkivenhetRequestTo requestTo) {
+	public SkjermArkivenhetResponse skjermArkivenhet(SkjermArkivenhetHeader skjermArkivenhetHeader) {
 
-		validerRequest(requestTo);
-		ArkivenhetCode arkivenhetCode = requestTo.getArkivenhet();
-		Begrensning begrensning = Begrensning.builder().begrensningType(requestTo.getSkjermingType()).build();
-
-		switch (arkivenhetCode) {
+		switch (skjermArkivenhetHeader.getArkivenhet()) {
 			case JOURNALPOST:
-				sjekkAtJournalpostIkkeErSkjermet(requestTo.getJournalpostId(), requestTo.getSkjermingType());
-				begrensning.setJournalpostId(requestTo.getJournalpostId());
+				sjekkAtJournalpostIkkeErSkjermet(skjermArkivenhetHeader.getJournalpostId(), skjermArkivenhetHeader.getSkjerming());
+				skjermingService.skjermJournalpostByJournalpostIdAndSkjermingType(skjermArkivenhetHeader.getJournalpostId(), skjermArkivenhetHeader
+						.getSkjerming());
 				break;
-			case JOURNALPOST_DOKUMENT:
+			case DOKUMENT_INFO:
 				sjekkAtJournalpostDokumentInfoRelasjonIkkeErSkjermet(
-						requestTo.getJournalpostId(),
-						requestTo.getDokumentInfoId(),
-						requestTo.getSkjermingType());
-				begrensning.setJournalpostId(requestTo.getJournalpostId());
-				begrensning.setDokumentInfoId(requestTo.getDokumentInfoId());
+						skjermArkivenhetHeader.getJournalpostId(),
+						skjermArkivenhetHeader.getDokumentInfoId(),
+						skjermArkivenhetHeader.getSkjerming());
+				skjermingService.skjermJpDokInfoRelByJournalpostIdAndDokumentInfoIdAndSkjermingType(
+						skjermArkivenhetHeader.getJournalpostId(), skjermArkivenhetHeader.getDokumentInfoId(), skjermArkivenhetHeader
+								.getSkjerming());
 				break;
-			case DOKUMENT_OBJEKT:
-				if (requestTo.getVariantFormat() == null) {
-					sjekkAtDokumentObjektIkkeErSkjermet(requestTo.getDokumentInfoId(), requestTo.getSkjermingType());
-				} else {
-					sjekkAtVariantFormatIkkeErSkjermet(requestTo.getDokumentInfoId(), requestTo.getVariantFormat());
-				}
+			case DOKUMENT_FIL:
+				sjekkAtVariantFormatIkkeErSkjermet(skjermArkivenhetHeader.getDokumentInfoId(), skjermArkivenhetHeader.getVariant());
+				skjermingService.skjermVariantByDokumentInfoIdAndVariantFormatAndSkjermingType(
+						skjermArkivenhetHeader.getDokumentInfoId(), skjermArkivenhetHeader.getVariant(), skjermArkivenhetHeader.getSkjerming());
 				break;
 			default:
-				throw new UgyldigInputException("Ugyldig request");
+				throw new UgyldigInputException("Ugyldig arkivenhet i headeren til " + MDC.get(MDCConstants.MDC_REQUEST_ID));
 		}
-		begrensning.setOpprettetKildeNavn(MDC.get(MDCConstants.MDC_CONSUMER_ID));
-		skjermingService.saveBegrensning(begrensning);
 
-		//Mapper
-		return SkjermArkivenhetResponse.builder().build();
-	}
-
-	private void validerRequest(SkjermArkivenhetRequestTo requestTo) {
+		return SkjermArkivenhetResponse.builder()
+				.journalpostId(skjermArkivenhetHeader.getJournalpostId())
+				.dokumentInfoId(skjermArkivenhetHeader.getDokumentInfoId())
+				.build();
 	}
 
 	private void sjekkAtJournalpostIkkeErSkjermet(Long journalpostId, SkjermingTypeCode skjermingTypeCode) {
@@ -81,14 +73,6 @@ public class SkjermArkivenhetService {
 		}
 	}
 
-	private void sjekkAtDokumentObjektIkkeErSkjermet(Long dokumentInfoId, SkjermingTypeCode skjermingTypeCode) {
-		if (skjermingService.isDokumentSkjermet(dokumentInfoId, skjermingTypeCode)) {
-			throw new DokumentAlleredeSkjermetException(String.format(
-					"Kan ikke utføre skjerming av dokument med dokumentInfoId=%s. Dokumentet er skjermet.",
-					dokumentInfoId));
-		}
-	}
-
 	private void sjekkAtVariantFormatIkkeErSkjermet(Long dokumentInfoId, VariantFormatCode variantFormatCode) {
 		if (skjermingService.isVariantSkjermet(dokumentInfoId, variantFormatCode)) {
 			throw new DokumentAlleredeSkjermetException(String.format(
@@ -98,5 +82,59 @@ public class SkjermArkivenhetService {
 		}
 	}
 
+	/**
+	 public SkjermArkivenhetResponse opphevSkjermArkivenhet(SkjermArkivenhetHeader skjermArkivenhetHeader){
+	 switch (skjermArkivenhetHeader.getArkivenhet()) {
+	 case JOURNALPOST:
+	 sjekkAtJournalpostErSkjermet(skjermArkivenhetHeader.getJournalpostId(), skjermArkivenhetHeader.getSkjerming());
+	 skjermingService.opphevSkjermJournalpostByJournalpostId(skjermArkivenhetHeader.getJournalpostId());
+	 break;
+	 case DOKUMENT_INFO:
+	 sjekkAtJournalpostDokumentInfoRelasjonErSkjermet(
+	 skjermArkivenhetHeader.getJournalpostId(),
+	 skjermArkivenhetHeader.getDokumentInfoId(),
+	 skjermArkivenhetHeader.getSkjerming());
+	 skjermingService.opphevSkjermJpDokInfoRelByJournalpostIdAndDokumentInfoId(
+	 skjermArkivenhetHeader.getJournalpostId(), skjermArkivenhetHeader.getDokumentInfoId());
+	 break;
+	 case DOKUMENT_FIL:
+	 sjekkAtVariantFormatErSkjermet(skjermArkivenhetHeader.getDokumentInfoId(), skjermArkivenhetHeader.getVariant());
+	 skjermingService.opphevSkjermVariantByDokumentInfoIdAndVariantFormat(
+	 skjermArkivenhetHeader.getDokumentInfoId(), skjermArkivenhetHeader.getVariant());
+	 break;
+	 default:
+	 throw new UgyldigInputException("Ugyldig arkivenhet i headeren til " + MDC.get(MDCConstants.MDC_REQUEST_ID));
+	 }
 
+	 return SkjermArkivenhetResponse.builder()
+	 .journalpostId(skjermArkivenhetHeader.getJournalpostId())
+	 .dokumentInfoId(skjermArkivenhetHeader.getDokumentInfoId())
+	 .build();
+	 }
+
+	 private void sjekkAtJournalpostErSkjermet(Long journalpostId, SkjermingTypeCode skjermingTypeCode) {
+	 if (isFalse(skjermingService.isJournalpostSkjermet(journalpostId, skjermingTypeCode))) {
+	 throw new SkjermingIkkeFunnetException(String.format(
+	 "Finner ikke forventet skjerming for journalpost med journalpostId=%s.", journalpostId));
+	 }
+	 }
+
+	 private void sjekkAtJournalpostDokumentInfoRelasjonErSkjermet(Long journalpostId, Long dokumentInfoId, SkjermingTypeCode skjermingTypeCode) {
+	 if (isFalse(skjermingService.isJournalpostDokumentInfoRelasjonSkjermet(journalpostId, dokumentInfoId, skjermingTypeCode))) {
+	 throw new SkjermingIkkeFunnetException(String.format(
+	 "Finner ikke forventet skjerming for journalpostDokumentInfoRelasjon med journalpostId=%s og dokumentInfoId=%s",
+	 journalpostId,
+	 dokumentInfoId));
+	 }
+	 }
+
+	 private void sjekkAtVariantFormatErSkjermet(Long dokumentInfoId, VariantFormatCode variantFormatCode) {
+	 if (isFalse(skjermingService.isVariantSkjermet(dokumentInfoId, variantFormatCode))) {
+	 throw new SkjermingIkkeFunnetException(String.format(
+	 "Finner ikke forventet skjerming for fildetaljer med dokumentInfoId=%s og variantFormat=%s",
+	 dokumentInfoId,
+	 variantFormatCode));
+	 }
+	 }
+	 */
 }
