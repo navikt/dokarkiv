@@ -57,6 +57,9 @@ public class SlettArkivenhetService {
 
 	public void slettDokumentFil(SlettArkivenhetRequest request) {
 
+		//Sjekk om DokumentFil er utilgjengjeligjort
+
+
 		//Sjekk om dokumentInfo eksisterer
 		DokumentInfo dokumentInfo = dokumentinfoRepository.findByDokumentInfoId(request.getDokumentInfoId())
 				.orElseThrow(() -> new IllegalArgumentException(String.format("Fant ikke dokument med dokumentInfoId=%s i Joark databasen", request
@@ -80,6 +83,8 @@ public class SlettArkivenhetService {
 	}
 
 	public void slettDokumentInfo(SlettArkivenhetRequest request) {
+		//Sjekk om DokumentInfo er utilgjengjeligjort
+
 		JournalpostDokumentInfoRelasjon relasjon = journalpostDokumentInfoRelasjonRepository.findByJournalpostJournalpostIdAndDokumentInfoDokumentInfoId(request
 				.getJournalpostId(), request.getDokumentInfoId()).orElseThrow(()->new IllegalArgumentException("Fant ikke relasjon"));
 

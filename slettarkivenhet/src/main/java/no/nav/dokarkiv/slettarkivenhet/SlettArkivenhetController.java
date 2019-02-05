@@ -24,6 +24,7 @@ public class SlettArkivenhetController {
 	@DeleteMapping
 	public SlettArkivenhetResponse slettArkivenhet(@RequestBody SlettArkivenhetRequest slettArkivenhetRequest) {
 
+		//TODO: Validering av input
 
 		switch (slettArkivenhetRequest.getArkivenhet()) {
 			case JOURNALPOST:
