@@ -56,7 +56,7 @@ public class LogiskSlettDokumentService {
 						ArkivElementEndringTO.builder()
 								.arkivElement("Journalpost.skjermingType")
 								.fraVerdi(null)
-								.tilVerdi("POL")
+								.tilVerdi(SkjermingTypeCode.POL.name())
 								.build()
 				);
 				log.info("{} har utført logisk sletting av hoveddokument med journalpostId={}",
@@ -70,7 +70,7 @@ public class LogiskSlettDokumentService {
 						ArkivElementEndringTO.builder()
 								.arkivElement("DokumentInfo.skjermingType")
 								.fraVerdi(null)
-								.tilVerdi("POL")
+								.tilVerdi(SkjermingTypeCode.POL.name())
 								.build()
 				);
 				log.info("{} har utført logisk sletting av vedlegg med journalpostId={} og dokumentInfoId={}",

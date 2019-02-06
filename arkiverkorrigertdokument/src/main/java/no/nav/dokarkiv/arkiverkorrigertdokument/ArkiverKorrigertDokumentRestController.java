@@ -16,6 +16,8 @@ import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggTOMapper;
 import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService;
 import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
+import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
+import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
 import no.nav.dokarkiv.core.metrics.RestMetrics;
@@ -85,12 +87,12 @@ public class ArkiverKorrigertDokumentRestController {
 				ArkivElementEndringTO.builder()
 						.arkivElement("Fildetaljer.variantFormat")
 						.fraVerdi(null)
-						.tilVerdi("SLADDET")
+						.tilVerdi(VariantFormatCode.SLADDET.name())
 						.build(),
 				ArkivElementEndringTO.builder()
 						.arkivElement("FilDetaljer.variantFormat[ARKIV].skjermingType")
 						.fraVerdi(null)
-						.tilVerdi("POL")
+						.tilVerdi(SkjermingTypeCode.POL.name())
 						.build()
 		);
 
@@ -124,12 +126,12 @@ public class ArkiverKorrigertDokumentRestController {
 		List<ArkivElementEndringTO> arkivElementEndringTOList = Arrays.asList(
 				ArkivElementEndringTO.builder()
 						.arkivElement("FilDetaljer.variantFormat")
-						.fraVerdi("SLADDET")
+						.fraVerdi(VariantFormatCode.SLADDET.name())
 						.tilVerdi(null)
 						.build(),
 				ArkivElementEndringTO.builder()
 						.arkivElement("FilDetaljer.variantFormat[ARKIV].skjermingType")
-						.fraVerdi("POL")
+						.fraVerdi(SkjermingTypeCode.POL.name())
 						.tilVerdi(null)
 						.build()
 		);

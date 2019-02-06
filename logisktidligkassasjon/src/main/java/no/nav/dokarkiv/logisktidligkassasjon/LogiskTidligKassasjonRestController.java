@@ -88,8 +88,8 @@ public class LogiskTidligKassasjonRestController {
 		List<ArkivElementEndringTO> arkivElementEndringTOList = Arrays.asList(
 				ArkivElementEndringTO.builder()
 						.arkivElement("DokumentInfo.skjermingType")
-						.fraVerdi(SkjermingTypeCode.POL.name())
-						.tilVerdi(null)
+						.fraVerdi(null)
+						.tilVerdi(SkjermingTypeCode.POL.name())
 						.build()
 
 		);
