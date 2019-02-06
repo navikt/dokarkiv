@@ -6,6 +6,6 @@ import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 
 @Value
 public class TilgangVariantDto {
-	private final VariantFormatCode variantformat;
+	private final VariantFormatCode variantFormat;
 	private final SkjermingTypeCode skjerming;
 }

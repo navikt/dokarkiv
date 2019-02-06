@@ -68,7 +68,7 @@ final class FinnJournalpostSqlGenerator {
 				"                              LEFT JOIN t_saksrelasjon s ON s.journalpost_id = j.journalpost_id\n" +
 				"                              JOIN t_jp_dok_info_rel rel ON j.journalpost_id = rel.journalpost_id\n" +
 				"                              JOIN t_dokument_info d ON rel.dokument_info_id = d.dokument_info_id\n" +
-				"                              JOIN t_fil_detaljer fd ON d.dokument_info_id = fd.dokument_info_id\n" +
+				"                              JOIN t_fil_detaljer fd ON d.dokument_info_id = fd.dokument_info_id AND fd.k_variant_format IN ('ARKIV', 'SLADDET')\n" +
 				"                              LEFT JOIN t_skannet_innhold tsi ON d.dokument_info_id = tsi.dokument_info_id)\n" +
 				"SELECT r.*,\n" +
 				"       journalposter.prevjournalpostid,\n" +
@@ -92,7 +92,6 @@ final class FinnJournalpostSqlGenerator {
 				"                       WHERE j.k_fagomrade IN (:inkluderTema)\n" +
 				"                         AND j.k_journalpost_t IN (:inkluderJournalpostType)\n" +
 				"                         AND j.dato_opprettet > :fraDato\n" +
-				"                         AND fpj.dokumenter_varianter_variantf IN ('ARKIV', 'SLADDET')\n" +
 				"                         AND (\n" +
 				"                           (ts.feilregistrert = 1 AND\n" +
 				"                            j.k_journal_s IN (:allJournalStatus))\n" +
