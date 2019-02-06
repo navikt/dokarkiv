@@ -1,7 +1,7 @@
 package no.nav.dokarkiv.fysiskslettdokument.rjoark102;
 
 import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_LOGG_HEADER;
-import static no.nav.dokarkiv.core.domain.codes.AksjonTypeCode.SLETT;
+import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.SLETT;
 import static no.nav.dokarkiv.fysiskslettdokument.util.TestUtils.knyttDokumentInfoSomVedleggTilJournalpostForIT;
 import static no.nav.dokarkiv.fysiskslettdokument.util.TestUtils.opprettDuplikatRelasjon;
 import static no.nav.dokarkiv.fysiskslettdokument.util.TestUtils.opprettHoveddokumentForIT;

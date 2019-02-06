@@ -66,7 +66,7 @@ public class FysiskTidligKassasjonServiceTest {
 		when(begrensningRepository.findByDokumentInfoIdAndBegrensningType(DOKUMENTINFO_ID, SkjermingTypeCode.POL))
 				.thenReturn(Optional.empty());
 
-		FysiskTidligKassasjonResponse response = fysiskTidligKassasjonService.fysiskTidligKassasjonAvDokument(DOKUMENTINFO_ID);
+		fysiskTidligKassasjonService.fysiskTidligKassasjonAvDokument(DOKUMENTINFO_ID);
 	}
 
 	@Test
@@ -79,7 +79,7 @@ public class FysiskTidligKassasjonServiceTest {
 		when(begrensningRepository.findByDokumentInfoIdAndBegrensningType(DOKUMENTINFO_ID, SkjermingTypeCode.POL))
 				.thenReturn(Optional.of(begrensning));
 
-		FysiskTidligKassasjonResponse response = fysiskTidligKassasjonService.fysiskTidligKassasjonAvDokument(DOKUMENTINFO_ID);
+		fysiskTidligKassasjonService.fysiskTidligKassasjonAvDokument(DOKUMENTINFO_ID);
 	}
 
 	@Test
@@ -88,6 +88,6 @@ public class FysiskTidligKassasjonServiceTest {
 		when(begrensningRepository.findByDokumentInfoIdAndBegrensningType(DOKUMENTINFO_ID, SkjermingTypeCode.POL))
 				.thenReturn(Optional.of(begrensning));
 
-		FysiskTidligKassasjonResponse response = fysiskTidligKassasjonService.fysiskTidligKassasjonAvDokument(DOKUMENTINFO_ID);
+		fysiskTidligKassasjonService.fysiskTidligKassasjonAvDokument(DOKUMENTINFO_ID);
 	}
 }

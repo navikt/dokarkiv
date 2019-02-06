@@ -8,7 +8,7 @@ import static no.nav.dokarkiv.arkiverkorrigertdokument.util.TestUtils.DOKUMENTIN
 import static no.nav.dokarkiv.arkiverkorrigertdokument.util.TestUtils.JOURNALPOST_ID;
 import static no.nav.dokarkiv.core.security.JwtClaimsBuilderProvider.openAmClaimsBuilder;
 import static no.nav.dokarkiv.core.util.ConverterUtils.objectToJsonString;
-import static no.nav.dokarkiv.core.util.TestDataUtils.createAksjonsLoggRequest;
+import static no.nav.dokarkiv.core.util.TestDataUtils.createAksjonsLoggTO;
 
 import no.nav.dokarkiv.core.CoreConfig;
 import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService;
@@ -151,7 +151,7 @@ public abstract class AbstractArkiverKorrigertDokumentIT {
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		headers.add(HttpHeaders.AUTHORIZATION, OIDC_TOKEN_PERSON_USER_TEST);
 		headers.add(NAV_CONSUMER_TOKEN, OIDC_TOKEN_SERVICE_USER_TEST);
-		headers.add(AksjonsLoggService.AKSJONS_LOGG_HEADER, objectToJsonString(createAksjonsLoggRequest(JOURNALPOST_ID, DOKUMENTINFO_ID, aksjon)));
+		headers.add(AksjonsLoggService.AKSJONS_LOGG_HEADER, objectToJsonString(createAksjonsLoggTO(JOURNALPOST_ID, DOKUMENTINFO_ID, aksjon)));
 		return headers;
 	}
 

@@ -7,7 +7,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode.POL;
 import static no.nav.dokarkiv.core.security.JwtClaimsBuilderProvider.openAmClaimsBuilder;
 import static no.nav.dokarkiv.core.util.ConverterUtils.objectToJsonString;
-import static no.nav.dokarkiv.core.util.TestDataUtils.createAksjonsLoggRequest;
+import static no.nav.dokarkiv.core.util.TestDataUtils.createAksjonsLoggTO;
 import static no.nav.dokarkiv.logiskslettdokument.util.TestUtils.DOKUMENTINFO_ID;
 import static no.nav.dokarkiv.logiskslettdokument.util.TestUtils.JOURNALPOST_ID;
 
@@ -145,7 +145,7 @@ public abstract class AbstractSlettDokumentIT {
 		headers.setContentType(MediaType.TEXT_PLAIN);
 		headers.add(HttpHeaders.AUTHORIZATION, OIDC_TOKEN_PERSON_USER_TEST);
 		headers.add(NAV_CONSUMER_TOKEN, OIDC_TOKEN_SERVICE_USER_TEST);
-		headers.add(AksjonsLoggService.AKSJONS_LOGG_HEADER, objectToJsonString(createAksjonsLoggRequest(JOURNALPOST_ID, DOKUMENTINFO_ID, aksjon)));
+		headers.add(AksjonsLoggService.AKSJONS_LOGG_HEADER, objectToJsonString(createAksjonsLoggTO(JOURNALPOST_ID, DOKUMENTINFO_ID, aksjon)));
 		return headers;
 	}
 

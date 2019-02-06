@@ -4,7 +4,7 @@ import static no.nav.dokarkiv.arkiverkorrigertdokument.util.TestUtils.FIL;
 import static no.nav.dokarkiv.arkiverkorrigertdokument.util.TestUtils.begrensArkivVariantAvDokumentSomSkjermet;
 import static no.nav.dokarkiv.arkiverkorrigertdokument.util.TestUtils.opprettHoveddokumentForIT;
 import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_LOGG_HEADER;
-import static no.nav.dokarkiv.core.domain.codes.AksjonTypeCode.SLETT;
+import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.SLETT;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.core.Is.is;

@@ -38,7 +38,7 @@ public class ArkiverKorrigertDokumentService {
 		this.begrensningRepository = begrensningRepository;
 	}
 
-	public ArkiverKorrigertDokumentRespons arkiverKorrigertDokument(Long dokumentInfoId, String fil) {
+	public FilDetaljer arkiverKorrigertDokument(Long dokumentInfoId, String fil) {
 		DokumentInfo dokumentInfo = dokumentinfoRepository.findByDokumentInfoId(dokumentInfoId)
 				.orElseThrow(() -> new DokumentInfoIkkeFunnetException(String.format("Kan ikke finne dokumentInfo med dokumentInfoId=%s",
 						dokumentInfoId)));
@@ -46,16 +46,11 @@ public class ArkiverKorrigertDokumentService {
 		kanskjeSlettEksisterendeSladdetFilOgFilDetaljer(dokumentInfo);
 
 		byte[] decodedFil = base64ToByte(fil);
-		lagreKorrigertDokumentSomSladdetVariantFormat(dokumentInfo, decodedFil);
+		FilDetaljer filDetaljer = lagreKorrigertDokumentSomSladdetVariantFormat(dokumentInfo, decodedFil);
 
 		kanskjeOpprettBegrensingSkjermet(dokumentInfo);
 
-		return ArkiverKorrigertDokumentRespons.builder()
-				.dokumentInfoId(dokumentInfo.getDokumentInfoId())
-				.journalpostId(dokumentInfo.getOriginalJournalpost() == null ? null : dokumentInfo.getOriginalJournalpost()
-						.getJournalpostId())
-				.tittel(dokumentInfo.getTittel())
-				.build();
+		return filDetaljer;
 	}
 
 	private void kanskjeOpprettBegrensingSkjermet(DokumentInfo dokumentInfo) {
@@ -86,7 +81,7 @@ public class ArkiverKorrigertDokumentService {
 		return Base64.decodeBase64(dokumentFilBase64);
 	}
 
-	private void lagreKorrigertDokumentSomSladdetVariantFormat(DokumentInfo dokumentInfo, byte[] fil) {
+	private FilDetaljer lagreKorrigertDokumentSomSladdetVariantFormat(DokumentInfo dokumentInfo, byte[] fil) {
 		FilDetaljer arkivFildetaljer = dokumentInfo.findFilDetaljerByVariantFormat(VariantFormatCode.ARKIV);
 		FilDetaljer filDetaljer = FilDetaljer.builder()
 				.filUuid(FilDetaljer.generateUuid())
@@ -101,5 +96,6 @@ public class ArkiverKorrigertDokumentService {
 
 		dokumentFilRepository.save(filDetaljer.createDokumentFil());
 		dokumentinfoRepository.save(dokumentInfo);
+		return filDetaljer;
 	}
 }
