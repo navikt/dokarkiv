@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 
 import javax.validation.constraints.NotNull;
-import java.util.List;
 
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.

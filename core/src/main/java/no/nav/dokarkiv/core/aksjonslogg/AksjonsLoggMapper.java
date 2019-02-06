@@ -1,9 +1,7 @@
 package no.nav.dokarkiv.core.aksjonslogg;
 
-import static no.nav.dokarkiv.core.util.ConverterUtils.stringToEnum;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
-import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
 import no.nav.dokarkiv.core.domain.entities.ArkivElementEndring;
 import no.nav.dokarkiv.core.stelvio.RequestContextHolder;
