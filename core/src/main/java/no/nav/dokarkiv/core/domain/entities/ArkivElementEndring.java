@@ -49,7 +49,7 @@ public class ArkivElementEndring {
 	@Column(name = "tidspunkt", nullable = false)
 	private LocalDateTime tidspunkt;
 
-	@Column(name = "arkiv_element", length = 50, nullable = false)
+	@Column(name = "arkiv_element", length = 200, nullable = false)
 	private String arkivElement;
 
 	@Column(name = "fra_verdi", length = 200)

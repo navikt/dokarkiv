@@ -14,7 +14,7 @@ create table t_arkiv_element_endring
 (
   arkiv_element_endring_id number(11)    not null,
   tidspunkt                timestamp(6)  not null,
-  arkiv_element            varchar2(50)  null,
+  arkiv_element            varchar2(200)  null,
   fra_verdi                varchar2(200) null,
   til_verdi                varchar2(200) null,
   aksjonslogg_id          number(11)    null
