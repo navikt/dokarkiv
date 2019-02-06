@@ -60,7 +60,7 @@ public class Rjoark106IT extends AbstractLogiskTidligKassasjonIT {
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_ANGRE_LOGISKTIDLIGKASSASJON + vedlegg.getDokumentInfoId(),
 				HttpMethod.POST,
-				new HttpEntity<>(createHeadersWithAksjon(AksjonsTypeCode.ENDRE_SKJERMING.name())),
+				new HttpEntity<>(createHeadersWithAksjon()),
 				String.class);
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 
@@ -130,7 +130,7 @@ public class Rjoark106IT extends AbstractLogiskTidligKassasjonIT {
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_ANGRE_LOGISKTIDLIGKASSASJON + vedlegg.getDokumentInfoId(),
 				HttpMethod.POST,
-				new HttpEntity<>(createHeadersWithAksjon(AksjonsTypeCode.ENDRE_SKJERMING.name())),
+				new HttpEntity<>(createHeadersWithAksjon()),
 				String.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.NOT_FOUND));
@@ -148,7 +148,7 @@ public class Rjoark106IT extends AbstractLogiskTidligKassasjonIT {
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_ANGRE_LOGISKTIDLIGKASSASJON + dokumentInfoId,
 				HttpMethod.POST,
-				new HttpEntity<>(createHeadersWithAksjon(AksjonsTypeCode.ENDRE_SKJERMING.name())),
+				new HttpEntity<>(createHeadersWithAksjon()),
 				String.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.NOT_FOUND));
@@ -168,7 +168,7 @@ public class Rjoark106IT extends AbstractLogiskTidligKassasjonIT {
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_ANGRE_LOGISKTIDLIGKASSASJON + dokumentInfo.getDokumentInfoId(),
 				HttpMethod.POST,
-				new HttpEntity<>(createHeadersWithAksjon(AksjonsTypeCode.ENDRE_SKJERMING.name())),
+				new HttpEntity<>(createHeadersWithAksjon()),
 				String.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.NOT_FOUND));
@@ -205,7 +205,7 @@ public class Rjoark106IT extends AbstractLogiskTidligKassasjonIT {
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_ANGRE_LOGISKTIDLIGKASSASJON + vedlegg.getDokumentInfoId(),
 				HttpMethod.POST,
-				new HttpEntity<>(createHeadersWithAksjon(AksjonsTypeCode.ENDRE_SKJERMING.name())),
+				new HttpEntity<>(createHeadersWithAksjon()),
 				String.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
@@ -238,7 +238,7 @@ public class Rjoark106IT extends AbstractLogiskTidligKassasjonIT {
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_ANGRE_LOGISKTIDLIGKASSASJON + hoveddokument1.getDokumentInfoId(),
 				HttpMethod.POST,
-				new HttpEntity<>(createHeadersWithAksjon(AksjonsTypeCode.ENDRE_SKJERMING.name())),
+				new HttpEntity<>(createHeadersWithAksjon()),
 				String.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));

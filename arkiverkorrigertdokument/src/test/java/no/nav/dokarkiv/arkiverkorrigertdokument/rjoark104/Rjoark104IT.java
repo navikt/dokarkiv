@@ -79,7 +79,7 @@ public class Rjoark104IT extends AbstractArkiverKorrigertDokumentIT {
 		ResponseEntity<ArkiverKorrigertDokumentRespons> responseEntity = restTemplate.exchange(
 				URL_ANGREARKIVERKORRIGERTDOKUMENT + dokumentInfo.getDokumentInfoId(),
 				HttpMethod.POST,
-				new HttpEntity<>(createHeadersWithAksjon(SLETT.name())),
+				new HttpEntity<>(createHeadersWithAksjon()),
 				ArkiverKorrigertDokumentRespons.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
@@ -132,7 +132,7 @@ public class Rjoark104IT extends AbstractArkiverKorrigertDokumentIT {
 		ResponseEntity<ArkiverKorrigertDokumentRespons> responseEntity = restTemplate.exchange(
 				URL_ANGREARKIVERKORRIGERTDOKUMENT + 1,
 				HttpMethod.POST,
-				new HttpEntity<>(createHeadersWithAksjon(SLETT.name())),
+				new HttpEntity<>(createHeadersWithAksjon()),
 				ArkiverKorrigertDokumentRespons.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.NOT_FOUND));
@@ -151,7 +151,7 @@ public class Rjoark104IT extends AbstractArkiverKorrigertDokumentIT {
 		ResponseEntity<ArkiverKorrigertDokumentRespons> responseEntity = restTemplate.exchange(
 				URL_ANGREARKIVERKORRIGERTDOKUMENT + dokumentInfoId,
 				HttpMethod.POST,
-				new HttpEntity<>(createHeadersWithAksjon(SLETT.name())),
+				new HttpEntity<>(createHeadersWithAksjon()),
 				ArkiverKorrigertDokumentRespons.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.BAD_REQUEST));
@@ -166,7 +166,7 @@ public class Rjoark104IT extends AbstractArkiverKorrigertDokumentIT {
 		ResponseEntity<ArkiverKorrigertDokumentRespons> responseEntity = restTemplate.exchange(
 				URL_ANGREARKIVERKORRIGERTDOKUMENT + dokumentInfoId,
 				HttpMethod.POST,
-				new HttpEntity<>(createHeadersWithAksjon(SLETT.name())),
+				new HttpEntity<>(createHeadersWithAksjon()),
 				ArkiverKorrigertDokumentRespons.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.NOT_FOUND));
@@ -183,7 +183,7 @@ public class Rjoark104IT extends AbstractArkiverKorrigertDokumentIT {
 		ResponseEntity<ArkiverKorrigertDokumentRespons> responseEntity = restTemplate.exchange(
 				URL_ANGREARKIVERKORRIGERTDOKUMENT + dokumentInfo.getDokumentInfoId(),
 				HttpMethod.POST,
-				new HttpEntity<>(createHeadersWithAksjon(SLETT.name())),
+				new HttpEntity<>(createHeadersWithAksjon()),
 				ArkiverKorrigertDokumentRespons.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.NOT_FOUND));
@@ -202,7 +202,7 @@ public class Rjoark104IT extends AbstractArkiverKorrigertDokumentIT {
 		ResponseEntity<ArkiverKorrigertDokumentRespons> responseEntity = restTemplate.exchange(
 				URL_ANGREARKIVERKORRIGERTDOKUMENT+dokumentInfo.getDokumentInfoId(),
 				HttpMethod.POST,
-				new HttpEntity<>(createHeadersWithAksjon(SLETT.name())),
+				new HttpEntity<>(createHeadersWithAksjon()),
 				ArkiverKorrigertDokumentRespons.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.NOT_FOUND));
@@ -226,7 +226,7 @@ public class Rjoark104IT extends AbstractArkiverKorrigertDokumentIT {
 		TestTransaction.end();
 
 
-		HttpEntity httpEntity = new HttpEntity(Base64.encodeBase64String(FIL), createHeadersWithAksjon(SLETT.name()));
+		HttpEntity httpEntity = new HttpEntity(Base64.encodeBase64String(FIL), createHeadersWithAksjon());
 
 
 		ResponseEntity<ArkiverKorrigertDokumentRespons> responseEntityArkiver = restTemplate.exchange(
@@ -242,7 +242,7 @@ public class Rjoark104IT extends AbstractArkiverKorrigertDokumentIT {
 		ResponseEntity<ArkiverKorrigertDokumentRespons> responseEntity = restTemplate.exchange(
 				URL_ANGREARKIVERKORRIGERTDOKUMENT + dokumentInfo.getDokumentInfoId(),
 				HttpMethod.POST,
-				new HttpEntity<>(createHeadersWithAksjon(SLETT.name())),
+				new HttpEntity<>(createHeadersWithAksjon()),
 				ArkiverKorrigertDokumentRespons.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));

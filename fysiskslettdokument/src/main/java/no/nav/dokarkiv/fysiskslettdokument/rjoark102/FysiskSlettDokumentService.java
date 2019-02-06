@@ -219,7 +219,12 @@ public class FysiskSlettDokumentService {
 				.arkivElement("DokumentInfo.dokumentInfoId")
 				.fraVerdi(String.valueOf(dokumentInfoId))
 				.tilVerdi(null)
-				.build()
+				.build(),
+				ArkivElementEndringTO.builder()
+						.arkivElement("Fildetaljer.variantFormat")
+						.fraVerdi(String.valueOf(dokumentInfoId))
+						.tilVerdi(null)
+						.build()
 		);
 	}
 
