@@ -58,7 +58,7 @@ public class Rjoark101IT extends AbstractSlettDokumentIT {
 		ResponseEntity<LogiskSlettDokumentResponse> responseEntity = restTemplate.exchange(
 				URL_ANGRESLETTDOKUMENT + journalpost.getJournalpostId() + "/" + vedlegg.getDokumentInfoId(),
 				HttpMethod.POST,
-				new HttpEntity<>(createHeadersWithAksjon(AksjonsTypeCode.ENDRE_SKJERMING.name())),
+				new HttpEntity<>(createHeadersWithAksjon()),
 				LogiskSlettDokumentResponse.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
@@ -120,7 +120,7 @@ public class Rjoark101IT extends AbstractSlettDokumentIT {
 		ResponseEntity<LogiskSlettDokumentResponse> responseEntity = restTemplate.exchange(
 				URL_ANGRESLETTDOKUMENT + journalpost.getJournalpostId() + "/" + vedlegg.getDokumentInfoId(),
 				HttpMethod.POST,
-				new HttpEntity<>(createHeadersWithAksjon(AksjonsTypeCode.ENDRE_SKJERMING.name())),
+				new HttpEntity<>(createHeadersWithAksjon()),
 				LogiskSlettDokumentResponse.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.NOT_FOUND));
@@ -143,7 +143,7 @@ public class Rjoark101IT extends AbstractSlettDokumentIT {
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_ANGRESLETTDOKUMENT + journalpost.getJournalpostId() + "/" + ikkeEksisterendeDokumentInfoId,
 				HttpMethod.POST,
-				new HttpEntity<>(createHeadersWithAksjon(AksjonsTypeCode.ENDRE_SKJERMING.name())),
+				new HttpEntity<>(createHeadersWithAksjon()),
 				String.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.NOT_FOUND));
@@ -174,7 +174,7 @@ public class Rjoark101IT extends AbstractSlettDokumentIT {
 		ResponseEntity<LogiskSlettDokumentResponse> responseEntity = restTemplate.exchange(
 				URL_ANGRESLETTDOKUMENT + journalpost.getJournalpostId() + "/" + vedlegg.getDokumentInfoId(),
 				HttpMethod.POST,
-				new HttpEntity<>(createHeadersWithAksjon(AksjonsTypeCode.ENDRE_SKJERMING.name())),
+				new HttpEntity<>(createHeadersWithAksjon()),
 				LogiskSlettDokumentResponse.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
@@ -199,7 +199,7 @@ public class Rjoark101IT extends AbstractSlettDokumentIT {
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_ANGRESLETTDOKUMENT + journalpost.getJournalpostId() + "/" + vedlegg.getDokumentInfoId(),
 				HttpMethod.POST,
-				new HttpEntity<>(createHeadersWithAksjon(AksjonsTypeCode.ENDRE_SKJERMING.name())),
+				new HttpEntity<>(createHeadersWithAksjon()),
 				String.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.NOT_FOUND));
@@ -238,7 +238,7 @@ public class Rjoark101IT extends AbstractSlettDokumentIT {
 		ResponseEntity<LogiskSlettDokumentResponse> responseEntity = restTemplate.exchange(
 				URL_ANGRESLETTDOKUMENT + journalpost.getJournalpostId() + "/" + vedlegg.getDokumentInfoId(),
 				HttpMethod.POST,
-				new HttpEntity<>(createHeadersWithAksjon(AksjonsTypeCode.ENDRE_SKJERMING.name())),
+				new HttpEntity<>(createHeadersWithAksjon()),
 				LogiskSlettDokumentResponse.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
@@ -269,7 +269,7 @@ public class Rjoark101IT extends AbstractSlettDokumentIT {
 				URL_ANGRESLETTDOKUMENT + journalpost.getJournalpostId() + "/" + journalpost.
 						findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId(),
 				HttpMethod.POST,
-				new HttpEntity<>(createHeadersWithAksjon(AksjonsTypeCode.ENDRE_SKJERMING.name())),
+				new HttpEntity<>(createHeadersWithAksjon()),
 				LogiskSlettDokumentResponse.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
@@ -292,7 +292,7 @@ public class Rjoark101IT extends AbstractSlettDokumentIT {
 				URL_ANGRESLETTDOKUMENT + journalpost.getJournalpostId() + "/" + journalpost.
 						findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId(),
 				HttpMethod.POST,
-				new HttpEntity<>(createHeadersWithAksjon(AksjonsTypeCode.ENDRE_SKJERMING.name())),
+				new HttpEntity<>(createHeadersWithAksjon()),
 				String.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.NOT_FOUND));
@@ -331,7 +331,7 @@ public class Rjoark101IT extends AbstractSlettDokumentIT {
 				URL_ANGRESLETTDOKUMENT + journalpost.getJournalpostId() + "/" +
 						journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId(),
 				HttpMethod.POST,
-				new HttpEntity<>(createHeadersWithAksjon(AksjonsTypeCode.ENDRE_SKJERMING.name())),
+				new HttpEntity<>(createHeadersWithAksjon()),
 				LogiskSlettDokumentResponse.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
@@ -360,7 +360,7 @@ public class Rjoark101IT extends AbstractSlettDokumentIT {
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_ANGRESLETTDOKUMENT + journalpost.getJournalpostId() + "/" + sammensattDok.getDokumentInfoId(),
 				HttpMethod.POST,
-				new HttpEntity<>(createHeadersWithAksjon(AksjonsTypeCode.ENDRE_SKJERMING.name())),
+				new HttpEntity<>(createHeadersWithAksjon()),
 				String.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.BAD_REQUEST));

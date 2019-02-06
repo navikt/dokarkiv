@@ -69,7 +69,7 @@ public class Rjoark102IT extends AbstractFysiskSlettDokumentIT {
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_FYSISKSLETTDOKUMENT + journalpost.getJournalpostId() + "/" + vedlegg.getDokumentInfoId(),
 				HttpMethod.DELETE,
-				new HttpEntity<>(createHeadersWithAksjon(SLETT.name())),
+				new HttpEntity<>(createHeadersWithAksjon()),
 				String.class);
 
 
@@ -128,7 +128,7 @@ public class Rjoark102IT extends AbstractFysiskSlettDokumentIT {
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_FYSISKSLETTDOKUMENT + 1 + "/" + 1,
 				HttpMethod.DELETE,
-				new HttpEntity<>(createHeadersWithAksjon(SLETT.name())),
+				new HttpEntity<>(createHeadersWithAksjon()),
 				String.class);
 
 
@@ -166,7 +166,7 @@ public class Rjoark102IT extends AbstractFysiskSlettDokumentIT {
 				URL_FYSISKSLETTDOKUMENT + journalpost.getJournalpostId() + "/"
 						+ feilDokumentInfoId,
 				HttpMethod.DELETE,
-				new HttpEntity<>(createHeadersWithAksjon(SLETT.name())),
+				new HttpEntity<>(createHeadersWithAksjon()),
 				String.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.NOT_FOUND));
@@ -190,7 +190,7 @@ public class Rjoark102IT extends AbstractFysiskSlettDokumentIT {
 				URL_FYSISKSLETTDOKUMENT + journalpost1.getJournalpostId() + "/"
 						+ journalpost2.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId() + "/",
 				HttpMethod.DELETE,
-				new HttpEntity<>(createHeadersWithAksjon(SLETT.name())),
+				new HttpEntity<>(createHeadersWithAksjon()),
 				String.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.NOT_FOUND));
@@ -214,7 +214,7 @@ public class Rjoark102IT extends AbstractFysiskSlettDokumentIT {
 				URL_FYSISKSLETTDOKUMENT + journalpost.getJournalpostId() + "/"
 						+ journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId(),
 				HttpMethod.DELETE,
-				new HttpEntity<>(createHeadersWithAksjon(SLETT.name())),
+				new HttpEntity<>(createHeadersWithAksjon()),
 				String.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.INTERNAL_SERVER_ERROR));
@@ -239,7 +239,7 @@ public class Rjoark102IT extends AbstractFysiskSlettDokumentIT {
 				URL_FYSISKSLETTDOKUMENT + journalpost.getJournalpostId() + "/"
 						+ sammensattDok.getDokumentInfoId() + "/",
 				HttpMethod.DELETE,
-				new HttpEntity<>(createHeadersWithAksjon(SLETT.name())),
+				new HttpEntity<>(createHeadersWithAksjon()),
 				String.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.BAD_REQUEST));
@@ -265,7 +265,7 @@ public class Rjoark102IT extends AbstractFysiskSlettDokumentIT {
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_FYSISKSLETTDOKUMENT + journalpost.getJournalpostId() + "/" + vedlegg.getDokumentInfoId(),
 				HttpMethod.DELETE,
-				new HttpEntity<>(createHeadersWithAksjon(SLETT.name())),
+				new HttpEntity<>(createHeadersWithAksjon()),
 				String.class);
 
 		assertThat(responseEntity.getBody(), containsString(
@@ -303,7 +303,7 @@ public class Rjoark102IT extends AbstractFysiskSlettDokumentIT {
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_FYSISKSLETTDOKUMENT + journalpost.getJournalpostId() + "/" + vedlegg.getDokumentInfoId(),
 				HttpMethod.DELETE,
-				new HttpEntity<>(createHeadersWithAksjon(SLETT.name())),
+				new HttpEntity<>(createHeadersWithAksjon()),
 				String.class);
 
 
@@ -360,7 +360,7 @@ public class Rjoark102IT extends AbstractFysiskSlettDokumentIT {
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_FYSISKSLETTDOKUMENT + journalpost1.getJournalpostId() + "/" + vedlegg.getDokumentInfoId(),
 				HttpMethod.DELETE,
-				new HttpEntity<>(createHeadersWithAksjon(SLETT.name())),
+				new HttpEntity<>(createHeadersWithAksjon()),
 				String.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
@@ -395,7 +395,7 @@ public class Rjoark102IT extends AbstractFysiskSlettDokumentIT {
 				URL_FYSISKSLETTDOKUMENT + journalpost.getJournalpostId() + "/"
 						+ journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId(),
 				HttpMethod.DELETE,
-				new HttpEntity<>(createHeadersWithAksjon(SLETT.name())),
+				new HttpEntity<>(createHeadersWithAksjon()),
 				String.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.NOT_FOUND));
@@ -431,7 +431,7 @@ public class Rjoark102IT extends AbstractFysiskSlettDokumentIT {
 				URL_FYSISKSLETTDOKUMENT + journalpost.getJournalpostId() + "/"
 						+ hoveddokument.getDokumentInfoId(),
 				HttpMethod.DELETE,
-				new HttpEntity<>(createHeadersWithAksjon(SLETT.name())),
+				new HttpEntity<>(createHeadersWithAksjon()),
 				String.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
@@ -485,7 +485,7 @@ public class Rjoark102IT extends AbstractFysiskSlettDokumentIT {
 				URL_FYSISKSLETTDOKUMENT + journalpost.getJournalpostId() + "/"
 						+ hoveddokument.getDokumentInfoId(),
 				HttpMethod.DELETE,
-				new HttpEntity<>(createHeadersWithAksjon(SLETT.name())),
+				new HttpEntity<>(createHeadersWithAksjon()),
 				String.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
@@ -530,7 +530,7 @@ public class Rjoark102IT extends AbstractFysiskSlettDokumentIT {
 				URL_FYSISKSLETTDOKUMENT + journalpost.getJournalpostId() + "/"
 						+ hoveddokument.getDokumentInfoId(),
 				HttpMethod.DELETE,
-				new HttpEntity<>(createHeadersWithAksjon(SLETT.name())),
+				new HttpEntity<>(createHeadersWithAksjon()),
 				String.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.NOT_FOUND));
@@ -598,7 +598,7 @@ public class Rjoark102IT extends AbstractFysiskSlettDokumentIT {
 				URL_FYSISKSLETTDOKUMENT + journalpost1.getJournalpostId() + "/"
 						+ hoveddokument1.getDokumentInfoId(),
 				HttpMethod.DELETE,
-				new HttpEntity<>(createHeadersWithAksjon(SLETT.name())),
+				new HttpEntity<>(createHeadersWithAksjon()),
 				String.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
@@ -694,7 +694,7 @@ public class Rjoark102IT extends AbstractFysiskSlettDokumentIT {
 				URL_FYSISKSLETTDOKUMENT + journalpost1.getJournalpostId() + "/"
 						+ hoveddokument1.getDokumentInfoId(),
 				HttpMethod.DELETE,
-				new HttpEntity<>(createHeadersWithAksjon(SLETT.name())),
+				new HttpEntity<>(createHeadersWithAksjon()),
 				String.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));

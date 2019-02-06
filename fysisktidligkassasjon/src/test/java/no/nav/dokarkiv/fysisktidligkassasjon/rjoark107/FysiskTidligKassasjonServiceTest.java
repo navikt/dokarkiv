@@ -1,6 +1,8 @@
 package no.nav.dokarkiv.fysisktidligkassasjon.rjoark107;
 
 import static junit.framework.TestCase.assertTrue;
+import static no.nav.dokarkiv.core.util.TestDataUtils.APPLICATION;
+import static no.nav.dokarkiv.core.util.TestDataUtils.USER_ID;
 import static no.nav.dokarkiv.fysisktidligkassasjon.util.TestUtil.knyttDokumentInfoSomVedleggTilJournalpostForIT;
 import static no.nav.dokarkiv.fysisktidligkassasjon.util.TestUtil.opprettHoveddokumentForEnhetstest;
 import static org.mockito.Mockito.when;
@@ -13,6 +15,7 @@ import no.nav.dokarkiv.core.exceptions.SkjermingIkkeFunnetException;
 import no.nav.dokarkiv.core.repository.BegrensningRepository;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkDeleteRepository;
+import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -52,6 +55,8 @@ public class FysiskTidligKassasjonServiceTest {
 		fysiskTidligKassasjonService = new FysiskTidligKassasjonService(dokumentinfoRepository, begrensningRepository, deleteRepository);
 		journalpost = opprettHoveddokumentForEnhetstest();
 		dokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
+		RequestContextUtil.createAndSetUsername(USER_ID, APPLICATION);
+
 	}
 
 	@Test()

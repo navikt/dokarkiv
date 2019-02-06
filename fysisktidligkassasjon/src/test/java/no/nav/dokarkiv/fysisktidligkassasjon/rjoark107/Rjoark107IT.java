@@ -1,6 +1,7 @@
 package no.nav.dokarkiv.fysisktidligkassasjon.rjoark107;
 
 import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_LOGG_HEADER;
+import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.ENDRE_SKJERMING;
 import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.SLETT;
 import static no.nav.dokarkiv.fysisktidligkassasjon.util.TestUtil.kassereDokumentLogisk;
 import static no.nav.dokarkiv.fysisktidligkassasjon.util.TestUtil.knyttDokumentInfoSomVedleggTilJournalpostForIT;
@@ -57,7 +58,7 @@ public class Rjoark107IT extends AbstractFysiskTidligKassasjonIT {
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_FYSISKTIDLIGKASSASJON + dokumentInfo1.getDokumentInfoId(),
 				HttpMethod.DELETE,
-				new HttpEntity<>(createHeadersWithAksjon(SLETT.name())),
+				new HttpEntity<>(createHeadersWithAksjon()),
 				String.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
@@ -112,7 +113,7 @@ public class Rjoark107IT extends AbstractFysiskTidligKassasjonIT {
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_FYSISKTIDLIGKASSASJON + dokumentInfoId,
 				HttpMethod.DELETE,
-				new HttpEntity<>(createHeadersWithAksjon(SLETT.name())),
+				new HttpEntity<>(createHeadersWithAksjon()),
 				String.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.NOT_FOUND));
@@ -130,7 +131,7 @@ public class Rjoark107IT extends AbstractFysiskTidligKassasjonIT {
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_FYSISKTIDLIGKASSASJON + dokumentInfoId,
 				HttpMethod.DELETE,
-				new HttpEntity<>(createHeadersWithAksjon(SLETT.name())),
+				new HttpEntity<>(createHeadersWithAksjon()),
 				String.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.NOT_FOUND));
@@ -150,7 +151,7 @@ public class Rjoark107IT extends AbstractFysiskTidligKassasjonIT {
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_FYSISKTIDLIGKASSASJON + dokumentInfo.getDokumentInfoId(),
 				HttpMethod.DELETE,
-				new HttpEntity<>(createHeadersWithAksjon(SLETT.name())),
+				new HttpEntity<>(createHeadersWithAksjon()),
 				String.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.NOT_FOUND));
@@ -185,7 +186,7 @@ public class Rjoark107IT extends AbstractFysiskTidligKassasjonIT {
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_FYSISKTIDLIGKASSASJON + dokumentInfo1.getDokumentInfoId(),
 				HttpMethod.DELETE,
-				new HttpEntity<>(createHeadersWithAksjon(SLETT.name())),
+				new HttpEntity<>(createHeadersWithAksjon()),
 				String.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
@@ -215,7 +216,7 @@ public class Rjoark107IT extends AbstractFysiskTidligKassasjonIT {
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_FYSISKTIDLIGKASSASJON + dokumentInfo.getDokumentInfoId(),
 				HttpMethod.DELETE,
-				new HttpEntity<>(createHeadersWithAksjon(SLETT.name())),
+				new HttpEntity<>(createHeadersWithAksjon()),
 				String.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));

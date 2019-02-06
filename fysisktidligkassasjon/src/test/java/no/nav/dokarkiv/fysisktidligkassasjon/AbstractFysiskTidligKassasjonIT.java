@@ -7,6 +7,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static no.nav.dokarkiv.core.security.JwtClaimsBuilderProvider.openAmClaimsBuilder;
 import static no.nav.dokarkiv.core.util.ConverterUtils.objectToJsonString;
 import static no.nav.dokarkiv.core.util.TestDataUtils.createAksjonsLoggTO;
+import static no.nav.dokarkiv.core.util.TestDataUtils.createAksjonsLoggTOHeader;
 import static no.nav.dokarkiv.fysisktidligkassasjon.util.TestUtil.DOKUMENTINFO_ID;
 import static no.nav.dokarkiv.fysisktidligkassasjon.util.TestUtil.JOURNALPOST_ID;
 
@@ -117,13 +118,12 @@ public abstract class AbstractFysiskTidligKassasjonIT {
 		return new HttpEntity(headers);
 	}
 
-	protected HttpHeaders createHeadersWithAksjon(String aksjon) throws IOException {
+	protected HttpHeaders createHeadersWithAksjon() throws IOException {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.TEXT_PLAIN);
 		headers.add(HttpHeaders.AUTHORIZATION, oidcTokenPersonUserTest);
 		headers.add(NAV_CONSUMER_TOKEN, oidcTokenServiceUserTest);
-		headers.add(AksjonsLoggService.AKSJONS_LOGG_HEADER, objectToJsonString(createAksjonsLoggTO(JOURNALPOST_ID, DOKUMENTINFO_ID)));
-		headers.add(AksjonsLoggService.AKSJONS_LOGG_HEADER, objectToJsonString(createAksjonsLoggTO(JOURNALPOST_ID, TestUtil.DOKUMENTINFO_ID)));
+		headers.add(AksjonsLoggService.AKSJONS_LOGG_HEADER, objectToJsonString(createAksjonsLoggTOHeader()));
 		return headers;
 	}
 

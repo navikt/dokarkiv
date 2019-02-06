@@ -72,7 +72,7 @@ public class FysiskTidligKassasjonRestController {
 		log.info("{} har fysisk tidlig kassert dokument med dokumentInfoId={}",
 				MDC.get(MDCConstants.MDC_REQUEST_ID), dokumentInfoId);
 
-		AksjonsLoggTO aksjonsLoggTO = aksjonsLoggTOMapper.mapAksjonsLoggHeader(aksjonsLoggHeaderString, AksjonsTypeCode.ENDRE_SKJERMING, null, dokumentInfoId);
+		AksjonsLoggTO aksjonsLoggTO = aksjonsLoggTOMapper.mapAksjonsLoggHeader(aksjonsLoggHeaderString, AksjonsTypeCode.SLETT, null, dokumentInfoId);
 
 		aksjonsLoggService.validateAndSaveAksjonsLogg(aksjonsLoggTO, arkivElementEndringTOList);
 

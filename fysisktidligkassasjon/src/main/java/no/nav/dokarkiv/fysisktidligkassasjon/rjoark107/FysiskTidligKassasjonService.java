@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import javax.inject.Inject;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -42,7 +43,9 @@ public class FysiskTidligKassasjonService {
 				() -> new DokumentInfoIkkeFunnetException(String.format(
 						"Kan ikke finne dokument med dokumentInfoId=%s", dokumentInfoId)));
 
-		List<ArkivElementEndringTO> arkivElementEndringTOList = Arrays.asList(
+		List<ArkivElementEndringTO> arkivElementEndringTOList = new ArrayList<>();
+
+		arkivElementEndringTOList.addAll(Arrays.asList(
 				ArkivElementEndringTO.builder()
 						.arkivElement("DokumentInfo.kassertDato")
 						.fraVerdi(null)
@@ -53,7 +56,7 @@ public class FysiskTidligKassasjonService {
 						.fraVerdi(null)
 						.tilVerdi(RequestContextHolder.currentRequestContext().getUserId())
 						.build()
-		);
+		));
 
 		arkivElementEndringTOList.addAll(dokumentInfoTilTidligKassering.getFildetaljerListe()
 				.stream()

@@ -8,6 +8,7 @@ import static no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode.POL;
 import static no.nav.dokarkiv.core.security.JwtClaimsBuilderProvider.openAmClaimsBuilder;
 import static no.nav.dokarkiv.core.util.ConverterUtils.objectToJsonString;
 import static no.nav.dokarkiv.core.util.TestDataUtils.createAksjonsLoggTO;
+import static no.nav.dokarkiv.core.util.TestDataUtils.createAksjonsLoggTOHeader;
 
 import no.nav.dokarkiv.core.CoreConfig;
 import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService;
@@ -133,12 +134,12 @@ public abstract class AbstractFysiskSlettDokumentIT {
 		return new HttpEntity(headers);
 	}
 
-	protected HttpHeaders createHeadersWithAksjon(String aksjon) throws IOException {
+	protected HttpHeaders createHeadersWithAksjon() throws IOException {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.TEXT_PLAIN);
 		headers.add(HttpHeaders.AUTHORIZATION, OIDC_TOKEN_PERSON_USER_TEST);
 		headers.add(NAV_CONSUMER_TOKEN, OIDC_TOKEN_SERVICE_USER_TEST);
-		headers.add(AksjonsLoggService.AKSJONS_LOGG_HEADER, objectToJsonString(createAksjonsLoggTO(1L, 1L)));
+		headers.add(AksjonsLoggService.AKSJONS_LOGG_HEADER, objectToJsonString(createAksjonsLoggTOHeader()));
 		return headers;
 	}
 
