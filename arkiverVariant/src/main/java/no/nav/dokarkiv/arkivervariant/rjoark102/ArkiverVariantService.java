@@ -1,0 +1,81 @@
+package no.nav.dokarkiv.arkivervariant.rjoark102;
+
+
+import no.nav.dokarkiv.arkivervariant.exception.VariantFormatAlreadyExistsException;
+import no.nav.dokarkiv.core.MDCConstants;
+import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
+import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
+import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
+import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
+import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
+import no.nav.dokarkiv.core.domain.service.SkjermingService;
+import no.nav.dokarkiv.core.exceptions.DokumentInfoIkkeFunnetException;
+import no.nav.dokarkiv.core.repository.DokumentFilRepository;
+import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
+import org.apache.commons.codec.binary.Base64;
+import org.slf4j.MDC;
+import org.springframework.stereotype.Service;
+
+import javax.inject.Inject;
+import java.util.Objects;
+
+
+@Service
+public class ArkiverVariantService {
+
+	private final DokumentinfoRepository dokumentinfoRepository;
+	private final DokumentFilRepository dokumentFilRepository;
+
+	@Inject
+	public ArkiverVariantService(DokumentinfoRepository dokumentinfoRepository,
+								 DokumentFilRepository dokumentFilRepository) {
+		this.dokumentinfoRepository = dokumentinfoRepository;
+		this.dokumentFilRepository = dokumentFilRepository;
+	}
+
+	public ArkiverVariantResponse arkiverVariant(Long dokumentInfoId, VariantFormatCode variant, String fil) {
+		DokumentInfo dokumentInfo = dokumentinfoRepository.findByDokumentInfoId(dokumentInfoId)
+				.orElseThrow(() -> new DokumentInfoIkkeFunnetException(String.format("Kan ikke finne dokumentInfo med dokumentInfoId=%s",
+						dokumentInfoId)));
+
+		sjekkOmVariantFinnes(dokumentInfo, variant);
+
+		byte[] decodedFil = base64ToByte(fil);
+		lagreVariantFormat(dokumentInfo, variant, decodedFil);
+
+		return ArkiverVariantResponse.builder()
+				.dokumentInfoId(dokumentInfo.getDokumentInfoId())
+				.journalpostId(dokumentInfo.getOriginalJournalpost() == null ? null : dokumentInfo.getOriginalJournalpost()
+						.getJournalpostId())
+				.tittel(dokumentInfo.getTittel())
+				.build();
+	}
+
+	private void sjekkOmVariantFinnes(DokumentInfo dokumentInfo, VariantFormatCode variantFormatCode) {
+		FilDetaljer variantFildetaljer = dokumentInfo.findFilDetaljerByVariantFormat(variantFormatCode);
+		if (Objects.nonNull(variantFildetaljer)) {
+			throw new VariantFormatAlreadyExistsException(String.format("Det finnes allerede en variant: %s for dokoumentInfoId: %s", variantFormatCode.name(), dokumentInfo.getDokumentInfoId()));
+		}
+	}
+
+	private byte[] base64ToByte(String dokumentFilBase64) {
+		return Base64.decodeBase64(dokumentFilBase64);
+	}
+
+	private void lagreVariantFormat(DokumentInfo dokumentInfo, VariantFormatCode variantFormatCode, byte[] fil) {
+		FilDetaljer arkivFildetaljer = dokumentInfo.findFilDetaljerByVariantFormat(VariantFormatCode.ARKIV);
+		FilDetaljer filDetaljer = FilDetaljer.builder()
+				.filUuid(FilDetaljer.generateUuid())
+				.filnavn(arkivFildetaljer.getFilnavn())
+				.filtype(FilTypeCode.PDF)
+				.variantFormat(variantFormatCode)
+				.fileContent(fil)
+				.dokumentInfo(dokumentInfo)
+				.build();
+		filDetaljer.setOpprettetKildeNavn(MDC.get(MDCConstants.MDC_CONSUMER_ID));
+		dokumentInfo.addFilDetaljer(filDetaljer);
+
+		dokumentFilRepository.save(filDetaljer.createDokumentFil());
+		dokumentinfoRepository.save(dokumentInfo);
+	}
+}
