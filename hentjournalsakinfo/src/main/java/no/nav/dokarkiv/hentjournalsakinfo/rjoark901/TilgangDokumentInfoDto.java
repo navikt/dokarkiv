@@ -5,9 +5,6 @@ import lombok.Builder;
 import lombok.Value;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
-import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
-
-import java.util.List;
 
 /**
  * @author Sigurd Midttun, Visma Consulting.
