@@ -8,6 +8,7 @@ import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
 
 import java.io.IOException;
+import java.util.Objects;
 
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
@@ -36,10 +37,11 @@ public class AksjonsLoggTOMapper {
 	}
 
 	private String getValueFromJsonNode(JsonNode jsonNode, String fieldName) {
-		if ("null".equals(jsonNode.get(fieldName).asText())) {
+		JsonNode value = Objects.isNull(jsonNode.get(0))?jsonNode.get(fieldName):jsonNode.get(0).get(fieldName);
+		if (value==null || "null".equals(value.asText())) {
 			return null;
 		}
 
-		return jsonNode.get(fieldName).asText();
+		return value.asText();
 	}
 }
