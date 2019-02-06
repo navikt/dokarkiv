@@ -7,6 +7,7 @@ import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_LOGG_H
 import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.UPDATE_ACTION;
 
 import lombok.extern.slf4j.Slf4j;
+import no.nav.dokarkiv.arkivervariant.rjoark102.ArkiverVariantRequest;
 import no.nav.dokarkiv.arkivervariant.rjoark102.ArkiverVariantResponse;
 import no.nav.dokarkiv.arkivervariant.rjoark102.ArkiverVariantService;
 import no.nav.dokarkiv.arkivervariant.rjoark102.ArkiverVariantValidator;
@@ -34,7 +35,7 @@ import java.util.List;
 
 @Slf4j
 @RestController
-@RequestMapping("rest/arkivervariant")
+@RequestMapping("rest/")
 public class ArkiverVariantRestController {
 
 	private final no.nav.dokarkiv.arkivervariant.rjoark102.ArkiverVariantService ArkiverVariantService;
@@ -56,28 +57,25 @@ public class ArkiverVariantRestController {
 
 	@Transactional
 	@ResponseBody
-	@PostMapping("/{dokumentInfoId}/{variant}")
+	@PostMapping("arkivervariant")
 	@Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_DOKUMENT)},
 			actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION))
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark103"}, percentiles = {0.5, 0.95})
 	public ArkiverVariantResponse arkiverVariant(
 			@RequestHeader(value = AKSJONS_LOGG_HEADER) String aksjonsLoggHeaderString,
-			@PathVariable("dokumentInfoId") Long dokumentInfoId,
-			@PathVariable("variant") String variant,
-			@RequestBody String fil) throws UgyldigAksjonsLoggHeaderException {
+			@RequestBody ArkiverVariantRequest request) throws UgyldigAksjonsLoggHeaderException {
 		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark103");
-
-		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har mottat kall for arkivering av korrigert dokument med dokumentInfoId={}", dokumentInfoId);
-		validator.validateArkiverVariantRequest(dokumentInfoId, variant, fil);
-		abacSecurityService.assertAccessToDokumentIncludingSkjermet(dokumentInfoId);
+		validator.validateArkiverVariantRequest(request);
+		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har mottat kall for arkivering av korrigert dokument med dokumentInfoId={}", request.getDokumentInfoId());
+		abacSecurityService.assertAccessToDokumentIncludingSkjermet(request.getDokumentInfoId());
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
 
 		List<AksjonsLoggHeader> aksjonsLoggHeader = aksjonsLoggHeaderMapper.mapAksjonsLoggHeader(aksjonsLoggHeaderString);
 		aksjonsLoggService.validateAndSaveAksjon(aksjonsLoggHeader);
 
-		ArkiverVariantResponse respons = ArkiverVariantService.arkiverVariant(dokumentInfoId, VariantFormatCode.valueOf(variant), fil);
-		log.info("{} har arkivert korrigert dokument med dokumentInfoId={}",
-				MDC.get(MDCConstants.MDC_REQUEST_ID), dokumentInfoId);
+		ArkiverVariantResponse respons = ArkiverVariantService.arkiverVariant(request);
+		log.info("{} har arkivert variant= {} med dokumentInfoId={}",
+				MDC.get(MDCConstants.MDC_REQUEST_ID), request.getVariant(), request.getDokumentInfoId());
 		return respons;
 	}
 }

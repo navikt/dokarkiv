@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.arkivervariant.rjoark102;
 
+import static no.nav.dokarkiv.arkivervariant.util.TestUtils.DOKUMENTINFO_ID;
 import static no.nav.dokarkiv.arkivervariant.util.TestUtils.FIL;
 import static no.nav.dokarkiv.arkivervariant.util.TestUtils.opprettHoveddokumentForIT;
 import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_LOGG_HEADER;
@@ -46,10 +47,17 @@ public class Rjoark102IT extends AbstractArkiverVariantIT {
 		List<AksjonsLogg> aksjonsLoggListBefore = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
 		assertThat(aksjonsLoggListBefore.size(), is(0));
 
-		HttpEntity httpEntity = new HttpEntity(Base64.encodeBase64String(FIL), createHeaders());
+		ArkiverVariantRequest request = ArkiverVariantRequest.builder()
+				.dokumentInfoId(dokumentInfo.getDokumentInfoId())
+				.fil(Base64.encodeBase64String(FIL))
+				.filnavn("filnavn")
+				.variant(VariantFormatCode.SLADDET.name())
+				.filType(FilTypeCode.PDF.name()).build();
+
+		HttpEntity httpEntity = new HttpEntity(request, createHeaders());
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
-				URL_ARKIVERVARIANT + dokumentInfo.getDokumentInfoId() + "/" + VariantFormatCode.SLADDET.name(),
+				URL_ARKIVERVARIANT,
 				HttpMethod.POST,
 				httpEntity,
 				String.class);
@@ -68,10 +76,18 @@ public class Rjoark102IT extends AbstractArkiverVariantIT {
 		List<AksjonsLogg> aksjonsLoggListBefore = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
 		assertThat(aksjonsLoggListBefore.size(), is(0));
 
-		HttpEntity httpEntity = new HttpEntity(Base64.encodeBase64String(FIL), createHeadersWithAksjon(AksjonTypeCode.ARKIVERING.name()));
+
+		ArkiverVariantRequest request = ArkiverVariantRequest.builder()
+				.dokumentInfoId(123456L)
+				.fil(Base64.encodeBase64String(FIL))
+				.filnavn("filnavn")
+				.variant(VariantFormatCode.SLADDET.name())
+				.filType(FilTypeCode.PDF.name()).build();
+
+		HttpEntity httpEntity = new HttpEntity(request, createHeadersWithAksjon(AksjonTypeCode.ARKIVERING.name()));
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
-				URL_ARKIVERVARIANT + 13123L,
+				URL_ARKIVERVARIANT,
 				HttpMethod.POST,
 				httpEntity,
 				String.class);
@@ -93,11 +109,17 @@ public class Rjoark102IT extends AbstractArkiverVariantIT {
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
+		ArkiverVariantRequest request = ArkiverVariantRequest.builder()
+				.dokumentInfoId(dokumentInfo.getDokumentInfoId())
+				.fil(Base64.encodeBase64String(FIL))
+				.filnavn("filnavn")
+				.variant(VariantFormatCode.SLADDET.name())
+				.filType(FilTypeCode.PDF.name()).build();
 
-		HttpEntity httpEntity = new HttpEntity(Base64.encodeBase64String(FIL), createHeadersWithAksjon(AksjonTypeCode.ARKIVERING.name()));
+		HttpEntity httpEntity = new HttpEntity(request, createHeadersWithAksjon(AksjonTypeCode.ARKIVERING.name()));
 
 		ResponseEntity<ArkiverVariantResponse> responseEntity = restTemplate.exchange(
-				URL_ARKIVERVARIANT + dokumentInfo.getDokumentInfoId()+ "/" + VariantFormatCode.SLADDET.name(),
+				URL_ARKIVERVARIANT,
 				HttpMethod.POST,
 				httpEntity,
 				ArkiverVariantResponse.class);
@@ -134,11 +156,17 @@ public class Rjoark102IT extends AbstractArkiverVariantIT {
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
+		ArkiverVariantRequest request = ArkiverVariantRequest.builder()
+				.dokumentInfoId(dokumentInfo.getDokumentInfoId())
+				.fil(Base64.encodeBase64String(FIL))
+				.filnavn("filnavn")
+				.variant(VariantFormatCode.SLADDET.name())
+				.filType(FilTypeCode.PDF.name()).build();
 
-		HttpEntity httpEntity = new HttpEntity(Base64.encodeBase64String(FIL), createHeadersWithAksjon(AksjonTypeCode.ARKIVERING.name()));
+		HttpEntity httpEntity = new HttpEntity(request, createHeadersWithAksjon(AksjonTypeCode.ARKIVERING.name()));
 
 		ResponseEntity<ArkiverVariantResponse> responseEntity = restTemplate.exchange(
-				URL_ARKIVERVARIANT + dokumentInfo.getDokumentInfoId() + "/" + VariantFormatCode.SLADDET.name(),
+				URL_ARKIVERVARIANT,
 				HttpMethod.POST,
 				httpEntity,
 				ArkiverVariantResponse.class);
@@ -146,10 +174,18 @@ public class Rjoark102IT extends AbstractArkiverVariantIT {
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 
 		byte[] FIL2 = "NEW FILE".getBytes();
-		HttpEntity httpEntity2 = new HttpEntity(Base64.encodeBase64String(FIL2), createHeadersWithAksjon(AksjonTypeCode.ARKIVERING.name()));
+
+		request = ArkiverVariantRequest.builder()
+				.dokumentInfoId(dokumentInfo.getDokumentInfoId())
+				.fil(Base64.encodeBase64String(FIL2))
+				.filnavn("filnavn")
+				.variant(VariantFormatCode.SLADDET.name())
+				.filType(FilTypeCode.PDF.name()).build();
+
+		HttpEntity httpEntity2 = new HttpEntity(request, createHeadersWithAksjon(AksjonTypeCode.ARKIVERING.name()));
 
 		ResponseEntity<ArkiverVariantResponse> responseEntity2 = restTemplate.exchange(
-				URL_ARKIVERVARIANT + dokumentInfo.getDokumentInfoId() + "/" + VariantFormatCode.SLADDET.name(),
+				URL_ARKIVERVARIANT,
 				HttpMethod.POST,
 				httpEntity2,
 				ArkiverVariantResponse.class);
@@ -167,10 +203,18 @@ public class Rjoark102IT extends AbstractArkiverVariantIT {
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
-		HttpEntity httpEntity = new HttpEntity(Base64.encodeBase64String(FIL), createHeadersWithAksjon(AksjonTypeCode.ARKIVERING.name()));
+
+		ArkiverVariantRequest request = ArkiverVariantRequest.builder()
+				.dokumentInfoId(dokumentInfo.getDokumentInfoId())
+				.fil(Base64.encodeBase64String(FIL))
+				.filnavn("filnavn")
+				.variant("UKJENT_VARIANT")
+				.filType(FilTypeCode.PDF.name()).build();
+
+		HttpEntity httpEntity = new HttpEntity(request, createHeadersWithAksjon(AksjonTypeCode.ARKIVERING.name()));
 
 		ResponseEntity<ArkiverVariantResponse> responseEntity = restTemplate.exchange(
-				URL_ARKIVERVARIANT + dokumentInfo.getDokumentInfoId() + "/def",
+				URL_ARKIVERVARIANT,
 				HttpMethod.POST,
 				httpEntity,
 				ArkiverVariantResponse.class);
@@ -183,11 +227,17 @@ public class Rjoark102IT extends AbstractArkiverVariantIT {
 	public void shouldFailWithNotFoundWhenDokumentInfoIsNotFound() throws IOException {
 		abacPermit();
 
-		HttpEntity httpEntity = new HttpEntity(Base64.encodeBase64String(FIL), createHeadersWithAksjon(AksjonTypeCode.ARKIVERING.name()));
+		ArkiverVariantRequest request = ArkiverVariantRequest.builder()
+				.dokumentInfoId(123456L)
+				.fil(Base64.encodeBase64String(FIL))
+				.filnavn("filnavn")
+				.variant(VariantFormatCode.SLADDET.name())
+				.filType(FilTypeCode.PDF.name()).build();
 
+		HttpEntity httpEntity = new HttpEntity(request, createHeadersWithAksjon(AksjonTypeCode.ARKIVERING.name()));
 
 		ResponseEntity<ArkiverVariantResponse> responseEntity = restTemplate.exchange(
-				URL_ARKIVERVARIANT + 1231223L + "/" + VariantFormatCode.SLADDET.name(),
+				URL_ARKIVERVARIANT,
 				HttpMethod.POST,
 				httpEntity,
 				ArkiverVariantResponse.class);
@@ -210,7 +260,7 @@ public class Rjoark102IT extends AbstractArkiverVariantIT {
 		HttpEntity httpEntity = new HttpEntity(Base64.encodeBase64String(FIL), createHeadersNotSrvJoarkadmin());
 
 		ResponseEntity<ArkiverVariantResponse> responseEntity = restTemplate.exchange(
-				URL_ARKIVERVARIANT + dokumentInfo.getDokumentInfoId() + "/" + VariantFormatCode.SLADDET.name(),
+				URL_ARKIVERVARIANT,
 				HttpMethod.POST,
 				httpEntity,
 				ArkiverVariantResponse.class);

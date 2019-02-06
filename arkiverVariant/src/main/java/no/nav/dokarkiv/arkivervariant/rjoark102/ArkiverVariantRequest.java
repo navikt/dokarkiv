@@ -11,7 +11,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ArkiverVariantRequest {
 	private Long dokumentInfoId;
-	private String fil;
 	private String variant;
-
+	private String fil;
+	private String filType;
+	private String filnavn;
 }

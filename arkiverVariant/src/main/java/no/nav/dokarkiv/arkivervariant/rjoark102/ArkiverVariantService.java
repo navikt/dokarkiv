@@ -33,15 +33,15 @@ public class ArkiverVariantService {
 		this.dokumentFilRepository = dokumentFilRepository;
 	}
 
-	public ArkiverVariantResponse arkiverVariant(Long dokumentInfoId, VariantFormatCode variant, String fil) {
-		DokumentInfo dokumentInfo = dokumentinfoRepository.findByDokumentInfoId(dokumentInfoId)
+	public ArkiverVariantResponse arkiverVariant(ArkiverVariantRequest request) {
+		DokumentInfo dokumentInfo = dokumentinfoRepository.findByDokumentInfoId(request.getDokumentInfoId())
 				.orElseThrow(() -> new DokumentInfoIkkeFunnetException(String.format("Kan ikke finne dokumentInfo med dokumentInfoId=%s",
-						dokumentInfoId)));
+						request.getDokumentInfoId())));
 
-		sjekkOmVariantFinnes(dokumentInfo, variant);
+		sjekkOmVariantFinnes(dokumentInfo, VariantFormatCode.valueOf(request.getVariant()));
 
-		byte[] decodedFil = base64ToByte(fil);
-		lagreVariantFormat(dokumentInfo, variant, decodedFil);
+		byte[] decodedFil = base64ToByte(request.getFil());
+		lagreVariantFormat(dokumentInfo, VariantFormatCode.valueOf(request.getVariant()), decodedFil, request.getFilnavn(), FilTypeCode.valueOf(request.getFilType()));
 
 		return ArkiverVariantResponse.builder()
 				.dokumentInfoId(dokumentInfo.getDokumentInfoId())
@@ -62,12 +62,11 @@ public class ArkiverVariantService {
 		return Base64.decodeBase64(dokumentFilBase64);
 	}
 
-	private void lagreVariantFormat(DokumentInfo dokumentInfo, VariantFormatCode variantFormatCode, byte[] fil) {
-		FilDetaljer arkivFildetaljer = dokumentInfo.findFilDetaljerByVariantFormat(VariantFormatCode.ARKIV);
+	private void lagreVariantFormat(DokumentInfo dokumentInfo, VariantFormatCode variantFormatCode, byte[] fil, String filnavn, FilTypeCode filTypeCode) {
 		FilDetaljer filDetaljer = FilDetaljer.builder()
 				.filUuid(FilDetaljer.generateUuid())
-				.filnavn(arkivFildetaljer.getFilnavn())
-				.filtype(FilTypeCode.PDF)
+				.filnavn(filnavn)
+				.filtype(filTypeCode)
 				.variantFormat(variantFormatCode)
 				.fileContent(fil)
 				.dokumentInfo(dokumentInfo)
