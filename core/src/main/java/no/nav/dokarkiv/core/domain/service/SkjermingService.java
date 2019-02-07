@@ -1,7 +1,5 @@
 package no.nav.dokarkiv.core.domain.service;
 
-import static java.util.Objects.isNull;
-
 import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
@@ -81,7 +79,7 @@ public class SkjermingService {
 		Optional<DokumentInfo> dokumentInfo = dokumentinfoRepository.findByDokumentInfoId(dokumentInfoId);
 		if (dokumentInfo.isPresent()) {
 			FilDetaljer filDetaljer = dokumentInfo.get().findFilDetaljerByVariantFormat(variant);
-			return isNull(filDetaljer.getSkjermingType());
+			return filDetaljer.getSkjermingType() != null;
 		}
 		return false;
 	}

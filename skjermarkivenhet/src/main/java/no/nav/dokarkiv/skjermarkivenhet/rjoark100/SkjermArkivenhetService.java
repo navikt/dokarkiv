@@ -1,13 +1,9 @@
 package no.nav.dokarkiv.skjermarkivenhet.rjoark100;
 
-import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.service.SkjermingService;
 import no.nav.dokarkiv.core.exceptions.DokumentAlleredeSkjermetException;
-import no.nav.dokarkiv.core.exceptions.UgyldigInputException;
-import no.nav.dokarkiv.skjermarkivenhet.SkjermArkivenhetHeader;
-import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -23,36 +19,10 @@ public class SkjermArkivenhetService {
 		this.skjermingService = skjermingService;
 	}
 
-	public SkjermArkivenhetResponse skjermArkivenhet(SkjermArkivenhetHeader skjermArkivenhetHeader) {
-
-		switch (skjermArkivenhetHeader.getArkivenhet()) {
-			case JOURNALPOST:
-				sjekkAtJournalpostIkkeErSkjermet(skjermArkivenhetHeader.getJournalpostId(), skjermArkivenhetHeader.getSkjerming());
-				skjermingService.skjermJournalpostByJournalpostIdAndSkjermingType(skjermArkivenhetHeader.getJournalpostId(), skjermArkivenhetHeader
-						.getSkjerming());
-				break;
-			case DOKUMENT_INFO:
-				sjekkAtJournalpostDokumentInfoRelasjonIkkeErSkjermet(
-						skjermArkivenhetHeader.getJournalpostId(),
-						skjermArkivenhetHeader.getDokumentInfoId(),
-						skjermArkivenhetHeader.getSkjerming());
-				skjermingService.skjermJpDokInfoRelByJournalpostIdAndDokumentInfoIdAndSkjermingType(
-						skjermArkivenhetHeader.getJournalpostId(), skjermArkivenhetHeader.getDokumentInfoId(), skjermArkivenhetHeader
-								.getSkjerming());
-				break;
-			case DOKUMENT_FIL:
-				sjekkAtVariantFormatIkkeErSkjermet(skjermArkivenhetHeader.getDokumentInfoId(), skjermArkivenhetHeader.getVariant());
-				skjermingService.skjermVariantByDokumentInfoIdAndVariantFormatAndSkjermingType(
-						skjermArkivenhetHeader.getDokumentInfoId(), skjermArkivenhetHeader.getVariant(), skjermArkivenhetHeader.getSkjerming());
-				break;
-			default:
-				throw new UgyldigInputException("Ugyldig arkivenhet i headeren til " + MDC.get(MDCConstants.MDC_REQUEST_ID));
-		}
-
-		return SkjermArkivenhetResponse.builder()
-				.journalpostId(skjermArkivenhetHeader.getJournalpostId())
-				.dokumentInfoId(skjermArkivenhetHeader.getDokumentInfoId())
-				.build();
+	public SkjermArkivenhetResponse skjermJournalpost(Long journalpostId, SkjermingTypeCode skjerming) {
+		sjekkAtJournalpostIkkeErSkjermet(journalpostId, skjerming);
+		skjermingService.skjermJournalpostByJournalpostIdAndSkjermingType(journalpostId, skjerming);
+		return SkjermArkivenhetResponse.builder().journalpostId(journalpostId).build();
 	}
 
 	private void sjekkAtJournalpostIkkeErSkjermet(Long journalpostId, SkjermingTypeCode skjermingTypeCode) {
@@ -61,6 +31,15 @@ public class SkjermArkivenhetService {
 					"Kan ikke utføre skjerming av journalpost med journalpostId=%s. Journalposten er skjermet",
 					journalpostId));
 		}
+	}
+
+	public SkjermArkivenhetResponse skjermDokumentInfo(Long journalpostId, Long dokumentInfoId, SkjermingTypeCode skjerming) {
+		sjekkAtJournalpostDokumentInfoRelasjonIkkeErSkjermet(journalpostId, dokumentInfoId, skjerming);
+		skjermingService.skjermJpDokInfoRelByJournalpostIdAndDokumentInfoIdAndSkjermingType(journalpostId, dokumentInfoId, skjerming);
+		return SkjermArkivenhetResponse.builder()
+				.journalpostId(journalpostId)
+				.dokumentInfoId(dokumentInfoId)
+				.build();
 	}
 
 	private void sjekkAtJournalpostDokumentInfoRelasjonIkkeErSkjermet(Long journalpostId, Long dokumentInfoId, SkjermingTypeCode skjermingTypeCode) {
@@ -73,6 +52,15 @@ public class SkjermArkivenhetService {
 		}
 	}
 
+	public SkjermArkivenhetResponse skjermDokumentFil(Long dokumentInfoId, VariantFormatCode variant, SkjermingTypeCode skjerming) {
+		sjekkAtVariantFormatIkkeErSkjermet(dokumentInfoId, variant);
+		skjermingService.skjermVariantByDokumentInfoIdAndVariantFormatAndSkjermingType(dokumentInfoId, variant, skjerming);
+		return SkjermArkivenhetResponse.builder()
+				.dokumentInfoId(dokumentInfoId)
+				.variant(variant)
+				.build();
+	}
+
 	private void sjekkAtVariantFormatIkkeErSkjermet(Long dokumentInfoId, VariantFormatCode variantFormatCode) {
 		if (skjermingService.isVariantSkjermet(dokumentInfoId, variantFormatCode)) {
 			throw new DokumentAlleredeSkjermetException(String.format(
@@ -82,8 +70,17 @@ public class SkjermArkivenhetService {
 		}
 	}
 
+	// SLETTELINJE ---------------
+
+
+
+
+
+
+
+
 	/**
-	 public SkjermArkivenhetResponse opphevSkjermArkivenhet(SkjermArkivenhetHeader skjermArkivenhetHeader){
+	 public SkjermArkivenhetResponse opphevSkjermArkivenhet(SkjermArkivenhetRequest skjermArkivenhetHeader){
 	 switch (skjermArkivenhetHeader.getArkivenhet()) {
 	 case JOURNALPOST:
 	 sjekkAtJournalpostErSkjermet(skjermArkivenhetHeader.getJournalpostId(), skjermArkivenhetHeader.getSkjerming());

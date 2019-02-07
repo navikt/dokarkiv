@@ -12,7 +12,7 @@ import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class SkjermArkivenhetHeader {
+public class SkjermArkivenhetRequest {
 	private SkjermingTypeCode skjerming;
 	private ArkivenhetCode arkivenhet;
 	private Long journalpostId;
