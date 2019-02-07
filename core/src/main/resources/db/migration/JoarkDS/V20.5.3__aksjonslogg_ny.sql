@@ -15,11 +15,6 @@ alter table T_AKSJONSLOGG
                                           (JOURNALPOST_ID is not null AND DOKUMENT_INFO_ID is null) or
                                           (JOURNALPOST_ID is not null AND DOKUMENT_INFO_ID is not null));
 
-delete from T_AKSJONSLOGG;
-alter table T_AKSJONSLOGG drop column AKSJON;
-alter table T_AKSJONSLOGG add aksjon varchar2(50) default 'ENDRE_SKJERMING' not null
-  constraint t_r_aksjons_type references T_K_AKSJON_TYPE (AKSJON_TYPE);
-
 create table t_arkiv_element_endring
 (
   arkiv_element_endring_id number(11)    not null,
@@ -33,17 +28,15 @@ create table t_arkiv_element_endring
   constraint arkiv_element_endring_pk primary key (arkiv_element_endring_id)
 );
 
-rename T_K_AKSJON_TYPE TO T_K_AKSJONS_TYPE;
-
-update T_K_AKSJONS_TYPE set BESKRIVELSE='Endre skjerming på et arkivelement' where AKSJON_TYPE='ENDRE_BEGRENSNING';
-update T_K_AKSJONS_TYPE set AKSJON_TYPE='ENDRE_SKJERMING' where AKSJON_TYPE='ENDRE_BEGRENSNING';
-
-update T_K_AKSJONS_TYPE set BESKRIVELSE='Kassering av et dokument' where AKSJON_TYPE='KASSASJON';
-update T_K_AKSJONS_TYPE set BESKRIVELSE='Sletting av et arkivelement' where AKSJON_TYPE='SLETT';
-update T_K_AKSJONS_TYPE set BESKRIVELSE='Endre skjerming på et arkivelement' where AKSJON_TYPE='ENDRE_SKJERMING';
-update T_K_AKSJONS_TYPE set BESKRIVELSE='Arkivering av et nytt variantformat og dokumentfil' where AKSJON_TYPE='ARKIVERING';
+INSERT INTO T_K_AKSJON_TYPE (AKSJON_TYPE, BESKRIVELSE, DATO_OPPRETTET, OPPRETTET_AV)
+VALUES ('ENDRE_SKJERMING', 'Endre skjerming på et arkivelement', sysdate, 'Ugur Alpay Cenar');
 
 update T_AKSJONSLOGG set AKSJON='ENDRE_SKJERMING' where AKSJON='ENDRE_BEGRENSNING';
+delete from T_K_AKSJON_TYPE where AKSJON_TYPE='ENDRE_BEGRENSNING';
+
+update T_K_AKSJON_TYPE set BESKRIVELSE='Kassering av et dokument' where AKSJON_TYPE='KASSASJON';
+update T_K_AKSJON_TYPE set BESKRIVELSE='Sletting av et arkivelement' where AKSJON_TYPE='SLETT';
+update T_K_AKSJON_TYPE set BESKRIVELSE='Arkivering av et nytt variantformat og dokumentfil' where AKSJON_TYPE='ARKIVERING';
 
 CREATE INDEX xiarkivelementendring
   ON t_arkiv_element_endring (tidspunkt);
