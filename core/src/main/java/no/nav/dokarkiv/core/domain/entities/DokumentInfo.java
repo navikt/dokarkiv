@@ -122,6 +122,12 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	@Column(name = "dokumenttype_id")
 	private String dokumenttypeId;
 
+	@Column(name = "dato_kassert")
+	private Date datoKassert;
+
+	@Column(name = "kassert_av_navn")
+	private String kassertAvNavn;
+
 	@ElementCollection
 	@JoinTable(name = "t_dok_info_tillegg", joinColumns = @JoinColumn(name = "dokument_info_id", nullable = false))
 	@MapKeyColumn(name = "nokkel")
@@ -676,10 +682,43 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	}
 
 	/**
+	 * Getter for the datoKassert property.
+	 *
+	 * @return the datoKassert
+	 */
+	public Date getDatoKassert() { return datoKassert; }
+
+	/**
+	 * Setter for the datoKassert property.
+	 *
+	 * @param datoKassert the datoKassert to set
+	 */
+	public void setDatoKassert(Date datoKassert) { this.datoKassert = datoKassert; }
+
+	/**
+	 * Getter for the kassertAvNavn property.
+	 *
+	 * @return the kassertAvNavn
+	 */
+	public String getKassertAvNavn() {
+		return kassertAvNavn;
+	}
+
+	/**
+	 * Setter for the kassertAvNavn property.
+	 *
+	 * @param kassertAvNavn the kassertAvNavn to set
+	 */
+	public void setKassertAvNavn(String kassertAvNavn) {
+		this.kassertAvNavn = kassertAvNavn;
+	}
+
+	/**
 	 * Getter for the tilleggsopplysninger property.
 	 *
 	 * @return the tilleggsopplysninger
 	 */
+
 	public Map<String, String> getTilleggsopplysninger() {
 		return tilleggsopplysninger;
 	}
