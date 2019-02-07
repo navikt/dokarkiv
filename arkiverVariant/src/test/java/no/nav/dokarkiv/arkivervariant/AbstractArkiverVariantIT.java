@@ -60,8 +60,6 @@ import java.nio.charset.StandardCharsets;
 @Transactional
 public abstract class AbstractArkiverVariantIT {
 
-	protected static final String OPPRETTET_KILDE_NAVN = "Opprettet kilde";
-	protected static final String TILKNYTTET_AV_NAVN = "Tilknyttetnavn";
 	protected static final String URL_ARKIVERVARIANT = "/rest/arkivervariant/";
 	private String OIDC_TOKEN_PERSON_USER_TEST;
 	private String OIDC_TOKEN_SERVICE_USER_TEST;
@@ -87,8 +85,6 @@ public abstract class AbstractArkiverVariantIT {
 	protected DokumentFilRepository dokumentFilRepository;
 	@Inject
 	protected AksjonsLoggRepository aksjonsLoggRepository;
-	@Inject
-	protected SkjermingService skjermingService;
 	@Before
 	public void setUp() {
 		OIDC_TOKEN_PERSON_USER_TEST = "Bearer " + oidcTestService.createOidc(openAmClaimsBuilder().subject(PERSON_USER_ID)
@@ -125,14 +121,6 @@ public abstract class AbstractArkiverVariantIT {
 		dokumentinfoRepository.deleteAll();
 		journalpostDokumentInfoRelasjonRepository.deleteAll();
 		aksjonsLoggRepository.deleteAll();
-	}
-
-	protected HttpEntity createNoAccesHeaders() {
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_JSON);
-		headers.add(HttpHeaders.AUTHORIZATION, OIDC_TOKEN_PERSON_USER_TEST);
-		headers.add(NAV_CONSUMER_TOKEN, OIDC_TOKEN_SERVICE_NO_ACCESS_USER_TEST);
-		return new HttpEntity(headers);
 	}
 
 	protected HttpHeaders createHeaders() {
