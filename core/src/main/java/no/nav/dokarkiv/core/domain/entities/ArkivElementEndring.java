@@ -49,13 +49,13 @@ public class ArkivElementEndring {
 	@Column(name = "tidspunkt", nullable = false)
 	private LocalDateTime tidspunkt;
 
-	@Column(name = "arkiv_element", length = 200, nullable = false)
+	@Column(name = "arkiv_element", length = 500, nullable = false)
 	private String arkivElement;
 
-	@Column(name = "fra_verdi", length = 200)
+	@Column(name = "fra_verdi", length = 500)
 	private String fraVerdi;
 
-	@Column(name = "til_verdi", length = 200)
+	@Column(name = "til_verdi", length = 500)
 	private String tilVerdi;
 
 	@ManyToOne(fetch = FetchType.LAZY)

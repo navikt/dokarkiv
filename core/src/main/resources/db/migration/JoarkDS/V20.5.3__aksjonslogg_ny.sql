@@ -21,9 +21,9 @@ create table t_arkiv_element_endring
 (
   arkiv_element_endring_id number(11)    not null,
   tidspunkt                timestamp(6)  not null,
-  arkiv_element            varchar2(200) null,
-  fra_verdi                varchar2(200) null,
-  til_verdi                varchar2(200) null,
+  arkiv_element            varchar2(500) null,
+  fra_verdi                varchar2(500) null,
+  til_verdi                varchar2(500) null,
   aksjonslogg_id           number(11)    null
     constraint constraint_aksjons_logg_id
       references T_AKSJONSLOGG,

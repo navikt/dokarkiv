@@ -73,7 +73,7 @@ public class AksjonsLogg {
 	@Column(name = "hjemmel", length = 50)
 	private String hjemmel;
 
-	@Column(name = "melding", length = 4000)
+	@Column(name = "melding", length = 1000)
 	private String melding;
 
 	@OneToMany(mappedBy = "aksjonsLogg")
