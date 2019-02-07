@@ -28,7 +28,6 @@ class FinnJournalposterSpringJdbcRepository {
 			.newResultSetExtractor(JournalpostDto.class);
 	private static final List<String> NOT_USED = Collections.singletonList("notused");
 	private static final List<String> ALL_JOURNALSTATUS = Stream.of(JournalStatusCode.values()).map(Enum::name).collect(Collectors.toList());
-	private static final List<String> INKLUDER_VARIANT_FORMATER = Arrays.asList("ARKIV", "SLADDET");
 	private static final List<Boolean> NO_FEILREGISTRERT_JOURNALPOST = Collections.singletonList(false);
 	private static final List<Boolean> ALL_JOURNALPOST = Arrays.asList(true, false);
 	private static final String PSAK_IDS_PARAM = "psakIds";
@@ -83,7 +82,6 @@ class FinnJournalposterSpringJdbcRepository {
 		namedParams.addValue("inkluderTema", journalpostFilter.getInkluderTema());
 		namedParams.addValue("inkluderJournalpostType", journalpostFilter.getInkluderJournalpostType());
 		namedParams.addValue("allJournalStatus", ALL_JOURNALSTATUS);
-		namedParams.addValue("inkluderVariantFormater", INKLUDER_VARIANT_FORMATER);
 		namedParams.addValue("visFeilregistrert", journalpostFilter.isVisFeilregistrerte() ? ALL_JOURNALPOST : NO_FEILREGISTRERT_JOURNALPOST);
 		namedParams.addValue("antallRader", journalpostFilter.getAntallRader());
 		namedParams.addValue("journalpostIdPeker", journalpostFilter.getJournalpostIdPeker());
