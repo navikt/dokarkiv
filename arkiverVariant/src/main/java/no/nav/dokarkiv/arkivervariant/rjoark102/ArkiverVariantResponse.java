@@ -4,19 +4,19 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Data;
+import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 
 @Data
 @Builder
 public class ArkiverVariantResponse {
-	private final Long journalpostId;
 	private final Long dokumentInfoId;
-	private final String tittel;
+	private final VariantFormatCode variantFormatCode;
+	private final String filUuid;
 
 	@JsonCreator
-	public ArkiverVariantResponse(@JsonProperty("journalpostId") Long journalpostId, @JsonProperty("dokumentInfoId") Long dokumentInfoId, @JsonProperty("tittel") String tittel) {
-		this.journalpostId = journalpostId;
+	public ArkiverVariantResponse(@JsonProperty("dokumentInfoId") Long dokumentInfoId, @JsonProperty("variantFormat") VariantFormatCode variantFormatCode, @JsonProperty("filuuid") String filUuid) {
+		this.variantFormatCode = variantFormatCode;
 		this.dokumentInfoId = dokumentInfoId;
-		this.tittel = tittel;
+		this.filUuid = filUuid;
 	}
-
 }

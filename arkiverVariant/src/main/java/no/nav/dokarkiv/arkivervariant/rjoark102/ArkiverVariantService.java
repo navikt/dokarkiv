@@ -41,13 +41,12 @@ public class ArkiverVariantService {
 		sjekkOmVariantFinnes(dokumentInfo, VariantFormatCode.valueOf(request.getVariant()));
 
 		byte[] decodedFil = base64ToByte(request.getFil());
-		lagreVariantFormat(dokumentInfo, VariantFormatCode.valueOf(request.getVariant()), decodedFil, request.getFilnavn(), FilTypeCode.valueOf(request.getFilType()));
+		FilDetaljer filDetaljer = lagreVariantFormat(dokumentInfo, VariantFormatCode.valueOf(request.getVariant()), decodedFil, request.getFilnavn(), FilTypeCode.valueOf(request.getFilType()));
 
 		return ArkiverVariantResponse.builder()
 				.dokumentInfoId(dokumentInfo.getDokumentInfoId())
-				.journalpostId(dokumentInfo.getOriginalJournalpost() == null ? null : dokumentInfo.getOriginalJournalpost()
-						.getJournalpostId())
-				.tittel(dokumentInfo.getTittel())
+				.variantFormatCode(filDetaljer.getVariantFormat())
+				.filUuid(filDetaljer.getFilUuid())
 				.build();
 	}
 
@@ -62,7 +61,7 @@ public class ArkiverVariantService {
 		return Base64.decodeBase64(dokumentFilBase64);
 	}
 
-	private void lagreVariantFormat(DokumentInfo dokumentInfo, VariantFormatCode variantFormatCode, byte[] fil, String filnavn, FilTypeCode filTypeCode) {
+	private FilDetaljer lagreVariantFormat(DokumentInfo dokumentInfo, VariantFormatCode variantFormatCode, byte[] fil, String filnavn, FilTypeCode filTypeCode) {
 		FilDetaljer filDetaljer = FilDetaljer.builder()
 				.filUuid(FilDetaljer.generateUuid())
 				.filnavn(filnavn)
@@ -76,5 +75,6 @@ public class ArkiverVariantService {
 
 		dokumentFilRepository.save(filDetaljer.createDokumentFil());
 		dokumentinfoRepository.save(dokumentInfo);
+		return filDetaljer;
 	}
 }

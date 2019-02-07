@@ -1,9 +1,9 @@
 package no.nav.dokarkiv.arkivervariant.rjoark102;
 
-import static no.nav.dokarkiv.arkivervariant.util.TestUtils.DOKUMENTINFO_ID;
 import static no.nav.dokarkiv.arkivervariant.util.TestUtils.FIL;
 import static no.nav.dokarkiv.arkivervariant.util.TestUtils.opprettHoveddokumentForIT;
 import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_LOGG_HEADER;
+import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.SLADDET;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.core.Is.is;
@@ -13,7 +13,6 @@ import static org.junit.Assert.assertTrue;
 import no.nav.dokarkiv.arkivervariant.AbstractArkiverVariantIT;
 import no.nav.dokarkiv.core.domain.codes.AksjonTypeCode;
 import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
-import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
 import no.nav.dokarkiv.core.domain.entities.DokumentFil;
@@ -51,7 +50,7 @@ public class Rjoark102IT extends AbstractArkiverVariantIT {
 				.dokumentInfoId(dokumentInfo.getDokumentInfoId())
 				.fil(Base64.encodeBase64String(FIL))
 				.filnavn("filnavn")
-				.variant(VariantFormatCode.SLADDET.name())
+				.variant(SLADDET.name())
 				.filType(FilTypeCode.PDF.name()).build();
 
 		HttpEntity httpEntity = new HttpEntity(request, createHeaders());
@@ -81,7 +80,7 @@ public class Rjoark102IT extends AbstractArkiverVariantIT {
 				.dokumentInfoId(123456L)
 				.fil(Base64.encodeBase64String(FIL))
 				.filnavn("filnavn")
-				.variant(VariantFormatCode.SLADDET.name())
+				.variant(SLADDET.name())
 				.filType(FilTypeCode.PDF.name()).build();
 
 		HttpEntity httpEntity = new HttpEntity(request, createHeadersWithAksjon(AksjonTypeCode.ARKIVERING.name()));
@@ -113,7 +112,7 @@ public class Rjoark102IT extends AbstractArkiverVariantIT {
 				.dokumentInfoId(dokumentInfo.getDokumentInfoId())
 				.fil(Base64.encodeBase64String(FIL))
 				.filnavn("filnavn")
-				.variant(VariantFormatCode.SLADDET.name())
+				.variant(SLADDET.name())
 				.filType(FilTypeCode.PDF.name()).build();
 
 		HttpEntity httpEntity = new HttpEntity(request, createHeadersWithAksjon(AksjonTypeCode.ARKIVERING.name()));
@@ -132,12 +131,16 @@ public class Rjoark102IT extends AbstractArkiverVariantIT {
 				.get();
 		assertThat(persistedDokumentInfo.getFildetaljerListe().size(), is(2));
 		assertThat(persistedDokumentInfo.findFilDetaljerByVariantFormat(VariantFormatCode.ARKIV), notNullValue());
-		assertThat(persistedDokumentInfo.findFilDetaljerByVariantFormat(VariantFormatCode.SLADDET), notNullValue());
-		assertThat(persistedDokumentInfo.findFilDetaljerByVariantFormat(VariantFormatCode.SLADDET)
+		assertThat(persistedDokumentInfo.findFilDetaljerByVariantFormat(SLADDET), notNullValue());
+		assertThat(persistedDokumentInfo.findFilDetaljerByVariantFormat(SLADDET)
 				.getFiltype(), is(FilTypeCode.PDF));
-		DokumentFil dokumentFil = dokumentFilRepository.findByFilUuid(persistedDokumentInfo.findFilDetaljerByVariantFormat(VariantFormatCode.SLADDET)
+		DokumentFil dokumentFil = dokumentFilRepository.findByFilUuid(persistedDokumentInfo.findFilDetaljerByVariantFormat(SLADDET)
 				.getFilUuid());
 		assertThat(dokumentFil.getFil(), is(FIL));
+		assertThat(responseEntity.getBody().getFilUuid(), is(dokumentFil.getFilUuid()));
+		assertThat(responseEntity.getBody().getVariantFormatCode(), is(SLADDET));
+		assertThat(responseEntity.getBody().getDokumentInfoId(), is(persistedDokumentInfo.getDokumentInfoId()));
+
 		TestTransaction.end();
 
 		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
@@ -160,7 +163,7 @@ public class Rjoark102IT extends AbstractArkiverVariantIT {
 				.dokumentInfoId(dokumentInfo.getDokumentInfoId())
 				.fil(Base64.encodeBase64String(FIL))
 				.filnavn("filnavn")
-				.variant(VariantFormatCode.SLADDET.name())
+				.variant(SLADDET.name())
 				.filType(FilTypeCode.PDF.name()).build();
 
 		HttpEntity httpEntity = new HttpEntity(request, createHeadersWithAksjon(AksjonTypeCode.ARKIVERING.name()));
@@ -179,7 +182,7 @@ public class Rjoark102IT extends AbstractArkiverVariantIT {
 				.dokumentInfoId(dokumentInfo.getDokumentInfoId())
 				.fil(Base64.encodeBase64String(FIL2))
 				.filnavn("filnavn")
-				.variant(VariantFormatCode.SLADDET.name())
+				.variant(SLADDET.name())
 				.filType(FilTypeCode.PDF.name()).build();
 
 		HttpEntity httpEntity2 = new HttpEntity(request, createHeadersWithAksjon(AksjonTypeCode.ARKIVERING.name()));
@@ -231,7 +234,7 @@ public class Rjoark102IT extends AbstractArkiverVariantIT {
 				.dokumentInfoId(123456L)
 				.fil(Base64.encodeBase64String(FIL))
 				.filnavn("filnavn")
-				.variant(VariantFormatCode.SLADDET.name())
+				.variant(SLADDET.name())
 				.filType(FilTypeCode.PDF.name()).build();
 
 		HttpEntity httpEntity = new HttpEntity(request, createHeadersWithAksjon(AksjonTypeCode.ARKIVERING.name()));
