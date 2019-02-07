@@ -5,6 +5,7 @@ import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
+import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode;
 
 import java.util.Date;
@@ -36,5 +37,6 @@ public class JournalpostDto {
 	private final Date avsReturDato;
 	private final Date sendtPrintDato;
 	private final Date ekspedertDato;
+	private final SkjermingTypeCode skjerming;
 	private final List<DokumentInfoDto> dokumenter;
 }

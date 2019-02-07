@@ -3,6 +3,7 @@ package no.nav.dokarkiv.hentjournalsakinfo.rjoark901;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Value;
+import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
 
 /**
  * @author Sigurd Midttun, Visma Consulting.
@@ -13,6 +14,6 @@ import lombok.Value;
 public class TilgangSakDto {
 
 	private final String sakId;
-	private final String fagsystem;
+	private final FagsystemCode fagsystem;
 
 }
