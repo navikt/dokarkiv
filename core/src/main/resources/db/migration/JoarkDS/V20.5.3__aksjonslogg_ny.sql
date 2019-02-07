@@ -10,6 +10,8 @@ alter table t_aksjonslogg
 alter table T_AKSJONSLOGG
   modify JOURNALPOST_ID null;
 
+alter table T_AKSJONSLOGG modify melding varchar2(1000);
+
 alter table T_AKSJONSLOGG
   add constraint check_jpid_dokid check ( (JOURNALPOST_ID is null AND DOKUMENT_INFO_ID is not null) or
                                           (JOURNALPOST_ID is not null AND DOKUMENT_INFO_ID is null) or
