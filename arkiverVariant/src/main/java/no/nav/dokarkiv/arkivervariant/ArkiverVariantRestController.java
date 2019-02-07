@@ -15,7 +15,6 @@ import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggHeader;
 import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggHeaderMapper;
 import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService;
-import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggHeaderException;
 import no.nav.dokarkiv.core.metrics.RestMetrics;
 import no.nav.dokarkiv.core.security.abac.AbacSecurityService;
@@ -23,7 +22,6 @@ import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import no.nav.freg.abac.core.annotation.Abac;
 import org.slf4j.MDC;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -38,7 +36,7 @@ import java.util.List;
 @RequestMapping("rest/")
 public class ArkiverVariantRestController {
 
-	private final no.nav.dokarkiv.arkivervariant.rjoark102.ArkiverVariantService ArkiverVariantService;
+	private final no.nav.dokarkiv.arkivervariant.rjoark102.ArkiverVariantService arkiverVariantService;
 	private final AbacSecurityService abacSecurityService;
 	private final AksjonsLoggService aksjonsLoggService;
 	private final AksjonsLoggHeaderMapper aksjonsLoggHeaderMapper;
@@ -46,9 +44,9 @@ public class ArkiverVariantRestController {
 
 
 	public ArkiverVariantRestController(
-			ArkiverVariantService ArkiverVariantService,
+			ArkiverVariantService arkiverVariantService,
 			AbacSecurityService abacSecurityService, AksjonsLoggService aksjonsLoggService, ArkiverVariantValidator validator) {
-		this.ArkiverVariantService = ArkiverVariantService;
+		this.arkiverVariantService = arkiverVariantService;
 		this.abacSecurityService = abacSecurityService;
 		this.aksjonsLoggService = aksjonsLoggService;
 		this.validator = validator;
@@ -73,7 +71,7 @@ public class ArkiverVariantRestController {
 		List<AksjonsLoggHeader> aksjonsLoggHeader = aksjonsLoggHeaderMapper.mapAksjonsLoggHeader(aksjonsLoggHeaderString);
 		aksjonsLoggService.validateAndSaveAksjon(aksjonsLoggHeader);
 
-		ArkiverVariantResponse respons = ArkiverVariantService.arkiverVariant(request);
+		ArkiverVariantResponse respons = arkiverVariantService.arkiverVariant(request);
 		log.info("{} har arkivert variant= {} med dokumentInfoId={}",
 				MDC.get(MDCConstants.MDC_REQUEST_ID), request.getVariant(), request.getDokumentInfoId());
 		return respons;
