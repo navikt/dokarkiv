@@ -1,11 +1,15 @@
 package no.nav.dokarkiv.core.aksjonslogg;
 
+import static org.apache.commons.lang3.StringUtils.isBlank;
+
 import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
 import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
 import no.nav.dokarkiv.core.repository.AksjonsLoggRepository;
+import no.nav.dokarkiv.core.stelvio.RequestContextHolder;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.

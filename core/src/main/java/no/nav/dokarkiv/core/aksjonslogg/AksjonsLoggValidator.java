@@ -24,16 +24,17 @@ class AksjonsLoggValidator {
 	}
 
 	public void validateAksjonslogg(AksjonsLoggTO aksjonsLoggTO) throws UgyldigAksjonsLoggException {
+		String componentId = RequestContextHolder.currentRequestContext().getComponentId();
+		String userId = RequestContextHolder.currentRequestContext().getUserId();
+
+		assertNullOrEmpty(componentId, "AksjonsLogg mangler påkrevd parameter: Applikasjon");
+
+		if (isBlank(aksjonsLoggTO.getUtfoertAv()) && (isBlank(userId) || componentId.equals(userId))) {
+			assertNullOrEmpty(aksjonsLoggTO.getUtfoertAv(), "AksjonsLogg mangler påkrevd parameter: utfoertAv. AksjonsLogg input må inneholde parameteren \"utfoertAv\" hvis kallet ikke inneholder sikkerhetstoken for saksbehandleren");
+		}
 
 		assertNullOrEmpty(aksjonsLoggTO.getAksjon(), "AksjonsLogg mangler påkrevd parameter: aksjon");
 		assertNullOrEmpty(aksjonsLoggTO.getBruker(), "AksjonsLogg mangler påkrevd parameter: bruker");
-
-		String userId = RequestContextHolder.currentRequestContext().getUserId();
-		String componentId = RequestContextHolder.currentRequestContext().getComponentId();
-
-		if (Objects.nonNull(componentId) && componentId.equals(userId) || isBlank(userId)) {
-			assertNullOrEmpty(aksjonsLoggTO.getUtfoertAv(), "AksjonsLogg mangler påkrevd parameter: utfoertAv. AksjonsLogg input må inneholde parameteren \"utfoertAv\" hvis kallet ikke inneholder sikkerhetstoken for saksbehandleren");
-		}
 
 		if (Objects.isNull(aksjonsLoggTO.getJournalpostId()) && Objects.isNull(aksjonsLoggTO.getDokumentInfoId())) {
 			throw new UgyldigAksjonsLoggException("AksjonsLogg mangler påkrevd parameter: enten journalpostId eller dokumentInfoId må bli satt.");

@@ -3,6 +3,7 @@ package no.nav.dokarkiv.core.akjsonslogg;
 import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_ARKIVELEMENT;
 import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_FRA_VERDI;
 import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_TIL_VERDI;
+import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_UTFOERT_AV;
 import static no.nav.dokarkiv.core.util.TestDataUtils.APPLICATION;
 import static no.nav.dokarkiv.core.util.TestDataUtils.USER_ID;
 import static no.nav.dokarkiv.core.util.TestDataUtils.createAksjonsLoggTO;
@@ -84,7 +85,7 @@ public class AksjonsLoggIT {
 		assertThat(aksjonsLogg.getHjemmel(), is(TestDataUtils.AKSJON_HJEMMEL));
 		assertThat(Duration.between(aksjonsLogg.getTidspunkt(), LocalDateTime.now()).getSeconds(), lessThan(10L));
 
-		assertThat(aksjonsLogg.getUtfoertAv(), is(USER_ID));
+		assertThat(aksjonsLogg.getUtfoertAv(), is(AKSJON_UTFOERT_AV));
 		assertThat(aksjonsLogg.getApplikasjon(), is(APPLICATION));
 
 		ArkivElementEndring arkivElementEndring = aksjonsLogg.getArkivElementEndringer().iterator().next();
@@ -95,6 +96,20 @@ public class AksjonsLoggIT {
 		assertThat(Duration.between(arkivElementEndring.getTidspunkt(), LocalDateTime.now()).getSeconds(), lessThan(10L));
 	}
 
+
+	@Test
+	public void shouldMapUtfoertAvFromRequestContextIfUtfoertAvIsNull() throws UgyldigAksjonsLoggException {
+		AksjonsLoggTO aksjonsLoggTO = createAksjonsLoggTO(1L, 1L);
+		aksjonsLoggTO.setUtfoertAv(null);
+		aksjonsLoggService.validateAndSaveAksjonsLogg(aksjonsLoggTO, createArkivElementEndringToList());
+
+		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
+		assertThat(aksjonsLoggList.size(), is(1));
+		AksjonsLogg aksjonsLogg = aksjonsLoggList.get(0);
+
+		assertThat(aksjonsLogg.getUtfoertAv(), is(USER_ID));
+		assertThat(aksjonsLogg.getApplikasjon(), is(APPLICATION));
+	}
 
 	@Test
 	public void shouldThrowWhenAksjonIsNull() throws UgyldigAksjonsLoggException {

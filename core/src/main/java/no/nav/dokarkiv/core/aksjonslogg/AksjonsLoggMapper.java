@@ -5,6 +5,7 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
 import no.nav.dokarkiv.core.domain.entities.ArkivElementEndring;
 import no.nav.dokarkiv.core.stelvio.RequestContextHolder;
+import org.apache.logging.log4j.util.Strings;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -22,9 +23,7 @@ class AksjonsLoggMapper {
 		String componentId = RequestContextHolder.currentRequestContext().getComponentId();
 		String userId = RequestContextHolder.currentRequestContext().getUserId();
 
-		if (Objects.nonNull(componentId) && componentId.equals(userId) || isBlank(userId)) {
-			userId = aksjonsLoggTO.getBruker();
-		}
+		String utfoertAv = Strings.isEmpty(aksjonsLoggTO.getUtfoertAv()) ? userId : aksjonsLoggTO.getUtfoertAv();
 
 		AksjonsLogg aksjonsLogg = AksjonsLogg.builder()
 				.tidspunkt(LocalDateTime.now())
@@ -35,7 +34,7 @@ class AksjonsLoggMapper {
 				.journalpostId(aksjonsLoggTO.getJournalpostId())
 				.hjemmel(aksjonsLoggTO.getHjemmel())
 				.melding(aksjonsLoggTO.getMelding())
-				.utfoertAv(userId)
+				.utfoertAv(utfoertAv)
 				.arkivElementEndringer(mapArkivElementEndring(arkivElementEndringTOList))
 				.build();
 
