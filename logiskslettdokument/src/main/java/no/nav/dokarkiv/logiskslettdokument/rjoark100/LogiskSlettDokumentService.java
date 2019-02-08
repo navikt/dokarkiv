@@ -2,7 +2,11 @@ package no.nav.dokarkiv.logiskslettdokument.rjoark100;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.MDCConstants;
+import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
 import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
+import no.nav.dokarkiv.core.domain.entities.ArkivElementEndring;
+import no.nav.dokarkiv.core.domain.entities.Begrensning;
+import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.service.SkjermingService;
 import no.nav.dokarkiv.core.exceptions.DokumentAlleredeSkjermetException;
@@ -13,6 +17,8 @@ import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @Slf4j
@@ -28,7 +34,7 @@ public class LogiskSlettDokumentService {
 		this.skjermingService = skjermingService;
 	}
 
-	public LogiskSlettDokumentResponse logiskSletteDokument(LogiskSlettDokumentRequestTo requestTo) {
+	public List<ArkivElementEndringTO> logiskSletteDokument(LogiskSlettDokumentRequestTo requestTo) {
 		sjekkAtDokumentIkkeErSkjermet(requestTo.getJournalpostId(), requestTo.getDokumentInfoId());
 
 		JournalpostDokumentInfoRelasjon relasjonSomSkalSlettesLogisk =
@@ -48,17 +54,32 @@ public class LogiskSlettDokumentService {
 					requestTo.getDokumentInfoId()));
 		}
 
+		List<ArkivElementEndringTO> arkivElementEndringTOList = new ArrayList<>();
 		switch (relasjonSomSkalSlettesLogisk.getTilknyttetJournalpostSom()) {
 			case HOVEDDOKUMENT:
 				skjermingService.setJournalpostBegrensning (relasjonSomSkalSlettesLogisk.getJournalpost(), SkjermingTypeCode.POL);
 				log.info("{} har utført logisk sletting av hoveddokument med journalpostId={}",
 						MDC.get(MDCConstants.MDC_REQUEST_ID), requestTo.getJournalpostId());
+				arkivElementEndringTOList.add(
+						ArkivElementEndringTO.builder()
+								.arkivElement("Journalpost.skjermingType")
+								.fraVerdi(null)
+								.tilVerdi(SkjermingTypeCode.POL.name())
+								.build()
+				);
 				break;
 			case VEDLEGG:
 				skjermingService.setJpDokInfoRelBegrensning(
 						relasjonSomSkalSlettesLogisk, SkjermingTypeCode.POL);
 				log.info("{} har utført logisk sletting av vedlegg med journalpostId={} og dokumentInfoId={}",
 						MDC.get(MDCConstants.MDC_REQUEST_ID), requestTo.getJournalpostId(), requestTo.getDokumentInfoId());
+				arkivElementEndringTOList.add(
+						ArkivElementEndringTO.builder()
+								.arkivElement("DokumentInfo.skjermingType")
+								.fraVerdi(null)
+								.tilVerdi(SkjermingTypeCode.POL.name())
+								.build()
+				);
 				break;
 			default:
 				throw new UgyldigTilknyttetJournalpostSomException(String.format(
@@ -68,7 +89,7 @@ public class LogiskSlettDokumentService {
 						requestTo.getDokumentInfoId()));
 		}
 
-		return LogiskSlettDokumentResponseMapper.mapToSlettDokumentResponse(relasjonSomSkalSlettesLogisk);
+		return arkivElementEndringTOList;
 	}
 
 	private void sjekkAtDokumentIkkeErSkjermet(Long journalpostId, Long dokumentInfoId) {

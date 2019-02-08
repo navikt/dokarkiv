@@ -3,9 +3,9 @@ package no.nav.dokarkiv.core.domain.codes;
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
  */
-public enum  AksjonTypeCode {
+public enum AksjonsTypeCode {
 
-	ENDRE_BEGRENSNING,
+	ENDRE_SKJERMING,
 	KASSASJON,
 	ARKIVERING,
 	SLETT

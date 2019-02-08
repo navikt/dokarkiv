@@ -8,10 +8,13 @@ import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.UPDATE_ACTI
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.MDCConstants;
-import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggHeader;
-import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggHeaderMapper;
+import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggTO;
+import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggTOMapper;
 import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService;
-import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggHeaderException;
+import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
+import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
+import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
+import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
 import no.nav.dokarkiv.core.metrics.RestMetrics;
 import no.nav.dokarkiv.core.security.abac.AbacSecurityService;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
@@ -30,6 +33,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.inject.Inject;
+import java.util.Arrays;
 import java.util.List;
 
 @Slf4j
@@ -42,7 +46,7 @@ public class LogiskTidligKassasjonRestController {
 	private final AngreLogiskTidligKassasjonService angreLogiskTidligKassasjonService;
 	private final AbacSecurityService abacSecurityService;
 	private final AksjonsLoggService aksjonsLoggService;
-	private final AksjonsLoggHeaderMapper aksjonsLoggHeaderMapper;
+	private final AksjonsLoggTOMapper aksjonsLoggTOMapper;
 
 	@Inject
 	public LogiskTidligKassasjonRestController(
@@ -56,7 +60,7 @@ public class LogiskTidligKassasjonRestController {
 		this.angreLogiskTidligKassasjonService = angreLogiskTidligKassasjonService;
 		this.abacSecurityService = abacSecurityService;
 		this.aksjonsLoggService = aksjonsLoggService;
-		this.aksjonsLoggHeaderMapper = new AksjonsLoggHeaderMapper();
+		this.aksjonsLoggTOMapper = new AksjonsLoggTOMapper();
 	}
 
 	@Transactional
@@ -67,19 +71,30 @@ public class LogiskTidligKassasjonRestController {
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark105"}, percentiles = {0.5, 0.95})
 	public LogiskTidligKassasjonResponse logiskTidligKassasjon(
 			@RequestHeader(value = AKSJONS_LOGG_HEADER) String aksjonsLoggHeaderString,
-			@PathVariable("dokumentInfoId") Long dokumentInfoId) throws UgyldigAksjonsLoggHeaderException {
+			@PathVariable("dokumentInfoId") Long dokumentInfoId) throws UgyldigAksjonsLoggException {
 		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark105");
 		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har mottat kall med dokumentInfoId={}", dokumentInfoId);
 		validator.validerLogiskTidligKassasjonRequest(dokumentInfoId);
 		abacSecurityService.assertAccessToDokumentIncludingSkjermet(dokumentInfoId);
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
 
-		List<AksjonsLoggHeader> aksjonsLoggHeader = aksjonsLoggHeaderMapper.mapAksjonsLoggHeader(aksjonsLoggHeaderString);
-		aksjonsLoggService.validateAndSaveAksjon(aksjonsLoggHeader);
-
 		LogiskTidligKassasjonResponse response = logiskTidligKassasjonService.logiskTidligKassasjonAvDokument(dokumentInfoId);
+
 		log.info("{} har logisk tidlig kassert dokument med dokumentInfoId={}",
 				MDC.get(MDCConstants.MDC_REQUEST_ID), dokumentInfoId);
+
+		AksjonsLoggTO aksjonsLoggTO = aksjonsLoggTOMapper.mapAksjonsLoggHeader(aksjonsLoggHeaderString, AksjonsTypeCode.ENDRE_SKJERMING, null, dokumentInfoId);
+
+		List<ArkivElementEndringTO> arkivElementEndringTOList = Arrays.asList(
+				ArkivElementEndringTO.builder()
+						.arkivElement("DokumentInfo.skjermingType")
+						.fraVerdi(null)
+						.tilVerdi(SkjermingTypeCode.POL.name())
+						.build()
+
+		);
+		aksjonsLoggService.validateAndSaveAksjonsLogg(aksjonsLoggTO, arkivElementEndringTOList);
+
 		return response;
 	}
 
@@ -91,19 +106,29 @@ public class LogiskTidligKassasjonRestController {
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark106"}, percentiles = {0.5, 0.95})
 	public LogiskTidligKassasjonResponse angreLogiskTidligKassasjon(
 			@RequestHeader(value = AKSJONS_LOGG_HEADER) String aksjonsLoggHeaderString,
-			@PathVariable("dokumentInfoId") Long dokumentInfoId) throws UgyldigAksjonsLoggHeaderException {
+			@PathVariable("dokumentInfoId") Long dokumentInfoId) throws UgyldigAksjonsLoggException {
 		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark106");
 		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har mottat kall med dokumentInfoId={}", dokumentInfoId);
 		validator.validerLogiskTidligKassasjonRequest(dokumentInfoId);
 		abacSecurityService.assertAccessToDokumentIncludingSkjermet(dokumentInfoId);
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
 
-		List<AksjonsLoggHeader> aksjonsLoggHeader = aksjonsLoggHeaderMapper.mapAksjonsLoggHeader(aksjonsLoggHeaderString);
-		aksjonsLoggService.validateAndSaveAksjon(aksjonsLoggHeader);
-
 		LogiskTidligKassasjonResponse response = angreLogiskTidligKassasjonService.angreLogiskTidligKassasjonAvDokument(dokumentInfoId);
 		log.info("{} har angret logisk tidlig kassering av dokument med dokumentInfoId={}",
 				MDC.get(MDCConstants.MDC_REQUEST_ID), dokumentInfoId);
+
+		AksjonsLoggTO aksjonsLoggTO = aksjonsLoggTOMapper.mapAksjonsLoggHeader(aksjonsLoggHeaderString, AksjonsTypeCode.ENDRE_SKJERMING, null, dokumentInfoId);
+
+		List<ArkivElementEndringTO> arkivElementEndringTOList = Arrays.asList(
+				ArkivElementEndringTO.builder()
+						.arkivElement("DokumentInfo.skjermingType")
+						.fraVerdi(SkjermingTypeCode.POL.name())
+						.tilVerdi(null)
+						.build()
+
+		);
+		aksjonsLoggService.validateAndSaveAksjonsLogg(aksjonsLoggTO, arkivElementEndringTOList);
+
 		return response;
 	}
 
