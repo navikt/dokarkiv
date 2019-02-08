@@ -35,6 +35,7 @@
 		<module>fysisktidligkassasjon</module>
 		<module>logisktidligkassasjon</module>
 		<module>hentjournalsakinfo</module>
+		<module>arkivervariant</module>
 		<module>skjermarkivenhet</module>
 	</modules>
 
@@ -163,6 +164,11 @@
 			<dependency>
 				<groupId>no.nav.dokarkiv</groupId>
 				<artifactId>hentjournalinfo</artifactId>
+				<version>1-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>no.nav.dokarkiv</groupId>
+				<artifactId>arkivervariant</artifactId>
 				<version>1-SNAPSHOT</version>
 			</dependency>
 			<dependency>
