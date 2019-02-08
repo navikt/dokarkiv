@@ -36,10 +36,10 @@ public class ArkiverVariantService {
 				.orElseThrow(() -> new DokumentInfoIkkeFunnetException(String.format("Kan ikke finne dokumentInfo med dokumentInfoId=%s",
 						request.getDokumentInfoId())));
 
-		sjekkOmVariantFinnes(dokumentInfo, VariantFormatCode.valueOf(request.getVariant()));
+		sjekkOmVariantFinnes(dokumentInfo, request.getVariant());
 
 		byte[] decodedFil = base64ToByte(request.getFil());
-		FilDetaljer filDetaljer = lagreVariantFormat(dokumentInfo, VariantFormatCode.valueOf(request.getVariant()), decodedFil, request.getFilnavn(), FilTypeCode.valueOf(request.getFilType()));
+		FilDetaljer filDetaljer = lagreVariantFormat(dokumentInfo, request.getVariant(), decodedFil, request.getFilnavn(), request.getFilType());
 
 		return ArkiverVariantResponse.builder()
 				.dokumentInfoId(dokumentInfo.getDokumentInfoId())

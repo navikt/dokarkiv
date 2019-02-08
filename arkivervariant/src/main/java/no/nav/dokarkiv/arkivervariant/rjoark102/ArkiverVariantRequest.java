@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
+import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 
 @Data
 @Builder
@@ -11,8 +13,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ArkiverVariantRequest {
 	private Long dokumentInfoId;
-	private String variant;
+	private VariantFormatCode variant;
 	private String fil;
-	private String filType;
+	private FilTypeCode filType;
 	private String filnavn;
 }

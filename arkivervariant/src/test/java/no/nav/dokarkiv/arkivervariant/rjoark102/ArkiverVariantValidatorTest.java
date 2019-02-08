@@ -2,16 +2,13 @@ package no.nav.dokarkiv.arkivervariant.rjoark102;
 
 import static no.nav.dokarkiv.arkivervariant.util.TestUtils.FIL;
 
-import no.nav.dokarkiv.arkivervariant.exception.UgyldigInputException;
 import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
+import no.nav.dokarkiv.core.exceptions.UgyldigInputException;
 import org.apache.commons.codec.binary.Base64;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.internal.runners.statements.ExpectException;
 import org.junit.rules.ExpectedException;
-
-import javax.inject.Inject;
 
 public class ArkiverVariantValidatorTest {
 
@@ -26,8 +23,8 @@ public class ArkiverVariantValidatorTest {
 				.dokumentInfoId(123456L)
 				.fil(Base64.encodeBase64String(FIL))
 				.filnavn("filnavn")
-				.variant(VariantFormatCode.SLADDET.name())
-				.filType(FilTypeCode.PDF.name()).build();
+				.variant(VariantFormatCode.SLADDET)
+				.filType(FilTypeCode.PDF).build();
 
 		validator.validateArkiverVariantRequest(request);
 	}
@@ -40,8 +37,8 @@ public class ArkiverVariantValidatorTest {
 		ArkiverVariantRequest request = ArkiverVariantRequest.builder()
 				.fil(Base64.encodeBase64String(FIL))
 				.filnavn("filnavn")
-				.variant(VariantFormatCode.SLADDET.name())
-				.filType(FilTypeCode.PDF.name()).build();
+				.variant(VariantFormatCode.SLADDET)
+				.filType(FilTypeCode.PDF).build();
 
 		validator.validateArkiverVariantRequest(request);
 	}
@@ -54,8 +51,8 @@ public class ArkiverVariantValidatorTest {
 		ArkiverVariantRequest request = ArkiverVariantRequest.builder()
 				.dokumentInfoId(123456L)
 				.filnavn("filnavn")
-				.variant(VariantFormatCode.SLADDET.name())
-				.filType(FilTypeCode.PDF.name()).build();
+				.variant(VariantFormatCode.SLADDET)
+				.filType(FilTypeCode.PDF).build();
 
 		validator.validateArkiverVariantRequest(request);
 	}
@@ -68,8 +65,8 @@ public class ArkiverVariantValidatorTest {
 		ArkiverVariantRequest request = ArkiverVariantRequest.builder()
 				.dokumentInfoId(123456L)
 				.fil(Base64.encodeBase64String(FIL))
-				.variant(VariantFormatCode.SLADDET.name())
-				.filType(FilTypeCode.PDF.name()).build();
+				.variant(VariantFormatCode.SLADDET)
+				.filType(FilTypeCode.PDF).build();
 
 		validator.validateArkiverVariantRequest(request);
 	}
@@ -83,7 +80,7 @@ public class ArkiverVariantValidatorTest {
 				.dokumentInfoId(123456L)
 				.fil(Base64.encodeBase64String(FIL))
 				.filnavn("filnavn")
-				.filType(FilTypeCode.PDF.name()).build();
+				.filType(FilTypeCode.PDF).build();
 
 		validator.validateArkiverVariantRequest(request);
 	}
@@ -97,37 +94,7 @@ public class ArkiverVariantValidatorTest {
 				.dokumentInfoId(123456L)
 				.fil(Base64.encodeBase64String(FIL))
 				.filnavn("filnavn")
-				.variant(VariantFormatCode.SLADDET.name()).build();
-
-		validator.validateArkiverVariantRequest(request);
-	}
-
-	@Test
-	public void variantErUgyldig() {
-		expectedException.expect(UgyldigInputException.class);
-		expectedException.expectMessage("Varianten: UGYLDIG er ugyldig");
-
-		ArkiverVariantRequest request = ArkiverVariantRequest.builder()
-				.dokumentInfoId(123456L)
-				.fil(Base64.encodeBase64String(FIL))
-				.filnavn("filnavn")
-				.variant("UGYLDIG")
-				.filType(FilTypeCode.PDF.name()).build();
-
-		validator.validateArkiverVariantRequest(request);
-	}
-
-	@Test
-	public void filTypeErUgyldig() {
-		expectedException.expect(UgyldigInputException.class);
-		expectedException.expectMessage("Filtypen: UKJENT er ugyldig");
-
-		ArkiverVariantRequest request = ArkiverVariantRequest.builder()
-				.dokumentInfoId(123456L)
-				.fil(Base64.encodeBase64String(FIL))
-				.filnavn("filnavn")
-				.variant(VariantFormatCode.SLADDET.name())
-				.filType("UKJENT").build();
+				.variant(VariantFormatCode.SLADDET).build();
 
 		validator.validateArkiverVariantRequest(request);
 	}
