@@ -21,12 +21,10 @@ import java.util.List;
 public class JournalpostListeRepository {
 
 	private final EntityManager entityManager;
-	private SkjermingService skjermingService;
 
 	@Inject
-	public JournalpostListeRepository(EntityManager entityManager, SkjermingService skjermingService) {
+	public JournalpostListeRepository(EntityManager entityManager) {
 		this.entityManager = entityManager;
-		this.skjermingService = skjermingService;
 	}
 
 	@SuppressWarnings("unchecked")
