@@ -686,14 +686,25 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	 *
 	 * @return the datoKassert
 	 */
-	public Date getDatoKassert() { return datoKassert; }
+	public Date getDatoKassert() {
+		if (datoKassert != null) {
+			return new Date(datoKassert.getTime());
+		}
+		return null;
+	}
 
 	/**
 	 * Setter for the datoKassert property.
 	 *
 	 * @param datoKassert the datoKassert to set
 	 */
-	public void setDatoKassert(Date datoKassert) { this.datoKassert = datoKassert; }
+	public void setDatoKassert(Date datoKassert) {
+		if (datoKassert != null) {
+			this.datoKassert = new Date(datoKassert.getTime());
+		} else {
+			this.datoKassert = null;
+		}
+	}
 
 	/**
 	 * Getter for the kassertAvNavn property.

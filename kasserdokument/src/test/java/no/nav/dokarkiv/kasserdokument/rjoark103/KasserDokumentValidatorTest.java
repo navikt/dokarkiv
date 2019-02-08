@@ -19,7 +19,6 @@ public class KasserDokumentValidatorTest {
 	public void happyPath() {
 		KasserDokumentRequest request = KasserDokumentRequest.builder().dokumentInfoId(1L).kassertAvNavn("Kassør").build();
 		validator.validerKasserDokumentRequest(request);
-		assertTrue(true);
 	}
 
 	@Test
