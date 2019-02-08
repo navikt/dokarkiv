@@ -10,13 +10,14 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.MDCConstants;
-import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggHeader;
-import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggHeaderMapper;
 import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService;
+import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggTO;
+import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggTOMapper;
+import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
+import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.codes.ArkivenhetCode;
 import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
-import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
-import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggHeaderException;
+import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
 import no.nav.dokarkiv.core.exceptions.UgyldigSkjermArkivenhetRequestException;
 import no.nav.dokarkiv.core.metrics.RestMetrics;
 import no.nav.dokarkiv.core.security.abac.AbacSecurityService;
@@ -37,6 +38,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -52,7 +54,7 @@ public class SkjermArkivenhetRestController {
 	private final SkjermArkivenhetService skjermArkivenhetService;
 	private final OpphevSkjermArkivenhetService opphevSkjermArkivenhetService;
 	private final AksjonsLoggService aksjonsLoggService;
-	private final AksjonsLoggHeaderMapper aksjonsLoggHeaderMapper;
+	private final AksjonsLoggTOMapper aksjonsLoggTOMapper;
 
 
 	@Inject
@@ -60,13 +62,12 @@ public class SkjermArkivenhetRestController {
 			AbacSecurityService abacSecurityService,
 			SkjermArkivenhetService skjermArkivenhetService,
 			OpphevSkjermArkivenhetService opphevSkjermArkivenhetService,
-			AksjonsLoggService aksjonsLoggService,
-			AksjonsLoggHeaderMapper aksjonsLoggHeaderMapper) {
+			AksjonsLoggService aksjonsLoggService) {
 		this.abacSecurityService = abacSecurityService;
 		this.skjermArkivenhetService = skjermArkivenhetService;
 		this.opphevSkjermArkivenhetService = opphevSkjermArkivenhetService;
 		this.aksjonsLoggService = aksjonsLoggService;
-		this.aksjonsLoggHeaderMapper = aksjonsLoggHeaderMapper;
+		this.aksjonsLoggTOMapper = new AksjonsLoggTOMapper();
 	}
 
 	@Transactional
@@ -77,20 +78,19 @@ public class SkjermArkivenhetRestController {
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark100"}, percentiles = {0.5, 0.95})
 	public SkjermArkivenhetResponse skjermArkivenhet(
 			@RequestHeader(value = AKSJONS_LOGG_HEADER) String aksjonsLoggHeaderString,
-			@RequestBody SkjermArkivenhetRequest skjermArkivenhetRequest) throws UgyldigAksjonsLoggHeaderException, UgyldigSkjermArkivenhetRequestException {
+			@RequestBody SkjermArkivenhetRequest skjermArkivenhetRequest) throws UgyldigAksjonsLoggException, UgyldigSkjermArkivenhetRequestException {
 		validerAtRequestHarSkjermingOgArkivenhet(skjermArkivenhetRequest.getSkjerming(), skjermArkivenhetRequest.getArkivenhet());
 		validerAbac(skjermArkivenhetRequest);
 		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark100");
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
-		validerOgLagreListeMedAksjonsLoggHeader(aksjonsLoggHeaderString);
-		SkjermArkivenhetResponse response = null;
+		List<ArkivElementEndringTO> arkivElementEndringTOList = new ArrayList<>();
 
 		switch (skjermArkivenhetRequest.getArkivenhet()) {
 			case JOURNALPOST:
 				assertNotNullOrEmpty(skjermArkivenhetRequest.getJournalpostId(), "journalpostId");
 				log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + LOGG_MOTTATT_KALL, skjermArkivenhetRequest.getArkivenhet() +
 						" og journalpostId={}", skjermArkivenhetRequest.getJournalpostId());
-				response = skjermArkivenhetService.skjermJournalpost(
+				skjermArkivenhetService.skjermJournalpost(
 						skjermArkivenhetRequest.getJournalpostId(), skjermArkivenhetRequest.getSkjerming());
 				break;
 			case DOKUMENT_INFO:
@@ -99,7 +99,7 @@ public class SkjermArkivenhetRestController {
 				log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + LOGG_MOTTATT_KALL, skjermArkivenhetRequest.getArkivenhet() +
 								", journalpostId={} og dokumentInfoId={}",
 						skjermArkivenhetRequest.getJournalpostId(), skjermArkivenhetRequest.getDokumentInfoId());
-				response = skjermArkivenhetService.skjermDokumentInfo(
+				skjermArkivenhetService.skjermDokumentInfo(
 						skjermArkivenhetRequest.getJournalpostId(), skjermArkivenhetRequest.getDokumentInfoId(), skjermArkivenhetRequest
 								.getSkjerming());
 				break;
@@ -109,7 +109,7 @@ public class SkjermArkivenhetRestController {
 				log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + LOGG_MOTTATT_KALL, skjermArkivenhetRequest.getArkivenhet() +
 						", dokumentInfoId={} og variant={}", skjermArkivenhetRequest.getJournalpostId(), skjermArkivenhetRequest
 						.getDokumentInfoId());
-				response = skjermArkivenhetService.skjermDokumentFil(skjermArkivenhetRequest.getDokumentInfoId(), skjermArkivenhetRequest
+				skjermArkivenhetService.skjermDokumentFil(skjermArkivenhetRequest.getDokumentInfoId(), skjermArkivenhetRequest
 						.getVariant(), skjermArkivenhetRequest.getSkjerming());
 				break;
 			default:
@@ -117,8 +117,14 @@ public class SkjermArkivenhetRestController {
 						" Request til skjermArkivenhet inneholder ugyldig arkivenhet. %s er ikke en gyldig verdi for arkivenhet",
 						skjermArkivenhetRequest.getArkivenhet()));
 		}
+
+		lagreAksjonsLogg(skjermArkivenhetRequest.getJournalpostId(), skjermArkivenhetRequest.getDokumentInfoId(), aksjonsLoggHeaderString, arkivElementEndringTOList);
 		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har skjermet arkivenhet {}", skjermArkivenhetRequest.getArkivenhet());
-		return response;
+		return SkjermArkivenhetResponse.builder()
+				.dokumentInfoId(skjermArkivenhetRequest.getDokumentInfoId())
+				.journalpostId(skjermArkivenhetRequest.getJournalpostId())
+				.variant(skjermArkivenhetRequest.getVariant())
+				.build();
 	}
 
 	@Transactional
@@ -129,20 +135,21 @@ public class SkjermArkivenhetRestController {
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark101"}, percentiles = {0.5, 0.95})
 	public SkjermArkivenhetResponse opphevSkjermArkivenhet(
 			@RequestHeader(value = AKSJONS_LOGG_HEADER) String aksjonsLoggHeaderString,
-			@RequestBody SkjermArkivenhetRequest skjermArkivenhetRequest) throws UgyldigAksjonsLoggHeaderException, UgyldigSkjermArkivenhetRequestException {
+			@RequestBody SkjermArkivenhetRequest skjermArkivenhetRequest) throws UgyldigAksjonsLoggException, UgyldigSkjermArkivenhetRequestException {
 		validerAtRequestHarSkjermingOgArkivenhet(skjermArkivenhetRequest.getSkjerming(), skjermArkivenhetRequest.getArkivenhet());
 		validerAbac(skjermArkivenhetRequest);
 		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark101");
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
-		validerOgLagreListeMedAksjonsLoggHeader(aksjonsLoggHeaderString);
-		SkjermArkivenhetResponse response = null;
+
+		//TODO: Fyll inn dette
+		List<ArkivElementEndringTO> arkivElementEndringTOList = new ArrayList<>();
 
 		switch (skjermArkivenhetRequest.getArkivenhet()) {
 			case JOURNALPOST:
 				assertNotNullOrEmpty(skjermArkivenhetRequest.getJournalpostId(), "journalpostId");
 				log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + LOGG_MOTTATT_KALL, skjermArkivenhetRequest.getArkivenhet() +
 						" og journalpostId={}", skjermArkivenhetRequest.getJournalpostId());
-				response = opphevSkjermArkivenhetService.opphevSkjermJournalpost(
+				opphevSkjermArkivenhetService.opphevSkjermJournalpost(
 						skjermArkivenhetRequest.getJournalpostId(), skjermArkivenhetRequest.getSkjerming());
 				break;
 			case DOKUMENT_INFO:
@@ -151,7 +158,7 @@ public class SkjermArkivenhetRestController {
 				log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + LOGG_MOTTATT_KALL, skjermArkivenhetRequest.getArkivenhet() +
 								", journalpostId={} og dokumentInfoId={}",
 						skjermArkivenhetRequest.getJournalpostId(), skjermArkivenhetRequest.getDokumentInfoId());
-				response = opphevSkjermArkivenhetService.opphevSkjermDokumentInfo(
+				opphevSkjermArkivenhetService.opphevSkjermDokumentInfo(
 						skjermArkivenhetRequest.getJournalpostId(), skjermArkivenhetRequest.getDokumentInfoId(), skjermArkivenhetRequest
 								.getSkjerming());
 				break;
@@ -161,7 +168,7 @@ public class SkjermArkivenhetRestController {
 				log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + LOGG_MOTTATT_KALL, skjermArkivenhetRequest.getArkivenhet() +
 						", dokumentInfoId={} og variant={}", skjermArkivenhetRequest.getJournalpostId(), skjermArkivenhetRequest
 						.getDokumentInfoId());
-				response = opphevSkjermArkivenhetService.opphevSkjermDokumentFil(skjermArkivenhetRequest.getDokumentInfoId(), skjermArkivenhetRequest
+				opphevSkjermArkivenhetService.opphevSkjermDokumentFil(skjermArkivenhetRequest.getDokumentInfoId(), skjermArkivenhetRequest
 						.getVariant());
 				break;
 			default:
@@ -169,6 +176,9 @@ public class SkjermArkivenhetRestController {
 						" Request til opphevSkjermArkivenhet inneholder ugyldig arkivenhet. %s er ikke en gyldig verdi for arkivenhet",
 						skjermArkivenhetRequest.getArkivenhet()));
 		}
+
+		lagreAksjonsLogg(skjermArkivenhetRequest.getJournalpostId(), skjermArkivenhetRequest.getDokumentInfoId(), aksjonsLoggHeaderString, arkivElementEndringTOList);
+
 		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har opphevt skjerming av arkivenhet {}", skjermArkivenhetRequest.getArkivenhet());
 		return SkjermArkivenhetResponse.builder().dokumentInfoId(skjermArkivenhetRequest.getDokumentInfoId()).journalpostId(skjermArkivenhetRequest.getJournalpostId()).variant(skjermArkivenhetRequest.getVariant()).build();
 	}
@@ -197,9 +207,11 @@ public class SkjermArkivenhetRestController {
 		}
 	}
 
-	private void validerOgLagreListeMedAksjonsLoggHeader(String aksjonsLoggHeaderString) throws
-			UgyldigAksjonsLoggHeaderException {
-		List<AksjonsLoggHeader> aksjonsLoggHeader = aksjonsLoggHeaderMapper.mapAksjonsLoggHeader(aksjonsLoggHeaderString);
-		aksjonsLoggService.validateAndSaveAksjon(aksjonsLoggHeader);
+	private void lagreAksjonsLogg(Long journalpostId, Long dokumentInfoId, String aksjonsLoggHeaderString, List<ArkivElementEndringTO> arkivElementEndringTOList) throws
+			UgyldigAksjonsLoggException {
+
+		log.info("Lagrer aksjonslogg");
+		AksjonsLoggTO aksjonsLoggTO = aksjonsLoggTOMapper.mapAksjonsLoggHeader(aksjonsLoggHeaderString, AksjonsTypeCode.ENDRE_SKJERMING, journalpostId, dokumentInfoId);
+		aksjonsLoggService.validateAndSaveAksjonsLogg(aksjonsLoggTO, arkivElementEndringTOList);
 	}
 }
