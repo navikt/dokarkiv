@@ -79,7 +79,9 @@ public class SkjermingService {
 		Optional<DokumentInfo> dokumentInfo = dokumentinfoRepository.findByDokumentInfoId(dokumentInfoId);
 		if (dokumentInfo.isPresent()) {
 			FilDetaljer filDetaljer = dokumentInfo.get().findFilDetaljerByVariantFormat(variant);
-			return filDetaljer.getSkjermingType() != null;
+			if (filDetaljer != null && filDetaljer.getSkjermingType() != null) {
+				return true;
+			}
 		}
 		return false;
 	}

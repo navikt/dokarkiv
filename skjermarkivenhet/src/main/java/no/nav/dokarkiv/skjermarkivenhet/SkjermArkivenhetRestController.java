@@ -105,7 +105,7 @@ public class SkjermArkivenhetRestController {
 				break;
 			case DOKUMENT_FIL:
 				assertNotNullOrEmpty(skjermArkivenhetRequest.getDokumentInfoId(), "dokumentInfoId");
-				assertNotInvalidEnum(skjermArkivenhetRequest.getVariant(), "variant", VariantFormatCode.values());
+				assertNotNullOrEmpty(skjermArkivenhetRequest.getVariant(), "variant");
 				log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + LOGG_MOTTATT_KALL, skjermArkivenhetRequest.getArkivenhet() +
 						", dokumentInfoId={} og variant={}", skjermArkivenhetRequest.getJournalpostId(), skjermArkivenhetRequest
 						.getDokumentInfoId());
@@ -157,7 +157,7 @@ public class SkjermArkivenhetRestController {
 				break;
 			case DOKUMENT_FIL:
 				assertNotNullOrEmpty(skjermArkivenhetRequest.getDokumentInfoId(), "dokumentInfoId");
-				assertNotInvalidEnum(skjermArkivenhetRequest.getVariant(), "variant", VariantFormatCode.values());
+				assertNotNullOrEmpty(skjermArkivenhetRequest.getVariant(), "variant");
 				log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + LOGG_MOTTATT_KALL, skjermArkivenhetRequest.getArkivenhet() +
 						", dokumentInfoId={} og variant={}", skjermArkivenhetRequest.getJournalpostId(), skjermArkivenhetRequest
 						.getDokumentInfoId());
@@ -170,38 +170,21 @@ public class SkjermArkivenhetRestController {
 						skjermArkivenhetRequest.getArkivenhet()));
 		}
 		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har opphevt skjerming av arkivenhet {}", skjermArkivenhetRequest.getArkivenhet());
-		return response;
+		return SkjermArkivenhetResponse.builder().dokumentInfoId(skjermArkivenhetRequest.getDokumentInfoId()).journalpostId(skjermArkivenhetRequest.getJournalpostId()).variant(skjermArkivenhetRequest.getVariant()).build();
 	}
 
 
 	private void validerAtRequestHarSkjermingOgArkivenhet(@NotNull SkjermingTypeCode skjerming, @NotNull ArkivenhetCode
 			arkivenhet)
 			throws UgyldigSkjermArkivenhetRequestException {
-		assertNotInvalidEnum(skjerming, "skjerming", SkjermingTypeCode.values());
-		assertNotInvalidEnum(arkivenhet, "arkivenhet", ArkivenhetCode.values());
-	}
-
-	//Gjenbrukt fra AksjonsLoggService men annen exception, legge metoden et annet sted?
-	private void assertNotInvalidEnum(Object value, String parameter, Enum[] allowedValues) throws
-			UgyldigSkjermArkivenhetRequestException {
-		boolean invalid = true;
-		for (Enum e : allowedValues) {
-			if (e.name().equals(value.toString())) {
-				invalid = false;
-				break;
-			}
-		}
-
-		if (invalid) {
-			throw new UgyldigSkjermArkivenhetRequestException(FEILMELDING_2 + String.format(" Header til skjermArkivenhet inneholder ugyldig verdi: " +
-					"%s er ikke en gyldig verdi for %s", value, parameter));
-		}
+		assertNotNullOrEmpty(skjerming, "skjerming");
+		assertNotNullOrEmpty(arkivenhet, "arkivenhet");
 	}
 
 	//Gjenbrukt fra AksjonsLoggService men annen exception, legge metoden et annet sted?
 	private void assertNotNullOrEmpty(Object value, String parameter) throws UgyldigSkjermArkivenhetRequestException {
 		if (Objects.isNull(value) || (value instanceof String && isBlank((String) value))) {
-			throw new UgyldigSkjermArkivenhetRequestException(FEILMELDING_2 + " Header til skjermArkivenhet mangler påkrevd parameter: " + parameter);
+			throw new UgyldigSkjermArkivenhetRequestException(FEILMELDING_2 + " Request til skjermArkivenhet mangler påkrevd parameter: " + parameter);
 		}
 	}
 
