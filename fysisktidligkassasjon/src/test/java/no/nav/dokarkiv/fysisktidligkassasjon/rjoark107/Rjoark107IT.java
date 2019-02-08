@@ -1,7 +1,6 @@
 package no.nav.dokarkiv.fysisktidligkassasjon.rjoark107;
 
 import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_LOGG_HEADER;
-import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.ENDRE_SKJERMING;
 import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.SLETT;
 import static no.nav.dokarkiv.fysisktidligkassasjon.util.TestUtil.kassereDokumentLogisk;
 import static no.nav.dokarkiv.fysisktidligkassasjon.util.TestUtil.knyttDokumentInfoSomVedleggTilJournalpostForIT;
