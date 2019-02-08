@@ -2,13 +2,14 @@ package no.nav.dokarkiv.logisktidligkassasjon.rjoark105;
 
 import static junit.framework.TestCase.assertTrue;
 import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_LOGG_HEADER;
+import static no.nav.dokarkiv.logisktidligkassasjon.util.TestUtils.kassereDokumentLogisk;
 import static no.nav.dokarkiv.logisktidligkassasjon.util.TestUtils.knyttDokumentInfoSomVedleggTilJournalpostForIT;
 import static no.nav.dokarkiv.logisktidligkassasjon.util.TestUtils.opprettHoveddokumentForIT;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.core.Is.is;
 
-import no.nav.dokarkiv.core.domain.codes.AksjonTypeCode;
+import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
@@ -44,7 +45,7 @@ public class Rjoark105IT extends AbstractLogiskTidligKassasjonIT {
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_LOGISKTIDLIGKASSASJON + dokumentInfo.getDokumentInfoId(),
 				HttpMethod.POST,
-				new HttpEntity<>(createHeadersWithAksjon(AksjonTypeCode.ENDRE_BEGRENSNING.name())),
+				new HttpEntity<>(createHeadersWithAksjon()),
 				String.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
@@ -54,7 +55,7 @@ public class Rjoark105IT extends AbstractLogiskTidligKassasjonIT {
 
 		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
 		assertThat(aksjonsLoggList.size(), is(1));
-		assertThat(aksjonsLoggList.get(0).getAksjon(), is(AksjonTypeCode.ENDRE_BEGRENSNING));
+		assertThat(aksjonsLoggList.get(0).getAksjon(), is(AksjonsTypeCode.ENDRE_SKJERMING));
 	}
 
 	@Test
@@ -99,7 +100,7 @@ public class Rjoark105IT extends AbstractLogiskTidligKassasjonIT {
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_LOGISKTIDLIGKASSASJON + dokumentInfoId,
 				HttpMethod.POST,
-				new HttpEntity<>(createHeadersWithAksjon(AksjonTypeCode.ENDRE_BEGRENSNING.name())),
+				new HttpEntity<>(createHeadersWithAksjon()),
 				String.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.NOT_FOUND));
@@ -117,7 +118,7 @@ public class Rjoark105IT extends AbstractLogiskTidligKassasjonIT {
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_LOGISKTIDLIGKASSASJON + dokumentInfoId,
 				HttpMethod.POST,
-				new HttpEntity<>(createHeadersWithAksjon(AksjonTypeCode.ENDRE_BEGRENSNING.name())),
+				new HttpEntity<>(createHeadersWithAksjon()),
 				String.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.NOT_FOUND));
@@ -140,7 +141,7 @@ public class Rjoark105IT extends AbstractLogiskTidligKassasjonIT {
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_LOGISKTIDLIGKASSASJON + dokumentInfo.getDokumentInfoId(),
 				HttpMethod.POST,
-				new HttpEntity<>(createHeadersWithAksjon(AksjonTypeCode.ENDRE_BEGRENSNING.name())),
+				new HttpEntity<>(createHeadersWithAksjon()),
 				String.class);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
@@ -171,7 +172,7 @@ public class Rjoark105IT extends AbstractLogiskTidligKassasjonIT {
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_LOGISKTIDLIGKASSASJON + hoveddokument1.getDokumentInfoId(),
 				HttpMethod.POST,
-				new HttpEntity<>(createHeadersWithAksjon(AksjonTypeCode.ENDRE_BEGRENSNING.name())),
+				new HttpEntity<>(createHeadersWithAksjon()),
 				String.class);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
@@ -198,7 +199,7 @@ public class Rjoark105IT extends AbstractLogiskTidligKassasjonIT {
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_LOGISKTIDLIGKASSASJON + dokumentInfo.getDokumentInfoId(),
 				HttpMethod.POST,
-				new HttpEntity<>(createHeadersWithAksjon(AksjonTypeCode.ENDRE_BEGRENSNING.name())),
+				new HttpEntity<>(createHeadersWithAksjon()),
 				String.class);
 
 		TestTransaction.flagForCommit();

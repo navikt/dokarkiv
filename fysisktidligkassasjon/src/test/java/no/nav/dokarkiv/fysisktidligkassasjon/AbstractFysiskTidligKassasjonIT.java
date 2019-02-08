@@ -6,9 +6,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static no.nav.dokarkiv.core.security.JwtClaimsBuilderProvider.openAmClaimsBuilder;
 import static no.nav.dokarkiv.core.util.ConverterUtils.objectToJsonString;
-import static no.nav.dokarkiv.core.util.TestDataUtils.createAksjonsLoggRequest;
-import static no.nav.dokarkiv.fysisktidligkassasjon.util.TestUtil.DOKUMENTINFO_ID;
-import static no.nav.dokarkiv.fysisktidligkassasjon.util.TestUtil.JOURNALPOST_ID;
+import static no.nav.dokarkiv.core.util.TestDataUtils.createAksjonsLoggTOHeader;
 
 import no.nav.dokarkiv.core.CoreConfig;
 import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService;
@@ -18,7 +16,6 @@ import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.dokarkiv.core.stelvio.SimpleRequestContext;
-import no.nav.dokarkiv.fysisktidligkassasjon.util.TestUtil;
 import no.nav.freg.security.test.oidc.tools.OidcTestService;
 import no.nav.freg.security.test.oidc.tools.TestToolsAutoConfig;
 import org.junit.Before;
@@ -116,13 +113,12 @@ public abstract class AbstractFysiskTidligKassasjonIT {
 		return new HttpEntity(headers);
 	}
 
-	protected HttpHeaders createHeadersWithAksjon(String aksjon) throws IOException {
+	protected HttpHeaders createHeadersWithAksjon() throws IOException {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.TEXT_PLAIN);
 		headers.add(HttpHeaders.AUTHORIZATION, oidcTokenPersonUserTest);
 		headers.add(NAV_CONSUMER_TOKEN, oidcTokenServiceUserTest);
-		headers.add(AksjonsLoggService.AKSJONS_LOGG_HEADER, objectToJsonString(createAksjonsLoggRequest(JOURNALPOST_ID, DOKUMENTINFO_ID, aksjon)));
-		headers.add(AksjonsLoggService.AKSJONS_LOGG_HEADER, objectToJsonString(createAksjonsLoggRequest(JOURNALPOST_ID, TestUtil.DOKUMENTINFO_ID, aksjon)));
+		headers.add(AksjonsLoggService.AKSJONS_LOGG_HEADER, objectToJsonString(createAksjonsLoggTOHeader()));
 		return headers;
 	}
 
