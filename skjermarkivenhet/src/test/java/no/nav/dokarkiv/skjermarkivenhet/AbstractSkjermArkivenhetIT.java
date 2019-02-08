@@ -6,7 +6,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static no.nav.dokarkiv.core.security.JwtClaimsBuilderProvider.openAmClaimsBuilder;
 import static no.nav.dokarkiv.core.util.ConverterUtils.objectToJsonString;
-import static no.nav.dokarkiv.core.util.TestDataUtils.createAksjonsLoggRequest;
+import static no.nav.dokarkiv.core.util.TestDataUtils.createAksjonsLoggTO;
 
 import no.nav.dokarkiv.core.CoreConfig;
 import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService;
@@ -133,7 +133,7 @@ public abstract class AbstractSkjermArkivenhetIT {
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		headers.add(HttpHeaders.AUTHORIZATION, oidcTokenPersonUserTest);
 		headers.add(NAV_CONSUMER_TOKEN, oidcTokenServiceUserTest);
-		headers.add(AksjonsLoggService.AKSJONS_LOGG_HEADER, objectToJsonString(createAksjonsLoggRequest(getJournalpostId(), getDokumentInfoId(), aksjon)));
+		headers.add(AksjonsLoggService.AKSJONS_LOGG_HEADER, objectToJsonString(createAksjonsLoggTO(getJournalpostId(), getDokumentInfoId())));
 		return headers;
 	}
 
@@ -150,7 +150,7 @@ public abstract class AbstractSkjermArkivenhetIT {
 		headers.setContentType(MediaType.TEXT_PLAIN);
 		headers.add(HttpHeaders.AUTHORIZATION, oidcTokenPersonUserTest);
 		headers.add(NAV_CONSUMER_TOKEN, oidcTokenServiceNoAccessUserTest);
-		headers.add(AksjonsLoggService.AKSJONS_LOGG_HEADER, objectToJsonString(createAksjonsLoggRequest(getJournalpostId(), getDokumentInfoId(), aksjon)));
+		headers.add(AksjonsLoggService.AKSJONS_LOGG_HEADER, objectToJsonString(createAksjonsLoggTO(getJournalpostId(), getDokumentInfoId())));
 		return new HttpEntity<>(headers);
 	}
 

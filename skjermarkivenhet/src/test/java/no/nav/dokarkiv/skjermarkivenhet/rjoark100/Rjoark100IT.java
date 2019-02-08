@@ -8,7 +8,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.core.Is.is;
 
-import no.nav.dokarkiv.core.domain.codes.AksjonTypeCode;
+import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.codes.ArkivenhetCode;
 import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
@@ -45,7 +45,7 @@ public class Rjoark100IT extends AbstractSkjermArkivenhetIT {
 
 		HttpEntity httpEntity = new HttpEntity(
 				createSkjermarkivenhetRequest(SkjermingTypeCode.POL, ArkivenhetCode.JOURNALPOST, journalpost.getJournalpostId(), null, null),
-				createHeadersWithAksjon(AksjonTypeCode.ENDRE_BEGRENSNING.name()));
+				createHeadersWithAksjon(AksjonsTypeCode.ENDRE_SKJERMING.name()));
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_SKJERMARKIVENHET,
@@ -57,7 +57,7 @@ public class Rjoark100IT extends AbstractSkjermArkivenhetIT {
 
 		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
 		assertThat(aksjonsLoggList.size(), is(1));
-		assertThat(aksjonsLoggList.get(0).getAksjon(), is(AksjonTypeCode.ENDRE_BEGRENSNING));
+		assertThat(aksjonsLoggList.get(0).getAksjon(), is(AksjonsTypeCode.ENDRE_SKJERMING));
 	}
 
 	@Test
@@ -103,7 +103,7 @@ public class Rjoark100IT extends AbstractSkjermArkivenhetIT {
 
 		HttpEntity httpEntity = new HttpEntity(
 //				createSkjermarkivenhetRequest(SkjermingTypeCode.POL, ArkivenhetCode.JOURNALPOST, journalpost.getJournalpostId(), null, null),
-				createHeadersWithAksjon(AksjonTypeCode.ENDRE_BEGRENSNING.name()));
+				createHeadersWithAksjon(AksjonsTypeCode.ENDRE_SKJERMING.name()));
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_SKJERMARKIVENHET,
@@ -131,7 +131,7 @@ public class Rjoark100IT extends AbstractSkjermArkivenhetIT {
 
 		HttpEntity httpEntity = new HttpEntity(
 				createSkjermarkivenhetRequest(SkjermingTypeCode.POL, ArkivenhetCode.JOURNALPOST, journalpost.getJournalpostId(), null, null),
-				createHeadersWithAksjon(AksjonTypeCode.ENDRE_BEGRENSNING.name()));
+				createHeadersWithAksjon(AksjonsTypeCode.ENDRE_SKJERMING.name()));
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_SKJERMARKIVENHET,
@@ -160,7 +160,7 @@ public class Rjoark100IT extends AbstractSkjermArkivenhetIT {
 		HttpEntity httpEntity = new HttpEntity(
 				createSkjermarkivenhetRequest(SkjermingTypeCode.POL, ArkivenhetCode.DOKUMENT_INFO, journalpost.getJournalpostId(),
 						dokumentInfo.getDokumentInfoId(), null),
-				createHeadersWithAksjon(AksjonTypeCode.ENDRE_BEGRENSNING.name()));
+				createHeadersWithAksjon(AksjonsTypeCode.ENDRE_SKJERMING.name()));
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_SKJERMARKIVENHET,
@@ -189,7 +189,7 @@ public class Rjoark100IT extends AbstractSkjermArkivenhetIT {
 		HttpEntity httpEntity = new HttpEntity(
 				createSkjermarkivenhetRequest(SkjermingTypeCode.POL, ArkivenhetCode.DOKUMENT_FIL, null,
 						dokumentInfo.getDokumentInfoId(), VariantFormatCode.ARKIV),
-				createHeadersWithAksjon(AksjonTypeCode.ENDRE_BEGRENSNING.name()));
+				createHeadersWithAksjon(AksjonsTypeCode.ENDRE_SKJERMING.name()));
 
 		TestTransaction.start();
 

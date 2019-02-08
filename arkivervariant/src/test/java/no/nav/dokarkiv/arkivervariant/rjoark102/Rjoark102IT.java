@@ -11,7 +11,7 @@ import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertTrue;
 
 import no.nav.dokarkiv.arkivervariant.AbstractArkiverVariantIT;
-import no.nav.dokarkiv.core.domain.codes.AksjonTypeCode;
+import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
@@ -83,7 +83,7 @@ public class Rjoark102IT extends AbstractArkiverVariantIT {
 				.variant(SLADDET)
 				.filType(FilTypeCode.PDF).build();
 
-		HttpEntity httpEntity = new HttpEntity(request, createHeadersWithAksjon(AksjonTypeCode.ARKIVERING.name()));
+		HttpEntity httpEntity = new HttpEntity(request, createHeadersWithAksjon(AksjonsTypeCode.ARKIVERING.name()));
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_ARKIVERVARIANT,
@@ -115,7 +115,7 @@ public class Rjoark102IT extends AbstractArkiverVariantIT {
 				.variant(SLADDET)
 				.filType(FilTypeCode.PDF).build();
 
-		HttpEntity httpEntity = new HttpEntity(request, createHeadersWithAksjon(AksjonTypeCode.ARKIVERING.name()));
+		HttpEntity httpEntity = new HttpEntity(request, createHeadersWithAksjon(AksjonsTypeCode.ARKIVERING.name()));
 
 		ResponseEntity<ArkiverVariantResponse> responseEntity = restTemplate.exchange(
 				URL_ARKIVERVARIANT,
@@ -145,7 +145,7 @@ public class Rjoark102IT extends AbstractArkiverVariantIT {
 
 		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
 		assertThat(aksjonsLoggList.size(), is(1));
-		assertThat(aksjonsLoggList.get(0).getAksjon(), is(AksjonTypeCode.ARKIVERING));
+		assertThat(aksjonsLoggList.get(0).getAksjon(), is(AksjonsTypeCode.ARKIVERING));
 	}
 
 	@Test
@@ -166,7 +166,7 @@ public class Rjoark102IT extends AbstractArkiverVariantIT {
 				.variant(SLADDET)
 				.filType(FilTypeCode.PDF).build();
 
-		HttpEntity httpEntity = new HttpEntity(request, createHeadersWithAksjon(AksjonTypeCode.ARKIVERING.name()));
+		HttpEntity httpEntity = new HttpEntity(request, createHeadersWithAksjon(AksjonsTypeCode.ARKIVERING.name()));
 
 		ResponseEntity<ArkiverVariantResponse> responseEntity = restTemplate.exchange(
 				URL_ARKIVERVARIANT,
@@ -185,7 +185,7 @@ public class Rjoark102IT extends AbstractArkiverVariantIT {
 				.variant(SLADDET)
 				.filType(FilTypeCode.PDF).build();
 
-		HttpEntity httpEntity2 = new HttpEntity(request, createHeadersWithAksjon(AksjonTypeCode.ARKIVERING.name()));
+		HttpEntity httpEntity2 = new HttpEntity(request, createHeadersWithAksjon(AksjonsTypeCode.ARKIVERING.name()));
 
 		ResponseEntity<ArkiverVariantResponse> responseEntity2 = restTemplate.exchange(
 				URL_ARKIVERVARIANT,
@@ -206,7 +206,7 @@ public class Rjoark102IT extends AbstractArkiverVariantIT {
 				.variant(SLADDET)
 				.filType(FilTypeCode.PDF).build();
 
-		HttpEntity httpEntity = new HttpEntity(request, createHeadersWithAksjon(AksjonTypeCode.ARKIVERING.name()));
+		HttpEntity httpEntity = new HttpEntity(request, createHeadersWithAksjon(AksjonsTypeCode.ARKIVERING.name()));
 
 		ResponseEntity<ArkiverVariantResponse> responseEntity = restTemplate.exchange(
 				URL_ARKIVERVARIANT,

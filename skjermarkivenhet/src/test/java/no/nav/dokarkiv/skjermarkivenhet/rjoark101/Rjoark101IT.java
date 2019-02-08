@@ -6,7 +6,7 @@ import static no.nav.dokarkiv.skjermarkivenhet.util.TestUtils.opprettHoveddokume
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
-import no.nav.dokarkiv.core.domain.codes.AksjonTypeCode;
+import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.codes.ArkivenhetCode;
 import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
@@ -41,7 +41,7 @@ public class Rjoark101IT extends AbstractSkjermArkivenhetIT {
 
 		HttpEntity httpEntity = new HttpEntity(
 				createSkjermarkivenhetRequest(SkjermingTypeCode.POL, ArkivenhetCode.JOURNALPOST, journalpost.getJournalpostId(), null, null),
-				createHeadersWithAksjon(AksjonTypeCode.ENDRE_BEGRENSNING.name()));
+				createHeadersWithAksjon(AksjonsTypeCode.ENDRE_SKJERMING.name()));
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_SKJERMARKIVENHET,
@@ -74,7 +74,7 @@ public class Rjoark101IT extends AbstractSkjermArkivenhetIT {
 		HttpEntity httpEntity = new HttpEntity(
 				createSkjermarkivenhetRequest(SkjermingTypeCode.POL, ArkivenhetCode.DOKUMENT_INFO, journalpost.getJournalpostId(),
 						dokumentInfo.getDokumentInfoId(), null),
-				createHeadersWithAksjon(AksjonTypeCode.ENDRE_BEGRENSNING.name()));
+				createHeadersWithAksjon(AksjonsTypeCode.ENDRE_SKJERMING.name()));
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_SKJERMARKIVENHET,
@@ -110,7 +110,7 @@ public class Rjoark101IT extends AbstractSkjermArkivenhetIT {
 		HttpEntity httpEntity = new HttpEntity(
 				createSkjermarkivenhetRequest(SkjermingTypeCode.POL, ArkivenhetCode.DOKUMENT_FIL, null,
 						dokumentInfo.getDokumentInfoId(), VariantFormatCode.ARKIV),
-				createHeadersWithAksjon(AksjonTypeCode.ENDRE_BEGRENSNING.name()));
+				createHeadersWithAksjon(AksjonsTypeCode.ENDRE_SKJERMING.name()));
 
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
