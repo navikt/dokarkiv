@@ -11,7 +11,7 @@ import java.util.List;
  * @author Ugur Alpay Cenar, Visma Consulting.
  */
 @Component
-class AksjonsLoggServiceImpl implements AksjonsLoggService {
+public class AksjonsLoggServiceImpl implements AksjonsLoggService {
 
 	private final AksjonsLoggRepository aksjonsLoggRepository;
 	private final AksjonsLoggMapper aksjonsLoggMapper;

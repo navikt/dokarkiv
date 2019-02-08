@@ -12,8 +12,6 @@ import no.nav.dokarkiv.core.exceptions.SkjermingIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.UgyldigTilknyttetJournalpostSomException;
 import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
 import no.nav.dokarkiv.logiskslettdokument.rjoark100.LogiskSlettDokumentRequestTo;
-import no.nav.dokarkiv.logiskslettdokument.rjoark100.LogiskSlettDokumentResponse;
-import no.nav.dokarkiv.logiskslettdokument.rjoark100.LogiskSlettDokumentResponseMapper;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
 
@@ -62,7 +60,7 @@ public class AngreLogiskSlettDokumentService {
 								.arkivElement("Journalpost.skjermingType")
 								.fraVerdi(SkjermingTypeCode.POL.name())
 								.tilVerdi(null)
-								.build()
+								.build());
 				log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har angret logisk sletting av journalpost med journalpostId={}",
 						journalpostId);
 				break;
@@ -77,7 +75,7 @@ public class AngreLogiskSlettDokumentService {
 								.arkivElement("DokumentInfo.skjermingType")
 								.fraVerdi(SkjermingTypeCode.POL.name())
 								.tilVerdi(null)
-								.build()
+								.build());
 				log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) +
 								" har angret logisk sletting av dokument med journalpostId={}, dokumentInfoId={}",
 						journalpostId, dokumentInfoId);

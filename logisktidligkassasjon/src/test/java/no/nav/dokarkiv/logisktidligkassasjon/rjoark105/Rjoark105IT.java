@@ -2,7 +2,6 @@ package no.nav.dokarkiv.logisktidligkassasjon.rjoark105;
 
 import static junit.framework.TestCase.assertTrue;
 import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_LOGG_HEADER;
-import static no.nav.dokarkiv.logisktidligkassasjon.util.TestUtils.kassereDokumentLogisk;
 import static no.nav.dokarkiv.logisktidligkassasjon.util.TestUtils.knyttDokumentInfoSomVedleggTilJournalpostForIT;
 import static no.nav.dokarkiv.logisktidligkassasjon.util.TestUtils.opprettHoveddokumentForIT;
 import static org.hamcrest.MatcherAssert.assertThat;

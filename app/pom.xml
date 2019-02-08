@@ -90,6 +90,10 @@
 		</dependency>
 		<dependency>
 			<groupId>no.nav.dokarkiv</groupId>
+			<artifactId>skjermarkivenhet</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>no.nav.dokarkiv</groupId>
 			<artifactId>arkivervariant</artifactId>
 		</dependency>
 		<!-- annet -->
