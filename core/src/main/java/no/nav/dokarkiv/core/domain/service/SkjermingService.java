@@ -116,6 +116,13 @@ public class SkjermingService {
 		return dokumentInfo.getFildetaljerListe().stream().allMatch(filDetaljer -> SkjermingTypeCode.POL.equals(filDetaljer.getSkjermingType()));
 	}
 
+	public Boolean isFildetaljerSkjermet(DokumentInfo dokumentInfo, VariantFormatCode variantFormatCode, SkjermingTypeCode skjermingTypeCode) {
+		return dokumentInfo.getFildetaljerListe()
+				.stream()
+				.filter(filDetaljer -> variantFormatCode.equals(filDetaljer.getVariantFormat()))
+				.allMatch(filDetaljer -> skjermingTypeCode.equals(filDetaljer.getSkjermingType()));
+	}
+
 	public void setVariantSkjermet(DokumentInfo dokumentInfo, VariantFormatCode variantFormatCode, SkjermingTypeCode SkjermingTypeCode) {
 		FilDetaljer filDetaljer = dokumentInfo.findFilDetaljerByVariantFormat(variantFormatCode);
 		setFildetaljerBegrensning(filDetaljer, SkjermingTypeCode);

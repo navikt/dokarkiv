@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.core.repository;
 
+import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -17,8 +18,16 @@ public interface JoarkDeleteRepository extends Repository<Journalpost, Long> {
 	void deleteDokumentFilByDokumentInfoId(@Param("dokumentInfoId") Long dokumentInfoId);
 
 	@Modifying
+	@Query(value = "delete from t_dokument_fil where fil_uuid in (select fil_uuid from t_fil_detaljer where dokument_info_id = :dokumentInfoId and k_variant_format = :variant_format)", nativeQuery = true)
+	void deleteDokumentFilByDokumentInfoIdAndVariantFormat(@Param("dokumentInfoId") Long dokumentInfoId, @Param("variant_format") VariantFormatCode variantFormatCode);
+
+	@Modifying
 	@Query(value = "delete from t_fil_detaljer where dokument_info_id = :dokumentInfoId", nativeQuery = true)
 	void deleteFilDetaljerByDokumentInfoId(@Param("dokumentInfoId") Long dokumentInfoId);
+
+	@Modifying
+	@Query(value = "delete from t_fil_detaljer where dokument_info_id = :dokumentInfoId and k_variant_format = :variant_format", nativeQuery = true)
+	void deleteFilDetaljerByDokumentInfoIdAndVariantFormat(@Param("dokumentInfoId") Long dokumentInfoId, @Param("variant_format") VariantFormatCode variantFormatCode);
 
 	@Modifying
 	@Query(value = "delete from T_JP_DOK_INFO_REL where dokument_info_id = :dokumentInfoId", nativeQuery = true)

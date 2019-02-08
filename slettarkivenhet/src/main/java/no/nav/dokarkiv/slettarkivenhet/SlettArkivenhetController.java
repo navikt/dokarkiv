@@ -1,11 +1,15 @@
 package no.nav.dokarkiv.slettarkivenhet;
 
+import no.nav.dokarkiv.slettarkivenhet.exception.UgyldigInputException;
 import no.nav.dokarkiv.slettarkivenhet.rjoark102.SlettArkivenhetRequest;
 import no.nav.dokarkiv.slettarkivenhet.rjoark102.SlettArkivenhetResponse;
 import no.nav.dokarkiv.slettarkivenhet.rjoark102.SlettArkivenhetService;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Objects;
 
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
@@ -21,10 +25,15 @@ public class SlettArkivenhetController {
 		this.slettArkivenhetService = slettArkivenhetService;
 	}
 
+	@Transactional(rollbackFor = Exception.class)
 	@DeleteMapping
 	public SlettArkivenhetResponse slettArkivenhet(@RequestBody SlettArkivenhetRequest slettArkivenhetRequest) {
 
 		//TODO: Validering av input
+
+		if (Objects.isNull(slettArkivenhetRequest.getArkivenhet())) {
+			throw new UgyldigInputException("Input mangler arkivenhet");
+		}
 
 		switch (slettArkivenhetRequest.getArkivenhet()) {
 			case JOURNALPOST:

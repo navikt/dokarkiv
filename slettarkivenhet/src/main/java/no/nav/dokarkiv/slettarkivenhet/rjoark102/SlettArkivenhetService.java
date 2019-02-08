@@ -4,21 +4,27 @@ import static org.apache.commons.lang3.BooleanUtils.isFalse;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
+import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
+import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentFil;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.service.SkjermingService;
+import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.SkjermingIkkeFunnetException;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkDeleteRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
+import no.nav.dokarkiv.slettarkivenhet.exception.DokumentInfoKanIkkeSlettesException;
+import no.nav.dokarkiv.slettarkivenhet.exception.JournalpostKanIkkeSlettesException;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import java.util.List;
 import java.util.Objects;
 
 @Slf4j
@@ -48,17 +54,19 @@ public class SlettArkivenhetService {
 
 	public void slettJournalpost(SlettArkivenhetRequest request) {
 		Journalpost journalpost = joarkRepository.findById(request.getJournalpostId())
-				.orElseThrow(() -> new IllegalArgumentException("Fant ikke journalpost"));
+				.orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Fant ingen journalpost med journalpostId=%s i databasen", request
+						.getJournalpostId())));
 
-		sjekkAtJournalpostErUtilgjengeliggjort(request.getJournalpostId());
-		fysiskSlettJournalpost(journalpost);
+		sjekkAtJournalpostErSkjermet(request.getJournalpostId());
+		sjekkOmJournalpostKanSlettes(journalpost);
+
+		slettVedleggKnyttetTilJournalpost(journalpost);
+		slettJournalpostRelasjonFilOgDokumentInfo(journalpost.findHoveddokumentDokumentInfoRelasjon());
+		slettJournalpost(journalpost.getJournalpostId());
 
 	}
 
 	public void slettDokumentFil(SlettArkivenhetRequest request) {
-
-		//Sjekk om DokumentFil er utilgjengjeligjort
-
 
 		//Sjekk om dokumentInfo eksisterer
 		DokumentInfo dokumentInfo = dokumentinfoRepository.findByDokumentInfoId(request.getDokumentInfoId())
@@ -79,23 +87,55 @@ public class SlettArkivenhetService {
 					.getVariant(), request.getDokumentInfoId()));
 		}
 
-		slettFilOgFildetaljer(request.getDokumentInfoId());
+		sjekkOmFildetaljerErSkjermet(dokumentInfo, request.getVariant());
+
+		slettFilOgFildetaljer(request.getDokumentInfoId(), request.getVariant());
 	}
 
 	public void slettDokumentInfo(SlettArkivenhetRequest request) {
-		//Sjekk om DokumentInfo er utilgjengjeligjort
 
 		JournalpostDokumentInfoRelasjon relasjon = journalpostDokumentInfoRelasjonRepository.findByJournalpostJournalpostIdAndDokumentInfoDokumentInfoId(request
-				.getJournalpostId(), request.getDokumentInfoId()).orElseThrow(()->new IllegalArgumentException("Fant ikke relasjon"));
+				.getJournalpostId(), request.getDokumentInfoId())
+				.orElseThrow(() -> new IllegalArgumentException(String.format("Fant ingen JournalpostDokumentInfoRelasjon med journalpostId=%s og dokumentInfoId=%s", request
+						.getJournalpostId(), request.getDokumentInfoId())));
 
-		if (relasjon.isVedlegg()) {
-			fysiskSlettEtVedlegg(relasjon);
+		sjekkAtDokumentErUtilgjengeliggjort(request.getJournalpostId(), request.getDokumentInfoId());
+
+		if (isFalse(relasjon.isVedlegg())) {
+			throw new DokumentInfoKanIkkeSlettesException(String.format("DokumentInfo=%s er hoveddokument i journalpost=%s og kan derfor ikke slettes", relasjon
+					.getDokumentInfo()
+					.getDokumentInfoId(), relasjon.getJournalpost().getJournalpostId()));
 		}
 
+		fysiskSlettEtVedlegg(relasjon);
 
 	}
 
-	private void sjekkAtJournalpostErUtilgjengeliggjort(Long journalpostId) {
+	private void sjekkOmJournalpostKanSlettes(Journalpost journalpost) {
+		List<DokumentInfo> dokumentInfoList = dokumentinfoRepository.findByOriginalJournalpostJournalpostId(journalpost.getJournalpostId());
+		if (dokumentInfoList.size() > journalpost.getJournalpostDokumentInfoRelasjoner().size()) {
+			Integer diff = dokumentInfoList.size() - journalpost.getJournalpostDokumentInfoRelasjoner().size();
+			throw new JournalpostKanIkkeSlettesException(String.format("Journalpost=%s kan ikke slettes: " +
+							"Det finnes %s dokumentInfo(er) som har originalJournalpostId=%s men som ikke har relasjon med journalposten som skal slettes",
+					journalpost.getJournalpostId(), diff, journalpost.getJournalpostId()));
+		}
+
+		Journalpost hoveddokOrigJp = journalpost.findHoveddokumentDokumentInfoRelasjon()
+				.getDokumentInfo()
+				.getOriginalJournalpost();
+
+		if (Objects.nonNull(hoveddokOrigJp) && isFalse(journalpost.getJournalpostId()
+				.equals(hoveddokOrigJp.getJournalpostId()))) {
+			throw new JournalpostKanIkkeSlettesException(String.format("Journalpost kan ikke slettes: " +
+							"Hoveddokument med dokumentInfoId=%s har originalJournalpostId=%s som er ulik journalpostIden til journalposten som skal slettes",
+					journalpost.findHoveddokumentDokumentInfoRelasjon()
+							.getDokumentInfo()
+							.getDokumentInfoId(), hoveddokOrigJp.getJournalpostId()));
+		}
+	}
+
+
+	private void sjekkAtJournalpostErSkjermet(Long journalpostId) {
 		if (isFalse(skjermingService.isJournalpostSkjermet(
 				journalpostId,
 				SkjermingTypeCode.POL))) {
@@ -119,66 +159,34 @@ public class SlettArkivenhetService {
 		}
 	}
 
-	private void fysiskSlettJournalpost(Journalpost journalpost) {
-		slettVedleggKnyttetTilJournalpost(journalpost);
-		slettHoveddokumentKnyttetTiLJournalpost(journalpost.findHoveddokumentDokumentInfoRelasjon());
+	private void sjekkOmFildetaljerErSkjermet(DokumentInfo dokumentInfo, VariantFormatCode variantFormatCode) {
+		if (isFalse(skjermingService.isFildetaljerSkjermet(dokumentInfo, variantFormatCode,
+				SkjermingTypeCode.POL))) {
+			throw new SkjermingIkkeFunnetException(String.format(
+					"Fant ikke forventet skjerming for dokument med dokumentInfoId=%s og begrensningsType=%s.",
+					dokumentInfo.getDokumentInfoId(),
+					SkjermingTypeCode.POL.name()));
+		}
 	}
 
-	private void slettHoveddokumentKnyttetTiLJournalpost(JournalpostDokumentInfoRelasjon relasjonSomSkalSlettes) {
-		if (relasjonSomSkalSlettes.getDokumentInfo().isRelatedToMultipleJournalposts()) {
-			slettJournalpostOgJournalpostDokumentInfoRelasjon(relasjonSomSkalSlettes);
-		} else {
-			slettJournalpostOgDokumentInfoOgJournalpostDokumentInfoRelasjon(relasjonSomSkalSlettes);
-		}
+	private void slettJournalpostRelasjonFilOgDokumentInfo(JournalpostDokumentInfoRelasjon relasjonSomSkalSlettes) {
+		slettJournalpostDokumentInfoRelasjonGittDokumentInfoId(relasjonSomSkalSlettes.getDokumentInfo().getDokumentInfoId());
+		slettFilOgFildetaljer(relasjonSomSkalSlettes.getDokumentInfo().getDokumentInfoId());
+		slettDokumentInfo(relasjonSomSkalSlettes.getDokumentInfo().getDokumentInfoId());
 	}
 
 	private void slettVedleggKnyttetTilJournalpost(Journalpost journalpost) {
 
-		Long jpIdTilJpSomSkalSlettes = journalpost.getJournalpostId();
-
-		for (JournalpostDokumentInfoRelasjon relasjon : journalpost.getJournalpostDokumentInfoRelasjoner()) {
-			if (relasjon.isVedlegg()) {
-				Long originalJournalpostId = relasjon.getDokumentInfo().getOriginalJournalpost() ==
-						null ? -1 : relasjon.getDokumentInfo().getOriginalJournalpost().getJournalpostId();
-				if (relasjon.getDokumentInfo().isRelatedToMultipleJournalposts() &&
-						originalJournalpostId.equals(jpIdTilJpSomSkalSlettes)) {
-					endreOriginalJournalpostIDokumentInfo(relasjon.getDokumentInfo(), jpIdTilJpSomSkalSlettes);
-				}
-				fysiskSlettEtVedlegg(relasjon);
-			}
-		}
+		journalpost.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
+				.forEach(this::fysiskSlettEtVedlegg);
 	}
 
 	private void fysiskSlettEtVedlegg(JournalpostDokumentInfoRelasjon relasjonSomSkalSlettes) {
 		if (relasjonSomSkalSlettes.getDokumentInfo().isRelatedToMultipleJournalposts()) {
 			slettJournalpostDokumentInfoRelasjon(relasjonSomSkalSlettes);
 		} else {
-			slettFilOgDokumentInfo(relasjonSomSkalSlettes.getDokumentInfo().getDokumentInfoId());
+			slettJournalpostRelasjonFilOgDokumentInfo(relasjonSomSkalSlettes);
 		}
-	}
-
-	private void slettJournalpostOgJournalpostDokumentInfoRelasjon(JournalpostDokumentInfoRelasjon relasjon) {
-		endreOriginalJournalpostIDokumentInfo(relasjon.getDokumentInfo(), relasjon.getJournalpost().getJournalpostId());
-		deleteRepository.deleteJournalpostDokumentInfoRelasjonByJournalpostIdAndDokumentInfoId(
-				relasjon.getJournalpost().getJournalpostId(),
-				relasjon.getDokumentInfo().getDokumentInfoId());
-		slettJournalpost(relasjon.getJournalpost().getJournalpostId());
-	}
-
-	private void endreOriginalJournalpostIDokumentInfo(DokumentInfo dokInfoMedJpSomSkalSlettes, Long jpIdTilJpSomSkalSlettes) {
-		Journalpost nyOriginalJournalpost = null;
-		for (JournalpostDokumentInfoRelasjon relasjon : dokInfoMedJpSomSkalSlettes.getJournalpostRelasjoner()) {
-			if (nyOriginalJournalpost == null &&
-					isFalse(relasjon.getJournalpost().getJournalpostId().equals(jpIdTilJpSomSkalSlettes))) {
-				nyOriginalJournalpost = relasjon.getJournalpost();
-			}
-		}
-		dokInfoMedJpSomSkalSlettes.setOriginalJournalpost(nyOriginalJournalpost);
-	}
-
-	private void slettJournalpostOgDokumentInfoOgJournalpostDokumentInfoRelasjon(JournalpostDokumentInfoRelasjon relasjon) {
-		slettFilOgDokumentInfo(relasjon.getDokumentInfo().getDokumentInfoId());
-		slettJournalpost(relasjon.getJournalpost().getJournalpostId());
 	}
 
 	private void slettJournalpostDokumentInfoRelasjon(JournalpostDokumentInfoRelasjon relasjon) {
@@ -194,12 +202,19 @@ public class SlettArkivenhetService {
 		deleteRepository.deleteJournalpostByJournalpostId(journalpostId);
 	}
 
-	private void slettFilOgDokumentInfo(Long dokumentInfoId) {
-		slettFilOgFildetaljer(dokumentInfoId);
+	private void slettJournalpostDokumentInfoRelasjonGittDokumentInfoId(Long dokumentInfoId) {
+		deleteRepository.deleteDokInfoJPRelByDokumentInfoId(dokumentInfoId);
+	}
+
+	private void slettDokumentInfo(Long dokumentInfoId) {
 		deleteRepository.deleteSkannetInnholdByDokumentInfoId(dokumentInfoId);
 		deleteRepository.deleteDokInfoTilleggByDokumentInfoId(dokumentInfoId);
-		deleteRepository.deleteDokInfoJPRelByDokumentInfoId(dokumentInfoId);
 		deleteRepository.deleteDokInfoByDokumentInfoId(dokumentInfoId);
+	}
+
+	private void slettFilOgFildetaljer(Long dokumentInfoId, VariantFormatCode variantFormatCode) {
+		deleteRepository.deleteDokumentFilByDokumentInfoIdAndVariantFormat(dokumentInfoId, variantFormatCode);
+		deleteRepository.deleteFilDetaljerByDokumentInfoIdAndVariantFormat(dokumentInfoId, variantFormatCode);
 	}
 
 	private void slettFilOgFildetaljer(Long dokumentInfoId) {
