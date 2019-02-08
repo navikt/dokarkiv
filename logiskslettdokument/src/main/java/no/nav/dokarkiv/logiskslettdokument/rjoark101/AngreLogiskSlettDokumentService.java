@@ -2,6 +2,7 @@ package no.nav.dokarkiv.logiskslettdokument.rjoark101;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.MDCConstants;
+import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
 import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
@@ -17,6 +18,8 @@ import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @Slf4j
@@ -32,7 +35,7 @@ public class AngreLogiskSlettDokumentService {
 		this.skjermingService = skjermingService;
 	}
 
-	public LogiskSlettDokumentResponse angreLogiskSlettDokument(LogiskSlettDokumentRequestTo requestTo) {
+	public List<ArkivElementEndringTO> angreLogiskSlettDokument(LogiskSlettDokumentRequestTo requestTo) {
 		JournalpostDokumentInfoRelasjon relasjonDerSlettingSkalAngres =
 				journalpostDokumentInfoRelasjonRepository.findByJournalpostJournalpostIdAndDokumentInfoDokumentInfoId(
 						requestTo.getJournalpostId(), requestTo.getDokumentInfoId()).orElse(null);
@@ -46,6 +49,7 @@ public class AngreLogiskSlettDokumentService {
 
 		Long journalpostId = relasjonDerSlettingSkalAngres.getJournalpost().getJournalpostId();
 		Long dokumentInfoId = relasjonDerSlettingSkalAngres.getDokumentInfo().getDokumentInfoId();
+		List<ArkivElementEndringTO> arkivElementEndringTOList = new ArrayList<>();
 
 		switch (relasjonDerSlettingSkalAngres.getTilknyttetJournalpostSom()) {
 			case HOVEDDOKUMENT:
@@ -53,6 +57,12 @@ public class AngreLogiskSlettDokumentService {
 				skjermingService.setJournalpostBegrensning(
 						relasjonDerSlettingSkalAngres.getJournalpost(),
 						null);
+				arkivElementEndringTOList.add(
+						ArkivElementEndringTO.builder()
+								.arkivElement("Journalpost.skjermingType")
+								.fraVerdi(SkjermingTypeCode.POL.name())
+								.tilVerdi(null)
+								.build()
 				log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har angret logisk sletting av journalpost med journalpostId={}",
 						journalpostId);
 				break;
@@ -62,6 +72,12 @@ public class AngreLogiskSlettDokumentService {
 				skjermingService.setJpDokInfoRelBegrensning(
 						relasjonDerSlettingSkalAngres,
 						null);
+				arkivElementEndringTOList.add(
+						ArkivElementEndringTO.builder()
+								.arkivElement("DokumentInfo.skjermingType")
+								.fraVerdi(SkjermingTypeCode.POL.name())
+								.tilVerdi(null)
+								.build()
 				log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) +
 								" har angret logisk sletting av dokument med journalpostId={}, dokumentInfoId={}",
 						journalpostId, dokumentInfoId);
@@ -74,7 +90,7 @@ public class AngreLogiskSlettDokumentService {
 						requestTo.getDokumentInfoId()));
 		}
 
-		return LogiskSlettDokumentResponseMapper.mapToSlettDokumentResponse(relasjonDerSlettingSkalAngres);
+		return arkivElementEndringTOList;
 	}
 
 	private void sjekkAtDokumentErSkjermet(JournalpostDokumentInfoRelasjon rel) {
