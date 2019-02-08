@@ -75,7 +75,7 @@ public class AksjonsLoggService {
 			assertNullOrEmpty(journalpostId, "journalpostId");
 			assertNullOrEmpty(applikasjon, "applikasjon");
 			assertNullOrEmpty(aksjon, "aksjon");
-			assertNullOrEmpty(utfoertAv, "utfoertAv");
+			assertNullOrEmpty(utfoertAv, "kassertAvNavn");
 
 			assertInvalidEnum(aksjon, "aksjon", AksjonTypeCode.values());
 

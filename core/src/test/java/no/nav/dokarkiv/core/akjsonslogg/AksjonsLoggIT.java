@@ -133,7 +133,7 @@ public class AksjonsLoggIT {
 	@Test
 	public void shouldThrowWhenUtfoertAvIsNotIncluded() throws IOException, UgyldigAksjonsLoggHeaderException {
 		expectedException.expect(UgyldigAksjonsLoggHeaderException.class);
-		expectedException.expectMessage("utfoertAv");
+		expectedException.expectMessage("kassertAvNavn");
 
 		List<AksjonsLoggHeader> aksjonsLoggHeaderList = TestDataUtils.createAksjonsLoggRequest(1L, 1L, AksjonTypeCode.ENDRE_BEGRENSNING.name());
 		aksjonsLoggHeaderList.get(0).setUtfoertAv(null);
