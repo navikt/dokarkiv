@@ -10,7 +10,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertFalse;
 
-import no.nav.dokarkiv.core.domain.codes.AksjonTypeCode;
+import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
@@ -64,7 +64,7 @@ public class Rjoark106IT extends AbstractLogiskTidligKassasjonIT {
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_ANGRE_LOGISKTIDLIGKASSASJON + vedlegg.getDokumentInfoId(),
 				HttpMethod.POST,
-				new HttpEntity<>(createHeadersWithAksjon(AksjonTypeCode.ENDRE_BEGRENSNING.name())),
+				new HttpEntity<>(createHeadersWithAksjon()),
 				String.class);
 
 		TestTransaction.flagForCommit();
@@ -75,7 +75,7 @@ public class Rjoark106IT extends AbstractLogiskTidligKassasjonIT {
 
 		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
 		assertThat(aksjonsLoggList.size(), is(1));
-		assertThat(aksjonsLoggList.get(0).getAksjon(), is(AksjonTypeCode.ENDRE_BEGRENSNING));
+		assertThat(aksjonsLoggList.get(0).getAksjon(), is(AksjonsTypeCode.ENDRE_SKJERMING));
 	}
 
 	@Test
@@ -146,7 +146,7 @@ public class Rjoark106IT extends AbstractLogiskTidligKassasjonIT {
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_ANGRE_LOGISKTIDLIGKASSASJON + vedlegg.getDokumentInfoId(),
 				HttpMethod.POST,
-				new HttpEntity<>(createHeadersWithAksjon(AksjonTypeCode.ENDRE_BEGRENSNING.name())),
+				new HttpEntity<>(createHeadersWithAksjon()),
 				String.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.NOT_FOUND));
@@ -164,7 +164,7 @@ public class Rjoark106IT extends AbstractLogiskTidligKassasjonIT {
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_ANGRE_LOGISKTIDLIGKASSASJON + dokumentInfoId,
 				HttpMethod.POST,
-				new HttpEntity<>(createHeadersWithAksjon(AksjonTypeCode.ENDRE_BEGRENSNING.name())),
+				new HttpEntity<>(createHeadersWithAksjon()),
 				String.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.NOT_FOUND));
@@ -184,7 +184,7 @@ public class Rjoark106IT extends AbstractLogiskTidligKassasjonIT {
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_ANGRE_LOGISKTIDLIGKASSASJON + dokumentInfo.getDokumentInfoId(),
 				HttpMethod.POST,
-				new HttpEntity<>(createHeadersWithAksjon(AksjonTypeCode.ENDRE_BEGRENSNING.name())),
+				new HttpEntity<>(createHeadersWithAksjon()),
 				String.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.NOT_FOUND));
@@ -223,7 +223,7 @@ public class Rjoark106IT extends AbstractLogiskTidligKassasjonIT {
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_ANGRE_LOGISKTIDLIGKASSASJON + vedlegg.getDokumentInfoId(),
 				HttpMethod.POST,
-				new HttpEntity<>(createHeadersWithAksjon(AksjonTypeCode.ENDRE_BEGRENSNING.name())),
+				new HttpEntity<>(createHeadersWithAksjon()),
 				String.class);
 
 
@@ -266,7 +266,7 @@ public class Rjoark106IT extends AbstractLogiskTidligKassasjonIT {
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_ANGRE_LOGISKTIDLIGKASSASJON + hoveddokument1.getDokumentInfoId(),
 				HttpMethod.POST,
-				new HttpEntity<>(createHeadersWithAksjon(AksjonTypeCode.ENDRE_BEGRENSNING.name())),
+				new HttpEntity<>(createHeadersWithAksjon()),
 				String.class);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();

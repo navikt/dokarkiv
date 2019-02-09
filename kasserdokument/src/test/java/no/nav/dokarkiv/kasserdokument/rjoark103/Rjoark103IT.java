@@ -1,7 +1,7 @@
 package no.nav.dokarkiv.kasserdokument.rjoark103;
 
 import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_LOGG_HEADER;
-import static no.nav.dokarkiv.core.domain.codes.AksjonTypeCode.SLETT;
+import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.SLETT;
 import static no.nav.dokarkiv.kasserdokument.util.TestUtil.KASSERT_AV_NAVN;
 import static no.nav.dokarkiv.kasserdokument.util.TestUtil.createKasserDokumentRequest;
 import static no.nav.dokarkiv.kasserdokument.util.TestUtil.knyttDokumentInfoSomVedleggTilJournalpostForIT;

@@ -8,10 +8,12 @@ import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.UPDATE_ACTI
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.MDCConstants;
-import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggHeader;
-import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggHeaderMapper;
+import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggTO;
+import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggTOMapper;
 import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService;
-import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggHeaderException;
+import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
+import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
+import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
 import no.nav.dokarkiv.core.metrics.RestMetrics;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import no.nav.dokarkiv.fysisktidligkassasjon.rjoark107.FysiskTidligKassasjonResponse;
@@ -38,7 +40,7 @@ public class FysiskTidligKassasjonRestController {
 	private final FysiskTidligKassasjonValidator validator;
 	private final FysiskTidligKassasjonService fysiskTidligKassasjonService;
 	private final AksjonsLoggService aksjonsLoggService;
-	private final AksjonsLoggHeaderMapper aksjonsLoggHeaderMapper;
+	private final AksjonsLoggTOMapper aksjonsLoggTOMapper;
 
 	@Inject
 	public FysiskTidligKassasjonRestController(
@@ -48,7 +50,7 @@ public class FysiskTidligKassasjonRestController {
 		this.validator = validator;
 		this.fysiskTidligKassasjonService = service;
 		this.aksjonsLoggService = aksjonsLoggService;
-		this.aksjonsLoggHeaderMapper = new AksjonsLoggHeaderMapper();
+		this.aksjonsLoggTOMapper = new AksjonsLoggTOMapper();
 	}
 
 	@Transactional
@@ -60,16 +62,22 @@ public class FysiskTidligKassasjonRestController {
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark107"}, percentiles = {0.5, 0.95})
 	public FysiskTidligKassasjonResponse fysiskTidligKassasjon(
 			@RequestHeader(value = AKSJONS_LOGG_HEADER) String aksjonsLoggHeaderString,
-			@PathVariable("dokumentInfoId") Long dokumentInfoId) throws UgyldigAksjonsLoggHeaderException {
+			@PathVariable("dokumentInfoId") Long dokumentInfoId) throws UgyldigAksjonsLoggException {
 		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark107");
 		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har mottat kall med dokumentInfoId={}", dokumentInfoId);
 		validator.validerFysiskTidligKassasjonRequest(dokumentInfoId);
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
-		List<AksjonsLoggHeader> aksjonsLoggHeader = aksjonsLoggHeaderMapper.mapAksjonsLoggHeader(aksjonsLoggHeaderString);
-		aksjonsLoggService.validateAndSaveAksjon(aksjonsLoggHeader);
-		FysiskTidligKassasjonResponse response = fysiskTidligKassasjonService.fysiskTidligKassasjonAvDokument(dokumentInfoId);
+
+		List<ArkivElementEndringTO> arkivElementEndringTOList = fysiskTidligKassasjonService.fysiskTidligKassasjonAvDokument(dokumentInfoId);
 		log.info("{} har fysisk tidlig kassert dokument med dokumentInfoId={}",
 				MDC.get(MDCConstants.MDC_REQUEST_ID), dokumentInfoId);
-		return response;
+
+		AksjonsLoggTO aksjonsLoggTO = aksjonsLoggTOMapper.mapAksjonsLoggHeader(aksjonsLoggHeaderString, AksjonsTypeCode.SLETT, null, dokumentInfoId);
+
+		aksjonsLoggService.validateAndSaveAksjonsLogg(aksjonsLoggTO, arkivElementEndringTOList);
+
+		return FysiskTidligKassasjonResponse.builder()
+				.dokumentInfoId(dokumentInfoId)
+				.build();
 	}
 }

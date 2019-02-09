@@ -8,10 +8,12 @@ import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.UPDATE_ACTI
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.MDCConstants;
-import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggHeader;
-import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggHeaderMapper;
 import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService;
-import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggHeaderException;
+import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggTO;
+import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggTOMapper;
+import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
+import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
+import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
 import no.nav.dokarkiv.core.metrics.RestMetrics;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import no.nav.dokarkiv.kasserdokument.rjoark103.KasserDokumentRequest;
@@ -29,6 +31,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.inject.Inject;
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -38,7 +41,7 @@ public class KasserDokumentRestController {
 
 	private final KasserDokumentValidator validator;
 	private final AksjonsLoggService aksjonsLoggService;
-	private final AksjonsLoggHeaderMapper aksjonsLoggHeaderMapper;
+	private final AksjonsLoggTOMapper aksjonsLoggTOMapper;
 	private final KasserDokumentService kasserDokumentService;
 
 	@Inject
@@ -49,7 +52,7 @@ public class KasserDokumentRestController {
 		this.validator = validator;
 		this.kasserDokumentService = service;
 		this.aksjonsLoggService = aksjonsLoggService;
-		this.aksjonsLoggHeaderMapper = new AksjonsLoggHeaderMapper();
+		this.aksjonsLoggTOMapper = new AksjonsLoggTOMapper();
 	}
 
 	@Transactional
@@ -61,14 +64,20 @@ public class KasserDokumentRestController {
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark103"}, percentiles = {0.5, 0.95})
 	public KasserDokumentResponse kasserDokument(
 			@RequestHeader(value = AKSJONS_LOGG_HEADER) String aksjonsLoggHeaderString,
-			@RequestBody KasserDokumentRequest request) throws UgyldigAksjonsLoggHeaderException {
+			@RequestBody KasserDokumentRequest request) throws UgyldigAksjonsLoggException {
 		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark107");
 		validator.validerKasserDokumentRequest(request);
 		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har mottat kall med dokumentInfoId={}", request.getDokumentInfoId());
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
-		List<AksjonsLoggHeader> aksjonsLoggHeader = aksjonsLoggHeaderMapper.mapAksjonsLoggHeader(aksjonsLoggHeaderString);
-		aksjonsLoggService.validateAndSaveAksjon(aksjonsLoggHeader);
+
 		KasserDokumentResponse response = kasserDokumentService.kasserDokument(request);
+
+		List<ArkivElementEndringTO> arkivElementEndringTOList = new ArrayList<>();
+		AksjonsLoggTO aksjonsLoggTO = aksjonsLoggTOMapper.mapAksjonsLoggHeader(aksjonsLoggHeaderString, AksjonsTypeCode.SLETT, null, request
+				.getDokumentInfoId());
+
+		aksjonsLoggService.validateAndSaveAksjonsLogg(aksjonsLoggTO, arkivElementEndringTOList);
+
 		log.info("{} har fysisk tidlig kassert dokument med dokumentInfoId={}",
 				MDC.get(MDCConstants.MDC_REQUEST_ID), request.getDokumentInfoId());
 		return response;

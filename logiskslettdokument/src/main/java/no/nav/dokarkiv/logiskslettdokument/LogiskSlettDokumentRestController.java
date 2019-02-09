@@ -8,10 +8,12 @@ import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.UPDATE_ACTI
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.MDCConstants;
-import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggHeader;
-import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggHeaderMapper;
+import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggTO;
+import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggTOMapper;
 import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService;
-import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggHeaderException;
+import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
+import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
+import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
 import no.nav.dokarkiv.core.metrics.RestMetrics;
 import no.nav.dokarkiv.core.security.abac.AbacSecurityService;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
@@ -41,7 +43,7 @@ public class LogiskSlettDokumentRestController {
 	private final AngreLogiskSlettDokumentService angreLogiskSlettDokumentService;
 	private final AbacSecurityService abacSecurityService;
 	private final AksjonsLoggService aksjonsLoggService;
-	private final AksjonsLoggHeaderMapper aksjonsLoggHeaderMapper;
+	private final AksjonsLoggTOMapper aksjonsLoggTOMapper;
 
 	@Inject
 	public LogiskSlettDokumentRestController(LogiskSlettDokumentService logiskSlettDokumentService,
@@ -51,27 +53,35 @@ public class LogiskSlettDokumentRestController {
 		this.angreLogiskSlettDokumentService = angreLogiskSlettDokumentService;
 		this.abacSecurityService = abacSecurityService;
 		this.aksjonsLoggService = aksjonsLoggService;
-		this.aksjonsLoggHeaderMapper = new AksjonsLoggHeaderMapper();
+		this.aksjonsLoggTOMapper = new AksjonsLoggTOMapper();
 	}
 
-	@Transactional
+	@Transactional(rollbackFor = Exception.class)
 	@ResponseBody
 	@PostMapping("/{journalpostId}/{dokumentInfoId}")
 	@Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_DOKUMENT)},
 			actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION))
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark100"}, percentiles = {0.5, 0.95})
 	public LogiskSlettDokumentResponse logiskSlettDokumentKnyttetKunEnJournalpost(@RequestHeader(value = AKSJONS_LOGG_HEADER) String aksjonsLoggHeaderString,
-																				  @PathVariable("journalpostId") Long journalpostId, @PathVariable("dokumentInfoId") Long dokumentInfoId) throws UgyldigAksjonsLoggHeaderException {
+																				  @PathVariable("journalpostId") Long journalpostId, @PathVariable("dokumentInfoId") Long dokumentInfoId) throws UgyldigAksjonsLoggException {
 		abacSecurityService.assertAccessToJournalpostIncludingBegrenset(journalpostId.toString());
 		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark100");
 		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har mottat kall med journalpostId=" + journalpostId + " og dokumentInfoId=" + dokumentInfoId);
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
-		List<AksjonsLoggHeader> aksjonsLoggHeader = aksjonsLoggHeaderMapper.mapAksjonsLoggHeader(aksjonsLoggHeaderString);
-		aksjonsLoggService.validateAndSaveAksjon(aksjonsLoggHeader);
-		return logiskSlettDokumentService.logiskSletteDokument(LogiskSlettDokumentRequestTo.builder()
+
+		List<ArkivElementEndringTO> arkivElementEndringTOList = logiskSlettDokumentService.logiskSletteDokument(LogiskSlettDokumentRequestTo.builder()
 				.journalpostId(journalpostId)
 				.dokumentInfoId(dokumentInfoId)
 				.build());
+
+		AksjonsLoggTO aksjonsLoggTO = aksjonsLoggTOMapper.mapAksjonsLoggHeader(aksjonsLoggHeaderString, AksjonsTypeCode.ENDRE_SKJERMING, journalpostId, dokumentInfoId);
+
+		aksjonsLoggService.validateAndSaveAksjonsLogg(aksjonsLoggTO, arkivElementEndringTOList);
+
+		return LogiskSlettDokumentResponse.builder()
+				.dokumentInfoId(dokumentInfoId)
+				.journalpostId(journalpostId)
+				.build();
 	}
 
 	@Transactional
@@ -82,17 +92,24 @@ public class LogiskSlettDokumentRestController {
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark101"}, percentiles = {0.5, 0.95})
 	public LogiskSlettDokumentResponse angreLogiskSlettDokument(@RequestHeader(value = AKSJONS_LOGG_HEADER) String aksjonsLoggHeaderString,
 																@PathVariable("journalpostId") Long journalpostId,
-																@PathVariable("dokumentInfoId") Long dokumentInfoId) throws UgyldigAksjonsLoggHeaderException {
+																@PathVariable("dokumentInfoId") Long dokumentInfoId) throws UgyldigAksjonsLoggException {
 		abacSecurityService.assertAccessToJournalpostIncludingBegrenset(journalpostId.toString());
 		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark101");
 		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har mottat kall med journalpostId=" + journalpostId + " og dokumentInfoId=" + dokumentInfoId);
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
-		List<AksjonsLoggHeader> aksjonsLoggHeader = aksjonsLoggHeaderMapper.mapAksjonsLoggHeader(aksjonsLoggHeaderString);
-		aksjonsLoggService.validateAndSaveAksjon(aksjonsLoggHeader);
-		return angreLogiskSlettDokumentService.angreLogiskSlettDokument(LogiskSlettDokumentRequestTo.builder()
+		List<ArkivElementEndringTO> arkivElementEndringTOList = angreLogiskSlettDokumentService.angreLogiskSlettDokument(LogiskSlettDokumentRequestTo.builder()
 				.journalpostId(journalpostId)
 				.dokumentInfoId(dokumentInfoId)
 				.build());
+
+		AksjonsLoggTO aksjonsLoggTO = aksjonsLoggTOMapper.mapAksjonsLoggHeader(aksjonsLoggHeaderString, AksjonsTypeCode.ENDRE_SKJERMING, journalpostId, dokumentInfoId);
+
+		aksjonsLoggService.validateAndSaveAksjonsLogg(aksjonsLoggTO, arkivElementEndringTOList);
+
+		return LogiskSlettDokumentResponse.builder()
+				.dokumentInfoId(dokumentInfoId)
+				.journalpostId(journalpostId)
+				.build();
 	}
 
 }
