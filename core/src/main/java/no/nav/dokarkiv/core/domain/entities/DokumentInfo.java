@@ -1,8 +1,5 @@
 package no.nav.dokarkiv.core.domain.entities;
 
-import static org.apache.commons.lang3.BooleanUtils.isTrue;
-import static org.apache.commons.lang3.StringUtils.contains;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -35,6 +32,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -123,7 +121,7 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	private String dokumenttypeId;
 
 	@Column(name = "dato_kassert")
-	private Date datoKassert;
+	private LocalDateTime datoKassert;
 
 	@Column(name = "kassert_av_navn")
 	private String kassertAvNavn;
@@ -686,11 +684,8 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	 *
 	 * @return the datoKassert
 	 */
-	public Date getDatoKassert() {
-		if (datoKassert != null) {
-			return new Date(datoKassert.getTime());
-		}
-		return null;
+	public LocalDateTime getDatoKassert() {
+		return datoKassert;
 	}
 
 	/**
@@ -698,12 +693,8 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	 *
 	 * @param datoKassert the datoKassert to set
 	 */
-	public void setDatoKassert(Date datoKassert) {
-		if (datoKassert != null) {
-			this.datoKassert = new Date(datoKassert.getTime());
-		} else {
-			this.datoKassert = null;
-		}
+	public void setDatoKassert(LocalDateTime datoKassert) {
+		this.datoKassert = datoKassert;
 	}
 
 	/**

@@ -60,7 +60,7 @@ public class KasserDokumentService {
 	}
 
 	private void settKassasjonInfo (DokumentInfo dokumentInfo, String kassertAvNavn) {
-		dokumentInfo.setDatoKassert(Date.from(LocalDateTime.now().toInstant(ZoneOffset.UTC)));
+		dokumentInfo.setDatoKassert(LocalDateTime.now());
 		dokumentInfo.setKassertAvNavn(kassertAvNavn);
 		dokumentInfoRepository.save(dokumentInfo);
 	}
