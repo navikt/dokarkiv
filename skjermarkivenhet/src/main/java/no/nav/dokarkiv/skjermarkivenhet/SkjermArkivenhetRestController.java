@@ -4,7 +4,6 @@ import static no.nav.abac.xacml.NavAttributter.RESOURCE_ARKIV_DOKUMENT;
 import static no.nav.abac.xacml.NavAttributter.RESOURCE_FELLES_RESOURCE_TYPE;
 import static no.nav.abac.xacml.StandardAttributter.ACTION_ID;
 import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_LOGG_HEADER;
-import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.DELETE_ACTION;
 import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.UPDATE_ACTION;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
@@ -70,7 +69,7 @@ public class SkjermArkivenhetRestController {
 		this.aksjonsLoggTOMapper = new AksjonsLoggTOMapper();
 	}
 
-	@Transactional
+	@Transactional(rollbackFor = UgyldigAksjonsLoggException.class)
 	@ResponseBody
 	@PostMapping("/skjermarkivenhet")
 	@Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_DOKUMENT)},
@@ -127,11 +126,11 @@ public class SkjermArkivenhetRestController {
 				.build();
 	}
 
-	@Transactional
+	@Transactional(rollbackFor = UgyldigAksjonsLoggException.class)
 	@ResponseBody
 	@DeleteMapping("/skjermarkivenhet")
 	@Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_DOKUMENT)},
-			actions = @Abac.Attr(key = ACTION_ID, value = DELETE_ACTION))
+			actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION))
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark101"}, percentiles = {0.5, 0.95})
 	public SkjermArkivenhetResponse opphevSkjermArkivenhet(
 			@RequestHeader(value = AKSJONS_LOGG_HEADER) String aksjonsLoggHeaderString,
