@@ -55,7 +55,7 @@ public class KasserDokumentRestController {
 		this.aksjonsLoggTOMapper = new AksjonsLoggTOMapper();
 	}
 
-	@Transactional
+	@Transactional(rollbackFor = UgyldigAksjonsLoggException.class)
 	@ResponseBody
 	@DeleteMapping("kasserdokument")
 	//TODO: MÅ endre fra value = UPDATE_ACTION til DELETE_ACTION. Men joarkadmin har ikke tilgang.
