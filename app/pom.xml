@@ -96,6 +96,10 @@
 			<groupId>no.nav.dokarkiv</groupId>
 			<artifactId>arkivervariant</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>no.nav.dokarkiv</groupId>
+			<artifactId>kasserdokument</artifactId>
+		</dependency>
 		<!-- annet -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
