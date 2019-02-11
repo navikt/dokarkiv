@@ -161,7 +161,7 @@ public class Rjoark103IT extends AbstractKasserDokumentIT {
 				String.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.NOT_FOUND));
-		assertThat(responseEntity.getBody(), containsString("Fildetaljene for dokumentInfoId=" + dokumentInfo.getDokumentInfoId()+" er ikke skjermet, kan ikke kassere dokumentet"));
+		assertThat(responseEntity.getBody(), containsString("Fildetaljene for dokumentInfoId=" + dokumentInfo.getDokumentInfoId() + " er ikke skjermet"));
 	}
 
 	@Test
