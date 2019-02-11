@@ -52,7 +52,7 @@ public class KasserDokumentServiceTest {
 	public void skalIkkeTidligKassereDokument_hvisDokumentInfoIkkeErBegrensetSomKassert() {
 		thrown.expect(SkjermingIkkeFunnetException.class);
 		thrown.expectMessage(String.format(
-				"Fildetaljene for dokumentInfoId=%s er ikke skjermet, kan ikke kassere dokumentet",
+				"Fildetaljene for dokumentInfoId=%s er ikke skjermet",
 				DOKUMENTINFO_ID));
 
 		when(dokumentinfoRepository.findByDokumentInfoId(DOKUMENTINFO_ID)).thenReturn(Optional.of(dokumentInfo));
