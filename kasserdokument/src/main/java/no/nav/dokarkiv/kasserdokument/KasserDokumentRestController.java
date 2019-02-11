@@ -70,9 +70,10 @@ public class KasserDokumentRestController {
 		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har mottat kall med dokumentInfoId={}", request.getDokumentInfoId());
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
 
-		KasserDokumentResponse response = kasserDokumentService.kasserDokument(request);
+		kasserDokumentService.kasserDokument(request);
 
 		List<ArkivElementEndringTO> arkivElementEndringTOList = new ArrayList<>();
+
 		AksjonsLoggTO aksjonsLoggTO = aksjonsLoggTOMapper.mapAksjonsLoggHeader(aksjonsLoggHeaderString, AksjonsTypeCode.SLETT, null, request
 				.getDokumentInfoId());
 
@@ -80,6 +81,8 @@ public class KasserDokumentRestController {
 
 		log.info("{} har fysisk tidlig kassert dokument med dokumentInfoId={}",
 				MDC.get(MDCConstants.MDC_REQUEST_ID), request.getDokumentInfoId());
-		return response;
+		return KasserDokumentResponse.builder()
+				.dokumentInfoId(request.getDokumentInfoId())
+				.build();
 	}
 }

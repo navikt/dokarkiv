@@ -51,7 +51,8 @@ public class ArkiverVariantService {
 	private void sjekkOmVariantFinnes(DokumentInfo dokumentInfo, VariantFormatCode variantFormatCode) {
 		FilDetaljer variantFildetaljer = dokumentInfo.findFilDetaljerByVariantFormat(variantFormatCode);
 		if (Objects.nonNull(variantFildetaljer)) {
-			throw new VariantFormatAlreadyExistsException(String.format("Det finnes allerede en variant: %s for dokoumentInfoId: %s", variantFormatCode.name(), dokumentInfo.getDokumentInfoId()));
+			throw new VariantFormatAlreadyExistsException(String.format("Det finnes allerede en variant: %s for dokumentInfoId: %s", variantFormatCode
+					.name(), dokumentInfo.getDokumentInfoId()));
 		}
 	}
 
