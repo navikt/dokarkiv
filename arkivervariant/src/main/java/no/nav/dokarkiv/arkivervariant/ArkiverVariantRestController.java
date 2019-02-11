@@ -17,8 +17,6 @@ import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggTO;
 import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggTOMapper;
 import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
-import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
-import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
 import no.nav.dokarkiv.core.metrics.RestMetrics;
 import no.nav.dokarkiv.core.security.abac.AbacSecurityService;
@@ -75,9 +73,9 @@ public class ArkiverVariantRestController {
 
 		ArkiverVariantResponse respons = arkiverVariantService.arkiverVariant(request);
 
-
 		AksjonsLoggTO aksjonsLoggTO = aksjonsLoggTOMapper.mapAksjonsLoggHeader(aksjonsLoggHeaderString, AksjonsTypeCode.ARKIVERING, null, request
 				.getDokumentInfoId());
+
 		List<ArkivElementEndringTO> arkivElementEndringTOList = Arrays.asList(
 				ArkivElementEndringTO.builder()
 						.arkivElement("Fildetaljer.filUuid")
@@ -87,14 +85,10 @@ public class ArkiverVariantRestController {
 				ArkivElementEndringTO.builder()
 						.arkivElement("Fildetaljer.variantFormat")
 						.fraVerdi(null)
-						.tilVerdi(VariantFormatCode.SLADDET.name())
-						.build(),
-				ArkivElementEndringTO.builder()
-						.arkivElement("FilDetaljer.variantFormat[ARKIV].skjermingType")
-						.fraVerdi(null)
-						.tilVerdi(SkjermingTypeCode.POL.name())
+						.tilVerdi(request.getVariant().name())
 						.build()
 		);
+
 		aksjonsLoggService.validateAndSaveAksjonsLogg(aksjonsLoggTO, arkivElementEndringTOList);
 
 		log.info("{} har arkivert variant= {} med dokumentInfoId={}",

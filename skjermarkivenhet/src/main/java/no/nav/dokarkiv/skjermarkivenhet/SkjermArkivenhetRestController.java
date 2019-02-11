@@ -19,6 +19,7 @@ import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.codes.ArkivenhetCode;
 import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
+import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
 import no.nav.dokarkiv.core.exceptions.UgyldigSkjermArkivenhetRequestException;
 import no.nav.dokarkiv.core.metrics.RestMetrics;
@@ -113,7 +114,8 @@ public class SkjermArkivenhetRestController {
 						.getVariant(), skjermArkivenhetRequest.getSkjerming());
 		}
 
-		List<ArkivElementEndringTO> arkivElementEndringTOList = createArkivElementEndringTO(skjermArkivenhetRequest.getArkivenhet(), null, SkjermingTypeCode.POL
+		List<ArkivElementEndringTO> arkivElementEndringTOList = createArkivElementEndringTO(skjermArkivenhetRequest.getArkivenhet(), skjermArkivenhetRequest
+				.getVariant(), null, SkjermingTypeCode.POL
 				.name());
 		lagreAksjonsLogg(skjermArkivenhetRequest.getJournalpostId(), skjermArkivenhetRequest.getDokumentInfoId(), aksjonsLoggHeaderString, arkivElementEndringTOList);
 
@@ -169,7 +171,8 @@ public class SkjermArkivenhetRestController {
 						.getVariant());
 		}
 
-		List<ArkivElementEndringTO> arkivElementEndringTOList = createArkivElementEndringTO(skjermArkivenhetRequest.getArkivenhet(), SkjermingTypeCode.POL
+		List<ArkivElementEndringTO> arkivElementEndringTOList = createArkivElementEndringTO(skjermArkivenhetRequest.getArkivenhet(), skjermArkivenhetRequest
+				.getVariant(), SkjermingTypeCode.POL
 				.name(), null);
 		lagreAksjonsLogg(skjermArkivenhetRequest.getJournalpostId(), skjermArkivenhetRequest.getDokumentInfoId(), aksjonsLoggHeaderString, arkivElementEndringTOList);
 
@@ -212,7 +215,7 @@ public class SkjermArkivenhetRestController {
 		aksjonsLoggService.validateAndSaveAksjonsLogg(aksjonsLoggTO, arkivElementEndringTOList);
 	}
 
-	private List<ArkivElementEndringTO> createArkivElementEndringTO(ArkivenhetCode arkivenhetCode, String fraVerdi, String tilVerdi) {
+	private List<ArkivElementEndringTO> createArkivElementEndringTO(ArkivenhetCode arkivenhetCode, VariantFormatCode variantFormatCode, String fraVerdi, String tilVerdi) {
 		ArkivElementEndringTO.ArkivElementEndringTOBuilder arkivElementEndringTO = ArkivElementEndringTO.builder();
 
 		switch (arkivenhetCode) {
@@ -223,7 +226,7 @@ public class SkjermArkivenhetRestController {
 				arkivElementEndringTO.arkivElement(JPDOKINFO_REL_SKJERMINGTYPE);
 				break;
 			case DOKUMENT_FIL:
-				arkivElementEndringTO.arkivElement(FILDETALJER_SKJERMINGTYPE);
+				arkivElementEndringTO.arkivElement(String.format(FILDETALJER_SKJERMINGTYPE, variantFormatCode.name()));
 				break;
 		}
 
