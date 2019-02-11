@@ -6,7 +6,6 @@ import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.service.SkjermingService;
 import no.nav.dokarkiv.core.exceptions.SkjermingIkkeFunnetException;
-import no.nav.dokarkiv.skjermarkivenhet.rjoark100.SkjermArkivenhetResponse;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -19,10 +18,9 @@ public class OpphevSkjermArkivenhetService {
 		this.skjermingService = skjermingService;
 	}
 
-	public SkjermArkivenhetResponse opphevSkjermJournalpost(Long journalpostId, SkjermingTypeCode skjerming) {
+	public void opphevSkjermJournalpost(Long journalpostId, SkjermingTypeCode skjerming) {
 		sjekkAtJournalpostErSkjermet(journalpostId, skjerming);
 		skjermingService.opphevSkjermJournalpostByJournalpostId(journalpostId);
-		return SkjermArkivenhetResponse.builder().journalpostId(journalpostId).build();
 	}
 
 	private void sjekkAtJournalpostErSkjermet(Long journalpostId, SkjermingTypeCode skjermingTypeCode) {
@@ -32,13 +30,9 @@ public class OpphevSkjermArkivenhetService {
 		}
 	}
 
-	public SkjermArkivenhetResponse opphevSkjermDokumentInfo(Long journalpostId, Long dokumentInfoId, SkjermingTypeCode skjerming) {
+	public void opphevSkjermDokumentInfo(Long journalpostId, Long dokumentInfoId, SkjermingTypeCode skjerming) {
 		sjekkAtJournalpostDokumentInfoRelasjonErSkjermet(journalpostId, dokumentInfoId, skjerming);
 		skjermingService.opphevSkjermJpDokInfoRelByJournalpostIdAndDokumentInfoId(journalpostId, dokumentInfoId);
-		return SkjermArkivenhetResponse.builder()
-				.journalpostId(journalpostId)
-				.dokumentInfoId(dokumentInfoId)
-				.build();
 	}
 
 	private void sjekkAtJournalpostDokumentInfoRelasjonErSkjermet(Long journalpostId, Long dokumentInfoId, SkjermingTypeCode skjermingTypeCode) {
@@ -50,13 +44,9 @@ public class OpphevSkjermArkivenhetService {
 		}
 	}
 
-	public SkjermArkivenhetResponse opphevSkjermDokumentFil(Long dokumentInfoId, VariantFormatCode variant) {
+	public void opphevSkjermDokumentFil(Long dokumentInfoId, VariantFormatCode variant) {
 		sjekkAtVariantFormatErSkjermet(dokumentInfoId, variant);
 		skjermingService.opphevSkjermVariantByDokumentInfoIdAndVariantFormat(dokumentInfoId, variant);
-		return SkjermArkivenhetResponse.builder()
-				.dokumentInfoId(dokumentInfoId)
-				.variant(variant)
-				.build();
 	}
 
 	private void sjekkAtVariantFormatErSkjermet(Long dokumentInfoId, VariantFormatCode variantFormatCode) {

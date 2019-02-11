@@ -1,9 +1,6 @@
 package no.nav.dokarkiv.skjermarkivenhet.rjoark100;
 
 import static no.nav.dokarkiv.core.util.TestDataUtils.createJournalpost;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertNull;
 
 import no.nav.dokarkiv.core.domain.codes.ArkivenhetCode;
 import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
@@ -55,9 +52,7 @@ public class skjermArkivenhetServiceTest {
 				.skjerming(SkjermingTypeCode.POL)
 				.build();
 
-		SkjermArkivenhetResponse response = skjermArkivenhetService.skjermJournalpost(request.getJournalpostId(), request.getSkjerming());
-		assertThat(response.getJournalpostId(), is(journalpost.getJournalpostId()));
-		assertNull(response.getDokumentInfoId());
+		skjermArkivenhetService.skjermJournalpost(request.getJournalpostId(), request.getSkjerming());
 	}
 
 	@Test
@@ -73,10 +68,9 @@ public class skjermArkivenhetServiceTest {
 				.build();
 
 
-		SkjermArkivenhetResponse response = skjermArkivenhetService.skjermDokumentInfo(request.getJournalpostId(), request.getDokumentInfoId(), request
+		skjermArkivenhetService.skjermDokumentInfo(request.getJournalpostId(), request.getDokumentInfoId(), request
 				.getSkjerming());
-		assertThat(response.getJournalpostId(), is(journalpost.getJournalpostId()));
-		assertThat(response.getDokumentInfoId(), is(dokumentInfoId));
+
 	}
 
 	@Test
@@ -92,9 +86,7 @@ public class skjermArkivenhetServiceTest {
 				.skjerming(SkjermingTypeCode.POL)
 				.build();
 
-		SkjermArkivenhetResponse response = skjermArkivenhetService.skjermDokumentFil(request.getDokumentInfoId(), request.getVariant(), request
-				.getSkjerming());
-		assertThat(response.getDokumentInfoId(), is(dokumentInfo.getDokumentInfoId()));
-		assertNull(response.getJournalpostId());
+		skjermArkivenhetService.skjermDokumentFil(request.getDokumentInfoId(), request.getVariant(), request.getSkjerming());
+
 	}
 }

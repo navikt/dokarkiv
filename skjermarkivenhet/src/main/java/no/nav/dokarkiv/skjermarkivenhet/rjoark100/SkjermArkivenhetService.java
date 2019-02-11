@@ -19,10 +19,9 @@ public class SkjermArkivenhetService {
 		this.skjermingService = skjermingService;
 	}
 
-	public SkjermArkivenhetResponse skjermJournalpost(Long journalpostId, SkjermingTypeCode skjerming) {
+	public void skjermJournalpost(Long journalpostId, SkjermingTypeCode skjerming) {
 		sjekkAtJournalpostIkkeErSkjermet(journalpostId, skjerming);
 		skjermingService.skjermJournalpostByJournalpostIdAndSkjermingType(journalpostId, skjerming);
-		return SkjermArkivenhetResponse.builder().journalpostId(journalpostId).build();
 	}
 
 	private void sjekkAtJournalpostIkkeErSkjermet(Long journalpostId, SkjermingTypeCode skjermingTypeCode) {
@@ -33,13 +32,9 @@ public class SkjermArkivenhetService {
 		}
 	}
 
-	public SkjermArkivenhetResponse skjermDokumentInfo(Long journalpostId, Long dokumentInfoId, SkjermingTypeCode skjerming) {
+	public void skjermDokumentInfo(Long journalpostId, Long dokumentInfoId, SkjermingTypeCode skjerming) {
 		sjekkAtJournalpostDokumentInfoRelasjonIkkeErSkjermet(journalpostId, dokumentInfoId, skjerming);
 		skjermingService.skjermJpDokInfoRelByJournalpostIdAndDokumentInfoIdAndSkjermingType(journalpostId, dokumentInfoId, skjerming);
-		return SkjermArkivenhetResponse.builder()
-				.journalpostId(journalpostId)
-				.dokumentInfoId(dokumentInfoId)
-				.build();
 	}
 
 	private void sjekkAtJournalpostDokumentInfoRelasjonIkkeErSkjermet(Long journalpostId, Long dokumentInfoId, SkjermingTypeCode skjermingTypeCode) {
@@ -52,13 +47,9 @@ public class SkjermArkivenhetService {
 		}
 	}
 
-	public SkjermArkivenhetResponse skjermDokumentFil(Long dokumentInfoId, VariantFormatCode variant, SkjermingTypeCode skjerming) {
+	public void skjermDokumentFil(Long dokumentInfoId, VariantFormatCode variant, SkjermingTypeCode skjerming) {
 		sjekkAtVariantFormatIkkeErSkjermet(dokumentInfoId, variant);
 		skjermingService.skjermVariantByDokumentInfoIdAndVariantFormatAndSkjermingType(dokumentInfoId, variant, skjerming);
-		return SkjermArkivenhetResponse.builder()
-				.dokumentInfoId(dokumentInfoId)
-				.variant(variant)
-				.build();
 	}
 
 	private void sjekkAtVariantFormatIkkeErSkjermet(Long dokumentInfoId, VariantFormatCode variantFormatCode) {

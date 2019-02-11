@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.skjermarkivenhet.rjoark100;
+package no.nav.dokarkiv.skjermarkivenhet;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
