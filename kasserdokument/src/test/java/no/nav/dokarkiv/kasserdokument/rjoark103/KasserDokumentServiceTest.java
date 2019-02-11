@@ -1,13 +1,11 @@
 package no.nav.dokarkiv.kasserdokument.rjoark103;
 
 import static junit.framework.TestCase.assertTrue;
-import static no.nav.dokarkiv.kasserdokument.util.TestUtil.KASSERT_AV_NAVN;
 import static no.nav.dokarkiv.kasserdokument.util.TestUtil.createKasserDokumentRequest;
 import static no.nav.dokarkiv.kasserdokument.util.TestUtil.knyttDokumentInfoSomVedleggTilJournalpostForIT;
 import static no.nav.dokarkiv.kasserdokument.util.TestUtil.opprettHoveddokumentForEnhetstest;
 import static org.mockito.Mockito.when;
 
-import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.service.SkjermingService;
@@ -59,7 +57,7 @@ public class KasserDokumentServiceTest {
 
 		when(dokumentinfoRepository.findByDokumentInfoId(DOKUMENTINFO_ID)).thenReturn(Optional.of(dokumentInfo));
 
-		KasserDokumentResponse response = kasserDokumentService.kasserDokument(createKasserDokumentRequest(DOKUMENTINFO_ID));
+		kasserDokumentService.kasserDokument(createKasserDokumentRequest(DOKUMENTINFO_ID));
 	}
 
 	@Test
