@@ -16,6 +16,7 @@ import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
+import no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.util.DateProvider;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.SettJournalpostAttributterRequest;
@@ -37,6 +38,7 @@ public class SettJournalpostAttributterIT extends AbstractArkiverdokumentproduks
 	private static final String ENDRET_AV_NAVN = "Tester2";
 	private static final int ANTALL_RETURPOST = 1;
 	public static final String ORIGINAL_ENDRET_AV_NAVN = "original";
+	public static final String UTSENDINGSKANAL = UtsendingsKanalCode.ALTINN.name();
 
 	@Before
 	public void setUp() throws Exception {
@@ -55,6 +57,24 @@ public class SettJournalpostAttributterIT extends AbstractArkiverdokumentproduks
 		assertThat(persistedJournalpost1.getSendtPrintDato(), is(DateProvider.getToday()));
 		assertThat(persistedJournalpost1.getAntallRetur(), is(ANTALL_RETURPOST));
 		assertThat(persistedJournalpost1.getEndretAvNavn(), is(ENDRET_AV_NAVN));
+		assertThat(persistedJournalpost1.getUtsendingskanal().name(), is(UTSENDINGSKANAL));
+	}
+
+	@Test
+	public void shouldOnlySetUtsendingskanal() throws Exception {
+		Journalpost journalpost1 = buildAndPersistJournalpost();
+
+		SettJournalpostAttributterRequest request = createWsRequest(journalpost1.getJournalpostId())
+				.withAntallReturpost(null)
+				.withDatoSendt(null);
+		arkiverDokumentproduksjonProvider.settJournalpostAttributter(request);
+
+		Journalpost persistedJournalpost1 = joarkRepository.findById(journalpost1.getJournalpostId()).get();
+
+		assertThat(persistedJournalpost1.getSendtPrintDato(), is(nullValue()));
+		assertThat(persistedJournalpost1.getAntallRetur(), is(nullValue()));
+		assertThat(persistedJournalpost1.getEndretAvNavn(), is(ENDRET_AV_NAVN));
+		assertThat(persistedJournalpost1.getUtsendingskanal().name(), is(UTSENDINGSKANAL));
 	}
 
 	@Test
@@ -110,7 +130,8 @@ public class SettJournalpostAttributterIT extends AbstractArkiverdokumentproduks
 				.withJournalpostIdListe(journalpostIds)
 				.withDatoSendt(xmlGregorianCalendarToday())
 				.withEndretAvNavn(ENDRET_AV_NAVN)
-				.withAntallReturpost(ANTALL_RETURPOST);
+				.withAntallReturpost(ANTALL_RETURPOST)
+				.withUtsendingskanal(UTSENDINGSKANAL);
 	}
 
 	private Journalpost buildAndPersistJournalpost() {
