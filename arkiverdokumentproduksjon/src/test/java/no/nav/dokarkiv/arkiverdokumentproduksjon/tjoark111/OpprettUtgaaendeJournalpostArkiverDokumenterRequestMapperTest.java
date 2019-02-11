@@ -4,7 +4,6 @@ import static no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark111.OpprettUtgaaen
 import static no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark111.OpprettUtgaaendeJournalpostArkiverDokumentAssertUtil.assertDokumentinfoRelasjon;
 import static no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark111.OpprettUtgaaendeJournalpostArkiverDokumentAssertUtil.assertFildetaljer;
 import static no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark111.OpprettUtgaaendeJournalpostArkiverDokumentAssertUtil.assertJournalpostFields;
-import static no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark111.OpprettUtgaaendeJournalpostArkiverDokumentAssertUtil.assertKryssReferanse;
 import static no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark111.OpprettUtgaaendeJournalpostArkiverDokumentAssertUtil.assertSaksrelasjon;
 import static no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark111.OpprettUtgaaendeJournalpostArkiverDokumentDataUtil.DOKUMENT_TYPE_ID;
 import static no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark111.OpprettUtgaaendeJournalpostArkiverDokumentDataUtil.HOVEDDOKUMENT;
@@ -17,7 +16,6 @@ import static no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark111.OpprettUtgaaen
 import static no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark111.OpprettUtgaaendeJournalpostArkiverDokumentDataUtil.createDokumentInfoRelasjonOnlyRequired;
 import static no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark111.OpprettUtgaaendeJournalpostArkiverDokumentDataUtil.createJournalpost;
 import static no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark111.OpprettUtgaaendeJournalpostArkiverDokumentDataUtil.createJournalpostOnlyRequiredValues;
-import static no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark111.OpprettUtgaaendeJournalpostArkiverDokumentDataUtil.createKryssReferanse;
 import static no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark111.OpprettUtgaaendeJournalpostArkiverDokumentDataUtil.createSaksrelasjon;
 import static no.nav.dokarkiv.core.domain.codes.DokumentStatusCode.FERDIGSTILT;
 import static org.hamcrest.CoreMatchers.is;
@@ -68,7 +66,6 @@ public class OpprettUtgaaendeJournalpostArkiverDokumenterRequestMapperTest {
 		assertJournalpostFields(to.getJournalpost());
 		assertDokumentinfoRelasjon(to.getJournalpost().getJournalpostDokumentInfoRelasjoner());
 		assertBruker(to.getJournalpost().getBrukere());
-		assertKryssReferanse(to.getJournalpost().getKryssreferanser());
 		assertSaksrelasjon(to.getJournalpost().getSaksrelasjon());
 		assertVedlegg(to);
 	}
@@ -129,7 +126,6 @@ public class OpprettUtgaaendeJournalpostArkiverDokumenterRequestMapperTest {
 		request.setSaksrelasjon(createSaksrelasjon());
 		request.getJournalpostDokumentInfoRelasjon().add(createDokumentInfoRelasjon(HOVEDDOKUMENT));
 		request.getJournalpostDokumentInfoRelasjon().add(createDokumentInfoRelasjon(VEDLEGG));
-		request.setKryssreferanse(createKryssReferanse());
 
 		Vedlegg vedlegg = new Vedlegg();
 		vedlegg.setDokumentInfoId(VEDLEGG_DOK_INFO_ID);

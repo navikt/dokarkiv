@@ -4,7 +4,6 @@ import static no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark111.OpprettUtgaaen
 import static no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark111.OpprettUtgaaendeJournalpostArkiverDokumentAssertUtil.assertDokumentinfoRelasjon;
 import static no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark111.OpprettUtgaaendeJournalpostArkiverDokumentAssertUtil.assertFildetaljer;
 import static no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark111.OpprettUtgaaendeJournalpostArkiverDokumentAssertUtil.assertJournalpostFields;
-import static no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark111.OpprettUtgaaendeJournalpostArkiverDokumentAssertUtil.assertKryssReferanse;
 import static no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark111.OpprettUtgaaendeJournalpostArkiverDokumentAssertUtil.assertSaksrelasjon;
 import static no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark111.OpprettUtgaaendeJournalpostArkiverDokumentAssertUtil.assertVedlegg;
 import static no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark111.OpprettUtgaaendeJournalpostArkiverDokumentDataUtil.DOKUMENT_TYPE_ID;
@@ -18,7 +17,6 @@ import static no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark111.OpprettUtgaaen
 import static no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark111.OpprettUtgaaendeJournalpostArkiverDokumentDataUtil.createFildetaljer;
 import static no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark111.OpprettUtgaaendeJournalpostArkiverDokumentDataUtil.createJournalpost;
 import static no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark111.OpprettUtgaaendeJournalpostArkiverDokumentDataUtil.createJournalpostOnlyRequiredValues;
-import static no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark111.OpprettUtgaaendeJournalpostArkiverDokumentDataUtil.createKryssReferanse;
 import static no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark111.OpprettUtgaaendeJournalpostArkiverDokumentDataUtil.createSaksrelasjon;
 import static no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark111.OpprettUtgaaendeJournalpostArkiverDokumentDataUtil.createVedlegg;
 import static no.nav.dokarkiv.core.domain.codes.DokumentStatusCode.FERDIGSTILT;
@@ -35,7 +33,6 @@ import static org.junit.Assert.assertTrue;
 import no.nav.dokarkiv.arkiverdokumentproduksjon.AbstractArkiverdokumentproduksjonItest;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
-import no.nav.dokarkiv.core.domain.codes.OnDemandInstansCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
@@ -97,7 +94,6 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentIT extends AbstractArkive
 
 		assertJournalpostFields(journalpost);
 		assertBruker(journalpost.getBrukere());
-		assertKryssReferanse(journalpost.getKryssreferanser());
 		assertSaksrelasjon(journalpost.getSaksrelasjon());
 
 		assertThat(journalpost.getJournalpostDokumentInfoRelasjoner().size(), is(request.getJournalpostDokumentInfoRelasjon()
@@ -535,7 +531,6 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentIT extends AbstractArkive
 		request.setSaksrelasjon(createSaksrelasjon());
 		request.getJournalpostDokumentInfoRelasjon().add(createDokumentInfoRelasjon(HOVEDDOKUMENT));
 		request.getJournalpostDokumentInfoRelasjon().add(createDokumentInfoRelasjon(VEDLEGG));
-		request.setKryssreferanse(createKryssReferanse());
 		return request;
 	}
 
