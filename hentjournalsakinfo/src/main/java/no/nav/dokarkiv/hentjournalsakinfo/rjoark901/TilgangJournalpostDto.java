@@ -2,6 +2,11 @@ package no.nav.dokarkiv.hentjournalsakinfo.rjoark901;
 
 
 import lombok.Value;
+import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
+import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
+import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
+import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
+import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 
 import java.time.LocalDateTime;
 
@@ -12,13 +17,13 @@ import java.time.LocalDateTime;
 public class TilgangJournalpostDto {
 
 	private final String journalpostId;
-	private final String journalStatus;
-	private final String journalpostType;
-	private final String tema;
+	private final JournalStatusCode journalStatus;
+	private final JournalpostTypeCode journalpostType;
+	private final FagomradeCode fagomrade;
 	private final LocalDateTime datoOpprettet;
-	private final String mottakskanal;
+	private final MottaksKanalCode mottakskanal;
+	private final SkjermingTypeCode skjerming;
 	private final String avsenderMottakerId;
-	//	private final Boolean kvalitetssikretForInnsyn; TODO Finne ut av denne
 	private final TilgangBrukerDto bruker;
 	private final TilgangSakDto sak;
 	private final TilgangDokumentInfoDto dokument;

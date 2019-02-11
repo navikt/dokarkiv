@@ -7,6 +7,7 @@ import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
+import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import org.hibernate.query.Query;
 import org.hibernate.transform.ResultTransformer;
@@ -40,6 +41,7 @@ public class HentTilgangJournalpostRepository {
 								"jp.fagomrade, " +
 								"cs.createdDate, " +
 								"jp.mottakskanal, " +
+								"jp.skjermingType, " +
 								"jp.avsenderMottakerId, " +
 								"br.brukerId, " +
 								"br.brukerType, " +
@@ -48,7 +50,9 @@ public class HentTilgangJournalpostRepository {
 								"di.dokumentInfoId, " +
 								"di.dokumentstatus, " +
 								"di.brevkode, " +
-								"fd.variantFormat " +
+								"jr.skjermingType, " +
+								"fd.variantFormat, " +
+								"fd.skjermingType " +
 								"from Journalpost jp " +
 								"left join jp.brukere br " +
 								"join jp.changeStamp cs " +
@@ -70,16 +74,24 @@ public class HentTilgangJournalpostRepository {
 									String[] aliases) {
 								return new TilgangJournalpostDto(
 										isNull(tuple[0]) ? null : ((Long) tuple[0]).toString(),
-										isNull(tuple[1]) ? null : ((JournalStatusCode) tuple[1]).name(),
-										isNull(tuple[2]) ? null : ((JournalpostTypeCode) tuple[2]).name(),
-										isNull(tuple[3]) ? null : ((FagomradeCode) tuple[3]).name(),
+										(JournalStatusCode) tuple[1],
+										(JournalpostTypeCode) tuple[2],
+										(FagomradeCode) tuple[3],
 										isNull(tuple[4]) ? null : ((Timestamp) tuple[4]).toLocalDateTime(),
-										isNull(tuple[5]) ? null : ((MottaksKanalCode) tuple[5]).name(),
-										(String) tuple[6],
-										new TilgangBrukerDto((String) tuple[7], isNull(tuple[8]) ? null : ((BrukerTypeCode) tuple[8]).name()),
-										new TilgangSakDto((String) tuple[9], isNull(tuple[10]) ? null : ((FagsystemCode) tuple[10]).name()),
-										new TilgangDokumentInfoDto(isNull(tuple[11]) ? null : ((Long) tuple[11]).toString(), isNull(tuple[12]) ? null : ((DokumentStatusCode) tuple[12])
-												.name(), (String) tuple[13], isNull(tuple[14]) ? null : ((VariantFormatCode) tuple[14]).name()));
+										(MottaksKanalCode) tuple[5],
+										(SkjermingTypeCode) tuple[6],
+										(String) tuple[7],
+										new TilgangBrukerDto((String) tuple[8],
+												(BrukerTypeCode) tuple[9]),
+										new TilgangSakDto(isNull(tuple[10]) ? null : (String) tuple[10],
+												(FagsystemCode) tuple[11]),
+										new TilgangDokumentInfoDto(isNull(tuple[12]) ? null : ((Long) tuple[12]).toString(),
+												isNull(tuple[13]) ? null : (DokumentStatusCode) tuple[13],
+												(String) tuple[14],
+												(SkjermingTypeCode) tuple[15],
+												new TilgangVariantDto((VariantFormatCode) tuple[16],
+														(SkjermingTypeCode) tuple[17])
+										));
 							}
 
 							@Override

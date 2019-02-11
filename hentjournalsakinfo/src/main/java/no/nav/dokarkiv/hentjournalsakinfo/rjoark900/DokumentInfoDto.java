@@ -3,7 +3,7 @@ package no.nav.dokarkiv.hentjournalsakinfo.rjoark900;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Value;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
-import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
+import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 
 import java.util.List;
 
@@ -17,7 +17,8 @@ public class DokumentInfoDto {
 	private final String tilknyttetSom;
 	private final DokumentStatusCode dokumentstatus;
 	private final String brevkode;
-	private final VariantFormatCode variantFormat = VariantFormatCode.ARKIV;
+	private final List<VariantDto> varianter;
 	private final String tittel;
+	private final SkjermingTypeCode skjerming;
 	private final List<LogiskVedleggDto> logiske;
 }

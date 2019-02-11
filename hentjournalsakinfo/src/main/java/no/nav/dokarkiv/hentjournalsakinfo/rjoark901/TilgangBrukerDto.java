@@ -1,6 +1,7 @@
 package no.nav.dokarkiv.hentjournalsakinfo.rjoark901;
 
 import lombok.Value;
+import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 
 /**
  * @author Sigurd Midttun, Visma Consulting.
@@ -9,5 +10,5 @@ import lombok.Value;
 public class TilgangBrukerDto {
 
 	String brukerId;
-	String brukerType;
+	BrukerTypeCode brukerType;
 }

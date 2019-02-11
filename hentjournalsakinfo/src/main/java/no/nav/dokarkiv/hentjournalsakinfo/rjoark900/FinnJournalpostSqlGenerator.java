@@ -51,6 +51,7 @@ final class FinnJournalpostSqlGenerator {
 				"                              j.dato_dokument       AS dokumentdato,\n" +
 				"                              j.dato_avs_retur      AS avsreturdato,\n" +
 				"                              j.dato_sendt_print    AS sendtprintdato,\n" +
+				"                              j.k_skjerming_type    AS skjerming,\n" +
 				"                              s.sak_nr_fk           AS saksrelasjon_sakid,\n" +
 				"                              s.feilregistrert      AS saksrelasjon_feilregistrert,\n" +
 				"                              s.k_fagsystem         AS saksrelasjon_fagsystem,\n" +
@@ -59,11 +60,15 @@ final class FinnJournalpostSqlGenerator {
 				"                              d.k_dokument_s        AS dokumenter_dokumentstatus,\n" +
 				"                              d.brev_kode           AS dokumenter_brevkode,\n" +
 				"                              d.tittel              AS dokumenter_tittel,\n" +
+				"                              rel.k_skjerming_type  AS dokumenter_skjerming,\n" +
+				"                              fd.k_skjerming_type   AS dokumenter_varianter_skjerming,\n" +
+				"                              fd.k_variant_format   AS dokumenter_varianter_variantf,\n" +
 				"                              tsi.vedlegg_innhold   AS dokumenter_logiske_tittel\n" +
 				"                       FROM t_journalpost j\n" +
 				"                              LEFT JOIN t_saksrelasjon s ON s.journalpost_id = j.journalpost_id\n" +
 				"                              JOIN t_jp_dok_info_rel rel ON j.journalpost_id = rel.journalpost_id\n" +
 				"                              JOIN t_dokument_info d ON rel.dokument_info_id = d.dokument_info_id\n" +
+				"                              JOIN t_fil_detaljer fd ON d.dokument_info_id = fd.dokument_info_id AND fd.k_variant_format IN ('ARKIV', 'SLADDET')\n" +
 				"                              LEFT JOIN t_skannet_innhold tsi ON d.dokument_info_id = tsi.dokument_info_id)\n" +
 				"SELECT r.*,\n" +
 				"       journalposter.prevjournalpostid,\n" +
