@@ -15,6 +15,7 @@ import javax.inject.Inject;
  */
 @Component
 public class SettJournalpostAttributterService {
+
 	@Inject
 	private JoarkRepositorySkjermet joarkRepository;
 
