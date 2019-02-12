@@ -100,6 +100,10 @@
 			<groupId>no.nav.dokarkiv</groupId>
 			<artifactId>kasserdokument</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>no.nav.dokarkiv</groupId>
+			<artifactId>slettarkivenhet</artifactId>
+		</dependency>
 		<!-- annet -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

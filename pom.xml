@@ -35,7 +35,7 @@
 		<module>fysisktidligkassasjon</module>
 		<module>logisktidligkassasjon</module>
 		<module>hentjournalsakinfo</module>
-		<module>slettArkivenhet</module>
+		<module>slettarkivenhet</module>
 		<module>kasserdokument</module>
 		<module>arkivervariant</module>
 		<module>skjermarkivenhet</module>
@@ -181,6 +181,11 @@
 			<dependency>
 				<groupId>no.nav.dokarkiv</groupId>
 				<artifactId>skjermarkivenhet</artifactId>
+				<version>1-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>no.nav.dokarkiv</groupId>
+				<artifactId>slettarkivenhet</artifactId>
 				<version>1-SNAPSHOT</version>
 			</dependency>
 			<dependency>

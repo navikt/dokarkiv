@@ -7,10 +7,10 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
  */
-@ResponseStatus(HttpStatus.NOT_ACCEPTABLE)
-public class DokumentInfoKanIkkeSlettesException extends DokarkivFunctionalException {
+@ResponseStatus(HttpStatus.BAD_REQUEST)
+public class UgyldigSlettArkivenhetInputException extends DokarkivFunctionalException {
 
-	public DokumentInfoKanIkkeSlettesException(String message) {
+	public UgyldigSlettArkivenhetInputException(String message) {
 		super(message);
 	}
 }

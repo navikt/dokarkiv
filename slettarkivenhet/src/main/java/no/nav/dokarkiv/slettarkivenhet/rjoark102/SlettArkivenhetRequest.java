@@ -16,5 +16,4 @@ public class SlettArkivenhetRequest {
 	private Long journalpostId;
 	private Long dokumentInfoId;
 	private VariantFormatCode variant;
-	private String bestiller;
 }
