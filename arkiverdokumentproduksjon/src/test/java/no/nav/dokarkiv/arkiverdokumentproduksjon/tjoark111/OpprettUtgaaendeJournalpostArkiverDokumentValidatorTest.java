@@ -9,10 +9,10 @@ import static no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark111.OpprettUtgaaen
 import static no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark111.OpprettUtgaaendeJournalpostArkiverDokumentDataUtil.INNHOLD;
 import static no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark111.OpprettUtgaaendeJournalpostArkiverDokumentDataUtil.JOURNALFOERENDE_ENHET_REF;
 import static no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark111.OpprettUtgaaendeJournalpostArkiverDokumentDataUtil.KANAL_REF_ID;
-import static no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark111.OpprettUtgaaendeJournalpostArkiverDokumentDataUtil.KRYSSREFERANSE_ID;
-import static no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark111.OpprettUtgaaendeJournalpostArkiverDokumentDataUtil.KRYSSREFERANSE_TYPE;
 import static no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark111.OpprettUtgaaendeJournalpostArkiverDokumentDataUtil.PERSONIDENT;
 import static no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark111.OpprettUtgaaendeJournalpostArkiverDokumentDataUtil.SAKSID;
+import static no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark111.OpprettUtgaaendeJournalpostArkiverDokumentDataUtil.TILLEGGSOPPLYSNING_NOKKEL;
+import static no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark111.OpprettUtgaaendeJournalpostArkiverDokumentDataUtil.TILLEGGSOPPLYSNING_VERDI;
 import static no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark111.OpprettUtgaaendeJournalpostArkiverDokumentDataUtil.TITTEL;
 
 import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.UgyldigInputException;
@@ -32,7 +32,6 @@ import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
-import no.nav.dokarkiv.core.domain.entities.Kryssreferanse;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
 import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
 import no.nav.dokarkiv.core.journalbehandling.DefaultJournalpostStructureVerifier;
@@ -47,7 +46,9 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.inject.Inject;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
@@ -503,7 +504,6 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentValidatorTest {
 		validator.validateRequiredFields(requestTo);
 	}
 
-
 	@Test
 	public void shouldThrowIfInputIsMissingSaksrelasjonFagsystem() throws Exception {
 		expected.expect(UgyldigInputException.class);
@@ -512,25 +512,6 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentValidatorTest {
 		requestTo.getJournalpost().getSaksrelasjon().setFagsystem(null);
 		validator.validateRequiredFields(requestTo);
 	}
-
-	@Test
-	public void shouldThrowIfInputIsMissingKryssreferanseReferanseId() throws Exception {
-		expected.expect(UgyldigInputException.class);
-		expected.expectMessage("ReferanseId");
-		OpprettUtgaaendeJournalpostArkiverDokumentRequestTo requestTo = createRequestTo();
-		requestTo.getJournalpost().getKryssreferanser().iterator().next().setReferanseId(null);
-		validator.validateRequiredFields(requestTo);
-	}
-
-	@Test
-	public void shouldThrowIfInputIsMissingKryssreferanseReferanseType() throws Exception {
-		expected.expect(UgyldigInputException.class);
-		expected.expectMessage("ReferanseType");
-		OpprettUtgaaendeJournalpostArkiverDokumentRequestTo requestTo = createRequestTo();
-		requestTo.getJournalpost().getKryssreferanser().iterator().next().setReferanseType(null);
-		validator.validateRequiredFields(requestTo);
-	}
-
 
 	private OpprettUtgaaendeJournalpostArkiverDokumentRequestTo createRequestTo() {
 		OpprettUtgaaendeJournalpostArkiverDokumentRequestTo to = OpprettUtgaaendeJournalpostArkiverDokumentRequestTo.builder()
@@ -558,12 +539,10 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentValidatorTest {
 						.sakId(SAKSID)
 						.sakId("1")
 						.fagsystem(FagsystemCode.AO01)
-						.build()).build();
+						.build())
+				.tilleggsopplysninger(createTilleggsopplysningMap())
+				.build();
 		journalpost.addBruker(Bruker.builder().brukerId(PERSONIDENT).brukerType(BRUKERTYPE).build());
-		journalpost.addKryssReferanse(Kryssreferanse.builder()
-				.referanseType(KRYSSREFERANSE_TYPE)
-				.referanseId(KRYSSREFERANSE_ID)
-				.build());
 		journalpost.addJournalpostDokumentInfoRelasjon(JournalpostDokumentInfoRelasjon.builder()
 				.dokumentInfo(DokumentInfo.builder()
 						.dokumentstatus(DokumentStatusCode.FERDIGSTILT)
@@ -582,7 +561,12 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentValidatorTest {
 				.build());
 
 		return journalpost;
+	}
 
+	private Map<String, String> createTilleggsopplysningMap() {
+		Map<String, String> map = new HashMap<>();
+		map.put(TILLEGGSOPPLYSNING_NOKKEL, TILLEGGSOPPLYSNING_VERDI);
+		return map;
 	}
 
 	private OpprettUtgaaendeJournalpostArkiverDokumentRequestTo.Vedlegg createVedlegg() {
