@@ -88,6 +88,18 @@
 			<groupId>no.nav.dokarkiv</groupId>
 			<artifactId>fysisktidligkassasjon</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>no.nav.dokarkiv</groupId>
+			<artifactId>skjermarkivenhet</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>no.nav.dokarkiv</groupId>
+			<artifactId>arkivervariant</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>no.nav.dokarkiv</groupId>
+			<artifactId>kasserdokument</artifactId>
+		</dependency>
 		<!-- annet -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

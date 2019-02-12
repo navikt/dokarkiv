@@ -87,8 +87,6 @@ public class JournalV3Provider implements JournalV3 {
 	@Inject
 	private AbacContext abacContext;
 	@Inject
-	private SkjermingService skjermingService;
-	@Inject
 	private HentKjerneJournalpostListeResponseMapper hentKjerneJournalpostListeResponseMapper;
 
 	private HentKjerneJournalpostListeRequestMapper hentKjerneJournalpostListeRequestMapper = new HentKjerneJournalpostListeRequestMapper();

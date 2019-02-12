@@ -9,10 +9,12 @@ import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.UPDATE_ACTI
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.MDCConstants;
-import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggHeader;
-import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggHeaderMapper;
 import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService;
-import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggHeaderException;
+import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggTO;
+import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggTOMapper;
+import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
+import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
+import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
 import no.nav.dokarkiv.core.metrics.RestMetrics;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import no.nav.dokarkiv.fysiskslettdokument.rjoark102.FysiskSlettDokumentRequestTo;
@@ -38,13 +40,13 @@ public class FysiskSlettDokumentRestController {
 
 	private final FysiskSlettDokumentService fysiskSlettDokumentService;
 	private final AksjonsLoggService aksjonsLoggService;
-	private final AksjonsLoggHeaderMapper aksjonsLoggHeaderMapper;
+	private final AksjonsLoggTOMapper aksjonsLoggTOMapper;
 
 	@Inject
 	public FysiskSlettDokumentRestController(FysiskSlettDokumentService fysiskSlettDokumentService, AksjonsLoggService aksjonsLoggService) {
 		this.fysiskSlettDokumentService = fysiskSlettDokumentService;
 		this.aksjonsLoggService = aksjonsLoggService;
-		this.aksjonsLoggHeaderMapper = new AksjonsLoggHeaderMapper();
+		this.aksjonsLoggTOMapper = new AksjonsLoggTOMapper();
 	}
 
 	@Transactional
@@ -57,18 +59,23 @@ public class FysiskSlettDokumentRestController {
 	public FysiskSlettDokumentResponse fysiskSlettDokument(
 			@RequestHeader(value = AKSJONS_LOGG_HEADER) String aksjonsLoggHeaderString,
 			@PathVariable("journalpostId") Long journalpostId,
-			@PathVariable("dokumentInfoId") Long dokumentInfoId) throws UgyldigAksjonsLoggHeaderException {
+			@PathVariable("dokumentInfoId") Long dokumentInfoId) throws UgyldigAksjonsLoggException {
 		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark102");
 		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har mottat kall med journalpostId=" + journalpostId + ", dokumentInfoId=" + dokumentInfoId);
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
 
-		List<AksjonsLoggHeader> aksjonsLoggHeader = aksjonsLoggHeaderMapper.mapAksjonsLoggHeader(aksjonsLoggHeaderString);
-		aksjonsLoggService.validateAndSaveAksjon(aksjonsLoggHeader);
-
-		return fysiskSlettDokumentService.sletteDokumentFysisk(FysiskSlettDokumentRequestTo.builder()
+		List<ArkivElementEndringTO> arkivElementEndringTOList = fysiskSlettDokumentService.sletteDokumentFysisk(FysiskSlettDokumentRequestTo.builder()
 				.journalpostId(journalpostId)
 				.dokumentInfoId(dokumentInfoId)
 				.build());
+		AksjonsLoggTO aksjonsLoggTO = aksjonsLoggTOMapper.mapAksjonsLoggHeader(aksjonsLoggHeaderString, AksjonsTypeCode.SLETT, journalpostId, dokumentInfoId);
+
+		aksjonsLoggService.validateAndSaveAksjonsLogg(aksjonsLoggTO, arkivElementEndringTOList);
+
+		return FysiskSlettDokumentResponse.builder()
+				.journalpostId(journalpostId)
+				.dokumentInfoId(dokumentInfoId)
+				.build();
 	}
 
 }

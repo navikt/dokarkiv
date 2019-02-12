@@ -4,7 +4,9 @@ import static org.apache.commons.lang3.BooleanUtils.isFalse;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.MDCConstants;
+import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
 import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
+import no.nav.dokarkiv.core.domain.entities.ArkivElementEndring;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
@@ -18,6 +20,8 @@ import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Slf4j
@@ -38,7 +42,9 @@ public class FysiskSlettDokumentService {
 		this.skjermingService = skjermingService;
 	}
 
-	public FysiskSlettDokumentResponse sletteDokumentFysisk(FysiskSlettDokumentRequestTo requestTo) {
+	public List<ArkivElementEndringTO> sletteDokumentFysisk(FysiskSlettDokumentRequestTo requestTo) {
+
+		List<ArkivElementEndringTO> arkivElementEndringTOList = new ArrayList<>();
 		JournalpostDokumentInfoRelasjon relasjonSomSkalSlettesFysisk =
 				journalpostDokumentInfoRelasjonRepository.findByJournalpostJournalpostIdAndDokumentInfoDokumentInfoId(
 						requestTo.getJournalpostId(), requestTo.getDokumentInfoId()).orElseThrow(() ->
@@ -53,7 +59,7 @@ public class FysiskSlettDokumentService {
 				skjermingService.setJournalpostBegrensning(
 						relasjonSomSkalSlettesFysisk.getJournalpost(),
 						null);
-				fysiskSlettEtHoveddokument(relasjonSomSkalSlettesFysisk);
+				arkivElementEndringTOList.addAll(fysiskSlettEtHoveddokument(relasjonSomSkalSlettesFysisk));
 				log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har fysisk slettet journalpost med journalpostId={}",
 						requestTo.getJournalpostId());
 				break;
@@ -64,7 +70,7 @@ public class FysiskSlettDokumentService {
 				skjermingService.setJpDokInfoRelBegrensning(
 						relasjonSomSkalSlettesFysisk,
 						null);
-				fysiskSlettEtVedlegg(relasjonSomSkalSlettesFysisk);
+				arkivElementEndringTOList.addAll(fysiskSlettEtVedlegg(relasjonSomSkalSlettesFysisk));
 				log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) +
 								" har fysisk slettet dokument med journalpostId={}, dokumentInfoId={}",
 						requestTo.getJournalpostId(), requestTo.getDokumentInfoId());
@@ -77,7 +83,7 @@ public class FysiskSlettDokumentService {
 						requestTo.getDokumentInfoId()));
 		}
 
-		return FysiskSlettDokumentResponseMapper.mapToFysiskSlettDokumentResponse(relasjonSomSkalSlettesFysisk);
+		return arkivElementEndringTOList;
 	}
 
 	private void sjekkAtJournalpostErUtilgjengeliggjort(Long journalpostId) {
@@ -104,22 +110,25 @@ public class FysiskSlettDokumentService {
 		}
 	}
 
-	private void fysiskSlettEtHoveddokument(JournalpostDokumentInfoRelasjon relasjonSomSkalSlettes) {
-		slettEventuelleVedleggKnyttetHoveddokumentValidertForSletting(relasjonSomSkalSlettes);
+	private List<ArkivElementEndringTO> fysiskSlettEtHoveddokument(JournalpostDokumentInfoRelasjon relasjonSomSkalSlettes) {
+		List<ArkivElementEndringTO> arkivElementEndringTOList = new ArrayList<>();
+		arkivElementEndringTOList.addAll(slettEventuelleVedleggKnyttetHoveddokumentValidertForSletting(relasjonSomSkalSlettes));
 		if (relasjonSomSkalSlettes.getDokumentInfo().isRelatedToMultipleJournalposts()) {
-			slettJournalpostOgJournalpostDokumentInfoRelasjon(relasjonSomSkalSlettes);
+			arkivElementEndringTOList.addAll(slettJournalpostOgJournalpostDokumentInfoRelasjon(relasjonSomSkalSlettes));
 		} else {
-			slettJournalpostOgDokumentInfoOgJournalpostDokumentInfoRelasjon(relasjonSomSkalSlettes);
+			arkivElementEndringTOList.addAll(slettJournalpostOgDokumentInfoOgJournalpostDokumentInfoRelasjon(relasjonSomSkalSlettes));
 		}
+
+		return arkivElementEndringTOList;
 	}
 
-	private void slettEventuelleVedleggKnyttetHoveddokumentValidertForSletting(JournalpostDokumentInfoRelasjon hoveddokumentRelasjon) {
+	private List<ArkivElementEndringTO> slettEventuelleVedleggKnyttetHoveddokumentValidertForSletting(JournalpostDokumentInfoRelasjon hoveddokumentRelasjon) {
 		List<JournalpostDokumentInfoRelasjon> listFoundByJournalpostId =
 				journalpostDokumentInfoRelasjonRepository.findAllByJournalpostJournalpostId(hoveddokumentRelasjon.getJournalpost()
 						.getJournalpostId());
 
 		Long jpIdTilJpSomSkalSlettes = hoveddokumentRelasjon.getJournalpost().getJournalpostId();
-
+		List<ArkivElementEndringTO> arkivElementEndringTOList = new ArrayList<>();
 		for (JournalpostDokumentInfoRelasjon relasjon : listFoundByJournalpostId) {
 			if (relasjon.isVedlegg()) {
 				Long originalJournalpostId = relasjon.getDokumentInfo().getOriginalJournalpost() ==
@@ -128,25 +137,28 @@ public class FysiskSlettDokumentService {
 						originalJournalpostId.equals(jpIdTilJpSomSkalSlettes)) {
 					endreOriginalJournalpostIDokumentInfo(relasjon.getDokumentInfo(), jpIdTilJpSomSkalSlettes);
 				}
-				fysiskSlettEtVedlegg(relasjon);
+				List<ArkivElementEndringTO> arkivElementEndringTOListVedlegg = fysiskSlettEtVedlegg(relasjon);
+				arkivElementEndringTOList.addAll(arkivElementEndringTOListVedlegg);
 			}
 		}
+		return arkivElementEndringTOList;
 	}
 
-	private void fysiskSlettEtVedlegg(JournalpostDokumentInfoRelasjon relasjonSomSkalSlettes) {
+
+	private List<ArkivElementEndringTO>  fysiskSlettEtVedlegg(JournalpostDokumentInfoRelasjon relasjonSomSkalSlettes) {
 		if (relasjonSomSkalSlettes.getDokumentInfo().isRelatedToMultipleJournalposts()) {
-			slettJournalpostDokumentInfoRelasjon(relasjonSomSkalSlettes);
+			return slettJournalpostDokumentInfoRelasjon(relasjonSomSkalSlettes);
 		} else {
-			slettFilOgDokumentInfo(relasjonSomSkalSlettes.getDokumentInfo().getDokumentInfoId());
+			return slettFilOgDokumentInfo(relasjonSomSkalSlettes.getDokumentInfo().getDokumentInfoId());
 		}
 	}
 
-	private void slettJournalpostOgJournalpostDokumentInfoRelasjon(JournalpostDokumentInfoRelasjon relasjon) {
+	private List<ArkivElementEndringTO>  slettJournalpostOgJournalpostDokumentInfoRelasjon(JournalpostDokumentInfoRelasjon relasjon) {
 		endreOriginalJournalpostIDokumentInfo(relasjon.getDokumentInfo(), relasjon.getJournalpost().getJournalpostId());
 		deleteRepository.deleteJournalpostDokumentInfoRelasjonByJournalpostIdAndDokumentInfoId(
 				relasjon.getJournalpost().getJournalpostId(),
 				relasjon.getDokumentInfo().getDokumentInfoId());
-		slettJournalpost(relasjon.getJournalpost().getJournalpostId());
+		return slettJournalpost(relasjon.getJournalpost().getJournalpostId());
 	}
 
 	private void endreOriginalJournalpostIDokumentInfo(DokumentInfo dokInfoMedJpSomSkalSlettes, Long jpIdTilJpSomSkalSlettes) {
@@ -160,30 +172,59 @@ public class FysiskSlettDokumentService {
 		dokInfoMedJpSomSkalSlettes.setOriginalJournalpost(nyOriginalJournalpost);
 	}
 
-	private void slettJournalpostOgDokumentInfoOgJournalpostDokumentInfoRelasjon(JournalpostDokumentInfoRelasjon relasjon) {
-		slettFilOgDokumentInfo(relasjon.getDokumentInfo().getDokumentInfoId());
-		slettJournalpost(relasjon.getJournalpost().getJournalpostId());
+	private List<ArkivElementEndringTO> slettJournalpostOgDokumentInfoOgJournalpostDokumentInfoRelasjon(JournalpostDokumentInfoRelasjon relasjon) {
+		List<ArkivElementEndringTO> arkivElementEndringTOList = new ArrayList<>();
+		arkivElementEndringTOList.addAll(slettFilOgDokumentInfo(relasjon.getDokumentInfo().getDokumentInfoId()));
+		arkivElementEndringTOList.addAll(slettJournalpost(relasjon.getJournalpost().getJournalpostId()));
+		return arkivElementEndringTOList;
 	}
 
-	private void slettJournalpostDokumentInfoRelasjon(JournalpostDokumentInfoRelasjon relasjon) {
+	private List<ArkivElementEndringTO> slettJournalpostDokumentInfoRelasjon(JournalpostDokumentInfoRelasjon relasjon) {
 		deleteRepository.deleteJournalpostDokumentInfoRelasjonByJournalpostIdAndDokumentInfoId(
 				relasjon.getJournalpost().getJournalpostId(),
 				relasjon.getDokumentInfo().getDokumentInfoId());
+
+		return Arrays.asList(ArkivElementEndringTO.builder()
+				.arkivElement("JournalpostDokumentInfoRelasjon.tilknyttetJounalpostSom")
+				.fraVerdi(relasjon.getTilknyttetJournalpostSom().name())
+				.tilVerdi(null)
+				.build()
+		);
 	}
 
-	private void slettJournalpost(Long journalpostId) {
+	private List<ArkivElementEndringTO> slettJournalpost(Long journalpostId) {
 		deleteRepository.deleteJPTilleggByJournalpostId(journalpostId);
 		deleteRepository.deleteSaksrelasjonByJournalpostId(journalpostId);
 		deleteRepository.deleteBrukerByJournalpostId(journalpostId);
 		deleteRepository.deleteJournalpostByJournalpostId(journalpostId);
+
+		return Arrays.asList(ArkivElementEndringTO.builder()
+				.arkivElement("Journalpost.journalpostId")
+				.fraVerdi(String.valueOf(journalpostId))
+				.tilVerdi(null)
+				.build()
+		);
 	}
 
-	private void slettFilOgDokumentInfo(Long dokumentInfoId) {
+	private List<ArkivElementEndringTO> slettFilOgDokumentInfo(Long dokumentInfoId) {
 		slettFilBeholdDokumentInfo(dokumentInfoId);
 		deleteRepository.deleteSkannetInnholdByDokumentInfoId(dokumentInfoId);
 		deleteRepository.deleteDokInfoTilleggByDokumentInfoId(dokumentInfoId);
 		deleteRepository.deleteDokInfoJPRelByDokumentInfoId(dokumentInfoId);
 		deleteRepository.deleteDokInfoByDokumentInfoId(dokumentInfoId);
+
+
+		return Arrays.asList(ArkivElementEndringTO.builder()
+				.arkivElement("DokumentInfo.dokumentInfoId")
+				.fraVerdi(String.valueOf(dokumentInfoId))
+				.tilVerdi(null)
+				.build(),
+				ArkivElementEndringTO.builder()
+						.arkivElement("Fildetaljer.variantFormat")
+						.fraVerdi(String.valueOf(dokumentInfoId))
+						.tilVerdi(null)
+						.build()
+		);
 	}
 
 	private void slettFilBeholdDokumentInfo(Long dokumentInfoId) {
