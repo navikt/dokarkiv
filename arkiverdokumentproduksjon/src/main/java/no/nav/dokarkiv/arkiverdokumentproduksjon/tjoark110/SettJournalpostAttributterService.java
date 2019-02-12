@@ -32,14 +32,14 @@ public class SettJournalpostAttributterService {
 		if (domainRequest.getDatoSendtPrint() != null) {
 			journalpost.setSendtPrintDato(domainRequest.getDatoSendtPrint());
 		}
+		if (domainRequest.getUtsendingskanal() != null && domainRequest.getEndretAvNavn() != null) {
+			journalpost.setUtsendingskanal(domainRequest.getUtsendingskanal());
+		}
 		if (!isBlank(domainRequest.getEndretAvNavn())) {
 			sporingPopulator.populateSporingInfo(journalpost, domainRequest.getEndretAvNavn());
 		}
 		if (domainRequest.getAntallRetur() != null) {
 			journalpost.setAntallRetur(domainRequest.getAntallRetur());
-		}
-		if (domainRequest.getUtsendingskanal() != null) {
-			journalpost.setUtsendingskanal(domainRequest.getUtsendingskanal());
 		}
 	}
 

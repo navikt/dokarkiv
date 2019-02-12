@@ -19,9 +19,12 @@ import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.util.DateProvider;
+import no.nav.dokarkiv.core.exceptions.ApplicationException;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.SettJournalpostAttributterRequest;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
@@ -39,6 +42,9 @@ public class SettJournalpostAttributterIT extends AbstractArkiverdokumentproduks
 	private static final int ANTALL_RETURPOST = 1;
 	public static final String ORIGINAL_ENDRET_AV_NAVN = "original";
 	public static final String UTSENDINGSKANAL = UtsendingsKanalCode.ALTINN.name();
+
+	@Rule
+	public ExpectedException expectedException = ExpectedException.none();
 
 	@Before
 	public void setUp() throws Exception {
@@ -61,7 +67,7 @@ public class SettJournalpostAttributterIT extends AbstractArkiverdokumentproduks
 	}
 
 	@Test
-	public void shouldOnlySetUtsendingskanal() throws Exception {
+	public void shouldOnlySetUtsendingskanalAndEndretAvNavn() throws Exception {
 		Journalpost journalpost1 = buildAndPersistJournalpost();
 
 		SettJournalpostAttributterRequest request = createWsRequest(journalpost1.getJournalpostId())
@@ -75,6 +81,49 @@ public class SettJournalpostAttributterIT extends AbstractArkiverdokumentproduks
 		assertThat(persistedJournalpost1.getAntallRetur(), is(nullValue()));
 		assertThat(persistedJournalpost1.getEndretAvNavn(), is(ENDRET_AV_NAVN));
 		assertThat(persistedJournalpost1.getUtsendingskanal().name(), is(UTSENDINGSKANAL));
+	}
+
+	@Test
+	public void shouldnotSetUtsendingskanalIfEndretAvNavnIsNull() throws Exception {
+		Journalpost journalpost1 = buildAndPersistJournalpost();
+
+		SettJournalpostAttributterRequest request = createWsRequest(journalpost1.getJournalpostId())
+				.withEndretAvNavn(null);
+		arkiverDokumentproduksjonProvider.settJournalpostAttributter(request);
+
+		Journalpost persistedJournalpost1 = joarkRepository.findById(journalpost1.getJournalpostId()).get();
+
+		assertThat(persistedJournalpost1.getSendtPrintDato(), is(DateProvider.getToday()));
+		assertThat(persistedJournalpost1.getAntallRetur(), is(ANTALL_RETURPOST));
+		assertThat(persistedJournalpost1.getEndretAvNavn(), is(ORIGINAL_ENDRET_AV_NAVN));
+		assertThat(persistedJournalpost1.getUtsendingskanal(), is(nullValue()));
+	}
+
+
+	@Test
+	public void shouldNotSetUtsendingskanal() throws Exception {
+		Journalpost journalpost1 = buildAndPersistJournalpost();
+
+		SettJournalpostAttributterRequest request = createWsRequest(journalpost1.getJournalpostId())
+				.withUtsendingskanal(null);
+		arkiverDokumentproduksjonProvider.settJournalpostAttributter(request);
+
+		Journalpost persistedJournalpost1 = joarkRepository.findById(journalpost1.getJournalpostId()).get();
+
+		assertThat(persistedJournalpost1.getSendtPrintDato(), is(DateProvider.getToday()));
+		assertThat(persistedJournalpost1.getAntallRetur(), is(ANTALL_RETURPOST));
+		assertThat(persistedJournalpost1.getEndretAvNavn(), is(ENDRET_AV_NAVN));
+		assertThat(persistedJournalpost1.getUtsendingskanal(), is(nullValue()));
+	}
+
+	@Test
+	public void shouldThrowExceptionIllegalUtsendingskanal() throws Exception {
+		expectedException.expect(ApplicationException.class);
+		Journalpost journalpost1 = buildAndPersistJournalpost();
+
+		SettJournalpostAttributterRequest request = createWsRequest(journalpost1.getJournalpostId())
+				.withUtsendingskanal("Ugyldig_kanal");
+		arkiverDokumentproduksjonProvider.settJournalpostAttributter(request);
 	}
 
 	@Test
