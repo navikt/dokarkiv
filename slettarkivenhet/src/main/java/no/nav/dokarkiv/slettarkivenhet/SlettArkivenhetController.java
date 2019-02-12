@@ -39,11 +39,11 @@ public class SlettArkivenhetController {
 			case JOURNALPOST:
 				slettArkivenhetService.slettJournalpost(slettArkivenhetRequest);
 				break;
-			case DOKUMENT_FIL:
-				slettArkivenhetService.slettDokumentFil(slettArkivenhetRequest);
-				break;
 			case DOKUMENT_INFO:
 				slettArkivenhetService.slettDokumentInfo(slettArkivenhetRequest);
+				break;
+			case DOKUMENT_FIL:
+				slettArkivenhetService.slettDokumentFil(slettArkivenhetRequest);
 				break;
 			default:
 				throw new IllegalArgumentException("Input mangler arkivenhet");

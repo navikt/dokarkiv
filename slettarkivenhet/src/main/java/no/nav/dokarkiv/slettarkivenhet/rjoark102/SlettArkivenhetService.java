@@ -62,8 +62,26 @@ public class SlettArkivenhetService {
 
 		slettVedleggKnyttetTilJournalpost(journalpost);
 		slettJournalpostRelasjonFilOgDokumentInfo(journalpost.findHoveddokumentDokumentInfoRelasjon());
-		slettJournalpost(journalpost.getJournalpostId());
+		fysiskSlettJournalpost(journalpost.getJournalpostId());
 
+	}
+
+	//TODO: Rename til slettJournalpostDokumentInfo, og få inn verdiet i arkivenhet? JournalpostDokumentInfoRelasjonKanIkkeSlettesException?
+	public void slettDokumentInfo(SlettArkivenhetRequest request) {
+
+		JournalpostDokumentInfoRelasjon relasjon = journalpostDokumentInfoRelasjonRepository.findByJournalpostJournalpostIdAndDokumentInfoDokumentInfoId(request
+				.getJournalpostId(), request.getDokumentInfoId())
+				.orElseThrow(() -> new IllegalArgumentException(String.format("Fant ingen JournalpostDokumentInfoRelasjon med journalpostId=%s og dokumentInfoId=%s", request
+						.getJournalpostId(), request.getDokumentInfoId())));
+
+		sjekkAtJournalpostDokumentInfoRelasjonErSkjermet(request.getJournalpostId(), request.getDokumentInfoId());
+
+		if (isFalse(relasjon.isVedlegg())) {
+			throw new DokumentInfoKanIkkeSlettesException(String.format("DokumentInfo=%s er hoveddokument i journalpost=%s og kan derfor ikke slettes", relasjon
+					.getDokumentInfo()
+					.getDokumentInfoId(), relasjon.getJournalpost().getJournalpostId()));
+		}
+		fysiskSlettEtVedlegg(relasjon);
 	}
 
 	public void slettDokumentFil(SlettArkivenhetRequest request) {
@@ -81,8 +99,8 @@ public class SlettArkivenhetService {
 		}
 
 		//Sjekk om dokumentFil eksisterer
-		DokumentFil dokumentFil = dokumentFilRepository.findByFilUuid(filDetaljerSomSkalSlettes.getFilUuid());
-		if (Objects.isNull(dokumentFil)) {
+		DokumentFil dokumentFilSomSkalSlettes = dokumentFilRepository.findByFilUuid(filDetaljerSomSkalSlettes.getFilUuid());
+		if (Objects.isNull(dokumentFilSomSkalSlettes)) {
 			throw new IllegalArgumentException(String.format("Fildetalj med variantFormat=%s og dokumentInfoId=%s mangler dokumentFil", request
 					.getVariant(), request.getDokumentInfoId()));
 		}
@@ -92,29 +110,14 @@ public class SlettArkivenhetService {
 		slettFilOgFildetaljer(request.getDokumentInfoId(), request.getVariant());
 	}
 
-	public void slettDokumentInfo(SlettArkivenhetRequest request) {
-
-		JournalpostDokumentInfoRelasjon relasjon = journalpostDokumentInfoRelasjonRepository.findByJournalpostJournalpostIdAndDokumentInfoDokumentInfoId(request
-				.getJournalpostId(), request.getDokumentInfoId())
-				.orElseThrow(() -> new IllegalArgumentException(String.format("Fant ingen JournalpostDokumentInfoRelasjon med journalpostId=%s og dokumentInfoId=%s", request
-						.getJournalpostId(), request.getDokumentInfoId())));
-
-		sjekkAtDokumentErUtilgjengeliggjort(request.getJournalpostId(), request.getDokumentInfoId());
-
-		if (isFalse(relasjon.isVedlegg())) {
-			throw new DokumentInfoKanIkkeSlettesException(String.format("DokumentInfo=%s er hoveddokument i journalpost=%s og kan derfor ikke slettes", relasjon
-					.getDokumentInfo()
-					.getDokumentInfoId(), relasjon.getJournalpost().getJournalpostId()));
-		}
-
-		fysiskSlettEtVedlegg(relasjon);
-
-	}
-
 	private void sjekkOmJournalpostKanSlettes(Journalpost journalpost) {
-		List<DokumentInfo> dokumentInfoList = dokumentinfoRepository.findByOriginalJournalpostJournalpostId(journalpost.getJournalpostId());
-		if (dokumentInfoList.size() > journalpost.getJournalpostDokumentInfoRelasjoner().size()) {
-			Integer diff = dokumentInfoList.size() - journalpost.getJournalpostDokumentInfoRelasjoner().size();
+//		Kontroll av originalJournalpost, dokumenterMedJournalpostSattSomOriginalJournalpost
+		List<DokumentInfo> dokumenterMedJournalpostSattSomOriginalJournalpost =
+				dokumentinfoRepository.findByOriginalJournalpostJournalpostId(journalpost.getJournalpostId());
+		if (dokumenterMedJournalpostSattSomOriginalJournalpost.size() > journalpost.getJournalpostDokumentInfoRelasjoner()
+				.size()) {
+			Integer diff = dokumenterMedJournalpostSattSomOriginalJournalpost.size() - journalpost.getJournalpostDokumentInfoRelasjoner()
+					.size();
 			throw new JournalpostKanIkkeSlettesException(String.format("Journalpost=%s kan ikke slettes: " +
 							"Det finnes %s dokumentInfo(er) som har originalJournalpostId=%s men som ikke har relasjon med journalposten som skal slettes",
 					journalpost.getJournalpostId(), diff, journalpost.getJournalpostId()));
@@ -124,8 +127,8 @@ public class SlettArkivenhetService {
 				.getDokumentInfo()
 				.getOriginalJournalpost();
 
-		if (Objects.nonNull(hoveddokOrigJp) && isFalse(journalpost.getJournalpostId()
-				.equals(hoveddokOrigJp.getJournalpostId()))) {
+		if (Objects.nonNull(hoveddokOrigJp) &&
+				isFalse(journalpost.getJournalpostId().equals(hoveddokOrigJp.getJournalpostId()))) {
 			throw new JournalpostKanIkkeSlettesException(String.format("Journalpost kan ikke slettes: " +
 							"Hoveddokument med dokumentInfoId=%s har originalJournalpostId=%s som er ulik journalpostIden til journalposten som skal slettes",
 					journalpost.findHoveddokumentDokumentInfoRelasjon()
@@ -135,27 +138,26 @@ public class SlettArkivenhetService {
 	}
 
 
+	//TODO: Legg til skjermingTypeCode i input, SlettArkivenhetResponse, slik at vi får en generell løsning.
+	//SjekkAtArkivenhetErSkjermet ----------------------------------------------------------
 	private void sjekkAtJournalpostErSkjermet(Long journalpostId) {
 		if (isFalse(skjermingService.isJournalpostSkjermet(
 				journalpostId,
 				SkjermingTypeCode.POL))) {
 			throw new SkjermingIkkeFunnetException(String.format(
-					"Fant ikke forventet begrensning for journalpost med journalpostId=%s og begrensningsType=%s.",
-					journalpostId,
-					SkjermingTypeCode.POL.name()));
+					"Fant ikke forventet skjerming(%s) av journalpost med journalpostId=%s.",
+					SkjermingTypeCode.POL.name(), journalpostId));
 		}
 	}
 
-	private void sjekkAtDokumentErUtilgjengeliggjort(Long journalpostId, Long dokumentInfoId) {
+	private void sjekkAtJournalpostDokumentInfoRelasjonErSkjermet(Long journalpostId, Long dokumentInfoId) {
 		if (isFalse(skjermingService.isJournalpostDokumentInfoRelasjonSkjermet(
 				journalpostId,
 				dokumentInfoId,
 				SkjermingTypeCode.POL))) {
 			throw new SkjermingIkkeFunnetException(String.format(
-					"Fant ikke forventet begrensning for dokument med journalpostId=%s, dokumentInfoId=%s og begrensningsType=%s.",
-					journalpostId,
-					dokumentInfoId,
-					SkjermingTypeCode.POL.name()));
+					"Fant ikke forventet skjerming(%s) av journalpostDokumentInfoRelasjon med journalpostId=%s, dokumentInfoId=%s.",
+					SkjermingTypeCode.POL.name(), journalpostId, dokumentInfoId));
 		}
 	}
 
@@ -163,20 +165,13 @@ public class SlettArkivenhetService {
 		if (isFalse(skjermingService.isFildetaljerSkjermet(dokumentInfo, variantFormatCode,
 				SkjermingTypeCode.POL))) {
 			throw new SkjermingIkkeFunnetException(String.format(
-					"Fant ikke forventet skjerming for dokument med dokumentInfoId=%s og begrensningsType=%s.",
-					dokumentInfo.getDokumentInfoId(),
-					SkjermingTypeCode.POL.name()));
+					"Fant ikke forventet skjerming(%s) av dokumentfil med dokumentInfoId=%s og variantFormat=%s.",
+					SkjermingTypeCode.POL.name(), dokumentInfo.getDokumentInfoId(), variantFormatCode));
 		}
 	}
 
-	private void slettJournalpostRelasjonFilOgDokumentInfo(JournalpostDokumentInfoRelasjon relasjonSomSkalSlettes) {
-		slettJournalpostDokumentInfoRelasjonGittDokumentInfoId(relasjonSomSkalSlettes.getDokumentInfo().getDokumentInfoId());
-		slettFilOgFildetaljer(relasjonSomSkalSlettes.getDokumentInfo().getDokumentInfoId());
-		slettDokumentInfo(relasjonSomSkalSlettes.getDokumentInfo().getDokumentInfoId());
-	}
-
+	//HåndterSlettAvArkivenhet ------------------------------
 	private void slettVedleggKnyttetTilJournalpost(Journalpost journalpost) {
-
 		journalpost.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
 				.forEach(this::fysiskSlettEtVedlegg);
 	}
@@ -189,13 +184,20 @@ public class SlettArkivenhetService {
 		}
 	}
 
+	private void slettJournalpostRelasjonFilOgDokumentInfo(JournalpostDokumentInfoRelasjon relasjonSomSkalSlettes) {
+		slettJournalpostDokumentInfoRelasjonGittDokumentInfoId(relasjonSomSkalSlettes.getDokumentInfo().getDokumentInfoId());
+		slettFilOgFildetaljer(relasjonSomSkalSlettes.getDokumentInfo().getDokumentInfoId());
+		slettDokumentInfo(relasjonSomSkalSlettes.getDokumentInfo().getDokumentInfoId());
+	}
+
+	//FysiskSlettAvArkivenhet -------------------------------------------
 	private void slettJournalpostDokumentInfoRelasjon(JournalpostDokumentInfoRelasjon relasjon) {
 		deleteRepository.deleteJournalpostDokumentInfoRelasjonByJournalpostIdAndDokumentInfoId(
 				relasjon.getJournalpost().getJournalpostId(),
 				relasjon.getDokumentInfo().getDokumentInfoId());
 	}
 
-	private void slettJournalpost(Long journalpostId) {
+	private void fysiskSlettJournalpost(Long journalpostId) {
 		deleteRepository.deleteJPTilleggByJournalpostId(journalpostId);
 		deleteRepository.deleteSaksrelasjonByJournalpostId(journalpostId);
 		deleteRepository.deleteBrukerByJournalpostId(journalpostId);
