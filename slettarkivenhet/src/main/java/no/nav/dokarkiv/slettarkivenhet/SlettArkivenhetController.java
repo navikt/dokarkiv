@@ -17,9 +17,9 @@ import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
 import no.nav.dokarkiv.core.metrics.RestMetrics;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import no.nav.dokarkiv.slettarkivenhet.exception.UgyldigSlettArkivenhetInputException;
+import no.nav.dokarkiv.slettarkivenhet.rjoark102.SlettArkivenhetOrchestrator;
 import no.nav.dokarkiv.slettarkivenhet.rjoark102.SlettArkivenhetRequest;
 import no.nav.dokarkiv.slettarkivenhet.rjoark102.SlettArkivenhetResponse;
-import no.nav.dokarkiv.slettarkivenhet.rjoark102.SlettArkivenhetService;
 import no.nav.freg.abac.core.annotation.Abac;
 import org.slf4j.MDC;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,12 +42,12 @@ import java.util.Objects;
 public class SlettArkivenhetController {
 
 
-	private final SlettArkivenhetService slettArkivenhetService;
+	private final SlettArkivenhetOrchestrator slettArkivenhetOrchestrator;
 	private final AksjonsLoggService aksjonsLoggService;
 	private final AksjonsLoggTOMapper aksjonsLoggTOMapper;
 
-	public SlettArkivenhetController(SlettArkivenhetService slettArkivenhetService, AksjonsLoggService aksjonsLoggService) {
-		this.slettArkivenhetService = slettArkivenhetService;
+	public SlettArkivenhetController(SlettArkivenhetOrchestrator slettArkivenhetOrchestrator, AksjonsLoggService aksjonsLoggService) {
+		this.slettArkivenhetOrchestrator = slettArkivenhetOrchestrator;
 		this.aksjonsLoggService = aksjonsLoggService;
 		this.aksjonsLoggTOMapper = new AksjonsLoggTOMapper();
 	}
@@ -70,17 +70,19 @@ public class SlettArkivenhetController {
 		switch (slettArkivenhetRequest.getArkivenhet()) {
 			case JOURNALPOST:
 				assertNotNullOrEmpty(slettArkivenhetRequest.getJournalpostId(), "journalpostId");
-				arkivElementEndringTOList = slettArkivenhetService.slettJournalpost(slettArkivenhetRequest);
+				arkivElementEndringTOList = slettArkivenhetOrchestrator.slettJournalpost(slettArkivenhetRequest.getJournalpostId());
 				break;
-			case DOKUMENT_INFO:
+			case VEDLEGG:
 				assertNotNullOrEmpty(slettArkivenhetRequest.getJournalpostId(), "journalpostId");
 				assertNotNullOrEmpty(slettArkivenhetRequest.getDokumentInfoId(), "dokumentInfoId");
-				arkivElementEndringTOList = slettArkivenhetService.slettDokumentInfo(slettArkivenhetRequest);
+				arkivElementEndringTOList = slettArkivenhetOrchestrator.slettVedlegg(slettArkivenhetRequest.getJournalpostId(), slettArkivenhetRequest
+						.getDokumentInfoId());
 				break;
 			case DOKUMENT_FIL:
 				assertNotNullOrEmpty(slettArkivenhetRequest.getDokumentInfoId(), "dokumentInfoId");
 				assertNotNullOrEmpty(slettArkivenhetRequest.getVariant(), "variant");
-				arkivElementEndringTOList = slettArkivenhetService.slettDokumentFil(slettArkivenhetRequest);
+				arkivElementEndringTOList = slettArkivenhetOrchestrator.slettDokumentFil(slettArkivenhetRequest.getDokumentInfoId(), slettArkivenhetRequest
+						.getVariant());
 				break;
 		}
 

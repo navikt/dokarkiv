@@ -7,10 +7,9 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
  */
-@ResponseStatus(HttpStatus.NOT_ACCEPTABLE)
-public class JournalpostKanIkkeSlettesException extends DokarkivFunctionalException {
-
-	public JournalpostKanIkkeSlettesException(String message) {
+@ResponseStatus(HttpStatus.NOT_FOUND)
+public class DokumentFilIkkeFunnetException extends DokarkivFunctionalException {
+	public DokumentFilIkkeFunnetException(String message) {
 		super(message);
 	}
 }

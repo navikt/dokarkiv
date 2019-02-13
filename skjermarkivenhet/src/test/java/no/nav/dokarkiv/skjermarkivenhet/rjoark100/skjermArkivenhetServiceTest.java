@@ -63,7 +63,7 @@ public class skjermArkivenhetServiceTest {
 		SkjermArkivenhetRequest request = SkjermArkivenhetRequest.builder()
 				.journalpostId(journalpost.getJournalpostId())
 				.dokumentInfoId(dokumentInfoId)
-				.arkivenhet(ArkivenhetCode.DOKUMENT_INFO)
+				.arkivenhet(ArkivenhetCode.VEDLEGG)
 				.skjerming(SkjermingTypeCode.POL)
 				.build();
 
