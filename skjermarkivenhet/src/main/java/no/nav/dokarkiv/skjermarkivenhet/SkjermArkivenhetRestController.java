@@ -3,9 +3,6 @@ package no.nav.dokarkiv.skjermarkivenhet;
 import static no.nav.abac.xacml.NavAttributter.RESOURCE_ARKIV_DOKUMENT;
 import static no.nav.abac.xacml.NavAttributter.RESOURCE_FELLES_RESOURCE_TYPE;
 import static no.nav.abac.xacml.StandardAttributter.ACTION_ID;
-import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggArkivElementConstants.FILDETALJER_SKJERMINGTYPE;
-import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggArkivElementConstants.JOURNALPOST_SKJERMINGTYPE;
-import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggArkivElementConstants.JPDOKINFO_REL_SKJERMINGTYPE;
 import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_LOGG_HEADER;
 import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.UPDATE_ACTION;
 import static org.apache.commons.lang3.StringUtils.isBlank;
@@ -94,7 +91,7 @@ public class SkjermArkivenhetRestController {
 				skjermArkivenhetService.skjermJournalpost(
 						skjermArkivenhetRequest.getJournalpostId(), skjermArkivenhetRequest.getSkjerming());
 				break;
-			case DOKUMENT_INFO:
+			case VEDLEGG:
 				assertNotNullOrEmpty(skjermArkivenhetRequest.getJournalpostId(), "journalpostId");
 				assertNotNullOrEmpty(skjermArkivenhetRequest.getDokumentInfoId(), "dokumentInfoId");
 				log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + LOGG_MOTTATT_KALL, skjermArkivenhetRequest.getArkivenhet() +
@@ -151,7 +148,7 @@ public class SkjermArkivenhetRestController {
 				opphevSkjermArkivenhetService.opphevSkjermJournalpost(
 						skjermArkivenhetRequest.getJournalpostId(), skjermArkivenhetRequest.getSkjerming());
 				break;
-			case DOKUMENT_INFO:
+			case VEDLEGG:
 				assertNotNullOrEmpty(skjermArkivenhetRequest.getJournalpostId(), "journalpostId");
 				assertNotNullOrEmpty(skjermArkivenhetRequest.getDokumentInfoId(), "dokumentInfoId");
 				log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + LOGG_MOTTATT_KALL, skjermArkivenhetRequest.getArkivenhet() +
@@ -220,13 +217,14 @@ public class SkjermArkivenhetRestController {
 
 		switch (arkivenhetCode) {
 			case JOURNALPOST:
-				arkivElementEndringTO.arkivElement(JOURNALPOST_SKJERMINGTYPE);
+				arkivElementEndringTO.arkivElement("Journalpost.skjermingType");
 				break;
-			case DOKUMENT_INFO:
-				arkivElementEndringTO.arkivElement(JPDOKINFO_REL_SKJERMINGTYPE);
+			case VEDLEGG:
+				arkivElementEndringTO.arkivElement("JournalpostDokumentInfoRelasjon.skjermingType");
 				break;
 			case DOKUMENT_FIL:
-				arkivElementEndringTO.arkivElement(String.format(FILDETALJER_SKJERMINGTYPE, variantFormatCode.name()));
+				arkivElementEndringTO.arkivElement(String.format("Fildetaljer.variantFormat[%s].skjermingType", variantFormatCode
+						.name()));
 				break;
 		}
 

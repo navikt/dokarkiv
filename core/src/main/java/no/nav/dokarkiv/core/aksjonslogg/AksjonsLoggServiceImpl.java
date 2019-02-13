@@ -27,7 +27,8 @@ public class AksjonsLoggServiceImpl implements AksjonsLoggService {
 
 	public void validateAndSaveAksjonsLogg(AksjonsLoggTO aksjonsLoggTO, List<ArkivElementEndringTO> arkivElementEndringTOList) throws UgyldigAksjonsLoggException {
 
-		log.info(String.format("Lagrer aksjonslogg med aksjonsType=%s", aksjonsLoggTO.getAksjon()));
+		log.info(String.format("Lagrer aksjonslogg med aksjonsType=%s, dokumentInfoId=%s og journalpostId=%s", aksjonsLoggTO.getAksjon(), aksjonsLoggTO
+				.getDokumentInfoId(), aksjonsLoggTO.getJournalpostId()));
 		aksjonsLoggValidator.validateAksjonslogg(aksjonsLoggTO);
 		aksjonsLoggValidator.validateArkivElementToList(arkivElementEndringTOList);
 

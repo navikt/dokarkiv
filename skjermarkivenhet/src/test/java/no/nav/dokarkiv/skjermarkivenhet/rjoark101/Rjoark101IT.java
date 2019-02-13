@@ -72,7 +72,7 @@ public class Rjoark101IT extends AbstractSkjermArkivenhetIT {
 				.getSkjermingType(), is(SkjermingTypeCode.POL));
 
 		HttpEntity httpEntity = new HttpEntity(
-				createSkjermarkivenhetRequest(SkjermingTypeCode.POL, ArkivenhetCode.DOKUMENT_INFO, journalpost.getJournalpostId(),
+				createSkjermarkivenhetRequest(SkjermingTypeCode.POL, ArkivenhetCode.VEDLEGG, journalpost.getJournalpostId(),
 						dokumentInfo.getDokumentInfoId(), null),
 				createHeadersWithAksjon(AksjonsTypeCode.ENDRE_SKJERMING.name()));
 

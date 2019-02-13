@@ -17,8 +17,16 @@ public interface JoarkDeleteRepository extends Repository<Journalpost, Long> {
 	void deleteDokumentFilByDokumentInfoId(@Param("dokumentInfoId") Long dokumentInfoId);
 
 	@Modifying
+	@Query(value = "delete from t_dokument_fil where fil_uuid in (select fil_uuid from t_fil_detaljer where dokument_info_id = :dokumentInfoId and k_variant_format = :variant_format)", nativeQuery = true)
+	void deleteDokumentFilByDokumentInfoIdAndVariantFormat(@Param("dokumentInfoId") Long dokumentInfoId, @Param("variant_format") String variantFormatCode);
+
+	@Modifying
 	@Query(value = "delete from t_fil_detaljer where dokument_info_id = :dokumentInfoId", nativeQuery = true)
 	void deleteFilDetaljerByDokumentInfoId(@Param("dokumentInfoId") Long dokumentInfoId);
+
+	@Modifying
+	@Query(value = "delete from t_fil_detaljer where dokument_info_id = :dokumentInfoId and k_variant_format = :variant_format", nativeQuery = true)
+	void deleteFilDetaljerByDokumentInfoIdAndVariantFormat(@Param("dokumentInfoId") Long dokumentInfoId, @Param("variant_format") String variantFormatCode);
 
 	@Modifying
 	@Query(value = "delete from T_JP_DOK_INFO_REL where dokument_info_id = :dokumentInfoId", nativeQuery = true)
@@ -41,12 +49,20 @@ public interface JoarkDeleteRepository extends Repository<Journalpost, Long> {
 	void deleteSaksrelasjonByJournalpostId(@Param("journalpostId") Long journalpostId);
 
 	@Modifying
+	@Query(value = "delete from t_kryssreferanse where journalpost_id = :journalpostId", nativeQuery = true)
+	void deleteKryssreferanseByJournalpostId(@Param("journalpostId") Long journalpostId);
+
+	@Modifying
+	@Query(value = "delete from t_retur_info where journalpost_id = :journalpostId", nativeQuery = true)
+	void deleteReturInfoByJournalpostId(@Param("journalpostId") Long journalpostId);
+
+	@Modifying
 	@Query(value = "delete from T_JP_TILLEGG where journalpost_id = :journalpostId", nativeQuery = true)
 	void deleteJPTilleggByJournalpostId(@Param("journalpostId") Long journalpostId);
 
 	@Modifying
 	@Query(value = "delete from T_bruker where journalpost_id = :journalpostId", nativeQuery = true)
-	void deleteBrukerByJournalpostId(@Param("journalpostId") Long journalpostId);
+	void deleteBrukereByJournalpostId(@Param("journalpostId") Long journalpostId);
 
 	@Modifying
 	@Query(value = "delete from t_journalpost where journalpost_id = :journalpostId", nativeQuery = true)

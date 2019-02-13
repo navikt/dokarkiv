@@ -158,7 +158,7 @@ public class Rjoark100IT extends AbstractSkjermArkivenhetIT {
 		assertNull(journalpost.findHoveddokumentDokumentInfoRelasjon().getSkjermingType());
 
 		HttpEntity httpEntity = new HttpEntity(
-				createSkjermarkivenhetRequest(SkjermingTypeCode.POL, ArkivenhetCode.DOKUMENT_INFO, journalpost.getJournalpostId(),
+				createSkjermarkivenhetRequest(SkjermingTypeCode.POL, ArkivenhetCode.VEDLEGG, journalpost.getJournalpostId(),
 						dokumentInfo.getDokumentInfoId(), null),
 				createHeadersWithAksjon(AksjonsTypeCode.ENDRE_SKJERMING.name()));
 

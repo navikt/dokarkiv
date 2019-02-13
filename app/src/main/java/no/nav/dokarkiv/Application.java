@@ -24,6 +24,7 @@ import no.nav.dokarkiv.logisktidligkassasjon.LogiskTidligKassasjonConfig;
 import no.nav.dokarkiv.nais.NaisContract;
 import no.nav.dokarkiv.platform.TomcatConfig;
 import no.nav.dokarkiv.skjermarkivenhet.SkjermArkivenhetConfig;
+import no.nav.dokarkiv.slettarkivenhet.SlettArkivenhetConfig;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.annotation.Import;
 
@@ -53,6 +54,7 @@ import org.springframework.context.annotation.Import;
 		ArkiverVariantConfig.class,
 		SkjermArkivenhetConfig.class,
 		KasserDokumentConfig.class,
+		SlettArkivenhetConfig.class,
 		NaisContract.class})
 public class Application {
 	public static void main(String[] args) {
