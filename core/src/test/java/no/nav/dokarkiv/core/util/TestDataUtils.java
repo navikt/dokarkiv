@@ -60,6 +60,9 @@ public class TestDataUtils {
 	public static final String AKSJON_TIL_VERDI = "Test2";
 	public static final String AKSJON_ARKIVELEMENT= "Journalpost.journalpostId";
 
+	public static final Long JOURNALPOST_ID = 1L;
+	public static final Long DOKUMENT_INFO_ID = 1L;
+
 	public static AksjonsLoggTO createAksjonsLoggTO(Long journalpostId, Long dokumentInfoId) {
 		return AksjonsLoggTO.builder()
 				.aksjon(AksjonsTypeCode.ARKIVERING)
