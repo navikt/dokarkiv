@@ -4,7 +4,6 @@ import static org.apache.commons.lang3.BooleanUtils.isFalse;
 
 import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
-import no.nav.dokarkiv.core.domain.entities.DokumentFil;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
@@ -17,7 +16,6 @@ import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
 import no.nav.dokarkiv.slettarkivenhet.exception.ArkivVariantkkeFunnetException;
-import no.nav.dokarkiv.slettarkivenhet.exception.DokumentFilIkkeFunnetException;
 import no.nav.dokarkiv.slettarkivenhet.exception.DokumentInfoKanIkkeSlettesException;
 import no.nav.dokarkiv.slettarkivenhet.exception.JournalpostKanIkkeSlettesException;
 import org.springframework.stereotype.Component;
@@ -90,15 +88,10 @@ public class SlettArkivenhetOrchestrator {
 			throw new ArkivVariantkkeFunnetException(String.format("Dokument med dokumentInfoId=%s har ingen fildetaljer med variantFormat=%s", dokumentInfoId, variant));
 		}
 
-		//Sjekk om dokumentFil eksisterer
-		DokumentFil dokumentFilSomSkalSlettes = dokumentFilRepository.findByFilUuid(filDetaljerSomSkalSlettes.getFilUuid());
-		if (Objects.isNull(dokumentFilSomSkalSlettes)) {
-			throw new DokumentFilIkkeFunnetException(String.format("Fildetaljer med variantFormat=%s og dokumentInfoId=%s mangler dokumentFil", variant, dokumentInfoId));
-		}
+		//Sjekke om dokumentFil eksisterer?
 
 		return slettArkivenhetService.slettFilOgFildetaljer(dokumentInfoId, variant);
 	}
-
 
 	private void sjekkOmHoveddokumentHarFlereRelasjoner(DokumentInfo dokumentInfoHoveddokument) {
 		if (dokumentInfoHoveddokument.getJournalpostRelasjoner().size() > 1) {
