@@ -28,12 +28,7 @@
 		<module>journal</module>
 		<module>journalfoerinngaaende</module>
 		<module>hentdokument</module>
-		<module>logiskslettdokument</module>
 		<module>hentjournalinfo</module>
-		<module>arkiverkorrigertdokument</module>
-		<module>fysiskslettdokument</module>
-		<module>fysisktidligkassasjon</module>
-		<module>logisktidligkassasjon</module>
 		<module>hentjournalsakinfo</module>
 		<module>slettarkivenhet</module>
 		<module>kasserdokument</module>
@@ -100,11 +95,6 @@
 			</dependency>
 			<dependency>
 				<groupId>no.nav.dokarkiv</groupId>
-				<artifactId>arkiverkorrigertdokument</artifactId>
-				<version>1-SNAPSHOT</version>
-			</dependency>
-			<dependency>
-				<groupId>no.nav.dokarkiv</groupId>
 				<artifactId>behandlejournal</artifactId>
 				<version>1-SNAPSHOT</version>
 			</dependency>
@@ -141,26 +131,6 @@
 			<dependency>
 				<groupId>no.nav.dokarkiv</groupId>
 				<artifactId>hentjournalsakinfo</artifactId>
-				<version>1-SNAPSHOT</version>
-			</dependency>
-			<dependency>
-				<groupId>no.nav.dokarkiv</groupId>
-				<artifactId>logiskslettdokument</artifactId>
-				<version>1-SNAPSHOT</version>
-			</dependency>
-			<dependency>
-				<groupId>no.nav.dokarkiv</groupId>
-				<artifactId>fysiskslettdokument</artifactId>
-				<version>1-SNAPSHOT</version>
-			</dependency>
-			<dependency>
-				<groupId>no.nav.dokarkiv</groupId>
-				<artifactId>logisktidligkassasjon</artifactId>
-				<version>1-SNAPSHOT</version>
-			</dependency>
-			<dependency>
-				<groupId>no.nav.dokarkiv</groupId>
-				<artifactId>fysisktidligkassasjon</artifactId>
 				<version>1-SNAPSHOT</version>
 			</dependency>
 			<dependency>
