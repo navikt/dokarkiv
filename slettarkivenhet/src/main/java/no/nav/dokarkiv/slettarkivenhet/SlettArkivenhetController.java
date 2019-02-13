@@ -101,7 +101,7 @@ public class SlettArkivenhetController {
 		aksjonsLoggService.validateAndSaveAksjonsLogg(aksjonsLoggTO, arkivElementEndringTOList);
 	}
 
-	private void assertNotNullOrEmpty(Object value, String parameter) throws UgyldigSlettArkivenhetInputException {
+	private void assertNotNullOrEmpty(Object value, String parameter) {
 		if (Objects.isNull(value) || (value instanceof String && isBlank((String) value))) {
 			throw new UgyldigSlettArkivenhetInputException(String.format("Validering av input feilet: Input mangler påkrevd parameter \"%s\"", parameter));
 		}
