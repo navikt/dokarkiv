@@ -102,7 +102,7 @@ public class SlettArkivenhetOrchestrator {
 
 	private void sjekkOmHoveddokumentHarFlereRelasjoner(DokumentInfo dokumentInfoHoveddokument) {
 		if (dokumentInfoHoveddokument.getJournalpostRelasjoner().size() > 1) {
-			throw new JournalpostKanIkkeSlettesException(String.format("Hoveddokument=%s er tilknyttet som vedlegg til andre journalposter. Alle tilknyttinger som vedlegg til hoveddokument må slettes før journalpost kan slettes",
+			throw new JournalpostKanIkkeSlettesException(String.format("Hoveddokument=%s er tilknyttet til andre journalposter som vedlegg. Alle tilknyttinger hoveddokument har som vedlegg må slettes før journalpost kan slettes",
 					dokumentInfoHoveddokument.getDokumentInfoId()));
 		}
 	}

@@ -5,7 +5,6 @@ import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.VED
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
-import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.repository.JoarkDeleteRepository;
 import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
@@ -53,10 +52,7 @@ public class SlettArkivenhetService {
 		List<ArkivElementEndringTO> arkivElementEndringTOList = new ArrayList<>();
 
 		arkivElementEndringTOList.addAll(slettJournalpostDokumentInfoRelasjon(relasjonSomSkalSlettes));
-		relasjonSomSkalSlettes.getDokumentInfo()
-				.getFildetaljerListe()
-				.forEach(filDetaljer -> slettFilOgFildetaljer(filDetaljer.getDokumentInfo()
-						.getDokumentInfoId(), filDetaljer.getVariantFormat()));
+		slettAlleFilOgFildetaljerGittDokumentInfoId(relasjonSomSkalSlettes.getDokumentInfo().getDokumentInfoId());
 		arkivElementEndringTOList.addAll(slettDokumentInfo(relasjonSomSkalSlettes.getDokumentInfo().getDokumentInfoId()));
 
 		return arkivElementEndringTOList;
@@ -64,10 +60,7 @@ public class SlettArkivenhetService {
 
 	public List<ArkivElementEndringTO> slettHoveddokument(JournalpostDokumentInfoRelasjon relasjonSomSkalSlettes) {
 		slettJournalpostDokumentInfoRelasjon(relasjonSomSkalSlettes);
-		DokumentInfo dokumentInfo = relasjonSomSkalSlettes.getDokumentInfo();
-		dokumentInfo
-				.getFildetaljerListe()
-				.forEach(filDetaljer -> slettFilOgFildetaljer(dokumentInfo.getDokumentInfoId(), filDetaljer.getVariantFormat()));
+		slettAlleFilOgFildetaljerGittDokumentInfoId(relasjonSomSkalSlettes.getDokumentInfo().getDokumentInfoId());
 		return slettDokumentInfo(relasjonSomSkalSlettes.getDokumentInfo().getDokumentInfoId());
 	}
 
@@ -78,17 +71,19 @@ public class SlettArkivenhetService {
 
 		return Arrays.asList(
 				ArkivElementEndringTO.builder()
-						.arkivElement("JournalpostDokumentInfoRelasjon.tilknyttetJounalpostSom")
-						.fraVerdi(relasjon.getTilknyttetJournalpostSom().name())
+						.arkivElement("JournalpostDokumentInfoRelasjon.dokumentInfoId")
+						.fraVerdi(relasjon.getDokumentInfo().getDokumentInfoId().toString())
 						.tilVerdi(null)
 						.build()
 		);
 	}
 
 	public List<ArkivElementEndringTO> slettJournalpost(Long journalpostId) {
+		deleteRepository.deleteKryssreferanseByJournalpostId(journalpostId);
+		deleteRepository.deleteReturInfoByJournalpostId(journalpostId);
 		deleteRepository.deleteJPTilleggByJournalpostId(journalpostId);
 		deleteRepository.deleteSaksrelasjonByJournalpostId(journalpostId);
-		deleteRepository.deleteBrukerByJournalpostId(journalpostId);
+		deleteRepository.deleteBrukereByJournalpostId(journalpostId);
 		deleteRepository.deleteJournalpostByJournalpostId(journalpostId);
 
 		return Collections.singletonList(
@@ -128,5 +123,10 @@ public class SlettArkivenhetService {
 						.build()
 
 		);
+	}
+
+	private void slettAlleFilOgFildetaljerGittDokumentInfoId(Long dokumentInfoId) {
+		deleteRepository.deleteDokumentFilByDokumentInfoId(dokumentInfoId);
+		deleteRepository.deleteFilDetaljerByDokumentInfoId(dokumentInfoId);
 	}
 }
