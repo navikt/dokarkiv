@@ -20,5 +20,6 @@ public class DokumentInfoDto {
 	private final List<VariantDto> varianter;
 	private final String tittel;
 	private final SkjermingTypeCode skjerming;
+	private final Long origJournalpostId;
 	private final List<LogiskVedleggDto> logiske;
 }

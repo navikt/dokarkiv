@@ -24,7 +24,7 @@ import java.util.stream.Stream;
 @Repository
 class FinnJournalposterSpringJdbcRepository {
 	private static final ResultSetExtractor<List<JournalpostDto>> JOURNALPOST_DTO_RESULT_SET_EXTRACTOR = JdbcTemplateMapperFactory.newInstance()
-			.addKeys("journalpostid", "saksrelasjon_sakid", "dokumenter_dokumentinfoid", "dokumenter_logiske_tittel", "dokumenter_varianter_variantf")
+			.addKeys("journalpostid", "saksrelasjon_sakid", "tilleggsopplysninger_nokkel", "dokumenter_dokumentinfoid", "dokumenter_logiske_tittel", "dokumenter_varianter_variantf")
 			.newResultSetExtractor(JournalpostDto.class);
 	private static final List<String> NOT_USED = Collections.singletonList("notused");
 	private static final List<String> ALL_JOURNALSTATUS = Stream.of(JournalStatusCode.values()).map(Enum::name).collect(Collectors.toList());
