@@ -5,9 +5,9 @@ import static no.nav.dokarkiv.arkiverdokumentproduksjon.AbstractArkiverdokumentp
 import static no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark111.OpprettUtgaaendeJournalpostArkiverDokumentDataUtil.BREVKODE;
 import static no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark111.OpprettUtgaaendeJournalpostArkiverDokumentDataUtil.DOKUMENT_TYPE_ID;
 import static no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark111.OpprettUtgaaendeJournalpostArkiverDokumentDataUtil.KANAL_REF_ID;
-import static no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark111.OpprettUtgaaendeJournalpostArkiverDokumentDataUtil.KRYSSREFERANSE_ID;
-import static no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark111.OpprettUtgaaendeJournalpostArkiverDokumentDataUtil.KRYSSREFERANSE_TYPE;
 import static no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark111.OpprettUtgaaendeJournalpostArkiverDokumentDataUtil.OPPRETTET_AV_NAVN;
+import static no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark111.OpprettUtgaaendeJournalpostArkiverDokumentDataUtil.TILLEGGSOPPLYSNING_NOKKEL;
+import static no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark111.OpprettUtgaaendeJournalpostArkiverDokumentDataUtil.TILLEGGSOPPLYSNING_VERDI;
 import static no.nav.dokarkiv.core.domain.codes.DokumentStatusCode.FERDIGSTILT;
 import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.VEDLEGG;
 import static no.nav.dokarkiv.core.util.DateUtil.getDateNow;
@@ -24,7 +24,6 @@ import no.nav.dokarkiv.core.domain.entities.Bruker;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
-import no.nav.dokarkiv.core.domain.entities.Kryssreferanse;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasjon.opprettutgaaendejournalpostarkiverdokument.Vedlegg;
 
@@ -50,6 +49,8 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentAssertUtil {
 		assertThat(domainJournalpost.getJournalposttype(), is(JournalpostTypeCode.U));
 		assertThat(domainJournalpost.getKanalReferanseId(), is(KANAL_REF_ID));
 		assertThat(domainJournalpost.getOpprettetKildeNavn(), is(ITEST_COMPONENTID));
+		assertTrue(domainJournalpost.getTilleggsopplysninger().containsKey(TILLEGGSOPPLYSNING_NOKKEL));
+		assertThat(domainJournalpost.getTilleggsopplysninger().get(TILLEGGSOPPLYSNING_NOKKEL), is(TILLEGGSOPPLYSNING_VERDI));
 	}
 
 	public static void assertEqualDokumentInfo(DokumentInfo persistedDokumentInfo, DokumentInfo newDokumentInfo) {
@@ -59,13 +60,6 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentAssertUtil {
 		assertEquals(persistedDokumentInfo.getTittel(), newDokumentInfo.getTittel());
 		assertEquals(persistedDokumentInfo.getBrevkode(), newDokumentInfo.getBrevkode());
 		assertEquals(persistedDokumentInfo.getKategori(), newDokumentInfo.getKategori());
-	}
-
-	public static void assertKryssReferanse(Set<Kryssreferanse> kryssreferanser) {
-		Kryssreferanse kryssreferanse = kryssreferanser.iterator().next();
-		assertThat(kryssreferanse.getReferanseId(), is(KRYSSREFERANSE_ID));
-		assertThat(kryssreferanse.getReferanseType(), is(KRYSSREFERANSE_TYPE));
-		assertThat(kryssreferanse.getOpprettetKildeNavn(), is(ITEST_COMPONENTID));
 	}
 
 	public static void assertDokumentinfoRelasjon(Set<JournalpostDokumentInfoRelasjon> domainDokumentInfoRelasjon) {

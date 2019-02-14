@@ -11,8 +11,8 @@ import no.nav.dokarkiv.core.domain.codes.ReferanseTypeCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasjon.arkiverdokumentproduksjon.Bruker;
-import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasjon.arkiverdokumentproduksjon.Kryssreferanse;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasjon.arkiverdokumentproduksjon.Saksrelasjon;
+import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasjon.arkiverdokumentproduksjon.Tilleggsopplysning;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasjon.opprettutgaaendejournalpostarkiverdokument.DokumentInfo;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasjon.opprettutgaaendejournalpostarkiverdokument.Fildetaljer;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasjon.opprettutgaaendejournalpostarkiverdokument.Journalpost;
@@ -38,8 +38,7 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentDataUtil {
 	protected static final String DOKUMENT_TYPE_ID = "dokumentTypeId";
 	protected static final String JOURNALFOERENDE_ENHET_REF = "2009";
 	protected static final String HOVEDDOKUMENT = TilknyttetJournalpostSomCode.HOVEDDOKUMENT.name();
-	protected static final String VEDLEGG = TilknyttetJournalpostSomCode.VEDLEGG
-			.name();
+	protected static final String VEDLEGG = TilknyttetJournalpostSomCode.VEDLEGG.name();
 	protected static final String OPPRETTET_AV_NAVN = "Max Mekker";
 	protected static final String TITTEL = "The Sound of Music";
 	protected static final String KATEGORI = DokumentKategoriCode.B.name();
@@ -52,10 +51,10 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentDataUtil {
 	protected static final String FAGSYSTEMKODE = FagsystemCode.AO01.name();
 	protected static final String SAKSID = "312";
 	protected static final String KANAL_REF_ID = "Kanal_ref_id_AAA";
-	protected static final String KRYSSREFERANSE_ID = "k_ref_id";
+	protected static final String TILLEGGSOPPLYSNING_NOKKEL = "bucId";
+	protected static final String TILLEGGSOPPLYSNING_VERDI = "bucId-verdi";
 	protected static final String VEDLEGG_DOK_INFO_ID = "1122";
 	protected static final String VEDLEGG_JP_ID = "123213213";
-	protected static final ReferanseTypeCode KRYSSREFERANSE_TYPE = ReferanseTypeCode.SED_FLYT;
 	protected static final BrukerTypeCode BRUKERTYPE = BrukerTypeCode.PERSON;
 	protected static final Date DATO_DOKUMENT = getDateNow();
 	protected static final Date DATO_JOURNAL = getDateNow();
@@ -66,7 +65,6 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentDataUtil {
 		journalpost.setKanalreferanseId(KANAL_REF_ID);
 		return journalpost;
 	}
-
 
 	public static Journalpost createJournalpost() {
 		Journalpost journalpost = new Journalpost();
@@ -79,14 +77,14 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentDataUtil {
 		journalpost.setAvsenderMottakerId(PERSONIDENT);
 		journalpost.setUtsendingskanal(UTSENDINGSKANAL.name());
 		journalpost.setKanalreferanseId(KANAL_REF_ID);
+		journalpost.setTilleggsopplysninger(createTilleggsopplysning());
 		return journalpost;
 	}
 
-	public static Kryssreferanse createKryssReferanse() {
-		Kryssreferanse kryssreferanse = new Kryssreferanse();
-		kryssreferanse.setReferanseId(KRYSSREFERANSE_ID);
-		kryssreferanse.setReferanseType(KRYSSREFERANSE_TYPE.name());
-		return kryssreferanse;
+	public static Tilleggsopplysning createTilleggsopplysning() {
+		return new Tilleggsopplysning()
+				.withOpplysningsnoekkel(TILLEGGSOPPLYSNING_NOKKEL)
+				.withOpplysningsverdi(TILLEGGSOPPLYSNING_VERDI);
 	}
 
 	public static Vedlegg createVedlegg(Long dokumentInfoId, Long jpId) {

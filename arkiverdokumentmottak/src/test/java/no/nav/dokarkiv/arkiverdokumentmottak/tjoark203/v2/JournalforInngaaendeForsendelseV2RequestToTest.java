@@ -195,20 +195,6 @@ public class JournalforInngaaendeForsendelseV2RequestToTest {
 	}
 
 	@Test
-	public void shouldThrowExceptionMissingDokumentInfoDokumenttypeId() {
-		expectedException.expect(IllegalArgumentException.class);
-		expectedException.expectMessage("DokumentInfo.DokumenttypeId");
-
-		requestTo.getJournalpost()
-				.getJournalpostDokumentInfoRelasjoner()
-				.iterator()
-				.next()
-				.getDokumentInfo()
-				.setDokumenttypeId(null);
-		requestTo.validate();
-	}
-
-	@Test
 	public void shouldThrowExceptionMissingFilDetaljer() {
 		expectedException.expect(IllegalArgumentException.class);
 		expectedException.expectMessage("JournalpostDokumentInfoRelasjoner.DokumentInfo.Fildetaljer");

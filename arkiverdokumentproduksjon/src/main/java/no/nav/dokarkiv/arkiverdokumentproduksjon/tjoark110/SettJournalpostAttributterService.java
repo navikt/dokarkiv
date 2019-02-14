@@ -15,6 +15,7 @@ import javax.inject.Inject;
  */
 @Component
 public class SettJournalpostAttributterService {
+
 	@Inject
 	private JoarkRepositorySkjermet joarkRepository;
 
@@ -22,25 +23,29 @@ public class SettJournalpostAttributterService {
 	private SporingPopulator sporingPopulator;
 
 	public void settJournalpostAttributter(SettJournalpostAttributterRequestTo domainRequest) {
-		for(Long journalpostId : domainRequest.getJournalpostIds()) {
+		for (Long journalpostId : domainRequest.getJournalpostIds()) {
 			Journalpost journalpost = getJournalpost(journalpostId);
 			updateJournalpost(domainRequest, journalpost);
 		}
 	}
 
 	private void updateJournalpost(SettJournalpostAttributterRequestTo domainRequest, Journalpost journalpost) {
-		if(domainRequest.getDatoSendtPrint() != null) {
+		if (domainRequest.getDatoSendtPrint() != null) {
 			journalpost.setSendtPrintDato(domainRequest.getDatoSendtPrint());
 		}
-		if(!isBlank(domainRequest.getEndretAvNavn())) {
+		if (domainRequest.getUtsendingskanal() != null && domainRequest.getEndretAvNavn() != null) {
+			journalpost.setUtsendingskanal(domainRequest.getUtsendingskanal());
+		}
+		if (!isBlank(domainRequest.getEndretAvNavn())) {
 			sporingPopulator.populateSporingInfo(journalpost, domainRequest.getEndretAvNavn());
 		}
-		if(domainRequest.getAntallRetur() != null) {
+		if (domainRequest.getAntallRetur() != null) {
 			journalpost.setAntallRetur(domainRequest.getAntallRetur());
 		}
 	}
 
 	private Journalpost getJournalpost(Long journalpostId) {
-		return joarkRepository.findById(journalpostId).orElseThrow(() -> new ApplicationException("Could not find Journalpost with journalpostId: " + journalpostId));
+		return joarkRepository.findById(journalpostId)
+				.orElseThrow(() -> new ApplicationException("Could not find Journalpost with journalpostId: " + journalpostId));
 	}
 }

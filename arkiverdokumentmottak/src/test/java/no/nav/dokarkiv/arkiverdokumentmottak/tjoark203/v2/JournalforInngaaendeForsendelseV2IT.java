@@ -477,20 +477,6 @@ public class JournalforInngaaendeForsendelseV2IT extends AbstractArkiverDokument
 	}
 
 	@Test
-	public void shouldThrowExceptionMissingDokumentInfoDokumenttypeIdOnHoveddokument() throws Exception {
-		expectedException.expect(KanIkkeJournalfores.class);
-		expectedException.expectMessage("DokumentInfo.DokumenttypeId");
-
-		request.getJournalpost()
-				.getJournalpostDokumentInfoRelasjon()
-				.iterator()
-				.next()
-				.getDokumentInfo()
-				.setDokumentTypeId(null);
-		arkiverDokumentmottakV2Provider.journalforInngaaendeForsendelse(request);
-	}
-
-	@Test
 	public void shouldJournalfoereWithMissingDokumentInfoDokumenttypeIdOnVedlegg() throws Exception {
 		request.getJournalpost()
 				.getJournalpostDokumentInfoRelasjon()
