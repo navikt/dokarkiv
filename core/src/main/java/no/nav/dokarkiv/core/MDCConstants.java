@@ -11,7 +11,6 @@ public class MDCConstants {
 	public static final String MDC_USER_ID = "userId";
 	public static final String MDC_USER_NAME = "userName";
 	public static final String MDC_CONSUMER_ID = "consumerId";
-	public static final String MDC_CORRELATION_ID = "correlationId";
 
 	// bruk av ABAC logging
 	public static final String MDC_HTTP_OPERATION = "httpOperation";

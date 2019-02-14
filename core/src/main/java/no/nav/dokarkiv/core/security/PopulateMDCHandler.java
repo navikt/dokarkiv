@@ -18,7 +18,7 @@ public class PopulateMDCHandler implements HandlerInterceptor {
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 
 		if (request.getHeader("X-Correlation-ID") != null) {
-			MDC.put(MDCConstants.MDC_CORRELATION_ID, request.getHeader("X-Correlation-ID"));
+			MDC.put(MDCConstants.MDC_CALL_ID, request.getHeader("X-Correlation-ID"));
 		}
 
 		MDC.put(MDCConstants.MDC_HTTP_ENDPOINT, request.getRequestURL().toString());
