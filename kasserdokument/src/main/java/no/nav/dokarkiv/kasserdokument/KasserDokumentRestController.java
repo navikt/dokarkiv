@@ -31,7 +31,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -65,14 +64,12 @@ public class KasserDokumentRestController {
 	public KasserDokumentResponse kasserDokument(
 			@RequestHeader(value = AKSJONS_LOGG_HEADER) String aksjonsLoggHeaderString,
 			@RequestBody KasserDokumentRequest request) throws UgyldigAksjonsLoggException {
-		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark107");
+		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark103");
 		validator.validerKasserDokumentRequest(request);
 		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har mottat kall med dokumentInfoId={}", request.getDokumentInfoId());
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
 
-		kasserDokumentService.kasserDokument(request);
-
-		List<ArkivElementEndringTO> arkivElementEndringTOList = new ArrayList<>();
+		List<ArkivElementEndringTO> arkivElementEndringTOList = kasserDokumentService.kasserDokument(request);
 
 		AksjonsLoggTO aksjonsLoggTO = aksjonsLoggTOMapper.mapAksjonsLoggHeader(aksjonsLoggHeaderString, AksjonsTypeCode.SLETT, null, request
 				.getDokumentInfoId());

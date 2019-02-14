@@ -6,6 +6,8 @@ import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_LOGG_H
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.SLADDET;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertTrue;
@@ -15,9 +17,11 @@ import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
+import no.nav.dokarkiv.core.domain.entities.ArkivElementEndring;
 import no.nav.dokarkiv.core.domain.entities.DokumentFil;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.util.TestDataUtils;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.collections15.IteratorUtils;
 import org.junit.Test;
@@ -29,6 +33,7 @@ import org.springframework.test.context.transaction.TestTransaction;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Rjoark102IT extends AbstractArkiverVariantIT {
 
@@ -53,7 +58,7 @@ public class Rjoark102IT extends AbstractArkiverVariantIT {
 				.variant(SLADDET)
 				.filType(FilTypeCode.PDF).build();
 
-		HttpEntity httpEntity = new HttpEntity(request, createHeaders());
+		HttpEntity httpEntity = new HttpEntity(request, createHeadersWithServiceUserToken());
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_ARKIVERVARIANT,
@@ -68,34 +73,6 @@ public class Rjoark102IT extends AbstractArkiverVariantIT {
 		assertThat(aksjonsLoggList.size(), is(0));
 	}
 
-	@Test
-	public void skalIkkeLagreAksjonsLoggVedFeil() throws IOException {
-		abacPermit();
-
-		List<AksjonsLogg> aksjonsLoggListBefore = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
-		assertThat(aksjonsLoggListBefore.size(), is(0));
-
-
-		ArkiverVariantRequest request = ArkiverVariantRequest.builder()
-				.dokumentInfoId(123456L)
-				.fil(Base64.encodeBase64String(FIL))
-				.filnavn("filnavn")
-				.variant(SLADDET)
-				.filType(FilTypeCode.PDF).build();
-
-		HttpEntity httpEntity = new HttpEntity(request, createHeadersWithAksjon(AksjonsTypeCode.ARKIVERING.name()));
-
-		ResponseEntity<String> responseEntity = restTemplate.exchange(
-				URL_ARKIVERVARIANT,
-				HttpMethod.POST,
-				httpEntity,
-				String.class);
-
-		assertThat(responseEntity.getStatusCode(), is(HttpStatus.NOT_FOUND));
-
-		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
-		assertThat(aksjonsLoggList.size(), is(0));
-	}
 
 	@Test
 	public void shouldSaveFileAsSladdetVariant() throws IOException {
@@ -115,7 +92,7 @@ public class Rjoark102IT extends AbstractArkiverVariantIT {
 				.variant(SLADDET)
 				.filType(FilTypeCode.PDF).build();
 
-		HttpEntity httpEntity = new HttpEntity(request, createHeadersWithAksjon(AksjonsTypeCode.ARKIVERING.name()));
+		HttpEntity httpEntity = new HttpEntity(request, createHeadersWithAksjon());
 
 		ResponseEntity<ArkiverVariantResponse> responseEntity = restTemplate.exchange(
 				URL_ARKIVERVARIANT,
@@ -143,13 +120,41 @@ public class Rjoark102IT extends AbstractArkiverVariantIT {
 
 		TestTransaction.end();
 
+		TestTransaction.start();
 		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
 		assertThat(aksjonsLoggList.size(), is(1));
-		assertThat(aksjonsLoggList.get(0).getAksjon(), is(AksjonsTypeCode.ARKIVERING));
+
+		AksjonsLogg aksjonsLogg = aksjonsLoggList.get(0);
+		assertThat(aksjonsLogg.getAksjon(), is(AksjonsTypeCode.ARKIVERING));
+		assertThat(aksjonsLogg.getUtfoertAv(), is(TestDataUtils.AKSJON_UTFOERT_AV));
+		assertThat(aksjonsLogg.getHjemmel(), is(TestDataUtils.AKSJON_HJEMMEL));
+		assertThat(aksjonsLogg.getMelding(), is(TestDataUtils.AKSJON_MELDING));
+		assertThat(aksjonsLogg.getJournalpostId(), nullValue());
+		assertThat(aksjonsLogg.getDokumentInfoId(), is(dokumentInfo.getDokumentInfoId()));
+		assertThat(aksjonsLogg.getApplikasjon(), is(SERVICE_USER_ID));
+		assertThat(aksjonsLogg.getArkivElementEndringer().size(), is(2));
+
+		List<ArkivElementEndring> arkivElementEndringList = IteratorUtils.toList(aksjonsLogg.getArkivElementEndringer()
+				.iterator());
+		assertThat(arkivElementEndringList.stream()
+				.map(ArkivElementEndring::toStringElementFraTil)
+				.collect(Collectors.toList()), hasItems(ArkivElementEndring.builder()
+						.arkivElement("Fildetaljer.filUuid")
+						.fraVerdi(null)
+						.tilVerdi(responseEntity.getBody().getFilUuid())
+						.build().toStringElementFraTil(),
+				ArkivElementEndring.builder()
+						.arkivElement("Fildetaljer.variantFormat")
+						.fraVerdi(null)
+						.tilVerdi("SLADDET")
+						.build().toStringElementFraTil()
+
+		));
+		TestTransaction.end();
 	}
 
 	@Test
-	public void FailWithBadRequestWhenVariantAlreadyExists() throws IOException {
+	public void shouldFailWithBadRequestWhenVariantAlreadyExists() throws IOException {
 		abacPermit();
 
 		Journalpost journalpost = joarkRepository.save(opprettHoveddokumentForIT());
@@ -166,7 +171,7 @@ public class Rjoark102IT extends AbstractArkiverVariantIT {
 				.variant(SLADDET)
 				.filType(FilTypeCode.PDF).build();
 
-		HttpEntity httpEntity = new HttpEntity(request, createHeadersWithAksjon(AksjonsTypeCode.ARKIVERING.name()));
+		HttpEntity httpEntity = new HttpEntity(request, createHeadersWithAksjon());
 
 		ResponseEntity<ArkiverVariantResponse> responseEntity = restTemplate.exchange(
 				URL_ARKIVERVARIANT,
@@ -185,7 +190,7 @@ public class Rjoark102IT extends AbstractArkiverVariantIT {
 				.variant(SLADDET)
 				.filType(FilTypeCode.PDF).build();
 
-		HttpEntity httpEntity2 = new HttpEntity(request, createHeadersWithAksjon(AksjonsTypeCode.ARKIVERING.name()));
+		HttpEntity httpEntity2 = new HttpEntity(request, createHeadersWithAksjon());
 
 		ResponseEntity<ArkiverVariantResponse> responseEntity2 = restTemplate.exchange(
 				URL_ARKIVERVARIANT,
@@ -206,7 +211,7 @@ public class Rjoark102IT extends AbstractArkiverVariantIT {
 				.variant(SLADDET)
 				.filType(FilTypeCode.PDF).build();
 
-		HttpEntity httpEntity = new HttpEntity(request, createHeadersWithAksjon(AksjonsTypeCode.ARKIVERING.name()));
+		HttpEntity httpEntity = new HttpEntity(request, createHeadersWithAksjon());
 
 		ResponseEntity<ArkiverVariantResponse> responseEntity = restTemplate.exchange(
 				URL_ARKIVERVARIANT,
@@ -229,7 +234,7 @@ public class Rjoark102IT extends AbstractArkiverVariantIT {
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
-		HttpEntity httpEntity = new HttpEntity(Base64.encodeBase64String(FIL), createHeadersNotSrvJoarkadmin());
+		HttpEntity httpEntity = new HttpEntity(Base64.encodeBase64String(FIL), createHeadersWithServiceUserToken("test"));
 
 		ResponseEntity<ArkiverVariantResponse> responseEntity = restTemplate.exchange(
 				URL_ARKIVERVARIANT,

@@ -1,11 +1,8 @@
 package no.nav.dokarkiv.kasserdokument.rjoark103;
 
 import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
-import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
-import no.nav.dokarkiv.core.domain.service.SkjermingService;
 import no.nav.dokarkiv.core.exceptions.DokumentInfoIkkeFunnetException;
-import no.nav.dokarkiv.core.exceptions.SkjermingIkkeFunnetException;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkDeleteRepository;
 import org.springframework.stereotype.Service;
@@ -21,16 +18,13 @@ public class KasserDokumentService {
 
 	private final DokumentinfoRepository dokumentInfoRepository;
 	private final JoarkDeleteRepository deleteRepository;
-	private final SkjermingService skjermingService;
 
 	@Inject
 	public KasserDokumentService(
 			DokumentinfoRepository dokumentinfoRepository,
-			JoarkDeleteRepository deleteRepository,
-			SkjermingService skjermingService) {
+			JoarkDeleteRepository deleteRepository) {
 		this.dokumentInfoRepository = dokumentinfoRepository;
 		this.deleteRepository = deleteRepository;
-		this.skjermingService = skjermingService;
 	}
 
 	public List<ArkivElementEndringTO> kasserDokument(KasserDokumentRequest request) {
@@ -39,7 +33,6 @@ public class KasserDokumentService {
 						() -> new DokumentInfoIkkeFunnetException(String.format(
 								"Kan ikke finne dokument med dokumentInfoId=%s", request.getDokumentInfoId())));
 
-		sjekkAtDokumentErLogiskKassert(dokumentInfoTilTidligKassering);
 		settKassasjonInfo(dokumentInfoTilTidligKassering, request.getKassertAvNavn());
 
 		List<ArkivElementEndringTO> arkivElementEndringTOList = opprettArkivElementEndring(dokumentInfoTilTidligKassering);
@@ -47,15 +40,6 @@ public class KasserDokumentService {
 		slettFildetaljerOgFil(request.getDokumentInfoId());
 
 		return arkivElementEndringTOList;
-	}
-
-	private void sjekkAtDokumentErLogiskKassert(DokumentInfo dokumentInfo) {
-		if (!skjermingService.isDokumentInfoKassert(dokumentInfo)) {
-			throw new SkjermingIkkeFunnetException(
-					String.format("Fildetaljene for dokumentInfoId=%s er ikke skjermet med skjermingType=%s, kan ikke kassere dokumentet",
-							dokumentInfo.getDokumentInfoId(),
-							SkjermingTypeCode.POL));
-		}
 	}
 
 	private void slettFildetaljerOgFil(Long dokumentInfoId) {

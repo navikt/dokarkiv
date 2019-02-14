@@ -1,18 +1,14 @@
 package no.nav.dokarkiv.kasserdokument.rjoark103;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class KasserDokumentResponse {
-	private final Long dokumentInfoId;
-
-	@JsonCreator
-	public KasserDokumentResponse(
-			@JsonProperty("dokumentInfoId") Long dokumentInfoId) {
-		this.dokumentInfoId = dokumentInfoId;
-	}
+	private Long dokumentInfoId;
 }

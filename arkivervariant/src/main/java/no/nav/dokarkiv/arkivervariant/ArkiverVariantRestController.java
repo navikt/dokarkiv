@@ -73,9 +73,6 @@ public class ArkiverVariantRestController {
 
 		ArkiverVariantResponse respons = arkiverVariantService.arkiverVariant(request);
 
-		AksjonsLoggTO aksjonsLoggTO = aksjonsLoggTOMapper.mapAksjonsLoggHeader(aksjonsLoggHeaderString, AksjonsTypeCode.ARKIVERING, null, request
-				.getDokumentInfoId());
-
 		List<ArkivElementEndringTO> arkivElementEndringTOList = Arrays.asList(
 				ArkivElementEndringTO.builder()
 						.arkivElement("Fildetaljer.filUuid")
@@ -89,6 +86,8 @@ public class ArkiverVariantRestController {
 						.build()
 		);
 
+		AksjonsLoggTO aksjonsLoggTO = aksjonsLoggTOMapper.mapAksjonsLoggHeader(aksjonsLoggHeaderString, AksjonsTypeCode.ARKIVERING, null, request
+				.getDokumentInfoId());
 		aksjonsLoggService.validateAndSaveAksjonsLogg(aksjonsLoggTO, arkivElementEndringTOList);
 
 		log.info("{} har arkivert variant= {} med dokumentInfoId={}",
