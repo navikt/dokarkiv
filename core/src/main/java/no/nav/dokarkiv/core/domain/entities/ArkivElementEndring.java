@@ -1,9 +1,7 @@
 package no.nav.dokarkiv.core.domain.entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -37,6 +35,7 @@ import java.time.LocalDateTime;
 @Immutable
 @NoArgsConstructor
 @AllArgsConstructor
+
 public class ArkivElementEndring {
 
 	@Id
@@ -63,7 +62,10 @@ public class ArkivElementEndring {
 	@Cascade({CascadeType.PERSIST, CascadeType.MERGE, CascadeType.SAVE_UPDATE, CascadeType.DELETE, CascadeType.DETACH})
 	private AksjonsLogg aksjonsLogg;
 
-	public String toString() {
-		return String.format("ArkivElementEndring(arkivElementEndringId=%s, arkivElement=%s)", arkivElementEndringId, arkivElement);
+	/**
+	 * Brukes i test
+	 */
+	public String toStringElementFraTil() {
+		return String.format("ArkivElementEndring(arkivElement=%s, fraVerdi=%s, tilVerdi=%s)", arkivElement, fraVerdi, tilVerdi);
 	}
 }

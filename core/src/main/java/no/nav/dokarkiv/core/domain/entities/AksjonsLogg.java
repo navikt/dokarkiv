@@ -3,9 +3,7 @@ package no.nav.dokarkiv.core.domain.entities;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
@@ -24,9 +22,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
@@ -34,8 +30,7 @@ import java.util.stream.Collectors;
 @Entity
 @Table(name = "T_AKSJONSLOGG")
 @Builder
-@Getter
-@Setter
+@Data
 @Immutable
 @NoArgsConstructor
 @AllArgsConstructor
@@ -80,9 +75,4 @@ public class AksjonsLogg {
 	@Cascade({CascadeType.PERSIST, CascadeType.MERGE, CascadeType.SAVE_UPDATE, CascadeType.DELETE, CascadeType.DETACH})
 	@Builder.Default
 	private final Set<ArkivElementEndring> arkivElementEndringer = new HashSet<>();
-
-	public String toString() {
-		return String.format("AksjonsLogg(aksjonsloggId=%s, aksjon=%s)", aksjonsloggId, aksjon);
-	}
-
 }

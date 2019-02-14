@@ -11,7 +11,6 @@ import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.exceptions.DokumentInfoIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.JournalpostDokumentInfoRelasjonIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
-import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
@@ -32,14 +31,15 @@ public class SlettArkivenhetOrchestrator {
 
 	private final JoarkRepository joarkRepository;
 	private final DokumentinfoRepository dokumentinfoRepository;
-	private final DokumentFilRepository dokumentFilRepository;
 	private final JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository;
 	private final SlettArkivenhetService slettArkivenhetService;
 
-	public SlettArkivenhetOrchestrator(JoarkRepository joarkRepository, DokumentinfoRepository dokumentinfoRepository, DokumentFilRepository dokumentFilRepository, JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository, SlettArkivenhetService slettArkivenhetService) {
+	public SlettArkivenhetOrchestrator(JoarkRepository joarkRepository,
+									   DokumentinfoRepository dokumentinfoRepository,
+									   JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository,
+									   SlettArkivenhetService slettArkivenhetService) {
 		this.joarkRepository = joarkRepository;
 		this.dokumentinfoRepository = dokumentinfoRepository;
-		this.dokumentFilRepository = dokumentFilRepository;
 		this.journalpostDokumentInfoRelasjonRepository = journalpostDokumentInfoRelasjonRepository;
 		this.slettArkivenhetService = slettArkivenhetService;
 	}
@@ -117,11 +117,8 @@ public class SlettArkivenhetOrchestrator {
 
 		if (Objects.nonNull(hoveddokOrigJp) &&
 				isFalse(journalpost.getJournalpostId().equals(hoveddokOrigJp.getJournalpostId()))) {
-			throw new JournalpostKanIkkeSlettesException(String.format("Journalpost kan ikke slettes fordi " +
-							"hoveddokument med dokumentInfoId=%s har originalJournalpostId=%s som er ulik journalposten som skal slettes",
-					journalpost.findHoveddokumentDokumentInfoRelasjon()
-							.getDokumentInfo()
-							.getDokumentInfoId(), hoveddokOrigJp.getJournalpostId()));
+			throw new JournalpostKanIkkeSlettesException(String.format("Journalpost kan ikke slettes fordi hoveddokumentet er splittet utifra journalpost=%s. Denne tjenesten støtter ikke sletting av splittete dokumenter", hoveddokOrigJp
+					.getJournalpostId()));
 		}
 	}
 }

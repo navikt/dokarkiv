@@ -42,12 +42,6 @@ public class RestWebMvcConfig implements WebMvcConfigurer {
 						"/rest/skjermarkivenhet",
 						"/rest/arkivervariant",
 						"/rest/kasserdokument",
-						"/rest/slettarkivenhet",
-						"/rest/arkiverkorrigertdokument/",
-						"/rest/arkiverkorrigertdokument/angre/**",
-						"/rest/fysiskslettdokument/**",
-						"/rest/logisktidligkassasjon/**",
-						"/rest/logiskslettdokument/**",
-						"/rest/fysisktidligkassasjon/**");
+						"/rest/slettarkivenhet");
 	}
 }

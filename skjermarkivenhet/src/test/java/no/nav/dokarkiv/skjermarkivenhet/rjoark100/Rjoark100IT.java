@@ -227,4 +227,20 @@ public class Rjoark100IT extends AbstractSkjermArkivenhetIT {
 		assertThat(aksjonsLoggList.size(), is(0));
 	}
 
+	@Test
+	public void skalIkkeFåTilgangHvisIkkeJoarkadmin() {
+
+		HttpEntity httpEntity = new HttpEntity(
+				createSkjermarkivenhetRequest(SkjermingTypeCode.POL, ArkivenhetCode.JOURNALPOST, 1L, null, null),
+				createHeadersWithServiceUserToken(NO_ACCESS_SERVICE_USER_ID));
+
+		ResponseEntity<String> responseEntity = restTemplate.exchange(
+				URL_SKJERMARKIVENHET,
+				HttpMethod.POST,
+				httpEntity,
+				String.class);
+
+		assertThat(responseEntity.getStatusCode(), is(HttpStatus.UNAUTHORIZED));
+	}
+
 }
