@@ -39,9 +39,10 @@ public class RestWebMvcConfig implements WebMvcConfigurer {
 		registry.addInterceptor(new ValidateGraphqlNavConsumerInterceptor())
 				.addPathPatterns(
 						"/rest/graphql",
-						"/rest/skjermarkivenhet/*",
-						"/rest/arkivervariant/*",
-						"/rest/kasserdokument/*",
-						"/rest/slettarkivenhet/*");
+						"/rest/skjermarkivenhet/", "/rest/skjermarkivenhet",
+						"/rest/arkivervariant/", "/rest/arkivervariant",
+						"/rest/kasserdokument/", "/rest/kasserdokument",
+						"/rest/slettarkivenhet/", "/rest/slettarkivenhet"
+				);
 	}
 }

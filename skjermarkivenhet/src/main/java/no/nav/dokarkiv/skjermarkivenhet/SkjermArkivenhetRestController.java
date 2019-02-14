@@ -47,8 +47,6 @@ import java.util.Objects;
 @RequestMapping("rest")
 public class SkjermArkivenhetRestController {
 
-	private static final String LOGG_MOTTATT_KALL = " har mottat kall med arkivenhet={}";
-
 	private final AbacSecurityService abacSecurityService;
 	private final SkjermArkivenhetService skjermArkivenhetService;
 	private final OpphevSkjermArkivenhetService opphevSkjermArkivenhetService;
@@ -82,6 +80,7 @@ public class SkjermArkivenhetRestController {
 		validerAbac(skjermArkivenhetRequest);
 		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark100");
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
+
 		log.info("{} har mottat kall med arkivenhet={}, journalpostId={} og dokumentInfoId={}", MDC.get(MDCConstants.MDC_REQUEST_ID), skjermArkivenhetRequest
 				.getJournalpostId(), skjermArkivenhetRequest.getDokumentInfoId());
 		switch (skjermArkivenhetRequest.getArkivenhet()) {
@@ -130,6 +129,7 @@ public class SkjermArkivenhetRestController {
 		validerAtRequestHarSkjermingOgArkivenhet(skjermArkivenhetRequest.getSkjerming(), skjermArkivenhetRequest.getArkivenhet());
 		validerAbac(skjermArkivenhetRequest);
 		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark101");
+
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
 		log.info("{} har mottat kall med arkivenhet={}, journalpostId={} og dokumentInfoId={}", MDC.get(MDCConstants.MDC_REQUEST_ID), skjermArkivenhetRequest
 				.getJournalpostId(), skjermArkivenhetRequest.getDokumentInfoId());
