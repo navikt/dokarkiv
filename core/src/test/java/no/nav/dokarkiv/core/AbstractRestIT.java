@@ -49,7 +49,7 @@ import java.util.Objects;
 @AutoConfigureCache
 @AutoConfigureDataLdap
 @Transactional
-public class AbstractRestIT {
+public abstract class AbstractRestIT {
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
