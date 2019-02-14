@@ -2,6 +2,7 @@ package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark110;
 
 import lombok.Builder;
 import lombok.Data;
+import no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode;
 
 import java.util.Date;
 import java.util.List;
@@ -18,4 +19,5 @@ public class SettJournalpostAttributterRequestTo {
 	private String endretAvNavn;
 	private Date datoSendtPrint;
 	private Integer antallRetur;
+	private UtsendingsKanalCode utsendingskanal;
 }
