@@ -1458,6 +1458,10 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 				.filter(relasjon -> relasjon.getSkjermingType() == null)
 				.collect(Collectors.toSet()));
 	}
+
+	public Set<JournalpostDokumentInfoRelasjon> getJournalpostDokumentInfoRelasjonerIncludingSkjermet() {
+		return Collections.unmodifiableSet(journalpostDokumentInfoRelasjoner);
+	}
 	/**
 	 * Getter for the journalpostDokumentInfoRelasjoner property.
 	 *

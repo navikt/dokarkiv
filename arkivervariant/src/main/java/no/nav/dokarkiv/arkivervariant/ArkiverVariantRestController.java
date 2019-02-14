@@ -39,7 +39,7 @@ import java.util.List;
 @RequestMapping("rest/")
 public class ArkiverVariantRestController {
 
-	private final no.nav.dokarkiv.arkivervariant.rjoark102.ArkiverVariantService arkiverVariantService;
+	private final ArkiverVariantService arkiverVariantService;
 	private final AbacSecurityService abacSecurityService;
 	private final AksjonsLoggService aksjonsLoggService;
 	private final AksjonsLoggTOMapper aksjonsLoggTOMapper;

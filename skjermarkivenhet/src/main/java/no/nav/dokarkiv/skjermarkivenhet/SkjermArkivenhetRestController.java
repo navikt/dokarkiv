@@ -82,21 +82,17 @@ public class SkjermArkivenhetRestController {
 		validerAbac(skjermArkivenhetRequest);
 		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark100");
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
-
+		log.info("{} har mottat kall med arkivenhet={}, journalpostId={} og dokumentInfoId={}", MDC.get(MDCConstants.MDC_REQUEST_ID), skjermArkivenhetRequest
+				.getJournalpostId(), skjermArkivenhetRequest.getDokumentInfoId());
 		switch (skjermArkivenhetRequest.getArkivenhet()) {
 			case JOURNALPOST:
 				assertNotNullOrEmpty(skjermArkivenhetRequest.getJournalpostId(), "journalpostId");
-				log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + LOGG_MOTTATT_KALL, skjermArkivenhetRequest.getArkivenhet() +
-						" og journalpostId={}", skjermArkivenhetRequest.getJournalpostId());
 				skjermArkivenhetService.skjermJournalpost(
 						skjermArkivenhetRequest.getJournalpostId(), skjermArkivenhetRequest.getSkjerming());
 				break;
 			case VEDLEGG:
 				assertNotNullOrEmpty(skjermArkivenhetRequest.getJournalpostId(), "journalpostId");
 				assertNotNullOrEmpty(skjermArkivenhetRequest.getDokumentInfoId(), "dokumentInfoId");
-				log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + LOGG_MOTTATT_KALL, skjermArkivenhetRequest.getArkivenhet() +
-								", journalpostId={} og dokumentInfoId={}",
-						skjermArkivenhetRequest.getJournalpostId(), skjermArkivenhetRequest.getDokumentInfoId());
 				skjermArkivenhetService.skjermDokumentInfo(
 						skjermArkivenhetRequest.getJournalpostId(), skjermArkivenhetRequest.getDokumentInfoId(), skjermArkivenhetRequest
 								.getSkjerming());
@@ -104,16 +100,12 @@ public class SkjermArkivenhetRestController {
 			case DOKUMENT_FIL:
 				assertNotNullOrEmpty(skjermArkivenhetRequest.getDokumentInfoId(), "dokumentInfoId");
 				assertNotNullOrEmpty(skjermArkivenhetRequest.getVariant(), "variant");
-				log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + LOGG_MOTTATT_KALL, skjermArkivenhetRequest.getArkivenhet() +
-						", dokumentInfoId={} og variant={}", skjermArkivenhetRequest.getJournalpostId(), skjermArkivenhetRequest
-						.getDokumentInfoId());
 				skjermArkivenhetService.skjermDokumentFil(skjermArkivenhetRequest.getDokumentInfoId(), skjermArkivenhetRequest
 						.getVariant(), skjermArkivenhetRequest.getSkjerming());
 		}
 
 		List<ArkivElementEndringTO> arkivElementEndringTOList = createArkivElementEndringTO(skjermArkivenhetRequest.getArkivenhet(), skjermArkivenhetRequest
-				.getVariant(), null, SkjermingTypeCode.POL
-				.name());
+				.getVariant(), null, skjermArkivenhetRequest.getSkjerming().name());
 		lagreAksjonsLogg(skjermArkivenhetRequest.getJournalpostId(), skjermArkivenhetRequest.getDokumentInfoId(), aksjonsLoggHeaderString, arkivElementEndringTOList);
 
 		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har skjermet arkivenhet {}", skjermArkivenhetRequest.getArkivenhet());
@@ -139,21 +131,18 @@ public class SkjermArkivenhetRestController {
 		validerAbac(skjermArkivenhetRequest);
 		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark101");
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
+		log.info("{} har mottat kall med arkivenhet={}, journalpostId={} og dokumentInfoId={}", MDC.get(MDCConstants.MDC_REQUEST_ID), skjermArkivenhetRequest
+				.getJournalpostId(), skjermArkivenhetRequest.getDokumentInfoId());
 
 		switch (skjermArkivenhetRequest.getArkivenhet()) {
 			case JOURNALPOST:
 				assertNotNullOrEmpty(skjermArkivenhetRequest.getJournalpostId(), "journalpostId");
-				log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + LOGG_MOTTATT_KALL, skjermArkivenhetRequest.getArkivenhet() +
-						" og journalpostId={}", skjermArkivenhetRequest.getJournalpostId());
 				opphevSkjermArkivenhetService.opphevSkjermJournalpost(
 						skjermArkivenhetRequest.getJournalpostId(), skjermArkivenhetRequest.getSkjerming());
 				break;
 			case VEDLEGG:
 				assertNotNullOrEmpty(skjermArkivenhetRequest.getJournalpostId(), "journalpostId");
 				assertNotNullOrEmpty(skjermArkivenhetRequest.getDokumentInfoId(), "dokumentInfoId");
-				log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + LOGG_MOTTATT_KALL, skjermArkivenhetRequest.getArkivenhet() +
-								", journalpostId={} og dokumentInfoId={}",
-						skjermArkivenhetRequest.getJournalpostId(), skjermArkivenhetRequest.getDokumentInfoId());
 				opphevSkjermArkivenhetService.opphevSkjermDokumentInfo(
 						skjermArkivenhetRequest.getJournalpostId(), skjermArkivenhetRequest.getDokumentInfoId(), skjermArkivenhetRequest
 								.getSkjerming());
@@ -161,16 +150,12 @@ public class SkjermArkivenhetRestController {
 			case DOKUMENT_FIL:
 				assertNotNullOrEmpty(skjermArkivenhetRequest.getDokumentInfoId(), "dokumentInfoId");
 				assertNotNullOrEmpty(skjermArkivenhetRequest.getVariant(), "variant");
-				log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + LOGG_MOTTATT_KALL, skjermArkivenhetRequest.getArkivenhet() +
-						", dokumentInfoId={} og variant={}", skjermArkivenhetRequest.getJournalpostId(), skjermArkivenhetRequest
-						.getDokumentInfoId());
 				opphevSkjermArkivenhetService.opphevSkjermDokumentFil(skjermArkivenhetRequest.getDokumentInfoId(), skjermArkivenhetRequest
 						.getVariant());
 		}
 
 		List<ArkivElementEndringTO> arkivElementEndringTOList = createArkivElementEndringTO(skjermArkivenhetRequest.getArkivenhet(), skjermArkivenhetRequest
-				.getVariant(), SkjermingTypeCode.POL
-				.name(), null);
+				.getVariant(), skjermArkivenhetRequest.getSkjerming().name(), null);
 		lagreAksjonsLogg(skjermArkivenhetRequest.getJournalpostId(), skjermArkivenhetRequest.getDokumentInfoId(), aksjonsLoggHeaderString, arkivElementEndringTOList);
 
 		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har opphevet skjerming av arkivenhet {}", skjermArkivenhetRequest.getArkivenhet());

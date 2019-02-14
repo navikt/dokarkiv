@@ -104,7 +104,7 @@ public class SlettArkivenhetOrchestrator {
 
 		List<DokumentInfo> dokumenterMedJournalpostSattSomOriginalJournalpost =
 				dokumentinfoRepository.findByOriginalJournalpostJournalpostId(journalpost.getJournalpostId());
-		if (dokumenterMedJournalpostSattSomOriginalJournalpost.size() > journalpost.getJournalpostDokumentInfoRelasjoner()
+		if (dokumenterMedJournalpostSattSomOriginalJournalpost.size() > journalpost.getJournalpostDokumentInfoRelasjonerIncludingSkjermet()
 				.size()) {
 			throw new JournalpostKanIkkeSlettesException(String.format("Journalpost=%s er splittet og kan ikke slettes før de splittete dokumentene er slettet",
 					journalpost.getJournalpostId()));
