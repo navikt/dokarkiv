@@ -37,7 +37,6 @@ final class FinnJournalpostSqlGenerator {
 				"                        AND tj.k_journal_s IN ('M', 'MO')\n" +
 				"     ),\n" +
 				"     relevantedata AS (SELECT j.journalpost_id      AS journalpostid,\n" +
-				"                              j.journalf_enhet      AS journalforendeenhetid,\n" +
 				"                              j.innhold             AS innhold,\n" +
 				"                              j.k_fagomrade         AS fagomrade,\n" +
 				"                              j.k_behandlingstema   AS behandlingstema,\n" +

@@ -21,7 +21,6 @@ public class JournalpostDto {
 	private final Long prevJournalpostId;
 	private final Long nextJournalpostId;
 	private final Long totaltAntall;
-	private final String journalForendeEnhetId;
 	private final String innhold;
 	private final FagomradeCode fagomrade;
 	private final Behandlingstema behandlingstema;
