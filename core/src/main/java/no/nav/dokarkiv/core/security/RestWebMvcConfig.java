@@ -45,5 +45,8 @@ public class RestWebMvcConfig implements WebMvcConfigurer {
 						"/rest/logisktidligkassasjon/**",
 						"/rest/logiskslettdokument/**",
 						"/rest/fysisktidligkassasjon/**");
+		registry.addInterceptor(new PopulateMDCHandler())
+				.addPathPatterns(oidcAuthProperties.getSecuredPath(),
+						"/hentjournalsakinfo/**");
 	}
 }
