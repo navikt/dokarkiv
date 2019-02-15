@@ -19,6 +19,7 @@ import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
+import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
@@ -44,6 +45,19 @@ public class JournalpostTest {
 	
 	@InjectMocks
 	private Journalpost journalpost;
+
+	@Test
+	public void shouldNotReturnSkjermetJournalpostRelasjoner() {
+
+		Journalpost journalpost = getJournalpostBuilder().dokumentInfoRelasjoner(
+				JournalpostDokumentInfoRelasjon.builder().tilknyttetJournalpostSom(HOVEDDOKUMENT).skjermingType(SkjermingTypeCode.POL).build(),
+				JournalpostDokumentInfoRelasjon.builder().tilknyttetJournalpostSom(VEDLEGG).skjermingType(SkjermingTypeCode.POL).build()
+		).build();
+
+		assertThat(journalpost.getJournalpostDokumentInfoRelasjoner().size(), is(0));
+		assertThat(journalpost.findDokumentInfoRelasjonByTilknyttetJournalpostSom(VEDLEGG).size(), is(0));
+		assertThat(journalpost.getJournalpostDokumentInfoRelasjonerAdmin().size(), is(2));
+	}
 	
 	@Test
 	public void testRemoveAllUsers() {
