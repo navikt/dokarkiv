@@ -65,6 +65,10 @@ public interface JoarkDeleteRepository extends Repository<Journalpost, Long> {
 	void deleteBrukereByJournalpostId(@Param("journalpostId") Long journalpostId);
 
 	@Modifying
+	@Query(value = "delete from t_dok_url_info where journalpost_id = :journalpostId", nativeQuery = true)
+	void deleteDokUrlInfoByJournalpostId(@Param("journalpostId") Long journalpostId);
+
+	@Modifying
 	@Query(value = "delete from t_journalpost where journalpost_id = :journalpostId", nativeQuery = true)
 	void deleteJournalpostByJournalpostId(@Param("journalpostId") Long journalpostId);
 }

@@ -79,6 +79,7 @@ public class SlettArkivenhetService {
 	}
 
 	public List<ArkivElementEndringTO> slettJournalpost(Long journalpostId) {
+		deleteRepository.deleteDokUrlInfoByJournalpostId(journalpostId);
 		deleteRepository.deleteKryssreferanseByJournalpostId(journalpostId);
 		deleteRepository.deleteReturInfoByJournalpostId(journalpostId);
 		deleteRepository.deleteJPTilleggByJournalpostId(journalpostId);
