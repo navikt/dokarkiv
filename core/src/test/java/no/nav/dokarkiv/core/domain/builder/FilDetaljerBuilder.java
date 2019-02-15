@@ -3,6 +3,7 @@ package no.nav.dokarkiv.core.domain.builder;
 import no.nav.dokarkiv.core.domain.ChangeStamp;
 import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
 import no.nav.dokarkiv.core.domain.codes.OnDemandInstansCode;
+import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import org.apache.commons.lang3.StringUtils;
@@ -39,7 +40,7 @@ public class FilDetaljerBuilder extends Builder<FilDetaljer> {
 	private String endretKildeNavn;
 	private byte[] fileContent; //transient field
 	private ChangeStamp changeStamp;
-	
+
 	public FilDetaljerBuilder fildetaljerId(Long value){ this.fildetaljerId = value; return this; }
 	public FilDetaljerBuilder filUuid(String value){ this.filUuid = value; return this; }
 	public FilDetaljerBuilder onDemandId(String value){ this.onDemandId = value; return this; }

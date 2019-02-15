@@ -61,7 +61,7 @@ public class HentFerdigstilteDokumenterService {
 				DokumentInfo dokumentInfo = journalpost.findDokumentInfoById(dokumentInfoId);
 				hentFerdigstilteRokumenterValidator.validateDokumentInfo(journalpostId, dokumentInfoId, dokumentInfo);
 
-				FilDetaljer filDetaljer = skjermingService.getVariantSkjermet(dokumentInfo, VariantFormatCode.ARKIV);
+				FilDetaljer filDetaljer = dokumentInfo.findFilDetaljerByVariantFormat(VariantFormatCode.ARKIV);
 				if (filDetaljer == null) {
 					throw new FilDetaljerNotFoundException("Fildetaljer ikke funnet for journalpostId=" + journalpostId + ", + dokumentInfoId=" + dokumentInfoId
 							+ ",variant=" + VariantFormatCode.ARKIV.name());

@@ -1,6 +1,7 @@
 package no.nav.dokarkiv.core.domain.service;
 
-import no.nav.dokarkiv.core.MDCConstants;
+import static org.apache.commons.lang3.BooleanUtils.isFalse;
+
 import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
@@ -13,8 +14,6 @@ import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
-import no.nav.modig.core.context.SubjectHandler;
-import org.jboss.logging.MDC;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -69,10 +68,10 @@ public class SkjermingService {
 
 	public boolean isDokumentInfoIdKassert(Long dokumentInfoId) {
 		Optional<DokumentInfo> dokumentInfo = dokumentinfoRepository.findByDokumentInfoId(dokumentInfoId);
-		if (dokumentInfo.isPresent()) {
-			return isDokumentInfoKassert(dokumentInfo.get());
-		}
-		return false;
+		return dokumentInfo.map(dokumentInfo1 -> dokumentInfo1.getFildetaljerListe()
+				.stream()
+				.allMatch(filDetaljer -> isFalse(filDetaljer.getSkjermingType() == null)))
+				.orElse(false);
 	}
 
 	public boolean isVariantSkjermet(Long dokumentInfoId, VariantFormatCode variant) {
@@ -86,54 +85,31 @@ public class SkjermingService {
 		return false;
 	}
 
-	//TODO: Gjør denne generell
-	public FilDetaljer getVariantSkjermet(DokumentInfo dokumentInfo, VariantFormatCode variant) {
-		String consumer = hentBrukerSomKaller();
-
-		FilDetaljer filDetaljer = dokumentInfo.findFilDetaljerByVariantFormat(variant);
-		if (!"srvjoarkadmin".equals(consumer) && filDetaljer != null) {
-			if (SkjermingTypeCode.POL.equals(filDetaljer.getSkjermingType())) {
-				filDetaljer = dokumentInfo.findFilDetaljerByVariantFormat(VariantFormatCode.SLADDET);
-				if (filDetaljer != null && SkjermingTypeCode.POL.equals(filDetaljer.getSkjermingType())) {
-					filDetaljer = null;
-				}
-			}
-		}
-		return filDetaljer;
-	}
-
-	private String hentBrukerSomKaller() {
-		String consumer;
-		if (SubjectHandler.getSubjectHandler().getConsumerId() == null) {
-			if (MDC.get(MDCConstants.MDC_CONSUMER_ID) != null) {
-				consumer = MDC.get(MDCConstants.MDC_CONSUMER_ID).toString();
-			} else if (MDC.get("user") != null) {
-				consumer = MDC.get("user").toString();
-			} else {
-				consumer = MDC.get(MDCConstants.MDC_USER_ID).toString();
-			}
-		} else {
-			consumer = SubjectHandler.getSubjectHandler().getConsumerId();
-		}
-		return consumer;
-	}
-
-	public static Long convertBigToLong(Object value) {
-		if (value instanceof BigDecimal) {
-			return ((BigDecimal) value).longValue();
-		} else if (value instanceof BigInteger) {
-			return ((BigInteger) value).longValue();
-		}
-		return (Long) value;
-	}
-
-	public Boolean isDokumentInfoKassert(DokumentInfo dokumentInfo) {
-		return dokumentInfo.getFildetaljerListe().stream().allMatch(filDetaljer -> SkjermingTypeCode.POL.equals(filDetaljer.getSkjermingType()));
-	}
-
 	public void setVariantSkjermet(DokumentInfo dokumentInfo, VariantFormatCode variantFormatCode, SkjermingTypeCode SkjermingTypeCode) {
 		FilDetaljer filDetaljer = dokumentInfo.findFilDetaljerByVariantFormat(variantFormatCode);
-		setFildetaljerBegrensning(filDetaljer, SkjermingTypeCode);
+		setFildetaljerSkjerming(filDetaljer, SkjermingTypeCode);
+	}
+
+	public void setJournalpostBegrensning(Journalpost journalpost, SkjermingTypeCode SkjermingTypeCode) {
+		Query q = entityManager.createQuery("update Journalpost set skjermingType = :begrenset where journalpostId = :journalpostId").setParameter("journalpostId", journalpost.getJournalpostId()).setParameter("begrenset", SkjermingTypeCode);
+		q.executeUpdate();
+	}
+
+	private Journalpost hentJournalpost(Long journalpostId) {
+		return joarkRepository.findById(journalpostId).orElseThrow(() ->
+				new JournalpostIkkeFunnetException("Kan ikke finne journalpost med journalpostId=" + journalpostId));
+	}
+
+	private DokumentInfo hentDokumentInfo(Long dokumentInfoId) {
+		return dokumentinfoRepository.findByDokumentInfoId(dokumentInfoId).orElseThrow(() ->
+				new DokumentInfoIkkeFunnetException(String.format("Kan ikke finne dokumentInfo med dokumentInfoId=%s", dokumentInfoId)));
+	}
+
+	private JournalpostDokumentInfoRelasjon hentJpDokInfoRel(Long journalpostId, Long dokumentInfoId) {
+		return journalpostDokumentInfoRelasjonRepository.findByJournalpostJournalpostIdAndDokumentInfoDokumentInfoId(
+				journalpostId, dokumentInfoId)
+				.orElseThrow(() -> new JournalpostDokumentInfoRelasjonIkkeFunnetException(String.format(
+						"Kan ikke finne journalpostDokumentInfoRelasjon med journalpostId=%s og dokumentInfoId=%s", journalpostId, dokumentInfoId)));
 	}
 
 	public void skjermVariantByDokumentInfoIdAndVariantFormatAndSkjermingType(Long dokumentInfoId, VariantFormatCode variantFormat, SkjermingTypeCode skjermingType) {
@@ -146,16 +122,6 @@ public class SkjermingService {
 		setVariantSkjermet(dokumentInfo, variantFormat, null);
 	}
 
-	private DokumentInfo hentDokumentInfo(Long dokumentInfoId) {
-		return dokumentinfoRepository.findByDokumentInfoId(dokumentInfoId).orElseThrow(() ->
-				new DokumentInfoIkkeFunnetException(String.format("Kan ikke finne dokumentInfo med dokumentInfoId=%s", dokumentInfoId)));
-	}
-
-	public void setJournalpostBegrensning(Journalpost journalpost, SkjermingTypeCode SkjermingTypeCode) {
-		Query q = entityManager.createQuery("update Journalpost set skjermingType = :begrenset where journalpostId = :journalpostId").setParameter("journalpostId", journalpost.getJournalpostId()).setParameter("begrenset", SkjermingTypeCode);
-		q.executeUpdate();
-	}
-
 	public void skjermJournalpostByJournalpostIdAndSkjermingType(Long journalpostId, SkjermingTypeCode skjermingTypeCode) {
 		Journalpost journalpost = hentJournalpost(journalpostId);
 		setJournalpostBegrensning(journalpost, skjermingTypeCode);
@@ -164,16 +130,6 @@ public class SkjermingService {
 	public void opphevSkjermJournalpostByJournalpostId(Long journalpostId) {
 		Journalpost journalpost = hentJournalpost(journalpostId);
 		setJournalpostBegrensning(journalpost, null);
-	}
-
-	private Journalpost hentJournalpost(Long journalpostId) {
-		return joarkRepository.findById(journalpostId).orElseThrow(() ->
-				new JournalpostIkkeFunnetException("Kan ikke finne journalpost med journalpostId=" + journalpostId));
-	}
-
-	public void setJpDokInfoRelBegrensning(JournalpostDokumentInfoRelasjon rel, SkjermingTypeCode SkjermingTypeCode) {
-		Query q = entityManager.createQuery("update JournalpostDokumentInfoRelasjon set skjermingType = :begrenset where journalpostDokumentInfoRelasjonId = :relId").setParameter("relId", rel.getJournalpostDokumentInfoRelasjonId()).setParameter("begrenset", SkjermingTypeCode);
-		q.executeUpdate();
 	}
 
 	public void skjermJpDokInfoRelByJournalpostIdAndDokumentInfoIdAndSkjermingType(Long journalpostId, Long dokumentInfoId, SkjermingTypeCode skjermingTypeCode) {
@@ -186,21 +142,29 @@ public class SkjermingService {
 		setJpDokInfoRelBegrensning(rel, null);
 	}
 
-	private JournalpostDokumentInfoRelasjon hentJpDokInfoRel(Long journalpostId, Long dokumentInfoId) {
-		return journalpostDokumentInfoRelasjonRepository.findByJournalpostJournalpostIdAndDokumentInfoDokumentInfoId(
-				journalpostId, dokumentInfoId)
-				.orElseThrow(() -> new JournalpostDokumentInfoRelasjonIkkeFunnetException(String.format(
-						"Kan ikke finne journalpostDokumentInfoRelasjon med journalpostId=%s og dokumentInfoId=%s", journalpostId, dokumentInfoId)));
-	}
-
 	public void setDokumentKassert(DokumentInfo dokumentInfo, SkjermingTypeCode SkjermingTypeCode) {
 		for (FilDetaljer filDetaljer : dokumentInfo.getFildetaljerListe()) {
-			setFildetaljerBegrensning(filDetaljer, SkjermingTypeCode);
+			setFildetaljerSkjerming(filDetaljer, SkjermingTypeCode);
 		}
 	}
 
-	public void setFildetaljerBegrensning(FilDetaljer filDetaljer, SkjermingTypeCode SkjermingTypeCode) {
+	public void setFildetaljerSkjerming(FilDetaljer filDetaljer, SkjermingTypeCode SkjermingTypeCode) {
 		Query q = entityManager.createQuery("update FilDetaljer set skjermingType = :begrenset where fildetaljerId = :filDetaljerId").setParameter("filDetaljerId", filDetaljer.getFildetaljerId()).setParameter("begrenset", SkjermingTypeCode);
 		q.executeUpdate();
 	}
+
+	public void setJpDokInfoRelBegrensning(JournalpostDokumentInfoRelasjon rel, SkjermingTypeCode SkjermingTypeCode) {
+		Query q = entityManager.createQuery("update JournalpostDokumentInfoRelasjon set skjermingType = :begrenset where journalpostDokumentInfoRelasjonId = :relId").setParameter("relId", rel.getJournalpostDokumentInfoRelasjonId()).setParameter("begrenset", SkjermingTypeCode);
+		q.executeUpdate();
+	}
+
+	public static Long convertBigToLong(Object value) {
+		if (value instanceof BigDecimal) {
+			return ((BigDecimal) value).longValue();
+		} else if (value instanceof BigInteger) {
+			return ((BigInteger) value).longValue();
+		}
+		return (Long) value;
+	}
+
 }

@@ -63,8 +63,6 @@ public class DefaultHentDokumentUrlServiceTest {
 	private DefaultHentDokumentUrl hentDokumentUrlMock;
 	@Mock
 	private JoarkRepositorySkjermet joarkRepositoryMock;
-	@Mock
-	private SkjermingService skjermingService;
 
 	@Captor
 	private ArgumentCaptor<HentDokumentUrlRequest> delegateRequestCaptor;
@@ -165,7 +163,6 @@ public class DefaultHentDokumentUrlServiceTest {
 
 	@Test
 	public void shouldCallDelegateWithCorrectValues() throws Exception {
-		when(skjermingService.getVariantSkjermet(any(DokumentInfo.class), eq(VariantFormatCode.ARKIV))).thenReturn(FilDetaljer.builder().filUuid(FIL_UUID).build());
 		when(joarkRepositoryMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(createJournalPost()));
 		when(hentDokumentUrlMock.hentDokumentUrl(isA(HentDokumentUrlRequest.class))).thenReturn(
 				new HentDokumentUrlResponse("Test"));
@@ -180,7 +177,6 @@ public class DefaultHentDokumentUrlServiceTest {
 
 	@Test
 	public void shouldCallDelegateWithCorrectValuesSkjermet() throws Exception {
-		when(skjermingService.getVariantSkjermet(any(DokumentInfo.class), eq(VariantFormatCode.ARKIV))).thenReturn(FilDetaljer.builder().filUuid(FIL_UUID_SLADDET).build());
 		when(joarkRepositoryMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(createJournalPost()));
 		when(hentDokumentUrlMock.hentDokumentUrl(isA(HentDokumentUrlRequest.class))).thenReturn(
 				new HentDokumentUrlResponse("Test"));
@@ -198,7 +194,6 @@ public class DefaultHentDokumentUrlServiceTest {
 	public void shouldReturnDokumentUrl() throws Exception {
 		String dokumentUrl = "nav.no/joark/dokument123";
 		Journalpost journalpost = createJournalPost();
-		when(skjermingService.getVariantSkjermet(any(DokumentInfo.class), eq(VariantFormatCode.ARKIV))).thenReturn(FilDetaljer.builder().filUuid(FIL_UUID).build());
 		when(joarkRepositoryMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(journalpost));
 		when(hentDokumentUrlMock.hentDokumentUrl(isA(HentDokumentUrlRequest.class))).thenReturn(
 				new HentDokumentUrlResponse(dokumentUrl));

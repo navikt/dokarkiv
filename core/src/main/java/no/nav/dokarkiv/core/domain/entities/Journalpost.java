@@ -1459,7 +1459,7 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 				.collect(Collectors.toSet()));
 	}
 
-	public Set<JournalpostDokumentInfoRelasjon> getJournalpostDokumentInfoRelasjonerIncludingSkjermet() {
+	public Set<JournalpostDokumentInfoRelasjon> getJournalpostDokumentInfoRelasjonerAdmin() {
 		return Collections.unmodifiableSet(journalpostDokumentInfoRelasjoner);
 	}
 	/**

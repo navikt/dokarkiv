@@ -25,19 +25,12 @@ public abstract class AbstractDocumentOperation {
 	@Inject
 	protected DokumentFilRepository dokumentFilRepository;
 
-	@Inject
-	protected SkjermingService skjermingService;
-
 	public void setJoarkRepository(JoarkRepositorySkjermet joarkRepository) {
 		this.joarkRepository = joarkRepository;
 	}
 
 	public void setDokumentFilRepository(DokumentFilRepository dokumentFilRepository) {
 		this.dokumentFilRepository = dokumentFilRepository;
-	}
-
-	public void setSkjermingService(SkjermingService skjermingService) {
-		this.skjermingService = skjermingService;
 	}
 
 	/**

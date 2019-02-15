@@ -130,7 +130,7 @@ public class HentMinTilgjengeligJournalpostListeV2ResponseMapper {
 
 	private JournalfoertDokumentInfo mapJournalfoertDokumentInfo(DokumentInfo dokumentInfo) {
 		final Optional<FilDetaljer> filDetaljer = dokumentInfo.getFildetaljerListe().stream().findFirst();
-		if(filDetaljer.isPresent() && !skjermingService.isDokumentInfoKassert(dokumentInfo)) {
+		if(filDetaljer.isPresent()) {
 			DokumentInnhold dokumentInnhold = mapDokumentInnhold(filDetaljer.get());
 			return new JournalfoertDokumentInfo()
 					.withDokumentId(dokumentInfo.getDokumentInfoId().toString())

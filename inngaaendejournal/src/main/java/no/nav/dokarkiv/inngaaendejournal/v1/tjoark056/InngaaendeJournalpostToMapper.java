@@ -38,14 +38,7 @@ import java.util.stream.Collectors;
 @Component
 public final class InngaaendeJournalpostToMapper {
 
-	@Inject
-	private SkjermingService skjermingService;
-
 	private static final List<JournalStatusCode> MIDLERTIDIG_STATUS = Arrays.asList(JournalStatusCode.M, JournalStatusCode.MO, JournalStatusCode.UB, JournalStatusCode.OD);
-
-	public InngaaendeJournalpostToMapper(SkjermingService skjermingService) {
-		this.skjermingService = skjermingService;
-	}
 
 	public InngaaendeJournalpostTo map(Journalpost journalpost) {
 		try {
@@ -114,7 +107,7 @@ public final class InngaaendeJournalpostToMapper {
 				.dokumenttypeId(dokumentInfo.getDokumenttypeId())
 				.dokumentId(dokumentInfo.getDokumentInfoId())
 				.dokumenttilstand(mapDokumenttilstand(dokumentInfo))
-				.dokumentInnhold(mapDokumentinnhold(dokumentInfo, dokumentInfo.getFildetaljerListe()))
+				.dokumentInnhold(mapDokumentinnhold(dokumentInfo.getFildetaljerListe()))
 				.build();
 	}
 
@@ -130,20 +123,16 @@ public final class InngaaendeJournalpostToMapper {
 		}
 	}
 
-	private List<DokumentInnholdTo> mapDokumentinnhold(DokumentInfo dokumentInfo, Set<FilDetaljer> filDetaljers) {
+	private List<DokumentInnholdTo> mapDokumentinnhold(Set<FilDetaljer> filDetaljers) {
 		if(filDetaljers.isEmpty()) {
 			return Collections.emptyList();
 		} else {
-			if (!skjermingService.isDokumentInfoKassert(dokumentInfo)) {
-				return filDetaljers.stream().filter(filDetaljer -> !filDetaljer.getVariantFormat().equals(VariantFormatCode.SLADDET))
+				return filDetaljers.stream()
 						.map(filDetaljer -> DokumentInnholdTo.builder()
 								.arkivFiltype(filDetaljer.getFiltype())
 								.variantFormat(filDetaljer.getVariantFormat())
 								.build()).collect(Collectors.toList());
-			} else {
-				return Collections.emptyList();
 			}
-		}
 	}
 
 	private List<DokumentinformasjonTo> mapVedlegg(Set<JournalpostDokumentInfoRelasjon> vedlegg) {
@@ -164,7 +153,7 @@ public final class InngaaendeJournalpostToMapper {
 						.dokumenttypeId(dokumentInfo.getDokumenttypeId())
 						.dokumentId(dokumentInfo.getDokumentInfoId())
 						.dokumenttilstand(mapDokumenttilstand(dokumentInfo))
-						.dokumentInnhold(mapDokumentinnhold(dokumentInfo, dokumentInfo.getFildetaljerListe()))
+						.dokumentInnhold(mapDokumentinnhold(dokumentInfo.getFildetaljerListe()))
 						.build();
 			}).collect(Collectors.toList());
 		}

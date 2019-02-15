@@ -32,9 +32,6 @@ public abstract class AbstractJournalOperations {
 	@Inject
 	private DokumentFilRepository dokumentFilRepository;
 
-	@Inject
-	private SkjermingService skjermingService;
-
 	/**
 	 * Finds the journalpost for a journalpostId
 	 *
@@ -74,7 +71,7 @@ public abstract class AbstractJournalOperations {
 	 */
 	protected FilDetaljer getFilDetaljer(DokumentInfo dokumentInfo, VariantFormatCode variantFormat)
 			throws DocumentNotFoundException {
-		FilDetaljer filDetaljer = skjermingService.getVariantSkjermet(dokumentInfo, variantFormat);
+		FilDetaljer filDetaljer = dokumentInfo.findFilDetaljerByVariantFormat(variantFormat);
 		if (filDetaljer == null) {
 			throw new DocumentNotFoundException(new InvalidArgumentException("DokumentInfo with dokumentInfoId="
 					+ dokumentInfo.getDokumentInfoId() + " has no FilDetaljer with variant: " + variantFormat));

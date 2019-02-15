@@ -1,6 +1,7 @@
 package no.nav.dokarkiv.journal.v3.tjoark051;
 
 import static no.nav.dokarkiv.core.domain.builder.DokumentFilBuilder.getDokumentFilBuilder;
+import static no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode.POL;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -67,8 +68,6 @@ public class Tjoark051HentDokumentServiceTest {
 	private DokumentFilRepository dokumentFilRepository;
 	@Mock
 	private HentOndemandDokument hentOndemandDokument;
-	@Mock
-	private SkjermingService skjermingService;
 
 	@InjectMocks
 	private Tjoark051HentDokumentService service;
@@ -117,13 +116,14 @@ public class Tjoark051HentDokumentServiceTest {
 	@Test
 	public void shouldThrowExceptionWhenDokumentFilNotFound() throws Exception {
 		Journalpost journalpost = createJournalPost();
-
 		when(joarkRepositoryMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(journalpost));
+		when(dokumentFilRepository.findByFilUuid(FIL_UUID)).thenReturn(null);
+
 		try {
 			service.hentDokument(request);
 			fail("Expected exception");
 		} catch (DocumentNotFoundException e) {
-			assertThat(e.getCause(), is(instanceOf(InvalidArgumentException.class)));
+			assertThat(e.getCause(), is(instanceOf(InvalidFilUuidException.class)));
 		}
 	}
 
@@ -131,7 +131,6 @@ public class Tjoark051HentDokumentServiceTest {
 	public void shouldReturnDokument() throws Exception {
 		DokumentFil dokumentFil = getDokumentFilBuilder().fil(BYTES).build();
 		Journalpost journalpost = createJournalPost();
-		when(skjermingService.getVariantSkjermet(any(DokumentInfo.class), eq(VARIANT_FORMAT))).thenReturn(FilDetaljer.builder().filUuid(FIL_UUID).dokumentInfo(journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo()).build());
 
 		when(joarkRepositoryMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(journalpost));
 		when(dokumentFilRepository.findByFilUuid(FIL_UUID)).thenReturn(dokumentFil);
@@ -145,8 +144,25 @@ public class Tjoark051HentDokumentServiceTest {
 	public void shouldReturnSladdetDokument() throws Exception {
 		DokumentFil dokumentFil = getDokumentFilBuilder().fil(BYTES).build();
 		Journalpost journalpost = createJournalPost();
-		when(skjermingService.getVariantSkjermet(any(DokumentInfo.class), eq(VARIANT_FORMAT))).thenReturn(FilDetaljer.builder().filUuid(FIL_UUID_SLADDET).dokumentInfo(journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo()).build());
-		when(joarkRepositoryMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(createJournalPost()));
+		journalpost.clearJournalpostDokumentInfoRelasjoner();
+		journalpost.addJournalpostDokumentInfoRelasjon(JournalpostDokumentInfoRelasjonBuilder
+				.getJournalpostDokumentInfoRelasjonBuilder()
+				.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.HOVEDDOKUMENT)
+				.dokumentInfo(
+						DokumentInfoBuilder
+								.getDokumentInfoBuilder()
+								.dokumentInfoId(DOKUMENT_INFO_ID)
+								.filDetaljerList(
+										FilDetaljer.builder().filUuid(FIL_UUID)
+												.skjermingType(POL)
+												.variantFormat(VARIANT_FORMAT).build(),
+										FilDetaljer.builder().filUuid(FIL_UUID_SLADDET)
+												.variantFormat(VARIANT_FORMAT_SLADDET).build()
+								).build()).build());
+
+
+
+		when(joarkRepositoryMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(journalpost));
 		when(dokumentFilRepository.findByFilUuid(FIL_UUID_SLADDET)).thenReturn(dokumentFil);
 
 		byte[] dokument = service.hentDokument(request);
@@ -157,7 +173,6 @@ public class Tjoark051HentDokumentServiceTest {
 	@Test
 	public void shouldReturnOnDemandDokument() throws Exception {
 		Journalpost journalPost = createWithOndemand(ON_DEMAND_ID, ON_DEMAND_INSTANS);
-		when(skjermingService.getVariantSkjermet(any(DokumentInfo.class), eq(VARIANT_FORMAT))).thenReturn(FilDetaljer.builder().filUuid(FIL_UUID).onDemandId(ON_DEMAND_ID).onDemandInstans(ON_DEMAND_INSTANS).dokumentInfo(journalPost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo()).build());
 
 		when(joarkRepositoryMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(journalPost));
 		when(hentOndemandDokument.createDokumentUrl(JOURNALPOST_ID, FIL_UUID)).thenReturn(new HentDokumentUrlResponse(DOKUMENTURL));

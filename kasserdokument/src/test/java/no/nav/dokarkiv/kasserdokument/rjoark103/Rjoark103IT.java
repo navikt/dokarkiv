@@ -72,7 +72,7 @@ public class Rjoark103IT extends AbstractKasserDokumentIT {
 
 		Optional<DokumentInfo> dokumentInfoRep = dokumentinfoRepository.findByDokumentInfoId(dokumentInfo1.getDokumentInfoId());
 		assertTrue(dokumentInfoRep.isPresent());
-		assertTrue(skjermingService.isDokumentInfoKassert(dokumentInfoRep.get()));
+		assertTrue(dokumentInfoRep.get().getFildetaljerListe().isEmpty());
 		assertThat("Feil antall journalposter", joarkRepository.count(), is(2L));
 		assertThat("Feil antall dokumenter", dokumentinfoRepository.count(), is(2L));
 		assertTrue(dokumentInfo1.isRelatedToMultipleJournalposts());
@@ -96,7 +96,6 @@ public class Rjoark103IT extends AbstractKasserDokumentIT {
 		assertThat(dokumentInfoAfter.get().getKassertAvNavn(), is(KASSERT_AV_NAVN));
 		assertNotNull(dokumentInfoAfter.get().getDatoKassert());
 		assertTrue(dokumentInfoAfter.get().getFildetaljerListe().isEmpty());
-		assertTrue(skjermingService.isDokumentInfoKassert(dokumentInfoAfter.get()));
 
 		assertThat("Feil antall journalposter etter kall", joarkRepository.count(), is(2L));
 		assertThat("Feil antall dokumenter etter kall", dokumentinfoRepository.count(), is(2L));
@@ -147,7 +146,7 @@ public class Rjoark103IT extends AbstractKasserDokumentIT {
 
 		Optional<DokumentInfo> dokumentInfoRep = dokumentinfoRepository.findByDokumentInfoId(dokumentInfo.getDokumentInfoId());
 		assertTrue(dokumentInfoRep.isPresent());
-		assertTrue(skjermingService.isDokumentInfoKassert(dokumentInfoRep.get()));
+		assertTrue(dokumentInfoRep.get().getFildetaljerListe().isEmpty());
 		assertThat("Feil antall journalposter", joarkRepository.count(), is(1L));
 		assertThat("Feil antall dokumenter", dokumentinfoRepository.count(), is(1L));
 		assertFalse(dokumentInfo.isRelatedToMultipleJournalposts());
@@ -170,7 +169,7 @@ public class Rjoark103IT extends AbstractKasserDokumentIT {
 		assertTrue(dokumentInfoAfter.isPresent());
 		assertThat(dokumentInfoAfter.get().getKassertAvNavn(), is(KASSERT_AV_NAVN));
 		assertNotNull(dokumentInfoAfter.get().getDatoKassert());
-		assertTrue(skjermingService.isDokumentInfoKassert(dokumentInfoAfter.get()));
+		assertTrue(dokumentInfoAfter.get().getFildetaljerListe().isEmpty());
 		assertTrue(dokumentInfoAfter.get().getFildetaljerListe().isEmpty());
 		assertThat("Feil antall journalposter etter kall", joarkRepository.count(), is(1L));
 		assertThat("Feil antall dokumenter etter kall", dokumentinfoRepository.count(), is(1L));

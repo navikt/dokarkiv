@@ -19,7 +19,6 @@ import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
 import no.nav.dokarkiv.core.domain.entities.ArkivElementEndring;
-import no.nav.dokarkiv.core.domain.service.SkjermingService;
 import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
 import no.nav.dokarkiv.core.repository.AksjonsLoggRepository;
 import no.nav.dokarkiv.core.repository.RepositoryConfig;
@@ -48,7 +47,7 @@ import java.util.List;
  * @author Ugur Alpay Cenar, Visma Consulting.
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = {RepositoryConfig.class, AksjonsLoggServiceImpl.class, SkjermingService.class, JdbcAbacSecurityRepository.class})
+@SpringBootTest(classes = {RepositoryConfig.class, AksjonsLoggServiceImpl.class, JdbcAbacSecurityRepository.class})
 @DataJpaTest
 @EnableConfigurationProperties
 @Transactional

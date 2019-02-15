@@ -23,6 +23,7 @@ import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
 import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
+import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
@@ -76,8 +77,12 @@ public class HentMinTilgjengeligJournalpostListeV2ResponseMapperTest {
 	private static final Long JOURNALPOST_ID1 = 0L;
 	private static final Long JOURNALPOST_ID2 = 1L;
 	private static final JournalpostTypeCode JOURNALPOST_TYPE = JournalpostTypeCode.U;
-	private static final Date JOURNAL_DATO = Date.from(LocalDate.of(2014, Month.JANUARY, 1).atStartOfDay(ZoneId.systemDefault()).toInstant());
-	private static final Date MOTTATT_DATO = Date.from(LocalDate.of(2015, Month.JANUARY, 1).atStartOfDay(ZoneId.systemDefault()).toInstant());
+	private static final Date JOURNAL_DATO = Date.from(LocalDate.of(2014, Month.JANUARY, 1)
+			.atStartOfDay(ZoneId.systemDefault())
+			.toInstant());
+	private static final Date MOTTATT_DATO = Date.from(LocalDate.of(2015, Month.JANUARY, 1)
+			.atStartOfDay(ZoneId.systemDefault())
+			.toInstant());
 	private static final DokumentStatusCode DOKUMENT_STATUS = DokumentStatusCode.FERDIGSTILT;
 	private static final Date DOKUMENT_FERDIG_DATO = new Date(1L);
 	private static final Date DOKUMENT_FERDIG_DATO_OLD = new Date(0L);
@@ -91,7 +96,6 @@ public class HentMinTilgjengeligJournalpostListeV2ResponseMapperTest {
 
 	@Before
 	public void setUp() throws Exception {
-		when(skjermingService.isDokumentInfoKassert(any(DokumentInfo.class))).thenReturn(false);
 		mapper = new HentMinTilgjengeligJournalpostListeV2ResponseMapper(skjermingService);
 	}
 
@@ -131,11 +135,10 @@ public class HentMinTilgjengeligJournalpostListeV2ResponseMapperTest {
 
 	@Test
 	public void shouldMapKassert() {
-		when(skjermingService.isDokumentInfoKassert(any(DokumentInfo.class))).thenReturn(true);
-		Journalpost journalpost1 = createJournalpost(JOURNALPOST_ID1);
+		Journalpost journalpost1 = createJournalpostKassert(JOURNALPOST_ID1);
 		journalpost1.setJournalposttype(JournalpostTypeCode.I);
 		journalpost1.setMottakskanal(MottaksKanalCode.ALTINN);
-		Journalpost journalpost2 = createJournalpost(JOURNALPOST_ID2);
+		Journalpost journalpost2 = createJournalpostKassert(JOURNALPOST_ID2);
 		journalpost2.setJournalposttype(JournalpostTypeCode.U);
 		journalpost2.setUtsendingskanal(UtsendingsKanalCode.E_POST);
 		List<Journalpost> journalposts = Lists.newArrayList(journalpost1, journalpost2);
@@ -160,6 +163,8 @@ public class HentMinTilgjengeligJournalpostListeV2ResponseMapperTest {
 			assertThat(journalpost.getOpprettet(), is(DateConverterUtil.convertDateToXMLGregorianCalendar(CHANGE_STAMP_DATE)));
 			assertThat(journalpost.getBrukerErAvsenderMottaker(), is(AvsenderMottaker.JA));
 			assertSak(journalpost.getGjelderSak());
+
+
 			assertNull(journalpost.getDokumentinfoRelasjonListe().get(0).getJournalfoertDokument().getBeskriverInnhold());
 			assertNull(journalpost.getDokumentinfoRelasjonListe().get(1).getJournalfoertDokument().getBeskriverInnhold());
 		}
@@ -254,7 +259,8 @@ public class HentMinTilgjengeligJournalpostListeV2ResponseMapperTest {
 		assertThat(dokumentinfoRelasjonListe, hasSize(size));
 
 		DokumentinfoRelasjon hovedDok = dokumentinfoRelasjonListe.get(0);
-		assertThat(hovedDok.getDokumentTilknyttetJournalpost().getValue(), is(TilknyttetJournalpostSomCode.HOVEDDOKUMENT.name()));
+		assertThat(hovedDok.getDokumentTilknyttetJournalpost()
+				.getValue(), is(TilknyttetJournalpostSomCode.HOVEDDOKUMENT.name()));
 		assertThat(hovedDok.getDokumentinfoRelasjonId(), is(Long.toString(DOK_INFO_REL_ID)));
 		assertDokument(hovedDok.getJournalfoertDokument());
 
@@ -303,6 +309,58 @@ public class HentMinTilgjengeligJournalpostListeV2ResponseMapperTest {
 		innsynJournalpostTo.setAvsenderMottaker(avsenderMottaker);
 		innsynJournalpostTo.putDokumentInnsyn(innsynDokument, DOKUMENT_INFO_ID);
 		return innsynJournalpostTo;
+	}
+
+
+	private JournalpostDokumentInfoRelasjon createDokInfoRelKasert(TilknyttetJournalpostSomCode tilknyttetJournalpostSomCode, Date dokumentFerdig, Long dokInfoRelId) {
+		return getJournalpostDokumentInfoRelasjonBuilder()
+				.tilknyttetJournalpostSom(tilknyttetJournalpostSomCode)
+				.journalpostDokumentInfoRelasjonId(dokInfoRelId)
+				.dokumentInfo(getDokumentInfoBuilder()
+						.dokumentstatus(DOKUMENT_STATUS)
+						.filDetaljerList(FilDetaljer.builder()
+										.variantFormat(VARIANT_FORMAT)
+										.filtype(FIL_TYPE)
+										.skjermingType(SkjermingTypeCode.POL)
+										.build(),
+								FilDetaljer.builder()
+										.variantFormat(VARIANT_FORMAT)
+										.filtype(FIL_TYPE)
+										.skjermingType(SkjermingTypeCode.POL)
+										.build())
+						.tittel(DOKUMENT_TITTEL)
+						.dokumentFerdigDato(dokumentFerdig)
+						.skannetInnhold(SkannetInnholdBuilder.getSkannetInnholdBuilder()
+										.skannetInnholdId(SKANNET_INNHOLD_ID)
+										.vedleggInnhold(VEDLEGG_INNHOLD)
+										.build(),
+								SkannetInnholdBuilder.getSkannetInnholdBuilder()
+										.skannetInnholdId(SKANNET_INNHOLD_ID)
+										.vedleggInnhold(VEDLEGG_INNHOLD)
+										.build())
+						.dokumentInfoId(DOKUMENT_INFO_ID)
+						.build())
+				.build();
+	}
+
+	private Journalpost createJournalpostKassert(Long journalpostId) {
+		return getJournalpostBuilder()
+				.changeStamp(new ChangeStamp(null, CHANGE_STAMP_DATE, null, null))
+				.fagomrade(FAGOMRADE)
+				.journalDato(JOURNAL_DATO)
+				.mottattDato(MOTTATT_DATO)
+				.avsenderMottaker(AVSENDER_MOTTAKER)
+				.journalpostId(journalpostId)
+				.journalpostType(JOURNALPOST_TYPE)
+				.kanalReferanseId(KANAL_REFERANSE_ID)
+				.saksrelasjon(SaksrelasjonBuilder.getSaksrelasjonBuilder()
+						.sakId(SAKS_ID)
+						.fagsystem(FAGSYSTEM)
+						.build())
+				.dokumentInfoRelasjoner(
+						createDokInfoRelKasert(TilknyttetJournalpostSomCode.HOVEDDOKUMENT, DOKUMENT_FERDIG_DATO, DOK_INFO_REL_ID),
+						createDokInfoRelKasert(TilknyttetJournalpostSomCode.VEDLEGG, DOKUMENT_FERDIG_DATO_OLD, DOK_INFO_REL_ID + 1))
+				.build();
 	}
 
 	private Journalpost createJournalpost(Long journalpostId) {

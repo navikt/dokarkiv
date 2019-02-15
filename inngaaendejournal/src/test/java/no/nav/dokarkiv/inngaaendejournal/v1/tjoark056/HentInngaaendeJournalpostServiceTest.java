@@ -250,7 +250,6 @@ public class HentInngaaendeJournalpostServiceTest {
 	@Test
 	public void should_map_journalpost_to_dto_kassert() throws Exception {
 		when(repository.findById(any(Long.class))).thenReturn(Optional.of(buildJournalpost().build()));
-		when(skjermingService.isDokumentInfoKassert(any(DokumentInfo.class))).thenReturn(true);
 
 		InngaaendeJournalpostTo to = service.hentJournalpost("1");
 

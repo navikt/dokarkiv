@@ -1,5 +1,9 @@
 package no.nav.dokarkiv.core.domain.entities;
 
+import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.ARKIV;
+import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.SLADDET;
+import static org.apache.commons.lang3.BooleanUtils.isFalse;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -40,6 +44,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Domain entity class that represents document info.
@@ -346,20 +351,37 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	 * @return The FilDetaljer.
 	 */
 	public FilDetaljer findFilDetaljerByFilUuid(final String filUuid) {
-		return fildetaljerListe.stream().filter(filDetaljer -> filUuid.equals(filDetaljer.getFilUuid())).findAny().orElse(null);
+		return fildetaljerListe.stream()
+				.filter(filDetaljer -> filUuid.equals(filDetaljer.getFilUuid()))
+				.findAny().orElse(null);
 	}
 
 	/**
 	 * Finds all FilDetaljer with the given variantFormat.
+	 * Filterer ut fildetaljer som er skjermet
+	 * Returnerer SLADDET variant hvis ARKIV variant er skjermet
 	 *
 	 * @param variantFormat The VariantFormatCode.
 	 * @return A list of Fildetaljer with the given VariantFormatCode.
 	 */
 	public FilDetaljer findFilDetaljerByVariantFormat(final VariantFormatCode variantFormat) {
+		if (ARKIV.equals(variantFormat) && isArkivVariantSkjermet()) {
+			return fildetaljerListe.stream()
+					.filter(filDetaljer -> SLADDET.equals(filDetaljer.getVariantFormat()))
+					.findAny()
+					.orElse(null);
+		}
+
 		return fildetaljerListe.stream()
+				.filter(filDetaljer -> filDetaljer.getSkjermingType() == null)
 				.filter(filDetaljer -> variantFormat.equals(filDetaljer.getVariantFormat()))
 				.findAny()
 				.orElse(null);
+	}
+
+	private boolean isArkivVariantSkjermet() {
+		return fildetaljerListe.stream()
+				.anyMatch(filDetaljer -> ARKIV.equals(filDetaljer.getVariantFormat()) && isFalse(filDetaljer.getSkjermingType() == null));
 	}
 
 	/**
@@ -777,10 +799,22 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 
 	/**
 	 * Getter for the fildetaljerListe property.
+	 * Filterer ut fildetaljer som er skjermet og sladdet
 	 *
 	 * @return the fildetaljerListe
 	 */
 	public Set<FilDetaljer> getFildetaljerListe() {
+		return Collections.unmodifiableSet(fildetaljerListe.stream()
+				.filter(filDetaljer -> filDetaljer.getSkjermingType() == null)
+				.filter(filDetaljer -> isFalse(SLADDET.equals(filDetaljer.getVariantFormat())))
+				.collect(Collectors.toSet())
+		);
+	}
+
+	/**
+	 * Returnerer alle Fildetaljer inkludert skjermet
+	 */
+	public Set<FilDetaljer> getFildetaljerListeAdmin() {
 		return Collections.unmodifiableSet(fildetaljerListe);
 	}
 

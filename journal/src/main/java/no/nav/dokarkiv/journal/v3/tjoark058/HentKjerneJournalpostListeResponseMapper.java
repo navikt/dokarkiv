@@ -49,12 +49,6 @@ import java.util.Set;
 @Component
 public class HentKjerneJournalpostListeResponseMapper {
 
-	private SkjermingService skjermingService;
-
-	public HentKjerneJournalpostListeResponseMapper(SkjermingService skjermingService) {
-		this.skjermingService = skjermingService;
-	}
-
 	public static final String KORRESPODANSE_TYPE_MOTTAKER = "Mottaker";
 	public static final String KORRESPODANSE_TYPE_AVSENDER = "Avsender";
 
@@ -199,7 +193,7 @@ public class HentKjerneJournalpostListeResponseMapper {
 	private DetaljertDokumentinformasjon mapDetaljerDokumentinformasjon(DokumentInfo dokumentInfo) {
 		return new DetaljertDokumentinformasjon()
 			.withDokumentId(String.valueOf(dokumentInfo.getDokumentInfoId()))
-			.withDokumentInnholdListe(mapDokumentInnhold(dokumentInfo, dokumentInfo.getFildetaljerListe()))
+			.withDokumentInnholdListe(mapDokumentInnhold(dokumentInfo.getFildetaljerListe()))
 			.withDokumentTypeId(new DokumenttypeIder().withValue(dokumentInfo.getDokumenttypeId()))
 			.withTittel(dokumentInfo.getTittel())
 			.withDokumentkategori(new Dokumentkategorier().withValue(getEnumName(dokumentInfo.getKategori())))
@@ -208,18 +202,13 @@ public class HentKjerneJournalpostListeResponseMapper {
 	}
 	
 
-	private List<DokumentInnhold> mapDokumentInnhold(DokumentInfo dokumentInfo, Set<FilDetaljer> filDetaljer) {
+	private List<DokumentInnhold> mapDokumentInnhold(Set<FilDetaljer> filDetaljer) {
 		List<DokumentInnhold> dokumentInnhold = new ArrayList<>();
-		if (skjermingService.isDokumentInfoKassert(dokumentInfo)) {
-			return dokumentInnhold;
-		}
 		for(no.nav.dokarkiv.core.domain.entities.FilDetaljer filDetalj : filDetaljer) {
-			if (!filDetalj.getVariantFormat().equals(VariantFormatCode.SLADDET)) {
 				dokumentInnhold.add(new DokumentInnhold()
 						.withArkivfiltype(new Arkivfiltyper().withValue(getEnumName(filDetalj.getFiltype())))
 						.withVariantformat(new Variantformater().withValue(getEnumName(filDetalj.getVariantFormat())))
 				);
-			}
 		}
 		return dokumentInnhold;
 	}

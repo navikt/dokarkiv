@@ -71,8 +71,6 @@ public class DefaultHentDokumentUrlTest {
 	private DokumentFilRepository dokumentFilRepositoryMock;
 	@Mock
 	private DokumentUrlInfoRepositorySkjermet dokumentUrlInfoRepositoryMock;
-	@Mock
-	private SkjermingService skjermingService;
 	@Captor
 	ArgumentCaptor<DokumentUrlInfo> dokumentUrlInfoCaptor;
 
@@ -88,7 +86,6 @@ public class DefaultHentDokumentUrlTest {
 		hentDokumentUrl.setDokumentFilRepository(dokumentFilRepositoryMock);
 		hentDokumentUrl.setServletUrl(SERVLET_URL);
 		hentDokumentUrl.setDokumentUrlInfoRepository(dokumentUrlInfoRepositoryMock);
-		hentDokumentUrl.setSkjermingService(skjermingService);
 		request = new HentDokumentUrlRequest(JOURNALPOST_ID, FIL_UUID);
 	}
 
@@ -131,7 +128,6 @@ public class DefaultHentDokumentUrlTest {
 	public void shouldGetDokumentUrlForOnDemand() throws Exception {
 		Journalpost journalpost = createJournalPost("10", SYFO, FIL_UUID, FIL_UUID_SLADDET);
 		when(joarkRepositoryMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(journalpost));
-		when(skjermingService.getVariantSkjermet(any(DokumentInfo.class), eq(VariantFormatCode.ARKIV))).thenReturn(FilDetaljer.builder().filUuid(FIL_UUID).filtype(FilTypeCode.PDF).onDemandInstans(OnDemandInstansCode.PESYS).onDemandId("ondemandid").build());
 
 		HentDokumentUrlResponse response = hentDokumentUrl.hentDokumentUrl(request);
 		String servletUrl = response.getDokumentUrl();
@@ -148,7 +144,6 @@ public class DefaultHentDokumentUrlTest {
 	public void shouldGetDokumentUrlForDokumentInDB() throws Exception {
 		Journalpost journalpost = createJournalPost(null, null, FIL_UUID, FIL_UUID_SLADDET);
 		when(joarkRepositoryMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(journalpost));
-		when(skjermingService.getVariantSkjermet(any(DokumentInfo.class), eq(VariantFormatCode.ARKIV))).thenReturn(FilDetaljer.builder().filUuid(FIL_UUID).filtype(FilTypeCode.PDF).build());
 
 		when(dokumentFilRepositoryMock.findByFilUuid(FIL_UUID)).thenReturn(new DokumentFil());
 		
@@ -163,7 +158,6 @@ public class DefaultHentDokumentUrlTest {
 	@Test
 	public void shouldGetSkjermetDokumentUrlForDokumentInDB() throws Exception {
 		Journalpost journalpost = createJournalPost(null, null, FIL_UUID, FIL_UUID_SLADDET);
-		when(skjermingService.getVariantSkjermet(any(DokumentInfo.class), eq(VariantFormatCode.ARKIV))).thenReturn(FilDetaljer.builder().filUuid(FIL_UUID_SLADDET).filtype(FilTypeCode.PDF).build());
 		when(joarkRepositoryMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(journalpost));
 
 		when(dokumentFilRepositoryMock.findByFilUuid(FIL_UUID_SLADDET)).thenReturn(new DokumentFil());
@@ -180,7 +174,6 @@ public class DefaultHentDokumentUrlTest {
 	public void shouldThrowDokumentNotFoundForKassertDokument() throws Exception {
 
 		Journalpost journalpost = createJournalPost(null, null, FIL_UUID, FIL_UUID_SLADDET);
-		when(skjermingService.getVariantSkjermet(any(DokumentInfo.class), eq(VariantFormatCode.ARKIV))).thenReturn(null);
 		when(joarkRepositoryMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(journalpost));
 
 		when(dokumentFilRepositoryMock.findByFilUuid(FIL_UUID)).thenReturn(new DokumentFil());
@@ -198,7 +191,6 @@ public class DefaultHentDokumentUrlTest {
 		when(joarkRepositoryMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(
 				createJournalPost(null, null,  FIL_UUID, FIL_UUID_SLADDET)));
 		when(dokumentFilRepositoryMock.findByFilUuid(FIL_UUID)).thenReturn(new DokumentFil());
-		when(skjermingService.getVariantSkjermet(any(DokumentInfo.class), eq(VariantFormatCode.ARKIV))).thenReturn(FilDetaljer.builder().filUuid(FIL_UUID).filtype(FilTypeCode.PDF).build());
 
 		request = new HentDokumentUrlRequest(JOURNALPOST_ID, FIL_UUID, timeToLive);
 		hentDokumentUrl.hentDokumentUrl(request);
@@ -221,7 +213,6 @@ public class DefaultHentDokumentUrlTest {
 	public void shouldThrowExceptionForMissingDokumentFil() throws Exception {
 		Journalpost journalpost = createJournalPost(null, null, FIL_UUID, FIL_UUID_SLADDET);
 		when(joarkRepositoryMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(journalpost));
-		when(skjermingService.getVariantSkjermet(any(DokumentInfo.class), eq(VariantFormatCode.ARKIV))).thenReturn(FilDetaljer.builder().filUuid(FIL_UUID).filtype(FilTypeCode.PDF).build());
 
 		when(dokumentFilRepositoryMock.findByFilUuid(FIL_UUID)).thenReturn(null);
 		
@@ -247,7 +238,6 @@ public class DefaultHentDokumentUrlTest {
 									.build();
 		when(joarkRepositoryMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(journalpost));
 		when(dokumentFilRepositoryMock.findByFilUuid(FIL_UUID)).thenReturn(new DokumentFil());
-		when(skjermingService.getVariantSkjermet(any(DokumentInfo.class), eq(VariantFormatCode.PRODUKSJON_DLF))).thenReturn(FilDetaljer.builder().filUuid(FIL_UUID).filtype(FilTypeCode.DLF).build());
 
 		HentDokumentUrlResponse response = hentDokumentUrl.hentDokumentUrl(request);
 		String servletUrl = response.getDokumentUrl();

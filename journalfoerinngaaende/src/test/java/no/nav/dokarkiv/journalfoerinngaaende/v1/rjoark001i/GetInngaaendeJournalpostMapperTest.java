@@ -69,9 +69,6 @@ public class GetInngaaendeJournalpostMapperTest {
 	private static final String ARKIVSAK_SYSTEM_GSAK = "GSAK";
 	private static final String ARKIVSAK_SYSTEM_PSAK = "PSAK";
 
-	@Mock
-	private SkjermingService skjermingService;
-	@InjectMocks
 	private GetInngaaendeJournalpostMapper mapper = new GetInngaaendeJournalpostMapper();
 
 	/**
@@ -184,7 +181,6 @@ public class GetInngaaendeJournalpostMapperTest {
 
 	@Test
 	public void shouldMapEmptyVarianterWhenKassert() {
-		when(skjermingService.isDokumentInfoKassert(any(DokumentInfo.class))).thenReturn(true);
 		Journalpost journalpost = createJournalpost();
 		journalpost.getSaksrelasjon().setFagsystem(FagsystemCode.PEN.PEN);
 		GetJournalpostResponse response = mapper.map(journalpost);

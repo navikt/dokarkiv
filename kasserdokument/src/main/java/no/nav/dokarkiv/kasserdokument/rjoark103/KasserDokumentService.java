@@ -54,7 +54,7 @@ public class KasserDokumentService {
 	}
 
 	private List<ArkivElementEndringTO> opprettArkivElementEndring(DokumentInfo dokumentInfoTilTidligKassering) {
-		List<ArkivElementEndringTO> arkivElementEndringTOList = dokumentInfoTilTidligKassering.getFildetaljerListe()
+		List<ArkivElementEndringTO> arkivElementEndringTOList = dokumentInfoTilTidligKassering.getFildetaljerListeAdmin()
 				.stream()
 				.map(filDetaljer -> ArkivElementEndringTO.builder()
 						.arkivElement("FilDetaljer.variantFormat")

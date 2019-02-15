@@ -5,6 +5,7 @@ import static no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder.getFilDetal
 import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalpostBuilder;
 import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
 import static no.nav.dokarkiv.core.domain.builder.SkannetInnholdBuilder.getSkannetInnholdBuilder;
+import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.SLADDET;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -13,6 +14,7 @@ import static org.junit.Assert.fail;
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
+import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
 import no.nav.dokarkiv.core.exceptions.InvalidJournalpostStructureException;
@@ -24,6 +26,47 @@ import org.junit.Test;
  * @author Thomas Eugen Bjørge, Sirius IT
  */
 public class DokumentInfoTest {
+
+	@Test
+	public void shouldReturnEmptyFildetaljerListWhenKassert() {
+		DokumentInfo dokumentInfo = getDokumentInfoBuilder()
+				.filDetaljerList(
+						FilDetaljer.builder()
+								.fildetaljerId(1L)
+								.filUuid("test")
+								.skjermingType(SkjermingTypeCode.POL)
+								.build(),
+						FilDetaljer.builder()
+								.fildetaljerId(2L)
+								.filUuid("test2")
+								.skjermingType(SkjermingTypeCode.POL)
+								.build())
+				.build();
+
+		assertThat(dokumentInfo.getFildetaljerListe().isEmpty(), is(true));
+		assertThat(dokumentInfo.getFildetaljerListeAdmin().size(), is(2));
+	}
+
+	@Test
+	public void shouldReturnSladdetVariantWhenArkivVariantIsSkjermet() {
+		DokumentInfo dokumentInfo = getDokumentInfoBuilder()
+				.filDetaljerList(
+						FilDetaljer.builder()
+								.fildetaljerId(1L)
+								.filUuid("test")
+								.variantFormat(VariantFormatCode.ARKIV)
+								.skjermingType(SkjermingTypeCode.POL)
+								.build(),
+						FilDetaljer.builder()
+								.fildetaljerId(2L)
+								.filUuid("test2")
+								.variantFormat(SLADDET)
+								.build())
+				.build();
+
+		assertThat(dokumentInfo.findFilDetaljerByVariantFormat(VariantFormatCode.ARKIV).getVariantFormat(), is(SLADDET));
+		assertThat(dokumentInfo.getFildetaljerListeAdmin().size(), is(2));
+	}
 
 	@Test
 	public void shouldThrowExceptionForMissingEndretAvNavn() throws Exception {
