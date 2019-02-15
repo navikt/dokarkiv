@@ -43,6 +43,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -351,9 +352,17 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	 * @return The FilDetaljer.
 	 */
 	public FilDetaljer findFilDetaljerByFilUuid(final String filUuid) {
-		return fildetaljerListe.stream()
-				.filter(filDetaljer -> filUuid.equals(filDetaljer.getFilUuid()))
+		FilDetaljer filDetaljer =  fildetaljerListe.stream()
+				.filter(filDetalj -> filUuid.equals(filDetalj.getFilUuid()))
 				.findAny().orElse(null);
+
+		if (Objects.nonNull(filDetaljer) && ARKIV.equals(filDetaljer.getVariantFormat()) && isArkivVariantSkjermet()) {
+			filDetaljer =  fildetaljerListe.stream()
+					.filter(filDetalj -> SLADDET.equals(filDetalj.getVariantFormat()))
+					.findAny().orElse(null);
+		}
+
+		return filDetaljer;
 	}
 
 	/**

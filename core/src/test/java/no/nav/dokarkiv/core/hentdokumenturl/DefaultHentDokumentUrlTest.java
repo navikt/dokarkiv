@@ -27,6 +27,7 @@ import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.OnDemandInstansCode;
+import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentFil;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
@@ -157,7 +158,7 @@ public class DefaultHentDokumentUrlTest {
 
 	@Test
 	public void shouldGetSkjermetDokumentUrlForDokumentInDB() throws Exception {
-		Journalpost journalpost = createJournalPost(null, null, FIL_UUID, FIL_UUID_SLADDET);
+		Journalpost journalpost = createJournalPostArkivVariantSkjermet(null, null, FIL_UUID, FIL_UUID_SLADDET);
 		when(joarkRepositoryMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(journalpost));
 
 		when(dokumentFilRepositoryMock.findByFilUuid(FIL_UUID_SLADDET)).thenReturn(new DokumentFil());
@@ -272,13 +273,44 @@ public class DefaultHentDokumentUrlTest {
 					.getJournalpostDokumentInfoRelasjonBuilder()
 						.dokumentInfo(DokumentInfoBuilder.getDokumentInfoBuilder()
 								.dokumentInfoId(1L)
-								.filDetaljerList(FilDetaljerBuilder.getFilDetaljerBuilder()
+								.filDetaljerList(FilDetaljer.builder()
 										.filUuid(filUuid)
 										.filtype(FilTypeCode.PDF)
 										.variantFormat(VariantFormatCode.ARKIV)
 										.onDemandId(onDemandId)
 										.onDemandInstans(onDemandInstans).build(),
-										FilDetaljerBuilder.getFilDetaljerBuilder()
+										FilDetaljer.builder()
+												.filUuid(filUuidSladdet)
+												.filtype(FilTypeCode.PDF)
+												.variantFormat(VariantFormatCode.SLADDET)
+												.onDemandId(onDemandId)
+												.onDemandInstans(onDemandInstans).build())
+								.build())
+						.build())
+				.build();
+	}
+
+	private Journalpost createJournalPostArkivVariantSkjermet(String onDemandId, OnDemandInstansCode onDemandInstans, String filUuid, String filUuidSladdet) {
+		return JournalpostBuilder.getJournalpostBuilder()
+				.journalpostId(1L)
+				.journalStatus(JournalStatusCode.J)
+				.fagomrade(FagomradeCode.PEN)
+				.brukere(BrukerBuilder.getBrukerBuilder().build())
+				.kryssReferanser(KryssreferanseBuilder.getKryssreferanseBuilder().build())
+				.returInfos(ReturInfoBuilder.getReturInfoBuilder().build())
+				.saksrelasjon(SaksrelasjonBuilder.getSaksrelasjonBuilder().build())
+				.dokumentInfoRelasjoner(JournalpostDokumentInfoRelasjonBuilder
+						.getJournalpostDokumentInfoRelasjonBuilder()
+						.dokumentInfo(DokumentInfoBuilder.getDokumentInfoBuilder()
+								.dokumentInfoId(1L)
+								.filDetaljerList(FilDetaljer.builder()
+												.filUuid(filUuid)
+												.filtype(FilTypeCode.PDF)
+												.variantFormat(VariantFormatCode.ARKIV)
+												.onDemandId(onDemandId)
+												.skjermingType(SkjermingTypeCode.POL)
+												.onDemandInstans(onDemandInstans).build(),
+										FilDetaljer.builder()
 												.filUuid(filUuidSladdet)
 												.filtype(FilTypeCode.PDF)
 												.variantFormat(VariantFormatCode.SLADDET)

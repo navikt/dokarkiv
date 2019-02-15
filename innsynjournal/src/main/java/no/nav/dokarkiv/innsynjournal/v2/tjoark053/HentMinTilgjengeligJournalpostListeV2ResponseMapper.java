@@ -39,12 +39,6 @@ import java.util.Optional;
 @Component
 public class HentMinTilgjengeligJournalpostListeV2ResponseMapper {
 
-	@Inject
-	private SkjermingService skjermingService;
-
-	public HentMinTilgjengeligJournalpostListeV2ResponseMapper(SkjermingService skjermingService) {
-		this.skjermingService = skjermingService;
-	}
 
 	/**
 	 * Mapping of domain journalpost to ws-journalpost
