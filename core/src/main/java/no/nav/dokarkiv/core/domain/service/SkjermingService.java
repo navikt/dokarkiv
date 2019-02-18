@@ -77,7 +77,7 @@ public class SkjermingService {
 	public boolean isVariantSkjermet(Long dokumentInfoId, VariantFormatCode variant) {
 		Optional<DokumentInfo> dokumentInfo = dokumentinfoRepository.findByDokumentInfoId(dokumentInfoId);
 		if (dokumentInfo.isPresent()) {
-			FilDetaljer filDetaljer = dokumentInfo.get().findFilDetaljerByVariantFormat(variant);
+			FilDetaljer filDetaljer = dokumentInfo.get().findFilDetaljerByVariantFormatAdmin(variant);
 			if (filDetaljer != null && filDetaljer.getSkjermingType() != null) {
 				return true;
 			}
@@ -86,7 +86,7 @@ public class SkjermingService {
 	}
 
 	public void setVariantSkjermet(DokumentInfo dokumentInfo, VariantFormatCode variantFormatCode, SkjermingTypeCode SkjermingTypeCode) {
-		FilDetaljer filDetaljer = dokumentInfo.findFilDetaljerByVariantFormat(variantFormatCode);
+		FilDetaljer filDetaljer = dokumentInfo.findFilDetaljerByVariantFormatAdmin(variantFormatCode);
 		setFildetaljerSkjerming(filDetaljer, SkjermingTypeCode);
 	}
 
