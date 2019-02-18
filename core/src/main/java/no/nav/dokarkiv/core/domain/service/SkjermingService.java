@@ -68,7 +68,7 @@ public class SkjermingService {
 
 	public boolean isDokumentInfoIdKassert(Long dokumentInfoId) {
 		Optional<DokumentInfo> dokumentInfo = dokumentinfoRepository.findByDokumentInfoId(dokumentInfoId);
-		return dokumentInfo.map(dokumentInfo1 -> dokumentInfo1.getFildetaljerListe()
+		return dokumentInfo.map(dokumentInfo1 -> dokumentInfo1.getFildetaljerListeAdmin()
 				.stream()
 				.allMatch(filDetaljer -> isFalse(filDetaljer.getSkjermingType() == null)))
 				.orElse(false);
@@ -143,7 +143,7 @@ public class SkjermingService {
 	}
 
 	public void setDokumentKassert(DokumentInfo dokumentInfo, SkjermingTypeCode SkjermingTypeCode) {
-		for (FilDetaljer filDetaljer : dokumentInfo.getFildetaljerListe()) {
+		for (FilDetaljer filDetaljer : dokumentInfo.getFildetaljerListeAdmin()) {
 			setFildetaljerSkjerming(filDetaljer, SkjermingTypeCode);
 		}
 	}

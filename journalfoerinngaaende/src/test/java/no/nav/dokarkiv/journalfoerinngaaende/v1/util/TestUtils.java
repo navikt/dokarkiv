@@ -8,6 +8,7 @@ import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
+import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.Bruker;
@@ -89,6 +90,34 @@ public class TestUtils {
 
 	}
 
+	public static Journalpost createJournalpostKassert() {
+		Journalpost journalpost = Journalpost.builder()
+				.journalpostId(JOURNALPOST_ID)
+				.journalstatus(JournalStatusCode.J)
+				.avsenderMottakerId(AVSENDER_ID_PERSON)
+				.avsenderMottaker(AVSENDER_NAVN)
+				.journalposttype(JournalpostTypeCode.I)
+				.fagomrade(FagomradeCode.FS22)
+				.innhold(INNHOLD)
+				.kanalReferanseId(KANALREFERANSE_ID)
+				.mottakskanal(MottaksKanalCode.ALTINN)
+				.mottattDato(Date.from(LOCAL_DATE_TIME.toInstant(ZoneOffset.UTC)))
+				.journalForendeEnhetId(JOURNALFOERENDE_ENHET)
+				.saksrelasjon(Saksrelasjon.builder()
+						.sakId(SAK_ID)
+						.fagsystem(FagsystemCode.FS22)
+						.build())
+				.build();
+
+		journalpost.addBruker(createPersonBruker());
+		journalpost.addBruker(createOrganisasjonBruker());
+		journalpost.addJournalpostDokumentInfoRelasjon(createJournalpostDokumentinfoRelasjon1Kassert());
+		journalpost.addJournalpostDokumentInfoRelasjon(createJournalpostDokumentinfoRelasjon2Kassert());
+
+		return journalpost;
+
+	}
+
 	public static Journalpost createJournalpostForOppdatering() {
 		Journalpost journalpost = Journalpost.builder()
 				.journalstatus(JournalStatusCode.M)
@@ -111,6 +140,69 @@ public class TestUtils {
 		journalpost.addBruker(createPersonBruker());
 		journalpost.addJournalpostDokumentInfoRelasjon(createJournalpostDokumentinfoRelasjon1());
 		return journalpost;
+	}
+
+	public static JournalpostDokumentInfoRelasjon createJournalpostDokumentinfoRelasjon1Kassert() {
+		return JournalpostDokumentInfoRelasjon.builder()
+				.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.HOVEDDOKUMENT)
+				.dokumentInfo(DokumentInfo.builder()
+						.dokumentInfoId(Long.parseLong(DOKUMENTINFO_ID1))
+						.dokumenttypeId(DOKUMNETTYPE_ID1)
+						.brevkode(BREVKODE1)
+						.tittel(DOKUMENT_TITTEL1)
+						.kategori(DokumentKategoriCode.ELEKTRONISK_DIALOG)
+						.fildetaljerListe(new HashSet<>(Arrays.asList(FilDetaljer.builder()
+										.filtype(FilTypeCode.XML)
+										.variantFormat(VariantFormatCode.ORIGINAL)
+										.skjermingType(SkjermingTypeCode.POL)
+										.build(),
+								FilDetaljer.builder()
+										.filtype(FilTypeCode.PDFA)
+										.variantFormat(VariantFormatCode.ARKIV)
+										.skjermingType(SkjermingTypeCode.POL)
+										.build(),
+								FilDetaljer.builder()
+										.filtype(FilTypeCode.PDFA)
+										.variantFormat(VariantFormatCode.SLADDET)
+										.skjermingType(SkjermingTypeCode.POL)
+										.build())))
+						.skannetInnholdListe(new HashSet<>(Arrays.asList(SkannetInnhold.builder()
+										.skannetInnholdId(Long.parseLong(SKANNETINNHOLD_ID1))
+										.vedleggInnhold(VEDLEGGINNHOLD1)
+										.build(),
+								SkannetInnhold.builder()
+										.skannetInnholdId(Long.parseLong(SKANNETINNHOLD_ID2))
+										.vedleggInnhold(VEDLEGGINNHOLD2)
+										.build())))
+						.build())
+				.build();
+	}
+
+	private static JournalpostDokumentInfoRelasjon createJournalpostDokumentinfoRelasjon2Kassert() {
+		return JournalpostDokumentInfoRelasjon.builder()
+				.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.HOVEDDOKUMENT)
+				.dokumentInfo(DokumentInfo.builder()
+						.dokumentInfoId(Long.parseLong(DOKUMENTINFO_ID2))
+						.dokumenttypeId(DOKUMNETTYPE_ID2)
+						.brevkode(BREVKODE2)
+						.tittel(DOKUMENT_TITTEL2)
+						.kategori(DokumentKategoriCode.FORVALTNINGSNOTAT)
+						.fildetaljerListe(new HashSet<>(Arrays.asList(FilDetaljer.builder()
+										.filtype(FilTypeCode.PDFA)
+										.variantFormat(VariantFormatCode.ARKIV)
+										.skjermingType(SkjermingTypeCode.POL)
+										.build(),
+								FilDetaljer.builder()
+										.filtype(FilTypeCode.PDFA)
+										.variantFormat(VariantFormatCode.SLADDET)
+										.skjermingType(SkjermingTypeCode.POL)
+										.build())))
+						.skannetInnholdListe(new HashSet<>(Arrays.asList(SkannetInnhold.builder()
+								.skannetInnholdId(Long.parseLong(SKANNETINNHOLD_ID3))
+								.vedleggInnhold(VEDLEGGINNHOLD3)
+								.build())))
+						.build())
+				.build();
 	}
 
 

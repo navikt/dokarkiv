@@ -68,7 +68,7 @@ public class skjermArkivenhetServiceTest {
 				.build();
 
 
-		skjermArkivenhetService.skjermDokumentInfo(request.getJournalpostId(), request.getDokumentInfoId(), request
+		skjermArkivenhetService.skjermVedlegg(request.getJournalpostId(), request.getDokumentInfoId(), request
 				.getSkjerming());
 
 	}

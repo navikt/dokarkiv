@@ -92,7 +92,7 @@ public class SkjermArkivenhetRestController {
 			case VEDLEGG:
 				assertNotNullOrEmpty(skjermArkivenhetRequest.getJournalpostId(), "journalpostId");
 				assertNotNullOrEmpty(skjermArkivenhetRequest.getDokumentInfoId(), "dokumentInfoId");
-				skjermArkivenhetService.skjermDokumentInfo(
+				skjermArkivenhetService.skjermVedlegg(
 						skjermArkivenhetRequest.getJournalpostId(), skjermArkivenhetRequest.getDokumentInfoId(), skjermArkivenhetRequest
 								.getSkjerming());
 				break;

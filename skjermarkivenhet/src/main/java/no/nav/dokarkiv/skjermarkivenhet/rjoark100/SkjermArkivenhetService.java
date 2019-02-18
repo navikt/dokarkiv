@@ -32,7 +32,7 @@ public class SkjermArkivenhetService {
 		}
 	}
 
-	public void skjermDokumentInfo(Long journalpostId, Long dokumentInfoId, SkjermingTypeCode skjerming) {
+	public void skjermVedlegg(Long journalpostId, Long dokumentInfoId, SkjermingTypeCode skjerming) {
 		sjekkAtJournalpostDokumentInfoRelasjonIkkeErSkjermet(journalpostId, dokumentInfoId, skjerming);
 		skjermingService.skjermJpDokInfoRelByJournalpostIdAndDokumentInfoIdAndSkjermingType(journalpostId, dokumentInfoId, skjerming);
 	}

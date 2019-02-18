@@ -17,6 +17,7 @@ import no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder;
 import no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder;
 import no.nav.dokarkiv.core.domain.builder.JournalpostBuilder;
 import no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder;
+import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
@@ -148,6 +149,8 @@ public class DefaultHentDokumentUrlServiceTest {
 		expectedException.expect(DocumentNotFoundException.class);
 
 		when(joarkRepositoryMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(createJournalPost()));
+		when(hentDokumentUrlMock.hentDokumentUrl(isA(HentDokumentUrlRequest.class))).thenThrow(
+				new NoJournalpostFoundException("Test", JOURNALPOST_ID));
 
 		hentDokumentUrlService.hentDokumentUrl(hentDokumentUrlRequest);
 	}
@@ -157,6 +160,8 @@ public class DefaultHentDokumentUrlServiceTest {
 		expectedException.expect(DocumentNotFoundException.class);
 
 		when(joarkRepositoryMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(createJournalPost()));
+		when(hentDokumentUrlMock.hentDokumentUrl(isA(HentDokumentUrlRequest.class))).thenThrow(
+				new InvalidFilUuidException("Test", FIL_UUID));
 
 		hentDokumentUrlService.hentDokumentUrl(hentDokumentUrlRequest);
 	}
@@ -177,7 +182,26 @@ public class DefaultHentDokumentUrlServiceTest {
 
 	@Test
 	public void shouldCallDelegateWithCorrectValuesSkjermet() throws Exception {
-		when(joarkRepositoryMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(createJournalPost()));
+		when(joarkRepositoryMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(
+
+				JournalpostBuilder.getJournalpostBuilder()
+						.journalpostId(JOURNALPOST_ID)
+						.dokumentInfoRelasjoner(JournalpostDokumentInfoRelasjonBuilder
+								.getJournalpostDokumentInfoRelasjonBuilder()
+								.dokumentInfo(DokumentInfoBuilder.getDokumentInfoBuilder()
+										.dokumentInfoId(DOKUMENT_INFO_ID)
+										.filDetaljerList(FilDetaljer.builder()
+														.filUuid(FIL_UUID)
+														.skjermingType(SkjermingTypeCode.POL)
+														.variantFormat(VARIANT_FORMAT).build(),
+												FilDetaljerBuilder.getFilDetaljerBuilder()
+														.filUuid(FIL_UUID_SLADDET)
+														.variantFormat(VARIANT_FORMAT_SLADDET)
+														.build())
+										.build())
+								.build())
+						.build()
+				));
 		when(hentDokumentUrlMock.hentDokumentUrl(isA(HentDokumentUrlRequest.class))).thenReturn(
 				new HentDokumentUrlResponse("Test"));
 		hentDokumentUrlService.hentDokumentUrl(hentDokumentUrlRequest);

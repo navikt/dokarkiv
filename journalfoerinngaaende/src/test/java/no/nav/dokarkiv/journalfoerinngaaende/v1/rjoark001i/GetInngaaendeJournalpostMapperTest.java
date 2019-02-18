@@ -25,6 +25,7 @@ import static no.nav.dokarkiv.journalfoerinngaaende.v1.util.TestUtils.VEDLEGGINN
 import static no.nav.dokarkiv.journalfoerinngaaende.v1.util.TestUtils.VEDLEGGINNHOLD2;
 import static no.nav.dokarkiv.journalfoerinngaaende.v1.util.TestUtils.VEDLEGGINNHOLD3;
 import static no.nav.dokarkiv.journalfoerinngaaende.v1.util.TestUtils.createJournalpost;
+import static no.nav.dokarkiv.journalfoerinngaaende.v1.util.TestUtils.createJournalpostKassert;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.ArgumentMatchers.any;
@@ -181,7 +182,7 @@ public class GetInngaaendeJournalpostMapperTest {
 
 	@Test
 	public void shouldMapEmptyVarianterWhenKassert() {
-		Journalpost journalpost = createJournalpost();
+		Journalpost journalpost = createJournalpostKassert();
 		journalpost.getSaksrelasjon().setFagsystem(FagsystemCode.PEN.PEN);
 		GetJournalpostResponse response = mapper.map(journalpost);
 		assertThat(response.getDokumentListe().size(), is(2));

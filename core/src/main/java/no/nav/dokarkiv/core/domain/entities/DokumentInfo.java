@@ -348,6 +348,7 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	/**
 	 * Finds a FilDetaljer by filUuid.
 	 *
+	 * Returnerer filUuid for SLADDET variant hvis filUuid tilhører ARKIV variant
 	 * @param filUuid The filUuid.
 	 * @return The FilDetaljer.
 	 */
@@ -367,8 +368,9 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 
 	/**
 	 * Finds all FilDetaljer with the given variantFormat.
+	 *
 	 * Filterer ut fildetaljer som er skjermet
-	 * Returnerer SLADDET variant hvis ARKIV variant er skjermet
+	 * Returnerer SLADDET variant hvis ARKIV variant er skjermet og ellers null hvis alle andre varianter er skjermet
 	 *
 	 * @param variantFormat The VariantFormatCode.
 	 * @return A list of Fildetaljer with the given VariantFormatCode.
@@ -377,12 +379,13 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 		if (ARKIV.equals(variantFormat) && isArkivVariantSkjermet()) {
 			return fildetaljerListe.stream()
 					.filter(filDetaljer -> SLADDET.equals(filDetaljer.getVariantFormat()))
+					.filter(filDetaljer -> Objects.isNull(filDetaljer.getSkjermingType()))
 					.findAny()
 					.orElse(null);
 		}
 
 		return fildetaljerListe.stream()
-				.filter(filDetaljer -> filDetaljer.getSkjermingType() == null)
+				.filter(filDetaljer -> Objects.isNull(filDetaljer.getSkjermingType()))
 				.filter(filDetaljer -> variantFormat.equals(filDetaljer.getVariantFormat()))
 				.findAny()
 				.orElse(null);
