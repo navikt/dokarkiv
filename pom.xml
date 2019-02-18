@@ -30,10 +30,8 @@
 		<module>hentdokument</module>
 		<module>hentjournalinfo</module>
 		<module>hentjournalsakinfo</module>
-		<module>slettarkivenhet</module>
-		<module>kasserdokument</module>
 		<module>arkivervariant</module>
-		<module>skjermarkivenhet</module>
+		<module>admin</module>
 	</modules>
 
 	<distributionManagement>
@@ -145,17 +143,7 @@
 			</dependency>
 			<dependency>
 				<groupId>no.nav.dokarkiv</groupId>
-				<artifactId>kasserdokument</artifactId>
-				<version>1-SNAPSHOT</version>
-			</dependency>
-			<dependency>
-				<groupId>no.nav.dokarkiv</groupId>
-				<artifactId>skjermarkivenhet</artifactId>
-				<version>1-SNAPSHOT</version>
-			</dependency>
-			<dependency>
-				<groupId>no.nav.dokarkiv</groupId>
-				<artifactId>slettarkivenhet</artifactId>
+				<artifactId>admin</artifactId>
 				<version>1-SNAPSHOT</version>
 			</dependency>
 			<dependency>

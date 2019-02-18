@@ -15,11 +15,8 @@ import no.nav.dokarkiv.inngaaendejournal.v1.InngaaendeJournalV1Config;
 import no.nav.dokarkiv.innsynjournal.v2.InnsynJournalV2Config;
 import no.nav.dokarkiv.journal.v3.JournalV3Config;
 import no.nav.dokarkiv.journalfoerinngaaende.v1.JournalfoerInngaaendeConfig;
-import no.nav.dokarkiv.kasserdokument.KasserDokumentConfig;
 import no.nav.dokarkiv.nais.NaisContract;
 import no.nav.dokarkiv.platform.TomcatConfig;
-import no.nav.dokarkiv.skjermarkivenhet.SkjermArkivenhetConfig;
-import no.nav.dokarkiv.slettarkivenhet.SlettArkivenhetConfig;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.annotation.Import;
 
@@ -42,9 +39,7 @@ import org.springframework.context.annotation.Import;
 		HentJournalInfoConfig.class,
 		HentJournalsakinfoConfig.class,
 		ArkiverVariantConfig.class,
-		SkjermArkivenhetConfig.class,
-		KasserDokumentConfig.class,
-		SlettArkivenhetConfig.class,
+		AdminConfig.class,
 		NaisContract.class})
 public class Application {
 	public static void main(String[] args) {

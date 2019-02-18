@@ -9,6 +9,7 @@ import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.ARKIV;
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.SLADDET;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
@@ -35,11 +36,13 @@ public class DokumentInfoTest {
 						FilDetaljer.builder()
 								.fildetaljerId(1L)
 								.filUuid("test")
+								.variantFormat(ARKIV)
 								.skjermingType(SkjermingTypeCode.POL)
 								.build(),
 						FilDetaljer.builder()
 								.fildetaljerId(2L)
 								.filUuid("test2")
+								.variantFormat(SLADDET)
 								.skjermingType(SkjermingTypeCode.POL)
 								.build())
 				.build();
@@ -67,7 +70,7 @@ public class DokumentInfoTest {
 	}
 
 	@Test
-	public void shouldReturnSladdetVariantWhenArkivVariantIsSkjermet() {
+	public void findFilDetaljerByVariantFormatShouldReturnSladdetVariantWhenArkivVariantIsSkjermet() {
 		DokumentInfo dokumentInfo = getDokumentInfoBuilder()
 				.filDetaljerList(
 						FilDetaljer.builder()
@@ -86,6 +89,29 @@ public class DokumentInfoTest {
 		assertThat(dokumentInfo.findFilDetaljerByVariantFormat(VariantFormatCode.ARKIV).getVariantFormat(), is(SLADDET));
 		assertThat(dokumentInfo.getFildetaljerListeAdmin().size(), is(2));
 	}
+
+	@Test
+	public void findFilDetaljerByVariantFormatShouldReturnEmptyFildetaljerListWhenKassert() {
+		DokumentInfo dokumentInfo = getDokumentInfoBuilder()
+				.filDetaljerList(
+						FilDetaljer.builder()
+								.fildetaljerId(1L)
+								.filUuid("test")
+								.variantFormat(ARKIV)
+								.skjermingType(SkjermingTypeCode.POL)
+								.build(),
+						FilDetaljer.builder()
+								.fildetaljerId(2L)
+								.filUuid("test2")
+								.variantFormat(SLADDET)
+								.skjermingType(SkjermingTypeCode.POL)
+								.build())
+				.build();
+
+		assertThat(dokumentInfo.findFilDetaljerByVariantFormat(ARKIV), nullValue());
+		assertThat(dokumentInfo.findFilDetaljerByVariantFormatAdmin(ARKIV).getVariantFormat(), is(ARKIV));
+	}
+
 
 	@Test
 	public void shouldReturnArkivVariantWhenArkivVariantIsNotSkjermet() {

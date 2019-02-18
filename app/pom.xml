@@ -70,19 +70,11 @@
 		</dependency>
 		<dependency>
 			<groupId>no.nav.dokarkiv</groupId>
-			<artifactId>skjermarkivenhet</artifactId>
+			<artifactId>admin</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>no.nav.dokarkiv</groupId>
 			<artifactId>arkivervariant</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>no.nav.dokarkiv</groupId>
-			<artifactId>kasserdokument</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>no.nav.dokarkiv</groupId>
-			<artifactId>slettarkivenhet</artifactId>
 		</dependency>
 		<!-- annet -->
 		<dependency>

@@ -372,6 +372,7 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	 * <p>
 	 * Filterer ut fildetaljer som er skjermet
 	 * Returnerer SLADDET variant hvis ARKIV variant er skjermet og ellers null hvis alle andre varianter er skjermet
+	 * Returnerer null hvis både ARKIV og SLADDET variant er skjermet
 	 *
 	 * @param variantFormat The VariantFormatCode.
 	 * @return A list of Fildetaljer with the given VariantFormatCode.
@@ -392,6 +393,9 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 				.orElse(null);
 	}
 
+	/**
+	 * Returnerer fildetaljer med gitt variantFormat inkludert skjermet
+	 */
 	public FilDetaljer findFilDetaljerByVariantFormatAdmin(final VariantFormatCode variantFormat) {
 		return fildetaljerListe.stream()
 				.filter(filDetaljer -> variantFormat.equals(filDetaljer.getVariantFormat()))
@@ -826,7 +830,7 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	 */
 	public Set<FilDetaljer> getFildetaljerListe() {
 		return Collections.unmodifiableSet(fildetaljerListe.stream()
-				.filter(filDetaljer -> filDetaljer.getSkjermingType() == null)
+				.filter(filDetaljer -> Objects.isNull(filDetaljer.getSkjermingType()))
 				.filter(filDetaljer -> isFalse(SLADDET.equals(filDetaljer.getVariantFormat())))
 				.collect(Collectors.toSet())
 		);
