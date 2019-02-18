@@ -166,7 +166,7 @@ public class Rjoark101IT extends AbstractSkjermArkivenhetIT {
 
 		assertThat(dokumentinfoRepository.findByDokumentInfoId(dokumentInfo.getDokumentInfoId())
 				.get()
-				.findFilDetaljerByVariantFormat(VariantFormatCode.ARKIV)
+				.findFilDetaljerByVariantFormatAdmin(VariantFormatCode.ARKIV)
 				.getSkjermingType(), is(SkjermingTypeCode.POL));
 
 		HttpEntity httpEntity = new HttpEntity(
