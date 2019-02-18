@@ -81,7 +81,7 @@ public class JournalpostQuery implements Query {
     public List<JournalpostDokumentRelasjon> knyttetDokumentList(@GraphQLContext Journalpost journalpost) {
         Set<JournalpostDokumentInfoRelasjon> journalpostDokumentInfoRelasjons = joarkRepository.findById(journalpost.getJournalpostId())
                 .orElse(new no.nav.dokarkiv.core.domain.entities.Journalpost())
-                .getJournalpostDokumentInfoRelasjoner();
+                .getJournalpostDokumentInfoRelasjonerAdmin();
 
         List<Long> begrensetDokumentInfoRelasjon = journalpostDokumentInfoRelasjons.stream()
                 .filter(relasjon -> skjermingService.isJournalpostDokumentInfoRelasjonOrJournalpostBegrenset(relasjon.getJournalpost()

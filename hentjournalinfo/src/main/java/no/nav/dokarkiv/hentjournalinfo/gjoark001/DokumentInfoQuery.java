@@ -134,7 +134,7 @@ public class DokumentInfoQuery implements Query {
 		//Må hente på nytt fra databasen pågrunn av lazy initialisering
 		Set<FilDetaljer> filDetaljerSet = dokumentinfoRepository.findById(dokumentInfo.getDokumentInfoId())
 				.orElse(no.nav.dokarkiv.core.domain.entities.DokumentInfo.builder().build())
-				.getFildetaljerListe();
+				.getFildetaljerListeAdmin();
 
 		return mapFildetaljer(filDetaljerSet);
 	}
