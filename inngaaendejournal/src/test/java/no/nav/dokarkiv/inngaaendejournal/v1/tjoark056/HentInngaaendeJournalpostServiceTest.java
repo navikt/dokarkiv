@@ -8,7 +8,9 @@ import static no.nav.dokarkiv.inngaaendejournal.v1.InngaaendeJournalDataProvider
 import static no.nav.dokarkiv.inngaaendejournal.v1.InngaaendeJournalDataProvider.buildJournalpost;
 import static no.nav.dokarkiv.inngaaendejournal.v1.InngaaendeJournalDataProvider.createBaseVedleggDokumentInfo;
 import static no.nav.dokarkiv.inngaaendejournal.v1.InngaaendeJournalDataProvider.createHovedDokumentInfo;
+import static no.nav.dokarkiv.inngaaendejournal.v1.InngaaendeJournalDataProvider.createHovedDokumentInfoKassert;
 import static no.nav.dokarkiv.inngaaendejournal.v1.InngaaendeJournalDataProvider.createSaksrelasjon;
+import static no.nav.dokarkiv.inngaaendejournal.v1.InngaaendeJournalDataProvider.createVedleggDokumentInfoKassert;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
@@ -249,7 +251,18 @@ public class HentInngaaendeJournalpostServiceTest {
 
 	@Test
 	public void should_map_journalpost_to_dto_kassert() throws Exception {
-		when(repository.findById(any(Long.class))).thenReturn(Optional.of(buildJournalpost().build()));
+		when(repository.findById(any(Long.class))).thenReturn(Optional.of(
+				buildBaseJournalpost()
+						.dokumentInfoRelasjoner(
+								getJournalpostDokumentInfoRelasjonBuilder()
+										.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.HOVEDDOKUMENT)
+										.dokumentInfo(createHovedDokumentInfoKassert().build())
+										.build(),
+								getJournalpostDokumentInfoRelasjonBuilder()
+										.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
+										.dokumentInfo(createVedleggDokumentInfoKassert().build())
+										.build())
+				.build()));
 
 		InngaaendeJournalpostTo to = service.hentJournalpost("1");
 
