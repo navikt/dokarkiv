@@ -149,12 +149,12 @@ public class SkjermingService {
 	}
 
 	public void setFildetaljerSkjerming(FilDetaljer filDetaljer, SkjermingTypeCode SkjermingTypeCode) {
-		Query q = entityManager.createQuery("update FilDetaljer set skjermingType = :begrenset where fildetaljerId = :filDetaljerId").setParameter("filDetaljerId", filDetaljer.getFildetaljerId()).setParameter("begrenset", SkjermingTypeCode);
+		Query q = entityManager.createQuery("update FilDetaljer set skjermingType = :skjermingTypeCode where fildetaljerId = :filDetaljerId").setParameter("filDetaljerId", filDetaljer.getFildetaljerId()).setParameter("skjermingTypeCode", SkjermingTypeCode);
 		q.executeUpdate();
 	}
 
 	public void setJpDokInfoRelBegrensning(JournalpostDokumentInfoRelasjon rel, SkjermingTypeCode SkjermingTypeCode) {
-		Query q = entityManager.createQuery("update JournalpostDokumentInfoRelasjon set skjermingType = :begrenset where journalpostDokumentInfoRelasjonId = :relId").setParameter("relId", rel.getJournalpostDokumentInfoRelasjonId()).setParameter("begrenset", SkjermingTypeCode);
+		Query q = entityManager.createQuery("update JournalpostDokumentInfoRelasjon set skjermingType = :skjermingTypeCode where journalpostDokumentInfoRelasjonId = :relId").setParameter("relId", rel.getJournalpostDokumentInfoRelasjonId()).setParameter("skjermingTypeCode", SkjermingTypeCode);
 		q.executeUpdate();
 	}
 

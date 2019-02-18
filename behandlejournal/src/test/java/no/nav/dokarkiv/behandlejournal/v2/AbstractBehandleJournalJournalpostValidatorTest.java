@@ -89,7 +89,7 @@ public abstract class AbstractBehandleJournalJournalpostValidatorTest {
 										.filDetaljerList(getFilDetaljerBuilder()
 												.filtype(FilTypeCode.PDF)
 												.fileContent("file".getBytes())
-												.variantFormat(VariantFormatCode.SLADDET)
+												.variantFormat(VariantFormatCode.ARKIV)
 												.build())
 										.build())
 								.build())

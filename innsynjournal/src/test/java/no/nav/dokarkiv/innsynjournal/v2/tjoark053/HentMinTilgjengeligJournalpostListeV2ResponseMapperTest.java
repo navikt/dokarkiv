@@ -96,7 +96,7 @@ public class HentMinTilgjengeligJournalpostListeV2ResponseMapperTest {
 
 	@Before
 	public void setUp() throws Exception {
-		mapper = new HentMinTilgjengeligJournalpostListeV2ResponseMapper(skjermingService);
+		mapper = new HentMinTilgjengeligJournalpostListeV2ResponseMapper();
 	}
 
 	@Test
