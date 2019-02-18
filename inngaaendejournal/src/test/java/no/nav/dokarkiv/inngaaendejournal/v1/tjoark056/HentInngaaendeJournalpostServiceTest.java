@@ -76,7 +76,7 @@ public class HentInngaaendeJournalpostServiceTest {
 
 	@Before
 	public void setUp() throws Exception {
-		service = new HentInngaaendeJournalpostService(repository, new InngaaendeJournalpostToMapper(skjermingService));
+		service = new HentInngaaendeJournalpostService(repository, new InngaaendeJournalpostToMapper());
 	}
 
 	@Test
