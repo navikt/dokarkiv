@@ -57,6 +57,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -1451,14 +1452,19 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	/**
 	 * Getter for the journalpostDokumentInfoRelasjoner property.
 	 *
+	 * Filterer ut JournalpostDokumentInfoRelasjoner som er skjermet
+	 *
 	 * @return the journalpostDokumentInfoRelasjoner
 	 */
 	public Set<JournalpostDokumentInfoRelasjon> getJournalpostDokumentInfoRelasjoner() {
 		return Collections.unmodifiableSet(journalpostDokumentInfoRelasjoner.stream()
-				.filter(relasjon -> relasjon.getSkjermingType() == null)
+				.filter(relasjon -> Objects.isNull(relasjon.getSkjermingType()))
 				.collect(Collectors.toSet()));
 	}
 
+	/**
+	 * Returnerer alle journalpostDokumentInfoRelasjoner inkludert skjermet
+	 */
 	public Set<JournalpostDokumentInfoRelasjon> getJournalpostDokumentInfoRelasjonerAdmin() {
 		return Collections.unmodifiableSet(journalpostDokumentInfoRelasjoner);
 	}

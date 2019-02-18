@@ -1,6 +1,5 @@
 package no.nav.dokarkiv.core.util;
 
-import no.nav.dokarkiv.core.datautil.SaksrelasjonTestDataProvider;
 import no.nav.dokarkiv.core.domain.codes.ArsakReturCode;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
@@ -61,8 +60,6 @@ public class TestDataGenerator {
 				.journalposttype(JournalpostTypeCode.U)
 				.opprettetAvNavn(OPPRETTET_AV_NAVN)
 				.fagomrade(FagomradeCode.RPO)
-				.saksrelasjon(
-						SaksrelasjonTestDataProvider.createSaksrelasjon().build())
 				.mottakskanal(MottaksKanalCode.NAV_NO).build();
 
 		journalpost.addBruker(createBruker());
@@ -85,8 +82,6 @@ public class TestDataGenerator {
 				.journalposttype(JournalpostTypeCode.U)
 				.opprettetAvNavn(OPPRETTET_AV_NAVN)
 				.fagomrade(FagomradeCode.RPO)
-				.saksrelasjon(
-						SaksrelasjonTestDataProvider.createSaksrelasjon().build())
 				.mottakskanal(MottaksKanalCode.NAV_NO).build();
 
 		journalpost.addBruker(createBruker());
