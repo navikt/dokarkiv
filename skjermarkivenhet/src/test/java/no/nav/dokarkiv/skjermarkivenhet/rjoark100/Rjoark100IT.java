@@ -171,7 +171,7 @@ public class Rjoark100IT extends AbstractSkjermArkivenhetIT {
 		Optional<DokumentInfo> dokInfoEtterKall = dokumentinfoRepository.findByDokumentInfoId(dokumentInfo.getDokumentInfoId());
 		assertTrue(dokInfoEtterKall.isPresent());
 		assertThat(dokInfoEtterKall.get()
-				.findFilDetaljerByVariantFormat(VariantFormatCode.ARKIV)
+				.findFilDetaljerByVariantFormatAdmin(VariantFormatCode.ARKIV)
 				.getSkjermingType(), is(SkjermingTypeCode.POL));
 
 		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());

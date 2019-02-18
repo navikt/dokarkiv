@@ -347,18 +347,19 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 
 	/**
 	 * Finds a FilDetaljer by filUuid.
-	 *
+	 * <p>
 	 * Returnerer filUuid for SLADDET variant hvis filUuid tilhører ARKIV variant
+	 *
 	 * @param filUuid The filUuid.
 	 * @return The FilDetaljer.
 	 */
 	public FilDetaljer findFilDetaljerByFilUuid(final String filUuid) {
-		FilDetaljer filDetaljer =  fildetaljerListe.stream()
+		FilDetaljer filDetaljer = fildetaljerListe.stream()
 				.filter(filDetalj -> filUuid.equals(filDetalj.getFilUuid()))
 				.findAny().orElse(null);
 
 		if (Objects.nonNull(filDetaljer) && ARKIV.equals(filDetaljer.getVariantFormat()) && isArkivVariantSkjermet()) {
-			filDetaljer =  fildetaljerListe.stream()
+			filDetaljer = fildetaljerListe.stream()
 					.filter(filDetalj -> SLADDET.equals(filDetalj.getVariantFormat()))
 					.findAny().orElse(null);
 		}
@@ -368,7 +369,7 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 
 	/**
 	 * Finds all FilDetaljer with the given variantFormat.
-	 *
+	 * <p>
 	 * Filterer ut fildetaljer som er skjermet
 	 * Returnerer SLADDET variant hvis ARKIV variant er skjermet og ellers null hvis alle andre varianter er skjermet
 	 *
@@ -389,6 +390,14 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 				.filter(filDetaljer -> variantFormat.equals(filDetaljer.getVariantFormat()))
 				.findAny()
 				.orElse(null);
+	}
+
+	public FilDetaljer findFilDetaljerByVariantFormatAdmin(final VariantFormatCode variantFormat) {
+		return fildetaljerListe.stream()
+				.filter(filDetaljer -> variantFormat.equals(filDetaljer.getVariantFormat()))
+				.findAny()
+				.orElse(null);
+
 	}
 
 	private boolean isArkivVariantSkjermet() {
