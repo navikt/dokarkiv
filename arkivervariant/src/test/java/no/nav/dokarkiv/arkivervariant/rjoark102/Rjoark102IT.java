@@ -106,7 +106,7 @@ public class Rjoark102IT extends AbstractArkiverVariantIT {
 		assertTrue(dokumentinfoRepository.findByDokumentInfoId(dokumentInfo.getDokumentInfoId()).isPresent());
 		DokumentInfo persistedDokumentInfo = dokumentinfoRepository.findByDokumentInfoId(dokumentInfo.getDokumentInfoId())
 				.get();
-		assertThat(persistedDokumentInfo.getFildetaljerListe().size(), is(2));
+		assertThat(persistedDokumentInfo.getFildetaljerListeAdmin().size(), is(2));
 		assertThat(persistedDokumentInfo.findFilDetaljerByVariantFormat(VariantFormatCode.ARKIV), notNullValue());
 		assertThat(persistedDokumentInfo.findFilDetaljerByVariantFormat(SLADDET), notNullValue());
 		assertThat(persistedDokumentInfo.findFilDetaljerByVariantFormat(SLADDET)
