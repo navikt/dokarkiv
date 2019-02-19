@@ -6,6 +6,7 @@ import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalp
 import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
 import static no.nav.dokarkiv.core.domain.builder.SkannetInnholdBuilder.getSkannetInnholdBuilder;
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.ARKIV;
+import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.PRODUKSJON;
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.SLADDET;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
@@ -58,10 +59,12 @@ public class DokumentInfoTest {
 						FilDetaljer.builder()
 								.fildetaljerId(1L)
 								.filUuid("test")
+								.variantFormat(ARKIV)
 								.build(),
 						FilDetaljer.builder()
 								.fildetaljerId(2L)
 								.filUuid("test2")
+								.variantFormat(SLADDET)
 								.build())
 				.build();
 
@@ -134,7 +137,7 @@ public class DokumentInfoTest {
 	}
 
 	@Test
-	public void shouldReturnSladdetVariantWhenFilUuidBelongsArkivVariantAndArkivVariantIsSkjermet() {
+	public void findFilDetaljerByFilUuidShouldReturnSladdetVariantWhenFilUuidBelongsArkivVariantAndArkivVariantIsSkjermet() {
 		DokumentInfo dokumentInfo = getDokumentInfoBuilder()
 				.filDetaljerList(
 						FilDetaljer.builder()
@@ -156,7 +159,7 @@ public class DokumentInfoTest {
 	}
 
 	@Test
-	public void shouldReturnArkivtVariantWhenFilUuidBelongsArkivVariantAndArkivVariantIsNotSkjermet() {
+	public void findFilDetaljerByFilUuidShouldReturnArkivVariantWhenFilUuidBelongsArkivVariantAndArkivVariantIsNotSkjermet() {
 		DokumentInfo dokumentInfo = getDokumentInfoBuilder()
 				.filDetaljerList(
 						FilDetaljer.builder()
@@ -176,6 +179,50 @@ public class DokumentInfoTest {
 		assertThat(dokumentInfo.getFildetaljerListeAdmin().size(), is(2));
 	}
 
+	@Test
+	public void findFilDetaljerByFilUuidShouldReturnEmptyFildetaljerListWhenKassert() {
+		DokumentInfo dokumentInfo = getDokumentInfoBuilder()
+				.filDetaljerList(
+						FilDetaljer.builder()
+								.fildetaljerId(1L)
+								.filUuid("test")
+								.variantFormat(ARKIV)
+								.skjermingType(SkjermingTypeCode.POL)
+								.build(),
+						FilDetaljer.builder()
+								.fildetaljerId(2L)
+								.filUuid("test2")
+								.variantFormat(SLADDET)
+								.skjermingType(SkjermingTypeCode.POL)
+								.build())
+				.build();
+
+		assertThat(dokumentInfo.findFilDetaljerByFilUuid("test"), nullValue());
+		assertThat(dokumentInfo.getFildetaljerListeAdmin().size(), is(2));
+	}
+
+	@Test
+	public void findFilDetaljerByFilUuidShouldReturnEmptyFildetaljerListWhenKassertNoSladdet() {
+		DokumentInfo dokumentInfo = getDokumentInfoBuilder()
+				.filDetaljerList(
+						FilDetaljer.builder()
+								.fildetaljerId(1L)
+								.filUuid("test")
+								.variantFormat(ARKIV)
+								.skjermingType(SkjermingTypeCode.POL)
+								.build(),
+						FilDetaljer.builder()
+								.fildetaljerId(2L)
+								.filUuid("test2")
+								.variantFormat(PRODUKSJON)
+								.skjermingType(SkjermingTypeCode.POL)
+								.build())
+				.build();
+
+		assertThat(dokumentInfo.findFilDetaljerByFilUuid("tes2t"), nullValue());
+		assertThat(dokumentInfo.findFilDetaljerByFilUuid("test"), nullValue());
+		assertThat(dokumentInfo.getFildetaljerListeAdmin().size(), is(2));
+	}
 
 	@Test
 	public void shouldThrowExceptionForMissingEndretAvNavn() throws Exception {
