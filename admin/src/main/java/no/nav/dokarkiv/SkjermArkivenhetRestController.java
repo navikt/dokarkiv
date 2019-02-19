@@ -4,6 +4,8 @@ import static no.nav.abac.xacml.NavAttributter.RESOURCE_ARKIV_DOKUMENT;
 import static no.nav.abac.xacml.NavAttributter.RESOURCE_FELLES_RESOURCE_TYPE;
 import static no.nav.abac.xacml.StandardAttributter.ACTION_ID;
 import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_LOGG_HEADER;
+import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_SKJERMING_TYPE;
+import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.RELASJON_SKJERMING_TYPE;
 import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.UPDATE_ACTION;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
@@ -204,10 +206,10 @@ public class SkjermArkivenhetRestController {
 
 		switch (arkivenhetCode) {
 			case JOURNALPOST:
-				arkivElementEndringTO.arkivElement("Journalpost.skjermingType");
+				arkivElementEndringTO.arkivElement(JOURNALPOST_SKJERMING_TYPE);
 				break;
 			case VEDLEGG:
-				arkivElementEndringTO.arkivElement("JournalpostDokumentInfoRelasjon.skjermingType");
+				arkivElementEndringTO.arkivElement(RELASJON_SKJERMING_TYPE);
 				break;
 			case DOKUMENT_FIL:
 				arkivElementEndringTO.arkivElement(String.format("Fildetaljer.variantFormat[%s].skjermingType", variantFormatCode

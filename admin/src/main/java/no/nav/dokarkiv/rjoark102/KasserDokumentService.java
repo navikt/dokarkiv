@@ -1,5 +1,9 @@
 package no.nav.dokarkiv.rjoark102;
 
+import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.DOKUMENT_INFO_KASSERT_AV;
+import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.DOKUMENT_INFO_KASSERT_DATO;
+import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.FILDETALJER_VARIANTFORMAT;
+
 import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.exceptions.DokumentInfoIkkeFunnetException;
@@ -58,7 +62,7 @@ public class KasserDokumentService {
 		List<ArkivElementEndringTO> arkivElementEndringTOList = dokumentInfoTilTidligKassering.getFildetaljerListeAdmin()
 				.stream()
 				.map(filDetaljer -> ArkivElementEndringTO.builder()
-						.arkivElement("FilDetaljer.variantFormat")
+						.arkivElement(FILDETALJER_VARIANTFORMAT)
 						.fraVerdi(filDetaljer.getVariantFormat().name())
 						.tilVerdi(null)
 						.build()
@@ -67,7 +71,7 @@ public class KasserDokumentService {
 
 		arkivElementEndringTOList.add(
 				ArkivElementEndringTO.builder()
-						.arkivElement("DokumentInfo.kassertDato")
+						.arkivElement(DOKUMENT_INFO_KASSERT_DATO)
 						.fraVerdi(null)
 						.tilVerdi(dokumentInfoTilTidligKassering.getDatoKassert().format(DateTimeFormatter.ISO_DATE_TIME))
 						.build()
@@ -75,7 +79,7 @@ public class KasserDokumentService {
 
 		arkivElementEndringTOList.add(
 				ArkivElementEndringTO.builder()
-						.arkivElement("DokumentInfo.kassertAv")
+						.arkivElement(DOKUMENT_INFO_KASSERT_AV)
 						.fraVerdi(null)
 						.tilVerdi(dokumentInfoTilTidligKassering.getKassertAvNavn())
 						.build()

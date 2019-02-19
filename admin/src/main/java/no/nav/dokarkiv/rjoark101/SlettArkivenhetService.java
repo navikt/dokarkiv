@@ -1,5 +1,9 @@
 package no.nav.dokarkiv.rjoark101;
 
+import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.DOKUMENT_INFO_DOKUMENT_INFO_ID;
+import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.FILDETALJER_VARIANTFORMAT;
+import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_JOURNALPOST_ID;
+import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.RELASJON_DOKUMENT_INFO_ID;
 import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.VEDLEGG;
 
 import lombok.extern.slf4j.Slf4j;
@@ -70,7 +74,7 @@ public class SlettArkivenhetService {
 
 		return Arrays.asList(
 				ArkivElementEndringTO.builder()
-						.arkivElement("JournalpostDokumentInfoRelasjon.dokumentInfoId")
+						.arkivElement(RELASJON_DOKUMENT_INFO_ID)
 						.fraVerdi(relasjon.getDokumentInfo().getDokumentInfoId().toString())
 						.tilVerdi(null)
 						.build()
@@ -88,7 +92,7 @@ public class SlettArkivenhetService {
 
 		return Collections.singletonList(
 				ArkivElementEndringTO.builder()
-						.arkivElement("Journalpost.journalpostId")
+						.arkivElement(JOURNALPOST_JOURNALPOST_ID)
 						.fraVerdi(journalpostId.toString())
 						.tilVerdi(null)
 						.build()
@@ -103,7 +107,7 @@ public class SlettArkivenhetService {
 
 		return Collections.singletonList(
 				ArkivElementEndringTO.builder()
-						.arkivElement("DokumentInfo.dokumentInfoId")
+						.arkivElement(DOKUMENT_INFO_DOKUMENT_INFO_ID)
 						.fraVerdi(dokumentInfoId.toString())
 						.tilVerdi(null)
 						.build()
@@ -117,7 +121,7 @@ public class SlettArkivenhetService {
 
 		return Collections.singletonList(
 				ArkivElementEndringTO.builder()
-						.arkivElement("FilDetaljer.variantFormat")
+						.arkivElement(FILDETALJER_VARIANTFORMAT)
 						.fraVerdi(variantFormatCode.name())
 						.tilVerdi(null)
 						.build()
