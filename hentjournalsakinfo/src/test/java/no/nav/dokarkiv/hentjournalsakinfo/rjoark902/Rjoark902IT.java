@@ -1,6 +1,8 @@
 package no.nav.dokarkiv.hentjournalsakinfo.rjoark902;
 
-import static no.nav.dokarkiv.hentjournalsakinfo.TestDataGenerator2.createJournalpostWithHoveddokument;
+//import static no.nav.dokarkiv.hentjournalsakinfo.TestDataGenerator2.createJournalpostWithHoveddokument;
+
+import static no.nav.dokarkiv.core.util.TestDataGenerator.createJournalpostWithHoveddokument;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
@@ -8,6 +10,7 @@ import static org.junit.Assert.assertThat;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.util.TestDataGenerator;
 import no.nav.dokarkiv.hentjournalsakinfo.AbstractHentjournalsakinfoItest;
 import no.nav.dokarkiv.hentjournalsakinfo.rjoark900.DokumentInfoDto;
 import org.junit.Test;
@@ -30,9 +33,6 @@ public class Rjoark902IT extends AbstractHentjournalsakinfoItest {
 	public void shouldGetJournalpost() {
 
 		Journalpost storedJournalpost = buildAndPersistJournalpost();
-		TestTransaction.flagForCommit();
-		TestTransaction.end();
-
 		Long journalpostId = storedJournalpost.getJournalpostId();
 
 		String uri = HENTJOURNALSAKINFO_HENTJOURNALPOST + journalpostId;
@@ -71,9 +71,6 @@ public class Rjoark902IT extends AbstractHentjournalsakinfoItest {
 	public void shouldFailToGetJournalpost() {
 
 		Journalpost storedJournalpost = buildAndPersistJournalpost();
-		TestTransaction.flagForCommit();
-		TestTransaction.end();
-
 		Long journalpostId = 54321L;
 
 		String uri = HENTJOURNALSAKINFO_HENTJOURNALPOST + journalpostId;
@@ -85,6 +82,11 @@ public class Rjoark902IT extends AbstractHentjournalsakinfoItest {
 	private Journalpost buildAndPersistJournalpost() {
 
 		Journalpost journalpost = createJournalpostWithHoveddokument();
+		journalpost.addJournalpostDokumentInfoRelasjon(TestDataGenerator.createDokumentInfoVedleggRelasjon(journalpost));
+		saveJournalpost(journalpost);
+
+
+
 		journalpost.setJournalForendeEnhetId(JOURNALFOERENDE_ENHET);
 		journalpost.setAvsenderMottaker(AVSENDER);
 		journalpost.setJournalfortAvNavn(JOURNALFOERT_AV);
@@ -92,6 +94,8 @@ public class Rjoark902IT extends AbstractHentjournalsakinfoItest {
 		journalpost.getSaksrelasjon().setFeilregistrert(true);
 
 		joarkRepository.save(journalpost);
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
 
 		return journalpost;
 	}

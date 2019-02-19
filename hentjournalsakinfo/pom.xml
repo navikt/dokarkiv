@@ -32,6 +32,11 @@
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>no.nav.freg</groupId>
+			<artifactId>freg-security-test-oidc-tools</artifactId>
+			<scope>test</scope>
+		</dependency>
 
 		<!--test-->
 		<dependency>

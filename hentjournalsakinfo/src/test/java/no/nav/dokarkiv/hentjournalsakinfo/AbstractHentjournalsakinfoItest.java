@@ -1,7 +1,7 @@
 package no.nav.dokarkiv.hentjournalsakinfo;
 
+import no.nav.dokarkiv.core.AbstractRestIT;
 import no.nav.dokarkiv.core.CoreConfig;
-import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
@@ -10,7 +10,7 @@ import no.nav.dokarkiv.core.security.BasicAuthRestInterceptor;
 import no.nav.dokarkiv.core.security.LdapConfig;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.dokarkiv.core.stelvio.SimpleRequestContext;
-import org.junit.After;
+import no.nav.freg.security.test.oidc.tools.TestToolsAutoConfig;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,27 +28,21 @@ import org.springframework.http.MediaType;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Base64Utils;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.util.Arrays;
 
 /**
  * @author Sigurd Midttun, Visma Consulting.
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-		classes = {CoreConfig.class, HentJournalsakinfoConfig.class, LdapConfig.class, AbstractHentjournalsakinfoItest.Config.class})
-@ActiveProfiles("itest,ldap")
-@AutoConfigureDataLdap
-@AutoConfigureTestDatabase
-@AutoConfigureTestEntityManager
-@Transactional
-public abstract class AbstractHentjournalsakinfoItest {
+		classes = {CoreConfig.class, HentJournalsakinfoConfig.class, LdapConfig.class, AbstractHentjournalsakinfoItest.Config.class, TestToolsAutoConfig.class})
+@ActiveProfiles("itest,wiremock,ldap,oidc")
+public abstract class AbstractHentjournalsakinfoItest extends AbstractRestIT {
 
 	@Configuration
 	static class Config {
@@ -87,20 +81,8 @@ public abstract class AbstractHentjournalsakinfoItest {
 				.userId("itestuser")
 				.componentId("itest")
 				.build());
-
 	}
 
-	@After
-	public void cleanup() {
-		if (!TestTransaction.isActive()) {
-			TestTransaction.start();
-		}
-		journalpostDokumentInfoRelasjonRepository.deleteAll();
-		dokumentInfoRepository.deleteAll();
-		joarkRepository.deleteAll();
-		TestTransaction.flagForCommit();
-		TestTransaction.end();
-	}
 
 	protected HttpEntity createHeaderEntity() {
 		return new HttpEntity(createDefaultHeaders());
@@ -112,9 +94,5 @@ public abstract class AbstractHentjournalsakinfoItest {
 		headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
 		headers.add(HttpHeaders.AUTHORIZATION, basicAuthHeader);
 		return headers;
-	}
-
-	protected void persist(Journalpost... journalposts) {
-		joarkRepository.saveAll(Arrays.asList(journalposts));
 	}
 }
