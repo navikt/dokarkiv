@@ -9,7 +9,7 @@ import no.nav.dokarkiv.hentjournalsakinfo.rjoark900.FinnJournalposterResponseTo;
 import no.nav.dokarkiv.hentjournalsakinfo.rjoark900.FinnJournalposterService;
 import no.nav.dokarkiv.hentjournalsakinfo.rjoark901.HentTilgangJournalpostResponse;
 import no.nav.dokarkiv.hentjournalsakinfo.rjoark901.HentTilgangJournalpostService;
-import no.nav.dokarkiv.hentjournalsakinfo.rjoark902.SafHentJournalpostResponseTo;
+import no.nav.dokarkiv.hentjournalsakinfo.rjoark902.SafHentJournalpostResponse;
 import no.nav.dokarkiv.hentjournalsakinfo.rjoark902.SafHentJournalpostService;
 import no.nav.dokarkiv.hentjournalsakinfo.rjoark920.SafHentDokumentResponse;
 import no.nav.dokarkiv.hentjournalsakinfo.rjoark920.SafHentDokumentService;
@@ -91,7 +91,7 @@ public class HentJournalsakinfoController {
 	@ResponseBody
 	@RequestMapping(value = "/hentjournalpost/{journalpostId}")
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark902"}, percentiles = {0.5, 0.95})
-	public SafHentJournalpostResponseTo safHentJournalpost(@PathVariable Long journalpostId) {
+	public SafHentJournalpostResponse safHentJournalpost(@PathVariable Long journalpostId) {
 		log.info("rjoark902 har mottatt forespørsel om journalpost med journalpostId={}", journalpostId);
 		return safHentJournalpostService.hentJournalpostByJournalpostId(journalpostId);
 	}

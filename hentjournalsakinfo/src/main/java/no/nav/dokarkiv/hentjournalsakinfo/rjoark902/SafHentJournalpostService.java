@@ -11,7 +11,7 @@ public class SafHentJournalpostService {
 		this.hentJournalpostSpringJdbcRepository = hentJournalpostSpringJdbcRepository;
 	}
 
-	public SafHentJournalpostResponseTo hentJournalpostByJournalpostId(Long journalpostId) {
-		return new SafHentJournalpostResponseTo(hentJournalpostSpringJdbcRepository.finnJournalposter(journalpostId.toString()));
+	public SafHentJournalpostResponse hentJournalpostByJournalpostId(Long journalpostId) {
+		return new SafHentJournalpostResponse(hentJournalpostSpringJdbcRepository.finnJournalposter(journalpostId.toString()));
 	}
 }

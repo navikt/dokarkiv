@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.hentjournalsakinfo.rjoark920;
+package no.nav.dokarkiv.hentjournalsakinfo.rjoark902;
 
 import lombok.AllArgsConstructor;
 import lombok.Value;
@@ -39,6 +39,7 @@ public class HentJournalpostDto {
 	private final UtsendingsKanalCode utsendingskanal;
 	private final JournalpostTypeCode journalposttype;
 	private final SaksrelasjonDto saksrelasjon;
+	private final BrukerDto bruker;
 	private final Date datoOpprettet;
 	private final Date mottattDato;
 	private final Date journalDato;

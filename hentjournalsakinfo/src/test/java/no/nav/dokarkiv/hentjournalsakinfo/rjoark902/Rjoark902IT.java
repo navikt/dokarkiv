@@ -10,7 +10,6 @@ import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.hentjournalsakinfo.AbstractHentjournalsakinfoItest;
 import no.nav.dokarkiv.hentjournalsakinfo.rjoark900.DokumentInfoDto;
-import no.nav.dokarkiv.hentjournalsakinfo.rjoark920.HentJournalpostDto;
 import org.junit.Test;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -37,7 +36,7 @@ public class Rjoark902IT extends AbstractHentjournalsakinfoItest {
 		Long journalpostId = storedJournalpost.getJournalpostId();
 
 		String uri = HENTJOURNALSAKINFO_HENTJOURNALPOST + journalpostId;
-		ResponseEntity<SafHentJournalpostResponseTo> responseEntity = restTemplate.exchange(uri, HttpMethod.GET, createHeaderEntity(), SafHentJournalpostResponseTo.class);
+		ResponseEntity<SafHentJournalpostResponse> responseEntity = restTemplate.exchange(uri, HttpMethod.GET, createHeaderEntity(), SafHentJournalpostResponse.class);
 
 		HentJournalpostDto responseJournalpost = responseEntity.getBody().getHentJournalpostDto();
 
@@ -78,7 +77,7 @@ public class Rjoark902IT extends AbstractHentjournalsakinfoItest {
 		Long journalpostId = 54321L;
 
 		String uri = HENTJOURNALSAKINFO_HENTJOURNALPOST + journalpostId;
-		ResponseEntity<SafHentJournalpostResponseTo> responseEntity = restTemplate.exchange(uri, HttpMethod.GET, createHeaderEntity(), SafHentJournalpostResponseTo.class);
+		ResponseEntity<SafHentJournalpostResponse> responseEntity = restTemplate.exchange(uri, HttpMethod.GET, createHeaderEntity(), SafHentJournalpostResponse.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.NOT_FOUND));
 	}

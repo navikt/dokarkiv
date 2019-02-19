@@ -4,7 +4,6 @@ import static no.nav.dokarkiv.hentjournalsakinfo.rjoark902.HentJournalpostSqlGen
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
-import no.nav.dokarkiv.hentjournalsakinfo.rjoark920.HentJournalpostDto;
 import org.simpleflatmapper.jdbc.spring.JdbcTemplateMapperFactory;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
