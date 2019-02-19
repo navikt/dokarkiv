@@ -18,8 +18,8 @@ import no.nav.dokarkiv.core.metrics.RestMetrics;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import no.nav.dokarkiv.dto.KasserDokumentRequest;
 import no.nav.dokarkiv.dto.KasserDokumentResponse;
-import no.nav.dokarkiv.rjoark103.KasserDokumentService;
-import no.nav.dokarkiv.rjoark103.KasserDokumentValidator;
+import no.nav.dokarkiv.rjoark102.KasserDokumentService;
+import no.nav.dokarkiv.rjoark102.KasserDokumentValidator;
 import no.nav.freg.abac.core.annotation.Abac;
 import org.slf4j.MDC;
 import org.springframework.transaction.annotation.Transactional;
@@ -60,11 +60,11 @@ public class KasserDokumentRestController {
 	//TODO: MÅ endre fra value = UPDATE_ACTION til DELETE_ACTION. Men joarkadmin har ikke tilgang.
 	@Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_DOKUMENT)},
 			actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION))
-	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark103"}, percentiles = {0.5, 0.95})
+	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark102"}, percentiles = {0.5, 0.95})
 	public KasserDokumentResponse kasserDokument(
 			@RequestHeader(value = AKSJONS_LOGG_HEADER) String aksjonsLoggHeaderString,
 			@RequestBody KasserDokumentRequest request) throws UgyldigAksjonsLoggException {
-		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark103");
+		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark102");
 		validator.validerKasserDokumentRequest(request);
 		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har mottat kall med dokumentInfoId={}", request.getDokumentInfoId());
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));

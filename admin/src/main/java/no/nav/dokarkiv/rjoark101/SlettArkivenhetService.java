@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.rjoark102;
+package no.nav.dokarkiv.rjoark101;
 
 import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.VEDLEGG;
 

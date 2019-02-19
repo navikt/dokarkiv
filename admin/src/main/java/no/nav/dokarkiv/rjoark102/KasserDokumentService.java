@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.rjoark103;
+package no.nav.dokarkiv.rjoark102;
 
 import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;

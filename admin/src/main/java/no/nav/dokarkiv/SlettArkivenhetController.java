@@ -18,7 +18,7 @@ import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
 import no.nav.dokarkiv.core.metrics.RestMetrics;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import no.nav.dokarkiv.exception.UgyldigSlettArkivenhetInputException;
-import no.nav.dokarkiv.rjoark102.SlettArkivenhetOrchestrator;
+import no.nav.dokarkiv.rjoark101.SlettArkivenhetOrchestrator;
 import no.nav.dokarkiv.dto.SlettArkivenhetRequest;
 import no.nav.dokarkiv.dto.SlettArkivenhetResponse;
 import no.nav.freg.abac.core.annotation.Abac;
@@ -57,12 +57,12 @@ public class SlettArkivenhetController {
 	@DeleteMapping("/slettarkivenhet")
 	@Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_DOKUMENT)},
 			actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION))
-	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark102"}, percentiles = {0.5, 0.95})
+	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark101"}, percentiles = {0.5, 0.95})
 	public SlettArkivenhetResponse slettArkivenhet(
 			@RequestHeader(value = AKSJONS_LOGG_HEADER) String aksjonsLoggHeaderString,
 			@RequestBody SlettArkivenhetRequest slettArkivenhetRequest) throws UgyldigAksjonsLoggException {
 		//TODO: Abac security
-		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark102");
+		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark101");
 		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har mottat kall om sletting av arkivenhet={} med journalpostId={}, dokumentInfoId={} og variant={}",
 				slettArkivenhetRequest.getArkivenhet(), slettArkivenhetRequest.getJournalpostId(), slettArkivenhetRequest.getDokumentInfoId(), slettArkivenhetRequest
 						.getVariant());

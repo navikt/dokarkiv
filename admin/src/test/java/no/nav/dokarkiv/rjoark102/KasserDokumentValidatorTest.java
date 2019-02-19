@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.rjoark103;
+package no.nav.dokarkiv.rjoark102;
 
 import no.nav.dokarkiv.core.exceptions.UgyldigInputException;
 import no.nav.dokarkiv.dto.KasserDokumentRequest;

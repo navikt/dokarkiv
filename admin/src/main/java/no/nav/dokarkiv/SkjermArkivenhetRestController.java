@@ -83,7 +83,7 @@ public class SkjermArkivenhetRestController {
 		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark100");
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
 
-		log.info("{} har mottat kall med arkivenhet={}, journalpostId={} og dokumentInfoId={}", MDC.get(MDCConstants.MDC_REQUEST_ID), skjermArkivenhetRequest
+		log.info("{} har mottat kall om å skjerme arkivenhet={} med journalpostId={} og dokumentInfoId={}", MDC.get(MDCConstants.MDC_REQUEST_ID), skjermArkivenhetRequest
 				.getJournalpostId(), skjermArkivenhetRequest.getDokumentInfoId());
 		switch (skjermArkivenhetRequest.getArkivenhet()) {
 			case JOURNALPOST:
@@ -124,16 +124,16 @@ public class SkjermArkivenhetRestController {
 	@DeleteMapping("/skjermarkivenhet")
 	@Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_DOKUMENT)},
 			actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION))
-	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark101"}, percentiles = {0.5, 0.95})
+	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark100"}, percentiles = {0.5, 0.95})
 	public SkjermArkivenhetResponse opphevSkjermArkivenhet(
 			@RequestHeader(value = AKSJONS_LOGG_HEADER) String aksjonsLoggHeaderString,
 			@RequestBody SkjermArkivenhetRequest skjermArkivenhetRequest) throws UgyldigAksjonsLoggException, UgyldigSkjermArkivenhetRequestException {
 		validerAtRequestHarSkjermingOgArkivenhet(skjermArkivenhetRequest.getSkjerming(), skjermArkivenhetRequest.getArkivenhet());
 		validerAbac(skjermArkivenhetRequest);
-		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark101");
+		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark100");
 
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
-		log.info("{} har mottat kall med arkivenhet={}, journalpostId={} og dokumentInfoId={}", MDC.get(MDCConstants.MDC_REQUEST_ID), skjermArkivenhetRequest
+		log.info("{} har mottat kall om å oppheve skjerming for arkivenhet={} med journalpostId={} og dokumentInfoId={}", MDC.get(MDCConstants.MDC_REQUEST_ID), skjermArkivenhetRequest
 				.getJournalpostId(), skjermArkivenhetRequest.getDokumentInfoId());
 
 		switch (skjermArkivenhetRequest.getArkivenhet()) {

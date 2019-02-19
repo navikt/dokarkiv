@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.rjoark103;
+package no.nav.dokarkiv.rjoark102;
 
 import static java.util.Objects.isNull;
 
