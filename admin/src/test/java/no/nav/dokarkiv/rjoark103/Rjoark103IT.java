@@ -66,7 +66,7 @@ public class Rjoark103IT extends AbstractAdminIT {
 
 		joarkRepository.save(journalpost2);
 
-		skjermingService.setDokumentKassert(dokumentInfo1, SkjermingTypeCode.POL);
+		skjermingService.skjermAllFildetaljer(dokumentInfo1, SkjermingTypeCode.POL);
 
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
@@ -140,7 +140,7 @@ public class Rjoark103IT extends AbstractAdminIT {
 		Journalpost journalpost = joarkRepository.save(opprettHoveddokumentForIT());
 		DokumentInfo dokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 
-		skjermingService.setDokumentKassert(dokumentInfo, SkjermingTypeCode.POL);
+		skjermingService.skjermAllFildetaljer(dokumentInfo, SkjermingTypeCode.POL);
 
 		TestTransaction.flagForCommit();
 		TestTransaction.end();

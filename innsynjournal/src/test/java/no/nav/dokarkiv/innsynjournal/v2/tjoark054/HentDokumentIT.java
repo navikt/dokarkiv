@@ -26,7 +26,6 @@ import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
 import no.nav.dokarkiv.core.domain.codes.OnDemandInstansCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
-import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.jaxws.SubjectHandlerUtils;
 import no.nav.dokarkiv.core.jaxws.ThreadLocalSubjectHandler;
@@ -266,7 +265,7 @@ public class HentDokumentIT extends AbstractInnsynJournalV2Itest {
 						.dokumentstatus(DokumentStatusCode.FERDIGSTILT))
 				.journalpostType(JournalpostTypeCode.U).build());
 
-		skjermingService.setDokumentKassert(journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo(), SkjermingTypeCode.POL);
+		skjermingService.skjermAllFildetaljer(journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo(), SkjermingTypeCode.POL);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 

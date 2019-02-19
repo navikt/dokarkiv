@@ -29,7 +29,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.springframework.test.context.transaction.TestTransaction;
 
 /**
  * @author Joakim Bjørnstad, Jbit AS
@@ -102,7 +101,7 @@ public class HentInngaaendeJournalpostIT extends AbstractInngaaendeJournalV1Ites
 		abacPermit();
 
 		Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.J));
-		skjermingService.setDokumentKassert(journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo(), SkjermingTypeCode.POL);
+		skjermingService.skjermAllFildetaljer(journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo(), SkjermingTypeCode.POL);
 		HentJournalpostResponse response = inngaaendeJournalProvider.hentJournalpost(defaultHentJournalpostRequest(journalpost.getJournalpostId()
 				.toString()));
 

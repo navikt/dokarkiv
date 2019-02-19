@@ -98,7 +98,7 @@ public class JoarkRepositorySkjermetTest {
 
 
 	@Test
-	public void shouldReturnSameResultAsJoarkRepositoryWhenNotBegrenset() {
+	public void shouldReturnSameResultAsJoarkRepositoryWhenNotSkjermet() {
 
 		Journalpost journalpost = createJournalpost();
 		journalpost = joarkRepository.save(journalpost);
@@ -160,7 +160,7 @@ public class JoarkRepositorySkjermetTest {
 	}
 
 	@Test
-	public void shouldReturnBegrensetJournalpostForFindById() {
+	public void shouldReturnSkjermetJournalpostForFindById() {
 		Journalpost journalpost = createJournalpost();
 
 
@@ -178,7 +178,7 @@ public class JoarkRepositorySkjermetTest {
 	}
 
 	@Test
-	public void shouldNotFindBegrensetDokument() {
+	public void shouldNotFindSkjermettDokument() {
 		Journalpost journalpost = createJournalpost();
 		Journalpost journalpostBegrenset = createJournalpost();
 
@@ -201,7 +201,7 @@ public class JoarkRepositorySkjermetTest {
 	}
 
 	@Test
-	public void shouldNotExistsWhenJournalpostIsBegrenset() {
+	public void shouldNotExistsWhenJournalpostIsSkjermet() {
 		Journalpost journalpost = createJournalpost();
 
 		journalpost = joarkRepository.save(journalpost);
@@ -216,7 +216,7 @@ public class JoarkRepositorySkjermetTest {
 	}
 
 	@Test
-	public void shouldNotfindJournalpostIdByDokumentinfoIdWhenJournalpostIsBegrenset() {
+	public void shouldNotfindJournalpostIdByDokumentinfoIdWhenJournalpostIsSkjermet() {
 		Journalpost journalpost = createJournalpost();
 
 		journalpost = joarkRepository.save(journalpost);
@@ -236,7 +236,7 @@ public class JoarkRepositorySkjermetTest {
 	}
 
 	@Test
-	public void shouldNotfindJournalpostIdByTilleggsopplysningerNokkelAndVerdiWhenJournalpostIsBegrenset() {
+	public void shouldNotfindJournalpostIdByTilleggsopplysningerNokkelAndVerdiWhenJournalpostIsSkjermet() {
 
 		Journalpost journalpost = createJournalpost();
 
@@ -252,7 +252,7 @@ public class JoarkRepositorySkjermetTest {
 	}
 
 	@Test
-	public void shouldNotfindJournalpostIdByKanalReferanseIdAndMottakskanalWhenJournalpostIsBegrenset() {
+	public void shouldNotfindJournalpostIdByKanalReferanseIdAndMottakskanalWhenJournalpostIsSkjermet() {
 		Journalpost journalpost = createJournalpost();
 
 		journalpost = joarkRepository.save(journalpost);
@@ -273,7 +273,7 @@ public class JoarkRepositorySkjermetTest {
 	}
 
 	@Test
-	public void shouldNotfindJournalpostByKanalReferanseIdWhenJournalpostIsBegrenset() {
+	public void shouldNotfindJournalpostByKanalReferanseIdWhenJournalpostIsSkjermet() {
 
 		Journalpost journalpost = createJournalpost();
 
@@ -289,7 +289,7 @@ public class JoarkRepositorySkjermetTest {
 
 
 	@Test
-	public void shouldReturnBegrensetJournalpostIdForFindAllJournalpostIdsByDokumentInfoId() {
+	public void shouldReturnSkjermetJournalpostIdForFindAllJournalpostIdsByDokumentInfoId() {
 		Journalpost journalpost = createJournalpost();
 		joarkRepository.save(journalpost);
 

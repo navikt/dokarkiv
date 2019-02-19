@@ -235,7 +235,7 @@ public class HentDokumentIT extends AbstractJournalV3Itest {
 		persistDokumentFil();
 		persistDokumentFilSladdet();
 
-		skjermingService.setDokumentKassert(journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo(), SkjermingTypeCode.POL);
+		skjermingService.skjermAllFildetaljer(journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo(), SkjermingTypeCode.POL);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 

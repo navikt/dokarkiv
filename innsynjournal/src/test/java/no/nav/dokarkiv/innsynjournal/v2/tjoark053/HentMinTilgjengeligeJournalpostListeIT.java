@@ -782,7 +782,7 @@ public class HentMinTilgjengeligeJournalpostListeIT extends AbstractInnsynJourna
 	@Test
 	public void shouldVerifyResponseValuesKassert() throws Exception {
 		Journalpost journalpost = buildAndPersist(journalpostMaxResponse());
-		skjermingService.setDokumentKassert(journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo(), SkjermingTypeCode.POL);
+		skjermingService.skjermAllFildetaljer(journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo(), SkjermingTypeCode.POL);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 

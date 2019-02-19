@@ -13,7 +13,6 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.when;
 
 import no.nav.dokarkiv.core.datautil.BrukerTestDataProvider;
 import no.nav.dokarkiv.core.datautil.SaksrelasjonTestDataProvider;
@@ -31,7 +30,6 @@ import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
-import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.DokumentUrlInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
@@ -176,7 +174,7 @@ public class HentDokumentURLIT extends AbstractJournalV3Itest {
 		abacPermit();
 		persistDokumentFil();
 
-		skjermingService.setDokumentKassert(journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo(), SkjermingTypeCode.POL);
+		skjermingService.skjermAllFildetaljer(journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo(), SkjermingTypeCode.POL);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 

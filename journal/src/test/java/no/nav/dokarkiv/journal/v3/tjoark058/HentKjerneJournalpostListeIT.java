@@ -196,7 +196,7 @@ public class HentKjerneJournalpostListeIT extends AbstractJournalV3Itest {
 	public void shouldReturnListWithOneJournalpostNoContentKassert() throws Exception {
 		abacPermit();
 		Journalpost storedJournalpost = joarkRepository.save(createJournalpost(DOKUMENT_KATEGORI).build());
-		skjermingService.setDokumentKassert(storedJournalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo(), SkjermingTypeCode.POL);
+		skjermingService.skjermAllFildetaljer(storedJournalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo(), SkjermingTypeCode.POL);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
