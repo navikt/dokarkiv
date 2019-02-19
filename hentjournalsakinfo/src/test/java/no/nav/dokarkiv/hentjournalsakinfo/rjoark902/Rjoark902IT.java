@@ -93,7 +93,6 @@ public class Rjoark902IT extends AbstractHentjournalsakinfoItest {
 
 		journalpost.getSaksrelasjon().setFeilregistrert(true);
 
-		journalpost.getJournalpostId();
 		joarkRepository.save(journalpost);
 
 		return journalpost;
