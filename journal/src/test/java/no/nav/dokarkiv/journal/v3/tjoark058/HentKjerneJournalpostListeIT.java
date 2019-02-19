@@ -23,6 +23,7 @@ import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isIn;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
@@ -454,7 +455,7 @@ public class HentKjerneJournalpostListeIT extends AbstractJournalV3Itest {
 		assertThat(wsJournalpost.getInnhold(), is(JournalpostTestDataProvider.JP_INNHOLD));
 		assertThat(wsJournalpost.getForsendelseJournalfoert(), is(convertDateToXMLGregorianCalendar(JANUARY_1_2020)));
 		assertThat(wsJournalpost.getForsendelseMottatt(), is(convertDateToXMLGregorianCalendar(JANUARY_1_2020)));
-		assertThat(wsJournalpost.getHoveddokument().getDokumentInnholdListe().size(), is(1));
+		assertThat(wsJournalpost.getHoveddokument().getDokumentInnholdListe().size(), is(2));
 	}
 
 	private void assertJournalpost(
@@ -506,7 +507,7 @@ public class HentKjerneJournalpostListeIT extends AbstractJournalV3Itest {
 
 	private void assertHoveddokument(DetaljertDokumentinformasjon dokument, DokumentInfo dokumentInfo, Dokumenttilstand dokTilstand, String dokumenttittel) {
 		assertThat(dokument.getDokumentId(), is(String.valueOf(dokumentInfo.getDokumentInfoId())));
-		assertThat(dokument.getDokumentInnholdListe(), hasSize(1));
+		assertThat(dokument.getDokumentInnholdListe(), hasSize(2));
 		assertDokumentInnhold(dokument.getDokumentInnholdListe().get(0));
 		if (!DELETED_DOCUMENT_TITLE.equals(dokumenttittel)) {
 			assertDokumentkategori(dokument.getDokumentkategori());
@@ -520,7 +521,8 @@ public class HentKjerneJournalpostListeIT extends AbstractJournalV3Itest {
 		assertThat(dokumentInnhold.getArkivfiltype(), is(notNullValue()));
 		assertThat(dokumentInnhold.getArkivfiltype().getValue(), is(FilTypeCode.PDF.name()));
 		assertThat(dokumentInnhold.getVariantformat(), is(notNullValue()));
-		assertThat(dokumentInnhold.getVariantformat().getValue(), is(VariantFormatCode.ARKIV.name()));
+		assertThat(dokumentInnhold.getVariantformat()
+				.getValue(), isIn(new String[]{VariantFormatCode.ARKIV.name(), VariantFormatCode.SLADDET.name()}));
 	}
 
 	private void assertSkannetInnholdListe(List<SkannetInnhold> skannetInnholdListe, int size) {
