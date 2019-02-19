@@ -10,7 +10,7 @@ import no.nav.dokarkiv.core.domain.entities.DokumentUrlInfo;
 import no.nav.dokarkiv.core.domain.util.DateProvider;
 import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
 import no.nav.dokarkiv.core.exceptions.UrlNotValidException;
-import no.nav.dokarkiv.core.repository.DokumentUrlInfoRepository;
+import no.nav.dokarkiv.core.repository.DokumentUrlInfoRepositorySkjermet;
 import no.nav.dokarkiv.hentdokument.dokumenturlinfo.DefaultHentDokumentUrlInfo;
 import no.nav.dokarkiv.hentdokument.dokumenturlinfo.HentDokumentUrlInfoRequest;
 import no.nav.dokarkiv.hentdokument.dokumenturlinfo.HentDokumentUrlInfoResponse;
@@ -36,7 +36,7 @@ public class DefaultHentDokumentUrlInfoTest {
 	private DefaultHentDokumentUrlInfo hentDokumentUrlInfo;
 
 	@Mock
-    private DokumentUrlInfoRepository dokumentUrlInfoRepository;
+	private DokumentUrlInfoRepositorySkjermet dokumentUrlInfoRepository;
 
 	private HentDokumentUrlInfoRequest request;
 
