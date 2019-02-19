@@ -2,9 +2,11 @@ package no.nav.dokarkiv.rjoark100;
 
 import static junit.framework.TestCase.assertNull;
 import static junit.framework.TestCase.assertTrue;
+import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_LOGG_HEADER;
 import static no.nav.dokarkiv.util.TestUtil.createSkjermarkivenhetRequest;
 import static no.nav.dokarkiv.util.TestUtil.opprettHoveddokumentForIT;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.Is.is;
 
@@ -19,6 +21,8 @@ import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.util.TestDataUtils;
+
+import no.nav.dokarkiv.dto.SkjermArkivenhetResponse;
 import org.apache.commons.collections15.IteratorUtils;
 import org.junit.Test;
 import org.springframework.http.HttpEntity;
@@ -31,40 +35,35 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
-public class Rjoark101IT extends AbstractAdminIT {
+public class Rjoark100aIT extends AbstractAdminIT {
 
 	@Test
-	public void skalOppheveSkjermeJournalpost() throws IOException {
+	public void skalSkjermeJournalpost() throws IOException {
 		abacPermit();
 
 		Journalpost journalpost = joarkRepository.save(opprettHoveddokumentForIT());
-		skjermingService.setJournalpostSkjerming(journalpost, SkjermingTypeCode.POL);
 
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
-		assertThat(joarkRepository.findById(journalpost.getJournalpostId())
-				.get()
-				.getSkjermingType(), is(SkjermingTypeCode.POL));
+		assertNull(journalpost.getSkjermingType());
 
+		TestTransaction.start();
 		HttpEntity httpEntity = new HttpEntity(
 				createSkjermarkivenhetRequest(SkjermingTypeCode.POL, ArkivenhetCode.JOURNALPOST, journalpost.getJournalpostId(), null, null),
 				createHeadersWithAksjon());
 
-
-		TestTransaction.start();
-		ResponseEntity<String> responseEntity = restTemplate.exchange(
+		ResponseEntity<SkjermArkivenhetResponse> responseEntity = restTemplate.exchange(
 				URL_SKJERMARKIVENHET,
-				HttpMethod.DELETE,
+				HttpMethod.POST,
 				httpEntity,
-				String.class);
+				SkjermArkivenhetResponse.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 
 		Optional<Journalpost> jpEtterKall = joarkRepository.findById(journalpost.getJournalpostId());
 		assertTrue(jpEtterKall.isPresent());
-		assertNull(jpEtterKall.get().getSkjermingType());
-
+		assertThat(jpEtterKall.get().getSkjermingType(), is(SkjermingTypeCode.POL));
 
 		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
 		assertThat(aksjonsLoggList.size(), is(1));
@@ -83,29 +82,24 @@ public class Rjoark101IT extends AbstractAdminIT {
 				.get(0);
 		assertThat(aksjonsLoggList.get(0).getArkivElementEndringer().size(), is(1));
 		assertThat(arkivElementEndringList.getArkivElement(), is("Journalpost.skjermingType"));
-		assertThat(arkivElementEndringList.getFraVerdi(), is("POL"));
-		assertThat(arkivElementEndringList.getTilVerdi(), nullValue());
+		assertThat(arkivElementEndringList.getFraVerdi(), nullValue());
+		assertThat(arkivElementEndringList.getTilVerdi(), is("POL"));
 		assertThat(arkivElementEndringList.getAksjonsLogg(), is(aksjonsLogg));
-
 		TestTransaction.end();
 	}
 
 
 	@Test
-	public void skalOppheveSkjermeDokumentInfo() throws IOException {
+	public void skalSkjermeDokumentInfo() throws IOException {
 		abacPermit();
 
 		Journalpost journalpost = joarkRepository.save(opprettHoveddokumentForIT());
 		DokumentInfo dokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
-		skjermingService.setJpDokInfoRelSkjerming(journalpost.findHoveddokumentDokumentInfoRelasjon(), SkjermingTypeCode.POL);
 
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
-		assertThat(journalpostDokumentInfoRelasjonRepository.findByJournalpostJournalpostIdAndDokumentInfoDokumentInfoId(
-				journalpost.getJournalpostId(), dokumentInfo.getDokumentInfoId())
-				.get()
-				.getSkjermingType(), is(SkjermingTypeCode.POL));
+		assertNull(journalpost.findHoveddokumentDokumentInfoRelasjon().getSkjermingType());
 
 		HttpEntity httpEntity = new HttpEntity(
 				createSkjermarkivenhetRequest(SkjermingTypeCode.POL, ArkivenhetCode.VEDLEGG, journalpost.getJournalpostId(),
@@ -115,7 +109,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 		TestTransaction.start();
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_SKJERMARKIVENHET,
-				HttpMethod.DELETE,
+				HttpMethod.POST,
 				httpEntity,
 				String.class);
 
@@ -124,8 +118,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 		Optional<JournalpostDokumentInfoRelasjon> jpDokInfoEtterKall = journalpostDokumentInfoRelasjonRepository.
 				findByJournalpostJournalpostIdAndDokumentInfoDokumentInfoId(journalpost.getJournalpostId(), dokumentInfo.getDokumentInfoId());
 		assertTrue(jpDokInfoEtterKall.isPresent());
-		assertNull(jpDokInfoEtterKall.get().getSkjermingType());
-
+		assertThat(jpDokInfoEtterKall.get().getSkjermingType(), is(SkjermingTypeCode.POL));
 
 		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
 		assertThat(aksjonsLoggList.size(), is(1));
@@ -144,54 +137,44 @@ public class Rjoark101IT extends AbstractAdminIT {
 				.get(0);
 		assertThat(aksjonsLoggList.get(0).getArkivElementEndringer().size(), is(1));
 		assertThat(arkivElementEndringList.getArkivElement(), is("JournalpostDokumentInfoRelasjon.skjermingType"));
-		assertThat(arkivElementEndringList.getFraVerdi(), is("POL"));
-		assertThat(arkivElementEndringList.getTilVerdi(), nullValue());
+		assertThat(arkivElementEndringList.getFraVerdi(), nullValue());
+		assertThat(arkivElementEndringList.getTilVerdi(), is("POL"));
 		assertThat(arkivElementEndringList.getAksjonsLogg(), is(aksjonsLogg));
 
 		TestTransaction.end();
 	}
 
 	@Test
-	public void skalOppheveSkjermeDokumentFil() throws IOException {
+	public void skalSkjermeDokumentFil() throws IOException {
 		abacPermit();
 
 		Journalpost journalpost = joarkRepository.save(opprettHoveddokumentForIT());
 		DokumentInfo dokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
-		skjermingService.setVariantSkjermet(dokumentInfo, VariantFormatCode.ARKIV, SkjermingTypeCode.POL);
-
 
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
-		TestTransaction.start();
-
-		assertThat(dokumentinfoRepository.findByDokumentInfoId(dokumentInfo.getDokumentInfoId())
-				.get()
-				.findFilDetaljerByVariantFormatAdmin(VariantFormatCode.ARKIV)
-				.getSkjermingType(), is(SkjermingTypeCode.POL));
+		assertNull(dokumentInfo.findFilDetaljerByVariantFormat(VariantFormatCode.ARKIV).getSkjermingType());
 
 		HttpEntity httpEntity = new HttpEntity(
 				createSkjermarkivenhetRequest(SkjermingTypeCode.POL, ArkivenhetCode.DOKUMENT_FIL, null,
 						dokumentInfo.getDokumentInfoId(), VariantFormatCode.ARKIV),
 				createHeadersWithAksjon());
 
+		TestTransaction.start();
 
-		ResponseEntity<String> responseEntity = restTemplate.exchange(
+		restTemplate.exchange(
 				URL_SKJERMARKIVENHET,
-				HttpMethod.DELETE,
+				HttpMethod.POST,
 				httpEntity,
 				String.class);
 
-		TestTransaction.flagForCommit();
-		TestTransaction.end();
-
-		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
-
-		TestTransaction.start();
 
 		Optional<DokumentInfo> dokInfoEtterKall = dokumentinfoRepository.findByDokumentInfoId(dokumentInfo.getDokumentInfoId());
 		assertTrue(dokInfoEtterKall.isPresent());
-		assertNull(dokInfoEtterKall.get().findFilDetaljerByVariantFormat(VariantFormatCode.ARKIV).getSkjermingType());
+		assertThat(dokInfoEtterKall.get()
+				.findFilDetaljerByVariantFormatAdmin(VariantFormatCode.ARKIV)
+				.getSkjermingType(), is(SkjermingTypeCode.POL));
 
 		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
 		assertThat(aksjonsLoggList.size(), is(1));
@@ -210,12 +193,40 @@ public class Rjoark101IT extends AbstractAdminIT {
 				.get(0);
 		assertThat(aksjonsLoggList.get(0).getArkivElementEndringer().size(), is(1));
 		assertThat(arkivElementEndringList.getArkivElement(), is("Fildetaljer.variantFormat[ARKIV].skjermingType"));
-		assertThat(arkivElementEndringList.getFraVerdi(), is("POL"));
-		assertThat(arkivElementEndringList.getTilVerdi(), nullValue());
+		assertThat(arkivElementEndringList.getFraVerdi(), nullValue());
+		assertThat(arkivElementEndringList.getTilVerdi(), is("POL"));
 		assertThat(arkivElementEndringList.getAksjonsLogg(), is(aksjonsLogg));
+
+		TestTransaction.end();
+	}
+
+	@Test
+	public void skalFeileNårAksjonsLoggHeaderIkkeErSatt() throws IOException {
+		abacPermit();
+
+		Journalpost journalpost = joarkRepository.save(opprettHoveddokumentForIT());
 
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
+
+		List<AksjonsLogg> aksjonsLoggListBefore = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
+		assertThat(aksjonsLoggListBefore.size(), is(0));
+
+		HttpEntity httpEntity = new HttpEntity(
+				createSkjermarkivenhetRequest(SkjermingTypeCode.POL, ArkivenhetCode.JOURNALPOST, journalpost.getJournalpostId(), null, null),
+				createHeadersWithServiceUserToken());
+
+		ResponseEntity<String> responseEntity = restTemplate.exchange(
+				URL_SKJERMARKIVENHET,
+				HttpMethod.POST,
+				httpEntity,
+				String.class);
+
+		assertThat(responseEntity.getStatusCode(), is(HttpStatus.BAD_REQUEST));
+		assertThat(responseEntity.getBody(), containsString(String.format("Missing request header '%s'", AKSJONS_LOGG_HEADER)));
+
+		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
+		assertThat(aksjonsLoggList.size(), is(0));
 	}
 
 	@Test
@@ -225,13 +236,13 @@ public class Rjoark101IT extends AbstractAdminIT {
 				createSkjermarkivenhetRequest(SkjermingTypeCode.POL, ArkivenhetCode.JOURNALPOST, 1L, null, null),
 				createHeadersWithServiceUserToken(NO_ACCESS_SERVICE_USER_ID));
 
-
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_SKJERMARKIVENHET,
-				HttpMethod.DELETE,
+				HttpMethod.POST,
 				httpEntity,
 				String.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.UNAUTHORIZED));
 	}
+
 }
