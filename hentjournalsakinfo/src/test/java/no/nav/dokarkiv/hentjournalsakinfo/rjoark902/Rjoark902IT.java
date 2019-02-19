@@ -69,7 +69,7 @@ public class Rjoark902IT extends AbstractHentjournalsakinfoItest {
 
 	//  Unhappy path
 	@Test
-	public void shouldFailToGetJournalpost() throws Exception {
+	public void shouldFailToGetJournalpost() {
 
 		Journalpost storedJournalpost = buildAndPersistJournalpost();
 		TestTransaction.flagForCommit();

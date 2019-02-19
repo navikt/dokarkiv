@@ -3,7 +3,9 @@ package no.nav.dokarkiv.hentjournalsakinfo;
 import no.nav.dokarkiv.core.CoreConfig;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
+import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
+import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
 import no.nav.dokarkiv.core.security.BasicAuthRestInterceptor;
 import no.nav.dokarkiv.core.security.LdapConfig;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
@@ -71,7 +73,13 @@ public abstract class AbstractHentjournalsakinfoItest {
 	protected JoarkRepository joarkRepository;
 
 	@Inject
+	protected DokumentinfoRepository dokumentInfoRepository;
+
+	@Inject
 	protected DokumentFilRepository dokumentFilRepository;
+
+	@Inject
+	protected JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository;
 
 	@Before
 	public void setUpItest() {
@@ -83,9 +91,15 @@ public abstract class AbstractHentjournalsakinfoItest {
 	}
 
 	@After
-	public void cleanUp() {
-		TestTransaction.end();
+	public void cleanup() {
+		if (!TestTransaction.isActive()) {
+			TestTransaction.start();
+		}
+		journalpostDokumentInfoRelasjonRepository.deleteAll();
+		dokumentInfoRepository.deleteAll();
 		joarkRepository.deleteAll();
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
 	}
 
 	protected HttpEntity createHeaderEntity() {
