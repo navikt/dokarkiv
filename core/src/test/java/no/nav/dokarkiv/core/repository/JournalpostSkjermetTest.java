@@ -38,7 +38,7 @@ import javax.inject.Inject;
 @SpringBootTest(classes = {RepositoryConfig.class, SkjermingService.class, JdbcAbacSecurityRepository.class})
 @DataJpaTest
 @ActiveProfiles("itest")
-public class JournalpostBegrensetTest {
+public class JournalpostSkjermetTest {
 
     @Inject
     private JoarkRepositorySkjermet joarkRepositorySkjermet;
