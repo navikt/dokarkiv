@@ -8,6 +8,7 @@ import no.nav.dokarkiv.core.security.BasicAuthRestInterceptor;
 import no.nav.dokarkiv.core.security.LdapConfig;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.dokarkiv.core.stelvio.SimpleRequestContext;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,6 +26,7 @@ import org.springframework.http.MediaType;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Base64Utils;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -78,6 +80,12 @@ public abstract class AbstractHentjournalsakinfoItest {
 				.componentId("itest")
 				.build());
 
+	}
+
+	@After
+	public void cleanUp() {
+		TestTransaction.end();
+		joarkRepository.deleteAll();
 	}
 
 	protected HttpEntity createHeaderEntity() {

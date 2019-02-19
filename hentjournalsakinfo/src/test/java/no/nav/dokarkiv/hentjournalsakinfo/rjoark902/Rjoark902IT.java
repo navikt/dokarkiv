@@ -90,7 +90,6 @@ public class Rjoark902IT extends AbstractHentjournalsakinfoItest {
 		journalpost.setAvsenderMottaker(AVSENDER);
 		journalpost.setJournalfortAvNavn(JOURNALFOERT_AV);
 		journalpost.setJournalposttype(JOURNALPOST_TYPE_CODE);
-
 		journalpost.getSaksrelasjon().setFeilregistrert(true);
 
 		joarkRepository.save(journalpost);
