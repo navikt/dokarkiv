@@ -148,7 +148,9 @@ public class SkjermingService {
 	}
 
 	public void setJournalpostSkjerming(Journalpost journalpost, SkjermingTypeCode skjermingTypeCode) {
-		Query q = entityManager.createQuery("update Journalpost set skjermingType = :SkjermingTypeCode where journalpostId = :journalpostId").setParameter("journalpostId", journalpost.getJournalpostId()).setParameter("SkjermingTypeCode", skjermingTypeCode);
+		Query q = entityManager.createQuery("update Journalpost set skjermingType = :skjermingTypeCode where journalpostId = :journalpostId")
+				.setParameter("journalpostId", journalpost.getJournalpostId())
+				.setParameter("skjermingTypeCode", skjermingTypeCode);
 		q.executeUpdate();
 	}
 
