@@ -1,7 +1,5 @@
 package no.nav.dokarkiv.core.aksjonslogg;
 
-import static org.apache.commons.lang3.StringUtils.isBlank;
-
 import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
 import no.nav.dokarkiv.core.domain.entities.ArkivElementEndring;
 import no.nav.dokarkiv.core.stelvio.RequestContextHolder;
@@ -9,7 +7,6 @@ import org.apache.logging.log4j.util.Strings;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 

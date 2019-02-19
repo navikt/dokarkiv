@@ -38,7 +38,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 		abacPermit();
 
 		Journalpost journalpost = joarkRepository.save(opprettHoveddokumentForIT());
-		skjermingService.setJournalpostBegrensning(journalpost, SkjermingTypeCode.POL);
+		skjermingService.setJournalpostSkjerming(journalpost, SkjermingTypeCode.POL);
 
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
@@ -97,7 +97,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 
 		Journalpost journalpost = joarkRepository.save(opprettHoveddokumentForIT());
 		DokumentInfo dokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
-		skjermingService.setJpDokInfoRelBegrensning(journalpost.findHoveddokumentDokumentInfoRelasjon(), SkjermingTypeCode.POL);
+		skjermingService.setJpDokInfoRelSkjerming(journalpost.findHoveddokumentDokumentInfoRelasjon(), SkjermingTypeCode.POL);
 
 		TestTransaction.flagForCommit();
 		TestTransaction.end();

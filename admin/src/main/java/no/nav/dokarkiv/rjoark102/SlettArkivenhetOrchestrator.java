@@ -2,6 +2,7 @@ package no.nav.dokarkiv.rjoark102;
 
 import static org.apache.commons.lang3.BooleanUtils.isFalse;
 
+import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
@@ -27,6 +28,7 @@ import java.util.Objects;
  * @author Ugur Alpay Cenar, Visma Consulting.
  */
 @Component
+@Slf4j
 public class SlettArkivenhetOrchestrator {
 
 	private final JoarkRepository joarkRepository;
@@ -88,14 +90,12 @@ public class SlettArkivenhetOrchestrator {
 			throw new ArkivVariantkkeFunnetException(String.format("Dokument med dokumentInfoId=%s har ingen fildetaljer med variantFormat=%s", dokumentInfoId, variant));
 		}
 
-		//Sjekke om dokumentFil eksisterer?
-
 		return slettArkivenhetService.slettFilOgFildetaljer(dokumentInfoId, variant);
 	}
 
 	private void sjekkOmHoveddokumentHarFlereRelasjoner(DokumentInfo dokumentInfoHoveddokument) {
 		if (dokumentInfoHoveddokument.getJournalpostRelasjoner().size() > 1) {
-			throw new JournalpostKanIkkeSlettesException(String.format("Hoveddokument=%s er tilknyttet til andre journalposter som vedlegg. Alle tilknyttinger hoveddokument har som vedlegg må slettes før journalpost kan slettes",
+			throw new JournalpostKanIkkeSlettesException(String.format("Hoveddokument er tilknyttet andre journalposter. All (gjen)bruk av dokumentinfo %s må fjernes før journalpost kan slettes.",
 					dokumentInfoHoveddokument.getDokumentInfoId()));
 		}
 	}
@@ -110,15 +110,13 @@ public class SlettArkivenhetOrchestrator {
 					journalpost.getJournalpostId()));
 		}
 
-		//Hindrer sletting av splittet dokumenter. Vil støtte sletting på sikt.
 		Journalpost hoveddokOrigJp = journalpost.findHoveddokumentDokumentInfoRelasjon()
 				.getDokumentInfo()
 				.getOriginalJournalpost();
 
 		if (Objects.nonNull(hoveddokOrigJp) &&
 				isFalse(journalpost.getJournalpostId().equals(hoveddokOrigJp.getJournalpostId()))) {
-			throw new JournalpostKanIkkeSlettesException(String.format("Journalpost kan ikke slettes fordi hoveddokumentet er splittet utifra journalpost=%s. Denne tjenesten støtter ikke sletting av splittete dokumenter", hoveddokOrigJp
-					.getJournalpostId()));
+			log.warn(String.format("Journalpost som slettes er splittet hvor originale journalpost=%s", hoveddokOrigJp.getJournalpostId()));
 		}
 	}
 }

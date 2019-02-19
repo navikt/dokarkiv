@@ -246,7 +246,7 @@ public class GraphQlQueryIT {
 		abacPermit();
 		Journalpost journalpost = TestDataUtils.createJournalpostBuilder(FIL_UUID).build();
 		joarkRepository.save(journalpost);
-		skjermingService.setJournalpostBegrensning(journalpost, SkjermingTypeCode.POL);
+		skjermingService.setJournalpostSkjerming(journalpost, SkjermingTypeCode.POL);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
@@ -268,7 +268,7 @@ public class GraphQlQueryIT {
 		journalpost = joarkRepository.save(journalpost);
 
 		no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon rel = journalpost.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG).iterator().next();
-		skjermingService.setJpDokInfoRelBegrensning(rel, SkjermingTypeCode.POL);
+		skjermingService.setJpDokInfoRelSkjerming(rel, SkjermingTypeCode.POL);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 

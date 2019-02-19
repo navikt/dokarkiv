@@ -30,7 +30,6 @@ public class SlettArkivenhetService {
 		this.journalpostDokumentInfoRelasjonRepository = journalpostDokumentInfoRelasjonRepository;
 	}
 
-	//HåndterSlettAvArkivenhet ------------------------------
 	public List<ArkivElementEndringTO> slettVedleggKnyttetTilJournalpost(Long journalpostId) {
 		List<ArkivElementEndringTO> arkivElementEndringTOList = new ArrayList<>();
 		List<JournalpostDokumentInfoRelasjon> vedleggRelasjoner = journalpostDokumentInfoRelasjonRepository.findAllByJournalpostJournalpostIdAndTilknyttetJournalpostSom(journalpostId, VEDLEGG);

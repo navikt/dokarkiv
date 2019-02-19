@@ -7,6 +7,7 @@ import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_LOGG_H
 import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.UPDATE_ACTION;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
+import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService;
 import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggTO;
@@ -36,7 +37,7 @@ import java.util.Objects;
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
  */
-
+@Slf4j
 @RestController
 @RequestMapping("rest")
 public class SlettArkivenhetController {
@@ -62,6 +63,9 @@ public class SlettArkivenhetController {
 			@RequestBody SlettArkivenhetRequest slettArkivenhetRequest) throws UgyldigAksjonsLoggException {
 		//TODO: Abac security
 		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark102");
+		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har mottat kall om sletting av arkivenhet={} med journalpostId={}, dokumentInfoId={} og variant={}",
+				slettArkivenhetRequest.getArkivenhet(), slettArkivenhetRequest.getJournalpostId(), slettArkivenhetRequest.getDokumentInfoId(), slettArkivenhetRequest
+						.getVariant());
 		assertNotNullOrEmpty(slettArkivenhetRequest.getArkivenhet(), "arkivEnhet");
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
 
@@ -87,6 +91,10 @@ public class SlettArkivenhetController {
 		}
 
 		lagreAksjonsLogg(slettArkivenhetRequest.getJournalpostId(), slettArkivenhetRequest.getDokumentInfoId(), aksjonsLoggHeaderString, arkivElementEndringTOList);
+
+		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har slettet arkivenhet={} med journalpostId={}, dokumentInfoId={} og variant={}",
+				slettArkivenhetRequest.getArkivenhet(), slettArkivenhetRequest.getJournalpostId(), slettArkivenhetRequest.getDokumentInfoId(), slettArkivenhetRequest
+						.getVariant());
 		return SlettArkivenhetResponse.builder()
 				.dokumentInfoId(slettArkivenhetRequest.getDokumentInfoId())
 				.journalpostId(slettArkivenhetRequest.getJournalpostId())

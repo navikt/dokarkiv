@@ -40,10 +40,10 @@ update T_K_AKSJON_TYPE set BESKRIVELSE='Kassering av et dokument' where AKSJON_T
 update T_K_AKSJON_TYPE set BESKRIVELSE='Sletting av et arkivelement' where AKSJON_TYPE='SLETT';
 update T_K_AKSJON_TYPE set BESKRIVELSE='Arkivering av et nytt variantformat og dokumentfil' where AKSJON_TYPE='ARKIVERING';
 
-CREATE INDEX xitidspunkt
+CREATE INDEX xiarkiveetidspunkt
   ON t_arkiv_element_endring (tidspunkt);
 
-CREATE INDEX xiaksjonsloggid
+CREATE INDEX xiarkiveeaksjonsloggid
   ON t_arkiv_element_endring (aksjonslogg_id);
 
 CREATE SEQUENCE t_arkivelementendring_seq

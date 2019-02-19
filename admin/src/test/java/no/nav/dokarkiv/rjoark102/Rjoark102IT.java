@@ -493,7 +493,7 @@ public class Rjoark102IT extends AbstractAdminIT {
 	 * Slett tjenesten med arkivEnhet=JOURNALPOST skal feile hvis Journalposten er Splittet
 	 */
 	@Test
-	public void skalIkkeSletteJournalposterMedDokumenterSomErSplittet() throws IOException {
+	public void skalIkkeSletteJournalposterSomErSplittet() throws IOException {
 		abacPermit();
 
 		Journalpost journalpostOriginal = createJournalpostWithHoveddokument();
@@ -538,7 +538,7 @@ public class Rjoark102IT extends AbstractAdminIT {
 								.build(),
 						createHeadersWithAksjon()),
 				SlettArkivenhetResponse.class);
-		assertThat(responseEntity1.getStatusCode(), is(HttpStatus.NOT_ACCEPTABLE));
+		assertThat(responseEntity1.getStatusCode(), is(HttpStatus.OK));
 
 		ResponseEntity<SlettArkivenhetResponse> responseEntity2 = restTemplate.exchange(
 				URL_SLETTARKIVENHET,
@@ -550,7 +550,7 @@ public class Rjoark102IT extends AbstractAdminIT {
 								.build(),
 						createHeadersWithAksjon()),
 				SlettArkivenhetResponse.class);
-		assertThat(responseEntity2.getStatusCode(), is(HttpStatus.NOT_ACCEPTABLE));
+		assertThat(responseEntity2.getStatusCode(), is(HttpStatus.OK));
 
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
@@ -559,10 +559,10 @@ public class Rjoark102IT extends AbstractAdminIT {
 
 		List<Journalpost> journalpostListAfter = IteratorUtils.toList(joarkRepository.findAll().iterator());
 
-		assertThat(journalpostListAfter.size(), is(3));
+		assertThat(journalpostListAfter.size(), is(1));
 		assertThatJournalpostIsNotDeleted(journalpostOriginal);
-		assertThatJournalpostIsNotDeleted(journalpostSplit1);
-		assertThatJournalpostIsNotDeleted(journalpostSplit2);
+		assertThatJournalpostIsDeleted(journalpostSplit1.getJournalpostId());
+		assertThatJournalpostIsDeleted(journalpostSplit2.getJournalpostId());
 
 		TestTransaction.end();
 	}

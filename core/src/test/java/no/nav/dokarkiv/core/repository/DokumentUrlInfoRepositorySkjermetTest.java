@@ -86,7 +86,7 @@ public class DokumentUrlInfoRepositorySkjermetTest {
         Journalpost journalpost = createJournalpost();
 
 		joarkRepository.save(journalpost);
-		skjermingService.setJournalpostBegrensning(journalpost, SkjermingTypeCode.POL);
+		skjermingService.setJournalpostSkjerming(journalpost, SkjermingTypeCode.POL);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
@@ -112,7 +112,7 @@ public class DokumentUrlInfoRepositorySkjermetTest {
         Journalpost journalpost = createJournalpost();
 
 		joarkRepository.save(journalpost);
-		skjermingService.setJournalpostBegrensning(journalpost, SkjermingTypeCode.POL);
+		skjermingService.setJournalpostSkjerming(journalpost, SkjermingTypeCode.POL);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 

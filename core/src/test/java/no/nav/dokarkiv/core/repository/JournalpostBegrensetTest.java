@@ -30,7 +30,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.transaction.TestTransaction;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
 
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
@@ -83,7 +82,7 @@ public class JournalpostBegrensetTest {
 				.next()
 				.getFildetaljerId();
 
-		skjermingService.setJpDokInfoRelBegrensning(begrensetJournalpostDokumentInfoRelasjon, SkjermingTypeCode.POL);
+		skjermingService.setJpDokInfoRelSkjerming(begrensetJournalpostDokumentInfoRelasjon, SkjermingTypeCode.POL);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
