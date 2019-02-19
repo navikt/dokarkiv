@@ -40,6 +40,7 @@ import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
+import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
@@ -67,6 +68,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.transaction.TestTransaction;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -191,6 +193,21 @@ public class HentKjerneJournalpostListeIT extends AbstractJournalV3Itest {
 	}
 
 	@Test
+	public void shouldReturnListWithOneJournalpostNoContentKassert() throws Exception {
+		abacPermit();
+		Journalpost storedJournalpost = joarkRepository.save(createJournalpost(DOKUMENT_KATEGORI).build());
+		skjermingService.skjermAllFildetaljer(storedJournalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo(), SkjermingTypeCode.POL);
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
+
+		HentKjerneJournalpostListeResponse response = journalV3Provider.hentKjerneJournalpostListe(createRequest());
+
+		assertThat(response.getJournalpostListe(), hasSize(1));
+		assertThat(response.isSisteIntervall(), is(true));
+		assertThat(response.getJournalpostListe().get(0).getHoveddokument().getDokumentInnholdListe().size(), is(0));
+	}
+
+	@Test
 	public void shouldMapSamhandlerToPerson() throws Exception {
 		abacPermit();
 		joarkRepository.save(createJournalpost(DOKUMENT_KATEGORI).brukere(BrukerBuilder.getBrukerBuilder()
@@ -266,18 +283,6 @@ public class HentKjerneJournalpostListeIT extends AbstractJournalV3Itest {
 		assertThat(response.getJournalpostListe(), hasSize(1));
 		assertThat(response.isSisteIntervall(), is(true));
 		assertJournalpost(response.getJournalpostListe().get(0), storedJournalpost, Journaltilstand.UTGAAR, false);
-	}
-
-	@Test
-	public void shouldReturnDokumenttilstandSlettet() throws Exception {
-		abacPermit();
-		Journalpost storedJournalpost = joarkRepository.save(createJournalpost(DELETED_DOCUMENT_TITLE, FIL_UUID).build());
-
-		HentKjerneJournalpostListeResponse response = journalV3Provider.hentKjerneJournalpostListe(createRequest());
-
-		assertThat(response.getJournalpostListe(), hasSize(1));
-		assertThat(response.isSisteIntervall(), is(true));
-		assertJournalpost(response.getJournalpostListe().get(0), storedJournalpost, Dokumenttilstand.SLETTET, DELETED_DOCUMENT_TITLE);
 	}
 
 	@Test
@@ -449,6 +454,7 @@ public class HentKjerneJournalpostListeIT extends AbstractJournalV3Itest {
 		assertThat(wsJournalpost.getInnhold(), is(JournalpostTestDataProvider.JP_INNHOLD));
 		assertThat(wsJournalpost.getForsendelseJournalfoert(), is(convertDateToXMLGregorianCalendar(JANUARY_1_2020)));
 		assertThat(wsJournalpost.getForsendelseMottatt(), is(convertDateToXMLGregorianCalendar(JANUARY_1_2020)));
+		assertThat(wsJournalpost.getHoveddokument().getDokumentInnholdListe().size(), is(1));
 	}
 
 	private void assertJournalpost(
@@ -456,15 +462,6 @@ public class HentKjerneJournalpostListeIT extends AbstractJournalV3Itest {
 			Journalpost j, Journaltilstand journalTilstand, boolean feilregistrert) {
 		assertJournalpost(wsJournalpost, j, journalTilstand, feilregistrert, Dokumenttilstand.FERDIGSTILT, DokumentInfoTestDataProvider.DOKUMENT_TITTEL);
 	}
-
-
-	private void assertJournalpost(
-			no.nav.tjeneste.virksomhet.journal.v3.informasjon.hentkjernejournalpostliste.Journalpost wsJournalpost,
-			Journalpost j, Dokumenttilstand dokTilstand, String dokumenttittel) {
-		assertJournalpost(wsJournalpost, j, Journaltilstand.ENDELIG, DEFAULT_FEILREGISTRERT, dokTilstand,
-				dokumenttittel);
-	}
-
 
 	private HentKjerneJournalpostListeRequest createRequest() {
 		return new HentKjerneJournalpostListeRequest()

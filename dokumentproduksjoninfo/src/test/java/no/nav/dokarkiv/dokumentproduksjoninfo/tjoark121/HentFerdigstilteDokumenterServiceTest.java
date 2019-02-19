@@ -8,16 +8,22 @@ import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjo
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
+import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentFil;
+import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
+import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.service.SkjermingService;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import no.nav.dokarkiv.dokumentproduksjoninfo.exceptions.FilDetaljerNotFoundException;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -70,6 +76,9 @@ public class HentFerdigstilteDokumenterServiceTest {
 	@InjectMocks
 	private HentFerdigstilteDokumenterService service;
 
+	@Before
+	public void setUp() {
+	}
 
 	@Test
 	public void shouldFetchFerdigstilteDokumenter() throws Exception {
@@ -91,20 +100,20 @@ public class HentFerdigstilteDokumenterServiceTest {
 
 	@Test
 	public void shouldFetchFerdigstilteDokumenterSkjermet() throws Exception {
-		when(joarkRepository.findById(JOURNALPOST_ID)).thenReturn(Optional.of(createJournalpost()));
-		when(dokumentFilRepository.findByFilUuid(FILUUID_2)).thenReturn(createFildetaljer(FILCONTENT_2));
-		when(dokumentFilRepository.findByFilUuid(FILUUID_SLADDET_1)).thenReturn(createFildetaljer(FILCONTENT_SLADDET_1));
-		when(skjermingService.isVariantSkjermet(DOKUMENT_1, VariantFormatCode.ARKIV)).thenReturn(true);
+		Journalpost journalpost = createJournalpostVedleggArkivVariantSkjermet();
+		when(joarkRepository.findById(JOURNALPOST_ID)).thenReturn(Optional.of(journalpost));
+		when(dokumentFilRepository.findByFilUuid(FILUUID_SLADDET_2)).thenReturn(createFildetaljer(FILUUID_SLADDET_2));
+		when(dokumentFilRepository.findByFilUuid(FILUUID_1)).thenReturn(createFildetaljer(FILCONTENT_1));
 
 		List<HentFerdigstilteDokumenterResponseTo> hentFerdigstilteDokumenter = service.hentFerdigstilteDokumenter(
 				JOURNALPOST_ID, Arrays.asList(DOKUMENT_1, DOKUMENT_2));
 
 		assertThat(hentFerdigstilteDokumenter.size(), is(2));
 		assertThat(hentFerdigstilteDokumenter.get(0).getDokumentInfoId(), is(DOKUMENT_1));
-		assertThat(hentFerdigstilteDokumenter.get(0).getFil(), is(FILCONTENT_SLADDET_1.getBytes()));
+		assertThat(hentFerdigstilteDokumenter.get(0).getFil(), is(FILCONTENT_1.getBytes()));
 		assertThat(hentFerdigstilteDokumenter.get(0).getTittel(), is(TITTEL_1));
 		assertThat(hentFerdigstilteDokumenter.get(1).getDokumentInfoId(), is(DOKUMENT_2));
-		assertThat(hentFerdigstilteDokumenter.get(1).getFil(), is(FILCONTENT_2.getBytes()));
+		assertThat(hentFerdigstilteDokumenter.get(1).getFil(), is(FILUUID_SLADDET_2.getBytes()));
 		assertThat(hentFerdigstilteDokumenter.get(1).getTittel(), is(TITTEL_2));
 	}
 
@@ -118,6 +127,48 @@ public class HentFerdigstilteDokumenterServiceTest {
 
 	private DokumentFil createFildetaljer(String filContent) {
 		return getDokumentFilBuilder().fil(filContent.getBytes()).build();
+	}
+
+	private Journalpost createJournalpostVedleggArkivVariantSkjermet() {
+		return getJournalpostBuilder()
+				.journalpostId(JOURNALPOST_ID)
+				.dokumentInfoRelasjoner(
+						getJournalpostDokumentInfoRelasjonBuilder()
+								.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.HOVEDDOKUMENT)
+								.dokumentInfo(
+										getDokumentInfoBuilder()
+												.dokumentInfoId(DOKUMENT_1)
+												.tittel(TITTEL_1)
+												.filDetaljerList(
+														getFilDetaljerBuilder()
+																.filUuid(FILUUID_1)
+																.variantFormat(VariantFormatCode.ARKIV).build(),
+														getFilDetaljerBuilder()
+																.filUuid(FILUUID_SLADDET_1)
+																.variantFormat(VariantFormatCode.SLADDET)
+																.build())
+												.build())
+								.build())
+				.dokumentInfoRelasjoner(
+						getJournalpostDokumentInfoRelasjonBuilder()
+								.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
+								.dokumentInfo(
+										getDokumentInfoBuilder()
+												.dokumentInfoId(DOKUMENT_2)
+												.tittel(TITTEL_2)
+												.filDetaljerList(
+														FilDetaljer.builder()
+																.filUuid(FILUUID_2)
+																.skjermingType(SkjermingTypeCode.POL)
+																.variantFormat(VariantFormatCode.ARKIV).build(),
+														getFilDetaljerBuilder()
+																.filUuid(FILUUID_SLADDET_2)
+																.variantFormat(VariantFormatCode.SLADDET)
+																.build())
+												.build())
+								.build()
+				)
+				.build();
 	}
 
 	private Journalpost createJournalpost() {

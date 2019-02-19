@@ -99,8 +99,6 @@ public class DefaultHentMinTilgjengeligeJournalpostListeService implements HentM
 			iterator.remove();
 		} else if (asList(U, N).contains(journalposttype) && hovedDokumentInfo.getDokumentstatus() != FERDIGSTILT) {
 			iterator.remove();
-		} else if (hovedDokumentInfo.isFunksjoneltSlettet()) {
-			iterator.remove();
 		} else {
 			filterVedlegg(journalpost);
 			filterFildetaljer(journalpost);
@@ -136,8 +134,6 @@ public class DefaultHentMinTilgjengeligeJournalpostListeService implements HentM
 			} else if (isTrue(dokumentInfo.getOrganInternt())) {
 				doRemove.add(vedlegg);
 			} else if (asList(N, U).contains(journalposttype) && dokumentInfo.getDokumentstatus() != FERDIGSTILT) {
-				doRemove.add(vedlegg);
-			} else if (dokumentInfo.isFunksjoneltSlettet()) {
 				doRemove.add(vedlegg);
 			}
 		}

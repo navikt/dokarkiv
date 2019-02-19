@@ -9,6 +9,7 @@ import no.nav.dokarkiv.core.CoreConfig;
 import no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerV2Mock;
 import no.nav.dokarkiv.core.domain.builder.JournalpostBuilder;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.domain.service.SkjermingService;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
@@ -31,6 +32,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.transaction.TestTransaction;
 
 import javax.inject.Inject;
 import javax.transaction.Transactional;
@@ -54,6 +56,8 @@ public abstract class AbstractInngaaendeJournalV1Itest {
 	protected JoarkRepositorySkjermet joarkRepository;
 	@Inject
 	protected DokumentFilRepository dokumentFilRepository;
+	@Inject
+	protected SkjermingService skjermingService;
 
 	@Configuration
 	public static class TestConfig {
@@ -65,12 +69,13 @@ public abstract class AbstractInngaaendeJournalV1Itest {
 
 	@Before
 	public void setUpItest() {
-		joarkRepository.deleteAll();
 		dokumentFilRepository.deleteAll();
+		joarkRepository.deleteAll();
 		RequestContextSetter.setRequestContext(new SimpleRequestContext.Builder()
 				.userId("itestuser")
 				.componentId("itest")
 				.build());
+		TestTransaction.end();
 	}
 
 	protected Journalpost buildAndCommit(final JournalpostBuilder builder) {

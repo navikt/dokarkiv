@@ -36,7 +36,6 @@ public class JournalpostQueryMapper {
 
     public static List<JournalpostDokumentRelasjon> mapKnyttetDokumentList(Set<JournalpostDokumentInfoRelasjon> journalpostDokumentInfoRelasjonSet, Long journalpostId, List<Long> begrensetDokumentInfoRelasjon) {
         return journalpostDokumentInfoRelasjonSet.stream()
-                .filter(relasjon -> isNotTrue(relasjon.getDokumentInfo().getSlettet()))
                 .map(relasjon -> JournalpostDokumentRelasjon.builder()
                         .tilknyttetJournalpostSom(TilknyttetJournalpostSom.mapTilknyttetJournalpostSomCode(relasjon.getTilknyttetJournalpostSom()))
                         .journalpostId(journalpostId)

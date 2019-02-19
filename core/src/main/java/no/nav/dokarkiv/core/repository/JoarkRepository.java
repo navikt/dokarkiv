@@ -19,6 +19,9 @@ public interface JoarkRepository extends CrudRepository<Journalpost, Long> {
 	@Query(value = "SELECT jt.journalpost_id FROM t_jp_tillegg jt WHERE jt.nokkel = :nokkel AND jt.verdi = :verdi", nativeQuery = true)
 	Long findJournalpostIdByTilleggsopplysningerNokkelAndVerdi(@Param("nokkel") String nokkel, @Param("verdi") String verdi);
 
+	@Query(value = "SELECT * from t_journalpost jp where jp.journalpost_id in ( select max(jt.journalpost_id) FROM t_jp_tillegg jt WHERE jt.nokkel = :nokkel AND jt.verdi = :verdi)", nativeQuery = true)
+	Optional<Journalpost> findJournalpostByTilleggsopplysningerNokkelAndVerdi(@Param("nokkel") String nokkel, @Param("verdi") String verdi);
+
 	@Query(value = "SELECT * FROM t_journalpost j WHERE j.k_mottaks_kanal = :mottakskanal AND j.kanal_referanse_id = :kanalReferanseId and rownum = 1", nativeQuery = true)
 	Optional<Journalpost> findJournalpostByKanalReferanseIdAndMottakskanal(@Param("kanalReferanseId") String kanalReferanseId, @Param("mottakskanal") String mottakskanal);
 

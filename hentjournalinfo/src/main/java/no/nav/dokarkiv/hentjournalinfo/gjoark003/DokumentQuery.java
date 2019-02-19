@@ -66,7 +66,7 @@ public class DokumentQuery implements Query {
 		DokumentInfo dokumentInfo = dokumentinfoRepository.findById(dokumentInfoId)
 				.orElse(DokumentInfo.builder().build());
 
-		List<FilDetaljer> fildetaljerListe = new ArrayList<>(dokumentInfo.getFildetaljerListe());
+		List<FilDetaljer> fildetaljerListe = new ArrayList<>(dokumentInfo.getFildetaljerListeAdmin());
 		FilDetaljer filDetaljer = fildetaljerListe.stream()
 				.filter(detaljer -> VariantFormat.mapFromVariantFormatCode(detaljer.getVariantFormat()) == variantFormat)
 				.filter(detaljer -> detaljer.getFiltype() == FilTypeCode.PDFA || detaljer.getFiltype() == FilTypeCode.PDF)

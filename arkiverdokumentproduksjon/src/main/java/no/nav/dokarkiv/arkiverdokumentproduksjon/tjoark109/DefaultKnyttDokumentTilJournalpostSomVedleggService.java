@@ -58,7 +58,6 @@ public class DefaultKnyttDokumentTilJournalpostSomVedleggService implements Knyt
 	private static final String JOURNAL_STATUS_FORMAT = "Journalpost with journalpostId=%d must have journalStatus '%s'";
 	private static final String TILLEGGSOPPLYSNING_FORMAT = "Journalpost with journalpostId=%d needs hoveddokument with tilleggsopplysning '%s'='%s'";
 	private static final String REQUIRED_DOKUMENTSTATUS_FORMAT = "DokumentInfo with dokumentInfoId=%d must have dokumentstatus '%s' or undefined";
-	private static final String DELETED_DOKUMENT_INFO_FORMAT = "DokumentInfo with dokumentInfoId=%d must not be deleted";
 	private static final String ORGAN_INTERN_DOKUMENT_INFO_FORMAT = "DokumentInfo with dokumentInfoId=%d cannot be organ intern";
 	private static final String PARTSINNSYN_DOKUMENT_INFO_FORMAT = "DokumentInfo with dokumentInfoId=%d cannot have innskrenket partsinnsyn";
 	private static final String PARTSINNSYN_TREDJEPART_DOKUMENT_INFO_FORMAT = PARTSINNSYN_DOKUMENT_INFO_FORMAT + " fra tredjepart";
@@ -108,7 +107,6 @@ public class DefaultKnyttDokumentTilJournalpostSomVedleggService implements Knyt
 
 		DokumentInfo dokumentInfo = findRelevantDokumentInfo(request.getDokumentInfoId(), journalpostSource);
 		checkIfDokumentInfoHasLegalDokumentStatus(dokumentInfo);
-		checkIfDokumentInfoIsSlettet(dokumentInfo);
 		checkIfDokumentInfoIsOrganIntern(dokumentInfo);
 		checkIfDokumentInfoHasInnskrenketPartsinnsyn(dokumentInfo);
 		checkIfDokumentInfoHasInnskrenketPartsinnsynFraTredjepart(dokumentInfo);
@@ -180,13 +178,6 @@ public class DefaultKnyttDokumentTilJournalpostSomVedleggService implements Knyt
 		if (dokumentInfo.getDokumentstatus() != null && dokumentInfo.getDokumentstatus() != FERDIGSTILT) {
 			String message = String.format(REQUIRED_DOKUMENTSTATUS_FORMAT, dokumentInfo.getDokumentInfoId(), FERDIGSTILT.name());
 			throw new IllegalDokumentstatusException(message);
-		}
-	}
-
-	private void checkIfDokumentInfoIsSlettet(DokumentInfo dokumentInfo) throws DokumentInfoSlettetException {
-		if (isTrue(dokumentInfo.getSlettet())) {
-			String message = String.format(DELETED_DOKUMENT_INFO_FORMAT, dokumentInfo.getDokumentInfoId());
-			throw new DokumentInfoSlettetException(message);
 		}
 	}
 

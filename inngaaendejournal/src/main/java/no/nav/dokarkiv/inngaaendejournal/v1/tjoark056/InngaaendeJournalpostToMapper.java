@@ -10,6 +10,7 @@ import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
+import no.nav.dokarkiv.core.domain.service.SkjermingService;
 import no.nav.dokarkiv.core.exceptions.DokarkivFunctionalException;
 import no.nav.dokarkiv.inngaaendejournal.v1.tjoark056.to.AktoerTo;
 import no.nav.dokarkiv.inngaaendejournal.v1.tjoark056.to.ArkivSakTo;
@@ -20,6 +21,7 @@ import no.nav.dokarkiv.inngaaendejournal.v1.tjoark056.to.InngaaendeJournalpostTo
 import no.nav.dokarkiv.inngaaendejournal.v1.tjoark056.to.JournaltilstandTo;
 import org.springframework.stereotype.Component;
 
+import javax.inject.Inject;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -110,9 +112,7 @@ public final class InngaaendeJournalpostToMapper {
 	}
 
 	private DokumenttilstandTo mapDokumenttilstand(DokumentInfo dokumentInfo) {
-		if(dokumentInfo.isFunksjoneltSlettet()) {
-			return DokumenttilstandTo.SLETTET;
-		} else if(dokumentInfo.isFerdigstilt()) {
+		if(dokumentInfo.isFerdigstilt()) {
 			return DokumenttilstandTo.FERDIGSTILT;
 		} else if(dokumentInfo.isAvbrutt()) {
 			return DokumenttilstandTo.AVBRUTT;
@@ -127,12 +127,12 @@ public final class InngaaendeJournalpostToMapper {
 		if(filDetaljers.isEmpty()) {
 			return Collections.emptyList();
 		} else {
-			return filDetaljers.stream().filter(filDetaljer -> !filDetaljer.getVariantFormat().equals(VariantFormatCode.SLADDET))
-					.map(filDetaljer -> DokumentInnholdTo.builder()
-					.arkivFiltype(filDetaljer.getFiltype())
-					.variantFormat(filDetaljer.getVariantFormat())
-					.build()).collect(Collectors.toList());
-		}
+				return filDetaljers.stream()
+						.map(filDetaljer -> DokumentInnholdTo.builder()
+								.arkivFiltype(filDetaljer.getFiltype())
+								.variantFormat(filDetaljer.getVariantFormat())
+								.build()).collect(Collectors.toList());
+			}
 	}
 
 	private List<DokumentinformasjonTo> mapVedlegg(Set<JournalpostDokumentInfoRelasjon> vedlegg) {

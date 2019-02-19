@@ -3,6 +3,7 @@ package no.nav.dokarkiv.core.repository;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import org.springframework.data.repository.CrudRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -12,5 +13,7 @@ public interface DokumentinfoRepository extends CrudRepository<DokumentInfo, Lon
 	Optional<DokumentInfo> findAllByJournalpostRelasjonerJournalpostJournalpostIdAndDokumentInfoId(Long journalpostId, Long dokumentInfoId);
 
 	Optional<DokumentInfo> findByDokumentInfoId(Long dokumentInfoId);
+
+	List<DokumentInfo> findByOriginalJournalpostJournalpostId(Long journalpostId);
 }
 

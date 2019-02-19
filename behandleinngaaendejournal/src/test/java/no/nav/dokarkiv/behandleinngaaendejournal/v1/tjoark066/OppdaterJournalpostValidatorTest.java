@@ -179,15 +179,6 @@ public class OppdaterJournalpostValidatorTest {
 	}
 	
 	@Test
-	public void shouldFailOnJournalpostSlettetDokumentInfo() throws Exception {
-		expected.expect(OppdaterJournalpostIkkeMuligException.class);
-		expected.expectMessage("Dokumentet som forsøkes oppdatert er slettet. journalpostId=");
-		
-		journalpost.findAllDokumentInfos().get(0).setSlettet(true);
-		validator.validateJournalpost(journalpost, requestTo.getOppdaterJournalpostTo());
-	}
-	
-	@Test
 	public void shouldFailOnJournalpostDokumentInfoUnderRedigering() throws Exception {
 		expected.expect(OppdaterJournalpostIkkeMuligException.class);
 		expected.expectMessage("Dokument har ugyldig status for oppdatering. dokumentStatus=");
