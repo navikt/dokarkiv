@@ -36,7 +36,7 @@ import java.util.List;
 
 @Slf4j
 @RestController
-@RequestMapping("rest/admin/")
+@RequestMapping("rest/admin")
 public class ArkiverVariantRestController {
 
 	private final ArkiverVariantService arkiverVariantService;
@@ -58,7 +58,7 @@ public class ArkiverVariantRestController {
 
 	@Transactional
 	@ResponseBody
-	@PostMapping("arkivervariant")
+	@PostMapping("/arkivervariant")
 	@Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_DOKUMENT)},
 			actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION))
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark103"}, percentiles = {0.5, 0.95})

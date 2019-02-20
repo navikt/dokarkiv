@@ -35,7 +35,7 @@ import java.util.List;
 
 @Slf4j
 @RestController
-@RequestMapping("rest/admin/")
+@RequestMapping("rest/admin")
 public class KasserDokumentRestController {
 
 	private final KasserDokumentValidator validator;
@@ -56,7 +56,7 @@ public class KasserDokumentRestController {
 
 	@Transactional(rollbackFor = UgyldigAksjonsLoggException.class)
 	@ResponseBody
-	@DeleteMapping("kasserdokument")
+	@DeleteMapping("/kasserdokument")
 	//TODO: MÅ endre fra value = UPDATE_ACTION til DELETE_ACTION. Men joarkadmin har ikke tilgang.
 	@Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_DOKUMENT)},
 			actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION))
