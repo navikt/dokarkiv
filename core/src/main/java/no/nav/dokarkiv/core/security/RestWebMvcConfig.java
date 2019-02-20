@@ -37,13 +37,7 @@ public class RestWebMvcConfig implements WebMvcConfigurer {
 				.excludePathPatterns(new ArrayList<>(oidcAuthProperties.getIgnoredPaths()))
 				.addPathPatterns(oidcAuthProperties.getSecuredPath());
 		registry.addInterceptor(new ValidateGraphqlNavConsumerInterceptor())
-				.addPathPatterns(
-						"/rest/graphql",
-						"/rest/skjermarkivenhet/", "/rest/skjermarkivenhet",
-						"/rest/arkivervariant/", "/rest/arkivervariant",
-						"/rest/kasserdokument/", "/rest/kasserdokument",
-						"/rest/slettarkivenhet/", "/rest/slettarkivenhet"
-				);
+				.addPathPatterns("/rest/admin/**");
 		registry.addInterceptor(new PopulateMDCHandler())
 				.addPathPatterns(oidcAuthProperties.getSecuredPath(),
 						"/hentjournalsakinfo/**");

@@ -48,7 +48,7 @@ import java.util.Objects;
 
 @Slf4j
 @RestController
-@RequestMapping("rest")
+@RequestMapping("rest/admin")
 public class SkjermArkivenhetRestController {
 
 	private final AbacSecurityService abacSecurityService;

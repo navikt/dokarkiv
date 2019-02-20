@@ -27,9 +27,9 @@ import org.springframework.test.context.ActiveProfiles;
 @ActiveProfiles("itest,wiremock,ldap,oidc")
 @AutoConfigureWireMock(port = 0)
 public abstract class AbstractAdminIT extends AbstractRestIT {
-	protected static final String URL_KASSERDOKUMENT = "/rest/kasserdokument/";
-	protected static final String URL_SKJERMARKIVENHET = "/rest/skjermarkivenhet/";
-	protected static final String URL_SLETTARKIVENHET = "/rest/slettarkivenhet";
+	protected static final String URL_KASSERDOKUMENT = "/rest/admin/kasserdokument/";
+	protected static final String URL_SKJERMARKIVENHET = "/rest/admin/skjermarkivenhet/";
+	protected static final String URL_SLETTARKIVENHET = "/rest/admin/slettarkivenhet";
 
 	protected void abacPermit() {
 		stubFor(post(urlEqualTo("/abac"))

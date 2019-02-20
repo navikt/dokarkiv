@@ -36,7 +36,7 @@ import java.util.List;
 
 @Slf4j
 @RestController
-@RequestMapping("rest/")
+@RequestMapping("rest/admin/")
 public class ArkiverVariantRestController {
 
 	private final ArkiverVariantService arkiverVariantService;

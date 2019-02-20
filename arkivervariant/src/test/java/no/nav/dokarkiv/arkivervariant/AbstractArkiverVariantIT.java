@@ -25,7 +25,7 @@ import java.nio.charset.StandardCharsets;
 @AutoConfigureWireMock(port = 0)
 public abstract class AbstractArkiverVariantIT extends AbstractRestIT {
 
-	protected static final String URL_ARKIVERVARIANT = "/rest/arkivervariant/";
+	protected static final String URL_ARKIVERVARIANT = "/rest/admin/arkivervariant/";
 
 
 	public static String classpathToString(String path) {

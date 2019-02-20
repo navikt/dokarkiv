@@ -90,6 +90,7 @@ public class GraphQlQueryIT {
 	protected final String VALID_SERVICE_USER_ID = "srvjoarkadmin";
 	protected final String INVALID_SERVICE_USER_ID = "srvdokarkiv";
 	protected final String PERSON_USER_ID = "Z990782";
+	protected final String GRAPHL_URL = "/rest/graphql";
 
 	@Inject
 	private JoarkRepository joarkRepository;
@@ -142,7 +143,7 @@ public class GraphQlQueryIT {
 				.getDokumentInfo()
 				.getDokumentInfoId());
 
-		GraphQlResponse response = testRestTemplate.postForObject("/rest/graphql", new HttpEntity<>(graphQLRequest, oidcHeaders()), GraphQlResponse.class);
+		GraphQlResponse response = testRestTemplate.postForObject(GRAPHL_URL, new HttpEntity<>(graphQLRequest, oidcHeaders()), GraphQlResponse.class);
 
 		assertThat(response.getDataWrapper(), notNullValue());
 		assertThat(response.getErrors(), nullValue());
@@ -163,7 +164,7 @@ public class GraphQlQueryIT {
 
 		HttpEntity request = new HttpEntity<>(createJournalpostRequest(journalpost.getJournalpostId()), oidcHeaders());
 
-		GraphQlResponse response = testRestTemplate.postForObject("/rest/graphql", request, GraphQlResponse.class);
+		GraphQlResponse response = testRestTemplate.postForObject(GRAPHL_URL, request, GraphQlResponse.class);
 
 		assertThat(response.getDataWrapper(), notNullValue());
 		assertThat(response.getErrors(), nullValue());
@@ -186,7 +187,7 @@ public class GraphQlQueryIT {
 				.getDokumentInfo()
 				.getDokumentInfoId()), oidcHeaders());
 
-		GraphQlResponse response = testRestTemplate.postForObject("/rest/graphql", request, GraphQlResponse.class);
+		GraphQlResponse response = testRestTemplate.postForObject(GRAPHL_URL, request, GraphQlResponse.class);
 
 		assertThat(response.getDataWrapper(), notNullValue());
 		assertThat(response.getErrors(), nullValue());
@@ -220,7 +221,7 @@ public class GraphQlQueryIT {
 				.getDokumentInfo()
 				.getDokumentInfoId(), VariantFormat.ARKIV), oidcHeaders());
 
-		GraphQlResponse response = testRestTemplate.postForObject("/rest/graphql", request, GraphQlResponse.class);
+		GraphQlResponse response = testRestTemplate.postForObject(GRAPHL_URL, request, GraphQlResponse.class);
 
 		assertThat(new String(Base64.decode(response.getDataWrapper().getDokumentFil()), StandardCharsets.UTF_8), is("Test"));
 		assertThat(response.getErrors(), nullValue());
@@ -234,7 +235,7 @@ public class GraphQlQueryIT {
 		request.put("query", "query {journalpost(journalpostId: 1) {tema}}");
 
 		HttpEntity httpEntity = new HttpEntity(request.toString(), oidcHeaders());
-		GraphQlResponse response = testRestTemplate.postForObject("/rest/graphql", httpEntity, GraphQlResponse.class);
+		GraphQlResponse response = testRestTemplate.postForObject(GRAPHL_URL, httpEntity, GraphQlResponse.class);
 		assertThat(response.getErrors()
 				.get(0)
 				.getMessage(), containsString("Journalpost ikke funnet. journalpostId=1"));
@@ -254,7 +255,7 @@ public class GraphQlQueryIT {
 				.getDokumentInfo()
 				.getDokumentInfoId()), oidcHeaders());
 
-		GraphQlResponse response = testRestTemplate.postForObject("/rest/graphql", request, GraphQlResponse.class);
+		GraphQlResponse response = testRestTemplate.postForObject(GRAPHL_URL, request, GraphQlResponse.class);
 		DokumentInfo dokumentInfo = response.getDataWrapper().getDokumentInfo();
 		assertDokumentInfo(dokumentInfo);
 		assertThat(dokumentInfo.getKnyttetJournalpostList().get(0).getSlettet(), is(Boolean.TRUE));
@@ -275,7 +276,7 @@ public class GraphQlQueryIT {
 		HttpEntity request = new HttpEntity<>(createDokumentInfoRequest(rel.getDokumentInfo()
 				.getDokumentInfoId()), oidcHeaders());
 
-		GraphQlResponse response = testRestTemplate.postForObject("/rest/graphql", request, GraphQlResponse.class);
+		GraphQlResponse response = testRestTemplate.postForObject(GRAPHL_URL, request, GraphQlResponse.class);
 		DokumentInfo dokumentInfo = response.getDataWrapper().getDokumentInfo();
 		assertVedleggDokumentInfo(dokumentInfo);
 		assertThat(response.getDataWrapper().getDokumentInfo().getKnyttetJournalpostList().get(0).getSlettet(), is(Boolean.TRUE));
@@ -288,7 +289,7 @@ public class GraphQlQueryIT {
 
 		HttpEntity request = new HttpEntity<>(createDokumentInfoRequest(123L), oidcHeaders());
 
-		GraphQlResponse response = testRestTemplate.postForObject("/rest/graphql", request, GraphQlResponse.class);
+		GraphQlResponse response = testRestTemplate.postForObject(GRAPHL_URL, request, GraphQlResponse.class);
 		assertThat(response.getErrors().size(), is(1));
 		assertThat(response.getErrors().get(0).getMessage(), containsString("DokumentInfo ikke funnet. dokumentInfoId=123"));
 		assertThat(response.getErrors().get(0).getException(), is(DokumentInfoIkkeFunnetException.class.getSimpleName()));
@@ -301,7 +302,7 @@ public class GraphQlQueryIT {
 
 		HttpEntity request = new HttpEntity<>(createJournalpostRequest(123L), oidcHeaders());
 
-		GraphQlResponse response = testRestTemplate.postForObject("/rest/graphql", request, GraphQlResponse.class);
+		GraphQlResponse response = testRestTemplate.postForObject(GRAPHL_URL, request, GraphQlResponse.class);
 		assertThat(response.getErrors().size(), is(1));
 		assertThat(response.getErrors().get(0).getMessage(), containsString("Journalpost ikke funnet. journalpostId=1"));
 		assertThat(response.getErrors().get(0).getException(), is(JournalpostIkkeFunnetException.class.getSimpleName()));
@@ -321,7 +322,7 @@ public class GraphQlQueryIT {
 				.getDokumentInfo()
 				.getDokumentInfoId()), oidcHeaders());
 
-		GraphQlResponse response = testRestTemplate.postForObject("/rest/graphql", request, GraphQlResponse.class);
+		GraphQlResponse response = testRestTemplate.postForObject(GRAPHL_URL, request, GraphQlResponse.class);
 
 		assertThat(response.getErrors(), notNullValue());
 		assertThat(response.getErrors().size(), is(1));
@@ -342,7 +343,7 @@ public class GraphQlQueryIT {
 
 		HttpEntity request = new HttpEntity<>(createJournalpostRequest(journalpost.getJournalpostId()), oidcHeaders());
 
-		GraphQlResponse response = testRestTemplate.postForObject("/rest/graphql", request, GraphQlResponse.class);
+		GraphQlResponse response = testRestTemplate.postForObject(GRAPHL_URL, request, GraphQlResponse.class);
 
 		assertThat(response.getErrors(), notNullValue());
 		assertThat(response.getErrors().size(), is(1));
@@ -369,7 +370,7 @@ public class GraphQlQueryIT {
 				.getDokumentInfo()
 				.getDokumentInfoId()), headers);
 
-		GraphQlResponse response = testRestTemplate.postForObject("/rest/graphql", request, GraphQlResponse.class);
+		GraphQlResponse response = testRestTemplate.postForObject(GRAPHL_URL, request, GraphQlResponse.class);
 		DokumentInfo dokumentInfo = response.getDataWrapper().getDokumentInfo();
 		assertDokumentInfo(dokumentInfo);
 	}
@@ -390,7 +391,7 @@ public class GraphQlQueryIT {
 				.getDokumentInfo()
 				.getDokumentInfoId()), headers);
 
-		GraphQlResponse response = testRestTemplate.postForObject("/rest/graphql", request, GraphQlResponse.class);
+		GraphQlResponse response = testRestTemplate.postForObject(GRAPHL_URL, request, GraphQlResponse.class);
 		assertThat(response.getErrors(), nullValue());
 		assertThat(response.getDataWrapper(), nullValue());
 	}
