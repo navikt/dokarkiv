@@ -127,7 +127,8 @@ public class GetInngaaendeJournalpostMapper {
 	}
 
 	private List<Variant> mapVarianter(Set<FilDetaljer> fildetaljer) {
-		return fildetaljer.stream().map(filDetaljer -> new Variant()
+		return fildetaljer.stream()
+				.map(filDetaljer -> new Variant()
 				.withArkivFilType(filDetaljer.getFiltype().name())
 				.withVariantFormat(filDetaljer.getVariantFormat().name()))
 				.collect(Collectors.toList());

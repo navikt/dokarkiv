@@ -1,16 +1,26 @@
 package no.nav.dokarkiv.core.akjsonslogg;
 
-import static no.nav.dokarkiv.core.util.TestDataUtils.createAksjonsLoggRequestAksjon;
+import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_ARKIVELEMENT;
+import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_FRA_VERDI;
+import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_TIL_VERDI;
+import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_UTFOERT_AV;
+import static no.nav.dokarkiv.core.util.TestDataUtils.APPLICATION;
+import static no.nav.dokarkiv.core.util.TestDataUtils.USER_ID;
+import static no.nav.dokarkiv.core.util.TestDataUtils.createAksjonsLoggTO;
+import static no.nav.dokarkiv.core.util.TestDataUtils.createArkivElementEndringToList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.lessThan;
 import static org.hamcrest.core.Is.is;
 
-import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggHeader;
 import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService;
-import no.nav.dokarkiv.core.domain.codes.AksjonTypeCode;
+import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggServiceImpl;
+import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggTO;
+import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
+import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
+import no.nav.dokarkiv.core.domain.entities.ArkivElementEndring;
 import no.nav.dokarkiv.core.domain.service.SkjermingService;
-import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggHeaderException;
+import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
 import no.nav.dokarkiv.core.repository.AksjonsLoggRepository;
 import no.nav.dokarkiv.core.repository.RepositoryConfig;
 import no.nav.dokarkiv.core.security.abac.JdbcAbacSecurityRepository;
@@ -22,6 +32,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -29,18 +40,17 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
-import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.List;
 
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = {RepositoryConfig.class, AksjonsLoggService.class, SkjermingService.class, JdbcAbacSecurityRepository.class})
+@SpringBootTest(classes = {RepositoryConfig.class, AksjonsLoggServiceImpl.class, SkjermingService.class, JdbcAbacSecurityRepository.class})
 @DataJpaTest
+@EnableConfigurationProperties
 @Transactional
 @ActiveProfiles("itest")
 public class AksjonsLoggIT {
@@ -56,96 +66,116 @@ public class AksjonsLoggIT {
 
 	@Before
 	public void setUp() {
-		RequestContextUtil.createAndSetUsername("username", "appId");
-
+		RequestContextUtil.createAndSetUsername(USER_ID, APPLICATION);
+		aksjonsLoggRepository.deleteAll();
 	}
 
 	@Test
-	public void shouldSaveAksjonsLogg() throws IOException, UgyldigAksjonsLoggHeaderException {
+	public void shouldSaveAksjonsLogg() throws UgyldigAksjonsLoggException {
 
-
-		List<AksjonsLoggHeader> aksjonLoggHeaderList = Arrays.asList(
-						createAksjonsLoggRequestAksjon(1L, 1L, AksjonTypeCode.ENDRE_BEGRENSNING.name()),
-						createAksjonsLoggRequestAksjon(1L, 1L, AksjonTypeCode.ENDRE_BEGRENSNING.name())
-				);
-		aksjonsLoggService.validateAndSaveAksjon(aksjonLoggHeaderList);
+		aksjonsLoggService.validateAndSaveAksjonsLogg(createAksjonsLoggTO(1L, 1L), createArkivElementEndringToList());
 
 		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
-		assertThat(aksjonsLoggList.size(), is(2));
-		aksjonsLoggList.forEach(aksjonsLogg -> {
-			assertThat(aksjonsLogg.getAksjon(), is(AksjonTypeCode.ENDRE_BEGRENSNING));
-			assertThat(aksjonsLogg.getUtfoertAv(), is(TestDataUtils.AKSJON_UTFOERT_AV));
-			assertThat(aksjonsLogg.getApplikasjon(), is(TestDataUtils.AKSJON_APPLIKASJON));
-			assertThat(aksjonsLogg.getBruker(), is(TestDataUtils.AKSJON_BRUKER));
-			assertThat(aksjonsLogg.getMelding(), is(TestDataUtils.AKSJON_MELDING));
-			assertThat(aksjonsLogg.getDokumentInfoId(), is(1L));
-			assertThat(aksjonsLogg.getJournalpostId(), is(1L));
-			assertThat(aksjonsLogg.getHjemmel(), is(TestDataUtils.AKSJON_HJEMMEL));
-			assertThat(aksjonsLogg.getArkivElement(), is(TestDataUtils.AKSJON_ARKIVELEMENT));
-			assertThat(aksjonsLogg.getFraVerdi(), is(TestDataUtils.AKSJON_FRA_VERDI));
-			assertThat(aksjonsLogg.getTilVerdi(), is(TestDataUtils.AKSJON_TIL_VERDI));
-			assertThat(Duration.between(aksjonsLogg.getTidspunkt(), LocalDateTime.now()).getSeconds(), lessThan(10L));
-			assertThat(aksjonsLogg.getOpprettetAv(), is("appId"));
-		});
+		assertThat(aksjonsLoggList.size(), is(1));
+		AksjonsLogg aksjonsLogg = aksjonsLoggList.get(0);
+
+		assertThat(aksjonsLogg.getAksjon(), is(AksjonsTypeCode.ARKIVERING));
+		assertThat(aksjonsLogg.getBruker(), is(TestDataUtils.AKSJON_BRUKER));
+		assertThat(aksjonsLogg.getMelding(), is(TestDataUtils.AKSJON_MELDING));
+		assertThat(aksjonsLogg.getDokumentInfoId(), is(1L));
+		assertThat(aksjonsLogg.getJournalpostId(), is(1L));
+		assertThat(aksjonsLogg.getHjemmel(), is(TestDataUtils.AKSJON_HJEMMEL));
+		assertThat(Duration.between(aksjonsLogg.getTidspunkt(), LocalDateTime.now()).getSeconds(), lessThan(10L));
+
+		assertThat(aksjonsLogg.getUtfoertAv(), is(AKSJON_UTFOERT_AV));
+		assertThat(aksjonsLogg.getApplikasjon(), is(APPLICATION));
+
+		ArkivElementEndring arkivElementEndring = aksjonsLogg.getArkivElementEndringer().iterator().next();
+		assertThat(arkivElementEndring.getAksjonsLogg(), is(aksjonsLogg));
+		assertThat(arkivElementEndring.getArkivElement(), is(AKSJON_ARKIVELEMENT));
+		assertThat(arkivElementEndring.getFraVerdi(), is(AKSJON_FRA_VERDI));
+		assertThat(arkivElementEndring.getTilVerdi(), is(AKSJON_TIL_VERDI));
+		assertThat(Duration.between(arkivElementEndring.getTidspunkt(), LocalDateTime.now()).getSeconds(), lessThan(10L));
+	}
+
+
+	@Test
+	public void shouldMapUtfoertAvFromRequestContextIfUtfoertAvIsNull() throws UgyldigAksjonsLoggException {
+		AksjonsLoggTO aksjonsLoggTO = createAksjonsLoggTO(1L, 1L);
+		aksjonsLoggTO.setUtfoertAv(null);
+		aksjonsLoggService.validateAndSaveAksjonsLogg(aksjonsLoggTO, createArkivElementEndringToList());
+
+		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
+		assertThat(aksjonsLoggList.size(), is(1));
+		AksjonsLogg aksjonsLogg = aksjonsLoggList.get(0);
+
+		assertThat(aksjonsLogg.getUtfoertAv(), is(USER_ID));
+		assertThat(aksjonsLogg.getApplikasjon(), is(APPLICATION));
 	}
 
 	@Test
-	public void shouldThrowWhenOneOfAksjonIsMissingJournalpostId() throws IOException, UgyldigAksjonsLoggHeaderException {
-		expectedException.expect(UgyldigAksjonsLoggHeaderException.class);
-		expectedException.expectMessage("journalpostId");
-		List<AksjonsLoggHeader> aksjonsLoggHeaderList = Arrays.asList(
-						createAksjonsLoggRequestAksjon(1L, 1L, AksjonTypeCode.ENDRE_BEGRENSNING.name()),
-						createAksjonsLoggRequestAksjon(null, 1L, AksjonTypeCode.ENDRE_BEGRENSNING.name())
-				);
-
-		aksjonsLoggService.validateAndSaveAksjon(aksjonsLoggHeaderList);
-	}
-
-	@Test
-	public void shouldThrowWhenJournalpostIdIsNotIncluded() throws IOException, UgyldigAksjonsLoggHeaderException {
-		expectedException.expect(UgyldigAksjonsLoggHeaderException.class);
-		expectedException.expectMessage("journalpostId");
-
-		List<AksjonsLoggHeader> aksjonsLoggHeaderList = TestDataUtils.createAksjonsLoggRequest(null, 1L, AksjonTypeCode.ENDRE_BEGRENSNING.name());
-		aksjonsLoggService.validateAndSaveAksjon(aksjonsLoggHeaderList);
-	}
-
-	@Test
-	public void shouldThrowWhenApplikasjonIsNotIncluded() throws IOException, UgyldigAksjonsLoggHeaderException {
-		expectedException.expect(UgyldigAksjonsLoggHeaderException.class);
-		expectedException.expectMessage("applikasjon");
-
-		List<AksjonsLoggHeader> aksjonsLoggHeaderList = TestDataUtils.createAksjonsLoggRequest(1L, 1L, AksjonTypeCode.ENDRE_BEGRENSNING.name());
-		aksjonsLoggHeaderList.get(0).setApplikasjon(null);
-		aksjonsLoggService.validateAndSaveAksjon(aksjonsLoggHeaderList);
-	}
-
-	@Test
-	public void shouldThrowWhenAksjonIsNotIncluded() throws IOException, UgyldigAksjonsLoggHeaderException {
-		expectedException.expect(UgyldigAksjonsLoggHeaderException.class);
+	public void shouldThrowWhenAksjonIsNull() throws UgyldigAksjonsLoggException {
+		expectedException.expect(UgyldigAksjonsLoggException.class);
 		expectedException.expectMessage("aksjon");
 
-		List<AksjonsLoggHeader> aksjonsLoggHeaderList = TestDataUtils.createAksjonsLoggRequest(1L, 1L, AksjonTypeCode.ENDRE_BEGRENSNING.name());
-		aksjonsLoggHeaderList.get(0).setAksjon(null);
-		aksjonsLoggService.validateAndSaveAksjon(aksjonsLoggHeaderList);
+		AksjonsLoggTO aksjonsLoggTOList = createAksjonsLoggTO(1L, 1L);
+		aksjonsLoggTOList.setAksjon(null);
+		aksjonsLoggService.validateAndSaveAksjonsLogg(aksjonsLoggTOList, createArkivElementEndringToList());
 	}
 
 	@Test
-	public void shouldThrowWhenUtfoertAvIsNotIncluded() throws IOException, UgyldigAksjonsLoggHeaderException {
-		expectedException.expect(UgyldigAksjonsLoggHeaderException.class);
-		expectedException.expectMessage("utfoertAv");
+	public void shouldThrowWhenUtfoertAvIsNull() throws UgyldigAksjonsLoggException {
+		expectedException.expect(UgyldigAksjonsLoggException.class);
+		expectedException.expectMessage("AksjonsLogg mangler påkrevd parameter: utfoertAv. AksjonsLogg input må inneholde parameteren \"utfoertAv\" hvis kallet ikke inneholder sikkerhetstoken for saksbehandleren");
+		RequestContextUtil.createAndSetUsername(APPLICATION, APPLICATION);
 
-		List<AksjonsLoggHeader> aksjonsLoggHeaderList = TestDataUtils.createAksjonsLoggRequest(1L, 1L, AksjonTypeCode.ENDRE_BEGRENSNING.name());
-		aksjonsLoggHeaderList.get(0).setUtfoertAv(null);
-		aksjonsLoggService.validateAndSaveAksjon(aksjonsLoggHeaderList);
+		AksjonsLoggTO aksjonsLoggTOList = createAksjonsLoggTO(1L, 1L);
+		aksjonsLoggTOList.setUtfoertAv(null);
+		aksjonsLoggService.validateAndSaveAksjonsLogg(aksjonsLoggTOList, createArkivElementEndringToList());
 	}
-
 
 	@Test
-	public void shouldThrowWhenInvalidAksjonValue() throws IOException, UgyldigAksjonsLoggHeaderException {
-		expectedException.expect(UgyldigAksjonsLoggHeaderException.class);
-		expectedException.expectMessage("AAA er ikke en gyldig verdi for aksjon");
-		List<AksjonsLoggHeader> aksjonsLoggHeaderList = TestDataUtils.createAksjonsLoggRequest(1L, 1L, "AAA");
-		aksjonsLoggService.validateAndSaveAksjon(aksjonsLoggHeaderList);
+	public void shouldThrowWhenBrukerIsNull() throws UgyldigAksjonsLoggException {
+		expectedException.expect(UgyldigAksjonsLoggException.class);
+		expectedException.expectMessage("bruker");
+
+		AksjonsLoggTO aksjonsLoggTOList = createAksjonsLoggTO(1L, 1L);
+		aksjonsLoggTOList.setBruker(null);
+		aksjonsLoggService.validateAndSaveAksjonsLogg(aksjonsLoggTOList, createArkivElementEndringToList());
 	}
+
+	@Test
+	public void shouldThrowWhenJournalpostIdAndDokumentInfoIdIsNull() throws UgyldigAksjonsLoggException {
+		expectedException.expect(UgyldigAksjonsLoggException.class);
+		expectedException.expectMessage("AksjonsLogg mangler påkrevd parameter: enten journalpostId eller dokumentInfoId må bli satt.");
+
+		AksjonsLoggTO aksjonsLoggTOList = createAksjonsLoggTO(1L, 1L);
+		aksjonsLoggTOList.setDokumentInfoId(null);
+		aksjonsLoggTOList.setJournalpostId(null);
+		aksjonsLoggService.validateAndSaveAksjonsLogg(aksjonsLoggTOList, createArkivElementEndringToList());
+	}
+
+	@Test
+	public void shouldThrowWhenArkivElementEndringArkivElementIsNull() throws UgyldigAksjonsLoggException {
+		expectedException.expect(UgyldigAksjonsLoggException.class);
+		expectedException.expectMessage("AksjonsLogg.ArkivElementEndring mangler påkrevd parameter: arkivElement");
+
+		AksjonsLoggTO aksjonsLoggTOList = createAksjonsLoggTO(1L, 1L);
+		List<ArkivElementEndringTO> arkivElementEndringTO =  createArkivElementEndringToList();
+		arkivElementEndringTO.get(0).setArkivElement(null);
+		aksjonsLoggService.validateAndSaveAksjonsLogg(aksjonsLoggTOList,arkivElementEndringTO);
+	}
+
+	@Test
+	public void shouldThrowWhenArkivElementEndringArkivElementFraVerdiAndTilVerdiIsNull() throws UgyldigAksjonsLoggException {
+		expectedException.expect(UgyldigAksjonsLoggException.class);
+		expectedException.expectMessage("Ugyldig AksjonsLogg.ArkivElementEndring: enten fraVerdi eller tilVerdi må bli satt");
+
+		AksjonsLoggTO aksjonsLoggTOList = createAksjonsLoggTO(1L, 1L);
+		List<ArkivElementEndringTO> arkivElementEndringTO =  createArkivElementEndringToList();
+		arkivElementEndringTO.get(0).setFraVerdi(null);
+		arkivElementEndringTO.get(0).setTilVerdi(null);
+		aksjonsLoggService.validateAndSaveAksjonsLogg(aksjonsLoggTOList, arkivElementEndringTO);
+	}
+
 }

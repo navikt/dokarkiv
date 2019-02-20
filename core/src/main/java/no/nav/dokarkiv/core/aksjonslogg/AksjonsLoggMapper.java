@@ -1,48 +1,53 @@
 package no.nav.dokarkiv.core.aksjonslogg;
 
-import static no.nav.dokarkiv.core.util.ConverterUtils.stringToEnum;
-
-import no.nav.dokarkiv.core.domain.codes.AksjonTypeCode;
 import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
+import no.nav.dokarkiv.core.domain.entities.ArkivElementEndring;
 import no.nav.dokarkiv.core.stelvio.RequestContextHolder;
+import org.apache.logging.log4j.util.Strings;
 
-import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
  */
-public class AksjonsLoggMapper {
+class AksjonsLoggMapper {
 
 
-	public AksjonsLogg mapToAksjonsLogg(@NotNull Long journalpostId,
-										@NotNull String applikasjon,
-										@NotNull String aksjon,
-										@NotNull String utfoertAv,
-										Long dokumentInfoId,
-										String hjemmel,
-										String bruker,
-										String arkivElement,
-										String fraVerdi,
-										String tilVerdi,
-										String melding) {
+	public AksjonsLogg mapToAksjonsLogg(AksjonsLoggTO aksjonsLoggTO, List<ArkivElementEndringTO> arkivElementEndringTOList) {
 		String componentId = RequestContextHolder.currentRequestContext().getComponentId();
+		String userId = RequestContextHolder.currentRequestContext().getUserId();
 
-		return AksjonsLogg.builder()
+		String utfoertAv = Strings.isEmpty(aksjonsLoggTO.getUtfoertAv()) ? userId : aksjonsLoggTO.getUtfoertAv();
+
+		AksjonsLogg aksjonsLogg = AksjonsLogg.builder()
 				.tidspunkt(LocalDateTime.now())
-				.aksjon(stringToEnum(AksjonTypeCode.class, aksjon))
-				.applikasjon(applikasjon)
-				.bruker(bruker)
-				.arkivElement(arkivElement)
-				.fraVerdi(fraVerdi)
-				.tilVerdi(tilVerdi)
-				.dokumentInfoId(dokumentInfoId)
-				.journalpostId(journalpostId)
-				.hjemmel(hjemmel)
-				.melding(melding)
+				.aksjon(aksjonsLoggTO.getAksjon())
+				.applikasjon(componentId)
+				.bruker(aksjonsLoggTO.getBruker())
+				.dokumentInfoId(aksjonsLoggTO.getDokumentInfoId())
+				.journalpostId(aksjonsLoggTO.getJournalpostId())
+				.hjemmel(aksjonsLoggTO.getHjemmel())
+				.melding(aksjonsLoggTO.getMelding())
 				.utfoertAv(utfoertAv)
-				.opprettetAv(componentId)
+				.arkivElementEndringer(mapArkivElementEndring(arkivElementEndringTOList))
 				.build();
+
+		aksjonsLogg.getArkivElementEndringer().forEach(arkivElementEndring -> arkivElementEndring.setAksjonsLogg(aksjonsLogg));
+		return aksjonsLogg;
+	}
+
+	private Set<ArkivElementEndring> mapArkivElementEndring(List<ArkivElementEndringTO> arkivElementEndringTOList) {
+		return arkivElementEndringTOList.stream()
+				.map(arkivElementEndringTO -> ArkivElementEndring.builder()
+						.arkivElement(arkivElementEndringTO.getArkivElement())
+						.fraVerdi(arkivElementEndringTO.getFraVerdi())
+						.tilVerdi(arkivElementEndringTO.getTilVerdi())
+						.tidspunkt(LocalDateTime.now())
+						.build()
+				).collect(Collectors.toSet());
 	}
 
 }

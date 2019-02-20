@@ -181,17 +181,6 @@ public class DefaultHentMinTilgjengeligeJournalpostListeServiceTest {
 	}
 
 	@Test
-	public void shouldRemoveJournalpostIfHovedDokIsSlettet() {
-		Journalpost journalpost = createLegalJournalpost();
-		journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().setSlettet(true);
-		journalposts.add(journalpost);
-		journalposts.add(createLegalJournalpost());
-		journalposts = service.hentMineTilgjengeligeJournalposter(createRequest(new SakFagsystem(FagsystemCode.BID, "1")));
-
-		assertThat(journalposts.size(), is(1));
-	}
-
-	@Test
 	public void shouldRemoveVedleggIfNotForvaltningsNotat() {
 		Journalpost journalpost = createJournalpostWithInfoRelasjon
 				(createDokumentInfoRelasjonVedlegg(true, true, DokumentStatusCode.AVBRUTT));
@@ -282,7 +271,6 @@ public class DefaultHentMinTilgjengeligeJournalpostListeServiceTest {
 						.kategori(DokumentKategoriCode.FORVALTNINGSNOTAT)
 						.organInternt(false)
 						.dokumentstatus(DokumentStatusCode.FERDIGSTILT)
-						.slettet(false)
 						.filDetaljerList(
 								FilDetaljerBuilder.getFilDetaljerBuilder()
 										.variantFormat(VariantFormatCode.PRODUKSJON)
@@ -305,7 +293,6 @@ public class DefaultHentMinTilgjengeligeJournalpostListeServiceTest {
 						.kategori(DokumentKategoriCode.B)
 						.organInternt(organInternt)
 						.dokumentstatus(dokumentStatusCode)
-						.slettet(isSlettet)
 						.filDetaljerList(FilDetaljerBuilder.getFilDetaljerBuilder()
 								.variantFormat(VariantFormatCode.ARKIV)
 								.filtype(FilTypeCode.PDF)

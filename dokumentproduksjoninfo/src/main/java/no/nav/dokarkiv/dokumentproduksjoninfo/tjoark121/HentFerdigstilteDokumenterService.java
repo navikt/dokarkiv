@@ -61,11 +61,10 @@ public class HentFerdigstilteDokumenterService {
 				DokumentInfo dokumentInfo = journalpost.findDokumentInfoById(dokumentInfoId);
 				hentFerdigstilteRokumenterValidator.validateDokumentInfo(journalpostId, dokumentInfoId, dokumentInfo);
 
-				FilDetaljer filDetaljer;
-				if (skjermingService.isVariantSkjermet(dokumentInfoId, VariantFormatCode.ARKIV)) {
-					filDetaljer = dokumentInfo.findFilDetaljerByVariantFormat(VariantFormatCode.SLADDET);
-				} else {
-					filDetaljer = dokumentInfo.findFilDetaljerByVariantFormat(VariantFormatCode.ARKIV);
+				FilDetaljer filDetaljer = dokumentInfo.findFilDetaljerByVariantFormat(VariantFormatCode.ARKIV);
+				if (filDetaljer == null) {
+					throw new FilDetaljerNotFoundException("Fildetaljer ikke funnet for journalpostId=" + journalpostId + ", + dokumentInfoId=" + dokumentInfoId
+							+ ",variant=" + VariantFormatCode.ARKIV.name());
 				}
 
 				hentFerdigstilteRokumenterValidator.validateFildetaljer(dokumentInfoId, filDetaljer);

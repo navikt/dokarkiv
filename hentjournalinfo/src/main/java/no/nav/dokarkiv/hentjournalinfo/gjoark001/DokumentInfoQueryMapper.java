@@ -12,6 +12,7 @@ import no.nav.dokarkiv.hentjournalinfo.dto.kode.TilknyttetJournalpostSom;
 import no.nav.dokarkiv.hentjournalinfo.dto.kode.VariantFormat;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -44,6 +45,7 @@ public class DokumentInfoQueryMapper {
                         .fildetaljerId(fildetaljer.getFildetaljerId())
                         .filtype(FilType.mapFromFilTypeCode(fildetaljer.getFiltype()))
                         .variantFormat(VariantFormat.mapFromVariantFormatCode(fildetaljer.getVariantFormat()))
+                        .skjermet(Objects.nonNull(fildetaljer.getSkjermingType()))
                         .build()).collect(Collectors.toList());
     }
 

@@ -6,7 +6,11 @@ import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjo
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.when;
 
 import com.google.common.collect.Lists;
 import no.nav.dokarkiv.core.domain.ChangeStamp;
@@ -19,6 +23,7 @@ import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
 import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
+import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
@@ -26,6 +31,7 @@ import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
+import no.nav.dokarkiv.core.domain.service.SkjermingService;
 import no.nav.dokarkiv.core.util.DateConverterUtil;
 import no.nav.dokarkiv.innsynjournal.v2.InnsynJournalpostTo;
 import no.nav.tjeneste.virksomhet.innsynjournal.v2.informasjon.AvsenderMottaker;
@@ -38,6 +44,9 @@ import no.nav.tjeneste.virksomhet.innsynjournal.v2.informasjon.SkannetInnhold;
 import no.nav.tjeneste.virksomhet.innsynjournal.v2.meldinger.HentTilgjengeligJournalpostListeResponse;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.time.LocalDate;
 import java.time.Month;
@@ -51,6 +60,7 @@ import java.util.List;
  *
  * @author Ketill Fenne, Visma Consulting.
  */
+@RunWith(MockitoJUnitRunner.class)
 public class HentMinTilgjengeligJournalpostListeV2ResponseMapperTest {
 
 	private static final String AVSENDER_MOTTAKER = "avsendermottaker";
@@ -67,8 +77,12 @@ public class HentMinTilgjengeligJournalpostListeV2ResponseMapperTest {
 	private static final Long JOURNALPOST_ID1 = 0L;
 	private static final Long JOURNALPOST_ID2 = 1L;
 	private static final JournalpostTypeCode JOURNALPOST_TYPE = JournalpostTypeCode.U;
-	private static final Date JOURNAL_DATO = Date.from(LocalDate.of(2014, Month.JANUARY, 1).atStartOfDay(ZoneId.systemDefault()).toInstant());
-	private static final Date MOTTATT_DATO = Date.from(LocalDate.of(2015, Month.JANUARY, 1).atStartOfDay(ZoneId.systemDefault()).toInstant());
+	private static final Date JOURNAL_DATO = Date.from(LocalDate.of(2014, Month.JANUARY, 1)
+			.atStartOfDay(ZoneId.systemDefault())
+			.toInstant());
+	private static final Date MOTTATT_DATO = Date.from(LocalDate.of(2015, Month.JANUARY, 1)
+			.atStartOfDay(ZoneId.systemDefault())
+			.toInstant());
 	private static final DokumentStatusCode DOKUMENT_STATUS = DokumentStatusCode.FERDIGSTILT;
 	private static final Date DOKUMENT_FERDIG_DATO = new Date(1L);
 	private static final Date DOKUMENT_FERDIG_DATO_OLD = new Date(0L);
@@ -76,6 +90,9 @@ public class HentMinTilgjengeligJournalpostListeV2ResponseMapperTest {
 	private static final String KANAL_REFERANSE_ID = "kanalReferanseId";
 
 	private HentMinTilgjengeligJournalpostListeV2ResponseMapper mapper;
+
+	@Mock
+	private SkjermingService skjermingService;
 
 	@Before
 	public void setUp() throws Exception {
@@ -113,6 +130,43 @@ public class HentMinTilgjengeligJournalpostListeV2ResponseMapperTest {
 			assertThat(journalpost.getBrukerErAvsenderMottaker(), is(AvsenderMottaker.JA));
 			assertSak(journalpost.getGjelderSak());
 			assertDokInfoRels(journalpost.getDokumentinfoRelasjonListe(), 2);
+		}
+	}
+
+	@Test
+	public void shouldMapKassert() {
+		Journalpost journalpost1 = createJournalpostKassert(JOURNALPOST_ID1);
+		journalpost1.setJournalposttype(JournalpostTypeCode.I);
+		journalpost1.setMottakskanal(MottaksKanalCode.ALTINN);
+		Journalpost journalpost2 = createJournalpostKassert(JOURNALPOST_ID2);
+		journalpost2.setJournalposttype(JournalpostTypeCode.U);
+		journalpost2.setUtsendingskanal(UtsendingsKanalCode.E_POST);
+		List<Journalpost> journalposts = Lists.newArrayList(journalpost1, journalpost2);
+		HentTilgjengeligJournalpostListeResponse response = mapper.mapList(createInnsynJournalpostToList(journalposts));
+		assertThat(response.getJournalpostListe(), hasSize(2));
+		for (no.nav.tjeneste.virksomhet.innsynjournal.v2.informasjon.Journalpost journalpost : response.getJournalpostListe()) {
+			assertThat(journalpost.getArkivtema().getValue(), is(FAGOMRADE.name()));
+			assertThat(journalpost.getEksternPart(), is(AVSENDER_MOTTAKER));
+			if (JOURNALPOST_ID1.equals(Long.valueOf(journalpost.getJournalpostId()))) {
+				assertThat(Long.valueOf(journalpost.getJournalpostId()), is(JOURNALPOST_ID1));
+				assertThat(journalpost.getKommunikasjonsretning().getValue(), is(JournalpostTypeCode.I.name()));
+				assertThat(journalpost.getKommunikasjonskanal(), is(MottaksKanalCode.ALTINN.name()));
+			} else {
+				assertThat(Long.valueOf(journalpost.getJournalpostId()), is(JOURNALPOST_ID2));
+				assertThat(journalpost.getKommunikasjonsretning().getValue(), is(JournalpostTypeCode.U.name()));
+				assertThat(journalpost.getKommunikasjonskanal(), is(UtsendingsKanalCode.E_POST.name()));
+			}
+			assertThat(journalpost.getKanalReferanseId(), is(KANAL_REFERANSE_ID));
+			assertThat(journalpost.getMottatt(), is(DateConverterUtil.convertDateToXMLGregorianCalendar(MOTTATT_DATO)));
+			assertThat(journalpost.getSendt(), is(DateConverterUtil.convertDateToXMLGregorianCalendar(JOURNAL_DATO)));
+			assertThat(journalpost.getFerdigstilt(), is(DateConverterUtil.convertDateToXMLGregorianCalendar(JOURNAL_DATO)));
+			assertThat(journalpost.getOpprettet(), is(DateConverterUtil.convertDateToXMLGregorianCalendar(CHANGE_STAMP_DATE)));
+			assertThat(journalpost.getBrukerErAvsenderMottaker(), is(AvsenderMottaker.JA));
+			assertSak(journalpost.getGjelderSak());
+
+
+			assertNull(journalpost.getDokumentinfoRelasjonListe().get(0).getJournalfoertDokument().getBeskriverInnhold());
+			assertNull(journalpost.getDokumentinfoRelasjonListe().get(1).getJournalfoertDokument().getBeskriverInnhold());
 		}
 	}
 
@@ -205,7 +259,8 @@ public class HentMinTilgjengeligJournalpostListeV2ResponseMapperTest {
 		assertThat(dokumentinfoRelasjonListe, hasSize(size));
 
 		DokumentinfoRelasjon hovedDok = dokumentinfoRelasjonListe.get(0);
-		assertThat(hovedDok.getDokumentTilknyttetJournalpost().getValue(), is(TilknyttetJournalpostSomCode.HOVEDDOKUMENT.name()));
+		assertThat(hovedDok.getDokumentTilknyttetJournalpost()
+				.getValue(), is(TilknyttetJournalpostSomCode.HOVEDDOKUMENT.name()));
 		assertThat(hovedDok.getDokumentinfoRelasjonId(), is(Long.toString(DOK_INFO_REL_ID)));
 		assertDokument(hovedDok.getJournalfoertDokument());
 
@@ -254,6 +309,58 @@ public class HentMinTilgjengeligJournalpostListeV2ResponseMapperTest {
 		innsynJournalpostTo.setAvsenderMottaker(avsenderMottaker);
 		innsynJournalpostTo.putDokumentInnsyn(innsynDokument, DOKUMENT_INFO_ID);
 		return innsynJournalpostTo;
+	}
+
+
+	private JournalpostDokumentInfoRelasjon createDokInfoRelKasert(TilknyttetJournalpostSomCode tilknyttetJournalpostSomCode, Date dokumentFerdig, Long dokInfoRelId) {
+		return getJournalpostDokumentInfoRelasjonBuilder()
+				.tilknyttetJournalpostSom(tilknyttetJournalpostSomCode)
+				.journalpostDokumentInfoRelasjonId(dokInfoRelId)
+				.dokumentInfo(getDokumentInfoBuilder()
+						.dokumentstatus(DOKUMENT_STATUS)
+						.filDetaljerList(FilDetaljer.builder()
+										.variantFormat(VARIANT_FORMAT)
+										.filtype(FIL_TYPE)
+										.skjermingType(SkjermingTypeCode.POL)
+										.build(),
+								FilDetaljer.builder()
+										.variantFormat(VARIANT_FORMAT)
+										.filtype(FIL_TYPE)
+										.skjermingType(SkjermingTypeCode.POL)
+										.build())
+						.tittel(DOKUMENT_TITTEL)
+						.dokumentFerdigDato(dokumentFerdig)
+						.skannetInnhold(SkannetInnholdBuilder.getSkannetInnholdBuilder()
+										.skannetInnholdId(SKANNET_INNHOLD_ID)
+										.vedleggInnhold(VEDLEGG_INNHOLD)
+										.build(),
+								SkannetInnholdBuilder.getSkannetInnholdBuilder()
+										.skannetInnholdId(SKANNET_INNHOLD_ID)
+										.vedleggInnhold(VEDLEGG_INNHOLD)
+										.build())
+						.dokumentInfoId(DOKUMENT_INFO_ID)
+						.build())
+				.build();
+	}
+
+	private Journalpost createJournalpostKassert(Long journalpostId) {
+		return getJournalpostBuilder()
+				.changeStamp(new ChangeStamp(null, CHANGE_STAMP_DATE, null, null))
+				.fagomrade(FAGOMRADE)
+				.journalDato(JOURNAL_DATO)
+				.mottattDato(MOTTATT_DATO)
+				.avsenderMottaker(AVSENDER_MOTTAKER)
+				.journalpostId(journalpostId)
+				.journalpostType(JOURNALPOST_TYPE)
+				.kanalReferanseId(KANAL_REFERANSE_ID)
+				.saksrelasjon(SaksrelasjonBuilder.getSaksrelasjonBuilder()
+						.sakId(SAKS_ID)
+						.fagsystem(FAGSYSTEM)
+						.build())
+				.dokumentInfoRelasjoner(
+						createDokInfoRelKasert(TilknyttetJournalpostSomCode.HOVEDDOKUMENT, DOKUMENT_FERDIG_DATO, DOK_INFO_REL_ID),
+						createDokInfoRelKasert(TilknyttetJournalpostSomCode.VEDLEGG, DOKUMENT_FERDIG_DATO_OLD, DOK_INFO_REL_ID + 1))
+				.build();
 	}
 
 	private Journalpost createJournalpost(Long journalpostId) {
