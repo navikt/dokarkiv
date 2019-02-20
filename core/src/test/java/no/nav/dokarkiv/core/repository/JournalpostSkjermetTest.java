@@ -69,52 +69,52 @@ public class JournalpostSkjermetTest {
 	}
 
 	@Test
-	public void shouldNotReturnBegrensetJournalpostDokumentInfoRelasjons() {
+	public void shouldNotReturnSkjermetJournalpostDokumentInfoRelasjons() {
 
 		Journalpost journalpost1 = joarkRepository.save(createJournalpostWithTwoVedlegg());
-		JournalpostDokumentInfoRelasjon begrensetJournalpostDokumentInfoRelasjon = journalpost1.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
+		JournalpostDokumentInfoRelasjon skjermetJournalpostDokumentInfoRelasjon = journalpost1.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
 				.iterator()
 				.next();
-		Long begrensetDokumentInfoId = begrensetJournalpostDokumentInfoRelasjon.getDokumentInfo().getDokumentInfoId();
-		Long begrensetDokumentFildetaljId = journalpost1.findDokumentInfoById(begrensetDokumentInfoId)
+		Long skjermetDokumentInfoId = skjermetJournalpostDokumentInfoRelasjon.getDokumentInfo().getDokumentInfoId();
+		Long skjermetDokumentFildetaljId = journalpost1.findDokumentInfoById(skjermetDokumentInfoId)
 				.getFildetaljerListe()
 				.iterator()
 				.next()
 				.getFildetaljerId();
 
-		skjermingService.setJpDokInfoRelSkjerming(begrensetJournalpostDokumentInfoRelasjon, SkjermingTypeCode.POL);
+		skjermingService.setJpDokInfoRelSkjerming(skjermetJournalpostDokumentInfoRelasjon, SkjermingTypeCode.POL);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
 		TestTransaction.start();
 
-		//Test behaviour when begrenset
+		//Test behaviour when skjermet
 		Journalpost journalpostWithBegrensning = joarkRepositorySkjermet.findById(journalpost1.getJournalpostId()).get();
 
 		assertThat(journalpostWithBegrensning.getJournalpostDokumentInfoRelasjoner().size(), is(2));
 		assertThat(journalpostWithBegrensning.getJournalpostDokumentInfoRelasjoner()
 				.stream()
-				.anyMatch(rel -> rel.getDokumentInfo().getDokumentInfoId().equals(begrensetDokumentInfoId)), is(false));
-		assertThat(journalpostWithBegrensning.getDokumentInfoFromJpDokInfoRelasjonerByDokumentInfoId(begrensetDokumentInfoId), nullValue());
-		assertThat(journalpostWithBegrensning.findDokumentInfoById(begrensetDokumentInfoId), nullValue());
+				.anyMatch(rel -> rel.getDokumentInfo().getDokumentInfoId().equals(skjermetDokumentInfoId)), is(false));
+		assertThat(journalpostWithBegrensning.getDokumentInfoFromJpDokInfoRelasjonerByDokumentInfoId(skjermetDokumentInfoId), nullValue());
+		assertThat(journalpostWithBegrensning.findDokumentInfoById(skjermetDokumentInfoId), nullValue());
 		assertThat(journalpostWithBegrensning.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
 				.size(), is(1));
 		assertThat(journalpostWithBegrensning.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
 				.stream()
-				.anyMatch(rel -> rel.getDokumentInfo().getDokumentInfoId().equals(begrensetDokumentInfoId)), is(false));
+				.anyMatch(rel -> rel.getDokumentInfo().getDokumentInfoId().equals(skjermetDokumentInfoId)), is(false));
 		assertThat(journalpostWithBegrensning.findAllFilDetaljer().size(), is(2));
 		assertThat(journalpostWithBegrensning.findAllFilDetaljer()
 				.stream()
-				.anyMatch(detalj -> detalj.getDokumentInfo().getDokumentInfoId().equals(begrensetDokumentInfoId)), is(false));
-		assertThat(journalpostWithBegrensning.findFilDetaljerByFilDetaljerId(begrensetDokumentFildetaljId), nullValue());
-		assertThat(journalpostWithBegrensning.findDokumentInfoRelasjonById(begrensetJournalpostDokumentInfoRelasjon.getJournalpostDokumentInfoRelasjonId()), nullValue());
+				.anyMatch(detalj -> detalj.getDokumentInfo().getDokumentInfoId().equals(skjermetDokumentInfoId)), is(false));
+		assertThat(journalpostWithBegrensning.findFilDetaljerByFilDetaljerId(skjermetDokumentFildetaljId), nullValue());
+		assertThat(journalpostWithBegrensning.findDokumentInfoRelasjonById(skjermetJournalpostDokumentInfoRelasjon.getJournalpostDokumentInfoRelasjonId()), nullValue());
 		assertThat(journalpostWithBegrensning.findAllDokumentInfos().size(), is(2));
 
 		Journalpost journalpost2 = joarkRepository.save(createJournalpostWithTwoVedlegg());
 		Journalpost journalpostWithoutBegrensning = joarkRepository.findById(journalpost2.getJournalpostId()).get();
 
 		assertThat(journalpostWithoutBegrensning.getJournalpostDokumentInfoRelasjoner().size(), is(3));
-		assertThat(journalpostWithoutBegrensning.getDokumentInfoFromJpDokInfoRelasjonerByDokumentInfoId(begrensetDokumentInfoId), nullValue());
+		assertThat(journalpostWithoutBegrensning.getDokumentInfoFromJpDokInfoRelasjonerByDokumentInfoId(skjermetDokumentInfoId), nullValue());
 		assertThat(journalpostWithoutBegrensning.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
 				.size(), is(2));
 		assertThat(journalpostWithoutBegrensning.findAllFilDetaljer().size(), is(3));

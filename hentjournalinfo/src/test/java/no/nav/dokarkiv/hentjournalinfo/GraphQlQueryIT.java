@@ -90,7 +90,7 @@ public class GraphQlQueryIT {
 	protected final String VALID_SERVICE_USER_ID = "srvjoarkadmin";
 	protected final String INVALID_SERVICE_USER_ID = "srvdokarkiv";
 	protected final String PERSON_USER_ID = "Z990782";
-	protected final String GRAPHL_URL = "/rest/graphql";
+	protected final String GRAPHL_URL = "/rest/admin/graphql";
 
 	@Inject
 	private JoarkRepository joarkRepository;

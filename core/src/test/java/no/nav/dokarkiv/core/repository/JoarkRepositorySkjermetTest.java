@@ -107,12 +107,12 @@ public class JoarkRepositorySkjermetTest {
 		assertTrue(joarkRepositorySkjermet.existsById(journalpost.getId()));
 
 		List<Journalpost> journalpostList = new ArrayList<>();
-		List<Journalpost> journalpostListBegrenset = new ArrayList<>();
+		List<Journalpost> journalpostListSkjermet = new ArrayList<>();
 		joarkRepository.findAll().forEach(journalpostList::add);
-		joarkRepositorySkjermet.findAll().forEach(journalpostListBegrenset::add);
+		joarkRepositorySkjermet.findAll().forEach(journalpostListSkjermet::add);
 
 		assertThat(journalpostList.size(), is(1));
-		assertThat(journalpostListBegrenset.size(), is(1));
+		assertThat(journalpostListSkjermet.size(), is(1));
 
 		assertThat(joarkRepository.findById(journalpost.getId()).isPresent(), is(true));
 		assertThat(joarkRepositorySkjermet.findById(journalpost.getId()).isPresent(), is(true));
@@ -159,7 +159,7 @@ public class JoarkRepositorySkjermetTest {
 	}
 
 	@Test
-	public void shouldReturnSkjermetJournalpostForFindById() {
+	public void shouldNotReturnSkjermetJournalpostForFindById() {
 		Journalpost journalpost = createJournalpost();
 
 
@@ -177,26 +177,26 @@ public class JoarkRepositorySkjermetTest {
 	}
 
 	@Test
-	public void shouldNotFindSkjermettDokument() {
+	public void shouldNotFindSkjermetJournalpost() {
 		Journalpost journalpost = createJournalpost();
-		Journalpost journalpostBegrenset = createJournalpost();
+		Journalpost journalpostSkjermet = createJournalpost();
 
 		journalpost = joarkRepository.save(journalpost);
-		journalpostBegrenset = joarkRepository.save(journalpostBegrenset);
-		skjermingService.setJournalpostSkjerming(journalpostBegrenset, SkjermingTypeCode.POL);
+		journalpostSkjermet = joarkRepository.save(journalpostSkjermet);
+		skjermingService.setJournalpostSkjerming(journalpostSkjermet, SkjermingTypeCode.POL);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
 		TestTransaction.start();
 
 		List<Journalpost> journalpostList = new ArrayList<>();
-		List<Journalpost> journalpostListBegrenset = new ArrayList<>();
+		List<Journalpost> journalpostListSkjermet = new ArrayList<>();
 		joarkRepository.findAll().forEach(journalpostList::add);
-		joarkRepositorySkjermet.findAll().forEach(journalpostListBegrenset::add);
+		joarkRepositorySkjermet.findAll().forEach(journalpostListSkjermet::add);
 
 		assertThat(journalpostList.size(), is(2));
-		assertThat(journalpostListBegrenset.size(), is(1));
-		assertThat(journalpostListBegrenset.get(0).getJournalpostId(), is(journalpost.getJournalpostId()));
+		assertThat(journalpostListSkjermet.size(), is(1));
+		assertThat(journalpostListSkjermet.get(0).getJournalpostId(), is(journalpost.getJournalpostId()));
 	}
 
 	@Test
@@ -292,20 +292,20 @@ public class JoarkRepositorySkjermetTest {
 		Journalpost journalpost = createJournalpost();
 		joarkRepository.save(journalpost);
 
-		Journalpost journalpostBegrenset = createJournalpost();
+		Journalpost journalpostSkjermet = createJournalpost();
 
 		Long dokumentInfoId = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId();
 
-		//Legg til dokumentInfo som vedlegg til begrenset journalpost
-		journalpostBegrenset.addJournalpostDokumentInfoRelasjon(JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder()
+		//Legg til dokumentInfo som vedlegg til skjermet journalpost
+		journalpostSkjermet.addJournalpostDokumentInfoRelasjon(JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder()
 				.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
 				.opprettetKildeNavn("test")
 				.tilknyttetAvNavn("test")
 				.dokumentInfo(journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo())
 				.build());
 
-		journalpostBegrenset = joarkRepository.save(journalpostBegrenset);
-		skjermingService.setJournalpostSkjerming(journalpostBegrenset, SkjermingTypeCode.POL);
+		journalpostSkjermet = joarkRepository.save(journalpostSkjermet);
+		skjermingService.setJournalpostSkjerming(journalpostSkjermet, SkjermingTypeCode.POL);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
