@@ -88,6 +88,10 @@
 			<groupId>no.nav.dokarkiv</groupId>
 			<artifactId>fysisktidligkassasjon</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>no.nav.dokarkiv</groupId>
+			<artifactId>ferdigstilljournalpost</artifactId>
+		</dependency>
 		<!-- annet -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
