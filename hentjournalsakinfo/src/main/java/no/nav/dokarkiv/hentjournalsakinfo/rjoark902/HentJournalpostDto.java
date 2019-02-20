@@ -24,7 +24,6 @@ import java.util.List;
 public class HentJournalpostDto {
 
 	private final Long journalpostId;
-	private final String journalForendeEnhetId;
 	private final String innhold;
 	private final FagomradeCode fagomrade;
 	private final Behandlingstema behandlingstema;
