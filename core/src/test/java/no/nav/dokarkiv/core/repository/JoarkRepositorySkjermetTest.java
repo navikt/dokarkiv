@@ -288,7 +288,7 @@ public class JoarkRepositorySkjermetTest {
 
 
 	@Test
-	public void shouldReturnSkjermetJournalpostIdForFindAllJournalpostIdsByDokumentInfoId() {
+	public void shouldNotReturnSkjermetJournalpostIdForFindAllJournalpostIdsByDokumentInfoId() {
 		Journalpost journalpost = createJournalpost();
 		joarkRepository.save(journalpost);
 
