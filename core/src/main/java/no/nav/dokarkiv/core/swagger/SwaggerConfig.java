@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.swagger;
+package no.nav.dokarkiv.core.swagger;
 
 import com.google.common.collect.Lists;
 import io.swagger.annotations.Api;
@@ -70,7 +70,7 @@ public class SwaggerConfig {
 				version,
 				"",
 				new Contact("Team Dokument", "", ""),
-				"", "", Collections.EMPTY_LIST);
+				"", "", Collections.emptyList());
 	}
 
 	private ApiKey apiKey() {

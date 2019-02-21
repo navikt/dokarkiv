@@ -22,7 +22,6 @@ import no.nav.dokarkiv.logiskslettdokument.LogiskSlettDokumentConfig;
 import no.nav.dokarkiv.logisktidligkassasjon.LogiskTidligKassasjonConfig;
 import no.nav.dokarkiv.nais.NaisContract;
 import no.nav.dokarkiv.platform.TomcatConfig;
-import no.nav.dokarkiv.swagger.SwaggerConfig;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.annotation.Import;
 
@@ -50,7 +49,6 @@ import org.springframework.context.annotation.Import;
 		LogiskTidligKassasjonConfig.class,
 		FysiskTidligKassasjonConfig.class,
 		FerdigstillJournalpostConfig.class,
-		SwaggerConfig.class,
 		NaisContract.class})
 public class Application {
 	public static void main(String[] args) {
