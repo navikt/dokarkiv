@@ -285,32 +285,6 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentIT extends AbstractArkive
 	 * HVIS operasjonen kalles med en peker til et vedlegg som allerede ligger i JOARK OG det er registrert at dokumentet er slettet, organInternt eller har innskrenketPartsinnsyn SÅ skal det returneres en feil
 	 */
 	@Test
-	public void shouldThrowIfVedleggDokumentInfoSlettetIsTrue() throws Exception {
-		expectedException.expect(isA(OpprettUtgaaendeJournalpostValideringAvVedleggFeilet.class));
-		expectedException.expectMessage("DokumentInfo.Slettet kan ikke være Sann");
-
-		persistedJournalpost.getJournalpostDokumentInfoRelasjoner()
-				.iterator()
-				.next()
-				.getDokumentInfo()
-				.setSlettet(Boolean.TRUE);
-		persistedJournalpost = joarkRepository.save(persistedJournalpost);
-
-		OpprettUtgaaendeJournalpostArkiverDokumentRequest request = createRequest();
-		request.getVedlegg()
-				.add(createVedlegg(persistedJournalpost.getJournalpostDokumentInfoRelasjoner()
-						.iterator()
-						.next()
-						.getDokumentInfo()
-						.getId(), persistedJournalpost.getJournalpostId()));
-
-		arkiverDokumentproduksjonProvider.opprettUtgaaendeJournalpostArkiverDokument(request);
-	}
-
-	/**
-	 * HVIS operasjonen kalles med en peker til et vedlegg som allerede ligger i JOARK OG det er registrert at dokumentet er slettet, organInternt eller har innskrenketPartsinnsyn SÅ skal det returneres en feil
-	 */
-	@Test
 	public void shouldThrowIfVedleggDokumentInfoOrganInterntIsTrue() throws Exception {
 		expectedException.expect(isA(OpprettUtgaaendeJournalpostValideringAvVedleggFeilet.class));
 		expectedException.expectMessage("DokumentInfo.OrganInternt kan ikke være Sann");

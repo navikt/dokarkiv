@@ -11,6 +11,8 @@ import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 
 import no.nav.dokarkiv.core.datautil.BrukerTestDataProvider;
 import no.nav.dokarkiv.core.datautil.SaksrelasjonTestDataProvider;
@@ -28,7 +30,6 @@ import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
-import no.nav.dokarkiv.core.domain.entities.Begrensning;
 import no.nav.dokarkiv.core.domain.entities.DokumentUrlInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
@@ -45,6 +46,7 @@ import no.nav.tjeneste.virksomhet.journal.v3.meldinger.HentDokumentURLRequest;
 import no.nav.tjeneste.virksomhet.journal.v3.meldinger.HentDokumentURLResponse;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.test.context.transaction.TestTransaction;
 
 /**
  * Integration test for HentDokumentURL in 3rd gen. Journal service.
@@ -155,18 +157,28 @@ public class HentDokumentURLIT extends AbstractJournalV3Itest {
 		abacPermit();
 		persistDokumentFil();
 
-		Begrensning skjermet = new Begrensning();
-		skjermet.setId(1L);
-		skjermet.setBegrensningType(SkjermingTypeCode.POL);
-		skjermet.setVariantFormat(VariantFormatCode.ARKIV);
-		skjermet.setDokumentInfoId(journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId());
-		skjermet.setOpprettetKildeNavn("test");
-		begrensningRepository.save(skjermet);
+		skjermingService.setVariantSkjermet(journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo(), VariantFormatCode.ARKIV, SkjermingTypeCode.POL);
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
 
 		HentDokumentURLResponse response = journalV3Provider.hentDokumentURL(request);
 
 		assertThat(response.getDokumentURL(), containsString("docToken"));
 		assertDokumentUrlInfoIsPersisted(FIL_UUID_SLADDET);
+	}
+
+	@Test
+	public void shouldThrowExceptionWhenKassert() throws Exception {
+		expectedException.expect(HentDokumentURLDokumentIkkeFunnet.class);
+		expectedException.expectMessage("Could not find document");
+		abacPermit();
+		persistDokumentFil();
+
+		skjermingService.skjermAllFildetaljer(journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo(), SkjermingTypeCode.POL);
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
+
+		journalV3Provider.hentDokumentURL(request);
 	}
 
 	private HentDokumentURLRequest createRequest() {

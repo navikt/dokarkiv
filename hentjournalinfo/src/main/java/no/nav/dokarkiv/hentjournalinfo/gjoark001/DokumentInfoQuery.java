@@ -68,7 +68,7 @@ public class DokumentInfoQuery implements Query {
 		abacSecurityService.assertAccessToDokumentIncludingSkjermet(dokumentInfoId);
 
 		//Om dokumentet eksiterer sjekkes i metoden over og kan derfor være sikker på dokumentInfo finnes i neste step
-		no.nav.dokarkiv.core.domain.entities.DokumentInfo dokumentInfo = dokumentinfoRepository.findById(dokumentInfoId).get();
+		no.nav.dokarkiv.core.domain.entities.DokumentInfo dokumentInfo = dokumentinfoRepository.findById(dokumentInfoId).get(); //NOSONAR
 
 		return mapDokumentInfo(dokumentInfo);
 	}
@@ -76,7 +76,7 @@ public class DokumentInfoQuery implements Query {
 	@GraphQLQuery(name = "kassert")
 	@Transactional(readOnly = true)
 	public boolean kassert(@GraphQLContext DokumentInfo dokument) {
-		return skjermingService.isDokumentKassert(dokument.getDokumentInfoId());
+		return skjermingService.isAlleFildetaljerSkjermet(dokument.getDokumentInfoId());
 	}
 
 	@GraphQLQuery(name = "originalJournalpost")
@@ -100,17 +100,12 @@ public class DokumentInfoQuery implements Query {
 				.getJournalpostRelasjoner();
 
 		List<Long> skjermetJournalpostRelasjon = journalpostDokumentInfoRelasjons.stream()
-				.filter(relasjon -> skjermingService.isJournalpostDokumentInfoRelasjonSkjermet(relasjon.getJournalpost()
-						.getJournalpostId(), relasjon.getDokumentInfo()
-						.getDokumentInfoId(), SkjermingTypeCode.POL) || skjermingService.isJournalpostSkjermet(relasjon
-						.getJournalpost()
-						.getJournalpostId(), SkjermingTypeCode.POL))
+				.filter(relasjon -> isJournalpostDokumentInfoRelasjonOrJournalpostSkjermet(relasjon.getJournalpost(), relasjon.getDokumentInfo()))
 				.map(relasjon -> relasjon.getJournalpost().getJournalpostId())
 				.collect(Collectors.toList());
 
 		List<Long> skjermetJournalpost = journalpostDokumentInfoRelasjons.stream()
-				.filter(relasjon -> skjermingService.isJournalpostSkjermet(relasjon.getJournalpost()
-						.getJournalpostId(), SkjermingTypeCode.POL))
+				.filter(relasjon -> skjermingService.isJournalpostSkjermet(relasjon.getJournalpost()))
 				.map(relasjon -> relasjon.getJournalpost().getJournalpostId())
 				.collect(Collectors.toList());
 
@@ -134,10 +129,14 @@ public class DokumentInfoQuery implements Query {
 		//Må hente på nytt fra databasen pågrunn av lazy initialisering
 		Set<FilDetaljer> filDetaljerSet = dokumentinfoRepository.findById(dokumentInfo.getDokumentInfoId())
 				.orElse(no.nav.dokarkiv.core.domain.entities.DokumentInfo.builder().build())
-				.getFildetaljerListe();
+				.getFildetaljerListeAdmin();
 
 		return mapFildetaljer(filDetaljerSet);
 	}
 
+	private boolean isJournalpostDokumentInfoRelasjonOrJournalpostSkjermet(no.nav.dokarkiv.core.domain.entities.Journalpost journalpost, no.nav.dokarkiv.core.domain.entities.DokumentInfo dokumentInfo) {
+		return skjermingService.isJournalpostDokumentInfoRelasjonSkjermet(journalpost.getJournalpostId(), dokumentInfo.getDokumentInfoId(), SkjermingTypeCode.POL) ||
+				skjermingService.isJournalpostSkjermet(journalpost);
+	}
 
 }

@@ -44,6 +44,7 @@ public class DokumentInfo {
         private Long fildetaljerId;
         private FilType filtype;
         private VariantFormat variantFormat;
+        private boolean skjermet;
     }
 
 }

@@ -2,7 +2,7 @@ package no.nav.dokarkiv.innsynjournal.v2;
 
 import no.nav.dokarkiv.core.CoreConfig;
 import no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerV2Mock;
-import no.nav.dokarkiv.core.repository.BegrensningRepository;
+import no.nav.dokarkiv.core.domain.service.SkjermingService;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
@@ -20,6 +20,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.transaction.TestTransaction;
 
 import javax.inject.Inject;
 import javax.transaction.Transactional;
@@ -42,7 +43,7 @@ public abstract class AbstractInnsynJournalV2Itest {
 	@Inject
 	protected DokumentFilRepository dokumentFilRepository;
 	@Inject
-	protected BegrensningRepository begrensningRepository;
+	protected SkjermingService skjermingService;
 
 	@Configuration
 	public static class TestConfig {

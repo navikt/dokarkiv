@@ -18,7 +18,6 @@ import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
-import no.nav.dokarkiv.core.domain.entities.Begrensning;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.dokumentproduksjoninfo.AbstractDokumentproduksjoninfoItest;
 import no.nav.tjeneste.domene.brevogarkiv.dokumentproduksjoninfo.v1.HentFerdigstilteDokumenterDokumenterIkkeFunnet;
@@ -28,6 +27,7 @@ import no.nav.tjeneste.domene.brevogarkiv.dokumentproduksjoninfo.v1.meldinger.He
 import no.nav.tjeneste.domene.brevogarkiv.dokumentproduksjoninfo.v1.meldinger.HentFerdigstilteDokumenterResponse;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.test.context.transaction.TestTransaction;
 
 import java.io.ByteArrayOutputStream;
 
@@ -46,12 +46,13 @@ public class HentFerdigstilteDokumenterIT extends AbstractDokumentproduksjoninfo
 
 	private Long journalpostId;
 	private Long dokumentInfoId;
+	private Journalpost journalpost;
 
 	private HentFerdigstilteDokumenterRequest request;
 
 	@Before
 	public void setUp() {
-		Journalpost journalpost = buildAndPersistJournalpost(FILUUID, FILUUID_SKJERMET, FS, FERDIGSTILT);
+		journalpost = buildAndPersistJournalpost(FILUUID, FILUUID_SKJERMET, FS, FERDIGSTILT);
 		journalpostId = journalpost.getId();
 		dokumentInfoId = journalpost.findAllDokumentInfos().iterator().next().getId();
 
@@ -81,13 +82,12 @@ public class HentFerdigstilteDokumenterIT extends AbstractDokumentproduksjoninfo
 
 	@Test
 	public void shouldHentFerdigstilteDokumenterSkjermet() throws Exception {
-		Begrensning begrensning = Begrensning.builder().begrensningId(1L)
-				.begrensningType(SkjermingTypeCode.POL)
-				.dokumentInfoId(dokumentInfoId)
-				.variantFormat(VariantFormatCode.ARKIV)
-				.build();
-		begrensning.setOpprettetKildeNavn("Clark Kentolini");
-		begrensningRepository.save(begrensning);
+
+		skjermingService.setVariantSkjermet(journalpost.findAllDokumentInfos().iterator().next(), VariantFormatCode.ARKIV, SkjermingTypeCode.POL);
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
+		TestTransaction.start();
+
 		HentFerdigstilteDokumenterResponse wsResponse = dokumentproduksjonInfoProvider.hentFerdigstilteDokumenter(request);
 		assertThat(wsResponse.getDokumentListe().size(), is(1));
 		assertThat(wsResponse.getDokumentListe().get(0).getDokumentInfoId(), is(dokumentInfoId));

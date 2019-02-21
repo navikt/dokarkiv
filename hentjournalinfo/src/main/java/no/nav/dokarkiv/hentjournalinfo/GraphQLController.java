@@ -61,7 +61,7 @@ public class GraphQLController {
                 .build();
     }
 
-    @PostMapping(value = "/rest/graphql", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PostMapping(value = "/rest/admin/graphql", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseBody
     @RestMetrics(value = "dok_request", extraTags = {"process_code", "gjoark00x"}, percentiles = {0.5, 0.95})
     public Map<String, Object> graphQLRequest(@RequestBody GraphQLRequest request, HttpServletRequest raw) {

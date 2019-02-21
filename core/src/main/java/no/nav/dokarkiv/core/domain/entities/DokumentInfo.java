@@ -1,7 +1,8 @@
 package no.nav.dokarkiv.core.domain.entities;
 
-import static org.apache.commons.lang3.BooleanUtils.isTrue;
-import static org.apache.commons.lang3.StringUtils.contains;
+import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.ARKIV;
+import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.SLADDET;
+import static org.apache.commons.lang3.BooleanUtils.isFalse;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
@@ -35,13 +36,16 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Domain entity class that represents document info.
@@ -85,10 +89,6 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	@Column(name = "sensitivt")
 	private Boolean sensitivt;
 
-	@Column(name = "slettet")
-	@Type(type = "org.hibernate.type.TrueFalseType")
-	private Boolean slettet;
-
 	@Column(name = "endret_av_navn")
 	private String endretAvNavn;
 
@@ -107,15 +107,6 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	@Column(name = "tittel")
 	private String tittel;
 
-	@Column(name = "konfidensialitet")
-	private String konfidensialitet;
-
-	@Column(name = "integritet")
-	private String integritet;
-
-	@Column(name = "tilgjengelighet")
-	private String tilgjengelighet;
-
 	@Column(name = "innskr_partsinnsyn")
 	@Type(type = "org.hibernate.type.TrueFalseType")
 	private Boolean innskrenketPartsinnsyn;
@@ -128,13 +119,18 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	@Type(type = "org.hibernate.type.TrueFalseType")
 	private Boolean organInternt;
 
-	@JsonIgnore
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "orig_journalpost_id")
 	private Journalpost originalJournalpost;
 
 	@Column(name = "dokumenttype_id")
 	private String dokumenttypeId;
+
+	@Column(name = "dato_kassert")
+	private LocalDateTime datoKassert;
+
+	@Column(name = "kassert_av_navn")
+	private String kassertAvNavn;
 
 	@ElementCollection
 	@JoinTable(name = "t_dok_info_tillegg", joinColumns = @JoinColumn(name = "dokument_info_id", nullable = false))
@@ -352,24 +348,70 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	/**
 	 * Finds a FilDetaljer by filUuid.
 	 *
+	 * Returnerer filUuid for SLADDET variant hvis filUuid tilhører ARKIV variant
+	 *
 	 * @param filUuid The filUuid.
 	 * @return The FilDetaljer.
 	 */
 	public FilDetaljer findFilDetaljerByFilUuid(final String filUuid) {
-		return fildetaljerListe.stream().filter(filDetaljer -> filUuid.equals(filDetaljer.getFilUuid())).findAny().orElse(null);
+		FilDetaljer filDetaljer = fildetaljerListe.stream()
+				.filter(filDetalj -> filUuid.equals(filDetalj.getFilUuid()))
+				.findAny().orElse(null);
+
+		//Return SLADDET if ARKIV is skjermet
+		if (Objects.nonNull(filDetaljer) && ARKIV.equals(filDetaljer.getVariantFormat()) && isArkivVariantSkjermet()) {
+			filDetaljer = fildetaljerListe.stream()
+					.filter(filDetalj -> SLADDET.equals(filDetalj.getVariantFormat()))
+					.findAny().orElse(null);
+		}
+
+		if (Objects.nonNull(filDetaljer) && Objects.nonNull(filDetaljer.getSkjermingType())) {
+			filDetaljer = null;
+		}
+
+		return filDetaljer;
 	}
 
 	/**
 	 * Finds all FilDetaljer with the given variantFormat.
+	 * <p>
+	 * Filterer ut fildetaljer som er skjermet
+	 * Returnerer SLADDET variant hvis ARKIV variant er skjermet og ellers null hvis alle andre varianter er skjermet
+	 * Returnerer null hvis både ARKIV og SLADDET variant er skjermet
 	 *
 	 * @param variantFormat The VariantFormatCode.
 	 * @return A list of Fildetaljer with the given VariantFormatCode.
 	 */
 	public FilDetaljer findFilDetaljerByVariantFormat(final VariantFormatCode variantFormat) {
+		if (ARKIV.equals(variantFormat) && isArkivVariantSkjermet()) {
+			return fildetaljerListe.stream()
+					.filter(filDetaljer -> SLADDET.equals(filDetaljer.getVariantFormat()))
+					.filter(filDetaljer -> Objects.isNull(filDetaljer.getSkjermingType()))
+					.findAny()
+					.orElse(null);
+		}
+
+		return fildetaljerListe.stream()
+				.filter(filDetaljer -> Objects.isNull(filDetaljer.getSkjermingType()))
+				.filter(filDetaljer -> variantFormat.equals(filDetaljer.getVariantFormat()))
+				.findAny()
+				.orElse(null);
+	}
+
+	/**
+	 * Returnerer fildetaljer med gitt variantFormat inkludert skjermet
+	 */
+	public FilDetaljer findFilDetaljerByVariantFormatAdmin(final VariantFormatCode variantFormat) {
 		return fildetaljerListe.stream()
 				.filter(filDetaljer -> variantFormat.equals(filDetaljer.getVariantFormat()))
 				.findAny()
 				.orElse(null);
+
+	}
+
+	private boolean isArkivVariantSkjermet() {
+		return fildetaljerListe.stream()
+				.anyMatch(filDetaljer -> ARKIV.equals(filDetaljer.getVariantFormat()) && Objects.nonNull(filDetaljer.getSkjermingType()));
 	}
 
 	/**
@@ -395,20 +437,6 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	 */
 	public boolean isRelatedToMultipleJournalposts() {
 		return getJournalpostRelasjoner().size() > 1;
-	}
-
-	/**
-	 * <p>Checks if the document is deleted. A document is considered deleted if {@link #getSlettet()}
-	 * returns {@code true} or if the value returned by {@link #getTittel()} contains
-	 * &quot;{@value #DELETED_DOCUMENT_TITLE}&quot;.</p>
-	 * <p/>
-	 * <p>The old method of deleting a document included changing the title to contain the text
-	 * &quot;{@value #DELETED_DOCUMENT_TITLE}&quot;, which is why we check for that here.</p>
-	 *
-	 * @return {@code true} if the document has been marked as deleted, otherwise {@code false}.
-	 */
-	public boolean isFunksjoneltSlettet() {
-		return isTrue(slettet) || contains(getTittel(), DELETED_DOCUMENT_TITLE);
 	}
 
 	/**
@@ -499,25 +527,6 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	 */
 	public void setSensitivt(Boolean sensitivt) {
 		this.sensitivt = sensitivt;
-	}
-
-	/**
-	 * Getter for the {@link #slettet} property.
-	 *
-	 * @return The value of the {@link #slettet} property.
-	 * @see #isFunksjoneltSlettet()
-	 */
-	public Boolean getSlettet() {
-		return slettet;
-	}
-
-	/**
-	 * Sets whether or not this document should be marked as deleted.
-	 *
-	 * @param slettet The boolean value to which the slettet property should be set.
-	 */
-	public void setSlettet(Boolean slettet) {
-		this.slettet = slettet;
 	}
 
 	/**
@@ -636,60 +645,6 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	}
 
 	/**
-	 * Getter for the konfidensialitet property.
-	 *
-	 * @return the konfidensialitet
-	 */
-	public String getKonfidensialitet() {
-		return konfidensialitet;
-	}
-
-	/**
-	 * Setter for the konfidensialitet property.
-	 *
-	 * @param konfidensialitet the konfidensialitet to set
-	 */
-	public void setKonfidensialitet(String konfidensialitet) {
-		this.konfidensialitet = konfidensialitet;
-	}
-
-	/**
-	 * Getter for the integritet property.
-	 *
-	 * @return the integritet
-	 */
-	public String getIntegritet() {
-		return integritet;
-	}
-
-	/**
-	 * Setter for the integritet property.
-	 *
-	 * @param integritet the integritet to set
-	 */
-	public void setIntegritet(String integritet) {
-		this.integritet = integritet;
-	}
-
-	/**
-	 * Getter for the tilgjengelighet property.
-	 *
-	 * @return the tilgjengelighet
-	 */
-	public String getTilgjengelighet() {
-		return tilgjengelighet;
-	}
-
-	/**
-	 * Setter for the tilgjengelighet property.
-	 *
-	 * @param tilgjengelighet the tilgjengelighet to set
-	 */
-	public void setTilgjengelighet(String tilgjengelighet) {
-		this.tilgjengelighet = tilgjengelighet;
-	}
-
-	/**
 	 * @return the innskrPartinnsyn
 	 */
 	public Boolean getInnskrenketPartsinnsyn() {
@@ -777,10 +732,47 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	}
 
 	/**
+	 * Getter for the datoKassert property.
+	 *
+	 * @return the datoKassert
+	 */
+	public LocalDateTime getDatoKassert() {
+		return datoKassert;
+	}
+
+	/**
+	 * Setter for the datoKassert property.
+	 *
+	 * @param datoKassert the datoKassert to set
+	 */
+	public void setDatoKassert(LocalDateTime datoKassert) {
+		this.datoKassert = datoKassert;
+	}
+
+	/**
+	 * Getter for the kassertAvNavn property.
+	 *
+	 * @return the kassertAvNavn
+	 */
+	public String getKassertAvNavn() {
+		return kassertAvNavn;
+	}
+
+	/**
+	 * Setter for the kassertAvNavn property.
+	 *
+	 * @param kassertAvNavn the kassertAvNavn to set
+	 */
+	public void setKassertAvNavn(String kassertAvNavn) {
+		this.kassertAvNavn = kassertAvNavn;
+	}
+
+	/**
 	 * Getter for the tilleggsopplysninger property.
 	 *
 	 * @return the tilleggsopplysninger
 	 */
+
 	public Map<String, String> getTilleggsopplysninger() {
 		return tilleggsopplysninger;
 	}
@@ -837,10 +829,21 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 
 	/**
 	 * Getter for the fildetaljerListe property.
+	 * Filterer ut fildetaljer som er skjermet og sladdet
 	 *
 	 * @return the fildetaljerListe
 	 */
 	public Set<FilDetaljer> getFildetaljerListe() {
+		return Collections.unmodifiableSet(fildetaljerListe.stream()
+				.filter(filDetaljer -> Objects.isNull(filDetaljer.getSkjermingType()))
+				.collect(Collectors.toSet())
+		);
+	}
+
+	/**
+	 * Returnerer alle Fildetaljer inkludert skjermet
+	 */
+	public Set<FilDetaljer> getFildetaljerListeAdmin() {
 		return Collections.unmodifiableSet(fildetaljerListe);
 	}
 

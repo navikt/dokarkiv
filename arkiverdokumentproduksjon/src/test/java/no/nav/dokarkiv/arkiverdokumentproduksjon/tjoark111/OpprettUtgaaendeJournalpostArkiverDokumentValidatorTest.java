@@ -306,16 +306,6 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentValidatorTest {
 	}
 
 	@Test
-	public void shouldThrowIfInputDokumentInfoSlettetIsTrue() throws Exception {
-		expected.expect(ValideringAvVedleggFeiletException.class);
-		expected.expectMessage("DokumentInfo.Slettet kan ikke være Sann");
-		validator.validateVedlegg(journalpost, DokumentInfo.builder()
-				.dokumentstatus(DokumentStatusCode.FERDIGSTILT)
-				.slettet(true)
-				.build(), createVedlegg());
-	}
-
-	@Test
 	public void shouldThrowIfInputDokumentInfoOrganinterntIsTrue() {
 		expected.expect(IllegalArgumentException.class);
 		expected.expectMessage("DokumentInfo.OrganInternt kan ikke være Sann");

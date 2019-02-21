@@ -18,6 +18,7 @@ import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
+import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.Bruker;
@@ -107,6 +108,11 @@ public class InngaaendeJournalDataProvider {
 				.filDetaljerList(createFilDetaljerArkiv(), createFilDetaljerProduksjon());
 	}
 
+	public static DokumentInfoBuilder createHovedDokumentInfoKassert() {
+		return createBaseHovedDokumentInfo()
+				.filDetaljerList(createFilDetaljerArkivSkjermet(), createFilDetaljerProduksjonSkjermet());
+	}
+
 	public static DokumentInfoBuilder createBaseVedleggDokumentInfo() {
 		return getDokumentInfoBuilder()
 				.dokumentInfoId(DOKUMENT_INFO_ID_VEDLEGG)
@@ -119,6 +125,36 @@ public class InngaaendeJournalDataProvider {
 	public static DokumentInfoBuilder createVedleggDokumentInfo() {
 		return createBaseVedleggDokumentInfo()
 				.filDetaljerList(createFilDetaljerArkiv(), createFilDetaljerProduksjon(), createFilDetaljerSladdet());
+	}
+
+	public static DokumentInfoBuilder createVedleggDokumentInfoKassert() {
+		return createBaseVedleggDokumentInfo()
+				.filDetaljerList(createFilDetaljerArkivSkjermet(), createFilDetaljerProduksjonSkjermet(), createFilDetaljerSladdetSkjermet());
+	}
+
+
+	public static FilDetaljer createFilDetaljerArkivSkjermet() {
+		return FilDetaljer.builder()
+				.filtype(FilTypeCode.PDFA)
+				.variantFormat(VariantFormatCode.ARKIV)
+				.skjermingType(SkjermingTypeCode.POL)
+				.build();
+	}
+
+	public static FilDetaljer createFilDetaljerSladdetSkjermet() {
+		return FilDetaljer.builder()
+				.filtype(FilTypeCode.PDFA)
+				.variantFormat(VariantFormatCode.SLADDET)
+				.skjermingType(SkjermingTypeCode.POL)
+				.build();
+	}
+
+	public static FilDetaljer createFilDetaljerProduksjonSkjermet() {
+		return FilDetaljer.builder()
+				.filtype(FilTypeCode.XML)
+				.variantFormat(VariantFormatCode.PRODUKSJON)
+				.skjermingType(SkjermingTypeCode.POL)
+				.build();
 	}
 
 	public static FilDetaljer createFilDetaljerArkiv() {

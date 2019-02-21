@@ -1,10 +1,13 @@
 package no.nav.dokarkiv.journal.v3.tjoark051;
 
 import static no.nav.dokarkiv.core.domain.builder.DokumentFilBuilder.getDokumentFilBuilder;
+import static no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode.POL;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 import no.nav.dokarkiv.core.dokumenturl.HentDokumentUrlResponse;
@@ -29,7 +32,6 @@ import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
 import no.nav.dokarkiv.core.ondemand.HentOndemandDokument;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
-import no.nav.tjeneste.virksomhet.journal.v3.HentDokumentSikkerhetsbegrensning;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -66,8 +68,6 @@ public class Tjoark051HentDokumentServiceTest {
 	private DokumentFilRepository dokumentFilRepository;
 	@Mock
 	private HentOndemandDokument hentOndemandDokument;
-	@Mock
-	private SkjermingService skjermingService;
 
 	@InjectMocks
 	private Tjoark051HentDokumentService service;
@@ -116,9 +116,9 @@ public class Tjoark051HentDokumentServiceTest {
 	@Test
 	public void shouldThrowExceptionWhenDokumentFilNotFound() throws Exception {
 		Journalpost journalpost = createJournalPost();
-
 		when(joarkRepositoryMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(journalpost));
 		when(dokumentFilRepository.findByFilUuid(FIL_UUID)).thenReturn(null);
+
 		try {
 			service.hentDokument(request);
 			fail("Expected exception");
@@ -127,21 +127,12 @@ public class Tjoark051HentDokumentServiceTest {
 		}
 	}
 
-	@Test(expected = HentDokumentSikkerhetsbegrensning.class)
-	public void shouldThrowExceptionWhenDokumentIsDeleted() throws Exception {
-		Journalpost journalpost = createJournalPost();
-		journalpost.getJournalpostDokumentInfoRelasjoner().iterator().next().getDokumentInfo().setSlettet(true);
-
-		when(joarkRepositoryMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(journalpost));
-
-		service.hentDokument(request);
-	}
-
 	@Test
 	public void shouldReturnDokument() throws Exception {
 		DokumentFil dokumentFil = getDokumentFilBuilder().fil(BYTES).build();
+		Journalpost journalpost = createJournalPost();
 
-		when(joarkRepositoryMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(createJournalPost()));
+		when(joarkRepositoryMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(journalpost));
 		when(dokumentFilRepository.findByFilUuid(FIL_UUID)).thenReturn(dokumentFil);
 
 		byte[] dokument = service.hentDokument(request);
@@ -152,9 +143,26 @@ public class Tjoark051HentDokumentServiceTest {
 	@Test
 	public void shouldReturnSladdetDokument() throws Exception {
 		DokumentFil dokumentFil = getDokumentFilBuilder().fil(BYTES).build();
+		Journalpost journalpost = createJournalPost();
+		journalpost.clearJournalpostDokumentInfoRelasjoner();
+		journalpost.addJournalpostDokumentInfoRelasjon(JournalpostDokumentInfoRelasjonBuilder
+				.getJournalpostDokumentInfoRelasjonBuilder()
+				.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.HOVEDDOKUMENT)
+				.dokumentInfo(
+						DokumentInfoBuilder
+								.getDokumentInfoBuilder()
+								.dokumentInfoId(DOKUMENT_INFO_ID)
+								.filDetaljerList(
+										FilDetaljer.builder().filUuid(FIL_UUID)
+												.skjermingType(POL)
+												.variantFormat(VARIANT_FORMAT).build(),
+										FilDetaljer.builder().filUuid(FIL_UUID_SLADDET)
+												.variantFormat(VARIANT_FORMAT_SLADDET).build()
+								).build()).build());
 
-		when(skjermingService.isVariantSkjermet(DOKUMENT_INFO_ID, VariantFormatCode.ARKIV)).thenReturn(true);
-		when(joarkRepositoryMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(createJournalPost()));
+
+
+		when(joarkRepositoryMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(journalpost));
 		when(dokumentFilRepository.findByFilUuid(FIL_UUID_SLADDET)).thenReturn(dokumentFil);
 
 		byte[] dokument = service.hentDokument(request);
@@ -202,7 +210,7 @@ public class Tjoark051HentDokumentServiceTest {
 																.variantFormat(VARIANT_FORMAT).build(),
 														FilDetaljerBuilder.getFilDetaljerBuilder().filUuid(FIL_UUID_SLADDET)
 																.variantFormat(VARIANT_FORMAT_SLADDET).build()
-														).build()).build())
+												).build()).build())
 				.build();
 	}
 }
