@@ -8,6 +8,7 @@ import no.nav.dokarkiv.behandlejournal.v2.BehandleJournalV2Config;
 import no.nav.dokarkiv.behandlejournal.v3.BehandleJournalV3Config;
 import no.nav.dokarkiv.core.CoreConfig;
 import no.nav.dokarkiv.dokumentproduksjoninfo.DokumentproduksjonInfoConfig;
+import no.nav.dokarkiv.ferdigstilljournalpost.v1.FerdigstillJournalpostConfig;
 import no.nav.dokarkiv.fysiskslettdokument.FysiskSlettDokumentConfig;
 import no.nav.dokarkiv.fysisktidligkassasjon.FysiskTidligKassasjonConfig;
 import no.nav.dokarkiv.hentdokument.HentDokumentConfig;
@@ -21,6 +22,7 @@ import no.nav.dokarkiv.logiskslettdokument.LogiskSlettDokumentConfig;
 import no.nav.dokarkiv.logisktidligkassasjon.LogiskTidligKassasjonConfig;
 import no.nav.dokarkiv.nais.NaisContract;
 import no.nav.dokarkiv.platform.TomcatConfig;
+import no.nav.dokarkiv.swagger.SwaggerConfig;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.annotation.Import;
 
@@ -47,6 +49,8 @@ import org.springframework.context.annotation.Import;
 		ArkiverKorrigertDokumentConfig.class,
 		LogiskTidligKassasjonConfig.class,
 		FysiskTidligKassasjonConfig.class,
+		FerdigstillJournalpostConfig.class,
+		SwaggerConfig.class,
 		NaisContract.class})
 public class Application {
 	public static void main(String[] args) {
