@@ -3,7 +3,6 @@ package no.nav.dokarkiv.hentjournalsakinfo.rjoark900;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import org.junit.Test;
@@ -51,7 +50,6 @@ public class FinnJournalpostSqlGeneratorTest {
 		finnJournalposterRequestTo.setFraDato("0000-01-01");
 		finnJournalposterRequestTo.setFoerste(1);
 		finnJournalposterRequestTo.setInkluderJournalStatus(Collections.singletonList(JournalStatusCode.J));
-		finnJournalposterRequestTo.setInkluderTema(Collections.singletonList(FagomradeCode.PEN));
 		finnJournalposterRequestTo.setInkluderJournalpostType(Collections.singletonList(JournalpostTypeCode.I));
 		finnJournalposterRequestTo.setPsakSakIds(Arrays.asList("P1", "P2"));
 		finnJournalposterRequestTo.setGsakSakIds(Collections.singletonList("G1"));
@@ -136,8 +134,7 @@ public class FinnJournalpostSqlGeneratorTest {
 						"                              JOIN t_journalpost j ON jps.journalpost_id = j.journalpost_id\n" +
 						"                              LEFT JOIN t_saksrelasjon ts ON j.journalpost_id = ts.journalpost_id\n" +
 						"\n" +
-						"                       WHERE j.k_fagomrade IN (:inkluderTema)\n" +
-						"                         AND j.k_journalpost_t IN (:inkluderJournalpostType)\n" +
+						"                       WHERE j.k_journalpost_t IN (:inkluderJournalpostType)\n" +
 						"                         AND j.dato_opprettet > :fraDato\n" +
 						"                         AND (\n" +
 						"                           (ts.feilregistrert = 1 AND\n" +
