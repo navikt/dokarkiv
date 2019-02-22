@@ -21,7 +21,7 @@ import javax.inject.Inject;
 import java.util.Set;
 
 @Component
-public class PutInngaaendeJournalpostMapper {
+public class PutJournalpostMapper {
 
 	@Inject
 	private BrukerRepository brukerRepository;

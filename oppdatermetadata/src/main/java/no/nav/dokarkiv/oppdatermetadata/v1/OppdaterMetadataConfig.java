@@ -8,5 +8,5 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @ComponentScan
-public class JournalfoerInngaaendeConfig {
+public class OppdaterMetadataConfig {
 }
