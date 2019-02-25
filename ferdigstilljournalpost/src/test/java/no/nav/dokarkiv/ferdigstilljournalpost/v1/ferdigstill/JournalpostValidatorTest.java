@@ -97,6 +97,111 @@ public class JournalpostValidatorTest {
 		validator.validateJournalpostStruktur(journalpost);
 	}
 
-	// TODO: tester på manglende påkrevde felter
+	@Test
+	public void shouldThrowExceptionIfJournalpostIsMissingInnhold() {
+		Journalpost journalpost = createJournalpost();
+		journalpost.setJournalstatus(JournalStatusCode.M);
+		journalpost.setInnhold(null);
 
+		expectedException.expect(KanIkkeFerdigstilleException.class);
+		expectedException.expectMessage("Journalpost.innhold");
+
+		validator.validatePaakrevdeFelter(journalpost);
+	}
+
+	@Test
+	public void shouldThrowExceptionIfJournalpostIsMissingFagomraade() {
+		Journalpost journalpost = createJournalpost();
+		journalpost.setJournalstatus(JournalStatusCode.M);
+		journalpost.setFagomrade(null);
+
+		expectedException.expect(KanIkkeFerdigstilleException.class);
+		expectedException.expectMessage("Journalpost.fagomrade");
+
+		validator.validatePaakrevdeFelter(journalpost);
+	}
+
+	@Test
+	public void shouldThrowExceptionIfJournalpostIsMissingAvsendMottaker() {
+		Journalpost journalpost = createJournalpost();
+		journalpost.setJournalstatus(JournalStatusCode.M);
+		journalpost.setAvsenderMottaker(null);
+
+		expectedException.expect(KanIkkeFerdigstilleException.class);
+		expectedException.expectMessage("Journalpost.avsendMottaker");
+
+		validator.validatePaakrevdeFelter(journalpost);
+	}
+
+	@Test
+	public void shouldThrowExceptionIfSaksrelasjonIsMissingSaksnummer() {
+		Journalpost journalpost = createJournalpost();
+		journalpost.setJournalstatus(JournalStatusCode.M);
+		journalpost.getSaksrelasjon().setSakId(null);
+
+		expectedException.expect(KanIkkeFerdigstilleException.class);
+		expectedException.expectMessage("Saksrelasjon.sakId");
+
+		validator.validatePaakrevdeFelter(journalpost);
+	}
+
+	@Test
+	public void shouldThrowExceptionIfSaksrelasjonIsMissingFagsystem() {
+		Journalpost journalpost = createJournalpost();
+		journalpost.setJournalstatus(JournalStatusCode.M);
+		journalpost.getSaksrelasjon().setFagsystem(null);
+
+		expectedException.expect(KanIkkeFerdigstilleException.class);
+		expectedException.expectMessage("Saksrelasjon.fagsystem");
+
+		validator.validatePaakrevdeFelter(journalpost);
+	}
+
+	@Test
+	public void shouldThrowExceptionIfBrukerIsMissingBrukerId() {
+		Journalpost journalpost = createJournalpost();
+		journalpost.setJournalstatus(JournalStatusCode.M);
+		journalpost.getBrukere().iterator().next().setBrukerId(null);
+
+		expectedException.expect(KanIkkeFerdigstilleException.class);
+		expectedException.expectMessage("Bruker.brukerId");
+
+		validator.validatePaakrevdeFelter(journalpost);
+	}
+
+	@Test
+	public void shouldThrowExceptionIfBrukerIsMissingBrukerType() {
+		Journalpost journalpost = createJournalpost();
+		journalpost.setJournalstatus(JournalStatusCode.M);
+		journalpost.getBrukere().iterator().next().setBrukerType(null);
+
+		expectedException.expect(KanIkkeFerdigstilleException.class);
+		expectedException.expectMessage("Bruker.brukerType");
+
+		validator.validatePaakrevdeFelter(journalpost);
+	}
+
+	@Test
+	public void shouldThrowExceptionIfDokumentInfoIsMissingKategori() {
+		Journalpost journalpost = createJournalpost();
+		journalpost.setJournalstatus(JournalStatusCode.M);
+		journalpost.getJournalpostDokumentInfoRelasjoner().iterator().next().getDokumentInfo().setKategori(null);
+
+		expectedException.expect(KanIkkeFerdigstilleException.class);
+		expectedException.expectMessage("DokumentInfo.kategori");
+
+		validator.validatePaakrevdeFelter(journalpost);
+	}
+
+	@Test
+	public void shouldThrowExceptionIfDokumentInfoIsMissingTittel() {
+		Journalpost journalpost = createJournalpost();
+		journalpost.setJournalstatus(JournalStatusCode.M);
+		journalpost.getJournalpostDokumentInfoRelasjoner().iterator().next().getDokumentInfo().setTittel(null);
+
+		expectedException.expect(KanIkkeFerdigstilleException.class);
+		expectedException.expectMessage("DokumentInfo.tittel");
+
+		validator.validatePaakrevdeFelter(journalpost);
+	}
 }
