@@ -54,6 +54,7 @@ public class FerdigstillJournalpostService {
 		journalpost.setJournalDato(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()));
 		journalpost.setJournalForendeEnhetId(journalfEnhet);
 		journalpost.setEndretAvNavn(MDC.get(MDC_USER_ID));
+		journalpost.setJournalfortAvNavn(MDC.get(MDC_USER_ID));
 		journalpost.setEndretKildeNavn(MDC.get(MDC_CONSUMER_ID));
 	}
 

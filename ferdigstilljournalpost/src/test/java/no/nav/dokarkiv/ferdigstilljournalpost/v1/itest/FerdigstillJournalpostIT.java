@@ -14,7 +14,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.transaction.TestTransaction;
-import org.springframework.util.MultiValueMap;
 
 import java.io.IOException;
 
@@ -45,6 +44,7 @@ public class FerdigstillJournalpostIT extends AbstractFerdigstillJournalpostIT {
 
 		assertEquals(SERVICE_USER_ID, ferdigstiltJournalpost.getEndretAvNavn());
 		assertEquals(SERVICE_USER_ID, ferdigstiltJournalpost.getEndretKildeNavn());
+		assertEquals(SERVICE_USER_ID, ferdigstiltJournalpost.getJournalfortAvNavn());
 		assertEquals(SERVICE_USER_ID, ferdigstiltJournalpost.getChangeStamp().getUpdatedBy());
 		assertEquals(request.getJournalfEnhet(), ferdigstiltJournalpost.getJournalForendeEnhetId());
 		assertEquals(JournalStatusCode.J, ferdigstiltJournalpost.getJournalstatus());
@@ -78,6 +78,7 @@ public class FerdigstillJournalpostIT extends AbstractFerdigstillJournalpostIT {
 
 		assertEquals(SERVICE_USER_ID, ferdigstiltJournalpost.getEndretAvNavn());
 		assertEquals(SERVICE_USER_ID, ferdigstiltJournalpost.getEndretKildeNavn());
+		assertEquals(SERVICE_USER_ID, ferdigstiltJournalpost.getJournalfortAvNavn());
 		assertEquals(SERVICE_USER_ID, ferdigstiltJournalpost.getChangeStamp().getUpdatedBy());
 		assertEquals(request.getJournalfEnhet(), ferdigstiltJournalpost.getJournalForendeEnhetId());
 		assertEquals(JournalStatusCode.FS, ferdigstiltJournalpost.getJournalstatus());
@@ -110,6 +111,7 @@ public class FerdigstillJournalpostIT extends AbstractFerdigstillJournalpostIT {
 
 		assertEquals(SERVICE_USER_ID, ferdigstiltJournalpost.getEndretAvNavn());
 		assertEquals(SERVICE_USER_ID, ferdigstiltJournalpost.getEndretKildeNavn());
+		assertEquals(SERVICE_USER_ID, ferdigstiltJournalpost.getJournalfortAvNavn());
 		assertEquals(SERVICE_USER_ID, ferdigstiltJournalpost.getChangeStamp().getUpdatedBy());
 		assertEquals(request.getJournalfEnhet(), ferdigstiltJournalpost.getJournalForendeEnhetId());
 		assertEquals(JournalStatusCode.FS, ferdigstiltJournalpost.getJournalstatus());
