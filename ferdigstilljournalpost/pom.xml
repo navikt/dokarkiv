@@ -55,6 +55,16 @@
 			<artifactId>h2</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>com.unboundid</groupId>
+			<artifactId>unboundid-ldapsdk</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>no.nav.freg</groupId>
+			<artifactId>freg-security-test-oidc-tools</artifactId>
+			<scope>test</scope>
+		</dependency>
 
 	</dependencies>
 
