@@ -158,3 +158,7 @@ fasitResources:
     path: /rest/journalfoerinngaaende/v1
     securityToken: OIDC_TOKEN
     description: Rest-tjenester til bruk ifm. manuell journalføring.
+  - alias: FerdigstillJournalpost
+    resourceType: restservice
+    path: /rest/ferdigstilljournalpost
+    description: Rest-tjeneste til bruk ifm. ferdigstilling av journalposter.
