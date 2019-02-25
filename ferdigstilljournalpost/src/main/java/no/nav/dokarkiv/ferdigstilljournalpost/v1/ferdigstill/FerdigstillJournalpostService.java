@@ -1,12 +1,15 @@
 package no.nav.dokarkiv.ferdigstilljournalpost.v1.ferdigstill;
 
 import static java.lang.Long.parseLong;
+import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
+import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
 
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
-import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
+import no.nav.dokarkiv.core.repository.JoarkRepository;
+import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
@@ -17,11 +20,11 @@ import java.util.Date;
 @Component
 public class FerdigstillJournalpostService {
 
-	private JoarkRepositorySkjermet joarkRepository;
+	private JoarkRepository joarkRepository;
 	private JournalpostValidator journalpostValidator;
 
 	@Inject
-	public FerdigstillJournalpostService(final JoarkRepositorySkjermet joarkRepository,
+	public FerdigstillJournalpostService(final JoarkRepository joarkRepository,
 										 final JournalpostValidator journalpostValidator) {
 		this.joarkRepository = joarkRepository;
 		this.journalpostValidator = journalpostValidator;
@@ -36,6 +39,8 @@ public class FerdigstillJournalpostService {
 		validerJournalpost(journalpost);
 
 		ferdigstillJournalpost(journalpost, journalfEnhet);
+
+		joarkRepository.save(journalpost);
 	}
 
 	private void validerJournalpost(Journalpost journalpost) {
@@ -48,6 +53,8 @@ public class FerdigstillJournalpostService {
 		setJournalpostStatus(journalpost);
 		journalpost.setJournalDato(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()));
 		journalpost.setJournalForendeEnhetId(journalfEnhet);
+		journalpost.setEndretAvNavn(MDC.get(MDC_USER_ID));
+		journalpost.setEndretKildeNavn(MDC.get(MDC_CONSUMER_ID));
 	}
 
 	// TODO: journalpoststatus FS eller FL ?
