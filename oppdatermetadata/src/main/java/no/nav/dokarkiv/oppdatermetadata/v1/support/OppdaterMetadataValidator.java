@@ -24,9 +24,9 @@ public class OppdaterMetadataValidator {
         }
 	}
 
-	private static void checkIfIllegalFieldIsSet(Object field, String fieldname, JournalStatusCode journalpoststatus) throws InputValideringFeiletException {
+	private static void checkIfIllegalFieldIsSet(Object field, String fieldName, JournalStatusCode journalpoststatus) throws InputValideringFeiletException {
 	    if (field != null) {
-	        throw new InputValideringFeiletException(fieldname + " kan ikke oppdateres for journalpost med journalpoststatus " + journalpoststatus.name());
+	        throw new InputValideringFeiletException(String.format("%s kan ikke oppdateres for journalpost med journalpoststatus %s.", fieldName, journalpoststatus.name()));
         }
     }
 }

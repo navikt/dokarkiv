@@ -6,7 +6,10 @@ import static no.nav.dokarkiv.oppdatermetadata.v1.util.Utils.assertNotNull;
 import static org.apache.logging.log4j.util.Strings.isNotBlank;
 
 import no.nav.dok.oppdatermetadata.api.v1.Arkivsaksystem;
+import no.nav.dok.oppdatermetadata.api.v1.BrukerIdType;
 import no.nav.dok.oppdatermetadata.api.v1.PutOppdatermetadataRequest;
+import no.nav.dok.oppdatermetadata.api.v1.Tilleggsopplysning;
+import no.nav.dokarkiv.core.domain.codes.Behandlingstema;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
@@ -18,7 +21,10 @@ import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Component
 public class PutJournalpostMapper {
@@ -48,6 +54,18 @@ public class PutJournalpostMapper {
 				endret = true;
 			}
 		}
+        if (isNotBlank(putOppdatermetadataRequest.getBehandlingstema())) {
+            journalpost.setBehandlingstema(Behandlingstema.valueOf(putOppdatermetadataRequest.getBehandlingstema()));
+            endret = true;
+        }
+        if (isNotBlank(putOppdatermetadataRequest.getAvsenderMottakerLand())) {
+            journalpost.setLand(putOppdatermetadataRequest.getAvsenderMottakerLand());
+            endret = true;
+        }
+
+        if (!putOppdatermetadataRequest.getTilleggsopplysninger().isEmpty()) {
+            journalpost.setTilleggsopplysninger(MapTilleggsopplysninger(putOppdatermetadataRequest.getTilleggsopplysninger()));
+        }
 
 		updateSaksrelasjonFields(journalpost, putOppdatermetadataRequest);
 
@@ -62,7 +80,11 @@ public class PutJournalpostMapper {
 		}
 	}
 
-	private boolean updateBrukerFraRequest(Journalpost journalpost, PutOppdatermetadataRequest putOppdatermetadataRequest) {
+    private Map<String, String> MapTilleggsopplysninger(List<Tilleggsopplysning> tilleggsopplysninger) {
+	    return tilleggsopplysninger.stream().collect(Collectors.toMap(Tilleggsopplysning::getNokkel, Tilleggsopplysning::getVerdi));
+    }
+
+    private boolean updateBrukerFraRequest(Journalpost journalpost, PutOppdatermetadataRequest putOppdatermetadataRequest) {
 		boolean endret = false;
 		Set<Bruker> brukere = journalpost.getBrukere();
 		if (brukere.isEmpty() || brukere.size() > 1) {
@@ -73,7 +95,8 @@ public class PutJournalpostMapper {
 				Bruker bruker = new Bruker();
 				bruker.setBrukerId(putOppdatermetadataRequest.getBruker().getIdentifikator());
 				assertNotNull(putOppdatermetadataRequest.getBruker().getBrukerIdType(), "bruker.brukerIdType");
-				bruker.setBrukerType(BrukerTypeCode.valueOf(putOppdatermetadataRequest.getBruker().getBrukerIdType().name()));
+				bruker.setBrukerType(BrukerIdType.ORGNR.equals(putOppdatermetadataRequest.getBruker().getBrukerIdType()) ?
+						BrukerTypeCode.ORGANISASJON : BrukerTypeCode.PERSON);
 				bruker.setOpprettetKildeNavn(MDC.get(MDC_CONSUMER_ID));
 				journalpost.addBruker(bruker);
 
@@ -84,7 +107,8 @@ public class PutJournalpostMapper {
 				brukere.iterator().forEachRemaining(bruker -> {
 					bruker.setBrukerId(putOppdatermetadataRequest.getBruker().getIdentifikator());
 					assertNotNull(putOppdatermetadataRequest.getBruker().getBrukerIdType(), "bruker.brukerIdType");
-					bruker.setBrukerType(BrukerTypeCode.valueOf(putOppdatermetadataRequest.getBruker().getBrukerIdType().name()));
+					bruker.setBrukerType(BrukerIdType.ORGNR.equals(putOppdatermetadataRequest.getBruker().getBrukerIdType()) ?
+							BrukerTypeCode.ORGANISASJON : BrukerTypeCode.PERSON);
 				});
 				endret = true;
 			}
