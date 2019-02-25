@@ -27,7 +27,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Component
-public class PutJournalpostMapper {
+public class JournalpostMapper {
 
 	@Inject
 	private BrukerRepository brukerRepository;

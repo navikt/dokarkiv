@@ -5,10 +5,13 @@ import static no.nav.dokarkiv.oppdatermetadata.v1.util.Utils.convertStringToLong
 
 import no.nav.dok.oppdatermetadata.api.v1.PutOppdatermetadataRequest;
 import no.nav.dok.oppdatermetadata.api.v1.PutOppdatermetadataResponse;
+import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
+import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
+import no.nav.dokarkiv.oppdatermetadata.v1.util.Utils;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -20,13 +23,19 @@ import javax.inject.Inject;
 public class OppdaterMetadataService {
 
     private final JoarkRepositorySkjermet joarkRepository;
-	private final PutJournalpostMapper putJournalpostMapper;
+    private final DokumentinfoRepository dokumentinfoRepository;
+	private final JournalpostMapper journalpostMapper;
+	private final DokumentInfoMapper dokumentInfoMapper;
 
 	@Inject
     public OppdaterMetadataService(JoarkRepositorySkjermet joarkRepository,
-								   PutJournalpostMapper putJournalpostMapper) {
+                                   JournalpostMapper journalpostMapper,
+                                   DokumentinfoRepository dokumentinfoRepository,
+                                   DokumentInfoMapper dokumentInfoMapper) {
 		this.joarkRepository = joarkRepository;
-		this.putJournalpostMapper = putJournalpostMapper;
+		this.dokumentinfoRepository = dokumentinfoRepository;
+		this.journalpostMapper = journalpostMapper;
+		this.dokumentInfoMapper = dokumentInfoMapper;
 	}
 
 	public PutOppdatermetadataResponse updateInngaaendeJournalpost(String journalpostId, PutOppdatermetadataRequest putOppdatermetadataRequest) throws InputValideringFeiletException {
@@ -34,9 +43,18 @@ public class OppdaterMetadataService {
 				.orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostId)));
 
 		validateOppdaterteFelt(putOppdatermetadataRequest, journalpost.getJournalstatus());
-		putJournalpostMapper.oppdaterJournalpost(journalpost, putOppdatermetadataRequest);
+		journalpostMapper.oppdaterJournalpost(journalpost, putOppdatermetadataRequest);
 		joarkRepository.save(journalpost);
-		return PutOppdatermetadataResponse.builder()
+
+        for (no.nav.dok.oppdatermetadata.api.v1.DokumentInfo dokument : putOppdatermetadataRequest.getDokumentInfoList()) {
+            DokumentInfo dokumentInfo = journalpost.getDokumentInfoFromJpDokInfoRelasjonerByDokumentInfoId(Long.parseLong(dokument.getDokumentInfoId()));
+
+            Utils.assertDokumentInfoNotNull(dokumentInfo, String.valueOf(journalpost.getJournalpostId()), dokument.getDokumentInfoId());
+            dokumentInfoMapper.oppdaterDokumentInfo(dokument, dokumentInfo);
+            dokumentinfoRepository.save(dokumentInfo);
+        }
+
+        return PutOppdatermetadataResponse.builder()
 				.journalpostId(journalpostId)
 				.build();
 	}
