@@ -12,6 +12,6 @@ public class SafHentJournalpostService {
 	}
 
 	public SafHentJournalpostResponse hentJournalpostByJournalpostId(Long journalpostId) {
-		return new SafHentJournalpostResponse(hentJournalpostSpringJdbcRepository.finnJournalposter(journalpostId.toString()));
+		return new SafHentJournalpostResponse(hentJournalpostSpringJdbcRepository.hentJournalpost(journalpostId.toString()));
 	}
 }

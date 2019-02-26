@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.hentjournalsakinfo.rjoark900;
+package no.nav.dokarkiv.hentjournalsakinfo.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Value;
