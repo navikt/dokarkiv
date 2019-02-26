@@ -12,10 +12,7 @@ import static no.nav.dokarkiv.ferdigstilljournalpost.v1.util.Utils.validateJourn
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService;
@@ -27,6 +24,7 @@ import no.nav.dokarkiv.core.metrics.RestMetrics;
 import no.nav.dokarkiv.core.security.abac.AbacSecurityService;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import no.nav.dokarkiv.ferdigstilljournalpost.v1.api.FerdigstillJournalpostRequest;
+import no.nav.dokarkiv.ferdigstilljournalpost.v1.config.SwaggerFerdigstillJournalpost;
 import no.nav.dokarkiv.ferdigstilljournalpost.v1.ferdigstill.FerdigstillJournalpostService;
 import no.nav.freg.abac.core.annotation.Abac;
 import org.slf4j.MDC;
@@ -37,7 +35,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.inject.Inject;
@@ -46,7 +43,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/rest/v1/journalpost")
-@Api(value = "FerdigstillJournalpost RestController")
+@Api(tags = "ferdigstilljournalpost API", value = "FerdigstillJournalpost RestController")
 public class FerdigstillJournalpostRestController {
 
 	private final FerdigstillJournalpostService ferdigstillJournalpostService;
@@ -65,16 +62,11 @@ public class FerdigstillJournalpostRestController {
 	}
 
 	@Transactional
+	@SwaggerFerdigstillJournalpost
 	@PatchMapping("/{journalpostId}/ferdigstill")
 	@Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_DOKUMENT)},
 			actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION))
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "ferdigstill"}, percentiles = {0.5, 0.95})
-	@ResponseBody
-	@ApiOperation("Ferdigstill journalpost")
-	@ApiResponses(value = {
-			@ApiResponse(code = 200, message = "Ok"),
-			@ApiResponse(code = 400, message = "Kan ikke ferdigstille"),
-			@ApiResponse(code = 500, message = "Internal server error")})
 	public ResponseEntity<String> ferdigstillJournalpost(
 			@RequestHeader(value = AKSJONS_LOGG_HEADER, required = false) String aksjonsLoggHeaderString,
 			@PathVariable @ApiParam(value = "IDen til journalposten som skal ferdigstilles", required = true, example = "77778888") String journalpostId,
