@@ -35,6 +35,7 @@
 		<module>fysisktidligkassasjon</module>
 		<module>logisktidligkassasjon</module>
 		<module>hentjournalsakinfo</module>
+		<module>oppdatermetadata</module>
 	</modules>
 
 	<distributionManagement>

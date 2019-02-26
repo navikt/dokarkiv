@@ -46,13 +46,15 @@ public class OppdaterMetadataService {
 		journalpostMapper.oppdaterJournalpost(journalpost, putOppdatermetadataRequest);
 		joarkRepository.save(journalpost);
 
-        for (no.nav.dok.oppdatermetadata.api.v1.DokumentInfo dokument : putOppdatermetadataRequest.getDokumentInfoList()) {
-            DokumentInfo dokumentInfo = journalpost.getDokumentInfoFromJpDokInfoRelasjonerByDokumentInfoId(Long.parseLong(dokument.getDokumentInfoId()));
+		if (putOppdatermetadataRequest.getDokumentInfoList() != null) {
+			for (no.nav.dok.oppdatermetadata.api.v1.DokumentInfo dokument : putOppdatermetadataRequest.getDokumentInfoList()) {
+				DokumentInfo dokumentInfo = journalpost.getDokumentInfoFromJpDokInfoRelasjonerByDokumentInfoId(Long.parseLong(dokument.getDokumentInfoId()));
 
-            Utils.assertDokumentInfoNotNull(dokumentInfo, String.valueOf(journalpost.getJournalpostId()), dokument.getDokumentInfoId());
-            dokumentInfoMapper.oppdaterDokumentInfo(dokument, dokumentInfo);
-            dokumentinfoRepository.save(dokumentInfo);
-        }
+				Utils.assertDokumentInfoNotNull(dokumentInfo, String.valueOf(journalpost.getJournalpostId()), dokument.getDokumentInfoId());
+				dokumentInfoMapper.oppdaterDokumentInfo(dokument, dokumentInfo);
+				dokumentinfoRepository.save(dokumentInfo);
+			}
+		}
 
         return PutOppdatermetadataResponse.builder()
 				.journalpostId(journalpostId)

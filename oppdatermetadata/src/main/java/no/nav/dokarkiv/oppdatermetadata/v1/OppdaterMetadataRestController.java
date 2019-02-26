@@ -33,7 +33,7 @@ import javax.inject.Inject;
  */
 @Slf4j
 @RestController
-@RequestMapping("/rest/journalfoerinngaaende/v1/journalposter")
+@RequestMapping("/rest/oppdatermetadata/v1/journalposter")
 public class OppdaterMetadataRestController {
 
 	private final OppdaterMetadataService oppdaterMetadataService;

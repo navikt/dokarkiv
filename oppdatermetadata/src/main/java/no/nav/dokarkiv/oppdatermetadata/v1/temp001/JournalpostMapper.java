@@ -63,7 +63,7 @@ public class JournalpostMapper {
             endret = true;
         }
 
-        if (!putOppdatermetadataRequest.getTilleggsopplysninger().isEmpty()) {
+        if (putOppdatermetadataRequest.getTilleggsopplysninger() != null && !putOppdatermetadataRequest.getTilleggsopplysninger().isEmpty()) {
             journalpost.setTilleggsopplysninger(MapTilleggsopplysninger(putOppdatermetadataRequest.getTilleggsopplysninger()));
         }
 
@@ -148,7 +148,7 @@ public class JournalpostMapper {
 
 	protected FagsystemCode mapArkivSakSystemToFagsystemCode(Arkivsaksystem arkivsaksystem) {
 		assertNotNull(arkivsaksystem, "arkivsaksystem");
-		if (Arkivsaksystem.GSAK.equals(arkivsaksystem.name())) {
+		if (Arkivsaksystem.GSAK.equals(arkivsaksystem)) {
 			return FagsystemCode.FS22;
 		} else {
 			return FagsystemCode.PEN;
