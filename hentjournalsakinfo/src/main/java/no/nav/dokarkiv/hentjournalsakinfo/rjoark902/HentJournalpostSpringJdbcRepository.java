@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.inject.Inject;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Repository
@@ -27,23 +28,19 @@ class HentJournalpostSpringJdbcRepository {
 		this.jdbcTemplate = jdbcTemplate;
 	}
 
+	HentJournalpostDto hentJournalpost(final String journalpostId) {
+		return journalpostFromJoark(journalpostId)
+				.orElseThrow(() -> new JournalpostIkkeFunnetException("Journalpost med journalpostId=" + journalpostId + " ikke funnet."));
+	}
 
-	HentJournalpostDto finnJournalposter(String journalpostId) {
+	private Optional<HentJournalpostDto> journalpostFromJoark(final String journalpostId) {
 		MapSqlParameterSource namedParams = buildNamedParams(journalpostId);
 		String hentJournalpostSql = hentJournalpostSql();
-
-		try {
-			List<HentJournalpostDto> journalpostDtoList = jdbcTemplate.query(hentJournalpostSql, namedParams, JOURNALPOST_DTO_RESULT_SET_EXTRACTOR);
-
-			if (journalpostDtoList == null || journalpostDtoList.isEmpty()) {
-				throw new JournalpostIkkeFunnetException("JournalpostDtoList er tom eller null");
-			} else {
-				return journalpostDtoList.get(0);
-			}
-
-		} catch (Exception e) {
-			log.warn("Journalpost med journalpostId={} ikke funnet.", journalpostId);
-			throw new JournalpostIkkeFunnetException("Journalpost med journalpostId=" + journalpostId + " ikke funnet.", e);
+		List<HentJournalpostDto> journalpostDtoList = jdbcTemplate.query(hentJournalpostSql, namedParams, JOURNALPOST_DTO_RESULT_SET_EXTRACTOR);
+		if (journalpostDtoList == null || journalpostDtoList.isEmpty()) {
+			return Optional.empty();
+		} else {
+			return Optional.of(journalpostDtoList.get(0));
 		}
 	}
 
