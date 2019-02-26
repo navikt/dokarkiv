@@ -4,6 +4,7 @@ import static java.lang.Long.parseLong;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
 
+import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
@@ -15,13 +16,15 @@ import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 @Component
 public class FerdigstillJournalpostService {
 
-	private JoarkRepository joarkRepository;
-	private JournalpostValidator journalpostValidator;
+	private final JoarkRepository joarkRepository;
+	private final JournalpostValidator journalpostValidator;
 
 	@Inject
 	public FerdigstillJournalpostService(final JoarkRepository joarkRepository,
@@ -30,17 +33,38 @@ public class FerdigstillJournalpostService {
 		this.journalpostValidator = journalpostValidator;
 	}
 
-	public void ferdigstill(String journalpostId, String journalfEnhet) {
-		// hent brukernavn fra ldap
-
+	public List<ArkivElementEndringTO> ferdigstill(String journalpostId, String journalfEnhet) {
 		Journalpost journalpost = joarkRepository.findById(parseLong(journalpostId))
 				.orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostId)));
+		JournalStatusCode prevStatus = journalpost.getJournalstatus();
 
 		validerJournalpost(journalpost);
 
 		ferdigstillJournalpost(journalpost, journalfEnhet);
 
 		joarkRepository.save(journalpost);
+
+		return Arrays.asList(
+				ArkivElementEndringTO.builder()
+						.arkivElement("Journalpost.journalpostStatus")
+						.fraVerdi(prevStatus.name())
+						.tilVerdi(journalpost.getJournalstatus().name())
+						.build(),
+				ArkivElementEndringTO.builder()
+						.arkivElement("Journalpost.journalDato")
+						.fraVerdi(null)
+						.tilVerdi(journalpost.getJournalDato().toString())
+						.build(),
+				ArkivElementEndringTO.builder()
+						.arkivElement("Journalpost.journalfEnhet")
+						.fraVerdi(null)
+						.tilVerdi(journalfEnhet)
+						.build(),
+				ArkivElementEndringTO.builder()
+						.arkivElement("Journalpost.journalfoertAvNavn")
+						.fraVerdi(null)
+						.tilVerdi(journalpost.getJournalfortAvNavn())
+						.build());
 	}
 
 	private void validerJournalpost(Journalpost journalpost) {

@@ -46,8 +46,6 @@ class JournalpostValidator {
 		}
 	}
 
-
-
 	private void verifyMidlertidigJournalfoert(Journalpost jp) {
 		if (!jp.hasMidlertidigInngaaendeJournalforingStatus() || Boolean.TRUE.equals(jp.getSaksrelasjon() == null ? Boolean.FALSE : jp.getSaksrelasjon()
 				.getFeilregistrert())) {
@@ -113,7 +111,7 @@ class JournalpostValidator {
 		}
 	}
 
-	private void verifyMandatoryFelterBruker(Bruker bruker){
+	private void verifyMandatoryFelterBruker(Bruker bruker) {
 		verifyStringNotBlank(bruker, bruker.getBrukerId(), "brukerId");
 		verifyFieldNotNull(bruker, bruker.getBrukerType(), "brukerType");
 	}
@@ -127,7 +125,7 @@ class JournalpostValidator {
 	 * Checks that a field is not null.
 	 *
 	 * @param fieldValue The value to check.
-	 * @param fieldName THe fieldName.
+	 * @param fieldName  THe fieldName.
 	 */
 	private void verifyFieldNotNull(Object parent, Object fieldValue, String fieldName) {
 		if (fieldValue == null) {
@@ -139,7 +137,7 @@ class JournalpostValidator {
 	 * Checks that a String is not null or empty.
 	 *
 	 * @param fieldValue The String to check.
-	 * @param fieldName The fieldName.
+	 * @param fieldName  The fieldName.
 	 */
 	private void verifyStringNotBlank(Object parent, String fieldValue, String fieldName) {
 		if (isBlank(fieldValue)) {
