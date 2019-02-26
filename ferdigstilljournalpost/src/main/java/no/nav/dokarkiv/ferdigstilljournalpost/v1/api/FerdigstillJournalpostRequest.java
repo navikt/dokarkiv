@@ -13,12 +13,6 @@ import lombok.NoArgsConstructor;
 public class FerdigstillJournalpostRequest {
 
 	@ApiModelProperty(
-			value = "IDen til journalposten som skal ferdigstiles",
-			required = true,
-			example = "77778888")
-	private String journalpostId;
-
-	@ApiModelProperty(
 			value = "NAV-enheten som personen som utfører journalføring jobber for. Ved automatisk journalføring uten mennesker involvert, skal enhet settes til \"9999\".",
 			required = true,
 			example = "9999")

@@ -160,5 +160,5 @@ fasitResources:
     description: Rest-tjenester til bruk ifm. manuell journalføring.
   - alias: FerdigstillJournalpost
     resourceType: restservice
-    path: /rest/ferdigstilljournalpost
+    path: /rest/v1/journalpost/{journalpostId}/ferdigstill
     description: Rest-tjeneste til bruk ifm. ferdigstilling av journalposter.

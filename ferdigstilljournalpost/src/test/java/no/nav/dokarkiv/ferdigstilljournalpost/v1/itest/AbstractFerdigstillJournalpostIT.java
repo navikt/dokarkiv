@@ -22,7 +22,8 @@ import org.springframework.test.context.ActiveProfiles;
 @AutoConfigureWireMock(port = 0)
 public abstract class AbstractFerdigstillJournalpostIT extends AbstractRestIT {
 
-	static final String URL_FERDIGSTILLJOURNALPOST = "/rest/ferdigstilljournalpost";
+	static final String URL_FERDIGSTILLJOURNALPOST = "/rest/v1/journalpost/";
+	static final String FERDIGSTILL = "/ferdigstill";
 
 	void abacPermit() {
 		stubFor(post(urlEqualTo("/abac"))
