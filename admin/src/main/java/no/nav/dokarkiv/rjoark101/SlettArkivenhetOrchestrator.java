@@ -85,7 +85,7 @@ public class SlettArkivenhetOrchestrator {
 				.orElseThrow(() -> new DokumentInfoIkkeFunnetException(String.format("Fant ikke dokument med dokumentInfoId=%s i Joark databasen", dokumentInfoId)));
 
 		//Sjekk om fildetaljer eksisterer
-		FilDetaljer filDetaljerSomSkalSlettes = dokumentInfo.findFilDetaljerByVariantFormat(variant);
+		FilDetaljer filDetaljerSomSkalSlettes = dokumentInfo.findFilDetaljerByVariantFormatAdmin(variant);
 		if (Objects.isNull(filDetaljerSomSkalSlettes)) {
 			throw new ArkivVariantkkeFunnetException(String.format("Dokument med dokumentInfoId=%s har ingen fildetaljer med variantFormat=%s", dokumentInfoId, variant));
 		}

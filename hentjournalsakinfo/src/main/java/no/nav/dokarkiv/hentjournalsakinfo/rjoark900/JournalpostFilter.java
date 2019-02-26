@@ -19,7 +19,6 @@ class JournalpostFilter {
 	public static final long JOURNALPOST_ID_MIN = 0L;
 	private final LocalDate fraDato;
 	private final List<String> alleIdenter;
-	private final List<String> inkluderTema;
 	private final List<String> inkluderJournalStatus;
 	private final List<String> inkluderJournalpostType;
 	private final boolean visFeilregistrerte;
@@ -35,7 +34,6 @@ class JournalpostFilter {
 	JournalpostFilter(FinnJournalposterRequestTo finnJournalposterRequestTo) {
 		this.fraDato = LocalDate.parse(finnJournalposterRequestTo.getFraDato());
 		this.alleIdenter = finnJournalposterRequestTo.getAlleIdenter();
-		this.inkluderTema = finnJournalposterRequestTo.getInkluderTema().stream().map(Enum::name).collect(Collectors.toList());
 		this.inkluderJournalStatus = finnJournalposterRequestTo.getInkluderJournalStatus().stream().map(Enum::name).collect(Collectors.toList());
 		this.inkluderJournalpostType = finnJournalposterRequestTo.getInkluderJournalpostType().stream().map(Enum::name).collect(Collectors.toList());
 		this.visFeilregistrerte = finnJournalposterRequestTo.isVisFeilregistrerte();
