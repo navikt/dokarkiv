@@ -55,12 +55,11 @@ public class FerdigstillJournalpostRestController {
 	@Inject
 	public FerdigstillJournalpostRestController(final FerdigstillJournalpostService ferdigstillJournalpostService,
 												final AbacSecurityService abacSecurityService,
-												final AksjonsLoggService aksjonsLoggService,
-												final AksjonsLoggTOMapper aksjonsLoggTOMapper) {
+												final AksjonsLoggService aksjonsLoggService) {
 		this.ferdigstillJournalpostService = ferdigstillJournalpostService;
 		this.abacSecurityService = abacSecurityService;
 		this.aksjonsLoggService = aksjonsLoggService;
-		this.aksjonsLoggTOMapper = aksjonsLoggTOMapper;
+		this.aksjonsLoggTOMapper = new AksjonsLoggTOMapper();
 	}
 
 	@Transactional
