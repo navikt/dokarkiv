@@ -386,26 +386,28 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	 * @return A list of Fildetaljer with the given VariantFormatCode.
 	 */
 	public FilDetaljer findFilDetaljerByVariantFormat(final VariantFormatCode variantFormat) {
-		if (ARKIV.equals(variantFormat) && isArkivVariantSkjermet()) {
-			FilDetaljer sladdetFildetaljer = fildetaljerListe.stream()
-					.filter(filDetaljer -> SLADDET.equals(filDetaljer.getVariantFormat()))
-					.filter(filDetaljer -> Objects.isNull(filDetaljer.getSkjermingType()))
+		FilDetaljer filDetaljer = fildetaljerListe.stream()
+				.filter(fd -> variantFormat.equals(fd.getVariantFormat()))
+				.filter(fd -> Objects.isNull(fd.getSkjermingType()))
+				.findAny()
+				.orElse(null);
+
+		if (ARKIV.equals(variantFormat) && Objects.isNull(filDetaljer)) {
+			filDetaljer = fildetaljerListe.stream()
+					.filter(fd -> SLADDET.equals(fd.getVariantFormat()))
+					.filter(fd -> Objects.isNull(fd.getSkjermingType()))
 					.findAny()
 					.orElse(null);
 
-			if (Objects.isNull(sladdetFildetaljer)) {
-				return fildetaljerListe.stream()
-						.filter(filDetaljer -> ARKIV.equals(filDetaljer.getVariantFormat()))
+			if (Objects.isNull(filDetaljer)) {
+				filDetaljer = fildetaljerListe.stream()
+						.filter(fd -> ARKIV.equals(fd.getVariantFormat()))
 						.findAny()
 						.orElse(null);
 			}
 		}
 
-		return fildetaljerListe.stream()
-				.filter(filDetaljer -> Objects.isNull(filDetaljer.getSkjermingType()))
-				.filter(filDetaljer -> variantFormat.equals(filDetaljer.getVariantFormat()))
-				.findAny()
-				.orElse(null);
+		return filDetaljer;
 	}
 
 	/**
