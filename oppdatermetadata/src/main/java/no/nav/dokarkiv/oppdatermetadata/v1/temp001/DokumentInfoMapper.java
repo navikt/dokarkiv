@@ -2,7 +2,6 @@ package no.nav.dokarkiv.oppdatermetadata.v1.temp001;
 
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import org.slf4j.MDC;

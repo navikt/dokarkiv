@@ -1,11 +1,9 @@
 package no.nav.dokarkiv.oppdatermetadata.v1.support;
 
-import static no.nav.dokarkiv.oppdatermetadata.v1.util.TestUtils.createJournalpostForOppdatering;
 import static no.nav.dokarkiv.oppdatermetadata.v1.util.TestUtils.createPutOppdaterMetadataRequest;
 
 import no.nav.dok.oppdatermetadata.api.v1.PutOppdatermetadataRequest;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
-import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
 import org.junit.Before;
 import org.junit.Rule;
