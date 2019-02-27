@@ -1,6 +1,8 @@
 package no.nav.dokarkiv.rjoark102;
 
 
+import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.ARKIV;
+import static no.nav.dokarkiv.core.repository.DefaultDokumentFilRepository.FIL_UUID_DUMMY_DOKUMENT;
 import static no.nav.dokarkiv.util.TestUtil.KASSERT_AV_NAVN;
 import static no.nav.dokarkiv.util.TestUtil.createKasserDokumentRequest;
 import static no.nav.dokarkiv.util.TestUtil.knyttDokumentInfoSomVedleggTilJournalpostForIT;
@@ -97,7 +99,10 @@ public class Rjoark102IT extends AbstractAdminIT {
 		assertTrue(dokumentInfoAfter.isPresent());
 		assertThat(dokumentInfoAfter.get().getKassertAvNavn(), is(KASSERT_AV_NAVN));
 		assertNotNull(dokumentInfoAfter.get().getDatoKassert());
-		assertTrue(dokumentInfoAfter.get().getFildetaljerListe().isEmpty());
+		assertThat(dokumentInfoAfter.get().getFildetaljerListe().size(), is(1));
+		assertThat(dokumentInfoAfter.get().getFildetaljerListe().iterator().next().getFilUuid(), is(FIL_UUID_DUMMY_DOKUMENT));
+		assertThat(dokumentInfoAfter.get().getFildetaljerListe().iterator().next().getVariantFormat(), is(ARKIV));
+		assertThat(dokumentInfoAfter.get().getFildetaljerListe().iterator().next().getSkjermingType(), nullValue());
 
 		assertThat("Feil antall journalposter etter kall", joarkRepository.count(), is(2L));
 		assertThat("Feil antall dokumenter etter kall", dokumentinfoRepository.count(), is(2L));
@@ -134,7 +139,7 @@ public class Rjoark102IT extends AbstractAdminIT {
 	}
 
 	@Test
-	public void skallTidligtKassereDokument_medDokumentKnyttetEnJournalpost() throws IOException {
+	public void skalKassereDokumentMedDokumentKnyttetEnJournalpost() throws IOException {
 		abacPermit();
 
 		Journalpost journalpost = joarkRepository.save(opprettHoveddokumentForIT());
@@ -171,8 +176,11 @@ public class Rjoark102IT extends AbstractAdminIT {
 		assertTrue(dokumentInfoAfter.isPresent());
 		assertThat(dokumentInfoAfter.get().getKassertAvNavn(), is(KASSERT_AV_NAVN));
 		assertNotNull(dokumentInfoAfter.get().getDatoKassert());
-		assertTrue(dokumentInfoAfter.get().getFildetaljerListe().isEmpty());
-		assertTrue(dokumentInfoAfter.get().getFildetaljerListe().isEmpty());
+		assertThat(dokumentInfoAfter.get().getFildetaljerListe().size(), is(1));
+		assertThat(dokumentInfoAfter.get().getFildetaljerListe().iterator().next().getFilUuid(), is(FIL_UUID_DUMMY_DOKUMENT));
+		assertThat(dokumentInfoAfter.get().getFildetaljerListe().iterator().next().getVariantFormat(), is(ARKIV));
+		assertThat(dokumentInfoAfter.get().getFildetaljerListe().iterator().next().getSkjermingType(), nullValue());
+
 		assertThat("Feil antall journalposter etter kall", joarkRepository.count(), is(1L));
 		assertThat("Feil antall dokumenter etter kall", dokumentinfoRepository.count(), is(1L));
 	}

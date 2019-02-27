@@ -36,6 +36,7 @@ import no.nav.dokarkiv.core.exceptions.InvalidFilUuidException;
 import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
 import no.nav.dokarkiv.core.exceptions.SettMetadataIDlfFailedException;
 import no.nav.dokarkiv.core.ondemand.HentOndemandDokument;
+import no.nav.dokarkiv.core.repository.DefaultDokumentFilRepository;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import no.nav.dokarkiv.hentdokument.dlf.SettMetadataIDLF;
@@ -76,7 +77,7 @@ public class DefaultHentDokumentTest {
 	@Mock
 	private HentOndemandDokument hentOndemandDokument;
 	@Mock
-	private DokumentFilRepository dokumentFilRepositoryMock;
+	private DefaultDokumentFilRepository dokumentFilRepositoryMock;
 	@Mock
 	private SettMetadataIDLF settMetadataIDLFMock;
 	private HentDokumentRequest request;

@@ -3,11 +3,10 @@ package no.nav.dokarkiv.core.dokumenturl;
 import no.nav.dokarkiv.core.domain.entities.DokumentFil;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import no.nav.dokarkiv.core.domain.service.SkjermingService;
 import no.nav.dokarkiv.core.exceptions.InvalidFilUuidException;
 import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
 import no.nav.dokarkiv.core.logging.AuditLogger;
-import no.nav.dokarkiv.core.repository.DokumentFilRepository;
+import no.nav.dokarkiv.core.repository.DefaultDokumentFilRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 
 import javax.inject.Inject;
@@ -23,13 +22,13 @@ public abstract class AbstractDocumentOperation {
 	protected JoarkRepositorySkjermet joarkRepository;
 
 	@Inject
-	protected DokumentFilRepository dokumentFilRepository;
+	protected DefaultDokumentFilRepository dokumentFilRepository;
 
 	public void setJoarkRepository(JoarkRepositorySkjermet joarkRepository) {
 		this.joarkRepository = joarkRepository;
 	}
 
-	public void setDokumentFilRepository(DokumentFilRepository dokumentFilRepository) {
+	public void setDokumentFilRepository(DefaultDokumentFilRepository dokumentFilRepository) {
 		this.dokumentFilRepository = dokumentFilRepository;
 	}
 
