@@ -51,7 +51,7 @@ public class OppdaterMetadataService {
 				DokumentInfo dokumentInfo = journalpost.getDokumentInfoFromJpDokInfoRelasjonerByDokumentInfoId(Long.parseLong(dokument.getDokumentInfoId()));
 
 				Utils.assertDokumentInfoNotNull(dokumentInfo, String.valueOf(journalpost.getJournalpostId()), dokument.getDokumentInfoId());
-				dokumentInfoMapper.oppdaterDokumentInfo(dokument, dokumentInfo);
+				dokumentInfoMapper.oppdaterDokumentInfo(dokumentInfo, dokument.getBrevkode(), dokument.getTittel());
 				dokumentinfoRepository.save(dokumentInfo);
 			}
 		}

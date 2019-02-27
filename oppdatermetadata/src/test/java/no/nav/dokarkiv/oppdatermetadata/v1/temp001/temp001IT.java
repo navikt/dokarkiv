@@ -9,8 +9,15 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.StringContains.containsString;
 
+import no.nav.dok.oppdatermetadata.api.v1.Arkivsak;
+import no.nav.dok.oppdatermetadata.api.v1.Arkivsaksystem;
+import no.nav.dok.oppdatermetadata.api.v1.AvsenderMottaker;
+import no.nav.dok.oppdatermetadata.api.v1.Bruker;
+import no.nav.dok.oppdatermetadata.api.v1.BrukerIdType;
+import no.nav.dok.oppdatermetadata.api.v1.DokumentInfo;
 import no.nav.dok.oppdatermetadata.api.v1.PutOppdatermetadataRequest;
 import no.nav.dok.oppdatermetadata.api.v1.PutOppdatermetadataResponse;
+import no.nav.dok.oppdatermetadata.api.v1.Tilleggsopplysning;
 import no.nav.dokarkiv.core.datautil.JournalpostTestDataProvider;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
@@ -27,11 +34,23 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.transaction.TestTransaction;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 /**
  * @author Sigurd Midttun, Visma Consulting.
  */
 public class temp001IT extends AbstractJournalfoerInngaaendeV1Itest {
+
+	private static final String IDENTIFIKATOR = "***gammelt_fnr***";
+	private static final String AVSENDER_MOTTAKER_NAVN = "etternavn, fornavn";
+	private static final String ARKIVSAKSNUMMER = "123123";
+	private static final String TEMA = "FOR";
+	private static final String BEHANDLINGSTEMA = "ab0001";
+	private static final String TITTEL = "Ettersendelse av something";
+	private static final String AVSENDER_MOTTAKER_LAND = "Legoland";
+	private static final String NOKKEL = "nokkel";
+	private static final String VERDI = "verdi";
+	private static final String BREVKODE = "brevkode";
 
 	/**
 	 * HVIS forsoekEndeligJF == TRUE, og ingen felter mangler for å endelig journalføre => returner 200 OK og journalpostId.
@@ -40,11 +59,12 @@ public class temp001IT extends AbstractJournalfoerInngaaendeV1Itest {
 	public void shouldFerdigstillJournalpostVedOppdateringUserTokenAndServiceUserToken() throws IOException {
 		abacPermit();
 
-		PutOppdatermetadataRequest request = mapper.readValue(classpathToString("__files/oppdatermetadata/happy_input_request.json"), PutOppdatermetadataRequest.class);
-
 		Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
 				.endretAvNavn("saksbehandlersen"));
 		Long journalpostId = journalpost.getJournalpostId();
+		Long dokumentInfoId = journalpost.getJournalpostDokumentInfoRelasjoner().iterator().next().getDokumentInfo().getDokumentInfoId();
+
+		PutOppdatermetadataRequest request = createPutOppdatermetadataRequestWithDokumentInfoId(dokumentInfoId);
 
 		HttpEntity<PutOppdatermetadataRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
 
@@ -67,6 +87,8 @@ public class temp001IT extends AbstractJournalfoerInngaaendeV1Itest {
 		assertThat(oppdatertJP.getChangeStamp().getUpdatedBy(), is(PERSON_USER_ID));
 		assertThat(oppdatertJP.getInnhold(), is(request.getTittel()));
 		assertThat(oppdatertJP.getFagomrade().name(), is(request.getTema()));
+		assertThat(oppdatertJP.getBehandlingstema().name(), is(request.getBehandlingstema()));
+		assertThat(oppdatertJP.getLand(), is(request.getAvsenderMottakerLand()));
 		assertThat(oppdatertJP.getAvsenderMottakerId(), is(request.getAvsenderMottaker().getIdentifikator()));
 		assertThat(oppdatertJP.getAvsenderMottaker(), is(request.getAvsenderMottaker().getAvsenderMottakerNavn()));
 		assertThat(oppdatertJP.getBrukere().size(), is(1));
@@ -75,6 +97,13 @@ public class temp001IT extends AbstractJournalfoerInngaaendeV1Itest {
 		assertThat(oppdatertJP.getBrukere().iterator().next().getOpprettetKildeNavn(), is(SERVICE_USER_ID));
 		assertThat(oppdatertJP.getSaksrelasjon().getSakId(), is(request.getArkivsak().getArkivsaksnummer()));
 		assertThat(oppdatertJP.getSaksrelasjon().getFagsystem().name(), is("FS22"));
+		assertThat(oppdatertJP.getTilleggsopplysninger().size(), is(1));
+		assert(oppdatertJP.getTilleggsopplysninger().containsKey(request.getTilleggsopplysninger().get(0).getNokkel()));
+		assert(oppdatertJP.getTilleggsopplysninger().containsValue(request.getTilleggsopplysninger().get(0).getVerdi()));
+		assertThat(oppdatertJP.getDokumentInfoFromJpDokInfoRelasjonerByDokumentInfoId(Long.parseLong(request.getDokumentInfoList().get(0).getDokumentInfoId())).getTittel(),
+				is(request.getDokumentInfoList().get(0).getTittel()));
+		assertThat(oppdatertJP.getDokumentInfoFromJpDokInfoRelasjonerByDokumentInfoId(Long.parseLong(request.getDokumentInfoList().get(0).getDokumentInfoId())).getBrevkode(),
+				is(request.getDokumentInfoList().get(0).getBrevkode()));
 
 		TestTransaction.end();
 	}
@@ -83,11 +112,12 @@ public class temp001IT extends AbstractJournalfoerInngaaendeV1Itest {
 	public void shouldFerdigstillJournalpostVedOppdateringOnlyServiceUserToken() throws IOException {
 		abacPermit();
 
-		PutOppdatermetadataRequest request = mapper.readValue(classpathToString("__files/oppdatermetadata/happy_input_request.json"), PutOppdatermetadataRequest.class);
-
 		Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
 				.endretAvNavn("saksbehandlersen"));
 		Long journalpostId = journalpost.getJournalpostId();
+		Long dokumentInfoId = journalpost.getJournalpostDokumentInfoRelasjoner().iterator().next().getDokumentInfo().getDokumentInfoId();
+
+		PutOppdatermetadataRequest request = createPutOppdatermetadataRequestWithDokumentInfoId(dokumentInfoId);
 
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
@@ -126,11 +156,12 @@ public class temp001IT extends AbstractJournalfoerInngaaendeV1Itest {
 
 	@Test
 	public void shouldFailOnlyPersonUserToken() throws IOException {
-		PutOppdatermetadataRequest request = mapper.readValue(classpathToString("__files/oppdatermetadata/happy_input_request.json"), PutOppdatermetadataRequest.class);
-
 		Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
 				.endretAvNavn("saksbehandlersen"));
 		Long journalpostId = journalpost.getJournalpostId();
+		Long dokumentInfoId = journalpost.getJournalpostDokumentInfoRelasjoner().iterator().next().getDokumentInfo().getDokumentInfoId();
+
+		PutOppdatermetadataRequest request = createPutOppdatermetadataRequestWithDokumentInfoId(dokumentInfoId);
 
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
@@ -148,11 +179,12 @@ public class temp001IT extends AbstractJournalfoerInngaaendeV1Itest {
 	public void shouldReturnForbiddenBrukerHarIkkeTilgangTilJournalpostPutJournalpost() throws IOException {
 		abacDeny();
 
-		PutOppdatermetadataRequest request = mapper.readValue(classpathToString("__files/oppdatermetadata/happy_input_request.json"), PutOppdatermetadataRequest.class);
-
 		Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
 				.endretAvNavn("saksbehandlersen"));
 		Long journalpostId = journalpost.getJournalpostId();
+		Long dokumentInfoId = journalpost.getJournalpostDokumentInfoRelasjoner().iterator().next().getDokumentInfo().getDokumentInfoId();
+
+		PutOppdatermetadataRequest request = createPutOppdatermetadataRequestWithDokumentInfoId(dokumentInfoId);
 
 		HttpEntity<PutOppdatermetadataRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
 
@@ -161,6 +193,36 @@ public class temp001IT extends AbstractJournalfoerInngaaendeV1Itest {
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.FORBIDDEN));
 		assertThat(responseEntity.getBody(), containsString("Bruker har ikke tilgang til journalpost"));
+	}
+
+	private PutOppdatermetadataRequest createPutOppdatermetadataRequestWithDokumentInfoId(Long dokumentInfoId) {
+		return PutOppdatermetadataRequest.builder()
+				.avsenderMottaker(AvsenderMottaker.builder()
+						.identifikator(IDENTIFIKATOR)
+						.avsenderMottakerNavn(AVSENDER_MOTTAKER_NAVN)
+						.build())
+				.bruker(Bruker.builder()
+						.brukerIdType(BrukerIdType.FNR)
+						.identifikator(IDENTIFIKATOR)
+						.build())
+				.arkivsak(Arkivsak.builder()
+						.arkivsaksystem(Arkivsaksystem.GSAK)
+						.arkivsaksnummer(ARKIVSAKSNUMMER)
+						.build())
+				.tema(TEMA)
+				.behandlingstema(BEHANDLINGSTEMA)
+				.tittel(TITTEL)
+				.avsenderMottakerLand(AVSENDER_MOTTAKER_LAND)
+				.tilleggsopplysninger(Arrays.asList(Tilleggsopplysning.builder()
+						.nokkel(NOKKEL)
+						.verdi(VERDI)
+						.build()))
+				.dokumentInfoList(Arrays.asList(DokumentInfo.builder()
+						.dokumentInfoId(Long.toString(dokumentInfoId))
+						.brevkode(BREVKODE)
+						.tittel(TITTEL)
+						.build()))
+				.build();
 	}
 }
 

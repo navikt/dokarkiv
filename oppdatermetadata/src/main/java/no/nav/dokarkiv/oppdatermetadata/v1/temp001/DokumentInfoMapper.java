@@ -11,14 +11,14 @@ import org.springframework.stereotype.Component;
 @Component
 public class DokumentInfoMapper {
 
-    public void oppdaterDokumentInfo(no.nav.dok.oppdatermetadata.api.v1.DokumentInfo request, DokumentInfo dokumentInfo) {
+    public void oppdaterDokumentInfo(DokumentInfo dokumentInfo, String brevkode, String tittel) {
         boolean endret = false;
-        if (isNotBlank(request.getBrevkode())) {
-            dokumentInfo.setBrevkode(request.getBrevkode());
+        if (brevkode != null) {
+            dokumentInfo.setBrevkode(brevkode);
             endret = true;
         }
-        if (isNotBlank(request.getTittel())) {
-            dokumentInfo.setTittel(request.getTittel());
+        if (tittel != null) {
+            dokumentInfo.setTittel(tittel);
             endret = true;
         }
         if (endret) {

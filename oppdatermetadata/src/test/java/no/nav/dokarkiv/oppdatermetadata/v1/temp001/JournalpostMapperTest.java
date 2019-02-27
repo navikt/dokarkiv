@@ -8,7 +8,6 @@ import static org.junit.Assert.assertThat;
 import no.nav.dok.oppdatermetadata.api.v1.PutOppdatermetadataRequest;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.repository.BrukerRepository;
-import no.nav.dokarkiv.oppdatermetadata.v1.temp001.JournalpostMapper;
 import no.nav.dokarkiv.oppdatermetadata.v1.util.TestUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,7 +22,6 @@ public class JournalpostMapperTest {
 	private BrukerRepository brukerRepositoryMock;
 
 	private PutOppdatermetadataRequest putOppdatermetadataRequest;
-
 	private Journalpost journalpost;
 
 	@InjectMocks
