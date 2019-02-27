@@ -58,7 +58,7 @@ public class FerdigstillJournalpostIT extends AbstractFerdigstillJournalpostIT {
 		assertEquals(1, aksjonsLoggList.size());
 		assertEquals(SERVICE_USER_ID, aksjonsLoggList.get(0).getUtfoertAv());
 		assertEquals(AksjonsTypeCode.FERDIGSTILL, aksjonsLoggList.get(0).getAksjon());
-		assertEquals(4, aksjonsLoggList.get(0).getArkivElementEndringer().size());
+		assertEquals(3, aksjonsLoggList.get(0).getArkivElementEndringer().size());
 
 		TestTransaction.end();
 	}

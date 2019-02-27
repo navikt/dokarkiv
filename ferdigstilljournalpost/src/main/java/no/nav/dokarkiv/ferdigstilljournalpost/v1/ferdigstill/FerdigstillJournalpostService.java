@@ -51,11 +51,6 @@ public class FerdigstillJournalpostService {
 						.tilVerdi(journalpost.getJournalstatus().name())
 						.build(),
 				ArkivElementEndringTO.builder()
-						.arkivElement("Journalpost.journalDato")
-						.fraVerdi(null)
-						.tilVerdi(journalpost.getJournalDato().toString())
-						.build(),
-				ArkivElementEndringTO.builder()
 						.arkivElement("Journalpost.journalfEnhet")
 						.fraVerdi(null)
 						.tilVerdi(journalfEnhet)
