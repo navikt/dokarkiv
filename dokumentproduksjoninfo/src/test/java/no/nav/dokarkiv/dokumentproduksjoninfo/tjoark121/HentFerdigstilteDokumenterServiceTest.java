@@ -20,6 +20,7 @@ import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.service.SkjermingService;
+import no.nav.dokarkiv.core.repository.DefaultDokumentFilRepository;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import no.nav.dokarkiv.dokumentproduksjoninfo.exceptions.FilDetaljerNotFoundException;
@@ -65,13 +66,10 @@ public class HentFerdigstilteDokumenterServiceTest {
 	private JoarkRepositorySkjermet joarkRepository;
 
 	@Mock
-	private DokumentFilRepository dokumentFilRepository;
+	private DefaultDokumentFilRepository dokumentFilRepository;
 
 	@Mock
 	private HentFerdigstilteDokumenterValidator hentFerdigstilteRokumenterValidator;
-
-	@Mock
-	private SkjermingService skjermingService;
 
 	@InjectMocks
 	private HentFerdigstilteDokumenterService service;
