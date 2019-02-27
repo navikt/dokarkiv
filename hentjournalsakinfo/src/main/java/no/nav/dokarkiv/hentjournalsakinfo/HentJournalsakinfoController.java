@@ -11,6 +11,9 @@ import no.nav.dokarkiv.hentjournalsakinfo.rjoark901.HentTilgangJournalpostRespon
 import no.nav.dokarkiv.hentjournalsakinfo.rjoark901.HentTilgangJournalpostService;
 import no.nav.dokarkiv.hentjournalsakinfo.rjoark902.SafHentJournalpostResponse;
 import no.nav.dokarkiv.hentjournalsakinfo.rjoark902.SafHentJournalpostService;
+import no.nav.dokarkiv.hentjournalsakinfo.rjoark903.Tilknytning;
+import no.nav.dokarkiv.hentjournalsakinfo.rjoark903.TilknyttedeJournalposterResponse;
+import no.nav.dokarkiv.hentjournalsakinfo.rjoark903.TilknyttedeJournalposterService;
 import no.nav.dokarkiv.hentjournalsakinfo.rjoark920.SafHentDokumentResponse;
 import no.nav.dokarkiv.hentjournalsakinfo.rjoark920.SafHentDokumentService;
 import org.springframework.http.HttpHeaders;
@@ -39,17 +42,19 @@ public class HentJournalsakinfoController {
 	private final MimeTypeMapper mimeTypeMapper = new MimeTypeMapper();
 	private final FinnJournalposterService finnJournalposterService;
 	private final HentTilgangJournalpostService hentTilgangJournalpostService;
+	private final TilknyttedeJournalposterService tilknyttedeJournalposterService;
 
 	@Inject
 	public HentJournalsakinfoController(SafHentDokumentService safHentDokumentService,
 										SafHentJournalpostService safHentJournalpostService,
 										FinnJournalposterService finnJournalposterService,
-										HentTilgangJournalpostService hentTilgangJournalpostService) {
+										HentTilgangJournalpostService hentTilgangJournalpostService,
+										TilknyttedeJournalposterService tilknyttedeJournalposterService) {
 		this.safHentDokumentService = safHentDokumentService;
 		this.safHentJournalpostService = safHentJournalpostService;
 		this.finnJournalposterService = finnJournalposterService;
 		this.hentTilgangJournalpostService = hentTilgangJournalpostService;
-
+		this.tilknyttedeJournalposterService = tilknyttedeJournalposterService;
 	}
 
 	@Transactional(readOnly = true)
@@ -76,6 +81,25 @@ public class HentJournalsakinfoController {
 	}
 
 	@Transactional(readOnly = true)
+	@ResponseBody
+	@RequestMapping(value = "/hentjournalpost/{journalpostId}")
+	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark902"}, percentiles = {0.5, 0.95})
+	public SafHentJournalpostResponse safHentJournalpost(@PathVariable Long journalpostId) {
+		log.info("rjoark902 har mottatt forespørsel om journalpost med journalpostId={}", journalpostId);
+		return safHentJournalpostService.hentJournalpostByJournalpostId(journalpostId);
+	}
+
+	@Transactional(readOnly = true)
+	@ResponseBody
+	@RequestMapping(value = "/tilknyttedejournalposter/{dokumentInfoId}/{tilknytning}")
+	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark903"}, percentiles = {0.5, 0.95})
+	public TilknyttedeJournalposterResponse tilknyttedeJournalposter(@PathVariable Long dokumentInfoId,
+																	 @PathVariable Tilknytning tilknytning) {
+		log.info("rjoark903 har mottatt forespørsel om tilknyttede journalposter for dokumentInfoId={} med tilknytning={}", dokumentInfoId, tilknytning);
+		return tilknyttedeJournalposterService.tilknyttedeJournalposter(dokumentInfoId, tilknytning);
+	}
+
+	@Transactional(readOnly = true)
 	@RequestMapping(value = "/hentdokument/{dokumentinfoId}/{variant}")
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark920"}, percentiles = {0.5, 0.95})
 	public ResponseEntity<String> safHentDokument(@PathVariable Long dokumentinfoId,
@@ -85,14 +109,5 @@ public class HentJournalsakinfoController {
 		return ResponseEntity.ok()
 				.header(HttpHeaders.CONTENT_TYPE, mimeTypeMapper.getMimeTypeForFileExtension(safHentDokumentResponse.getFiltype().toString()))
 				.body(Base64.getEncoder().encodeToString(safHentDokumentResponse.getDokument()));
-	}
-
-	@Transactional(readOnly = true)
-	@ResponseBody
-	@RequestMapping(value = "/hentjournalpost/{journalpostId}")
-	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark902"}, percentiles = {0.5, 0.95})
-	public SafHentJournalpostResponse safHentJournalpost(@PathVariable Long journalpostId) {
-		log.info("rjoark902 har mottatt forespørsel om journalpost med journalpostId={}", journalpostId);
-		return safHentJournalpostService.hentJournalpostByJournalpostId(journalpostId);
 	}
 }
