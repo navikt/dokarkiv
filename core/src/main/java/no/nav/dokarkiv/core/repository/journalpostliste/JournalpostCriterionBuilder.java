@@ -53,7 +53,7 @@ public class JournalpostCriterionBuilder extends CriterionBuilder {
 		}
 
 		if (isFalse(parameters.isIncludeBegrensetJournalpost())) {
-			criteria.add(Restrictions.sqlRestriction("not exists (select 'begrenset' from t_begrensning bg where bg.journalpost_id = this_.journalpost_id and bg.begrensning_type = 'POL' and bg.dokument_info_id is null)"));
+			criteria.add(Restrictions.isNull("skjermingType"));
 		}
 		// Note that an empty saksliste would possibly return all journalposts, so we need
 		// to return an empty resultset from query if this list is empty.

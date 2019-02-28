@@ -15,4 +15,8 @@ public final class JournalpostIkkeFunnetException extends DokarkivFunctionalExce
 	public JournalpostIkkeFunnetException(String message) {
 		super(message);
 	}
+
+	public JournalpostIkkeFunnetException(String message, Exception e) {
+		super(message, e);
+	}
 }

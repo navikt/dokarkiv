@@ -1,6 +1,5 @@
 package no.nav.dokarkiv.core.dokumenturl;
 
-import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentUrlInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
@@ -9,7 +8,7 @@ import no.nav.dokarkiv.core.exceptions.DokarkivTechnicalException;
 import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
 import no.nav.dokarkiv.core.exceptions.InvalidFilUuidException;
 import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
-import no.nav.dokarkiv.core.repository.DokumentUrlInfoRepositorySkjermet;
+import no.nav.dokarkiv.core.repository.DokumentUrlInfoRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -20,7 +19,7 @@ import java.util.UUID;
 
 /**
  * Implementation of <code>HentDokumentUrl</code>.
- * 
+ *
  * @author Thomas Eugen Bjørge, Sirius IT
  * @author Magnus Skuland, Sirius IT
  * @author Thao Thao Nguyen, Visma Sirius
@@ -36,7 +35,7 @@ public class DefaultHentDokumentUrl extends AbstractDocumentOperation implements
 	private final MimeTypeMapper mimeTypeMapper = new MimeTypeMapper();
 
 	@Inject
-    private DokumentUrlInfoRepositorySkjermet dokumentUrlInfoRepository;
+	private DokumentUrlInfoRepository dokumentUrlInfoRepository;
 
 	public HentDokumentUrlResponse hentDokumentUrl(HentDokumentUrlRequest hentDokumentUrlRequest)
 			throws NoJournalpostFoundException, InvalidFilUuidException {
@@ -71,14 +70,19 @@ public class DefaultHentDokumentUrl extends AbstractDocumentOperation implements
 	private void validateRequest(HentDokumentUrlRequest hentDokumentUrlRequest) {
 		if (hentDokumentUrlRequest == null) {
 			throw new InvalidArgumentException("HentDokumentUrlRequest is null");
-		}		
+		}
 		hentDokumentUrlRequest.validate();
 	}
 
-	private String generateUrl(String baseUrl, Journalpost journalpost, FilDetaljer fildetaljer, Long timeToLiveMinutes)
+	private String generateUrl(String baseUrl, Journalpost journalpost, FilDetaljer pfildetaljer, Long timeToLiveMinutes)
 			throws InvalidFilUuidException {
-		if (skjermingService.isVariantSkjermet(fildetaljer.getDokumentInfo().getDokumentInfoId(), fildetaljer.getVariantFormat())) {
-			fildetaljer = fildetaljer.getDokumentInfo().findFilDetaljerByVariantFormat(VariantFormatCode.SLADDET);
+
+		FilDetaljer fildetaljer = pfildetaljer.getDokumentInfo()
+				.findFilDetaljerByVariantFormat(pfildetaljer.getVariantFormat());
+		if (fildetaljer == null) {
+			throw new InvalidFilUuidException(String.format("Finner ikke FilDetaljer tilhørende dokumentInfoId: %s og variant %s", pfildetaljer
+					.getDokumentInfo()
+					.getDokumentInfoId(), pfildetaljer.getVariantFormat().name()), null);
 		}
 		String filUuid = fildetaljer.getFilUuid();
 		if (fildetaljer.getOnDemandId() != null && fildetaljer.getOnDemandInstans() != null) {
@@ -89,7 +93,7 @@ public class DefaultHentDokumentUrl extends AbstractDocumentOperation implements
 		String url = createDokumentUrlInfoAndUrl(baseUrl, journalpost, filUuid, timeToLiveMinutes);
 		return addMimetypeToUrl(url, mimeTypeMapper.getMimeTypeForFileExtension(fildetaljer.getFiltype().name()));
 	}
-	
+
 	private void verifyThatDocumentExistsInDB(String filUuid) throws InvalidFilUuidException {
 		getDocumentFromDBRepository(filUuid);
 	}
@@ -102,7 +106,7 @@ public class DefaultHentDokumentUrl extends AbstractDocumentOperation implements
 			throw new DokarkivTechnicalException("Could not generate URL", e);
 		}
 		return url.concat(mimetypeParam);
-	}	
+	}
 
 	private String createDokumentUrlInfoAndUrl(String baseUrl, Journalpost journalpost, String filUuid, Long timeToLiveMinutes) {
 		String token = saveDokumentUrlInfo(journalpost, filUuid, timeToLiveMinutes);
@@ -128,15 +132,14 @@ public class DefaultHentDokumentUrl extends AbstractDocumentOperation implements
 
 	/**
 	 * Setter for the servletUrl property.
-	 * 
-	 * @param servletUrl
-	 *            the servletUrl to set
+	 *
+	 * @param servletUrl the servletUrl to set
 	 */
 	public void setServletUrl(String servletUrl) {
 		this.servletUrl = servletUrl;
 	}
 
-    public void setDokumentUrlInfoRepository(DokumentUrlInfoRepositorySkjermet dokumentUrlInfoRepository) {
+	public void setDokumentUrlInfoRepository(DokumentUrlInfoRepository dokumentUrlInfoRepository) {
 		this.dokumentUrlInfoRepository = dokumentUrlInfoRepository;
 	}
 }

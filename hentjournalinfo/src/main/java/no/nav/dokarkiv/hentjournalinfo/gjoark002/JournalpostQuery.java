@@ -81,10 +81,10 @@ public class JournalpostQuery implements Query {
     public List<JournalpostDokumentRelasjon> knyttetDokumentList(@GraphQLContext Journalpost journalpost) {
         Set<JournalpostDokumentInfoRelasjon> journalpostDokumentInfoRelasjons = joarkRepository.findById(journalpost.getJournalpostId())
                 .orElse(new no.nav.dokarkiv.core.domain.entities.Journalpost())
-                .getJournalpostDokumentInfoRelasjoner();
+                .getJournalpostDokumentInfoRelasjonerAdmin();
 
         List<Long> begrensetDokumentInfoRelasjon = journalpostDokumentInfoRelasjons.stream()
-                .filter(relasjon -> skjermingService.isJournalpostDokumentInfoRelasjonOrJournalpostBegrenset(relasjon.getJournalpost()
+                .filter(relasjon -> isJournalpostDokumentInfoRelasjonOrJournalpostSkjermet(relasjon.getJournalpost()
                         .getJournalpostId(), relasjon.getDokumentInfo()
                         .getDokumentInfoId(), SkjermingTypeCode.POL))
                 .map(relasjon -> relasjon.getJournalpost().getJournalpostId())
@@ -92,4 +92,10 @@ public class JournalpostQuery implements Query {
 
         return mapKnyttetDokumentList(journalpostDokumentInfoRelasjons, journalpost.getJournalpostId(), begrensetDokumentInfoRelasjon);
     }
+
+
+    private boolean isJournalpostDokumentInfoRelasjonOrJournalpostSkjermet(Long journalpostId, Long dokumentInfoId, SkjermingTypeCode skjermingTypeCode) {
+        return skjermingService.isJournalpostDokumentInfoRelasjonSkjermet(journalpostId, dokumentInfoId, skjermingTypeCode) || skjermingService.isJournalpostSkjermet(journalpostId, skjermingTypeCode);
+    }
+
 }

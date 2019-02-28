@@ -4,10 +4,13 @@ import static no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder.getDokumen
 import static no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder.getFilDetaljerBuilder;
 import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalpostBuilder;
 import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
+import static no.nav.dokarkiv.core.domain.codes.DokumentStatusCode.AVBRUTT;
 import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.HOVEDDOKUMENT;
 import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.SAMMENSATT_DOK;
 import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.VEDLEGG;
+import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.SLADDET;
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertFalse;
@@ -19,6 +22,7 @@ import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
+import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
@@ -30,6 +34,9 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.util.Arrays;
+import java.util.HashSet;
+
 /**
  * Unit tests for Journalpost.
  *
@@ -38,43 +45,155 @@ import org.mockito.junit.MockitoJUnitRunner;
  */
 @RunWith(MockitoJUnitRunner.class)
 public class JournalpostTest {
-	
+
 	@Rule
 	public ExpectedException expectedException = ExpectedException.none();
-	
+
 	@InjectMocks
 	private Journalpost journalpost;
-	
+
+	@Test
+	public void shouldReturnJournalpostRelasjonerWhenNotSkjermet() {
+
+		Journalpost journalpost = getJournalpostBuilder().dokumentInfoRelasjoner(
+				JournalpostDokumentInfoRelasjon.builder()
+						.tilknyttetJournalpostSom(HOVEDDOKUMENT)
+						.build(),
+				JournalpostDokumentInfoRelasjon.builder()
+						.tilknyttetJournalpostSom(VEDLEGG)
+						.build()
+		).build();
+
+		assertThat(journalpost.getJournalpostDokumentInfoRelasjoner().size(), is(2));
+		assertThat(journalpost.getJournalpostDokumentInfoRelasjonerAdmin().size(), is(2));
+	}
+
+	@Test
+	public void shouldUpdateJournalpostRelasjoner() {
+
+		Journalpost journalpost = getJournalpostBuilder().dokumentInfoRelasjoner(
+				JournalpostDokumentInfoRelasjon.builder()
+						.tilknyttetJournalpostSom(HOVEDDOKUMENT)
+						.dokumentInfo(new DokumentInfo())
+						.build(),
+				JournalpostDokumentInfoRelasjon.builder()
+						.tilknyttetJournalpostSom(VEDLEGG)
+						.build()
+		).build();
+
+		journalpost.findHoveddokumentDokumentInfoRelasjon().setTilknyttetAvNavn("testnavn");
+		journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().setDokumentstatus(AVBRUTT);
+
+		assertThat(journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentstatus(), is(AVBRUTT));
+		assertThat(journalpost.findHoveddokumentDokumentInfoRelasjon().getTilknyttetAvNavn(), is("testnavn"));
+
+		journalpost.findDokumentInfoRelasjonByTilknyttetJournalpostSom(HOVEDDOKUMENT).iterator().next().setTilknyttetAvNavn("testnavn2");
+		assertThat(journalpost.findDokumentInfoRelasjonByTilknyttetJournalpostSom(HOVEDDOKUMENT).iterator().next().getTilknyttetAvNavn(), is("testnavn2"));
+
+
+
+
+	}
+
+	@Test
+	public void shouldNotReturnSkjermetJournalpostRelasjoner() {
+
+		Journalpost journalpost = getJournalpostBuilder().dokumentInfoRelasjoner(
+				JournalpostDokumentInfoRelasjon.builder()
+						.tilknyttetJournalpostSom(HOVEDDOKUMENT)
+						.skjermingType(SkjermingTypeCode.POL)
+						.build(),
+				JournalpostDokumentInfoRelasjon.builder()
+						.tilknyttetJournalpostSom(VEDLEGG)
+						.skjermingType(SkjermingTypeCode.POL)
+						.build()
+		).build();
+
+		assertThat(journalpost.getJournalpostDokumentInfoRelasjoner().size(), is(0));
+		assertThat(journalpost.findDokumentInfoRelasjonByTilknyttetJournalpostSom(VEDLEGG).size(), is(0));
+		assertThat(journalpost.getJournalpostDokumentInfoRelasjonerAdmin().size(), is(2));
+	}
+
+	@Test
+	public void shouldOnlyReturnNotSkjermetJournalpostRelasjoner() {
+
+		Journalpost journalpost = getJournalpostBuilder().dokumentInfoRelasjoner(
+				JournalpostDokumentInfoRelasjon.builder()
+						.tilknyttetJournalpostSom(HOVEDDOKUMENT)
+						.build(),
+				JournalpostDokumentInfoRelasjon.builder()
+						.tilknyttetJournalpostSom(VEDLEGG)
+						.skjermingType(SkjermingTypeCode.POL)
+						.build()
+		).build();
+
+		assertThat(journalpost.getJournalpostDokumentInfoRelasjoner().size(), is(1));
+		assertThat(journalpost.getJournalpostDokumentInfoRelasjoner().iterator().next().getTilknyttetJournalpostSom(), is(HOVEDDOKUMENT));
+		assertThat(journalpost.findDokumentInfoRelasjonByTilknyttetJournalpostSom(HOVEDDOKUMENT).size(), is(1));
+		assertThat(journalpost.findDokumentInfoRelasjonByTilknyttetJournalpostSom(VEDLEGG).size(), is(0));
+		assertThat(journalpost.getJournalpostDokumentInfoRelasjonerAdmin().size(), is(2));
+	}
+
+	@Test
+	public void shouldNotReturnSkjermetFildetaljer() {
+
+		Journalpost journalpost = getJournalpostBuilder().dokumentInfoRelasjoner(
+				JournalpostDokumentInfoRelasjon.builder()
+						.tilknyttetJournalpostSom(HOVEDDOKUMENT)
+						.dokumentInfo(DokumentInfo.builder()
+								.fildetaljerListe(new HashSet<>(Arrays.asList(
+										FilDetaljer.builder()
+												.variantFormat(VariantFormatCode.ARKIV)
+												.filUuid("uuid1")
+												.skjermingType(SkjermingTypeCode.POL)
+												.build(),
+										FilDetaljer.builder()
+												.variantFormat(SLADDET)
+												.filUuid("uuid2")
+												.build()
+								)))
+								.build())
+						.build(),
+				JournalpostDokumentInfoRelasjon.builder()
+						.tilknyttetJournalpostSom(VEDLEGG)
+						.skjermingType(SkjermingTypeCode.POL)
+						.build()
+		).build();
+
+		assertThat(journalpost.findFilDetaljerByFilUuid("uuid2").getVariantFormat(), is(SLADDET));
+		assertThat(journalpost.findFilDetaljerByFilUuid("uuid1").getVariantFormat(), is(SLADDET));
+	}
+
 	@Test
 	public void testRemoveAllUsers() {
 		journalpost.addBruker(new Bruker());
 		journalpost.addBruker(new Bruker());
-		
+
 		journalpost.removeBrukere(journalpost.getBrukere());
 		assertThat(journalpost.getBrukere().size(), is(equalTo(0)));
 	}
-	
+
 	@Test
 	public void shouldSetSaksrelasjonRelationBothWays() {
 		journalpost = new Journalpost();
 		Saksrelasjon saksrelasjon = new Saksrelasjon();
-		
+
 		journalpost.setSaksrelasjon(saksrelasjon);
 		assertThat(journalpost.getSaksrelasjon(), is(saksrelasjon));
 		assertThat(saksrelasjon.getJournalpost(), is(journalpost));
 	}
-	
+
 	@Test
 	public void shouldSetDokumentInfoRelasjonBothWays() {
 		journalpost = new Journalpost();
 		JournalpostDokumentInfoRelasjon relasjon = new JournalpostDokumentInfoRelasjon();
-		
+
 		journalpost.addJournalpostDokumentInfoRelasjon(relasjon);
 		assertThat(journalpost.getJournalpostDokumentInfoRelasjoner().size(), is(1));
 		assertThat(journalpost.getJournalpostDokumentInfoRelasjoner().iterator().next(), is(relasjon));
 		assertThat(relasjon.getJournalpost(), is(journalpost));
 	}
-	
+
 	@Test
 	public void shouldCheckForLenientStatus() throws Exception {
 		assertLenientStatus(JournalStatusCode.MO, true);
@@ -86,26 +205,26 @@ public class JournalpostTest {
 		assertLenientStatus(JournalStatusCode.FS, false);
 		assertLenientStatus(JournalStatusCode.FL, false);
 	}
-	
+
 	private void assertLenientStatus(JournalStatusCode journalStatus, boolean expectedResult) {
 		journalpost = getJournalpostBuilder().journalStatus(journalStatus).build();
 		assertThat(journalpost.hasLenientStatus(), is(expectedResult));
 	}
-	
+
 	@Test
 	public void shoudlCheckIfInFerdigOgSentralPrintJournalforingStatus() {
 		Journalpost journalpost = new Journalpost();
 		journalpost.setJournalstatus(JournalStatusCode.FS);
 		assertTrue(journalpost.hasFerdigOgSentralPrintJournalforingStatus());
 	}
-	
+
 	@Test
 	public void shoudlCheckIfNotInFerdigOgSentralPrintJournalforingStatus() {
 		Journalpost journalpost = new Journalpost();
 		journalpost.setJournalstatus(JournalStatusCode.FL);
 		assertFalse(journalpost.hasFerdigOgSentralPrintJournalforingStatus());
 	}
-	
+
 	@Test
 	public void shouldCheckInngaendeStatus() throws Exception {
 		assertInngaendeStatus(JournalStatusCode.MO, true);
@@ -118,12 +237,12 @@ public class JournalpostTest {
 		assertInngaendeStatus(JournalStatusCode.FS, false);
 		assertInngaendeStatus(JournalStatusCode.FL, false);
 	}
-	
+
 	private void assertInngaendeStatus(JournalStatusCode journalStatus, boolean expectedResult) {
 		journalpost = getJournalpostBuilder().journalStatus(journalStatus).build();
 		assertThat(journalpost.hasInngaendeStatus(), is(expectedResult));
 	}
-	
+
 	@Test
 	public void shouldThrowExceptionForNonUniqueDokumentInfoRelasjoner() throws Exception {
 		long dokumentInfoId = 200;
@@ -139,7 +258,7 @@ public class JournalpostTest {
 			assertThat(e.getMessage(), containsString(String.valueOf(dokumentInfoId)));
 		}
 	}
-	
+
 	@Test
 	public void shouldThrowExceptionForDuplicateDokumentVarianter() throws Exception {
 		VariantFormatCode arkiv = VariantFormatCode.ARKIV;
@@ -157,7 +276,7 @@ public class JournalpostTest {
 			assertThat(e.getMessage(), containsString(arkiv.name()));
 		}
 	}
-	
+
 	@Test
 	public void shouldNotThrowNPEWhenCoutingIfVariantFormatIsNull() throws Exception {
 		VariantFormatCode arkiv = VariantFormatCode.ARKIV;
@@ -167,66 +286,66 @@ public class JournalpostTest {
 								getFilDetaljerBuilder().variantFormat(null).build()).build()).build()).build();
 		journalpost.verifyNoDokumentVariantDuplicates();
 	}
-	
+
 	@Test
 	public void shouldVerifyStructureForEndeligJournalforingWhenStatusNotFinal() throws Exception {
 		Journalpost journalpost = getJournalpostBuilder().journalStatus(JournalStatusCode.M).build();
-		
+
 		journalpost.verifyStructureForEndeligJournalforing();
 	}
-	
+
 	@Test
 	public void shouldThrowExceptionForNoHoveddok() throws Exception {
 		Journalpost journalpost = getJournalpostBuilder().journalStatus(JournalStatusCode.J).build();
-		
+
 		expectedException.expect(InvalidJournalpostStructureException.class);
 		expectedException.expectMessage("Journalpost must contain a hoveddokument");
-		
+
 		journalpost.verifyOnlyOneHoveddokument();
 	}
-	
+
 	@Test
 	public void shouldThrowExceptionForTooManyHoveddoks() throws Exception {
 		Journalpost journalpost = createJournalpostWithTwoDokumentInfoRelasjoner(JournalStatusCode.FS, HOVEDDOKUMENT,
 				HOVEDDOKUMENT);
 		expectedException.expect(InvalidJournalpostStructureException.class);
 		expectedException.expectMessage("Journalpost cannot contain more than one hoveddokument");
-		
+
 		journalpost.verifyOnlyOneHoveddokument();
-		
+
 	}
-	
+
 	@Test
 	public void shouldThrowExceptionForNoHoveddokAndSammensattDok() throws Exception {
 		Journalpost journalpost = getJournalpostBuilder().journalStatus(JournalStatusCode.J).build();
-		
+
 		assertExceptionThrownWithMessage(journalpost, "hoveddokument", "sammensatt dokument");
 	}
-	
+
 	@Test
 	public void shouldThrowExceptionWhenBothHoveddokAndSammensattDokAreSet() throws Exception {
 		Journalpost journalpost = createJournalpostWithTwoDokumentInfoRelasjoner(JournalStatusCode.FS, HOVEDDOKUMENT,
 				SAMMENSATT_DOK);
-		
+
 		assertExceptionThrownWithMessage(journalpost, "one hoveddokument", "one sammensatt dokument");
 	}
-	
+
 	@Test
 	public void shouldThrowExceptionWhenMoreThanOneHoveddokIsSet() throws Exception {
 		Journalpost journalpost = createJournalpostWithTwoDokumentInfoRelasjoner(JournalStatusCode.FL, HOVEDDOKUMENT,
 				HOVEDDOKUMENT);
-		
+
 		assertExceptionThrownWithMessage(journalpost, "more than one hoveddokument");
 	}
-	
+
 	@Test
 	public void shouldThrowExceptionWhenMoreThanOneSammensattDokIsSet() throws Exception {
 		Journalpost journalpost = createJournalpostWithTwoDokumentInfoRelasjoner(JournalStatusCode.J, SAMMENSATT_DOK,
 				SAMMENSATT_DOK);
-		
+
 		assertExceptionThrownWithMessage(journalpost, "more than one sammensatt dokument");
 	}
-	
+
 	@Test
 	public void shouldThrowExceptionForMissingJournalForendeEnhetIdAndStatusM() throws Exception {
 		Journalpost journalpost = getJournalpostBuilder()
@@ -244,7 +363,7 @@ public class JournalpostTest {
 			assertThat(e.getMessage(), containsString("Journalpost.journalForendeEnhetId must be set"));
 		}
 	}
-	
+
 	@Test
 	public void shouldThrowExceptionForMissingArkivVariant() throws Exception {
 		journalpost = getJournalpostBuilder()
@@ -262,10 +381,10 @@ public class JournalpostTest {
 										getDokumentInfoBuilder().filDetaljerList(
 												getFilDetaljerBuilder().variantFormat(VariantFormatCode.PRODUKSJON).build())
 												.build()).build()).build();
-		
+
 		assertExceptionThrownWithMessage(journalpost, "arkiv variant");
 	}
-	
+
 	@Test
 	public void shouldThrowExceptionForDokumentUnderRedigering() throws Exception {
 		journalpost = getJournalpostBuilder()
@@ -287,40 +406,40 @@ public class JournalpostTest {
 												.filDetaljerList(
 														getFilDetaljerBuilder().variantFormat(VariantFormatCode.ARKIV).build())
 												.build()).build()).build();
-		
+
 		assertExceptionThrownWithMessage(journalpost, "under redigering");
 	}
-	
+
 	@Test
 	public void shouldClearReturInfos() throws Exception {
 		Journalpost journalpost = new Journalpost();
 		journalpost.addReturInfo(new ReturInfo());
-		
+
 		journalpost.clearReturInfos();
-		
+
 		assertThat(journalpost.getReturInfos().isEmpty(), is(true));
 	}
-	
+
 	@Test
 	public void shouldClearDokumentInfoRelasjoner() throws Exception {
 		Journalpost journalpost = new Journalpost();
 		journalpost.addJournalpostDokumentInfoRelasjon(new JournalpostDokumentInfoRelasjon());
-		
+
 		journalpost.clearJournalpostDokumentInfoRelasjoner();
-		
+
 		assertThat(journalpost.getJournalpostDokumentInfoRelasjoner().isEmpty(), is(true));
 	}
-	
+
 	@Test
 	public void shouldClearBrukere() throws Exception {
 		Journalpost journalpost = new Journalpost();
 		journalpost.addBruker(new Bruker());
-		
+
 		journalpost.clearBrukere();
-		
+
 		assertThat(journalpost.getBrukere().isEmpty(), is(true));
 	}
-	
+
 	private Journalpost createJournalpostWithTwoDokumentInfoRelasjoner(JournalStatusCode journalstatus,
 																	   TilknyttetJournalpostSomCode tilknyttet1, TilknyttetJournalpostSomCode tilknyttet2) {
 		return getJournalpostBuilder()
@@ -329,7 +448,7 @@ public class JournalpostTest {
 						getJournalpostDokumentInfoRelasjonBuilder().tilknyttetJournalpostSom(tilknyttet1).build(),
 						getJournalpostDokumentInfoRelasjonBuilder().tilknyttetJournalpostSom(tilknyttet2).build()).build();
 	}
-	
+
 	private void assertExceptionThrownWithMessage(Journalpost journalpost, String... messages) {
 		try {
 			journalpost.verifyStructureForEndeligJournalforing();
@@ -340,5 +459,5 @@ public class JournalpostTest {
 			}
 		}
 	}
-	
+
 }

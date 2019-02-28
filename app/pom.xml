@@ -70,23 +70,11 @@
 		</dependency>
 		<dependency>
 			<groupId>no.nav.dokarkiv</groupId>
-			<artifactId>logiskslettdokument</artifactId>
+			<artifactId>admin</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>no.nav.dokarkiv</groupId>
-			<artifactId>arkiverkorrigertdokument</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>no.nav.dokarkiv</groupId>
-			<artifactId>fysiskslettdokument</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>no.nav.dokarkiv</groupId>
-			<artifactId>logisktidligkassasjon</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>no.nav.dokarkiv</groupId>
-			<artifactId>fysisktidligkassasjon</artifactId>
+			<artifactId>arkivervariant</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>no.nav.dokarkiv</groupId>

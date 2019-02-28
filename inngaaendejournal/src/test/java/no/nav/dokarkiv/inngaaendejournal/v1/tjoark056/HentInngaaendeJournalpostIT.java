@@ -12,6 +12,7 @@ import static org.junit.Assert.fail;
 import no.nav.dokarkiv.core.datautil.JournalpostTestDataProvider;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
+import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.jaxws.SubjectHandlerUtils;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
@@ -93,6 +94,22 @@ public class HentInngaaendeJournalpostIT extends AbstractInngaaendeJournalV1Ites
 		thrown.expect(HentJournalpostUgyldigInput.class);
 
 		inngaaendeJournalProvider.hentJournalpost(defaultHentJournalpostRequest(""));
+	}
+
+	@Test
+	public void should_hentJournalpost_from_repository_when_hovedddok_kassert() throws Exception {
+		abacPermit();
+
+		Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.J));
+		skjermingService.skjermAllFildetaljer(journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo(), SkjermingTypeCode.POL);
+		HentJournalpostResponse response = inngaaendeJournalProvider.hentJournalpost(defaultHentJournalpostRequest(journalpost.getJournalpostId()
+				.toString()));
+
+		InngaaendeJournalpost inngaaendeJournalpost = response.getInngaaendeJournalpost();
+		assertThat(inngaaendeJournalpost.getJournaltilstand(), is(Journaltilstand.ENDELIG));
+		assertThat(inngaaendeJournalpost.getJournalfEnhet(), is("SesamStasjon"));
+		assertThat(inngaaendeJournalpost.getHoveddokument().getDokumentInnholdListe().size(), is(0));
+		assertThat(inngaaendeJournalpost.getVedleggListe().get(0).getDokumentInnholdListe().size(), is(2));
 	}
 
 	private HentJournalpostRequest defaultHentJournalpostRequest(String journalpostId) {

@@ -224,17 +224,6 @@ public class OppdaterJournalpostServiceTest {
 	}
 
 	@Test
-	public void shouldFailOnSlettetDokumentInfo() throws Exception {
-		expected.expect(OppdaterJournalpostIkkeMuligException.class);
-		expected.expectMessage("Dokumentet som forsøkes oppdatert er slettet.");
-
-		journalpost.getJournalpostDokumentInfoRelasjoner().iterator().next().getDokumentInfo().setSlettet(true);
-		when(repository.findById(any(Long.class))).thenReturn(Optional.of(journalpost));
-
-		service.oppdaterJournalpost(requestTo);
-	}
-
-	@Test
 	public void shouldFailIfDokumentInfoUnderRedigering() throws Exception {
 		expected.expect(OppdaterJournalpostIkkeMuligException.class);
 		expected.expectMessage("Dokument har ugyldig status for oppdatering. dokumentStatus=");

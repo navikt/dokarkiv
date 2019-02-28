@@ -25,8 +25,11 @@ import static no.nav.dokarkiv.journalfoerinngaaende.v1.util.TestUtils.VEDLEGGINN
 import static no.nav.dokarkiv.journalfoerinngaaende.v1.util.TestUtils.VEDLEGGINNHOLD2;
 import static no.nav.dokarkiv.journalfoerinngaaende.v1.util.TestUtils.VEDLEGGINNHOLD3;
 import static no.nav.dokarkiv.journalfoerinngaaende.v1.util.TestUtils.createJournalpost;
+import static no.nav.dokarkiv.journalfoerinngaaende.v1.util.TestUtils.createJournalpostKassert;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 import no.nav.dok.tjenester.journalfoerinngaaende.ArkivSakNoArkivsakSystemEnum;
 import no.nav.dok.tjenester.journalfoerinngaaende.Avsender;
@@ -43,8 +46,14 @@ import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
+import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.domain.service.SkjermingService;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -54,6 +63,7 @@ import java.util.List;
 /**
  * @author Sigurd Midttun, Visma Consulting.
  */
+@RunWith(MockitoJUnitRunner.class)
 public class GetInngaaendeJournalpostMapperTest {
 
 	private static final String JOURNALTILSTAND_ENDELIG = "ENDELIG";
@@ -168,6 +178,17 @@ public class GetInngaaendeJournalpostMapperTest {
 		assertAvsender(response.getAvsender());
 		assertArkivsak(response.getArkivSak());
 		assertDokumenter(response.getDokumentListe());
+	}
+
+	@Test
+	public void shouldMapEmptyVarianterWhenKassert() {
+		Journalpost journalpost = createJournalpostKassert();
+		journalpost.getSaksrelasjon().setFagsystem(FagsystemCode.PEN.PEN);
+		GetJournalpostResponse response = mapper.map(journalpost);
+		assertThat(response.getDokumentListe().size(), is(2));
+		assertThat(response.getDokumentListe().get(0).getVariant().size(), is(0));
+		assertThat(response.getDokumentListe().get(1).getVariant().size(), is(0));
+		assertThat(response.getArkivSak().getArkivSakSystem(), is(ARKIVSAK_SYSTEM_PSAK));
 	}
 
 	private void assertBrukere(List<Bruker> brukere) {

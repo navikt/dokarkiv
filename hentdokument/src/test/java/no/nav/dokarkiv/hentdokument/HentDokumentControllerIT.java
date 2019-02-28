@@ -27,7 +27,7 @@ import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
-import no.nav.dokarkiv.core.repository.DokumentUrlInfoRepositorySkjermet;
+import no.nav.dokarkiv.core.repository.DokumentUrlInfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.dokarkiv.core.stelvio.SimpleRequestContext;
@@ -74,7 +74,7 @@ public class HentDokumentControllerIT {
 	private static final byte[] ONDEMAND_FIL_CONTENT = "e-business".getBytes();
 
 	@Inject
-	private DokumentUrlInfoRepositorySkjermet dokumentUrlInfoRepository;
+	private DokumentUrlInfoRepository dokumentUrlInfoRepository;
 	@Inject
 	private JoarkRepositorySkjermet joarkRepository;
 	@Inject

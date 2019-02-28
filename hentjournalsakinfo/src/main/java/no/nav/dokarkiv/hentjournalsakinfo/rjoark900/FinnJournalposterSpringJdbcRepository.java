@@ -79,7 +79,6 @@ class FinnJournalposterSpringJdbcRepository {
 		}
 
 		namedParams.addValue("fraDato", Timestamp.valueOf(journalpostFilter.getFraDato().atStartOfDay()));
-		namedParams.addValue("inkluderTema", journalpostFilter.getInkluderTema());
 		namedParams.addValue("inkluderJournalpostType", journalpostFilter.getInkluderJournalpostType());
 		namedParams.addValue("allJournalStatus", ALL_JOURNALSTATUS);
 		namedParams.addValue("visFeilregistrert", journalpostFilter.isVisFeilregistrerte() ? ALL_JOURNALPOST : NO_FEILREGISTRERT_JOURNALPOST);
