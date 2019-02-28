@@ -13,7 +13,7 @@ import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.metrics.RestMetrics;
 import no.nav.dokarkiv.core.security.abac.AbacSecurityService;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
-import no.nav.dokarkiv.oppdatermetadata.v1.temp001.OppdaterMetadataService;
+import no.nav.dokarkiv.oppdatermetadata.v1.rjoark200.OppdaterMetadataService;
 import no.nav.dokarkiv.oppdatermetadata.v1.util.Utils;
 import no.nav.freg.abac.core.annotation.Abac;
 import org.slf4j.MDC;
@@ -51,14 +51,14 @@ public class OppdaterMetadataRestController {
 	@PutMapping(value = "/{journalpostId}")
 	@Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_JOURNALPOST)},
 			actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION))
-	@RestMetrics(value = "dok_request", extraTags = {"process_code", "temp001"}, percentiles = {0.5, 0.95})
+	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark200"}, percentiles = {0.5, 0.95})
 	public PutOppdatermetadataResponse updateInngaaendeJournalpost(@PathVariable String journalpostId, @RequestBody PutOppdatermetadataRequest request) {
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
-		log.info(String.format("temp001 har mottatt kall om å oppdatere inngaaende journalpost med journalpostId=%s", journalpostId));
+		log.info(String.format("rjoark200 har mottatt kall om å oppdatere inngaaende journalpost med journalpostId=%s", journalpostId));
 		Utils.validateId(journalpostId, "journalpostId");
 		abacSecurityService.assertAccessToJournalpost(journalpostId);
 		PutOppdatermetadataResponse responseTo = oppdaterMetadataService.updateInngaaendeJournalpost(journalpostId, request);
-		log.info("temp001 har oppdatert journalpost med journalpostId={} i Joark.", journalpostId);
+		log.info("rjoark200 har oppdatert journalpost med journalpostId={} i Joark.", journalpostId);
 		return responseTo;
 	}
 }

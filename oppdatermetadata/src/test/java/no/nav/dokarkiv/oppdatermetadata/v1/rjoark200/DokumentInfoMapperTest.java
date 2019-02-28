@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.oppdatermetadata.v1.temp001;
+package no.nav.dokarkiv.oppdatermetadata.v1.rjoark200;
 
 import static no.nav.dokarkiv.oppdatermetadata.v1.util.TestUtils.BREVKODE1;
 import static no.nav.dokarkiv.oppdatermetadata.v1.util.TestUtils.DOKUMENT_TITTEL1;

@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.oppdatermetadata.v1.temp001;
+package no.nav.dokarkiv.oppdatermetadata.v1.rjoark200;
 
 import static no.nav.dokarkiv.oppdatermetadata.v1.util.TestUtils.createPutOppdaterMetadataRequest;
 import static org.hamcrest.CoreMatchers.is;

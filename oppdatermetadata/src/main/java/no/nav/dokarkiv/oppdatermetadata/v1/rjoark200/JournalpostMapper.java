@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.oppdatermetadata.v1.temp001;
+package no.nav.dokarkiv.oppdatermetadata.v1.rjoark200;
 
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
