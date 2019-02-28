@@ -226,7 +226,7 @@ public class HentDokumentIT extends AbstractJournalV3Itest {
 	}
 
 	@Test
-	public void shouldThrowNotFoundWhenDokumentKassert() throws Exception {
+	public void shouldReturnDummyDokumentWhenKassert() throws Exception {
 		abacPermit();
 
 		Journalpost journalpost = buildAndPersistJournalpost("Dokumenttittel");

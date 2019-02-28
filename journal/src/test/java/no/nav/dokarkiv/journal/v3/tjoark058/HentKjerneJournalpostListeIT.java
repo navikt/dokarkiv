@@ -194,6 +194,19 @@ public class HentKjerneJournalpostListeIT extends AbstractJournalV3Itest {
 	}
 
 	@Test
+	public void shouldNotReturnJournalpostWhenSkjermet() throws Exception {
+		abacPermit();
+		Journalpost storedJournalpost = joarkRepository.save(createJournalpost(DOKUMENT_KATEGORI).build());
+		skjermingService.skjermJournalpostByJournalpostIdAndSkjermingType(storedJournalpost.getJournalpostId(), SkjermingTypeCode.POL);
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
+
+		HentKjerneJournalpostListeResponse response = journalV3Provider.hentKjerneJournalpostListe(createRequest());
+
+		assertThat(response.getJournalpostListe(), is(empty()));
+	}
+
+	@Test
 	public void shouldReturnListWithOneJournalpostOnlyArkivVariantWhenKassert() throws Exception {
 		abacPermit();
 		Journalpost storedJournalpost = joarkRepository.save(createJournalpost(DOKUMENT_KATEGORI).build());

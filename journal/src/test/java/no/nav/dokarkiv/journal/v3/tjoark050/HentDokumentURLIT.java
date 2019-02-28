@@ -173,11 +173,6 @@ public class HentDokumentURLIT extends AbstractJournalV3Itest {
 	public void shouldReturnFilUuidForArkivVariantWhenDokumentIsKassert() throws Exception {
 		abacPermit();
 		persistDokumentFil();
-		dokumentFilRepository.save(DokumentFilBuilder.getDokumentFilBuilder()
-				.filUuid(FIL_UUID_DUMMY_DOKUMENT)
-				.fil("Dummy".getBytes())
-				.opprettetKildeNavn("test")
-				.build());
 
 		skjermingService.skjermAllFildetaljer(journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo(), SkjermingTypeCode.POL);
 		TestTransaction.flagForCommit();
@@ -263,6 +258,11 @@ public class HentDokumentURLIT extends AbstractJournalV3Itest {
 		dokumentFilRepository.save(DokumentFilBuilder.getDokumentFilBuilder()
 				.filUuid(FIL_UUID_SLADDET)
 				.fil("Test".getBytes())
+				.opprettetKildeNavn("test")
+				.build());
+		dokumentFilRepository.save(DokumentFilBuilder.getDokumentFilBuilder()
+				.filUuid(FIL_UUID_DUMMY_DOKUMENT)
+				.fil("Dummy".getBytes())
 				.opprettetKildeNavn("test")
 				.build());
 	}
