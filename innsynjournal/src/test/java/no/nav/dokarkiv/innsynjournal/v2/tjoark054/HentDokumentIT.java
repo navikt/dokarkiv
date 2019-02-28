@@ -2,6 +2,7 @@ package no.nav.dokarkiv.innsynjournal.v2.tjoark054;
 
 import static no.nav.dokarkiv.core.datautil.DokumentFilTestDataProvider.FIL_UUID_SLADDET;
 import static no.nav.dokarkiv.core.datautil.DokumentFilTestDataProvider.createDokumentFil;
+import static no.nav.dokarkiv.core.datautil.DokumentFilTestDataProvider.createDokumentFilDummy;
 import static no.nav.dokarkiv.core.datautil.DokumentFilTestDataProvider.createDokumentFilSladdet;
 import static no.nav.dokarkiv.core.datautil.DokumentInfoTestDataProvider.DOKUMENT_TITTEL;
 import static no.nav.dokarkiv.core.datautil.DokumentInfoTestDataProvider.createDokumentInfo;
@@ -258,8 +259,7 @@ public class HentDokumentIT extends AbstractInnsynJournalV2Itest {
 	}
 
 	@Test
-	public void shouldThrowDokumentIkkeFinnetWhenKassert() throws Exception {
-		expectedException.expect(HentDokumentDokumentIkkeFunnet.class);
+	public void shouldReturnDummyDokumentWhenKassert() throws Exception {
 		Journalpost journalpost = joarkRepository.save(buildDokInfoStructure(
 				createDokumentInfo()
 						.dokumentstatus(DokumentStatusCode.FERDIGSTILT))
@@ -269,7 +269,9 @@ public class HentDokumentIT extends AbstractInnsynJournalV2Itest {
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
-		innsynJournalV2Provider.hentDokument(createRequestFromJournalpost(journalpost));
+		HentDokumentResponse response = innsynJournalV2Provider.hentDokument(createRequestFromJournalpost(journalpost));
+		assertThat(response.getDokument(), is(DokumentFilTestDataProvider.FIL_CONTENT_DUMMY));
+
 	}
 	private void expectAccessDenied() {
 		expectedException.expect(isA(HentDokumentSikkerhetsbegrensning.class));
@@ -286,6 +288,7 @@ public class HentDokumentIT extends AbstractInnsynJournalV2Itest {
 	private JournalpostBuilder buildDokInfoStructure(DokumentInfoBuilder dokumentInfoBuilder) {
 		dokumentFilRepository.save(createDokumentFil().build());
 		dokumentFilRepository.save(createDokumentFilSladdet().build());
+		dokumentFilRepository.save(createDokumentFilDummy().build());
 		return appendServiceSpecificAttributes(JournalpostTestDataProvider
 				.createJournalpost(dokumentInfoBuilder)
 				.mottakskanal(MottaksKanalCode.E_POST));
@@ -295,6 +298,7 @@ public class HentDokumentIT extends AbstractInnsynJournalV2Itest {
 	private JournalpostBuilder buildJournalpost(MottaksKanalCode mottaksKanalCode) {
 		dokumentFilRepository.save(createDokumentFil().build());
 		dokumentFilRepository.save(createDokumentFilSladdet().build());
+		dokumentFilRepository.save(createDokumentFilDummy().build());
 		return appendServiceSpecificAttributes(JournalpostTestDataProvider
 				.createJournalpost(DokumentFilTestDataProvider.FIL_UUID)
 				.mottakskanal(mottaksKanalCode));

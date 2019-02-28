@@ -30,6 +30,7 @@ import no.nav.dokarkiv.core.exceptions.InvalidFilUuidException;
 import no.nav.dokarkiv.core.exceptions.NoDokumentInfoFoundException;
 import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
 import no.nav.dokarkiv.core.ondemand.HentOndemandDokument;
+import no.nav.dokarkiv.core.repository.DefaultDokumentFilRepository;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import org.junit.Test;
@@ -38,6 +39,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import javax.persistence.EntityManager;
 import java.util.Optional;
 
 /**
@@ -65,7 +67,7 @@ public class Tjoark051HentDokumentServiceTest {
 	@Mock
 	private JoarkRepositorySkjermet joarkRepositoryMock;
 	@Mock
-	private DokumentFilRepository dokumentFilRepository;
+	private DefaultDokumentFilRepository dokumentFilRepository;
 	@Mock
 	private HentOndemandDokument hentOndemandDokument;
 
@@ -102,6 +104,7 @@ public class Tjoark051HentDokumentServiceTest {
 	public void shouldThrowExceptionWhenFilDetaljerWithGivenVariantNotFound() throws Exception {
 		Journalpost journalpost = createJournalPost();
 		journalpost.findFilDetaljerByFilUuid(FIL_UUID).setVariantFormat(VariantFormatCode.PRODUKSJON);
+		journalpost.findFilDetaljerByFilUuid(FIL_UUID_SLADDET).setVariantFormat(VariantFormatCode.PRODUKSJON);
 
 		when(joarkRepositoryMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(journalpost));
 

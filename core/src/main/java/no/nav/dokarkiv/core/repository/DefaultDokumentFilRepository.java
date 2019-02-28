@@ -1,10 +1,9 @@
 package no.nav.dokarkiv.core.repository;
 
-import no.nav.dokarkiv.core.domain.entities.DokumentFil;
-import org.springframework.orm.hibernate5.HibernateTemplate;
-import org.springframework.stereotype.Repository;
+import static org.apache.commons.lang3.BooleanUtils.isFalse;
 
-import javax.inject.Inject;
+import no.nav.dokarkiv.core.domain.entities.DokumentFil;
+
 import javax.persistence.EntityManager;
 
 /**
@@ -23,19 +22,14 @@ public class DefaultDokumentFilRepository {
 
 	public DokumentFil findByFilUuid(String filUuid){
 		String maybeDummyfilUuid = filUuid;
-		if (isFilUuidBelongsToFildetaljerWithArkivVariantAndSkjermet(filUuid)) {
+		if (isFildetaljerWithArkivVariantSkjermet(filUuid)) {
 			maybeDummyfilUuid = FIL_UUID_DUMMY_DOKUMENT;
 		}
 
 		return dokumentFilRepository.findByFilUuid(maybeDummyfilUuid);
 	}
 
-	public void deleteByFilUuid(String filUuid){
-		dokumentFilRepository.deleteByFilUuid(filUuid);
-	}
-
-
-	private boolean isFilUuidBelongsToFildetaljerWithArkivVariantAndSkjermet(String filUuid) {
-		return entityManager.createQuery("select 'fildetaljer er skjermet' from FilDetaljer where filUuid=:filUuid and skjermingType is not null and variantFormat='ARKIV'").setParameter("filUuid", filUuid).getResultList().size()==1;
+	private boolean isFildetaljerWithArkivVariantSkjermet(String filUuid) {
+		return isFalse(entityManager.createQuery("select 'fildetaljer er skjermet' from FilDetaljer where filUuid=:filUuid and skjermingType is not null and variantFormat='ARKIV'").setParameter("filUuid", filUuid).getResultList().isEmpty());
 	}
 }

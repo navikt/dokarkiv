@@ -10,6 +10,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static no.nav.dokarkiv.core.domain.entities.DokumentInfo.DELETED_DOCUMENT_TITLE;
+import static no.nav.dokarkiv.core.repository.DefaultDokumentFilRepository.FIL_UUID_DUMMY_DOKUMENT;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasProperty;
@@ -74,6 +75,7 @@ public class HentDokumentIT extends AbstractJournalV3Itest {
 	private static final String FIL_UUID_SLADDET = FilDetaljer.generateUuid();
 	private static final VariantFormatCode VARIANT_FORMAT_SLADDET = VariantFormatCode.SLADDET;
 	private static final byte[] FIL_CONTENT_SLADDET = "sladdet".getBytes();
+	private static final byte[] FIL_CONTENT_DUMMY = "DUMMY".getBytes();
 
 
 	private static final OnDemandInstansCode ON_DEMAND_INSTANS = OnDemandInstansCode.PESYS;
@@ -225,21 +227,21 @@ public class HentDokumentIT extends AbstractJournalV3Itest {
 
 	@Test
 	public void shouldThrowNotFoundWhenDokumentKassert() throws Exception {
-		expectedException.expect(HentDokumentDokumentIkkeFunnet.class);
-		expectedException.expectMessage("Could not find document");
-
 		abacPermit();
 
 		Journalpost journalpost = buildAndPersistJournalpost("Dokumenttittel");
 		HentDokumentRequest request = createRequest(journalpost);
 		persistDokumentFil();
 		persistDokumentFilSladdet();
+		persistDokumentFilDummy();
 
 		skjermingService.skjermAllFildetaljer(journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo(), SkjermingTypeCode.POL);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
-		journalV3Provider.hentDokument(request);
+		HentDokumentResponse response = journalV3Provider.hentDokument(request);
+
+		assertThat(response.getDokument(), is(FIL_CONTENT_DUMMY));
 	}
 
 	@Test
@@ -356,5 +358,10 @@ public class HentDokumentIT extends AbstractJournalV3Itest {
 	private void persistDokumentFil() {
 		dokumentFilRepository.save(DokumentFilBuilder.getDokumentFilBuilder().filUuid(FIL_UUID).fil(FIL_CONTENT).opprettetKildeNavn("test").build());
 	}
+
+	private void persistDokumentFilDummy() {
+		dokumentFilRepository.save(DokumentFilBuilder.getDokumentFilBuilder().filUuid(FIL_UUID_DUMMY_DOKUMENT).fil(FIL_CONTENT_DUMMY).opprettetKildeNavn("test").build());
+	}
+
 
 }

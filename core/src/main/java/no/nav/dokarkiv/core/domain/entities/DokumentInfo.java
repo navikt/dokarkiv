@@ -360,9 +360,8 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 
 		//Return SLADDET if ARKIV is skjermet
 		if (Objects.nonNull(filDetaljer) && ARKIV.equals(filDetaljer.getVariantFormat()) && isArkivVariantSkjermet()) {
-			FilDetaljer filDetaljerSladdet = fildetaljerListe.stream()
-					.filter(filDetalj -> SLADDET.equals(filDetalj.getVariantFormat()))
-					.findAny().orElse(null);
+			FilDetaljer filDetaljerSladdet = findFilDetaljerByVariantFormat(SLADDET);
+
 			if (Objects.nonNull(filDetaljerSladdet)) {
 				filDetaljer = filDetaljerSladdet;
 			}
