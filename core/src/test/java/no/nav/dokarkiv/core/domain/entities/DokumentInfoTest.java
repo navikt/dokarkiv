@@ -183,28 +183,6 @@ public class DokumentInfoTest {
 	}
 
 	@Test
-	public void findFilDetaljerByFilUuidShouldReturnEmptyFildetaljerListWhenKassert() {
-		DokumentInfo dokumentInfo = getDokumentInfoBuilder()
-				.filDetaljerList(
-						FilDetaljer.builder()
-								.fildetaljerId(1L)
-								.filUuid("test")
-								.variantFormat(ARKIV)
-								.skjermingType(POL)
-								.build(),
-						FilDetaljer.builder()
-								.fildetaljerId(2L)
-								.filUuid("test2")
-								.variantFormat(SLADDET)
-								.skjermingType(POL)
-								.build())
-				.build();
-
-		assertThat(dokumentInfo.findFilDetaljerByFilUuid("test"), nullValue());
-		assertThat(dokumentInfo.getFildetaljerListeAdmin().size(), is(2));
-	}
-
-	@Test
 	public void findFilDetaljerByFilUuidShouldReturnArkivFildetaljerWhenKassert() {
 		DokumentInfo dokumentInfo = getDokumentInfoBuilder()
 				.filDetaljerList(
@@ -222,7 +200,7 @@ public class DokumentInfoTest {
 								.build())
 				.build();
 
-		assertThat(dokumentInfo.findFilDetaljerByFilUuid("tes2t"), nullValue());
+		assertThat(dokumentInfo.findFilDetaljerByFilUuid("test2"), nullValue());
 		assertThat(dokumentInfo.findFilDetaljerByFilUuid("test"), notNullValue());
 		assertThat(dokumentInfo.findFilDetaljerByFilUuid("test").getVariantFormat(), is(ARKIV));
 		assertThat(dokumentInfo.getFildetaljerListeAdmin().size(), is(2));
