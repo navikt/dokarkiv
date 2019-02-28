@@ -6,6 +6,7 @@ import static no.nav.abac.xacml.NavAttributter.RESOURCE_FELLES_RESOURCE_TYPE;
 import static no.nav.abac.xacml.StandardAttributter.ACTION_ID;
 import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.UPDATE_ACTION;
 
+import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dok.oppdatermetadata.api.v1.PutOppdatermetadataRequest;
 import no.nav.dok.oppdatermetadata.api.v1.PutOppdatermetadataResponse;
@@ -34,6 +35,7 @@ import javax.inject.Inject;
 @Slf4j
 @RestController
 @RequestMapping("/rest/v1/journalpost")
+@Api
 public class OppdaterMetadataRestController {
 
 	private final OppdaterMetadataService oppdaterMetadataService;

@@ -59,7 +59,7 @@
 		<oracle.version>12.2.0.1</oracle.version>
 		<cxf.version>3.2.6</cxf.version>
 		<flyway.version>4.2.0</flyway.version>
-		<swagger.version>2.8.0</swagger.version>
+		<swagger.version>2.9.2</swagger.version>
 		<freg.security.test.version>3.1.0</freg.security.test.version>
 	</properties>
 	<dependencyManagement>
@@ -163,6 +163,11 @@
 			<dependency>
 				<groupId>no.nav.dokarkiv</groupId>
 				<artifactId>hentjournalinfo</artifactId>
+				<version>1-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>no.nav.dokarkiv</groupId>
+				<artifactId>oppdatermetadata</artifactId>
 				<version>1-SNAPSHOT</version>
 			</dependency>
 			<dependency>
