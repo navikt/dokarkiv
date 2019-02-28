@@ -33,7 +33,7 @@ import org.junit.Test;
 public class DokumentInfoTest {
 
 	@Test
-	public void shouldReturnEmptyFildetaljerListWhenKassert() {
+	public void shouldOnlyReturnArkivVariantWhenKassert() {
 		DokumentInfo dokumentInfo = getDokumentInfoBuilder()
 				.filDetaljerList(
 						FilDetaljer.builder()
@@ -50,7 +50,8 @@ public class DokumentInfoTest {
 								.build())
 				.build();
 
-		assertThat(dokumentInfo.getFildetaljerListe().isEmpty(), is(true));
+		assertThat(dokumentInfo.getFildetaljerListe().size(), is(1));
+		assertThat(dokumentInfo.getFildetaljerListe().iterator().next().getVariantFormat(), is(ARKIV));
 		assertThat(dokumentInfo.getFildetaljerListeAdmin().size(), is(2));
 	}
 

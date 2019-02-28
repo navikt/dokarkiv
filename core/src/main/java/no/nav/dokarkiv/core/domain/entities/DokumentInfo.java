@@ -846,7 +846,7 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	 */
 	public Set<FilDetaljer> getFildetaljerListe() {
 		return Collections.unmodifiableSet(fildetaljerListe.stream()
-				.filter(filDetaljer -> Objects.isNull(filDetaljer.getSkjermingType()))
+				.filter(filDetaljer -> filDetaljer.getVariantFormat() == ARKIV || Objects.isNull(filDetaljer.getSkjermingType()))
 				.collect(Collectors.toSet())
 		);
 	}
