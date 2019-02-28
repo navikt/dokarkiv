@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.ferdigstilljournalpost.v1.ferdigstill;
+package no.nav.dokarkiv.ferdigstilljournalpost.v1.rjoark201;
 
 import static no.nav.dokarkiv.core.util.TestDataUtils.createJournalpost;
 
@@ -12,11 +12,9 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.DokumentUnderRedigeringException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeMidlertidigException;
 import no.nav.dokarkiv.core.exceptions.KanIkkeFerdigstilleException;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.springframework.test.context.junit.jupiter.DisabledIf;
 
 public class JournalpostValidatorTest {
 

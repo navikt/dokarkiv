@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.ferdigstilljournalpost.v1.config;
+package no.nav.dokarkiv.ferdigstilljournalpost.v1.swagger;
 
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;

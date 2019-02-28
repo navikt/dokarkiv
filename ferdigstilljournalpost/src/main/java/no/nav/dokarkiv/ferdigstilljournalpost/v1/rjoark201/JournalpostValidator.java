@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.ferdigstilljournalpost.v1.ferdigstill;
+package no.nav.dokarkiv.ferdigstilljournalpost.v1.rjoark201;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
 

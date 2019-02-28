@@ -24,8 +24,8 @@ import no.nav.dokarkiv.core.metrics.RestMetrics;
 import no.nav.dokarkiv.core.security.abac.AbacSecurityService;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import no.nav.dokarkiv.ferdigstilljournalpost.v1.api.FerdigstillJournalpostRequest;
-import no.nav.dokarkiv.ferdigstilljournalpost.v1.config.SwaggerFerdigstillJournalpost;
-import no.nav.dokarkiv.ferdigstilljournalpost.v1.ferdigstill.FerdigstillJournalpostService;
+import no.nav.dokarkiv.ferdigstilljournalpost.v1.swagger.SwaggerFerdigstillJournalpost;
+import no.nav.dokarkiv.ferdigstilljournalpost.v1.rjoark201.FerdigstillJournalpostService;
 import no.nav.freg.abac.core.annotation.Abac;
 import org.slf4j.MDC;
 import org.springframework.http.ResponseEntity;
@@ -43,7 +43,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/rest/v1/journalpost")
-@Api(tags = "ferdigstilljournalpost API", value = "FerdigstillJournalpost RestController")
+@Api
 public class FerdigstillJournalpostRestController {
 
 	private final FerdigstillJournalpostService ferdigstillJournalpostService;
@@ -66,12 +66,12 @@ public class FerdigstillJournalpostRestController {
 	@PatchMapping("/{journalpostId}/ferdigstill")
 	@Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_DOKUMENT)},
 			actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION))
-	@RestMetrics(value = "dok_request", extraTags = {"process_code", "ferdigstill"}, percentiles = {0.5, 0.95})
+	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark201"}, percentiles = {0.5, 0.95})
 	public ResponseEntity<String> ferdigstillJournalpost(
 			@RequestHeader(value = AKSJONS_LOGG_HEADER, required = false) String aksjonsLoggHeaderString,
 			@PathVariable @ApiParam(value = "IDen til journalposten som skal ferdigstilles", required = true, example = "77778888") String journalpostId,
 			@RequestBody FerdigstillJournalpostRequest request) throws UgyldigAksjonsLoggException {
-		MDC.put(MDCConstants.MDC_REQUEST_ID, "ferdigstill_id");
+		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark201");
 		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har mottat kall for ferdigstilling av journalpost med journalpostId={}", journalpostId);
 		validateRequest(journalpostId, request);
 		abacSecurityService.assertAccessToJournalpost(journalpostId);
