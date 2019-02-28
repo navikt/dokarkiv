@@ -135,20 +135,21 @@ public class TestUtil {
 				.endretAvNavn(ENDRET_AV_NAVN)
 				.brevgruppe(BREVGRUPPE)
 				.brevkode(BREVKODE)
-				.filDetaljerList(createFildetaljer())
+				.filDetaljerList(createFildetaljer(VariantFormatCode.ARKIV), createFildetaljer(VariantFormatCode.SLADDET))
 				.opprettetKildeNavn(OPPRETTET_KILDE_NAVN);
 	}
 
-	private static FilDetaljer createFildetaljer() {
-		return createFildetaljer(FilDetaljer.generateUuid());
+	private static FilDetaljer createFildetaljer(VariantFormatCode variantFormatCode) {
+		return createFildetaljer(variantFormatCode, FilDetaljer.generateUuid());
 	}
 
-	private static FilDetaljer createFildetaljer(String filUuid) {
+
+	private static FilDetaljer createFildetaljer(VariantFormatCode variantFormatCode, String filUuid) {
 		return FilDetaljerBuilder.getFilDetaljerBuilder()
 				.filUuid(filUuid)
 				.filnavn(FILNAVN)
 				.filtype(FilTypeCode.PDF)
-				.variantFormat(VariantFormatCode.ARKIV)
+				.variantFormat(variantFormatCode)
 				.opprettetKildeNavn(OPPRETTET_KILDE_NAVN)
 				.fileContent("ARKIV variant".getBytes())
 				.build();

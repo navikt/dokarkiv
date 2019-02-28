@@ -76,7 +76,7 @@ public class Rjoark102IT extends AbstractAdminIT {
 
 		Optional<DokumentInfo> dokumentInfoRep = dokumentinfoRepository.findByDokumentInfoId(dokumentInfo1.getDokumentInfoId());
 		assertTrue(dokumentInfoRep.isPresent());
-		assertTrue(dokumentInfoRep.get().getFildetaljerListe().isEmpty());
+		assertThat(dokumentInfoRep.get().getFildetaljerListeAdmin().size(), is(2));
 		assertThat("Feil antall journalposter", joarkRepository.count(), is(2L));
 		assertThat("Feil antall dokumenter", dokumentinfoRepository.count(), is(2L));
 		assertTrue(dokumentInfo1.isRelatedToMultipleJournalposts());
@@ -118,7 +118,7 @@ public class Rjoark102IT extends AbstractAdminIT {
 		assertThat(aksjonsLogg.getJournalpostId(), nullValue());
 		assertThat(aksjonsLogg.getDokumentInfoId(), is(dokumentInfo1.getDokumentInfoId()));
 		assertThat(aksjonsLogg.getApplikasjon(), is(SERVICE_USER_ID));
-		assertThat(aksjonsLogg.getArkivElementEndringer().size(), is(3));
+		assertThat(aksjonsLogg.getArkivElementEndringer().size(), is(4));
 
 		List<ArkivElementEndring> arkivElementEndringList = IteratorUtils.toList(aksjonsLogg.getArkivElementEndringer()
 				.iterator());
@@ -153,7 +153,7 @@ public class Rjoark102IT extends AbstractAdminIT {
 
 		Optional<DokumentInfo> dokumentInfoRep = dokumentinfoRepository.findByDokumentInfoId(dokumentInfo.getDokumentInfoId());
 		assertTrue(dokumentInfoRep.isPresent());
-		assertTrue(dokumentInfoRep.get().getFildetaljerListe().isEmpty());
+		assertThat(dokumentInfoRep.get().getFildetaljerListeAdmin().size(), is(2));
 		assertThat("Feil antall journalposter", joarkRepository.count(), is(1L));
 		assertThat("Feil antall dokumenter", dokumentinfoRepository.count(), is(1L));
 		assertFalse(dokumentInfo.isRelatedToMultipleJournalposts());
