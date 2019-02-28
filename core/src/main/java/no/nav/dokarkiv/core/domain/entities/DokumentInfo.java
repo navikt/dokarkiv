@@ -359,7 +359,7 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 				.findAny().orElse(null);
 
 		//Return SLADDET if ARKIV is skjermet
-		if (Objects.nonNull(filDetaljer) && ARKIV.equals(filDetaljer.getVariantFormat()) && isArkivVariantSkjermet()) {
+		if (Objects.nonNull(filDetaljer) && ARKIV.equals(filDetaljer.getVariantFormat()) && Objects.nonNull(filDetaljer.getSkjermingType())) {
 			FilDetaljer filDetaljerSladdet = findFilDetaljerByVariantFormat(SLADDET);
 
 			if (Objects.nonNull(filDetaljerSladdet)) {
@@ -418,11 +418,6 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 				.findAny()
 				.orElse(null);
 
-	}
-
-	private boolean isArkivVariantSkjermet() {
-		return fildetaljerListe.stream()
-				.anyMatch(filDetaljer -> ARKIV.equals(filDetaljer.getVariantFormat()) && Objects.nonNull(filDetaljer.getSkjermingType()));
 	}
 
 	/**
