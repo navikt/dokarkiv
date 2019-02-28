@@ -806,7 +806,7 @@ public class HentMinTilgjengeligeJournalpostListeIT extends AbstractInnsynJourna
 		assertThat(responseJp.getOpprettet(), is(DateConverterUtil.convertDateToXMLGregorianCalendar(journalpost.getChangeStamp().getCreatedDate())));
 
 		assertSak(responseJp.getGjelderSak());
-		assertNull(responseJp.getDokumentinfoRelasjonListe().get(0).getJournalfoertDokument().getBeskriverInnhold());
+		assertThat(responseJp.getDokumentinfoRelasjonListe().get(0).getJournalfoertDokument().getBeskriverInnhold().getVariantformat().getValue(), is("ARKIV"));
 	}
 
 	private void assertSak(Sak gjelderSak) {

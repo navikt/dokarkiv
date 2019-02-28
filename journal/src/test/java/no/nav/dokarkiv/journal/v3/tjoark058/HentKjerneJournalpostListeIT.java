@@ -194,7 +194,7 @@ public class HentKjerneJournalpostListeIT extends AbstractJournalV3Itest {
 	}
 
 	@Test
-	public void shouldReturnListWithOneJournalpostNoContentKassert() throws Exception {
+	public void shouldReturnListWithOneJournalpostOnlyArkivVariantWhenKassert() throws Exception {
 		abacPermit();
 		Journalpost storedJournalpost = joarkRepository.save(createJournalpost(DOKUMENT_KATEGORI).build());
 		skjermingService.skjermAllFildetaljer(storedJournalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo(), SkjermingTypeCode.POL);
@@ -205,7 +205,8 @@ public class HentKjerneJournalpostListeIT extends AbstractJournalV3Itest {
 
 		assertThat(response.getJournalpostListe(), hasSize(1));
 		assertThat(response.isSisteIntervall(), is(true));
-		assertThat(response.getJournalpostListe().get(0).getHoveddokument().getDokumentInnholdListe().size(), is(0));
+		assertThat(response.getJournalpostListe().get(0).getHoveddokument().getDokumentInnholdListe().size(), is(1));
+		assertThat(response.getJournalpostListe().get(0).getHoveddokument().getDokumentInnholdListe().get(0).getVariantformat().getValue(), is("ARKIV"));
 	}
 
 	@Test
