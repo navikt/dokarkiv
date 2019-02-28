@@ -9,9 +9,9 @@ import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
 import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode;
-import no.nav.dokarkiv.hentjournalsakinfo.rjoark900.DokumentInfoDto;
-import no.nav.dokarkiv.hentjournalsakinfo.rjoark900.SaksrelasjonDto;
-import no.nav.dokarkiv.hentjournalsakinfo.rjoark900.TilleggsopplysningDto;
+import no.nav.dokarkiv.hentjournalsakinfo.dto.DokumentInfoDto;
+import no.nav.dokarkiv.hentjournalsakinfo.dto.SaksrelasjonDto;
+import no.nav.dokarkiv.hentjournalsakinfo.dto.TilleggsopplysningDto;
 
 import java.util.Date;
 import java.util.List;

@@ -72,6 +72,7 @@ final class FinnJournalpostSqlGenerator {
 				"                              d.orig_journalpost_id AS dokumenter_origjournalpostid,\n" +
 				"                              fd.k_skjerming_type   AS dokumenter_varianter_skjerming,\n" +
 				"                              fd.k_variant_format   AS dokumenter_varianter_variantf,\n" +
+				"	                           fd.fil_navn           AS dokumenter_varianter_filnavn,\n" +
 				"                              tsi.vedlegg_innhold   AS dokumenter_logiske_tittel\n" +
 				"                       FROM t_journalpost j\n" +
 				"                              LEFT JOIN t_saksrelasjon s ON s.journalpost_id = j.journalpost_id\n" +
@@ -101,8 +102,7 @@ final class FinnJournalpostSqlGenerator {
 				"                              JOIN t_journalpost j ON jps.journalpost_id = j.journalpost_id\n" +
 				"                              LEFT JOIN t_saksrelasjon ts ON j.journalpost_id = ts.journalpost_id\n" +
 				"\n" +
-				"                       WHERE j.k_fagomrade IN (:inkluderTema)\n" +
-				"                         AND j.k_journalpost_t IN (:inkluderJournalpostType)\n" +
+				"                       WHERE j.k_journalpost_t IN (:inkluderJournalpostType)\n" +
 				"                         AND j.dato_opprettet > :fraDato\n" +
 				"                         AND (\n" +
 				"                           (ts.feilregistrert = 1 AND\n" +

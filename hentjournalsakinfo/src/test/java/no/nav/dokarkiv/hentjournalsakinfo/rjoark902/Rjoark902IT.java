@@ -19,7 +19,7 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.util.TestDataGenerator;
 import no.nav.dokarkiv.hentjournalsakinfo.AbstractHentjournalsakinfoItest;
-import no.nav.dokarkiv.hentjournalsakinfo.rjoark900.DokumentInfoDto;
+import no.nav.dokarkiv.hentjournalsakinfo.dto.DokumentInfoDto;
 import org.junit.Test;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
