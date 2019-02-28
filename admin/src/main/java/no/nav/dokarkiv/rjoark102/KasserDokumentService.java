@@ -1,8 +1,12 @@
 package no.nav.dokarkiv.rjoark102;
 
+import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.DOKUMENT_FIL_FIL_UUID;
+import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.FILDETALJER_FIL_UUID;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.DOKUMENT_INFO_KASSERT_AV;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.DOKUMENT_INFO_KASSERT_DATO;
+import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.FILDETALJER_SKJERMING_TYPE_VARIANT;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.FILDETALJER_VARIANTFORMAT;
+import static no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode.POL;
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.ARKIV;
 import static no.nav.dokarkiv.core.repository.DefaultDokumentFilRepository.FIL_UUID_DUMMY_DOKUMENT;
 
@@ -14,16 +18,15 @@ import no.nav.dokarkiv.core.exceptions.DokumentInfoIkkeFunnetException;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkDeleteRepository;
 import no.nav.dokarkiv.dto.KasserDokumentRequest;
-import no.nav.dokarkiv.exception.ArkivVariantkkeFunnetException;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 public class KasserDokumentService {
@@ -52,32 +55,37 @@ public class KasserDokumentService {
 		List<ArkivElementEndringTO> arkivElementEndringTOList = opprettArkivElementEndring(dokumentInfoTilTidligKassering);
 
 		//Slett alle Fildetaljer som ikke er ARKIV variant
-		slettFildetaljerIkkeArkivVariant(request.getDokumentInfoId(), dokumentInfoTilTidligKassering.getFildetaljerListeAdmin());
+		arkivElementEndringTOList.addAll(slettFildetaljerIkkeArkivVariant(request.getDokumentInfoId(), dokumentInfoTilTidligKassering.getFildetaljerListeAdmin()));
 
 		FilDetaljer arkiv = dokumentInfoTilTidligKassering.findFilDetaljerByVariantFormatAdmin(ARKIV);
-		slettArkivVariantDokumentFilOgErstattMedDummy(request.getDokumentInfoId(), arkiv.getFilUuid());
+		arkivElementEndringTOList.addAll(slettArkivVariantDokumentFilOgErstattMedDummy(request.getDokumentInfoId(), arkiv.getFilUuid()));
 
 		return arkivElementEndringTOList;
 	}
 
-	private void slettFildetaljerIkkeArkivVariant(Long dokumentInfoId, Set<FilDetaljer> filDetaljerList) {
+	private List<ArkivElementEndringTO> slettFildetaljerIkkeArkivVariant(Long dokumentInfoId, Set<FilDetaljer> filDetaljerList) {
+		List<ArkivElementEndringTO> arkivElementEndringTOList = new ArrayList<>();
 		filDetaljerList
 				.stream()
 				.filter(filDetaljer -> filDetaljer.getVariantFormat() != ARKIV)
 				.forEach(filDetaljer -> {
-					slettDokumentFil(dokumentInfoId, filDetaljer.getVariantFormat());
-					slettFildetaljer(dokumentInfoId, filDetaljer.getVariantFormat());
+					arkivElementEndringTOList.add(slettDokumentFil(dokumentInfoId, filDetaljer.getVariantFormat(), filDetaljer.getFilUuid()));
+					arkivElementEndringTOList.add(slettFildetaljer(dokumentInfoId, filDetaljer.getVariantFormat()));
 				});
 
+		return arkivElementEndringTOList;
+
 	}
 
-	private void slettArkivVariantDokumentFilOgErstattMedDummy(Long dokumentInfoId, String oldFilUuid) {
-		slettDokumentFil(dokumentInfoId, ARKIV);
-		fjernSkjermingFraFildetaljer(dokumentInfoId, oldFilUuid);
-		oppdaterFildetaljerFilUuid(dokumentInfoId, oldFilUuid, FIL_UUID_DUMMY_DOKUMENT);
+	private List<ArkivElementEndringTO> slettArkivVariantDokumentFilOgErstattMedDummy(Long dokumentInfoId, String oldFilUuid) {
+		List<ArkivElementEndringTO> arkivElementEndringTOList = new ArrayList<>();
+		arkivElementEndringTOList.add(slettDokumentFil(dokumentInfoId, ARKIV, oldFilUuid));
+		arkivElementEndringTOList.add(fjernSkjermingFraFildetaljer(dokumentInfoId, oldFilUuid, ARKIV));
+		arkivElementEndringTOList.add(oppdaterFildetaljerFilUuid(dokumentInfoId, oldFilUuid, FIL_UUID_DUMMY_DOKUMENT));
+		return arkivElementEndringTOList;
 	}
 
-	private void oppdaterFildetaljerFilUuid(Long dokumentInfoId, String oldFilUuid, String newFilUuid) {
+	private ArkivElementEndringTO oppdaterFildetaljerFilUuid(Long dokumentInfoId, String oldFilUuid, String newFilUuid) {
 		entityManager.createQuery("update FilDetaljer set filUuid=:dummy_fil_uuid where filUuid=:oldFilUuid and dokumentInfo.dokumentInfoId=:dokumentInfoId")
 				.setParameter("dokumentInfoId", dokumentInfoId)
 				.setParameter("oldFilUuid", oldFilUuid)
@@ -85,24 +93,44 @@ public class KasserDokumentService {
 				.executeUpdate();
 		entityManager.flush();
 		entityManager.clear();
+		return ArkivElementEndringTO.builder()
+				.arkivElement(FILDETALJER_FIL_UUID)
+				.fraVerdi(oldFilUuid)
+				.tilVerdi(newFilUuid)
+				.build();
 	}
 
-	private void fjernSkjermingFraFildetaljer(Long dokumentInfoId, String filUuid) {
+	private ArkivElementEndringTO fjernSkjermingFraFildetaljer(Long dokumentInfoId, String filUuid, VariantFormatCode variantFormatCode) {
 		entityManager.createQuery("update FilDetaljer set skjermingType=null where filUuid=:filUuid and dokumentInfo.dokumentInfoId=:dokumentInfoId")
 				.setParameter("dokumentInfoId", dokumentInfoId)
 				.setParameter("filUuid", filUuid)
 				.executeUpdate();
 		entityManager.flush();
 		entityManager.clear();
+		return ArkivElementEndringTO.builder()
+				.arkivElement(String.format(FILDETALJER_SKJERMING_TYPE_VARIANT, variantFormatCode))
+				.fraVerdi(POL.name())
+				.tilVerdi(null)
+				.build();
 	}
 
 
-	private void slettFildetaljer(Long dokumentInfoId, VariantFormatCode variantFormatCode) {
+	private ArkivElementEndringTO slettFildetaljer(Long dokumentInfoId, VariantFormatCode variantFormatCode) {
 		deleteRepository.deleteFilDetaljerByDokumentInfoIdAndVariantFormat(dokumentInfoId, variantFormatCode.name());
+		return ArkivElementEndringTO.builder()
+				.arkivElement(FILDETALJER_VARIANTFORMAT)
+				.fraVerdi(variantFormatCode.name())
+				.tilVerdi(null)
+				.build();
 	}
 
-	private void slettDokumentFil(Long dokumentInfoId, VariantFormatCode variantFormatCode) {
+	private ArkivElementEndringTO slettDokumentFil(Long dokumentInfoId, VariantFormatCode variantFormatCode, String filUuid) {
 		deleteRepository.deleteDokumentFilByDokumentInfoIdAndVariantFormat(dokumentInfoId, variantFormatCode.name());
+		return ArkivElementEndringTO.builder()
+				.arkivElement(DOKUMENT_FIL_FIL_UUID)
+				.fraVerdi(filUuid)
+				.tilVerdi(null)
+				.build();
 	}
 
 	private void settKassasjonInfo(DokumentInfo dokumentInfo, String kassertAvNavn) {
@@ -112,15 +140,7 @@ public class KasserDokumentService {
 	}
 
 	private List<ArkivElementEndringTO> opprettArkivElementEndring(DokumentInfo dokumentInfoTilTidligKassering) {
-		List<ArkivElementEndringTO> arkivElementEndringTOList = dokumentInfoTilTidligKassering.getFildetaljerListeAdmin()
-				.stream()
-				.map(filDetaljer -> ArkivElementEndringTO.builder()
-						.arkivElement(FILDETALJER_VARIANTFORMAT)
-						.fraVerdi(filDetaljer.getVariantFormat().name())
-						.tilVerdi(null)
-						.build()
-				)
-				.collect(Collectors.toList());
+		List<ArkivElementEndringTO> arkivElementEndringTOList = new ArrayList<>();
 
 		arkivElementEndringTOList.add(
 				ArkivElementEndringTO.builder()
