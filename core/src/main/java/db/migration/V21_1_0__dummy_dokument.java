@@ -14,7 +14,7 @@ import java.sql.ResultSet;
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
  */
-public class V21_0_0__dummy_dokument implements JdbcMigration {
+public class V21_1_0__dummy_dokument implements JdbcMigration {
 	/**
 	 * Executes this db.migration. The execution will automatically take place within a transaction, when the underlying
 	 * database supports it.

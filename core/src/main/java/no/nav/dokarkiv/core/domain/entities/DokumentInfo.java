@@ -367,7 +367,7 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 			}
 		}
 
-		if (Objects.nonNull(filDetaljer) && Objects.nonNull(filDetaljer.getSkjermingType()) && filDetaljer.getVariantFormat() != ARKIV) {
+		if (Objects.nonNull(filDetaljer) && filDetaljer.getVariantFormat() != ARKIV && Objects.nonNull(filDetaljer.getSkjermingType())) {
 			filDetaljer = null;
 		}
 
