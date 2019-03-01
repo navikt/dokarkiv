@@ -3,6 +3,7 @@ package no.nav.dokarkiv.ferdigstilljournalpost.v1;
 import static no.nav.abac.xacml.NavAttributter.RESOURCE_ARKIV_DOKUMENT;
 import static no.nav.abac.xacml.NavAttributter.RESOURCE_FELLES_RESOURCE_TYPE;
 import static no.nav.abac.xacml.StandardAttributter.ACTION_ID;
+import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
 import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_LOGG_HEADER;
 import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.FERDIGSTILL;
@@ -95,9 +96,9 @@ public class FerdigstillJournalpostRestController {
 			aksjonsLoggTo = AksjonsLoggTO.builder()
 					.aksjon(FERDIGSTILL)
 					.journalpostId(Long.parseLong(journalpostId))
-					.utfoertAv(MDC.get(MDC_USER_ID))
-					.bruker(MDC.get(MDC_USER_ID))
-					.melding(String.format("Journalpost ferdigstilt, journalpostId=%s", journalpostId))
+					.utfoertAv(MDC.get(MDC_CONSUMER_ID))
+					.bruker(MDC.get(MDC_USER_ID)) // hent fra journalpost ??
+					.melding("Journalpost ferdigstilt")
 					.build();
 		} else {
 			aksjonsLoggTo = aksjonsLoggTOMapper.mapAksjonsLoggHeader(aksjonsLoggHeaderString, FERDIGSTILL, Long.parseLong(journalpostId), null);

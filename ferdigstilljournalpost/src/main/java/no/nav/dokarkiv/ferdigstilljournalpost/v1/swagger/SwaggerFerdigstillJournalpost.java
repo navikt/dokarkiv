@@ -19,7 +19,7 @@ import java.lang.annotation.Target;
 @ApiResponses(value = {
 		@ApiResponse(code = 200, message = "OK"),
 		@ApiResponse(code = 400, message = "* Kan ikke ferdigstille"),
-		@ApiResponse(code = 401, message = "* Bruker mangler tilgang for å vise dokumentet.\n* Ugyldig OIDC token. Denne feilen gis dersom tokenet ikke har riktig format eller er utgått."),
+		@ApiResponse(code = 401, message = "* Mangler tilgang til å opprette ny førsteside.\n* Ugyldig OIDC token. Denne feilen gis dersom tokenet ikke har riktig format eller er utgått."),
 		@ApiResponse(code = 500, message = "Internal server error")})
 public @interface SwaggerFerdigstillJournalpost {
 	@AliasFor(
