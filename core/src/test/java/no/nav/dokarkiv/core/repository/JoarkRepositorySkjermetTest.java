@@ -165,7 +165,7 @@ public class JoarkRepositorySkjermetTest {
 
 		journalpost = joarkRepository.save(journalpost);
 
-		skjermingService.setJournalpostSkjerming(journalpost, SkjermingTypeCode.POL);
+		skjermingService.setJournalpostSkjermet(journalpost, SkjermingTypeCode.POL);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
@@ -183,7 +183,7 @@ public class JoarkRepositorySkjermetTest {
 
 		journalpost = joarkRepository.save(journalpost);
 		journalpostSkjermet = joarkRepository.save(journalpostSkjermet);
-		skjermingService.setJournalpostSkjerming(journalpostSkjermet, SkjermingTypeCode.POL);
+		skjermingService.setJournalpostSkjermet(journalpostSkjermet, SkjermingTypeCode.POL);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
@@ -205,7 +205,7 @@ public class JoarkRepositorySkjermetTest {
 
 		journalpost = joarkRepository.save(journalpost);
 
-		skjermingService.setJournalpostSkjerming(journalpost, SkjermingTypeCode.POL);
+		skjermingService.setJournalpostSkjermet(journalpost, SkjermingTypeCode.POL);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
@@ -219,7 +219,7 @@ public class JoarkRepositorySkjermetTest {
 		Journalpost journalpost = createJournalpost();
 
 		journalpost = joarkRepository.save(journalpost);
-		skjermingService.setJournalpostSkjerming(journalpost, SkjermingTypeCode.POL);
+		skjermingService.setJournalpostSkjermet(journalpost, SkjermingTypeCode.POL);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
@@ -240,7 +240,7 @@ public class JoarkRepositorySkjermetTest {
 		Journalpost journalpost = createJournalpost();
 
 		joarkRepository.save(journalpost);
-		skjermingService.setJournalpostSkjerming(journalpost, SkjermingTypeCode.POL);
+		skjermingService.setJournalpostSkjermet(journalpost, SkjermingTypeCode.POL);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
@@ -255,7 +255,7 @@ public class JoarkRepositorySkjermetTest {
 		Journalpost journalpost = createJournalpost();
 
 		journalpost = joarkRepository.save(journalpost);
-		skjermingService.setJournalpostSkjerming(journalpost, SkjermingTypeCode.POL);
+		skjermingService.setJournalpostSkjermet(journalpost, SkjermingTypeCode.POL);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
@@ -277,7 +277,7 @@ public class JoarkRepositorySkjermetTest {
 		Journalpost journalpost = createJournalpost();
 
 		joarkRepository.save(journalpost);
-		skjermingService.setJournalpostSkjerming(journalpost, SkjermingTypeCode.POL);
+		skjermingService.setJournalpostSkjermet(journalpost, SkjermingTypeCode.POL);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
@@ -305,7 +305,7 @@ public class JoarkRepositorySkjermetTest {
 				.build());
 
 		journalpostSkjermet = joarkRepository.save(journalpostSkjermet);
-		skjermingService.setJournalpostSkjerming(journalpostSkjermet, SkjermingTypeCode.POL);
+		skjermingService.setJournalpostSkjermet(journalpostSkjermet, SkjermingTypeCode.POL);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 

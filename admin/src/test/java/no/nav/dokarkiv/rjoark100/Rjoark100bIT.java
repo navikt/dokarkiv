@@ -38,7 +38,7 @@ public class Rjoark100bIT extends AbstractAdminIT {
 		abacPermit();
 
 		Journalpost journalpost = joarkRepository.save(opprettHoveddokumentForIT());
-		skjermingService.setJournalpostSkjerming(journalpost, SkjermingTypeCode.POL);
+		skjermingService.setJournalpostSkjermet(journalpost, SkjermingTypeCode.POL);
 
 		TestTransaction.flagForCommit();
 		TestTransaction.end();

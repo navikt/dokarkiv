@@ -243,7 +243,7 @@ public class HentDokumentIT extends AbstractInnsynJournalV2Itest {
 	}
 
 	@Test
-	public void shouldReturnSladdetDocumentWithCorrectDokumentstatus() throws Exception {
+	public void shouldReturnSladdetDocumentWhenArkivVariantIsSkjermet() throws Exception {
 		Journalpost journalpost = joarkRepository.save(buildDokInfoStructure(
 				createDokumentInfo()
 						.dokumentstatus(DokumentStatusCode.FERDIGSTILT))

@@ -122,7 +122,7 @@ public class Rjoark102IT extends AbstractAdminIT {
 		assertThat(aksjonsLogg.getJournalpostId(), nullValue());
 		assertThat(aksjonsLogg.getDokumentInfoId(), is(dokumentInfo1.getDokumentInfoId()));
 		assertThat(aksjonsLogg.getApplikasjon(), is(SERVICE_USER_ID));
-		assertThat(aksjonsLogg.getArkivElementEndringer().size(), is(7));
+		assertThat(aksjonsLogg.getArkivElementEndringer().size(), is(6));
 
 		List<ArkivElementEndring> arkivElementEndringList = IteratorUtils.toList(aksjonsLogg.getArkivElementEndringer()
 				.iterator());
@@ -147,11 +147,6 @@ public class Rjoark102IT extends AbstractAdminIT {
 				ArkivElementEndring.builder()
 						.arkivElement("DokumentFil.filUuid")
 						.fraVerdi(FIL_UUID_ARKIV)
-						.tilVerdi(null)
-						.build().toStringElementFraTil(),
-				ArkivElementEndring.builder()
-						.arkivElement("DokumentFil.filUuid")
-						.fraVerdi(FIL_UUID_SLADDET)
 						.tilVerdi(null)
 						.build().toStringElementFraTil(),
 				ArkivElementEndring.builder()

@@ -21,7 +21,7 @@ public class SkjermArkivenhetService {
 
 	public void skjermJournalpost(Long journalpostId, SkjermingTypeCode skjerming) {
 		sjekkAtJournalpostIkkeErSkjermet(journalpostId, skjerming);
-		skjermingService.skjermJournalpostByJournalpostIdAndSkjermingType(journalpostId, skjerming);
+		skjermingService.skjermJournalpost(journalpostId, skjerming);
 	}
 
 	private void sjekkAtJournalpostIkkeErSkjermet(Long journalpostId, SkjermingTypeCode skjermingTypeCode) {
@@ -34,7 +34,7 @@ public class SkjermArkivenhetService {
 
 	public void skjermVedlegg(Long journalpostId, Long dokumentInfoId, SkjermingTypeCode skjerming) {
 		sjekkAtJournalpostDokumentInfoRelasjonIkkeErSkjermet(journalpostId, dokumentInfoId, skjerming);
-		skjermingService.skjermJpDokInfoRelByJournalpostIdAndDokumentInfoIdAndSkjermingType(journalpostId, dokumentInfoId, skjerming);
+		skjermingService.skjermJournalpostDokumentInfoRelasjon(journalpostId, dokumentInfoId, skjerming);
 	}
 
 	private void sjekkAtJournalpostDokumentInfoRelasjonIkkeErSkjermet(Long journalpostId, Long dokumentInfoId, SkjermingTypeCode skjermingTypeCode) {
@@ -49,7 +49,7 @@ public class SkjermArkivenhetService {
 
 	public void skjermDokumentFil(Long dokumentInfoId, VariantFormatCode variant, SkjermingTypeCode skjerming) {
 		sjekkAtVariantFormatIkkeErSkjermet(dokumentInfoId, variant);
-		skjermingService.skjermVariantByDokumentInfoIdAndVariantFormatAndSkjermingType(dokumentInfoId, variant, skjerming);
+		skjermingService.skjermFildetaljerByVariant(dokumentInfoId, variant, skjerming);
 	}
 
 	private void sjekkAtVariantFormatIkkeErSkjermet(Long dokumentInfoId, VariantFormatCode variantFormatCode) {

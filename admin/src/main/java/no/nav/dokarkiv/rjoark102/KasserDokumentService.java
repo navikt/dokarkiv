@@ -69,12 +69,11 @@ public class KasserDokumentService {
 				.stream()
 				.filter(filDetaljer -> filDetaljer.getVariantFormat() != ARKIV)
 				.forEach(filDetaljer -> {
-					arkivElementEndringTOList.add(slettDokumentFil(dokumentInfoId, filDetaljer.getVariantFormat(), filDetaljer.getFilUuid()));
+					slettDokumentFil(dokumentInfoId, filDetaljer.getVariantFormat(), filDetaljer.getFilUuid());
 					arkivElementEndringTOList.add(slettFildetaljer(dokumentInfoId, filDetaljer.getVariantFormat()));
 				});
 
 		return arkivElementEndringTOList;
-
 	}
 
 	private List<ArkivElementEndringTO> slettArkivVariantDokumentFilOgErstattMedDummy(Long dokumentInfoId, String oldFilUuid) {

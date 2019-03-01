@@ -809,6 +809,65 @@ public class HentMinTilgjengeligeJournalpostListeIT extends AbstractInnsynJourna
 		assertThat(responseJp.getDokumentinfoRelasjonListe().get(0).getJournalfoertDokument().getBeskriverInnhold().getVariantformat().getValue(), is("ARKIV"));
 	}
 
+	@Test
+	public void shouldNotReturnJournalpostWhenSkjermet() throws Exception {
+
+		Journalpost journalpost = buildAndPersist(journalpostMaxResponse());
+		Journalpost journalpost2 = buildAndPersist(journalpostMaxResponse());
+
+
+		String sakId = journalpost.getSaksrelasjon().getSakId();
+		HentTilgjengeligJournalpostListeRequest request = createRequest(true, sakId);
+		HentTilgjengeligJournalpostListeResponse response = innsynJournalV2Provider.hentTilgjengeligJournalpostListe(request);
+
+		List<no.nav.tjeneste.virksomhet.innsynjournal.v2.informasjon.Journalpost> journalpostListe = response.getJournalpostListe();
+		assertThat(journalpostListe, hasSize(2));
+
+		skjermingService.setJournalpostSkjermet(journalpost, SkjermingTypeCode.POL);
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
+
+		HentTilgjengeligJournalpostListeResponse responseAfter = innsynJournalV2Provider.hentTilgjengeligJournalpostListe(request);
+		List<no.nav.tjeneste.virksomhet.innsynjournal.v2.informasjon.Journalpost> journalpostListeAfter = responseAfter.getJournalpostListe();
+		assertThat(journalpostListeAfter, hasSize(1));
+		assertThat(journalpostListeAfter.get(0).getJournalpostId(), is(journalpost2.getJournalpostId().toString()));
+	}
+
+	@Test
+	public void shouldNotReturnJournalpostRelasjonWhenSkjermet() throws Exception {
+		Journalpost journalpost = buildAndPersist(aJournalpostWithoutHoveddokument()
+				.dokumentInfoRelasjoner(
+						createVedleggRelasjon(
+								createDokumentInfo("Tidligste_vedlegg", FIL_UUID, FIL_UUID_SLADDET)
+										.build()).build(),
+						createHoveddokumentRelasjon(
+								createDokumentInfo("Hoveddokument", FIL_UUID, FIL_UUID_SLADDET)
+										.build()).build()
+				));
+		String sakId = journalpost.getSaksrelasjon().getSakId();
+		HentTilgjengeligJournalpostListeRequest request = createRequest(true, sakId);
+		HentTilgjengeligJournalpostListeResponse response = innsynJournalV2Provider.hentTilgjengeligJournalpostListe(request);
+
+		List<no.nav.tjeneste.virksomhet.innsynjournal.v2.informasjon.Journalpost> journalpostListe = response.getJournalpostListe();
+		assertThat(journalpostListe, hasSize(1));
+		assertThat(journalpostListe.get(0).getDokumentinfoRelasjonListe().size(), is(2));
+
+		skjermingService.setJpDokInfoRelSkjerming(journalpost.findDokumentInfoRelasjonByTilknyttetJournalpostSom(VEDLEGG).iterator().next(), SkjermingTypeCode.POL);
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
+
+		HentTilgjengeligJournalpostListeResponse responseAfter = innsynJournalV2Provider.hentTilgjengeligJournalpostListe(request);
+
+		List<no.nav.tjeneste.virksomhet.innsynjournal.v2.informasjon.Journalpost> journalpostListeAfter = responseAfter.getJournalpostListe();
+		assertThat(journalpostListeAfter, hasSize(1));
+		assertThat(journalpostListeAfter.get(0).getDokumentinfoRelasjonListe().size(), is(1));
+		assertThat(journalpostListeAfter.get(0)
+				.getDokumentinfoRelasjonListe()
+				.get(0)
+				.getDokumentTilknyttetJournalpost()
+				.getValue(), is("HOVEDDOKUMENT"));
+	}
+
 	private void assertSak(Sak gjelderSak) {
 		assertThat(gjelderSak.getFagsystem().getValue(), is(SAK_FAGSYSTEM.name()));
 		assertThat(gjelderSak.getSakId(), is(SAK_ID));

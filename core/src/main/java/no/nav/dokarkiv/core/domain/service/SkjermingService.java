@@ -97,32 +97,32 @@ public class SkjermingService {
 		}
 	}
 
-	public void skjermVariantByDokumentInfoIdAndVariantFormatAndSkjermingType(Long dokumentInfoId, VariantFormatCode variantFormat, SkjermingTypeCode skjermingType) {
+	public void skjermFildetaljerByVariant(Long dokumentInfoId, VariantFormatCode variantFormat, SkjermingTypeCode skjermingType) {
 		DokumentInfo dokumentInfo = hentDokumentInfo(dokumentInfoId);
 		setVariantSkjermet(dokumentInfo, variantFormat, skjermingType);
 	}
 
-	public void opphevSkjermVariantByDokumentInfoIdAndVariantFormat(Long dokumentInfoId, VariantFormatCode variantFormat) {
+	public void opphevSkjermFildetaljerByVariant(Long dokumentInfoId, VariantFormatCode variantFormat) {
 		DokumentInfo dokumentInfo = hentDokumentInfo(dokumentInfoId);
 		setVariantSkjermet(dokumentInfo, variantFormat, null);
 	}
 
-	public void skjermJournalpostByJournalpostIdAndSkjermingType(Long journalpostId, SkjermingTypeCode skjermingTypeCode) {
+	public void skjermJournalpost(Long journalpostId, SkjermingTypeCode skjermingTypeCode) {
 		Journalpost journalpost = hentJournalpost(journalpostId);
-		setJournalpostSkjerming(journalpost, skjermingTypeCode);
+		setJournalpostSkjermet(journalpost, skjermingTypeCode);
 	}
 
 	public void opphevSkjermJournalpostByJournalpostId(Long journalpostId) {
 		Journalpost journalpost = hentJournalpost(journalpostId);
-		setJournalpostSkjerming(journalpost, null);
+		setJournalpostSkjermet(journalpost, null);
 	}
 
-	public void skjermJpDokInfoRelByJournalpostIdAndDokumentInfoIdAndSkjermingType(Long journalpostId, Long dokumentInfoId, SkjermingTypeCode skjermingTypeCode) {
+	public void skjermJournalpostDokumentInfoRelasjon(Long journalpostId, Long dokumentInfoId, SkjermingTypeCode skjermingTypeCode) {
 		JournalpostDokumentInfoRelasjon rel = hentJpDokInfoRel(journalpostId, dokumentInfoId);
 		setJpDokInfoRelSkjerming(rel, skjermingTypeCode);
 	}
 
-	public void opphevSkjermJpDokInfoRelByJournalpostIdAndDokumentInfoId(Long journalpostId, Long dokumentInfoId) {
+	public void opphevSkjermingJournalpostDokumentInfoRelasjon(Long journalpostId, Long dokumentInfoId) {
 		JournalpostDokumentInfoRelasjon rel = hentJpDokInfoRel(journalpostId, dokumentInfoId);
 		setJpDokInfoRelSkjerming(rel, null);
 	}
@@ -147,7 +147,7 @@ public class SkjermingService {
 		q.executeUpdate();
 	}
 
-	public void setJournalpostSkjerming(Journalpost journalpost, SkjermingTypeCode skjermingTypeCode) {
+	public void setJournalpostSkjermet(Journalpost journalpost, SkjermingTypeCode skjermingTypeCode) {
 		Query q = entityManager.createQuery("update Journalpost set skjermingType = :skjermingTypeCode where journalpostId = :journalpostId")
 				.setParameter("journalpostId", journalpost.getJournalpostId())
 				.setParameter("skjermingTypeCode", skjermingTypeCode);

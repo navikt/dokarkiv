@@ -155,6 +155,22 @@ public class HentDokumentURLIT extends AbstractJournalV3Itest {
 	}
 
 	@Test
+	public void shouldThrowWhenJournalpostIsSkjermet() throws Exception {
+		expectedException.expect(HentDokumentURLDokumentIkkeFunnet.class);
+		expectedException.expectMessage("Journalpost ikke funnet");
+		abacPermit();
+		persistDokumentFil();
+
+		skjermingService.setJournalpostSkjermet(journalpost, SkjermingTypeCode.POL);
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
+
+		journalV3Provider.hentDokumentURL(request);
+
+
+	}
+
+	@Test
 	public void shouldGetSladdetDokumentUrl() throws Exception {
 		abacPermit();
 		persistDokumentFil();
