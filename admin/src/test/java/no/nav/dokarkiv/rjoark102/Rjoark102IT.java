@@ -202,7 +202,7 @@ public class Rjoark102IT extends AbstractAdminIT {
 		assertThat(dokumentInfoAfter.get().getKassertAvNavn(), is(KASSERT_AV_NAVN));
 		assertNotNull(dokumentInfoAfter.get().getDatoKassert());
 		assertThat(dokumentInfoAfter.get().getFildetaljerListe().size(), is(1));
-		assertThat(dokumentInfoAfter.get().getFildetaljerListe().iterator().next().getFilUuid(), is(FIL_UUID_DUMMY_DOKUMENT_KASSERT));
+		assertThat(dokumentInfoAfter.get().getFildetaljerListe().iterator().next().getFilUuid(), is(FIL_UUID_DUMMY_DOKUMENT_KASSERT +FIL_UUID_ARKIV.substring(FIL_UUID_DUMMY_DOKUMENT_KASSERT.length())));
 		assertThat(dokumentInfoAfter.get().getFildetaljerListe().iterator().next().getVariantFormat(), is(ARKIV));
 		assertThat(dokumentInfoAfter.get().getFildetaljerListe().iterator().next().getSkjermingType(), nullValue());
 

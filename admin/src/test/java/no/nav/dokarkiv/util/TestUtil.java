@@ -41,8 +41,8 @@ public class TestUtil {
 	public static Long JOURNALPOST_ID = 2000000L;
 	public static Long JPDOKINFORELAJSON_ID = 2000000L;
 	public static Long DOKUMENTINFO_ID = 2000000L;
-	public static String FIL_UUID_ARKIV= "ARKIV_F_TEST_XXXXXX";
-	public static String FIL_UUID_SLADDET= "SLADDET_F_TEST_XXXXXX";
+	public static String FIL_UUID_ARKIV= "ARKIV_F_TEST_XXXXXX_AAAAAAAAAAA";
+	public static String FIL_UUID_SLADDET= "SLADDET_F_TEST_XXXXXX_AAAAAAAAAAA";
 
 
 	public static SkjermArkivenhetRequest createSkjermarkivenhetRequest(SkjermingTypeCode skjermingType, ArkivenhetCode arkivenhet, Long journalpostId, Long dokumentInfoId, VariantFormatCode variantFormat) {
