@@ -37,7 +37,7 @@ public class V21_0_0__dummy_dokument implements JdbcMigration {
 		}
 
 		try {
-			InputStream in = new ClassPathResource("dummy_dokument_slettet.pdf").getInputStream();
+			InputStream in = new ClassPathResource("dummy_dokument_kassert.pdf").getInputStream();
 			pstmt.setBlob(1, in);
 
 			pstmt.setString(2, FIL_UUID_DUMMY_DOKUMENT_KASSERT);
