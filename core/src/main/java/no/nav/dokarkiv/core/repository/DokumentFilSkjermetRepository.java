@@ -9,13 +9,13 @@ import javax.persistence.EntityManager;
 /**
  * @author Joakim Bjørnstad, Jbit AS
  */
-public class DefaultDokumentFilRepository {
+public class DokumentFilSkjermetRepository {
 	public static final String FIL_UUID_DUMMY_DOKUMENT_KASSERT = "DUMMY_DOKUMENT_KASSERT";
 
 	private final DokumentFilRepository dokumentFilRepository;
 	private final EntityManager entityManager;
 
-	public DefaultDokumentFilRepository(DokumentFilRepository dokumentFilRepository, EntityManager entityManager) {
+	public DokumentFilSkjermetRepository(DokumentFilRepository dokumentFilRepository, EntityManager entityManager) {
 		this.dokumentFilRepository = dokumentFilRepository;
 		this.entityManager = entityManager;
 	}

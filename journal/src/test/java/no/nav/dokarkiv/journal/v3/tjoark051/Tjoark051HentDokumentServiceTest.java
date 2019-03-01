@@ -23,15 +23,13 @@ import no.nav.dokarkiv.core.domain.entities.DokumentFil;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import no.nav.dokarkiv.core.domain.service.SkjermingService;
 import no.nav.dokarkiv.core.exceptions.DocumentNotFoundException;
 import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
 import no.nav.dokarkiv.core.exceptions.InvalidFilUuidException;
 import no.nav.dokarkiv.core.exceptions.NoDokumentInfoFoundException;
 import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
 import no.nav.dokarkiv.core.ondemand.HentOndemandDokument;
-import no.nav.dokarkiv.core.repository.DefaultDokumentFilRepository;
-import no.nav.dokarkiv.core.repository.DokumentFilRepository;
+import no.nav.dokarkiv.core.repository.DokumentFilSkjermetRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,7 +37,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import javax.persistence.EntityManager;
 import java.util.Optional;
 
 /**
@@ -67,7 +64,7 @@ public class Tjoark051HentDokumentServiceTest {
 	@Mock
 	private JoarkRepositorySkjermet joarkRepositoryMock;
 	@Mock
-	private DefaultDokumentFilRepository dokumentFilRepository;
+	private DokumentFilSkjermetRepository dokumentFilRepository;
 	@Mock
 	private HentOndemandDokument hentOndemandDokument;
 

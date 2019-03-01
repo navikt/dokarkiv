@@ -1,6 +1,6 @@
 package no.nav.dokarkiv.core.datautil;
 
-import static no.nav.dokarkiv.core.repository.DefaultDokumentFilRepository.FIL_UUID_DUMMY_DOKUMENT_KASSERT;
+import static no.nav.dokarkiv.core.repository.DokumentFilSkjermetRepository.FIL_UUID_DUMMY_DOKUMENT_KASSERT;
 
 import no.nav.dokarkiv.core.domain.builder.DokumentFilBuilder;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;

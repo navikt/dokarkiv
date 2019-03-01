@@ -2,7 +2,7 @@ package no.nav.dokarkiv.rjoark102;
 
 
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.ARKIV;
-import static no.nav.dokarkiv.core.repository.DefaultDokumentFilRepository.FIL_UUID_DUMMY_DOKUMENT_KASSERT;
+import static no.nav.dokarkiv.core.repository.DokumentFilSkjermetRepository.FIL_UUID_DUMMY_DOKUMENT_KASSERT;
 import static no.nav.dokarkiv.util.TestUtil.FIL_UUID_ARKIV;
 import static no.nav.dokarkiv.util.TestUtil.KASSERT_AV_NAVN;
 import static no.nav.dokarkiv.util.TestUtil.createKasserDokumentRequest;
