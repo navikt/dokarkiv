@@ -2,9 +2,8 @@ package no.nav.dokarkiv.rjoark102;
 
 
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.ARKIV;
-import static no.nav.dokarkiv.core.repository.DefaultDokumentFilRepository.FIL_UUID_DUMMY_DOKUMENT;
+import static no.nav.dokarkiv.core.repository.DefaultDokumentFilRepository.FIL_UUID_DUMMY_DOKUMENT_KASSERT;
 import static no.nav.dokarkiv.util.TestUtil.FIL_UUID_ARKIV;
-import static no.nav.dokarkiv.util.TestUtil.FIL_UUID_SLADDET;
 import static no.nav.dokarkiv.util.TestUtil.KASSERT_AV_NAVN;
 import static no.nav.dokarkiv.util.TestUtil.createKasserDokumentRequest;
 import static no.nav.dokarkiv.util.TestUtil.knyttDokumentInfoSomVedleggTilJournalpost;
@@ -39,7 +38,6 @@ import org.springframework.test.context.transaction.TestTransaction;
 import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.Period;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
@@ -99,12 +97,14 @@ public class Rjoark102IT extends AbstractAdminIT {
 
 		TestTransaction.start();
 
+
 		Optional<DokumentInfo> dokumentInfoAfter = dokumentinfoRepository.findByDokumentInfoId(dokumentInfo1.getDokumentInfoId());
 		assertTrue(dokumentInfoAfter.isPresent());
 		assertThat(dokumentInfoAfter.get().getKassertAvNavn(), is(KASSERT_AV_NAVN));
 		assertThat(Duration.between(dokumentInfoAfter.get().getDatoKassert(), LocalDateTime.now()).toMillis(), lessThan(10000L));
 		assertThat(dokumentInfoAfter.get().getFildetaljerListe().size(), is(1));
-		assertThat(dokumentInfoAfter.get().getFildetaljerListe().iterator().next().getFilUuid(), is(FIL_UUID_DUMMY_DOKUMENT));
+		assertThat(dokumentInfoAfter.get().getFildetaljerListe().iterator().next().getFilUuid(), is(FIL_UUID_DUMMY_DOKUMENT_KASSERT +FIL_UUID_ARKIV.substring(FIL_UUID_DUMMY_DOKUMENT_KASSERT
+				.length())));
 		assertThat(dokumentInfoAfter.get().getFildetaljerListe().iterator().next().getVariantFormat(), is(ARKIV));
 		assertThat(dokumentInfoAfter.get().getFildetaljerListe().iterator().next().getSkjermingType(), nullValue());
 
@@ -142,7 +142,7 @@ public class Rjoark102IT extends AbstractAdminIT {
 				ArkivElementEndring.builder()
 						.arkivElement("FilDetaljer.filUuid")
 						.fraVerdi(FIL_UUID_ARKIV)
-						.tilVerdi(FIL_UUID_DUMMY_DOKUMENT)
+						.tilVerdi(FIL_UUID_DUMMY_DOKUMENT_KASSERT +FIL_UUID_ARKIV.substring(FIL_UUID_DUMMY_DOKUMENT_KASSERT.length()))
 						.build().toStringElementFraTil(),
 				ArkivElementEndring.builder()
 						.arkivElement("DokumentFil.filUuid")
@@ -202,7 +202,7 @@ public class Rjoark102IT extends AbstractAdminIT {
 		assertThat(dokumentInfoAfter.get().getKassertAvNavn(), is(KASSERT_AV_NAVN));
 		assertNotNull(dokumentInfoAfter.get().getDatoKassert());
 		assertThat(dokumentInfoAfter.get().getFildetaljerListe().size(), is(1));
-		assertThat(dokumentInfoAfter.get().getFildetaljerListe().iterator().next().getFilUuid(), is(FIL_UUID_DUMMY_DOKUMENT));
+		assertThat(dokumentInfoAfter.get().getFildetaljerListe().iterator().next().getFilUuid(), is(FIL_UUID_DUMMY_DOKUMENT_KASSERT));
 		assertThat(dokumentInfoAfter.get().getFildetaljerListe().iterator().next().getVariantFormat(), is(ARKIV));
 		assertThat(dokumentInfoAfter.get().getFildetaljerListe().iterator().next().getSkjermingType(), nullValue());
 

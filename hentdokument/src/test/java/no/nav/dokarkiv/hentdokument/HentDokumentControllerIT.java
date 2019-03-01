@@ -4,7 +4,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
-import static no.nav.dokarkiv.core.repository.DefaultDokumentFilRepository.FIL_UUID_DUMMY_DOKUMENT;
+import static no.nav.dokarkiv.core.repository.DefaultDokumentFilRepository.FIL_UUID_DUMMY_DOKUMENT_KASSERT;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertArrayEquals;
@@ -316,7 +316,7 @@ public class HentDokumentControllerIT {
 				.opprettetKildeNavn("test")
 				.build());
 		dokumentFilRepository.save(DokumentFilBuilder.getDokumentFilBuilder()
-				.filUuid(FIL_UUID_DUMMY_DOKUMENT)
+				.filUuid(FIL_UUID_DUMMY_DOKUMENT_KASSERT)
 				.fil(FIL_CONTENT_DUMMY)
 				.opprettetKildeNavn("test")
 				.build());

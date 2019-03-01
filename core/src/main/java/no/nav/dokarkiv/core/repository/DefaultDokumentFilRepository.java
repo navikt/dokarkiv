@@ -10,7 +10,7 @@ import javax.persistence.EntityManager;
  * @author Joakim Bjørnstad, Jbit AS
  */
 public class DefaultDokumentFilRepository {
-	public static final String FIL_UUID_DUMMY_DOKUMENT = "DUMMY_DOKUMENT";
+	public static final String FIL_UUID_DUMMY_DOKUMENT_KASSERT = "DUMMY_DOKUMENT_KASSERT";
 
 	private final DokumentFilRepository dokumentFilRepository;
 	private final EntityManager entityManager;
@@ -22,12 +22,19 @@ public class DefaultDokumentFilRepository {
 
 	public DokumentFil findByFilUuid(String filUuid){
 		String maybeDummyfilUuid = filUuid;
-		if (isFildetaljerWithArkivVariantSkjermet(filUuid)) {
-			maybeDummyfilUuid = FIL_UUID_DUMMY_DOKUMENT;
+
+		/*Skal returnere DUMMY dokument hvis filUuid tilhører ARKIV variant og er skjermet eller hvis filUuid starter med DUMMY_DOKUMENT. Sjekk @KasserDokumentService **/
+		if (isFildetaljerWithArkivVariantSkjermet(filUuid) || startsWithDummyDokument(filUuid)) {
+			maybeDummyfilUuid = FIL_UUID_DUMMY_DOKUMENT_KASSERT;
 		}
 
 		return dokumentFilRepository.findByFilUuid(maybeDummyfilUuid);
 	}
+
+	private boolean startsWithDummyDokument(String filUuid) {
+		return filUuid.startsWith(FIL_UUID_DUMMY_DOKUMENT_KASSERT);
+	}
+
 
 	private boolean isFildetaljerWithArkivVariantSkjermet(String filUuid) {
 		return isFalse(entityManager.createQuery("select 'fildetaljer er skjermet' from FilDetaljer where filUuid=:filUuid and skjermingType is not null and variantFormat='ARKIV'").setParameter("filUuid", filUuid).getResultList().isEmpty());

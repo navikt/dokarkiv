@@ -1,6 +1,6 @@
 package db.migration;
 
-import static no.nav.dokarkiv.core.repository.DefaultDokumentFilRepository.FIL_UUID_DUMMY_DOKUMENT;
+import static no.nav.dokarkiv.core.repository.DefaultDokumentFilRepository.FIL_UUID_DUMMY_DOKUMENT_KASSERT;
 import static org.apache.commons.lang3.BooleanUtils.isFalse;
 
 import org.flywaydb.core.api.migration.jdbc.JdbcMigration;
@@ -40,7 +40,7 @@ public class V21_0_0__dummy_dokument implements JdbcMigration {
 			InputStream in = new ClassPathResource("dummy_dokument_slettet.pdf").getInputStream();
 			pstmt.setBlob(1, in);
 
-			pstmt.setString(2, FIL_UUID_DUMMY_DOKUMENT);
+			pstmt.setString(2, FIL_UUID_DUMMY_DOKUMENT_KASSERT);
 			pstmt.execute();
 			connection.commit();
 		} finally {
@@ -51,7 +51,7 @@ public class V21_0_0__dummy_dokument implements JdbcMigration {
 
 	private boolean isDummyDocumentExists(Connection connection) throws Exception {
 		try (PreparedStatement existingFile = connection.prepareStatement("select 'exists' from T_DOKUMENT_FIL where FIL_UUID=?")) {
-			existingFile.setString(1, FIL_UUID_DUMMY_DOKUMENT);
+			existingFile.setString(1, FIL_UUID_DUMMY_DOKUMENT_KASSERT);
 			try (ResultSet resultSet = existingFile.executeQuery()) {
 				return resultSet.next();
 			}

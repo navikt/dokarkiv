@@ -1,6 +1,6 @@
 package no.nav.dokarkiv.core.datautil;
 
-import static no.nav.dokarkiv.core.repository.DefaultDokumentFilRepository.FIL_UUID_DUMMY_DOKUMENT;
+import static no.nav.dokarkiv.core.repository.DefaultDokumentFilRepository.FIL_UUID_DUMMY_DOKUMENT_KASSERT;
 
 import no.nav.dokarkiv.core.domain.builder.DokumentFilBuilder;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
@@ -37,7 +37,7 @@ public final class DokumentFilTestDataProvider {
 
 	public static DokumentFilBuilder createDokumentFilDummy() {
 		return DokumentFilBuilder.getDokumentFilBuilder()
-				.filUuid(FIL_UUID_DUMMY_DOKUMENT)
+				.filUuid(FIL_UUID_DUMMY_DOKUMENT_KASSERT)
 				.fil(FIL_CONTENT_DUMMY)
 				.opprettetKildeNavn("test");
 	}
