@@ -38,7 +38,7 @@ public class OppdaterMetadataService {
 		this.dokumentInfoMapper = dokumentInfoMapper;
 	}
 
-	public PutOppdatermetadataResponse updateInngaaendeJournalpost(String journalpostId, PutOppdatermetadataRequest putOppdatermetadataRequest) throws InputValideringFeiletException {
+	public PutOppdatermetadataResponse oppdaterMetadata(String journalpostId, PutOppdatermetadataRequest putOppdatermetadataRequest) throws InputValideringFeiletException {
 		Journalpost journalpost = joarkRepository.findById(convertStringToLong(journalpostId, "journalpostId"))
 				.orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostId)));
 

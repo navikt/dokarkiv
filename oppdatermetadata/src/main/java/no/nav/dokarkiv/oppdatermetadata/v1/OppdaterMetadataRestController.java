@@ -59,7 +59,7 @@ public class OppdaterMetadataRestController {
 		log.info(String.format("rjoark200 har mottatt kall om å oppdatere inngaaende journalpost med journalpostId=%s", journalpostId));
 		Utils.validateId(journalpostId, "journalpostId");
 		abacSecurityService.assertAccessToJournalpost(journalpostId);
-		PutOppdatermetadataResponse responseTo = oppdaterMetadataService.updateInngaaendeJournalpost(journalpostId, request);
+		PutOppdatermetadataResponse responseTo = oppdaterMetadataService.oppdaterMetadata(journalpostId, request);
 		log.info("rjoark200 har oppdatert journalpost med journalpostId={} i Joark.", journalpostId);
 		return responseTo;
 	}

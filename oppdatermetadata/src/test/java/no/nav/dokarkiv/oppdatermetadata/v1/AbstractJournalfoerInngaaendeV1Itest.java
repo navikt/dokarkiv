@@ -66,7 +66,7 @@ public abstract class AbstractJournalfoerInngaaendeV1Itest {
 	protected String NAV_CONSUMER_TOKEN = "Nav-Consumer-Token";
 	protected final String SERVICE_USER_ID = "srvdokarkiv";
 	protected final String PERSON_USER_ID = "Z990782";
-	protected static final String JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER = "/rest/oppdatermetadata/v1/journalposter/";
+	protected static final String JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER = "/rest/v1/journalpost/";
 	protected static final ObjectMapper mapper = new ObjectMapper();
 	@Rule
 	public ExpectedException expectedException = ExpectedException.none();
