@@ -78,7 +78,7 @@
 		</dependency>
 		<dependency>
 			<groupId>no.nav.dokarkiv</groupId>
-			<artifactId>oppdatermetadata</artifactId>
+			<artifactId>oppdaterjournalpost</artifactId>
 		</dependency>
 		<!-- annet -->
 		<dependency>

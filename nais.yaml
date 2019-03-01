@@ -158,7 +158,7 @@ fasitResources:
     path: /rest/journalfoerinngaaende/v1
     securityToken: OIDC_TOKEN
     description: Rest-tjenester til bruk ifm. manuell journalføring.
-  - alias: OppdaterMetadata
+  - alias: OppdaterJournalpost
     resourceType: restservice
     path: /rest/v1/journalpost/{journalpostId}
     description: Tjeneste som oppdaterer metadata på en journalpost med tilhørende dokumenter i Joark.

@@ -30,7 +30,7 @@
 		<module>hentdokument</module>
 		<module>hentjournalinfo</module>
 		<module>hentjournalsakinfo</module>
-		<module>oppdatermetadata</module>
+		<module>oppdaterjournalpost</module>
 		<module>arkivervariant</module>
 		<module>admin</module>
 	</modules>
@@ -149,7 +149,7 @@
 			</dependency>
 			<dependency>
 				<groupId>no.nav.dokarkiv</groupId>
-				<artifactId>oppdatermetadata</artifactId>
+				<artifactId>oppdaterjournalpost</artifactId>
 				<version>1-SNAPSHOT</version>
 			</dependency>
 			<dependency>
