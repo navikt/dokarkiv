@@ -32,7 +32,7 @@
 		<module>hentjournalsakinfo</module>
 		<module>arkivervariant</module>
 		<module>admin</module>
-		<module>ferdigstilljournalpost</module>
+		<module>journalpost</module>
 	</modules>
 
 	<distributionManagement>
@@ -149,7 +149,7 @@
 			</dependency>
 			<dependency>
 				<groupId>no.nav.dokarkiv</groupId>
-				<artifactId>ferdigstilljournalpost</artifactId>
+				<artifactId>journalpost</artifactId>
 				<version>1-SNAPSHOT</version>
 			</dependency>
 			<dependency>
