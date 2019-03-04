@@ -2,6 +2,7 @@ package no.nav.dokarkiv.ferdigstilljournalpost.v1.rjoark201;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
+import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.entities.Bruker;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
@@ -39,7 +40,7 @@ class JournalpostValidator {
 		verifyPaakrevdeFelterJournalpost(journalpost);
 		verifyPaakrevdeFelterSaksrelasjon(journalpost.getSaksrelasjon());
 		verifyPaakrevdeFelterBruker(journalpost);
-		verifyPaakrevdeFeterDokumentInfo(journalpost);
+		verifyPaakrevdeFelterDokumentInfo(journalpost);
 		if (!manglendePaakrevdeFelter.isEmpty()) {
 			String manglendeFelter = StringUtils.join(manglendePaakrevdeFelter, ", ");
 			throw new KanIkkeFerdigstilleException("Kan ikke ferdigstille journalpost, følgende felt(er) mangler: " + manglendeFelter);
@@ -92,10 +93,15 @@ class JournalpostValidator {
 	private void verifyPaakrevdeFelterJournalpost(Journalpost journalpost) {
 		verifyFieldNotNull(journalpost, journalpost.getFagomrade(), "fagomrade");
 		verifyStringNotBlank(journalpost, journalpost.getInnhold(), "innhold");
-		verifyStringNotBlank(journalpost, journalpost.getAvsenderMottaker(), "avsendMottaker");
+		if (!JournalpostTypeCode.N.equals(journalpost.getJournalposttype())) {
+			verifyStringNotBlank(journalpost, journalpost.getAvsenderMottaker(), "avsendMottaker");
+		}
+		if (JournalpostTypeCode.I.equals(journalpost.getJournalposttype())) {
+			verifyFieldNotNull(journalpost, journalpost.getMottakskanal(), "mottakskanal");
+		}
 	}
 
-	private void verifyPaakrevdeFeterDokumentInfo(Journalpost journalpost) {
+	private void verifyPaakrevdeFelterDokumentInfo(Journalpost journalpost) {
 		journalpost.getJournalpostDokumentInfoRelasjoner()
 				.forEach(journalpostDokumentInfoRelasjon -> verifyMandatoryFelterDokumentinfo(journalpostDokumentInfoRelasjon.getDokumentInfo()));
 	}

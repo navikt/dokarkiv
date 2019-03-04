@@ -5,6 +5,7 @@ import static no.nav.dokarkiv.core.util.TestDataUtils.createJournalpost;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
+import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
@@ -199,6 +200,19 @@ public class JournalpostValidatorTest {
 
 		expectedException.expect(KanIkkeFerdigstilleException.class);
 		expectedException.expectMessage("DokumentInfo.tittel");
+
+		validator.validatePaakrevdeFelter(journalpost);
+	}
+
+	@Test
+	public void shouldThrowExceptionIfInngaaendeAndMottakskanalIsMissing() {
+		Journalpost journalpost = createJournalpost();
+		journalpost.setJournalstatus(JournalStatusCode.M);
+		journalpost.setJournalposttype(JournalpostTypeCode.I);
+		journalpost.setMottakskanal(null);
+
+		expectedException.expect(KanIkkeFerdigstilleException.class);
+		expectedException.expectMessage("Journalpost.mottakskanal");
 
 		validator.validatePaakrevdeFelter(journalpost);
 	}
