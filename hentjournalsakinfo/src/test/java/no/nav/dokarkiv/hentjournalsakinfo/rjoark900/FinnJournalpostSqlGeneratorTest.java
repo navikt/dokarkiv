@@ -113,7 +113,7 @@ public class FinnJournalpostSqlGeneratorTest {
 						"                              LEFT JOIN t_k_behandlingstema bt ON j.k_behandlingstema = bt.k_behandlingstema" +
 						"                              JOIN t_jp_dok_info_rel rel ON j.journalpost_id = rel.journalpost_id\n" +
 						"                              JOIN t_dokument_info d ON rel.dokument_info_id = d.dokument_info_id\n" +
-						"                              LEFT JOIN t_fil_detaljer fd ON d.dokument_info_id = fd.dokument_info_id AND fd.k_variant_format IN ('ARKIV', 'SLADDET', 'PRODUKSJON_DLF', 'FULLVERSJON')\n" +
+						"                              LEFT JOIN t_fil_detaljer fd ON d.dokument_info_id = fd.dokument_info_id AND fd.k_variant_format IN ('ARKIV', 'SLADDET', 'PRODUKSJON', 'PRODUKSJON_DLF', 'FULLVERSJON')\n" +
 						"                              LEFT JOIN t_skannet_innhold tsi ON d.dokument_info_id = tsi.dokument_info_id" +
 						"     )\n" +
 						"SELECT r.*,\n" +
