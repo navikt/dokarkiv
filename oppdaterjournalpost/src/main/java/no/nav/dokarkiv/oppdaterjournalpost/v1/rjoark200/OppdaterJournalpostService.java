@@ -4,13 +4,13 @@ import static no.nav.dokarkiv.oppdaterjournalpost.v1.support.OppdaterJournalpost
 import static no.nav.dokarkiv.oppdaterjournalpost.v1.util.Utils.convertStringToLong;
 
 import no.nav.dok.oppdaterjournalpost.api.v1.PutOppdaterJournalpostRequest;
-import no.nav.dok.oppdaterjournalpost.api.v1.PutOppdaterJournalpostResponse;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
+import no.nav.dokarkiv.oppdaterjournalpost.v1.support.AksjonsloggHelper;
 import no.nav.dokarkiv.oppdaterjournalpost.v1.util.Utils;
 import org.springframework.stereotype.Service;
 
@@ -40,12 +40,19 @@ public class OppdaterJournalpostService {
 		this.dokumentInfoMapper = dokumentInfoMapper;
 	}
 
-	public PutOppdaterJournalpostResponse oppdaterJournalpost(String journalpostId, PutOppdaterJournalpostRequest putOppdaterJournalpostRequest) throws InputValideringFeiletException {
+	public void oppdaterJournalpost(String journalpostId, PutOppdaterJournalpostRequest putOppdaterJournalpostRequest, String aksjonsLoggHeaderString) throws InputValideringFeiletException {
 		Journalpost journalpost = joarkRepository.findById(convertStringToLong(journalpostId, "journalpostId"))
 				.orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostId)));
 
+		AksjonsloggHelper.setAksjonsLoggHeaderString(aksjonsLoggHeaderString);
+		AksjonsloggHelper.setJournalpostId(Long.parseLong(journalpostId));
+		AksjonsloggHelper.setBrukerId(putOppdaterJournalpostRequest.getBruker() != null ?
+				putOppdaterJournalpostRequest.getBruker().getIdentifikator() :
+				(journalpost.getBrukere().isEmpty() ? null : journalpost.getBrukere().iterator().next().getBrukerId())
+		);
+
 		validateOppdaterteFelt(putOppdaterJournalpostRequest, journalpost.getJournalstatus());
-		journalpostMapper.oppdaterJournalpost(journalpost, putOppdaterJournalpostRequest);
+		journalpostMapper.oppdaterJournalpost(journalpost, putOppdaterJournalpostRequest, aksjonsLoggHeaderString);
 		joarkRepository.save(journalpost);
 
 		if (putOppdaterJournalpostRequest.getDokumentInfoList() != null) {
@@ -57,9 +64,5 @@ public class OppdaterJournalpostService {
 				dokumentinfoRepository.save(dokumentInfo);
 			}
 		}
-
-        return PutOppdaterJournalpostResponse.builder()
-				.journalpostId(journalpostId)
-				.build();
 	}
 }
