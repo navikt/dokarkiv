@@ -33,17 +33,13 @@ public class AksjonsloggHelper {
     public AksjonsloggHelper() {
     }
 
-    public void populerAksjonslogg() {
+    public void populerAksjonslogg() throws UgyldigAksjonsLoggException{
         if (!this.arkivElementEndringTOs.isEmpty()) {
-            try {
-                aksjonsLoggService.validateAndSaveAksjonsLogg(this.aksjonsLoggTO, this.arkivElementEndringTOs);
-            } catch (UgyldigAksjonsLoggException e) {
-                log.error("");
-            }
+            aksjonsLoggService.validateAndSaveAksjonsLogg(this.aksjonsLoggTO, this.arkivElementEndringTOs);
         }
     }
 
-    public void setAksjonsLoggTO(AksjonsTypeCode aksjonsTypeCode, Long dokumentInfoId) {
+    public void setAksjonsLoggTO(AksjonsTypeCode aksjonsTypeCode, Long dokumentInfoId) throws UgyldigAksjonsLoggException {
         if (isBlank(this.aksjonsLoggHeaderString)) {
             this.aksjonsLoggTO = AksjonsLoggTO.builder()
                     .aksjon(aksjonsTypeCode)
@@ -56,11 +52,7 @@ public class AksjonsloggHelper {
                             "Metadata på journalposten ble endret.")
                     .build();
         } else {
-            try {
-                this.aksjonsLoggTO = aksjonsLoggTOMapper.mapAksjonsLoggHeader(this.aksjonsLoggHeaderString, aksjonsTypeCode, this.journalpostId, dokumentInfoId);
-            } catch (UgyldigAksjonsLoggException e) {
-                log.error("");
-            }
+            this.aksjonsLoggTO = aksjonsLoggTOMapper.mapAksjonsLoggHeader(this.aksjonsLoggHeaderString, aksjonsTypeCode, this.journalpostId, dokumentInfoId);
         }
     }
 

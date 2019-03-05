@@ -8,6 +8,7 @@ import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
+import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import no.nav.dokarkiv.oppdaterjournalpost.v1.support.AksjonsloggHelper;
@@ -40,7 +41,7 @@ public class OppdaterJournalpostService {
 		this.dokumentInfoMapper = dokumentInfoMapper;
 	}
 
-	public void oppdaterJournalpost(String journalpostId, PutOppdaterJournalpostRequest putOppdaterJournalpostRequest, String aksjonsLoggHeaderString) throws InputValideringFeiletException {
+	public void oppdaterJournalpost(String journalpostId, PutOppdaterJournalpostRequest putOppdaterJournalpostRequest, String aksjonsLoggHeaderString) throws InputValideringFeiletException, UgyldigAksjonsLoggException {
 		Journalpost journalpost = joarkRepository.findById(convertStringToLong(journalpostId, "journalpostId"))
 				.orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostId)));
 
@@ -52,7 +53,7 @@ public class OppdaterJournalpostService {
 		);
 
 		validateOppdaterteFelt(putOppdaterJournalpostRequest, journalpost.getJournalstatus());
-		journalpostMapper.oppdaterJournalpost(journalpost, putOppdaterJournalpostRequest, aksjonsLoggHeaderString);
+		journalpostMapper.oppdaterJournalpost(journalpost, putOppdaterJournalpostRequest);
 		joarkRepository.save(journalpost);
 
 		if (putOppdaterJournalpostRequest.getDokumentInfoList() != null) {

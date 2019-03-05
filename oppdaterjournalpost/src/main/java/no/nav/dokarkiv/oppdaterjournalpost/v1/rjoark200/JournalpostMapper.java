@@ -18,6 +18,7 @@ import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
 import no.nav.dokarkiv.core.domain.entities.Bruker;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
+import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
 import no.nav.dokarkiv.core.repository.BrukerRepository;
 import no.nav.dokarkiv.oppdaterjournalpost.v1.support.AksjonsloggHelper;
 import org.slf4j.MDC;
@@ -34,10 +35,8 @@ public class JournalpostMapper {
 
 	@Inject
 	private BrukerRepository brukerRepository;
-	@Inject
-	AksjonsloggHelper aksjonsloggHelper;
 
-	public void oppdaterJournalpost(Journalpost journalpost, PutOppdaterJournalpostRequest putOppdaterJournalpostRequest, String aksjonsLoggHeaderString) {
+	public void oppdaterJournalpost(Journalpost journalpost, PutOppdaterJournalpostRequest putOppdaterJournalpostRequest) throws UgyldigAksjonsLoggException {
 
 		boolean endret = false;
 		AksjonsloggHelper aksjonsloggHelperMetadata = new AksjonsloggHelper();
@@ -135,7 +134,7 @@ public class JournalpostMapper {
 		return endret;
 	}
 
-	private void updateSaksrelasjonFields(Journalpost journalpost, PutOppdaterJournalpostRequest request) {
+	private void updateSaksrelasjonFields(Journalpost journalpost, PutOppdaterJournalpostRequest request) throws UgyldigAksjonsLoggException {
 		boolean endret = false;
 		boolean newSak = false;
 
