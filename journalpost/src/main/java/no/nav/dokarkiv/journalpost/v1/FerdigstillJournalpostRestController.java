@@ -45,7 +45,7 @@ import java.util.List;
 
 @Slf4j
 @RestController
-@RequestMapping("/rest/v1/journalpost")
+@RequestMapping("/rest/journalpostapi/v1/journalpost")
 @Api
 public class FerdigstillJournalpostRestController {
 

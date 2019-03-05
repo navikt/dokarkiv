@@ -160,5 +160,5 @@ fasitResources:
     description: Rest-tjenester til bruk ifm. manuell journalføring.
   - alias: Journalpost_v1
     resourceType: restservice
-    path: /rest/v1/journalpost
+    path: /rest/journalpostapi/v1
     description: Rest-tjeneste til bruk ifm. oppretting, oppdatering eller ferdigstilling journalposter.
