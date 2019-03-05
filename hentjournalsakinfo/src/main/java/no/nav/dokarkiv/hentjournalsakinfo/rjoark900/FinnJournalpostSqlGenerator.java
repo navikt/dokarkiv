@@ -42,6 +42,7 @@ final class FinnJournalpostSqlGenerator {
 				"                              j.k_behandlingstema   AS behandlingstema,\n" +
 				"                              bt.dekode             AS behandlingstemanavn,\n" +
 				"                              j.k_journal_s         AS journalstatus,\n" +
+				"                              j.avsend_mottak_id    AS avsendermottakerid,\n" +
 				"                              j.avsend_mottaker     AS avsendermottakernavn,\n" +
 				"                              j.land                AS avsendermottakerland,\n" +
 				"                              j.journalf_enhet      AS journalforendeenhet,\n" +

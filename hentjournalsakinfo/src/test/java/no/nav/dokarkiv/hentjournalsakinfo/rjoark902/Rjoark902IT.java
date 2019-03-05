@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.hentjournalsakinfo.rjoark902;
 
+import static no.nav.dokarkiv.core.util.TestDataGenerator.AVSENDER_MOTTAKER_ID;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createJournalpostWithHoveddokument;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
@@ -66,6 +67,7 @@ public class Rjoark902IT extends AbstractHentjournalsakinfoItest {
 		assertEquals(INNHOLD, responseJournalpost.getInnhold());
 		assertEquals(FAGOMRADE, responseJournalpost.getFagomrade());
 		assertEquals(JOURNALSTATUS, responseJournalpost.getJournalstatus());
+		assertEquals(AVSENDER_MOTTAKER_ID, responseJournalpost.getAvsenderMottakerId());
 		assertEquals(AVSENDER, responseJournalpost.getAvsenderMottakerNavn());
 		assertEquals(JOURNALFOERT_AV, responseJournalpost.getJournalfortAvNavn());
 		assertEquals(MOTTAKSKANAL, responseJournalpost.getMottakskanal());
