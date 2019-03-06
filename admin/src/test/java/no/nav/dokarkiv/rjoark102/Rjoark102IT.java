@@ -115,7 +115,7 @@ public class Rjoark102IT extends AbstractAdminIT {
 		assertThat(aksjonsLoggList.size(), is(1));
 
 		AksjonsLogg aksjonsLogg = aksjonsLoggList.get(0);
-		assertThat(aksjonsLogg.getAksjon(), is(AksjonsTypeCode.SLETT));
+		assertThat(aksjonsLogg.getAksjon(), is(AksjonsTypeCode.KASSASJON));
 		assertThat(aksjonsLogg.getUtfoertAv(), is(TestDataUtils.AKSJON_UTFOERT_AV));
 		assertThat(aksjonsLogg.getHjemmel(), is(TestDataUtils.AKSJON_HJEMMEL));
 		assertThat(aksjonsLogg.getMelding(), is(TestDataUtils.AKSJON_MELDING));
