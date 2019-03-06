@@ -8,6 +8,7 @@ import static java.lang.String.format;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.StringContains.containsString;
+import static org.junit.Assert.assertEquals;
 
 import no.nav.dok.oppdaterjournalpost.api.v1.Arkivsak;
 import no.nav.dok.oppdaterjournalpost.api.v1.Arkivsaksystem;
@@ -19,11 +20,14 @@ import no.nav.dok.oppdaterjournalpost.api.v1.PutOppdaterJournalpostRequest;
 import no.nav.dok.oppdaterjournalpost.api.v1.PutOppdaterJournalpostResponse;
 import no.nav.dok.oppdaterjournalpost.api.v1.Tilleggsopplysning;
 import no.nav.dokarkiv.core.datautil.JournalpostTestDataProvider;
+import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
+import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.oppdaterjournalpost.v1.AbstractOppdaterJournalpostV1Itest;
+import org.apache.commons.collections15.IteratorUtils;
 import org.junit.Test;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -35,6 +39,7 @@ import org.springframework.test.context.transaction.TestTransaction;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author Sigurd Midttun, Visma Consulting.
@@ -105,7 +110,47 @@ public class rjoark200IT extends AbstractOppdaterJournalpostV1Itest {
 		assertThat(oppdatertJP.getDokumentInfoFromJpDokInfoRelasjonerByDokumentInfoId(Long.parseLong(request.getDokumentInfoList().get(0).getDokumentInfoId())).getBrevkode(),
 				is(request.getDokumentInfoList().get(0).getBrevkode()));
 
+		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
+
+		assertEquals(3, aksjonsLoggList.size());
+
+		assertEquals(SERVICE_USER_ID, aksjonsLoggList.get(0).getUtfoertAv());
+		assertEquals(AksjonsTypeCode.SAKSTILKNYTNING, aksjonsLoggList.get(0).getAksjon());
+		assertEquals(2, aksjonsLoggList.get(0).getArkivElementEndringer().size());
+
+		assertEquals(SERVICE_USER_ID, aksjonsLoggList.get(1).getUtfoertAv());
+		assertEquals(AksjonsTypeCode.ENDRE_METADATA, aksjonsLoggList.get(1).getAksjon());
+		assertEquals(2, aksjonsLoggList.get(1).getArkivElementEndringer().size());
+
+		assertEquals(SERVICE_USER_ID, aksjonsLoggList.get(2).getUtfoertAv());
+		assertEquals(AksjonsTypeCode.ENDRE_METADATA, aksjonsLoggList.get(2).getAksjon());
+		assertEquals(1, aksjonsLoggList.get(2).getArkivElementEndringer().size());
+
 		TestTransaction.end();
+	}
+
+	@Test
+	public void shouldNotProduceAksjonsLogg() {
+		abacPermit();
+
+		Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
+				.endretAvNavn("saksbehandlersen"));
+		Long journalpostId = journalpost.getJournalpostId();
+
+		PutOppdaterJournalpostRequest request = new PutOppdaterJournalpostRequest();
+
+		HttpEntity<PutOppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
+
+		ResponseEntity<PutOppdaterJournalpostResponse> responseEntity = restTemplate.exchange(
+				JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER + journalpostId, HttpMethod.PUT, requestHttpEntity, PutOppdaterJournalpostResponse.class);
+
+		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
+
+		TestTransaction.start();
+		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
+		assert(aksjonsLoggList.isEmpty());
+		TestTransaction.end();
+
 	}
 
 	@Test

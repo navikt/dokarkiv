@@ -11,7 +11,7 @@ import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
-import no.nav.dokarkiv.oppdaterjournalpost.v1.support.AksjonsloggHelper;
+import no.nav.dokarkiv.oppdaterjournalpost.v1.support.AksjonsLoggHelper;
 import no.nav.dokarkiv.oppdaterjournalpost.v1.util.Utils;
 import org.springframework.stereotype.Service;
 
@@ -45,9 +45,9 @@ public class OppdaterJournalpostService {
 		Journalpost journalpost = joarkRepository.findById(convertStringToLong(journalpostId, "journalpostId"))
 				.orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostId)));
 
-		AksjonsloggHelper.setAksjonsLoggHeaderString(aksjonsLoggHeaderString);
-		AksjonsloggHelper.setJournalpostId(Long.parseLong(journalpostId));
-		AksjonsloggHelper.setBrukerId(putOppdaterJournalpostRequest.getBruker() != null ?
+		AksjonsLoggHelper.setAksjonsLoggHeaderString(aksjonsLoggHeaderString);
+		AksjonsLoggHelper.setJournalpostId(Long.parseLong(journalpostId));
+		AksjonsLoggHelper.setBrukerId(putOppdaterJournalpostRequest.getBruker() != null ?
 				putOppdaterJournalpostRequest.getBruker().getIdentifikator() :
 				(journalpost.getBrukere().isEmpty() ? null : journalpost.getBrukere().iterator().next().getBrukerId())
 		);

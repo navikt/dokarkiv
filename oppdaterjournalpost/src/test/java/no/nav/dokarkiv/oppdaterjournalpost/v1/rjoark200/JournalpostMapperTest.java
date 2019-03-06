@@ -6,7 +6,9 @@ import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.junit.Assert.assertThat;
 
 import no.nav.dok.oppdaterjournalpost.api.v1.PutOppdaterJournalpostRequest;
+import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
 import no.nav.dokarkiv.core.repository.BrukerRepository;
 import no.nav.dokarkiv.oppdaterjournalpost.v1.util.TestUtils;
 import org.junit.Test;
@@ -20,6 +22,8 @@ public class JournalpostMapperTest {
 
 	@Mock
 	private BrukerRepository brukerRepositoryMock;
+	@Mock
+	private AksjonsLoggService aksjonsLoggService;
 
 	private PutOppdaterJournalpostRequest putOppdaterJournalpostRequest;
 	private Journalpost journalpost;
@@ -29,7 +33,7 @@ public class JournalpostMapperTest {
 
 
 	@Test
-	public void shouldUpdateJournalpost() {
+	public void shouldUpdateJournalpost() throws UgyldigAksjonsLoggException {
 		putOppdaterJournalpostRequest = createPutOppdaterJournalpostRequest();
 
 		journalpost = TestUtils.createJournalpost();
@@ -44,7 +48,7 @@ public class JournalpostMapperTest {
 	}
 
 	@Test
-	public void shouldNotClearBrukerListeVedOppdateringAvEksisterende() {
+	public void shouldNotClearBrukerListeVedOppdateringAvEksisterende() throws UgyldigAksjonsLoggException {
 		putOppdaterJournalpostRequest = createPutOppdaterJournalpostRequest();
 
 		journalpost = TestUtils.createJournalpostForOppdatering();

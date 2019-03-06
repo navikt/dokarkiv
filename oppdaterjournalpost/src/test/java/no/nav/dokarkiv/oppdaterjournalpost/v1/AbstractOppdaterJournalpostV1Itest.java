@@ -8,11 +8,13 @@ import static no.nav.dokarkiv.core.security.JwtClaimsBuilderProvider.openAmClaim
 
 import com.auth0.jwt.JWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import no.nav.dokarkiv.core.AbstractRestIT;
 import no.nav.dokarkiv.core.CoreConfig;
 import no.nav.dokarkiv.core.domain.builder.JournalpostBuilder;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
+import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
 import no.nav.dokarkiv.core.repository.SkannetInnholdRepository;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.dokarkiv.core.stelvio.SimpleRequestContext;
@@ -59,7 +61,7 @@ import java.nio.charset.StandardCharsets;
 @AutoConfigureDataLdap
 @AutoConfigureWireMock(port = 0)
 @Transactional
-public abstract class AbstractOppdaterJournalpostV1Itest {
+public abstract class AbstractOppdaterJournalpostV1Itest extends AbstractRestIT {
 
 	protected String OIDC_TOKEN_PERSON_USER_TEST;
 	protected String OIDC_TOKEN_SERVICE_USER_TEST;
@@ -78,6 +80,8 @@ public abstract class AbstractOppdaterJournalpostV1Itest {
 	protected TestRestTemplate restTemplate;
 	@Inject
     protected DokumentinfoRepository dokumentinfoRepository;
+	@Inject
+	protected JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository;
 	@Inject
 	protected OidcTestService oidcTestService;
 
@@ -107,12 +111,6 @@ public abstract class AbstractOppdaterJournalpostV1Itest {
 		} catch (IOException e) {
 			throw new RuntimeException("Could not convert url to String" + url);
 		}
-	}
-
-	@Before
-	public void cleanup() {
-		joarkRepository.deleteAll();
-		dokumentinfoRepository.deleteAll();
 	}
 
 	protected Journalpost buildAndCommit(final JournalpostBuilder builder) {

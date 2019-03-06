@@ -5,7 +5,9 @@ import static no.nav.dokarkiv.oppdaterjournalpost.v1.util.TestUtils.DOKUMENT_TIT
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
+import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
+import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
 import no.nav.dokarkiv.core.repository.BrukerRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,6 +19,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 public class DokumentInfoMapperTest {
         @Mock
         private BrukerRepository brukerRepositoryMock;
+        @Mock
+        private AksjonsLoggService aksjonsLoggService;
 
         private DokumentInfo dokumentInfo;
 
@@ -25,7 +29,7 @@ public class DokumentInfoMapperTest {
 
 
         @Test
-        public void shouldUpdateDokumentInfo() {
+        public void shouldUpdateDokumentInfo() throws UgyldigAksjonsLoggException {
             dokumentInfo = new DokumentInfo();
 
             mapper.oppdaterDokumentInfo(dokumentInfo, BREVKODE1, DOKUMENT_TITTEL1);

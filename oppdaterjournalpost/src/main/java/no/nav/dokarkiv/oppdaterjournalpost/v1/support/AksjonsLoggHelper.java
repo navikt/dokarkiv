@@ -4,7 +4,6 @@ import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 import lombok.extern.slf4j.Slf4j;
-import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService;
 import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggTO;
 import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggTOMapper;
 import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
@@ -12,31 +11,20 @@ import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
 import org.slf4j.MDC;
 
-import javax.inject.Inject;
-import java.util.List;
+import java.util.ArrayList;
 
 @Slf4j
-public class AksjonsloggHelper {
-
-    @Inject
-    private AksjonsLoggService aksjonsLoggService;
+public class AksjonsLoggHelper {
 
     private final AksjonsLoggTOMapper aksjonsLoggTOMapper = new AksjonsLoggTOMapper();
-
     private AksjonsLoggTO aksjonsLoggTO;
-    private List<ArkivElementEndringTO> arkivElementEndringTOs;
+    private ArrayList<ArkivElementEndringTO> arkivElementEndringTOs = new ArrayList<>();
 
     private static long journalpostId;
     private static String aksjonsLoggHeaderString;
     private static String brukerId;
 
-    public AksjonsloggHelper() {
-    }
-
-    public void populerAksjonslogg() throws UgyldigAksjonsLoggException{
-        if (!this.arkivElementEndringTOs.isEmpty()) {
-            aksjonsLoggService.validateAndSaveAksjonsLogg(this.aksjonsLoggTO, this.arkivElementEndringTOs);
-        }
+    public AksjonsLoggHelper() {
     }
 
     public void setAksjonsLoggTO(AksjonsTypeCode aksjonsTypeCode, Long dokumentInfoId) throws UgyldigAksjonsLoggException {
@@ -61,14 +49,22 @@ public class AksjonsloggHelper {
     }
 
     public static void setJournalpostId(long journalpostId) {
-        AksjonsloggHelper.journalpostId = journalpostId;
+        AksjonsLoggHelper.journalpostId = journalpostId;
     }
 
     public static void setAksjonsLoggHeaderString(String aksjonsLoggHeaderString) {
-        AksjonsloggHelper.aksjonsLoggHeaderString = aksjonsLoggHeaderString;
+        AksjonsLoggHelper.aksjonsLoggHeaderString = aksjonsLoggHeaderString;
     }
 
     public static void setBrukerId(String brukerId) {
-        AksjonsloggHelper.brukerId = brukerId;
+        AksjonsLoggHelper.brukerId = brukerId;
+    }
+
+    public AksjonsLoggTO getAksjonsLoggTO() {
+        return aksjonsLoggTO;
+    }
+
+    public ArrayList<ArkivElementEndringTO> getArkivElementEndringTOs() {
+        return arkivElementEndringTOs;
     }
 }

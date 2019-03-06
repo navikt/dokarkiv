@@ -9,6 +9,7 @@ import no.nav.dok.oppdaterjournalpost.api.v1.Arkivsaksystem;
 import no.nav.dok.oppdaterjournalpost.api.v1.BrukerIdType;
 import no.nav.dok.oppdaterjournalpost.api.v1.PutOppdaterJournalpostRequest;
 import no.nav.dok.oppdaterjournalpost.api.v1.Tilleggsopplysning;
+import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService;
 import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.codes.Behandlingstema;
@@ -20,7 +21,7 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
 import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
 import no.nav.dokarkiv.core.repository.BrukerRepository;
-import no.nav.dokarkiv.oppdaterjournalpost.v1.support.AksjonsloggHelper;
+import no.nav.dokarkiv.oppdaterjournalpost.v1.support.AksjonsLoggHelper;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 
@@ -36,14 +37,17 @@ public class JournalpostMapper {
 	@Inject
 	private BrukerRepository brukerRepository;
 
+	@Inject
+	private AksjonsLoggService aksjonsLoggService;
+
 	public void oppdaterJournalpost(Journalpost journalpost, PutOppdaterJournalpostRequest putOppdaterJournalpostRequest) throws UgyldigAksjonsLoggException {
 
 		boolean endret = false;
-		AksjonsloggHelper aksjonsloggHelperMetadata = new AksjonsloggHelper();
-		aksjonsloggHelperMetadata.setAksjonsLoggTO(AksjonsTypeCode.ENDRE_METADATA, null);
+		AksjonsLoggHelper aksjonsLoggHelperMetadata = new AksjonsLoggHelper();
+		aksjonsLoggHelperMetadata.setAksjonsLoggTO(AksjonsTypeCode.ENDRE_METADATA, null);
 
 		if (isNotBlank(putOppdaterJournalpostRequest.getTittel())) {
-			aksjonsloggHelperMetadata.addToArkivElementEndringTOs(ArkivElementEndringTO.builder()
+			aksjonsLoggHelperMetadata.addToArkivElementEndringTOs(ArkivElementEndringTO.builder()
 					.arkivElement("Journalpost.innhold")
 					.fraVerdi(journalpost.getInnhold())
 					.tilVerdi(putOppdaterJournalpostRequest.getTittel())
@@ -52,7 +56,7 @@ public class JournalpostMapper {
 			endret = true;
 		}
 		if (isNotBlank(putOppdaterJournalpostRequest.getTema())) {
-			aksjonsloggHelperMetadata.addToArkivElementEndringTOs(ArkivElementEndringTO.builder()
+			aksjonsLoggHelperMetadata.addToArkivElementEndringTOs(ArkivElementEndringTO.builder()
 					.arkivElement("Journalpost.fagomrade")
 					.fraVerdi(journalpost.getFagomrade().name())
 					.tilVerdi(putOppdaterJournalpostRequest.getTema())
@@ -95,7 +99,10 @@ public class JournalpostMapper {
 			journalpost.setEndretKildeNavn(MDC.get(MDC_CONSUMER_ID));
 		}
 
-		aksjonsloggHelperMetadata.populerAksjonslogg();
+		if (!aksjonsLoggHelperMetadata.getArkivElementEndringTOs().isEmpty()) {
+			aksjonsLoggService.validateAndSaveAksjonsLogg(aksjonsLoggHelperMetadata.getAksjonsLoggTO(), aksjonsLoggHelperMetadata
+					.getArkivElementEndringTOs());
+		}
 	}
 
     private Map<String, String> MapTilleggsopplysninger(List<Tilleggsopplysning> tilleggsopplysninger) {
@@ -140,8 +147,8 @@ public class JournalpostMapper {
 
 		if (request.getArkivsak() != null) {
 			Saksrelasjon saksrelasjon;
-			AksjonsloggHelper aksjonsloggHelperSakstilknytning = new AksjonsloggHelper();
-			aksjonsloggHelperSakstilknytning.setAksjonsLoggTO(AksjonsTypeCode.SAKSTILKNYTNING, null);
+			AksjonsLoggHelper aksjonsLoggHelperSakstilknytning = new AksjonsLoggHelper();
+			aksjonsLoggHelperSakstilknytning.setAksjonsLoggTO(AksjonsTypeCode.SAKSTILKNYTNING, null);
 
 			if (journalpost.getSaksrelasjon() == null) {
 				saksrelasjon = new Saksrelasjon();
@@ -151,7 +158,7 @@ public class JournalpostMapper {
 				saksrelasjon = journalpost.getSaksrelasjon();
 			}
 			if (isNotBlank(request.getArkivsak().getArkivsaksnummer())) {
-				aksjonsloggHelperSakstilknytning.addToArkivElementEndringTOs(ArkivElementEndringTO.builder()
+				aksjonsLoggHelperSakstilknytning.addToArkivElementEndringTOs(ArkivElementEndringTO.builder()
 						.arkivElement("Saksrelasjon.sakId")
 						.fraVerdi(journalpost.getSaksrelasjon().getSakId())
 						.tilVerdi(request.getArkivsak().getArkivsaksnummer())
@@ -160,7 +167,7 @@ public class JournalpostMapper {
 				endret = true;
 			}
 			if (request.getArkivsak().getArkivsaksystem() != null) {
-				aksjonsloggHelperSakstilknytning.addToArkivElementEndringTOs(ArkivElementEndringTO.builder()
+				aksjonsLoggHelperSakstilknytning.addToArkivElementEndringTOs(ArkivElementEndringTO.builder()
 						.arkivElement("Saksrelasjon.fagsystem")
 						.fraVerdi(journalpost.getSaksrelasjon().getFagsystem().name())
 						.tilVerdi(request.getArkivsak().getArkivsaksystem().name())
@@ -176,8 +183,10 @@ public class JournalpostMapper {
 				journalpost.setSaksrelasjon(saksrelasjon);
 			}
 
-			aksjonsloggHelperSakstilknytning.populerAksjonslogg();
-		}
+			if (!aksjonsLoggHelperSakstilknytning.getArkivElementEndringTOs().isEmpty()) {
+				aksjonsLoggService.validateAndSaveAksjonsLogg(aksjonsLoggHelperSakstilknytning.getAksjonsLoggTO(), aksjonsLoggHelperSakstilknytning
+						.getArkivElementEndringTOs());
+			}			}
 	}
 
 	protected FagsystemCode mapArkivSakSystemToFagsystemCode(Arkivsaksystem arkivsaksystem) {
