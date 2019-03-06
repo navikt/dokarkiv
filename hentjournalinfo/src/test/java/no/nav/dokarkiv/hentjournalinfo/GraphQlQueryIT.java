@@ -247,7 +247,7 @@ public class GraphQlQueryIT {
 		abacPermit();
 		Journalpost journalpost = TestDataUtils.createJournalpostBuilder(FIL_UUID).build();
 		joarkRepository.save(journalpost);
-		skjermingService.setJournalpostSkjermet(journalpost, SkjermingTypeCode.POL);
+		skjermingService.setJournalpostSkjerming(journalpost, SkjermingTypeCode.POL);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 

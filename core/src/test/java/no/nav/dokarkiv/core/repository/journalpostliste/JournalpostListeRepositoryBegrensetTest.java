@@ -80,7 +80,7 @@ public class JournalpostListeRepositoryBegrensetTest {
 				.toDate(), JournalStatusCode.J, FAGOMRADE).build();
 		joarkRepository.save(journalpost);
 		joarkRepository.save(journalpostBegrenset);
-		skjermingService.setJournalpostSkjermet(journalpostBegrenset, SkjermingTypeCode.POL);
+		skjermingService.setJournalpostSkjerming(journalpostBegrenset, SkjermingTypeCode.POL);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
@@ -107,7 +107,7 @@ public class JournalpostListeRepositoryBegrensetTest {
 				.toDate(), JournalStatusCode.J, FAGOMRADE).build();
 		joarkRepository.save(journalpost);
 		joarkRepository.save(journalpostBegrenset);
-		skjermingService.setJournalpostSkjermet(journalpostBegrenset, SkjermingTypeCode.POL);
+		skjermingService.setJournalpostSkjerming(journalpostBegrenset, SkjermingTypeCode.POL);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 

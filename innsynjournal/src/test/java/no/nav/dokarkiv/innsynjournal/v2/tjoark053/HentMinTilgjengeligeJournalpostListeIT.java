@@ -823,7 +823,7 @@ public class HentMinTilgjengeligeJournalpostListeIT extends AbstractInnsynJourna
 		List<no.nav.tjeneste.virksomhet.innsynjournal.v2.informasjon.Journalpost> journalpostListe = response.getJournalpostListe();
 		assertThat(journalpostListe, hasSize(2));
 
-		skjermingService.setJournalpostSkjermet(journalpost, SkjermingTypeCode.POL);
+		skjermingService.setJournalpostSkjerming(journalpost, SkjermingTypeCode.POL);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 

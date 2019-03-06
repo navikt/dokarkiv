@@ -161,7 +161,7 @@ public class HentDokumentURLIT extends AbstractJournalV3Itest {
 		abacPermit();
 		persistDokumentFil();
 
-		skjermingService.setJournalpostSkjermet(journalpost, SkjermingTypeCode.POL);
+		skjermingService.setJournalpostSkjerming(journalpost, SkjermingTypeCode.POL);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 

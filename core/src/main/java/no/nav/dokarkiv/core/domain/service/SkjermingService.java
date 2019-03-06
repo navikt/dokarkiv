@@ -109,12 +109,12 @@ public class SkjermingService {
 
 	public void skjermJournalpost(Long journalpostId, SkjermingTypeCode skjermingTypeCode) {
 		Journalpost journalpost = hentJournalpost(journalpostId);
-		setJournalpostSkjermet(journalpost, skjermingTypeCode);
+		setJournalpostSkjerming(journalpost, skjermingTypeCode);
 	}
 
 	public void opphevSkjermJournalpostByJournalpostId(Long journalpostId) {
 		Journalpost journalpost = hentJournalpost(journalpostId);
-		setJournalpostSkjermet(journalpost, null);
+		setJournalpostSkjerming(journalpost, null);
 	}
 
 	public void skjermJournalpostDokumentInfoRelasjon(Long journalpostId, Long dokumentInfoId, SkjermingTypeCode skjermingTypeCode) {
@@ -147,7 +147,7 @@ public class SkjermingService {
 		q.executeUpdate();
 	}
 
-	public void setJournalpostSkjermet(Journalpost journalpost, SkjermingTypeCode skjermingTypeCode) {
+	public void setJournalpostSkjerming(Journalpost journalpost, SkjermingTypeCode skjermingTypeCode) {
 		Query q = entityManager.createQuery("update Journalpost set skjermingType = :skjermingTypeCode where journalpostId = :journalpostId")
 				.setParameter("journalpostId", journalpost.getJournalpostId())
 				.setParameter("skjermingTypeCode", skjermingTypeCode);

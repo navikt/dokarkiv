@@ -197,7 +197,7 @@ public class HentDokumentControllerIT {
 		Journalpost journalpost = joarkRepository.save(createJournalpostBuilder("tittel").build());
 		dokumentUrlInfoRepository.save(createDokumentUrlInfo(journalpost, docToken, FIL_UUID).build());
 		persistDokumentFil(FIL_CONTENT);
-		skjermingService.setJournalpostSkjermet(journalpost, SkjermingTypeCode.POL);
+		skjermingService.setJournalpostSkjerming(journalpost, SkjermingTypeCode.POL);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
