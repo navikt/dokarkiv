@@ -12,12 +12,10 @@ import no.nav.dokarkiv.core.exceptions.InvalidJournalpostStructureException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeMidlertidigException;
 import no.nav.dokarkiv.core.exceptions.KanIkkeFerdigstilleException;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Component
 class JournalpostValidator {
 
 	private List<String> manglendePaakrevdeFelter;
@@ -43,6 +41,7 @@ class JournalpostValidator {
 		verifyPaakrevdeFelterDokumentInfo(journalpost);
 		if (!manglendePaakrevdeFelter.isEmpty()) {
 			String manglendeFelter = StringUtils.join(manglendePaakrevdeFelter, ", ");
+			manglendePaakrevdeFelter.clear();
 			throw new KanIkkeFerdigstilleException("Kan ikke ferdigstille journalpost, følgende felt(er) mangler: " + manglendeFelter);
 		}
 	}

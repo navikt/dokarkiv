@@ -9,6 +9,8 @@ import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.exceptions.JournalpostIkkeMidlertidigException;
+import no.nav.dokarkiv.core.exceptions.KanIkkeFerdigstilleException;
 import no.nav.dokarkiv.journalpost.v1.api.FerdigstillJournalpostRequest;
 import org.apache.commons.collections15.IteratorUtils;
 import org.junit.Test;
@@ -146,8 +148,7 @@ public class FerdigstillJournalpostIT extends AbstractFerdigstillJournalpostIT {
 				.build();
 
 		HttpEntity requestEntity = new HttpEntity(request, createHeadersWithServiceUserToken());
-		ResponseEntity<String> response = restTemplate.exchange(URL_FERDIGSTILLJOURNALPOST + journalpostId + FERDIGSTILL, HttpMethod.PATCH, requestEntity, String.class);
-
+		ResponseEntity<JournalpostIkkeMidlertidigException> response = restTemplate.exchange(URL_FERDIGSTILLJOURNALPOST + journalpostId + FERDIGSTILL, HttpMethod.PATCH, requestEntity, JournalpostIkkeMidlertidigException.class);
 		assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
 	}
 
@@ -191,5 +192,28 @@ public class FerdigstillJournalpostIT extends AbstractFerdigstillJournalpostIT {
 		ResponseEntity<String> response = restTemplate.exchange(URL_FERDIGSTILLJOURNALPOST + journalpostId + FERDIGSTILL, HttpMethod.PATCH, requestEntity, String.class);
 
 		assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+	}
+
+	@Test
+	public void shouldFailIfMissingPaakrevdFelt() throws IOException {
+		abacPermit();
+
+		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M).build();
+		journalpost.setAvsenderMottaker(null);
+		joarkRepository.save(journalpost);
+
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
+
+		Long journalpostId = journalpost.getJournalpostId();
+		FerdigstillJournalpostRequest request = FerdigstillJournalpostRequest.builder()
+				.journalfEnhet("9999")
+				.build();
+
+		HttpEntity requestEntity = new HttpEntity(request, createHeadersWithServiceUserToken());
+		ResponseEntity<KanIkkeFerdigstilleException> response = restTemplate.exchange(URL_FERDIGSTILLJOURNALPOST + journalpostId + FERDIGSTILL, HttpMethod.PATCH, requestEntity, KanIkkeFerdigstilleException.class);
+
+		assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+		assertTrue(response.getBody().getMessage().contains("Journalpost.avsendMottaker"));
 	}
 }

@@ -27,10 +27,9 @@ public class FerdigstillJournalpostService {
 	private final JournalpostValidator journalpostValidator;
 
 	@Inject
-	public FerdigstillJournalpostService(final JoarkRepository joarkRepository,
-										 final JournalpostValidator journalpostValidator) {
+	public FerdigstillJournalpostService(final JoarkRepository joarkRepository) {
 		this.joarkRepository = joarkRepository;
-		this.journalpostValidator = journalpostValidator;
+		this.journalpostValidator = new JournalpostValidator();
 	}
 
 	public List<ArkivElementEndringTO> ferdigstill(String journalpostId, String journalfEnhet) {
