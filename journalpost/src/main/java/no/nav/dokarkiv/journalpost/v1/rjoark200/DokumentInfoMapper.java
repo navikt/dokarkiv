@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.oppdaterjournalpost.v1.rjoark200;
+package no.nav.dokarkiv.journalpost.v1.rjoark200;
 
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
@@ -8,7 +8,6 @@ import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
-import no.nav.dokarkiv.oppdaterjournalpost.v1.support.AksjonsLoggHelper;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 

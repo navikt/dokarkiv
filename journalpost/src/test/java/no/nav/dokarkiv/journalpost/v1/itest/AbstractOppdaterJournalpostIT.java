@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.oppdaterjournalpost.v1;
+package no.nav.dokarkiv.journalpost.v1.itest;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
@@ -18,6 +18,7 @@ import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository
 import no.nav.dokarkiv.core.repository.SkannetInnholdRepository;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.dokarkiv.core.stelvio.SimpleRequestContext;
+import no.nav.dokarkiv.journalpost.v1.JournalpostConfig;
 import no.nav.freg.security.test.oidc.tools.OidcTestService;
 import no.nav.freg.security.test.oidc.tools.TestToolsAutoConfig;
 import org.apache.commons.io.IOUtils;
@@ -53,7 +54,7 @@ import java.nio.charset.StandardCharsets;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-		classes = {CoreConfig.class, OppdaterJournalpostConfig.class, TestToolsAutoConfig.class})
+		classes = {CoreConfig.class, JournalpostConfig.class, TestToolsAutoConfig.class})
 @ActiveProfiles("itest,wiremock,ldap,oidc")
 @AutoConfigureDataJpa
 @AutoConfigureTestDatabase
@@ -61,7 +62,7 @@ import java.nio.charset.StandardCharsets;
 @AutoConfigureDataLdap
 @AutoConfigureWireMock(port = 0)
 @Transactional
-public abstract class AbstractOppdaterJournalpostV1Itest extends AbstractRestIT {
+public abstract class AbstractOppdaterJournalpostIT extends AbstractRestIT {
 
 	protected String OIDC_TOKEN_PERSON_USER_TEST;
 	protected String OIDC_TOKEN_SERVICE_USER_TEST;

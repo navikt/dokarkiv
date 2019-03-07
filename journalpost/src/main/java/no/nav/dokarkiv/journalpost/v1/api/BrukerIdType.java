@@ -1,4 +1,4 @@
-package no.nav.dok.oppdaterjournalpost.api.v1;
+package no.nav.dokarkiv.journalpost.v1.api;
 
 import io.swagger.annotations.ApiModel;
 

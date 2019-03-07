@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.oppdaterjournalpost.v1;
+package no.nav.dokarkiv.journalpost.v1;
 
 
 import static no.nav.abac.xacml.NavAttributter.RESOURCE_ARKIV_JOURNALPOST;
@@ -11,14 +11,14 @@ import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.UPDATE_ACTI
 
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
-import no.nav.dok.oppdaterjournalpost.api.v1.PutOppdaterJournalpostRequest;
-import no.nav.dok.oppdaterjournalpost.api.v1.PutOppdaterJournalpostResponse;
 import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
 import no.nav.dokarkiv.core.metrics.RestMetrics;
 import no.nav.dokarkiv.core.security.abac.AbacSecurityService;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
-import no.nav.dokarkiv.oppdaterjournalpost.v1.rjoark200.OppdaterJournalpostService;
-import no.nav.dokarkiv.oppdaterjournalpost.v1.util.Utils;
+import no.nav.dokarkiv.journalpost.v1.api.PutOppdaterJournalpostRequest;
+import no.nav.dokarkiv.journalpost.v1.api.PutOppdaterJournalpostResponse;
+import no.nav.dokarkiv.journalpost.v1.rjoark200.OppdaterJournalpostService;
+import no.nav.dokarkiv.journalpost.v1.rjoark200.util.Utils;
 import no.nav.freg.abac.core.annotation.Abac;
 import org.slf4j.MDC;
 import org.springframework.transaction.annotation.Transactional;

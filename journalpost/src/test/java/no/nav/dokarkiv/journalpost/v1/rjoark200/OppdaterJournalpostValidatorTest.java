@@ -1,10 +1,10 @@
-package no.nav.dokarkiv.oppdaterjournalpost.v1.support;
+package no.nav.dokarkiv.journalpost.v1.rjoark200;
 
-import static no.nav.dokarkiv.oppdaterjournalpost.v1.util.TestUtils.createPutOppdaterJournalpostRequest;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createPutOppdaterJournalpostRequest;
 
-import no.nav.dok.oppdaterjournalpost.api.v1.PutOppdaterJournalpostRequest;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
+import no.nav.dokarkiv.journalpost.v1.api.PutOppdaterJournalpostRequest;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;

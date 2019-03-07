@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.oppdaterjournalpost.v1.util;
+package no.nav.dokarkiv.journalpost.v1.rjoark200.util;
 
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.exceptions.DokumentIkkeFunnetException;

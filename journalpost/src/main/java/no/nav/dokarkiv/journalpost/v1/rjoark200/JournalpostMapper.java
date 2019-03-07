@@ -1,14 +1,10 @@
-package no.nav.dokarkiv.oppdaterjournalpost.v1.rjoark200;
+package no.nav.dokarkiv.journalpost.v1.rjoark200;
 
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
-import static no.nav.dokarkiv.oppdaterjournalpost.v1.util.Utils.assertNotNull;
+import static no.nav.dokarkiv.journalpost.v1.rjoark200.util.Utils.assertNotNull;
 import static org.apache.logging.log4j.util.Strings.isNotBlank;
 
-import no.nav.dok.oppdaterjournalpost.api.v1.Arkivsaksystem;
-import no.nav.dok.oppdaterjournalpost.api.v1.BrukerIdType;
-import no.nav.dok.oppdaterjournalpost.api.v1.PutOppdaterJournalpostRequest;
-import no.nav.dok.oppdaterjournalpost.api.v1.Tilleggsopplysning;
 import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService;
 import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
@@ -21,7 +17,10 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
 import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
 import no.nav.dokarkiv.core.repository.BrukerRepository;
-import no.nav.dokarkiv.oppdaterjournalpost.v1.support.AksjonsLoggHelper;
+import no.nav.dokarkiv.journalpost.v1.api.Arkivsaksystem;
+import no.nav.dokarkiv.journalpost.v1.api.BrukerIdType;
+import no.nav.dokarkiv.journalpost.v1.api.PutOppdaterJournalpostRequest;
+import no.nav.dokarkiv.journalpost.v1.api.Tilleggsopplysning;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 

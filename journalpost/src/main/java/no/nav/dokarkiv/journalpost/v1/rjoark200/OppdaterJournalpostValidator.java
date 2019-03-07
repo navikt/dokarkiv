@@ -1,8 +1,8 @@
-package no.nav.dokarkiv.oppdaterjournalpost.v1.support;
+package no.nav.dokarkiv.journalpost.v1.rjoark200;
 
-import no.nav.dok.oppdaterjournalpost.api.v1.PutOppdaterJournalpostRequest;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
+import no.nav.dokarkiv.journalpost.v1.api.PutOppdaterJournalpostRequest;
 
 import java.util.Arrays;
 

@@ -1,7 +1,7 @@
-package no.nav.dokarkiv.oppdaterjournalpost.v1.rjoark200;
+package no.nav.dokarkiv.journalpost.v1.rjoark200;
 
-import static no.nav.dokarkiv.oppdaterjournalpost.v1.util.TestUtils.BREVKODE1;
-import static no.nav.dokarkiv.oppdaterjournalpost.v1.util.TestUtils.DOKUMENT_TITTEL1;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.BREVKODE1;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.DOKUMENT_TITTEL1;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 

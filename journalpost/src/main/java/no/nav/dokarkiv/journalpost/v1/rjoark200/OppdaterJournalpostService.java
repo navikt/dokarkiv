@@ -1,9 +1,8 @@
-package no.nav.dokarkiv.oppdaterjournalpost.v1.rjoark200;
+package no.nav.dokarkiv.journalpost.v1.rjoark200;
 
-import static no.nav.dokarkiv.oppdaterjournalpost.v1.support.OppdaterJournalpostValidator.validateOppdaterteFelt;
-import static no.nav.dokarkiv.oppdaterjournalpost.v1.util.Utils.convertStringToLong;
+import static no.nav.dokarkiv.journalpost.v1.rjoark200.OppdaterJournalpostValidator.validateOppdaterteFelt;
+import static no.nav.dokarkiv.journalpost.v1.rjoark200.util.Utils.convertStringToLong;
 
-import no.nav.dok.oppdaterjournalpost.api.v1.PutOppdaterJournalpostRequest;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
@@ -11,8 +10,8 @@ import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
-import no.nav.dokarkiv.oppdaterjournalpost.v1.support.AksjonsLoggHelper;
-import no.nav.dokarkiv.oppdaterjournalpost.v1.util.Utils;
+import no.nav.dokarkiv.journalpost.v1.api.PutOppdaterJournalpostRequest;
+import no.nav.dokarkiv.journalpost.v1.rjoark200.util.Utils;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -57,7 +56,7 @@ public class OppdaterJournalpostService {
 		joarkRepository.save(journalpost);
 
 		if (putOppdaterJournalpostRequest.getDokumentInfoList() != null) {
-			for (no.nav.dok.oppdaterjournalpost.api.v1.DokumentInfo dokument : putOppdaterJournalpostRequest.getDokumentInfoList()) {
+			for (no.nav.dokarkiv.journalpost.v1.api.DokumentInfo dokument : putOppdaterJournalpostRequest.getDokumentInfoList()) {
 				DokumentInfo dokumentInfo = journalpost.getDokumentInfoFromJpDokInfoRelasjonerByDokumentInfoId(Long.parseLong(dokument.getDokumentInfoId()));
 
 				Utils.assertDokumentInfoNotNull(dokumentInfo, String.valueOf(journalpost.getJournalpostId()), dokument.getDokumentInfoId());

@@ -1,11 +1,5 @@
-package no.nav.dokarkiv.oppdaterjournalpost.v1.util;
+package no.nav.dokarkiv.journalpost.v1.util;
 
-import no.nav.dok.oppdaterjournalpost.api.v1.Arkivsak;
-import no.nav.dok.oppdaterjournalpost.api.v1.Arkivsaksystem;
-import no.nav.dok.oppdaterjournalpost.api.v1.AvsenderMottaker;
-import no.nav.dok.oppdaterjournalpost.api.v1.BrukerIdType;
-import no.nav.dok.oppdaterjournalpost.api.v1.PutOppdaterJournalpostRequest;
-import no.nav.dok.oppdaterjournalpost.api.v1.Tilleggsopplysning;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
@@ -23,6 +17,12 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
 import no.nav.dokarkiv.core.domain.entities.SkannetInnhold;
+import no.nav.dokarkiv.journalpost.v1.api.Arkivsak;
+import no.nav.dokarkiv.journalpost.v1.api.Arkivsaksystem;
+import no.nav.dokarkiv.journalpost.v1.api.AvsenderMottaker;
+import no.nav.dokarkiv.journalpost.v1.api.BrukerIdType;
+import no.nav.dokarkiv.journalpost.v1.api.PutOppdaterJournalpostRequest;
+import no.nav.dokarkiv.journalpost.v1.api.Tilleggsopplysning;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -225,15 +225,15 @@ public class TestUtils {
 				.build();
 	}
 
-	private static no.nav.dok.oppdaterjournalpost.api.v1.Bruker createBrukerPerson() {
-		return no.nav.dok.oppdaterjournalpost.api.v1.Bruker.builder()
+	private static no.nav.dokarkiv.journalpost.v1.api.Bruker createBrukerPerson() {
+		return no.nav.dokarkiv.journalpost.v1.api.Bruker.builder()
 				.brukerIdType(BrukerIdType.FNR)
 				.identifikator(BRUKER_ID_PERSON)
 				.build();
 	}
 
-	private static no.nav.dok.oppdaterjournalpost.api.v1.Bruker createBrukerOrganisasjon() {
-		return no.nav.dok.oppdaterjournalpost.api.v1.Bruker.builder()
+	private static no.nav.dokarkiv.journalpost.v1.api.Bruker createBrukerOrganisasjon() {
+		return no.nav.dokarkiv.journalpost.v1.api.Bruker.builder()
 				.brukerIdType(BrukerIdType.ORGNR)
 				.identifikator(BRUKER_ID_ORGANISASJON)
 				.build();
@@ -250,14 +250,14 @@ public class TestUtils {
 		return Arrays.asList(Tilleggsopplysning.builder().nokkel("nokkel").verdi("verdi").build());
 	}
 
-	private static List<no.nav.dok.oppdaterjournalpost.api.v1.DokumentInfo> createDokumentInfos() {
+	private static List<no.nav.dokarkiv.journalpost.v1.api.DokumentInfo> createDokumentInfos() {
 		return Arrays.asList(
-				no.nav.dok.oppdaterjournalpost.api.v1.DokumentInfo.builder()
+				no.nav.dokarkiv.journalpost.v1.api.DokumentInfo.builder()
 						.brevkode(BREVKODE1)
 						.dokumentInfoId(DOKUMENTINFO_ID1)
 						.tittel(DOKUMENT_TITTEL1)
 						.build(),
-				no.nav.dok.oppdaterjournalpost.api.v1.DokumentInfo.builder()
+				no.nav.dokarkiv.journalpost.v1.api.DokumentInfo.builder()
 						.brevkode(BREVKODE2)
 						.dokumentInfoId(DOKUMENTINFO_ID2)
 						.tittel(DOKUMENT_TITTEL2)

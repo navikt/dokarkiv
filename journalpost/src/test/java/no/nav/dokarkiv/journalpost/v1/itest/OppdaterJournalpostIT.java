@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.oppdaterjournalpost.v1.rjoark200;
+package no.nav.dokarkiv.journalpost.v1.itest;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
@@ -10,15 +10,6 @@ import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.StringContains.containsString;
 import static org.junit.Assert.assertEquals;
 
-import no.nav.dok.oppdaterjournalpost.api.v1.Arkivsak;
-import no.nav.dok.oppdaterjournalpost.api.v1.Arkivsaksystem;
-import no.nav.dok.oppdaterjournalpost.api.v1.AvsenderMottaker;
-import no.nav.dok.oppdaterjournalpost.api.v1.Bruker;
-import no.nav.dok.oppdaterjournalpost.api.v1.BrukerIdType;
-import no.nav.dok.oppdaterjournalpost.api.v1.DokumentInfo;
-import no.nav.dok.oppdaterjournalpost.api.v1.PutOppdaterJournalpostRequest;
-import no.nav.dok.oppdaterjournalpost.api.v1.PutOppdaterJournalpostResponse;
-import no.nav.dok.oppdaterjournalpost.api.v1.Tilleggsopplysning;
 import no.nav.dokarkiv.core.datautil.JournalpostTestDataProvider;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
@@ -26,7 +17,15 @@ import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import no.nav.dokarkiv.oppdaterjournalpost.v1.AbstractOppdaterJournalpostV1Itest;
+import no.nav.dokarkiv.journalpost.v1.api.Arkivsak;
+import no.nav.dokarkiv.journalpost.v1.api.Arkivsaksystem;
+import no.nav.dokarkiv.journalpost.v1.api.AvsenderMottaker;
+import no.nav.dokarkiv.journalpost.v1.api.Bruker;
+import no.nav.dokarkiv.journalpost.v1.api.BrukerIdType;
+import no.nav.dokarkiv.journalpost.v1.api.DokumentInfo;
+import no.nav.dokarkiv.journalpost.v1.api.PutOppdaterJournalpostRequest;
+import no.nav.dokarkiv.journalpost.v1.api.PutOppdaterJournalpostResponse;
+import no.nav.dokarkiv.journalpost.v1.api.Tilleggsopplysning;
 import org.apache.commons.collections15.IteratorUtils;
 import org.junit.Test;
 import org.springframework.http.HttpEntity;
@@ -44,7 +43,7 @@ import java.util.List;
 /**
  * @author Sigurd Midttun, Visma Consulting.
  */
-public class rjoark200IT extends AbstractOppdaterJournalpostV1Itest {
+public class OppdaterJournalpostIT extends AbstractOppdaterJournalpostIT {
 
 	private static final String IDENTIFIKATOR = "***gammelt_fnr***";
 	private static final String AVSENDER_MOTTAKER_NAVN = "etternavn, fornavn";
