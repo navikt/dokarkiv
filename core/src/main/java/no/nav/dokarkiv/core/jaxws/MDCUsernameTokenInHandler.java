@@ -108,7 +108,7 @@ public class MDCUsernameTokenInHandler implements SOAPHandler<SOAPMessageContext
 				break;
 			}
 		}
-		return mdc;
+		return mdc == null ? "" : mdc;
 	}
 
 }

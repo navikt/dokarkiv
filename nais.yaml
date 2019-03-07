@@ -162,3 +162,7 @@ fasitResources:
     resourceType: restservice
     path: /rest/v1/journalpost/{journalpostId}
     description: Tjeneste som oppdaterer metadata på en journalpost med tilhørende dokumenter i Joark.
+  - alias: Journalpost_v1
+    resourceType: restservice
+    path: /rest/journalpostapi/v1
+    description: Rest-tjeneste til bruk ifm. oppretting, oppdatering eller ferdigstilling journalposter.
