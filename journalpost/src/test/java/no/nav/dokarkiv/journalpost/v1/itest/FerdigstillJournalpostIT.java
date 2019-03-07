@@ -1,6 +1,7 @@
 package no.nav.dokarkiv.journalpost.v1.itest;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import no.nav.dokarkiv.core.datautil.JournalpostTestDataProvider;
@@ -195,11 +196,12 @@ public class FerdigstillJournalpostIT extends AbstractFerdigstillJournalpostIT {
 	}
 
 	@Test
-	public void shouldFailIfMissingPaakrevdFelt() throws IOException {
+	public void shouldFailIfMissingPaakrevdFelter() throws IOException {
 		abacPermit();
 
 		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M).build();
 		journalpost.setAvsenderMottaker(null);
+		journalpost.setInnhold(null);
 		joarkRepository.save(journalpost);
 
 		TestTransaction.flagForCommit();
@@ -214,6 +216,8 @@ public class FerdigstillJournalpostIT extends AbstractFerdigstillJournalpostIT {
 		ResponseEntity<KanIkkeFerdigstilleException> response = restTemplate.exchange(URL_FERDIGSTILLJOURNALPOST + journalpostId + FERDIGSTILL, HttpMethod.PATCH, requestEntity, KanIkkeFerdigstilleException.class);
 
 		assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+		assertNotNull(response.getBody());
 		assertTrue(response.getBody().getMessage().contains("Journalpost.avsendMottaker"));
+		assertTrue(response.getBody().getMessage().contains("Journalpost.innhold"));
 	}
 }

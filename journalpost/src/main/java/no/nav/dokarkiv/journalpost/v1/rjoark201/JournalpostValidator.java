@@ -3,7 +3,6 @@ package no.nav.dokarkiv.journalpost.v1.rjoark201;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
-import no.nav.dokarkiv.core.domain.entities.Bruker;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
@@ -18,10 +17,7 @@ import java.util.List;
 
 class JournalpostValidator {
 
-	private List<String> manglendePaakrevdeFelter;
-
 	JournalpostValidator() {
-		manglendePaakrevdeFelter = new ArrayList<>();
 	}
 
 	void validateJournalpostTilstand(Journalpost journalpost) {
@@ -35,13 +31,13 @@ class JournalpostValidator {
 	}
 
 	void validatePaakrevdeFelter(Journalpost journalpost) {
-		verifyPaakrevdeFelterJournalpost(journalpost);
-		verifyPaakrevdeFelterSaksrelasjon(journalpost.getSaksrelasjon());
-		verifyPaakrevdeFelterBruker(journalpost);
-		verifyPaakrevdeFelterDokumentInfo(journalpost);
+		List<String> manglendePaakrevdeFelter = new ArrayList<>();
+		verifyPaakrevdeFelterJournalpost(journalpost, manglendePaakrevdeFelter);
+		verifyPaakrevdeFelterSaksrelasjon(journalpost.getSaksrelasjon(), manglendePaakrevdeFelter);
+		verifyPaakrevdeFelterBruker(journalpost, manglendePaakrevdeFelter);
+		verifyPaakrevdeFelterDokumentInfo(journalpost, manglendePaakrevdeFelter);
 		if (!manglendePaakrevdeFelter.isEmpty()) {
 			String manglendeFelter = StringUtils.join(manglendePaakrevdeFelter, ", ");
-			manglendePaakrevdeFelter.clear();
 			throw new KanIkkeFerdigstilleException("Kan ikke ferdigstille journalpost, følgende felt(er) mangler: " + manglendeFelter);
 		}
 	}
@@ -89,50 +85,48 @@ class JournalpostValidator {
 		});
 	}
 
-	private void verifyPaakrevdeFelterJournalpost(Journalpost journalpost) {
-		verifyFieldNotNull(journalpost, journalpost.getFagomrade(), "fagomrade");
-		verifyStringNotBlank(journalpost, journalpost.getInnhold(), "innhold");
+	private void verifyPaakrevdeFelterJournalpost(Journalpost journalpost, List<String> manglendePaakrevdeFelter) {
+		verifyFieldNotNull(journalpost, journalpost.getFagomrade(), "fagomrade", manglendePaakrevdeFelter);
+		verifyStringNotBlank(journalpost, journalpost.getInnhold(), "innhold", manglendePaakrevdeFelter);
 		if (!JournalpostTypeCode.N.equals(journalpost.getJournalposttype())) {
-			verifyStringNotBlank(journalpost, journalpost.getAvsenderMottaker(), "avsendMottaker");
+			verifyStringNotBlank(journalpost, journalpost.getAvsenderMottaker(), "avsendMottaker", manglendePaakrevdeFelter);
 		}
 		if (JournalpostTypeCode.I.equals(journalpost.getJournalposttype())) {
-			verifyFieldNotNull(journalpost, journalpost.getMottakskanal(), "mottakskanal");
+			verifyFieldNotNull(journalpost, journalpost.getMottakskanal(), "mottakskanal", manglendePaakrevdeFelter);
 		}
 	}
 
-	private void verifyPaakrevdeFelterDokumentInfo(Journalpost journalpost) {
+	private void verifyPaakrevdeFelterDokumentInfo(Journalpost journalpost, List<String> manglendePaakrevdeFelter) {
 		journalpost.getJournalpostDokumentInfoRelasjoner()
-				.forEach(journalpostDokumentInfoRelasjon -> verifyMandatoryFelterDokumentinfo(journalpostDokumentInfoRelasjon.getDokumentInfo()));
+				.forEach(journalpostDokumentInfoRelasjon -> verifyMandatoryFelterDokumentinfo(journalpostDokumentInfoRelasjon.getDokumentInfo(), manglendePaakrevdeFelter));
 	}
 
-	private void verifyPaakrevdeFelterBruker(Journalpost journalpost) {
-		journalpost.getBrukere().forEach(this::verifyMandatoryFelterBruker);
+	private void verifyPaakrevdeFelterBruker(Journalpost journalpost, List<String> manglendePaakrevdeFelter) {
+		journalpost.getBrukere().forEach(bruker -> {
+			verifyStringNotBlank(bruker, bruker.getBrukerId(), "brukerId", manglendePaakrevdeFelter);
+			verifyFieldNotNull(bruker, bruker.getBrukerType(), "brukerType", manglendePaakrevdeFelter);
+		});
 	}
 
-	private void verifyPaakrevdeFelterSaksrelasjon(Saksrelasjon saksrelasjon) {
+	private void verifyPaakrevdeFelterSaksrelasjon(Saksrelasjon saksrelasjon, List<String> manglendePaakrevdeFelter) {
 		if (saksrelasjon != null) {
-			verifyStringNotBlank(saksrelasjon, saksrelasjon.getSakId(), "sakId");
-			verifyFieldNotNull(saksrelasjon, saksrelasjon.getFagsystem(), "fagsystem");
+			verifyStringNotBlank(saksrelasjon, saksrelasjon.getSakId(), "sakId", manglendePaakrevdeFelter);
+			verifyFieldNotNull(saksrelasjon, saksrelasjon.getFagsystem(), "fagsystem", manglendePaakrevdeFelter);
 		}
 	}
 
-	private void verifyMandatoryFelterBruker(Bruker bruker) {
-		verifyStringNotBlank(bruker, bruker.getBrukerId(), "brukerId");
-		verifyFieldNotNull(bruker, bruker.getBrukerType(), "brukerType");
-	}
-
-	private void verifyMandatoryFelterDokumentinfo(DokumentInfo dokumentInfo) {
-		verifyFieldNotNull(dokumentInfo, dokumentInfo.getKategori(), "kategori");
-		verifyStringNotBlank(dokumentInfo, dokumentInfo.getTittel(), "tittel");
+	private void verifyMandatoryFelterDokumentinfo(DokumentInfo dokumentInfo, List<String> manglendePaakrevdeFelter) {
+		verifyFieldNotNull(dokumentInfo, dokumentInfo.getKategori(), "kategori", manglendePaakrevdeFelter);
+		verifyStringNotBlank(dokumentInfo, dokumentInfo.getTittel(), "tittel", manglendePaakrevdeFelter);
 	}
 
 	/**
 	 * Checks that a field is not null.
 	 *
 	 * @param fieldValue The value to check.
-	 * @param fieldName  THe fieldName.
+	 * @param fieldName  The fieldName.
 	 */
-	private void verifyFieldNotNull(Object parent, Object fieldValue, String fieldName) {
+	private void verifyFieldNotNull(Object parent, Object fieldValue, String fieldName, List<String> manglendePaakrevdeFelter) {
 		if (fieldValue == null) {
 			manglendePaakrevdeFelter.add(parent.getClass().getSimpleName() + "." + fieldName);
 		}
@@ -144,7 +138,7 @@ class JournalpostValidator {
 	 * @param fieldValue The String to check.
 	 * @param fieldName  The fieldName.
 	 */
-	private void verifyStringNotBlank(Object parent, String fieldValue, String fieldName) {
+	private void verifyStringNotBlank(Object parent, String fieldValue, String fieldName, List<String> manglendePaakrevdeFelter) {
 		if (isBlank(fieldValue)) {
 			manglendePaakrevdeFelter.add(parent.getClass().getSimpleName() + "." + fieldName);
 		}
