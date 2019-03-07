@@ -8,5 +8,6 @@ public enum AksjonsTypeCode {
 	ENDRE_SKJERMING,
 	KASSASJON,
 	ARKIVERING,
-	SLETT
+	SLETT,
+	FERDIGSTILL
 }
