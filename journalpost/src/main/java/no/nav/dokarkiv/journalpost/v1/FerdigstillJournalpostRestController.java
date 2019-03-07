@@ -4,6 +4,7 @@ import static no.nav.abac.xacml.NavAttributter.RESOURCE_ARKIV_DOKUMENT;
 import static no.nav.abac.xacml.NavAttributter.RESOURCE_FELLES_RESOURCE_TYPE;
 import static no.nav.abac.xacml.StandardAttributter.ACTION_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
+import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
 import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_LOGG_HEADER;
 import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.FERDIGSTILL;
@@ -77,8 +78,8 @@ public class FerdigstillJournalpostRestController {
 			@RequestHeader(value = AKSJONS_LOGG_HEADER, required = false) String aksjonsLoggHeaderString,
 			@PathVariable @ApiParam(value = "IDen til journalposten som skal ferdigstilles", required = true, example = "77778888") String journalpostId,
 			@RequestBody FerdigstillJournalpostRequest request) throws UgyldigAksjonsLoggException {
-		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark201");
-		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har mottat kall for ferdigstilling av journalpost med journalpostId={}", journalpostId);
+		MDC.put(MDC_REQUEST_ID, "rjoark201");
+		log.info(MDC.get(MDC_REQUEST_ID) + " har mottat kall for ferdigstilling av journalpost med journalpostId={}", journalpostId);
 		validateRequest(journalpostId, request);
 		abacSecurityService.assertAccessToJournalpost(journalpostId);
 		RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
@@ -86,6 +87,8 @@ public class FerdigstillJournalpostRestController {
 		List<ArkivElementEndringTO> arkivElementEndringTOList = ferdigstillJournalpostService.ferdigstill(journalpostId, request.getJournalfEnhet());
 
 		populerAksjonslogg(journalpostId, aksjonsLoggHeaderString, arkivElementEndringTOList);
+
+		log.info(MDC.get(MDC_REQUEST_ID) + " har ferdigstilt journalpost med journalpostId={}", journalpostId);
 
 		return ResponseEntity.ok().body("Journalpost ferdigstilt");
 	}
