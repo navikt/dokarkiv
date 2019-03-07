@@ -5,6 +5,7 @@ import static no.nav.abac.xacml.NavAttributter.RESOURCE_ARKIV_JOURNALPOST;
 import static no.nav.abac.xacml.NavAttributter.RESOURCE_FELLES_RESOURCE_TYPE;
 import static no.nav.abac.xacml.StandardAttributter.ACTION_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
+import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
 import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_LOGG_HEADER;
 import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.UPDATE_ACTION;
@@ -19,6 +20,7 @@ import no.nav.dokarkiv.journalpost.v1.api.PutOppdaterJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.PutOppdaterJournalpostResponse;
 import no.nav.dokarkiv.journalpost.v1.rjoark200.OppdaterJournalpostService;
 import no.nav.dokarkiv.journalpost.v1.rjoark200.util.Utils;
+import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerOppdaterJournalpost;
 import no.nav.freg.abac.core.annotation.Abac;
 import org.slf4j.MDC;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,6 +52,7 @@ public class OppdaterJournalpostRestController {
 	}
 
 	@Transactional
+	@SwaggerOppdaterJournalpost
 	@ResponseBody
 	@PutMapping(value = "/{journalpostId}")
 	@Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_JOURNALPOST)},
@@ -60,7 +63,8 @@ public class OppdaterJournalpostRestController {
 			@RequestBody PutOppdaterJournalpostRequest request,
 			@RequestHeader(value = AKSJONS_LOGG_HEADER, required = false) String aksjonsLoggHeaderString) throws UgyldigAksjonsLoggException {
 		RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDC_CONSUMER_ID));
-		log.info(String.format("rjoark200 har mottatt kall om å oppdatere journalpost med journalpostId=%s", journalpostId));
+		MDC.put(MDC_REQUEST_ID, "rjoark201");
+		log.info(MDC.get(MDC_REQUEST_ID) + " har mottatt kall om å oppdatere journalpost med journalpostId={}", journalpostId);
 		Utils.validateId(journalpostId, "journalpostId");
 		abacSecurityService.assertAccessToJournalpost(journalpostId);
 
