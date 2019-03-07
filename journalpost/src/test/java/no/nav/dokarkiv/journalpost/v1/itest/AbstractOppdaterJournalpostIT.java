@@ -49,9 +49,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
-/**
- * @author Sigurd Midttun, Visma Consulting.
- */
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
 		classes = {CoreConfig.class, JournalpostConfig.class, TestToolsAutoConfig.class})

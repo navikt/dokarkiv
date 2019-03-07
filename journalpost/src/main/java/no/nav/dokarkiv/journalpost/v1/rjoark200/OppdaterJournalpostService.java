@@ -17,9 +17,7 @@ import org.springframework.stereotype.Service;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-/**
- * @author Paul Magne Lunde, Visma Consulting
- */
+
 @Service
 @Named("oppdaterMetadataJournalpost")
 public class OppdaterJournalpostService {

@@ -33,9 +33,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 
-/**
- * @author Sigurd Midttun, Visma Consulting.
- */
 @Slf4j
 @RestController
 @RequestMapping("/rest/v1/journalpost")

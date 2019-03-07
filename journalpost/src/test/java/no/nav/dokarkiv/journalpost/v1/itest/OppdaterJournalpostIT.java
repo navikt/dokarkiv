@@ -40,9 +40,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * @author Sigurd Midttun, Visma Consulting.
- */
 public class OppdaterJournalpostIT extends AbstractOppdaterJournalpostIT {
 
 	private static final String IDENTIFIKATOR = "***gammelt_fnr***";
