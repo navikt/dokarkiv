@@ -38,7 +38,7 @@ public class OppdaterJournalpostService {
 		this.dokumentInfoMapper = dokumentInfoMapper;
 	}
 
-	public void oppdaterJournalpost(String journalpostId, PutOppdaterJournalpostRequest putOppdaterJournalpostRequest, String aksjonsLoggHeaderString) throws InputValideringFeiletException, UgyldigAksjonsLoggException {
+	public void oppdaterJournalpost(String journalpostId, PutOppdaterJournalpostRequest putOppdaterJournalpostRequest, String aksjonsLoggHeaderString) throws UgyldigAksjonsLoggException {
 		Journalpost journalpost = joarkRepository.findById(convertStringToLong(journalpostId, "journalpostId"))
 				.orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostId)));
 

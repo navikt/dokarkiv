@@ -8,15 +8,15 @@ import java.util.Arrays;
 
 public class OppdaterJournalpostValidator {
 
-	public static void validateOppdaterteFelt(PutOppdaterJournalpostRequest request, JournalStatusCode journalpoststatus) throws InputValideringFeiletException {
+	private OppdaterJournalpostValidator() {}
+
+	public static void validateOppdaterteFelt(PutOppdaterJournalpostRequest request, JournalStatusCode journalpoststatus) {
 
 	    if (JournalStatusCode.J.equals(journalpoststatus)) {
 	        checkIfIllegalFieldIsSet(request.getBruker(), "Bruker", journalpoststatus);
 	        checkIfIllegalFieldIsSet(request.getArkivsak(), "Arkivsak", journalpoststatus);
 	        checkIfIllegalFieldIsSet(request.getTema(), "Tema", journalpoststatus);
-        }
-
-	    else if (Arrays.asList(JournalStatusCode.FS, JournalStatusCode.FL, JournalStatusCode.E).contains(journalpoststatus)) {
+        } else if (Arrays.asList(JournalStatusCode.FS, JournalStatusCode.FL, JournalStatusCode.E).contains(journalpoststatus)) {
             checkIfIllegalFieldIsSet(request.getBruker(), "Bruker", journalpoststatus);
             checkIfIllegalFieldIsSet(request.getArkivsak(), "Arkivsak", journalpoststatus);
             checkIfIllegalFieldIsSet(request.getTema(), "Tema", journalpoststatus);
@@ -24,7 +24,7 @@ public class OppdaterJournalpostValidator {
         }
 	}
 
-	private static void checkIfIllegalFieldIsSet(Object field, String fieldName, JournalStatusCode journalpoststatus) throws InputValideringFeiletException {
+	private static void checkIfIllegalFieldIsSet(Object field, String fieldName, JournalStatusCode journalpoststatus) {
 	    if (field != null) {
 	        throw new InputValideringFeiletException(String.format("%s kan ikke oppdateres for journalpost med journalpoststatus %s.", fieldName, journalpoststatus.name()));
         }

@@ -16,8 +16,12 @@ import javax.inject.Inject;
 @Component
 public class DokumentInfoMapper {
 
+    private final AksjonsLoggService aksjonsLoggService;
+
     @Inject
-    private AksjonsLoggService aksjonsLoggService;
+    public DokumentInfoMapper(AksjonsLoggService aksjonsLoggService) {
+        this.aksjonsLoggService = aksjonsLoggService;
+    }
 
     public void oppdaterDokumentInfo(DokumentInfo dokumentInfo, String brevkode, String tittel) throws UgyldigAksjonsLoggException {
         boolean endret = false;

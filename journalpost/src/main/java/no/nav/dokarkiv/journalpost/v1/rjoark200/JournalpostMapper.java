@@ -33,11 +33,14 @@ import java.util.stream.Collectors;
 @Component
 public class JournalpostMapper {
 
-	@Inject
-	private BrukerRepository brukerRepository;
+	private final BrukerRepository brukerRepository;
+	private final AksjonsLoggService aksjonsLoggService;
 
 	@Inject
-	private AksjonsLoggService aksjonsLoggService;
+	public JournalpostMapper(BrukerRepository brukerRepository, AksjonsLoggService aksjonsLoggService) {
+		this.brukerRepository = brukerRepository;
+		this.aksjonsLoggService = aksjonsLoggService;
+	}
 
 	public void oppdaterJournalpost(Journalpost journalpost, PutOppdaterJournalpostRequest putOppdaterJournalpostRequest) throws UgyldigAksjonsLoggException {
 
@@ -83,7 +86,7 @@ public class JournalpostMapper {
         }
 
         if (putOppdaterJournalpostRequest.getTilleggsopplysninger() != null && !putOppdaterJournalpostRequest.getTilleggsopplysninger().isEmpty()) {
-            journalpost.setTilleggsopplysninger(MapTilleggsopplysninger(putOppdaterJournalpostRequest.getTilleggsopplysninger()));
+            journalpost.setTilleggsopplysninger(mapTilleggsopplysninger(putOppdaterJournalpostRequest.getTilleggsopplysninger()));
         }
 
 		updateSaksrelasjonFields(journalpost, putOppdaterJournalpostRequest);
@@ -104,7 +107,7 @@ public class JournalpostMapper {
 		}
 	}
 
-    private Map<String, String> MapTilleggsopplysninger(List<Tilleggsopplysning> tilleggsopplysninger) {
+    private Map<String, String> mapTilleggsopplysninger(List<Tilleggsopplysning> tilleggsopplysninger) {
 	    return tilleggsopplysninger.stream().collect(Collectors.toMap(Tilleggsopplysning::getNokkel, Tilleggsopplysning::getVerdi));
     }
 
@@ -185,7 +188,8 @@ public class JournalpostMapper {
 			if (!aksjonsLoggHelperSakstilknytning.getArkivElementEndringTOs().isEmpty()) {
 				aksjonsLoggService.validateAndSaveAksjonsLogg(aksjonsLoggHelperSakstilknytning.getAksjonsLoggTO(), aksjonsLoggHelperSakstilknytning
 						.getArkivElementEndringTOs());
-			}			}
+			}
+		}
 	}
 
 	protected FagsystemCode mapArkivSakSystemToFagsystemCode(Arkivsaksystem arkivsaksystem) {

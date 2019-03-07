@@ -12,6 +12,7 @@ import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
 import org.slf4j.MDC;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @Slf4j
 public class AksjonsLoggHelper {
@@ -24,23 +25,20 @@ public class AksjonsLoggHelper {
     private static String aksjonsLoggHeaderString;
     private static String brukerId;
 
-    public AksjonsLoggHelper() {
-    }
-
     public void setAksjonsLoggTO(AksjonsTypeCode aksjonsTypeCode, Long dokumentInfoId) throws UgyldigAksjonsLoggException {
-        if (isBlank(this.aksjonsLoggHeaderString)) {
+        if (isBlank(aksjonsLoggHeaderString)) {
             this.aksjonsLoggTO = AksjonsLoggTO.builder()
                     .aksjon(aksjonsTypeCode)
-                    .journalpostId(this.journalpostId)
+                    .journalpostId(journalpostId)
                     .utfoertAv(MDC.get(MDC_CONSUMER_ID))
-                    .bruker(this.brukerId)
+                    .bruker(brukerId)
                     .dokumentInfoId(dokumentInfoId)
                     .melding(aksjonsTypeCode.equals(AksjonsTypeCode.SAKSTILKNYTNING) ?
                             "Journalposten ble knyttet til en sak." :
                             "Metadata på journalposten ble endret.")
                     .build();
         } else {
-            this.aksjonsLoggTO = aksjonsLoggTOMapper.mapAksjonsLoggHeader(this.aksjonsLoggHeaderString, aksjonsTypeCode, this.journalpostId, dokumentInfoId);
+            this.aksjonsLoggTO = aksjonsLoggTOMapper.mapAksjonsLoggHeader(aksjonsLoggHeaderString, aksjonsTypeCode, journalpostId, dokumentInfoId);
         }
     }
 
@@ -64,7 +62,7 @@ public class AksjonsLoggHelper {
         return aksjonsLoggTO;
     }
 
-    public ArrayList<ArkivElementEndringTO> getArkivElementEndringTOs() {
+    public List<ArkivElementEndringTO> getArkivElementEndringTOs() {
         return arkivElementEndringTOs;
     }
 }

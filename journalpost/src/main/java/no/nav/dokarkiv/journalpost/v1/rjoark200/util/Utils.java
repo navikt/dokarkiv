@@ -10,6 +10,9 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class Utils {
 
+	private Utils() {
+	}
+
 	public static void validateId(String journalpostId, String feltnavn) {
 		try {
 			hasText(journalpostId, feltnavn);
@@ -27,7 +30,7 @@ public class Utils {
 		}
 	}
 
-	public static void hasText(String input, String feltnavn) {
+	private static void hasText(String input, String feltnavn) {
 		if (StringUtils.isBlank(input)) {
 			throw new IllegalArgumentException(String.format("%s kan ikke være null eller tom", feltnavn));
 		}
@@ -39,7 +42,7 @@ public class Utils {
 		}
 	}
 
-	public static void assertNotNull(Object object, String fieldName) throws IllegalArgumentException {
+	public static void assertNotNull(Object object, String fieldName) {
 		if (object == null) {
 			throw new InputValideringFeiletException(String.format("%s kan ikke være null", fieldName));
 		}
