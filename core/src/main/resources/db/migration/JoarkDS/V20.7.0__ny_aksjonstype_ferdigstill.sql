@@ -1,0 +1,2 @@
+INSERT INTO T_K_AKSJON_TYPE (AKSJON_TYPE, BESKRIVELSE, DATO_OPPRETTET, OPPRETTET_AV)
+VALUES ('FERDIGSTILL', 'Ferdigstilling av journalpost', sysdate, 'Martin Tveter');
