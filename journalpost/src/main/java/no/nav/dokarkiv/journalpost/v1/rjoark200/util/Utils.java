@@ -10,8 +10,7 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class Utils {
 
-	private Utils() {
-	}
+	private Utils() {}
 
 	public static void validateId(String journalpostId, String feltnavn) {
 		try {

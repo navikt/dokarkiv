@@ -29,7 +29,7 @@ public class JournalpostMapperTest {
 	private Journalpost journalpost;
 
 	@InjectMocks
-	private JournalpostMapper mapper = new JournalpostMapper();
+	private JournalpostMapper mapper;
 
 
 	@Test

@@ -25,7 +25,7 @@ public class DokumentInfoMapperTest {
         private DokumentInfo dokumentInfo;
 
         @InjectMocks
-        private DokumentInfoMapper mapper = new DokumentInfoMapper();
+        private DokumentInfoMapper mapper;
 
 
         @Test
