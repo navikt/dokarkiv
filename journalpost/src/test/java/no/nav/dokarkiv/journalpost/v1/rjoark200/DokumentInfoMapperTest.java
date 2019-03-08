@@ -17,25 +17,25 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DokumentInfoMapperTest {
-        @Mock
-        private BrukerRepository brukerRepositoryMock;
-        @Mock
-        private AksjonsLoggService aksjonsLoggService;
+    @Mock
+    private BrukerRepository brukerRepositoryMock;
+    @Mock
+    private AksjonsLoggService aksjonsLoggService;
 
-        private DokumentInfo dokumentInfo;
+    private DokumentInfo dokumentInfo;
 
-        @InjectMocks
-        private DokumentInfoMapper mapper;
+    @InjectMocks
+    private DokumentInfoMapper mapper;
 
 
-        @Test
-        public void shouldUpdateDokumentInfo() throws UgyldigAksjonsLoggException {
-            dokumentInfo = new DokumentInfo();
+    @Test
+    public void shouldUpdateDokumentInfo() throws UgyldigAksjonsLoggException {
+        dokumentInfo = new DokumentInfo();
 
-            mapper.oppdaterDokumentInfo(dokumentInfo, BREVKODE1, DOKUMENT_TITTEL1);
+        mapper.oppdaterDokumentInfo(dokumentInfo, BREVKODE1, DOKUMENT_TITTEL1);
 
-            assertThat(dokumentInfo.getBrevkode(), is(BREVKODE1));
-            assertThat(dokumentInfo.getTittel(), is(DOKUMENT_TITTEL1));
-        }
+        assertThat(dokumentInfo.getBrevkode(), is(BREVKODE1));
+        assertThat(dokumentInfo.getTittel(), is(DOKUMENT_TITTEL1));
+    }
 
 }

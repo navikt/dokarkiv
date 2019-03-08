@@ -2,7 +2,7 @@ package no.nav.dokarkiv.journalpost.v1.rjoark200;
 
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
-import no.nav.dokarkiv.journalpost.v1.api.PutOppdaterJournalpostRequest;
+import no.nav.dokarkiv.journalpost.v1.api.OppdaterJournalpostRequest;
 
 import java.util.Arrays;
 
@@ -10,7 +10,7 @@ public class OppdaterJournalpostValidator {
 
 	private OppdaterJournalpostValidator() {}
 
-	public static void validateOppdaterteFelt(PutOppdaterJournalpostRequest request, JournalStatusCode journalpoststatus) {
+	public static void validateOppdaterteFelt(OppdaterJournalpostRequest request, JournalStatusCode journalpoststatus) {
 
 	    if (JournalStatusCode.J.equals(journalpoststatus)) {
 	        checkIfIllegalFieldIsSet(request.getBruker(), "Bruker", journalpoststatus);

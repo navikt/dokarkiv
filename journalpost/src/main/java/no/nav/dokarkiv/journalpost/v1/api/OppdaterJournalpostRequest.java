@@ -13,7 +13,7 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PutOppdaterJournalpostRequest {
+public class OppdaterJournalpostRequest {
     @ApiModelProperty(value = "Avsender eller mottaker av forsendelsen.\n\nSkal ikke settes for notater.")
     private AvsenderMottaker avsenderMottaker;
 

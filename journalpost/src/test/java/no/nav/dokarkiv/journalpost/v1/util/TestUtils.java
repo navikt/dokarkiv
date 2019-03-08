@@ -21,7 +21,7 @@ import no.nav.dokarkiv.journalpost.v1.api.Arkivsak;
 import no.nav.dokarkiv.journalpost.v1.api.Arkivsaksystem;
 import no.nav.dokarkiv.journalpost.v1.api.AvsenderMottaker;
 import no.nav.dokarkiv.journalpost.v1.api.BrukerIdType;
-import no.nav.dokarkiv.journalpost.v1.api.PutOppdaterJournalpostRequest;
+import no.nav.dokarkiv.journalpost.v1.api.OppdaterJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.Tilleggsopplysning;
 
 import java.time.LocalDateTime;
@@ -197,8 +197,8 @@ public class TestUtils {
 				.build();
 	}
 
-	public static PutOppdaterJournalpostRequest createPutOppdaterJournalpostRequest() {
-		return PutOppdaterJournalpostRequest.builder()
+	public static OppdaterJournalpostRequest createPutOppdaterJournalpostRequest() {
+		return OppdaterJournalpostRequest.builder()
 				.avsenderMottaker(createAvsenderMottakerPerson())
 				.bruker(createBrukerPerson())
 				.arkivsak(createArkivSak())

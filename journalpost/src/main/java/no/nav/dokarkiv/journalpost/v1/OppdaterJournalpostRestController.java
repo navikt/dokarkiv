@@ -16,8 +16,8 @@ import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
 import no.nav.dokarkiv.core.metrics.RestMetrics;
 import no.nav.dokarkiv.core.security.abac.AbacSecurityService;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
-import no.nav.dokarkiv.journalpost.v1.api.PutOppdaterJournalpostRequest;
-import no.nav.dokarkiv.journalpost.v1.api.PutOppdaterJournalpostResponse;
+import no.nav.dokarkiv.journalpost.v1.api.OppdaterJournalpostResponse;
+import no.nav.dokarkiv.journalpost.v1.api.OppdaterJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.rjoark200.OppdaterJournalpostService;
 import no.nav.dokarkiv.journalpost.v1.rjoark200.util.Utils;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerOppdaterJournalpost;
@@ -55,9 +55,9 @@ public class OppdaterJournalpostRestController {
 	@Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_JOURNALPOST)},
 			actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION))
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark200"}, percentiles = {0.5, 0.95})
-	public PutOppdaterJournalpostResponse oppdaterJournalpost(
+	public OppdaterJournalpostResponse oppdaterJournalpost(
 			@PathVariable String journalpostId,
-			@RequestBody PutOppdaterJournalpostRequest request,
+			@RequestBody OppdaterJournalpostRequest request,
 			@RequestHeader(value = AKSJONS_LOGG_HEADER, required = false) String aksjonsLoggHeaderString) throws UgyldigAksjonsLoggException {
 		RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDC_CONSUMER_ID));
 		MDC.put(MDC_REQUEST_ID, "rjoark201");
@@ -68,6 +68,6 @@ public class OppdaterJournalpostRestController {
 		oppdaterJournalpostService.oppdaterJournalpost(journalpostId, request, aksjonsLoggHeaderString);
 
 		log.info("rjoark200 har oppdatert journalpost med journalpostId={} i Joark.", journalpostId);
-		return PutOppdaterJournalpostResponse.builder().journalpostId(journalpostId).build();
+		return OppdaterJournalpostResponse.builder().journalpostId(journalpostId).build();
 	}
 }

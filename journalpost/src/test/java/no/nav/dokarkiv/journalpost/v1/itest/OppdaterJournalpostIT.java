@@ -23,8 +23,8 @@ import no.nav.dokarkiv.journalpost.v1.api.AvsenderMottaker;
 import no.nav.dokarkiv.journalpost.v1.api.Bruker;
 import no.nav.dokarkiv.journalpost.v1.api.BrukerIdType;
 import no.nav.dokarkiv.journalpost.v1.api.DokumentInfo;
-import no.nav.dokarkiv.journalpost.v1.api.PutOppdaterJournalpostRequest;
-import no.nav.dokarkiv.journalpost.v1.api.PutOppdaterJournalpostResponse;
+import no.nav.dokarkiv.journalpost.v1.api.OppdaterJournalpostResponse;
+import no.nav.dokarkiv.journalpost.v1.api.OppdaterJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.Tilleggsopplysning;
 import org.apache.commons.collections15.IteratorUtils;
 import org.junit.Test;
@@ -65,12 +65,12 @@ public class OppdaterJournalpostIT extends AbstractOppdaterJournalpostIT {
 		Long journalpostId = journalpost.getJournalpostId();
 		Long dokumentInfoId = journalpost.getJournalpostDokumentInfoRelasjoner().iterator().next().getDokumentInfo().getDokumentInfoId();
 
-		PutOppdaterJournalpostRequest request = createPutOppdaterJournalpostRequestWithDokumentInfoId(dokumentInfoId);
+		OppdaterJournalpostRequest request = createPutOppdaterJournalpostRequestWithDokumentInfoId(dokumentInfoId);
 
-		HttpEntity<PutOppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
+		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
 
-		ResponseEntity<PutOppdaterJournalpostResponse> responseEntity = restTemplate.exchange(
-				JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER + journalpostId, HttpMethod.PUT, requestHttpEntity, PutOppdaterJournalpostResponse.class);
+		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(
+				JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER + journalpostId, HttpMethod.PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 		assertThat(responseEntity.getBody().getJournalpostId(), is(String.valueOf(journalpostId)));
@@ -133,12 +133,12 @@ public class OppdaterJournalpostIT extends AbstractOppdaterJournalpostIT {
 				.endretAvNavn("saksbehandlersen"));
 		Long journalpostId = journalpost.getJournalpostId();
 
-		PutOppdaterJournalpostRequest request = new PutOppdaterJournalpostRequest();
+		OppdaterJournalpostRequest request = new OppdaterJournalpostRequest();
 
-		HttpEntity<PutOppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
+		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
 
-		ResponseEntity<PutOppdaterJournalpostResponse> responseEntity = restTemplate.exchange(
-				JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER + journalpostId, HttpMethod.PUT, requestHttpEntity, PutOppdaterJournalpostResponse.class);
+		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(
+				JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER + journalpostId, HttpMethod.PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 
@@ -158,16 +158,16 @@ public class OppdaterJournalpostIT extends AbstractOppdaterJournalpostIT {
 		Long journalpostId = journalpost.getJournalpostId();
 		Long dokumentInfoId = journalpost.getJournalpostDokumentInfoRelasjoner().iterator().next().getDokumentInfo().getDokumentInfoId();
 
-		PutOppdaterJournalpostRequest request = createPutOppdaterJournalpostRequestWithDokumentInfoId(dokumentInfoId);
+		OppdaterJournalpostRequest request = createPutOppdaterJournalpostRequestWithDokumentInfoId(dokumentInfoId);
 
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		headers.add(HttpHeaders.AUTHORIZATION, OIDC_TOKEN_SERVICE_USER_TEST);
 
-		HttpEntity<PutOppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, headers);
+		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, headers);
 
-		ResponseEntity<PutOppdaterJournalpostResponse> responseEntity = restTemplate.exchange(
-				JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER + journalpostId, HttpMethod.PUT, requestHttpEntity, PutOppdaterJournalpostResponse.class);
+		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(
+				JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER + journalpostId, HttpMethod.PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 		assertThat(responseEntity.getBody().getJournalpostId(), is(String.valueOf(journalpostId)));
@@ -202,16 +202,16 @@ public class OppdaterJournalpostIT extends AbstractOppdaterJournalpostIT {
 		Long journalpostId = journalpost.getJournalpostId();
 		Long dokumentInfoId = journalpost.getJournalpostDokumentInfoRelasjoner().iterator().next().getDokumentInfo().getDokumentInfoId();
 
-		PutOppdaterJournalpostRequest request = createPutOppdaterJournalpostRequestWithDokumentInfoId(dokumentInfoId);
+		OppdaterJournalpostRequest request = createPutOppdaterJournalpostRequestWithDokumentInfoId(dokumentInfoId);
 
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		headers.add(HttpHeaders.AUTHORIZATION, OIDC_TOKEN_PERSON_USER_TEST);
 
-		HttpEntity<PutOppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, headers);
+		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, headers);
 
-		ResponseEntity<PutOppdaterJournalpostResponse> responseEntity = restTemplate.exchange(
-				JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER + journalpostId, HttpMethod.PUT, requestHttpEntity, PutOppdaterJournalpostResponse.class);
+		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(
+				JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER + journalpostId, HttpMethod.PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.UNAUTHORIZED));
 	}
@@ -225,9 +225,9 @@ public class OppdaterJournalpostIT extends AbstractOppdaterJournalpostIT {
 		Long journalpostId = journalpost.getJournalpostId();
 		Long dokumentInfoId = journalpost.getJournalpostDokumentInfoRelasjoner().iterator().next().getDokumentInfo().getDokumentInfoId();
 
-		PutOppdaterJournalpostRequest request = createPutOppdaterJournalpostRequestWithDokumentInfoId(dokumentInfoId);
+		OppdaterJournalpostRequest request = createPutOppdaterJournalpostRequestWithDokumentInfoId(dokumentInfoId);
 
-		HttpEntity<PutOppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
+		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER + journalpostId, HttpMethod.PUT, requestHttpEntity, String.class);
@@ -236,8 +236,8 @@ public class OppdaterJournalpostIT extends AbstractOppdaterJournalpostIT {
 		assertThat(responseEntity.getBody(), containsString("Bruker har ikke tilgang til journalpost"));
 	}
 
-	private PutOppdaterJournalpostRequest createPutOppdaterJournalpostRequestWithDokumentInfoId(Long dokumentInfoId) {
-		return PutOppdaterJournalpostRequest.builder()
+	private OppdaterJournalpostRequest createPutOppdaterJournalpostRequestWithDokumentInfoId(Long dokumentInfoId) {
+		return OppdaterJournalpostRequest.builder()
 				.avsenderMottaker(AvsenderMottaker.builder()
 						.identifikator(IDENTIFIKATOR)
 						.avsenderMottakerNavn(AVSENDER_MOTTAKER_NAVN)

@@ -12,8 +12,8 @@ import javax.validation.constraints.NotNull;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PutOppdaterJournalpostResponse {
-    @NotNull(message = "PutOppdaterJournalpostResponse mangler journalpostId")
+public class OppdaterJournalpostResponse {
+    @NotNull(message = "OppdaterJournalpostResponse mangler journalpostId")
     @ApiModelProperty(
             value = "JournalpostId som har blitt oppdatert (og forsøkt endelig journalført)",
             required = true)
