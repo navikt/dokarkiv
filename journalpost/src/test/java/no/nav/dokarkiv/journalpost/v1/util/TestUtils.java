@@ -201,7 +201,7 @@ public class TestUtils {
 		return OppdaterJournalpostRequest.builder()
 				.avsenderMottaker(createAvsenderMottakerPerson())
 				.bruker(createBrukerPerson())
-				.sak(createArkivSak())
+				.sak(createSak())
 				.tema(TEMA_FOR)
 				.behandlingstema(BEHANDLINGSTEMA)
 				.tittel(DOKUMENT_TITTEL1)
@@ -210,7 +210,7 @@ public class TestUtils {
 				.build();
 	}
 
-	private static AvsenderMottaker createAvsenderMottakerPerson() {
+	public static AvsenderMottaker createAvsenderMottakerPerson() {
 		return AvsenderMottaker.builder()
 				.navn(AVSENDER_NAVN)
 				.id(AVSENDER_ID_PERSON)
@@ -226,21 +226,21 @@ public class TestUtils {
 				.build();
 	}
 
-	private static no.nav.dokarkiv.journalpost.v1.api.Bruker createBrukerPerson() {
+	public static no.nav.dokarkiv.journalpost.v1.api.Bruker createBrukerPerson() {
 		return no.nav.dokarkiv.journalpost.v1.api.Bruker.builder()
 				.idType(BrukerIdType.FNR)
 				.id(BRUKER_ID_PERSON)
 				.build();
 	}
 
-	private static no.nav.dokarkiv.journalpost.v1.api.Bruker createBrukerOrganisasjon() {
+	public static no.nav.dokarkiv.journalpost.v1.api.Bruker createBrukerOrganisasjon() {
 		return no.nav.dokarkiv.journalpost.v1.api.Bruker.builder()
 				.idType(BrukerIdType.ORGNR)
 				.id(BRUKER_ID_ORGANISASJON)
 				.build();
 	}
 
-	private static Sak createArkivSak() {
+	public static Sak createSak() {
 		return Sak.builder()
 				.arkivsaksnummer(SAK_ID)
 				.arkivsaksystem(Arkivsaksystem.GSAK)
