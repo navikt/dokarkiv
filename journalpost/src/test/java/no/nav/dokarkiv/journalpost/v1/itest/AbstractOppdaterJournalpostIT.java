@@ -58,7 +58,7 @@ public abstract class AbstractOppdaterJournalpostIT extends AbstractRestIT {
 	protected String OIDC_TOKEN_PERSON_USER_TEST;
 	protected String OIDC_TOKEN_SERVICE_USER_TEST;
 	protected final String SERVICE_USER_ID = "srvdokarkiv";
-	protected static final String JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER = "/rest/v1/journalpost/";
+	protected static final String JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER = "/rest/journalpostapi/v1/journalpost/";
 
 	@Before
 	public void setUp() {
