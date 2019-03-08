@@ -16,11 +16,17 @@ public class AvsenderMottaker {
     @ApiModelProperty(
             value = "Fødselsnummer/d-nummer (11 siffer) eller organisasjonsnummer (9 siffer)",
             required = false)
-    private String identifikator;
+    private String id;
 
-    @NotNull(message = "AvsenderMottaker mangler avsenderMottakerNavn")
+    @NotNull(message = "AvsenderMottaker mangler navn")
     @ApiModelProperty(
             value = "Navn på personbrukere skal lagres på formatet etternavn, fornavn mellomnavn",
             required = true)
-    private String avsenderMottakerNavn;
+    private String navn;
+
+    @NotNull(message = "AvsenderMottaker mangler land")
+    @ApiModelProperty(
+            value = "",
+            required = true)
+    private String land;
 }

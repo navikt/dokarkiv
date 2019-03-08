@@ -67,21 +67,21 @@ public class JournalpostMapper {
 			endret = true;
 		}
 		if (oppdaterJournalpostRequest.getAvsenderMottaker() != null) {
-			if (isNotBlank(oppdaterJournalpostRequest.getAvsenderMottaker().getAvsenderMottakerNavn())) {
-				journalpost.setAvsenderMottaker(oppdaterJournalpostRequest.getAvsenderMottaker().getAvsenderMottakerNavn());
+			if (isNotBlank(oppdaterJournalpostRequest.getAvsenderMottaker().getNavn())) {
+				journalpost.setAvsenderMottaker(oppdaterJournalpostRequest.getAvsenderMottaker().getNavn());
 				endret = true;
 			}
-			if (isNotBlank(oppdaterJournalpostRequest.getAvsenderMottaker().getIdentifikator())) {
-				journalpost.setAvsenderMottakerId(oppdaterJournalpostRequest.getAvsenderMottaker().getIdentifikator());
+			if (isNotBlank(oppdaterJournalpostRequest.getAvsenderMottaker().getId())) {
+				journalpost.setAvsenderMottakerId(oppdaterJournalpostRequest.getAvsenderMottaker().getId());
+				endret = true;
+			}
+			if (isNotBlank(oppdaterJournalpostRequest.getAvsenderMottaker().getLand())) {
+				journalpost.setLand(oppdaterJournalpostRequest.getAvsenderMottaker().getLand());
 				endret = true;
 			}
 		}
         if (isNotBlank(oppdaterJournalpostRequest.getBehandlingstema())) {
             journalpost.setBehandlingstema(Behandlingstema.valueOf(oppdaterJournalpostRequest.getBehandlingstema()));
-            endret = true;
-        }
-        if (isNotBlank(oppdaterJournalpostRequest.getAvsenderMottakerLand())) {
-            journalpost.setLand(oppdaterJournalpostRequest.getAvsenderMottakerLand());
             endret = true;
         }
 
@@ -120,9 +120,9 @@ public class JournalpostMapper {
 
 			if (oppdaterJournalpostRequest.getBruker() != null) {
 				Bruker bruker = new Bruker();
-				bruker.setBrukerId(oppdaterJournalpostRequest.getBruker().getIdentifikator());
-				assertNotNull(oppdaterJournalpostRequest.getBruker().getBrukerIdType(), "bruker.brukerIdType");
-				bruker.setBrukerType(BrukerIdType.ORGNR.equals(oppdaterJournalpostRequest.getBruker().getBrukerIdType()) ?
+				bruker.setBrukerId(oppdaterJournalpostRequest.getBruker().getId());
+				assertNotNull(oppdaterJournalpostRequest.getBruker().getIdType(), "Bruker.idType");
+				bruker.setBrukerType(BrukerIdType.ORGNR.equals(oppdaterJournalpostRequest.getBruker().getIdType()) ?
 						BrukerTypeCode.ORGANISASJON : BrukerTypeCode.PERSON);
 				bruker.setOpprettetKildeNavn(MDC.get(MDC_CONSUMER_ID));
 				journalpost.addBruker(bruker);
@@ -132,9 +132,9 @@ public class JournalpostMapper {
 		} else {
 			if (oppdaterJournalpostRequest.getBruker() != null) {
 				brukere.iterator().forEachRemaining(bruker -> {
-					bruker.setBrukerId(oppdaterJournalpostRequest.getBruker().getIdentifikator());
-					assertNotNull(oppdaterJournalpostRequest.getBruker().getBrukerIdType(), "bruker.brukerIdType");
-					bruker.setBrukerType(BrukerIdType.ORGNR.equals(oppdaterJournalpostRequest.getBruker().getBrukerIdType()) ?
+					bruker.setBrukerId(oppdaterJournalpostRequest.getBruker().getId());
+					assertNotNull(oppdaterJournalpostRequest.getBruker().getIdType(), "Bruker.idType");
+					bruker.setBrukerType(BrukerIdType.ORGNR.equals(oppdaterJournalpostRequest.getBruker().getIdType()) ?
 							BrukerTypeCode.ORGANISASJON : BrukerTypeCode.PERSON);
 				});
 				endret = true;
@@ -147,7 +147,7 @@ public class JournalpostMapper {
 		boolean endret = false;
 		boolean newSak = false;
 
-		if (request.getArkivsak() != null) {
+		if (request.getSak() != null) {
 			Saksrelasjon saksrelasjon;
 			AksjonsLoggHelper aksjonsLoggHelperSakstilknytning = new AksjonsLoggHelper();
 			aksjonsLoggHelperSakstilknytning.setAksjonsLoggTO(AksjonsTypeCode.SAKSTILKNYTNING, null);
@@ -159,22 +159,22 @@ public class JournalpostMapper {
 			} else {
 				saksrelasjon = journalpost.getSaksrelasjon();
 			}
-			if (isNotBlank(request.getArkivsak().getArkivsaksnummer())) {
+			if (isNotBlank(request.getSak().getArkivsaksnummer())) {
 				aksjonsLoggHelperSakstilknytning.addToArkivElementEndringTOs(ArkivElementEndringTO.builder()
 						.arkivElement("Saksrelasjon.sakId")
 						.fraVerdi(journalpost.getSaksrelasjon().getSakId())
-						.tilVerdi(request.getArkivsak().getArkivsaksnummer())
+						.tilVerdi(request.getSak().getArkivsaksnummer())
 						.build());
-				saksrelasjon.setSakId(request.getArkivsak().getArkivsaksnummer());
+				saksrelasjon.setSakId(request.getSak().getArkivsaksnummer());
 				endret = true;
 			}
-			if (request.getArkivsak().getArkivsaksystem() != null) {
+			if (request.getSak().getArkivsaksystem() != null) {
 				aksjonsLoggHelperSakstilknytning.addToArkivElementEndringTOs(ArkivElementEndringTO.builder()
 						.arkivElement("Saksrelasjon.fagsystem")
 						.fraVerdi(journalpost.getSaksrelasjon().getFagsystem().name())
-						.tilVerdi(request.getArkivsak().getArkivsaksystem().name())
+						.tilVerdi(request.getSak().getArkivsaksystem().name())
 						.build());
-				saksrelasjon.setFagsystem(mapArkivSakSystemToFagsystemCode(request.getArkivsak().getArkivsaksystem()));
+				saksrelasjon.setFagsystem(mapArkivSakSystemToFagsystemCode(request.getSak().getArkivsaksystem()));
 				endret = true;
 			}
 			if (endret && !newSak) {

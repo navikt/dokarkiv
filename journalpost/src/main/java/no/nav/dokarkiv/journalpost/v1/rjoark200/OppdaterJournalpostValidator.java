@@ -14,11 +14,11 @@ public class OppdaterJournalpostValidator {
 
 	    if (JournalStatusCode.J.equals(journalpoststatus)) {
 	        checkIfIllegalFieldIsSet(request.getBruker(), "Bruker", journalpoststatus);
-	        checkIfIllegalFieldIsSet(request.getArkivsak(), "Arkivsak", journalpoststatus);
+	        checkIfIllegalFieldIsSet(request.getSak(), "Sak", journalpoststatus);
 	        checkIfIllegalFieldIsSet(request.getTema(), "Tema", journalpoststatus);
         } else if (Arrays.asList(JournalStatusCode.FS, JournalStatusCode.FL, JournalStatusCode.E).contains(journalpoststatus)) {
             checkIfIllegalFieldIsSet(request.getBruker(), "Bruker", journalpoststatus);
-            checkIfIllegalFieldIsSet(request.getArkivsak(), "Arkivsak", journalpoststatus);
+            checkIfIllegalFieldIsSet(request.getSak(), "Sak", journalpoststatus);
             checkIfIllegalFieldIsSet(request.getTema(), "Tema", journalpoststatus);
             checkIfIllegalFieldIsSet(request.getAvsenderMottaker(), "AvsenderMottaker", journalpoststatus);
         }

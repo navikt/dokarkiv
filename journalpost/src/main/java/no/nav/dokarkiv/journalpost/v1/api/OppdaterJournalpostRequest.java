@@ -21,7 +21,7 @@ public class OppdaterJournalpostRequest {
     private Bruker bruker;
 
     @ApiModelProperty(value = "Referanse til arkivsaken i GSAK eller PSAK som journalposten skal journalføres mot.")
-    private Arkivsak arkivsak;
+    private Sak sak;
 
     @ApiModelProperty(value = "Fagområdet som forsendelsen tilhører, for eksempel \"FOR\" for Foreldrepenger")
     private String tema;
@@ -33,11 +33,8 @@ public class OppdaterJournalpostRequest {
     private String tittel;
 
     @ApiModelProperty(value = "")
-    private String avsenderMottakerLand;
-
-    @ApiModelProperty(value = "")
     private List<Tilleggsopplysning> tilleggsopplysninger;
 
     @ApiModelProperty(value = "liste over dokumentene på journalposten der metadata skal endres")
-    private List<DokumentInfo> dokumentInfoList;
+    private List<DokumentInfo> dokumenter;
 }

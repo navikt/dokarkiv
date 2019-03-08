@@ -44,7 +44,7 @@ public class OppdaterJournalpostService {
 		AksjonsLoggHelper.setAksjonsLoggHeaderString(aksjonsLoggHeaderString);
 		AksjonsLoggHelper.setJournalpostId(Long.parseLong(journalpostId));
 		AksjonsLoggHelper.setBrukerId(oppdaterJournalpostRequest.getBruker() != null ?
-				oppdaterJournalpostRequest.getBruker().getIdentifikator() :
+				oppdaterJournalpostRequest.getBruker().getId() :
 				(journalpost.getBrukere().isEmpty() ? null : journalpost.getBrukere().iterator().next().getBrukerId())
 		);
 
@@ -52,8 +52,8 @@ public class OppdaterJournalpostService {
 		journalpostMapper.oppdaterJournalpost(journalpost, oppdaterJournalpostRequest);
 		joarkRepository.save(journalpost);
 
-		if (oppdaterJournalpostRequest.getDokumentInfoList() != null) {
-			for (no.nav.dokarkiv.journalpost.v1.api.DokumentInfo dokument : oppdaterJournalpostRequest.getDokumentInfoList()) {
+		if (oppdaterJournalpostRequest.getDokumenter() != null) {
+			for (no.nav.dokarkiv.journalpost.v1.api.DokumentInfo dokument : oppdaterJournalpostRequest.getDokumenter()) {
 				DokumentInfo dokumentInfo = journalpost.getDokumentInfoFromJpDokInfoRelasjonerByDokumentInfoId(Long.parseLong(dokument.getDokumentInfoId()));
 
 				Utils.assertDokumentInfoNotNull(dokumentInfo, String.valueOf(journalpost.getJournalpostId()), dokument.getDokumentInfoId());

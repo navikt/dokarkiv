@@ -13,15 +13,15 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Bruker {
-    @NotNull(message = "Bruker mangler brukerIdType")
+    @NotNull(message = "Bruker mangler idtype")
     @ApiModelProperty(
             value = "",
             required = true)
-    private BrukerIdType brukerIdType;
+    private BrukerIdType idType;
 
-    @NotNull(message = "Bruker mangler identifikator")
+    @NotNull(message = "Bruker mangler id")
     @ApiModelProperty(
             value = "",
             required = true)
-    private String identifikator;
+    private String id;
 }
