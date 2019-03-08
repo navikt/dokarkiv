@@ -6,7 +6,7 @@ import no.nav.dokarkiv.journalpost.v1.api.OppdaterJournalpostRequest;
 
 import java.util.Arrays;
 
-public class OppdaterJournalpostValidator {
+public final class OppdaterJournalpostValidator {
 
 	private OppdaterJournalpostValidator() {}
 

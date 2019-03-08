@@ -13,6 +13,7 @@ import org.slf4j.MDC;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 public class AksjonsLoggHelper {
@@ -63,6 +64,6 @@ public class AksjonsLoggHelper {
     }
 
     public List<ArkivElementEndringTO> getArkivElementEndringTOs() {
-        return arkivElementEndringTOs;
+        return new ArrayList<>(arkivElementEndringTOs);
     }
 }

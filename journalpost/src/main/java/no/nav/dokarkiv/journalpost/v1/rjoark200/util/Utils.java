@@ -8,7 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 /**
  * @author Sigurd Midttun, Visma Consulting.
  */
-public class Utils {
+public final class Utils {
 
 	private Utils() {}
 
