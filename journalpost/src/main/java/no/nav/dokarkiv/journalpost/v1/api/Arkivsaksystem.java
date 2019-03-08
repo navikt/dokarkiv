@@ -4,6 +4,6 @@ import io.swagger.annotations.ApiModel;
 
 @ApiModel
 public enum Arkivsaksystem {
-    GSAK,
-    PSAK
+	GSAK,
+	PSAK
 }
