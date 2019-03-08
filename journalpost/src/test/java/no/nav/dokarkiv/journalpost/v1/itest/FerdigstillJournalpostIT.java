@@ -38,7 +38,7 @@ public class FerdigstillJournalpostIT extends AbstractFerdigstillJournalpostIT {
 
 		Long journalpostId = journalpost.getJournalpostId();
 		FerdigstillJournalpostRequest request = FerdigstillJournalpostRequest.builder()
-				.journalfEnhet("9999")
+				.journalfoerendeEnhet("9999")
 				.build();
 
 		HttpEntity requestEntity = new HttpEntity(request, createHeadersWithServiceUserToken());
@@ -53,7 +53,7 @@ public class FerdigstillJournalpostIT extends AbstractFerdigstillJournalpostIT {
 		assertEquals(SERVICE_USER_ID, ferdigstiltJournalpost.getEndretKildeNavn());
 		assertEquals(SERVICE_USER_ID, ferdigstiltJournalpost.getJournalfortAvNavn());
 		assertEquals(SERVICE_USER_ID, ferdigstiltJournalpost.getChangeStamp().getUpdatedBy());
-		assertEquals(request.getJournalfEnhet(), ferdigstiltJournalpost.getJournalForendeEnhetId());
+		assertEquals(request.getJournalfoerendeEnhet(), ferdigstiltJournalpost.getJournalForendeEnhetId());
 		assertEquals(JournalStatusCode.J, ferdigstiltJournalpost.getJournalstatus());
 		assertTrue(ferdigstiltJournalpost.getChangeStamp().getUpdatedDate().after(journalpost.getChangeStamp().getCreatedDate()));
 
@@ -78,7 +78,7 @@ public class FerdigstillJournalpostIT extends AbstractFerdigstillJournalpostIT {
 
 		Long journalpostId = journalpost.getJournalpostId();
 		FerdigstillJournalpostRequest request = FerdigstillJournalpostRequest.builder()
-				.journalfEnhet("9999")
+				.journalfoerendeEnhet("9999")
 				.build();
 
 		HttpEntity requestEntity = new HttpEntity(request, createHeadersWithServiceUserToken());
@@ -93,7 +93,7 @@ public class FerdigstillJournalpostIT extends AbstractFerdigstillJournalpostIT {
 		assertEquals(SERVICE_USER_ID, ferdigstiltJournalpost.getEndretKildeNavn());
 		assertEquals(SERVICE_USER_ID, ferdigstiltJournalpost.getJournalfortAvNavn());
 		assertEquals(SERVICE_USER_ID, ferdigstiltJournalpost.getChangeStamp().getUpdatedBy());
-		assertEquals(request.getJournalfEnhet(), ferdigstiltJournalpost.getJournalForendeEnhetId());
+		assertEquals(request.getJournalfoerendeEnhet(), ferdigstiltJournalpost.getJournalForendeEnhetId());
 		assertEquals(JournalStatusCode.FS, ferdigstiltJournalpost.getJournalstatus());
 		assertTrue(ferdigstiltJournalpost.getChangeStamp().getUpdatedDate().after(journalpost.getChangeStamp().getCreatedDate()));
 		TestTransaction.end();
@@ -112,7 +112,7 @@ public class FerdigstillJournalpostIT extends AbstractFerdigstillJournalpostIT {
 
 		Long journalpostId = journalpost.getJournalpostId();
 		FerdigstillJournalpostRequest request = FerdigstillJournalpostRequest.builder()
-				.journalfEnhet("9999")
+				.journalfoerendeEnhet("9999")
 				.build();
 
 		HttpEntity requestEntity = new HttpEntity(request, createHeadersWithServiceUserToken());
@@ -127,7 +127,7 @@ public class FerdigstillJournalpostIT extends AbstractFerdigstillJournalpostIT {
 		assertEquals(SERVICE_USER_ID, ferdigstiltJournalpost.getEndretKildeNavn());
 		assertEquals(SERVICE_USER_ID, ferdigstiltJournalpost.getJournalfortAvNavn());
 		assertEquals(SERVICE_USER_ID, ferdigstiltJournalpost.getChangeStamp().getUpdatedBy());
-		assertEquals(request.getJournalfEnhet(), ferdigstiltJournalpost.getJournalForendeEnhetId());
+		assertEquals(request.getJournalfoerendeEnhet(), ferdigstiltJournalpost.getJournalForendeEnhetId());
 		assertEquals(JournalStatusCode.FS, ferdigstiltJournalpost.getJournalstatus());
 		assertTrue(ferdigstiltJournalpost.getChangeStamp().getUpdatedDate().after(journalpost.getChangeStamp().getCreatedDate()));
 		TestTransaction.end();
@@ -145,7 +145,7 @@ public class FerdigstillJournalpostIT extends AbstractFerdigstillJournalpostIT {
 
 		Long journalpostId = journalpost.getJournalpostId();
 		FerdigstillJournalpostRequest request = FerdigstillJournalpostRequest.builder()
-				.journalfEnhet("9999")
+				.journalfoerendeEnhet("9999")
 				.build();
 
 		HttpEntity requestEntity = new HttpEntity(request, createHeadersWithServiceUserToken());
@@ -154,7 +154,7 @@ public class FerdigstillJournalpostIT extends AbstractFerdigstillJournalpostIT {
 	}
 
 	@Test
-	public void shouldFailIfRequestJournalfEnhetIsInvalid() throws IOException {
+	public void shouldFailIfRequestJournalfoerendeEnhetIsInvalid() throws IOException {
 		abacPermit();
 
 		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.U, JournalStatusCode.FS).build();
@@ -165,7 +165,7 @@ public class FerdigstillJournalpostIT extends AbstractFerdigstillJournalpostIT {
 
 		Long journalpostId = journalpost.getJournalpostId();
 		FerdigstillJournalpostRequest request = FerdigstillJournalpostRequest.builder()
-				.journalfEnhet("abc")
+				.journalfoerendeEnhet("abc")
 				.build();
 
 		HttpEntity requestEntity = new HttpEntity(request, createHeadersWithServiceUserToken());
@@ -186,7 +186,7 @@ public class FerdigstillJournalpostIT extends AbstractFerdigstillJournalpostIT {
 
 		String journalpostId = "abc";
 		FerdigstillJournalpostRequest request = FerdigstillJournalpostRequest.builder()
-				.journalfEnhet("9999")
+				.journalfoerendeEnhet("9999")
 				.build();
 
 		HttpEntity requestEntity = new HttpEntity(request, createHeadersWithServiceUserToken());
@@ -209,7 +209,7 @@ public class FerdigstillJournalpostIT extends AbstractFerdigstillJournalpostIT {
 
 		Long journalpostId = journalpost.getJournalpostId();
 		FerdigstillJournalpostRequest request = FerdigstillJournalpostRequest.builder()
-				.journalfEnhet("9999")
+				.journalfoerendeEnhet("9999")
 				.build();
 
 		HttpEntity requestEntity = new HttpEntity(request, createHeadersWithServiceUserToken());
