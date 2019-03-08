@@ -6,7 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import no.nav.dokarkiv.journalpost.v1.api.codes.JournalpostType;
 
 import java.util.ArrayList;
 import java.util.List;
