@@ -18,13 +18,13 @@ public final class RequestUtils {
 		}
 	}
 
-	public static void validateJournalfEnhet(String journalfEnhet, String feltnavn) {
+	public static void validateJournalfoerendeEnhet(String journalfoerendeEnhet, String feltnavn) {
 		try {
-			hasText(journalfEnhet, feltnavn);
-			hasLength(journalfEnhet, feltnavn, 4);
-			isNumeric(journalfEnhet, feltnavn);
+			hasText(journalfoerendeEnhet, feltnavn);
+			hasLength(journalfoerendeEnhet, feltnavn, 4);
+			isNumeric(journalfoerendeEnhet, feltnavn);
 		} catch (IllegalArgumentException e) {
-			throw new InputValideringFeiletException(String.format("%s. journalfEnhet=%s", e.getMessage(), journalfEnhet));
+			throw new InputValideringFeiletException(String.format("%s. journalfoerendeEnhet=%s", e.getMessage(), journalfoerendeEnhet));
 		}
 	}
 

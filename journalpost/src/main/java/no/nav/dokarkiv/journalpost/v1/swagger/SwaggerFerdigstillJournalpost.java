@@ -19,7 +19,9 @@ import java.lang.annotation.Target;
 @ApiResponses(value = {
 		@ApiResponse(code = 200, message = "OK"),
 		@ApiResponse(code = 400, message = "* Kan ikke ferdigstille"),
-		@ApiResponse(code = 401, message = "* Mangler tilgang til å opprette ny førsteside.\n* Ugyldig OIDC token. Denne feilen gis dersom tokenet ikke har riktig format eller er utgått."),
+		@ApiResponse(code = 401, message = "* Ugyldig OIDC token. Denne feilen gis dersom tokenet ikke har riktig format eller er utgått."),
+		@ApiResponse(code = 403, message = "Bruker mangler tilgang til å ferdigstille journalpost"),
+		@ApiResponse(code = 404, message = "Journalpost ikke funnet"),
 		@ApiResponse(code = 500, message = "Internal server error")})
 public @interface SwaggerFerdigstillJournalpost {
 	@AliasFor(
