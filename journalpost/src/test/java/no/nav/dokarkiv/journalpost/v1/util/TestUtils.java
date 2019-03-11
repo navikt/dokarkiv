@@ -17,6 +17,10 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
 import no.nav.dokarkiv.core.domain.entities.SkannetInnhold;
+import no.nav.dokarkiv.journalpost.v1.api.Dokument;
+import no.nav.dokarkiv.journalpost.v1.api.DokumentVariant;
+import no.nav.dokarkiv.journalpost.v1.api.JournalpostType;
+import no.nav.dokarkiv.journalpost.v1.api.OpprettJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.Sak;
 import no.nav.dokarkiv.journalpost.v1.api.Arkivsaksystem;
 import no.nav.dokarkiv.journalpost.v1.api.AvsenderMottaker;
@@ -27,6 +31,7 @@ import no.nav.dokarkiv.journalpost.v1.api.Tilleggsopplysning;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -70,6 +75,15 @@ public class TestUtils {
 	public static final String TEMA_FOR = "FOR";
 	public static final String BEHANDLINGSTEMA = "ab0001";
 	public static final String AVSENDER_MOTTAKER_LAND = "Legoland";
+	public static final String KANAL_NAVNO = "NAV_NO";
+	public static final String DOKUMENTKATEGORI_SED = "SED";
+	public static final String FILTYPE_PDF = "PDF";
+	public static final String FILTYPE_XML = "XML";
+	public static final String VARIANTFORMAT_ARKIV = "ARKIV";
+	public static final String VARIANTFORMAT_ORIGINAL = "ARKIV";
+	public static final byte[] FYSISK_DOKUMENT = "DOKUMENT".getBytes();
+	public static final String TILLEGGSOPPLYSNING_NOKKEL = "noekkel";
+	public static final String TILLEGGSOPPLYSNING_VERDI = "verdi";
 
 	public static Journalpost createJournalpost() {
 		Journalpost journalpost = Journalpost.builder()
@@ -264,5 +278,58 @@ public class TestUtils {
 						.tittel(DOKUMENT_TITTEL2)
 						.build()
 		);
+	}
+
+	public static OpprettJournalpostRequest createRequest(JournalpostType journalpostType) {
+		return createBaseRequest(journalpostType)
+				.dokumenter(Arrays.asList(
+						Dokument.builder()
+								.tittel(DOKUMENT_TITTEL1)
+								.brevkode(BREVKODE1)
+								.dokumentKategori(DOKUMENTKATEGORI_SED)
+								.dokumentvarianter(Collections.singletonList(DokumentVariant.builder()
+										.filtype(FILTYPE_PDF)
+										.variantformat(VARIANTFORMAT_ARKIV)
+										.fysiskDokument(FYSISK_DOKUMENT)
+										.build()))
+								.build(),
+						Dokument.builder()
+								.tittel(DOKUMENT_TITTEL2)
+								.brevkode(BREVKODE2)
+								.dokumentKategori(DOKUMENTKATEGORI_SED)
+								.dokumentvarianter(Collections.singletonList(DokumentVariant.builder()
+										.filtype(FILTYPE_XML)
+										.variantformat(VARIANTFORMAT_ORIGINAL)
+										.fysiskDokument(FYSISK_DOKUMENT)
+										.build()))
+								.build()))
+				.build();
+	}
+
+	public static OpprettJournalpostRequest createRequestUtenDokumenter(JournalpostType journalpostType) {
+		return createBaseRequest(journalpostType).build();
+	}
+
+	private static OpprettJournalpostRequest.OpprettJournalpostRequestBuilder createBaseRequest(JournalpostType journalpostType){
+		return OpprettJournalpostRequest.builder()
+				.journalpostType(journalpostType)
+				.avsenderMottaker(AvsenderMottaker.builder()
+						.id(AVSENDER_ID_PERSON)
+						.navn(AVSENDER_NAVN)
+						.build())
+				.bruker(no.nav.dokarkiv.journalpost.v1.api.Bruker.builder()
+						.idType(BrukerIdType.FNR)
+						.id(BRUKER_ID_PERSON)
+						.build())
+				.tema(TEMA_FOR)
+				.behandlingstema(BEHANDLINGSTEMA)
+				.tittel(INNHOLD)
+				.kanal(KANAL_NAVNO)
+				.eksternReferanseId(KANALREFERANSE_ID)
+				.tilleggsopplysninger(Collections.singletonList(Tilleggsopplysning.builder().nokkel(TILLEGGSOPPLYSNING_NOKKEL).verdi(TILLEGGSOPPLYSNING_VERDI).build()))
+				.sak(Sak.builder()
+						.arkivsaksnummer(SAK_ID)
+						.arkivsaksystem(Arkivsaksystem.GSAK)
+						.build());
 	}
 }

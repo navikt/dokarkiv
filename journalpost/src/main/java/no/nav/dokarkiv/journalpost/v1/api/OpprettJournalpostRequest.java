@@ -66,7 +66,7 @@ public class OpprettJournalpostRequest {
 	@ApiModelProperty(
 			value = "",
 			required = false)
-	private Arkivsak arkivSak;
+	private Sak sak;
 
 	@Builder.Default
 	@ApiModelProperty(

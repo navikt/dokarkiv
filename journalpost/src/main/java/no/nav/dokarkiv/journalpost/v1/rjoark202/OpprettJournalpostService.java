@@ -15,15 +15,16 @@ public class OpprettJournalpostService {
 	private final JournalpostMapper journalpostMapper;
 
 	@Inject
-	public OpprettJournalpostService(final JoarkRepository joarkRepository,
-									 final JournalpostMapper journalpostMapper) {
+	public OpprettJournalpostService(final JoarkRepository joarkRepository) {
 		this.joarkRepository = joarkRepository;
-		this.journalpostMapper = journalpostMapper;
+		this.journalpostMapper = new JournalpostMapper();
 	}
 
 	public Long opprettJournalpost(OpprettJournalpostRequest request) {
 
 		Journalpost journalpost = journalpostMapper.map(request);
+
+		// validering ??
 
 		joarkRepository.save(journalpost);
 

@@ -25,7 +25,6 @@ import no.nav.dokarkiv.journalpost.v1.api.Tilleggsopplysning;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-
 public class JournalpostMapper {
 
 	public Journalpost map(OpprettJournalpostRequest request) {
@@ -35,8 +34,8 @@ public class JournalpostMapper {
 				.journalstatus(mapJournalstatus(request))
 				.innhold(request.getTittel())
 				.fagomrade(FagomradeCode.valueOf(request.getTema()))
-				.avsenderMottaker(request.getAvsenderMottaker() == null ? null : request.getAvsenderMottaker().getAvsenderMottakerNavn())
-				.avsenderMottakerId(request.getAvsenderMottaker() == null ? null : request.getAvsenderMottaker().getIdentifikator())
+				.avsenderMottaker(request.getAvsenderMottaker() == null ? null : request.getAvsenderMottaker().getNavn())
+				.avsenderMottakerId(request.getAvsenderMottaker() == null ? null : request.getAvsenderMottaker().getId())
 				.behandlingstema(Behandlingstema.valueOf(request.getBehandlingstema()))
 				.tilleggsopplysninger(mapTilleggsopplysninger(request))
 				.mottakskanal(mapMottakskanal(request))
@@ -90,10 +89,10 @@ public class JournalpostMapper {
 	}
 
 	private void mapSaksrelasjon(Journalpost.JournalpostBuilder builder, OpprettJournalpostRequest request) {
-		if (request.getArkivSak() != null) {
+		if (request.getSak() != null) {
 			builder.saksrelasjon(Saksrelasjon.builder()
-					.sakId(request.getArkivSak().getArkivsaksnummer())
-					.fagsystem(Arkivsaksystem.GSAK.equals(request.getArkivSak().getArkivsaksystem()) ? FagsystemCode.FS22 : FagsystemCode.PEN)
+					.sakId(request.getSak().getArkivsaksnummer())
+					.fagsystem(Arkivsaksystem.GSAK.equals(request.getSak().getArkivsaksystem()) ? FagsystemCode.FS22 : FagsystemCode.PEN)
 					.build());
 		}
 	}
@@ -101,8 +100,8 @@ public class JournalpostMapper {
 	private void addBruker(Journalpost jp, OpprettJournalpostRequest request) {
 		if (request.getBruker() != null){
 			jp.addBruker(Bruker.builder()
-					.brukerId(request.getBruker().getIdentifikator())
-					.brukerType(BrukerIdType.FNR.equals(request.getBruker().getBrukerIdType()) ? BrukerTypeCode.PERSON : BrukerTypeCode.ORGANISASJON)
+					.brukerId(request.getBruker().getId())
+					.brukerType(BrukerIdType.FNR.equals(request.getBruker().getIdType()) ? BrukerTypeCode.PERSON : BrukerTypeCode.ORGANISASJON)
 					.build());
 		}
 	}
