@@ -12,16 +12,16 @@ import javax.validation.constraints.NotNull;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Bruker {
-    @NotNull(message = "Bruker mangler idtype")
+public class Sak {
+    @NotNull(message = "Sak mangler arkivsaksnummer")
     @ApiModelProperty(
-            value = "",
+            value = "Angir hvorvidt arkivsaken befinner seg i GSAK (FS22) eller PSAK (PEN)",
             required = true)
-    private BrukerIdType idType;
+    private String arkivsaksnummer;
 
-    @NotNull(message = "Bruker mangler id")
+    @NotNull(message = "Sak mangler arkivsaksystem")
     @ApiModelProperty(
-            value = "",
+            value = "Fagområdet som forsendelsen tilhører, for eksempel \"FOR\" for Foreldrepenger",
             required = true)
-    private String id;
+    private Arkivsaksystem arkivsaksystem;
 }

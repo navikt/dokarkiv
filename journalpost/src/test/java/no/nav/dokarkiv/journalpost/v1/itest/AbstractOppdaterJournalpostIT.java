@@ -49,53 +49,22 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
-@RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
 		classes = {CoreConfig.class, JournalpostConfig.class, TestToolsAutoConfig.class})
 @ActiveProfiles("itest,wiremock,ldap,oidc")
-@AutoConfigureDataJpa
-@AutoConfigureTestDatabase
-@AutoConfigureTestEntityManager
-@AutoConfigureDataLdap
 @AutoConfigureWireMock(port = 0)
-@Transactional
 public abstract class AbstractOppdaterJournalpostIT extends AbstractRestIT {
 
 	protected String OIDC_TOKEN_PERSON_USER_TEST;
 	protected String OIDC_TOKEN_SERVICE_USER_TEST;
-	protected String NAV_CONSUMER_TOKEN = "Nav-Consumer-Token";
 	protected final String SERVICE_USER_ID = "srvdokarkiv";
-	protected final String PERSON_USER_ID = "Z990782";
-	protected static final String JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER = "/rest/v1/journalpost/";
-	protected static final ObjectMapper mapper = new ObjectMapper();
-	@Rule
-	public ExpectedException expectedException = ExpectedException.none();
-	@Inject
-	protected JoarkRepositorySkjermet joarkRepository;
-	@Inject
-	protected SkannetInnholdRepository skannetInnholdRepository;
-	@Inject
-	protected TestRestTemplate restTemplate;
-	@Inject
-    protected DokumentinfoRepository dokumentinfoRepository;
-	@Inject
-	protected JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository;
-	@Inject
-	protected OidcTestService oidcTestService;
+	protected static final String JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER = "/rest/journalpostapi/v1/journalpost/";
 
 	@Before
 	public void setUp() {
 		OIDC_TOKEN_PERSON_USER_TEST = "Bearer " + oidcTestService.createOidc(openAmClaimsBuilder().subject(PERSON_USER_ID)
 				.build());
 		OIDC_TOKEN_SERVICE_USER_TEST = "Bearer " + oidcTestService.createOidc(openAmClaimsBuilder().subject(SERVICE_USER_ID)
-				.build());
-	}
-
-	@BeforeClass
-	public static void setupItest() {
-		RequestContextSetter.setRequestContext(new SimpleRequestContext.Builder()
-				.userId("itestuser")
-				.componentId("itest")
 				.build());
 	}
 
@@ -116,14 +85,6 @@ public abstract class AbstractOppdaterJournalpostIT extends AbstractRestIT {
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 		return journalpost;
-	}
-
-	protected HttpEntity createHeaders() {
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.TEXT_PLAIN);
-		headers.add(HttpHeaders.AUTHORIZATION, OIDC_TOKEN_PERSON_USER_TEST);
-		headers.add(NAV_CONSUMER_TOKEN, OIDC_TOKEN_SERVICE_USER_TEST);
-		return new HttpEntity(headers);
 	}
 
 	protected HttpHeaders oidcHeaders() {

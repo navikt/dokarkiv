@@ -13,7 +13,7 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PutOppdaterJournalpostRequest {
+public class OppdaterJournalpostRequest {
     @ApiModelProperty(value = "Avsender eller mottaker av forsendelsen.\n\nSkal ikke settes for notater.")
     private AvsenderMottaker avsenderMottaker;
 
@@ -21,7 +21,7 @@ public class PutOppdaterJournalpostRequest {
     private Bruker bruker;
 
     @ApiModelProperty(value = "Referanse til arkivsaken i GSAK eller PSAK som journalposten skal journalføres mot.")
-    private Arkivsak arkivsak;
+    private Sak sak;
 
     @ApiModelProperty(value = "Fagområdet som forsendelsen tilhører, for eksempel \"FOR\" for Foreldrepenger")
     private String tema;
@@ -33,11 +33,8 @@ public class PutOppdaterJournalpostRequest {
     private String tittel;
 
     @ApiModelProperty(value = "")
-    private String avsenderMottakerLand;
-
-    @ApiModelProperty(value = "")
     private List<Tilleggsopplysning> tilleggsopplysninger;
 
     @ApiModelProperty(value = "liste over dokumentene på journalposten der metadata skal endres")
-    private List<DokumentInfo> dokumentInfoList;
+    private List<DokumentInfo> dokumenter;
 }

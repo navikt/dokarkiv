@@ -63,6 +63,6 @@ public class AksjonsLoggHelper {
     }
 
     public List<ArkivElementEndringTO> getArkivElementEndringTOs() {
-        return arkivElementEndringTOs;
+        return new ArrayList<>(arkivElementEndringTOs);
     }
 }

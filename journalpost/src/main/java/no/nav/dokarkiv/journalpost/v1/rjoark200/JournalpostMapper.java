@@ -19,7 +19,7 @@ import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
 import no.nav.dokarkiv.core.repository.BrukerRepository;
 import no.nav.dokarkiv.journalpost.v1.api.Arkivsaksystem;
 import no.nav.dokarkiv.journalpost.v1.api.BrukerIdType;
-import no.nav.dokarkiv.journalpost.v1.api.PutOppdaterJournalpostRequest;
+import no.nav.dokarkiv.journalpost.v1.api.OppdaterJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.Tilleggsopplysning;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
@@ -42,56 +42,56 @@ public class JournalpostMapper {
 		this.aksjonsLoggService = aksjonsLoggService;
 	}
 
-	public void oppdaterJournalpost(Journalpost journalpost, PutOppdaterJournalpostRequest putOppdaterJournalpostRequest) throws UgyldigAksjonsLoggException {
+	public void oppdaterJournalpost(Journalpost journalpost, OppdaterJournalpostRequest oppdaterJournalpostRequest) throws UgyldigAksjonsLoggException {
 
 		boolean endret = false;
 		AksjonsLoggHelper aksjonsLoggHelperMetadata = new AksjonsLoggHelper();
 		aksjonsLoggHelperMetadata.setAksjonsLoggTO(AksjonsTypeCode.ENDRE_METADATA, null);
 
-		if (isNotBlank(putOppdaterJournalpostRequest.getTittel())) {
+		if (isNotBlank(oppdaterJournalpostRequest.getTittel())) {
 			aksjonsLoggHelperMetadata.addToArkivElementEndringTOs(ArkivElementEndringTO.builder()
 					.arkivElement("Journalpost.innhold")
 					.fraVerdi(journalpost.getInnhold())
-					.tilVerdi(putOppdaterJournalpostRequest.getTittel())
+					.tilVerdi(oppdaterJournalpostRequest.getTittel())
 					.build());
-			journalpost.setInnhold(putOppdaterJournalpostRequest.getTittel());
+			journalpost.setInnhold(oppdaterJournalpostRequest.getTittel());
 			endret = true;
 		}
-		if (isNotBlank(putOppdaterJournalpostRequest.getTema())) {
+		if (isNotBlank(oppdaterJournalpostRequest.getTema())) {
 			aksjonsLoggHelperMetadata.addToArkivElementEndringTOs(ArkivElementEndringTO.builder()
 					.arkivElement("Journalpost.fagomrade")
 					.fraVerdi(journalpost.getFagomrade().name())
-					.tilVerdi(putOppdaterJournalpostRequest.getTema())
+					.tilVerdi(oppdaterJournalpostRequest.getTema())
 					.build());
-			journalpost.setFagomrade(FagomradeCode.valueOf(putOppdaterJournalpostRequest.getTema()));
+			journalpost.setFagomrade(FagomradeCode.valueOf(oppdaterJournalpostRequest.getTema()));
 			endret = true;
 		}
-		if (putOppdaterJournalpostRequest.getAvsenderMottaker() != null) {
-			if (isNotBlank(putOppdaterJournalpostRequest.getAvsenderMottaker().getAvsenderMottakerNavn())) {
-				journalpost.setAvsenderMottaker(putOppdaterJournalpostRequest.getAvsenderMottaker().getAvsenderMottakerNavn());
+		if (oppdaterJournalpostRequest.getAvsenderMottaker() != null) {
+			if (isNotBlank(oppdaterJournalpostRequest.getAvsenderMottaker().getNavn())) {
+				journalpost.setAvsenderMottaker(oppdaterJournalpostRequest.getAvsenderMottaker().getNavn());
 				endret = true;
 			}
-			if (isNotBlank(putOppdaterJournalpostRequest.getAvsenderMottaker().getIdentifikator())) {
-				journalpost.setAvsenderMottakerId(putOppdaterJournalpostRequest.getAvsenderMottaker().getIdentifikator());
+			if (isNotBlank(oppdaterJournalpostRequest.getAvsenderMottaker().getId())) {
+				journalpost.setAvsenderMottakerId(oppdaterJournalpostRequest.getAvsenderMottaker().getId());
+				endret = true;
+			}
+			if (isNotBlank(oppdaterJournalpostRequest.getAvsenderMottaker().getLand())) {
+				journalpost.setLand(oppdaterJournalpostRequest.getAvsenderMottaker().getLand());
 				endret = true;
 			}
 		}
-        if (isNotBlank(putOppdaterJournalpostRequest.getBehandlingstema())) {
-            journalpost.setBehandlingstema(Behandlingstema.valueOf(putOppdaterJournalpostRequest.getBehandlingstema()));
-            endret = true;
-        }
-        if (isNotBlank(putOppdaterJournalpostRequest.getAvsenderMottakerLand())) {
-            journalpost.setLand(putOppdaterJournalpostRequest.getAvsenderMottakerLand());
+        if (isNotBlank(oppdaterJournalpostRequest.getBehandlingstema())) {
+            journalpost.setBehandlingstema(Behandlingstema.valueOf(oppdaterJournalpostRequest.getBehandlingstema()));
             endret = true;
         }
 
-        if (putOppdaterJournalpostRequest.getTilleggsopplysninger() != null && !putOppdaterJournalpostRequest.getTilleggsopplysninger().isEmpty()) {
-            journalpost.setTilleggsopplysninger(mapTilleggsopplysninger(putOppdaterJournalpostRequest.getTilleggsopplysninger()));
+        if (oppdaterJournalpostRequest.getTilleggsopplysninger() != null && !oppdaterJournalpostRequest.getTilleggsopplysninger().isEmpty()) {
+            journalpost.setTilleggsopplysninger(mapTilleggsopplysninger(oppdaterJournalpostRequest.getTilleggsopplysninger()));
         }
 
-		updateSaksrelasjonFields(journalpost, putOppdaterJournalpostRequest);
+		updateSaksrelasjonFields(journalpost, oppdaterJournalpostRequest);
 
-		boolean brukerEndret = updateBrukerFraRequest(journalpost, putOppdaterJournalpostRequest);
+		boolean brukerEndret = updateBrukerFraRequest(journalpost, oppdaterJournalpostRequest);
 		if (brukerEndret) {
 			endret = true;
 		}
@@ -111,18 +111,18 @@ public class JournalpostMapper {
 	    return tilleggsopplysninger.stream().collect(Collectors.toMap(Tilleggsopplysning::getNokkel, Tilleggsopplysning::getVerdi));
     }
 
-    private boolean updateBrukerFraRequest(Journalpost journalpost, PutOppdaterJournalpostRequest putOppdaterJournalpostRequest) {
+    private boolean updateBrukerFraRequest(Journalpost journalpost, OppdaterJournalpostRequest oppdaterJournalpostRequest) {
 		boolean endret = false;
 		Set<Bruker> brukere = journalpost.getBrukere();
 		if (brukere.isEmpty() || brukere.size() > 1) {
 			brukerRepository.deleteBrukerByJournalpostId(journalpost.getJournalpostId().toString());
 			journalpost.clearBrukere();
 
-			if (putOppdaterJournalpostRequest.getBruker() != null) {
+			if (oppdaterJournalpostRequest.getBruker() != null) {
 				Bruker bruker = new Bruker();
-				bruker.setBrukerId(putOppdaterJournalpostRequest.getBruker().getIdentifikator());
-				assertNotNull(putOppdaterJournalpostRequest.getBruker().getBrukerIdType(), "bruker.brukerIdType");
-				bruker.setBrukerType(BrukerIdType.ORGNR.equals(putOppdaterJournalpostRequest.getBruker().getBrukerIdType()) ?
+				bruker.setBrukerId(oppdaterJournalpostRequest.getBruker().getId());
+				assertNotNull(oppdaterJournalpostRequest.getBruker().getIdType(), "Bruker.idType");
+				bruker.setBrukerType(BrukerIdType.ORGNR.equals(oppdaterJournalpostRequest.getBruker().getIdType()) ?
 						BrukerTypeCode.ORGANISASJON : BrukerTypeCode.PERSON);
 				bruker.setOpprettetKildeNavn(MDC.get(MDC_CONSUMER_ID));
 				journalpost.addBruker(bruker);
@@ -130,11 +130,11 @@ public class JournalpostMapper {
 				endret = true;
 			}
 		} else {
-			if (putOppdaterJournalpostRequest.getBruker() != null) {
+			if (oppdaterJournalpostRequest.getBruker() != null) {
 				brukere.iterator().forEachRemaining(bruker -> {
-					bruker.setBrukerId(putOppdaterJournalpostRequest.getBruker().getIdentifikator());
-					assertNotNull(putOppdaterJournalpostRequest.getBruker().getBrukerIdType(), "bruker.brukerIdType");
-					bruker.setBrukerType(BrukerIdType.ORGNR.equals(putOppdaterJournalpostRequest.getBruker().getBrukerIdType()) ?
+					bruker.setBrukerId(oppdaterJournalpostRequest.getBruker().getId());
+					assertNotNull(oppdaterJournalpostRequest.getBruker().getIdType(), "Bruker.idType");
+					bruker.setBrukerType(BrukerIdType.ORGNR.equals(oppdaterJournalpostRequest.getBruker().getIdType()) ?
 							BrukerTypeCode.ORGANISASJON : BrukerTypeCode.PERSON);
 				});
 				endret = true;
@@ -143,11 +143,11 @@ public class JournalpostMapper {
 		return endret;
 	}
 
-	private void updateSaksrelasjonFields(Journalpost journalpost, PutOppdaterJournalpostRequest request) throws UgyldigAksjonsLoggException {
+	private void updateSaksrelasjonFields(Journalpost journalpost, OppdaterJournalpostRequest request) throws UgyldigAksjonsLoggException {
 		boolean endret = false;
 		boolean newSak = false;
 
-		if (request.getArkivsak() != null) {
+		if (request.getSak() != null) {
 			Saksrelasjon saksrelasjon;
 			AksjonsLoggHelper aksjonsLoggHelperSakstilknytning = new AksjonsLoggHelper();
 			aksjonsLoggHelperSakstilknytning.setAksjonsLoggTO(AksjonsTypeCode.SAKSTILKNYTNING, null);
@@ -159,22 +159,22 @@ public class JournalpostMapper {
 			} else {
 				saksrelasjon = journalpost.getSaksrelasjon();
 			}
-			if (isNotBlank(request.getArkivsak().getArkivsaksnummer())) {
+			if (isNotBlank(request.getSak().getArkivsaksnummer())) {
 				aksjonsLoggHelperSakstilknytning.addToArkivElementEndringTOs(ArkivElementEndringTO.builder()
 						.arkivElement("Saksrelasjon.sakId")
 						.fraVerdi(journalpost.getSaksrelasjon().getSakId())
-						.tilVerdi(request.getArkivsak().getArkivsaksnummer())
+						.tilVerdi(request.getSak().getArkivsaksnummer())
 						.build());
-				saksrelasjon.setSakId(request.getArkivsak().getArkivsaksnummer());
+				saksrelasjon.setSakId(request.getSak().getArkivsaksnummer());
 				endret = true;
 			}
-			if (request.getArkivsak().getArkivsaksystem() != null) {
+			if (request.getSak().getArkivsaksystem() != null) {
 				aksjonsLoggHelperSakstilknytning.addToArkivElementEndringTOs(ArkivElementEndringTO.builder()
 						.arkivElement("Saksrelasjon.fagsystem")
 						.fraVerdi(journalpost.getSaksrelasjon().getFagsystem().name())
-						.tilVerdi(request.getArkivsak().getArkivsaksystem().name())
+						.tilVerdi(request.getSak().getArkivsaksystem().name())
 						.build());
-				saksrelasjon.setFagsystem(mapArkivSakSystemToFagsystemCode(request.getArkivsak().getArkivsaksystem()));
+				saksrelasjon.setFagsystem(mapArkivSakSystemToFagsystemCode(request.getSak().getArkivsaksystem()));
 				endret = true;
 			}
 			if (endret && !newSak) {

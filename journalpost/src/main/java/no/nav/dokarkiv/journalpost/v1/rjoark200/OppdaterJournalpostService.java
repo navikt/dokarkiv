@@ -5,12 +5,11 @@ import static no.nav.dokarkiv.journalpost.v1.rjoark200.util.Utils.convertStringT
 
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
-import no.nav.dokarkiv.journalpost.v1.api.PutOppdaterJournalpostRequest;
+import no.nav.dokarkiv.journalpost.v1.api.OppdaterJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.rjoark200.util.Utils;
 import org.springframework.stereotype.Service;
 
@@ -38,23 +37,23 @@ public class OppdaterJournalpostService {
 		this.dokumentInfoMapper = dokumentInfoMapper;
 	}
 
-	public void oppdaterJournalpost(String journalpostId, PutOppdaterJournalpostRequest putOppdaterJournalpostRequest, String aksjonsLoggHeaderString) throws UgyldigAksjonsLoggException {
+	public void oppdaterJournalpost(String journalpostId, OppdaterJournalpostRequest oppdaterJournalpostRequest, String aksjonsLoggHeaderString) throws UgyldigAksjonsLoggException {
 		Journalpost journalpost = joarkRepository.findById(convertStringToLong(journalpostId, "journalpostId"))
 				.orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostId)));
 
 		AksjonsLoggHelper.setAksjonsLoggHeaderString(aksjonsLoggHeaderString);
 		AksjonsLoggHelper.setJournalpostId(Long.parseLong(journalpostId));
-		AksjonsLoggHelper.setBrukerId(putOppdaterJournalpostRequest.getBruker() != null ?
-				putOppdaterJournalpostRequest.getBruker().getIdentifikator() :
+		AksjonsLoggHelper.setBrukerId(oppdaterJournalpostRequest.getBruker() != null ?
+				oppdaterJournalpostRequest.getBruker().getId() :
 				(journalpost.getBrukere().isEmpty() ? null : journalpost.getBrukere().iterator().next().getBrukerId())
 		);
 
-		validateOppdaterteFelt(putOppdaterJournalpostRequest, journalpost.getJournalstatus());
-		journalpostMapper.oppdaterJournalpost(journalpost, putOppdaterJournalpostRequest);
+		validateOppdaterteFelt(oppdaterJournalpostRequest, journalpost.getJournalstatus());
+		journalpostMapper.oppdaterJournalpost(journalpost, oppdaterJournalpostRequest);
 		joarkRepository.save(journalpost);
 
-		if (putOppdaterJournalpostRequest.getDokumentInfoList() != null) {
-			for (no.nav.dokarkiv.journalpost.v1.api.DokumentInfo dokument : putOppdaterJournalpostRequest.getDokumentInfoList()) {
+		if (oppdaterJournalpostRequest.getDokumenter() != null) {
+			for (no.nav.dokarkiv.journalpost.v1.api.DokumentInfo dokument : oppdaterJournalpostRequest.getDokumenter()) {
 				DokumentInfo dokumentInfo = journalpost.getDokumentInfoFromJpDokInfoRelasjonerByDokumentInfoId(Long.parseLong(dokument.getDokumentInfoId()));
 
 				Utils.assertDokumentInfoNotNull(dokumentInfo, String.valueOf(journalpost.getJournalpostId()), dokument.getDokumentInfoId());

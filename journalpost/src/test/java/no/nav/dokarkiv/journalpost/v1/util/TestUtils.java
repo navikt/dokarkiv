@@ -17,11 +17,11 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
 import no.nav.dokarkiv.core.domain.entities.SkannetInnhold;
-import no.nav.dokarkiv.journalpost.v1.api.Arkivsak;
+import no.nav.dokarkiv.journalpost.v1.api.Sak;
 import no.nav.dokarkiv.journalpost.v1.api.Arkivsaksystem;
 import no.nav.dokarkiv.journalpost.v1.api.AvsenderMottaker;
 import no.nav.dokarkiv.journalpost.v1.api.BrukerIdType;
-import no.nav.dokarkiv.journalpost.v1.api.PutOppdaterJournalpostRequest;
+import no.nav.dokarkiv.journalpost.v1.api.OppdaterJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.Tilleggsopplysning;
 
 import java.time.LocalDateTime;
@@ -197,50 +197,51 @@ public class TestUtils {
 				.build();
 	}
 
-	public static PutOppdaterJournalpostRequest createPutOppdaterJournalpostRequest() {
-		return PutOppdaterJournalpostRequest.builder()
+	public static OppdaterJournalpostRequest createPutOppdaterJournalpostRequest() {
+		return OppdaterJournalpostRequest.builder()
 				.avsenderMottaker(createAvsenderMottakerPerson())
 				.bruker(createBrukerPerson())
-				.arkivsak(createArkivSak())
+				.sak(createSak())
 				.tema(TEMA_FOR)
 				.behandlingstema(BEHANDLINGSTEMA)
 				.tittel(DOKUMENT_TITTEL1)
-				.avsenderMottakerLand(AVSENDER_MOTTAKER_LAND)
 				.tilleggsopplysninger(createTilleggsopplysninger())
-				.dokumentInfoList(createDokumentInfos())
+				.dokumenter(createDokumentInfos())
 				.build();
 	}
 
-	private static AvsenderMottaker createAvsenderMottakerPerson() {
+	public static AvsenderMottaker createAvsenderMottakerPerson() {
 		return AvsenderMottaker.builder()
-				.avsenderMottakerNavn(AVSENDER_NAVN)
-				.identifikator(AVSENDER_ID_PERSON)
+				.navn(AVSENDER_NAVN)
+				.id(AVSENDER_ID_PERSON)
+				.land(AVSENDER_MOTTAKER_LAND)
 				.build();
 	}
 
 	private static AvsenderMottaker createAvsenderMottakerOrganisasjon() {
 		return AvsenderMottaker.builder()
-				.avsenderMottakerNavn(AVSENDER_NAVN_ORGANISASJON)
-				.identifikator(AVSENDER_ID_ORGANISASJON)
+				.navn(AVSENDER_NAVN_ORGANISASJON)
+				.id(AVSENDER_ID_ORGANISASJON)
+				.land(AVSENDER_MOTTAKER_LAND)
 				.build();
 	}
 
-	private static no.nav.dokarkiv.journalpost.v1.api.Bruker createBrukerPerson() {
+	public static no.nav.dokarkiv.journalpost.v1.api.Bruker createBrukerPerson() {
 		return no.nav.dokarkiv.journalpost.v1.api.Bruker.builder()
-				.brukerIdType(BrukerIdType.FNR)
-				.identifikator(BRUKER_ID_PERSON)
+				.idType(BrukerIdType.FNR)
+				.id(BRUKER_ID_PERSON)
 				.build();
 	}
 
-	private static no.nav.dokarkiv.journalpost.v1.api.Bruker createBrukerOrganisasjon() {
+	public static no.nav.dokarkiv.journalpost.v1.api.Bruker createBrukerOrganisasjon() {
 		return no.nav.dokarkiv.journalpost.v1.api.Bruker.builder()
-				.brukerIdType(BrukerIdType.ORGNR)
-				.identifikator(BRUKER_ID_ORGANISASJON)
+				.idType(BrukerIdType.ORGNR)
+				.id(BRUKER_ID_ORGANISASJON)
 				.build();
 	}
 
-	private static Arkivsak createArkivSak() {
-		return Arkivsak.builder()
+	public static Sak createSak() {
+		return Sak.builder()
 				.arkivsaksnummer(SAK_ID)
 				.arkivsaksystem(Arkivsaksystem.GSAK)
 				.build();
