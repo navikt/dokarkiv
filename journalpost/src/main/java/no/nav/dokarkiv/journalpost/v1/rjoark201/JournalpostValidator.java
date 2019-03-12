@@ -52,7 +52,7 @@ class JournalpostValidator {
 	}
 
 	private void verifyMidlertidigJournalfoert(Journalpost jp) {
-		if (MIDLERTIDIG_JOURNALSTATUS.contains(jp.getJournalstatus()) || Boolean.TRUE.equals(jp.getSaksrelasjon() == null ? Boolean.FALSE : jp.getSaksrelasjon()
+		if (!MIDLERTIDIG_JOURNALSTATUS.contains(jp.getJournalstatus()) || Boolean.TRUE.equals(jp.getSaksrelasjon() == null ? Boolean.FALSE : jp.getSaksrelasjon()
 				.getFeilregistrert())) {
 			throw new JournalpostIkkeMidlertidigException(String.format("Journalpost med journalpostId=%s er ikke midlertidig journalført", jp
 					.getJournalpostId()));
