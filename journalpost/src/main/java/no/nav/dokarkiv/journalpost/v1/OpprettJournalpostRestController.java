@@ -49,7 +49,7 @@ public class OpprettJournalpostRestController {
 	@SwaggerOpprettJournalpost
 	@Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_DOKUMENT)},
 			actions = @Abac.Attr(key = ACTION_ID, value = CREATE_ACTION))
-	@RestMetrics(value = "dok_request", extraTags = {"process", "rjoark202"}, percentiles = {0.5, 0.95}, histogram = true)
+	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark202"}, percentiles = {0.5, 0.95}, histogram = true)
 	public ResponseEntity<Long> opprettJournalpost(@RequestBody OpprettJournalpostRequest request) {
 		MDC.put(MDC_REQUEST_ID, "rjoark202");
 		log.info(MDC.get(MDC_REQUEST_ID) + " har mottat kall for opprettelse av ny journalpost");
