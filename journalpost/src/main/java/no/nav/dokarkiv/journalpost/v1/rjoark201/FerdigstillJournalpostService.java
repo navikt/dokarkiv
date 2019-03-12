@@ -32,14 +32,14 @@ public class FerdigstillJournalpostService {
 		this.journalpostValidator = new JournalpostValidator();
 	}
 
-	public List<ArkivElementEndringTO> ferdigstill(String journalpostId, String journalfEnhet) {
+	public List<ArkivElementEndringTO> ferdigstill(String journalpostId, String journalfoerendeEnhet) {
 		Journalpost journalpost = joarkRepository.findById(parseLong(journalpostId))
 				.orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostId)));
 		JournalStatusCode prevStatus = journalpost.getJournalstatus();
 
 		validerJournalpost(journalpost);
 
-		ferdigstillJournalpost(journalpost, journalfEnhet);
+		ferdigstillJournalpost(journalpost, journalfoerendeEnhet);
 
 		joarkRepository.save(journalpost);
 
@@ -52,7 +52,7 @@ public class FerdigstillJournalpostService {
 				ArkivElementEndringTO.builder()
 						.arkivElement("Journalpost.journalfEnhet")
 						.fraVerdi(null)
-						.tilVerdi(journalfEnhet)
+						.tilVerdi(journalfoerendeEnhet)
 						.build(),
 				ArkivElementEndringTO.builder()
 						.arkivElement("Journalpost.journalfoertAvNavn")
@@ -67,10 +67,10 @@ public class FerdigstillJournalpostService {
 		journalpostValidator.validatePaakrevdeFelter(journalpost);
 	}
 
-	private void ferdigstillJournalpost(Journalpost journalpost, String journalfEnhet) {
+	private void ferdigstillJournalpost(Journalpost journalpost, String journalfoerendeEnhet) {
 		setJournalpostStatus(journalpost);
 		journalpost.setJournalDato(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()));
-		journalpost.setJournalForendeEnhetId(journalfEnhet);
+		journalpost.setJournalForendeEnhetId(journalfoerendeEnhet);
 		journalpost.setEndretAvNavn(MDC.get(MDC_USER_ID));
 		journalpost.setJournalfortAvNavn(MDC.get(MDC_USER_ID));
 		journalpost.setEndretKildeNavn(MDC.get(MDC_CONSUMER_ID));
