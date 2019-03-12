@@ -1,8 +1,7 @@
-package no.nav.dokarkiv.journalpost.v1.rjoark202.util;
+package no.nav.dokarkiv.journalpost.v1.rjoark202;
 
 import static org.junit.Assert.assertEquals;
 
-import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.journalpost.v1.api.JournalpostType;
 import no.nav.dokarkiv.journalpost.v1.api.OpprettJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.util.TestUtils;
@@ -11,7 +10,6 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.transaction.TestTransaction;
 
 import java.io.IOException;
 

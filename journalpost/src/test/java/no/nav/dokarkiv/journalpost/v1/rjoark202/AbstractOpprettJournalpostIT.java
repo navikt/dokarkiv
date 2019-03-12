@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.journalpost.v1.rjoark202.util;
+package no.nav.dokarkiv.journalpost.v1.rjoark202;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
