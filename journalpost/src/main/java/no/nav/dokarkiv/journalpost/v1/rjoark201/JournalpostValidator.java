@@ -1,7 +1,13 @@
 package no.nav.dokarkiv.journalpost.v1.rjoark201;
 
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.D;
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.M;
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.MO;
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.R;
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.UB;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
+import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
@@ -13,9 +19,12 @@ import no.nav.dokarkiv.core.exceptions.KanIkkeFerdigstilleException;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 class JournalpostValidator {
+
+	private static final List<JournalStatusCode> MIDLERTIDIG_JOURNALSTATUS = Arrays.asList(M, MO, UB, D, R);
 
 	JournalpostValidator() {
 	}
@@ -43,7 +52,7 @@ class JournalpostValidator {
 	}
 
 	private void verifyMidlertidigJournalfoert(Journalpost jp) {
-		if (!jp.hasMidlertidigInngaaendeJournalforingStatus() || Boolean.TRUE.equals(jp.getSaksrelasjon() == null ? Boolean.FALSE : jp.getSaksrelasjon()
+		if (MIDLERTIDIG_JOURNALSTATUS.contains(jp.getJournalstatus()) || Boolean.TRUE.equals(jp.getSaksrelasjon() == null ? Boolean.FALSE : jp.getSaksrelasjon()
 				.getFeilregistrert())) {
 			throw new JournalpostIkkeMidlertidigException(String.format("Journalpost med journalpostId=%s er ikke midlertidig journalført", jp
 					.getJournalpostId()));
