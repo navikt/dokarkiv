@@ -15,7 +15,7 @@ import java.lang.annotation.Target;
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@ApiOperation("Ferdigstill journalpost")
+@ApiOperation("Oppdater journalpost")
 @ApiResponses(value = {
 		@ApiResponse(code = 200, message = "* OK"),
 		@ApiResponse(code = 400, message = "* Kan ikke oppdatere\n* Feil i aksjonslogg \n* Data kan ikke endres for statusen journalposten er på"),
