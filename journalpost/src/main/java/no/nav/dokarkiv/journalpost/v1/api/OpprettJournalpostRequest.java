@@ -23,7 +23,7 @@ public class OpprettJournalpostRequest {
 	private JournalpostType journalpostType;
 
 	@ApiModelProperty(
-			value = "",
+			value = "Avsender av forsendelsen",
 			required = false)
 	private AvsenderMottaker avsenderMottaker;
 
@@ -33,7 +33,8 @@ public class OpprettJournalpostRequest {
 	private Bruker bruker;
 
 	@ApiModelProperty(
-			value = "",
+			value = "Fagområdet som forsendelsen tilhører, for eksempel \"FOR\" for Foreldrepenger",
+			example = "FOR",
 			required = true)
 	private String tema;
 
@@ -43,12 +44,14 @@ public class OpprettJournalpostRequest {
 	private String behandlingstema;
 
 	@ApiModelProperty(
-			value = "",
+			value = "Tittel som beskriver forsendelsen samlet, feks \"Ettersendelse til søknad om foreldrepenger\".",
+			example = "Ettersendelse til søknad om foreldrepenger",
 			required = true)
 	private String tittel;
 
 	@ApiModelProperty(
-			value = "",
+			value = "Kanalen som ble brukt ved innsending eller distribusjon. F.eks. NAV_NO, ALTINN eller EESSI.",
+			example = "NAV_NO",
 			required = false)
 	private String kanal;
 
@@ -71,7 +74,7 @@ public class OpprettJournalpostRequest {
 	@Builder.Default
 	@ApiModelProperty(
 			value = "Første dokument blir tilknyttet som hoveddokument på journalposten. Øvrige dokumenter tilknyttes som vedlegg. Rekkefølgen på vedlegg beholdes ikke ved uthenting av journalpost.",
-			required = false)
+			required = true)
 	private List<Dokument> dokumenter = new ArrayList<>();
 
 }
