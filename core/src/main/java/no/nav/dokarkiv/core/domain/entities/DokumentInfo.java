@@ -355,7 +355,7 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	 */
 	public FilDetaljer findFilDetaljerByFilUuid(final String filUuid) {
 		FilDetaljer filDetaljer = fildetaljerListe.stream()
-				.filter(filDetalj -> filUuid.equals(filDetalj.getFilUuid()))
+				.filter(filDetalj -> filUuid.equals(filDetalj.getFilUuidAdmin()))
 				.findAny().orElse(null);
 
 		//Return SLADDET if ARKIV is skjermet

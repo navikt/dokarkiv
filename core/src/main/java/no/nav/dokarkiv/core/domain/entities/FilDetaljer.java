@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.core.domain.entities;
 
+import static no.nav.dokarkiv.core.domain.service.SkjermingService.FIL_UUID_DUMMY_DOKUMENT_KASSERT;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -27,6 +28,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -216,9 +218,16 @@ public class FilDetaljer extends AbstractPersistentVersionedDomainObjectWithKild
 	 * @return the filUuid
 	 */
 	public String getFilUuid() {
+		if (Objects.nonNull(skjermingType) && VariantFormatCode.ARKIV.equals(variantFormat)) {
+			return FIL_UUID_DUMMY_DOKUMENT_KASSERT;
+		}
+
 		return filUuid;
 	}
 
+	public String getFilUuidAdmin() {
+		return filUuid;
+	}
 	/**
 	 * Getter for the onDemandId property.
 	 *

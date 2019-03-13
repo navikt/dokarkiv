@@ -1,6 +1,6 @@
 package db.migration;
 
-import static no.nav.dokarkiv.core.repository.DokumentFilSkjermetRepository.FIL_UUID_DUMMY_DOKUMENT_KASSERT;
+import static no.nav.dokarkiv.core.domain.service.SkjermingService.FIL_UUID_DUMMY_DOKUMENT_KASSERT;
 import static org.apache.commons.lang3.BooleanUtils.isFalse;
 
 import org.flywaydb.core.api.migration.jdbc.JdbcMigration;
