@@ -1,17 +1,18 @@
 package no.nav.dokarkiv.journalpost.v1.itest;
 
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertThat;
 
+import no.nav.dokarkiv.core.consumer.RestConsumerExceptionResponse;
 import no.nav.dokarkiv.core.datautil.JournalpostTestDataProvider;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import no.nav.dokarkiv.core.exceptions.JournalpostIkkeMidlertidigException;
-import no.nav.dokarkiv.core.exceptions.KanIkkeFerdigstilleException;
 import no.nav.dokarkiv.journalpost.v1.api.FerdigstillJournalpostRequest;
 import org.apache.commons.collections15.IteratorUtils;
 import org.junit.Test;
@@ -149,8 +150,12 @@ public class FerdigstillJournalpostIT extends AbstractFerdigstillJournalpostIT {
 				.build();
 
 		HttpEntity requestEntity = new HttpEntity(request, createHeadersWithServiceUserToken());
-		ResponseEntity<JournalpostIkkeMidlertidigException> response = restTemplate.exchange(URL_FERDIGSTILLJOURNALPOST + journalpostId + FERDIGSTILL, HttpMethod.PATCH, requestEntity, JournalpostIkkeMidlertidigException.class);
+		ResponseEntity<RestConsumerExceptionResponse> response =
+				restTemplate.exchange(URL_FERDIGSTILLJOURNALPOST + journalpostId + FERDIGSTILL, HttpMethod.PATCH,
+						requestEntity, RestConsumerExceptionResponse.class);
 		assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+		assertNotNull(response.getBody().getMessage());
+		assertEquals(String.format("Journalpost med journalpostId=%s er ikke midlertidig journalført", journalpostId), response.getBody().getMessage());
 	}
 
 	@Test
@@ -175,6 +180,30 @@ public class FerdigstillJournalpostIT extends AbstractFerdigstillJournalpostIT {
 	}
 
 	@Test
+	public void shouldFailIfJournalfEnhetInRequestIsInvalid() throws IOException {
+		abacPermit();
+
+		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.U, JournalStatusCode.FS).build();
+		joarkRepository.save(journalpost);
+
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
+
+		Long journalpostId = journalpost.getJournalpostId();
+		FerdigstillJournalpostRequest request = FerdigstillJournalpostRequest.builder()
+				.journalfEnhet("abc")
+				.build();
+
+		HttpEntity requestEntity = new HttpEntity("{ \"journalFEnhet\": \"9999\" }", createHeadersWithUserAndServiceUserToken());
+		ResponseEntity<String> response =
+				restTemplate.exchange(URL_FERDIGSTILLJOURNALPOST + journalpostId + FERDIGSTILL, HttpMethod.PATCH,
+						requestEntity, String.class);
+
+		assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+		assertThat(response.getBody(), containsString("JSON parse error: Unrecognized field \\\"journalFEnhet\\\" "));
+	}
+
+	@Test
 	public void shouldFailIfRequestJournalpostIdIsInvalid() throws IOException {
 		abacPermit();
 
@@ -190,7 +219,9 @@ public class FerdigstillJournalpostIT extends AbstractFerdigstillJournalpostIT {
 				.build();
 
 		HttpEntity requestEntity = new HttpEntity(request, createHeadersWithServiceUserToken());
-		ResponseEntity<String> response = restTemplate.exchange(URL_FERDIGSTILLJOURNALPOST + journalpostId + FERDIGSTILL, HttpMethod.PATCH, requestEntity, String.class);
+		ResponseEntity<String> response =
+				restTemplate.exchange(URL_FERDIGSTILLJOURNALPOST + journalpostId + FERDIGSTILL, HttpMethod.PATCH,
+						requestEntity, String.class);
 
 		assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
 	}
@@ -213,7 +244,9 @@ public class FerdigstillJournalpostIT extends AbstractFerdigstillJournalpostIT {
 				.build();
 
 		HttpEntity requestEntity = new HttpEntity(request, createHeadersWithServiceUserToken());
-		ResponseEntity<KanIkkeFerdigstilleException> response = restTemplate.exchange(URL_FERDIGSTILLJOURNALPOST + journalpostId + FERDIGSTILL, HttpMethod.PATCH, requestEntity, KanIkkeFerdigstilleException.class);
+		ResponseEntity<RestConsumerExceptionResponse> response =
+				restTemplate.exchange(URL_FERDIGSTILLJOURNALPOST + journalpostId + FERDIGSTILL, HttpMethod.PATCH,
+						requestEntity, RestConsumerExceptionResponse.class);
 
 		assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
 		assertNotNull(response.getBody());
