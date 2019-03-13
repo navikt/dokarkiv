@@ -15,6 +15,7 @@ import no.nav.dokarkiv.core.security.abac.AbacSecurityService;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import no.nav.dokarkiv.journalpost.v1.api.OpprettJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.rjoark202.OpprettJournalpostService;
+import no.nav.dokarkiv.journalpost.v1.rjoark202.util.OpprettJournalpostRequestValidator;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerOpprettJournalpost;
 import no.nav.freg.abac.core.annotation.Abac;
 import org.slf4j.MDC;
@@ -36,12 +37,14 @@ public class OpprettJournalpostRestController {
 
 	private final AbacSecurityService abacSecurityService;
 	private final OpprettJournalpostService service;
+	private final OpprettJournalpostRequestValidator requestValidator;
 
 	@Inject
 	public OpprettJournalpostRestController(final AbacSecurityService abacSecurityService,
 											final OpprettJournalpostService opprettJournalpostService) {
 		this.abacSecurityService = abacSecurityService;
 		this.service = opprettJournalpostService;
+		this.requestValidator = new OpprettJournalpostRequestValidator();
 	}
 
 	@Transactional
@@ -57,7 +60,7 @@ public class OpprettJournalpostRestController {
 
 		// tilgangsstyring abac
 
-		// validate request
+		requestValidator.validateRequest(request);
 
 		Long journalpostId = service.opprettJournalpost(request);
 		log.info(MDC.get(MDC_REQUEST_ID) + " har opprettet ny journalpost med journalpostId={}", journalpostId);

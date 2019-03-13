@@ -1,5 +1,8 @@
 package no.nav.dokarkiv.journalpost.v1.rjoark202.util;
 
+import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.HOVEDDOKUMENT;
+import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.VEDLEGG;
+
 import no.nav.dokarkiv.core.domain.codes.Behandlingstema;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
@@ -47,9 +50,9 @@ public class JournalpostMapper {
 				.kanalReferanseId(request.getEksternReferanseId())
 				.build();
 
-		mapSaksrelasjon(journalpost, request);
-
+		addSaksrelasjon(journalpost, request);
 		addBruker(journalpost, request);
+
 		addJournalpostDokumentInfoRelasjon(journalpost, request);
 
 		return journalpost;
@@ -91,7 +94,7 @@ public class JournalpostMapper {
 		return null;
 	}
 
-	private void mapSaksrelasjon(Journalpost journalpost, OpprettJournalpostRequest request) {
+	private void addSaksrelasjon(Journalpost journalpost, OpprettJournalpostRequest request) {
 		if (request.getSak() != null) {
 			journalpost.setSaksrelasjon(Saksrelasjon.builder()
 					.sakId(request.getSak().getArkivsaksnummer())
@@ -112,15 +115,15 @@ public class JournalpostMapper {
 
 	private void addJournalpostDokumentInfoRelasjon(Journalpost jp, OpprettJournalpostRequest request) {
 		if (!request.getDokumenter().isEmpty()) {
-			addJournalpostDokumentInfoRelasjon(jp, request.getDokumenter().get(0), TilknyttetJournalpostSomCode.HOVEDDOKUMENT);
+			createJournalpostDokumentInfoRelasjon(jp, request.getDokumenter().get(0), HOVEDDOKUMENT);
 
 			if (request.getDokumenter().size() > 1) {
-				request.getDokumenter().stream().skip(1).forEach(dokument -> addJournalpostDokumentInfoRelasjon(jp, dokument, TilknyttetJournalpostSomCode.VEDLEGG));
+				request.getDokumenter().stream().skip(1).forEach(dokument -> createJournalpostDokumentInfoRelasjon(jp, dokument, VEDLEGG));
 			}
 		}
 	}
 
-	private void addJournalpostDokumentInfoRelasjon(Journalpost jp, Dokument dokument, TilknyttetJournalpostSomCode tilknyttetJournalpostSomCode) {
+	private void createJournalpostDokumentInfoRelasjon(Journalpost jp, Dokument dokument, TilknyttetJournalpostSomCode tilknyttetJournalpostSomCode) {
 		DokumentInfo dokumentInfo = DokumentInfo.builder()
 				.kategori(DokumentKategoriCode.valueOf(dokument.getDokumentKategori()))
 				.tittel(dokument.getTittel())
@@ -133,6 +136,7 @@ public class JournalpostMapper {
 						.filtype(mapFilType(dokumentVariant.getFiltype()))
 						.variantFormat(mapVariantFormat(dokumentVariant.getVariantformat()))
 						.filUuid(UUID.randomUUID().toString())
+						.fileContent(dokumentVariant.getFysiskDokument())
 						.dokumentInfo(dokumentInfo)
 						.build()
 				));
