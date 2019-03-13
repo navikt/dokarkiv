@@ -7,6 +7,8 @@ import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalp
 import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
@@ -15,7 +17,7 @@ import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentFil;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import no.nav.dokarkiv.core.repository.DokumentFilRepository;
+import no.nav.dokarkiv.core.repository.DokumentFilSkjermetRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import no.nav.dokarkiv.dokumentproduksjoninfo.exceptions.FilDetaljerNotFoundException;
 import org.junit.Before;
@@ -60,7 +62,7 @@ public class HentFerdigstilteDokumenterServiceTest {
 	private JoarkRepositorySkjermet joarkRepository;
 
 	@Mock
-	private DokumentFilRepository dokumentFilRepository;
+	private DokumentFilSkjermetRepository dokumentFilRepository;
 
 	@Mock
 	private HentFerdigstilteDokumenterValidator hentFerdigstilteRokumenterValidator;

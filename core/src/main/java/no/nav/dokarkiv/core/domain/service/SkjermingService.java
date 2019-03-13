@@ -12,7 +12,6 @@ import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
-import org.aspectj.weaver.ast.Var;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,8 +29,6 @@ import java.util.Optional;
 @Transactional
 @Component
 public class SkjermingService {
-
-	public static final String FIL_UUID_DUMMY_DOKUMENT_KASSERT = "DUMMY_DOKUMENT_KASSERT";
 
 	private JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository;
 	private JoarkRepository joarkRepository;
@@ -88,17 +85,6 @@ public class SkjermingService {
 		if (dokumentInfo.isPresent()) {
 			FilDetaljer filDetaljer = dokumentInfo.get().findFilDetaljerByVariantFormatAdmin(variant);
 			if (Objects.nonNull(filDetaljer) && Objects.nonNull(filDetaljer.getSkjermingType())) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	public boolean isVariantSkjermet(Long dokumentInfoId, String filuuid, VariantFormatCode variant){
-		Optional<DokumentInfo> dokumentInfo = dokumentinfoRepository.findByDokumentInfoId(dokumentInfoId);
-		if (dokumentInfo.isPresent()) {
-			FilDetaljer filDetaljer = dokumentInfo.get().findFilDetaljerByFilUuid(filuuid);
-			if (Objects.nonNull(filDetaljer) && filDetaljer.getVariantFormat()==variant && Objects.nonNull(filDetaljer.getSkjermingType())) {
 				return true;
 			}
 		}

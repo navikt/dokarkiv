@@ -5,7 +5,8 @@ import no.nav.dokarkiv.core.domain.entities.DokumentFil;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import no.nav.dokarkiv.core.repository.DokumentFilRepository;
+import no.nav.dokarkiv.core.domain.service.SkjermingService;
+import no.nav.dokarkiv.core.repository.DokumentFilSkjermetRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import no.nav.dokarkiv.dokumentproduksjoninfo.exceptions.DokumentInfoNotFoundException;
 import no.nav.dokarkiv.dokumentproduksjoninfo.exceptions.FilDetaljerNotFoundException;
@@ -33,10 +34,13 @@ public class HentFerdigstilteDokumenterService {
 	private JoarkRepositorySkjermet joarkRepository;
 
 	@Inject
-	private DokumentFilRepository dokumentFilRepository;
+	private DokumentFilSkjermetRepository dokumentFilRepository;
 	
 	@Inject
 	private HentFerdigstilteDokumenterValidator hentFerdigstilteRokumenterValidator;
+
+	@Inject
+	private SkjermingService skjermingService;
 
 	/**
 	 * 
