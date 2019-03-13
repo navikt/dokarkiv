@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.hentjournalsakinfo.rjoark920i;
+package no.nav.dokarkiv.hentjournalsakinfo.rjoark920;
 
 import static no.nav.dokarkiv.core.domain.builder.DokumentFilBuilder.getDokumentFilBuilder;
 import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalpostBuilder;
