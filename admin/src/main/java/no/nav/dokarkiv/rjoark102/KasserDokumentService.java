@@ -60,7 +60,7 @@ public class KasserDokumentService {
 				.getFildetaljerListeAdmin()));
 
 		FilDetaljer arkiv = dokumentInfoTilTidligKassering.findFilDetaljerByVariantFormatAdmin(ARKIV);
-		arkivElementEndringTOList.addAll(slettArkivVariantDokumentFilOgErstattMedDummy(request.getDokumentInfoId(), arkiv.getFilUuidAdmin(),
+		arkivElementEndringTOList.addAll(slettArkivVariantDokumentFilOgErstattMedDummy(request.getDokumentInfoId(), arkiv.getFilUuid(),
 				Objects.nonNull(arkiv.getSkjermingType())));
 
 		return arkivElementEndringTOList;
@@ -72,7 +72,7 @@ public class KasserDokumentService {
 				.stream()
 				.filter(filDetaljer -> filDetaljer.getVariantFormat() != ARKIV)
 				.forEach(filDetaljer -> {
-					slettDokumentFil(dokumentInfoId, filDetaljer.getVariantFormat(), filDetaljer.getFilUuidAdmin());
+					slettDokumentFil(dokumentInfoId, filDetaljer.getVariantFormat(), filDetaljer.getFilUuid());
 					arkivElementEndringTOList.add(slettFildetaljer(dokumentInfoId, filDetaljer.getVariantFormat()));
 				});
 

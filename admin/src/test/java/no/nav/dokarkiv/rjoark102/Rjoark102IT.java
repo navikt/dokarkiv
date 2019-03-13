@@ -3,7 +3,6 @@ package no.nav.dokarkiv.rjoark102;
 
 import static no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode.POL;
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.ARKIV;
-import static no.nav.dokarkiv.core.domain.service.SkjermingService.FIL_UUID_DUMMY_DOKUMENT_KASSERT;
 import static no.nav.dokarkiv.util.TestUtil.FIL_UUID_ARKIV;
 import static no.nav.dokarkiv.util.TestUtil.KASSERT_AV_NAVN;
 import static no.nav.dokarkiv.util.TestUtil.createKasserDokumentRequest;
@@ -103,8 +102,8 @@ public class Rjoark102IT extends AbstractAdminIT {
 		assertThat(dokumentInfoAfter.get().getKassertAvNavn(), is(KASSERT_AV_NAVN));
 		assertThat(Duration.between(dokumentInfoAfter.get().getDatoKassert(), LocalDateTime.now()).toMillis(), lessThan(10000L));
 		assertThat(dokumentInfoAfter.get().getFildetaljerListe().size(), is(1));
-		assertThat(dokumentInfoAfter.get().getFildetaljerListe().iterator().next().getFilUuidAdmin(), is(FIL_UUID_ARKIV));
-		assertThat(dokumentInfoAfter.get().getFildetaljerListe().iterator().next().getFilUuid(), is(FIL_UUID_DUMMY_DOKUMENT_KASSERT));
+		assertThat(dokumentInfoAfter.get().getFildetaljerListe().iterator().next().getFilUuid(), is(FIL_UUID_ARKIV));
+//		assertThat(dokumentInfoAfter.get().getFildetaljerListe().iterator().next().getFilUuid(), is(FIL_UUID_DUMMY_DOKUMENT_KASSERT));
 		assertThat(dokumentInfoAfter.get().getFildetaljerListe().iterator().next().getVariantFormat(), is(ARKIV));
 		assertThat(dokumentInfoAfter.get().getFildetaljerListe().iterator().next().getSkjermingType(), is(POL));
 
@@ -205,8 +204,8 @@ public class Rjoark102IT extends AbstractAdminIT {
 		assertThat(dokumentInfoAfter.get().getKassertAvNavn(), is(KASSERT_AV_NAVN));
 		assertThat(Duration.between(dokumentInfoAfter.get().getDatoKassert(), LocalDateTime.now()).toMillis(), lessThan(10000L));
 		assertThat(dokumentInfoAfter.get().getFildetaljerListe().size(), is(1));
-		assertThat(dokumentInfoAfter.get().getFildetaljerListe().iterator().next().getFilUuidAdmin(), is(FIL_UUID_ARKIV));
-		assertThat(dokumentInfoAfter.get().getFildetaljerListe().iterator().next().getFilUuid(), is(FIL_UUID_DUMMY_DOKUMENT_KASSERT));
+		assertThat(dokumentInfoAfter.get().getFildetaljerListe().iterator().next().getFilUuid(), is(FIL_UUID_ARKIV));
+//		assertThat(dokumentInfoAfter.get().getFildetaljerListe().iterator().next().getFilUuid(), is(FIL_UUID_DUMMY_DOKUMENT_KASSERT));
 		assertThat(dokumentInfoAfter.get().getFildetaljerListe().iterator().next().getVariantFormat(), is(ARKIV));
 		assertThat(dokumentInfoAfter.get().getFildetaljerListe().iterator().next().getSkjermingType(), is(POL));
 
@@ -299,8 +298,8 @@ public class Rjoark102IT extends AbstractAdminIT {
 		assertThat(dokumentInfoAfter.get().getKassertAvNavn(), is(KASSERT_AV_NAVN));
 		assertNotNull(dokumentInfoAfter.get().getDatoKassert());
 		assertThat(dokumentInfoAfter.get().getFildetaljerListe().size(), is(1));
-		assertThat(dokumentInfoAfter.get().getFildetaljerListe().iterator().next().getFilUuidAdmin(), is(FIL_UUID_ARKIV));
-		assertThat(dokumentInfoAfter.get().getFildetaljerListe().iterator().next().getFilUuid(), is(FIL_UUID_DUMMY_DOKUMENT_KASSERT));
+		assertThat(dokumentInfoAfter.get().getFildetaljerListe().iterator().next().getFilUuid(), is(FIL_UUID_ARKIV));
+//		assertThat(dokumentInfoAfter.get().getFildetaljerListe().iterator().next().getFilUuid(), is(FIL_UUID_DUMMY_DOKUMENT_KASSERT));
 		assertThat(dokumentInfoAfter.get().getFildetaljerListe().iterator().next().getVariantFormat(), is(ARKIV));
 		assertThat(dokumentInfoAfter.get().getFildetaljerListe().iterator().next().getSkjermingType(), is(POL));
 
