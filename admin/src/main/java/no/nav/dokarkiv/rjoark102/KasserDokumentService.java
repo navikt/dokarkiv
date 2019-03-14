@@ -103,9 +103,10 @@ public class KasserDokumentService {
 	}
 
 	private ArkivElementEndringTO fjernSkjermingFraFildetaljer(Long dokumentInfoId, String filUuid, VariantFormatCode variantFormatCode) {
-		entityManager.createQuery("update FilDetaljer set skjermingType=null where filUuid=:filUuid and dokumentInfo.dokumentInfoId=:dokumentInfoId")
+		entityManager.createQuery("update FilDetaljer set skjermingType=null where filUuid=:filUuid and dokumentInfo.dokumentInfoId=:dokumentInfoId and variantFormat=:variantFormat")
 				.setParameter("dokumentInfoId", dokumentInfoId)
 				.setParameter("filUuid", filUuid)
+				.setParameter("variantFormat", variantFormatCode)
 				.executeUpdate();
 		entityManager.flush();
 		entityManager.clear();
