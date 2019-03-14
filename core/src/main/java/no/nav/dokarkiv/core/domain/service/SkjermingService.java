@@ -1,5 +1,7 @@
 package no.nav.dokarkiv.core.domain.service;
 
+import static org.apache.commons.lang3.BooleanUtils.isFalse;
+
 import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
@@ -59,6 +61,14 @@ public class SkjermingService {
 		}
 
 		return false;
+	}
+
+	public boolean isKassertOrSkjermetByFilUuidAndVariantFormat(String filUuid, VariantFormatCode variantFormatCode) {
+		return isFalse(entityManager.createQuery("select 'kassert' from FilDetaljer where filUuid=:filUuid and variantFormat=:variantFormat and dokumentInfo.datoKassert is not null or skjermingType is not null")
+				.setParameter("filUuid", filUuid)
+				.setParameter("variantFormat", variantFormatCode)
+				.getResultList()
+				.isEmpty());
 	}
 
 	public boolean isJournalpostSkjermet(Journalpost journalpost) {
@@ -138,12 +148,16 @@ public class SkjermingService {
 	}
 
 	public void setFildetaljerSkjerming(FilDetaljer filDetaljer, SkjermingTypeCode skjermingTypeCode) {
-		Query q = entityManager.createQuery("update FilDetaljer set skjermingType = :skjermingTypeCode where fildetaljerId = :filDetaljerId").setParameter("filDetaljerId", filDetaljer.getFildetaljerId()).setParameter("skjermingTypeCode", skjermingTypeCode);
+		Query q = entityManager.createQuery("update FilDetaljer set skjermingType = :skjermingTypeCode where fildetaljerId = :filDetaljerId")
+				.setParameter("filDetaljerId", filDetaljer.getFildetaljerId())
+				.setParameter("skjermingTypeCode", skjermingTypeCode);
 		q.executeUpdate();
 	}
 
 	public void setJpDokInfoRelSkjerming(JournalpostDokumentInfoRelasjon rel, SkjermingTypeCode skjermingTypeCode) {
-		Query q = entityManager.createQuery("update JournalpostDokumentInfoRelasjon set skjermingType = :skjermingTypeCode where journalpostDokumentInfoRelasjonId = :relId").setParameter("relId", rel.getJournalpostDokumentInfoRelasjonId()).setParameter("skjermingTypeCode", skjermingTypeCode);
+		Query q = entityManager.createQuery("update JournalpostDokumentInfoRelasjon set skjermingType = :skjermingTypeCode where journalpostDokumentInfoRelasjonId = :relId")
+				.setParameter("relId", rel.getJournalpostDokumentInfoRelasjonId())
+				.setParameter("skjermingTypeCode", skjermingTypeCode);
 		q.executeUpdate();
 	}
 

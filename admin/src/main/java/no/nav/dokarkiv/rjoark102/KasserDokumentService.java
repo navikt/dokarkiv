@@ -60,8 +60,7 @@ public class KasserDokumentService {
 				.getFildetaljerListeAdmin()));
 
 		FilDetaljer arkiv = dokumentInfoTilTidligKassering.findFilDetaljerByVariantFormatAdmin(ARKIV);
-		arkivElementEndringTOList.addAll(slettArkivVariantDokumentFilOgErstattMedDummy(request.getDokumentInfoId(), arkiv.getFilUuid(),
-				Objects.nonNull(arkiv.getSkjermingType())));
+		arkivElementEndringTOList.addAll(slettArkivVariantDokumentFilOgErstattMedDummy(request.getDokumentInfoId(), arkiv.getFilUuid()));
 
 		return arkivElementEndringTOList;
 	}
@@ -79,13 +78,10 @@ public class KasserDokumentService {
 		return arkivElementEndringTOList;
 	}
 
-	private List<ArkivElementEndringTO> slettArkivVariantDokumentFilOgErstattMedDummy(Long dokumentInfoId, String oldFilUuid, boolean isSkjermet) {
+	private List<ArkivElementEndringTO> slettArkivVariantDokumentFilOgErstattMedDummy(Long dokumentInfoId, String oldFilUuid) {
 		List<ArkivElementEndringTO> arkivElementEndringTOList = new ArrayList<>();
 		arkivElementEndringTOList.add(slettDokumentFil(dokumentInfoId, ARKIV, oldFilUuid));
-		if (isFalse(isSkjermet)) {
-			arkivElementEndringTOList.add(leggTilSkjermingFildetaljer(dokumentInfoId, oldFilUuid, ARKIV));
-		}
-//		arkivElementEndringTOList.add(fjernSkjermingFraFildetaljer(dokumentInfoId, oldFilUuid, ARKIV));
+		arkivElementEndringTOList.add(fjernSkjermingFraFildetaljer(dokumentInfoId, oldFilUuid, ARKIV));
 //		arkivElementEndringTOList.add(oppdaterFildetaljerFilUuid(dokumentInfoId, oldFilUuid, FIL_UUID_DUMMY_DOKUMENT_KASSERT));
 		return arkivElementEndringTOList;
 	}
@@ -103,21 +99,6 @@ public class KasserDokumentService {
 				.arkivElement(FILDETALJER_FIL_UUID)
 				.fraVerdi(oldFilUuid)
 				.tilVerdi(newFilUuid)
-				.build();
-	}
-
-	private ArkivElementEndringTO leggTilSkjermingFildetaljer(Long dokumentInfoId, String filUuid, VariantFormatCode variantFormatCode) {
-		entityManager.createQuery("update FilDetaljer set skjermingType=:skjermingType where filUuid=:filUuid and dokumentInfo.dokumentInfoId=:dokumentInfoId")
-				.setParameter("dokumentInfoId", dokumentInfoId)
-				.setParameter("filUuid", filUuid)
-				.setParameter("skjermingType", POL)
-				.executeUpdate();
-		entityManager.flush();
-		entityManager.clear();
-		return ArkivElementEndringTO.builder()
-				.arkivElement(String.format(FILDETALJER_SKJERMING_TYPE_VARIANT, variantFormatCode))
-				.tilVerdi(POL.name())
-				.fraVerdi(null)
 				.build();
 	}
 

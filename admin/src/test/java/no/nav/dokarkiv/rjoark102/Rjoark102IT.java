@@ -105,7 +105,7 @@ public class Rjoark102IT extends AbstractAdminIT {
 		assertThat(dokumentInfoAfter.get().getFildetaljerListe().iterator().next().getFilUuid(), is(FIL_UUID_ARKIV));
 //		assertThat(dokumentInfoAfter.get().getFildetaljerListe().iterator().next().getFilUuid(), is(FIL_UUID_DUMMY_DOKUMENT_KASSERT));
 		assertThat(dokumentInfoAfter.get().getFildetaljerListe().iterator().next().getVariantFormat(), is(ARKIV));
-		assertThat(dokumentInfoAfter.get().getFildetaljerListe().iterator().next().getSkjermingType(), is(POL));
+		assertThat(dokumentInfoAfter.get().getFildetaljerListe().iterator().next().getSkjermingType(), nullValue());
 
 		assertThat("Feil antall journalposter etter kall", joarkRepository.count(), is(2L));
 		assertThat("Feil antall dokumenter etter kall", dokumentinfoRepository.count(), is(2L));
@@ -121,18 +121,18 @@ public class Rjoark102IT extends AbstractAdminIT {
 		assertThat(aksjonsLogg.getJournalpostId(), nullValue());
 		assertThat(aksjonsLogg.getDokumentInfoId(), is(dokumentInfo1.getDokumentInfoId()));
 		assertThat(aksjonsLogg.getApplikasjon(), is(SERVICE_USER_ID));
-		assertThat(aksjonsLogg.getArkivElementEndringer().size(), is(4));
+		assertThat(aksjonsLogg.getArkivElementEndringer().size(), is(5));
 
 		List<ArkivElementEndring> arkivElementEndringList = IteratorUtils.toList(aksjonsLogg.getArkivElementEndringer()
 				.iterator());
 		assertThat(arkivElementEndringList.stream()
 				.map(ArkivElementEndring::toStringElementFraTil)
 				.collect(Collectors.toList()), hasItems(
-//				ArkivElementEndring.builder()
-//						.arkivElement("Fildetaljer.variantFormat[ARKIV].skjermingType")
-//						.fraVerdi("POL")
-//						.tilVerdi(null)
-//						.build().toStringElementFraTil(),
+				ArkivElementEndring.builder()
+						.arkivElement("Fildetaljer.variantFormat[ARKIV].skjermingType")
+						.fraVerdi("POL")
+						.tilVerdi(null)
+						.build().toStringElementFraTil(),
 				ArkivElementEndring.builder()
 						.arkivElement("FilDetaljer.variantFormat")
 						.fraVerdi("SLADDET")
@@ -162,102 +162,6 @@ public class Rjoark102IT extends AbstractAdminIT {
 		));
 	}
 
-	@Test
-	public void skallKassereDokumentDokmumentKnyttetFlereJournalposterOgLeggetTilSkjermingPåArkivVariant() throws IOException {
-		abacPermit();
-
-		Journalpost journalpost1 = joarkRepository.save(opprettHoveddokumentForIT());
-		Journalpost journalpost2 = opprettHoveddokumentForIT();
-		DokumentInfo dokumentInfo1 = journalpost1.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
-		knyttDokumentInfoSomVedleggTilJournalpost(dokumentInfo1, journalpost2);
-		joarkRepository.save(journalpost2);
-		skjermingService.skjermAllFildetaljer(dokumentInfo1, POL);
-		skjermingService.opphevSkjermFildetaljerByVariant(dokumentInfo1.getDokumentInfoId(), ARKIV);
-		TestTransaction.flagForCommit();
-		TestTransaction.end();
-		TestTransaction.start();
-
-		Optional<DokumentInfo> dokumentInfoBefore = dokumentinfoRepository.findByDokumentInfoId(dokumentInfo1.getDokumentInfoId());
-		assertTrue(dokumentInfoBefore.isPresent());
-		assertThat(dokumentInfoBefore.get().getFildetaljerListeAdmin().size(), is(2));
-		assertThat("Feil antall journalposter", joarkRepository.count(), is(2L));
-		assertThat("Feil antall dokumenter", dokumentinfoRepository.count(), is(2L));
-		assertTrue(dokumentInfo1.isRelatedToMultipleJournalposts());
-
-		ResponseEntity<KasserDokumentResponse> responseEntity = restTemplate.exchange(
-				URL_KASSERDOKUMENT,
-				HttpMethod.DELETE,
-				new HttpEntity<>(createKasserDokumentRequest(dokumentInfoBefore.get()
-						.getDokumentInfoId()), createHeadersWithAksjon()),
-				KasserDokumentResponse.class);
-
-		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
-
-		TestTransaction.flagForCommit();
-		TestTransaction.end();
-
-		TestTransaction.start();
-
-
-		Optional<DokumentInfo> dokumentInfoAfter = dokumentinfoRepository.findByDokumentInfoId(dokumentInfo1.getDokumentInfoId());
-		assertTrue(dokumentInfoAfter.isPresent());
-		assertThat(dokumentInfoAfter.get().getKassertAvNavn(), is(KASSERT_AV_NAVN));
-		assertThat(Duration.between(dokumentInfoAfter.get().getDatoKassert(), LocalDateTime.now()).toMillis(), lessThan(10000L));
-		assertThat(dokumentInfoAfter.get().getFildetaljerListe().size(), is(1));
-		assertThat(dokumentInfoAfter.get().getFildetaljerListe().iterator().next().getFilUuid(), is(FIL_UUID_ARKIV));
-//		assertThat(dokumentInfoAfter.get().getFildetaljerListe().iterator().next().getFilUuid(), is(FIL_UUID_DUMMY_DOKUMENT_KASSERT));
-		assertThat(dokumentInfoAfter.get().getFildetaljerListe().iterator().next().getVariantFormat(), is(ARKIV));
-		assertThat(dokumentInfoAfter.get().getFildetaljerListe().iterator().next().getSkjermingType(), is(POL));
-
-		assertThat("Feil antall journalposter etter kall", joarkRepository.count(), is(2L));
-		assertThat("Feil antall dokumenter etter kall", dokumentinfoRepository.count(), is(2L));
-
-		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
-		assertThat(aksjonsLoggList.size(), is(1));
-
-		AksjonsLogg aksjonsLogg = aksjonsLoggList.get(0);
-		assertThat(aksjonsLogg.getAksjon(), is(AksjonsTypeCode.KASSASJON));
-		assertThat(aksjonsLogg.getUtfoertAv(), is(TestDataUtils.AKSJON_UTFOERT_AV));
-		assertThat(aksjonsLogg.getHjemmel(), is(TestDataUtils.AKSJON_HJEMMEL));
-		assertThat(aksjonsLogg.getMelding(), is(TestDataUtils.AKSJON_MELDING));
-		assertThat(aksjonsLogg.getJournalpostId(), nullValue());
-		assertThat(aksjonsLogg.getDokumentInfoId(), is(dokumentInfo1.getDokumentInfoId()));
-		assertThat(aksjonsLogg.getApplikasjon(), is(SERVICE_USER_ID));
-		assertThat(aksjonsLogg.getArkivElementEndringer().size(), is(5));
-
-		List<ArkivElementEndring> arkivElementEndringList = IteratorUtils.toList(aksjonsLogg.getArkivElementEndringer()
-				.iterator());
-		assertThat(arkivElementEndringList.stream()
-				.map(ArkivElementEndring::toStringElementFraTil)
-				.collect(Collectors.toList()), hasItems(
-				ArkivElementEndring.builder()
-						.arkivElement("Fildetaljer.variantFormat[ARKIV].skjermingType")
-						.tilVerdi("POL")
-						.fraVerdi(null)
-						.build().toStringElementFraTil(),
-				ArkivElementEndring.builder()
-						.arkivElement("FilDetaljer.variantFormat")
-						.fraVerdi("SLADDET")
-						.tilVerdi(null)
-						.build().toStringElementFraTil(),
-				ArkivElementEndring.builder()
-						.arkivElement("DokumentFil.filUuid")
-						.fraVerdi(FIL_UUID_ARKIV)
-						.tilVerdi(null)
-						.build().toStringElementFraTil(),
-				ArkivElementEndring.builder()
-						.arkivElement("DokumentInfo.kassertAv")
-						.fraVerdi(null)
-						.tilVerdi(KASSERT_AV_NAVN)
-						.build().toStringElementFraTil(),
-				ArkivElementEndring.builder()
-						.arkivElement("DokumentInfo.kassertDato")
-						.fraVerdi(null)
-						.tilVerdi(dokumentInfoAfter.get().getDatoKassert().format(DateTimeFormatter.ISO_DATE_TIME))
-						.build().toStringElementFraTil()
-
-		));
-	}
 
 	@Test
 	public void skalKassereDokumentMedDokumentKnyttetEnJournalpost() throws IOException {
@@ -301,7 +205,7 @@ public class Rjoark102IT extends AbstractAdminIT {
 		assertThat(dokumentInfoAfter.get().getFildetaljerListe().iterator().next().getFilUuid(), is(FIL_UUID_ARKIV));
 //		assertThat(dokumentInfoAfter.get().getFildetaljerListe().iterator().next().getFilUuid(), is(FIL_UUID_DUMMY_DOKUMENT_KASSERT));
 		assertThat(dokumentInfoAfter.get().getFildetaljerListe().iterator().next().getVariantFormat(), is(ARKIV));
-		assertThat(dokumentInfoAfter.get().getFildetaljerListe().iterator().next().getSkjermingType(), is(POL));
+		assertThat(dokumentInfoAfter.get().getFildetaljerListe().iterator().next().getSkjermingType(), nullValue());
 
 		assertThat("Feil antall journalposter etter kall", joarkRepository.count(), is(1L));
 		assertThat("Feil antall dokumenter etter kall", dokumentinfoRepository.count(), is(1L));
