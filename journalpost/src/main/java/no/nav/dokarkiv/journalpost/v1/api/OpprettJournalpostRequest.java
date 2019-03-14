@@ -56,6 +56,13 @@ public class OpprettJournalpostRequest {
 	private String kanal;
 
 	@ApiModelProperty(
+			value = "NAV-enheten som har journalført, eventuelt skal journalføre, forsendelsen.\n" +
+					"Ved automatisk journalføring uten mennesker involvert skal enhet settes til \"9999\".",
+			example = "9999",
+			required = false)
+	private String journalfoerendeEnhet;
+
+	@ApiModelProperty(
 			value = "",
 			required = false)
 	private String eksternReferanseId;
