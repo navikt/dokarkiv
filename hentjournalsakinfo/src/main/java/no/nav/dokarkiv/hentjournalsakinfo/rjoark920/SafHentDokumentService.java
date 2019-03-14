@@ -9,27 +9,39 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class SafHentDokumentService {
 
-	private final HentDokumentRepository hentDokumentRepository;
+	private final SafHentDokumentRepository safHentDokumentRepository;
+	private final SafHentDokumentOndemandRepository safHentDokumentOndemandRepository;
 
-	public SafHentDokumentService(HentDokumentRepository hentDokumentRepository) {
-		this.hentDokumentRepository = hentDokumentRepository;
+	public SafHentDokumentService(SafHentDokumentRepository safHentDokumentRepository,
+								  SafHentDokumentOndemandRepository safHentDokumentOndemandRepository) {
+		this.safHentDokumentRepository = safHentDokumentRepository;
+		this.safHentDokumentOndemandRepository = safHentDokumentOndemandRepository;
 	}
 
 	public SafHentDokumentResponse hentDokumentByDokumentinfoIdAndVariant(Long dokumentinfoId, VariantFormatCode variant) {
-		SafHentDokumentDto safHentDokumentDto = new SafHentDokumentDto(null, null);
+		return hentDokumentFromJoark(dokumentinfoId, variant);
+	}
+
+	private SafHentDokumentResponse hentDokumentFromJoark(Long dokumentinfoId, VariantFormatCode variant) {
 		try {
-			safHentDokumentDto = hentDokumentRepository.queryForDokumentAndDokumenttype(dokumentinfoId, variant);
+			JoarkDokumentDto joarkDokumentDto = safHentDokumentRepository.hentDokumentFromJoark(dokumentinfoId, variant);
+			if(joarkDokumentDto.isNormalDocument()) {
+				return SafHentDokumentResponse.builder()
+						.dokument(joarkDokumentDto.getDokument())
+						.filtype(joarkDokumentDto.getFiltype())
+						.build();
+			} else if(joarkDokumentDto.isOndemandDocument()) {
+				byte[] ondemandDokument = safHentDokumentOndemandRepository.hentDokumentFromOndemand(joarkDokumentDto);
+				return SafHentDokumentResponse.builder()
+						.dokument(ondemandDokument)
+						.filtype(joarkDokumentDto.getFiltype())
+						.build();
+			} else {
+				throw new DocumentNotFoundException("Fysisk dokument med dokumentinfoId=" + dokumentinfoId + " og variant=" + variant + " ikke funnet i Joark eller OnDemand.");
+			}
 		} catch (Exception e) {
-			log.warn("Dokument med dokumentinfoId={}, variant={} ikke funnet.", dokumentinfoId, variant);
-			throw new DocumentNotFoundException("Dokument med dokumentinfoId=" + dokumentinfoId.toString() + " og  variant=" + variant.toString() + " ikke funnet.", e);
+			throw new DocumentNotFoundException("FilDetaljer med dokumentinfoId=" + dokumentinfoId + " og variant=" + variant + " ikke funnet.", e);
 		}
-
-		return SafHentDokumentResponse.builder()
-				.dokument(safHentDokumentDto.getDokument())
-				.filtype(safHentDokumentDto.getVariantFormat())
-				.build();
-
-
 	}
 }
 
