@@ -1,12 +1,19 @@
 package no.nav.dokarkiv.core.repository;
 
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.ARKIV;
+import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.SLADDET;
+import static no.nav.dokarkiv.core.util.TestDataGenerator.FIL_NAVN;
+import static no.nav.dokarkiv.core.util.TestDataGenerator.FIL_SLADDET;
+import static no.nav.dokarkiv.core.util.TestDataGenerator.OPPRETTET_KILDE_NAVN;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createDummyDokument;
+import static no.nav.dokarkiv.core.util.TestDataGenerator.createFildetaljerOgFil;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createJournalpostWithHoveddokument;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
+import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
 import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
+import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentFil;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
@@ -132,6 +139,31 @@ public class DokumentFilSkjermetRepositoryTest {
 
 		DokumentFil dokumentFilAfter = dokumentFilSkjermetRepository.findByFilUuid("ADADS_DUMMY_DOKUMENT_KASSERT_AASDSAD");
 		assertThat(dokumentFilAfter.getFil(), is(TestDataGenerator.FIL_DUMMY));
+	}
+
+	@Test
+	public void shouldReturnSladdetForSladdetFilUuidVariantWhenArkivVariantIsSkjermet(){
+
+		Journalpost journalpost = createJournalpostWithHoveddokument();
+
+		DokumentInfo hoveddok = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
+		FilDetaljer arkiv = hoveddok.findFilDetaljerByVariantFormat(ARKIV);
+
+		FilDetaljer sladdet = createFildetaljerOgFil(hoveddok, SLADDET);
+		sladdet.setFileContent(FIL_SLADDET);
+
+		DokumentFil arkivDokumentFil = arkiv.createDokumentFil();
+		DokumentFil sladdetDokumentFil = sladdet.createDokumentFil();
+
+		dokumentFilRepository.save(arkivDokumentFil);
+		dokumentFilRepository.save(sladdetDokumentFil);
+		dokumentFilRepository.save(createDummyDokument());
+		journalpost = joarkRepository.save(journalpost);
+
+		skjermingService.setVariantSkjermet(journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo(), ARKIV, SkjermingTypeCode.POL);
+
+		DokumentFil dokumentFil = dokumentFilSkjermetRepository.findByFilUuid(sladdet.getFilUuid());
+		assertThat(new String(dokumentFil.getFil()), is(new String(sladdetDokumentFil.getFil())));
 	}
 
 }

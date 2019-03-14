@@ -64,7 +64,7 @@ public class SkjermingService {
 	}
 
 	public boolean isKassertOrSkjermetByFilUuidAndVariantFormat(String filUuid, VariantFormatCode variantFormatCode) {
-		return isFalse(entityManager.createQuery("select 'kassert' from FilDetaljer where filUuid=:filUuid and variantFormat=:variantFormat and dokumentInfo.datoKassert is not null or skjermingType is not null")
+		return isFalse(entityManager.createQuery("select 'kassert' from FilDetaljer where filUuid=:filUuid and variantFormat=:variantFormat and (dokumentInfo.datoKassert is not null or skjermingType is not null)")
 				.setParameter("filUuid", filUuid)
 				.setParameter("variantFormat", variantFormatCode)
 				.getResultList()

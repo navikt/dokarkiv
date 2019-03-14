@@ -54,6 +54,7 @@ public class TestDataGenerator {
 	public static final String TILLEGGOPPLYSNINGER_VAL = "tillegg_verdi";
 	public static final byte[] FIL = "Test dokument".getBytes();
 	public static final byte[] FIL_DUMMY = "Test dummy dokument dummy".getBytes();
+	public static final byte[] FIL_SLADDET = "Test sladdet dokument".getBytes();
 
 	public static Journalpost createJournalpostWithHoveddokument() {
 		Journalpost journalpost = Journalpost.builder()
