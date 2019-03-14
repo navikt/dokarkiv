@@ -9,11 +9,13 @@ import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
 import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.CREATE_ACTION;
 
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
+import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
 import no.nav.dokarkiv.core.metrics.RestMetrics;
-import no.nav.dokarkiv.core.security.abac.AbacSecurityService;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import no.nav.dokarkiv.journalpost.v1.api.OpprettJournalpostRequest;
+import no.nav.dokarkiv.journalpost.v1.api.OpprettJournalpostResponse;
 import no.nav.dokarkiv.journalpost.v1.rjoark202.OpprettJournalpostService;
 import no.nav.dokarkiv.journalpost.v1.rjoark202.util.OpprettJournalpostRequestValidator;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerOpprettJournalpost;
@@ -24,7 +26,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.inject.Inject;
@@ -35,14 +39,13 @@ import javax.inject.Inject;
 @RequestMapping("/rest/journalpostapi/v1/journalpost")
 public class OpprettJournalpostRestController {
 
-	private final AbacSecurityService abacSecurityService;
+	private static final String TRUE = "true";
+
 	private final OpprettJournalpostService service;
 	private final OpprettJournalpostRequestValidator requestValidator;
 
 	@Inject
-	public OpprettJournalpostRestController(final AbacSecurityService abacSecurityService,
-											final OpprettJournalpostService opprettJournalpostService) {
-		this.abacSecurityService = abacSecurityService;
+	public OpprettJournalpostRestController(final OpprettJournalpostService opprettJournalpostService) {
 		this.service = opprettJournalpostService;
 		this.requestValidator = new OpprettJournalpostRequestValidator();
 	}
@@ -53,17 +56,34 @@ public class OpprettJournalpostRestController {
 	@Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_DOKUMENT)},
 			actions = @Abac.Attr(key = ACTION_ID, value = CREATE_ACTION))
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark202"}, percentiles = {0.5, 0.95}, histogram = true)
-	public ResponseEntity<Long> opprettJournalpost(@RequestBody OpprettJournalpostRequest request) {
+	public ResponseEntity<OpprettJournalpostResponse> opprettJournalpost(@RequestBody OpprettJournalpostRequest request,
+																		 @RequestHeader(required = false) String aksjonsLoggHeader,
+																		 @ApiParam(name = "ferdigstill", allowableValues = "true, false", required = false) @RequestParam(required = false) String ferdigstill) throws UgyldigAksjonsLoggException {
 		MDC.put(MDC_REQUEST_ID, "rjoark202");
 		log.info(MDC.get(MDC_REQUEST_ID) + " har mottat kall for opprettelse av ny journalpost");
 		RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDC_CONSUMER_ID));
 
-		// tilgangsstyring abac
+		// tilgangsstyring abac?
 
 		requestValidator.validateRequest(request);
 
-		Long journalpostId = service.opprettJournalpost(request);
-		log.info(MDC.get(MDC_REQUEST_ID) + " har opprettet ny journalpost med journalpostId={}", journalpostId);
-		return ResponseEntity.status(HttpStatus.CREATED).body(journalpostId);
+		Long journalpostId = service.opprettJournalpost(request, aksjonsLoggHeader);
+		log.info(MDC.get(MDC_REQUEST_ID) + " har opprettet ny journalpost, journalpostId={}", journalpostId);
+
+		String journalstatus = "MIDLERTIDIG";
+		if (TRUE.equals(ferdigstill)) {
+			log.info(MDC.get(MDC_REQUEST_ID) + " forsøker å ferdigstille journalpost, journalpostId={}", journalpostId);
+			// kall ferdigstill JP
+
+//			log.info(MDC.get(MDC_REQUEST_ID) + " har ferdigstilt journalpost, journalpostId={}", journalpostId);
+		}
+		return ResponseEntity
+				.status(HttpStatus.CREATED)
+				.body(OpprettJournalpostResponse.builder()
+						.journalpostId(String.valueOf(journalpostId))
+						.journalstatus(journalstatus)
+						.build());
 	}
+
+
 }
