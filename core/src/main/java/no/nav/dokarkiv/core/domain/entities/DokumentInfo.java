@@ -370,6 +370,13 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 		return Objects.nonNull(filDetaljer) && ARKIV.equals(filDetaljer.getVariantFormat());
 	}
 
+	/**
+	 * Filterer ut fildetaljer som er skjermet
+	 * Returnerer null hvis fildetaljer skjermingType ikke er null og variant ikke er ARKIV
+	 * Hvis Fildetaljer er ARKIV variant og SLADDET variant finnes og ikke er skjermet så vil SLADDET variant bli returnert
+	 * Hvis ARKIV variant er skjermet og SLADDET variant ikke eksisterer eller er skjermet så vil ARKIV variant bli returnert
+	 * -> Når ARKIV variant er skjermet så vil det bli returnert en dummy dokument i HentDokument kall. Sjekk DokumentFilSkjermetRepository
+	 */
 	private FilDetaljer filterSkjermetFildetaljer(FilDetaljer filDetaljer) {
 		FilDetaljer filDetaljerFiltered = filDetaljer;
 
@@ -392,8 +399,9 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	 * Finds all FilDetaljer with the given variantFormat.
 	 * <p>
 	 * Filterer ut fildetaljer som er skjermet
-	 * Returnerer SLADDET variant hvis ARKIV variant er skjermet og ellers null hvis alle andre varianter er skjermet
-	 * Returnerer null hvis både ARKIV og SLADDET variant er skjermet
+	 * Returnerer SLADDET variant hvis ARKIV variant er skjermet
+	 * Hvis ARKIV variant er skjermet og SLADDET variant ikke eksisterer eller er skjermet så vil ARKIV variant bli returnert
+	 * Når ARKIV variant er skjermet så vil det bli returnert en dummy dokument i HentDokument kall. SjekkDokumentFilSkjermetRepository
 	 *
 	 * @param variantFormat The VariantFormatCode.
 	 * @return A list of Fildetaljer with the given VariantFormatCode.
