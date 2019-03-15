@@ -163,6 +163,28 @@ public class DokumentInfoTest {
 	}
 
 	@Test
+	public void findFilDetaljerByFilUuidShouldReturnArkivVariantWhenFilUuidBelongsArkivVariantAndArkivVariantIsSkjermetAndSladdetNotExists() {
+		DokumentInfo dokumentInfo = getDokumentInfoBuilder()
+				.filDetaljerList(
+						FilDetaljer.builder()
+								.fildetaljerId(1L)
+								.filUuid("test")
+								.variantFormat(VariantFormatCode.ARKIV)
+								.skjermingType(POL)
+								.build(),
+						FilDetaljer.builder()
+								.fildetaljerId(2L)
+								.filUuid("test2")
+								.variantFormat(PRODUKSJON)
+								.build())
+				.build();
+
+		assertThat(dokumentInfo.findFilDetaljerByFilUuid("test").getVariantFormat(), is(ARKIV));
+		assertThat(dokumentInfo.findFilDetaljerByFilUuid("test").getFilUuid(), is("test"));
+		assertThat(dokumentInfo.getFildetaljerListeAdmin().size(), is(2));
+	}
+
+	@Test
 	public void findFilDetaljerByFilUuidShouldReturnArkivVariantWhenFilUuidBelongsArkivVariantAndArkivVariantIsNotSkjermet() {
 		DokumentInfo dokumentInfo = getDokumentInfoBuilder()
 				.filDetaljerList(

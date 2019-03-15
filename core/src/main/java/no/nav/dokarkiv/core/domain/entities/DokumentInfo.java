@@ -349,6 +349,7 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	 * Finds a FilDetaljer by filUuid.
 	 * <p>
 	 * Returnerer filUuid for SLADDET variant hvis filUuid tilhører ARKIV variant
+	 * Returnerer ARKIV variant hvis ARKIV er skjermet og det ikke finnes en SLADDET variant eller at SLADDET variant er skjermet
 	 *
 	 * @param filUuid The filUuid.
 	 * @return The FilDetaljer.
@@ -358,20 +359,33 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 				.filter(filDetalj -> filUuid.equals(filDetalj.getFilUuid()))
 				.findAny().orElse(null);
 
+		return filterSkjermetFildetaljer(filDetaljer);
+	}
+
+	private boolean isFildetaljerSkjermet(FilDetaljer filDetaljer) {
+		return Objects.nonNull(filDetaljer) && Objects.nonNull(filDetaljer.getSkjermingType());
+	}
+
+	private boolean isFildetaljerArkivVariant(FilDetaljer filDetaljer) {
+		return Objects.nonNull(filDetaljer) && ARKIV.equals(filDetaljer.getVariantFormat());
+	}
+
+	private FilDetaljer filterSkjermetFildetaljer(FilDetaljer filDetaljer) {
+		FilDetaljer filDetaljerFiltered = filDetaljer;
+
 		//Return SLADDET if ARKIV is skjermet
-		if (Objects.nonNull(filDetaljer) && ARKIV.equals(filDetaljer.getVariantFormat()) && Objects.nonNull(filDetaljer.getSkjermingType())) {
-			FilDetaljer filDetaljerSladdet = findFilDetaljerByVariantFormat(SLADDET);
+		if (isFildetaljerArkivVariant(filDetaljer) && isFildetaljerSkjermet(filDetaljer)) {
+			FilDetaljer filDetaljerSladdet = findFilDetaljerByVariantFormatAdmin(SLADDET);
 
-			if (Objects.nonNull(filDetaljerSladdet)) {
-				filDetaljer = filDetaljerSladdet;
+			//Return ARKIV if SLADDET doesn't exist. In case ARKIV variant is skjermet DokumentFilSkjermetRepository will return a dummy document
+			if (Objects.nonNull(filDetaljerSladdet) && isFalse(isFildetaljerSkjermet(filDetaljerSladdet))) {
+				filDetaljerFiltered = filDetaljerSladdet;
 			}
-		}
 
-		if (Objects.nonNull(filDetaljer) && filDetaljer.getVariantFormat() != ARKIV && Objects.nonNull(filDetaljer.getSkjermingType())) {
-			filDetaljer = null;
+		} else if (isFildetaljerSkjermet(filDetaljer)) {
+			filDetaljerFiltered = null;
 		}
-
-		return filDetaljer;
+		return filDetaljerFiltered;
 	}
 
 	/**
@@ -387,26 +401,10 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	public FilDetaljer findFilDetaljerByVariantFormat(final VariantFormatCode variantFormat) {
 		FilDetaljer filDetaljer = fildetaljerListe.stream()
 				.filter(fd -> variantFormat.equals(fd.getVariantFormat()))
-				.filter(fd -> Objects.isNull(fd.getSkjermingType()))
 				.findAny()
 				.orElse(null);
 
-		if (ARKIV.equals(variantFormat) && Objects.isNull(filDetaljer)) {
-			filDetaljer = fildetaljerListe.stream()
-					.filter(fd -> SLADDET.equals(fd.getVariantFormat()))
-					.filter(fd -> Objects.isNull(fd.getSkjermingType()))
-					.findAny()
-					.orElse(null);
-
-			if (Objects.isNull(filDetaljer)) {
-				filDetaljer = fildetaljerListe.stream()
-						.filter(fd -> ARKIV.equals(fd.getVariantFormat()))
-						.findAny()
-						.orElse(null);
-			}
-		}
-
-		return filDetaljer;
+		return filterSkjermetFildetaljer(filDetaljer);
 	}
 
 	/**

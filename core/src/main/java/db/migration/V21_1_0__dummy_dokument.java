@@ -36,10 +36,8 @@ public class V21_1_0__dummy_dokument implements JdbcMigration {
 			pstmt = connection.prepareStatement("update T_DOKUMENT_FIL set FIL=? where FIL_UUID=?");
 		}
 
-		try {
-			InputStream in = new ClassPathResource("dummy_dokument_kassert.pdf").getInputStream();
+		try(InputStream in = new ClassPathResource("dummy_dokument_kassert.pdf").getInputStream()){
 			pstmt.setBlob(1, in);
-
 			pstmt.setString(2, FIL_UUID_DUMMY_DOKUMENT_KASSERT);
 			pstmt.execute();
 			connection.commit();
