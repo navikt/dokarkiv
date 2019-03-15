@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
@@ -24,27 +25,29 @@ public class V21_1_0__dummy_dokument implements JdbcMigration {
 	 */
 	@Override
 	public void migrate(Connection connection) throws Exception {
-		PreparedStatement pstmt;
+		String query;
 
 		if (isFalse(isDummyDocumentExists(connection))) {
-			pstmt = connection.prepareStatement("INSERT INTO T_DOKUMENT_FIL (DOKUMENT_FIL_ID, FIL, FIL_UUID, DATO_OPPRETTET, OPPRETTET_AV, DATO_ENDRET," +
+			query = "INSERT INTO T_DOKUMENT_FIL (DOKUMENT_FIL_ID, FIL, FIL_UUID, DATO_OPPRETTET, OPPRETTET_AV, DATO_ENDRET," +
 					"                              ENDRET_AV, VERSJON, OPPRETTET_KILDE_NAVN, ENDRET_KILDE_NAVN)" +
 					"  VALUES (T_DOKUMENT_FIL_SEQ.NEXTVAL, ?, ?," +
 					"          sysdate, 'FLYWAY', null, null, 0," +
-					"          'FLYWAY', null)");
+					"          'FLYWAY', null)";
 		} else {
-			pstmt = connection.prepareStatement("update T_DOKUMENT_FIL set FIL=? where FIL_UUID=?");
+			query = "update T_DOKUMENT_FIL set FIL=? where FIL_UUID=?";
 		}
 
-		try(InputStream in = new ClassPathResource("dummy_dokument_kassert.pdf").getInputStream()){
+		addOrUpdateDummyDocument(connection, query);
+	}
+
+	private void addOrUpdateDummyDocument(Connection connection, String query) throws Exception {
+		try(InputStream in = new ClassPathResource("dummy_dokument_kassert.pdf").getInputStream();
+			PreparedStatement pstmt = connection.prepareStatement(query)){
 			pstmt.setBlob(1, in);
 			pstmt.setString(2, FIL_UUID_DUMMY_DOKUMENT_KASSERT);
 			pstmt.execute();
 			connection.commit();
-		} finally {
-			pstmt.close();
 		}
-
 	}
 
 	private boolean isDummyDocumentExists(Connection connection) throws Exception {
