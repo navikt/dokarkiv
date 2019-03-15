@@ -1,14 +1,19 @@
 package no.nav.dokarkiv.journalpost.v1.rjoark201;
 
-import static java.lang.Long.parseLong;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
+import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.FERDIGSTILL;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
+import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService;
+import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggTO;
+import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggTOMapper;
 import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
+import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
@@ -25,17 +30,23 @@ public class FerdigstillJournalpostService {
 
 	private final JoarkRepository joarkRepository;
 	private final JournalpostValidator journalpostValidator;
+	private final AksjonsLoggService aksjonsLoggService;
+	private final AksjonsLoggTOMapper aksjonsLoggTOMapper;
 
 	@Inject
-	public FerdigstillJournalpostService(final JoarkRepository joarkRepository) {
+	public FerdigstillJournalpostService(final JoarkRepository joarkRepository,
+										 final AksjonsLoggService aksjonsLoggService) {
 		this.joarkRepository = joarkRepository;
 		this.journalpostValidator = new JournalpostValidator();
+		this.aksjonsLoggService = aksjonsLoggService;
+		this.aksjonsLoggTOMapper = new AksjonsLoggTOMapper();
 	}
 
-	public List<ArkivElementEndringTO> ferdigstill(String journalpostId, String journalfoerendeEnhet) {
-		Journalpost journalpost = joarkRepository.findById(parseLong(journalpostId))
+	public void ferdigstill(Long journalpostId, String journalfoerendeEnhet, String aksjonsloggHeaderString) throws UgyldigAksjonsLoggException {
+		Journalpost journalpost = joarkRepository.findById(journalpostId)
 				.orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostId)));
-		JournalStatusCode prevStatus = journalpost.getJournalstatus();
+		JournalStatusCode prevJournalstatus = journalpost.getJournalstatus();
+		String prevJournalfoerendeEnhet = journalpost.getJournalForendeEnhetId();
 
 		validerJournalpost(journalpost);
 
@@ -43,22 +54,7 @@ public class FerdigstillJournalpostService {
 
 		joarkRepository.save(journalpost);
 
-		return Arrays.asList(
-				ArkivElementEndringTO.builder()
-						.arkivElement("Journalpost.journalpostStatus")
-						.fraVerdi(prevStatus.name())
-						.tilVerdi(journalpost.getJournalstatus().name())
-						.build(),
-				ArkivElementEndringTO.builder()
-						.arkivElement("Journalpost.journalfEnhet")
-						.fraVerdi(null)
-						.tilVerdi(journalfoerendeEnhet)
-						.build(),
-				ArkivElementEndringTO.builder()
-						.arkivElement("Journalpost.journalfoertAvNavn")
-						.fraVerdi(null)
-						.tilVerdi(journalpost.getJournalfortAvNavn())
-						.build());
+		populerAksjonslogg(journalpostId, aksjonsloggHeaderString, getArkivElementEndringer(journalpost, prevJournalstatus, prevJournalfoerendeEnhet));
 	}
 
 	private void validerJournalpost(Journalpost journalpost) {
@@ -77,12 +73,49 @@ public class FerdigstillJournalpostService {
 	}
 
 	private void setJournalpostStatus(Journalpost journalpost) {
-		if (JournalpostTypeCode.I.equals(journalpost.getJournalposttype())){
+		if (JournalpostTypeCode.I.equals(journalpost.getJournalposttype())) {
 			journalpost.setJournalstatus(JournalStatusCode.J);
-		} else if (JournalpostTypeCode.U.equals(journalpost.getJournalposttype())){
+		} else if (JournalpostTypeCode.U.equals(journalpost.getJournalposttype())) {
 			journalpost.setJournalstatus(JournalStatusCode.FS);
 		} else { // JournalpostTypeCode.N
 			journalpost.setJournalstatus(JournalStatusCode.FS);
 		}
+	}
+
+	private void populerAksjonslogg(Long journalpostId, String aksjonsLoggHeaderString, List<ArkivElementEndringTO> arkivElementEndringTOList) throws UgyldigAksjonsLoggException {
+		AksjonsLoggTO aksjonsLoggTo;
+		if (isBlank(aksjonsLoggHeaderString)) {
+			String bruker = joarkRepository.findById(journalpostId).orElseThrow(JournalpostIkkeFunnetException::new).getBrukere().iterator().next().getBrukerId();
+			aksjonsLoggTo = AksjonsLoggTO.builder()
+					.aksjon(FERDIGSTILL)
+					.journalpostId(journalpostId)
+					.utfoertAv(MDC.get(MDC_CONSUMER_ID))
+					.bruker(bruker)
+					.melding("Journalpost ferdigstilt")
+					.build();
+		} else {
+			aksjonsLoggTo = aksjonsLoggTOMapper.mapAksjonsLoggHeader(aksjonsLoggHeaderString, FERDIGSTILL, journalpostId, null);
+		}
+
+		aksjonsLoggService.validateAndSaveAksjonsLogg(aksjonsLoggTo, arkivElementEndringTOList);
+	}
+
+	private List<ArkivElementEndringTO> getArkivElementEndringer(Journalpost journalpost, JournalStatusCode prevJournalstatus, String prevJournalfoerendeEnhet) {
+		return Arrays.asList(
+				ArkivElementEndringTO.builder()
+						.arkivElement("Journalpost.journalpostStatus")
+						.fraVerdi(prevJournalstatus == null ? null : prevJournalstatus.name())
+						.tilVerdi(journalpost.getJournalstatus().name())
+						.build(),
+				ArkivElementEndringTO.builder()
+						.arkivElement("Journalpost.journalfEnhet")
+						.fraVerdi(prevJournalfoerendeEnhet)
+						.tilVerdi(journalpost.getJournalForendeEnhetId())
+						.build(),
+				ArkivElementEndringTO.builder()
+						.arkivElement("Journalpost.journalfoertAvNavn")
+						.fraVerdi(null)
+						.tilVerdi(journalpost.getJournalfortAvNavn())
+						.build());
 	}
 }

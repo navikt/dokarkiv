@@ -3,32 +3,23 @@ package no.nav.dokarkiv.journalpost.v1;
 import static no.nav.abac.xacml.NavAttributter.RESOURCE_ARKIV_DOKUMENT;
 import static no.nav.abac.xacml.NavAttributter.RESOURCE_FELLES_RESOURCE_TYPE;
 import static no.nav.abac.xacml.StandardAttributter.ACTION_ID;
-import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
 import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_LOGG_HEADER;
-import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.FERDIGSTILL;
 import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.UPDATE_ACTION;
-import static no.nav.dokarkiv.journalpost.v1.rjoark201.util.RequestUtils.validateId;
-import static no.nav.dokarkiv.journalpost.v1.rjoark201.util.RequestUtils.validateJournalfoerendeEnhet;
-import static org.apache.commons.lang3.StringUtils.isBlank;
+import static no.nav.dokarkiv.journalpost.v1.util.RequestUtils.validateId;
+import static no.nav.dokarkiv.journalpost.v1.util.RequestUtils.validateJournalfoerendeEnhet;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.MDCConstants;
-import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService;
-import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggTO;
-import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggTOMapper;
-import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
-import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
 import no.nav.dokarkiv.core.metrics.RestMetrics;
-import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.core.security.abac.AbacSecurityService;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
-import no.nav.dokarkiv.journalpost.v1.rjoark201.FerdigstillJournalpostService;
 import no.nav.dokarkiv.journalpost.v1.api.FerdigstillJournalpostRequest;
+import no.nav.dokarkiv.journalpost.v1.rjoark201.FerdigstillJournalpostService;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerFerdigstillJournalpost;
 import no.nav.freg.abac.core.annotation.Abac;
 import org.slf4j.MDC;
@@ -42,7 +33,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.inject.Inject;
-import java.util.List;
 
 @Slf4j
 @RestController
@@ -52,20 +42,12 @@ public class FerdigstillJournalpostRestController {
 
 	private final FerdigstillJournalpostService ferdigstillJournalpostService;
 	private final AbacSecurityService abacSecurityService;
-	private final AksjonsLoggService aksjonsLoggService;
-	private final AksjonsLoggTOMapper aksjonsLoggTOMapper;
-	private final JoarkRepository joarkRepository;
 
 	@Inject
 	public FerdigstillJournalpostRestController(final FerdigstillJournalpostService ferdigstillJournalpostService,
-												final AbacSecurityService abacSecurityService,
-												final AksjonsLoggService aksjonsLoggService,
-												final JoarkRepository joarkRepository){
+												final AbacSecurityService abacSecurityService){
 		this.ferdigstillJournalpostService = ferdigstillJournalpostService;
 		this.abacSecurityService = abacSecurityService;
-		this.aksjonsLoggService = aksjonsLoggService;
-		this.aksjonsLoggTOMapper = new AksjonsLoggTOMapper();
-		this.joarkRepository = joarkRepository;
 	}
 
 	@Transactional
@@ -84,10 +66,7 @@ public class FerdigstillJournalpostRestController {
 		abacSecurityService.assertAccessToJournalpost(journalpostId);
 		RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
 
-		List<ArkivElementEndringTO> arkivElementEndringTOList = ferdigstillJournalpostService.ferdigstill(journalpostId, request.getJournalfoerendeEnhet());
-
-		populerAksjonslogg(journalpostId, aksjonsLoggHeaderString, arkivElementEndringTOList);
-
+		ferdigstillJournalpostService.ferdigstill(Long.parseLong(journalpostId), request.getJournalfoerendeEnhet(), aksjonsLoggHeaderString);
 		log.info(MDC.get(MDC_REQUEST_ID) + " har ferdigstilt journalpost med journalpostId={}", journalpostId);
 
 		return ResponseEntity.ok().body("Journalpost ferdigstilt");
@@ -96,23 +75,5 @@ public class FerdigstillJournalpostRestController {
 	private void validateRequest(String journalpostId, FerdigstillJournalpostRequest request) {
 		validateId(journalpostId, "journalpostId");
 		validateJournalfoerendeEnhet(request.getJournalfoerendeEnhet(), "journalfoerendeEnhet");
-	}
-
-	private void populerAksjonslogg(String journalpostId, String aksjonsLoggHeaderString, List<ArkivElementEndringTO> arkivElementEndringTOList) throws UgyldigAksjonsLoggException {
-		AksjonsLoggTO aksjonsLoggTo;
-		if (isBlank(aksjonsLoggHeaderString)) {
-			String bruker = joarkRepository.findById(Long.parseLong(journalpostId)).orElseThrow(JournalpostIkkeFunnetException::new).getBrukere().iterator().next().getBrukerId();
-			aksjonsLoggTo = AksjonsLoggTO.builder()
-					.aksjon(FERDIGSTILL)
-					.journalpostId(Long.parseLong(journalpostId))
-					.utfoertAv(MDC.get(MDC_CONSUMER_ID))
-					.bruker(bruker)
-					.melding("Journalpost ferdigstilt")
-					.build();
-		} else {
-			aksjonsLoggTo = aksjonsLoggTOMapper.mapAksjonsLoggHeader(aksjonsLoggHeaderString, FERDIGSTILL, Long.parseLong(journalpostId), null);
-		}
-
-		aksjonsLoggService.validateAndSaveAksjonsLogg(aksjonsLoggTo, arkivElementEndringTOList);
 	}
 }

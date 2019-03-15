@@ -281,7 +281,11 @@ public class TestUtils {
 	}
 
 	public static OpprettJournalpostRequest createRequest(JournalpostType journalpostType) {
+		return createRequest(journalpostType, null);
+	}
+	public static OpprettJournalpostRequest createRequest(JournalpostType journalpostType, String journalfoerendeEnhet) {
 		return createBaseRequest(journalpostType)
+				.journalfoerendeEnhet(journalfoerendeEnhet)
 				.dokumenter(Arrays.asList(
 						Dokument.builder()
 								.tittel(DOKUMENT_TITTEL1)

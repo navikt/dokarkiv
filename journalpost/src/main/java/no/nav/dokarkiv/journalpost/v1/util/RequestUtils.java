@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.journalpost.v1.rjoark201.util;
+package no.nav.dokarkiv.journalpost.v1.util;
 
 import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
 import org.apache.commons.lang3.StringUtils;

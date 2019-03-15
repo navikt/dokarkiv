@@ -7,19 +7,23 @@ import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
 import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.CREATE_ACTION;
+import static no.nav.dokarkiv.journalpost.v1.util.RequestUtils.validateJournalfoerendeEnhet;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
+import no.nav.dokarkiv.core.exceptions.DokarkivFunctionalException;
 import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
 import no.nav.dokarkiv.core.metrics.RestMetrics;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import no.nav.dokarkiv.journalpost.v1.api.OpprettJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.OpprettJournalpostResponse;
+import no.nav.dokarkiv.journalpost.v1.rjoark201.FerdigstillJournalpostService;
 import no.nav.dokarkiv.journalpost.v1.rjoark202.OpprettJournalpostService;
 import no.nav.dokarkiv.journalpost.v1.rjoark202.util.OpprettJournalpostRequestValidator;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerOpprettJournalpost;
 import no.nav.freg.abac.core.annotation.Abac;
+import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.MDC;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,6 +36,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.inject.Inject;
+import java.util.Optional;
 
 @Api
 @Slf4j
@@ -43,11 +48,14 @@ public class OpprettJournalpostRestController {
 
 	private final OpprettJournalpostService service;
 	private final OpprettJournalpostRequestValidator requestValidator;
+	private final FerdigstillJournalpostService ferdigstillJournalpostService;
 
 	@Inject
-	public OpprettJournalpostRestController(final OpprettJournalpostService opprettJournalpostService) {
+	public OpprettJournalpostRestController(final OpprettJournalpostService opprettJournalpostService,
+											final FerdigstillJournalpostService ferdigstillJournalpostService) {
 		this.service = opprettJournalpostService;
 		this.requestValidator = new OpprettJournalpostRequestValidator();
+		this.ferdigstillJournalpostService = ferdigstillJournalpostService;
 	}
 
 	@Transactional
@@ -70,20 +78,28 @@ public class OpprettJournalpostRestController {
 		Long journalpostId = service.opprettJournalpost(request, aksjonsLoggHeader);
 		log.info(MDC.get(MDC_REQUEST_ID) + " har opprettet ny journalpost, journalpostId={}", journalpostId);
 
-		String journalstatus = "MIDLERTIDIG";
+		Optional<Pair<String, String>> ferdigstillResponse = Optional.empty();
 		if (TRUE.equals(ferdigstill)) {
-			log.info(MDC.get(MDC_REQUEST_ID) + " forsøker å ferdigstille journalpost, journalpostId={}", journalpostId);
-			// kall ferdigstill JP
-
-//			log.info(MDC.get(MDC_REQUEST_ID) + " har ferdigstilt journalpost, journalpostId={}", journalpostId);
+			validateJournalfoerendeEnhet(request.getJournalfoerendeEnhet(), "journalfoerendeEnhet");
+			ferdigstillResponse = Optional.of(forsoekFerdigstill(journalpostId, request.getJournalfoerendeEnhet(), aksjonsLoggHeader));
 		}
 		return ResponseEntity
 				.status(HttpStatus.CREATED)
 				.body(OpprettJournalpostResponse.builder()
 						.journalpostId(String.valueOf(journalpostId))
-						.journalstatus(journalstatus)
+						.journalstatus(ferdigstillResponse.map(Pair::getKey).orElse(null))
+						.melding(ferdigstillResponse.map(Pair::getValue).orElse(null))
 						.build());
 	}
 
-
+	private Pair<String, String> forsoekFerdigstill(Long journalpostId, String journalfoerendeEnhet, String aksjonsLoggHeader) throws UgyldigAksjonsLoggException {
+		log.info(MDC.get(MDC_REQUEST_ID) + " forsøker å ferdigstille journalpost, journalpostId={}", journalpostId);
+		try {
+			ferdigstillJournalpostService.ferdigstill(journalpostId, journalfoerendeEnhet, aksjonsLoggHeader);
+		} catch (DokarkivFunctionalException e) {
+			return Pair.of("MIDLERTIDIG", e.getMessage());
+		}
+		log.info(MDC.get(MDC_REQUEST_ID) + " har ferdigstilt journalpost, journalpostId={}", journalpostId);
+		return Pair.of("ENDELIG", null);
+	}
 }

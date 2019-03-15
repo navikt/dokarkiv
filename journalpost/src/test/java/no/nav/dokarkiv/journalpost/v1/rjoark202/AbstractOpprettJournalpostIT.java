@@ -22,6 +22,7 @@ import org.springframework.test.context.ActiveProfiles;
 public abstract class AbstractOpprettJournalpostIT extends AbstractRestIT {
 
 	static final String URL_OPPRETTJOURNALPOST = "/rest/journalpostapi/v1/journalpost";
+	static final String FERDIGSTILL_QUERY = "?ferdigstill=true";
 
 	void abacPermit() {
 		stubFor(post(urlEqualTo("/abac"))

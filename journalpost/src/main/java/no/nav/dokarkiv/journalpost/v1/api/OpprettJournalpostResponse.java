@@ -27,5 +27,8 @@ public class OpprettJournalpostResponse {
 			required = true)
 	private String journalstatus;
 
-
+	@ApiModelProperty(
+			value = "Melding",
+			required = true)
+	private String melding;
 }
