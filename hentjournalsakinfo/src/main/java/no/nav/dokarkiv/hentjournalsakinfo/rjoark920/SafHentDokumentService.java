@@ -8,14 +8,13 @@ import org.springframework.stereotype.Component;
 @Component
 @Slf4j
 public class SafHentDokumentService {
-
 	private final SafHentDokumentRepository safHentDokumentRepository;
-	private final SafHentDokumentOndemandRepository safHentDokumentOndemandRepository;
+	private final SafHentDokumentJoarkRepository safHentDokumentJoarkRepository;
 
 	public SafHentDokumentService(SafHentDokumentRepository safHentDokumentRepository,
-								  SafHentDokumentOndemandRepository safHentDokumentOndemandRepository) {
+								  SafHentDokumentJoarkRepository safHentDokumentJoarkRepository) {
 		this.safHentDokumentRepository = safHentDokumentRepository;
-		this.safHentDokumentOndemandRepository = safHentDokumentOndemandRepository;
+		this.safHentDokumentJoarkRepository = safHentDokumentJoarkRepository;
 	}
 
 	public SafHentDokumentResponse hentDokumentByDokumentinfoIdAndVariant(Long dokumentinfoId, VariantFormatCode variant) {
@@ -30,8 +29,8 @@ public class SafHentDokumentService {
 						.dokument(joarkDokumentDto.getDokument())
 						.filtype(joarkDokumentDto.getFiltype())
 						.build();
-			} else if(joarkDokumentDto.isOndemandDocument()) {
-				byte[] ondemandDokument = safHentDokumentOndemandRepository.hentDokumentFromOndemand(joarkDokumentDto);
+			} else if(joarkDokumentDto.isDlfDocument() || joarkDokumentDto.isOndemandDocument()) {
+				byte[] ondemandDokument = safHentDokumentJoarkRepository.hentDokument(joarkDokumentDto);
 				return SafHentDokumentResponse.builder()
 						.dokument(ondemandDokument)
 						.filtype(joarkDokumentDto.getFiltype())

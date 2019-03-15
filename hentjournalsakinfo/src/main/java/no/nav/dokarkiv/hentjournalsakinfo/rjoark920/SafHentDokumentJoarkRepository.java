@@ -9,21 +9,23 @@ import org.springframework.web.client.RestTemplate;
 import javax.inject.Inject;
 
 /**
+ * Henter dokumenter fra joark (special case)
+ *
  * @author Joakim Bjørnstad, Jbit AS
  */
 @Component
-class SafHentDokumentOndemandRepository {
+class SafHentDokumentJoarkRepository {
 	private final RestTemplate restTemplate;
 	private final HentOndemandDokument hentOndemandDokument;
 
 	@Inject
-	SafHentDokumentOndemandRepository(RestTemplate restTemplate,
-									  HentOndemandDokument hentOndemandDokument) {
+	SafHentDokumentJoarkRepository(RestTemplate restTemplate,
+								   HentOndemandDokument hentOndemandDokument) {
 		this.restTemplate = restTemplate;
 		this.hentOndemandDokument = hentOndemandDokument;
 	}
 
-	byte[] hentDokumentFromOndemand(final JoarkDokumentDto joarkDokumentDto) {
+	byte[] hentDokument(final JoarkDokumentDto joarkDokumentDto) {
 		HentDokumentUrlResponse dokumentUrl = hentOndemandDokument.createDokumentUrl(joarkDokumentDto.getJournalpostId(), joarkDokumentDto.getFilUuid());
 		ResponseEntity<byte[]> forEntity = restTemplate.getForEntity(dokumentUrl.getDokumentUrl(), byte[].class);
 		return forEntity.getBody();

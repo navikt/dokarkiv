@@ -16,7 +16,11 @@ public class JoarkDokumentDto {
 	private byte[] dokument;
 
 	boolean isNormalDocument() {
-		return dokument != null;
+		return dokument != null && !isDlfDocument();
+	}
+
+	boolean isDlfDocument() {
+		return dokument != null && filtype == FilTypeCode.DLF;
 	}
 
 	boolean isOndemandDocument() {
