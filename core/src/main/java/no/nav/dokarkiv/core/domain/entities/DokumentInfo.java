@@ -347,23 +347,25 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 
 	/**
 	 * Finds a FilDetaljer by filUuid.
-	 * <p>
-	 * Returnerer filUuid for SLADDET variant hvis filUuid tilhører ARKIV variant
-	 * Returnerer ARKIV variant hvis ARKIV er skjermet og det ikke finnes en SLADDET variant eller at SLADDET variant er skjermet
+	 *
+	 * Returnerer null hvis fildetaljer skjermingType ikke er null og variant ikke er ARKIV
+	 * Hvis Fildetaljer er ARKIV variant og SLADDET variant finnes og ikke er skjermet så vil SLADDET variant bli returnert
+	 * Hvis ARKIV variant er skjermet og SLADDET variant ikke eksisterer eller er skjermet så vil ARKIV variant bli returnert
+	 * -> Når ARKIV variant er skjermet så vil det bli returnert en dummy dokument i HentDokument kall. Sjekk DokumentFilSkjermetRepository
 	 *
 	 * @param filUuid The filUuid.
 	 * @return The FilDetaljer.
 	 */
 	public FilDetaljer findFilDetaljerByFilUuid(final String filUuid) {
 		FilDetaljer filDetaljer = fildetaljerListe.stream()
-				.filter(filDetalj -> filUuid.equals(filDetalj.getFilUuid()))
+				.filter(f -> filUuid.equals(f.getFilUuid()))
 				.findAny().orElse(null);
 
 		return filterSkjermetFildetaljer(filDetaljer);
 	}
 
 	private boolean isFildetaljerSkjermet(FilDetaljer filDetaljer) {
-		return Objects.nonNull(filDetaljer) && Objects.nonNull(filDetaljer.getSkjermingType());
+		return Objects.nonNull(filDetaljer) && filDetaljer.isSkjermet();
 	}
 
 	private boolean isFildetaljerArkivVariant(FilDetaljer filDetaljer) {
@@ -392,6 +394,7 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 		} else if (isFildetaljerSkjermet(filDetaljer)) {
 			filDetaljerFiltered = null;
 		}
+
 		return filDetaljerFiltered;
 	}
 

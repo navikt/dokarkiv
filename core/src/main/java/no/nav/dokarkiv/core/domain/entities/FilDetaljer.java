@@ -27,6 +27,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -394,6 +395,10 @@ public class FilDetaljer extends AbstractPersistentVersionedDomainObjectWithKild
 		} else {
 			this.fileContent = Arrays.copyOf(fileContent, fileContent.length);
 		}
+	}
+
+	public boolean isSkjermet() {
+		return Objects.nonNull(skjermingType);
 	}
 
 }
