@@ -65,7 +65,7 @@ public class OppdaterJournalpostRestController {
 		Utils.validateId(journalpostId, "journalpostId");
 		abacSecurityService.assertAccessToJournalpost(journalpostId);
 
-		oppdaterJournalpostService.oppdaterJournalpost(journalpostId, request, aksjonsLoggHeaderString);
+		oppdaterJournalpostService.oppdaterJournalpost(Long.parseLong(journalpostId), request, aksjonsLoggHeaderString);
 
 		log.info("rjoark200 har oppdatert journalpost med journalpostId={} i Joark.", journalpostId);
 		return OppdaterJournalpostResponse.builder().journalpostId(journalpostId).build();
