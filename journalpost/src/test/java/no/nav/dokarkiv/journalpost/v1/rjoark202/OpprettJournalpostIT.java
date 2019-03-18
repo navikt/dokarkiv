@@ -1,11 +1,22 @@
 package no.nav.dokarkiv.journalpost.v1.rjoark202;
 
+import static java.util.Collections.singletonList;
 import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.FERDIGSTILL;
 import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.OPPRETT;
 import static no.nav.dokarkiv.journalpost.v1.api.JournalpostType.INNGAAENDE;
 import static no.nav.dokarkiv.journalpost.v1.api.JournalpostType.NOTAT;
 import static no.nav.dokarkiv.journalpost.v1.api.JournalpostType.UTGAAENDE;
+import static no.nav.dokarkiv.journalpost.v1.rjoark202.OpprettJournalpostService.UKJENT;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.BREVKODE1;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.BRUKER_ID_PERSON;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.DOKUMENTKATEGORI_SED;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.DOKUMENT_TITTEL1;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FILTYPE_PDF;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FYSISK_DOKUMENT;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.INNHOLD;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_FOR;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.VARIANTFORMAT_ARKIV;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createMinimalRequest;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createRequest;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -16,6 +27,8 @@ import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.journalpost.v1.api.Dokument;
+import no.nav.dokarkiv.journalpost.v1.api.DokumentVariant;
 import no.nav.dokarkiv.journalpost.v1.api.OpprettJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.OpprettJournalpostResponse;
 import org.apache.commons.collections15.IteratorUtils;
@@ -31,7 +44,7 @@ import java.util.List;
 public class OpprettJournalpostIT extends AbstractOpprettJournalpostIT {
 
 	@Test
-	public void happyPathInngaaende() throws IOException {
+	public void happyPathOpprettInngaaende() throws IOException {
 		abacPermit();
 
 		OpprettJournalpostRequest request = createRequest(INNGAAENDE);
@@ -54,7 +67,7 @@ public class OpprettJournalpostIT extends AbstractOpprettJournalpostIT {
 	}
 
 	@Test
-	public void happyPathUtgaaende() throws IOException {
+	public void happyPathOpprettUtgaaende() throws IOException {
 		abacPermit();
 
 		OpprettJournalpostRequest request = createRequest(UTGAAENDE);
@@ -77,7 +90,7 @@ public class OpprettJournalpostIT extends AbstractOpprettJournalpostIT {
 	}
 
 	@Test
-	public void happyPathNotat() throws IOException {
+	public void happyPathOpprettNotat() throws IOException {
 		abacPermit();
 
 		OpprettJournalpostRequest request = createRequest(NOTAT);
@@ -100,7 +113,7 @@ public class OpprettJournalpostIT extends AbstractOpprettJournalpostIT {
 	}
 
 	@Test
-	public void happyPathInngaaendeMedFerdigstilling() throws IOException {
+	public void happyPathOpprettOgFerdigstillInngaaende() throws IOException {
 		abacPermit();
 
 		OpprettJournalpostRequest request = createRequest(INNGAAENDE, "9999");
@@ -109,12 +122,14 @@ public class OpprettJournalpostIT extends AbstractOpprettJournalpostIT {
 		ResponseEntity<OpprettJournalpostResponse> response = restTemplate.exchange(URL_OPPRETTJOURNALPOST + FERDIGSTILL_QUERY, HttpMethod.POST, requestEntity, OpprettJournalpostResponse.class);
 
 		assertEquals(HttpStatus.CREATED, response.getStatusCode());
+		assertNotNull(response.getBody());
 		assertNull(response.getBody().getMelding());
 
 		Journalpost journalpost = joarkRepository.findAll().iterator().next();
 		assertNotNull(journalpost.getJournalpostId());
 		assertEquals(JournalpostTypeCode.I, journalpost.getJournalposttype());
 		assertEquals(JournalStatusCode.J, journalpost.getJournalstatus());
+		assertEquals("9999", journalpost.getJournalForendeEnhetId());
 
 		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
 		assertEquals(2, aksjonsLoggList.size());
@@ -130,7 +145,7 @@ public class OpprettJournalpostIT extends AbstractOpprettJournalpostIT {
 	}
 
 	@Test
-	public void happyPathUtgaaendeMedFerdigstilling() throws IOException {
+	public void happyPathOpprettOgFerdigstillUtgaaende() throws IOException {
 		abacPermit();
 
 		OpprettJournalpostRequest request = createRequest(UTGAAENDE, "9999");
@@ -139,12 +154,14 @@ public class OpprettJournalpostIT extends AbstractOpprettJournalpostIT {
 		ResponseEntity<OpprettJournalpostResponse> response = restTemplate.exchange(URL_OPPRETTJOURNALPOST + FERDIGSTILL_QUERY, HttpMethod.POST, requestEntity, OpprettJournalpostResponse.class);
 
 		assertEquals(HttpStatus.CREATED, response.getStatusCode());
+		assertNotNull(response.getBody());
 		assertNull(response.getBody().getMelding());
 
 		Journalpost journalpost = joarkRepository.findAll().iterator().next();
 		assertNotNull(journalpost.getJournalpostId());
 		assertEquals(JournalpostTypeCode.U, journalpost.getJournalposttype());
 		assertEquals(JournalStatusCode.FS, journalpost.getJournalstatus());
+		assertEquals("9999", journalpost.getJournalForendeEnhetId());
 
 		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
 		assertEquals(2, aksjonsLoggList.size());
@@ -157,5 +174,70 @@ public class OpprettJournalpostIT extends AbstractOpprettJournalpostIT {
 		assertEquals(BRUKER_ID_PERSON, aksjonsLoggList.get(1).getBruker());
 		assertEquals(FERDIGSTILL, aksjonsLoggList.get(1).getAksjon());
 		assertEquals(3, aksjonsLoggList.get(1).getArkivElementEndringer().size());
+	}
+
+	@Test
+	public void shouldFailOnFerdigstillingWhenMissingJournalfoerendeEnhet() throws IOException {
+		abacPermit();
+
+		OpprettJournalpostRequest request = createRequest(INNGAAENDE, null);
+
+		HttpEntity requestEntity = new HttpEntity(request, createHeadersWithServiceUserToken());
+		ResponseEntity<OpprettJournalpostResponse> response = restTemplate.exchange(URL_OPPRETTJOURNALPOST + FERDIGSTILL_QUERY, HttpMethod.POST, requestEntity, OpprettJournalpostResponse.class);
+
+		assertEquals(HttpStatus.CREATED, response.getStatusCode());
+		assertNotNull(response.getBody());
+		assertNotNull(response.getBody().getMelding());
+
+		Journalpost journalpost = joarkRepository.findAll().iterator().next();
+		assertNotNull(journalpost.getJournalpostId());
+		assertEquals(JournalpostTypeCode.I, journalpost.getJournalposttype());
+		assertEquals(JournalStatusCode.M, journalpost.getJournalstatus());
+
+		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
+		assertEquals(1, aksjonsLoggList.size());
+		assertEquals(SERVICE_USER_ID, aksjonsLoggList.get(0).getUtfoertAv());
+		assertEquals(BRUKER_ID_PERSON, aksjonsLoggList.get(0).getBruker());
+		assertEquals(OPPRETT, aksjonsLoggList.get(0).getAksjon());
+		assertTrue(aksjonsLoggList.get(0).getArkivElementEndringer().isEmpty());
+	}
+
+	@Test
+	public void shouldFailOnFerdigstillingWhenMissingPaakrevdeFelter() throws IOException {
+		abacPermit();
+
+		OpprettJournalpostRequest request = createMinimalRequest(INNGAAENDE, TEMA_FOR, INNHOLD)
+				.journalfoerendeEnhet("9999")
+				.dokumenter(singletonList(
+						Dokument.builder()
+								.tittel(DOKUMENT_TITTEL1)
+								.brevkode(BREVKODE1)
+								.dokumentKategori(DOKUMENTKATEGORI_SED)
+								.dokumentvarianter(singletonList(DokumentVariant.builder()
+										.filtype(FILTYPE_PDF)
+										.variantformat(VARIANTFORMAT_ARKIV)
+										.fysiskDokument(FYSISK_DOKUMENT)
+										.build()))
+								.build()))
+				.build();
+
+		HttpEntity requestEntity = new HttpEntity(request, createHeadersWithServiceUserToken());
+		ResponseEntity<OpprettJournalpostResponse> response = restTemplate.exchange(URL_OPPRETTJOURNALPOST + FERDIGSTILL_QUERY, HttpMethod.POST, requestEntity, OpprettJournalpostResponse.class);
+
+		assertEquals(HttpStatus.CREATED, response.getStatusCode());
+		assertNotNull(response.getBody());
+		assertNotNull(response.getBody().getMelding());
+
+		Journalpost journalpost = joarkRepository.findAll().iterator().next();
+		assertNotNull(journalpost.getJournalpostId());
+		assertEquals(JournalpostTypeCode.I, journalpost.getJournalposttype());
+		assertEquals(JournalStatusCode.M, journalpost.getJournalstatus());
+
+		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
+		assertEquals(1, aksjonsLoggList.size());
+		assertEquals(SERVICE_USER_ID, aksjonsLoggList.get(0).getUtfoertAv());
+		assertEquals(UKJENT, aksjonsLoggList.get(0).getBruker());
+		assertEquals(OPPRETT, aksjonsLoggList.get(0).getAksjon());
+		assertTrue(aksjonsLoggList.get(0).getArkivElementEndringer().isEmpty());
 	}
 }
