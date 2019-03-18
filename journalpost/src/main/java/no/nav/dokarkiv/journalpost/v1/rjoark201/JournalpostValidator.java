@@ -37,6 +37,7 @@ class JournalpostValidator {
 	void validateJournalpostStruktur(Journalpost journalpost) {
 		verifyExactlyOneHoveddokument(journalpost);
 		verifyFildetaljerVariantFormat(journalpost);
+		verifyAtLeastOneBrukerExists(journalpost);
 	}
 
 	void validatePaakrevdeFelter(Journalpost journalpost) {
@@ -92,6 +93,12 @@ class JournalpostValidator {
 						jp.getJournalpostId()));
 			}
 		});
+	}
+
+	private void verifyAtLeastOneBrukerExists(Journalpost jp) {
+		if (jp.getBrukere().isEmpty()) {
+			throw new KanIkkeFerdigstilleException(String.format("Kunne ikke endelig journalføre: Journalpost med journalpostId=%s må knyttes til en bruker.", jp.getJournalpostId()));
+		}
 	}
 
 	private void verifyPaakrevdeFelterJournalpost(Journalpost journalpost, List<String> manglendePaakrevdeFelter) {

@@ -27,6 +27,8 @@ import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.journalpost.v1.api.Bruker;
+import no.nav.dokarkiv.journalpost.v1.api.BrukerIdType;
 import no.nav.dokarkiv.journalpost.v1.api.Dokument;
 import no.nav.dokarkiv.journalpost.v1.api.DokumentVariant;
 import no.nav.dokarkiv.journalpost.v1.api.OpprettJournalpostRequest;
@@ -208,6 +210,10 @@ public class OpprettJournalpostIT extends AbstractOpprettJournalpostIT {
 
 		OpprettJournalpostRequest request = createMinimalRequest(INNGAAENDE, TEMA_FOR, INNHOLD)
 				.journalfoerendeEnhet("9999")
+				.bruker(Bruker.builder()
+						.id(BRUKER_ID_PERSON)
+						.idType(BrukerIdType.FNR)
+						.build())
 				.dokumenter(singletonList(
 						Dokument.builder()
 								.tittel(DOKUMENT_TITTEL1)
@@ -227,6 +233,48 @@ public class OpprettJournalpostIT extends AbstractOpprettJournalpostIT {
 		assertEquals(HttpStatus.CREATED, response.getStatusCode());
 		assertNotNull(response.getBody());
 		assertNotNull(response.getBody().getMelding());
+		assertTrue(response.getBody().getMelding().contains("følgende felt(er) mangler"));
+
+		Journalpost journalpost = joarkRepository.findAll().iterator().next();
+		assertNotNull(journalpost.getJournalpostId());
+		assertEquals(JournalpostTypeCode.I, journalpost.getJournalposttype());
+		assertEquals(JournalStatusCode.M, journalpost.getJournalstatus());
+
+		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
+		assertEquals(1, aksjonsLoggList.size());
+		assertEquals(SERVICE_USER_ID, aksjonsLoggList.get(0).getUtfoertAv());
+		assertEquals(BRUKER_ID_PERSON, aksjonsLoggList.get(0).getBruker());
+		assertEquals(OPPRETT, aksjonsLoggList.get(0).getAksjon());
+		assertTrue(aksjonsLoggList.get(0).getArkivElementEndringer().isEmpty());
+	}
+
+	@Test
+	public void shouldFailOnFerdigstillingIfMissingBruker() throws IOException {
+		abacPermit();
+
+		OpprettJournalpostRequest request = createMinimalRequest(INNGAAENDE, TEMA_FOR, INNHOLD)
+				.bruker(null)
+				.journalfoerendeEnhet("9999")
+				.dokumenter(singletonList(
+						Dokument.builder()
+								.tittel(DOKUMENT_TITTEL1)
+								.brevkode(BREVKODE1)
+								.dokumentKategori(DOKUMENTKATEGORI_SED)
+								.dokumentvarianter(singletonList(DokumentVariant.builder()
+										.filtype(FILTYPE_PDF)
+										.variantformat(VARIANTFORMAT_ARKIV)
+										.fysiskDokument(FYSISK_DOKUMENT)
+										.build()))
+								.build()))
+				.build();
+
+		HttpEntity requestEntity = new HttpEntity(request, createHeadersWithServiceUserToken());
+		ResponseEntity<OpprettJournalpostResponse> response = restTemplate.exchange(URL_OPPRETTJOURNALPOST + FERDIGSTILL_QUERY, HttpMethod.POST, requestEntity, OpprettJournalpostResponse.class);
+
+		assertEquals(HttpStatus.CREATED, response.getStatusCode());
+		assertNotNull(response.getBody());
+		assertNotNull(response.getBody().getMelding());
+		assertTrue(response.getBody().getMelding().contains("må knyttes til en bruker"));
 
 		Journalpost journalpost = joarkRepository.findAll().iterator().next();
 		assertNotNull(journalpost.getJournalpostId());

@@ -157,6 +157,18 @@ public class JournalpostValidatorTest {
 	}
 
 	@Test
+	public void shouldThrowExceptionIfNoBrukerExists() {
+		Journalpost journalpost = createJournalpost();
+		journalpost.setJournalstatus(JournalStatusCode.M);
+		journalpost.clearBrukere();
+
+		expectedException.expect(KanIkkeFerdigstilleException.class);
+		expectedException.expectMessage("må knyttes til en bruker");
+
+		validator.validateJournalpostStruktur(journalpost);
+	}
+
+	@Test
 	public void shouldThrowExceptionIfBrukerIsMissingBrukerId() {
 		Journalpost journalpost = createJournalpost();
 		journalpost.setJournalstatus(JournalStatusCode.M);
