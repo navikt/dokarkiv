@@ -24,6 +24,7 @@ import javax.inject.Inject;
 @Service(value = "opprettNyJournalpostService")
 public class OpprettJournalpostService {
 
+	public static final String UKJENT = "UKJENT";
 	private final JoarkRepository joarkRepository;
 	private final JournalpostMapper journalpostMapper;
 	private final DefaultSporingPopulator defaultSporingPopulator;
@@ -60,7 +61,7 @@ public class OpprettJournalpostService {
 		AksjonsLoggTO aksjonsLoggTo;
 		if (isBlank(aksjonsLoggHeaderString)) {
 			Journalpost journalpost = joarkRepository.findById(journalpostId).orElseThrow(JournalpostIkkeFunnetException::new);
-			String bruker = journalpost.getBrukere().isEmpty() ? "UKJENT" : journalpost.getBrukere().iterator().next().getBrukerId();
+			String bruker = journalpost.getBrukere().isEmpty() ? UKJENT : journalpost.getBrukere().iterator().next().getBrukerId();
 			aksjonsLoggTo = AksjonsLoggTO.builder()
 					.aksjon(OPPRETT)
 					.journalpostId(journalpostId)

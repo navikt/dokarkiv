@@ -80,8 +80,7 @@ public class OpprettJournalpostRestController {
 
 		Optional<Pair<String, String>> ferdigstillResponse = Optional.empty();
 		if (TRUE.equals(ferdigstill)) {
-			validateJournalfoerendeEnhet(request.getJournalfoerendeEnhet(), "journalfoerendeEnhet");
-			ferdigstillResponse = Optional.of(forsoekFerdigstill(journalpostId, request.getJournalfoerendeEnhet(), aksjonsLoggHeader));
+			ferdigstillResponse = Optional.of(forsoekFerdigstill(journalpostId, request, aksjonsLoggHeader));
 		}
 		return ResponseEntity
 				.status(HttpStatus.CREATED)
@@ -92,10 +91,11 @@ public class OpprettJournalpostRestController {
 						.build());
 	}
 
-	private Pair<String, String> forsoekFerdigstill(Long journalpostId, String journalfoerendeEnhet, String aksjonsLoggHeader) throws UgyldigAksjonsLoggException {
+	private Pair<String, String> forsoekFerdigstill(Long journalpostId, OpprettJournalpostRequest request, String aksjonsLoggHeader) throws UgyldigAksjonsLoggException {
 		log.info(MDC.get(MDC_REQUEST_ID) + " forsøker å ferdigstille journalpost, journalpostId={}", journalpostId);
 		try {
-			ferdigstillJournalpostService.ferdigstill(journalpostId, journalfoerendeEnhet, aksjonsLoggHeader);
+			validateJournalfoerendeEnhet(request.getJournalfoerendeEnhet(), "journalfoerendeEnhet");
+			ferdigstillJournalpostService.ferdigstill(journalpostId, request.getJournalfoerendeEnhet(), aksjonsLoggHeader);
 		} catch (DokarkivFunctionalException e) {
 			return Pair.of("MIDLERTIDIG", e.getMessage());
 		}

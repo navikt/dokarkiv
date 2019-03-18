@@ -2,6 +2,8 @@ package no.nav.dokarkiv.journalpost.v1.rjoark202.util;
 
 import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.HOVEDDOKUMENT;
 import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.VEDLEGG;
+import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 import no.nav.dokarkiv.core.domain.codes.Behandlingstema;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
@@ -43,7 +45,7 @@ public class JournalpostMapper {
 				.fagomrade(FagomradeCode.valueOf(request.getTema()))
 				.avsenderMottaker(request.getAvsenderMottaker() == null ? null : request.getAvsenderMottaker().getNavn())
 				.avsenderMottakerId(request.getAvsenderMottaker() == null ? null : request.getAvsenderMottaker().getId())
-				.behandlingstema(Behandlingstema.valueOf(request.getBehandlingstema()))
+				.behandlingstema(mapBehandlingstema(request))
 				.tilleggsopplysninger(mapTilleggsopplysninger(request))
 				.mottakskanal(mapMottakskanal(request))
 				.utsendingskanal(mapUtsendingskanal(request))
@@ -81,17 +83,21 @@ public class JournalpostMapper {
 	}
 
 	private MottaksKanalCode mapMottakskanal(OpprettJournalpostRequest request) {
-		if (JournalpostType.INNGAAENDE.equals(request.getJournalpostType())) {
+		if (JournalpostType.INNGAAENDE.equals(request.getJournalpostType()) && isNotBlank(request.getKanal())) {
 			return MottaksKanalCode.valueOf(request.getKanal());
 		}
 		return null;
 	}
 
 	private UtsendingsKanalCode mapUtsendingskanal(OpprettJournalpostRequest request) {
-		if (!JournalpostType.INNGAAENDE.equals(request.getJournalpostType())) {
+		if (!JournalpostType.INNGAAENDE.equals(request.getJournalpostType()) && isNotBlank(request.getKanal())) {
 			return UtsendingsKanalCode.valueOf(request.getKanal());
 		}
 		return null;
+	}
+
+	private Behandlingstema mapBehandlingstema(OpprettJournalpostRequest request) {
+		return isBlank(request.getBehandlingstema()) ? null : Behandlingstema.valueOf(request.getBehandlingstema());
 	}
 
 	private void addSaksrelasjon(Journalpost journalpost, OpprettJournalpostRequest request) {
