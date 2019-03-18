@@ -92,6 +92,22 @@ public class DokumentInfoQuery implements Query {
 		return mapJournalpost(originalJournalpost, skjermingService.isJournalpostSkjermet(originalJournalpost.getJournalpostId(), SkjermingTypeCode.POL));
 	}
 
+	@GraphQLQuery(name = "dokumentMedSammeOriginalJournalpostList")
+	@Transactional(readOnly = true)
+	public List<DokumentInfo> dokumentMedSammeOriginalJournalpostList(@GraphQLContext DokumentInfo dokument) {
+		no.nav.dokarkiv.core.domain.entities.DokumentInfo dokumentInfo = dokumentinfoRepository.findById(dokument.getDokumentInfoId())
+				.orElse(no.nav.dokarkiv.core.domain.entities.DokumentInfo.builder().build());
+		no.nav.dokarkiv.core.domain.entities.Journalpost originalJournalpost = dokumentInfo.getOriginalJournalpost();
+		if (originalJournalpost == null) {
+			throw new JournalpostIkkeFunnetException(format("Fant ingen tilhørende original journalpost for dokumentInfo med dokumentInfoId=%s", dokument
+					.getDokumentInfoId()));
+		}
+
+		List<no.nav.dokarkiv.core.domain.entities.DokumentInfo> dokumentInfoList = dokumentinfoRepository.findByOriginalJournalpostJournalpostId(originalJournalpost.getJournalpostId());
+		return dokumentInfoList.stream().filter(d-> !d.getDokumentInfoId().equals(dokument.getDokumentInfoId()))
+				.map(DokumentInfoQueryMapper::mapDokumentInfo).collect(Collectors.toList());
+	}
+
 	@GraphQLQuery(name = "knyttetJournalpostList")
 	@Transactional(readOnly = true)
 	public List<JournalpostDokumentRelasjon> knyttetJournalpostList(@GraphQLContext DokumentInfo dokumentInfo) {

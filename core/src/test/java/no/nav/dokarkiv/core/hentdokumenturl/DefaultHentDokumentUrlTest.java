@@ -34,7 +34,7 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
 import no.nav.dokarkiv.core.exceptions.InvalidFilUuidException;
 import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
-import no.nav.dokarkiv.core.repository.DokumentFilRepository;
+import no.nav.dokarkiv.core.repository.DokumentFilSkjermetRepository;
 import no.nav.dokarkiv.core.repository.DokumentUrlInfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import org.junit.Before;
@@ -64,7 +64,7 @@ public class DefaultHentDokumentUrlTest {
 	@Mock
 	private JoarkRepositorySkjermet joarkRepositoryMock;
 	@Mock
-	private DokumentFilRepository dokumentFilRepositoryMock;
+	private DokumentFilSkjermetRepository dokumentFilRepositoryMock;
 	@Mock
 	private DokumentUrlInfoRepository dokumentUrlInfoRepositoryMock;
 	@Captor

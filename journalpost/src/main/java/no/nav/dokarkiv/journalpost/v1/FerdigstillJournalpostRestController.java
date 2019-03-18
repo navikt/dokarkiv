@@ -10,7 +10,7 @@ import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_LOGG_H
 import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.FERDIGSTILL;
 import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.UPDATE_ACTION;
 import static no.nav.dokarkiv.journalpost.v1.rjoark201.util.RequestUtils.validateId;
-import static no.nav.dokarkiv.journalpost.v1.rjoark201.util.RequestUtils.validateJournalfEnhet;
+import static no.nav.dokarkiv.journalpost.v1.rjoark201.util.RequestUtils.validateJournalfoerendeEnhet;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 import io.swagger.annotations.Api;
@@ -84,7 +84,7 @@ public class FerdigstillJournalpostRestController {
 		abacSecurityService.assertAccessToJournalpost(journalpostId);
 		RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
 
-		List<ArkivElementEndringTO> arkivElementEndringTOList = ferdigstillJournalpostService.ferdigstill(journalpostId, request.getJournalfEnhet());
+		List<ArkivElementEndringTO> arkivElementEndringTOList = ferdigstillJournalpostService.ferdigstill(journalpostId, request.getJournalfoerendeEnhet());
 
 		populerAksjonslogg(journalpostId, aksjonsLoggHeaderString, arkivElementEndringTOList);
 
@@ -95,7 +95,7 @@ public class FerdigstillJournalpostRestController {
 
 	private void validateRequest(String journalpostId, FerdigstillJournalpostRequest request) {
 		validateId(journalpostId, "journalpostId");
-		validateJournalfEnhet(request.getJournalfEnhet(), "journalfEnhet");
+		validateJournalfoerendeEnhet(request.getJournalfoerendeEnhet(), "journalfoerendeEnhet");
 	}
 
 	private void populerAksjonslogg(String journalpostId, String aksjonsLoggHeaderString, List<ArkivElementEndringTO> arkivElementEndringTOList) throws UgyldigAksjonsLoggException {

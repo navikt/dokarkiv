@@ -186,8 +186,10 @@ public class GetInngaaendeJournalpostMapperTest {
 		journalpost.getSaksrelasjon().setFagsystem(FagsystemCode.PEN.PEN);
 		GetJournalpostResponse response = mapper.map(journalpost);
 		assertThat(response.getDokumentListe().size(), is(2));
-		assertThat(response.getDokumentListe().get(0).getVariant().size(), is(0));
-		assertThat(response.getDokumentListe().get(1).getVariant().size(), is(0));
+		assertThat(response.getDokumentListe().get(0).getVariant().size(), is(1));
+		assertThat(response.getDokumentListe().get(0).getVariant().get(0).getVariantFormat(), is("ARKIV"));
+		assertThat(response.getDokumentListe().get(1).getVariant().size(), is(1));
+		assertThat(response.getDokumentListe().get(1).getVariant().get(0).getVariantFormat(), is("ARKIV"));
 		assertThat(response.getArkivSak().getArkivSakSystem(), is(ARKIVSAK_SYSTEM_PSAK));
 	}
 

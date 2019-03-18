@@ -19,4 +19,8 @@ public class ArkivElementConstants {
 	public static final String RELASJON_SKJERMING_TYPE= "JournalpostDokumentInfoRelasjon.skjermingType";
 
 	public static final String FILDETALJER_VARIANTFORMAT = "FilDetaljer.variantFormat";
+	public static final String FILDETALJER_FIL_UUID= "FilDetaljer.filUuid";
+	public static final String FILDETALJER_SKJERMING_TYPE_VARIANT = "Fildetaljer.variantFormat[%s].skjermingType";
+	public static final String DOKUMENT_FIL_FIL_UUID= "DokumentFil.filUuid";
+
 }

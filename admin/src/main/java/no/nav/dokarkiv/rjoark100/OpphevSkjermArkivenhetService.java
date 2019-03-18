@@ -32,7 +32,7 @@ public class OpphevSkjermArkivenhetService {
 
 	public void opphevSkjermDokumentInfo(Long journalpostId, Long dokumentInfoId, SkjermingTypeCode skjerming) {
 		sjekkAtJournalpostDokumentInfoRelasjonErSkjermet(journalpostId, dokumentInfoId, skjerming);
-		skjermingService.opphevSkjermJpDokInfoRelByJournalpostIdAndDokumentInfoId(journalpostId, dokumentInfoId);
+		skjermingService.opphevSkjermingJournalpostDokumentInfoRelasjon(journalpostId, dokumentInfoId);
 	}
 
 	private void sjekkAtJournalpostDokumentInfoRelasjonErSkjermet(Long journalpostId, Long dokumentInfoId, SkjermingTypeCode skjermingTypeCode) {
@@ -46,7 +46,7 @@ public class OpphevSkjermArkivenhetService {
 
 	public void opphevSkjermDokumentFil(Long dokumentInfoId, VariantFormatCode variant) {
 		sjekkAtVariantFormatErSkjermet(dokumentInfoId, variant);
-		skjermingService.opphevSkjermVariantByDokumentInfoIdAndVariantFormat(dokumentInfoId, variant);
+		skjermingService.opphevSkjermFildetaljerByVariant(dokumentInfoId, variant);
 	}
 
 	private void sjekkAtVariantFormatErSkjermet(Long dokumentInfoId, VariantFormatCode variantFormatCode) {
