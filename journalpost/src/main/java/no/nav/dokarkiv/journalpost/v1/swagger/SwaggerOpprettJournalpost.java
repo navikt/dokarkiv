@@ -3,6 +3,7 @@ package no.nav.dokarkiv.journalpost.v1.swagger;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.Authorization;
 import org.springframework.core.annotation.AliasFor;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -15,7 +16,7 @@ import java.lang.annotation.Target;
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@ApiOperation("Opprett ny journalpost")
+@ApiOperation(value = "Opprett ny journalpost", authorizations = {@Authorization(value = "apiKey")})
 @ApiResponses(value = {
 		@ApiResponse(code = 201, message = "Created"),
 		@ApiResponse(code = 400, message = "* Kan ikke opprette journalpost"),
