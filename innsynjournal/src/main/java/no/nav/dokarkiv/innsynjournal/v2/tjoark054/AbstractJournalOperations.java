@@ -5,13 +5,12 @@ import no.nav.dokarkiv.core.domain.entities.DokumentFil;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import no.nav.dokarkiv.core.domain.service.SkjermingService;
 import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
 import no.nav.dokarkiv.core.exceptions.InvalidFilUuidException;
 import no.nav.dokarkiv.core.exceptions.NoDokumentInfoFoundException;
 import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
 import no.nav.dokarkiv.core.logging.AuditLogger;
-import no.nav.dokarkiv.core.repository.DokumentFilRepository;
+import no.nav.dokarkiv.core.repository.DokumentFilSkjermetRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import no.nav.dokarkiv.innsynjournal.v2.exceptions.DocumentNotFoundException;
 import org.apache.commons.lang3.BooleanUtils;
@@ -30,7 +29,7 @@ public abstract class AbstractJournalOperations {
 	private JoarkRepositorySkjermet joarkRepository;
 
 	@Inject
-	private DokumentFilRepository dokumentFilRepository;
+	private DokumentFilSkjermetRepository dokumentFilRepository;
 
 	/**
 	 * Finds the journalpost for a journalpostId

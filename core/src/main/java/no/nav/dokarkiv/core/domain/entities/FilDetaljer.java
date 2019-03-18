@@ -1,5 +1,7 @@
 package no.nav.dokarkiv.core.domain.entities;
 
+import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.ARKIV;
+import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.SLADDET;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -27,6 +29,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -394,6 +397,18 @@ public class FilDetaljer extends AbstractPersistentVersionedDomainObjectWithKild
 		} else {
 			this.fileContent = Arrays.copyOf(fileContent, fileContent.length);
 		}
+	}
+
+	public boolean isSkjermet() {
+		return Objects.nonNull(skjermingType);
+	}
+
+	public boolean isArkivVariant() {
+		return ARKIV.equals(variantFormat);
+	}
+
+	public boolean isSladdetVariant() {
+		return SLADDET.equals(variantFormat);
 	}
 
 }

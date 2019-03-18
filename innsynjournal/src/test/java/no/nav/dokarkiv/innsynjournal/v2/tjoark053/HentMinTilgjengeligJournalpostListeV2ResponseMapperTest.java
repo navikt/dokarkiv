@@ -165,8 +165,8 @@ public class HentMinTilgjengeligJournalpostListeV2ResponseMapperTest {
 			assertSak(journalpost.getGjelderSak());
 
 
-			assertNull(journalpost.getDokumentinfoRelasjonListe().get(0).getJournalfoertDokument().getBeskriverInnhold());
-			assertNull(journalpost.getDokumentinfoRelasjonListe().get(1).getJournalfoertDokument().getBeskriverInnhold());
+			assertThat(journalpost.getDokumentinfoRelasjonListe().get(0).getJournalfoertDokument().getBeskriverInnhold().getVariantformat().getValue(), is("ARKIV"));
+			assertThat(journalpost.getDokumentinfoRelasjonListe().get(1).getJournalfoertDokument().getBeskriverInnhold().getVariantformat().getValue(), is("ARKIV"));
 		}
 	}
 

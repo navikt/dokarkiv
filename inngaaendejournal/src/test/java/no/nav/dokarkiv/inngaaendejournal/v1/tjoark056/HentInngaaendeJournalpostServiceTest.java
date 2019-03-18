@@ -68,8 +68,6 @@ public class HentInngaaendeJournalpostServiceTest {
 
 	@Mock
     private JoarkRepositorySkjermet repository;
-	@Mock
-	private SkjermingService skjermingService;
 
 	private HentInngaaendeJournalpostService service;
 
@@ -280,10 +278,12 @@ public class HentInngaaendeJournalpostServiceTest {
 		assertThat(to.getHoveddokument().getDokumenttypeId(), is(InngaaendeJournalDataProvider.DOKUMENTTYPE_ID));
 		assertThat(to.getHoveddokument().getDokumentId(), is(InngaaendeJournalDataProvider.DOKUMENT_INFO_ID));
 		assertThat(to.getHoveddokument().getDokumenttilstand(), is(DokumenttilstandTo.FERDIGSTILT));
-		assertThat(to.getHoveddokument().getDokumentInnhold().size(), is(0));
+		assertThat(to.getHoveddokument().getDokumentInnhold().size(), is(1));
+		assertThat(to.getHoveddokument().getDokumentInnhold().get(0).getVariantFormat().name(), is("ARKIV"));
 		assertThat(to.getVedlegg().get(0).getDokumenttilstand(), is(DokumenttilstandTo.FERDIGSTILT));
 		assertThat(to.getVedlegg().get(0).getDokumenttypeId(), is(InngaaendeJournalDataProvider.DOKUMENTTYPE_ID_VEDLEGG));
-		assertThat(to.getVedlegg().get(0).getDokumentInnhold().size(), is(0));
+		assertThat(to.getVedlegg().get(0).getDokumentInnhold().size(), is(1));
+		assertThat(to.getVedlegg().get(0).getDokumentInnhold().get(0).getVariantFormat().name(), is("ARKIV"));
 	}
 
 	private AktoerTo findAktoerByType(final List<AktoerTo> brukere, final BrukerTypeCode brukerType) {

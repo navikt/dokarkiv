@@ -23,14 +23,13 @@ import no.nav.dokarkiv.core.domain.entities.DokumentFil;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import no.nav.dokarkiv.core.domain.service.SkjermingService;
 import no.nav.dokarkiv.core.exceptions.DocumentNotFoundException;
 import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
 import no.nav.dokarkiv.core.exceptions.InvalidFilUuidException;
 import no.nav.dokarkiv.core.exceptions.NoDokumentInfoFoundException;
 import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
 import no.nav.dokarkiv.core.ondemand.HentOndemandDokument;
-import no.nav.dokarkiv.core.repository.DokumentFilRepository;
+import no.nav.dokarkiv.core.repository.DokumentFilSkjermetRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -65,7 +64,7 @@ public class Tjoark051HentDokumentServiceTest {
 	@Mock
 	private JoarkRepositorySkjermet joarkRepositoryMock;
 	@Mock
-	private DokumentFilRepository dokumentFilRepository;
+	private DokumentFilSkjermetRepository dokumentFilRepository;
 	@Mock
 	private HentOndemandDokument hentOndemandDokument;
 
@@ -102,6 +101,7 @@ public class Tjoark051HentDokumentServiceTest {
 	public void shouldThrowExceptionWhenFilDetaljerWithGivenVariantNotFound() throws Exception {
 		Journalpost journalpost = createJournalPost();
 		journalpost.findFilDetaljerByFilUuid(FIL_UUID).setVariantFormat(VariantFormatCode.PRODUKSJON);
+		journalpost.findFilDetaljerByFilUuid(FIL_UUID_SLADDET).setVariantFormat(VariantFormatCode.PRODUKSJON);
 
 		when(joarkRepositoryMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(journalpost));
 

@@ -71,7 +71,7 @@ public class KasserDokumentRestController {
 
 		List<ArkivElementEndringTO> arkivElementEndringTOList = kasserDokumentService.kasserDokument(request);
 
-		AksjonsLoggTO aksjonsLoggTO = aksjonsLoggTOMapper.mapAksjonsLoggHeader(aksjonsLoggHeaderString, AksjonsTypeCode.SLETT, null, request
+		AksjonsLoggTO aksjonsLoggTO = aksjonsLoggTOMapper.mapAksjonsLoggHeader(aksjonsLoggHeaderString, AksjonsTypeCode.KASSASJON, null, request
 				.getDokumentInfoId());
 
 		aksjonsLoggService.validateAndSaveAksjonsLogg(aksjonsLoggTO, arkivElementEndringTOList);

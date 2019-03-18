@@ -60,7 +60,7 @@ public class OppdaterJournalpostRestController {
 			@RequestBody OppdaterJournalpostRequest request,
 			@RequestHeader(value = AKSJONS_LOGG_HEADER, required = false) String aksjonsLoggHeaderString) throws UgyldigAksjonsLoggException {
 		RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDC_CONSUMER_ID));
-		MDC.put(MDC_REQUEST_ID, "rjoark201");
+		MDC.put(MDC_REQUEST_ID, "rjoark200");
 		log.info(MDC.get(MDC_REQUEST_ID) + " har mottatt kall om å oppdatere journalpost med journalpostId={}", journalpostId);
 		Utils.validateId(journalpostId, "journalpostId");
 		abacSecurityService.assertAccessToJournalpost(journalpostId);

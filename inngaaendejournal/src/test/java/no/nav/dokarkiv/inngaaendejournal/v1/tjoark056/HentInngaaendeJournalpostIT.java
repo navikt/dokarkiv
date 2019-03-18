@@ -108,7 +108,8 @@ public class HentInngaaendeJournalpostIT extends AbstractInngaaendeJournalV1Ites
 		InngaaendeJournalpost inngaaendeJournalpost = response.getInngaaendeJournalpost();
 		assertThat(inngaaendeJournalpost.getJournaltilstand(), is(Journaltilstand.ENDELIG));
 		assertThat(inngaaendeJournalpost.getJournalfEnhet(), is("SesamStasjon"));
-		assertThat(inngaaendeJournalpost.getHoveddokument().getDokumentInnholdListe().size(), is(0));
+		assertThat(inngaaendeJournalpost.getHoveddokument().getDokumentInnholdListe().size(), is(1));
+		assertThat(inngaaendeJournalpost.getHoveddokument().getDokumentInnholdListe().get(0).getVariantformat().getValue(), is("ARKIV"));
 		assertThat(inngaaendeJournalpost.getVedleggListe().get(0).getDokumentInnholdListe().size(), is(2));
 	}
 
