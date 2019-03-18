@@ -3,8 +3,8 @@ package no.nav.dokarkiv.journalpost.v1.itest;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 import no.nav.dokarkiv.core.consumer.RestConsumerExceptionResponse;
 import no.nav.dokarkiv.core.datautil.JournalpostTestDataProvider;
@@ -190,9 +190,6 @@ public class FerdigstillJournalpostIT extends AbstractFerdigstillJournalpostIT {
 		TestTransaction.end();
 
 		Long journalpostId = journalpost.getJournalpostId();
-		FerdigstillJournalpostRequest request = FerdigstillJournalpostRequest.builder()
-				.journalfEnhet("abc")
-				.build();
 
 		HttpEntity requestEntity = new HttpEntity("{ \"journalFEnhet\": \"9999\" }", createHeadersWithUserAndServiceUserToken());
 		ResponseEntity<String> response =
