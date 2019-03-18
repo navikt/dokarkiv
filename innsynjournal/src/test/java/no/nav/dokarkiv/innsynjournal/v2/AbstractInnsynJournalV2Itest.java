@@ -4,7 +4,9 @@ import no.nav.dokarkiv.core.CoreConfig;
 import no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerV2Mock;
 import no.nav.dokarkiv.core.domain.service.SkjermingService;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
+import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
+import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.dokarkiv.core.stelvio.SimpleRequestContext;
 import no.nav.tjeneste.virksomhet.aktoer.v2.binding.AktoerV2;
@@ -23,6 +25,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.transaction.TestTransaction;
 
 import javax.inject.Inject;
+import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 
 @RunWith(SpringRunner.class)
@@ -41,9 +44,15 @@ public abstract class AbstractInnsynJournalV2Itest {
 	@Inject
     protected JoarkRepositorySkjermet joarkRepository;
 	@Inject
+	protected JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository;
+	@Inject
+	protected DokumentinfoRepository dokumentinfoRepository;
+	@Inject
 	protected DokumentFilRepository dokumentFilRepository;
 	@Inject
 	protected SkjermingService skjermingService;
+	@Inject
+	protected EntityManager entityManager;
 
 	@Configuration
 	public static class TestConfig {
@@ -55,8 +64,12 @@ public abstract class AbstractInnsynJournalV2Itest {
 
 	@Before
 	public void setUpItest() {
+		journalpostDokumentInfoRelasjonRepository.deleteAll();
+		dokumentinfoRepository.deleteAll();
 		joarkRepository.deleteAll();
 		dokumentFilRepository.deleteAll();
+		entityManager.flush();
+		entityManager.clear();
 		RequestContextSetter.setRequestContext(new SimpleRequestContext.Builder()
 				.userId("itestuser")
 				.componentId("itest")

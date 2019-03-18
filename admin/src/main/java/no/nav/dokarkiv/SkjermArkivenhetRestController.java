@@ -86,7 +86,7 @@ public class SkjermArkivenhetRestController {
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
 
 		log.info("{} har mottat kall om å skjerme arkivenhet={} med journalpostId={} og dokumentInfoId={}", MDC.get(MDCConstants.MDC_REQUEST_ID), skjermArkivenhetRequest
-				.getJournalpostId(), skjermArkivenhetRequest.getDokumentInfoId());
+				.getArkivenhet(), skjermArkivenhetRequest.getJournalpostId(), skjermArkivenhetRequest.getDokumentInfoId());
 		switch (skjermArkivenhetRequest.getArkivenhet()) {
 			case JOURNALPOST:
 				assertNotNullOrEmpty(skjermArkivenhetRequest.getJournalpostId(), "journalpostId");
@@ -136,6 +136,7 @@ public class SkjermArkivenhetRestController {
 
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
 		log.info("{} har mottat kall om å oppheve skjerming for arkivenhet={} med journalpostId={} og dokumentInfoId={}", MDC.get(MDCConstants.MDC_REQUEST_ID), skjermArkivenhetRequest
+				.getArkivenhet(), skjermArkivenhetRequest
 				.getJournalpostId(), skjermArkivenhetRequest.getDokumentInfoId());
 
 		switch (skjermArkivenhetRequest.getArkivenhet()) {

@@ -4,6 +4,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
+import static no.nav.dokarkiv.core.repository.DokumentFilSkjermetRepository.FIL_UUID_DUMMY_DOKUMENT_KASSERT;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.Matchers.containsString;
@@ -57,6 +58,7 @@ public class HentDokumentURLIT extends AbstractJournalV3Itest {
 
 	private static final String FIL_UUID = FilDetaljer.generateUuid();
 	private static final String FIL_UUID_SLADDET = FilDetaljer.generateUuid();
+	private static final String FIL_UUID_DUMMY = FilDetaljer.generateUuid();
 
 	private static final VariantFormatCode VARIANT_FORMAT = VariantFormatCode.ARKIV;
 	private String journalpostId;
@@ -153,6 +155,22 @@ public class HentDokumentURLIT extends AbstractJournalV3Itest {
 	}
 
 	@Test
+	public void shouldThrowWhenJournalpostIsSkjermet() throws Exception {
+		expectedException.expect(HentDokumentURLDokumentIkkeFunnet.class);
+		expectedException.expectMessage("Journalpost ikke funnet");
+		abacPermit();
+		persistDokumentFil();
+
+		skjermingService.setJournalpostSkjerming(journalpost, SkjermingTypeCode.POL);
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
+
+		journalV3Provider.hentDokumentURL(request);
+
+
+	}
+
+	@Test
 	public void shouldGetSladdetDokumentUrl() throws Exception {
 		abacPermit();
 		persistDokumentFil();
@@ -168,9 +186,7 @@ public class HentDokumentURLIT extends AbstractJournalV3Itest {
 	}
 
 	@Test
-	public void shouldThrowExceptionWhenKassert() throws Exception {
-		expectedException.expect(HentDokumentURLDokumentIkkeFunnet.class);
-		expectedException.expectMessage("Could not find document");
+	public void shouldReturnFilUuidForArkivVariantWhenDokumentIsKassert() throws Exception {
 		abacPermit();
 		persistDokumentFil();
 
@@ -178,7 +194,10 @@ public class HentDokumentURLIT extends AbstractJournalV3Itest {
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
-		journalV3Provider.hentDokumentURL(request);
+		HentDokumentURLResponse response = journalV3Provider.hentDokumentURL(request);
+
+		assertThat(response.getDokumentURL(), containsString("docToken"));
+		assertDokumentUrlInfoIsPersisted(FIL_UUID);
 	}
 
 	private HentDokumentURLRequest createRequest() {
@@ -255,6 +274,11 @@ public class HentDokumentURLIT extends AbstractJournalV3Itest {
 		dokumentFilRepository.save(DokumentFilBuilder.getDokumentFilBuilder()
 				.filUuid(FIL_UUID_SLADDET)
 				.fil("Test".getBytes())
+				.opprettetKildeNavn("test")
+				.build());
+		dokumentFilRepository.save(DokumentFilBuilder.getDokumentFilBuilder()
+				.filUuid(FIL_UUID_DUMMY_DOKUMENT_KASSERT)
+				.fil("Dummy".getBytes())
 				.opprettetKildeNavn("test")
 				.build());
 	}

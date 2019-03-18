@@ -41,6 +41,8 @@ public class TestUtil {
 	public static Long JOURNALPOST_ID = 2000000L;
 	public static Long JPDOKINFORELAJSON_ID = 2000000L;
 	public static Long DOKUMENTINFO_ID = 2000000L;
+	public static String FIL_UUID_ARKIV= "ARKIV_F_TEST_XXXXXX_AAAAAAAAAAA";
+	public static String FIL_UUID_SLADDET= "SLADDET_F_TEST_XXXXXX_AAAAAAAAAAA";
 
 
 	public static SkjermArkivenhetRequest createSkjermarkivenhetRequest(SkjermingTypeCode skjermingType, ArkivenhetCode arkivenhet, Long journalpostId, Long dokumentInfoId, VariantFormatCode variantFormat) {
@@ -90,7 +92,7 @@ public class TestUtil {
 		return journalpost;
 	}
 
-	public static void knyttDokumentInfoSomVedleggTilJournalpostForIT(DokumentInfo dokInfoVedlegg, Journalpost jpHovedokument) {
+	public static void knyttDokumentInfoSomVedleggTilJournalpost(DokumentInfo dokInfoVedlegg, Journalpost jpHovedokument) {
 		jpHovedokument.addJournalpostDokumentInfoRelasjon(
 				getBaseJournalpostDokumentInfoRelasjonBuilder()
 						.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
@@ -135,20 +137,16 @@ public class TestUtil {
 				.endretAvNavn(ENDRET_AV_NAVN)
 				.brevgruppe(BREVGRUPPE)
 				.brevkode(BREVKODE)
-				.filDetaljerList(createFildetaljer())
+				.filDetaljerList(createFildetaljer(VariantFormatCode.ARKIV, FIL_UUID_ARKIV), createFildetaljer(VariantFormatCode.SLADDET, FIL_UUID_SLADDET))
 				.opprettetKildeNavn(OPPRETTET_KILDE_NAVN);
 	}
 
-	private static FilDetaljer createFildetaljer() {
-		return createFildetaljer(FilDetaljer.generateUuid());
-	}
-
-	private static FilDetaljer createFildetaljer(String filUuid) {
+	private static FilDetaljer createFildetaljer(VariantFormatCode variantFormatCode, String filUuid) {
 		return FilDetaljerBuilder.getFilDetaljerBuilder()
 				.filUuid(filUuid)
 				.filnavn(FILNAVN)
 				.filtype(FilTypeCode.PDF)
-				.variantFormat(VariantFormatCode.ARKIV)
+				.variantFormat(variantFormatCode)
 				.opprettetKildeNavn(OPPRETTET_KILDE_NAVN)
 				.fileContent("ARKIV variant".getBytes())
 				.build();

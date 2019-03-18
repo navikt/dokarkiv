@@ -4,6 +4,9 @@ import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
+import static no.nav.dokarkiv.core.repository.DokumentFilSkjermetRepository.FIL_UUID_DUMMY_DOKUMENT_KASSERT;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
@@ -22,13 +25,17 @@ import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
 import no.nav.dokarkiv.core.domain.codes.OnDemandInstansCode;
+import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.domain.service.SkjermingService;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.DokumentUrlInfoRepository;
+import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
+import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.dokarkiv.core.stelvio.SimpleRequestContext;
 import org.apache.commons.io.IOUtils;
@@ -51,6 +58,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.transaction.TestTransaction;
 
 import javax.inject.Inject;
+import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 import java.io.IOException;
 import java.util.UUID;
@@ -66,8 +74,11 @@ import java.util.UUID;
 public class HentDokumentControllerIT {
 
 	private static final String FIL_UUID = FilDetaljer.generateUuid();
+	private static final String FIL_UUID_SLADDET = FilDetaljer.generateUuid();
 	private static final VariantFormatCode VARIANT_FORMAT = VariantFormatCode.ARKIV;
 	private static final byte[] FIL_CONTENT = "Test".getBytes();
+	private static final byte[] FIL_CONTENT_DUMMY = "Dummy".getBytes();
+	private static final byte[] FIL_CONTENT_SKJERMET = "Skjermet".getBytes();
 
 	private static final OnDemandInstansCode ON_DEMAND_INSTANS = OnDemandInstansCode.PESYS;
 	private static final String ON_DEMAND_ID = "onDemandId";
@@ -80,7 +91,15 @@ public class HentDokumentControllerIT {
 	@Inject
 	private DokumentFilRepository dokumentFilRepository;
 	@Inject
+	private JournalpostDokumentInfoRelasjonRepository relasjonRepository;
+	@Inject
+	private DokumentinfoRepository dokumentinfoRepository;
+	@Inject
 	private TestRestTemplate testRestTemplate;
+	@Inject
+	private SkjermingService skjermingService;
+	@Inject
+	private EntityManager entityManager;
 
 	@Before
 	public void setUp() {
@@ -94,7 +113,14 @@ public class HentDokumentControllerIT {
 	public void deleteAll() {
 		dokumentUrlInfoRepository.deleteAll();
 		dokumentFilRepository.deleteAll();
+		relasjonRepository.deleteAll();
+		dokumentinfoRepository.deleteAll();
 		joarkRepository.deleteAll();
+		if (entityManager.isJoinedToTransaction()) {
+			entityManager.flush();
+			entityManager.clear();
+		}
+
 	}
 
 	@Test
@@ -129,6 +155,56 @@ public class HentDokumentControllerIT {
 
 		assertEquals(HttpStatus.OK.value(), response.getStatusCodeValue());
 		assertArrayEquals(FIL_CONTENT, response.getBody());
+	}
+
+	@Test
+	public void shouldFetchDummyDokumentWhenDokumentIsKassert() {
+		String docToken = UUID.randomUUID().toString();
+		Journalpost journalpost = joarkRepository.save(createJournalpostBuilder("tittel").build());
+		dokumentUrlInfoRepository.save(createDokumentUrlInfo(journalpost, docToken, FIL_UUID).build());
+		persistDokumentFil(FIL_CONTENT);
+		skjermingService.skjermAllFildetaljer(journalpost.findHoveddokumentDokumentInfoRelasjon()
+				.getDokumentInfo(), SkjermingTypeCode.POL);
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
+
+		ResponseEntity<byte[]> response = testRestTemplate.getForEntity("/hentdokument?docToken=" + docToken + "&amp;mimetype=application%2Fpdf", byte[].class);
+
+		assertEquals(HttpStatus.OK.value(), response.getStatusCodeValue());
+		assertArrayEquals(FIL_CONTENT_DUMMY, response.getBody());
+	}
+
+	@Test
+	public void shouldFetchSkjermetDokumentWhenArkivVariantIsSkjermet() {
+		String docToken = UUID.randomUUID().toString();
+		Journalpost journalpost = joarkRepository.save(createJournalpostBuilder("tittel").build());
+		dokumentUrlInfoRepository.save(createDokumentUrlInfo(journalpost, docToken, FIL_UUID).build());
+		persistDokumentFil(FIL_CONTENT);
+		skjermingService.setVariantSkjermet(journalpost.findHoveddokumentDokumentInfoRelasjon()
+				.getDokumentInfo(), VariantFormatCode.ARKIV, SkjermingTypeCode.POL);
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
+
+		ResponseEntity<byte[]> response = testRestTemplate.getForEntity("/hentdokument?docToken=" + docToken + "&amp;mimetype=application%2Fpdf", byte[].class);
+
+		assertEquals(HttpStatus.OK.value(), response.getStatusCodeValue());
+		assertArrayEquals(FIL_CONTENT_SKJERMET, response.getBody());
+	}
+
+	@Test
+	public void shouldThrowWhenJournalpostIsSkjermet() {
+		String docToken = UUID.randomUUID().toString();
+		Journalpost journalpost = joarkRepository.save(createJournalpostBuilder("tittel").build());
+		dokumentUrlInfoRepository.save(createDokumentUrlInfo(journalpost, docToken, FIL_UUID).build());
+		persistDokumentFil(FIL_CONTENT);
+		skjermingService.setJournalpostSkjerming(journalpost, SkjermingTypeCode.POL);
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
+
+		ResponseEntity<String> response = testRestTemplate.getForEntity("/hentdokument?docToken=" + docToken + "&amp;mimetype=application%2Fpdf", String.class);
+		assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), response.getStatusCodeValue());
+		assertThat(response.getBody(), is(String.format("Journalpost med id %s eksisterer ikke", journalpost.getJournalpostId())));
+
 	}
 
 	@Test
@@ -188,7 +264,11 @@ public class HentDokumentControllerIT {
 												.filDetaljerList(
 														FilDetaljerBuilder.getFilDetaljerBuilder().filtype(FilTypeCode.PDF)
 																.filUuid(FIL_UUID).variantFormat(VARIANT_FORMAT)
-																.opprettetKildeNavn("test").build()).build()).build());
+																.opprettetKildeNavn("test").build(),
+														FilDetaljerBuilder.getFilDetaljerBuilder().filtype(FilTypeCode.PDF)
+																.filUuid(FIL_UUID_SLADDET).variantFormat(VariantFormatCode.SLADDET)
+																.opprettetKildeNavn("test").build()).build())
+								.build());
 	}
 
 	private JournalpostBuilder createOnDemandJournalpostBuilder() {
@@ -230,7 +310,21 @@ public class HentDokumentControllerIT {
 	}
 
 	private void persistDokumentFil(byte[] fileContent) {
-		dokumentFilRepository.save(DokumentFilBuilder.getDokumentFilBuilder().filUuid(FIL_UUID).fil(fileContent).opprettetKildeNavn("test").build());
+		dokumentFilRepository.save(DokumentFilBuilder.getDokumentFilBuilder()
+				.filUuid(FIL_UUID)
+				.fil(fileContent)
+				.opprettetKildeNavn("test")
+				.build());
+		dokumentFilRepository.save(DokumentFilBuilder.getDokumentFilBuilder()
+				.filUuid(FIL_UUID_DUMMY_DOKUMENT_KASSERT)
+				.fil(FIL_CONTENT_DUMMY)
+				.opprettetKildeNavn("test")
+				.build());
+		dokumentFilRepository.save(DokumentFilBuilder.getDokumentFilBuilder()
+				.filUuid(FIL_UUID_SLADDET)
+				.fil(FIL_CONTENT_SKJERMET)
+				.opprettetKildeNavn("test")
+				.build());
 	}
 
 	protected byte[] byteArrFromClasspath(String resourcename) throws IOException {

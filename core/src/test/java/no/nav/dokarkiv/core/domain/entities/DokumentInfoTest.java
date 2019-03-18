@@ -5,11 +5,13 @@ import static no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder.getFilDetal
 import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalpostBuilder;
 import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
 import static no.nav.dokarkiv.core.domain.builder.SkannetInnholdBuilder.getSkannetInnholdBuilder;
+import static no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode.POL;
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.ARKIV;
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.PRODUKSJON;
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.SLADDET;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
@@ -30,30 +32,32 @@ import org.junit.Test;
  */
 public class DokumentInfoTest {
 
+
 	@Test
-	public void shouldReturnEmptyFildetaljerListWhenKassert() {
+	public void getFildetaljerListeShouldFilterSkjermetOnlyReturnSkjermetArkivVariant() {
 		DokumentInfo dokumentInfo = getDokumentInfoBuilder()
 				.filDetaljerList(
 						FilDetaljer.builder()
 								.fildetaljerId(1L)
 								.filUuid("test")
 								.variantFormat(ARKIV)
-								.skjermingType(SkjermingTypeCode.POL)
+								.skjermingType(POL)
 								.build(),
 						FilDetaljer.builder()
 								.fildetaljerId(2L)
 								.filUuid("test2")
 								.variantFormat(SLADDET)
-								.skjermingType(SkjermingTypeCode.POL)
+								.skjermingType(POL)
 								.build())
 				.build();
 
-		assertThat(dokumentInfo.getFildetaljerListe().isEmpty(), is(true));
+		assertThat(dokumentInfo.getFildetaljerListe().size(), is(1));
+		assertThat(dokumentInfo.getFildetaljerListe().iterator().next().getVariantFormat(), is(ARKIV));
 		assertThat(dokumentInfo.getFildetaljerListeAdmin().size(), is(2));
 	}
 
 	@Test
-	public void shouldReturnFildetaljerWhenNotKassert() {
+	public void shouldReturnFildetaljerWhenNotSkjermet() {
 		DokumentInfo dokumentInfo = getDokumentInfoBuilder()
 				.filDetaljerList(
 						FilDetaljer.builder()
@@ -65,11 +69,23 @@ public class DokumentInfoTest {
 								.fildetaljerId(2L)
 								.filUuid("test2")
 								.variantFormat(SLADDET)
+								.build(),
+						FilDetaljer.builder()
+								.fildetaljerId(2L)
+								.filUuid("test3")
+								.variantFormat(PRODUKSJON)
 								.build())
 				.build();
 
-		assertThat(dokumentInfo.getFildetaljerListe().size(), is(2));
-		assertThat(dokumentInfo.getFildetaljerListeAdmin().size(), is(2));
+		assertThat(dokumentInfo.getFildetaljerListe().size(), is(3));
+		assertThat(dokumentInfo.getFildetaljerListeAdmin().size(), is(3));
+		assertThat(dokumentInfo.findFilDetaljerByVariantFormat(VariantFormatCode.PRODUKSJON).getVariantFormat(), is(PRODUKSJON));
+		assertThat(dokumentInfo.findFilDetaljerByVariantFormat(VariantFormatCode.SLADDET).getVariantFormat(), is(SLADDET));
+		assertThat(dokumentInfo.findFilDetaljerByVariantFormat(VariantFormatCode.ARKIV).getVariantFormat(), is(ARKIV));
+		assertThat(dokumentInfo.findFilDetaljerByFilUuid("test").getVariantFormat(), is(ARKIV));
+		assertThat(dokumentInfo.findFilDetaljerByFilUuid("test2").getVariantFormat(), is(SLADDET));
+		assertThat(dokumentInfo.findFilDetaljerByFilUuid("test3").getVariantFormat(), is(PRODUKSJON));
+
 	}
 
 	@Test
@@ -80,7 +96,7 @@ public class DokumentInfoTest {
 								.fildetaljerId(1L)
 								.filUuid("test")
 								.variantFormat(VariantFormatCode.ARKIV)
-								.skjermingType(SkjermingTypeCode.POL)
+								.skjermingType(POL)
 								.build(),
 						FilDetaljer.builder()
 								.fildetaljerId(2L)
@@ -91,28 +107,31 @@ public class DokumentInfoTest {
 
 		assertThat(dokumentInfo.findFilDetaljerByVariantFormat(VariantFormatCode.ARKIV).getVariantFormat(), is(SLADDET));
 		assertThat(dokumentInfo.getFildetaljerListeAdmin().size(), is(2));
+		assertThat(dokumentInfo.findFilDetaljerByVariantFormatAdmin(VariantFormatCode.ARKIV).getVariantFormat(), is(ARKIV));
+
 	}
 
 	@Test
-	public void findFilDetaljerByVariantFormatShouldReturnEmptyFildetaljerListWhenKassert() {
+	public void findFilDetaljerByVariantFormatShouldReturnArkivFildetaljerWhenKassert() {
 		DokumentInfo dokumentInfo = getDokumentInfoBuilder()
 				.filDetaljerList(
 						FilDetaljer.builder()
 								.fildetaljerId(1L)
 								.filUuid("test")
 								.variantFormat(ARKIV)
-								.skjermingType(SkjermingTypeCode.POL)
+								.skjermingType(POL)
 								.build(),
 						FilDetaljer.builder()
 								.fildetaljerId(2L)
 								.filUuid("test2")
 								.variantFormat(SLADDET)
-								.skjermingType(SkjermingTypeCode.POL)
+								.skjermingType(POL)
 								.build())
 				.build();
 
-		assertThat(dokumentInfo.findFilDetaljerByVariantFormat(ARKIV), nullValue());
-		assertThat(dokumentInfo.findFilDetaljerByVariantFormatAdmin(ARKIV).getVariantFormat(), is(ARKIV));
+		assertThat(dokumentInfo.findFilDetaljerByVariantFormat(ARKIV), notNullValue());
+		assertThat(dokumentInfo.findFilDetaljerByVariantFormat(ARKIV).getVariantFormat(), is(ARKIV));
+		assertThat(dokumentInfo.findFilDetaljerByVariantFormat(ARKIV).getSkjermingType(), is(POL));
 	}
 
 
@@ -133,6 +152,7 @@ public class DokumentInfoTest {
 				.build();
 
 		assertThat(dokumentInfo.findFilDetaljerByVariantFormat(VariantFormatCode.ARKIV).getVariantFormat(), is(ARKIV));
+		assertThat(dokumentInfo.findFilDetaljerByVariantFormat(VariantFormatCode.SLADDET).getVariantFormat(), is(SLADDET));
 		assertThat(dokumentInfo.getFildetaljerListeAdmin().size(), is(2));
 	}
 
@@ -144,7 +164,7 @@ public class DokumentInfoTest {
 								.fildetaljerId(1L)
 								.filUuid("test")
 								.variantFormat(VariantFormatCode.ARKIV)
-								.skjermingType(SkjermingTypeCode.POL)
+								.skjermingType(POL)
 								.build(),
 						FilDetaljer.builder()
 								.fildetaljerId(2L)
@@ -155,6 +175,28 @@ public class DokumentInfoTest {
 
 		assertThat(dokumentInfo.findFilDetaljerByFilUuid("test").getVariantFormat(), is(SLADDET));
 		assertThat(dokumentInfo.findFilDetaljerByFilUuid("test").getFilUuid(), is("test2"));
+		assertThat(dokumentInfo.getFildetaljerListeAdmin().size(), is(2));
+	}
+
+	@Test
+	public void findFilDetaljerByFilUuidShouldReturnArkivVariantWhenFilUuidBelongsArkivVariantAndArkivVariantIsSkjermetAndSladdetNotExists() {
+		DokumentInfo dokumentInfo = getDokumentInfoBuilder()
+				.filDetaljerList(
+						FilDetaljer.builder()
+								.fildetaljerId(1L)
+								.filUuid("test")
+								.variantFormat(VariantFormatCode.ARKIV)
+								.skjermingType(POL)
+								.build(),
+						FilDetaljer.builder()
+								.fildetaljerId(2L)
+								.filUuid("test2")
+								.variantFormat(PRODUKSJON)
+								.build())
+				.build();
+
+		assertThat(dokumentInfo.findFilDetaljerByFilUuid("test").getVariantFormat(), is(ARKIV));
+		assertThat(dokumentInfo.findFilDetaljerByFilUuid("test").getFilUuid(), is("test"));
 		assertThat(dokumentInfo.getFildetaljerListeAdmin().size(), is(2));
 	}
 
@@ -180,47 +222,26 @@ public class DokumentInfoTest {
 	}
 
 	@Test
-	public void findFilDetaljerByFilUuidShouldReturnEmptyFildetaljerListWhenKassert() {
+	public void findFilDetaljerByFilUuidShouldReturnArkivFildetaljerWhenKassert() {
 		DokumentInfo dokumentInfo = getDokumentInfoBuilder()
 				.filDetaljerList(
 						FilDetaljer.builder()
 								.fildetaljerId(1L)
 								.filUuid("test")
 								.variantFormat(ARKIV)
-								.skjermingType(SkjermingTypeCode.POL)
-								.build(),
-						FilDetaljer.builder()
-								.fildetaljerId(2L)
-								.filUuid("test2")
-								.variantFormat(SLADDET)
-								.skjermingType(SkjermingTypeCode.POL)
-								.build())
-				.build();
-
-		assertThat(dokumentInfo.findFilDetaljerByFilUuid("test"), nullValue());
-		assertThat(dokumentInfo.getFildetaljerListeAdmin().size(), is(2));
-	}
-
-	@Test
-	public void findFilDetaljerByFilUuidShouldReturnEmptyFildetaljerListWhenKassertNoSladdet() {
-		DokumentInfo dokumentInfo = getDokumentInfoBuilder()
-				.filDetaljerList(
-						FilDetaljer.builder()
-								.fildetaljerId(1L)
-								.filUuid("test")
-								.variantFormat(ARKIV)
-								.skjermingType(SkjermingTypeCode.POL)
+								.skjermingType(POL)
 								.build(),
 						FilDetaljer.builder()
 								.fildetaljerId(2L)
 								.filUuid("test2")
 								.variantFormat(PRODUKSJON)
-								.skjermingType(SkjermingTypeCode.POL)
+								.skjermingType(POL)
 								.build())
 				.build();
 
-		assertThat(dokumentInfo.findFilDetaljerByFilUuid("tes2t"), nullValue());
-		assertThat(dokumentInfo.findFilDetaljerByFilUuid("test"), nullValue());
+		assertThat(dokumentInfo.findFilDetaljerByFilUuid("test2"), nullValue());
+		assertThat(dokumentInfo.findFilDetaljerByFilUuid("test"), notNullValue());
+		assertThat(dokumentInfo.findFilDetaljerByFilUuid("test").getVariantFormat(), is(ARKIV));
 		assertThat(dokumentInfo.getFildetaljerListeAdmin().size(), is(2));
 	}
 
