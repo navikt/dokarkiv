@@ -191,7 +191,7 @@ public class FerdigstillJournalpostIT extends AbstractFerdigstillJournalpostIT {
 
 		Long journalpostId = journalpost.getJournalpostId();
 		FerdigstillJournalpostRequest request = FerdigstillJournalpostRequest.builder()
-				.journalfEnhet("abc")
+				.journalfoerendeEnhet("abc")
 				.build();
 
 		HttpEntity requestEntity = new HttpEntity("{ \"journalFEnhet\": \"9999\" }", createHeadersWithUserAndServiceUserToken());
