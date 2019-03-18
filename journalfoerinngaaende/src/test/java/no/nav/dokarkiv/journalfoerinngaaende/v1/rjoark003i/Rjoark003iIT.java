@@ -14,6 +14,7 @@ import static org.hamcrest.core.StringContains.containsString;
 
 import no.nav.dok.tjenester.journalfoerinngaaende.PutDokumentRequest;
 import no.nav.dok.tjenester.journalfoerinngaaende.PutDokumentResponse;
+import no.nav.dokarkiv.core.consumer.RestConsumerExceptionResponse;
 import no.nav.dokarkiv.core.datautil.JournalpostTestDataProvider;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
@@ -138,8 +139,9 @@ public class Rjoark003iIT extends AbstractJournalfoerInngaaendeV1Itest {
 				.getDokumentInfo()
 				.getDokumentInfoId();
 
-		ResponseEntity<PutDokumentResponse> responseEntity = restTemplate.exchange(
-				JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER + journalpostId + "/dokumenter/" + dokumentId, HttpMethod.PUT, httpEntity, PutDokumentResponse.class);
+		ResponseEntity<RestConsumerExceptionResponse> responseEntity = restTemplate.exchange(
+				JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER + journalpostId + "/dokumenter/" + dokumentId, HttpMethod.PUT,
+				httpEntity, RestConsumerExceptionResponse.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.UNAUTHORIZED));
 	}
