@@ -20,6 +20,7 @@ import java.lang.annotation.Target;
 		@ApiResponse(code = 200, message = "* OK"),
 		@ApiResponse(code = 400, message = "* Kan ikke oppdatere\n* Feil i aksjonslogg \n* Data kan ikke endres for statusen journalposten er på"),
 		@ApiResponse(code = 401, message = "* Ugyldig OIDC token. Denne feilen gis dersom tokenet ikke har riktig format eller er utgått."),
+		@ApiResponse(code = 404, message = "Journalpost ikke funnet"),
 		@ApiResponse(code = 500, message = "* Internal server error")})
 public @interface SwaggerOppdaterJournalpost {
 	@AliasFor(
