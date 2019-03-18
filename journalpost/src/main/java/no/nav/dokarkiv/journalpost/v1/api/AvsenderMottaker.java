@@ -24,9 +24,8 @@ public class AvsenderMottaker {
             required = true)
     private String navn;
 
-    @NotNull(message = "AvsenderMottaker mangler land")
     @ApiModelProperty(
             value = "",
-            required = true)
+            required = false)
     private String land;
 }
