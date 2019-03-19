@@ -1,7 +1,6 @@
 package no.nav.dokarkiv.journalpost.v1.rjoark200;
 
 import static no.nav.dokarkiv.journalpost.v1.rjoark200.OppdaterJournalpostValidator.validateOppdaterteFelt;
-import static no.nav.dokarkiv.journalpost.v1.rjoark200.util.Utils.convertStringToLong;
 
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
@@ -37,12 +36,12 @@ public class OppdaterJournalpostService {
 		this.dokumentInfoMapper = dokumentInfoMapper;
 	}
 
-	public void oppdaterJournalpost(String journalpostId, OppdaterJournalpostRequest oppdaterJournalpostRequest, String aksjonsLoggHeaderString) throws UgyldigAksjonsLoggException {
-		Journalpost journalpost = joarkRepository.findById(convertStringToLong(journalpostId, "journalpostId"))
+	public void oppdaterJournalpost(Long journalpostId, OppdaterJournalpostRequest oppdaterJournalpostRequest, String aksjonsLoggHeaderString) throws UgyldigAksjonsLoggException {
+		Journalpost journalpost = joarkRepository.findById(journalpostId)
 				.orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostId)));
 
 		AksjonsLoggHelper.setAksjonsLoggHeaderString(aksjonsLoggHeaderString);
-		AksjonsLoggHelper.setJournalpostId(Long.parseLong(journalpostId));
+		AksjonsLoggHelper.setJournalpostId(journalpostId);
 		AksjonsLoggHelper.setBrukerId(oppdaterJournalpostRequest.getBruker() != null ?
 				oppdaterJournalpostRequest.getBruker().getId() :
 				(journalpost.getBrukere().isEmpty() ? null : journalpost.getBrukere().iterator().next().getBrukerId())

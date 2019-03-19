@@ -16,8 +16,8 @@ import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
 import no.nav.dokarkiv.core.metrics.RestMetrics;
 import no.nav.dokarkiv.core.security.abac.AbacSecurityService;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
-import no.nav.dokarkiv.journalpost.v1.api.OppdaterJournalpostResponse;
 import no.nav.dokarkiv.journalpost.v1.api.OppdaterJournalpostRequest;
+import no.nav.dokarkiv.journalpost.v1.api.OppdaterJournalpostResponse;
 import no.nav.dokarkiv.journalpost.v1.rjoark200.OppdaterJournalpostService;
 import no.nav.dokarkiv.journalpost.v1.rjoark200.util.Utils;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerOppdaterJournalpost;
@@ -65,7 +65,7 @@ public class OppdaterJournalpostRestController {
 		Utils.validateId(journalpostId, "journalpostId");
 		abacSecurityService.assertAccessToJournalpost(journalpostId);
 
-		oppdaterJournalpostService.oppdaterJournalpost(journalpostId, request, aksjonsLoggHeaderString);
+		oppdaterJournalpostService.oppdaterJournalpost(Long.parseLong(journalpostId), request, aksjonsLoggHeaderString);
 
 		log.info("rjoark200 har oppdatert journalpost med journalpostId={} i Joark.", journalpostId);
 		return OppdaterJournalpostResponse.builder().journalpostId(journalpostId).build();
