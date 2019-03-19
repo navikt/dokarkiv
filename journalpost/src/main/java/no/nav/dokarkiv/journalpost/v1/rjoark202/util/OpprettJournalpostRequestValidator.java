@@ -133,7 +133,7 @@ public class OpprettJournalpostRequestValidator {
 	}
 
 	private void validateDokumentVariant(DokumentVariant dokumentVariant) {
-		if (isBlank(dokumentVariant.getFiltype())){
+		if (isBlank(dokumentVariant.getFiltype())) {
 			throw new InputValideringFeiletException("Dokument.dokumentvariant.filtype må være satt");
 		}
 		try {
@@ -141,7 +141,7 @@ public class OpprettJournalpostRequestValidator {
 		} catch (IllegalArgumentException e) {
 			throw new InputValideringFeiletException("Dokument.dokumentvariant.filtype validerer ikke mot kodeverk");
 		}
-		if (isBlank(dokumentVariant.getVariantformat())){
+		if (isBlank(dokumentVariant.getVariantformat())) {
 			throw new InputValideringFeiletException("Dokument.dokumentvariant.variantformat må være satt");
 		}
 		try {

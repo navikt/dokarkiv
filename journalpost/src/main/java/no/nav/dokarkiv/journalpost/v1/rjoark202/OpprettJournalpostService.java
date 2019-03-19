@@ -25,6 +25,7 @@ import javax.inject.Inject;
 public class OpprettJournalpostService {
 
 	public static final String UKJENT = "UKJENT";
+
 	private final JoarkRepository joarkRepository;
 	private final JournalpostMapper journalpostMapper;
 	private final DefaultSporingPopulator defaultSporingPopulator;
@@ -43,12 +44,9 @@ public class OpprettJournalpostService {
 	}
 
 	public Long opprettJournalpost(OpprettJournalpostRequest request, String aksjonsLoggHeader) throws UgyldigAksjonsLoggException {
-
 		Journalpost journalpost = journalpostMapper.map(request);
 		defaultSporingPopulator.populateSporingInfo(journalpost, MDC.get(MDCConstants.MDC_CONSUMER_ID));
 		journalpost.getJournalpostDokumentInfoRelasjoner().forEach(journalpostDokumentInfoRelasjon -> journalpostDokumentInfoRelasjon.setTilknyttetAvNavn(journalpost.getOpprettetAvNavn()));
-
-		// validering ??
 
 		joarkRepository.save(journalpost);
 

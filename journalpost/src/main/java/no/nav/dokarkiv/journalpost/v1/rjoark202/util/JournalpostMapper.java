@@ -37,7 +37,6 @@ import java.util.stream.Collectors;
 public class JournalpostMapper {
 
 	public Journalpost map(OpprettJournalpostRequest request) {
-
 		Journalpost journalpost = Journalpost.builder()
 				.journalposttype(mapJournalposttype(request.getJournalpostType()))
 				.journalstatus(mapJournalstatus(request))
@@ -54,7 +53,6 @@ public class JournalpostMapper {
 
 		addSaksrelasjon(journalpost, request);
 		addBruker(journalpost, request);
-
 		addJournalpostDokumentInfoRelasjon(journalpost, request);
 
 		return journalpost;
@@ -144,8 +142,7 @@ public class JournalpostMapper {
 						.filUuid(UUID.randomUUID().toString())
 						.fileContent(dokumentVariant.getFysiskDokument())
 						.dokumentInfo(dokumentInfo)
-						.build()
-				));
+						.build()));
 
 		JournalpostDokumentInfoRelasjon relasjon = JournalpostDokumentInfoRelasjon.builder()
 				.tilknyttetJournalpostSom(tilknyttetJournalpostSomCode)
