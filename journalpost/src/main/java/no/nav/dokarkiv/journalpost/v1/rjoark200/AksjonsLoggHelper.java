@@ -42,6 +42,10 @@ public class AksjonsLoggHelper {
         }
     }
 
+    public void setAksjonsLoggTO(AksjonsTypeCode aksjonsTypeCode) throws UgyldigAksjonsLoggException {
+        setAksjonsLoggTO(aksjonsTypeCode, null);
+    }
+
     public void addToArkivElementEndringTOs(ArkivElementEndringTO arkivElementEndringTO) {
         this.arkivElementEndringTOs.add(arkivElementEndringTO);
     }
