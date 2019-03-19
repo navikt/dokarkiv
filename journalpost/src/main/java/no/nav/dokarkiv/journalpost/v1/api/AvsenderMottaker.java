@@ -14,18 +14,18 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor
 public class AvsenderMottaker {
     @ApiModelProperty(
-            value = "Fødselsnummer/d-nummer (11 siffer) eller organisasjonsnummer (9 siffer)",
+            value = "Identifikatoren til avsender/mottaker. Dette er normalt et fødselsnummer eller organisasjonsnummer, men valideres ikke.",
             required = false)
     private String id;
 
     @NotNull(message = "AvsenderMottaker mangler navn")
     @ApiModelProperty(
-            value = "Navn på personbrukere skal lagres på formatet etternavn, fornavn mellomnavn",
+            value = "Navnet til avsender/mottaker.\nNavn på personbrukere skal lagres på formatet etternavn, fornavn mellomnavn",
             required = true)
     private String navn;
 
     @ApiModelProperty(
-            value = "",
+            value = "Landet forsendelsen er mottatt fra eller sendt til. Feltet skal i utgangspunktet kun settes dersom avsender eller mottaker er en institusjon med adresse i utlandet.",
             required = false)
     private String land;
 }

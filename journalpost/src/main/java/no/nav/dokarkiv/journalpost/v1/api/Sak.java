@@ -15,13 +15,13 @@ import javax.validation.constraints.NotNull;
 public class Sak {
     @NotNull(message = "Sak mangler arkivsaksnummer")
     @ApiModelProperty(
-            value = "Angir hvorvidt arkivsaken befinner seg i GSAK (FS22) eller PSAK (PEN)",
+            value = "Saksnummeret i PSAK eller GSAK (SAK)",
             required = true)
     private String arkivsaksnummer;
 
     @NotNull(message = "Sak mangler arkivsaksystem")
     @ApiModelProperty(
-            value = "Fagområdet som forsendelsen tilhører, for eksempel \"FOR\" for Foreldrepenger",
+            value = "\"PSAK\" skal brukes for saker som behandles i Pesys\n\"GSAK\" skal brukes for alle andre sakstyper.",
             required = true)
     private Arkivsaksystem arkivsaksystem;
 }
