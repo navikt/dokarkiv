@@ -54,6 +54,7 @@ public class OppdaterJournalpostIT extends AbstractOppdaterJournalpostIT {
 	private static final String NOKKEL = "nokkel";
 	private static final String VERDI = "verdi";
 	private static final String BREVKODE = "brevkode";
+	private static final String JOURNALFOERENDE_ENHET = "9999";
 
 	/**
 	 * HVIS forsoekEndeligJF == TRUE, og ingen felter mangler for å endelig journalføre => returner 200 OK og journalpostId.
@@ -91,6 +92,7 @@ public class OppdaterJournalpostIT extends AbstractOppdaterJournalpostIT {
 		assertThat(oppdatertJP.getInnhold(), is(request.getTittel()));
 		assertThat(oppdatertJP.getFagomrade().name(), is(request.getTema()));
 		assertThat(oppdatertJP.getBehandlingstema().name(), is(request.getBehandlingstema()));
+		assertThat(oppdatertJP.getJournalForendeEnhetId(), is(request.getJournalfoerendeEnhet()));
 		assertThat(oppdatertJP.getLand(), is(request.getAvsenderMottaker().getLand()));
 		assertThat(oppdatertJP.getAvsenderMottakerId(), is(request.getAvsenderMottaker().getId()));
 		assertThat(oppdatertJP.getAvsenderMottaker(), is(request.getAvsenderMottaker().getNavn()));
@@ -281,6 +283,7 @@ public class OppdaterJournalpostIT extends AbstractOppdaterJournalpostIT {
 				.tema(TEMA)
 				.behandlingstema(BEHANDLINGSTEMA)
 				.tittel(TITTEL)
+				.journalfoerendeEnhet(JOURNALFOERENDE_ENHET)
 				.tilleggsopplysninger(Arrays.asList(Tilleggsopplysning.builder()
 						.nokkel(NOKKEL)
 						.verdi(VERDI)

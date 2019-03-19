@@ -32,6 +32,9 @@ public class OppdaterJournalpostRequest {
     @ApiModelProperty(value = "Tittel som beskriver forsendelsen samlet, for eksempel \"Ettersendelse til søknad om foreldrepenger\".\n\nFeltet vil bli vist frem i brukers journal på nav.no, samt i Gosys og fagsystemer.")
     private String tittel;
 
+    @ApiModelProperty(value = "NAV-enheten som har journalført, eventuelt skal journalføre, forsendelsen. Ved automatisk journalføring uten mennesker involvert skal enhet settes til \"9999\".")
+    private String journalfoerendeEnhet;
+
     @ApiModelProperty(value = "")
     private List<Tilleggsopplysning> tilleggsopplysninger;
 

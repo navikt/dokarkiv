@@ -87,7 +87,13 @@ public class JournalpostMapper {
 
         if (oppdaterJournalpostRequest.getTilleggsopplysninger() != null && !oppdaterJournalpostRequest.getTilleggsopplysninger().isEmpty()) {
             journalpost.setTilleggsopplysninger(mapTilleggsopplysninger(oppdaterJournalpostRequest.getTilleggsopplysninger()));
+        	endret = true;
         }
+
+        if (isNotBlank(oppdaterJournalpostRequest.getJournalfoerendeEnhet())) {
+        	journalpost.setJournalForendeEnhetId(oppdaterJournalpostRequest.getJournalfoerendeEnhet());
+        	endret = true;
+		}
 
 		updateSaksrelasjonFields(journalpost, oppdaterJournalpostRequest);
 
