@@ -18,7 +18,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
-public class JournalpostMapperTest {
+public class JournalpostUpdaterTest {
     @Mock
 	private BrukerRepository brukerRepositoryMock;
 	@Mock
@@ -28,7 +28,7 @@ public class JournalpostMapperTest {
 	private Journalpost journalpost;
 
 	@InjectMocks
-	private JournalpostMapper mapper;
+	private JournalpostUpdater updater;
 
 
 	@Test
@@ -39,7 +39,7 @@ public class JournalpostMapperTest {
 
 		assertThat(journalpost.getBrukere(), hasSize(2));
 
-		mapper.oppdaterJournalpost(journalpost, oppdaterJournalpostRequest);
+		updater.updateFields(journalpost, oppdaterJournalpostRequest);
 
 		assertThat(journalpost.getFagomrade().name(), is(oppdaterJournalpostRequest.getTema()));
 		assertThat(journalpost.getInnhold(), is(oppdaterJournalpostRequest.getTittel()));
@@ -52,7 +52,7 @@ public class JournalpostMapperTest {
 
 		journalpost = TestUtils.createJournalpostForOppdatering();
 
-		mapper.oppdaterJournalpost(journalpost, oppdaterJournalpostRequest);
+		updater.updateFields(journalpost, oppdaterJournalpostRequest);
 
 		assertThat(journalpost.getBrukere(), hasSize(1));
 	}

@@ -19,14 +19,14 @@ import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import no.nav.dokarkiv.journalpost.v1.api.Sak;
 import no.nav.dokarkiv.journalpost.v1.api.Arkivsaksystem;
 import no.nav.dokarkiv.journalpost.v1.api.AvsenderMottaker;
 import no.nav.dokarkiv.journalpost.v1.api.Bruker;
 import no.nav.dokarkiv.journalpost.v1.api.BrukerIdType;
 import no.nav.dokarkiv.journalpost.v1.api.DokumentInfo;
-import no.nav.dokarkiv.journalpost.v1.api.OppdaterJournalpostResponse;
 import no.nav.dokarkiv.journalpost.v1.api.OppdaterJournalpostRequest;
+import no.nav.dokarkiv.journalpost.v1.api.OppdaterJournalpostResponse;
+import no.nav.dokarkiv.journalpost.v1.api.Sak;
 import no.nav.dokarkiv.journalpost.v1.api.Tilleggsopplysning;
 import org.apache.commons.collections15.IteratorUtils;
 import org.junit.Test;
@@ -115,11 +115,11 @@ public class OppdaterJournalpostIT extends AbstractOppdaterJournalpostIT {
 		assertEquals(3, aksjonsLoggList.size());
 
 		assertEquals(SERVICE_USER_ID, aksjonsLoggList.get(0).getUtfoertAv());
-		assertEquals(AksjonsTypeCode.SAKSTILKNYTNING, aksjonsLoggList.get(0).getAksjon());
+		assertEquals(AksjonsTypeCode.ENDRE_METADATA, aksjonsLoggList.get(0).getAksjon());
 		assertEquals(2, aksjonsLoggList.get(0).getArkivElementEndringer().size());
 
 		assertEquals(SERVICE_USER_ID, aksjonsLoggList.get(1).getUtfoertAv());
-		assertEquals(AksjonsTypeCode.ENDRE_METADATA, aksjonsLoggList.get(1).getAksjon());
+		assertEquals(AksjonsTypeCode.SAKSTILKNYTNING, aksjonsLoggList.get(1).getAksjon());
 		assertEquals(2, aksjonsLoggList.get(1).getArkivElementEndringer().size());
 
 		assertEquals(SERVICE_USER_ID, aksjonsLoggList.get(2).getUtfoertAv());

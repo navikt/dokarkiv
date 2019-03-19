@@ -1,7 +1,6 @@
 package no.nav.dokarkiv.journalpost.v1.rjoark200;
 
 import static no.nav.dokarkiv.journalpost.v1.rjoark200.OppdaterJournalpostValidator.validateOppdaterteFelt;
-import static no.nav.dokarkiv.journalpost.v1.rjoark200.util.Utils.convertStringToLong;
 
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
@@ -23,18 +22,21 @@ public class OppdaterJournalpostService {
 
     private final JoarkRepositorySkjermet joarkRepository;
     private final DokumentinfoRepository dokumentinfoRepository;
-	private final JournalpostMapper journalpostMapper;
-	private final DokumentInfoMapper dokumentInfoMapper;
+	private final JournalpostUpdater journalpostUpdater;
+	private final SaksrelasjonUpdater saksrelasjonUpdater;
+	private final DokumentInfoUpdater dokumentInfoUpdater;
 
 	@Inject
     public OppdaterJournalpostService(JoarkRepositorySkjermet joarkRepository,
-									  JournalpostMapper journalpostMapper,
+									  JournalpostUpdater journalpostUpdater,
+									  SaksrelasjonUpdater saksrelasjonUpdater,
 									  DokumentinfoRepository dokumentinfoRepository,
-									  DokumentInfoMapper dokumentInfoMapper) {
+									  DokumentInfoUpdater dokumentInfoUpdater) {
 		this.joarkRepository = joarkRepository;
 		this.dokumentinfoRepository = dokumentinfoRepository;
-		this.journalpostMapper = journalpostMapper;
-		this.dokumentInfoMapper = dokumentInfoMapper;
+		this.journalpostUpdater = journalpostUpdater;
+		this.saksrelasjonUpdater = saksrelasjonUpdater;
+		this.dokumentInfoUpdater = dokumentInfoUpdater;
 	}
 
 	public void oppdaterJournalpost(Long journalpostId, OppdaterJournalpostRequest oppdaterJournalpostRequest, String aksjonsLoggHeaderString) throws UgyldigAksjonsLoggException {
@@ -49,7 +51,8 @@ public class OppdaterJournalpostService {
 		);
 
 		validateOppdaterteFelt(oppdaterJournalpostRequest, journalpost.getJournalstatus());
-		journalpostMapper.oppdaterJournalpost(journalpost, oppdaterJournalpostRequest);
+		journalpostUpdater.updateFields(journalpost, oppdaterJournalpostRequest);
+		saksrelasjonUpdater.updateFields(journalpost, oppdaterJournalpostRequest);
 		joarkRepository.save(journalpost);
 
 		if (oppdaterJournalpostRequest.getDokumenter() != null) {
@@ -57,7 +60,7 @@ public class OppdaterJournalpostService {
 				DokumentInfo dokumentInfo = journalpost.getDokumentInfoFromJpDokInfoRelasjonerByDokumentInfoId(Long.parseLong(dokument.getDokumentInfoId()));
 
 				Utils.assertDokumentInfoNotNull(dokumentInfo, String.valueOf(journalpost.getJournalpostId()), dokument.getDokumentInfoId());
-				dokumentInfoMapper.oppdaterDokumentInfo(dokumentInfo, dokument.getBrevkode(), dokument.getTittel());
+				dokumentInfoUpdater.updateFields(dokumentInfo, dokument);
 				dokumentinfoRepository.save(dokumentInfo);
 			}
 		}
