@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,6 +18,7 @@ import java.util.List;
 @AllArgsConstructor
 public class OpprettJournalpostRequest {
 
+	@NotNull(message = "JournalpostType kan ikke være null")
 	@ApiModelProperty(
 			value = "",
 			required = true)
@@ -32,17 +34,20 @@ public class OpprettJournalpostRequest {
 			required = false)
 	private Bruker bruker;
 
+	@NotNull(message = "Tema kan ikke være null")
 	@ApiModelProperty(
-			value = "Fagområdet som forsendelsen tilhører, for eksempel \"FOR\" for Foreldrepenger",
+			value = "Temaet som forsendelsen tilhører, for eksempel \"FOR\" (foreldrepenger).",
 			example = "FOR",
 			required = true)
 	private String tema;
 
 	@ApiModelProperty(
-			value = "",
+			value = "Behandlingstema for forsendelsen, for eksempel ab0001 (Ordinære dagpenger).",
+			example = "ab0001",
 			required = false)
 	private String behandlingstema;
 
+	@NotNull(message = "Tittel kan ikke være null")
 	@ApiModelProperty(
 			value = "Tittel som beskriver forsendelsen samlet, feks \"Ettersendelse til søknad om foreldrepenger\".",
 			example = "Ettersendelse til søknad om foreldrepenger",
@@ -56,14 +61,16 @@ public class OpprettJournalpostRequest {
 	private String kanal;
 
 	@ApiModelProperty(
-			value = "NAV-enheten som har journalført, eventuelt skal journalføre, forsendelsen.\n" +
-					"Ved automatisk journalføring uten mennesker involvert skal enhet settes til \"9999\".",
+			value = "NAV-enheten som har journalført, eventuelt skal journalføre, forsendelsen. " +
+					"Ved automatisk journalføring uten mennesker involvert skal enhet settes til \"9999\".\n" +
+					"Konsument må sette journalfoerendeEnhet dersom tjenesten skal ferdigstille journalføringen.",
 			example = "9999",
 			required = false)
 	private String journalfoerendeEnhet;
 
 	@ApiModelProperty(
-			value = "",
+			value = "Unik id for forsendelsen som kan brukes til sporing gjennom verdikjeden.\n" +
+					"Eksempler på eksternReferanseId kan være sykmeldingsId for sykmeldinger, Altinn ArchiveReference for Altinn-skjema eller SEDid for SED.",
 			required = false)
 	private String eksternReferanseId;
 

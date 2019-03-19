@@ -24,7 +24,8 @@ public class Dokument {
 
 	@ApiModelProperty(
 			value = "Typen dokument. Brevkoden sier noe om dokumentets innhold og oppbygning.\n" +
-					"For inngående dokumenter kan brevkoden være en NAV-skjemaID f.eks. \"NAV 14-05.09\" eller en SED-id.",
+					"For inngående dokumenter kan brevkoden være en NAV-skjemaID f.eks. \"NAV 14-05.09\" eller en SED-id.\n" +
+					"Brevkode skal ikke settes for ustrukturert, uklassifisert dokumentasjon, f.eks. brukeropplastede vedlegg.",
 			example = "NAV 14-05.09",
 			required = false)
 	private String brevkode;

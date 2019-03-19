@@ -6,18 +6,22 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.NotNull;
+
 @Builder
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 public class DokumentVariant {
 
+	@NotNull(message = "Filtype kan ikke være null")
 	@ApiModelProperty(
 			value = "Filtypen til filen som følger, feks PDF/A, JSON eller XML.",
 			example = "PDF/A",
 			required = true)
 	private String filtype;
 
+	@NotNull(message = "Variantformat kan ikke være null")
 	@ApiModelProperty(
 			value = "ARKIV brukes for dokumentvarianter i menneskelesbart format (for eksempel PDF/A).  Gosys og nav.no henter arkivvariant og viser denne til bruker.\n" +
 					"ORIGINAL skal brukes for dokumentvariant i maskinlesbart format (for eksempel XML og JSON) som brukes for automatisk saksbehandling\n" +
