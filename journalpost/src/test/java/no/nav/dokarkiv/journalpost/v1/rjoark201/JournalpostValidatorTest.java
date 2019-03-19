@@ -133,6 +133,18 @@ public class JournalpostValidatorTest {
 	}
 
 	@Test
+	public void shouldThrowExceptionIfSaksrelasjonIsMissing() {
+		Journalpost journalpost = createJournalpost();
+		journalpost.setJournalstatus(JournalStatusCode.M);
+		journalpost.setSaksrelasjon(null);
+
+		expectedException.expect(KanIkkeFerdigstilleException.class);
+		expectedException.expectMessage("må ha en saksrelasjon");
+
+		validator.validateJournalpostStruktur(journalpost);
+	}
+
+	@Test
 	public void shouldThrowExceptionIfSaksrelasjonIsMissingSaksnummer() {
 		Journalpost journalpost = createJournalpost();
 		journalpost.setJournalstatus(JournalStatusCode.M);

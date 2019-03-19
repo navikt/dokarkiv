@@ -38,6 +38,7 @@ class JournalpostValidator {
 		verifyExactlyOneHoveddokument(journalpost);
 		verifyFildetaljerVariantFormat(journalpost);
 		verifyAtLeastOneBrukerExists(journalpost);
+		verifySaksrelasjonIsPresent(journalpost);
 	}
 
 	void validatePaakrevdeFelter(Journalpost journalpost) {
@@ -64,8 +65,7 @@ class JournalpostValidator {
 		try {
 			jp.verifyNoDokumentInfosUnderRedigering();
 		} catch (InvalidJournalpostStructureException e) {
-			throw new DokumentUnderRedigeringException(String.format("Ett eller flere av dokumentene som forsøkes oppdatert på journalpost med journalpostId=%s er under redigering",
-					jp.getJournalpostId()));
+			throw new DokumentUnderRedigeringException(String.format("Ett eller flere av dokumentene som forsøkes oppdatert på journalpost med journalpostId=%s er under redigering", jp.getJournalpostId()));
 		}
 	}
 
@@ -73,8 +73,7 @@ class JournalpostValidator {
 		try {
 			jp.verifyOnlyOneHoveddokument();
 		} catch (InvalidJournalpostStructureException e) {
-			throw new KanIkkeFerdigstilleException(String.format("Kan ikke ferdigstille: Journalpost med journalpostId=%s inneholder null eller flere enn ett hoveddokument",
-					jp.getJournalpostId()));
+			throw new KanIkkeFerdigstilleException(String.format("Kan ikke ferdigstille: Journalpost med journalpostId=%s inneholder null eller flere enn ett hoveddokument", jp.getJournalpostId()));
 		}
 	}
 
@@ -82,14 +81,14 @@ class JournalpostValidator {
 		try {
 			jp.verifyArkivVariantOfAllDocuments();
 		} catch (InvalidJournalpostStructureException e) {
-			throw new KanIkkeFerdigstilleException(String.format("Kunne ikke endelig journalføre: Journalpost med journalpostId=%s mangler arkivvariant",
+			throw new KanIkkeFerdigstilleException(String.format("Kan ikke ferdigstille: Journalpost med journalpostId=%s mangler arkivvariant",
 					jp.getJournalpostId()));
 		}
 		jp.getJournalpostDokumentInfoRelasjoner().forEach(dr -> {
 			try {
 				dr.getDokumentInfo().verifyNoVariantDuplicates();
 			} catch (InvalidJournalpostStructureException e) {
-				throw new KanIkkeFerdigstilleException(String.format("Kunne ikke endelig journalføre: Journalpost med journalpostId=%s inneholder flere fildetaljer med samme variantformat",
+				throw new KanIkkeFerdigstilleException(String.format("Kan ikke ferdigstille: Journalpost med journalpostId=%s inneholder flere fildetaljer med samme variantformat",
 						jp.getJournalpostId()));
 			}
 		});
@@ -97,7 +96,13 @@ class JournalpostValidator {
 
 	private void verifyAtLeastOneBrukerExists(Journalpost jp) {
 		if (jp.getBrukere().isEmpty()) {
-			throw new KanIkkeFerdigstilleException(String.format("Kunne ikke endelig journalføre: Journalpost med journalpostId=%s må knyttes til en bruker.", jp.getJournalpostId()));
+			throw new KanIkkeFerdigstilleException(String.format("Kan ikke ferdigstille: Journalpost med journalpostId=%s må knyttes til en bruker.", jp.getJournalpostId()));
+		}
+	}
+
+	private void verifySaksrelasjonIsPresent(Journalpost jp) {
+		if (jp.getSaksrelasjon() == null) {
+			throw new KanIkkeFerdigstilleException(String.format("Kunne ikke ferdigstille: Journalpost med journalpostId=%s må ha en saksrelasjon", jp.getJournalpostId()));
 		}
 	}
 
