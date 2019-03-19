@@ -42,8 +42,15 @@ public class AksjonsLoggHelper {
         }
     }
 
+    public void setAksjonsLoggTO(AksjonsTypeCode aksjonsTypeCode) throws UgyldigAksjonsLoggException {
+        setAksjonsLoggTO(aksjonsTypeCode, null);
+    }
+
     public void addToArkivElementEndringTOs(ArkivElementEndringTO arkivElementEndringTO) {
-        this.arkivElementEndringTOs.add(arkivElementEndringTO);
+        if(arkivElementEndringTO.getFraVerdi() == null
+                || !arkivElementEndringTO.getFraVerdi().equals(arkivElementEndringTO.getTilVerdi())) {
+            this.arkivElementEndringTOs.add(arkivElementEndringTO);
+        }
     }
 
     public static void setJournalpostId(long journalpostId) {

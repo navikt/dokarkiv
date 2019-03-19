@@ -46,7 +46,7 @@ public class JournalpostMapper {
 
 		boolean endret = false;
 		AksjonsLoggHelper aksjonsLoggHelperMetadata = new AksjonsLoggHelper();
-		aksjonsLoggHelperMetadata.setAksjonsLoggTO(AksjonsTypeCode.ENDRE_METADATA, null);
+		aksjonsLoggHelperMetadata.setAksjonsLoggTO(AksjonsTypeCode.ENDRE_METADATA);
 
 		if (isNotBlank(oppdaterJournalpostRequest.getTittel())) {
 			aksjonsLoggHelperMetadata.addToArkivElementEndringTOs(ArkivElementEndringTO.builder()
@@ -150,7 +150,7 @@ public class JournalpostMapper {
 		if (request.getSak() != null) {
 			Saksrelasjon saksrelasjon;
 			AksjonsLoggHelper aksjonsLoggHelperSakstilknytning = new AksjonsLoggHelper();
-			aksjonsLoggHelperSakstilknytning.setAksjonsLoggTO(AksjonsTypeCode.SAKSTILKNYTNING, null);
+			aksjonsLoggHelperSakstilknytning.setAksjonsLoggTO(AksjonsTypeCode.SAKSTILKNYTNING);
 
 			if (journalpost.getSaksrelasjon() == null) {
 				saksrelasjon = new Saksrelasjon();

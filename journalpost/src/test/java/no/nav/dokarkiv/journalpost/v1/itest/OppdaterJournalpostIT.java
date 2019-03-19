@@ -5,6 +5,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static java.lang.String.format;
+import static no.nav.dokarkiv.core.datautil.JournalpostTestDataProvider.INNHOLD;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.StringContains.containsString;
@@ -127,7 +128,7 @@ public class OppdaterJournalpostIT extends AbstractOppdaterJournalpostIT {
 	}
 
 	@Test
-	public void shouldNotProduceAksjonsLogg() {
+	public void shouldNotProduceAksjonsLoggForEmptyRequest() {
 		abacPermit();
 
 		Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
@@ -147,7 +148,32 @@ public class OppdaterJournalpostIT extends AbstractOppdaterJournalpostIT {
 		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
 		assert(aksjonsLoggList.isEmpty());
 		TestTransaction.end();
+	}
 
+	@Test
+	public void shouldNotProduceAksjonsLoggForUnchangedFields() {
+		abacPermit();
+
+		Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
+				.endretAvNavn("saksbehandlersen"));
+		Long journalpostId = journalpost.getJournalpostId();
+
+		OppdaterJournalpostRequest request = OppdaterJournalpostRequest.builder()
+				.tema("PEN")
+				.tittel(INNHOLD)
+				.build();
+
+		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
+
+		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(
+				JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER + journalpostId, HttpMethod.PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
+
+		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
+
+		TestTransaction.start();
+		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
+		assert(aksjonsLoggList.isEmpty());
+		TestTransaction.end();
 	}
 
 	@Test
