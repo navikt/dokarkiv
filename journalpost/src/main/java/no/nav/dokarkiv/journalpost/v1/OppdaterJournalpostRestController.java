@@ -9,6 +9,7 @@ import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
 import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_LOGG_HEADER;
 import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.UPDATE_ACTION;
+import static no.nav.dokarkiv.journalpost.v1.util.RequestUtils.validateId;
 
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +20,6 @@ import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import no.nav.dokarkiv.journalpost.v1.api.OppdaterJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.OppdaterJournalpostResponse;
 import no.nav.dokarkiv.journalpost.v1.rjoark200.OppdaterJournalpostService;
-import no.nav.dokarkiv.journalpost.v1.rjoark200.util.Utils;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerOppdaterJournalpost;
 import no.nav.freg.abac.core.annotation.Abac;
 import org.slf4j.MDC;
@@ -62,7 +62,7 @@ public class OppdaterJournalpostRestController {
 		RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDC_CONSUMER_ID));
 		MDC.put(MDC_REQUEST_ID, "rjoark200");
 		log.info(MDC.get(MDC_REQUEST_ID) + " har mottatt kall om å oppdatere journalpost med journalpostId={}", journalpostId);
-		Utils.validateId(journalpostId, "journalpostId");
+		validateId(journalpostId, "journalpostId");
 		abacSecurityService.assertAccessToJournalpost(journalpostId);
 
 		oppdaterJournalpostService.oppdaterJournalpost(Long.parseLong(journalpostId), request, aksjonsLoggHeaderString);
