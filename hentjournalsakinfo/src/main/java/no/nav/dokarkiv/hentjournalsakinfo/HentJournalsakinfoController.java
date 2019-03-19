@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.dokumenturl.MimeTypeMapper;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.metrics.RestMetrics;
+import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import no.nav.dokarkiv.hentjournalsakinfo.rjoark900.FinnJournalposterRequestTo;
 import no.nav.dokarkiv.hentjournalsakinfo.rjoark900.FinnJournalposterResponseTo;
 import no.nav.dokarkiv.hentjournalsakinfo.rjoark900.FinnJournalposterService;
@@ -37,6 +38,7 @@ import java.util.Base64;
 @RestController
 @RequestMapping("/hentjournalsakinfo")
 public class HentJournalsakinfoController {
+	public static final String RJOARK_920 = "rjoark920";
 	private final SafHentDokumentService safHentDokumentService;
 	private final SafHentJournalpostService safHentJournalpostService;
 	private final MimeTypeMapper mimeTypeMapper = new MimeTypeMapper();
@@ -101,9 +103,10 @@ public class HentJournalsakinfoController {
 
 	@Transactional(readOnly = true)
 	@RequestMapping(value = "/hentdokument/{dokumentinfoId}/{variant}")
-	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark920"}, percentiles = {0.5, 0.95})
+	@RestMetrics(value = "dok_request", extraTags = {"process_code", RJOARK_920}, percentiles = {0.5, 0.95})
 	public ResponseEntity<String> safHentDokument(@PathVariable Long dokumentinfoId,
 												  @PathVariable VariantFormatCode variant) {
+		RequestContextUtil.createAndSetUsername(RJOARK_920, "dokarkiv");
 		log.info("rjoark920 har mottatt forespørsel om dokument med dokumentinfoId={} og variant={}", dokumentinfoId, variant);
 		SafHentDokumentResponse safHentDokumentResponse = safHentDokumentService.hentDokumentByDokumentinfoIdAndVariant(dokumentinfoId, variant);
 		return ResponseEntity.ok()

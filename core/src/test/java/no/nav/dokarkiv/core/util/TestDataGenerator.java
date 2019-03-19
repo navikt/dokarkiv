@@ -1,5 +1,7 @@
 package no.nav.dokarkiv.core.util;
 
+import static no.nav.dokarkiv.core.repository.DokumentFilSkjermetRepository.FIL_UUID_DUMMY_DOKUMENT_KASSERT;
+
 import no.nav.dokarkiv.core.domain.codes.ArsakReturCode;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
@@ -14,6 +16,7 @@ import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.Bruker;
+import no.nav.dokarkiv.core.domain.entities.DokumentFil;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
@@ -50,6 +53,8 @@ public class TestDataGenerator {
 	public static final String TILLEGGOPPLYSNINGER_KEY = "tillegg";
 	public static final String TILLEGGOPPLYSNINGER_VAL = "tillegg_verdi";
 	public static final byte[] FIL = "Test dokument".getBytes();
+	public static final byte[] FIL_DUMMY = "Test dummy dokument dummy".getBytes();
+	public static final byte[] FIL_SLADDET = "Test sladdet dokument".getBytes();
 
 	public static Journalpost createJournalpostWithHoveddokument() {
 		Journalpost journalpost = Journalpost.builder()
@@ -229,5 +234,13 @@ public class TestDataGenerator {
 				.build();
 		filDetaljer.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
 		return filDetaljer;
+	}
+
+	public static DokumentFil createDummyDokument(){
+		DokumentFil dokumentFil = new DokumentFil();
+		dokumentFil.setFil(FIL_DUMMY);
+		dokumentFil.setFilUuid(FIL_UUID_DUMMY_DOKUMENT_KASSERT);
+		dokumentFil.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
+		return dokumentFil;
 	}
 }

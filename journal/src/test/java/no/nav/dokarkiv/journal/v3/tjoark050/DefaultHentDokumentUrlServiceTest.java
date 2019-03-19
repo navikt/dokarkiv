@@ -133,6 +133,7 @@ public class DefaultHentDokumentUrlServiceTest {
 	public void shouldThrowExceptionWhenFilDetaljerWithGivenVariantNotFound() throws Exception {
 		Journalpost journalpost = createJournalPost();
 		journalpost.findFilDetaljerByFilUuid(FIL_UUID).setVariantFormat(VariantFormatCode.PRODUKSJON);
+		journalpost.findFilDetaljerByFilUuid(FIL_UUID_SLADDET).setVariantFormat(VariantFormatCode.PRODUKSJON);
 
 		when(joarkRepositoryMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(journalpost));
 

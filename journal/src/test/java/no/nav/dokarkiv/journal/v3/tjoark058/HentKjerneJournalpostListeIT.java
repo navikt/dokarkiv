@@ -15,8 +15,12 @@ import static no.nav.dokarkiv.core.datautil.JournalpostTestDataProvider.createJo
 import static no.nav.dokarkiv.core.datautil.SaksrelasjonTestDataProvider.PEN_SAK_ID;
 import static no.nav.dokarkiv.core.datautil.SaksrelasjonTestDataProvider.createPENSaksrelasjon;
 import static no.nav.dokarkiv.core.datautil.SaksrelasjonTestDataProvider.createSaksrelasjon;
+import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
+import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.HOVEDDOKUMENT;
+import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.VEDLEGG;
 import static no.nav.dokarkiv.core.domain.entities.DokumentInfo.DELETED_DOCUMENT_TITLE;
 import static no.nav.dokarkiv.core.util.DateConverterUtil.convertDateToXMLGregorianCalendar;
+import static no.nav.dokarkiv.core.util.TestDataGenerator.createDokumentInfo;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.Matchers.empty;
@@ -42,6 +46,7 @@ import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
 import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
+import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
@@ -121,12 +126,14 @@ public class HentKjerneJournalpostListeIT extends AbstractJournalV3Itest {
 		stubFor(post("/abac")
 				.inScenario(DENY_PERMIT_ABAC_SCENARIO)
 				.willSetStateTo("permit")
-				.willReturn(aResponse().withStatus(HttpStatus.OK.value()).withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
+						.withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
 						.withBodyFile("abac/abac-deny.json")));
 		stubFor(post("/abac")
 				.inScenario(DENY_PERMIT_ABAC_SCENARIO)
 				.whenScenarioStateIs("permit")
-				.willReturn(aResponse().withStatus(HttpStatus.OK.value()).withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
+						.withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
 						.withBodyFile("abac/abac-permit.json")));
 
 
@@ -148,12 +155,14 @@ public class HentKjerneJournalpostListeIT extends AbstractJournalV3Itest {
 		stubFor(post("/abac")
 				.inScenario(DENY_PERMIT_ABAC_SCENARIO)
 				.willSetStateTo("permit")
-				.willReturn(aResponse().withStatus(HttpStatus.OK.value()).withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
+						.withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
 						.withBodyFile("abac/abac-deny.json")));
 		stubFor(post("/abac")
 				.inScenario(DENY_PERMIT_ABAC_SCENARIO)
 				.whenScenarioStateIs("permit")
-				.willReturn(aResponse().withStatus(HttpStatus.OK.value()).withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
+						.withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
 						.withBodyFile("abac/abac-permit.json")));
 
 		joarkRepository.save(createJournalpost(DOKUMENT_KATEGORI).build());
@@ -169,7 +178,9 @@ public class HentKjerneJournalpostListeIT extends AbstractJournalV3Itest {
 		HentKjerneJournalpostListeResponse response = journalV3Provider.hentKjerneJournalpostListe(request);
 
 		assertThat(response.getJournalpostListe(), hasSize(1));
-		assertThat(response.getJournalpostListe().get(0).getJournalpostId(), equalTo(String.valueOf(journalpostPen.getJournalpostId())));
+		assertThat(response.getJournalpostListe()
+				.get(0)
+				.getJournalpostId(), equalTo(String.valueOf(journalpostPen.getJournalpostId())));
 	}
 
 	@Test
@@ -194,10 +205,56 @@ public class HentKjerneJournalpostListeIT extends AbstractJournalV3Itest {
 	}
 
 	@Test
-	public void shouldReturnListWithOneJournalpostNoContentKassert() throws Exception {
+	public void shouldNotReturnJournalpostWhenSkjermet() throws Exception {
 		abacPermit();
 		Journalpost storedJournalpost = joarkRepository.save(createJournalpost(DOKUMENT_KATEGORI).build());
-		skjermingService.skjermAllFildetaljer(storedJournalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo(), SkjermingTypeCode.POL);
+		skjermingService.skjermJournalpost(storedJournalpost.getJournalpostId(), SkjermingTypeCode.POL);
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
+
+		HentKjerneJournalpostListeResponse response = journalV3Provider.hentKjerneJournalpostListe(createRequest());
+
+		assertThat(response.getJournalpostListe(), is(empty()));
+	}
+
+	@Test
+	public void shouldNotReturnRelasjonWhenSkjermet() throws Exception {
+		abacPermit();
+		Journalpost storedJournalpost = joarkRepository.save(createJournalpost(DOKUMENT_KATEGORI)
+				.dokumentInfoRelasjoner(
+						getJournalpostDokumentInfoRelasjonBuilder()
+								.tilknyttetAvNavn("testuser")
+								.tilknyttetJournalpostSom(VEDLEGG)
+								.dokumentInfo(createDokumentInfo())
+								.opprettetKildeNavn("test").build())
+				.build());
+
+		HentKjerneJournalpostListeResponse response = journalV3Provider.hentKjerneJournalpostListe(createRequest());
+
+		assertThat(response.getJournalpostListe().get(0).getVedleggListe().size(), is(1));
+		assertThat(response.getJournalpostListe().get(0).getHoveddokument(), notNullValue());
+
+		skjermingService.skjermJournalpostDokumentInfoRelasjon(storedJournalpost.getJournalpostId(), storedJournalpost
+				.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
+				.iterator()
+				.next()
+				.getDokumentInfo()
+				.getDokumentInfoId(), SkjermingTypeCode.POL);
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
+
+		response = journalV3Provider.hentKjerneJournalpostListe(createRequest());
+
+		assertThat(response.getJournalpostListe().get(0).getVedleggListe().size(), is(0));
+		assertThat(response.getJournalpostListe().get(0).getHoveddokument(), notNullValue());
+	}
+
+	@Test
+	public void shouldReturnListWithOneJournalpostOnlyArkivVariantWhenKassert() throws Exception {
+		abacPermit();
+		Journalpost storedJournalpost = joarkRepository.save(createJournalpost(DOKUMENT_KATEGORI).build());
+		skjermingService.skjermAllFildetaljer(storedJournalpost.findHoveddokumentDokumentInfoRelasjon()
+				.getDokumentInfo(), SkjermingTypeCode.POL);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
@@ -205,7 +262,14 @@ public class HentKjerneJournalpostListeIT extends AbstractJournalV3Itest {
 
 		assertThat(response.getJournalpostListe(), hasSize(1));
 		assertThat(response.isSisteIntervall(), is(true));
-		assertThat(response.getJournalpostListe().get(0).getHoveddokument().getDokumentInnholdListe().size(), is(0));
+		assertThat(response.getJournalpostListe().get(0).getHoveddokument().getDokumentInnholdListe().size(), is(1));
+		assertThat(response.getJournalpostListe()
+				.get(0)
+				.getHoveddokument()
+				.getDokumentInnholdListe()
+				.get(0)
+				.getVariantformat()
+				.getValue(), is("ARKIV"));
 	}
 
 	@Test
@@ -445,7 +509,8 @@ public class HentKjerneJournalpostListeIT extends AbstractJournalV3Itest {
 		assertKorrespodansePart(wsJournalpost);
 		assertThat(wsJournalpost.getKryssreferanseListe(), is(empty()));
 
-		assertHoveddokument(wsJournalpost.getHoveddokument(), j.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo(), dokTilstand, dokumenttittel);
+		assertHoveddokument(wsJournalpost.getHoveddokument(), j.findHoveddokumentDokumentInfoRelasjon()
+				.getDokumentInfo(), dokTilstand, dokumenttittel);
 		assertThat(wsJournalpost.getVedleggListe(), is(empty()));
 		assertThat(wsJournalpost.getBrukerListe(), hasSize(0));
 		assertThat(wsJournalpost.getJournaltilstand(), is(journalTilstand));
@@ -480,8 +545,10 @@ public class HentKjerneJournalpostListeIT extends AbstractJournalV3Itest {
 	private void assertKorrespodansePart(
 			no.nav.tjeneste.virksomhet.journal.v3.informasjon.hentkjernejournalpostliste.Journalpost journalpost) {
 		assertThat(journalpost.getKorrespondansePart(), is(notNullValue()));
-		assertThat(journalpost.getKorrespondansePart().getKorrespondansepartId(), is(JournalpostTestDataProvider.JP_AVSENDER_MOTTAKER_ID));
-		assertThat(journalpost.getKorrespondansePart().getKorrespondansepartNavn(), is(JournalpostTestDataProvider.JP_AVSENDER_MOTTAKER));
+		assertThat(journalpost.getKorrespondansePart()
+				.getKorrespondansepartId(), is(JournalpostTestDataProvider.JP_AVSENDER_MOTTAKER_ID));
+		assertThat(journalpost.getKorrespondansePart()
+				.getKorrespondansepartNavn(), is(JournalpostTestDataProvider.JP_AVSENDER_MOTTAKER));
 		assertThat(journalpost.getKorrespondansePart().getKorrespondansepartType(), is("Mottaker"));
 	}
 
@@ -527,7 +594,9 @@ public class HentKjerneJournalpostListeIT extends AbstractJournalV3Itest {
 
 	private void assertSkannetInnholdListe(List<SkannetInnhold> skannetInnholdListe, int size) {
 		assertThat(skannetInnholdListe, hasSize(size));
-		assertThat(skannetInnholdListe.get(0).getDokumenttypeId().getValue(), is(SkannetInnholdTestDataProvider.DOKUMENT_TYPE_ID));
+		assertThat(skannetInnholdListe.get(0)
+				.getDokumenttypeId()
+				.getValue(), is(SkannetInnholdTestDataProvider.DOKUMENT_TYPE_ID));
 		assertThat(skannetInnholdListe.get(0).getVedleggInnhold(), is(SkannetInnholdTestDataProvider.VEDLEGG_INNHOLD));
 	}
 }
