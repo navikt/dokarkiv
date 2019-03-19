@@ -21,7 +21,7 @@ import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -47,6 +47,7 @@ public class FerdigstillJournalpostService {
 				.orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostId)));
 		JournalStatusCode prevJournalstatus = journalpost.getJournalstatus();
 		String prevJournalfoerendeEnhet = journalpost.getJournalForendeEnhetId();
+		String prevJournalfortAvNavn = journalpost.getJournalfortAvNavn();
 
 		validerJournalpost(journalpost);
 
@@ -54,7 +55,7 @@ public class FerdigstillJournalpostService {
 
 		joarkRepository.save(journalpost);
 
-		populerAksjonslogg(journalpostId, aksjonsloggHeaderString, getArkivElementEndringer(journalpost, prevJournalstatus, prevJournalfoerendeEnhet));
+		populerAksjonslogg(journalpostId, aksjonsloggHeaderString, getArkivElementEndringer(journalpost, prevJournalstatus, prevJournalfoerendeEnhet, prevJournalfortAvNavn));
 	}
 
 	private void validerJournalpost(Journalpost journalpost) {
@@ -100,22 +101,31 @@ public class FerdigstillJournalpostService {
 		aksjonsLoggService.validateAndSaveAksjonsLogg(aksjonsLoggTo, arkivElementEndringTOList);
 	}
 
-	private List<ArkivElementEndringTO> getArkivElementEndringer(Journalpost journalpost, JournalStatusCode prevJournalstatus, String prevJournalfoerendeEnhet) {
-		return Arrays.asList(
-				ArkivElementEndringTO.builder()
-						.arkivElement("Journalpost.journalpostStatus")
-						.fraVerdi(prevJournalstatus == null ? null : prevJournalstatus.name())
-						.tilVerdi(journalpost.getJournalstatus().name())
-						.build(),
-				ArkivElementEndringTO.builder()
-						.arkivElement("Journalpost.journalfEnhet")
-						.fraVerdi(prevJournalfoerendeEnhet)
-						.tilVerdi(journalpost.getJournalForendeEnhetId())
-						.build(),
-				ArkivElementEndringTO.builder()
-						.arkivElement("Journalpost.journalfoertAvNavn")
-						.fraVerdi(null)
-						.tilVerdi(journalpost.getJournalfortAvNavn())
-						.build());
+	private List<ArkivElementEndringTO> getArkivElementEndringer(Journalpost journalpost, JournalStatusCode prevJournalstatus, String prevJournalfoerendeEnhet, String prevJournalfortAvNavn) {
+		List<ArkivElementEndringTO> arkivElementEndringTOList = new ArrayList<>();
+
+		// Journalpost skifter _alltid_ status ved ferdigstilling
+		arkivElementEndringTOList.add(ArkivElementEndringTO.builder()
+				.arkivElement("Journalpost.journalpostStatus")
+				.fraVerdi(prevJournalstatus == null ? null : prevJournalstatus.name())
+				.tilVerdi(journalpost.getJournalstatus().name())
+				.build());
+
+		if (isBlank(prevJournalfoerendeEnhet) || !prevJournalfoerendeEnhet.equals(journalpost.getJournalForendeEnhetId())){
+			arkivElementEndringTOList.add(ArkivElementEndringTO.builder()
+					.arkivElement("Journalpost.journalfEnhet")
+					.fraVerdi(prevJournalfoerendeEnhet)
+					.tilVerdi(journalpost.getJournalForendeEnhetId())
+					.build());
+		}
+
+		if (isBlank(prevJournalfortAvNavn) || !prevJournalfortAvNavn.equals(journalpost.getJournalfortAvNavn())){
+			arkivElementEndringTOList.add(ArkivElementEndringTO.builder()
+					.arkivElement("Journalpost.journalfoertAvNavn")
+					.fraVerdi(prevJournalfortAvNavn)
+					.tilVerdi(journalpost.getJournalfortAvNavn())
+					.build());
+		}
+		return arkivElementEndringTOList;
 	}
 }
