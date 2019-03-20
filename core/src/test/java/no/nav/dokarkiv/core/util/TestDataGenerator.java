@@ -100,6 +100,28 @@ public class TestDataGenerator {
 		return journalpost;
 	}
 
+	public static Journalpost createJournalpostWithGjenbruktHoveddokument(DokumentInfo dokumentInfoGjenbrukt) {
+		Journalpost journalpost = Journalpost.builder()
+				.avsenderMottakerId(AVSENDER_MOTTAKER_ID)
+				.dokumentDato(new Date())
+				.utsendingskanal(UtsendingsKanalCode.NAV_NO)
+				.journalstatus(JournalStatusCode.FS)
+				.journalposttype(JournalpostTypeCode.U)
+				.opprettetAvNavn(OPPRETTET_AV_NAVN)
+				.fagomrade(FagomradeCode.RPO)
+				.mottakskanal(MottaksKanalCode.NAV_NO).build();
+
+		journalpost.addBruker(createBruker());
+		journalpost.addKryssReferanse(createKryssreferanse());
+		journalpost.addReturInfo(createReturInfo());
+		journalpost.setSaksrelasjon(createSaksrelasjon(journalpost));
+		journalpost.setTilleggsopplysninger(createTilleggsopplysninger());
+		journalpost.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
+
+		journalpost.addJournalpostDokumentInfoRelasjon(createHoveddokumentRelasjon(journalpost, dokumentInfoGjenbrukt));
+		return journalpost;
+	}
+
 	public static Map<String, String> createTilleggsopplysninger() {
 		Map<String, String> tilleggsopplysninger = new HashMap<>();
 		tilleggsopplysninger.put(TILLEGGOPPLYSNINGER_KEY, TILLEGGOPPLYSNINGER_VAL);
