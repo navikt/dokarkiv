@@ -66,7 +66,7 @@ public class OpprettJournalpostRestController {
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark202"}, percentiles = {0.5, 0.95}, histogram = true)
 	public ResponseEntity<OpprettJournalpostResponse> opprettJournalpost(@RequestBody OpprettJournalpostRequest request,
 																		 @RequestHeader(required = false) String aksjonsLoggHeader,
-																		 @ApiParam(name = "ferdigstill", allowableValues = "true, false", required = false) @RequestParam(required = false) String ferdigstill) throws UgyldigAksjonsLoggException {
+																		 @ApiParam(name = "forsoekFerdigstill", allowableValues = "true, false", required = false) @RequestParam(required = false) String forsoekFerdigstill) throws UgyldigAksjonsLoggException {
 		MDC.put(MDC_REQUEST_ID, "rjoark202");
 		log.info(MDC.get(MDC_REQUEST_ID) + " har mottat kall for opprettelse av ny journalpost");
 		RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDC_CONSUMER_ID));
@@ -79,7 +79,7 @@ public class OpprettJournalpostRestController {
 		log.info(MDC.get(MDC_REQUEST_ID) + " har opprettet ny journalpost, journalpostId={}", journalpostId);
 
 		Optional<Pair<String, String>> ferdigstillResponse = Optional.empty();
-		if (TRUE.equals(ferdigstill)) {
+		if (TRUE.equals(forsoekFerdigstill)) {
 			ferdigstillResponse = Optional.of(forsoekFerdigstill(journalpostId, request, aksjonsLoggHeader));
 		}
 		return ResponseEntity
