@@ -41,10 +41,23 @@ public class OpprettJournalpostRequestValidatorTest {
 	}
 
 	@Test
+	public void shouldNotThrowExceptionIfAvsenderIsMissing() {
+		request = createMinimalRequest(JournalpostType.INNGAAENDE, TEMA_FOR, INNHOLD)
+				.avsenderMottaker(AvsenderMottaker.builder()
+						.navn(null)
+						.id(null)
+						.build())
+				.build();
+
+		validator.validateRequest(request);
+	}
+
+	@Test
 	public void shouldThrowExceptionIfAvsenderIsMissingNavn() {
 		request = createMinimalRequest(JournalpostType.INNGAAENDE, TEMA_FOR, INNHOLD)
 				.avsenderMottaker(AvsenderMottaker.builder()
 						.navn(null)
+						.id("1122334455")
 						.build())
 				.build();
 
@@ -55,11 +68,11 @@ public class OpprettJournalpostRequestValidatorTest {
 	}
 
 	@Test
-	public void shouldThrowExceptionIfAvsenderIdIsNotNumeric() {
+	public void shouldThrowExceptionIfAvsenderIdHasInvalidLength() {
 		request = createMinimalRequest(JournalpostType.INNGAAENDE, TEMA_FOR, INNHOLD)
 				.avsenderMottaker(AvsenderMottaker.builder()
 						.navn(AVSENDER_NAVN)
-						.id("abc")
+						.id("***gammelt_fnr******gammelt_fnr******gammelt_fnr******gammelt_fnr***5678901")
 						.build())
 				.build();
 
@@ -70,10 +83,9 @@ public class OpprettJournalpostRequestValidatorTest {
 	}
 
 	@Test
-	public void shouldThrowExceptionIfAvsenderIdHasInvalidLength() {
+	public void shouldThrowExceptionIfAvsenderNameIsNotsetWhenAvsenderIdIsSet() {
 		request = createMinimalRequest(JournalpostType.INNGAAENDE, TEMA_FOR, INNHOLD)
 				.avsenderMottaker(AvsenderMottaker.builder()
-						.navn(AVSENDER_NAVN)
 						.id("1122334455")
 						.build())
 				.build();

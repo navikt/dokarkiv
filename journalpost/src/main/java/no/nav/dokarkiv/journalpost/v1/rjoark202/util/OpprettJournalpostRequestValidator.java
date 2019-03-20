@@ -25,6 +25,8 @@ public class OpprettJournalpostRequestValidator {
 
 	private static final int FNR_LENGTH = 11;
 	private static final int ORGNR_LENGTH = 9;
+	private static final int AVSENDERMOTTAKER_NAVN_LENGTH_BYTES = 200;
+	private static final int AVSENDERMOTTAKER_ID_LENGTH_BYTES = 50;
 
 	public void validateRequest(OpprettJournalpostRequest request) {
 		if (request.getAvsenderMottaker() != null) {
@@ -50,17 +52,24 @@ public class OpprettJournalpostRequestValidator {
 	}
 
 	private void validateAvsenderMottaker(AvsenderMottaker avsenderMottaker) {
-		if (isBlank(avsenderMottaker.getNavn())) {
-			throw new InputValideringFeiletException("AvsenderMottaker.navn må være satt.");
+		if (isNotBlank(avsenderMottaker.getNavn()) && avsenderMottaker.getNavn().getBytes().length > AVSENDERMOTTAKER_NAVN_LENGTH_BYTES) {
+			throw new InputValideringFeiletException("AvsenderMottaker.navn er lengre enn " +
+					AVSENDERMOTTAKER_NAVN_LENGTH_BYTES + " byte.");
 		}
-		if (isNotBlank(avsenderMottaker.getId())) {
-			if (!isNumeric(avsenderMottaker.getId())) {
-				throw new InputValideringFeiletException("AvsenderMottaker.id må bestå av tall.");
-			}
-			if (avsenderMottaker.getId().length() != FNR_LENGTH && avsenderMottaker.getId().length() != ORGNR_LENGTH) {
-				throw new InputValideringFeiletException("AvsenderMottaker.id må ha lengde 11 eller 9 (fnr eller orgnr)");
-			}
+		if (isNotBlank(avsenderMottaker.getId()) && avsenderMottaker.getId().getBytes().length > AVSENDERMOTTAKER_ID_LENGTH_BYTES) {
+			throw new InputValideringFeiletException("AvsenderMottaker.id er lengre enn " +
+					AVSENDERMOTTAKER_ID_LENGTH_BYTES + " byte.");
 		}
+
+		if (!isBlank(avsenderMottaker.getNavn()) && isBlank(avsenderMottaker.getId())) {
+			throw new InputValideringFeiletException("AvsenderMottaker.id må være satt når " +
+					"AvsenderMottaker.navn er satt");
+		}
+		if (isBlank(avsenderMottaker.getNavn()) && !isBlank(avsenderMottaker.getId())) {
+			throw new InputValideringFeiletException("AvsenderMottaker.navn må være satt når " +
+					"AvsenderMottaker.id er satt");
+		}
+
 	}
 
 	private void validateBruker(Bruker bruker) {
