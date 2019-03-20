@@ -5,7 +5,6 @@ import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
 import static no.nav.dokarkiv.journalpost.v1.rjoark200.util.Utils.assertNotNull;
 import static org.apache.logging.log4j.util.Strings.isNotBlank;
 
-import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService;
 import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.codes.Behandlingstema;
@@ -32,22 +31,19 @@ import java.util.stream.Collectors;
 public class JournalpostUpdater {
 
 	private final BrukerRepository brukerRepository;
-	private final AksjonsLoggService aksjonsLoggService;
 
 	@Inject
-	public JournalpostUpdater(BrukerRepository brukerRepository, AksjonsLoggService aksjonsLoggService) {
+	public JournalpostUpdater(BrukerRepository brukerRepository) {
 		this.brukerRepository = brukerRepository;
-		this.aksjonsLoggService = aksjonsLoggService;
 	}
 
-	public void updateFields(Journalpost journalpost, OppdaterJournalpostRequest oppdaterJournalpostRequest) throws UgyldigAksjonsLoggException {
+	public void updateFields(Journalpost journalpost, OppdaterJournalpostRequest oppdaterJournalpostRequest, AksjonsLoggHelper aksjonsLoggHelper) throws UgyldigAksjonsLoggException {
 
 		Endret endret = new Endret();
-		AksjonsLoggHelper aksjonsLoggHelperMetadata = new AksjonsLoggHelper();
-		aksjonsLoggHelperMetadata.setAksjonsLoggTO(AksjonsTypeCode.ENDRE_METADATA);
+		aksjonsLoggHelper.setAksjonsLoggTO(AksjonsTypeCode.ENDRE_METADATA);
 
-		updateTittel(journalpost, oppdaterJournalpostRequest, aksjonsLoggHelperMetadata, endret);
-		updateTema(journalpost, oppdaterJournalpostRequest, aksjonsLoggHelperMetadata, endret);
+		updateTittel(journalpost, oppdaterJournalpostRequest, aksjonsLoggHelper, endret);
+		updateTema(journalpost, oppdaterJournalpostRequest, aksjonsLoggHelper, endret);
 		updateAvsenderMottaker(journalpost, oppdaterJournalpostRequest, endret);
 		updateBehandlingstema(journalpost, oppdaterJournalpostRequest, endret);
 		updateTilleggsopplysninger(journalpost, oppdaterJournalpostRequest, endret);
@@ -57,11 +53,6 @@ public class JournalpostUpdater {
 		if (endret.isEndret()) {
 			journalpost.setEndretAvNavn(MDC.get(MDC_USER_ID));
 			journalpost.setEndretKildeNavn(MDC.get(MDC_CONSUMER_ID));
-		}
-
-		if (!aksjonsLoggHelperMetadata.getArkivElementEndringTOs().isEmpty()) {
-			aksjonsLoggService.validateAndSaveAksjonsLogg(aksjonsLoggHelperMetadata.getAksjonsLoggTO(), aksjonsLoggHelperMetadata
-					.getArkivElementEndringTOs());
 		}
 	}
 
