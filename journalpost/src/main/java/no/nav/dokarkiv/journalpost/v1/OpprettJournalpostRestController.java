@@ -64,9 +64,10 @@ public class OpprettJournalpostRestController {
 	@Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_DOKUMENT)},
 			actions = @Abac.Attr(key = ACTION_ID, value = CREATE_ACTION))
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark202"}, percentiles = {0.5, 0.95}, histogram = true)
-	public ResponseEntity<OpprettJournalpostResponse> opprettJournalpost(@RequestBody OpprettJournalpostRequest request,
-																		 @RequestHeader(required = false) String aksjonsLoggHeader,
-																		 @ApiParam(name = "forsoekFerdigstill", allowableValues = "true, false", required = false) @RequestParam(required = false) String forsoekFerdigstill) throws UgyldigAksjonsLoggException {
+	public ResponseEntity<OpprettJournalpostResponse> opprettJournalpost(
+			@RequestBody OpprettJournalpostRequest request,
+			@RequestHeader(required = false) String aksjonsLoggHeader,
+			@ApiParam(name = "forsoekFerdigstill", allowableValues = "true, false", required = false) @RequestParam(required = false) String forsoekFerdigstill) throws UgyldigAksjonsLoggException {
 		MDC.put(MDC_REQUEST_ID, "rjoark202");
 		log.info(MDC.get(MDC_REQUEST_ID) + " har mottat kall for opprettelse av ny journalpost");
 		RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDC_CONSUMER_ID));
@@ -86,20 +87,23 @@ public class OpprettJournalpostRestController {
 				.status(HttpStatus.CREATED)
 				.body(OpprettJournalpostResponse.builder()
 						.journalpostId(String.valueOf(journalpostId))
-						.journalstatus(ferdigstillResponse.map(Pair::getKey).orElse(null))
+						.journalstatus(ferdigstillResponse.map(Pair::getKey).orElse("MIDLERTIDIG"))
 						.melding(ferdigstillResponse.map(Pair::getValue).orElse(null))
 						.build());
 	}
 
 	private Pair<String, String> forsoekFerdigstill(Long journalpostId, OpprettJournalpostRequest request, String aksjonsLoggHeader) throws UgyldigAksjonsLoggException {
 		log.info(MDC.get(MDC_REQUEST_ID) + " forsøker å ferdigstille journalpost, journalpostId={}", journalpostId);
+		Pair<String, String> ferdigstillResponse;
 		try {
 			validateJournalfoerendeEnhet(request.getJournalfoerendeEnhet(), "journalfoerendeEnhet");
 			ferdigstillJournalpostService.ferdigstill(journalpostId, request.getJournalfoerendeEnhet(), aksjonsLoggHeader);
+			log.info(MDC.get(MDC_REQUEST_ID) + " har ferdigstilt journalpost, journalpostId={}", journalpostId);
+			ferdigstillResponse = Pair.of("ENDELIG", null);
 		} catch (DokarkivFunctionalException e) {
-			return Pair.of("MIDLERTIDIG", e.getMessage());
+			log.info(MDC.get(MDC_REQUEST_ID) + " kunne ikke ferdigstille journalpost, journalpostId={}. {}", journalpostId, e.getMessage());
+			ferdigstillResponse = Pair.of("MIDLERTIDIG", e.getMessage());
 		}
-		log.info(MDC.get(MDC_REQUEST_ID) + " har ferdigstilt journalpost, journalpostId={}", journalpostId);
-		return Pair.of("ENDELIG", null);
+		return ferdigstillResponse;
 	}
 }
