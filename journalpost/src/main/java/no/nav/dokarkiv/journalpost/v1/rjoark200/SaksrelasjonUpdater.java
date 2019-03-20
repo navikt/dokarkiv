@@ -2,7 +2,6 @@ package no.nav.dokarkiv.journalpost.v1.rjoark200;
 
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
-import static no.nav.dokarkiv.journalpost.v1.rjoark200.util.Utils.assertNotNull;
 import static org.apache.logging.log4j.util.Strings.isNotBlank;
 
 import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService;
@@ -11,6 +10,7 @@ import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
+import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
 import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
 import no.nav.dokarkiv.journalpost.v1.api.Arkivsaksystem;
 import no.nav.dokarkiv.journalpost.v1.api.OppdaterJournalpostRequest;
@@ -89,13 +89,18 @@ public class SaksrelasjonUpdater {
         }
     }
 
-
     protected FagsystemCode mapArkivSakSystemToFagsystemCode(Arkivsaksystem arkivsaksystem) {
         assertNotNull(arkivsaksystem, "arkivsaksystem");
         if (Arkivsaksystem.GSAK.equals(arkivsaksystem)) {
             return FagsystemCode.FS22;
         } else {
             return FagsystemCode.PEN;
+        }
+    }
+
+    private void assertNotNull(Object object, String fieldName) {
+        if (object == null) {
+            throw new InputValideringFeiletException(String.format("%s kan ikke være null", fieldName));
         }
     }
 }
