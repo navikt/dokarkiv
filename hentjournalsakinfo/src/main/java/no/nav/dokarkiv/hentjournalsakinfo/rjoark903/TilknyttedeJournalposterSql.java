@@ -3,7 +3,10 @@ package no.nav.dokarkiv.hentjournalsakinfo.rjoark903;
 /**
  * @author Joakim Bjørnstad, Jbit AS
  */
-public class TilknyttedeJournalposterSql {
+final class TilknyttedeJournalposterSql {
+	private TilknyttedeJournalposterSql() {
+		// ingen instansiering
+	}
 	static final String GJENBRUKTE_JOURNALPOSTER_SQL =
 			"WITH gjenbrukte_journalposter(journalpostid) AS (\n" +
 					"  SELECT journalpost_id\n" +

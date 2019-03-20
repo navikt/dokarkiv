@@ -9,7 +9,6 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -33,7 +32,7 @@ class TilknyttedeJournalposterJdbcRepository {
 	}
 
 	List<TilknyttetJournalpostDto> findSplittedeJournalposter(final Long dokumentInfoId) {
-		return new ArrayList<>();
+		throw new UnsupportedOperationException("Ikke implementert splittede journalposter enda.");
 	}
 
 	private MapSqlParameterSource buildNamedParams(final Long dokumentInfoId) {
