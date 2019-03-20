@@ -17,24 +17,27 @@ public class OppdaterJournalpostRequest {
     @ApiModelProperty(value = "Avsender eller mottaker av forsendelsen.\n\nSkal ikke settes for notater.")
     private AvsenderMottaker avsenderMottaker;
 
-    @ApiModelProperty(value = "")
+    @ApiModelProperty(value = "Brukeren som forsendelsen gjelder.")
     private Bruker bruker;
 
-    @ApiModelProperty(value = "Referanse til arkivsaken i GSAK eller PSAK som journalposten skal journalføres mot.")
+    @ApiModelProperty(value = "Saken i PSAK eller GSAK som dokumentene skal journalføres mot.\nNB: Dersom journalposten tilhører en fagsak i et fagsystem, må konsument selv sørge for å opprette en GSAK-sak med mapping til fagsaken. Alternativt kan fagsystemet benytte tjenesten knyttTilSak, som knytter journalposten til en fagsak eller generell sak.")
     private Sak sak;
 
     @ApiModelProperty(value = "Fagområdet som forsendelsen tilhører, for eksempel \"FOR\" for Foreldrepenger")
     private String tema;
 
-    @ApiModelProperty(value = "")
+    @ApiModelProperty(value = "Behandlingstema for forsendelsen, for eksempel ab0001 (Ordinære dagpenger).")
     private String behandlingstema;
 
-    @ApiModelProperty(value = "Tittel som beskriver forsendelsen samlet, for eksempel \"Ettersendelse til søknad om foreldrepenger\".\n\nFeltet vil bli vist frem i brukers journal på nav.no, samt i Gosys og fagsystemer.")
+    @ApiModelProperty(value = "Tittel som beskriver forsendelsen samlet, for eksempel \"Ettersendelse til søknad om foreldrepenger\"")
     private String tittel;
 
-    @ApiModelProperty(value = "")
+    @ApiModelProperty(value = "NAV-enheten som har journalført, eventuelt skal journalføre, forsendelsen. Ved automatisk journalføring uten mennesker involvert skal enhet settes til \"9999\".")
+    private String journalfoerendeEnhet;
+
+    @ApiModelProperty(value = "Fagsystemene som arkiverer kan legge til egne fagspesifikke attributter per journalpost. Disse er representert som et skjemaløst nøkkel-verdi-sett og valideres ikke ved arkivering. Et eksempel på et slikt sett kan være nøkkel: bucid og verdi: 21521.")
     private List<Tilleggsopplysning> tilleggsopplysninger;
 
-    @ApiModelProperty(value = "liste over dokumentene på journalposten der metadata skal endres")
+    @ApiModelProperty(value = "Liste over dokumentene på journalposten der metadata skal endres")
     private List<DokumentInfo> dokumenter;
 }

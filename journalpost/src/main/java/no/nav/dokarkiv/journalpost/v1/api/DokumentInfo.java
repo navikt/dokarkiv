@@ -20,13 +20,12 @@ public class DokumentInfo {
     private String dokumentInfoId;
 
     @ApiModelProperty(
-            value = "ID som beskriver typen dokument, for eksempel \"NAV 14-05.09\" (Søknad om foreldrepenger ved fødsel)",
+            value = "Kode som sier noe om dokumentets innhold og oppbygning.\nFor inngående dokumenter kan brevkoden være en NAV-skjemaID f.eks. \"NAV 14-05.09\" eller en SED-id.\nBrevkode skal ikke settes for ustrukturert, uklassifisert dokumentasjon, f.eks. brukeropplastede vedlegg.\n",
             required = false)
     private String brevkode;
 
     @ApiModelProperty(
-            value = "Tittel som beskriver dokumentet, for eksempel \"Søknad om foreldrepenger ved fødsel\"",
+            value = "Tittel som beskriver dokumentet, for eksempel \"Søknad om foreldrepenger ved fødsel\".\nDokumentets tittel blir synlig i brukers journal på nav.no, samt i NAVs fagsystemer.",
             required = false)
     private String tittel;
-
 }

@@ -15,13 +15,13 @@ import javax.validation.constraints.NotNull;
 public class Bruker {
     @NotNull(message = "Bruker mangler idType")
     @ApiModelProperty(
-            value = "",
+            value = "Angir hvilken type identifikator som er benyttet i bruker.id",
             required = true)
     private BrukerIdType idType;
 
     @NotNull(message = "Bruker mangler id")
     @ApiModelProperty(
-            value = "",
+            value = "Brukerens fødselsnummer (11 siffer) eller organisasjonsnummer (9 siffer)",
             required = true)
     private String id;
 }

@@ -19,14 +19,14 @@ import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import no.nav.dokarkiv.journalpost.v1.api.Sak;
 import no.nav.dokarkiv.journalpost.v1.api.Arkivsaksystem;
 import no.nav.dokarkiv.journalpost.v1.api.AvsenderMottaker;
 import no.nav.dokarkiv.journalpost.v1.api.Bruker;
 import no.nav.dokarkiv.journalpost.v1.api.BrukerIdType;
 import no.nav.dokarkiv.journalpost.v1.api.DokumentInfo;
-import no.nav.dokarkiv.journalpost.v1.api.OppdaterJournalpostResponse;
 import no.nav.dokarkiv.journalpost.v1.api.OppdaterJournalpostRequest;
+import no.nav.dokarkiv.journalpost.v1.api.OppdaterJournalpostResponse;
+import no.nav.dokarkiv.journalpost.v1.api.Sak;
 import no.nav.dokarkiv.journalpost.v1.api.Tilleggsopplysning;
 import org.apache.commons.collections15.IteratorUtils;
 import org.junit.Test;
@@ -54,6 +54,7 @@ public class OppdaterJournalpostIT extends AbstractOppdaterJournalpostIT {
 	private static final String NOKKEL = "nokkel";
 	private static final String VERDI = "verdi";
 	private static final String BREVKODE = "brevkode";
+	private static final String JOURNALFOERENDE_ENHET = "9999";
 
 	/**
 	 * HVIS forsoekEndeligJF == TRUE, og ingen felter mangler for å endelig journalføre => returner 200 OK og journalpostId.
@@ -91,6 +92,7 @@ public class OppdaterJournalpostIT extends AbstractOppdaterJournalpostIT {
 		assertThat(oppdatertJP.getInnhold(), is(request.getTittel()));
 		assertThat(oppdatertJP.getFagomrade().name(), is(request.getTema()));
 		assertThat(oppdatertJP.getBehandlingstema().name(), is(request.getBehandlingstema()));
+		assertThat(oppdatertJP.getJournalForendeEnhetId(), is(request.getJournalfoerendeEnhet()));
 		assertThat(oppdatertJP.getLand(), is(request.getAvsenderMottaker().getLand()));
 		assertThat(oppdatertJP.getAvsenderMottakerId(), is(request.getAvsenderMottaker().getId()));
 		assertThat(oppdatertJP.getAvsenderMottaker(), is(request.getAvsenderMottaker().getNavn()));
@@ -113,11 +115,11 @@ public class OppdaterJournalpostIT extends AbstractOppdaterJournalpostIT {
 		assertEquals(3, aksjonsLoggList.size());
 
 		assertEquals(SERVICE_USER_ID, aksjonsLoggList.get(0).getUtfoertAv());
-		assertEquals(AksjonsTypeCode.SAKSTILKNYTNING, aksjonsLoggList.get(0).getAksjon());
+		assertEquals(AksjonsTypeCode.ENDRE_METADATA, aksjonsLoggList.get(0).getAksjon());
 		assertEquals(2, aksjonsLoggList.get(0).getArkivElementEndringer().size());
 
 		assertEquals(SERVICE_USER_ID, aksjonsLoggList.get(1).getUtfoertAv());
-		assertEquals(AksjonsTypeCode.ENDRE_METADATA, aksjonsLoggList.get(1).getAksjon());
+		assertEquals(AksjonsTypeCode.SAKSTILKNYTNING, aksjonsLoggList.get(1).getAksjon());
 		assertEquals(2, aksjonsLoggList.get(1).getArkivElementEndringer().size());
 
 		assertEquals(SERVICE_USER_ID, aksjonsLoggList.get(2).getUtfoertAv());
@@ -281,6 +283,7 @@ public class OppdaterJournalpostIT extends AbstractOppdaterJournalpostIT {
 				.tema(TEMA)
 				.behandlingstema(BEHANDLINGSTEMA)
 				.tittel(TITTEL)
+				.journalfoerendeEnhet(JOURNALFOERENDE_ENHET)
 				.tilleggsopplysninger(Arrays.asList(Tilleggsopplysning.builder()
 						.nokkel(NOKKEL)
 						.verdi(VERDI)

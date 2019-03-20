@@ -16,7 +16,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
-public class DokumentInfoMapperTest {
+public class DokumentInfoUpdaterTest {
     @Mock
     private BrukerRepository brukerRepositoryMock;
     @Mock
@@ -24,15 +24,21 @@ public class DokumentInfoMapperTest {
 
     private DokumentInfo dokumentInfo;
 
+    private no.nav.dokarkiv.journalpost.v1.api.DokumentInfo dokumentRequest;
+
     @InjectMocks
-    private DokumentInfoMapper mapper;
+    private DokumentInfoUpdater updater;
 
 
     @Test
     public void shouldUpdateDokumentInfo() throws UgyldigAksjonsLoggException {
         dokumentInfo = new DokumentInfo();
+        dokumentRequest = no.nav.dokarkiv.journalpost.v1.api.DokumentInfo.builder()
+                .brevkode(BREVKODE1)
+                .tittel(DOKUMENT_TITTEL1)
+                .build();
 
-        mapper.oppdaterDokumentInfo(dokumentInfo, BREVKODE1, DOKUMENT_TITTEL1);
+        updater.updateFields(dokumentInfo, dokumentRequest);
 
         assertThat(dokumentInfo.getBrevkode(), is(BREVKODE1));
         assertThat(dokumentInfo.getTittel(), is(DOKUMENT_TITTEL1));
