@@ -11,6 +11,7 @@ import no.nav.dokarkiv.journalpost.v1.api.KopierJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.rjoark203.KopierJournalpostService;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerKopierJournalpost;
 import org.slf4j.MDC;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,6 +19,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.inject.Inject;
 
 @Api
 @Slf4j
@@ -27,6 +30,7 @@ public class KopierJournalpostRestController {
 
 	private final KopierJournalpostService kopierJournalpostService;
 
+	@Inject
 	public KopierJournalpostRestController(final KopierJournalpostService kopierJournalpostService) {
 		this.kopierJournalpostService = kopierJournalpostService;
 	}
@@ -35,15 +39,15 @@ public class KopierJournalpostRestController {
 	@SwaggerKopierJournalpost
 	@PostMapping("/{journalpostId}/kopierJournalpost")
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark203"}, percentiles = {0.5, 0.95})
-	public ResponseEntity<String> kopierJournalpost(
+	public ResponseEntity<Long> kopierJournalpost(
 			@RequestBody KopierJournalpostRequest request,
 			@ApiParam(value = "IDen til journalposten som skal kopieres", required = true, example = "77778888") @PathVariable String journalpostId) {
 		MDC.put(MDC_REQUEST_ID, "rjoark203");
 		log.info(MDC.get(MDC_REQUEST_ID) + " har mottatt kall for kopiering av journalpost med journalpostId={}", journalpostId);
 		validateId(journalpostId, "journalpostId");
 
-		kopierJournalpostService.execute(request);
+		Long nyJournalpostId = kopierJournalpostService.execute(Long.parseLong(journalpostId), request);
 
-		return ResponseEntity.ok("ok");
+		return ResponseEntity.status(HttpStatus.CREATED).body(nyJournalpostId);
 	}
 }
