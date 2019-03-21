@@ -2,6 +2,7 @@ package no.nav.dokarkiv.journalpost.v1.rjoark200;
 
 import static no.nav.dokarkiv.journalpost.v1.rjoark200.OppdaterJournalpostValidator.validateOppdaterteFelt;
 
+import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.DokumentIkkeFunnetException;
@@ -25,18 +26,21 @@ public class OppdaterJournalpostService {
 	private final JournalpostUpdater journalpostUpdater;
 	private final SaksrelasjonUpdater saksrelasjonUpdater;
 	private final DokumentInfoUpdater dokumentInfoUpdater;
+	private final AksjonsLoggService aksjonsLoggService;
 
 	@Inject
     public OppdaterJournalpostService(JoarkRepositorySkjermet joarkRepository,
 									  JournalpostUpdater journalpostUpdater,
 									  SaksrelasjonUpdater saksrelasjonUpdater,
 									  DokumentinfoRepository dokumentinfoRepository,
-									  DokumentInfoUpdater dokumentInfoUpdater) {
+									  DokumentInfoUpdater dokumentInfoUpdater,
+									  AksjonsLoggService aksjonsLoggService) {
 		this.joarkRepository = joarkRepository;
 		this.dokumentinfoRepository = dokumentinfoRepository;
 		this.journalpostUpdater = journalpostUpdater;
 		this.saksrelasjonUpdater = saksrelasjonUpdater;
 		this.dokumentInfoUpdater = dokumentInfoUpdater;
+		this.aksjonsLoggService = aksjonsLoggService;
 	}
 
 	public void oppdaterJournalpost(Long journalpostId, OppdaterJournalpostRequest oppdaterJournalpostRequest, String aksjonsLoggHeaderString) throws UgyldigAksjonsLoggException {
@@ -51,17 +55,27 @@ public class OppdaterJournalpostService {
 		);
 
 		validateOppdaterteFelt(oppdaterJournalpostRequest, journalpost.getJournalstatus());
-		journalpostUpdater.updateFields(journalpost, oppdaterJournalpostRequest);
-		saksrelasjonUpdater.updateFields(journalpost, oppdaterJournalpostRequest);
+
+		AksjonsLoggHelper aksjonsLoggHelperJournalpost = new AksjonsLoggHelper();
+		journalpostUpdater.updateFields(journalpost, oppdaterJournalpostRequest, aksjonsLoggHelperJournalpost);
+
+		AksjonsLoggHelper aksjonsLoggHelperSaksrelasjon = new AksjonsLoggHelper();
+		saksrelasjonUpdater.updateFields(journalpost, oppdaterJournalpostRequest, aksjonsLoggHelperSaksrelasjon);
+
 		joarkRepository.save(journalpost);
+		saveAksjonslogg(aksjonsLoggHelperJournalpost);
+		saveAksjonslogg(aksjonsLoggHelperSaksrelasjon);
 
 		if (oppdaterJournalpostRequest.getDokumenter() != null) {
 			for (no.nav.dokarkiv.journalpost.v1.api.DokumentInfo dokument : oppdaterJournalpostRequest.getDokumenter()) {
 				DokumentInfo dokumentInfo = journalpost.getDokumentInfoFromJpDokInfoRelasjonerByDokumentInfoId(Long.parseLong(dokument.getDokumentInfoId()));
-
 				assertDokumentInfoNotNull(dokumentInfo, String.valueOf(journalpost.getJournalpostId()), dokument.getDokumentInfoId());
-				dokumentInfoUpdater.updateFields(dokumentInfo, dokument);
+
+				AksjonsLoggHelper aksjonsLoggHelperDokument = new AksjonsLoggHelper();
+				dokumentInfoUpdater.updateFields(dokumentInfo, dokument, aksjonsLoggHelperDokument);
+
 				dokumentinfoRepository.save(dokumentInfo);
+				saveAksjonslogg(aksjonsLoggHelperDokument);
 			}
 		}
 	}
@@ -69,6 +83,13 @@ public class OppdaterJournalpostService {
 	private void assertDokumentInfoNotNull(DokumentInfo dokumentInfo, String journalpostId, String dokumentId) {
 		if (dokumentInfo == null) {
 			throw new DokumentIkkeFunnetException(String.format("Fant ingen dokument med dokumentId=%s paa journalpost med journalpostId=%s", dokumentId, journalpostId));
+		}
+	}
+
+	private void saveAksjonslogg(AksjonsLoggHelper aksjonsLoggHelper) throws UgyldigAksjonsLoggException {
+		if (!aksjonsLoggHelper.getArkivElementEndringTOs().isEmpty()) {
+			aksjonsLoggService.validateAndSaveAksjonsLogg(aksjonsLoggHelper.getAksjonsLoggTO(), aksjonsLoggHelper
+					.getArkivElementEndringTOs());
 		}
 	}
 }
