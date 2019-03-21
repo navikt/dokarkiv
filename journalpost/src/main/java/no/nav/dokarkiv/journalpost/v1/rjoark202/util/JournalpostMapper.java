@@ -30,6 +30,8 @@ import no.nav.dokarkiv.journalpost.v1.api.JournalpostType;
 import no.nav.dokarkiv.journalpost.v1.api.OpprettJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.Tilleggsopplysning;
 
+import java.sql.Date;
+import java.time.LocalDate;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -49,6 +51,8 @@ public class JournalpostMapper {
 				.mottakskanal(mapMottakskanal(request))
 				.utsendingskanal(mapUtsendingskanal(request))
 				.kanalReferanseId(request.getEksternReferanseId())
+				.mottattDato(mapMottattDato(request))
+				.dokumentDato(Date.valueOf(LocalDate.now()))
 				.build();
 
 		addSaksrelasjon(journalpost, request);
@@ -92,6 +96,10 @@ public class JournalpostMapper {
 			return UtsendingsKanalCode.valueOf(request.getKanal());
 		}
 		return null;
+	}
+
+	private Date mapMottattDato(OpprettJournalpostRequest request) {
+		return JournalpostType.INNGAAENDE.equals(request.getJournalpostType()) ? Date.valueOf(LocalDate.now()) : null;
 	}
 
 	private Behandlingstema mapBehandlingstema(OpprettJournalpostRequest request) {
