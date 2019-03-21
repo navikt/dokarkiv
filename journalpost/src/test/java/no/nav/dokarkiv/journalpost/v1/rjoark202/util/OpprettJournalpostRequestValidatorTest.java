@@ -53,16 +53,13 @@ public class OpprettJournalpostRequestValidatorTest {
 	}
 
 	@Test
-	public void shouldThrowExceptionIfAvsenderIsMissingNavn() {
+	public void shouldNotThrowExceptionIfAvsenderIsMissingNavn() {
 		request = createMinimalRequest(JournalpostType.INNGAAENDE, TEMA_FOR, INNHOLD)
 				.avsenderMottaker(AvsenderMottaker.builder()
 						.navn(null)
 						.id("1122334455")
 						.build())
 				.build();
-
-		expectedException.expect(InputValideringFeiletException.class);
-		expectedException.expectMessage("AvsenderMottaker.navn");
 
 		validator.validateRequest(request);
 	}
@@ -83,15 +80,12 @@ public class OpprettJournalpostRequestValidatorTest {
 	}
 
 	@Test
-	public void shouldThrowExceptionIfAvsenderNameIsNotsetWhenAvsenderIdIsSet() {
+	public void shouldNotThrowExceptionIfAvsenderNameIsNotsetWhenAvsenderIdIsSet() {
 		request = createMinimalRequest(JournalpostType.INNGAAENDE, TEMA_FOR, INNHOLD)
 				.avsenderMottaker(AvsenderMottaker.builder()
 						.id("1122334455")
 						.build())
 				.build();
-
-		expectedException.expect(InputValideringFeiletException.class);
-		expectedException.expectMessage("AvsenderMottaker.id");
 
 		validator.validateRequest(request);
 	}

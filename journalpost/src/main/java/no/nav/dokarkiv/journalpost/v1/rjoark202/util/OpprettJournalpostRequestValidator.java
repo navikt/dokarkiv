@@ -60,16 +60,6 @@ public class OpprettJournalpostRequestValidator {
 			throw new InputValideringFeiletException("AvsenderMottaker.id er lengre enn " +
 					AVSENDERMOTTAKER_ID_LENGTH_BYTES + " byte.");
 		}
-
-		if (!isBlank(avsenderMottaker.getNavn()) && isBlank(avsenderMottaker.getId())) {
-			throw new InputValideringFeiletException("AvsenderMottaker.id må være satt når " +
-					"AvsenderMottaker.navn er satt");
-		}
-		if (isBlank(avsenderMottaker.getNavn()) && !isBlank(avsenderMottaker.getId())) {
-			throw new InputValideringFeiletException("AvsenderMottaker.navn må være satt når " +
-					"AvsenderMottaker.id er satt");
-		}
-
 	}
 
 	private void validateBruker(Bruker bruker) {
