@@ -4,7 +4,6 @@ import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
 import static org.apache.logging.log4j.util.Strings.isNotBlank;
 
-import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService;
 import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
@@ -18,20 +17,11 @@ import no.nav.dokarkiv.journalpost.v1.rjoark200.util.Endret;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
-
 @Component
 public class SaksrelasjonUpdater {
-    private final AksjonsLoggService aksjonsLoggService;
 
-    @Inject
-    public SaksrelasjonUpdater(AksjonsLoggService aksjonsLoggService) {
-        this.aksjonsLoggService = aksjonsLoggService;
-    }
-
-    public void updateFields(Journalpost journalpost, OppdaterJournalpostRequest request) throws UgyldigAksjonsLoggException {
+    public void updateFields(Journalpost journalpost, OppdaterJournalpostRequest request, AksjonsLoggHelper aksjonsLoggHelper) throws UgyldigAksjonsLoggException {
         Endret endret = new Endret();
-        AksjonsLoggHelper aksjonsLoggHelper = new AksjonsLoggHelper();
         aksjonsLoggHelper.setAksjonsLoggTO(AksjonsTypeCode.SAKSTILKNYTNING);
 
         boolean newSak = false;
@@ -56,11 +46,6 @@ public class SaksrelasjonUpdater {
             }
             if (newSak) {
                 journalpost.setSaksrelasjon(saksrelasjon);
-            }
-
-            if (!aksjonsLoggHelper.getArkivElementEndringTOs().isEmpty()) {
-                aksjonsLoggService.validateAndSaveAksjonsLogg(aksjonsLoggHelper.getAksjonsLoggTO(), aksjonsLoggHelper
-                        .getArkivElementEndringTOs());
             }
         }
     }
