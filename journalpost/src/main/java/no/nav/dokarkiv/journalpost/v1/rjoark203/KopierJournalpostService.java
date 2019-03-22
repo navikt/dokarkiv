@@ -6,7 +6,6 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.journalpost.v1.rjoark203.support.KopierJournalpostValidator;
-import no.nav.dokarkiv.journalpost.v1.rjoark203.support.KopierService;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
@@ -16,13 +15,11 @@ public class KopierJournalpostService {
 
 	private final JoarkRepository joarkRepository;
 	private final KopierJournalpostValidator kopierJournalpostValidator;
-	private final KopierService kopierService;
 
 	@Inject
 	public KopierJournalpostService(final JoarkRepository joarkRepository) {
 		this.joarkRepository = joarkRepository;
 		this.kopierJournalpostValidator = new KopierJournalpostValidator();
-		this.kopierService = new KopierService();
 	}
 
 	public Long execute(Long journalpostId) {
@@ -32,7 +29,7 @@ public class KopierJournalpostService {
 		// verifiser at journalpost er i tilstand som kan kopieres - dvs status = FL, FS eller J, eller har saksrelasjon feilregistrert
 		kopierJournalpostValidator.validate(journalpost);
 
-		Journalpost nyJournalpost = kopierService.copyFrom(journalpost);
+		Journalpost nyJournalpost = copyJournalpost(journalpost);
 
 		// låse opp den nye journalpost ved å sette den "tilbake" i status: (eks: FS -> D)
 		resetJournalpoststatus(nyJournalpost);
@@ -41,7 +38,6 @@ public class KopierJournalpostService {
 		return nyJournalpost.getJournalpostId();
 	}
 
-	// TODO: hva blir riktige statuser å sette?
 	private void resetJournalpoststatus(Journalpost journalpost) {
 		JournalpostTypeCode type = journalpost.getJournalposttype();
 		if (JournalpostTypeCode.I.equals(type)) {
@@ -52,4 +48,8 @@ public class KopierJournalpostService {
 			journalpost.setJournalstatus(JournalStatusCode.D);
 		}
 	}
+
+	private Journalpost copyJournalpost(Journalpost journalpost) {
+	    return journalpost.toBuilder().build();
+    }
 }
