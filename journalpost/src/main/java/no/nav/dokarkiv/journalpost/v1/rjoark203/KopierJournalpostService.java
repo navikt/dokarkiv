@@ -5,7 +5,6 @@ import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
-import no.nav.dokarkiv.journalpost.v1.api.KopierJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.rjoark203.support.KopierJournalpostValidator;
 import no.nav.dokarkiv.journalpost.v1.rjoark203.support.KopierService;
 import org.springframework.stereotype.Component;
@@ -26,15 +25,14 @@ public class KopierJournalpostService {
 		this.kopierService = new KopierService();
 	}
 
-	public Long execute(Long journalpostId, KopierJournalpostRequest request) {
+	public Long execute(Long journalpostId) {
 		// finn journalpost
 		Journalpost journalpost = joarkRepository.findById(journalpostId)
 				.orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostId)));
 		// verifiser at journalpost er i tilstand som kan kopieres - dvs status = FL, FS eller J, eller har saksrelasjon feilregistrert
-		// verifiser at journalpost har dokumentInfoId'ene oppgitt i request
-		kopierJournalpostValidator.validate(journalpost, request);
+		kopierJournalpostValidator.validate(journalpost);
 
-		Journalpost nyJournalpost = kopierService.copyFrom(journalpost, request.getGjenbrukDokumenter());
+		Journalpost nyJournalpost = kopierService.copyFrom(journalpost);
 
 		// låse opp den nye journalpost ved å sette den "tilbake" i status: (eks: FS -> D)
 		resetJournalpoststatus(nyJournalpost);
