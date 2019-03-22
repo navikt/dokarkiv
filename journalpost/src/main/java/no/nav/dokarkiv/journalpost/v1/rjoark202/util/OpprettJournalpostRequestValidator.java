@@ -77,6 +77,9 @@ public class OpprettJournalpostRequestValidator {
 	}
 
 	private void validateTema(String tema) {
+		if (isBlank(tema)) {
+			throw new InputValideringFeiletException("Tema må være satt");
+		}
 		try {
 			FagomradeCode.valueOf(tema);
 		} catch (IllegalArgumentException e) {

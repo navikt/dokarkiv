@@ -151,6 +151,16 @@ public class OpprettJournalpostRequestValidatorTest {
 	}
 
 	@Test
+	public void shouldThrowExceptionIfTemaIsNull() {
+		request = createMinimalRequest(JournalpostType.INNGAAENDE, null, INNHOLD).build();
+
+		expectedException.expect(InputValideringFeiletException.class);
+		expectedException.expectMessage("Tema må være satt");
+
+		validator.validateRequest(request);
+	}
+
+	@Test
 	public void shouldThrowExceptionIfTemaIsInvalid() {
 		request = createMinimalRequest(JournalpostType.INNGAAENDE, "tema", INNHOLD).build();
 

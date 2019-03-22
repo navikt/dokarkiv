@@ -24,6 +24,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import no.nav.dokarkiv.core.consumer.RestConsumerExceptionResponse;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
@@ -294,5 +295,31 @@ public class OpprettJournalpostIT extends AbstractOpprettJournalpostIT {
 		assertEquals(UKJENT, aksjonsLoggList.get(0).getBruker());
 		assertEquals(OPPRETT, aksjonsLoggList.get(0).getAksjon());
 		assertTrue(aksjonsLoggList.get(0).getArkivElementEndringer().isEmpty());
+	}
+
+	@Test
+	public void shouldFailIfMissingRequiredInputTittel() throws IOException {
+		abacPermit();
+
+		OpprettJournalpostRequest request = createMinimalRequest(INNGAAENDE, TEMA_FOR, null).build();
+
+		HttpEntity requestEntity = new HttpEntity(request, createHeadersWithServiceUserToken());
+		ResponseEntity<RestConsumerExceptionResponse> response = restTemplate.exchange(URL_OPPRETTJOURNALPOST, HttpMethod.POST, requestEntity, RestConsumerExceptionResponse.class);
+
+		assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+
+	}
+
+	@Test
+	public void shouldFailIfMissingRequiredInputTema() throws IOException {
+		abacPermit();
+
+		OpprettJournalpostRequest request = createMinimalRequest(INNGAAENDE, null, INNHOLD).build();
+
+		HttpEntity requestEntity = new HttpEntity(request, createHeadersWithServiceUserToken());
+		ResponseEntity<RestConsumerExceptionResponse> response = restTemplate.exchange(URL_OPPRETTJOURNALPOST, HttpMethod.POST, requestEntity, RestConsumerExceptionResponse.class);
+
+		assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+
 	}
 }
