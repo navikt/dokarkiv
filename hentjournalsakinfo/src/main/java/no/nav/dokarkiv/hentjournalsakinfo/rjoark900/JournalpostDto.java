@@ -8,6 +8,7 @@ import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
 import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode;
+import no.nav.dokarkiv.hentjournalsakinfo.dto.BrukerDto;
 import no.nav.dokarkiv.hentjournalsakinfo.dto.DokumentInfoDto;
 import no.nav.dokarkiv.hentjournalsakinfo.dto.SaksrelasjonDto;
 import no.nav.dokarkiv.hentjournalsakinfo.dto.TilleggsopplysningDto;
@@ -39,6 +40,7 @@ public class JournalpostDto {
 	private final UtsendingsKanalCode utsendingskanal;
 	private final JournalpostTypeCode journalposttype;
 	private final SaksrelasjonDto saksrelasjon;
+	private final BrukerDto bruker;
 	private final Date datoOpprettet;
 	private final Date mottattDato;
 	private final Date journalDato;
