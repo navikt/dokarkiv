@@ -19,17 +19,13 @@ public class KopierJournalpostValidator {
 	public void validate(Journalpost journalpost) {
 		JournalStatusCode status = journalpost.getJournalstatus();
 
-		// Verifisere at journalposten er i en tilstand som kan kopieres (status FL, FS, E eller J, eventuelt har en feilregistrert saksrelasjon)
-		if (!journalpostHasCopyableStatus(status) || !journalpostHasFeilregistrertSaksrelasjon(journalpost)) {
-			throw new KanIkkeKopiereException(String.format("Kan ikke kopiere journalpost med journalpostId=%s, journalpost har ugyldig status ELLER mangler feilregistrert saksrelasjon", journalpost.getJournalpostId()));
+		// Verifisere at journalposten er i en tilstand som kan kopieres (status FL, FS, E eller J)
+		if (!journalpostHasCopyableStatus(status)) {
+			throw new KanIkkeKopiereException(String.format("Kan ikke kopiere journalpost med journalpostId=%s, journalpost har ugyldig status", journalpost.getJournalpostId()));
 		}
 	}
 
 	private boolean journalpostHasCopyableStatus(JournalStatusCode status) {
 		return COPYABLE_JOURNALSTATUS_LIST.contains(status);
-	}
-
-	private boolean journalpostHasFeilregistrertSaksrelasjon(Journalpost journalpost) {
-		return journalpost.getSaksrelasjon() != null && journalpost.getSaksrelasjon().getFeilregistrert();
 	}
 }

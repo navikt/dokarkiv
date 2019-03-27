@@ -3,6 +3,7 @@ package no.nav.dokarkiv.journalpost.v1.rjoark203;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.journalpost.v1.rjoark203.support.KopierJournalpostValidator;
@@ -34,6 +35,8 @@ public class KopierJournalpostService {
 		// låse opp den nye journalpost ved å sette den "tilbake" i status: (eks: FS -> D)
 		resetJournalpoststatus(nyJournalpost);
 
+		joarkRepository.save(nyJournalpost);
+
 		// returnere journalpostId til ny journalpost
 		return nyJournalpost.getJournalpostId();
 	}
@@ -50,6 +53,19 @@ public class KopierJournalpostService {
 	}
 
 	private Journalpost copyJournalpost(Journalpost journalpost) {
-	    return journalpost.toBuilder().build();
+	    Journalpost kopiertJournalpost = journalpost.toBuilder()
+				.journalpostId(12345L)
+				.build();
+	    journalpost.getBrukere().forEach(kopiertJournalpost::addBruker);
+
+	    journalpost.getJournalpostDokumentInfoRelasjoner().forEach(
+	    		journalpostDokumentInfoRelasjon -> kopiertJournalpost.addJournalpostDokumentInfoRelasjon(JournalpostDokumentInfoRelasjon.builder()
+				.journalpost(kopiertJournalpost)
+				.dokumentInfo(journalpostDokumentInfoRelasjon.getDokumentInfo())
+				.tilknyttetJournalpostSom(journalpostDokumentInfoRelasjon.getTilknyttetJournalpostSom())
+				.build())
+		);
+
+	    return kopiertJournalpost;
     }
 }
