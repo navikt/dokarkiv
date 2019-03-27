@@ -13,6 +13,7 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.DOKUMENTKATEGORI_SED
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.DOKUMENT_TITTEL1;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FILTYPE_PDF;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FYSISK_DOKUMENT;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FYSISK_DOKUMENT_2;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.INNHOLD;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.SAK_ID;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_FOR;
@@ -24,10 +25,12 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import com.google.common.collect.Lists;
 import no.nav.dokarkiv.core.consumer.RestConsumerExceptionResponse;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
+import no.nav.dokarkiv.core.domain.entities.DokumentFil;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.journalpost.v1.api.Arkivsaksystem;
 import no.nav.dokarkiv.journalpost.v1.api.Bruker;
@@ -45,7 +48,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class OpprettJournalpostIT extends AbstractOpprettJournalpostIT {
 
@@ -70,6 +76,12 @@ public class OpprettJournalpostIT extends AbstractOpprettJournalpostIT {
 		assertEquals(SERVICE_USER_ID, aksjonsLoggList.get(0).getUtfoertAv());
 		assertEquals(OPPRETT, aksjonsLoggList.get(0).getAksjon());
 		assertTrue(aksjonsLoggList.get(0).getArkivElementEndringer().isEmpty());
+
+		ArrayList<DokumentFil> dokumentFilList = Lists.newArrayList(dokumentFilRepository.findAll());
+		assertEquals(3, dokumentFilList.size());
+		dokumentFilList.forEach(dokumentFil -> assertNotNull(dokumentFil.getFil()));
+		assertEquals(2, dokumentFilList.stream().filter(dokumentFil -> Arrays.equals(FYSISK_DOKUMENT, dokumentFil.getFil())).collect(Collectors.toList()).size());
+		assertEquals(1, dokumentFilList.stream().filter(dokumentFil -> Arrays.equals(FYSISK_DOKUMENT_2, dokumentFil.getFil())).collect(Collectors.toList()).size());
 	}
 
 	@Test

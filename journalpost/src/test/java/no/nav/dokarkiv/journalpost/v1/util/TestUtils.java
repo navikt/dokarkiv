@@ -80,8 +80,9 @@ public class TestUtils {
 	public static final String FILTYPE_PDF = "PDF";
 	public static final String FILTYPE_XML = "XML";
 	public static final String VARIANTFORMAT_ARKIV = "ARKIV";
-	public static final String VARIANTFORMAT_ORIGINAL = "ARKIV";
+	public static final String VARIANTFORMAT_ORIGINAL = "ORIGINAL";
 	public static final byte[] FYSISK_DOKUMENT = "DOKUMENT".getBytes();
+	public static final byte[] FYSISK_DOKUMENT_2 = "DOKUMENT_2".getBytes();
 	public static final String TILLEGGSOPPLYSNING_NOKKEL = "noekkel";
 	public static final String TILLEGGSOPPLYSNING_VERDI = "verdi";
 
@@ -283,6 +284,7 @@ public class TestUtils {
 	public static OpprettJournalpostRequest createRequest(JournalpostType journalpostType) {
 		return createRequest(journalpostType, null);
 	}
+
 	public static OpprettJournalpostRequest createRequest(JournalpostType journalpostType, String journalfoerendeEnhet) {
 		return createBaseRequest(journalpostType)
 				.journalfoerendeEnhet(journalfoerendeEnhet)
@@ -291,11 +293,16 @@ public class TestUtils {
 								.tittel(DOKUMENT_TITTEL1)
 								.brevkode(BREVKODE1)
 								.dokumentKategori(DOKUMENTKATEGORI_SED)
-								.dokumentvarianter(Collections.singletonList(DokumentVariant.builder()
-										.filtype(FILTYPE_PDF)
-										.variantformat(VARIANTFORMAT_ARKIV)
-										.fysiskDokument(FYSISK_DOKUMENT)
-										.build()))
+								.dokumentvarianter(Arrays.asList(DokumentVariant.builder()
+												.filtype(FILTYPE_PDF)
+												.variantformat(VARIANTFORMAT_ARKIV)
+												.fysiskDokument(FYSISK_DOKUMENT)
+												.build(),
+										DokumentVariant.builder()
+												.filtype(FILTYPE_XML)
+												.variantformat(VARIANTFORMAT_ORIGINAL)
+												.fysiskDokument(FYSISK_DOKUMENT_2)
+												.build()))
 								.build(),
 						Dokument.builder()
 								.tittel(DOKUMENT_TITTEL2)
@@ -303,7 +310,7 @@ public class TestUtils {
 								.dokumentKategori(DOKUMENTKATEGORI_SED)
 								.dokumentvarianter(Collections.singletonList(DokumentVariant.builder()
 										.filtype(FILTYPE_XML)
-										.variantformat(VARIANTFORMAT_ORIGINAL)
+										.variantformat(VARIANTFORMAT_ARKIV)
 										.fysiskDokument(FYSISK_DOKUMENT)
 										.build()))
 								.build()))
@@ -314,7 +321,7 @@ public class TestUtils {
 		return createBaseRequest(journalpostType).build();
 	}
 
-	private static OpprettJournalpostRequest.OpprettJournalpostRequestBuilder createBaseRequest(JournalpostType journalpostType){
+	private static OpprettJournalpostRequest.OpprettJournalpostRequestBuilder createBaseRequest(JournalpostType journalpostType) {
 		return OpprettJournalpostRequest.builder()
 				.journalpostType(journalpostType)
 				.avsenderMottaker(AvsenderMottaker.builder()
@@ -337,7 +344,7 @@ public class TestUtils {
 						.build());
 	}
 
-	public static OpprettJournalpostRequest.OpprettJournalpostRequestBuilder createMinimalRequest(JournalpostType journalpostType, String tema, String tittel){
+	public static OpprettJournalpostRequest.OpprettJournalpostRequestBuilder createMinimalRequest(JournalpostType journalpostType, String tema, String tittel) {
 		return OpprettJournalpostRequest.builder()
 				.journalpostType(journalpostType)
 				.tema(tema)

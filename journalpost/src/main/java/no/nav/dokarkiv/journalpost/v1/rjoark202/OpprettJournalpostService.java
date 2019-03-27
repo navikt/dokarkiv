@@ -9,9 +9,12 @@ import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService;
 import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggTO;
 import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggTOMapper;
+import no.nav.dokarkiv.core.domain.entities.DokumentFil;
+import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
+import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.core.sporing.DefaultSporingPopulator;
 import no.nav.dokarkiv.journalpost.v1.api.OpprettJournalpostRequest;
@@ -20,6 +23,8 @@ import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service(value = "opprettNyJournalpostService")
 public class OpprettJournalpostService {
@@ -27,6 +32,7 @@ public class OpprettJournalpostService {
 	public static final String UKJENT = "UKJENT";
 
 	private final JoarkRepository joarkRepository;
+	private final DokumentFilRepository dokumentFilRepository;
 	private final JournalpostMapper journalpostMapper;
 	private final DefaultSporingPopulator defaultSporingPopulator;
 	private final AksjonsLoggService aksjonsLoggService;
@@ -34,10 +40,13 @@ public class OpprettJournalpostService {
 
 	@Inject
 	public OpprettJournalpostService(final JoarkRepository joarkRepository,
+									 final DokumentFilRepository dokumentFilRepository,
+									 final JournalpostMapper journalpostMapper,
 									 final DefaultSporingPopulator defaultSporingPopulator,
 									 final AksjonsLoggService aksjonsLoggService) {
 		this.joarkRepository = joarkRepository;
-		this.journalpostMapper = new JournalpostMapper();
+		this.dokumentFilRepository = dokumentFilRepository;
+		this.journalpostMapper = journalpostMapper;
 		this.defaultSporingPopulator = defaultSporingPopulator;
 		this.aksjonsLoggService = aksjonsLoggService;
 		this.aksjonsLoggTOMapper = new AksjonsLoggTOMapper();
@@ -48,11 +57,18 @@ public class OpprettJournalpostService {
 		defaultSporingPopulator.populateSporingInfo(journalpost, MDC.get(MDCConstants.MDC_CONSUMER_ID));
 		journalpost.getJournalpostDokumentInfoRelasjoner().forEach(journalpostDokumentInfoRelasjon -> journalpostDokumentInfoRelasjon.setTilknyttetAvNavn(journalpost.getOpprettetAvNavn()));
 
+		persistDokumentFiler(journalpost);
+
 		joarkRepository.save(journalpost);
 
 		populerAksjonslogg(journalpost.getJournalpostId(), aksjonsLoggHeader);
 
 		return journalpost.getJournalpostId();
+	}
+
+	private void persistDokumentFiler(Journalpost journalpost) {
+		List<DokumentFil> dokumentFilList = journalpost.findAllFilDetaljer().stream().map(FilDetaljer::createDokumentFil).collect(Collectors.toList());
+		dokumentFilList.forEach(dokumentFilRepository::save);
 	}
 
 	private void populerAksjonslogg(Long journalpostId, String aksjonsLoggHeaderString) throws UgyldigAksjonsLoggException {

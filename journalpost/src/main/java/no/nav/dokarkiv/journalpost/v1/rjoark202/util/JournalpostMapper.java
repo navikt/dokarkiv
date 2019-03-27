@@ -29,13 +29,14 @@ import no.nav.dokarkiv.journalpost.v1.api.Dokument;
 import no.nav.dokarkiv.journalpost.v1.api.JournalpostType;
 import no.nav.dokarkiv.journalpost.v1.api.OpprettJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.Tilleggsopplysning;
+import org.springframework.stereotype.Component;
 
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.Map;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
+@Component
 public class JournalpostMapper {
 
 	public Journalpost map(OpprettJournalpostRequest request) {
@@ -143,11 +144,11 @@ public class JournalpostMapper {
 				.originalJournalpost(jp)
 				.build();
 
-		dokument.getDokumentvarianter().forEach(dokumentVariant -> dokumentInfo.addFilDetaljer(
-				FilDetaljer.builder()
+		dokument.getDokumentvarianter().forEach(
+				dokumentVariant -> dokumentInfo.addFilDetaljer(FilDetaljer.builder()
 						.filtype(mapFilType(dokumentVariant.getFiltype()))
 						.variantFormat(mapVariantFormat(dokumentVariant.getVariantformat()))
-						.filUuid(UUID.randomUUID().toString())
+						.filUuid(FilDetaljer.generateUuid())
 						.fileContent(dokumentVariant.getFysiskDokument())
 						.dokumentInfo(dokumentInfo)
 						.build()));
