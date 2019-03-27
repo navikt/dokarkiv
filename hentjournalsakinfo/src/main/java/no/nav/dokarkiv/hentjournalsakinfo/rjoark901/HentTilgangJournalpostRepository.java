@@ -33,7 +33,7 @@ public class HentTilgangJournalpostRepository {
 
 	TilgangJournalpostDto hentTilgangJournalpost(Long journalpostId, Long dokumentInfoId, VariantFormatCode variantFormat) {
 
-		return (TilgangJournalpostDto) entityManager
+		List resultList = entityManager
 				.createQuery(
 						"select jp.journalpostId, " +
 								"jp.journalstatus, " +
@@ -60,11 +60,13 @@ public class HentTilgangJournalpostRepository {
 								"join jp.journalpostDokumentInfoRelasjoner jr " +
 								"join jr.dokumentInfo di on di.dokumentInfoId = :dokumentInfoId and jr.journalpost.journalpostId = :journalpostId " +
 								"join FilDetaljer fd on fd.dokumentInfo.dokumentInfoId = :dokumentInfoId and fd.variantFormat = :variantFormat " +
-								"where jp.journalpostId = :journalpostId"
+								"where jp.journalpostId = :journalpostId " +
+								"order by br.brukerInfoId desc"
 				)
 				.setParameter("journalpostId", journalpostId)
 				.setParameter("dokumentInfoId", dokumentInfoId)
 				.setParameter("variantFormat", variantFormat)
+				.setMaxResults(1)
 				.unwrap(Query.class)
 				.setResultTransformer(
 						new ResultTransformer() {
@@ -100,7 +102,8 @@ public class HentTilgangJournalpostRepository {
 							}
 						}
 				)
-				.getSingleResult();
+				.getResultList();
+		return (TilgangJournalpostDto) resultList.get(0);
 	}
 
 	private boolean isNull(Object o) {
