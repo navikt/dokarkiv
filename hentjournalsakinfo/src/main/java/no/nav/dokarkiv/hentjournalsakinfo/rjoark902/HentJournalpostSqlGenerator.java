@@ -43,6 +43,7 @@ final class HentJournalpostSqlGenerator {
 				"		d.dokument_info_id    AS dokumenter_dokumentinfoid,\n" +
 				"		rel.k_tilkn_jp_som    AS dokumenter_tilknyttetsom,\n" +
 				"		d.k_dokument_s        AS dokumenter_dokumentstatus,\n" +
+				"       d.dato_dok_ferdig     AS dokumenter_datoferdigstilt,\n" +
 				"		d.brev_kode           AS dokumenter_brevkode,\n" +
 				"		d.tittel              AS dokumenter_tittel,\n" +
 				"		rel.k_skjerming_type  AS dokumenter_skjerming,\n" +

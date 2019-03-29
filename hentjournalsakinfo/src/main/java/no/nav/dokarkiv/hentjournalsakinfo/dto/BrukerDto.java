@@ -1,7 +1,6 @@
-package no.nav.dokarkiv.hentjournalsakinfo.rjoark902;
+package no.nav.dokarkiv.hentjournalsakinfo.dto;
 
 import lombok.Data;
-import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
 
 /**
  * @author Joakim Bjørnstad, Jbit AS
