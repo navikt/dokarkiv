@@ -21,6 +21,10 @@ public class PopulateMDCHandler implements HandlerInterceptor {
 			MDC.put(MDCConstants.MDC_CALL_ID, request.getHeader("X-Correlation-ID"));
 		}
 
+		if (request.getHeader("callId") != null) {
+			MDC.put(MDCConstants.MDC_CALL_ID, request.getHeader("callId"));
+		}
+
 		MDC.put(MDCConstants.MDC_HTTP_ENDPOINT, request.getRequestURL().toString());
 		MDC.put(MDCConstants.MDC_HTTP_OPERATION, request.getMethod());
 		return true;
