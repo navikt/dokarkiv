@@ -5,6 +5,7 @@ import lombok.Value;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -16,6 +17,7 @@ public class DokumentInfoDto {
 	@JsonIgnore
 	private final String tilknyttetSom;
 	private final DokumentStatusCode dokumentstatus;
+	private final Date datoFerdigstilt;
 	private final String brevkode;
 	private final List<VariantDto> varianter;
 	private final String tittel;

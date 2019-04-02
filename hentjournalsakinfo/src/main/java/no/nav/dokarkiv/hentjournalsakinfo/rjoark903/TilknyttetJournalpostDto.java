@@ -1,5 +1,6 @@
-package no.nav.dokarkiv.hentjournalsakinfo.rjoark900;
+package no.nav.dokarkiv.hentjournalsakinfo.rjoark903;
 
+import lombok.AllArgsConstructor;
 import lombok.Value;
 import no.nav.dokarkiv.core.domain.codes.Behandlingstema;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
@@ -20,11 +21,9 @@ import java.util.List;
  * @author Joakim Bjørnstad, Jbit AS
  */
 @Value
-public class JournalpostDto {
+@AllArgsConstructor
+public class TilknyttetJournalpostDto {
 	private final Long journalpostId;
-	private final Long prevJournalpostId;
-	private final Long nextJournalpostId;
-	private final Long totaltAntall;
 	private final String innhold;
 	private final FagomradeCode fagomrade;
 	private final Behandlingstema behandlingstema;

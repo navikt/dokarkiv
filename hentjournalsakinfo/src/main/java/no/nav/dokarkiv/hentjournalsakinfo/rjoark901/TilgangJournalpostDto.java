@@ -15,7 +15,6 @@ import java.time.LocalDateTime;
  */
 @Value
 public class TilgangJournalpostDto {
-
 	private final String journalpostId;
 	private final JournalStatusCode journalStatus;
 	private final JournalpostTypeCode journalpostType;
