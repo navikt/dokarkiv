@@ -5,6 +5,7 @@ import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
+import no.nav.dokarkiv.journalpost.v1.rjoark203.support.JournalpostCopier;
 import no.nav.dokarkiv.journalpost.v1.rjoark203.support.KopierJournalpostValidator;
 import org.springframework.stereotype.Component;
 
@@ -15,11 +16,13 @@ public class KopierJournalpostService {
 
 	private final JoarkRepository joarkRepository;
 	private final KopierJournalpostValidator kopierJournalpostValidator;
+	private final JournalpostCopier journalpostCopier;
 
 	@Inject
 	public KopierJournalpostService(final JoarkRepository joarkRepository) {
 		this.joarkRepository = joarkRepository;
 		this.kopierJournalpostValidator = new KopierJournalpostValidator();
+		this.journalpostCopier = new JournalpostCopier();
 	}
 
 	public Long execute(Long journalpostId) {
@@ -29,12 +32,13 @@ public class KopierJournalpostService {
 		// verifiser at journalpost er i tilstand som kan kopieres - dvs status = FL, FS eller J, eller har saksrelasjon feilregistrert
 		kopierJournalpostValidator.validate(journalpost);
 
-		Journalpost nyJournalpost = copyJournalpost(journalpost);
+		// kopier journalpost
+		Journalpost nyJournalpost = journalpostCopier.copy(journalpost);
 
 		// låse opp den nye journalpost ved å sette den "tilbake" i status: (eks: FS -> D)
 		resetJournalpoststatus(nyJournalpost);
 
-		joarkRepository.save(nyJournalpost);
+        nyJournalpost = joarkRepository.save(nyJournalpost);
 
 		// returnere journalpostId til ny journalpost
 		return nyJournalpost.getJournalpostId();
@@ -50,21 +54,4 @@ public class KopierJournalpostService {
 			journalpost.setJournalstatus(JournalStatusCode.D);
 		}
 	}
-
-	private Journalpost copyJournalpost(Journalpost journalpost) {
-	    Journalpost kopiertJournalpost = journalpost.toBuilder()
-				.journalpostId(null)
-				.build();
-//	    journalpost.getBrukere().forEach(kopiertJournalpost::addBruker);
-//
-//	    journalpost.getJournalpostDokumentInfoRelasjoner().forEach(
-//	    		journalpostDokumentInfoRelasjon -> kopiertJournalpost.addJournalpostDokumentInfoRelasjon(JournalpostDokumentInfoRelasjon.builder()
-//				.journalpost(kopiertJournalpost)
-//				.dokumentInfo(journalpostDokumentInfoRelasjon.getDokumentInfo())
-//				.tilknyttetJournalpostSom(journalpostDokumentInfoRelasjon.getTilknyttetJournalpostSom())
-//				.build())
-//		);
-
-	    return kopiertJournalpost;
-    }
 }
