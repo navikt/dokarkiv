@@ -1,12 +1,15 @@
 package no.nav.dokarkiv.journalpost.v1;
 
 import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
+import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
 import static no.nav.dokarkiv.journalpost.v1.rjoark201.util.RequestUtils.validateId;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
+import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.metrics.RestMetrics;
+import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import no.nav.dokarkiv.journalpost.v1.rjoark203.KopierJournalpostService;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerKopierJournalpost;
 import org.slf4j.MDC;
@@ -42,8 +45,9 @@ public class KopierJournalpostRestController {
 		MDC.put(MDC_REQUEST_ID, "rjoark203");
 		log.info(MDC.get(MDC_REQUEST_ID) + " har mottatt kall for kopiering av journalpost med journalpostId={}", journalpostId);
 		validateId(journalpostId, "journalpostId");
+        RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
 
-		Long nyJournalpostId = kopierJournalpostService.execute(Long.parseLong(journalpostId));
+        Long nyJournalpostId = kopierJournalpostService.execute(Long.parseLong(journalpostId));
 
 		return ResponseEntity.status(HttpStatus.CREATED).body(nyJournalpostId);
 	}
