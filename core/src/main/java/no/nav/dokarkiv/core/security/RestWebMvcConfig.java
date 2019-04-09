@@ -36,7 +36,7 @@ public class RestWebMvcConfig implements WebMvcConfigurer {
 		registry.addInterceptor(new ValidateUserAndAddToMDCHandler(navLdapService))
 				.excludePathPatterns(new ArrayList<>(oidcAuthProperties.getIgnoredPaths()))
 				.addPathPatterns(oidcAuthProperties.getSecuredPath());
-		registry.addInterceptor(new ValidateGraphqlNavConsumerInterceptor())
+		registry.addInterceptor(new ValidateAdminConsumerAccessInterceptor(navLdapService))
 				.addPathPatterns("/rest/admin/**");
 		registry.addInterceptor(new PopulateMDCHandler())
 				.addPathPatterns(oidcAuthProperties.getSecuredPath(),
