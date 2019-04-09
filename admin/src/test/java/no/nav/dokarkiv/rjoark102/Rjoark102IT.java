@@ -61,7 +61,7 @@ public class Rjoark102IT extends AbstractAdminIT {
 	}
 
 	@Test
-	public void skallKassereDokumentDokmumentKnyttetFlereJournalposter() throws IOException {
+	public void skallKassereDokumentSomErKnyttetTilFlereJournalposter() throws IOException {
 		abacPermit();
 
 		Journalpost journalpost1 = joarkRepository.save(opprettHoveddokumentForIT());
@@ -103,7 +103,6 @@ public class Rjoark102IT extends AbstractAdminIT {
 		assertThat(Duration.between(dokumentInfoAfter.get().getDatoKassert(), LocalDateTime.now()).toMillis(), lessThan(10000L));
 		assertThat(dokumentInfoAfter.get().getFildetaljerListe().size(), is(1));
 		assertThat(dokumentInfoAfter.get().getFildetaljerListe().iterator().next().getFilUuid(), is(FIL_UUID_ARKIV));
-//		assertThat(dokumentInfoAfter.get().getFildetaljerListe().iterator().next().getFilUuid(), is(FIL_UUID_DUMMY_DOKUMENT_KASSERT));
 		assertThat(dokumentInfoAfter.get().getFildetaljerListe().iterator().next().getVariantFormat(), is(ARKIV));
 		assertThat(dokumentInfoAfter.get().getFildetaljerListe().iterator().next().getSkjermingType(), nullValue());
 
@@ -138,11 +137,6 @@ public class Rjoark102IT extends AbstractAdminIT {
 						.fraVerdi("SLADDET")
 						.tilVerdi(null)
 						.build().toStringElementFraTil(),
-//				ArkivElementEndring.builder()
-//						.arkivElement("FilDetaljer.filUuid")
-//						.fraVerdi(FIL_UUID_ARKIV)
-//						.tilVerdi(FIL_UUID_DUMMY_DOKUMENT_KASSERT)
-//						.build().toStringElementFraTil(),
 				ArkivElementEndring.builder()
 						.arkivElement("DokumentFil.filUuid")
 						.fraVerdi(FIL_UUID_ARKIV)
@@ -164,7 +158,7 @@ public class Rjoark102IT extends AbstractAdminIT {
 
 
 	@Test
-	public void skalKassereDokumentMedDokumentKnyttetEnJournalpost() throws IOException {
+	public void skalKassereDokumentMedSomErKnyttetTilEnJournalpost() throws IOException {
 		abacPermit();
 
 		Journalpost journalpost = joarkRepository.save(opprettHoveddokumentForIT());
@@ -203,7 +197,6 @@ public class Rjoark102IT extends AbstractAdminIT {
 		assertNotNull(dokumentInfoAfter.get().getDatoKassert());
 		assertThat(dokumentInfoAfter.get().getFildetaljerListe().size(), is(1));
 		assertThat(dokumentInfoAfter.get().getFildetaljerListe().iterator().next().getFilUuid(), is(FIL_UUID_ARKIV));
-//		assertThat(dokumentInfoAfter.get().getFildetaljerListe().iterator().next().getFilUuid(), is(FIL_UUID_DUMMY_DOKUMENT_KASSERT));
 		assertThat(dokumentInfoAfter.get().getFildetaljerListe().iterator().next().getVariantFormat(), is(ARKIV));
 		assertThat(dokumentInfoAfter.get().getFildetaljerListe().iterator().next().getSkjermingType(), nullValue());
 
@@ -212,7 +205,7 @@ public class Rjoark102IT extends AbstractAdminIT {
 	}
 
 	@Test
-	public void noAccess() {
+	public void skalIkkeFåTilgangHvisServiceBrukerIkkeErSrvJoarkadmin() {
 		abacPermit();
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(

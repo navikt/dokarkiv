@@ -9,8 +9,10 @@ import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.hamcrest.core.IsNull.nullValue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.springframework.ldap.query.LdapQueryBuilder.query;
 
 import no.nav.dokarkiv.core.AbstractRestIT;
 import no.nav.dokarkiv.core.CoreConfig;
@@ -18,15 +20,15 @@ import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.security.ldap.NavLdapService;
 import no.nav.dokarkiv.core.security.ldap.NavUser;
 import no.nav.freg.security.test.oidc.tools.TestToolsAutoConfig;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.ldap.core.ContextSource;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -42,18 +44,29 @@ public abstract class AbstractAdminIT extends AbstractRestIT {
 	protected static final String URL_SKJERMARKIVENHET = "/rest/admin/skjermarkivenhet/";
 	protected static final String URL_SLETTARKIVENHET = "/rest/admin/slettarkivenhet";
 
+	protected static final String NO_ACCESS_PERSON_USER_ID = "Z111111";
+
 	public static class Config {
 		@Bean
-		LdapTemplate ldapTemplate(ContextSource contextSource) {
-			LdapTemplate mockLdapTemplate = mock(LdapTemplate.class);
-			when(mockLdapTemplate.findOne(any(), any())).thenReturn(NavUser.builder()
+		NavLdapService navLdapService() {
+			NavLdapService mockNavLdapService = mock(NavLdapService.class);
+			when(mockNavLdapService.findByUserId(PERSON_USER_ID)).thenReturn(NavUser.builder()
 					.memberOf(new HashSet<>(Arrays.asList("0000-GA-joark-vedlikehold")))
-					.userId("Z990782")
+					.userId(PERSON_USER_ID)
 					.userExistsInLdap(true)
-					.build()
-			);
-			return mockLdapTemplate;
+					.build());
+			when(mockNavLdapService.findByUserId(NO_ACCESS_PERSON_USER_ID)).thenReturn(NavUser.builder()
+					.memberOf(new HashSet<>(Arrays.asList("0000-GA-NOTHING")))
+					.userId(NO_ACCESS_PERSON_USER_ID)
+					.userExistsInLdap(true)
+					.build());
+			when(mockNavLdapService.findByServiceuserId(SERVICE_USER_ID)).thenReturn(NavUser.builder()
+					.userId(SERVICE_USER_ID)
+					.userExistsInLdap(true)
+					.build());
+			return mockNavLdapService;
 		}
+
 	}
 
 	protected void abacPermit() {
