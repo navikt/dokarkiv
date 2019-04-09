@@ -34,7 +34,7 @@ import java.util.Optional;
 public class Rjoark100bIT extends AbstractAdminIT {
 
 	@Test
-	public void skalOppheveSkjermeJournalpost() throws IOException {
+	public void skalOppheveSkjermingJournalpost() throws IOException {
 		abacPermit();
 
 		Journalpost journalpost = joarkRepository.save(opprettHoveddokumentForIT());
@@ -92,7 +92,7 @@ public class Rjoark100bIT extends AbstractAdminIT {
 
 
 	@Test
-	public void skalOppheveSkjermeDokumentInfo() throws IOException {
+	public void skalOppheveSkjermingDokumentInfo() throws IOException {
 		abacPermit();
 
 		Journalpost journalpost = joarkRepository.save(opprettHoveddokumentForIT());
@@ -152,7 +152,7 @@ public class Rjoark100bIT extends AbstractAdminIT {
 	}
 
 	@Test
-	public void skalOppheveSkjermeDokumentFil() throws IOException {
+	public void skalOppheveSkjermingDokumentFil() throws IOException {
 		abacPermit();
 
 		Journalpost journalpost = joarkRepository.save(opprettHoveddokumentForIT());
@@ -219,7 +219,7 @@ public class Rjoark100bIT extends AbstractAdminIT {
 	}
 
 	@Test
-	public void skalIkkeFåTilgangHvisIkkeJoarkadmin() {
+	public void skalIkkeFåTilgangHvisServiceBrukerIkkeErSrvJoarkadmin() {
 
 		HttpEntity httpEntity = new HttpEntity(
 				createSkjermarkivenhetRequest(SkjermingTypeCode.POL, ArkivenhetCode.JOURNALPOST, 1L, null, null),
@@ -234,4 +234,5 @@ public class Rjoark100bIT extends AbstractAdminIT {
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.UNAUTHORIZED));
 	}
+
 }
