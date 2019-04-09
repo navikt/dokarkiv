@@ -8,14 +8,13 @@ import no.nav.dokarkiv.behandlejournal.v2.BehandleJournalV2Config;
 import no.nav.dokarkiv.behandlejournal.v3.BehandleJournalV3Config;
 import no.nav.dokarkiv.core.CoreConfig;
 import no.nav.dokarkiv.dokumentproduksjoninfo.DokumentproduksjonInfoConfig;
-import no.nav.dokarkiv.journalpost.v1.JournalpostConfig;
 import no.nav.dokarkiv.hentdokument.HentDokumentConfig;
-import no.nav.dokarkiv.hentjournalinfo.HentJournalInfoConfig;
 import no.nav.dokarkiv.hentjournalsakinfo.HentJournalsakinfoConfig;
 import no.nav.dokarkiv.inngaaendejournal.v1.InngaaendeJournalV1Config;
 import no.nav.dokarkiv.innsynjournal.v2.InnsynJournalV2Config;
 import no.nav.dokarkiv.journal.v3.JournalV3Config;
 import no.nav.dokarkiv.journalfoerinngaaende.v1.JournalfoerInngaaendeConfig;
+import no.nav.dokarkiv.journalpost.v1.JournalpostConfig;
 import no.nav.dokarkiv.nais.NaisContract;
 import no.nav.dokarkiv.platform.TomcatConfig;
 import org.springframework.boot.SpringApplication;
@@ -37,7 +36,6 @@ import org.springframework.context.annotation.Import;
 		JournalV3Config.class,
 		JournalfoerInngaaendeConfig.class,
 		HentDokumentConfig.class,
-		HentJournalInfoConfig.class,
 		HentJournalsakinfoConfig.class,
 		ArkiverVariantConfig.class,
 		AdminConfig.class,

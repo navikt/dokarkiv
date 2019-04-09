@@ -57,9 +57,6 @@ public class KasserDokumentRestController {
 	@Transactional(rollbackFor = UgyldigAksjonsLoggException.class)
 	@ResponseBody
 	@DeleteMapping("/kasserdokument")
-	//TODO: MÅ endre fra value = UPDATE_ACTION til DELETE_ACTION. Men joarkadmin har ikke tilgang.
-	@Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_DOKUMENT)},
-			actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION))
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark102"}, percentiles = {0.5, 0.95})
 	public KasserDokumentResponse kasserDokument(
 			@RequestHeader(value = AKSJONS_LOGG_HEADER) String aksjonsLoggHeaderString,

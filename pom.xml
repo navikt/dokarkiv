@@ -28,7 +28,6 @@
 		<module>journal</module>
 		<module>journalfoerinngaaende</module>
 		<module>hentdokument</module>
-		<module>hentjournalinfo</module>
 		<module>hentjournalsakinfo</module>
 		<module>arkivervariant</module>
 		<module>admin</module>
@@ -130,11 +129,6 @@
 			<dependency>
 				<groupId>no.nav.dokarkiv</groupId>
 				<artifactId>hentjournalsakinfo</artifactId>
-				<version>1-SNAPSHOT</version>
-			</dependency>
-			<dependency>
-				<groupId>no.nav.dokarkiv</groupId>
-				<artifactId>hentjournalinfo</artifactId>
 				<version>1-SNAPSHOT</version>
 			</dependency>
 			<dependency>
