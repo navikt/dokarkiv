@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.journalpost.v1.rjoark201;
+package no.nav.dokarkiv.journalpost.v1.journalpost;
 
 import static no.nav.dokarkiv.core.util.TestDataUtils.createJournalpost;
 
@@ -13,6 +13,7 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.DokumentUnderRedigeringException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeMidlertidigException;
 import no.nav.dokarkiv.core.exceptions.KanIkkeFerdigstilleException;
+import no.nav.dokarkiv.journalpost.v1.journalpost.JournalpostValidator;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;

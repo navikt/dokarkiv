@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.journalpost.v1.rjoark201;
+package no.nav.dokarkiv.journalpost.v1.journalpost;
 
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.D;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.M;
@@ -22,11 +22,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-class JournalpostValidator {
+public class JournalpostValidator {
 
 	private static final List<JournalStatusCode> MIDLERTIDIG_JOURNALSTATUS = Arrays.asList(M, MO, UB, D, R);
 
-	JournalpostValidator() {
+	public JournalpostValidator() {
 	}
 
 	void validateJournalpostTilstand(Journalpost journalpost) {
