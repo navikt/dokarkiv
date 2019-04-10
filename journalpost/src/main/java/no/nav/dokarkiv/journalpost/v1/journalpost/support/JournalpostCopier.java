@@ -45,8 +45,6 @@ public class JournalpostCopier {
             kopiertJournalpost.addBruker(nyBruker);
         }
 
-        journalpost.getKryssreferanser().forEach(kopiertJournalpost::addKryssReferanse);
-
         return kopiertJournalpost;
     }
 
