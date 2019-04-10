@@ -11,6 +11,7 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.entities.Kryssreferanse;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
+import org.junit.After;
 import org.junit.Test;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -31,24 +32,35 @@ public class KopierJournalpostIT extends AbstractKopierJournalpostIT {
         abacPermit();
 
         Journalpost journalpost = createJournalpost();
-        joarkRepository.save(journalpost);
+        Long journalpostId = joarkRepository.save(journalpost).getJournalpostId();
 
         TestTransaction.flagForCommit();
         TestTransaction.end();
-
-        Long journalpostId = journalpost.getJournalpostId();
+        TestTransaction.start();
 
         HttpEntity requestEntity = new HttpEntity(createHeadersWithServiceUserToken());
         ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST + journalpostId + KOPIERJOURNALPOST, HttpMethod.POST, requestEntity, String.class);
 
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
 
+        TestTransaction.flagForCommit();
+        TestTransaction.end();
         TestTransaction.start();
+
         Journalpost kopiertJournalpost = joarkRepository.findById(Long.parseLong(response.getBody())).orElseThrow(RuntimeException::new);
+        journalpost = joarkRepository.findById(journalpostId).orElseThrow(RuntimeException::new);
+
+        assertEquals(2, journalpost.getJournalpostDokumentInfoRelasjoner().size());
+        assertEquals(2, kopiertJournalpost.getJournalpostDokumentInfoRelasjoner().size());
+
+        assertEquals(kopiertJournalpost.getBrukere().size(), journalpost.getBrukere().size());
 
         assertTrue(brukereSetIsCorrectlyCopied(journalpost.getBrukere(), kopiertJournalpost.getBrukere()));
-        assertTrue(kryssreferanseSetIsCorrectlyCopied(journalpost.getKryssreferanser(), kopiertJournalpost.getKryssreferanser()));
-        assertTrue(journalpostDokumentInfoRelasjonerAreCorrectlyCopied(journalpost.getJournalpostDokumentInfoRelasjoner(), kopiertJournalpost.getJournalpostDokumentInfoRelasjoner()));
+        assertTrue(kopiertJournalpost.getKryssreferanser().isEmpty());
+        assertTrue(journalpostDokumentInfoRelasjonerAreCorrectlyCopied(
+                journalpost.getJournalpostDokumentInfoRelasjoner(),
+                kopiertJournalpost.getJournalpostDokumentInfoRelasjoner())
+        );
 
         assertSaksrelasjon(journalpost.getSaksrelasjon(), kopiertJournalpost.getSaksrelasjon(), kopiertJournalpost);
         assertEquals(journalpost.getTilleggsopplysninger(), kopiertJournalpost.getTilleggsopplysninger());
@@ -59,7 +71,10 @@ public class KopierJournalpostIT extends AbstractKopierJournalpostIT {
         assertEquals(journalpost.getAvsenderMottaker(), kopiertJournalpost.getAvsenderMottaker());
         assertEquals(journalpost.getInnhold(), kopiertJournalpost.getInnhold());
         assertEquals(JournalStatusCode.M, kopiertJournalpost.getJournalstatus());
+    }
 
+    @After
+    public void closeTransaction() throws Exception {
         TestTransaction.end();
     }
 
@@ -89,28 +104,6 @@ public class KopierJournalpostIT extends AbstractKopierJournalpostIT {
         assertEquals(kopiertJournalpost.getSaksrelasjon().getJournalpost(), kopiertJournalpost);
     }
 
-    private boolean kryssreferanseSetIsCorrectlyCopied(Set<Kryssreferanse> kryssreferanser, Set<Kryssreferanse> kryssreferanserCopy) {
-        ArrayList<Map<String, String>> kryssreferanserList = kryssreferanseSetToArrayList(kryssreferanser);
-        ArrayList<Map<String, String>> kryssreferanserCopyList = kryssreferanseSetToArrayList(kryssreferanserCopy);
-        return kryssreferanserCopyList.containsAll(kryssreferanserList) && kryssreferanserList.containsAll(kryssreferanserCopyList);
-    }
-
-    private ArrayList<Map<String, String>> kryssreferanseSetToArrayList(Set<Kryssreferanse> kryssreferanser) {
-        ArrayList<Map<String, String>> kryssreferanserList = new ArrayList<>();
-
-        kryssreferanser.forEach(kryssreferanse -> kryssreferanserList.add(new HashMap<String, String>()
-            {{
-                put("kryssreferanserId", kryssreferanse.getKryssreferanseId().toString());
-                put("referanseId", kryssreferanse.getReferanseId());
-                put("referanseType", kryssreferanse.getReferanseType().name());
-                put("id", kryssreferanse.getId().toString());
-                put("referanseNr", kryssreferanse.getReferanseNr().toString());
-            }}
-        ));
-
-        return kryssreferanserList;
-    }
-
     private boolean brukereSetIsCorrectlyCopied(Set<Bruker> brukere, Set<Bruker> brukereCopy) {
         ArrayList<Map<String, String>> brukereList = brukereSetToArrayList(brukere);
         ArrayList<Map<String, String>> brukereCopyList = brukereSetToArrayList(brukereCopy);
@@ -124,8 +117,6 @@ public class KopierJournalpostIT extends AbstractKopierJournalpostIT {
             {{
                 put("brukerId", bruker.getBrukerId());
                 put("brukerType", bruker.getBrukerType().name());
-                put("brukerInfoId", bruker.getBrukerInfoId().toString());
-                put("id", bruker.getId().toString());
             }}
         ));
 
