@@ -56,6 +56,10 @@ public abstract class AbstractArkiverVariantIT extends AbstractRestIT {
 					.userId(SERVICE_USER_ID)
 					.userExistsInLdap(true)
 					.build());
+			when(mockNavLdapService.findByServiceuserId(NO_ACCESS_SERVICE_USER_ID)).thenReturn(NavUser.builder()
+					.userId(NO_ACCESS_SERVICE_USER_ID)
+					.userExistsInLdap(true)
+					.build());
 			return mockNavLdapService;
 		}
 

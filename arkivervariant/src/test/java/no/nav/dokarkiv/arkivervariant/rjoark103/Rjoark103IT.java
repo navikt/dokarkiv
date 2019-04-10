@@ -234,7 +234,7 @@ public class Rjoark103IT extends AbstractArkiverVariantIT {
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
-		HttpEntity httpEntity = new HttpEntity(Base64.encodeBase64String(FIL), createHeadersWithServiceUserToken("test"));
+		HttpEntity httpEntity = new HttpEntity(Base64.encodeBase64String(FIL), createHeadersWithServiceUserToken(NO_ACCESS_SERVICE_USER_ID));
 
 		ResponseEntity<ArkiverVariantResponse> responseEntity = restTemplate.exchange(
 				URL_ARKIVERVARIANT,
