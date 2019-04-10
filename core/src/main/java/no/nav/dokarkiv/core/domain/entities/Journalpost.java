@@ -6,12 +6,10 @@ import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.MO;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.OD;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.U;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.UB;
-import static org.apache.commons.lang3.BooleanUtils.isFalse;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import no.nav.dokarkiv.core.domain.AbstractPersistentVersionedDomainObjectWithKilde;
-import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.Behandlingstema;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
@@ -20,6 +18,7 @@ import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
+import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode;
 import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
@@ -47,7 +46,6 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import javax.persistence.Transient;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -73,7 +71,7 @@ import java.util.stream.Collectors;
  */
 @Entity
 @Table(name = "T_JOURNALPOST")
-@Builder
+@Builder(toBuilder=true)
 @AllArgsConstructor
 public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKilde {
 
