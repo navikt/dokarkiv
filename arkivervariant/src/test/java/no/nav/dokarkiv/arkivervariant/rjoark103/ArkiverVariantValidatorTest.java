@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.arkivervariant.rjoark102;
+package no.nav.dokarkiv.arkivervariant.rjoark103;
 
 import static no.nav.dokarkiv.arkivervariant.util.TestUtils.FIL;
 

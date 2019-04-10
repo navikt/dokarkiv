@@ -7,10 +7,10 @@ import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_LOGG_H
 import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.UPDATE_ACTION;
 
 import lombok.extern.slf4j.Slf4j;
-import no.nav.dokarkiv.arkivervariant.rjoark102.ArkiverVariantRequest;
-import no.nav.dokarkiv.arkivervariant.rjoark102.ArkiverVariantResponse;
-import no.nav.dokarkiv.arkivervariant.rjoark102.ArkiverVariantService;
-import no.nav.dokarkiv.arkivervariant.rjoark102.ArkiverVariantValidator;
+import no.nav.dokarkiv.arkivervariant.rjoark103.ArkiverVariantRequest;
+import no.nav.dokarkiv.arkivervariant.rjoark103.ArkiverVariantResponse;
+import no.nav.dokarkiv.arkivervariant.rjoark103.ArkiverVariantService;
+import no.nav.dokarkiv.arkivervariant.rjoark103.ArkiverVariantValidator;
 import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService;
 import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggTO;

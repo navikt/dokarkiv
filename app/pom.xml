@@ -58,10 +58,6 @@
 		</dependency>
 		<dependency>
 			<groupId>no.nav.dokarkiv</groupId>
-			<artifactId>hentjournalinfo</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>no.nav.dokarkiv</groupId>
 			<artifactId>hentjournalsakinfo</artifactId>
 		</dependency>
 		<dependency>
