@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.arkivervariant.rjoark102;
+package no.nav.dokarkiv.arkivervariant.rjoark103;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;

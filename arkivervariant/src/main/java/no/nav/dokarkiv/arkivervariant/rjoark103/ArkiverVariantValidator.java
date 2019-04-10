@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.arkivervariant.rjoark102;
+package no.nav.dokarkiv.arkivervariant.rjoark103;
 
 import no.nav.dokarkiv.core.exceptions.UgyldigInputException;
 import org.springframework.stereotype.Component;

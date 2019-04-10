@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.arkivervariant.rjoark102;
+package no.nav.dokarkiv.arkivervariant.rjoark103;
 
 import static no.nav.dokarkiv.arkivervariant.util.TestUtils.FIL;
 import static no.nav.dokarkiv.arkivervariant.util.TestUtils.opprettHoveddokumentForIT;
@@ -36,7 +36,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class Rjoark102IT extends AbstractArkiverVariantIT {
+public class Rjoark103IT extends AbstractArkiverVariantIT {
 
 	@Test
 	public void skalFeileNårAksjonsLoggHeaderIkkeErSatt() throws IOException {
