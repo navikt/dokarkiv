@@ -1,9 +1,8 @@
-package no.nav.dokarkiv.journalpost.v1.journalpost.support;
+package no.nav.dokarkiv.journalpost.v1.rjoark203.support;
 
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
 
-import no.nav.dokarkiv.core.domain.entities.Bruker;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
@@ -38,13 +37,7 @@ public class JournalpostCopier {
                         kopiertJournalpost.addJournalpostDokumentInfoRelasjon(copyJournalpostDokumentInfoRelasjon(kopiertJournalpost, journalpostDokumentInfoRelasjon))
         );
 
-        for (Bruker bruker : journalpost.getBrukere()) {
-            Bruker nyBruker = bruker.toBuilder().brukerInfoId(null).build();
-            nyBruker.setEndretKildeNavn(bruker.getEndretKildeNavn());
-            nyBruker.setOpprettetKildeNavn(bruker.getOpprettetKildeNavn());
-            kopiertJournalpost.addBruker(nyBruker);
-        }
-
+        journalpost.getBrukere().forEach(kopiertJournalpost::addBruker);
         journalpost.getKryssreferanser().forEach(kopiertJournalpost::addKryssReferanse);
 
         return kopiertJournalpost;

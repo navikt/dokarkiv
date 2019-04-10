@@ -25,7 +25,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "T_BRUKER")
-@Builder(toBuilder = true)
+@Builder
 @AllArgsConstructor
 public class Bruker extends AbstractPersistentVersionedDomainObjectWithKilde {
 
@@ -34,15 +34,15 @@ public class Bruker extends AbstractPersistentVersionedDomainObjectWithKilde {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "brukerInfo_seq")
-	@GenericGenerator(name = "brukerInfo_seq", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
-					  parameters = { @Parameter(name = "sequence_name", value = "T_BRUKER_SEQ"),
+	@GenericGenerator(name = "brukerInfo_seq", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator", 
+					  parameters = { @Parameter(name = "sequence_name", value = "T_BRUKER_SEQ"), 
 									 @Parameter(name = "initial_value", value = "200000000") })
 	@Column(name = "brukerinfo_id", nullable = false)
 	private Long brukerInfoId;
 
 	@Column(name = "bruker_id", length = 11, nullable = false)
 	private String brukerId;
-
+	
 	@Enumerated(EnumType.STRING)
 	@Column(name = "k_bruker_t", nullable = false)
 	private BrukerTypeCode brukerType;
@@ -55,7 +55,7 @@ public class Bruker extends AbstractPersistentVersionedDomainObjectWithKilde {
 
 	/**
 	 * Constructor that assigns immutable properties. Used for testing.
-	 *
+	 * 
 	 * @param brukerInfoId
 	 *            DB-id for the instance.
 	 * @param version
@@ -74,7 +74,7 @@ public class Bruker extends AbstractPersistentVersionedDomainObjectWithKilde {
 		verifyFieldNotNull(brukerType, "brukerType");
 		validateBrukerId();
 	}
-
+	
 	private void validateBrukerId() {
 		BrukerValidator.validate(this);
 	}
@@ -87,7 +87,7 @@ public class Bruker extends AbstractPersistentVersionedDomainObjectWithKilde {
 
 	/**
 	 * Getter for the brukerId property.
-	 *
+	 * 
 	 * @return the brukerId
 	 */
 	public String getBrukerId() {
@@ -96,7 +96,7 @@ public class Bruker extends AbstractPersistentVersionedDomainObjectWithKilde {
 
 	/**
 	 * Setter for the brukerId property.
-	 *
+	 * 
 	 * @param brukerId
 	 *            the brukerId to set
 	 */
@@ -106,16 +106,16 @@ public class Bruker extends AbstractPersistentVersionedDomainObjectWithKilde {
 
 	/**
 	 * Getter for the brukerInfoId property.
-	 *
+	 * 
 	 * @return the brukerInfoId
 	 */
 	public Long getBrukerInfoId() {
 		return brukerInfoId;
 	}
-
+	
 	/**
 	 * Getter for the gjelderType property.
-	 *
+	 * 
 	 * @return the brukertype
 	 */
 	public BrukerTypeCode getBrukerType() {
@@ -124,10 +124,11 @@ public class Bruker extends AbstractPersistentVersionedDomainObjectWithKilde {
 
 	/**
 	 * Setter for the brukerType property.
-	 *
+	 * 
 	 * @param brukerType the brukerType to set
 	 */
 	public void setBrukerType(BrukerTypeCode brukerType) {
 		this.brukerType = brukerType;
 	}
+
 }

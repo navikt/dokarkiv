@@ -1,10 +1,9 @@
-package no.nav.dokarkiv.journalpost.v1.journalpost.itest;
+package no.nav.dokarkiv.journalpost.v1.itest;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import no.nav.dokarkiv.core.AbstractRestIT;
 import no.nav.dokarkiv.core.datautil.JournalpostTestDataProvider;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
@@ -15,7 +14,6 @@ import no.nav.dokarkiv.core.exceptions.JournalpostIkkeMidlertidigException;
 import no.nav.dokarkiv.core.exceptions.KanIkkeFerdigstilleException;
 import no.nav.dokarkiv.journalpost.v1.api.FerdigstillJournalpostRequest;
 import org.apache.commons.collections15.IteratorUtils;
-import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -44,23 +42,26 @@ public class FerdigstillJournalpostIT extends AbstractFerdigstillJournalpostIT {
 				.build();
 
 		HttpEntity requestEntity = new HttpEntity(request, createHeadersWithServiceUserToken());
-		ResponseEntity<String> response = restTemplate.exchange(AbstractFerdigstillJournalpostIT.URL_FERDIGSTILLJOURNALPOST + journalpostId + AbstractFerdigstillJournalpostIT.FERDIGSTILL, HttpMethod.PATCH, requestEntity, String.class);
+		ResponseEntity<String> response = restTemplate.exchange(URL_FERDIGSTILLJOURNALPOST + journalpostId + FERDIGSTILL, HttpMethod.PATCH, requestEntity, String.class);
 
 		assertEquals(HttpStatus.OK, response.getStatusCode());
 
 		TestTransaction.start();
 		Journalpost ferdigstiltJournalpost = joarkRepository.findById(journalpost.getJournalpostId()).orElseThrow(RuntimeException::new);
 
-		Assert.assertEquals(AbstractRestIT.SERVICE_USER_ID, ferdigstiltJournalpost.getEndretAvNavn());
-		Assert.assertEquals(AbstractRestIT.SERVICE_USER_ID, ferdigstiltJournalpost.getEndretKildeNavn());
-		Assert.assertEquals(AbstractRestIT.SERVICE_USER_ID, ferdigstiltJournalpost.getJournalfortAvNavn());
-		Assert.assertEquals(AbstractRestIT.SERVICE_USER_ID, ferdigstiltJournalpost.getChangeStamp().getUpdatedBy());
+		assertEquals(SERVICE_USER_ID, ferdigstiltJournalpost.getEndretAvNavn());
+		assertEquals(SERVICE_USER_ID, ferdigstiltJournalpost.getEndretKildeNavn());
+		assertEquals(SERVICE_USER_ID, ferdigstiltJournalpost.getJournalfortAvNavn());
+		assertEquals(SERVICE_USER_ID, ferdigstiltJournalpost.getChangeStamp().getUpdatedBy());
 		assertEquals(request.getJournalfoerendeEnhet(), ferdigstiltJournalpost.getJournalForendeEnhetId());
 		assertEquals(JournalStatusCode.J, ferdigstiltJournalpost.getJournalstatus());
 		assertTrue(ferdigstiltJournalpost.getChangeStamp().getUpdatedDate().after(journalpost.getChangeStamp().getCreatedDate()));
 
 		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
-		assertEquals(0, aksjonsLoggList.size());
+		assertEquals(1, aksjonsLoggList.size());
+		assertEquals(SERVICE_USER_ID, aksjonsLoggList.get(0).getUtfoertAv());
+		assertEquals(AksjonsTypeCode.FERDIGSTILL, aksjonsLoggList.get(0).getAksjon());
+		assertEquals(3, aksjonsLoggList.get(0).getArkivElementEndringer().size());
 
 		TestTransaction.end();
 	}
@@ -81,17 +82,17 @@ public class FerdigstillJournalpostIT extends AbstractFerdigstillJournalpostIT {
 				.build();
 
 		HttpEntity requestEntity = new HttpEntity(request, createHeadersWithServiceUserToken());
-		ResponseEntity<String> response = restTemplate.exchange(AbstractFerdigstillJournalpostIT.URL_FERDIGSTILLJOURNALPOST + journalpostId + AbstractFerdigstillJournalpostIT.FERDIGSTILL, HttpMethod.PATCH, requestEntity, String.class);
+		ResponseEntity<String> response = restTemplate.exchange(URL_FERDIGSTILLJOURNALPOST + journalpostId + FERDIGSTILL, HttpMethod.PATCH, requestEntity, String.class);
 
 		assertEquals(HttpStatus.OK, response.getStatusCode());
 
 		TestTransaction.start();
 		Journalpost ferdigstiltJournalpost = joarkRepository.findById(journalpost.getJournalpostId()).orElseThrow(RuntimeException::new);
 
-		Assert.assertEquals(AbstractRestIT.SERVICE_USER_ID, ferdigstiltJournalpost.getEndretAvNavn());
-		Assert.assertEquals(AbstractRestIT.SERVICE_USER_ID, ferdigstiltJournalpost.getEndretKildeNavn());
-		Assert.assertEquals(AbstractRestIT.SERVICE_USER_ID, ferdigstiltJournalpost.getJournalfortAvNavn());
-		Assert.assertEquals(AbstractRestIT.SERVICE_USER_ID, ferdigstiltJournalpost.getChangeStamp().getUpdatedBy());
+		assertEquals(SERVICE_USER_ID, ferdigstiltJournalpost.getEndretAvNavn());
+		assertEquals(SERVICE_USER_ID, ferdigstiltJournalpost.getEndretKildeNavn());
+		assertEquals(SERVICE_USER_ID, ferdigstiltJournalpost.getJournalfortAvNavn());
+		assertEquals(SERVICE_USER_ID, ferdigstiltJournalpost.getChangeStamp().getUpdatedBy());
 		assertEquals(request.getJournalfoerendeEnhet(), ferdigstiltJournalpost.getJournalForendeEnhetId());
 		assertEquals(JournalStatusCode.FS, ferdigstiltJournalpost.getJournalstatus());
 		assertTrue(ferdigstiltJournalpost.getChangeStamp().getUpdatedDate().after(journalpost.getChangeStamp().getCreatedDate()));
@@ -115,17 +116,17 @@ public class FerdigstillJournalpostIT extends AbstractFerdigstillJournalpostIT {
 				.build();
 
 		HttpEntity requestEntity = new HttpEntity(request, createHeadersWithServiceUserToken());
-		ResponseEntity<String> response = restTemplate.exchange(AbstractFerdigstillJournalpostIT.URL_FERDIGSTILLJOURNALPOST + journalpostId + AbstractFerdigstillJournalpostIT.FERDIGSTILL, HttpMethod.PATCH, requestEntity, String.class);
+		ResponseEntity<String> response = restTemplate.exchange(URL_FERDIGSTILLJOURNALPOST + journalpostId + FERDIGSTILL, HttpMethod.PATCH, requestEntity, String.class);
 
 		assertEquals(HttpStatus.OK, response.getStatusCode());
 
 		TestTransaction.start();
 		Journalpost ferdigstiltJournalpost = joarkRepository.findById(journalpost.getJournalpostId()).orElseThrow(RuntimeException::new);
 
-		Assert.assertEquals(AbstractRestIT.SERVICE_USER_ID, ferdigstiltJournalpost.getEndretAvNavn());
-		Assert.assertEquals(AbstractRestIT.SERVICE_USER_ID, ferdigstiltJournalpost.getEndretKildeNavn());
-		Assert.assertEquals(AbstractRestIT.SERVICE_USER_ID, ferdigstiltJournalpost.getJournalfortAvNavn());
-		Assert.assertEquals(AbstractRestIT.SERVICE_USER_ID, ferdigstiltJournalpost.getChangeStamp().getUpdatedBy());
+		assertEquals(SERVICE_USER_ID, ferdigstiltJournalpost.getEndretAvNavn());
+		assertEquals(SERVICE_USER_ID, ferdigstiltJournalpost.getEndretKildeNavn());
+		assertEquals(SERVICE_USER_ID, ferdigstiltJournalpost.getJournalfortAvNavn());
+		assertEquals(SERVICE_USER_ID, ferdigstiltJournalpost.getChangeStamp().getUpdatedBy());
 		assertEquals(request.getJournalfoerendeEnhet(), ferdigstiltJournalpost.getJournalForendeEnhetId());
 		assertEquals(JournalStatusCode.FS, ferdigstiltJournalpost.getJournalstatus());
 		assertTrue(ferdigstiltJournalpost.getChangeStamp().getUpdatedDate().after(journalpost.getChangeStamp().getCreatedDate()));
@@ -148,7 +149,7 @@ public class FerdigstillJournalpostIT extends AbstractFerdigstillJournalpostIT {
 				.build();
 
 		HttpEntity requestEntity = new HttpEntity(request, createHeadersWithServiceUserToken());
-		ResponseEntity<JournalpostIkkeMidlertidigException> response = restTemplate.exchange(AbstractFerdigstillJournalpostIT.URL_FERDIGSTILLJOURNALPOST + journalpostId + AbstractFerdigstillJournalpostIT.FERDIGSTILL, HttpMethod.PATCH, requestEntity, JournalpostIkkeMidlertidigException.class);
+		ResponseEntity<JournalpostIkkeMidlertidigException> response = restTemplate.exchange(URL_FERDIGSTILLJOURNALPOST + journalpostId + FERDIGSTILL, HttpMethod.PATCH, requestEntity, JournalpostIkkeMidlertidigException.class);
 		assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
 	}
 
@@ -168,7 +169,7 @@ public class FerdigstillJournalpostIT extends AbstractFerdigstillJournalpostIT {
 				.build();
 
 		HttpEntity requestEntity = new HttpEntity(request, createHeadersWithServiceUserToken());
-		ResponseEntity<String> response = restTemplate.exchange(AbstractFerdigstillJournalpostIT.URL_FERDIGSTILLJOURNALPOST + journalpostId + AbstractFerdigstillJournalpostIT.FERDIGSTILL, HttpMethod.PATCH, requestEntity, String.class);
+		ResponseEntity<String> response = restTemplate.exchange(URL_FERDIGSTILLJOURNALPOST + journalpostId + FERDIGSTILL, HttpMethod.PATCH, requestEntity, String.class);
 
 		assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
 	}
@@ -189,7 +190,7 @@ public class FerdigstillJournalpostIT extends AbstractFerdigstillJournalpostIT {
 				.build();
 
 		HttpEntity requestEntity = new HttpEntity(request, createHeadersWithServiceUserToken());
-		ResponseEntity<String> response = restTemplate.exchange(AbstractFerdigstillJournalpostIT.URL_FERDIGSTILLJOURNALPOST + journalpostId + AbstractFerdigstillJournalpostIT.FERDIGSTILL, HttpMethod.PATCH, requestEntity, String.class);
+		ResponseEntity<String> response = restTemplate.exchange(URL_FERDIGSTILLJOURNALPOST + journalpostId + FERDIGSTILL, HttpMethod.PATCH, requestEntity, String.class);
 
 		assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
 	}
@@ -212,7 +213,7 @@ public class FerdigstillJournalpostIT extends AbstractFerdigstillJournalpostIT {
 				.build();
 
 		HttpEntity requestEntity = new HttpEntity(request, createHeadersWithServiceUserToken());
-		ResponseEntity<KanIkkeFerdigstilleException> response = restTemplate.exchange(AbstractFerdigstillJournalpostIT.URL_FERDIGSTILLJOURNALPOST + journalpostId + AbstractFerdigstillJournalpostIT.FERDIGSTILL, HttpMethod.PATCH, requestEntity, KanIkkeFerdigstilleException.class);
+		ResponseEntity<KanIkkeFerdigstilleException> response = restTemplate.exchange(URL_FERDIGSTILLJOURNALPOST + journalpostId + FERDIGSTILL, HttpMethod.PATCH, requestEntity, KanIkkeFerdigstilleException.class);
 
 		assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
 		assertNotNull(response.getBody());

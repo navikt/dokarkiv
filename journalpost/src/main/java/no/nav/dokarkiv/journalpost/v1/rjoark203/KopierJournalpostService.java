@@ -1,12 +1,12 @@
-package no.nav.dokarkiv.journalpost.v1.journalpost;
+package no.nav.dokarkiv.journalpost.v1.rjoark203;
 
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
-import no.nav.dokarkiv.journalpost.v1.journalpost.support.JournalpostCopier;
-import no.nav.dokarkiv.journalpost.v1.journalpost.support.KopierJournalpostValidator;
+import no.nav.dokarkiv.journalpost.v1.rjoark203.support.JournalpostCopier;
+import no.nav.dokarkiv.journalpost.v1.rjoark203.support.KopierJournalpostValidator;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;

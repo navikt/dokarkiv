@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.journalpost.v1.journalpost.support;
+package no.nav.dokarkiv.journalpost.v1.rjoark203.support;
 
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.E;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.FL;

@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.journalpost.v1.journalpost;
+package no.nav.dokarkiv.journalpost.v1.rjoark201;
 
 import static java.lang.Long.parseLong;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
