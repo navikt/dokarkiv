@@ -25,7 +25,7 @@ import org.springframework.test.context.transaction.TestTransaction;
 import java.io.IOException;
 import java.util.List;
 
-public class FerdigstillJournalpostIT extends AbstractFerdigstillJournalpostIT {
+public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 
 	@Test
 	public void happyPathInngaaende() throws IOException {
@@ -43,7 +43,7 @@ public class FerdigstillJournalpostIT extends AbstractFerdigstillJournalpostIT {
 				.build();
 
 		HttpEntity requestEntity = new HttpEntity(request, createHeadersWithServiceUserToken());
-		ResponseEntity<String> response = restTemplate.exchange(URL_FERDIGSTILLJOURNALPOST + journalpostId + FERDIGSTILL, HttpMethod.PATCH, requestEntity, String.class);
+		ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST + journalpostId + FERDIGSTILL, HttpMethod.PATCH, requestEntity, String.class);
 
 		assertEquals(HttpStatus.OK, response.getStatusCode());
 
@@ -83,7 +83,7 @@ public class FerdigstillJournalpostIT extends AbstractFerdigstillJournalpostIT {
 				.build();
 
 		HttpEntity requestEntity = new HttpEntity(request, createHeadersWithServiceUserToken());
-		ResponseEntity<String> response = restTemplate.exchange(URL_FERDIGSTILLJOURNALPOST + journalpostId + FERDIGSTILL, HttpMethod.PATCH, requestEntity, String.class);
+		ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST + journalpostId + FERDIGSTILL, HttpMethod.PATCH, requestEntity, String.class);
 
 		assertEquals(HttpStatus.OK, response.getStatusCode());
 
@@ -117,7 +117,7 @@ public class FerdigstillJournalpostIT extends AbstractFerdigstillJournalpostIT {
 				.build();
 
 		HttpEntity requestEntity = new HttpEntity(request, createHeadersWithServiceUserToken());
-		ResponseEntity<String> response = restTemplate.exchange(URL_FERDIGSTILLJOURNALPOST + journalpostId + FERDIGSTILL, HttpMethod.PATCH, requestEntity, String.class);
+		ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST + journalpostId + FERDIGSTILL, HttpMethod.PATCH, requestEntity, String.class);
 
 		assertEquals(HttpStatus.OK, response.getStatusCode());
 
@@ -151,7 +151,7 @@ public class FerdigstillJournalpostIT extends AbstractFerdigstillJournalpostIT {
 
 		HttpEntity requestEntity = new HttpEntity(request, createHeadersWithServiceUserToken());
 		ResponseEntity<RestConsumerExceptionResponse> response =
-				restTemplate.exchange(URL_FERDIGSTILLJOURNALPOST + journalpostId + FERDIGSTILL, HttpMethod.PATCH,
+				restTemplate.exchange(URL_JOURNALPOST + journalpostId + FERDIGSTILL, HttpMethod.PATCH,
 						requestEntity, RestConsumerExceptionResponse.class);
 		assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
 		assertNotNull(response.getBody().getMessage());
@@ -174,7 +174,7 @@ public class FerdigstillJournalpostIT extends AbstractFerdigstillJournalpostIT {
 				.build();
 
 		HttpEntity requestEntity = new HttpEntity(request, createHeadersWithServiceUserToken());
-		ResponseEntity<String> response = restTemplate.exchange(URL_FERDIGSTILLJOURNALPOST + journalpostId + FERDIGSTILL, HttpMethod.PATCH, requestEntity, String.class);
+		ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST + journalpostId + FERDIGSTILL, HttpMethod.PATCH, requestEntity, String.class);
 
 		assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
 	}
@@ -193,7 +193,7 @@ public class FerdigstillJournalpostIT extends AbstractFerdigstillJournalpostIT {
 
 		HttpEntity requestEntity = new HttpEntity("{ \"journalFEnhet\": \"9999\" }", createHeadersWithUserAndServiceUserToken());
 		ResponseEntity<String> response =
-				restTemplate.exchange(URL_FERDIGSTILLJOURNALPOST + journalpostId + FERDIGSTILL, HttpMethod.PATCH,
+				restTemplate.exchange(URL_JOURNALPOST + journalpostId + FERDIGSTILL, HttpMethod.PATCH,
 						requestEntity, String.class);
 
 		assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
@@ -217,7 +217,7 @@ public class FerdigstillJournalpostIT extends AbstractFerdigstillJournalpostIT {
 
 		HttpEntity requestEntity = new HttpEntity(request, createHeadersWithServiceUserToken());
 		ResponseEntity<String> response =
-				restTemplate.exchange(URL_FERDIGSTILLJOURNALPOST + journalpostId + FERDIGSTILL, HttpMethod.PATCH,
+				restTemplate.exchange(URL_JOURNALPOST + journalpostId + FERDIGSTILL, HttpMethod.PATCH,
 						requestEntity, String.class);
 
 		assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
@@ -242,7 +242,7 @@ public class FerdigstillJournalpostIT extends AbstractFerdigstillJournalpostIT {
 
 		HttpEntity requestEntity = new HttpEntity(request, createHeadersWithServiceUserToken());
 		ResponseEntity<RestConsumerExceptionResponse> response =
-				restTemplate.exchange(URL_FERDIGSTILLJOURNALPOST + journalpostId + FERDIGSTILL, HttpMethod.PATCH,
+				restTemplate.exchange(URL_JOURNALPOST + journalpostId + FERDIGSTILL, HttpMethod.PATCH,
 						requestEntity, RestConsumerExceptionResponse.class);
 
 		assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());

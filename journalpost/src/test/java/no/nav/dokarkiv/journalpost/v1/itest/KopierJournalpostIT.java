@@ -24,7 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-public class KopierJournalpostIT extends AbstractKopierJournalpostIT {
+public class KopierJournalpostIT extends AbstractJournalpostIT {
 
     @Test
     public void happyPathInngaaende() throws IOException {
