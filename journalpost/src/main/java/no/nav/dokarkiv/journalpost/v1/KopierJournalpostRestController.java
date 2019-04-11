@@ -2,7 +2,7 @@ package no.nav.dokarkiv.journalpost.v1;
 
 import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
-import static no.nav.dokarkiv.journalpost.v1.rjoark201.util.RequestUtils.validateId;
+import static no.nav.dokarkiv.journalpost.v1.util.RequestUtils.validateId;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiParam;
