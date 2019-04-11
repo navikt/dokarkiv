@@ -6,7 +6,6 @@ import static no.nav.abac.xacml.StandardAttributter.ACTION_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
-import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_LOGG_HEADER;
 import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.FEILREGISTRER;
 import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.UPDATE_ACTION;
 import static no.nav.dokarkiv.journalpost.v1.util.AvvikstypeConstants.AVBRYT;
@@ -15,7 +14,6 @@ import static no.nav.dokarkiv.journalpost.v1.util.AvvikstypeConstants.OPPHEV_FEI
 import static no.nav.dokarkiv.journalpost.v1.util.AvvikstypeConstants.UKJENT_BRUKER;
 import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateId;
 import static no.nav.dokarkiv.journalpost.v1.validators.HandterAvvikValidator.validateAvvikstype;
-import static org.apache.commons.lang3.StringUtils.isBlank;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiParam;
@@ -23,14 +21,11 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService;
 import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggTO;
-import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggTOMapper;
 import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
-import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
 import no.nav.dokarkiv.core.exceptions.UgyldigInputException;
 import no.nav.dokarkiv.core.metrics.RestMetrics;
-import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.core.security.abac.AbacSecurityService;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import no.nav.dokarkiv.journalpost.v1.handterAvvik.AvbrytService;
@@ -44,7 +39,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -63,8 +57,6 @@ public class HandterAvvikRestController{
     private final AvbrytService avbrytService;
     private final AbacSecurityService abacSecurityService;
     private final AksjonsLoggService aksjonsLoggService;
-    private final AksjonsLoggTOMapper aksjonsLoggTOMapper;
-    private final JoarkRepository joarkRepository;
 
     @Inject
     public HandterAvvikRestController(final FeilregistrerSaksrelasjonService feilregistrerSaksrelasjonService,
@@ -72,16 +64,13 @@ public class HandterAvvikRestController{
                                                 final SettTilUkjentBrukerService settTilUkjentBrukerService,
                                                 final AvbrytService avbrytService,
                                                 final AbacSecurityService abacSecurityService,
-                                                final AksjonsLoggService aksjonsLoggService,
-                                                final JoarkRepository joarkRepository){
+                                                final AksjonsLoggService aksjonsLoggService){
         this.feilregistrerSaksrelasjonService = feilregistrerSaksrelasjonService;
         this.opphevFeilregistreringService = opphevFeilregistreringService;
         this.settTilUkjentBrukerService = settTilUkjentBrukerService;
         this.avbrytService = avbrytService;
         this.abacSecurityService = abacSecurityService;
         this.aksjonsLoggService = aksjonsLoggService;
-        this.aksjonsLoggTOMapper = new AksjonsLoggTOMapper();
-        this.joarkRepository = joarkRepository;
     }
 
     @Transactional
@@ -91,7 +80,6 @@ public class HandterAvvikRestController{
             actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION))
     @RestMetrics(value = "dok_request", extraTags = {"process_code", "feilregistrer"}, percentiles = {0.5, 0.95})
     public ResponseEntity<String> feilregistrer(
-            @RequestHeader(value = AKSJONS_LOGG_HEADER, required = false) String aksjonsLoggHeaderString,
             @PathVariable @ApiParam(value = "IDen til journalposten som skal feilregistreres", required = true, example = "77778888") String journalpostId,
             @PathVariable @ApiParam(value = "", required = true, example = "feilregistrerSaksrelasjon") String avvikstype)
             throws UgyldigAksjonsLoggException, UgyldigInputException {
@@ -104,7 +92,7 @@ public class HandterAvvikRestController{
         if (avvikstype.equals(FEILREGISTRER_SAKSRELASJON)) {
             List<ArkivElementEndringTO> arkivElementEndringTOList = feilregistrerSaksrelasjonService.feilregistrerSaksrelasjon(journalpostId);
 
-            populerAksjonslogg(journalpostId, aksjonsLoggHeaderString, FEILREGISTRER, arkivElementEndringTOList, "Saksrelasjonen ble feilregistrert");
+            populerAksjonslogg(journalpostId, FEILREGISTRER, arkivElementEndringTOList, "Saksrelasjonen ble feilregistrert");
 
             log.info(MDC.get(MDC_REQUEST_ID) + " har feilregistrert journalpost med journalpostId={}", journalpostId);
 
@@ -114,7 +102,7 @@ public class HandterAvvikRestController{
         else if (avvikstype.equals(OPPHEV_FEILREGISTRERING)) {
             List<ArkivElementEndringTO> arkivElementEndringTOList = opphevFeilregistreringService.opphevFeilregistrering(journalpostId);
 
-            populerAksjonslogg(journalpostId, aksjonsLoggHeaderString, AksjonsTypeCode.OPPHEV_FEILREGISTRERING ,arkivElementEndringTOList, "Feilregistreringen ble opphevet");
+            populerAksjonslogg(journalpostId, AksjonsTypeCode.OPPHEV_FEILREGISTRERING ,arkivElementEndringTOList, "Feilregistreringen ble opphevet");
 
             log.info(MDC.get(MDC_REQUEST_ID) + " har opphevet feilregistrering av journalpost med journalpostId={}", journalpostId);
 
@@ -124,7 +112,7 @@ public class HandterAvvikRestController{
         else if (avvikstype.equals(UKJENT_BRUKER)) {
             List<ArkivElementEndringTO> arkivElementEndringTOList = settTilUkjentBrukerService.settTilUkjentBruker(journalpostId);
 
-            populerAksjonslogg(journalpostId, aksjonsLoggHeaderString, AksjonsTypeCode.UKJENT_BRUKER ,arkivElementEndringTOList, "Journalposten fikk status Ukjent Bruker");
+            populerAksjonslogg(journalpostId, AksjonsTypeCode.UKJENT_BRUKER ,arkivElementEndringTOList, "Journalposten fikk status Ukjent Bruker");
 
             log.info(MDC.get(MDC_REQUEST_ID) + " har satt status til Ukjent Bruker for journalpost med journalpostId={}", journalpostId);
 
@@ -134,7 +122,7 @@ public class HandterAvvikRestController{
         else if (avvikstype.equals(AVBRYT)) {
             List<ArkivElementEndringTO> arkivElementEndringTOList = avbrytService.avbryt(journalpostId);
 
-            populerAksjonslogg(journalpostId, aksjonsLoggHeaderString, AksjonsTypeCode.AVBRYT ,arkivElementEndringTOList, "Journalposten ble satt til avbrutt / utgår");
+            populerAksjonslogg(journalpostId, AksjonsTypeCode.AVBRYT ,arkivElementEndringTOList, "Journalposten ble satt til avbrutt / utgår");
 
             log.info(MDC.get(MDC_REQUEST_ID) + " har satt status til avbrutt / utgår for journalpost med journalpostId={}", journalpostId);
 
@@ -151,21 +139,14 @@ public class HandterAvvikRestController{
         validateAvvikstype(avvikstype);
     }
 
-    private void populerAksjonslogg(String journalpostId, String aksjonsLoggHeaderString, AksjonsTypeCode aksjon, List<ArkivElementEndringTO> arkivElementEndringTOList, String melding) throws UgyldigAksjonsLoggException {
+    private void populerAksjonslogg(String journalpostId, AksjonsTypeCode aksjon, List<ArkivElementEndringTO> arkivElementEndringTOList, String melding) throws UgyldigAksjonsLoggException {
         AksjonsLoggTO aksjonsLoggTo;
-        if (isBlank(aksjonsLoggHeaderString)) {
-            String bruker = joarkRepository.findById(Long.parseLong(journalpostId)).orElseThrow(JournalpostIkkeFunnetException::new).getBrukere().iterator().next().getBrukerId();
-            aksjonsLoggTo = AksjonsLoggTO.builder()
-                    .aksjon(aksjon)
-                    .journalpostId(Long.parseLong(journalpostId))
-                    .utfoertAv(MDC.get(MDC_CONSUMER_ID))
-                    .hjemmel(aksjonsLoggHeaderString) //TODO fiks
-                    .bruker(bruker)
-                    .melding(melding)
-                    .build();
-        } else {
-            aksjonsLoggTo = aksjonsLoggTOMapper.mapAksjonsLoggHeader(aksjonsLoggHeaderString, FEILREGISTRER, Long.parseLong(journalpostId), null);
-        }
+        aksjonsLoggTo = AksjonsLoggTO.builder()
+                .aksjon(aksjon)
+                .journalpostId(Long.parseLong(journalpostId))
+                .utfoertAv(MDC.get(MDC_CONSUMER_ID))
+                .melding(melding)
+                .build();
 
         aksjonsLoggService.validateAndSaveAksjonsLogg(aksjonsLoggTo, arkivElementEndringTOList);
     }
