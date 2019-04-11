@@ -1,7 +1,9 @@
 package no.nav.dokarkiv.core.aksjonslogg;
 
+import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
 import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
 import no.nav.dokarkiv.core.domain.entities.ArkivElementEndring;
+import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.stelvio.RequestContextHolder;
 import org.apache.logging.log4j.util.Strings;
 
@@ -16,7 +18,7 @@ import java.util.stream.Collectors;
 class AksjonsLoggMapper {
 
 
-	public AksjonsLogg mapToAksjonsLogg(AksjonsLoggTO aksjonsLoggTO, List<ArkivElementEndringTO> arkivElementEndringTOList) {
+	public AksjonsLogg mapToAksjonsLogg(AksjonsLoggTO aksjonsLoggTO, List<ArkivElementEndringTO> arkivElementEndringTOList, Journalpost journalpost) {
 		String componentId = RequestContextHolder.currentRequestContext().getComponentId();
 		String userId = RequestContextHolder.currentRequestContext().getUserId();
 
@@ -26,7 +28,9 @@ class AksjonsLoggMapper {
 				.tidspunkt(LocalDateTime.now())
 				.aksjon(aksjonsLoggTO.getAksjon())
 				.applikasjon(componentId)
-				.bruker(aksjonsLoggTO.getBruker())
+				.bruker(mapBruker(aksjonsLoggTO.getBruker(), journalpost))
+				.arkivsaksnummer(mapArkivsaksnummer(journalpost))
+				.arkivsaksystem(mapArkivsaksystem(journalpost))
 				.dokumentInfoId(aksjonsLoggTO.getDokumentInfoId())
 				.journalpostId(aksjonsLoggTO.getJournalpostId())
 				.hjemmel(aksjonsLoggTO.getHjemmel())
@@ -37,6 +41,19 @@ class AksjonsLoggMapper {
 
 		aksjonsLogg.getArkivElementEndringer().forEach(arkivElementEndring -> arkivElementEndring.setAksjonsLogg(aksjonsLogg));
 		return aksjonsLogg;
+	}
+
+	private String mapArkivsaksnummer(Journalpost journalpost) {
+		return journalpost != null ? journalpost.getSaksrelasjon().getSakId() : null;
+	}
+
+	private FagsystemCode mapArkivsaksystem(Journalpost journalpost) {
+		return journalpost != null ? journalpost.getSaksrelasjon().getFagsystem() : null;
+	}
+
+	private String mapBruker(String bruker, Journalpost journalpost) {
+		return bruker != null ? bruker :
+				(journalpost != null ? journalpost.getBrukere().iterator().next().getBrukerId() : null);
 	}
 
 	private Set<ArkivElementEndring> mapArkivElementEndring(List<ArkivElementEndringTO> arkivElementEndringTOList) {

@@ -1,6 +1,7 @@
 package no.nav.dokarkiv.core.akjsonslogg;
 
 import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_ARKIVELEMENT;
+import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_BRUKER;
 import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_FRA_VERDI;
 import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_TIL_VERDI;
 import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_UTFOERT_AV;
@@ -17,14 +18,18 @@ import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggServiceImpl;
 import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggTO;
 import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
+import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
 import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
 import no.nav.dokarkiv.core.domain.entities.ArkivElementEndring;
+import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.service.SkjermingService;
 import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
 import no.nav.dokarkiv.core.repository.AksjonsLoggRepository;
+import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.core.repository.RepositoryConfig;
 import no.nav.dokarkiv.core.security.abac.JdbcAbacSecurityRepository;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
+import no.nav.dokarkiv.core.util.TestDataGenerator;
 import no.nav.dokarkiv.core.util.TestDataUtils;
 import org.apache.commons.collections15.IteratorUtils;
 import org.junit.Before;
@@ -61,30 +66,39 @@ public class AksjonsLoggIT {
 	@Inject
 	private AksjonsLoggRepository aksjonsLoggRepository;
 
+	@Inject
+	private JoarkRepository joarkRepository;
+
 	@Rule
 	public ExpectedException expectedException = ExpectedException.none();
+
+	private long journalpostId;
 
 	@Before
 	public void setUp() {
 		RequestContextUtil.createAndSetUsername(USER_ID, APPLICATION);
 		aksjonsLoggRepository.deleteAll();
+		Journalpost journalpost = joarkRepository.save(TestDataGenerator.createJournalpostWithHoveddokument());
+		this.journalpostId = journalpost.getJournalpostId();
 	}
 
 	@Test
 	public void shouldSaveAksjonsLogg() throws UgyldigAksjonsLoggException {
 
-		aksjonsLoggService.validateAndSaveAksjonsLogg(createAksjonsLoggTO(1L, 1L), createArkivElementEndringToList());
+		aksjonsLoggService.validateAndSaveAksjonsLogg(createAksjonsLoggTO(journalpostId, 1L), createArkivElementEndringToList());
 
 		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
 		assertThat(aksjonsLoggList.size(), is(1));
 		AksjonsLogg aksjonsLogg = aksjonsLoggList.get(0);
 
 		assertThat(aksjonsLogg.getAksjon(), is(AksjonsTypeCode.ARKIVERING));
-		assertThat(aksjonsLogg.getBruker(), is(TestDataUtils.AKSJON_BRUKER));
+		assertThat(aksjonsLogg.getBruker(), is(AKSJON_BRUKER));
 		assertThat(aksjonsLogg.getMelding(), is(TestDataUtils.AKSJON_MELDING));
 		assertThat(aksjonsLogg.getDokumentInfoId(), is(1L));
-		assertThat(aksjonsLogg.getJournalpostId(), is(1L));
+		assertThat(aksjonsLogg.getJournalpostId(), is(journalpostId));
 		assertThat(aksjonsLogg.getHjemmel(), is(TestDataUtils.AKSJON_HJEMMEL));
+		assertThat(aksjonsLogg.getArkivsaksnummer(), is(TestDataGenerator.SAK_ID));
+		assertThat(aksjonsLogg.getArkivsaksystem(), is(FagsystemCode.AO01));
 		assertThat(Duration.between(aksjonsLogg.getTidspunkt(), LocalDateTime.now()).getSeconds(), lessThan(10L));
 
 		assertThat(aksjonsLogg.getUtfoertAv(), is(AKSJON_UTFOERT_AV));
@@ -101,7 +115,7 @@ public class AksjonsLoggIT {
 
 	@Test
 	public void shouldMapUtfoertAvFromRequestContextIfUtfoertAvIsNull() throws UgyldigAksjonsLoggException {
-		AksjonsLoggTO aksjonsLoggTO = createAksjonsLoggTO(1L, 1L);
+		AksjonsLoggTO aksjonsLoggTO = createAksjonsLoggTO(journalpostId, 1L);
 		aksjonsLoggTO.setUtfoertAv(null);
 		aksjonsLoggService.validateAndSaveAksjonsLogg(aksjonsLoggTO, createArkivElementEndringToList());
 
@@ -118,7 +132,7 @@ public class AksjonsLoggIT {
 		expectedException.expect(UgyldigAksjonsLoggException.class);
 		expectedException.expectMessage("aksjon");
 
-		AksjonsLoggTO aksjonsLoggTOList = createAksjonsLoggTO(1L, 1L);
+		AksjonsLoggTO aksjonsLoggTOList = createAksjonsLoggTO(journalpostId, 1L);
 		aksjonsLoggTOList.setAksjon(null);
 		aksjonsLoggService.validateAndSaveAksjonsLogg(aksjonsLoggTOList, createArkivElementEndringToList());
 	}
@@ -129,7 +143,7 @@ public class AksjonsLoggIT {
 		expectedException.expectMessage("AksjonsLogg mangler påkrevd parameter: utfoertAv. AksjonsLogg input må inneholde parameteren \"utfoertAv\" hvis kallet ikke inneholder sikkerhetstoken for saksbehandleren");
 		RequestContextUtil.createAndSetUsername(APPLICATION, APPLICATION);
 
-		AksjonsLoggTO aksjonsLoggTOList = createAksjonsLoggTO(1L, 1L);
+		AksjonsLoggTO aksjonsLoggTOList = createAksjonsLoggTO(journalpostId, 1L);
 		aksjonsLoggTOList.setUtfoertAv(null);
 		aksjonsLoggService.validateAndSaveAksjonsLogg(aksjonsLoggTOList, createArkivElementEndringToList());
 	}
@@ -139,7 +153,7 @@ public class AksjonsLoggIT {
 		expectedException.expect(UgyldigAksjonsLoggException.class);
 		expectedException.expectMessage("bruker");
 
-		AksjonsLoggTO aksjonsLoggTOList = createAksjonsLoggTO(1L, 1L);
+		AksjonsLoggTO aksjonsLoggTOList = createAksjonsLoggTO(journalpostId, 1L);
 		aksjonsLoggTOList.setBruker(null);
 		aksjonsLoggService.validateAndSaveAksjonsLogg(aksjonsLoggTOList, createArkivElementEndringToList());
 	}
@@ -149,7 +163,7 @@ public class AksjonsLoggIT {
 		expectedException.expect(UgyldigAksjonsLoggException.class);
 		expectedException.expectMessage("AksjonsLogg mangler påkrevd parameter: enten journalpostId eller dokumentInfoId må bli satt.");
 
-		AksjonsLoggTO aksjonsLoggTOList = createAksjonsLoggTO(1L, 1L);
+		AksjonsLoggTO aksjonsLoggTOList = createAksjonsLoggTO(journalpostId, 1L);
 		aksjonsLoggTOList.setDokumentInfoId(null);
 		aksjonsLoggTOList.setJournalpostId(null);
 		aksjonsLoggService.validateAndSaveAksjonsLogg(aksjonsLoggTOList, createArkivElementEndringToList());
@@ -160,7 +174,7 @@ public class AksjonsLoggIT {
 		expectedException.expect(UgyldigAksjonsLoggException.class);
 		expectedException.expectMessage("AksjonsLogg.ArkivElementEndring mangler påkrevd parameter: arkivElement");
 
-		AksjonsLoggTO aksjonsLoggTOList = createAksjonsLoggTO(1L, 1L);
+		AksjonsLoggTO aksjonsLoggTOList = createAksjonsLoggTO(journalpostId, 1L);
 		List<ArkivElementEndringTO> arkivElementEndringTO =  createArkivElementEndringToList();
 		arkivElementEndringTO.get(0).setArkivElement(null);
 		aksjonsLoggService.validateAndSaveAksjonsLogg(aksjonsLoggTOList,arkivElementEndringTO);
@@ -171,7 +185,7 @@ public class AksjonsLoggIT {
 		expectedException.expect(UgyldigAksjonsLoggException.class);
 		expectedException.expectMessage("Ugyldig AksjonsLogg.ArkivElementEndring: enten fraVerdi eller tilVerdi må bli satt");
 
-		AksjonsLoggTO aksjonsLoggTOList = createAksjonsLoggTO(1L, 1L);
+		AksjonsLoggTO aksjonsLoggTOList = createAksjonsLoggTO(journalpostId, 1L);
 		List<ArkivElementEndringTO> arkivElementEndringTO =  createArkivElementEndringToList();
 		arkivElementEndringTO.get(0).setFraVerdi(null);
 		arkivElementEndringTO.get(0).setTilVerdi(null);
