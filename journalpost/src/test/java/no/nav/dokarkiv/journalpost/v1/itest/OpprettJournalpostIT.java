@@ -40,7 +40,6 @@ import no.nav.dokarkiv.journalpost.v1.api.DokumentVariant;
 import no.nav.dokarkiv.journalpost.v1.api.OpprettJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.OpprettJournalpostResponse;
 import no.nav.dokarkiv.journalpost.v1.api.Sak;
-import no.nav.dokarkiv.journalpost.v1.itest.AbstractOpprettJournalpostIT;
 import org.apache.commons.collections15.IteratorUtils;
 import org.junit.Test;
 import org.springframework.http.HttpEntity;

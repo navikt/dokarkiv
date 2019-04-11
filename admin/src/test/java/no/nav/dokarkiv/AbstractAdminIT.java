@@ -23,7 +23,6 @@ import no.nav.freg.security.test.oidc.tools.TestToolsAutoConfig;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.ldap.core.ContextSource;
