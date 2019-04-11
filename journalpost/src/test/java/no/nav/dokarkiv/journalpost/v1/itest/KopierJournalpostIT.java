@@ -9,7 +9,6 @@ import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.entities.Bruker;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
-import no.nav.dokarkiv.core.domain.entities.Kryssreferanse;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
 import org.junit.After;
 import org.junit.Test;
@@ -25,7 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-public class KopierJournalpostIT extends AbstractKopierJournalpostIT {
+public class KopierJournalpostIT extends AbstractJournalpostIT {
 
     @Test
     public void happyPathInngaaende() throws IOException {
