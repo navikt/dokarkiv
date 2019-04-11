@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.journalpost.v1.rjoark201.util;
+package no.nav.dokarkiv.journalpost.v1.util;
 
 public class AvvikstypeConstants {
     public static final String FEILREGISTRER_SAKSRELASJON = "feilregistrerSaksrelasjon";

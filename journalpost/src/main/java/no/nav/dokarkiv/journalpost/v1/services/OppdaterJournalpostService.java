@@ -10,11 +10,11 @@ import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
-import no.nav.dokarkiv.journalpost.v1.AksjonsLoggHelper;
 import no.nav.dokarkiv.journalpost.v1.api.OppdaterJournalpostRequest;
-import no.nav.dokarkiv.journalpost.v1.oppdaterjournalpost.DokumentInfoUpdater;
-import no.nav.dokarkiv.journalpost.v1.oppdaterjournalpost.JournalpostUpdater;
-import no.nav.dokarkiv.journalpost.v1.oppdaterjournalpost.SaksrelasjonUpdater;
+import no.nav.dokarkiv.journalpost.v1.util.AksjonsLoggHelper;
+import no.nav.dokarkiv.journalpost.v1.util.oppdaterjournalpost.DokumentInfoUpdater;
+import no.nav.dokarkiv.journalpost.v1.util.oppdaterjournalpost.JournalpostUpdater;
+import no.nav.dokarkiv.journalpost.v1.util.oppdaterjournalpost.SaksrelasjonUpdater;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;

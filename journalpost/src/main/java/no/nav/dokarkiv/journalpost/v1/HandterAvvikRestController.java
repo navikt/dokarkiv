@@ -9,12 +9,12 @@ import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
 import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_LOGG_HEADER;
 import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.FEILREGISTRER;
 import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.UPDATE_ACTION;
-import static no.nav.dokarkiv.journalpost.v1.rjoark201.util.AvvikstypeConstants.AVBRYT;
-import static no.nav.dokarkiv.journalpost.v1.rjoark201.util.AvvikstypeConstants.FEILREGISTRER_SAKSRELASJON;
-import static no.nav.dokarkiv.journalpost.v1.rjoark201.util.AvvikstypeConstants.OPPHEV_FEILREGISTRERING;
-import static no.nav.dokarkiv.journalpost.v1.rjoark201.util.AvvikstypeConstants.UKJENT_BRUKER;
-import static no.nav.dokarkiv.journalpost.v1.rjoark201.util.RequestUtils.validateAvvikstype;
-import static no.nav.dokarkiv.journalpost.v1.rjoark201.util.RequestUtils.validateId;
+import static no.nav.dokarkiv.journalpost.v1.util.AvvikstypeConstants.AVBRYT;
+import static no.nav.dokarkiv.journalpost.v1.util.AvvikstypeConstants.FEILREGISTRER_SAKSRELASJON;
+import static no.nav.dokarkiv.journalpost.v1.util.AvvikstypeConstants.OPPHEV_FEILREGISTRERING;
+import static no.nav.dokarkiv.journalpost.v1.util.AvvikstypeConstants.UKJENT_BRUKER;
+import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateId;
+import static no.nav.dokarkiv.journalpost.v1.validators.HandterAvvikValidator.validateAvvikstype;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 import io.swagger.annotations.Api;
@@ -112,7 +112,7 @@ public class HandterAvvikRestController{
         }
 
         else if (avvikstype.equals(OPPHEV_FEILREGISTRERING)) {
-            List<ArkivElementEndringTO> arkivElementEndringTOList = feilregistrerSaksrelasjonService.feilregistrerSaksrelasjon(journalpostId);
+            List<ArkivElementEndringTO> arkivElementEndringTOList = opphevFeilregistreringService.opphevFeilregistrering(journalpostId);
 
             populerAksjonslogg(journalpostId, aksjonsLoggHeaderString, AksjonsTypeCode.OPPHEV_FEILREGISTRERING ,arkivElementEndringTOList, "Feilregistreringen ble opphevet");
 

@@ -2,6 +2,7 @@ package no.nav.dokarkiv.core.datautil;
 
 import static no.nav.dokarkiv.core.datautil.DokumentFilTestDataProvider.FIL_UUID_SLADDET;
 import static no.nav.dokarkiv.core.datautil.DokumentInfoTestDataProvider.createDokumentInfo;
+import static no.nav.dokarkiv.core.datautil.DokumentInfoTestDataProvider.createHovedDokumentInfoFP;
 import static no.nav.dokarkiv.core.datautil.DokumentInfoTestDataProvider.createVedleggDokumentInfo;
 import static no.nav.dokarkiv.core.datautil.JournalpostDokumentInfoRelasjonTestDataProvider.createHoveddokumentRelasjon;
 import static no.nav.dokarkiv.core.datautil.SaksrelasjonTestDataProvider.createSaksrelasjon;
@@ -115,12 +116,12 @@ public final class JournalpostTestDataProvider {
 				.opprettetKildeNavn("itest")
 				.dokumentDato(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()))
 				.dokumentInfoRelasjoner(
-//						getJournalpostDokumentInfoRelasjonBuilder()
-//								.opprettetKildeNavn("itest")
-//								.tilknyttetAvNavn("itest")
-//								.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.HOVEDDOKUMENT)
-//								.dokumentInfo(createHovedDokumentInfoFP().build())
-//								.build(),
+						getJournalpostDokumentInfoRelasjonBuilder()
+								.opprettetKildeNavn("itest")
+								.tilknyttetAvNavn("itest")
+								.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.HOVEDDOKUMENT)
+								.dokumentInfo(createHovedDokumentInfoFP().build())
+								.build(),
 						getJournalpostDokumentInfoRelasjonBuilder()
 								.opprettetKildeNavn("itest")
 								.tilknyttetAvNavn("itest")
