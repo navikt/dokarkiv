@@ -92,6 +92,7 @@ public abstract class AbstractRestIT {
 			TestTransaction.start();
 		}
 		aksjonsLoggRepository.deleteAll();
+		dokumentFilRepository.deleteAll();
 		journalpostDokumentInfoRelasjonRepository.deleteAll();
 		dokumentinfoRepository.deleteAll();
 		joarkRepository.deleteAll();
@@ -130,7 +131,6 @@ public abstract class AbstractRestIT {
 				.build()));
 		return headers;
 	}
-
 
 	protected void saveJournalpost(Journalpost journalpost) {
 		joarkRepository.save(journalpost);
