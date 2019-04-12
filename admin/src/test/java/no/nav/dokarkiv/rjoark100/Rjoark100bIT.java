@@ -21,7 +21,6 @@ import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
 import no.nav.dokarkiv.core.domain.entities.ArkivElementEndring;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.util.TestDataGenerator;
 import no.nav.dokarkiv.core.util.TestDataUtils;
 import org.apache.commons.collections15.IteratorUtils;
@@ -176,19 +175,6 @@ public class Rjoark100bIT extends AbstractAdminIT {
 		TestTransaction.end();
 	}
 
-	private JournalpostDokumentInfoRelasjon getRelasjonByDokumentInfoId(Journalpost journalpost, Long dokumentInfoId) {
-		return journalpost.getJournalpostDokumentInfoRelasjoner()
-				.stream()
-				.filter(rel -> rel.getDokumentInfo().getDokumentInfoId().equals(dokumentInfoId))
-				.findAny()
-				.get();
-	}
-
-	private void assertDokumentInfoIkkeSkjermet(Long journalpostId, Long dokumentInfoId) {
-		journalpostDokumentInfoRelasjonRepository.findAllByDokumentInfoDokumentInfoId(dokumentInfoId)
-				.forEach(rel -> assertThat(rel.getSkjermingType(), nullValue()));
-		assertThat(joarkRepository.findById(journalpostId).get().getSkjermingType(), nullValue());
-	}
 
 	@Test
 	public void skalOppheveSkjermingDokumentFil() throws IOException {
@@ -221,12 +207,7 @@ public class Rjoark100bIT extends AbstractAdminIT {
 				httpEntity,
 				String.class);
 
-		TestTransaction.flagForCommit();
-		TestTransaction.end();
-
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
-
-		TestTransaction.start();
 
 		Optional<DokumentInfo> dokInfoEtterKall = dokumentinfoRepository.findByDokumentInfoId(dokumentInfo.getDokumentInfoId());
 		assertTrue(dokInfoEtterKall.isPresent());
@@ -257,6 +238,95 @@ public class Rjoark100bIT extends AbstractAdminIT {
 		TestTransaction.end();
 	}
 
+
+	@Test
+	public void skalIkkeLageAksjonsLoggHvisDokumentInfoIkkeErSkjermet() throws IOException {
+		Journalpost originalJournalpost = createJournalpostWithHoveddokument();
+		DokumentInfo dokumentInfo = originalJournalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
+
+		Journalpost journalpost1 = createJournalpostWithGjenbruktHoveddokument(originalJournalpost.findHoveddokumentDokumentInfoRelasjon()
+				.getDokumentInfo());
+		Journalpost journalpost2 = createJournalpostWithHoveddokument();
+		journalpost2.addJournalpostDokumentInfoRelasjon(TestDataGenerator.createVedleggRelasjon(journalpost2, dokumentInfo));
+
+		joarkRepository.save(originalJournalpost);
+		joarkRepository.save(journalpost1);
+		joarkRepository.save(journalpost2);
+
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
+
+		HttpEntity httpEntity = new HttpEntity(
+				createSkjermarkivenhetRequest(SkjermingTypeCode.POL, ArkivenhetCode.DOKUMENT_INFO, null,
+						dokumentInfo.getDokumentInfoId(), null),
+				createHeadersWithAksjon());
+
+		TestTransaction.start();
+		ResponseEntity<String> responseEntity = restTemplate.exchange(
+				URL_SKJERMARKIVENHET,
+				HttpMethod.DELETE,
+				httpEntity,
+				String.class);
+
+		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
+		assertDokumentInfoIkkeSkjermet(originalJournalpost.getJournalpostId(), dokumentInfo.getDokumentInfoId());
+		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
+		assertThat(aksjonsLoggList.size(), is(0));
+	}
+
+	@Test
+	public void skalIkkeLageAksjonsLoggHvisJournalpostIkkeErSkjermet() throws IOException {
+		Journalpost journalpost = createJournalpostWithHoveddokument();
+
+		joarkRepository.save(journalpost);
+
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
+
+		HttpEntity httpEntity = new HttpEntity(
+				createSkjermarkivenhetRequest(SkjermingTypeCode.POL, ArkivenhetCode.JOURNALPOST, journalpost.getJournalpostId(),
+						null, null),
+				createHeadersWithAksjon());
+
+		TestTransaction.start();
+		ResponseEntity<String> responseEntity = restTemplate.exchange(
+				URL_SKJERMARKIVENHET,
+				HttpMethod.DELETE,
+				httpEntity,
+				String.class);
+
+		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
+		assertThat(skjermingService.isJournalpostSkjermet(journalpost.getJournalpostId()), is(false));
+		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
+		assertThat(aksjonsLoggList.size(), is(0));
+	}
+
+	@Test
+	public void skalIkkeLageAksjonsLoggHvisDokumentFilIkkeErSkjermet() throws IOException {
+		Journalpost journalpost = joarkRepository.save(opprettHoveddokumentForIT());
+		DokumentInfo dokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
+
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
+
+		HttpEntity httpEntity = new HttpEntity(
+				createSkjermarkivenhetRequest(SkjermingTypeCode.POL, ArkivenhetCode.DOKUMENT_FIL, null,
+						dokumentInfo.getDokumentInfoId(), VariantFormatCode.ARKIV),
+				createHeadersWithAksjon());
+
+		TestTransaction.start();
+		ResponseEntity<String> responseEntity = restTemplate.exchange(
+				URL_SKJERMARKIVENHET,
+				HttpMethod.DELETE,
+				httpEntity,
+				String.class);
+
+		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
+		assertThat(skjermingService.isVariantSkjermet(dokumentInfo.getDokumentInfoId(), VariantFormatCode.ARKIV, SkjermingTypeCode.POL), is(false));
+		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
+		assertThat(aksjonsLoggList.size(), is(0));
+	}
+
 	@Test
 	public void skalIkkeFåTilgangHvisServiceBrukerIkkeErSrvJoarkadmin() {
 
@@ -273,5 +343,12 @@ public class Rjoark100bIT extends AbstractAdminIT {
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.UNAUTHORIZED));
 	}
+
+	private void assertDokumentInfoIkkeSkjermet(Long journalpostId, Long dokumentInfoId) {
+		journalpostDokumentInfoRelasjonRepository.findAllByDokumentInfoDokumentInfoId(dokumentInfoId)
+				.forEach(rel -> assertThat(rel.getSkjermingType(), nullValue()));
+		assertThat(joarkRepository.findById(journalpostId).get().getSkjermingType(), nullValue());
+	}
+
 
 }

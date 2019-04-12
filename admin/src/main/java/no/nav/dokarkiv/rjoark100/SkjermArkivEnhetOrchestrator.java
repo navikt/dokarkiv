@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.rjoark100;
 
+import static org.apache.commons.lang3.BooleanUtils.isFalse;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService;
@@ -92,8 +93,10 @@ public class SkjermArkivEnhetOrchestrator {
 	private void lagreAksjonsLogg(Long journalpostId, Long dokumentInfoId, String aksjonsLoggHeaderString, List<ArkivElementEndringTO> arkivElementEndringTOList) throws
 			UgyldigAksjonsLoggException {
 
-		AksjonsLoggTO aksjonsLoggTO = aksjonsLoggTOMapper.mapAksjonsLoggHeader(aksjonsLoggHeaderString, AksjonsTypeCode.ENDRE_SKJERMING, journalpostId, dokumentInfoId);
-		aksjonsLoggService.validateAndSaveAksjonsLogg(aksjonsLoggTO, arkivElementEndringTOList);
+		if (isFalse(arkivElementEndringTOList.isEmpty())) {
+			AksjonsLoggTO aksjonsLoggTO = aksjonsLoggTOMapper.mapAksjonsLoggHeader(aksjonsLoggHeaderString, AksjonsTypeCode.ENDRE_SKJERMING, journalpostId, dokumentInfoId);
+			aksjonsLoggService.validateAndSaveAksjonsLogg(aksjonsLoggTO, arkivElementEndringTOList);
+		}
 	}
 
 	//Gjenbrukt fra AksjonsLoggService men annen exception, legge metoden et annet sted?

@@ -82,14 +82,6 @@ public class SkjermingService {
 				.isPresent();
 	}
 
-	public boolean isAlleFildetaljerSkjermet(Long dokumentInfoId) {
-		Optional<DokumentInfo> dokumentInfo = dokumentinfoRepository.findByDokumentInfoId(dokumentInfoId);
-		return dokumentInfo.map(dokumentInfo1 -> dokumentInfo1.getFildetaljerListeAdmin()
-				.stream()
-				.allMatch(filDetaljer -> Objects.nonNull(filDetaljer.getSkjermingType())))
-				.orElse(false);
-	}
-
 	public boolean isVariantSkjermet(Long dokumentInfoId, VariantFormatCode variant, SkjermingTypeCode skjermingTypeCode) {
 		Optional<DokumentInfo> dokumentInfo = dokumentinfoRepository.findByDokumentInfoId(dokumentInfoId);
 		if (dokumentInfo.isPresent()) {

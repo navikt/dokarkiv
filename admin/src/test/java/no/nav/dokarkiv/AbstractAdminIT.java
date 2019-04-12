@@ -21,6 +21,7 @@ import no.nav.dokarkiv.core.domain.entities.ArkivElementEndring;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.security.ldap.NavLdapService;
 import no.nav.dokarkiv.core.security.ldap.NavUser;
 import no.nav.dokarkiv.core.util.TestDataUtils;
@@ -87,6 +88,15 @@ public abstract class AbstractAdminIT extends AbstractRestIT {
 		return aksjonsLoggList.stream()
 				.filter(aksjonsLogg -> journalpostId.equals(aksjonsLogg.getJournalpostId())).findAny().get();
 	}
+
+	protected JournalpostDokumentInfoRelasjon getRelasjonByDokumentInfoId(Journalpost journalpost, Long dokumentInfoId) {
+		return journalpost.getJournalpostDokumentInfoRelasjoner()
+				.stream()
+				.filter(rel -> rel.getDokumentInfo().getDokumentInfoId().equals(dokumentInfoId))
+				.findAny()
+				.get();
+	}
+
 
 	protected void assertAksjonsLogg(AksjonsLogg aksjonsLogg, Long journalpostId, Long dokumentInfoId, List<ArkivElementEndring> expectedArkivElementEndringList) {
 

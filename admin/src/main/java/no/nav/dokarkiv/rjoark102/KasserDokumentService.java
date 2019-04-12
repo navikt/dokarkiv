@@ -3,7 +3,6 @@ package no.nav.dokarkiv.rjoark102;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.DOKUMENT_FIL_FIL_UUID;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.DOKUMENT_INFO_KASSERT_AV;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.DOKUMENT_INFO_KASSERT_DATO;
-import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.FILDETALJER_FIL_UUID;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.FILDETALJER_SKJERMING_TYPE_VARIANT;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.FILDETALJER_VARIANTFORMAT;
 import static no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode.POL;
@@ -58,7 +57,7 @@ public class KasserDokumentService {
 				.getFildetaljerListeAdmin()));
 
 		FilDetaljer arkiv = dokumentInfoTilTidligKassering.findFilDetaljerByVariantFormatAdmin(ARKIV);
-		arkivElementEndringTOList.addAll(slettArkivVariantDokumentFilOgErstattMedDummy(request.getDokumentInfoId(), arkiv.getFilUuid()));
+		arkivElementEndringTOList.addAll(slettArkivVariantDokumentFil(request.getDokumentInfoId(), arkiv.getFilUuid()));
 
 		return arkivElementEndringTOList;
 	}
@@ -76,28 +75,11 @@ public class KasserDokumentService {
 		return arkivElementEndringTOList;
 	}
 
-	private List<ArkivElementEndringTO> slettArkivVariantDokumentFilOgErstattMedDummy(Long dokumentInfoId, String oldFilUuid) {
+	private List<ArkivElementEndringTO> slettArkivVariantDokumentFil(Long dokumentInfoId, String oldFilUuid) {
 		List<ArkivElementEndringTO> arkivElementEndringTOList = new ArrayList<>();
 		arkivElementEndringTOList.add(slettDokumentFil(dokumentInfoId, ARKIV, oldFilUuid));
 		arkivElementEndringTOList.add(fjernSkjermingFraFildetaljer(dokumentInfoId, oldFilUuid, ARKIV));
-//		arkivElementEndringTOList.add(oppdaterFildetaljerFilUuid(dokumentInfoId, oldFilUuid, FIL_UUID_DUMMY_DOKUMENT_KASSERT));
 		return arkivElementEndringTOList;
-	}
-
-	//Ikke fjern dette. Midlertidlig løsning. Tenker å legge dette tilbake senere. Filluuid på Fildetaljer er ikke unik som gjør det umulig å bytte filluuid til dummmy_dokument
-	private ArkivElementEndringTO oppdaterFildetaljerFilUuid(Long dokumentInfoId, String oldFilUuid, String newFilUuid) {
-		entityManager.createQuery("update FilDetaljer set filUuid=:dummy_fil_uuid where filUuid=:oldFilUuid and dokumentInfo.dokumentInfoId=:dokumentInfoId")
-				.setParameter("dokumentInfoId", dokumentInfoId)
-				.setParameter("oldFilUuid", oldFilUuid)
-				.setParameter("dummy_fil_uuid", newFilUuid)
-				.executeUpdate();
-		entityManager.flush();
-		entityManager.clear();
-		return ArkivElementEndringTO.builder()
-				.arkivElement(FILDETALJER_FIL_UUID)
-				.fraVerdi(oldFilUuid)
-				.tilVerdi(newFilUuid)
-				.build();
 	}
 
 	private ArkivElementEndringTO fjernSkjermingFraFildetaljer(Long dokumentInfoId, String filUuid, VariantFormatCode variantFormatCode) {
