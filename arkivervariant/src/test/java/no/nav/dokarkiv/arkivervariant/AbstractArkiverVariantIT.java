@@ -10,6 +10,7 @@ import static org.mockito.Mockito.when;
 
 import no.nav.dokarkiv.core.AbstractRestIT;
 import no.nav.dokarkiv.core.CoreConfig;
+import no.nav.dokarkiv.core.security.ldap.NavLdapService;
 import no.nav.dokarkiv.core.security.ldap.NavUser;
 import no.nav.freg.security.test.oidc.tools.TestToolsAutoConfig;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -35,19 +36,33 @@ import java.util.HashSet;
 public abstract class AbstractArkiverVariantIT extends AbstractRestIT {
 
 	protected static final String URL_ARKIVERVARIANT = "/rest/admin/arkivervariant/";
+	protected static final String NO_ACCESS_PERSON_USER_ID = "Z111111";
 
 	public static class Config {
 		@Bean
-		LdapTemplate ldapTemplate(ContextSource contextSource) {
-			LdapTemplate mockLdapTemplate = mock(LdapTemplate.class);
-			when(mockLdapTemplate.findOne(any(), any())).thenReturn(NavUser.builder()
+		NavLdapService navLdapService() {
+			NavLdapService mockNavLdapService = mock(NavLdapService.class);
+			when(mockNavLdapService.findByUserId(PERSON_USER_ID)).thenReturn(NavUser.builder()
 					.memberOf(new HashSet<>(Arrays.asList("0000-GA-joark-vedlikehold")))
-					.userId("Z990782")
+					.userId(PERSON_USER_ID)
 					.userExistsInLdap(true)
-					.build()
-			);
-			return mockLdapTemplate;
+					.build());
+			when(mockNavLdapService.findByUserId(NO_ACCESS_PERSON_USER_ID)).thenReturn(NavUser.builder()
+					.memberOf(new HashSet<>(Arrays.asList("0000-GA-NOTHING")))
+					.userId(NO_ACCESS_PERSON_USER_ID)
+					.userExistsInLdap(true)
+					.build());
+			when(mockNavLdapService.findByServiceuserId(SERVICE_USER_ID)).thenReturn(NavUser.builder()
+					.userId(SERVICE_USER_ID)
+					.userExistsInLdap(true)
+					.build());
+			when(mockNavLdapService.findByServiceuserId(NO_ACCESS_SERVICE_USER_ID)).thenReturn(NavUser.builder()
+					.userId(NO_ACCESS_SERVICE_USER_ID)
+					.userExistsInLdap(true)
+					.build());
+			return mockNavLdapService;
 		}
+
 	}
 
 	public static String classpathToString(String path) {
