@@ -131,7 +131,6 @@ public abstract class AbstractRestIT {
 		return headers;
 	}
 
-
 	protected void saveJournalpost(Journalpost journalpost) {
 		joarkRepository.save(journalpost);
 

@@ -1,12 +1,8 @@
 package no.nav.dokarkiv;
 
-import static no.nav.abac.xacml.NavAttributter.RESOURCE_ARKIV_DOKUMENT;
-import static no.nav.abac.xacml.NavAttributter.RESOURCE_FELLES_RESOURCE_TYPE;
-import static no.nav.abac.xacml.StandardAttributter.ACTION_ID;
 import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_LOGG_HEADER;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_SKJERMING_TYPE;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.RELASJON_SKJERMING_TYPE;
-import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.UPDATE_ACTION;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 import lombok.extern.slf4j.Slf4j;
@@ -22,13 +18,11 @@ import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
 import no.nav.dokarkiv.core.exceptions.UgyldigSkjermArkivenhetRequestException;
 import no.nav.dokarkiv.core.metrics.RestMetrics;
-import no.nav.dokarkiv.core.security.abac.AbacSecurityService;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import no.nav.dokarkiv.dto.SkjermArkivenhetRequest;
 import no.nav.dokarkiv.dto.SkjermArkivenhetResponse;
 import no.nav.dokarkiv.rjoark100.OpphevSkjermArkivenhetService;
 import no.nav.dokarkiv.rjoark100.SkjermArkivenhetService;
-import no.nav.freg.abac.core.annotation.Abac;
 import org.slf4j.MDC;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,7 +45,6 @@ import java.util.Objects;
 @RequestMapping("rest/admin")
 public class SkjermArkivenhetRestController {
 
-	private final AbacSecurityService abacSecurityService;
 	private final SkjermArkivenhetService skjermArkivenhetService;
 	private final OpphevSkjermArkivenhetService opphevSkjermArkivenhetService;
 	private final AksjonsLoggService aksjonsLoggService;
@@ -60,11 +53,9 @@ public class SkjermArkivenhetRestController {
 
 	@Inject
 	public SkjermArkivenhetRestController(
-			AbacSecurityService abacSecurityService,
 			SkjermArkivenhetService skjermArkivenhetService,
 			OpphevSkjermArkivenhetService opphevSkjermArkivenhetService,
 			AksjonsLoggService aksjonsLoggService) {
-		this.abacSecurityService = abacSecurityService;
 		this.skjermArkivenhetService = skjermArkivenhetService;
 		this.opphevSkjermArkivenhetService = opphevSkjermArkivenhetService;
 		this.aksjonsLoggService = aksjonsLoggService;
@@ -74,14 +65,11 @@ public class SkjermArkivenhetRestController {
 	@Transactional(rollbackFor = UgyldigAksjonsLoggException.class)
 	@ResponseBody
 	@PostMapping("/skjermarkivenhet")
-	@Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_DOKUMENT)},
-			actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION))
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark100a"}, percentiles = {0.5, 0.95})
 	public ResponseEntity<SkjermArkivenhetResponse> skjermArkivenhet(
 			@RequestHeader(value = AKSJONS_LOGG_HEADER) String aksjonsLoggHeaderString,
 			@RequestBody SkjermArkivenhetRequest skjermArkivenhetRequest) throws UgyldigAksjonsLoggException, UgyldigSkjermArkivenhetRequestException {
 		validerAtRequestHarSkjermingOgArkivenhet(skjermArkivenhetRequest.getSkjerming(), skjermArkivenhetRequest.getArkivenhet());
-		validerAbac(skjermArkivenhetRequest);
 		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark100a");
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
 
@@ -124,14 +112,11 @@ public class SkjermArkivenhetRestController {
 	@Transactional(rollbackFor = UgyldigAksjonsLoggException.class)
 	@ResponseBody
 	@DeleteMapping("/skjermarkivenhet")
-	@Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_DOKUMENT)},
-			actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION))
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark100b"}, percentiles = {0.5, 0.95})
 	public SkjermArkivenhetResponse opphevSkjermArkivenhet(
 			@RequestHeader(value = AKSJONS_LOGG_HEADER) String aksjonsLoggHeaderString,
 			@RequestBody SkjermArkivenhetRequest skjermArkivenhetRequest) throws UgyldigAksjonsLoggException, UgyldigSkjermArkivenhetRequestException {
 		validerAtRequestHarSkjermingOgArkivenhet(skjermArkivenhetRequest.getSkjerming(), skjermArkivenhetRequest.getArkivenhet());
-		validerAbac(skjermArkivenhetRequest);
 		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark100b");
 
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
@@ -183,15 +168,6 @@ public class SkjermArkivenhetRestController {
 	private void assertNotNullOrEmpty(Object value, String parameter) throws UgyldigSkjermArkivenhetRequestException {
 		if (Objects.isNull(value) || (value instanceof String && isBlank((String) value))) {
 			throw new UgyldigSkjermArkivenhetRequestException("Validering av input feilet: Kallet mangler påkrevd parameter: " + parameter);
-		}
-	}
-
-	private void validerAbac(SkjermArkivenhetRequest skjermArkivenhetRequest) {
-		if (skjermArkivenhetRequest.getJournalpostId() == null) {
-			abacSecurityService.assertAccessToDokumentIncludingSkjermet(skjermArkivenhetRequest.getDokumentInfoId());
-		} else {
-			abacSecurityService.assertAccessToJournalpostIncludingBegrenset(skjermArkivenhetRequest.getJournalpostId()
-					.toString());
 		}
 	}
 

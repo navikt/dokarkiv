@@ -12,6 +12,7 @@ import org.springframework.ldap.odm.annotations.Entry;
 import org.springframework.ldap.odm.annotations.Id;
 
 import javax.naming.Name;
+import java.util.Set;
 
 /**
  * @author Joakim Bjørnstad, Jbit AS
@@ -30,6 +31,7 @@ public final class NavUser {
 	private String userId;
 	private String displayName;
 	private String description;
+	private Set<String> memberOf;
 
 	/**
 	 * Flagg som forteller hvorvidt brukeren ble funnet i ldap
