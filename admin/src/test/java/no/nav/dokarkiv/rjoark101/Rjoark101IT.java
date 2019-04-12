@@ -428,7 +428,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 				HttpMethod.DELETE,
 				new HttpEntity(
 						SlettArkivenhetRequest.builder()
-								.arkivenhet(ArkivenhetCode.VEDLEGG)
+								.arkivenhet(ArkivenhetCode.DOKUMENT_INFO)
 								.journalpostId(journalpost.getJournalpostId())
 								.dokumentInfoId(dokumentInfoVedlegg.getDokumentInfoId())
 								.build(),
@@ -603,7 +603,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 				HttpMethod.DELETE,
 				new HttpEntity(
 						SlettArkivenhetRequest.builder()
-								.arkivenhet(ArkivenhetCode.VEDLEGG)
+								.arkivenhet(ArkivenhetCode.DOKUMENT_INFO)
 								.journalpostId(journalpost.getJournalpostId())
 								.dokumentInfoId(relasjonVedlegg.getDokumentInfo().getDokumentInfoId())
 								.build(),
@@ -717,7 +717,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 				HttpMethod.DELETE,
 				new HttpEntity(
 						SlettArkivenhetRequest.builder()
-								.arkivenhet(ArkivenhetCode.VEDLEGG)
+								.arkivenhet(ArkivenhetCode.DOKUMENT_INFO)
 								.journalpostId(journalpost.getJournalpostId())
 								.dokumentInfoId(relasjonVedlegg.getDokumentInfo().getDokumentInfoId())
 								.build(),
@@ -809,7 +809,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 				HttpMethod.DELETE,
 				new HttpEntity(
 						SlettArkivenhetRequest.builder()
-								.arkivenhet(ArkivenhetCode.VEDLEGG)
+								.arkivenhet(ArkivenhetCode.DOKUMENT_INFO)
 								.journalpostId(journalpost.getJournalpostId())
 								.dokumentInfoId(journalpost.findHoveddokumentDokumentInfoRelasjon()
 										.getDokumentInfo()

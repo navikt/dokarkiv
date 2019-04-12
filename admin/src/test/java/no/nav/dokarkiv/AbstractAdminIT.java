@@ -5,35 +5,38 @@ import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.hamcrest.core.IsNull.nullValue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.springframework.ldap.query.LdapQueryBuilder.query;
 
 import no.nav.dokarkiv.core.AbstractRestIT;
 import no.nav.dokarkiv.core.CoreConfig;
+import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
+import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
+import no.nav.dokarkiv.core.domain.entities.ArkivElementEndring;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.security.ldap.NavLdapService;
 import no.nav.dokarkiv.core.security.ldap.NavUser;
+import no.nav.dokarkiv.core.util.TestDataUtils;
 import no.nav.freg.security.test.oidc.tools.TestToolsAutoConfig;
-import org.springframework.beans.factory.annotation.Value;
+import org.apache.commons.collections15.IteratorUtils;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
 		classes = {CoreConfig.class, AdminConfig.class, TestToolsAutoConfig.class, AbstractAdminIT.Config.class})
@@ -79,6 +82,38 @@ public abstract class AbstractAdminIT extends AbstractRestIT {
 						.withHeader(org.apache.http.HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
 						.withBodyFile("abac/abac-permit.json")));
 	}
+
+	protected AksjonsLogg getAksjonsLoggByJournalpostId(List<AksjonsLogg> aksjonsLoggList, Long journalpostId) {
+		return aksjonsLoggList.stream()
+				.filter(aksjonsLogg -> journalpostId.equals(aksjonsLogg.getJournalpostId())).findAny().get();
+	}
+
+	protected void assertAksjonsLogg(AksjonsLogg aksjonsLogg, Long journalpostId, Long dokumentInfoId, List<ArkivElementEndring> expectedArkivElementEndringList) {
+
+		assertCommongAksjonsLoggValues(aksjonsLogg);
+		assertThat(aksjonsLogg.getJournalpostId(), is(journalpostId));
+		assertThat(aksjonsLogg.getDokumentInfoId(), is(dokumentInfoId));
+		assertThat(aksjonsLogg.getArkivElementEndringer().size(), is(expectedArkivElementEndringList.size()));
+
+		List<ArkivElementEndring> arkivElementEndringList = IteratorUtils.toList(aksjonsLogg.getArkivElementEndringer()
+				.iterator());
+
+		assertThat(arkivElementEndringList.stream()
+				.map(ArkivElementEndring::toStringElementFraTil)
+				.collect(Collectors.toList()), hasItems(expectedArkivElementEndringList.stream()
+				.map(ArkivElementEndring::toStringElementFraTil)
+				.distinct()
+				.toArray()));
+	}
+
+	protected void assertCommongAksjonsLoggValues(AksjonsLogg aksjonsLogg) {
+		assertThat(aksjonsLogg.getAksjon(), is(AksjonsTypeCode.ENDRE_SKJERMING));
+		assertThat(aksjonsLogg.getUtfoertAv(), is(TestDataUtils.AKSJON_UTFOERT_AV));
+		assertThat(aksjonsLogg.getHjemmel(), is(TestDataUtils.AKSJON_HJEMMEL));
+		assertThat(aksjonsLogg.getMelding(), is(TestDataUtils.AKSJON_MELDING));
+		assertThat(aksjonsLogg.getApplikasjon(), is(SERVICE_USER_ID));
+	}
+
 
 	protected void assertThatJournalpostIsDeleted(Long journalpostId) {
 		assertThat(joarkRepository.findById(journalpostId).isPresent(), is(false));

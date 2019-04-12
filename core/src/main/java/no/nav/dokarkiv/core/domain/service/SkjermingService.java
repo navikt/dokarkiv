@@ -90,11 +90,11 @@ public class SkjermingService {
 				.orElse(false);
 	}
 
-	public boolean isVariantSkjermet(Long dokumentInfoId, VariantFormatCode variant) {
+	public boolean isVariantSkjermet(Long dokumentInfoId, VariantFormatCode variant, SkjermingTypeCode skjermingTypeCode) {
 		Optional<DokumentInfo> dokumentInfo = dokumentinfoRepository.findByDokumentInfoId(dokumentInfoId);
 		if (dokumentInfo.isPresent()) {
 			FilDetaljer filDetaljer = dokumentInfo.get().findFilDetaljerByVariantFormatAdmin(variant);
-			if (Objects.nonNull(filDetaljer) && Objects.nonNull(filDetaljer.getSkjermingType())) {
+			if (Objects.nonNull(filDetaljer) && skjermingTypeCode.equals(filDetaljer.getSkjermingType())) {
 				return true;
 			}
 		}

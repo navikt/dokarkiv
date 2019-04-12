@@ -17,10 +17,10 @@ import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
 import no.nav.dokarkiv.core.metrics.RestMetrics;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
-import no.nav.dokarkiv.exception.UgyldigSlettArkivenhetInputException;
-import no.nav.dokarkiv.rjoark101.SlettArkivenhetOrchestrator;
 import no.nav.dokarkiv.dto.SlettArkivenhetRequest;
 import no.nav.dokarkiv.dto.SlettArkivenhetResponse;
+import no.nav.dokarkiv.exception.UgyldigSlettArkivenhetInputException;
+import no.nav.dokarkiv.rjoark101.SlettArkivenhetOrchestrator;
 import no.nav.freg.abac.core.annotation.Abac;
 import org.slf4j.MDC;
 import org.springframework.transaction.annotation.Transactional;
@@ -76,7 +76,7 @@ public class SlettArkivenhetController {
 				assertNotNullOrEmpty(slettArkivenhetRequest.getJournalpostId(), "journalpostId");
 				arkivElementEndringTOList = slettArkivenhetOrchestrator.slettJournalpost(slettArkivenhetRequest.getJournalpostId());
 				break;
-			case VEDLEGG:
+			case DOKUMENT_INFO:
 				assertNotNullOrEmpty(slettArkivenhetRequest.getJournalpostId(), "journalpostId");
 				assertNotNullOrEmpty(slettArkivenhetRequest.getDokumentInfoId(), "dokumentInfoId");
 				arkivElementEndringTOList = slettArkivenhetOrchestrator.slettVedlegg(slettArkivenhetRequest.getJournalpostId(), slettArkivenhetRequest

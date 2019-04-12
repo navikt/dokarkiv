@@ -1,6 +1,7 @@
 package no.nav.dokarkiv.core.aksjonslogg;
 
 import lombok.experimental.UtilityClass;
+import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
@@ -20,7 +21,12 @@ public class ArkivElementConstants {
 
 	public static final String FILDETALJER_VARIANTFORMAT = "FilDetaljer.variantFormat";
 	public static final String FILDETALJER_FIL_UUID= "FilDetaljer.filUuid";
-	public static final String FILDETALJER_SKJERMING_TYPE_VARIANT = "Fildetaljer.variantFormat[%s].skjermingType";
+
+	public static final String FILDETALJER_SKJERMING_TYPE_VARIANT(VariantFormatCode variantFormatCode) {
+		return String.format("Fildetaljer.variantFormat[%s].skjermingType", variantFormatCode);
+	}
+
+	;
 	public static final String DOKUMENT_FIL_FIL_UUID= "DokumentFil.filUuid";
 
 }
