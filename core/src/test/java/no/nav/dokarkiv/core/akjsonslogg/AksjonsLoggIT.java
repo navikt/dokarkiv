@@ -9,7 +9,6 @@ import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_UTFOERT_AV;
 import static no.nav.dokarkiv.core.util.TestDataUtils.APPLICATION;
 import static no.nav.dokarkiv.core.util.TestDataUtils.USER_ID;
 import static no.nav.dokarkiv.core.util.TestDataUtils.createAksjonsLoggTO;
-import static no.nav.dokarkiv.core.util.TestDataUtils.createAksjonsLoggTOWithoutBruker;
 import static no.nav.dokarkiv.core.util.TestDataUtils.createArkivElementEndringToList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.lessThan;
@@ -116,8 +115,8 @@ public class AksjonsLoggIT {
 
 	@Test
     public void shouldGetBrukerFromJoark() throws UgyldigAksjonsLoggException {
-        AksjonsLoggTO aksjonsLoggTO = createAksjonsLoggTOWithoutBruker(journalpostId, 1L);
-        aksjonsLoggTO.setUtfoertAv(null);
+        AksjonsLoggTO aksjonsLoggTO = createAksjonsLoggTO(journalpostId, 1L);
+        aksjonsLoggTO.setBruker(null);
         aksjonsLoggService.validateAndSaveAksjonsLogg(aksjonsLoggTO, createArkivElementEndringToList());
 
         List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
@@ -159,16 +158,6 @@ public class AksjonsLoggIT {
 
 		AksjonsLoggTO aksjonsLoggTOList = createAksjonsLoggTO(journalpostId, 1L);
 		aksjonsLoggTOList.setUtfoertAv(null);
-		aksjonsLoggService.validateAndSaveAksjonsLogg(aksjonsLoggTOList, createArkivElementEndringToList());
-	}
-
-	@Test
-	public void shouldThrowWhenBrukerIsNull() throws UgyldigAksjonsLoggException {
-		expectedException.expect(UgyldigAksjonsLoggException.class);
-		expectedException.expectMessage("bruker");
-
-		AksjonsLoggTO aksjonsLoggTOList = createAksjonsLoggTO(journalpostId, 1L);
-		aksjonsLoggTOList.setBruker(null);
 		aksjonsLoggService.validateAndSaveAksjonsLogg(aksjonsLoggTOList, createArkivElementEndringToList());
 	}
 
