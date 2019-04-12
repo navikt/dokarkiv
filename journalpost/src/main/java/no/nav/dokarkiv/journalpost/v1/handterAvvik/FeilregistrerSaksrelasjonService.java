@@ -29,7 +29,7 @@ public class FeilregistrerSaksrelasjonService {
 
         Saksrelasjon saksrelasjon = journalpost.getSaksrelasjon();
 
-        if (!saksrelasjon.getFeilregistrert()) {
+        if (saksrelasjon.getFeilregistrert() == null || !saksrelasjon.getFeilregistrert()) {
             journalpost.getSaksrelasjon().setFeilregistrert(true);
         } else if (saksrelasjon.getFeilregistrert()) {
             throw new UgyldigInputException("Saksrelasjonen er allerede feilregistrert");
