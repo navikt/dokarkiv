@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
+import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.GenericGenerator;
@@ -64,6 +65,13 @@ public class AksjonsLogg {
 
 	@Column(name = "bruker", length = 50)
 	private String bruker;
+
+	@Column(name = "arkivsaksnummer", length = 10)
+	private String arkivsaksnummer;
+
+	@Enumerated(EnumType.STRING)
+	@Column(name = "arkivsaksystem")
+	private FagsystemCode arkivsaksystem;
 
 	@Column(name = "hjemmel", length = 50)
 	private String hjemmel;
