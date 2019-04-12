@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.core.akjsonslogg;
 
+import static no.nav.dokarkiv.core.util.TestDataGenerator.BRUKER_ID;
 import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_ARKIVELEMENT;
 import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_BRUKER;
 import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_FRA_VERDI;
@@ -112,6 +113,18 @@ public class AksjonsLoggIT {
 		assertThat(Duration.between(arkivElementEndring.getTidspunkt(), LocalDateTime.now()).getSeconds(), lessThan(10L));
 	}
 
+	@Test
+    public void shouldGetBrukerFromJoark() throws UgyldigAksjonsLoggException {
+        AksjonsLoggTO aksjonsLoggTO = createAksjonsLoggTO(journalpostId, 1L);
+        aksjonsLoggTO.setBruker(null);
+        aksjonsLoggService.validateAndSaveAksjonsLogg(aksjonsLoggTO, createArkivElementEndringToList());
+
+        List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
+        assertThat(aksjonsLoggList.size(), is(1));
+        AksjonsLogg aksjonsLogg = aksjonsLoggList.get(0);
+
+        assertThat(aksjonsLogg.getBruker(), is(BRUKER_ID));
+    }
 
 	@Test
 	public void shouldMapUtfoertAvFromRequestContextIfUtfoertAvIsNull() throws UgyldigAksjonsLoggException {
@@ -145,16 +158,6 @@ public class AksjonsLoggIT {
 
 		AksjonsLoggTO aksjonsLoggTOList = createAksjonsLoggTO(journalpostId, 1L);
 		aksjonsLoggTOList.setUtfoertAv(null);
-		aksjonsLoggService.validateAndSaveAksjonsLogg(aksjonsLoggTOList, createArkivElementEndringToList());
-	}
-
-	@Test
-	public void shouldThrowWhenBrukerIsNull() throws UgyldigAksjonsLoggException {
-		expectedException.expect(UgyldigAksjonsLoggException.class);
-		expectedException.expectMessage("bruker");
-
-		AksjonsLoggTO aksjonsLoggTOList = createAksjonsLoggTO(journalpostId, 1L);
-		aksjonsLoggTOList.setBruker(null);
 		aksjonsLoggService.validateAndSaveAksjonsLogg(aksjonsLoggTOList, createArkivElementEndringToList());
 	}
 

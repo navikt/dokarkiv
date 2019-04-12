@@ -34,7 +34,6 @@ class AksjonsLoggValidator {
 		}
 
 		assertNullOrEmpty(aksjonsLoggTO.getAksjon(), "AksjonsLogg mangler påkrevd parameter: aksjon");
-		assertNullOrEmpty(aksjonsLoggTO.getBruker(), "AksjonsLogg mangler påkrevd parameter: bruker");
 
 		if (Objects.isNull(aksjonsLoggTO.getJournalpostId()) && Objects.isNull(aksjonsLoggTO.getDokumentInfoId())) {
 			throw new UgyldigAksjonsLoggException("AksjonsLogg mangler påkrevd parameter: enten journalpostId eller dokumentInfoId må bli satt.");
