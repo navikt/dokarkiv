@@ -41,7 +41,7 @@ public class SaksrelasjonUpdater {
             updateArkivsaksnummer(journalpost, request, saksrelasjon, aksjonsLoggHelper, endret);
             updateArkivsaksystem(journalpost, request, saksrelasjon, aksjonsLoggHelper, endret);
 
-            if (endret.isEndret() && !newSak) {
+            if (endret.isEndretFlagg() && !newSak) {
                 saksrelasjon.setEndretAvNavn(MDC.get(MDC_USER_ID));
                 saksrelasjon.setEndretKildeNavn(MDC.get(MDC_CONSUMER_ID));
             }
@@ -59,7 +59,7 @@ public class SaksrelasjonUpdater {
                     .tilVerdi(request.getSak().getArkivsaksystem().name())
                     .build());
             saksrelasjon.setFagsystem(mapArkivSakSystemToFagsystemCode(request.getSak().getArkivsaksystem()));
-            endret.setEndret(true);
+            endret.setEndretFlagg(true);
         }
     }
 
@@ -71,7 +71,7 @@ public class SaksrelasjonUpdater {
                     .tilVerdi(request.getSak().getArkivsaksnummer())
                     .build());
             saksrelasjon.setSakId(request.getSak().getArkivsaksnummer());
-            endret.setEndret(true);
+            endret.setEndretFlagg(true);
         }
     }
 

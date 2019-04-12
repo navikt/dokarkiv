@@ -1,7 +1,6 @@
 package no.nav.dokarkiv.journalpost.v1;
 
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
-import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.FERDIGSTILL;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 import lombok.extern.slf4j.Slf4j;
@@ -9,7 +8,6 @@ import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggTO;
 import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggTOMapper;
 import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
-import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
 import org.slf4j.MDC;
 
@@ -37,7 +35,7 @@ public class AksjonsLoggHelper {
                     .dokumentInfoId(dokumentInfoId)
                     .melding(aksjonsTypeCode.equals(AksjonsTypeCode.SAKSTILKNYTNING) ?
                             "Journalposten ble knyttet til en sak." :
-                            "Metadata på journalposten ble endret.")
+                            "Metadata på journalposten ble endretFlagg.")
                     .build();
         } else {
             this.aksjonsLoggTO = aksjonsLoggTOMapper.mapAksjonsLoggHeader(aksjonsLoggHeaderString, aksjonsTypeCode, journalpostId, dokumentInfoId);
