@@ -39,15 +39,20 @@ public class JournalpostCopier {
         );
 
         for (Bruker bruker : journalpost.getBrukere()) {
-            Bruker nyBruker = bruker.toBuilder().brukerInfoId(null).build();
-            nyBruker.setEndretKildeNavn(bruker.getEndretKildeNavn());
-            nyBruker.setOpprettetKildeNavn(bruker.getOpprettetKildeNavn());
-            kopiertJournalpost.addBruker(nyBruker);
+            kopiertJournalpost.addBruker(cloneBruker(bruker));
         }
 
         journalpost.getKryssreferanser().forEach(kopiertJournalpost::addKryssReferanse);
 
         return kopiertJournalpost;
+    }
+
+    private Bruker cloneBruker(Bruker originalBruker) {
+        Bruker nyBruker = originalBruker.toBuilder().brukerInfoId(null).build();
+        String consumerId = MDC.get(MDC_CONSUMER_ID);
+        nyBruker.setEndretKildeNavn(consumerId);
+        nyBruker.setOpprettetKildeNavn(consumerId);
+        return nyBruker;
     }
 
     private Map<String, String> copyTilleggsopplysninger(Map<String, String> tilleggsopplysninger) {
