@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.core.akjsonslogg;
 
+import static no.nav.dokarkiv.core.util.TestDataGenerator.BRUKER_ID;
 import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_ARKIVELEMENT;
 import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_BRUKER;
 import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_FRA_VERDI;
@@ -8,6 +9,7 @@ import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_UTFOERT_AV;
 import static no.nav.dokarkiv.core.util.TestDataUtils.APPLICATION;
 import static no.nav.dokarkiv.core.util.TestDataUtils.USER_ID;
 import static no.nav.dokarkiv.core.util.TestDataUtils.createAksjonsLoggTO;
+import static no.nav.dokarkiv.core.util.TestDataUtils.createAksjonsLoggTOWithoutBruker;
 import static no.nav.dokarkiv.core.util.TestDataUtils.createArkivElementEndringToList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.lessThan;
@@ -112,6 +114,18 @@ public class AksjonsLoggIT {
 		assertThat(Duration.between(arkivElementEndring.getTidspunkt(), LocalDateTime.now()).getSeconds(), lessThan(10L));
 	}
 
+	@Test
+    public void shouldGetBrukerFromJoark() throws UgyldigAksjonsLoggException {
+        AksjonsLoggTO aksjonsLoggTO = createAksjonsLoggTOWithoutBruker(journalpostId, 1L);
+        aksjonsLoggTO.setUtfoertAv(null);
+        aksjonsLoggService.validateAndSaveAksjonsLogg(aksjonsLoggTO, createArkivElementEndringToList());
+
+        List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
+        assertThat(aksjonsLoggList.size(), is(1));
+        AksjonsLogg aksjonsLogg = aksjonsLoggList.get(0);
+
+        assertThat(aksjonsLogg.getBruker(), is(BRUKER_ID));
+    }
 
 	@Test
 	public void shouldMapUtfoertAvFromRequestContextIfUtfoertAvIsNull() throws UgyldigAksjonsLoggException {

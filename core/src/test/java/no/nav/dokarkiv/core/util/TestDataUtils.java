@@ -75,6 +75,17 @@ public class TestDataUtils {
 				.build();
 	}
 
+	public static AksjonsLoggTO createAksjonsLoggTOWithoutBruker(Long journalpostId, Long dokumentInfoId) {
+		return AksjonsLoggTO.builder()
+				.aksjon(AksjonsTypeCode.ARKIVERING)
+				.melding(AKSJON_MELDING)
+				.journalpostId(journalpostId)
+				.dokumentInfoId(dokumentInfoId)
+				.hjemmel(AKSJON_HJEMMEL)
+				.utfoertAv(AKSJON_UTFOERT_AV)
+				.build();
+	}
+
 	public static AksjonsLoggTO createAksjonsLoggTOHeader() {
 		return AksjonsLoggTO.builder()
 				.bruker(AKSJON_BRUKER)
