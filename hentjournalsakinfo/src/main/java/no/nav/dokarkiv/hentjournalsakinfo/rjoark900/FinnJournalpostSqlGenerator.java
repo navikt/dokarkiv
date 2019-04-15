@@ -77,6 +77,7 @@ final class FinnJournalpostSqlGenerator {
 				"                              fd.k_skjerming_type   AS dokumenter_varianter_skjerming,\n" +
 				"                              fd.k_variant_format   AS dokumenter_varianter_variantf,\n" +
 				"	                           fd.fil_navn           AS dokumenter_varianter_filnavn,\n" +
+				"                              tsi.skannet_innhold_id AS dokumenter_logiske_vedleggid,\n" +
 				"                              tsi.vedlegg_innhold   AS dokumenter_logiske_tittel\n" +
 				"                       FROM t_journalpost j\n" +
 				"                              LEFT JOIN t_saksrelasjon s ON s.journalpost_id = j.journalpost_id\n" +
