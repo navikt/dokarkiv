@@ -5,6 +5,7 @@ import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.RELASJON_SKJERMING_TYPE;
 import static org.apache.commons.lang3.BooleanUtils.isFalse;
 
+import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
 import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
@@ -19,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 @Service
+@Slf4j
 public class OpphevSkjermArkivenhetService {
 
 	private final SkjermingService skjermingService;
@@ -41,6 +43,8 @@ public class OpphevSkjermArkivenhetService {
 							.tilVerdi(null)
 							.build()
 			);
+		} else {
+			log.warn(String.format("Journalpost %s er ikke skjermet. Gjør ingen endring i databasen.", journalpostId));
 		}
 
 		return arkivElementEndringTOList;
@@ -57,6 +61,8 @@ public class OpphevSkjermArkivenhetService {
 							.tilVerdi(null)
 							.build()
 			);
+		} else {
+			log.warn(String.format("JournalpostDokumentInfoRelasjon med journalpostId=%s og dokumentInfoId=%s er ikke skjermet. Gjør ingen endring i databasen.", journalpostId, dokumentInfoId));
 		}
 
 		return arkivElementEndringTOList;
@@ -94,7 +100,10 @@ public class OpphevSkjermArkivenhetService {
 							.tilVerdi(null)
 							.build()
 			);
+		} else {
+			log.warn(String.format("DokumentFil med dokumentInfoId=%s og variantFormat=%s er ikke skjermet. Gjør ingen endring i databasen.", dokumentInfoId, variant));
 		}
+
 		return arkivElementEndringTOList;
 	}
 }
