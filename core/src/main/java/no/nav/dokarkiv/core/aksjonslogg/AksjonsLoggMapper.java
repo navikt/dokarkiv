@@ -57,18 +57,19 @@ class AksjonsLoggMapper {
 	}
 
 	private String mapBruker(String bruker, Journalpost journalpost) {
-		if (bruker != null) {
+	    if (bruker != null) {
 			return bruker;
 		} else if (journalpost != null && journalpost.getBrukere() != null) {
-			if (journalpost.getBrukere().size() == 1) {
-				return journalpost.getBrukere().iterator().next().getBrukerId();
+	        if (journalpost.getBrukere().size() == 1) {
+                bruker = journalpost.getBrukere().iterator().next().getBrukerId();
 			} else {
 				log.warn("Journalpost med journalpostId=" + journalpost.getJournalpostId() + " har mer enn én bruker. " +
 						"Siste lagrede bruker settes i aksjonslogg.");
 				List<Bruker> brukere = new ArrayList<>(journalpost.getBrukere());
 				brukere.sort(Comparator.comparing(Bruker::getBrukerInfoId));
-				return brukere.get(brukere.size()-1).getBrukerId();
-			}
+                bruker = brukere.get(brukere.size()-1).getBrukerId();
+	        }
+	        return bruker;
 		} else {
 			return null;
 		}
