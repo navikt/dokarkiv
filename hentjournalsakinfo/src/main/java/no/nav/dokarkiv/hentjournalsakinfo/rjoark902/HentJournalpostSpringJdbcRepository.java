@@ -18,7 +18,7 @@ import java.util.Optional;
 @Repository
 class HentJournalpostSpringJdbcRepository {
 	private static final ResultSetExtractor<List<HentJournalpostDto>> JOURNALPOST_DTO_RESULT_SET_EXTRACTOR = JdbcTemplateMapperFactory.newInstance()
-			.addKeys("journalpostid", "saksrelasjon_sakid", "tilleggsopplysninger_nokkel", "dokumenter_dokumentinfoid", "dokumenter_logiske_tittel", "dokumenter_varianter_variantf")
+			.addKeys("journalpostid", "saksrelasjon_sakid", "tilleggsopplysninger_nokkel", "dokumenter_dokumentinfoid", "dokumenter_logiske_vedleggid", "dokumenter_varianter_variantf")
 			.newResultSetExtractor(HentJournalpostDto.class);
 
 	private final NamedParameterJdbcTemplate jdbcTemplate;
