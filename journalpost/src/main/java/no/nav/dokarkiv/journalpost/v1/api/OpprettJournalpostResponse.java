@@ -23,8 +23,8 @@ public class OpprettJournalpostResponse {
 			value = "Journalstatus for journalpost.\n" +
 					"* MIDLERTIDIG - hvis journalpost er opprettet\n" +
 					"* ENDELIG - hvis journalpost er opprett og endelig journalført",
-			example = "MIDLERTIDIG",
-			required = true)
+			required = true,
+			example = "MIDLERTIDIG")
 	private String journalstatus;
 
 	@ApiModelProperty(

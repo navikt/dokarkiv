@@ -4,5 +4,5 @@ import lombok.Data;
 
 @Data
 public class Endret {
-    private boolean endret;
+    private boolean endretFlagg;
 }

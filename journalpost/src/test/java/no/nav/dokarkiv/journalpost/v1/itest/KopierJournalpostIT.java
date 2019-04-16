@@ -1,6 +1,8 @@
 package no.nav.dokarkiv.journalpost.v1.itest;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import no.nav.dokarkiv.core.datautil.JournalpostTestDataProvider;
@@ -53,6 +55,12 @@ public class KopierJournalpostIT extends AbstractJournalpostIT {
         assertEquals(2, kopiertJournalpost.getJournalpostDokumentInfoRelasjoner().size());
 
         assertEquals(kopiertJournalpost.getBrukere().size(), journalpost.getBrukere().size());
+
+        Bruker kopiertBruker = kopiertJournalpost.getBrukere().iterator().next();
+        Bruker originalBruker = journalpost.getBrukere().iterator().next();
+        assertTrue(kopiertBruker.getChangeStamp().getCreatedDate().after(originalBruker.getChangeStamp().getCreatedDate()));
+        assertEquals(SERVICE_USER_ID, kopiertBruker.getEndretKildeNavn());
+        assertEquals(SERVICE_USER_ID, kopiertBruker.getOpprettetKildeNavn());
 
         assertTrue(brukereSetIsCorrectlyCopied(journalpost.getBrukere(), kopiertJournalpost.getBrukere()));
         assertTrue(kopiertJournalpost.getKryssreferanser().isEmpty());

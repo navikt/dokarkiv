@@ -132,16 +132,6 @@ public abstract class AbstractRestIT {
 		return headers;
 	}
 
-	protected HttpHeaders createHeadersWithUserAndServiceUserToken(String serviceUserId, String personUserId) throws IOException {
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_JSON);
-		headers.add(HttpHeaders.AUTHORIZATION, BEARER + oidcTestService.createOidc(openAmClaimsBuilder().subject(personUserId)
-				.build()));
-		headers.add(NAV_CONSUMER_TOKEN, BEARER + oidcTestService.createOidc(openAmClaimsBuilder().subject(serviceUserId)
-				.build()));
-		return headers;
-	}
-
 	protected void saveJournalpost(Journalpost journalpost) {
 		joarkRepository.save(journalpost);
 

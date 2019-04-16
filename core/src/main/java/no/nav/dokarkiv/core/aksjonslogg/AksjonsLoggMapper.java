@@ -44,16 +44,16 @@ class AksjonsLoggMapper {
 	}
 
 	private String mapArkivsaksnummer(Journalpost journalpost) {
-		return journalpost != null ? journalpost.getSaksrelasjon().getSakId() : null;
+		return journalpost != null && journalpost.getSaksrelasjon() != null ? journalpost.getSaksrelasjon().getSakId() : null;
 	}
 
 	private FagsystemCode mapArkivsaksystem(Journalpost journalpost) {
-		return journalpost != null ? journalpost.getSaksrelasjon().getFagsystem() : null;
+		return journalpost != null && journalpost.getSaksrelasjon() != null ? journalpost.getSaksrelasjon().getFagsystem() : null;
 	}
 
 	private String mapBruker(String bruker, Journalpost journalpost) {
 		return bruker != null ? bruker :
-				(journalpost != null ? journalpost.getBrukere().iterator().next().getBrukerId() : null);
+				(journalpost != null && journalpost.getBrukere() != null ? journalpost.getBrukere().iterator().next().getBrukerId() : null);
 	}
 
 	private Set<ArkivElementEndring> mapArkivElementEndring(List<ArkivElementEndringTO> arkivElementEndringTOList) {

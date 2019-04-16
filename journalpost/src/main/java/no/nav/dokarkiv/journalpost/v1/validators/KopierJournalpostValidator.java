@@ -14,7 +14,7 @@ import java.util.List;
 
 public class KopierJournalpostValidator {
 
-	public static final List<JournalStatusCode> COPYABLE_JOURNALSTATUS_LIST = Arrays.asList(FS, FL, E, J);
+	private static final List<JournalStatusCode> COPYABLE_JOURNALSTATUS_LIST = Arrays.asList(FS, FL, E, J);
 
 	public void validate(Journalpost journalpost) {
 		JournalStatusCode status = journalpost.getJournalstatus();

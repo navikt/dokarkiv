@@ -37,35 +37,40 @@ public class OpprettJournalpostRequest {
 	@NotNull(message = "Tema kan ikke være null")
 	@ApiModelProperty(
 			value = "Temaet som forsendelsen tilhører, for eksempel \"FOR\" (foreldrepenger).",
-			example = "FOR",
-			required = true)
+			required = true,
+			example = "FOR"
+	)
 	private String tema;
 
 	@ApiModelProperty(
 			value = "Behandlingstema for forsendelsen, for eksempel ab0001 (Ordinære dagpenger).",
-			example = "ab0001",
-			required = false)
+			required = false,
+			example = "ab0001"
+	)
 	private String behandlingstema;
 
 	@NotNull(message = "Tittel kan ikke være null")
 	@ApiModelProperty(
 			value = "Tittel som beskriver forsendelsen samlet, feks \"Ettersendelse til søknad om foreldrepenger\".",
-			example = "Ettersendelse til søknad om foreldrepenger",
-			required = true)
+			required = true,
+			example = "Ettersendelse til søknad om foreldrepenger"
+	)
 	private String tittel;
 
 	@ApiModelProperty(
 			value = "Kanalen som ble brukt ved innsending eller distribusjon. F.eks. NAV_NO, ALTINN eller EESSI.",
-			example = "NAV_NO",
-			required = false)
+			required = false,
+			example = "NAV_NO"
+	)
 	private String kanal;
 
 	@ApiModelProperty(
 			value = "NAV-enheten som har journalført, eventuelt skal journalføre, forsendelsen. " +
 					"Ved automatisk journalføring uten mennesker involvert skal enhet settes til \"9999\".\n" +
 					"Konsument må sette journalfoerendeEnhet dersom tjenesten skal ferdigstille journalføringen.",
-			example = "9999",
-			required = false)
+			required = false,
+			example = "9999"
+	)
 	private String journalfoerendeEnhet;
 
 	@ApiModelProperty(

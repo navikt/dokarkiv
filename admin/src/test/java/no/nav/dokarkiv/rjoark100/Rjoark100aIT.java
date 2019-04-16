@@ -230,7 +230,7 @@ public class Rjoark100aIT extends AbstractAdminIT {
 	}
 
 	@Test
-	public void skalIkkeFåTilgangHvisIkkeJoarkadmin() {
+	public void skalIkkeFåTilgangHvisServiceBrukerIkkeErSrvJoarkadmin() {
 
 		HttpEntity httpEntity = new HttpEntity(
 				createSkjermarkivenhetRequest(SkjermingTypeCode.POL, ArkivenhetCode.JOURNALPOST, 1L, null, null),

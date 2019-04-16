@@ -10,7 +10,6 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService;
 import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggTO;
-import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggTOMapper;
 import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
@@ -39,7 +38,6 @@ public class FerdigstillJournalpostService {
 	private final JoarkRepository joarkRepository;
 	private final FerdigstillJournalpostValidator ferdigstillJournalpostValidator;
 	private final AksjonsLoggService aksjonsLoggService;
-	private final AksjonsLoggTOMapper aksjonsLoggTOMapper;
 
 	@Inject
 	public FerdigstillJournalpostService(final JoarkRepository joarkRepository,
@@ -47,7 +45,6 @@ public class FerdigstillJournalpostService {
 		this.joarkRepository = joarkRepository;
 		this.ferdigstillJournalpostValidator = new FerdigstillJournalpostValidator();
 		this.aksjonsLoggService = aksjonsLoggService;
-		this.aksjonsLoggTOMapper = new AksjonsLoggTOMapper();
 	}
 
 	public void ferdigstill(Long journalpostId, String journalfoerendeEnhet) {

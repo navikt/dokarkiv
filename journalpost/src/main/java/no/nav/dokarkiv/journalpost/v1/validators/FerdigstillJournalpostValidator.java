@@ -30,6 +30,7 @@ public class FerdigstillJournalpostValidator {
 	private static final List<JournalStatusCode> MIDLERTIDIG_JOURNALSTATUS = Arrays.asList(M, MO, UB, D, R);
 
 	public FerdigstillJournalpostValidator() {
+		// Vi setter ingenting her
 	}
 
 	public void validateRequest(String journalpostId, FerdigstillJournalpostRequest request) {

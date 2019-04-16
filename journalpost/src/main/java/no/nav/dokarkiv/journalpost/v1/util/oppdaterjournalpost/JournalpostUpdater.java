@@ -51,7 +51,7 @@ public class JournalpostUpdater {
 		updateJournalfoerendeEnhet(journalpost, oppdaterJournalpostRequest, endret);
 		updateBruker(journalpost, oppdaterJournalpostRequest, endret);
 
-		if (endret.isEndret()) {
+		if (endret.isEndretFlagg()) {
 			journalpost.setEndretAvNavn(MDC.get(MDC_USER_ID));
 			journalpost.setEndretKildeNavn(MDC.get(MDC_CONSUMER_ID));
 		}
@@ -60,21 +60,21 @@ public class JournalpostUpdater {
 	private void updateJournalfoerendeEnhet(Journalpost journalpost, OppdaterJournalpostRequest oppdaterJournalpostRequest, Endret endret) {
 		if (isNotBlank(oppdaterJournalpostRequest.getJournalfoerendeEnhet())) {
 			journalpost.setJournalForendeEnhetId(oppdaterJournalpostRequest.getJournalfoerendeEnhet());
-			endret.setEndret(true);
+			endret.setEndretFlagg(true);
 		}
 	}
 
 	private void updateTilleggsopplysninger(Journalpost journalpost, OppdaterJournalpostRequest oppdaterJournalpostRequest, Endret endret) {
 		if (oppdaterJournalpostRequest.getTilleggsopplysninger() != null && !oppdaterJournalpostRequest.getTilleggsopplysninger().isEmpty()) {
 			journalpost.setTilleggsopplysninger(mapTilleggsopplysninger(oppdaterJournalpostRequest.getTilleggsopplysninger()));
-			endret.setEndret(true);
+			endret.setEndretFlagg(true);
 		}
 	}
 
 	private void updateBehandlingstema(Journalpost journalpost, OppdaterJournalpostRequest oppdaterJournalpostRequest, Endret endret) {
 		if (isNotBlank(oppdaterJournalpostRequest.getBehandlingstema())) {
 			journalpost.setBehandlingstema(Behandlingstema.valueOf(oppdaterJournalpostRequest.getBehandlingstema()));
-			endret.setEndret(true);
+			endret.setEndretFlagg(true);
 		}
 	}
 
@@ -82,15 +82,15 @@ public class JournalpostUpdater {
 		if (oppdaterJournalpostRequest.getAvsenderMottaker() != null) {
 			if (isNotBlank(oppdaterJournalpostRequest.getAvsenderMottaker().getNavn())) {
 				journalpost.setAvsenderMottaker(oppdaterJournalpostRequest.getAvsenderMottaker().getNavn());
-				endret.setEndret(true);
+				endret.setEndretFlagg(true);
 			}
 			if (isNotBlank(oppdaterJournalpostRequest.getAvsenderMottaker().getId())) {
 				journalpost.setAvsenderMottakerId(oppdaterJournalpostRequest.getAvsenderMottaker().getId());
-				endret.setEndret(true);
+				endret.setEndretFlagg(true);
 			}
 			if (isNotBlank(oppdaterJournalpostRequest.getAvsenderMottaker().getLand())) {
 				journalpost.setLand(oppdaterJournalpostRequest.getAvsenderMottaker().getLand());
-				endret.setEndret(true);
+				endret.setEndretFlagg(true);
 			}
 		}
 	}
@@ -103,7 +103,7 @@ public class JournalpostUpdater {
 					.tilVerdi(oppdaterJournalpostRequest.getTema())
 					.build());
 			journalpost.setFagomrade(FagomradeCode.valueOf(oppdaterJournalpostRequest.getTema()));
-			endret.setEndret(true);
+			endret.setEndretFlagg(true);
 		}
 	}
 
@@ -119,7 +119,7 @@ public class JournalpostUpdater {
 					.tilVerdi(oppdaterJournalpostRequest.getTittel())
 					.build());
 			journalpost.setInnhold(oppdaterJournalpostRequest.getTittel());
-			endret.setEndret(true);
+			endret.setEndretFlagg(true);
 		}
 
 	}
@@ -138,7 +138,7 @@ public class JournalpostUpdater {
 						BrukerTypeCode.ORGANISASJON : BrukerTypeCode.PERSON);
 				bruker.setOpprettetKildeNavn(MDC.get(MDC_CONSUMER_ID));
 				journalpost.addBruker(bruker);
-				endret.setEndret(true);
+				endret.setEndretFlagg(true);
 			}
 		} else {
 			if (oppdaterJournalpostRequest.getBruker() != null) {
@@ -148,7 +148,7 @@ public class JournalpostUpdater {
 					bruker.setBrukerType(BrukerIdType.ORGNR.equals(oppdaterJournalpostRequest.getBruker().getIdType()) ?
 							BrukerTypeCode.ORGANISASJON : BrukerTypeCode.PERSON);
 				});
-				endret.setEndret(true);
+				endret.setEndretFlagg(true);
 			}
 		}
 	}

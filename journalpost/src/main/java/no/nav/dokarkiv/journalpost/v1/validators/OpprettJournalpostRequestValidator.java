@@ -28,6 +28,8 @@ public class OpprettJournalpostRequestValidator {
 	private static final int AVSENDERMOTTAKER_NAVN_LENGTH_BYTES = 200;
 	private static final int AVSENDERMOTTAKER_ID_LENGTH_BYTES = 50;
 
+	private static final String VALIDERER_IKKE_MOT_KODEVERK = "validerer ikke mot kodeverk";
+
 	public void validateRequest(OpprettJournalpostRequest request) {
 		if (request.getAvsenderMottaker() != null) {
 			validateAvsenderMottaker(request.getAvsenderMottaker());
@@ -83,7 +85,7 @@ public class OpprettJournalpostRequestValidator {
 		try {
 			FagomradeCode.valueOf(tema);
 		} catch (IllegalArgumentException e) {
-			throw new InputValideringFeiletException("Oppgitt tema=" + tema + " validerer ikke mot kodeverk");
+			throw new InputValideringFeiletException(String.format("Oppgitt tema=%s %s", tema, VALIDERER_IKKE_MOT_KODEVERK));
 		}
 	}
 
@@ -91,7 +93,7 @@ public class OpprettJournalpostRequestValidator {
 		try {
 			Behandlingstema.valueOf(behandlingstema);
 		} catch (IllegalArgumentException e) {
-			throw new InputValideringFeiletException("Oppgitt behandlingstema=" + behandlingstema + " validerer ikke mot kodeverk");
+			throw new InputValideringFeiletException(String.format("Oppgitt behandlingstema=%s %s", behandlingstema, VALIDERER_IKKE_MOT_KODEVERK));
 		}
 	}
 
@@ -106,13 +108,13 @@ public class OpprettJournalpostRequestValidator {
 			try {
 				MottaksKanalCode.valueOf(request.getKanal());
 			} catch (IllegalArgumentException e) {
-				throw new InputValideringFeiletException("Oppgitt kanal=" + request.getKanal() + " validerer ikke mot kodeverk");
+				throw new InputValideringFeiletException(String.format("Oppgitt kanal=%s %s", request.getKanal(), VALIDERER_IKKE_MOT_KODEVERK));
 			}
 		} else {
 			try {
 				UtsendingsKanalCode.valueOf(request.getKanal());
 			} catch (IllegalArgumentException e) {
-				throw new InputValideringFeiletException("Oppgitt kanal=" + request.getKanal() + " validerer ikke mot kodeverk");
+				throw new InputValideringFeiletException(String.format("Oppgitt kanal=%s %s", request.getKanal(), VALIDERER_IKKE_MOT_KODEVERK));
 			}
 		}
 	}
@@ -128,7 +130,7 @@ public class OpprettJournalpostRequestValidator {
 			try {
 				DokumentKategoriCode.valueOf(dokument.getDokumentKategori());
 			} catch (IllegalArgumentException e) {
-				throw new InputValideringFeiletException("Dokument.dokumentkategori validerer ikke mot kodeverk");
+				throw new InputValideringFeiletException(String.format("Dokument.dokumentkategori %s", VALIDERER_IKKE_MOT_KODEVERK));
 			}
 		}
 		dokument.getDokumentvarianter().forEach(this::validateDokumentVariant);
@@ -141,7 +143,7 @@ public class OpprettJournalpostRequestValidator {
 		try {
 			FilTypeCode.valueOf(dokumentVariant.getFiltype());
 		} catch (IllegalArgumentException e) {
-			throw new InputValideringFeiletException("Dokument.dokumentvariant.filtype validerer ikke mot kodeverk");
+			throw new InputValideringFeiletException(String.format("Dokument.dokumentvariant.filtype %s", VALIDERER_IKKE_MOT_KODEVERK));
 		}
 		if (isBlank(dokumentVariant.getVariantformat())) {
 			throw new InputValideringFeiletException("Dokument.dokumentvariant.variantformat må være satt");
@@ -149,7 +151,7 @@ public class OpprettJournalpostRequestValidator {
 		try {
 			VariantFormatCode.valueOf(dokumentVariant.getVariantformat());
 		} catch (IllegalArgumentException e) {
-			throw new InputValideringFeiletException("Dokument.dokumentvariant.variantformat validerer ikke mot kodeverk");
+			throw new InputValideringFeiletException(String.format("Dokument.dokumentvariant.variantformat %s", VALIDERER_IKKE_MOT_KODEVERK));
 		}
 	}
 }

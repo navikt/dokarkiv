@@ -23,7 +23,7 @@ public class DokumentInfoUpdater {
         updateBrevkode(dokumentJoark, dokumentRequest, endret);
         updateTittel(dokumentJoark, dokumentRequest, aksjonsLoggHelper, endret);
 
-        if (endret.isEndret()) {
+        if (endret.isEndretFlagg()) {
             dokumentJoark.setEndretAvNavn(MDC.get(MDC_USER_ID));
             dokumentJoark.setEndretKildeNavn(MDC.get(MDC_CONSUMER_ID));
         }
@@ -37,14 +37,14 @@ public class DokumentInfoUpdater {
                     .tilVerdi(dokumentRequest.getTittel())
                     .build());
             dokumentJoark.setTittel(dokumentRequest.getTittel());
-            endret.setEndret(true);
+            endret.setEndretFlagg(true);
         }
     }
 
     private void updateBrevkode(DokumentInfo dokumentJoark, no.nav.dokarkiv.journalpost.v1.api.DokumentInfo dokumentRequest, Endret endret) {
         if (dokumentRequest.getBrevkode() != null) {
             dokumentJoark.setBrevkode(dokumentRequest.getBrevkode());
-            endret.setEndret(true);
+            endret.setEndretFlagg(true);
         }
     }
 }

@@ -8,7 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService;
 import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggTO;
-import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggTOMapper;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentFil;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
@@ -38,7 +37,6 @@ public class OpprettJournalpostService {
 	private final OpprettJournalpostApiRequestMapper opprettJournalpostApiRequestMapper;
 	private final DefaultSporingPopulator defaultSporingPopulator;
 	private final AksjonsLoggService aksjonsLoggService;
-	private final AksjonsLoggTOMapper aksjonsLoggTOMapper;
 
 	@Inject
 	public OpprettJournalpostService(final JoarkRepository joarkRepository,
@@ -51,7 +49,6 @@ public class OpprettJournalpostService {
 		this.opprettJournalpostApiRequestMapper = opprettJournalpostApiRequestMapper;
 		this.defaultSporingPopulator = defaultSporingPopulator;
 		this.aksjonsLoggService = aksjonsLoggService;
-		this.aksjonsLoggTOMapper = new AksjonsLoggTOMapper();
 	}
 
 	public Long opprettJournalpost(OpprettJournalpostRequest request) {

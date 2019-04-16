@@ -35,7 +35,7 @@ public class AksjonsLoggHelper {
                     .dokumentInfoId(dokumentInfoId)
                     .melding(aksjonsTypeCode.equals(AksjonsTypeCode.SAKSTILKNYTNING) ?
                             "Journalposten ble knyttet til en sak." :
-                            "Metadata på journalposten ble endret.")
+                            "Metadata på journalposten ble endretFlagg.")
                     .build();
         } else {
             this.aksjonsLoggTO = aksjonsLoggTOMapper.mapAksjonsLoggHeader(aksjonsLoggHeaderString, aksjonsTypeCode, journalpostId, dokumentInfoId);
