@@ -9,9 +9,9 @@ import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
 import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.FEILREGISTRER;
 import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.UPDATE_ACTION;
 import static no.nav.dokarkiv.journalpost.v1.util.AvvikstypeConstants.AVBRYT;
-import static no.nav.dokarkiv.journalpost.v1.util.AvvikstypeConstants.FEILREGISTRER_SAKSRELASJON;
-import static no.nav.dokarkiv.journalpost.v1.util.AvvikstypeConstants.OPPHEV_FEILREGISTRERING;
-import static no.nav.dokarkiv.journalpost.v1.util.AvvikstypeConstants.UKJENT_BRUKER;
+import static no.nav.dokarkiv.journalpost.v1.util.AvvikstypeConstants.FEILREGISTRER_SAKSTILKNYTNING;
+import static no.nav.dokarkiv.journalpost.v1.util.AvvikstypeConstants.OPPHEV_FEILREGISTRERT_SAKSTILKNYTNING;
+import static no.nav.dokarkiv.journalpost.v1.util.AvvikstypeConstants.SETT_UKJENT_BRUKER;
 import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateId;
 import static no.nav.dokarkiv.journalpost.v1.validators.HandterAvvikValidator.validateAvvikstype;
 
@@ -28,9 +28,9 @@ import no.nav.dokarkiv.core.metrics.RestMetrics;
 import no.nav.dokarkiv.core.security.abac.AbacSecurityService;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import no.nav.dokarkiv.journalpost.v1.services.AvbrytService;
-import no.nav.dokarkiv.journalpost.v1.services.FeilregistrerSaksrelasjonService;
-import no.nav.dokarkiv.journalpost.v1.services.OpphevFeilregistreringService;
-import no.nav.dokarkiv.journalpost.v1.services.SettTilUkjentBrukerService;
+import no.nav.dokarkiv.journalpost.v1.services.FeilregistrerSakstilknytningService;
+import no.nav.dokarkiv.journalpost.v1.services.OpphevFeilregistrertSakstilknytningService;
+import no.nav.dokarkiv.journalpost.v1.services.SettUkjentBrukerService;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerFerdigstillJournalpost;
 import no.nav.freg.abac.core.annotation.Abac;
 import org.slf4j.MDC;
@@ -48,25 +48,25 @@ import java.util.List;
 @RestController
 @RequestMapping("/rest/journalpostapi/v1/journalpost")
 @Api
-public class HandterAvvikRestController{
+public class FeilregistrerRestController {
 
-    private final FeilregistrerSaksrelasjonService feilregistrerSaksrelasjonService;
-    private final OpphevFeilregistreringService opphevFeilregistreringService;
-    private final SettTilUkjentBrukerService settTilUkjentBrukerService;
+    private final FeilregistrerSakstilknytningService feilregistrerSakstilknytningService;
+    private final OpphevFeilregistrertSakstilknytningService opphevFeilregistrertSakstilknytningService;
+    private final SettUkjentBrukerService settUkjentBrukerService;
     private final AvbrytService avbrytService;
     private final AbacSecurityService abacSecurityService;
     private final AksjonsLoggService aksjonsLoggService;
 
     @Inject
-    public HandterAvvikRestController(final FeilregistrerSaksrelasjonService feilregistrerSaksrelasjonService,
-                                                final OpphevFeilregistreringService opphevFeilregistreringService,
-                                                final SettTilUkjentBrukerService settTilUkjentBrukerService,
-                                                final AvbrytService avbrytService,
-                                                final AbacSecurityService abacSecurityService,
-                                                final AksjonsLoggService aksjonsLoggService){
-        this.feilregistrerSaksrelasjonService = feilregistrerSaksrelasjonService;
-        this.opphevFeilregistreringService = opphevFeilregistreringService;
-        this.settTilUkjentBrukerService = settTilUkjentBrukerService;
+    public FeilregistrerRestController(final FeilregistrerSakstilknytningService feilregistrerSakstilknytningService,
+                                       final OpphevFeilregistrertSakstilknytningService opphevFeilregistrertSakstilknytningService,
+                                       final SettUkjentBrukerService settUkjentBrukerService,
+                                       final AvbrytService avbrytService,
+                                       final AbacSecurityService abacSecurityService,
+                                       final AksjonsLoggService aksjonsLoggService){
+        this.feilregistrerSakstilknytningService = feilregistrerSakstilknytningService;
+        this.opphevFeilregistrertSakstilknytningService = opphevFeilregistrertSakstilknytningService;
+        this.settUkjentBrukerService = settUkjentBrukerService;
         this.avbrytService = avbrytService;
         this.abacSecurityService = abacSecurityService;
         this.aksjonsLoggService = aksjonsLoggService;
@@ -74,7 +74,7 @@ public class HandterAvvikRestController{
 
     @Transactional
     @SwaggerFerdigstillJournalpost
-    @PatchMapping("/{journalpostId}/handterAvvik/{avvikstype}")
+    @PatchMapping("/{journalpostId}/feilregistrer/{avvikstype}")
     @Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_DOKUMENT)},
             actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION))
     @RestMetrics(value = "dok_request", extraTags = {"process_code", "feilregistrer"}, percentiles = {0.5, 0.95})
@@ -88,8 +88,8 @@ public class HandterAvvikRestController{
         abacSecurityService.assertAccessToJournalpost(journalpostId);
         RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
 
-        if (avvikstype.equalsIgnoreCase(FEILREGISTRER_SAKSRELASJON)) {
-            List<ArkivElementEndringTO> arkivElementEndringTOList = feilregistrerSaksrelasjonService.feilregistrerSaksrelasjon(journalpostId);
+        if (avvikstype.equalsIgnoreCase(FEILREGISTRER_SAKSTILKNYTNING)) {
+            List<ArkivElementEndringTO> arkivElementEndringTOList = feilregistrerSakstilknytningService.feilregistrerSakstilknytning(journalpostId);
 
             populerAksjonslogg(journalpostId, FEILREGISTRER, arkivElementEndringTOList, "Saksrelasjonen ble feilregistrert");
 
@@ -98,8 +98,8 @@ public class HandterAvvikRestController{
             return ResponseEntity.ok().body("Saksrelasjonen ble feilregistrert");
         }
 
-        else if (avvikstype.equalsIgnoreCase(OPPHEV_FEILREGISTRERING)) {
-            List<ArkivElementEndringTO> arkivElementEndringTOList = opphevFeilregistreringService.opphevFeilregistrering(journalpostId);
+        else if (avvikstype.equalsIgnoreCase(OPPHEV_FEILREGISTRERT_SAKSTILKNYTNING)) {
+            List<ArkivElementEndringTO> arkivElementEndringTOList = opphevFeilregistrertSakstilknytningService.opphevFeilregistrertSakstilknytning(journalpostId);
 
             populerAksjonslogg(journalpostId, AksjonsTypeCode.OPPHEV_FEILREGISTRERING ,arkivElementEndringTOList, "Feilregistreringen ble opphevet");
 
@@ -108,8 +108,8 @@ public class HandterAvvikRestController{
             return ResponseEntity.ok().body("Feilregistreringen ble opphevet");
         }
 
-        else if (avvikstype.equalsIgnoreCase(UKJENT_BRUKER)) {
-            List<ArkivElementEndringTO> arkivElementEndringTOList = settTilUkjentBrukerService.settTilUkjentBruker(journalpostId);
+        else if (avvikstype.equalsIgnoreCase(SETT_UKJENT_BRUKER)) {
+            List<ArkivElementEndringTO> arkivElementEndringTOList = settUkjentBrukerService.settUkjentBruker(journalpostId);
 
             populerAksjonslogg(journalpostId, AksjonsTypeCode.UKJENT_BRUKER ,arkivElementEndringTOList, "Journalposten fikk status Ukjent Bruker");
 
@@ -144,6 +144,7 @@ public class HandterAvvikRestController{
                 .aksjon(aksjon)
                 .journalpostId(Long.parseLong(journalpostId))
                 .utfoertAv(MDC.get(MDC_CONSUMER_ID))
+                .hjemmel("ARKL")
                 .melding(melding)
                 .build();
 

@@ -15,24 +15,24 @@ import java.util.Arrays;
 import java.util.List;
 
 @Component
-public class OpphevFeilregistreringService {
+public class FeilregistrerSakstilknytningService {
     private final JoarkRepository joarkRepository;
 
     @Inject
-    public OpphevFeilregistreringService(final JoarkRepository joarkRepository) {
+    public FeilregistrerSakstilknytningService(final JoarkRepository joarkRepository) {
         this.joarkRepository = joarkRepository;
     }
 
-    public List<ArkivElementEndringTO> opphevFeilregistrering(String journalpostId) throws UgyldigInputException {
+    public List<ArkivElementEndringTO> feilregistrerSakstilknytning(String journalpostId) throws UgyldigInputException {
         Journalpost journalpost = joarkRepository.findById(parseLong(journalpostId))
                 .orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostId)));
 
         Saksrelasjon saksrelasjon = journalpost.getSaksrelasjon();
 
-        if (!saksrelasjon.getFeilregistrert()) {
-            throw new UgyldigInputException("Feilregistreringen er allerede opphevet");
+        if (saksrelasjon.getFeilregistrert() == null || !saksrelasjon.getFeilregistrert()) {
+            journalpost.getSaksrelasjon().setFeilregistrert(true);
         } else if (saksrelasjon.getFeilregistrert()) {
-            journalpost.getSaksrelasjon().setFeilregistrert(false);
+            throw new UgyldigInputException("Saksrelasjonen er allerede feilregistrert");
         } else {
             throw new UgyldigInputException("Feilregistrering er ikke mulig fordi journalposten ikke er knyttet til sak");
         }
@@ -41,8 +41,8 @@ public class OpphevFeilregistreringService {
 
         return Arrays.asList(ArkivElementEndringTO.builder()
                 .arkivElement("Journalpost.Saksrelasjon.feilregistrert")
-                .fraVerdi("true")
-                .tilVerdi("false")
+                .fraVerdi("false")
+                .tilVerdi("true")
                 .build());
     }
 }

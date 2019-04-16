@@ -27,12 +27,13 @@ public class AvbrytService {
         Journalpost journalpost = joarkRepository.findById(parseLong(journalpostId))
                 .orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostId)));
 
+        JournalStatusCode oldJournalStatus = journalpost.getJournalstatus();
         if (Arrays.asList(JournalStatusCode.OD, JournalStatusCode.M, JournalStatusCode.MO, JournalStatusCode.UB)
-                .contains(journalpost.getJournalstatus())) {
+                .contains(oldJournalStatus)) {
             journalpost.setJournalstatus(JournalStatusCode.U);
-        } else if (Arrays.asList(JournalStatusCode.D, JournalStatusCode.R).contains(journalpost.getJournalstatus())) {
+        } else if (Arrays.asList(JournalStatusCode.D, JournalStatusCode.R).contains(oldJournalStatus)) {
             journalpost.setJournalstatus(JournalStatusCode.A);
-        } else if (Arrays.asList(JournalStatusCode.A, JournalStatusCode.U).contains(journalpost.getJournalstatus())) {
+        } else if (Arrays.asList(JournalStatusCode.A, JournalStatusCode.U).contains(oldJournalStatus)) {
             throw new UgyldigInputException("Journalposten er allerede avbrutt)");
         } else {
             throw new UgyldigInputException("Journalposten kan ikke avbrytes da den er ferdigstilt)");
@@ -41,9 +42,9 @@ public class AvbrytService {
         joarkRepository.save(journalpost);
 
         return Arrays.asList(ArkivElementEndringTO.builder()
-                .arkivElement("Journalpost.Saksrelasjon.feilregistrert")
-                .fraVerdi("true")
-                .tilVerdi("false")
+                .arkivElement("Journalpost.journalStatus")
+                .fraVerdi(oldJournalStatus.name())
+                .tilVerdi(journalpost.getJournalstatus().name())
                 .build());
     }
 }

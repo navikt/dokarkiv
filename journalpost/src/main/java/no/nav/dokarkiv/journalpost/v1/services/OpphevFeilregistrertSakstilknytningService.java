@@ -15,24 +15,24 @@ import java.util.Arrays;
 import java.util.List;
 
 @Component
-public class FeilregistrerSaksrelasjonService {
+public class OpphevFeilregistrertSakstilknytningService {
     private final JoarkRepository joarkRepository;
 
     @Inject
-    public FeilregistrerSaksrelasjonService(final JoarkRepository joarkRepository) {
+    public OpphevFeilregistrertSakstilknytningService(final JoarkRepository joarkRepository) {
         this.joarkRepository = joarkRepository;
     }
 
-    public List<ArkivElementEndringTO> feilregistrerSaksrelasjon(String journalpostId) throws UgyldigInputException {
+    public List<ArkivElementEndringTO> opphevFeilregistrertSakstilknytning(String journalpostId) throws UgyldigInputException {
         Journalpost journalpost = joarkRepository.findById(parseLong(journalpostId))
                 .orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostId)));
 
         Saksrelasjon saksrelasjon = journalpost.getSaksrelasjon();
 
-        if (saksrelasjon.getFeilregistrert() == null || !saksrelasjon.getFeilregistrert()) {
-            journalpost.getSaksrelasjon().setFeilregistrert(true);
+        if (!saksrelasjon.getFeilregistrert()) {
+            throw new UgyldigInputException("Feilregistreringen er allerede opphevet");
         } else if (saksrelasjon.getFeilregistrert()) {
-            throw new UgyldigInputException("Saksrelasjonen er allerede feilregistrert");
+            journalpost.getSaksrelasjon().setFeilregistrert(false);
         } else {
             throw new UgyldigInputException("Feilregistrering er ikke mulig fordi journalposten ikke er knyttet til sak");
         }
@@ -41,8 +41,8 @@ public class FeilregistrerSaksrelasjonService {
 
         return Arrays.asList(ArkivElementEndringTO.builder()
                 .arkivElement("Journalpost.Saksrelasjon.feilregistrert")
-                .fraVerdi("false")
-                .tilVerdi("true")
+                .fraVerdi("true")
+                .tilVerdi("false")
                 .build());
     }
 }

@@ -15,20 +15,21 @@ import java.util.Arrays;
 import java.util.List;
 
 @Component
-public class SettTilUkjentBrukerService {
+public class SettUkjentBrukerService {
     private final JoarkRepository joarkRepository;
 
     @Inject
-    public SettTilUkjentBrukerService(final JoarkRepository joarkRepository) {
+    public SettUkjentBrukerService(final JoarkRepository joarkRepository) {
         this.joarkRepository = joarkRepository;
     }
 
-    public List<ArkivElementEndringTO> settTilUkjentBruker(String journalpostId) throws UgyldigInputException {
+    public List<ArkivElementEndringTO> settUkjentBruker(String journalpostId) throws UgyldigInputException {
         Journalpost journalpost = joarkRepository.findById(parseLong(journalpostId))
                 .orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostId)));
 
+        JournalStatusCode oldJournalStatus = journalpost.getJournalstatus();
         if (Arrays.asList(JournalStatusCode.U, JournalStatusCode.OD, JournalStatusCode.M, JournalStatusCode.MO)
-                .contains(journalpost.getJournalstatus())) {
+                .contains(oldJournalStatus)) {
             journalpost.setJournalstatus(JournalStatusCode.UB);
         } else {
             throw new UgyldigInputException("Journalpost kan ikke settes til UB (ukjent bruker)");
@@ -37,9 +38,9 @@ public class SettTilUkjentBrukerService {
         joarkRepository.save(journalpost);
 
         return Arrays.asList(ArkivElementEndringTO.builder()
-                .arkivElement("Journalpost.Saksrelasjon.feilregistrert")
-                .fraVerdi("true")
-                .tilVerdi("false")
+                .arkivElement("Journalpost.journalStatus")
+                .fraVerdi(oldJournalStatus.name())
+                .tilVerdi(journalpost.getJournalstatus().name())
                 .build());
     }
 }

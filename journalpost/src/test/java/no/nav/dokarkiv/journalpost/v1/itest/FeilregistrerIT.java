@@ -15,9 +15,9 @@ import org.springframework.test.context.transaction.TestTransaction;
 
 import java.io.IOException;
 
-public class HandterAvvikIT extends AbstractJournalpostIT {
+public class FeilregistrerIT extends AbstractJournalpostIT {
 
-    private static final String HANDTER_AVVIK = "/handterAvvik/";
+    private static final String FEILREGISTRER = "/feilregistrer/";
 
     @Test
     public void happyPathFeilregistrer() throws IOException {
@@ -31,7 +31,7 @@ public class HandterAvvikIT extends AbstractJournalpostIT {
         TestTransaction.start();
 
         HttpEntity requestEntity = new HttpEntity(createHeadersWithServiceUserToken());
-        ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST + journalpostId + HANDTER_AVVIK + AvvikstypeConstants.FEILREGISTRER_SAKSRELASJON, HttpMethod.PATCH, requestEntity, String.class);
+        ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST + journalpostId + FEILREGISTRER + AvvikstypeConstants.FEILREGISTRER_SAKSTILKNYTNING, HttpMethod.PATCH, requestEntity, String.class);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
@@ -57,7 +57,7 @@ public class HandterAvvikIT extends AbstractJournalpostIT {
         TestTransaction.start();
 
         HttpEntity requestEntity = new HttpEntity(createHeadersWithServiceUserToken());
-        ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST + journalpostId + HANDTER_AVVIK + AvvikstypeConstants.OPPHEV_FEILREGISTRERING, HttpMethod.PATCH, requestEntity, String.class);
+        ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST + journalpostId + FEILREGISTRER + AvvikstypeConstants.OPPHEV_FEILREGISTRERT_SAKSTILKNYTNING, HttpMethod.PATCH, requestEntity, String.class);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
@@ -83,7 +83,7 @@ public class HandterAvvikIT extends AbstractJournalpostIT {
         TestTransaction.start();
 
         HttpEntity requestEntity = new HttpEntity(createHeadersWithServiceUserToken());
-        ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST + journalpostId + HANDTER_AVVIK + AvvikstypeConstants.UKJENT_BRUKER, HttpMethod.PATCH, requestEntity, String.class);
+        ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST + journalpostId + FEILREGISTRER + AvvikstypeConstants.SETT_UKJENT_BRUKER, HttpMethod.PATCH, requestEntity, String.class);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
@@ -109,7 +109,7 @@ public class HandterAvvikIT extends AbstractJournalpostIT {
         TestTransaction.start();
 
         HttpEntity requestEntity = new HttpEntity(createHeadersWithServiceUserToken());
-        ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST + journalpostId + HANDTER_AVVIK + AvvikstypeConstants.AVBRYT, HttpMethod.PATCH, requestEntity, String.class);
+        ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST + journalpostId + FEILREGISTRER + AvvikstypeConstants.AVBRYT, HttpMethod.PATCH, requestEntity, String.class);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
