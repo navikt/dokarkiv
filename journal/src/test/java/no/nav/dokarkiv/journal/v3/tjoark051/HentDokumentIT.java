@@ -233,7 +233,9 @@ public class HentDokumentIT extends AbstractJournalV3Itest {
 		HentDokumentRequest request = createRequest(journalpost);
 		persistDokumentFil();
 		persistDokumentFilSladdet();
-		skjermingService.setVariantSkjermet(journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo(), VariantFormatCode.ARKIV, SkjermingTypeCode.POL);
+		skjermingService.setVariantSkjermet(journalpost.findHoveddokumentDokumentInfoRelasjon()
+				.getDokumentInfo()
+				.getDokumentInfoId(), VariantFormatCode.ARKIV, SkjermingTypeCode.POL);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
