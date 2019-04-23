@@ -33,6 +33,7 @@ public class SkjermArkivEnhetOrchestrator {
 		this.aksjonsLoggTOMapper = new AksjonsLoggTOMapper();
 	}
 
+	//rjoark100a
 	public void skjermArkivEnhet(SkjermArkivenhetRequest request, String aksjonsLoggHeaderString) throws UgyldigSkjermArkivenhetRequestException, UgyldigAksjonsLoggException {
 		List<ArkivElementEndringTO> arkivElementEndringTOList;
 		switch (request.getArkivenhet()) {
@@ -62,6 +63,7 @@ public class SkjermArkivEnhetOrchestrator {
 
 	}
 
+	//rjoark100b
 	public void opphevSkjermArkivEnhet(SkjermArkivenhetRequest request, String aksjonsLoggHeaderString) throws UgyldigSkjermArkivenhetRequestException, UgyldigAksjonsLoggException {
 		List<ArkivElementEndringTO> arkivElementEndringTOList;
 		switch (request.getArkivenhet()) {

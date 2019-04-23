@@ -58,7 +58,7 @@ public class EndreSkjermingArkivenhetService {
 					ArkivElementEndringTO.builder()
 							.arkivElement(JOURNALPOST_SKJERMING_TYPE)
 							.fraVerdi(enumToString(journalpost.getSkjermingType()))
-							.tilVerdi(tilSkjerming == null ? null : tilSkjerming.name())
+							.tilVerdi(enumToString(tilSkjerming))
 							.build()
 			);
 		}
@@ -74,7 +74,7 @@ public class EndreSkjermingArkivenhetService {
 					ArkivElementEndringTO.builder()
 							.arkivElement(RELASJON_SKJERMING_TYPE)
 							.fraVerdi(enumToString(forrigeSkjerming))
-							.tilVerdi(tilSkjerming == null ? null : tilSkjerming.name())
+							.tilVerdi(enumToString(tilSkjerming))
 							.build()
 			);
 		}
@@ -90,7 +90,7 @@ public class EndreSkjermingArkivenhetService {
 					ArkivElementEndringTO.builder()
 							.arkivElement(FILDETALJER_SKJERMING_TYPE_VARIANT(variant))
 							.fraVerdi(enumToString(filDetaljer.getSkjermingType()))
-							.tilVerdi(skjerming == null ? null : skjerming.name())
+							.tilVerdi(enumToString(skjerming))
 							.build()
 			);
 		}
@@ -108,7 +108,7 @@ public class EndreSkjermingArkivenhetService {
 					.getSkjermingType(), tilSkjerming);
 
 			entityManager.refresh(relasjon);
-			//Hvis tilSkjerming=null og Journalpost er skjermet så skal Journalpost skjermingen fjernes. Hvis ikke dette gjøres vil ikke dokumentet være synlig.
+			//Hvis tilSkjerming=null (Opphev skjerming) og Journalpost er skjermet så skal skjermingen i Journalpost fjernes. Hvis ikke dette gjøres vil ikke dokumentet være synlig.
 			//Hvis tilSkjerming!=null og Journalposten ikke har noen flere dokumentInfo relasjoner som IKKE er skjermet så skal journalposten også skjermes.
 			if (tilSkjerming == null && skjermingService.isJournalpostSkjermet(journalpostId)) {
 				arkivElementEndringList.addAll(endreSkjermingJournalpost(journalpostId, null));
