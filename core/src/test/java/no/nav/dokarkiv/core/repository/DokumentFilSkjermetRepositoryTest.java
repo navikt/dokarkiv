@@ -2,18 +2,14 @@ package no.nav.dokarkiv.core.repository;
 
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.ARKIV;
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.SLADDET;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.FIL_NAVN;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.FIL_SLADDET;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.OPPRETTET_KILDE_NAVN;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createDummyDokument;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createFildetaljerOgFil;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createJournalpostWithHoveddokument;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
 import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
-import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentFil;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
@@ -94,7 +90,9 @@ public class DokumentFilSkjermetRepositoryTest {
 		DokumentFil dokumentFilBefore = dokumentFilSkjermetRepository.findByFilUuid(arkiv.getFilUuid());
 		assertThat(dokumentFilBefore.getFil(), is(arkivDokumentFil.getFil()));
 
-		skjermingService.setVariantSkjermet(journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo(), ARKIV, SkjermingTypeCode.POL);
+		skjermingService.setVariantSkjermet(journalpost.findHoveddokumentDokumentInfoRelasjon()
+				.getDokumentInfo()
+				.getDokumentInfoId(), ARKIV, SkjermingTypeCode.POL);
 
 		DokumentFil dokumentFilAfter = dokumentFilSkjermetRepository.findByFilUuid(arkiv.getFilUuid());
 		assertThat(dokumentFilAfter.getFil(), is(TestDataGenerator.FIL_DUMMY));
@@ -160,7 +158,9 @@ public class DokumentFilSkjermetRepositoryTest {
 		dokumentFilRepository.save(createDummyDokument());
 		journalpost = joarkRepository.save(journalpost);
 
-		skjermingService.setVariantSkjermet(journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo(), ARKIV, SkjermingTypeCode.POL);
+		skjermingService.setVariantSkjermet(journalpost.findHoveddokumentDokumentInfoRelasjon()
+				.getDokumentInfo()
+				.getDokumentInfoId(), ARKIV, SkjermingTypeCode.POL);
 
 		DokumentFil dokumentFil = dokumentFilSkjermetRepository.findByFilUuid(sladdet.getFilUuid());
 		assertThat(new String(dokumentFil.getFil()), is(new String(sladdetDokumentFil.getFil())));

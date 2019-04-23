@@ -101,9 +101,10 @@ public abstract class AbstractAdminIT extends AbstractRestIT {
 	protected void assertAksjonsLogg(AksjonsLogg aksjonsLogg, Long journalpostId, Long dokumentInfoId, List<ArkivElementEndring> expectedArkivElementEndringList) {
 
 		assertCommongAksjonsLoggValues(aksjonsLogg);
-		assertThat(aksjonsLogg.getJournalpostId(), is(journalpostId));
-		assertThat(aksjonsLogg.getDokumentInfoId(), is(dokumentInfoId));
-		assertThat(aksjonsLogg.getArkivElementEndringer().size(), is(expectedArkivElementEndringList.size()));
+		assertThat("journalpostId", aksjonsLogg.getJournalpostId(), is(journalpostId));
+		assertThat("dokumentInfoId", aksjonsLogg.getDokumentInfoId(), is(dokumentInfoId));
+		assertThat("arkivElementEndring.size()", aksjonsLogg.getArkivElementEndringer()
+				.size(), is(expectedArkivElementEndringList.size()));
 
 		List<ArkivElementEndring> arkivElementEndringList = IteratorUtils.toList(aksjonsLogg.getArkivElementEndringer()
 				.iterator());

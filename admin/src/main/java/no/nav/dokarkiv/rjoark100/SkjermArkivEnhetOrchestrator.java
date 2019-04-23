@@ -1,6 +1,5 @@
 package no.nav.dokarkiv.rjoark100;
 
-import static org.apache.commons.lang3.BooleanUtils.isFalse;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService;
@@ -68,7 +67,7 @@ public class SkjermArkivEnhetOrchestrator {
 			case JOURNALPOST:
 				assertNotNullOrEmpty(request.getJournalpostId(), "journalpostId");
 				arkivElementEndringTOList = opphevSkjermArkivenhetService.opphevSkjermJournalpost(
-						request.getJournalpostId(), request.getSkjerming());
+						request.getJournalpostId());
 				lagreAksjonsLogg(request.getJournalpostId(), request.getDokumentInfoId(), aksjonsLoggHeaderString, arkivElementEndringTOList);
 				break;
 			case DOKUMENT_INFO:
@@ -84,7 +83,7 @@ public class SkjermArkivEnhetOrchestrator {
 				assertNotNullOrEmpty(request.getDokumentInfoId(), "dokumentInfoId");
 				assertNotNullOrEmpty(request.getVariant(), "variant");
 				arkivElementEndringTOList = opphevSkjermArkivenhetService.opphevSkjermDokumentFil(request.getDokumentInfoId(), request
-						.getVariant(), request.getSkjerming());
+						.getVariant());
 				lagreAksjonsLogg(request.getJournalpostId(), request.getDokumentInfoId(), aksjonsLoggHeaderString, arkivElementEndringTOList);
 		}
 
@@ -93,10 +92,8 @@ public class SkjermArkivEnhetOrchestrator {
 	private void lagreAksjonsLogg(Long journalpostId, Long dokumentInfoId, String aksjonsLoggHeaderString, List<ArkivElementEndringTO> arkivElementEndringTOList) throws
 			UgyldigAksjonsLoggException {
 
-		if (isFalse(arkivElementEndringTOList.isEmpty())) {
-			AksjonsLoggTO aksjonsLoggTO = aksjonsLoggTOMapper.mapAksjonsLoggHeader(aksjonsLoggHeaderString, AksjonsTypeCode.ENDRE_SKJERMING, journalpostId, dokumentInfoId);
-			aksjonsLoggService.validateAndSaveAksjonsLogg(aksjonsLoggTO, arkivElementEndringTOList);
-		}
+		AksjonsLoggTO aksjonsLoggTO = aksjonsLoggTOMapper.mapAksjonsLoggHeader(aksjonsLoggHeaderString, AksjonsTypeCode.ENDRE_SKJERMING, journalpostId, dokumentInfoId);
+		aksjonsLoggService.validateAndSaveAksjonsLogg(aksjonsLoggTO, arkivElementEndringTOList);
 	}
 
 	//Gjenbrukt fra AksjonsLoggService men annen exception, legge metoden et annet sted?
