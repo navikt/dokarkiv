@@ -20,13 +20,7 @@ import java.lang.annotation.Target;
 @ApiResponses(value = {
         @ApiResponse(code = 200, message = "* OK"),
         @ApiResponse(code = 400, message = "* Ugyldig avvikstype\n" +
-                "* Feil i aksjonslogg\n" +
-                "* Saksrelasjonen er allerede feilregistrert\n" +
-                "* Feilregistrering er ikke mulig fordi journalposten ikke er knyttet til sak\n" +
-                "* Feilregistreringen er allerede opphevet\n" +
-                "* Journalpost kan ikke settes til UB (ukjent bruker)\n" +
-                "* Journalposten er allerede avbrutt\n" +
-                "* Journalposten kan ikke avbrytes da den er ferdigstilt"),
+                "* Feil i aksjonslogg"),
         @ApiResponse(code = 401, message = "* Ugyldig OIDC token. Denne feilen gis dersom tokenet ikke har riktig format eller er utgått."),
         @ApiResponse(code = 404, message = "* Journalpost ikke funnet"),
         @ApiResponse(code = 500, message = "* Internal server error")})
