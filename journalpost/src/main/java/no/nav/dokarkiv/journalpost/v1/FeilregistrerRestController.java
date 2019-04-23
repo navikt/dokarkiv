@@ -31,7 +31,7 @@ import no.nav.dokarkiv.journalpost.v1.services.AvbrytService;
 import no.nav.dokarkiv.journalpost.v1.services.FeilregistrerSakstilknytningService;
 import no.nav.dokarkiv.journalpost.v1.services.OpphevFeilregistrertSakstilknytningService;
 import no.nav.dokarkiv.journalpost.v1.services.SettUkjentBrukerService;
-import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerFerdigstillJournalpost;
+import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerFeilregistrer;
 import no.nav.freg.abac.core.annotation.Abac;
 import org.slf4j.MDC;
 import org.springframework.http.ResponseEntity;
@@ -73,7 +73,7 @@ public class FeilregistrerRestController {
     }
 
     @Transactional
-    @SwaggerFerdigstillJournalpost
+    @SwaggerFeilregistrer
     @PatchMapping("/{journalpostId}/feilregistrer/{avvikstype}")
     @Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_DOKUMENT)},
             actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION))
