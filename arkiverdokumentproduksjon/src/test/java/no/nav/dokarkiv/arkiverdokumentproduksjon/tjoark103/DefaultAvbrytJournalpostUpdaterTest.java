@@ -22,7 +22,7 @@ import org.junit.Test;
  */
 public class DefaultAvbrytJournalpostUpdaterTest {
 	private static final Long JOURNALPOST_ID = 42L;
-	private static final String ENDRET_AV_NAVN = "endret av navn";
+	private static final String ENDRET_AV_NAVN = "endretFlagg av navn";
 
 	private DefaultAvbrytJournalpostUpdater avbrytJournalpostUpdater = new DefaultAvbrytJournalpostUpdater();
 

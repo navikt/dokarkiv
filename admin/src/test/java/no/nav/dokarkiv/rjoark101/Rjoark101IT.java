@@ -9,6 +9,7 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.Is.is;
 
 import no.nav.dokarkiv.AbstractAdminIT;
+import no.nav.dokarkiv.core.consumer.RestConsumerExceptionResponse;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.codes.ArkivenhetCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
@@ -338,11 +339,11 @@ public class Rjoark101IT extends AbstractAdminIT {
 				createHeadersWithAksjon());
 
 
-		ResponseEntity<SlettArkivenhetResponse> responseEntity = restTemplate.exchange(
+		ResponseEntity<RestConsumerExceptionResponse> responseEntity = restTemplate.exchange(
 				URL_SLETTARKIVENHET,
 				HttpMethod.DELETE,
 				httpEntity,
-				SlettArkivenhetResponse.class);
+				RestConsumerExceptionResponse.class);
 
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
@@ -410,7 +411,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 				.size(), is(2));
 
 		//Sjekk at tjenesten feiler ved sletting av journalpost med hoveddokument som er brukt som vedlegg i andre journalposter
-		ResponseEntity<SlettArkivenhetResponse> responseEntity = restTemplate.exchange(
+		ResponseEntity<RestConsumerExceptionResponse> responseEntity = restTemplate.exchange(
 				URL_SLETTARKIVENHET,
 				HttpMethod.DELETE,
 				new HttpEntity(
@@ -419,7 +420,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 								.journalpostId(journalpost1.getJournalpostId())
 								.build(),
 						createHeadersWithAksjon()),
-				SlettArkivenhetResponse.class);
+				RestConsumerExceptionResponse.class);
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.NOT_ACCEPTABLE));
 
 		//Slett vedleggrelasjoner til hoveddokument
@@ -516,7 +517,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 		assertThatJournalpostIsNotDeleted(journalpostSplit2);
 
 		//Sjekk at tjenesten feiler ved sletting av journalpost med hoveddokument som er brukt som vedlegg i andre journalposter
-		ResponseEntity<SlettArkivenhetResponse> responseEntity = restTemplate.exchange(
+		ResponseEntity<RestConsumerExceptionResponse> responseEntity = restTemplate.exchange(
 				URL_SLETTARKIVENHET,
 				HttpMethod.DELETE,
 				new HttpEntity(
@@ -525,7 +526,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 								.journalpostId(journalpostOriginal.getJournalpostId())
 								.build(),
 						createHeadersWithAksjon()),
-				SlettArkivenhetResponse.class);
+				RestConsumerExceptionResponse.class);
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.NOT_ACCEPTABLE));
 
 		ResponseEntity<SlettArkivenhetResponse> responseEntity1 = restTemplate.exchange(
@@ -804,7 +805,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 		assertThat(dokumentInfoList.size(), is(1));
 
 		//Sjekk at tjenesten feiler ved sletting av journalpost med hoveddokument som er brukt som vedlegg i andre journalposter
-		ResponseEntity<SlettArkivenhetResponse> responseEntity = restTemplate.exchange(
+		ResponseEntity<RestConsumerExceptionResponse> responseEntity = restTemplate.exchange(
 				URL_SLETTARKIVENHET,
 				HttpMethod.DELETE,
 				new HttpEntity(
@@ -816,7 +817,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 										.getDokumentInfoId())
 								.build(),
 						createHeadersWithAksjon()),
-				SlettArkivenhetResponse.class);
+				RestConsumerExceptionResponse.class);
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.NOT_ACCEPTABLE));
 
 		TestTransaction.flagForCommit();
@@ -928,7 +929,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 		assertThat(dokumentInfoList.size(), is(1));
 
 		//Sjekk at tjenesten feiler ved sletting av journalpost med hoveddokument som er brukt som vedlegg i andre journalposter
-		ResponseEntity<SlettArkivenhetResponse> responseEntity = restTemplate.exchange(
+		ResponseEntity<RestConsumerExceptionResponse> responseEntity = restTemplate.exchange(
 				URL_SLETTARKIVENHET,
 				HttpMethod.DELETE,
 				new HttpEntity(
@@ -940,7 +941,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 								.variant(VariantFormatCode.SLADDET)
 								.build(),
 						createHeadersWithAksjon()),
-				SlettArkivenhetResponse.class);
+				RestConsumerExceptionResponse.class);
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.NOT_FOUND));
 
 		TestTransaction.flagForCommit();

@@ -13,6 +13,7 @@ import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertTrue;
 
 import no.nav.dokarkiv.arkivervariant.AbstractArkiverVariantIT;
+import no.nav.dokarkiv.core.consumer.RestConsumerExceptionResponse;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
@@ -192,11 +193,11 @@ public class Rjoark103IT extends AbstractArkiverVariantIT {
 
 		HttpEntity httpEntity2 = new HttpEntity(request, createHeadersWithAksjon());
 
-		ResponseEntity<ArkiverVariantResponse> responseEntity2 = restTemplate.exchange(
+		ResponseEntity<RestConsumerExceptionResponse> responseEntity2 = restTemplate.exchange(
 				URL_ARKIVERVARIANT,
 				HttpMethod.POST,
 				httpEntity2,
-				ArkiverVariantResponse.class);
+				RestConsumerExceptionResponse.class);
 		assertThat(responseEntity2.getStatusCode(), is(HttpStatus.BAD_REQUEST));
 	}
 
@@ -213,11 +214,11 @@ public class Rjoark103IT extends AbstractArkiverVariantIT {
 
 		HttpEntity httpEntity = new HttpEntity(request, createHeadersWithAksjon());
 
-		ResponseEntity<ArkiverVariantResponse> responseEntity = restTemplate.exchange(
+		ResponseEntity<RestConsumerExceptionResponse> responseEntity = restTemplate.exchange(
 				URL_ARKIVERVARIANT,
 				HttpMethod.POST,
 				httpEntity,
-				ArkiverVariantResponse.class);
+				RestConsumerExceptionResponse.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.NOT_FOUND));
 
@@ -236,11 +237,11 @@ public class Rjoark103IT extends AbstractArkiverVariantIT {
 
 		HttpEntity httpEntity = new HttpEntity(Base64.encodeBase64String(FIL), createHeadersWithServiceUserToken(NO_ACCESS_SERVICE_USER_ID));
 
-		ResponseEntity<ArkiverVariantResponse> responseEntity = restTemplate.exchange(
+		ResponseEntity<RestConsumerExceptionResponse> responseEntity = restTemplate.exchange(
 				URL_ARKIVERVARIANT,
 				HttpMethod.POST,
 				httpEntity,
-				ArkiverVariantResponse.class);
+				RestConsumerExceptionResponse.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.UNAUTHORIZED));
 
