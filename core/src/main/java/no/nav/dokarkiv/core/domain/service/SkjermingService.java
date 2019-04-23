@@ -48,7 +48,7 @@ public class SkjermingService {
 	public boolean isJournalpostSkjermet(Long journalpostId, SkjermingTypeCode skjermingTypeCode) {
 		Journalpost journalpost = joarkRepository.findById(journalpostId).orElse(null);
 		if (journalpost != null) {
-			return skjermingTypeCode.equals(journalpost.getSkjermingType());
+			return skjermingTypeCode == journalpost.getSkjermingType();
 		}
 		return false;
 	}
@@ -132,6 +132,14 @@ public class SkjermingService {
 	public void setJpDokInfoRelSkjerming(Long journalpostDokumentInfoRelasjonId, SkjermingTypeCode skjermingTypeCode) {
 		Query q = entityManager.createQuery("update JournalpostDokumentInfoRelasjon set skjermingType = :skjermingTypeCode where journalpostDokumentInfoRelasjonId = :relId")
 				.setParameter("relId", journalpostDokumentInfoRelasjonId)
+				.setParameter("skjermingTypeCode", skjermingTypeCode);
+		q.executeUpdate();
+	}
+
+	public void setJpDokInfoRelSkjerming(Long jpId, Long dokInfoId, SkjermingTypeCode skjermingTypeCode) {
+		Query q = entityManager.createQuery("update JournalpostDokumentInfoRelasjon set skjermingType = :skjermingTypeCode where dokument_info_id = :dokInfoId and journalpost_id=:jpId")
+				.setParameter("jpId", jpId)
+				.setParameter("dokInfoId", dokInfoId)
 				.setParameter("skjermingTypeCode", skjermingTypeCode);
 		q.executeUpdate();
 	}

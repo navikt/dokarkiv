@@ -36,6 +36,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Test for opphev skjerming av arkivenhet
+ */
 public class Rjoark100bIT extends AbstractAdminIT {
 
 	@Test

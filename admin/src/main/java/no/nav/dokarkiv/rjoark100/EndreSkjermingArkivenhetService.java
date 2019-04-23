@@ -31,7 +31,7 @@ import java.util.Map;
 
 @Service
 @Slf4j
-public class SkjermArkivenhetService {
+public class EndreSkjermingArkivenhetService {
 
 	private final SkjermingService skjermingService;
 	private final JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository;
@@ -40,7 +40,7 @@ public class SkjermArkivenhetService {
 	private final EntityManager entityManager;
 
 	@Inject
-	public SkjermArkivenhetService(
+	public EndreSkjermingArkivenhetService(
 			SkjermingService skjermingService, JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository, JoarkRepository joarkRepository, DokumentinfoRepository dokumentinfoRepository, EntityManager entityManager) {
 		this.skjermingService = skjermingService;
 		this.journalpostDokumentInfoRelasjonRepository = journalpostDokumentInfoRelasjonRepository;
@@ -49,75 +49,78 @@ public class SkjermArkivenhetService {
 		this.entityManager = entityManager;
 	}
 
-	public List<ArkivElementEndringTO> skjermJournalpost(Long journalpostId, SkjermingTypeCode skjerming) {
+	public List<ArkivElementEndringTO> endreSkjermingJournalpost(Long journalpostId, SkjermingTypeCode tilSkjerming) {
 		List<ArkivElementEndringTO> arkivElementEndringTOList = new ArrayList<>();
 		Journalpost journalpost = hentJournalpost(journalpostId);
-		if (isNull(journalpost.getSkjermingType())) {
-			skjermingService.skjermJournalpost(journalpostId, skjerming);
+		if (journalpost.getSkjermingType() != tilSkjerming) {
+			skjermingService.setJournalpostSkjerming(journalpostId, tilSkjerming);
 			arkivElementEndringTOList.add(
 					ArkivElementEndringTO.builder()
 							.arkivElement(JOURNALPOST_SKJERMING_TYPE)
-							.fraVerdi(null)
-							.tilVerdi(skjerming.name())
+							.fraVerdi(enumToString(journalpost.getSkjermingType()))
+							.tilVerdi(tilSkjerming == null ? null : tilSkjerming.name())
 							.build()
 			);
 		}
+
 		return arkivElementEndringTOList;
 	}
 
-	public List<ArkivElementEndringTO> skjermJournalpostDokumentInfoRelasjon(Long journalpostId, Long dokumentInfoId, SkjermingTypeCode forrigeSkjerming, SkjermingTypeCode nySkjerming) {
+	private List<ArkivElementEndringTO> endreSkjermingJournalpostDokumentInfoRelasjon(Long journalpostId, Long dokumentInfoId, SkjermingTypeCode forrigeSkjerming, SkjermingTypeCode tilSkjerming) {
 		List<ArkivElementEndringTO> arkivElementEndringTOList = new ArrayList<>();
-		if (isNull(forrigeSkjerming)) {
-			skjermingService.skjermJournalpostDokumentInfoRelasjon(journalpostId, dokumentInfoId, nySkjerming);
+		if (forrigeSkjerming != tilSkjerming) {
+			skjermingService.setJpDokInfoRelSkjerming(journalpostId, dokumentInfoId, tilSkjerming);
 			arkivElementEndringTOList.add(
 					ArkivElementEndringTO.builder()
 							.arkivElement(RELASJON_SKJERMING_TYPE)
-							.fraVerdi(null)
-							.tilVerdi(nySkjerming.name())
+							.fraVerdi(enumToString(forrigeSkjerming))
+							.tilVerdi(tilSkjerming == null ? null : tilSkjerming.name())
 							.build()
 			);
 		}
-
 		return arkivElementEndringTOList;
 	}
 
-	public Map<Long, List<ArkivElementEndringTO>> skjermDokumentInfo(Long dokumentInfoId, SkjermingTypeCode skjerming) {
-		Map<Long, List<ArkivElementEndringTO>> aksjonsLoggMap = new HashMap<>();
-		List<JournalpostDokumentInfoRelasjon> journalpostDokumentInfoRelasjonList = hentJournalpostDokumentInfoRelasjonerByDokumentInfoId(dokumentInfoId);
-		journalpostDokumentInfoRelasjonList.forEach(relasjon -> {
-			List<ArkivElementEndringTO> arkivElementEndringList = new ArrayList<>();
-
-			Long journalpostId = relasjon.getJournalpost().getJournalpostId();
-			arkivElementEndringList.addAll(skjermJournalpostDokumentInfoRelasjon(journalpostId, dokumentInfoId, relasjon.getSkjermingType(), skjerming));
-
-			entityManager.refresh(relasjon);
-
-			if (isJournalpostHarIngenJournalpostRelasjoner(journalpostId)) {
-				arkivElementEndringList.addAll(skjermJournalpost(journalpostId, skjerming));
-			}
-
-			aksjonsLoggMap.put(journalpostId, arkivElementEndringList);
-		});
-
-		return aksjonsLoggMap;
-	}
-
-	public List<ArkivElementEndringTO> skjermDokumentFil(Long dokumentInfoId, VariantFormatCode variant, SkjermingTypeCode skjerming) {
+	public List<ArkivElementEndringTO> endreSkjermingDokumentFil(Long dokumentInfoId, VariantFormatCode variant, SkjermingTypeCode skjerming) {
 		List<ArkivElementEndringTO> arkivElementEndringTOList = new ArrayList<>();
 		FilDetaljer filDetaljer = hentFildetaljerByVariantFormat(dokumentInfoId, variant);
-		if (isNull(filDetaljer.getSkjermingType())) {
-			skjermingService.skjermFildetaljerByVariant(dokumentInfoId, variant, skjerming);
+		if (filDetaljer.getSkjermingType() != skjerming) {
+			skjermingService.setFildetaljerSkjerming(dokumentInfoId, variant, skjerming);
 			arkivElementEndringTOList.add(
 					ArkivElementEndringTO.builder()
 							.arkivElement(FILDETALJER_SKJERMING_TYPE_VARIANT(variant))
 							.fraVerdi(enumToString(filDetaljer.getSkjermingType()))
-							.tilVerdi(skjerming.name())
+							.tilVerdi(skjerming == null ? null : skjerming.name())
 							.build()
-
 			);
 		}
-
 		return arkivElementEndringTOList;
+	}
+
+
+	public Map<Long, List<ArkivElementEndringTO>> endreSkjermingDokumentInfo(Long dokumentInfoId, SkjermingTypeCode tilSkjerming) {
+		Map<Long, List<ArkivElementEndringTO>> aksjonsLoggMap = new HashMap<>();
+		List<JournalpostDokumentInfoRelasjon> journalpostDokumentInfoRelasjonList = hentJournalpostDokumentInfoRelasjonerByDokumentInfoId(dokumentInfoId);
+
+		journalpostDokumentInfoRelasjonList.forEach(relasjon -> {
+			Long journalpostId = relasjon.getJournalpost().getJournalpostId();
+			List<ArkivElementEndringTO> arkivElementEndringList = endreSkjermingJournalpostDokumentInfoRelasjon(journalpostId, dokumentInfoId, relasjon
+					.getSkjermingType(), tilSkjerming);
+
+			entityManager.refresh(relasjon);
+			//Hvis tilSkjerming=null og Journalpost er skjermet så skal Journalpost skjermingen fjernes. Hvis ikke dette gjøres vil ikke dokumentet være synlig.
+			//Hvis tilSkjerming!=null og Journalposten ikke har noen flere dokumentInfo relasjoner som IKKE er skjermet så skal journalposten også skjermes.
+			if (tilSkjerming == null && skjermingService.isJournalpostSkjermet(journalpostId)) {
+				arkivElementEndringList.addAll(endreSkjermingJournalpost(journalpostId, null));
+			} else if (tilSkjerming != null && isJournalpostHarIngenJournalpostRelasjoner(journalpostId)) {
+				arkivElementEndringList.addAll(endreSkjermingJournalpost(journalpostId, tilSkjerming));
+			}
+
+			aksjonsLoggMap.put(journalpostId, arkivElementEndringList);
+
+		});
+
+		return aksjonsLoggMap;
 	}
 
 	private boolean isJournalpostHarIngenJournalpostRelasjoner(Long journalpostId) {
@@ -128,13 +131,13 @@ public class SkjermArkivenhetService {
 
 	private Journalpost hentJournalpost(Long journalpostId) {
 		return joarkRepository.findById(journalpostId).orElseThrow(() ->
-				new JournalpostIkkeFunnetException("Kan ikke finne journalpost med journalpostId=" + journalpostId));
+				new JournalpostIkkeFunnetException("Fant ikke journalpost med journalpostId=" + journalpostId));
 	}
 
 	private FilDetaljer hentFildetaljerByVariantFormat(Long dokumentInfoId, VariantFormatCode variantFormatCode) {
 		return dokumentinfoRepository.findByDokumentInfoId(dokumentInfoId)
 				.orElseThrow(() ->
-						new DokumentInfoIkkeFunnetException(String.format("Kan ikke finne dokumentInfo med dokumentInfoId=%s", dokumentInfoId)))
+						new DokumentInfoIkkeFunnetException(String.format("Fant ikke dokumentInfo med dokumentInfoId=%s", dokumentInfoId)))
 				.findFilDetaljerByVariantFormatAdmin(variantFormatCode);
 	}
 
@@ -144,7 +147,7 @@ public class SkjermArkivenhetService {
 
 		if (journalpostDokumentInfoRelasjonList.isEmpty()) {
 			throw new JournalpostDokumentInfoRelasjonIkkeFunnetException(String.format(
-					"Kan ikke finne journalpostDokumentInfoRelasjoner dokumentInfoId=%s", dokumentInfoId));
+					"Fant ikke journalpostDokumentInfoRelasjoner dokumentInfoId=%s", dokumentInfoId));
 		}
 		return journalpostDokumentInfoRelasjonList;
 	}

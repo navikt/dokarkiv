@@ -23,14 +23,12 @@ import java.util.Objects;
 public class SkjermArkivEnhetOrchestrator {
 
 
-	private final SkjermArkivenhetService skjermArkivenhetService;
-	private final OpphevSkjermArkivenhetService opphevSkjermArkivenhetService;
+	private final EndreSkjermingArkivenhetService endreSkjermingArkivenhetService;
 	private final AksjonsLoggService aksjonsLoggService;
 	private final AksjonsLoggTOMapper aksjonsLoggTOMapper;
 
-	public SkjermArkivEnhetOrchestrator(SkjermArkivenhetService skjermArkivenhetService, OpphevSkjermArkivenhetService opphevSkjermArkivenhetService, AksjonsLoggService aksjonsLoggService) {
-		this.skjermArkivenhetService = skjermArkivenhetService;
-		this.opphevSkjermArkivenhetService = opphevSkjermArkivenhetService;
+	public SkjermArkivEnhetOrchestrator(EndreSkjermingArkivenhetService endreSkjermingArkivenhetService, AksjonsLoggService aksjonsLoggService) {
+		this.endreSkjermingArkivenhetService = endreSkjermingArkivenhetService;
 		this.aksjonsLoggService = aksjonsLoggService;
 		this.aksjonsLoggTOMapper = new AksjonsLoggTOMapper();
 	}
@@ -40,12 +38,14 @@ public class SkjermArkivEnhetOrchestrator {
 		switch (request.getArkivenhet()) {
 			case JOURNALPOST:
 				assertNotNullOrEmpty(request.getJournalpostId(), "journalpostId");
-				arkivElementEndringTOList = skjermArkivenhetService.skjermJournalpost(request.getJournalpostId(), request.getSkjerming());
+				arkivElementEndringTOList = endreSkjermingArkivenhetService.endreSkjermingJournalpost(request.getJournalpostId(), request
+						.getSkjerming());
 				lagreAksjonsLogg(request.getJournalpostId(), request.getDokumentInfoId(), aksjonsLoggHeaderString, arkivElementEndringTOList);
 				break;
 			case DOKUMENT_INFO:
 				assertNotNullOrEmpty(request.getDokumentInfoId(), "dokumentInfoId");
-				Map<Long, List<ArkivElementEndringTO>> aksjonsLoggMap = skjermArkivenhetService.skjermDokumentInfo(request.getDokumentInfoId(), request
+				Map<Long, List<ArkivElementEndringTO>> aksjonsLoggMap = endreSkjermingArkivenhetService.endreSkjermingDokumentInfo(request
+						.getDokumentInfoId(), request
 						.getSkjerming());
 				for (Long journalpostId : aksjonsLoggMap.keySet()) {
 					lagreAksjonsLogg(journalpostId, request.getDokumentInfoId(), aksjonsLoggHeaderString, aksjonsLoggMap.get(journalpostId));
@@ -54,7 +54,8 @@ public class SkjermArkivEnhetOrchestrator {
 			case DOKUMENT_FIL:
 				assertNotNullOrEmpty(request.getDokumentInfoId(), "dokumentInfoId");
 				assertNotNullOrEmpty(request.getVariant(), "variant");
-				arkivElementEndringTOList = skjermArkivenhetService.skjermDokumentFil(request.getDokumentInfoId(), request.getVariant(), request
+				arkivElementEndringTOList = endreSkjermingArkivenhetService.endreSkjermingDokumentFil(request.getDokumentInfoId(), request
+						.getVariant(), request
 						.getSkjerming());
 				lagreAksjonsLogg(request.getJournalpostId(), request.getDokumentInfoId(), aksjonsLoggHeaderString, arkivElementEndringTOList);
 		}
@@ -66,15 +67,14 @@ public class SkjermArkivEnhetOrchestrator {
 		switch (request.getArkivenhet()) {
 			case JOURNALPOST:
 				assertNotNullOrEmpty(request.getJournalpostId(), "journalpostId");
-				arkivElementEndringTOList = opphevSkjermArkivenhetService.opphevSkjermJournalpost(
-						request.getJournalpostId());
+				arkivElementEndringTOList = endreSkjermingArkivenhetService.endreSkjermingJournalpost(
+						request.getJournalpostId(), null);
 				lagreAksjonsLogg(request.getJournalpostId(), request.getDokumentInfoId(), aksjonsLoggHeaderString, arkivElementEndringTOList);
 				break;
 			case DOKUMENT_INFO:
 				assertNotNullOrEmpty(request.getDokumentInfoId(), "dokumentInfoId");
-				Map<Long, List<ArkivElementEndringTO>> aksjonsLoggMap = opphevSkjermArkivenhetService.opphevSkjermDokumentInfo(request
-						.getDokumentInfoId(), request
-						.getSkjerming());
+				Map<Long, List<ArkivElementEndringTO>> aksjonsLoggMap = endreSkjermingArkivenhetService.endreSkjermingDokumentInfo(request
+						.getDokumentInfoId(), null);
 				for (Long journalpostId : aksjonsLoggMap.keySet()) {
 					lagreAksjonsLogg(journalpostId, request.getDokumentInfoId(), aksjonsLoggHeaderString, aksjonsLoggMap.get(journalpostId));
 				}
@@ -82,8 +82,8 @@ public class SkjermArkivEnhetOrchestrator {
 			case DOKUMENT_FIL:
 				assertNotNullOrEmpty(request.getDokumentInfoId(), "dokumentInfoId");
 				assertNotNullOrEmpty(request.getVariant(), "variant");
-				arkivElementEndringTOList = opphevSkjermArkivenhetService.opphevSkjermDokumentFil(request.getDokumentInfoId(), request
-						.getVariant());
+				arkivElementEndringTOList = endreSkjermingArkivenhetService.endreSkjermingDokumentFil(request.getDokumentInfoId(), request
+						.getVariant(), null);
 				lagreAksjonsLogg(request.getJournalpostId(), request.getDokumentInfoId(), aksjonsLoggHeaderString, arkivElementEndringTOList);
 		}
 

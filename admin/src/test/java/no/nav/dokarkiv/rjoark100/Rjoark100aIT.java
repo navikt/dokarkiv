@@ -39,6 +39,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Test for skjerming av arkivenhet
+ */
 public class Rjoark100aIT extends AbstractAdminIT {
 
 	@Test
@@ -324,6 +327,7 @@ public class Rjoark100aIT extends AbstractAdminIT {
 		assertThat(aksjonsLoggList.size(), is(1));
 		assertAksjonsLogg(aksjonsLoggList.get(0), null, dokumentInfo.getDokumentInfoId(), new ArrayList<>());
 	}
+
 	@Test
 	public void skalFeileNårAksjonsLoggHeaderIkkeErSatt() throws IOException {
 		abacPermit();
