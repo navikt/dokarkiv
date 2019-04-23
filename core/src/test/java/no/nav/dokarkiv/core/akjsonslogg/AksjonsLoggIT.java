@@ -1,6 +1,7 @@
 package no.nav.dokarkiv.core.akjsonslogg;
 
 import static no.nav.dokarkiv.core.util.TestDataGenerator.BRUKER_ID;
+import static no.nav.dokarkiv.core.util.TestDataGenerator.OPPRETTET_KILDE_NAVN;
 import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_ARKIVELEMENT;
 import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_BRUKER;
 import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_FRA_VERDI;
@@ -19,11 +20,14 @@ import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggServiceImpl;
 import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggTO;
 import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
+import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
 import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
 import no.nav.dokarkiv.core.domain.entities.ArkivElementEndring;
+import no.nav.dokarkiv.core.domain.entities.Bruker;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.service.SkjermingService;
+import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
 import no.nav.dokarkiv.core.repository.AksjonsLoggRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
@@ -125,6 +129,30 @@ public class AksjonsLoggIT {
 
         assertThat(aksjonsLogg.getBruker(), is(BRUKER_ID));
     }
+
+    @Test
+	public void shouldGetMostRecentBruker() throws UgyldigAksjonsLoggException {
+		Journalpost journalpost = joarkRepository.findById(journalpostId)
+				.orElseThrow(JournalpostIkkeFunnetException::new);
+		String nyBrukerId = "***gammelt_fnr***";
+		Bruker nyBruker = Bruker.builder()
+				.brukerId(nyBrukerId)
+				.brukerType(BrukerTypeCode.PERSON)
+				.build();
+		nyBruker.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
+		journalpost.addBruker(nyBruker);
+		joarkRepository.save(journalpost);
+
+		AksjonsLoggTO aksjonsLoggTO = createAksjonsLoggTO(journalpostId, 1L);
+		aksjonsLoggTO.setBruker(null);
+		aksjonsLoggService.validateAndSaveAksjonsLogg(aksjonsLoggTO, createArkivElementEndringToList());
+
+		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
+		assertThat(aksjonsLoggList.size(), is(1));
+		AksjonsLogg aksjonsLogg = aksjonsLoggList.get(0);
+
+		assertThat(aksjonsLogg.getBruker(), is(nyBrukerId));
+	}
 
 	@Test
 	public void shouldMapUtfoertAvFromRequestContextIfUtfoertAvIsNull() throws UgyldigAksjonsLoggException {
