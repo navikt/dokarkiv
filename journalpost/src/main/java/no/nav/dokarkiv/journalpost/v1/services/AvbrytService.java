@@ -6,7 +6,7 @@ import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
-import no.nav.dokarkiv.core.exceptions.UgyldigInputException;
+import no.nav.dokarkiv.core.exceptions.UgyldigJournalStatusException;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import org.springframework.stereotype.Component;
 
@@ -34,9 +34,9 @@ public class AvbrytService {
         } else if (Arrays.asList(JournalStatusCode.D, JournalStatusCode.R).contains(oldJournalStatus)) {
             journalpost.setJournalstatus(JournalStatusCode.A);
         } else if (Arrays.asList(JournalStatusCode.A, JournalStatusCode.U).contains(oldJournalStatus)) {
-            throw new UgyldigInputException("Journalposten er allerede avbrutt)");
+            throw new UgyldigJournalStatusException("Journalposten er allerede avbrutt)");
         } else {
-            throw new UgyldigInputException("Journalposten kan ikke avbrytes da den er ferdigstilt)");
+            throw new UgyldigJournalStatusException("Journalposten kan ikke avbrytes da den er ferdigstilt)");
         }
 
         joarkRepository.save(journalpost);

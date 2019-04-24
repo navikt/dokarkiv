@@ -6,7 +6,7 @@ import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
-import no.nav.dokarkiv.core.exceptions.UgyldigInputException;
+import no.nav.dokarkiv.core.exceptions.UgyldigJournalStatusException;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import org.springframework.stereotype.Component;
 
@@ -32,7 +32,7 @@ public class SettUkjentBrukerService {
                 .contains(oldJournalStatus)) {
             journalpost.setJournalstatus(JournalStatusCode.UB);
         } else {
-            throw new UgyldigInputException("Journalpost kan ikke settes til UB (ukjent bruker)");
+            throw new UgyldigJournalStatusException("Journalpost kan ikke settes til UB (ukjent bruker)");
         }
 
         joarkRepository.save(journalpost);

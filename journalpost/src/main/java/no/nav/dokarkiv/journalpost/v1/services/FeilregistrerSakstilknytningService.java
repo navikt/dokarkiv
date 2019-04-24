@@ -6,7 +6,8 @@ import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
-import no.nav.dokarkiv.core.exceptions.UgyldigInputException;
+import no.nav.dokarkiv.core.exceptions.JournalpostIkkeKnyttetTilSakException;
+import no.nav.dokarkiv.core.exceptions.SaksrelasjonAlleredeFeilregistrertException;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import org.springframework.stereotype.Component;
 
@@ -32,9 +33,9 @@ public class FeilregistrerSakstilknytningService {
         if (saksrelasjon.getFeilregistrert() == null || !saksrelasjon.getFeilregistrert()) {
             journalpost.getSaksrelasjon().setFeilregistrert(true);
         } else if (saksrelasjon.getFeilregistrert()) {
-            throw new UgyldigInputException("Saksrelasjonen er allerede feilregistrert");
+            throw new SaksrelasjonAlleredeFeilregistrertException("Saksrelasjonen er allerede feilregistrert");
         } else {
-            throw new UgyldigInputException("Feilregistrering er ikke mulig fordi journalposten ikke er knyttet til sak");
+            throw new JournalpostIkkeKnyttetTilSakException("Feilregistrering er ikke mulig fordi journalposten ikke er knyttet til sak");
         }
 
         joarkRepository.save(journalpost);
