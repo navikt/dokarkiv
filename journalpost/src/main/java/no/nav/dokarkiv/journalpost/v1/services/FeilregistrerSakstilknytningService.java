@@ -23,7 +23,7 @@ public class FeilregistrerSakstilknytningService {
         this.joarkRepository = joarkRepository;
     }
 
-    public List<ArkivElementEndringTO> feilregistrerSakstilknytning(String journalpostId) throws UgyldigInputException {
+    public List<ArkivElementEndringTO> feilregistrerSakstilknytning(String journalpostId) {
         Journalpost journalpost = joarkRepository.findById(parseLong(journalpostId))
                 .orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostId)));
 

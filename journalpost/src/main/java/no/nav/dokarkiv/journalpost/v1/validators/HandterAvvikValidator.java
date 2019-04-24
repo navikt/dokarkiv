@@ -14,6 +14,8 @@ public class HandterAvvikValidator {
 
     private static final List<String> validAvvikstyper = Arrays.asList(FEILREGISTRER_SAKSTILKNYTNING, OPPHEV_FEILREGISTRERT_SAKSTILKNYTNING, SETT_UKJENT_BRUKER, AVBRYT);
 
+    private HandterAvvikValidator() {}
+
     public static void validateAvvikstype(String avvikstype) {
         if (!validAvvikstyper.contains(avvikstype)) {
             throw new InputValideringFeiletException("Ugyldig avvikstype");

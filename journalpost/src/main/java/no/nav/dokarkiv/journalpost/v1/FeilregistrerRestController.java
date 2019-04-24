@@ -88,49 +88,49 @@ public class FeilregistrerRestController {
         abacSecurityService.assertAccessToJournalpost(journalpostId);
         RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
 
+        ResponseEntity<String> response;
         if (avvikstype.equalsIgnoreCase(FEILREGISTRER_SAKSTILKNYTNING)) {
-            List<ArkivElementEndringTO> arkivElementEndringTOList = feilregistrerSakstilknytningService.feilregistrerSakstilknytning(journalpostId);
-
-            populerAksjonslogg(journalpostId, FEILREGISTRER, arkivElementEndringTOList, "Saksrelasjonen ble feilregistrert");
-
-            log.info(MDC.get(MDC_REQUEST_ID) + " har feilregistrert journalpost med journalpostId={}", journalpostId);
-
-            return ResponseEntity.ok().body("Saksrelasjonen ble feilregistrert");
+            response = feilregistrerSakstilkytning(journalpostId);
+        } else if (avvikstype.equalsIgnoreCase(OPPHEV_FEILREGISTRERT_SAKSTILKNYTNING)) {
+            response = opphevFeilregistrertSakstilknytning(journalpostId);
+        } else if (avvikstype.equalsIgnoreCase(SETT_UKJENT_BRUKER)) {
+            response = settUkjentBruker(journalpostId);
+        } else if (avvikstype.equalsIgnoreCase(AVBRYT)) {
+            response = avbryt(journalpostId);
+        } else {
+            response = ResponseEntity.badRequest().body("Ugyldig avvikstype");
         }
 
-        else if (avvikstype.equalsIgnoreCase(OPPHEV_FEILREGISTRERT_SAKSTILKNYTNING)) {
-            List<ArkivElementEndringTO> arkivElementEndringTOList = opphevFeilregistrertSakstilknytningService.opphevFeilregistrertSakstilknytning(journalpostId);
+        return response;
+    }
 
-            populerAksjonslogg(journalpostId, AksjonsTypeCode.OPPHEV_FEILREGISTRERING ,arkivElementEndringTOList, "Feilregistreringen ble opphevet");
+    private ResponseEntity<String> feilregistrerSakstilkytning(String journalpostId) throws UgyldigAksjonsLoggException {
+        List<ArkivElementEndringTO> arkivElementEndringTOList = feilregistrerSakstilknytningService.feilregistrerSakstilknytning(journalpostId);
+        populerAksjonslogg(journalpostId, FEILREGISTRER, arkivElementEndringTOList, "Saksrelasjonen ble feilregistrert");
+        log.info(MDC.get(MDC_REQUEST_ID) + " har feilregistrert journalpost med journalpostId={}", journalpostId);
+        return ResponseEntity.ok().body("Saksrelasjonen ble feilregistrert");
+    }
 
-            log.info(MDC.get(MDC_REQUEST_ID) + " har opphevet feilregistrering av journalpost med journalpostId={}", journalpostId);
 
-            return ResponseEntity.ok().body("Feilregistreringen ble opphevet");
-        }
+    private ResponseEntity<String> opphevFeilregistrertSakstilknytning(String journalpostId) throws UgyldigAksjonsLoggException {
+        List<ArkivElementEndringTO> arkivElementEndringTOList = opphevFeilregistrertSakstilknytningService.opphevFeilregistrertSakstilknytning(journalpostId);
+        populerAksjonslogg(journalpostId, AksjonsTypeCode.OPPHEV_FEILREGISTRERING ,arkivElementEndringTOList, "Feilregistreringen ble opphevet");
+        log.info(MDC.get(MDC_REQUEST_ID) + " har opphevet feilregistrering av journalpost med journalpostId={}", journalpostId);
+        return ResponseEntity.ok().body("Feilregistreringen ble opphevet");
+    }
 
-        else if (avvikstype.equalsIgnoreCase(SETT_UKJENT_BRUKER)) {
-            List<ArkivElementEndringTO> arkivElementEndringTOList = settUkjentBrukerService.settUkjentBruker(journalpostId);
+    private ResponseEntity<String> settUkjentBruker(String journalpostId) throws UgyldigAksjonsLoggException {
+        List<ArkivElementEndringTO> arkivElementEndringTOList = settUkjentBrukerService.settUkjentBruker(journalpostId);
+        populerAksjonslogg(journalpostId, AksjonsTypeCode.UKJENT_BRUKER ,arkivElementEndringTOList, "Journalposten fikk status Ukjent Bruker");
+        log.info(MDC.get(MDC_REQUEST_ID) + " har satt status til Ukjent Bruker for journalpost med journalpostId={}", journalpostId);
+        return ResponseEntity.ok().body("Journalposten fikk status Ukjent Bruker");
+    }
 
-            populerAksjonslogg(journalpostId, AksjonsTypeCode.UKJENT_BRUKER ,arkivElementEndringTOList, "Journalposten fikk status Ukjent Bruker");
-
-            log.info(MDC.get(MDC_REQUEST_ID) + " har satt status til Ukjent Bruker for journalpost med journalpostId={}", journalpostId);
-
-            return ResponseEntity.ok().body("Journalposten fikk status Ukjent Bruker");
-        }
-
-        else if (avvikstype.equalsIgnoreCase(AVBRYT)) {
-            List<ArkivElementEndringTO> arkivElementEndringTOList = avbrytService.avbryt(journalpostId);
-
-            populerAksjonslogg(journalpostId, AksjonsTypeCode.AVBRYT ,arkivElementEndringTOList, "Journalposten ble satt til avbrutt / utgår");
-
-            log.info(MDC.get(MDC_REQUEST_ID) + " har satt status til avbrutt / utgår for journalpost med journalpostId={}", journalpostId);
-
-            return ResponseEntity.ok().body("Journalposten ble satt til avbrutt / utgår");
-        }
-
-        else {
-            return ResponseEntity.badRequest().body("Ugyldig avvikstype");
-        }
+    private ResponseEntity<String> avbryt(String journalpostId) throws UgyldigAksjonsLoggException {
+        List<ArkivElementEndringTO> arkivElementEndringTOList = avbrytService.avbryt(journalpostId);
+        populerAksjonslogg(journalpostId, AksjonsTypeCode.AVBRYT ,arkivElementEndringTOList, "Journalposten ble satt til avbrutt / utgår");
+        log.info(MDC.get(MDC_REQUEST_ID) + " har satt status til avbrutt / utgår for journalpost med journalpostId={}", journalpostId);
+        return ResponseEntity.ok().body("Journalposten ble satt til avbrutt / utgår");
     }
 
     private void validateRequest(String journalpostId, String avvikstype) {
