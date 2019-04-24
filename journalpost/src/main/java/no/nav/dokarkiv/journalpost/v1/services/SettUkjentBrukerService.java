@@ -17,6 +17,7 @@ import java.util.List;
 @Component
 public class SettUkjentBrukerService {
     private final JoarkRepository joarkRepository;
+    private static final List<JournalStatusCode> validJournalStatusList = Arrays.asList(JournalStatusCode.U, JournalStatusCode.OD, JournalStatusCode.M, JournalStatusCode.MO);
 
     @Inject
     public SettUkjentBrukerService(final JoarkRepository joarkRepository) {
@@ -28,8 +29,7 @@ public class SettUkjentBrukerService {
                 .orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostId)));
 
         JournalStatusCode oldJournalStatus = journalpost.getJournalstatus();
-        if (Arrays.asList(JournalStatusCode.U, JournalStatusCode.OD, JournalStatusCode.M, JournalStatusCode.MO)
-                .contains(oldJournalStatus)) {
+        if (validJournalStatusList.contains(oldJournalStatus)) {
             journalpost.setJournalstatus(JournalStatusCode.UB);
         } else {
             throw new UgyldigJournalStatusException("Journalpost kan ikke settes til UB (ukjent bruker)");
