@@ -10,7 +10,7 @@ import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
 import java.util.Arrays;
 import java.util.List;
 
-public class HandterAvvikValidator {
+public final class HandterAvvikValidator {
 
     private static final List<String> validAvvikstyper = Arrays.asList(FEILREGISTRER_SAKSTILKNYTNING, OPPHEV_FEILREGISTRERT_SAKSTILKNYTNING, SETT_UKJENT_BRUKER, AVBRYT);
 
