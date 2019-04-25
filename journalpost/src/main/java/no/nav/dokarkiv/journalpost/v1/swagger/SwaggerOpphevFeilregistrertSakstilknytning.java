@@ -16,15 +16,14 @@ import java.lang.annotation.Target;
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@ApiOperation(value = "Feilregistrer journalpost", authorizations = {@Authorization(value = "apiKey")})
+@ApiOperation(value = "Opphever en feilregistrert sakstilknytning", authorizations = {@Authorization(value = "apiKey")})
 @ApiResponses(value = {
         @ApiResponse(code = 200, message = "* OK"),
-        @ApiResponse(code = 400, message = "* Ugyldig avvikstype\n" +
-                "* Feil i aksjonslogg"),
+        @ApiResponse(code = 400, message = "* Feil i aksjonslogg"),
         @ApiResponse(code = 401, message = "* Ugyldig OIDC token. Denne feilen gis dersom tokenet ikke har riktig format eller er utgått."),
         @ApiResponse(code = 404, message = "* Journalpost ikke funnet"),
         @ApiResponse(code = 500, message = "* Internal server error")})
-public @interface SwaggerFeilregistrer{
+public @interface SwaggerOpphevFeilregistrertSakstilknytning {
     @AliasFor(
             annotation = RequestMapping.class
     )
