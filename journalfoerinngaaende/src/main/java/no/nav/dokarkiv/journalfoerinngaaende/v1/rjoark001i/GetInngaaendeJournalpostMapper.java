@@ -155,7 +155,7 @@ public class GetInngaaendeJournalpostMapper {
 	private Bruker.BrukerType utledBrukerType(String brukerId) {
 		if (brukerId == null) {
 			return null;
-		} else if (brukerId.length() == 11) {
+		} else if (brukerId.trim().length() == 11) {
 			return Bruker.BrukerType.PERSON;
 		} else {
 			return Bruker.BrukerType.ORGANISASJON;
