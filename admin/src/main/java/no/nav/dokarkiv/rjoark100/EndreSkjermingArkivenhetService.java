@@ -1,7 +1,7 @@
 package no.nav.dokarkiv.rjoark100;
 
 import static java.util.Objects.isNull;
-import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.FILDETALJER_SKJERMING_TYPE_VARIANT;
+import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.fildetaljerSkjermingTypeVariant;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_SKJERMING_TYPE;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.RELASJON_SKJERMING_TYPE;
 import static no.nav.dokarkiv.core.util.ConverterUtils.enumToString;
@@ -88,7 +88,7 @@ public class EndreSkjermingArkivenhetService {
 			skjermingService.setFildetaljerSkjerming(dokumentInfoId, variant, skjerming);
 			arkivElementEndringTOList.add(
 					ArkivElementEndringTO.builder()
-							.arkivElement(FILDETALJER_SKJERMING_TYPE_VARIANT(variant))
+							.arkivElement(fildetaljerSkjermingTypeVariant(variant))
 							.fraVerdi(enumToString(filDetaljer.getSkjermingType()))
 							.tilVerdi(enumToString(skjerming))
 							.build()

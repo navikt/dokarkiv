@@ -2,7 +2,7 @@ package no.nav.dokarkiv.rjoark100;
 
 import static junit.framework.TestCase.assertNull;
 import static junit.framework.TestCase.assertTrue;
-import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.FILDETALJER_SKJERMING_TYPE_VARIANT;
+import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.fildetaljerSkjermingTypeVariant;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_SKJERMING_TYPE;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.RELASJON_SKJERMING_TYPE;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createJournalpostWithGjenbruktHoveddokument;
@@ -262,7 +262,7 @@ public class Rjoark100bIT extends AbstractAdminIT {
 		assertAksjonsLogg(aksjonsLoggList.get(0), AksjonsTypeCode.ENDRE_SKJERMING, null, dokumentInfo.getDokumentInfoId(), Arrays
 				.asList(
 						ArkivElementEndring.builder()
-								.arkivElement(FILDETALJER_SKJERMING_TYPE_VARIANT(VariantFormatCode.ARKIV))
+								.arkivElement(fildetaljerSkjermingTypeVariant(VariantFormatCode.ARKIV))
 								.fraVerdi(SkjermingTypeCode.POL.name())
 								.tilVerdi(null)
 								.build()

@@ -3,7 +3,7 @@ package no.nav.dokarkiv.rjoark102;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.DOKUMENT_FIL_FIL_UUID;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.DOKUMENT_INFO_KASSERT_AV;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.DOKUMENT_INFO_KASSERT_DATO;
-import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.FILDETALJER_SKJERMING_TYPE_VARIANT;
+import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.fildetaljerSkjermingTypeVariant;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.FILDETALJER_VARIANTFORMAT;
 import static no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode.POL;
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.ARKIV;
@@ -93,7 +93,7 @@ public class KasserDokumentService {
 		entityManager.flush();
 		entityManager.clear();
 		return ArkivElementEndringTO.builder()
-				.arkivElement(FILDETALJER_SKJERMING_TYPE_VARIANT(variantFormatCode))
+				.arkivElement(fildetaljerSkjermingTypeVariant(variantFormatCode))
 				.fraVerdi(POL.name())
 				.tilVerdi(null)
 				.build();

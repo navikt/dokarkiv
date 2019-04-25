@@ -151,11 +151,6 @@ public class SkjermingService {
 		q.executeUpdate();
 	}
 
-	private DokumentInfo hentDokumentInfo(Long dokumentInfoId) {
-		return dokumentinfoRepository.findByDokumentInfoId(dokumentInfoId).orElseThrow(() ->
-				new DokumentInfoIkkeFunnetException(String.format("Kan ikke finne dokumentInfo med dokumentInfoId=%s", dokumentInfoId)));
-	}
-
 	private JournalpostDokumentInfoRelasjon hentJpDokInfoRel(Long journalpostId, Long dokumentInfoId) {
 		return journalpostDokumentInfoRelasjonRepository.findByJournalpostJournalpostIdAndDokumentInfoDokumentInfoId(
 				journalpostId, dokumentInfoId)
