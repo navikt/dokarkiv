@@ -33,6 +33,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.transaction.TestTransaction;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -77,6 +78,12 @@ public abstract class AbstractAdminIT extends AbstractRestIT {
 
 	}
 
+	protected void reinitTransaction() {
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
+		TestTransaction.start();
+	}
+
 	protected void abacPermit() {
 		stubFor(post(urlEqualTo("/abac"))
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
@@ -89,6 +96,13 @@ public abstract class AbstractAdminIT extends AbstractRestIT {
 				.filter(aksjonsLogg -> journalpostId.equals(aksjonsLogg.getJournalpostId())).findAny().get();
 	}
 
+	protected AksjonsLogg getAksjonsLoggByDokumentInfoId(List<AksjonsLogg> aksjonsLoggList, Long dokumentInfoId) {
+		return aksjonsLoggList.stream()
+				.filter(aksjonsLogg -> aksjonsLogg.getJournalpostId() == null && dokumentInfoId.equals(aksjonsLogg.getDokumentInfoId()))
+				.findAny()
+				.get();
+	}
+
 	protected JournalpostDokumentInfoRelasjon getRelasjonByDokumentInfoId(Journalpost journalpost, Long dokumentInfoId) {
 		return journalpost.getJournalpostDokumentInfoRelasjoner()
 				.stream()
@@ -98,9 +112,9 @@ public abstract class AbstractAdminIT extends AbstractRestIT {
 	}
 
 
-	protected void assertAksjonsLogg(AksjonsLogg aksjonsLogg, Long journalpostId, Long dokumentInfoId, List<ArkivElementEndring> expectedArkivElementEndringList) {
+	protected void assertAksjonsLogg(AksjonsLogg aksjonsLogg, AksjonsTypeCode expectedAksjonsTypeCode, Long journalpostId, Long dokumentInfoId, List<ArkivElementEndring> expectedArkivElementEndringList) {
 
-		assertCommongAksjonsLoggValues(aksjonsLogg);
+		assertCommongAksjonsLoggValues(aksjonsLogg, expectedAksjonsTypeCode);
 		assertThat("journalpostId", aksjonsLogg.getJournalpostId(), is(journalpostId));
 		assertThat("dokumentInfoId", aksjonsLogg.getDokumentInfoId(), is(dokumentInfoId));
 		assertThat("arkivElementEndring.size()", aksjonsLogg.getArkivElementEndringer()
@@ -117,8 +131,8 @@ public abstract class AbstractAdminIT extends AbstractRestIT {
 				.toArray()));
 	}
 
-	protected void assertCommongAksjonsLoggValues(AksjonsLogg aksjonsLogg) {
-		assertThat(aksjonsLogg.getAksjon(), is(AksjonsTypeCode.ENDRE_SKJERMING));
+	protected void assertCommongAksjonsLoggValues(AksjonsLogg aksjonsLogg, AksjonsTypeCode expectedAksjonsTypeCode) {
+		assertThat(aksjonsLogg.getAksjon(), is(expectedAksjonsTypeCode));
 		assertThat(aksjonsLogg.getUtfoertAv(), is(TestDataUtils.AKSJON_UTFOERT_AV));
 		assertThat(aksjonsLogg.getHjemmel(), is(TestDataUtils.AKSJON_HJEMMEL));
 		assertThat(aksjonsLogg.getMelding(), is(TestDataUtils.AKSJON_MELDING));
@@ -186,6 +200,17 @@ public abstract class AbstractAdminIT extends AbstractRestIT {
 	protected void assertThatDokumentFilIsDeleted(String filuuid) {
 		assertThat(dokumentFilRepository.findByFilUuid(filuuid), nullValue());
 
+	}
+
+	protected void assertThatJournalpostRelasjonerIsNotDeleted(Journalpost journalpost) {
+		assertThat(entityManager.createQuery("select '1' from JournalpostDokumentInfoRelasjon where journalpost.journalpostId= :jp")
+				.setParameter("jp", journalpost.getJournalpostId())
+				.getResultList()
+				.size(), is(journalpost.getJournalpostDokumentInfoRelasjonerAdmin().size()));
+
+		for (JournalpostDokumentInfoRelasjon rel : journalpost.getJournalpostDokumentInfoRelasjoner()) {
+			assertThatDokumentInfoAndFildetaljerIsNotDeleted(rel.getDokumentInfo());
+		}
 	}
 
 	protected void assertThatJournalpostIsNotDeleted(Journalpost journalpost) {

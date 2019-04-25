@@ -181,6 +181,8 @@ public class TestDataGenerator {
 
 		journalpostDokumentInfoRelasjon.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
 		journalpostDokumentInfoRelasjon.setTilknyttetAvNavn(OPPRETTET_KILDE_NAVN);
+
+		journalpost.addJournalpostDokumentInfoRelasjon(journalpostDokumentInfoRelasjon);
 		return journalpostDokumentInfoRelasjon;
 	}
 

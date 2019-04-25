@@ -16,6 +16,7 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.Is.is;
 
 import no.nav.dokarkiv.AbstractAdminIT;
+import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.codes.ArkivenhetCode;
 import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
@@ -76,7 +77,7 @@ public class Rjoark100aIT extends AbstractAdminIT {
 		assertThat(aksjonsLoggList.size(), is(1));
 
 		AksjonsLogg aksjonsLogg = aksjonsLoggList.get(0);
-		assertCommongAksjonsLoggValues(aksjonsLogg);
+		assertCommongAksjonsLoggValues(aksjonsLogg, AksjonsTypeCode.ENDRE_SKJERMING);
 		assertThat(aksjonsLogg.getJournalpostId(), is(journalpost.getJournalpostId()));
 		assertThat(aksjonsLogg.getDokumentInfoId(), nullValue());
 		assertThat(aksjonsLogg.getArkivElementEndringer().size(), is(1));
@@ -131,7 +132,7 @@ public class Rjoark100aIT extends AbstractAdminIT {
 		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
 		assertThat(aksjonsLoggList.size(), is(3));
 
-		assertAksjonsLogg(getAksjonsLoggByJournalpostId(aksjonsLoggList, originalJournalpost.getJournalpostId()), originalJournalpost
+		assertAksjonsLogg(getAksjonsLoggByJournalpostId(aksjonsLoggList, originalJournalpost.getJournalpostId()), AksjonsTypeCode.ENDRE_SKJERMING, originalJournalpost
 						.getJournalpostId(), dokumentInfo.getDokumentInfoId(),
 				Arrays.asList(
 						ArkivElementEndring.builder()
@@ -145,7 +146,8 @@ public class Rjoark100aIT extends AbstractAdminIT {
 								.tilVerdi(SkjermingTypeCode.POL.name())
 								.build())
 		);
-		assertAksjonsLogg(getAksjonsLoggByJournalpostId(aksjonsLoggList, journalpost1.getJournalpostId()), journalpost1.getJournalpostId(), dokumentInfo
+		assertAksjonsLogg(getAksjonsLoggByJournalpostId(aksjonsLoggList, journalpost1.getJournalpostId()), AksjonsTypeCode.ENDRE_SKJERMING, journalpost1
+						.getJournalpostId(), dokumentInfo
 						.getDokumentInfoId(),
 				Arrays.asList(
 						ArkivElementEndring.builder()
@@ -159,7 +161,8 @@ public class Rjoark100aIT extends AbstractAdminIT {
 								.tilVerdi(SkjermingTypeCode.POL.name())
 								.build()
 				));
-		assertAksjonsLogg(getAksjonsLoggByJournalpostId(aksjonsLoggList, journalpost2.getJournalpostId()), journalpost2.getJournalpostId(), dokumentInfo
+		assertAksjonsLogg(getAksjonsLoggByJournalpostId(aksjonsLoggList, journalpost2.getJournalpostId()), AksjonsTypeCode.ENDRE_SKJERMING, journalpost2
+						.getJournalpostId(), dokumentInfo
 						.getDokumentInfoId(),
 				Arrays.asList(
 						ArkivElementEndring.builder()
@@ -206,7 +209,7 @@ public class Rjoark100aIT extends AbstractAdminIT {
 
 		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
 		assertThat(aksjonsLoggList.size(), is(1));
-		assertAksjonsLogg(aksjonsLoggList.get(0), null, dokumentInfo.getDokumentInfoId(),
+		assertAksjonsLogg(aksjonsLoggList.get(0), AksjonsTypeCode.ENDRE_SKJERMING, null, dokumentInfo.getDokumentInfoId(),
 				Arrays.asList(
 						ArkivElementEndring.builder()
 								.arkivElement(FILDETALJER_SKJERMING_TYPE_VARIANT(VariantFormatCode.ARKIV))
@@ -260,7 +263,7 @@ public class Rjoark100aIT extends AbstractAdminIT {
 		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
 		assertThat(aksjonsLoggList.size(), is(3));
 
-		assertAksjonsLogg(getAksjonsLoggByJournalpostId(aksjonsLoggList, originalJournalpost.getJournalpostId()), originalJournalpost
+		assertAksjonsLogg(getAksjonsLoggByJournalpostId(aksjonsLoggList, originalJournalpost.getJournalpostId()), AksjonsTypeCode.ENDRE_SKJERMING, originalJournalpost
 				.getJournalpostId(), dokumentInfo.getDokumentInfoId(), new ArrayList<>());
 
 	}
@@ -293,7 +296,7 @@ public class Rjoark100aIT extends AbstractAdminIT {
 		assertThat(skjermingService.isJournalpostSkjermet(journalpost.getJournalpostId()), is(true));
 		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
 		assertThat(aksjonsLoggList.size(), is(1));
-		assertAksjonsLogg(aksjonsLoggList.get(0), journalpost.getJournalpostId(), null,
+		assertAksjonsLogg(aksjonsLoggList.get(0), AksjonsTypeCode.ENDRE_SKJERMING, journalpost.getJournalpostId(), null,
 				new ArrayList<>()
 		);
 	}
@@ -325,7 +328,7 @@ public class Rjoark100aIT extends AbstractAdminIT {
 		assertThat(skjermingService.isVariantSkjermet(dokumentInfo.getDokumentInfoId(), VariantFormatCode.ARKIV, SkjermingTypeCode.POL), is(true));
 		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
 		assertThat(aksjonsLoggList.size(), is(1));
-		assertAksjonsLogg(aksjonsLoggList.get(0), null, dokumentInfo.getDokumentInfoId(), new ArrayList<>());
+		assertAksjonsLogg(aksjonsLoggList.get(0), AksjonsTypeCode.ENDRE_SKJERMING, null, dokumentInfo.getDokumentInfoId(), new ArrayList<>());
 	}
 
 	@Test

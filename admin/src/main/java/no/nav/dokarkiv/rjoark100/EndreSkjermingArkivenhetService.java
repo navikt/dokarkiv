@@ -112,7 +112,7 @@ public class EndreSkjermingArkivenhetService {
 			//Hvis tilSkjerming!=null og Journalposten ikke har noen flere dokumentInfo relasjoner som IKKE er skjermet så skal journalposten også skjermes.
 			if (tilSkjerming == null && skjermingService.isJournalpostSkjermet(journalpostId)) {
 				arkivElementEndringList.addAll(endreSkjermingJournalpost(journalpostId, null));
-			} else if (tilSkjerming != null && isJournalpostHarIngenJournalpostRelasjoner(journalpostId)) {
+			} else if (tilSkjerming != null && isJournalpostHarIngenDokumentInfoRelasjoner(journalpostId)) {
 				arkivElementEndringList.addAll(endreSkjermingJournalpost(journalpostId, tilSkjerming));
 			}
 
@@ -123,7 +123,7 @@ public class EndreSkjermingArkivenhetService {
 		return aksjonsLoggMap;
 	}
 
-	private boolean isJournalpostHarIngenJournalpostRelasjoner(Long journalpostId) {
+	private boolean isJournalpostHarIngenDokumentInfoRelasjoner(Long journalpostId) {
 		List<JournalpostDokumentInfoRelasjon> journalpostDokumentInfoRelasjonList = journalpostDokumentInfoRelasjonRepository.findAllByJournalpostJournalpostId(journalpostId);
 		return journalpostDokumentInfoRelasjonList.stream().noneMatch(relasjon -> isNull(relasjon.getSkjermingType()));
 
