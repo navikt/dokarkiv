@@ -80,7 +80,8 @@ public class FeilregistrerRestController {
     @RestMetrics(value = "dok_request", extraTags = {"process_code", "feilregistrer"}, percentiles = {0.5, 0.95})
     public ResponseEntity<String> handterAvvik(
             @PathVariable @ApiParam(value = "IDen til journalposten som skal feilregistreres", required = true, example = "77778888") String journalpostId,
-            @PathVariable @ApiParam(value = "", required = true, example = "feilregistrerSaksrelasjon") String avvikstype)
+            @PathVariable @ApiParam(allowableValues = FEILREGISTRER_SAKSTILKNYTNING + "," + OPPHEV_FEILREGISTRERT_SAKSTILKNYTNING + "," + SETT_UKJENT_BRUKER + "," + AVBRYT,
+                    required = true, example = FEILREGISTRER_SAKSTILKNYTNING) String avvikstype)
             throws UgyldigAksjonsLoggException {
         MDC.put(MDC_REQUEST_ID, "feilregistrer");
         log.info(MDC.get(MDC_REQUEST_ID) + " har mottatt kall for feilregistrering av journalpost med journalpostId={}", journalpostId);
