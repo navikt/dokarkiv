@@ -4,10 +4,12 @@ import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.DOKUMENT_IN
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.FILDETALJER_VARIANTFORMAT;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_JOURNALPOST_ID;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.RELASJON_DOKUMENT_INFO_ID;
+import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.RELASJON_TILKNYTTET_SOM;
 import static org.apache.commons.lang3.BooleanUtils.isFalse;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
+import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
@@ -31,6 +33,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -100,7 +103,8 @@ public class SlettArkivenhetService {
 				//Hvis Journalpost ikke har hoveddokument relasjon etter sletting (DokumentInfo var hoveddokument i Journalposten)
 				//så skal en vilkårlig vedlegg settes som hoveddokument i Journalposten
 			} else if (isFalse(hasJournalpostHoveddokumentRelasjon(journalpostId))) {
-				log.info("Fix me");
+				//TODO: Mangler aksjonslogg
+				byttFørsteVedleggRelasjonTilHoveddokument(journalpostId);
 			}
 			aksjonsLoggMap.put(journalpostId, arkivElementEndringTOList);
 
@@ -109,6 +113,28 @@ public class SlettArkivenhetService {
 		return aksjonsLoggMap;
 	}
 
+
+	private List<ArkivElementEndringTO> byttFørsteVedleggRelasjonTilHoveddokument(Long journalpostId) {
+		List<JournalpostDokumentInfoRelasjon> relasjonList = journalpostDokumentInfoRelasjonRepository.findAllByJournalpostJournalpostId(journalpostId)
+				.stream()
+				.filter(rel -> rel.getTilknyttetJournalpostSom() == TilknyttetJournalpostSomCode.VEDLEGG)
+				.filter(rel -> rel.getDokumentInfo()
+						.findHoveddokumentJournalpostRelasjon() == null)//Ikke bytt om dokumentInfo som allerede er hoveddokument i en annen Journalpost
+				.collect(Collectors.toList());
+
+		JournalpostDokumentInfoRelasjon vedleggRelasjon = relasjonList.get(0);
+		vedleggRelasjon.setTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.HOVEDDOKUMENT);
+		journalpostDokumentInfoRelasjonRepository.save(vedleggRelasjon);
+		return Collections.singletonList(
+				ArkivElementEndringTO.builder()
+						.arkivElement(RELASJON_TILKNYTTET_SOM)
+						.fraVerdi(TilknyttetJournalpostSomCode.VEDLEGG.name())
+						.tilVerdi(TilknyttetJournalpostSomCode.HOVEDDOKUMENT.name())
+						.build()
+
+		);
+
+	}
 
 	private boolean hasJournalpostHoveddokumentRelasjon(Long journalpostId) {
 		Journalpost journalpost = joarkRepository.findById(journalpostId).get();
@@ -155,7 +181,8 @@ public class SlettArkivenhetService {
 	}
 
 	private boolean sjekkOmJournalpostErSplittetUtFraEnAnnenJournalpost(Journalpost journalpost) {
-		if (!journalpost.getJournalpostDokumentInfoRelasjoner().isEmpty()) {
+		if (!journalpost.getJournalpostDokumentInfoRelasjoner()
+				.isEmpty() && journalpost.findHoveddokumentDokumentInfoRelasjon() != null) {
 			Journalpost hoveddokOrigJp = journalpost.findHoveddokumentDokumentInfoRelasjon()
 					.getDokumentInfo()
 					.getOriginalJournalpost();

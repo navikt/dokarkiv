@@ -4,6 +4,7 @@ import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.DOKUMENT_IN
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.FILDETALJER_VARIANTFORMAT;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_JOURNALPOST_ID;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.RELASJON_DOKUMENT_INFO_ID;
+import static no.nav.dokarkiv.core.util.TestDataGenerator.createDokumentInfoVedleggRelasjon;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createJournalpostWithHoveddokument;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createJournalpostWithSplittetHoveddokument;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createVedleggRelasjon;
@@ -28,7 +29,6 @@ import no.nav.dokarkiv.core.util.TestDataGenerator;
 import no.nav.dokarkiv.dto.SlettArkivenhetRequest;
 import no.nav.dokarkiv.dto.SlettArkivenhetResponse;
 import org.apache.commons.collections15.IteratorUtils;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -54,7 +54,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 		Journalpost journalpost2 = createJournalpostWithHoveddokument();
 
 		Journalpost journalpost = createJournalpostWithHoveddokument();
-		TestDataGenerator.createDokumentInfoVedleggRelasjon(journalpost);
+		createDokumentInfoVedleggRelasjon(journalpost);
 		saveJournalpost(journalpost1);
 		saveJournalpost(journalpost2);
 		saveJournalpost(journalpost);
@@ -190,10 +190,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 						createHeadersWithAksjon()),
 				SlettArkivenhetResponse.class);
 
-		TestTransaction.flagForCommit();
-		TestTransaction.end();
-
-		TestTransaction.start();
+		reinitTransaction();
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 
 		assertThatJournalpostIsDeleted(journalpost.getJournalpostId());
@@ -385,117 +382,6 @@ public class Rjoark101IT extends AbstractAdminIT {
 	}
 
 	/**
-	 * Slett tjenesten med arkivEnhet=JOURNALPOST skal feile hvis Journalposten har hoveddokument som er brukt som vedlegg i andre journalposter (gjenbrukt).
-	 * I slike tilfeller må relasjonene hvor hoveddokument er vedlegg slettes før journalposten kan slettes.
-	 * Denne testen skal verifisere at Journalposten kan slettes etter at vedlegg relasjonene til hoveddokumentet er slettet.
-	 */
-	@Test
-	@Ignore("Finnes ingen metode for sletting av bare relasjon. Bør implementeres")
-	public void skalSletteJournalpostMedHoveddokumentSomHarRelasjonTilAndreJournalposterSomVedleggEtterSlettingAvRelasjonene() throws IOException {
-		abacPermit();
-		Journalpost journalpost1 = createJournalpostWithHoveddokument();
-		Journalpost journalpost2 = createJournalpostWithHoveddokument();
-		Journalpost journalpost = createJournalpostWithHoveddokument();
-
-		DokumentInfo dokumentInfoVedlegg = journalpost1.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
-		journalpost.addJournalpostDokumentInfoRelasjon(createVedleggRelasjon(journalpost, dokumentInfoVedlegg));
-
-		saveJournalpost(journalpost1);
-		saveJournalpost(journalpost2);
-		saveJournalpost(journalpost);
-
-		TestTransaction.flagForCommit();
-		TestTransaction.end();
-
-		TestTransaction.start();
-		List<Journalpost> journalpostList = IteratorUtils.toList(joarkRepository.findAll().iterator());
-
-		assertThat(journalpostList.size(), is(3));
-		assertThatJournalpostIsNotDeleted(journalpost);
-		assertThat(journalpostDokumentInfoRelasjonRepository.findAllByDokumentInfoDokumentInfoId(dokumentInfoVedlegg.getDokumentInfoId())
-				.size(), is(2));
-
-		//Sjekk at tjenesten feiler ved sletting av journalpost med hoveddokument som er brukt som vedlegg i andre journalposter
-		ResponseEntity<RestConsumerExceptionResponse> responseEntity = restTemplate.exchange(
-				URL_SLETTARKIVENHET,
-				HttpMethod.DELETE,
-				new HttpEntity(
-						SlettArkivenhetRequest.builder()
-								.arkivenhet(ArkivenhetCode.JOURNALPOST)
-								.journalpostId(journalpost.getJournalpostId())
-								.build(),
-						createHeadersWithAksjon()),
-				RestConsumerExceptionResponse.class);
-		assertThat(responseEntity.getStatusCode(), is(HttpStatus.NOT_ACCEPTABLE));
-
-		//Slett vedleggrelasjoner til hoveddokument
-		ResponseEntity<SlettArkivenhetResponse> responseEntity2 = restTemplate.exchange(
-				URL_SLETTARKIVENHET,
-				HttpMethod.DELETE,
-				new HttpEntity(
-						SlettArkivenhetRequest.builder()
-								.arkivenhet(ArkivenhetCode.DOKUMENT_INFO)
-								.journalpostId(journalpost.getJournalpostId())
-								.dokumentInfoId(dokumentInfoVedlegg.getDokumentInfoId())
-								.build(),
-						createHeadersWithAksjon()),
-				SlettArkivenhetResponse.class);
-		assertThat(responseEntity2.getStatusCode(), is(HttpStatus.OK));
-
-		//Utfør samme kall som første kallet i testen
-		ResponseEntity<SlettArkivenhetResponse> responseEntity3 = restTemplate.exchange(
-				URL_SLETTARKIVENHET,
-				HttpMethod.DELETE,
-				new HttpEntity(
-						SlettArkivenhetRequest.builder()
-								.arkivenhet(ArkivenhetCode.JOURNALPOST)
-								.journalpostId(journalpost.getJournalpostId())
-								.build(),
-						createHeadersWithAksjon()),
-				SlettArkivenhetResponse.class);
-		assertThat(responseEntity3.getStatusCode(), is(HttpStatus.OK));
-
-		TestTransaction.flagForCommit();
-		TestTransaction.end();
-
-		TestTransaction.start();
-
-		assertThatJournalpostIsDeleted(journalpost1.getJournalpostId());
-		for (JournalpostDokumentInfoRelasjon rel : journalpost1.getJournalpostDokumentInfoRelasjoner()) {
-			assertThatDokumentInfoIsDeleted(rel.getDokumentInfo());
-		}
-
-		List<Journalpost> journalpostListAfter = IteratorUtils.toList(joarkRepository.findAll().iterator());
-		assertThat(journalpostListAfter.size(), is(2));
-
-		assertThatJournalpostIsNotDeleted(journalpost);
-		for (JournalpostDokumentInfoRelasjon rel : journalpost.getJournalpostDokumentInfoRelasjoner()) {
-			if (rel.getDokumentInfo().getDokumentInfoId().equals(dokumentInfoVedlegg.getDokumentInfoId())) {
-				assertThatDokumentInfoIsDeleted(rel.getDokumentInfo());
-			} else {
-				assertThatDokumentInfoAndFildetaljerIsNotDeleted(rel.getDokumentInfo());
-			}
-		}
-
-		assertThatJournalpostIsNotDeleted(journalpost2);
-		for (JournalpostDokumentInfoRelasjon rel : journalpost2.getJournalpostDokumentInfoRelasjoner()) {
-			assertThatDokumentInfoAndFildetaljerIsNotDeleted(rel.getDokumentInfo());
-		}
-
-		assertThat(journalpostDokumentInfoRelasjonRepository.findAllByJournalpostJournalpostId(journalpost.getJournalpostId())
-				.size(), is(1));
-		assertThat(journalpostDokumentInfoRelasjonRepository.findAllByJournalpostJournalpostId(journalpost2.getJournalpostId())
-				.size(), is(1));
-		assertThat(journalpostDokumentInfoRelasjonRepository.findAllByDokumentInfoDokumentInfoId(dokumentInfoVedlegg.getDokumentInfoId())
-				.size(), is(0));
-		assertThat(journalpostDokumentInfoRelasjonRepository.findAllByDokumentInfoDokumentInfoId(journalpost2.findHoveddokumentDokumentInfoRelasjon()
-				.getDokumentInfo()
-				.getDokumentInfoId()).size(), is(1));
-
-		TestTransaction.end();
-	}
-
-	/**
 	 * Slett tjenesten med arkivEnhet=JOURNALPOST skal feile hvis Journalposten er Splittet
 	 */
 	@Test
@@ -568,6 +454,114 @@ public class Rjoark101IT extends AbstractAdminIT {
 		TestTransaction.end();
 	}
 
+	/**
+	 * Slett tjenesten med arkivEnhet=JOURNALPOST skal feile hvis Journalposten har hoveddokument som er brukt som vedlegg i andre journalposter (gjenbrukt).
+	 * I slike tilfeller må relasjonene hvor hoveddokument er vedlegg slettes før journalposten kan slettes.
+	 * Denne testen skal verifisere at Journalposten kan slettes etter at vedlegg relasjonene til hoveddokumentet er slettet.
+	 */
+	@Test
+	public void skalSletteJournalpostMedHoveddokumentSomHarRelasjonTilAndreJournalposterSomVedleggEtterSlettingAvRelasjonene() throws IOException {
+		abacPermit();
+		Journalpost journalpostMedDokumentSomVedlegg = createJournalpostWithHoveddokument();
+		Journalpost journalpost2 = createJournalpostWithHoveddokument();
+		Journalpost journalpostSomSkalSlettes = createJournalpostWithHoveddokument();
+		createDokumentInfoVedleggRelasjon(journalpostSomSkalSlettes);
+
+		DokumentInfo dokumentInfoHoveddokument = journalpostSomSkalSlettes.findHoveddokumentDokumentInfoRelasjon()
+				.getDokumentInfo();
+		DokumentInfo dokumentInfoVedlegg = journalpostSomSkalSlettes.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
+				.iterator()
+				.next()
+				.getDokumentInfo();
+		createVedleggRelasjon(journalpostMedDokumentSomVedlegg, dokumentInfoHoveddokument);
+
+		saveJournalpost(journalpostSomSkalSlettes);
+		saveJournalpost(journalpostMedDokumentSomVedlegg);
+		saveJournalpost(journalpost2);
+
+		reinitTransaction();
+
+		List<Journalpost> journalpostList = IteratorUtils.toList(joarkRepository.findAll().iterator());
+		assertThat(journalpostList.size(), is(3));
+
+		//Sjekk at tjenesten feiler ved sletting av journalpost med hoveddokument som er brukt som vedlegg i andre journalposter
+		ResponseEntity<RestConsumerExceptionResponse> responseEntity = restTemplate.exchange(
+				URL_SLETTARKIVENHET,
+				HttpMethod.DELETE,
+				new HttpEntity(
+						SlettArkivenhetRequest.builder()
+								.arkivenhet(ArkivenhetCode.JOURNALPOST)
+								.journalpostId(journalpostSomSkalSlettes.getJournalpostId())
+								.build(),
+						createHeadersWithAksjon()),
+				RestConsumerExceptionResponse.class);
+		assertThat(responseEntity.getStatusCode(), is(HttpStatus.NOT_ACCEPTABLE));
+
+		//Slett vedleggrelasjoner til hoveddokument
+		ResponseEntity<SlettArkivenhetResponse> responseEntity2 = restTemplate.exchange(
+				URL_SLETTARKIVENHET,
+				HttpMethod.DELETE,
+				new HttpEntity(
+						SlettArkivenhetRequest.builder()
+								.arkivenhet(ArkivenhetCode.DOKUMENT_INFO)
+								.dokumentInfoId(dokumentInfoHoveddokument.getDokumentInfoId())
+								.build(),
+						createHeadersWithAksjon()),
+				SlettArkivenhetResponse.class);
+		assertThat(responseEntity2.getStatusCode(), is(HttpStatus.OK));
+
+		//Utfør samme kall som første kallet i testen
+		ResponseEntity<SlettArkivenhetResponse> responseEntity3 = restTemplate.exchange(
+				URL_SLETTARKIVENHET,
+				HttpMethod.DELETE,
+				new HttpEntity(
+						SlettArkivenhetRequest.builder()
+								.arkivenhet(ArkivenhetCode.JOURNALPOST)
+								.journalpostId(journalpostSomSkalSlettes.getJournalpostId())
+								.build(),
+						createHeadersWithAksjon()),
+				SlettArkivenhetResponse.class);
+		assertThat(responseEntity3.getStatusCode(), is(HttpStatus.OK));
+
+		reinitTransaction();
+
+		assertThatDokumentInfoIsDeleted(dokumentInfoHoveddokument);
+		assertThatDokumentInfoIsDeleted(journalpostSomSkalSlettes.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo());
+
+		List<Journalpost> journalpostListAfter = IteratorUtils.toList(joarkRepository.findAll().iterator());
+		assertThat(journalpostListAfter.size(), is(2));
+
+		assertThatJournalpostIsDeleted(journalpostSomSkalSlettes.getJournalpostId());
+
+		assertThatJournalpostIsNotDeleted(journalpostMedDokumentSomVedlegg);
+		assertThatJournalpostIsNotDeleted(journalpost2);
+		assertThatJournalpostRelasjonerIsNotDeleted(journalpost2);
+
+	}
+
+
+	/**
+	 * Test med arkivEnhet=JOURNALPOST
+	 */
+	@Test
+	public void skalFeileHvisJournalpostIkkeFinnes() throws IOException {
+		abacPermit();
+
+		//Sjekk at tjenesten feiler ved sletting av journalpost med hoveddokument som er brukt som vedlegg i andre journalposter
+		ResponseEntity<RestConsumerExceptionResponse> responseEntity = restTemplate.exchange(
+				URL_SLETTARKIVENHET,
+				HttpMethod.DELETE,
+				new HttpEntity(
+						SlettArkivenhetRequest.builder()
+								.arkivenhet(ArkivenhetCode.JOURNALPOST)
+								.journalpostId(1L)
+								.build(),
+						createHeadersWithAksjon()),
+				RestConsumerExceptionResponse.class);
+		assertThat(responseEntity.getStatusCode(), is(HttpStatus.NOT_FOUND));
+
+	}
+
 
 	//Tester med arkivEnhet=DOKUMENT_INFO
 
@@ -582,7 +576,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 		Journalpost journalpost2 = createJournalpostWithHoveddokument();
 
 		Journalpost journalpostMedDokumentSomSkalSlettes = createJournalpostWithHoveddokument();
-		JournalpostDokumentInfoRelasjon relasjonVedlegg = TestDataGenerator.createDokumentInfoVedleggRelasjon(journalpostMedDokumentSomSkalSlettes);
+		JournalpostDokumentInfoRelasjon relasjonVedlegg = createDokumentInfoVedleggRelasjon(journalpostMedDokumentSomSkalSlettes);
 
 		saveJournalpost(journalpostMedDokumentSomSkalSlettes);
 		saveJournalpost(journalpost1);
@@ -665,8 +659,8 @@ public class Rjoark101IT extends AbstractAdminIT {
 		Journalpost journalpostMedDokumentSomSkalSlettes = createJournalpostWithHoveddokument();
 		DokumentInfo dokumentInfoSomSkalSlettes = journalpostMedDokumentSomSkalSlettes.findHoveddokumentDokumentInfoRelasjon()
 				.getDokumentInfo();
-		TestDataGenerator.createDokumentInfoVedleggRelasjon(journalpostMedDokumentSomSkalSlettes);
-		TestDataGenerator.createDokumentInfoVedleggRelasjon(journalpostMedDokumentSomSkalSlettes);
+		createDokumentInfoVedleggRelasjon(journalpostMedDokumentSomSkalSlettes);
+		createDokumentInfoVedleggRelasjon(journalpostMedDokumentSomSkalSlettes);
 
 		saveJournalpost(journalpostMedDokumentSomSkalSlettes);
 		saveJournalpost(journalpost1);
@@ -958,6 +952,27 @@ public class Rjoark101IT extends AbstractAdminIT {
 		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
 		assertThat(aksjonsLoggList.size(), is(0));
 
+	}
+
+	/**
+	 * arkivEnhet=DOKUMENT_INFO
+	 */
+	@Test
+	public void skalFeileHvisDokumentInfoIkkeFinnes() throws IOException {
+		abacPermit();
+		ResponseEntity<String> responseEntity = restTemplate.exchange(
+				URL_SLETTARKIVENHET,
+				HttpMethod.DELETE,
+				new HttpEntity(
+						SlettArkivenhetRequest.builder()
+								.arkivenhet(ArkivenhetCode.DOKUMENT_INFO)
+								.dokumentInfoId(1L)
+								.build(),
+						createHeadersWithAksjon()),
+				String.class);
+		assertThat(responseEntity.getStatusCode(), is(HttpStatus.NOT_FOUND));
+		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
+		assertThat(aksjonsLoggList.size(), is(0));
 	}
 	//Tester med arkivEnhet=DOKUMENT_FIL
 
