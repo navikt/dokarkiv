@@ -68,6 +68,10 @@ public class SlettArkivenhetService {
 	}
 
 	public Map<Long, List<ArkivElementEndringTO>> slettDokumentInfo(Long dokumentInfoId) {
+		if (isFalse(dokumentinfoRepository.existsById(dokumentInfoId))) {
+			throw new DokumentInfoIkkeFunnetException(String.format("Fant ingen dokumentInfo med dokumentInfoId=%s i databasen", dokumentInfoId));
+		}
+
 		Map<Long, List<ArkivElementEndringTO>> aksjonsLoggMap = new HashMap<>();
 
 		List<JournalpostDokumentInfoRelasjon> relasjonList = journalpostDokumentInfoRelasjonRepository.findAllByDokumentInfoDokumentInfoId(dokumentInfoId);
