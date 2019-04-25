@@ -1,6 +1,7 @@
 package no.nav.dokarkiv.hentjournalsakinfo.rjoark902;
 
 import static no.nav.dokarkiv.core.util.TestDataGenerator.AVSENDER_MOTTAKER_ID;
+import static no.nav.dokarkiv.core.util.TestDataGenerator.DOKUMENT_TYPE_ID;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createJournalpostWithHoveddokument;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
@@ -82,8 +83,8 @@ public class Rjoark902IT extends AbstractHentjournalsakinfoItest {
 
 		assertEquals(DOKUMENTSTATUS, responseDokumentInfo.getDokumentstatus());
 		assertEquals(BREVKODE, responseDokumentInfo.getBrevkode());
+		assertEquals(DOKUMENT_TYPE_ID, responseDokumentInfo.getDokumenttypeId());
 		assertEquals(TITTEL, responseDokumentInfo.getTittel());
-
 	}
 
 	//  Unhappy path
