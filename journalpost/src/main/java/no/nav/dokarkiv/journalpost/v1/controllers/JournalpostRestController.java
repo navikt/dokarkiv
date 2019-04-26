@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.journalpost.v1;
+package no.nav.dokarkiv.journalpost.v1.controllers;
 
 import static no.nav.abac.xacml.NavAttributter.RESOURCE_ARKIV_DOKUMENT;
 import static no.nav.abac.xacml.NavAttributter.RESOURCE_ARKIV_JOURNALPOST;

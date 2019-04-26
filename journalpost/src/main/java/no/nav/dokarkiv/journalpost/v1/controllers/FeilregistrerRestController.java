@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.journalpost.v1;
+package no.nav.dokarkiv.journalpost.v1.controllers;
 
 import static no.nav.abac.xacml.NavAttributter.RESOURCE_ARKIV_DOKUMENT;
 import static no.nav.abac.xacml.NavAttributter.RESOURCE_FELLES_RESOURCE_TYPE;
@@ -83,17 +83,11 @@ public class FeilregistrerRestController {
     public ResponseEntity<String> feilregistrerSakstilkytning (
             @PathVariable @ApiParam(value = "IDen til journalposten som skal feilregistreres", required = true, example = "77778888") String journalpostId)
             throws UgyldigAksjonsLoggException {
-        MDC.put(MDC_REQUEST_ID, "feilregistrer");
-        log.info(MDC.get(MDC_REQUEST_ID) + " har mottatt kall for feilregistrering av journalpost med journalpostId={}", journalpostId);
-        validateId(journalpostId, "journalpostId");
-        abacSecurityService.assertAccessToJournalpost(journalpostId);
-        RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
         List<ArkivElementEndringTO> arkivElementEndringTOList = feilregistrerSakstilknytningService.feilregistrerSakstilknytning(journalpostId);
         populerAksjonslogg(journalpostId, FEILREGISTRER, arkivElementEndringTOList, "Saksrelasjonen ble feilregistrert");
         log.info(MDC.get(MDC_REQUEST_ID) + " har feilregistrert journalpost med journalpostId={}", journalpostId);
         return ResponseEntity.ok().body("Saksrelasjonen ble feilregistrert");
     }
-
 
     @Transactional
     @SwaggerOpphevFeilregistrertSakstilknytning
@@ -104,11 +98,6 @@ public class FeilregistrerRestController {
     public ResponseEntity<String> opphevFeilregistrertSakstilknytning (
             @PathVariable @ApiParam(value = "IDen til journalposten som skal feilregistreres", required = true, example = "77778888") String journalpostId)
             throws UgyldigAksjonsLoggException {
-        MDC.put(MDC_REQUEST_ID, "feilregistrer");
-        log.info(MDC.get(MDC_REQUEST_ID) + " har mottatt kall for feilregistrering av journalpost med journalpostId={}", journalpostId);
-        validateId(journalpostId, "journalpostId");
-        abacSecurityService.assertAccessToJournalpost(journalpostId);
-        RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
         List<ArkivElementEndringTO> arkivElementEndringTOList = opphevFeilregistrertSakstilknytningService.opphevFeilregistrertSakstilknytning(journalpostId);
         populerAksjonslogg(journalpostId, AksjonsTypeCode.OPPHEV_FEILREGISTRERING ,arkivElementEndringTOList, "Feilregistreringen ble opphevet");
         log.info(MDC.get(MDC_REQUEST_ID) + " har opphevet feilregistrering av journalpost med journalpostId={}", journalpostId);
@@ -124,11 +113,6 @@ public class FeilregistrerRestController {
     public ResponseEntity<String> settUkjentBruker (
             @PathVariable @ApiParam(value = "IDen til journalposten som skal feilregistreres", required = true, example = "77778888") String journalpostId)
             throws UgyldigAksjonsLoggException {
-        MDC.put(MDC_REQUEST_ID, "feilregistrer");
-        log.info(MDC.get(MDC_REQUEST_ID) + " har mottatt kall for feilregistrering av journalpost med journalpostId={}", journalpostId);
-        validateId(journalpostId, "journalpostId");
-        abacSecurityService.assertAccessToJournalpost(journalpostId);
-        RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
         List<ArkivElementEndringTO> arkivElementEndringTOList = settUkjentBrukerService.settUkjentBruker(journalpostId);
         populerAksjonslogg(journalpostId, AksjonsTypeCode.UKJENT_BRUKER ,arkivElementEndringTOList, "Journalposten fikk status Ukjent Bruker");
         log.info(MDC.get(MDC_REQUEST_ID) + " har satt status til Ukjent Bruker for journalpost med journalpostId={}", journalpostId);
@@ -144,11 +128,6 @@ public class FeilregistrerRestController {
     public ResponseEntity<String> avbryt (
             @PathVariable @ApiParam(value = "IDen til journalposten som skal feilregistreres", required = true, example = "77778888") String journalpostId)
             throws UgyldigAksjonsLoggException {
-        MDC.put(MDC_REQUEST_ID, "feilregistrer");
-        log.info(MDC.get(MDC_REQUEST_ID) + " har mottatt kall for feilregistrering av journalpost med journalpostId={}", journalpostId);
-        validateId(journalpostId, "journalpostId");
-        abacSecurityService.assertAccessToJournalpost(journalpostId);
-        RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
         List<ArkivElementEndringTO> arkivElementEndringTOList = avbrytService.avbryt(journalpostId);
         populerAksjonslogg(journalpostId, AksjonsTypeCode.AVBRYT ,arkivElementEndringTOList, "Journalposten ble satt til avbrutt / utgår");
         log.info(MDC.get(MDC_REQUEST_ID) + " har satt status til avbrutt / utgår for journalpost med journalpostId={}", journalpostId);
