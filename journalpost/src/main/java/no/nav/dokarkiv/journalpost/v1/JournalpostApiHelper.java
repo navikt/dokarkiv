@@ -6,6 +6,7 @@ import no.nav.dokarkiv.core.security.abac.AbacSecurityService;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import no.nav.dokarkiv.journalpost.v1.validators.CommonValidator;
 import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.slf4j.MDC;
@@ -31,6 +32,11 @@ public class JournalpostApiHelper {
         CommonValidator.validateId(journalpostId, "journalpostId");
         abacSecurityService.assertAccessToJournalpost(journalpostId);
         RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
+    }
+
+    @After("execution(* no.nav.dokarkiv.journalpost.v1.controllers.FeilregistrerRestController.*(..))")
+    public void cleanUp() {
+        MDC.clear();
     }
 
 }
