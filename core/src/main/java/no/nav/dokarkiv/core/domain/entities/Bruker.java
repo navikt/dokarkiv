@@ -25,7 +25,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "T_BRUKER")
-@Builder
+@Builder(toBuilder = true)
 @AllArgsConstructor
 public class Bruker extends AbstractPersistentVersionedDomainObjectWithKilde {
 

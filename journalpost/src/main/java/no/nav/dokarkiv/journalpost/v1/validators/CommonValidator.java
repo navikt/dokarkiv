@@ -1,11 +1,11 @@
-package no.nav.dokarkiv.journalpost.v1.rjoark201.util;
+package no.nav.dokarkiv.journalpost.v1.validators;
 
 import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
 import org.apache.commons.lang3.StringUtils;
 
-public final class RequestUtils {
+public final class CommonValidator {
 
-	private RequestUtils() {
+	private CommonValidator() {
 		//no-op
 	}
 

@@ -13,13 +13,14 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.DokumentUnderRedigeringException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeMidlertidigException;
 import no.nav.dokarkiv.core.exceptions.KanIkkeFerdigstilleException;
+import no.nav.dokarkiv.journalpost.v1.validators.FerdigstillJournalpostValidator;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-public class JournalpostValidatorTest {
+public class FerdigstillJournalpostValidatorTest {
 
-	private JournalpostValidator validator = new JournalpostValidator();
+	private FerdigstillJournalpostValidator validator = new FerdigstillJournalpostValidator();
 
 	@Rule
 	public ExpectedException expectedException = ExpectedException.none();
@@ -133,6 +134,18 @@ public class JournalpostValidatorTest {
 	}
 
 	@Test
+	public void shouldThrowExceptionIfSaksrelasjonIsMissing() {
+		Journalpost journalpost = createJournalpost();
+		journalpost.setJournalstatus(JournalStatusCode.M);
+		journalpost.setSaksrelasjon(null);
+
+		expectedException.expect(KanIkkeFerdigstilleException.class);
+		expectedException.expectMessage("må ha en saksrelasjon");
+
+		validator.validateJournalpostStruktur(journalpost);
+	}
+
+	@Test
 	public void shouldThrowExceptionIfSaksrelasjonIsMissingSaksnummer() {
 		Journalpost journalpost = createJournalpost();
 		journalpost.setJournalstatus(JournalStatusCode.M);
@@ -154,6 +167,18 @@ public class JournalpostValidatorTest {
 		expectedException.expectMessage("Saksrelasjon.fagsystem");
 
 		validator.validatePaakrevdeFelter(journalpost);
+	}
+
+	@Test
+	public void shouldThrowExceptionIfNoBrukerExists() {
+		Journalpost journalpost = createJournalpost();
+		journalpost.setJournalstatus(JournalStatusCode.M);
+		journalpost.clearBrukere();
+
+		expectedException.expect(KanIkkeFerdigstilleException.class);
+		expectedException.expectMessage("må knyttes til en bruker");
+
+		validator.validateJournalpostStruktur(journalpost);
 	}
 
 	@Test

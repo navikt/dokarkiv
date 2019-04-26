@@ -7,5 +7,6 @@ import lombok.Value;
  */
 @Value
 public class LogiskVedleggDto {
+	private final String vedleggId;
 	private final String tittel;
 }

@@ -49,12 +49,14 @@ final class TilknyttedeJournalposterSql {
 					"              d.k_dokument_s        AS dokumenter_dokumentstatus,\n" +
 					"              d.dato_dok_ferdig     AS dokumenter_datoferdigstilt,\n" +
 					"              d.brev_kode           AS dokumenter_brevkode,\n" +
+					"              d.dokumenttype_id     AS dokumenter_dokumenttypeid,\n" +
 					"              d.tittel              AS dokumenter_tittel,\n" +
 					"              rel.k_skjerming_type  AS dokumenter_skjerming,\n" +
 					"              d.orig_journalpost_id AS dokumenter_origjournalpostid,\n" +
 					"              fd.k_skjerming_type   AS dokumenter_varianter_skjerming,\n" +
 					"              fd.k_variant_format   AS dokumenter_varianter_variantf,\n" +
 					"              fd.fil_navn           AS dokumenter_varianter_filnavn,\n" +
+					"              tsi.skannet_innhold_id AS dokumenter_logiske_vedleggid,\n" +
 					"              tsi.vedlegg_innhold   AS dokumenter_logiske_tittel\n" +
 					"       FROM t_journalpost j\n" +
 					"              LEFT JOIN t_saksrelasjon s ON s.journalpost_id = j.journalpost_id\n" +
