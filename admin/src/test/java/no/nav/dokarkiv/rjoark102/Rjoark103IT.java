@@ -5,7 +5,6 @@ import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.DOKUMENT_IN
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.fildetaljerSkjermingTypeVariant;
 import static no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode.POL;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createJournalpostWithHoveddokument;
-import static no.nav.dokarkiv.util.TestUtil.createKasserDokumentRequest;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
@@ -44,9 +43,9 @@ public class Rjoark103IT extends AbstractAdminIT {
 		reinitTransaction();
 
 		ResponseEntity responseEntity = restTemplate.exchange(
-				URL_KASSERDOKUMENT_SKJERM,
+				URL_KASSERDOKUMENT_SKJERM + "/" + dokumentInfoSomSkalSkjermesSomKassert.getDokumentInfoId(),
 				HttpMethod.POST,
-				new HttpEntity<>(createKasserDokumentRequest(dokumentInfoSomSkalSkjermesSomKassert.getDokumentInfoId()), createHeadersWithAksjon()),
+				new HttpEntity<>(createHeadersWithAksjon()),
 				String.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
@@ -99,9 +98,9 @@ public class Rjoark103IT extends AbstractAdminIT {
 		reinitTransaction();
 
 		ResponseEntity responseEntity = restTemplate.exchange(
-				URL_KASSERDOKUMENT_SKJERM,
+				URL_KASSERDOKUMENT_SKJERM + "/" + dokumentInfoSomSkalSkjermesSomKassert.getDokumentInfoId(),
 				HttpMethod.DELETE,
-				new HttpEntity<>(createKasserDokumentRequest(dokumentInfoSomSkalSkjermesSomKassert.getDokumentInfoId()), createHeadersWithAksjon()),
+				new HttpEntity<>(createHeadersWithAksjon()),
 				String.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
