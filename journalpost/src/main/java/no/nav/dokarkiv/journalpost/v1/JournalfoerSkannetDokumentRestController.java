@@ -7,6 +7,8 @@ import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
 import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.UPDATE_ACTION;
+import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.hasText;
+import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateId;
 
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
@@ -68,7 +70,10 @@ public class JournalfoerSkannetDokumentRestController {
         MDC.put(MDC_REQUEST_ID, "endrelogiskvedlegg");
         log.info(MDC.get(MDC_REQUEST_ID) + " har mottatt kall om å endre logisk vedlegg med logiskVedleggId={} på dokument med dokumentInfoId={}",
                 logiskVedleggId, dokumentInfoId);
-        //valider
+
+        validateId(dokumentInfoId, "dokumentInfoId");
+        validateId(logiskVedleggId, "logiskVedleggId");
+        hasText(request.getTittel(), "tittel");
 
         abacSecurityService.assertAccessToDokumentIncludingSkjermet(Long.parseLong(dokumentInfoId));
 
@@ -90,7 +95,9 @@ public class JournalfoerSkannetDokumentRestController {
         RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDC_CONSUMER_ID));
         MDC.put(MDC_REQUEST_ID, "leggtillogiskvedlegg");
         log.info(MDC.get(MDC_REQUEST_ID) + " har mottatt kall om å legge til logisk vedlegg på dokument med dokumentInfoId={}", dokumentInfoId);
-        //valider
+
+        validateId(dokumentInfoId, "dokumentInfoId");
+        hasText(request.getTittel(), "tittel");
 
         abacSecurityService.assertAccessToDokumentIncludingSkjermet(Long.parseLong(dokumentInfoId));
 
@@ -112,7 +119,9 @@ public class JournalfoerSkannetDokumentRestController {
         RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDC_CONSUMER_ID));
         MDC.put(MDC_REQUEST_ID, "slettlogiskvedlegg");
         log.info(MDC.get(MDC_REQUEST_ID) + " har mottatt kall om å har mottatt kall om å slette logisk vedlegg med logiskVedleggId={} på dokument med dokumentInfoId={}", logiskVedleggId, dokumentInfoId);
-        //valider
+
+        validateId(dokumentInfoId, "dokumentInfoId");
+        validateId(logiskVedleggId, "logiskVedleggId");
 
         abacSecurityService.assertAccessToDokumentIncludingSkjermet(Long.parseLong(dokumentInfoId));
 
