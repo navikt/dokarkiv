@@ -10,6 +10,7 @@ import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 public class ArkivElementConstants {
 
 	public static final String DOKUMENT_INFO_KASSERT_DATO = "DokumentInfo.kassertDato";
+	public static final String DOKUMENT_INFO_KASSERT = "DokumentInfo.kassert";
 	public static final String DOKUMENT_INFO_KASSERT_AV = "DokumentInfo.kassertAv";
 	public static final String DOKUMENT_INFO_DOKUMENT_INFO_ID = "DokumentInfo.dokumentInfoId";
 	public static final String JOURNALPOST_JOURNALPOST_ID= "Journalpost.journalpostId";

@@ -46,6 +46,7 @@ import java.util.stream.Collectors;
 @AutoConfigureWireMock(port = 0)
 public abstract class AbstractAdminIT extends AbstractRestIT {
 	protected static final String URL_KASSERDOKUMENT = "/rest/admin/kasserdokument/";
+	protected static final String URL_KASSERDOKUMENT_SKJERM = "/rest/admin/kasserdokument/skjerm";
 	protected static final String URL_SKJERMARKIVENHET = "/rest/admin/skjermarkivenhet/";
 	protected static final String URL_SLETTARKIVENHET = "/rest/admin/slettarkivenhet";
 

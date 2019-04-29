@@ -42,7 +42,7 @@ public class SkjermArkivenhetRestController {
 		this.skjermArkivEnhetOrchestrator = skjermArkivEnhetOrchestrator;
 	}
 
-	@Transactional(rollbackFor = UgyldigAksjonsLoggException.class)
+	@Transactional(rollbackFor = Exception.class)
 	@ResponseBody
 	@PostMapping("/skjermarkivenhet")
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark100a"}, percentiles = {0.5, 0.95})
@@ -68,7 +68,7 @@ public class SkjermArkivenhetRestController {
 						.build());
 	}
 
-	@Transactional(rollbackFor = UgyldigAksjonsLoggException.class)
+	@Transactional(rollbackFor = Exception.class)
 	@ResponseBody
 	@DeleteMapping("/skjermarkivenhet")
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark100b"}, percentiles = {0.5, 0.95})

@@ -157,6 +157,11 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	@Builder.Default
 	private Set<FilDetaljer> fildetaljerListe = new HashSet<>();
 
+	@Column(name = "kassert")
+	@Type(type = "org.hibernate.type.TrueFalseType")
+	private Boolean kassert;
+
+
 	/**
 	 * Default constructor.
 	 */
@@ -872,6 +877,14 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	 */
 	public boolean removeJournalpostDokumentInfoRelasjon(JournalpostDokumentInfoRelasjon relasjonToRemove) {
 		return journalpostRelasjoner.remove(relasjonToRemove);
+	}
+
+	public void setKassert(boolean kassert) {
+		this.kassert = kassert;
+	}
+
+	public boolean getKassert() {
+		return this.kassert;
 	}
 
 }

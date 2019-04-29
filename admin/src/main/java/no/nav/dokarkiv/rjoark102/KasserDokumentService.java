@@ -3,8 +3,8 @@ package no.nav.dokarkiv.rjoark102;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.DOKUMENT_FIL_FIL_UUID;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.DOKUMENT_INFO_KASSERT_AV;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.DOKUMENT_INFO_KASSERT_DATO;
-import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.fildetaljerSkjermingTypeVariant;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.FILDETALJER_VARIANTFORMAT;
+import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.fildetaljerSkjermingTypeVariant;
 import static no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode.POL;
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.ARKIV;
 
@@ -15,7 +15,6 @@ import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.exceptions.DokumentInfoIkkeFunnetException;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkDeleteRepository;
-import no.nav.dokarkiv.dto.KasserDokumentRequest;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -42,24 +41,22 @@ public class KasserDokumentService {
 		this.entityManager = entityManager;
 	}
 
-	public List<ArkivElementEndringTO> kasserDokument(KasserDokumentRequest request) {
-		DokumentInfo dokumentInfoForKassering = dokumentInfoRepository.findByDokumentInfoId(request.getDokumentInfoId())
+	public List<ArkivElementEndringTO> kasserDokument(Long dokumentInfoId, String kassertAvNavn) {
+		DokumentInfo dokumentInfoForKassering = dokumentInfoRepository.findByDokumentInfoId(dokumentInfoId)
 				.orElseThrow(
 						() -> new DokumentInfoIkkeFunnetException(String.format(
-								"Kan ikke finne dokument med dokumentInfoId=%s", request.getDokumentInfoId())));
+								"Kan ikke finne dokument med dokumentInfoId=%s", dokumentInfoId)));
 
-		settKassasjonInfo(dokumentInfoForKassering, request.getKassertAvNavn());
-
-		List<ArkivElementEndringTO> arkivElementEndringTOList = opprettArkivElementEndring(dokumentInfoForKassering);
+		List<ArkivElementEndringTO> arkivElementEndringTOList = settKassasjonInfo(dokumentInfoForKassering, kassertAvNavn);
 
 		//Slett alle Fildetaljer som ikke er ARKIV variant.
 		//Fildetaljer for ARKIV variant beholdes fordi noen tjenester i Joark forventer at DokumentInfo har minst en fildetaljer objekt.
 		//DokumentFil for ARKIV variant slettes
-		arkivElementEndringTOList.addAll(slettFildetaljerIkkeArkivVariant(request.getDokumentInfoId(), dokumentInfoForKassering
+		arkivElementEndringTOList.addAll(slettFildetaljerIkkeArkivVariant(dokumentInfoId, dokumentInfoForKassering
 				.getFildetaljerListeAdmin()));
 
 		FilDetaljer arkiv = dokumentInfoForKassering.findFilDetaljerByVariantFormatAdmin(ARKIV);
-		arkivElementEndringTOList.addAll(slettArkivVariantDokumentFil(request.getDokumentInfoId(), arkiv.getFilUuid()));
+		arkivElementEndringTOList.addAll(slettArkivVariantDokumentFil(dokumentInfoId, arkiv.getFilUuid()));
 
 		return arkivElementEndringTOList;
 	}
@@ -118,13 +115,14 @@ public class KasserDokumentService {
 				.build();
 	}
 
-	private void settKassasjonInfo(DokumentInfo dokumentInfo, String kassertAvNavn) {
+	private List<ArkivElementEndringTO> settKassasjonInfo(DokumentInfo dokumentInfo, String kassertAvNavn) {
 		dokumentInfo.setDatoKassert(LocalDateTime.now());
 		dokumentInfo.setKassertAvNavn(kassertAvNavn);
 		dokumentInfoRepository.save(dokumentInfo);
+		return opprettArkivElementEndringKassering(dokumentInfo);
 	}
 
-	private List<ArkivElementEndringTO> opprettArkivElementEndring(DokumentInfo dokumentInfoTilTidligKassering) {
+	private List<ArkivElementEndringTO> opprettArkivElementEndringKassering(DokumentInfo dokumentInfoTilTidligKassering) {
 		List<ArkivElementEndringTO> arkivElementEndringTOList = new ArrayList<>();
 
 		arkivElementEndringTOList.add(

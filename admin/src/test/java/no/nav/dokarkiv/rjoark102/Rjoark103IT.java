@@ -1,0 +1,147 @@
+package no.nav.dokarkiv.rjoark102;
+
+
+import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.DOKUMENT_INFO_KASSERT;
+import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.fildetaljerSkjermingTypeVariant;
+import static no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode.POL;
+import static no.nav.dokarkiv.core.util.TestDataGenerator.createJournalpostWithHoveddokument;
+import static no.nav.dokarkiv.util.TestUtil.createKasserDokumentRequest;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
+
+import junit.framework.TestCase;
+import no.nav.dokarkiv.AbstractAdminIT;
+import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
+import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
+import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
+import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
+import no.nav.dokarkiv.core.domain.entities.ArkivElementEndring;
+import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
+import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import org.apache.commons.collections15.IteratorUtils;
+import org.junit.Test;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.transaction.TestTransaction;
+
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+
+public class Rjoark103IT extends AbstractAdminIT {
+
+	@Test
+	public void skalSkjermeDokumentForKassering() throws IOException {
+		abacPermit();
+
+		Journalpost journalpost = joarkRepository.save(createJournalpostWithHoveddokument());
+		DokumentInfo dokumentInfoSomSkalSkjermesSomKassert = journalpost.findHoveddokumentDokumentInfoRelasjon()
+				.getDokumentInfo();
+
+		reinitTransaction();
+
+		ResponseEntity responseEntity = restTemplate.exchange(
+				URL_KASSERDOKUMENT_SKJERM,
+				HttpMethod.POST,
+				new HttpEntity<>(createKasserDokumentRequest(dokumentInfoSomSkalSkjermesSomKassert.getDokumentInfoId()), createHeadersWithAksjon()),
+				String.class);
+
+		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
+
+		Optional<DokumentInfo> dokInfoEtterKall = dokumentinfoRepository.findByDokumentInfoId(dokumentInfoSomSkalSkjermesSomKassert
+				.getDokumentInfoId());
+		TestCase.assertTrue(dokInfoEtterKall.isPresent());
+		assertThatAllFildetaljerIsSkjermet(dokInfoEtterKall.get(), POL);
+		assertThat(dokInfoEtterKall.get().getKassert(), is(true));
+
+		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
+		assertThat(aksjonsLoggList.size(), is(1));
+		assertAksjonsLogg(aksjonsLoggList.get(0), AksjonsTypeCode.ENDRE_SKJERMING, null, dokumentInfoSomSkalSkjermesSomKassert.getDokumentInfoId(),
+				Arrays.asList(
+						ArkivElementEndring.builder()
+								.arkivElement(fildetaljerSkjermingTypeVariant(VariantFormatCode.ARKIV))
+								.fraVerdi(null)
+								.tilVerdi(SkjermingTypeCode.POL.name())
+								.build(),
+						ArkivElementEndring.builder()
+								.arkivElement(fildetaljerSkjermingTypeVariant(VariantFormatCode.PRODUKSJON))
+								.fraVerdi(null)
+								.tilVerdi(SkjermingTypeCode.POL.name())
+								.build(),
+						ArkivElementEndring.builder()
+								.arkivElement(DOKUMENT_INFO_KASSERT)
+								.fraVerdi("false")
+								.tilVerdi("true")
+								.build()
+
+				)
+		);
+		TestTransaction.end();
+
+	}
+
+	@Test
+	public void skalOppheveSkjermingDokumentForKassering() throws IOException {
+		abacPermit();
+
+		Journalpost journalpost = joarkRepository.save(createJournalpostWithHoveddokument());
+		DokumentInfo dokumentInfoSomSkalSkjermesSomKassert = journalpost.findHoveddokumentDokumentInfoRelasjon()
+				.getDokumentInfo();
+
+		dokumentInfoSomSkalSkjermesSomKassert.setKassert(true);
+		dokumentInfoSomSkalSkjermesSomKassert.getFildetaljerListeAdmin()
+				.forEach(filDetaljer -> skjermingService.setFildetaljerSkjerming(dokumentInfoSomSkalSkjermesSomKassert.getDokumentInfoId(), filDetaljer
+						.getVariantFormat(), POL));
+
+		reinitTransaction();
+
+		ResponseEntity responseEntity = restTemplate.exchange(
+				URL_KASSERDOKUMENT_SKJERM,
+				HttpMethod.DELETE,
+				new HttpEntity<>(createKasserDokumentRequest(dokumentInfoSomSkalSkjermesSomKassert.getDokumentInfoId()), createHeadersWithAksjon()),
+				String.class);
+
+		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
+
+		Optional<DokumentInfo> dokInfoEtterKall = dokumentinfoRepository.findByDokumentInfoId(dokumentInfoSomSkalSkjermesSomKassert
+				.getDokumentInfoId());
+		TestCase.assertTrue(dokInfoEtterKall.isPresent());
+		assertThatAllFildetaljerIsSkjermet(dokInfoEtterKall.get(), null);
+		assertThat(dokInfoEtterKall.get().getKassert(), is(false));
+
+		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
+		assertThat(aksjonsLoggList.size(), is(1));
+		assertAksjonsLogg(aksjonsLoggList.get(0), AksjonsTypeCode.ENDRE_SKJERMING, null, dokumentInfoSomSkalSkjermesSomKassert.getDokumentInfoId(),
+				Arrays.asList(
+						ArkivElementEndring.builder()
+								.arkivElement(fildetaljerSkjermingTypeVariant(VariantFormatCode.ARKIV))
+								.fraVerdi(POL.name())
+								.tilVerdi(null)
+								.build(),
+						ArkivElementEndring.builder()
+								.arkivElement(fildetaljerSkjermingTypeVariant(VariantFormatCode.PRODUKSJON))
+								.fraVerdi(POL.name())
+								.tilVerdi(null)
+								.build(),
+						ArkivElementEndring.builder()
+								.arkivElement(DOKUMENT_INFO_KASSERT)
+								.fraVerdi("true")
+								.tilVerdi("false")
+								.build()
+
+				)
+		);
+
+		TestTransaction.end();
+	}
+
+	private void assertThatAllFildetaljerIsSkjermet(DokumentInfo dokInfoEtterKall, SkjermingTypeCode skjermingTypeCode) {
+
+		dokInfoEtterKall.getFildetaljerListeAdmin().forEach(
+				filDetaljer -> assertThat(filDetaljer.getSkjermingType(), is(skjermingTypeCode))
+		);
+	}
+}
