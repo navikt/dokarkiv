@@ -8,7 +8,6 @@ import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
-import no.nav.dokarkiv.core.exceptions.DokumentInfoIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.JournalpostDokumentInfoRelasjonIkkeFunnetException;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
@@ -63,7 +62,7 @@ public class SkjermingService {
 	}
 
 	public boolean isKassertOrSkjermetByFilUuidAndVariantFormat(String filUuid, VariantFormatCode variantFormatCode) {
-		return isFalse(entityManager.createQuery("select 'kassert' from FilDetaljer where filUuid=:filUuid and variantFormat=:variantFormat and (dokumentInfo.datoKassert is not null or skjermingType is not null)")
+		return isFalse(entityManager.createQuery("select 'kassert' from FilDetaljer where filUuid=:filUuid and variantFormat=:variantFormat and dokumentInfo.kassert is true")
 				.setParameter("filUuid", filUuid)
 				.setParameter("variantFormat", variantFormatCode)
 				.getResultList()

@@ -90,6 +90,9 @@ public class DokumentFilSkjermetRepositoryTest {
 		DokumentFil dokumentFilBefore = dokumentFilSkjermetRepository.findByFilUuid(arkiv.getFilUuid());
 		assertThat(dokumentFilBefore.getFil(), is(arkivDokumentFil.getFil()));
 
+		DokumentInfo dokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
+		dokumentInfo.setKassert(true);
+		dokumentinfoRepository.save(dokumentInfo);
 		skjermingService.setVariantSkjermet(journalpost.findHoveddokumentDokumentInfoRelasjon()
 				.getDokumentInfo()
 				.getDokumentInfoId(), ARKIV, SkjermingTypeCode.POL);
@@ -114,28 +117,11 @@ public class DokumentFilSkjermetRepositoryTest {
 
 		DokumentInfo hoveddok = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 		hoveddok.setDatoKassert(LocalDateTime.now());
+		hoveddok.setKassert(true);
 		hoveddok.setKassertAvNavn("Navn");
 		dokumentinfoRepository.save(hoveddok);
 
 		DokumentFil dokumentFilAfter = dokumentFilSkjermetRepository.findByFilUuid(arkiv.getFilUuid());
-		assertThat(dokumentFilAfter.getFil(), is(TestDataGenerator.FIL_DUMMY));
-	}
-
-	@Test
-	public void shouldReturnDummyDokumentWhenFilUuidContainsDummyDokument() {
-		Journalpost journalpost = createJournalpostWithHoveddokument();
-
-		FilDetaljer arkiv = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().findFilDetaljerByVariantFormat(ARKIV);
-		DokumentFil arkivDokumentFil = arkiv.createDokumentFil();
-		dokumentFilRepository.save(arkivDokumentFil);
-		dokumentFilRepository.save(createDummyDokument());
-		journalpost = joarkRepository.save(journalpost);
-		TestTransaction.flagForCommit();
-		TestTransaction.end();
-
-		TestTransaction.start();
-
-		DokumentFil dokumentFilAfter = dokumentFilSkjermetRepository.findByFilUuid("ADADS_DUMMY_DOKUMENT_KASSERT_AASDSAD");
 		assertThat(dokumentFilAfter.getFil(), is(TestDataGenerator.FIL_DUMMY));
 	}
 

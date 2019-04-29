@@ -21,16 +21,12 @@ public class DokumentFilSkjermetRepository {
 	public DokumentFil findByFilUuid(String filUuid){
 		String maybeDummyfilUuid = filUuid;
 
-		/*Skal returnere DUMMY dokument hvis filUuid tilhører ARKIV variant og er skjermet eller hvis filUuid starter med DUMMY_DOKUMENT. Sjekk @KasserDokumentService **/
-		if (isKassertOrArkivVariantIsSkjermet(filUuid) || containsDummyDokumentKassert(filUuid)) {
+		/*Skal returnere DUMMY dokument hvis dokumentinfo.kassert er true. Sjekk @KasserDokumentService **/
+		if (isKassertOrArkivVariantIsSkjermet(filUuid)) {
 			maybeDummyfilUuid = FIL_UUID_DUMMY_DOKUMENT_KASSERT;
 		}
 
 		return dokumentFilRepository.findByFilUuid(maybeDummyfilUuid);
-	}
-
-	private boolean containsDummyDokumentKassert(String filUuid) {
-		return filUuid.contains(FIL_UUID_DUMMY_DOKUMENT_KASSERT);
 	}
 
 	private boolean isKassertOrArkivVariantIsSkjermet(String filUuid) {
