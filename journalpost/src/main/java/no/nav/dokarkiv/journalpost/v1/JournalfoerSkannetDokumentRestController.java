@@ -1,0 +1,123 @@
+package no.nav.dokarkiv.journalpost.v1;
+
+import static no.nav.abac.xacml.NavAttributter.RESOURCE_ARKIV_JOURNALPOST;
+import static no.nav.abac.xacml.NavAttributter.RESOURCE_FELLES_RESOURCE_TYPE;
+import static no.nav.abac.xacml.StandardAttributter.ACTION_ID;
+import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
+import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
+import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
+import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.UPDATE_ACTION;
+
+import io.swagger.annotations.Api;
+import lombok.extern.slf4j.Slf4j;
+import no.nav.dokarkiv.core.metrics.RestMetrics;
+import no.nav.dokarkiv.core.security.abac.AbacSecurityService;
+import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
+import no.nav.dokarkiv.journalpost.v1.api.EndreLogiskVedleggRequest;
+import no.nav.dokarkiv.journalpost.v1.api.LeggTilLogiskVedleggRequest;
+import no.nav.dokarkiv.journalpost.v1.services.EndreLogiskVedleggService;
+import no.nav.dokarkiv.journalpost.v1.services.LeggTilLogiskVedleggService;
+import no.nav.dokarkiv.journalpost.v1.services.SlettLogiskVedleggService;
+import no.nav.freg.abac.core.annotation.Abac;
+import org.slf4j.MDC;
+import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import javax.inject.Inject;
+
+@Api
+@Slf4j
+@RestController
+@RequestMapping("/rest/journalpostapi/v1/dokumentInfo")
+public class JournalfoerSkannetDokumentRestController {
+
+    private final AbacSecurityService abacSecurityService;
+    private final EndreLogiskVedleggService endreLogiskVedleggService;
+    private final LeggTilLogiskVedleggService leggTilLogiskVedleggService;
+    private final SlettLogiskVedleggService slettLogiskVedleggService;
+
+    @Inject
+    public JournalfoerSkannetDokumentRestController(final AbacSecurityService abacSecurityService,
+                                                    final EndreLogiskVedleggService endreLogiskVedleggService,
+                                                    final LeggTilLogiskVedleggService leggTilLogiskVedleggService,
+                                                    final SlettLogiskVedleggService slettLogiskVedleggService) {
+        this.abacSecurityService = abacSecurityService;
+        this.endreLogiskVedleggService = endreLogiskVedleggService;
+        this.leggTilLogiskVedleggService = leggTilLogiskVedleggService;
+        this.slettLogiskVedleggService = slettLogiskVedleggService;
+    }
+
+    @Transactional
+    @ResponseBody
+    @PostMapping(value = "/{dokumentInfoId}/logiskVedlegg/{logiskVedleggId}")
+    @Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_JOURNALPOST)},
+            actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION))
+    @RestMetrics(value = "dok_request", extraTags = {"process_code", "endrelogiskvedlegg"}, percentiles = {0.5, 0.95})
+    public ResponseEntity<String> endreLogiskVedlegg (
+            @PathVariable String dokumentInfoId,
+            @PathVariable String logiskVedleggId,
+            @RequestBody EndreLogiskVedleggRequest request) {
+        RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDC_CONSUMER_ID));
+        MDC.put(MDC_REQUEST_ID, "endrelogiskvedlegg");
+        log.info(MDC.get(MDC_REQUEST_ID) + " har mottatt kall om å endre logisk vedlegg med logiskVedleggId={} på dokument med dokumentInfoId={}",
+                logiskVedleggId, dokumentInfoId);
+        //valider
+
+        abacSecurityService.assertAccessToDokumentIncludingSkjermet(Long.parseLong(dokumentInfoId));
+
+        endreLogiskVedleggService.endreLogiskVedlegg(dokumentInfoId, logiskVedleggId, request);
+
+        log.info("endrelogiskvedlegg har endret logisk vedlegg med logiskVedleggId={}.", logiskVedleggId);
+        return ResponseEntity.ok("");
+    }
+
+    @Transactional
+    @ResponseBody
+    @PostMapping(value = "/{dokumentInfoId}/logiskVedlegg/")
+    @Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_JOURNALPOST)},
+            actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION))
+    @RestMetrics(value = "dok_request", extraTags = {"process_code", "leggtillogiskvedlegg"}, percentiles = {0.5, 0.95})
+    public ResponseEntity<String> leggTilLogiskVedlegg (
+            @PathVariable String dokumentInfoId,
+            @RequestBody LeggTilLogiskVedleggRequest request) {
+        RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDC_CONSUMER_ID));
+        MDC.put(MDC_REQUEST_ID, "leggtillogiskvedlegg");
+        log.info(MDC.get(MDC_REQUEST_ID) + " har mottatt kall om å legge til logisk vedlegg på dokument med dokumentInfoId={}", dokumentInfoId);
+        //valider
+
+        abacSecurityService.assertAccessToDokumentIncludingSkjermet(Long.parseLong(dokumentInfoId));
+
+        String logiskVedleggId = leggTilLogiskVedleggService.leggTilLogiskVedlegg(dokumentInfoId, request);
+
+        log.info("endrelogiskvedlegg har lagt til logisk vedlegg med logiskVedleggId={}.", logiskVedleggId);
+        return ResponseEntity.ok("");
+    }
+
+    @Transactional
+    @ResponseBody
+    @PostMapping(value = "/{dokumentInfoId}/logiskVedlegg/{logiskVedleggId}")
+    @Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_JOURNALPOST)},
+            actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION))
+    @RestMetrics(value = "dok_request", extraTags = {"process_code", "slettlogiskvedlegg"}, percentiles = {0.5, 0.95})
+    public ResponseEntity<String> slettLogiskVedlegg (
+            @PathVariable String dokumentInfoId,
+            @PathVariable String logiskVedleggId) {
+        RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDC_CONSUMER_ID));
+        MDC.put(MDC_REQUEST_ID, "slettlogiskvedlegg");
+        log.info(MDC.get(MDC_REQUEST_ID) + " har mottatt kall om å har mottatt kall om å slette logisk vedlegg med logiskVedleggId={} på dokument med dokumentInfoId={}", logiskVedleggId, dokumentInfoId);
+        //valider
+
+        abacSecurityService.assertAccessToDokumentIncludingSkjermet(Long.parseLong(dokumentInfoId));
+
+        slettLogiskVedleggService.slettLogiskVedlegg(dokumentInfoId, logiskVedleggId);
+
+        log.info("slettlogiskvedlegg har slettet logisk vedlegg med logiskVedleggId={}.", logiskVedleggId);
+        return ResponseEntity.ok("");
+    }
+}
