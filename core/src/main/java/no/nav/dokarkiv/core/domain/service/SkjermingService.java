@@ -44,14 +44,6 @@ public class SkjermingService {
 		this.entityManager = entityManager;
 	}
 
-	public boolean isJournalpostSkjermet(Long journalpostId, SkjermingTypeCode skjermingTypeCode) {
-		Journalpost journalpost = joarkRepository.findById(journalpostId).orElse(null);
-		if (journalpost != null) {
-			return skjermingTypeCode == journalpost.getSkjermingType();
-		}
-		return false;
-	}
-
 	public boolean isJournalpostSkjermet(Long journalpostId) {
 		Journalpost journalpost = joarkRepository.findById(journalpostId).orElse(null);
 		if (journalpost != null) {
@@ -61,7 +53,7 @@ public class SkjermingService {
 		return false;
 	}
 
-	public boolean isKassertOrSkjermetByFilUuidAndVariantFormat(String filUuid, VariantFormatCode variantFormatCode) {
+	public boolean isKassertByFilUuidAndVariantFormat(String filUuid, VariantFormatCode variantFormatCode) {
 		return isFalse(entityManager.createQuery("select 'kassert' from FilDetaljer where filUuid=:filUuid and variantFormat=:variantFormat and dokumentInfo.kassert is true")
 				.setParameter("filUuid", filUuid)
 				.setParameter("variantFormat", variantFormatCode)
@@ -84,36 +76,26 @@ public class SkjermingService {
 		return false;
 	}
 
+	/**
+	 * Brukes bare i test
+	 */
 	public void skjermAllFildetaljer(DokumentInfo dokumentInfo, SkjermingTypeCode skjermingTypeCode) {
 		for (FilDetaljer filDetaljer : dokumentInfo.getFildetaljerListeAdmin()) {
 			setFildetaljerSkjerming(dokumentInfo.getDokumentInfoId(), filDetaljer.getVariantFormat(), skjermingTypeCode);
 		}
-	}
-
-	public void skjermFildetaljerByVariant(Long dokumentInfoId, VariantFormatCode variantFormat, SkjermingTypeCode skjermingType) {
-		setVariantSkjermet(dokumentInfoId, variantFormat, skjermingType);
-	}
-
-	public void opphevSkjermFildetaljerByVariant(Long dokumentInfoId, VariantFormatCode variantFormat) {
-		setVariantSkjermet(dokumentInfoId, variantFormat, null);
+		Query q = entityManager.createQuery("update DokumentInfo set kassert=true where dokument_info_id = :dokumentInfoId")
+				.setParameter("dokumentInfoId", dokumentInfo.getDokumentInfoId());
+		q.executeUpdate();
 	}
 
 	public void skjermJournalpost(Long journalpostId, SkjermingTypeCode skjermingTypeCode) {
 		setJournalpostSkjerming(journalpostId, skjermingTypeCode);
 	}
 
-	public void opphevSkjermJournalpostByJournalpostId(Long journalpostId) {
-		setJournalpostSkjerming(journalpostId, null);
-	}
 
 	public void skjermJournalpostDokumentInfoRelasjon(Long journalpostId, Long dokumentInfoId, SkjermingTypeCode skjermingTypeCode) {
 		JournalpostDokumentInfoRelasjon rel = hentJpDokInfoRel(journalpostId, dokumentInfoId);
 		setJpDokInfoRelSkjerming(rel.getJournalpostDokumentInfoRelasjonId(), skjermingTypeCode);
-	}
-
-	public void opphevSkjermingJournalpostDokumentInfoRelasjon(Long journalpostId, Long dokumentInfoId) {
-		JournalpostDokumentInfoRelasjon rel = hentJpDokInfoRel(journalpostId, dokumentInfoId);
-		setJpDokInfoRelSkjerming(rel.getJournalpostDokumentInfoRelasjonId(), null);
 	}
 
 	public void setVariantSkjermet(Long dokumentInfoId, VariantFormatCode variantFormatCode, SkjermingTypeCode skjermingTypeCode) {

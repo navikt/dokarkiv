@@ -30,6 +30,6 @@ public class DokumentFilSkjermetRepository {
 	}
 
 	private boolean isKassertOrArkivVariantIsSkjermet(String filUuid) {
-		return skjermingService.isKassertOrSkjermetByFilUuidAndVariantFormat(filUuid, VariantFormatCode.ARKIV);
+		return skjermingService.isKassertByFilUuidAndVariantFormat(filUuid, VariantFormatCode.ARKIV);
 	}
 }
