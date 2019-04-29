@@ -28,17 +28,17 @@ public final class CommonValidator {
 		}
 	}
 
+    public static void hasText(String input, String feltnavn) {
+        if (StringUtils.isBlank(input)) {
+            throw new IllegalArgumentException(String.format("%s kan ikke være null eller tom", feltnavn));
+        }
+    }
+
 	private static void convertStringToLong(String input, String feltnavn) {
 		try {
 			Long.parseLong(input);
 		} catch (Exception e) {
 			throw new IllegalArgumentException(String.format("%s er ikke et tall", feltnavn));
-		}
-	}
-
-	private static void hasText(String input, String feltnavn) {
-		if (StringUtils.isBlank(input)) {
-			throw new IllegalArgumentException(String.format("%s kan ikke være null eller tom", feltnavn));
 		}
 	}
 
