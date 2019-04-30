@@ -62,11 +62,11 @@ public class KasserDokumentRestController {
 	@Transactional(rollbackFor = Exception.class)
 	@ResponseBody
 	@PostMapping("/kasserdokument/skjerm/{dokumentInfoId}")
-	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark103a"}, percentiles = {0.5, 0.95})
+	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark102SA"}, percentiles = {0.5, 0.95})
 	public ResponseEntity kasserSkjermDokument(
 			@RequestHeader(value = AKSJONS_LOGG_HEADER) String aksjonsLoggHeaderString,
 			@PathVariable Long dokumentInfoId) throws UgyldigAksjonsLoggException {
-		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark103a");
+		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark102S");
 		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har mottat kall med dokumentInfoId={}", dokumentInfoId);
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
 
@@ -81,11 +81,11 @@ public class KasserDokumentRestController {
 	@Transactional(rollbackFor = Exception.class)
 	@ResponseBody
 	@DeleteMapping("/kasserdokument/skjerm/{dokumentInfoId}")
-	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark103b"}, percentiles = {0.5, 0.95})
+	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark102SB"}, percentiles = {0.5, 0.95})
 	public ResponseEntity opphevKasserSkjermDokument(
 			@RequestHeader(value = AKSJONS_LOGG_HEADER) String aksjonsLoggHeaderString,
 			@PathVariable Long dokumentInfoId) throws UgyldigAksjonsLoggException {
-		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark103b");
+		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark102SB");
 		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har mottat kall med dokumentInfoId={}", dokumentInfoId);
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
 

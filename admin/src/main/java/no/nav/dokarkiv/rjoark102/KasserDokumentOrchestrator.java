@@ -16,28 +16,28 @@ import java.util.List;
 public class KasserDokumentOrchestrator {
 
 	private final KasserDokumentService kasserDokumentService;
-	private final KasserDokumentSkjermService kasserDokumentSkjermService;
+	private final KasserSkjermDokumentService kasserSkjermDokumentService;
 	private final AksjonsLoggService aksjonsLoggService;
 	private final AksjonsLoggTOMapper aksjonsLoggTOMapper;
 
 
 	@Inject
-	public KasserDokumentOrchestrator(KasserDokumentService kasserDokumentService, KasserDokumentSkjermService kasserDokumentSkjermService, AksjonsLoggService aksjonsLoggService) {
+	public KasserDokumentOrchestrator(KasserDokumentService kasserDokumentService, KasserSkjermDokumentService kasserSkjermDokumentService, AksjonsLoggService aksjonsLoggService) {
 		this.kasserDokumentService = kasserDokumentService;
-		this.kasserDokumentSkjermService = kasserDokumentSkjermService;
+		this.kasserSkjermDokumentService = kasserSkjermDokumentService;
 		this.aksjonsLoggService = aksjonsLoggService;
 		this.aksjonsLoggTOMapper = new AksjonsLoggTOMapper();
 	}
 
 	public void opphevKasserSkjermDokument(Long dokumentInfoId, String aksjonsLoggHeaderString) throws UgyldigAksjonsLoggException {
 		List<ArkivElementEndringTO> arkivElementEndringTOList = new ArrayList<>();
-		arkivElementEndringTOList.addAll(kasserDokumentSkjermService.opphevSkjermDokument(dokumentInfoId));
+		arkivElementEndringTOList.addAll(kasserSkjermDokumentService.opphevSkjermDokument(dokumentInfoId));
 		lagreAksjonsLogg(AksjonsTypeCode.ENDRE_SKJERMING, dokumentInfoId, aksjonsLoggHeaderString, arkivElementEndringTOList);
 	}
 
 	public void kasserSkjermDokument(Long dokumentInfoId, String aksjonsLoggHeaderString) throws UgyldigAksjonsLoggException {
 		List<ArkivElementEndringTO> arkivElementEndringTOList = new ArrayList<>();
-		arkivElementEndringTOList.addAll(kasserDokumentSkjermService.skjermDokument(dokumentInfoId));
+		arkivElementEndringTOList.addAll(kasserSkjermDokumentService.skjermDokument(dokumentInfoId));
 		lagreAksjonsLogg(AksjonsTypeCode.ENDRE_SKJERMING, dokumentInfoId, aksjonsLoggHeaderString, arkivElementEndringTOList);
 	}
 

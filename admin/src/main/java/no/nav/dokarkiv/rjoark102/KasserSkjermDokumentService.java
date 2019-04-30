@@ -21,12 +21,12 @@ import java.util.List;
  * @author Ugur Alpay Cenar, Visma Consulting.
  */
 @Service
-public class KasserDokumentSkjermService {
+public class KasserSkjermDokumentService {
 
 	private final DokumentinfoRepository dokumentInfoRepository;
 	private final SkjermingService skjermingService;
 
-	public KasserDokumentSkjermService(DokumentinfoRepository dokumentInfoRepository, SkjermingService skjermingService) {
+	public KasserSkjermDokumentService(DokumentinfoRepository dokumentInfoRepository, SkjermingService skjermingService) {
 		this.dokumentInfoRepository = dokumentInfoRepository;
 		this.skjermingService = skjermingService;
 	}
@@ -36,7 +36,7 @@ public class KasserDokumentSkjermService {
 
 		arkivElementEndringTOList.addAll(endreSkjermingForAlleFildetaljer(dokumentInfoId, SkjermingTypeCode.POL));
 
-		arkivElementEndringTOList.addAll(setKassasjonParameter(dokumentInfoId, true));
+		arkivElementEndringTOList.addAll(oppdaterKassertParameter(dokumentInfoId, true));
 		return arkivElementEndringTOList;
 	}
 
@@ -45,11 +45,11 @@ public class KasserDokumentSkjermService {
 
 		arkivElementEndringTOList.addAll(endreSkjermingForAlleFildetaljer(dokumentInfoId, null));
 
-		arkivElementEndringTOList.addAll(setKassasjonParameter(dokumentInfoId, false));
+		arkivElementEndringTOList.addAll(oppdaterKassertParameter(dokumentInfoId, false));
 		return arkivElementEndringTOList;
 	}
 
-	private List<ArkivElementEndringTO> setKassasjonParameter(Long dokumentInfoId, boolean kassert) {
+	private List<ArkivElementEndringTO> oppdaterKassertParameter(Long dokumentInfoId, boolean kassert) {
 		DokumentInfo dokumentInfoForSkjerming = dokumentInfoRepository.findByDokumentInfoId(dokumentInfoId)
 				.orElseThrow(
 						() -> new DokumentInfoIkkeFunnetException(String.format(
