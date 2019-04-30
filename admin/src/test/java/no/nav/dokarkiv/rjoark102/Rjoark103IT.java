@@ -137,6 +137,29 @@ public class Rjoark103IT extends AbstractAdminIT {
 		TestTransaction.end();
 	}
 
+	@Test
+	public void skalFeileHvisDokumentIkkeFinnes() throws IOException {
+		abacPermit();
+
+		ResponseEntity responseEntity = restTemplate.exchange(
+				URL_KASSERDOKUMENT_SKJERM + "/" + 1,
+				HttpMethod.POST,
+				new HttpEntity<>(createHeadersWithAksjon()),
+				String.class);
+
+		assertThat(responseEntity.getStatusCode(), is(HttpStatus.NOT_FOUND));
+
+
+		ResponseEntity responseEntityOpphev = restTemplate.exchange(
+				URL_KASSERDOKUMENT_SKJERM + "/" + 1,
+				HttpMethod.DELETE,
+				new HttpEntity<>(createHeadersWithAksjon()),
+				String.class);
+
+		assertThat(responseEntityOpphev.getStatusCode(), is(HttpStatus.NOT_FOUND));
+
+	}
+
 	private void assertThatAllFildetaljerIsSkjermet(DokumentInfo dokInfoEtterKall, SkjermingTypeCode skjermingTypeCode) {
 
 		dokInfoEtterKall.getFildetaljerListeAdmin().forEach(

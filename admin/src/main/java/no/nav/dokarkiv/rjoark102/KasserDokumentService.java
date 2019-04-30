@@ -43,9 +43,8 @@ public class KasserDokumentService {
 
 	public List<ArkivElementEndringTO> kasserDokument(Long dokumentInfoId, String kassertAvNavn) {
 		DokumentInfo dokumentInfoForKassering = dokumentInfoRepository.findByDokumentInfoId(dokumentInfoId)
-				.orElseThrow(
-						() -> new DokumentInfoIkkeFunnetException(String.format(
-								"Kan ikke finne dokument med dokumentInfoId=%s", dokumentInfoId)));
+				.orElseThrow(() -> new DokumentInfoIkkeFunnetException(String.format(
+						"Fant ikke dokument med dokumentInfoId=%s", dokumentInfoId)));
 
 		List<ArkivElementEndringTO> arkivElementEndringTOList = settKassasjonInfo(dokumentInfoForKassering, kassertAvNavn);
 

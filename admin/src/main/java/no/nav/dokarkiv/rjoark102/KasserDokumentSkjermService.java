@@ -69,9 +69,8 @@ public class KasserDokumentSkjermService {
 	private List<ArkivElementEndringTO> endreSkjermingForAlleFildetaljer(Long dokumentInfoId, SkjermingTypeCode skjermingTypeCode) {
 		List<ArkivElementEndringTO> arkivElementEndringTOList = new ArrayList<>();
 		DokumentInfo dokumentInfoForSkjerming = dokumentInfoRepository.findByDokumentInfoId(dokumentInfoId)
-				.orElseThrow(
-						() -> new DokumentInfoIkkeFunnetException(String.format(
-								"Kan ikke finne dokument med dokumentInfoId=%s", dokumentInfoId)));
+				.orElseThrow(() -> new DokumentInfoIkkeFunnetException(String.format(
+						"Fant ikke dokument med dokumentInfoId=%s", dokumentInfoId)));
 
 		dokumentInfoForSkjerming.getFildetaljerListeAdmin()
 				.forEach(filDetaljer -> arkivElementEndringTOList.addAll(endreSkjermingFildetaljer(dokumentInfoId, filDetaljer.getVariantFormat(), filDetaljer
