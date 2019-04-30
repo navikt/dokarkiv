@@ -81,7 +81,7 @@ public class JournalfoerSkannetDokumentRestController {
         endreLogiskVedleggService.endreLogiskVedlegg(dokumentInfoId, logiskVedleggId, request);
 
         log.info("endrelogiskvedlegg har endret logisk vedlegg med logiskVedleggId={}.", logiskVedleggId);
-        return ResponseEntity.ok("");
+        return ResponseEntity.ok("Logisk vedlegg endret");
     }
 
     @Transactional
@@ -130,6 +130,6 @@ public class JournalfoerSkannetDokumentRestController {
         slettLogiskVedleggService.slettLogiskVedlegg(dokumentInfoId, logiskVedleggId);
 
         log.info("slettlogiskvedlegg har slettet logisk vedlegg med logiskVedleggId={}.", logiskVedleggId);
-        return ResponseEntity.ok("");
+        return ResponseEntity.ok("Logisk vedlegg slettet");
     }
 }
