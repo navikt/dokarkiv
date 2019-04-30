@@ -21,6 +21,9 @@ import no.nav.dokarkiv.journalpost.v1.api.LeggTilLogiskVedleggResponse;
 import no.nav.dokarkiv.journalpost.v1.services.EndreLogiskVedleggService;
 import no.nav.dokarkiv.journalpost.v1.services.LeggTilLogiskVedleggService;
 import no.nav.dokarkiv.journalpost.v1.services.SlettLogiskVedleggService;
+import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerEndreLogiskVedlegg;
+import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerLeggTilLogiskVedlegg;
+import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerSlettLogiskVedlegg;
 import no.nav.freg.abac.core.annotation.Abac;
 import org.slf4j.MDC;
 import org.springframework.http.ResponseEntity;
@@ -58,6 +61,7 @@ public class JournalfoerSkannetDokumentRestController {
     }
 
     @Transactional
+    @SwaggerEndreLogiskVedlegg
     @ResponseBody
     @PostMapping(value = "/{dokumentInfoId}/logiskVedlegg/{logiskVedleggId}")
     @Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_JOURNALPOST)},
@@ -85,6 +89,7 @@ public class JournalfoerSkannetDokumentRestController {
     }
 
     @Transactional
+    @SwaggerLeggTilLogiskVedlegg
     @ResponseBody
     @PostMapping(value = "/{dokumentInfoId}/logiskVedlegg/")
     @Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_JOURNALPOST)},
@@ -110,6 +115,7 @@ public class JournalfoerSkannetDokumentRestController {
     }
 
     @Transactional
+    @SwaggerSlettLogiskVedlegg
     @ResponseBody
     @DeleteMapping(value = "/{dokumentInfoId}/logiskVedlegg/{logiskVedleggId}")
     @Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_JOURNALPOST)},
