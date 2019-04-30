@@ -3,9 +3,9 @@ package no.nav.dokarkiv.rjoark100;
 import static junit.framework.TestCase.assertNull;
 import static junit.framework.TestCase.assertTrue;
 import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_LOGG_HEADER;
-import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.fildetaljerSkjermingTypeVariant;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_SKJERMING_TYPE;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.RELASJON_SKJERMING_TYPE;
+import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.fildetaljerSkjermingTypeVariant;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createJournalpostWithGjenbruktHoveddokument;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createJournalpostWithHoveddokument;
 import static no.nav.dokarkiv.util.TestUtil.createSkjermarkivenhetRequest;
@@ -25,7 +25,6 @@ import no.nav.dokarkiv.core.domain.entities.ArkivElementEndring;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.util.TestDataGenerator;
-import no.nav.dokarkiv.dto.SkjermArkivenhetResponse;
 import org.apache.commons.collections15.IteratorUtils;
 import org.junit.Test;
 import org.springframework.http.HttpEntity;
@@ -61,11 +60,11 @@ public class Rjoark100aIT extends AbstractAdminIT {
 				createSkjermarkivenhetRequest(SkjermingTypeCode.POL, ArkivenhetCode.JOURNALPOST, journalpost.getJournalpostId(), null, null),
 				createHeadersWithAksjon());
 
-		ResponseEntity<SkjermArkivenhetResponse> responseEntity = restTemplate.exchange(
+		ResponseEntity responseEntity = restTemplate.exchange(
 				URL_SKJERMARKIVENHET,
 				HttpMethod.POST,
 				httpEntity,
-				SkjermArkivenhetResponse.class);
+				String.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 
