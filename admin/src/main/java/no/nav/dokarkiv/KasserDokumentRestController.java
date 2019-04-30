@@ -1,10 +1,6 @@
 package no.nav.dokarkiv;
 
-import static no.nav.abac.xacml.NavAttributter.RESOURCE_ARKIV_DOKUMENT;
-import static no.nav.abac.xacml.NavAttributter.RESOURCE_FELLES_RESOURCE_TYPE;
-import static no.nav.abac.xacml.StandardAttributter.ACTION_ID;
 import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_LOGG_HEADER;
-import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.UPDATE_ACTION;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.MDCConstants;
@@ -20,7 +16,6 @@ import no.nav.dokarkiv.dto.KasserDokumentRequest;
 import no.nav.dokarkiv.dto.KasserDokumentResponse;
 import no.nav.dokarkiv.rjoark102.KasserDokumentService;
 import no.nav.dokarkiv.rjoark102.KasserDokumentValidator;
-import no.nav.freg.abac.core.annotation.Abac;
 import org.slf4j.MDC;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;

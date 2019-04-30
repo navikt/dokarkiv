@@ -1,0 +1,141 @@
+package no.nav.dokarkiv.journalpost.v1.controllers;
+
+import static no.nav.abac.xacml.NavAttributter.RESOURCE_ARKIV_DOKUMENT;
+import static no.nav.abac.xacml.NavAttributter.RESOURCE_FELLES_RESOURCE_TYPE;
+import static no.nav.abac.xacml.StandardAttributter.ACTION_ID;
+import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
+import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
+import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.FEILREGISTRER;
+import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.UPDATE_ACTION;
+import static no.nav.dokarkiv.journalpost.v1.util.AvvikstypeConstants.AVBRYT;
+import static no.nav.dokarkiv.journalpost.v1.util.AvvikstypeConstants.FEILREGISTRER_SAKSTILKNYTNING;
+import static no.nav.dokarkiv.journalpost.v1.util.AvvikstypeConstants.OPPHEV_FEILREGISTRERT_SAKSTILKNYTNING;
+import static no.nav.dokarkiv.journalpost.v1.util.AvvikstypeConstants.SETT_UKJENT_BRUKER;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiParam;
+import lombok.extern.slf4j.Slf4j;
+import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService;
+import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggTO;
+import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
+import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
+import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
+import no.nav.dokarkiv.core.metrics.RestMetrics;
+import no.nav.dokarkiv.journalpost.v1.services.AvbrytService;
+import no.nav.dokarkiv.journalpost.v1.services.FeilregistrerSakstilknytningService;
+import no.nav.dokarkiv.journalpost.v1.services.SettUkjentBrukerService;
+import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerAvbryt;
+import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerFeilregistrerSakstilknytning;
+import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerOpphevFeilregistrertSakstilknytning;
+import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerSettUkjentBruker;
+import no.nav.freg.abac.core.annotation.Abac;
+import org.slf4j.MDC;
+import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import javax.inject.Inject;
+import java.util.List;
+
+@Slf4j
+@RestController
+@RequestMapping("/rest/journalpostapi/v1/journalpost")
+@Api(value = "Feilregistrer", description = "Tjenester for å feilregistrere journalpost")
+public class FeilregistrerRestController {
+
+    private static final String FIKK_UKJENT_BRUKER = "Journalposten fikk status Ukjent Bruker";
+    private static final String FIKK_AVBRUTT_UTGAAR = "Journalposten ble satt til avbrutt / utgår";
+    private static final String FEILREGISTRERING_OPPHEVET = "Feilregistreringen ble opphevet";
+
+    private final FeilregistrerSakstilknytningService feilregistrerSakstilknytningService;
+    private final SettUkjentBrukerService settUkjentBrukerService;
+    private final AvbrytService avbrytService;
+    private final AksjonsLoggService aksjonsLoggService;
+
+    @Inject
+    public FeilregistrerRestController(final FeilregistrerSakstilknytningService feilregistrerSakstilknytningService,
+                                       final SettUkjentBrukerService settUkjentBrukerService,
+                                       final AvbrytService avbrytService,
+                                       final AksjonsLoggService aksjonsLoggService){
+        this.feilregistrerSakstilknytningService = feilregistrerSakstilknytningService;
+        this.settUkjentBrukerService = settUkjentBrukerService;
+        this.avbrytService = avbrytService;
+        this.aksjonsLoggService = aksjonsLoggService;
+    }
+
+    @Transactional
+    @SwaggerFeilregistrerSakstilknytning
+    @PatchMapping("/{journalpostId}/feilregistrer/" + FEILREGISTRER_SAKSTILKNYTNING)
+    @Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_DOKUMENT)},
+            actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION))
+    @RestMetrics(value = "dok_request", extraTags = {"process_code", "feilregistrer"}, percentiles = {0.5, 0.95})
+    public ResponseEntity<String> feilregistrerSakstilkytning (
+            @PathVariable @ApiParam(value = "IDen til journalposten som skal feilregistreres", required = true, example = "77778888") String journalpostId) {
+        List<ArkivElementEndringTO> arkivElementEndringTOList = feilregistrerSakstilknytningService.feilregistrerSakstilknytning(journalpostId);
+        populerAksjonslogg(journalpostId, FEILREGISTRER, arkivElementEndringTOList, "Saksrelasjonen ble feilregistrert");
+        log.info(MDC.get(MDC_REQUEST_ID) + " har feilregistrert journalpost med journalpostId={}", journalpostId);
+        return ResponseEntity.ok().body("Saksrelasjonen ble feilregistrert");
+    }
+
+    @Transactional
+    @SwaggerOpphevFeilregistrertSakstilknytning
+    @PatchMapping("/{journalpostId}/feilregistrer/" + OPPHEV_FEILREGISTRERT_SAKSTILKNYTNING)
+    @Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_DOKUMENT)},
+            actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION))
+    @RestMetrics(value = "dok_request", extraTags = {"process_code", "feilregistrer"}, percentiles = {0.5, 0.95})
+    public ResponseEntity<String> opphevFeilregistrertSakstilknytning (
+            @PathVariable @ApiParam(value = "IDen til journalposten som skal feilregistreres", required = true, example = "77778888") String journalpostId) {
+        List<ArkivElementEndringTO> arkivElementEndringTOList = feilregistrerSakstilknytningService.opphevFeilregistrertSakstilknytning(journalpostId);
+        populerAksjonslogg(journalpostId, AksjonsTypeCode.OPPHEV_FEILREGISTRERING, arkivElementEndringTOList, FEILREGISTRERING_OPPHEVET);
+        log.info(MDC.get(MDC_REQUEST_ID) + " har opphevet feilregistrering av journalpost med journalpostId={}", journalpostId);
+        return ResponseEntity.ok().body(FEILREGISTRERING_OPPHEVET);
+    }
+
+    @Transactional
+    @SwaggerSettUkjentBruker
+    @PatchMapping("/{journalpostId}/feilregistrer/" + SETT_UKJENT_BRUKER)
+    @Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_DOKUMENT)},
+            actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION))
+    @RestMetrics(value = "dok_request", extraTags = {"process_code", "feilregistrer"}, percentiles = {0.5, 0.95})
+    public ResponseEntity<String> settUkjentBruker (
+            @PathVariable @ApiParam(value = "IDen til journalposten som skal feilregistreres", required = true, example = "77778888") String journalpostId) {
+        List<ArkivElementEndringTO> arkivElementEndringTOList = settUkjentBrukerService.settUkjentBruker(journalpostId);
+        populerAksjonslogg(journalpostId, AksjonsTypeCode.UKJENT_BRUKER ,arkivElementEndringTOList, FIKK_UKJENT_BRUKER);
+        log.info(MDC.get(MDC_REQUEST_ID) + " har satt status til Ukjent Bruker for journalpost med journalpostId={}", journalpostId);
+        return ResponseEntity.ok().body(FIKK_UKJENT_BRUKER);
+    }
+
+    @Transactional
+    @SwaggerAvbryt
+    @PatchMapping("/{journalpostId}/feilregistrer/" + AVBRYT)
+    @Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_DOKUMENT)},
+            actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION))
+    @RestMetrics(value = "dok_request", extraTags = {"process_code", "feilregistrer"}, percentiles = {0.5, 0.95})
+    public ResponseEntity<String> avbryt (
+            @PathVariable @ApiParam(value = "IDen til journalposten som skal feilregistreres", required = true, example = "77778888") String journalpostId) {
+        List<ArkivElementEndringTO> arkivElementEndringTOList = avbrytService.avbryt(journalpostId);
+        populerAksjonslogg(journalpostId, AksjonsTypeCode.AVBRYT ,arkivElementEndringTOList, FIKK_AVBRUTT_UTGAAR);
+        log.info(MDC.get(MDC_REQUEST_ID) + " har satt status til avbrutt / utgår for journalpost med journalpostId={}", journalpostId);
+        return ResponseEntity.ok().body(FIKK_AVBRUTT_UTGAAR);
+    }
+
+    private void populerAksjonslogg(String journalpostId, AksjonsTypeCode aksjon, List<ArkivElementEndringTO> arkivElementEndringTOList, String melding) {
+        AksjonsLoggTO aksjonsLoggTo;
+        aksjonsLoggTo = AksjonsLoggTO.builder()
+                .aksjon(aksjon)
+                .journalpostId(Long.parseLong(journalpostId))
+                .utfoertAv(MDC.get(MDC_CONSUMER_ID))
+                .hjemmel("ARKL")
+                .melding(melding)
+                .build();
+
+        try {
+            aksjonsLoggService.validateAndSaveAksjonsLogg(aksjonsLoggTo, arkivElementEndringTOList);
+        } catch (UgyldigAksjonsLoggException e) {
+            log.warn("Kunne ikke skrive til AksjonsLogg: "+e.getMessage());
+        }
+    }
+}

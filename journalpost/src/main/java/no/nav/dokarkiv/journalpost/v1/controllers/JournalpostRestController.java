@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.journalpost.v1;
+package no.nav.dokarkiv.journalpost.v1.controllers;
 
 import static no.nav.abac.xacml.NavAttributter.RESOURCE_ARKIV_DOKUMENT;
 import static no.nav.abac.xacml.NavAttributter.RESOURCE_ARKIV_JOURNALPOST;
@@ -24,16 +24,16 @@ import no.nav.dokarkiv.journalpost.v1.api.OppdaterJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.OppdaterJournalpostResponse;
 import no.nav.dokarkiv.journalpost.v1.api.OpprettJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.OpprettJournalpostResponse;
-import no.nav.dokarkiv.journalpost.v1.services.OppdaterJournalpostService;
 import no.nav.dokarkiv.journalpost.v1.services.FerdigstillJournalpostService;
-import no.nav.dokarkiv.journalpost.v1.services.OpprettJournalpostService;
-import no.nav.dokarkiv.journalpost.v1.validators.FerdigstillJournalpostValidator;
-import no.nav.dokarkiv.journalpost.v1.validators.OpprettJournalpostRequestValidator;
 import no.nav.dokarkiv.journalpost.v1.services.KopierJournalpostService;
+import no.nav.dokarkiv.journalpost.v1.services.OppdaterJournalpostService;
+import no.nav.dokarkiv.journalpost.v1.services.OpprettJournalpostService;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerFerdigstillJournalpost;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerKopierJournalpost;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerOppdaterJournalpost;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerOpprettJournalpost;
+import no.nav.dokarkiv.journalpost.v1.validators.FerdigstillJournalpostValidator;
+import no.nav.dokarkiv.journalpost.v1.validators.OpprettJournalpostRequestValidator;
 import no.nav.freg.abac.core.annotation.Abac;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.MDC;
