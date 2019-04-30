@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.journalpost.v1;
+package no.nav.dokarkiv.journalpost.v1.controllers;
 
 import static no.nav.abac.xacml.NavAttributter.RESOURCE_ARKIV_JOURNALPOST;
 import static no.nav.abac.xacml.NavAttributter.RESOURCE_FELLES_RESOURCE_TYPE;
@@ -17,6 +17,7 @@ import no.nav.dokarkiv.core.security.abac.AbacSecurityService;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import no.nav.dokarkiv.journalpost.v1.api.EndreLogiskVedleggRequest;
 import no.nav.dokarkiv.journalpost.v1.api.LeggTilLogiskVedleggRequest;
+import no.nav.dokarkiv.journalpost.v1.api.LeggTilLogiskVedleggResponse;
 import no.nav.dokarkiv.journalpost.v1.services.EndreLogiskVedleggService;
 import no.nav.dokarkiv.journalpost.v1.services.LeggTilLogiskVedleggService;
 import no.nav.dokarkiv.journalpost.v1.services.SlettLogiskVedleggService;
@@ -89,7 +90,7 @@ public class JournalfoerSkannetDokumentRestController {
     @Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_JOURNALPOST)},
             actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION))
     @RestMetrics(value = "dok_request", extraTags = {"process_code", "leggtillogiskvedlegg"}, percentiles = {0.5, 0.95})
-    public ResponseEntity<String> leggTilLogiskVedlegg (
+    public ResponseEntity<LeggTilLogiskVedleggResponse> leggTilLogiskVedlegg (
             @PathVariable String dokumentInfoId,
             @RequestBody LeggTilLogiskVedleggRequest request) {
         RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDC_CONSUMER_ID));
@@ -102,9 +103,10 @@ public class JournalfoerSkannetDokumentRestController {
         abacSecurityService.assertAccessToDokumentIncludingSkjermet(Long.parseLong(dokumentInfoId));
 
         String logiskVedleggId = leggTilLogiskVedleggService.leggTilLogiskVedlegg(dokumentInfoId, request);
+        LeggTilLogiskVedleggResponse response = LeggTilLogiskVedleggResponse.builder().logiskVedleggId(logiskVedleggId).build();
 
         log.info("endrelogiskvedlegg har lagt til logisk vedlegg med logiskVedleggId={}.", logiskVedleggId);
-        return ResponseEntity.ok("");
+        return ResponseEntity.ok(response);
     }
 
     @Transactional

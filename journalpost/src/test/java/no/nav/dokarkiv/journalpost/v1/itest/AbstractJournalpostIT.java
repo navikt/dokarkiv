@@ -33,6 +33,7 @@ import java.nio.charset.StandardCharsets;
 public abstract class AbstractJournalpostIT extends AbstractRestIT {
 
     static final String URL_JOURNALPOST = "/rest/journalpostapi/v1/journalpost/";
+    static final String URL_DOKUMENTINFO= "/rest/journalpostapi/v1/dokumentInfo/";
     static final String FERDIGSTILL = "/ferdigstill";
     static final String KOPIERJOURNALPOST = "/kopierJournalpost";
     static final String FERDIGSTILL_QUERY = "?forsoekFerdigstill=true";
