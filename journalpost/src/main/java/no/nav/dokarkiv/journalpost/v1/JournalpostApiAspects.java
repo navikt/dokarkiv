@@ -29,23 +29,23 @@ public class JournalpostApiAspects {
     private AbacSecurityService abacSecurityService;
 
     @Before("execution(* no.nav.dokarkiv.journalpost.v1.controllers.FeilregistrerRestController.*(..)) && args(journalpostId)")
-    public void A_configureMDC(JoinPoint point, String journalpostId) {
+    public void aConfigureMDC(JoinPoint point, String journalpostId) {
         MDC.put(MDC_REQUEST_ID, "feilregistrer");
         RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
     }
 
     @Before("execution(* no.nav.dokarkiv.journalpost.v1.controllers.FeilregistrerRestController.*(..)) && args(journalpostId)")
-    public void B_log(JoinPoint point, String journalpostId) {
+    public void bLog(JoinPoint point, String journalpostId) {
         log.info(MDC.get(MDC_REQUEST_ID) + " har mottatt kall for feilregistrering av journalpost med journalpostId={}", journalpostId);
     }
 
     @Before("execution(* no.nav.dokarkiv.journalpost.v1.controllers.FeilregistrerRestController.*(..)) && args(journalpostId)")
-    public void C_validerInput(JoinPoint point, String journalpostId) {
+    public void cValiderInput(JoinPoint point, String journalpostId) {
         CommonValidator.validateId(journalpostId, "journalpostId");
     }
 
     @Before("execution(* no.nav.dokarkiv.journalpost.v1.controllers.FeilregistrerRestController.*(..)) && args(journalpostId)")
-    public void D_performAccessControl(JoinPoint point, String journalpostId) {
+    public void dPerformAccessControl(JoinPoint point, String journalpostId) {
         abacSecurityService.assertAccessToJournalpost(journalpostId);
     }
 
