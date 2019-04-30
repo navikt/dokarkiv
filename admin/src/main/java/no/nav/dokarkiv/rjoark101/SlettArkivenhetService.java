@@ -35,6 +35,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -108,7 +109,11 @@ public class SlettArkivenhetService {
 
 
 	private Map<Pair<Long, Long>, List<ArkivElementEndringTO>> byttFørsteVedleggRelasjonTilHoveddokument(Long journalpostId) {
-		List<JournalpostDokumentInfoRelasjon> relasjonList = journalpostDokumentInfoRelasjonRepository.findAllByJournalpostJournalpostId(journalpostId);
+		List<JournalpostDokumentInfoRelasjon> relasjonList = journalpostDokumentInfoRelasjonRepository
+				.findAllByJournalpostJournalpostId(journalpostId)
+				.stream()
+				.filter(rel -> rel.getTilknyttetJournalpostSom() == TilknyttetJournalpostSomCode.VEDLEGG)
+				.collect(Collectors.toList());
 
 		JournalpostDokumentInfoRelasjon vedleggRelasjon = relasjonList.get(0);
 		vedleggRelasjon.setTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.HOVEDDOKUMENT);
@@ -122,7 +127,6 @@ public class SlettArkivenhetService {
 						.fraVerdi(TilknyttetJournalpostSomCode.VEDLEGG.name())
 						.tilVerdi(TilknyttetJournalpostSomCode.HOVEDDOKUMENT.name())
 						.build()
-
 		));
 		return aksjonsLoggMap;
 
