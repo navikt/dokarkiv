@@ -1606,4 +1606,12 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 		return list;
 	}
 
+	public boolean hasHoveddokumentRelasjon() {
+		return findHoveddokumentDokumentInfoRelasjon() != null;
+	}
+
+	public boolean hasAnyDokumentInfoRelasjoner() {
+		return !getJournalpostDokumentInfoRelasjoner().isEmpty();
+	}
+
 }

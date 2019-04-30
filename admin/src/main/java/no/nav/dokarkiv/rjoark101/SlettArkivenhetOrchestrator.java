@@ -8,6 +8,7 @@ import no.nav.dokarkiv.core.domain.codes.ArkivenhetCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
 import no.nav.dokarkiv.exception.UgyldigSlettArkivenhetInputException;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -42,10 +43,10 @@ public class SlettArkivenhetOrchestrator {
 				break;
 			case DOKUMENT_INFO:
 				assertNotNullOrEmpty(dokumentInfoId, "dokumentInfoId");
-				Map<Long, List<ArkivElementEndringTO>> aksjonsLoggMap = slettArkivenhetService.slettDokumentInfo(dokumentInfoId);
-				for (Long aksjonJournalpostId : aksjonsLoggMap.keySet()) {
-					lagreAksjonsLoggService.lagreAksjonsLogg(aksjonJournalpostId, dokumentInfoId, aksjonsLoggHeaderString, aksjonsLoggMap
-							.get(aksjonJournalpostId));
+				Map<Pair<Long, Long>, List<ArkivElementEndringTO>> aksjonsLoggMap = slettArkivenhetService.slettDokumentInfo(dokumentInfoId);
+				for (Pair<Long, Long> aksjonsLoggJournalpostDokumentInfo: aksjonsLoggMap.keySet()) {
+					lagreAksjonsLoggService.lagreAksjonsLogg(aksjonsLoggJournalpostDokumentInfo.getLeft(), aksjonsLoggJournalpostDokumentInfo.getRight(), aksjonsLoggHeaderString, aksjonsLoggMap
+							.get(aksjonsLoggJournalpostDokumentInfo));
 				}
 				break;
 			case DOKUMENT_FIL:
