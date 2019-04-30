@@ -61,7 +61,7 @@ public class Rjoark102IT extends AbstractAdminIT {
 				String.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.NOT_FOUND));
-		assertThat(responseEntity.getBody(), containsString("Kan ikke finne dokument med dokumentInfoId=" + dokumentInfoId));
+		assertThat(responseEntity.getBody(), containsString("Fant ikke dokument med dokumentInfoId=" + dokumentInfoId));
 	}
 
 	@Test
