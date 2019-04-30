@@ -7,6 +7,7 @@ import no.nav.dok.tjenester.journalfoerinngaaende.Dokument;
 import no.nav.dok.tjenester.journalfoerinngaaende.GetJournalpostResponse;
 import no.nav.dok.tjenester.journalfoerinngaaende.LogiskVedlegg;
 import no.nav.dok.tjenester.journalfoerinngaaende.Variant;
+import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
@@ -81,7 +82,7 @@ public class GetInngaaendeJournalpostMapper {
 		} else {
 			return brukere.stream().map(bruker -> new Bruker()
 					.withIdentifikator(bruker.getBrukerId())
-					.withBrukerType(utledBrukerType(bruker.getBrukerId())))
+					.withBrukerType(utledBrukerType(bruker.getBrukerType())))
 					.collect(Collectors.toList());
 		}
 	}
@@ -129,8 +130,8 @@ public class GetInngaaendeJournalpostMapper {
 	private List<Variant> mapVarianter(Set<FilDetaljer> fildetaljer) {
 		return fildetaljer.stream()
 				.map(filDetaljer -> new Variant()
-				.withArkivFilType(filDetaljer.getFiltype().name())
-				.withVariantFormat(filDetaljer.getVariantFormat().name()))
+						.withArkivFilType(filDetaljer.getFiltype().name())
+						.withVariantFormat(filDetaljer.getVariantFormat().name()))
 				.collect(Collectors.toList());
 	}
 
@@ -152,13 +153,14 @@ public class GetInngaaendeJournalpostMapper {
 		}
 	}
 
-	private Bruker.BrukerType utledBrukerType(String brukerId) {
-		if (brukerId == null) {
-			return null;
-		} else if (brukerId.length() == 11) {
-			return Bruker.BrukerType.PERSON;
-		} else {
-			return Bruker.BrukerType.ORGANISASJON;
+	private Bruker.BrukerType utledBrukerType(BrukerTypeCode brukerTypeCode) {
+		switch (brukerTypeCode) {
+			case PERSON:
+				return Bruker.BrukerType.PERSON;
+			case ORGANISASJON:
+				return Bruker.BrukerType.ORGANISASJON;
+			default:
+				return null;
 		}
 	}
 

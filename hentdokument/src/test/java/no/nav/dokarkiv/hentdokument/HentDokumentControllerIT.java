@@ -181,7 +181,7 @@ public class HentDokumentControllerIT {
 		dokumentUrlInfoRepository.save(createDokumentUrlInfo(journalpost, docToken, FIL_UUID).build());
 		persistDokumentFil(FIL_CONTENT);
 		skjermingService.setVariantSkjermet(journalpost.findHoveddokumentDokumentInfoRelasjon()
-				.getDokumentInfo(), VariantFormatCode.ARKIV, SkjermingTypeCode.POL);
+				.getDokumentInfo().getDokumentInfoId(), VariantFormatCode.ARKIV, SkjermingTypeCode.POL);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
@@ -197,7 +197,7 @@ public class HentDokumentControllerIT {
 		Journalpost journalpost = joarkRepository.save(createJournalpostBuilder("tittel").build());
 		dokumentUrlInfoRepository.save(createDokumentUrlInfo(journalpost, docToken, FIL_UUID).build());
 		persistDokumentFil(FIL_CONTENT);
-		skjermingService.setJournalpostSkjerming(journalpost, SkjermingTypeCode.POL);
+		skjermingService.setJournalpostSkjerming(journalpost.getJournalpostId(), SkjermingTypeCode.POL);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
