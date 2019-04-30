@@ -54,7 +54,7 @@ public class FeilregistrerSakstilknytningServiceTest {
     @Test
     public void feilregistrerSakstilknytningKanIkkeFinneJournalpost() {
         Long journalpostId = 1L;
-        when(joarkRepository.findById(journalpostId)).thenThrow(
+        when(joarkRepository.existsById(journalpostId)).thenThrow(
                 new JournalpostIkkeFunnetException("Kunne ikke finne journalpost med journalpostId=1 i joark"));
         expectedException.expect(JournalpostIkkeFunnetException.class);
         expectedException.expectMessage("Kunne ikke finne journalpost med journalpostId=1 i joark");
@@ -64,7 +64,7 @@ public class FeilregistrerSakstilknytningServiceTest {
     @Test
     public void feilregistrerSakstilknytningKanIkkeFinneSakstilknytning() {
         Long journalpostId = 1L;
-        when(joarkRepository.findById(journalpostId)).thenReturn(Optional.of(Journalpost.builder().build()));
+        when(joarkRepository.existsById(journalpostId)).thenReturn(Boolean.TRUE);
         expectedException.expect(JournalpostIkkeKnyttetTilSakException.class);
         expectedException.expectMessage("Feilregistrering er ikke mulig fordi journalposten ikke er knyttet til sak");
         feilregistrerSakstilknytningService.feilregistrerSakstilknytning(String.valueOf(journalpostId));
@@ -73,7 +73,7 @@ public class FeilregistrerSakstilknytningServiceTest {
     @Test
     public void feilregistrerSakstilknytning() {
         Long journalpostId = 1L;
-        when(joarkRepository.findById(journalpostId)).thenReturn(Optional.of(Journalpost.builder().build()));
+        when(joarkRepository.existsById(journalpostId)).thenReturn(Boolean.TRUE);
         when(saksrelasjonRepository.findSaksrelasjonByJournalpostId(any(String.class))).thenReturn(
                 Optional.of(Saksrelasjon.builder().build()));
 
@@ -88,7 +88,7 @@ public class FeilregistrerSakstilknytningServiceTest {
     @Test
     public void kanIkkeOpphevFeilregistrertSakstilknytningForJournalpostUtenFeilregistrering() {
         Long journalpostId = 1L;
-        when(joarkRepository.findById(journalpostId)).thenReturn(Optional.of(Journalpost.builder().build()));
+        when(joarkRepository.existsById(journalpostId)).thenReturn(Boolean.TRUE);
         when(saksrelasjonRepository.findSaksrelasjonByJournalpostId(any(String.class))).thenReturn(
                 Optional.of(Saksrelasjon.builder().build()));
         expectedException.expect(FeilregistreringAlleredeOpphevetException.class);
@@ -100,7 +100,7 @@ public class FeilregistrerSakstilknytningServiceTest {
     @Test
     public void opphevFeilregistrertSakstilknytning() {
         Long journalpostId = 1L;
-        when(joarkRepository.findById(journalpostId)).thenReturn(Optional.of(Journalpost.builder().build()));
+        when(joarkRepository.existsById(journalpostId)).thenReturn(Boolean.TRUE);
         when(saksrelasjonRepository.findSaksrelasjonByJournalpostId(any(String.class))).thenReturn(
                 Optional.of(Saksrelasjon.builder().feilregistrert(true).build()));
 

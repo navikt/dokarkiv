@@ -1,8 +1,10 @@
 package no.nav.dokarkiv.journalpost.v1.services;
 
 import static java.lang.Long.parseLong;
+import static java.lang.Long.remainderUnsigned;
 
 import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
+import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
 import no.nav.dokarkiv.core.exceptions.FeilregistreringAlleredeOpphevetException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
@@ -71,8 +73,9 @@ public class FeilregistrerSakstilknytningService {
     }
 
     private void assertJournalpostExists(String journalpostId) {
-        joarkRepository.findById(parseLong(journalpostId))
-                .orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostId)));
+        if (!joarkRepository.existsById(parseLong(journalpostId))) {
+            throw new JournalpostIkkeFunnetException(String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostId));
+        }
     }
 
 }
