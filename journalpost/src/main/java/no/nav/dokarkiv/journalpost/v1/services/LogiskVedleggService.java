@@ -13,8 +13,10 @@ import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 @Service
+@Named("journalfoerSkannetDokumentService")
 public class LogiskVedleggService {
     private final SkannetInnholdRepository skannetInnholdRepository;
     private final DokumentinfoRepository dokumentinfoRepository;
