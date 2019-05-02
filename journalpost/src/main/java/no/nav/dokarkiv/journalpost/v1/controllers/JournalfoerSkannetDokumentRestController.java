@@ -18,9 +18,7 @@ import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import no.nav.dokarkiv.journalpost.v1.api.EndreLogiskVedleggRequest;
 import no.nav.dokarkiv.journalpost.v1.api.LeggTilLogiskVedleggRequest;
 import no.nav.dokarkiv.journalpost.v1.api.LeggTilLogiskVedleggResponse;
-import no.nav.dokarkiv.journalpost.v1.services.EndreLogiskVedleggService;
-import no.nav.dokarkiv.journalpost.v1.services.LeggTilLogiskVedleggService;
-import no.nav.dokarkiv.journalpost.v1.services.SlettLogiskVedleggService;
+import no.nav.dokarkiv.journalpost.v1.services.LogiskVedleggService;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerEndreLogiskVedlegg;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerLeggTilLogiskVedlegg;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerSlettLogiskVedlegg;
@@ -45,19 +43,13 @@ import javax.inject.Inject;
 public class JournalfoerSkannetDokumentRestController {
 
     private final AbacSecurityService abacSecurityService;
-    private final EndreLogiskVedleggService endreLogiskVedleggService;
-    private final LeggTilLogiskVedleggService leggTilLogiskVedleggService;
-    private final SlettLogiskVedleggService slettLogiskVedleggService;
+    private final LogiskVedleggService logiskVedleggService;
 
     @Inject
     public JournalfoerSkannetDokumentRestController(final AbacSecurityService abacSecurityService,
-                                                    final EndreLogiskVedleggService endreLogiskVedleggService,
-                                                    final LeggTilLogiskVedleggService leggTilLogiskVedleggService,
-                                                    final SlettLogiskVedleggService slettLogiskVedleggService) {
+                                                    final LogiskVedleggService logiskVedleggService) {
         this.abacSecurityService = abacSecurityService;
-        this.endreLogiskVedleggService = endreLogiskVedleggService;
-        this.leggTilLogiskVedleggService = leggTilLogiskVedleggService;
-        this.slettLogiskVedleggService = slettLogiskVedleggService;
+        this.logiskVedleggService = logiskVedleggService;
     }
 
     @Transactional
@@ -82,7 +74,7 @@ public class JournalfoerSkannetDokumentRestController {
 
         abacSecurityService.assertAccessToDokumentIncludingSkjermet(Long.parseLong(dokumentInfoId));
 
-        endreLogiskVedleggService.endreLogiskVedlegg(dokumentInfoId, logiskVedleggId, request);
+        logiskVedleggService.endreLogiskVedlegg(dokumentInfoId, logiskVedleggId, request);
 
         log.info("endrelogiskvedlegg har endret logisk vedlegg med logiskVedleggId={}.", logiskVedleggId);
         return ResponseEntity.ok("Logisk vedlegg endret");
@@ -107,7 +99,7 @@ public class JournalfoerSkannetDokumentRestController {
 
         abacSecurityService.assertAccessToDokumentIncludingSkjermet(Long.parseLong(dokumentInfoId));
 
-        String logiskVedleggId = leggTilLogiskVedleggService.leggTilLogiskVedlegg(dokumentInfoId, request);
+        String logiskVedleggId = logiskVedleggService.leggTilLogiskVedlegg(dokumentInfoId, request);
         LeggTilLogiskVedleggResponse response = LeggTilLogiskVedleggResponse.builder().logiskVedleggId(logiskVedleggId).build();
 
         log.info("endrelogiskvedlegg har lagt til logisk vedlegg med logiskVedleggId={}.", logiskVedleggId);
@@ -133,7 +125,7 @@ public class JournalfoerSkannetDokumentRestController {
 
         abacSecurityService.assertAccessToDokumentIncludingSkjermet(Long.parseLong(dokumentInfoId));
 
-        slettLogiskVedleggService.slettLogiskVedlegg(dokumentInfoId, logiskVedleggId);
+        logiskVedleggService.slettLogiskVedlegg(dokumentInfoId, logiskVedleggId);
 
         log.info("slettlogiskvedlegg har slettet logisk vedlegg med logiskVedleggId={}.", logiskVedleggId);
         return ResponseEntity.ok("Logisk vedlegg slettet");
