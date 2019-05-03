@@ -1,6 +1,7 @@
 package no.nav.dokarkiv.rjoark102;
 
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.DOKUMENT_FIL_FIL_UUID;
+import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.DOKUMENT_INFO_KASSERT;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.DOKUMENT_INFO_KASSERT_AV;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.DOKUMENT_INFO_KASSERT_DATO;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.FILDETALJER_VARIANTFORMAT;
@@ -117,8 +118,19 @@ public class KasserDokumentService {
 	private List<ArkivElementEndringTO> settKassasjonInfo(DokumentInfo dokumentInfo, String kassertAvNavn) {
 		dokumentInfo.setDatoKassert(LocalDateTime.now());
 		dokumentInfo.setKassertAvNavn(kassertAvNavn);
+		List<ArkivElementEndringTO> arkivElementEndringTOList = opprettArkivElementEndringKassering(dokumentInfo);
+		if (!dokumentInfo.getKassert()) {
+			dokumentInfo.setKassert(true);
+			arkivElementEndringTOList.add(
+					ArkivElementEndringTO.builder()
+							.arkivElement(DOKUMENT_INFO_KASSERT)
+							.fraVerdi(String.valueOf(false))
+							.tilVerdi(String.valueOf(true))
+							.build()
+			);
+		}
 		dokumentInfoRepository.save(dokumentInfo);
-		return opprettArkivElementEndringKassering(dokumentInfo);
+		return arkivElementEndringTOList;
 	}
 
 	private List<ArkivElementEndringTO> opprettArkivElementEndringKassering(DokumentInfo dokumentInfoTilTidligKassering) {

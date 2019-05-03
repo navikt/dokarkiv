@@ -1,9 +1,9 @@
 package no.nav.dokarkiv.rjoark100;
 
 import static java.util.Objects.isNull;
-import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.fildetaljerSkjermingTypeVariant;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_SKJERMING_TYPE;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.RELASJON_SKJERMING_TYPE;
+import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.fildetaljerSkjermingTypeVariant;
 import static no.nav.dokarkiv.core.util.ConverterUtils.enumToString;
 
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +20,7 @@ import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -49,9 +50,20 @@ public class EndreSkjermingArkivenhetService {
 		this.entityManager = entityManager;
 	}
 
-	public List<ArkivElementEndringTO> endreSkjermingJournalpost(Long journalpostId, SkjermingTypeCode tilSkjerming) {
-		List<ArkivElementEndringTO> arkivElementEndringTOList = new ArrayList<>();
+	public Map<Pair<Long, Long>, List<ArkivElementEndringTO>> endreSkjermingJournalpost(Long journalpostId, SkjermingTypeCode tilSkjerming) {
 		Journalpost journalpost = hentJournalpost(journalpostId);
+		Map<Pair<Long, Long>, List<ArkivElementEndringTO>> aksjonsLoggMap = new HashMap<>();
+
+		//Skjerm JournalpostRelasjoner
+		journalpost.getJournalpostDokumentInfoRelasjonerAdmin()
+				.forEach(rel -> {
+					aksjonsLoggMap.put(Pair.of(journalpostId, rel.getDokumentInfo().getDokumentInfoId()),
+							endreSkjermingJournalpostDokumentInfoRelasjon(journalpostId, rel.getDokumentInfo()
+									.getDokumentInfoId(), rel.getSkjermingType(), tilSkjerming));
+				});
+
+		List<ArkivElementEndringTO> arkivElementEndringTOList = new ArrayList<>();
+		//Skjerm Journalpost
 		if (journalpost.getSkjermingType() != tilSkjerming) {
 			skjermingService.setJournalpostSkjerming(journalpostId, tilSkjerming);
 			arkivElementEndringTOList.add(
@@ -59,26 +71,10 @@ public class EndreSkjermingArkivenhetService {
 							.arkivElement(JOURNALPOST_SKJERMING_TYPE)
 							.fraVerdi(enumToString(journalpost.getSkjermingType()))
 							.tilVerdi(enumToString(tilSkjerming))
-							.build()
-			);
+							.build());
 		}
-
-		return arkivElementEndringTOList;
-	}
-
-	private List<ArkivElementEndringTO> endreSkjermingJournalpostDokumentInfoRelasjon(Long journalpostId, Long dokumentInfoId, SkjermingTypeCode forrigeSkjerming, SkjermingTypeCode tilSkjerming) {
-		List<ArkivElementEndringTO> arkivElementEndringTOList = new ArrayList<>();
-		if (forrigeSkjerming != tilSkjerming) {
-			skjermingService.setJpDokInfoRelSkjerming(journalpostId, dokumentInfoId, tilSkjerming);
-			arkivElementEndringTOList.add(
-					ArkivElementEndringTO.builder()
-							.arkivElement(RELASJON_SKJERMING_TYPE)
-							.fraVerdi(enumToString(forrigeSkjerming))
-							.tilVerdi(enumToString(tilSkjerming))
-							.build()
-			);
-		}
-		return arkivElementEndringTOList;
+		aksjonsLoggMap.put(Pair.of(journalpostId, null), arkivElementEndringTOList);
+		return aksjonsLoggMap;
 	}
 
 	public List<ArkivElementEndringTO> endreSkjermingDokumentFil(Long dokumentInfoId, VariantFormatCode variant, SkjermingTypeCode skjerming) {
@@ -97,9 +93,8 @@ public class EndreSkjermingArkivenhetService {
 		return arkivElementEndringTOList;
 	}
 
-
-	public Map<Long, List<ArkivElementEndringTO>> endreSkjermingDokumentInfo(Long dokumentInfoId, SkjermingTypeCode tilSkjerming) {
-		Map<Long, List<ArkivElementEndringTO>> aksjonsLoggMap = new HashMap<>();
+	public Map<Pair<Long, Long>, List<ArkivElementEndringTO>> endreSkjermingDokumentInfo(Long dokumentInfoId, SkjermingTypeCode tilSkjerming) {
+		Map<Pair<Long, Long>, List<ArkivElementEndringTO>> aksjonsLoggMap = new HashMap<>();
 		List<JournalpostDokumentInfoRelasjon> journalpostDokumentInfoRelasjonList = hentJournalpostDokumentInfoRelasjonerByDokumentInfoId(dokumentInfoId);
 
 		journalpostDokumentInfoRelasjonList.forEach(relasjon -> {
@@ -111,16 +106,31 @@ public class EndreSkjermingArkivenhetService {
 			//Hvis tilSkjerming=null (Opphev skjerming) og Journalpost er skjermet så skal skjermingen i Journalpost fjernes. Hvis ikke dette gjøres vil ikke dokumentet være synlig.
 			//Hvis tilSkjerming!=null og Journalposten ikke har noen flere dokumentInfo relasjoner som IKKE er skjermet så skal journalposten også skjermes.
 			if (tilSkjerming == null && skjermingService.isJournalpostSkjermet(journalpostId)) {
-				arkivElementEndringList.addAll(endreSkjermingJournalpost(journalpostId, null));
+				arkivElementEndringList.addAll(endreSkjermingJournalpost(journalpostId, null).getOrDefault(Pair.of(journalpostId, null), new ArrayList<>()));
 			} else if (tilSkjerming != null && isJournalpostHarIngenDokumentInfoRelasjoner(journalpostId)) {
-				arkivElementEndringList.addAll(endreSkjermingJournalpost(journalpostId, tilSkjerming));
+				arkivElementEndringList.addAll(endreSkjermingJournalpost(journalpostId, tilSkjerming).getOrDefault(Pair.of(journalpostId, null), new ArrayList<>()));
 			}
 
-			aksjonsLoggMap.put(journalpostId, arkivElementEndringList);
+			aksjonsLoggMap.put(Pair.of(journalpostId, dokumentInfoId), arkivElementEndringList);
 
 		});
 
 		return aksjonsLoggMap;
+	}
+
+	private List<ArkivElementEndringTO> endreSkjermingJournalpostDokumentInfoRelasjon(Long journalpostId, Long dokumentInfoId, SkjermingTypeCode forrigeSkjerming, SkjermingTypeCode tilSkjerming) {
+		List<ArkivElementEndringTO> arkivElementEndringTOList = new ArrayList<>();
+		if (forrigeSkjerming != tilSkjerming) {
+			skjermingService.setJpDokInfoRelSkjerming(journalpostId, dokumentInfoId, tilSkjerming);
+			arkivElementEndringTOList.add(
+					ArkivElementEndringTO.builder()
+							.arkivElement(RELASJON_SKJERMING_TYPE)
+							.fraVerdi(enumToString(forrigeSkjerming))
+							.tilVerdi(enumToString(tilSkjerming))
+							.build()
+			);
+		}
+		return arkivElementEndringTOList;
 	}
 
 	private boolean isJournalpostHarIngenDokumentInfoRelasjoner(Long journalpostId) {

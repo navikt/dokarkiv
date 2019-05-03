@@ -12,7 +12,6 @@ import static no.nav.dokarkiv.util.TestUtil.createSkjermarkivenhetRequest;
 import static no.nav.dokarkiv.util.TestUtil.opprettHoveddokumentForIT;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.Is.is;
 
 import no.nav.dokarkiv.AbstractAdminIT;
@@ -73,21 +72,31 @@ public class Rjoark100aIT extends AbstractAdminIT {
 		assertThat(jpEtterKall.get().getSkjermingType(), is(SkjermingTypeCode.POL));
 
 		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
-		assertThat(aksjonsLoggList.size(), is(1));
+		assertThat(aksjonsLoggList.size(), is(2));
 
-		AksjonsLogg aksjonsLogg = aksjonsLoggList.get(0);
-		assertCommongAksjonsLoggValues(aksjonsLogg, AksjonsTypeCode.ENDRE_SKJERMING);
-		assertThat(aksjonsLogg.getJournalpostId(), is(journalpost.getJournalpostId()));
-		assertThat(aksjonsLogg.getDokumentInfoId(), nullValue());
-		assertThat(aksjonsLogg.getArkivElementEndringer().size(), is(1));
+		assertAksjonsLogg(getAksjonsLoggByJournalpostIdAndDokumentInfoId(aksjonsLoggList, journalpost.getJournalpostId(), journalpost
+						.findHoveddokumentDokumentInfoRelasjon()
+						.getDokumentInfo()
+						.getDokumentInfoId()), AksjonsTypeCode.ENDRE_SKJERMING, journalpost
+						.getJournalpostId(), journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId(),
+				Arrays.asList(
+						ArkivElementEndring.builder()
+								.arkivElement(RELASJON_SKJERMING_TYPE)
+								.fraVerdi(null)
+								.tilVerdi(SkjermingTypeCode.POL.name())
+								.build()
+				));
 
-		ArkivElementEndring arkivElementEndringList = IteratorUtils.toList(aksjonsLogg.getArkivElementEndringer().iterator())
-				.get(0);
-		assertThat(aksjonsLoggList.get(0).getArkivElementEndringer().size(), is(1));
-		assertThat(arkivElementEndringList.getArkivElement(), is(JOURNALPOST_SKJERMING_TYPE));
-		assertThat(arkivElementEndringList.getFraVerdi(), nullValue());
-		assertThat(arkivElementEndringList.getTilVerdi(), is("POL"));
-		assertThat(arkivElementEndringList.getAksjonsLogg(), is(aksjonsLogg));
+		assertAksjonsLogg(getAksjonsLoggByJournalpostIdAndDokumentInfoId(aksjonsLoggList, journalpost.getJournalpostId(), null), AksjonsTypeCode.ENDRE_SKJERMING, journalpost
+						.getJournalpostId(), null,
+				Arrays.asList(
+						ArkivElementEndring.builder()
+								.arkivElement(JOURNALPOST_SKJERMING_TYPE)
+								.fraVerdi(null)
+								.tilVerdi(SkjermingTypeCode.POL.name())
+								.build()
+				));
+
 		TestTransaction.end();
 	}
 
@@ -330,6 +339,9 @@ public class Rjoark100aIT extends AbstractAdminIT {
 		joarkRepository.save(journalpost);
 
 		skjermingService.setJournalpostSkjerming(journalpost.getJournalpostId(), SkjermingTypeCode.POL);
+		skjermingService.setJpDokInfoRelSkjerming(journalpost.getJournalpostId(), journalpost.findHoveddokumentDokumentInfoRelasjon()
+				.getDokumentInfo()
+				.getDokumentInfoId(), SkjermingTypeCode.POL);
 
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
@@ -350,10 +362,17 @@ public class Rjoark100aIT extends AbstractAdminIT {
 
 		assertThat(skjermingService.isJournalpostSkjermet(journalpost.getJournalpostId()), is(true));
 		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
-		assertThat(aksjonsLoggList.size(), is(1));
-		assertAksjonsLogg(aksjonsLoggList.get(0), AksjonsTypeCode.ENDRE_SKJERMING, journalpost.getJournalpostId(), null,
-				new ArrayList<>()
-		);
+		assertThat(aksjonsLoggList.size(), is(2));
+
+		assertAksjonsLogg(getAksjonsLoggByJournalpostIdAndDokumentInfoId(aksjonsLoggList, journalpost.getJournalpostId(), journalpost
+				.findHoveddokumentDokumentInfoRelasjon()
+				.getDokumentInfo()
+				.getDokumentInfoId()), AksjonsTypeCode.ENDRE_SKJERMING, journalpost
+				.getJournalpostId(), journalpost.findHoveddokumentDokumentInfoRelasjon()
+				.getDokumentInfo()
+				.getDokumentInfoId(), new ArrayList<>());
+		assertAksjonsLogg(getAksjonsLoggByJournalpostIdAndDokumentInfoId(aksjonsLoggList, journalpost.getJournalpostId(), null), AksjonsTypeCode.ENDRE_SKJERMING, journalpost
+				.getJournalpostId(), null, new ArrayList<>());
 	}
 
 

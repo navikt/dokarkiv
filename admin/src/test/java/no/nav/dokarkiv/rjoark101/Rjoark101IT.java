@@ -104,49 +104,47 @@ public class Rjoark101IT extends AbstractAdminIT {
 				.getDokumentInfoId()).size(), is(1));
 
 		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
-		assertThat(aksjonsLoggList.size(), is(1));
+		assertThat(aksjonsLoggList.size(), is(3));
 
-		assertAksjonsLogg(getAksjonsLoggByJournalpostId(aksjonsLoggList, journalpost.getJournalpostId()), AksjonsTypeCode.SLETT, journalpost
-				.getJournalpostId(), null, Arrays.asList(
+		Long dokInfoIdVedlegg = journalpost.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
+				.iterator()
+				.next()
+				.getDokumentInfo()
+				.getDokumentInfoId();
+		assertAksjonsLogg(getAksjonsLoggByJournalpostIdAndDokumentInfoId(aksjonsLoggList, journalpost.getJournalpostId(), dokInfoIdVedlegg), AksjonsTypeCode.SLETT, journalpost
+				.getJournalpostId(), dokInfoIdVedlegg, Arrays.asList(
 				ArkivElementEndring.builder()
 						.arkivElement(RELASJON_DOKUMENT_INFO_ID)
-						.fraVerdi(journalpost.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
-								.iterator()
-								.next()
-								.getDokumentInfo()
-								.getDokumentInfoId()
-								.toString())
+						.fraVerdi(dokInfoIdVedlegg.toString())
 						.tilVerdi(null)
 						.build(),
 				ArkivElementEndring.builder()
 						.arkivElement(DOKUMENT_INFO_DOKUMENT_INFO_ID)
-						.fraVerdi(journalpost.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
-								.iterator()
-								.next()
-								.getDokumentInfo()
-								.getDokumentInfoId()
-								.toString())
+						.fraVerdi(dokInfoIdVedlegg.toString())
+						.tilVerdi(null)
+						.build()));
+
+		Long dokInfoHoveddok = journalpost.findHoveddokumentDokumentInfoRelasjon()
+				.getDokumentInfo()
+				.getDokumentInfoId();
+		assertAksjonsLogg(getAksjonsLoggByJournalpostIdAndDokumentInfoId(aksjonsLoggList, journalpost.getJournalpostId(), dokInfoHoveddok), AksjonsTypeCode.SLETT, journalpost
+				.getJournalpostId(), dokInfoHoveddok, Arrays.asList(
+				ArkivElementEndring.builder()
+						.arkivElement(RELASJON_DOKUMENT_INFO_ID)
+						.fraVerdi(dokInfoHoveddok.toString())
 						.tilVerdi(null)
 						.build(),
+				ArkivElementEndring.builder()
+						.arkivElement(DOKUMENT_INFO_DOKUMENT_INFO_ID)
+						.fraVerdi(dokInfoHoveddok.toString())
+						.tilVerdi(null)
+						.build()));
+
+		assertAksjonsLogg(getAksjonsLoggByJournalpostIdAndDokumentInfoId(aksjonsLoggList, journalpost.getJournalpostId(), null), AksjonsTypeCode.SLETT, journalpost
+				.getJournalpostId(), null, Arrays.asList(
 				ArkivElementEndring.builder()
 						.arkivElement(JOURNALPOST_JOURNALPOST_ID)
 						.fraVerdi(journalpost.getJournalpostId().toString())
-						.tilVerdi(null)
-						.build(),
-				ArkivElementEndring.builder()
-						.arkivElement(RELASJON_DOKUMENT_INFO_ID)
-						.fraVerdi(journalpost.findHoveddokumentDokumentInfoRelasjon()
-								.getDokumentInfo()
-								.getDokumentInfoId()
-								.toString())
-						.tilVerdi(null)
-						.build(),
-				ArkivElementEndring.builder()
-						.arkivElement(DOKUMENT_INFO_DOKUMENT_INFO_ID)
-						.fraVerdi(journalpost.findHoveddokumentDokumentInfoRelasjon()
-								.getDokumentInfo()
-								.getDokumentInfoId()
-								.toString())
 						.tilVerdi(null)
 						.build()
 		));
@@ -216,37 +214,46 @@ public class Rjoark101IT extends AbstractAdminIT {
 				.getDokumentInfoId()).size(), is(1));
 
 		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
-		assertThat(aksjonsLoggList.size(), is(1));
+		assertThat(aksjonsLoggList.size(), is(3));
 
-		assertAksjonsLogg(getAksjonsLoggByJournalpostId(aksjonsLoggList, journalpost.getJournalpostId()), AksjonsTypeCode.SLETT, journalpost
-				.getJournalpostId(), null, Arrays.asList(
+		Long dokInfoIdVedlegg = journalpost.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
+				.iterator()
+				.next()
+				.getDokumentInfo()
+				.getDokumentInfoId();
+		assertAksjonsLogg(getAksjonsLoggByJournalpostIdAndDokumentInfoId(aksjonsLoggList, journalpost.getJournalpostId(), dokInfoIdVedlegg), AksjonsTypeCode.SLETT, journalpost
+				.getJournalpostId(), dokInfoIdVedlegg, Arrays.asList(
 				ArkivElementEndring.builder()
 						.arkivElement(RELASJON_DOKUMENT_INFO_ID)
-						.fraVerdi(dokumentInfoVedlegg.getDokumentInfoId().toString())
+						.fraVerdi(dokInfoIdVedlegg.toString())
 						.tilVerdi(null)
-						.build(),
-				ArkivElementEndring.builder()
-						.arkivElement(JOURNALPOST_JOURNALPOST_ID)
-						.fraVerdi(journalpost.getJournalpostId().toString())
-						.tilVerdi(null)
-						.build(),
+						.build()));
+
+		Long dokInfoHoveddok = journalpost.findHoveddokumentDokumentInfoRelasjon()
+				.getDokumentInfo()
+				.getDokumentInfoId();
+		assertAksjonsLogg(getAksjonsLoggByJournalpostIdAndDokumentInfoId(aksjonsLoggList, journalpost.getJournalpostId(), dokInfoHoveddok), AksjonsTypeCode.SLETT, journalpost
+				.getJournalpostId(), dokInfoHoveddok, Arrays.asList(
 				ArkivElementEndring.builder()
 						.arkivElement(RELASJON_DOKUMENT_INFO_ID)
-						.fraVerdi(journalpost.findHoveddokumentDokumentInfoRelasjon()
-								.getDokumentInfo()
-								.getDokumentInfoId()
-								.toString())
+						.fraVerdi(dokInfoHoveddok.toString())
 						.tilVerdi(null)
 						.build(),
 				ArkivElementEndring.builder()
 						.arkivElement(DOKUMENT_INFO_DOKUMENT_INFO_ID)
-						.fraVerdi(journalpost.findHoveddokumentDokumentInfoRelasjon()
-								.getDokumentInfo()
-								.getDokumentInfoId()
-								.toString())
+						.fraVerdi(dokInfoHoveddok.toString())
+						.tilVerdi(null)
+						.build()));
+
+		assertAksjonsLogg(getAksjonsLoggByJournalpostIdAndDokumentInfoId(aksjonsLoggList, journalpost.getJournalpostId(), null), AksjonsTypeCode.SLETT, journalpost
+				.getJournalpostId(), null, Arrays.asList(
+				ArkivElementEndring.builder()
+						.arkivElement(JOURNALPOST_JOURNALPOST_ID)
+						.fraVerdi(journalpost.getJournalpostId().toString())
 						.tilVerdi(null)
 						.build()
 		));
+
 
 	}
 
@@ -319,7 +326,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 				.getDokumentInfoId()).size(), is(1));
 
 		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
-		assertThat(aksjonsLoggList.size(), is(1));
+		assertThat(aksjonsLoggList.size(), is(3));
 
 	}
 

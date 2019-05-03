@@ -57,7 +57,7 @@ public class SlettArkivenhetService {
 		this.entityManager = entityManager;
 	}
 
-	public List<ArkivElementEndringTO> slettJournalpost(Long journalpostId) {
+	public Map<Pair<Long, Long>, List<ArkivElementEndringTO>> slettJournalpost(Long journalpostId) {
 		Journalpost journalpost = joarkRepository.findById(journalpostId)
 				.orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Fant ingen journalpost med journalpostId=%s i databasen", journalpostId)));
 
@@ -67,12 +67,12 @@ public class SlettArkivenhetService {
 		//Bare for logging
 		sjekkOmJournalpostErSplittetUtFraEnAnnenJournalpost(journalpost);
 
-		List<ArkivElementEndringTO> arkivElementEndringTOList = new ArrayList<>();
+		Map<Pair<Long, Long>, List<ArkivElementEndringTO>> aksjonsLoggMap = new HashMap<>();
 
-		arkivElementEndringTOList.addAll(slettDokumentInfoRelasjonerKnyttetTilJournalpost(journalpostId));
-		arkivElementEndringTOList.addAll(slettJournalpostFraDatabasen(journalpost.getJournalpostId()));
+		aksjonsLoggMap.putAll(slettDokumentInfoRelasjonerKnyttetTilJournalpost(journalpostId));
+		aksjonsLoggMap.put(Pair.of(journalpostId, null), slettJournalpostFraDatabasen(journalpost.getJournalpostId()));
 
-		return arkivElementEndringTOList;
+		return aksjonsLoggMap;
 	}
 
 	public Map<Pair<Long, Long>, List<ArkivElementEndringTO>> slettDokumentInfo(Long dokumentInfoId) {
@@ -204,13 +204,16 @@ public class SlettArkivenhetService {
 		return false;
 	}
 
-	private List<ArkivElementEndringTO> slettDokumentInfoRelasjonerKnyttetTilJournalpost(Long journalpostId) {
-		List<ArkivElementEndringTO> arkivElementEndringTOList = new ArrayList<>();
+	private Map<Pair<Long, Long>, List<ArkivElementEndringTO>> slettDokumentInfoRelasjonerKnyttetTilJournalpost(Long journalpostId) {
 		List<JournalpostDokumentInfoRelasjon> relasjoner = journalpostDokumentInfoRelasjonRepository.findAllByJournalpostJournalpostId(journalpostId);
+		Map<Pair<Long, Long>, List<ArkivElementEndringTO>> aksjonsLoggMap = new HashMap<>();
 		relasjoner
-				.forEach(relasjon -> arkivElementEndringTOList.addAll(slettJournalpostDokumentInfoRelasjon(relasjon)));
+				.forEach(relasjon -> {
+					aksjonsLoggMap.put(Pair.of(journalpostId, relasjon.getDokumentInfo()
+							.getDokumentInfoId()), slettJournalpostDokumentInfoRelasjon(relasjon));
+				});
 
-		return arkivElementEndringTOList;
+		return aksjonsLoggMap;
 	}
 
 	private List<ArkivElementEndringTO> slettJournalpostDokumentInfoRelasjon(JournalpostDokumentInfoRelasjon relasjonSomSkalSlettes) {
