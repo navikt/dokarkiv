@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.journalpost.v1;
+package no.nav.dokarkiv.journalpost.v1.util;
 
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static org.apache.commons.lang3.StringUtils.isBlank;

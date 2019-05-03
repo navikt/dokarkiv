@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.journalpost.v1.oppdaterjournalpost;
+package no.nav.dokarkiv.journalpost.v1.util.oppdaterjournalpost;
 
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
@@ -14,10 +14,10 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
 import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
 import no.nav.dokarkiv.core.repository.BrukerRepository;
-import no.nav.dokarkiv.journalpost.v1.AksjonsLoggHelper;
 import no.nav.dokarkiv.journalpost.v1.api.BrukerIdType;
 import no.nav.dokarkiv.journalpost.v1.api.OppdaterJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.Tilleggsopplysning;
+import no.nav.dokarkiv.journalpost.v1.util.AksjonsLoggHelper;
 import no.nav.dokarkiv.journalpost.v1.util.Endret;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Component;

@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.journalpost.v1.oppdaterjournalpost;
+package no.nav.dokarkiv.journalpost.v1.util.oppdaterjournalpost;
 
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.BREVKODE1;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.DOKUMENT_TITTEL1;
@@ -7,7 +7,7 @@ import static org.junit.Assert.assertThat;
 
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
-import no.nav.dokarkiv.journalpost.v1.AksjonsLoggHelper;
+import no.nav.dokarkiv.journalpost.v1.util.AksjonsLoggHelper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
