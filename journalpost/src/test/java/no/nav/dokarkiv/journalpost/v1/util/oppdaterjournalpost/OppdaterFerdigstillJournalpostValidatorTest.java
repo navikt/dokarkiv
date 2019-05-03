@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.journalpost.v1.oppdaterjournalpost;
+package no.nav.dokarkiv.journalpost.v1.util.oppdaterjournalpost;
 
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_FOR;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createAvsenderMottakerPerson;

@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.journalpost.v1.util;
+package no.nav.dokarkiv.journalpost.v1.util.kopierjournalpost;
 
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;

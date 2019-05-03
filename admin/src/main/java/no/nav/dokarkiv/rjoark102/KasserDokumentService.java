@@ -3,12 +3,10 @@ package no.nav.dokarkiv.rjoark102;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.DOKUMENT_FIL_FIL_UUID;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.DOKUMENT_INFO_KASSERT_AV;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.DOKUMENT_INFO_KASSERT_DATO;
-import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.FILDETALJER_FIL_UUID;
-import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.FILDETALJER_SKJERMING_TYPE_VARIANT;
+import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.fildetaljerSkjermingTypeVariant;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.FILDETALJER_VARIANTFORMAT;
 import static no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode.POL;
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.ARKIV;
-import static org.apache.commons.lang3.BooleanUtils.isFalse;
 
 import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
@@ -26,7 +24,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 
 @Service
@@ -46,21 +43,23 @@ public class KasserDokumentService {
 	}
 
 	public List<ArkivElementEndringTO> kasserDokument(KasserDokumentRequest request) {
-		DokumentInfo dokumentInfoTilTidligKassering = dokumentInfoRepository.findByDokumentInfoId(request.getDokumentInfoId())
+		DokumentInfo dokumentInfoForKassering = dokumentInfoRepository.findByDokumentInfoId(request.getDokumentInfoId())
 				.orElseThrow(
 						() -> new DokumentInfoIkkeFunnetException(String.format(
 								"Kan ikke finne dokument med dokumentInfoId=%s", request.getDokumentInfoId())));
 
-		settKassasjonInfo(dokumentInfoTilTidligKassering, request.getKassertAvNavn());
+		settKassasjonInfo(dokumentInfoForKassering, request.getKassertAvNavn());
 
-		List<ArkivElementEndringTO> arkivElementEndringTOList = opprettArkivElementEndring(dokumentInfoTilTidligKassering);
+		List<ArkivElementEndringTO> arkivElementEndringTOList = opprettArkivElementEndring(dokumentInfoForKassering);
 
-		//Slett alle Fildetaljer som ikke er ARKIV variant
-		arkivElementEndringTOList.addAll(slettFildetaljerIkkeArkivVariant(request.getDokumentInfoId(), dokumentInfoTilTidligKassering
+		//Slett alle Fildetaljer som ikke er ARKIV variant.
+		//Fildetaljer for ARKIV variant beholdes fordi noen tjenester i Joark forventer at DokumentInfo har minst en fildetaljer objekt.
+		//DokumentFil for ARKIV variant slettes
+		arkivElementEndringTOList.addAll(slettFildetaljerIkkeArkivVariant(request.getDokumentInfoId(), dokumentInfoForKassering
 				.getFildetaljerListeAdmin()));
 
-		FilDetaljer arkiv = dokumentInfoTilTidligKassering.findFilDetaljerByVariantFormatAdmin(ARKIV);
-		arkivElementEndringTOList.addAll(slettArkivVariantDokumentFilOgErstattMedDummy(request.getDokumentInfoId(), arkiv.getFilUuid()));
+		FilDetaljer arkiv = dokumentInfoForKassering.findFilDetaljerByVariantFormatAdmin(ARKIV);
+		arkivElementEndringTOList.addAll(slettArkivVariantDokumentFil(request.getDokumentInfoId(), arkiv.getFilUuid()));
 
 		return arkivElementEndringTOList;
 	}
@@ -78,28 +77,11 @@ public class KasserDokumentService {
 		return arkivElementEndringTOList;
 	}
 
-	private List<ArkivElementEndringTO> slettArkivVariantDokumentFilOgErstattMedDummy(Long dokumentInfoId, String oldFilUuid) {
+	private List<ArkivElementEndringTO> slettArkivVariantDokumentFil(Long dokumentInfoId, String oldFilUuid) {
 		List<ArkivElementEndringTO> arkivElementEndringTOList = new ArrayList<>();
 		arkivElementEndringTOList.add(slettDokumentFil(dokumentInfoId, ARKIV, oldFilUuid));
 		arkivElementEndringTOList.add(fjernSkjermingFraFildetaljer(dokumentInfoId, oldFilUuid, ARKIV));
-//		arkivElementEndringTOList.add(oppdaterFildetaljerFilUuid(dokumentInfoId, oldFilUuid, FIL_UUID_DUMMY_DOKUMENT_KASSERT));
 		return arkivElementEndringTOList;
-	}
-
-	//Ikke fjern dette. Midlertidlig løsning. Tenker å legge dette tilbake senere. Filluuid på Fildetaljer er ikke unik som gjør det umulig å bytte filluuid til dummmy_dokument
-	private ArkivElementEndringTO oppdaterFildetaljerFilUuid(Long dokumentInfoId, String oldFilUuid, String newFilUuid) {
-		entityManager.createQuery("update FilDetaljer set filUuid=:dummy_fil_uuid where filUuid=:oldFilUuid and dokumentInfo.dokumentInfoId=:dokumentInfoId")
-				.setParameter("dokumentInfoId", dokumentInfoId)
-				.setParameter("oldFilUuid", oldFilUuid)
-				.setParameter("dummy_fil_uuid", newFilUuid)
-				.executeUpdate();
-		entityManager.flush();
-		entityManager.clear();
-		return ArkivElementEndringTO.builder()
-				.arkivElement(FILDETALJER_FIL_UUID)
-				.fraVerdi(oldFilUuid)
-				.tilVerdi(newFilUuid)
-				.build();
 	}
 
 	private ArkivElementEndringTO fjernSkjermingFraFildetaljer(Long dokumentInfoId, String filUuid, VariantFormatCode variantFormatCode) {
@@ -111,7 +93,7 @@ public class KasserDokumentService {
 		entityManager.flush();
 		entityManager.clear();
 		return ArkivElementEndringTO.builder()
-				.arkivElement(String.format(FILDETALJER_SKJERMING_TYPE_VARIANT, variantFormatCode))
+				.arkivElement(fildetaljerSkjermingTypeVariant(variantFormatCode))
 				.fraVerdi(POL.name())
 				.tilVerdi(null)
 				.build();

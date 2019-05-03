@@ -11,11 +11,11 @@ import static org.junit.Assert.assertThat;
 
 import no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder;
 import no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder;
-import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
+import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
@@ -83,7 +83,10 @@ public class HentFerdigstilteDokumenterIT extends AbstractDokumentproduksjoninfo
 	@Test
 	public void shouldHentFerdigstilteDokumenterSkjermet() throws Exception {
 
-		skjermingService.setVariantSkjermet(journalpost.findAllDokumentInfos().iterator().next(), VariantFormatCode.ARKIV, SkjermingTypeCode.POL);
+		skjermingService.setVariantSkjermet(journalpost.findAllDokumentInfos()
+				.iterator()
+				.next()
+				.getDokumentInfoId(), VariantFormatCode.ARKIV, SkjermingTypeCode.POL);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 		TestTransaction.start();
