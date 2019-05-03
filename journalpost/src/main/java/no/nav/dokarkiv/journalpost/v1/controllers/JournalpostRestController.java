@@ -89,7 +89,8 @@ public class JournalpostRestController {
     @PostMapping("/{journalpostId}/kopierJournalpost")
     @RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark203"}, percentiles = {0.5, 0.95})
     public ResponseEntity<Long> kopierJournalpost(
-            @ApiParam(value = "IDen til journalposten som skal kopieres", required = true, example = "77778888") @PathVariable String journalpostId) {
+            @ApiParam(value = "IDen til journalposten som skal kopieres", required = true, example = "77778888")
+            @PathVariable String journalpostId) throws UgyldigAksjonsLoggException {
         MDC.put(MDC_REQUEST_ID, "rjoark203");
         log.info(MDC.get(MDC_REQUEST_ID) + " har mottatt kall for kopiering av journalpost med journalpostId={}", journalpostId);
         validateId(journalpostId, "journalpostId");

@@ -1,17 +1,19 @@
 package no.nav.dokarkiv.journalpost.v1.itest;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import no.nav.dokarkiv.core.datautil.JournalpostTestDataProvider;
+import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
+import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
+import no.nav.dokarkiv.core.domain.entities.ArkivElementEndring;
 import no.nav.dokarkiv.core.domain.entities.Bruker;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
+import org.apache.commons.collections15.IteratorUtils;
 import org.junit.After;
 import org.junit.Test;
 import org.springframework.http.HttpEntity;
@@ -23,6 +25,7 @@ import org.springframework.test.context.transaction.TestTransaction;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -78,10 +81,22 @@ public class KopierJournalpostIT extends AbstractJournalpostIT {
         assertEquals(journalpost.getAvsenderMottaker(), kopiertJournalpost.getAvsenderMottaker());
         assertEquals(journalpost.getInnhold(), kopiertJournalpost.getInnhold());
         assertEquals(JournalStatusCode.M, kopiertJournalpost.getJournalstatus());
+
+        List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
+        assertEquals(1, aksjonsLoggList.size());
+        assertEquals(SERVICE_USER_ID, aksjonsLoggList.get(0).getUtfoertAv());
+        assertEquals(AksjonsTypeCode.KOPIER_JOURNALPOST, aksjonsLoggList.get(0).getAksjon());
+
+        Set<ArkivElementEndring> arkivElementEndringTOs = aksjonsLoggList.get(0).getArkivElementEndringer();
+        assertEquals(1, arkivElementEndringTOs.size());
+
+        ArkivElementEndring arkivElementEndring = arkivElementEndringTOs.iterator().next();
+        assertEquals(arkivElementEndring.getFraVerdi(), Long.toString(journalpost.getJournalpostId()));
+        assertEquals(arkivElementEndring.getTilVerdi(), Long.toString(kopiertJournalpost.getJournalpostId()));
     }
 
     @After
-    public void closeTransaction() throws Exception {
+    public void closeTransaction() {
         TestTransaction.end();
     }
 

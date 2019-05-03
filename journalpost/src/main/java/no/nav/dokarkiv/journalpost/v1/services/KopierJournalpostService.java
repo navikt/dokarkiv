@@ -1,31 +1,42 @@
 package no.nav.dokarkiv.journalpost.v1.services;
 
+import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
+import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.KOPIER_JOURNALPOST;
+
+import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService;
+import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggTO;
+import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
+import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.journalpost.v1.util.kopierjournalpost.JournalpostCopier;
 import no.nav.dokarkiv.journalpost.v1.validators.KopierJournalpostValidator;
+import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
+import java.util.Arrays;
 
 @Component
 public class KopierJournalpostService {
 
 	private final JoarkRepository joarkRepository;
+	private final AksjonsLoggService aksjonsLoggService;
 	private final KopierJournalpostValidator kopierJournalpostValidator;
 	private final JournalpostCopier journalpostCopier;
 
 	@Inject
-	public KopierJournalpostService(final JoarkRepository joarkRepository) {
+	public KopierJournalpostService(final JoarkRepository joarkRepository, final AksjonsLoggService aksjonsLoggService) {
 		this.joarkRepository = joarkRepository;
+		this.aksjonsLoggService = aksjonsLoggService;
 		this.kopierJournalpostValidator = new KopierJournalpostValidator();
 		this.journalpostCopier = new JournalpostCopier();
 	}
 
-	public Long execute(Long journalpostId) {
+	public Long execute(Long journalpostId) throws UgyldigAksjonsLoggException {
 		// finn journalpost
 		Journalpost journalpost = joarkRepository.findById(journalpostId)
 				.orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostId)));
@@ -40,6 +51,8 @@ public class KopierJournalpostService {
 
         nyJournalpost = joarkRepository.save(nyJournalpost);
 
+        populerAksjonslogg(nyJournalpost.getJournalpostId(), journalpost.getJournalpostId());
+
 		// returnere journalpostId til ny journalpost
 		return nyJournalpost.getJournalpostId();
 	}
@@ -53,5 +66,24 @@ public class KopierJournalpostService {
 		} else { // Notat
 			journalpost.setJournalstatus(JournalStatusCode.D);
 		}
+	}
+
+
+	private void populerAksjonslogg(long journalpostId, long originalJournalpostId) throws UgyldigAksjonsLoggException {
+		AksjonsLoggTO aksjonsLoggTo;
+		aksjonsLoggTo = AksjonsLoggTO.builder()
+				.aksjon(KOPIER_JOURNALPOST)
+				.journalpostId(journalpostId)
+				.utfoertAv(MDC.get(MDC_CONSUMER_ID))
+				.melding("Journalposten ble kopiert. Id til ny journalpost er " + journalpostId)
+				.build();
+
+		ArkivElementEndringTO arkivElementEndringTO = ArkivElementEndringTO.builder()
+				.arkivElement("Journalpost.journalpostId")
+				.fraVerdi(Long.toString(originalJournalpostId))
+				.tilVerdi(Long.toString(journalpostId))
+				.build();
+
+		aksjonsLoggService.validateAndSaveAksjonsLogg(aksjonsLoggTo, Arrays.asList(arkivElementEndringTO));
 	}
 }
