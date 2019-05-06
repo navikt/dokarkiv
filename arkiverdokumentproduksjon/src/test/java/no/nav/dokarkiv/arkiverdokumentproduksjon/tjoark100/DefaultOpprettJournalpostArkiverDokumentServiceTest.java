@@ -146,7 +146,7 @@ public class DefaultOpprettJournalpostArkiverDokumentServiceTest {
 	@Test
 	public void shouldSetUtsendingskanal() {
 		service.opprettJournalpostArkiverDokument(requestFerdigstillJournalpost);
-		assertThat(journalpost.getUtsendingskanal(), is(UtsendingsKanalCode.ALTINN));
+		assertThat(journalpost.getUtsendingskanal(), is(UtsendingsKanalCode.EESSI));
 	}
 	
 	@Test
@@ -207,10 +207,10 @@ public class DefaultOpprettJournalpostArkiverDokumentServiceTest {
 				.avsenderMottaker("avsender")
 				.brukere(getBrukerBuilder().brukerId("***gammelt_fnr***").build())
 				.saksrelasjon(
-						getSaksrelasjonBuilder().sakId("1").fagsystem(FagsystemCode.BID).build())
+						getSaksrelasjonBuilder().sakId("1").fagsystem(FagsystemCode.PEN).build())
 				.innhold("innhold")
 				.journalpostType(JournalpostTypeCode.U)
-				.utsendingskanal(UtsendingsKanalCode.ALTINN)
+				.utsendingskanal(UtsendingsKanalCode.EESSI)
 				.fagomrade(FagomradeCode.AAP)
 				.opprettetAvNavn(OPPRETTET_AV_NAVN)
 				.journalForendeEnhetId("309480dfk")
@@ -221,7 +221,7 @@ public class DefaultOpprettJournalpostArkiverDokumentServiceTest {
 								.tilknyttetAvNavn("Tester")
 								.dokumentInfo(
 										getDokumentInfoBuilder()
-												.kategori(DokumentKategoriCode.E_BLANKETT)
+												.kategori(DokumentKategoriCode.SED)
 												.tittel("Brev")
 												.dokumenttypeId("dokumenttypeId")
 												.sensitivt(SENSITIVT_REQUEST)

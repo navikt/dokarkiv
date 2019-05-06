@@ -7,7 +7,6 @@ import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
 import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
-import no.nav.dokarkiv.core.domain.codes.ReferanseTypeCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasjon.arkiverdokumentproduksjon.Bruker;
@@ -48,7 +47,7 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentDataUtil {
 	protected static final String VARIANTFORMAT = "ARKIV";
 	protected static final String PERSONIDENT = "***gammelt_fnr***";
 	protected static final String EKSTERNPART_NAVN = "Jippi Hurra";
-	protected static final String FAGSYSTEMKODE = FagsystemCode.AO01.name();
+	protected static final String FAGSYSTEMKODE = FagsystemCode.PEN.name();
 	protected static final String SAKSID = "312";
 	protected static final String KANAL_REF_ID = "Kanal_ref_id_AAA";
 	protected static final String TILLEGGSOPPLYSNING_NOKKEL = "bucId";

@@ -6,11 +6,7 @@ import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjo
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.when;
 
 import com.google.common.collect.Lists;
 import no.nav.dokarkiv.core.domain.ChangeStamp;
@@ -66,11 +62,11 @@ public class HentMinTilgjengeligJournalpostListeV2ResponseMapperTest {
 	private static final String AVSENDER_MOTTAKER = "avsendermottaker";
 	private static final FagomradeCode FAGOMRADE = FagomradeCode.PEN;
 	private static final String SAKS_ID = "id";
-	private static final FagsystemCode FAGSYSTEM = FagsystemCode.BID;
+	private static final FagsystemCode FAGSYSTEM = FagsystemCode.FS22;
 	private static final Long DOK_INFO_REL_ID = 3L;
 	private static final String DOKUMENT_TITTEL = "tittel";
 	private static final VariantFormatCode VARIANT_FORMAT = VariantFormatCode.ARKIV;
-	private static final FilTypeCode FIL_TYPE = FilTypeCode.DOC;
+	private static final FilTypeCode FIL_TYPE = FilTypeCode.PDF;
 	private static final Long SKANNET_INNHOLD_ID = 2L;
 	private static final String VEDLEGG_INNHOLD = "vedleggInnhold";
 	private static final Long DOKUMENT_INFO_ID = 3L;
@@ -106,7 +102,7 @@ public class HentMinTilgjengeligJournalpostListeV2ResponseMapperTest {
 		journalpost1.setMottakskanal(MottaksKanalCode.ALTINN);
 		Journalpost journalpost2 = createJournalpost(JOURNALPOST_ID2);
 		journalpost2.setJournalposttype(JournalpostTypeCode.U);
-		journalpost2.setUtsendingskanal(UtsendingsKanalCode.E_POST);
+		journalpost2.setUtsendingskanal(UtsendingsKanalCode.EESSI);
 		List<Journalpost> journalposts = Lists.newArrayList(journalpost1, journalpost2);
 		HentTilgjengeligJournalpostListeResponse response = mapper.mapList(createInnsynJournalpostToList(journalposts));
 		assertThat(response.getJournalpostListe(), hasSize(2));
@@ -120,7 +116,7 @@ public class HentMinTilgjengeligJournalpostListeV2ResponseMapperTest {
 			} else {
 				assertThat(Long.valueOf(journalpost.getJournalpostId()), is(JOURNALPOST_ID2));
 				assertThat(journalpost.getKommunikasjonsretning().getValue(), is(JournalpostTypeCode.U.name()));
-				assertThat(journalpost.getKommunikasjonskanal(), is(UtsendingsKanalCode.E_POST.name()));
+				assertThat(journalpost.getKommunikasjonskanal(), is(UtsendingsKanalCode.EESSI.name()));
 			}
 			assertThat(journalpost.getKanalReferanseId(), is(KANAL_REFERANSE_ID));
 			assertThat(journalpost.getMottatt(), is(DateConverterUtil.convertDateToXMLGregorianCalendar(MOTTATT_DATO)));
@@ -140,7 +136,7 @@ public class HentMinTilgjengeligJournalpostListeV2ResponseMapperTest {
 		journalpost1.setMottakskanal(MottaksKanalCode.ALTINN);
 		Journalpost journalpost2 = createJournalpostKassert(JOURNALPOST_ID2);
 		journalpost2.setJournalposttype(JournalpostTypeCode.U);
-		journalpost2.setUtsendingskanal(UtsendingsKanalCode.E_POST);
+		journalpost2.setUtsendingskanal(UtsendingsKanalCode.EESSI);
 		List<Journalpost> journalposts = Lists.newArrayList(journalpost1, journalpost2);
 		HentTilgjengeligJournalpostListeResponse response = mapper.mapList(createInnsynJournalpostToList(journalposts));
 		assertThat(response.getJournalpostListe(), hasSize(2));
@@ -154,7 +150,7 @@ public class HentMinTilgjengeligJournalpostListeV2ResponseMapperTest {
 			} else {
 				assertThat(Long.valueOf(journalpost.getJournalpostId()), is(JOURNALPOST_ID2));
 				assertThat(journalpost.getKommunikasjonsretning().getValue(), is(JournalpostTypeCode.U.name()));
-				assertThat(journalpost.getKommunikasjonskanal(), is(UtsendingsKanalCode.E_POST.name()));
+				assertThat(journalpost.getKommunikasjonskanal(), is(UtsendingsKanalCode.EESSI.name()));
 			}
 			assertThat(journalpost.getKanalReferanseId(), is(KANAL_REFERANSE_ID));
 			assertThat(journalpost.getMottatt(), is(DateConverterUtil.convertDateToXMLGregorianCalendar(MOTTATT_DATO)));

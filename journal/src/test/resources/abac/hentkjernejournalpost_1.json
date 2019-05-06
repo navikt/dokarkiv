@@ -11,7 +11,7 @@
           "Value": "no.nav.abac.attributter.resource.arkiv.sak"
         },
         {
-          "AttributeId": "no.nav.abac.attributter.resource.arkiv.gsak_saksid",
+          "AttributeId": "no.nav.abac.attributter.resource.arkiv.pensjon_saksid",
           "Value": "9999"
         }
       ]

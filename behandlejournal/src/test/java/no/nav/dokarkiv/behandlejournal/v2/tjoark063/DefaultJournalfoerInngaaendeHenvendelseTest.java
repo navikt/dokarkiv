@@ -118,11 +118,11 @@ public class DefaultJournalfoerInngaaendeHenvendelseTest {
 				.avsenderMottaker("avsender")
 				.brukere(getBrukerBuilder().brukerId("***gammelt_fnr***").build())
 				.saksrelasjon(
-						SaksrelasjonBuilder.getSaksrelasjonBuilder().sakId("1").fagsystem(FagsystemCode.BID).build())
+						SaksrelasjonBuilder.getSaksrelasjonBuilder().sakId("1").fagsystem(FagsystemCode.PEN).build())
 				.signatur(true)
 				.mottattDato(new Date())
 				.journalpostType(JournalpostTypeCode.I)
-				.mottakskanal(MottaksKanalCode.PSELV)
+				.mottakskanal(MottaksKanalCode.NAV_NO)
 				.fagomrade(FagomradeCode.AAP)
 				.opprettetAvNavn(OPPRETTET_AV_NAVN)
 				.dokumentInfoRelasjoner(

@@ -528,7 +528,7 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentValidatorTest {
 				.saksrelasjon(Saksrelasjon.builder()
 						.sakId(SAKSID)
 						.sakId("1")
-						.fagsystem(FagsystemCode.AO01)
+						.fagsystem(FagsystemCode.PEN)
 						.build())
 				.tilleggsopplysninger(createTilleggsopplysningMap())
 				.build();
@@ -573,12 +573,12 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentValidatorTest {
 				.fildetaljerListe(new HashSet<>(Arrays.asList(
 						FilDetaljer.builder()
 								.variantFormat(VariantFormatCode.ARKIV)
-								.filtype(FilTypeCode.AFP)
+								.filtype(FilTypeCode.PDF)
 								.fileContent("test".getBytes())
 								.build(),
 						FilDetaljer.builder()
 								.variantFormat(VariantFormatCode.ORIGINAL)
-								.filtype(FilTypeCode.DOC)
+								.filtype(FilTypeCode.PDF)
 								.fileContent("test".getBytes())
 								.build())))
 				.build();
@@ -601,12 +601,12 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentValidatorTest {
 										.fildetaljerListe(new HashSet<>(Arrays.asList(
 												FilDetaljer.builder()
 														.variantFormat(VariantFormatCode.ARKIV)
-														.filtype(FilTypeCode.AFP)
+														.filtype(FilTypeCode.PDF)
 														.fileContent("test".getBytes())
 														.build(),
 												FilDetaljer.builder()
 														.variantFormat(secondVariantFormat)
-														.filtype(FilTypeCode.DOC)
+														.filtype(FilTypeCode.PDF)
 														.fileContent("test".getBytes())
 														.build())))
 										.build())

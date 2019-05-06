@@ -103,7 +103,7 @@ public class AksjonsLoggIT {
 		assertThat(aksjonsLogg.getJournalpostId(), is(journalpostId));
 		assertThat(aksjonsLogg.getHjemmel(), is(TestDataUtils.AKSJON_HJEMMEL));
 		assertThat(aksjonsLogg.getArkivsaksnummer(), is(TestDataGenerator.SAK_ID));
-		assertThat(aksjonsLogg.getArkivsaksystem(), is(FagsystemCode.AO01));
+		assertThat(aksjonsLogg.getArkivsaksystem(), is(FagsystemCode.PEN));
 		assertThat(Duration.between(aksjonsLogg.getTidspunkt(), LocalDateTime.now()).getSeconds(), lessThan(10L));
 
 		assertThat(aksjonsLogg.getUtfoertAv(), is(AKSJON_UTFOERT_AV));

@@ -189,7 +189,7 @@ public class TestDataGenerator {
 
 	public static Saksrelasjon createSaksrelasjon(Journalpost journalpost) {
 		Saksrelasjon saksrelasjon = Saksrelasjon.builder()
-				.fagsystem(FagsystemCode.AO01)
+				.fagsystem(FagsystemCode.PEN)
 				.sakId(SAK_ID)
 				.journalpost(journalpost)
 				.build();
@@ -217,7 +217,7 @@ public class TestDataGenerator {
 
 	public static Kryssreferanse createKryssreferanse() {
 		Kryssreferanse kryssreferanse = Kryssreferanse.builder()
-				.referanseType(ReferanseTypeCode.SED_FLYT)
+				.referanseType(ReferanseTypeCode.SPOERSMAAL)
 				.referanseId(KRYSSREFERANSE_ID)
 				.referanseNr(1L)
 				.build();

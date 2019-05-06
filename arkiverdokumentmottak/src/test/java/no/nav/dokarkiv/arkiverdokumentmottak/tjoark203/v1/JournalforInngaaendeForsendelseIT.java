@@ -471,7 +471,7 @@ public class JournalforInngaaendeForsendelseIT extends AbstractArkiverDokumentmo
 	@Test
 	public void shouldThrowExceptionOnMissingHoveddokument() throws Exception {
 		expectedException.expect(KanIkkeJournalfores.class);
-		expectedException.expectMessage("Journalpost must contain either a hoveddokument or a sammensatt dokument when endelig journalforing");
+		expectedException.expectMessage("Journalpost must contain a hoveddokument when endelig journalforing");
 
 		request.getJournalpost()
 				.getJournalpostDokumentInfoRelasjon()

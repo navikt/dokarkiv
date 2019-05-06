@@ -163,10 +163,10 @@ public class DefaultOpprettJournalpostServiceTest {
 				.saksrelasjon(
 						getSaksrelasjonBuilder()
 								.sakId("1")
-								.fagsystem(FagsystemCode.BID).build())
+								.fagsystem(FagsystemCode.PEN).build())
 				.innhold("innhold")
 				.journalpostType(JournalpostTypeCode.U)
-				.utsendingskanal(UtsendingsKanalCode.ALTINN)
+				.utsendingskanal(UtsendingsKanalCode.EESSI)
 				.fagomrade(FagomradeCode.AAP)
 				.opprettetAvNavn(OPPRETTET_AV_NAVN)
 				.journalForendeEnhetId("309480dfk")
@@ -179,7 +179,7 @@ public class DefaultOpprettJournalpostServiceTest {
 										getDokumentInfoBuilder()
 												.dokumentInfoId(dokumentinfoId)
 												.kategori(
-														DokumentKategoriCode.E_BLANKETT)
+														DokumentKategoriCode.ES)
 												.tittel("Brev")
 												.dokumenttypeId(
 														"dokumenttypeId")

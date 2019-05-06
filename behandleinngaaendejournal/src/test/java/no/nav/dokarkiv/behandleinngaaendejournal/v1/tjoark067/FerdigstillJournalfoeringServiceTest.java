@@ -175,7 +175,7 @@ public class FerdigstillJournalfoeringServiceTest {
 				.build()));
 
 		thrown.expect(FerdigstillingIkkeMuligException.class);
-		thrown.expectMessage("Journalpost must contain either a hoveddokument");
+		thrown.expectMessage("Journalpost must contain a hoveddokument");
 
 		ferdigstillJournalfoeringService.ferdigstillJournalfoering(defaultTo());
 	}

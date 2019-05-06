@@ -6,11 +6,9 @@ import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalp
 import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
 import static no.nav.dokarkiv.core.domain.codes.DokumentStatusCode.AVBRUTT;
 import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.HOVEDDOKUMENT;
-import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.SAMMENSATT_DOK;
 import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.VEDLEGG;
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.SLADDET;
 import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertFalse;
@@ -316,34 +314,11 @@ public class JournalpostTest {
 	}
 
 	@Test
-	public void shouldThrowExceptionForNoHoveddokAndSammensattDok() throws Exception {
-		Journalpost journalpost = getJournalpostBuilder().journalStatus(JournalStatusCode.J).build();
-
-		assertExceptionThrownWithMessage(journalpost, "hoveddokument", "sammensatt dokument");
-	}
-
-	@Test
-	public void shouldThrowExceptionWhenBothHoveddokAndSammensattDokAreSet() throws Exception {
-		Journalpost journalpost = createJournalpostWithTwoDokumentInfoRelasjoner(JournalStatusCode.FS, HOVEDDOKUMENT,
-				SAMMENSATT_DOK);
-
-		assertExceptionThrownWithMessage(journalpost, "one hoveddokument", "one sammensatt dokument");
-	}
-
-	@Test
 	public void shouldThrowExceptionWhenMoreThanOneHoveddokIsSet() throws Exception {
 		Journalpost journalpost = createJournalpostWithTwoDokumentInfoRelasjoner(JournalStatusCode.FL, HOVEDDOKUMENT,
 				HOVEDDOKUMENT);
 
 		assertExceptionThrownWithMessage(journalpost, "more than one hoveddokument");
-	}
-
-	@Test
-	public void shouldThrowExceptionWhenMoreThanOneSammensattDokIsSet() throws Exception {
-		Journalpost journalpost = createJournalpostWithTwoDokumentInfoRelasjoner(JournalStatusCode.J, SAMMENSATT_DOK,
-				SAMMENSATT_DOK);
-
-		assertExceptionThrownWithMessage(journalpost, "more than one sammensatt dokument");
 	}
 
 	@Test

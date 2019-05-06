@@ -60,7 +60,7 @@ public class JournalforInngaaendeForsendelseValidatorTest {
 	private static final VariantFormatCode VARIANTFORMAT_ORIGINAL = VariantFormatCode.ORIGINAL;
 	private static final String PERSONIDENT = "***gammelt_fnr***";
 	private static final String EKSTERNPART_NAVN = "Mario & Luigi";
-	private static final FagsystemCode FAGSYSTEMKODE = FagsystemCode.AO01;
+	private static final FagsystemCode FAGSYSTEMKODE = FagsystemCode.PEN;
 	private static final String SAKSID = "312";
 	private static final BrukerTypeCode BRUKER_TYPE_CODE = BrukerTypeCode.PERSON;
 	private static final String TILLEGGSOPPLYSNING_KEY = "tilleggsopplysning-1";
@@ -125,7 +125,7 @@ public class JournalforInngaaendeForsendelseValidatorTest {
 	@Test
 	public void testTooFewHoveddokument() throws Exception {
 		expectedException.expect(InvalidJournalpostStructureException.class);
-		expectedException.expectMessage("Journalpost must contain either a hoveddokument or a sammensatt dokument when endelig journalforing");
+		expectedException.expectMessage("Journalpost must contain a hoveddokument when endelig journalforing");
 
 		for (JournalpostDokumentInfoRelasjon jdir : journalpost.getJournalpostDokumentInfoRelasjoner()) {
 			jdir.setTilknyttetJournalpostSom(VEDLEGG);

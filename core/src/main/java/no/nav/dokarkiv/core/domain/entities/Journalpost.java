@@ -410,7 +410,7 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 		if (!hasEndeligJournalforingStatus() && journalstatus != JournalStatusCode.E) {
 			return;
 		}
-		verifyOnlyOneHoveddokOrSammensattDok();
+		verifyOnlyOneHoveddokument();
 		verifyArkivVariantOfAllDocuments();
 		verifyNoDokumentInfosUnderRedigering();
 	}
@@ -449,30 +449,6 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	 */
 	public boolean hasFerdigOgSentralPrintJournalforingStatus() {
 		return journalstatus == JournalStatusCode.FS;
-	}
-
-	public void verifyOnlyOneHoveddokOrSammensattDok() {
-		int hovedDokumentCount = getTilknyttetSomCount(getJournalpostDokumentInfoRelasjoner(),
-				TilknyttetJournalpostSomCode.HOVEDDOKUMENT);
-		int sammensattDokCount = getTilknyttetSomCount(getJournalpostDokumentInfoRelasjoner(),
-				TilknyttetJournalpostSomCode.SAMMENSATT_DOK);
-
-		if (hovedDokumentCount == 0 && sammensattDokCount == 0) {
-			throwExceptionForFailedVerificationForEndeligJournalforing(
-					"Journalpost must contain either a hoveddokument or a sammensatt dokument");
-		}
-		if (hovedDokumentCount == 1 && sammensattDokCount == 1) {
-			throwExceptionForFailedVerificationForEndeligJournalforing(
-					"Journalpost must only contain one hoveddokument or one sammensatt dokument");
-		}
-		if (hovedDokumentCount > 1) {
-			throwExceptionForFailedVerificationForEndeligJournalforing(
-					"Journalpost cannot contain more than one hoveddokument");
-		}
-		if (sammensattDokCount > 1) {
-			throwExceptionForFailedVerificationForEndeligJournalforing(
-					"Journalpost cannot contain more than one sammensatt dokument");
-		}
 	}
 
 	public void verifyOnlyOneHoveddokument() {

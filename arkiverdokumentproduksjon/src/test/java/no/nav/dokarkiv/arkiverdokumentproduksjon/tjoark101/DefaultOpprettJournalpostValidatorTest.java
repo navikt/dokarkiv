@@ -286,7 +286,7 @@ public class DefaultOpprettJournalpostValidatorTest {
 						getSaksrelasjonBuilder()
 								.sakId("1")
 								.opprettetKildeNavn(OPPRETTET_KILDE_NAVN)
-								.fagsystem(FagsystemCode.BID).build())
+								.fagsystem(FagsystemCode.PEN).build())
 				.journalStatus(JournalStatusCode.D)
 				.journalpostType(JournalpostTypeCode.U)
 				.fagomrade(FagomradeCode.UKJ)
@@ -310,7 +310,7 @@ public class DefaultOpprettJournalpostValidatorTest {
 								.dokumentInfo(
 										getDokumentInfoBuilder()
 												.dokumentstatus(DokumentStatusCode.UNDER_REDIGERING)
-												.kategori(DokumentKategoriCode.E_BLANKETT)
+												.kategori(DokumentKategoriCode.SED)
 												.opprettetKildeNavn(OPPRETTET_KILDE_NAVN)
 												.tittel("Brev")
 												.dokumenttypeId("dokumenttypeId")

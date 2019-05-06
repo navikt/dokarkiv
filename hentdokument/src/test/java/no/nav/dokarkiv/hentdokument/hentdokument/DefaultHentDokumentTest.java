@@ -345,7 +345,7 @@ public class DefaultHentDokumentTest {
 		return FilDetaljerBuilder.getFilDetaljerBuilder()
 				.filUuid(filUuid)
 				.filnavn("filNavn")
-				.filtype(FilTypeCode.AFP)
+				.filtype(FilTypeCode.PDF)
 				.variantFormat(VariantFormatCode.ARKIV)
 				.opprettetKildeNavn("NAV")
 				.build();

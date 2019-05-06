@@ -16,7 +16,6 @@ import static no.nav.dokarkiv.core.datautil.SaksrelasjonTestDataProvider.PEN_SAK
 import static no.nav.dokarkiv.core.datautil.SaksrelasjonTestDataProvider.createPENSaksrelasjon;
 import static no.nav.dokarkiv.core.datautil.SaksrelasjonTestDataProvider.createSaksrelasjon;
 import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
-import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.HOVEDDOKUMENT;
 import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.VEDLEGG;
 import static no.nav.dokarkiv.core.domain.entities.DokumentInfo.DELETED_DOCUMENT_TITLE;
 import static no.nav.dokarkiv.core.util.DateConverterUtil.convertDateToXMLGregorianCalendar;
@@ -94,7 +93,7 @@ public class HentKjerneJournalpostListeIT extends AbstractJournalV3Itest {
 	private static final String ORG_NR = "220278387";
 	private static final boolean DEFAULT_FEILREGISTRERT = false;
 	private static final DokumentKategoriCode DOKUMENT_KATEGORI = DokumentKategoriCode.SOK;
-	private static final FagsystemCode SAK_FAGSYSTEM = FagsystemCode.AO01;
+	private static final FagsystemCode SAK_FAGSYSTEM = FagsystemCode.PEN;
 	private static final String SAK_ID = "9999";
 	private static final String DENY_PERMIT_ABAC_SCENARIO = "denypermitabac";
 

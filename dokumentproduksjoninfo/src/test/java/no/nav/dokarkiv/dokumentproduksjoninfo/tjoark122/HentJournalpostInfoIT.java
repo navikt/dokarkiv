@@ -40,7 +40,7 @@ public class HentJournalpostInfoIT extends AbstractDokumentproduksjoninfoItest {
 	private static final JournalStatusCode JOURNAL_STATUS = JournalStatusCode.D;
 	private static final String JOURNALFOERENDE_ENHET = "9999";
 	private static final FagomradeCode FAGOMRADE_CODE = FagomradeCode.AAP;
-	private static final FagsystemCode FAGSYSTEM_CODE = FagsystemCode.AO01;
+	private static final FagsystemCode FAGSYSTEM_CODE = FagsystemCode.PEN;
 	private static final String SAKID = "12";
 	private static final String BRUKERID = "999999999";
 	private static final BrukerTypeCode BRUKER_TYPE_CODE = BrukerTypeCode.PERSON;

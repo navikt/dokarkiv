@@ -165,12 +165,12 @@ public class DefaultJournalfoerNotatHenvendelseTest {
 				.avsenderMottaker("avsender")
 				.brukere(getBrukerBuilder().brukerId("***gammelt_fnr***").build())
 				.saksrelasjon(
-						SaksrelasjonBuilder.getSaksrelasjonBuilder().sakId("1").fagsystem(FagsystemCode.BID).build())
+						SaksrelasjonBuilder.getSaksrelasjonBuilder().sakId("1").fagsystem(FagsystemCode.PEN).build())
 				.signatur(true)
 				.innhold("innhold")
 				.mottattDato(new Date())
 				.journalpostType(JournalpostTypeCode.U)
-				.utsendingskanal(UtsendingsKanalCode.ALTINN)
+				.utsendingskanal(UtsendingsKanalCode.EESSI)
 				.fagomrade(FagomradeCode.AAP)
 				.opprettetAvNavn(OPPRETTET_AV_NAVN)
 				.dokumentInfoRelasjoner(
