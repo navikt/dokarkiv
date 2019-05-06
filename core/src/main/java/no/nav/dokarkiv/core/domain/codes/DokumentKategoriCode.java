@@ -34,14 +34,6 @@ public enum DokumentKategoriCode implements CtiRelationship<DokumentKategoriCode
 	 */
 	IS,
 	/**
-	 * E-post
-	 */
-	EP,
-	/**
-	 * Faktura
-	 */
-	F,
-	/**
 	 * Konverterte data fra system
 	 */
 	KS,
@@ -50,25 +42,13 @@ public enum DokumentKategoriCode implements CtiRelationship<DokumentKategoriCode
 	 */
 	KD,
 	/**
-	 * Konvertert fra papirarkiv (skannet)
-	 */
-	KM,
-	/**
 	 * Strukturert elektronisk dokument
 	 */
 	SED,
 	/**
-	 * SystemSED
-	 */
-	SYS_SED,
-	/**
 	 * Publikumsblankett EØS
 	 */
 	PUBL_BLANKETT_EOS,
-	/**
-	 * E-blankett
-	 */
-	E_BLANKETT,
 	/**
 	 * Elektronisk dialog (brukerdialog)
 	 */

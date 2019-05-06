@@ -13,16 +13,8 @@ public enum FagomradeCode implements CtiRelationship<FagomradeCode, String> {
 	BID,
 	/** Pensjon */
 	PEN,
-	/** Øvrig */
-	OVR,
-	/** Skanning */
-	MOT,
 	/** Okonomi */
 	OKO,
-	/** Bidrag innkreving */
-	BII,
-	/** FS22 */
-	FS22,
 	/** Bil */
 	BIL,
 	/** Hjelpemidler */

@@ -13,19 +13,15 @@ public enum FilTypeCode implements CtiRelationship<FilTypeCode, String> {
 	PDFA,
 	XML,
 	RTF,
-	AFP,
-	META,
 	DLF,
 	JPEG,
 	TIFF,
-	DOC,
-	DOCX,
-	XLS,
-	XLSX,
 	AXML,
 	DXML,
 	JSON,
-	PNG;
+	PNG,
+	JPG,
+	TIF;
 	
 	/** {@inheritDoc} */
 	@Override
