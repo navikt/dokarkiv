@@ -228,14 +228,7 @@ public class Rjoark100bIT extends AbstractAdminIT {
 		);
 		assertAksjonsLogg(getAksjonsLoggByJournalpostId(aksjonsLoggList, journalpost1.getJournalpostId()), AksjonsTypeCode.ENDRE_SKJERMING, journalpost1
 						.getJournalpostId(), dokumentInfo
-						.getDokumentInfoId(),
-				Arrays.asList(
-						ArkivElementEndring.builder()
-								.arkivElement(RELASJON_SKJERMING_TYPE)
-								.fraVerdi(SkjermingTypeCode.POL.name())
-								.tilVerdi(null)
-								.build()
-				));
+				.getDokumentInfoId(), new ArrayList<>());
 		assertAksjonsLogg(getAksjonsLoggByJournalpostId(aksjonsLoggList, journalpost2.getJournalpostId()), AksjonsTypeCode.ENDRE_SKJERMING, journalpost2
 						.getJournalpostId(), dokumentInfo
 						.getDokumentInfoId(),
