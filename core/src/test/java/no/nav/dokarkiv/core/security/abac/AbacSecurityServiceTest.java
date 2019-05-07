@@ -200,7 +200,7 @@ public class AbacSecurityServiceTest {
 						Collections.<Obligation>emptyList(),
 						Collections.<Advice>emptyList()));
 
-		Decision decision = abacSecurityService.assertAccessToSak(SAK_ID, FagsystemCode.PEN);
+		Decision decision = abacSecurityService.assertAccessToSak(SAK_ID, FagsystemCode.FS22);
 
 		verify(abaclog).logAbacDeny(any(XacmlRequest.class), any(XacmlResponse.class), anyMap());
 		assertThat(decision, equalTo(Decision.DENY));
@@ -214,7 +214,7 @@ public class AbacSecurityServiceTest {
 						Arrays.asList(new Advice("id1", Collections.<AttributeAssignment>emptyList()),
 								new Advice("id2", Collections.<AttributeAssignment>emptyList()))));
 
-		Decision decision = abacSecurityService.assertAccessToSak(SAK_ID, FagsystemCode.PEN);
+		Decision decision = abacSecurityService.assertAccessToSak(SAK_ID, FagsystemCode.FS22);
 
 		verify(abaclog).logAbacPermit(any(XacmlRequest.class), any(XacmlResponse.class), anyMap());
 

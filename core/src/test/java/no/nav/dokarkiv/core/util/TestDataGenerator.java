@@ -189,7 +189,7 @@ public class TestDataGenerator {
 
 	public static Saksrelasjon createSaksrelasjon(Journalpost journalpost) {
 		Saksrelasjon saksrelasjon = Saksrelasjon.builder()
-				.fagsystem(FagsystemCode.PEN)
+				.fagsystem(FagsystemCode.FS22)
 				.sakId(SAK_ID)
 				.journalpost(journalpost)
 				.build();

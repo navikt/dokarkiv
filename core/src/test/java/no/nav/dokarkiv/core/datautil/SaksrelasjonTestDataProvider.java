@@ -14,7 +14,7 @@ import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
 public final class SaksrelasjonTestDataProvider {
 
 	public static final String SAK_KILDE_NAVN = "test";
-	public static final FagsystemCode SAK_FAGSYSTEM = FagsystemCode.PEN;
+	public static final FagsystemCode SAK_FAGSYSTEM = FagsystemCode.FS22;
 	public static final String SAK_ID = "9999";
 	public static final String PEN_SAK_ID = "1000";
 

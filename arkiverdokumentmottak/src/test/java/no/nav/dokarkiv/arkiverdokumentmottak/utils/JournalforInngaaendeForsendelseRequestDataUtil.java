@@ -60,7 +60,7 @@ public final class JournalforInngaaendeForsendelseRequestDataUtil {
 				.journalfortAvNavn("test")
 				.saksrelasjon(Saksrelasjon.builder()
 						.endretAvNavn("test")
-						.fagsystem(FagsystemCode.PEN)
+						.fagsystem(FagsystemCode.FS22)
 						.feilregistrert(false)
 						.build())
 				.innhold(INNHOLD)

@@ -294,7 +294,7 @@ public class DefaultOpprettJournalpostArkiverDokumenterValidatorTest {
 				.brukere(getBrukerBuilder().brukerId("***gammelt_fnr***").brukerType(BrukerTypeCode.PERSON).build())
 				.journalStatus(JournalStatusCode.FS)
 				.saksrelasjon(
-						getSaksrelasjonBuilder().sakId("1").fagsystem(FagsystemCode.PEN).build())
+						getSaksrelasjonBuilder().sakId("1").fagsystem(FagsystemCode.FS22).build())
 				.innhold("innhold")
 				.journalpostType(JournalpostTypeCode.U)
 				.utsendingskanal(UtsendingsKanalCode.EESSI)
@@ -348,7 +348,7 @@ public class DefaultOpprettJournalpostArkiverDokumenterValidatorTest {
 				.brukere(getBrukerBuilder().brukerId("***gammelt_fnr***").brukerType(BrukerTypeCode.PERSON).build())
 				.journalStatus(JournalStatusCode.FS)
 				.saksrelasjon(
-						getSaksrelasjonBuilder().sakId("1").fagsystem(FagsystemCode.PEN).build())
+						getSaksrelasjonBuilder().sakId("1").fagsystem(FagsystemCode.FS22).build())
 				.innhold("innhold")
 				.journalpostType(JournalpostTypeCode.U)
 				.utsendingskanal(UtsendingsKanalCode.EESSI)

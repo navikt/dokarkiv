@@ -286,7 +286,7 @@ public class DefaultOpprettJournalpostValidatorTest {
 						getSaksrelasjonBuilder()
 								.sakId("1")
 								.opprettetKildeNavn(OPPRETTET_KILDE_NAVN)
-								.fagsystem(FagsystemCode.PEN).build())
+								.fagsystem(FagsystemCode.FS22).build())
 				.journalStatus(JournalStatusCode.D)
 				.journalpostType(JournalpostTypeCode.U)
 				.fagomrade(FagomradeCode.UKJ)

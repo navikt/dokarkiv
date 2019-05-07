@@ -93,7 +93,7 @@ public class HentKjerneJournalpostListeIT extends AbstractJournalV3Itest {
 	private static final String ORG_NR = "220278387";
 	private static final boolean DEFAULT_FEILREGISTRERT = false;
 	private static final DokumentKategoriCode DOKUMENT_KATEGORI = DokumentKategoriCode.SOK;
-	private static final FagsystemCode SAK_FAGSYSTEM = FagsystemCode.PEN;
+	private static final FagsystemCode SAK_FAGSYSTEM = FagsystemCode.FS22;
 	private static final String SAK_ID = "9999";
 	private static final String DENY_PERMIT_ABAC_SCENARIO = "denypermitabac";
 

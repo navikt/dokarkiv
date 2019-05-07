@@ -15,6 +15,10 @@
           "Value": "***gammelt_fnr***"
         },
         {
+          "AttributeId": "no.nav.abac.attributter.resource.arkiv.gsak_saksid",
+          "Value": "9999"
+        },
+        {
           "AttributeId": "no.nav.abac.attributter.resource.felles.tema",
           "Value": "FOR"
         }

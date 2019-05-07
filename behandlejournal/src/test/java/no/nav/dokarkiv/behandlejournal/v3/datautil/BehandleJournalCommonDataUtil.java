@@ -46,7 +46,7 @@ public class BehandleJournalCommonDataUtil {
 	protected static final boolean SIGNATUR = true;
 	protected static final String REFERANSEID = "123";
 	protected static final String REFERANSEKODE = ReferanseTypeCode.SPOERSMAAL.name();
-	protected static final String FAGSYSTEMKODE = FagsystemCode.PEN.name();
+	protected static final String FAGSYSTEMKODE = FagsystemCode.FS22.name();
 	protected static final String SAKSID = "312";
 
 	public static NoekkelVerdiSett createTilleggsopplysninger() {

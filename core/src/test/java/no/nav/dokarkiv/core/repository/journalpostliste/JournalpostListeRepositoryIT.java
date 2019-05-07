@@ -89,13 +89,13 @@ public class JournalpostListeRepositoryIT {
 
 	@Test
 	public void shouldRestrictToNotFeilregistrert() {
-		createJournalpostWithSaksrelasjon("1337", false, null, FagsystemCode.PEN);
+		createJournalpostWithSaksrelasjon("1337", false, null, FagsystemCode.FS22);
 		createJournalpostWithSaksrelasjon("1338", false, null, FagsystemCode.FS22);
-		createJournalpostWithSaksrelasjon("1339", true, null, FagsystemCode.PEN);
+		createJournalpostWithSaksrelasjon("1339", true, null, FagsystemCode.FS22);
 
-		hentMinJPListeParameters.addFagsystemSak("1337", FagsystemCode.PEN);
+		hentMinJPListeParameters.addFagsystemSak("1337", FagsystemCode.FS22);
 		hentMinJPListeParameters.addFagsystemSak("1338", FagsystemCode.FS22);
-		hentMinJPListeParameters.addFagsystemSak("1339", FagsystemCode.PEN);
+		hentMinJPListeParameters.addFagsystemSak("1339", FagsystemCode.FS22);
 
 		List<Journalpost> journalpostListe = journalpostListeRepository.findJournalpostListe(hentMinJPListeParameters);
 		Assert.assertThat(journalpostListe, Matchers.hasSize(2));
@@ -103,8 +103,8 @@ public class JournalpostListeRepositoryIT {
 
 	@Test
 	public void shouldReturnEmptyWhenNotFeilRegistrertAndCreatedDatoBefore() {
-		createJournalpostWithSaksrelasjon("1339", true, null, FagsystemCode.PEN);
-		hentMinJPListeParameters.addFagsystemSak("1339", FagsystemCode.PEN);
+		createJournalpostWithSaksrelasjon("1339", true, null, FagsystemCode.FS22);
+		hentMinJPListeParameters.addFagsystemSak("1339", FagsystemCode.FS22);
 		hentMinJPListeParameters.setTidligstInnsynDato(journalDato.minusDays(1).toDate());
 
 		List<Journalpost> journalpostListe = journalpostListeRepository.findJournalpostListe(hentMinJPListeParameters);
@@ -141,7 +141,7 @@ public class JournalpostListeRepositoryIT {
 	public void shouldSearchWhenPagingParamsIsMissingl() {
 		int i = 0;
 		while (5 > i++) {
-			createJournalpostWithSaksrelasjon("1337", false, null, FagsystemCode.PEN);
+			createJournalpostWithSaksrelasjon("1337", false, null, FagsystemCode.FS22);
 
 		}
 		journalpostListeRepository.findJournalpostListe(hentMinJPListeParameters);
@@ -151,11 +151,11 @@ public class JournalpostListeRepositoryIT {
 	public void shouldReturnMaxResult() {
 		int i = 0;
 		while (5 > i++) {
-			createJournalpostWithSaksrelasjon("1337", false, null, FagsystemCode.PEN);
+			createJournalpostWithSaksrelasjon("1337", false, null, FagsystemCode.FS22);
 
 		}
 
-		hentMinJPListeParameters.addFagsystemSak("1337", FagsystemCode.PEN);
+		hentMinJPListeParameters.addFagsystemSak("1337", FagsystemCode.FS22);
 		hentMinJPListeParameters.setMaxResults(3);
 
 		List<Journalpost> journalpostListe = journalpostListeRepository.findJournalpostListe(hentMinJPListeParameters);
@@ -168,10 +168,10 @@ public class JournalpostListeRepositoryIT {
 		List<Journalpost> expectedJournalposter = new LinkedList<Journalpost>();
 		int i = 0;
 		while (5 > i++) {
-			expectedJournalposter.add(createJournalpostWithSaksrelasjon("1337", false, null, FagsystemCode.PEN));
+			expectedJournalposter.add(createJournalpostWithSaksrelasjon("1337", false, null, FagsystemCode.FS22));
 		}
 
-		hentMinJPListeParameters.addFagsystemSak("1337", FagsystemCode.PEN);
+		hentMinJPListeParameters.addFagsystemSak("1337", FagsystemCode.FS22);
 		hentMinJPListeParameters.setMaxResults(3);
 		hentMinJPListeParameters.setPageNr(0);
 
@@ -187,9 +187,9 @@ public class JournalpostListeRepositoryIT {
 		List<Journalpost> expectedJournalposter = new LinkedList<Journalpost>();
 		int i = 0;
 		while (5 > i++) {
-			expectedJournalposter.add(createJournalpostWithSaksrelasjon("1337", false, null, FagsystemCode.PEN));
+			expectedJournalposter.add(createJournalpostWithSaksrelasjon("1337", false, null, FagsystemCode.FS22));
 		}
-		hentMinJPListeParameters.addFagsystemSak("1337", FagsystemCode.PEN);
+		hentMinJPListeParameters.addFagsystemSak("1337", FagsystemCode.FS22);
 		hentMinJPListeParameters.setMaxResults(3);
 		hentMinJPListeParameters.setPageNr(1);
 
@@ -222,21 +222,21 @@ public class JournalpostListeRepositoryIT {
 	public void shouldFindTotalNumberOfJournalposts() {
 		int i = 0;
 		while (5 > i++) {
-			createJournalpostWithSaksrelasjon("1337", false, null, FagsystemCode.PEN);
+			createJournalpostWithSaksrelasjon("1337", false, null, FagsystemCode.FS22);
 		}
 
-		hentMinJPListeParameters.addFagsystemSak("1337", FagsystemCode.PEN);
+		hentMinJPListeParameters.addFagsystemSak("1337", FagsystemCode.FS22);
 
 //		Assert.assertThat(joarkRepository.findTotalNumberOfJournalposts(hentMinJPListeParameters), Matchers.is(5L));
 	}
 
 	@Test
 	public void shouldRestrictToSaksIdAndFagSystem() {
-		createJournalpostWithSaksrelasjon("1337", false, null, FagsystemCode.PEN);
-		createJournalpostWithSaksrelasjon("1337", false, null, FagsystemCode.PEN);
-		createJournalpostWithSaksrelasjon("1338", false, null, FagsystemCode.PEN);
+		createJournalpostWithSaksrelasjon("1337", false, null, FagsystemCode.FS22);
+		createJournalpostWithSaksrelasjon("1337", false, null, FagsystemCode.FS22);
+		createJournalpostWithSaksrelasjon("1338", false, null, FagsystemCode.FS22);
 
-		hentMinJPListeParameters.addFagsystemSak("1337", FagsystemCode.PEN);
+		hentMinJPListeParameters.addFagsystemSak("1337", FagsystemCode.FS22);
 
 		List<Journalpost> journalpostListe = journalpostListeRepository.findJournalpostListe(hentMinJPListeParameters);
 		Assert.assertThat(journalpostListe, Matchers.hasSize(2));
@@ -245,11 +245,11 @@ public class JournalpostListeRepositoryIT {
 	@Test
 	public void shouldRestrictToJournalpostType() {
 		//GIVEN
-		createJournalpostWithSaksrelasjon("1337", false, null, FagsystemCode.PEN, JournalpostTypeCode.I);
-		createJournalpostWithSaksrelasjon("1337", false, null, FagsystemCode.PEN);
-		createJournalpostWithSaksrelasjon("1338", false, null, FagsystemCode.PEN);
+		createJournalpostWithSaksrelasjon("1337", false, null, FagsystemCode.FS22, JournalpostTypeCode.I);
+		createJournalpostWithSaksrelasjon("1337", false, null, FagsystemCode.FS22);
+		createJournalpostWithSaksrelasjon("1338", false, null, FagsystemCode.FS22);
 
-		hentMinJPListeParameters.addFagsystemSak("1337", FagsystemCode.PEN);
+		hentMinJPListeParameters.addFagsystemSak("1337", FagsystemCode.FS22);
 		hentMinJPListeParameters.setJournalpostTypeCode(JournalpostTypeCode.I);
 
 		//WHEN

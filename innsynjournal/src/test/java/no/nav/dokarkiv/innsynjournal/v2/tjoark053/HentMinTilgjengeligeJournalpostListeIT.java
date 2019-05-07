@@ -951,7 +951,7 @@ public class HentMinTilgjengeligeJournalpostListeIT extends AbstractInnsynJourna
 		sak.setSakId(sakId);
 
 		Fagsystemer fagsystem = new Fagsystemer();
-		fagsystem.setValue(FagsystemCode.PEN.name());
+		fagsystem.setValue(FagsystemCode.FS22.name());
 
 		sak.setFagsystem(fagsystem);
 

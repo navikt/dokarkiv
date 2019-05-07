@@ -3,10 +3,6 @@
     "Resource": {
       "Attribute": [
         {
-          "AttributeId" : "no.nav.abac.attributter.resource.arkiv.pensjon_saksid",
-          "Value" : "9999"
-        },
-        {
           "AttributeId": "no.nav.abac.attributter.resource.felles.domene",
           "Value": "arkiv"
         },
@@ -17,6 +13,10 @@
         {
           "AttributeId": "no.nav.abac.attributter.resource.felles.person.tilknyttet_fnr",
           "Value": "***gammelt_fnr***"
+        },
+        {
+          "AttributeId": "no.nav.abac.attributter.resource.arkiv.gsak_saksid",
+          "Value": "9999"
         },
         {
           "AttributeId": "no.nav.abac.attributter.resource.felles.tema",

@@ -62,7 +62,7 @@ public class ArkiverDokumentmottakV2RequestDataUtil {
 	static final String KANALREFERANSE_ID = "kanalReferanseId";
 	static final String VEDLEGGINNHOLD = "vedleggInnhold";
 	static final String BATCHNAVN = "Batchnavn";
-	static final String FAGSYSTEMKODE = FagsystemCode.PEN.name();
+	static final String FAGSYSTEMKODE = FagsystemCode.FS22.name();
 	static final String SAKSID = "312";
 	static final Date DATO_DOKUMENT = new Date(1234567890);
 	static final Date DATO_MOTTATT = new Date(234567890);

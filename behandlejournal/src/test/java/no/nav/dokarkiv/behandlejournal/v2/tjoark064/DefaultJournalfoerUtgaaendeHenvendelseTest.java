@@ -157,7 +157,7 @@ public class DefaultJournalfoerUtgaaendeHenvendelseTest {
 				.avsenderMottaker("avsender")
 				.brukere(getBrukerBuilder().brukerId("***gammelt_fnr***").build())
 				.saksrelasjon(
-						SaksrelasjonBuilder.getSaksrelasjonBuilder().sakId("1").fagsystem(FagsystemCode.PEN).build())
+						SaksrelasjonBuilder.getSaksrelasjonBuilder().sakId("1").fagsystem(FagsystemCode.FS22).build())
 				.signatur(true)
 				.innhold("innhold")
 				.mottattDato(new Date())

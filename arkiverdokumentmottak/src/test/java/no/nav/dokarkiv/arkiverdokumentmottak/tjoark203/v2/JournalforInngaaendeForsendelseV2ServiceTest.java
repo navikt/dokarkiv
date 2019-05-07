@@ -231,7 +231,7 @@ public class JournalforInngaaendeForsendelseV2ServiceTest {
 	private Saksrelasjon createSaksrelasjon() {
 		return getSaksrelasjonBuilder()
 				.sakId("123")
-				.fagsystem(FagsystemCode.PEN)
+				.fagsystem(FagsystemCode.FS22)
 				.build();
 	}
 

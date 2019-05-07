@@ -47,7 +47,7 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentDataUtil {
 	protected static final String VARIANTFORMAT = "ARKIV";
 	protected static final String PERSONIDENT = "***gammelt_fnr***";
 	protected static final String EKSTERNPART_NAVN = "Jippi Hurra";
-	protected static final String FAGSYSTEMKODE = FagsystemCode.PEN.name();
+	protected static final String FAGSYSTEMKODE = FagsystemCode.FS22.name();
 	protected static final String SAKSID = "312";
 	protected static final String KANAL_REF_ID = "Kanal_ref_id_AAA";
 	protected static final String TILLEGGSOPPLYSNING_NOKKEL = "bucId";

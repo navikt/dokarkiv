@@ -528,7 +528,7 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentValidatorTest {
 				.saksrelasjon(Saksrelasjon.builder()
 						.sakId(SAKSID)
 						.sakId("1")
-						.fagsystem(FagsystemCode.PEN)
+						.fagsystem(FagsystemCode.FS22)
 						.build())
 				.tilleggsopplysninger(createTilleggsopplysningMap())
 				.build();

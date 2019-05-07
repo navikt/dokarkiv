@@ -163,7 +163,7 @@ public class DefaultOpprettJournalpostServiceTest {
 				.saksrelasjon(
 						getSaksrelasjonBuilder()
 								.sakId("1")
-								.fagsystem(FagsystemCode.PEN).build())
+								.fagsystem(FagsystemCode.FS22).build())
 				.innhold("innhold")
 				.journalpostType(JournalpostTypeCode.U)
 				.utsendingskanal(UtsendingsKanalCode.EESSI)
