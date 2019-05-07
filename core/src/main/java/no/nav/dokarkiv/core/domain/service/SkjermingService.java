@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.core.domain.service;
 
+import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.BooleanUtils.isFalse;
 
 import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
@@ -20,7 +21,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -47,33 +47,45 @@ public class SkjermingService {
 	public boolean isJournalpostSkjermet(Long journalpostId) {
 		Journalpost journalpost = joarkRepository.findById(journalpostId).orElse(null);
 		if (journalpost != null) {
-			return Objects.nonNull(journalpost.getSkjermingType());
+			return nonNull(journalpost.getSkjermingType());
 		}
 
 		return false;
 	}
 
-	public boolean isKassertByFilUuidAndVariantFormat(String filUuid, VariantFormatCode variantFormatCode) {
-		return isFalse(entityManager.createQuery("select 'kassert' from FilDetaljer where filUuid=:filUuid and variantFormat=:variantFormat and dokumentInfo.kassert is true")
+	public boolean isKassertByFilUuid(String filUuid) {
+		return isFalse(entityManager.createQuery("select 'kassert' from FilDetaljer where filUuid=:filUuid and dokumentInfo.kassert is true")
 				.setParameter("filUuid", filUuid)
-				.setParameter("variantFormat", variantFormatCode)
 				.getResultList()
 				.isEmpty());
 	}
 
 	public boolean isJournalpostSkjermet(Journalpost journalpost) {
-		return Objects.nonNull(journalpost.getSkjermingType());
+		return nonNull(journalpost.getSkjermingType());
 	}
 
 	public boolean isVariantSkjermet(Long dokumentInfoId, VariantFormatCode variant, SkjermingTypeCode skjermingTypeCode) {
 		Optional<DokumentInfo> dokumentInfo = dokumentinfoRepository.findByDokumentInfoId(dokumentInfoId);
 		if (dokumentInfo.isPresent()) {
 			FilDetaljer filDetaljer = dokumentInfo.get().findFilDetaljerByVariantFormatAdmin(variant);
-			if (Objects.nonNull(filDetaljer) && skjermingTypeCode.equals(filDetaljer.getSkjermingType())) {
+			if (nonNull(filDetaljer) && skjermingTypeCode.equals(filDetaljer.getSkjermingType())) {
 				return true;
 			}
 		}
 		return false;
+	}
+
+	public boolean isAllFildetaljerSkjermet(DokumentInfo dokumentInfo) {
+		return dokumentInfo.getFildetaljerListeAdmin()
+				.stream()
+				.allMatch(filDetaljer -> nonNull(filDetaljer.getSkjermingType()));
+	}
+
+	public boolean isFildetaljerSkjermetByFilUuid(String filUuid) {
+		return isFalse(entityManager.createQuery("select 'skjermet' from FilDetaljer where filUuid=:filUuid and skjermingType is not null")
+				.setParameter("filUuid", filUuid)
+				.getResultList()
+				.isEmpty());
 	}
 
 	/**
@@ -147,5 +159,6 @@ public class SkjermingService {
 		}
 		return (Long) value;
 	}
+
 
 }
