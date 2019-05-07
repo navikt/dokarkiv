@@ -3,6 +3,10 @@
     "Resource": {
       "Attribute": [
         {
+          "AttributeId" : "no.nav.abac.attributter.resource.arkiv.pensjon_saksid",
+          "Value" : "9999"
+        },
+        {
           "AttributeId": "no.nav.abac.attributter.resource.felles.domene",
           "Value": "arkiv"
         },
