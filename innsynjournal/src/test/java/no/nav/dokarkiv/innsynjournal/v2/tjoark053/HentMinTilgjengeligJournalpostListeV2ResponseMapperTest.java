@@ -66,7 +66,7 @@ public class HentMinTilgjengeligJournalpostListeV2ResponseMapperTest {
 	private static final Long DOK_INFO_REL_ID = 3L;
 	private static final String DOKUMENT_TITTEL = "tittel";
 	private static final VariantFormatCode VARIANT_FORMAT = VariantFormatCode.ARKIV;
-	private static final FilTypeCode FIL_TYPE = FilTypeCode.PDF;
+	private static final FilTypeCode FIL_TYPE = FilTypeCode.RTF;
 	private static final Long SKANNET_INNHOLD_ID = 2L;
 	private static final String VEDLEGG_INNHOLD = "vedleggInnhold";
 	private static final Long DOKUMENT_INFO_ID = 3L;

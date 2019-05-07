@@ -578,7 +578,7 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentValidatorTest {
 								.build(),
 						FilDetaljer.builder()
 								.variantFormat(VariantFormatCode.ORIGINAL)
-								.filtype(FilTypeCode.PDF)
+								.filtype(FilTypeCode.RTF)
 								.fileContent("test".getBytes())
 								.build())))
 				.build();
@@ -606,7 +606,7 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentValidatorTest {
 														.build(),
 												FilDetaljer.builder()
 														.variantFormat(secondVariantFormat)
-														.filtype(FilTypeCode.PDF)
+														.filtype(FilTypeCode.RTF)
 														.fileContent("test".getBytes())
 														.build())))
 										.build())

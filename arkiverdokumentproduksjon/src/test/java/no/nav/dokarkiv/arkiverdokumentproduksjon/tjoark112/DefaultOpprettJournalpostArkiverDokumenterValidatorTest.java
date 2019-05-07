@@ -378,7 +378,7 @@ public class DefaultOpprettJournalpostArkiverDokumenterValidatorTest {
 																.build(),
 														getFilDetaljerBuilder()
 																.variantFormat(null)
-																.filtype(FilTypeCode.PDF)
+																.filtype(FilTypeCode.RTF)
 																.fileContent("test".getBytes())
 																.build()).build())
 								.build()).build();
@@ -407,7 +407,7 @@ public class DefaultOpprettJournalpostArkiverDokumenterValidatorTest {
 														.build(),
 												getFilDetaljerBuilder()
 														.variantFormat(VariantFormatCode.ARKIV)
-														.filtype(FilTypeCode.PDF)
+														.filtype(FilTypeCode.RTF)
 														.fileContent("test".getBytes())
 														.build())
 										.build())
