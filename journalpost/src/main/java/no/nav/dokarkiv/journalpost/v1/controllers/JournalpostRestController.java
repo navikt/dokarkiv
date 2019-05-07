@@ -15,6 +15,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.MDCConstants;
+import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
 import no.nav.dokarkiv.core.metrics.RestMetrics;
 import no.nav.dokarkiv.core.security.abac.AbacSecurityService;
@@ -161,18 +162,19 @@ public class JournalpostRestController {
 
         opprettJournalpostRequestValidator.validateRequest(request);
 
-        Long journalpostId = opprettJournalpostService.opprettJournalpost(request);
-        log.info(MDC.get(MDC_REQUEST_ID) + " har opprettet ny journalpost, journalpostId={}", journalpostId);
+        Journalpost journalpost = opprettJournalpostService.opprettJournalpost(request);
+        Long journalpostId = journalpost.getJournalpostId();
 
         Optional<Pair<String, String>> ferdigstillResponse = Optional.empty();
         if (TRUE.equalsIgnoreCase(forsoekFerdigstill)) {
             ferdigstillResponse = Optional.of(ferdigstillJournalpostService.forsoekFerdigstill(journalpostId, request));
         }
+
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(OpprettJournalpostResponse.builder()
                         .journalpostId(String.valueOf(journalpostId))
-                        .journalstatus(ferdigstillResponse.map(Pair::getKey).orElse("MIDLERTIDIG"))
+                        .journalstatus(ferdigstillResponse.map(Pair::getKey).orElse(journalpost.getJournalstatus().name()))
                         .melding(ferdigstillResponse.map(Pair::getValue).orElse(null))
                         .build());
     }
