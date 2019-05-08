@@ -2,6 +2,7 @@ package no.nav.dokarkiv.journalpost.v1.services;
 
 import static java.util.Collections.emptyList;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
+import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
 import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.OPPRETT;
 
 import lombok.extern.slf4j.Slf4j;
@@ -51,7 +52,7 @@ public class OpprettJournalpostService {
 		this.aksjonsLoggService = aksjonsLoggService;
 	}
 
-	public Long opprettJournalpost(OpprettJournalpostRequest request) {
+	public Journalpost opprettJournalpost(OpprettJournalpostRequest request) {
 		Journalpost journalpost = opprettJournalpostApiRequestMapper.map(request);
 		defaultSporingPopulator.populateSporingInfo(journalpost, MDC.get(MDCConstants.MDC_CONSUMER_ID));
 		journalpost.getJournalpostDokumentInfoRelasjoner().forEach(journalpostDokumentInfoRelasjon -> journalpostDokumentInfoRelasjon.setTilknyttetAvNavn(journalpost.getOpprettetAvNavn()));
@@ -61,8 +62,9 @@ public class OpprettJournalpostService {
 		joarkRepository.save(journalpost);
 
 		populerAksjonslogg(journalpost.getJournalpostId(), OPPRETT);
+		log.info(MDC.get(MDC_REQUEST_ID) + " har opprettet ny journalpost, journalpostId={} og status={}", journalpost.getJournalpostId(), journalpost.getJournalstatus());
 
-		return journalpost.getJournalpostId();
+		return journalpost;
 	}
 
 	private void persistDokumentFiler(Journalpost journalpost) {
