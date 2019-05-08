@@ -348,12 +348,12 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		ResponseEntity<OpprettJournalpostResponse> response = restTemplate.exchange(URL_JOURNALPOST, HttpMethod.POST, requestEntity, OpprettJournalpostResponse.class);
 
 		assertEquals(HttpStatus.CREATED, response.getStatusCode());
-		assertEquals(JournalStatusCode.M, response.getBody().getJournalstatus());
+		assertEquals("M", response.getBody().getJournalstatus());
 
 	}
 
 	@Test
-	public void shouldJournalfoereSoeknadOmForeldrepengerVedFoedsel() throws IOException {
+	public void shouldEndeligJournalfoereSoeknadOmForeldrepengerVedFoedsel() throws IOException {
 		abacPermit();
 
 		OpprettJournalpostRequest request = mapper.readValue(classpathToString("__files/soeknadOmForeldrepengerVedFoedsel.json"), OpprettJournalpostRequest.class);
@@ -362,7 +362,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		ResponseEntity<OpprettJournalpostResponse> response = restTemplate.exchange(URL_JOURNALPOST + FERDIGSTILL_QUERY, HttpMethod.POST, requestEntity, OpprettJournalpostResponse.class);
 
 		assertEquals(HttpStatus.CREATED, response.getStatusCode());
-		assertEquals(JournalStatusCode.M, response.getBody().getJournalstatus());
+		assertEquals("ENDELIG", response.getBody().getJournalstatus());
 
 	}
 
