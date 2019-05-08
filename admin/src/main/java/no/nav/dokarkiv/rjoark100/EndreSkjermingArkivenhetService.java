@@ -126,6 +126,12 @@ public class EndreSkjermingArkivenhetService {
 		//Grunnen til det er at Journalpost uten HOVEDDOKUMENT relasjon skaper problemer i gamle Joark tjenester og fagsystemer som bruker de tjenestene.
 		if (relasjon.getTilknyttetJournalpostSom() == TilknyttetJournalpostSomCode.HOVEDDOKUMENT) {
 			arkivElementEndringTOList.addAll(endreSkjermingAlleFildetaljer(relasjon.getDokumentInfo(), tilSkjerming));
+
+			//Midlertidlig fix for å fikse testdata. Fjern dette før merge
+			if (tilSkjerming == null) {
+				arkivElementEndringTOList.addAll(endreSkjermingJournalpostDokumentInfoRelasjon(journalpostId, dokumentInfoId, relasjon
+						.getSkjermingType(), null));
+			}
 		} else {
 			arkivElementEndringTOList.addAll(endreSkjermingJournalpostDokumentInfoRelasjon(journalpostId, dokumentInfoId, relasjon
 					.getSkjermingType(), tilSkjerming));
