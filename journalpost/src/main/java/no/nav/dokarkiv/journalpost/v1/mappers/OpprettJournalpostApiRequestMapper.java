@@ -138,7 +138,7 @@ public class OpprettJournalpostApiRequestMapper {
 
 	private void createJournalpostDokumentInfoRelasjon(Journalpost jp, Dokument dokument, TilknyttetJournalpostSomCode tilknyttetJournalpostSomCode) {
 		DokumentInfo dokumentInfo = DokumentInfo.builder()
-				.kategori(DokumentKategoriCode.valueOf(dokument.getDokumentKategori()))
+				.kategori(dokument.getDokumentKategori() != null ? DokumentKategoriCode.valueOf(dokument.getDokumentKategori()) : null)
 				.tittel(dokument.getTittel())
 				.brevkode(dokument.getBrevkode())
 				.originalJournalpost(jp)
