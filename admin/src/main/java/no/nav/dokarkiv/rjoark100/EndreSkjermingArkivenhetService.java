@@ -123,15 +123,9 @@ public class EndreSkjermingArkivenhetService {
 		Long journalpostId = relasjon.getJournalpost().getJournalpostId();
 		Long dokumentInfoId = relasjon.getDokumentInfo().getDokumentInfoId();
 		//Hvis relasjon er HOVEDDOKUMENT så skal bare alle fildetaljer skjermes og ikke selve relasjonen.
-		//Grunnen til det er at Journalpost uten HOVEDDOKUMENT relasjon skaper problemer i gamle Joark tjenester og fagsystemer som bruker de tjenestene.
+		//Grunnen til det er at Journalpost uten HOVEDDOKUMENT relasjon skaper problemer i gamle Joark tjenester og fagsystemer som bruker de gamle Joark tjenestene.
 		if (relasjon.getTilknyttetJournalpostSom() == TilknyttetJournalpostSomCode.HOVEDDOKUMENT) {
 			arkivElementEndringTOList.addAll(endreSkjermingAlleFildetaljer(relasjon.getDokumentInfo(), tilSkjerming));
-
-			//Midlertidlig fix for å fikse testdata. Fjern dette før merge
-			if (tilSkjerming == null) {
-				arkivElementEndringTOList.addAll(endreSkjermingJournalpostDokumentInfoRelasjon(journalpostId, dokumentInfoId, relasjon
-						.getSkjermingType(), null));
-			}
 		} else {
 			arkivElementEndringTOList.addAll(endreSkjermingJournalpostDokumentInfoRelasjon(journalpostId, dokumentInfoId, relasjon
 					.getSkjermingType(), tilSkjerming));
@@ -161,13 +155,13 @@ public class EndreSkjermingArkivenhetService {
 			if (filDetaljer.getSkjermingType() != tilSkjerming) {
 				SkjermingTypeCode forrigeSkjerming = filDetaljer.getSkjermingType();
 				skjermingService.setFildetaljerSkjerming(dokumentInfo.getDokumentInfoId(), filDetaljer.getVariantFormat(), tilSkjerming);
-				entityManager.refresh(filDetaljer);
 				arkivElementEndringTOList.add(
 						ArkivElementEndringTO.builder()
 								.arkivElement(fildetaljerSkjermingTypeVariant(filDetaljer.getVariantFormat()))
 								.fraVerdi(enumToString(forrigeSkjerming))
 								.tilVerdi(enumToString(tilSkjerming))
 								.build());
+				entityManager.refresh(filDetaljer);
 			}
 		});
 		return arkivElementEndringTOList;
@@ -205,11 +199,6 @@ public class EndreSkjermingArkivenhetService {
 					"Fant ikke journalpostDokumentInfoRelasjoner dokumentInfoId=%s", dokumentInfoId));
 		}
 		return journalpostDokumentInfoRelasjonList;
-	}
-
-	private boolean isHoveddokumentAndSkjermet(JournalpostDokumentInfoRelasjon relasjon) {
-		return relasjon.getTilknyttetJournalpostSom() == TilknyttetJournalpostSomCode.HOVEDDOKUMENT && skjermingService.isAllFildetaljerSkjermet(relasjon
-				.getDokumentInfo());
 	}
 
 }
