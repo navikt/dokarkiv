@@ -163,19 +163,28 @@ public class Rjoark100aIT extends AbstractAdminIT {
 		TestTransaction.end();
 	}
 
+	/**
+	 * Case
+	 * <p>
+	 * OrigJp -> dokumentSomSkalSkjermes(hoveddok)
+	 * JP1 -> dokumentSomSkalSkjermes(hoveddok)
+	 * JP2 -> dokumentSomSkalSkjermes(vedlegg)
+	 * -> dokument(hoveddok)
+	 */
 	@Test
-	public void skalSkjermeDokumentInfoSomErGjenbrukt() throws IOException {
+	public void skalSkjermeDokumentInfoSomErGjenbruktSomHoveddokumentPåEnJournalpostOgSomVedleggPåEnAnnen() throws IOException {
 		abacPermit();
 		Journalpost originalJournalpost = createJournalpostWithHoveddokument();
-		DokumentInfo dokumentInfo = originalJournalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
+		DokumentInfo dokumentInfoSomSkalSkjermes = originalJournalpost.findHoveddokumentDokumentInfoRelasjon()
+				.getDokumentInfo();
 
-		Journalpost journalpost1 = createJournalpostWithGjenbruktHoveddokument(dokumentInfo);
-		Journalpost journalpost2 = createJournalpostWithHoveddokument();
-		journalpost2.addJournalpostDokumentInfoRelasjon(TestDataGenerator.createVedleggRelasjon(journalpost2, dokumentInfo));
+		Journalpost journalpostMedHoveddokumentSomErGjenbrukt = createJournalpostWithGjenbruktHoveddokument(dokumentInfoSomSkalSkjermes);
+		Journalpost journalpostMedHoveddokuemtn = createJournalpostWithHoveddokument();
+		journalpostMedHoveddokuemtn.addJournalpostDokumentInfoRelasjon(TestDataGenerator.createVedleggRelasjon(journalpostMedHoveddokuemtn, dokumentInfoSomSkalSkjermes));
 
 		joarkRepository.save(originalJournalpost);
-		joarkRepository.save(journalpost1);
-		joarkRepository.save(journalpost2);
+		joarkRepository.save(journalpostMedHoveddokumentSomErGjenbrukt);
+		joarkRepository.save(journalpostMedHoveddokuemtn);
 
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
@@ -185,7 +194,7 @@ public class Rjoark100aIT extends AbstractAdminIT {
 
 		HttpEntity httpEntity = new HttpEntity(
 				createSkjermarkivenhetRequest(SkjermingTypeCode.POL, ArkivenhetCode.DOKUMENT_INFO, null,
-						dokumentInfo.getDokumentInfoId(), null),
+						dokumentInfoSomSkalSkjermes.getDokumentInfoId(), null),
 				createHeadersWithAksjon());
 
 		TestTransaction.start();
@@ -197,7 +206,7 @@ public class Rjoark100aIT extends AbstractAdminIT {
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 
-		assertDokumentInfoSkjermet(dokumentInfo.getDokumentInfoId());
+		assertDokumentInfoSkjermet(dokumentInfoSomSkalSkjermes.getDokumentInfoId());
 		assertThat(joarkRepository.findById(originalJournalpost.getJournalpostId())
 				.get()
 				.getSkjermingType(), is(SkjermingTypeCode.POL));
@@ -206,7 +215,7 @@ public class Rjoark100aIT extends AbstractAdminIT {
 		assertThat(aksjonsLoggList.size(), is(3));
 
 		assertAksjonsLogg(getAksjonsLoggByJournalpostId(aksjonsLoggList, originalJournalpost.getJournalpostId()), AksjonsTypeCode.ENDRE_SKJERMING, originalJournalpost
-						.getJournalpostId(), dokumentInfo.getDokumentInfoId(),
+						.getJournalpostId(), dokumentInfoSomSkalSkjermes.getDokumentInfoId(),
 				Arrays.asList(
 						ArkivElementEndring.builder()
 								.arkivElement(JOURNALPOST_SKJERMING_TYPE)
@@ -225,8 +234,8 @@ public class Rjoark100aIT extends AbstractAdminIT {
 								.build()
 				)
 		);
-		assertAksjonsLogg(getAksjonsLoggByJournalpostId(aksjonsLoggList, journalpost1.getJournalpostId()), AksjonsTypeCode.ENDRE_SKJERMING, journalpost1
-						.getJournalpostId(), dokumentInfo
+		assertAksjonsLogg(getAksjonsLoggByJournalpostId(aksjonsLoggList, journalpostMedHoveddokumentSomErGjenbrukt.getJournalpostId()), AksjonsTypeCode.ENDRE_SKJERMING, journalpostMedHoveddokumentSomErGjenbrukt
+						.getJournalpostId(), dokumentInfoSomSkalSkjermes
 						.getDokumentInfoId(),
 				Arrays.asList(
 						ArkivElementEndring.builder()
@@ -235,8 +244,8 @@ public class Rjoark100aIT extends AbstractAdminIT {
 								.tilVerdi(SkjermingTypeCode.POL.name())
 								.build()
 				));
-		assertAksjonsLogg(getAksjonsLoggByJournalpostId(aksjonsLoggList, journalpost2.getJournalpostId()), AksjonsTypeCode.ENDRE_SKJERMING, journalpost2
-						.getJournalpostId(), dokumentInfo
+		assertAksjonsLogg(getAksjonsLoggByJournalpostId(aksjonsLoggList, journalpostMedHoveddokuemtn.getJournalpostId()), AksjonsTypeCode.ENDRE_SKJERMING, journalpostMedHoveddokuemtn
+						.getJournalpostId(), dokumentInfoSomSkalSkjermes
 						.getDokumentInfoId(),
 				Arrays.asList(
 						ArkivElementEndring.builder()

@@ -654,7 +654,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 	 * arkivEnhet=DOKUMENT_INFO
 	 */
 	@Test
-	public void skalSletteHoveddokumentOgBytteVedleggRelasjonTilHovedHvorJournalpostHarFlereRelasjoner() throws IOException {
+	public void skalSletteHoveddokumentOgBytteVedleggRelasjonTilHoveddokumentForJournalpostMedFlereRelasjoner() throws IOException {
 		abacPermit();
 
 		Journalpost journalpost1 = createJournalpostWithHoveddokument();
@@ -758,7 +758,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 	 * arkivEnhet=DOKUMENT_INFO
 	 */
 	@Test
-	public void skalSletteDokumentInfoSomErEnesteDokumentPåJournalpostOgVedleggPåEnAnnenJournalpost() throws IOException {
+	public void skalSletteDokumentInfoSomErEnesteDokumentPåEnJournalpostOgVedleggPåEnAnnenJournalpost() throws IOException {
 		abacPermit();
 
 		Journalpost journalpostSomHarDokumentSomVedlegg = createJournalpostWithHoveddokument();
