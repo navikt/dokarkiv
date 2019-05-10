@@ -95,6 +95,10 @@ public class SkjermingService {
 		for (FilDetaljer filDetaljer : dokumentInfo.getFildetaljerListeAdmin()) {
 			setFildetaljerSkjerming(dokumentInfo.getDokumentInfoId(), filDetaljer.getVariantFormat(), skjermingTypeCode);
 		}
+	}
+
+	public void setDokumentKassert(DokumentInfo dokumentInfo, SkjermingTypeCode skjermingTypeCode) {
+		skjermAllFildetaljer(dokumentInfo, skjermingTypeCode);
 		Query q = entityManager.createQuery("update DokumentInfo set kassert=true where dokument_info_id = :dokumentInfoId")
 				.setParameter("dokumentInfoId", dokumentInfo.getDokumentInfoId());
 		q.executeUpdate();

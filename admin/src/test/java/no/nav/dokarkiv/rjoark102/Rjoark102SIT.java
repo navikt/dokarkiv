@@ -54,7 +54,7 @@ public class Rjoark102SIT extends AbstractAdminIT {
 				.getDokumentInfoId());
 		TestCase.assertTrue(dokInfoEtterKall.isPresent());
 		assertThatAllFildetaljerIsSkjermet(dokInfoEtterKall.get(), POL);
-		assertThat(dokInfoEtterKall.get().getKassert(), is(true));
+		assertThat(dokInfoEtterKall.get().isKassert(), is(true));
 
 		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
 		assertThat(aksjonsLoggList.size(), is(1));
@@ -109,7 +109,7 @@ public class Rjoark102SIT extends AbstractAdminIT {
 				.getDokumentInfoId());
 		TestCase.assertTrue(dokInfoEtterKall.isPresent());
 		assertThatAllFildetaljerIsSkjermet(dokInfoEtterKall.get(), null);
-		assertThat(dokInfoEtterKall.get().getKassert(), is(false));
+		assertThat(dokInfoEtterKall.get().isKassert(), is(false));
 
 		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
 		assertThat(aksjonsLoggList.size(), is(1));

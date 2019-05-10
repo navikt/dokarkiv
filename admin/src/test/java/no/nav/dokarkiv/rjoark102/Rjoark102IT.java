@@ -73,7 +73,7 @@ public class Rjoark102IT extends AbstractAdminIT {
 		DokumentInfo dokumentInfoSomSkalKasseres = journalpost1.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 		knyttDokumentInfoSomVedleggTilJournalpost(dokumentInfoSomSkalKasseres, journalpost2);
 		joarkRepository.save(journalpost2);
-		skjermingService.skjermAllFildetaljer(dokumentInfoSomSkalKasseres, POL);
+		skjermingService.setDokumentKassert(dokumentInfoSomSkalKasseres, POL);
 
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
@@ -153,7 +153,7 @@ public class Rjoark102IT extends AbstractAdminIT {
 		Journalpost journalpost = joarkRepository.save(opprettHoveddokumentForIT());
 		DokumentInfo dokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 
-		skjermingService.skjermAllFildetaljer(dokumentInfo, POL);
+		skjermingService.setDokumentKassert(dokumentInfo, POL);
 
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
