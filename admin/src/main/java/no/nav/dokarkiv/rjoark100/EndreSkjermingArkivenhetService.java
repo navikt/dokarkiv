@@ -4,6 +4,7 @@ import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.RELASJON_SKJERMING_TYPE;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.fildetaljerSkjermingTypeVariant;
 import static no.nav.dokarkiv.core.util.ConverterUtils.enumToString;
+import static org.apache.commons.lang3.BooleanUtils.isFalse;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
@@ -151,19 +152,22 @@ public class EndreSkjermingArkivenhetService {
 
 	private List<ArkivElementEndringTO> endreSkjermingAlleFildetaljer(DokumentInfo dokumentInfo, SkjermingTypeCode tilSkjerming) {
 		List<ArkivElementEndringTO> arkivElementEndringTOList = new ArrayList<>();
-		dokumentInfo.getFildetaljerListeAdmin().forEach(filDetaljer -> {
-			if (filDetaljer.getSkjermingType() != tilSkjerming) {
-				SkjermingTypeCode forrigeSkjerming = filDetaljer.getSkjermingType();
-				skjermingService.setFildetaljerSkjerming(dokumentInfo.getDokumentInfoId(), filDetaljer.getVariantFormat(), tilSkjerming);
-				arkivElementEndringTOList.add(
-						ArkivElementEndringTO.builder()
-								.arkivElement(fildetaljerSkjermingTypeVariant(filDetaljer.getVariantFormat()))
-								.fraVerdi(enumToString(forrigeSkjerming))
-								.tilVerdi(enumToString(tilSkjerming))
-								.build());
-				entityManager.refresh(filDetaljer);
-			}
-		});
+		//Skal ikke fjerne skjerming fra Fildetaljer hvis dokument er kassert. Da må kasser tjenesten kalles.
+		if (isFalse(dokumentInfo.getKassert())) {
+			dokumentInfo.getFildetaljerListeAdmin().forEach(filDetaljer -> {
+				if (filDetaljer.getSkjermingType() != tilSkjerming) {
+					SkjermingTypeCode forrigeSkjerming = filDetaljer.getSkjermingType();
+					skjermingService.setFildetaljerSkjerming(dokumentInfo.getDokumentInfoId(), filDetaljer.getVariantFormat(), tilSkjerming);
+					arkivElementEndringTOList.add(
+							ArkivElementEndringTO.builder()
+									.arkivElement(fildetaljerSkjermingTypeVariant(filDetaljer.getVariantFormat()))
+									.fraVerdi(enumToString(forrigeSkjerming))
+									.tilVerdi(enumToString(tilSkjerming))
+									.build());
+					entityManager.refresh(filDetaljer);
+				}
+			});
+		}
 		return arkivElementEndringTOList;
 	}
 
@@ -171,7 +175,9 @@ public class EndreSkjermingArkivenhetService {
 		List<JournalpostDokumentInfoRelasjon> journalpostDokumentInfoRelasjonList = journalpostDokumentInfoRelasjonRepository.findAllByJournalpostJournalpostId(journalpostId);
 		return journalpostDokumentInfoRelasjonList.stream().allMatch(relasjon -> {
 			if (relasjon.getTilknyttetJournalpostSom() == TilknyttetJournalpostSomCode.HOVEDDOKUMENT) {
-				return skjermingService.isAllFildetaljerSkjermet(relasjon.getDokumentInfo());
+				//Hvis dokumentet er kassert og alle fildetaljer er skjermet så betyr det at hoveddokument ikke er skjermet men er kassert.
+				return skjermingService.isAllFildetaljerSkjermet(relasjon.getDokumentInfo()) && isFalse(relasjon.getDokumentInfo()
+						.getKassert());
 			} else {
 				return Objects.nonNull(relasjon.getSkjermingType());
 			}
