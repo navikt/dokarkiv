@@ -267,7 +267,8 @@ public class HentDokumentIT extends AbstractInnsynJournalV2Itest {
 						.dokumentstatus(DokumentStatusCode.FERDIGSTILT))
 				.journalpostType(JournalpostTypeCode.U).build());
 
-		skjermingService.skjermAllFildetaljer(journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo(), SkjermingTypeCode.POL);
+		skjermingService.setDokumentKassert(journalpost.findHoveddokumentDokumentInfoRelasjon()
+				.getDokumentInfo(), SkjermingTypeCode.POL);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
