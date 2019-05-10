@@ -884,7 +884,7 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	}
 
 	public boolean getKassert() {
-		return this.kassert;
+		return this.kassert == null ? false : this.kassert;
 	}
 
 }
