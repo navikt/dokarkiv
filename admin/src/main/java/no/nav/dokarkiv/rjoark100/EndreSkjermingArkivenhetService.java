@@ -57,12 +57,10 @@ public class EndreSkjermingArkivenhetService {
 		Journalpost journalpost = hentJournalpost(journalpostId);
 		Map<Pair<Long, Long>, List<ArkivElementEndringTO>> aksjonsLoggMap = new HashMap<>();
 
-		//Skjerm JournalpostRelasjoner
+		//Skjerm JournalpostRelasjoner. For at oppførsel skal bli likt med skjermDokumentInfo må alle relasjoner skjermes før Journalpost skjermes.
 		journalpost.getJournalpostDokumentInfoRelasjonerAdmin()
-				.forEach(rel -> {
-					aksjonsLoggMap.put(Pair.of(journalpostId, rel.getDokumentInfo()
-							.getDokumentInfoId()), endreSkjermingJournalpostDokumentInfoRelasjon(rel, tilSkjerming));
-				});
+				.forEach(rel -> aksjonsLoggMap.put(Pair.of(journalpostId, rel.getDokumentInfo()
+						.getDokumentInfoId()), endreSkjermingJournalpostDokumentInfoRelasjon(rel, tilSkjerming)));
 
 		List<ArkivElementEndringTO> arkivElementEndringTOList = new ArrayList<>();
 		//Skjerm Journalpost
@@ -152,7 +150,7 @@ public class EndreSkjermingArkivenhetService {
 
 	private List<ArkivElementEndringTO> endreSkjermingAlleFildetaljer(DokumentInfo dokumentInfo, SkjermingTypeCode tilSkjerming) {
 		List<ArkivElementEndringTO> arkivElementEndringTOList = new ArrayList<>();
-		//Skal ikke fjerne skjerming fra Fildetaljer hvis dokument er kassert. Da må kasser tjenesten kalles.
+		//Skal ikke fjerne skjerming fra Fildetaljer hvis dokumentet er kassert. I det tilfellet så må kassering tjenesten kalles for å kunne gjøre endring på fildetaljer skjerming
 		if (isFalse(dokumentInfo.isKassert())) {
 			dokumentInfo.getFildetaljerListeAdmin().forEach(filDetaljer -> {
 				if (filDetaljer.getSkjermingType() != tilSkjerming) {
@@ -176,6 +174,7 @@ public class EndreSkjermingArkivenhetService {
 		return journalpostDokumentInfoRelasjonList.stream().allMatch(relasjon -> {
 			if (relasjon.getTilknyttetJournalpostSom() == TilknyttetJournalpostSomCode.HOVEDDOKUMENT) {
 				//Hvis dokumentet er kassert og alle fildetaljer er skjermet så betyr det at hoveddokument ikke er skjermet men er kassert.
+				//Ellers hvis alle fildetaljer på hoveddokument er skjermet så betyr det at hoveddokumentet er skjermet
 				return skjermingService.isAllFildetaljerSkjermet(relasjon.getDokumentInfo()) && isFalse(relasjon.getDokumentInfo()
 						.isKassert());
 			} else {
