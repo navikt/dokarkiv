@@ -119,7 +119,7 @@ public class KasserDokumentService {
 		dokumentInfo.setDatoKassert(LocalDateTime.now());
 		dokumentInfo.setKassertAvNavn(kassertAvNavn);
 		List<ArkivElementEndringTO> arkivElementEndringTOList = opprettArkivElementEndringKassering(dokumentInfo);
-		if (!dokumentInfo.getKassert()) {
+		if (!dokumentInfo.isKassert()) {
 			dokumentInfo.setKassert(true);
 			arkivElementEndringTOList.add(
 					ArkivElementEndringTO.builder()

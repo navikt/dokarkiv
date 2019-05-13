@@ -1,15 +1,17 @@
 package no.nav.dokarkiv.rjoark100;
 
-import static java.util.Objects.isNull;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_SKJERMING_TYPE;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.RELASJON_SKJERMING_TYPE;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.fildetaljerSkjermingTypeVariant;
 import static no.nav.dokarkiv.core.util.ConverterUtils.enumToString;
+import static org.apache.commons.lang3.BooleanUtils.isFalse;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
 import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
+import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
+import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
@@ -29,6 +31,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @Service
 @Slf4j
@@ -57,9 +60,8 @@ public class EndreSkjermingArkivenhetService {
 		//Skjerm JournalpostRelasjoner
 		journalpost.getJournalpostDokumentInfoRelasjonerAdmin()
 				.forEach(rel -> {
-					aksjonsLoggMap.put(Pair.of(journalpostId, rel.getDokumentInfo().getDokumentInfoId()),
-							endreSkjermingJournalpostDokumentInfoRelasjon(journalpostId, rel.getDokumentInfo()
-									.getDokumentInfoId(), rel.getSkjermingType(), tilSkjerming));
+					aksjonsLoggMap.put(Pair.of(journalpostId, rel.getDokumentInfo()
+							.getDokumentInfoId()), endreSkjermingJournalpostDokumentInfoRelasjon(rel, tilSkjerming));
 				});
 
 		List<ArkivElementEndringTO> arkivElementEndringTOList = new ArrayList<>();
@@ -99,9 +101,8 @@ public class EndreSkjermingArkivenhetService {
 
 		journalpostDokumentInfoRelasjonList.forEach(relasjon -> {
 			Long journalpostId = relasjon.getJournalpost().getJournalpostId();
-			List<ArkivElementEndringTO> arkivElementEndringList = endreSkjermingJournalpostDokumentInfoRelasjon(journalpostId, dokumentInfoId, relasjon
-					.getSkjermingType(), tilSkjerming);
-
+			List<ArkivElementEndringTO> arkivElementEndringList = new ArrayList<>();
+			arkivElementEndringList.addAll(endreSkjermingJournalpostDokumentInfoRelasjon(relasjon, tilSkjerming));
 			entityManager.refresh(relasjon);
 			//Hvis tilSkjerming=null (Opphev skjerming) og Journalpost er skjermet så skal skjermingen i Journalpost fjernes. Hvis ikke dette gjøres vil ikke dokumentet være synlig.
 			//Hvis tilSkjerming!=null og Journalposten ikke har noen flere dokumentInfo relasjoner som IKKE er skjermet så skal journalposten også skjermes.
@@ -116,6 +117,22 @@ public class EndreSkjermingArkivenhetService {
 		});
 
 		return aksjonsLoggMap;
+	}
+
+	private List<ArkivElementEndringTO> endreSkjermingJournalpostDokumentInfoRelasjon(JournalpostDokumentInfoRelasjon relasjon, SkjermingTypeCode tilSkjerming) {
+		List<ArkivElementEndringTO> arkivElementEndringTOList = new ArrayList<>();
+		Long journalpostId = relasjon.getJournalpost().getJournalpostId();
+		Long dokumentInfoId = relasjon.getDokumentInfo().getDokumentInfoId();
+		//Hvis relasjon er HOVEDDOKUMENT så skal bare alle fildetaljer skjermes og ikke selve relasjonen.
+		//Grunnen til det er at Journalpost uten HOVEDDOKUMENT relasjon skaper problemer i gamle Joark tjenester og fagsystemer som bruker de gamle Joark tjenestene.
+		if (relasjon.getTilknyttetJournalpostSom() == TilknyttetJournalpostSomCode.HOVEDDOKUMENT) {
+			arkivElementEndringTOList.addAll(endreSkjermingAlleFildetaljer(relasjon.getDokumentInfo(), tilSkjerming));
+		} else {
+			arkivElementEndringTOList.addAll(endreSkjermingJournalpostDokumentInfoRelasjon(journalpostId, dokumentInfoId, relasjon
+					.getSkjermingType(), tilSkjerming));
+		}
+
+		return arkivElementEndringTOList;
 	}
 
 	private List<ArkivElementEndringTO> endreSkjermingJournalpostDokumentInfoRelasjon(Long journalpostId, Long dokumentInfoId, SkjermingTypeCode forrigeSkjerming, SkjermingTypeCode tilSkjerming) {
@@ -133,10 +150,38 @@ public class EndreSkjermingArkivenhetService {
 		return arkivElementEndringTOList;
 	}
 
+	private List<ArkivElementEndringTO> endreSkjermingAlleFildetaljer(DokumentInfo dokumentInfo, SkjermingTypeCode tilSkjerming) {
+		List<ArkivElementEndringTO> arkivElementEndringTOList = new ArrayList<>();
+		//Skal ikke fjerne skjerming fra Fildetaljer hvis dokument er kassert. Da må kasser tjenesten kalles.
+		if (isFalse(dokumentInfo.isKassert())) {
+			dokumentInfo.getFildetaljerListeAdmin().forEach(filDetaljer -> {
+				if (filDetaljer.getSkjermingType() != tilSkjerming) {
+					SkjermingTypeCode forrigeSkjerming = filDetaljer.getSkjermingType();
+					skjermingService.setFildetaljerSkjerming(dokumentInfo.getDokumentInfoId(), filDetaljer.getVariantFormat(), tilSkjerming);
+					arkivElementEndringTOList.add(
+							ArkivElementEndringTO.builder()
+									.arkivElement(fildetaljerSkjermingTypeVariant(filDetaljer.getVariantFormat()))
+									.fraVerdi(enumToString(forrigeSkjerming))
+									.tilVerdi(enumToString(tilSkjerming))
+									.build());
+					entityManager.refresh(filDetaljer);
+				}
+			});
+		}
+		return arkivElementEndringTOList;
+	}
+
 	private boolean isJournalpostHarIngenDokumentInfoRelasjoner(Long journalpostId) {
 		List<JournalpostDokumentInfoRelasjon> journalpostDokumentInfoRelasjonList = journalpostDokumentInfoRelasjonRepository.findAllByJournalpostJournalpostId(journalpostId);
-		return journalpostDokumentInfoRelasjonList.stream().noneMatch(relasjon -> isNull(relasjon.getSkjermingType()));
-
+		return journalpostDokumentInfoRelasjonList.stream().allMatch(relasjon -> {
+			if (relasjon.getTilknyttetJournalpostSom() == TilknyttetJournalpostSomCode.HOVEDDOKUMENT) {
+				//Hvis dokumentet er kassert og alle fildetaljer er skjermet så betyr det at hoveddokument ikke er skjermet men er kassert.
+				return skjermingService.isAllFildetaljerSkjermet(relasjon.getDokumentInfo()) && isFalse(relasjon.getDokumentInfo()
+						.isKassert());
+			} else {
+				return Objects.nonNull(relasjon.getSkjermingType());
+			}
+		});
 	}
 
 	private Journalpost hentJournalpost(Long journalpostId) {
