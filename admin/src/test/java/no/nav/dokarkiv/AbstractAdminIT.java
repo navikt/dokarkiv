@@ -99,10 +99,10 @@ public abstract class AbstractAdminIT extends AbstractRestIT {
 
 	protected AksjonsLogg getAksjonsLoggByJournalpostIdAndDokumentInfoId(List<AksjonsLogg> aksjonsLoggList, Long journalpostId, Long dokumentInfoId) {
 		return aksjonsLoggList.stream()
-				.filter(aksjonsLogg -> journalpostId == null ? aksjonsLogg.getJournalpostId() == null : journalpostId.equals(aksjonsLogg
-						.getJournalpostId()) && dokumentInfoId == null ? aksjonsLogg.getDokumentInfoId() == null : dokumentInfoId
+				.filter(aksjonsLogg -> (journalpostId == null ? aksjonsLogg.getJournalpostId() == null : journalpostId.equals(aksjonsLogg
+						.getJournalpostId())) && (dokumentInfoId == null ? aksjonsLogg.getDokumentInfoId() == null : dokumentInfoId
 						.equals(aksjonsLogg
-								.getDokumentInfoId()))
+								.getDokumentInfoId())))
 				.findAny()
 				.get();
 	}

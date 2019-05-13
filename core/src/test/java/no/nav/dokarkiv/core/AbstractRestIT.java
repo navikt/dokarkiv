@@ -93,6 +93,9 @@ public abstract class AbstractRestIT {
 	public void cleanup() {
 		if (!TestTransaction.isActive()) {
 			TestTransaction.start();
+		} else {
+			TestTransaction.end();
+			TestTransaction.start();
 		}
 		aksjonsLoggRepository.deleteAll();
 		dokumentFilRepository.deleteAll();
