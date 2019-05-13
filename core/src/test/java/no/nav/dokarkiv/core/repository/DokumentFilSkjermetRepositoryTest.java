@@ -18,6 +18,7 @@ import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.service.SkjermingService;
 import no.nav.dokarkiv.core.security.abac.JdbcAbacSecurityRepository;
+import no.nav.dokarkiv.core.skjerming.SkjermingServiceTest;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import no.nav.dokarkiv.core.util.TestDataGenerator;
 import org.junit.After;
@@ -38,7 +39,7 @@ import java.time.LocalDateTime;
  * @author Ugur Alpay Cenar, Visma Consulting.
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = {RepositoryConfig.class, SkjermingService.class, JdbcAbacSecurityRepository.class})
+@SpringBootTest(classes = {RepositoryConfig.class, SkjermingService.class, SkjermingServiceTest.class, JdbcAbacSecurityRepository.class})
 @DataJpaTest
 @Transactional
 @ActiveProfiles("itest")
@@ -61,7 +62,7 @@ public class DokumentFilSkjermetRepositoryTest {
 	private DokumentFilSkjermetRepository dokumentFilSkjermetRepository;
 
 	@Inject
-	private SkjermingService skjermingService;
+	private SkjermingServiceTest skjermingService;
 
 	@Before
 	public void setUp() {

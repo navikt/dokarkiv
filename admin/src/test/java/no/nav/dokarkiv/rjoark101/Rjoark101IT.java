@@ -874,8 +874,8 @@ public class Rjoark101IT extends AbstractAdminIT {
 		saveJournalpost(journalpostSomHarDokumentSomVedlegg);
 		saveJournalpost(journalpost2);
 
-		skjermingService.setJpDokInfoRelSkjerming(relasjonVedlegg.getJournalpostDokumentInfoRelasjonId(), SkjermingTypeCode.POL);
-		skjermingService.setJpDokInfoRelSkjerming(journalpostMedDokumentSomSkalSlettes.findHoveddokumentDokumentInfoRelasjon()
+		skjermingServiceTest.setJpDokInfoRelSkjerming(relasjonVedlegg.getJournalpostDokumentInfoRelasjonId(), SkjermingTypeCode.POL);
+		skjermingServiceTest.setJpDokInfoRelSkjerming(journalpostMedDokumentSomSkalSlettes.findHoveddokumentDokumentInfoRelasjon()
 				.getJournalpostDokumentInfoRelasjonId(), SkjermingTypeCode.POL);
 		skjermingService.setJournalpostSkjerming(journalpostMedDokumentSomSkalSlettes.getJournalpostId(), SkjermingTypeCode.POL);
 
@@ -1070,7 +1070,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 		DokumentInfo dokumentInfoMedVariantSomSkalSlettes = journalpost.findHoveddokumentDokumentInfoRelasjon()
 				.getDokumentInfo();
 		saveJournalpost(journalpost);
-		skjermingService.setVariantSkjermet(dokumentInfoMedVariantSomSkalSlettes.getDokumentInfoId(), VariantFormatCode.ARKIV, SkjermingTypeCode.POL);
+		skjermingServiceTest.setVariantSkjermet(dokumentInfoMedVariantSomSkalSlettes.getDokumentInfoId(), VariantFormatCode.ARKIV, SkjermingTypeCode.POL);
 
 		reinitTransaction();
 

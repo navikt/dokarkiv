@@ -30,12 +30,12 @@ import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import no.nav.dokarkiv.core.domain.service.SkjermingService;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.DokumentUrlInfoRepository;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
+import no.nav.dokarkiv.core.skjerming.SkjermingServiceTest;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.dokarkiv.core.stelvio.SimpleRequestContext;
 import org.apache.commons.io.IOUtils;
@@ -97,7 +97,7 @@ public class HentDokumentControllerIT {
 	@Inject
 	private TestRestTemplate testRestTemplate;
 	@Inject
-	private SkjermingService skjermingService;
+	private SkjermingServiceTest skjermingService;
 	@Inject
 	private EntityManager entityManager;
 

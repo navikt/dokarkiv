@@ -14,6 +14,7 @@ import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
+import no.nav.dokarkiv.core.skjerming.SkjermingServiceTest;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.dokarkiv.core.stelvio.SimpleRequestContext;
 import no.nav.freg.security.test.oidc.tools.OidcTestService;
@@ -65,6 +66,8 @@ public abstract class AbstractRestIT {
 	protected OidcTestService oidcTestService;
 	@Inject
 	protected SkjermingService skjermingService;
+	@Inject
+	protected SkjermingServiceTest skjermingServiceTest;
 	@Inject
 	protected AksjonsLoggRepository aksjonsLoggRepository;
 	@Inject
