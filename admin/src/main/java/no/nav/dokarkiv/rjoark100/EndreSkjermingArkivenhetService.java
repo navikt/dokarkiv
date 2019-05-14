@@ -90,7 +90,8 @@ public class EndreSkjermingArkivenhetService {
 		if (forrigeSkjerming != tilSkjerming) {
 			//Skal ikke fjerne skjerming fra ARKIV variant hvis det finnes en SLADDET variant som ikke er skjermet.
 			//Det betyr at dokumentet er sladdet hvor originalen som er ARKIV variant er skjermet.
-			if (!filDetaljer.isArkivVariant() || canRemoveSkjermingFromArkivVariant(filDetaljer.getDokumentInfo())) {
+			//Skal være mulig å endre skjerming til noe annet hvis dokumentet er sladdet
+			if (tilSkjerming != null || !filDetaljer.isArkivVariant() || canRemoveSkjermingFromArkivVariant(filDetaljer.getDokumentInfo())) {
 				skjermingService.setFildetaljerSkjerming(filDetaljer.getDokumentInfo()
 						.getDokumentInfoId(), filDetaljer.getVariantFormat(), tilSkjerming);
 				arkivElementEndringTOList.add(
@@ -107,7 +108,7 @@ public class EndreSkjermingArkivenhetService {
 
 	private boolean canRemoveSkjermingFromArkivVariant(DokumentInfo dokumentInfo) {
 		FilDetaljer sladdet = dokumentInfo.findFilDetaljerByVariantFormatAdmin(VariantFormatCode.SLADDET);
-		return sladdet == null || sladdet.getSkjermingType() == null;
+		return sladdet == null;
 	}
 
 	public Map<Pair<Long, Long>, List<ArkivElementEndringTO>> endreSkjermingDokumentInfo(Long dokumentInfoId, SkjermingTypeCode tilSkjerming) {
