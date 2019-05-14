@@ -14,6 +14,7 @@ import no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
 import no.nav.dokarkiv.journalpost.v1.api.AvsenderMottaker;
+import no.nav.dokarkiv.journalpost.v1.api.AvsenderMottakerIdType;
 import no.nav.dokarkiv.journalpost.v1.api.Bruker;
 import no.nav.dokarkiv.journalpost.v1.api.BrukerIdType;
 import no.nav.dokarkiv.journalpost.v1.api.Dokument;
@@ -25,6 +26,7 @@ public class OpprettJournalpostRequestValidator {
 
 	private static final int FNR_LENGTH = 11;
 	private static final int ORGNR_LENGTH = 9;
+	private static final int HPRNUMMER_LENGTH = 9;
 	private static final int AVSENDERMOTTAKER_NAVN_LENGTH_BYTES = 200;
 	private static final int AVSENDERMOTTAKER_ID_LENGTH_BYTES = 50;
 
@@ -54,13 +56,18 @@ public class OpprettJournalpostRequestValidator {
 	}
 
 	private void validateAvsenderMottaker(AvsenderMottaker avsenderMottaker) {
-		if (isNotBlank(avsenderMottaker.getNavn()) && avsenderMottaker.getNavn().getBytes().length > AVSENDERMOTTAKER_NAVN_LENGTH_BYTES) {
+		if (isNotBlank(avsenderMottaker.getNavn()) && avsenderMottaker.getNavn()
+				.getBytes().length > AVSENDERMOTTAKER_NAVN_LENGTH_BYTES) {
 			throw new InputValideringFeiletException("AvsenderMottaker.navn er lengre enn " +
 					AVSENDERMOTTAKER_NAVN_LENGTH_BYTES + " byte.");
 		}
-		if (isNotBlank(avsenderMottaker.getId()) && avsenderMottaker.getId().getBytes().length > AVSENDERMOTTAKER_ID_LENGTH_BYTES) {
+		if (isNotBlank(avsenderMottaker.getId()) && avsenderMottaker.getId()
+				.getBytes().length > AVSENDERMOTTAKER_ID_LENGTH_BYTES) {
 			throw new InputValideringFeiletException("AvsenderMottaker.id er lengre enn " +
 					AVSENDERMOTTAKER_ID_LENGTH_BYTES + " byte.");
+		}
+		if (isNotBlank(avsenderMottaker.getId()) && (avsenderMottaker.getIdType() == null)) {
+			throw new InputValideringFeiletException("AvsenderMottaker.avsenderMottakerIdType må være satt når mottaker id er satt");
 		}
 	}
 

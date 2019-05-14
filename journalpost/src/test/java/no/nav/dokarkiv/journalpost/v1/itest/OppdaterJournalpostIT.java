@@ -15,6 +15,7 @@ import static org.junit.Assert.assertEquals;
 import no.nav.dokarkiv.core.consumer.RestConsumerExceptionResponse;
 import no.nav.dokarkiv.core.datautil.JournalpostTestDataProvider;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
+import no.nav.dokarkiv.core.domain.codes.AvsenderMottakerCode;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
@@ -22,6 +23,7 @@ import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.journalpost.v1.api.Arkivsaksystem;
 import no.nav.dokarkiv.journalpost.v1.api.AvsenderMottaker;
+import no.nav.dokarkiv.journalpost.v1.api.AvsenderMottakerIdType;
 import no.nav.dokarkiv.journalpost.v1.api.Bruker;
 import no.nav.dokarkiv.journalpost.v1.api.BrukerIdType;
 import no.nav.dokarkiv.journalpost.v1.api.DokumentInfo;
@@ -48,6 +50,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 	private static final String IDENTIFIKATOR = "***gammelt_fnr***";
 	private static final String AVSENDER_MOTTAKER_NAVN = "etternavn, fornavn";
+	private static final AvsenderMottakerIdType AVSENDER_MOTTAKER_TYPE_ID = AvsenderMottakerIdType.FNR;
 	private static final String ARKIVSAKSNUMMER = "123123";
 	private static final String TEMA = "FOR";
 	private static final String BEHANDLINGSTEMA = "ab0001";
@@ -107,6 +110,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 		assertThat(oppdatertJP.getLand(), is(request.getAvsenderMottaker().getLand()));
 		assertThat(oppdatertJP.getAvsenderMottakerId(), is(request.getAvsenderMottaker().getId()));
 		assertThat(oppdatertJP.getAvsenderMottaker(), is(request.getAvsenderMottaker().getNavn()));
+		assertThat(oppdatertJP.getAvsenderMottakerIdType(), is(AvsenderMottakerCode.FNR));
 		assertThat(oppdatertJP.getBrukere().size(), is(1));
 		assertThat(oppdatertJP.getBrukere().iterator().next().getBrukerId(), is(request.getBruker().getId()));
 		assertThat(oppdatertJP.getBrukere().iterator().next().getBrukerType(), is(BrukerTypeCode.PERSON));
@@ -226,6 +230,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 		assertThat(oppdatertJP.getFagomrade().name(), is(request.getTema()));
 		assertThat(oppdatertJP.getAvsenderMottakerId(), is(request.getAvsenderMottaker().getId()));
 		assertThat(oppdatertJP.getAvsenderMottaker(), is(request.getAvsenderMottaker().getNavn()));
+		assertThat(oppdatertJP.getAvsenderMottakerIdType(), is(AvsenderMottakerCode.FNR));
 		assertThat(oppdatertJP.getBrukere().size(), is(1));
 		assertThat(oppdatertJP.getBrukere().iterator().next().getBrukerId(), is(request.getBruker().getId()));
 		assertThat(oppdatertJP.getBrukere().iterator().next().getBrukerType(), is(BrukerTypeCode.PERSON));
@@ -280,6 +285,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 		return OppdaterJournalpostRequest.builder()
 				.avsenderMottaker(AvsenderMottaker.builder()
 						.id(IDENTIFIKATOR)
+						.idType(AVSENDER_MOTTAKER_TYPE_ID)
 						.navn(AVSENDER_MOTTAKER_NAVN)
 						.land(AVSENDER_MOTTAKER_LAND)
 						.build())

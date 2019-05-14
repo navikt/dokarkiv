@@ -19,6 +19,7 @@ import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
 import no.nav.dokarkiv.core.domain.entities.SkannetInnhold;
 import no.nav.dokarkiv.journalpost.v1.api.Arkivsaksystem;
 import no.nav.dokarkiv.journalpost.v1.api.AvsenderMottaker;
+import no.nav.dokarkiv.journalpost.v1.api.AvsenderMottakerIdType;
 import no.nav.dokarkiv.journalpost.v1.api.BrukerIdType;
 import no.nav.dokarkiv.journalpost.v1.api.Dokument;
 import no.nav.dokarkiv.journalpost.v1.api.DokumentVariant;
@@ -326,6 +327,7 @@ public class TestUtils {
 				.journalpostType(journalpostType)
 				.avsenderMottaker(AvsenderMottaker.builder()
 						.id(AVSENDER_ID_PERSON)
+						.idType(AvsenderMottakerIdType.FNR)
 						.navn(AVSENDER_NAVN)
 						.build())
 				.bruker(no.nav.dokarkiv.journalpost.v1.api.Bruker.builder()

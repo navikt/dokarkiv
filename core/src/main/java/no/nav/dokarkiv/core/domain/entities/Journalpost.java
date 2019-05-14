@@ -10,6 +10,8 @@ import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.UB;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import no.nav.dokarkiv.core.domain.AbstractPersistentVersionedDomainObjectWithKilde;
+import no.nav.dokarkiv.core.domain.codes.AvsenderMottakerCode;
+import no.nav.dokarkiv.core.domain.codes.AvsenderMottakerTypeCti;
 import no.nav.dokarkiv.core.domain.codes.Behandlingstema;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
@@ -71,7 +73,7 @@ import java.util.stream.Collectors;
  */
 @Entity
 @Table(name = "T_JOURNALPOST")
-@Builder(toBuilder=true)
+@Builder(toBuilder = true)
 @AllArgsConstructor
 public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKilde {
 
@@ -149,6 +151,10 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 
 	@Column(name = "avsend_mottak_id")
 	private String avsenderMottakerId;
+
+	@Enumerated(EnumType.STRING)
+	@Column(name = "avsend_mottak_id_t", length = 20)
+	private AvsenderMottakerCode avsenderMottakerIdType;
 
 	@Column(name = "journalfort_av_navn")
 	private String journalfortAvNavn;
@@ -243,7 +249,7 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	 * Constructor that assigns immutable properties. Used for testing.
 	 *
 	 * @param journalpostId DB-id for the instance.
-	 * @param version       DB-version for the instance.
+	 * @param version DB-version for the instance.
 	 */
 	public Journalpost(Long journalpostId, long version) {
 		this.journalpostId = journalpostId;
@@ -1154,6 +1160,24 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	}
 
 	/**
+	 * Getter for the avsenderMottakerIdType property.
+	 *
+	 * @return the avsenderMottakerIdType
+	 */
+	public AvsenderMottakerCode getAvsenderMottakerIdType() {
+		return avsenderMottakerIdType;
+	}
+
+	/**
+	 * Setter for the avsenderMottakerIdType property.
+	 *
+	 * @param avsenderMottakerIdType the avsenderMottakerIdType to set
+	 */
+	public void setAvsenderMottakerIdType(AvsenderMottakerCode avsenderMottakerIdType) {
+		this.avsenderMottakerIdType = avsenderMottakerIdType;
+	}
+
+	/**
 	 * Getter for the journalfortAvNavn property.
 	 *
 	 * @return the journalfortAvNavn
@@ -1424,7 +1448,6 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	}
 
 
-
 	/**
 	 * Add a JournalpostDokumentInfoRelasjon to relasjon Set.
 	 *
@@ -1449,7 +1472,7 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 
 	/**
 	 * Getter for the journalpostDokumentInfoRelasjoner property.
-	 *
+	 * <p>
 	 * Filterer ut JournalpostDokumentInfoRelasjoner som er skjermet
 	 *
 	 * @return the journalpostDokumentInfoRelasjoner
@@ -1466,6 +1489,7 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	public Set<JournalpostDokumentInfoRelasjon> getJournalpostDokumentInfoRelasjonerAdmin() {
 		return Collections.unmodifiableSet(journalpostDokumentInfoRelasjoner);
 	}
+
 	/**
 	 * Getter for the journalpostDokumentInfoRelasjoner property.
 	 *

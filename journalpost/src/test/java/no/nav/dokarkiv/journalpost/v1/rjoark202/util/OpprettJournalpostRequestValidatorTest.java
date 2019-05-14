@@ -13,6 +13,7 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createRequest;
 import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
 import no.nav.dokarkiv.journalpost.v1.api.Arkivsaksystem;
 import no.nav.dokarkiv.journalpost.v1.api.AvsenderMottaker;
+import no.nav.dokarkiv.journalpost.v1.api.AvsenderMottakerIdType;
 import no.nav.dokarkiv.journalpost.v1.api.Bruker;
 import no.nav.dokarkiv.journalpost.v1.api.BrukerIdType;
 import no.nav.dokarkiv.journalpost.v1.api.Dokument;
@@ -53,15 +54,18 @@ public class OpprettJournalpostRequestValidatorTest {
 		validator.validateRequest(request);
 	}
 
+
 	@Test
-	public void shouldNotThrowExceptionIfAvsenderIsMissingNavn() {
+	public void shouldThrowExceptionIfWhenAvsenderIdIsSetButNotMottakerIdType() {
 		request = createMinimalRequest(JournalpostType.INNGAAENDE, TEMA_FOR, INNHOLD)
 				.avsenderMottaker(AvsenderMottaker.builder()
 						.navn(null)
-						.id("1122334455")
+						.id("***gammelt_fnr***")
+						.idType(null)
 						.build())
 				.build();
-
+		expectedException.expect(InputValideringFeiletException.class);
+		expectedException.expectMessage("AvsenderMottaker.avsenderMottakerIdType");
 		validator.validateRequest(request);
 	}
 
@@ -71,6 +75,7 @@ public class OpprettJournalpostRequestValidatorTest {
 				.avsenderMottaker(AvsenderMottaker.builder()
 						.navn(AVSENDER_NAVN)
 						.id("***gammelt_fnr******gammelt_fnr******gammelt_fnr******gammelt_fnr***5678901")
+						.idType(AvsenderMottakerIdType.FNR)
 						.build())
 				.build();
 
@@ -84,7 +89,8 @@ public class OpprettJournalpostRequestValidatorTest {
 	public void shouldNotThrowExceptionIfAvsenderNameIsNotsetWhenAvsenderIdIsSet() {
 		request = createMinimalRequest(JournalpostType.INNGAAENDE, TEMA_FOR, INNHOLD)
 				.avsenderMottaker(AvsenderMottaker.builder()
-						.id("1122334455")
+						.id("***gammelt_fnr***")
+						.idType(AvsenderMottakerIdType.FNR)
 						.build())
 				.build();
 
