@@ -38,16 +38,13 @@ public class SlettArkivenhetOrchestrator {
 		switch (arkivenhet) {
 			case JOURNALPOST:
 				assertNotNullOrEmpty(journalpostId, "journalpostId");
-				arkivElementEndringTOList = slettArkivenhetService.slettJournalpost(journalpostId);
-				lagreAksjonsLoggService.lagreAksjonsLogg(journalpostId, null, aksjonsLoggHeaderString, arkivElementEndringTOList);
+				Map<Pair<Long, Long>, List<ArkivElementEndringTO>> aksjonsLoggMapJournalpost = slettArkivenhetService.slettJournalpost(journalpostId);
+				lagreAksjonsLoggService.lagreAksjonsLogg(aksjonsLoggMapJournalpost, aksjonsLoggHeaderString);
 				break;
 			case DOKUMENT_INFO:
 				assertNotNullOrEmpty(dokumentInfoId, "dokumentInfoId");
-				Map<Pair<Long, Long>, List<ArkivElementEndringTO>> aksjonsLoggMap = slettArkivenhetService.slettDokumentInfo(dokumentInfoId);
-				for (Pair<Long, Long> aksjonsLoggJournalpostDokumentInfo: aksjonsLoggMap.keySet()) {
-					lagreAksjonsLoggService.lagreAksjonsLogg(aksjonsLoggJournalpostDokumentInfo.getLeft(), aksjonsLoggJournalpostDokumentInfo.getRight(), aksjonsLoggHeaderString, aksjonsLoggMap
-							.get(aksjonsLoggJournalpostDokumentInfo));
-				}
+				Map<Pair<Long, Long>, List<ArkivElementEndringTO>> aksjonsLoggMapDokumentInfo = slettArkivenhetService.slettDokumentInfo(dokumentInfoId);
+				lagreAksjonsLoggService.lagreAksjonsLogg(aksjonsLoggMapDokumentInfo, aksjonsLoggHeaderString);
 				break;
 			case DOKUMENT_FIL:
 				assertNotNullOrEmpty(dokumentInfoId, "dokumentInfoId");

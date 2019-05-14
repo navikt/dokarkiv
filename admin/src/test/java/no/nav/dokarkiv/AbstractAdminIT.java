@@ -46,6 +46,7 @@ import java.util.stream.Collectors;
 @AutoConfigureWireMock(port = 0)
 public abstract class AbstractAdminIT extends AbstractRestIT {
 	protected static final String URL_KASSERDOKUMENT = "/rest/admin/kasserdokument/";
+	protected static final String URL_KASSERDOKUMENT_SKJERM = "/rest/admin/kasserdokument/skjerm";
 	protected static final String URL_SKJERMARKIVENHET = "/rest/admin/skjermarkivenhet/";
 	protected static final String URL_SLETTARKIVENHET = "/rest/admin/slettarkivenhet";
 
@@ -98,8 +99,10 @@ public abstract class AbstractAdminIT extends AbstractRestIT {
 
 	protected AksjonsLogg getAksjonsLoggByJournalpostIdAndDokumentInfoId(List<AksjonsLogg> aksjonsLoggList, Long journalpostId, Long dokumentInfoId) {
 		return aksjonsLoggList.stream()
-				.filter(aksjonsLogg -> journalpostId.equals(aksjonsLogg.getJournalpostId()) && dokumentInfoId.equals(aksjonsLogg
-						.getDokumentInfoId()))
+				.filter(aksjonsLogg -> (journalpostId == null ? aksjonsLogg.getJournalpostId() == null : journalpostId.equals(aksjonsLogg
+						.getJournalpostId())) && (dokumentInfoId == null ? aksjonsLogg.getDokumentInfoId() == null : dokumentInfoId
+						.equals(aksjonsLogg
+								.getDokumentInfoId())))
 				.findAny()
 				.get();
 	}

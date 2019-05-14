@@ -10,6 +10,7 @@ import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
 import no.nav.dokarkiv.core.exceptions.UgyldigSkjermArkivenhetRequestException;
 import no.nav.dokarkiv.dto.SkjermArkivenhetRequest;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -39,18 +40,17 @@ public class SkjermArkivEnhetOrchestrator {
 		switch (request.getArkivenhet()) {
 			case JOURNALPOST:
 				assertNotNullOrEmpty(request.getJournalpostId(), "journalpostId");
-				arkivElementEndringTOList = endreSkjermingArkivenhetService.endreSkjermingJournalpost(request.getJournalpostId(), request
+				Map<Pair<Long, Long>, List<ArkivElementEndringTO>> aksjonsLoggMapJP = endreSkjermingArkivenhetService.endreSkjermingJournalpost(request
+						.getJournalpostId(), request
 						.getSkjerming());
-				lagreAksjonsLogg(request.getJournalpostId(), request.getDokumentInfoId(), aksjonsLoggHeaderString, arkivElementEndringTOList);
+				lagreAksjonsLogg(aksjonsLoggMapJP, aksjonsLoggHeaderString);
 				break;
 			case DOKUMENT_INFO:
 				assertNotNullOrEmpty(request.getDokumentInfoId(), "dokumentInfoId");
-				Map<Long, List<ArkivElementEndringTO>> aksjonsLoggMap = endreSkjermingArkivenhetService.endreSkjermingDokumentInfo(request
+				Map<Pair<Long, Long>, List<ArkivElementEndringTO>> aksjonsLoggMapDokInfo = endreSkjermingArkivenhetService.endreSkjermingDokumentInfo(request
 						.getDokumentInfoId(), request
 						.getSkjerming());
-				for (Long journalpostId : aksjonsLoggMap.keySet()) {
-					lagreAksjonsLogg(journalpostId, request.getDokumentInfoId(), aksjonsLoggHeaderString, aksjonsLoggMap.get(journalpostId));
-				}
+				lagreAksjonsLogg(aksjonsLoggMapDokInfo, aksjonsLoggHeaderString);
 				break;
 			case DOKUMENT_FIL:
 				assertNotNullOrEmpty(request.getDokumentInfoId(), "dokumentInfoId");
@@ -69,17 +69,15 @@ public class SkjermArkivEnhetOrchestrator {
 		switch (request.getArkivenhet()) {
 			case JOURNALPOST:
 				assertNotNullOrEmpty(request.getJournalpostId(), "journalpostId");
-				arkivElementEndringTOList = endreSkjermingArkivenhetService.endreSkjermingJournalpost(
+				Map<Pair<Long, Long>, List<ArkivElementEndringTO>> aksjonsLoggMapJP = endreSkjermingArkivenhetService.endreSkjermingJournalpost(
 						request.getJournalpostId(), null);
-				lagreAksjonsLogg(request.getJournalpostId(), request.getDokumentInfoId(), aksjonsLoggHeaderString, arkivElementEndringTOList);
+				lagreAksjonsLogg(aksjonsLoggMapJP, aksjonsLoggHeaderString);
 				break;
 			case DOKUMENT_INFO:
 				assertNotNullOrEmpty(request.getDokumentInfoId(), "dokumentInfoId");
-				Map<Long, List<ArkivElementEndringTO>> aksjonsLoggMap = endreSkjermingArkivenhetService.endreSkjermingDokumentInfo(request
+				Map<Pair<Long, Long>, List<ArkivElementEndringTO>> aksjonsLoggMapDokInfo = endreSkjermingArkivenhetService.endreSkjermingDokumentInfo(request
 						.getDokumentInfoId(), null);
-				for (Long journalpostId : aksjonsLoggMap.keySet()) {
-					lagreAksjonsLogg(journalpostId, request.getDokumentInfoId(), aksjonsLoggHeaderString, aksjonsLoggMap.get(journalpostId));
-				}
+				lagreAksjonsLogg(aksjonsLoggMapDokInfo, aksjonsLoggHeaderString);
 				break;
 			case DOKUMENT_FIL:
 				assertNotNullOrEmpty(request.getDokumentInfoId(), "dokumentInfoId");
@@ -96,6 +94,15 @@ public class SkjermArkivEnhetOrchestrator {
 
 		AksjonsLoggTO aksjonsLoggTO = aksjonsLoggTOMapper.mapAksjonsLoggHeader(aksjonsLoggHeaderString, AksjonsTypeCode.ENDRE_SKJERMING, journalpostId, dokumentInfoId);
 		aksjonsLoggService.validateAndSaveAksjonsLogg(aksjonsLoggTO, arkivElementEndringTOList);
+	}
+
+	public void lagreAksjonsLogg(Map<Pair<Long, Long>, List<ArkivElementEndringTO>> aksjonsLoggMap, String aksjonsLoggHeaderString) throws
+			UgyldigAksjonsLoggException {
+
+		for (Pair<Long, Long> aksjonsLoggJournalpostDokumentInfo : aksjonsLoggMap.keySet()) {
+			lagreAksjonsLogg(aksjonsLoggJournalpostDokumentInfo.getLeft(), aksjonsLoggJournalpostDokumentInfo.getRight(), aksjonsLoggHeaderString, aksjonsLoggMap
+					.get(aksjonsLoggJournalpostDokumentInfo));
+		}
 	}
 
 	//Gjenbrukt fra AksjonsLoggService men annen exception, legge metoden et annet sted?

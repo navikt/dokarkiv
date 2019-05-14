@@ -6,11 +6,13 @@ import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggTOMapper;
 import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Mapper og lagrer AksjonsLogg i en egen transaksjon. AksjonsLoggSerivce henter Journalpost fra databasen for å hente ut verdier som settes i aksjonsloggen.
@@ -29,6 +31,16 @@ public class LagreAksjonsLoggService {
 	public LagreAksjonsLoggService(AksjonsLoggService aksjonsLoggService) {
 		this.aksjonsLoggService = aksjonsLoggService;
 		this.aksjonsLoggTOMapper = new AksjonsLoggTOMapper();
+	}
+
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
+	public void lagreAksjonsLogg(Map<Pair<Long, Long>, List<ArkivElementEndringTO>> aksjonsLoggMap, String aksjonsLoggHeaderString) throws
+			UgyldigAksjonsLoggException {
+
+		for (Pair<Long, Long> aksjonsLoggJournalpostDokumentInfo : aksjonsLoggMap.keySet()) {
+			lagreAksjonsLogg(aksjonsLoggJournalpostDokumentInfo.getLeft(), aksjonsLoggJournalpostDokumentInfo.getRight(), aksjonsLoggHeaderString, aksjonsLoggMap
+					.get(aksjonsLoggJournalpostDokumentInfo));
+		}
 	}
 
 	@Transactional(propagation = Propagation.REQUIRES_NEW)

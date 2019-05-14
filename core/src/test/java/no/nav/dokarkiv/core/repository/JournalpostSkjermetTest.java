@@ -17,6 +17,7 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.service.SkjermingService;
 import no.nav.dokarkiv.core.security.abac.JdbcAbacSecurityRepository;
+import no.nav.dokarkiv.core.skjerming.SkjermingServiceTest;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import org.junit.After;
 import org.junit.Before;
@@ -34,7 +35,7 @@ import javax.inject.Inject;
  * @author Ugur Alpay Cenar, Visma Consulting.
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = {RepositoryConfig.class, SkjermingService.class, JdbcAbacSecurityRepository.class})
+@SpringBootTest(classes = {RepositoryConfig.class, SkjermingService.class, SkjermingServiceTest.class, JdbcAbacSecurityRepository.class})
 @DataJpaTest
 @ActiveProfiles("itest")
 public class JournalpostSkjermetTest {
@@ -53,6 +54,9 @@ public class JournalpostSkjermetTest {
 
 	@Inject
 	private SkjermingService skjermingService;
+
+	@Inject
+	private SkjermingServiceTest skjermingServiceTest;
 
 	@Before
 	public void setUp() {
@@ -81,7 +85,7 @@ public class JournalpostSkjermetTest {
 				.next()
 				.getFildetaljerId();
 
-		skjermingService.setJpDokInfoRelSkjerming(skjermetJournalpostDokumentInfoRelasjon.getJournalpostDokumentInfoRelasjonId(), SkjermingTypeCode.POL);
+		skjermingServiceTest.setJpDokInfoRelSkjerming(skjermetJournalpostDokumentInfoRelasjon.getJournalpostDokumentInfoRelasjonId(), SkjermingTypeCode.POL);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 

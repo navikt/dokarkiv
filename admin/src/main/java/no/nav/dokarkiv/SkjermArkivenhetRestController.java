@@ -12,7 +12,6 @@ import no.nav.dokarkiv.core.exceptions.UgyldigSkjermArkivenhetRequestException;
 import no.nav.dokarkiv.core.metrics.RestMetrics;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import no.nav.dokarkiv.dto.SkjermArkivenhetRequest;
-import no.nav.dokarkiv.dto.SkjermArkivenhetResponse;
 import no.nav.dokarkiv.rjoark100.SkjermArkivEnhetOrchestrator;
 import org.slf4j.MDC;
 import org.springframework.http.ResponseEntity;
@@ -42,11 +41,11 @@ public class SkjermArkivenhetRestController {
 		this.skjermArkivEnhetOrchestrator = skjermArkivEnhetOrchestrator;
 	}
 
-	@Transactional(rollbackFor = UgyldigAksjonsLoggException.class)
+	@Transactional(rollbackFor = Exception.class)
 	@ResponseBody
 	@PostMapping("/skjermarkivenhet")
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark100a"}, percentiles = {0.5, 0.95})
-	public ResponseEntity<SkjermArkivenhetResponse> skjermArkivenhet(
+	public ResponseEntity skjermArkivenhet(
 			@RequestHeader(value = AKSJONS_LOGG_HEADER) String aksjonsLoggHeaderString,
 			@RequestBody SkjermArkivenhetRequest skjermArkivenhetRequest) throws UgyldigAksjonsLoggException, UgyldigSkjermArkivenhetRequestException {
 		validerAtRequestHarSkjermingOgArkivenhet(skjermArkivenhetRequest.getSkjerming(), skjermArkivenhetRequest.getArkivenhet());
@@ -59,20 +58,14 @@ public class SkjermArkivenhetRestController {
 		skjermArkivEnhetOrchestrator.skjermArkivEnhet(skjermArkivenhetRequest, aksjonsLoggHeaderString);
 
 		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har skjermet arkivenhet {}", skjermArkivenhetRequest.getArkivenhet());
-		return ResponseEntity
-				.ok()
-				.body(SkjermArkivenhetResponse.builder()
-						.dokumentInfoId(skjermArkivenhetRequest.getDokumentInfoId())
-						.journalpostId(skjermArkivenhetRequest.getJournalpostId())
-						.variant(skjermArkivenhetRequest.getVariant())
-						.build());
+		return ResponseEntity.ok().build();
 	}
 
-	@Transactional(rollbackFor = UgyldigAksjonsLoggException.class)
+	@Transactional(rollbackFor = Exception.class)
 	@ResponseBody
 	@DeleteMapping("/skjermarkivenhet")
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark100b"}, percentiles = {0.5, 0.95})
-	public SkjermArkivenhetResponse opphevSkjermArkivenhet(
+	public ResponseEntity opphevSkjermArkivenhet(
 			@RequestHeader(value = AKSJONS_LOGG_HEADER) String aksjonsLoggHeaderString,
 			@RequestBody SkjermArkivenhetRequest skjermArkivenhetRequest) throws UgyldigAksjonsLoggException, UgyldigSkjermArkivenhetRequestException {
 		validerAtRequestHarSkjermingOgArkivenhet(skjermArkivenhetRequest.getSkjerming(), skjermArkivenhetRequest.getArkivenhet());
@@ -86,13 +79,8 @@ public class SkjermArkivenhetRestController {
 		skjermArkivEnhetOrchestrator.opphevSkjermArkivEnhet(skjermArkivenhetRequest, aksjonsLoggHeaderString);
 
 		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har opphevet skjerming av arkivenhet {}", skjermArkivenhetRequest.getArkivenhet());
-		return SkjermArkivenhetResponse.builder()
-				.dokumentInfoId(skjermArkivenhetRequest.getDokumentInfoId())
-				.journalpostId(skjermArkivenhetRequest.getJournalpostId())
-				.variant(skjermArkivenhetRequest.getVariant())
-				.build();
+		return ResponseEntity.ok().build();
 	}
-
 
 	private void validerAtRequestHarSkjermingOgArkivenhet(@NotNull SkjermingTypeCode skjerming, @NotNull ArkivenhetCode
 			arkivenhet)

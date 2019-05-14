@@ -7,12 +7,12 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 
 import no.nav.dokarkiv.core.CoreConfig;
 import no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerV2Mock;
-import no.nav.dokarkiv.core.domain.service.SkjermingService;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.DokumentUrlInfoRepository;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
+import no.nav.dokarkiv.core.skjerming.SkjermingServiceTest;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.dokarkiv.core.stelvio.SimpleRequestContext;
 import no.nav.tjeneste.virksomhet.aktoer.v2.binding.AktoerV2;
@@ -66,7 +66,7 @@ public abstract class AbstractJournalV3Itest {
 	@Inject
     protected DokumentUrlInfoRepository dokumentUrlInfoRepository;
 	@Inject
-	protected SkjermingService skjermingService;
+	protected SkjermingServiceTest skjermingService;
 	@Inject
 	protected EntityManager entityManager;
 	@Configuration
