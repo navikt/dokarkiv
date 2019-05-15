@@ -15,7 +15,7 @@ import static org.junit.Assert.assertEquals;
 import no.nav.dokarkiv.core.consumer.RestConsumerExceptionResponse;
 import no.nav.dokarkiv.core.datautil.JournalpostTestDataProvider;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
-import no.nav.dokarkiv.core.domain.codes.AvsenderMottakerCode;
+import no.nav.dokarkiv.core.domain.codes.AvsenderMottakerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
@@ -110,7 +110,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 		assertThat(oppdatertJP.getLand(), is(request.getAvsenderMottaker().getLand()));
 		assertThat(oppdatertJP.getAvsenderMottakerId(), is(request.getAvsenderMottaker().getId()));
 		assertThat(oppdatertJP.getAvsenderMottaker(), is(request.getAvsenderMottaker().getNavn()));
-		assertThat(oppdatertJP.getAvsenderMottakerIdType(), is(AvsenderMottakerCode.FNR));
+		assertThat(oppdatertJP.getAvsenderMottakerIdType(), is(AvsenderMottakerTypeCode.FNR));
 		assertThat(oppdatertJP.getBrukere().size(), is(1));
 		assertThat(oppdatertJP.getBrukere().iterator().next().getBrukerId(), is(request.getBruker().getId()));
 		assertThat(oppdatertJP.getBrukere().iterator().next().getBrukerType(), is(BrukerTypeCode.PERSON));
@@ -230,7 +230,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 		assertThat(oppdatertJP.getFagomrade().name(), is(request.getTema()));
 		assertThat(oppdatertJP.getAvsenderMottakerId(), is(request.getAvsenderMottaker().getId()));
 		assertThat(oppdatertJP.getAvsenderMottaker(), is(request.getAvsenderMottaker().getNavn()));
-		assertThat(oppdatertJP.getAvsenderMottakerIdType(), is(AvsenderMottakerCode.FNR));
+		assertThat(oppdatertJP.getAvsenderMottakerIdType(), is(AvsenderMottakerTypeCode.FNR));
 		assertThat(oppdatertJP.getBrukere().size(), is(1));
 		assertThat(oppdatertJP.getBrukere().iterator().next().getBrukerId(), is(request.getBruker().getId()));
 		assertThat(oppdatertJP.getBrukere().iterator().next().getBrukerType(), is(BrukerTypeCode.PERSON));

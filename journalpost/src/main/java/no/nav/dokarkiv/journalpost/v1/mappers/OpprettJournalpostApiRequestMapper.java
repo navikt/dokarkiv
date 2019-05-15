@@ -23,7 +23,7 @@ import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
-import no.nav.dokarkiv.core.domain.codes.AvsenderMottakerCode;
+import no.nav.dokarkiv.core.domain.codes.AvsenderMottakerTypeCode;
 import no.nav.dokarkiv.journalpost.v1.api.Arkivsaksystem;
 import no.nav.dokarkiv.journalpost.v1.api.AvsenderMottakerIdType;
 import no.nav.dokarkiv.journalpost.v1.api.BrukerIdType;
@@ -76,18 +76,18 @@ public class OpprettJournalpostApiRequestMapper {
 		}
 	}
 
-	private AvsenderMottakerCode mapAvsenderMottakerType(AvsenderMottakerIdType request) {
-		AvsenderMottakerCode avsenderMottakerCode;
+	private AvsenderMottakerTypeCode mapAvsenderMottakerType(AvsenderMottakerIdType request) {
+		AvsenderMottakerTypeCode avsenderMottakerTypeCode;
 		if (AvsenderMottakerIdType.FNR.equals(request)) {
-			avsenderMottakerCode = AvsenderMottakerCode.FNR;
+			avsenderMottakerTypeCode = AvsenderMottakerTypeCode.FNR;
 		} else if (AvsenderMottakerIdType.ORGNR.equals(request)) {
-			avsenderMottakerCode = AvsenderMottakerCode.ORGNR;
+			avsenderMottakerTypeCode = AvsenderMottakerTypeCode.ORGNR;
 		} else if (AvsenderMottakerIdType.HPRNR.equals(request)) {
-			avsenderMottakerCode = AvsenderMottakerCode.HPRNR;
+			avsenderMottakerTypeCode = AvsenderMottakerTypeCode.HPRNR;
 		} else {
-			avsenderMottakerCode = AvsenderMottakerCode.UTL_ORG;
+			avsenderMottakerTypeCode = AvsenderMottakerTypeCode.UTL_ORG;
 		}
-		return avsenderMottakerCode;
+		return avsenderMottakerTypeCode;
 	}
 
 	private JournalStatusCode mapJournalstatus(OpprettJournalpostRequest request) {

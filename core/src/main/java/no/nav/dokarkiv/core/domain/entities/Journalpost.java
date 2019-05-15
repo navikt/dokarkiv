@@ -10,7 +10,7 @@ import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.UB;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import no.nav.dokarkiv.core.domain.AbstractPersistentVersionedDomainObjectWithKilde;
-import no.nav.dokarkiv.core.domain.codes.AvsenderMottakerCode;
+import no.nav.dokarkiv.core.domain.codes.AvsenderMottakerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.Behandlingstema;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
@@ -153,7 +153,7 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 
 	@Enumerated(EnumType.STRING)
 	@Column(name = "avsend_mottak_id_t", length = 20)
-	private AvsenderMottakerCode avsenderMottakerIdType;
+	private AvsenderMottakerTypeCode avsenderMottakerIdType;
 
 	@Column(name = "journalfort_av_navn")
 	private String journalfortAvNavn;
@@ -1163,7 +1163,7 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	 *
 	 * @return the avsenderMottakerIdType
 	 */
-	public AvsenderMottakerCode getAvsenderMottakerIdType() {
+	public AvsenderMottakerTypeCode getAvsenderMottakerIdType() {
 		return avsenderMottakerIdType;
 	}
 
@@ -1172,7 +1172,7 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	 *
 	 * @param avsenderMottakerIdType the avsenderMottakerIdType to set
 	 */
-	public void setAvsenderMottakerIdType(AvsenderMottakerCode avsenderMottakerIdType) {
+	public void setAvsenderMottakerIdType(AvsenderMottakerTypeCode avsenderMottakerIdType) {
 		this.avsenderMottakerIdType = avsenderMottakerIdType;
 	}
 
