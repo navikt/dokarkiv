@@ -77,16 +77,17 @@ public class OpprettJournalpostApiRequestMapper {
 	}
 
 	private AvsenderMottakerCode mapAvsenderMottakerType(AvsenderMottakerIdType request) {
+		AvsenderMottakerCode avsenderMottakerCode;
 		if (AvsenderMottakerIdType.FNR.equals(request)) {
-			return AvsenderMottakerCode.FNR;
+			avsenderMottakerCode = AvsenderMottakerCode.FNR;
 		} else if (AvsenderMottakerIdType.ORGNR.equals(request)) {
-			return AvsenderMottakerCode.ORGNR;
+			avsenderMottakerCode = AvsenderMottakerCode.ORGNR;
 		} else if (AvsenderMottakerIdType.HPRNR.equals(request)) {
-			return AvsenderMottakerCode.HPRNR;
+			avsenderMottakerCode = AvsenderMottakerCode.HPRNR;
 		} else {
-			return AvsenderMottakerCode.UTL_ORG;
+			avsenderMottakerCode = AvsenderMottakerCode.UTL_ORG;
 		}
-
+		return avsenderMottakerCode;
 	}
 
 	private JournalStatusCode mapJournalstatus(OpprettJournalpostRequest request) {

@@ -16,7 +16,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "T_K_AVSEND_MOTTAK_ID_T")
-@AttributeOverrides({@AttributeOverride(name = "code", column = @Column(name = "k_journalpost_t")),
+@AttributeOverrides({@AttributeOverride(name = "code", column = @Column(name = "k_avsend_mottak_id_t")),
 		@AttributeOverride(name = "decode", column = @Column(name = "dekode")),
 		@AttributeOverride(name = "fromDate", column = @Column(name = "dato_fom")),
 		@AttributeOverride(name = "toDate", column = @Column(name = "dato_tom"))})
