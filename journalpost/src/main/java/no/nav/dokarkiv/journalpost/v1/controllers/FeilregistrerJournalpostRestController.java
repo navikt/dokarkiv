@@ -44,7 +44,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/rest/journalpostapi/v1/journalpost")
 @Api(value = "Feilregistrer", description = "Tjenester for å feilregistrere journalpost")
-public class FeilregistrerRestController {
+public class FeilregistrerJournalpostRestController {
 
     private static final String FIKK_UKJENT_BRUKER = "Journalposten fikk status Ukjent Bruker";
     private static final String FIKK_AVBRUTT_UTGAAR = "Journalposten ble satt til avbrutt / utgår";
@@ -56,10 +56,10 @@ public class FeilregistrerRestController {
     private final AksjonsLoggService aksjonsLoggService;
 
     @Inject
-    public FeilregistrerRestController(final FeilregistrerSakstilknytningService feilregistrerSakstilknytningService,
-                                       final SettUkjentBrukerService settUkjentBrukerService,
-                                       final AvbrytService avbrytService,
-                                       final AksjonsLoggService aksjonsLoggService){
+    public FeilregistrerJournalpostRestController(final FeilregistrerSakstilknytningService feilregistrerSakstilknytningService,
+                                                  final SettUkjentBrukerService settUkjentBrukerService,
+                                                  final AvbrytService avbrytService,
+                                                  final AksjonsLoggService aksjonsLoggService){
         this.feilregistrerSakstilknytningService = feilregistrerSakstilknytningService;
         this.settUkjentBrukerService = settUkjentBrukerService;
         this.avbrytService = avbrytService;

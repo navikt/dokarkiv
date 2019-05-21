@@ -64,9 +64,11 @@ public class SwaggerConfig {
 	private ApiInfo apiInfo() {
 		return new ApiInfo(
 				"Dokarkiv APIer",
-				"Her dokumenteres REST-grensesnittene til dokarkiv (Joark). Til autentisering brukes OIDC-token (JWT via OAuth2.0). " +
-						"Følgende format må brukes i Authorize sitt input-felt \"Value\": <strong> Bearer {token} </strong>. " +
-						"Eksempel på verdi i input-feltet: <strong> Bearer eYdmifml0ejugm </strong>. Et gyldig token kommer til å ha mange flere karakterer enn i eksempelet.",
+				"Her dokumenteres REST-grensesnittene til dokarkiv (Joark). Til autentisering brukes to OIDC-token (JWT via OAuth2.0) i hver sin header, " +
+						"Nav-Consumer-Token (applikasjonsbrukeren sitt token) og Authorization (saksbehandleren sitt token). " +
+						"Følgende format må brukes for disse \"Value\": <strong> Bearer {token} </strong>. " +
+						"Eksempel på verdi i input-feltet: <strong> Bearer eYdmifml0ejugm </strong>. Et gyldig token kommer til å ha mange flere karakterer enn i eksempelet. " +
+						"Denne siden er ment som dokumentasjon, og ikke for å teste tjenestene.",
 				version,
 				"",
 				new Contact("Team Dokument", "", ""),

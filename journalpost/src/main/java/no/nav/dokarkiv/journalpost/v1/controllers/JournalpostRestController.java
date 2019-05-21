@@ -54,7 +54,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.inject.Inject;
 import java.util.Optional;
 
-@Api
+@Api(description = "Tjenester for å arkivere og journalføre i fagarkiv")
 @Slf4j
 @RestController
 @RequestMapping("/rest/journalpostapi/v1/journalpost")
