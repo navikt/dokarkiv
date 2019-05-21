@@ -103,7 +103,7 @@ public class Rjoark902IT extends AbstractHentjournalsakinfoItest {
 	private Journalpost buildAndPersistJournalpost() {
 
 		Journalpost journalpost = createJournalpostWithHoveddokument();
-		journalpost.addJournalpostDokumentInfoRelasjon(TestDataGenerator.createDokumentInfoVedleggRelasjon(journalpost));
+		TestDataGenerator.createDokumentInfoVedleggRelasjon(journalpost);
 		saveJournalpost(journalpost);
 
 		journalpost.setJournalForendeEnhetId(JOURNALFOERENDE_ENHET);

@@ -2,22 +2,22 @@ package no.nav.dokarkiv.core.repository;
 
 import static no.nav.dokarkiv.core.util.TestDataUtils.createJournalpost;
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 import no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder;
 import no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder;
 import no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder;
-import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
+import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.service.SkjermingService;
 import no.nav.dokarkiv.core.security.abac.JdbcAbacSecurityRepository;
+import no.nav.dokarkiv.core.skjerming.SkjermingServiceTest;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import org.junit.After;
 import org.junit.Before;
@@ -35,7 +35,7 @@ import javax.inject.Inject;
  * @author Ugur Alpay Cenar, Visma Consulting.
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = {RepositoryConfig.class, SkjermingService.class, JdbcAbacSecurityRepository.class})
+@SpringBootTest(classes = {RepositoryConfig.class, SkjermingService.class, SkjermingServiceTest.class, JdbcAbacSecurityRepository.class})
 @DataJpaTest
 @ActiveProfiles("itest")
 public class JournalpostSkjermetTest {
@@ -54,6 +54,9 @@ public class JournalpostSkjermetTest {
 
 	@Inject
 	private SkjermingService skjermingService;
+
+	@Inject
+	private SkjermingServiceTest skjermingServiceTest;
 
 	@Before
 	public void setUp() {
@@ -82,7 +85,7 @@ public class JournalpostSkjermetTest {
 				.next()
 				.getFildetaljerId();
 
-		skjermingService.setJpDokInfoRelSkjerming(skjermetJournalpostDokumentInfoRelasjon, SkjermingTypeCode.POL);
+		skjermingServiceTest.setJpDokInfoRelSkjerming(skjermetJournalpostDokumentInfoRelasjon.getJournalpostDokumentInfoRelasjonId(), SkjermingTypeCode.POL);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 

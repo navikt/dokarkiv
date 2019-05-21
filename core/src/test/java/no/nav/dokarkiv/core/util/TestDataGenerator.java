@@ -1,6 +1,7 @@
 package no.nav.dokarkiv.core.util;
 
 import static no.nav.dokarkiv.core.repository.DokumentFilSkjermetRepository.FIL_UUID_DUMMY_DOKUMENT_KASSERT;
+import static no.nav.dokarkiv.core.repository.DokumentFilSkjermetRepository.FIL_UUID_DUMMY_DOKUMENT_SKJERMET;
 
 import no.nav.dokarkiv.core.domain.codes.ArsakReturCode;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
@@ -53,7 +54,8 @@ public class TestDataGenerator {
 	public static final String TILLEGGOPPLYSNINGER_KEY = "tillegg";
 	public static final String TILLEGGOPPLYSNINGER_VAL = "tillegg_verdi";
 	public static final byte[] FIL = "Test dokument".getBytes();
-	public static final byte[] FIL_DUMMY = "Test dummy dokument dummy".getBytes();
+	public static final byte[] FIL_DUMMY_KASSERT = "Test kassert dummy dokument dummy".getBytes();
+	public static final byte[] FIL_DUMMY_SKJERMET = "Test skjermet dummy dokument dummy".getBytes();
 	public static final byte[] FIL_SLADDET = "Test sladdet dokument".getBytes();
 
 	public static Journalpost createJournalpostWithHoveddokument() {
@@ -168,6 +170,7 @@ public class TestDataGenerator {
 
 		journalpostDokumentInfoRelasjon.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
 		journalpostDokumentInfoRelasjon.setTilknyttetAvNavn(OPPRETTET_KILDE_NAVN);
+		journalpost.addJournalpostDokumentInfoRelasjon(journalpostDokumentInfoRelasjon);
 		return journalpostDokumentInfoRelasjon;
 	}
 
@@ -181,6 +184,8 @@ public class TestDataGenerator {
 
 		journalpostDokumentInfoRelasjon.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
 		journalpostDokumentInfoRelasjon.setTilknyttetAvNavn(OPPRETTET_KILDE_NAVN);
+
+		journalpost.addJournalpostDokumentInfoRelasjon(journalpostDokumentInfoRelasjon);
 		return journalpostDokumentInfoRelasjon;
 	}
 
@@ -258,10 +263,18 @@ public class TestDataGenerator {
 		return filDetaljer;
 	}
 
-	public static DokumentFil createDummyDokument(){
+	public static DokumentFil createDummyDokumentKassert() {
 		DokumentFil dokumentFil = new DokumentFil();
-		dokumentFil.setFil(FIL_DUMMY);
+		dokumentFil.setFil(FIL_DUMMY_KASSERT);
 		dokumentFil.setFilUuid(FIL_UUID_DUMMY_DOKUMENT_KASSERT);
+		dokumentFil.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
+		return dokumentFil;
+	}
+
+	public static DokumentFil createDummyDokumentSkjermet() {
+		DokumentFil dokumentFil = new DokumentFil();
+		dokumentFil.setFil(FIL_DUMMY_SKJERMET);
+		dokumentFil.setFilUuid(FIL_UUID_DUMMY_DOKUMENT_SKJERMET);
 		dokumentFil.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
 		return dokumentFil;
 	}

@@ -1,28 +1,18 @@
 package no.nav.dokarkiv;
 
 import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_LOGG_HEADER;
-import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_SKJERMING_TYPE;
-import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.RELASJON_SKJERMING_TYPE;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.MDCConstants;
-import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService;
-import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggTO;
-import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggTOMapper;
-import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
-import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.codes.ArkivenhetCode;
 import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
-import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
 import no.nav.dokarkiv.core.exceptions.UgyldigSkjermArkivenhetRequestException;
 import no.nav.dokarkiv.core.metrics.RestMetrics;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import no.nav.dokarkiv.dto.SkjermArkivenhetRequest;
-import no.nav.dokarkiv.dto.SkjermArkivenhetResponse;
-import no.nav.dokarkiv.rjoark100.OpphevSkjermArkivenhetService;
-import no.nav.dokarkiv.rjoark100.SkjermArkivenhetService;
+import no.nav.dokarkiv.rjoark100.SkjermArkivEnhetOrchestrator;
 import org.slf4j.MDC;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,8 +26,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
 
 @Slf4j
@@ -45,28 +33,19 @@ import java.util.Objects;
 @RequestMapping("rest/admin")
 public class SkjermArkivenhetRestController {
 
-	private final SkjermArkivenhetService skjermArkivenhetService;
-	private final OpphevSkjermArkivenhetService opphevSkjermArkivenhetService;
-	private final AksjonsLoggService aksjonsLoggService;
-	private final AksjonsLoggTOMapper aksjonsLoggTOMapper;
+	private final SkjermArkivEnhetOrchestrator skjermArkivEnhetOrchestrator;
 
 
 	@Inject
-	public SkjermArkivenhetRestController(
-			SkjermArkivenhetService skjermArkivenhetService,
-			OpphevSkjermArkivenhetService opphevSkjermArkivenhetService,
-			AksjonsLoggService aksjonsLoggService) {
-		this.skjermArkivenhetService = skjermArkivenhetService;
-		this.opphevSkjermArkivenhetService = opphevSkjermArkivenhetService;
-		this.aksjonsLoggService = aksjonsLoggService;
-		this.aksjonsLoggTOMapper = new AksjonsLoggTOMapper();
+	public SkjermArkivenhetRestController(SkjermArkivEnhetOrchestrator skjermArkivEnhetOrchestrator) {
+		this.skjermArkivEnhetOrchestrator = skjermArkivEnhetOrchestrator;
 	}
 
-	@Transactional(rollbackFor = UgyldigAksjonsLoggException.class)
+	@Transactional(rollbackFor = Exception.class)
 	@ResponseBody
 	@PostMapping("/skjermarkivenhet")
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark100a"}, percentiles = {0.5, 0.95})
-	public ResponseEntity<SkjermArkivenhetResponse> skjermArkivenhet(
+	public ResponseEntity skjermArkivenhet(
 			@RequestHeader(value = AKSJONS_LOGG_HEADER) String aksjonsLoggHeaderString,
 			@RequestBody SkjermArkivenhetRequest skjermArkivenhetRequest) throws UgyldigAksjonsLoggException, UgyldigSkjermArkivenhetRequestException {
 		validerAtRequestHarSkjermingOgArkivenhet(skjermArkivenhetRequest.getSkjerming(), skjermArkivenhetRequest.getArkivenhet());
@@ -75,45 +54,18 @@ public class SkjermArkivenhetRestController {
 
 		log.info("{} har mottat kall om å skjerme arkivenhet={} med journalpostId={} og dokumentInfoId={}", MDC.get(MDCConstants.MDC_REQUEST_ID), skjermArkivenhetRequest
 				.getArkivenhet(), skjermArkivenhetRequest.getJournalpostId(), skjermArkivenhetRequest.getDokumentInfoId());
-		switch (skjermArkivenhetRequest.getArkivenhet()) {
-			case JOURNALPOST:
-				assertNotNullOrEmpty(skjermArkivenhetRequest.getJournalpostId(), "journalpostId");
-				skjermArkivenhetService.skjermJournalpost(
-						skjermArkivenhetRequest.getJournalpostId(), skjermArkivenhetRequest.getSkjerming());
-				break;
-			case VEDLEGG:
-				assertNotNullOrEmpty(skjermArkivenhetRequest.getJournalpostId(), "journalpostId");
-				assertNotNullOrEmpty(skjermArkivenhetRequest.getDokumentInfoId(), "dokumentInfoId");
-				skjermArkivenhetService.skjermVedlegg(
-						skjermArkivenhetRequest.getJournalpostId(), skjermArkivenhetRequest.getDokumentInfoId(), skjermArkivenhetRequest
-								.getSkjerming());
-				break;
-			case DOKUMENT_FIL:
-				assertNotNullOrEmpty(skjermArkivenhetRequest.getDokumentInfoId(), "dokumentInfoId");
-				assertNotNullOrEmpty(skjermArkivenhetRequest.getVariant(), "variant");
-				skjermArkivenhetService.skjermDokumentFil(skjermArkivenhetRequest.getDokumentInfoId(), skjermArkivenhetRequest
-						.getVariant(), skjermArkivenhetRequest.getSkjerming());
-		}
 
-		List<ArkivElementEndringTO> arkivElementEndringTOList = createArkivElementEndringTO(skjermArkivenhetRequest.getArkivenhet(), skjermArkivenhetRequest
-				.getVariant(), null, skjermArkivenhetRequest.getSkjerming().name());
-		lagreAksjonsLogg(skjermArkivenhetRequest.getJournalpostId(), skjermArkivenhetRequest.getDokumentInfoId(), aksjonsLoggHeaderString, arkivElementEndringTOList);
+		skjermArkivEnhetOrchestrator.skjermArkivEnhet(skjermArkivenhetRequest, aksjonsLoggHeaderString);
 
 		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har skjermet arkivenhet {}", skjermArkivenhetRequest.getArkivenhet());
-		return ResponseEntity
-				.ok()
-				.body(SkjermArkivenhetResponse.builder()
-						.dokumentInfoId(skjermArkivenhetRequest.getDokumentInfoId())
-						.journalpostId(skjermArkivenhetRequest.getJournalpostId())
-						.variant(skjermArkivenhetRequest.getVariant())
-						.build());
+		return ResponseEntity.ok().build();
 	}
 
-	@Transactional(rollbackFor = UgyldigAksjonsLoggException.class)
+	@Transactional(rollbackFor = Exception.class)
 	@ResponseBody
 	@DeleteMapping("/skjermarkivenhet")
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark100b"}, percentiles = {0.5, 0.95})
-	public SkjermArkivenhetResponse opphevSkjermArkivenhet(
+	public ResponseEntity opphevSkjermArkivenhet(
 			@RequestHeader(value = AKSJONS_LOGG_HEADER) String aksjonsLoggHeaderString,
 			@RequestBody SkjermArkivenhetRequest skjermArkivenhetRequest) throws UgyldigAksjonsLoggException, UgyldigSkjermArkivenhetRequestException {
 		validerAtRequestHarSkjermingOgArkivenhet(skjermArkivenhetRequest.getSkjerming(), skjermArkivenhetRequest.getArkivenhet());
@@ -124,38 +76,11 @@ public class SkjermArkivenhetRestController {
 				.getArkivenhet(), skjermArkivenhetRequest
 				.getJournalpostId(), skjermArkivenhetRequest.getDokumentInfoId());
 
-		switch (skjermArkivenhetRequest.getArkivenhet()) {
-			case JOURNALPOST:
-				assertNotNullOrEmpty(skjermArkivenhetRequest.getJournalpostId(), "journalpostId");
-				opphevSkjermArkivenhetService.opphevSkjermJournalpost(
-						skjermArkivenhetRequest.getJournalpostId(), skjermArkivenhetRequest.getSkjerming());
-				break;
-			case VEDLEGG:
-				assertNotNullOrEmpty(skjermArkivenhetRequest.getJournalpostId(), "journalpostId");
-				assertNotNullOrEmpty(skjermArkivenhetRequest.getDokumentInfoId(), "dokumentInfoId");
-				opphevSkjermArkivenhetService.opphevSkjermDokumentInfo(
-						skjermArkivenhetRequest.getJournalpostId(), skjermArkivenhetRequest.getDokumentInfoId(), skjermArkivenhetRequest
-								.getSkjerming());
-				break;
-			case DOKUMENT_FIL:
-				assertNotNullOrEmpty(skjermArkivenhetRequest.getDokumentInfoId(), "dokumentInfoId");
-				assertNotNullOrEmpty(skjermArkivenhetRequest.getVariant(), "variant");
-				opphevSkjermArkivenhetService.opphevSkjermDokumentFil(skjermArkivenhetRequest.getDokumentInfoId(), skjermArkivenhetRequest
-						.getVariant());
-		}
-
-		List<ArkivElementEndringTO> arkivElementEndringTOList = createArkivElementEndringTO(skjermArkivenhetRequest.getArkivenhet(), skjermArkivenhetRequest
-				.getVariant(), skjermArkivenhetRequest.getSkjerming().name(), null);
-		lagreAksjonsLogg(skjermArkivenhetRequest.getJournalpostId(), skjermArkivenhetRequest.getDokumentInfoId(), aksjonsLoggHeaderString, arkivElementEndringTOList);
+		skjermArkivEnhetOrchestrator.opphevSkjermArkivEnhet(skjermArkivenhetRequest, aksjonsLoggHeaderString);
 
 		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har opphevet skjerming av arkivenhet {}", skjermArkivenhetRequest.getArkivenhet());
-		return SkjermArkivenhetResponse.builder()
-				.dokumentInfoId(skjermArkivenhetRequest.getDokumentInfoId())
-				.journalpostId(skjermArkivenhetRequest.getJournalpostId())
-				.variant(skjermArkivenhetRequest.getVariant())
-				.build();
+		return ResponseEntity.ok().build();
 	}
-
 
 	private void validerAtRequestHarSkjermingOgArkivenhet(@NotNull SkjermingTypeCode skjerming, @NotNull ArkivenhetCode
 			arkivenhet)
@@ -171,32 +96,4 @@ public class SkjermArkivenhetRestController {
 		}
 	}
 
-	private void lagreAksjonsLogg(Long journalpostId, Long dokumentInfoId, String aksjonsLoggHeaderString, List<ArkivElementEndringTO> arkivElementEndringTOList) throws
-			UgyldigAksjonsLoggException {
-
-		AksjonsLoggTO aksjonsLoggTO = aksjonsLoggTOMapper.mapAksjonsLoggHeader(aksjonsLoggHeaderString, AksjonsTypeCode.ENDRE_SKJERMING, journalpostId, dokumentInfoId);
-		aksjonsLoggService.validateAndSaveAksjonsLogg(aksjonsLoggTO, arkivElementEndringTOList);
-	}
-
-	private List<ArkivElementEndringTO> createArkivElementEndringTO(ArkivenhetCode arkivenhetCode, VariantFormatCode variantFormatCode, String fraVerdi, String tilVerdi) {
-		ArkivElementEndringTO.ArkivElementEndringTOBuilder arkivElementEndringTO = ArkivElementEndringTO.builder();
-
-		switch (arkivenhetCode) {
-			case JOURNALPOST:
-				arkivElementEndringTO.arkivElement(JOURNALPOST_SKJERMING_TYPE);
-				break;
-			case VEDLEGG:
-				arkivElementEndringTO.arkivElement(RELASJON_SKJERMING_TYPE);
-				break;
-			case DOKUMENT_FIL:
-				arkivElementEndringTO.arkivElement(String.format("Fildetaljer.variantFormat[%s].skjermingType", variantFormatCode
-						.name()));
-				break;
-		}
-
-		arkivElementEndringTO.fraVerdi(fraVerdi);
-		arkivElementEndringTO.tilVerdi(tilVerdi);
-
-		return Arrays.asList(arkivElementEndringTO.build());
-	}
 }

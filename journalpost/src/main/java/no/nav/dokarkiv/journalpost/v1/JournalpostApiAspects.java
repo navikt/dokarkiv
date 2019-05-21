@@ -17,21 +17,36 @@ import javax.inject.Inject;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
 
+/**
+ * Metodene av samme Advice (f.eks @Before) kjøres i alfabetisk rekkefølge, vær obs på løsningsbeskrivelsen her!
+ */
 @Aspect
 @Component
 @Slf4j
-public class JournalpostApiHelper {
+public class JournalpostApiAspects {
 
     @Inject
     private AbacSecurityService abacSecurityService;
 
     @Before("execution(* no.nav.dokarkiv.journalpost.v1.controllers.FeilregistrerRestController.*(..)) && args(journalpostId)")
-    public void configureMDCAndLog(JoinPoint point, String journalpostId) {
+    public void aConfigureMDC(JoinPoint point, String journalpostId) {
         MDC.put(MDC_REQUEST_ID, "feilregistrer");
-        log.info(MDC.get(MDC_REQUEST_ID) + " har mottatt kall for feilregistrering av journalpost med journalpostId={}", journalpostId);
-        CommonValidator.validateId(journalpostId, "journalpostId");
-        abacSecurityService.assertAccessToJournalpost(journalpostId);
         RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
+    }
+
+    @Before("execution(* no.nav.dokarkiv.journalpost.v1.controllers.FeilregistrerRestController.*(..)) && args(journalpostId)")
+    public void bLog(JoinPoint point, String journalpostId) {
+        log.info(MDC.get(MDC_REQUEST_ID) + " har mottatt kall for feilregistrering av journalpost med journalpostId={}", journalpostId);
+    }
+
+    @Before("execution(* no.nav.dokarkiv.journalpost.v1.controllers.FeilregistrerRestController.*(..)) && args(journalpostId)")
+    public void cValiderInput(JoinPoint point, String journalpostId) {
+        CommonValidator.validateId(journalpostId, "journalpostId");
+    }
+
+    @Before("execution(* no.nav.dokarkiv.journalpost.v1.controllers.FeilregistrerRestController.*(..)) && args(journalpostId)")
+    public void dPerformAccessControl(JoinPoint point, String journalpostId) {
+        abacSecurityService.assertAccessToJournalpost(journalpostId);
     }
 
     @After("execution(* no.nav.dokarkiv.journalpost.v1.controllers.FeilregistrerRestController.*(..))")

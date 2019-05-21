@@ -66,7 +66,6 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
 import no.nav.dokarkiv.core.datautil.SaksrelasjonTestDataProvider;
@@ -782,7 +781,8 @@ public class HentMinTilgjengeligeJournalpostListeIT extends AbstractInnsynJourna
 	@Test
 	public void shouldVerifyResponseValuesKassert() throws Exception {
 		Journalpost journalpost = buildAndPersist(journalpostMaxResponse());
-		skjermingService.skjermAllFildetaljer(journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo(), SkjermingTypeCode.POL);
+		skjermingService.setDokumentKassert(journalpost.findHoveddokumentDokumentInfoRelasjon()
+				.getDokumentInfo(), SkjermingTypeCode.POL);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
@@ -823,7 +823,7 @@ public class HentMinTilgjengeligeJournalpostListeIT extends AbstractInnsynJourna
 		List<no.nav.tjeneste.virksomhet.innsynjournal.v2.informasjon.Journalpost> journalpostListe = response.getJournalpostListe();
 		assertThat(journalpostListe, hasSize(2));
 
-		skjermingService.setJournalpostSkjerming(journalpost, SkjermingTypeCode.POL);
+		skjermingService.setJournalpostSkjerming(journalpost.getJournalpostId(), SkjermingTypeCode.POL);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
@@ -852,7 +852,10 @@ public class HentMinTilgjengeligeJournalpostListeIT extends AbstractInnsynJourna
 		assertThat(journalpostListe, hasSize(1));
 		assertThat(journalpostListe.get(0).getDokumentinfoRelasjonListe().size(), is(2));
 
-		skjermingService.setJpDokInfoRelSkjerming(journalpost.findDokumentInfoRelasjonByTilknyttetJournalpostSom(VEDLEGG).iterator().next(), SkjermingTypeCode.POL);
+		skjermingService.setJpDokInfoRelSkjerming(journalpost.findDokumentInfoRelasjonByTilknyttetJournalpostSom(VEDLEGG)
+				.iterator()
+				.next()
+				.getJournalpostDokumentInfoRelasjonId(), SkjermingTypeCode.POL);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 

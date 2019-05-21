@@ -16,7 +16,6 @@ import static no.nav.dokarkiv.core.datautil.SaksrelasjonTestDataProvider.PEN_SAK
 import static no.nav.dokarkiv.core.datautil.SaksrelasjonTestDataProvider.createPENSaksrelasjon;
 import static no.nav.dokarkiv.core.datautil.SaksrelasjonTestDataProvider.createSaksrelasjon;
 import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
-import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.HOVEDDOKUMENT;
 import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.VEDLEGG;
 import static no.nav.dokarkiv.core.domain.entities.DokumentInfo.DELETED_DOCUMENT_TITLE;
 import static no.nav.dokarkiv.core.util.DateConverterUtil.convertDateToXMLGregorianCalendar;
@@ -253,7 +252,7 @@ public class HentKjerneJournalpostListeIT extends AbstractJournalV3Itest {
 	public void shouldReturnListWithOneJournalpostOnlyArkivVariantWhenKassert() throws Exception {
 		abacPermit();
 		Journalpost storedJournalpost = joarkRepository.save(createJournalpost(DOKUMENT_KATEGORI).build());
-		skjermingService.skjermAllFildetaljer(storedJournalpost.findHoveddokumentDokumentInfoRelasjon()
+		skjermingService.setDokumentKassert(storedJournalpost.findHoveddokumentDokumentInfoRelasjon()
 				.getDokumentInfo(), SkjermingTypeCode.POL);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
