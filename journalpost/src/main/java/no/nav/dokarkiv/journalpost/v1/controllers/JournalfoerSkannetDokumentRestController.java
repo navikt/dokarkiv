@@ -36,7 +36,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.inject.Inject;
 
-@Api("Tjenester for å slette, endre og legge til logiske vedlegg")
+@Api(description = "Tjenester for å slette, endre og legge til logiske vedlegg")
 @Slf4j
 @RestController
 @RequestMapping("/rest/journalpostapi/v1/dokumentInfo")
