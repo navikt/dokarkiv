@@ -17,59 +17,50 @@ import java.util.List;
 @Slf4j
 public class AksjonsLoggHelper {
 
-    private final AksjonsLoggTOMapper aksjonsLoggTOMapper = new AksjonsLoggTOMapper();
-    private AksjonsLoggTO aksjonsLoggTO;
-    private ArrayList<ArkivElementEndringTO> arkivElementEndringTOs = new ArrayList<>();
+	private AksjonsLoggTO aksjonsLoggTO;
+	private ArrayList<ArkivElementEndringTO> arkivElementEndringTOs = new ArrayList<>();
 
-    private static long journalpostId;
-    private static String aksjonsLoggHeaderString;
-    private static String brukerId;
+	private static long journalpostId;
+	private static String brukerId;
 
-    public void setAksjonsLoggTO(AksjonsTypeCode aksjonsTypeCode, Long dokumentInfoId) throws UgyldigAksjonsLoggException {
-        if (isBlank(aksjonsLoggHeaderString)) {
-            this.aksjonsLoggTO = AksjonsLoggTO.builder()
-                    .aksjon(aksjonsTypeCode)
-                    .journalpostId(journalpostId)
-                    .utfoertAv(MDC.get(MDC_CONSUMER_ID))
-                    .bruker(brukerId)
-                    .dokumentInfoId(dokumentInfoId)
-                    .melding(aksjonsTypeCode.equals(AksjonsTypeCode.SAKSTILKNYTNING) ?
-                            "Journalposten ble knyttet til en sak." :
-                            "Metadata på journalposten ble endretFlagg.")
-                    .build();
-        } else {
-            this.aksjonsLoggTO = aksjonsLoggTOMapper.mapAksjonsLoggHeader(aksjonsLoggHeaderString, aksjonsTypeCode, journalpostId, dokumentInfoId);
-        }
-    }
+	public void setAksjonsLoggTO(AksjonsTypeCode aksjonsTypeCode, Long dokumentInfoId) throws UgyldigAksjonsLoggException {
+		this.aksjonsLoggTO = AksjonsLoggTO.builder()
+				.aksjon(aksjonsTypeCode)
+				.journalpostId(journalpostId)
+				.utfoertAv(MDC.get(MDC_CONSUMER_ID))
+				.bruker(brukerId)
+				.dokumentInfoId(dokumentInfoId)
+				.melding(aksjonsTypeCode.equals(AksjonsTypeCode.SAKSTILKNYTNING) ?
+						"Journalposten ble knyttet til en sak." :
+						"Metadata på journalposten ble endretFlagg.")
+				.build();
 
-    public void setAksjonsLoggTO(AksjonsTypeCode aksjonsTypeCode) throws UgyldigAksjonsLoggException {
-        setAksjonsLoggTO(aksjonsTypeCode, null);
-    }
+	}
 
-    public void addToArkivElementEndringTOs(ArkivElementEndringTO arkivElementEndringTO) {
-        if(arkivElementEndringTO.getFraVerdi() == null
-                || !arkivElementEndringTO.getFraVerdi().equals(arkivElementEndringTO.getTilVerdi())) {
-            this.arkivElementEndringTOs.add(arkivElementEndringTO);
-        }
-    }
+	public void setAksjonsLoggTO(AksjonsTypeCode aksjonsTypeCode) throws UgyldigAksjonsLoggException {
+		setAksjonsLoggTO(aksjonsTypeCode, null);
+	}
 
-    public static void setJournalpostId(long journalpostId) {
-        AksjonsLoggHelper.journalpostId = journalpostId;
-    }
+	public void addToArkivElementEndringTOs(ArkivElementEndringTO arkivElementEndringTO) {
+		if (arkivElementEndringTO.getFraVerdi() == null
+				|| !arkivElementEndringTO.getFraVerdi().equals(arkivElementEndringTO.getTilVerdi())) {
+			this.arkivElementEndringTOs.add(arkivElementEndringTO);
+		}
+	}
 
-    public static void setAksjonsLoggHeaderString(String aksjonsLoggHeaderString) {
-        AksjonsLoggHelper.aksjonsLoggHeaderString = aksjonsLoggHeaderString;
-    }
+	public static void setJournalpostId(long journalpostId) {
+		AksjonsLoggHelper.journalpostId = journalpostId;
+	}
 
-    public static void setBrukerId(String brukerId) {
-        AksjonsLoggHelper.brukerId = brukerId;
-    }
+	public static void setBrukerId(String brukerId) {
+		AksjonsLoggHelper.brukerId = brukerId;
+	}
 
-    public AksjonsLoggTO getAksjonsLoggTO() {
-        return aksjonsLoggTO;
-    }
+	public AksjonsLoggTO getAksjonsLoggTO() {
+		return aksjonsLoggTO;
+	}
 
-    public List<ArkivElementEndringTO> getArkivElementEndringTOs() {
-        return new ArrayList<>(arkivElementEndringTOs);
-    }
+	public List<ArkivElementEndringTO> getArkivElementEndringTOs() {
+		return new ArrayList<>(arkivElementEndringTOs);
+	}
 }

@@ -39,43 +39,6 @@ import java.util.stream.Collectors;
 public class Rjoark103IT extends AbstractArkiverVariantIT {
 
 	@Test
-	public void skalFeileNårAksjonsLoggHeaderIkkeErSatt() throws IOException {
-		abacPermit();
-
-		Journalpost journalpost = joarkRepository.save(opprettHoveddokumentForIT());
-
-		DokumentInfo dokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
-
-		TestTransaction.flagForCommit();
-		TestTransaction.end();
-
-		List<AksjonsLogg> aksjonsLoggListBefore = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
-		assertThat(aksjonsLoggListBefore.size(), is(0));
-
-		ArkiverVariantRequest request = ArkiverVariantRequest.builder()
-				.dokumentInfoId(dokumentInfo.getDokumentInfoId())
-				.fil(Base64.encodeBase64String(FIL))
-				.filnavn("filnavn")
-				.variant(SLADDET)
-				.filType(FilTypeCode.PDF).build();
-
-		HttpEntity httpEntity = new HttpEntity(request, createHeadersWithServiceUserToken());
-
-		ResponseEntity<String> responseEntity = restTemplate.exchange(
-				URL_ARKIVERVARIANT,
-				HttpMethod.POST,
-				httpEntity,
-				String.class);
-
-		assertThat(responseEntity.getStatusCode(), is(HttpStatus.BAD_REQUEST));
-		assertThat(responseEntity.getBody(), containsString(String.format("Missing request header '%s'", AKSJONS_LOGG_HEADER)));
-
-		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
-		assertThat(aksjonsLoggList.size(), is(0));
-	}
-
-
-	@Test
 	public void shouldSaveFileAsSladdetVariant() throws IOException {
 		abacPermit();
 

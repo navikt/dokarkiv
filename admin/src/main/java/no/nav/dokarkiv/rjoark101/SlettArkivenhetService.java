@@ -152,14 +152,14 @@ public class SlettArkivenhetService {
 			//Slett Journalpost hvis Journalposten ikke har noen dokumentInfo relasjoner.
 			//Journalpost uten dokumentInfo relasjoner vil skape problemer i andre tjenester og det er heller ikke meningen å ha en Journalpost uten dokumenter.
 			//DokumentInfo må slettes før Journalpost kan slettes fordi DokumentInfo objektet har peker til Journalpost via original_journalpost kolonnen
-			if (isFalse(journalpost.hasAnyDokumentInfoRelasjoner())) {
+			if (isFalse(journalpost.hasAnyDokumentInfoRelasjonerIncludingSkjermet())) {
 				validerAtJournalpostIkkeErSplittet(relasjon.getJournalpost());
 				List<ArkivElementEndringTO> arkivElementEndringTOList = aksjonsLoggMap.get(Pair.of(journalpostId, dokumentInfoId));
 				arkivElementEndringTOList.addAll(slettJournalpostFraDatabasen(journalpostId));
 				aksjonsLoggMap.put(Pair.of(journalpostId, dokumentInfoId), arkivElementEndringTOList);
 				//Hvis Journalpost ikke har hoveddokument relasjon etter sletting (DokumentInfo var hoveddokument i Journalposten)
 				//så skal en vilkårlig vedlegg settes som hoveddokument i Journalposten. Grunnen til det er at Journalpost må ha en hoveddokument ellers vil gamle tjenester feile.
-			} else if (isFalse(journalpost.hasHoveddokumentRelasjon())) {
+			} else if (isFalse(journalpost.hasHoveddokumentRelasjonIncludingSkjermet())) {
 				aksjonsLoggMap.putAll(byttFørsteVedleggRelasjonTilHoveddokument(journalpostId));
 			}
 

@@ -475,35 +475,6 @@ public class Rjoark100aIT extends AbstractAdminIT {
 	}
 
 	@Test
-	public void skalFeileNårAksjonsLoggHeaderIkkeErSatt() throws IOException {
-		abacPermit();
-
-		Journalpost journalpost = joarkRepository.save(createJournalpostWithHoveddokument());
-
-		TestTransaction.flagForCommit();
-		TestTransaction.end();
-
-		List<AksjonsLogg> aksjonsLoggListBefore = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
-		assertThat(aksjonsLoggListBefore.size(), is(0));
-
-		HttpEntity httpEntity = new HttpEntity(
-				createSkjermarkivenhetRequest(SkjermingTypeCode.POL, ArkivenhetCode.JOURNALPOST, journalpost.getJournalpostId(), null, null),
-				createHeadersWithServiceUserToken());
-
-		ResponseEntity<String> responseEntity = restTemplate.exchange(
-				URL_SKJERMARKIVENHET,
-				HttpMethod.POST,
-				httpEntity,
-				String.class);
-
-		assertThat(responseEntity.getStatusCode(), is(HttpStatus.BAD_REQUEST));
-		assertThat(responseEntity.getBody(), containsString(String.format("Missing request header '%s'", AKSJONS_LOGG_HEADER)));
-
-		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
-		assertThat(aksjonsLoggList.size(), is(0));
-	}
-
-	@Test
 	public void skalIkkeFåTilgangHvisServiceBrukerIkkeErSrvJoarkadmin() {
 
 		HttpEntity httpEntity = new HttpEntity(
