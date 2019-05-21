@@ -67,26 +67,7 @@ public class ArkiverVariantRestController {
 		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har mottat kall for arkivering av korrigert dokument med dokumentInfoId={}", request
 				.getDokumentInfoId());
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
-
-		ArkiverVariantResponse respons = arkiverVariantService.arkiverVariant(request);
-
-		List<ArkivElementEndringTO> arkivElementEndringTOList = Arrays.asList(
-				ArkivElementEndringTO.builder()
-						.arkivElement("Fildetaljer.filUuid")
-						.fraVerdi(null)
-						.tilVerdi(respons.getFilUuid())
-						.build(),
-				ArkivElementEndringTO.builder()
-						.arkivElement("Fildetaljer.variantFormat")
-						.fraVerdi(null)
-						.tilVerdi(request.getVariant().name())
-						.build()
-		);
-
-		AksjonsLoggTO aksjonsLoggTO = aksjonsLoggTOMapper.mapAksjonsLoggTo(melding, bruker, utfoertAv, hjemmel, AksjonsTypeCode.ARKIVERING, null, request
-				.getDokumentInfoId());
-		aksjonsLoggService.validateAndSaveAksjonsLogg(aksjonsLoggTO, arkivElementEndringTOList);
-
+		ArkiverVariantResponse respons = arkiverVariantService.arkiverVariant(request, melding, bruker, utfoertAv, hjemmel);
 		log.info("{} har arkivert variant= {} med dokumentInfoId={}",
 				MDC.get(MDCConstants.MDC_REQUEST_ID), request.getVariant(), request.getDokumentInfoId());
 		return respons;

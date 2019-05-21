@@ -1,9 +1,5 @@
-package no.nav.dokarkiv.aksjonslogg;
+package no.nav.dokarkiv.core.aksjonslogg;
 
-import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService;
-import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggTO;
-import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggTOMapper;
-import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
@@ -14,8 +10,6 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -40,6 +34,15 @@ public class LagreAksjonsLoggService {
 		this.aksjonsLoggTOMapper = new AksjonsLoggTOMapper();
 	}
 
+	/**
+	 * @param aksjonsTypeCode
+	 * @param aksjonsLoggMap I form av Map<Pair<Long, Long>, List<ArkivElementEndringTO>> hvor Pair<Long, Long> er JournalpostId og DokumentInfoId
+	 * @param hjemmel
+	 * @param bruker
+	 * @param melding
+	 * @param utfoertAv
+	 * @throws UgyldigAksjonsLoggException
+	 */
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public void lagreAksjonsLogg(AksjonsTypeCode aksjonsTypeCode, Map<Pair<Long, Long>, List<ArkivElementEndringTO>> aksjonsLoggMap, String hjemmel, String bruker, String melding, String utfoertAv) throws
 			UgyldigAksjonsLoggException {

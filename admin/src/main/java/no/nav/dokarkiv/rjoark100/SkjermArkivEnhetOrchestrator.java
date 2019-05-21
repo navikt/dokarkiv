@@ -2,10 +2,7 @@ package no.nav.dokarkiv.rjoark100;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
-import no.nav.dokarkiv.aksjonslogg.LagreAksjonsLoggService;
-import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService;
-import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggTO;
-import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggTOMapper;
+import no.nav.dokarkiv.core.aksjonslogg.LagreAksjonsLoggService;
 import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;

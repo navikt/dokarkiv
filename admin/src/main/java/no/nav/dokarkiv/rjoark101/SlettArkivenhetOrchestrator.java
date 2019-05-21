@@ -3,7 +3,7 @@ package no.nav.dokarkiv.rjoark101;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 import lombok.extern.slf4j.Slf4j;
-import no.nav.dokarkiv.aksjonslogg.LagreAksjonsLoggService;
+import no.nav.dokarkiv.core.aksjonslogg.LagreAksjonsLoggService;
 import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.codes.ArkivenhetCode;
@@ -14,7 +14,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -53,7 +52,6 @@ public class SlettArkivenhetOrchestrator {
 				assertNotNullOrEmpty(dokumentInfoId, "dokumentInfoId");
 				assertNotNullOrEmpty(variant, "variant");
 				arkivElementEndringTOList = slettArkivenhetService.slettDokumentFil(dokumentInfoId, variant);
-				Map<Pair<Long, Long>, List<ArkivElementEndringTO>> a = new HashMap<>();
 				lagreAksjonsLoggService.lagreAksjonsLogg(AksjonsTypeCode.SLETT, dokumentInfoId, hjemmel, bruker, melding, utfoertAv, arkivElementEndringTOList);
 				break;
 		}
