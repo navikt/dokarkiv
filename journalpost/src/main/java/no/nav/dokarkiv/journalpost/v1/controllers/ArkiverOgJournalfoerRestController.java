@@ -58,7 +58,7 @@ import java.util.Optional;
 @Slf4j
 @RestController
 @RequestMapping("/rest/journalpostapi/v1/journalpost")
-public class JournalpostRestController {
+public class ArkiverOgJournalfoerRestController {
 
     private final KopierJournalpostService kopierJournalpostService;
     private final FerdigstillJournalpostService ferdigstillJournalpostService;
@@ -71,11 +71,11 @@ public class JournalpostRestController {
     private static final String TRUE = "true";
 
     @Inject
-    public JournalpostRestController(final FerdigstillJournalpostService ferdigstillJournalpostService,
-                                     final KopierJournalpostService kopierJournalpostService,
-                                     final OppdaterJournalpostService oppdaterJournalpostService,
-                                     final OpprettJournalpostService opprettJournalpostService,
-                                     final AbacSecurityService abacSecurityService) {
+    public ArkiverOgJournalfoerRestController(final FerdigstillJournalpostService ferdigstillJournalpostService,
+                                              final KopierJournalpostService kopierJournalpostService,
+                                              final OppdaterJournalpostService oppdaterJournalpostService,
+                                              final OpprettJournalpostService opprettJournalpostService,
+                                              final AbacSecurityService abacSecurityService) {
         this.ferdigstillJournalpostService = ferdigstillJournalpostService;
         this.kopierJournalpostService = kopierJournalpostService;
         this.abacSecurityService = abacSecurityService;
