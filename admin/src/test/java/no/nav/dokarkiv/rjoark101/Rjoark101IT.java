@@ -30,6 +30,7 @@ import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.util.TestDataGenerator;
 import no.nav.dokarkiv.dto.SlettArkivenhetRequest;
 import org.apache.commons.collections15.IteratorUtils;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -42,6 +43,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @SuppressWarnings("unchecked")
+@Ignore
 public class Rjoark101IT extends AbstractAdminIT {
 
 
