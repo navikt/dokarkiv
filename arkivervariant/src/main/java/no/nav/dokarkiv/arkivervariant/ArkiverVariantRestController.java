@@ -1,6 +1,5 @@
 package no.nav.dokarkiv.arkivervariant;
 
-import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_LOGG_BRUKER_HEADER;
 import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_LOGG_HJEMMEL_HEADER;
 import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_LOGG_MELDING_HEADER;
 import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_LOGG_UTFOERT_AV_HEADER;
@@ -12,7 +11,6 @@ import no.nav.dokarkiv.arkivervariant.rjoark103.ArkiverVariantService;
 import no.nav.dokarkiv.arkivervariant.rjoark103.ArkiverVariantValidator;
 import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService;
-import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggTOMapper;
 import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
 import no.nav.dokarkiv.core.metrics.RestMetrics;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
@@ -31,18 +29,14 @@ import org.springframework.web.bind.annotation.RestController;
 public class ArkiverVariantRestController {
 
 	private final ArkiverVariantService arkiverVariantService;
-	private final AksjonsLoggService aksjonsLoggService;
-	private final AksjonsLoggTOMapper aksjonsLoggTOMapper;
 	private final ArkiverVariantValidator validator;
 
 
 	public ArkiverVariantRestController(
 			ArkiverVariantService arkiverVariantService,
-			AksjonsLoggService aksjonsLoggService, ArkiverVariantValidator validator) {
+			ArkiverVariantValidator validator) {
 		this.arkiverVariantService = arkiverVariantService;
-		this.aksjonsLoggService = aksjonsLoggService;
 		this.validator = validator;
-		this.aksjonsLoggTOMapper = new AksjonsLoggTOMapper();
 	}
 
 	@Transactional
