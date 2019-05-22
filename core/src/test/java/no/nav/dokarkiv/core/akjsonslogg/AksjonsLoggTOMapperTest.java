@@ -1,6 +1,9 @@
 package no.nav.dokarkiv.core.akjsonslogg;
 
-import static no.nav.dokarkiv.core.util.ConverterUtils.objectToJsonString;
+import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_BRUKER;
+import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_HJEMMEL;
+import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_MELDING;
+import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_UTFOERT_AV;
 import static no.nav.dokarkiv.core.util.TestDataUtils.createAksjonsLoggTOHeader;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -38,8 +41,7 @@ public class AksjonsLoggTOMapperTest {
 
 	@Test
 	public void shouldMap() throws IOException, UgyldigAksjonsLoggException {
-		String aksjonsLoggHeaderString = objectToJsonString(createAksjonsLoggTOHeader());
-		AksjonsLoggTO aksjonsLogg = aksjonsLoggTOMapper.mapAksjonsLoggHeader(aksjonsLoggHeaderString, AksjonsTypeCode.ARKIVERING, 1L, 1L);
+		AksjonsLoggTO aksjonsLogg = aksjonsLoggTOMapper.mapAksjonsLoggTo(AKSJON_MELDING, AKSJON_BRUKER, AKSJON_UTFOERT_AV, AKSJON_HJEMMEL, AksjonsTypeCode.ARKIVERING, 1L, 1L);
 		assertThat(aksjonsLogg.getBruker(), is(TestDataUtils.AKSJON_BRUKER));
 		assertThat(aksjonsLogg.getMelding(), is(TestDataUtils.AKSJON_MELDING));
 		assertThat(aksjonsLogg.getHjemmel(), is(TestDataUtils.AKSJON_HJEMMEL));
@@ -51,11 +53,7 @@ public class AksjonsLoggTOMapperTest {
 
 	@Test
 	public void shouldMapNullWhenNull() throws IOException, UgyldigAksjonsLoggException {
-		AksjonsLoggTO aksjonsLoggTO = createAksjonsLoggTOHeader();
-		aksjonsLoggTO.setMelding(null);
-		aksjonsLoggTO.setBruker(null);
-		String aksjonsLoggHeaderString = objectToJsonString(aksjonsLoggTO);
-		AksjonsLoggTO aksjonsLogg = aksjonsLoggTOMapper.mapAksjonsLoggHeader(aksjonsLoggHeaderString, AksjonsTypeCode.ARKIVERING, 1L, 1L);
+		AksjonsLoggTO aksjonsLogg = aksjonsLoggTOMapper.mapAksjonsLoggTo(null, null, AKSJON_UTFOERT_AV, AKSJON_HJEMMEL, AksjonsTypeCode.ARKIVERING, 1L, 1L);
 		assertThat(aksjonsLogg.getBruker(), nullValue());
 		assertThat(aksjonsLogg.getMelding(), nullValue());
 		assertThat(aksjonsLogg.getUtfoertAv(), is(TestDataUtils.AKSJON_UTFOERT_AV));
@@ -63,11 +61,5 @@ public class AksjonsLoggTOMapperTest {
 		assertThat(aksjonsLogg.getAksjon(), is(AksjonsTypeCode.ARKIVERING));
 		assertThat(aksjonsLogg.getJournalpostId(), is(1L));
 		assertThat(aksjonsLogg.getDokumentInfoId(), is(1L));
-	}
-
-	@Test
-	public void shouldThrowForInvalidAksjonsLoggHeaderString() throws UgyldigAksjonsLoggException {
-		expectedException.expect(UgyldigAksjonsLoggException.class);
-		aksjonsLoggTOMapper.mapAksjonsLoggHeader("{", AksjonsTypeCode.ARKIVERING, 1L, 1L);
 	}
 }

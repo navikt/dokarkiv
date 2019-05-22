@@ -4,6 +4,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static no.nav.dokarkiv.core.util.TestDataGenerator.BRUKER_ID;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.core.Is.is;
@@ -143,11 +144,12 @@ public abstract class AbstractAdminIT extends AbstractRestIT {
 	}
 
 	protected void assertCommongAksjonsLoggValues(AksjonsLogg aksjonsLogg, AksjonsTypeCode expectedAksjonsTypeCode) {
-		assertThat(aksjonsLogg.getAksjon(), is(expectedAksjonsTypeCode));
-		assertThat(aksjonsLogg.getUtfoertAv(), is(TestDataUtils.AKSJON_UTFOERT_AV));
-		assertThat(aksjonsLogg.getHjemmel(), is(TestDataUtils.AKSJON_HJEMMEL));
-		assertThat(aksjonsLogg.getMelding(), is(TestDataUtils.AKSJON_MELDING));
-		assertThat(aksjonsLogg.getApplikasjon(), is(SERVICE_USER_ID));
+		assertThat("aksjon", aksjonsLogg.getAksjon(), is(expectedAksjonsTypeCode));
+		assertThat("ufoertAv", aksjonsLogg.getUtfoertAv(), is(TestDataUtils.AKSJON_UTFOERT_AV));
+		assertThat("hjemmel", aksjonsLogg.getHjemmel(), is(TestDataUtils.AKSJON_HJEMMEL));
+		assertThat("melding", aksjonsLogg.getMelding(), is(TestDataUtils.AKSJON_MELDING));
+		assertThat("applikasjon", aksjonsLogg.getApplikasjon(), is(SERVICE_USER_ID));
+		assertThat("bruker", aksjonsLogg.getBruker(), is(BRUKER_ID));
 	}
 
 

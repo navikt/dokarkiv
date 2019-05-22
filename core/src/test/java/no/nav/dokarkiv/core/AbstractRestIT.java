@@ -3,6 +3,10 @@ package no.nav.dokarkiv.core;
 import static no.nav.dokarkiv.core.security.JwtClaimsBuilderProvider.openAmClaimsBuilder;
 import static no.nav.dokarkiv.core.util.ConverterUtils.objectToJsonString;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.OPPRETTET_KILDE_NAVN;
+import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_BRUKER;
+import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_HJEMMEL;
+import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_MELDING;
+import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_UTFOERT_AV;
 import static no.nav.dokarkiv.core.util.TestDataUtils.createAksjonsLoggTOHeader;
 
 import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService;
@@ -126,7 +130,10 @@ public abstract class AbstractRestIT {
 
 	protected HttpHeaders createHeadersWithAksjon() throws IOException {
 		HttpHeaders httpHeaders = createHeadersWithUserAndServiceUserToken();
-		httpHeaders.add(AksjonsLoggService.AKSJONS_LOGG_HEADER, objectToJsonString(createAksjonsLoggTOHeader()));
+		httpHeaders.add(AksjonsLoggService.AKSJONS_LOGG_BRUKER_HEADER, AKSJON_BRUKER);
+		httpHeaders.add(AksjonsLoggService.AKSJONS_LOGG_HJEMMEL_HEADER, AKSJON_HJEMMEL);
+		httpHeaders.add(AksjonsLoggService.AKSJONS_LOGG_MELDING_HEADER, AKSJON_MELDING);
+		httpHeaders.add(AksjonsLoggService.AKSJONS_LOGG_UTFOERT_AV_HEADER, AKSJON_UTFOERT_AV);
 		return httpHeaders;
 	}
 

@@ -53,6 +53,7 @@ public class TestDataGenerator {
 	public static final String FIL_NAVN = "navn";
 	public static final String TILLEGGOPPLYSNINGER_KEY = "tillegg";
 	public static final String TILLEGGOPPLYSNINGER_VAL = "tillegg_verdi";
+	public static final String FIL_UUID_ARKIV = "filuuid_arkiv";
 	public static final byte[] FIL = "Test dokument".getBytes();
 	public static final byte[] FIL_DUMMY_KASSERT = "Test kassert dummy dokument dummy".getBytes();
 	public static final byte[] FIL_DUMMY_SKJERMET = "Test skjermet dummy dokument dummy".getBytes();
@@ -234,7 +235,7 @@ public class TestDataGenerator {
 				.tittel(DOKUMENT_INFO_TITTEL)
 				.dokumenttypeId(DOKUMENT_TYPE_ID)
 				.build();
-		dokumentInfo.addFilDetaljer(createFildetaljerOgFil(dokumentInfo, VariantFormatCode.ARKIV));
+		dokumentInfo.addFilDetaljer(createFildetaljerOgFil(dokumentInfo, VariantFormatCode.ARKIV, FIL_UUID_ARKIV));
 		dokumentInfo.addFilDetaljer(createFildetaljerOgFil(dokumentInfo, VariantFormatCode.PRODUKSJON));
 		dokumentInfo.addSkannetInnhold(createSkannetInnhold());
 		dokumentInfo.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
@@ -251,12 +252,17 @@ public class TestDataGenerator {
 	}
 
 	public static FilDetaljer createFildetaljerOgFil(DokumentInfo dokumentInfo, VariantFormatCode variantFormatCode) {
+			return createFildetaljerOgFil(dokumentInfo, variantFormatCode, FilDetaljer.generateUuid());
+	}
+
+
+	public static FilDetaljer createFildetaljerOgFil(DokumentInfo dokumentInfo, VariantFormatCode variantFormatCode, String filUuid) {
 		FilDetaljer filDetaljer = FilDetaljer.builder()
 				.dokumentInfo(dokumentInfo)
 				.fileContent(FIL)
 				.filnavn(FIL_NAVN)
 				.filtype(FilTypeCode.PDF)
-				.filUuid(FilDetaljer.generateUuid())
+				.filUuid(filUuid)
 				.variantFormat(variantFormatCode)
 				.build();
 		filDetaljer.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);

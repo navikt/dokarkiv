@@ -85,6 +85,7 @@ public class Rjoark902IT extends AbstractHentjournalsakinfoItest {
 		assertEquals(BREVKODE, responseDokumentInfo.getBrevkode());
 		assertEquals(DOKUMENT_TYPE_ID, responseDokumentInfo.getDokumenttypeId());
 		assertEquals(TITTEL, responseDokumentInfo.getTittel());
+		assertEquals(true, responseDokumentInfo.getKassert());
 	}
 
 	//  Unhappy path
@@ -125,6 +126,7 @@ public class Rjoark902IT extends AbstractHentjournalsakinfoItest {
 		storedDokumentInfo.setDokumentstatus(DOKUMENTSTATUS);
 		storedDokumentInfo.setBrevkode(BREVKODE);
 		storedDokumentInfo.setTittel(TITTEL);
+		storedDokumentInfo.setKassert(true);
 
 		joarkRepository.save(journalpost);
 		TestTransaction.flagForCommit();
