@@ -31,7 +31,7 @@ public class SkjermArkivEnhetOrchestrator {
 	}
 
 	//rjoark100a
-	public void skjermArkivEnhet(SkjermArkivenhetRequest request, String hjemmel, String bruker, String melding, String utfoertAv) throws UgyldigSkjermArkivenhetRequestException, UgyldigAksjonsLoggException {
+	public void skjermArkivEnhet(SkjermArkivenhetRequest request, String hjemmel, String melding, String utfoertAv) throws UgyldigSkjermArkivenhetRequestException, UgyldigAksjonsLoggException {
 		List<ArkivElementEndringTO> arkivElementEndringTOList;
 		switch (request.getArkivenhet()) {
 			case JOURNALPOST:
@@ -39,14 +39,14 @@ public class SkjermArkivEnhetOrchestrator {
 				Map<Pair<Long, Long>, List<ArkivElementEndringTO>> aksjonsLoggMapJP = endreSkjermingArkivenhetService.endreSkjermingJournalpost(request
 						.getJournalpostId(), request
 						.getSkjerming());
-				lagreAksjonsLoggService.lagreAksjonsLogg(AksjonsTypeCode.ENDRE_SKJERMING, aksjonsLoggMapJP, hjemmel, bruker, melding, utfoertAv);
+				lagreAksjonsLoggService.lagreAksjonsLogg(AksjonsTypeCode.ENDRE_SKJERMING, aksjonsLoggMapJP, hjemmel, melding, utfoertAv);
 				break;
 			case DOKUMENT_INFO:
 				assertNotNullOrEmpty(request.getDokumentInfoId(), "dokumentInfoId");
 				Map<Pair<Long, Long>, List<ArkivElementEndringTO>> aksjonsLoggMapDokInfo = endreSkjermingArkivenhetService.endreSkjermingDokumentInfo(request
 						.getDokumentInfoId(), request
 						.getSkjerming());
-				lagreAksjonsLoggService.lagreAksjonsLogg(AksjonsTypeCode.ENDRE_SKJERMING, aksjonsLoggMapDokInfo, hjemmel, bruker, melding, utfoertAv);
+				lagreAksjonsLoggService.lagreAksjonsLogg(AksjonsTypeCode.ENDRE_SKJERMING, aksjonsLoggMapDokInfo, hjemmel, melding, utfoertAv);
 				break;
 			case DOKUMENT_FIL:
 				assertNotNullOrEmpty(request.getDokumentInfoId(), "dokumentInfoId");
@@ -54,33 +54,33 @@ public class SkjermArkivEnhetOrchestrator {
 				arkivElementEndringTOList = endreSkjermingArkivenhetService.endreSkjermingDokumentFil(request.getDokumentInfoId(), request
 						.getVariant(), request
 						.getSkjerming());
-				lagreAksjonsLoggService.lagreAksjonsLogg(AksjonsTypeCode.ENDRE_SKJERMING, request.getDokumentInfoId(), hjemmel, bruker, melding, utfoertAv, arkivElementEndringTOList);
+				lagreAksjonsLoggService.lagreAksjonsLogg(AksjonsTypeCode.ENDRE_SKJERMING, request.getDokumentInfoId(), hjemmel, melding, utfoertAv, arkivElementEndringTOList);
 		}
 
 	}
 
 	//rjoark100b
-	public void opphevSkjermArkivEnhet(SkjermArkivenhetRequest request, String hjemmel, String bruker, String melding, String utfoertAv) throws UgyldigSkjermArkivenhetRequestException, UgyldigAksjonsLoggException {
+	public void opphevSkjermArkivEnhet(SkjermArkivenhetRequest request, String hjemmel, String melding, String utfoertAv) throws UgyldigSkjermArkivenhetRequestException, UgyldigAksjonsLoggException {
 		List<ArkivElementEndringTO> arkivElementEndringTOList;
 		switch (request.getArkivenhet()) {
 			case JOURNALPOST:
 				assertNotNullOrEmpty(request.getJournalpostId(), "journalpostId");
 				Map<Pair<Long, Long>, List<ArkivElementEndringTO>> aksjonsLoggMapJP = endreSkjermingArkivenhetService.endreSkjermingJournalpost(
 						request.getJournalpostId(), null);
-				lagreAksjonsLoggService.lagreAksjonsLogg(AksjonsTypeCode.ENDRE_SKJERMING, aksjonsLoggMapJP, hjemmel, bruker, melding, utfoertAv);
+				lagreAksjonsLoggService.lagreAksjonsLogg(AksjonsTypeCode.ENDRE_SKJERMING, aksjonsLoggMapJP, hjemmel, melding, utfoertAv);
 				break;
 			case DOKUMENT_INFO:
 				assertNotNullOrEmpty(request.getDokumentInfoId(), "dokumentInfoId");
 				Map<Pair<Long, Long>, List<ArkivElementEndringTO>> aksjonsLoggMapDokInfo = endreSkjermingArkivenhetService.endreSkjermingDokumentInfo(request
 						.getDokumentInfoId(), null);
-				lagreAksjonsLoggService.lagreAksjonsLogg(AksjonsTypeCode.ENDRE_SKJERMING, aksjonsLoggMapDokInfo, hjemmel, bruker, melding, utfoertAv);
+				lagreAksjonsLoggService.lagreAksjonsLogg(AksjonsTypeCode.ENDRE_SKJERMING, aksjonsLoggMapDokInfo, hjemmel, melding, utfoertAv);
 				break;
 			case DOKUMENT_FIL:
 				assertNotNullOrEmpty(request.getDokumentInfoId(), "dokumentInfoId");
 				assertNotNullOrEmpty(request.getVariant(), "variant");
 				arkivElementEndringTOList = endreSkjermingArkivenhetService.endreSkjermingDokumentFil(request.getDokumentInfoId(), request
 						.getVariant(), null);
-				lagreAksjonsLoggService.lagreAksjonsLogg(AksjonsTypeCode.ENDRE_SKJERMING, request.getDokumentInfoId(), hjemmel, bruker, melding, utfoertAv, arkivElementEndringTOList);
+				lagreAksjonsLoggService.lagreAksjonsLogg(AksjonsTypeCode.ENDRE_SKJERMING, request.getDokumentInfoId(), hjemmel, melding, utfoertAv, arkivElementEndringTOList);
 		}
 
 	}

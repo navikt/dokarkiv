@@ -25,23 +25,23 @@ public class KasserDokumentOrchestrator {
 		this.lagreAksjonsLoggService = lagreAksjonsLoggService;
 	}
 
-	public void opphevKasserSkjermDokument(Long dokumentInfoId, String hjemmel, String bruker, String melding, String utfoertAv) throws UgyldigAksjonsLoggException {
+	public void opphevKasserSkjermDokument(Long dokumentInfoId, String hjemmel, String melding, String utfoertAv) throws UgyldigAksjonsLoggException {
 		List<ArkivElementEndringTO> arkivElementEndringTOList = new ArrayList<>();
 		arkivElementEndringTOList.addAll(kasserSkjermDokumentService.opphevSkjermDokument(dokumentInfoId));
-		lagreAksjonsLoggService.lagreAksjonsLogg(AksjonsTypeCode.ENDRE_SKJERMING, dokumentInfoId, hjemmel, bruker, melding, utfoertAv, arkivElementEndringTOList);
+		lagreAksjonsLoggService.lagreAksjonsLogg(AksjonsTypeCode.ENDRE_SKJERMING, dokumentInfoId, hjemmel, melding, utfoertAv, arkivElementEndringTOList);
 	}
 
-	public void kasserSkjermDokument(Long dokumentInfoId, String hjemmel, String bruker, String melding, String utfoertAv) throws UgyldigAksjonsLoggException {
+	public void kasserSkjermDokument(Long dokumentInfoId, String hjemmel, String melding, String utfoertAv) throws UgyldigAksjonsLoggException {
 		List<ArkivElementEndringTO> arkivElementEndringTOList = new ArrayList<>();
 		arkivElementEndringTOList.addAll(kasserSkjermDokumentService.skjermDokument(dokumentInfoId));
-		lagreAksjonsLoggService.lagreAksjonsLogg(AksjonsTypeCode.ENDRE_SKJERMING, dokumentInfoId, hjemmel, bruker, melding, utfoertAv, arkivElementEndringTOList);
+		lagreAksjonsLoggService.lagreAksjonsLogg(AksjonsTypeCode.ENDRE_SKJERMING, dokumentInfoId, hjemmel, melding, utfoertAv, arkivElementEndringTOList);
 	}
 
 
-	public void kasserDokument(Long dokumentInfoId, String kassertAvNavn, String hjemmel, String bruker, String melding, String utfoertAv) throws UgyldigAksjonsLoggException {
+	public void kasserDokument(Long dokumentInfoId, String kassertAvNavn, String hjemmel, String melding, String utfoertAv) throws UgyldigAksjonsLoggException {
 		List<ArkivElementEndringTO> arkivElementEndringTOList = new ArrayList<>();
 		arkivElementEndringTOList.addAll(kasserDokumentService.kasserDokument(dokumentInfoId, kassertAvNavn));
-		lagreAksjonsLoggService.lagreAksjonsLogg(AksjonsTypeCode.KASSASJON, dokumentInfoId, hjemmel, bruker, melding, utfoertAv, arkivElementEndringTOList);
+		lagreAksjonsLoggService.lagreAksjonsLogg(AksjonsTypeCode.KASSASJON, dokumentInfoId, hjemmel, melding, utfoertAv, arkivElementEndringTOList);
 	}
 
 }

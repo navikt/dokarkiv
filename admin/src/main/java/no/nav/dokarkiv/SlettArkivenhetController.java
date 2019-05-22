@@ -42,9 +42,8 @@ public class SlettArkivenhetController {
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark101"}, percentiles = {0.5, 0.95})
 	public ResponseEntity slettArkivenhet(
 			@RequestHeader(value = AKSJONS_LOGG_HJEMMEL_HEADER) String hjemmel,
-			@RequestHeader(value = AKSJONS_LOGG_BRUKER_HEADER, required = false) String bruker,
 			@RequestHeader(value = AKSJONS_LOGG_MELDING_HEADER) String melding,
-			@RequestHeader(value = AKSJONS_LOGG_UTFOERT_AV_HEADER) String utfoertAv,
+			@RequestHeader(value = AKSJONS_LOGG_UTFOERT_AV_HEADER, required = false) String utfoertAv,
 			@RequestBody SlettArkivenhetRequest slettArkivenhetRequest) throws UgyldigAksjonsLoggException {
 
 		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark101");
@@ -54,7 +53,7 @@ public class SlettArkivenhetController {
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
 
 		slettArkivenhetOrchestrator.slettArkivenhhet(slettArkivenhetRequest.getArkivenhet(), slettArkivenhetRequest.getJournalpostId(), slettArkivenhetRequest
-				.getDokumentInfoId(), slettArkivenhetRequest.getVariant(), hjemmel, bruker, melding, utfoertAv);
+				.getDokumentInfoId(), slettArkivenhetRequest.getVariant(), hjemmel, melding, utfoertAv);
 
 		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har slettet arkivenhet={} med journalpostId={}, dokumentInfoId={} og variant={}",
 				slettArkivenhetRequest.getArkivenhet(), slettArkivenhetRequest.getJournalpostId(), slettArkivenhetRequest.getDokumentInfoId(), slettArkivenhetRequest

@@ -38,13 +38,12 @@ public class LagreAksjonsLoggService {
 	 * @param aksjonsTypeCode
 	 * @param aksjonsLoggMap I form av Map<Pair<Long, Long>, List<ArkivElementEndringTO>> hvor Pair<Long, Long> er JournalpostId og DokumentInfoId
 	 * @param hjemmel
-	 * @param bruker
 	 * @param melding
 	 * @param utfoertAv
 	 * @throws UgyldigAksjonsLoggException
 	 */
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
-	public void lagreAksjonsLogg(AksjonsTypeCode aksjonsTypeCode, Map<Pair<Long, Long>, List<ArkivElementEndringTO>> aksjonsLoggMap, String hjemmel, String bruker, String melding, String utfoertAv) throws
+	public void lagreAksjonsLogg(AksjonsTypeCode aksjonsTypeCode, Map<Pair<Long, Long>, List<ArkivElementEndringTO>> aksjonsLoggMap, String hjemmel, String melding, String utfoertAv) throws
 			UgyldigAksjonsLoggException {
 
 		List<Pair<Long, Long>> removeList = new ArrayList<>();
@@ -71,10 +70,10 @@ public class LagreAksjonsLoggService {
 	}
 
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
-	public void lagreAksjonsLogg(AksjonsTypeCode aksjonsType, Long dokumentInfoId, String hjemmel, String bruker, String melding, String utfoertAv, List<ArkivElementEndringTO> arkivElementEndringTOList) throws UgyldigAksjonsLoggException {
+	public void lagreAksjonsLogg(AksjonsTypeCode aksjonsType, Long dokumentInfoId, String hjemmel, String melding, String utfoertAv, List<ArkivElementEndringTO> arkivElementEndringTOList) throws UgyldigAksjonsLoggException {
 
 		for (JournalpostDokumentInfoRelasjon rel: journalpostDokumentInfoRelasjonRepository.findAllByDokumentInfoDokumentInfoId(dokumentInfoId)){
-			lagreAksjonsLogg(aksjonsType, rel.getJournalpost().getJournalpostId(), dokumentInfoId, hjemmel, bruker, melding, utfoertAv, arkivElementEndringTOList);
+			lagreAksjonsLogg(aksjonsType, rel.getJournalpost().getJournalpostId(), dokumentInfoId, hjemmel, null, melding, utfoertAv, arkivElementEndringTOList);
 		}
 	}
 

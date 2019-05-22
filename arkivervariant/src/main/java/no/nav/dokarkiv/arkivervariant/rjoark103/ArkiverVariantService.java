@@ -6,7 +6,6 @@ import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.FILDETALJER
 
 import no.nav.dokarkiv.arkivervariant.exception.VariantFormatAlreadyExistsException;
 import no.nav.dokarkiv.core.MDCConstants;
-import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggTO;
 import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
 import no.nav.dokarkiv.core.aksjonslogg.LagreAksjonsLoggService;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
@@ -24,7 +23,6 @@ import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
 
 
@@ -43,7 +41,7 @@ public class ArkiverVariantService {
 		this.lagreAksjonsLoggService = lagreAksjonsLoggService;
 	}
 
-	public ArkiverVariantResponse arkiverVariant(ArkiverVariantRequest request, String melding, String bruker, String utfoertAv, String hjemmel) throws UgyldigAksjonsLoggException {
+	public ArkiverVariantResponse arkiverVariant(ArkiverVariantRequest request, String melding, String utfoertAv, String hjemmel) throws UgyldigAksjonsLoggException {
 		DokumentInfo dokumentInfo = dokumentinfoRepository.findByDokumentInfoId(request.getDokumentInfoId())
 				.orElseThrow(() -> new DokumentInfoIkkeFunnetException(String.format("Kan ikke finne dokumentInfo med dokumentInfoId=%s",
 						request.getDokumentInfoId())));
@@ -53,7 +51,7 @@ public class ArkiverVariantService {
 		byte[] decodedFil = base64ToByte(request.getFil());
 		FilDetaljer filDetaljer = lagreVariantFormat(dokumentInfo, request.getVariant(), decodedFil, request.getFilnavn(), request.getFilType());
 
-		lagreAksjonsLoggService.lagreAksjonsLogg(AksjonsTypeCode.ARKIVERING, request.getDokumentInfoId(), hjemmel, bruker, melding, utfoertAv,
+		lagreAksjonsLoggService.lagreAksjonsLogg(AksjonsTypeCode.ARKIVERING, request.getDokumentInfoId(), hjemmel, melding, utfoertAv,
 				Arrays.asList(
 						ArkivElementEndringTO.builder()
 								.arkivElement(FILDETALJER_FILUUID)

@@ -1,7 +1,6 @@
 package no.nav.dokarkiv.arkivervariant;
 
 import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_LOGG_BRUKER_HEADER;
-import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_LOGG_HEADER;
 import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_LOGG_HJEMMEL_HEADER;
 import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_LOGG_MELDING_HEADER;
 import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_LOGG_UTFOERT_AV_HEADER;
@@ -13,10 +12,7 @@ import no.nav.dokarkiv.arkivervariant.rjoark103.ArkiverVariantService;
 import no.nav.dokarkiv.arkivervariant.rjoark103.ArkiverVariantValidator;
 import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService;
-import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggTO;
 import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggTOMapper;
-import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
-import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
 import no.nav.dokarkiv.core.metrics.RestMetrics;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
@@ -28,9 +24,6 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.Arrays;
-import java.util.List;
 
 @Slf4j
 @RestController
@@ -58,7 +51,6 @@ public class ArkiverVariantRestController {
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark103"}, percentiles = {0.5, 0.95})
 	public ArkiverVariantResponse arkiverVariant(
 			@RequestHeader(value = AKSJONS_LOGG_HJEMMEL_HEADER) String hjemmel,
-			@RequestHeader(value = AKSJONS_LOGG_BRUKER_HEADER) String bruker,
 			@RequestHeader(value = AKSJONS_LOGG_MELDING_HEADER) String melding,
 			@RequestHeader(value = AKSJONS_LOGG_UTFOERT_AV_HEADER, required = false) String utfoertAv,
 			@RequestBody ArkiverVariantRequest request) throws UgyldigAksjonsLoggException {
@@ -67,7 +59,7 @@ public class ArkiverVariantRestController {
 		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har mottat kall for arkivering av korrigert dokument med dokumentInfoId={}", request
 				.getDokumentInfoId());
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
-		ArkiverVariantResponse respons = arkiverVariantService.arkiverVariant(request, melding, bruker, utfoertAv, hjemmel);
+		ArkiverVariantResponse respons = arkiverVariantService.arkiverVariant(request, melding, utfoertAv, hjemmel);
 		log.info("{} har arkivert variant= {} med dokumentInfoId={}",
 				MDC.get(MDCConstants.MDC_REQUEST_ID), request.getVariant(), request.getDokumentInfoId());
 		return respons;
