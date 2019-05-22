@@ -159,7 +159,7 @@ public class SlettArkivenhetService {
 				aksjonsLoggMap.put(Pair.of(journalpostId, dokumentInfoId), arkivElementEndringTOList);
 				//Hvis Journalpost ikke har hoveddokument relasjon etter sletting (DokumentInfo var hoveddokument i Journalposten)
 				//så skal en vilkårlig vedlegg settes som hoveddokument i Journalposten. Grunnen til det er at Journalpost må ha en hoveddokument ellers vil gamle tjenester feile.
-			} else if (isFalse(journalpost.hasHoveddokumentRelasjonIncludingSkjermet())) {
+			} else if (isFalse(journalpost.hasHoveddokumentRelasjon())) {
 				aksjonsLoggMap.putAll(byttFørsteVedleggRelasjonTilHoveddokument(journalpostId));
 			}
 

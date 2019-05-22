@@ -1610,11 +1610,6 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 		return findHoveddokumentDokumentInfoRelasjon() != null;
 	}
 
-	public boolean hasHoveddokumentRelasjonIncludingSkjermet() {
-		return journalpostDokumentInfoRelasjoner.stream().anyMatch(rel -> rel.getTilknyttetJournalpostSom() == TilknyttetJournalpostSomCode.HOVEDDOKUMENT);
-	}
-
-
 	public boolean hasAnyDokumentInfoRelasjoner() {
 		return !getJournalpostDokumentInfoRelasjoner().isEmpty();
 	}
