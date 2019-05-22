@@ -64,11 +64,11 @@ public class SwaggerConfig {
 	private ApiInfo apiInfo() {
 		return new ApiInfo(
 				"Dokarkiv APIer",
-				"Her dokumenteres REST-grensesnittene til dokarkiv (Joark). Til autentisering brukes to OIDC-token (JWT via OAuth2.0) i hver sin header, " +
-						"Nav-Consumer-Token (applikasjonsbrukeren sitt token) og Authorization (saksbehandleren sitt token). " +
-						"Følgende format må brukes for disse \"Value\": <strong> Bearer {token} </strong>. " +
-						"Eksempel på verdi i input-feltet: <strong> Bearer eYdmifml0ejugm </strong>. Et gyldig token kommer til å ha mange flere karakterer enn i eksempelet. " +
-						"Denne siden er ment som dokumentasjon, og ikke for å teste tjenestene.",
+				"Her dokumenteres REST-grensesnittene til dokarkiv (Joark). Til autentisering brukes to OIDC-token (JWT via OAuth2.0) i hver sin header, Nav-Consumer-Token (applikasjonsbrukeren sitt token) og Authorization (saksbehandleren sitt token). Eksempel på kall med to tokens:\n" +
+                        "\n" +
+                        "curl -X PUT \"https://dokarkiv-q1.nais.preprod.local/rest/journalpostapi/v1/journalpost/111\" -H \"accept: */*\" -H \"Authorization: Bearer eyAidH...\", -H \"Nav-Consumer-Token: Bearer eyJraWQi...\" -H \"Content-Type: application/json\" -d \"{ \\\"avsenderMottaker\\\": { \\\"id\\\": \\\"string\\\", \\\"land\\\": \\\"string\\\",...}\"\n" +
+                        "\n" +
+                        "Swagger-apiet er kun ment som dokumentasjon, og kan ikke brukes for uttesting, da det kun støtter ett token.",
 				version,
 				"",
 				new Contact("Team Dokument", "", ""),
