@@ -112,9 +112,38 @@ public class Rjoark102IT extends AbstractAdminIT {
 		assertThat("Feil antall dokumenter etter kall", dokumentinfoRepository.count(), is(2L));
 
 		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
-		assertThat(aksjonsLoggList.size(), is(1));
+		assertThat(aksjonsLoggList.size(), is(2));
 
-		assertAksjonsLogg(getAksjonsLoggByDokumentInfoId(aksjonsLoggList, dokumentInfoSomSkalKasseres.getDokumentInfoId()), AksjonsTypeCode.KASSASJON, null, dokumentInfoSomSkalKasseres
+		assertAksjonsLogg(getAksjonsLoggByJournalpostIdAndDokumentInfoId(aksjonsLoggList, journalpost1.getJournalpostId(), dokumentInfoSomSkalKasseres.getDokumentInfoId()), AksjonsTypeCode.KASSASJON, journalpost1.getJournalpostId(), dokumentInfoSomSkalKasseres
+				.getDokumentInfoId(), Arrays.asList(
+				ArkivElementEndring.builder()
+						.arkivElement(fildetaljerSkjermingTypeVariant(ARKIV))
+						.fraVerdi(SkjermingTypeCode.POL.name())
+						.tilVerdi(null)
+						.build(),
+				ArkivElementEndring.builder()
+						.arkivElement(FILDETALJER_VARIANTFORMAT)
+						.fraVerdi(SLADDET.name())
+						.tilVerdi(null)
+						.build(),
+				ArkivElementEndring.builder()
+						.arkivElement(DOKUMENT_FIL_FIL_UUID)
+						.fraVerdi(FIL_UUID_ARKIV)
+						.tilVerdi(null)
+						.build(),
+				ArkivElementEndring.builder()
+						.arkivElement(DOKUMENT_INFO_KASSERT_AV)
+						.fraVerdi(null)
+						.tilVerdi(KASSERT_AV_NAVN)
+						.build(),
+				ArkivElementEndring.builder()
+						.arkivElement(DOKUMENT_INFO_KASSERT_DATO)
+						.fraVerdi(null)
+						.tilVerdi(dokumentInfoAfter.get().getDatoKassert().format(DateTimeFormatter.ISO_DATE_TIME))
+						.build()
+
+		));
+		assertAksjonsLogg(getAksjonsLoggByJournalpostIdAndDokumentInfoId(aksjonsLoggList, journalpost2.getJournalpostId(), dokumentInfoSomSkalKasseres.getDokumentInfoId()), AksjonsTypeCode.KASSASJON, journalpost2.getJournalpostId(), dokumentInfoSomSkalKasseres
 				.getDokumentInfoId(), Arrays.asList(
 				ArkivElementEndring.builder()
 						.arkivElement(fildetaljerSkjermingTypeVariant(ARKIV))

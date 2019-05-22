@@ -626,7 +626,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 		assertThatJournalpostRelasjonerIsNotDeleted(journalpost2);
 
 		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
-		assertThat(aksjonsLoggList.size(), is(2));
+		assertThat(aksjonsLoggList.size(), is(1));
 
 		assertAksjonsLogg(getAksjonsLoggByJournalpostId(aksjonsLoggList, journalpostMedDokumentSomSkalSlettes.getJournalpostId()), AksjonsTypeCode.SLETT, journalpostMedDokumentSomSkalSlettes
 				.getJournalpostId(), relasjonVedlegg.getDokumentInfo().getDokumentInfoId(), Arrays.asList(
@@ -634,12 +634,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 						.arkivElement(RELASJON_DOKUMENT_INFO_ID)
 						.fraVerdi(relasjonVedlegg.getDokumentInfo().getDokumentInfoId().toString())
 						.tilVerdi(null)
-						.build()
-
-		));
-		assertAksjonsLogg(getAksjonsLoggByDokumentInfoId(aksjonsLoggList, relasjonVedlegg.getDokumentInfo()
-				.getDokumentInfoId()), AksjonsTypeCode.SLETT, null, relasjonVedlegg.getDokumentInfo()
-				.getDokumentInfoId(), Arrays.asList(
+						.build(),
 				ArkivElementEndring.builder()
 						.arkivElement(DOKUMENT_INFO_DOKUMENT_INFO_ID)
 						.fraVerdi(relasjonVedlegg.getDokumentInfo().getDokumentInfoId().toString())
@@ -718,7 +713,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 		assertThatJournalpostRelasjonerIsNotDeleted(journalpost2);
 
 		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
-		assertThat(aksjonsLoggList.size(), is(3));
+		assertThat(aksjonsLoggList.size(), is(2));
 
 
 		assertAksjonsLogg(getAksjonsLoggByJournalpostIdAndDokumentInfoId(aksjonsLoggList, journalpostMedDokumentSomSkalSlettes.getJournalpostId(), dokumentInfoSomSkalSlettes
@@ -728,11 +723,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 						.arkivElement(RELASJON_DOKUMENT_INFO_ID)
 						.fraVerdi(dokumentInfoSomSkalSlettes.getDokumentInfoId().toString())
 						.tilVerdi(null)
-						.build()
-
-		));
-		assertAksjonsLogg(getAksjonsLoggByDokumentInfoId(aksjonsLoggList, dokumentInfoSomSkalSlettes.getDokumentInfoId()), AksjonsTypeCode.SLETT, null, dokumentInfoSomSkalSlettes
-				.getDokumentInfoId(), Arrays.asList(
+						.build(),
 				ArkivElementEndring.builder()
 						.arkivElement(DOKUMENT_INFO_DOKUMENT_INFO_ID)
 						.fraVerdi(dokumentInfoSomSkalSlettes.getDokumentInfoId().toString())
@@ -819,12 +810,17 @@ public class Rjoark101IT extends AbstractAdminIT {
 		assertThatJournalpostRelasjonerIsNotDeleted(journalpost2);
 
 		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
-		assertThat(aksjonsLoggList.size(), is(3));
+		assertThat(aksjonsLoggList.size(), is(2));
 
 		assertAksjonsLogg(getAksjonsLoggByJournalpostId(aksjonsLoggList, journalpostSomHarDokumentSomVedlegg.getJournalpostId()), AksjonsTypeCode.SLETT, journalpostSomHarDokumentSomVedlegg
 				.getJournalpostId(), relasjonVedlegg.getDokumentInfo().getDokumentInfoId(), Arrays.asList(
 				ArkivElementEndring.builder()
 						.arkivElement(RELASJON_DOKUMENT_INFO_ID)
+						.fraVerdi(relasjonVedlegg.getDokumentInfo().getDokumentInfoId().toString())
+						.tilVerdi(null)
+						.build(),
+				ArkivElementEndring.builder()
+						.arkivElement(DOKUMENT_INFO_DOKUMENT_INFO_ID)
 						.fraVerdi(relasjonVedlegg.getDokumentInfo().getDokumentInfoId().toString())
 						.tilVerdi(null)
 						.build()
@@ -841,17 +837,12 @@ public class Rjoark101IT extends AbstractAdminIT {
 						.arkivElement(JOURNALPOST_JOURNALPOST_ID)
 						.fraVerdi(journalpostMedDokumentSomSkalSlettes.getJournalpostId().toString())
 						.tilVerdi(null)
-						.build()
-		));
-		assertAksjonsLogg(getAksjonsLoggByDokumentInfoId(aksjonsLoggList, relasjonVedlegg.getDokumentInfo()
-				.getDokumentInfoId()), AksjonsTypeCode.SLETT, null, relasjonVedlegg.getDokumentInfo()
-				.getDokumentInfoId(), Arrays.asList(
+						.build(),
 				ArkivElementEndring.builder()
 						.arkivElement(DOKUMENT_INFO_DOKUMENT_INFO_ID)
 						.fraVerdi(relasjonVedlegg.getDokumentInfo().getDokumentInfoId().toString())
 						.tilVerdi(null)
 						.build()
-
 		));
 	}
 
@@ -926,7 +917,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 		assertThatJournalpostRelasjonerIsNotDeleted(journalpost2);
 
 		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
-		assertThat(aksjonsLoggList.size(), is(3));
+		assertThat(aksjonsLoggList.size(), is(2));
 	}
 
 	/**
@@ -1048,7 +1039,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
 		assertThat(aksjonsLoggList.size(), is(1));
 
-		assertAksjonsLogg(aksjonsLoggList.get(0), AksjonsTypeCode.SLETT, null, dokumentInfoMedVariantSomSkalSlettes
+		assertAksjonsLogg(aksjonsLoggList.get(0), AksjonsTypeCode.SLETT, journalpost.getJournalpostId(), dokumentInfoMedVariantSomSkalSlettes
 				.getDokumentInfoId(), Arrays.asList(
 				ArkivElementEndring.builder()
 						.arkivElement(FILDETALJER_VARIANTFORMAT)
