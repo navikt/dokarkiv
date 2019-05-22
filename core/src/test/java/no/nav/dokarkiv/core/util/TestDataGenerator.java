@@ -235,7 +235,7 @@ public class TestDataGenerator {
 				.tittel(DOKUMENT_INFO_TITTEL)
 				.dokumenttypeId(DOKUMENT_TYPE_ID)
 				.build();
-		dokumentInfo.addFilDetaljer(createFildetaljerOgFil(dokumentInfo, VariantFormatCode.ARKIV, FIL_UUID_ARKIV));
+		dokumentInfo.addFilDetaljer(createFildetaljerOgFil(dokumentInfo, VariantFormatCode.ARKIV));
 		dokumentInfo.addFilDetaljer(createFildetaljerOgFil(dokumentInfo, VariantFormatCode.PRODUKSJON));
 		dokumentInfo.addSkannetInnhold(createSkannetInnhold());
 		dokumentInfo.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);

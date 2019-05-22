@@ -11,6 +11,7 @@ import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.ARKIV;
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.PRODUKSJON;
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.SLADDET;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.FIL_UUID_ARKIV;
+import static no.nav.dokarkiv.core.util.TestDataGenerator.createFildetaljerOgFil;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createJournalpostWithHoveddokument;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createVedleggRelasjon;
 import static no.nav.dokarkiv.util.TestUtil.KASSERT_AV_NAVN;
@@ -27,6 +28,7 @@ import static org.junit.Assert.assertTrue;
 import no.nav.dokarkiv.AbstractAdminIT;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
+import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
 import no.nav.dokarkiv.core.domain.entities.ArkivElementEndring;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
@@ -73,6 +75,8 @@ public class Rjoark102IT extends AbstractAdminIT {
 		Journalpost journalpost1 = createJournalpostWithHoveddokument();
 		Journalpost journalpost2 = createJournalpostWithHoveddokument();
 		DokumentInfo dokumentInfoSomSkalKasseres = journalpost1.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
+		dokumentInfoSomSkalKasseres.removeFilDetaljer(dokumentInfoSomSkalKasseres.findFilDetaljerByVariantFormat(ARKIV));
+		dokumentInfoSomSkalKasseres.addFilDetaljer(createFildetaljerOgFil(dokumentInfoSomSkalKasseres, ARKIV, FIL_UUID_ARKIV));
 		createVedleggRelasjon(journalpost2, dokumentInfoSomSkalKasseres);
 
 		joarkRepository.save(journalpost1);
@@ -183,22 +187,25 @@ public class Rjoark102IT extends AbstractAdminIT {
 	public void skalKassereDokumentMedSomErKnyttetTilEnJournalpost() throws IOException {
 		abacPermit();
 
-		Journalpost journalpost = joarkRepository.save(createJournalpostWithHoveddokument());
-		DokumentInfo dokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
+		Journalpost journalpost = createJournalpostWithHoveddokument();
+		DokumentInfo dokumentInfoSomSkalKasseres = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
+		dokumentInfoSomSkalKasseres.removeFilDetaljer(dokumentInfoSomSkalKasseres.findFilDetaljerByVariantFormat(ARKIV));
+		dokumentInfoSomSkalKasseres.addFilDetaljer(createFildetaljerOgFil(dokumentInfoSomSkalKasseres, ARKIV, FIL_UUID_ARKIV));
 
-		skjermingServiceTest.setDokumentKassert(dokumentInfo, POL);
+		joarkRepository.save(journalpost);
+		skjermingServiceTest.setDokumentKassert(dokumentInfoSomSkalKasseres, POL);
 
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 		TestTransaction.start();
 
-		Optional<DokumentInfo> dokumentInfoRep = dokumentinfoRepository.findByDokumentInfoId(dokumentInfo.getDokumentInfoId());
+		Optional<DokumentInfo> dokumentInfoRep = dokumentinfoRepository.findByDokumentInfoId(dokumentInfoSomSkalKasseres.getDokumentInfoId());
 		assertTrue(dokumentInfoRep.isPresent());
 		assertThat(dokumentInfoRep.get().getFildetaljerListeAdmin().size(), is(2));
 		assertThat("Feil antall journalposter", joarkRepository.count(), is(1L));
 		assertThat("Feil antall dokumenter", dokumentinfoRepository.count(), is(1L));
-		assertFalse(dokumentInfo.isRelatedToMultipleJournalposts());
-		assertFalse(dokumentInfo.getFildetaljerListe().isEmpty());
+		assertFalse(dokumentInfoSomSkalKasseres.isRelatedToMultipleJournalposts());
+		assertFalse(dokumentInfoSomSkalKasseres.getFildetaljerListe().isEmpty());
 
 		ResponseEntity responseEntity = restTemplate.exchange(
 				URL_KASSERDOKUMENT,
@@ -213,7 +220,7 @@ public class Rjoark102IT extends AbstractAdminIT {
 
 		TestTransaction.start();
 
-		Optional<DokumentInfo> dokumentInfoAfter = dokumentinfoRepository.findByDokumentInfoId(dokumentInfo.getDokumentInfoId());
+		Optional<DokumentInfo> dokumentInfoAfter = dokumentinfoRepository.findByDokumentInfoId(dokumentInfoSomSkalKasseres.getDokumentInfoId());
 		assertTrue(dokumentInfoAfter.isPresent());
 		assertThat(dokumentInfoAfter.get().getKassertAvNavn(), is(KASSERT_AV_NAVN));
 		assertNotNull(dokumentInfoAfter.get().getDatoKassert());
