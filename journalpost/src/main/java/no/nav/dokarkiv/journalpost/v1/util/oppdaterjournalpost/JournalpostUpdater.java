@@ -49,6 +49,7 @@ public class JournalpostUpdater {
 		updateBehandlingstema(journalpost, oppdaterJournalpostRequest, endret);
 		updateTilleggsopplysninger(journalpost, oppdaterJournalpostRequest, endret);
 		updateJournalfoerendeEnhet(journalpost, oppdaterJournalpostRequest, endret);
+		updateDatoRetur(journalpost, oppdaterJournalpostRequest, endret);
 		updateBruker(journalpost, oppdaterJournalpostRequest, endret);
 
 		if (endret.isEndretFlagg()) {
@@ -60,6 +61,13 @@ public class JournalpostUpdater {
 	private void updateJournalfoerendeEnhet(Journalpost journalpost, OppdaterJournalpostRequest oppdaterJournalpostRequest, Endret endret) {
 		if (isNotBlank(oppdaterJournalpostRequest.getJournalfoerendeEnhet())) {
 			journalpost.setJournalForendeEnhetId(oppdaterJournalpostRequest.getJournalfoerendeEnhet());
+			endret.setEndretFlagg(true);
+		}
+	}
+
+	private void updateDatoRetur(Journalpost journalpost, OppdaterJournalpostRequest oppdaterJournalpostRequest, Endret endret) {
+		if (oppdaterJournalpostRequest.getDatoRetur() != null) {
+			journalpost.setAvsendtReturDato(oppdaterJournalpostRequest.getDatoRetur());
 			endret.setEndretFlagg(true);
 		}
 	}
