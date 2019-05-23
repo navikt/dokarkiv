@@ -15,43 +15,43 @@ public final class OppdaterJournalpostValidator {
 
 	private OppdaterJournalpostValidator() {}
 
-	public static void validateOppdaterteFelt(OppdaterJournalpostRequest request, JournalStatusCode journalpoststatus, JournalpostTypeCode journalpostType) {
+	public static void validateOppdaterteFelt(OppdaterJournalpostRequest request, JournalStatusCode journalpostStatus, JournalpostTypeCode journalpostType) {
 
-		if (restrictedJournalpostStatusCodes.contains(journalpoststatus)) {
-            checkIfIllegalFieldIsSet(request.getBruker(), "Bruker", journalpoststatus);
-            checkIfIllegalFieldIsSet(request.getSak(), "Sak", journalpoststatus);
-			checkIfIllegalFieldIsSet(request.getJournalfoerendeEnhet(), "JournalfoerendeEnhet", journalpoststatus);
-			checkIfIllegalFieldIsSet(request.getTema(), "Tema", journalpoststatus);
+		if (restrictedJournalpostStatusCodes.contains(journalpostStatus)) {
+            checkIfIllegalFieldIsSet(request.getBruker(), "Bruker", journalpostStatus, journalpostType);
+            checkIfIllegalFieldIsSet(request.getSak(), "Sak", journalpostStatus, journalpostType);
+			checkIfIllegalFieldIsSet(request.getJournalfoerendeEnhet(), "JournalfoerendeEnhet", journalpostStatus, journalpostType);
+			checkIfIllegalFieldIsSet(request.getTema(), "Tema", journalpostStatus, journalpostType);
 
-			if (journalpoststatus != JournalStatusCode.J) {
-				validateAvsenderMottaker(request, journalpoststatus);
-				validateDokumenter(request, journalpoststatus);
+			if (journalpostStatus != JournalStatusCode.J) {
+				validateAvsenderMottaker(request, journalpostStatus, journalpostType);
+				validateDokumenter(request, journalpostStatus, journalpostType);
 			}
 		}
 
-		if (journalpostType != JournalpostTypeCode.U || !restrictedJournalpostStatusCodes.contains(journalpoststatus)) {
-			checkIfIllegalFieldIsSet(request.getDatoRetur(), "DatoRetur", journalpoststatus);
+		if (journalpostType != JournalpostTypeCode.U || !restrictedJournalpostStatusCodes.contains(journalpostStatus)) {
+			checkIfIllegalFieldIsSet(request.getDatoRetur(), "DatoRetur", journalpostStatus, journalpostType);
 		}
 	}
 
-	private static void validateAvsenderMottaker(OppdaterJournalpostRequest request, JournalStatusCode journalpoststatus) {
+	private static void validateAvsenderMottaker(OppdaterJournalpostRequest request, JournalStatusCode journalpoststatus, JournalpostTypeCode journalpostType) {
 		if (request.getAvsenderMottaker() != null) {
-			checkIfIllegalFieldIsSet(request.getAvsenderMottaker().getId(), "AvsenderMottaker.Id", journalpoststatus);
-			checkIfIllegalFieldIsSet(request.getAvsenderMottaker().getNavn(), "AvsenderMottaker.Navn", journalpoststatus);
+			checkIfIllegalFieldIsSet(request.getAvsenderMottaker().getId(), "AvsenderMottaker.Id", journalpoststatus, journalpostType);
+			checkIfIllegalFieldIsSet(request.getAvsenderMottaker().getNavn(), "AvsenderMottaker.Navn", journalpoststatus, journalpostType);
 		}
 	}
 
-	private static void validateDokumenter(OppdaterJournalpostRequest request, JournalStatusCode journalpoststatus) {
+	private static void validateDokumenter(OppdaterJournalpostRequest request, JournalStatusCode journalpoststatus, JournalpostTypeCode journalpostType) {
 		if (request.getDokumenter() != null) {
 			for (DokumentInfo dokument : request.getDokumenter()) {
-				checkIfIllegalFieldIsSet(dokument.getBrevkode(), "Brevkode", journalpoststatus);
+				checkIfIllegalFieldIsSet(dokument.getBrevkode(), "Brevkode", journalpoststatus, journalpostType);
 			}
 		}
 	}
 
-	private static void checkIfIllegalFieldIsSet(Object field, String fieldName, JournalStatusCode journalpoststatus) {
+	private static void checkIfIllegalFieldIsSet(Object field, String fieldName, JournalStatusCode journalpoststatus, JournalpostTypeCode journalpostType) {
 	    if (field != null) {
-	        throw new InputValideringFeiletException(String.format("%s kan ikke oppdateres for journalpost med journalpoststatus %s.", fieldName, journalpoststatus.name()));
+	        throw new InputValideringFeiletException(String.format("%s kan ikke oppdateres for journalpost med journalpostStatus=%s og journalpostType=%s.", fieldName, journalpoststatus.name(), journalpostType.name()));
         }
     }
 }
