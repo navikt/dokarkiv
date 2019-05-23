@@ -1,6 +1,7 @@
 package no.nav.dokarkiv.journalpost.v1.api;
 
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -37,6 +38,7 @@ public class OppdaterJournalpostRequest {
     private String journalfoerendeEnhet;
 
     @ApiModelProperty(value = "Dato forsendelsen ble mottatt i retur. Feltet kan kun settes for utgående journalposter.")
+    @JsonFormat(pattern="yyyy-MM-dd")
     private Date datoRetur;
 
     @ApiModelProperty(value = "Fagsystemene som arkiverer kan legge til egne fagspesifikke attributter per journalpost. Disse er representert som et skjemaløst nøkkel-verdi-sett og valideres ikke ved arkivering. Et eksempel på et slikt sett kan være nøkkel: bucid og verdi: 21521.")
