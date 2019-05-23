@@ -1,11 +1,9 @@
 package no.nav.dokarkiv.journalpost.v1.util;
 
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
-import static org.apache.commons.lang3.StringUtils.isBlank;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggTO;
-import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggTOMapper;
 import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
