@@ -68,7 +68,7 @@ public class JournalpostUpdater {
 	private void updateReturInfo(Journalpost journalpost, OppdaterJournalpostRequest oppdaterJournalpostRequest, Endret endret) {
 		if (oppdaterJournalpostRequest.getDatoRetur() != null) {
 			journalpost.setAvsendtReturDato(oppdaterJournalpostRequest.getDatoRetur());
-			journalpost.setAntallRetur(journalpost.getAntallRetur() == null ? 1 : journalpost.getAntallRetur()+1);
+			journalpost.setAntallRetur(journalpost.getAntallRetur() == null ? 1 : (journalpost.getAntallRetur()+1));
 			endret.setEndretFlagg(true);
 		}
 	}

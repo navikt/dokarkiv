@@ -11,9 +11,9 @@ import java.util.List;
 
 public final class OppdaterJournalpostValidator {
 
-	private OppdaterJournalpostValidator() {}
-
 	private static List<JournalStatusCode> restrictedJournalpostStatusCodes = Arrays.asList(JournalStatusCode.J, JournalStatusCode.FS, JournalStatusCode.FL, JournalStatusCode.E);
+
+	private OppdaterJournalpostValidator() {}
 
 	public static void validateOppdaterteFelt(OppdaterJournalpostRequest request, JournalStatusCode journalpoststatus, JournalpostTypeCode journalpostType) {
 

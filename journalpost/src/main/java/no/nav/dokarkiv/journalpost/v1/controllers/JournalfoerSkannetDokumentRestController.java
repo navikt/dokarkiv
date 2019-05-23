@@ -45,6 +45,10 @@ public class JournalfoerSkannetDokumentRestController {
     private final AbacSecurityService abacSecurityService;
     private final LogiskVedleggService logiskVedleggService;
 
+    private static final String DOKUMENT_INFO_ID_STRING = "dokumentInfoId";
+    private static final String LOGISK_VEDLEGG_ID_STRING = "logiskVedleggId";
+    private static final String TITTEL_STRING = "tittel";
+
     @Inject
     public JournalfoerSkannetDokumentRestController(final AbacSecurityService abacSecurityService,
                                                     final LogiskVedleggService logiskVedleggService) {
@@ -66,11 +70,11 @@ public class JournalfoerSkannetDokumentRestController {
         log.info(MDC.get(MDC_REQUEST_ID) + " har mottatt kall om å endre logisk vedlegg med logiskVedleggId={} på dokument med dokumentInfoId={}",
                 logiskVedleggId, dokumentInfoId);
 
-        validateId(dokumentInfoId, "dokumentInfoId");
-        validateId(logiskVedleggId, "logiskVedleggId");
-        hasText(request.getTittel(), "tittel");
+        validateId(dokumentInfoId, DOKUMENT_INFO_ID_STRING);
+        validateId(logiskVedleggId, LOGISK_VEDLEGG_ID_STRING);
+        hasText(request.getTittel(), TITTEL_STRING);
 
-        abacSecurityService.assertAccessToDokumentIncludingSkjermet(Long.parseLong(dokumentInfoId));
+        abacSecurityService.assertAccessToDokumentInfo(Long.parseLong(dokumentInfoId));
 
         logiskVedleggService.endreLogiskVedlegg(dokumentInfoId, logiskVedleggId, request);
 
@@ -90,10 +94,10 @@ public class JournalfoerSkannetDokumentRestController {
         MDC.put(MDC_REQUEST_ID, "leggtillogiskvedlegg");
         log.info(MDC.get(MDC_REQUEST_ID) + " har mottatt kall om å legge til logisk vedlegg på dokument med dokumentInfoId={}", dokumentInfoId);
 
-        validateId(dokumentInfoId, "dokumentInfoId");
-        hasText(request.getTittel(), "tittel");
+        validateId(dokumentInfoId, DOKUMENT_INFO_ID_STRING);
+        hasText(request.getTittel(), TITTEL_STRING);
 
-        abacSecurityService.assertAccessToDokumentIncludingSkjermet(Long.parseLong(dokumentInfoId));
+        abacSecurityService.assertAccessToDokumentInfo(Long.parseLong(dokumentInfoId));
 
         String logiskVedleggId = logiskVedleggService.leggTilLogiskVedlegg(dokumentInfoId, request);
         LeggTilLogiskVedleggResponse response = LeggTilLogiskVedleggResponse.builder().logiskVedleggId(logiskVedleggId).build();
@@ -114,10 +118,10 @@ public class JournalfoerSkannetDokumentRestController {
         MDC.put(MDC_REQUEST_ID, "slettlogiskvedlegg");
         log.info(MDC.get(MDC_REQUEST_ID) + " har mottatt kall om å har mottatt kall om å slette logisk vedlegg med logiskVedleggId={} på dokument med dokumentInfoId={}", logiskVedleggId, dokumentInfoId);
 
-        validateId(dokumentInfoId, "dokumentInfoId");
-        validateId(logiskVedleggId, "logiskVedleggId");
+        validateId(dokumentInfoId, DOKUMENT_INFO_ID_STRING);
+        validateId(logiskVedleggId, LOGISK_VEDLEGG_ID_STRING);
 
-        abacSecurityService.assertAccessToDokumentIncludingSkjermet(Long.parseLong(dokumentInfoId));
+        abacSecurityService.assertAccessToDokumentInfo(Long.parseLong(dokumentInfoId));
 
         logiskVedleggService.slettLogiskVedlegg(dokumentInfoId, logiskVedleggId);
 
