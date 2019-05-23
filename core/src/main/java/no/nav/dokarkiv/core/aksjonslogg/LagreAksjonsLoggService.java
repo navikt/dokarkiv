@@ -34,20 +34,12 @@ public class LagreAksjonsLoggService {
 		this.aksjonsLoggTOMapper = new AksjonsLoggTOMapper();
 	}
 
-	/**
-	 * @param aksjonsTypeCode
-	 * @param aksjonsLoggMap I form av Map<Pair<Long, Long>, List<ArkivElementEndringTO>> hvor Pair<Long, Long> er JournalpostId og DokumentInfoId
-	 * @param hjemmel
-	 * @param melding
-	 * @param utfoertAv
-	 * @throws UgyldigAksjonsLoggException
-	 */
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public void lagreAksjonsLogg(AksjonsTypeCode aksjonsTypeCode, Map<JournalpostDokumentInfoPair, List<ArkivElementEndringTO>> aksjonsLoggMap, String hjemmel, String melding, String utfoertAv) throws
 			UgyldigAksjonsLoggException {
 
 		/*
-		 Hvis journalpostId(Left) er null så opprettes det ny aksjonslogg eller at arkivelementendringer legges til eksisterende aksjonslogg med journalpostId og dokumentInfoId par for alle JournalpostRelasjoner dokumentInfoId(right) har.
+		 Hvis journalpostId er null så opprettes det ny aksjonslogg eller at arkivelementendringer legges til eksisterende aksjonslogg med journalpostId og dokumentInfoId par for alle JournalpostRelasjoner dokumentInfoId har.
 		 Grunnen til at det gjøres er for å kunne gjøre det søktbar på alle journalpostIder og brukere som dokumentInfo relasjon til og tillegg at det skal være mulig å se alle endringer som journalpost har gått gjennom inkludert endringene i dokumentRelasjoner.
 		 */
 		List<JournalpostDokumentInfoPair> removeList = new ArrayList<>();
