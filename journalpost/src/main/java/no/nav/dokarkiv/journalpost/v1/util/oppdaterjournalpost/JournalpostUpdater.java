@@ -93,8 +93,11 @@ public class JournalpostUpdater {
 				journalpost.setAvsenderMottaker(oppdaterJournalpostRequest.getAvsenderMottaker().getNavn());
 				endret.setEndretFlagg(true);
 			}
-			if (isNotBlank(oppdaterJournalpostRequest.getAvsenderMottaker().getId())) {
+			if ((oppdaterJournalpostRequest.getAvsenderMottaker().getId()) != null) {
 				journalpost.setAvsenderMottakerId(oppdaterJournalpostRequest.getAvsenderMottaker().getId());
+				if(oppdaterJournalpostRequest.getAvsenderMottaker().getId().trim().length() == 0) {
+					journalpost.setAvsenderMottakerId(null);
+				}
 				endret.setEndretFlagg(true);
 			}
 			if (isNotBlank(oppdaterJournalpostRequest.getAvsenderMottaker().getLand())) {
