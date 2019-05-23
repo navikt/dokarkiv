@@ -8,7 +8,7 @@ import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
  */
 public class AksjonsLoggTOMapper {
 
-	public AksjonsLoggTO mapAksjonsLoggTo(String melding, String bruker, String utfoertAv, String hjemmel, AksjonsTypeCode aksjon, Long journalpostId, Long dokumentInfoId) throws UgyldigAksjonsLoggException {
+	public AksjonsLoggTO mapAksjonsLoggTo(String melding, String bruker, String utfoertAv, String hjemmel, AksjonsTypeCode aksjon, Long journalpostId, Long dokumentInfoId) {
 
 		return AksjonsLoggTO.builder()
 				.aksjon(aksjon)

@@ -43,19 +43,19 @@ public class LagreAksjonsLoggService {
 	 * @throws UgyldigAksjonsLoggException
 	 */
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
-	public void lagreAksjonsLogg(AksjonsTypeCode aksjonsTypeCode, Map<Pair<Long, Long>, List<ArkivElementEndringTO>> aksjonsLoggMap, String hjemmel, String melding, String utfoertAv) throws
+	public void lagreAksjonsLogg(AksjonsTypeCode aksjonsTypeCode, Map<JournalpostDokumentInfoPair, List<ArkivElementEndringTO>> aksjonsLoggMap, String hjemmel, String melding, String utfoertAv) throws
 			UgyldigAksjonsLoggException {
 
 		/*
 		 Hvis journalpostId(Left) er null så opprettes det ny aksjonslogg eller at arkivelementendringer legges til eksisterende aksjonslogg med journalpostId og dokumentInfoId par for alle JournalpostRelasjoner dokumentInfoId(right) har.
 		 Grunnen til at det gjøres er for å kunne gjøre det søktbar på alle journalpostIder og brukere som dokumentInfo relasjon til og tillegg at det skal være mulig å se alle endringer som journalpost har gått gjennom inkludert endringene i dokumentRelasjoner.
 		 */
-		List<Pair<Long, Long>> removeList = new ArrayList<>();
+		List<JournalpostDokumentInfoPair> removeList = new ArrayList<>();
 		aksjonsLoggMap.keySet().forEach(aksjonsLoggKey -> {
-			if (aksjonsLoggKey.getLeft() == null) {
-				journalpostDokumentInfoRelasjonRepository.findAllByDokumentInfoDokumentInfoId(aksjonsLoggKey.getRight())
+			if (aksjonsLoggKey.getJournalpostId() == null) {
+				journalpostDokumentInfoRelasjonRepository.findAllByDokumentInfoDokumentInfoId(aksjonsLoggKey.getDokumentInfoId())
 						.forEach(rel -> {
-							Pair<Long, Long> jpDokInfoPair = Pair.of(rel.getJournalpost().getJournalpostId(), aksjonsLoggKey.getRight());
+							JournalpostDokumentInfoPair jpDokInfoPair = JournalpostDokumentInfoPair.of(rel.getJournalpost().getJournalpostId(), aksjonsLoggKey.getDokumentInfoId());
 							List<ArkivElementEndringTO> arkivElementEndringTOList = aksjonsLoggMap.getOrDefault(jpDokInfoPair, new ArrayList<>());
 							arkivElementEndringTOList.addAll(aksjonsLoggMap.get(aksjonsLoggKey));
 							aksjonsLoggMap.put(jpDokInfoPair, arkivElementEndringTOList);
@@ -67,8 +67,8 @@ public class LagreAksjonsLoggService {
 		removeList.forEach(aksjonsLoggMap::remove);
 
 
-		for (Pair<Long, Long> aksjonsLoggJournalpostDokumentInfo : aksjonsLoggMap.keySet()) {
-			lagreAksjonsLogg(aksjonsTypeCode, aksjonsLoggJournalpostDokumentInfo.getLeft(), aksjonsLoggJournalpostDokumentInfo.getRight(), hjemmel, null, melding, utfoertAv, aksjonsLoggMap
+		for (JournalpostDokumentInfoPair aksjonsLoggJournalpostDokumentInfo : aksjonsLoggMap.keySet()) {
+			lagreAksjonsLogg(aksjonsTypeCode, aksjonsLoggJournalpostDokumentInfo.getJournalpostId(), aksjonsLoggJournalpostDokumentInfo.getDokumentInfoId(), hjemmel, null, melding, utfoertAv, aksjonsLoggMap
 					.get(aksjonsLoggJournalpostDokumentInfo));
 		}
 	}
