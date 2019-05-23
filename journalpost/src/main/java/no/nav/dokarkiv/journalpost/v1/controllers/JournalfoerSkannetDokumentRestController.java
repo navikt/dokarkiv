@@ -31,7 +31,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.inject.Inject;
@@ -39,6 +38,7 @@ import javax.inject.Inject;
 @Api(description = "Tjenester for å slette, endre og legge til logiske vedlegg")
 @Slf4j
 @RestController
+@Transactional
 @RequestMapping("/rest/journalpostapi/v1/dokumentInfo")
 public class JournalfoerSkannetDokumentRestController {
 
@@ -52,9 +52,7 @@ public class JournalfoerSkannetDokumentRestController {
         this.logiskVedleggService = logiskVedleggService;
     }
 
-    @Transactional
     @SwaggerEndreLogiskVedlegg
-    @ResponseBody
     @PostMapping(value = "/{dokumentInfoId}/logiskVedlegg/{logiskVedleggId}")
     @Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_JOURNALPOST)},
             actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION))
@@ -80,9 +78,7 @@ public class JournalfoerSkannetDokumentRestController {
         return ResponseEntity.ok("Logisk vedlegg endret");
     }
 
-    @Transactional
     @SwaggerLeggTilLogiskVedlegg
-    @ResponseBody
     @PostMapping(value = "/{dokumentInfoId}/logiskVedlegg/")
     @Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_JOURNALPOST)},
             actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION))
@@ -106,9 +102,7 @@ public class JournalfoerSkannetDokumentRestController {
         return ResponseEntity.ok(response);
     }
 
-    @Transactional
     @SwaggerSlettLogiskVedlegg
-    @ResponseBody
     @DeleteMapping(value = "/{dokumentInfoId}/logiskVedlegg/{logiskVedleggId}")
     @Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_JOURNALPOST)},
             actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION))
