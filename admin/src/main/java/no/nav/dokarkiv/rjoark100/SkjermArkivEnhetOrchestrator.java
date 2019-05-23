@@ -2,6 +2,7 @@ package no.nav.dokarkiv.rjoark100;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
+import no.nav.dokarkiv.core.aksjonslogg.JournalpostDokumentInfoPair;
 import no.nav.dokarkiv.core.aksjonslogg.LagreAksjonsLoggService;
 import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
@@ -36,14 +37,14 @@ public class SkjermArkivEnhetOrchestrator {
 		switch (request.getArkivenhet()) {
 			case JOURNALPOST:
 				assertNotNullOrEmpty(request.getJournalpostId(), "journalpostId");
-				Map<Pair<Long, Long>, List<ArkivElementEndringTO>> aksjonsLoggMapJP = endreSkjermingArkivenhetService.endreSkjermingJournalpost(request
+				Map<JournalpostDokumentInfoPair, List<ArkivElementEndringTO>> aksjonsLoggMapJP = endreSkjermingArkivenhetService.endreSkjermingJournalpost(request
 						.getJournalpostId(), request
 						.getSkjerming());
 				lagreAksjonsLoggService.lagreAksjonsLogg(AksjonsTypeCode.ENDRE_SKJERMING, aksjonsLoggMapJP, hjemmel, melding, utfoertAv);
 				break;
 			case DOKUMENT_INFO:
 				assertNotNullOrEmpty(request.getDokumentInfoId(), "dokumentInfoId");
-				Map<Pair<Long, Long>, List<ArkivElementEndringTO>> aksjonsLoggMapDokInfo = endreSkjermingArkivenhetService.endreSkjermingDokumentInfo(request
+				Map<JournalpostDokumentInfoPair, List<ArkivElementEndringTO>> aksjonsLoggMapDokInfo = endreSkjermingArkivenhetService.endreSkjermingDokumentInfo(request
 						.getDokumentInfoId(), request
 						.getSkjerming());
 				lagreAksjonsLoggService.lagreAksjonsLogg(AksjonsTypeCode.ENDRE_SKJERMING, aksjonsLoggMapDokInfo, hjemmel, melding, utfoertAv);
@@ -65,13 +66,13 @@ public class SkjermArkivEnhetOrchestrator {
 		switch (request.getArkivenhet()) {
 			case JOURNALPOST:
 				assertNotNullOrEmpty(request.getJournalpostId(), "journalpostId");
-				Map<Pair<Long, Long>, List<ArkivElementEndringTO>> aksjonsLoggMapJP = endreSkjermingArkivenhetService.endreSkjermingJournalpost(
+				Map<JournalpostDokumentInfoPair, List<ArkivElementEndringTO>> aksjonsLoggMapJP = endreSkjermingArkivenhetService.endreSkjermingJournalpost(
 						request.getJournalpostId(), null);
 				lagreAksjonsLoggService.lagreAksjonsLogg(AksjonsTypeCode.ENDRE_SKJERMING, aksjonsLoggMapJP, hjemmel, melding, utfoertAv);
 				break;
 			case DOKUMENT_INFO:
 				assertNotNullOrEmpty(request.getDokumentInfoId(), "dokumentInfoId");
-				Map<Pair<Long, Long>, List<ArkivElementEndringTO>> aksjonsLoggMapDokInfo = endreSkjermingArkivenhetService.endreSkjermingDokumentInfo(request
+				Map<JournalpostDokumentInfoPair, List<ArkivElementEndringTO>> aksjonsLoggMapDokInfo = endreSkjermingArkivenhetService.endreSkjermingDokumentInfo(request
 						.getDokumentInfoId(), null);
 				lagreAksjonsLoggService.lagreAksjonsLogg(AksjonsTypeCode.ENDRE_SKJERMING, aksjonsLoggMapDokInfo, hjemmel, melding, utfoertAv);
 				break;

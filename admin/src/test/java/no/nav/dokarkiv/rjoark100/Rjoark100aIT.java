@@ -177,12 +177,12 @@ public class Rjoark100aIT extends AbstractAdminIT {
 				.getDokumentInfo();
 
 		Journalpost journalpostMedHoveddokumentSomErGjenbrukt = createJournalpostWithGjenbruktHoveddokument(dokumentInfoSomSkalSkjermes);
-		Journalpost journalpostMedHoveddokuemtn = createJournalpostWithHoveddokument();
-		journalpostMedHoveddokuemtn.addJournalpostDokumentInfoRelasjon(TestDataGenerator.createVedleggRelasjon(journalpostMedHoveddokuemtn, dokumentInfoSomSkalSkjermes));
+		Journalpost journalpostMedHoveddokument = createJournalpostWithHoveddokument();
+		journalpostMedHoveddokument.addJournalpostDokumentInfoRelasjon(TestDataGenerator.createVedleggRelasjon(journalpostMedHoveddokument, dokumentInfoSomSkalSkjermes));
 
 		joarkRepository.save(originalJournalpost);
 		joarkRepository.save(journalpostMedHoveddokumentSomErGjenbrukt);
-		joarkRepository.save(journalpostMedHoveddokuemtn);
+		joarkRepository.save(journalpostMedHoveddokument);
 
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
@@ -242,7 +242,7 @@ public class Rjoark100aIT extends AbstractAdminIT {
 								.tilVerdi(SkjermingTypeCode.POL.name())
 								.build()
 				));
-		assertAksjonsLogg(getAksjonsLoggByJournalpostId(aksjonsLoggList, journalpostMedHoveddokuemtn.getJournalpostId()), AksjonsTypeCode.ENDRE_SKJERMING, journalpostMedHoveddokuemtn
+		assertAksjonsLogg(getAksjonsLoggByJournalpostId(aksjonsLoggList, journalpostMedHoveddokument.getJournalpostId()), AksjonsTypeCode.ENDRE_SKJERMING, journalpostMedHoveddokument
 						.getJournalpostId(), dokumentInfoSomSkalSkjermes
 						.getDokumentInfoId(),
 				Arrays.asList(

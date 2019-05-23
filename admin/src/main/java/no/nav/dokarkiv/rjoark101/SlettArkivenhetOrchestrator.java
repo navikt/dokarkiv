@@ -3,6 +3,7 @@ package no.nav.dokarkiv.rjoark101;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 import lombok.extern.slf4j.Slf4j;
+import no.nav.dokarkiv.core.aksjonslogg.JournalpostDokumentInfoPair;
 import no.nav.dokarkiv.core.aksjonslogg.LagreAksjonsLoggService;
 import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
@@ -40,12 +41,12 @@ public class SlettArkivenhetOrchestrator {
 		switch (arkivenhet) {
 			case JOURNALPOST:
 				assertNotNullOrEmpty(journalpostId, "journalpostId");
-				Map<Pair<Long, Long>, List<ArkivElementEndringTO>> aksjonsLoggMapJournalpost = slettArkivenhetService.slettJournalpost(journalpostId);
+				Map<JournalpostDokumentInfoPair, List<ArkivElementEndringTO>> aksjonsLoggMapJournalpost = slettArkivenhetService.slettJournalpost(journalpostId);
 				lagreAksjonsLoggService.lagreAksjonsLogg(AksjonsTypeCode.SLETT, aksjonsLoggMapJournalpost, hjemmel, melding, utfoertAv);
 				break;
 			case DOKUMENT_INFO:
 				assertNotNullOrEmpty(dokumentInfoId, "dokumentInfoId");
-				Map<Pair<Long, Long>, List<ArkivElementEndringTO>> aksjonsLoggMapDokumentInfo = slettArkivenhetService.slettDokumentInfo(dokumentInfoId);
+				Map<JournalpostDokumentInfoPair, List<ArkivElementEndringTO>> aksjonsLoggMapDokumentInfo = slettArkivenhetService.slettDokumentInfo(dokumentInfoId);
 				lagreAksjonsLoggService.lagreAksjonsLogg(AksjonsTypeCode.SLETT, aksjonsLoggMapDokumentInfo, hjemmel, melding, utfoertAv);
 				break;
 			case DOKUMENT_FIL:
