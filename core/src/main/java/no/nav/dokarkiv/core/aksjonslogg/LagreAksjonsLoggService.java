@@ -46,6 +46,10 @@ public class LagreAksjonsLoggService {
 	public void lagreAksjonsLogg(AksjonsTypeCode aksjonsTypeCode, Map<Pair<Long, Long>, List<ArkivElementEndringTO>> aksjonsLoggMap, String hjemmel, String melding, String utfoertAv) throws
 			UgyldigAksjonsLoggException {
 
+		/*
+		 Hvis journalpostId(Left) er null så opprettes det ny aksjonslogg eller at arkivelementendringer legges til eksisterende aksjonslogg med journalpostId og dokumentInfoId par for alle JournalpostRelasjoner dokumentInfoId(right) har.
+		 Grunnen til at det gjøres er for å kunne gjøre det søktbar på alle journalpostIder og brukere som dokumentInfo relasjon til og tillegg at det skal være mulig å se alle endringer som journalpost har gått gjennom inkludert endringene i dokumentRelasjoner.
+		 */
 		List<Pair<Long, Long>> removeList = new ArrayList<>();
 		aksjonsLoggMap.keySet().forEach(aksjonsLoggKey -> {
 			if (aksjonsLoggKey.getLeft() == null) {
@@ -72,7 +76,7 @@ public class LagreAksjonsLoggService {
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public void lagreAksjonsLogg(AksjonsTypeCode aksjonsType, Long dokumentInfoId, String hjemmel, String melding, String utfoertAv, List<ArkivElementEndringTO> arkivElementEndringTOList) throws UgyldigAksjonsLoggException {
 
-		for (JournalpostDokumentInfoRelasjon rel: journalpostDokumentInfoRelasjonRepository.findAllByDokumentInfoDokumentInfoId(dokumentInfoId)){
+		for (JournalpostDokumentInfoRelasjon rel : journalpostDokumentInfoRelasjonRepository.findAllByDokumentInfoDokumentInfoId(dokumentInfoId)) {
 			lagreAksjonsLogg(aksjonsType, rel.getJournalpost().getJournalpostId(), dokumentInfoId, hjemmel, null, melding, utfoertAv, arkivElementEndringTOList);
 		}
 	}
