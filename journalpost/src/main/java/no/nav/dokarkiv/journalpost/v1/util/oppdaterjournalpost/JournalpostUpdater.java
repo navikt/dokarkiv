@@ -49,7 +49,7 @@ public class JournalpostUpdater {
 		updateBehandlingstema(journalpost, oppdaterJournalpostRequest, endret);
 		updateTilleggsopplysninger(journalpost, oppdaterJournalpostRequest, endret);
 		updateJournalfoerendeEnhet(journalpost, oppdaterJournalpostRequest, endret);
-		updateDatoRetur(journalpost, oppdaterJournalpostRequest, endret);
+		updateReturInfo(journalpost, oppdaterJournalpostRequest, endret);
 		updateBruker(journalpost, oppdaterJournalpostRequest, endret);
 
 		if (endret.isEndretFlagg()) {
@@ -65,10 +65,10 @@ public class JournalpostUpdater {
 		}
 	}
 
-	private void updateDatoRetur(Journalpost journalpost, OppdaterJournalpostRequest oppdaterJournalpostRequest, Endret endret) {
+	private void updateReturInfo(Journalpost journalpost, OppdaterJournalpostRequest oppdaterJournalpostRequest, Endret endret) {
 		if (oppdaterJournalpostRequest.getDatoRetur() != null) {
 			journalpost.setAvsendtReturDato(oppdaterJournalpostRequest.getDatoRetur());
-			journalpost.setAntallRetur(journalpost.getAntallRetur()+1);
+			journalpost.setAntallRetur(journalpost.getAntallRetur() == null ? 1 : journalpost.getAntallRetur()+1);
 			endret.setEndretFlagg(true);
 		}
 	}
