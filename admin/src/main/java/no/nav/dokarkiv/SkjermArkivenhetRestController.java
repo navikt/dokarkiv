@@ -1,6 +1,8 @@
 package no.nav.dokarkiv;
 
-import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_LOGG_HEADER;
+import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_LOGG_HJEMMEL_HEADER;
+import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_LOGG_MELDING_HEADER;
+import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_LOGG_UTFOERT_AV_HEADER;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 import lombok.extern.slf4j.Slf4j;
@@ -46,7 +48,9 @@ public class SkjermArkivenhetRestController {
 	@PostMapping("/skjermarkivenhet")
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark100a"}, percentiles = {0.5, 0.95})
 	public ResponseEntity skjermArkivenhet(
-			@RequestHeader(value = AKSJONS_LOGG_HEADER) String aksjonsLoggHeaderString,
+			@RequestHeader(value = AKSJONS_LOGG_HJEMMEL_HEADER) String hjemmel,
+			@RequestHeader(value = AKSJONS_LOGG_MELDING_HEADER) String melding,
+			@RequestHeader(value = AKSJONS_LOGG_UTFOERT_AV_HEADER, required = false) String utfoertAv,
 			@RequestBody SkjermArkivenhetRequest skjermArkivenhetRequest) throws UgyldigAksjonsLoggException, UgyldigSkjermArkivenhetRequestException {
 		validerAtRequestHarSkjermingOgArkivenhet(skjermArkivenhetRequest.getSkjerming(), skjermArkivenhetRequest.getArkivenhet());
 		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark100a");
@@ -55,7 +59,7 @@ public class SkjermArkivenhetRestController {
 		log.info("{} har mottat kall om å skjerme arkivenhet={} med journalpostId={} og dokumentInfoId={}", MDC.get(MDCConstants.MDC_REQUEST_ID), skjermArkivenhetRequest
 				.getArkivenhet(), skjermArkivenhetRequest.getJournalpostId(), skjermArkivenhetRequest.getDokumentInfoId());
 
-		skjermArkivEnhetOrchestrator.skjermArkivEnhet(skjermArkivenhetRequest, aksjonsLoggHeaderString);
+		skjermArkivEnhetOrchestrator.skjermArkivEnhet(skjermArkivenhetRequest, hjemmel, melding, utfoertAv);
 
 		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har skjermet arkivenhet {}", skjermArkivenhetRequest.getArkivenhet());
 		return ResponseEntity.ok().build();
@@ -66,7 +70,9 @@ public class SkjermArkivenhetRestController {
 	@DeleteMapping("/skjermarkivenhet")
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark100b"}, percentiles = {0.5, 0.95})
 	public ResponseEntity opphevSkjermArkivenhet(
-			@RequestHeader(value = AKSJONS_LOGG_HEADER) String aksjonsLoggHeaderString,
+			@RequestHeader(value = AKSJONS_LOGG_HJEMMEL_HEADER) String hjemmel,
+			@RequestHeader(value = AKSJONS_LOGG_MELDING_HEADER) String melding,
+			@RequestHeader(value = AKSJONS_LOGG_UTFOERT_AV_HEADER, required = false) String utfoertAv,
 			@RequestBody SkjermArkivenhetRequest skjermArkivenhetRequest) throws UgyldigAksjonsLoggException, UgyldigSkjermArkivenhetRequestException {
 		validerAtRequestHarSkjermingOgArkivenhet(skjermArkivenhetRequest.getSkjerming(), skjermArkivenhetRequest.getArkivenhet());
 		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark100b");
@@ -76,7 +82,7 @@ public class SkjermArkivenhetRestController {
 				.getArkivenhet(), skjermArkivenhetRequest
 				.getJournalpostId(), skjermArkivenhetRequest.getDokumentInfoId());
 
-		skjermArkivEnhetOrchestrator.opphevSkjermArkivEnhet(skjermArkivenhetRequest, aksjonsLoggHeaderString);
+		skjermArkivEnhetOrchestrator.opphevSkjermArkivEnhet(skjermArkivenhetRequest, hjemmel, melding, utfoertAv);
 
 		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har opphevet skjerming av arkivenhet {}", skjermArkivenhetRequest.getArkivenhet());
 		return ResponseEntity.ok().build();

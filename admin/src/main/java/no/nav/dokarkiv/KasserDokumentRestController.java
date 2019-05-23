@@ -1,6 +1,9 @@
 package no.nav.dokarkiv;
 
-import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_LOGG_HEADER;
+import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_LOGG_BRUKER_HEADER;
+import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_LOGG_HJEMMEL_HEADER;
+import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_LOGG_MELDING_HEADER;
+import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_LOGG_UTFOERT_AV_HEADER;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.MDCConstants;
@@ -45,14 +48,16 @@ public class KasserDokumentRestController {
 	@DeleteMapping("/kasserdokument")
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark102"}, percentiles = {0.5, 0.95})
 	public ResponseEntity kasserDokument(
-			@RequestHeader(value = AKSJONS_LOGG_HEADER) String aksjonsLoggHeaderString,
+			@RequestHeader(value = AKSJONS_LOGG_HJEMMEL_HEADER) String hjemmel,
+			@RequestHeader(value = AKSJONS_LOGG_MELDING_HEADER) String melding,
+			@RequestHeader(value = AKSJONS_LOGG_UTFOERT_AV_HEADER, required = false) String utfoertAv,
 			@RequestBody KasserDokumentRequest request) throws UgyldigAksjonsLoggException {
 		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark102");
 		validator.validerKasserDokumentRequest(request);
 		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har mottat kall med dokumentInfoId={}", request.getDokumentInfoId());
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
 
-		kasserDokumentOrchestrator.kasserDokument(request.getDokumentInfoId(), request.getKassertAvNavn(), aksjonsLoggHeaderString);
+		kasserDokumentOrchestrator.kasserDokument(request.getDokumentInfoId(), request.getKassertAvNavn(), hjemmel, melding,utfoertAv);
 
 		log.info("{} har kassert dokument med dokumentInfoId={}",
 				MDC.get(MDCConstants.MDC_REQUEST_ID), request.getDokumentInfoId());
@@ -64,13 +69,15 @@ public class KasserDokumentRestController {
 	@PostMapping("/kasserdokument/skjerm/{dokumentInfoId}")
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark102SA"}, percentiles = {0.5, 0.95})
 	public ResponseEntity kasserSkjermDokument(
-			@RequestHeader(value = AKSJONS_LOGG_HEADER) String aksjonsLoggHeaderString,
+			@RequestHeader(value = AKSJONS_LOGG_HJEMMEL_HEADER) String hjemmel,
+			@RequestHeader(value = AKSJONS_LOGG_MELDING_HEADER) String melding,
+			@RequestHeader(value = AKSJONS_LOGG_UTFOERT_AV_HEADER, required = false) String utfoertAv,
 			@PathVariable Long dokumentInfoId) throws UgyldigAksjonsLoggException {
 		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark102S");
 		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har mottat kall med dokumentInfoId={}", dokumentInfoId);
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
 
-		kasserDokumentOrchestrator.kasserSkjermDokument(dokumentInfoId, aksjonsLoggHeaderString);
+		kasserDokumentOrchestrator.kasserSkjermDokument(dokumentInfoId, hjemmel, melding, utfoertAv);
 
 		log.info("{} har skjermet dokument for kassering med dokumentInfoId={}",
 				MDC.get(MDCConstants.MDC_REQUEST_ID), dokumentInfoId);
@@ -83,13 +90,15 @@ public class KasserDokumentRestController {
 	@DeleteMapping("/kasserdokument/skjerm/{dokumentInfoId}")
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark102SB"}, percentiles = {0.5, 0.95})
 	public ResponseEntity opphevKasserSkjermDokument(
-			@RequestHeader(value = AKSJONS_LOGG_HEADER) String aksjonsLoggHeaderString,
+			@RequestHeader(value = AKSJONS_LOGG_HJEMMEL_HEADER) String hjemmel,
+			@RequestHeader(value = AKSJONS_LOGG_MELDING_HEADER) String melding,
+			@RequestHeader(value = AKSJONS_LOGG_UTFOERT_AV_HEADER, required = false) String utfoertAv,
 			@PathVariable Long dokumentInfoId) throws UgyldigAksjonsLoggException {
 		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark102SB");
 		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har mottat kall med dokumentInfoId={}", dokumentInfoId);
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
 
-		kasserDokumentOrchestrator.opphevKasserSkjermDokument(dokumentInfoId, aksjonsLoggHeaderString);
+		kasserDokumentOrchestrator.opphevKasserSkjermDokument(dokumentInfoId, hjemmel, melding,utfoertAv);
 
 		log.info("{} har opphevet skjerming for dokument som var skjermet som kassert med dokumentInfoId={}",
 				MDC.get(MDCConstants.MDC_REQUEST_ID), dokumentInfoId);

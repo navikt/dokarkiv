@@ -1,6 +1,10 @@
 package no.nav.dokarkiv;
 
+import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_LOGG_BRUKER_HEADER;
 import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_LOGG_HEADER;
+import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_LOGG_HJEMMEL_HEADER;
+import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_LOGG_MELDING_HEADER;
+import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_LOGG_UTFOERT_AV_HEADER;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.MDCConstants;
@@ -37,7 +41,9 @@ public class SlettArkivenhetController {
 	@DeleteMapping("/slettarkivenhet")
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark101"}, percentiles = {0.5, 0.95})
 	public ResponseEntity slettArkivenhet(
-			@RequestHeader(value = AKSJONS_LOGG_HEADER) String aksjonsLoggHeaderString,
+			@RequestHeader(value = AKSJONS_LOGG_HJEMMEL_HEADER) String hjemmel,
+			@RequestHeader(value = AKSJONS_LOGG_MELDING_HEADER) String melding,
+			@RequestHeader(value = AKSJONS_LOGG_UTFOERT_AV_HEADER, required = false) String utfoertAv,
 			@RequestBody SlettArkivenhetRequest slettArkivenhetRequest) throws UgyldigAksjonsLoggException {
 
 		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark101");
@@ -47,7 +53,7 @@ public class SlettArkivenhetController {
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
 
 		slettArkivenhetOrchestrator.slettArkivenhhet(slettArkivenhetRequest.getArkivenhet(), slettArkivenhetRequest.getJournalpostId(), slettArkivenhetRequest
-				.getDokumentInfoId(), slettArkivenhetRequest.getVariant(), aksjonsLoggHeaderString);
+				.getDokumentInfoId(), slettArkivenhetRequest.getVariant(), hjemmel, melding, utfoertAv);
 
 		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har slettet arkivenhet={} med journalpostId={}, dokumentInfoId={} og variant={}",
 				slettArkivenhetRequest.getArkivenhet(), slettArkivenhetRequest.getJournalpostId(), slettArkivenhetRequest.getDokumentInfoId(), slettArkivenhetRequest

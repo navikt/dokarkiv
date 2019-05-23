@@ -8,6 +8,7 @@ import static org.apache.commons.lang3.BooleanUtils.isFalse;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
+import no.nav.dokarkiv.core.aksjonslogg.JournalpostDokumentInfoPair;
 import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
@@ -53,13 +54,13 @@ public class EndreSkjermingArkivenhetService {
 		this.entityManager = entityManager;
 	}
 
-	public Map<Pair<Long, Long>, List<ArkivElementEndringTO>> endreSkjermingJournalpost(Long journalpostId, SkjermingTypeCode tilSkjerming) {
+	public Map<JournalpostDokumentInfoPair, List<ArkivElementEndringTO>> endreSkjermingJournalpost(Long journalpostId, SkjermingTypeCode tilSkjerming) {
 		Journalpost journalpost = hentJournalpost(journalpostId);
-		Map<Pair<Long, Long>, List<ArkivElementEndringTO>> aksjonsLoggMap = new HashMap<>();
+		Map<JournalpostDokumentInfoPair, List<ArkivElementEndringTO>> aksjonsLoggMap = new HashMap<>();
 
 		//Skjerm JournalpostRelasjoner. For at oppførsel skal bli likt med skjermDokumentInfo må alle relasjoner skjermes før Journalpost skjermes.
 		journalpost.getJournalpostDokumentInfoRelasjonerAdmin()
-				.forEach(rel -> aksjonsLoggMap.put(Pair.of(journalpostId, rel.getDokumentInfo()
+				.forEach(rel -> aksjonsLoggMap.put(JournalpostDokumentInfoPair.of(journalpostId, rel.getDokumentInfo()
 						.getDokumentInfoId()), endreSkjermingJournalpostDokumentInfoRelasjon(rel, tilSkjerming)));
 
 		List<ArkivElementEndringTO> arkivElementEndringTOList = new ArrayList<>();
@@ -73,7 +74,7 @@ public class EndreSkjermingArkivenhetService {
 							.tilVerdi(enumToString(tilSkjerming))
 							.build());
 		}
-		aksjonsLoggMap.put(Pair.of(journalpostId, null), arkivElementEndringTOList);
+		aksjonsLoggMap.put(JournalpostDokumentInfoPair.of(journalpostId, null), arkivElementEndringTOList);
 		return aksjonsLoggMap;
 	}
 
@@ -111,8 +112,8 @@ public class EndreSkjermingArkivenhetService {
 		return sladdet == null;
 	}
 
-	public Map<Pair<Long, Long>, List<ArkivElementEndringTO>> endreSkjermingDokumentInfo(Long dokumentInfoId, SkjermingTypeCode tilSkjerming) {
-		Map<Pair<Long, Long>, List<ArkivElementEndringTO>> aksjonsLoggMap = new HashMap<>();
+	public Map<JournalpostDokumentInfoPair, List<ArkivElementEndringTO>> endreSkjermingDokumentInfo(Long dokumentInfoId, SkjermingTypeCode tilSkjerming) {
+		Map<JournalpostDokumentInfoPair, List<ArkivElementEndringTO>> aksjonsLoggMap = new HashMap<>();
 		List<JournalpostDokumentInfoRelasjon> journalpostDokumentInfoRelasjonList = hentJournalpostDokumentInfoRelasjonerByDokumentInfoId(dokumentInfoId);
 
 		journalpostDokumentInfoRelasjonList.forEach(relasjon -> {
@@ -123,12 +124,12 @@ public class EndreSkjermingArkivenhetService {
 			//Hvis tilSkjerming=null (Opphev skjerming) og Journalpost er skjermet så skal skjermingen i Journalpost fjernes. Hvis ikke dette gjøres vil ikke dokumentet være synlig.
 			//Hvis tilSkjerming!=null og Journalposten ikke har noen flere dokumentInfo relasjoner som IKKE er skjermet så skal journalposten også skjermes.
 			if (tilSkjerming == null && skjermingService.isJournalpostSkjermet(journalpostId)) {
-				arkivElementEndringList.addAll(endreSkjermingJournalpost(journalpostId, null).getOrDefault(Pair.of(journalpostId, null), new ArrayList<>()));
+				arkivElementEndringList.addAll(endreSkjermingJournalpost(journalpostId, null).getOrDefault(JournalpostDokumentInfoPair.of(journalpostId, null), new ArrayList<>()));
 			} else if (tilSkjerming != null && isJournalpostHarIngenDokumentInfoRelasjoner(journalpostId)) {
-				arkivElementEndringList.addAll(endreSkjermingJournalpost(journalpostId, tilSkjerming).getOrDefault(Pair.of(journalpostId, null), new ArrayList<>()));
+				arkivElementEndringList.addAll(endreSkjermingJournalpost(journalpostId, tilSkjerming).getOrDefault(JournalpostDokumentInfoPair.of(journalpostId, null), new ArrayList<>()));
 			}
 
-			aksjonsLoggMap.put(Pair.of(journalpostId, dokumentInfoId), arkivElementEndringList);
+			aksjonsLoggMap.put(JournalpostDokumentInfoPair.of(journalpostId, dokumentInfoId), arkivElementEndringList);
 
 		});
 

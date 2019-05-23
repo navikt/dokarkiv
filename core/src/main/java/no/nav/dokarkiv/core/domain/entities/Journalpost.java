@@ -71,7 +71,7 @@ import java.util.stream.Collectors;
  */
 @Entity
 @Table(name = "T_JOURNALPOST")
-@Builder(toBuilder=true)
+@Builder(toBuilder = true)
 @AllArgsConstructor
 public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKilde {
 
@@ -243,7 +243,7 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	 * Constructor that assigns immutable properties. Used for testing.
 	 *
 	 * @param journalpostId DB-id for the instance.
-	 * @param version       DB-version for the instance.
+	 * @param version DB-version for the instance.
 	 */
 	public Journalpost(Long journalpostId, long version) {
 		this.journalpostId = journalpostId;
@@ -1424,7 +1424,6 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	}
 
 
-
 	/**
 	 * Add a JournalpostDokumentInfoRelasjon to relasjon Set.
 	 *
@@ -1449,7 +1448,7 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 
 	/**
 	 * Getter for the journalpostDokumentInfoRelasjoner property.
-	 *
+	 * <p>
 	 * Filterer ut JournalpostDokumentInfoRelasjoner som er skjermet
 	 *
 	 * @return the journalpostDokumentInfoRelasjoner
@@ -1466,6 +1465,7 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	public Set<JournalpostDokumentInfoRelasjon> getJournalpostDokumentInfoRelasjonerAdmin() {
 		return Collections.unmodifiableSet(journalpostDokumentInfoRelasjoner);
 	}
+
 	/**
 	 * Getter for the journalpostDokumentInfoRelasjoner property.
 	 *
@@ -1614,4 +1614,7 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 		return !getJournalpostDokumentInfoRelasjoner().isEmpty();
 	}
 
+	public boolean hasAnyDokumentInfoRelasjonerIncludingSkjermet() {
+		return !journalpostDokumentInfoRelasjoner.isEmpty();
+	}
 }
