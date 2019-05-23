@@ -1,8 +1,7 @@
 package no.nav.dokarkiv.core.akjsonslogg;
 
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.any;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
