@@ -20,7 +20,7 @@ import javax.persistence.Table;
 		@AttributeOverride(name = "decode", column = @Column(name = "dekode")),
 		@AttributeOverride(name = "fromDate", column = @Column(name = "dato_fom")),
 		@AttributeOverride(name = "toDate", column = @Column(name = "dato_tom"))})
-public class AvsenderMottakerTypeCti extends CodesTablePeriodicItem<AvsenderMottakerTypeCode, String> {
+public class AvsenderMottakerIdTypeCti extends CodesTablePeriodicItem<AvsenderMottakerIdTypeCode, String> {
 
 	/**
 	 * Serialization UID

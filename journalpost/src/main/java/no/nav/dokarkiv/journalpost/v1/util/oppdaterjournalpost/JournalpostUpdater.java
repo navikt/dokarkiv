@@ -6,7 +6,7 @@ import static org.apache.logging.log4j.util.Strings.isNotBlank;
 
 import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
-import no.nav.dokarkiv.core.domain.codes.AvsenderMottakerTypeCode;
+import no.nav.dokarkiv.core.domain.codes.AvsenderMottakerIdTypeCode;
 import no.nav.dokarkiv.core.domain.codes.Behandlingstema;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
@@ -94,16 +94,16 @@ public class JournalpostUpdater {
 			if (oppdaterJournalpostRequest.getAvsenderMottaker().getIdType() != null) {
 				if (AvsenderMottakerIdType.FNR.equals(oppdaterJournalpostRequest.getAvsenderMottaker()
 						.getIdType())) {
-					journalpost.setAvsenderMottakerIdType(AvsenderMottakerTypeCode.FNR);
+					journalpost.setAvsenderMottakerIdType(AvsenderMottakerIdTypeCode.FNR);
 				} else if (AvsenderMottakerIdType.ORGNR.equals(oppdaterJournalpostRequest.getAvsenderMottaker()
 						.getIdType())) {
-					journalpost.setAvsenderMottakerIdType(AvsenderMottakerTypeCode.ORGNR);
+					journalpost.setAvsenderMottakerIdType(AvsenderMottakerIdTypeCode.ORGNR);
 				} else if (AvsenderMottakerIdType.HPRNR.equals(oppdaterJournalpostRequest.getAvsenderMottaker()
 						.getIdType())) {
-					journalpost.setAvsenderMottakerIdType(AvsenderMottakerTypeCode.HPRNR);
+					journalpost.setAvsenderMottakerIdType(AvsenderMottakerIdTypeCode.HPRNR);
 				} else if (AvsenderMottakerIdType.UTL_ORG.equals(oppdaterJournalpostRequest.getAvsenderMottaker()
 						.getIdType())) {
-					journalpost.setAvsenderMottakerIdType(AvsenderMottakerTypeCode.UTL_ORG);
+					journalpost.setAvsenderMottakerIdType(AvsenderMottakerIdTypeCode.UTL_ORG);
 				}
 				endret.setEndretFlagg(true);
 

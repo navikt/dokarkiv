@@ -22,6 +22,7 @@ import no.nav.dokarkiv.journalpost.v1.api.JournalpostType;
 import no.nav.dokarkiv.journalpost.v1.api.OpprettJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.Sak;
 import no.nav.dokarkiv.journalpost.v1.validators.OpprettJournalpostRequestValidator;
+import org.hibernate.HibernateException;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -70,22 +71,6 @@ public class OpprettJournalpostRequestValidatorTest {
 	}
 
 	@Test
-	public void shouldThrowExceptionIfAvsenderIdHasInvalidLength() {
-		request = createMinimalRequest(JournalpostType.INNGAAENDE, TEMA_FOR, INNHOLD)
-				.avsenderMottaker(AvsenderMottaker.builder()
-						.navn(AVSENDER_NAVN)
-						.id("***gammelt_fnr******gammelt_fnr******gammelt_fnr******gammelt_fnr***5678901")
-						.idType(AvsenderMottakerIdType.FNR)
-						.build())
-				.build();
-
-		expectedException.expect(InputValideringFeiletException.class);
-		expectedException.expectMessage("AvsenderMottaker.id");
-
-		validator.validateRequest(request);
-	}
-
-	@Test
 	public void shouldNotThrowExceptionIfAvsenderNameIsNotsetWhenAvsenderIdIsSet() {
 		request = createMinimalRequest(JournalpostType.INNGAAENDE, TEMA_FOR, INNHOLD)
 				.avsenderMottaker(AvsenderMottaker.builder()
@@ -101,7 +86,6 @@ public class OpprettJournalpostRequestValidatorTest {
 	public void shouldThrowExceptionIfBrukerIsMissingId() {
 		request = createMinimalRequest(JournalpostType.INNGAAENDE, TEMA_FOR, INNHOLD)
 				.bruker(Bruker.builder()
-						.idType(BrukerIdType.FNR)
 						.id(null)
 						.build())
 				.build();

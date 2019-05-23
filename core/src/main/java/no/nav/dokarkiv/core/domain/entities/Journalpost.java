@@ -10,7 +10,7 @@ import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.UB;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import no.nav.dokarkiv.core.domain.AbstractPersistentVersionedDomainObjectWithKilde;
-import no.nav.dokarkiv.core.domain.codes.AvsenderMottakerTypeCode;
+import no.nav.dokarkiv.core.domain.codes.AvsenderMottakerIdTypeCode;
 import no.nav.dokarkiv.core.domain.codes.Behandlingstema;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
@@ -145,15 +145,15 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	@Column(name = "dato_dokument")
 	private Date dokumentDato;
 
-	@Column(name = "avsend_mottaker")
+	@Column(name = "avsend_mottaker", length = 200)
 	private String avsenderMottaker;
 
-	@Column(name = "avsend_mottak_id")
+	@Column(name = "avsend_mottak_id", length = 50)
 	private String avsenderMottakerId;
 
 	@Enumerated(EnumType.STRING)
-	@Column(name = "avsend_mottak_id_t", length = 20)
-	private AvsenderMottakerTypeCode avsenderMottakerIdType;
+	@Column(name = "k_avsend_mottak_id_t", length = 20)
+	private AvsenderMottakerIdTypeCode avsenderMottakerIdType;
 
 	@Column(name = "journalfort_av_navn")
 	private String journalfortAvNavn;
@@ -1163,7 +1163,7 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	 *
 	 * @return the avsenderMottakerIdType
 	 */
-	public AvsenderMottakerTypeCode getAvsenderMottakerIdType() {
+	public AvsenderMottakerIdTypeCode getAvsenderMottakerIdType() {
 		return avsenderMottakerIdType;
 	}
 
@@ -1172,7 +1172,7 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	 *
 	 * @param avsenderMottakerIdType the avsenderMottakerIdType to set
 	 */
-	public void setAvsenderMottakerIdType(AvsenderMottakerTypeCode avsenderMottakerIdType) {
+	public void setAvsenderMottakerIdType(AvsenderMottakerIdTypeCode avsenderMottakerIdType) {
 		this.avsenderMottakerIdType = avsenderMottakerIdType;
 	}
 

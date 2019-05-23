@@ -23,7 +23,8 @@ import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
-import no.nav.dokarkiv.core.domain.codes.AvsenderMottakerTypeCode;
+import no.nav.dokarkiv.core.domain.codes.AvsenderMottakerIdTypeCode;
+import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
 import no.nav.dokarkiv.journalpost.v1.api.Arkivsaksystem;
 import no.nav.dokarkiv.journalpost.v1.api.AvsenderMottakerIdType;
 import no.nav.dokarkiv.journalpost.v1.api.BrukerIdType;
@@ -49,7 +50,8 @@ public class OpprettJournalpostApiRequestMapper {
 				.fagomrade(FagomradeCode.valueOf(request.getTema()))
 				.avsenderMottaker(request.getAvsenderMottaker() == null ? null : request.getAvsenderMottaker().getNavn())
 				.avsenderMottakerId(request.getAvsenderMottaker() == null ? null : request.getAvsenderMottaker().getId())
-				.avsenderMottakerIdType(request.getAvsenderMottaker() == null ? null : mapAvsenderMottakerType(request.getAvsenderMottaker().getIdType()))
+				.avsenderMottakerIdType(request.getAvsenderMottaker() == null ? null : mapAvsenderMottakerType(request.getAvsenderMottaker()
+						.getIdType()))
 				.behandlingstema(mapBehandlingstema(request))
 				.tilleggsopplysninger(mapTilleggsopplysninger(request))
 				.mottakskanal(mapMottakskanal(request))
@@ -76,18 +78,29 @@ public class OpprettJournalpostApiRequestMapper {
 		}
 	}
 
-	private AvsenderMottakerTypeCode mapAvsenderMottakerType(AvsenderMottakerIdType request) {
-		AvsenderMottakerTypeCode avsenderMottakerTypeCode;
-		if (AvsenderMottakerIdType.FNR.equals(request)) {
-			avsenderMottakerTypeCode = AvsenderMottakerTypeCode.FNR;
-		} else if (AvsenderMottakerIdType.ORGNR.equals(request)) {
-			avsenderMottakerTypeCode = AvsenderMottakerTypeCode.ORGNR;
-		} else if (AvsenderMottakerIdType.HPRNR.equals(request)) {
-			avsenderMottakerTypeCode = AvsenderMottakerTypeCode.HPRNR;
-		} else {
-			avsenderMottakerTypeCode = AvsenderMottakerTypeCode.UTL_ORG;
+	private AvsenderMottakerIdTypeCode mapAvsenderMottakerType(AvsenderMottakerIdType request) {
+		AvsenderMottakerIdTypeCode avsenderMottakerIdTypeCode = null;
+		if(request != null) {
+			switch (request) {
+				case FNR:
+					avsenderMottakerIdTypeCode = AvsenderMottakerIdTypeCode.FNR;
+					break;
+				case ORGNR:
+					avsenderMottakerIdTypeCode = AvsenderMottakerIdTypeCode.ORGNR;
+					break;
+				case HPRNR:
+					avsenderMottakerIdTypeCode = AvsenderMottakerIdTypeCode.HPRNR;
+					break;
+				case UTL_ORG:
+					avsenderMottakerIdTypeCode = AvsenderMottakerIdTypeCode.UTL_ORG;
+					break;
+				default:
+					throw new InputValideringFeiletException(String.format("AvesenderMottakerIdTypeCode validerer ikke mot kodeverk: %s.", request));
+
+			}
 		}
-		return avsenderMottakerTypeCode;
+		return avsenderMottakerIdTypeCode;
+
 	}
 
 	private JournalStatusCode mapJournalstatus(OpprettJournalpostRequest request) {
