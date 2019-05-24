@@ -85,8 +85,8 @@ DELETE FROM T_K_MOTTAKS_KANAL WHERE K_MOTTAKS_KANAL = 'NETS_PB1423';
 DELETE FROM T_K_MOTTAKS_KANAL WHERE K_MOTTAKS_KANAL = 'NETS_PB1431';
 DELETE FROM T_K_MOTTAKS_KANAL WHERE K_MOTTAKS_KANAL = 'NETS_PB1441';
 
-INSERT INTO T_K_UTSENDINGS_KANAL (k_utsendings_kanal,dekode,dato_fom,dato_tom,er_gyldig,dato_opprettet,opprettet_av,dato_endret,endret_av) VALUES ('HELSENETTET','Helsenettet',date '1900-01-01',NULL,'1',timestamp '2019-02-05 10:00:00','Bjørnar Hunshamar',timestamp '2019-02-05 10:00:00','Bjørnar Hunshamar');
-INSERT INTO T_K_UTSENDINGS_KANAL (k_utsendings_kanal,dekode,dato_fom,dato_tom,er_gyldig,dato_opprettet,opprettet_av,dato_endret,endret_av) VALUES ('EFORMIDLING','eFormidling',date '1900-01-01',NULL,'1',timestamp '2019-02-05 10:00:00','Bjørnar Hunshamar',timestamp '2019-02-05 10:00:00','Bjørnar Hunshamar');
+INSERT INTO T_K_UTSENDINGS_KANAL (k_utsendings_kanal,dekode,dato_fom,dato_tom,er_gyldig,dato_opprettet,opprettet_av,dato_endret,endret_av) VALUES ('HELSENETTET','Helsenettet',date '1900-01-01',NULL,'1',timestamp '2019-02-05 10:00:00','Bjørnar Hunshamar',sysdate);
+INSERT INTO T_K_UTSENDINGS_KANAL (k_utsendings_kanal,dekode,dato_fom,dato_tom,er_gyldig,dato_opprettet,opprettet_av,dato_endret,endret_av) VALUES ('TRYGDERETTEN','Trygderetten',date '1900-01-01',NULL,'1',timestamp '2019-02-05 10:00:00','Bjørnar Hunshamar',sysdate);
 
 DELETE FROM T_K_UTSENDINGS_KANAL WHERE K_UTSENDINGS_KANAL = 'PSELV';
 DELETE FROM T_K_UTSENDINGS_KANAL WHERE K_UTSENDINGS_KANAL = 'E_POST';
@@ -94,7 +94,8 @@ DELETE FROM T_K_UTSENDINGS_KANAL WHERE K_UTSENDINGS_KANAL = 'ALTINN';
 
 UPDATE T_K_UTSENDINGS_KANAL SET DEKODE = 'Digital postkasse til innbyggere' WHERE K_UTSENDINGS_KANAL = 'SDP';
 
-INSERT INTO T_K_AKSJON_TYPE (AKSJON_TYPE, BESKRIVELSE, DATO_OPPRETTET, OPPRETTET_AV) VALUES ('KOPIER_JOURNALPOST', 'Kopier journalpost', timestamp '2019-02-05 10:00:00','Bjørnar Hunshamar');
+INSERT INTO T_K_AKSJON_TYPE (AKSJON_TYPE, BESKRIVELSE, DATO_OPPRETTET, OPPRETTET_AV) VALUES ('KOPIER_JOURNALPOST', 'Kopier journalpost', sysdate,'Bjørnar Hunshamar');
+INSERT INTO T_K_AKSJON_TYPE (AKSJON_TYPE, BESKRIVELSE, DATO_OPPRETTET, OPPRETTET_AV) VALUES ('TILKNYTT_EKSISTERENDE_DOKUMENT', 'Tilknytt eksisterende dokument', sysdate);
 
 UPDATE T_K_AKSJON_TYPE SET AKSJON_TYPE = 'FEILREGISTRER_SAKSTILKNYTNING' WHERE AKSJON_TYPE = 'FEILREGISTRER';
 

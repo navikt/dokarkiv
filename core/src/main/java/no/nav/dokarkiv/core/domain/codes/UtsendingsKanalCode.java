@@ -23,8 +23,8 @@ public enum UtsendingsKanalCode implements CtiRelationship<UtsendingsKanalCode, 
 	EIA,
 	/** Helsenettet */
 	HELSENETTET,
-	/** eFormidling */
-	EFORMIDLING,
+	/** Trygderetten */
+    TRYGDERETTEN,
 	/**
 	 * INGEN_DISTRIBUSJON
 	 */
