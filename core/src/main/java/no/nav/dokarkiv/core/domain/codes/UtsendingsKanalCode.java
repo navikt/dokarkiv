@@ -17,6 +17,8 @@ public enum UtsendingsKanalCode implements CtiRelationship<UtsendingsKanalCode, 
 	S,
 	/** Lokal print */
 	L,
+	/** Sikker digital post */
+	SDP,
 	/** EIA */
 	EIA,
 	/** Helsenettet */
