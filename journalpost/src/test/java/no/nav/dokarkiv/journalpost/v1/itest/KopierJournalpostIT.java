@@ -80,7 +80,7 @@ public class KopierJournalpostIT extends AbstractJournalpostIT {
         assertEquals(journalpost.getAvsenderMottakerId(), kopiertJournalpost.getAvsenderMottakerId());
         assertEquals(journalpost.getAvsenderMottaker(), kopiertJournalpost.getAvsenderMottaker());
         assertEquals(journalpost.getInnhold(), kopiertJournalpost.getInnhold());
-        assertEquals(JournalStatusCode.M, kopiertJournalpost.getJournalstatus());
+        assertEquals(JournalStatusCode.OD, kopiertJournalpost.getJournalstatus());
 
         List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
         assertEquals(1, aksjonsLoggList.size());
