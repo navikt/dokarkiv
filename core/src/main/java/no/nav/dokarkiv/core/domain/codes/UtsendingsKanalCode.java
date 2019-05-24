@@ -11,6 +11,8 @@ public enum UtsendingsKanalCode implements CtiRelationship<UtsendingsKanalCode, 
 
 	/** EESSI */
 	EESSI,
+	/** ALTINN */
+	ALTINN,
 	/** Ditt NAV */
 	NAV_NO,
 	/** Sentral print */
