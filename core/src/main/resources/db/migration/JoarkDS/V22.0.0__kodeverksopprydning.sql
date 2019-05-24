@@ -18,22 +18,6 @@ DELETE FROM T_K_FIL_T WHERE K_FIL_T = 'DOCX';
 DELETE FROM T_K_FIL_T WHERE K_FIL_T = 'XLS';
 DELETE FROM T_K_FIL_T WHERE K_FIL_T = 'XLSX';
 
-INSERT INTO T_K_FIL_T (k_fil_t, dekode, dato_fom, dato_tom, er_gyldig, dato_opprettet, opprettet_av, dato_endret, endret_av)
-SELECT
-       'JPG',
-       'JPG',
-       DATE '1900-01-01',
-       NULL,
-       '1',
-       TIMESTAMP '2018-05-02 10:00:00',
-       'Bjørnar Hunshamar',
-       TIMESTAMP '2018-05-02 10:00:00',
-       'Bjørnar Hunshamar'
-FROM dual
-WHERE NOT exists(
-            SELECT 1
-            FROM T_K_FIL_T
-            WHERE k_fil_t = 'JPG');
 
 INSERT INTO T_K_FIL_T (k_fil_t, dekode, dato_fom, dato_tom, er_gyldig, dato_opprettet, opprettet_av, dato_endret, endret_av)
 SELECT
@@ -51,23 +35,6 @@ WHERE NOT exists(
             SELECT 1
             FROM T_K_FIL_T
             WHERE k_fil_t = 'PNG');
-
-INSERT INTO T_K_FIL_T (k_fil_t, dekode, dato_fom, dato_tom, er_gyldig, dato_opprettet, opprettet_av, dato_endret, endret_av)
-SELECT
-       'TIF',
-       'TIF',
-       DATE '1900-01-01',
-       NULL,
-       '1',
-       TIMESTAMP '2018-05-02 10:00:00',
-       'Bjørnar Hunshamar',
-       TIMESTAMP '2018-05-02 10:00:00',
-       'Bjørnar Hunshamar'
-FROM dual
-WHERE NOT exists(
-            SELECT 1
-            FROM T_K_FIL_T
-            WHERE k_fil_t = 'TIF');
 
 INSERT INTO T_K_MOTTAKS_KANAL (k_mottaks_kanal,dekode,dato_fom,dato_tom,er_gyldig,dato_opprettet,opprettet_av,dato_endret,endret_av) VALUES ('HELSENETTET','Helsenettet',date '1900-01-01',NULL,'1',timestamp '2019-02-05 10:00:00','Bjørnar Hunshamar',timestamp '2019-02-05 10:00:00','Bjørnar Hunshamar');
 
