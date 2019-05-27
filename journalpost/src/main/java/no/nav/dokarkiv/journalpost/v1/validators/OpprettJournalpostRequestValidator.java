@@ -53,7 +53,7 @@ public class OpprettJournalpostRequestValidator {
 
 	private void validateAvsenderMottaker(AvsenderMottaker avsenderMottaker) {
 		if (isNotBlank(avsenderMottaker.getId()) && (avsenderMottaker.getIdType() == null)) {
-			throw new InputValideringFeiletException("AvsenderMottaker.avsenderMottakerIdType må være satt når mottaker id er satt");
+			throw new InputValideringFeiletException("AvsenderMottaker.avsenderMottakerIdType må være satt når avsenderMottaker.id er satt");
 		}
 
 	}
