@@ -87,17 +87,17 @@ public class ArkiverOgJournalfoerRestController {
 
     @Transactional
     @SwaggerKopierJournalpost
-    @PostMapping("/{journalpostId}/kopierJournalpost")
+    @PostMapping("/kopierJournalpost")
     @RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark203"}, percentiles = {0.5, 0.95})
     public ResponseEntity<Long> kopierJournalpost(
-            @ApiParam(value = "IDen til journalposten som skal kopieres", required = true, example = "77778888")
-            @PathVariable String journalpostId) throws UgyldigAksjonsLoggException {
+            @ApiParam(name="kildeJournalpostId", value = "IDen til journalposten som skal kopieres", required = true, example = "77778888")
+            @RequestParam String kildeJournalpostId) throws UgyldigAksjonsLoggException {
         MDC.put(MDC_REQUEST_ID, "rjoark203");
-        log.info(MDC.get(MDC_REQUEST_ID) + " har mottatt kall for kopiering av journalpost med journalpostId={}", journalpostId);
-        validateId(journalpostId, "journalpostId");
+        log.info(MDC.get(MDC_REQUEST_ID) + " har mottatt kall for kopiering av journalpost med journalpostId={}", kildeJournalpostId);
+        validateId(kildeJournalpostId, "journalpostId");
         RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
 
-        Long nyJournalpostId = kopierJournalpostService.execute(Long.parseLong(journalpostId));
+        Long nyJournalpostId = kopierJournalpostService.execute(Long.parseLong(kildeJournalpostId));
 
         return ResponseEntity.status(HttpStatus.CREATED).body(nyJournalpostId);
     }

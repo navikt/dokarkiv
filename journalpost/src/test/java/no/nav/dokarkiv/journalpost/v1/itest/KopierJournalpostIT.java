@@ -43,7 +43,7 @@ public class KopierJournalpostIT extends AbstractJournalpostIT {
         TestTransaction.start();
 
         HttpEntity requestEntity = new HttpEntity(createHeadersWithServiceUserToken());
-        ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST + journalpostId + KOPIERJOURNALPOST, HttpMethod.POST, requestEntity, String.class);
+        ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST + KOPIER_QUERY + journalpostId, HttpMethod.POST, requestEntity, String.class);
 
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
 
