@@ -51,7 +51,6 @@ public class SkjermArkivEnhetOrchestrator {
 				break;
 			case DOKUMENT_FIL:
 				assertNotNullOrEmpty(request.getDokumentInfoId(), "dokumentInfoId");
-				assertNotNullOrEmpty(request.getVariant(), "variant");
 				arkivElementEndringTOList = endreSkjermingArkivenhetService.endreSkjermingDokumentFil(request.getDokumentInfoId(), request
 						.getVariant(), request
 						.getSkjerming());
@@ -78,7 +77,6 @@ public class SkjermArkivEnhetOrchestrator {
 				break;
 			case DOKUMENT_FIL:
 				assertNotNullOrEmpty(request.getDokumentInfoId(), "dokumentInfoId");
-				assertNotNullOrEmpty(request.getVariant(), "variant");
 				arkivElementEndringTOList = endreSkjermingArkivenhetService.endreSkjermingDokumentFil(request.getDokumentInfoId(), request
 						.getVariant(), null);
 				lagreAksjonsLoggService.lagreAksjonsLogg(AksjonsTypeCode.ENDRE_SKJERMING, request.getDokumentInfoId(), hjemmel, melding, utfoertAv, arkivElementEndringTOList);
