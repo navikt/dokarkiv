@@ -4,6 +4,7 @@ import static no.nav.dokarkiv.core.repository.DokumentFilSkjermetRepository.FIL_
 import static no.nav.dokarkiv.core.repository.DokumentFilSkjermetRepository.FIL_UUID_DUMMY_DOKUMENT_SKJERMET;
 
 import no.nav.dokarkiv.core.domain.codes.ArsakReturCode;
+import no.nav.dokarkiv.core.domain.codes.AvsenderMottakerIdTypeCode;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
@@ -41,6 +42,7 @@ public class TestDataGenerator {
 	public static final String TILKNYTTET_AV_NAVN = "Tilknyttetnavn";
 	public static final String ENDRET_AV_NAVN = "Endret av navn";
 	public static final String AVSENDER_MOTTAKER_ID = "***gammelt_fnr***";
+	public static final AvsenderMottakerIdTypeCode AVSENDER_MOTTAKER_ID_TYPE = AvsenderMottakerIdTypeCode.FNR;
 	public static final String TITTEL = "FysiskSlettDokument";
 	public static final String BREVGRUPPE = "Brevgruppe";
 	public static final String BREVKODE = "Brevkode";
@@ -62,6 +64,7 @@ public class TestDataGenerator {
 	public static Journalpost createJournalpostWithHoveddokument() {
 		Journalpost journalpost = Journalpost.builder()
 				.avsenderMottakerId(AVSENDER_MOTTAKER_ID)
+				.avsenderMottakerIdType(AVSENDER_MOTTAKER_ID_TYPE)
 				.dokumentDato(new Date())
 				.utsendingskanal(UtsendingsKanalCode.NAV_NO)
 				.journalstatus(JournalStatusCode.FS)

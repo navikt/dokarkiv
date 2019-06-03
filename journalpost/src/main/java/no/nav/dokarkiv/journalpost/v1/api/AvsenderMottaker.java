@@ -18,14 +18,19 @@ public class AvsenderMottaker {
             required = false)
     private String id;
 
-    @NotNull(message = "AvsenderMottaker mangler navn")
-    @ApiModelProperty(
-            value = "Navnet til avsender/mottaker.\nNavn på personbrukere skal lagres på formatet etternavn, fornavn mellomnavn",
-            required = true)
-    private String navn;
+	@ApiModelProperty(
+			value = "Angir hvilken type identifikator som er benyttet i AvsenderMottaker.id.",
+			required = false)
+	private AvsenderMottakerIdType idType;
 
-    @ApiModelProperty(
-            value = "Landet forsendelsen er mottatt fra eller sendt til. Feltet skal i utgangspunktet kun settes dersom avsender eller mottaker er en institusjon med adresse i utlandet.",
-            required = false)
-    private String land;
+	@NotNull(message = "AvsenderMottaker mangler navn")
+	@ApiModelProperty(
+			value = "Navnet til avsender/mottaker.\nNavn på personbrukere skal lagres på formatet etternavn, fornavn mellomnavn",
+			required = true)
+	private String navn;
+
+	@ApiModelProperty(
+			value = "Landet forsendelsen er mottatt fra eller sendt til. Feltet skal i utgangspunktet kun settes dersom avsender eller mottaker er en institusjon med adresse i utlandet.",
+			required = false)
+	private String land;
 }
