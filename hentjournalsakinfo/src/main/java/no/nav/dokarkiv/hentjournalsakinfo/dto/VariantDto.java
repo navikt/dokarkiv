@@ -8,5 +8,6 @@ import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 public class VariantDto {
 	private final VariantFormatCode variantf;
 	private final String filnavn;
+	private final String filuuid;
 	private final SkjermingTypeCode skjerming;
 }

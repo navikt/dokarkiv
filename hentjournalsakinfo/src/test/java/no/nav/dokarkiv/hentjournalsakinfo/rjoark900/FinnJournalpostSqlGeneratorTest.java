@@ -107,11 +107,13 @@ public class FinnJournalpostSqlGeneratorTest {
 						"                              d.brev_kode           AS dokumenter_brevkode,\n" +
 						"                              d.dokumenttype_id     AS dokumenter_dokumenttypeid,\n" +
 						"                              d.tittel              AS dokumenter_tittel,\n" +
+						"							   d.kassert             AS dokumenter_kassert,\n" +
 						"                              rel.k_skjerming_type  AS dokumenter_skjerming,\n" +
 						"                              d.orig_journalpost_id AS dokumenter_origjournalpostid,\n" +
 						"                              fd.k_skjerming_type   AS dokumenter_varianter_skjerming,\n" +
 						"                              fd.k_variant_format   AS dokumenter_varianter_variantf,\n" +
 						"	                           fd.fil_navn           AS dokumenter_varianter_filnavn,\n" +
+						"	                           fd.fil_uuid           AS dokumenter_varianter_filuuid,\n" +
 						"                              tsi.skannet_innhold_id AS dokumenter_logiske_vedleggid,\n" +
 						"                              tsi.vedlegg_innhold   AS dokumenter_logiske_tittel\n" +
 						"                       FROM t_journalpost j\n" +

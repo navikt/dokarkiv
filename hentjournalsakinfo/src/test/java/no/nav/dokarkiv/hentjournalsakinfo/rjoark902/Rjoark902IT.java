@@ -6,6 +6,7 @@ import static no.nav.dokarkiv.core.util.TestDataGenerator.DOKUMENT_TYPE_ID;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createJournalpostWithHoveddokument;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
@@ -56,7 +57,6 @@ public class Rjoark902IT extends AbstractHentjournalsakinfoItest {
 	// Happy path
 	@Test
 	public void shouldGetJournalpost() {
-
 		Journalpost storedJournalpost = buildAndPersistJournalpost();
 		Long journalpostId = storedJournalpost.getJournalpostId();
 
@@ -87,6 +87,9 @@ public class Rjoark902IT extends AbstractHentjournalsakinfoItest {
 		assertEquals(BREVKODE, responseDokumentInfo.getBrevkode());
 		assertEquals(DOKUMENT_TYPE_ID, responseDokumentInfo.getDokumenttypeId());
 		assertEquals(TITTEL, responseDokumentInfo.getTittel());
+		assertEquals(true, responseDokumentInfo.getKassert());
+
+		assertNotNull(responseDokumentInfo.getVarianter().get(0).getFiluuid());
 	}
 
 	//  Unhappy path
@@ -127,6 +130,7 @@ public class Rjoark902IT extends AbstractHentjournalsakinfoItest {
 		storedDokumentInfo.setDokumentstatus(DOKUMENTSTATUS);
 		storedDokumentInfo.setBrevkode(BREVKODE);
 		storedDokumentInfo.setTittel(TITTEL);
+		storedDokumentInfo.setKassert(true);
 
 		joarkRepository.save(journalpost);
 		TestTransaction.flagForCommit();

@@ -3,7 +3,10 @@ package no.nav.dokarkiv.rjoark101;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 import lombok.extern.slf4j.Slf4j;
+import no.nav.dokarkiv.core.aksjonslogg.JournalpostDokumentInfoPair;
+import no.nav.dokarkiv.core.aksjonslogg.LagreAksjonsLoggService;
 import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
+import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.codes.ArkivenhetCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
@@ -31,29 +34,26 @@ public class SlettArkivenhetOrchestrator {
 		this.lagreAksjonsLoggService = lagreAksjonsLoggService;
 	}
 
-	public List<ArkivElementEndringTO> slettArkivenhhet(ArkivenhetCode arkivenhet, Long journalpostId, Long dokumentInfoId, VariantFormatCode variant, String aksjonsLoggHeaderString) throws UgyldigAksjonsLoggException {
+	public List<ArkivElementEndringTO> slettArkivenhhet(ArkivenhetCode arkivenhet, Long journalpostId, Long dokumentInfoId, VariantFormatCode variant, String hjemmel, String melding, String utfoertAv) throws UgyldigAksjonsLoggException {
 		List<ArkivElementEndringTO> arkivElementEndringTOList = new ArrayList<>();
 		assertNotNullOrEmpty(arkivenhet, "arkivEnhet");
 
 		switch (arkivenhet) {
 			case JOURNALPOST:
 				assertNotNullOrEmpty(journalpostId, "journalpostId");
-				arkivElementEndringTOList = slettArkivenhetService.slettJournalpost(journalpostId);
-				lagreAksjonsLoggService.lagreAksjonsLogg(journalpostId, null, aksjonsLoggHeaderString, arkivElementEndringTOList);
+				Map<JournalpostDokumentInfoPair, List<ArkivElementEndringTO>> aksjonsLoggMapJournalpost = slettArkivenhetService.slettJournalpost(journalpostId);
+				lagreAksjonsLoggService.lagreAksjonsLogg(AksjonsTypeCode.SLETT, aksjonsLoggMapJournalpost, hjemmel, melding, utfoertAv);
 				break;
 			case DOKUMENT_INFO:
 				assertNotNullOrEmpty(dokumentInfoId, "dokumentInfoId");
-				Map<Pair<Long, Long>, List<ArkivElementEndringTO>> aksjonsLoggMap = slettArkivenhetService.slettDokumentInfo(dokumentInfoId);
-				for (Pair<Long, Long> aksjonsLoggJournalpostDokumentInfo: aksjonsLoggMap.keySet()) {
-					lagreAksjonsLoggService.lagreAksjonsLogg(aksjonsLoggJournalpostDokumentInfo.getLeft(), aksjonsLoggJournalpostDokumentInfo.getRight(), aksjonsLoggHeaderString, aksjonsLoggMap
-							.get(aksjonsLoggJournalpostDokumentInfo));
-				}
+				Map<JournalpostDokumentInfoPair, List<ArkivElementEndringTO>> aksjonsLoggMapDokumentInfo = slettArkivenhetService.slettDokumentInfo(dokumentInfoId);
+				lagreAksjonsLoggService.lagreAksjonsLogg(AksjonsTypeCode.SLETT, aksjonsLoggMapDokumentInfo, hjemmel, melding, utfoertAv);
 				break;
 			case DOKUMENT_FIL:
 				assertNotNullOrEmpty(dokumentInfoId, "dokumentInfoId");
 				assertNotNullOrEmpty(variant, "variant");
 				arkivElementEndringTOList = slettArkivenhetService.slettDokumentFil(dokumentInfoId, variant);
-				lagreAksjonsLoggService.lagreAksjonsLogg(null, dokumentInfoId, aksjonsLoggHeaderString, arkivElementEndringTOList);
+				lagreAksjonsLoggService.lagreAksjonsLogg(AksjonsTypeCode.SLETT, dokumentInfoId, hjemmel, melding, utfoertAv, arkivElementEndringTOList);
 				break;
 		}
 

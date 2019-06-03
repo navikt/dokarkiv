@@ -24,5 +24,6 @@ public class DokumentInfoDto {
 	private final String tittel;
 	private final SkjermingTypeCode skjerming;
 	private final Long origJournalpostId;
+	private final Boolean kassert;
 	private final List<LogiskVedleggDto> logiske;
 }

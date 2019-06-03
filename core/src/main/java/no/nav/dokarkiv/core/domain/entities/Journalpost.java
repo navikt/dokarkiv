@@ -1637,4 +1637,7 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 		return !getJournalpostDokumentInfoRelasjoner().isEmpty();
 	}
 
+	public boolean hasAnyDokumentInfoRelasjonerIncludingSkjermet() {
+		return !journalpostDokumentInfoRelasjoner.isEmpty();
+	}
 }

@@ -1,18 +1,13 @@
 package no.nav.dokarkiv.core.domain.service;
 
+import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.BooleanUtils.isFalse;
 
 import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
-import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
-import no.nav.dokarkiv.core.exceptions.DokumentInfoIkkeFunnetException;
-import no.nav.dokarkiv.core.exceptions.JournalpostDokumentInfoRelasjonIkkeFunnetException;
-import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
-import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,8 +16,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.Objects;
-import java.util.Optional;
 
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
@@ -31,107 +24,54 @@ import java.util.Optional;
 @Component
 public class SkjermingService {
 
-	private JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository;
 	private JoarkRepository joarkRepository;
-	private DokumentinfoRepository dokumentinfoRepository;
 
 	private final EntityManager entityManager;
 
 	@Inject
-	public SkjermingService(JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository, JoarkRepository joarkRepository, DokumentinfoRepository dokumentinfoRepository, EntityManager entityManager) {
-		this.journalpostDokumentInfoRelasjonRepository = journalpostDokumentInfoRelasjonRepository;
+	public SkjermingService(JoarkRepository joarkRepository, EntityManager entityManager) {
 		this.joarkRepository = joarkRepository;
-		this.dokumentinfoRepository = dokumentinfoRepository;
 		this.entityManager = entityManager;
-	}
-
-	public boolean isJournalpostSkjermet(Long journalpostId, SkjermingTypeCode skjermingTypeCode) {
-		Journalpost journalpost = joarkRepository.findById(journalpostId).orElse(null);
-		if (journalpost != null) {
-			return skjermingTypeCode == journalpost.getSkjermingType();
-		}
-		return false;
 	}
 
 	public boolean isJournalpostSkjermet(Long journalpostId) {
 		Journalpost journalpost = joarkRepository.findById(journalpostId).orElse(null);
 		if (journalpost != null) {
-			return Objects.nonNull(journalpost.getSkjermingType());
+			return nonNull(journalpost.getSkjermingType());
 		}
 
 		return false;
 	}
 
-	public boolean isKassertOrSkjermetByFilUuidAndVariantFormat(String filUuid, VariantFormatCode variantFormatCode) {
-		return isFalse(entityManager.createQuery("select 'kassert' from FilDetaljer where filUuid=:filUuid and variantFormat=:variantFormat and (dokumentInfo.datoKassert is not null or skjermingType is not null)")
+	public boolean isJournalpostSkjermet(Journalpost journalpost) {
+		return nonNull(journalpost.getSkjermingType());
+	}
+
+	public boolean isKassertByFilUuid(String filUuid) {
+		return isFalse(entityManager.createQuery("select 'kassert' from FilDetaljer where filUuid=:filUuid and dokumentInfo.kassert is true")
 				.setParameter("filUuid", filUuid)
-				.setParameter("variantFormat", variantFormatCode)
 				.getResultList()
 				.isEmpty());
 	}
 
-	public boolean isJournalpostSkjermet(Journalpost journalpost) {
-		return Objects.nonNull(journalpost.getSkjermingType());
+
+	public boolean isAllFildetaljerSkjermet(DokumentInfo dokumentInfo) {
+		return dokumentInfo.getFildetaljerListeAdmin()
+				.stream()
+				.allMatch(filDetaljer -> nonNull(filDetaljer.getSkjermingType()));
 	}
 
-	public boolean isVariantSkjermet(Long dokumentInfoId, VariantFormatCode variant, SkjermingTypeCode skjermingTypeCode) {
-		Optional<DokumentInfo> dokumentInfo = dokumentinfoRepository.findByDokumentInfoId(dokumentInfoId);
-		if (dokumentInfo.isPresent()) {
-			FilDetaljer filDetaljer = dokumentInfo.get().findFilDetaljerByVariantFormatAdmin(variant);
-			if (Objects.nonNull(filDetaljer) && skjermingTypeCode.equals(filDetaljer.getSkjermingType())) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	public void skjermAllFildetaljer(DokumentInfo dokumentInfo, SkjermingTypeCode skjermingTypeCode) {
-		for (FilDetaljer filDetaljer : dokumentInfo.getFildetaljerListeAdmin()) {
-			setFildetaljerSkjerming(dokumentInfo.getDokumentInfoId(), filDetaljer.getVariantFormat(), skjermingTypeCode);
-		}
-	}
-
-	public void skjermFildetaljerByVariant(Long dokumentInfoId, VariantFormatCode variantFormat, SkjermingTypeCode skjermingType) {
-		setVariantSkjermet(dokumentInfoId, variantFormat, skjermingType);
-	}
-
-	public void opphevSkjermFildetaljerByVariant(Long dokumentInfoId, VariantFormatCode variantFormat) {
-		setVariantSkjermet(dokumentInfoId, variantFormat, null);
-	}
-
-	public void skjermJournalpost(Long journalpostId, SkjermingTypeCode skjermingTypeCode) {
-		setJournalpostSkjerming(journalpostId, skjermingTypeCode);
-	}
-
-	public void opphevSkjermJournalpostByJournalpostId(Long journalpostId) {
-		setJournalpostSkjerming(journalpostId, null);
-	}
-
-	public void skjermJournalpostDokumentInfoRelasjon(Long journalpostId, Long dokumentInfoId, SkjermingTypeCode skjermingTypeCode) {
-		JournalpostDokumentInfoRelasjon rel = hentJpDokInfoRel(journalpostId, dokumentInfoId);
-		setJpDokInfoRelSkjerming(rel.getJournalpostDokumentInfoRelasjonId(), skjermingTypeCode);
-	}
-
-	public void opphevSkjermingJournalpostDokumentInfoRelasjon(Long journalpostId, Long dokumentInfoId) {
-		JournalpostDokumentInfoRelasjon rel = hentJpDokInfoRel(journalpostId, dokumentInfoId);
-		setJpDokInfoRelSkjerming(rel.getJournalpostDokumentInfoRelasjonId(), null);
-	}
-
-	public void setVariantSkjermet(Long dokumentInfoId, VariantFormatCode variantFormatCode, SkjermingTypeCode skjermingTypeCode) {
-		setFildetaljerSkjerming(dokumentInfoId, variantFormatCode, skjermingTypeCode);
+	public boolean isFildetaljerSkjermetByFilUuid(String filUuid) {
+		return isFalse(entityManager.createQuery("select 'skjermet' from FilDetaljer where filUuid=:filUuid and skjermingType is not null")
+				.setParameter("filUuid", filUuid)
+				.getResultList()
+				.isEmpty());
 	}
 
 	public void setFildetaljerSkjerming(Long dokumentInfoId, VariantFormatCode variantFormatCode, SkjermingTypeCode skjermingTypeCode) {
 		Query q = entityManager.createQuery("update FilDetaljer set skjermingType = :skjermingTypeCode where dokument_info_id = :dokumentInfoId and variantFormat=:variantFormat")
 				.setParameter("dokumentInfoId", dokumentInfoId)
 				.setParameter("variantFormat", variantFormatCode)
-				.setParameter("skjermingTypeCode", skjermingTypeCode);
-		q.executeUpdate();
-	}
-
-	public void setJpDokInfoRelSkjerming(Long journalpostDokumentInfoRelasjonId, SkjermingTypeCode skjermingTypeCode) {
-		Query q = entityManager.createQuery("update JournalpostDokumentInfoRelasjon set skjermingType = :skjermingTypeCode where journalpostDokumentInfoRelasjonId = :relId")
-				.setParameter("relId", journalpostDokumentInfoRelasjonId)
 				.setParameter("skjermingTypeCode", skjermingTypeCode);
 		q.executeUpdate();
 	}
@@ -151,12 +91,6 @@ public class SkjermingService {
 		q.executeUpdate();
 	}
 
-	private JournalpostDokumentInfoRelasjon hentJpDokInfoRel(Long journalpostId, Long dokumentInfoId) {
-		return journalpostDokumentInfoRelasjonRepository.findByJournalpostJournalpostIdAndDokumentInfoDokumentInfoId(
-				journalpostId, dokumentInfoId)
-				.orElseThrow(() -> new JournalpostDokumentInfoRelasjonIkkeFunnetException(String.format(
-						"Kan ikke finne journalpostDokumentInfoRelasjon med journalpostId=%s og dokumentInfoId=%s", journalpostId, dokumentInfoId)));
-	}
 
 	public static Long convertBigToLong(Object value) {
 		if (value instanceof BigDecimal) {
@@ -166,5 +100,6 @@ public class SkjermingService {
 		}
 		return (Long) value;
 	}
+
 
 }

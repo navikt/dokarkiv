@@ -1,16 +1,23 @@
 package no.nav.dokarkiv.rjoark102;
 
 
+import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.DOKUMENT_FIL_FIL_UUID;
+import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.DOKUMENT_INFO_KASSERT_AV;
+import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.DOKUMENT_INFO_KASSERT_DATO;
+import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.FILDETALJER_VARIANTFORMAT;
+import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.fildetaljerSkjermingTypeVariant;
 import static no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode.POL;
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.ARKIV;
-import static no.nav.dokarkiv.util.TestUtil.FIL_UUID_ARKIV;
+import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.PRODUKSJON;
+import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.SLADDET;
+import static no.nav.dokarkiv.core.util.TestDataGenerator.FIL_UUID_ARKIV;
+import static no.nav.dokarkiv.core.util.TestDataGenerator.createFildetaljerOgFil;
+import static no.nav.dokarkiv.core.util.TestDataGenerator.createJournalpostWithHoveddokument;
+import static no.nav.dokarkiv.core.util.TestDataGenerator.createVedleggRelasjon;
 import static no.nav.dokarkiv.util.TestUtil.KASSERT_AV_NAVN;
 import static no.nav.dokarkiv.util.TestUtil.createKasserDokumentRequest;
-import static no.nav.dokarkiv.util.TestUtil.knyttDokumentInfoSomVedleggTilJournalpost;
-import static no.nav.dokarkiv.util.TestUtil.opprettHoveddokumentForIT;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.lessThan;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.Is.is;
@@ -20,12 +27,13 @@ import static org.junit.Assert.assertTrue;
 
 import no.nav.dokarkiv.AbstractAdminIT;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
+import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
+import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
 import no.nav.dokarkiv.core.domain.entities.ArkivElementEndring;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import no.nav.dokarkiv.core.util.TestDataUtils;
-import no.nav.dokarkiv.dto.KasserDokumentResponse;
+import no.nav.dokarkiv.core.util.TestDataGenerator;
 import org.apache.commons.collections15.IteratorUtils;
 import org.junit.Test;
 import org.springframework.http.HttpEntity;
@@ -38,9 +46,9 @@ import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 public class Rjoark102IT extends AbstractAdminIT {
 
@@ -57,37 +65,39 @@ public class Rjoark102IT extends AbstractAdminIT {
 				String.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.NOT_FOUND));
-		assertThat(responseEntity.getBody(), containsString("Kan ikke finne dokument med dokumentInfoId=" + dokumentInfoId));
+		assertThat(responseEntity.getBody(), containsString("Fant ikke dokument med dokumentInfoId=" + dokumentInfoId));
 	}
 
 	@Test
 	public void skallKassereDokumentSomErKnyttetTilFlereJournalposter() throws IOException {
 		abacPermit();
 
-		Journalpost journalpost1 = joarkRepository.save(opprettHoveddokumentForIT());
-		Journalpost journalpost2 = opprettHoveddokumentForIT();
-		DokumentInfo dokumentInfo1 = journalpost1.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
-		knyttDokumentInfoSomVedleggTilJournalpost(dokumentInfo1, journalpost2);
+		Journalpost journalpost1 = createJournalpostWithHoveddokument();
+		Journalpost journalpost2 = createJournalpostWithHoveddokument();
+		DokumentInfo dokumentInfoSomSkalKasseres = journalpost1.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
+		dokumentInfoSomSkalKasseres.removeFilDetaljer(dokumentInfoSomSkalKasseres.findFilDetaljerByVariantFormat(ARKIV));
+		dokumentInfoSomSkalKasseres.addFilDetaljer(createFildetaljerOgFil(dokumentInfoSomSkalKasseres, ARKIV, FIL_UUID_ARKIV));
+		createVedleggRelasjon(journalpost2, dokumentInfoSomSkalKasseres);
+
+		joarkRepository.save(journalpost1);
 		joarkRepository.save(journalpost2);
-		skjermingService.skjermAllFildetaljer(dokumentInfo1, POL);
+		skjermingServiceTest.setDokumentKassert(dokumentInfoSomSkalKasseres, POL);
 
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 		TestTransaction.start();
 
-		Optional<DokumentInfo> dokumentInfoBefore = dokumentinfoRepository.findByDokumentInfoId(dokumentInfo1.getDokumentInfoId());
-		assertTrue(dokumentInfoBefore.isPresent());
-		assertThat(dokumentInfoBefore.get().getFildetaljerListeAdmin().size(), is(2));
+		assertThat(dokumentInfoSomSkalKasseres.getFildetaljerListeAdmin().size(), is(2));
 		assertThat("Feil antall journalposter", joarkRepository.count(), is(2L));
 		assertThat("Feil antall dokumenter", dokumentinfoRepository.count(), is(2L));
-		assertTrue(dokumentInfo1.isRelatedToMultipleJournalposts());
+		assertTrue(dokumentinfoRepository.findByDokumentInfoId(dokumentInfoSomSkalKasseres.getDokumentInfoId()).get().isRelatedToMultipleJournalposts());
 
-		ResponseEntity<KasserDokumentResponse> responseEntity = restTemplate.exchange(
+		ResponseEntity responseEntity = restTemplate.exchange(
 				URL_KASSERDOKUMENT,
 				HttpMethod.DELETE,
-				new HttpEntity<>(createKasserDokumentRequest(dokumentInfoBefore.get()
+				new HttpEntity<>(createKasserDokumentRequest(dokumentInfoSomSkalKasseres
 						.getDokumentInfoId()), createHeadersWithAksjon()),
-				KasserDokumentResponse.class);
+				String.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 
@@ -97,7 +107,7 @@ public class Rjoark102IT extends AbstractAdminIT {
 		TestTransaction.start();
 
 
-		Optional<DokumentInfo> dokumentInfoAfter = dokumentinfoRepository.findByDokumentInfoId(dokumentInfo1.getDokumentInfoId());
+		Optional<DokumentInfo> dokumentInfoAfter = dokumentinfoRepository.findByDokumentInfoId(dokumentInfoSomSkalKasseres.getDokumentInfoId());
 		assertTrue(dokumentInfoAfter.isPresent());
 		assertThat(dokumentInfoAfter.get().getKassertAvNavn(), is(KASSERT_AV_NAVN));
 		assertThat(Duration.between(dokumentInfoAfter.get().getDatoKassert(), LocalDateTime.now()).toMillis(), lessThan(10000L));
@@ -110,48 +120,64 @@ public class Rjoark102IT extends AbstractAdminIT {
 		assertThat("Feil antall dokumenter etter kall", dokumentinfoRepository.count(), is(2L));
 
 		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
-		assertThat(aksjonsLoggList.size(), is(1));
+		assertThat(aksjonsLoggList.size(), is(2));
 
-		AksjonsLogg aksjonsLogg = aksjonsLoggList.get(0);
-		assertThat(aksjonsLogg.getAksjon(), is(AksjonsTypeCode.KASSASJON));
-		assertThat(aksjonsLogg.getUtfoertAv(), is(TestDataUtils.AKSJON_UTFOERT_AV));
-		assertThat(aksjonsLogg.getHjemmel(), is(TestDataUtils.AKSJON_HJEMMEL));
-		assertThat(aksjonsLogg.getMelding(), is(TestDataUtils.AKSJON_MELDING));
-		assertThat(aksjonsLogg.getJournalpostId(), nullValue());
-		assertThat(aksjonsLogg.getDokumentInfoId(), is(dokumentInfo1.getDokumentInfoId()));
-		assertThat(aksjonsLogg.getApplikasjon(), is(SERVICE_USER_ID));
-		assertThat(aksjonsLogg.getArkivElementEndringer().size(), is(5));
-
-		List<ArkivElementEndring> arkivElementEndringList = IteratorUtils.toList(aksjonsLogg.getArkivElementEndringer()
-				.iterator());
-		assertThat(arkivElementEndringList.stream()
-				.map(ArkivElementEndring::toStringElementFraTil)
-				.collect(Collectors.toList()), hasItems(
+		assertAksjonsLogg(getAksjonsLoggByJournalpostIdAndDokumentInfoId(aksjonsLoggList, journalpost1.getJournalpostId(), dokumentInfoSomSkalKasseres.getDokumentInfoId()), AksjonsTypeCode.KASSASJON, journalpost1.getJournalpostId(), dokumentInfoSomSkalKasseres
+				.getDokumentInfoId(), Arrays.asList(
 				ArkivElementEndring.builder()
-						.arkivElement("Fildetaljer.variantFormat[ARKIV].skjermingType")
-						.fraVerdi("POL")
+						.arkivElement(fildetaljerSkjermingTypeVariant(ARKIV))
+						.fraVerdi(SkjermingTypeCode.POL.name())
 						.tilVerdi(null)
-						.build().toStringElementFraTil(),
+						.build(),
 				ArkivElementEndring.builder()
-						.arkivElement("FilDetaljer.variantFormat")
-						.fraVerdi("SLADDET")
+						.arkivElement(FILDETALJER_VARIANTFORMAT)
+						.fraVerdi(PRODUKSJON.name())
 						.tilVerdi(null)
-						.build().toStringElementFraTil(),
+						.build(),
 				ArkivElementEndring.builder()
-						.arkivElement("DokumentFil.filUuid")
+						.arkivElement(DOKUMENT_FIL_FIL_UUID)
 						.fraVerdi(FIL_UUID_ARKIV)
 						.tilVerdi(null)
-						.build().toStringElementFraTil(),
+						.build(),
 				ArkivElementEndring.builder()
-						.arkivElement("DokumentInfo.kassertAv")
+						.arkivElement(DOKUMENT_INFO_KASSERT_AV)
 						.fraVerdi(null)
 						.tilVerdi(KASSERT_AV_NAVN)
-						.build().toStringElementFraTil(),
+						.build(),
 				ArkivElementEndring.builder()
-						.arkivElement("DokumentInfo.kassertDato")
+						.arkivElement(DOKUMENT_INFO_KASSERT_DATO)
 						.fraVerdi(null)
 						.tilVerdi(dokumentInfoAfter.get().getDatoKassert().format(DateTimeFormatter.ISO_DATE_TIME))
-						.build().toStringElementFraTil()
+						.build()
+
+		));
+		assertAksjonsLogg(getAksjonsLoggByJournalpostIdAndDokumentInfoId(aksjonsLoggList, journalpost2.getJournalpostId(), dokumentInfoSomSkalKasseres.getDokumentInfoId()), AksjonsTypeCode.KASSASJON, journalpost2.getJournalpostId(), dokumentInfoSomSkalKasseres
+				.getDokumentInfoId(), Arrays.asList(
+				ArkivElementEndring.builder()
+						.arkivElement(fildetaljerSkjermingTypeVariant(ARKIV))
+						.fraVerdi(SkjermingTypeCode.POL.name())
+						.tilVerdi(null)
+						.build(),
+				ArkivElementEndring.builder()
+						.arkivElement(FILDETALJER_VARIANTFORMAT)
+						.fraVerdi(PRODUKSJON.name())
+						.tilVerdi(null)
+						.build(),
+				ArkivElementEndring.builder()
+						.arkivElement(DOKUMENT_FIL_FIL_UUID)
+						.fraVerdi(FIL_UUID_ARKIV)
+						.tilVerdi(null)
+						.build(),
+				ArkivElementEndring.builder()
+						.arkivElement(DOKUMENT_INFO_KASSERT_AV)
+						.fraVerdi(null)
+						.tilVerdi(KASSERT_AV_NAVN)
+						.build(),
+				ArkivElementEndring.builder()
+						.arkivElement(DOKUMENT_INFO_KASSERT_DATO)
+						.fraVerdi(null)
+						.tilVerdi(dokumentInfoAfter.get().getDatoKassert().format(DateTimeFormatter.ISO_DATE_TIME))
+						.build()
 
 		));
 	}
@@ -161,29 +187,32 @@ public class Rjoark102IT extends AbstractAdminIT {
 	public void skalKassereDokumentMedSomErKnyttetTilEnJournalpost() throws IOException {
 		abacPermit();
 
-		Journalpost journalpost = joarkRepository.save(opprettHoveddokumentForIT());
-		DokumentInfo dokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
+		Journalpost journalpost = createJournalpostWithHoveddokument();
+		DokumentInfo dokumentInfoSomSkalKasseres = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
+		dokumentInfoSomSkalKasseres.removeFilDetaljer(dokumentInfoSomSkalKasseres.findFilDetaljerByVariantFormat(ARKIV));
+		dokumentInfoSomSkalKasseres.addFilDetaljer(createFildetaljerOgFil(dokumentInfoSomSkalKasseres, ARKIV, FIL_UUID_ARKIV));
 
-		skjermingService.skjermAllFildetaljer(dokumentInfo, POL);
+		joarkRepository.save(journalpost);
+		skjermingServiceTest.setDokumentKassert(dokumentInfoSomSkalKasseres, POL);
 
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 		TestTransaction.start();
 
-		Optional<DokumentInfo> dokumentInfoRep = dokumentinfoRepository.findByDokumentInfoId(dokumentInfo.getDokumentInfoId());
+		Optional<DokumentInfo> dokumentInfoRep = dokumentinfoRepository.findByDokumentInfoId(dokumentInfoSomSkalKasseres.getDokumentInfoId());
 		assertTrue(dokumentInfoRep.isPresent());
 		assertThat(dokumentInfoRep.get().getFildetaljerListeAdmin().size(), is(2));
 		assertThat("Feil antall journalposter", joarkRepository.count(), is(1L));
 		assertThat("Feil antall dokumenter", dokumentinfoRepository.count(), is(1L));
-		assertFalse(dokumentInfo.isRelatedToMultipleJournalposts());
-		assertFalse(dokumentInfo.getFildetaljerListe().isEmpty());
+		assertFalse(dokumentInfoSomSkalKasseres.isRelatedToMultipleJournalposts());
+		assertFalse(dokumentInfoSomSkalKasseres.getFildetaljerListe().isEmpty());
 
-		ResponseEntity<KasserDokumentResponse> responseEntity = restTemplate.exchange(
+		ResponseEntity responseEntity = restTemplate.exchange(
 				URL_KASSERDOKUMENT,
 				HttpMethod.DELETE,
 				new HttpEntity<>(createKasserDokumentRequest(dokumentInfoRep.get()
 						.getDokumentInfoId()), createHeadersWithAksjon()),
-				KasserDokumentResponse.class);
+				String.class);
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 
 		TestTransaction.flagForCommit();
@@ -191,7 +220,7 @@ public class Rjoark102IT extends AbstractAdminIT {
 
 		TestTransaction.start();
 
-		Optional<DokumentInfo> dokumentInfoAfter = dokumentinfoRepository.findByDokumentInfoId(dokumentInfo.getDokumentInfoId());
+		Optional<DokumentInfo> dokumentInfoAfter = dokumentinfoRepository.findByDokumentInfoId(dokumentInfoSomSkalKasseres.getDokumentInfoId());
 		assertTrue(dokumentInfoAfter.isPresent());
 		assertThat(dokumentInfoAfter.get().getKassertAvNavn(), is(KASSERT_AV_NAVN));
 		assertNotNull(dokumentInfoAfter.get().getDatoKassert());
