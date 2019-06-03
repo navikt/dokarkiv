@@ -76,6 +76,7 @@ public class FinnJournalpostSqlGeneratorTest {
 						"                              bt.dekode             AS behandlingstemanavn,\n" +
 						"                              j.k_journal_s         AS journalstatus,\n" +
 						"                              j.avsend_mottak_id    AS avsendermottakerid,\n" +
+						"                              j.k_avsend_mottak_id_t    AS avsendermottakeridtype,\n" +
 						"                              j.avsend_mottaker     AS avsendermottakernavn,\n" +
 						"                              j.land                AS avsendermottakerland,\n" +
 						"                              j.journalf_enhet      AS journalforendeenhet,\n" +
