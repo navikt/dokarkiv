@@ -108,7 +108,7 @@ public class OpprettJournalpostApiRequestMapperTest {
 		FilDetaljer filDetaljer2 = dokumentInfo2.getFildetaljerListe().iterator().next();
 		assertArrayEquals(FYSISK_DOKUMENT, filDetaljer2.getFileContent());
 		assertNotNull(filDetaljer2.getFilUuid());
-		assertEquals(FilTypeCode.XML, filDetaljer2.getFiltype());
+		assertEquals(FilTypeCode.PDF, filDetaljer2.getFiltype());
 		assertEquals(VariantFormatCode.ARKIV, filDetaljer2.getVariantFormat());
 	}
 

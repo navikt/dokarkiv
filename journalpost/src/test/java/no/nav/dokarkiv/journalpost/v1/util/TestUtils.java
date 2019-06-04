@@ -347,7 +347,7 @@ public class TestUtils {
 								.brevkode(BREVKODE2)
 								.dokumentKategori(DOKUMENTKATEGORI_SED)
 								.dokumentvarianter(Collections.singletonList(DokumentVariant.builder()
-										.filtype(FILTYPE_XML)
+										.filtype(FILTYPE_PDF)
 										.variantformat(VARIANTFORMAT_ARKIV)
 										.fysiskDokument(FYSISK_DOKUMENT)
 										.build()))
