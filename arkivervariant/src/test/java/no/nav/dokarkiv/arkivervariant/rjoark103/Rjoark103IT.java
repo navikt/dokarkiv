@@ -3,6 +3,8 @@ package no.nav.dokarkiv.arkivervariant.rjoark103;
 import static no.nav.dokarkiv.arkivervariant.util.TestUtils.FIL;
 import static no.nav.dokarkiv.arkivervariant.util.TestUtils.opprettHoveddokumentForIT;
 import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_LOGG_HEADER;
+import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.FILDETALJER_FILUUID;
+import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.FILDETALJER_VARIANTFORMAT;
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.SLADDET;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
@@ -37,43 +39,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class Rjoark103IT extends AbstractArkiverVariantIT {
-
-	@Test
-	public void skalFeileNårAksjonsLoggHeaderIkkeErSatt() throws IOException {
-		abacPermit();
-
-		Journalpost journalpost = joarkRepository.save(opprettHoveddokumentForIT());
-
-		DokumentInfo dokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
-
-		TestTransaction.flagForCommit();
-		TestTransaction.end();
-
-		List<AksjonsLogg> aksjonsLoggListBefore = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
-		assertThat(aksjonsLoggListBefore.size(), is(0));
-
-		ArkiverVariantRequest request = ArkiverVariantRequest.builder()
-				.dokumentInfoId(dokumentInfo.getDokumentInfoId())
-				.fil(Base64.encodeBase64String(FIL))
-				.filnavn("filnavn")
-				.variant(SLADDET)
-				.filType(FilTypeCode.PDF).build();
-
-		HttpEntity httpEntity = new HttpEntity(request, createHeadersWithServiceUserToken());
-
-		ResponseEntity<String> responseEntity = restTemplate.exchange(
-				URL_ARKIVERVARIANT,
-				HttpMethod.POST,
-				httpEntity,
-				String.class);
-
-		assertThat(responseEntity.getStatusCode(), is(HttpStatus.BAD_REQUEST));
-		assertThat(responseEntity.getBody(), containsString(String.format("Missing request header '%s'", AKSJONS_LOGG_HEADER)));
-
-		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
-		assertThat(aksjonsLoggList.size(), is(0));
-	}
-
 
 	@Test
 	public void shouldSaveFileAsSladdetVariant() throws IOException {
@@ -130,7 +95,7 @@ public class Rjoark103IT extends AbstractArkiverVariantIT {
 		assertThat(aksjonsLogg.getUtfoertAv(), is(TestDataUtils.AKSJON_UTFOERT_AV));
 		assertThat(aksjonsLogg.getHjemmel(), is(TestDataUtils.AKSJON_HJEMMEL));
 		assertThat(aksjonsLogg.getMelding(), is(TestDataUtils.AKSJON_MELDING));
-		assertThat(aksjonsLogg.getJournalpostId(), nullValue());
+		assertThat(aksjonsLogg.getJournalpostId(), is(journalpost.getJournalpostId()));
 		assertThat(aksjonsLogg.getDokumentInfoId(), is(dokumentInfo.getDokumentInfoId()));
 		assertThat(aksjonsLogg.getApplikasjon(), is(SERVICE_USER_ID));
 		assertThat(aksjonsLogg.getArkivElementEndringer().size(), is(2));
@@ -140,14 +105,14 @@ public class Rjoark103IT extends AbstractArkiverVariantIT {
 		assertThat(arkivElementEndringList.stream()
 				.map(ArkivElementEndring::toStringElementFraTil)
 				.collect(Collectors.toList()), hasItems(ArkivElementEndring.builder()
-						.arkivElement("Fildetaljer.filUuid")
+						.arkivElement(FILDETALJER_FILUUID)
 						.fraVerdi(null)
 						.tilVerdi(responseEntity.getBody().getFilUuid())
 						.build().toStringElementFraTil(),
 				ArkivElementEndring.builder()
-						.arkivElement("Fildetaljer.variantFormat")
+						.arkivElement(FILDETALJER_VARIANTFORMAT)
 						.fraVerdi(null)
-						.tilVerdi("SLADDET")
+						.tilVerdi(SLADDET.name())
 						.build().toStringElementFraTil()
 
 		));

@@ -1,0 +1,64 @@
+package no.nav.dokarkiv.journalpost.v1.util;
+
+import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
+
+import lombok.extern.slf4j.Slf4j;
+import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggTO;
+import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
+import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
+import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
+import org.slf4j.MDC;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@Slf4j
+public class AksjonsLoggHelper {
+
+	private AksjonsLoggTO aksjonsLoggTO;
+	private ArrayList<ArkivElementEndringTO> arkivElementEndringTOs = new ArrayList<>();
+
+	private static long journalpostId;
+	private static String brukerId;
+
+	public void setAksjonsLoggTO(AksjonsTypeCode aksjonsTypeCode, Long dokumentInfoId) throws UgyldigAksjonsLoggException {
+		this.aksjonsLoggTO = AksjonsLoggTO.builder()
+				.aksjon(aksjonsTypeCode)
+				.journalpostId(journalpostId)
+				.utfoertAv(MDC.get(MDC_CONSUMER_ID))
+				.bruker(brukerId)
+				.dokumentInfoId(dokumentInfoId)
+				.melding(aksjonsTypeCode.equals(AksjonsTypeCode.SAKSTILKNYTNING) ?
+						"Journalposten ble knyttet til en sak." :
+						"Metadata på journalposten ble endretFlagg.")
+				.build();
+
+	}
+
+	public void setAksjonsLoggTO(AksjonsTypeCode aksjonsTypeCode) throws UgyldigAksjonsLoggException {
+		setAksjonsLoggTO(aksjonsTypeCode, null);
+	}
+
+	public void addToArkivElementEndringTOs(ArkivElementEndringTO arkivElementEndringTO) {
+		if (arkivElementEndringTO.getFraVerdi() == null
+				|| !arkivElementEndringTO.getFraVerdi().equals(arkivElementEndringTO.getTilVerdi())) {
+			this.arkivElementEndringTOs.add(arkivElementEndringTO);
+		}
+	}
+
+	public static void setJournalpostId(long journalpostId) {
+		AksjonsLoggHelper.journalpostId = journalpostId;
+	}
+
+	public static void setBrukerId(String brukerId) {
+		AksjonsLoggHelper.brukerId = brukerId;
+	}
+
+	public AksjonsLoggTO getAksjonsLoggTO() {
+		return aksjonsLoggTO;
+	}
+
+	public List<ArkivElementEndringTO> getArkivElementEndringTOs() {
+		return new ArrayList<>(arkivElementEndringTOs);
+	}
+}

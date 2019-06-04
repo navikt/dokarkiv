@@ -10,6 +10,7 @@ import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.UB;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import no.nav.dokarkiv.core.domain.AbstractPersistentVersionedDomainObjectWithKilde;
+import no.nav.dokarkiv.core.domain.codes.AvsenderMottakerIdTypeCode;
 import no.nav.dokarkiv.core.domain.codes.Behandlingstema;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
@@ -71,7 +72,7 @@ import java.util.stream.Collectors;
  */
 @Entity
 @Table(name = "T_JOURNALPOST")
-@Builder(toBuilder=true)
+@Builder(toBuilder = true)
 @AllArgsConstructor
 public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKilde {
 
@@ -144,11 +145,15 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	@Column(name = "dato_dokument")
 	private Date dokumentDato;
 
-	@Column(name = "avsend_mottaker")
+	@Column(name = "avsend_mottaker", length = 200)
 	private String avsenderMottaker;
 
-	@Column(name = "avsend_mottak_id")
+	@Column(name = "avsend_mottak_id", length = 50)
 	private String avsenderMottakerId;
+
+	@Enumerated(EnumType.STRING)
+	@Column(name = "k_avsend_mottak_id_t", length = 20)
+	private AvsenderMottakerIdTypeCode avsenderMottakerIdType;
 
 	@Column(name = "journalfort_av_navn")
 	private String journalfortAvNavn;
@@ -243,7 +248,7 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	 * Constructor that assigns immutable properties. Used for testing.
 	 *
 	 * @param journalpostId DB-id for the instance.
-	 * @param version       DB-version for the instance.
+	 * @param version DB-version for the instance.
 	 */
 	public Journalpost(Long journalpostId, long version) {
 		this.journalpostId = journalpostId;
@@ -1154,6 +1159,24 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	}
 
 	/**
+	 * Getter for the avsenderMottakerIdType property.
+	 *
+	 * @return the avsenderMottakerIdType
+	 */
+	public AvsenderMottakerIdTypeCode getAvsenderMottakerIdType() {
+		return avsenderMottakerIdType;
+	}
+
+	/**
+	 * Setter for the avsenderMottakerIdType property.
+	 *
+	 * @param avsenderMottakerIdType the avsenderMottakerIdType to set
+	 */
+	public void setAvsenderMottakerIdType(AvsenderMottakerIdTypeCode avsenderMottakerIdType) {
+		this.avsenderMottakerIdType = avsenderMottakerIdType;
+	}
+
+	/**
 	 * Getter for the journalfortAvNavn property.
 	 *
 	 * @return the journalfortAvNavn
@@ -1424,7 +1447,6 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	}
 
 
-
 	/**
 	 * Add a JournalpostDokumentInfoRelasjon to relasjon Set.
 	 *
@@ -1449,7 +1471,7 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 
 	/**
 	 * Getter for the journalpostDokumentInfoRelasjoner property.
-	 *
+	 * <p>
 	 * Filterer ut JournalpostDokumentInfoRelasjoner som er skjermet
 	 *
 	 * @return the journalpostDokumentInfoRelasjoner
@@ -1466,6 +1488,7 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	public Set<JournalpostDokumentInfoRelasjon> getJournalpostDokumentInfoRelasjonerAdmin() {
 		return Collections.unmodifiableSet(journalpostDokumentInfoRelasjoner);
 	}
+
 	/**
 	 * Getter for the journalpostDokumentInfoRelasjoner property.
 	 *
@@ -1606,4 +1629,15 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 		return list;
 	}
 
+	public boolean hasHoveddokumentRelasjon() {
+		return findHoveddokumentDokumentInfoRelasjon() != null;
+	}
+
+	public boolean hasAnyDokumentInfoRelasjoner() {
+		return !getJournalpostDokumentInfoRelasjoner().isEmpty();
+	}
+
+	public boolean hasAnyDokumentInfoRelasjonerIncludingSkjermet() {
+		return !journalpostDokumentInfoRelasjoner.isEmpty();
+	}
 }

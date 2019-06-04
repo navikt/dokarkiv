@@ -1,0 +1,19 @@
+{
+  "journalpostType": "INNGAAENDE",
+  "avsenderMottaker": {
+    "navn": "Ola Normann"
+  },
+  "tema": "PEN",
+  "behandlingstema": "ab0054",
+  "tittel": "Søknad om stønad i pensjonsnød",
+  "dokumenter": [
+    {
+      "tittel": "brev",
+      "dokumentvarianter": [ {
+        "filtype": "PDFA",
+        "fysiskDokument":"ZGV0dGUgZXIgZXQgZG9rdW1lbnQ=",
+        "variantformat": "ARKIV"
+      } ]
+    }
+  ]
+}

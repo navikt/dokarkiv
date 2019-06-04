@@ -101,7 +101,8 @@ public class HentInngaaendeJournalpostIT extends AbstractInngaaendeJournalV1Ites
 		abacPermit();
 
 		Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.J));
-		skjermingService.skjermAllFildetaljer(journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo(), SkjermingTypeCode.POL);
+		skjermingService.setDokumentKassert(journalpost.findHoveddokumentDokumentInfoRelasjon()
+				.getDokumentInfo(), SkjermingTypeCode.POL);
 		HentJournalpostResponse response = inngaaendeJournalProvider.hentJournalpost(defaultHentJournalpostRequest(journalpost.getJournalpostId()
 				.toString()));
 
