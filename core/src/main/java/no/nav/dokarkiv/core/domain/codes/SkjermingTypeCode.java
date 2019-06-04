@@ -7,5 +7,5 @@ package no.nav.dokarkiv.core.domain.codes;
  */
 public enum SkjermingTypeCode {
 	POL,
-	ARK
+	FEIL
 }
