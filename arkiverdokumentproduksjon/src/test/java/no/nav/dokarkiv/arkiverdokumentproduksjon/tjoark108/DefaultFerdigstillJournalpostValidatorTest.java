@@ -57,21 +57,21 @@ public class DefaultFerdigstillJournalpostValidatorTest {
 	@Test
 	public void shouldValidateInputRequest() throws Exception {
 		validator.validateInputRequest(new FerdigstillJournalpostRequestTo(JOURNALPOST_ID, ENDRET_AV_NAVN,
-				UtsendingsKanalCode.ALTINN));
+				UtsendingsKanalCode.EESSI));
 	}
 
 	@Test
 	public void validateInputRequest_shouldThrowExceptionWhenJournalpostIdIsMissing() throws Exception {
 		expectedException.expect(IllegalArgumentException.class);
 		expectedException.expectMessage("JournalpostId");
-		validator.validateInputRequest(new FerdigstillJournalpostRequestTo(null, ENDRET_AV_NAVN, UtsendingsKanalCode.ALTINN));
+		validator.validateInputRequest(new FerdigstillJournalpostRequestTo(null, ENDRET_AV_NAVN, UtsendingsKanalCode.EESSI));
 	}
 
 	@Test
 	public void validateInputRequest_shouldThrowExceptionWhenEndretAvNavnIsMissing() throws Exception {
 		expectedException.expect(IllegalArgumentException.class);
 		expectedException.expectMessage("EndretAvNavn");
-		validator.validateInputRequest(new FerdigstillJournalpostRequestTo(JOURNALPOST_ID, null, UtsendingsKanalCode.ALTINN));
+		validator.validateInputRequest(new FerdigstillJournalpostRequestTo(JOURNALPOST_ID, null, UtsendingsKanalCode.EESSI));
 	}
 
 	@Test

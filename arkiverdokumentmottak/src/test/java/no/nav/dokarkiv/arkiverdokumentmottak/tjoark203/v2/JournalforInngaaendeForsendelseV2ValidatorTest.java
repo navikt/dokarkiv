@@ -56,7 +56,7 @@ public class JournalforInngaaendeForsendelseV2ValidatorTest {
 	private static final VariantFormatCode VARIANTFORMAT_ORIGINAL = VariantFormatCode.ORIGINAL;
 	private static final String PERSONIDENT = "***gammelt_fnr***";
 	private static final String EKSTERNPART_NAVN = "Mario & Luigi";
-	private static final FagsystemCode FAGSYSTEMKODE = FagsystemCode.AO01;
+	private static final FagsystemCode FAGSYSTEMKODE = FagsystemCode.FS22;
 	private static final String SAKSID = "312";
 	private static final BrukerTypeCode BRUKER_TYPE_CODE = BrukerTypeCode.PERSON;
 	private static final String TILLEGGSOPPLYSNING_KEY = "tilleggsopplysning-1";

@@ -146,7 +146,7 @@ public class DefaultOppdaterJournalpostArkiverDokumentValidatorTest {
 		Journalpost journalpost = createJournalpost();
 		addDokumentInfo(journalpost, generateId());
 		journalpost.getJournalpostDokumentInfoRelasjoner().iterator().next()
-				.setTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.SAMMENSATT_DOK);
+				.setTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG);
 
 		expected.expect(FeilStrukturException.class);
 		expected.expectMessage("Journalpost har ikke korrekt struktur");

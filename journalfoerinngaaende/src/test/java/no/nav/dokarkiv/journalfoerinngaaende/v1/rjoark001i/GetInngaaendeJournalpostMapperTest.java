@@ -28,8 +28,6 @@ import static no.nav.dokarkiv.journalfoerinngaaende.v1.util.TestUtils.createJour
 import static no.nav.dokarkiv.journalfoerinngaaende.v1.util.TestUtils.createJournalpostKassert;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
 
 import no.nav.dok.tjenester.journalfoerinngaaende.ArkivSakNoArkivsakSystemEnum;
 import no.nav.dok.tjenester.journalfoerinngaaende.Avsender;
@@ -46,13 +44,9 @@ import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
-import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import no.nav.dokarkiv.core.domain.service.SkjermingService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.time.LocalDateTime;
@@ -167,7 +161,7 @@ public class GetInngaaendeJournalpostMapperTest {
 		LocalDateTime localDateTime = LocalDateTime.of(2017, 2, 3, 10, 37, 30);
 
 		assertThat("response.journaltilstand", response.getJournalTilstand().toString(), is(JOURNALTILSTAND_ENDELIG));
-		assertThat("response.tema", response.getTema(), is(FagomradeCode.FS22.name()));
+		assertThat("response.tema", response.getTema(), is(FagomradeCode.BID.name()));
 		assertThat("response.tittel", response.getTittel(), is(INNHOLD));
 		assertThat("response.kanalreferanseId", response.getKanalReferanseId(), is(KANALREFERANSE_ID));
 		assertThat("response.forsendelseMottatt", response.getForsendelseMottatt(), is(Date.from(LOCAL_DATE_TIME.toInstant(ZoneOffset.UTC))));

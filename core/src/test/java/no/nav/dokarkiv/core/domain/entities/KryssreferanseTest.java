@@ -19,7 +19,7 @@ public class KryssreferanseTest {
 	@Test
 	public void shouldThrowExceptionForMissingReferanseId() throws Exception {
 		Kryssreferanse kryssreferanse = getKryssreferanseBuilder()
-										.referanseType(ReferanseTypeCode.SED_FLYT)
+										.referanseType(ReferanseTypeCode.SPOERSMAAL)
 										.build();
 		
 		assertExceptionThrownWhenVerifyingMandatoryFields(kryssreferanse, "referanseId");

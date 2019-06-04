@@ -894,7 +894,7 @@ public class JournalforInngaaendeForsendelseV2IT extends AbstractArkiverDokument
 
 	public static void assertKryssreferanse(Kryssreferanse kryssreferanse) {
 		assertThat(kryssreferanse.getReferanseId(), Matchers.is(REFERANSE_ID));
-		assertThat(kryssreferanse.getReferanseType().name(), Matchers.is(ReferanseTypeCode.ETTERSENDT.name()));
+		assertThat(kryssreferanse.getReferanseType().name(), Matchers.is(ReferanseTypeCode.SPOERSMAAL.name()));
 	}
 
 	private void assertResponse(no.nav.dokarkiv.core.domain.entities.Journalpost journalpost, JournalforInngaaendeForsendelseResponse response, JournalTilstandEnum journalTilstand) {

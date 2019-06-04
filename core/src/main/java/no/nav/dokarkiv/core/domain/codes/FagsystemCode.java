@@ -11,49 +11,13 @@ import no.nav.dokarkiv.core.stelvio.CodesTablePeriodicItem;
 public enum FagsystemCode implements CtiRelationship<FagsystemCode, String> {
 	
 	/**
-	 * Arena
-	 */
-	AO01,
-	/**
-	 * Infotrygd
-	 */
-	IT01,
-	/**
-	 * Bidrag
-	 */
-	BID,	
-	/**
 	 * Pensjon
 	 */
 	PEN,
 	/**
-	 * Øvrig 
-	 */
-	OVR,
-	/**
-	 * Skanning 
-	 */
-	MOT,
-	/**
-	 * Okonomi 
-	 */
-	OKO,	
-	/**
-	 * Bidrag innkreving 
-	 */
-	BII,
-	/**
 	 * GOSYS
 	 */
-	FS22,
-	/**
-	 * GSAK
-	 */
-	FS19,
-	/**
-	 * Utbetalingsmeldinger (UR)
-	 */
-	OB36;
+	FS22;
 
 	/** {@inheritDoc} */
 	@Override

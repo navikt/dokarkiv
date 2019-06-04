@@ -385,7 +385,7 @@ public class ArkiverDokumentproduksjonProviderTest {
 	@Test
 	public void shouldFerdigstillJournalpost() throws Exception {
 		when(ferdigstillJournalpostRequestMapperMock.map(any(FerdigstillJournalpostRequest.class))).thenReturn(
-				new FerdigstillJournalpostRequestTo(JOURNALPOST_ID, ENDRET_AV_NAVN, UtsendingsKanalCode.ALTINN));
+				new FerdigstillJournalpostRequestTo(JOURNALPOST_ID, ENDRET_AV_NAVN, UtsendingsKanalCode.EESSI));
 		provider.ferdigstillJournalpost(new FerdigstillJournalpostRequest());
 		verify(ferdigstillJournalpostServiceMock).ferdigstillJournalpost(any(FerdigstillJournalpostRequestTo.class));
 	}

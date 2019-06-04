@@ -62,7 +62,7 @@ public class ArkiverDokumentmottakV2RequestDataUtil {
 	static final String KANALREFERANSE_ID = "kanalReferanseId";
 	static final String VEDLEGGINNHOLD = "vedleggInnhold";
 	static final String BATCHNAVN = "Batchnavn";
-	static final String FAGSYSTEMKODE = FagsystemCode.AO01.name();
+	static final String FAGSYSTEMKODE = FagsystemCode.FS22.name();
 	static final String SAKSID = "312";
 	static final Date DATO_DOKUMENT = new Date(1234567890);
 	static final Date DATO_MOTTATT = new Date(234567890);
@@ -82,7 +82,7 @@ public class ArkiverDokumentmottakV2RequestDataUtil {
 	public static Kryssreferanse createKryssreferanse() {
 		Kryssreferanse kryssreferanse = new Kryssreferanse();
 		kryssreferanse.setReferanseId(REFERANSE_ID);
-		kryssreferanse.setReferanseType(ReferanseTypeCode.ETTERSENDT.name());
+		kryssreferanse.setReferanseType(ReferanseTypeCode.SPOERSMAAL.name());
 		return kryssreferanse;
 	}
 
@@ -182,6 +182,6 @@ public class ArkiverDokumentmottakV2RequestDataUtil {
 
 	public static void assertKryssreferanser(no.nav.dokarkiv.core.domain.entities.Kryssreferanse kryssreferanse) {
 		assertThat(kryssreferanse.getReferanseId(), Matchers.is(REFERANSE_ID));
-		assertThat(kryssreferanse.getReferanseType().name(), Matchers.is(ReferanseTypeCode.ETTERSENDT.name()));
+		assertThat(kryssreferanse.getReferanseType().name(), Matchers.is(ReferanseTypeCode.SPOERSMAAL.name()));
 	}
 }

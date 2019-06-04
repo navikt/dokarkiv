@@ -1,5 +1,3 @@
-DROP TABLE T_RETUR_INFO;
-
 DELETE FROM T_K_FAGOMRADE WHERE K_FAGOMRADE = 'BII';
 DELETE FROM T_K_FAGOMRADE WHERE K_FAGOMRADE = 'FS22';
 DELETE FROM T_K_FAGOMRADE WHERE K_FAGOMRADE = 'MOT';
@@ -20,22 +18,6 @@ DELETE FROM T_K_FIL_T WHERE K_FIL_T = 'DOCX';
 DELETE FROM T_K_FIL_T WHERE K_FIL_T = 'XLS';
 DELETE FROM T_K_FIL_T WHERE K_FIL_T = 'XLSX';
 
-INSERT INTO T_K_FIL_T (k_fil_t, dekode, dato_fom, dato_tom, er_gyldig, dato_opprettet, opprettet_av, dato_endret, endret_av)
-SELECT
-       'JPG',
-       'JPG',
-       DATE '1900-01-01',
-       NULL,
-       '1',
-       TIMESTAMP '2018-05-02 10:00:00',
-       'Bjørnar Hunshamar',
-       TIMESTAMP '2018-05-02 10:00:00',
-       'Bjørnar Hunshamar'
-FROM dual
-WHERE NOT exists(
-            SELECT 1
-            FROM T_K_FIL_T
-            WHERE k_fil_t = 'JPG');
 
 INSERT INTO T_K_FIL_T (k_fil_t, dekode, dato_fom, dato_tom, er_gyldig, dato_opprettet, opprettet_av, dato_endret, endret_av)
 SELECT
@@ -54,23 +36,6 @@ WHERE NOT exists(
             FROM T_K_FIL_T
             WHERE k_fil_t = 'PNG');
 
-INSERT INTO T_K_FIL_T (k_fil_t, dekode, dato_fom, dato_tom, er_gyldig, dato_opprettet, opprettet_av, dato_endret, endret_av)
-SELECT
-       'TIF',
-       'TIF',
-       DATE '1900-01-01',
-       NULL,
-       '1',
-       TIMESTAMP '2018-05-02 10:00:00',
-       'Bjørnar Hunshamar',
-       TIMESTAMP '2018-05-02 10:00:00',
-       'Bjørnar Hunshamar'
-FROM dual
-WHERE NOT exists(
-            SELECT 1
-            FROM T_K_FIL_T
-            WHERE k_fil_t = 'TIF');
-
 INSERT INTO T_K_MOTTAKS_KANAL (k_mottaks_kanal,dekode,dato_fom,dato_tom,er_gyldig,dato_opprettet,opprettet_av,dato_endret,endret_av) VALUES ('HELSENETTET','Helsenettet',date '1900-01-01',NULL,'1',timestamp '2019-02-05 10:00:00','Bjørnar Hunshamar',timestamp '2019-02-05 10:00:00','Bjørnar Hunshamar');
 
 DELETE FROM T_K_MOTTAKS_KANAL WHERE K_MOTTAKS_KANAL = 'PSELV';
@@ -87,16 +52,18 @@ DELETE FROM T_K_MOTTAKS_KANAL WHERE K_MOTTAKS_KANAL = 'NETS_PB1423';
 DELETE FROM T_K_MOTTAKS_KANAL WHERE K_MOTTAKS_KANAL = 'NETS_PB1431';
 DELETE FROM T_K_MOTTAKS_KANAL WHERE K_MOTTAKS_KANAL = 'NETS_PB1441';
 
-INSERT INTO T_K_UTSENDINGS_KANAL (k_utsendings_kanal,dekode,dato_fom,dato_tom,er_gyldig,dato_opprettet,opprettet_av,dato_endret,endret_av) VALUES ('HELSENETTET','Helsenettet',date '1900-01-01',NULL,'1',timestamp '2019-02-05 10:00:00','Bjørnar Hunshamar',timestamp '2019-02-05 10:00:00','Bjørnar Hunshamar');
-INSERT INTO T_K_UTSENDINGS_KANAL (k_utsendings_kanal,dekode,dato_fom,dato_tom,er_gyldig,dato_opprettet,opprettet_av,dato_endret,endret_av) VALUES ('EFORMIDLING','eFormidling',date '1900-01-01',NULL,'1',timestamp '2019-02-05 10:00:00','Bjørnar Hunshamar',timestamp '2019-02-05 10:00:00','Bjørnar Hunshamar');
+INSERT INTO T_K_UTSENDINGS_KANAL (k_utsendings_kanal,dekode,dato_fom,dato_tom,er_gyldig,dato_opprettet,opprettet_av,dato_endret,endret_av) VALUES ('HELSENETTET','Helsenettet',date '1900-01-01',NULL,'1',timestamp '2019-02-05 10:00:00','Bjørnar Hunshamar',sysdate);
+INSERT INTO T_K_UTSENDINGS_KANAL (k_utsendings_kanal,dekode,dato_fom,dato_tom,er_gyldig,dato_opprettet,opprettet_av,dato_endret,endret_av) VALUES ('TRYGDERETTEN','Trygderetten',date '1900-01-01',NULL,'1',timestamp '2019-02-05 10:00:00','Bjørnar Hunshamar',sysdate);
 
 DELETE FROM T_K_UTSENDINGS_KANAL WHERE K_UTSENDINGS_KANAL = 'PSELV';
 DELETE FROM T_K_UTSENDINGS_KANAL WHERE K_UTSENDINGS_KANAL = 'E_POST';
-DELETE FROM T_K_UTSENDINGS_KANAL WHERE K_UTSENDINGS_KANAL = 'ALTINN';
 
 UPDATE T_K_UTSENDINGS_KANAL SET DEKODE = 'Digital postkasse til innbyggere' WHERE K_UTSENDINGS_KANAL = 'SDP';
 
-INSERT INTO T_K_AKSJON_TYPE (AKSJON_TYPE, BESKRIVELSE, DATO_OPPRETTET, OPPRETTET_AV) VALUES ('KOPIER_JOURNALPOST', 'Kopier journalpost', timestamp '2019-02-05 10:00:00','Bjørnar Hunshamar');
+INSERT INTO T_K_AKSJON_TYPE (AKSJON_TYPE, BESKRIVELSE, DATO_OPPRETTET, OPPRETTET_AV) VALUES ('KOPIER_JOURNALPOST', 'Kopier journalpost', sysdate,'Bjørnar Hunshamar');
+INSERT INTO T_K_AKSJON_TYPE (AKSJON_TYPE, BESKRIVELSE, DATO_OPPRETTET, OPPRETTET_AV) VALUES ('TILKNYTT_EKSISTERENDE_DOKUMENT', 'Tilknytt eksisterende dokument', sysdate);
+
+UPDATE T_K_AKSJON_TYPE SET AKSJON_TYPE = 'FEILREGISTRER_SAKSTILKNYTNING' WHERE AKSJON_TYPE = 'FEILREGISTRER';
 
 DELETE FROM T_K_TILKN_JP_SOM WHERE K_TILKN_JP_SOM = 'SAMMENSATT_DOK';
 

@@ -18,7 +18,7 @@ public class FerdigstillJournalpostRequestMapperTest {
 	private static final Long JOURNALPOST_ID = 200L;
 	private static final String ENDRET_AV_NAVN = "Endre Tavnavn";
 	private static final String ILLEGAL_UTSENDINGKANAL = "illegal";
-	private static final String VALID_UTSENDINGKANAL = "ALTINN";
+	private static final String VALID_UTSENDINGKANAL = "EESSI";
 
 	private FerdigstillJournalpostRequestMapper requestMapper;
 
@@ -35,7 +35,7 @@ public class FerdigstillJournalpostRequestMapperTest {
 		FerdigstillJournalpostRequestTo domainRequest = requestMapper.map(createWebRequest(VALID_UTSENDINGKANAL));
 		assertThat(domainRequest.getEndretAvNavn(), is(ENDRET_AV_NAVN));
 		assertThat(domainRequest.getJournalpostId(), is(JOURNALPOST_ID));
-		assertThat(domainRequest.getUtsendingskanal(), is(UtsendingsKanalCode.ALTINN));
+		assertThat(domainRequest.getUtsendingskanal(), is(UtsendingsKanalCode.EESSI));
 	}
 
 	@Test
