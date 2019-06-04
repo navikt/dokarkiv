@@ -371,7 +371,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 
 	}
 
-	@Test
+/*	@Test
 	public void shouldFailIfIdTypeIsRequired() throws IOException {
 		abacPermit();
 
@@ -382,7 +382,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 
 		assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
 
-	}
+	}*/
 
 
 }
