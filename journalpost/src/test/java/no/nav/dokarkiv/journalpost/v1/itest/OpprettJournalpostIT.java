@@ -372,15 +372,15 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 	}
 
 	@Test
-	public void shouldFailIfIdTypeIsRequired() throws IOException {
+	public void shouldNotFailIfIdTypeIsEmpty() throws IOException {
 		abacPermit();
 
 		OpprettJournalpostRequest request = createRequestAvsenderMottaker(INNGAAENDE, createAvsenderMottakerUtenIdType());
 
 		HttpEntity requestEntity = new HttpEntity(request, createHeadersWithServiceUserToken());
-		ResponseEntity<RestConsumerExceptionResponse> response = restTemplate.exchange(URL_JOURNALPOST, HttpMethod.POST, requestEntity, RestConsumerExceptionResponse.class);
+		ResponseEntity response = restTemplate.exchange(URL_JOURNALPOST, HttpMethod.POST, requestEntity, Void.class);
 
-		assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+		assertEquals(HttpStatus.CREATED, response.getStatusCode());
 
 	}
 
