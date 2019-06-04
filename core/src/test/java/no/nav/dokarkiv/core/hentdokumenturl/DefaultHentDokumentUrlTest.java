@@ -19,7 +19,6 @@ import no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder;
 import no.nav.dokarkiv.core.domain.builder.JournalpostBuilder;
 import no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder;
 import no.nav.dokarkiv.core.domain.builder.KryssreferanseBuilder;
-import no.nav.dokarkiv.core.domain.builder.ReturInfoBuilder;
 import no.nav.dokarkiv.core.domain.builder.SaksrelasjonBuilder;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
@@ -261,7 +260,6 @@ public class DefaultHentDokumentUrlTest {
 				.fagomrade(FagomradeCode.PEN)
 				.brukere(BrukerBuilder.getBrukerBuilder().build())
 				.kryssReferanser(KryssreferanseBuilder.getKryssreferanseBuilder().build())
-				.returInfos(ReturInfoBuilder.getReturInfoBuilder().build())
 				.saksrelasjon(SaksrelasjonBuilder.getSaksrelasjonBuilder().build())
 				.dokumentInfoRelasjoner(JournalpostDokumentInfoRelasjonBuilder
 						.getJournalpostDokumentInfoRelasjonBuilder()
@@ -291,7 +289,6 @@ public class DefaultHentDokumentUrlTest {
 				.fagomrade(FagomradeCode.PEN)
 				.brukere(BrukerBuilder.getBrukerBuilder().build())
 				.kryssReferanser(KryssreferanseBuilder.getKryssreferanseBuilder().build())
-				.returInfos(ReturInfoBuilder.getReturInfoBuilder().build())
 				.saksrelasjon(SaksrelasjonBuilder.getSaksrelasjonBuilder().build())
 				.dokumentInfoRelasjoner(JournalpostDokumentInfoRelasjonBuilder
 						.getJournalpostDokumentInfoRelasjonBuilder()

@@ -6,11 +6,9 @@ import static no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder.getFilDetal
 import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalpostBuilder;
 import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
 import static no.nav.dokarkiv.core.domain.builder.KryssreferanseBuilder.getKryssreferanseBuilder;
-import static no.nav.dokarkiv.core.domain.builder.ReturInfoBuilder.getReturInfoBuilder;
 import static no.nav.dokarkiv.core.domain.builder.SaksrelasjonBuilder.getSaksrelasjonBuilder;
 import static no.nav.dokarkiv.core.domain.builder.SkannetInnholdBuilder.getSkannetInnholdBuilder;
 
-import no.nav.dokarkiv.core.domain.codes.ArsakReturCode;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
@@ -105,11 +103,6 @@ public class DefaultMandatoryFieldsVerifierTest {
 				.brukere(getBrukerBuilder()
 						.brukerId("***gammelt_fnr***")
 						.brukerType(BrukerTypeCode.PERSON)
-						.build())
-				.returInfos(getReturInfoBuilder()
-						.returInfoId(123L)
-						.returDato(new Date())
-						.arsakRetur(ArsakReturCode.FLYTTET_ADR_UKJ)
 						.build())
 				.kryssReferanser(getKryssreferanseBuilder()
 						.referanseId("200000123")

@@ -233,11 +233,6 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	@Cascade({CascadeType.PERSIST, CascadeType.MERGE, CascadeType.SAVE_UPDATE, CascadeType.DELETE, CascadeType.DETACH})
 	private final Set<Kryssreferanse> kryssreferanser = new HashSet<>();
 
-	@OneToMany
-	@JoinColumn(name = "journalpost_id", nullable = false)
-	@Cascade({CascadeType.PERSIST, CascadeType.MERGE, CascadeType.SAVE_UPDATE, CascadeType.DELETE, CascadeType.DETACH})
-	private final Set<ReturInfo> returInfos = new HashSet<>();
-
 	/**
 	 * Default constructor.
 	 */
@@ -545,16 +540,6 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 			}
 		}
 		return allFilDetaljer;
-	}
-
-	/**
-	 * Finds a ReturInfo by Id.
-	 *
-	 * @param returInfoId The Id
-	 * @return The ReturInfo with id.
-	 */
-	public ReturInfo findReturInfoById(final Long returInfoId) {
-		return returInfos.stream().filter(returInfo -> returInfoId.equals(returInfo.getId())).findAny().orElse(null);
 	}
 
 	/**
@@ -1541,33 +1526,6 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 		if (kryssreferanse != null) {
 			kryssreferanser.add(kryssreferanse);
 		}
-	}
-
-	/**
-	 * Getter for the returInfos property.
-	 *
-	 * @return the returInfos
-	 */
-	public Set<ReturInfo> getReturInfos() {
-		return Collections.unmodifiableSet(returInfos);
-	}
-
-	/**
-	 * Add a ReturInfo to the ReturInfo Set.
-	 *
-	 * @param returInfo The ReturInfo to add.
-	 */
-	public void addReturInfo(ReturInfo returInfo) {
-		if (returInfo != null) {
-			returInfos.add(returInfo);
-		}
-	}
-
-	/**
-	 * Empties the ReturInfo set.
-	 */
-	public void clearReturInfos() {
-		returInfos.clear();
 	}
 
 	/**

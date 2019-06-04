@@ -386,16 +386,6 @@ public class JournalpostTest {
 	}
 
 	@Test
-	public void shouldClearReturInfos() throws Exception {
-		Journalpost journalpost = new Journalpost();
-		journalpost.addReturInfo(new ReturInfo());
-
-		journalpost.clearReturInfos();
-
-		assertThat(journalpost.getReturInfos().isEmpty(), is(true));
-	}
-
-	@Test
 	public void shouldClearDokumentInfoRelasjoner() throws Exception {
 		Journalpost journalpost = new Journalpost();
 		journalpost.addJournalpostDokumentInfoRelasjon(new JournalpostDokumentInfoRelasjon());

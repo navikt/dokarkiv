@@ -3,7 +3,6 @@ package no.nav.dokarkiv.core.util;
 import static no.nav.dokarkiv.core.repository.DokumentFilSkjermetRepository.FIL_UUID_DUMMY_DOKUMENT_KASSERT;
 import static no.nav.dokarkiv.core.repository.DokumentFilSkjermetRepository.FIL_UUID_DUMMY_DOKUMENT_SKJERMET;
 
-import no.nav.dokarkiv.core.domain.codes.ArsakReturCode;
 import no.nav.dokarkiv.core.domain.codes.AvsenderMottakerIdTypeCode;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
@@ -24,7 +23,6 @@ import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.entities.Kryssreferanse;
-import no.nav.dokarkiv.core.domain.entities.ReturInfo;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
 import no.nav.dokarkiv.core.domain.entities.SkannetInnhold;
 
@@ -75,7 +73,6 @@ public class TestDataGenerator {
 
 		journalpost.addBruker(createBruker());
 		journalpost.addKryssReferanse(createKryssreferanse());
-		journalpost.addReturInfo(createReturInfo());
 		journalpost.setSaksrelasjon(createSaksrelasjon(journalpost));
 		journalpost.setTilleggsopplysninger(createTilleggsopplysninger());
 		journalpost.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
@@ -97,7 +94,6 @@ public class TestDataGenerator {
 
 		journalpost.addBruker(createBruker());
 		journalpost.addKryssReferanse(createKryssreferanse());
-		journalpost.addReturInfo(createReturInfo());
 		journalpost.setSaksrelasjon(createSaksrelasjon(journalpost));
 		journalpost.setTilleggsopplysninger(createTilleggsopplysninger());
 		journalpost.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
@@ -119,7 +115,6 @@ public class TestDataGenerator {
 
 		journalpost.addBruker(createBruker());
 		journalpost.addKryssReferanse(createKryssreferanse());
-		journalpost.addReturInfo(createReturInfo());
 		journalpost.setSaksrelasjon(createSaksrelasjon(journalpost));
 		journalpost.setTilleggsopplysninger(createTilleggsopplysninger());
 		journalpost.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
@@ -210,15 +205,6 @@ public class TestDataGenerator {
 				.build();
 		bruker.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
 		return bruker;
-	}
-
-	public static ReturInfo createReturInfo() {
-		ReturInfo returInfo = new ReturInfo();
-		returInfo.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
-		returInfo.setAdresseSendtIgjen("GATE");
-		returInfo.setArsakRetur(ArsakReturCode.ANNET);
-		returInfo.setReturDato(new Date());
-		return returInfo;
 	}
 
 	public static Kryssreferanse createKryssreferanse() {
