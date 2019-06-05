@@ -82,8 +82,8 @@ public class SlettArkivenhetOrchestrator {
 								.collect(Collectors.joining(", "))
 				);
 			case DOKUMENT_FIL:
-				return String.format("Dokument Fil med variant %s knyttet til dokumentInfoId %s er fysisk slettet og kan ikke gjenopprettes lenger.",
-						variantFormatCode, dokumentInfoId);
+				return String.format("Dokumentfil knyttet til dokumentInfoId %s med variant %s er fysisk slettet og kan ikke gjenopprettes lenger.",
+						dokumentInfoId, variantFormatCode);
 			default:
 				throw new InvalidArgumentException(String.format("Det mangler logikk for generering av aksjonslogg melding for arkivEnhetCode=%s.", arkivenhetCode));
 		}
