@@ -55,7 +55,7 @@ public class OpprettJournalpostRequestValidatorTest {
 	}
 
 
-	@Test
+/*	@Test
 	public void shouldThrowExceptionIfWhenAvsenderIdIsSetButNotMottakerIdType() {
 		request = createMinimalRequest(JournalpostType.INNGAAENDE, TEMA_FOR, INNHOLD)
 				.avsenderMottaker(AvsenderMottaker.builder()
@@ -67,7 +67,7 @@ public class OpprettJournalpostRequestValidatorTest {
 		expectedException.expect(InputValideringFeiletException.class);
 		expectedException.expectMessage("AvsenderMottaker.avsenderMottakerIdType");
 		validator.validateRequest(request);
-	}
+	}*/
 
 	@Test
 	public void shouldNotThrowExceptionIfAvsenderNameIsNotsetWhenAvsenderIdIsSet() {
