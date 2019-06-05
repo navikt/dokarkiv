@@ -18,7 +18,6 @@ DELETE FROM T_K_FIL_T WHERE K_FIL_T = 'DOCX';
 DELETE FROM T_K_FIL_T WHERE K_FIL_T = 'XLS';
 DELETE FROM T_K_FIL_T WHERE K_FIL_T = 'XLSX';
 
-
 INSERT INTO T_K_FIL_T (k_fil_t, dekode, dato_fom, dato_tom, er_gyldig, dato_opprettet, opprettet_av, dato_endret, endret_av)
 SELECT
        'PNG',
@@ -36,7 +35,14 @@ WHERE NOT exists(
             FROM T_K_FIL_T
             WHERE k_fil_t = 'PNG');
 
-INSERT INTO T_K_MOTTAKS_KANAL (k_mottaks_kanal,dekode,dato_fom,dato_tom,er_gyldig,dato_opprettet,opprettet_av,dato_endret,endret_av) VALUES ('HELSENETTET','Helsenettet',date '1900-01-01',NULL,'1',timestamp '2019-02-05 10:00:00','Bjørnar Hunshamar',timestamp '2019-02-05 10:00:00','Bjørnar Hunshamar');
+INSERT INTO T_K_MOTTAKS_KANAL (k_mottaks_kanal,dekode,dato_fom,dato_tom,er_gyldig,dato_opprettet,opprettet_av,dato_endret,endret_av)
+SELECT
+    'HELSENETTET','Helsenettet',date '1900-01-01',NULL,'1',timestamp '2019-02-05 10:00:00','Bjørnar Hunshamar',timestamp '2019-02-05 10:00:00','Bjørnar Hunshamar'
+FROM dual
+WHERE NOT exists(
+            SELECT 1
+            from T_K_MOTTAKS_KANAL
+            where k_mottaks_kanal = 'HELSENETTET');
 
 DELETE FROM T_K_MOTTAKS_KANAL WHERE K_MOTTAKS_KANAL = 'PSELV';
 DELETE FROM T_K_MOTTAKS_KANAL WHERE K_MOTTAKS_KANAL = 'E_POST';
@@ -52,16 +58,42 @@ DELETE FROM T_K_MOTTAKS_KANAL WHERE K_MOTTAKS_KANAL = 'NETS_PB1423';
 DELETE FROM T_K_MOTTAKS_KANAL WHERE K_MOTTAKS_KANAL = 'NETS_PB1431';
 DELETE FROM T_K_MOTTAKS_KANAL WHERE K_MOTTAKS_KANAL = 'NETS_PB1441';
 
-INSERT INTO T_K_UTSENDINGS_KANAL (k_utsendings_kanal,dekode,dato_fom,dato_tom,er_gyldig,dato_opprettet,opprettet_av,dato_endret,endret_av) VALUES ('HELSENETTET','Helsenettet',date '1900-01-01',NULL,'1',timestamp '2019-02-05 10:00:00','Bjørnar Hunshamar',sysdate);
-INSERT INTO T_K_UTSENDINGS_KANAL (k_utsendings_kanal,dekode,dato_fom,dato_tom,er_gyldig,dato_opprettet,opprettet_av,dato_endret,endret_av) VALUES ('TRYGDERETTEN','Trygderetten',date '1900-01-01',NULL,'1',timestamp '2019-02-05 10:00:00','Bjørnar Hunshamar',sysdate);
+INSERT INTO T_K_UTSENDINGS_KANAL (k_utsendings_kanal, dekode, dato_fom, dato_tom, er_gyldig, dato_opprettet, opprettet_av, dato_endret, endret_av)
+SELECT 'HELSENETTET', 'Helsenettet', date '1900-01-01', NULL, '1', timestamp '2019-02-05 10:00:00', 'Bjørnar Hunshamar', sysdate, 'Bjørnar Hunshamar'
+FROM dual
+WHERE NOT exists(
+  SELECT 1
+  from T_K_UTSENDINGS_KANAL
+  where k_utsendings_kanal = 'HELSENETTET');
+
+INSERT INTO T_K_UTSENDINGS_KANAL (k_utsendings_kanal,dekode,dato_fom,dato_tom,er_gyldig,dato_opprettet,opprettet_av,dato_endret,endret_av)
+SELECT 'TRYGDERETTEN','Trygderetten',date '1900-01-01',NULL,'1',timestamp '2019-02-05 10:00:00','Bjørnar Hunshamar',sysdate, 'Bjørnar Hunshamar'
+FROM dual
+WHERE NOT exists(
+  SELECT 1
+  from T_K_UTSENDINGS_KANAL
+  where k_utsendings_kanal = 'TRYGDERETTEN');
 
 DELETE FROM T_K_UTSENDINGS_KANAL WHERE K_UTSENDINGS_KANAL = 'PSELV';
 DELETE FROM T_K_UTSENDINGS_KANAL WHERE K_UTSENDINGS_KANAL = 'E_POST';
 
 UPDATE T_K_UTSENDINGS_KANAL SET DEKODE = 'Digital postkasse til innbyggere' WHERE K_UTSENDINGS_KANAL = 'SDP';
 
-INSERT INTO T_K_AKSJON_TYPE (AKSJON_TYPE, BESKRIVELSE, DATO_OPPRETTET, OPPRETTET_AV) VALUES ('KOPIER_JOURNALPOST', 'Kopier journalpost', sysdate,'Bjørnar Hunshamar');
-INSERT INTO T_K_AKSJON_TYPE (AKSJON_TYPE, BESKRIVELSE, DATO_OPPRETTET, OPPRETTET_AV) VALUES ('TILKNYTT_EKSISTERENDE_DOKUMENT', 'Tilknytt eksisterende dokument', sysdate);
+INSERT INTO T_K_AKSJON_TYPE (AKSJON_TYPE, BESKRIVELSE, DATO_OPPRETTET, OPPRETTET_AV)
+SELECT 'KOPIER_JOURNALPOST', 'Kopier journalpost', sysdate,'Bjørnar Hunshamar'
+FROM dual
+WHERE NOT exists(
+  SELECT 1
+  from T_K_AKSJON_TYPE
+  where AKSJON_TYPE = 'KOPIER_JOURNALPOST');
+
+INSERT INTO T_K_AKSJON_TYPE (AKSJON_TYPE, BESKRIVELSE, DATO_OPPRETTET, OPPRETTET_AV)
+SELECT 'TILKNYTT_EKSISTERENDE_DOKUMENT', 'Tilknytt eksisterende dokument', sysdate,'Bjørnar Hunshamar'
+FROM dual
+WHERE NOT exists(
+  SELECT 1
+  from T_K_AKSJON_TYPE
+  where AKSJON_TYPE = 'TILKNYTT_EKSISTERENDE_DOKUMENT');
 
 UPDATE T_K_AKSJON_TYPE SET AKSJON_TYPE = 'FEILREGISTRER_SAKSTILKNYTNING' WHERE AKSJON_TYPE = 'FEILREGISTRER';
 
