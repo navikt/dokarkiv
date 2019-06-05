@@ -29,9 +29,9 @@ public class OpprettJournalpostRequestValidator {
 	private static final String VALIDERER_IKKE_MOT_KODEVERK = "validerer ikke mot kodeverk";
 
 	public void validateRequest(OpprettJournalpostRequest request) {
-		if (request.getAvsenderMottaker() != null) {
+/*		if (request.getAvsenderMottaker() != null) {
 			validateAvsenderMottaker(request.getAvsenderMottaker());
-		}
+		}*/
 		if (request.getBruker() != null) {
 			validateBruker(request.getBruker());
 		}
@@ -51,12 +51,13 @@ public class OpprettJournalpostRequestValidator {
 		}
 	}
 
-	private void validateAvsenderMottaker(AvsenderMottaker avsenderMottaker) {
+	//Kan ikke brukes enda
+/*	private void validateAvsenderMottaker(AvsenderMottaker avsenderMottaker) {
 		if (isNotBlank(avsenderMottaker.getId()) && (avsenderMottaker.getIdType() == null)) {
 			throw new InputValideringFeiletException("AvsenderMottaker.avsenderMottakerIdType må være satt når avsenderMottaker.id er satt");
 		}
 
-	}
+	}*/
 
 	private void validateBruker(Bruker bruker) {
 		if (isBlank(bruker.getId())) {
