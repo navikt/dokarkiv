@@ -10,6 +10,7 @@ import lombok.Builder;
 import no.nav.dokarkiv.core.domain.AbstractPersistentVersionedDomainObjectWithKilde;
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
+import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
 import no.nav.dokarkiv.core.exceptions.InvalidJournalpostStructureException;
@@ -155,6 +156,11 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	@Cascade({CascadeType.PERSIST, CascadeType.MERGE, CascadeType.SAVE_UPDATE, CascadeType.DETACH})
 	@Builder.Default
 	private Set<FilDetaljer> fildetaljerListe = new HashSet<>();
+
+	@Column(name = "kassert")
+	@Type(type = "org.hibernate.type.TrueFalseType")
+	private Boolean kassert;
+
 
 	/**
 	 * Default constructor.
@@ -362,7 +368,7 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 				.filter(f -> filUuid.equals(f.getFilUuid()))
 				.findAny();
 
-	return filterSkjermetFildetaljer(filDetaljerIkkeSkjermet);
+		return filterSkjermetFildetaljer(filDetaljerIkkeSkjermet);
 
 	}
 
@@ -379,11 +385,11 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 		//Return ARKIV if SLADDET doesn't exist or is skjermet. In case ARKIV variant is skjermet DokumentFilSkjermetRepository will return a dummy document
 		if (filDetaljer.filter(FilDetaljer::isArkivVariant).filter(FilDetaljer::isSkjermet).isPresent()) {
 			return Optional.ofNullable(findFilDetaljerByVariantFormatAdmin(SLADDET))
-						.filter(f->isFalse(f.isSkjermet()))
-						.orElse(filDetaljer.get());
+					.filter(f -> isFalse(f.isSkjermet()))
+					.orElse(filDetaljer.get());
 		}
 
-		return filDetaljer.filter(f->isFalse(f.isSkjermet())).orElse(null);
+		return filDetaljer.filter(f -> isFalse(f.isSkjermet())).orElse(null);
 	}
 
 	/**
@@ -439,6 +445,13 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	 */
 	public boolean isRelatedToMultipleJournalposts() {
 		return getJournalpostRelasjoner().size() > 1;
+	}
+
+	public JournalpostDokumentInfoRelasjon findHoveddokumentJournalpostRelasjon() {
+		return journalpostRelasjoner.stream()
+				.filter(rel -> rel.getTilknyttetJournalpostSom() == TilknyttetJournalpostSomCode.HOVEDDOKUMENT)
+				.findAny()
+				.orElse(null);
 	}
 
 	/**
@@ -864,6 +877,14 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	 */
 	public boolean removeJournalpostDokumentInfoRelasjon(JournalpostDokumentInfoRelasjon relasjonToRemove) {
 		return journalpostRelasjoner.remove(relasjonToRemove);
+	}
+
+	public void setKassert(boolean kassert) {
+		this.kassert = kassert;
+	}
+
+	public boolean isKassert() {
+		return this.kassert == null ? false : this.kassert;
 	}
 
 }

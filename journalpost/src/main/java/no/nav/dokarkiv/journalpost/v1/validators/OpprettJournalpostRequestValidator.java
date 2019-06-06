@@ -21,19 +21,19 @@ import no.nav.dokarkiv.journalpost.v1.api.DokumentVariant;
 import no.nav.dokarkiv.journalpost.v1.api.OpprettJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.Sak;
 
+import java.util.Arrays;
+
 public class OpprettJournalpostRequestValidator {
 
 	private static final int FNR_LENGTH = 11;
 	private static final int ORGNR_LENGTH = 9;
-	private static final int AVSENDERMOTTAKER_NAVN_LENGTH_BYTES = 200;
-	private static final int AVSENDERMOTTAKER_ID_LENGTH_BYTES = 50;
 
 	private static final String VALIDERER_IKKE_MOT_KODEVERK = "validerer ikke mot kodeverk";
 
 	public void validateRequest(OpprettJournalpostRequest request) {
-		if (request.getAvsenderMottaker() != null) {
+/*		if (request.getAvsenderMottaker() != null) {
 			validateAvsenderMottaker(request.getAvsenderMottaker());
-		}
+		}*/
 		if (request.getBruker() != null) {
 			validateBruker(request.getBruker());
 		}
@@ -53,16 +53,13 @@ public class OpprettJournalpostRequestValidator {
 		}
 	}
 
-	private void validateAvsenderMottaker(AvsenderMottaker avsenderMottaker) {
-		if (isNotBlank(avsenderMottaker.getNavn()) && avsenderMottaker.getNavn().getBytes().length > AVSENDERMOTTAKER_NAVN_LENGTH_BYTES) {
-			throw new InputValideringFeiletException("AvsenderMottaker.navn er lengre enn " +
-					AVSENDERMOTTAKER_NAVN_LENGTH_BYTES + " byte.");
+	//Kan ikke brukes enda
+/*	private void validateAvsenderMottaker(AvsenderMottaker avsenderMottaker) {
+		if (isNotBlank(avsenderMottaker.getId()) && (avsenderMottaker.getIdType() == null)) {
+			throw new InputValideringFeiletException("AvsenderMottaker.avsenderMottakerIdType må være satt når avsenderMottaker.id er satt");
 		}
-		if (isNotBlank(avsenderMottaker.getId()) && avsenderMottaker.getId().getBytes().length > AVSENDERMOTTAKER_ID_LENGTH_BYTES) {
-			throw new InputValideringFeiletException("AvsenderMottaker.id er lengre enn " +
-					AVSENDERMOTTAKER_ID_LENGTH_BYTES + " byte.");
-		}
-	}
+
+	}*/
 
 	private void validateBruker(Bruker bruker) {
 		if (isBlank(bruker.getId())) {
@@ -152,6 +149,10 @@ public class OpprettJournalpostRequestValidator {
 			VariantFormatCode.valueOf(dokumentVariant.getVariantformat());
 		} catch (IllegalArgumentException e) {
 			throw new InputValideringFeiletException(String.format("Dokument.dokumentvariant.variantformat %s", VALIDERER_IKKE_MOT_KODEVERK));
+		}
+		if (dokumentVariant.getVariantformat().equals(VariantFormatCode.ARKIV.name())
+				&& !Arrays.asList(FilTypeCode.PDF, FilTypeCode.PDFA).contains(FilTypeCode.valueOf(dokumentVariant.getFiltype()))) {
+			throw new InputValideringFeiletException("Dokument.dokumentvariant.filtype på være PDF eller PDFA for Dokument.dokumentvariant.variantformat=ARKIV.");
 		}
 	}
 }

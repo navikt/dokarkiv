@@ -1,8 +1,10 @@
 package no.nav.dokarkiv.core.util;
 
 import static no.nav.dokarkiv.core.repository.DokumentFilSkjermetRepository.FIL_UUID_DUMMY_DOKUMENT_KASSERT;
+import static no.nav.dokarkiv.core.repository.DokumentFilSkjermetRepository.FIL_UUID_DUMMY_DOKUMENT_SKJERMET;
 
 import no.nav.dokarkiv.core.domain.codes.ArsakReturCode;
+import no.nav.dokarkiv.core.domain.codes.AvsenderMottakerIdTypeCode;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
@@ -40,6 +42,7 @@ public class TestDataGenerator {
 	public static final String TILKNYTTET_AV_NAVN = "Tilknyttetnavn";
 	public static final String ENDRET_AV_NAVN = "Endret av navn";
 	public static final String AVSENDER_MOTTAKER_ID = "***gammelt_fnr***";
+	public static final AvsenderMottakerIdTypeCode AVSENDER_MOTTAKER_ID_TYPE = AvsenderMottakerIdTypeCode.FNR;
 	public static final String TITTEL = "FysiskSlettDokument";
 	public static final String BREVGRUPPE = "Brevgruppe";
 	public static final String BREVKODE = "Brevkode";
@@ -52,13 +55,16 @@ public class TestDataGenerator {
 	public static final String FIL_NAVN = "navn";
 	public static final String TILLEGGOPPLYSNINGER_KEY = "tillegg";
 	public static final String TILLEGGOPPLYSNINGER_VAL = "tillegg_verdi";
+	public static final String FIL_UUID_ARKIV = "filuuid_arkiv";
 	public static final byte[] FIL = "Test dokument".getBytes();
-	public static final byte[] FIL_DUMMY = "Test dummy dokument dummy".getBytes();
+	public static final byte[] FIL_DUMMY_KASSERT = "Test kassert dummy dokument dummy".getBytes();
+	public static final byte[] FIL_DUMMY_SKJERMET = "Test skjermet dummy dokument dummy".getBytes();
 	public static final byte[] FIL_SLADDET = "Test sladdet dokument".getBytes();
 
 	public static Journalpost createJournalpostWithHoveddokument() {
 		Journalpost journalpost = Journalpost.builder()
 				.avsenderMottakerId(AVSENDER_MOTTAKER_ID)
+				.avsenderMottakerIdType(AVSENDER_MOTTAKER_ID_TYPE)
 				.dokumentDato(new Date())
 				.utsendingskanal(UtsendingsKanalCode.NAV_NO)
 				.journalstatus(JournalStatusCode.FS)
@@ -168,6 +174,7 @@ public class TestDataGenerator {
 
 		journalpostDokumentInfoRelasjon.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
 		journalpostDokumentInfoRelasjon.setTilknyttetAvNavn(OPPRETTET_KILDE_NAVN);
+		journalpost.addJournalpostDokumentInfoRelasjon(journalpostDokumentInfoRelasjon);
 		return journalpostDokumentInfoRelasjon;
 	}
 
@@ -181,6 +188,8 @@ public class TestDataGenerator {
 
 		journalpostDokumentInfoRelasjon.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
 		journalpostDokumentInfoRelasjon.setTilknyttetAvNavn(OPPRETTET_KILDE_NAVN);
+
+		journalpost.addJournalpostDokumentInfoRelasjon(journalpostDokumentInfoRelasjon);
 		return journalpostDokumentInfoRelasjon;
 	}
 
@@ -246,22 +255,35 @@ public class TestDataGenerator {
 	}
 
 	public static FilDetaljer createFildetaljerOgFil(DokumentInfo dokumentInfo, VariantFormatCode variantFormatCode) {
+			return createFildetaljerOgFil(dokumentInfo, variantFormatCode, FilDetaljer.generateUuid());
+	}
+
+
+	public static FilDetaljer createFildetaljerOgFil(DokumentInfo dokumentInfo, VariantFormatCode variantFormatCode, String filUuid) {
 		FilDetaljer filDetaljer = FilDetaljer.builder()
 				.dokumentInfo(dokumentInfo)
 				.fileContent(FIL)
 				.filnavn(FIL_NAVN)
 				.filtype(FilTypeCode.PDF)
-				.filUuid(FilDetaljer.generateUuid())
+				.filUuid(filUuid)
 				.variantFormat(variantFormatCode)
 				.build();
 		filDetaljer.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
 		return filDetaljer;
 	}
 
-	public static DokumentFil createDummyDokument(){
+	public static DokumentFil createDummyDokumentKassert() {
 		DokumentFil dokumentFil = new DokumentFil();
-		dokumentFil.setFil(FIL_DUMMY);
+		dokumentFil.setFil(FIL_DUMMY_KASSERT);
 		dokumentFil.setFilUuid(FIL_UUID_DUMMY_DOKUMENT_KASSERT);
+		dokumentFil.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
+		return dokumentFil;
+	}
+
+	public static DokumentFil createDummyDokumentSkjermet() {
+		DokumentFil dokumentFil = new DokumentFil();
+		dokumentFil.setFil(FIL_DUMMY_SKJERMET);
+		dokumentFil.setFilUuid(FIL_UUID_DUMMY_DOKUMENT_SKJERMET);
 		dokumentFil.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
 		return dokumentFil;
 	}

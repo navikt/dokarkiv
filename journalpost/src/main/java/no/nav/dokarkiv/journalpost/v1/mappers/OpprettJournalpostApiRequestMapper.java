@@ -5,9 +5,11 @@ import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.VED
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
+import no.nav.dokarkiv.core.domain.codes.AvsenderMottakerIdTypeCode;
 import no.nav.dokarkiv.core.domain.codes.Behandlingstema;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
+import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
 import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
@@ -23,7 +25,9 @@ import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
+import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
 import no.nav.dokarkiv.journalpost.v1.api.Arkivsaksystem;
+import no.nav.dokarkiv.journalpost.v1.api.AvsenderMottakerIdType;
 import no.nav.dokarkiv.journalpost.v1.api.BrukerIdType;
 import no.nav.dokarkiv.journalpost.v1.api.Dokument;
 import no.nav.dokarkiv.journalpost.v1.api.JournalpostType;
@@ -33,6 +37,7 @@ import org.springframework.stereotype.Component;
 
 import java.sql.Date;
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -47,6 +52,8 @@ public class OpprettJournalpostApiRequestMapper {
 				.fagomrade(FagomradeCode.valueOf(request.getTema()))
 				.avsenderMottaker(request.getAvsenderMottaker() == null ? null : request.getAvsenderMottaker().getNavn())
 				.avsenderMottakerId(request.getAvsenderMottaker() == null ? null : request.getAvsenderMottaker().getId())
+				.avsenderMottakerIdType(request.getAvsenderMottaker() == null ? null : mapAvsenderMottakerType(request.getAvsenderMottaker()
+						.getIdType()))
 				.behandlingstema(mapBehandlingstema(request))
 				.tilleggsopplysninger(mapTilleggsopplysninger(request))
 				.mottakskanal(mapMottakskanal(request))
@@ -73,6 +80,31 @@ public class OpprettJournalpostApiRequestMapper {
 		}
 	}
 
+	private AvsenderMottakerIdTypeCode mapAvsenderMottakerType(AvsenderMottakerIdType request) {
+		AvsenderMottakerIdTypeCode avsenderMottakerIdTypeCode = null;
+		if(request != null) {
+			switch (request) {
+				case FNR:
+					avsenderMottakerIdTypeCode = AvsenderMottakerIdTypeCode.FNR;
+					break;
+				case ORGNR:
+					avsenderMottakerIdTypeCode = AvsenderMottakerIdTypeCode.ORGNR;
+					break;
+				case HPRNR:
+					avsenderMottakerIdTypeCode = AvsenderMottakerIdTypeCode.HPRNR;
+					break;
+				case UTL_ORG:
+					avsenderMottakerIdTypeCode = AvsenderMottakerIdTypeCode.UTL_ORG;
+					break;
+				default:
+					throw new InputValideringFeiletException(String.format("AvesenderMottakerIdTypeCode validerer ikke mot kodeverk: %s.", request));
+
+			}
+		}
+		return avsenderMottakerIdTypeCode;
+
+	}
+
 	private JournalStatusCode mapJournalstatus(OpprettJournalpostRequest request) {
 		if (request.getDokumenter().isEmpty()) {
 			return JournalpostType.INNGAAENDE.equals(request.getJournalpostType()) ? JournalStatusCode.OD : JournalStatusCode.R;
@@ -82,7 +114,9 @@ public class OpprettJournalpostApiRequestMapper {
 	}
 
 	private Map<String, String> mapTilleggsopplysninger(OpprettJournalpostRequest request) {
-		return request.getTilleggsopplysninger().stream().collect(Collectors.toMap(Tilleggsopplysning::getNokkel, Tilleggsopplysning::getVerdi));
+		return request.getTilleggsopplysninger()
+				.stream()
+				.collect(Collectors.toMap(Tilleggsopplysning::getNokkel, Tilleggsopplysning::getVerdi));
 	}
 
 	private MottaksKanalCode mapMottakskanal(OpprettJournalpostRequest request) {
@@ -107,11 +141,13 @@ public class OpprettJournalpostApiRequestMapper {
 		return isBlank(request.getBehandlingstema()) ? null : Behandlingstema.valueOf(request.getBehandlingstema());
 	}
 
+
 	private void addSaksrelasjon(Journalpost journalpost, OpprettJournalpostRequest request) {
 		if (request.getSak() != null) {
 			journalpost.setSaksrelasjon(Saksrelasjon.builder()
 					.sakId(request.getSak().getArkivsaksnummer())
-					.fagsystem(Arkivsaksystem.GSAK.equals(request.getSak().getArkivsaksystem()) ? FagsystemCode.FS22 : FagsystemCode.PEN)
+					.fagsystem(Arkivsaksystem.GSAK.equals(request.getSak()
+							.getArkivsaksystem()) ? FagsystemCode.FS22 : FagsystemCode.PEN)
 					.journalpost(journalpost)
 					.build());
 		}
@@ -121,7 +157,8 @@ public class OpprettJournalpostApiRequestMapper {
 		if (request.getBruker() != null) {
 			jp.addBruker(Bruker.builder()
 					.brukerId(request.getBruker().getId())
-					.brukerType(BrukerIdType.FNR.equals(request.getBruker().getIdType()) ? BrukerTypeCode.PERSON : BrukerTypeCode.ORGANISASJON)
+					.brukerType(BrukerIdType.FNR.equals(request.getBruker()
+							.getIdType()) ? BrukerTypeCode.PERSON : BrukerTypeCode.ORGANISASJON)
 					.build());
 		}
 	}
@@ -131,15 +168,20 @@ public class OpprettJournalpostApiRequestMapper {
 			createJournalpostDokumentInfoRelasjon(jp, request.getDokumenter().get(0), HOVEDDOKUMENT);
 
 			if (request.getDokumenter().size() > 1) {
-				request.getDokumenter().stream().skip(1).forEach(dokument -> createJournalpostDokumentInfoRelasjon(jp, dokument, VEDLEGG));
+				request.getDokumenter()
+						.stream()
+						.skip(1)
+						.forEach(dokument -> createJournalpostDokumentInfoRelasjon(jp, dokument, VEDLEGG));
 			}
 		}
 	}
 
 	private void createJournalpostDokumentInfoRelasjon(Journalpost jp, Dokument dokument, TilknyttetJournalpostSomCode tilknyttetJournalpostSomCode) {
 		DokumentInfo dokumentInfo = DokumentInfo.builder()
-				.kategori(DokumentKategoriCode.valueOf(dokument.getDokumentKategori()))
+				.kategori(dokument.getDokumentKategori() != null ? DokumentKategoriCode.valueOf(dokument.getDokumentKategori()) : DokumentKategoriCode.IS)
 				.tittel(dokument.getTittel())
+				.dokumentstatus(Arrays.asList(JournalpostTypeCode.U, JournalpostTypeCode.N).contains(jp.getJournalposttype()) ?
+						DokumentStatusCode.FERDIGSTILT : null)
 				.brevkode(dokument.getBrevkode())
 				.originalJournalpost(jp)
 				.build();

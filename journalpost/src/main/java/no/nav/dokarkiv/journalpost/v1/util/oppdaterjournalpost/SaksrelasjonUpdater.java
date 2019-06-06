@@ -55,7 +55,7 @@ public class SaksrelasjonUpdater {
         if (request.getSak().getArkivsaksystem() != null) {
             aksjonsLoggHelper.addToArkivElementEndringTOs(ArkivElementEndringTO.builder()
                     .arkivElement("Saksrelasjon.fagsystem")
-                    .fraVerdi(journalpost.getSaksrelasjon().getFagsystem().name())
+                    .fraVerdi(journalpost.getSaksrelasjon() == null ? null : journalpost.getSaksrelasjon().getFagsystem().name())
                     .tilVerdi(request.getSak().getArkivsaksystem().name())
                     .build());
             saksrelasjon.setFagsystem(mapArkivSakSystemToFagsystemCode(request.getSak().getArkivsaksystem()));
@@ -67,7 +67,7 @@ public class SaksrelasjonUpdater {
         if (isNotBlank(request.getSak().getArkivsaksnummer())) {
             aksjonsLoggHelper.addToArkivElementEndringTOs(ArkivElementEndringTO.builder()
                     .arkivElement("Saksrelasjon.sakId")
-                    .fraVerdi(journalpost.getSaksrelasjon().getSakId())
+                    .fraVerdi(journalpost.getSaksrelasjon() == null ? null : journalpost.getSaksrelasjon().getSakId())
                     .tilVerdi(request.getSak().getArkivsaksnummer())
                     .build());
             saksrelasjon.setSakId(request.getSak().getArkivsaksnummer());

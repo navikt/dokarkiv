@@ -79,6 +79,21 @@ public class AbacSecurityService {
         assertAccessToJournalpostIncludingBegrenset(journalpostId.toString());
 	}
 
+	public void assertAccessToDokumentInfo(Long dokumentInfoId) {
+
+		if (!dokumentinfoRepository.existsById(dokumentInfoId)) {
+			throw new DokumentInfoIkkeFunnetException("DokumentInfo ikke funnet. dokumentInfoId=" + dokumentInfoId);
+		}
+		Long journalpostId = joarkRepositorySkjermet.findJournalpostIdByDokumentinfoId(dokumentInfoId.toString());
+		if (journalpostId == null) {
+			log.warn(String.format("DokumentInfo med dokumentInfoId=%s mangler originalJournalpost", dokumentInfoId));
+			throw new DokumentInfoIkkeFunnetException(String.format("DokumentInfo med dokumentInfoId=%s mangler originalJournalpost", dokumentInfoId));
+		}
+
+        assertAccessToJournalpost(journalpostId.toString());
+	}
+
+
 	public void assertAccessToJournalpost(String journalpost) {
 		Long journalpostId = Long.parseLong(journalpost);
 

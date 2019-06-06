@@ -31,19 +31,23 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.inject.Inject;
 
-@Api
+@Api(description = "Tjenester for å slette, endre og legge til logiske vedlegg")
 @Slf4j
 @RestController
+@Transactional
 @RequestMapping("/rest/journalpostapi/v1/dokumentInfo")
 public class JournalfoerSkannetDokumentRestController {
 
     private final AbacSecurityService abacSecurityService;
     private final LogiskVedleggService logiskVedleggService;
+
+    private static final String DOKUMENT_INFO_ID_STRING = "dokumentInfoId";
+    private static final String LOGISK_VEDLEGG_ID_STRING = "logiskVedleggId";
+    private static final String TITTEL_STRING = "tittel";
 
     @Inject
     public JournalfoerSkannetDokumentRestController(final AbacSecurityService abacSecurityService,
@@ -52,9 +56,7 @@ public class JournalfoerSkannetDokumentRestController {
         this.logiskVedleggService = logiskVedleggService;
     }
 
-    @Transactional
     @SwaggerEndreLogiskVedlegg
-    @ResponseBody
     @PostMapping(value = "/{dokumentInfoId}/logiskVedlegg/{logiskVedleggId}")
     @Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_JOURNALPOST)},
             actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION))
@@ -68,11 +70,11 @@ public class JournalfoerSkannetDokumentRestController {
         log.info(MDC.get(MDC_REQUEST_ID) + " har mottatt kall om å endre logisk vedlegg med logiskVedleggId={} på dokument med dokumentInfoId={}",
                 logiskVedleggId, dokumentInfoId);
 
-        validateId(dokumentInfoId, "dokumentInfoId");
-        validateId(logiskVedleggId, "logiskVedleggId");
-        hasText(request.getTittel(), "tittel");
+        validateId(dokumentInfoId, DOKUMENT_INFO_ID_STRING);
+        validateId(logiskVedleggId, LOGISK_VEDLEGG_ID_STRING);
+        hasText(request.getTittel(), TITTEL_STRING);
 
-        abacSecurityService.assertAccessToDokumentIncludingSkjermet(Long.parseLong(dokumentInfoId));
+        abacSecurityService.assertAccessToDokumentInfo(Long.parseLong(dokumentInfoId));
 
         logiskVedleggService.endreLogiskVedlegg(dokumentInfoId, logiskVedleggId, request);
 
@@ -80,9 +82,7 @@ public class JournalfoerSkannetDokumentRestController {
         return ResponseEntity.ok("Logisk vedlegg endret");
     }
 
-    @Transactional
     @SwaggerLeggTilLogiskVedlegg
-    @ResponseBody
     @PostMapping(value = "/{dokumentInfoId}/logiskVedlegg/")
     @Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_JOURNALPOST)},
             actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION))
@@ -94,10 +94,10 @@ public class JournalfoerSkannetDokumentRestController {
         MDC.put(MDC_REQUEST_ID, "leggtillogiskvedlegg");
         log.info(MDC.get(MDC_REQUEST_ID) + " har mottatt kall om å legge til logisk vedlegg på dokument med dokumentInfoId={}", dokumentInfoId);
 
-        validateId(dokumentInfoId, "dokumentInfoId");
-        hasText(request.getTittel(), "tittel");
+        validateId(dokumentInfoId, DOKUMENT_INFO_ID_STRING);
+        hasText(request.getTittel(), TITTEL_STRING);
 
-        abacSecurityService.assertAccessToDokumentIncludingSkjermet(Long.parseLong(dokumentInfoId));
+        abacSecurityService.assertAccessToDokumentInfo(Long.parseLong(dokumentInfoId));
 
         String logiskVedleggId = logiskVedleggService.leggTilLogiskVedlegg(dokumentInfoId, request);
         LeggTilLogiskVedleggResponse response = LeggTilLogiskVedleggResponse.builder().logiskVedleggId(logiskVedleggId).build();
@@ -106,9 +106,7 @@ public class JournalfoerSkannetDokumentRestController {
         return ResponseEntity.ok(response);
     }
 
-    @Transactional
     @SwaggerSlettLogiskVedlegg
-    @ResponseBody
     @DeleteMapping(value = "/{dokumentInfoId}/logiskVedlegg/{logiskVedleggId}")
     @Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_JOURNALPOST)},
             actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION))
@@ -120,10 +118,10 @@ public class JournalfoerSkannetDokumentRestController {
         MDC.put(MDC_REQUEST_ID, "slettlogiskvedlegg");
         log.info(MDC.get(MDC_REQUEST_ID) + " har mottatt kall om å har mottatt kall om å slette logisk vedlegg med logiskVedleggId={} på dokument med dokumentInfoId={}", logiskVedleggId, dokumentInfoId);
 
-        validateId(dokumentInfoId, "dokumentInfoId");
-        validateId(logiskVedleggId, "logiskVedleggId");
+        validateId(dokumentInfoId, DOKUMENT_INFO_ID_STRING);
+        validateId(logiskVedleggId, LOGISK_VEDLEGG_ID_STRING);
 
-        abacSecurityService.assertAccessToDokumentIncludingSkjermet(Long.parseLong(dokumentInfoId));
+        abacSecurityService.assertAccessToDokumentInfo(Long.parseLong(dokumentInfoId));
 
         logiskVedleggService.slettLogiskVedlegg(dokumentInfoId, logiskVedleggId);
 

@@ -1,10 +1,12 @@
 package no.nav.dokarkiv.hentjournalsakinfo.rjoark902;
 
 import static no.nav.dokarkiv.core.util.TestDataGenerator.AVSENDER_MOTTAKER_ID;
+import static no.nav.dokarkiv.core.util.TestDataGenerator.AVSENDER_MOTTAKER_ID_TYPE;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.DOKUMENT_TYPE_ID;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createJournalpostWithHoveddokument;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
@@ -55,7 +57,6 @@ public class Rjoark902IT extends AbstractHentjournalsakinfoItest {
 	// Happy path
 	@Test
 	public void shouldGetJournalpost() {
-
 		Journalpost storedJournalpost = buildAndPersistJournalpost();
 		Long journalpostId = storedJournalpost.getJournalpostId();
 
@@ -69,6 +70,7 @@ public class Rjoark902IT extends AbstractHentjournalsakinfoItest {
 		assertEquals(FAGOMRADE, responseJournalpost.getFagomrade());
 		assertEquals(JOURNALSTATUS, responseJournalpost.getJournalstatus());
 		assertEquals(AVSENDER_MOTTAKER_ID, responseJournalpost.getAvsenderMottakerId());
+		assertEquals(AVSENDER_MOTTAKER_ID_TYPE, responseJournalpost.getAvsenderMottakerIdType());
 		assertEquals(AVSENDER, responseJournalpost.getAvsenderMottakerNavn());
 		assertEquals(JOURNALFOERT_AV, responseJournalpost.getJournalfortAvNavn());
 		assertEquals(MOTTAKSKANAL, responseJournalpost.getMottakskanal());
@@ -85,6 +87,9 @@ public class Rjoark902IT extends AbstractHentjournalsakinfoItest {
 		assertEquals(BREVKODE, responseDokumentInfo.getBrevkode());
 		assertEquals(DOKUMENT_TYPE_ID, responseDokumentInfo.getDokumenttypeId());
 		assertEquals(TITTEL, responseDokumentInfo.getTittel());
+		assertEquals(true, responseDokumentInfo.getKassert());
+
+		assertNotNull(responseDokumentInfo.getVarianter().get(0).getFiluuid());
 	}
 
 	//  Unhappy path
@@ -103,7 +108,7 @@ public class Rjoark902IT extends AbstractHentjournalsakinfoItest {
 	private Journalpost buildAndPersistJournalpost() {
 
 		Journalpost journalpost = createJournalpostWithHoveddokument();
-		journalpost.addJournalpostDokumentInfoRelasjon(TestDataGenerator.createDokumentInfoVedleggRelasjon(journalpost));
+		TestDataGenerator.createDokumentInfoVedleggRelasjon(journalpost);
 		saveJournalpost(journalpost);
 
 		journalpost.setJournalForendeEnhetId(JOURNALFOERENDE_ENHET);
@@ -125,6 +130,7 @@ public class Rjoark902IT extends AbstractHentjournalsakinfoItest {
 		storedDokumentInfo.setDokumentstatus(DOKUMENTSTATUS);
 		storedDokumentInfo.setBrevkode(BREVKODE);
 		storedDokumentInfo.setTittel(TITTEL);
+		storedDokumentInfo.setKassert(true);
 
 		joarkRepository.save(journalpost);
 		TestTransaction.flagForCommit();

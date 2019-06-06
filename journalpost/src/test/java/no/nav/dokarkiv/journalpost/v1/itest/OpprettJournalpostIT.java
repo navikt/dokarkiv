@@ -17,16 +17,20 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.INNHOLD;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.SAK_ID;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_FOR;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.VARIANTFORMAT_ARKIV;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createAvsenderMottakerUtenIdType;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createMinimalRequest;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createRequest;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createRequestAvsenderMottaker;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 import no.nav.dokarkiv.core.consumer.RestConsumerExceptionResponse;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
+import no.nav.dokarkiv.core.domain.codes.AvsenderMottakerIdTypeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
@@ -55,6 +59,8 @@ import java.util.stream.Collectors;
 
 public class OpprettJournalpostIT extends AbstractJournalpostIT {
 
+	private ObjectMapper mapper = new ObjectMapper();
+
 	@Test
 	public void happyPathOpprettInngaaende() throws IOException {
 		abacPermit();
@@ -70,6 +76,8 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertNotNull(journalpost.getJournalpostId());
 		assertEquals(JournalpostTypeCode.I, journalpost.getJournalposttype());
 		assertEquals(JournalStatusCode.M, journalpost.getJournalstatus());
+
+		assertEquals(AvsenderMottakerIdTypeCode.FNR, journalpost.getAvsenderMottakerIdType());
 
 		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
 		assertEquals(1, aksjonsLoggList.size());
@@ -334,4 +342,47 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
 
 	}
+
+	@Test
+	public void shouldJournalfoereSoeknadOmStoenadIPensjonsnoed() throws IOException {
+		abacPermit();
+
+		OpprettJournalpostRequest request = mapper.readValue(classpathToString("__files/opprettJournalpostMedEttDokument.json"), OpprettJournalpostRequest.class);
+
+		HttpEntity requestEntity = new HttpEntity(request, createHeadersWithServiceUserToken());
+		ResponseEntity<OpprettJournalpostResponse> response = restTemplate.exchange(URL_JOURNALPOST, HttpMethod.POST, requestEntity, OpprettJournalpostResponse.class);
+
+		assertEquals(HttpStatus.CREATED, response.getStatusCode());
+		assertEquals("M", response.getBody().getJournalstatus());
+
+	}
+
+	@Test
+	public void shouldEndeligJournalfoereSoeknadOmForeldrepengerVedFoedsel() throws IOException {
+		abacPermit();
+
+		OpprettJournalpostRequest request = mapper.readValue(classpathToString("__files/soeknadOmForeldrepengerVedFoedsel.json"), OpprettJournalpostRequest.class);
+
+		HttpEntity requestEntity = new HttpEntity(request, createHeadersWithServiceUserToken());
+		ResponseEntity<OpprettJournalpostResponse> response = restTemplate.exchange(URL_JOURNALPOST + FERDIGSTILL_QUERY, HttpMethod.POST, requestEntity, OpprettJournalpostResponse.class);
+
+		assertEquals(HttpStatus.CREATED, response.getStatusCode());
+		assertEquals("ENDELIG", response.getBody().getJournalstatus());
+
+	}
+
+	@Test
+	public void shouldNotFailIfIdTypeIsEmpty() throws IOException {
+		abacPermit();
+
+		OpprettJournalpostRequest request = createRequestAvsenderMottaker(INNGAAENDE, createAvsenderMottakerUtenIdType());
+
+		HttpEntity requestEntity = new HttpEntity(request, createHeadersWithServiceUserToken());
+		ResponseEntity response = restTemplate.exchange(URL_JOURNALPOST, HttpMethod.POST, requestEntity, Void.class);
+
+		assertEquals(HttpStatus.CREATED, response.getStatusCode());
+
+	}
+
+
 }

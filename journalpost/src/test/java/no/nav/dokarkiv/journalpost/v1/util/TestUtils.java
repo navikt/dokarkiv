@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.journalpost.v1.util;
 
+import no.nav.dokarkiv.core.domain.codes.AvsenderMottakerIdTypeCode;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
@@ -19,6 +20,7 @@ import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
 import no.nav.dokarkiv.core.domain.entities.SkannetInnhold;
 import no.nav.dokarkiv.journalpost.v1.api.Arkivsaksystem;
 import no.nav.dokarkiv.journalpost.v1.api.AvsenderMottaker;
+import no.nav.dokarkiv.journalpost.v1.api.AvsenderMottakerIdType;
 import no.nav.dokarkiv.journalpost.v1.api.BrukerIdType;
 import no.nav.dokarkiv.journalpost.v1.api.Dokument;
 import no.nav.dokarkiv.journalpost.v1.api.DokumentVariant;
@@ -44,8 +46,14 @@ public class TestUtils {
 	public static final long JOURNALPOST_ID = 1234L;
 	public static final String AVSENDER_NAVN = "avsenderNavn";
 	public static final String AVSENDER_NAVN_ORGANISASJON = "avsenderNavn_org";
+	public static final String AVSENDER_NAVN_HELSEPERSONELLNR = "avsenderNavn_hprnr";
+	public static final String AVSENDER_NAVN_UTLORGANISASJON = "avsenderNavn_utl_org";
 	public static final String AVSENDER_ID_PERSON = "***gammelt_fnr***";
 	public static final String AVSENDER_ID_ORGANISASJON = "123456789";
+	public static final String AVSENDER_ID_HELSEPERSONELLNR = "123456789";
+	public static final String AVSENDER_ID_UTLORGANISASJON = "123456789";
+
+
 	public static final String BRUKER_ID_PERSON = "***gammelt_fnr***";
 	public static final String BRUKER_ID_ORGANISASJON = "987654321";
 	public static final String SAK_ID = "sakId";
@@ -91,6 +99,7 @@ public class TestUtils {
 				.journalpostId(JOURNALPOST_ID)
 				.journalstatus(JournalStatusCode.J)
 				.avsenderMottakerId(AVSENDER_ID_PERSON)
+				.avsenderMottakerIdType(AvsenderMottakerIdTypeCode.FNR)
 				.avsenderMottaker(AVSENDER_NAVN)
 				.journalposttype(JournalpostTypeCode.I)
 				.fagomrade(FagomradeCode.FS22)
@@ -233,13 +242,42 @@ public class TestUtils {
 				.build();
 	}
 
-	private static AvsenderMottaker createAvsenderMottakerOrganisasjon() {
+	public static AvsenderMottaker createAvsenderMottakerOrganisasjon() {
 		return AvsenderMottaker.builder()
 				.navn(AVSENDER_NAVN_ORGANISASJON)
 				.id(AVSENDER_ID_ORGANISASJON)
+				.idType(AvsenderMottakerIdType.ORGNR)
 				.land(AVSENDER_MOTTAKER_LAND)
 				.build();
 	}
+
+	public static AvsenderMottaker createAvsenderMottakerHelsepersonell() {
+		return AvsenderMottaker.builder()
+				.navn(AVSENDER_NAVN_HELSEPERSONELLNR)
+				.id(AVSENDER_ID_HELSEPERSONELLNR)
+				.idType(AvsenderMottakerIdType.HPRNR)
+				.land(AVSENDER_MOTTAKER_LAND)
+				.build();
+	}
+
+	public static AvsenderMottaker createAvsenderMottakerUtlandOrganisasjon() {
+		return AvsenderMottaker.builder()
+				.navn(AVSENDER_NAVN_UTLORGANISASJON)
+				.id(AVSENDER_ID_UTLORGANISASJON)
+				.idType(AvsenderMottakerIdType.UTL_ORG)
+				.land(AVSENDER_MOTTAKER_LAND)
+				.build();
+	}
+
+	public static AvsenderMottaker createAvsenderMottakerUtenIdType() {
+		return AvsenderMottaker.builder()
+				.navn(AVSENDER_NAVN_UTLORGANISASJON)
+				.id(AVSENDER_ID_UTLORGANISASJON)
+				.idType(null)
+				.land(AVSENDER_MOTTAKER_LAND)
+				.build();
+	}
+
 
 	public static no.nav.dokarkiv.journalpost.v1.api.Bruker createBrukerPerson() {
 		return no.nav.dokarkiv.journalpost.v1.api.Bruker.builder()
@@ -309,7 +347,7 @@ public class TestUtils {
 								.brevkode(BREVKODE2)
 								.dokumentKategori(DOKUMENTKATEGORI_SED)
 								.dokumentvarianter(Collections.singletonList(DokumentVariant.builder()
-										.filtype(FILTYPE_XML)
+										.filtype(FILTYPE_PDF)
 										.variantformat(VARIANTFORMAT_ARKIV)
 										.fysiskDokument(FYSISK_DOKUMENT)
 										.build()))
@@ -326,6 +364,7 @@ public class TestUtils {
 				.journalpostType(journalpostType)
 				.avsenderMottaker(AvsenderMottaker.builder()
 						.id(AVSENDER_ID_PERSON)
+						.idType(AvsenderMottakerIdType.FNR)
 						.navn(AVSENDER_NAVN)
 						.build())
 				.bruker(no.nav.dokarkiv.journalpost.v1.api.Bruker.builder()
@@ -337,7 +376,10 @@ public class TestUtils {
 				.tittel(INNHOLD)
 				.kanal(KANAL_NAVNO)
 				.eksternReferanseId(KANALREFERANSE_ID)
-				.tilleggsopplysninger(Collections.singletonList(Tilleggsopplysning.builder().nokkel(TILLEGGSOPPLYSNING_NOKKEL).verdi(TILLEGGSOPPLYSNING_VERDI).build()))
+				.tilleggsopplysninger(Collections.singletonList(Tilleggsopplysning.builder()
+						.nokkel(TILLEGGSOPPLYSNING_NOKKEL)
+						.verdi(TILLEGGSOPPLYSNING_VERDI)
+						.build()))
 				.sak(Sak.builder()
 						.arkivsaksnummer(SAK_ID)
 						.arkivsaksystem(Arkivsaksystem.GSAK)
@@ -349,5 +391,16 @@ public class TestUtils {
 				.journalpostType(journalpostType)
 				.tema(tema)
 				.tittel(tittel);
+	}
+
+	public static OpprettJournalpostRequest createRequestAvsenderMottaker(JournalpostType journalpostType, AvsenderMottaker avsenderMottaker) {
+		return OpprettJournalpostRequest.builder()
+				.journalpostType(journalpostType)
+				.avsenderMottaker(avsenderMottaker)
+				.tema(TEMA_FOR)
+				.tittel(INNHOLD)
+				.build();
+
+
 	}
 }

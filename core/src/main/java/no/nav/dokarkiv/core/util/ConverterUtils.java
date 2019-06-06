@@ -18,6 +18,10 @@ public class ConverterUtils {
 		return Enum.valueOf(clazz, value);
 	}
 
+	public static String enumToString(Enum en) {
+		return en == null ? null : en.name();
+	}
+
 	public static <T> T jsonStringToObject(String jsonString, Class<T> tClass) throws IOException {
 		ObjectMapper mapper = new ObjectMapper();
 

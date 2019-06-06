@@ -26,7 +26,6 @@ import no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder;
 import no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder;
 import no.nav.dokarkiv.core.domain.builder.JournalpostBuilder;
 import no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder;
-import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
@@ -34,6 +33,7 @@ import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
 import no.nav.dokarkiv.core.domain.codes.OnDemandInstansCode;
+import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentUrlInfo;
@@ -218,7 +218,7 @@ public class HentDokumentIT extends AbstractJournalV3Itest {
 		HentDokumentRequest request = createRequest(journalpost);
 		persistDokumentFil();
 		persistDokumentFilSladdet();
-		skjermingService.setJournalpostSkjerming(journalpost, SkjermingTypeCode.POL);
+		skjermingService.setJournalpostSkjerming(journalpost.getJournalpostId(), SkjermingTypeCode.POL);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
@@ -233,7 +233,9 @@ public class HentDokumentIT extends AbstractJournalV3Itest {
 		HentDokumentRequest request = createRequest(journalpost);
 		persistDokumentFil();
 		persistDokumentFilSladdet();
-		skjermingService.setVariantSkjermet(journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo(), VariantFormatCode.ARKIV, SkjermingTypeCode.POL);
+		skjermingService.setVariantSkjermet(journalpost.findHoveddokumentDokumentInfoRelasjon()
+				.getDokumentInfo()
+				.getDokumentInfoId(), VariantFormatCode.ARKIV, SkjermingTypeCode.POL);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
@@ -252,7 +254,8 @@ public class HentDokumentIT extends AbstractJournalV3Itest {
 		persistDokumentFilSladdet();
 		persistDokumentFilDummy();
 
-		skjermingService.skjermAllFildetaljer(journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo(), SkjermingTypeCode.POL);
+		skjermingService.setDokumentKassert(journalpost.findHoveddokumentDokumentInfoRelasjon()
+				.getDokumentInfo(), SkjermingTypeCode.POL);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 

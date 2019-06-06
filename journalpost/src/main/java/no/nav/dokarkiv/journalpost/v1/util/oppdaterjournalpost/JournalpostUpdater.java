@@ -6,6 +6,7 @@ import static org.apache.logging.log4j.util.Strings.isNotBlank;
 
 import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
+import no.nav.dokarkiv.core.domain.codes.AvsenderMottakerIdTypeCode;
 import no.nav.dokarkiv.core.domain.codes.Behandlingstema;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
@@ -14,6 +15,7 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
 import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
 import no.nav.dokarkiv.core.repository.BrukerRepository;
+import no.nav.dokarkiv.journalpost.v1.api.AvsenderMottakerIdType;
 import no.nav.dokarkiv.journalpost.v1.api.BrukerIdType;
 import no.nav.dokarkiv.journalpost.v1.api.OppdaterJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.Tilleggsopplysning;
@@ -49,6 +51,7 @@ public class JournalpostUpdater {
 		updateBehandlingstema(journalpost, oppdaterJournalpostRequest, endret);
 		updateTilleggsopplysninger(journalpost, oppdaterJournalpostRequest, endret);
 		updateJournalfoerendeEnhet(journalpost, oppdaterJournalpostRequest, endret);
+		updateReturInfo(journalpost, oppdaterJournalpostRequest, endret);
 		updateBruker(journalpost, oppdaterJournalpostRequest, endret);
 
 		if (endret.isEndretFlagg()) {
@@ -64,8 +67,17 @@ public class JournalpostUpdater {
 		}
 	}
 
+	private void updateReturInfo(Journalpost journalpost, OppdaterJournalpostRequest oppdaterJournalpostRequest, Endret endret) {
+		if (oppdaterJournalpostRequest.getDatoRetur() != null) {
+			journalpost.setAvsendtReturDato(oppdaterJournalpostRequest.getDatoRetur());
+			journalpost.setAntallRetur(journalpost.getAntallRetur() == null ? 1 : (journalpost.getAntallRetur()+1));
+			endret.setEndretFlagg(true);
+		}
+	}
+
 	private void updateTilleggsopplysninger(Journalpost journalpost, OppdaterJournalpostRequest oppdaterJournalpostRequest, Endret endret) {
-		if (oppdaterJournalpostRequest.getTilleggsopplysninger() != null && !oppdaterJournalpostRequest.getTilleggsopplysninger().isEmpty()) {
+		if (oppdaterJournalpostRequest.getTilleggsopplysninger() != null && !oppdaterJournalpostRequest.getTilleggsopplysninger()
+				.isEmpty()) {
 			journalpost.setTilleggsopplysninger(mapTilleggsopplysninger(oppdaterJournalpostRequest.getTilleggsopplysninger()));
 			endret.setEndretFlagg(true);
 		}
@@ -84,10 +96,31 @@ public class JournalpostUpdater {
 				journalpost.setAvsenderMottaker(oppdaterJournalpostRequest.getAvsenderMottaker().getNavn());
 				endret.setEndretFlagg(true);
 			}
-			if (isNotBlank(oppdaterJournalpostRequest.getAvsenderMottaker().getId())) {
+			if ((oppdaterJournalpostRequest.getAvsenderMottaker().getId()) != null) {
 				journalpost.setAvsenderMottakerId(oppdaterJournalpostRequest.getAvsenderMottaker().getId());
+				if(oppdaterJournalpostRequest.getAvsenderMottaker().getId().trim().length() == 0) {
+					journalpost.setAvsenderMottakerId(null);
+				}
 				endret.setEndretFlagg(true);
 			}
+			if (oppdaterJournalpostRequest.getAvsenderMottaker().getIdType() != null) {
+				if (AvsenderMottakerIdType.FNR.equals(oppdaterJournalpostRequest.getAvsenderMottaker()
+						.getIdType())) {
+					journalpost.setAvsenderMottakerIdType(AvsenderMottakerIdTypeCode.FNR);
+				} else if (AvsenderMottakerIdType.ORGNR.equals(oppdaterJournalpostRequest.getAvsenderMottaker()
+						.getIdType())) {
+					journalpost.setAvsenderMottakerIdType(AvsenderMottakerIdTypeCode.ORGNR);
+				} else if (AvsenderMottakerIdType.HPRNR.equals(oppdaterJournalpostRequest.getAvsenderMottaker()
+						.getIdType())) {
+					journalpost.setAvsenderMottakerIdType(AvsenderMottakerIdTypeCode.HPRNR);
+				} else if (AvsenderMottakerIdType.UTL_ORG.equals(oppdaterJournalpostRequest.getAvsenderMottaker()
+						.getIdType())) {
+					journalpost.setAvsenderMottakerIdType(AvsenderMottakerIdTypeCode.UTL_ORG);
+				}
+				endret.setEndretFlagg(true);
+
+			}
+
 			if (isNotBlank(oppdaterJournalpostRequest.getAvsenderMottaker().getLand())) {
 				journalpost.setLand(oppdaterJournalpostRequest.getAvsenderMottaker().getLand());
 				endret.setEndretFlagg(true);
@@ -108,10 +141,11 @@ public class JournalpostUpdater {
 	}
 
 	private Map<String, String> mapTilleggsopplysninger(List<Tilleggsopplysning> tilleggsopplysninger) {
-	    return tilleggsopplysninger.stream().collect(Collectors.toMap(Tilleggsopplysning::getNokkel, Tilleggsopplysning::getVerdi));
-    }
+		return tilleggsopplysninger.stream()
+				.collect(Collectors.toMap(Tilleggsopplysning::getNokkel, Tilleggsopplysning::getVerdi));
+	}
 
-    private void updateTittel(Journalpost journalpost, OppdaterJournalpostRequest oppdaterJournalpostRequest, AksjonsLoggHelper aksjonsLoggHelperMetadata, Endret endret) {
+	private void updateTittel(Journalpost journalpost, OppdaterJournalpostRequest oppdaterJournalpostRequest, AksjonsLoggHelper aksjonsLoggHelperMetadata, Endret endret) {
 		if (isNotBlank(oppdaterJournalpostRequest.getTittel())) {
 			aksjonsLoggHelperMetadata.addToArkivElementEndringTOs(ArkivElementEndringTO.builder()
 					.arkivElement("Journalpost.innhold")
@@ -124,7 +158,7 @@ public class JournalpostUpdater {
 
 	}
 
-    private void updateBruker(Journalpost journalpost, OppdaterJournalpostRequest oppdaterJournalpostRequest, Endret endret) {
+	private void updateBruker(Journalpost journalpost, OppdaterJournalpostRequest oppdaterJournalpostRequest, Endret endret) {
 		Set<Bruker> brukere = journalpost.getBrukere();
 		if (brukere.isEmpty() || brukere.size() > 1) {
 			brukerRepository.deleteBrukerByJournalpostId(journalpost.getJournalpostId().toString());

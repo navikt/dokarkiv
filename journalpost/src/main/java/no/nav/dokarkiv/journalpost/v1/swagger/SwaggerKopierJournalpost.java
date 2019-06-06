@@ -15,7 +15,7 @@ import java.lang.annotation.Target;
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@ApiOperation("Kopier Journalpost")
+@ApiOperation(hidden = true, value = "Kloner journalposten. Den nye journalposten settes i en midlertidig status slik at den kan knyttes til en annen sak/bruker")
 @ApiResponses(value = {
 		@ApiResponse(code = 200, message = "OK"),
 		@ApiResponse(code = 400, message = "* Kan ikke kopiere journalpost"),
