@@ -58,6 +58,8 @@ public class Rjoark101IT extends AbstractAdminIT {
 		Journalpost journalpost2 = createJournalpostWithHoveddokument();
 
 		Journalpost journalpost = createJournalpostWithHoveddokument();
+		saveJournalpost(journalpost);
+
 		createDokumentInfoVedleggRelasjon(journalpost);
 		saveJournalpost(journalpost1);
 		saveJournalpost(journalpost2);
@@ -110,9 +112,14 @@ public class Rjoark101IT extends AbstractAdminIT {
 				.next()
 				.getDokumentInfo()
 				.getDokumentInfoId();
+		Long dokInfoHoveddok = journalpost.findHoveddokumentDokumentInfoRelasjon()
+				.getDokumentInfo()
+				.getDokumentInfoId();
 		assertAksjonsLogg(getAksjonsLoggByJournalpostIdAndDokumentInfoId(aksjonsLoggList, journalpost.getJournalpostId(), dokInfoIdVedlegg), AksjonsTypeCode.SLETT, journalpost
 				.getJournalpostId(), dokInfoIdVedlegg,
-				String.format("Journalpost med journalpostId %s er fysisk slettet og kan ikke gjenopprettes lenger.", journalpost.getJournalpostId()),
+				String.format("Journalpost med journalpostId %s knyttet til dokumentInfoId(er) %s, %s er fysisk slettet og kan ikke gjenopprettes lenger.", journalpost.getJournalpostId(),
+						dokInfoHoveddok, dokInfoIdVedlegg
+						),
 				Arrays.asList(
 				ArkivElementEndring.builder()
 						.arkivElement(RELASJON_DOKUMENT_INFO_ID)
@@ -125,12 +132,12 @@ public class Rjoark101IT extends AbstractAdminIT {
 						.tilVerdi(null)
 						.build()));
 
-		Long dokInfoHoveddok = journalpost.findHoveddokumentDokumentInfoRelasjon()
-				.getDokumentInfo()
-				.getDokumentInfoId();
+
 		assertAksjonsLogg(getAksjonsLoggByJournalpostIdAndDokumentInfoId(aksjonsLoggList, journalpost.getJournalpostId(), dokInfoHoveddok), AksjonsTypeCode.SLETT, journalpost
 				.getJournalpostId(), dokInfoHoveddok,
-				String.format("Journalpost med journalpostId %s er fysisk slettet og kan ikke gjenopprettes lenger.", journalpost.getJournalpostId()),
+				String.format("Journalpost med journalpostId %s knyttet til dokumentInfoId(er) %s, %s er fysisk slettet og kan ikke gjenopprettes lenger.", journalpost.getJournalpostId(),
+						dokInfoHoveddok, dokInfoIdVedlegg
+				),
 				Arrays.asList(
 				ArkivElementEndring.builder()
 						.arkivElement(RELASJON_DOKUMENT_INFO_ID)
@@ -145,7 +152,9 @@ public class Rjoark101IT extends AbstractAdminIT {
 
 		assertAksjonsLogg(getAksjonsLoggByJournalpostIdAndDokumentInfoId(aksjonsLoggList, journalpost.getJournalpostId(), null), AksjonsTypeCode.SLETT, journalpost
 				.getJournalpostId(), null,
-				String.format("Journalpost med journalpostId %s er fysisk slettet og kan ikke gjenopprettes lenger.", journalpost.getJournalpostId()),
+				String.format("Journalpost med journalpostId %s knyttet til dokumentInfoId(er) %s, %s er fysisk slettet og kan ikke gjenopprettes lenger.", journalpost.getJournalpostId(),
+						dokInfoHoveddok, dokInfoIdVedlegg
+				),
 				Arrays.asList(
 				ArkivElementEndring.builder()
 						.arkivElement(JOURNALPOST_JOURNALPOST_ID)

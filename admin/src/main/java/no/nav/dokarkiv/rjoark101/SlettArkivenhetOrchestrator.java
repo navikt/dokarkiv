@@ -1,7 +1,6 @@
 package no.nav.dokarkiv.rjoark101;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
-import static org.apache.commons.lang3.StringUtils.swapCase;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
@@ -14,7 +13,7 @@ import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
 import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
 import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
 import no.nav.dokarkiv.exception.UgyldigSlettArkivenhetInputException;
-import org.apache.logging.log4j.util.Strings;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -44,7 +43,7 @@ public class SlettArkivenhetOrchestrator {
 		List<ArkivElementEndringTO> arkivElementEndringTOList = new ArrayList<>();
 		assertNotNullOrEmpty(arkivenhet, "arkivEnhet");
 
-		String aksjonsLoggMelding = Strings.isBlank(melding) ? generateAksjonsLoggMelding(arkivenhet, journalpostId, dokumentInfoId, variant) : melding;
+		String aksjonsLoggMelding = StringUtils.isBlank(melding) ? generateAksjonsLoggMelding(arkivenhet, journalpostId, dokumentInfoId, variant) : melding;
 
 		switch (arkivenhet) {
 			case JOURNALPOST:
@@ -71,7 +70,15 @@ public class SlettArkivenhetOrchestrator {
 	private String generateAksjonsLoggMelding(ArkivenhetCode arkivenhetCode, Long journalpostId, Long dokumentInfoId, VariantFormatCode variantFormatCode) {
 		switch (arkivenhetCode) {
 			case JOURNALPOST:
-				return String.format("Journalpost med journalpostId %s er fysisk slettet og kan ikke gjenopprettes lenger.", journalpostId);
+				List<Long> knyttetTilDokumentInfoId = relasjonRepository.findAllByJournalpostJournalpostId(journalpostId).stream().map(rel -> rel.getDokumentInfo().getDokumentInfoId())
+						.collect(Collectors.toList());
+				return String.format("Journalpost med journalpostId %s knyttet til dokumentInfoId(er) %s er fysisk slettet og kan ikke gjenopprettes lenger.", journalpostId,
+						knyttetTilDokumentInfoId
+								.stream()
+								.map(Object::toString)
+								.sorted()
+								.collect(Collectors.joining(", "))
+				);
 			case DOKUMENT_INFO:
 				List<Long> knyttetTilJournalpostId = relasjonRepository.findAllByDokumentInfoDokumentInfoId(dokumentInfoId).stream().map(rel -> rel.getJournalpost().getJournalpostId())
 						.collect(Collectors.toList());
