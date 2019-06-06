@@ -1,0 +1,2 @@
+INSERT INTO T_K_BEGRENSNING_TYPE (BEGRENSNING_TYPE, BEGRENSNING_BESKRIVELSE, DATO_OPPRETTET, OPPRETTET_AV)
+VALUES ('FEIL', 'Indikerer at det har blitt gjort en feil under mottak, journalføring eller brevproduksjon, slik at journalposten eller dokumentene er markert for sletting.', sysdate, 'Ugur Alpay Cenar');
