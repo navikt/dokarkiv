@@ -13,10 +13,10 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AvsenderMottaker {
-	@ApiModelProperty(
-			value = "Identifikatoren til avsender/mottaker. Dette er normalt et fødselsnummer eller organisasjonsnummer, men valideres ikke.",
-			required = false)
-	private String id;
+    @ApiModelProperty(
+            value = "Identifikatoren til avsender/mottaker. Dette er normalt et fødselsnummer eller organisasjonsnummer, men valideres ikke. Dersom det ønskes å nullstille denne verdien, kan den settes til en tom string.",
+            required = false)
+    private String id;
 
 	@ApiModelProperty(
 			value = "Angir hvilken type identifikator som er benyttet i AvsenderMottaker.id.",
@@ -26,7 +26,7 @@ public class AvsenderMottaker {
 	@NotNull(message = "AvsenderMottaker mangler navn")
 	@ApiModelProperty(
 			value = "Navnet til avsender/mottaker.\nNavn på personbrukere skal lagres på formatet etternavn, fornavn mellomnavn",
-			required = true)
+			required = false)
 	private String navn;
 
 	@ApiModelProperty(

@@ -28,6 +28,7 @@ import no.nav.dokarkiv.core.domain.codes.AvsenderMottakerIdTypeCode;
 import no.nav.dokarkiv.core.domain.codes.Behandlingstema;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
+import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
 import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
@@ -107,7 +108,7 @@ public class OpprettJournalpostApiRequestMapperTest {
 		FilDetaljer filDetaljer2 = dokumentInfo2.getFildetaljerListe().iterator().next();
 		assertArrayEquals(FYSISK_DOKUMENT, filDetaljer2.getFileContent());
 		assertNotNull(filDetaljer2.getFilUuid());
-		assertEquals(FilTypeCode.XML, filDetaljer2.getFiltype());
+		assertEquals(FilTypeCode.PDF, filDetaljer2.getFiltype());
 		assertEquals(VariantFormatCode.ARKIV, filDetaljer2.getVariantFormat());
 	}
 
@@ -120,6 +121,11 @@ public class OpprettJournalpostApiRequestMapperTest {
 		assertNull(jp.getMottakskanal());
 		assertEquals(UtsendingsKanalCode.NAV_NO, jp.getUtsendingskanal());
 		assertEquals(JournalStatusCode.D, jp.getJournalstatus());
+
+		JournalpostDokumentInfoRelasjon relasjon = jp.findHoveddokumentDokumentInfoRelasjon();
+		JournalpostDokumentInfoRelasjon relasjon2 = jp.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG).iterator().next();
+		assertEquals(DokumentStatusCode.FERDIGSTILT, relasjon.getDokumentInfo().getDokumentstatus());
+		assertEquals(DokumentStatusCode.FERDIGSTILT, relasjon2.getDokumentInfo().getDokumentstatus());
 	}
 
 	@Test

@@ -56,7 +56,7 @@ public class OppdaterJournalpostService {
 				(journalpost.getBrukere().isEmpty() ? null : journalpost.getBrukere().iterator().next().getBrukerId())
 		);
 
-		validateOppdaterteFelt(oppdaterJournalpostRequest, journalpost.getJournalstatus());
+		validateOppdaterteFelt(oppdaterJournalpostRequest, journalpost.getJournalstatus(), journalpost.getJournalposttype());
 
 		AksjonsLoggHelper aksjonsLoggHelperJournalpost = new AksjonsLoggHelper();
 		journalpostUpdater.updateFields(journalpost, oppdaterJournalpostRequest, aksjonsLoggHelperJournalpost);
