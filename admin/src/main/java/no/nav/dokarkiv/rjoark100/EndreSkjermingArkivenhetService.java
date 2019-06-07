@@ -58,10 +58,10 @@ public class EndreSkjermingArkivenhetService {
 		Journalpost journalpost = hentJournalpost(journalpostId);
 		Map<JournalpostDokumentInfoPair, List<ArkivElementEndringTO>> aksjonsLoggMap = new HashMap<>();
 
-		//Skjerm JournalpostRelasjoner. For at oppførsel skal bli likt med skjermDokumentInfo må alle relasjoner skjermes før Journalpost skjermes.
-		journalpost.getJournalpostDokumentInfoRelasjonerAdmin()
-				.forEach(rel -> aksjonsLoggMap.put(JournalpostDokumentInfoPair.of(journalpostId, rel.getDokumentInfo()
-						.getDokumentInfoId()), endreSkjermingJournalpostDokumentInfoRelasjon(rel, tilSkjerming)));
+//		//Skjerm JournalpostRelasjoner. For at oppførsel skal bli likt med skjermDokumentInfo må alle relasjoner skjermes før Journalpost skjermes.
+//		journalpost.getJournalpostDokumentInfoRelasjonerAdmin()
+//				.forEach(rel -> aksjonsLoggMap.put(JournalpostDokumentInfoPair.of(journalpostId, rel.getDokumentInfo()
+//						.getDokumentInfoId()), endreSkjermingJournalpostDokumentInfoRelasjon(rel, tilSkjerming)));
 
 		List<ArkivElementEndringTO> arkivElementEndringTOList = new ArrayList<>();
 		//Skjerm Journalpost
