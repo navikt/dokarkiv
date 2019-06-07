@@ -59,7 +59,7 @@ class AksjonsLoggMapper {
 	private String mapBruker(String bruker, Journalpost journalpost) {
 	    if (Strings.isNotEmpty(bruker)) {
 			return bruker;
-		} else if (journalpost != null && journalpost.getBrukere() != null) {
+		} else if (journalpost != null && journalpost.getBrukere() != null && !journalpost.getBrukere().isEmpty()) {
 	        if (journalpost.getBrukere().size() == 1) {
                 bruker = journalpost.getBrukere().iterator().next().getBrukerId();
 			} else {

@@ -5,7 +5,6 @@ import static no.nav.abac.xacml.NavAttributter.RESOURCE_FELLES_RESOURCE_TYPE;
 import static no.nav.abac.xacml.StandardAttributter.ACTION_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
-import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.FEILREGISTRER;
 import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.UPDATE_ACTION;
 import static no.nav.dokarkiv.journalpost.v1.util.AvvikstypeConstants.AVBRYT;
 import static no.nav.dokarkiv.journalpost.v1.util.AvvikstypeConstants.FEILREGISTRER_SAKSTILKNYTNING;
@@ -44,7 +43,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/rest/journalpostapi/v1/journalpost")
 @Api(value = "Feilregistrer", description = "Tjenester for å feilregistrere journalpost")
-public class FeilregistrerRestController {
+public class FeilregistrerJournalpostRestController {
 
     private static final String FIKK_UKJENT_BRUKER = "Journalposten fikk status Ukjent Bruker";
     private static final String FIKK_AVBRUTT_UTGAAR = "Journalposten ble satt til avbrutt / utgår";
@@ -56,10 +55,10 @@ public class FeilregistrerRestController {
     private final AksjonsLoggService aksjonsLoggService;
 
     @Inject
-    public FeilregistrerRestController(final FeilregistrerSakstilknytningService feilregistrerSakstilknytningService,
-                                       final SettUkjentBrukerService settUkjentBrukerService,
-                                       final AvbrytService avbrytService,
-                                       final AksjonsLoggService aksjonsLoggService){
+    public FeilregistrerJournalpostRestController(final FeilregistrerSakstilknytningService feilregistrerSakstilknytningService,
+                                                  final SettUkjentBrukerService settUkjentBrukerService,
+                                                  final AvbrytService avbrytService,
+                                                  final AksjonsLoggService aksjonsLoggService){
         this.feilregistrerSakstilknytningService = feilregistrerSakstilknytningService;
         this.settUkjentBrukerService = settUkjentBrukerService;
         this.avbrytService = avbrytService;
@@ -75,7 +74,7 @@ public class FeilregistrerRestController {
     public ResponseEntity<String> feilregistrerSakstilkytning (
             @PathVariable @ApiParam(value = "IDen til journalposten som skal feilregistreres", required = true, example = "77778888") String journalpostId) {
         List<ArkivElementEndringTO> arkivElementEndringTOList = feilregistrerSakstilknytningService.feilregistrerSakstilknytning(journalpostId);
-        populerAksjonslogg(journalpostId, FEILREGISTRER, arkivElementEndringTOList, "Saksrelasjonen ble feilregistrert");
+        populerAksjonslogg(journalpostId, AksjonsTypeCode.FEILREGISTRER_SAKSTILKNYTNING, arkivElementEndringTOList, "Saksrelasjonen ble feilregistrert");
         log.info(MDC.get(MDC_REQUEST_ID) + " har feilregistrert journalpost med journalpostId={}", journalpostId);
         return ResponseEntity.ok().body("Saksrelasjonen ble feilregistrert");
     }

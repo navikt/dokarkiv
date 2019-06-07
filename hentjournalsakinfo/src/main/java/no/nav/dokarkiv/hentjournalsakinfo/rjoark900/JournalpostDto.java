@@ -1,6 +1,7 @@
 package no.nav.dokarkiv.hentjournalsakinfo.rjoark900;
 
 import lombok.Value;
+import no.nav.dokarkiv.core.domain.codes.AvsenderMottakerIdTypeCode;
 import no.nav.dokarkiv.core.domain.codes.Behandlingstema;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
@@ -31,6 +32,7 @@ public class JournalpostDto {
 	private final String behandlingstemanavn;
 	private final JournalStatusCode journalstatus;
 	private final String avsenderMottakerId;
+	private final AvsenderMottakerIdTypeCode avsenderMottakerIdType;
 	private final String avsenderMottakerNavn;
 	private final String avsenderMottakerLand;
 	private final String journalforendeEnhet;

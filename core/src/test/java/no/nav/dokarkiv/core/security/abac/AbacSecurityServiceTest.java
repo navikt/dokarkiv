@@ -54,23 +54,18 @@ public class AbacSecurityServiceTest {
 	public static final Long DEFAULT_JOURNALPOST = 1L;
 	private static final String SAK_ID = "123";
 
+	@Mock
 	private static AbacContext abacContext;
-
 	@Mock
 	private AbacLogger abaclog;
 	@Mock
 	private AbacService abacService;
 	@Mock
 	private JdbcAbacSecurityRepository jdbcAbacSecurityRepository;
-
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
 	@InjectMocks
 	private AbacSecurityService abacSecurityService;
-
-	@Mock
-	private JoarkRepository joarkRepository;
-
 	@Mock
 	private JoarkRepositorySkjermet joarkRepositorySkjermet;
 
@@ -80,8 +75,7 @@ public class AbacSecurityServiceTest {
 				Collections.<Obligation>emptyList(),
 				Collections.<Advice>emptyList()));
 		when(joarkRepositorySkjermet.existsById(DEFAULT_JOURNALPOST)).thenReturn(true);
-		abacContext = new ThreadLocalAbacContext();
-		abacSecurityService.setAbacContext(abacContext);
+		when(abacContext.getRequest()).thenReturn(new ThreadLocalAbacContext().getRequest());
 	}
 
 	@Test

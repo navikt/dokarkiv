@@ -13,16 +13,22 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.KANALREFERANSE_ID;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.SAK_ID;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TILLEGGSOPPLYSNING_NOKKEL;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TILLEGGSOPPLYSNING_VERDI;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createAvsenderMottakerHelsepersonell;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createAvsenderMottakerOrganisasjon;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createAvsenderMottakerUtlandOrganisasjon;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createRequest;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createRequestAvsenderMottaker;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createRequestUtenDokumenter;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
+import no.nav.dokarkiv.core.domain.codes.AvsenderMottakerIdTypeCode;
 import no.nav.dokarkiv.core.domain.codes.Behandlingstema;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
+import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
 import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
@@ -102,7 +108,7 @@ public class OpprettJournalpostApiRequestMapperTest {
 		FilDetaljer filDetaljer2 = dokumentInfo2.getFildetaljerListe().iterator().next();
 		assertArrayEquals(FYSISK_DOKUMENT, filDetaljer2.getFileContent());
 		assertNotNull(filDetaljer2.getFilUuid());
-		assertEquals(FilTypeCode.XML, filDetaljer2.getFiltype());
+		assertEquals(FilTypeCode.PDF, filDetaljer2.getFiltype());
 		assertEquals(VariantFormatCode.ARKIV, filDetaljer2.getVariantFormat());
 	}
 
@@ -115,6 +121,11 @@ public class OpprettJournalpostApiRequestMapperTest {
 		assertNull(jp.getMottakskanal());
 		assertEquals(UtsendingsKanalCode.NAV_NO, jp.getUtsendingskanal());
 		assertEquals(JournalStatusCode.D, jp.getJournalstatus());
+
+		JournalpostDokumentInfoRelasjon relasjon = jp.findHoveddokumentDokumentInfoRelasjon();
+		JournalpostDokumentInfoRelasjon relasjon2 = jp.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG).iterator().next();
+		assertEquals(DokumentStatusCode.FERDIGSTILT, relasjon.getDokumentInfo().getDokumentstatus());
+		assertEquals(DokumentStatusCode.FERDIGSTILT, relasjon2.getDokumentInfo().getDokumentstatus());
 	}
 
 	@Test
@@ -145,5 +156,29 @@ public class OpprettJournalpostApiRequestMapperTest {
 		assertEquals(JournalpostTypeCode.U, jp.getJournalposttype());
 		assertEquals(JournalStatusCode.R, jp.getJournalstatus());
 	}
+
+	@Test
+	public void shouldMapInngaaendeJournalpostOrganisasjon(){
+		OpprettJournalpostRequest request = createRequestAvsenderMottaker(JournalpostType.INNGAAENDE, createAvsenderMottakerOrganisasjon());
+		Journalpost jp = mapper.map(request);
+		assertEquals(AvsenderMottakerIdTypeCode.ORGNR, jp.getAvsenderMottakerIdType());
+
+	}
+	@Test
+	public void shouldMapInngaaendeJournalpostHelsePersonellNr(){
+		OpprettJournalpostRequest request = createRequestAvsenderMottaker(JournalpostType.INNGAAENDE, createAvsenderMottakerHelsepersonell());
+		Journalpost jp = mapper.map(request);
+		assertEquals(AvsenderMottakerIdTypeCode.HPRNR, jp.getAvsenderMottakerIdType());
+
+	}
+	@Test
+	public void shouldMapInngaaendeJournalpostUtlandOrganisasjon(){
+		OpprettJournalpostRequest request = createRequestAvsenderMottaker(JournalpostType.INNGAAENDE, createAvsenderMottakerUtlandOrganisasjon());
+		Journalpost jp = mapper.map(request);
+		assertEquals(AvsenderMottakerIdTypeCode.UTL_ORG, jp.getAvsenderMottakerIdType());
+
+	}
+
+
 
 }

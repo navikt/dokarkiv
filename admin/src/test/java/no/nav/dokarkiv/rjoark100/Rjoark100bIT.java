@@ -334,6 +334,53 @@ public class Rjoark100bIT extends AbstractAdminIT {
 	}
 
 	@Test
+	public void skalOppheveSkjermingDokumentFilAlleFildetaljerHvisVariantIkkeOppgitt() throws IOException {
+		abacPermit();
+
+		Journalpost journalpost = joarkRepository.save(TestDataGenerator.createJournalpostWithHoveddokument());
+		DokumentInfo dokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
+		skjermingServiceTest.setVariantSkjermet(dokumentInfo.getDokumentInfoId(), VariantFormatCode.ARKIV, SkjermingTypeCode.POL);
+		skjermingServiceTest.setVariantSkjermet(dokumentInfo.getDokumentInfoId(), VariantFormatCode.PRODUKSJON, SkjermingTypeCode.POL);
+		reinitTransaction();
+
+		HttpEntity httpEntity = new HttpEntity(
+				createSkjermarkivenhetRequest(SkjermingTypeCode.POL, ArkivenhetCode.DOKUMENT_FIL, null,
+						dokumentInfo.getDokumentInfoId(), null),
+				createHeadersWithAksjon());
+
+
+		ResponseEntity<String> responseEntity = restTemplate.exchange(
+				URL_SKJERMARKIVENHET,
+				HttpMethod.DELETE,
+				httpEntity,
+				String.class);
+
+		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
+		reinitTransaction();
+
+		Optional<DokumentInfo> dokInfoEtterKall = dokumentinfoRepository.findByDokumentInfoId(dokumentInfo.getDokumentInfoId());
+		assertTrue(dokInfoEtterKall.isPresent());
+		assertNull(dokInfoEtterKall.get().findFilDetaljerByVariantFormat(VariantFormatCode.ARKIV).getSkjermingType());
+		assertNull(dokInfoEtterKall.get().findFilDetaljerByVariantFormat(VariantFormatCode.PRODUKSJON).getSkjermingType());
+
+		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
+		assertThat(aksjonsLoggList.size(), is(1));
+		assertAksjonsLogg(aksjonsLoggList.get(0), AksjonsTypeCode.ENDRE_SKJERMING, journalpost.getJournalpostId(), dokumentInfo.getDokumentInfoId(), Arrays
+				.asList(
+						ArkivElementEndring.builder()
+								.arkivElement(fildetaljerSkjermingTypeVariant(VariantFormatCode.ARKIV))
+								.fraVerdi(SkjermingTypeCode.POL.name())
+								.tilVerdi(null)
+								.build(),
+						ArkivElementEndring.builder()
+								.arkivElement(fildetaljerSkjermingTypeVariant(VariantFormatCode.PRODUKSJON))
+								.fraVerdi(SkjermingTypeCode.POL.name())
+								.tilVerdi(null)
+								.build()
+				));
+	}
+
+	@Test
 	public void skalIkkeOppheveSkjermingDokumentFilArkivVariantHvisSladdetVariantEksisterer() throws IOException {
 		abacPermit();
 

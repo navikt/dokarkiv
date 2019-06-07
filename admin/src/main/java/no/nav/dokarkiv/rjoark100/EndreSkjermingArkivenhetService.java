@@ -75,8 +75,13 @@ public class EndreSkjermingArkivenhetService {
 
 	public List<ArkivElementEndringTO> endreSkjermingDokumentFil(Long dokumentInfoId, VariantFormatCode variant, SkjermingTypeCode tilSkjerming) {
 		List<ArkivElementEndringTO> arkivElementEndringTOList = new ArrayList<>();
-		FilDetaljer filDetaljer = hentFildetaljerByVariantFormat(dokumentInfoId, variant);
-		arkivElementEndringTOList.addAll(endreSkjermingFildetaljer(filDetaljer, tilSkjerming));
+		if (Objects.isNull(variant)){
+			DokumentInfo dokumentInfo = hentDokumentInfo(dokumentInfoId);
+			arkivElementEndringTOList.addAll(endreSkjermingAlleFildetaljer(dokumentInfo, tilSkjerming));
+		} else {
+			FilDetaljer filDetaljer = hentFildetaljerByVariantFormat(dokumentInfoId, variant);
+			arkivElementEndringTOList.addAll(endreSkjermingFildetaljer(filDetaljer, tilSkjerming));
+		}
 		return arkivElementEndringTOList;
 	}
 
@@ -192,6 +197,12 @@ public class EndreSkjermingArkivenhetService {
 		return joarkRepository.findById(journalpostId).orElseThrow(() ->
 				new JournalpostIkkeFunnetException("Fant ikke journalpost med journalpostId=" + journalpostId));
 	}
+
+	private DokumentInfo hentDokumentInfo(Long dokumentInfoId) {
+		return dokumentinfoRepository.findById(dokumentInfoId).orElseThrow(() ->
+				new JournalpostIkkeFunnetException("Fant ikke DokumentInfo med dokumentInfoId=" + dokumentInfoId));
+	}
+
 
 	private FilDetaljer hentFildetaljerByVariantFormat(Long dokumentInfoId, VariantFormatCode variantFormatCode) {
 		return dokumentinfoRepository.findByDokumentInfoId(dokumentInfoId)

@@ -54,11 +54,11 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.inject.Inject;
 import java.util.Optional;
 
-@Api
+@Api(description = "Tjenester for å arkivere og journalføre i fagarkiv")
 @Slf4j
 @RestController
 @RequestMapping("/rest/journalpostapi/v1/journalpost")
-public class JournalpostRestController {
+public class ArkiverOgJournalfoerRestController {
 
     private final KopierJournalpostService kopierJournalpostService;
     private final FerdigstillJournalpostService ferdigstillJournalpostService;
@@ -71,11 +71,11 @@ public class JournalpostRestController {
     private static final String TRUE = "true";
 
     @Inject
-    public JournalpostRestController(final FerdigstillJournalpostService ferdigstillJournalpostService,
-                                     final KopierJournalpostService kopierJournalpostService,
-                                     final OppdaterJournalpostService oppdaterJournalpostService,
-                                     final OpprettJournalpostService opprettJournalpostService,
-                                     final AbacSecurityService abacSecurityService) {
+    public ArkiverOgJournalfoerRestController(final FerdigstillJournalpostService ferdigstillJournalpostService,
+                                              final KopierJournalpostService kopierJournalpostService,
+                                              final OppdaterJournalpostService oppdaterJournalpostService,
+                                              final OpprettJournalpostService opprettJournalpostService,
+                                              final AbacSecurityService abacSecurityService) {
         this.ferdigstillJournalpostService = ferdigstillJournalpostService;
         this.kopierJournalpostService = kopierJournalpostService;
         this.abacSecurityService = abacSecurityService;
@@ -87,16 +87,17 @@ public class JournalpostRestController {
 
     @Transactional
     @SwaggerKopierJournalpost
-    @PostMapping("/{journalpostId}/kopierJournalpost")
+    @PostMapping("/kopierJournalpost")
     @RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark203"}, percentiles = {0.5, 0.95})
     public ResponseEntity<Long> kopierJournalpost(
-            @ApiParam(value = "IDen til journalposten som skal kopieres", required = true, example = "77778888") @PathVariable String journalpostId) {
+            @ApiParam(name="kildeJournalpostId", value = "IDen til journalposten som skal kopieres", required = true, example = "77778888")
+            @RequestParam String kildeJournalpostId) throws UgyldigAksjonsLoggException {
         MDC.put(MDC_REQUEST_ID, "rjoark203");
-        log.info(MDC.get(MDC_REQUEST_ID) + " har mottatt kall for kopiering av journalpost med journalpostId={}", journalpostId);
-        validateId(journalpostId, "journalpostId");
+        log.info(MDC.get(MDC_REQUEST_ID) + " har mottatt kall for kopiering av journalpost med journalpostId={}", kildeJournalpostId);
+        validateId(kildeJournalpostId, "journalpostId");
         RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
 
-        Long nyJournalpostId = kopierJournalpostService.execute(Long.parseLong(journalpostId));
+        Long nyJournalpostId = kopierJournalpostService.execute(Long.parseLong(kildeJournalpostId));
 
         return ResponseEntity.status(HttpStatus.CREATED).body(nyJournalpostId);
     }
@@ -152,7 +153,8 @@ public class JournalpostRestController {
     @RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark202"}, percentiles = {0.5, 0.95}, histogram = true)
     public ResponseEntity<OpprettJournalpostResponse> opprettJournalpost(
             @RequestBody OpprettJournalpostRequest request,
-            @ApiParam(name = "forsoekFerdigstill", allowableValues = "true, false", required = false)
+            @ApiParam(name = "forsoekFerdigstill", value = "Angir hvorvidt tjenesten skal forsøke å ferdigstille eller ikke. Dette vil å sette journalposten i en status som indikerer at journalføring er komplett, og låser journalposten for senere endringer.\n" +
+                    "Journalposten blir uansett opprettet, men kun ferdigstilt dersom den oppfyller krav til struktur og metadata som beskrevet under ferdigstillJournalpost.", allowableValues = "true, false", required = false)
             @RequestParam(required = false) String forsoekFerdigstill) {
         MDC.put(MDC_REQUEST_ID, "rjoark202");
         log.info(MDC.get(MDC_REQUEST_ID) + " har mottat kall for opprettelse av ny journalpost");
