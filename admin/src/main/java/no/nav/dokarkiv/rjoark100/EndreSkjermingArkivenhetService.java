@@ -23,7 +23,6 @@ import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
-import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -89,10 +88,10 @@ public class EndreSkjermingArkivenhetService {
 		List<ArkivElementEndringTO> arkivElementEndringTOList = new ArrayList<>();
 		SkjermingTypeCode forrigeSkjerming = filDetaljer.getSkjermingType();
 		if (forrigeSkjerming != tilSkjerming) {
-			//Skal ikke fjerne skjerming fra ARKIV variant hvis det finnes en SLADDET variant som ikke er skjermet.
+			//Skal ikke kunne fjerne skjerming fra ARKIV eller andre varianter hvis det finnes en SLADDET variant.
 			//Det betyr at dokumentet er sladdet hvor originalen som er ARKIV variant er skjermet.
-			//Skal være mulig å endre skjerming til noe annet hvis dokumentet er sladdet
-			if (tilSkjerming != null || !filDetaljer.isArkivVariant() || canRemoveSkjermingFromArkivVariant(filDetaljer.getDokumentInfo())) {
+			//Skal være mulig å endre skjerming til noe annet hvis dokumentet er sladdet og i tillegg endre skjerming på sladdet variant
+			if (tilSkjerming != null || filDetaljer.isSladdetVariant() || !dokumentHarSladdetVariant(filDetaljer.getDokumentInfo())) {
 				skjermingService.setFildetaljerSkjerming(filDetaljer.getDokumentInfo()
 						.getDokumentInfoId(), filDetaljer.getVariantFormat(), tilSkjerming);
 				arkivElementEndringTOList.add(
@@ -107,9 +106,9 @@ public class EndreSkjermingArkivenhetService {
 		return arkivElementEndringTOList;
 	}
 
-	private boolean canRemoveSkjermingFromArkivVariant(DokumentInfo dokumentInfo) {
+	private boolean dokumentHarSladdetVariant(DokumentInfo dokumentInfo) {
 		FilDetaljer sladdet = dokumentInfo.findFilDetaljerByVariantFormatAdmin(VariantFormatCode.SLADDET);
-		return sladdet == null;
+		return sladdet != null;
 	}
 
 	public Map<JournalpostDokumentInfoPair, List<ArkivElementEndringTO>> endreSkjermingDokumentInfo(Long dokumentInfoId, SkjermingTypeCode tilSkjerming) {
