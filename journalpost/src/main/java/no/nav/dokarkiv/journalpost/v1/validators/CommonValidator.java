@@ -9,12 +9,12 @@ public final class CommonValidator {
 		//no-op
 	}
 
-	public static void validateId(String journalpostId, String feltnavn) {
+	public static void validateId(String id, String feltnavn) {
 		try {
-			hasText(journalpostId, feltnavn);
-			convertStringToLong(journalpostId, feltnavn);
+			hasText(id, feltnavn);
+			convertStringToLong(id, feltnavn);
 		} catch (IllegalArgumentException e) {
-			throw new InputValideringFeiletException(String.format("%s. journalpostId=%s", e.getMessage(), journalpostId));
+			throw new InputValideringFeiletException(String.format("%s. %s=%s", e.getMessage(), feltnavn, id));
 		}
 	}
 
@@ -28,17 +28,17 @@ public final class CommonValidator {
 		}
 	}
 
+    public static void hasText(String input, String feltnavn) {
+        if (StringUtils.isBlank(input)) {
+            throw new IllegalArgumentException(String.format("%s kan ikke være null eller tom", feltnavn));
+        }
+    }
+
 	private static void convertStringToLong(String input, String feltnavn) {
 		try {
 			Long.parseLong(input);
 		} catch (Exception e) {
 			throw new IllegalArgumentException(String.format("%s er ikke et tall", feltnavn));
-		}
-	}
-
-	private static void hasText(String input, String feltnavn) {
-		if (StringUtils.isBlank(input)) {
-			throw new IllegalArgumentException(String.format("%s kan ikke være null eller tom", feltnavn));
 		}
 	}
 

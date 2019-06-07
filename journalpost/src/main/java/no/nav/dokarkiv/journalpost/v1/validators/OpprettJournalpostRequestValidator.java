@@ -21,6 +21,8 @@ import no.nav.dokarkiv.journalpost.v1.api.DokumentVariant;
 import no.nav.dokarkiv.journalpost.v1.api.OpprettJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.Sak;
 
+import java.util.Arrays;
+
 public class OpprettJournalpostRequestValidator {
 
 	private static final int FNR_LENGTH = 11;
@@ -147,6 +149,10 @@ public class OpprettJournalpostRequestValidator {
 			VariantFormatCode.valueOf(dokumentVariant.getVariantformat());
 		} catch (IllegalArgumentException e) {
 			throw new InputValideringFeiletException(String.format("Dokument.dokumentvariant.variantformat %s", VALIDERER_IKKE_MOT_KODEVERK));
+		}
+		if (dokumentVariant.getVariantformat().equals(VariantFormatCode.ARKIV.name())
+				&& !Arrays.asList(FilTypeCode.PDF, FilTypeCode.PDFA).contains(FilTypeCode.valueOf(dokumentVariant.getFiltype()))) {
+			throw new InputValideringFeiletException("Dokument.dokumentvariant.filtype på være PDF eller PDFA for Dokument.dokumentvariant.variantformat=ARKIV.");
 		}
 	}
 }
