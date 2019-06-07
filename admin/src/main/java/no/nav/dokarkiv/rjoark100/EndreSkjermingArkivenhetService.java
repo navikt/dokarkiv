@@ -58,11 +58,6 @@ public class EndreSkjermingArkivenhetService {
 		Journalpost journalpost = hentJournalpost(journalpostId);
 		Map<JournalpostDokumentInfoPair, List<ArkivElementEndringTO>> aksjonsLoggMap = new HashMap<>();
 
-//		//Skjerm JournalpostRelasjoner. For at oppførsel skal bli likt med skjermDokumentInfo må alle relasjoner skjermes før Journalpost skjermes.
-//		journalpost.getJournalpostDokumentInfoRelasjonerAdmin()
-//				.forEach(rel -> aksjonsLoggMap.put(JournalpostDokumentInfoPair.of(journalpostId, rel.getDokumentInfo()
-//						.getDokumentInfoId()), endreSkjermingJournalpostDokumentInfoRelasjon(rel, tilSkjerming)));
-
 		List<ArkivElementEndringTO> arkivElementEndringTOList = new ArrayList<>();
 		//Skjerm Journalpost
 		if (journalpost.getSkjermingType() != tilSkjerming) {
@@ -118,18 +113,18 @@ public class EndreSkjermingArkivenhetService {
 
 		journalpostDokumentInfoRelasjonList.forEach(relasjon -> {
 			Long journalpostId = relasjon.getJournalpost().getJournalpostId();
-			List<ArkivElementEndringTO> arkivElementEndringList = new ArrayList<>();
-			arkivElementEndringList.addAll(endreSkjermingJournalpostDokumentInfoRelasjon(relasjon, tilSkjerming));
+
+			aksjonsLoggMap.put(JournalpostDokumentInfoPair.of(journalpostId, dokumentInfoId), endreSkjermingJournalpostDokumentInfoRelasjon(relasjon, tilSkjerming));
+
 			entityManager.refresh(relasjon);
 			//Hvis tilSkjerming=null (Opphev skjerming) og Journalpost er skjermet så skal skjermingen i Journalpost fjernes. Hvis ikke dette gjøres vil ikke dokumentet være synlig.
 			//Hvis tilSkjerming!=null og Journalposten ikke har noen flere dokumentInfo relasjoner som IKKE er skjermet så skal journalposten også skjermes.
 			if (tilSkjerming == null && skjermingService.isJournalpostSkjermet(journalpostId)) {
-				arkivElementEndringList.addAll(endreSkjermingJournalpost(journalpostId, null).getOrDefault(JournalpostDokumentInfoPair.of(journalpostId, null), new ArrayList<>()));
+				aksjonsLoggMap.putAll(endreSkjermingJournalpost(journalpostId, null));
 			} else if (tilSkjerming != null && isJournalpostHarIngenDokumentInfoRelasjoner(journalpostId)) {
-				arkivElementEndringList.addAll(endreSkjermingJournalpost(journalpostId, tilSkjerming).getOrDefault(JournalpostDokumentInfoPair.of(journalpostId, null), new ArrayList<>()));
+				aksjonsLoggMap.putAll(endreSkjermingJournalpost(journalpostId, tilSkjerming));
 			}
 
-			aksjonsLoggMap.put(JournalpostDokumentInfoPair.of(journalpostId, dokumentInfoId), arkivElementEndringList);
 
 		});
 

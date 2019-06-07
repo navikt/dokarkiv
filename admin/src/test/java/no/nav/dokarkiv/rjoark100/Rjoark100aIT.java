@@ -74,26 +74,8 @@ public class Rjoark100aIT extends AbstractAdminIT {
 		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
 		assertThat(aksjonsLoggList.size(), is(1));
 
-//		assertAksjonsLogg(getAksjonsLoggByJournalpostIdAndDokumentInfoId(aksjonsLoggList, journalpost.getJournalpostId(), journalpost
-//						.findHoveddokumentDokumentInfoRelasjon()
-//						.getDokumentInfo()
-//						.getDokumentInfoId()), AksjonsTypeCode.ENDRE_SKJERMING, journalpost
-//						.getJournalpostId(), journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId(),
-//				Arrays.asList(
-//						ArkivElementEndring.builder()
-//								.arkivElement(fildetaljerSkjermingTypeVariant(VariantFormatCode.ARKIV))
-//								.fraVerdi(null)
-//								.tilVerdi(SkjermingTypeCode.POL.name())
-//								.build(),
-//						ArkivElementEndring.builder()
-//								.arkivElement(fildetaljerSkjermingTypeVariant(VariantFormatCode.PRODUKSJON))
-//								.fraVerdi(null)
-//								.tilVerdi(SkjermingTypeCode.POL.name())
-//								.build()
-//				));
-
-		assertAksjonsLogg(getAksjonsLoggByJournalpostIdAndDokumentInfoId(aksjonsLoggList, journalpost.getJournalpostId(), null), AksjonsTypeCode.ENDRE_SKJERMING, journalpost
-						.getJournalpostId(), null,
+		assertAksjonsLogg(getAksjonsLoggByJournalpostId(aksjonsLoggList, journalpost.getJournalpostId()), AksjonsTypeCode.ENDRE_SKJERMING, journalpost
+						.getJournalpostId(), journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId(),
 				Arrays.asList(
 						ArkivElementEndring.builder()
 								.arkivElement(JOURNALPOST_SKJERMING_TYPE)
@@ -430,16 +412,8 @@ public class Rjoark100aIT extends AbstractAdminIT {
 		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
 		assertThat(aksjonsLoggList.size(), is(1));
 
-//		assertAksjonsLogg(getAksjonsLoggByJournalpostIdAndDokumentInfoId(aksjonsLoggList, journalpost.getJournalpostId(), journalpost
-//				.findHoveddokumentDokumentInfoRelasjon()
-//				.getDokumentInfo()
-//				.getDokumentInfoId()), AksjonsTypeCode.ENDRE_SKJERMING, journalpost
-//				.getJournalpostId(), journalpost.findHoveddokumentDokumentInfoRelasjon()
-//				.getDokumentInfo()
-//				.getDokumentInfoId(), new ArrayList<>());
-//
-		assertAksjonsLogg(getAksjonsLoggByJournalpostIdAndDokumentInfoId(aksjonsLoggList, journalpost.getJournalpostId(), null), AksjonsTypeCode.ENDRE_SKJERMING, journalpost
-				.getJournalpostId(), null, new ArrayList<>());
+		assertAksjonsLogg(getAksjonsLoggByJournalpostId(aksjonsLoggList, journalpost.getJournalpostId()), AksjonsTypeCode.ENDRE_SKJERMING, journalpost
+				.getJournalpostId(), journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId(), new ArrayList<>());
 	}
 
 

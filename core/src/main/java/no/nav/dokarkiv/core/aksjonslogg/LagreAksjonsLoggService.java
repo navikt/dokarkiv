@@ -59,6 +59,24 @@ public class LagreAksjonsLoggService {
 							}
 						});
 				removeList.add(aksjonsLoggKey);
+				/*
+		 Hvis dokumentInfoId er null så opprettes enten ny aksjonslogg eller så legges arkivelementendringer til en eksisterende aksjonslogg med journalpostId og dokumentInfoId par for alle JournalpostRelasjoner journalpostId har.
+		 Grunnen til at det gjøres er for å kunne gjøre det søktbar på alle journalpostIder og brukere som dokumentInfo har relasjon til og tillegg at det skal være mulig å se alle endringer som journalpost har gått gjennom inkludert endringene i dokumentRelasjoner.
+		 */
+			} else if (aksjonsLoggKey.getDokumentInfoId() == null) {
+				journalpostDokumentInfoRelasjonRepository.findAllByJournalpostJournalpostId(aksjonsLoggKey.getJournalpostId())
+						.forEach(rel -> {
+							JournalpostDokumentInfoPair jpDokInfoPair = JournalpostDokumentInfoPair.of(aksjonsLoggKey.getJournalpostId(), rel.getDokumentInfo().getDokumentInfoId());
+							List<ArkivElementEndringTO> arkivElementEndringTOList = aksjonsLoggMap.getOrDefault(jpDokInfoPair, new ArrayList<>());
+							arkivElementEndringTOList.addAll(aksjonsLoggMap.get(aksjonsLoggKey));
+							if (aksjonsLoggMap.containsKey(jpDokInfoPair)) {
+								aksjonsLoggMap.put(jpDokInfoPair, arkivElementEndringTOList);
+							} else {
+								//Kan ikke legge til ny verdi i map mens vi iterer gjennom keySet
+								tempNewAksjonsLogg.put(jpDokInfoPair, arkivElementEndringTOList);
+							}
+						});
+				removeList.add(aksjonsLoggKey);
 			}
 		});
 
