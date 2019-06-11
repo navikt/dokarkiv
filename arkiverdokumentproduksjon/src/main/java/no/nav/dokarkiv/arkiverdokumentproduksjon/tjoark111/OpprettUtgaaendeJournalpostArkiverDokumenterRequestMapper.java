@@ -2,6 +2,7 @@ package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark111;
 
 import static no.nav.dokarkiv.core.util.ConverterUtils.stringToEnum;
 import static no.nav.dokarkiv.core.util.SpecialFilTypeConverter.convertFilType;
+import static org.apache.commons.lang3.StringUtils.trim;
 
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
@@ -112,7 +113,7 @@ public class OpprettUtgaaendeJournalpostArkiverDokumenterRequestMapper {
 		}
 
 		domainJournalpost.addBruker(Bruker.builder()
-				.brukerId(bruker.getBrukerId())
+				.brukerId(trim(bruker.getBrukerId()))
 				.brukerType(stringToEnum(BrukerTypeCode.class, bruker.getBrukerType()))
 				.build());
 	}

@@ -1,6 +1,7 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark101;
 
 import static no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark101.OpprettJournalpostAssertUtil.assertEqualJournalposts;
+import static no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark101.OpprettJournalpostDataUtil.PERSONIDENT;
 import static no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark101.OpprettJournalpostDataUtil.createJournalpost;
 
 import no.nav.dokarkiv.core.domain.util.DateProvider;
@@ -27,10 +28,6 @@ public class OpprettJournalpostRequestMapperTest {
 	@InjectMocks
 	private OpprettJournalpostRequestMapper requestMapper;
 
-	private OpprettJournalpostRequest wsRequest;
-	private OpprettJournalpostRequestTo domainRequest;
-	private Journalpost inngaaendeWsJournalpost;
-
 	@Before
 	public void setUp() throws Exception {
 		DateProvider.configure(true, "2014-08-27T12:00:00");
@@ -40,14 +37,24 @@ public class OpprettJournalpostRequestMapperTest {
 
 	@Test
 	public void shouldMapOpprettJournalpostRequestToTransferObject() throws Exception {
-		domainRequest = requestMapper.map(wsRequest);
+		OpprettJournalpostRequest wsRequest = createRequest();
+		OpprettJournalpostRequestTo domainRequest = requestMapper.map(wsRequest);
 		assertEqualJournalposts(domainRequest.getJournalpost());
 	}
 
-	private void createRequest() throws Exception {
-		inngaaendeWsJournalpost = createJournalpost();
-		wsRequest = new OpprettJournalpostRequest();
+	@Test
+	public void shouldTrimBrukerIdWhenBlankPadded() throws Exception {
+		OpprettJournalpostRequest wsRequest = createRequest();
+		wsRequest.getJournalpost().getBruker().setBrukerId("   " + PERSONIDENT);
+		OpprettJournalpostRequestTo domainRequest = requestMapper.map(wsRequest);
+		assertEqualJournalposts(domainRequest.getJournalpost());
+	}
+
+	private OpprettJournalpostRequest createRequest() throws Exception {
+		Journalpost inngaaendeWsJournalpost = createJournalpost();
+		OpprettJournalpostRequest wsRequest = new OpprettJournalpostRequest();
 		wsRequest.setJournalpost(inngaaendeWsJournalpost);
+		return wsRequest;
 	}
 
 }
