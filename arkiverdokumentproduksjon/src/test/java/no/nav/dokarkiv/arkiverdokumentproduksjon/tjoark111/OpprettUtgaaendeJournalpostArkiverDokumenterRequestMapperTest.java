@@ -101,6 +101,16 @@ public class OpprettUtgaaendeJournalpostArkiverDokumenterRequestMapperTest {
 		assertThat(to.getVedleggList().size(), is(0));
 	}
 
+	@Test
+	public void shouldTrimBrukerIdWhenBlankPadded() throws Exception {
+		OpprettUtgaaendeJournalpostArkiverDokumentRequest request = createRequest();
+		request.getBruker().setBrukerId("  " + OpprettUtgaaendeJournalpostArkiverDokumentDataUtil.PERSONIDENT);
+		OpprettUtgaaendeJournalpostArkiverDokumentRequestTo domainRequest = requestMapper.map(request);
+		no.nav.dokarkiv.core.domain.entities.Journalpost domainJournalpost = domainRequest.getJournalpost();
+		assertBruker(domainJournalpost.getBrukere());
+	}
+
+
 	private void fillWithDummyValues(OpprettUtgaaendeJournalpostArkiverDokumentRequestTo to) {
 		//Using same assertion as in OpprettUtgaaendeJournalpostArkiverDokumentIT
 		to.getJournalpost().getJournalpostDokumentInfoRelasjoner().forEach(relasjon -> {
