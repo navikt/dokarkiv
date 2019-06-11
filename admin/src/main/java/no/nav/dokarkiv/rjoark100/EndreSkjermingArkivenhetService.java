@@ -125,7 +125,7 @@ public class EndreSkjermingArkivenhetService {
 			//Hvis tilSkjerming!=null og Journalposten ikke har noen flere dokumentInfo relasjoner som IKKE er skjermet så skal journalposten også skjermes.
 			if (tilSkjerming == null && skjermingService.isJournalpostSkjermet(journalpostId)) {
 				aksjonsLoggMap.putAll(endreSkjermingJournalpost(journalpostId, null));
-			} else if (tilSkjerming != null && isJournalpostHarIngenDokumentInfoRelasjoner(journalpostId)) {
+			} else if (tilSkjerming != null && !isJournalpostHarDokumentInfoRelasjonerIkkeSkjermet(journalpostId)) {
 				aksjonsLoggMap.putAll(endreSkjermingJournalpost(journalpostId, tilSkjerming));
 			}
 
@@ -178,16 +178,16 @@ public class EndreSkjermingArkivenhetService {
 		return arkivElementEndringTOList;
 	}
 
-	private boolean isJournalpostHarIngenDokumentInfoRelasjoner(Long journalpostId) {
+	private boolean isJournalpostHarDokumentInfoRelasjonerIkkeSkjermet(Long journalpostId) {
 		List<JournalpostDokumentInfoRelasjon> journalpostDokumentInfoRelasjonList = journalpostDokumentInfoRelasjonRepository.findAllByJournalpostJournalpostId(journalpostId);
-		return journalpostDokumentInfoRelasjonList.stream().allMatch(relasjon -> {
+		return journalpostDokumentInfoRelasjonList.stream().anyMatch(relasjon -> {
 			if (relasjon.getTilknyttetJournalpostSom() == TilknyttetJournalpostSomCode.HOVEDDOKUMENT) {
 				//Hvis dokumentet er kassert og alle fildetaljer er skjermet så betyr det at hoveddokument ikke er skjermet men er kassert.
 				//Ellers hvis alle fildetaljer på hoveddokument er skjermet så betyr det at hoveddokumentet er skjermet
-				return skjermingService.isAllFildetaljerSkjermet(relasjon.getDokumentInfo()) && isFalse(relasjon.getDokumentInfo()
-						.isKassert());
+				return relasjon.getDokumentInfo()
+						.isKassert() || !skjermingService.isAllFildetaljerSkjermet(relasjon.getDokumentInfo());
 			} else {
-				return Objects.nonNull(relasjon.getSkjermingType());
+				return Objects.isNull(relasjon.getSkjermingType());
 			}
 		});
 	}
