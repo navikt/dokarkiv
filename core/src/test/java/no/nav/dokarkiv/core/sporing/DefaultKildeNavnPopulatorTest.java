@@ -6,7 +6,6 @@ import static no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder.getFilDetal
 import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalpostBuilder;
 import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
 import static no.nav.dokarkiv.core.domain.builder.KryssreferanseBuilder.getKryssreferanseBuilder;
-import static no.nav.dokarkiv.core.domain.builder.ReturInfoBuilder.getReturInfoBuilder;
 import static no.nav.dokarkiv.core.domain.builder.SaksrelasjonBuilder.getSaksrelasjonBuilder;
 import static no.nav.dokarkiv.core.domain.builder.SkannetInnholdBuilder.getSkannetInnholdBuilder;
 import static org.hamcrest.Matchers.is;
@@ -56,7 +55,6 @@ public class DefaultKildeNavnPopulatorTest {
 		assertThat(journalpost.getOpprettetKildeNavn(), is(kildeNavn));
 		assertThat(journalpost.getSaksrelasjon().getOpprettetKildeNavn(), is(kildeNavn));
 		assertThat(journalpost.getBrukere().iterator().next().getOpprettetKildeNavn(), is(kildeNavn));
-		assertThat(journalpost.getReturInfos().iterator().next().getOpprettetKildeNavn(), is(kildeNavn));
 		assertThat(journalpost.getKryssreferanser().iterator().next().getOpprettetKildeNavn(), is(kildeNavn));
 		assertThat(journalpost.getJournalpostDokumentInfoRelasjoner().iterator().next().getOpprettetKildeNavn(), is(kildeNavn));
 		DokumentInfo dokumentInfo = journalpost.getJournalpostDokumentInfoRelasjoner().iterator().next().getDokumentInfo();
@@ -69,7 +67,6 @@ public class DefaultKildeNavnPopulatorTest {
 		assertThat(journalpost.getEndretKildeNavn(), is(kildeNavn));
 		assertThat(journalpost.getSaksrelasjon().getEndretKildeNavn(), is(kildeNavn));
 		assertThat(journalpost.getBrukere().iterator().next().getEndretKildeNavn(), is(kildeNavn));
-		assertThat(journalpost.getReturInfos().iterator().next().getEndretKildeNavn(), is(kildeNavn));
 		assertThat(journalpost.getKryssreferanser().iterator().next().getEndretKildeNavn(), is(kildeNavn));
 		assertThat(journalpost.getJournalpostDokumentInfoRelasjoner().iterator().next().getEndretKildeNavn(), is(kildeNavn));
 		DokumentInfo dokumentInfo = journalpost.getJournalpostDokumentInfoRelasjoner().iterator().next().getDokumentInfo();
@@ -90,9 +87,6 @@ public class DefaultKildeNavnPopulatorTest {
 						.build())
 				.brukere(getBrukerBuilder()
 						.brukerInfoId(id)
-						.build())
-				.returInfos(getReturInfoBuilder()
-						.returInfoId(id)
 						.build())
 				.kryssReferanser(getKryssreferanseBuilder()
 						.kryssreferanseId(id)

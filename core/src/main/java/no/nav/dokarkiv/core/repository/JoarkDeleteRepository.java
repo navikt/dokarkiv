@@ -53,10 +53,6 @@ public interface JoarkDeleteRepository extends Repository<Journalpost, Long> {
 	void deleteKryssreferanseByJournalpostId(@Param("journalpostId") Long journalpostId);
 
 	@Modifying
-	@Query(value = "delete from t_retur_info where journalpost_id = :journalpostId", nativeQuery = true)
-	void deleteReturInfoByJournalpostId(@Param("journalpostId") Long journalpostId);
-
-	@Modifying
 	@Query(value = "delete from T_JP_TILLEGG where journalpost_id = :journalpostId", nativeQuery = true)
 	void deleteJPTilleggByJournalpostId(@Param("journalpostId") Long journalpostId);
 

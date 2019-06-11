@@ -7,7 +7,6 @@ import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.entities.Kryssreferanse;
-import no.nav.dokarkiv.core.domain.entities.ReturInfo;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
 import no.nav.dokarkiv.core.domain.entities.SkannetInnhold;
 import org.springframework.stereotype.Component;
@@ -30,7 +29,6 @@ public class DefaultKildeNavnPopulator implements KildeNavnPopulator {
 		populateJournalpost(journalpost, kildeNavn);
 		populateSaksrelasjon(journalpost.getSaksrelasjon(), kildeNavn);
 		populateBruker(journalpost.getBrukere(), kildeNavn);
-		populateReturInfo(journalpost.getReturInfos(), kildeNavn);
 		populateKryssreferanse(journalpost.getKryssreferanser(), kildeNavn);
 		populateDokumentInfoRelasjon(journalpost.getJournalpostDokumentInfoRelasjoner(), kildeNavn);
 	}
@@ -49,12 +47,6 @@ public class DefaultKildeNavnPopulator implements KildeNavnPopulator {
 	private void populateBruker(Set<Bruker> brukere, String kilde) {
 		for (Bruker bruker : brukere) {
 			populateKilde(kilde, bruker);
-		}
-	}
-
-	private void populateReturInfo(Set<ReturInfo> returInfos, String kilde) {
-		for (ReturInfo returInfo : returInfos) {
-			populateKilde(kilde, returInfo);
 		}
 	}
 

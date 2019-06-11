@@ -49,7 +49,7 @@ public final class ArkiverDokumentmottakRequestDataUtil {
 	static final String VARIANTFORMAT = "ARKIV";
 	static final String PERSONIDENT = "***gammelt_fnr***";
 	static final String EKSTERNPART_NAVN = "Mario & Luigi";
-	static final String FAGSYSTEMKODE = FagsystemCode.AO01.name();
+	static final String FAGSYSTEMKODE = FagsystemCode.FS22.name();
 	static final String SAKSID = "312";
 	static final String BATCH_NAVN = "TJOARK201";
 	static final String VEDLEGG_INNHOLD = "Vedlegg innhold";

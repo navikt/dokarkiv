@@ -317,7 +317,7 @@ public class InnsynJournalV2SecurityFacadeTest {
 		Journalpost legalJournalpost = createLegalJournalpost();
 		legalJournalpost.setJournalposttype(JournalpostTypeCode.N);
 		legalJournalpost.getDokumentInfoFromJpDokInfoRelasjonerByDokumentInfoId(DOKUMENT_INFO_ID)
-				.setKategori(DokumentKategoriCode.E_BLANKETT);
+				.setKategori(DokumentKategoriCode.SED);
 
 		mockJournalpost(legalJournalpost);
 
@@ -331,7 +331,7 @@ public class InnsynJournalV2SecurityFacadeTest {
 		Journalpost legalJournalpost = createLegalJournalpost();
 		legalJournalpost.setJournalposttype(JournalpostTypeCode.U);
 		legalJournalpost.getDokumentInfoFromJpDokInfoRelasjonerByDokumentInfoId(DOKUMENT_INFO_ID)
-				.setKategori(DokumentKategoriCode.E_BLANKETT);
+				.setKategori(DokumentKategoriCode.SED);
 
 		mockJournalpost(legalJournalpost);
 

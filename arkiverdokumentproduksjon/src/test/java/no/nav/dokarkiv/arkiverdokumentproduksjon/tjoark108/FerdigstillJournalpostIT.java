@@ -41,7 +41,7 @@ import java.util.Date;
 public class FerdigstillJournalpostIT extends AbstractArkiverdokumentproduksjonItest {
 	private static final DokumentStatusCode UNDER_REDIGERING = DokumentStatusCode.UNDER_REDIGERING;
 	private static final DokumentStatusCode FERDIGSTILT = DokumentStatusCode.FERDIGSTILT;
-	private static final UtsendingsKanalCode UTSENDINGKANAL = UtsendingsKanalCode.ALTINN;
+	private static final UtsendingsKanalCode UTSENDINGKANAL = UtsendingsKanalCode.EESSI;
 	private static final String OPPRETTET_KILDE_NAVN = "opprettet kilde";
 	private static final String OPPRETTET_AV_NAVN = "Tester";
 	private static final String TILKNYTTET_AV_NAVN = "Tilknyttetnavn";

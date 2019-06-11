@@ -47,7 +47,7 @@ import java.util.Optional;
 public class DefaultFerdigstillJournalpostServiceTest {
 	private static final Long JOURNALPOST_ID = 42L;
 	private static final String ENDRET_AV_NAVN = "endret_av";
-	private static final UtsendingsKanalCode UTSENDINGS_KANAL = UtsendingsKanalCode.ALTINN;
+	private static final UtsendingsKanalCode UTSENDINGS_KANAL = UtsendingsKanalCode.EESSI;
 	private static final String MOCK_DATE = "2018-06-20T14:31:54.767";
 	private FerdigstillJournalpostRequestTo request;
 

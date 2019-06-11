@@ -233,11 +233,6 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	@Cascade({CascadeType.PERSIST, CascadeType.MERGE, CascadeType.SAVE_UPDATE, CascadeType.DELETE, CascadeType.DETACH})
 	private final Set<Kryssreferanse> kryssreferanser = new HashSet<>();
 
-	@OneToMany
-	@JoinColumn(name = "journalpost_id", nullable = false)
-	@Cascade({CascadeType.PERSIST, CascadeType.MERGE, CascadeType.SAVE_UPDATE, CascadeType.DELETE, CascadeType.DETACH})
-	private final Set<ReturInfo> returInfos = new HashSet<>();
-
 	/**
 	 * Default constructor.
 	 */
@@ -415,7 +410,7 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 		if (!hasEndeligJournalforingStatus() && journalstatus != JournalStatusCode.E) {
 			return;
 		}
-		verifyOnlyOneHoveddokOrSammensattDok();
+		verifyOnlyOneHoveddokument();
 		verifyArkivVariantOfAllDocuments();
 		verifyNoDokumentInfosUnderRedigering();
 	}
@@ -454,30 +449,6 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	 */
 	public boolean hasFerdigOgSentralPrintJournalforingStatus() {
 		return journalstatus == JournalStatusCode.FS;
-	}
-
-	public void verifyOnlyOneHoveddokOrSammensattDok() {
-		int hovedDokumentCount = getTilknyttetSomCount(getJournalpostDokumentInfoRelasjoner(),
-				TilknyttetJournalpostSomCode.HOVEDDOKUMENT);
-		int sammensattDokCount = getTilknyttetSomCount(getJournalpostDokumentInfoRelasjoner(),
-				TilknyttetJournalpostSomCode.SAMMENSATT_DOK);
-
-		if (hovedDokumentCount == 0 && sammensattDokCount == 0) {
-			throwExceptionForFailedVerificationForEndeligJournalforing(
-					"Journalpost must contain either a hoveddokument or a sammensatt dokument");
-		}
-		if (hovedDokumentCount == 1 && sammensattDokCount == 1) {
-			throwExceptionForFailedVerificationForEndeligJournalforing(
-					"Journalpost must only contain one hoveddokument or one sammensatt dokument");
-		}
-		if (hovedDokumentCount > 1) {
-			throwExceptionForFailedVerificationForEndeligJournalforing(
-					"Journalpost cannot contain more than one hoveddokument");
-		}
-		if (sammensattDokCount > 1) {
-			throwExceptionForFailedVerificationForEndeligJournalforing(
-					"Journalpost cannot contain more than one sammensatt dokument");
-		}
 	}
 
 	public void verifyOnlyOneHoveddokument() {
@@ -569,16 +540,6 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 			}
 		}
 		return allFilDetaljer;
-	}
-
-	/**
-	 * Finds a ReturInfo by Id.
-	 *
-	 * @param returInfoId The Id
-	 * @return The ReturInfo with id.
-	 */
-	public ReturInfo findReturInfoById(final Long returInfoId) {
-		return returInfos.stream().filter(returInfo -> returInfoId.equals(returInfo.getId())).findAny().orElse(null);
 	}
 
 	/**
@@ -1565,33 +1526,6 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 		if (kryssreferanse != null) {
 			kryssreferanser.add(kryssreferanse);
 		}
-	}
-
-	/**
-	 * Getter for the returInfos property.
-	 *
-	 * @return the returInfos
-	 */
-	public Set<ReturInfo> getReturInfos() {
-		return Collections.unmodifiableSet(returInfos);
-	}
-
-	/**
-	 * Add a ReturInfo to the ReturInfo Set.
-	 *
-	 * @param returInfo The ReturInfo to add.
-	 */
-	public void addReturInfo(ReturInfo returInfo) {
-		if (returInfo != null) {
-			returInfos.add(returInfo);
-		}
-	}
-
-	/**
-	 * Empties the ReturInfo set.
-	 */
-	public void clearReturInfos() {
-		returInfos.clear();
 	}
 
 	/**

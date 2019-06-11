@@ -152,7 +152,7 @@ public class FerdigstillDokumentopplastingIT extends AbstractBehandleJournalV2It
 				.mottattDato(DateProvider.getToday())
 				.dokumentDato(DateProvider.getToday())
 				.mottakskanal(MottaksKanalCode.ALTINN)
-				.utsendingskanal(UtsendingsKanalCode.ALTINN)
+				.utsendingskanal(UtsendingsKanalCode.EESSI)
 				.saksrelasjon(
 						getSaksrelasjonBuilder().sakId("1").fagsystem(FagsystemCode.PEN)
 								.opprettetKildeNavn("opprettetKildeNavn").build())

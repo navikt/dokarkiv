@@ -35,7 +35,7 @@ public interface JoarkRepository extends CrudRepository<Journalpost, Long> {
 	Long findJournalpostIdByDokumentinfoId(@Param("dokumentinfoId") String dokumentinfoId);
 
 	@Query(value = "select j from Journalpost j join j.saksrelasjon s where s.sakId IN :sakId and s.fagsystem = :fagsystem")
-	@EntityGraph(attributePaths = {"brukere", "tilleggsopplysninger", "journalpostDokumentInfoRelasjoner", "kryssreferanser", "returInfos", "behandlingsrelasjon",
+	@EntityGraph(attributePaths = {"brukere", "tilleggsopplysninger", "journalpostDokumentInfoRelasjoner", "kryssreferanser", "behandlingsrelasjon",
 			"journalpostDokumentInfoRelasjoner.dokumentInfo.tilleggsopplysninger", "journalpostDokumentInfoRelasjoner.dokumentInfo.skannetInnholdListe",
 			"journalpostDokumentInfoRelasjoner.dokumentInfo.fildetaljerListe", "journalpostDokumentInfoRelasjoner.dokumentInfo.journalpostRelasjoner"})
 	Optional<List<Journalpost>> findJournalposterBySakIdAndFagsystem(@Param("sakId") List<String> sakIdList, @Param("fagsystem") FagsystemCode fagsystemCode);

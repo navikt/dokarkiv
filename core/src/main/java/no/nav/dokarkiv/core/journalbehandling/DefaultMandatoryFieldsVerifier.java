@@ -7,7 +7,6 @@ import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.entities.Kryssreferanse;
-import no.nav.dokarkiv.core.domain.entities.ReturInfo;
 import no.nav.dokarkiv.core.domain.entities.SkannetInnhold;
 import org.springframework.stereotype.Component;
 
@@ -39,7 +38,6 @@ public class DefaultMandatoryFieldsVerifier implements MandatoryFieldsVerifier {
 	private void verifyRemainingFields(final Journalpost journalpost) {
 		verifySaksrelasjon(journalpost);
 		verifyKryssreferanse(journalpost);
-		verifyReturInfo(journalpost);
 		verifyBruker(journalpost);
 		verifyDokumentInfoRelasjon(journalpost);
 	}
@@ -54,12 +52,6 @@ public class DefaultMandatoryFieldsVerifier implements MandatoryFieldsVerifier {
 	private void verifyKryssreferanse(Journalpost journalpost) {
 		for (Kryssreferanse kryssreferanse : journalpost.getKryssreferanser()) {
 			kryssreferanse.verifyMandatoryFields();
-		}
-	}
-
-	private void verifyReturInfo(Journalpost journalpost) {
-		for (ReturInfo returInfo : journalpost.getReturInfos()) {
-			returInfo.verifyMandatoryFields();
 		}
 	}
 

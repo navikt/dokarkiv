@@ -12,9 +12,7 @@ public enum TilknyttetJournalpostSomCode implements CtiRelationship<TilknyttetJo
 	/** Hoveddokument */
 	HOVEDDOKUMENT,
 	/** Vedlegg */
-	VEDLEGG,
-	/** Sammensatt dokument */
-	SAMMENSATT_DOK;
+	VEDLEGG;
 
 	/** {@inheritDoc} */
 	@Override

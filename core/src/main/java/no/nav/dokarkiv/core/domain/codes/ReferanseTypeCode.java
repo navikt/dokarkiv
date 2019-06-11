@@ -10,26 +10,6 @@ import no.nav.dokarkiv.core.stelvio.CodesTablePeriodicItem;
 public enum ReferanseTypeCode implements CtiRelationship<ReferanseTypeCode, String> {
 
 	/**
-	 * SED_FLYT
-	 */
-	SED_FLYT,
-	/**
-	 * SERIE
-	 */
-	SERIE,
-	/**
-	 * Oversettelse
-	 */
-	OVERSETTELSE,
-	/**
-	 * Ettersendt
-	 */
-	ETTERSENDT,
-	/**
-	 * System-SED
-	 */
-	SYS_SED,
-	/**
 	 * Spørsmål (brukerdialog)
 	 */
 	SPOERSMAAL;

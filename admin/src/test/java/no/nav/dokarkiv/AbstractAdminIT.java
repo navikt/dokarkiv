@@ -176,10 +176,6 @@ public abstract class AbstractAdminIT extends AbstractRestIT {
 				.setParameter("jp", journalpostId)
 				.getResultList()
 				.size(), is(0));
-		assertThat(entityManager.createNativeQuery("select '1' from t_retur_info where journalpost_id= :jp")
-				.setParameter("jp", journalpostId)
-				.getResultList()
-				.size(), is(0));
 		assertThat(journalpostDokumentInfoRelasjonRepository.findAllByJournalpostJournalpostId(journalpostId).size(), is(0));
 	}
 
@@ -247,10 +243,6 @@ public abstract class AbstractAdminIT extends AbstractRestIT {
 				.getResultList()
 				.size(), is(1));
 		assertThat(entityManager.createNativeQuery("select '1' from t_jp_tillegg where journalpost_id= :jp")
-				.setParameter("jp", journalpostId)
-				.getResultList()
-				.size(), is(1));
-		assertThat(entityManager.createNativeQuery("select '1' from t_retur_info where journalpost_id= :jp")
 				.setParameter("jp", journalpostId)
 				.getResultList()
 				.size(), is(1));

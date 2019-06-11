@@ -11,7 +11,6 @@ import no.nav.dokarkiv.core.domain.entities.Bruker;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.entities.Kryssreferanse;
-import no.nav.dokarkiv.core.domain.entities.ReturInfo;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
 
 import java.util.Arrays;
@@ -57,7 +56,6 @@ public class JournalpostBuilder extends Builder<Journalpost> {
 	private Saksrelasjon saksrelasjon;
 	private Set<JournalpostDokumentInfoRelasjon> dokumentInfoRelasjoner = new HashSet<JournalpostDokumentInfoRelasjon>();
 	private Set<Kryssreferanse> kryssreferanser = new HashSet<Kryssreferanse>();
-	private Set<ReturInfo> returInfos = new HashSet<ReturInfo>();
 	private Date dokumentDato;
 	private String avsenderMottaker;
 	private String avsenderMottakerId;
@@ -101,7 +99,6 @@ public class JournalpostBuilder extends Builder<Journalpost> {
 		this.dokumentInfoRelasjoner.addAll(Arrays.asList(value)); return this; }
 	public JournalpostBuilder kryssReferanser(Kryssreferanse... value) {
 		this.kryssreferanser.addAll(Arrays.asList(value)); return this; }
-	public JournalpostBuilder returInfos(ReturInfo... value) { this.returInfos.addAll(Arrays.asList(value)); return this; }
 	public JournalpostBuilder dokumentDato(Date value) { this.dokumentDato = value; return this; }
 	public JournalpostBuilder avsenderMottaker(String value) { this.avsenderMottaker = value; return this; }
 	public JournalpostBuilder avsenderMottakerId(String value) { this.avsenderMottakerId = value; return this; }
@@ -158,9 +155,6 @@ public class JournalpostBuilder extends Builder<Journalpost> {
 		}
 		for (Kryssreferanse kryssreferanse : kryssreferanser) {
 			journalpost.addKryssReferanse(kryssreferanse);
-		}
-		for (ReturInfo returInfo : returInfos) {
-			journalpost.addReturInfo(returInfo);
 		}
 		journalpost.setDokumentDato(dokumentDato);
 		journalpost.setAvsenderMottaker(avsenderMottaker);
