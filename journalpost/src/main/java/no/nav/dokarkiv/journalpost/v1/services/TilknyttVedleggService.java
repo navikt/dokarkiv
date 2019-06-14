@@ -84,7 +84,6 @@ public class TilknyttVedleggService {
 					}
 
 					DokumentInfo dokumentInfoCopy = createDokumentInfoCopy(dokumentInfo, filDetaljerListCopy);
-					dokumentInfo = dokumentInfoCopy;
 
 				}*/
 
@@ -96,7 +95,6 @@ public class TilknyttVedleggService {
 							.getJournalpostId(), dokumentInfo.getDokumentInfoId());
 				} catch (Exception e) {
 					addToFeiletDokumentList(feiletDokumentList, "tilknyttingFeilet", dokumentVedlegg);
-					;
 					break;
 				}
 			}
