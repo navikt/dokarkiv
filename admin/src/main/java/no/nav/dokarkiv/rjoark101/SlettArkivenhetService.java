@@ -240,12 +240,12 @@ public class SlettArkivenhetService {
 				relasjon.getJournalpost().getJournalpostId(),
 				relasjon.getDokumentInfo().getDokumentInfoId());
 
-		return Arrays.asList(
+		return new ArrayList<>(Arrays.asList(
 				ArkivElementEndringTO.builder()
 						.arkivElement(RELASJON_DOKUMENT_INFO_ID)
 						.fraVerdi(relasjon.getDokumentInfo().getDokumentInfoId().toString())
 						.tilVerdi(null)
-						.build()
+						.build())
 		);
 	}
 
@@ -253,7 +253,6 @@ public class SlettArkivenhetService {
 	private List<ArkivElementEndringTO> slettJournalpostFraDatabasen(Long journalpostId) {
 		deleteRepository.deleteDokUrlInfoByJournalpostId(journalpostId);
 		deleteRepository.deleteKryssreferanseByJournalpostId(journalpostId);
-		deleteRepository.deleteReturInfoByJournalpostId(journalpostId);
 		deleteRepository.deleteJPTilleggByJournalpostId(journalpostId);
 		deleteRepository.deleteSaksrelasjonByJournalpostId(journalpostId);
 		deleteRepository.deleteBrukereByJournalpostId(journalpostId);

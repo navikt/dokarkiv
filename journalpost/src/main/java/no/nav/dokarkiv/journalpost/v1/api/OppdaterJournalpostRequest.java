@@ -1,12 +1,14 @@
 package no.nav.dokarkiv.journalpost.v1.api;
 
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
 import java.util.List;
 
 @Builder
@@ -34,6 +36,10 @@ public class OppdaterJournalpostRequest {
 
     @ApiModelProperty(value = "NAV-enheten som har journalført, eventuelt skal journalføre, forsendelsen. Ved automatisk journalføring uten mennesker involvert skal enhet settes til \"9999\".")
     private String journalfoerendeEnhet;
+
+    @ApiModelProperty(value = "Dato forsendelsen ble mottatt i retur. Feltet kan kun settes for utgående journalposter.")
+    @JsonFormat(pattern="yyyy-MM-dd")
+    private Date datoRetur;
 
     @ApiModelProperty(value = "Fagsystemene som arkiverer kan legge til egne fagspesifikke attributter per journalpost. Disse er representert som et skjemaløst nøkkel-verdi-sett og valideres ikke ved arkivering. Et eksempel på et slikt sett kan være nøkkel: bucid og verdi: 21521.")
     private List<Tilleggsopplysning> tilleggsopplysninger;

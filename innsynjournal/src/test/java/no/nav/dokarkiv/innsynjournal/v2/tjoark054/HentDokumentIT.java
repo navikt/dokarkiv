@@ -108,7 +108,7 @@ public class HentDokumentIT extends AbstractInnsynJournalV2Itest {
 	@Test
 	public void shouldNotReturnDocumentCreatedToEarly() throws Exception {
 		Date toEarlyDate = Date.from(earliestAllowedDate.minusYears(1).atStartOfDay(ZoneId.systemDefault()).toInstant());
-		Journalpost journalpost = joarkRepository.save(buildJournalpost(MottaksKanalCode.E_POST)
+		Journalpost journalpost = joarkRepository.save(buildJournalpost(MottaksKanalCode.EESSI)
 				.changeStamp(new ChangeStamp("test", toEarlyDate, null, null))
 				.journalDato(toEarlyDate).build());
 
@@ -119,7 +119,7 @@ public class HentDokumentIT extends AbstractInnsynJournalV2Itest {
 
 	@Test
 	public void shouldNotReturnDocumentWrongJournalstatus() throws Exception {
-		Journalpost journalpost = joarkRepository.save(buildJournalpost(MottaksKanalCode.E_POST)
+		Journalpost journalpost = joarkRepository.save(buildJournalpost(MottaksKanalCode.EESSI)
 				.journalStatus(JournalStatusCode.A).build());
 
 		expectAccessDenied();
@@ -129,7 +129,7 @@ public class HentDokumentIT extends AbstractInnsynJournalV2Itest {
 
 	@Test
 	public void shouldNotReturnDocumentFeilregistrert() throws Exception {
-		Journalpost journalpost = joarkRepository.save(buildJournalpost(MottaksKanalCode.E_POST)
+		Journalpost journalpost = joarkRepository.save(buildJournalpost(MottaksKanalCode.EESSI)
 				.saksrelasjon(SaksrelasjonTestDataProvider.createSaksrelasjon()
 						.feilregistrert(Boolean.TRUE)
 						.build()).build());
@@ -141,7 +141,7 @@ public class HentDokumentIT extends AbstractInnsynJournalV2Itest {
 
 	@Test
 	public void shouldNotReturnDocumentFagomradeKon() throws Exception {
-		Journalpost journalpost = joarkRepository.save(buildJournalpost(MottaksKanalCode.E_POST)
+		Journalpost journalpost = joarkRepository.save(buildJournalpost(MottaksKanalCode.EESSI)
 				.fagomrade(FagomradeCode.KTR).build());
 
 		expectAccessDenied();
@@ -151,7 +151,7 @@ public class HentDokumentIT extends AbstractInnsynJournalV2Itest {
 
 	@Test
 	public void shouldNotReturnDocumentMottakskanalSkanPen() throws Exception {
-		Journalpost journalpost = joarkRepository.save(buildJournalpost(MottaksKanalCode.E_POST)
+		Journalpost journalpost = joarkRepository.save(buildJournalpost(MottaksKanalCode.EESSI)
 				.mottakskanal(MottaksKanalCode.SKAN_PEN).build());
 
 		expectAccessDenied();
@@ -161,7 +161,7 @@ public class HentDokumentIT extends AbstractInnsynJournalV2Itest {
 
 	@Test
 	public void shouldNotReturnDocumentWrongAvsenderMottaker() throws Exception {
-		Journalpost journalpost = joarkRepository.save(buildJournalpost(MottaksKanalCode.E_POST)
+		Journalpost journalpost = joarkRepository.save(buildJournalpost(MottaksKanalCode.EESSI)
 				.avsenderMottakerId("***gammelt_fnr***").build());
 
 		expectAccessDenied();
@@ -173,7 +173,7 @@ public class HentDokumentIT extends AbstractInnsynJournalV2Itest {
 	public void shouldNotReturnDocumentWrongKategori() throws Exception {
 		Journalpost journalpost = joarkRepository.save(buildDokInfoStructure(
 				createDokumentInfo()
-						.kategori(DokumentKategoriCode.E_BLANKETT))
+						.kategori(DokumentKategoriCode.SED))
 				.journalpostType(JournalpostTypeCode.N).build());
 
 		expectAccessDenied();
@@ -294,7 +294,7 @@ public class HentDokumentIT extends AbstractInnsynJournalV2Itest {
 		dokumentFilRepository.save(createDokumentFilDummy().build());
 		return appendServiceSpecificAttributes(JournalpostTestDataProvider
 				.createJournalpost(dokumentInfoBuilder)
-				.mottakskanal(MottaksKanalCode.E_POST));
+				.mottakskanal(MottaksKanalCode.EESSI));
 
 	}
 

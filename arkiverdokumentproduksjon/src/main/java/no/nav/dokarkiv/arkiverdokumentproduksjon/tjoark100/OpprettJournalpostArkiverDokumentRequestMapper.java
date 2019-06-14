@@ -1,6 +1,7 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark100;
 
 import static no.nav.dokarkiv.core.util.SpecialFilTypeConverter.convertFilType;
+import static org.apache.commons.lang3.StringUtils.trim;
 
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
@@ -80,7 +81,7 @@ public class OpprettJournalpostArkiverDokumentRequestMapper {
 	private void addBruker(Journalpost domainJournalpost,
 						   no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasjon.opprettjournalpostarkiverdokument.Journalpost journalpost) {
 		domainJournalpost.addBruker(Bruker.builder()
-				.brukerId(journalpost.getBruker() == null ? null : journalpost.getBruker().getBrukerId())
+				.brukerId(journalpost.getBruker() == null ? null : trim(journalpost.getBruker().getBrukerId()))
 				.brukerType(journalpost.getBruker() == null || journalpost.getBruker()
 						.getBrukerType() == null ? null : BrukerTypeCode.valueOf(journalpost.getBruker()
 						.getBrukerType()))

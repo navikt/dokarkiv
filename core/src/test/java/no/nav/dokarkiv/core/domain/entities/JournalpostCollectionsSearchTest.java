@@ -6,14 +6,12 @@ import static no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder.getFilDetal
 import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalpostBuilder;
 import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
 import static no.nav.dokarkiv.core.domain.builder.KryssreferanseBuilder.getKryssreferanseBuilder;
-import static no.nav.dokarkiv.core.domain.builder.ReturInfoBuilder.getReturInfoBuilder;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 
-import no.nav.dokarkiv.core.domain.codes.ArsakReturCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import org.junit.Test;
@@ -124,24 +122,6 @@ public class JournalpostCollectionsSearchTest {
 		List allDokumentInfos = journalpost.findAllDokumentInfos();
 		assertThat((List<Object>) allDokumentInfos, hasItem(hasProperty("dokumentInfoId", is(dokumentInfoId1))));
 		assertThat((List<Object>) allDokumentInfos, hasItem(hasProperty("dokumentInfoId", is(dokumentInfoId2))));
-	}
-	
-	@Test
-	public void shouldFindReturInfoById() throws Exception {
-		long returInfoId = 100L;
-		Journalpost journalpost = getJournalpostBuilder()
-									.returInfos(getReturInfoBuilder()
-													.returInfoId(returInfoId)
-													.arsakRetur(ArsakReturCode.IKKE_HENTET)
-													.build(),
-												getReturInfoBuilder()
-													.returInfoId(200L)
-													.arsakRetur(ArsakReturCode.ANNET)
-													.build())
-									.build();
-		
-		ReturInfo returInfo = journalpost.findReturInfoById(returInfoId);
-		assertThat(returInfo.getArsakRetur(), is(ArsakReturCode.IKKE_HENTET));
 	}
 	
 	@Test

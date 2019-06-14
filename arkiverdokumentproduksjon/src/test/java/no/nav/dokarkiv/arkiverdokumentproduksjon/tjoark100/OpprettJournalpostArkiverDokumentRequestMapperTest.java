@@ -1,5 +1,7 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark100;
 
+import static no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark100.OpprettJournalpostArkiverDokumentDataUtil.PERSONIDENT;
+
 import no.nav.dokarkiv.core.domain.util.DateProvider;
 import no.nav.dokarkiv.core.sporing.KildeNavnPopulator;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
@@ -20,16 +22,11 @@ import org.mockito.junit.MockitoJUnitRunner;
  */
 @RunWith(MockitoJUnitRunner.class)
 public class OpprettJournalpostArkiverDokumentRequestMapperTest {
-
 	@Mock
 	private KildeNavnPopulator kildeNavnPopulator;
 
 	@InjectMocks
 	private OpprettJournalpostArkiverDokumentRequestMapper requestMapper = new OpprettJournalpostArkiverDokumentRequestMapper();
-
-	private OpprettJournalpostArkiverDokumentRequest wsRequest;
-	private OpprettJournalpostArkiverDokumentRequestTo domainRequest;
-	private Journalpost inngaaendeWsJournalpost;
 
 	@Before
 	public void setUp() throws Exception {
@@ -40,15 +37,26 @@ public class OpprettJournalpostArkiverDokumentRequestMapperTest {
 
 	@Test
 	public void shouldMapOpprettOgFerdigstillRequestToTransferObject() throws Exception {
-		domainRequest = requestMapper.map(wsRequest);
+		OpprettJournalpostArkiverDokumentRequest request = createRequest();
+		OpprettJournalpostArkiverDokumentRequestTo domainRequest = requestMapper.map(request);
 		no.nav.dokarkiv.core.domain.entities.Journalpost domainJournalpost = domainRequest.getJournalpost();
 		OpprettJournalpostArkiverDokumentAssertUtil.assertEqualJournalposts(domainJournalpost);
 	}
 
-	private void createRequest() throws Exception {
-		inngaaendeWsJournalpost = OpprettJournalpostArkiverDokumentDataUtil.createJournalpost();
-		wsRequest = new OpprettJournalpostArkiverDokumentRequest();
+	@Test
+	public void shouldTrimBrukerIdWhenBlankPadded() throws Exception {
+		OpprettJournalpostArkiverDokumentRequest request = createRequest();
+		request.getJournalpost().getBruker().setBrukerId("   " + PERSONIDENT);
+		OpprettJournalpostArkiverDokumentRequestTo domainRequest = requestMapper.map(request);
+		no.nav.dokarkiv.core.domain.entities.Journalpost domainJournalpost = domainRequest.getJournalpost();
+		OpprettJournalpostArkiverDokumentAssertUtil.assertEqualJournalposts(domainJournalpost);
+	}
+
+	private OpprettJournalpostArkiverDokumentRequest createRequest() throws Exception {
+		Journalpost inngaaendeWsJournalpost = OpprettJournalpostArkiverDokumentDataUtil.createJournalpost();
+		OpprettJournalpostArkiverDokumentRequest wsRequest = new OpprettJournalpostArkiverDokumentRequest();
 		wsRequest.setJournalpost(inngaaendeWsJournalpost);
+		return wsRequest;
 	}
 
 

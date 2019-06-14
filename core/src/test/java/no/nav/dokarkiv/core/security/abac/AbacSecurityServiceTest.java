@@ -1,6 +1,5 @@
 package no.nav.dokarkiv.core.security.abac;
 
-import static no.nav.abac.xacml.NavAttributter.RESOURCE_ARKIV_GSAK_SAKSID;
 import static no.nav.abac.xacml.NavAttributter.RESOURCE_ARKIV_PENSJON_SAKSID;
 import static no.nav.abac.xacml.NavAttributter.RESOURCE_FELLES_PERSON_TILKNYTTET_FNR;
 import static no.nav.abac.xacml.NavAttributter.RESOURCE_FELLES_TEMA;
@@ -54,23 +53,18 @@ public class AbacSecurityServiceTest {
 	public static final Long DEFAULT_JOURNALPOST = 1L;
 	private static final String SAK_ID = "123";
 
+	@Mock
 	private static AbacContext abacContext;
-
 	@Mock
 	private AbacLogger abaclog;
 	@Mock
 	private AbacService abacService;
 	@Mock
 	private JdbcAbacSecurityRepository jdbcAbacSecurityRepository;
-
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
 	@InjectMocks
 	private AbacSecurityService abacSecurityService;
-
-	@Mock
-	private JoarkRepository joarkRepository;
-
 	@Mock
 	private JoarkRepositorySkjermet joarkRepositorySkjermet;
 
@@ -80,8 +74,7 @@ public class AbacSecurityServiceTest {
 				Collections.<Obligation>emptyList(),
 				Collections.<Advice>emptyList()));
 		when(joarkRepositorySkjermet.existsById(DEFAULT_JOURNALPOST)).thenReturn(true);
-		abacContext = new ThreadLocalAbacContext();
-		abacSecurityService.setAbacContext(abacContext);
+		when(abacContext.getRequest()).thenReturn(new ThreadLocalAbacContext().getRequest());
 	}
 
 	@Test
@@ -195,27 +188,13 @@ public class AbacSecurityServiceTest {
 	}
 
 	@Test
-	public void shouldCreateValidAbacRequestForGsakSak() throws Exception {
-		Decision decision = abacSecurityService.assertAccessToSak(SAK_ID, FagsystemCode.AO01);
-
-		XacmlRequest request = getXacmlRequestFromAbacServiceMock();
-
-		verify(abaclog, never()).logAbacDeny(any(XacmlRequest.class), any(XacmlResponse.class), anyMap());
-		verify(abaclog, never()).logAbacPermit(any(XacmlRequest.class), any(XacmlResponse.class), anyMap());
-
-		assertThat(decision, equalTo(Decision.PERMIT));
-		assertThat(request.getResources(), hasSize(1));
-		assertThat(request.getResources().get(0), equalTo(new XacmlAttribute(RESOURCE_ARKIV_GSAK_SAKSID, SAK_ID)));
-	}
-
-	@Test
 	public void shouldReturnDenyForSak() throws Exception {
 		when(abacService.evaluate(any(XacmlRequest.class))).thenReturn(
 				new XacmlResponse(Decision.DENY, Decision.DENY,
 						Collections.<Obligation>emptyList(),
 						Collections.<Advice>emptyList()));
 
-		Decision decision = abacSecurityService.assertAccessToSak(SAK_ID, FagsystemCode.AO01);
+		Decision decision = abacSecurityService.assertAccessToSak(SAK_ID, FagsystemCode.FS22);
 
 		verify(abaclog).logAbacDeny(any(XacmlRequest.class), any(XacmlResponse.class), anyMap());
 		assertThat(decision, equalTo(Decision.DENY));
@@ -229,7 +208,7 @@ public class AbacSecurityServiceTest {
 						Arrays.asList(new Advice("id1", Collections.<AttributeAssignment>emptyList()),
 								new Advice("id2", Collections.<AttributeAssignment>emptyList()))));
 
-		Decision decision = abacSecurityService.assertAccessToSak(SAK_ID, FagsystemCode.AO01);
+		Decision decision = abacSecurityService.assertAccessToSak(SAK_ID, FagsystemCode.FS22);
 
 		verify(abaclog).logAbacPermit(any(XacmlRequest.class), any(XacmlResponse.class), anyMap());
 

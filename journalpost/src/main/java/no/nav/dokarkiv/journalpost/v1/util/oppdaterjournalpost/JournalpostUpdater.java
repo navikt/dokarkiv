@@ -51,6 +51,7 @@ public class JournalpostUpdater {
 		updateBehandlingstema(journalpost, oppdaterJournalpostRequest, endret);
 		updateTilleggsopplysninger(journalpost, oppdaterJournalpostRequest, endret);
 		updateJournalfoerendeEnhet(journalpost, oppdaterJournalpostRequest, endret);
+		updateReturInfo(journalpost, oppdaterJournalpostRequest, endret);
 		updateBruker(journalpost, oppdaterJournalpostRequest, endret);
 
 		if (endret.isEndretFlagg()) {
@@ -62,6 +63,14 @@ public class JournalpostUpdater {
 	private void updateJournalfoerendeEnhet(Journalpost journalpost, OppdaterJournalpostRequest oppdaterJournalpostRequest, Endret endret) {
 		if (isNotBlank(oppdaterJournalpostRequest.getJournalfoerendeEnhet())) {
 			journalpost.setJournalForendeEnhetId(oppdaterJournalpostRequest.getJournalfoerendeEnhet());
+			endret.setEndretFlagg(true);
+		}
+	}
+
+	private void updateReturInfo(Journalpost journalpost, OppdaterJournalpostRequest oppdaterJournalpostRequest, Endret endret) {
+		if (oppdaterJournalpostRequest.getDatoRetur() != null) {
+			journalpost.setAvsendtReturDato(oppdaterJournalpostRequest.getDatoRetur());
+			journalpost.setAntallRetur(journalpost.getAntallRetur() == null ? 1 : (journalpost.getAntallRetur()+1));
 			endret.setEndretFlagg(true);
 		}
 	}
@@ -87,8 +96,11 @@ public class JournalpostUpdater {
 				journalpost.setAvsenderMottaker(oppdaterJournalpostRequest.getAvsenderMottaker().getNavn());
 				endret.setEndretFlagg(true);
 			}
-			if (isNotBlank(oppdaterJournalpostRequest.getAvsenderMottaker().getId())) {
+			if ((oppdaterJournalpostRequest.getAvsenderMottaker().getId()) != null) {
 				journalpost.setAvsenderMottakerId(oppdaterJournalpostRequest.getAvsenderMottaker().getId());
+				if(oppdaterJournalpostRequest.getAvsenderMottaker().getId().trim().length() == 0) {
+					journalpost.setAvsenderMottakerId(null);
+				}
 				endret.setEndretFlagg(true);
 			}
 			if (oppdaterJournalpostRequest.getAvsenderMottaker().getIdType() != null) {

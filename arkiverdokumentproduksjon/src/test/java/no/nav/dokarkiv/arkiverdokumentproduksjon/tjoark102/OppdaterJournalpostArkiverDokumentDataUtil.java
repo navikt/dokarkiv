@@ -41,7 +41,7 @@ public class OppdaterJournalpostArkiverDokumentDataUtil {
 		wsRequest.setJournalpostId(journalpostId);
 		wsRequest.setEndretAvNavn(EKSTERNPART_NAVN);
 		wsRequest.setDatoDokument(toXMLGregorianCalendar(DATO_DOKUMENT));
-		wsRequest.setUtsendingskanal(UtsendingsKanalCode.ALTINN.name());
+		wsRequest.setUtsendingskanal(UtsendingsKanalCode.EESSI.name());
 		wsRequest.withFildetaljerListe(createFildetaljer());
 		return wsRequest;
 	}

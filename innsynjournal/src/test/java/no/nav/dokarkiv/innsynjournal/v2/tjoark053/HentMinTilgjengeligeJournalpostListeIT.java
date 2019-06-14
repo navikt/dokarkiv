@@ -23,20 +23,15 @@ import static no.nav.dokarkiv.core.datautil.SaksrelasjonTestDataProvider.SAK_FAG
 import static no.nav.dokarkiv.core.datautil.SaksrelasjonTestDataProvider.SAK_ID;
 import static no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode.B;
 import static no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode.ELEKTRONISK_DIALOG;
-import static no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode.EP;
 import static no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode.ES;
-import static no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode.E_BLANKETT;
-import static no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode.F;
 import static no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode.FORVALTNINGSNOTAT;
 import static no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode.IB;
 import static no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode.IS;
 import static no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode.KD;
-import static no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode.KM;
 import static no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode.KS;
 import static no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode.PUBL_BLANKETT_EOS;
 import static no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode.REFERAT;
 import static no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode.SED;
-import static no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode.SYS_SED;
 import static no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode.TS;
 import static no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode.VB;
 import static no.nav.dokarkiv.core.domain.codes.DokumentStatusCode.AVBRUTT;
@@ -238,20 +233,15 @@ public class HentMinTilgjengeligeJournalpostListeIT extends AbstractInnsynJourna
 	public void shouldNotReturnJournalpostWhereTypeIsNAndHoveddokumentKategoriIsNotFORVALTNINGSNOTAT() throws Exception {
 		Journalpost journalpost = buildAndPersist(aJournalpostWithHoveddokumentKategori(null).journalpostType(N));
 		buildAndPersist(aJournalpostWithHoveddokumentKategori(B).journalpostType(N));
-		buildAndPersist(aJournalpostWithHoveddokumentKategori(E_BLANKETT).journalpostType(N));
 		buildAndPersist(aJournalpostWithHoveddokumentKategori(ELEKTRONISK_DIALOG).journalpostType(N));
-		buildAndPersist(aJournalpostWithHoveddokumentKategori(EP).journalpostType(N));
 		buildAndPersist(aJournalpostWithHoveddokumentKategori(ES).journalpostType(N));
-		buildAndPersist(aJournalpostWithHoveddokumentKategori(F).journalpostType(N));
 		buildAndPersist(aJournalpostWithHoveddokumentKategori(IB).journalpostType(N));
 		buildAndPersist(aJournalpostWithHoveddokumentKategori(IS).journalpostType(N));
 		buildAndPersist(aJournalpostWithHoveddokumentKategori(KD).journalpostType(N));
-		buildAndPersist(aJournalpostWithHoveddokumentKategori(KM).journalpostType(N));
 		buildAndPersist(aJournalpostWithHoveddokumentKategori(KS).journalpostType(N));
 		buildAndPersist(aJournalpostWithHoveddokumentKategori(PUBL_BLANKETT_EOS).journalpostType(N));
 		buildAndPersist(aJournalpostWithHoveddokumentKategori(REFERAT).journalpostType(N));
 		buildAndPersist(aJournalpostWithHoveddokumentKategori(SED).journalpostType(N));
-		buildAndPersist(aJournalpostWithHoveddokumentKategori(SYS_SED).journalpostType(N));
 		buildAndPersist(aJournalpostWithHoveddokumentKategori(TS).journalpostType(N));
 		buildAndPersist(aJournalpostWithHoveddokumentKategori(VB).journalpostType(N));
 
@@ -276,20 +266,15 @@ public class HentMinTilgjengeligeJournalpostListeIT extends AbstractInnsynJourna
 						createHoveddokumentRelasjon(createDokumentInfo(FORVALTNINGSNOTAT).build()).build(),
 						createVedleggRelasjon(createDokumentInfo(null).build()).build(),
 						createVedleggRelasjon(createDokumentInfo(B).build()).build(),
-						createVedleggRelasjon(createDokumentInfo(E_BLANKETT).build()).build(),
 						createVedleggRelasjon(createDokumentInfo(ELEKTRONISK_DIALOG).build()).build(),
-						createVedleggRelasjon(createDokumentInfo(EP).build()).build(),
 						createVedleggRelasjon(createDokumentInfo(ES).build()).build(),
-						createVedleggRelasjon(createDokumentInfo(F).build()).build(),
 						createVedleggRelasjon(createDokumentInfo(IB).build()).build(),
 						createVedleggRelasjon(createDokumentInfo(IS).build()).build(),
 						createVedleggRelasjon(createDokumentInfo(KD).build()).build(),
-						createVedleggRelasjon(createDokumentInfo(KM).build()).build(),
 						createVedleggRelasjon(createDokumentInfo(KS).build()).build(),
 						createVedleggRelasjon(createDokumentInfo(PUBL_BLANKETT_EOS).build()).build(),
 						createVedleggRelasjon(createDokumentInfo(REFERAT).build()).build(),
 						createVedleggRelasjon(createDokumentInfo(SED).build()).build(),
-						createVedleggRelasjon(createDokumentInfo(SYS_SED).build()).build(),
 						createVedleggRelasjon(createDokumentInfo(TS).build()).build(),
 						createVedleggRelasjon(createDokumentInfo(VB).build()).build()
 				));
@@ -967,7 +952,7 @@ public class HentMinTilgjengeligeJournalpostListeIT extends AbstractInnsynJourna
 		sak.setSakId(sakId);
 
 		Fagsystemer fagsystem = new Fagsystemer();
-		fagsystem.setValue(FagsystemCode.AO01.name());
+		fagsystem.setValue(FagsystemCode.FS22.name());
 
 		sak.setFagsystem(fagsystem);
 

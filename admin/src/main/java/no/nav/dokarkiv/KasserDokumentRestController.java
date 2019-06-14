@@ -49,7 +49,7 @@ public class KasserDokumentRestController {
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark102"}, percentiles = {0.5, 0.95})
 	public ResponseEntity kasserDokument(
 			@RequestHeader(value = AKSJONS_LOGG_HJEMMEL_HEADER) String hjemmel,
-			@RequestHeader(value = AKSJONS_LOGG_MELDING_HEADER) String melding,
+			@RequestHeader(value = AKSJONS_LOGG_MELDING_HEADER, required = false) String melding,
 			@RequestHeader(value = AKSJONS_LOGG_UTFOERT_AV_HEADER, required = false) String utfoertAv,
 			@RequestBody KasserDokumentRequest request) throws UgyldigAksjonsLoggException {
 		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark102");

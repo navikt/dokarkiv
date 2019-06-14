@@ -298,7 +298,7 @@ public class JournalforInngaaendeForsendelseV2RequestToTest {
 	private Saksrelasjon createSaksrelasjon() {
 		return getSaksrelasjonBuilder()
 				.sakId("123")
-				.fagsystem(FagsystemCode.AO01)
+				.fagsystem(FagsystemCode.FS22)
 				.build();
 	}
 
@@ -311,7 +311,7 @@ public class JournalforInngaaendeForsendelseV2RequestToTest {
 
 	private FilDetaljer createFildetaljer() {
 		return getFilDetaljerBuilder()
-				.filtype(FilTypeCode.AFP)
+				.filtype(FilTypeCode.PDF)
 				.variantFormat(VariantFormatCode.ARKIV)
 				.fileContent("filinnhold".getBytes())
 				.build();

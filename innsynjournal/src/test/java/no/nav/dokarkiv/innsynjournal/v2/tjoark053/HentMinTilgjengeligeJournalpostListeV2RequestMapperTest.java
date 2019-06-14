@@ -21,7 +21,7 @@ import org.junit.Test;
  */
 public class HentMinTilgjengeligeJournalpostListeV2RequestMapperTest {
 
-	public static final FagsystemCode FAGSYSTEM = FagsystemCode.BID;
+	public static final FagsystemCode FAGSYSTEM = FagsystemCode.FS22;
 	public static final String SAKS_ID = "0";
 	public static final boolean MERK_INNSYN = true;
 

@@ -123,10 +123,14 @@ public abstract class AbstractAdminIT extends AbstractRestIT {
 				.get();
 	}
 
-
 	protected void assertAksjonsLogg(AksjonsLogg aksjonsLogg, AksjonsTypeCode expectedAksjonsTypeCode, Long journalpostId, Long dokumentInfoId, List<ArkivElementEndring> expectedArkivElementEndringList) {
+		assertAksjonsLogg(aksjonsLogg, expectedAksjonsTypeCode, journalpostId, dokumentInfoId, null, expectedArkivElementEndringList);
+	}
 
-		assertCommongAksjonsLoggValues(aksjonsLogg, expectedAksjonsTypeCode);
+
+	protected void assertAksjonsLogg(AksjonsLogg aksjonsLogg, AksjonsTypeCode expectedAksjonsTypeCode, Long journalpostId, Long dokumentInfoId, String expectedMelding, List<ArkivElementEndring> expectedArkivElementEndringList) {
+
+		assertCommongAksjonsLoggValues(aksjonsLogg, expectedAksjonsTypeCode, expectedMelding);
 		assertThat("journalpostId", aksjonsLogg.getJournalpostId(), is(journalpostId));
 		assertThat("dokumentInfoId", aksjonsLogg.getDokumentInfoId(), is(dokumentInfoId));
 		assertThat("arkivElementEndring.size()", aksjonsLogg.getArkivElementEndringer()
@@ -136,18 +140,19 @@ public abstract class AbstractAdminIT extends AbstractRestIT {
 				.iterator());
 
 		assertThat(arkivElementEndringList.stream()
-				.map(ArkivElementEndring::toStringElementFraTil)
-				.collect(Collectors.toList()), hasItems(expectedArkivElementEndringList.stream()
-				.map(ArkivElementEndring::toStringElementFraTil)
-				.distinct()
-				.toArray()));
+						.map(ArkivElementEndring::toStringElementFraTil)
+						.collect(Collectors.toList()),
+				hasItems(expectedArkivElementEndringList.stream()
+						.map(ArkivElementEndring::toStringElementFraTil)
+						.distinct()
+						.toArray()));
 	}
 
-	protected void assertCommongAksjonsLoggValues(AksjonsLogg aksjonsLogg, AksjonsTypeCode expectedAksjonsTypeCode) {
+	protected void assertCommongAksjonsLoggValues(AksjonsLogg aksjonsLogg, AksjonsTypeCode expectedAksjonsTypeCode, String expectedMelding) {
 		assertThat("aksjon", aksjonsLogg.getAksjon(), is(expectedAksjonsTypeCode));
 		assertThat("ufoertAv", aksjonsLogg.getUtfoertAv(), is(TestDataUtils.AKSJON_UTFOERT_AV));
 		assertThat("hjemmel", aksjonsLogg.getHjemmel(), is(TestDataUtils.AKSJON_HJEMMEL));
-		assertThat("melding", aksjonsLogg.getMelding(), is(TestDataUtils.AKSJON_MELDING));
+		assertThat("melding", aksjonsLogg.getMelding(), is(expectedMelding == null ? TestDataUtils.AKSJON_MELDING : expectedMelding));
 		assertThat("applikasjon", aksjonsLogg.getApplikasjon(), is(SERVICE_USER_ID));
 		assertThat("bruker", aksjonsLogg.getBruker(), is(BRUKER_ID));
 	}
@@ -168,10 +173,6 @@ public abstract class AbstractAdminIT extends AbstractRestIT {
 				.getResultList()
 				.size(), is(0));
 		assertThat(entityManager.createNativeQuery("select '1' from t_jp_tillegg where journalpost_id= :jp")
-				.setParameter("jp", journalpostId)
-				.getResultList()
-				.size(), is(0));
-		assertThat(entityManager.createNativeQuery("select '1' from t_retur_info where journalpost_id= :jp")
 				.setParameter("jp", journalpostId)
 				.getResultList()
 				.size(), is(0));
@@ -242,10 +243,6 @@ public abstract class AbstractAdminIT extends AbstractRestIT {
 				.getResultList()
 				.size(), is(1));
 		assertThat(entityManager.createNativeQuery("select '1' from t_jp_tillegg where journalpost_id= :jp")
-				.setParameter("jp", journalpostId)
-				.getResultList()
-				.size(), is(1));
-		assertThat(entityManager.createNativeQuery("select '1' from t_retur_info where journalpost_id= :jp")
 				.setParameter("jp", journalpostId)
 				.getResultList()
 				.size(), is(1));

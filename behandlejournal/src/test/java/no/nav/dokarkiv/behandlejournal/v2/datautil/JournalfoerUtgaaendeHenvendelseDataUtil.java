@@ -20,7 +20,7 @@ import no.nav.tjeneste.virksomhet.behandlejournal.v2.informasjon.journalfoerutga
 public class JournalfoerUtgaaendeHenvendelseDataUtil extends BehandleJournalCommonDataUtil {
 
 	public static final FagomradeCode ARKIVTEMA = FagomradeCode.UFO;
-	public static final UtsendingsKanalCode KANAL = UtsendingsKanalCode.ALTINN;
+	public static final UtsendingsKanalCode KANAL = UtsendingsKanalCode.EESSI;
 	public static final String DOKUMENT_TYPE_ID = "dokumentTypeId";
 	public static final boolean BEGRENSET_PARTS_INNSYN = true;
 	public static final String JOURNALFOERENDE_ENHET_REF = "2009";

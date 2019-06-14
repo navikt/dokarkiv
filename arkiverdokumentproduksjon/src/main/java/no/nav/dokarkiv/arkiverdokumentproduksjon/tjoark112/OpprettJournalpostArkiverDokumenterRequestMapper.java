@@ -3,6 +3,7 @@ package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark112;
 
 import static no.nav.dokarkiv.arkiverdokumentproduksjon.ArkiverDokumentproduksjonConstants.FILREFERANSE_ID_KEY;
 import static no.nav.dokarkiv.core.storage.DokprodMellomlagerS3Storage.DOKPRODMELLOMLAGER_DIRECTORY_NAME;
+import static org.apache.commons.lang3.StringUtils.trim;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
@@ -91,7 +92,7 @@ public class OpprettJournalpostArkiverDokumenterRequestMapper {
 	private void addBruker(Journalpost domainJournalpost,
 						   no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasjon.opprettjournalpostarkiverdokumenter.Journalpost journalpost) {
 		domainJournalpost.addBruker(Bruker.builder()
-				.brukerId(journalpost.getBruker() == null ? null : journalpost.getBruker().getBrukerId())
+				.brukerId(journalpost.getBruker() == null ? null : trim(journalpost.getBruker().getBrukerId()))
 				.brukerType(journalpost.getBruker() == null || journalpost.getBruker()
 						.getBrukerType() == null ? null : BrukerTypeCode.valueOf(journalpost.getBruker()
 						.getBrukerType()))

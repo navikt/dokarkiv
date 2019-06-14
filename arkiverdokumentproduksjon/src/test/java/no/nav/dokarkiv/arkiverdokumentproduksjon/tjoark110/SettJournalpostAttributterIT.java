@@ -41,7 +41,7 @@ public class SettJournalpostAttributterIT extends AbstractArkiverdokumentproduks
 	private static final String ENDRET_AV_NAVN = "Tester2";
 	private static final int ANTALL_RETURPOST = 1;
 	public static final String ORIGINAL_ENDRET_AV_NAVN = "original";
-	public static final String UTSENDINGSKANAL = UtsendingsKanalCode.ALTINN.name();
+	public static final String UTSENDINGSKANAL = UtsendingsKanalCode.EESSI.name();
 
 	@Rule
 	public ExpectedException expectedException = ExpectedException.none();

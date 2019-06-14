@@ -33,41 +33,36 @@ import java.util.Map;
 @Component
 public class AbacSecurityService {
 
-	public static final String ACCESS_DENIED_TO_JOURNALPOST = "Bruker har ikke tilgang til journalpost";
+	private static final String ACCESS_DENIED_TO_JOURNALPOST = "Bruker har ikke tilgang til journalpost";
 	public static final String ACCESS_DENIED = "Access Denied";
 
-	@Inject
-	private AbacLogger abaclog;
+	private final AbacLogger abaclog;
+	private final AbacService abacService;
+	private final AbacContext abacContext;
+	private final JdbcAbacSecurityRepository jdbcAbacSecurityRepository;
+	private final JoarkRepository joarkRepository;
+    private final DokumentinfoRepository dokumentinfoRepository;
+	private final JoarkRepositorySkjermet joarkRepositorySkjermet;
 
 	@Inject
-	private AbacService abacService;
+	public AbacSecurityService(AbacLogger abaclog, AbacService abacService, AbacContext abacContext, JdbcAbacSecurityRepository jdbcAbacSecurityRepository, JoarkRepository joarkRepository, DokumentinfoRepository dokumentinfoRepository, JoarkRepositorySkjermet joarkRepositorySkjermet) {
+		this.abaclog = abaclog;
+		this.abacService = abacService;
+		this.abacContext = abacContext;
+		this.jdbcAbacSecurityRepository = jdbcAbacSecurityRepository;
+		this.joarkRepository = joarkRepository;
+		this.dokumentinfoRepository = dokumentinfoRepository;
+		this.joarkRepositorySkjermet = joarkRepositorySkjermet;
+	}
 
-	@Inject
-	private AbacContext abacContext;
-
-	@Inject
-	private JdbcAbacSecurityRepository jdbcAbacSecurityRepository;
-
-	@Inject
-	private JoarkRepository joarkRepository;
-
-    @Inject
-    private DokumentinfoRepository dokumentinfoRepository;
-
-	@Inject
-	private JoarkRepositorySkjermet joarkRepositorySkjermet;
-
-	public void assertAccessToJournalpostIncludingBegrenset(String journalpost) {
+	private void assertAccessToJournalpostIncludingBegrenset(String journalpost) {
 		Long journalpostId = Long.parseLong(journalpost);
 
 		if (!joarkRepository.existsById(journalpostId)) {
 			throw new JournalpostIkkeFunnetException("Journalpost ikke funnet. journalpostId=" + journalpostId);
 		}
 
-		AbacResources abacResources = jdbcAbacSecurityRepository.findAbacResources(journalpostId);
-		decorateJoarkResources(abacContext.getRequest(), abacResources, journalpostId);
-		XacmlResponse accessResponse = abacService.evaluate(abacContext.getRequest());
-		handleResponseForJournalpostId(abacContext.getRequest(), accessResponse, journalpostId);
+		submitJournalpostParametersAndHandleResponse(journalpostId);
 	}
 
 	public void assertAccessToDokumentIncludingSkjermet(Long dokumentInfoId) {
@@ -84,6 +79,20 @@ public class AbacSecurityService {
         assertAccessToJournalpostIncludingBegrenset(journalpostId.toString());
 	}
 
+	public void assertAccessToDokumentInfo(Long dokumentInfoId) {
+
+		if (!dokumentinfoRepository.existsById(dokumentInfoId)) {
+			throw new DokumentInfoIkkeFunnetException("DokumentInfo ikke funnet. dokumentInfoId=" + dokumentInfoId);
+		}
+		Long journalpostId = joarkRepositorySkjermet.findJournalpostIdByDokumentinfoId(dokumentInfoId.toString());
+		if (journalpostId == null) {
+			log.warn(String.format("DokumentInfo med dokumentInfoId=%s mangler originalJournalpost", dokumentInfoId));
+			throw new DokumentInfoIkkeFunnetException(String.format("DokumentInfo med dokumentInfoId=%s mangler originalJournalpost", dokumentInfoId));
+		}
+
+        assertAccessToJournalpost(journalpostId.toString());
+	}
+
 
 	public void assertAccessToJournalpost(String journalpost) {
 		Long journalpostId = Long.parseLong(journalpost);
@@ -92,12 +101,15 @@ public class AbacSecurityService {
 			throw new JournalpostIkkeFunnetException("Journalpost ikke funnet. journalpostId=" + journalpostId);
 		}
 
+		submitJournalpostParametersAndHandleResponse(journalpostId);
+	}
+
+	private void submitJournalpostParametersAndHandleResponse(Long journalpostId) {
 		AbacResources abacResources = jdbcAbacSecurityRepository.findAbacResources(journalpostId);
 		decorateJoarkResources(abacContext.getRequest(), abacResources, journalpostId);
 		XacmlResponse accessResponse = abacService.evaluate(abacContext.getRequest());
 		handleResponseForJournalpostId(abacContext.getRequest(), accessResponse, journalpostId);
 	}
-
 
 	Decision assertAccessToSak(String sakId, FagsystemCode fagsystemCode) {
 		return assertAccessToSak(abacContext.getRequest(), sakId, fagsystemCode);
@@ -164,9 +176,4 @@ public class AbacSecurityService {
 			return response.getDecision();
 		}
 	}
-
-	void setAbacContext(AbacContext abacContext) {
-		this.abacContext = abacContext;
-	}
-
 }

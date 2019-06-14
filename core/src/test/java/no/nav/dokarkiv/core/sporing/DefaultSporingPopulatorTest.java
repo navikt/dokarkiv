@@ -6,7 +6,6 @@ import static no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder.getFilDetal
 import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalpostBuilder;
 import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
 import static no.nav.dokarkiv.core.domain.builder.KryssreferanseBuilder.getKryssreferanseBuilder;
-import static no.nav.dokarkiv.core.domain.builder.ReturInfoBuilder.getReturInfoBuilder;
 import static no.nav.dokarkiv.core.domain.builder.SaksrelasjonBuilder.getSaksrelasjonBuilder;
 import static no.nav.dokarkiv.core.domain.builder.SkannetInnholdBuilder.getSkannetInnholdBuilder;
 import static org.hamcrest.Matchers.is;
@@ -95,9 +94,6 @@ public class DefaultSporingPopulatorTest {
 						.build())
 				.brukere(getBrukerBuilder()
 						.brukerInfoId(id)
-						.build())
-				.returInfos(getReturInfoBuilder()
-						.returInfoId(id)
 						.build())
 				.kryssReferanser(getKryssreferanseBuilder()
 						.kryssreferanseId(id)

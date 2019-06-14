@@ -106,14 +106,14 @@ public class DefaultHentMinTilgjengeligeJournalpostListeServiceTest {
 		thrown.expect(IllegalArgumentException.class);
 		thrown.expectMessage("SaksId must be set");
 		service.hentMineTilgjengeligeJournalposter(
-				createRequest(new SakFagsystem(FagsystemCode.BID, "0"), new SakFagsystem(FagsystemCode.FS19, null)));
+				createRequest(new SakFagsystem(FagsystemCode.FS22, "0"), new SakFagsystem(FagsystemCode.FS22, null)));
 	}
 
 	@Test
 	public void shouldThrowIfSaksListConstainsSakWithEmptyFagsystemCode() {
 		thrown.expect(IllegalArgumentException.class);
 		thrown.expectMessage("FagsystemCode of sak with saksId 0, must be set");
-		service.hentMineTilgjengeligeJournalposter(createRequest(new SakFagsystem(null, "0"), new SakFagsystem(FagsystemCode.AO01, "1")));
+		service.hentMineTilgjengeligeJournalposter(createRequest(new SakFagsystem(null, "0"), new SakFagsystem(FagsystemCode.FS22, "1")));
 	}
 
 	@Test
@@ -128,7 +128,7 @@ public class DefaultHentMinTilgjengeligeJournalpostListeServiceTest {
 	@Test
 	public void shouldNotRemoveHovedDokOrVedlegg() {
 		journalposts.add(createLegalJournalpost());
-		journalposts = service.hentMineTilgjengeligeJournalposter(createRequest(new SakFagsystem(FagsystemCode.BID, "1")));
+		journalposts = service.hentMineTilgjengeligeJournalposter(createRequest(new SakFagsystem(FagsystemCode.FS22, "1")));
 		assertThat(journalposts.size(), is(1));
 		assertNotNull(journalposts.get(0).findHoveddokumentDokumentInfoRelasjon());
 		assertThat(journalposts.get(0).findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG).size(), is(2));
@@ -140,17 +140,17 @@ public class DefaultHentMinTilgjengeligeJournalpostListeServiceTest {
 		Journalpost journalpost = createLegalJournalpost();
 		journalpost.removeJournalpostDokumentInfoRelasjon(journalpost.findHoveddokumentDokumentInfoRelasjon());
 		journalposts.add(journalpost);
-		journalposts = service.hentMineTilgjengeligeJournalposter(createRequest(new SakFagsystem(FagsystemCode.BID, "1")));
+		journalposts = service.hentMineTilgjengeligeJournalposter(createRequest(new SakFagsystem(FagsystemCode.FS22, "1")));
 		assertThat(journalposts.size(), is(1));
 	}
 
 	@Test
 	public void shouldRemoveJournalpostIfHovedDokKategoriNotForvaltningsNotat() {
 		Journalpost journalpost = createLegalJournalpost();
-		journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().setKategori(DokumentKategoriCode.F);
+		journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().setKategori(DokumentKategoriCode.SED);
 		journalposts.add(journalpost);
 		journalposts.add(createLegalJournalpost());
-		journalposts = service.hentMineTilgjengeligeJournalposter(createRequest(new SakFagsystem(FagsystemCode.BID, "1")));
+		journalposts = service.hentMineTilgjengeligeJournalposter(createRequest(new SakFagsystem(FagsystemCode.FS22, "1")));
 		assertThat(journalposts.size(), is(1));
 	}
 
@@ -160,7 +160,7 @@ public class DefaultHentMinTilgjengeligeJournalpostListeServiceTest {
 		journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().setOrganInternt(true);
 		journalposts.add(journalpost);
 		journalposts.add(createLegalJournalpost());
-		journalposts = service.hentMineTilgjengeligeJournalposter(createRequest(new SakFagsystem(FagsystemCode.BID, "1")));
+		journalposts = service.hentMineTilgjengeligeJournalposter(createRequest(new SakFagsystem(FagsystemCode.FS22, "1")));
 
 		assertThat(journalposts.size(), is(1));
 	}
@@ -175,7 +175,7 @@ public class DefaultHentMinTilgjengeligeJournalpostListeServiceTest {
 		journalposts.add(journalpost);
 		journalposts.add(journalpostUt);
 		journalposts.add(createLegalJournalpost());
-		journalposts = service.hentMineTilgjengeligeJournalposter(createRequest(new SakFagsystem(FagsystemCode.BID, "1")));
+		journalposts = service.hentMineTilgjengeligeJournalposter(createRequest(new SakFagsystem(FagsystemCode.FS22, "1")));
 
 		assertThat(journalposts.size(), is(1));
 	}
@@ -185,7 +185,7 @@ public class DefaultHentMinTilgjengeligeJournalpostListeServiceTest {
 		Journalpost journalpost = createJournalpostWithInfoRelasjon
 				(createDokumentInfoRelasjonVedlegg(true, true, DokumentStatusCode.AVBRUTT));
 		journalposts.add(journalpost);
-		journalposts = service.hentMineTilgjengeligeJournalposter(createRequest(new SakFagsystem(FagsystemCode.BID, "1")));
+		journalposts = service.hentMineTilgjengeligeJournalposter(createRequest(new SakFagsystem(FagsystemCode.FS22, "1")));
 
 		assertThat(journalposts.get(0).findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG).size(), is(2));
 	}
@@ -196,7 +196,7 @@ public class DefaultHentMinTilgjengeligeJournalpostListeServiceTest {
 				(createDokumentInfoRelasjonVedlegg(true, false, DokumentStatusCode.AVBRUTT));
 
 		journalposts.add(journalpost);
-		journalposts = service.hentMineTilgjengeligeJournalposter(createRequest(new SakFagsystem(FagsystemCode.BID, "1")));
+		journalposts = service.hentMineTilgjengeligeJournalposter(createRequest(new SakFagsystem(FagsystemCode.FS22, "1")));
 
 		assertThat(journalposts.size(), is(1));
 		assertThat(journalposts.get(0).findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG).size(), is(2));
@@ -208,7 +208,7 @@ public class DefaultHentMinTilgjengeligeJournalpostListeServiceTest {
 				(createDokumentInfoRelasjonVedlegg(false, true, DokumentStatusCode.AVBRUTT));
 
 		journalposts.add(journalpost);
-		journalposts = service.hentMineTilgjengeligeJournalposter(createRequest(new SakFagsystem(FagsystemCode.BID, "1")));
+		journalposts = service.hentMineTilgjengeligeJournalposter(createRequest(new SakFagsystem(FagsystemCode.FS22, "1")));
 
 		assertThat(journalposts.size(), is(1));
 		assertThat(journalposts.get(0).findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG).size(), is(2));
@@ -222,7 +222,7 @@ public class DefaultHentMinTilgjengeligeJournalpostListeServiceTest {
 
 		journalposts.add(journalpost);
 		journalposts.add(journalpostUt);
-		journalposts = service.hentMineTilgjengeligeJournalposter(createRequest(new SakFagsystem(FagsystemCode.BID, "1")));
+		journalposts = service.hentMineTilgjengeligeJournalposter(createRequest(new SakFagsystem(FagsystemCode.FS22, "1")));
 
 		assertThat(journalposts.size(), is(2));
 		assertThat(journalposts.get(0).findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG).size(), is(2));
@@ -232,7 +232,7 @@ public class DefaultHentMinTilgjengeligeJournalpostListeServiceTest {
 	@Test
 	public void shouldRemoveFilDetalajerOfVedleggWithVariantFormatNotArkiv() {
 		journalposts.add(createLegalJournalpost());
-		journalposts = service.hentMineTilgjengeligeJournalposter(createRequest(new SakFagsystem(FagsystemCode.BID, "1")));
+		journalposts = service.hentMineTilgjengeligeJournalposter(createRequest(new SakFagsystem(FagsystemCode.FS22, "1")));
 
 		assertThat(journalposts.size(), is(1));
 		Set<JournalpostDokumentInfoRelasjon> vedlegg = journalposts.get(0).findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG);
