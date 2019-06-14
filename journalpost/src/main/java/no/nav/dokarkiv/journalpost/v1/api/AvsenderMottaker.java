@@ -19,14 +19,14 @@ public class AvsenderMottaker {
     private String id;
 
 	@ApiModelProperty(
-			value = "Angir hvilken type identifikator som er benyttet i AvsenderMottaker.id.",
+			value = "Angir hvilken type identifikator som er benyttet i AvsenderMottaker.id.\nPåkrevd dersom `id` er satt.",
 			required = false)
 	private AvsenderMottakerIdType idType;
 
 	@NotNull(message = "AvsenderMottaker mangler navn")
 	@ApiModelProperty(
 			value = "Navnet til avsender/mottaker.\nNavn på personbrukere skal lagres på formatet etternavn, fornavn mellomnavn",
-			required = false)
+			required = true)
 	private String navn;
 
 	@ApiModelProperty(

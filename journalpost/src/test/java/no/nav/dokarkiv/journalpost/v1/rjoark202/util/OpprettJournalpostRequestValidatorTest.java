@@ -1,6 +1,7 @@
 package no.nav.dokarkiv.journalpost.v1.rjoark202.util;
 
 import static java.util.Collections.singletonList;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.AVSENDER_NAVN;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.DOKUMENTKATEGORI_SED;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FILTYPE_PDF;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FILTYPE_XML;
@@ -43,41 +44,139 @@ public class OpprettJournalpostRequestValidatorTest {
 	}
 
 	@Test
-	public void shouldNotThrowExceptionIfAvsenderIsMissing() {
+	public void shouldValidateWhenNoAvsenderMottaker() {
 		request = createMinimalRequest(JournalpostType.INNGAAENDE, TEMA_FOR, INNHOLD)
-				.avsenderMottaker(AvsenderMottaker.builder()
-						.navn(null)
-						.id(null)
-						.build())
+				.avsenderMottaker(null)
 				.build();
 
 		validator.validateRequest(request);
 	}
 
 
-/*	@Test
-	public void shouldThrowExceptionIfWhenAvsenderIdIsSetButNotMottakerIdType() {
+	@Test
+	public void shouldThrowExceptionWhenAvsenderMottakerNavnIsNotSet() {
 		request = createMinimalRequest(JournalpostType.INNGAAENDE, TEMA_FOR, INNHOLD)
 				.avsenderMottaker(AvsenderMottaker.builder()
 						.navn(null)
+						.id("***gammelt_fnr***")
+						.idType(AvsenderMottakerIdType.FNR)
+						.build())
+				.build();
+		expectedException.expect(InputValideringFeiletException.class);
+		expectedException.expectMessage("AvsenderMottaker.navn");
+		validator.validateRequest(request);
+	}
+
+	@Test
+	public void shouldThrowExceptionWhenAvsenderMottakerIdIsSetButNotIdType() {
+		request = createMinimalRequest(JournalpostType.INNGAAENDE, TEMA_FOR, INNHOLD)
+				.avsenderMottaker(AvsenderMottaker.builder()
+						.navn(AVSENDER_NAVN)
 						.id("***gammelt_fnr***")
 						.idType(null)
 						.build())
 				.build();
 		expectedException.expect(InputValideringFeiletException.class);
-		expectedException.expectMessage("AvsenderMottaker.avsenderMottakerIdType");
+		expectedException.expectMessage("AvsenderMottaker.idType");
 		validator.validateRequest(request);
-	}*/
+	}
 
 	@Test
-	public void shouldNotThrowExceptionIfAvsenderNameIsNotsetWhenAvsenderIdIsSet() {
+	public void shouldThrowExceptionWhenAvsenderMottakerIdTypeIsSetAndNotId() {
 		request = createMinimalRequest(JournalpostType.INNGAAENDE, TEMA_FOR, INNHOLD)
 				.avsenderMottaker(AvsenderMottaker.builder()
-						.id("***gammelt_fnr***")
+						.id(null)
+						.idType(AvsenderMottakerIdType.FNR)
+						.navn(AVSENDER_NAVN)
+						.build())
+				.build();
+		expectedException.expect(InputValideringFeiletException.class);
+		expectedException.expectMessage("AvsenderMottaker.id");
+
+		validator.validateRequest(request);
+	}
+
+	@Test
+	public void shouldThrowExceptionWhenAvsenderMottakerIdTypeFNRAndIdNot11Digits() {
+		request = createMinimalRequest(JournalpostType.INNGAAENDE, TEMA_FOR, INNHOLD)
+				.avsenderMottaker(AvsenderMottaker.builder()
+						.navn(AVSENDER_NAVN)
+						.id("1111111111a")
 						.idType(AvsenderMottakerIdType.FNR)
 						.build())
 				.build();
+		expectedException.expect(InputValideringFeiletException.class);
+		expectedException.expectMessage("AvsenderMottaker.id");
+		validator.validateRequest(request);
+	}
 
+	@Test
+	public void shouldThrowExceptionWhenAvsenderMottakerIdTypeFNRAndMoreThan11Digits() {
+		request = createMinimalRequest(JournalpostType.INNGAAENDE, TEMA_FOR, INNHOLD)
+				.avsenderMottaker(AvsenderMottaker.builder()
+						.navn(AVSENDER_NAVN)
+						.id("***gammelt_fnr***1")
+						.idType(AvsenderMottakerIdType.FNR)
+						.build())
+				.build();
+		expectedException.expect(InputValideringFeiletException.class);
+		expectedException.expectMessage("AvsenderMottaker.id");
+		validator.validateRequest(request);
+	}
+
+	@Test
+	public void shouldThrowExceptionWhenAvsenderMottakerIdTypeORGNRAndIdNot9Digits() {
+		request = createMinimalRequest(JournalpostType.INNGAAENDE, TEMA_FOR, INNHOLD)
+				.avsenderMottaker(AvsenderMottaker.builder()
+						.navn(AVSENDER_NAVN)
+						.id("NO7777777")
+						.idType(AvsenderMottakerIdType.ORGNR)
+						.build())
+				.build();
+		expectedException.expect(InputValideringFeiletException.class);
+		expectedException.expectMessage("AvsenderMottaker.id");
+		validator.validateRequest(request);
+	}
+
+	@Test
+	public void shouldThrowExceptionWhenAvsenderMottakerIdTypeORGNRAndIdMoreThan9Digits() {
+		request = createMinimalRequest(JournalpostType.INNGAAENDE, TEMA_FOR, INNHOLD)
+				.avsenderMottaker(AvsenderMottaker.builder()
+						.navn(AVSENDER_NAVN)
+						.id("9999999999")
+						.idType(AvsenderMottakerIdType.ORGNR)
+						.build())
+				.build();
+		expectedException.expect(InputValideringFeiletException.class);
+		expectedException.expectMessage("AvsenderMottaker.id");
+		validator.validateRequest(request);
+	}
+
+	@Test
+	public void shouldThrowExceptionWhenAvsenderMottakerIdTypeHPRNRAndIdNot9Digits() {
+		request = createMinimalRequest(JournalpostType.INNGAAENDE, TEMA_FOR, INNHOLD)
+				.avsenderMottaker(AvsenderMottaker.builder()
+						.navn(AVSENDER_NAVN)
+						.id("1010101010")
+						.idType(AvsenderMottakerIdType.HPRNR)
+						.build())
+				.build();
+		expectedException.expect(InputValideringFeiletException.class);
+		expectedException.expectMessage("AvsenderMottaker.id");
+		validator.validateRequest(request);
+	}
+
+	@Test
+	public void shouldThrowExceptionWhenAvsenderMottakerIdTypeHPRNRMoreThan9Digits() {
+		request = createMinimalRequest(JournalpostType.INNGAAENDE, TEMA_FOR, INNHOLD)
+				.avsenderMottaker(AvsenderMottaker.builder()
+						.navn(AVSENDER_NAVN)
+						.id("9999999999")
+						.idType(AvsenderMottakerIdType.HPRNR)
+						.build())
+				.build();
+		expectedException.expect(InputValideringFeiletException.class);
+		expectedException.expectMessage("AvsenderMottaker.id");
 		validator.validateRequest(request);
 	}
 
@@ -100,7 +199,7 @@ public class OpprettJournalpostRequestValidatorTest {
 		request = createMinimalRequest(JournalpostType.INNGAAENDE, TEMA_FOR, INNHOLD)
 				.bruker(Bruker.builder()
 						.idType(BrukerIdType.FNR)
-						.id("abc")
+						.id("abc11111111")
 						.build())
 				.build();
 

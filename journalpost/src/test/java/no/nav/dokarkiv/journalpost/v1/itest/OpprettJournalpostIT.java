@@ -17,10 +17,8 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.INNHOLD;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.SAK_ID;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_FOR;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.VARIANTFORMAT_ARKIV;
-import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createAvsenderMottakerUtenIdType;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createMinimalRequest;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createRequest;
-import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createRequestAvsenderMottaker;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -370,19 +368,4 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertEquals("ENDELIG", response.getBody().getJournalstatus());
 
 	}
-
-	@Test
-	public void shouldNotFailIfIdTypeIsEmpty() throws IOException {
-		abacPermit();
-
-		OpprettJournalpostRequest request = createRequestAvsenderMottaker(INNGAAENDE, createAvsenderMottakerUtenIdType());
-
-		HttpEntity requestEntity = new HttpEntity(request, createHeadersWithServiceUserToken());
-		ResponseEntity response = restTemplate.exchange(URL_JOURNALPOST, HttpMethod.POST, requestEntity, Void.class);
-
-		assertEquals(HttpStatus.CREATED, response.getStatusCode());
-
-	}
-
-
 }

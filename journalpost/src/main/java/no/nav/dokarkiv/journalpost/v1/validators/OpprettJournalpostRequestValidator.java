@@ -31,9 +31,9 @@ public class OpprettJournalpostRequestValidator {
 	private static final String VALIDERER_IKKE_MOT_KODEVERK = "validerer ikke mot kodeverk";
 
 	public void validateRequest(OpprettJournalpostRequest request) {
-/*		if (request.getAvsenderMottaker() != null) {
+		if (request.getAvsenderMottaker() != null) {
 			validateAvsenderMottaker(request.getAvsenderMottaker());
-		}*/
+		}
 		if (request.getBruker() != null) {
 			validateBruker(request.getBruker());
 		}
@@ -53,13 +53,35 @@ public class OpprettJournalpostRequestValidator {
 		}
 	}
 
-	//Kan ikke brukes enda
-/*	private void validateAvsenderMottaker(AvsenderMottaker avsenderMottaker) {
-		if (isNotBlank(avsenderMottaker.getId()) && (avsenderMottaker.getIdType() == null)) {
-			throw new InputValideringFeiletException("AvsenderMottaker.avsenderMottakerIdType må være satt når avsenderMottaker.id er satt");
+	private void validateAvsenderMottaker(AvsenderMottaker avsenderMottaker) {
+		if (isBlank(avsenderMottaker.getNavn())) {
+			throw new InputValideringFeiletException("AvsenderMottaker.navn må være satt.");
 		}
-
-	}*/
+		if (isNotBlank(avsenderMottaker.getId()) && avsenderMottaker.getIdType() == null) {
+			throw new InputValideringFeiletException("AvsenderMottaker.idType må være satt når AvsenderMottaker.id er satt.");
+		}
+		if (avsenderMottaker.getIdType() != null && isBlank(avsenderMottaker.getId())) {
+			throw new InputValideringFeiletException("AvsenderMottaker.id må være satt når AvsenderMottaker.idType er satt.");
+		}
+		if (avsenderMottaker.getIdType() != null) {
+			switch (avsenderMottaker.getIdType()) {
+				case FNR:
+					if (!avsenderMottaker.getId().matches("^\\d{11}$")) {
+						throw new InputValideringFeiletException("AvsenderMottaker.id må være 11 siffer når AvsenderMottaker.idType er " + avsenderMottaker.getIdType() + ".");
+					}
+					break;
+				case ORGNR:
+				case HPRNR:
+					if (!avsenderMottaker.getId().matches("^\\d{9}$")) {
+						throw new InputValideringFeiletException("AvsenderMottaker.id må være 9 siffer når AvsenderMottaker.idType er " + avsenderMottaker.getIdType() + ".");
+					}
+					break;
+				default:
+					// noop
+					break;
+			}
+		}
+	}
 
 	private void validateBruker(Bruker bruker) {
 		if (isBlank(bruker.getId())) {
