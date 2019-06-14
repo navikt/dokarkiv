@@ -24,14 +24,17 @@ import no.nav.dokarkiv.journalpost.v1.api.AvsenderMottakerIdType;
 import no.nav.dokarkiv.journalpost.v1.api.BrukerIdType;
 import no.nav.dokarkiv.journalpost.v1.api.Dokument;
 import no.nav.dokarkiv.journalpost.v1.api.DokumentVariant;
+import no.nav.dokarkiv.journalpost.v1.api.DokumentVedlegg;
 import no.nav.dokarkiv.journalpost.v1.api.JournalpostType;
 import no.nav.dokarkiv.journalpost.v1.api.OppdaterJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.OpprettJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.Sak;
+import no.nav.dokarkiv.journalpost.v1.api.TilknyttVedleggRequest;
 import no.nav.dokarkiv.journalpost.v1.api.Tilleggsopplysning;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -402,5 +405,29 @@ public class TestUtils {
 				.build();
 
 
+	}
+
+	public static TilknyttVedleggRequest createTilknyttVedleggRequest() {
+		return TilknyttVedleggRequest.builder()
+				.tilknyttetAvNavn("Testus Testesen")
+				.dokument(createDokumentVedleggList())
+				.build();
+	}
+
+	public static TilknyttVedleggRequest createTilknyttVedleggRequestUtenNavn() {
+		return TilknyttVedleggRequest.builder()
+				.tilknyttetAvNavn("")
+				.dokument(createDokumentVedleggList())
+				.build();
+	}
+
+	private static List<DokumentVedlegg> createDokumentVedleggList() {
+		List<DokumentVedlegg> dokumentVedleggList = new ArrayList<>();
+		DokumentVedlegg dokumentVedlegg = DokumentVedlegg.builder()
+				.dokumentInfoId(DOKUMENTINFO_ID1)
+				.kildeJournalpostId(JOURNALPOST_ID)
+				.build();
+		dokumentVedleggList.add(dokumentVedlegg);
+		return dokumentVedleggList;
 	}
 }
