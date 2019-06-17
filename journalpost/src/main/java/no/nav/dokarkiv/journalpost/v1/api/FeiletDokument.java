@@ -32,7 +32,7 @@ public class FeiletDokument {
 	@ApiModelProperty(
 			value = "Årsak til at dokumentet ikke lot seg knytte til journalpostId",
 			required = true)
-	private String arsakKode;
+	private ArsakFeilCode arsakKode;
 
 
 

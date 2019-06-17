@@ -12,6 +12,7 @@ import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
+import no.nav.dokarkiv.journalpost.v1.api.ArsakFeilCode;
 import no.nav.dokarkiv.journalpost.v1.api.DokumentVedlegg;
 import no.nav.dokarkiv.journalpost.v1.api.FeiletDokument;
 import no.nav.dokarkiv.journalpost.v1.api.TilknyttVedleggRequest;
@@ -54,48 +55,39 @@ public class TilknyttVedleggService {
 
 		for (DokumentVedlegg dokumentVedlegg : tilknyttVedleggRequest.getDokument()) {
 			Journalpost journalpostOrigin = joarkRepository.findById(dokumentVedlegg.getKildeJournalpostId()).orElse(null);
-			DokumentInfo dokumentInfo = dokumentinfoRepository.findByDokumentInfoId(Long.parseLong(dokumentVedlegg.getDokumentInfoId())).orElse(null);
-			JournalpostDokumentInfoRelasjon journalpostDokumentInfoRelasjon;
+			DokumentInfo dokumentInfo = dokumentinfoRepository.findByDokumentInfoId(Long.parseLong(dokumentVedlegg.getDokumentInfoId()))
+					.orElse(null);
+			FilDetaljer filDetaljerSladdet = tilknyttVedleggValidator.finnSladdetFildetaljer(dokumentInfo);
+			FilDetaljer filDetaljerArkiv = tilknyttVedleggValidator.finnArkivFildetaljer(dokumentInfo);
+			Set<FilDetaljer> filDetaljerListCopy = new HashSet<>();
+
 
 			if (journalpostOrigin == null) {
-				addToFeiletDokumentList(feiletDokumentList, "ikkeFunnet", dokumentVedlegg);
+				addToFeiletDokumentList(feiletDokumentList, ArsakFeilCode.IKKE_FUNNET, dokumentVedlegg);
 
 			} else if (!tilknyttVedleggValidator.validateOriginJournalpostStatus(journalpostOrigin)) {
-				addToFeiletDokumentList(feiletDokumentList, "ugyldigStatus", dokumentVedlegg);
+				addToFeiletDokumentList(feiletDokumentList, ArsakFeilCode.UGYLDIG_STATUS, dokumentVedlegg);
 
 			} else if (dokumentInfo == null) {
-				addToFeiletDokumentList(feiletDokumentList, "ikkeFunnet", dokumentVedlegg);
+				addToFeiletDokumentList(feiletDokumentList, ArsakFeilCode.IKKE_FUNNET, dokumentVedlegg);
 
 			} else if (joarkRepository.findAllJournalpostIdsByDokumentInfoId(dokumentInfo.getDokumentInfoId())
 					.contains(journalpostId)) {
 				log.info(MDC.get(MDC_REQUEST_ID) + " dokumentId={} er allerede tilknyttet journalpostId={}", dokumentVedlegg.getDokumentInfoId(), journalpostOrigin);
 
 			} else if (!tilknyttVedleggValidator.validateDokumentInfo(dokumentInfo)) {
-				addToFeiletDokumentList(feiletDokumentList, "dokumentTillatesIkkeGjenbrukt", dokumentVedlegg);
-				;
+				addToFeiletDokumentList(feiletDokumentList, ArsakFeilCode.DOKUMENT_TILLATES_IKKE_GJENBRUKT, dokumentVedlegg);
+
 			} else {
-
-/*				Set<FilDetaljer> filDetaljerList = tilknyttVedleggValidator.finnSladdetFildetlajeList(dokumentInfo);
-				Set<FilDetaljer> filDetaljerListCopy = new HashSet<>();
-				if (filDetaljerList != null) {
-
-					for (FilDetaljer filDetaljer : filDetaljerList) {
-						filDetaljerListCopy.add(createFildetaljerCopy(filDetaljer));
-					}
-
-					DokumentInfo dokumentInfoCopy = createDokumentInfoCopy(dokumentInfo, filDetaljerListCopy);
-
-				}*/
-
-				try {
-					journalpostDokumentInfoRelasjon = createJournalpostDokumentInfoRelasjon(dokumentInfo, journalpost);
-					journalpost.addJournalpostDokumentInfoRelasjon(journalpostDokumentInfoRelasjon);
-					joarkRepository.save(journalpost);
-					log.info("Journalpost med journalpostId={} har fått tilknyttet dokument vedlegg fra DokumentInfoId={} ", journalpost
-							.getJournalpostId(), dokumentInfo.getDokumentInfoId());
-				} catch (Exception e) {
-					addToFeiletDokumentList(feiletDokumentList, "tilknyttingFeilet", dokumentVedlegg);
-					break;
+				if (filDetaljerSladdet != null) {
+					DokumentInfo dokumentInfoCopy = createDokumentInfoCopy(dokumentInfo);
+					filDetaljerListCopy.add(createFildetaljerCopy(filDetaljerSladdet, dokumentInfoCopy));
+					dokumentInfoCopy.setOpprettetKildeNavn("Test");
+					saveDokumentInfoRelasjon(dokumentInfoCopy, dokumentVedlegg, journalpost, feiletDokumentList);
+				} else if (filDetaljerArkiv != null) {
+					saveDokumentInfoRelasjon(dokumentInfo, dokumentVedlegg, journalpost, feiletDokumentList);
+				} else {
+					addToFeiletDokumentList(feiletDokumentList, ArsakFeilCode.DOKUMENT_TILLATES_IKKE_GJENBRUKT, dokumentVedlegg);
 				}
 			}
 		}
@@ -114,8 +106,9 @@ public class TilknyttVedleggService {
 		return journalpostDokumentInfoRelasjon;
 	}
 
-	private FilDetaljer createFildetaljerCopy(FilDetaljer filDetaljer) {
+	private FilDetaljer createFildetaljerCopy(FilDetaljer filDetaljer, DokumentInfo dokumentInfo) {
 		return FilDetaljer.builder()
+				.dokumentInfo(dokumentInfo)
 				.fileContent(filDetaljer.getFileContent())
 				.filUuid(filDetaljer.getFilUuid())
 				.onDemandId(filDetaljer.getOnDemandId())
@@ -129,7 +122,7 @@ public class TilknyttVedleggService {
 				.build();
 	}
 
-	private DokumentInfo createDokumentInfoCopy(DokumentInfo dokumentInfo, Set<FilDetaljer> filDetaljerList) {
+	private DokumentInfo createDokumentInfoCopy(DokumentInfo dokumentInfo) {
 		return DokumentInfo.builder()
 				.brevkode(dokumentInfo.getBrevkode())
 				.tittel(dokumentInfo.getTittel())
@@ -144,22 +137,35 @@ public class TilknyttVedleggService {
 				.organInternt(dokumentInfo.getOrganInternt())
 				.originalJournalpost(dokumentInfo.getOriginalJournalpost())
 				.dokumentFerdigDato(dokumentInfo.getDokumentFerdigDato())
-				.fildetaljerListe(filDetaljerList)
 				.brevgruppe(dokumentInfo.getBrevgruppe())
 				.datoKassert(dokumentInfo.getDatoKassert())
-				.endretAvNavn("tilKnytVedlegg")
+				.endretAvNavn("tilKnyttVedlegg")
 				.kassert(dokumentInfo.isKassert())
 				.kassertAvNavn(dokumentInfo.getKassertAvNavn())
 				.konvertertFraSystem(dokumentInfo.getKonvertertFraSystem())
 				.build();
 	}
 
-	private List<FeiletDokument> addToFeiletDokumentList(List<FeiletDokument> feiletDokumentList, String aarsakKode, DokumentVedlegg dokumentVedlegg) {
+	private List<FeiletDokument> addToFeiletDokumentList(List<FeiletDokument> feiletDokumentList, ArsakFeilCode arsakFeilCode, DokumentVedlegg dokumentVedlegg) {
 		feiletDokumentList.add(FeiletDokument.builder()
 				.kildeJournalpostId(dokumentVedlegg.getKildeJournalpostId())
 				.dokumentInfoId(dokumentVedlegg.getDokumentInfoId())
-				.arsakKode(aarsakKode)
+				.arsakKode(arsakFeilCode)
 				.build());
 		return feiletDokumentList;
+	}
+
+	private void saveDokumentInfoRelasjon(DokumentInfo dokumentInfo, DokumentVedlegg dokumentVedlegg, Journalpost journalpost, List<FeiletDokument> feiletDokumentList){
+		JournalpostDokumentInfoRelasjon journalpostDokumentInfoRelasjon;
+		try {
+			journalpostDokumentInfoRelasjon = createJournalpostDokumentInfoRelasjon(dokumentInfo, journalpost);
+			journalpost.addJournalpostDokumentInfoRelasjon(journalpostDokumentInfoRelasjon);
+			joarkRepository.save(journalpost);
+			log.info("Journalpost med journalpostId={} har fått tilknyttet dokument vedlegg fra DokumentInfoId={} ", journalpost
+					.getJournalpostId(), dokumentInfo.getDokumentInfoId());
+		} catch (Exception e) {
+			addToFeiletDokumentList(feiletDokumentList, ArsakFeilCode.TILKNYTNING_FEILET, dokumentVedlegg);
+
+		}
 	}
 }

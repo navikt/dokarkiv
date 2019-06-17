@@ -75,7 +75,7 @@ public class JournalpostInternRestController {
 
 		List<FeiletDokument> feiletDokumentList = tilknyttVedleggService.tilknyttVedlegg(Long.parseLong(journalpostId), request);
 
-		if (feiletDokumentList == null) {
+		if (feiletDokumentList.isEmpty()) {
 			log.info("tilknyttVedlegg har lagt til vedlegg på journalpost med journalpostId={} i Joark.", journalpostId);
 			return ResponseEntity
 					.ok()

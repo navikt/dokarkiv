@@ -49,9 +49,7 @@ public class TilknyttVedleggValidator {
 	public Boolean validateDokumentInfo(DokumentInfo dokumentInfo) {
 		if (dokumentInfo.getDokumentstatus() == null || dokumentInfo.getDokumentstatus() != DokumentStatusCode.FERDIGSTILT) {
 			return false;
-		} else if (dokumentInfo.getOrganInternt() == true || dokumentInfo.isKassert() == true) {
-			return false;
-		} else if (!validateFildetaljer(dokumentInfo)) {
+		} else if (dokumentInfo.getOrganInternt() != null && dokumentInfo.getOrganInternt() == true || dokumentInfo.isKassert() == true ) {
 			return false;
 		} else {
 			return true;
@@ -59,10 +57,18 @@ public class TilknyttVedleggValidator {
 
 	}
 
-	public Set<FilDetaljer> finnSladdetFildetlajeList(DokumentInfo dokumentInfo) {
+	public FilDetaljer finnSladdetFildetaljer(DokumentInfo dokumentInfo) {
 		return dokumentInfo.getFildetaljerListe().stream()
 				.filter(filDetaljer1 -> VariantFormatCode.SLADDET.equals(filDetaljer1.getVariantFormat()))
-				.collect(Collectors.toSet());
+				.findAny()
+				.orElse(null);
+	}
+
+	public FilDetaljer finnArkivFildetaljer(DokumentInfo dokumentInfo) {
+		return dokumentInfo.getFildetaljerListe().stream()
+				.filter(filDetaljer1 -> VariantFormatCode.ARKIV.equals(filDetaljer1.getVariantFormat()))
+				.findAny()
+				.orElse(null);
 	}
 
 	private Boolean validateFildetaljer(DokumentInfo dokumentInfo) {
