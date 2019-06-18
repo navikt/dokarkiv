@@ -5,26 +5,30 @@ import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
+import no.nav.dokarkiv.core.domain.entities.DokumentFil;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
+import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
+import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
 import no.nav.dokarkiv.journalpost.v1.api.ArsakFeilCode;
 import no.nav.dokarkiv.journalpost.v1.api.DokumentVedlegg;
 import no.nav.dokarkiv.journalpost.v1.api.FeiletDokument;
 import no.nav.dokarkiv.journalpost.v1.api.TilknyttVedleggRequest;
+import no.nav.dokarkiv.journalpost.v1.util.kopierjournalpost.DokumentInfoCopier;
 import no.nav.dokarkiv.journalpost.v1.validators.TilknyttVedleggValidator;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
 /**
  * @author Olav Røstvold Thorsen, Visma Consulting.
@@ -35,13 +39,20 @@ import java.util.Set;
 public class TilknyttVedleggService {
 
 	private final JoarkRepositorySkjermet joarkRepository;
+	private final DokumentInfoCopier dokumentInfoCopier;
 	private final DokumentinfoRepository dokumentinfoRepository;
+	private final DokumentFilRepository dokumentFilRepository;
+	private final JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository;
 	private final TilknyttVedleggValidator tilknyttVedleggValidator;
+	public static final String TILLEGGOPPLYSNINGER_KEY = "Kopi dokumentInfoId";
 
 	@Inject
-	public TilknyttVedleggService(JoarkRepositorySkjermet joarkRepository, DokumentinfoRepository dokumentinfoRepository) {
+	public TilknyttVedleggService(JoarkRepositorySkjermet joarkRepository, DokumentinfoRepository dokumentinfoRepository, DokumentFilRepository dokumentFilRepository, JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository) {
 		this.joarkRepository = joarkRepository;
+		this.dokumentFilRepository = dokumentFilRepository;
+		this.dokumentInfoCopier = new DokumentInfoCopier();
 		this.dokumentinfoRepository = dokumentinfoRepository;
+		this.journalpostDokumentInfoRelasjonRepository = journalpostDokumentInfoRelasjonRepository;
 		this.tilknyttVedleggValidator = new TilknyttVedleggValidator();
 
 	}
@@ -59,8 +70,6 @@ public class TilknyttVedleggService {
 					.orElse(null);
 			FilDetaljer filDetaljerSladdet = tilknyttVedleggValidator.finnSladdetFildetaljer(dokumentInfo);
 			FilDetaljer filDetaljerArkiv = tilknyttVedleggValidator.finnArkivFildetaljer(dokumentInfo);
-			Set<FilDetaljer> filDetaljerListCopy = new HashSet<>();
-
 
 			if (journalpostOrigin == null) {
 				addToFeiletDokumentList(feiletDokumentList, ArsakFeilCode.IKKE_FUNNET, dokumentVedlegg);
@@ -80,10 +89,25 @@ public class TilknyttVedleggService {
 
 			} else {
 				if (filDetaljerSladdet != null) {
-					DokumentInfo dokumentInfoCopy = createDokumentInfoCopy(dokumentInfo);
-					filDetaljerListCopy.add(createFildetaljerCopy(filDetaljerSladdet, dokumentInfoCopy));
-					dokumentInfoCopy.setOpprettetKildeNavn("Test");
+
+					DokumentInfo dokumentInfoCopy = dokumentInfoCopier.copy(dokumentInfo);
+					dokumentInfoCopy.setOpprettetKildeNavn("TilknyttVedlegg");
+					dokumentInfoCopy.setEndretAvNavn(null);
+					dokumentInfoCopy.setTilleggsopplysninger(createTilleggsopplysninger(dokumentInfo.getDokumentInfoId().toString()));
+
+					FilDetaljer filDetaljer = createFildetaljerCopy(filDetaljerSladdet, dokumentInfoCopy);
+					filDetaljer.setOpprettetKildeNavn("TilknyttVedlegg");
+					byte[] fil = dokumentFilRepository.findByFilUuid(filDetaljerSladdet.getFilUuid()).getFil();
+					filDetaljer.setFileContent(fil);
+
+					DokumentFil dokumentFil = filDetaljer.createDokumentFil();
+					dokumentFil.setOpprettetKildeNavn("TilknyttVedlegg");
+					dokumentInfoCopy.addFilDetaljer(filDetaljer);
+
+					dokumentFilRepository.save(dokumentFil);
+					dokumentinfoRepository.save(dokumentInfoCopy);
 					saveDokumentInfoRelasjon(dokumentInfoCopy, dokumentVedlegg, journalpost, feiletDokumentList);
+
 				} else if (filDetaljerArkiv != null) {
 					saveDokumentInfoRelasjon(dokumentInfo, dokumentVedlegg, journalpost, feiletDokumentList);
 				} else {
@@ -95,14 +119,14 @@ public class TilknyttVedleggService {
 	}
 
 	private JournalpostDokumentInfoRelasjon createJournalpostDokumentInfoRelasjon(DokumentInfo dokumentInfo, Journalpost journalpost) {
+
 		JournalpostDokumentInfoRelasjon journalpostDokumentInfoRelasjon = JournalpostDokumentInfoRelasjon.builder()
 				.journalpost(journalpost)
 				.dokumentInfo(dokumentInfo)
 				.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
-				.tilknyttetAvNavn("Testus testesen")
+				.tilknyttetAvNavn("TilknyttVedlegg")
 				.build();
-
-		journalpostDokumentInfoRelasjon.setOpprettetKildeNavn("test");
+		journalpostDokumentInfoRelasjon.setOpprettetKildeNavn("TilknyttVedlegg");
 		return journalpostDokumentInfoRelasjon;
 	}
 
@@ -110,7 +134,7 @@ public class TilknyttVedleggService {
 		return FilDetaljer.builder()
 				.dokumentInfo(dokumentInfo)
 				.fileContent(filDetaljer.getFileContent())
-				.filUuid(filDetaljer.getFilUuid())
+				.filUuid(FilDetaljer.generateUuid())
 				.onDemandId(filDetaljer.getOnDemandId())
 				.onDemandInstans(filDetaljer.getOnDemandInstans())
 				.metaforceInstanceId(filDetaljer.getMetaforceInstanceId())
@@ -122,29 +146,6 @@ public class TilknyttVedleggService {
 				.build();
 	}
 
-	private DokumentInfo createDokumentInfoCopy(DokumentInfo dokumentInfo) {
-		return DokumentInfo.builder()
-				.brevkode(dokumentInfo.getBrevkode())
-				.tittel(dokumentInfo.getTittel())
-				.kategori(dokumentInfo.getKategori())
-				.tilleggsopplysninger(dokumentInfo.getTilleggsopplysninger())
-				.innskrenketPartsinnsyn(dokumentInfo.getInnskrenketPartsinnsyn())
-				.sensitivt(dokumentInfo.getSensitivt())
-				.innskrenketPartsinnsyn(dokumentInfo.getInnskrenketPartsinnsyn())
-				.brevkode(dokumentInfo.getBrevkode())
-				.dokumenttypeId(dokumentInfo.getDokumenttypeId())
-				.dokumentstatus(dokumentInfo.getDokumentstatus())
-				.organInternt(dokumentInfo.getOrganInternt())
-				.originalJournalpost(dokumentInfo.getOriginalJournalpost())
-				.dokumentFerdigDato(dokumentInfo.getDokumentFerdigDato())
-				.brevgruppe(dokumentInfo.getBrevgruppe())
-				.datoKassert(dokumentInfo.getDatoKassert())
-				.endretAvNavn("tilKnyttVedlegg")
-				.kassert(dokumentInfo.isKassert())
-				.kassertAvNavn(dokumentInfo.getKassertAvNavn())
-				.konvertertFraSystem(dokumentInfo.getKonvertertFraSystem())
-				.build();
-	}
 
 	private List<FeiletDokument> addToFeiletDokumentList(List<FeiletDokument> feiletDokumentList, ArsakFeilCode arsakFeilCode, DokumentVedlegg dokumentVedlegg) {
 		feiletDokumentList.add(FeiletDokument.builder()
@@ -155,7 +156,7 @@ public class TilknyttVedleggService {
 		return feiletDokumentList;
 	}
 
-	private void saveDokumentInfoRelasjon(DokumentInfo dokumentInfo, DokumentVedlegg dokumentVedlegg, Journalpost journalpost, List<FeiletDokument> feiletDokumentList){
+	private void saveDokumentInfoRelasjon(DokumentInfo dokumentInfo, DokumentVedlegg dokumentVedlegg, Journalpost journalpost, List<FeiletDokument> feiletDokumentList) {
 		JournalpostDokumentInfoRelasjon journalpostDokumentInfoRelasjon;
 		try {
 			journalpostDokumentInfoRelasjon = createJournalpostDokumentInfoRelasjon(dokumentInfo, journalpost);
@@ -168,4 +169,14 @@ public class TilknyttVedleggService {
 
 		}
 	}
+
+	private static Map<String, String> createTilleggsopplysninger(String dokumentInfoId) {
+		Map<String, String> tilleggsopplysninger = new HashMap<>();
+		tilleggsopplysninger.put(TILLEGGOPPLYSNINGER_KEY, dokumentInfoId);
+		return tilleggsopplysninger;
+	}
+
+
+
+
 }
