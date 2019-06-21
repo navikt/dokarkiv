@@ -19,19 +19,25 @@ public class RestWebMvcConfig implements WebMvcConfigurer {
 	private final NavLdapService navLdapService;
 	private final OidcAuthProperties oidcAuthProperties;
 	private final HandlerInterceptor basicAuthReadAccessRestInterceptor;
+	private final HandlerInterceptor basicAuthReadAccessRestInterceptorNoGroup;
 
 	public RestWebMvcConfig(NavLdapService navLdapService,
 							OidcAuthProperties oidcAuthProperties,
-							@Named("basicAuthReadAccessRestInterceptor") HandlerInterceptor basicAuthReadAccessRestInterceptor) {
+							@Named("basicAuthReadAccessRestInterceptor") HandlerInterceptor basicAuthReadAccessRestInterceptor,
+							@Named("basicAuthReadAccessRestInterceptorNoGroup") HandlerInterceptor basicAuthReadAccessRestInterceptorNoGroup
+	) {
 		this.navLdapService = navLdapService;
 		this.oidcAuthProperties = oidcAuthProperties;
 		this.basicAuthReadAccessRestInterceptor = basicAuthReadAccessRestInterceptor;
+		this.basicAuthReadAccessRestInterceptorNoGroup = basicAuthReadAccessRestInterceptorNoGroup;
 	}
 
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
 		registry.addInterceptor(basicAuthReadAccessRestInterceptor)
 				.addPathPatterns("/hentjournalsakinfo/**");
+		registry.addInterceptor(basicAuthReadAccessRestInterceptorNoGroup)
+				.addPathPatterns("/rest/intern/journalpostapi/v1/journalpost/*/tilknyttVedlegg");
 
 		registry.addInterceptor(new ValidateUserAndAddToMDCHandler(navLdapService))
 				.excludePathPatterns(new ArrayList<>(oidcAuthProperties.getIgnoredPaths()))
@@ -41,5 +47,6 @@ public class RestWebMvcConfig implements WebMvcConfigurer {
 		registry.addInterceptor(new PopulateMDCHandler())
 				.addPathPatterns(oidcAuthProperties.getSecuredPath(),
 						"/hentjournalsakinfo/**");
+
 	}
 }

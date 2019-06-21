@@ -145,6 +145,10 @@ public abstract class AbstractRestIT {
 		return headers;
 	}
 
+/*	protected HttpHeaders createHeadersWithBasicAuth(String serviceUser){
+
+	}*/
+
 	protected void saveJournalpost(Journalpost journalpost) {
 		joarkRepository.save(journalpost);
 

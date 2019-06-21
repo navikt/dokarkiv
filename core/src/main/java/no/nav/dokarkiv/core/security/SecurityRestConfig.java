@@ -36,6 +36,15 @@ public class SecurityRestConfig {
 														  @Value("${ldap.basedn}") String baseDn,
 														  @Value("${ldap.serviceuser.basedn}") String serviceuserBaseDn,
 														  @Value("${auth.group.lesetilgang.joark}") String authReadRequiredMemberOf) {
-		return new BasicAuthRestInterceptor(baseDn, serviceuserBaseDn, authReadRequiredMemberOf, ldapTemplate, cacheManager);
+		return new BasicAuthRestInterceptor(baseDn, serviceuserBaseDn, authReadRequiredMemberOf, null,ldapTemplate, cacheManager);
+	}
+
+	@Bean
+	@Named("basicAuthReadAccessRestInterceptorNoGroup")
+	HandlerInterceptor basicAuthReadAccessRestInterceptorNoGroup(LdapTemplate ldapTemplate,
+														  CacheManager cacheManager,
+														  @Value("${ldap.basedn}") String baseDn,
+														  @Value("${ldap.serviceuser.basedn}") String serviceuserBaseDn) {
+		return new BasicAuthRestInterceptor(baseDn, serviceuserBaseDn, null, "srvdokarkivproxy", ldapTemplate, cacheManager);
 	}
 }

@@ -186,17 +186,26 @@ public class TilknyttVedleggService {
 	}
 
 	public FilDetaljer finnSladdetFildetaljer(DokumentInfo dokumentInfo) {
-		return dokumentInfo.getFildetaljerListe().stream()
-				.filter(filDetaljer1 -> VariantFormatCode.SLADDET.equals(filDetaljer1.getVariantFormat()))
-				.findAny()
-				.orElse(null);
+		if(dokumentInfo!= null) {
+			return dokumentInfo.getFildetaljerListe().stream()
+					.filter(filDetaljer1 -> VariantFormatCode.SLADDET.equals(filDetaljer1.getVariantFormat()))
+					.findAny()
+					.orElse(null);
+		} else {
+			return null;
+		}
+
 	}
 
 	public FilDetaljer finnArkivFildetaljer(DokumentInfo dokumentInfo) {
-		return dokumentInfo.getFildetaljerListe().stream()
-				.filter(filDetaljer1 -> VariantFormatCode.ARKIV.equals(filDetaljer1.getVariantFormat()))
-				.findAny()
-				.orElse(null);
+		if(dokumentInfo!= null) {
+			return dokumentInfo.getFildetaljerListe().stream()
+					.filter(filDetaljer1 -> VariantFormatCode.ARKIV.equals(filDetaljer1.getVariantFormat()))
+					.findAny()
+					.orElse(null);
+		} else {
+			return null;
+		}
 	}
 
 	private Boolean checkDuplicateDokumentInfoRelasjon(Long journalpostId, DokumentInfo dokumentInfo) {

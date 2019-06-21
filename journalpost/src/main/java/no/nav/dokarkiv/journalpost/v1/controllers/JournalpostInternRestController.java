@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.journalpost.v1.controllers;
 
+import static no.nav.dokarkiv.core.MDCConstants.MDC_CALL_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
 
 import io.swagger.annotations.Api;
@@ -17,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -40,7 +42,6 @@ public class JournalpostInternRestController {
 	@Inject
 	public JournalpostInternRestController(final TilknyttVedleggService tilknyttVedleggService) {
 		this.tilknyttVedleggService = tilknyttVedleggService;
-
 		this.tilknyttVedleggRequestValidator = new TilknyttVedleggRequestValidator();
 
 	}
@@ -50,12 +51,15 @@ public class JournalpostInternRestController {
 	@PutMapping(value = "/{journalpostId}/tilknyttVedlegg")
 	public ResponseEntity<TilknyttVedleggResponse> tilknyttVedlegg(
 			@PathVariable String journalpostId,
+			@RequestHeader(value = "callId", required = false) String callId,
 			@RequestBody TilknyttVedleggRequest request) {
-		RequestContextUtil.createAndSetUsername("test", "test");
+		if (callId != null) {
+			addValueToMDC(callId, MDC_CALL_ID);
+		}
+		RequestContextUtil.createAndSetUsername("tilknyttVedlegg", "dokarkiv");
 		MDC.put(MDC_REQUEST_ID, "tilknyttVedlegg");
+
 		log.info(MDC.get(MDC_REQUEST_ID) + " har mottatt kall om å legge til vedlegg på journalpostId={}", journalpostId);
-		//validateId(journalpostId, "journalpostId");
-		//abacSecurityService.assertAccessToJournalpost(journalpostId);
 
 		tilknyttVedleggRequestValidator.validateRequest(request);
 
@@ -71,5 +75,11 @@ public class JournalpostInternRestController {
 					.body(TilknyttVedleggResponse.builder().feiletDokument(feiletDokumentList).build());
 		}
 
+	}
+
+	private void addValueToMDC(String value, String key) {
+		if (value != null && !value.isEmpty()) {
+			MDC.put(key, value);
+		}
 	}
 }

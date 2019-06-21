@@ -41,7 +41,7 @@ public class BasicAuthRestInterceptorTest {
 	private final HttpServletResponse httpServletResponseMock = mock(HttpServletResponse.class);
 	private final Object handlerMock = mock(Object.class);
 	private final Cache cacheMock = mock(Cache.class);
-	private final BasicAuthRestInterceptor basicAuthRestInterceptor = new BasicAuthRestInterceptor(BASE_DN, SERVICE_USER_BASE_DN, SERVICE_USER_GROUP_DN, ldapTemplateMock, cacheManagerMock);
+	private final BasicAuthRestInterceptor basicAuthRestInterceptor = new BasicAuthRestInterceptor(BASE_DN, SERVICE_USER_BASE_DN, SERVICE_USER_GROUP_DN,null, ldapTemplateMock, cacheManagerMock);
 
 
 	@Test
