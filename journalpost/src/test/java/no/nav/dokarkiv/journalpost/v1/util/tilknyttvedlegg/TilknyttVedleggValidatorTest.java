@@ -1,45 +1,53 @@
 package no.nav.dokarkiv.journalpost.v1.util.tilknyttvedlegg;
 
-import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
-import no.nav.dokarkiv.journalpost.v1.api.TilknyttVedleggRequest;
-import no.nav.dokarkiv.journalpost.v1.validators.TilknyttVedleggRequestValidator;
+import static no.nav.dokarkiv.core.util.TestDataUtils.createJournalpost;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
+
+import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
+import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
+import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
+import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.exceptions.KanIkkeTilknytteVedleggException;
 import no.nav.dokarkiv.journalpost.v1.validators.TilknyttVedleggValidator;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createTilknyttVedleggRequest;
-import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createTilknyttVedleggRequestUtenNavn;
 
 /**
  * @author Olav Røstvold Thorsen, Visma Consulting.
  */
 public class TilknyttVedleggValidatorTest {
 
+	private TilknyttVedleggValidator validator = new TilknyttVedleggValidator();
+
 	@Rule
 	public ExpectedException expectedException = ExpectedException.none();
 
-
-	private TilknyttVedleggRequest tilknyttVedleggRequest;
-	private TilknyttVedleggRequestValidator tilknyttVedleggRequestValidatorValidator = new TilknyttVedleggRequestValidator();
-
-
 	@Test
-	public void happyPath() {
-		tilknyttVedleggRequest = createTilknyttVedleggRequest();
+	public void shouldThrowExceptionIfJournalpoststatusIsNotUnderProduksjonD() {
+		Journalpost journalpost = createJournalpost();
+		journalpost.setJournalstatus(JournalStatusCode.J);
 
-		tilknyttVedleggRequestValidatorValidator.validateRequest(tilknyttVedleggRequest);
-
+		expectedException.expect(KanIkkeTilknytteVedleggException.class);
+		validator.validateJournalpostStatus(journalpost);
 	}
 
 	@Test
-	public void shouldThrowExceptionIfTilknyttetNavnIsMissing() {
-		tilknyttVedleggRequest = createTilknyttVedleggRequestUtenNavn();
+	public void shouldreturnFalseIfOriginJournalpoststatusIsNotValid() {
+		Journalpost journalpost = createJournalpost();
+		journalpost.setJournalstatus(JournalStatusCode.D);
 
-		expectedException.expect(InputValideringFeiletException.class);
-		expectedException.expectMessage("TilknyttetAvNavn");
-
-		tilknyttVedleggRequestValidatorValidator.validateRequest(tilknyttVedleggRequest);
-
+		assertThat(validator.validateOriginJournalpostStatus(journalpost), is(false));
 	}
+
+	@Test
+	public void shouldReturnFalseIfDokumentStatusCodeIsNotFerdigstilt() {
+		DokumentInfo dokumentInfo = DokumentInfo.builder()
+				.dokumentstatus(DokumentStatusCode.UNDER_REDIGERING)
+				.build();
+		assertThat(validator.validateDokumentInfo(dokumentInfo), is(false));
+	}
+
 }

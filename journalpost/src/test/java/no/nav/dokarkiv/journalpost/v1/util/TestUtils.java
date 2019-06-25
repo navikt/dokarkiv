@@ -403,9 +403,8 @@ public class TestUtils {
 				.tema(TEMA_FOR)
 				.tittel(INNHOLD)
 				.build();
-
-
 	}
+
 
 	public static TilknyttVedleggRequest createTilknyttVedleggRequest() {
 		return TilknyttVedleggRequest.builder()
@@ -414,14 +413,14 @@ public class TestUtils {
 				.build();
 	}
 
-	public static TilknyttVedleggRequest createTilknyttVedleggRequestUtenNavn() {
+	public static TilknyttVedleggRequest createTilknyttVedleggRequest(String tilknyttetAvNavn, List<DokumentVedlegg> dokumentVedleggList) {
 		return TilknyttVedleggRequest.builder()
-				.tilknyttetAvNavn("")
-				.dokument(createDokumentVedleggList())
+				.tilknyttetAvNavn(tilknyttetAvNavn)
+				.dokument(dokumentVedleggList)
 				.build();
 	}
 
-	private static List<DokumentVedlegg> createDokumentVedleggList() {
+	public static List<DokumentVedlegg> createDokumentVedleggList() {
 		List<DokumentVedlegg> dokumentVedleggList = new ArrayList<>();
 		DokumentVedlegg dokumentVedlegg = DokumentVedlegg.builder()
 				.dokumentInfoId(DOKUMENTINFO_ID1)
@@ -429,5 +428,17 @@ public class TestUtils {
 				.build();
 		dokumentVedleggList.add(dokumentVedlegg);
 		return dokumentVedleggList;
+	}
+
+	public static List<DokumentVedlegg> createDokumentVedleggList(Long journalpostId, String dokumentInfo) {
+		List<DokumentVedlegg> dokumentVedleggList = new ArrayList<>();
+		dokumentVedleggList.add(createDokumentVedlegg(journalpostId, dokumentInfo).build());
+		return dokumentVedleggList;
+	}
+
+	private static DokumentVedlegg.DokumentVedleggBuilder createDokumentVedlegg(Long journalpostId, String dokumentId) {
+		return DokumentVedlegg.builder()
+				.kildeJournalpostId(journalpostId)
+				.dokumentInfoId(dokumentId);
 	}
 }

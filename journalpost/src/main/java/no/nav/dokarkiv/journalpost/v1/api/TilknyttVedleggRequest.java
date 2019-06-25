@@ -6,7 +6,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,7 +19,6 @@ import java.util.List;
 @AllArgsConstructor
 public class TilknyttVedleggRequest {
 
-	@NotNull(message = "TilknyttetAvNavn kan ikke være null")
 	@ApiModelProperty(
 			value = "navn på saksbehandler som tilknytter vedleggene",
 			required = true)

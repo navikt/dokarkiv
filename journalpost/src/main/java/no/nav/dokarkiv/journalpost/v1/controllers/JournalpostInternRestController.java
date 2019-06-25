@@ -2,9 +2,12 @@ package no.nav.dokarkiv.journalpost.v1.controllers;
 
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CALL_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
+import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateId;
 
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
+import no.nav.dokarkiv.core.exceptions.DokarkivFunctionalException;
+import no.nav.dokarkiv.core.exceptions.DokarkivTechnicalException;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import no.nav.dokarkiv.journalpost.v1.api.FeiletDokument;
 import no.nav.dokarkiv.journalpost.v1.api.TilknyttVedleggRequest;
@@ -14,6 +17,7 @@ import no.nav.dokarkiv.journalpost.v1.validators.TilknyttVedleggRequestValidator
 import org.slf4j.MDC;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -24,6 +28,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.inject.Inject;
+import java.io.IOException;
+import java.util.Base64;
 import java.util.List;
 
 /**
@@ -38,6 +44,7 @@ public class JournalpostInternRestController {
 
 	private final TilknyttVedleggService tilknyttVedleggService;
 	private final TilknyttVedleggRequestValidator tilknyttVedleggRequestValidator;
+	private static final String CHARSET = "UTF-8";
 
 	@Inject
 	public JournalpostInternRestController(final TilknyttVedleggService tilknyttVedleggService) {
@@ -52,34 +59,72 @@ public class JournalpostInternRestController {
 	public ResponseEntity<TilknyttVedleggResponse> tilknyttVedlegg(
 			@PathVariable String journalpostId,
 			@RequestHeader(value = "callId", required = false) String callId,
-			@RequestBody TilknyttVedleggRequest request) {
-		if (callId != null) {
+			@RequestHeader(value = "Authorization") String auth,
+			@RequestBody TilknyttVedleggRequest request) throws IOException {
+
+		if (decodeBasicAuth(auth)[0].equals("srvdokarkivproxy")) {
 			addValueToMDC(callId, MDC_CALL_ID);
-		}
-		RequestContextUtil.createAndSetUsername("tilknyttVedlegg", "dokarkiv");
-		MDC.put(MDC_REQUEST_ID, "tilknyttVedlegg");
+			try {
+				validateId(journalpostId, "journalpostId");
 
-		log.info(MDC.get(MDC_REQUEST_ID) + " har mottatt kall om å legge til vedlegg på journalpostId={}", journalpostId);
+				RequestContextUtil.createAndSetUsername("tilknyttVedlegg", "dokarkiv");
+				MDC.put(MDC_REQUEST_ID, "tilknyttVedlegg");
 
-		tilknyttVedleggRequestValidator.validateRequest(request);
+				log.info(MDC.get(MDC_REQUEST_ID) + " har mottatt kall om å legge til vedlegg på journalpostId={}", journalpostId);
 
-		List<FeiletDokument> feiletDokumentList = tilknyttVedleggService.tilknyttVedlegg(Long.parseLong(journalpostId), request);
+				tilknyttVedleggRequestValidator.validateRequest(request);
 
-		if (feiletDokumentList.isEmpty()) {
-			return ResponseEntity
-					.ok()
-					.body(TilknyttVedleggResponse.builder().build());
+				List<FeiletDokument> feiletDokumentList = tilknyttVedleggService.tilknyttVedlegg(Long.parseLong(journalpostId), request);
+
+				if (feiletDokumentList.isEmpty()) {
+					return ResponseEntity
+							.ok()
+							.body(TilknyttVedleggResponse.builder().build());
+				} else {
+					return ResponseEntity
+							.status(HttpStatus.MULTI_STATUS)
+							.body(TilknyttVedleggResponse.builder().feiletDokument(feiletDokumentList).build());
+				}
+
+			} catch (DokarkivFunctionalException e) {
+				log.warn("tilknyttVedlegg - feilet funksjonelt ved tilknytning av vedlegg for journalpostId={}. Feilmelding={}", journalpostId, e
+						.getMessage());
+				throw e;
+			} catch (DokarkivTechnicalException e) {
+				log.warn("tilknyttVedlegg - feilet teknisk ved tilknytning av vedlegg for journalpostId={}. Feilmelding={}", journalpostId, e
+						.getMessage());
+				throw e;
+			}
+
 		} else {
-			return ResponseEntity
-					.status(HttpStatus.MULTI_STATUS)
-					.body(TilknyttVedleggResponse.builder().feiletDokument(feiletDokumentList).build());
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+					.body(TilknyttVedleggResponse.builder().build());
 		}
-
 	}
 
 	private void addValueToMDC(String value, String key) {
 		if (value != null && !value.isEmpty()) {
 			MDC.put(key, value);
 		}
+	}
+
+	private String[] decodeBasicAuth(String header) throws IOException {
+		byte[] base64Token = header.substring(6).getBytes(CHARSET);
+		byte[] decoded;
+
+		try {
+			decoded = Base64.getDecoder().decode(base64Token);
+		} catch (IllegalArgumentException e) {
+			throw new BadCredentialsException(
+					"Kunne ikke dekode basic authentication token");
+		}
+
+		String token = new String(decoded, CHARSET);
+		int delim = token.indexOf(':');
+
+		if (delim == -1) {
+			throw new BadCredentialsException("Ugyldig basic authentication token");
+		}
+		return new String[]{token.substring(0, delim), token.substring(delim + 1)};
 	}
 }

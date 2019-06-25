@@ -35,14 +35,12 @@ public class BasicAuthRestInterceptor implements HandlerInterceptor {
 	private final String requiredGroupMember;
 	private final LdapTemplate ldapTemplate;
 	private final CacheManager cacheManager;
-	private final String requiredServiceUser;
 
 
 	@Inject
 	public BasicAuthRestInterceptor(String baseDn,
 									String serviceuserBasedn,
 									String requiredGroupMember,
-									String requiredServiceUser,
 									LdapTemplate ldapTemplate,
 									CacheManager cacheManager) {
 		this.serviceuserBasedn = serviceuserBasedn;
@@ -51,7 +49,6 @@ public class BasicAuthRestInterceptor implements HandlerInterceptor {
 		} else {
 			this.requiredGroupMember = requiredGroupMember + "," + baseDn;
 		}
-		this.requiredServiceUser =requiredServiceUser;
 		this.ldapTemplate = ldapTemplate;
 		this.cacheManager = cacheManager;
 
@@ -84,12 +81,6 @@ public class BasicAuthRestInterceptor implements HandlerInterceptor {
 
 		Cache usernameTokenCache = cacheManager.getCache(CacheConfig.USERNAME_TOKEN_CACHE);
 		Integer cachedAuthHash = usernameTokenCache.get(username, Integer.class);
-
-
-		if(requiredServiceUser != null && !requiredServiceUser.equals(username)){
-			response.sendError(HttpServletResponse.SC_FORBIDDEN, String.format("Innlogging feilet for bruker med navn %s", username));
-			return false;
-		}
 
 		if (cachedAuthHash == null) {
 			try {

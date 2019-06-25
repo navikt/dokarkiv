@@ -24,7 +24,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.util.Base64Utils;
 
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,15 +31,13 @@ import java.util.List;
 /**
  * @author Olav Røstvold Thorsen, Visma Consulting.
  */
-public class TilknyttVedleggIT extends AbstractJournalpostIT{
+public class TilknyttVedleggIT extends AbstractJournalpostIT {
 
 	private static final String UGYLDIG_JOURNALPOST = "***gammelt_fnr***";
 
 
 	@Test
-	public void shouldTilknytteVedleggTilJournalpost() throws IOException {
-		abacPermit();
-
+	public void shouldTilknytteSladdetVedleggTilJournalpost() {
 		Journalpost journalpostVedlegg = createJournalpost();
 		Journalpost journalpostOrg = createOrgJournalpostSladdet();
 		Long journalpostIdVedlegg = joarkRepository.save(journalpostVedlegg).getJournalpostId();
@@ -74,14 +71,17 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT{
 		Journalpost journalpostTilknyttetVedlegg = joarkRepository.findById(journalpostIdVedlegg).get();
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
-		assertThat(journalpostTilknyttetVedlegg.findAllDokumentInfos().get(0).getTilleggsopplysninger().get("Kopi dokumentInfoId"),
+		assertThat(journalpostTilknyttetVedlegg.findAllDokumentInfos()
+						.get(0)
+						.getTilleggsopplysninger()
+						.get("Kopi dokumentInfoId"),
 				is(request.getDokument().get(0).getDokumentInfoId()));
+
+		TestTransaction.end();
 	}
 
 	@Test
-	public void shouldReturnForbiddenForWrongConsumer() throws IOException {
-		abacPermit();
-
+	public void shouldReturnForbiddenForWrongConsumer() {
 		Journalpost journalpostVedlegg = createJournalpost();
 		Journalpost journalpostOrg = createOrgJournalpostSladdet();
 		Long journalpostIdVedlegg = joarkRepository.save(journalpostVedlegg).getJournalpostId();
@@ -111,12 +111,12 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT{
 		HttpEntity<TilknyttVedleggRequest> requestHttpEntity = new HttpEntity<>(request, headers);
 		ResponseEntity responseEntity = restTemplate.exchange(
 				URL_JOURNALPOST_INTERN + journalpostIdVedlegg + "/tilknyttVedlegg", HttpMethod.PUT, requestHttpEntity, String.class);
-		assertThat(responseEntity.getStatusCode(), is(HttpStatus.FORBIDDEN));
+		assertThat(responseEntity.getStatusCode(), is(HttpStatus.UNAUTHORIZED));
+		TestTransaction.end();
 	}
 
 	@Test
-	public void shouldReturnNotFoundForJournalpost() throws IOException {
-		abacPermit();
+	public void shouldReturnNotFoundForJournalpost() {
 
 		List<DokumentVedlegg> dokumentVedleggList = new ArrayList<>();
 
@@ -133,12 +133,11 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT{
 				URL_JOURNALPOST_INTERN + UGYLDIG_JOURNALPOST + "/tilknyttVedlegg", HttpMethod.PUT, requestHttpEntity, String.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.NOT_FOUND));
+		TestTransaction.end();
 	}
 
 	@Test
-	public void shouldReturnConflictForJournalpostWrongStatus() throws IOException {
-		abacPermit();
-
+	public void shouldReturnConflictForJournalpostWrongStatus() {
 		Journalpost journalpostVedlegg = createJournalpost();
 		journalpostVedlegg.setJournalstatus(JournalStatusCode.M);
 		Journalpost journalpostOrg = createOrgJournalpostSladdet();
@@ -172,13 +171,11 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT{
 
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.CONFLICT));
-
+		TestTransaction.end();
 	}
 
 	@Test
-	public void shouldReturnFeiletDokumentListeAarsakKodeUgyldigStatus() throws IOException {
-		abacPermit();
-
+	public void shouldReturnFeiletDokumentListeAarsakKodeUgyldigStatus() {
 		Journalpost journalpostVedlegg = createJournalpost();
 		Journalpost journalpostOrg = createOrgJournalpostSladdet();
 		journalpostOrg.setJournalstatus(JournalStatusCode.M);
@@ -212,14 +209,12 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT{
 
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.MULTI_STATUS));
-		assertThat(responseEntity.getBody().getFeiletDokument().get(0).getArsakKode(), is(ArsakFeilCode.UGYLDIG_STATUS) );
-
+		assertThat(responseEntity.getBody().getFeiletDokument().get(0).getArsakKode(), is(ArsakFeilCode.UGYLDIG_STATUS));
+		TestTransaction.end();
 	}
 
 	@Test
-	public void shouldReturnFeiletDokumentListeAarsakKodeIkkeFunnet() throws IOException {
-		abacPermit();
-
+	public void shouldReturnFeiletDokumentListeAarsakKodeIkkeFunnet() {
 		Journalpost journalpostVedlegg = createJournalpost();
 		Journalpost journalpostOrg = createOrgJournalpostSladdet();
 		Long journalpostIdVedlegg = joarkRepository.save(journalpostVedlegg).getJournalpostId();
@@ -248,20 +243,18 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT{
 		ResponseEntity<TilknyttVedleggResponse> responseEntity = restTemplate.exchange(
 				URL_JOURNALPOST_INTERN + journalpostIdVedlegg + "/tilknyttVedlegg", HttpMethod.PUT, requestHttpEntity, TilknyttVedleggResponse.class);
 
-
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.MULTI_STATUS));
-		assertThat(responseEntity.getBody().getFeiletDokument().get(0).getArsakKode(), is(ArsakFeilCode.IKKE_FUNNET) );
-
+		assertThat(responseEntity.getBody().getFeiletDokument().get(0).getArsakKode(), is(ArsakFeilCode.IKKE_FUNNET));
+		TestTransaction.end();
 	}
 
-
-
-	private TilknyttVedleggRequest createTilknyttVedleggRequest(List<DokumentVedlegg> dokumentVedleggList){
+	private TilknyttVedleggRequest createTilknyttVedleggRequest(List<DokumentVedlegg> dokumentVedleggList) {
 		return TilknyttVedleggRequest.builder()
 				.tilknyttetAvNavn("TilknyttVedleggIT")
 				.dokument(dokumentVedleggList)
 				.build();
 	}
+
 	private Journalpost createJournalpost() {
 		return JournalpostTestDataProvider.createJournalpostWithoutHoveddokument()
 				.journalStatus(JournalStatusCode.D)
@@ -272,10 +265,11 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT{
 				.endretAvNavn("endretAvNavn")
 				.build();
 	}
+
 	private Journalpost createOrgJournalpostSladdet() {
 		dokumentFilRepository.save(createDokumentFil().build());
 		dokumentFilRepository.save(createDokumentFilSladdet().build());
-		return JournalpostTestDataProvider.createJournalpost(DokumentFilTestDataProvider.FIL_UUID, DokumentFilTestDataProvider.FIL_UUID_SLADDET)
+		return JournalpostTestDataProvider.createJournalpost(DokumentFilTestDataProvider.FIL_UUID)
 				.journalStatus(JournalStatusCode.J)
 				.journalpostType(JournalpostTypeCode.U)
 				.opprettetAvNavn("opprettetAvNavn")

@@ -6,8 +6,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.NotNull;
-
 /**
  * @author Olav Røstvold Thorsen, Visma Consulting.
  */
@@ -18,13 +16,11 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor
 public class DokumentVedlegg {
 
-	@NotNull(message = "ID til journalpost kilden mangler")
 	@ApiModelProperty(
 			value = "ID til journalpost kilden i Joark",
 			required = true)
 	private Long kildeJournalpostId;
 
-	@NotNull(message = "DokumentinfoId mangler")
 	@ApiModelProperty(
 			value = "ID til dokumentet som skal legges til som vedlegg",
 			required = true)

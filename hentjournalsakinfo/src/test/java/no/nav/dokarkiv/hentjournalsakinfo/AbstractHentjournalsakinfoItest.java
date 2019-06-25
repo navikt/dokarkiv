@@ -53,7 +53,7 @@ public abstract class AbstractHentjournalsakinfoItest extends AbstractRestIT {
 															  @Value("${ldap.basedn}") String baseDn,
 															  @Value("${ldap.serviceuser.basedn}") String serviceuserBaseDn) {
 			// kan ikke teste gruppemedlemskap pga embedded unboundid ldap server ikke støtter det.
-			return new BasicAuthRestInterceptor(baseDn, serviceuserBaseDn, null, null, ldapTemplate, cacheManager);
+			return new BasicAuthRestInterceptor(baseDn, serviceuserBaseDn,  null, ldapTemplate, cacheManager);
 		}
 	}
 

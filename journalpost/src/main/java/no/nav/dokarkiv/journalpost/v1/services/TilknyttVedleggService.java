@@ -44,7 +44,7 @@ public class TilknyttVedleggService {
 	private final DokumentFilRepository dokumentFilRepository;
 	private final JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository;
 	private final TilknyttVedleggValidator tilknyttVedleggValidator;
-	public static final String TILLEGGOPPLYSNINGER_KEY = "Kopi dokumentInfoId";
+	private static final String TILLEGGOPPLYSNINGER_KEY = "Kopi dokumentInfoId";
 
 	@Inject
 	public TilknyttVedleggService(JoarkRepositorySkjermet joarkRepository, DokumentinfoRepository dokumentinfoRepository, DokumentFilRepository dokumentFilRepository, JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository) {
@@ -54,7 +54,6 @@ public class TilknyttVedleggService {
 		this.dokumentinfoRepository = dokumentinfoRepository;
 		this.journalpostDokumentInfoRelasjonRepository = journalpostDokumentInfoRelasjonRepository;
 		this.tilknyttVedleggValidator = new TilknyttVedleggValidator();
-
 	}
 
 	public List<FeiletDokument> tilknyttVedlegg(Long journalpostId, TilknyttVedleggRequest tilknyttVedleggRequest) {
@@ -185,8 +184,8 @@ public class TilknyttVedleggService {
 		return tilleggsopplysninger;
 	}
 
-	public FilDetaljer finnSladdetFildetaljer(DokumentInfo dokumentInfo) {
-		if(dokumentInfo!= null) {
+	private FilDetaljer finnSladdetFildetaljer(DokumentInfo dokumentInfo) {
+		if (dokumentInfo != null) {
 			return dokumentInfo.getFildetaljerListe().stream()
 					.filter(filDetaljer1 -> VariantFormatCode.SLADDET.equals(filDetaljer1.getVariantFormat()))
 					.findAny()
@@ -194,11 +193,10 @@ public class TilknyttVedleggService {
 		} else {
 			return null;
 		}
-
 	}
 
-	public FilDetaljer finnArkivFildetaljer(DokumentInfo dokumentInfo) {
-		if(dokumentInfo!= null) {
+	private FilDetaljer finnArkivFildetaljer(DokumentInfo dokumentInfo) {
+		if (dokumentInfo != null) {
 			return dokumentInfo.getFildetaljerListe().stream()
 					.filter(filDetaljer1 -> VariantFormatCode.ARKIV.equals(filDetaljer1.getVariantFormat()))
 					.findAny()
