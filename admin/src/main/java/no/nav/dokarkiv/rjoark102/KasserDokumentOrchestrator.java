@@ -47,7 +47,7 @@ public class KasserDokumentOrchestrator {
 		List<ArkivElementEndringTO> arkivElementEndringTOList = new ArrayList<>();
 		arkivElementEndringTOList.addAll(kasserDokumentService.kasserDokument(dokumentInfoId, kassertAvNavn));
 		String aksjonsLoggMelding = Strings.isBlank(melding) ? fysiskKasserMelding(dokumentInfoId) : melding;
-		lagreAksjonsLoggService.lagreAksjonsLogg(AksjonsTypeCode.KASSASJON, dokumentInfoId, hjemmel, aksjonsLoggMelding, utfoertAv, arkivElementEndringTOList);
+		lagreAksjonsLoggService.lagreAksjonsLogg(AksjonsTypeCode.KASSERING, dokumentInfoId, hjemmel, aksjonsLoggMelding, utfoertAv, arkivElementEndringTOList);
 	}
 
 	private String fysiskKasserMelding(Long dokumentInfoId) {

@@ -9,7 +9,6 @@ import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.fildetaljer
 import static no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode.POL;
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.ARKIV;
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.PRODUKSJON;
-import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.SLADDET;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.FIL_UUID_ARKIV;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createFildetaljerOgFil;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createJournalpostWithHoveddokument;
@@ -28,12 +27,10 @@ import static org.junit.Assert.assertTrue;
 import no.nav.dokarkiv.AbstractAdminIT;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
-import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
 import no.nav.dokarkiv.core.domain.entities.ArkivElementEndring;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import no.nav.dokarkiv.core.util.TestDataGenerator;
 import org.apache.commons.collections15.IteratorUtils;
 import org.junit.Test;
 import org.springframework.http.HttpEntity;
@@ -122,7 +119,7 @@ public class Rjoark102IT extends AbstractAdminIT {
 		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
 		assertThat(aksjonsLoggList.size(), is(2));
 
-		assertAksjonsLogg(getAksjonsLoggByJournalpostIdAndDokumentInfoId(aksjonsLoggList, journalpost1.getJournalpostId(), dokumentInfoSomSkalKasseres.getDokumentInfoId()), AksjonsTypeCode.KASSASJON, journalpost1.getJournalpostId(), dokumentInfoSomSkalKasseres
+		assertAksjonsLogg(getAksjonsLoggByJournalpostIdAndDokumentInfoId(aksjonsLoggList, journalpost1.getJournalpostId(), dokumentInfoSomSkalKasseres.getDokumentInfoId()), AksjonsTypeCode.KASSERING, journalpost1.getJournalpostId(), dokumentInfoSomSkalKasseres
 				.getDokumentInfoId(), Arrays.asList(
 				ArkivElementEndring.builder()
 						.arkivElement(fildetaljerSkjermingTypeVariant(ARKIV))
@@ -151,7 +148,7 @@ public class Rjoark102IT extends AbstractAdminIT {
 						.build()
 
 		));
-		assertAksjonsLogg(getAksjonsLoggByJournalpostIdAndDokumentInfoId(aksjonsLoggList, journalpost2.getJournalpostId(), dokumentInfoSomSkalKasseres.getDokumentInfoId()), AksjonsTypeCode.KASSASJON, journalpost2.getJournalpostId(), dokumentInfoSomSkalKasseres
+		assertAksjonsLogg(getAksjonsLoggByJournalpostIdAndDokumentInfoId(aksjonsLoggList, journalpost2.getJournalpostId(), dokumentInfoSomSkalKasseres.getDokumentInfoId()), AksjonsTypeCode.KASSERING, journalpost2.getJournalpostId(), dokumentInfoSomSkalKasseres
 				.getDokumentInfoId(), Arrays.asList(
 				ArkivElementEndring.builder()
 						.arkivElement(fildetaljerSkjermingTypeVariant(ARKIV))
