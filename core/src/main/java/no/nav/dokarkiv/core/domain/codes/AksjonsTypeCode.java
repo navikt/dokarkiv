@@ -6,9 +6,9 @@ package no.nav.dokarkiv.core.domain.codes;
 public enum AksjonsTypeCode {
 
 	ENDRE_SKJERMING,
-	KASSASJON,
+	KASSERING,
 	ARKIVERING,
-	SLETT,
+	SLETTING,
 	FERDIGSTILL,
 	FEILREGISTRER_SAKSTILKNYTNING,
 	OPPHEV_FEILREGISTRERING,

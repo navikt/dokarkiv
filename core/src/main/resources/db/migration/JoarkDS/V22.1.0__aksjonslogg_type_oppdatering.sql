@@ -1,0 +1,30 @@
+INSERT INTO T_K_AKSJON_TYPE (AKSJON_TYPE, BESKRIVELSE, DATO_OPPRETTET, OPPRETTET_AV)
+SELECT
+  'KASSERING',
+  'Kassering av et dokument',
+  sysdate,
+  'Ugur Alpay Cenar'
+FROM dual
+WHERE NOT exists(
+        SELECT 1
+        FROM T_K_AKSJON_TYPE
+        WHERE AKSJON_TYPE = 'KASSERING'
+  );
+
+
+INSERT INTO T_K_AKSJON_TYPE (AKSJON_TYPE, BESKRIVELSE, DATO_OPPRETTET, OPPRETTET_AV)
+SELECT
+  'SLETTING',
+  'Sletting av et arkivelement',
+  sysdate,
+  'Ugur Alpay Cenar'
+FROM dual
+WHERE NOT exists(
+        SELECT 1
+        FROM T_K_AKSJON_TYPE
+        WHERE AKSJON_TYPE = 'SLETTING'
+  );
+
+
+update T_AKSJONSLOGG set AKSJON='SLETTING' where AKSJON='SLETT';
+update T_AKSJONSLOGG set AKSJON='KASSERING' where AKSJON='KASSASJON';
