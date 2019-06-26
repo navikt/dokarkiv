@@ -420,7 +420,8 @@ public enum Behandlingstema implements CtiRelationship<Behandlingstema, String> 
     ab0415,
     ab0416,
     ab0417,
-    ab0418;
+    ab0418,
+    ab0422;
 
     @Override
     public Class<? extends CodesTablePeriodicItem<Behandlingstema, String>> getCtiClass() {
