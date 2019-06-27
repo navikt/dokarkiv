@@ -145,10 +145,10 @@ public abstract class AbstractRestIT {
 		return headers;
 	}
 
-	protected void saveJournalpost(Journalpost journalpost) {
-		joarkRepository.save(journalpost);
+	protected Journalpost saveJournalpost(Journalpost journalpost) {
+		Journalpost newJp = joarkRepository.save(journalpost);
 
-		journalpost.getJournalpostDokumentInfoRelasjoner().forEach(rel -> {
+		newJp.getJournalpostDokumentInfoRelasjoner().forEach(rel -> {
 			rel.getDokumentInfo().getFildetaljerListe().forEach(filDetaljer -> {
 				if (Objects.isNull(dokumentFilRepository.findByFilUuid(filDetaljer.getFilUuid()))) {
 					DokumentFil dokumentFil = filDetaljer.createDokumentFil();
@@ -157,5 +157,6 @@ public abstract class AbstractRestIT {
 				}
 			});
 		});
+		return newJp;
 	}
 }

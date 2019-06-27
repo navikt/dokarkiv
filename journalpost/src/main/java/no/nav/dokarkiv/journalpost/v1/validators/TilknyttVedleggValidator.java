@@ -26,24 +26,23 @@ public class TilknyttVedleggValidator {
 
 	private static final List<JournalStatusCode> ORIGIN_JOURNALSTATUS_LIST = Arrays.asList(J, FL, FS, E);
 
-	public void validateJournalpostStatus(Journalpost journalpost) {
-		if (!D.equals(journalpost.getJournalstatus())) {
-			throw new KanIkkeTilknytteVedleggException(String.format("Kan ikke legge til vedlegg på journalpostId=%s med journalstatus=%s, journalpost må ha journalstatus=D", journalpost
-					.getJournalpostId(), journalpost.getJournalstatus()));
-		} else if (!journalpost.getJournalposttype().equals(JournalpostTypeCode.U)) {
-			throw new KanIkkeTilknytteVedleggException(String.format("Kan ikke legge til vedlegg på journalpostId=%s med journalpostTypeCode=%s, journalpost må være av type U", journalpost
-					.getJournalpostId(), journalpost.getJournalposttype()));
+	public void validateJournalpostStatus(Journalpost targetJournalpost) {
+		if (!D.equals(targetJournalpost.getJournalstatus())) {
+			throw new KanIkkeTilknytteVedleggException(String.format("Kan ikke legge til vedlegg på journalpostId=%s med journalstatus=%s, journalpost må ha journalstatus=D", targetJournalpost
+					.getJournalpostId(), targetJournalpost.getJournalstatus()));
+		} else if (!targetJournalpost.getJournalposttype().equals(JournalpostTypeCode.U)) {
+			throw new KanIkkeTilknytteVedleggException(String.format("Kan ikke legge til vedlegg på journalpostId=%s med journalpostTypeCode=%s, journalpost må være av type U", targetJournalpost
+					.getJournalpostId(), targetJournalpost.getJournalposttype()));
 		}
 	}
 
-	public boolean validateOriginJournalpostStatus(Journalpost journalpost) {
-		JournalStatusCode statusCode = journalpost.getJournalstatus();
+	public boolean validateSourceJournalpostStatus(Journalpost sourceJournalpost) {
+		JournalStatusCode statusCode = sourceJournalpost.getJournalstatus();
 		return ORIGIN_JOURNALSTATUS_LIST.contains(statusCode);
-
 	}
 
 	public boolean validateDokumentInfo(DokumentInfo dokumentInfo) {
-		if (dokumentInfo.getDokumentstatus() != DokumentStatusCode.FERDIGSTILT) {
+		if (dokumentInfo.getDokumentstatus() != null && dokumentInfo.getDokumentstatus() != DokumentStatusCode.FERDIGSTILT) {
 			return false;
 		} else if (dokumentInfo.getOrganInternt() != null && dokumentInfo.getOrganInternt() || dokumentInfo.isKassert()) {
 			return false;

@@ -8,11 +8,13 @@ import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.exceptions.DokarkivFunctionalException;
 import no.nav.dokarkiv.core.exceptions.DokarkivTechnicalException;
+import no.nav.dokarkiv.core.metrics.RestMetrics;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import no.nav.dokarkiv.journalpost.v1.api.FeiletDokument;
 import no.nav.dokarkiv.journalpost.v1.api.TilknyttVedleggRequest;
 import no.nav.dokarkiv.journalpost.v1.api.TilknyttVedleggResponse;
 import no.nav.dokarkiv.journalpost.v1.services.TilknyttVedleggService;
+import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerTilknyttVedlegg;
 import no.nav.dokarkiv.journalpost.v1.validators.TilknyttVedleggRequestValidator;
 import org.slf4j.MDC;
 import org.springframework.http.HttpStatus;
@@ -45,6 +47,7 @@ public class JournalpostInternRestController {
 	private final TilknyttVedleggService tilknyttVedleggService;
 	private final TilknyttVedleggRequestValidator tilknyttVedleggRequestValidator;
 	private static final String CHARSET = "UTF-8";
+	private static final String AUTH_USER = "srvdokarkivproxy";
 
 	@Inject
 	public JournalpostInternRestController(final TilknyttVedleggService tilknyttVedleggService) {
@@ -54,15 +57,17 @@ public class JournalpostInternRestController {
 	}
 
 	@Transactional
+	@SwaggerTilknyttVedlegg
 	@ResponseBody
 	@PutMapping(value = "/{journalpostId}/tilknyttVedlegg")
+	@RestMetrics(value = "dok_request", extraTags = {"process_code", "tilknyttVedlegg"}, percentiles = {0.5, 0.95})
 	public ResponseEntity<TilknyttVedleggResponse> tilknyttVedlegg(
 			@PathVariable String journalpostId,
 			@RequestHeader(value = "callId", required = false) String callId,
 			@RequestHeader(value = "Authorization") String auth,
 			@RequestBody TilknyttVedleggRequest request) throws IOException {
 
-		if (decodeBasicAuth(auth)[0].equals("srvdokarkivproxy")) {
+		if (AUTH_USER.equals(decodeBasicAuth(auth)[0])) {
 			addValueToMDC(callId, MDC_CALL_ID);
 			try {
 				validateId(journalpostId, "journalpostId");

@@ -39,7 +39,7 @@ public class TilknyttVedleggValidatorTest {
 		Journalpost journalpost = createJournalpost();
 		journalpost.setJournalstatus(JournalStatusCode.D);
 
-		assertThat(validator.validateOriginJournalpostStatus(journalpost), is(false));
+		assertThat(validator.validateSourceJournalpostStatus(journalpost), is(false));
 	}
 
 	@Test
@@ -49,5 +49,30 @@ public class TilknyttVedleggValidatorTest {
 				.build();
 		assertThat(validator.validateDokumentInfo(dokumentInfo), is(false));
 	}
+
+	@Test
+	public void shouldReturnFalseIfOrganInterntIsTrue() {
+		DokumentInfo dokumentInfo = DokumentInfo.builder()
+				.organInternt(true)
+				.build();
+		assertThat(validator.validateDokumentInfo(dokumentInfo), is(false));
+	}
+
+	@Test
+	public void shouldReturnFalseIfOrganInterntIsNull() {
+		DokumentInfo dokumentInfo = DokumentInfo.builder()
+				.organInternt(true)
+				.build();
+		assertThat(validator.validateDokumentInfo(dokumentInfo), is(false));
+	}
+
+	@Test
+	public void shouldReturnFalseIfSlettetIsTrue() {
+		DokumentInfo dokumentInfo = DokumentInfo.builder()
+				.kassert(true)
+				.build();
+		assertThat(validator.validateDokumentInfo(dokumentInfo), is(false));
+	}
+
 
 }

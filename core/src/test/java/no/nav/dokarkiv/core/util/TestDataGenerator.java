@@ -54,6 +54,7 @@ public class TestDataGenerator {
 	public static final String TILLEGGOPPLYSNINGER_KEY = "tillegg";
 	public static final String TILLEGGOPPLYSNINGER_VAL = "tillegg_verdi";
 	public static final String FIL_UUID_ARKIV = "filuuid_arkiv";
+	public static final String FIL_UUID_SLADDET = "filuuid_sladdet";
 	public static final byte[] FIL = "Test dokument".getBytes();
 	public static final byte[] FIL_DUMMY_KASSERT = "Test kassert dummy dokument dummy".getBytes();
 	public static final byte[] FIL_DUMMY_SKJERMET = "Test skjermet dummy dokument dummy".getBytes();
@@ -270,6 +271,14 @@ public class TestDataGenerator {
 		DokumentFil dokumentFil = new DokumentFil();
 		dokumentFil.setFil(FIL_DUMMY_SKJERMET);
 		dokumentFil.setFilUuid(FIL_UUID_DUMMY_DOKUMENT_SKJERMET);
+		dokumentFil.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
+		return dokumentFil;
+	}
+
+	public static DokumentFil createDummyDokument(String filuuid) {
+		DokumentFil dokumentFil = new DokumentFil();
+		dokumentFil.setFil(FIL);
+		dokumentFil.setFilUuid(filuuid);
 		dokumentFil.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
 		return dokumentFil;
 	}
