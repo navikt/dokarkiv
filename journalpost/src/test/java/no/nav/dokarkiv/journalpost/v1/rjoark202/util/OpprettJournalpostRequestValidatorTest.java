@@ -52,21 +52,6 @@ public class OpprettJournalpostRequestValidatorTest {
 		validator.validateRequest(request);
 	}
 
-
-	@Test
-	public void shouldThrowExceptionWhenAvsenderMottakerNavnIsNotSet() {
-		request = createMinimalRequest(JournalpostType.INNGAAENDE, TEMA_FOR, INNHOLD)
-				.avsenderMottaker(AvsenderMottaker.builder()
-						.navn(null)
-						.id("***gammelt_fnr***")
-						.idType(AvsenderMottakerIdType.FNR)
-						.build())
-				.build();
-		expectedException.expect(InputValideringFeiletException.class);
-		expectedException.expectMessage("AvsenderMottaker.navn");
-		validator.validateRequest(request);
-	}
-
 	@Test
 	public void shouldThrowExceptionWhenAvsenderMottakerIdIsSetButNotIdType() {
 		request = createMinimalRequest(JournalpostType.INNGAAENDE, TEMA_FOR, INNHOLD)
