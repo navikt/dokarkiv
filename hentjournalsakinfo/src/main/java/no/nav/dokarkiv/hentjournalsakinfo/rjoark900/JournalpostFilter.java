@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.hentjournalsakinfo.rjoark900;
 
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.D;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.M;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.MO;
 
@@ -43,7 +44,7 @@ class JournalpostFilter {
 	}
 
 	private Integer getAntallRader(FinnJournalposterRequestTo finnJournalposterRequestTo) {
-		if(finnJournalposterRequestTo.getFoerste() == null) {
+		if (finnJournalposterRequestTo.getFoerste() == null) {
 			return finnJournalposterRequestTo.getSiste();
 		} else {
 			return finnJournalposterRequestTo.getFoerste();
@@ -51,7 +52,7 @@ class JournalpostFilter {
 	}
 
 	private Slice getSlice(FinnJournalposterRequestTo finnJournalposterRequestTo) {
-		if(finnJournalposterRequestTo.getFoerste() == null) {
+		if (finnJournalposterRequestTo.getFoerste() == null) {
 			return Slice.SISTE;
 		} else {
 			return Slice.FOERSTE;
@@ -59,7 +60,7 @@ class JournalpostFilter {
 	}
 
 	private Long getPeker(Slice slice, FinnJournalposterRequestTo requestTo) {
-		switch(slice) {
+		switch (slice) {
 			case FOERSTE:
 				return getPeker(requestTo.getEtterPeker(), JOURNALPOST_ID_MAX);
 			case SISTE:
@@ -70,7 +71,7 @@ class JournalpostFilter {
 	}
 
 	private Long getPeker(String peker, Long defaultValue) {
-		if(peker == null) {
+		if (peker == null) {
 			return defaultValue;
 		}
 		try {
@@ -85,6 +86,8 @@ class JournalpostFilter {
 	}
 
 	boolean isInkluderMidlertidigeJournalposter() {
-		return !alleIdenter.isEmpty() && (inkluderJournalStatus.contains(MO.name()) || inkluderJournalStatus.contains(M.name()));
+		return !alleIdenter.isEmpty() && (inkluderJournalStatus.contains(MO.name()) ||
+				inkluderJournalStatus.contains(M.name()) ||
+				inkluderJournalStatus.contains(D.name()));
 	}
 }
