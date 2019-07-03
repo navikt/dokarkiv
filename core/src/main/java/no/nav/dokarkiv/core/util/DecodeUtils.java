@@ -11,6 +11,9 @@ import java.util.Base64;
 public class DecodeUtils {
 	private static final String CHARSET = java.nio.charset.StandardCharsets.UTF_8.name();
 
+	private DecodeUtils() {
+	}
+
 	public static String[] decodeBasicAuth(String header) throws IOException {
 		byte[] base64Token = header.substring(6).getBytes(CHARSET);
 		byte[] decoded;

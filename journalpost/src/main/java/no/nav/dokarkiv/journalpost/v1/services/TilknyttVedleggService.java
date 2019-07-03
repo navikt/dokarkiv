@@ -71,11 +71,7 @@ public class TilknyttVedleggService {
 			FilDetaljer filDetaljerSladdet = finnSladdetFildetaljer(sourceDokumentInfo);
 			FilDetaljer filDetaljerArkiv = finnArkivFildetaljer(sourceDokumentInfo);
 
-			if (!validateSourceJournalpost(sourceJournalpost, feiletDokumentList, dokumentVedlegg)) {
-				break;
-			}
-
-			if (!validateSourceDokumentInfo(sourceDokumentInfo, targetJournalpostId, feiletDokumentList, dokumentVedlegg)) {
+			if (!validateSourceJournalpost(sourceJournalpost, feiletDokumentList, dokumentVedlegg) || !validateSourceDokumentInfo(sourceDokumentInfo, targetJournalpostId, feiletDokumentList, dokumentVedlegg)) {
 				break;
 			}
 
@@ -195,9 +191,7 @@ public class TilknyttVedleggService {
 	}
 
 	private Boolean checkDuplicate(Long targetJournalpostId, DokumentInfo dokumentInfo) {
-		if (checkDuplicateDokumentInfoRelasjon(targetJournalpostId, dokumentInfo)) {
-			return true;
-		} else if (checkDuplicateDokumentInfoCopy(targetJournalpostId, dokumentInfo)) {
+		if (checkDuplicateDokumentInfoRelasjon(targetJournalpostId, dokumentInfo) || checkDuplicateDokumentInfoCopy(targetJournalpostId, dokumentInfo)) {
 			return true;
 		}
 		return false;
@@ -228,16 +222,17 @@ public class TilknyttVedleggService {
 	}
 
 	private Boolean validateSourceDokumentInfo(DokumentInfo sourceDokumentInfo, Long targetJournalpostId, List<FeiletDokument> feiletDokumentList, DokumentVedlegg dokumentVedlegg) {
+		boolean valid = true;
 		if (sourceDokumentInfo == null) {
 			addToFeiletDokumentList(feiletDokumentList, ArsakFeilCode.IKKE_FUNNET, dokumentVedlegg);
-			return false;
+			valid = false;
 		} else if (checkDuplicate(targetJournalpostId, sourceDokumentInfo)) {
 			log.info(MDC.get(MDC_REQUEST_ID) + " dokumentId={} er allerede tilknyttet journalpostId={}", dokumentVedlegg.getDokumentInfoId(), targetJournalpostId);
-			return false;
+			valid = false;
 		} else if (!tilknyttVedleggValidator.validateDokumentInfo(sourceDokumentInfo)) {
 			addToFeiletDokumentList(feiletDokumentList, ArsakFeilCode.DOKUMENT_TILLATES_IKKE_GJENBRUKT, dokumentVedlegg);
-			return false;
+			valid = false;
 		}
-		return true;
+		return valid;
 	}
 }
