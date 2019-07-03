@@ -8,7 +8,6 @@ import static org.junit.Assert.assertEquals;
 
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
-import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentFil;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
@@ -40,7 +39,10 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 
 	private static final String UGYLDIG_JOURNALPOST = "***gammelt_fnr***";
 	private static final String OPPRETTET_KILDE_NAVN = "dokarkiv";
-	private static final String TILLEGGOPPLYSNINGER_KEY = "DOK_ORIGINAL_DOKUMENT_INFO_ID";
+	private static final String TILLEGGOPPLYSNINGER_KEY = "DOK_ORG_DOK_INFO_ID";
+	private static final String GYLDIG_CONSUMER = "srvdokarkivproxy";
+	private static final String UGYLDIG_CONSUMER = "srvdokarkiv";
+
 
 	@Test
 	public void shouldTilknytteArkivVedleggTilJournalpost() {
@@ -50,9 +52,8 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		Long targetJournalpostId = saveJournalpost(targetJournalpost).getJournalpostId();
 		Long sourcejournalpostId = saveJournalpost(sourceJournalpost).getJournalpostId();
 
-		TestTransaction.flagForCommit();
-		TestTransaction.end();
-		TestTransaction.start();
+		saveJournalpost();
+
 
 		Long dokumentInfoId = sourceJournalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId();
 
@@ -62,21 +63,15 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 				.dokumentInfoId(dokumentInfoId.toString())
 				.build());
 
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_JSON);
-		String token = Base64Utils.encodeToString(
-				("srvdokarkivproxy" + ":" + "hemmelig").getBytes(StandardCharsets.UTF_8));
-		headers.add(HttpHeaders.AUTHORIZATION, "Basic " + token);
+		HttpHeaders headers = createHeaders(GYLDIG_CONSUMER);
 
 		TilknyttVedleggRequest request = createTilknyttVedleggRequest(dokumentVedleggList);
 
 		HttpEntity<TilknyttVedleggRequest> requestHttpEntity = new HttpEntity<>(request, headers);
 		ResponseEntity responseEntity = restTemplate.exchange(
-				URL_JOURNALPOST_INTERN + targetJournalpostId + "/tilknyttVedlegg", HttpMethod.PUT, requestHttpEntity, String.class);
+				URL_JOURNALPOST_INTERN + targetJournalpostId + "/tilknyttVedlegg", HttpMethod.PUT, requestHttpEntity, TilknyttVedleggResponse.class);
 
-		TestTransaction.flagForCommit();
-		TestTransaction.end();
-		TestTransaction.start();
+		saveJournalpost();
 
 		Journalpost journalpostTilknyttetVedlegg = joarkRepository.findById(targetJournalpostId).get();
 		DokumentInfo sourceDokumentInfo = sourceJournalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
@@ -101,34 +96,24 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		Long sourceJournalpostId2 = saveJournalpost(sourceJournalpost2).getJournalpostId();
 		Long sourceJournalpostId3 = saveJournalpost(sourceJournalpost3).getJournalpostId();
 
-		TestTransaction.flagForCommit();
-		TestTransaction.end();
-		TestTransaction.start();
+		saveJournalpost();
 
-		Long sourceDokumentInfoId1 = sourceJournalpost1.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId();
-		Long sourceDokumentInfoId2 = sourceJournalpost2.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId();
-		Long sourceDokumentInfoId3 = sourceJournalpost3.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId();
+		Long sourceDokumentInfoId1 = sourceJournalpost1.findHoveddokumentDokumentInfoRelasjon()
+				.getDokumentInfo()
+				.getDokumentInfoId();
+		Long sourceDokumentInfoId2 = sourceJournalpost2.findHoveddokumentDokumentInfoRelasjon()
+				.getDokumentInfo()
+				.getDokumentInfoId();
+		Long sourceDokumentInfoId3 = sourceJournalpost3.findHoveddokumentDokumentInfoRelasjon()
+				.getDokumentInfo()
+				.getDokumentInfoId();
 
 		List<DokumentVedlegg> dokumentVedleggList = new ArrayList<>();
-		dokumentVedleggList.add(DokumentVedlegg.builder()
-				.kildeJournalpostId(sourceJournalpostId1)
-				.dokumentInfoId(sourceDokumentInfoId1.toString())
-				.build());
-		dokumentVedleggList.add(DokumentVedlegg.builder()
-				.kildeJournalpostId(sourceJournalpostId2)
-				.dokumentInfoId(sourceDokumentInfoId2.toString())
-				.build());
-		dokumentVedleggList.add(DokumentVedlegg.builder()
-				.kildeJournalpostId(sourceJournalpostId3)
-				.dokumentInfoId(sourceDokumentInfoId3.toString())
-				.build());
+		dokumentVedleggList.add(createDokumentVedlegg(sourceJournalpostId1, sourceDokumentInfoId1.toString()));
+		dokumentVedleggList.add(createDokumentVedlegg(sourceJournalpostId2, sourceDokumentInfoId2.toString()));
+		dokumentVedleggList.add(createDokumentVedlegg(sourceJournalpostId3, sourceDokumentInfoId3.toString()));
 
-
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_JSON);
-		String token = Base64Utils.encodeToString(
-				("srvdokarkivproxy" + ":" + "hemmelig").getBytes(StandardCharsets.UTF_8));
-		headers.add(HttpHeaders.AUTHORIZATION, "Basic " + token);
+		HttpHeaders headers = createHeaders(GYLDIG_CONSUMER);
 
 		TilknyttVedleggRequest request = createTilknyttVedleggRequest(dokumentVedleggList);
 
@@ -136,10 +121,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		ResponseEntity<TilknyttVedleggResponse> responseEntity = restTemplate.exchange(
 				URL_JOURNALPOST_INTERN + targetJournalpostId + "/tilknyttVedlegg", HttpMethod.PUT, requestHttpEntity, TilknyttVedleggResponse.class);
 
-		TestTransaction.flagForCommit();
-		TestTransaction.end();
-		TestTransaction.start();
-
+		saveJournalpost();
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 
@@ -245,7 +227,10 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		DokumentInfo sourceDokumentInfo3 = sourceJournalpost3.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 		DokumentInfo dokumentInfoKopi3 = journalpostTilknyttetVedlegg.getJournalpostDokumentInfoRelasjoner()
 				.stream()
-				.filter(j -> j.getDokumentInfo().getDokumentInfoId().equals(sourceDokumentInfoId3)).findAny().get().getDokumentInfo();
+				.filter(j -> j.getDokumentInfo().getDokumentInfoId().equals(sourceDokumentInfoId3))
+				.findAny()
+				.get()
+				.getDokumentInfo();
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 		assertEquals(sourceDokumentInfo3.getDokumentInfoId(), dokumentInfoKopi3.getDokumentInfoId());
@@ -264,34 +249,25 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		Long sourceJournalpostId2 = saveJournalpost(sourceJournalpost2).getJournalpostId();
 		Long sourceJournalpostId3 = saveJournalpost(sourcejJournalpost3).getJournalpostId();
 
-		TestTransaction.flagForCommit();
-		TestTransaction.end();
-		TestTransaction.start();
+		saveJournalpost();
 
-		Long dokumentInfoId1 = sourceJournalpost1.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId();
-		Long dokumentInfoId2 = sourceJournalpost2.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId();
-		Long dokumentInfoId3 = sourcejJournalpost3.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId();
+		Long sourceDokumentInfoId1 = sourceJournalpost1.findHoveddokumentDokumentInfoRelasjon()
+				.getDokumentInfo()
+				.getDokumentInfoId();
+		Long sourceDokumentInfoId2 = sourceJournalpost2.findHoveddokumentDokumentInfoRelasjon()
+				.getDokumentInfo()
+				.getDokumentInfoId();
+		Long sourceDokumentInfoId3 = sourcejJournalpost3.findHoveddokumentDokumentInfoRelasjon()
+				.getDokumentInfo()
+				.getDokumentInfoId();
 
 		List<DokumentVedlegg> dokumentVedleggList = new ArrayList<>();
-		dokumentVedleggList.add(DokumentVedlegg.builder()
-				.kildeJournalpostId(sourceJournalpostId1)
-				.dokumentInfoId(dokumentInfoId1.toString())
-				.build());
-		dokumentVedleggList.add(DokumentVedlegg.builder()
-				.kildeJournalpostId(sourceJournalpostId2)
-				.dokumentInfoId(dokumentInfoId2.toString())
-				.build());
-		dokumentVedleggList.add(DokumentVedlegg.builder()
-				.kildeJournalpostId(sourceJournalpostId3)
-				.dokumentInfoId(dokumentInfoId3.toString())
-				.build());
 
+		dokumentVedleggList.add(createDokumentVedlegg(sourceJournalpostId1, sourceDokumentInfoId1.toString()));
+		dokumentVedleggList.add(createDokumentVedlegg(sourceJournalpostId2, sourceDokumentInfoId2.toString()));
+		dokumentVedleggList.add(createDokumentVedlegg(sourceJournalpostId3, sourceDokumentInfoId3.toString()));
 
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_JSON);
-		String token = Base64Utils.encodeToString(
-				("srvdokarkivproxy" + ":" + "hemmelig").getBytes(StandardCharsets.UTF_8));
-		headers.add(HttpHeaders.AUTHORIZATION, "Basic " + token);
+		HttpHeaders headers = createHeaders(GYLDIG_CONSUMER);
 
 		TilknyttVedleggRequest request = createTilknyttVedleggRequest(dokumentVedleggList);
 
@@ -299,10 +275,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		ResponseEntity<TilknyttVedleggResponse> responseEntity = restTemplate.exchange(
 				URL_JOURNALPOST_INTERN + journalpostIdVedlegg + "/tilknyttVedlegg", HttpMethod.PUT, requestHttpEntity, TilknyttVedleggResponse.class);
 
-		TestTransaction.flagForCommit();
-		TestTransaction.end();
-		TestTransaction.start();
-
+		saveJournalpost();
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.MULTI_STATUS));
 		assertThat(responseEntity.getBody().getFeiletDokument().get(0).getArsakKode(), is(ArsakFeilCode.UGYLDIG_STATUS));
@@ -313,7 +286,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		DokumentInfo dokumentInfoKopi1 = journalpostTilknyttetVedlegg1.getJournalpostDokumentInfoRelasjoner()
 				.stream()
 				.filter(j -> j.getDokumentInfo().getTilleggsopplysninger().containsKey(TILLEGGOPPLYSNINGER_KEY))
-				.filter(d -> d.getDokumentInfo().getTilleggsopplysninger().containsValue(dokumentInfoId1.toString()))
+				.filter(d -> d.getDokumentInfo().getTilleggsopplysninger().containsValue(sourceDokumentInfoId1.toString()))
 				.findAny()
 				.get()
 				.getDokumentInfo();
@@ -361,7 +334,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		DokumentInfo dokumentInfoKopi2 = journalpostTilknyttetVedlegg2.getJournalpostDokumentInfoRelasjoner()
 				.stream()
 				.filter(j -> j.getDokumentInfo().getTilleggsopplysninger().containsKey(TILLEGGOPPLYSNINGER_KEY))
-				.filter(d -> d.getDokumentInfo().getTilleggsopplysninger().containsValue(dokumentInfoId2.toString()))
+				.filter(d -> d.getDokumentInfo().getTilleggsopplysninger().containsValue(sourceDokumentInfoId2.toString()))
 				.findAny()
 				.get()
 				.getDokumentInfo();
@@ -407,7 +380,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		Journalpost journalpostTilknyttetVedlegg = joarkRepository.findById(journalpostIdVedlegg).get();
 		assertThat(journalpostTilknyttetVedlegg.getJournalpostDokumentInfoRelasjoner()
 				.stream()
-				.anyMatch(j -> j.getDokumentInfo().getDokumentInfoId().equals(dokumentInfoId3)), is(false));
+				.anyMatch(j -> j.getDokumentInfo().getDokumentInfoId().equals(sourceDokumentInfoId3)), is(false));
 
 		TestTransaction.end();
 	}
@@ -419,26 +392,14 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		Long journalpostIdVedlegg = joarkRepository.save(journalpostVedlegg).getJournalpostId();
 		Long sourceJournalpostId = joarkRepository.save(sourceJournalpost).getJournalpostId();
 
-		TestTransaction.flagForCommit();
-		TestTransaction.end();
-		TestTransaction.start();
-
+		saveJournalpost();
 
 		Long dokumentInfoId = sourceJournalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId();
 
-		List<DokumentVedlegg> dokumentVedleggList = new ArrayList<>();
-		dokumentVedleggList.add(DokumentVedlegg.builder()
-				.kildeJournalpostId(sourceJournalpostId)
-				.dokumentInfoId(dokumentInfoId.toString())
-				.build());
+		HttpHeaders headers = createHeaders(UGYLDIG_CONSUMER);
 
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_JSON);
-		String token = Base64Utils.encodeToString(
-				("srvdokarkiv" + ":" + "hemmelig").getBytes(StandardCharsets.UTF_8));
-		headers.add(HttpHeaders.AUTHORIZATION, "Basic " + token);
-
-		TilknyttVedleggRequest request = createTilknyttVedleggRequest(dokumentVedleggList);
+		TilknyttVedleggRequest request = createTilknyttVedleggRequest(createDokumentVedleggList(sourceJournalpostId, dokumentInfoId
+				.toString()));
 
 		HttpEntity<TilknyttVedleggRequest> requestHttpEntity = new HttpEntity<>(request, headers);
 		ResponseEntity responseEntity = restTemplate.exchange(
@@ -452,11 +413,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 
 		List<DokumentVedlegg> dokumentVedleggList = new ArrayList<>();
 
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_JSON);
-		String token = Base64Utils.encodeToString(
-				("srvdokarkivproxy" + ":" + "hemmelig").getBytes(StandardCharsets.UTF_8));
-		headers.add(HttpHeaders.AUTHORIZATION, "Basic " + token);
+		HttpHeaders headers = createHeaders(GYLDIG_CONSUMER);
 
 		TilknyttVedleggRequest request = createTilknyttVedleggRequest(dokumentVedleggList);
 
@@ -475,31 +432,18 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		Long journalpostIdVedlegg = joarkRepository.save(sourceJournalpost).getJournalpostId();
 		Long sourceJournalpostId = joarkRepository.save(sourceJournalpost).getJournalpostId();
 
-		TestTransaction.flagForCommit();
-		TestTransaction.end();
-		TestTransaction.start();
-
+		saveJournalpost();
 
 		Long dokumentInfoId = sourceJournalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId();
 
-		List<DokumentVedlegg> dokumentVedleggList = new ArrayList<>();
-		dokumentVedleggList.add(DokumentVedlegg.builder()
-				.kildeJournalpostId(sourceJournalpostId)
-				.dokumentInfoId(dokumentInfoId.toString())
-				.build());
+		HttpHeaders headers = createHeaders(GYLDIG_CONSUMER);
 
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_JSON);
-		String token = Base64Utils.encodeToString(
-				("srvdokarkivproxy" + ":" + "hemmelig").getBytes(StandardCharsets.UTF_8));
-		headers.add(HttpHeaders.AUTHORIZATION, "Basic " + token);
-
-		TilknyttVedleggRequest request = createTilknyttVedleggRequest(dokumentVedleggList);
+		TilknyttVedleggRequest request = createTilknyttVedleggRequest(createDokumentVedleggList(sourceJournalpostId, dokumentInfoId
+				.toString()));
 
 		HttpEntity requestHttpEntity = new HttpEntity<>(request, headers);
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_JOURNALPOST_INTERN + journalpostIdVedlegg + "/tilknyttVedlegg", HttpMethod.PUT, requestHttpEntity, String.class);
-
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.CONFLICT));
 		TestTransaction.end();
@@ -513,26 +457,14 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		Long journalpostIdVedlegg = joarkRepository.save(journalpostVedlegg).getJournalpostId();
 		Long sourceJournalpostId = joarkRepository.save(sourceJournalpost).getJournalpostId();
 
-		TestTransaction.flagForCommit();
-		TestTransaction.end();
-		TestTransaction.start();
-
+		saveJournalpost();
 
 		Long dokumentInfoId = sourceJournalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId();
 
-		List<DokumentVedlegg> dokumentVedleggList = new ArrayList<>();
-		dokumentVedleggList.add(DokumentVedlegg.builder()
-				.kildeJournalpostId(sourceJournalpostId)
-				.dokumentInfoId(dokumentInfoId.toString())
-				.build());
+		HttpHeaders headers = createHeaders(GYLDIG_CONSUMER);
 
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_JSON);
-		String token = Base64Utils.encodeToString(
-				("srvdokarkivproxy" + ":" + "hemmelig").getBytes(StandardCharsets.UTF_8));
-		headers.add(HttpHeaders.AUTHORIZATION, "Basic " + token);
-
-		TilknyttVedleggRequest request = createTilknyttVedleggRequest(dokumentVedleggList);
+		TilknyttVedleggRequest request = createTilknyttVedleggRequest(createDokumentVedleggList(sourceJournalpostId, dokumentInfoId
+				.toString()));
 
 		HttpEntity requestHttpEntity = new HttpEntity<>(request, headers);
 		ResponseEntity<TilknyttVedleggResponse> responseEntity = restTemplate.exchange(
@@ -551,24 +483,11 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		Long journalpostIdVedlegg = joarkRepository.save(journalpostVedlegg).getJournalpostId();
 		Long sourceJournalpostId = joarkRepository.save(sourceJournalpost).getJournalpostId();
 
-		TestTransaction.flagForCommit();
-		TestTransaction.end();
-		TestTransaction.start();
+		saveJournalpost();
 
+		HttpHeaders headers = createHeaders(GYLDIG_CONSUMER);
 
-		List<DokumentVedlegg> dokumentVedleggList = new ArrayList<>();
-		dokumentVedleggList.add(DokumentVedlegg.builder()
-				.kildeJournalpostId(sourceJournalpostId)
-				.dokumentInfoId("200000345")
-				.build());
-
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_JSON);
-		String token = Base64Utils.encodeToString(
-				("srvdokarkivproxy" + ":" + "hemmelig").getBytes(StandardCharsets.UTF_8));
-		headers.add(HttpHeaders.AUTHORIZATION, "Basic " + token);
-
-		TilknyttVedleggRequest request = createTilknyttVedleggRequest(dokumentVedleggList);
+		TilknyttVedleggRequest request = createTilknyttVedleggRequest(createDokumentVedleggList(sourceJournalpostId, "200000345"));
 
 		HttpEntity requestHttpEntity = new HttpEntity<>(request, headers);
 		ResponseEntity<TilknyttVedleggResponse> responseEntity = restTemplate.exchange(
@@ -614,6 +533,34 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		DokumentInfo dokumentInfo = journalpostArkiv.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 		dokumentInfo.removeFilDetaljer(dokumentInfo.findFilDetaljerByVariantFormat(VariantFormatCode.PRODUKSJON));
 		return journalpostArkiv;
+	}
+
+	private HttpHeaders createHeaders(String consumer) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		String token = Base64Utils.encodeToString(
+				(consumer + ":" + "hemmelig").getBytes(StandardCharsets.UTF_8));
+		headers.add(HttpHeaders.AUTHORIZATION, "Basic " + token);
+		return headers;
+	}
+
+	private List<DokumentVedlegg> createDokumentVedleggList(Long journalpostId, String dokumentinfoId) {
+		List<DokumentVedlegg> dokumentVedleggList = new ArrayList<>();
+		dokumentVedleggList.add(createDokumentVedlegg(journalpostId, dokumentinfoId));
+		return dokumentVedleggList;
+	}
+
+	private DokumentVedlegg createDokumentVedlegg(Long journalpostId, String dokumentinfoId) {
+		return DokumentVedlegg.builder()
+				.kildeJournalpostId(journalpostId)
+				.dokumentInfoId(dokumentinfoId)
+				.build();
+	}
+
+	private void saveJournalpost() {
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
+		TestTransaction.start();
 	}
 
 	public void saveFil(Set<FilDetaljer> fd) {

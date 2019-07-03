@@ -4,7 +4,6 @@ import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 
 /**
  * @author Olav Røstvold Thorsen, Visma Consulting.

@@ -44,7 +44,7 @@ public class TilknyttVedleggValidator {
 	public boolean validateDokumentInfo(DokumentInfo dokumentInfo) {
 		if (dokumentInfo.getDokumentstatus() != null && dokumentInfo.getDokumentstatus() != DokumentStatusCode.FERDIGSTILT) {
 			return false;
-		} else if (dokumentInfo.getOrganInternt() != null && dokumentInfo.getOrganInternt() || dokumentInfo.isKassert()) {
+		} else if ((dokumentInfo.getOrganInternt() != null && dokumentInfo.getOrganInternt()) || dokumentInfo.isKassert()) {
 			return false;
 		} else {
 			return true;

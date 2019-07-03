@@ -6,6 +6,7 @@ import static org.hamcrest.core.Is.is;
 
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
+import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.KanIkkeTilknytteVedleggException;
@@ -26,6 +27,27 @@ public class TilknyttVedleggValidatorTest {
 	public ExpectedException expectedException = ExpectedException.none();
 
 	@Test
+	public void happyPath(){
+		Journalpost targetJournalpost = createJournalpost();
+		targetJournalpost.setJournalstatus(JournalStatusCode.D);
+		targetJournalpost.setJournalposttype(JournalpostTypeCode.U);
+
+		Journalpost sourceJournalpost = createJournalpost();
+		sourceJournalpost.setJournalstatus(JournalStatusCode.J);
+
+		DokumentInfo dokumentInfo = DokumentInfo.builder()
+				.dokumentstatus(DokumentStatusCode.FERDIGSTILT)
+				.organInternt(false)
+				.kassert(false)
+				.build();
+
+		validator.validateJournalpostStatus(targetJournalpost);
+		validator.validateSourceJournalpostStatus(sourceJournalpost);
+		validator.validateDokumentInfo(dokumentInfo);
+
+	}
+
+	@Test
 	public void shouldThrowExceptionIfJournalpoststatusIsNotUnderProduksjonD() {
 		Journalpost journalpost = createJournalpost();
 		journalpost.setJournalstatus(JournalStatusCode.J);
@@ -40,6 +62,24 @@ public class TilknyttVedleggValidatorTest {
 		journalpost.setJournalstatus(JournalStatusCode.D);
 
 		assertThat(validator.validateSourceJournalpostStatus(journalpost), is(false));
+	}
+
+	@Test
+	public void shouldreturnFalseIfOriginJournalpoststatusIsNull() {
+		Journalpost journalpost = createJournalpost();
+		journalpost.setJournalstatus(null);
+
+		assertThat(validator.validateSourceJournalpostStatus(journalpost), is(false));
+	}
+
+	@Test
+	public void shouldReturnFalseIfJournalpostTypeCodeIsNotUtgaande() {
+		Journalpost journalpost = createJournalpost();
+		journalpost.setJournalposttype(JournalpostTypeCode.I);
+
+
+		expectedException.expect(KanIkkeTilknytteVedleggException.class);
+		validator.validateJournalpostStatus(journalpost);
 	}
 
 	@Test
@@ -73,6 +113,5 @@ public class TilknyttVedleggValidatorTest {
 				.build();
 		assertThat(validator.validateDokumentInfo(dokumentInfo), is(false));
 	}
-
 
 }
