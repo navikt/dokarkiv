@@ -1,7 +1,8 @@
 package no.nav.dokarkiv.journalpost.v1.controllers;
 
-import static no.nav.dokarkiv.core.MDCConstants.MDC_CALL_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
+import static no.nav.dokarkiv.core.MDCConstants.NAV_CALL_ID;
+import static no.nav.dokarkiv.core.MDCConstants.NAV_CONSUMER_ID;
 import static no.nav.dokarkiv.core.util.DecodeUtils.decodeBasicAuth;
 import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateId;
 
@@ -15,7 +16,6 @@ import no.nav.dokarkiv.journalpost.v1.api.TilknyttVedleggRequest;
 import no.nav.dokarkiv.journalpost.v1.api.TilknyttVedleggResponse;
 import no.nav.dokarkiv.journalpost.v1.services.TilknyttVedleggService;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerTilknyttVedlegg;
-import no.nav.dokarkiv.journalpost.v1.validators.TilknyttVedleggRequestValidator;
 import org.slf4j.MDC;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -42,14 +42,11 @@ import java.util.List;
 public class JournalpostInternRestController {
 
 	private final TilknyttVedleggService tilknyttVedleggService;
-	private final TilknyttVedleggRequestValidator tilknyttVedleggRequestValidator;
 	private static final String SRVDOKARKIVPROXY = "srvdokarkivproxy";
 
 	@Inject
 	public JournalpostInternRestController(final TilknyttVedleggService tilknyttVedleggService) {
 		this.tilknyttVedleggService = tilknyttVedleggService;
-		this.tilknyttVedleggRequestValidator = new TilknyttVedleggRequestValidator();
-
 	}
 
 	@Transactional
@@ -59,37 +56,36 @@ public class JournalpostInternRestController {
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "tilknyttVedlegg"}, percentiles = {0.5, 0.95})
 	public ResponseEntity<TilknyttVedleggResponse> tilknyttVedlegg(
 			@PathVariable String journalpostId,
-			@RequestHeader(value = "callId", required = false) String callId,
+			@RequestHeader(value = "Nav-CallId", required = false) String callId,
+			@RequestHeader(value = "Nav-Consumer-Id", required = false) String consumerId,
 			@RequestHeader(value = "Authorization") String auth,
 			@RequestBody TilknyttVedleggRequest request) throws IOException {
 
 
 		try {
-			if (SRVDOKARKIVPROXY.equals(decodeBasicAuth(auth)[0])) {
-				addValueToMDC(callId, MDC_CALL_ID);
-				validateId(journalpostId, "journalpostId");
-
-				RequestContextUtil.createAndSetUsername("tilknyttVedlegg", "dokarkiv");
-				MDC.put(MDC_REQUEST_ID, "tilknyttVedlegg");
-
-				log.info(MDC.get(MDC_REQUEST_ID) + " har mottatt kall om å legge til vedlegg på journalpostId={}", journalpostId);
-
-				tilknyttVedleggRequestValidator.validateRequest(request);
-
-				List<FeiletDokument> feiletDokumentList = tilknyttVedleggService.tilknyttVedlegg(Long.parseLong(journalpostId), request);
-
-				if (feiletDokumentList.isEmpty()) {
-					return ResponseEntity
-							.ok()
-							.body(TilknyttVedleggResponse.builder().build());
-				} else {
-					return ResponseEntity
-							.status(HttpStatus.MULTI_STATUS)
-							.body(TilknyttVedleggResponse.builder().feiletDokument(feiletDokumentList).build());
-				}
-			} else {
+			if (!SRVDOKARKIVPROXY.equals(decodeBasicAuth(auth)[0])) {
 				return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
 						.body(TilknyttVedleggResponse.builder().build());
+			}
+			addValueToMDC(callId, NAV_CALL_ID);
+			addValueToMDC(consumerId, NAV_CONSUMER_ID);
+			validateId(journalpostId, "journalpostId");
+
+			RequestContextUtil.createAndSetUsername("tilknyttVedlegg", "dokarkiv");
+			MDC.put(MDC_REQUEST_ID, "tilknyttVedlegg");
+
+			log.info(MDC.get(MDC_REQUEST_ID) + " har mottatt kall om å legge til vedlegg på journalpostId={}", journalpostId);
+
+			List<FeiletDokument> feiletDokumentList = tilknyttVedleggService.tilknyttVedlegg(Long.parseLong(journalpostId), request);
+
+			if (feiletDokumentList.isEmpty()) {
+				return ResponseEntity
+						.ok()
+						.body(TilknyttVedleggResponse.builder().build());
+			} else {
+				return ResponseEntity
+						.status(HttpStatus.MULTI_STATUS)
+						.body(TilknyttVedleggResponse.builder().feiletDokument(feiletDokumentList).build());
 			}
 
 		} catch (DokarkivFunctionalException e) {

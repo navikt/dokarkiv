@@ -21,6 +21,7 @@ import no.nav.dokarkiv.journalpost.v1.api.FeiletDokument;
 import no.nav.dokarkiv.journalpost.v1.api.TilknyttVedleggRequest;
 import no.nav.dokarkiv.journalpost.v1.util.kopierjournalpost.ShallowDokumentInfoCopier;
 import no.nav.dokarkiv.journalpost.v1.validators.TilknyttVedleggValidator;
+import no.nav.dokarkiv.journalpost.v1.validators.TilknyttVedleggRequestValidator;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
 
@@ -42,6 +43,7 @@ public class TilknyttVedleggService {
 	private final DokumentFilRepository dokumentFilRepository;
 	private final JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository;
 	private final TilknyttVedleggValidator tilknyttVedleggValidator;
+	private final TilknyttVedleggRequestValidator tilknyttVedleggRequestValidator;
 	private String tilKnyttetAvNavn;
 	private static final String TILLEGGOPPLYSNINGER_KEY = "DOK_ORG_DOK_INFO_ID";
 	private static final String OPPRETTET_KILDE_NAVN = "dokarkiv";
@@ -54,15 +56,20 @@ public class TilknyttVedleggService {
 		this.dokumentinfoRepository = dokumentinfoRepository;
 		this.journalpostDokumentInfoRelasjonRepository = journalpostDokumentInfoRelasjonRepository;
 		this.tilknyttVedleggValidator = new TilknyttVedleggValidator();
+		this.tilknyttVedleggRequestValidator = new TilknyttVedleggRequestValidator();
 	}
 
 	public List<FeiletDokument> tilknyttVedlegg(Long targetJournalpostId, TilknyttVedleggRequest tilknyttVedleggRequest) {
+
+		tilknyttVedleggRequestValidator.validateRequest(tilknyttVedleggRequest);
+
 		List<FeiletDokument> feiletDokumentList = new ArrayList<>();
 		tilKnyttetAvNavn = tilknyttVedleggRequest.getTilknyttetAvNavn();
 
-		Journalpost journalpost = joarkRepository.findById(targetJournalpostId)
+		Journalpost targetJournalpost = joarkRepository.findById(targetJournalpostId)
 				.orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", targetJournalpostId)));
-		tilknyttVedleggValidator.validateJournalpostStatus(journalpost);
+		tilknyttVedleggValidator.validateJournalpostStatus(targetJournalpost);
+
 
 		for (DokumentVedlegg dokumentVedlegg : tilknyttVedleggRequest.getDokument()) {
 			Journalpost sourceJournalpost = joarkRepository.findById(dokumentVedlegg.getKildeJournalpostId()).orElse(null);
@@ -71,28 +78,18 @@ public class TilknyttVedleggService {
 			FilDetaljer filDetaljerSladdet = finnSladdetFildetaljer(sourceDokumentInfo);
 			FilDetaljer filDetaljerArkiv = finnArkivFildetaljer(sourceDokumentInfo);
 
-			if (!validateSourceJournalpost(sourceJournalpost, feiletDokumentList, dokumentVedlegg) || !validateSourceDokumentInfo(sourceDokumentInfo, targetJournalpostId, feiletDokumentList, dokumentVedlegg)) {
+			if (!validateSourceJournalpost(sourceJournalpost, feiletDokumentList, dokumentVedlegg)) {
+				break;
+			}
+
+			if (!validateSourceDokumentInfo(sourceDokumentInfo, targetJournalpostId, feiletDokumentList, dokumentVedlegg)) {
 				break;
 			}
 
 			if (filDetaljerSladdet != null) {
-				log.info(MDC.get(MDC_REQUEST_ID) + " dokumentId={} har fildetaljer med variant=SLADDET. Det vil bli lagt til en kopi av dokumentinfo på journalpostId={} med variant=ARKIV", dokumentVedlegg
-						.getDokumentInfoId(), targetJournalpostId);
-				DokumentInfo dokumentInfoCopy = createDokumentInfoCopy(sourceDokumentInfo);
-
-				FilDetaljer fildetaljerCopy = createFildetaljerCopy(filDetaljerSladdet, dokumentInfoCopy);
-
-				DokumentFil dokumentFilCopy = fildetaljerCopy.createDokumentFil();
-				dokumentFilCopy.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
-				dokumentInfoCopy.addFilDetaljer(fildetaljerCopy);
-
-				dokumentFilRepository.save(dokumentFilCopy);
-				dokumentinfoRepository.save(dokumentInfoCopy);
-
-				tilknyttDokumentInfoSomVedleggPaaJournalpost(dokumentInfoCopy, dokumentVedlegg, journalpost, feiletDokumentList);
-
+				tilknyttDokumentInfoCopySomVedleggPaaJournalpost(targetJournalpostId, sourceDokumentInfo, filDetaljerSladdet, dokumentVedlegg, targetJournalpost, feiletDokumentList);
 			} else if (filDetaljerArkiv != null) {
-				tilknyttDokumentInfoSomVedleggPaaJournalpost(sourceDokumentInfo, dokumentVedlegg, journalpost, feiletDokumentList);
+				tilknyttDokumentInfoSomVedleggPaaJournalpost(sourceDokumentInfo, dokumentVedlegg, targetJournalpost, feiletDokumentList);
 			} else {
 				addToFeiletDokumentList(feiletDokumentList, ArsakFeilCode.DOKUMENT_TILLATES_IKKE_GJENBRUKT, dokumentVedlegg);
 			}
@@ -101,6 +98,22 @@ public class TilknyttVedleggService {
 		return feiletDokumentList;
 	}
 
+	private void tilknyttDokumentInfoCopySomVedleggPaaJournalpost(Long targetJournalpostId, DokumentInfo sourceDokumentInfo, FilDetaljer filDetaljerSladdet, DokumentVedlegg dokumentVedlegg, Journalpost journalpost, List<FeiletDokument> feiletDokumentList) {
+		log.info(MDC.get(MDC_REQUEST_ID) + " dokumentId={} har fildetaljer med variant=SLADDET. Det vil bli lagt til en kopi av dokumentinfo på journalpostId={} med variant=ARKIV", dokumentVedlegg
+				.getDokumentInfoId(), targetJournalpostId);
+		DokumentInfo dokumentInfoCopy = createDokumentInfoCopy(sourceDokumentInfo);
+
+		FilDetaljer fildetaljerCopy = createFildetaljerCopy(filDetaljerSladdet, dokumentInfoCopy);
+
+		DokumentFil dokumentFilCopy = fildetaljerCopy.createDokumentFil();
+		dokumentFilCopy.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
+		dokumentInfoCopy.addFilDetaljer(fildetaljerCopy);
+
+		dokumentFilRepository.save(dokumentFilCopy);
+		dokumentinfoRepository.save(dokumentInfoCopy);
+
+		tilknyttDokumentInfoSomVedleggPaaJournalpost(dokumentInfoCopy, dokumentVedlegg, journalpost, feiletDokumentList);
+	}
 
 	private DokumentInfo createDokumentInfoCopy(DokumentInfo dokumentInfo) {
 		DokumentInfo dokumentInfoCopy = shallowDokumentInfoCopier.copy(dokumentInfo);
@@ -191,10 +204,7 @@ public class TilknyttVedleggService {
 	}
 
 	private Boolean checkDuplicate(Long targetJournalpostId, DokumentInfo dokumentInfo) {
-		if (checkDuplicateDokumentInfoRelasjon(targetJournalpostId, dokumentInfo) || checkDuplicateDokumentInfoCopy(targetJournalpostId, dokumentInfo)) {
-			return true;
-		}
-		return false;
+		return (checkDuplicateDokumentInfoRelasjon(targetJournalpostId, dokumentInfo) || checkDuplicateDokumentInfoCopy(targetJournalpostId, dokumentInfo));
 	}
 
 	private Boolean checkDuplicateDokumentInfoRelasjon(Long targetJournalpostId, DokumentInfo dokumentInfo) {
