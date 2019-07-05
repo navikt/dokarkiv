@@ -34,7 +34,6 @@ import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.codes.AvsenderMottakerIdTypeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
-import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
 import no.nav.dokarkiv.core.domain.entities.DokumentFil;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
@@ -78,11 +77,16 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertNotNull(journalpost.getJournalpostId());
 		assertEquals(JournalpostTypeCode.I, journalpost.getJournalposttype());
 		assertEquals(JournalStatusCode.M, journalpost.getJournalstatus());
-		assertEquals(FILNAVN, journalpost.
-				findAllDokumentInfos()
-				.iterator()
-				.next()
-				.findFilDetaljerByVariantFormat(VariantFormatCode.ORIGINAL)
+		assertEquals(FILNAVN, journalpost.findAllDokumentInfos()
+				.stream()
+				.filter(dokumentInfo -> BREVKODE1.equals(dokumentInfo.getBrevkode()))
+				.findAny()
+				.get()
+				.getFildetaljerListe()
+				.stream()
+				.filter(filDetaljer -> FILNAVN.equals(filDetaljer.getFilnavn()))
+				.findAny()
+				.get()
 				.getFilnavn());
 
 		assertEquals(AvsenderMottakerIdTypeCode.FNR, journalpost.getAvsenderMottakerIdType());
