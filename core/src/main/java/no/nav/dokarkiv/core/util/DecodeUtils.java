@@ -1,48 +1,36 @@
 package no.nav.dokarkiv.core.util;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.BadCredentialsException;
 
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Base64;
 
 /**
  * @author Olav Røstvold Thorsen, Visma Consulting.
  */
+@Slf4j
 public final class DecodeUtils {
 	private static final String CHARSET = java.nio.charset.StandardCharsets.UTF_8.name();
 
-	private DecodeUtils(){
+	private DecodeUtils() {
 	}
 
-	public static String[] decodeBasicAuth(String header)  {
-		byte[] base64Token = new byte[0];
-		try {
-			base64Token = header.substring(6).getBytes(CHARSET);
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-		}
+	public static String[] decodeBasicAuth(String header) {
 		byte[] decoded;
-
 		try {
+			byte[] base64Token = header.substring(6).getBytes(CHARSET);
 			decoded = Base64.getDecoder().decode(base64Token);
-		} catch (IllegalArgumentException e) {
-			throw new BadCredentialsException(
-					"Kunne ikke dekode basic authentication token");
+			String token = new String(decoded, CHARSET);
+			int delim = token.indexOf(':');
+			if (delim == -1) {
+				throw new BadCredentialsException("Ugyldig basic authentication token");
+			}
+			return new String[]{token.substring(0, delim), token.substring(delim + 1)};
+		} catch (IllegalArgumentException | UnsupportedEncodingException e) {
+			log.error(e.getMessage(), e.getCause());
 		}
-
-		String token = null;
-		try {
-			token = new String(decoded, CHARSET);
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-		}
-		int delim = token.indexOf(':');
-
-		if (delim == -1) {
-			throw new BadCredentialsException("Ugyldig basic authentication token");
-		}
-		return new String[]{token.substring(0, delim), token.substring(delim + 1)};
+		return new String[]{};
 	}
 
 }

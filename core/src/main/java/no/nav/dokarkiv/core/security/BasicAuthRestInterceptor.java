@@ -1,6 +1,7 @@
 package no.nav.dokarkiv.core.security;
 
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
+import static no.nav.dokarkiv.core.util.DecodeUtils.decodeBasicAuth;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.ldap.query.LdapQueryBuilder.query;
 
@@ -18,8 +19,6 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.Base64;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -44,7 +43,7 @@ public class BasicAuthRestInterceptor implements HandlerInterceptor {
 									LdapTemplate ldapTemplate,
 									CacheManager cacheManager) {
 		this.serviceuserBasedn = serviceuserBasedn;
-		if(requiredGroupMember == null) {
+		if (requiredGroupMember == null) {
 			this.requiredGroupMember = null;
 		} else {
 			this.requiredGroupMember = requiredGroupMember + "," + baseDn;
@@ -118,23 +117,7 @@ public class BasicAuthRestInterceptor implements HandlerInterceptor {
 				.orElse(null);
 	}
 
-	private String[] extractAndDecodeHeader(String header) throws IOException {
-		byte[] base64Token = header.substring(6).getBytes(CHARSET);
-		byte[] decoded;
-
-		try {
-			decoded = Base64.getDecoder().decode(base64Token);
-		} catch (IllegalArgumentException e) {
-			throw new BadCredentialsException(
-					"Kunne ikke dekode basic authentication token");
-		}
-
-		String token = new String(decoded, CHARSET);
-		int delim = token.indexOf(':');
-
-		if (delim == -1) {
-			throw new BadCredentialsException("Ugyldig basic authentication token");
-		}
-		return new String[]{token.substring(0, delim), token.substring(delim + 1)};
+	private String[] extractAndDecodeHeader(String header) {
+		return decodeBasicAuth(header);
 	}
 }
