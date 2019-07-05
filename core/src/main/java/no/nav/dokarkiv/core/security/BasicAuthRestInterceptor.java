@@ -28,7 +28,6 @@ import java.util.Optional;
 public class BasicAuthRestInterceptor implements HandlerInterceptor {
 
 	private static final String BASIC = "Basic";
-	private static final String CHARSET = "UTF-8";
 
 	private final String serviceuserBasedn;
 	private final String requiredGroupMember;
