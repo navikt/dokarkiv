@@ -15,13 +15,13 @@ import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
-import no.nav.dokarkiv.journalpost.v1.api.ArsakFeilCode;
+import no.nav.dokarkiv.journalpost.v1.api.ArsakKode;
 import no.nav.dokarkiv.journalpost.v1.api.DokumentVedlegg;
-import no.nav.dokarkiv.journalpost.v1.api.FeiletDokument;
+import no.nav.dokarkiv.journalpost.v1.api.FeiledeDokumenter;
 import no.nav.dokarkiv.journalpost.v1.api.TilknyttVedleggRequest;
 import no.nav.dokarkiv.journalpost.v1.util.kopierjournalpost.ShallowDokumentInfoCopier;
-import no.nav.dokarkiv.journalpost.v1.validators.TilknyttVedleggValidator;
 import no.nav.dokarkiv.journalpost.v1.validators.TilknyttVedleggRequestValidator;
+import no.nav.dokarkiv.journalpost.v1.validators.TilknyttVedleggValidator;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
 
@@ -59,11 +59,11 @@ public class TilknyttVedleggService {
 		this.tilknyttVedleggRequestValidator = new TilknyttVedleggRequestValidator();
 	}
 
-	public List<FeiletDokument> tilknyttVedlegg(Long targetJournalpostId, TilknyttVedleggRequest tilknyttVedleggRequest) {
+	public List<FeiledeDokumenter> tilknyttVedlegg(Long targetJournalpostId, TilknyttVedleggRequest tilknyttVedleggRequest, String consumerId) {
 
-		tilknyttVedleggRequestValidator.validateRequest(tilknyttVedleggRequest);
+		tilknyttVedleggRequestValidator.validateRequest(tilknyttVedleggRequest, consumerId);
 
-		List<FeiletDokument> feiletDokumentList = new ArrayList<>();
+		List<FeiledeDokumenter> feiledeDokumenter = new ArrayList<>();
 		tilKnyttetAvNavn = tilknyttVedleggRequest.getTilknyttetAvNavn();
 
 		Journalpost targetJournalpost = joarkRepository.findById(targetJournalpostId)
@@ -78,46 +78,46 @@ public class TilknyttVedleggService {
 			FilDetaljer filDetaljerSladdet = finnSladdetFildetaljer(sourceDokumentInfo);
 			FilDetaljer filDetaljerArkiv = finnArkivFildetaljer(sourceDokumentInfo);
 
-			if (!validateSourceJournalpost(sourceJournalpost, feiletDokumentList, dokumentVedlegg)) {
+			if (!validateSourceJournalpost(sourceJournalpost, feiledeDokumenter, dokumentVedlegg)) {
 				break;
 			}
 
-			if (!validateSourceDokumentInfo(sourceDokumentInfo, targetJournalpostId, feiletDokumentList, dokumentVedlegg)) {
+			if (!validateSourceDokumentInfo(sourceDokumentInfo, targetJournalpostId, feiledeDokumenter, dokumentVedlegg)) {
 				break;
 			}
 
 			if (filDetaljerSladdet != null) {
-				tilknyttDokumentInfoCopySomVedleggPaaJournalpost(targetJournalpostId, sourceDokumentInfo, filDetaljerSladdet, dokumentVedlegg, targetJournalpost, feiletDokumentList);
+				tilknyttDokumentInfoCopySomVedleggPaaJournalpost(targetJournalpostId, sourceDokumentInfo, filDetaljerSladdet, dokumentVedlegg, targetJournalpost, feiledeDokumenter, consumerId);
 			} else if (filDetaljerArkiv != null) {
-				tilknyttDokumentInfoSomVedleggPaaJournalpost(sourceDokumentInfo, dokumentVedlegg, targetJournalpost, feiletDokumentList);
+				tilknyttDokumentInfoSomVedleggPaaJournalpost(sourceDokumentInfo, dokumentVedlegg, targetJournalpost, feiledeDokumenter);
 			} else {
-				addToFeiletDokumentList(feiletDokumentList, ArsakFeilCode.DOKUMENT_TILLATES_IKKE_GJENBRUKT, dokumentVedlegg);
+				addToFeiletDokumentList(feiledeDokumenter, ArsakKode.DOKUMENT_TILLATES_IKKE_GJENBRUKT, dokumentVedlegg);
 			}
 
 		}
-		return feiletDokumentList;
+		return feiledeDokumenter;
 	}
 
-	private void tilknyttDokumentInfoCopySomVedleggPaaJournalpost(Long targetJournalpostId, DokumentInfo sourceDokumentInfo, FilDetaljer filDetaljerSladdet, DokumentVedlegg dokumentVedlegg, Journalpost journalpost, List<FeiletDokument> feiletDokumentList) {
-		log.info(MDC.get(MDC_REQUEST_ID) + " dokumentId={} har fildetaljer med variant=SLADDET. Det vil bli lagt til en kopi av dokumentinfo på journalpostId={} med variant=ARKIV", dokumentVedlegg
+	private void tilknyttDokumentInfoCopySomVedleggPaaJournalpost(Long targetJournalpostId, DokumentInfo sourceDokumentInfo, FilDetaljer filDetaljerSladdet, DokumentVedlegg dokumentVedlegg, Journalpost journalpost, List<FeiledeDokumenter> feiledeDokumenterList, String consumerId) {
+		log.info(MDC.get(MDC_REQUEST_ID) + " legger til en kopi av dokumentinfo med dokumentInfoId={} på journalpost journalpostId={} da variant=SLADDET. Kopi av dokumentinfo vil få variant=ARKIV", dokumentVedlegg
 				.getDokumentInfoId(), targetJournalpostId);
-		DokumentInfo dokumentInfoCopy = createDokumentInfoCopy(sourceDokumentInfo);
+		DokumentInfo dokumentInfoCopy = createDokumentInfoCopy(sourceDokumentInfo, consumerId);
 
-		FilDetaljer fildetaljerCopy = createFildetaljerCopy(filDetaljerSladdet, dokumentInfoCopy);
+		FilDetaljer fildetaljerCopy = createFildetaljerCopy(filDetaljerSladdet, dokumentInfoCopy, consumerId);
 
 		DokumentFil dokumentFilCopy = fildetaljerCopy.createDokumentFil();
-		dokumentFilCopy.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
+		dokumentFilCopy.setOpprettetKildeNavn(consumerId);
 		dokumentInfoCopy.addFilDetaljer(fildetaljerCopy);
 
 		dokumentFilRepository.save(dokumentFilCopy);
 		dokumentinfoRepository.save(dokumentInfoCopy);
 
-		tilknyttDokumentInfoSomVedleggPaaJournalpost(dokumentInfoCopy, dokumentVedlegg, journalpost, feiletDokumentList);
+		tilknyttDokumentInfoSomVedleggPaaJournalpost(dokumentInfoCopy, dokumentVedlegg, journalpost, feiledeDokumenterList);
 	}
 
-	private DokumentInfo createDokumentInfoCopy(DokumentInfo dokumentInfo) {
+	private DokumentInfo createDokumentInfoCopy(DokumentInfo dokumentInfo, String consumerId) {
 		DokumentInfo dokumentInfoCopy = shallowDokumentInfoCopier.copy(dokumentInfo);
-		dokumentInfoCopy.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
+		dokumentInfoCopy.setOpprettetKildeNavn(consumerId);
 		dokumentInfoCopy.setEndretAvNavn(null);
 		dokumentInfoCopy.setOriginalJournalpost(null);
 		dokumentInfoCopy.getTilleggsopplysninger().put(TILLEGGOPPLYSNINGER_KEY, dokumentInfo.getDokumentInfoId().toString());
@@ -125,7 +125,7 @@ public class TilknyttVedleggService {
 		return dokumentInfoCopy;
 	}
 
-	private FilDetaljer createFildetaljerCopy(FilDetaljer filDetaljer, DokumentInfo dokumentInfo) {
+	private FilDetaljer createFildetaljerCopy(FilDetaljer filDetaljer, DokumentInfo dokumentInfo, String consumerId) {
 		FilDetaljer filDetaljerCopy = FilDetaljer.builder()
 				.dokumentInfo(dokumentInfo)
 				.fileContent(filDetaljer.getFileContent())
@@ -141,23 +141,23 @@ public class TilknyttVedleggService {
 				.build();
 
 
-		filDetaljerCopy.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
+		filDetaljerCopy.setOpprettetKildeNavn(consumerId);
 		byte[] fil = dokumentFilRepository.findByFilUuid(filDetaljer.getFilUuid()).getFil();
 		filDetaljerCopy.setFileContent(fil);
 
 		return filDetaljerCopy;
 	}
 
-	private List<FeiletDokument> addToFeiletDokumentList(List<FeiletDokument> feiletDokumentList, ArsakFeilCode arsakFeilCode, DokumentVedlegg dokumentVedlegg) {
-		feiletDokumentList.add(FeiletDokument.builder()
-				.kildeJournalpostId(dokumentVedlegg.getKildeJournalpostId())
+	private List<FeiledeDokumenter> addToFeiletDokumentList(List<FeiledeDokumenter> feiledeDokumenterList, ArsakKode arsakKode, DokumentVedlegg dokumentVedlegg) {
+		feiledeDokumenterList.add(FeiledeDokumenter.builder()
+				.kildeJournalpostId(dokumentVedlegg.getKildeJournalpostId().toString())
 				.dokumentInfoId(dokumentVedlegg.getDokumentInfoId())
-				.arsakKode(arsakFeilCode)
+				.arsakKode(arsakKode)
 				.build());
-		return feiletDokumentList;
+		return feiledeDokumenterList;
 	}
 
-	private void tilknyttDokumentInfoSomVedleggPaaJournalpost(DokumentInfo dokumentInfo, DokumentVedlegg dokumentVedlegg, Journalpost journalpost, List<FeiletDokument> feiletDokumentList) {
+	private void tilknyttDokumentInfoSomVedleggPaaJournalpost(DokumentInfo dokumentInfo, DokumentVedlegg dokumentVedlegg, Journalpost journalpost, List<FeiledeDokumenter> feiledeDokumenterList) {
 		JournalpostDokumentInfoRelasjon journalpostDokumentInfoRelasjon;
 		try {
 			journalpostDokumentInfoRelasjon = createJournalpostDokumentInfoRelasjon(dokumentInfo, journalpost);
@@ -166,7 +166,7 @@ public class TilknyttVedleggService {
 			log.info("Journalpost med journalpostId={} har fått tilknyttet dokument vedlegg fra DokumentInfoId={} ", journalpost
 					.getJournalpostId(), dokumentInfo.getDokumentInfoId());
 		} catch (Exception e) {
-			addToFeiletDokumentList(feiletDokumentList, ArsakFeilCode.TILKNYTNING_FEILET, dokumentVedlegg);
+			addToFeiletDokumentList(feiledeDokumenterList, ArsakKode.TILKNYTNING_FEILET, dokumentVedlegg);
 		}
 	}
 
@@ -220,27 +220,28 @@ public class TilknyttVedleggService {
 						.get(TILLEGGOPPLYSNINGER_KEY)));
 	}
 
-	private Boolean validateSourceJournalpost(Journalpost sourceJournalpost, List<FeiletDokument> feiletDokumentList, DokumentVedlegg dokumentVedlegg) {
+	private Boolean validateSourceJournalpost(Journalpost sourceJournalpost, List<FeiledeDokumenter> feiledeDokumenterList, DokumentVedlegg dokumentVedlegg) {
 		if (sourceJournalpost == null) {
-			addToFeiletDokumentList(feiletDokumentList, ArsakFeilCode.IKKE_FUNNET, dokumentVedlegg);
+			addToFeiletDokumentList(feiledeDokumenterList, ArsakKode.IKKE_FUNNET, dokumentVedlegg);
 			return false;
 		} else if (!tilknyttVedleggValidator.validateSourceJournalpostStatus(sourceJournalpost)) {
-			addToFeiletDokumentList(feiletDokumentList, ArsakFeilCode.UGYLDIG_STATUS, dokumentVedlegg);
+			addToFeiletDokumentList(feiledeDokumenterList, ArsakKode.UGYLDIG_STATUS, dokumentVedlegg);
 			return false;
 		}
 		return true;
 	}
 
-	private Boolean validateSourceDokumentInfo(DokumentInfo sourceDokumentInfo, Long targetJournalpostId, List<FeiletDokument> feiletDokumentList, DokumentVedlegg dokumentVedlegg) {
+	private Boolean validateSourceDokumentInfo(DokumentInfo sourceDokumentInfo, Long targetJournalpostId, List<FeiledeDokumenter> feiledeDokumenterList, DokumentVedlegg dokumentVedlegg) {
 		boolean valid = true;
 		if (sourceDokumentInfo == null) {
-			addToFeiletDokumentList(feiletDokumentList, ArsakFeilCode.IKKE_FUNNET, dokumentVedlegg);
+			addToFeiletDokumentList(feiledeDokumenterList, ArsakKode.IKKE_FUNNET, dokumentVedlegg);
 			valid = false;
 		} else if (checkDuplicate(targetJournalpostId, sourceDokumentInfo)) {
-			log.info(MDC.get(MDC_REQUEST_ID) + " dokumentId={} er allerede tilknyttet journalpostId={}", dokumentVedlegg.getDokumentInfoId(), targetJournalpostId);
+			log.info(MDC.get(MDC_REQUEST_ID) + " kan ikke knytte dokumentinfo med dokumentInfoId={} til journalpost med journalpostId={} fordi den allerede er tilknyttet journalposten", dokumentVedlegg
+					.getDokumentInfoId(), targetJournalpostId);
 			valid = false;
 		} else if (!tilknyttVedleggValidator.validateDokumentInfo(sourceDokumentInfo)) {
-			addToFeiletDokumentList(feiletDokumentList, ArsakFeilCode.DOKUMENT_TILLATES_IKKE_GJENBRUKT, dokumentVedlegg);
+			addToFeiletDokumentList(feiledeDokumenterList, ArsakKode.DOKUMENT_TILLATES_IKKE_GJENBRUKT, dokumentVedlegg);
 			valid = false;
 		}
 		return valid;

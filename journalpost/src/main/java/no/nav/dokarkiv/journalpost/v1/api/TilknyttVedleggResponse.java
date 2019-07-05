@@ -23,5 +23,5 @@ public class TilknyttVedleggResponse {
 	@ApiModelProperty(
 			value = "Liste med dokumenter som ikke kunne knyttes til journalpostId",
 			required = false)
-	private List<FeiletDokument> feiletDokument = new ArrayList<>();
+	private List<FeiledeDokumenter> feiledeDokumenter = new ArrayList<>();
 }

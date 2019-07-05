@@ -13,7 +13,7 @@ import no.nav.dokarkiv.core.domain.entities.DokumentFil;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import no.nav.dokarkiv.journalpost.v1.api.ArsakFeilCode;
+import no.nav.dokarkiv.journalpost.v1.api.ArsakKode;
 import no.nav.dokarkiv.journalpost.v1.api.DokumentVedlegg;
 import no.nav.dokarkiv.journalpost.v1.api.TilknyttVedleggRequest;
 import no.nav.dokarkiv.journalpost.v1.api.TilknyttVedleggResponse;
@@ -38,10 +38,10 @@ import java.util.Set;
 public class TilknyttVedleggIT extends AbstractJournalpostIT {
 
 	private static final String UGYLDIG_JOURNALPOST = "***gammelt_fnr***";
-	private static final String OPPRETTET_KILDE_NAVN = "dokarkiv";
 	private static final String TILLEGGOPPLYSNINGER_KEY = "DOK_ORG_DOK_INFO_ID";
 	private static final String GYLDIG_CONSUMER = "srvdokarkivproxy";
 	private static final String UGYLDIG_CONSUMER = "srvdokarkiv";
+	public static final String NAV_CONSUMER_ID = "Nav-Consumer-Id";
 
 
 	@Test
@@ -52,7 +52,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		Long targetJournalpostId = saveJournalpost(targetJournalpost).getJournalpostId();
 		Long sourcejournalpostId = saveJournalpost(sourceJournalpost).getJournalpostId();
 
-		saveJournalpost();
+		endTransaction();
 
 
 		Long dokumentInfoId = sourceJournalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId();
@@ -71,7 +71,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		ResponseEntity responseEntity = restTemplate.exchange(
 				URL_JOURNALPOST_INTERN + targetJournalpostId + "/tilknyttVedlegg", HttpMethod.PUT, requestHttpEntity, TilknyttVedleggResponse.class);
 
-		saveJournalpost();
+		endTransaction();
 
 		Journalpost journalpostTilknyttetVedlegg = joarkRepository.findById(targetJournalpostId).get();
 		DokumentInfo sourceDokumentInfo = sourceJournalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
@@ -96,7 +96,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		Long sourceJournalpostId2 = saveJournalpost(sourceJournalpost2).getJournalpostId();
 		Long sourceJournalpostId3 = saveJournalpost(sourceJournalpost3).getJournalpostId();
 
-		saveJournalpost();
+		endTransaction();
 
 		Long sourceDokumentInfoId1 = sourceJournalpost1.findHoveddokumentDokumentInfoRelasjon()
 				.getDokumentInfo()
@@ -121,7 +121,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		ResponseEntity<TilknyttVedleggResponse> responseEntity = restTemplate.exchange(
 				URL_JOURNALPOST_INTERN + targetJournalpostId + "/tilknyttVedlegg", HttpMethod.PUT, requestHttpEntity, TilknyttVedleggResponse.class);
 
-		saveJournalpost();
+		endTransaction();
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 
@@ -137,41 +137,12 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 				.getDokumentInfo();
 		FilDetaljer sourceFilDetaljer1 = sourceDokumentInfo1.findFilDetaljerByVariantFormat(VariantFormatCode.SLADDET);
 		FilDetaljer filDetaljerKopi1 = dokumentInfoKopi1.findFilDetaljerByVariantFormat(VariantFormatCode.ARKIV);
-		DokumentFil dourceDokumentFil1 = dokumentFilRepository.findByFilUuid(sourceFilDetaljer1.getFilUuid());
+		DokumentFil sourceDokumentFil1 = dokumentFilRepository.findByFilUuid(sourceFilDetaljer1.getFilUuid());
 		DokumentFil dokumentFilKopi1 = dokumentFilRepository.findByFilUuid(filDetaljerKopi1.getFilUuid());
 
-		assertEquals(sourceDokumentInfo1.getDokumentstatus(), dokumentInfoKopi1.getDokumentstatus());
-		assertEquals(sourceDokumentInfo1.getDokumentFerdigDato(), dokumentInfoKopi1.getDokumentFerdigDato());
-		assertEquals(sourceDokumentInfo1.getTittel(), dokumentInfoKopi1.getTittel());
-		assertEquals(sourceDokumentInfo1.getBrevkode(), dokumentInfoKopi1.getBrevkode());
-		assertEquals(sourceDokumentInfo1.getDokumenttypeId(), dokumentInfoKopi1.getDokumenttypeId());
-		assertEquals(sourceDokumentInfo1.getBrevgruppe(), dokumentInfoKopi1.getBrevgruppe());
-		assertEquals(null, dokumentInfoKopi1.getOriginalJournalpost());
-		assertEquals(sourceDokumentInfo1.getSensitivt(), dokumentInfoKopi1.getSensitivt());
-		assertEquals(sourceDokumentInfo1.getInnskrenketPartsinnsyn(), dokumentInfoKopi1.getInnskrenketPartsinnsyn());
-		assertEquals(sourceDokumentInfo1.getInnskrenketPartsinnsynFraTredjepart(), dokumentInfoKopi1.getInnskrenketPartsinnsynFraTredjepart());
-		assertEquals(sourceDokumentInfo1.getOrganInternt(), dokumentInfoKopi1.getOrganInternt());
-		assertEquals(sourceDokumentInfo1.getKonvertertFraSystem(), dokumentInfoKopi1.getKonvertertFraSystem());
-		assertEquals(sourceDokumentInfo1.getEndretAvNavn(), dokumentInfoKopi1.getEndretAvNavn());
-		assertEquals(sourceDokumentInfo1.getKassertAvNavn(), dokumentInfoKopi1.getKassertAvNavn());
-		assertEquals(sourceDokumentInfo1.getDatoKassert(), dokumentInfoKopi1.getDatoKassert());
-		assertThat(dokumentInfoKopi1.getOpprettetKildeNavn(), is(OPPRETTET_KILDE_NAVN));
-		assertEquals(sourceDokumentInfo1.getEndretKildeNavn(), dokumentInfoKopi1.getEndretKildeNavn());
-
-		assertEquals(sourceFilDetaljer1.getFiltype(), filDetaljerKopi1.getFiltype());
-		assertEquals(sourceFilDetaljer1.getOnDemandId(), filDetaljerKopi1.getOnDemandId());
-		assertEquals(sourceFilDetaljer1.getOnDemandInstans(), filDetaljerKopi1.getOnDemandInstans());
-		assertEquals(sourceFilDetaljer1.getMetaforceInstanceId(), filDetaljerKopi1.getMetaforceInstanceId());
-		assertThat(filDetaljerKopi1.getVariantFormat(), is(VariantFormatCode.ARKIV));
-		assertThat(filDetaljerKopi1.getOpprettetKildeNavn(), is(OPPRETTET_KILDE_NAVN));
-		assertEquals(sourceFilDetaljer1.getBatchNavn(), filDetaljerKopi1.getBatchNavn());
-		assertEquals(sourceFilDetaljer1.getFilnavn(), filDetaljerKopi1.getFilnavn());
-		assertEquals(sourceFilDetaljer1.getFilstorrelse(), filDetaljerKopi1.getFilstorrelse());
-		assertEquals(sourceFilDetaljer1.getSkjermingType(), filDetaljerKopi1.getSkjermingType());
-		assertEquals(sourceFilDetaljer1.getEndretKildeNavn(), filDetaljerKopi1.getEndretKildeNavn());
-
-		assertEquals(new String(dourceDokumentFil1.getFil()), new String(dokumentFilKopi1.getFil()));
-		assertThat(dokumentFilKopi1.getOpprettetKildeNavn(), is(OPPRETTET_KILDE_NAVN));
+		assertDokumentInfo(sourceDokumentInfo1, dokumentInfoKopi1);
+		assertFildetaljer(sourceFilDetaljer1, filDetaljerKopi1);
+		assertDokumentFil(sourceDokumentFil1, dokumentFilKopi1);
 
 		//Assert 2 sladdet
 		Journalpost journalpostTilknyttetVedlegg2 = joarkRepository.findById(targetJournalpostId).get();
@@ -188,38 +159,9 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		DokumentFil sourceDokumentFil2 = dokumentFilRepository.findByFilUuid(sourceFilDetaljer2.getFilUuid());
 		DokumentFil dokumentFilKopi2 = dokumentFilRepository.findByFilUuid(filDetaljerKopi2.getFilUuid());
 
-		assertEquals(sourceDokumentInfo2.getDokumentstatus(), dokumentInfoKopi2.getDokumentstatus());
-		assertEquals(sourceDokumentInfo2.getDokumentFerdigDato(), dokumentInfoKopi2.getDokumentFerdigDato());
-		assertEquals(sourceDokumentInfo2.getTittel(), dokumentInfoKopi2.getTittel());
-		assertEquals(sourceDokumentInfo2.getBrevkode(), dokumentInfoKopi2.getBrevkode());
-		assertEquals(sourceDokumentInfo2.getDokumenttypeId(), dokumentInfoKopi2.getDokumenttypeId());
-		assertEquals(sourceDokumentInfo2.getBrevgruppe(), dokumentInfoKopi2.getBrevgruppe());
-		assertEquals(null, dokumentInfoKopi2.getOriginalJournalpost());
-		assertEquals(sourceDokumentInfo2.getSensitivt(), dokumentInfoKopi2.getSensitivt());
-		assertEquals(sourceDokumentInfo2.getInnskrenketPartsinnsyn(), dokumentInfoKopi2.getInnskrenketPartsinnsyn());
-		assertEquals(sourceDokumentInfo2.getInnskrenketPartsinnsynFraTredjepart(), dokumentInfoKopi2.getInnskrenketPartsinnsynFraTredjepart());
-		assertEquals(sourceDokumentInfo2.getOrganInternt(), dokumentInfoKopi2.getOrganInternt());
-		assertEquals(sourceDokumentInfo2.getKonvertertFraSystem(), dokumentInfoKopi2.getKonvertertFraSystem());
-		assertEquals(sourceDokumentInfo2.getEndretAvNavn(), dokumentInfoKopi2.getEndretAvNavn());
-		assertEquals(sourceDokumentInfo2.getKassertAvNavn(), dokumentInfoKopi2.getKassertAvNavn());
-		assertEquals(sourceDokumentInfo2.getDatoKassert(), dokumentInfoKopi2.getDatoKassert());
-		assertThat(dokumentInfoKopi2.getOpprettetKildeNavn(), is(OPPRETTET_KILDE_NAVN));
-		assertEquals(sourceDokumentInfo2.getEndretKildeNavn(), dokumentInfoKopi2.getEndretKildeNavn());
-
-		assertEquals(sourceFilDetaljer2.getFiltype(), filDetaljerKopi2.getFiltype());
-		assertEquals(sourceFilDetaljer2.getOnDemandId(), filDetaljerKopi2.getOnDemandId());
-		assertEquals(sourceFilDetaljer2.getOnDemandInstans(), filDetaljerKopi2.getOnDemandInstans());
-		assertEquals(sourceFilDetaljer2.getMetaforceInstanceId(), filDetaljerKopi2.getMetaforceInstanceId());
-		assertThat(filDetaljerKopi2.getVariantFormat(), is(VariantFormatCode.ARKIV));
-		assertThat(filDetaljerKopi2.getOpprettetKildeNavn(), is(OPPRETTET_KILDE_NAVN));
-		assertEquals(sourceFilDetaljer2.getBatchNavn(), filDetaljerKopi2.getBatchNavn());
-		assertEquals(sourceFilDetaljer2.getFilnavn(), filDetaljerKopi2.getFilnavn());
-		assertEquals(sourceFilDetaljer2.getFilstorrelse(), filDetaljerKopi2.getFilstorrelse());
-		assertEquals(sourceFilDetaljer2.getSkjermingType(), filDetaljerKopi2.getSkjermingType());
-		assertEquals(sourceFilDetaljer2.getEndretKildeNavn(), filDetaljerKopi2.getEndretKildeNavn());
-
-		assertEquals(new String(sourceDokumentFil2.getFil()), new String(dokumentFilKopi2.getFil()));
-		assertThat(dokumentFilKopi2.getOpprettetKildeNavn(), is(OPPRETTET_KILDE_NAVN));
+		assertDokumentInfo(sourceDokumentInfo2, dokumentInfoKopi2);
+		assertFildetaljer(sourceFilDetaljer2, filDetaljerKopi2);
+		assertDokumentFil(sourceDokumentFil2, dokumentFilKopi2);
 
 
 		//Assert 3 Arkiv
@@ -249,7 +191,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		Long sourceJournalpostId2 = saveJournalpost(sourceJournalpost2).getJournalpostId();
 		Long sourceJournalpostId3 = saveJournalpost(sourcejJournalpost3).getJournalpostId();
 
-		saveJournalpost();
+		endTransaction();
 
 		Long sourceDokumentInfoId1 = sourceJournalpost1.findHoveddokumentDokumentInfoRelasjon()
 				.getDokumentInfo()
@@ -275,10 +217,10 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		ResponseEntity<TilknyttVedleggResponse> responseEntity = restTemplate.exchange(
 				URL_JOURNALPOST_INTERN + journalpostIdVedlegg + "/tilknyttVedlegg", HttpMethod.PUT, requestHttpEntity, TilknyttVedleggResponse.class);
 
-		saveJournalpost();
+		endTransaction();
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.MULTI_STATUS));
-		assertThat(responseEntity.getBody().getFeiletDokument().get(0).getArsakKode(), is(ArsakFeilCode.UGYLDIG_STATUS));
+		assertThat(responseEntity.getBody().getFeiledeDokumenter().get(0).getArsakKode(), is(ArsakKode.UGYLDIG_STATUS));
 
 		//Assert 1 Sladdet
 		Journalpost journalpostTilknyttetVedlegg1 = joarkRepository.findById(journalpostIdVedlegg).get();
@@ -295,38 +237,9 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		DokumentFil sourceDokumentFil1 = dokumentFilRepository.findByFilUuid(sourceFilDetaljer1.getFilUuid());
 		DokumentFil dokumentFilKopi1 = dokumentFilRepository.findByFilUuid(filDetaljerKopi1.getFilUuid());
 
-		assertEquals(sourceDokumentInfo1.getDokumentstatus(), dokumentInfoKopi1.getDokumentstatus());
-		assertEquals(sourceDokumentInfo1.getDokumentFerdigDato(), dokumentInfoKopi1.getDokumentFerdigDato());
-		assertEquals(sourceDokumentInfo1.getTittel(), dokumentInfoKopi1.getTittel());
-		assertEquals(sourceDokumentInfo1.getBrevkode(), dokumentInfoKopi1.getBrevkode());
-		assertEquals(sourceDokumentInfo1.getDokumenttypeId(), dokumentInfoKopi1.getDokumenttypeId());
-		assertEquals(sourceDokumentInfo1.getBrevgruppe(), dokumentInfoKopi1.getBrevgruppe());
-		assertEquals(null, dokumentInfoKopi1.getOriginalJournalpost());
-		assertEquals(sourceDokumentInfo1.getSensitivt(), dokumentInfoKopi1.getSensitivt());
-		assertEquals(sourceDokumentInfo1.getInnskrenketPartsinnsyn(), dokumentInfoKopi1.getInnskrenketPartsinnsyn());
-		assertEquals(sourceDokumentInfo1.getInnskrenketPartsinnsynFraTredjepart(), dokumentInfoKopi1.getInnskrenketPartsinnsynFraTredjepart());
-		assertEquals(sourceDokumentInfo1.getOrganInternt(), dokumentInfoKopi1.getOrganInternt());
-		assertEquals(sourceDokumentInfo1.getKonvertertFraSystem(), dokumentInfoKopi1.getKonvertertFraSystem());
-		assertEquals(sourceDokumentInfo1.getEndretAvNavn(), dokumentInfoKopi1.getEndretAvNavn());
-		assertEquals(sourceDokumentInfo1.getKassertAvNavn(), dokumentInfoKopi1.getKassertAvNavn());
-		assertEquals(sourceDokumentInfo1.getDatoKassert(), dokumentInfoKopi1.getDatoKassert());
-		assertThat(dokumentInfoKopi1.getOpprettetKildeNavn(), is(OPPRETTET_KILDE_NAVN));
-		assertEquals(sourceDokumentInfo1.getEndretKildeNavn(), dokumentInfoKopi1.getEndretKildeNavn());
-
-		assertEquals(sourceFilDetaljer1.getFiltype(), filDetaljerKopi1.getFiltype());
-		assertEquals(sourceFilDetaljer1.getOnDemandId(), filDetaljerKopi1.getOnDemandId());
-		assertEquals(sourceFilDetaljer1.getOnDemandInstans(), filDetaljerKopi1.getOnDemandInstans());
-		assertEquals(sourceFilDetaljer1.getMetaforceInstanceId(), filDetaljerKopi1.getMetaforceInstanceId());
-		assertThat(filDetaljerKopi1.getVariantFormat(), is(VariantFormatCode.ARKIV));
-		assertThat(filDetaljerKopi1.getOpprettetKildeNavn(), is(OPPRETTET_KILDE_NAVN));
-		assertEquals(sourceFilDetaljer1.getBatchNavn(), filDetaljerKopi1.getBatchNavn());
-		assertEquals(sourceFilDetaljer1.getFilnavn(), filDetaljerKopi1.getFilnavn());
-		assertEquals(sourceFilDetaljer1.getFilstorrelse(), filDetaljerKopi1.getFilstorrelse());
-		assertEquals(sourceFilDetaljer1.getSkjermingType(), filDetaljerKopi1.getSkjermingType());
-		assertEquals(sourceFilDetaljer1.getEndretKildeNavn(), filDetaljerKopi1.getEndretKildeNavn());
-
-		assertEquals(new String(sourceDokumentFil1.getFil()), new String(dokumentFilKopi1.getFil()));
-		assertThat(dokumentFilKopi1.getOpprettetKildeNavn(), is(OPPRETTET_KILDE_NAVN));
+		assertDokumentInfo(sourceDokumentInfo1, dokumentInfoKopi1);
+		assertFildetaljer(sourceFilDetaljer1, filDetaljerKopi1);
+		assertDokumentFil(sourceDokumentFil1, dokumentFilKopi1);
 
 		//Assert 2 sladdet
 		Journalpost journalpostTilknyttetVedlegg2 = joarkRepository.findById(journalpostIdVedlegg).get();
@@ -343,38 +256,9 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		DokumentFil sourceDokumentFil2 = dokumentFilRepository.findByFilUuid(sourceFilDetaljer2.getFilUuid());
 		DokumentFil dokumentFilKopi2 = dokumentFilRepository.findByFilUuid(filDetaljerKopi2.getFilUuid());
 
-		assertEquals(sourceDokumentInfo2.getDokumentstatus(), dokumentInfoKopi2.getDokumentstatus());
-		assertEquals(sourceDokumentInfo2.getDokumentFerdigDato(), dokumentInfoKopi2.getDokumentFerdigDato());
-		assertEquals(sourceDokumentInfo2.getTittel(), dokumentInfoKopi2.getTittel());
-		assertEquals(sourceDokumentInfo2.getBrevkode(), dokumentInfoKopi2.getBrevkode());
-		assertEquals(sourceDokumentInfo2.getDokumenttypeId(), dokumentInfoKopi2.getDokumenttypeId());
-		assertEquals(sourceDokumentInfo2.getBrevgruppe(), dokumentInfoKopi2.getBrevgruppe());
-		assertEquals(null, dokumentInfoKopi2.getOriginalJournalpost());
-		assertEquals(sourceDokumentInfo2.getSensitivt(), dokumentInfoKopi2.getSensitivt());
-		assertEquals(sourceDokumentInfo2.getInnskrenketPartsinnsyn(), dokumentInfoKopi2.getInnskrenketPartsinnsyn());
-		assertEquals(sourceDokumentInfo2.getInnskrenketPartsinnsynFraTredjepart(), dokumentInfoKopi2.getInnskrenketPartsinnsynFraTredjepart());
-		assertEquals(sourceDokumentInfo2.getOrganInternt(), dokumentInfoKopi2.getOrganInternt());
-		assertEquals(sourceDokumentInfo2.getKonvertertFraSystem(), dokumentInfoKopi2.getKonvertertFraSystem());
-		assertEquals(sourceDokumentInfo2.getEndretAvNavn(), dokumentInfoKopi2.getEndretAvNavn());
-		assertEquals(sourceDokumentInfo2.getKassertAvNavn(), dokumentInfoKopi2.getKassertAvNavn());
-		assertEquals(sourceDokumentInfo2.getDatoKassert(), dokumentInfoKopi2.getDatoKassert());
-		assertThat(dokumentInfoKopi2.getOpprettetKildeNavn(), is(OPPRETTET_KILDE_NAVN));
-		assertEquals(sourceDokumentInfo2.getEndretKildeNavn(), dokumentInfoKopi2.getEndretKildeNavn());
-
-		assertEquals(sourceFilDetaljer2.getFiltype(), filDetaljerKopi2.getFiltype());
-		assertEquals(sourceFilDetaljer2.getOnDemandId(), filDetaljerKopi2.getOnDemandId());
-		assertEquals(sourceFilDetaljer2.getOnDemandInstans(), filDetaljerKopi2.getOnDemandInstans());
-		assertEquals(sourceFilDetaljer2.getMetaforceInstanceId(), filDetaljerKopi2.getMetaforceInstanceId());
-		assertThat(filDetaljerKopi2.getVariantFormat(), is(VariantFormatCode.ARKIV));
-		assertThat(filDetaljerKopi2.getOpprettetKildeNavn(), is(OPPRETTET_KILDE_NAVN));
-		assertEquals(sourceFilDetaljer2.getBatchNavn(), filDetaljerKopi2.getBatchNavn());
-		assertEquals(sourceFilDetaljer2.getFilnavn(), filDetaljerKopi2.getFilnavn());
-		assertEquals(sourceFilDetaljer2.getFilstorrelse(), filDetaljerKopi2.getFilstorrelse());
-		assertEquals(sourceFilDetaljer2.getSkjermingType(), filDetaljerKopi2.getSkjermingType());
-		assertEquals(sourceFilDetaljer2.getEndretKildeNavn(), filDetaljerKopi2.getEndretKildeNavn());
-
-		assertEquals(new String(sourceDokumentFil2.getFil()), new String(dokumentFilKopi2.getFil()));
-		assertThat(dokumentFilKopi2.getOpprettetKildeNavn(), is(OPPRETTET_KILDE_NAVN));
+		assertDokumentInfo(sourceDokumentInfo2, dokumentInfoKopi2);
+		assertFildetaljer(sourceFilDetaljer2, filDetaljerKopi2);
+		assertDokumentFil(sourceDokumentFil2, dokumentFilKopi2);
 
 		//Assert 3 Arkiv
 		Journalpost journalpostTilknyttetVedlegg = joarkRepository.findById(journalpostIdVedlegg).get();
@@ -392,7 +276,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		Long journalpostIdVedlegg = joarkRepository.save(journalpostVedlegg).getJournalpostId();
 		Long sourceJournalpostId = joarkRepository.save(sourceJournalpost).getJournalpostId();
 
-		saveJournalpost();
+		endTransaction();
 
 		Long dokumentInfoId = sourceJournalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId();
 
@@ -432,7 +316,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		Long journalpostIdVedlegg = joarkRepository.save(sourceJournalpost).getJournalpostId();
 		Long sourceJournalpostId = joarkRepository.save(sourceJournalpost).getJournalpostId();
 
-		saveJournalpost();
+		endTransaction();
 
 		Long dokumentInfoId = sourceJournalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId();
 
@@ -457,7 +341,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		Long journalpostIdVedlegg = joarkRepository.save(journalpostVedlegg).getJournalpostId();
 		Long sourceJournalpostId = joarkRepository.save(sourceJournalpost).getJournalpostId();
 
-		saveJournalpost();
+		endTransaction();
 
 		Long dokumentInfoId = sourceJournalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId();
 
@@ -472,7 +356,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.MULTI_STATUS));
-		assertThat(responseEntity.getBody().getFeiletDokument().get(0).getArsakKode(), is(ArsakFeilCode.UGYLDIG_STATUS));
+		assertThat(responseEntity.getBody().getFeiledeDokumenter().get(0).getArsakKode(), is(ArsakKode.UGYLDIG_STATUS));
 		TestTransaction.end();
 	}
 
@@ -483,7 +367,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		Long journalpostIdVedlegg = joarkRepository.save(journalpostVedlegg).getJournalpostId();
 		Long sourceJournalpostId = joarkRepository.save(sourceJournalpost).getJournalpostId();
 
-		saveJournalpost();
+		endTransaction();
 
 		HttpHeaders headers = createHeaders(GYLDIG_CONSUMER);
 
@@ -494,8 +378,48 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 				URL_JOURNALPOST_INTERN + journalpostIdVedlegg + "/tilknyttVedlegg", HttpMethod.PUT, requestHttpEntity, TilknyttVedleggResponse.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.MULTI_STATUS));
-		assertThat(responseEntity.getBody().getFeiletDokument().get(0).getArsakKode(), is(ArsakFeilCode.IKKE_FUNNET));
+		assertThat(responseEntity.getBody().getFeiledeDokumenter().get(0).getArsakKode(), is(ArsakKode.IKKE_FUNNET));
 		TestTransaction.end();
+	}
+
+	private void assertDokumentInfo(DokumentInfo sourceDokumentInfo, DokumentInfo dokumentInfoKopi) {
+		assertEquals(sourceDokumentInfo.getDokumentstatus(), dokumentInfoKopi.getDokumentstatus());
+		assertEquals(sourceDokumentInfo.getDokumentFerdigDato(), dokumentInfoKopi.getDokumentFerdigDato());
+		assertEquals(sourceDokumentInfo.getTittel(), dokumentInfoKopi.getTittel());
+		assertEquals(sourceDokumentInfo.getBrevkode(), dokumentInfoKopi.getBrevkode());
+		assertEquals(sourceDokumentInfo.getDokumenttypeId(), dokumentInfoKopi.getDokumenttypeId());
+		assertEquals(sourceDokumentInfo.getBrevgruppe(), dokumentInfoKopi.getBrevgruppe());
+		assertEquals(null, dokumentInfoKopi.getOriginalJournalpost());
+		assertEquals(sourceDokumentInfo.getSensitivt(), dokumentInfoKopi.getSensitivt());
+		assertEquals(sourceDokumentInfo.getInnskrenketPartsinnsyn(), dokumentInfoKopi.getInnskrenketPartsinnsyn());
+		assertEquals(sourceDokumentInfo.getInnskrenketPartsinnsynFraTredjepart(), dokumentInfoKopi.getInnskrenketPartsinnsynFraTredjepart());
+		assertEquals(sourceDokumentInfo.getOrganInternt(), dokumentInfoKopi.getOrganInternt());
+		assertEquals(sourceDokumentInfo.getKonvertertFraSystem(), dokumentInfoKopi.getKonvertertFraSystem());
+		assertEquals(null, dokumentInfoKopi.getEndretAvNavn());
+		assertEquals(sourceDokumentInfo.getKassertAvNavn(), dokumentInfoKopi.getKassertAvNavn());
+		assertEquals(sourceDokumentInfo.getDatoKassert(), dokumentInfoKopi.getDatoKassert());
+		assertThat(dokumentInfoKopi.getOpprettetKildeNavn(), is(NAV_CONSUMER_ID));
+		assertEquals(null, dokumentInfoKopi.getEndretKildeNavn());
+
+	}
+
+	private void assertFildetaljer(FilDetaljer sourceFilDetaljer, FilDetaljer filDetaljerKopi) {
+		assertEquals(sourceFilDetaljer.getFiltype(), filDetaljerKopi.getFiltype());
+		assertEquals(sourceFilDetaljer.getOnDemandId(), filDetaljerKopi.getOnDemandId());
+		assertEquals(sourceFilDetaljer.getOnDemandInstans(), filDetaljerKopi.getOnDemandInstans());
+		assertEquals(sourceFilDetaljer.getMetaforceInstanceId(), filDetaljerKopi.getMetaforceInstanceId());
+		assertThat(filDetaljerKopi.getVariantFormat(), is(VariantFormatCode.ARKIV));
+		assertThat(filDetaljerKopi.getOpprettetKildeNavn(), is(NAV_CONSUMER_ID));
+		assertEquals(sourceFilDetaljer.getBatchNavn(), filDetaljerKopi.getBatchNavn());
+		assertEquals(sourceFilDetaljer.getFilnavn(), filDetaljerKopi.getFilnavn());
+		assertEquals(sourceFilDetaljer.getFilstorrelse(), filDetaljerKopi.getFilstorrelse());
+		assertEquals(sourceFilDetaljer.getSkjermingType(), filDetaljerKopi.getSkjermingType());
+		assertEquals(null, filDetaljerKopi.getEndretKildeNavn());
+	}
+
+	private void assertDokumentFil(DokumentFil sourceDokumentFil, DokumentFil dokumentFilKopi) {
+		assertEquals(new String(sourceDokumentFil.getFil()), new String(dokumentFilKopi.getFil()));
+		assertThat(dokumentFilKopi.getOpprettetKildeNavn(), is(NAV_CONSUMER_ID));
 	}
 
 	private TilknyttVedleggRequest createTilknyttVedleggRequest(List<DokumentVedlegg> dokumentVedleggList) {
@@ -538,9 +462,11 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 	private HttpHeaders createHeaders(String consumer) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
+		headers.add("Nav-Consumer-Id", NAV_CONSUMER_ID);
 		String token = Base64Utils.encodeToString(
 				(consumer + ":" + "hemmelig").getBytes(StandardCharsets.UTF_8));
 		headers.add(HttpHeaders.AUTHORIZATION, "Basic " + token);
+
 		return headers;
 	}
 
@@ -557,7 +483,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 				.build();
 	}
 
-	private void saveJournalpost() {
+	private void endTransaction() {
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 		TestTransaction.start();

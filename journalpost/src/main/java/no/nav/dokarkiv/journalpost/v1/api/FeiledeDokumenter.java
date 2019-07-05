@@ -16,13 +16,13 @@ import javax.validation.constraints.NotNull;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class FeiletDokument {
+public class FeiledeDokumenter {
 
 	@NotNull(message = "ID til journalpost kilden mangler")
 	@ApiModelProperty(
 			value = "ID til journalpost kilden i Joark",
 			required = true)
-	private Long kildeJournalpostId;
+	private String kildeJournalpostId;
 
 	@ApiModelProperty(
 			value = "ID til dokumentet som skal legges til som vedlegg",
@@ -32,7 +32,7 @@ public class FeiletDokument {
 	@ApiModelProperty(
 			value = "Årsak til at dokumentet ikke lot seg knytte til journalpostId",
 			required = true)
-	private ArsakFeilCode arsakKode;
+	private ArsakKode arsakKode;
 
 
 

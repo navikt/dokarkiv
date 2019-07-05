@@ -4,6 +4,7 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createDokumentVedleg
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createTilknyttVedleggRequest;
 
 import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
+import no.nav.dokarkiv.core.exceptions.InvalidNavConsumerIdFunctionalException;
 import no.nav.dokarkiv.journalpost.v1.api.TilknyttVedleggRequest;
 import no.nav.dokarkiv.journalpost.v1.validators.TilknyttVedleggRequestValidator;
 import org.junit.Rule;
@@ -15,6 +16,8 @@ import org.junit.rules.ExpectedException;
  */
 public class TilknyttVedleggRequestValidatorTest {
 
+	public static final String NAV_CONSUMER_ID = "Nav-Consumer-Id";
+
 	@Rule
 	public ExpectedException expectedException = ExpectedException.none();
 	private TilknyttVedleggRequest tilknyttVedleggRequest;
@@ -23,7 +26,7 @@ public class TilknyttVedleggRequestValidatorTest {
 	@Test
 	public void happyPath() {
 		tilknyttVedleggRequest = createTilknyttVedleggRequest();
-		tilknyttVedleggRequestValidator.validateRequest(tilknyttVedleggRequest);
+		tilknyttVedleggRequestValidator.validateRequest(tilknyttVedleggRequest, NAV_CONSUMER_ID);
 	}
 
 	@Test
@@ -32,7 +35,7 @@ public class TilknyttVedleggRequestValidatorTest {
 
 		expectedException.expect(InputValideringFeiletException.class);
 		expectedException.expectMessage("TilknyttetAvNavn må være satt");
-		tilknyttVedleggRequestValidator.validateRequest(tilknyttVedleggRequest);
+		tilknyttVedleggRequestValidator.validateRequest(tilknyttVedleggRequest, NAV_CONSUMER_ID);
 	}
 
 	@Test
@@ -41,7 +44,7 @@ public class TilknyttVedleggRequestValidatorTest {
 
 		expectedException.expect(InputValideringFeiletException.class);
 		expectedException.expectMessage("Kilde journalpostId må være satt");
-		tilknyttVedleggRequestValidator.validateRequest(tilknyttVedleggRequest);
+		tilknyttVedleggRequestValidator.validateRequest(tilknyttVedleggRequest, NAV_CONSUMER_ID);
 	}
 
 	@Test
@@ -50,6 +53,15 @@ public class TilknyttVedleggRequestValidatorTest {
 
 		expectedException.expect(InputValideringFeiletException.class);
 		expectedException.expectMessage("DokumentInfoId må være satt");
-		tilknyttVedleggRequestValidator.validateRequest(tilknyttVedleggRequest);
+		tilknyttVedleggRequestValidator.validateRequest(tilknyttVedleggRequest, NAV_CONSUMER_ID);
+	}
+
+	@Test
+	public void shouldThrowExceptionIfconsumerIdIsMissing() {
+		tilknyttVedleggRequest = createTilknyttVedleggRequest();
+
+		expectedException.expect(InvalidNavConsumerIdFunctionalException.class);
+		expectedException.expectMessage("Nav-Consumer-Id kan ikke være null");
+		tilknyttVedleggRequestValidator.validateRequest(tilknyttVedleggRequest, null);
 	}
 }

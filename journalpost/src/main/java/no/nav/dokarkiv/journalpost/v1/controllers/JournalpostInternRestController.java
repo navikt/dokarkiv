@@ -7,11 +7,12 @@ import static no.nav.dokarkiv.core.util.DecodeUtils.decodeBasicAuth;
 import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateId;
 
 import lombok.extern.slf4j.Slf4j;
+import no.nav.dokarkiv.core.exceptions.ConsumerIsNotSrvDokarkivProxyFunctionalException;
 import no.nav.dokarkiv.core.exceptions.DokarkivFunctionalException;
 import no.nav.dokarkiv.core.exceptions.DokarkivTechnicalException;
 import no.nav.dokarkiv.core.metrics.RestMetrics;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
-import no.nav.dokarkiv.journalpost.v1.api.FeiletDokument;
+import no.nav.dokarkiv.journalpost.v1.api.FeiledeDokumenter;
 import no.nav.dokarkiv.journalpost.v1.api.TilknyttVedleggRequest;
 import no.nav.dokarkiv.journalpost.v1.api.TilknyttVedleggResponse;
 import no.nav.dokarkiv.journalpost.v1.services.TilknyttVedleggService;
@@ -63,12 +64,9 @@ public class JournalpostInternRestController {
 
 
 		try {
-			if (!SRVDOKARKIVPROXY.equals(decodeBasicAuth(auth)[0])) {
-				return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-						.body(TilknyttVedleggResponse.builder().build());
-			}
-			addValueToMDC(callId, NAV_CALL_ID);
-			addValueToMDC(consumerId, NAV_CONSUMER_ID);
+			assertThatConsumerIsSrvdokarkivproxy(auth);
+
+			addToMDC(callId, consumerId);
 			validateId(journalpostId, "journalpostId");
 
 			RequestContextUtil.createAndSetUsername("tilknyttVedlegg", "dokarkiv");
@@ -76,16 +74,16 @@ public class JournalpostInternRestController {
 
 			log.info(MDC.get(MDC_REQUEST_ID) + " har mottatt kall om å legge til vedlegg på journalpostId={}", journalpostId);
 
-			List<FeiletDokument> feiletDokumentList = tilknyttVedleggService.tilknyttVedlegg(Long.parseLong(journalpostId), request);
+			List<FeiledeDokumenter> feiledeDokumenterList = tilknyttVedleggService.tilknyttVedlegg(Long.parseLong(journalpostId), request, consumerId);
 
-			if (feiletDokumentList.isEmpty()) {
+			if (feiledeDokumenterList.isEmpty()) {
 				return ResponseEntity
 						.ok()
 						.body(TilknyttVedleggResponse.builder().build());
 			} else {
 				return ResponseEntity
 						.status(HttpStatus.MULTI_STATUS)
-						.body(TilknyttVedleggResponse.builder().feiletDokument(feiletDokumentList).build());
+						.body(TilknyttVedleggResponse.builder().feiledeDokumenter(feiledeDokumenterList).build());
 			}
 
 		} catch (DokarkivFunctionalException e) {
@@ -103,6 +101,18 @@ public class JournalpostInternRestController {
 		if (value != null && !value.isEmpty()) {
 			MDC.put(key, value);
 		}
+	}
+
+	private void addToMDC(String callId, String consumerId) {
+		addValueToMDC(callId, NAV_CALL_ID);
+		addValueToMDC(consumerId, NAV_CONSUMER_ID);
+	}
+
+	private void assertThatConsumerIsSrvdokarkivproxy(String auth) throws ConsumerIsNotSrvDokarkivProxyFunctionalException, IOException {
+		if (!SRVDOKARKIVPROXY.equals(decodeBasicAuth(auth)[0])) {
+			throw new ConsumerIsNotSrvDokarkivProxyFunctionalException("Konsument har ikke tilgang til å kalle tjenesten");
+		}
+
 	}
 
 }

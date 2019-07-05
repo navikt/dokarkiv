@@ -1,8 +1,10 @@
 package no.nav.dokarkiv.journalpost.v1.validators;
 
 import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
+import no.nav.dokarkiv.core.exceptions.InvalidNavConsumerIdFunctionalException;
 import no.nav.dokarkiv.journalpost.v1.api.DokumentVedlegg;
 import no.nav.dokarkiv.journalpost.v1.api.TilknyttVedleggRequest;
+
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 /**
@@ -10,7 +12,10 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
  */
 public class TilknyttVedleggRequestValidator {
 
-	public void validateRequest(TilknyttVedleggRequest request) {
+	public void validateRequest(TilknyttVedleggRequest request, String navConsumerId) {
+		if (navConsumerId == null) {
+			throw new InvalidNavConsumerIdFunctionalException(String.format("Nav-Consumer-Id kan ikke være null"));
+		}
 		validateTilknyttetAvNavn(request.getTilknyttetAvNavn());
 		if (!request.getDokument().isEmpty()) {
 			request.getDokument().forEach(this::validateDokumentListe);
