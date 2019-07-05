@@ -5,7 +5,9 @@ import static no.nav.dokarkiv.core.util.DecodeUtils.decodeBasicAuth;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.ldap.query.LdapQueryBuilder.query;
 
+import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.cache.CacheConfig;
+import no.nav.dokarkiv.core.exceptions.CouldNotDecodeBasicAuthToken;
 import org.slf4j.MDC;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
@@ -13,7 +15,6 @@ import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.filter.AndFilter;
 import org.springframework.ldap.filter.EqualsFilter;
 import org.springframework.ldap.filter.HardcodedFilter;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.inject.Inject;
@@ -25,6 +26,7 @@ import java.util.Optional;
 /**
  * @author Sigurd Midttun, Visma Consulting.
  */
+@Slf4j
 public class BasicAuthRestInterceptor implements HandlerInterceptor {
 
 	private static final String BASIC = "Basic";
@@ -64,7 +66,8 @@ public class BasicAuthRestInterceptor implements HandlerInterceptor {
 		String[] decodedCredentials;
 		try {
 			decodedCredentials = extractAndDecodeHeader(token);
-		} catch (BadCredentialsException e) {
+		} catch (CouldNotDecodeBasicAuthToken e) {
+			log.error(e.getMessage(), e.getCause());
 			response.sendError(HttpServletResponse.SC_UNAUTHORIZED, e.getMessage());
 			return false;
 		}

@@ -1,7 +1,7 @@
 package no.nav.dokarkiv.core.util;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.authentication.BadCredentialsException;
+import no.nav.dokarkiv.core.exceptions.CouldNotDecodeBasicAuthToken;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Base64;
@@ -24,13 +24,13 @@ public final class DecodeUtils {
 			String token = new String(decoded, CHARSET);
 			int delim = token.indexOf(':');
 			if (delim == -1) {
-				throw new BadCredentialsException("Ugyldig basic authentication token");
+				throw new CouldNotDecodeBasicAuthToken("Decode av basicAuthToken feilet");
 			}
 			return new String[]{token.substring(0, delim), token.substring(delim + 1)};
 		} catch (IllegalArgumentException | UnsupportedEncodingException e) {
-			log.error(e.getMessage(), e.getCause());
+			throw new CouldNotDecodeBasicAuthToken("Decode av basicAuthToken feilet");
+
 		}
-		return new String[]{};
 	}
 
 }

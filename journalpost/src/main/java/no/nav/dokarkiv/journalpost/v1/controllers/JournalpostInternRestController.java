@@ -90,7 +90,7 @@ public class JournalpostInternRestController {
 					.getMessage());
 			throw e;
 		} catch (DokarkivTechnicalException e) {
-			log.warn("tilknyttVedlegg - feilet teknisk ved tilknytning av vedlegg for journalpostId={}. Feilmelding={}", journalpostId, e
+			log.error("tilknyttVedlegg - feilet teknisk ved tilknytning av vedlegg for journalpostId={}. Feilmelding={}", journalpostId, e
 					.getMessage());
 			throw e;
 		}
