@@ -3,6 +3,7 @@ package no.nav.dokarkiv.core.util;
 import org.springframework.security.authentication.BadCredentialsException;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.Base64;
 
 /**
@@ -14,8 +15,13 @@ public final class DecodeUtils {
 	private DecodeUtils(){
 	}
 
-	public static String[] decodeBasicAuth(String header) throws IOException {
-		byte[] base64Token = header.substring(6).getBytes(CHARSET);
+	public static String[] decodeBasicAuth(String header)  {
+		byte[] base64Token = new byte[0];
+		try {
+			base64Token = header.substring(6).getBytes(CHARSET);
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
 		byte[] decoded;
 
 		try {
@@ -25,7 +31,12 @@ public final class DecodeUtils {
 					"Kunne ikke dekode basic authentication token");
 		}
 
-		String token = new String(decoded, CHARSET);
+		String token = null;
+		try {
+			token = new String(decoded, CHARSET);
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
 		int delim = token.indexOf(':');
 
 		if (delim == -1) {

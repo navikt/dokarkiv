@@ -70,7 +70,6 @@ public class JournalpostInternRestController {
 			validateId(journalpostId, "journalpostId");
 
 			RequestContextUtil.createAndSetUsername("tilknyttVedlegg", "dokarkiv");
-			MDC.put(MDC_REQUEST_ID, "tilknyttVedlegg");
 
 			log.info(MDC.get(MDC_REQUEST_ID) + " har mottatt kall om å legge til vedlegg på journalpostId={}", journalpostId);
 
@@ -106,13 +105,13 @@ public class JournalpostInternRestController {
 	private void addToMDC(String callId, String consumerId) {
 		addValueToMDC(callId, NAV_CALL_ID);
 		addValueToMDC(consumerId, NAV_CONSUMER_ID);
+		MDC.put(MDC_REQUEST_ID, "tilknyttVedlegg");
 	}
 
-	private void assertThatConsumerIsSrvdokarkivproxy(String auth) throws ConsumerIsNotSrvDokarkivProxyFunctionalException, IOException {
+	private void assertThatConsumerIsSrvdokarkivproxy(String auth) {
 		if (!SRVDOKARKIVPROXY.equals(decodeBasicAuth(auth)[0])) {
 			throw new ConsumerIsNotSrvDokarkivProxyFunctionalException("Konsument har ikke tilgang til å kalle tjenesten");
 		}
-
 	}
 
 }

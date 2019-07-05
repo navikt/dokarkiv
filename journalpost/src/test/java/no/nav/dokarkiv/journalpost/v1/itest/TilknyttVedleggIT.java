@@ -288,7 +288,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		HttpEntity<TilknyttVedleggRequest> requestHttpEntity = new HttpEntity<>(request, headers);
 		ResponseEntity responseEntity = restTemplate.exchange(
 				URL_JOURNALPOST_INTERN + journalpostIdVedlegg + "/tilknyttVedlegg", HttpMethod.PUT, requestHttpEntity, String.class);
-		assertThat(responseEntity.getStatusCode(), is(HttpStatus.UNAUTHORIZED));
+		assertThat(responseEntity.getStatusCode(), is(HttpStatus.FORBIDDEN));
 		TestTransaction.end();
 	}
 

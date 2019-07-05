@@ -46,7 +46,6 @@ public class TilknyttVedleggService {
 	private final TilknyttVedleggRequestValidator tilknyttVedleggRequestValidator;
 	private String tilKnyttetAvNavn;
 	private static final String TILLEGGOPPLYSNINGER_KEY = "DOK_ORG_DOK_INFO_ID";
-	private static final String OPPRETTET_KILDE_NAVN = "dokarkiv";
 
 	@Inject
 	public TilknyttVedleggService(JoarkRepositorySkjermet joarkRepository, DokumentinfoRepository dokumentinfoRepository, DokumentFilRepository dokumentFilRepository, JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository) {
