@@ -67,7 +67,7 @@ public class FinnJournalpostSqlGeneratorTest {
 						"                      FROM t_bruker b\n" +
 						"                             JOIN t_journalpost tj ON b.journalpost_id = tj.journalpost_id\n" +
 						"                      WHERE b.bruker_id IN (:alleIdenter)\n" +
-						"                        AND tj.k_journal_s IN ('M', 'MO')\n" +
+						"                        AND tj.k_journal_s IN ('M', 'MO', 'D')\n" +
 						"     ),\n" +
 						"     relevantedata AS (SELECT j.journalpost_id      AS journalpostid,\n" +
 						"                              j.innhold             AS innhold,\n" +
