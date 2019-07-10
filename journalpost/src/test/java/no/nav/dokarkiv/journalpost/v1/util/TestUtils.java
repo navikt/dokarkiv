@@ -81,6 +81,7 @@ public class TestUtils {
 	public static final LocalDateTime LOCAL_DATE_TIME = LocalDateTime.of(2017, 2, 3, 10, 37, 30);
 	public static final String OPPRETTET_AV_NAVN = "Sak S. Behandler";
 	public static final String TEMA_FOR = "FOR";
+	public static final String TEMA_SER = "SER";
 	public static final String BEHANDLINGSTEMA = "ab0001";
 	public static final String AVSENDER_MOTTAKER_LAND = "Legoland";
 	public static final String KANAL_NAVNO = "NAV_NO";
