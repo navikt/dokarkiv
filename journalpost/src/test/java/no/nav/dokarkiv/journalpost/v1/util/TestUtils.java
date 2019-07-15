@@ -94,6 +94,7 @@ public class TestUtils {
 	public static final byte[] FYSISK_DOKUMENT_2 = "DOKUMENT_2".getBytes();
 	public static final String TILLEGGSOPPLYSNING_NOKKEL = "noekkel";
 	public static final String TILLEGGSOPPLYSNING_VERDI = "verdi";
+	public static final String FILNAVN = "filnavn";
 
 	public static Journalpost createJournalpost() {
 		Journalpost journalpost = Journalpost.builder()
@@ -340,6 +341,7 @@ public class TestUtils {
 										DokumentVariant.builder()
 												.filtype(FILTYPE_XML)
 												.variantformat(VARIANTFORMAT_ORIGINAL)
+												.filnavn(FILNAVN)
 												.fysiskDokument(FYSISK_DOKUMENT_2)
 												.build()))
 								.build(),
