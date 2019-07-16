@@ -1,10 +1,13 @@
 package no.nav.dokarkiv.core.security;
 
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
+import static no.nav.dokarkiv.core.util.DecodeUtils.decodeBasicAuth;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.ldap.query.LdapQueryBuilder.query;
 
+import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.cache.CacheConfig;
+import no.nav.dokarkiv.core.exceptions.CouldNotDecodeBasicAuthToken;
 import org.slf4j.MDC;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
@@ -12,24 +15,21 @@ import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.filter.AndFilter;
 import org.springframework.ldap.filter.EqualsFilter;
 import org.springframework.ldap.filter.HardcodedFilter;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.Base64;
 import java.util.Objects;
 import java.util.Optional;
 
 /**
  * @author Sigurd Midttun, Visma Consulting.
  */
+@Slf4j
 public class BasicAuthRestInterceptor implements HandlerInterceptor {
 
 	private static final String BASIC = "Basic";
-	private static final String CHARSET = "UTF-8";
 
 	private final String serviceuserBasedn;
 	private final String requiredGroupMember;
@@ -44,13 +44,14 @@ public class BasicAuthRestInterceptor implements HandlerInterceptor {
 									LdapTemplate ldapTemplate,
 									CacheManager cacheManager) {
 		this.serviceuserBasedn = serviceuserBasedn;
-		if(requiredGroupMember == null) {
+		if (requiredGroupMember == null) {
 			this.requiredGroupMember = null;
 		} else {
 			this.requiredGroupMember = requiredGroupMember + "," + baseDn;
 		}
 		this.ldapTemplate = ldapTemplate;
 		this.cacheManager = cacheManager;
+
 	}
 
 	@Override
@@ -65,7 +66,8 @@ public class BasicAuthRestInterceptor implements HandlerInterceptor {
 		String[] decodedCredentials;
 		try {
 			decodedCredentials = extractAndDecodeHeader(token);
-		} catch (BadCredentialsException e) {
+		} catch (CouldNotDecodeBasicAuthToken e) {
+			log.error(e.getMessage(), e.getCause());
 			response.sendError(HttpServletResponse.SC_UNAUTHORIZED, e.getMessage());
 			return false;
 		}
@@ -117,23 +119,7 @@ public class BasicAuthRestInterceptor implements HandlerInterceptor {
 				.orElse(null);
 	}
 
-	private String[] extractAndDecodeHeader(String header) throws IOException {
-		byte[] base64Token = header.substring(6).getBytes(CHARSET);
-		byte[] decoded;
-
-		try {
-			decoded = Base64.getDecoder().decode(base64Token);
-		} catch (IllegalArgumentException e) {
-			throw new BadCredentialsException(
-					"Kunne ikke dekode basic authentication token");
-		}
-
-		String token = new String(decoded, CHARSET);
-		int delim = token.indexOf(':');
-
-		if (delim == -1) {
-			throw new BadCredentialsException("Ugyldig basic authentication token");
-		}
-		return new String[]{token.substring(0, delim), token.substring(delim + 1)};
+	private String[] extractAndDecodeHeader(String header) {
+		return decodeBasicAuth(header);
 	}
 }

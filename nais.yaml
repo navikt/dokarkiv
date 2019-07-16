@@ -162,3 +162,7 @@ fasitResources:
     resourceType: restservice
     path: /rest/journalpostapi/v1
     description: Rest-tjeneste til bruk ifm. oppretting, oppdatering eller ferdigstilling journalposter.
+  - alias: Journalpost_v1_intern
+    resourceType: restservice
+    path: /rest/intern/journalpostapi/v1
+    description: Rest-tjeneste til intern bruk ifm. tilknytting av vedlegg.

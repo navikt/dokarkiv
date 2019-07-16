@@ -20,9 +20,11 @@ public class RestWebMvcConfig implements WebMvcConfigurer {
 	private final OidcAuthProperties oidcAuthProperties;
 	private final HandlerInterceptor basicAuthReadAccessRestInterceptor;
 
+
 	public RestWebMvcConfig(NavLdapService navLdapService,
 							OidcAuthProperties oidcAuthProperties,
-							@Named("basicAuthReadAccessRestInterceptor") HandlerInterceptor basicAuthReadAccessRestInterceptor) {
+							@Named("basicAuthReadAccessRestInterceptor") HandlerInterceptor basicAuthReadAccessRestInterceptor
+	) {
 		this.navLdapService = navLdapService;
 		this.oidcAuthProperties = oidcAuthProperties;
 		this.basicAuthReadAccessRestInterceptor = basicAuthReadAccessRestInterceptor;
@@ -41,5 +43,6 @@ public class RestWebMvcConfig implements WebMvcConfigurer {
 		registry.addInterceptor(new PopulateMDCHandler())
 				.addPathPatterns(oidcAuthProperties.getSecuredPath(),
 						"/hentjournalsakinfo/**");
+
 	}
 }
