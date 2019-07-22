@@ -24,14 +24,17 @@ import no.nav.dokarkiv.journalpost.v1.api.AvsenderMottakerIdType;
 import no.nav.dokarkiv.journalpost.v1.api.BrukerIdType;
 import no.nav.dokarkiv.journalpost.v1.api.Dokument;
 import no.nav.dokarkiv.journalpost.v1.api.DokumentVariant;
+import no.nav.dokarkiv.journalpost.v1.api.DokumentVedlegg;
 import no.nav.dokarkiv.journalpost.v1.api.JournalpostType;
 import no.nav.dokarkiv.journalpost.v1.api.OppdaterJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.OpprettJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.Sak;
+import no.nav.dokarkiv.journalpost.v1.api.TilknyttVedleggRequest;
 import no.nav.dokarkiv.journalpost.v1.api.Tilleggsopplysning;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -81,6 +84,7 @@ public class TestUtils {
 	public static final LocalDateTime LOCAL_DATE_TIME = LocalDateTime.of(2017, 2, 3, 10, 37, 30);
 	public static final String OPPRETTET_AV_NAVN = "Sak S. Behandler";
 	public static final String TEMA_FOR = "FOR";
+	public static final String TEMA_SER = "SER";
 	public static final String BEHANDLINGSTEMA = "ab0001";
 	public static final String AVSENDER_MOTTAKER_LAND = "Legoland";
 	public static final String KANAL_NAVNO = "NAV_NO";
@@ -93,6 +97,7 @@ public class TestUtils {
 	public static final byte[] FYSISK_DOKUMENT_2 = "DOKUMENT_2".getBytes();
 	public static final String TILLEGGSOPPLYSNING_NOKKEL = "noekkel";
 	public static final String TILLEGGSOPPLYSNING_VERDI = "verdi";
+	public static final String FILNAVN = "filnavn";
 
 	public static Journalpost createJournalpost() {
 		Journalpost journalpost = Journalpost.builder()
@@ -339,6 +344,7 @@ public class TestUtils {
 										DokumentVariant.builder()
 												.filtype(FILTYPE_XML)
 												.variantformat(VARIANTFORMAT_ORIGINAL)
+												.filnavn(FILNAVN)
 												.fysiskDokument(FYSISK_DOKUMENT_2)
 												.build()))
 								.build(),
@@ -400,7 +406,42 @@ public class TestUtils {
 				.tema(TEMA_FOR)
 				.tittel(INNHOLD)
 				.build();
+	}
 
 
+	public static TilknyttVedleggRequest createTilknyttVedleggRequest() {
+		return TilknyttVedleggRequest.builder()
+				.tilknyttetAvNavn("Testus Testesen")
+				.dokument(createDokumentVedleggList())
+				.build();
+	}
+
+	public static TilknyttVedleggRequest createTilknyttVedleggRequest(String tilknyttetAvNavn, List<DokumentVedlegg> dokumentVedleggList) {
+		return TilknyttVedleggRequest.builder()
+				.tilknyttetAvNavn(tilknyttetAvNavn)
+				.dokument(dokumentVedleggList)
+				.build();
+	}
+
+	public static List<DokumentVedlegg> createDokumentVedleggList() {
+		List<DokumentVedlegg> dokumentVedleggList = new ArrayList<>();
+		DokumentVedlegg dokumentVedlegg = DokumentVedlegg.builder()
+				.dokumentInfoId(DOKUMENTINFO_ID1)
+				.kildeJournalpostId(JOURNALPOST_ID)
+				.build();
+		dokumentVedleggList.add(dokumentVedlegg);
+		return dokumentVedleggList;
+	}
+
+	public static List<DokumentVedlegg> createDokumentVedleggList(Long journalpostId, String dokumentInfo) {
+		List<DokumentVedlegg> dokumentVedleggList = new ArrayList<>();
+		dokumentVedleggList.add(createDokumentVedlegg(journalpostId, dokumentInfo).build());
+		return dokumentVedleggList;
+	}
+
+	private static DokumentVedlegg.DokumentVedleggBuilder createDokumentVedlegg(Long journalpostId, String dokumentId) {
+		return DokumentVedlegg.builder()
+				.kildeJournalpostId(journalpostId)
+				.dokumentInfoId(dokumentId);
 	}
 }

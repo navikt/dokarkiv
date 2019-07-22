@@ -60,9 +60,9 @@
 		<appender-ref ref="stdout_json"/>
 	</logger>
 
-	<!-- Hibernate deprecated warnings -->
+<!--	 Hibernate deprecated warnings -->
 	<logger name="org.hibernate.orm.deprecation" additivity="false" level="ERROR"/>
-	<!-- Remove noise due to wrong use of AddressingFeature -->
+<!--	 Remove noise due to wrong use of AddressingFeature -->
 	<logger name="org.apache.cxf.ws.addressing.ContextUtils" additivity="false" level="ERROR"/>
 	<logger name="org.apache.cxf.ws.security.wss4j.WSS4JInInterceptor" additivity="false" level="ERROR"/>
 	<logger name="org.apache.cxf.ws.addressing.soap.MAPCodec" additivity="false" level="ERROR"/>

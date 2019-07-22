@@ -1,0 +1,51 @@
+INSERT INTO T_K_AKSJON_TYPE (AKSJON_TYPE, BESKRIVELSE, DATO_OPPRETTET, OPPRETTET_AV)
+SELECT
+  'FEILREGISTRER_SAKSTILKNYTNING',
+  'Feilregistrer sakstilknytning',
+  sysdate,
+  'Bjørnar Hunshamar'
+  FROM dual
+  WHERE NOT exists(
+    SELECT 1
+    FROM T_K_AKSJON_TYPE
+    WHERE AKSJON_TYPE = 'FEILREGISTRER_SAKSTILKNYTNING'
+  );
+
+INSERT INTO T_K_AKSJON_TYPE (AKSJON_TYPE, BESKRIVELSE, DATO_OPPRETTET, OPPRETTET_AV)
+SELECT
+  'UKJENT_BRUKER',
+  'Sett status til ukjent bruker på journalpost',
+  sysdate,
+  'Bjørnar Hunshamar'
+  FROM dual
+  WHERE NOT exists(
+    SELECT 1
+    FROM T_K_AKSJON_TYPE
+    WHERE AKSJON_TYPE = 'UKJENT_BRUKER'
+  );
+
+INSERT INTO T_K_AKSJON_TYPE (AKSJON_TYPE, BESKRIVELSE, DATO_OPPRETTET, OPPRETTET_AV)
+SELECT
+  'AVBRYT',
+  'Avbryt journalpost',
+  sysdate,
+  'Bjørnar Hunshamar'
+  FROM dual
+  WHERE NOT exists(
+    SELECT 1
+    FROM T_K_AKSJON_TYPE
+    WHERE AKSJON_TYPE = 'AVBRYT'
+  );
+
+INSERT INTO T_K_AKSJON_TYPE (AKSJON_TYPE, BESKRIVELSE, DATO_OPPRETTET, OPPRETTET_AV)
+SELECT
+  'OPPHEV_FEILREGISTRERING',
+  'Opphev feilregistrering sakstilknytning',
+  sysdate,
+  'Bjørnar Hunshamar'
+  FROM dual
+  WHERE NOT exists(
+    SELECT 1
+    FROM T_K_AKSJON_TYPE
+    WHERE AKSJON_TYPE = 'OPPHEV_FEILREGISTRERING'
+  );

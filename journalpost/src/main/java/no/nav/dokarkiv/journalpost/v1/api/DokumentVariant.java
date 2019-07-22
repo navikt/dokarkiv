@@ -34,6 +34,11 @@ public class DokumentVariant {
 
 	@ApiModelProperty(
 			value = "Selve dokumentet",
-			required = false)
+			required = true)
 	private byte[] fysiskDokument;
+
+	@ApiModelProperty(
+			value = "Navnet filen skal ha i arkivet.",
+			required = false)
+	private String filnavn;
 }

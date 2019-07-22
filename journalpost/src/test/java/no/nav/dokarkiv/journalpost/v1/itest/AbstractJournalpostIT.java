@@ -34,6 +34,7 @@ public abstract class AbstractJournalpostIT extends AbstractRestIT {
 
     static final String URL_JOURNALPOST = "/rest/journalpostapi/v1/journalpost/";
     static final String URL_DOKUMENTINFO= "/rest/journalpostapi/v1/dokumentInfo/";
+    static final String URL_JOURNALPOST_INTERN = "/rest/intern/journalpostapi/v1/journalpost/";
     static final String FERDIGSTILL = "/ferdigstill";
     static final String KOPIER_QUERY = "kopierJournalpost?kildeJournalpostId=";
     static final String FERDIGSTILL_QUERY = "?forsoekFerdigstill=true";

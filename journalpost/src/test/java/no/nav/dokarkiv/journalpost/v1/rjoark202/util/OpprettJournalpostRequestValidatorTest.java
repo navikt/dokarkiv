@@ -7,6 +7,7 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FILTYPE_PDF;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FILTYPE_XML;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.INNHOLD;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_FOR;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_SER;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.VARIANTFORMAT_ARKIV;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createMinimalRequest;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createRequest;
@@ -39,6 +40,15 @@ public class OpprettJournalpostRequestValidatorTest {
 	@Test
 	public void happyPath() {
 		request = createRequest(JournalpostType.INNGAAENDE);
+
+		validator.validateRequest(request);
+	}
+
+	@Test
+	public void shouldNotThrowExceptionIfMottakskanalTemaCombinationIsValid() {
+		request = createMinimalRequest(JournalpostType.INNGAAENDE, TEMA_SER, INNHOLD)
+				.kanal("NAV_NO_UINNLOGGET")
+				.build();
 
 		validator.validateRequest(request);
 	}
@@ -274,6 +284,18 @@ public class OpprettJournalpostRequestValidatorTest {
 
 		expectedException.expect(InputValideringFeiletException.class);
 		expectedException.expectMessage("kanal");
+
+		validator.validateRequest(request);
+	}
+
+	@Test
+	public void shouldThrowExceptionIfMottakskanalTemaCombinationIsInvalid() {
+		request = createMinimalRequest(JournalpostType.INNGAAENDE, TEMA_FOR, INNHOLD)
+				.kanal("NAV_NO_UINNLOGGET")
+				.build();
+
+		expectedException.expect(InputValideringFeiletException.class);
+		expectedException.expectMessage("Det er kun mulig å arkivere med mottakskanal NAV_NO_UINNLOGGET dersom tema=SER.");
 
 		validator.validateRequest(request);
 	}

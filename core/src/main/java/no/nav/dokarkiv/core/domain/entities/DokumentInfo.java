@@ -57,7 +57,7 @@ import java.util.stream.Collectors;
  */
 @Entity
 @Table(name = "T_DOKUMENT_INFO")
-@Builder
+@Builder  (toBuilder = true)
 @AllArgsConstructor
 public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKilde {
 

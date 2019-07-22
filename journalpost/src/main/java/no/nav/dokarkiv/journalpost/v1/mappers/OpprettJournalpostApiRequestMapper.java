@@ -193,6 +193,7 @@ public class OpprettJournalpostApiRequestMapper {
 						.variantFormat(mapVariantFormat(dokumentVariant.getVariantformat()))
 						.filUuid(FilDetaljer.generateUuid())
 						.fileContent(dokumentVariant.getFysiskDokument())
+						.filnavn(dokumentVariant.getFilnavn())
 						.dokumentInfo(dokumentInfo)
 						.build()));
 
