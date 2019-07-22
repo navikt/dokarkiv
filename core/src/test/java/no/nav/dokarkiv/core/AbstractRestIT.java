@@ -1,13 +1,11 @@
 package no.nav.dokarkiv.core;
 
 import static no.nav.dokarkiv.core.security.JwtClaimsBuilderProvider.openAmClaimsBuilder;
-import static no.nav.dokarkiv.core.util.ConverterUtils.objectToJsonString;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.OPPRETTET_KILDE_NAVN;
 import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_BRUKER;
 import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_HJEMMEL;
 import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_MELDING;
 import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_UTFOERT_AV;
-import static no.nav.dokarkiv.core.util.TestDataUtils.createAksjonsLoggTOHeader;
 
 import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService;
 import no.nav.dokarkiv.core.domain.entities.DokumentFil;
@@ -117,6 +115,7 @@ public abstract class AbstractRestIT {
 				.build()));
 		headers.add(NAV_CONSUMER_TOKEN, BEARER + oidcTestService.createOidc(openAmClaimsBuilder().subject(SERVICE_USER_ID)
 				.build()));
+		headers.add(NavHeaders.NAV_CALL_ID, "itest");
 		return headers;
 	}
 
@@ -125,6 +124,7 @@ public abstract class AbstractRestIT {
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		headers.add(HttpHeaders.AUTHORIZATION, BEARER + oidcTestService.createOidc(openAmClaimsBuilder().subject(SERVICE_USER_ID)
 				.build()));
+		headers.add(NavHeaders.NAV_CALL_ID, "itest");
 		return headers;
 	}
 

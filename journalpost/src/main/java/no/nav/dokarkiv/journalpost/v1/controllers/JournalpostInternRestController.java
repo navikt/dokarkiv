@@ -1,12 +1,12 @@
 package no.nav.dokarkiv.journalpost.v1.controllers;
 
 import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
-import static no.nav.dokarkiv.core.MDCConstants.NAV_CALL_ID;
-import static no.nav.dokarkiv.core.MDCConstants.NAV_CONSUMER_ID;
 import static no.nav.dokarkiv.core.util.DecodeUtils.decodeBasicAuth;
 import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateId;
 
 import lombok.extern.slf4j.Slf4j;
+import no.nav.dokarkiv.core.MDCConstants;
+import no.nav.dokarkiv.core.NavHeaders;
 import no.nav.dokarkiv.core.exceptions.ConsumerIsNotSrvDokarkivProxyFunctionalException;
 import no.nav.dokarkiv.core.exceptions.DokarkivFunctionalException;
 import no.nav.dokarkiv.core.exceptions.DokarkivTechnicalException;
@@ -18,6 +18,7 @@ import no.nav.dokarkiv.journalpost.v1.api.TilknyttVedleggResponse;
 import no.nav.dokarkiv.journalpost.v1.services.TilknyttVedleggService;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerTilknyttVedlegg;
 import org.slf4j.MDC;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,7 +31,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.inject.Inject;
-import java.io.IOException;
 import java.util.List;
 
 /**
@@ -57,12 +57,11 @@ public class JournalpostInternRestController {
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "tilknyttVedlegg"}, percentiles = {0.5, 0.95})
 	public ResponseEntity<TilknyttVedleggResponse> tilknyttVedlegg(
 			@PathVariable String journalpostId,
-			@RequestHeader(value = "Nav-CallId", required = false) String callId,
-			@RequestHeader(value = "Nav-Consumer-Id", required = false) String consumerId,
-			@RequestHeader(value = "Authorization") String auth,
-			@RequestBody TilknyttVedleggRequest request) throws IOException {
-
-
+			@RequestHeader(value = NavHeaders.NAV_CALL_ID, required = false) String callId,
+			@RequestHeader(value = NavHeaders.NAV_CONSUMER_ID, required = false) String consumerId,
+			@RequestHeader(value = HttpHeaders.AUTHORIZATION) String auth,
+			@RequestBody TilknyttVedleggRequest request) {
+		MDC.put(MDC_REQUEST_ID, "tilknyttVedlegg");
 		try {
 			assertThatConsumerIsSrvdokarkivproxy(auth);
 
@@ -96,15 +95,15 @@ public class JournalpostInternRestController {
 		}
 	}
 
-	private void addValueToMDC(String value, String key) {
+	private void addValueToMDC(String key, String value) {
 		if (value != null && !value.isEmpty()) {
 			MDC.put(key, value);
 		}
 	}
 
 	private void addToMDC(String callId, String consumerId) {
-		addValueToMDC(callId, NAV_CALL_ID);
-		addValueToMDC(consumerId, NAV_CONSUMER_ID);
+		addValueToMDC(MDCConstants.MDC_CALL_ID, callId);
+		addValueToMDC(MDCConstants.MDC_CONSUMER_ID, consumerId);
 		MDC.put(MDC_REQUEST_ID, "tilknyttVedlegg");
 	}
 
