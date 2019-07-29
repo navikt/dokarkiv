@@ -19,7 +19,7 @@ public class AvsenderMottaker {
     private String id;
 
 	@ApiModelProperty(
-			value = "Angir hvilken type identifikator som er benyttet i AvsenderMottaker.id.",
+			value = "Angir hvilken type identifikator som er benyttet i AvsenderMottaker.id.\nPåkrevd dersom `id` er satt.",
 			required = false)
 	private AvsenderMottakerIdType idType;
 

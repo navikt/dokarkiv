@@ -4,6 +4,7 @@ import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.HOV
 import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.VEDLEGG;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
+import static org.apache.commons.lang3.StringUtils.trim;
 
 import no.nav.dokarkiv.core.domain.codes.AvsenderMottakerIdTypeCode;
 import no.nav.dokarkiv.core.domain.codes.Behandlingstema;
@@ -51,7 +52,7 @@ public class OpprettJournalpostApiRequestMapper {
 				.innhold(request.getTittel())
 				.fagomrade(FagomradeCode.valueOf(request.getTema()))
 				.avsenderMottaker(request.getAvsenderMottaker() == null ? null : request.getAvsenderMottaker().getNavn())
-				.avsenderMottakerId(request.getAvsenderMottaker() == null ? null : request.getAvsenderMottaker().getId())
+				.avsenderMottakerId(request.getAvsenderMottaker() == null ? null : trim(request.getAvsenderMottaker().getId()))
 				.avsenderMottakerIdType(request.getAvsenderMottaker() == null ? null : mapAvsenderMottakerType(request.getAvsenderMottaker()
 						.getIdType()))
 				.behandlingstema(mapBehandlingstema(request))
