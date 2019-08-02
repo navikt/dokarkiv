@@ -1,8 +1,15 @@
 package no.nav.dokarkiv.journalpost.v1.util.oppdaterjournalpost;
 
+import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.AVSENDER_ID_PERSON;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.AVSENDER_NAVN;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createPutOppdaterJournalpostRequest;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createPutOppdaterJournalpostRequestWithoutAvsenderMottaker;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createPutOppdaterJournalpostRequestWithoutAvsenderMottakerId;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
@@ -16,6 +23,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.slf4j.MDC;
 
 @RunWith(MockitoJUnitRunner.class)
 public class JournalpostUpdaterTest {
@@ -55,4 +63,34 @@ public class JournalpostUpdaterTest {
 
 		assertThat(journalpost.getBrukere(), hasSize(1));
 	}
+
+	@Test
+	public void shouldRemoveAvsenderMottakerIdType() throws UgyldigAksjonsLoggException {
+		MDC.put(MDC_USER_ID, "testuser");
+		AksjonsLoggHelper aksjonsLoggHelper = new AksjonsLoggHelper();
+		oppdaterJournalpostRequest = createPutOppdaterJournalpostRequestWithoutAvsenderMottakerId();
+
+		journalpost = TestUtils.createJournalpostForOppdatering();
+
+		updater.updateFields(journalpost, oppdaterJournalpostRequest, aksjonsLoggHelper);
+
+		assertEquals("testuser", journalpost.getEndretAvNavn());
+		assertNull(journalpost.getAvsenderMottakerId());
+		assertNull(journalpost.getAvsenderMottakerIdType());
+	}
+
+	@Test
+	public void shouldNotChangeAvsenderMottaker() throws UgyldigAksjonsLoggException {
+		MDC.put(MDC_USER_ID, "testuser");
+		AksjonsLoggHelper aksjonsLoggHelper = new AksjonsLoggHelper();
+		oppdaterJournalpostRequest = createPutOppdaterJournalpostRequestWithoutAvsenderMottaker();
+
+		journalpost = TestUtils.createJournalpostForOppdatering();
+
+		updater.updateFields(journalpost, oppdaterJournalpostRequest, aksjonsLoggHelper);
+
+		assertEquals(journalpost.getAvsenderMottakerId(), AVSENDER_ID_PERSON);
+		assertEquals(journalpost.getAvsenderMottaker(), AVSENDER_NAVN);
+	}
+
 }
