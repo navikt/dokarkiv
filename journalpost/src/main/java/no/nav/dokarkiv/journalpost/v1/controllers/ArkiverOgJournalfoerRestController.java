@@ -21,6 +21,7 @@ import no.nav.dokarkiv.core.metrics.RestMetrics;
 import no.nav.dokarkiv.core.security.abac.AbacSecurityService;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import no.nav.dokarkiv.journalpost.v1.api.FerdigstillJournalpostRequest;
+import no.nav.dokarkiv.journalpost.v1.api.OppdaterDistribusjonsinfoRequest;
 import no.nav.dokarkiv.journalpost.v1.api.OppdaterJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.OppdaterJournalpostResponse;
 import no.nav.dokarkiv.journalpost.v1.api.OpprettJournalpostRequest;
@@ -31,6 +32,7 @@ import no.nav.dokarkiv.journalpost.v1.services.OppdaterJournalpostService;
 import no.nav.dokarkiv.journalpost.v1.services.OpprettJournalpostService;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerFerdigstillJournalpost;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerKopierJournalpost;
+import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerOppdaterDistribusjonsinfo;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerOppdaterJournalpost;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerOpprettJournalpost;
 import no.nav.dokarkiv.journalpost.v1.validators.FerdigstillJournalpostValidator;
@@ -121,6 +123,27 @@ public class ArkiverOgJournalfoerRestController {
         log.info(MDC.get(MDC_REQUEST_ID) + " har ferdigstilt journalpost med journalpostId={}", journalpostId);
 
         return ResponseEntity.ok().body("Journalpost ferdigstilt");
+    }
+
+    @Transactional
+    @SwaggerOppdaterDistribusjonsinfo
+    @PatchMapping("/{journalpostId}/oppdaterDistribusjonsinfo")
+    @Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_DOKUMENT)},
+            actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION))
+    @RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark201"}, percentiles = {0.5, 0.95})
+    public ResponseEntity<String> oppdaterDistribusjonsinfo(
+            @PathVariable @ApiParam(value = "IDen til journalposten som skal oppdateres", required = true, example = "77778888") String journalpostId,
+            @RequestBody OppdaterDistribusjonsinfoRequest request) {
+//        MDC.put(MDC_REQUEST_ID, "rjoark201");
+//        log.info(MDC.get(MDC_REQUEST_ID) + " har mottat kall for ferdigstilling av journalpost med journalpostId={}", journalpostId);
+//        ferdigstillJournalpostValidator.validateRequest(journalpostId, request);
+//        abacSecurityService.assertAccessToJournalpost(journalpostId);
+//        RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
+//
+//        ferdigstillJournalpostService.ferdigstill(Long.parseLong(journalpostId), request.getJournalfoerendeEnhet());
+//        log.info(MDC.get(MDC_REQUEST_ID) + " har ferdigstilt journalpost med journalpostId={}", journalpostId);
+
+        return ResponseEntity.ok().body("Journalpost oppdatert");
     }
 
     @Transactional
