@@ -25,6 +25,8 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.slf4j.MDC;
 
+import java.util.Date;
+
 @RunWith(MockitoJUnitRunner.class)
 public class JournalpostUpdaterTest {
     @Mock
@@ -63,6 +65,30 @@ public class JournalpostUpdaterTest {
 
 		assertThat(journalpost.getBrukere(), hasSize(1));
 	}
+
+	@Test
+	public void shouldNotIncrementAntallReturWhenDateIsEquals() throws UgyldigAksjonsLoggException {
+		AksjonsLoggHelper aksjonsLoggHelper = new AksjonsLoggHelper();
+		Date earliest = new Date();
+		oppdaterJournalpostRequest = TestUtils.createPutOppdaterJournalpostRequestWithDatoRetur(earliest);
+
+		journalpost = TestUtils.createJournalpost();
+		assertNull(journalpost.getAntallRetur());
+
+		updater.updateFields(journalpost, oppdaterJournalpostRequest, aksjonsLoggHelper);
+
+		assertEquals(new Integer(1), journalpost.getAntallRetur());
+		updater.updateFields(journalpost, oppdaterJournalpostRequest, aksjonsLoggHelper);
+		assertEquals(new Integer(1), journalpost.getAntallRetur());
+
+		earliest.setTime(earliest.getTime() + 1);
+		oppdaterJournalpostRequest = TestUtils.createPutOppdaterJournalpostRequestWithDatoRetur(earliest);
+		updater.updateFields(journalpost, oppdaterJournalpostRequest, aksjonsLoggHelper);
+		assertEquals(new Integer(2), journalpost.getAntallRetur());
+		updater.updateFields(journalpost, oppdaterJournalpostRequest, aksjonsLoggHelper);
+		assertEquals(new Integer(2), journalpost.getAntallRetur());
+	}
+
 
 	@Test
 	public void shouldRemoveAvsenderMottakerIdType() throws UgyldigAksjonsLoggException {

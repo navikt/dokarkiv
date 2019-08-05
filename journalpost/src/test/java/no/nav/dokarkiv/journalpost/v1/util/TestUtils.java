@@ -239,6 +239,20 @@ public class TestUtils {
 				.build();
 	}
 
+	public static OppdaterJournalpostRequest createPutOppdaterJournalpostRequestWithDatoRetur(Date date) {
+		return OppdaterJournalpostRequest.builder()
+				.avsenderMottaker(createAvsenderMottakerPerson())
+				.bruker(createBrukerPerson())
+				.sak(createSak())
+				.tema(TEMA_FOR)
+				.datoRetur(date)
+				.behandlingstema(BEHANDLINGSTEMA)
+				.tittel(DOKUMENT_TITTEL1)
+				.tilleggsopplysninger(createTilleggsopplysninger())
+				.dokumenter(createDokumentInfos())
+				.build();
+	}
+
 	public static OppdaterJournalpostRequest createPutOppdaterJournalpostRequestWithoutAvsenderMottakerId() {
 		return OppdaterJournalpostRequest.builder()
 				.avsenderMottaker(createAvsenderMottakerPersonWithoutId())
