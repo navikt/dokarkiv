@@ -21,6 +21,7 @@ import org.springframework.boot.test.autoconfigure.data.ldap.DataLdapTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpHeaders;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -37,7 +38,7 @@ import javax.servlet.http.HttpServletResponse;
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = {ValidateUserAndAddToMDCHandlerTest.TestConfig.class, LdapConfig.class, ValidateUserAndAddToMDCHandler.class, NavLdapService.class})
 @DataLdapTest
-@ActiveProfiles("itest,ldap")
+@ActiveProfiles("itest,ldap,registry")
 public class ValidateUserAndAddToMDCHandlerTest {
 
     protected static final String OIDC_TOKEN_PERSON_USER_TEST = "Bearer eyAidHlwIjogIkpXVCIsICJraWQiOiAiU0gxSWVSU2sxT1VGSDNzd1orRXVVcTE5VHZRPSIsICJhbGciOiAiUlMyNTYiIH0.eyAiYXRfaGFzaCI6ICJLWENReU1JdUNHSkRaTzF3el9LM0d3IiwgInN1YiI6ICJaOTkwNzgyIiwgImF1ZGl0VHJhY2tpbmdJZCI6ICJmOTMzZTgxMy00ZDU5LTRjYjgtYTQ0OC0zMTliY2JlOWIzNTgtMjA0NzIwIiwgImlzcyI6ICJodHRwczovL2lzc28tdC5hZGVvLm5vOjQ0My9pc3NvL29hdXRoMiIsICJ0b2tlbk5hbWUiOiAiaWRfdG9rZW4iLCAiYXVkIjogImlkYS10IiwgImNfaGFzaCI6ICJRNzVsekZVanFlV09pZzNMdWxYOHlRIiwgIm9yZy5mb3JnZXJvY2sub3BlbmlkY29ubmVjdC5vcHMiOiAiMjg4NGFjY2MtYmU4My00MWFkLTk4NTctMWE2MWIyMDIzMTRkIiwgImF6cCI6ICJpZGEtdCIsICJhdXRoX3RpbWUiOiAxNTM1NDY0NDE4LCAicmVhbG0iOiAiLyIsICJleHAiOiAxNTM1NDY4MDE5LCAidG9rZW5UeXBlIjogIkpXVFRva2VuIiwgImlhdCI6IDE1MzU0NjQ0MTkgfQ.K9gDJI97u0A2mbF51qaS66AlXcVdzYYrIoUTXQ-Ol3nOdZ_XAEPSoQLi_uuccaniXZVjGCAOXXNuqdz9A-tY22cbiZ4SZ8HaSIA3WvRUOneES0r2RFg5oN3EAgt3okOHIShkPPjk7UwXqYe4D3dzZE6xaM7UmNMzyetvE4RMcti33bpXevonMxd-qHjWC9MuZBQdPwHvxIYgah0VGSp7WJ4KdizSW3ArPCWgZH-2UDvW8ugFVOigIOcEa93I3_HrBj6dTrlhn43WBo0q0G-Zvu0-Zya3Xts1QkJbRqmc6hpLF2attIPpqw8nwQv3S-gJidx_pLnPHK2OjjQgnMJruw";
@@ -50,7 +51,8 @@ public class ValidateUserAndAddToMDCHandlerTest {
     private MeterRegistry meterRegistry;
 
     @Configuration
-    public class TestConfig {
+    @Profile("registry")
+    public static class TestConfig {
         @Bean
         public MeterRegistry meterRegistry(){
             return mock(MeterRegistry.class);
