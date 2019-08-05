@@ -21,6 +21,7 @@ public class TilknyttVedleggRequest {
 
 	@ApiModelProperty(
 			value = "navn på saksbehandler som tilknytter vedleggene",
+			example = "Mikkel Pettersen",
 			required = true)
 	private String tilknyttetAvNavn;
 

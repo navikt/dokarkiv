@@ -4,6 +4,8 @@ import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
 import com.auth0.jwt.JWT;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.jaxws.ThreadLocalSubjectHandler;
@@ -11,6 +13,7 @@ import no.nav.dokarkiv.core.security.ldap.NavLdapService;
 import no.nav.dokarkiv.core.security.ldap.NavUser;
 import no.nav.freg.security.oidc.auth.idtoken.extract.HeaderTokenExtractor;
 import no.nav.modig.core.context.SubjectHandler;
+import org.apache.logging.log4j.util.Strings;
 import org.slf4j.MDC;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -25,11 +28,20 @@ import javax.servlet.http.HttpServletResponse;
 public class ValidateUserAndAddToMDCHandler implements HandlerInterceptor {
 
 	private final NavLdapService navLdapService;
+	private final MeterRegistry meterRegistry;
 
 	private final HeaderTokenExtractor headerTokenExtractor = new HeaderTokenExtractor();
 
-	public ValidateUserAndAddToMDCHandler(NavLdapService navLdapService) {
+	public ValidateUserAndAddToMDCHandler(NavLdapService navLdapService, MeterRegistry meterRegistry) {
 		this.navLdapService = navLdapService;
+		this.meterRegistry = meterRegistry;
+	}
+
+	private void incrementConsumerCounter(String consumer){
+		Counter.builder("dok_request_consumer_name")
+				.tag("consumer_name", consumer)
+				.register(meterRegistry)
+				.increment();
 	}
 
 	@Override
@@ -90,6 +102,8 @@ public class ValidateUserAndAddToMDCHandler implements HandlerInterceptor {
 					return false;
 				}
 			}
+
+			incrementConsumerCounter(Strings.isBlank(navConsumerToken)?getSubjectFromToken(authorizationToken):getSubjectFromToken(navConsumerToken));
 			return true;
 		}
 	}

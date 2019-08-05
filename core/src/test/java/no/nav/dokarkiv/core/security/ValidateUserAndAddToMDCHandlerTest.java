@@ -4,6 +4,7 @@ import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
+import io.micrometer.core.instrument.MeterRegistry;
 import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.jaxws.ThreadLocalSubjectHandler;
 import no.nav.dokarkiv.core.security.ldap.NavLdapService;
@@ -39,13 +40,16 @@ public class ValidateUserAndAddToMDCHandlerTest {
     @Inject
     private NavLdapService navLdapService;
 
+    @Inject
+    private MeterRegistry meterRegistry;
+
     private ValidateUserAndAddToMDCHandler validateUserAndAddToMDCHandler;
 
 
     @Before
     public void setUp() {
         System.setProperty("no.nav.modig.core.context.subjectHandlerImplementationClass", ThreadLocalSubjectHandler.class.getName());
-        validateUserAndAddToMDCHandler = new ValidateUserAndAddToMDCHandler(navLdapService);
+        validateUserAndAddToMDCHandler = new ValidateUserAndAddToMDCHandler(navLdapService, meterRegistry);
     }
 
     @Test

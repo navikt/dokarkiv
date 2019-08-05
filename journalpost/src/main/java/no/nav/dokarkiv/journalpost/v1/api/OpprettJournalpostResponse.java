@@ -31,4 +31,10 @@ public class OpprettJournalpostResponse {
 			value = "Melding",
 			required = false)
 	private String melding;
+
+	@ApiModelProperty(
+			value = "True eller False for om journalpost ble ferdigstilt",
+			example = "true",
+			required = false)
+	private Boolean journalpostferdigstilt;
 }

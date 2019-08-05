@@ -79,4 +79,6 @@ public class SwaggerConfig {
 
 		return new ApiKey("apiKey", HttpHeaders.AUTHORIZATION, "header");
 	}
+
+
 }

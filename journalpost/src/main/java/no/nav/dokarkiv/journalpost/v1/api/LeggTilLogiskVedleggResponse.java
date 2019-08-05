@@ -15,6 +15,7 @@ import lombok.NoArgsConstructor;
 public class LeggTilLogiskVedleggResponse {
     @ApiModelProperty(
             value = "IDen til det logiske vedlegget som har blitt lagt til",
+            example = "12345",
             required = true)
     private String logiskVedleggId;
 }

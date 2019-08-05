@@ -15,6 +15,7 @@ import javax.validation.constraints.NotNull;
 public class EndreLogiskVedleggRequest {
     @NotNull(message = "EndreLogiskVedleggRequest mangler tittel")
     @ApiModelProperty(value = "Den nye tittelen til det logiske vedlegget, for eksempel \"Kontoutskrift\".",
+                      example = "Kontoutskrift",
                       required = true)
     private String tittel;
 }

@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @ApiModel
@@ -20,6 +21,7 @@ public class OpprettJournalpostRequest {
 
 	@NotNull(message = "JournalpostType kan ikke være null")
 	@ApiModelProperty(
+			example = "INNGAAENDE",
 			value = "",
 			required = true)
 	private JournalpostType journalpostType;

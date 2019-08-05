@@ -6,8 +6,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
  */
-@ResponseStatus(HttpStatus.BAD_REQUEST)
-public class UgyldigAksjonsLoggException extends Exception {
+@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+public class UgyldigAksjonsLoggException extends RuntimeException {
 
 	public UgyldigAksjonsLoggException(String message, Throwable cause) {
 		super(message, cause);
