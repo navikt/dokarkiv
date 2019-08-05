@@ -35,7 +35,7 @@ import javax.servlet.http.HttpServletResponse;
  * @author Ugur Alpay Cenar, Visma Consulting.
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = {ValidateUserAndAddToMDCHandlerTest.Config.class, LdapConfig.class, ValidateUserAndAddToMDCHandler.class, NavLdapService.class})
+@SpringBootTest(classes = {ValidateUserAndAddToMDCHandlerTest.TestConfig.class, LdapConfig.class, ValidateUserAndAddToMDCHandler.class, NavLdapService.class})
 @DataLdapTest
 @ActiveProfiles("itest,ldap")
 public class ValidateUserAndAddToMDCHandlerTest {
@@ -50,7 +50,7 @@ public class ValidateUserAndAddToMDCHandlerTest {
     private MeterRegistry meterRegistry;
 
     @Configuration
-    public static class Config  {
+    public class TestConfig {
         @Bean
         public MeterRegistry meterRegistry(){
             return mock(MeterRegistry.class);
