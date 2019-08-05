@@ -93,39 +93,38 @@ public class JournalpostUpdater {
 
 	private void updateAvsenderMottaker(Journalpost journalpost, OppdaterJournalpostRequest oppdaterJournalpostRequest, Endret endret) {
 		if (oppdaterJournalpostRequest.getAvsenderMottaker() != null) {
-			if (isNotBlank(oppdaterJournalpostRequest.getAvsenderMottaker().getNavn())) {
-				journalpost.setAvsenderMottaker(oppdaterJournalpostRequest.getAvsenderMottaker().getNavn());
-				endret.setEndretFlagg(true);
-			}
-			if ((oppdaterJournalpostRequest.getAvsenderMottaker().getId()) != null) {
+			if ((oppdaterJournalpostRequest.getAvsenderMottaker().getId()) != null &&
+					isNotBlank(oppdaterJournalpostRequest.getAvsenderMottaker().getId()) &&
+					oppdaterJournalpostRequest.getAvsenderMottaker().getIdType() != null) {
 				journalpost.setAvsenderMottakerId(oppdaterJournalpostRequest.getAvsenderMottaker().getId());
-				if(oppdaterJournalpostRequest.getAvsenderMottaker().getId().trim().length() == 0) {
-					journalpost.setAvsenderMottakerId(null);
-				}
+				journalpost.setAvsenderMottakerIdType(oversettAvsenderMottakerIdType(oppdaterJournalpostRequest));
+			} else {
+				journalpost.setAvsenderMottakerId(null);
+				journalpost.setAvsenderMottakerIdType(null);
 				endret.setEndretFlagg(true);
-			}
-			if (oppdaterJournalpostRequest.getAvsenderMottaker().getIdType() != null) {
-				if (AvsenderMottakerIdType.FNR.equals(oppdaterJournalpostRequest.getAvsenderMottaker()
-						.getIdType())) {
-					journalpost.setAvsenderMottakerIdType(AvsenderMottakerIdTypeCode.FNR);
-				} else if (AvsenderMottakerIdType.ORGNR.equals(oppdaterJournalpostRequest.getAvsenderMottaker()
-						.getIdType())) {
-					journalpost.setAvsenderMottakerIdType(AvsenderMottakerIdTypeCode.ORGNR);
-				} else if (AvsenderMottakerIdType.HPRNR.equals(oppdaterJournalpostRequest.getAvsenderMottaker()
-						.getIdType())) {
-					journalpost.setAvsenderMottakerIdType(AvsenderMottakerIdTypeCode.HPRNR);
-				} else if (AvsenderMottakerIdType.UTL_ORG.equals(oppdaterJournalpostRequest.getAvsenderMottaker()
-						.getIdType())) {
-					journalpost.setAvsenderMottakerIdType(AvsenderMottakerIdTypeCode.UTL_ORG);
-				}
-				endret.setEndretFlagg(true);
-
 			}
 
 			if (isNotBlank(oppdaterJournalpostRequest.getAvsenderMottaker().getLand())) {
 				journalpost.setLand(oppdaterJournalpostRequest.getAvsenderMottaker().getLand());
 				endret.setEndretFlagg(true);
 			}
+
+			if (isNotBlank(oppdaterJournalpostRequest.getAvsenderMottaker().getNavn())) {
+				journalpost.setAvsenderMottaker(oppdaterJournalpostRequest.getAvsenderMottaker().getNavn());
+				endret.setEndretFlagg(true);
+			}
+
+		}
+	}
+
+	private AvsenderMottakerIdTypeCode oversettAvsenderMottakerIdType(OppdaterJournalpostRequest oppdaterJournalpostRequest) {
+		AvsenderMottakerIdType idType = oppdaterJournalpostRequest.getAvsenderMottaker().getIdType();
+		switch (idType) {
+			case FNR: return AvsenderMottakerIdTypeCode.FNR;
+			case HPRNR: return AvsenderMottakerIdTypeCode.HPRNR;
+			case ORGNR: return AvsenderMottakerIdTypeCode.ORGNR;
+			case UTL_ORG: return AvsenderMottakerIdTypeCode.UTL_ORG;
+			default: return null;
 		}
 	}
 

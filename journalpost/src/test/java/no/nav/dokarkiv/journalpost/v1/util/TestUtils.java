@@ -253,10 +253,43 @@ public class TestUtils {
 				.build();
 	}
 
+	public static OppdaterJournalpostRequest createPutOppdaterJournalpostRequestWithoutAvsenderMottakerId() {
+		return OppdaterJournalpostRequest.builder()
+				.avsenderMottaker(createAvsenderMottakerPersonWithoutId())
+				.bruker(createBrukerPerson())
+				.sak(createSak())
+				.tema(TEMA_FOR)
+				.behandlingstema(BEHANDLINGSTEMA)
+				.tittel(DOKUMENT_TITTEL1)
+				.tilleggsopplysninger(createTilleggsopplysninger())
+				.dokumenter(createDokumentInfos())
+				.build();
+	}
+
+	public static OppdaterJournalpostRequest createPutOppdaterJournalpostRequestWithoutAvsenderMottaker() {
+		return OppdaterJournalpostRequest.builder()
+				.bruker(createBrukerPerson())
+				.sak(createSak())
+				.tema(TEMA_FOR)
+				.behandlingstema(BEHANDLINGSTEMA)
+				.tittel(DOKUMENT_TITTEL1)
+				.tilleggsopplysninger(createTilleggsopplysninger())
+				.dokumenter(createDokumentInfos())
+				.build();
+	}
+
 	public static AvsenderMottaker createAvsenderMottakerPerson() {
 		return AvsenderMottaker.builder()
 				.navn(AVSENDER_NAVN)
 				.id(AVSENDER_ID_PERSON)
+				.land(AVSENDER_MOTTAKER_LAND)
+				.build();
+	}
+
+	public static AvsenderMottaker createAvsenderMottakerPersonWithoutId() {
+		return AvsenderMottaker.builder()
+				.idType(AvsenderMottakerIdType.FNR)
+				.navn(AVSENDER_NAVN)
 				.land(AVSENDER_MOTTAKER_LAND)
 				.build();
 	}
