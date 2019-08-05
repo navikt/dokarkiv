@@ -38,10 +38,7 @@ public class ValidateUserAndAddToMDCHandler implements HandlerInterceptor {
 	}
 
 	private void incrementConsumerCounter(String consumer){
-		Counter.builder("dok_request_consumer_name")
-				.tag("consumer_name", consumer)
-				.register(meterRegistry)
-				.increment();
+		meterRegistry.counter("dok_request_consumer_name", "consumer_name", consumer).increment();
 	}
 
 	@Override
