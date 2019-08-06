@@ -27,6 +27,7 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.web.method.HandlerMethod;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -67,7 +68,7 @@ public class ValidateUserAndAddToMDCHandlerTest {
     public void setUp() {
         System.setProperty("no.nav.modig.core.context.subjectHandlerImplementationClass", ThreadLocalSubjectHandler.class.getName());
         validateUserAndAddToMDCHandler = new ValidateUserAndAddToMDCHandler(navLdapService, meterRegistry);
-        when(meterRegistry.counter(any(), any(), any())).thenReturn(new Counter() {
+        when(meterRegistry.counter(any(), any(), any(), any(), any(), any(), any())).thenReturn(new Counter() {
             @Override
             public void increment(double amount) {
 
@@ -91,7 +92,7 @@ public class ValidateUserAndAddToMDCHandlerTest {
         request.addHeader(HttpHeaders.AUTHORIZATION, OIDC_TOKEN_SERVICE_USER_TEST);
         HttpServletResponse response = new MockHttpServletResponse();
 
-        Boolean result = validateUserAndAddToMDCHandler.preHandle(request, response, null);
+        Boolean result = validateUserAndAddToMDCHandler.preHandle(request, response, new HandlerMethod(new Object(), "equals", Object.class));
         assertThat(result, is(true));
         assertThat(MDC.get(MDCConstants.MDC_USER_NAME), is("srvdokarkiv"));
         assertThat(MDC.get(MDCConstants.MDC_USER_ID), is("srvdokarkiv"));
@@ -105,7 +106,7 @@ public class ValidateUserAndAddToMDCHandlerTest {
         request.addHeader(NavHttpHeaders.NAV_CONSUMER_TOKEN_HEADER, OIDC_TOKEN_SERVICE_USER_TEST);
         HttpServletResponse response = new MockHttpServletResponse();
 
-        Boolean result = validateUserAndAddToMDCHandler.preHandle(request, response, null);
+        Boolean result = validateUserAndAddToMDCHandler.preHandle(request, response, new HandlerMethod(new Object(), "equals", Object.class));
         assertThat(result, is(true));
         assertThat(MDC.get(MDCConstants.MDC_USER_NAME), is("Stasjonsmester Tidemann"));
         assertThat(MDC.get(MDCConstants.MDC_USER_ID), is("Z990782"));
@@ -118,7 +119,7 @@ public class ValidateUserAndAddToMDCHandlerTest {
         request.addHeader(HttpHeaders.AUTHORIZATION, OIDC_TOKEN_PERSON_USER_TEST);
         MockHttpServletResponse response = new MockHttpServletResponse();
 
-        Boolean result = validateUserAndAddToMDCHandler.preHandle(request, response, null);
+        Boolean result = validateUserAndAddToMDCHandler.preHandle(request, response, new HandlerMethod(new Object(), "equals", Object.class));
         assertThat(result, is(false));
         assertThat(response.getErrorMessage(), containsString("OIDC token på Authorization header må tilhøre en Servicebruker når Nav-Consumer-Token header ikke er satt"));
     }
@@ -128,7 +129,7 @@ public class ValidateUserAndAddToMDCHandlerTest {
         HttpServletRequest request = new MockHttpServletRequest();
         MockHttpServletResponse response = new MockHttpServletResponse();
 
-        Boolean result = validateUserAndAddToMDCHandler.preHandle(request, response, null);
+        Boolean result = validateUserAndAddToMDCHandler.preHandle(request, response, new HandlerMethod(new Object(), "equals", Object.class));
         assertThat(result, is(false));
         assertThat(response.getErrorMessage(), containsString("Finner ingen oidc token på Authorization header. Requesten må enten ha oidc-token for servicebruker på header med key=Authorization og value=Bearer [oidc-token] eller ha oidc-token for internbruker i Authorization header og servicebruker på header med key=Nav-Consumer-Token og value=Bearer [oidc-token]"));
     }
@@ -140,7 +141,7 @@ public class ValidateUserAndAddToMDCHandlerTest {
         request.addHeader(HttpHeaders.AUTHORIZATION, OIDC_TOKEN_PERSON_USER_TEST);
         MockHttpServletResponse response = new MockHttpServletResponse();
 
-        Boolean result = validateUserAndAddToMDCHandler.preHandle(request, response, null);
+        Boolean result = validateUserAndAddToMDCHandler.preHandle(request, response, new HandlerMethod(new Object(), "equals", Object.class));
         assertThat(result, is(false));
         assertThat(response.getErrorMessage(), containsString("OIDC token på Nav-Consumer-Token header må tilhøre en Servicebruker når både Authorization og Nav-Consumer-Token header er satt"));
     }
@@ -152,7 +153,7 @@ public class ValidateUserAndAddToMDCHandlerTest {
         request.addHeader(NavHttpHeaders.NAV_CONSUMER_TOKEN_HEADER, OIDC_TOKEN_SERVICE_USER_TEST);
         request.addHeader(HttpHeaders.AUTHORIZATION, OIDC_TOKEN_SERVICE_USER_TEST);
 
-        Boolean result = validateUserAndAddToMDCHandler.preHandle(request, response, null);
+        Boolean result = validateUserAndAddToMDCHandler.preHandle(request, response, new HandlerMethod(new Object(), "equals", Object.class));
         assertThat(result, is(false));
         assertThat(response.getErrorMessage(), containsString("OIDC token på Authorization header må tilhøre en Internbruker når både Authorization og Nav-Consumer-Token header er satt"));
     }

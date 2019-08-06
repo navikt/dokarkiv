@@ -41,9 +41,9 @@ public class ValidateUserAndAddToMDCHandler implements HandlerInterceptor {
 
 	private void incrementConsumerCounter(String consumer, String methodName, String controllerName){
 		meterRegistry.counter("dok_request_consumer_name",
-				"consumerName", consumer,
-				"methodName", methodName,
-				"controllerName", controllerName).increment();
+				"consumerName", consumer==null?"UKJENT":consumer,
+				"methodName", methodName==null?"UKJENT":methodName,
+				"controllerName", controllerName==null?"UKJENT":controllerName).increment();
 	}
 
 	@Override
