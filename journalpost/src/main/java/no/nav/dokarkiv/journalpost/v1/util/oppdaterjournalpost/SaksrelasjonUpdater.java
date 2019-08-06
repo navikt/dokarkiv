@@ -5,26 +5,22 @@ import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
 import static org.apache.logging.log4j.util.Strings.isNotBlank;
 
 import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
-import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
 import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
-import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
 import no.nav.dokarkiv.journalpost.v1.api.Arkivsaksystem;
 import no.nav.dokarkiv.journalpost.v1.api.OppdaterJournalpostRequest;
-import no.nav.dokarkiv.journalpost.v1.util.AksjonsLoggHelper;
-import no.nav.dokarkiv.journalpost.v1.util.Endret;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 @Component
 public class SaksrelasjonUpdater {
 
-    public void updateFields(Journalpost journalpost, OppdaterJournalpostRequest request, AksjonsLoggHelper aksjonsLoggHelper) throws UgyldigAksjonsLoggException {
-        Endret endret = new Endret();
-        aksjonsLoggHelper.setAksjonsLoggTO(AksjonsTypeCode.SAKSTILKNYTNING);
-
+    public ChangeTracker updateFields(Journalpost journalpost, OppdaterJournalpostRequest request) {
+        ChangeTracker endret = new ChangeTracker();
         boolean newSak = false;
 
         if (request.getSak() != null) {
@@ -38,8 +34,8 @@ public class SaksrelasjonUpdater {
                 saksrelasjon = journalpost.getSaksrelasjon();
             }
 
-            updateArkivsaksnummer(journalpost, request, saksrelasjon, aksjonsLoggHelper, endret);
-            updateArkivsaksystem(journalpost, request, saksrelasjon, aksjonsLoggHelper, endret);
+            updateArkivsaksnummer(journalpost, request, saksrelasjon, endret);
+            updateArkivsaksystem(journalpost, request, saksrelasjon, endret);
 
             if (endret.isEndretFlagg() && !newSak) {
                 saksrelasjon.setEndretAvNavn(MDC.get(MDC_USER_ID));
@@ -49,29 +45,23 @@ public class SaksrelasjonUpdater {
                 journalpost.setSaksrelasjon(saksrelasjon);
             }
         }
+        return endret;
     }
 
-    private void updateArkivsaksystem(Journalpost journalpost, OppdaterJournalpostRequest request, Saksrelasjon saksrelasjon, AksjonsLoggHelper aksjonsLoggHelper, Endret endret) {
-        if (request.getSak().getArkivsaksystem() != null) {
-            aksjonsLoggHelper.addToArkivElementEndringTOs(ArkivElementEndringTO.builder()
-                    .arkivElement("Saksrelasjon.fagsystem")
-                    .fraVerdi(journalpost.getSaksrelasjon() == null ? null : journalpost.getSaksrelasjon().getFagsystem().name())
-                    .tilVerdi(request.getSak().getArkivsaksystem().name())
-                    .build());
+    private void updateArkivsaksystem(Journalpost journalpost, OppdaterJournalpostRequest request, Saksrelasjon saksrelasjon, ChangeTracker endret) {
+        if (request.getSak().getArkivsaksystem() != null &&
+                !mapArkivSakSystemToFagsystemCode(request.getSak().getArkivsaksystem()).equals(journalpost.getSaksrelasjon().getFagsystem())) {
+            endret.add("Saksrelasjon.fagsystem", journalpost.getSaksrelasjon() == null ? null : journalpost.getSaksrelasjon().getFagsystem().name(),
+                    request.getSak().getArkivsaksystem().name());
             saksrelasjon.setFagsystem(mapArkivSakSystemToFagsystemCode(request.getSak().getArkivsaksystem()));
-            endret.setEndretFlagg(true);
         }
     }
 
-    private void updateArkivsaksnummer(Journalpost journalpost, OppdaterJournalpostRequest request, Saksrelasjon saksrelasjon, AksjonsLoggHelper aksjonsLoggHelper, Endret endret) {
-        if (isNotBlank(request.getSak().getArkivsaksnummer())) {
-            aksjonsLoggHelper.addToArkivElementEndringTOs(ArkivElementEndringTO.builder()
-                    .arkivElement("Saksrelasjon.sakId")
-                    .fraVerdi(journalpost.getSaksrelasjon() == null ? null : journalpost.getSaksrelasjon().getSakId())
-                    .tilVerdi(request.getSak().getArkivsaksnummer())
-                    .build());
+    private void updateArkivsaksnummer(Journalpost journalpost, OppdaterJournalpostRequest request, Saksrelasjon saksrelasjon, ChangeTracker endret) {
+        if (isNotBlank(request.getSak().getArkivsaksnummer()) && !request.getSak().getArkivsaksnummer().equals(journalpost.getSaksrelasjon().getSakId())) {
+            endret.add("Saksrelasjon.sakId", journalpost.getSaksrelasjon() == null ? null : journalpost.getSaksrelasjon().getSakId(),
+                    request.getSak().getArkivsaksnummer());
             saksrelasjon.setSakId(request.getSak().getArkivsaksnummer());
-            endret.setEndretFlagg(true);
         }
     }
 

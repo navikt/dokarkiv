@@ -59,6 +59,15 @@ public class LagreAksjonsLoggService {
 		}
 	}
 
+	/**
+	 * Denne metoden lagrer ny aksjonslogg med arkivelementendringer for en enkelt journalpostId
+	 */
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
+	public void lagreAksjonsLoggForJournalpost(AksjonsTypeCode aksjonsType, Long jpId, String hjemmel, String melding, String utfoertAv, List<ArkivElementEndringTO> arkivElementEndringTOList) throws UgyldigAksjonsLoggException {
+		AksjonsLoggTO aksjonsLoggTO = mapAksjonsLoggTo(aksjonsType, jpId, null, melding, utfoertAv, hjemmel);
+		aksjonsLoggService.validateAndSaveAksjonsLogg(aksjonsLoggTO, arkivElementEndringTOList);
+	}
+
 	private AksjonsLoggTO mapAksjonsLoggTo(AksjonsTypeCode aksjon, Long journalpostId, Long dokumentInfoId, String melding, String utfoertAv, String hjemmel) {
 
 		return AksjonsLoggTO.builder()

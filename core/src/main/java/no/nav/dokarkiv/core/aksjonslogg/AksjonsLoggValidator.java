@@ -29,7 +29,7 @@ class AksjonsLoggValidator {
 
 		assertNullOrEmpty(componentId, "AksjonsLogg mangler påkrevd parameter: Applikasjon");
 
-		if (isBlank(aksjonsLoggTO.getUtfoertAv()) && (isBlank(userId) || componentId.equals(userId))) {
+		if (isBlank(aksjonsLoggTO.getUtfoertAv()) && isBlank(userId)) {
 			assertNullOrEmpty(aksjonsLoggTO.getUtfoertAv(), "AksjonsLogg mangler påkrevd parameter: utfoertAv. AksjonsLogg input må inneholde parameteren \"utfoertAv\" hvis kallet ikke inneholder sikkerhetstoken for saksbehandleren");
 		}
 

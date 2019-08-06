@@ -14,6 +14,7 @@ import static no.nav.dokarkiv.core.util.TestDataUtils.createArkivElementEndringT
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.lessThan;
 import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertEquals;
 
 import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService;
 import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggServiceImpl;
@@ -179,14 +180,12 @@ public class AksjonsLoggIT {
 	}
 
 	@Test
-	public void shouldThrowWhenUtfoertAvIsNull() throws UgyldigAksjonsLoggException {
-		expectedException.expect(UgyldigAksjonsLoggException.class);
-		expectedException.expectMessage("AksjonsLogg mangler påkrevd parameter: utfoertAv. AksjonsLogg input må inneholde parameteren \"utfoertAv\" hvis kallet ikke inneholder sikkerhetstoken for saksbehandleren");
-		RequestContextUtil.createAndSetUsername(APPLICATION, APPLICATION);
-
+	public void shouldGetUtfoertAvFromContextWhenNull() throws UgyldigAksjonsLoggException {
 		AksjonsLoggTO aksjonsLoggTOList = createAksjonsLoggTO(journalpostId, 1L);
 		aksjonsLoggTOList.setUtfoertAv(null);
 		aksjonsLoggService.validateAndSaveAksjonsLogg(aksjonsLoggTOList, createArkivElementEndringToList());
+		String faktiskUtfoertAv = aksjonsLoggRepository.findAll().iterator().next().getUtfoertAv();
+		assertEquals(faktiskUtfoertAv, USER_ID);
 	}
 
 	@Test

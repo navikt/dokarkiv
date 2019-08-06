@@ -46,7 +46,6 @@ import java.util.List;
 public class FeilregistrerJournalpostRestController {
 
     private static final String FIKK_UKJENT_BRUKER = "Journalposten fikk status Ukjent Bruker";
-    private static final String FIKK_AVBRUTT_UTGAAR = "Journalposten ble satt til avbrutt / utgår";
     private static final String FEILREGISTRERING_OPPHEVET = "Feilregistreringen ble opphevet";
 
     private final FeilregistrerSakstilknytningService feilregistrerSakstilknytningService;
@@ -115,10 +114,8 @@ public class FeilregistrerJournalpostRestController {
     @RestMetrics(value = "dok_request", extraTags = {"process_code", "feilregistrer"}, percentiles = {0.5, 0.95})
     public ResponseEntity<String> avbryt (
             @PathVariable @ApiParam(value = "IDen til journalposten som skal feilregistreres", required = true, example = "77778888") String journalpostId) {
-        List<ArkivElementEndringTO> arkivElementEndringTOList = avbrytService.avbryt(journalpostId);
-        populerAksjonslogg(journalpostId, AksjonsTypeCode.AVBRYT ,arkivElementEndringTOList, FIKK_AVBRUTT_UTGAAR);
-        log.info(MDC.get(MDC_REQUEST_ID) + " har satt status til avbrutt / utgår for journalpost med journalpostId={}", journalpostId);
-        return ResponseEntity.ok().body(FIKK_AVBRUTT_UTGAAR);
+        String response = avbrytService.avbryt(journalpostId);
+        return ResponseEntity.ok().body(response);
     }
 
     private void populerAksjonslogg(String journalpostId, AksjonsTypeCode aksjon, List<ArkivElementEndringTO> arkivElementEndringTOList, String melding) {
