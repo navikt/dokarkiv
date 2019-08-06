@@ -39,7 +39,7 @@ public class SwaggerConfig {
 				.build()
 				.useDefaultResponseMessages(false)
 				.apiInfo(apiInfo())
-				.securitySchemes(Lists.newArrayList(apiKey()));
+				.securitySchemes(Lists.newArrayList(apiKey(), consumerToken()));
 	}
 
 	@Bean
@@ -55,7 +55,7 @@ public class SwaggerConfig {
 				.filter(false)
 				.maxDisplayedTags(null)
 				.operationsSorter(OperationsSorter.ALPHA)
-				.showExtensions(false)
+				.showExtensions(true)
 				.tagsSorter(TagsSorter.ALPHA)
 				.validatorUrl(null)
 				.build();
@@ -77,8 +77,12 @@ public class SwaggerConfig {
 
 	private ApiKey apiKey() {
 
-		return new ApiKey("apiKey", HttpHeaders.AUTHORIZATION, "header");
+		return new ApiKey("Authorization", HttpHeaders.AUTHORIZATION, "header");
 	}
 
+	private ApiKey consumerToken() {
+
+		return new ApiKey("NavConsumerToken", HttpHeaders.AUTHORIZATION, "header");
+	}
 
 }

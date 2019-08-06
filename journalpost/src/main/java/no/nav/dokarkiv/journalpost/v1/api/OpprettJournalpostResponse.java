@@ -16,19 +16,23 @@ public class OpprettJournalpostResponse {
 
 	@ApiModelProperty(
 			value = "JournalpostId som har blit opprettet",
+			example = "12345678",
 			required = true)
 	private String journalpostId;
 
 	@ApiModelProperty(
 			value = "Journalstatus for journalpost.\n" +
 					"* MIDLERTIDIG - hvis journalpost er opprettet\n" +
-					"* ENDELIG - hvis journalpost er opprett og endelig journalført",
+					"* ENDELIG - hvis journalpost er opprett og endelig journalført\n\n " +
+					"Feltet er deprekert og vil bli fjernet i fremtiden. Bruk journalpostferdigstilt i stedet.",
 			required = true,
-			example = "MIDLERTIDIG")
+			example = "ENDELIG")
+	@Deprecated
 	private String journalstatus;
 
 	@ApiModelProperty(
 			value = "Melding",
+			example = "null",
 			required = false)
 	private String melding;
 

@@ -16,7 +16,7 @@ import java.lang.annotation.Target;
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@ApiOperation(value = "Fullfører journalføringen og låser journalposten for senere endringer", authorizations = {@Authorization(value = "apiKey")})
+@ApiOperation(value = "Fullfører journalføringen og låser journalposten for senere endringer", authorizations = {@Authorization(value = "Authorization")})
 @ApiResponses(value = {
 		@ApiResponse(code = 200, message = "OK"),
 		@ApiResponse(code = 400, message = "* Kan ikke ferdigstille"),

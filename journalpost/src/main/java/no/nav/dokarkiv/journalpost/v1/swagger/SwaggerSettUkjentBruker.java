@@ -16,7 +16,7 @@ import java.lang.annotation.Target;
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@ApiOperation(value = "Tar en inngående journalpost ut av ordinær saksbehandling fordi det ikke er mulig å identifisere hvilken bruker dokumentene er knyttet til", authorizations = {@Authorization(value = "apiKey")})
+@ApiOperation(value = "Tar en inngående journalpost ut av ordinær saksbehandling fordi det ikke er mulig å identifisere hvilken bruker dokumentene er knyttet til", authorizations = {@Authorization(value = "Authorization")})
 @ApiResponses(value = {
         @ApiResponse(code = 200, message = "* OK"),
         @ApiResponse(code = 400, message = "* Feil i aksjonslogg"),
