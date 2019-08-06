@@ -4,7 +4,6 @@ import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
 import com.auth0.jwt.JWT;
-import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.MDCConstants;
@@ -41,9 +40,9 @@ public class ValidateUserAndAddToMDCHandler implements HandlerInterceptor {
 
 	private void incrementConsumerCounter(String consumer, String methodName, String controllerName){
 		meterRegistry.counter("dok_request_consumer_name",
-				"consumerName", consumer==null?"UKJENT":consumer,
-				"methodName", methodName==null?"UKJENT":methodName,
-				"controllerName", controllerName==null?"UKJENT":controllerName).increment();
+				"consumer_name", consumer == null ? "UKJENT" : consumer,
+				"method_name", methodName == null ? "UKJENT" : methodName,
+				"controller_name", controllerName == null ? "UKJENT" : controllerName).increment();
 	}
 
 	@Override
