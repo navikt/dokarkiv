@@ -21,7 +21,9 @@ public class ChangeTracker {
     public void add(ArkivElementEndringTO endring) {
         if(endring != null) {
             if (endring.getFraVerdi() != null) {
-                if (endring.getTilVerdi() != null) {
+                if (endring.getTilVerdi() != null &&
+                    !endring.getFraVerdi().equals(endring.getTilVerdi()))
+                {
                     changes.add(endring);
                     endretFlagg = true;
                 }
