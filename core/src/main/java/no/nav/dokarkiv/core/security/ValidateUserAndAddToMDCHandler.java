@@ -16,10 +16,12 @@ import no.nav.modig.core.context.SubjectHandler;
 import org.apache.logging.log4j.util.Strings;
 import org.slf4j.MDC;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.lang.reflect.Method;
 
 /**
  * @author Sigurd Midttun, Visma Consulting.
@@ -37,8 +39,11 @@ public class ValidateUserAndAddToMDCHandler implements HandlerInterceptor {
 		this.meterRegistry = meterRegistry;
 	}
 
-	private void incrementConsumerCounter(String consumer){
-		meterRegistry.counter("dok_request_consumer_name", "consumer_name", consumer).increment();
+	private void incrementConsumerCounter(String consumer, String methodName, String controllerName){
+		meterRegistry.counter("dok_request_consumer_name",
+				"consumerName", consumer,
+				"methodName", methodName,
+				"controllerName", controllerName).increment();
 	}
 
 	@Override
@@ -100,7 +105,10 @@ public class ValidateUserAndAddToMDCHandler implements HandlerInterceptor {
 				}
 			}
 
-			incrementConsumerCounter(Strings.isBlank(navConsumerToken)?getSubjectFromToken(authorizationToken):getSubjectFromToken(navConsumerToken));
+			String consumerName = Strings.isBlank(navConsumerToken)?getSubjectFromToken(authorizationToken):getSubjectFromToken(navConsumerToken);
+			String methodName = ((HandlerMethod) handler).getMethod().getName();
+			String controllerName = ((Method)((HandlerMethod)handler).getMethod()).getDeclaringClass().getSimpleName();
+			incrementConsumerCounter(consumerName, methodName, controllerName);
 			return true;
 		}
 	}
