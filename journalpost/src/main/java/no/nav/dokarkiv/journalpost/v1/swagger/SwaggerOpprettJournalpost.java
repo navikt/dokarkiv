@@ -18,7 +18,7 @@ import java.lang.annotation.Target;
 @Documented
 @ApiOperation(
 		value = "Oppretter en journalpost i fagarkivet, med eller uten dokumenter",
-		authorizations = {@Authorization(value = "Authorization")})
+		authorizations = {@Authorization(value = "Authorization"), @Authorization(value = "NavConsumerToken")})
 @ApiResponses(value = {
 		@ApiResponse(code = 201, message = "Created"),
 		@ApiResponse(code = 400, message = "* Kan ikke opprette journalpost"),

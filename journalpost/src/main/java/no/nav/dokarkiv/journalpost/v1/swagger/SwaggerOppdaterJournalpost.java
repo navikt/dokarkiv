@@ -16,7 +16,8 @@ import java.lang.annotation.Target;
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@ApiOperation(value = "Oppdaterer metadata på en journalpost og/eller tilhørende dokumenter", authorizations = {@Authorization(value = "Authorization")})
+@ApiOperation(value = "Oppdaterer metadata på en journalpost og/eller tilhørende dokumenter",
+		authorizations = {@Authorization(value = "Authorization"), @Authorization(value = "NavConsumerToken")})
 @ApiResponses(value = {
 		@ApiResponse(code = 200, message = "* OK"),
 		@ApiResponse(code = 400, message = "* Kan ikke oppdatere\n* Feil i aksjonslogg \n* Data kan ikke endres for statusen journalposten er på"),

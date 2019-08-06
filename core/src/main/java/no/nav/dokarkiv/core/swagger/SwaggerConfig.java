@@ -69,7 +69,7 @@ public class SwaggerConfig {
                         "\n" +
                         "curl -X PUT \"https://dokarkiv-q1.nais.preprod.local/rest/journalpostapi/v1/journalpost/111\" -H \"accept: */*\" -H \"Authorization: Bearer eyAidH...\", -H \"Nav-Consumer-Token: Bearer eyJraWQi...\" -H \"Content-Type: application/json\" -d \"{ \\\"avsenderMottaker\\\": { \\\"id\\\": \\\"string\\\", \\\"land\\\": \\\"string\\\",...}\"\n" +
                         "\n" +
-						"Hvis disse tjenestene blir kalt direkte fra en annen applikasjon hvor saksbehandlertoken ikke tilgjengjelig er det mulig å autentisere seg med en OIDC token ved bruk av Authorization header med applikasjonsbrukeren sitt token" +
+						"Hvis disse tjenestene blir kalt direkte fra en annen applikasjon hvor saksbehandlertoken ikke er tilgjengjelig er det mulig å autentisere seg med èn OIDC token. Da skal`Authorization` header inneholde applikasjonsbrukeren sitt token og `Nav-Consumer-Token` header ikke settes" +
 						"",
 				version,
 				"",
@@ -84,7 +84,7 @@ public class SwaggerConfig {
 
 	private ApiKey consumerToken() {
 
-		return new ApiKey("NavConsumerToken", HttpHeaders.AUTHORIZATION, "header");
+		return new ApiKey("NavConsumerToken", "Nav-Consumer-Token", "header");
 	}
 
 

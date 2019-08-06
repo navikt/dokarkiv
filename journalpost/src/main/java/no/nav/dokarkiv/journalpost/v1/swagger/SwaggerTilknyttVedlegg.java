@@ -16,7 +16,8 @@ import java.lang.annotation.Target;
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@ApiOperation(value = "Knytter ett eller flere eksisterende dokumenter til en utgående journalpost som vedlegg", authorizations = {@Authorization(value = "Authorization")})
+@ApiOperation(value = "Knytter ett eller flere eksisterende dokumenter til en utgående journalpost som vedlegg",
+		authorizations = {@Authorization(value = "Authorization"), @Authorization(value = "NavConsumerToken")})
 @ApiResponses(value = {
 		@ApiResponse(code = 200, message = "OK"),
 		@ApiResponse(code = 207, message = "Delvis ok (Multi-Status). Dokumentene som ikke lot seg knytte til journalpost som vedlegg returneres som en feiledeDokumenter-liste, med årsakskode."),

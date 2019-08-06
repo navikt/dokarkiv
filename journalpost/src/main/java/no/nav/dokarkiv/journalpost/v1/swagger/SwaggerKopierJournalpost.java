@@ -3,6 +3,7 @@ package no.nav.dokarkiv.journalpost.v1.swagger;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.Authorization;
 import org.springframework.core.annotation.AliasFor;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -15,7 +16,10 @@ import java.lang.annotation.Target;
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@ApiOperation(hidden = true, value = "Kloner journalposten. Den nye journalposten settes i en midlertidig status slik at den kan knyttes til en annen sak/bruker")
+@ApiOperation(hidden = true,
+		value = "Kloner journalposten. Den nye journalposten settes i en midlertidig status slik at den kan knyttes til en annen sak/bruker",
+		authorizations = {@Authorization(value = "Authorization"), @Authorization(value = "NavConsumerToken")}
+)
 @ApiResponses(value = {
 		@ApiResponse(code = 200, message = "OK"),
 		@ApiResponse(code = 400, message = "* Kan ikke kopiere journalpost"),
