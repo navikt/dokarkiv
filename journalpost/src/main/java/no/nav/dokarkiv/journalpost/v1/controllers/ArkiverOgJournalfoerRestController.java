@@ -178,7 +178,7 @@ public class ArkiverOgJournalfoerRestController {
                         .journalpostId(String.valueOf(journalpostId))
                         .journalstatus(ferdigstillResponse.map(Pair::getKey).orElse(journalpost.getJournalstatus().name()))
                         .melding(ferdigstillResponse.map(Pair::getValue).orElse(null))
-                        .journalpostferdigstilt(ferdigstillResponse.map(Pair::getKey).filter(key->key.equalsIgnoreCase("ENDELIG")).isPresent())
+						.journalpostferdigstilt(ferdigstillResponse.map(Pair::getKey).filter("ENDELIG"::equalsIgnoreCase).isPresent())
                         .build());
     }
 
