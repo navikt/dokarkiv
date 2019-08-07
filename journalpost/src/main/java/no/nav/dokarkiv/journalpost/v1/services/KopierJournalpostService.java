@@ -15,6 +15,8 @@ import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import java.util.Collections;
 
+import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_JOURNALPOST_ID;
+
 @Component
 public class KopierJournalpostService {
 
@@ -49,7 +51,7 @@ public class KopierJournalpostService {
         Long nyJournalpostId = nyJournalpost.getJournalpostId();
 
 		ArkivElementEndringTO endring = ArkivElementEndringTO.builder()
-				.arkivElement("Journalpost.journalpostId")
+				.arkivElement(JOURNALPOST_JOURNALPOST_ID)
 				.fraVerdi(Long.toString(journalpost.getJournalpostId()))
 				.tilVerdi(Long.toString(nyJournalpostId))
 				.build();
