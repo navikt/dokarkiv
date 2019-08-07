@@ -45,7 +45,7 @@ public class OppdaterDistribusjonsinfoValidator {
         }
         if(journalpost.getSaksrelasjon() == null || journalpost.getSaksrelasjon().getFeilregistrert()) {
             throw new KanIkkeOppdatereDistribusjonsinfoException(
-                    String.format("Kan ikke ekspedere journalpost med journalpostType=%s", journalpost.getJournalpostId()));
+                    "Kan ikke ekspedere journalpost med tom/feilregistrert saksrelasjon");
         }
     }
 

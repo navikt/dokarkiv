@@ -14,13 +14,17 @@ import java.lang.annotation.Target;
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@ApiOperation(value = "Fullfører journalføringen og låser journalposten for senere endringer", authorizations = {@Authorization(value = "apiKey")})
+@ApiOperation(value = "Fullfører journalføringen og låser journalposten for senere endringer",
+        authorizations = {@Authorization(value = "Authorization"), @Authorization(value = "NavConsumerToken")})
 @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "OK"),
-        @ApiResponse(code = 400, message = "* Kan ikke ferdigstille"),
-        @ApiResponse(code = 401, message = "* Ugyldig OIDC token. Denne feilen gis dersom tokenet ikke har riktig format eller er utgått."),
-        @ApiResponse(code = 403, message = "Bruker mangler tilgang til å ferdigstille journalpost"),
+        @ApiResponse(code = 200, message = "OK - Journalposten fikk status ekspedert"),
+        @ApiResponse(code = 400, message = "Kan bare sette status ekspedert, når:\n" +
+                "*Journalpost er UTGÅENDE\n" +
+                "*Journalpost har status FS eller FL\n" +
+                "*Journalpost har en saksrelasjon som ikke er feilregistrert"),
+        @ApiResponse(code = 401, message = "Ugyldig OIDC token. Denne feilen gis dersom tokenet ikke har riktig format eller er utgått."),
+        @ApiResponse(code = 403, message = "Konsument har ikke tilgang til å ekspedere journalpost"),
         @ApiResponse(code = 404, message = "Journalpost ikke funnet"),
-        @ApiResponse(code = 500, message = "Internal server error")})
+        @ApiResponse(code = 500, message = "Uventet teknisk feil")})
 public @interface SwaggerOppdaterDistribusjonsinfo {
 }
