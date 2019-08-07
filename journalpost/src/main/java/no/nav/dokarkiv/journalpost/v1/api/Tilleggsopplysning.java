@@ -15,14 +15,12 @@ import javax.validation.constraints.NotNull;
 public class Tilleggsopplysning {
 	@NotNull(message = "Tilleggsopplysning mangler nokkel")
 	@ApiModelProperty(
-			value = "",
 			example = "bucid",
 			required = true)
 	private String nokkel;
 
 	@NotNull(message = "Tilleggsopplysning mangler verdi")
 	@ApiModelProperty(
-			value = "",
 			example = "eksempel_verdi_123",
 			required = true)
 	private String verdi;

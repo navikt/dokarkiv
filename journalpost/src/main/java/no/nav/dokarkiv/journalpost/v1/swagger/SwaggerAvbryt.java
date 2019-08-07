@@ -16,7 +16,8 @@ import java.lang.annotation.Target;
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@ApiOperation(value = "Tar en opprettet journalpost ut av ordinær saksbehandling",
+@ApiOperation(
+		value = "Tar en opprettet journalpost ut av ordinær saksbehandling",
 		authorizations = {@Authorization(value = "Authorization"), @Authorization(value = "NavConsumerToken")})
 @ApiResponses(value = {
 		@ApiResponse(code = 200, message = "* OK"),

@@ -21,8 +21,9 @@ public class TilknyttVedleggRequest {
 
 	@ApiModelProperty(
 			value = "navn på saksbehandler som tilknytter vedleggene",
-			example = "Mikkel Pettersen",
-			required = true)
+			required = true,
+			example = "Mikkel Pettersen"
+	)
 	private String tilknyttetAvNavn;
 
 	@Builder.Default

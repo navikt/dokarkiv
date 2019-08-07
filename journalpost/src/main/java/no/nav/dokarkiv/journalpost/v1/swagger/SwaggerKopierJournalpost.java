@@ -16,9 +16,10 @@ import java.lang.annotation.Target;
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@ApiOperation(hidden = true,
+@ApiOperation(
 		value = "Kloner journalposten. Den nye journalposten settes i en midlertidig status slik at den kan knyttes til en annen sak/bruker",
-		authorizations = {@Authorization(value = "Authorization"), @Authorization(value = "NavConsumerToken")}
+		authorizations = {@Authorization(value = "Authorization"), @Authorization(value = "NavConsumerToken")},
+		hidden = true
 )
 @ApiResponses(value = {
 		@ApiResponse(code = 200, message = "OK"),

@@ -16,8 +16,9 @@ public class OpprettJournalpostResponse {
 
 	@ApiModelProperty(
 			value = "JournalpostId som har blit opprettet",
-			example = "12345678",
-			required = true)
+			required = true,
+			example = "12345678"
+	)
 	private String journalpostId;
 
 	@ApiModelProperty(
@@ -28,17 +29,20 @@ public class OpprettJournalpostResponse {
 			required = true,
 			example = "ENDELIG")
 	@Deprecated
+	/**
+	 * @deprecated
+	 */
 	private String journalstatus;
 
 	@ApiModelProperty(
 			value = "Melding",
-			example = "null",
-			required = false)
+			example = "null"
+	)
 	private String melding;
 
 	@ApiModelProperty(
 			value = "True eller False for om journalpost ble ferdigstilt",
-			example = "true",
-			required = false)
+			example = "true"
+	)
 	private Boolean journalpostferdigstilt;
 }

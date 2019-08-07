@@ -20,8 +20,6 @@ import java.util.List;
 public class TilknyttVedleggResponse {
 
 	@Builder.Default
-	@ApiModelProperty(
-			value = "Liste med dokumenter som ikke kunne knyttes til journalpostId",
-			required = false)
+	@ApiModelProperty(value = "Liste med dokumenter som ikke kunne knyttes til journalpostId")
 	private List<FeiledeDokumenter> feiledeDokumenter = new ArrayList<>();
 }
