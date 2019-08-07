@@ -20,7 +20,6 @@ import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.lang.reflect.Method;
 
 /**
  * @author Sigurd Midttun, Visma Consulting.
@@ -38,7 +37,7 @@ public class ValidateUserAndAddToMDCHandler implements HandlerInterceptor {
 		this.meterRegistry = meterRegistry;
 	}
 
-	private void incrementConsumerCounter(String consumer, String methodName, String controllerName){
+	private void incrementConsumerCounter(String consumer, String methodName, String controllerName) {
 		meterRegistry.counter("dok_request_consumer_name",
 				"consumer_name", consumer == null ? "UKJENT" : consumer,
 				"method_name", methodName == null ? "UKJENT" : methodName,
@@ -55,7 +54,7 @@ public class ValidateUserAndAddToMDCHandler implements HandlerInterceptor {
 			return true;
 		}
 
-        putAbacMdcValues(request);
+		putAbacMdcValues(request);
 
 		String navConsumerToken = headerTokenExtractor.getConsumerToken(request);
 		String authorizationToken = headerTokenExtractor.getIdToken(request);
@@ -104,18 +103,23 @@ public class ValidateUserAndAddToMDCHandler implements HandlerInterceptor {
 				}
 			}
 
-			String consumerName = Strings.isBlank(navConsumerToken)?getSubjectFromToken(authorizationToken):getSubjectFromToken(navConsumerToken);
-			String methodName = ((HandlerMethod) handler).getMethod().getName();
-			String controllerName = ((Method)((HandlerMethod)handler).getMethod()).getDeclaringClass().getSimpleName();
-			incrementConsumerCounter(consumerName, methodName, controllerName);
+			try {
+				String consumerName = Strings.isBlank(navConsumerToken) ? getSubjectFromToken(authorizationToken) : getSubjectFromToken(navConsumerToken);
+				String methodName = ((HandlerMethod) handler).getMethod().getName();
+				String controllerName = (((HandlerMethod) handler).getMethod()).getDeclaringClass().getSimpleName();
+				incrementConsumerCounter(consumerName, methodName, controllerName);
+			} catch (Exception e) {
+				log.warn("Det skjedde feil ved henting av consumer, metode eller controller navn for inkrementering av metrikker", e);
+			}
+
 			return true;
 		}
 	}
 
-    private void putAbacMdcValues(HttpServletRequest request) {
-        MDC.put(MDCConstants.MDC_HTTP_ENDPOINT, request.getRequestURL().toString());
-        MDC.put(MDCConstants.MDC_HTTP_OPERATION, request.getMethod());
-    }
+	private void putAbacMdcValues(HttpServletRequest request) {
+		MDC.put(MDCConstants.MDC_HTTP_ENDPOINT, request.getRequestURL().toString());
+		MDC.put(MDCConstants.MDC_HTTP_OPERATION, request.getMethod());
+	}
 
 	private String getSubjectFromToken(String token) {
 		if (isEmpty(token)) {
