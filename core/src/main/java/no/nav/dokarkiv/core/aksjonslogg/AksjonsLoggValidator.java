@@ -13,7 +13,7 @@ import java.util.Objects;
  */
 class AksjonsLoggValidator {
 
-	public void validateArkivElementToList(List<ArkivElementEndringTO> arkivElementEndringTOList) throws UgyldigAksjonsLoggException {
+	public void validateArkivElementToList(List<ArkivElementEndringTO> arkivElementEndringTOList) {
 		for (ArkivElementEndringTO arkivElementEndringTo : arkivElementEndringTOList) {
 			assertNullOrEmpty(arkivElementEndringTo.getArkivElement(), "AksjonsLogg.ArkivElementEndring mangler påkrevd parameter: arkivElement");
 
@@ -23,7 +23,7 @@ class AksjonsLoggValidator {
 		}
 	}
 
-	public void validateAksjonslogg(AksjonsLoggTO aksjonsLoggTO) throws UgyldigAksjonsLoggException {
+	public void validateAksjonslogg(AksjonsLoggTO aksjonsLoggTO) {
 		String componentId = RequestContextHolder.currentRequestContext().getComponentId();
 		String userId = RequestContextHolder.currentRequestContext().getUserId();
 
@@ -40,7 +40,7 @@ class AksjonsLoggValidator {
 		}
 	}
 
-	public void assertNullOrEmpty(Object value, String feilmelding) throws UgyldigAksjonsLoggException {
+	public void assertNullOrEmpty(Object value, String feilmelding) {
 		if (Objects.isNull(value) || (value instanceof String && isBlank((String) value))) {
 			throw new UgyldigAksjonsLoggException(feilmelding);
 		}

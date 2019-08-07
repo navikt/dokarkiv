@@ -16,7 +16,6 @@ import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
 import no.nav.dokarkiv.core.metrics.RestMetrics;
 import no.nav.dokarkiv.core.security.abac.AbacSecurityService;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
@@ -100,7 +99,7 @@ public class ArkiverOgJournalfoerRestController {
     @RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark203"}, percentiles = {0.5, 0.95})
     public ResponseEntity<Long> kopierJournalpost(
             @ApiParam(name="kildeJournalpostId", value = "IDen til journalposten som skal kopieres", required = true, example = "77778888")
-            @RequestParam String kildeJournalpostId) throws UgyldigAksjonsLoggException {
+            @RequestParam String kildeJournalpostId) {
         MDC.put(MDC_REQUEST_ID, "rjoark203");
         log.info(MDC.get(MDC_REQUEST_ID) + " har mottatt kall for kopiering av journalpost med journalpostId={}", kildeJournalpostId);
         validateId(kildeJournalpostId, "journalpostId");
@@ -140,7 +139,7 @@ public class ArkiverOgJournalfoerRestController {
     @RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark201"}, percentiles = {0.5, 0.95})
     public ResponseEntity<String> oppdaterDistribusjonsinfo(
             @PathVariable @ApiParam(value = "IDen til journalposten som skal oppdateres", required = true, example = "77778888") String journalpostId,
-            @RequestBody OppdaterDistribusjonsinfoRequest request) throws UgyldigAksjonsLoggException {
+            @RequestBody OppdaterDistribusjonsinfoRequest request) {
         MDC.put(MDC_REQUEST_ID, "oppdaterDistribusjonsinfo");
         log.info(MDC.get(MDC_REQUEST_ID) + " har mottat kall for oppdatering av distribusjonsinfo for journalpostId={}", journalpostId);
         validateId(journalpostId, "journalpostId");
@@ -164,7 +163,7 @@ public class ArkiverOgJournalfoerRestController {
     @RestMetrics(value = "dok_request", extraTags = {"process_code", "oppdaterjournalpost"}, percentiles = {0.5, 0.95})
     public OppdaterJournalpostResponse oppdaterJournalpost(
             @PathVariable String journalpostId,
-            @RequestBody OppdaterJournalpostRequest request) throws UgyldigAksjonsLoggException {
+            @RequestBody OppdaterJournalpostRequest request) {
         RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDC_CONSUMER_ID));
         MDC.put(MDC_REQUEST_ID, "oppdaterjournalpost");
         log.info(MDC.get(MDC_REQUEST_ID) + " har mottatt kall om å oppdatere journalpost med journalpostId={}", journalpostId);

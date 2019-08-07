@@ -4,7 +4,6 @@ import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
 import static org.apache.logging.log4j.util.Strings.isNotBlank;
 
-import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
 import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
@@ -13,8 +12,6 @@ import no.nav.dokarkiv.journalpost.v1.api.Arkivsaksystem;
 import no.nav.dokarkiv.journalpost.v1.api.OppdaterJournalpostRequest;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
-
-import java.util.List;
 
 @Component
 public class SaksrelasjonUpdater {
@@ -65,7 +62,7 @@ public class SaksrelasjonUpdater {
         }
     }
 
-    protected FagsystemCode mapArkivSakSystemToFagsystemCode(Arkivsaksystem arkivsaksystem) {
+    FagsystemCode mapArkivSakSystemToFagsystemCode(Arkivsaksystem arkivsaksystem) {
         assertNotNull(arkivsaksystem, "arkivsaksystem");
         if (Arkivsaksystem.GSAK.equals(arkivsaksystem)) {
             return FagsystemCode.FS22;

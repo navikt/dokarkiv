@@ -1,11 +1,9 @@
 package no.nav.dokarkiv.journalpost.v1.services;
 
-import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
 import no.nav.dokarkiv.core.aksjonslogg.LagreAksjonsLoggService;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
-import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
 import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import no.nav.dokarkiv.journalpost.v1.api.OppdaterDistribusjonsinfoRequest;
 import no.nav.dokarkiv.journalpost.v1.util.oppdaterjournalpost.ChangeTracker;
@@ -14,8 +12,6 @@ import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-
-import java.util.Collections;
 
 import static no.nav.dokarkiv.journalpost.v1.validators.OppdaterDistribusjonsinfoValidator.validateJournalpost;
 import static no.nav.dokarkiv.journalpost.v1.validators.OppdaterDistribusjonsinfoValidator.validateOppdaterteFelt;
@@ -37,7 +33,7 @@ public class OppdaterDistribusjonsinfoService {
         this.aksjonsLoggService = aksjonsLoggService;
     }
 
-    public void oppdaterDistribusjonsinfo(Long journalpostId, OppdaterDistribusjonsinfoRequest request) throws UgyldigAksjonsLoggException {
+    public void oppdaterDistribusjonsinfo(Long journalpostId, OppdaterDistribusjonsinfoRequest request) {
         Journalpost journalpost = joarkRepository.findById(journalpostId)
                 .orElseThrow(() -> new JournalpostIkkeFunnetException(
                         String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostId)));
@@ -49,7 +45,7 @@ public class OppdaterDistribusjonsinfoService {
 
         joarkRepository.save(journalpost);
 
-        if(changes.getChanges().size() > 0) {
+        if(!changes.getChanges().isEmpty()) {
             aksjonsLoggService.lagreAksjonsLoggForJournalpost(
                     AksjonsTypeCode.EKSPEDER, journalpostId, null, "Journalposten fikk status 'ekspedert'",
                     null, changes.getChanges());

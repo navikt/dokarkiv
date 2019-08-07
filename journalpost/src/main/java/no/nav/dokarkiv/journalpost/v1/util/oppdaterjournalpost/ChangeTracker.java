@@ -14,7 +14,7 @@ public class ChangeTracker {
 
     private boolean endretFlagg;
 
-    public ChangeTracker() {
+    ChangeTracker() {
         changes = new ArrayList<>();
     }
 
@@ -22,8 +22,7 @@ public class ChangeTracker {
         if(endring != null) {
             if (endring.getFraVerdi() != null) {
                 if (endring.getTilVerdi() != null &&
-                    !endring.getFraVerdi().equals(endring.getTilVerdi()))
-                {
+                    !endring.getFraVerdi().equals(endring.getTilVerdi())) {
                     changes.add(endring);
                     endretFlagg = true;
                 }

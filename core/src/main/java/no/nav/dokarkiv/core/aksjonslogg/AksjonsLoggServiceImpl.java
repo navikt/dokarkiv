@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
-import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
 import no.nav.dokarkiv.core.repository.AksjonsLoggRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import org.springframework.stereotype.Component;
@@ -30,7 +29,7 @@ public class AksjonsLoggServiceImpl implements AksjonsLoggService {
 		this.joarkRepository = joarkRepository;
 	}
 
-	public void validateAndSaveAksjonsLogg(AksjonsLoggTO aksjonsLoggTO, List<ArkivElementEndringTO> arkivElementEndringTOList) throws UgyldigAksjonsLoggException {
+	public void validateAndSaveAksjonsLogg(AksjonsLoggTO aksjonsLoggTO, List<ArkivElementEndringTO> arkivElementEndringTOList) {
 
 		log.info(String.format("Lagrer aksjonslogg med aksjonsType=%s, dokumentInfoId=%s og journalpostId=%s", aksjonsLoggTO.getAksjon(), aksjonsLoggTO
 				.getDokumentInfoId(), aksjonsLoggTO.getJournalpostId()));

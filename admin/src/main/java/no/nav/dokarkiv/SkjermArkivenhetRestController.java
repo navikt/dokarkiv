@@ -9,7 +9,6 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.domain.codes.ArkivenhetCode;
 import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
-import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
 import no.nav.dokarkiv.core.exceptions.UgyldigSkjermArkivenhetRequestException;
 import no.nav.dokarkiv.core.metrics.RestMetrics;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
@@ -51,7 +50,7 @@ public class SkjermArkivenhetRestController {
 			@RequestHeader(value = AKSJONS_LOGG_HJEMMEL_HEADER) String hjemmel,
 			@RequestHeader(value = AKSJONS_LOGG_MELDING_HEADER) String melding,
 			@RequestHeader(value = AKSJONS_LOGG_UTFOERT_AV_HEADER, required = false) String utfoertAv,
-			@RequestBody SkjermArkivenhetRequest skjermArkivenhetRequest) throws UgyldigAksjonsLoggException, UgyldigSkjermArkivenhetRequestException {
+			@RequestBody SkjermArkivenhetRequest skjermArkivenhetRequest) throws UgyldigSkjermArkivenhetRequestException {
 		validerAtRequestHarSkjermingOgArkivenhet(skjermArkivenhetRequest.getSkjerming(), skjermArkivenhetRequest.getArkivenhet());
 		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark100a");
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
@@ -73,7 +72,7 @@ public class SkjermArkivenhetRestController {
 			@RequestHeader(value = AKSJONS_LOGG_HJEMMEL_HEADER) String hjemmel,
 			@RequestHeader(value = AKSJONS_LOGG_MELDING_HEADER) String melding,
 			@RequestHeader(value = AKSJONS_LOGG_UTFOERT_AV_HEADER, required = false) String utfoertAv,
-			@RequestBody SkjermArkivenhetRequest skjermArkivenhetRequest) throws UgyldigAksjonsLoggException, UgyldigSkjermArkivenhetRequestException {
+			@RequestBody SkjermArkivenhetRequest skjermArkivenhetRequest) throws UgyldigSkjermArkivenhetRequestException {
 		validerAtRequestHarSkjermingOgArkivenhet(skjermArkivenhetRequest.getSkjerming(), skjermArkivenhetRequest.getArkivenhet());
 		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark100b");
 

@@ -1,14 +1,11 @@
 package no.nav.dokarkiv;
 
-import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_LOGG_BRUKER_HEADER;
-import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_LOGG_HEADER;
 import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_LOGG_HJEMMEL_HEADER;
 import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_LOGG_MELDING_HEADER;
 import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_LOGG_UTFOERT_AV_HEADER;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.MDCConstants;
-import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
 import no.nav.dokarkiv.core.metrics.RestMetrics;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import no.nav.dokarkiv.dto.SlettArkivenhetRequest;
@@ -44,7 +41,7 @@ public class SlettArkivenhetController {
 			@RequestHeader(value = AKSJONS_LOGG_HJEMMEL_HEADER) String hjemmel,
 			@RequestHeader(value = AKSJONS_LOGG_MELDING_HEADER, required = false) String melding,
 			@RequestHeader(value = AKSJONS_LOGG_UTFOERT_AV_HEADER, required = false) String utfoertAv,
-			@RequestBody SlettArkivenhetRequest slettArkivenhetRequest) throws UgyldigAksjonsLoggException {
+			@RequestBody SlettArkivenhetRequest slettArkivenhetRequest) {
 
 		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark101");
 		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har mottat kall om sletting av arkivenhet={} med journalpostId={}, dokumentInfoId={} og variant={}",

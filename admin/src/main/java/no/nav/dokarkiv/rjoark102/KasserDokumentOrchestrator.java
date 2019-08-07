@@ -3,7 +3,6 @@ package no.nav.dokarkiv.rjoark102;
 import no.nav.dokarkiv.core.aksjonslogg.LagreAksjonsLoggService;
 import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
-import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
 import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.stereotype.Service;
@@ -30,20 +29,20 @@ public class KasserDokumentOrchestrator {
 		this.relasjonRepository = relasjonRepository;
 	}
 
-	public void opphevKasserSkjermDokument(Long dokumentInfoId, String hjemmel, String melding, String utfoertAv) throws UgyldigAksjonsLoggException {
+	public void opphevKasserSkjermDokument(Long dokumentInfoId, String hjemmel, String melding, String utfoertAv) {
 		List<ArkivElementEndringTO> arkivElementEndringTOList = new ArrayList<>();
 		arkivElementEndringTOList.addAll(kasserSkjermDokumentService.opphevSkjermDokument(dokumentInfoId));
 		lagreAksjonsLoggService.lagreAksjonsLogg(AksjonsTypeCode.ENDRE_SKJERMING, dokumentInfoId, hjemmel, melding, utfoertAv, arkivElementEndringTOList);
 	}
 
-	public void kasserSkjermDokument(Long dokumentInfoId, String hjemmel, String melding, String utfoertAv) throws UgyldigAksjonsLoggException {
+	public void kasserSkjermDokument(Long dokumentInfoId, String hjemmel, String melding, String utfoertAv) {
 		List<ArkivElementEndringTO> arkivElementEndringTOList = new ArrayList<>();
 		arkivElementEndringTOList.addAll(kasserSkjermDokumentService.skjermDokument(dokumentInfoId));
 		lagreAksjonsLoggService.lagreAksjonsLogg(AksjonsTypeCode.ENDRE_SKJERMING, dokumentInfoId, hjemmel, melding, utfoertAv, arkivElementEndringTOList);
 	}
 
 
-	public void kasserDokument(Long dokumentInfoId, String kassertAvNavn, String hjemmel, String melding, String utfoertAv) throws UgyldigAksjonsLoggException {
+	public void kasserDokument(Long dokumentInfoId, String kassertAvNavn, String hjemmel, String melding, String utfoertAv) {
 		List<ArkivElementEndringTO> arkivElementEndringTOList = new ArrayList<>();
 		arkivElementEndringTOList.addAll(kasserDokumentService.kasserDokument(dokumentInfoId, kassertAvNavn));
 		String aksjonsLoggMelding = Strings.isBlank(melding) ? fysiskKasserMelding(dokumentInfoId) : melding;
