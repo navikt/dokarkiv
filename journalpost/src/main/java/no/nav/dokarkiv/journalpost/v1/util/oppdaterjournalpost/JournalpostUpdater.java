@@ -2,6 +2,9 @@ package no.nav.dokarkiv.journalpost.v1.util.oppdaterjournalpost;
 
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
+import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_FAGOMRADE;
+import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_INNHOLD;
+import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_JOURNALSTATUS;
 import static org.apache.logging.log4j.util.Strings.isNotBlank;
 
 import no.nav.dokarkiv.core.domain.codes.AvsenderMottakerIdTypeCode;
@@ -69,7 +72,7 @@ public class JournalpostUpdater {
 			journalpost.setJournalstatus(JournalStatusCode.E);
 			journalpost.setEkspedertDato(new Date());
 			tracker.setEndretFlagg(true);
-			tracker.add("Journalpost.journalstatus", journalpost.getJournalstatus().name(), JournalStatusCode.E.name());
+			tracker.add(JOURNALPOST_JOURNALSTATUS, journalpost.getJournalstatus().name(), JournalStatusCode.E.name());
         }
 
 		if (tracker.isEndretFlagg()) {
@@ -148,7 +151,7 @@ public class JournalpostUpdater {
 
 	private void updateTema(Journalpost journalpost, OppdaterJournalpostRequest oppdaterJournalpostRequest, ChangeTracker endret) {
 		if (isNotBlank(oppdaterJournalpostRequest.getTema()) && !oppdaterJournalpostRequest.getTema().equals(journalpost.getFagomrade().name())) {
-			endret.add("Journalpost.fagomrade", journalpost.getFagomrade().name(), oppdaterJournalpostRequest.getTema());
+			endret.add(JOURNALPOST_FAGOMRADE, journalpost.getFagomrade().name(), oppdaterJournalpostRequest.getTema());
 			journalpost.setFagomrade(FagomradeCode.valueOf(oppdaterJournalpostRequest.getTema()));
 		}
 	}
@@ -160,7 +163,7 @@ public class JournalpostUpdater {
 
 	private void updateTittel(Journalpost journalpost, OppdaterJournalpostRequest oppdaterJournalpostRequest, ChangeTracker endret) {
 		if (isNotBlank(oppdaterJournalpostRequest.getTittel()) && !oppdaterJournalpostRequest.getTittel().equals(journalpost.getInnhold())) {
-			endret.add("Journalpost.innhold", journalpost.getInnhold(), oppdaterJournalpostRequest.getTittel());
+			endret.add(JOURNALPOST_INNHOLD, journalpost.getInnhold(), oppdaterJournalpostRequest.getTittel());
             journalpost.setInnhold(oppdaterJournalpostRequest.getTittel());
 		}
 	}

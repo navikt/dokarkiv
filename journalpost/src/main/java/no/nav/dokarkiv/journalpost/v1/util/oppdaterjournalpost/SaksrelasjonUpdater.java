@@ -2,6 +2,8 @@ package no.nav.dokarkiv.journalpost.v1.util.oppdaterjournalpost;
 
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
+import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.SAKSRELASJON_FAGSYSTEM;
+import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.SAKSRELASJON_SAKID;
 import static org.apache.logging.log4j.util.Strings.isNotBlank;
 
 import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
@@ -48,7 +50,7 @@ public class SaksrelasjonUpdater {
     private void updateArkivsaksystem(Journalpost journalpost, OppdaterJournalpostRequest request, Saksrelasjon saksrelasjon, ChangeTracker endret) {
         if (request.getSak().getArkivsaksystem() != null &&
                 !mapArkivSakSystemToFagsystemCode(request.getSak().getArkivsaksystem()).equals(journalpost.getSaksrelasjon().getFagsystem())) {
-            endret.add("Saksrelasjon.fagsystem", journalpost.getSaksrelasjon() == null ? null : journalpost.getSaksrelasjon().getFagsystem().name(),
+            endret.add(SAKSRELASJON_FAGSYSTEM, journalpost.getSaksrelasjon() == null ? null : journalpost.getSaksrelasjon().getFagsystem().name(),
                     request.getSak().getArkivsaksystem().name());
             saksrelasjon.setFagsystem(mapArkivSakSystemToFagsystemCode(request.getSak().getArkivsaksystem()));
         }
@@ -56,7 +58,7 @@ public class SaksrelasjonUpdater {
 
     private void updateArkivsaksnummer(Journalpost journalpost, OppdaterJournalpostRequest request, Saksrelasjon saksrelasjon, ChangeTracker endret) {
         if (isNotBlank(request.getSak().getArkivsaksnummer()) && !request.getSak().getArkivsaksnummer().equals(journalpost.getSaksrelasjon().getSakId())) {
-            endret.add("Saksrelasjon.sakId", journalpost.getSaksrelasjon() == null ? null : journalpost.getSaksrelasjon().getSakId(),
+            endret.add(SAKSRELASJON_SAKID, journalpost.getSaksrelasjon() == null ? null : journalpost.getSaksrelasjon().getSakId(),
                     request.getSak().getArkivsaksnummer());
             saksrelasjon.setSakId(request.getSak().getArkivsaksnummer());
         }

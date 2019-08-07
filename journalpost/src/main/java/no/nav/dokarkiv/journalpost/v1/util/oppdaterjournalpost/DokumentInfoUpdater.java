@@ -2,6 +2,8 @@ package no.nav.dokarkiv.journalpost.v1.util.oppdaterjournalpost;
 
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
+import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.DOKUMENT_INFO_BREVKODE;
+import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.DOKUMENT_INFO_TITTEL;
 
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import org.slf4j.MDC;
@@ -26,14 +28,14 @@ public class DokumentInfoUpdater {
 
     private void updateTittel(DokumentInfo dokumentJoark, no.nav.dokarkiv.journalpost.v1.api.DokumentInfo dokumentRequest, ChangeTracker endret) {
         if (dokumentRequest.getTittel() != null && !dokumentRequest.getTittel().equals(dokumentJoark.getTittel())) {
-            endret.add("DokumentInfo.tittel", dokumentJoark.getTittel(), dokumentRequest.getTittel());
+            endret.add(DOKUMENT_INFO_TITTEL, dokumentJoark.getTittel(), dokumentRequest.getTittel());
             dokumentJoark.setTittel(dokumentRequest.getTittel());
         }
     }
 
     private void updateBrevkode(DokumentInfo dokumentJoark, no.nav.dokarkiv.journalpost.v1.api.DokumentInfo dokumentRequest, ChangeTracker endret) {
         if (dokumentRequest.getBrevkode() != null && !dokumentRequest.getBrevkode().equals(dokumentJoark.getBrevkode())) {
-            endret.add("DokumentInfo.brevkode", dokumentJoark.getBrevkode(), dokumentRequest.getBrevkode());
+            endret.add(DOKUMENT_INFO_BREVKODE, dokumentJoark.getBrevkode(), dokumentRequest.getBrevkode());
             dokumentJoark.setBrevkode(dokumentRequest.getBrevkode());
         }
     }
