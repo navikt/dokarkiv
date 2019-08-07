@@ -20,18 +20,17 @@ public class OpprettJournalpostRequest {
 
 	@NotNull(message = "JournalpostType kan ikke være null")
 	@ApiModelProperty(
-			value = "",
-			required = true)
+			required = true,
+			example = "INNGAAENDE"
+	)
 	private JournalpostType journalpostType;
 
 	@ApiModelProperty(
-			value = "Avsender av forsendelsen",
-			required = false)
+			value = "Avsender av forsendelsen"
+	)
 	private AvsenderMottaker avsenderMottaker;
 
-	@ApiModelProperty(
-			value = "",
-			required = false)
+	@ApiModelProperty
 	private Bruker bruker;
 
 	@NotNull(message = "Tema kan ikke være null")
@@ -44,7 +43,6 @@ public class OpprettJournalpostRequest {
 
 	@ApiModelProperty(
 			value = "Behandlingstema for forsendelsen, for eksempel ab0001 (Ordinære dagpenger).",
-			required = false,
 			example = "ab0001"
 	)
 	private String behandlingstema;
@@ -59,7 +57,6 @@ public class OpprettJournalpostRequest {
 
 	@ApiModelProperty(
 			value = "Kanalen som ble brukt ved innsending eller distribusjon. F.eks. NAV_NO, ALTINN eller EESSI.",
-			required = false,
 			example = "NAV_NO"
 	)
 	private String kanal;
@@ -68,26 +65,21 @@ public class OpprettJournalpostRequest {
 			value = "NAV-enheten som har journalført, eventuelt skal journalføre, forsendelsen. " +
 					"Ved automatisk journalføring uten mennesker involvert skal enhet settes til \"9999\".\n" +
 					"Konsument må sette journalfoerendeEnhet dersom tjenesten skal ferdigstille journalføringen.",
-			required = false,
 			example = "9999"
 	)
 	private String journalfoerendeEnhet;
 
 	@ApiModelProperty(
 			value = "Unik id for forsendelsen som kan brukes til sporing gjennom verdikjeden.\n" +
-					"Eksempler på eksternReferanseId kan være sykmeldingsId for sykmeldinger, Altinn ArchiveReference for Altinn-skjema eller SEDid for SED.",
-			required = false)
+					"Eksempler på eksternReferanseId kan være sykmeldingsId for sykmeldinger, Altinn ArchiveReference for Altinn-skjema eller SEDid for SED."
+	)
 	private String eksternReferanseId;
 
 	@Builder.Default
-	@ApiModelProperty(
-			value = "",
-			required = false)
+	@ApiModelProperty
 	private List<Tilleggsopplysning> tilleggsopplysninger = new ArrayList<>();
 
-	@ApiModelProperty(
-			value = "",
-			required = false)
+	@ApiModelProperty
 	private Sak sak;
 
 	@Builder.Default

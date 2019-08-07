@@ -18,12 +18,15 @@ public class DokumentVedlegg {
 
 	@ApiModelProperty(
 			value = "ID til journalpost kilden i Joark",
-			required = true)
+			required = true,
+			example = "22345678"
+	)
 	private Long kildeJournalpostId;
 
 	@ApiModelProperty(
 			value = "ID til dokumentet som skal legges til som vedlegg",
-			required = true)
+			required = true,
+			example = "12345678")
 	private String dokumentInfoId;
 
 }

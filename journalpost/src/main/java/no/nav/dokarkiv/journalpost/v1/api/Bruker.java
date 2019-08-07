@@ -16,12 +16,16 @@ public class Bruker {
     @NotNull(message = "Bruker mangler idType")
     @ApiModelProperty(
             value = "Angir hvilken type identifikator som er benyttet i bruker.id",
-            required = true)
+            required = true,
+            example = "FNR"
+    )
     private BrukerIdType idType;
 
     @NotNull(message = "Bruker mangler id")
     @ApiModelProperty(
             value = "Brukerens fødselsnummer (11 siffer) eller organisasjonsnummer (9 siffer)",
-            required = true)
+            required = true,
+            example = "***gammelt_fnr***"
+    )
     private String id;
 }

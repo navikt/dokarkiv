@@ -13,8 +13,11 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 @AllArgsConstructor
 public class EndreLogiskVedleggRequest {
-    @NotNull(message = "EndreLogiskVedleggRequest mangler tittel")
-    @ApiModelProperty(value = "Den nye tittelen til det logiske vedlegget, for eksempel \"Kontoutskrift\".",
-                      required = true)
-    private String tittel;
+	@NotNull(message = "EndreLogiskVedleggRequest mangler tittel")
+	@ApiModelProperty(
+			value = "Den nye tittelen til det logiske vedlegget, for eksempel \"Kontoutskrift\".",
+			required = true,
+			example = "Kontoutskrift"
+	)
+	private String tittel;
 }

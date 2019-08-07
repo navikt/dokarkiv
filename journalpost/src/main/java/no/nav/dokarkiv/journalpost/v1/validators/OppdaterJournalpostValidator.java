@@ -36,8 +36,8 @@ public final class OppdaterJournalpostValidator {
 
 	private static void validateAvsenderMottaker(OppdaterJournalpostRequest request, JournalStatusCode journalpoststatus, JournalpostTypeCode journalpostType) {
 		if (request.getAvsenderMottaker() != null) {
-			checkIfIllegalFieldIsSet(request.getAvsenderMottaker().getId(), "AvsenderMottaker.Id", journalpoststatus, journalpostType);
-			checkIfIllegalFieldIsSet(request.getAvsenderMottaker().getNavn(), "AvsenderMottaker.Navn", journalpoststatus, journalpostType);
+			checkIfIllegalFieldIsSet(request.getAvsenderMottaker().getId(), "AvsenderMottaker.id", journalpoststatus, journalpostType);
+			checkIfIllegalFieldIsSet(request.getAvsenderMottaker().getNavn(), "AvsenderMottaker.navn", journalpoststatus, journalpostType);
 		}
 	}
 

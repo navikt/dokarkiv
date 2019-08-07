@@ -4,6 +4,7 @@ import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
 import com.auth0.jwt.JWT;
+import io.micrometer.core.instrument.MeterRegistry;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.jaxws.ThreadLocalSubjectHandler;
@@ -11,8 +12,10 @@ import no.nav.dokarkiv.core.security.ldap.NavLdapService;
 import no.nav.dokarkiv.core.security.ldap.NavUser;
 import no.nav.freg.security.oidc.auth.idtoken.extract.HeaderTokenExtractor;
 import no.nav.modig.core.context.SubjectHandler;
+import org.apache.logging.log4j.util.Strings;
 import org.slf4j.MDC;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.servlet.http.HttpServletRequest;
@@ -25,11 +28,20 @@ import javax.servlet.http.HttpServletResponse;
 public class ValidateUserAndAddToMDCHandler implements HandlerInterceptor {
 
 	private final NavLdapService navLdapService;
-
+	private final MeterRegistry meterRegistry;
+	private static final String UKJENT = "UKJENT";
 	private final HeaderTokenExtractor headerTokenExtractor = new HeaderTokenExtractor();
 
-	public ValidateUserAndAddToMDCHandler(NavLdapService navLdapService) {
+	public ValidateUserAndAddToMDCHandler(NavLdapService navLdapService, MeterRegistry meterRegistry) {
 		this.navLdapService = navLdapService;
+		this.meterRegistry = meterRegistry;
+	}
+
+	private void incrementConsumerCounter(String consumer, String methodName, String controllerName) {
+		meterRegistry.counter("dok_request_consumer_name",
+				"consumer_name", consumer == null ? UKJENT : consumer,
+				"method_name", methodName == null ? UKJENT : methodName,
+				"controller_name", controllerName == null ? UKJENT : controllerName).increment();
 	}
 
 	@Override
@@ -42,7 +54,7 @@ public class ValidateUserAndAddToMDCHandler implements HandlerInterceptor {
 			return true;
 		}
 
-        putAbacMdcValues(request);
+		putAbacMdcValues(request);
 
 		String navConsumerToken = headerTokenExtractor.getConsumerToken(request);
 		String authorizationToken = headerTokenExtractor.getIdToken(request);
@@ -90,14 +102,24 @@ public class ValidateUserAndAddToMDCHandler implements HandlerInterceptor {
 					return false;
 				}
 			}
+
+			try {
+				String consumerName = Strings.isBlank(navConsumerToken) ? getSubjectFromToken(authorizationToken) : getSubjectFromToken(navConsumerToken);
+				String methodName = ((HandlerMethod) handler).getMethod().getName();
+				String controllerName = (((HandlerMethod) handler).getMethod()).getDeclaringClass().getSimpleName();
+				incrementConsumerCounter(consumerName, methodName, controllerName);
+			} catch (Exception e) {
+				log.warn("Det skjedde feil ved henting av consumer, metode eller controller navn for inkrementering av metrikker", e);
+			}
+
 			return true;
 		}
 	}
 
-    private void putAbacMdcValues(HttpServletRequest request) {
-        MDC.put(MDCConstants.MDC_HTTP_ENDPOINT, request.getRequestURL().toString());
-        MDC.put(MDCConstants.MDC_HTTP_OPERATION, request.getMethod());
-    }
+	private void putAbacMdcValues(HttpServletRequest request) {
+		MDC.put(MDCConstants.MDC_HTTP_ENDPOINT, request.getRequestURL().toString());
+		MDC.put(MDCConstants.MDC_HTTP_OPERATION, request.getMethod());
+	}
 
 	private String getSubjectFromToken(String token) {
 		if (isEmpty(token)) {
