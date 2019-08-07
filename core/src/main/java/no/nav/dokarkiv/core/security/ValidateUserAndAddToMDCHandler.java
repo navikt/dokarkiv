@@ -29,7 +29,7 @@ public class ValidateUserAndAddToMDCHandler implements HandlerInterceptor {
 
 	private final NavLdapService navLdapService;
 	private final MeterRegistry meterRegistry;
-
+	private static final String UKJENT = "UKJENT";
 	private final HeaderTokenExtractor headerTokenExtractor = new HeaderTokenExtractor();
 
 	public ValidateUserAndAddToMDCHandler(NavLdapService navLdapService, MeterRegistry meterRegistry) {
@@ -39,9 +39,9 @@ public class ValidateUserAndAddToMDCHandler implements HandlerInterceptor {
 
 	private void incrementConsumerCounter(String consumer, String methodName, String controllerName) {
 		meterRegistry.counter("dok_request_consumer_name",
-				"consumer_name", consumer == null ? "UKJENT" : consumer,
-				"method_name", methodName == null ? "UKJENT" : methodName,
-				"controller_name", controllerName == null ? "UKJENT" : controllerName).increment();
+				"consumer_name", consumer == null ? UKJENT : consumer,
+				"method_name", methodName == null ? UKJENT : methodName,
+				"controller_name", controllerName == null ? UKJENT : controllerName).increment();
 	}
 
 	@Override
