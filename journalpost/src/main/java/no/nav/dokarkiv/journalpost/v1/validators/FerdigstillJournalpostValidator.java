@@ -119,7 +119,7 @@ public class FerdigstillJournalpostValidator {
 		verifyFieldNotNull(journalpost, journalpost.getFagomrade(), "fagomrade", manglendePaakrevdeFelter);
 		verifyStringNotBlank(journalpost, journalpost.getInnhold(), "innhold", manglendePaakrevdeFelter);
 		if (!JournalpostTypeCode.N.equals(journalpost.getJournalposttype())) {
-			verifyStringNotBlank(journalpost, journalpost.getAvsenderMottaker(), "avsendMottaker", manglendePaakrevdeFelter);
+			verifyStringNotBlank(journalpost, journalpost.getAvsenderMottaker(), "avsendMottaker.navn", manglendePaakrevdeFelter);
 		}
 		if (JournalpostTypeCode.I.equals(journalpost.getJournalposttype())) {
 			verifyFieldNotNull(journalpost, journalpost.getMottakskanal(), "mottakskanal", manglendePaakrevdeFelter);

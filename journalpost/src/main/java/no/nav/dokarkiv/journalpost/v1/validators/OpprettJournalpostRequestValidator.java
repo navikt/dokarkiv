@@ -96,7 +96,7 @@ public class OpprettJournalpostRequestValidator {
 
 	private void validateTema(String tema) {
 		if (isBlank(tema)) {
-			throw new InputValideringFeiletException("Tema må være satt");
+			throw new InputValideringFeiletException("Journalpost.tema må være satt");
 		}
 		try {
 			FagomradeCode.valueOf(tema);
@@ -115,7 +115,7 @@ public class OpprettJournalpostRequestValidator {
 
 	private void validateTittel(String tittel) {
 		if (isBlank(tittel)) {
-			throw new InputValideringFeiletException("tittel må være satt");
+			throw new InputValideringFeiletException("Journalpost.tittel må være satt");
 		}
 	}
 

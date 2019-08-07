@@ -239,7 +239,7 @@ public class OpprettJournalpostRequestValidatorTest {
 		request = createMinimalRequest(JournalpostType.INNGAAENDE, null, INNHOLD).build();
 
 		expectedException.expect(InputValideringFeiletException.class);
-		expectedException.expectMessage("Tema må være satt");
+		expectedException.expectMessage("Journalpost.tema må være satt");
 
 		validator.validateRequest(request);
 	}

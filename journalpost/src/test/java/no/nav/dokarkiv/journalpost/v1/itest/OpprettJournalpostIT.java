@@ -20,9 +20,11 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_FOR;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.VARIANTFORMAT_ARKIV;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createMinimalRequest;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createRequest;
+import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -166,6 +168,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(HttpStatus.CREATED, response.getStatusCode());
 		assertNotNull(response.getBody());
 		assertNull(response.getBody().getMelding());
+		assertThat(response.getBody().getJournalpostferdigstilt(), is(true));
 
 		Journalpost journalpost = joarkRepository.findAll().iterator().next();
 		assertNotNull(journalpost.getJournalpostId());
@@ -198,6 +201,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(HttpStatus.CREATED, response.getStatusCode());
 		assertNotNull(response.getBody());
 		assertNull(response.getBody().getMelding());
+		assertThat(response.getBody().getJournalpostferdigstilt(), is(true));
 
 		Journalpost journalpost = joarkRepository.findAll().iterator().next();
 		assertNotNull(journalpost.getJournalpostId());
@@ -230,6 +234,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(HttpStatus.CREATED, response.getStatusCode());
 		assertNotNull(response.getBody());
 		assertNotNull(response.getBody().getMelding());
+		assertThat(response.getBody().getJournalpostferdigstilt(), is(false));
 
 		Journalpost journalpost = joarkRepository.findAll().iterator().next();
 		assertNotNull(journalpost.getJournalpostId());
@@ -278,6 +283,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertNotNull(response.getBody());
 		assertNotNull(response.getBody().getMelding());
 		assertTrue(response.getBody().getMelding().contains("følgende felt(er) mangler"));
+		assertThat(response.getBody().getJournalpostferdigstilt(), is(false));
 
 		Journalpost journalpost = joarkRepository.findAll().iterator().next();
 		assertNotNull(journalpost.getJournalpostId());
@@ -319,6 +325,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertNotNull(response.getBody());
 		assertNotNull(response.getBody().getMelding());
 		assertTrue(response.getBody().getMelding().contains("må knyttes til en bruker"));
+		assertThat(response.getBody().getJournalpostferdigstilt(), is(false));
 
 		Journalpost journalpost = joarkRepository.findAll().iterator().next();
 		assertNotNull(journalpost.getJournalpostId());

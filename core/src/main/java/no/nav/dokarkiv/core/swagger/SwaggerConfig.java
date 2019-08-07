@@ -39,7 +39,7 @@ public class SwaggerConfig {
 				.build()
 				.useDefaultResponseMessages(false)
 				.apiInfo(apiInfo())
-				.securitySchemes(Lists.newArrayList(apiKey()));
+				.securitySchemes(Lists.newArrayList(apiKey(), consumerToken()));
 	}
 
 	@Bean
@@ -55,7 +55,7 @@ public class SwaggerConfig {
 				.filter(false)
 				.maxDisplayedTags(null)
 				.operationsSorter(OperationsSorter.ALPHA)
-				.showExtensions(false)
+				.showExtensions(true)
 				.tagsSorter(TagsSorter.ALPHA)
 				.validatorUrl(null)
 				.build();
@@ -64,11 +64,13 @@ public class SwaggerConfig {
 	private ApiInfo apiInfo() {
 		return new ApiInfo(
 				"Dokarkiv APIer",
-				"Her dokumenteres REST-grensesnittene til dokarkiv (Joark). Til autentisering brukes to OIDC-token (JWT via OAuth2.0) i hver sin header, Nav-Consumer-Token (applikasjonsbrukeren sitt token) og Authorization (saksbehandleren sitt token). Eksempel på kall med to tokens:\n" +
+				"Her dokumenteres REST-grensesnittene til dokarkiv (Joark). Til autentisering brukes to OIDC-token (JWT via OAuth2.0) i hver sin header" +
+						"\nmed `Nav-Consumer-Token` (applikasjonsbrukeren sitt token) og `Authorization` (saksbehandleren sitt token). Eksempel på kall med to tokens:\n" +
                         "\n" +
                         "curl -X PUT \"https://dokarkiv-q1.nais.preprod.local/rest/journalpostapi/v1/journalpost/111\" -H \"accept: */*\" -H \"Authorization: Bearer eyAidH...\", -H \"Nav-Consumer-Token: Bearer eyJraWQi...\" -H \"Content-Type: application/json\" -d \"{ \\\"avsenderMottaker\\\": { \\\"id\\\": \\\"string\\\", \\\"land\\\": \\\"string\\\",...}\"\n" +
                         "\n" +
-                        "Swagger-apiet er kun ment som dokumentasjon, og kan ikke brukes for uttesting, da det kun støtter ett token.",
+						"Hvis disse tjenestene blir kalt direkte fra en annen applikasjon hvor saksbehandlertoken ikke er tilgjengjelig er det mulig å autentisere seg med èn OIDC token. Da skal`Authorization` header inneholde applikasjonsbrukeren sitt token og `Nav-Consumer-Token` header ikke settes" +
+						"",
 				version,
 				"",
 				new Contact("Team Dokument", "", ""),
@@ -77,6 +79,13 @@ public class SwaggerConfig {
 
 	private ApiKey apiKey() {
 
-		return new ApiKey("apiKey", HttpHeaders.AUTHORIZATION, "header");
+		return new ApiKey("Authorization", HttpHeaders.AUTHORIZATION, "header");
 	}
+
+	private ApiKey consumerToken() {
+
+		return new ApiKey("NavConsumerToken", "Nav-Consumer-Token", "header");
+	}
+
+
 }

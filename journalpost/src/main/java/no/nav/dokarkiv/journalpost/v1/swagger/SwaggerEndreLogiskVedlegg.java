@@ -16,7 +16,8 @@ import java.lang.annotation.Target;
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@ApiOperation(value = "Endrer tittel på logisk vedlegg", authorizations = {@Authorization(value = "apiKey")})
+@ApiOperation(value = "Endrer tittel på logisk vedlegg",
+        authorizations = {@Authorization(value = "Authorization"), @Authorization(value = "NavConsumerToken")})
 @ApiResponses(value = {
         @ApiResponse(code = 200, message = "* OK"),
         @ApiResponse(code = 401, message = "* Ugyldig OIDC token. Denne feilen gis dersom tokenet ikke har riktig format eller er utgått."),

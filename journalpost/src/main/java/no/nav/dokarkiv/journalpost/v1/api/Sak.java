@@ -16,12 +16,16 @@ public class Sak {
     @NotNull(message = "Sak mangler arkivsaksnummer")
     @ApiModelProperty(
             value = "Saksnummeret i PSAK eller GSAK (SAK)",
-            required = true)
+            required = true,
+            example = "111111111"
+    )
     private String arkivsaksnummer;
 
     @NotNull(message = "Sak mangler arkivsaksystem")
     @ApiModelProperty(
             value = "\"PSAK\" skal brukes for saker som behandles i Pesys\n\"GSAK\" skal brukes for alle andre sakstyper.",
-            required = true)
+            required = true,
+            example = "GSAK"
+    )
     private Arkivsaksystem arkivsaksystem;
 }
