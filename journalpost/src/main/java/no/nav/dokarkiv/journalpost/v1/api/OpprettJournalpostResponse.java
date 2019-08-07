@@ -21,6 +21,9 @@ public class OpprettJournalpostResponse {
 	)
 	private String journalpostId;
 
+	/**
+	 * @deprecated Skal ikke brukes lenger. Bruk journalpostferdigstilt istedenfor
+	 */
 	@ApiModelProperty(
 			value = "Journalstatus for journalpost.\n" +
 					"* MIDLERTIDIG - hvis journalpost er opprettet\n" +
@@ -29,9 +32,6 @@ public class OpprettJournalpostResponse {
 			required = true,
 			example = "ENDELIG")
 	@Deprecated
-	/**
-	 * @deprecated
-	 */
 	private String journalstatus;
 
 	@ApiModelProperty(
