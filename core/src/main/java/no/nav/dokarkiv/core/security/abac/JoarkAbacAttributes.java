@@ -15,4 +15,5 @@ public class JoarkAbacAttributes {
     public static final String UPDATE_ACTION = "update";
     public static final String DELETE_ACTION = "delete";
 	public static final String ARKIV = "arkiv";
+    public static final String ARKIV_V2 = "arkiv_v2";
 }

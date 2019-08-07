@@ -50,7 +50,7 @@ public class AbacDefaultConfig {
 
 	@Bean
 	AbacAttributeLocator fellesDomeneLocator() {
-		return new ResolvingAbacAttributeLocator(NavAttributter.RESOURCE_FELLES_DOMENE, () -> JoarkAbacAttributes.ARKIV);
+		return new ResolvingAbacAttributeLocator(NavAttributter.RESOURCE_FELLES_DOMENE, new DomeneSupplier());
 	}
 
 	@Bean
