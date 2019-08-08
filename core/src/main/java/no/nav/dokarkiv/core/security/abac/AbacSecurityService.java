@@ -1,9 +1,14 @@
 package no.nav.dokarkiv.core.security.abac;
 
+import static no.nav.abac.xacml.NavAttributter.ENVIRONMENT_FELLES_PEP_ID;
 import static no.nav.abac.xacml.NavAttributter.RESOURCE_ARKIV_GSAK_SAKSID;
 import static no.nav.abac.xacml.NavAttributter.RESOURCE_ARKIV_PENSJON_SAKSID;
+import static no.nav.abac.xacml.NavAttributter.RESOURCE_FELLES_DOMENE;
+import static no.nav.abac.xacml.NavAttributter.RESOURCE_FELLES_PERSON_AKTOERID_RESOURCE;
 import static no.nav.abac.xacml.NavAttributter.RESOURCE_FELLES_PERSON_TILKNYTTET_FNR;
+import static no.nav.abac.xacml.NavAttributter.RESOURCE_FELLES_RESOURCE_TYPE;
 import static no.nav.abac.xacml.NavAttributter.RESOURCE_FELLES_TEMA;
+import static no.nav.abac.xacml.NavAttributter.RESOURCE_SAK_SAK;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +25,7 @@ import no.nav.freg.abac.core.dto.response.Decision;
 import no.nav.freg.abac.core.dto.response.XacmlResponse;
 import no.nav.freg.abac.core.service.AbacService;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
@@ -34,14 +40,14 @@ import java.util.Map;
 public class AbacSecurityService {
 
 	private static final String ACCESS_DENIED_TO_JOURNALPOST = "Bruker har ikke tilgang til journalpost";
+	private static final String ACCESS_DENIED_TO_SAK = "Bruker har ikke tilgang til sak";
 	public static final String ACCESS_DENIED = "Access Denied";
 
 	private final AbacLogger abaclog;
 	private final AbacService abacService;
 	private final AbacContext abacContext;
 	private final JdbcAbacSecurityRepository jdbcAbacSecurityRepository;
-	private final JoarkRepository joarkRepository;
-    private final DokumentinfoRepository dokumentinfoRepository;
+	private final DokumentinfoRepository dokumentinfoRepository;
 	private final JoarkRepositorySkjermet joarkRepositorySkjermet;
 
 	@Inject
@@ -50,33 +56,8 @@ public class AbacSecurityService {
 		this.abacService = abacService;
 		this.abacContext = abacContext;
 		this.jdbcAbacSecurityRepository = jdbcAbacSecurityRepository;
-		this.joarkRepository = joarkRepository;
 		this.dokumentinfoRepository = dokumentinfoRepository;
 		this.joarkRepositorySkjermet = joarkRepositorySkjermet;
-	}
-
-	private void assertAccessToJournalpostIncludingBegrenset(String journalpost) {
-		Long journalpostId = Long.parseLong(journalpost);
-
-		if (!joarkRepository.existsById(journalpostId)) {
-			throw new JournalpostIkkeFunnetException("Journalpost ikke funnet. journalpostId=" + journalpostId);
-		}
-
-		submitJournalpostParametersAndHandleResponse(journalpostId);
-	}
-
-	public void assertAccessToDokumentIncludingSkjermet(Long dokumentInfoId) {
-
-		if (!dokumentinfoRepository.existsById(dokumentInfoId)) {
-			throw new DokumentInfoIkkeFunnetException("DokumentInfo ikke funnet. dokumentInfoId=" + dokumentInfoId);
-		}
-		Long journalpostId = joarkRepository.findJournalpostIdByDokumentinfoId(dokumentInfoId.toString());
-		if (journalpostId == null) {
-			log.warn(String.format("DokumentInfo med dokumentInfoId=%s mangler originalJournalpost", dokumentInfoId));
-			throw new DokumentInfoIkkeFunnetException(String.format("DokumentInfo med dokumentInfoId=%s mangler originalJournalpost", dokumentInfoId));
-		}
-
-        assertAccessToJournalpostIncludingBegrenset(journalpostId.toString());
 	}
 
 	public void assertAccessToDokumentInfo(Long dokumentInfoId) {
@@ -90,7 +71,7 @@ public class AbacSecurityService {
 			throw new DokumentInfoIkkeFunnetException(String.format("DokumentInfo med dokumentInfoId=%s mangler originalJournalpost", dokumentInfoId));
 		}
 
-        assertAccessToJournalpost(journalpostId.toString());
+		assertAccessToJournalpost(journalpostId.toString());
 	}
 
 
@@ -122,6 +103,31 @@ public class AbacSecurityService {
 		decorateJoarkResources(abacRequest, abacResources, null);
 		XacmlResponse accessResponse = abacService.evaluate(abacRequest);
 		return handleResponseForSakId(abacRequest, accessResponse, abacResources);
+	}
+
+	public void assertAccessToSakPep(String aktoerId) {
+		final Map<String, String> resources = new HashMap<>();
+		final XacmlRequest abacRequest = abacContext.getRequest()
+				.environment(ENVIRONMENT_FELLES_PEP_ID, "sak")
+				.resource(RESOURCE_FELLES_DOMENE, "sak")
+				.resource(RESOURCE_FELLES_RESOURCE_TYPE, RESOURCE_SAK_SAK);
+
+		if (Strings.isNotEmpty(aktoerId)) {
+			resources.put("aktoer_id", aktoerId);
+			abacRequest.resource(RESOURCE_FELLES_PERSON_AKTOERID_RESOURCE, aktoerId);
+		}
+
+		final XacmlResponse abacResponse = abacService.evaluate(abacRequest);
+
+		if (abacResponse.getDecision() == Decision.DENY) {
+			abaclog.logAbacDeny(abacRequest, abacResponse, resources);
+			throw new AuthorizationException(ACCESS_DENIED_TO_SAK);
+		} else {
+			if (!isEmpty(abacResponse.getAdvices())) {
+				abaclog.logAbacPermit(abacRequest, abacResponse, resources);
+			}
+		}
+
 	}
 
 	XacmlRequest decorateJoarkResources(XacmlRequest request,

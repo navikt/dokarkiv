@@ -25,6 +25,10 @@
 		</dependency>
 		<dependency>
 			<groupId>no.nav.dokarkiv</groupId>
+			<artifactId>sak</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>no.nav.dokarkiv</groupId>
 			<artifactId>arkiverdokumentproduksjon</artifactId>
 		</dependency>
 		<dependency>
