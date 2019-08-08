@@ -20,7 +20,7 @@ import java.time.LocalDateTime;
  * @author Ugur Alpay Cenar, Visma Consulting.
  */
 @Entity
-@Table(name = "SAK")
+@Table(name = "T_SAK")
 @Builder
 @Data
 @Immutable

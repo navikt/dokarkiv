@@ -13,7 +13,7 @@ import java.lang.annotation.Target;
 @Documented
 @Constraint(validatedBy = AtLeastOneOfValidator.class)
 public @interface AtLeastOneOf {
-	String message() default "{no.nav.sak.AtLeastOneOf}";
+	String message() default "{no.nav.dokarkiv.sak.AtLeastOneOf}";
 
 	Class<?>[] groups() default {};
 

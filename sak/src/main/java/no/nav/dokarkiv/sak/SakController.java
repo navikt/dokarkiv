@@ -32,13 +32,16 @@ import no.nav.dokarkiv.core.repository.sak.HentSakerRepository;
 import no.nav.dokarkiv.core.repository.sak.SakSearchCriteria;
 import no.nav.dokarkiv.core.security.abac.AbacSecurityService;
 import no.nav.dokarkiv.core.security.abac.AuthorizationException;
-import no.nav.dokarkiv.sak.infrastruktur.EnableApiFilters;
+import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import no.nav.dokarkiv.sak.infrastruktur.ErrorResponse;
 import no.nav.freg.abac.core.annotation.Abac;
-import no.nav.sikkerhet.abac.ABACResult;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.MDC;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -51,19 +54,14 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.validation.Valid;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
-@EnableApiFilters
 @RestController
 @RequestMapping("/rest/saker")
 @Api(value = "v1/saker", authorizations = {
@@ -131,14 +129,23 @@ public class SakController {
 		this.sakRepository = sakRepository;
 	}
 
-	@ExceptionHandler({Exception.class})
+	@ExceptionHandler({MethodArgumentNotValidException.class, BindException.class})
 	public ResponseEntity exceptionHandler(Exception e) {
-		log.error("test", e);
-//		List<String> violationMessages = ((ConstraintViolationException) e).getConstraintViolations().stream()
-//				.map(ConstraintViolation::getMessage)
-//				.collect(Collectors.toList());
+		List<String> violationMessages;
+		if (e instanceof MethodArgumentNotValidException) {
+			violationMessages = ((MethodArgumentNotValidException) e).getBindingResult()
+					.getAllErrors()
+					.stream()
+					.map(DefaultMessageSourceResolvable::getDefaultMessage).collect(Collectors.toList());
+		} else {
+			violationMessages = ((BindException) e).getBindingResult()
+					.getAllErrors()
+					.stream()
+					.map(DefaultMessageSourceResolvable::getDefaultMessage).collect(Collectors.toList());
+		}
 
-		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e);
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(MDC.get(MDCConstants.MDC_CALL_ID),
+				StringUtils.join(violationMessages, ", ")));
 	}
 
 	@ResponseBody
@@ -201,7 +208,7 @@ public class SakController {
 	@Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_SAK_SAK)},
 			actions = @Abac.Attr(key = ACTION_ID, value = READ_ACTION))
 	public ResponseEntity finnSaker(
-			@Valid @RequestBody final SakSearchRequest sakSearchRequest) {
+			@Valid final SakSearchRequest sakSearchRequest) {
 
 		log.info("Søker etter saker for: {}", sakSearchRequest);
 		ResponseEntity response;
@@ -212,12 +219,11 @@ public class SakController {
 					sakRepository.finnSaker(sakSearchRequest.toCriteria());
 			response =
 					ResponseEntity
-							.ok(
-									saker
-											.stream()
-											.filter(this::harTilgangTilSakInterneRegler)
-											.map(SakJson::new)
-											.collect(toList())
+							.ok(saker
+									.stream()
+									.filter(this::harTilgangTilSakInterneRegler)
+									.map(SakJson::new)
+									.collect(toList())
 							);
 		} catch (AuthorizationException e) {
 			response = ResponseEntity.ok(new ArrayList<>());
@@ -244,8 +250,9 @@ public class SakController {
 	@Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_SAK_SAK)},
 			actions = @Abac.Attr(key = ACTION_ID, value = CREATE_ACTION))
 	public ResponseEntity opprettSak(
-			@RequestBody @ApiParam(value = "Saken som skal opprettes", required = true) final SakJson sakJson
+			@Valid @RequestBody @ApiParam(value = "Saken som skal opprettes", required = true) final SakJson sakJson
 	) throws URISyntaxException {
+		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
 
 		final String user = MDC.get(MDCConstants.MDC_USER_ID);
 		final Sak innsendtSak = sakJson.toSak(user);
@@ -275,8 +282,7 @@ public class SakController {
 			response =
 					ResponseEntity
 							.status(HttpStatus.CONFLICT)
-							.body(
-									new ErrorResponse(
+							.body(new ErrorResponse(
 											MDC.get("uuid"),
 											String.format(
 													"Det finnes allerede en sak for fagsaksnr: %s, applikasjon: %s, aktør: %s orgnr: %s",
@@ -287,15 +293,13 @@ public class SakController {
 									)
 							);
 		} else {
-			String uri = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest().getRequestURI().toString();
+			String baseUrl = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest().getRequestURL().toString();
 
 			final Sak opprettetSak = sakRepository.lagre(sak);
 			log.info("Opprettet: {}", opprettetSak);
 			response =
 					ResponseEntity
-							.created(
-									new URI("")
-							)
+							.created(new URI(baseUrl + "/" + sak.getSakId()))
 							.body(new SakJson(opprettetSak));
 		}
 
@@ -341,7 +345,7 @@ public class SakController {
 							.status(HttpStatus.FORBIDDEN)
 							.body(
 									new ErrorResponse(
-											MDC.get("uuid"),
+											MDC.get(MDCConstants.MDC_CALL_ID),
 											"Bruker kunne ikke autoriseres for denne operasjonen"
 									)
 							);
@@ -350,30 +354,4 @@ public class SakController {
 		return response;
 	}
 
-	private ResponseEntity makeResponseUponAbacFaliure(final ABACResult.Code abacResultCode) {
-
-		final HttpStatus responseStatus =
-				mapABACResultCodeToResponseStatus(abacResultCode);
-		return
-				ResponseEntity
-						.status(responseStatus)
-						.body(
-								new ErrorResponse(
-										MDC.get("uuid"),
-										abacResultCode.getDescription()
-								)
-						);
-	}
-
-	private HttpStatus mapABACResultCodeToResponseStatus(final ABACResult.Code abacResultCode) {
-
-		final HttpStatus responseStatus;
-		if (ABACResult.Code.OK.equals(abacResultCode)) {
-			responseStatus = HttpStatus.OK;
-		} else {
-			responseStatus = HttpStatus.INTERNAL_SERVER_ERROR;
-		}
-
-		return responseStatus;
-	}
 }

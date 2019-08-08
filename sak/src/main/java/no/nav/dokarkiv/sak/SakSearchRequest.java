@@ -3,28 +3,28 @@ package no.nav.dokarkiv.sak;
 import static org.apache.commons.lang3.builder.ToStringStyle.SHORT_PREFIX_STYLE;
 
 import io.swagger.annotations.ApiParam;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
 import no.nav.dokarkiv.core.repository.sak.SakSearchCriteria;
 import no.nav.dokarkiv.sak.validering.AtLeastOneOf;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
-import javax.ws.rs.QueryParam;
 import java.util.List;
 
+@Data
+@Builder
+@AllArgsConstructor
 @AtLeastOneOf(fields = {"aktoerId", "orgnr", "fagsakNr"})
 public class SakSearchRequest {
-	@QueryParam("aktoerId")
 	@ApiParam("Filtrering på saker opprettet for en aktør (person)")
 	private String aktoerId;
-	@QueryParam("orgnr")
 	@ApiParam("Filtrering på saker opprettet for en organisasjon")
 	private String orgnr;
-	@QueryParam("applikasjon")
 	@ApiParam("Filtrering på applikasjon (iht felles kodeverk)")
 	private String applikasjon;
-	@QueryParam("tema")
 	@ApiParam("Filtrering på tema (iht felles kodeverk)")
 	private List<String> tema;
-	@QueryParam("fagsakNr")
 	@ApiParam("Filtrering på fagsakNr")
 	private String fagsakNr;
 

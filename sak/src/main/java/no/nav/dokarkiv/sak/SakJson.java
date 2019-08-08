@@ -19,18 +19,18 @@ import java.time.format.DateTimeFormatter;
 public class SakJson {
 	private Long id;
 
-	@NotNull(message = "{no.nav.sak.tema.NotNull}")
+	@NotNull(message = "{no.nav.dokarkiv.sak.tema.NotNull}")
 	@Size(max = 40)
 	private String tema;
 
 	@Size(max = 40)
 	private String applikasjon;
 
-	@Size(message = "{no.nav.sak.aktoerId.Size}", max = 40)
+	@Size(message = "{no.nav.dokarkiv.sak.aktoerId.Size}", max = 40)
 	private String aktoerId;
 
 	@Organisasjonsnummer
-	@Size(message = "{no.nav.sak.orgnr.Size}", max = 9)
+	@Size(message = "{no.nav.dokarkiv.sak.orgnr.Size}", max = 9)
 	private String orgnr;
 
 	private String fagsakNr;

@@ -14,7 +14,6 @@
 	<properties>
 		<swagger-ui.version>3.9.2</swagger-ui.version>
 
-		<oppgavehandtering-security.version>2.00.09</oppgavehandtering-security.version>
 		<oppgavehandtering.resilience.version>1.00.03</oppgavehandtering.resilience.version>
 
 		<commons.configuration.version>2.5</commons.configuration.version>
@@ -45,56 +44,6 @@
 			<version>${commons.beanutils.version}</version>
 		</dependency>
 
-		<!--NAV avhengigheter-->
-		<dependency>
-			<groupId>no.nav.oppgavehandtering</groupId>
-			<artifactId>oppgavehandtering-security</artifactId>
-			<version>${oppgavehandtering-security.version}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>org.apache.santuario</groupId>
-					<artifactId>xmlsec</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.opensaml</groupId>
-					<artifactId>opensaml-core</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.opensaml</groupId>
-					<artifactId>opensaml-profile-api</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.opensaml</groupId>
-					<artifactId>opensaml-saml-api</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.opensaml</groupId>
-					<artifactId>opensaml-saml-impl</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>commons-io</groupId>
-					<artifactId>commons-io</artifactId>
-				</exclusion>
-
-			</exclusions>
-		</dependency>
-
-		<dependency>
-			<groupId>no.nav.abac.policies</groupId>
-			<artifactId>abac-attribute-constants</artifactId>
-			<version>${abac.attribute.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>no.nav.opggavehandtering</groupId>
-			<artifactId>oppgavehandtering-resilience</artifactId>
-			<version>${oppgavehandtering.resilience.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>no.nav.abac.policies</groupId>
-			<artifactId>abac-attribute-constants</artifactId>
-			<version>${abac.attribute.version}</version>
-		</dependency>
 		<dependency>
 			<groupId>org.webjars</groupId>
 			<artifactId>swagger-ui</artifactId>

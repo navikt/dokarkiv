@@ -13,7 +13,7 @@ import java.lang.annotation.Target;
 @Documented
 @Constraint(validatedBy = ExactlyOneOfValidator.class)
 public @interface ExactlyOneOf {
-	String message() default "{no.nav.sak.ExactlyOneOf}";
+	String message() default "{no.nav.dokarkiv.sak.ExactlyOneOf}";
 
 	Class<?>[] groups() default {};
 

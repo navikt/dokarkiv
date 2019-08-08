@@ -19,7 +19,7 @@ public @interface NotNullWhenDependsOnHasValue {
 
 	String dependsOnField();
 
-	String message() default "{no.nav.sak.NotNullWhenDependsOnHasValue}";
+	String message() default "{no.nav.dokarkiv.sak.NotNullWhenDependsOnHasValue}";
 
 	Class<?>[] groups() default {};
 

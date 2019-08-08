@@ -13,7 +13,7 @@ import java.lang.annotation.Target;
 @Documented
 @Constraint(validatedBy = OrganisasjonsnummerValidator.class)
 public @interface Organisasjonsnummer {
-	String message() default "{no.nav.sak.Organisasjonsnummer.ugyldig}";
+	String message() default "{no.nav.dokarkiv.sak.Organisasjonsnummer.ugyldig}";
 
 	Class<?>[] groups() default {};
 

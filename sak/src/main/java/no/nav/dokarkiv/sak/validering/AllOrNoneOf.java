@@ -13,7 +13,7 @@ import java.lang.annotation.Target;
 @Documented
 @Constraint(validatedBy = AllorNoneOfValidator.class)
 public @interface AllOrNoneOf {
-	String message() default "{no.nav.sak.AllOrNoneOf}";
+	String message() default "{no.nav.dokarkiv.sak.AllOrNoneOf}";
 
 	Class<?>[] groups() default {};
 
