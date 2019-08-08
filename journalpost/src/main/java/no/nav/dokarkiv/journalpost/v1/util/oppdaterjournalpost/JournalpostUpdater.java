@@ -17,6 +17,7 @@ import no.nav.dokarkiv.core.domain.entities.Bruker;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
 import no.nav.dokarkiv.core.repository.BrukerRepository;
+import no.nav.dokarkiv.journalpost.v1.api.AvsenderMottaker;
 import no.nav.dokarkiv.journalpost.v1.api.AvsenderMottakerIdType;
 import no.nav.dokarkiv.journalpost.v1.api.BrukerIdType;
 import no.nav.dokarkiv.journalpost.v1.api.OppdaterDistribusjonsinfoRequest;
@@ -115,19 +116,26 @@ public class JournalpostUpdater {
 
 	private void updateAvsenderMottaker(Journalpost journalpost, OppdaterJournalpostRequest oppdaterJournalpostRequest, ChangeTracker endret) {
 		if (oppdaterJournalpostRequest.getAvsenderMottaker() != null) {
-			if ((oppdaterJournalpostRequest.getAvsenderMottaker().getId()) != null &&
-					isNotBlank(oppdaterJournalpostRequest.getAvsenderMottaker().getId()) &&
-					oppdaterJournalpostRequest.getAvsenderMottaker().getIdType() != null) {
-				journalpost.setAvsenderMottakerId(oppdaterJournalpostRequest.getAvsenderMottaker().getId());
-				journalpost.setAvsenderMottakerIdType(oversettAvsenderMottakerIdType(oppdaterJournalpostRequest));
-			} else {
-				journalpost.setAvsenderMottakerId(null);
-				journalpost.setAvsenderMottakerIdType(null);
-				endret.setEndretFlagg(true);
+			AvsenderMottaker ny = oppdaterJournalpostRequest.getAvsenderMottaker();
+			if (ny.getId() != null) {
+				if(ny.getIdType() != null &&
+						oversettAvsenderMottakerIdType(ny.getIdType()) != journalpost.getAvsenderMottakerIdType()) {
+					journalpost.setAvsenderMottakerIdType(oversettAvsenderMottakerIdType(ny.getIdType()));
+					endret.setEndretFlagg(true);
+				}
+				if(!ny.getId().equalsIgnoreCase(journalpost.getAvsenderMottakerId())) {
+					journalpost.setAvsenderMottakerId(ny.getId());
+					endret.setEndretFlagg(true);
+				}
+				if(ny.getId().equalsIgnoreCase(" ")) {
+					journalpost.setAvsenderMottakerId(null);
+					journalpost.setAvsenderMottakerIdType(null);
+					endret.setEndretFlagg(true);
+				}
 			}
 
-			if (isNotBlank(oppdaterJournalpostRequest.getAvsenderMottaker().getLand())) {
-				journalpost.setLand(oppdaterJournalpostRequest.getAvsenderMottaker().getLand());
+			if (isNotBlank(ny.getLand())) {
+				journalpost.setLand(ny.getLand());
 				endret.setEndretFlagg(true);
 			}
 
@@ -138,8 +146,7 @@ public class JournalpostUpdater {
 		}
 	}
 
-	private AvsenderMottakerIdTypeCode oversettAvsenderMottakerIdType(OppdaterJournalpostRequest oppdaterJournalpostRequest) {
-		AvsenderMottakerIdType idType = oppdaterJournalpostRequest.getAvsenderMottaker().getIdType();
+	private AvsenderMottakerIdTypeCode oversettAvsenderMottakerIdType(AvsenderMottakerIdType idType) {
 		switch (idType) {
 			case FNR: return AvsenderMottakerIdTypeCode.FNR;
 			case HPRNR: return AvsenderMottakerIdTypeCode.HPRNR;
