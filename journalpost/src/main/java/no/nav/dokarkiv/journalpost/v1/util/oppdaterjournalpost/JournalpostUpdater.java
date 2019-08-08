@@ -2,29 +2,31 @@ package no.nav.dokarkiv.journalpost.v1.util.oppdaterjournalpost;
 
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
+import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_FAGOMRADE;
+import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_INNHOLD;
+import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_JOURNALSTATUS;
 import static org.apache.logging.log4j.util.Strings.isNotBlank;
 
-import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
-import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.codes.AvsenderMottakerIdTypeCode;
 import no.nav.dokarkiv.core.domain.codes.Behandlingstema;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
+import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
+import no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode;
 import no.nav.dokarkiv.core.domain.entities.Bruker;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
-import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
 import no.nav.dokarkiv.core.repository.BrukerRepository;
 import no.nav.dokarkiv.journalpost.v1.api.AvsenderMottakerIdType;
 import no.nav.dokarkiv.journalpost.v1.api.BrukerIdType;
+import no.nav.dokarkiv.journalpost.v1.api.OppdaterDistribusjonsinfoRequest;
 import no.nav.dokarkiv.journalpost.v1.api.OppdaterJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.Tilleggsopplysning;
-import no.nav.dokarkiv.journalpost.v1.util.AksjonsLoggHelper;
-import no.nav.dokarkiv.journalpost.v1.util.Endret;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -40,34 +42,54 @@ public class JournalpostUpdater {
 		this.brukerRepository = brukerRepository;
 	}
 
-	public void updateFields(Journalpost journalpost, OppdaterJournalpostRequest oppdaterJournalpostRequest, AksjonsLoggHelper aksjonsLoggHelper) throws UgyldigAksjonsLoggException {
+	public ChangeTracker updateFields(Journalpost journalpost, OppdaterJournalpostRequest oppdaterJournalpostRequest) {
 
-		Endret endret = new Endret();
-		aksjonsLoggHelper.setAksjonsLoggTO(AksjonsTypeCode.ENDRE_METADATA);
+		ChangeTracker tracker = new ChangeTracker();
+        updateTittel(journalpost, oppdaterJournalpostRequest, tracker);
+		updateTema(journalpost, oppdaterJournalpostRequest, tracker);
+        updateAvsenderMottaker(journalpost, oppdaterJournalpostRequest, tracker);
+        updateBehandlingstema(journalpost, oppdaterJournalpostRequest, tracker);
+        updateTilleggsopplysninger(journalpost, oppdaterJournalpostRequest, tracker);
+        updateJournalfoerendeEnhet(journalpost, oppdaterJournalpostRequest, tracker);
+        updateReturInfo(journalpost, oppdaterJournalpostRequest, tracker);
+        updateBruker(journalpost, oppdaterJournalpostRequest, tracker);
 
-		updateTittel(journalpost, oppdaterJournalpostRequest, aksjonsLoggHelper, endret);
-		updateTema(journalpost, oppdaterJournalpostRequest, aksjonsLoggHelper, endret);
-		updateAvsenderMottaker(journalpost, oppdaterJournalpostRequest, endret);
-		updateBehandlingstema(journalpost, oppdaterJournalpostRequest, endret);
-		updateTilleggsopplysninger(journalpost, oppdaterJournalpostRequest, endret);
-		updateJournalfoerendeEnhet(journalpost, oppdaterJournalpostRequest, endret);
-		updateReturInfo(journalpost, oppdaterJournalpostRequest, endret);
-		updateBruker(journalpost, oppdaterJournalpostRequest, endret);
-
-		if (endret.isEndretFlagg()) {
+		if (tracker.isEndretFlagg()) {
 			journalpost.setEndretAvNavn(MDC.get(MDC_USER_ID));
 			journalpost.setEndretKildeNavn(MDC.get(MDC_CONSUMER_ID));
 		}
+		return tracker;
 	}
 
-	private void updateJournalfoerendeEnhet(Journalpost journalpost, OppdaterJournalpostRequest oppdaterJournalpostRequest, Endret endret) {
+	public ChangeTracker updateFields(Journalpost journalpost, OppdaterDistribusjonsinfoRequest request) {
+		ChangeTracker tracker = new ChangeTracker();
+
+		if(request.getUtsendingsKanal() != null) {
+			journalpost.setUtsendingskanal(UtsendingsKanalCode.valueOf(request.getUtsendingsKanal()));
+			tracker.setEndretFlagg(true);
+		}
+		if(request.getSettStatusEkspedert()) {
+			journalpost.setJournalstatus(JournalStatusCode.E);
+			journalpost.setEkspedertDato(new Date());
+			tracker.setEndretFlagg(true);
+			tracker.add(JOURNALPOST_JOURNALSTATUS, journalpost.getJournalstatus().name(), JournalStatusCode.E.name());
+        }
+
+		if (tracker.isEndretFlagg()) {
+			journalpost.setEndretAvNavn(MDC.get(MDC_USER_ID));
+			journalpost.setEndretKildeNavn(MDC.get(MDC_CONSUMER_ID));
+		}
+		return tracker;
+	}
+
+	private void updateJournalfoerendeEnhet(Journalpost journalpost, OppdaterJournalpostRequest oppdaterJournalpostRequest, ChangeTracker endret) {
 		if (isNotBlank(oppdaterJournalpostRequest.getJournalfoerendeEnhet())) {
 			journalpost.setJournalForendeEnhetId(oppdaterJournalpostRequest.getJournalfoerendeEnhet());
 			endret.setEndretFlagg(true);
 		}
 	}
 
-	private void updateReturInfo(Journalpost journalpost, OppdaterJournalpostRequest oppdaterJournalpostRequest, Endret endret) {
+	private void updateReturInfo(Journalpost journalpost, OppdaterJournalpostRequest oppdaterJournalpostRequest, ChangeTracker endret) {
 		if (oppdaterJournalpostRequest.getDatoRetur() != null &&
 				!oppdaterJournalpostRequest.getDatoRetur().equals(journalpost.getAvsendtReturDato())) {
 			journalpost.setAvsendtReturDato(oppdaterJournalpostRequest.getDatoRetur());
@@ -76,7 +98,7 @@ public class JournalpostUpdater {
 		}
 	}
 
-	private void updateTilleggsopplysninger(Journalpost journalpost, OppdaterJournalpostRequest oppdaterJournalpostRequest, Endret endret) {
+	private void updateTilleggsopplysninger(Journalpost journalpost, OppdaterJournalpostRequest oppdaterJournalpostRequest, ChangeTracker endret) {
 		if (oppdaterJournalpostRequest.getTilleggsopplysninger() != null && !oppdaterJournalpostRequest.getTilleggsopplysninger()
 				.isEmpty()) {
 			journalpost.setTilleggsopplysninger(mapTilleggsopplysninger(oppdaterJournalpostRequest.getTilleggsopplysninger()));
@@ -84,14 +106,14 @@ public class JournalpostUpdater {
 		}
 	}
 
-	private void updateBehandlingstema(Journalpost journalpost, OppdaterJournalpostRequest oppdaterJournalpostRequest, Endret endret) {
+	private void updateBehandlingstema(Journalpost journalpost, OppdaterJournalpostRequest oppdaterJournalpostRequest, ChangeTracker endret) {
 		if (isNotBlank(oppdaterJournalpostRequest.getBehandlingstema())) {
 			journalpost.setBehandlingstema(Behandlingstema.valueOf(oppdaterJournalpostRequest.getBehandlingstema()));
 			endret.setEndretFlagg(true);
 		}
 	}
 
-	private void updateAvsenderMottaker(Journalpost journalpost, OppdaterJournalpostRequest oppdaterJournalpostRequest, Endret endret) {
+	private void updateAvsenderMottaker(Journalpost journalpost, OppdaterJournalpostRequest oppdaterJournalpostRequest, ChangeTracker endret) {
 		if (oppdaterJournalpostRequest.getAvsenderMottaker() != null) {
 			if ((oppdaterJournalpostRequest.getAvsenderMottaker().getId()) != null &&
 					isNotBlank(oppdaterJournalpostRequest.getAvsenderMottaker().getId()) &&
@@ -113,7 +135,6 @@ public class JournalpostUpdater {
 				journalpost.setAvsenderMottaker(oppdaterJournalpostRequest.getAvsenderMottaker().getNavn());
 				endret.setEndretFlagg(true);
 			}
-
 		}
 	}
 
@@ -128,15 +149,10 @@ public class JournalpostUpdater {
 		}
 	}
 
-	private void updateTema(Journalpost journalpost, OppdaterJournalpostRequest oppdaterJournalpostRequest, AksjonsLoggHelper aksjonsLoggHelperMetadata, Endret endret) {
-		if (isNotBlank(oppdaterJournalpostRequest.getTema())) {
-			aksjonsLoggHelperMetadata.addToArkivElementEndringTOs(ArkivElementEndringTO.builder()
-					.arkivElement("Journalpost.fagomrade")
-					.fraVerdi(journalpost.getFagomrade().name())
-					.tilVerdi(oppdaterJournalpostRequest.getTema())
-					.build());
+	private void updateTema(Journalpost journalpost, OppdaterJournalpostRequest oppdaterJournalpostRequest, ChangeTracker endret) {
+		if (isNotBlank(oppdaterJournalpostRequest.getTema()) && !oppdaterJournalpostRequest.getTema().equals(journalpost.getFagomrade().name())) {
+			endret.add(JOURNALPOST_FAGOMRADE, journalpost.getFagomrade().name(), oppdaterJournalpostRequest.getTema());
 			journalpost.setFagomrade(FagomradeCode.valueOf(oppdaterJournalpostRequest.getTema()));
-			endret.setEndretFlagg(true);
 		}
 	}
 
@@ -145,20 +161,14 @@ public class JournalpostUpdater {
 				.collect(Collectors.toMap(Tilleggsopplysning::getNokkel, Tilleggsopplysning::getVerdi));
 	}
 
-	private void updateTittel(Journalpost journalpost, OppdaterJournalpostRequest oppdaterJournalpostRequest, AksjonsLoggHelper aksjonsLoggHelperMetadata, Endret endret) {
-		if (isNotBlank(oppdaterJournalpostRequest.getTittel())) {
-			aksjonsLoggHelperMetadata.addToArkivElementEndringTOs(ArkivElementEndringTO.builder()
-					.arkivElement("Journalpost.innhold")
-					.fraVerdi(journalpost.getInnhold())
-					.tilVerdi(oppdaterJournalpostRequest.getTittel())
-					.build());
-			journalpost.setInnhold(oppdaterJournalpostRequest.getTittel());
-			endret.setEndretFlagg(true);
+	private void updateTittel(Journalpost journalpost, OppdaterJournalpostRequest oppdaterJournalpostRequest, ChangeTracker endret) {
+		if (isNotBlank(oppdaterJournalpostRequest.getTittel()) && !oppdaterJournalpostRequest.getTittel().equals(journalpost.getInnhold())) {
+			endret.add(JOURNALPOST_INNHOLD, journalpost.getInnhold(), oppdaterJournalpostRequest.getTittel());
+            journalpost.setInnhold(oppdaterJournalpostRequest.getTittel());
 		}
-
 	}
 
-	private void updateBruker(Journalpost journalpost, OppdaterJournalpostRequest oppdaterJournalpostRequest, Endret endret) {
+	private void updateBruker(Journalpost journalpost, OppdaterJournalpostRequest oppdaterJournalpostRequest, ChangeTracker endret) {
 		Set<Bruker> brukere = journalpost.getBrukere();
 		if (brukere.isEmpty() || brukere.size() > 1) {
 			brukerRepository.deleteBrukerByJournalpostId(journalpost.getJournalpostId().toString());

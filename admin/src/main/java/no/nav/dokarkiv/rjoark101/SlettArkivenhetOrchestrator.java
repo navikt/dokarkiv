@@ -39,7 +39,7 @@ public class SlettArkivenhetOrchestrator {
 		this.relasjonRepository = relasjonRepository;
 	}
 
-	public List<ArkivElementEndringTO> slettArkivenhhet(ArkivenhetCode arkivenhet, Long journalpostId, Long dokumentInfoId, VariantFormatCode variant, String hjemmel, String melding, String utfoertAv) throws UgyldigAksjonsLoggException {
+	public List<ArkivElementEndringTO> slettArkivenhhet(ArkivenhetCode arkivenhet, Long journalpostId, Long dokumentInfoId, VariantFormatCode variant, String hjemmel, String melding, String utfoertAv) {
 		List<ArkivElementEndringTO> arkivElementEndringTOList = new ArrayList<>();
 		assertNotNullOrEmpty(arkivenhet, "arkivEnhet");
 

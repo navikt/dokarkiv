@@ -10,8 +10,6 @@ import no.nav.dokarkiv.arkivervariant.rjoark103.ArkiverVariantResponse;
 import no.nav.dokarkiv.arkivervariant.rjoark103.ArkiverVariantService;
 import no.nav.dokarkiv.arkivervariant.rjoark103.ArkiverVariantValidator;
 import no.nav.dokarkiv.core.MDCConstants;
-import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService;
-import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
 import no.nav.dokarkiv.core.metrics.RestMetrics;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import org.slf4j.MDC;
@@ -47,7 +45,7 @@ public class ArkiverVariantRestController {
 			@RequestHeader(value = AKSJONS_LOGG_HJEMMEL_HEADER) String hjemmel,
 			@RequestHeader(value = AKSJONS_LOGG_MELDING_HEADER) String melding,
 			@RequestHeader(value = AKSJONS_LOGG_UTFOERT_AV_HEADER, required = false) String utfoertAv,
-			@RequestBody ArkiverVariantRequest request) throws UgyldigAksjonsLoggException {
+			@RequestBody ArkiverVariantRequest request) {
 		MDC.put(MDCConstants.MDC_REQUEST_ID, "rjoark103");
 		validator.validateArkiverVariantRequest(request);
 		log.info(MDC.get(MDCConstants.MDC_REQUEST_ID) + " har mottat kall for arkivering av korrigert dokument med dokumentInfoId={}", request

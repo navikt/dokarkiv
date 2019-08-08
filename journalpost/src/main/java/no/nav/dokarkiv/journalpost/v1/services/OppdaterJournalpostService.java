@@ -2,16 +2,16 @@ package no.nav.dokarkiv.journalpost.v1.services;
 
 import static no.nav.dokarkiv.journalpost.v1.validators.OppdaterJournalpostValidator.validateOppdaterteFelt;
 
-import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService;
+import no.nav.dokarkiv.core.aksjonslogg.LagreAksjonsLoggService;
+import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.DokumentIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
-import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import no.nav.dokarkiv.journalpost.v1.api.OppdaterJournalpostRequest;
-import no.nav.dokarkiv.journalpost.v1.util.AksjonsLoggHelper;
+import no.nav.dokarkiv.journalpost.v1.util.oppdaterjournalpost.ChangeTracker;
 import no.nav.dokarkiv.journalpost.v1.util.oppdaterjournalpost.DokumentInfoUpdater;
 import no.nav.dokarkiv.journalpost.v1.util.oppdaterjournalpost.JournalpostUpdater;
 import no.nav.dokarkiv.journalpost.v1.util.oppdaterjournalpost.SaksrelasjonUpdater;
@@ -29,7 +29,7 @@ public class OppdaterJournalpostService {
 	private final JournalpostUpdater journalpostUpdater;
 	private final SaksrelasjonUpdater saksrelasjonUpdater;
 	private final DokumentInfoUpdater dokumentInfoUpdater;
-	private final AksjonsLoggService aksjonsLoggService;
+	private final LagreAksjonsLoggService lagreAksjonsLoggService;
 
 	@Inject
     public OppdaterJournalpostService(JoarkRepositorySkjermet joarkRepository,
@@ -37,49 +37,57 @@ public class OppdaterJournalpostService {
 									  SaksrelasjonUpdater saksrelasjonUpdater,
 									  DokumentinfoRepository dokumentinfoRepository,
 									  DokumentInfoUpdater dokumentInfoUpdater,
-									  AksjonsLoggService aksjonsLoggService) {
+									  LagreAksjonsLoggService lagreAksjonsLoggService) {
 		this.joarkRepository = joarkRepository;
 		this.dokumentinfoRepository = dokumentinfoRepository;
 		this.journalpostUpdater = journalpostUpdater;
 		this.saksrelasjonUpdater = saksrelasjonUpdater;
 		this.dokumentInfoUpdater = dokumentInfoUpdater;
-		this.aksjonsLoggService = aksjonsLoggService;
+		this.lagreAksjonsLoggService = lagreAksjonsLoggService;
 	}
 
-	public void oppdaterJournalpost(Long journalpostId, OppdaterJournalpostRequest oppdaterJournalpostRequest) throws UgyldigAksjonsLoggException {
+	public void oppdaterJournalpost(Long journalpostId, OppdaterJournalpostRequest oppdaterJournalpostRequest) {
 		Journalpost journalpost = joarkRepository.findById(journalpostId)
 				.orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostId)));
 
-		AksjonsLoggHelper.setJournalpostId(journalpostId);
-		AksjonsLoggHelper.setBrukerId(oppdaterJournalpostRequest.getBruker() != null ?
-				oppdaterJournalpostRequest.getBruker().getId() :
-				(journalpost.getBrukere().isEmpty() ? null : journalpost.getBrukere().iterator().next().getBrukerId())
-		);
-
 		validateOppdaterteFelt(oppdaterJournalpostRequest, journalpost.getJournalstatus(), journalpost.getJournalposttype());
 
-		AksjonsLoggHelper aksjonsLoggHelperJournalpost = new AksjonsLoggHelper();
-		journalpostUpdater.updateFields(journalpost, oppdaterJournalpostRequest, aksjonsLoggHelperJournalpost);
+		ChangeTracker changeTracker = journalpostUpdater.updateFields(journalpost, oppdaterJournalpostRequest);
 
-		AksjonsLoggHelper aksjonsLoggHelperSaksrelasjon = new AksjonsLoggHelper();
-		saksrelasjonUpdater.updateFields(journalpost, oppdaterJournalpostRequest, aksjonsLoggHelperSaksrelasjon);
+		if(!changeTracker.getChanges().isEmpty()) {
+			lagreAksjonsLoggService.lagreAksjonsLoggForJournalpost(
+					AksjonsTypeCode.ENDRE_METADATA, journalpostId, null,
+					hentMeldingFraAksjonsType(AksjonsTypeCode.ENDRE_METADATA), null, changeTracker.getChanges());
+		}
 
+		changeTracker = saksrelasjonUpdater.updateFields(journalpost, oppdaterJournalpostRequest);
 		joarkRepository.save(journalpost);
-		saveAksjonslogg(aksjonsLoggHelperJournalpost);
-		saveAksjonslogg(aksjonsLoggHelperSaksrelasjon);
+		if(!changeTracker.getChanges().isEmpty()) {
+			lagreAksjonsLoggService.lagreAksjonsLoggForJournalpost(
+					AksjonsTypeCode.SAKSTILKNYTNING, journalpostId, null,
+					hentMeldingFraAksjonsType(AksjonsTypeCode.SAKSTILKNYTNING), null, changeTracker.getChanges());
+		}
 
 		if (oppdaterJournalpostRequest.getDokumenter() != null) {
 			for (no.nav.dokarkiv.journalpost.v1.api.DokumentInfo dokument : oppdaterJournalpostRequest.getDokumenter()) {
 				DokumentInfo dokumentInfo = journalpost.getDokumentInfoFromJpDokInfoRelasjonerByDokumentInfoId(Long.parseLong(dokument.getDokumentInfoId()));
 				assertDokumentInfoNotNull(dokumentInfo, String.valueOf(journalpost.getJournalpostId()), dokument.getDokumentInfoId());
 
-				AksjonsLoggHelper aksjonsLoggHelperDokument = new AksjonsLoggHelper();
-				dokumentInfoUpdater.updateFields(dokumentInfo, dokument, aksjonsLoggHelperDokument);
-
+				changeTracker = dokumentInfoUpdater.updateFields(dokumentInfo, dokument);
 				dokumentinfoRepository.save(dokumentInfo);
-				saveAksjonslogg(aksjonsLoggHelperDokument);
+				if(!changeTracker.getChanges().isEmpty()) {
+					lagreAksjonsLoggService.lagreAksjonsLogg(
+							AksjonsTypeCode.ENDRE_METADATA, dokumentInfo.getDokumentInfoId(), null,
+							hentMeldingFraAksjonsType(AksjonsTypeCode.ENDRE_METADATA), null, changeTracker.getChanges());
+				}
 			}
 		}
+	}
+
+	private String hentMeldingFraAksjonsType(AksjonsTypeCode kode) {
+		return kode.equals(AksjonsTypeCode.SAKSTILKNYTNING) ?
+				"Journalposten ble knyttet til en sak." :
+				"Metadata på journalposten ble endretFlagg.";
 	}
 
 	private void assertDokumentInfoNotNull(DokumentInfo dokumentInfo, String journalpostId, String dokumentId) {
@@ -88,10 +96,4 @@ public class OppdaterJournalpostService {
 		}
 	}
 
-	private void saveAksjonslogg(AksjonsLoggHelper aksjonsLoggHelper) throws UgyldigAksjonsLoggException {
-		if (!aksjonsLoggHelper.getArkivElementEndringTOs().isEmpty()) {
-			aksjonsLoggService.validateAndSaveAksjonsLogg(aksjonsLoggHelper.getAksjonsLoggTO(), aksjonsLoggHelper
-					.getArkivElementEndringTOs());
-		}
-	}
 }
