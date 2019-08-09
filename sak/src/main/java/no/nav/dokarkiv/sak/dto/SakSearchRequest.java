@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.sak;
+package no.nav.dokarkiv.sak.dto;
 
 import static org.apache.commons.lang3.builder.ToStringStyle.SHORT_PREFIX_STYLE;
 
@@ -6,6 +6,7 @@ import io.swagger.annotations.ApiParam;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import no.nav.dokarkiv.core.repository.sak.SakSearchCriteria;
 import no.nav.dokarkiv.sak.validering.AtLeastOneOf;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -15,6 +16,7 @@ import java.util.List;
 @Data
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor
 @AtLeastOneOf(fields = {"aktoerId", "orgnr", "fagsakNr"})
 public class SakSearchRequest {
 	@ApiParam("Filtrering på saker opprettet for en aktør (person)")
@@ -28,51 +30,12 @@ public class SakSearchRequest {
 	@ApiParam("Filtrering på fagsakNr")
 	private String fagsakNr;
 
-	public SakSearchRequest() {
-		//JaxRSActionDelAct
-	}
-
 	public String getAktoerId() {
 		return aktoerId;
 	}
 
-	public void setAktoerId(String aktoerId) {
-		this.aktoerId = aktoerId;
-	}
 
-	public String getOrgnr() {
-		return orgnr;
-	}
-
-	public void setOrgnr(String orgnr) {
-		this.orgnr = orgnr;
-	}
-
-	public String getApplikasjon() {
-		return applikasjon;
-	}
-
-	public void setApplikasjon(String applikasjon) {
-		this.applikasjon = applikasjon;
-	}
-
-	public List<String> getTema() {
-		return tema;
-	}
-
-	public void setTema(List<String> tema) {
-		this.tema = tema;
-	}
-
-	public String getFagsakNr() {
-		return fagsakNr;
-	}
-
-	public void setFagsakNr(String fagsakNr) {
-		this.fagsakNr = fagsakNr;
-	}
-
-	SakSearchCriteria toCriteria() {
+	public SakSearchCriteria toCriteria() {
 		return SakSearchCriteria.builder()
 				.aktoerId(aktoerId)
 				.orgnr(orgnr)

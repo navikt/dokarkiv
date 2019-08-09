@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.sak;
+package no.nav.dokarkiv.sak.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
@@ -43,7 +43,7 @@ public class SakJson {
 		//JaxRS
 	}
 
-	SakJson(Sak sak) {
+	public SakJson(Sak sak) {
 		this.id = sak.getSakId();
 		this.tema = sak.getTema();
 		this.aktoerId = sak.getAktoerId();
@@ -123,7 +123,7 @@ public class SakJson {
 		return ZonedDateTime.of(opprettetTidspunkt, ZoneId.systemDefault()).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
 	}
 
-	Sak toSak(String opprettetAv) {
+	public Sak toSak(String opprettetAv) {
 		return Sak.builder()
 				.aktoerId(aktoerId)
 				.orgnr(orgnr)

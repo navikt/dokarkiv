@@ -33,6 +33,8 @@ import no.nav.dokarkiv.core.repository.sak.SakSearchCriteria;
 import no.nav.dokarkiv.core.security.abac.AbacSecurityService;
 import no.nav.dokarkiv.core.security.abac.AuthorizationException;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
+import no.nav.dokarkiv.sak.dto.SakJson;
+import no.nav.dokarkiv.sak.dto.SakSearchRequest;
 import no.nav.dokarkiv.sak.infrastruktur.ErrorResponse;
 import no.nav.freg.abac.core.annotation.Abac;
 import org.apache.commons.lang3.StringUtils;
@@ -64,8 +66,8 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/rest/saker")
-@Api(value = "v1/saker", authorizations = {
-		@Authorization(value = "Bearer"),
+@Api(value = "/rest/saker", authorizations = {
+		@Authorization(value = "Authorization"),
 		@Authorization(value = "Saml"),
 		@Authorization(value = "Basic")
 })
@@ -89,7 +91,7 @@ import java.util.stream.Collectors;
 @SecurityDefinition(apiKeyAuthDefinitions = {
 		@ApiKeyAuthDefinition(
 				name = "Authorization",
-				key = "Bearer",
+				key = "Authorization",
 				in = HEADER,
 				description = "OIDC-token (JWT via OAuth2.0). Dette preferert autentiseringsmekanisme, og <strong>skal</strong>" +
 						" benyttes ved tjenestekall initiert av en bruker for å propagere konteksten (unntatt i særtilfeller - se Saml) \n" +
@@ -150,7 +152,7 @@ public class SakController {
 
 	@ResponseBody
 	@GetMapping("/{id}")
-	@ApiOperation(value = "Henter sak for en gitt id", response = SakJson.class)
+	@ApiOperation(value = "Henter sak for en gitt id", response = SakJson.class, authorizations = {@Authorization(value = "Authorization")})
 	@ApiImplicitParams({@ApiImplicitParam(name = "X-Correlation-ID", required = true, dataType = "string", paramType = "header")})
 	@ApiResponses(
 			value = {
@@ -194,7 +196,7 @@ public class SakController {
 	@GetMapping
 	@ResponseBody
 	@ApiOperation(value = "Finner saker for angitte søkekriterier",
-			response = SakJson.class, responseContainer = "List")
+			response = SakJson.class, responseContainer = "List", authorizations = {@Authorization(value = "Authorization")})
 	@ApiImplicitParams({@ApiImplicitParam(name = "X-Correlation-ID", required = true, dataType = "string", paramType = "header")})
 	@ApiResponses(
 			value = {
@@ -234,7 +236,7 @@ public class SakController {
 	}
 
 	@PostMapping
-	@ApiOperation(value = "Oppretter en ny sak", notes = "Merk at en sak enten skal tilhøre en aktør <b>eller</b> et foretak. Begge er p.t. ikke tillatt. ")
+	@ApiOperation(value = "Oppretter en ny sak", notes = "Merk at en sak enten skal tilhøre en aktør <b>eller</b> et foretak. Begge er p.t. ikke tillatt. ", authorizations = {@Authorization(value = "Authorization")})
 	@ApiImplicitParams({@ApiImplicitParam(name = "X-Correlation-ID", required = true, dataType = "string", paramType = "header")})
 	@ApiResponses(
 			value = {

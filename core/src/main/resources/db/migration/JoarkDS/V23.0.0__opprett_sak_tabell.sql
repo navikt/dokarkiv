@@ -4,7 +4,7 @@ CREATE TABLE t_sak
     aktoerid            VARCHAR2(40),
     orgnr               VARCHAR2(9),
     tema                VARCHAR2(40) NOT NULL,
-    applikasjon         VARCHAR2(40) NOT NULL,
+    applikasjon         VARCHAR2(40),
     fagsaknr            VARCHAR2(40),
     opprettet_av        VARCHAR2(40) NOT NULL,
     opprettet_tidspunkt TIMESTAMP    NOT NULL,
