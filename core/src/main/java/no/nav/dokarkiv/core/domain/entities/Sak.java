@@ -38,7 +38,7 @@ public class Sak {
 	@Column(name = "tema", nullable = false)
 	private String tema;
 
-	@Column(name = "applikasjon", nullable = false)
+	@Column(name = "applikasjon")
 	private String applikasjon;
 
 	@Column(name = "fagsaknr")
