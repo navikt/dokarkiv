@@ -114,6 +114,7 @@ public class FinnJournalpostSqlGeneratorTest {
 						"                              fd.k_variant_format   AS dokumenter_varianter_variantf,\n" +
 						"	                           fd.fil_navn           AS dokumenter_varianter_filnavn,\n" +
 						"	                           fd.fil_uuid           AS dokumenter_varianter_filuuid,\n" +
+						"	                           fd.k_fil_t            AS dokumenter_varianter_filtype,\n" +
 						"                              tsi.skannet_innhold_id AS dokumenter_logiske_vedleggid,\n" +
 						"                              tsi.vedlegg_innhold   AS dokumenter_logiske_tittel\n" +
 						"                       FROM t_journalpost j\n" +
