@@ -18,3 +18,5 @@ CREATE INDEX sak_orgnr
     ON T_SAK (orgnr);
 CREATE INDEX sak_aktoerid
     ON T_SAK (aktoerid);
+create index IDX_SAK_FAGSAKNR
+    on T_SAK (fagsaknr);
