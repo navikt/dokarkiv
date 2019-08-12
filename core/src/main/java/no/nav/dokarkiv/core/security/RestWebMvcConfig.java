@@ -12,7 +12,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import javax.inject.Named;
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
@@ -45,10 +44,8 @@ public class RestWebMvcConfig implements WebMvcConfigurer {
 		registry.addInterceptor(basicAuthReadAccessRestInterceptor)
 				.addPathPatterns("/hentjournalsakinfo/**");
 
-		List<String> ignoredPaths = new ArrayList<>(oidcAuthProperties.getIgnoredPaths());
-		ignoredPaths.add("/rest/saker/**");
 		registry.addInterceptor(new ValidateUserAndAddToMDCHandler(navLdapService, meterRegistry))
-				.excludePathPatterns(new ArrayList<>(ignoredPaths))
+				.excludePathPatterns(new ArrayList<>(oidcAuthProperties.getIgnoredPaths()))
 				.addPathPatterns(oidcAuthProperties.getSecuredPath());
 
 		registry.addInterceptor(new ValidateAdminConsumerAccessInterceptor(navLdapService))
