@@ -40,6 +40,10 @@ public class SakAbacLogger {
 				mapResponse(xacmlResponse));
 	}
 
+	public void logAbacWarn(String msg) {
+		log.warn(msg);
+	}
+
 	private String getAbsolutePath() {
 		return ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest().getRequestURL().toString();
 	}

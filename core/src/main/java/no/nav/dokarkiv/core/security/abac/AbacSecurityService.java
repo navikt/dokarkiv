@@ -132,11 +132,10 @@ public class AbacSecurityService {
 		} catch (AuthorizationException e) {
 			throw e;
 		} catch (Exception e) {
-			throw new AbacException("Abac feilet med feilmelding: " + e.getMessage());
+			String msg = "Feil i kall mot ABAC: " + e.getMessage();
+			sakAbacLogger.logAbacWarn(msg);
+			throw new AbacException(msg);
 		}
-
-
-
 
 	}
 
