@@ -28,14 +28,15 @@ import io.swagger.annotations.SwaggerDefinition;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.domain.entities.Sak;
+import no.nav.dokarkiv.core.exceptions.AbacException;
 import no.nav.dokarkiv.core.repository.sak.HentSakerRepository;
 import no.nav.dokarkiv.core.repository.sak.SakSearchCriteria;
 import no.nav.dokarkiv.core.security.abac.AbacSecurityService;
 import no.nav.dokarkiv.core.security.abac.AuthorizationException;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
+import no.nav.dokarkiv.core.util.ErrorResponse;
 import no.nav.dokarkiv.sak.dto.SakJson;
 import no.nav.dokarkiv.sak.dto.SakSearchRequest;
-import no.nav.dokarkiv.sak.infrastruktur.ErrorResponse;
 import no.nav.freg.abac.core.annotation.Abac;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.MDC;
@@ -229,6 +230,15 @@ public class SakController {
 							);
 		} catch (AuthorizationException e) {
 			response = ResponseEntity.ok(new ArrayList<>());
+		} catch (AbacException e) {
+			response = ResponseEntity
+					.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body(
+							new ErrorResponse(
+									MDC.get(MDCConstants.MDC_CALL_ID),
+									e.getMessage()
+							)
+					);
 		}
 
 
@@ -271,6 +281,15 @@ public class SakController {
 			response = ResponseEntity
 					.status(HttpStatus.FORBIDDEN)
 					.body(new ErrorResponse(MDC.get("uuid"), "Bruker kunne ikke autoriseres for denne operasjonen"));
+		} catch (AbacException e) {
+			response = ResponseEntity
+					.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body(
+							new ErrorResponse(
+									MDC.get(MDCConstants.MDC_CALL_ID),
+									e.getMessage()
+							)
+					);
 		}
 
 		return response;
@@ -351,6 +370,15 @@ public class SakController {
 											"Bruker kunne ikke autoriseres for denne operasjonen"
 									)
 							);
+		} catch (AbacException e) {
+			response = ResponseEntity
+					.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body(
+							new ErrorResponse(
+									MDC.get(MDCConstants.MDC_CALL_ID),
+									e.getMessage()
+							)
+					);
 		}
 
 		return response;

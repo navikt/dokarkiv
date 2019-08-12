@@ -1,6 +1,7 @@
 package no.nav.dokarkiv.core.security.abac;
 
 import no.nav.abac.xacml.NavAttributter;
+import no.nav.abac.xacml.StandardAttributter;
 import no.nav.freg.abac.core.annotation.attribute.AbacAttributeLocator;
 import no.nav.freg.abac.core.annotation.attribute.ResolvingAbacAttributeLocator;
 import no.nav.freg.security.oidc.auth.common.OidcTokenAuthentication;
@@ -8,6 +9,7 @@ import no.nav.modig.core.context.SubjectHandler;
 import org.apache.wss4j.common.util.DOM2Writer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.HashSet;
@@ -23,6 +25,7 @@ public class AbacDefaultConfig {
 		values.add(NavAttributter.ENVIRONMENT_FELLES_SAML_TOKEN);
 		values.add(NavAttributter.ENVIRONMENT_FELLES_OIDC_TOKEN_BODY);
 		values.add(NavAttributter.ENVIRONMENT_FELLES_CONSUMER_OIDC_TOKEN_BODY);
+		values.add(StandardAttributter.SUBJECT_ID);
 		return values;
 	}
 
@@ -35,7 +38,10 @@ public class AbacDefaultConfig {
 
 	@Bean
 	Set<String> abacDefaultSubjects() {
-		return new HashSet<>();
+		Set<String> values = new HashSet<>();
+		values.add(StandardAttributter.SUBJECT_ID);
+		values.add(NavAttributter.SUBJECT_FELLES_SUBJECTTYPE);
+		return values;
 	}
 
 	@Bean
@@ -72,7 +78,7 @@ public class AbacDefaultConfig {
 	@Bean
 	AbacAttributeLocator authorizationHeaderOidcTokenLocator() {
 		return new ResolvingAbacAttributeLocator(NavAttributter.ENVIRONMENT_FELLES_OIDC_TOKEN_BODY, () -> {
-			if (SecurityContextHolder.getContext().getAuthentication() == null) {
+			if (SecurityContextHolder.getContext().getAuthentication() == null || !(SecurityContextHolder.getContext().getAuthentication() instanceof OidcTokenAuthentication)) {
 				return null;
 			} else {
 				return ((OidcTokenAuthentication) SecurityContextHolder.getContext().getAuthentication()).getIdTokenBody();
@@ -83,11 +89,33 @@ public class AbacDefaultConfig {
 	@Bean
 	AbacAttributeLocator navConsumerHeaderOidcTokenLocator() {
 		return new ResolvingAbacAttributeLocator(NavAttributter.ENVIRONMENT_FELLES_CONSUMER_OIDC_TOKEN_BODY, () -> {
-			if (SecurityContextHolder.getContext().getAuthentication() == null) {
+			if (SecurityContextHolder.getContext().getAuthentication() == null || !(SecurityContextHolder.getContext().getAuthentication() instanceof OidcTokenAuthentication)) {
 				return null;
 			} else {
 				return ((OidcTokenAuthentication) SecurityContextHolder.getContext()
 						.getAuthentication()).getConsumerTokenBody();
+			}
+		});
+	}
+
+	@Bean
+	AbacAttributeLocator basicAuthHeaderLocator() {
+		return new ResolvingAbacAttributeLocator(StandardAttributter.SUBJECT_ID, () -> {
+			if (SecurityContextHolder.getContext().getAuthentication() == null || !(SecurityContextHolder.getContext().getAuthentication() instanceof UsernamePasswordAuthenticationToken)) {
+				return null;
+			} else {
+				return SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+			}
+		});
+	}
+
+	@Bean
+	AbacAttributeLocator basicAuthHeaderSystemressursLocator() {
+		return new ResolvingAbacAttributeLocator(NavAttributter.SUBJECT_FELLES_SUBJECTTYPE, () -> {
+			if (SecurityContextHolder.getContext().getAuthentication() == null || !(SecurityContextHolder.getContext().getAuthentication() instanceof UsernamePasswordAuthenticationToken)) {
+				return null;
+			} else {
+				return "Systemressurs";
 			}
 		});
 	}

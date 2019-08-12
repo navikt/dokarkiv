@@ -13,9 +13,11 @@ import static org.springframework.util.CollectionUtils.isEmpty;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
+import no.nav.dokarkiv.core.exceptions.AbacException;
 import no.nav.dokarkiv.core.exceptions.DokumentInfoIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.logging.AbacLogger;
+import no.nav.dokarkiv.core.logging.SakAbacLogger;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
@@ -44,6 +46,7 @@ public class AbacSecurityService {
 	public static final String ACCESS_DENIED = "Access Denied";
 
 	private final AbacLogger abaclog;
+	private final SakAbacLogger sakAbacLogger;
 	private final AbacService abacService;
 	private final AbacContext abacContext;
 	private final JdbcAbacSecurityRepository jdbcAbacSecurityRepository;
@@ -51,8 +54,9 @@ public class AbacSecurityService {
 	private final JoarkRepositorySkjermet joarkRepositorySkjermet;
 
 	@Inject
-	public AbacSecurityService(AbacLogger abaclog, AbacService abacService, AbacContext abacContext, JdbcAbacSecurityRepository jdbcAbacSecurityRepository, JoarkRepository joarkRepository, DokumentinfoRepository dokumentinfoRepository, JoarkRepositorySkjermet joarkRepositorySkjermet) {
+	public AbacSecurityService(AbacLogger abaclog, SakAbacLogger sakAbacLogger, AbacService abacService, AbacContext abacContext, JdbcAbacSecurityRepository jdbcAbacSecurityRepository, JoarkRepository joarkRepository, DokumentinfoRepository dokumentinfoRepository, JoarkRepositorySkjermet joarkRepositorySkjermet) {
 		this.abaclog = abaclog;
+		this.sakAbacLogger = sakAbacLogger;
 		this.abacService = abacService;
 		this.abacContext = abacContext;
 		this.jdbcAbacSecurityRepository = jdbcAbacSecurityRepository;
@@ -117,16 +121,22 @@ public class AbacSecurityService {
 			abacRequest.resource(RESOURCE_FELLES_PERSON_AKTOERID_RESOURCE, aktoerId);
 		}
 
-		final XacmlResponse abacResponse = abacService.evaluate(abacRequest);
-
-		if (abacResponse.getDecision() == Decision.DENY) {
-			abaclog.logAbacDeny(abacRequest, abacResponse, resources);
-			throw new AuthorizationException(ACCESS_DENIED_TO_SAK);
-		} else {
-			if (!isEmpty(abacResponse.getAdvices())) {
-				abaclog.logAbacPermit(abacRequest, abacResponse, resources);
+		try {
+			final XacmlResponse abacResponse = abacService.evaluate(abacRequest);
+			if (abacResponse.getDecision() == Decision.DENY) {
+				sakAbacLogger.logAbacDeny(abacRequest, abacResponse, resources);
+				throw new AuthorizationException(ACCESS_DENIED_TO_SAK);
 			}
+
+			sakAbacLogger.logAbacPermit(abacRequest, abacResponse, resources);
+		} catch (AuthorizationException e) {
+			throw e;
+		} catch (Exception e) {
+			throw new AbacException("Abac feilet med feilmelding: " + e.getMessage());
 		}
+
+
+
 
 	}
 

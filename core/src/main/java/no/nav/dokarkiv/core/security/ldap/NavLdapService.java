@@ -6,6 +6,7 @@ import static no.nav.dokarkiv.core.cache.CacheConfig.NAVUSER_CACHE;
 import static org.springframework.ldap.query.LdapQueryBuilder.query;
 
 import lombok.extern.slf4j.Slf4j;
+import no.nav.dokarkiv.core.security.AuthenticationResult;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
@@ -55,5 +56,15 @@ public class NavLdapService {
 			log.warn(format("Feilet ved oppslag av servicebruker=%s i LDAP. Feilmelding=%s", serviceUserId, e.getMessage()));
 			return NavUser.builder().userId(serviceUserId).userExistsInLdap(false).build();
 		}
+	}
+
+	public AuthenticationResult authenticateLdapUser(final String userId, final String password) {
+		try {
+			ldapTemplate.authenticate(query().base(serviceuserBasedn).where("cn").is(userId), password);
+			return AuthenticationResult.success(userId, userId);
+		} catch (Exception e) {
+			return AuthenticationResult.invalid(String.format("Kunne ikke autentisere %s mot %s. %s", userId, serviceuserBasedn, e.getMessage()));
+		}
+
 	}
 }
