@@ -66,7 +66,7 @@ public class SakAbacLogger {
 	}
 
 	private String mapResponse(final XacmlResponse xacmlResponse) {
-		String response = String.format("decision=%s, %s", xacmlResponse.getDecision().getValue(), ", " + mapDecision(xacmlResponse));
+		String response = String.format("decision=%s, %s", xacmlResponse.getDecision().getValue(), mapDecision(xacmlResponse));
 		if (xacmlResponse.getAdvices().isEmpty()) {
 			response = StringUtils.remove(response, ",");
 		}
