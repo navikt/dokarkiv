@@ -7,7 +7,7 @@ import static no.nav.abac.xacml.StandardAttributter.ACTION_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
-import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.ARKIV;
+import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.ARKIV_V2;
 import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.UPDATE_ACTION;
 import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.hasText;
 import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateId;
@@ -61,7 +61,7 @@ public class JournalfoerSkannetDokumentRestController {
     @SwaggerEndreLogiskVedlegg
     @PostMapping(value = "/{dokumentInfoId}/logiskVedlegg/{logiskVedleggId}")
     @Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_JOURNALPOST),
-                        @Abac.Attr(key = RESOURCE_FELLES_DOMENE, value = ARKIV)},
+                        @Abac.Attr(key = RESOURCE_FELLES_DOMENE, value = ARKIV_V2)},
             actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION))
     @RestMetrics(value = "dok_request", extraTags = {"process_code", "endrelogiskvedlegg"}, percentiles = {0.5, 0.95})
     public ResponseEntity<String> endreLogiskVedlegg (
@@ -88,7 +88,7 @@ public class JournalfoerSkannetDokumentRestController {
     @SwaggerLeggTilLogiskVedlegg
     @PostMapping(value = "/{dokumentInfoId}/logiskVedlegg/")
     @Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_JOURNALPOST),
-                        @Abac.Attr(key = RESOURCE_FELLES_DOMENE, value = ARKIV)},
+                        @Abac.Attr(key = RESOURCE_FELLES_DOMENE, value = ARKIV_V2)},
             actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION))
     @RestMetrics(value = "dok_request", extraTags = {"process_code", "leggtillogiskvedlegg"}, percentiles = {0.5, 0.95})
     public ResponseEntity<LeggTilLogiskVedleggResponse> leggTilLogiskVedlegg (
@@ -113,7 +113,7 @@ public class JournalfoerSkannetDokumentRestController {
     @SwaggerSlettLogiskVedlegg
     @DeleteMapping(value = "/{dokumentInfoId}/logiskVedlegg/{logiskVedleggId}")
     @Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_JOURNALPOST),
-                        @Abac.Attr(key = RESOURCE_FELLES_DOMENE, value = ARKIV)},
+                        @Abac.Attr(key = RESOURCE_FELLES_DOMENE, value = ARKIV_V2)},
             actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION))
     @RestMetrics(value = "dok_request", extraTags = {"process_code", "slettlogiskvedlegg"}, percentiles = {0.5, 0.95})
     public ResponseEntity<String> slettLogiskVedlegg (
