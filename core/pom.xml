@@ -160,7 +160,12 @@
 			<groupId>org.flywaydb</groupId>
 			<artifactId>flyway-core</artifactId>
 		</dependency>
-	</dependencies>
+        <dependency>
+            <groupId>no.nav.aura.fasit</groupId>
+            <artifactId>fasit-appconfig</artifactId>
+            <version>6.0.0-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
 	<build>
 		<plugins>
 			<plugin>

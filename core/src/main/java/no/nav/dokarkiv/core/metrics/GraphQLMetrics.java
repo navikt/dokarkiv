@@ -32,3 +32,4 @@ public @interface GraphQLMetrics {
 
     String description() default "";
 }
+

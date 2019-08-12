@@ -9,9 +9,13 @@ import static no.nav.abac.xacml.NavAttributter.RESOURCE_FELLES_PERSON_TILKNYTTET
 import static no.nav.abac.xacml.NavAttributter.RESOURCE_FELLES_RESOURCE_TYPE;
 import static no.nav.abac.xacml.NavAttributter.RESOURCE_FELLES_TEMA;
 import static no.nav.abac.xacml.NavAttributter.RESOURCE_SAK_SAK;
+import static org.apache.commons.lang3.StringUtils.defaultString;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
+import io.prometheus.client.Counter;
+import io.prometheus.client.Histogram;
 import lombok.extern.slf4j.Slf4j;
+import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
 import no.nav.dokarkiv.core.exceptions.AbacException;
 import no.nav.dokarkiv.core.exceptions.DokumentInfoIkkeFunnetException;
@@ -28,6 +32,7 @@ import no.nav.freg.abac.core.dto.response.XacmlResponse;
 import no.nav.freg.abac.core.service.AbacService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.util.Strings;
+import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
@@ -52,6 +57,14 @@ public class AbacSecurityService {
 	private final JdbcAbacSecurityRepository jdbcAbacSecurityRepository;
 	private final DokumentinfoRepository dokumentinfoRepository;
 	private final JoarkRepositorySkjermet joarkRepositorySkjermet;
+
+	private static final Histogram authorizationHistogram = Histogram.build("authorization_request_duration_seconds","Authorization request duration in seconds")
+			.labelNames("consumer","subjecttype")
+			.register();
+
+	private static final Counter authorizationCounter = Counter.build("authorization_result_count","Authorization result count")
+			.labelNames("consumer","domene","permission")
+			.register();
 
 	@Inject
 	public AbacSecurityService(AbacLogger abaclog, SakAbacLogger sakAbacLogger, AbacService abacService, AbacContext abacContext, JdbcAbacSecurityRepository jdbcAbacSecurityRepository, JoarkRepository joarkRepository, DokumentinfoRepository dokumentinfoRepository, JoarkRepositorySkjermet joarkRepositorySkjermet) {
@@ -128,6 +141,10 @@ public class AbacSecurityService {
 				throw new AuthorizationException(ACCESS_DENIED_TO_SAK);
 			}
 
+			authorizationCounter.labels(defaultString(MDC.get("consumerId"),"N/A"),
+					defaultString(ENVIRONMENT_FELLES_PEP_ID,"sak"),
+					abacResponse.getDecision()==Decision.DENY? "deny":"permit").inc();
+
 			sakAbacLogger.logAbacPermit(abacRequest, abacResponse, resources);
 		} catch (AuthorizationException e) {
 			throw e;
@@ -135,10 +152,11 @@ public class AbacSecurityService {
 			throw new AbacException("Abac feilet med feilmelding: " + e.getMessage());
 		}
 
-
-
-
+		Histogram.Timer timer = authorizationHistogram.labels(defaultString(MDC.get("consumerId"),"N/A"),
+				defaultString(ENVIRONMENT_FELLES_PEP_ID,"sak")).startTimer();
 	}
+
+
 
 	XacmlRequest decorateJoarkResources(XacmlRequest request,
 										AbacResources joarkResources, Long journalpostId) {

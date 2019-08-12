@@ -40,7 +40,7 @@ public class HentSakerRepository {
 	}
 
 	public Sak lagre(Sak sak) {
-		Histogram.Timer timer = startTimer("insert");
+		Histogram.Timer timer = startTimer("save");
 		try {
 			sakRepository.save(sak);
 		} finally {
