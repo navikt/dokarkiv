@@ -55,6 +55,7 @@ public class ValidateSakApiInterceptor implements HandlerInterceptor {
 	private static final String BASIC_TOKEN_PREFIX = "Basic ";
 	private static final String CORRELATION_HEADER = "X-Correlation-ID";
 	private static final String UUID_HEADER = "X-UUID";
+	private static final String UKJENT = "UKJENT";
 
 	private final HeaderTokenExtractor headerTokenExtractor = new HeaderTokenExtractor();
 
@@ -115,8 +116,7 @@ public class ValidateSakApiInterceptor implements HandlerInterceptor {
 
 		if (authenticationResult.isValid()) {
 			MDC.put(MDCConstants.MDC_CONSUMER_ID, authenticationResult.getConsumerId());
-			MDC.put(MDCConstants.MDC_USER_ID, authenticationResult.getConsumerId());
-			MDC.put(MDCConstants.MDC_USER_NAME, authenticationResult.getConsumerId());
+			MDC.put(MDCConstants.MDC_USER_ID, authenticationResult.getUser());
 		}
 
 		return authenticationResult;
@@ -148,9 +148,9 @@ public class ValidateSakApiInterceptor implements HandlerInterceptor {
 			SecurityContextHolder.getContext().setAuthentication(auth);
 
 			String userName = getSubjectFromToken(authorizationToken);
-			MDC.put(MDCConstants.MDC_CONSUMER_ID, userName);
+			String audience = getAudienceFromOidcToken(authorizationToken);
+			MDC.put(MDCConstants.MDC_CONSUMER_ID, audience);
 			MDC.put(MDCConstants.MDC_USER_ID, userName);
-			MDC.put(MDCConstants.MDC_USER_NAME, userName);
 			return AuthenticationResult.builder().isValid(true).build();
 
 		} catch (Exception e) {
@@ -183,6 +183,13 @@ public class ValidateSakApiInterceptor implements HandlerInterceptor {
 			return null;
 		}
 		return JWT.decode(token).getSubject();
+	}
+
+	private String getAudienceFromOidcToken(String token) {
+		if (isEmpty(token)) {
+			return null;
+		}
+		return JWT.decode(token).getAudience().stream().findFirst().orElse(UKJENT);
 	}
 
 	private String getSamlToken(HttpServletRequest request) {
