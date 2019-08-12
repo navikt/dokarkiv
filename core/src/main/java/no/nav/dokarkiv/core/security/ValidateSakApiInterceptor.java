@@ -3,8 +3,8 @@ package no.nav.dokarkiv.core.security;
 import static no.nav.dokarkiv.core.util.DecodeUtils.decodeBasicAuth;
 import static no.nav.freg.security.oidc.auth.OidcConstants.BEARER_TOKEN_PREFIX;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
-import static org.apache.http.entity.ContentType.APPLICATION_JSON;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import com.auth0.jwt.JWT;
 import lombok.RequiredArgsConstructor;
@@ -69,7 +69,7 @@ public class ValidateSakApiInterceptor implements HandlerInterceptor {
 		if (StringUtils.isBlank(correlationId)) {
 			log.warn("Forventet følgende header: {}, avbryter forespørsel", CORRELATION_HEADER);
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-			response.setHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON.getMimeType());
+			response.setHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE);
 			response.getWriter()
 					.print(JsonSerializer
 							.serialize(ErrorResponse.builder()
@@ -86,20 +86,22 @@ public class ValidateSakApiInterceptor implements HandlerInterceptor {
 
 		putAbacMdcValues(request);
 
-		AuthenticationResult result = AuthenticationResult.builder().build();
+		AuthenticationResult result;
 		if (isOIDCToken(request)) {
 			result = authorizeOIDCToken(request, response);
 		} else if (isSAMLToken(request)) {
 			result = authorizeSAMLToken(request);
 		} else if (isBasicAuth(request)) {
 			result = authorizeBasicAuth(request);
+		} else {
+			result = AuthenticationResult.builder().isValid(false).errorMessage("Kallet mangler gyldig Autentisering header").build();
 		}
 
 		if (!result.isValid()) {
 			String message = "Autentisering feilet, se kibana for årsak";
 			log.warn("Autentisering feilet: " + result.getErrorMessage());
 			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-			response.setHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON.getMimeType());
+			response.setHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE);
 			response.getWriter()
 					.print(JsonSerializer
 							.serialize(ErrorResponse.builder().feilmelding(message).uuid(MDC.get(MDCConstants.MDC_CALL_ID)).build()));

@@ -280,7 +280,7 @@ public class SakController {
 		} catch (AuthorizationException e) {
 			response = ResponseEntity
 					.status(HttpStatus.FORBIDDEN)
-					.body(new ErrorResponse(MDC.get("uuid"), "Bruker kunne ikke autoriseres for denne operasjonen"));
+					.body(new ErrorResponse(MDC.get(MDCConstants.MDC_CALL_ID), "Bruker kunne ikke autoriseres for denne operasjonen"));
 		} catch (AbacException e) {
 			response = ResponseEntity
 					.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -304,7 +304,7 @@ public class SakController {
 					ResponseEntity
 							.status(HttpStatus.CONFLICT)
 							.body(new ErrorResponse(
-											MDC.get("uuid"),
+									MDC.get(MDCConstants.MDC_CALL_ID),
 											String.format(
 													"Det finnes allerede en sak for fagsaksnr: %s, applikasjon: %s, aktør: %s orgnr: %s",
 													sak.getFagsakNr(),
