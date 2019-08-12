@@ -53,8 +53,8 @@ public class ValidateSakApiInterceptor implements HandlerInterceptor {
 
 	private static final String SAML_TOKEN_PREFIX = "Saml ";
 	private static final String BASIC_TOKEN_PREFIX = "Basic ";
-	private static final String CORRELATION_HEADER = "X-Correlation-ID";
-	private static final String UUID_HEADER = "X-UUID";
+	private static final String CORRELATION_HEADER = "X-Correlation-Id";
+	private static final String UUID_HEADER = "X-Uuid";
 	private static final String UKJENT = "UKJENT";
 
 	private final HeaderTokenExtractor headerTokenExtractor = new HeaderTokenExtractor();

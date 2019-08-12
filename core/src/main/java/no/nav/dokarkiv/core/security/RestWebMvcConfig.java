@@ -56,7 +56,8 @@ public class RestWebMvcConfig implements WebMvcConfigurer {
 
 		registry.addInterceptor(new PopulateMDCHandler())
 				.addPathPatterns(oidcAuthProperties.getSecuredPath(),
-						"/hentjournalsakinfo/**");
+						"/hentjournalsakinfo/**")
+				.excludePathPatterns("/rest/saker/**");
 
 	}
 }
