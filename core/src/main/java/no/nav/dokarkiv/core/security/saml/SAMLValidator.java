@@ -66,6 +66,7 @@ public class SAMLValidator {
 	}
 
 	public SAMLValidator(String trustStore, String trustStorePassword, int timeSkewInMinutes) {
+		//TODO: Tester feiler pga truststore og truststorepassord mangler. Fiks dette
 		if (Strings.isBlank(trustStore) || Strings.isEmpty(trustStorePassword)) {
 			log.warn("Trustore eller truststorepassord mangler. Kunne ikke initialisere SAML Validator");
 			return;
