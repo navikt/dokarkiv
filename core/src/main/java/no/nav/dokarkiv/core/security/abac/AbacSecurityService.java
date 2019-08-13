@@ -12,10 +12,10 @@ import static no.nav.abac.xacml.NavAttributter.RESOURCE_SAK_SAK;
 import static org.apache.commons.lang3.StringUtils.defaultString;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
+import io.micrometer.core.instrument.MeterRegistry;
 import io.prometheus.client.Counter;
 import io.prometheus.client.Histogram;
 import lombok.extern.slf4j.Slf4j;
-import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
 import no.nav.dokarkiv.core.exceptions.AbacException;
 import no.nav.dokarkiv.core.exceptions.DokumentInfoIkkeFunnetException;
@@ -57,6 +57,7 @@ public class AbacSecurityService {
 	private final JdbcAbacSecurityRepository jdbcAbacSecurityRepository;
 	private final DokumentinfoRepository dokumentinfoRepository;
 	private final JoarkRepositorySkjermet joarkRepositorySkjermet;
+	private final MeterRegistry meterRegistry;
 
 	private static final Histogram authorizationHistogram = Histogram.build("authorization_request_duration_seconds","Authorization request duration in seconds")
 			.labelNames("consumer","subjecttype")
@@ -67,7 +68,7 @@ public class AbacSecurityService {
 			.register();
 
 	@Inject
-	public AbacSecurityService(AbacLogger abaclog, SakAbacLogger sakAbacLogger, AbacService abacService, AbacContext abacContext, JdbcAbacSecurityRepository jdbcAbacSecurityRepository, JoarkRepository joarkRepository, DokumentinfoRepository dokumentinfoRepository, JoarkRepositorySkjermet joarkRepositorySkjermet) {
+	public AbacSecurityService(AbacLogger abaclog, SakAbacLogger sakAbacLogger, AbacService abacService, AbacContext abacContext, JdbcAbacSecurityRepository jdbcAbacSecurityRepository, JoarkRepository joarkRepository, DokumentinfoRepository dokumentinfoRepository, JoarkRepositorySkjermet joarkRepositorySkjermet, MeterRegistry meterRegistry) {
 		this.abaclog = abaclog;
 		this.sakAbacLogger = sakAbacLogger;
 		this.abacService = abacService;
@@ -75,6 +76,7 @@ public class AbacSecurityService {
 		this.jdbcAbacSecurityRepository = jdbcAbacSecurityRepository;
 		this.dokumentinfoRepository = dokumentinfoRepository;
 		this.joarkRepositorySkjermet = joarkRepositorySkjermet;
+		this.meterRegistry = meterRegistry;
 	}
 
 	public void assertAccessToDokumentInfo(Long dokumentInfoId) {
