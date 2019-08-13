@@ -12,6 +12,7 @@ import static org.junit.Assert.assertThat;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
+import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
@@ -90,6 +91,7 @@ public class Rjoark902IT extends AbstractHentjournalsakinfoItest {
 		assertEquals(true, responseDokumentInfo.getKassert());
 
 		assertNotNull(responseDokumentInfo.getVarianter().get(0).getFiluuid());
+		assertEquals(responseDokumentInfo.getVarianter().get(0).getFiltype(), FilTypeCode.PDF.name());
 	}
 
 	//  Unhappy path
