@@ -366,7 +366,8 @@ public class SakResourceTest extends AbstractRestIT {
         String tema1 = RandomStringUtils.randomAlphabetic(4);
         String tema2 = RandomStringUtils.randomAlphabetic(4);
         Sak sak1 = hentSakerRepository.lagre(new SakTestData().tema(tema1).build());
-		Sak sak2 = hentSakerRepository.lagre(new SakTestData().tema(tema1)
+		Sak sak2 = hentSakerRepository.lagre(new SakTestData().tema(tema2)
+				.aktoerId(sak1.getAktoerId())
 				.opprettettidspunkt(LocalDateTime.now().plusMinutes(1))
 				.build());
 
