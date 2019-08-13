@@ -316,12 +316,13 @@ public class SakResourceTest extends AbstractRestIT {
     }
 
     @Test
-    public void soeker_opp_saker_for_aktoer_id() throws IOException {
+	public void soeker_opp_saker_for_aktoer_id() throws IOException, InterruptedException {
         abacPermit();
 
         opprett100Tilfeldigesaker();
         String aktoerId = RandomStringUtils.randomNumeric(9);
         Sak sak1 = hentSakerRepository.lagre(new SakTestData().aktoerId(aktoerId).build());
+		Thread.sleep(10);
         Sak sak2 = hentSakerRepository.lagre(new SakTestData().aktoerId(aktoerId).build());
 
         reinitTransaction();
@@ -332,7 +333,7 @@ public class SakResourceTest extends AbstractRestIT {
 
         ResponseEntity response = executeGetRequest(url);
 
-        verifySearchResponseMatching(response, asList(sak1, sak2));
+		verifySearchResponseMatching(response, asList(sak2, sak1));
     }
 
     @Test
