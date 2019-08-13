@@ -52,6 +52,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import javax.inject.Inject;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -316,14 +317,15 @@ public class SakResourceTest extends AbstractRestIT {
     }
 
     @Test
-	public void soeker_opp_saker_for_aktoer_id() throws IOException, InterruptedException {
+	public void soeker_opp_saker_for_aktoer_id() throws IOException {
         abacPermit();
 
         opprett100Tilfeldigesaker();
         String aktoerId = RandomStringUtils.randomNumeric(9);
         Sak sak1 = hentSakerRepository.lagre(new SakTestData().aktoerId(aktoerId).build());
-		Thread.sleep(10);
-        Sak sak2 = hentSakerRepository.lagre(new SakTestData().aktoerId(aktoerId).build());
+		Sak sak2 = hentSakerRepository.lagre(new SakTestData().aktoerId(aktoerId)
+				.opprettettidspunkt(LocalDateTime.now().plusMinutes(1))
+				.build());
 
         reinitTransaction();
 
@@ -364,9 +366,9 @@ public class SakResourceTest extends AbstractRestIT {
         String tema1 = RandomStringUtils.randomAlphabetic(4);
         String tema2 = RandomStringUtils.randomAlphabetic(4);
         Sak sak1 = hentSakerRepository.lagre(new SakTestData().tema(tema1).build());
-        Sak sak2 = hentSakerRepository.lagre(new SakTestData().tema(tema2)
-            .aktoerId(sak1.getAktoerId())
-            .build());
+		Sak sak2 = hentSakerRepository.lagre(new SakTestData().tema(tema1)
+				.opprettettidspunkt(LocalDateTime.now().plusMinutes(1))
+				.build());
 
         reinitTransaction();
 
@@ -378,7 +380,7 @@ public class SakResourceTest extends AbstractRestIT {
 
         ResponseEntity response = executeGetRequest(url);
 
-        verifySearchResponseMatching(response, asList(sak1, sak2));
+		verifySearchResponseMatching(response, asList(sak2, sak1));
     }
 
     @Test
