@@ -3,8 +3,8 @@ package no.nav.dokarkiv.core.security;
 import static no.nav.dokarkiv.core.util.DecodeUtils.decodeBasicAuth;
 import static no.nav.freg.security.oidc.auth.OidcConstants.BEARER_TOKEN_PREFIX;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
-import static org.apache.http.entity.ContentType.APPLICATION_JSON;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 
 import com.auth0.jwt.JWT;
 import lombok.RequiredArgsConstructor;
@@ -53,8 +53,9 @@ public class ValidateSakApiInterceptor implements HandlerInterceptor {
 
 	private static final String SAML_TOKEN_PREFIX = "Saml ";
 	private static final String BASIC_TOKEN_PREFIX = "Basic ";
-	private static final String CORRELATION_HEADER = "X-Correlation-ID";
-	private static final String UUID_HEADER = "X-UUID";
+	private static final String CORRELATION_HEADER = "X-Correlation-Id";
+	private static final String UUID_HEADER = "X-Uuid";
+	private static final String UKJENT = "UKJENT";
 
 	private final HeaderTokenExtractor headerTokenExtractor = new HeaderTokenExtractor();
 
@@ -68,7 +69,7 @@ public class ValidateSakApiInterceptor implements HandlerInterceptor {
 		if (StringUtils.isBlank(correlationId)) {
 			log.warn("Forventet følgende header: {}, avbryter forespørsel", CORRELATION_HEADER);
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-			response.setHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON.getMimeType());
+			response.setHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE);
 			response.getWriter()
 					.print(JsonSerializer
 							.serialize(ErrorResponse.builder()
@@ -85,20 +86,22 @@ public class ValidateSakApiInterceptor implements HandlerInterceptor {
 
 		putAbacMdcValues(request);
 
-		AuthenticationResult result = AuthenticationResult.builder().build();
+		AuthenticationResult result;
 		if (isOIDCToken(request)) {
 			result = authorizeOIDCToken(request, response);
 		} else if (isSAMLToken(request)) {
 			result = authorizeSAMLToken(request);
 		} else if (isBasicAuth(request)) {
 			result = authorizeBasicAuth(request);
+		} else {
+			result = AuthenticationResult.invalid(String.format("Fant ingen gyldig %s header", AUTHORIZATION));
 		}
 
 		if (!result.isValid()) {
 			String message = "Autentisering feilet, se kibana for årsak";
 			log.warn("Autentisering feilet: " + result.getErrorMessage());
 			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-			response.setHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON.getMimeType());
+			response.setHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE);
 			response.getWriter()
 					.print(JsonSerializer
 							.serialize(ErrorResponse.builder().feilmelding(message).uuid(MDC.get(MDCConstants.MDC_CALL_ID)).build()));
@@ -115,8 +118,7 @@ public class ValidateSakApiInterceptor implements HandlerInterceptor {
 
 		if (authenticationResult.isValid()) {
 			MDC.put(MDCConstants.MDC_CONSUMER_ID, authenticationResult.getConsumerId());
-			MDC.put(MDCConstants.MDC_USER_ID, authenticationResult.getConsumerId());
-			MDC.put(MDCConstants.MDC_USER_NAME, authenticationResult.getConsumerId());
+			MDC.put(MDCConstants.MDC_USER_ID, authenticationResult.getUser());
 		}
 
 		return authenticationResult;
@@ -148,9 +150,9 @@ public class ValidateSakApiInterceptor implements HandlerInterceptor {
 			SecurityContextHolder.getContext().setAuthentication(auth);
 
 			String userName = getSubjectFromToken(authorizationToken);
-			MDC.put(MDCConstants.MDC_CONSUMER_ID, userName);
+			String audience = getAudienceFromOidcToken(authorizationToken);
+			MDC.put(MDCConstants.MDC_CONSUMER_ID, audience);
 			MDC.put(MDCConstants.MDC_USER_ID, userName);
-			MDC.put(MDCConstants.MDC_USER_NAME, userName);
 			return AuthenticationResult.builder().isValid(true).build();
 
 		} catch (Exception e) {
@@ -183,6 +185,13 @@ public class ValidateSakApiInterceptor implements HandlerInterceptor {
 			return null;
 		}
 		return JWT.decode(token).getSubject();
+	}
+
+	private String getAudienceFromOidcToken(String token) {
+		if (isEmpty(token)) {
+			return null;
+		}
+		return JWT.decode(token).getAudience().stream().findFirst().orElse(UKJENT);
 	}
 
 	private String getSamlToken(HttpServletRequest request) {
