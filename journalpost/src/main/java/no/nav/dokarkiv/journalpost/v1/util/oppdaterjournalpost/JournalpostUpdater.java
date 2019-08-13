@@ -38,6 +38,8 @@ public class JournalpostUpdater {
 
 	private final BrukerRepository brukerRepository;
 
+	private static final String DELETE_MARKER = " ";
+
 	@Inject
 	public JournalpostUpdater(BrukerRepository brukerRepository) {
 		this.brukerRepository = brukerRepository;
@@ -127,7 +129,7 @@ public class JournalpostUpdater {
 					journalpost.setAvsenderMottakerId(ny.getId());
 					endret.setEndretFlagg(true);
 				}
-				if(ny.getId().equalsIgnoreCase(" ")) {
+				if(DELETE_MARKER.equalsIgnoreCase(ny.getId())) {
 					journalpost.setAvsenderMottakerId(null);
 					journalpost.setAvsenderMottakerIdType(null);
 					endret.setEndretFlagg(true);
