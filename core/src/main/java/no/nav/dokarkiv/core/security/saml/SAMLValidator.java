@@ -1,8 +1,3 @@
-//
-// Source code recreated from a .class file by IntelliJ IDEA
-// (powered by Fernflower decompiler)
-//
-
 package no.nav.dokarkiv.core.security.saml;
 
 import static no.nav.dokarkiv.core.security.saml.SamlUtils.buildSubject;
@@ -13,7 +8,6 @@ import no.nav.dokarkiv.core.security.AuthenticationResult;
 import no.nav.modig.core.context.SubjectHandler;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.util.Strings;
 import org.joda.time.DateTime;
 import org.opensaml.core.config.InitializationException;
 import org.opensaml.core.config.InitializationService;
@@ -54,6 +48,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Kopiert fra oppgavehandtering-security
+ * Link https://github.com/navikt/oppgavehandtering-security/tree/master/src/main/java/no/nav/sikkerhet/authentication/saml
+ */
 @Slf4j
 public class SAMLValidator {
 	private Collection<X509Certificate> trustedCertificates;
@@ -66,11 +64,6 @@ public class SAMLValidator {
 	}
 
 	public SAMLValidator(String trustStore, String trustStorePassword, int timeSkewInMinutes) {
-		//TODO: Tester feiler pga truststore og truststorepassord mangler. Fiks dette
-		if (Strings.isBlank(trustStore) || Strings.isEmpty(trustStorePassword)) {
-			log.warn("Trustore eller truststorepassord mangler. Kunne ikke initialisere SAML Validator");
-			return;
-		}
 		this.timeSkew = timeSkewInMinutes;
 		this.init();
 		this.keyStore = new KeyStore(trustStore, trustStorePassword, (String) null);

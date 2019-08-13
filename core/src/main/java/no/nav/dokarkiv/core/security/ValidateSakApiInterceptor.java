@@ -33,7 +33,6 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Optional;
-import java.util.UUID;
 
 /**
  * @author Sigurd Midttun, Visma Consulting.
@@ -64,7 +63,6 @@ public class ValidateSakApiInterceptor implements HandlerInterceptor {
 		((ThreadLocalSubjectHandler) SubjectHandler.getSubjectHandler()).reset();
 
 		String correlationId = request.getHeader(CORRELATION_HEADER);
-		MDC.put(MDCConstants.MDC_CALL_ID, UUID.randomUUID().toString());
 
 		if (StringUtils.isBlank(correlationId)) {
 			log.warn("Forventet følgende header: {}, avbryter forespørsel", CORRELATION_HEADER);
@@ -79,9 +77,9 @@ public class ValidateSakApiInterceptor implements HandlerInterceptor {
 			return false;
 		}
 
-		MDC.put(MDCConstants.MDC_CORRELATION_ID, correlationId);
+		MDC.put(MDCConstants.MDC_CALL_ID, correlationId);
 
-		response.setHeader(CORRELATION_HEADER, MDC.get(MDCConstants.MDC_CORRELATION_ID));
+		response.setHeader(CORRELATION_HEADER, MDC.get(MDCConstants.MDC_CALL_ID));
 		response.setHeader(UUID_HEADER, MDC.get(MDCConstants.MDC_CALL_ID));
 
 		putAbacMdcValues(request);

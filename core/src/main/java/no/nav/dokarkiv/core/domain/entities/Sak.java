@@ -20,7 +20,7 @@ import java.time.LocalDateTime;
  * @author Ugur Alpay Cenar, Visma Consulting.
  */
 @Entity
-@Table(name = "T_SAK")
+@Table(name = "SAK")
 @Builder
 @Data
 @Immutable
@@ -31,7 +31,7 @@ public class Sak {
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sak_seq")
 	@GenericGenerator(name = "sak_seq", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
-			parameters = {@Parameter(name = "sequence_name", value = "t_sak_seq")})
+			parameters = {@Parameter(name = "sequence_name", value = "sak_seq")})
 	@Column(name = "id", nullable = false, length = 11)
 	private Long sakId;
 

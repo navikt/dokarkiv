@@ -1,4 +1,4 @@
-CREATE TABLE t_sak
+CREATE TABLE SAK
 (
     id                  NUMBER(10)   NOT NULL,
     aktoerid            VARCHAR2(40),
@@ -12,11 +12,11 @@ CREATE TABLE t_sak
     CONSTRAINT pk_sak PRIMARY KEY (id)
 );
 
-CREATE SEQUENCE T_SAK_SEQ;
+CREATE SEQUENCE SAK_SEQ;
 
 CREATE INDEX sak_orgnr
-    ON T_SAK (orgnr);
+    ON SAK (orgnr);
 CREATE INDEX sak_aktoerid
-    ON T_SAK (aktoerid);
-create index IDX_SAK_FAGSAKNR
-    on T_SAK (fagsaknr);
+    ON SAK (aktoerid);
+create index sak_fagsaknr
+    on SAK (fagsaknr);

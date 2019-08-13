@@ -73,11 +73,11 @@ public class SakResourceTest extends AbstractRestIT {
     @Inject
     private HentSakerRepository hentSakerRepository;
 
-    @Value("${sak.junit-truststore.path}")
+    @Value("${javax.net.ssl.trustStore}")
     private String trustStore;
-    @Value("${sak.junit-truststore.password}")
+    @Value("${javax.net.ssl.trustStorePassword}")
     private String trustStorePassword;
-    @Value("${sak.junit-keystore.privatekey.password}")
+    @Value("${javax.net.ssl.trustStorePassword}")
     private String privateKeyPassword;
 
     public static class Config {
