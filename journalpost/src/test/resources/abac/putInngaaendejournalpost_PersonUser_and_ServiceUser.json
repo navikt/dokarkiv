@@ -8,7 +8,7 @@
         },
         {
           "AttributeId": "no.nav.abac.attributter.resource.felles.domene",
-          "Value": "arkiv"
+          "Value": "arkiv_v2"
         },
         {
           "AttributeId": "no.nav.abac.attributter.resource.felles.resource_type",
