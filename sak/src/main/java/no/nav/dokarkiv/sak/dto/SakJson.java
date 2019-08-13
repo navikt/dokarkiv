@@ -38,11 +38,6 @@ public class SakJson {
 	private String opprettetAv;
 	private LocalDateTime opprettetTidspunkt;
 
-
-	public SakJson() {
-		//JaxRS
-	}
-
 	public SakJson(Sak sak) {
 		this.id = sak.getSakId();
 		this.tema = sak.getTema();

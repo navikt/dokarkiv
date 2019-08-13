@@ -250,7 +250,7 @@ public class SAMLValidator {
 
 	private String getAttribute(Assertion assertion, String attributeName) {
 		List<Attribute> attributes = assertion.getAttributeStatements().get(0).getAttributes();
-		Attribute attribute = attributes.stream().filter((attr) -> attributeName.equals(attr.getName())).findFirst()
+		Attribute attribute = attributes.stream().filter(attr -> attributeName.equals(attr.getName())).findFirst()
 				.orElseThrow(() -> new RuntimeException("Missing attribute in SAML assertion: " + attributeName));
 		XMLObject xmlObject = attribute.getAttributeValues().get(0);
 		String textContent;

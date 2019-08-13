@@ -124,11 +124,11 @@ public class AbacSecurityService {
 		try {
 			final XacmlResponse abacResponse = abacService.evaluate(abacRequest);
 			if (abacResponse.getDecision() == Decision.DENY) {
-				sakAbacLogger.logAbacDeny(abacRequest, abacResponse, resources);
+				sakAbacLogger.logAbacDeny(abacRequest, abacResponse);
 				throw new AuthorizationException(ACCESS_DENIED_TO_SAK);
 			}
 
-			sakAbacLogger.logAbacPermit(abacRequest, abacResponse, resources);
+			sakAbacLogger.logAbacPermit(abacRequest, abacResponse);
 		} catch (AuthorizationException e) {
 			throw e;
 		} catch (Exception e) {
