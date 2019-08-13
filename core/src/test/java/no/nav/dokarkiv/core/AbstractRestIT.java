@@ -16,6 +16,7 @@ import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
+import no.nav.dokarkiv.core.repository.SakRepository;
 import no.nav.dokarkiv.core.skjerming.SkjermingServiceTest;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.dokarkiv.core.stelvio.SimpleRequestContext;
@@ -76,6 +77,8 @@ public abstract class AbstractRestIT {
 	protected EntityManager entityManager;
 	@Inject
 	protected DokumentFilRepository dokumentFilRepository;
+	@Inject
+	private SakRepository sakRepository;
 
 	protected static final String BEARER = "Bearer ";
 	protected static final String NAV_CONSUMER_TOKEN = "Nav-Consumer-Token";
@@ -104,6 +107,7 @@ public abstract class AbstractRestIT {
 		journalpostDokumentInfoRelasjonRepository.deleteAll();
 		dokumentinfoRepository.deleteAll();
 		joarkRepository.deleteAll();
+		sakRepository.deleteAll();
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 	}

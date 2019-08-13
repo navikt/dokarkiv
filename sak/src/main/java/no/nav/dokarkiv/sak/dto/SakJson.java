@@ -120,7 +120,18 @@ public class SakJson {
 	@JsonProperty("opprettetTidspunkt")
 	@ApiModelProperty("Opprettet tidspunkt iht. ISO-8601")
 	public String getOpprettetTidspunkt() {
+		if (opprettetTidspunkt == null) {
+			return null;
+		}
 		return ZonedDateTime.of(opprettetTidspunkt, ZoneId.systemDefault()).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+	}
+
+	public void setOpprettetTidspunkt(String opprettetTidspunkt) {
+		if (opprettetTidspunkt != null && !opprettetTidspunkt.isEmpty()) {
+			this.opprettetTidspunkt = LocalDateTime.parse(opprettetTidspunkt, DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+		} else {
+			this.opprettetTidspunkt = null;
+		}
 	}
 
 	public Sak toSak(String opprettetAv) {

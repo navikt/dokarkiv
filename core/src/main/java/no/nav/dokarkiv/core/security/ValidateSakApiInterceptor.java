@@ -135,6 +135,9 @@ public class ValidateSakApiInterceptor implements HandlerInterceptor {
 			return AuthenticationResult.builder().isValid(false).errorMessage(authenticationResult.getErrorMessage()).build();
 		}
 
+		MDC.put(MDCConstants.MDC_CONSUMER_ID, authenticationResult.getConsumerId());
+		MDC.put(MDCConstants.MDC_USER_ID, authenticationResult.getUser());
+
 		SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(username, password));
 		return AuthenticationResult.builder().isValid(true).build();
 
