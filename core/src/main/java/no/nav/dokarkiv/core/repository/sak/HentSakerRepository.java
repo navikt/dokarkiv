@@ -93,7 +93,7 @@ public class HentSakerRepository {
 		}
 
 		cq.where(predicates.toArray(new Predicate[0]));
-		cq.orderBy(cb.asc(sak.get("opprettetTidspunkt")));
+		cq.orderBy(cb.desc(sak.get("opprettetTidspunkt")));
 
 		Histogram.Timer timer = startTimer("search");
 		try {
