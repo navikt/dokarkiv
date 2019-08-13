@@ -13,6 +13,8 @@ public class JoarkAbacAttributes {
     public static final String READ_ACTION = "read";
 	public static final String CREATE_ACTION = "create";
     public static final String UPDATE_ACTION = "update";
+    public static final String ADMIN_UPDATE_ACTION = "admin_update";
     public static final String DELETE_ACTION = "delete";
 	public static final String ARKIV = "arkiv";
+    public static final String ARKIV_V2 = "arkiv_v2";
 }

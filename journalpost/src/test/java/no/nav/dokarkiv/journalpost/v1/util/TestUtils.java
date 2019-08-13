@@ -87,6 +87,7 @@ public class TestUtils {
 	public static final String TEMA_SER = "SER";
 	public static final String BEHANDLINGSTEMA = "ab0001";
 	public static final String AVSENDER_MOTTAKER_LAND = "Legoland";
+	public static final String AVSENDER_MOTTAKER_UTLAND = "Utland";
 	public static final String KANAL_NAVNO = "NAV_NO";
 	public static final String DOKUMENTKATEGORI_SED = "SED";
 	public static final String FILTYPE_PDF = "PDF";
@@ -278,6 +279,19 @@ public class TestUtils {
 				.build();
 	}
 
+	public static OppdaterJournalpostRequest createPutOppdaterJournalpostAvsenderMottakerKunLandRequest() {
+		return OppdaterJournalpostRequest.builder()
+				.avsenderMottaker(AvsenderMottaker.builder().land(AVSENDER_MOTTAKER_UTLAND).build())
+				.bruker(createBrukerPerson())
+				.sak(createSak())
+				.tema(TEMA_FOR)
+				.behandlingstema(BEHANDLINGSTEMA)
+				.tittel(DOKUMENT_TITTEL1)
+				.tilleggsopplysninger(createTilleggsopplysninger())
+				.dokumenter(createDokumentInfos())
+				.build();
+	}
+
 	public static AvsenderMottaker createAvsenderMottakerPerson() {
 		return AvsenderMottaker.builder()
 				.navn(AVSENDER_NAVN)
@@ -289,6 +303,7 @@ public class TestUtils {
 	public static AvsenderMottaker createAvsenderMottakerPersonWithoutId() {
 		return AvsenderMottaker.builder()
 				.idType(AvsenderMottakerIdType.FNR)
+				.id(" ")
 				.navn(AVSENDER_NAVN)
 				.land(AVSENDER_MOTTAKER_LAND)
 				.build();

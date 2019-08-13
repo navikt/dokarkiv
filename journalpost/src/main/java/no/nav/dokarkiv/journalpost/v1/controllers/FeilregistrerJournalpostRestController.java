@@ -1,10 +1,13 @@
 package no.nav.dokarkiv.journalpost.v1.controllers;
 
 import static no.nav.abac.xacml.NavAttributter.RESOURCE_ARKIV_DOKUMENT;
+import static no.nav.abac.xacml.NavAttributter.RESOURCE_FELLES_DOMENE;
 import static no.nav.abac.xacml.NavAttributter.RESOURCE_FELLES_RESOURCE_TYPE;
 import static no.nav.abac.xacml.StandardAttributter.ACTION_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
+import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.ADMIN_UPDATE_ACTION;
+import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.ARKIV_V2;
 import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.UPDATE_ACTION;
 import static no.nav.dokarkiv.journalpost.v1.util.AvvikstypeConstants.AVBRYT;
 import static no.nav.dokarkiv.journalpost.v1.util.AvvikstypeConstants.FEILREGISTRER_SAKSTILKNYTNING;
@@ -46,7 +49,6 @@ import java.util.List;
 public class FeilregistrerJournalpostRestController {
 
     private static final String FIKK_UKJENT_BRUKER = "Journalposten fikk status Ukjent Bruker";
-    private static final String FIKK_AVBRUTT_UTGAAR = "Journalposten ble satt til avbrutt / utgår";
     private static final String FEILREGISTRERING_OPPHEVET = "Feilregistreringen ble opphevet";
 
     private final FeilregistrerSakstilknytningService feilregistrerSakstilknytningService;
@@ -68,7 +70,8 @@ public class FeilregistrerJournalpostRestController {
     @Transactional
     @SwaggerFeilregistrerSakstilknytning
     @PatchMapping("/{journalpostId}/feilregistrer/" + FEILREGISTRER_SAKSTILKNYTNING)
-    @Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_DOKUMENT)},
+    @Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_DOKUMENT),
+                        @Abac.Attr(key = RESOURCE_FELLES_DOMENE, value = ARKIV_V2)},
             actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION))
     @RestMetrics(value = "dok_request", extraTags = {"process_code", "feilregistrer"}, percentiles = {0.5, 0.95})
     public ResponseEntity<String> feilregistrerSakstilkytning (
@@ -82,7 +85,8 @@ public class FeilregistrerJournalpostRestController {
     @Transactional
     @SwaggerOpphevFeilregistrertSakstilknytning
     @PatchMapping("/{journalpostId}/feilregistrer/" + OPPHEV_FEILREGISTRERT_SAKSTILKNYTNING)
-    @Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_DOKUMENT)},
+    @Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_DOKUMENT),
+                        @Abac.Attr(key = RESOURCE_FELLES_DOMENE, value = ARKIV_V2)},
             actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION))
     @RestMetrics(value = "dok_request", extraTags = {"process_code", "feilregistrer"}, percentiles = {0.5, 0.95})
     public ResponseEntity<String> opphevFeilregistrertSakstilknytning (
@@ -96,8 +100,9 @@ public class FeilregistrerJournalpostRestController {
     @Transactional
     @SwaggerSettUkjentBruker
     @PatchMapping("/{journalpostId}/feilregistrer/" + SETT_UKJENT_BRUKER)
-    @Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_DOKUMENT)},
-            actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION))
+    @Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_DOKUMENT),
+                        @Abac.Attr(key = RESOURCE_FELLES_DOMENE, value = ARKIV_V2)},
+            actions = @Abac.Attr(key = ACTION_ID, value = ADMIN_UPDATE_ACTION))
     @RestMetrics(value = "dok_request", extraTags = {"process_code", "feilregistrer"}, percentiles = {0.5, 0.95})
     public ResponseEntity<String> settUkjentBruker (
             @PathVariable @ApiParam(value = "IDen til journalposten som skal feilregistreres", required = true, example = "77778888") String journalpostId) {
@@ -110,15 +115,14 @@ public class FeilregistrerJournalpostRestController {
     @Transactional
     @SwaggerAvbryt
     @PatchMapping("/{journalpostId}/feilregistrer/" + AVBRYT)
-    @Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_DOKUMENT)},
-            actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION))
+    @Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_DOKUMENT),
+                        @Abac.Attr(key = RESOURCE_FELLES_DOMENE, value = ARKIV_V2)},
+            actions = @Abac.Attr(key = ACTION_ID, value = ADMIN_UPDATE_ACTION))
     @RestMetrics(value = "dok_request", extraTags = {"process_code", "feilregistrer"}, percentiles = {0.5, 0.95})
     public ResponseEntity<String> avbryt (
             @PathVariable @ApiParam(value = "IDen til journalposten som skal feilregistreres", required = true, example = "77778888") String journalpostId) {
-        List<ArkivElementEndringTO> arkivElementEndringTOList = avbrytService.avbryt(journalpostId);
-        populerAksjonslogg(journalpostId, AksjonsTypeCode.AVBRYT ,arkivElementEndringTOList, FIKK_AVBRUTT_UTGAAR);
-        log.info(MDC.get(MDC_REQUEST_ID) + " har satt status til avbrutt / utgår for journalpost med journalpostId={}", journalpostId);
-        return ResponseEntity.ok().body(FIKK_AVBRUTT_UTGAAR);
+        String response = avbrytService.avbryt(journalpostId);
+        return ResponseEntity.ok().body(response);
     }
 
     private void populerAksjonslogg(String journalpostId, AksjonsTypeCode aksjon, List<ArkivElementEndringTO> arkivElementEndringTOList, String melding) {

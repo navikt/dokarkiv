@@ -2,11 +2,13 @@ package no.nav.dokarkiv.journalpost.v1.controllers;
 
 import static no.nav.abac.xacml.NavAttributter.RESOURCE_ARKIV_DOKUMENT;
 import static no.nav.abac.xacml.NavAttributter.RESOURCE_ARKIV_JOURNALPOST;
+import static no.nav.abac.xacml.NavAttributter.RESOURCE_FELLES_DOMENE;
 import static no.nav.abac.xacml.NavAttributter.RESOURCE_FELLES_RESOURCE_TYPE;
 import static no.nav.abac.xacml.StandardAttributter.ACTION_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
+import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.ARKIV_V2;
 import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.CREATE_ACTION;
 import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.UPDATE_ACTION;
 import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateId;
@@ -16,24 +18,27 @@ import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
 import no.nav.dokarkiv.core.metrics.RestMetrics;
 import no.nav.dokarkiv.core.security.abac.AbacSecurityService;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import no.nav.dokarkiv.journalpost.v1.api.FerdigstillJournalpostRequest;
+import no.nav.dokarkiv.journalpost.v1.api.OppdaterDistribusjonsinfoRequest;
 import no.nav.dokarkiv.journalpost.v1.api.OppdaterJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.OppdaterJournalpostResponse;
 import no.nav.dokarkiv.journalpost.v1.api.OpprettJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.OpprettJournalpostResponse;
 import no.nav.dokarkiv.journalpost.v1.services.FerdigstillJournalpostService;
 import no.nav.dokarkiv.journalpost.v1.services.KopierJournalpostService;
+import no.nav.dokarkiv.journalpost.v1.services.OppdaterDistribusjonsinfoService;
 import no.nav.dokarkiv.journalpost.v1.services.OppdaterJournalpostService;
 import no.nav.dokarkiv.journalpost.v1.services.OpprettJournalpostService;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerFerdigstillJournalpost;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerKopierJournalpost;
+import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerOppdaterDistribusjonsinfo;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerOppdaterJournalpost;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerOpprettJournalpost;
 import no.nav.dokarkiv.journalpost.v1.validators.FerdigstillJournalpostValidator;
+import no.nav.dokarkiv.journalpost.v1.validators.OppdaterDistribusjonsinfoValidator;
 import no.nav.dokarkiv.journalpost.v1.validators.OpprettJournalpostRequestValidator;
 import no.nav.freg.abac.core.annotation.Abac;
 import org.apache.commons.lang3.tuple.Pair;
@@ -64,9 +69,11 @@ public class ArkiverOgJournalfoerRestController {
     private final FerdigstillJournalpostService ferdigstillJournalpostService;
     private final AbacSecurityService abacSecurityService;
     private final OppdaterJournalpostService oppdaterJournalpostService;
+    private final OppdaterDistribusjonsinfoService oppdaterDistribusjonsinfoService;
     private final OpprettJournalpostService opprettJournalpostService;
     private final OpprettJournalpostRequestValidator opprettJournalpostRequestValidator;
     private final FerdigstillJournalpostValidator ferdigstillJournalpostValidator;
+    private final OppdaterDistribusjonsinfoValidator oppdaterDistribusjonsinfoValidator;
 
     private static final String TRUE = "true";
 
@@ -75,14 +82,17 @@ public class ArkiverOgJournalfoerRestController {
                                               final KopierJournalpostService kopierJournalpostService,
                                               final OppdaterJournalpostService oppdaterJournalpostService,
                                               final OpprettJournalpostService opprettJournalpostService,
+                                              final OppdaterDistribusjonsinfoService oppdaterDistribusjonsinfoService,
                                               final AbacSecurityService abacSecurityService) {
         this.ferdigstillJournalpostService = ferdigstillJournalpostService;
         this.kopierJournalpostService = kopierJournalpostService;
         this.abacSecurityService = abacSecurityService;
         this.oppdaterJournalpostService = oppdaterJournalpostService;
         this.opprettJournalpostService = opprettJournalpostService;
+        this.oppdaterDistribusjonsinfoService = oppdaterDistribusjonsinfoService;
         this.opprettJournalpostRequestValidator = new OpprettJournalpostRequestValidator();
         this.ferdigstillJournalpostValidator = new FerdigstillJournalpostValidator();
+        this.oppdaterDistribusjonsinfoValidator = new OppdaterDistribusjonsinfoValidator();
     }
 
     @Transactional
@@ -91,7 +101,7 @@ public class ArkiverOgJournalfoerRestController {
     @RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark203"}, percentiles = {0.5, 0.95})
     public ResponseEntity<Long> kopierJournalpost(
             @ApiParam(name="kildeJournalpostId", value = "IDen til journalposten som skal kopieres", required = true, example = "77778888")
-            @RequestParam String kildeJournalpostId) throws UgyldigAksjonsLoggException {
+            @RequestParam String kildeJournalpostId) {
         MDC.put(MDC_REQUEST_ID, "rjoark203");
         log.info(MDC.get(MDC_REQUEST_ID) + " har mottatt kall for kopiering av journalpost med journalpostId={}", kildeJournalpostId);
         validateId(kildeJournalpostId, "journalpostId");
@@ -105,7 +115,8 @@ public class ArkiverOgJournalfoerRestController {
     @Transactional
     @SwaggerFerdigstillJournalpost
     @PatchMapping("/{journalpostId}/ferdigstill")
-    @Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_DOKUMENT)},
+    @Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_DOKUMENT),
+                        @Abac.Attr(key = RESOURCE_FELLES_DOMENE, value = ARKIV_V2)},
             actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION))
     @RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark201"}, percentiles = {0.5, 0.95})
     public ResponseEntity<String> ferdigstillJournalpost(
@@ -124,15 +135,40 @@ public class ArkiverOgJournalfoerRestController {
     }
 
     @Transactional
+    @SwaggerOppdaterDistribusjonsinfo
+    @PatchMapping("/{journalpostId}/oppdaterDistribusjonsinfo")
+    @Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_DOKUMENT),
+                        @Abac.Attr(key = RESOURCE_FELLES_DOMENE, value = ARKIV_V2)},
+            actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION))
+    @RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark201"}, percentiles = {0.5, 0.95})
+    public ResponseEntity<String> oppdaterDistribusjonsinfo(
+            @PathVariable @ApiParam(value = "IDen til journalposten som skal oppdateres", required = true, example = "77778888") String journalpostId,
+            @RequestBody OppdaterDistribusjonsinfoRequest request) {
+        MDC.put(MDC_REQUEST_ID, "oppdaterDistribusjonsinfo");
+        log.info(MDC.get(MDC_REQUEST_ID) + " har mottat kall for oppdatering av distribusjonsinfo for journalpostId={}", journalpostId);
+        validateId(journalpostId, "journalpostId");
+        oppdaterDistribusjonsinfoValidator.validateRequest(journalpostId, request);
+        abacSecurityService.assertAccessToJournalpost(journalpostId);
+        RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
+
+        oppdaterDistribusjonsinfoService.oppdaterDistribusjonsinfo(Long.parseLong(journalpostId), request);
+
+        log.info(MDC.get(MDC_REQUEST_ID) + " har oppdatert distribusjonsinfo på journalpost med journalpostId={}", journalpostId);
+
+        return ResponseEntity.ok().body("Journalpost oppdatert");
+    }
+
+    @Transactional
     @SwaggerOppdaterJournalpost
     @ResponseBody
     @PutMapping(value = "/{journalpostId}")
-    @Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_JOURNALPOST)},
+    @Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_JOURNALPOST),
+                        @Abac.Attr(key = RESOURCE_FELLES_DOMENE, value = ARKIV_V2)},
             actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION))
     @RestMetrics(value = "dok_request", extraTags = {"process_code", "oppdaterjournalpost"}, percentiles = {0.5, 0.95})
     public OppdaterJournalpostResponse oppdaterJournalpost(
             @PathVariable String journalpostId,
-            @RequestBody OppdaterJournalpostRequest request) throws UgyldigAksjonsLoggException {
+            @RequestBody OppdaterJournalpostRequest request) {
         RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDC_CONSUMER_ID));
         MDC.put(MDC_REQUEST_ID, "oppdaterjournalpost");
         log.info(MDC.get(MDC_REQUEST_ID) + " har mottatt kall om å oppdatere journalpost med journalpostId={}", journalpostId);
@@ -148,7 +184,8 @@ public class ArkiverOgJournalfoerRestController {
     @Transactional
     @PostMapping
     @SwaggerOpprettJournalpost
-    @Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_DOKUMENT)},
+    @Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_DOKUMENT),
+                        @Abac.Attr(key = RESOURCE_FELLES_DOMENE, value = ARKIV_V2)},
             actions = @Abac.Attr(key = ACTION_ID, value = CREATE_ACTION))
     @RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark202"}, percentiles = {0.5, 0.95}, histogram = true)
     public ResponseEntity<OpprettJournalpostResponse> opprettJournalpost(

@@ -1,42 +1,39 @@
 package no.nav.dokarkiv.journalpost.v1.services;
 
-import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
-import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.KOPIER_JOURNALPOST;
-
-import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService;
-import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggTO;
 import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
+import no.nav.dokarkiv.core.aksjonslogg.LagreAksjonsLoggService;
+import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
-import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.journalpost.v1.util.kopierjournalpost.JournalpostCopier;
 import no.nav.dokarkiv.journalpost.v1.validators.KopierJournalpostValidator;
-import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
-import java.util.Arrays;
+import java.util.Collections;
+
+import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_JOURNALPOST_ID;
 
 @Component
 public class KopierJournalpostService {
 
 	private final JoarkRepository joarkRepository;
-	private final AksjonsLoggService aksjonsLoggService;
+	private final LagreAksjonsLoggService aksjonsLoggService;
 	private final KopierJournalpostValidator kopierJournalpostValidator;
 	private final JournalpostCopier journalpostCopier;
 
 	@Inject
-	public KopierJournalpostService(final JoarkRepository joarkRepository, final AksjonsLoggService aksjonsLoggService) {
+	public KopierJournalpostService(final JoarkRepository joarkRepository, final LagreAksjonsLoggService aksjonsLoggService) {
 		this.joarkRepository = joarkRepository;
 		this.aksjonsLoggService = aksjonsLoggService;
 		this.kopierJournalpostValidator = new KopierJournalpostValidator();
 		this.journalpostCopier = new JournalpostCopier();
 	}
 
-	public Long execute(Long journalpostId) throws UgyldigAksjonsLoggException {
+	public Long execute(Long journalpostId) {
 		// finn journalpost
 		Journalpost journalpost = joarkRepository.findById(journalpostId)
 				.orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostId)));
@@ -51,10 +48,20 @@ public class KopierJournalpostService {
 
         nyJournalpost = joarkRepository.save(nyJournalpost);
 
-        populerAksjonslogg(nyJournalpost.getJournalpostId(), journalpost.getJournalpostId());
+        Long nyJournalpostId = nyJournalpost.getJournalpostId();
+
+		ArkivElementEndringTO endring = ArkivElementEndringTO.builder()
+				.arkivElement(JOURNALPOST_JOURNALPOST_ID)
+				.fraVerdi(Long.toString(journalpost.getJournalpostId()))
+				.tilVerdi(Long.toString(nyJournalpostId))
+				.build();
+
+		aksjonsLoggService.lagreAksjonsLoggForJournalpost(
+				AksjonsTypeCode.KOPIER_JOURNALPOST, journalpostId, null,"Journalposten ble kopiert. Id til ny journalpost er " + nyJournalpostId,
+				null, Collections.singletonList(endring));
 
 		// returnere journalpostId til ny journalpost
-		return nyJournalpost.getJournalpostId();
+		return nyJournalpostId;
 	}
 
 	private void resetJournalpoststatus(Journalpost journalpost) {
@@ -66,24 +73,5 @@ public class KopierJournalpostService {
 		} else { // Notat
 			journalpost.setJournalstatus(JournalStatusCode.R);
 		}
-	}
-
-
-	private void populerAksjonslogg(long journalpostId, long originalJournalpostId) throws UgyldigAksjonsLoggException {
-		AksjonsLoggTO aksjonsLoggTo;
-		aksjonsLoggTo = AksjonsLoggTO.builder()
-				.aksjon(KOPIER_JOURNALPOST)
-				.journalpostId(journalpostId)
-				.utfoertAv(MDC.get(MDC_CONSUMER_ID))
-				.melding("Journalposten ble kopiert. Id til ny journalpost er " + journalpostId)
-				.build();
-
-		ArkivElementEndringTO arkivElementEndringTO = ArkivElementEndringTO.builder()
-				.arkivElement("Journalpost.journalpostId")
-				.fraVerdi(Long.toString(originalJournalpostId))
-				.tilVerdi(Long.toString(journalpostId))
-				.build();
-
-		aksjonsLoggService.validateAndSaveAksjonsLogg(aksjonsLoggTo, Arrays.asList(arkivElementEndringTO));
 	}
 }
