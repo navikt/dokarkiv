@@ -142,7 +142,7 @@ public class AbacSecurityService {
 	XacmlRequest decorateJoarkResources(XacmlRequest request,
 										AbacResources joarkResources, Long journalpostId) {
 		if (journalpostId != null && !joarkResources.getBrukerIds().isEmpty() && joarkResources.getBrukerIds().size() > 1) {
-			log.error("Requested access to journalpost with multiple users, journalpostId={}", journalpostId);
+			log.warn("Requested access to journalpost with multiple users, journalpostId={}", journalpostId);
 		}
 
 		if (joarkResources.getBrukerIds() != null && joarkResources.getBrukerIds().size() == 1) {
