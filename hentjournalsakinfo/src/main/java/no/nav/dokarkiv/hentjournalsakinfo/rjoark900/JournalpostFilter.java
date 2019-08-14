@@ -5,9 +5,12 @@ import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.M;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.MO;
 
 import lombok.Value;
+import no.nav.dokarkiv.hentjournalsakinfo.rjoark904.FinnJournalposterStatusRequestTo;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -15,7 +18,7 @@ import java.util.stream.Collectors;
  * @author Joakim Bjørnstad, Jbit AS
  */
 @Value
-class JournalpostFilter {
+public class JournalpostFilter {
 	public static final long JOURNALPOST_ID_MAX = 999999999L;
 	public static final long JOURNALPOST_ID_MIN = 0L;
 	private final LocalDate fraDato;
@@ -27,7 +30,7 @@ class JournalpostFilter {
 	private final Slice slice;
 	private final Long journalpostIdPeker;
 
-	enum Slice {
+	public enum Slice {
 		FOERSTE,
 		SISTE
 	}
@@ -41,6 +44,19 @@ class JournalpostFilter {
 		this.antallRader = getAntallRader(finnJournalposterRequestTo);
 		this.slice = getSlice(finnJournalposterRequestTo);
 		this.journalpostIdPeker = getPeker(this.slice, finnJournalposterRequestTo);
+	}
+
+	public JournalpostFilter(FinnJournalposterStatusRequestTo finnJournalposterStatusRequestTo) {
+		this.fraDato = LocalDate.parse(finnJournalposterStatusRequestTo.getFraDato());
+		this.inkluderJournalStatus = Collections.singletonList(finnJournalposterStatusRequestTo.getJournalstatus().toString());
+		this.inkluderJournalpostType = finnJournalposterStatusRequestTo.getInkluderJournalpostType().stream().map(Enum::name).collect(Collectors.toList());
+		// Kun tillatt å paginere forover
+		this.antallRader = finnJournalposterStatusRequestTo.getFoerste();
+		this.slice = Slice.FOERSTE;
+		this.journalpostIdPeker = getPeker(finnJournalposterStatusRequestTo.getEtterPeker(), JOURNALPOST_ID_MAX);
+		// Ikke brukt
+		this.alleIdenter = new ArrayList<>();
+		this.visFeilregistrerte = false;
 	}
 
 	private Integer getAntallRader(FinnJournalposterRequestTo finnJournalposterRequestTo) {
