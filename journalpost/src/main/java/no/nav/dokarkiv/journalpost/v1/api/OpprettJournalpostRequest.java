@@ -33,10 +33,8 @@ public class OpprettJournalpostRequest {
 	@ApiModelProperty
 	private Bruker bruker;
 
-	@NotNull(message = "Tema kan ikke være null")
 	@ApiModelProperty(
 			value = "Temaet som forsendelsen tilhører, for eksempel \"FOR\" (foreldrepenger).",
-			required = true,
 			example = "FOR"
 	)
 	private String tema;
@@ -47,10 +45,8 @@ public class OpprettJournalpostRequest {
 	)
 	private String behandlingstema;
 
-	@NotNull(message = "Tittel kan ikke være null")
 	@ApiModelProperty(
 			value = "Tittel som beskriver forsendelsen samlet, feks \"Ettersendelse til søknad om foreldrepenger\".",
-			required = true,
 			example = "Ettersendelse til søknad om foreldrepenger"
 	)
 	private String tittel;

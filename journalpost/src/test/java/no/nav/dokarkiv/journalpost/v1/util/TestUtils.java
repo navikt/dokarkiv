@@ -454,11 +454,9 @@ public class TestUtils {
 						.build());
 	}
 
-	public static OpprettJournalpostRequest.OpprettJournalpostRequestBuilder createMinimalRequest(JournalpostType journalpostType, String tema, String tittel) {
+	public static OpprettJournalpostRequest.OpprettJournalpostRequestBuilder createMinimalRequest(JournalpostType journalpostType) {
 		return OpprettJournalpostRequest.builder()
-				.journalpostType(journalpostType)
-				.tema(tema)
-				.tittel(tittel);
+				.journalpostType(journalpostType);
 	}
 
 	public static OpprettJournalpostRequest createRequestAvsenderMottaker(JournalpostType journalpostType, AvsenderMottaker avsenderMottaker) {
@@ -469,7 +467,6 @@ public class TestUtils {
 				.tittel(INNHOLD)
 				.build();
 	}
-
 
 	public static TilknyttVedleggRequest createTilknyttVedleggRequest() {
 		return TilknyttVedleggRequest.builder()

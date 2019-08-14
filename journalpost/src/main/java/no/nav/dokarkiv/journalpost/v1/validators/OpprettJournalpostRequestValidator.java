@@ -37,11 +37,12 @@ public class OpprettJournalpostRequestValidator {
 		if (request.getBruker() != null) {
 			validateBruker(request.getBruker());
 		}
-		validateTema(request.getTema());
+		if(request.getTema() != null){
+			validateTema(request.getTema());
+		}
 		if (isNotBlank(request.getBehandlingstema())) {
 			validateBehandlingstema(request.getBehandlingstema());
 		}
-		validateTittel(request.getTittel());
 		if (isNotBlank(request.getKanal())) {
 			validateKanal(request);
 		}
@@ -95,9 +96,6 @@ public class OpprettJournalpostRequestValidator {
 	}
 
 	private void validateTema(String tema) {
-		if (isBlank(tema)) {
-			throw new InputValideringFeiletException("Journalpost.tema må være satt");
-		}
 		try {
 			FagomradeCode.valueOf(tema);
 		} catch (IllegalArgumentException e) {
@@ -110,12 +108,6 @@ public class OpprettJournalpostRequestValidator {
 			Behandlingstema.valueOf(behandlingstema);
 		} catch (IllegalArgumentException e) {
 			throw new InputValideringFeiletException(String.format("Oppgitt behandlingstema=%s %s", behandlingstema, VALIDERER_IKKE_MOT_KODEVERK));
-		}
-	}
-
-	private void validateTittel(String tittel) {
-		if (isBlank(tittel)) {
-			throw new InputValideringFeiletException("Journalpost.tittel må være satt");
 		}
 	}
 

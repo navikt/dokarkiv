@@ -9,5 +9,6 @@ public class VariantDto {
 	private final VariantFormatCode variantf;
 	private final String filnavn;
 	private final String filuuid;
+	private final String filtype;
 	private final SkjermingTypeCode skjerming;
 }
