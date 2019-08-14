@@ -2,6 +2,7 @@ package no.nav.dokarkiv.sak.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.NoArgsConstructor;
 import no.nav.dokarkiv.core.domain.entities.Sak;
 import no.nav.dokarkiv.sak.validering.ExactlyOneOf;
 import no.nav.dokarkiv.sak.validering.NotNullWhenDependsOnHasValue;
@@ -16,6 +17,7 @@ import java.time.format.DateTimeFormatter;
 
 @ExactlyOneOf(fields = {"aktoerId", "orgnr"})
 @NotNullWhenDependsOnHasValue(field = "applikasjon", dependsOnField = "fagsakNr")
+@NoArgsConstructor
 public class SakJson {
 	private Long id;
 
@@ -37,11 +39,6 @@ public class SakJson {
 
 	private String opprettetAv;
 	private LocalDateTime opprettetTidspunkt;
-
-
-	public SakJson() {
-		//JaxRS
-	}
 
 	public SakJson(Sak sak) {
 		this.id = sak.getSakId();
@@ -120,7 +117,18 @@ public class SakJson {
 	@JsonProperty("opprettetTidspunkt")
 	@ApiModelProperty("Opprettet tidspunkt iht. ISO-8601")
 	public String getOpprettetTidspunkt() {
+		if (opprettetTidspunkt == null) {
+			return null;
+		}
 		return ZonedDateTime.of(opprettetTidspunkt, ZoneId.systemDefault()).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+	}
+
+	public void setOpprettetTidspunkt(String opprettetTidspunkt) {
+		if (opprettetTidspunkt != null && !opprettetTidspunkt.isEmpty()) {
+			this.opprettetTidspunkt = LocalDateTime.parse(opprettetTidspunkt, DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+		} else {
+			this.opprettetTidspunkt = null;
+		}
 	}
 
 	public Sak toSak(String opprettetAv) {

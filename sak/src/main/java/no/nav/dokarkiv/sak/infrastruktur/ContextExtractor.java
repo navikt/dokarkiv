@@ -5,15 +5,13 @@ import static no.nav.dokarkiv.sak.infrastruktur.SubjectType.SUBJECT_TYPE_EKSTERN
 import static no.nav.dokarkiv.sak.infrastruktur.SubjectType.SUBJECT_TYPE_INTERNBRUKER;
 import static no.nav.dokarkiv.sak.infrastruktur.SubjectType.SUBJECT_TYPE_SYSTEMBRUKER;
 
+import lombok.experimental.UtilityClass;
 import no.nav.dokarkiv.core.MDCConstants;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.MDC;
 
+@UtilityClass
 public class ContextExtractor {
-
-	private ContextExtractor() {
-		//Util
-	}
 
 	public static String getUserName() {
 		return MDC.get(MDCConstants.MDC_USER_ID);

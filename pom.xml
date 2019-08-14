@@ -58,6 +58,7 @@
 		<flyway.version>4.2.0</flyway.version>
 		<swagger.version>2.9.2</swagger.version>
 		<freg.security.test.version>3.1.0</freg.security.test.version>
+		<modig.testcertificates.version>2.0.0-SNAPSHOT</modig.testcertificates.version>
 	</properties>
 	<dependencyManagement>
 		<dependencies>
@@ -217,7 +218,12 @@
 				<artifactId>springfox-swagger-ui</artifactId>
 				<version>${swagger.version}</version>
 			</dependency>
-
+			<dependency>
+				<groupId>no.nav.modig</groupId>
+				<artifactId>modig-testcertificates</artifactId>
+				<version>${modig.testcertificates.version}</version>
+				<scope>test</scope>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 	<build>

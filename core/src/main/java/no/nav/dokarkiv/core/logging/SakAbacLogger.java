@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -20,7 +19,7 @@ import java.util.stream.Collectors;
 @Slf4j(topic = "sakabaclogger")
 public class SakAbacLogger {
 
-	public void logAbacDeny(final XacmlRequest xacmlRequest, final XacmlResponse xacmlResponse, final Map<String, String> resources) {
+	public void logAbacDeny(final XacmlRequest xacmlRequest, final XacmlResponse xacmlResponse) {
 		log.warn("ConsumerID: {}; User: {}; Endpoint: {}; Method: {}; Authorization Request: {}; Authorization Response: {}",
 				MDC.get(MDCConstants.MDC_CONSUMER_ID),
 				MDC.get(MDCConstants.MDC_USER_ID),
@@ -30,7 +29,7 @@ public class SakAbacLogger {
 				mapResponse(xacmlResponse));
 	}
 
-	public void logAbacPermit(final XacmlRequest xacmlRequest, final XacmlResponse xacmlResponse, final Map<String, String> resources) {
+	public void logAbacPermit(final XacmlRequest xacmlRequest, final XacmlResponse xacmlResponse) {
 		log.info("ConsumerID: {}; User: {}; Endpoint: {}; Method: {}; Authorization Request: {}; Authorization Response: {}",
 				MDC.get(MDCConstants.MDC_CONSUMER_ID),
 				MDC.get(MDCConstants.MDC_USER_ID),

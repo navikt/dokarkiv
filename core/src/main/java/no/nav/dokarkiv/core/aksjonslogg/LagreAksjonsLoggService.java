@@ -51,12 +51,21 @@ public class LagreAksjonsLoggService {
 	 * Denne metoden lagrer ny aksjonslogg med samme arkivelementendringer for alle journalpostIder dokumentInfo har relasjon til.
 	 */
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
-	public void lagreAksjonsLogg(AksjonsTypeCode aksjonsType, Long dokumentInfoId, String hjemmel, String melding, String utfoertAv, List<ArkivElementEndringTO> arkivElementEndringTOList) throws UgyldigAksjonsLoggException {
+	public void lagreAksjonsLogg(AksjonsTypeCode aksjonsType, Long dokumentInfoId, String hjemmel, String melding, String utfoertAv, List<ArkivElementEndringTO> arkivElementEndringTOList) {
 
 		for (JournalpostDokumentInfoRelasjon rel : journalpostDokumentInfoRelasjonRepository.findAllByDokumentInfoDokumentInfoId(dokumentInfoId)) {
 			AksjonsLoggTO aksjonsLoggTO = mapAksjonsLoggTo(aksjonsType, rel.getJournalpost().getJournalpostId(), dokumentInfoId, melding, utfoertAv, hjemmel);
 			aksjonsLoggService.validateAndSaveAksjonsLogg(aksjonsLoggTO, arkivElementEndringTOList);
 		}
+	}
+
+	/**
+	 * Denne metoden lagrer ny aksjonslogg med arkivelementendringer for en enkelt journalpostId
+	 */
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
+	public void lagreAksjonsLoggForJournalpost(AksjonsTypeCode aksjonsType, Long jpId, String hjemmel, String melding, String utfoertAv, List<ArkivElementEndringTO> arkivElementEndringTOList) {
+		AksjonsLoggTO aksjonsLoggTO = mapAksjonsLoggTo(aksjonsType, jpId, null, melding, utfoertAv, hjemmel);
+		aksjonsLoggService.validateAndSaveAksjonsLogg(aksjonsLoggTO, arkivElementEndringTOList);
 	}
 
 	private AksjonsLoggTO mapAksjonsLoggTo(AksjonsTypeCode aksjon, Long journalpostId, Long dokumentInfoId, String melding, String utfoertAv, String hjemmel) {

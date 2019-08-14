@@ -1,12 +1,12 @@
 package no.nav.dokarkiv.sak.validering;
 
+import lombok.experimental.UtilityClass;
 import org.apache.commons.beanutils.BeanUtils;
 
 import java.util.Arrays;
 
-class CountFieldsMatching {
-	private CountFieldsMatching() {
-	} //No instantiation
+@UtilityClass
+final class CountFieldsMatching {
 
 	static Long count(Object o, String[] fields) {
 		return Arrays.stream(fields).filter(field -> {

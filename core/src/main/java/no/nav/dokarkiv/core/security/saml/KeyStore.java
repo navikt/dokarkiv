@@ -1,13 +1,7 @@
-//
-// Source code recreated from a .class file by IntelliJ IDEA
-// (powered by Fernflower decompiler)
-//
-
 package no.nav.dokarkiv.core.security.saml;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -23,8 +17,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
 
+/**
+ * Kopiert fra oppgavehandtering-security
+ * Link https://github.com/navikt/oppgavehandtering-security/blob/master/src/main/java/no/nav/sikkerhet/authentication/saml
+ */
+@Slf4j
 public class KeyStore {
-	private static final Logger log = LoggerFactory.getLogger(KeyStore.class);
 	private final java.security.KeyStore keyStore;
 	private final String privateKeyPassword;
 

@@ -18,6 +18,7 @@ import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.dokarkiv.core.stelvio.SimpleRequestContext;
 import no.nav.freg.security.test.oidc.tools.OidcTestService;
 import no.nav.freg.security.test.oidc.tools.TestToolsAutoConfig;
+import no.nav.modig.testcertificates.TestCertificates;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -91,6 +92,7 @@ public abstract class AbstractJournalfoerInngaaendeV1Itest {
 
 	@BeforeClass
 	public static void setupItest() {
+		TestCertificates.setupKeyAndTrustStore();
 		RequestContextSetter.setRequestContext(new SimpleRequestContext.Builder()
 				.userId("itestuser")
 				.componentId("itest")

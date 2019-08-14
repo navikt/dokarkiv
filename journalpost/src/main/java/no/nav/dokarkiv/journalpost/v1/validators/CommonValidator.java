@@ -18,6 +18,14 @@ public final class CommonValidator {
 		}
 	}
 
+	public static void validateBoolean(Boolean value, String feltnavn) {
+		try {
+			assert value != null;
+		} catch (IllegalArgumentException e) {
+			throw new InputValideringFeiletException(String.format("%s kan ikke være null eller tom.", feltnavn));
+		}
+	}
+
 	public static void validateJournalfoerendeEnhet(String journalfoerendeEnhet, String feltnavn) {
 		try {
 			hasText(journalfoerendeEnhet, feltnavn);

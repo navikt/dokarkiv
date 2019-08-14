@@ -19,11 +19,11 @@ public class NotNullWhenDependsOnHasValueValidator implements ConstraintValidato
 	@Override
 	public boolean isValid(Object o, ConstraintValidatorContext constraintValidatorContext) {
 		try {
-			String fieldValue = BeanUtils.getProperty(o, field);
 			String dependFieldValue = BeanUtils.getProperty(o, dependsOnField);
 			if (StringUtils.isBlank(dependFieldValue)) {
 				return true;
 			}
+			String fieldValue = BeanUtils.getProperty(o, field);
 			return StringUtils.isNotBlank(fieldValue);
 
 		} catch (Exception e) {

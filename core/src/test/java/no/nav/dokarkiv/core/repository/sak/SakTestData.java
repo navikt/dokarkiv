@@ -57,6 +57,11 @@ public class SakTestData {
 		return this;
 	}
 
+	public SakTestData opprettettidspunkt(LocalDateTime opprettetTidspunkt) {
+		this.opprettetTidspunkt = opprettetTidspunkt;
+		return this;
+	}
+
 	public static String generateValidOrgnr() {
 		return gyldigeOrgnr[RandomUtils.nextInt(0, 3)];
 	}

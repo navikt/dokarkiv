@@ -38,11 +38,13 @@ import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository
 import no.nav.dokarkiv.core.skjerming.SkjermingServiceTest;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.dokarkiv.core.stelvio.SimpleRequestContext;
+import no.nav.modig.testcertificates.TestCertificates;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpHeaders;
 import org.assertj.core.util.DateUtil;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -100,6 +102,11 @@ public class HentDokumentControllerIT {
 	private SkjermingServiceTest skjermingService;
 	@Inject
 	private EntityManager entityManager;
+
+	@BeforeClass
+	public static void beforeClass() {
+		TestCertificates.setupKeyAndTrustStore();
+	}
 
 	@Before
 	public void setUp() {

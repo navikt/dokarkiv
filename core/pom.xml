@@ -160,7 +160,12 @@
 			<groupId>org.flywaydb</groupId>
 			<artifactId>flyway-core</artifactId>
 		</dependency>
-    </dependencies>
+		<dependency>
+			<groupId>no.nav.modig</groupId>
+			<artifactId>modig-testcertificates</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
 	<build>
 		<plugins>
 			<plugin>
