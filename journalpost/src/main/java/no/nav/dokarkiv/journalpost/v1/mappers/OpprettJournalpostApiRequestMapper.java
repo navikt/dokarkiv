@@ -50,7 +50,7 @@ public class OpprettJournalpostApiRequestMapper {
 				.journalposttype(mapJournalposttype(request.getJournalpostType()))
 				.journalstatus(mapJournalstatus(request))
 				.innhold(request.getTittel())
-				.fagomrade(FagomradeCode.valueOf(request.getTema()))
+				.fagomrade(mapTema(request))
 				.avsenderMottaker(request.getAvsenderMottaker() == null ? null : request.getAvsenderMottaker().getNavn())
 				.avsenderMottakerId(request.getAvsenderMottaker() == null ? null : trim(request.getAvsenderMottaker().getId()))
 				.avsenderMottakerIdType(request.getAvsenderMottaker() == null ? null : mapAvsenderMottakerType(request.getAvsenderMottaker()
@@ -83,7 +83,7 @@ public class OpprettJournalpostApiRequestMapper {
 
 	private AvsenderMottakerIdTypeCode mapAvsenderMottakerType(AvsenderMottakerIdType request) {
 		AvsenderMottakerIdTypeCode avsenderMottakerIdTypeCode = null;
-		if(request != null) {
+		if (request != null) {
 			switch (request) {
 				case FNR:
 					avsenderMottakerIdTypeCode = AvsenderMottakerIdTypeCode.FNR;
@@ -140,6 +140,10 @@ public class OpprettJournalpostApiRequestMapper {
 
 	private Behandlingstema mapBehandlingstema(OpprettJournalpostRequest request) {
 		return isBlank(request.getBehandlingstema()) ? null : Behandlingstema.valueOf(request.getBehandlingstema());
+	}
+
+	private FagomradeCode mapTema(OpprettJournalpostRequest request) {
+		return isBlank(request.getTema()) ? null : FagomradeCode.valueOf(request.getTema());
 	}
 
 

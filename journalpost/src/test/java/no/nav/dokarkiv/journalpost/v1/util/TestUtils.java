@@ -468,7 +468,6 @@ public class TestUtils {
 				.build();
 	}
 
-
 	public static TilknyttVedleggRequest createTilknyttVedleggRequest() {
 		return TilknyttVedleggRequest.builder()
 				.tilknyttetAvNavn("Testus Testesen")

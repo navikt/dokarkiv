@@ -344,6 +344,20 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 	}
 
 	@Test
+	public void shouldRunOKWithoutTittelAndTema() throws IOException {
+		abacPermit();
+
+		OpprettJournalpostRequest request = createMinimalRequest(INNGAAENDE).build();
+
+		HttpEntity requestEntity = new HttpEntity(request, createHeadersWithServiceUserToken());
+		ResponseEntity<OpprettJournalpostResponse> response = restTemplate.exchange(URL_JOURNALPOST + FERDIGSTILL_QUERY, HttpMethod.POST, requestEntity, OpprettJournalpostResponse.class);
+
+		assertEquals(HttpStatus.CREATED, response.getStatusCode());
+		assertNotNull(response.getBody());
+
+	}
+
+	@Test
 	public void shouldJournalfoereSoeknadOmStoenadIPensjonsnoed() throws IOException {
 		abacPermit();
 
