@@ -29,7 +29,6 @@ import static org.junit.Assert.assertTrue;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
-import no.nav.dokarkiv.core.consumer.RestConsumerExceptionResponse;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.codes.AvsenderMottakerIdTypeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
@@ -253,7 +252,9 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 	public void shouldFailOnFerdigstillingWhenMissingPaakrevdeFelter() throws IOException {
 		abacPermit();
 
-		OpprettJournalpostRequest request = createMinimalRequest(INNGAAENDE, TEMA_FOR, INNHOLD)
+		OpprettJournalpostRequest request = createMinimalRequest(INNGAAENDE)
+				.tema(TEMA_FOR)
+				.tittel(INNHOLD)
 				.journalfoerendeEnhet("9999")
 				.bruker(Bruker.builder()
 						.id(BRUKER_ID_PERSON)
@@ -302,7 +303,9 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 	public void shouldFailOnFerdigstillingIfMissingBruker() throws IOException {
 		abacPermit();
 
-		OpprettJournalpostRequest request = createMinimalRequest(INNGAAENDE, TEMA_FOR, INNHOLD)
+		OpprettJournalpostRequest request = createMinimalRequest(INNGAAENDE)
+				.tema(TEMA_FOR)
+				.tittel(INNHOLD)
 				.bruker(null)
 				.journalfoerendeEnhet("9999")
 				.dokumenter(singletonList(
@@ -341,28 +344,16 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 	}
 
 	@Test
-	public void shouldFailIfMissingRequiredInputTittel() throws IOException {
+	public void shouldRunOKWithoutTittelAndTema() throws IOException {
 		abacPermit();
 
-		OpprettJournalpostRequest request = createMinimalRequest(INNGAAENDE, TEMA_FOR, null).build();
+		OpprettJournalpostRequest request = createMinimalRequest(INNGAAENDE).build();
 
 		HttpEntity requestEntity = new HttpEntity(request, createHeadersWithServiceUserToken());
-		ResponseEntity<RestConsumerExceptionResponse> response = restTemplate.exchange(URL_JOURNALPOST, HttpMethod.POST, requestEntity, RestConsumerExceptionResponse.class);
+		ResponseEntity<OpprettJournalpostResponse> response = restTemplate.exchange(URL_JOURNALPOST + FERDIGSTILL_QUERY, HttpMethod.POST, requestEntity, OpprettJournalpostResponse.class);
 
-		assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-
-	}
-
-	@Test
-	public void shouldFailIfMissingRequiredInputTema() throws IOException {
-		abacPermit();
-
-		OpprettJournalpostRequest request = createMinimalRequest(INNGAAENDE, null, INNHOLD).build();
-
-		HttpEntity requestEntity = new HttpEntity(request, createHeadersWithServiceUserToken());
-		ResponseEntity<RestConsumerExceptionResponse> response = restTemplate.exchange(URL_JOURNALPOST, HttpMethod.POST, requestEntity, RestConsumerExceptionResponse.class);
-
-		assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+		assertEquals(HttpStatus.CREATED, response.getStatusCode());
+		assertNotNull(response.getBody());
 
 	}
 

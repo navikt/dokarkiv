@@ -46,7 +46,8 @@ public class OpprettJournalpostRequestValidatorTest {
 
 	@Test
 	public void shouldNotThrowExceptionIfMottakskanalTemaCombinationIsValid() {
-		request = createMinimalRequest(JournalpostType.INNGAAENDE, TEMA_SER, INNHOLD)
+		request = createMinimalRequest(JournalpostType.INNGAAENDE)
+				.tema(TEMA_SER)
 				.kanal("NAV_NO_UINNLOGGET")
 				.build();
 
@@ -55,7 +56,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 	@Test
 	public void shouldValidateWhenNoAvsenderMottaker() {
-		request = createMinimalRequest(JournalpostType.INNGAAENDE, TEMA_FOR, INNHOLD)
+		request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.avsenderMottaker(null)
 				.build();
 
@@ -64,7 +65,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 	@Test
 	public void shouldThrowExceptionWhenAvsenderMottakerIdIsSetButNotIdType() {
-		request = createMinimalRequest(JournalpostType.INNGAAENDE, TEMA_FOR, INNHOLD)
+		request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.avsenderMottaker(AvsenderMottaker.builder()
 						.navn(AVSENDER_NAVN)
 						.id("***gammelt_fnr***")
@@ -78,7 +79,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 	@Test
 	public void shouldThrowExceptionWhenAvsenderMottakerIdTypeIsSetAndNotId() {
-		request = createMinimalRequest(JournalpostType.INNGAAENDE, TEMA_FOR, INNHOLD)
+		request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.avsenderMottaker(AvsenderMottaker.builder()
 						.id(null)
 						.idType(AvsenderMottakerIdType.FNR)
@@ -93,7 +94,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 	@Test
 	public void shouldThrowExceptionWhenAvsenderMottakerIdTypeFNRAndIdNot11Digits() {
-		request = createMinimalRequest(JournalpostType.INNGAAENDE, TEMA_FOR, INNHOLD)
+		request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.avsenderMottaker(AvsenderMottaker.builder()
 						.navn(AVSENDER_NAVN)
 						.id("1111111111a")
@@ -107,7 +108,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 	@Test
 	public void shouldThrowExceptionWhenAvsenderMottakerIdTypeFNRAndMoreThan11Digits() {
-		request = createMinimalRequest(JournalpostType.INNGAAENDE, TEMA_FOR, INNHOLD)
+		request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.avsenderMottaker(AvsenderMottaker.builder()
 						.navn(AVSENDER_NAVN)
 						.id("***gammelt_fnr***1")
@@ -121,7 +122,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 	@Test
 	public void shouldThrowExceptionWhenAvsenderMottakerIdTypeORGNRAndIdNot9Digits() {
-		request = createMinimalRequest(JournalpostType.INNGAAENDE, TEMA_FOR, INNHOLD)
+		request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.avsenderMottaker(AvsenderMottaker.builder()
 						.navn(AVSENDER_NAVN)
 						.id("NO7777777")
@@ -135,7 +136,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 	@Test
 	public void shouldThrowExceptionWhenAvsenderMottakerIdTypeORGNRAndIdMoreThan9Digits() {
-		request = createMinimalRequest(JournalpostType.INNGAAENDE, TEMA_FOR, INNHOLD)
+		request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.avsenderMottaker(AvsenderMottaker.builder()
 						.navn(AVSENDER_NAVN)
 						.id("9999999999")
@@ -149,7 +150,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 	@Test
 	public void shouldThrowExceptionWhenAvsenderMottakerIdTypeHPRNRAndIdNot9Digits() {
-		request = createMinimalRequest(JournalpostType.INNGAAENDE, TEMA_FOR, INNHOLD)
+		request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.avsenderMottaker(AvsenderMottaker.builder()
 						.navn(AVSENDER_NAVN)
 						.id("1010101010")
@@ -163,7 +164,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 	@Test
 	public void shouldThrowExceptionWhenAvsenderMottakerIdTypeHPRNRMoreThan9Digits() {
-		request = createMinimalRequest(JournalpostType.INNGAAENDE, TEMA_FOR, INNHOLD)
+		request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.avsenderMottaker(AvsenderMottaker.builder()
 						.navn(AVSENDER_NAVN)
 						.id("9999999999")
@@ -177,7 +178,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 	@Test
 	public void shouldThrowExceptionIfBrukerIsMissingId() {
-		request = createMinimalRequest(JournalpostType.INNGAAENDE, TEMA_FOR, INNHOLD)
+		request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.bruker(Bruker.builder()
 						.id(null)
 						.build())
@@ -191,7 +192,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 	@Test
 	public void shouldThrowExceptionIfBrukerIdIsNotNumeric() {
-		request = createMinimalRequest(JournalpostType.INNGAAENDE, TEMA_FOR, INNHOLD)
+		request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.bruker(Bruker.builder()
 						.idType(BrukerIdType.FNR)
 						.id("abc11111111")
@@ -206,7 +207,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 	@Test
 	public void shouldThrowExceptionIfBrukerIdHasInvalidLengthForFnr() {
-		request = createMinimalRequest(JournalpostType.INNGAAENDE, TEMA_FOR, INNHOLD)
+		request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.bruker(Bruker.builder()
 						.idType(BrukerIdType.FNR)
 						.id("1122334455")
@@ -221,7 +222,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 	@Test
 	public void shouldThrowExceptionIfBrukerIdHasInvalidLengthForOrgnr() {
-		request = createMinimalRequest(JournalpostType.INNGAAENDE, TEMA_FOR, INNHOLD)
+		request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.bruker(Bruker.builder()
 						.idType(BrukerIdType.ORGNR)
 						.id("1122334455")
@@ -235,18 +236,10 @@ public class OpprettJournalpostRequestValidatorTest {
 	}
 
 	@Test
-	public void shouldThrowExceptionIfTemaIsNull() {
-		request = createMinimalRequest(JournalpostType.INNGAAENDE, null, INNHOLD).build();
-
-		expectedException.expect(InputValideringFeiletException.class);
-		expectedException.expectMessage("Journalpost.tema må være satt");
-
-		validator.validateRequest(request);
-	}
-
-	@Test
 	public void shouldThrowExceptionIfTemaIsInvalid() {
-		request = createMinimalRequest(JournalpostType.INNGAAENDE, "tema", INNHOLD).build();
+		request = createMinimalRequest(JournalpostType.INNGAAENDE)
+				.tema("tema")
+				.build();
 
 		expectedException.expect(InputValideringFeiletException.class);
 		expectedException.expectMessage("tema");
@@ -255,18 +248,8 @@ public class OpprettJournalpostRequestValidatorTest {
 	}
 
 	@Test
-	public void shouldThrowExceptionIfTittelIsInvalid() {
-		request = createMinimalRequest(JournalpostType.INNGAAENDE, TEMA_FOR, null).build();
-
-		expectedException.expect(InputValideringFeiletException.class);
-		expectedException.expectMessage("tittel");
-
-		validator.validateRequest(request);
-	}
-
-	@Test
 	public void shouldThrowExceptionIfBehandlingstemaIsInvalid() {
-		request = createMinimalRequest(JournalpostType.INNGAAENDE, TEMA_FOR, INNHOLD)
+		request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.behandlingstema("behandlingstema")
 				.build();
 
@@ -278,7 +261,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 	@Test
 	public void shouldThrowExceptionIfInngaaendeKanalIsInvalid() {
-		request = createMinimalRequest(JournalpostType.INNGAAENDE, TEMA_FOR, INNHOLD)
+		request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.kanal("kanal")
 				.build();
 
@@ -290,7 +273,8 @@ public class OpprettJournalpostRequestValidatorTest {
 
 	@Test
 	public void shouldThrowExceptionIfMottakskanalTemaCombinationIsInvalid() {
-		request = createMinimalRequest(JournalpostType.INNGAAENDE, TEMA_FOR, INNHOLD)
+		request = createMinimalRequest(JournalpostType.INNGAAENDE)
+				.tema(TEMA_FOR)
 				.kanal("NAV_NO_UINNLOGGET")
 				.build();
 
@@ -302,7 +286,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 	@Test
 	public void shouldThrowExceptionIfUtgaaendeKanalIsInvalid() {
-		request = createMinimalRequest(JournalpostType.UTGAAENDE, TEMA_FOR, INNHOLD)
+		request = createMinimalRequest(JournalpostType.UTGAAENDE)
 				.kanal("kanal")
 				.build();
 
@@ -314,7 +298,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 	@Test
 	public void shouldThrowExceptionIfSakIsMissingArkivsaksnummer() {
-		request = createMinimalRequest(JournalpostType.UTGAAENDE, TEMA_FOR, INNHOLD)
+		request = createMinimalRequest(JournalpostType.UTGAAENDE)
 				.sak(Sak.builder()
 						.arkivsaksystem(Arkivsaksystem.GSAK)
 						.arkivsaksnummer(null)
@@ -329,7 +313,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 	@Test
 	public void shouldThrowExceptionIfDokumentkategoriIsInvalid() {
-		request = createMinimalRequest(JournalpostType.INNGAAENDE, TEMA_FOR, INNHOLD)
+		request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.dokumenter(singletonList(Dokument.builder()
 						.dokumentKategori("kategori")
 						.dokumentvarianter(singletonList(DokumentVariant.builder()
@@ -347,7 +331,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 	@Test
 	public void shouldThrowExceptionIfFiltypeIsNotSet() {
-		request = createMinimalRequest(JournalpostType.INNGAAENDE, TEMA_FOR, INNHOLD)
+		request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.dokumenter(singletonList(Dokument.builder()
 						.dokumentKategori(DOKUMENTKATEGORI_SED)
 						.dokumentvarianter(singletonList(DokumentVariant.builder()
@@ -365,7 +349,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 	@Test
 	public void shouldThrowExceptionIfFiltypeIsInvalid() {
-		request = createMinimalRequest(JournalpostType.INNGAAENDE, TEMA_FOR, INNHOLD)
+		request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.dokumenter(singletonList(Dokument.builder()
 						.dokumentKategori(DOKUMENTKATEGORI_SED)
 						.dokumentvarianter(singletonList(DokumentVariant.builder()
@@ -383,7 +367,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 	@Test
 	public void shouldThrowExceptionIfFiltypeIsInvalidForARKIV() {
-		request = createMinimalRequest(JournalpostType.INNGAAENDE, TEMA_FOR, INNHOLD)
+		request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.dokumenter(singletonList(Dokument.builder()
 						.dokumentKategori(DOKUMENTKATEGORI_SED)
 						.dokumentvarianter(singletonList(DokumentVariant.builder()
@@ -401,7 +385,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 	@Test
 	public void shouldThrowExceptionIfVariantformatIsNotSet() {
-		request = createMinimalRequest(JournalpostType.INNGAAENDE, TEMA_FOR, INNHOLD)
+		request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.dokumenter(singletonList(Dokument.builder()
 						.dokumentKategori(DOKUMENTKATEGORI_SED)
 						.dokumentvarianter(singletonList(DokumentVariant.builder()
@@ -419,7 +403,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 	@Test
 	public void shouldThrowExceptionIfVariantformatIsInvalid() {
-		request = createMinimalRequest(JournalpostType.INNGAAENDE, TEMA_FOR, INNHOLD)
+		request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.dokumenter(singletonList(Dokument.builder()
 						.dokumentKategori(DOKUMENTKATEGORI_SED)
 						.dokumentvarianter(singletonList(DokumentVariant.builder()
