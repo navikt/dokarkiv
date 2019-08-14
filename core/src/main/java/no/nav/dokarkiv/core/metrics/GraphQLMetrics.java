@@ -28,6 +28,7 @@ public @interface GraphQLMetrics {
 
     String[] extraTags() default {};
 
+
     boolean histogram() default false;
 
     String description() default "";
