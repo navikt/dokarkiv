@@ -1,6 +1,7 @@
 package no.nav.dokarkiv.core.security.abac;
 
 import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.Meter;
 import io.micrometer.core.instrument.MeterRegistry;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.MDCConstants;
@@ -136,12 +137,7 @@ public class AbacSecurityService {
 				sakAbacLogger.logAbacDeny(abacRequest, abacResponse);
 				throw new AuthorizationException(ACCESS_DENIED_TO_SAK);
 			}
-/*
-			Counter.builder("authentication_counter")
-					.tag("domene","sak")
-					.tag("resource_type",RESOURCE_SAK_SAK)
-					.tag("permission",abacResponse.getDecision()==Decision.DENY?"deny":"permit")
-					.register(meterRegistry).increment();*/
+			initAbacSecurityCounter(meterRegistry,abacResponse.getDecision()).increment();
 			sakAbacLogger.logAbacPermit(abacRequest, abacResponse);
 		} catch (AuthorizationException e) {
 			throw e;
@@ -207,5 +203,13 @@ public class AbacSecurityService {
 		}
 	}
 
+
+	public static Counter initAbacSecurityCounter(MeterRegistry meterRegistry,Decision decision){
+
+		return Counter.builder("authentication_counter")
+				.tag("resource_type",RESOURCE_SAK_SAK)
+				.tag("permission",decision==Decision.DENY?"deny":"permit")
+				.register(meterRegistry);
+	}
 
 }
