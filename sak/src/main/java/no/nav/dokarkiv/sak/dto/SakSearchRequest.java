@@ -7,7 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import no.nav.dokarkiv.core.repository.sak.SakSearchCriteria;
+import no.nav.dokarkiv.sak.repository.SakSearchCriteria;
 import no.nav.dokarkiv.sak.validering.AtLeastOneOf;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
