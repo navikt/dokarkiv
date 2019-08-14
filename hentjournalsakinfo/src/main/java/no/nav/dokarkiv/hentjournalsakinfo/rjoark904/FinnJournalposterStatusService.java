@@ -1,7 +1,8 @@
 package no.nav.dokarkiv.hentjournalsakinfo.rjoark904;
 
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
-import no.nav.dokarkiv.hentjournalsakinfo.rjoark900.JournalpostFilter;
+import no.nav.dokarkiv.hentjournalsakinfo.JournalpostFilter;
+import no.nav.dokarkiv.hentjournalsakinfo.dto.JournalpostDto;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
@@ -13,7 +14,7 @@ import java.util.List;
  */
 @Component
 public class FinnJournalposterStatusService {
-	private static final EnumSet SOEKBARE_JOURNALSTATUSER = EnumSet.of(JournalStatusCode.U, JournalStatusCode.UB);
+	private static final EnumSet GYLDIGE_JOURNALSTATUSER = EnumSet.of(JournalStatusCode.U, JournalStatusCode.UB);
 	private final FinnJournalposterStatusJdbcRepository finnJournalposterStatusJdbcRepository;
 
 	@Inject
@@ -28,12 +29,12 @@ public class FinnJournalposterStatusService {
 	}
 
 	private void validateRequest(FinnJournalposterStatusRequestTo finnJournalposterStatusRequestTo) {
-		if (finnJournalposterStatusRequestTo.getJournalstatus() == null || isSoekbarJournalstatus(finnJournalposterStatusRequestTo)) {
+		if (finnJournalposterStatusRequestTo.getJournalstatus() == null || isGyldigJournalstatus(finnJournalposterStatusRequestTo)) {
 			throw new UgyldigJournalstatusException();
 		}
 	}
 
-	private boolean isSoekbarJournalstatus(FinnJournalposterStatusRequestTo finnJournalposterStatusRequestTo) {
-		return !SOEKBARE_JOURNALSTATUSER.contains(finnJournalposterStatusRequestTo.getJournalstatus());
+	private boolean isGyldigJournalstatus(FinnJournalposterStatusRequestTo finnJournalposterStatusRequestTo) {
+		return !GYLDIGE_JOURNALSTATUSER.contains(finnJournalposterStatusRequestTo.getJournalstatus());
 	}
 }

@@ -6,6 +6,7 @@ import static org.junit.Assert.assertThat;
 
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
+import no.nav.dokarkiv.hentjournalsakinfo.JournalpostFilter;
 import org.junit.Test;
 
 import java.util.Arrays;

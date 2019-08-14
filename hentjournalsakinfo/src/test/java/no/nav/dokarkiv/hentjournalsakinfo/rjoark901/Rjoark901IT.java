@@ -7,20 +7,15 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 import no.nav.dokarkiv.core.consumer.RestConsumerExceptionResponse;
-import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.Bruker;
-import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.hentjournalsakinfo.AbstractHentjournalsakinfoItest;
 import org.junit.Test;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.transaction.TestTransaction;
-
-import java.util.Set;
 
 public class Rjoark901IT extends AbstractHentjournalsakinfoItest {
 
@@ -88,11 +83,5 @@ public class Rjoark901IT extends AbstractHentjournalsakinfoItest {
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 		return journalpost;
-	}
-
-	private DokumentInfo getDokumentInfoOfHoveddokument(Journalpost journalpost) {
-		Set<JournalpostDokumentInfoRelasjon> hoveddokumentList = journalpost.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.HOVEDDOKUMENT);
-		JournalpostDokumentInfoRelasjon journalpostDokumentInfoRelasjon = hoveddokumentList.isEmpty() ? null : hoveddokumentList.iterator().next();
-		return journalpostDokumentInfoRelasjon.getDokumentInfo();
 	}
 }

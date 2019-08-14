@@ -13,9 +13,9 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 public class FinnJournalposterStatusRequestTo {
-	private String fraDato;
 	private JournalStatusCode journalstatus;
-	private List<JournalpostTypeCode> inkluderJournalpostType;
+	private String fraDato;
+	private List<JournalpostTypeCode> journalposttyper;
 	private Integer foerste;
 	private String etterPeker;
 }

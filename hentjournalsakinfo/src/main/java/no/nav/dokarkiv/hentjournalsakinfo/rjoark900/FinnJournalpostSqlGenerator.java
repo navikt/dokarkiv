@@ -2,6 +2,8 @@ package no.nav.dokarkiv.hentjournalsakinfo.rjoark900;
 
 import static no.nav.dokarkiv.hentjournalsakinfo.common.SqlProjections.RELEVANTE_DATA;
 
+import no.nav.dokarkiv.hentjournalsakinfo.JournalpostFilter;
+
 import java.util.List;
 import java.util.stream.Collectors;
 

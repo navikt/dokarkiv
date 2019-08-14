@@ -1,10 +1,11 @@
-package no.nav.dokarkiv.hentjournalsakinfo.rjoark900;
+package no.nav.dokarkiv.hentjournalsakinfo;
 
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.D;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.M;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.MO;
 
 import lombok.Value;
+import no.nav.dokarkiv.hentjournalsakinfo.rjoark900.FinnJournalposterRequestTo;
 import no.nav.dokarkiv.hentjournalsakinfo.rjoark904.FinnJournalposterStatusRequestTo;
 
 import java.time.LocalDate;
@@ -35,7 +36,7 @@ public class JournalpostFilter {
 		SISTE
 	}
 
-	JournalpostFilter(FinnJournalposterRequestTo finnJournalposterRequestTo) {
+	public JournalpostFilter(FinnJournalposterRequestTo finnJournalposterRequestTo) {
 		this.fraDato = LocalDate.parse(finnJournalposterRequestTo.getFraDato());
 		this.alleIdenter = finnJournalposterRequestTo.getAlleIdenter();
 		this.inkluderJournalStatus = finnJournalposterRequestTo.getInkluderJournalStatus().stream().map(Enum::name).collect(Collectors.toList());
@@ -49,7 +50,7 @@ public class JournalpostFilter {
 	public JournalpostFilter(FinnJournalposterStatusRequestTo finnJournalposterStatusRequestTo) {
 		this.fraDato = LocalDate.parse(finnJournalposterStatusRequestTo.getFraDato());
 		this.inkluderJournalStatus = Collections.singletonList(finnJournalposterStatusRequestTo.getJournalstatus().toString());
-		this.inkluderJournalpostType = finnJournalposterStatusRequestTo.getInkluderJournalpostType().stream().map(Enum::name).collect(Collectors.toList());
+		this.inkluderJournalpostType = finnJournalposterStatusRequestTo.getJournalposttyper().stream().map(Enum::name).collect(Collectors.toList());
 		// Kun tillatt å paginere forover
 		this.antallRader = finnJournalposterStatusRequestTo.getFoerste();
 		this.slice = Slice.FOERSTE;
@@ -97,11 +98,11 @@ public class JournalpostFilter {
 		}
 	}
 
-	boolean isKunFeilregistrerte() {
+	public boolean isKunFeilregistrerte() {
 		return inkluderJournalStatus.isEmpty() && visFeilregistrerte;
 	}
 
-	boolean isInkluderMidlertidigeJournalposter() {
+	public boolean isInkluderMidlertidigeJournalposter() {
 		return !alleIdenter.isEmpty() && (inkluderJournalStatus.contains(MO.name()) ||
 				inkluderJournalStatus.contains(M.name()) ||
 				inkluderJournalStatus.contains(D.name()));
