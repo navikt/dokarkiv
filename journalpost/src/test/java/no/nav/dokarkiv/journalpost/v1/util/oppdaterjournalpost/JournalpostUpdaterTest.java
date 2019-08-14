@@ -2,7 +2,9 @@ package no.nav.dokarkiv.journalpost.v1.util.oppdaterjournalpost;
 
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.AVSENDER_ID_PERSON;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.AVSENDER_MOTTAKER_UTLAND;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.AVSENDER_NAVN;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createPutOppdaterJournalpostAvsenderMottakerKunLandRequest;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createPutOppdaterJournalpostRequest;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createPutOppdaterJournalpostRequestWithoutAvsenderMottaker;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createPutOppdaterJournalpostRequestWithoutAvsenderMottakerId;
@@ -112,5 +114,22 @@ public class JournalpostUpdaterTest {
 		assertEquals(journalpost.getAvsenderMottakerId(), AVSENDER_ID_PERSON);
 		assertEquals(journalpost.getAvsenderMottaker(), AVSENDER_NAVN);
 	}
+
+	@Test
+	public void shouldNotClearBrukerListeVedOppdateringAvLandEksisterende() throws UgyldigAksjonsLoggException {
+		oppdaterJournalpostRequest = createPutOppdaterJournalpostAvsenderMottakerKunLandRequest();
+
+		journalpost = TestUtils.createJournalpostForOppdatering();
+
+		assertNull(journalpost.getLand());
+
+		ChangeTracker changeTracker = updater.updateFields(journalpost, oppdaterJournalpostRequest);
+
+		assertThat(journalpost.getBrukere(), hasSize(1));
+		assertEquals(journalpost.getAvsenderMottaker(), AVSENDER_NAVN);
+		assertEquals(journalpost.getAvsenderMottakerId(), AVSENDER_ID_PERSON);
+		assertEquals(journalpost.getLand(), AVSENDER_MOTTAKER_UTLAND);
+	}
+
 
 }
