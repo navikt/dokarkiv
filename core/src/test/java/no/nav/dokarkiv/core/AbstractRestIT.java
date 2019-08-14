@@ -21,6 +21,7 @@ import no.nav.dokarkiv.core.skjerming.SkjermingServiceTest;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.dokarkiv.core.stelvio.SimpleRequestContext;
 import no.nav.freg.security.test.oidc.tools.OidcTestService;
+import no.nav.modig.testcertificates.TestCertificates;
 import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -88,6 +89,7 @@ public abstract class AbstractRestIT {
 
 	@BeforeClass
 	public static void setupRequestContext() {
+		TestCertificates.setupKeyAndTrustStore();
 		RequestContextSetter.setRequestContext(new SimpleRequestContext.Builder()
 				.userId("itestuser")
 				.componentId("itest")

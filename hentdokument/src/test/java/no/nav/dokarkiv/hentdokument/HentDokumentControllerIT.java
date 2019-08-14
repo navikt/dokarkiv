@@ -38,6 +38,7 @@ import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository
 import no.nav.dokarkiv.core.skjerming.SkjermingServiceTest;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.dokarkiv.core.stelvio.SimpleRequestContext;
+import no.nav.modig.testcertificates.TestCertificates;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpHeaders;
 import org.assertj.core.util.DateUtil;
@@ -103,6 +104,7 @@ public class HentDokumentControllerIT {
 
 	@Before
 	public void setUp() {
+		TestCertificates.setupKeyAndTrustStore();
 		RequestContextSetter.setRequestContext(new SimpleRequestContext.Builder()
 				.userId("itestuser")
 				.componentId("itest")

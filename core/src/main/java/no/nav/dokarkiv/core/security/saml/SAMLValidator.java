@@ -8,7 +8,6 @@ import no.nav.dokarkiv.core.security.AuthenticationResult;
 import no.nav.modig.core.context.SubjectHandler;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.util.Strings;
 import org.joda.time.DateTime;
 import org.opensaml.core.config.InitializationException;
 import org.opensaml.core.config.InitializationService;
@@ -65,11 +64,6 @@ public class SAMLValidator {
 	}
 
 	public SAMLValidator(String trustStore, String trustStorePassword, int timeSkewInMinutes) {
-		//TODO: Tester feiler pga truststore og truststorepassord mangler. Fiks dette
-		if (Strings.isBlank(trustStore) || Strings.isEmpty(trustStorePassword)) {
-			log.warn("Trustore eller truststorepassord mangler. Kunne ikke initialisere SAML Validator");
-			return;
-		}
 		this.timeSkew = timeSkewInMinutes;
 		this.init();
 		this.keyStore = new KeyStore(trustStore, trustStorePassword, (String) null);
