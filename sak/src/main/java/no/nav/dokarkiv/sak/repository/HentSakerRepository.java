@@ -1,9 +1,8 @@
 package no.nav.dokarkiv.sak.repository;
 
-import static org.apache.commons.lang3.StringUtils.defaultString;
-
-import io.prometheus.client.Counter;
-import io.prometheus.client.Histogram;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
+import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.domain.entities.Sak;
 import no.nav.dokarkiv.core.repository.SakRepository;
 import org.slf4j.MDC;
@@ -24,44 +23,27 @@ import java.util.Optional;
  */
 @Repository
 public class HentSakerRepository {
-	private static final Counter opprettedeSakerCounter = Counter.build("saker_opprettet_total", "Antall saker opprettet totalt")
-			.labelNames("tema", "type", "applikasjon", "consumer").register();
-
-	private static final Histogram latencyHisto = Histogram.build("repository_duration_seconds", "Repository latency in seconds")
-			.labelNames("operation", "consumer")
-			.register();
 
 	private final EntityManager entityManager;
 	private final SakRepository sakRepository;
+	private final MeterRegistry meterRegistry;
 
-	public HentSakerRepository(EntityManager entityManager, SakRepository sakRepository) {
+	public HentSakerRepository(EntityManager entityManager, SakRepository sakRepository,
+							   MeterRegistry meterRegistry) {
 		this.entityManager = entityManager;
 		this.sakRepository = sakRepository;
+		this.meterRegistry = meterRegistry;
 	}
 
 	public Sak lagre(Sak sak) {
-		Histogram.Timer timer = startTimer("save");
-		try {
-			sakRepository.save(sak);
-		} finally {
-			timer.observeDuration();
-		}
-		opprettedeSakerCounter.labels(
-				sak.getTema(),
-				sak.getFagsakNr() != null ? "Fagsak" : "Generell",
-				defaultString(sak.getApplikasjon(), "N/A"),
-				defaultString(MDC.get("consumerid"), "N/A")).inc();
+		sakRepository.save(sak);
+		initSakerRepoCounter(meterRegistry,sak.getTema(),sak.getApplikasjon(),sak.getFagsakNr()).increment();
 		return sak;
 	}
 
 	public Optional<Sak> hentSak(Long id) {
-		Histogram.Timer timer = startTimer("get");
 		Optional<Sak> result;
-		try {
-			result = sakRepository.findById(id);
-		} finally {
-			timer.observeDuration();
-		}
+		result = sakRepository.findById(id);
 		return result;
 	}
 
@@ -95,19 +77,19 @@ public class HentSakerRepository {
 		cq.where(predicates.toArray(new Predicate[0]));
 		cq.orderBy(cb.desc(sak.get("opprettetTidspunkt")));
 
-		Histogram.Timer timer = startTimer("search");
-		try {
-			TypedQuery<Sak> query = entityManager.createQuery(cq);
-			return query.getResultList();
-		} finally {
-			timer.observeDuration();
-		}
+
+		TypedQuery<Sak> query = entityManager.createQuery(cq);
+		return query.getResultList();
 	}
 
-	private Histogram.Timer startTimer(String operation) {
-		return latencyHisto
-				.labels(
-						operation,
-						defaultString(MDC.get("consumerid"), "N/A")).startTimer();
+
+	public static Counter initSakerRepoCounter(MeterRegistry meterRegistry,String applikasjon, String tema, String fagsakNr){
+		return Counter.builder("repository_duration_seconds")
+				.tag("tema",tema)
+				.tag("applikasjon",applikasjon)
+				.tag("FagsakNr",fagsakNr)
+				.tag("consumerid", MDC.get(MDCConstants.MDC_CONSUMER_ID))
+				.register(meterRegistry);
 	}
+
 }

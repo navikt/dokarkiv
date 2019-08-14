@@ -5,6 +5,8 @@ import static no.nav.dokarkiv.core.cache.CacheConfig.NAVSERVICEUSER_CACHE;
 import static no.nav.dokarkiv.core.cache.CacheConfig.NAVUSER_CACHE;
 import static org.springframework.ldap.query.LdapQueryBuilder.query;
 
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.security.AuthenticationResult;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,12 +30,12 @@ public class NavLdapService {
 	private final LdapTemplate ldapTemplate;
 
 	@Inject
-	public NavLdapService(@Value("${ldap.navuser.basedn}") String navuserBasedn, @Value("${ldap.serviceuser.basedn}") String serviceuserBasedn,
-						  LdapTemplate ldapTemplate) {
+	public NavLdapService(@Value("${ldap.navuser.basedn}") String navuserBasedn, @Value("${ldap.serviceuser.basedn}") String serviceuserBasedn, LdapTemplate ldapTemplate, MeterRegistry meterRegistry) {
 		this.navuserBasedn = navuserBasedn;
 		this.serviceuserBasedn = serviceuserBasedn;
 		this.ldapTemplate = ldapTemplate;
 	}
+
 
 	@Retryable(backoff = @Backoff(delay = 500))
 	@Cacheable(NAVUSER_CACHE)
@@ -61,10 +63,12 @@ public class NavLdapService {
 	public AuthenticationResult authenticateLdapUser(final String userId, final String password) {
 		try {
 			ldapTemplate.authenticate(query().base(serviceuserBasedn).where("cn").is(userId), password);
+
 			return AuthenticationResult.success(userId, userId);
 		} catch (Exception e) {
 			return AuthenticationResult.invalid(String.format("Kunne ikke autentisere %s mot %s. %s", userId, serviceuserBasedn, e.getMessage()));
 		}
 
 	}
+
 }

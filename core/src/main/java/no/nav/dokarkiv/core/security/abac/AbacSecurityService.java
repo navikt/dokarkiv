@@ -1,6 +1,9 @@
 package no.nav.dokarkiv.core.security.abac;
 
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
 import lombok.extern.slf4j.Slf4j;
+import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
 import no.nav.dokarkiv.core.exceptions.AbacException;
 import no.nav.dokarkiv.core.exceptions.DokumentInfoIkkeFunnetException;
@@ -16,6 +19,7 @@ import no.nav.freg.abac.core.dto.response.XacmlResponse;
 import no.nav.freg.abac.core.service.AbacService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.util.Strings;
+import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
@@ -51,10 +55,14 @@ public class AbacSecurityService {
 	private final JdbcAbacSecurityRepository jdbcAbacSecurityRepository;
 	private final DokumentinfoRepository dokumentinfoRepository;
 	private final JoarkRepositorySkjermet joarkRepositorySkjermet;
+	private final MeterRegistry meterRegistry;
 
 
 	@Inject
-	public AbacSecurityService(AbacLogger abaclog, SakAbacLogger sakAbacLogger, AbacService abacService, AbacContext abacContext, JdbcAbacSecurityRepository jdbcAbacSecurityRepository, DokumentinfoRepository dokumentinfoRepository, JoarkRepositorySkjermet joarkRepositorySkjermet) {
+	public AbacSecurityService(AbacLogger abaclog, SakAbacLogger sakAbacLogger, AbacService abacService,
+							   AbacContext abacContext, JdbcAbacSecurityRepository jdbcAbacSecurityRepository,
+							   DokumentinfoRepository dokumentinfoRepository, JoarkRepositorySkjermet joarkRepositorySkjermet,
+							   MeterRegistry meterRegistry) {
 		this.abaclog = abaclog;
 		this.sakAbacLogger = sakAbacLogger;
 		this.abacService = abacService;
@@ -62,6 +70,7 @@ public class AbacSecurityService {
 		this.jdbcAbacSecurityRepository = jdbcAbacSecurityRepository;
 		this.dokumentinfoRepository = dokumentinfoRepository;
 		this.joarkRepositorySkjermet = joarkRepositorySkjermet;
+		this.meterRegistry= meterRegistry;
 	}
 
 	public void assertAccessToDokumentInfo(Long dokumentInfoId) {
@@ -127,7 +136,12 @@ public class AbacSecurityService {
 				sakAbacLogger.logAbacDeny(abacRequest, abacResponse);
 				throw new AuthorizationException(ACCESS_DENIED_TO_SAK);
 			}
-
+/*
+			Counter.builder("authentication_counter")
+					.tag("domene","sak")
+					.tag("resource_type",RESOURCE_SAK_SAK)
+					.tag("permission",abacResponse.getDecision()==Decision.DENY?"deny":"permit")
+					.register(meterRegistry).increment();*/
 			sakAbacLogger.logAbacPermit(abacRequest, abacResponse);
 		} catch (AuthorizationException e) {
 			throw e;
