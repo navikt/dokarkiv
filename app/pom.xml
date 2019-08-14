@@ -25,6 +25,10 @@
 		</dependency>
 		<dependency>
 			<groupId>no.nav.dokarkiv</groupId>
+			<artifactId>sak</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>no.nav.dokarkiv</groupId>
 			<artifactId>arkiverdokumentproduksjon</artifactId>
 		</dependency>
 		<dependency>
@@ -112,6 +116,11 @@
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>no.nav.modig</groupId>
+			<artifactId>modig-testcertificates</artifactId>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 	<build>

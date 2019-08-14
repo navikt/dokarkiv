@@ -10,6 +10,7 @@ import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.service.ApiInfo;
 import springfox.documentation.service.ApiKey;
+import springfox.documentation.service.BasicAuth;
 import springfox.documentation.service.Contact;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
@@ -33,13 +34,13 @@ public class SwaggerConfig {
 	@Bean
 	public Docket api() {
 		return new Docket(DocumentationType.SWAGGER_2)
+				.securitySchemes(Lists.newArrayList(apiKey(), consumerToken(), basicAuth(), saml()))
 				.select()
 				.apis(RequestHandlerSelectors.withClassAnnotation(Api.class))
 				.paths(PathSelectors.any())
 				.build()
 				.useDefaultResponseMessages(false)
-				.apiInfo(apiInfo())
-				.securitySchemes(Lists.newArrayList(apiKey(), consumerToken()));
+				.apiInfo(apiInfo());
 	}
 
 	@Bean
@@ -66,9 +67,9 @@ public class SwaggerConfig {
 				"Dokarkiv APIer",
 				"Her dokumenteres REST-grensesnittene til dokarkiv (Joark). Til autentisering brukes to OIDC-token (JWT via OAuth2.0) i hver sin header" +
 						"\nmed `Nav-Consumer-Token` (applikasjonsbrukeren sitt token) og `Authorization` (saksbehandleren sitt token). Eksempel på kall med to tokens:\n" +
-                        "\n" +
-                        "curl -X PUT \"https://dokarkiv-q1.nais.preprod.local/rest/journalpostapi/v1/journalpost/111\" -H \"accept: */*\" -H \"Authorization: Bearer eyAidH...\", -H \"Nav-Consumer-Token: Bearer eyJraWQi...\" -H \"Content-Type: application/json\" -d \"{ \\\"avsenderMottaker\\\": { \\\"id\\\": \\\"string\\\", \\\"land\\\": \\\"string\\\",...}\"\n" +
-                        "\n" +
+						"\n" +
+						"curl -X PUT \"https://dokarkiv-q1.nais.preprod.local/rest/journalpostapi/v1/journalpost/111\" -H \"accept: */*\" -H \"Authorization: Bearer eyAidH...\", -H \"Nav-Consumer-Token: Bearer eyJraWQi...\" -H \"Content-Type: application/json\" -d \"{ \\\"avsenderMottaker\\\": { \\\"id\\\": \\\"string\\\", \\\"land\\\": \\\"string\\\",...}\"\n" +
+						"\n" +
 						"Hvis disse tjenestene blir kalt direkte fra en annen applikasjon hvor saksbehandlertoken ikke er tilgjengjelig er det mulig å autentisere seg med èn OIDC token. Da skal`Authorization` header inneholde applikasjonsbrukeren sitt token og `Nav-Consumer-Token` header ikke settes" +
 						"",
 				version,
@@ -78,14 +79,20 @@ public class SwaggerConfig {
 	}
 
 	private ApiKey apiKey() {
-
 		return new ApiKey("Authorization", HttpHeaders.AUTHORIZATION, "header");
 	}
 
 	private ApiKey consumerToken() {
-
 		return new ApiKey("NavConsumerToken", "Nav-Consumer-Token", "header");
 	}
 
+	private BasicAuth basicAuth() {
+
+		return new BasicAuth("Basic");
+	}
+
+	private ApiKey saml() {
+		return new ApiKey("Saml", HttpHeaders.AUTHORIZATION, "header");
+	}
 
 }

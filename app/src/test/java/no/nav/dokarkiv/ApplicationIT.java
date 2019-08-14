@@ -4,6 +4,8 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 import no.nav.dokarkiv.core.security.STSTestConfig;
+import no.nav.modig.testcertificates.TestCertificates;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -29,6 +31,11 @@ public class ApplicationIT {
 
 	@Inject
 	private TestRestTemplate testRestTemplate;
+
+	@BeforeClass
+	public static void beforeClass() {
+		TestCertificates.setupKeyAndTrustStore();
+	}
 
 	@Test
 	public void shouldStartApp() {

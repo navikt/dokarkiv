@@ -32,7 +32,8 @@ import java.util.Properties;
 		JournalpostDokumentInfoRelasjonRepository.class,
 		BidragMellomlagringRepository.class,
 		BidragMellomlagringDokumentRepository.class,
-		JoarkDeleteRepository.class, AksjonsLoggRepository.class
+		JoarkDeleteRepository.class, AksjonsLoggRepository.class,
+		SakRepository.class
 })
 @EnableTransactionManagement
 @EnableConfigurationProperties(DataSourceProperties.class)
