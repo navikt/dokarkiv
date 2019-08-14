@@ -44,6 +44,7 @@ import org.apache.http.HttpHeaders;
 import org.assertj.core.util.DateUtil;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -102,9 +103,13 @@ public class HentDokumentControllerIT {
 	@Inject
 	private EntityManager entityManager;
 
+	@BeforeClass
+	public static void beforeClass() {
+		TestCertificates.setupKeyAndTrustStore();
+	}
+
 	@Before
 	public void setUp() {
-		TestCertificates.setupKeyAndTrustStore();
 		RequestContextSetter.setRequestContext(new SimpleRequestContext.Builder()
 				.userId("itestuser")
 				.componentId("itest")
