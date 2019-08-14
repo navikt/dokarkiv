@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.core.repository.sak;
+package no.nav.dokarkiv.sak.repository;
 
 import no.nav.dokarkiv.core.domain.entities.Sak;
 import org.apache.commons.lang3.RandomStringUtils;

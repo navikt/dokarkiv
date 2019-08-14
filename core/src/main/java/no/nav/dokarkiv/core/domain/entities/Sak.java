@@ -29,9 +29,9 @@ import java.time.LocalDateTime;
 public class Sak {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sak_seq")
-	@GenericGenerator(name = "sak_seq", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
-			parameters = {@Parameter(name = "sequence_name", value = "sak_seq")})
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_sak")
+	@GenericGenerator(name = "seq_sak", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
+			parameters = {@Parameter(name = "sequence_name", value = "seq_sak")})
 	@Column(name = "id", nullable = false, length = 11)
 	private Long sakId;
 

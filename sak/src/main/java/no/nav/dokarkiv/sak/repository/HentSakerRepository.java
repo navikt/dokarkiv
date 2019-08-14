@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.core.repository.sak;
+package no.nav.dokarkiv.sak.repository;
 
 import static org.apache.commons.lang3.StringUtils.defaultString;
 

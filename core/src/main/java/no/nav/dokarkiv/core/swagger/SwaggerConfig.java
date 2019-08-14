@@ -10,6 +10,7 @@ import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.service.ApiInfo;
 import springfox.documentation.service.ApiKey;
+import springfox.documentation.service.BasicAuth;
 import springfox.documentation.service.Contact;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
@@ -39,7 +40,7 @@ public class SwaggerConfig {
 				.build()
 				.useDefaultResponseMessages(false)
 				.apiInfo(apiInfo())
-				.securitySchemes(Lists.newArrayList(apiKey(), consumerToken()));
+				.securitySchemes(Lists.newArrayList(apiKey(), consumerToken(), basicAuth(), saml()));
 	}
 
 	@Bean
@@ -87,5 +88,13 @@ public class SwaggerConfig {
 		return new ApiKey("NavConsumerToken", "Nav-Consumer-Token", "header");
 	}
 
+	private BasicAuth basicAuth() {
+
+		return new BasicAuth("Basic");
+	}
+
+	private ApiKey saml() {
+		return new ApiKey("Saml", HttpHeaders.AUTHORIZATION, "header");
+	}
 
 }

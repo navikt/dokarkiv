@@ -1,6 +1,5 @@
 package no.nav.dokarkiv.sak;
 
-import static io.swagger.annotations.ApiKeyAuthDefinition.ApiKeyLocation.HEADER;
 import static java.util.stream.Collectors.toList;
 import static no.nav.abac.xacml.NavAttributter.RESOURCE_FELLES_RESOURCE_TYPE;
 import static no.nav.abac.xacml.NavAttributter.RESOURCE_SAK_SAK;
@@ -13,30 +12,24 @@ import static no.nav.dokarkiv.sak.infrastruktur.SubjectType.SUBJECT_TYPE_EKSTERN
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiKeyAuthDefinition;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import io.swagger.annotations.Authorization;
-import io.swagger.annotations.BasicAuthDefinition;
-import io.swagger.annotations.Contact;
-import io.swagger.annotations.Info;
 import io.swagger.annotations.ResponseHeader;
-import io.swagger.annotations.SecurityDefinition;
-import io.swagger.annotations.SwaggerDefinition;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.domain.entities.Sak;
 import no.nav.dokarkiv.core.exceptions.AbacException;
-import no.nav.dokarkiv.core.repository.sak.HentSakerRepository;
-import no.nav.dokarkiv.core.repository.sak.SakSearchCriteria;
 import no.nav.dokarkiv.core.security.abac.AbacSecurityService;
 import no.nav.dokarkiv.core.security.abac.AuthorizationException;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import no.nav.dokarkiv.core.util.ErrorResponse;
 import no.nav.dokarkiv.sak.dto.SakJson;
 import no.nav.dokarkiv.sak.dto.SakSearchRequest;
+import no.nav.dokarkiv.sak.repository.HentSakerRepository;
+import no.nav.dokarkiv.sak.repository.SakSearchCriteria;
 import no.nav.freg.abac.core.annotation.Abac;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.MDC;
@@ -67,58 +60,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/rest/saker")
-@Api(value = "/rest/saker", authorizations = {
-		@Authorization(value = "Authorization"),
-		@Authorization(value = "Saml"),
-		@Authorization(value = "Basic")
-})
-@SwaggerDefinition(
-		info = @Info(
-				title = "Sak API",
-				version = "1",
-				description = "Her dokumenteres tjenestegrensesnittet for Sak.\n\n" +
-						"Tjenesten leveres kontinuerlig til produksjon. For å sikre oss mot å innføre regresjon som påvirker våre konsumenter, benytter vi " +
-						"Pact. Det er konsumentens ansvar å gi oss pact-test, men ta gjerne kontakt ved behov for bistand ifm. dette. \n\n" +
-						"Vi ber nye konsumenter om å ta kontakt med teamet, dette for å få gjennomført ev. avklaringer, sikre korrekte tilganger, pact-test, og for å sikre at tjenesten støtter " +
-						"forventet volum og ev. SLA.\n\n" +
-						"Merk at vi forventer at Headeren <strong>\"X-Correlation-ID\"</strong> er angitt for alle tjenestekall. Denne logges alltid i Sak, og benyttes for å kunne sammenstille hendelser " +
-						"på tvers av kallkjeder. X-Correlation-ID skal oppgis ved forespørsel om bistand fra Team Oppgavehåntering vedr. feilsøk ifm. bruk av tjenesten\n" +
-						"Vi anbefaler at korrelasjonsID genereres så tidlig som mulig hos konsument, bindes til tråden, og logges sammen med alle hendelser som danner grunnlaget for kallet mot Sak,\n\n" +
-						"KorrelasjonsIDen skal være unik, og kan enten genereres med f.eks UUID.randomUUID() eller hvis aktuelt, hentes ut fra inngående tjenestekall (i.e. callId via modig-biblioteket)",
-				contact = @Contact(
-						name = "Team Oppgavehåndtering"
-				))
-		, securityDefinition =
-@SecurityDefinition(apiKeyAuthDefinitions = {
-		@ApiKeyAuthDefinition(
-				name = "Authorization",
-				key = "Authorization",
-				in = HEADER,
-				description = "OIDC-token (JWT via OAuth2.0). Dette preferert autentiseringsmekanisme, og <strong>skal</strong>" +
-						" benyttes ved tjenestekall initiert av en bruker for å propagere konteksten (unntatt i særtilfeller - se Saml) \n" +
-						" Følgende format må brukes i input-feltet \"Value\" under: <strong>\"Bearer {token}\"</strong>.\n" +
-						" Eksempel på verdi i input-felt: <strong>Bearer eYdmifml0ejugm</strong>\n\n" +
-						" Et gyldig token kommer til å ha mange flere karakterer enn i eksempelet."),
-
-		@ApiKeyAuthDefinition(
-				name = "Authorization",
-				key = "Saml",
-				in = HEADER,
-				description = "P.t støttes ikke konvertering fra SAML til OIDC-token og det er derfor implementert støtte for Saml for å propagere brukercontext fra legacy-systemer " +
-						" (i.e. fra et system som kun eksponerer soap-tjenester og som skal gjøre tjenestekall videre mot Oppgave.\n" +
-						" I denne konteksten er et SAML token en SAML assertion som er Base 64 enkodet. \n" +
-						" På grunn av begrensninger i header-lengde, må saml-assertion strippes for whitespaces før den encodes \n" +
-						" Formatet skal være som følger: <strong>\"Saml {token}\"</strong>.\n" +
-						" Eksempel på verdi i input-felt: <strong>Saml eYdmifml0ejugm</strong>\n\n" +
-						" Et gyldig token kommer til å ha mange flere karakterer enn i eksempelet.")
-},
-		basicAuthDefinitions = {
-				@BasicAuthDefinition(
-						key = "Basic",
-						description = "Basic auth kan brukes når det er snakk om system-til-system kommunikasjon")
-		}
-)
-)
+@Api(value = "/rest/saker")
 @Slf4j
 public class SakController {
 
@@ -153,7 +95,11 @@ public class SakController {
 
 	@ResponseBody
 	@GetMapping("/{id}")
-	@ApiOperation(value = "Henter sak for en gitt id", response = SakJson.class, authorizations = {@Authorization(value = "Authorization")})
+	@ApiOperation(value = "Henter sak for en gitt id", response = SakJson.class, authorizations = {
+			@Authorization(value = "Authorization"),
+			@Authorization(value = "Saml"),
+			@Authorization(value = "Basic")
+	})
 	@ApiImplicitParams({@ApiImplicitParam(name = "X-Correlation-ID", required = true, dataType = "string", paramType = "header")})
 	@ApiResponses(
 			value = {
@@ -197,7 +143,11 @@ public class SakController {
 	@GetMapping
 	@ResponseBody
 	@ApiOperation(value = "Finner saker for angitte søkekriterier",
-			response = SakJson.class, responseContainer = "List", authorizations = {@Authorization(value = "Authorization")})
+			response = SakJson.class, responseContainer = "List", authorizations = {
+			@Authorization(value = "Authorization"),
+			@Authorization(value = "Saml"),
+			@Authorization(value = "Basic")
+	})
 	@ApiImplicitParams({@ApiImplicitParam(name = "X-Correlation-ID", required = true, dataType = "string", paramType = "header")})
 	@ApiResponses(
 			value = {
@@ -246,7 +196,12 @@ public class SakController {
 	}
 
 	@PostMapping
-	@ApiOperation(value = "Oppretter en ny sak", notes = "Merk at en sak enten skal tilhøre en aktør <b>eller</b> et foretak. Begge er p.t. ikke tillatt. ", authorizations = {@Authorization(value = "Authorization")})
+	@ApiOperation(value = "Oppretter en ny sak", notes = "Merk at en sak enten skal tilhøre en aktør <b>eller</b> et foretak. Begge er p.t. ikke tillatt. ",
+			authorizations = {
+					@Authorization(value = "Authorization"),
+					@Authorization(value = "Saml"),
+					@Authorization(value = "Basic")
+			})
 	@ApiImplicitParams({@ApiImplicitParam(name = "X-Correlation-ID", required = true, dataType = "string", paramType = "header")})
 	@ApiResponses(
 			value = {

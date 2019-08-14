@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.core.repository.sak;
+package no.nav.dokarkiv.sak.repository;
 
 import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
 import static org.assertj.core.api.Assertions.assertThat;
