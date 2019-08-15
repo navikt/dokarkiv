@@ -58,7 +58,7 @@
 		<flyway.version>4.2.0</flyway.version>
 		<swagger.version>2.9.2</swagger.version>
 		<freg.security.test.version>3.1.0</freg.security.test.version>
-		<modig.testcertificates.version>2.0.0-SNAPSHOT</modig.testcertificates.version>
+		<modig.testcertificates.version>1.2.5</modig.testcertificates.version>
 	</properties>
 	<dependencyManagement>
 		<dependencies>
