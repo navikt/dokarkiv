@@ -103,8 +103,9 @@ public class JournalpostFilter {
 	}
 
 	public boolean isInkluderMidlertidigeJournalposter() {
-		return !alleIdenter.isEmpty() && (inkluderJournalStatus.contains(MO.name()) ||
-				inkluderJournalStatus.contains(M.name()) ||
-				inkluderJournalStatus.contains(D.name()));
+		return alleIdenter != null && !alleIdenter.isEmpty() &&
+				(inkluderJournalStatus.contains(MO.name()) ||
+						inkluderJournalStatus.contains(M.name()) ||
+						inkluderJournalStatus.contains(D.name()));
 	}
 }
