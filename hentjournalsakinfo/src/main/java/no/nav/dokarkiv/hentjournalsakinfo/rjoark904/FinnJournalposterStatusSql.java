@@ -10,8 +10,8 @@ class FinnJournalposterStatusSql {
 	static String finnJournalposterStatusSql() {
 		return "WITH finnjournalposter_status AS (SELECT j.journalpost_id\n" +
 				"                                  FROM t_journalpost j\n" +
-				"                                  WHERE j.k_journal_s IN (:inkluderJournalpostType)\n" +
-				"                                    AND j.k_journalpost_t IN (:inkluderJournalStatus)\n" +
+				"                                  WHERE j.k_journal_s IN (:inkluderJournalStatus)\n" +
+				"                                    AND j.k_journalpost_t IN (:inkluderJournalpostType)\n" +
 				"                                    AND j.dato_opprettet > :fraDato\n" +
 				"),\n" +
 				"     relevantedata AS (SELECT j.journalpost_id       AS journalpostid,\n" +
@@ -90,8 +90,7 @@ class FinnJournalposterStatusSql {
 				"                                  LEAD(j.journalpost_id) OVER (ORDER BY j.journalpost_id) AS prevjournalpostid,\n" +
 				"                                  LAG(j.journalpost_id) OVER (ORDER BY j.journalpost_id)  AS nextjournalpostid,\n" +
 				"                                  COUNT(*) OVER ()                                        AS totaltantall\n" +
-				"                           FROM (SELECT journalpost_id FROM finnjournalposter_status) jps\n" +
-				"                                    JOIN t_journalpost j ON jps.journalpost_id = j.journalpost_id\n" +
+				"                           FROM (SELECT journalpost_id FROM finnjournalposter_status) j\n" +
 				"                       ) p\n" +
 				"                  WHERE p.journalpost_id < :journalpostIdPeker\n" +
 				"                  ORDER BY p.journalpost_id DESC\n" +
