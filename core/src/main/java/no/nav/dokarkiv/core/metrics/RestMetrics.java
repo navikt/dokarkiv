@@ -30,7 +30,7 @@ public @interface RestMetrics {
 
 	double[] percentiles() default {};
 
-	boolean histogram() default true;
+	boolean histogram() default false;
 
 	String description() default "";
 }

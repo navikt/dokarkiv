@@ -4,6 +4,7 @@ import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.domain.entities.Sak;
+import no.nav.dokarkiv.core.exceptions.DokumentIkkeFunnetException;
 import no.nav.dokarkiv.core.repository.SakRepository;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Repository;
@@ -44,6 +45,7 @@ public class HentSakerRepository {
 	public Optional<Sak> hentSak(Long id) {
 		Optional<Sak> result;
 		result = sakRepository.findById(id);
+		initSakerRepoCounter(meterRegistry,result.get().getTema(),result.get().getApplikasjon(),result.get().getFagsakNr()).increment();
 		return result;
 	}
 

@@ -30,6 +30,7 @@ import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.domain.entities.Sak;
 import no.nav.dokarkiv.core.exceptions.AbacException;
 import no.nav.dokarkiv.core.metrics.RestMetrics;
+import no.nav.dokarkiv.core.metrics.SakMetrics;
 import no.nav.dokarkiv.core.security.abac.AbacSecurityService;
 import no.nav.dokarkiv.core.security.abac.AuthorizationException;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
@@ -168,7 +169,7 @@ public class SakController {
 	)
 	@Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_SAK_SAK)},
 			actions = @Abac.Attr(key = ACTION_ID, value = READ_ACTION))
-	@RestMetrics(value = "dok_request", extraTags = {"process_code", "hentSak"}, percentiles = {0.5, 0.95})
+	@SakMetrics(value = "sak_request", extraTags = {"process_code", "hentSak"}, percentiles = {0.5, 0.95})
 	public ResponseEntity hentSak(@PathVariable final Long id) {
 
 		log.info("Henter sak med id: {}", id);
@@ -216,7 +217,7 @@ public class SakController {
 	)
 	@Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_SAK_SAK)},
 			actions = @Abac.Attr(key = ACTION_ID, value = READ_ACTION))
-	@RestMetrics(value = "dok_request", extraTags = {"process_code", "finnSaker"}, percentiles = {0.5, 0.95})
+	@SakMetrics(value = "sak_request", extraTags = {"process_code", "finnSaker"}, percentiles = {0.5, 0.95})
 	public ResponseEntity finnSaker(
 			@Valid final SakSearchRequest sakSearchRequest) {
 
@@ -273,7 +274,7 @@ public class SakController {
 	)
 	@Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_SAK_SAK)},
 			actions = @Abac.Attr(key = ACTION_ID, value = CREATE_ACTION))
-	@RestMetrics(value = "dok_request", extraTags = {"process_code", "opprettSak"}, percentiles = {0.5, 0.95})
+	@SakMetrics(value = "sak_request", extraTags = {"process_code", "opprettSak"}, percentiles = {0.5, 0.95})
 	public ResponseEntity opprettSak(
 			@Valid @RequestBody @ApiParam(value = "Saken som skal opprettes", required = true) final SakJson sakJson
 	) throws URISyntaxException {
