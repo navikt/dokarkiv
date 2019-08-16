@@ -1,5 +1,32 @@
 package no.nav.dokarkiv.core.security.abac;
 
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
+import lombok.extern.slf4j.Slf4j;
+import no.nav.dokarkiv.core.MDCConstants;
+import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
+import no.nav.dokarkiv.core.exceptions.AbacException;
+import no.nav.dokarkiv.core.exceptions.DokumentInfoIkkeFunnetException;
+import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
+import no.nav.dokarkiv.core.logging.AbacLogger;
+import no.nav.dokarkiv.core.logging.SakAbacLogger;
+import no.nav.dokarkiv.core.metrics.SakMetrics;
+import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
+import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
+import no.nav.freg.abac.core.annotation.context.AbacContext;
+import no.nav.freg.abac.core.dto.request.XacmlRequest;
+import no.nav.freg.abac.core.dto.response.Decision;
+import no.nav.freg.abac.core.dto.response.XacmlResponse;
+import no.nav.freg.abac.core.service.AbacService;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.util.Strings;
+import org.slf4j.MDC;
+import org.springframework.stereotype.Component;
+
+import javax.inject.Inject;
+import java.util.HashMap;
+import java.util.Map;
+
 import static no.nav.abac.xacml.NavAttributter.ENVIRONMENT_FELLES_PEP_ID;
 import static no.nav.abac.xacml.NavAttributter.RESOURCE_ARKIV_GSAK_SAKSID;
 import static no.nav.abac.xacml.NavAttributter.RESOURCE_ARKIV_PENSJON_SAKSID;
@@ -10,29 +37,6 @@ import static no.nav.abac.xacml.NavAttributter.RESOURCE_FELLES_RESOURCE_TYPE;
 import static no.nav.abac.xacml.NavAttributter.RESOURCE_FELLES_TEMA;
 import static no.nav.abac.xacml.NavAttributter.RESOURCE_SAK_SAK;
 import static org.springframework.util.CollectionUtils.isEmpty;
-
-import lombok.extern.slf4j.Slf4j;
-import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
-import no.nav.dokarkiv.core.exceptions.AbacException;
-import no.nav.dokarkiv.core.exceptions.DokumentInfoIkkeFunnetException;
-import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
-import no.nav.dokarkiv.core.logging.AbacLogger;
-import no.nav.dokarkiv.core.logging.SakAbacLogger;
-import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
-import no.nav.dokarkiv.core.repository.JoarkRepository;
-import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
-import no.nav.freg.abac.core.annotation.context.AbacContext;
-import no.nav.freg.abac.core.dto.request.XacmlRequest;
-import no.nav.freg.abac.core.dto.response.Decision;
-import no.nav.freg.abac.core.dto.response.XacmlResponse;
-import no.nav.freg.abac.core.service.AbacService;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.util.Strings;
-import org.springframework.stereotype.Component;
-
-import javax.inject.Inject;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @author Martin Burheim Tingstad, Visma Consulting AS
@@ -52,9 +56,14 @@ public class AbacSecurityService {
 	private final JdbcAbacSecurityRepository jdbcAbacSecurityRepository;
 	private final DokumentinfoRepository dokumentinfoRepository;
 	private final JoarkRepositorySkjermet joarkRepositorySkjermet;
+	private final MeterRegistry meterRegistry;
+
 
 	@Inject
-	public AbacSecurityService(AbacLogger abaclog, SakAbacLogger sakAbacLogger, AbacService abacService, AbacContext abacContext, JdbcAbacSecurityRepository jdbcAbacSecurityRepository, JoarkRepository joarkRepository, DokumentinfoRepository dokumentinfoRepository, JoarkRepositorySkjermet joarkRepositorySkjermet) {
+	public AbacSecurityService(AbacLogger abaclog, SakAbacLogger sakAbacLogger, AbacService abacService,
+							   AbacContext abacContext, JdbcAbacSecurityRepository jdbcAbacSecurityRepository,
+							   DokumentinfoRepository dokumentinfoRepository, JoarkRepositorySkjermet joarkRepositorySkjermet,
+							   MeterRegistry meterRegistry) {
 		this.abaclog = abaclog;
 		this.sakAbacLogger = sakAbacLogger;
 		this.abacService = abacService;
@@ -62,6 +71,7 @@ public class AbacSecurityService {
 		this.jdbcAbacSecurityRepository = jdbcAbacSecurityRepository;
 		this.dokumentinfoRepository = dokumentinfoRepository;
 		this.joarkRepositorySkjermet = joarkRepositorySkjermet;
+		this.meterRegistry = meterRegistry;
 	}
 
 	public void assertAccessToDokumentInfo(Long dokumentInfoId) {
@@ -109,6 +119,7 @@ public class AbacSecurityService {
 		return handleResponseForSakId(abacRequest, accessResponse, abacResources);
 	}
 
+	@SakMetrics(value = "sak_request", extraTags = {"process_code", "assertAccessToSakPep"}, percentiles = {0.5, 0.95})
 	public void assertAccessToSakPep(String aktoerId) {
 		final Map<String, String> resources = new HashMap<>();
 		final XacmlRequest abacRequest = abacContext.getRequest()
@@ -127,7 +138,7 @@ public class AbacSecurityService {
 				sakAbacLogger.logAbacDeny(abacRequest, abacResponse);
 				throw new AuthorizationException(ACCESS_DENIED_TO_SAK);
 			}
-
+			initAbacSecurityCounter(meterRegistry, abacResponse.getDecision()).increment();
 			sakAbacLogger.logAbacPermit(abacRequest, abacResponse);
 		} catch (AuthorizationException e) {
 			throw e;
@@ -138,6 +149,7 @@ public class AbacSecurityService {
 		}
 
 	}
+
 
 	XacmlRequest decorateJoarkResources(XacmlRequest request,
 										AbacResources joarkResources, Long journalpostId) {
@@ -191,4 +203,15 @@ public class AbacSecurityService {
 			return response.getDecision();
 		}
 	}
+
+
+	public static Counter initAbacSecurityCounter(MeterRegistry meterRegistry, Decision decision) {
+
+		return Counter.builder("authentication_request_second_count")
+				.tag("resource_type", RESOURCE_SAK_SAK)
+				.tag("permission", decision == Decision.DENY ? "deny" : "permit")
+				.tag("consumer", MDC.get(MDCConstants.MDC_CONSUMER_ID))
+				.register(meterRegistry);
+	}
+
 }

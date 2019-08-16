@@ -1,15 +1,5 @@
 package no.nav.dokarkiv.sak;
 
-import static io.swagger.annotations.ApiKeyAuthDefinition.ApiKeyLocation.HEADER;
-import static java.util.stream.Collectors.toList;
-import static no.nav.abac.xacml.NavAttributter.RESOURCE_FELLES_RESOURCE_TYPE;
-import static no.nav.abac.xacml.NavAttributter.RESOURCE_SAK_SAK;
-import static no.nav.abac.xacml.StandardAttributter.ACTION_ID;
-import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.CREATE_ACTION;
-import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.READ_ACTION;
-import static no.nav.dokarkiv.sak.infrastruktur.ContextExtractor.getSubjectType;
-import static no.nav.dokarkiv.sak.infrastruktur.SubjectType.SUBJECT_TYPE_EKSTERNBRUKER;
-
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -29,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.domain.entities.Sak;
 import no.nav.dokarkiv.core.exceptions.AbacException;
+import no.nav.dokarkiv.core.metrics.SakMetrics;
 import no.nav.dokarkiv.core.security.abac.AbacSecurityService;
 import no.nav.dokarkiv.core.security.abac.AuthorizationException;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
@@ -64,6 +55,16 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static io.swagger.annotations.ApiKeyAuthDefinition.ApiKeyLocation.HEADER;
+import static java.util.stream.Collectors.toList;
+import static no.nav.abac.xacml.NavAttributter.RESOURCE_FELLES_RESOURCE_TYPE;
+import static no.nav.abac.xacml.NavAttributter.RESOURCE_SAK_SAK;
+import static no.nav.abac.xacml.StandardAttributter.ACTION_ID;
+import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.CREATE_ACTION;
+import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.READ_ACTION;
+import static no.nav.dokarkiv.sak.infrastruktur.ContextExtractor.getSubjectType;
+import static no.nav.dokarkiv.sak.infrastruktur.SubjectType.SUBJECT_TYPE_EKSTERNBRUKER;
 
 @RestController
 @RequestMapping("/rest/saker")
@@ -167,6 +168,7 @@ public class SakController {
 	)
 	@Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_SAK_SAK)},
 			actions = @Abac.Attr(key = ACTION_ID, value = READ_ACTION))
+	@SakMetrics(value = "sak_request", extraTags = {"process_code", "hentSak"}, percentiles = {0.5, 0.95})
 	public ResponseEntity hentSak(@PathVariable final Long id) {
 
 		log.info("Henter sak med id: {}", id);
@@ -214,6 +216,7 @@ public class SakController {
 	)
 	@Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_SAK_SAK)},
 			actions = @Abac.Attr(key = ACTION_ID, value = READ_ACTION))
+	@SakMetrics(value = "sak_request", extraTags = {"process_code", "finnSaker"}, percentiles = {0.5, 0.95})
 	public ResponseEntity finnSaker(
 			@Valid final SakSearchRequest sakSearchRequest) {
 
@@ -270,6 +273,7 @@ public class SakController {
 	)
 	@Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_SAK_SAK)},
 			actions = @Abac.Attr(key = ACTION_ID, value = CREATE_ACTION))
+	@SakMetrics(value = "sak_request", extraTags = {"process_code", "opprettSak"}, percentiles = {0.5, 0.95})
 	public ResponseEntity opprettSak(
 			@Valid @RequestBody @ApiParam(value = "Saken som skal opprettes", required = true) final SakJson sakJson
 	) throws URISyntaxException {
@@ -313,7 +317,7 @@ public class SakController {
 					ResponseEntity
 							.status(HttpStatus.CONFLICT)
 							.body(new ErrorResponse(
-									MDC.get(MDCConstants.MDC_CALL_ID),
+											MDC.get(MDCConstants.MDC_CALL_ID),
 											String.format(
 													"Det finnes allerede en sak for fagsaksnr: %s, applikasjon: %s, aktør: %s orgnr: %s",
 													sak.getFagsakNr(),

@@ -100,11 +100,11 @@ public class DokTimedAspect {
 		}
 	}
 
-	@Around("execution (@no.nav.dokarkiv.core.metrics.RestMetrics * *.*(..))")
+	@Around("execution (@no.nav.dokarkiv.core.metrics.SakMetrics * *.*(..))")
 	public Object restMetrics(ProceedingJoinPoint pjp) throws Throwable {
 		Method method = ((MethodSignature) pjp.getSignature()).getMethod();
 
-		RestMetrics restMetrics = method.getAnnotation(RestMetrics.class);
+		SakMetrics restMetrics = method.getAnnotation(SakMetrics.class);
 		if (restMetrics.value().isEmpty()) {
 			return pjp.proceed();
 		}
@@ -150,6 +150,45 @@ public class DokTimedAspect {
 		return pjp.proceed();
 
 	}
+
+
+	@Around("execution (@no.nav.dokarkiv.core.metrics.SakMetrics * *.*(..))")
+	public Object sakMetrics(ProceedingJoinPoint pjp) throws Throwable {
+		Method method = ((MethodSignature) pjp.getSignature()).getMethod();
+
+		SakMetrics sakMetrics = method.getAnnotation(SakMetrics.class);
+		if (sakMetrics.value().isEmpty()) {
+			return pjp.proceed();
+		}
+
+		Timer.Sample sample = Timer.start(registry);
+		try {
+			return pjp.proceed();
+		} catch (Exception e) {
+
+			logException(method, e);
+
+			Counter.builder(sakMetrics.value() + "_exception")
+					.tags("error_type", isFunctionalException(method, e) ? "functional" : "technical")
+					.tags("exception_name", e.getClass().getSimpleName())
+					.tags(sakMetrics.extraTags())
+					.tags(tagsBasedOnJoinpoint.apply(pjp))
+					.register(registry)
+					.increment();
+
+			throw e;
+
+		} finally {
+			sample.stop(Timer.builder(sakMetrics.value())
+					.description(sakMetrics.description().isEmpty() ? null : sakMetrics.description())
+					.tags(sakMetrics.extraTags())
+					.tags(tagsBasedOnJoinpoint.apply(pjp))
+					.publishPercentileHistogram(sakMetrics.histogram())
+					.publishPercentiles(sakMetrics.percentiles().length == 0 ? null : sakMetrics.percentiles())
+					.register(registry));
+		}
+	}
+
 
 	private boolean isFunctionalException(Method method, Exception e) {
 		return asList(method.getExceptionTypes()).contains(e.getClass()) || MetricUtils.isFunctionalException(e);
