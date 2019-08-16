@@ -2,6 +2,7 @@ package no.nav.dokarkiv.hentjournalsakinfo.rjoark900;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 
@@ -19,6 +20,7 @@ public class FinnJournalposterRequestTo {
 	private List<JournalStatusCode> inkluderJournalStatus;
 	private List<JournalpostTypeCode> inkluderJournalpostType;
 	private boolean visFeilregistrerte;
+	@ToString.Exclude
 	private List<String> alleIdenter;
 	private Integer foerste;
 	private String etterPeker;

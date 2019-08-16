@@ -70,9 +70,9 @@ public class HentJournalsakinfoController {
 	@PostMapping(value = "/finnjournalposter")
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark900"}, percentiles = {0.5, 0.95})
 	public FinnJournalposterResponseTo finnJournalposter(@RequestBody FinnJournalposterRequestTo finnJournalposterRequestTo) {
-		log.info("rjoark900 finner journalposter.");
+		log.info("rjoark900 finner journalposter med request={}.", finnJournalposterRequestTo);
 		FinnJournalposterResponseTo finnJournalposterResponseTo = finnJournalposterService.finnJournalposter(finnJournalposterRequestTo);
-		log.info("rjoark900 fant og returnerer {} journalposter.", finnJournalposterResponseTo.getTilgangJournalposter().size());
+		log.info("rjoark900 fant og returnerer {} journalposter med request={}.", finnJournalposterResponseTo.getTilgangJournalposter().size(), finnJournalposterRequestTo);
 		return finnJournalposterResponseTo;
 	}
 
@@ -81,9 +81,9 @@ public class HentJournalsakinfoController {
 	@PostMapping(value = "/finnjournalposterstatus")
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark904"}, percentiles = {0.5, 0.95})
 	public FinnJournalposterStatusResponseTo finnJournalposterStatus(@RequestBody FinnJournalposterStatusRequestTo finnJournalposterStatusRequestTo) {
-		log.info("rjoark904 finner journalposter med filtere={}.", finnJournalposterStatusRequestTo);
+		log.info("rjoark904 finner journalposter med request={}.", finnJournalposterStatusRequestTo);
 		FinnJournalposterStatusResponseTo finnJournalposterStatusResponseTo = finnJournalposterStatusService.finnJournalposterStatus(finnJournalposterStatusRequestTo);
-		log.info("rjoark904 fant og returnerer {} journalposter med filtere={}.", finnJournalposterStatusResponseTo.getTilgangJournalposter().size(), finnJournalposterStatusRequestTo);
+		log.info("rjoark904 fant og returnerer {} journalposter med request={}.", finnJournalposterStatusResponseTo.getTilgangJournalposter().size(), finnJournalposterStatusRequestTo);
 		return finnJournalposterStatusResponseTo;
 	}
 
