@@ -37,12 +37,13 @@ public class HentSakerRepository {
 
 	public Sak lagre(Sak sak) {
 		sakRepository.save(sak);
+		initSakerRepoCounter(meterRegistry,sak.getTema(),sak.getApplikasjon(),sak.getFagsakNr()).increment();
 		return sak;
 	}
 
 	public Optional<Sak> hentSak(Long id) {
-		Optional<Sak> result;
-		result = sakRepository.findById(id);
+		Optional<Sak> result = sakRepository.findById(id);
+		initSakerRepoCounter(meterRegistry,result.get().getTema(),result.get().getApplikasjon(),result.get().getFagsakNr()).increment();
 		return result;
 	}
 
@@ -82,9 +83,11 @@ public class HentSakerRepository {
 	}
 
 
-	public static Counter initSakerRepoCounter(MeterRegistry meterRegistry, String applikasjon, String tema) {
+	public static Counter initSakerRepoCounter(MeterRegistry meterRegistry, String tema, String applikasjon,String fagsakNr) {
 		return Counter.builder("repository_duration_seconds")
-				.tag("applikasjon", applikasjon)
+				.tag("tema",tema==null?"N/A":tema)
+				.tag("applikasjon", applikasjon==null?"N/A":applikasjon)
+				.tag("fagsakNr",fagsakNr==null?"N/A":fagsakNr)
 				.tag("consumerid", MDC.get(MDCConstants.MDC_CONSUMER_ID))
 				.register(meterRegistry);
 	}

@@ -49,6 +49,7 @@ public class AbacSecurityService {
 	private static final String ACCESS_DENIED_TO_JOURNALPOST = "Bruker har ikke tilgang til journalpost";
 	private static final String ACCESS_DENIED_TO_SAK = "Bruker har ikke tilgang til sak";
 	public static final String ACCESS_DENIED = "Access Denied";
+	private static final String CONSUMER_ID =MDC.get(MDCConstants.MDC_CONSUMER_ID);
 
 	private final AbacLogger abaclog;
 	private final SakAbacLogger sakAbacLogger;
@@ -208,9 +209,10 @@ public class AbacSecurityService {
 
 	public static Counter initAbacSecurityCounter(MeterRegistry meterRegistry,Decision decision){
 
-		return Counter.builder("authentication_counter")
+		return Counter.builder("authentication_request_second_count")
 				.tag("resource_type",RESOURCE_SAK_SAK)
 				.tag("permission",decision==Decision.DENY?"deny":"permit")
+				.tag("consumer",MDC.get(MDCConstants.MDC_CONSUMER_ID))
 				.register(meterRegistry);
 	}
 
