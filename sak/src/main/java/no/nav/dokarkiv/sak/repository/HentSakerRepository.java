@@ -32,18 +32,17 @@ public class HentSakerRepository {
 							   MeterRegistry meterRegistry) {
 		this.entityManager = entityManager;
 		this.sakRepository = sakRepository;
-		this.meterRegistry=meterRegistry;
+		this.meterRegistry = meterRegistry;
 	}
 
 	public Sak lagre(Sak sak) {
 		sakRepository.save(sak);
-		initSakerRepoCounter(meterRegistry,sak.getTema(),sak.getApplikasjon(),sak.getFagsakNr()).increment();
+		initSakerRepoCounter(meterRegistry, sak.getTema(), sak.getApplikasjon(), sak.getFagsakNr()).increment();
 		return sak;
 	}
 
 	public Optional<Sak> hentSak(Long id) {
 		Optional<Sak> result = sakRepository.findById(id);
-		initSakerRepoCounter(meterRegistry,result.get().getTema(),result.get().getApplikasjon(),result.get().getFagsakNr()).increment();
 		return result;
 	}
 
@@ -88,7 +87,7 @@ public class HentSakerRepository {
 				.tag("tema", tema == null ? "N/A" : tema)
 				.tag("applikasjon", applikasjon == null ? "N/A" : applikasjon)
 				.tag("fagsakNr", fagsakNr == null ? "N/A" : fagsakNr)
-				.tag("consumerid", MDC.get(MDCConstants.MDC_CONSUMER_ID))
+				.tag("consumerid", MDC.get(MDCConstants.MDC_CONSUMER_ID) == null ? "ukjent" : MDC.get(MDCConstants.MDC_CONSUMER_ID))
 				.register(meterRegistry);
 	}
 
