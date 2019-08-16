@@ -1,5 +1,7 @@
 package no.nav.dokarkiv.hentjournalsakinfo.rjoark900;
 
+import no.nav.dokarkiv.hentjournalsakinfo.JournalpostFilter;
+import no.nav.dokarkiv.hentjournalsakinfo.dto.JournalpostDto;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;

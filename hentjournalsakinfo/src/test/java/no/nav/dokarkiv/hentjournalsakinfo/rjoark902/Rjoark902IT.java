@@ -97,8 +97,7 @@ public class Rjoark902IT extends AbstractHentjournalsakinfoItest {
 	//  Unhappy path
 	@Test
 	public void shouldFailToGetJournalpost() {
-
-		Journalpost storedJournalpost = buildAndPersistJournalpost();
+		buildAndPersistJournalpost();
 		Long journalpostId = 54321L;
 
 		String uri = HENTJOURNALSAKINFO_HENTJOURNALPOST + journalpostId;

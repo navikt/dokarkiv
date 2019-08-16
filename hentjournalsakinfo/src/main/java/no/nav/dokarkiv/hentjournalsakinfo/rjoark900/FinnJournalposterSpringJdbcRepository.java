@@ -3,6 +3,8 @@ package no.nav.dokarkiv.hentjournalsakinfo.rjoark900;
 import static no.nav.dokarkiv.hentjournalsakinfo.rjoark900.FinnJournalpostSqlGenerator.finnJournalposterSql;
 
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
+import no.nav.dokarkiv.hentjournalsakinfo.JournalpostFilter;
+import no.nav.dokarkiv.hentjournalsakinfo.dto.JournalpostDto;
 import org.simpleflatmapper.jdbc.spring.JdbcTemplateMapperFactory;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;

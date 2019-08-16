@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.hentjournalsakinfo.exceptions;
+package no.nav.dokarkiv.hentjournalsakinfo.rjoark901;
 
 import no.nav.dokarkiv.core.exceptions.DokarkivFunctionalException;
 import org.springframework.http.HttpStatus;

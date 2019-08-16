@@ -1,10 +1,12 @@
 package no.nav.dokarkiv.hentjournalsakinfo.common;
 
+import lombok.experimental.UtilityClass;
+
 /**
  * @author Sigurd Midttun, Visma Consulting.
  */
+@UtilityClass
 public final class SqlProjections {
-
 	public static final String RELEVANTE_DATA =
 					"       j.journalpost_id       AS journalpostid,\n" +
 					"		j.innhold              AS innhold,\n" +
@@ -54,7 +56,4 @@ public final class SqlProjections {
 					"	    fd.k_fil_t             AS dokumenter_varianter_filtype,\n" +
 					"       tsi.skannet_innhold_id AS dokumenter_logiske_vedleggid,\n" +
 					"		tsi.vedlegg_innhold    AS dokumenter_logiske_tittel\n";
-
-	private SqlProjections() {
-	}
 }
