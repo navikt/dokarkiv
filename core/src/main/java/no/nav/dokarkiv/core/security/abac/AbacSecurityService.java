@@ -49,7 +49,6 @@ public class AbacSecurityService {
 	private static final String ACCESS_DENIED_TO_JOURNALPOST = "Bruker har ikke tilgang til journalpost";
 	private static final String ACCESS_DENIED_TO_SAK = "Bruker har ikke tilgang til sak";
 	public static final String ACCESS_DENIED = "Access Denied";
-	private static final String CONSUMER_ID =MDC.get(MDCConstants.MDC_CONSUMER_ID);
 
 	private final AbacLogger abaclog;
 	private final SakAbacLogger sakAbacLogger;

@@ -1,10 +1,8 @@
 package no.nav.dokarkiv.sak.repository;
 
-import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
-import static org.assertj.core.api.Assertions.assertThat;
-
 import no.nav.dokarkiv.core.domain.entities.Sak;
 import no.nav.dokarkiv.core.domain.service.SkjermingService;
+import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.core.repository.RepositoryConfig;
 import no.nav.dokarkiv.core.repository.SakRepository;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
@@ -23,8 +21,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
+import static org.assertj.core.api.Assertions.assertThat;
+
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = {RepositoryConfig.class, SkjermingService.class, HentSakerRepository.class, SakRepository.class})
+@SpringBootTest(classes = {RepositoryConfig.class, SkjermingService.class, HentSakerRepository.class, SakRepository.class, JoarkRepository.class})
 @DataJpaTest
 @Transactional
 @ActiveProfiles("itest")

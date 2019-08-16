@@ -26,13 +26,13 @@ public class HentSakerRepository {
 
 	private final EntityManager entityManager;
 	private final SakRepository sakRepository;
-	private final MeterRegistry meterRegistry;
+	private MeterRegistry meterRegistry;
 
 	public HentSakerRepository(EntityManager entityManager, SakRepository sakRepository,
 							   MeterRegistry meterRegistry) {
 		this.entityManager = entityManager;
 		this.sakRepository = sakRepository;
-		this.meterRegistry = meterRegistry;
+		this.meterRegistry=meterRegistry;
 	}
 
 	public Sak lagre(Sak sak) {
@@ -83,11 +83,11 @@ public class HentSakerRepository {
 	}
 
 
-	public static Counter initSakerRepoCounter(MeterRegistry meterRegistry, String tema, String applikasjon,String fagsakNr) {
+	public static Counter initSakerRepoCounter(MeterRegistry meterRegistry, String tema, String applikasjon, String fagsakNr) {
 		return Counter.builder("repository_duration_seconds")
-				.tag("tema",tema==null?"N/A":tema)
-				.tag("applikasjon", applikasjon==null?"N/A":applikasjon)
-				.tag("fagsakNr",fagsakNr==null?"N/A":fagsakNr)
+				.tag("tema", tema == null ? "N/A" : tema)
+				.tag("applikasjon", applikasjon == null ? "N/A" : applikasjon)
+				.tag("fagsakNr", fagsakNr == null ? "N/A" : fagsakNr)
 				.tag("consumerid", MDC.get(MDCConstants.MDC_CONSUMER_ID))
 				.register(meterRegistry);
 	}
