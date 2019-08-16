@@ -4,7 +4,6 @@ import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.domain.entities.Sak;
-import no.nav.dokarkiv.core.exceptions.DokumentIkkeFunnetException;
 import no.nav.dokarkiv.core.repository.SakRepository;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Repository;
@@ -38,14 +37,12 @@ public class HentSakerRepository {
 
 	public Sak lagre(Sak sak) {
 		sakRepository.save(sak);
-		initSakerRepoCounter(meterRegistry,sak.getTema(),sak.getApplikasjon(),sak.getFagsakNr()).increment();
 		return sak;
 	}
 
 	public Optional<Sak> hentSak(Long id) {
 		Optional<Sak> result;
 		result = sakRepository.findById(id);
-		initSakerRepoCounter(meterRegistry,result.get().getTema(),result.get().getApplikasjon(),result.get().getFagsakNr()).increment();
 		return result;
 	}
 
@@ -85,11 +82,9 @@ public class HentSakerRepository {
 	}
 
 
-	public static Counter initSakerRepoCounter(MeterRegistry meterRegistry,String applikasjon, String tema, String fagsakNr){
+	public static Counter initSakerRepoCounter(MeterRegistry meterRegistry, String applikasjon, String tema) {
 		return Counter.builder("repository_duration_seconds")
-				.tag("tema",tema)
-				.tag("applikasjon",applikasjon)
-				.tag("FagsakNr",fagsakNr)
+				.tag("applikasjon", applikasjon)
 				.tag("consumerid", MDC.get(MDCConstants.MDC_CONSUMER_ID))
 				.register(meterRegistry);
 	}

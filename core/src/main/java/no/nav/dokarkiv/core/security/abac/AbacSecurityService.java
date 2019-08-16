@@ -11,6 +11,7 @@ import no.nav.dokarkiv.core.exceptions.DokumentInfoIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.logging.AbacLogger;
 import no.nav.dokarkiv.core.logging.SakAbacLogger;
+import no.nav.dokarkiv.core.metrics.SakMetrics;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import no.nav.freg.abac.core.annotation.context.AbacContext;
@@ -119,6 +120,7 @@ public class AbacSecurityService {
 		return handleResponseForSakId(abacRequest, accessResponse, abacResources);
 	}
 
+	@SakMetrics(value = "sak_request", extraTags = {"process_code", "assertAccessToSakPep"}, percentiles = {0.5, 0.95})
 	public void assertAccessToSakPep(String aktoerId) {
 		final Map<String, String> resources = new HashMap<>();
 		final XacmlRequest abacRequest = abacContext.getRequest()
