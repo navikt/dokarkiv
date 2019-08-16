@@ -1,7 +1,6 @@
 package no.nav.dokarkiv.core.security.abac;
 
 import io.micrometer.core.instrument.Counter;
-import io.micrometer.core.instrument.Meter;
 import io.micrometer.core.instrument.MeterRegistry;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.MDCConstants;
@@ -72,7 +71,7 @@ public class AbacSecurityService {
 		this.jdbcAbacSecurityRepository = jdbcAbacSecurityRepository;
 		this.dokumentinfoRepository = dokumentinfoRepository;
 		this.joarkRepositorySkjermet = joarkRepositorySkjermet;
-		this.meterRegistry= meterRegistry;
+		this.meterRegistry = meterRegistry;
 	}
 
 	public void assertAccessToDokumentInfo(Long dokumentInfoId) {
@@ -139,7 +138,7 @@ public class AbacSecurityService {
 				sakAbacLogger.logAbacDeny(abacRequest, abacResponse);
 				throw new AuthorizationException(ACCESS_DENIED_TO_SAK);
 			}
-			initAbacSecurityCounter(meterRegistry,abacResponse.getDecision()).increment();
+			initAbacSecurityCounter(meterRegistry, abacResponse.getDecision()).increment();
 			sakAbacLogger.logAbacPermit(abacRequest, abacResponse);
 		} catch (AuthorizationException e) {
 			throw e;
@@ -206,12 +205,12 @@ public class AbacSecurityService {
 	}
 
 
-	public static Counter initAbacSecurityCounter(MeterRegistry meterRegistry,Decision decision){
+	public static Counter initAbacSecurityCounter(MeterRegistry meterRegistry, Decision decision) {
 
 		return Counter.builder("authentication_request_second_count")
-				.tag("resource_type",RESOURCE_SAK_SAK)
-				.tag("permission",decision==Decision.DENY?"deny":"permit")
-				.tag("consumer",MDC.get(MDCConstants.MDC_CONSUMER_ID))
+				.tag("resource_type", RESOURCE_SAK_SAK)
+				.tag("permission", decision == Decision.DENY ? "deny" : "permit")
+				.tag("consumer", MDC.get(MDCConstants.MDC_CONSUMER_ID))
 				.register(meterRegistry);
 	}
 

@@ -1,8 +1,5 @@
 package no.nav.dokarkiv.sak.repository;
 
-import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
-import static org.assertj.core.api.Assertions.assertThat;
-
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import no.nav.dokarkiv.core.domain.entities.Sak;
@@ -27,6 +24,9 @@ import javax.inject.Inject;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+
+import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = {HentSakerRepositoryTest.Config.class, RepositoryConfig.class, SkjermingService.class, HentSakerRepository.class, SakRepository.class, JoarkRepository.class})
