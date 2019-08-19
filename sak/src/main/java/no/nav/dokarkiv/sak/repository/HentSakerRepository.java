@@ -40,6 +40,7 @@ public class HentSakerRepository {
 	}
 
 	public Optional<Sak> hentSak(Long id) {
+
 		return sakRepository.findById(id);
 	}
 
@@ -86,5 +87,6 @@ public class HentSakerRepository {
 				.tag("fagsakNr", fagsakNr == null ? "ukjent" : fagsakNr)
 				.register(meterRegistry);
 	}
+
 
 }

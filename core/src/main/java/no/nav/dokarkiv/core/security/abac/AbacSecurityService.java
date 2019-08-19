@@ -210,7 +210,7 @@ public class AbacSecurityService {
 		return Counter.builder("authentication_request_second_count")
 				.tag("resource_type", RESOURCE_SAK_SAK)
 				.tag("permission", decision == Decision.DENY ? "deny" : "permit")
-				.tag("consumer", MDC.get(MDCConstants.MDC_CONSUMER_ID))
+				.tag("consumer", MDC.get(MDCConstants.MDC_CONSUMER_ID)==null?"Ukjent":MDC.get(MDCConstants.MDC_CONSUMER_ID))
 				.register(meterRegistry);
 	}
 
