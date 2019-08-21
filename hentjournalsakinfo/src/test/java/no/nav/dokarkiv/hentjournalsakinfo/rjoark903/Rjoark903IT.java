@@ -1,10 +1,14 @@
 package no.nav.dokarkiv.hentjournalsakinfo.rjoark903;
 
+import static no.nav.dokarkiv.core.util.TestDataGenerator.createDokumentInfo;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createJournalpostWithGjenbruktHoveddokument;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createJournalpostWithHoveddokument;
+import static no.nav.dokarkiv.core.util.TestDataGenerator.createVedleggRelasjon;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
 
+import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.hentjournalsakinfo.AbstractHentjournalsakinfoItest;
 import org.junit.Test;
@@ -42,6 +46,31 @@ public class Rjoark903IT extends AbstractHentjournalsakinfoItest {
 		TestTransaction.end();
 		ResponseEntity<TilknyttedeJournalposterResponse> responseEntity = tilknyttedeJournalposterGjenbrukRest(journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId());
 		assertThat(responseEntity.getBody().getTilknyttedeJournalposter(), hasSize(1));
+	}
+
+	@Test
+	public void shouldReturnVedleggOrderedByRelasjonId() {
+		DokumentInfo vedlegg2 = createDokumentInfo();
+		dokumentInfoRepository.save(vedlegg2);
+		DokumentInfo vedlegg1 = createDokumentInfo();
+		dokumentInfoRepository.save(vedlegg1);
+		Journalpost journalpost = createJournalpostWithHoveddokument();
+		DokumentInfo hoveddokument = journalpost.getDokumentInfoFromJpDokInfoRelasjoner(0);
+		createVedleggRelasjon(journalpost, vedlegg1);
+		joarkRepository.save(journalpost);
+		createVedleggRelasjon(journalpost, vedlegg2);
+		joarkRepository.save(journalpost);
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
+
+		ResponseEntity<TilknyttedeJournalposterResponse> responseEntity = tilknyttedeJournalposterGjenbrukRest(journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId());
+
+		assertThat(responseEntity.getBody().getTilknyttedeJournalposter(), hasSize(1));
+		TilknyttetJournalpostDto journalpostDto = responseEntity.getBody().getTilknyttedeJournalposter().get(0);
+		assertThat(journalpostDto.getDokumenter(), hasSize(3));
+		assertThat(journalpostDto.getDokumenter().get(0).getDokumentInfoId(), is(hoveddokument.getDokumentInfoId()));
+		assertThat(journalpostDto.getDokumenter().get(1).getDokumentInfoId(), is(vedlegg1.getDokumentInfoId()));
+		assertThat(journalpostDto.getDokumenter().get(2).getDokumentInfoId(), is(vedlegg2.getDokumentInfoId()));
 	}
 
 	private ResponseEntity<TilknyttedeJournalposterResponse> tilknyttedeJournalposterGjenbrukRest(final Long dokumentInfoId) {

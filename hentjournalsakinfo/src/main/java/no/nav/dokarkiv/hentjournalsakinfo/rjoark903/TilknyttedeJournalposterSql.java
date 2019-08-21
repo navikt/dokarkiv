@@ -28,7 +28,7 @@ final class TilknyttedeJournalposterSql {
 					"              LEFT JOIN t_fil_detaljer fd ON d.dokument_info_id = fd.dokument_info_id AND\n" +
 					"                                             fd.k_variant_format IN ('ARKIV', 'SLADDET', 'PRODUKSJON_DLF', 'FULLVERSJON', 'ORIGINAL')\n" +
 					"              LEFT JOIN t_skannet_innhold tsi ON d.dokument_info_id = tsi.dokument_info_id\n" +
-					"       ORDER BY j.journalpost_id DESC, dokumenter_tilknyttetsom ASC\n" +
+					"       ORDER BY j.journalpost_id DESC, dokumenter_tilknyttetsom ASC, dokumenter_journalpostrelasjonid ASC\n" +
 					"     )\n" +
 					"SELECT *\n" +
 					"FROM saf_visning_tilgang svt\n" +

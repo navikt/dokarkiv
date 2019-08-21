@@ -47,6 +47,7 @@ class FinnJournalposterStatusSql {
 				"                              t.verdi                AS tilleggsopplysninger_verdi,\n" +
 				"                              d.dokument_info_id     AS dokumenter_dokumentinfoid,\n" +
 				"                              rel.k_tilkn_jp_som     AS dokumenter_tilknyttetsom,\n" +
+				"                              rel.jp_dok_info_rel_id AS dokumenter_journalpostrelasjonid,\n" +
 				"                              d.k_dokument_s         AS dokumenter_dokumentstatus,\n" +
 				"                              d.dato_dok_ferdig      AS dokumenter_datoferdigstilt,\n" +
 				"                              d.brev_kode            AS dokumenter_brevkode,\n" +
@@ -97,7 +98,7 @@ class FinnJournalposterStatusSql {
 				"              ) t\n" +
 				"         WHERE rownum <= :antallRader\n" +
 				"     ) journalposter ON journalposter.journalpost_id = r.journalpostid\n" +
-				"ORDER BY journalpostid DESC, dokumenter_tilknyttetsom ASC";
+				"ORDER BY journalpostid DESC, dokumenter_tilknyttetsom ASC, dokumenter_journalpostrelasjonid ASC";
 	}
 
 }
