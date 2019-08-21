@@ -36,9 +36,11 @@ final class FinnJournalpostSqlGenerator {
 				gsakCte +
 				"     midlertidige AS (SELECT b.journalpost_id\n" +
 				"                      FROM t_bruker b\n" +
-				"                             JOIN t_journalpost tj ON b.journalpost_id = tj.journalpost_id\n" +
+				"                               JOIN t_journalpost tj ON b.journalpost_id = tj.journalpost_id\n" +
+				"                               LEFT JOIN t_saksrelasjon s ON tj.journalpost_id = s.journalpost_id\n" +
 				"                      WHERE b.bruker_id IN (:alleIdenter)\n" +
 				"                        AND tj.k_journal_s IN ('M', 'MO', 'D')\n" +
+				"                        AND " + feilregistrertSelectionSql(journalpostFilter.isKunFeilregistrerte()) + "\n" +
 				"     ),\n" +
 				"     relevantedata AS (SELECT" + RELEVANTE_DATA +
 				"                       FROM t_journalpost j\n" +
