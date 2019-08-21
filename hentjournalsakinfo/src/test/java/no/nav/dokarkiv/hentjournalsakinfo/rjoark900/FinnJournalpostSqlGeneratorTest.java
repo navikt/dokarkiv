@@ -67,11 +67,13 @@ public class FinnJournalpostSqlGeneratorTest {
 						"       ),\n" +
 						"     midlertidige AS (SELECT b.journalpost_id\n" +
 						"                      FROM t_bruker b\n" +
-						"                             JOIN t_journalpost tj ON b.journalpost_id = tj.journalpost_id\n" +
+						"                               JOIN t_journalpost tj ON b.journalpost_id = tj.journalpost_id\n" +
+						"                               LEFT JOIN t_saksrelasjon s ON tj.journalpost_id = s.journalpost_id\n" +
 						"                      WHERE b.bruker_id IN (:alleIdenter)\n" +
 						"                        AND tj.k_journal_s IN ('M', 'MO', 'D')\n" +
+						"                        AND (s.feilregistrert IS NULL OR (s.feilregistrert IN (:visFeilregistrert)))\n" +
 						"     ),\n" +
-						"     relevantedata AS (SELECT" +RELEVANTE_DATA +
+						"     relevantedata AS (SELECT" + RELEVANTE_DATA +
 						"                       FROM t_journalpost j\n" +
 						"                              LEFT JOIN t_saksrelasjon s ON s.journalpost_id = j.journalpost_id\n" +
 						"                              LEFT JOIN t_jp_tillegg t ON j.journalpost_id = t.journalpost_id\n" +
