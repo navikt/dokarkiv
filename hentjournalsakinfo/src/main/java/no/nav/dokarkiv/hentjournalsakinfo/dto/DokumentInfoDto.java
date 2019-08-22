@@ -16,6 +16,8 @@ public class DokumentInfoDto {
 	private final Long dokumentInfoId;
 	@JsonIgnore
 	private final String tilknyttetSom;
+	@JsonIgnore
+	private final Long journalpostRelasjonId;
 	private final DokumentStatusCode dokumentstatus;
 	private final Date datoFerdigstilt;
 	private final String brevkode;
