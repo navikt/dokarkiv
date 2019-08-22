@@ -41,7 +41,7 @@ public final class SqlProjections {
 					"       t.verdi                AS tilleggsopplysninger_verdi,\n" +
 					"		d.dokument_info_id     AS dokumenter_dokumentinfoid,\n" +
 					"		rel.k_tilkn_jp_som     AS dokumenter_tilknyttetsom,\n" +
-					"		rel.jp_dok_info_rel_id AS dokumenter_journalpostrelasjonid,\n" +
+					"		rel.jp_dok_info_rel_id AS dokumenter_jprelasjonid,\n" +
 					"		d.k_dokument_s         AS dokumenter_dokumentstatus,\n" +
 					"       d.dato_dok_ferdig      AS dokumenter_datoferdigstilt,\n" +
 					"		d.brev_kode            AS dokumenter_brevkode,\n" +

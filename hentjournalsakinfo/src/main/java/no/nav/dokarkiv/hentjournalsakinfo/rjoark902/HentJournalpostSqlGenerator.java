@@ -23,6 +23,6 @@ final class HentJournalpostSqlGenerator {
 				"				LEFT JOIN t_fil_detaljer fd ON d.dokument_info_id = fd.dokument_info_id AND fd.k_variant_format IN ('ARKIV', 'SLADDET', 'PRODUKSJON', 'PRODUKSJON_DLF', 'FULLVERSJON', 'ORIGINAL')\n" +
 				"				LEFT JOIN t_skannet_innhold tsi ON d.dokument_info_id = tsi.dokument_info_id\n" +
 				"       		WHERE j.journalpost_id = :journalpostId\n" +
-				"	ORDER BY dokumenter_tilknyttetsom ASC, dokumenter_journalpostrelasjonid ASC";
+				"	ORDER BY dokumenter_tilknyttetsom ASC, dokumenter_jprelasjonid ASC";
 	}
 }
