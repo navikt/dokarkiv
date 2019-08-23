@@ -14,19 +14,19 @@ CREATE TABLE sak_gr (
     CONSTRAINT pk_sak_gr PRIMARY KEY (sak_gr_id)
 );
 
-CREATE SEQUENCE sak_gr_seq;
+CREATE SEQUENCE seq_sak_gr;
 
-create TRIGGER sak_d_trg
+create TRIGGER trg_sak_delete
 AFTER DELETE ON sak
 FOR EACH ROW BEGIN
     INSERT INTO sak_gr
     (sak_gr_id, sak_id, tema, applikasjon, fagsaknr, opprettet_av, opprettet_tidspunkt, dato_overfort_grensesnitt, endring_type)
     VALUES
-    (sak_gr_seq.nextval, :old.id, :old.tema, :old.applikasjon, :old.fagsaknr, :old.opprettet_av, :old.opprettet_tidspunkt, CURRENT_TIMESTAMP, 'D');
+    (seq_sak_gr.nextval, :old.id, :old.tema, :old.applikasjon, :old.fagsaknr, :old.opprettet_av, :old.opprettet_tidspunkt, CURRENT_TIMESTAMP, 'D');
 END;
 /
 
-create TRIGGER sak_iu_trg
+create TRIGGER trg_sak_insert_update
 AFTER INSERT OR UPDATE ON sak
 FOR EACH ROW
 DECLARE
@@ -38,6 +38,6 @@ BEGIN
     INSERT INTO sak_gr
     (sak_gr_id, sak_id, aktoerid, orgnr, tema, applikasjon, fagsaknr, opprettet_av, opprettet_tidspunkt, dato_overfort_grensesnitt, endring_type)
     VALUES
-    (sak_gr_seq.nextval, :new.id, :new.aktoerid, :new.orgnr, :new.tema, :new.applikasjon, :new.fagsaknr, :new.opprettet_av, :new.opprettet_tidspunkt, CURRENT_TIMESTAMP, endringstype);
+    (seq_sak_gr.nextval, :new.id, :new.aktoerid, :new.orgnr, :new.tema, :new.applikasjon, :new.fagsaknr, :new.opprettet_av, :new.opprettet_tidspunkt, CURRENT_TIMESTAMP, endringstype);
 END;
 /
