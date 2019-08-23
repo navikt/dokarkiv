@@ -60,7 +60,8 @@ public class TestDataGenerator {
 	public static final byte[] FIL_DUMMY_KASSERT = "Test kassert dummy dokument dummy".getBytes();
 	public static final byte[] FIL_DUMMY_SKJERMET = "Test skjermet dummy dokument dummy".getBytes();
 	public static final byte[] FIL_SLADDET = "Test sladdet dokument".getBytes();
-
+	public static final Integer ANTALL_RETUR = 3;
+	
 	public static Journalpost createJournalpostWithHoveddokument() {
 		Journalpost journalpost = Journalpost.builder()
 				.avsenderMottakerId(AVSENDER_MOTTAKER_ID)
@@ -71,7 +72,8 @@ public class TestDataGenerator {
 				.journalposttype(JournalpostTypeCode.U)
 				.opprettetAvNavn(OPPRETTET_AV_NAVN)
 				.fagomrade(FagomradeCode.RPO)
-				.mottakskanal(MottaksKanalCode.NAV_NO).build();
+				.mottakskanal(MottaksKanalCode.NAV_NO)
+				.antallRetur(ANTALL_RETUR).build();
 
 		journalpost.addBruker(createBruker());
 		journalpost.addKryssReferanse(createKryssreferanse());

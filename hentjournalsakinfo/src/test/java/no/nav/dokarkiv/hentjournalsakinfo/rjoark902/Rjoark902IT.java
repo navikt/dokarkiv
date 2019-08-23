@@ -53,7 +53,7 @@ public class Rjoark902IT extends AbstractHentjournalsakinfoItest {
 	private static final DokumentStatusCode DOKUMENTSTATUS = DokumentStatusCode.UNDER_REDIGERING;
 	private static final String BREVKODE = "test dokumentinfo brevkode";
 	private static final String TITTEL = "test tittel";
-
+	private static final String ANTALL_RETUR = "3";
 
 	// Happy path
 	@Test
@@ -81,6 +81,7 @@ public class Rjoark902IT extends AbstractHentjournalsakinfoItest {
 		assertEquals(SAKID, responseJournalpost.getSaksrelasjon().getSakId());
 		assertEquals(SAKRELASJONFAGSYSTEM, responseJournalpost.getSaksrelasjon().getFagsystem());
 		assertEquals(SAKFEILREGISTRERT, responseJournalpost.getSaksrelasjon().getFeilregistrert());
+		assertEquals(ANTALL_RETUR, responseJournalpost.getAntallRetur());
 
 		DokumentInfoDto responseDokumentInfo = responseJournalpost.getDokumenter().get(0);
 
@@ -142,7 +143,9 @@ public class Rjoark902IT extends AbstractHentjournalsakinfoItest {
 
 	private DokumentInfo getDokumentInfoOfHoveddokument(Journalpost journalpost) {
 		Set<JournalpostDokumentInfoRelasjon> hoveddokumentList = journalpost.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.HOVEDDOKUMENT);
-		JournalpostDokumentInfoRelasjon journalpostDokumentInfoRelasjon = hoveddokumentList.isEmpty() ? null : hoveddokumentList.iterator().next();
+		JournalpostDokumentInfoRelasjon journalpostDokumentInfoRelasjon = hoveddokumentList.isEmpty() ? null : hoveddokumentList
+				.iterator()
+				.next();
 		return journalpostDokumentInfoRelasjon.getDokumentInfo();
 	}
 }
