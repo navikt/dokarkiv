@@ -33,8 +33,8 @@ public class SaksrelasjonUpdater {
                 saksrelasjon = journalpost.getSaksrelasjon();
             }
 
-            updateArkivsaksnummer(journalpost, request, saksrelasjon, endret);
-            updateArkivsaksystem(journalpost, request, saksrelasjon, endret);
+            updateArkivsaksnummer(request, saksrelasjon, endret);
+            updateArkivsaksystem(request, saksrelasjon, endret);
 
             if (endret.isEndretFlagg() && !newSak) {
                 saksrelasjon.setEndretAvNavn(MDC.get(MDC_USER_ID));
@@ -47,19 +47,18 @@ public class SaksrelasjonUpdater {
         return endret;
     }
 
-    private void updateArkivsaksystem(Journalpost journalpost, OppdaterJournalpostRequest request, Saksrelasjon saksrelasjon, ChangeTracker endret) {
+    private void updateArkivsaksystem(OppdaterJournalpostRequest request, Saksrelasjon saksrelasjon, ChangeTracker endret) {
         if (request.getSak().getArkivsaksystem() != null &&
-                !mapArkivSakSystemToFagsystemCode(request.getSak().getArkivsaksystem()).equals(journalpost.getSaksrelasjon().getFagsystem())) {
-            endret.add(SAKSRELASJON_FAGSYSTEM, journalpost.getSaksrelasjon() == null ? null : journalpost.getSaksrelasjon().getFagsystem().name(),
+                !mapArkivSakSystemToFagsystemCode(request.getSak().getArkivsaksystem()).equals(saksrelasjon.getFagsystem())) {
+            endret.add(SAKSRELASJON_FAGSYSTEM, saksrelasjon.getFagsystem() == null ? null : saksrelasjon.getFagsystem().name(),
                     request.getSak().getArkivsaksystem().name());
             saksrelasjon.setFagsystem(mapArkivSakSystemToFagsystemCode(request.getSak().getArkivsaksystem()));
         }
     }
 
-    private void updateArkivsaksnummer(Journalpost journalpost, OppdaterJournalpostRequest request, Saksrelasjon saksrelasjon, ChangeTracker endret) {
-        if (isNotBlank(request.getSak().getArkivsaksnummer()) && !request.getSak().getArkivsaksnummer().equals(journalpost.getSaksrelasjon().getSakId())) {
-            endret.add(SAKSRELASJON_SAKID, journalpost.getSaksrelasjon() == null ? null : journalpost.getSaksrelasjon().getSakId(),
-                    request.getSak().getArkivsaksnummer());
+    private void updateArkivsaksnummer(OppdaterJournalpostRequest request, Saksrelasjon saksrelasjon, ChangeTracker endret) {
+        if (isNotBlank(request.getSak().getArkivsaksnummer()) && !request.getSak().getArkivsaksnummer().equals(saksrelasjon.getSakId())) {
+            endret.add(SAKSRELASJON_SAKID, saksrelasjon.getSakId(), request.getSak().getArkivsaksnummer());
             saksrelasjon.setSakId(request.getSak().getArkivsaksnummer());
         }
     }

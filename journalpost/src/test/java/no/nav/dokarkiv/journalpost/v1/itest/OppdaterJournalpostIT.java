@@ -6,14 +6,17 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static java.lang.String.format;
 import static no.nav.dokarkiv.core.datautil.JournalpostTestDataProvider.INNHOLD;
+import static no.nav.dokarkiv.core.domain.codes.FagsystemCode.FS22;
 import static no.nav.dokarkiv.core.security.JwtClaimsBuilderProvider.openAmClaimsBuilder;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.StringContains.containsString;
 import static org.junit.Assert.assertEquals;
 
 import no.nav.dokarkiv.core.consumer.RestConsumerExceptionResponse;
 import no.nav.dokarkiv.core.datautil.JournalpostTestDataProvider;
+import no.nav.dokarkiv.core.domain.builder.JournalpostBuilder;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.codes.AvsenderMottakerIdTypeCode;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
@@ -167,6 +170,42 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 		TestTransaction.start();
 		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
 		assert(aksjonsLoggList.isEmpty());
+		TestTransaction.end();
+	}
+
+	@Test
+	public void shouldUpdateJournalpostWithSaksrelasjonIsNull() {
+		abacPermit();
+
+		JournalpostBuilder journalpostBuilder = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
+				.endretAvNavn("saksbehandlersen")
+				.saksrelasjon(null);
+		Journalpost journalpost = buildAndCommit(journalpostBuilder);
+		Long journalpostId = journalpost.getJournalpostId();
+
+		OppdaterJournalpostRequest request = OppdaterJournalpostRequest.builder()
+				.sak(Sak.builder()
+						.arkivsaksystem(Arkivsaksystem.GSAK)
+						.arkivsaksnummer(ARKIVSAKSNUMMER)
+						.build())
+				.build();
+
+		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
+
+		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(
+				URL_JOURNALPOST + journalpostId, HttpMethod.PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
+
+		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
+
+		TestTransaction.start();
+		Journalpost oppdatertJournalpost = joarkRepository.findById(journalpostId).get();
+		assertThat(oppdatertJournalpost.getSaksrelasjon().getSakId(), is(ARKIVSAKSNUMMER));
+		assertThat(oppdatertJournalpost.getSaksrelasjon().getFagsystem(), is(FS22));
+
+		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
+		assertThat(aksjonsLoggList, hasSize(1));
+		assertThat(aksjonsLoggList.get(0).getAksjon(), is(AksjonsTypeCode.SAKSTILKNYTNING));
+		assertThat(aksjonsLoggList.get(0).getArkivElementEndringer(), hasSize(2));
 		TestTransaction.end();
 	}
 
