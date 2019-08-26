@@ -3,8 +3,11 @@ package no.nav.dokarkiv.hentjournalsakinfo.rjoark902;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.AVSENDER_MOTTAKER_ID;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.AVSENDER_MOTTAKER_ID_TYPE;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.DOKUMENT_TYPE_ID;
+import static no.nav.dokarkiv.core.util.TestDataGenerator.createDokumentInfo;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createJournalpostWithHoveddokument;
+import static no.nav.dokarkiv.core.util.TestDataGenerator.createVedleggRelasjon;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
@@ -93,6 +96,31 @@ public class Rjoark902IT extends AbstractHentjournalsakinfoItest {
 
 		assertNotNull(responseDokumentInfo.getVarianter().get(0).getFiluuid());
 		assertEquals(responseDokumentInfo.getVarianter().get(0).getFiltype(), FilTypeCode.PDF.name());
+	}
+
+	@Test
+	public void shouldReturnVedleggOrderedByRelasjonId() {
+		DokumentInfo vedlegg2 = createDokumentInfo();
+		dokumentInfoRepository.save(vedlegg2);
+		DokumentInfo vedlegg1 = createDokumentInfo();
+		dokumentInfoRepository.save(vedlegg1);
+		Journalpost journalpost = createJournalpostWithHoveddokument();
+		DokumentInfo hoveddokument = journalpost.getDokumentInfoFromJpDokInfoRelasjoner(0);
+		createVedleggRelasjon(journalpost, vedlegg1);
+		joarkRepository.save(journalpost);
+		createVedleggRelasjon(journalpost, vedlegg2);
+		joarkRepository.save(journalpost);
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
+
+		String uri = HENTJOURNALSAKINFO_HENTJOURNALPOST + journalpost.getJournalpostId();
+		ResponseEntity<SafHentJournalpostResponse> responseEntity = restTemplate.exchange(uri, HttpMethod.GET, createHeaderEntity(), SafHentJournalpostResponse.class);
+		HentJournalpostDto responseJournalpost = responseEntity.getBody().getHentJournalpostDto();
+
+		assertThat(responseJournalpost.getDokumenter(), hasSize(3));
+		assertThat(responseJournalpost.getDokumenter().get(0).getDokumentInfoId(), is(hoveddokument.getDokumentInfoId()));
+		assertThat(responseJournalpost.getDokumenter().get(1).getDokumentInfoId(), is(vedlegg1.getDokumentInfoId()));
+		assertThat(responseJournalpost.getDokumenter().get(2).getDokumentInfoId(), is(vedlegg2.getDokumentInfoId()));
 	}
 
 	//  Unhappy path

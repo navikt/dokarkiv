@@ -1,6 +1,8 @@
 package no.nav.dokarkiv.hentjournalsakinfo.rjoark904;
 
+import static no.nav.dokarkiv.core.util.TestDataGenerator.createDokumentInfo;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createJournalpostWithHoveddokument;
+import static no.nav.dokarkiv.core.util.TestDataGenerator.createVedleggRelasjon;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
@@ -8,8 +10,11 @@ import static org.junit.Assert.fail;
 
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
+import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.hentjournalsakinfo.AbstractHentjournalsakinfoItest;
+import no.nav.dokarkiv.hentjournalsakinfo.dto.JournalpostDto;
+import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -84,6 +89,32 @@ public class Rjoark904IT extends AbstractHentjournalsakinfoItest {
 		FinnJournalposterStatusResponseTo responseTo = finnJournalposterStatusRest(createRequest(JournalStatusCode.UB));
 
 		assertThat(responseTo.getTilgangJournalposter(), hasSize(1));
+	}
+
+	@Test
+	public void shouldReturnVedleggOrderedByRelasjonId() {
+		DokumentInfo vedlegg2 = createDokumentInfo();
+		dokumentInfoRepository.save(vedlegg2);
+		DokumentInfo vedlegg1 = createDokumentInfo();
+		dokumentInfoRepository.save(vedlegg1);
+		Journalpost journalpost = createJournalpostWithHoveddokument();
+		journalpost.setJournalstatus(JournalStatusCode.U);
+		DokumentInfo hoveddokument = journalpost.getDokumentInfoFromJpDokInfoRelasjoner(0);
+		createVedleggRelasjon(journalpost, vedlegg1);
+		joarkRepository.save(journalpost);
+		createVedleggRelasjon(journalpost, vedlegg2);
+		joarkRepository.save(journalpost);
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
+
+		FinnJournalposterStatusResponseTo responseTo = finnJournalposterStatusRest(createRequest(JournalStatusCode.U));
+
+		assertThat(responseTo.getTilgangJournalposter(), hasSize(1));
+		JournalpostDto journalpostDto = responseTo.getTilgangJournalposter().get(0);
+		Assert.assertThat(journalpostDto.getDokumenter(), hasSize(3));
+		Assert.assertThat(journalpostDto.getDokumenter().get(0).getDokumentInfoId(), is(hoveddokument.getDokumentInfoId()));
+		Assert.assertThat(journalpostDto.getDokumenter().get(1).getDokumentInfoId(), is(vedlegg1.getDokumentInfoId()));
+		Assert.assertThat(journalpostDto.getDokumenter().get(2).getDokumentInfoId(), is(vedlegg2.getDokumentInfoId()));
 	}
 
 	private FinnJournalposterStatusRequestTo createRequest(JournalStatusCode journalStatusCode) {
