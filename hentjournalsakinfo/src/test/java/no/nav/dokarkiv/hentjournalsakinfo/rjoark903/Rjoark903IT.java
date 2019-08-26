@@ -6,6 +6,7 @@ import static no.nav.dokarkiv.core.util.TestDataGenerator.createJournalpostWithH
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createVedleggRelasjon;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.hasSize;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
@@ -18,7 +19,7 @@ import org.springframework.test.context.transaction.TestTransaction;
 
 public class Rjoark903IT extends AbstractHentjournalsakinfoItest {
 	private static final String TILKNYTTEDEJOURNALPOSTER_GJENBRUK = "/hentjournalsakinfo/tilknyttedejournalposter/{dokumentInfoId}/GJENBRUK";
-
+	private static final String ANTALL_RETUR = "3";
 
 	@Test
 	public void shouldReturnEmptyResponseWhenNotFound() {
@@ -29,12 +30,15 @@ public class Rjoark903IT extends AbstractHentjournalsakinfoItest {
 	@Test
 	public void shouldReturnGjenbrukteJournalposter() {
 		Journalpost journalpost = createJournalpostWithHoveddokument();
-		Journalpost gjenbrukt = createJournalpostWithGjenbruktHoveddokument(journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo());
+		Journalpost gjenbrukt = createJournalpostWithGjenbruktHoveddokument(journalpost.findHoveddokumentDokumentInfoRelasjon()
+				.getDokumentInfo());
 		joarkRepository.save(journalpost);
 		joarkRepository.save(gjenbrukt);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
-		ResponseEntity<TilknyttedeJournalposterResponse> responseEntity = tilknyttedeJournalposterGjenbrukRest(journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId());
+		ResponseEntity<TilknyttedeJournalposterResponse> responseEntity = tilknyttedeJournalposterGjenbrukRest(journalpost.findHoveddokumentDokumentInfoRelasjon()
+				.getDokumentInfo()
+				.getDokumentInfoId());
 		assertThat(responseEntity.getBody().getTilknyttedeJournalposter(), hasSize(2));
 	}
 
@@ -44,8 +48,11 @@ public class Rjoark903IT extends AbstractHentjournalsakinfoItest {
 		joarkRepository.save(journalpost);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
-		ResponseEntity<TilknyttedeJournalposterResponse> responseEntity = tilknyttedeJournalposterGjenbrukRest(journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId());
+		ResponseEntity<TilknyttedeJournalposterResponse> responseEntity = tilknyttedeJournalposterGjenbrukRest(journalpost.findHoveddokumentDokumentInfoRelasjon()
+				.getDokumentInfo()
+				.getDokumentInfoId());
 		assertThat(responseEntity.getBody().getTilknyttedeJournalposter(), hasSize(1));
+		assertEquals(responseEntity.getBody().getTilknyttedeJournalposter().get(0).getAntallRetur(), ANTALL_RETUR);
 	}
 
 	@Test

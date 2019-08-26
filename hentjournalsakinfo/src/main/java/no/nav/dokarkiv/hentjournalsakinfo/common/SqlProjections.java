@@ -32,6 +32,7 @@ public final class SqlProjections {
 					"		j.dato_avs_retur       AS avsreturdato,\n" +
 					"		j.dato_sendt_print     AS sendtprintdato,\n" +
 					"		j.k_skjerming_type     AS skjerming,\n" +
+					"		j.antall_retur		   AS antallretur,\n" +
 					"		s.sak_nr_fk            AS saksrelasjon_sakid,\n" +
 					"		s.feilregistrert       AS saksrelasjon_feilregistrert,\n" +
 					"		s.k_fagsystem          AS saksrelasjon_fagsystem,\n" +

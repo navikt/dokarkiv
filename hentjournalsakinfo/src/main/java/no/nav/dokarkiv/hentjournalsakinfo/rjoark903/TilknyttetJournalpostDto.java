@@ -50,6 +50,7 @@ public class TilknyttetJournalpostDto {
 	private final Date sendtPrintDato;
 	private final Date ekspedertDato;
 	private final SkjermingTypeCode skjerming;
+	private final String antallRetur;
 	private final List<TilleggsopplysningDto> tilleggsopplysninger;
 	private final List<DokumentInfoDto> dokumenter;
 }
