@@ -7,17 +7,22 @@ import static no.nav.dokarkiv.journalpost.v1.api.JournalpostType.NOTAT;
 import static no.nav.dokarkiv.journalpost.v1.api.JournalpostType.UTGAAENDE;
 import static no.nav.dokarkiv.journalpost.v1.services.OpprettJournalpostService.UKJENT;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.BREVKODE1;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.BREVKODE2;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.BRUKER_ID_PERSON;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.DOKUMENTKATEGORI_SED;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.DOKUMENT_TITTEL1;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.DOKUMENT_TITTEL2;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FILNAVN;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FILTYPE_PDF;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FILTYPE_XML;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FYSISK_DOKUMENT;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FYSISK_DOKUMENT_2;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.INNHOLD;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.SAK_ID;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_FOR;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.VARIANTFORMAT_ARKIV;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.VARIANTFORMAT_ORIGINAL;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createBaseRequest;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createMinimalRequest;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createRequest;
 import static org.hamcrest.core.Is.is;
@@ -54,6 +59,7 @@ import org.springframework.http.ResponseEntity;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -347,7 +353,28 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 	public void shouldRunOKWithoutTittelAndTema() throws IOException {
 		abacPermit();
 
-		OpprettJournalpostRequest request = createMinimalRequest(INNGAAENDE).build();
+		OpprettJournalpostRequest request = createBaseRequest(INNGAAENDE)
+				.journalfoerendeEnhet(null)
+				.tittel(null)
+				.tema(null)
+				.dokumenter(Collections.singletonList(
+						Dokument.builder()
+								.tittel(DOKUMENT_TITTEL1)
+								.brevkode(BREVKODE1)
+								.dokumentKategori(DOKUMENTKATEGORI_SED)
+								.dokumentvarianter(Arrays.asList(DokumentVariant.builder()
+												.filtype(FILTYPE_PDF)
+												.variantformat(VARIANTFORMAT_ARKIV)
+												.fysiskDokument(FYSISK_DOKUMENT)
+												.build(),
+										DokumentVariant.builder()
+												.filtype(FILTYPE_XML)
+												.variantformat(VARIANTFORMAT_ORIGINAL)
+												.filnavn(FILNAVN)
+												.fysiskDokument(FYSISK_DOKUMENT_2)
+												.build()))
+								.build()))
+				.build();
 
 		HttpEntity requestEntity = new HttpEntity(request, createHeadersWithServiceUserToken());
 		ResponseEntity<OpprettJournalpostResponse> response = restTemplate.exchange(URL_JOURNALPOST + FERDIGSTILL_QUERY, HttpMethod.POST, requestEntity, OpprettJournalpostResponse.class);

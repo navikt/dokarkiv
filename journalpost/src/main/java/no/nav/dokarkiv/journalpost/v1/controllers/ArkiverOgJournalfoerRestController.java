@@ -21,6 +21,7 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.metrics.RestMetrics;
 import no.nav.dokarkiv.core.security.abac.AbacSecurityService;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
+import no.nav.dokarkiv.journalpost.v1.api.Dokumenter;
 import no.nav.dokarkiv.journalpost.v1.api.FerdigstillJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.OppdaterDistribusjonsinfoRequest;
 import no.nav.dokarkiv.journalpost.v1.api.OppdaterJournalpostRequest;
@@ -57,6 +58,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Api(description = "Tjenester for å arkivere og journalføre i fagarkiv")
@@ -65,158 +68,173 @@ import java.util.Optional;
 @RequestMapping("/rest/journalpostapi/v1/journalpost")
 public class ArkiverOgJournalfoerRestController {
 
-    private final KopierJournalpostService kopierJournalpostService;
-    private final FerdigstillJournalpostService ferdigstillJournalpostService;
-    private final AbacSecurityService abacSecurityService;
-    private final OppdaterJournalpostService oppdaterJournalpostService;
-    private final OppdaterDistribusjonsinfoService oppdaterDistribusjonsinfoService;
-    private final OpprettJournalpostService opprettJournalpostService;
-    private final OpprettJournalpostRequestValidator opprettJournalpostRequestValidator;
-    private final FerdigstillJournalpostValidator ferdigstillJournalpostValidator;
-    private final OppdaterDistribusjonsinfoValidator oppdaterDistribusjonsinfoValidator;
+	private final KopierJournalpostService kopierJournalpostService;
+	private final FerdigstillJournalpostService ferdigstillJournalpostService;
+	private final AbacSecurityService abacSecurityService;
+	private final OppdaterJournalpostService oppdaterJournalpostService;
+	private final OppdaterDistribusjonsinfoService oppdaterDistribusjonsinfoService;
+	private final OpprettJournalpostService opprettJournalpostService;
+	private final OpprettJournalpostRequestValidator opprettJournalpostRequestValidator;
+	private final FerdigstillJournalpostValidator ferdigstillJournalpostValidator;
+	private final OppdaterDistribusjonsinfoValidator oppdaterDistribusjonsinfoValidator;
 
-    private static final String TRUE = "true";
+	private static final String TRUE = "true";
 
-    @Inject
-    public ArkiverOgJournalfoerRestController(final FerdigstillJournalpostService ferdigstillJournalpostService,
-                                              final KopierJournalpostService kopierJournalpostService,
-                                              final OppdaterJournalpostService oppdaterJournalpostService,
-                                              final OpprettJournalpostService opprettJournalpostService,
-                                              final OppdaterDistribusjonsinfoService oppdaterDistribusjonsinfoService,
-                                              final AbacSecurityService abacSecurityService) {
-        this.ferdigstillJournalpostService = ferdigstillJournalpostService;
-        this.kopierJournalpostService = kopierJournalpostService;
-        this.abacSecurityService = abacSecurityService;
-        this.oppdaterJournalpostService = oppdaterJournalpostService;
-        this.opprettJournalpostService = opprettJournalpostService;
-        this.oppdaterDistribusjonsinfoService = oppdaterDistribusjonsinfoService;
-        this.opprettJournalpostRequestValidator = new OpprettJournalpostRequestValidator();
-        this.ferdigstillJournalpostValidator = new FerdigstillJournalpostValidator();
-        this.oppdaterDistribusjonsinfoValidator = new OppdaterDistribusjonsinfoValidator();
-    }
+	@Inject
+	public ArkiverOgJournalfoerRestController(final FerdigstillJournalpostService ferdigstillJournalpostService,
+											  final KopierJournalpostService kopierJournalpostService,
+											  final OppdaterJournalpostService oppdaterJournalpostService,
+											  final OpprettJournalpostService opprettJournalpostService,
+											  final OppdaterDistribusjonsinfoService oppdaterDistribusjonsinfoService,
+											  final AbacSecurityService abacSecurityService) {
+		this.ferdigstillJournalpostService = ferdigstillJournalpostService;
+		this.kopierJournalpostService = kopierJournalpostService;
+		this.abacSecurityService = abacSecurityService;
+		this.oppdaterJournalpostService = oppdaterJournalpostService;
+		this.opprettJournalpostService = opprettJournalpostService;
+		this.oppdaterDistribusjonsinfoService = oppdaterDistribusjonsinfoService;
+		this.opprettJournalpostRequestValidator = new OpprettJournalpostRequestValidator();
+		this.ferdigstillJournalpostValidator = new FerdigstillJournalpostValidator();
+		this.oppdaterDistribusjonsinfoValidator = new OppdaterDistribusjonsinfoValidator();
+	}
 
-    @Transactional
-    @SwaggerKopierJournalpost
-    @PostMapping("/kopierJournalpost")
-    @RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark203"}, percentiles = {0.5, 0.95})
-    public ResponseEntity<Long> kopierJournalpost(
-            @ApiParam(name="kildeJournalpostId", value = "IDen til journalposten som skal kopieres", required = true, example = "77778888")
-            @RequestParam String kildeJournalpostId) {
-        MDC.put(MDC_REQUEST_ID, "rjoark203");
-        log.info(MDC.get(MDC_REQUEST_ID) + " har mottatt kall for kopiering av journalpost med journalpostId={}", kildeJournalpostId);
-        validateId(kildeJournalpostId, "journalpostId");
-        RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
+	@Transactional
+	@SwaggerKopierJournalpost
+	@PostMapping("/kopierJournalpost")
+	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark203"}, percentiles = {0.5, 0.95})
+	public ResponseEntity<Long> kopierJournalpost(
+			@ApiParam(name = "kildeJournalpostId", value = "IDen til journalposten som skal kopieres", required = true, example = "77778888")
+			@RequestParam String kildeJournalpostId) {
+		MDC.put(MDC_REQUEST_ID, "rjoark203");
+		log.info(MDC.get(MDC_REQUEST_ID) + " har mottatt kall for kopiering av journalpost med journalpostId={}", kildeJournalpostId);
+		validateId(kildeJournalpostId, "journalpostId");
+		RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
 
-        Long nyJournalpostId = kopierJournalpostService.execute(Long.parseLong(kildeJournalpostId));
+		Long nyJournalpostId = kopierJournalpostService.execute(Long.parseLong(kildeJournalpostId));
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(nyJournalpostId);
-    }
+		return ResponseEntity.status(HttpStatus.CREATED).body(nyJournalpostId);
+	}
 
-    @Transactional
-    @SwaggerFerdigstillJournalpost
-    @PatchMapping("/{journalpostId}/ferdigstill")
-    @Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_DOKUMENT),
-                        @Abac.Attr(key = RESOURCE_FELLES_DOMENE, value = ARKIV_V2)},
-            actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION))
-    @RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark201"}, percentiles = {0.5, 0.95})
-    public ResponseEntity<String> ferdigstillJournalpost(
-            @PathVariable @ApiParam(value = "IDen til journalposten som skal ferdigstilles", required = true, example = "77778888") String journalpostId,
-            @RequestBody FerdigstillJournalpostRequest request) {
-        MDC.put(MDC_REQUEST_ID, "rjoark201");
-        log.info(MDC.get(MDC_REQUEST_ID) + " har mottat kall for ferdigstilling av journalpost med journalpostId={}", journalpostId);
-        ferdigstillJournalpostValidator.validateRequest(journalpostId, request);
-        abacSecurityService.assertAccessToJournalpost(journalpostId);
-        RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
+	@Transactional
+	@SwaggerFerdigstillJournalpost
+	@PatchMapping("/{journalpostId}/ferdigstill")
+	@Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_DOKUMENT),
+			@Abac.Attr(key = RESOURCE_FELLES_DOMENE, value = ARKIV_V2)},
+			actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION))
+	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark201"}, percentiles = {0.5, 0.95})
+	public ResponseEntity<String> ferdigstillJournalpost(
+			@PathVariable @ApiParam(value = "IDen til journalposten som skal ferdigstilles", required = true, example = "77778888") String journalpostId,
+			@RequestBody FerdigstillJournalpostRequest request) {
+		MDC.put(MDC_REQUEST_ID, "rjoark201");
+		log.info(MDC.get(MDC_REQUEST_ID) + " har mottat kall for ferdigstilling av journalpost med journalpostId={}", journalpostId);
+		ferdigstillJournalpostValidator.validateRequest(journalpostId, request);
+		abacSecurityService.assertAccessToJournalpost(journalpostId);
+		RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
 
-        ferdigstillJournalpostService.ferdigstill(Long.parseLong(journalpostId), request.getJournalfoerendeEnhet());
-        log.info(MDC.get(MDC_REQUEST_ID) + " har ferdigstilt journalpost med journalpostId={}", journalpostId);
+		ferdigstillJournalpostService.ferdigstill(Long.parseLong(journalpostId), request.getJournalfoerendeEnhet());
+		log.info(MDC.get(MDC_REQUEST_ID) + " har ferdigstilt journalpost med journalpostId={}", journalpostId);
 
-        return ResponseEntity.ok().body("Journalpost ferdigstilt");
-    }
+		return ResponseEntity.ok().body("Journalpost ferdigstilt");
+	}
 
-    @Transactional
-    @SwaggerOppdaterDistribusjonsinfo
-    @PatchMapping("/{journalpostId}/oppdaterDistribusjonsinfo")
-    @Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_DOKUMENT),
-                        @Abac.Attr(key = RESOURCE_FELLES_DOMENE, value = ARKIV_V2)},
-            actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION))
-    @RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark201"}, percentiles = {0.5, 0.95})
-    public ResponseEntity<String> oppdaterDistribusjonsinfo(
-            @PathVariable @ApiParam(value = "IDen til journalposten som skal oppdateres", required = true, example = "77778888") String journalpostId,
-            @RequestBody OppdaterDistribusjonsinfoRequest request) {
-        MDC.put(MDC_REQUEST_ID, "oppdaterDistribusjonsinfo");
-        log.info(MDC.get(MDC_REQUEST_ID) + " har mottat kall for oppdatering av distribusjonsinfo for journalpostId={}", journalpostId);
-        validateId(journalpostId, "journalpostId");
-        oppdaterDistribusjonsinfoValidator.validateRequest(journalpostId, request);
-        abacSecurityService.assertAccessToJournalpost(journalpostId);
-        RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
+	@Transactional
+	@SwaggerOppdaterDistribusjonsinfo
+	@PatchMapping("/{journalpostId}/oppdaterDistribusjonsinfo")
+	@Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_DOKUMENT),
+			@Abac.Attr(key = RESOURCE_FELLES_DOMENE, value = ARKIV_V2)},
+			actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION))
+	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark201"}, percentiles = {0.5, 0.95})
+	public ResponseEntity<String> oppdaterDistribusjonsinfo(
+			@PathVariable @ApiParam(value = "IDen til journalposten som skal oppdateres", required = true, example = "77778888") String journalpostId,
+			@RequestBody OppdaterDistribusjonsinfoRequest request) {
+		MDC.put(MDC_REQUEST_ID, "oppdaterDistribusjonsinfo");
+		log.info(MDC.get(MDC_REQUEST_ID) + " har mottat kall for oppdatering av distribusjonsinfo for journalpostId={}", journalpostId);
+		validateId(journalpostId, "journalpostId");
+		oppdaterDistribusjonsinfoValidator.validateRequest(journalpostId, request);
+		abacSecurityService.assertAccessToJournalpost(journalpostId);
+		RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
 
-        oppdaterDistribusjonsinfoService.oppdaterDistribusjonsinfo(Long.parseLong(journalpostId), request);
+		oppdaterDistribusjonsinfoService.oppdaterDistribusjonsinfo(Long.parseLong(journalpostId), request);
 
-        log.info(MDC.get(MDC_REQUEST_ID) + " har oppdatert distribusjonsinfo på journalpost med journalpostId={}", journalpostId);
+		log.info(MDC.get(MDC_REQUEST_ID) + " har oppdatert distribusjonsinfo på journalpost med journalpostId={}", journalpostId);
 
-        return ResponseEntity.ok().body("Journalpost oppdatert");
-    }
+		return ResponseEntity.ok().body("Journalpost oppdatert");
+	}
 
-    @Transactional
-    @SwaggerOppdaterJournalpost
-    @ResponseBody
-    @PutMapping(value = "/{journalpostId}")
-    @Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_JOURNALPOST),
-                        @Abac.Attr(key = RESOURCE_FELLES_DOMENE, value = ARKIV_V2)},
-            actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION))
-    @RestMetrics(value = "dok_request", extraTags = {"process_code", "oppdaterjournalpost"}, percentiles = {0.5, 0.95})
-    public OppdaterJournalpostResponse oppdaterJournalpost(
-            @PathVariable String journalpostId,
-            @RequestBody OppdaterJournalpostRequest request) {
-        RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDC_CONSUMER_ID));
-        MDC.put(MDC_REQUEST_ID, "oppdaterjournalpost");
-        log.info(MDC.get(MDC_REQUEST_ID) + " har mottatt kall om å oppdatere journalpost med journalpostId={}", journalpostId);
-        validateId(journalpostId, "journalpostId");
-        abacSecurityService.assertAccessToJournalpost(journalpostId);
+	@Transactional
+	@SwaggerOppdaterJournalpost
+	@ResponseBody
+	@PutMapping(value = "/{journalpostId}")
+	@Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_JOURNALPOST),
+			@Abac.Attr(key = RESOURCE_FELLES_DOMENE, value = ARKIV_V2)},
+			actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION))
+	@RestMetrics(value = "dok_request", extraTags = {"process_code", "oppdaterjournalpost"}, percentiles = {0.5, 0.95})
+	public OppdaterJournalpostResponse oppdaterJournalpost(
+			@PathVariable String journalpostId,
+			@RequestBody OppdaterJournalpostRequest request) {
+		RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDC_CONSUMER_ID));
+		MDC.put(MDC_REQUEST_ID, "oppdaterjournalpost");
+		log.info(MDC.get(MDC_REQUEST_ID) + " har mottatt kall om å oppdatere journalpost med journalpostId={}", journalpostId);
+		validateId(journalpostId, "journalpostId");
+		abacSecurityService.assertAccessToJournalpost(journalpostId);
 
-        oppdaterJournalpostService.oppdaterJournalpost(Long.parseLong(journalpostId), request);
+		oppdaterJournalpostService.oppdaterJournalpost(Long.parseLong(journalpostId), request);
 
-        log.info("oppdaterjournalpost har oppdatert journalpost med journalpostId={} i Joark.", journalpostId);
-        return OppdaterJournalpostResponse.builder().journalpostId(journalpostId).build();
-    }
+		log.info("oppdaterjournalpost har oppdatert journalpost med journalpostId={} i Joark.", journalpostId);
+		return OppdaterJournalpostResponse.builder().journalpostId(journalpostId).build();
+	}
 
-    @Transactional
-    @PostMapping
-    @SwaggerOpprettJournalpost
-    @Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_DOKUMENT),
-                        @Abac.Attr(key = RESOURCE_FELLES_DOMENE, value = ARKIV_V2)},
-            actions = @Abac.Attr(key = ACTION_ID, value = CREATE_ACTION))
-    @RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark202"}, percentiles = {0.5, 0.95}, histogram = true)
-    public ResponseEntity<OpprettJournalpostResponse> opprettJournalpost(
-            @RequestBody OpprettJournalpostRequest request,
-            @ApiParam(name = "forsoekFerdigstill", value = "Angir hvorvidt tjenesten skal forsøke å ferdigstille eller ikke. Dette vil å sette journalposten i en status som indikerer at journalføring er komplett, og låser journalposten for senere endringer.\n" +
-                    "Journalposten blir uansett opprettet, men kun ferdigstilt dersom den oppfyller krav til struktur og metadata som beskrevet under ferdigstillJournalpost.", allowableValues = "true, false", required = false)
-            @RequestParam(required = false) String forsoekFerdigstill) {
-        MDC.put(MDC_REQUEST_ID, "rjoark202");
-        log.info(MDC.get(MDC_REQUEST_ID) + " har mottat kall for opprettelse av ny journalpost");
-        RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDC_CONSUMER_ID));
+	@Transactional
+	@PostMapping
+	@SwaggerOpprettJournalpost
+	@Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_DOKUMENT),
+			@Abac.Attr(key = RESOURCE_FELLES_DOMENE, value = ARKIV_V2)},
+			actions = @Abac.Attr(key = ACTION_ID, value = CREATE_ACTION))
+	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark202"}, percentiles = {0.5, 0.95}, histogram = true)
+	public ResponseEntity<OpprettJournalpostResponse> opprettJournalpost(
+			@RequestBody OpprettJournalpostRequest request,
+			@ApiParam(name = "forsoekFerdigstill", value = "Angir hvorvidt tjenesten skal forsøke å ferdigstille eller ikke. Dette vil å sette journalposten i en status som indikerer at journalføring er komplett, og låser journalposten for senere endringer.\n" +
+					"Journalposten blir uansett opprettet, men kun ferdigstilt dersom den oppfyller krav til struktur og metadata som beskrevet under ferdigstillJournalpost.", allowableValues = "true, false", required = false)
+			@RequestParam(required = false) String forsoekFerdigstill) {
+		MDC.put(MDC_REQUEST_ID, "rjoark202");
+		log.info(MDC.get(MDC_REQUEST_ID) + " har mottat kall for opprettelse av ny journalpost");
+		RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDC_CONSUMER_ID));
 
-        // tilgangsstyring abac?
+		// tilgangsstyring abac?
 
-        opprettJournalpostRequestValidator.validateRequest(request);
+		opprettJournalpostRequestValidator.validateRequest(request);
 
-        Journalpost journalpost = opprettJournalpostService.opprettJournalpost(request);
-        Long journalpostId = journalpost.getJournalpostId();
+		Journalpost journalpost = opprettJournalpostService.opprettJournalpost(request);
 
-        Optional<Pair<String, String>> ferdigstillResponse = Optional.empty();
-        if (TRUE.equalsIgnoreCase(forsoekFerdigstill)) {
-            ferdigstillResponse = Optional.of(ferdigstillJournalpostService.forsoekFerdigstill(journalpostId, request));
-        }
+		List<Dokumenter> dokumenter = new ArrayList<>();
+		dokumenter.add(Dokumenter.builder()
+				.dokumentInfoId(
+						journalpost.getJournalpostDokumentInfoRelasjoner()
+								.iterator()
+								.next()
+								.getDokumentInfo()
+								.getDokumentInfoId().toString())
+				.build());
 
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(OpprettJournalpostResponse.builder()
-                        .journalpostId(String.valueOf(journalpostId))
-                        .journalstatus(ferdigstillResponse.map(Pair::getKey).orElse(journalpost.getJournalstatus().name()))
-                        .melding(ferdigstillResponse.map(Pair::getValue).orElse(null))
-						.journalpostferdigstilt(ferdigstillResponse.map(Pair::getKey).filter("ENDELIG"::equalsIgnoreCase).isPresent())
-                        .build());
-    }
+
+		Long journalpostId = journalpost.getJournalpostId();
+
+		Optional<Pair<String, String>> ferdigstillResponse = Optional.empty();
+		if (TRUE.equalsIgnoreCase(forsoekFerdigstill)) {
+			ferdigstillResponse = Optional.of(ferdigstillJournalpostService.forsoekFerdigstill(journalpostId, request));
+		}
+
+		return ResponseEntity
+				.status(HttpStatus.CREATED)
+				.body(OpprettJournalpostResponse.builder()
+						.journalpostId(String.valueOf(journalpostId))
+						.journalstatus(ferdigstillResponse.map(Pair::getKey).orElse(journalpost.getJournalstatus().name()))
+						.melding(ferdigstillResponse.map(Pair::getValue).orElse(null))
+						.journalpostferdigstilt(ferdigstillResponse.map(Pair::getKey)
+								.filter("ENDELIG"::equalsIgnoreCase)
+								.isPresent())
+						.dokumenter(dokumenter)
+						.build());
+	}
 
 }

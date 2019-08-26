@@ -7,6 +7,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @ApiModel
 @Builder
 @Getter
@@ -45,4 +47,9 @@ public class OpprettJournalpostResponse {
 			example = "true"
 	)
 	private Boolean journalpostferdigstilt;
+
+	@ApiModelProperty(
+			value = "Dokumentene på journalposten."
+	)
+	private List<Dokumenter> dokumenter;
 }

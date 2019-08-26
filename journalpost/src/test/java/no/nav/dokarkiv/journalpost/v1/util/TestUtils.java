@@ -427,7 +427,7 @@ public class TestUtils {
 		return createBaseRequest(journalpostType).build();
 	}
 
-	private static OpprettJournalpostRequest.OpprettJournalpostRequestBuilder createBaseRequest(JournalpostType journalpostType) {
+	public static OpprettJournalpostRequest.OpprettJournalpostRequestBuilder createBaseRequest(JournalpostType journalpostType) {
 		return OpprettJournalpostRequest.builder()
 				.journalpostType(journalpostType)
 				.avsenderMottaker(AvsenderMottaker.builder()
