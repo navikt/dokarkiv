@@ -207,15 +207,16 @@ public class ArkiverOgJournalfoerRestController {
 		Journalpost journalpost = opprettJournalpostService.opprettJournalpost(request);
 
 		List<Dokumenter> dokumenter = new ArrayList<>();
-		dokumenter.add(Dokumenter.builder()
-				.dokumentInfoId(
-						journalpost.getJournalpostDokumentInfoRelasjoner()
-								.iterator()
-								.next()
-								.getDokumentInfo()
-								.getDokumentInfoId().toString())
-				.build());
-
+		journalpost.getJournalpostDokumentInfoRelasjoner()
+				.forEach(
+						journalpostDokumentInfoRelasjon -> {
+							dokumenter.add(Dokumenter.builder()
+									.dokumentInfoId(journalpostDokumentInfoRelasjon.getDokumentInfo()
+											.getDokumentInfoId()
+											.toString())
+									.build());
+						}
+				);
 
 		Long journalpostId = journalpost.getJournalpostId();
 

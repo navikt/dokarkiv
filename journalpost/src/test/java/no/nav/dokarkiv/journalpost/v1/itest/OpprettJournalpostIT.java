@@ -174,6 +174,8 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertNotNull(response.getBody());
 		assertNull(response.getBody().getMelding());
 		assertThat(response.getBody().getJournalpostferdigstilt(), is(true));
+		assertNotNull(response.getBody().getDokumenter());
+		assertNotNull(response.getBody().getDokumenter().get(0).getDokumentInfoId());
 
 		Journalpost journalpost = joarkRepository.findAll().iterator().next();
 		assertNotNull(journalpost.getJournalpostId());
@@ -353,28 +355,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 	public void shouldRunOKWithoutTittelAndTema() throws IOException {
 		abacPermit();
 
-		OpprettJournalpostRequest request = createBaseRequest(INNGAAENDE)
-				.journalfoerendeEnhet(null)
-				.tittel(null)
-				.tema(null)
-				.dokumenter(Collections.singletonList(
-						Dokument.builder()
-								.tittel(DOKUMENT_TITTEL1)
-								.brevkode(BREVKODE1)
-								.dokumentKategori(DOKUMENTKATEGORI_SED)
-								.dokumentvarianter(Arrays.asList(DokumentVariant.builder()
-												.filtype(FILTYPE_PDF)
-												.variantformat(VARIANTFORMAT_ARKIV)
-												.fysiskDokument(FYSISK_DOKUMENT)
-												.build(),
-										DokumentVariant.builder()
-												.filtype(FILTYPE_XML)
-												.variantformat(VARIANTFORMAT_ORIGINAL)
-												.filnavn(FILNAVN)
-												.fysiskDokument(FYSISK_DOKUMENT_2)
-												.build()))
-								.build()))
-				.build();
+		OpprettJournalpostRequest request = createMinimalRequest(INNGAAENDE).build();
 
 		HttpEntity requestEntity = new HttpEntity(request, createHeadersWithServiceUserToken());
 		ResponseEntity<OpprettJournalpostResponse> response = restTemplate.exchange(URL_JOURNALPOST + FERDIGSTILL_QUERY, HttpMethod.POST, requestEntity, OpprettJournalpostResponse.class);
