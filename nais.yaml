@@ -20,9 +20,9 @@ prometheus:
 resources:
   limits:
     cpu: 4000m
-    memory: 2048Mi
+    memory: 3072Mi
   requests:
-    memory: 1280Mi
+    memory: 1920Mi
 fasitResources:
   used:
   - alias: freg-security-oidc
