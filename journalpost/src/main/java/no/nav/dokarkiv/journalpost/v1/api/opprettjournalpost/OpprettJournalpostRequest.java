@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.journalpost.v1.api;
+package no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -6,6 +6,12 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import no.nav.dokarkiv.journalpost.v1.api.AvsenderMottaker;
+import no.nav.dokarkiv.journalpost.v1.api.Bruker;
+import no.nav.dokarkiv.journalpost.v1.api.Dokument;
+import no.nav.dokarkiv.journalpost.v1.api.JournalpostType;
+import no.nav.dokarkiv.journalpost.v1.api.Sak;
+import no.nav.dokarkiv.journalpost.v1.api.Tilleggsopplysning;
 
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;

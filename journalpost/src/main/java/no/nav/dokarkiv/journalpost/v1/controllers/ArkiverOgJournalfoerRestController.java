@@ -21,13 +21,13 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.metrics.RestMetrics;
 import no.nav.dokarkiv.core.security.abac.AbacSecurityService;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
-import no.nav.dokarkiv.journalpost.v1.api.Dokumenter;
 import no.nav.dokarkiv.journalpost.v1.api.FerdigstillJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.OppdaterDistribusjonsinfoRequest;
 import no.nav.dokarkiv.journalpost.v1.api.OppdaterJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.OppdaterJournalpostResponse;
-import no.nav.dokarkiv.journalpost.v1.api.OpprettJournalpostRequest;
-import no.nav.dokarkiv.journalpost.v1.api.OpprettJournalpostResponse;
+import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.DokumentInfo;
+import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostRequest;
+import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostResponse;
 import no.nav.dokarkiv.journalpost.v1.services.FerdigstillJournalpostService;
 import no.nav.dokarkiv.journalpost.v1.services.KopierJournalpostService;
 import no.nav.dokarkiv.journalpost.v1.services.OppdaterDistribusjonsinfoService;
@@ -206,17 +206,14 @@ public class ArkiverOgJournalfoerRestController {
 
 		Journalpost journalpost = opprettJournalpostService.opprettJournalpost(request);
 
-		List<Dokumenter> dokumenter = new ArrayList<>();
-		journalpost.getJournalpostDokumentInfoRelasjoner()
-				.forEach(
-						journalpostDokumentInfoRelasjon -> {
-							dokumenter.add(Dokumenter.builder()
-									.dokumentInfoId(journalpostDokumentInfoRelasjon.getDokumentInfo()
-											.getDokumentInfoId()
-											.toString())
-									.build());
-						}
-				);
+		List<DokumentInfo> dokumenter = new ArrayList<>();
+		journalpost.getJournalpostDokumentInfoRelasjoner().forEach(
+				journalpostDokumentInfoRelasjon -> dokumenter.add(DokumentInfo.builder()
+						.dokumentInfoId(journalpostDokumentInfoRelasjon.getDokumentInfo()
+								.getDokumentInfoId()
+								.toString())
+						.build())
+		);
 
 		Long journalpostId = journalpost.getJournalpostId();
 

@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.journalpost.v1.api;
+package no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -12,8 +12,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Dokumenter {
-
+public class DokumentInfo {
 	@ApiModelProperty(
 			value = "Id til et dokumentInfo-objekt som peker på det arkiverte dokumentet."
 	)

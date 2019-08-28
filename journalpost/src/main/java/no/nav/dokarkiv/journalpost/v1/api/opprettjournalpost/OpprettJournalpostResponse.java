@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.journalpost.v1.api;
+package no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -51,5 +51,5 @@ public class OpprettJournalpostResponse {
 	@ApiModelProperty(
 			value = "Dokumentene på journalposten."
 	)
-	private List<Dokumenter> dokumenter;
+	private List<DokumentInfo> dokumenter;
 }
