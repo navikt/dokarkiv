@@ -41,8 +41,8 @@ import no.nav.dokarkiv.journalpost.v1.api.Bruker;
 import no.nav.dokarkiv.journalpost.v1.api.BrukerIdType;
 import no.nav.dokarkiv.journalpost.v1.api.Dokument;
 import no.nav.dokarkiv.journalpost.v1.api.DokumentVariant;
-import no.nav.dokarkiv.journalpost.v1.api.OpprettJournalpostRequest;
-import no.nav.dokarkiv.journalpost.v1.api.OpprettJournalpostResponse;
+import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostRequest;
+import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostResponse;
 import no.nav.dokarkiv.journalpost.v1.api.Sak;
 import org.apache.commons.collections15.IteratorUtils;
 import org.junit.Test;
@@ -168,6 +168,8 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertNotNull(response.getBody());
 		assertNull(response.getBody().getMelding());
 		assertThat(response.getBody().getJournalpostferdigstilt(), is(true));
+		assertNotNull(response.getBody().getDokumenter());
+		assertNotNull(response.getBody().getDokumenter().get(0).getDokumentInfoId());
 
 		Journalpost journalpost = joarkRepository.findAll().iterator().next();
 		assertNotNull(journalpost.getJournalpostId());

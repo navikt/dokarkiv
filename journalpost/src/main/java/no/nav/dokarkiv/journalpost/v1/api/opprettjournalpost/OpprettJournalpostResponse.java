@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.journalpost.v1.api;
+package no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @ApiModel
 @Builder
@@ -45,4 +47,9 @@ public class OpprettJournalpostResponse {
 			example = "true"
 	)
 	private Boolean journalpostferdigstilt;
+
+	@ApiModelProperty(
+			value = "Dokumentene på journalposten."
+	)
+	private List<DokumentInfo> dokumenter;
 }
