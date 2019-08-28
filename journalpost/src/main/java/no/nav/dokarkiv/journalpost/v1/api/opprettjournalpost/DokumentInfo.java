@@ -14,7 +14,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class DokumentInfo {
 	@ApiModelProperty(
-			value = "Id til et dokumentInfo-objekt som peker på det arkiverte dokumentet."
+			value = "Id til et dokumentInfo-objekt som peker på det arkiverte dokumentet.",
+			example = "123"
 	)
 	String dokumentInfoId;
 }
