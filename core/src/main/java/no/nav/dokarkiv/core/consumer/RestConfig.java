@@ -3,6 +3,7 @@ package no.nav.dokarkiv.core.consumer;
 import no.nav.dokarkiv.core.fasit.ServiceuserAlias;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -33,6 +34,11 @@ public class RestConfig {
 
 	@Bean
 	HttpClient httpClient() {
-		return HttpClients.createDefault();
+		PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager();
+		connectionManager.setMaxTotal(400);
+		connectionManager.setDefaultMaxPerRoute(100);
+		return HttpClients.custom()
+				.setConnectionManager(connectionManager)
+				.build();
 	}
 }
