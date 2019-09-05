@@ -9,7 +9,11 @@ import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.SkannetInnholdRepository;
 import no.nav.dokarkiv.journalpost.v1.api.EndreLogiskVedleggRequest;
 import no.nav.dokarkiv.journalpost.v1.api.LeggTilLogiskVedleggRequest;
+import org.hibernate.StaleObjectStateException;
 import org.slf4j.MDC;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -27,6 +31,10 @@ public class LogiskVedleggService {
         this.dokumentinfoRepository = dokumentinfoRepository;
     }
 
+    @Retryable(
+            include = {ObjectOptimisticLockingFailureException.class, StaleObjectStateException.class},
+            backoff = @Backoff(delay = 200L, multiplier = 3)
+    )
     public String leggTilLogiskVedlegg(String dokumentInfoId, LeggTilLogiskVedleggRequest request) {
         DokumentInfo dokumentInfo = dokumentinfoRepository.findByDokumentInfoId(Long.parseLong(dokumentInfoId))
                 .orElseThrow(() -> new DokumentInfoIkkeFunnetException(String.format("Kunne ikke finne dokumentInfo med dokumentInfoId=%s i joark", dokumentInfoId)));
@@ -40,6 +48,10 @@ public class LogiskVedleggService {
         return skannetInnhold.getSkannetInnholdId().toString();
     }
 
+    @Retryable(
+            include = {ObjectOptimisticLockingFailureException.class, StaleObjectStateException.class},
+            backoff = @Backoff(delay = 200L, multiplier = 3)
+    )
     public void endreLogiskVedlegg(String dokumentInfoId, String logiskVedleggId, EndreLogiskVedleggRequest request) {
         SkannetInnhold skannetInnhold = skannetInnholdRepository.findSkannetInnholdBySkannetInnholdIdAndDokumentinfoId(logiskVedleggId, dokumentInfoId)
                 .orElseThrow(() -> new LogiskVedleggIkkeFunnetException(String.format("Kunne ikke finne logisk vedlegg med logiskVedleggId=%s og dokumentId=%s i Joark", logiskVedleggId, dokumentInfoId)));

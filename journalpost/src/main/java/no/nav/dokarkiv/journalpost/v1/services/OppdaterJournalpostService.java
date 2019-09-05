@@ -15,6 +15,10 @@ import no.nav.dokarkiv.journalpost.v1.util.oppdaterjournalpost.ChangeTracker;
 import no.nav.dokarkiv.journalpost.v1.util.oppdaterjournalpost.DokumentInfoUpdater;
 import no.nav.dokarkiv.journalpost.v1.util.oppdaterjournalpost.JournalpostUpdater;
 import no.nav.dokarkiv.journalpost.v1.util.oppdaterjournalpost.SaksrelasjonUpdater;
+import org.hibernate.StaleObjectStateException;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -46,6 +50,10 @@ public class OppdaterJournalpostService {
 		this.lagreAksjonsLoggService = lagreAksjonsLoggService;
 	}
 
+	@Retryable(
+			include = {ObjectOptimisticLockingFailureException.class, StaleObjectStateException.class},
+			backoff = @Backoff(delay = 200L, multiplier = 3)
+	)
 	public void oppdaterJournalpost(Long journalpostId, OppdaterJournalpostRequest oppdaterJournalpostRequest) {
 		Journalpost journalpost = joarkRepository.findById(journalpostId)
 				.orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostId)));

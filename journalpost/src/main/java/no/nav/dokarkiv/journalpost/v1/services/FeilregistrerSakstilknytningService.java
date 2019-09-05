@@ -10,6 +10,10 @@ import no.nav.dokarkiv.core.exceptions.JournalpostIkkeKnyttetTilSakException;
 import no.nav.dokarkiv.core.exceptions.SaksrelasjonAlleredeFeilregistrertException;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.core.repository.SaksrelasjonRepository;
+import org.hibernate.StaleObjectStateException;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
@@ -28,6 +32,10 @@ public class FeilregistrerSakstilknytningService {
         this.saksrelasjonRepository = saksrelasjonRepository;
     }
 
+    @Retryable(
+            include = {ObjectOptimisticLockingFailureException.class, StaleObjectStateException.class},
+            backoff = @Backoff(delay = 200L, multiplier = 3)
+    )
     public List<ArkivElementEndringTO> feilregistrerSakstilknytning(String journalpostId) {
         Saksrelasjon saksrelasjon = hentSaksRelasjonForJournalpost(journalpostId);
 
