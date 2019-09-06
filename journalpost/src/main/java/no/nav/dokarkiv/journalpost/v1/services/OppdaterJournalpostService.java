@@ -1,5 +1,7 @@
 package no.nav.dokarkiv.journalpost.v1.services;
 
+import static no.nav.dokarkiv.journalpost.v1.JournalpostApiConfig.RETRY_DELAY;
+import static no.nav.dokarkiv.journalpost.v1.JournalpostApiConfig.RETRY_MULTIPLIER;
 import static no.nav.dokarkiv.journalpost.v1.validators.OppdaterJournalpostValidator.validateOppdaterteFelt;
 
 import no.nav.dokarkiv.core.aksjonslogg.LagreAksjonsLoggService;
@@ -52,7 +54,7 @@ public class OppdaterJournalpostService {
 
 	@Retryable(
 			include = {ObjectOptimisticLockingFailureException.class, StaleObjectStateException.class},
-			backoff = @Backoff(delay = 200L, multiplier = 3)
+			backoff = @Backoff(delay = RETRY_DELAY, multiplier = RETRY_MULTIPLIER)
 	)
 	public void oppdaterJournalpost(Long journalpostId, OppdaterJournalpostRequest oppdaterJournalpostRequest) {
 		Journalpost journalpost = joarkRepository.findById(journalpostId)

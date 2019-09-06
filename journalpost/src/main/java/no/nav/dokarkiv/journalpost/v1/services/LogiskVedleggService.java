@@ -1,5 +1,8 @@
 package no.nav.dokarkiv.journalpost.v1.services;
 
+import static no.nav.dokarkiv.journalpost.v1.JournalpostApiConfig.RETRY_DELAY;
+import static no.nav.dokarkiv.journalpost.v1.JournalpostApiConfig.RETRY_MULTIPLIER;
+
 import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.SkannetInnhold;
@@ -33,7 +36,7 @@ public class LogiskVedleggService {
 
     @Retryable(
             include = {ObjectOptimisticLockingFailureException.class, StaleObjectStateException.class},
-            backoff = @Backoff(delay = 200L, multiplier = 3)
+            backoff = @Backoff(delay = RETRY_DELAY, multiplier = RETRY_MULTIPLIER)
     )
     public String leggTilLogiskVedlegg(String dokumentInfoId, LeggTilLogiskVedleggRequest request) {
         DokumentInfo dokumentInfo = dokumentinfoRepository.findByDokumentInfoId(Long.parseLong(dokumentInfoId))
@@ -50,7 +53,7 @@ public class LogiskVedleggService {
 
     @Retryable(
             include = {ObjectOptimisticLockingFailureException.class, StaleObjectStateException.class},
-            backoff = @Backoff(delay = 200L, multiplier = 3)
+            backoff = @Backoff(delay = RETRY_DELAY, multiplier = RETRY_MULTIPLIER)
     )
     public void endreLogiskVedlegg(String dokumentInfoId, String logiskVedleggId, EndreLogiskVedleggRequest request) {
         SkannetInnhold skannetInnhold = skannetInnholdRepository.findSkannetInnholdBySkannetInnholdIdAndDokumentinfoId(logiskVedleggId, dokumentInfoId)
