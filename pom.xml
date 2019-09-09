@@ -53,13 +53,30 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
+		<javax.inject.version>1</javax.inject.version>
 		<oracle.version>12.2.0.1</oracle.version>
 		<cxf.version>3.2.6</cxf.version>
 		<flyway.version>4.2.0</flyway.version>
 		<simpleflatmapper.version>8.0.1</simpleflatmapper.version>
 		<swagger.version>2.9.2</swagger.version>
+		<commons-collections4.version>4.2</commons-collections4.version>
+		<logstash-logback-encoder.version>5.1</logstash-logback-encoder.version>
+		<logback-syslog4j.version>1.0.0</logback-syslog4j.version>
+		<jaxb2-basics-runtime.version>0.6.4</jaxb2-basics-runtime.version>
+		<java-jwt.version>3.4.0</java-jwt.version>
+		<aws-java-sdk-s3.version>1.11.337</aws-java-sdk-s3.version>
+		<modig-security-authorization.version>1.0.35</modig-security-authorization.version>
+		<abac-spring.version>1.6.0</abac-spring.version>
+		<freg-security-oidc.version>3.1.0</freg-security-oidc.version>
+		<commons.configuration.version>2.5</commons.configuration.version>
+		<commons.beanutils.version>1.9.3</commons.beanutils.version>
+		<commons.io.version>2.4</commons.io.version>
+		<swagger-ui.version>3.9.2</swagger-ui.version>
+		<lombok.version>1.18.8</lombok.version>
+		<!-- test -->
 		<freg.security.test.version>3.1.0</freg.security.test.version>
 		<modig.testcertificates.version>1.2.5</modig.testcertificates.version>
+		<spring-cloud-contract-wiremock.version>1.2.5.RELEASE</spring-cloud-contract-wiremock.version>
 	</properties>
 	<dependencyManagement>
 		<dependencies>
@@ -172,7 +189,7 @@
 			<dependency>
 				<groupId>javax.inject</groupId>
 				<artifactId>javax.inject</artifactId>
-				<version>1</version>
+				<version>${javax.inject.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.cxf</groupId>
@@ -187,18 +204,80 @@
 			<dependency>
 				<groupId>org.apache.commons</groupId>
 				<artifactId>commons-collections4</artifactId>
-				<version>4.2</version>
+				<version>${commons-collections4.version}</version>
 			</dependency>
+			<dependency>
+				<groupId>net.logstash.logback</groupId>
+				<artifactId>logstash-logback-encoder</artifactId>
+				<version>${logstash-logback-encoder.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.papertrailapp</groupId>
+				<artifactId>logback-syslog4j</artifactId>
+				<version>${logback-syslog4j.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jvnet.jaxb2_commons</groupId>
+				<artifactId>jaxb2-basics-runtime</artifactId>
+				<version>${jaxb2-basics-runtime.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.auth0</groupId>
+				<artifactId>java-jwt</artifactId>
+				<version>${java-jwt.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.amazonaws</groupId>
+				<artifactId>aws-java-sdk-s3</artifactId>
+				<version>${aws-java-sdk-s3.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>no.nav.modig</groupId>
+				<artifactId>modig-security-authorization</artifactId>
+				<version>${modig-security-authorization.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>no.nav.freg</groupId>
+				<artifactId>abac-spring</artifactId>
+				<version>${abac-spring.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>no.nav.freg</groupId>
+				<artifactId>freg-security-oidc</artifactId>
+				<version>${freg-security-oidc.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>commons-io</groupId>
+				<artifactId>commons-io</artifactId>
+				<version>${commons.io.version}</version>
+				<scope>runtime</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-configuration2</artifactId>
+				<version>${commons.configuration.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>commons-beanutils</groupId>
+				<artifactId>commons-beanutils</artifactId>
+				<version>${commons.beanutils.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.webjars</groupId>
+				<artifactId>swagger-ui</artifactId>
+				<version>${swagger-ui.version}</version>
+			</dependency>
+			<!-- provided og test -->
 			<dependency>
 				<groupId>org.projectlombok</groupId>
 				<artifactId>lombok</artifactId>
-				<version>1.18.8</version>
+				<version>${lombok.version}</version>
 				<scope>provided</scope>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.cloud</groupId>
 				<artifactId>spring-cloud-contract-wiremock</artifactId>
-				<version>1.2.5.RELEASE</version>
+				<version>${spring-cloud-contract-wiremock.version}</version>
 				<scope>test</scope>
 			</dependency>
 			<dependency>
@@ -261,41 +340,13 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<version>2.22.0</version>
+				<version>3.0.0-M3</version>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-failsafe-plugin</artifactId>
-				<version>2.22.0</version>
-				<configuration>
-					<additionalClasspathElements>${basedir}/target/classes</additionalClasspathElements>
-				</configuration>
-				<executions>
-					<execution>
-						<goals>
-							<goal>integration-test</goal>
-							<goal>verify</goal>
-						</goals>
-					</execution>
-				</executions>
+				<version>3.0.0-M3</version>
 			</plugin>
 		</plugins>
 	</build>
-	<reporting>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-report-plugin</artifactId>
-				<version>2.22.0</version>
-				<reportSets>
-					<reportSet>
-						<id>integration-tests</id>
-						<reports>
-							<report>failsafe-report-only</report>
-						</reports>
-					</reportSet>
-				</reportSets>
-			</plugin>
-		</plugins>
-	</reporting>
 </project>
