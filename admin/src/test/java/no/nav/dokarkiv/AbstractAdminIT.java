@@ -42,7 +42,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-		classes = {CoreConfig.class, AdminConfig.class, TestToolsAutoConfig.class, AbstractAdminIT.Config.class})
+		classes = {CoreConfig.class, AdminConfig.class, TestToolsAutoConfig.class, AbstractAdminIT.Config.class},
+		properties = {"spring.main.allow-bean-definition-overriding=true"})
 @ActiveProfiles("itest,wiremock,ldap,oidc")
 @AutoConfigureWireMock(port = 0)
 public abstract class AbstractAdminIT extends AbstractRestIT {

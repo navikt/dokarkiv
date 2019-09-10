@@ -113,7 +113,7 @@ public class DokprodMellomlagerS3StorageTest {
 
 	@EnableRetry
 	@Configuration
-	public static class Config {
+	static class Config {
 
 		@Bean
 		static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
@@ -132,7 +132,5 @@ public class DokprodMellomlagerS3StorageTest {
 		public Storage storage(AmazonS3 s3) {
 			return new DokprodMellomlagerS3Storage(s3, encryptPsw);
 		}
-
 	}
-
 }

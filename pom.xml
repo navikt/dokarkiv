@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.0.9.RELEASE</version>
+		<version>2.1.8.RELEASE</version>
 	</parent>
 	<groupId>no.nav.dokarkiv</groupId>
 	<artifactId>dokarkiv</artifactId>
@@ -55,26 +55,27 @@
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<javax.inject.version>1</javax.inject.version>
 		<oracle.version>12.2.0.1</oracle.version>
-		<cxf.version>3.2.6</cxf.version>
+		<cxf.version>3.3.3</cxf.version>
 		<flyway.version>4.2.0</flyway.version>
 		<simpleflatmapper.version>8.0.1</simpleflatmapper.version>
 		<swagger.version>2.9.2</swagger.version>
 		<commons-collections4.version>4.2</commons-collections4.version>
-		<logstash-logback-encoder.version>5.1</logstash-logback-encoder.version>
+		<logstash-logback-encoder.version>6.1</logstash-logback-encoder.version>
 		<logback-syslog4j.version>1.0.0</logback-syslog4j.version>
 		<jaxb2-basics-runtime.version>0.6.4</jaxb2-basics-runtime.version>
-		<java-jwt.version>3.4.0</java-jwt.version>
-		<aws-java-sdk-s3.version>1.11.337</aws-java-sdk-s3.version>
+		<java-jwt.version>3.8.2</java-jwt.version>
+		<aws-java-sdk-s3.version>1.11.627</aws-java-sdk-s3.version>
 		<modig-security-authorization.version>1.0.35</modig-security-authorization.version>
 		<abac-spring.version>1.6.0</abac-spring.version>
-		<freg-security-oidc.version>3.1.0</freg-security-oidc.version>
+		<freg-security.version>3.3.5</freg-security.version>
 		<commons.configuration.version>2.5</commons.configuration.version>
-		<commons.beanutils.version>1.9.3</commons.beanutils.version>
-		<commons.io.version>2.4</commons.io.version>
+		<commons.beanutils.version>1.9.4</commons.beanutils.version>
+		<commons.io.version>2.6</commons.io.version>
 		<swagger-ui.version>3.9.2</swagger-ui.version>
+		<!-- Se https://issues.apache.org/jira/browse/HTTPCLIENT-1997 for bug i httpclient 4.5.9 -->
+		<httpclient.version>4.5.8</httpclient.version>
 		<lombok.version>1.18.8</lombok.version>
 		<!-- test -->
-		<freg.security.test.version>3.1.0</freg.security.test.version>
 		<modig.testcertificates.version>1.2.5</modig.testcertificates.version>
 		<spring-cloud-contract-wiremock.version>1.2.5.RELEASE</spring-cloud-contract-wiremock.version>
 	</properties>
@@ -244,7 +245,7 @@
 			<dependency>
 				<groupId>no.nav.freg</groupId>
 				<artifactId>freg-security-oidc</artifactId>
-				<version>${freg-security-oidc.version}</version>
+				<version>${freg-security.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>commons-io</groupId>
@@ -283,7 +284,7 @@
 			<dependency>
 				<artifactId>freg-security-test-oidc-tools</artifactId>
 				<groupId>no.nav.freg</groupId>
-				<version>${freg.security.test.version}</version>
+				<version>${freg-security.version}</version>
 				<scope>test</scope>
 			</dependency>
 

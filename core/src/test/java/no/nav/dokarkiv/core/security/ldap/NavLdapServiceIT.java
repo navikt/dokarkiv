@@ -9,8 +9,8 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.autoconfigure.data.ldap.DataLdapTest;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.inject.Inject;
@@ -19,8 +19,8 @@ import javax.inject.Inject;
  * @author Joakim Bjørnstad, Jbit AS
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = {LdapConfig.class, NavLdapService.class})
 @DataLdapTest
+@ContextConfiguration(classes = {LdapConfig.class, NavLdapService.class})
 @ActiveProfiles("itest,ldap")
 public class NavLdapServiceIT {
 

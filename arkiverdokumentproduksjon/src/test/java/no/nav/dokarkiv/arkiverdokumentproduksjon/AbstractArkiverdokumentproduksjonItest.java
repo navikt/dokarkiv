@@ -19,6 +19,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -31,7 +32,8 @@ import javax.transaction.Transactional;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE,
-		classes = {CoreConfig.class, AbstractArkiverdokumentproduksjonItest.Config.class, ArkiverDokumentproduksjonConfig.class})
+		classes = {AbstractArkiverdokumentproduksjonItest.Config.class, CoreConfig.class, ArkiverDokumentproduksjonConfig.class},
+		properties = {"spring.main.allow-bean-definition-overriding=true"})
 @ActiveProfiles("itest")
 @AutoConfigureTestDatabase
 @AutoConfigureTestEntityManager
@@ -67,6 +69,7 @@ public abstract class AbstractArkiverdokumentproduksjonItest {
 				.build());
 	}
 
+	@Configuration
 	static class Config {
 		@Bean
 		public Storage dokprodMellomlagerStorage() {
