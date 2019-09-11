@@ -1,6 +1,9 @@
 package no.nav.dokarkiv.dokumentproduksjoninfo;
 
-import no.nav.dokarkiv.core.security.LdapUsernameTokenValidatorInterceptor;
+import static org.apache.cxf.ws.security.SecurityConstants.USERNAME_TOKEN_VALIDATOR;
+import static org.apache.cxf.ws.security.SecurityConstants.VALIDATE_TOKEN;
+
+import no.nav.dokarkiv.core.security.NavLdapUsernameTokenValidator;
 import org.apache.cxf.Bus;
 import org.apache.cxf.jaxws.EndpointImpl;
 import org.apache.cxf.ws.security.wss4j.WSS4JInInterceptor;
@@ -26,16 +29,16 @@ public class DokumentproduksjonInfoConfig {
 	@Profile("nais")
 	Endpoint dokumentproduksjonInfoV1(Bus bus,
 									  DokumentproduksjonInfoEndpoint dokumentproduksjonInfoEndpoint,
-									  LdapUsernameTokenValidatorInterceptor ldapUsernameTokenValidatorInterceptor) {
+									  NavLdapUsernameTokenValidator navLdapUsernameTokenValidator) {
 		EndpointImpl endpoint = new EndpointImpl(bus, dokumentproduksjonInfoEndpoint);
-		endpoint.getProperties().put("ws-security.validate.token", "false");
+		endpoint.getProperties().put(USERNAME_TOKEN_VALIDATOR, navLdapUsernameTokenValidator);
+		endpoint.getProperties().put(VALIDATE_TOKEN, "false");
 		endpoint.publish("/dokumentproduksjoninfo/v1");
 		org.apache.cxf.endpoint.Endpoint cxfEndpoint = endpoint.getServer().getEndpoint();
 		Map<String, Object> inProps = new HashMap<>();
 		inProps.put(WSHandlerConstants.ACTION, WSHandlerConstants.USERNAME_TOKEN);
 		inProps.put(WSHandlerConstants.PASSWORD_TYPE, WSConstants.PW_TEXT);
 		cxfEndpoint.getInInterceptors().add(new WSS4JInInterceptor(inProps));
-		cxfEndpoint.getInInterceptors().add(ldapUsernameTokenValidatorInterceptor);
 		return endpoint;
 	}
 }
