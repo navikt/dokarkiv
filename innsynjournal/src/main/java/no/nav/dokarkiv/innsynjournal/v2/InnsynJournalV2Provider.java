@@ -83,11 +83,19 @@ public class InnsynJournalV2Provider implements InnsynJournalV2 {
 			List<InnsynJournalpostTo> innsynJournalpostTos = securityFacade.hentMineTilgjengeligeJournalpostListe(toRequest);
 			log.info("tjoark053 hentet tilgjengelige journalposter");
 			return journalpostListeV2ResponseMapper.mapList(innsynJournalpostTos);
-		} catch (AuthorizationException e) {
-			log.warn(String.format("Access denied in operation %s. LoggedOnUser=%s", INNSYN_JOURNAL_V2_HENT_JP_LISTE,
-					SubjectHandler.getSubjectHandler().getUid()), e);
-			AuthorizationException undetailedException = new AuthorizationException(ACCESS_DENIED);
-			throw new HentTilgjengeligJournalpostListeSikkerhetsbegrensning(undetailedException.getMessage(), new FunctionalFault());
+		} catch (RuntimeException e) {
+			// Hvorfor gjør vi dette?
+			// Biblioteket vi er avhengig av modig-security-authorization kaster access denied feil som RuntimeException.
+			// Selv om dette er funksjonelle feil. For mer info se no.nav.modig.security.tilgangskontroll.policy.pep.PEPImpl
+			if (e.getMessage().startsWith("Access denied")) {
+				log.warn(String.format("Access denied in operation %s. LoggedOnUser=%s", INNSYN_JOURNAL_V2_HENT_JP_LISTE,
+						SubjectHandler.getSubjectHandler().getUid()), e);
+				AuthorizationException undetailedException = new AuthorizationException(ACCESS_DENIED);
+				throw new HentTilgjengeligJournalpostListeSikkerhetsbegrensning(undetailedException.getMessage(), new FunctionalFault());
+			} else {
+				log.error("Teknisk feil: " + e.getMessage(), e);
+				throw e;
+			}
 		}
 	}
 
@@ -105,16 +113,24 @@ public class InnsynJournalV2Provider implements InnsynJournalV2 {
 			file = securityFacade.hentDokument(journalpostId, dokumentId);
 		} catch (NoJournalpostFoundException | DocumentNotFoundException e) {
 			throw new HentDokumentDokumentIkkeFunnet(e.getMessage(), new FunctionalFault());
-		} catch (AuthorizationException e) {
-			log.warn(String.format("Access denied in operation %s. JournalpostId=%s ,dokumentInfoId=%s , logged on user=%s",
-					INNSYN_JOURNAL_V2_HENT_DOKUMENT, request.getJournalpostId(), request.getDokumentId(),
-					SubjectHandler.getSubjectHandler().getUid()), e);
-			AuthorizationException undetailedException = new AuthorizationException(ACCESS_DENIED);
-			throw new HentDokumentSikkerhetsbegrensning(undetailedException.getMessage(), new FunctionalFault());
 		} catch (SecurityLimitationAttributeException e) {
 			log.warn(e.toLogMessage(INNSYN_JOURNAL_V2_HENT_DOKUMENT));
 			AuthorizationException undetailedException = new AuthorizationException(ACCESS_DENIED);
 			throw new HentDokumentSikkerhetsbegrensning(undetailedException.getMessage(), new FunctionalFault());
+		} catch (RuntimeException e) {
+			// Hvorfor gjør vi dette?
+			// Biblioteket vi er avhengig av modig-security-authorization kaster access denied feil som RuntimeException.
+			// Selv om dette er funksjonelle feil. For mer info se no.nav.modig.security.tilgangskontroll.policy.pep.PEPImpl
+			if (e.getMessage().startsWith("Access denied")) {
+				log.warn(String.format("Access denied in operation %s. JournalpostId=%s ,dokumentInfoId=%s , logged on user=%s",
+						INNSYN_JOURNAL_V2_HENT_DOKUMENT, request.getJournalpostId(), request.getDokumentId(),
+						SubjectHandler.getSubjectHandler().getUid()), e);
+				AuthorizationException undetailedException = new AuthorizationException(ACCESS_DENIED);
+				throw new HentDokumentSikkerhetsbegrensning(undetailedException.getMessage(), new FunctionalFault());
+			} else {
+				log.error("Teknisk feil: " + e.getMessage(), e);
+				throw e;
+			}
 		}
 
 		HentDokumentResponse response = new HentDokumentResponse();
