@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
 import javax.xml.namespace.QName;
-import javax.xml.soap.SOAPElement;
+import javax.xml.soap.Node;
 import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPHeader;
 import javax.xml.ws.ProtocolException;
@@ -97,10 +97,11 @@ public class MDCUsernameTokenInHandler implements SOAPHandler<SOAPMessageContext
 		if (header == null) {
 			return mdc;
 		}
-		Iterator<SOAPElement> headersIter = header.getChildElements(mdcQname);
+		Iterator<Node> headersIter = header.getChildElements(mdcQname);
 		while (headersIter.hasNext()) {
-			SOAPElement element = headersIter.next();
-			if (element.getElementQName().equals(mdcQname)) {
+			Node element = headersIter.next();
+			if (CALLID_QNAME.getNamespaceURI().equals(element.getNamespaceURI()) &&
+					CALLID_QNAME.getLocalPart().equals(element.getLocalName())) {
 				mdc = element.getValue();
 				if (log.isDebugEnabled()) {
 					log.debug("Found " + mdcQname + " : " + mdc);
@@ -110,5 +111,4 @@ public class MDCUsernameTokenInHandler implements SOAPHandler<SOAPMessageContext
 		}
 		return mdc == null ? "" : mdc;
 	}
-
 }

@@ -6,6 +6,7 @@ import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeInngaaendeException;
 import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
 import no.nav.dokarkiv.core.exceptions.UgyldigInputException;
+import no.nav.dokarkiv.core.security.abac.AuthorizationException;
 import no.nav.dokarkiv.innsynjournal.v2.exceptions.DocumentNotFoundException;
 import no.nav.dokarkiv.innsynjournal.v2.exceptions.JournalpostNotSupportedException;
 import no.nav.dokarkiv.innsynjournal.v2.exceptions.SecurityLimitationAttributeException;
@@ -16,7 +17,6 @@ import no.nav.dokarkiv.innsynjournal.v2.tjoark059.IdentifiserJournalpostToReques
 import no.nav.dokarkiv.innsynjournal.v2.tjoark059.IdentifiserJournalpostV2RequestMapper;
 import no.nav.dokarkiv.innsynjournal.v2.tjoark059.IdentifiserJournalpostV2ResponseMapper;
 import no.nav.modig.core.context.SubjectHandler;
-import no.nav.modig.core.exception.AuthorizationException;
 import no.nav.tjeneste.virksomhet.innsynjournal.v2.binding.HentDokumentDokumentIkkeFunnet;
 import no.nav.tjeneste.virksomhet.innsynjournal.v2.binding.HentDokumentSikkerhetsbegrensning;
 import no.nav.tjeneste.virksomhet.innsynjournal.v2.binding.HentTilgjengeligJournalpostListeSikkerhetsbegrensning;
