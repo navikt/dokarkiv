@@ -40,7 +40,8 @@ import java.io.IOException;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE,
-		classes = {CoreConfig.class, AbstractInngaaendeJournalV1Itest.TestConfig.class, InngaaendeJournalV1Config.class})
+		classes = {CoreConfig.class, AbstractInngaaendeJournalV1Itest.TestConfig.class, InngaaendeJournalV1Config.class},
+		properties = {"spring.main.allow-bean-definition-overriding=true"})
 @ActiveProfiles("itest,wiremock")
 @AutoConfigureTestDatabase
 @AutoConfigureTestEntityManager

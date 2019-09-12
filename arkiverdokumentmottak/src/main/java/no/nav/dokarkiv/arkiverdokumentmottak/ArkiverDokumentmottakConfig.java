@@ -1,9 +1,12 @@
 package no.nav.dokarkiv.arkiverdokumentmottak;
 
 
+import static org.apache.cxf.ws.security.SecurityConstants.USERNAME_TOKEN_VALIDATOR;
+import static org.apache.cxf.ws.security.SecurityConstants.VALIDATE_TOKEN;
+
 import no.nav.dokarkiv.arkiverdokumentmottak.tjoark203.v1.ArkiverDokumentmottakEndpoint;
 import no.nav.dokarkiv.arkiverdokumentmottak.tjoark203.v2.ArkiverDokumentmottakV2Endpoint;
-import no.nav.dokarkiv.core.security.LdapUsernameTokenValidatorInterceptor;
+import no.nav.dokarkiv.core.security.NavLdapUsernameTokenValidator;
 import org.apache.cxf.Bus;
 import org.apache.cxf.jaxws.EndpointImpl;
 import org.apache.cxf.ws.security.wss4j.WSS4JInInterceptor;
@@ -29,32 +32,36 @@ public class ArkiverDokumentmottakConfig {
 
 	@Bean
 	@Profile("nais")
-	public Endpoint arkiverDokumentmottakV1(Bus bus, LdapUsernameTokenValidatorInterceptor ldapUsernameTokenValidatorInterceptor, ArkiverDokumentmottakEndpoint arkiverDokumentmottakEndpoint) {
+	public Endpoint arkiverDokumentmottakV1(Bus bus,
+											ArkiverDokumentmottakEndpoint arkiverDokumentmottakEndpoint,
+											NavLdapUsernameTokenValidator navLdapUsernameTokenValidator) {
 		EndpointImpl endpoint = new EndpointImpl(bus, arkiverDokumentmottakEndpoint);
+		endpoint.getProperties().put(USERNAME_TOKEN_VALIDATOR, navLdapUsernameTokenValidator);
+		endpoint.getProperties().put(VALIDATE_TOKEN, "false");
 		endpoint.publish("/arkiverdokumentmottak/v1");
-		endpoint.getProperties().put("ws-security.validate.token", "false");
 		org.apache.cxf.endpoint.Endpoint cxfEndpoint = endpoint.getServer().getEndpoint();
 		Map<String, Object> inProps = new HashMap<>();
 		inProps.put(WSHandlerConstants.ACTION, WSHandlerConstants.USERNAME_TOKEN);
 		inProps.put(WSHandlerConstants.PASSWORD_TYPE, WSConstants.PW_TEXT);
 		cxfEndpoint.getInInterceptors().add(new WSS4JInInterceptor(inProps));
-		cxfEndpoint.getInInterceptors().add(ldapUsernameTokenValidatorInterceptor);
 		return endpoint;
 	}
 
 
 	@Bean
 	@Profile("nais")
-	public Endpoint arkiverDokumentmottakV2(Bus bus, LdapUsernameTokenValidatorInterceptor ldapUsernameTokenValidatorInterceptor, ArkiverDokumentmottakV2Endpoint arkiverDokumentmottakV2Endpoint) {
+	public Endpoint arkiverDokumentmottakV2(Bus bus,
+											ArkiverDokumentmottakV2Endpoint arkiverDokumentmottakV2Endpoint,
+											NavLdapUsernameTokenValidator navLdapUsernameTokenValidator) {
 		EndpointImpl endpoint = new EndpointImpl(bus, arkiverDokumentmottakV2Endpoint);
+		endpoint.getProperties().put(USERNAME_TOKEN_VALIDATOR, navLdapUsernameTokenValidator);
+		endpoint.getProperties().put(VALIDATE_TOKEN, "false");
 		endpoint.publish("/arkiverdokumentmottak/v2");
-		endpoint.getProperties().put("ws-security.validate.token", "false");
 		org.apache.cxf.endpoint.Endpoint cxfEndpoint = endpoint.getServer().getEndpoint();
 		Map<String, Object> inProps = new HashMap<>();
 		inProps.put(WSHandlerConstants.ACTION, WSHandlerConstants.USERNAME_TOKEN);
 		inProps.put(WSHandlerConstants.PASSWORD_TYPE, WSConstants.PW_TEXT);
 		cxfEndpoint.getInInterceptors().add(new WSS4JInInterceptor(inProps));
-		cxfEndpoint.getInInterceptors().add(ldapUsernameTokenValidatorInterceptor);
 		return endpoint;
 	}
 

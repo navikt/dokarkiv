@@ -1,5 +1,8 @@
 package no.nav.dokarkiv.sak.repository;
 
+import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import no.nav.dokarkiv.core.domain.entities.Sak;
@@ -13,10 +16,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,12 +28,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
-import static org.assertj.core.api.Assertions.assertThat;
-
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = {HentSakerRepositoryTest.Config.class, RepositoryConfig.class, SkjermingService.class, HentSakerRepository.class, SakRepository.class, JoarkRepository.class})
 @DataJpaTest
+@ContextConfiguration(classes = {HentSakerRepositoryTest.Config.class, RepositoryConfig.class, SkjermingService.class, HentSakerRepository.class, SakRepository.class, JoarkRepository.class})
 @Transactional
 @ActiveProfiles("itest")
 public class HentSakerRepositoryTest {

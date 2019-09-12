@@ -29,7 +29,8 @@ import javax.transaction.Transactional;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE,
-		classes = {CoreConfig.class, AbstractInnsynJournalV2Itest.TestConfig.class, InnsynJournalV2Config.class})
+		classes = {CoreConfig.class, AbstractInnsynJournalV2Itest.TestConfig.class, InnsynJournalV2Config.class},
+		properties = {"spring.main.allow-bean-definition-overriding=true"})
 @ActiveProfiles("itest")
 @AutoConfigureTestDatabase
 @AutoConfigureTestEntityManager

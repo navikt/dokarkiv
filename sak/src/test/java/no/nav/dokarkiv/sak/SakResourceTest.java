@@ -59,7 +59,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-		classes = {CoreConfig.class, SakConfig.class, TestToolsAutoConfig.class, SakResourceTest.Config.class})
+		classes = {CoreConfig.class, SakConfig.class, TestToolsAutoConfig.class, SakResourceTest.Config.class},
+        properties = {"spring.main.allow-bean-definition-overriding=true"})
 @ActiveProfiles("itest,wiremock,ldap,oidc,saml")
 @AutoConfigureWireMock(port = 0)
 public class SakResourceTest extends AbstractRestIT {
