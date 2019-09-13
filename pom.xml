@@ -42,6 +42,7 @@
 		<javax.inject.version>1</javax.inject.version>
 		<jakarta.jaxws-api.version>2.3.2</jakarta.jaxws-api.version>
 		<jakarta.jws-api.version>1.1.1</jakarta.jws-api.version>
+		<jakarta.activation.version>1.2.1</jakarta.activation.version>
 		<saaj-impl.version>1.5.1</saaj-impl.version>
 		<oracle.version>12.2.0.1</oracle.version>
 		<cxf.version>3.3.3</cxf.version>
@@ -191,6 +192,11 @@
 				<groupId>jakarta.jws</groupId>
 				<artifactId>jakarta.jws-api</artifactId>
 				<version>${jakarta.jws-api.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.sun.activation</groupId>
+				<artifactId>jakarta.activation</artifactId>
+				<version>${jakarta.activation.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.sun.xml.messaging.saaj</groupId>
