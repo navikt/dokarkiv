@@ -84,21 +84,19 @@ import java.util.List;
  */
 @RunWith(MockitoJUnitRunner.class)
 public class InngaaendeJournalProviderTest {
-
-	public static final String AVSENDER_MOTTAKERID = "***gammelt_fnr***";
-	public static final Long DOKUMENT_INFO_ID = 1L;
-	public static final String ARKIV_SAKID = "1";
-	public static final String INNHOLD = "Mitt innhold";
-	public static final String ERRORMSG = "errormsg";
-	static final LocalDateTime NOW = LocalDateTime.now();
-	static final String FNR = "***gammelt_fnr***";
-	static final String ORGNR = "999999999";
-	static final String DOKUMENTTYPE_ID = "I00008";
-	static final Long DOKUMENT_INFO_ID_VEDLEGG = 2L;
-	static final String DOKUMENTTYPE_ID_VEDLEGG = "I00024";
+	private static final String AVSENDER_MOTTAKERID = "***gammelt_fnr***";
+	private static final Long DOKUMENT_INFO_ID = 1L;
+	private static final String ARKIV_SAKID = "1";
+	private static final String ERRORMSG = "errormsg";
+	private static final LocalDateTime NOW = LocalDateTime.now();
+	private static final String FNR = "***gammelt_fnr***";
+	private static final String ORGNR = "999999999";
+	private static final String DOKUMENTTYPE_ID = "I00008";
+	private static final Long DOKUMENT_INFO_ID_VEDLEGG = 2L;
+	private static final String DOKUMENTTYPE_ID_VEDLEGG = "I00024";
 	private static final String HENT_JOURNALPOST_OPERATION_NAME = "JOARK:" + HENT_JOURNALPOST;
 	private static final String UTLED_JOURNALFOERINGSBEHOV_OPERATION_NAME = "JOARK:" + UTLED_JOURNALFOERINGSBEHOV;
-	public static final String KANAL_REFERANSE_ID = "kanalReferanseId";
+
 	@Rule
 	public ExpectedException expectedException = ExpectedException.none();
 	private UtledJournalfoeringsbehovRequest utledJournalfoeringsbehovRequest;

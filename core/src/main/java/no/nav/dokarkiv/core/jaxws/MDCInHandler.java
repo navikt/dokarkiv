@@ -9,7 +9,7 @@ import javax.naming.InvalidNameException;
 import javax.naming.ldap.LdapName;
 import javax.naming.ldap.Rdn;
 import javax.xml.namespace.QName;
-import javax.xml.soap.SOAPElement;
+import javax.xml.soap.Node;
 import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPHeader;
 import javax.xml.ws.ProtocolException;
@@ -122,17 +122,14 @@ public class MDCInHandler implements SOAPHandler<SOAPMessageContext> {
 		if (header == null) {
 			return callId;
 		}
-		
-		Iterator<SOAPElement> headersIter = header.getChildElements(CALLID_QNAME);
-		
+
+		Iterator<Node> headersIter = header.getChildElements(CALLID_QNAME);
 		while (headersIter.hasNext()) {
-			SOAPElement element = headersIter.next();
-			if(log.isDebugEnabled()) {
-				log.debug("QName: " + element.getElementQName());
-			}
-			if (element.getElementQName().equals(CALLID_QNAME)) {
+			Node element = headersIter.next();
+			if (CALLID_QNAME.getNamespaceURI().equals(element.getNamespaceURI()) &&
+					CALLID_QNAME.getLocalPart().equals(element.getLocalName())) {
 				callId = element.getValue();
-				if(log.isDebugEnabled()) {
+				if (log.isDebugEnabled()) {
 					log.debug("Found callId: " + callId);
 				}
 				break;
@@ -140,5 +137,4 @@ public class MDCInHandler implements SOAPHandler<SOAPMessageContext> {
 		}
 		return callId;
 	}
-	
 }

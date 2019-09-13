@@ -50,7 +50,7 @@ import java.util.Optional;
 public class Rjoark102IT extends AbstractAdminIT {
 
 	@Test
-	public void skallIkkeKassereDokumentNårDokmentInfoIkkeFinnes() throws IOException {
+	public void skalIkkeKassereDokumentNårDokmentInfoIkkeFinnes() throws IOException {
 		abacPermit();
 
 		Long dokumentInfoId = 13L;
@@ -66,7 +66,7 @@ public class Rjoark102IT extends AbstractAdminIT {
 	}
 
 	@Test
-	public void skallKassereDokumentSomErKnyttetTilFlereJournalposter() throws IOException {
+	public void skalKassereDokumentSomErKnyttetTilFlereJournalposter() throws IOException {
 		abacPermit();
 
 		Journalpost journalpost1 = createJournalpostWithHoveddokument();
