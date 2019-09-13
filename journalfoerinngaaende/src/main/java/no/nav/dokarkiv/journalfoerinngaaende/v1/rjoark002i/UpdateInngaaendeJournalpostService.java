@@ -61,8 +61,6 @@ public class UpdateInngaaendeJournalpostService {
 		response.setJournalpostId(journalpostId);
 		response.setHarEndeligJF(false);
 
-		//TODO: hva blir korrekt behandling av manglende journalfEnhet i request (ved endeligJF)
-
 		if (putJournalpostRequest.isForsoekEndeligJF()) {
 			if (isEmpty(putJournalpostRequest.getJournalfEnhet())) {
 				throw new KunneIkkeEndeligJournalfoereException(String.format("Kunne ikke endelig journalføre journalpost med journalpostId=%s. Mangler journalfEnhet", journalpostId));
