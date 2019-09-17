@@ -81,7 +81,9 @@ public class OpprettJournalpostRequest {
 	@ApiModelProperty
 	private List<Tilleggsopplysning> tilleggsopplysninger = new ArrayList<>();
 
-	@ApiModelProperty
+	@ApiModelProperty(
+			value = "Saken som journalposten hører til"
+	)
 	private Sak sak;
 
 	@Builder.Default

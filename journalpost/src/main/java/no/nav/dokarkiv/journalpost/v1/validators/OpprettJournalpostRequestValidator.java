@@ -18,8 +18,9 @@ import no.nav.dokarkiv.journalpost.v1.api.Bruker;
 import no.nav.dokarkiv.journalpost.v1.api.BrukerIdType;
 import no.nav.dokarkiv.journalpost.v1.api.Dokument;
 import no.nav.dokarkiv.journalpost.v1.api.DokumentVariant;
-import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.Sak;
+import no.nav.dokarkiv.journalpost.v1.api.Sakstype;
+import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostRequest;
 
 import java.util.Arrays;
 
@@ -27,6 +28,8 @@ public class OpprettJournalpostRequestValidator {
 
 	private static final int FNR_LENGTH = 11;
 	private static final int ORGNR_LENGTH = 9;
+	private static final String TEMA_PEN = "PEN";
+	private static final String TEMA_UFO = "UFO";
 
 	private static final String VALIDERER_IKKE_MOT_KODEVERK = "validerer ikke mot kodeverk";
 
@@ -47,7 +50,7 @@ public class OpprettJournalpostRequestValidator {
 			validateKanal(request);
 		}
 		if (request.getSak() != null) {
-			validateSak(request.getSak());
+			validateSak(request.getSak(), request.getBruker(), request.getTema());
 		}
 		if (!request.getDokumenter().isEmpty()) {
 			request.getDokumenter().forEach(this::validateDokument);
@@ -132,9 +135,78 @@ public class OpprettJournalpostRequestValidator {
 		}
 	}
 
-	private void validateSak(Sak sak) {
+	private void validateSak(Sak sak, Bruker bruker, String tema) {
+		if (Sakstype.FAGSAK.equals(sak.getSakstype())) {
+			validateFagsak(sak, bruker, tema);
+		}
+
+		if (Sakstype.GENERELL_SAK.equals(sak.getSakstype())) {
+			validateGenerellSak(sak, bruker, tema);
+		}
+
+		if (Sakstype.ARKIVSAK.equals(sak.getSakstype())) {
+			validateArkivsak(sak);
+
+		}
+	}
+
+	private void validateFagsak(Sak sak, Bruker bruker, String tema) {
+		if (isBlank(tema)) {
+			throw new InputValideringFeiletException("tema må være satt dersom sakstype=FAGSAK");
+		}
+		if (bruker == null) {
+			throw new InputValideringFeiletException("Bruker må være satt dersom sakstype=FAGSAK");
+		}
+		if (isBlank(sak.getFagsakId())) {
+			throw new InputValideringFeiletException("Sak.fagsakId må være satt dersom sakstype=FAGSAK");
+		}
+		if (sak.getFagsaksystem() == null) {
+			throw new InputValideringFeiletException("Sak.fagsaksystem må være satt dersom sakstype=FAGSAK");
+		}
+		if (isNotBlank(sak.getArkivsaksnummer())) {
+			throw new InputValideringFeiletException("Sak.arkivsaksnummer skal ikke være satt dersom sakstype=FAGSAK");
+		}
+		if (sak.getArkivsaksystem() != null) {
+			throw new InputValideringFeiletException("Sak.arkivsaksystem skal ikke være satt dersom sakstype=FAGSAK");
+		}
+	}
+
+	private void validateGenerellSak(Sak sak, Bruker bruker, String tema) {
+		if (isBlank(tema)) {
+			throw new InputValideringFeiletException("tema må være satt dersom sakstype=GENERELL_SAK");
+		}
+		if (TEMA_PEN.equals(tema) || TEMA_UFO.equals(tema)) {
+			throw new InputValideringFeiletException("tema kan ikke være UFO eller PEN dersom sakstype=GENERELL_SAK");
+		}
+		if (bruker == null) {
+			throw new InputValideringFeiletException("Bruker må være satt dersom sakstype=GENERELL_SAK");
+		}
+		if (isNotBlank(sak.getFagsakId())) {
+			throw new InputValideringFeiletException("Sak.fagsakId skal ikke være satt dersom sakstype=GENERELL_SAK");
+		}
+		if (sak.getFagsaksystem() != null) {
+			throw new InputValideringFeiletException("Sak.fagsaksystem skal ikke være satt dersom sakstype=GENERELL_SAK");
+		}
+		if (isNotBlank(sak.getArkivsaksnummer())) {
+			throw new InputValideringFeiletException("Sak.arkivsaksnummer skal ikke være satt dersom sakstype=GENERELL_SAK");
+		}
+		if (sak.getArkivsaksystem() != null) {
+			throw new InputValideringFeiletException("Sak.arkivsaksystem skal ikke være satt dersom sakstype=GENERELL_SAK");
+		}
+	}
+
+	private void validateArkivsak(Sak sak) {
+		if (isNotBlank(sak.getFagsakId())) {
+			throw new InputValideringFeiletException("Sak.fagsakId skal ikke være satt dersom sakstype=ARKIVSAK");
+		}
+		if (sak.getFagsaksystem() != null) {
+			throw new InputValideringFeiletException("Sak.fagsaksystem skal ikke være satt dersom sakstype=ARKIVSAK");
+		}
 		if (isBlank(sak.getArkivsaksnummer())) {
-			throw new InputValideringFeiletException("Sak.arkivsaksnummer må være satt");
+			throw new InputValideringFeiletException("Sak.arkivsaksnummer må være satt dersom sakstype=GENERELL_SAK");
+		}
+		if (sak.getArkivsaksystem() == null) {
+			throw new InputValideringFeiletException("Sak.arkivsaksystem må være satt dersom sakstype=GENERELL_SAK");
 		}
 	}
 
