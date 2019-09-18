@@ -3,6 +3,7 @@ package no.nav.dokarkiv.core.consumer.aktoer;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import no.nav.dokarkiv.core.security.STSConfig;
+import no.nav.tjeneste.virksomhet.aktoer.v2.HentIdentForAktoerIdResponse;
 import no.nav.tjeneste.virksomhet.aktoer.v2.binding.AktoerV2;
 import no.nav.tjeneste.virksomhet.aktoer.v2.meldinger.HentAktoerIdForIdentResponse;
 import org.apache.cxf.endpoint.Client;
@@ -50,6 +51,14 @@ public class AktoerV2Config {
 
 	@Bean
 	public Cache<String, HentAktoerIdForIdentResponse> aktoerResponseCache() {
+		return CacheBuilder.newBuilder()
+				.expireAfterAccess(CACHE_EXPIRES_AFTER, TimeUnit.MINUTES)
+				.maximumSize(CACHE_MAX_SIZE)
+				.build();
+	}
+
+	@Bean
+	public Cache<String, HentIdentForAktoerIdResponse> identResponseCache() {
 		return CacheBuilder.newBuilder()
 				.expireAfterAccess(CACHE_EXPIRES_AFTER, TimeUnit.MINUTES)
 				.maximumSize(CACHE_MAX_SIZE)

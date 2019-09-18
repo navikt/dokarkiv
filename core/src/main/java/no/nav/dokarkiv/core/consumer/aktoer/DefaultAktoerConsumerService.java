@@ -3,7 +3,9 @@ package no.nav.dokarkiv.core.consumer.aktoer;
 import com.google.common.cache.Cache;
 import no.nav.tjeneste.virksomhet.aktoer.v2.binding.AktoerV2;
 import no.nav.tjeneste.virksomhet.aktoer.v2.binding.HentAktoerIdForIdentPersonIkkeFunnet;
+import no.nav.tjeneste.virksomhet.aktoer.v2.binding.HentIdentForAktoerIdPersonIkkeFunnet;
 import no.nav.tjeneste.virksomhet.aktoer.v2.meldinger.HentAktoerIdForIdentResponse;
+import no.nav.tjeneste.virksomhet.aktoer.v2.meldinger.HentIdentForAktoerIdResponse;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
@@ -23,7 +25,13 @@ public class DefaultAktoerConsumerService implements AktoerConsumerService {
 	@Inject
 	private HentAktoerIdForIdentResponseMapper responseAktoerMapper;
 	@Inject
+	private HentIdentForAktoerIdRequestMapper requestIdentMapper;
+	@Inject
+	private HentIdentForAktoerIdResponseMapper responseIdentMapper;
+	@Inject
 	private Cache<String, HentAktoerIdForIdentResponse> aktoerResponseCache;
+	@Inject
+	private Cache<String, HentIdentForAktoerIdResponse> identResponseCache;
 
 	/**
 	 * {@inheritDoc}
@@ -40,5 +48,19 @@ public class DefaultAktoerConsumerService implements AktoerConsumerService {
 			}
 		}
 		return responseAktoerMapper.map(response);
+	}
+
+	@Override
+	public HentIdentForAktoerIdResponseTo hentIdentForAktoerId (HentIdentForAktoerIdRequestTo request) throws PersonIkkeFunnetException {
+		HentIdentForAktoerIdResponse response = identResponseCache.getIfPresent(request.getAktoerId());
+		if (response == null) {
+			try {
+				response = aktoerV2.hentIdentForAktoerId(requestIdentMapper.map(request));
+				identResponseCache.put(request.getAktoerId(), response);
+			} catch (HentIdentForAktoerIdPersonIkkeFunnet e) {
+				throw new PersonIkkeFunnetException(e, "Fant ikke person med aktoerId: " + request.getAktoerId());
+			}
+		}
+		return responseIdentMapper.map(response);
 	}
 }
