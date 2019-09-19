@@ -20,6 +20,7 @@ final class TilknyttedeJournalposterSql {
 					"       SELECT" + RELEVANTE_DATA +
 					"       FROM t_journalpost j\n" +
 					"              LEFT JOIN t_saksrelasjon s ON s.journalpost_id = j.journalpost_id\n" +
+					"              LEFT JOIN sak sa ON sa.id = s.sak_nr_fk\n" +
 					"              LEFT JOIN t_jp_tillegg t ON j.journalpost_id = t.journalpost_id\n" +
 					"              LEFT JOIN t_k_behandlingstema bt ON j.k_behandlingstema = bt.k_behandlingstema\n" +
 					"              LEFT JOIN t_bruker b ON j.journalpost_id = b.journalpost_id\n" +

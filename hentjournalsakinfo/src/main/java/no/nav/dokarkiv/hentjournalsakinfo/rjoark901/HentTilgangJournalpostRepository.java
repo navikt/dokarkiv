@@ -47,6 +47,13 @@ public class HentTilgangJournalpostRepository {
 								"br.brukerType, " +
 								"sr.sakId, " +
 								"sr.fagsystem, " +
+								"sa.aktoerId, " +
+								"sa.tema, " +
+								"sa.fagsakNr, " +
+								"sa.orgnr, " +
+								"sa.applikasjon, " +
+								"sa.opprettetAv, " +
+								"sa.opprettetTidspunkt, " +
 								"di.dokumentInfoId, " +
 								"di.dokumentstatus, " +
 								"di.brevkode, " +
@@ -57,6 +64,7 @@ public class HentTilgangJournalpostRepository {
 								"left join jp.brukere br " +
 								"join jp.changeStamp cs " +
 								"left join jp.saksrelasjon sr on sr.journalpost.journalpostId = :journalpostId " +
+								"left join Sak sa on sr.sakId = sa.sakId " +
 								"join jp.journalpostDokumentInfoRelasjoner jr " +
 								"join jr.dokumentInfo di on di.dokumentInfoId = :dokumentInfoId and jr.journalpost.journalpostId = :journalpostId " +
 								"join FilDetaljer fd on fd.dokumentInfo.dokumentInfoId = :dokumentInfoId and fd.variantFormat = :variantFormat " +
@@ -85,14 +93,21 @@ public class HentTilgangJournalpostRepository {
 										(String) tuple[7],
 										new TilgangBrukerDto((String) tuple[8],
 												(BrukerTypeCode) tuple[9]),
-										new TilgangSakDto(isNull(tuple[10]) ? null : (String) tuple[10],
-												(FagsystemCode) tuple[11]),
-										new TilgangDokumentInfoDto(isNull(tuple[12]) ? null : ((Long) tuple[12]).toString(),
-												isNull(tuple[13]) ? null : (DokumentStatusCode) tuple[13],
+										new TilgangSakDto((String) tuple[10],
+												(FagsystemCode) tuple[11],
+												(String) tuple[12],
+												(String) tuple[13],
 												(String) tuple[14],
-												(SkjermingTypeCode) tuple[15],
-												new TilgangVariantDto((VariantFormatCode) tuple[16],
-														(SkjermingTypeCode) tuple[17])
+												(String) tuple[15],
+												(String) tuple[16],
+												(String) tuple[17],
+												(String) tuple[18]),
+										new TilgangDokumentInfoDto(isNull(tuple[19]) ? null : ((Long) tuple[19]).toString(),
+												isNull(tuple[20]) ? null : (DokumentStatusCode) tuple[20],
+												(String) tuple[21],
+												(SkjermingTypeCode) tuple[22],
+												new TilgangVariantDto((VariantFormatCode) tuple[23],
+														(SkjermingTypeCode) tuple[24])
 										));
 							}
 
