@@ -40,7 +40,7 @@ public final class SqlProjections {
 					"		sa.tema                AS saksrelasjon_tema,\n" +
 					"		sa.fagsaknr            AS saksrelasjon_fagsaknr,\n" +
 					"		sa.orgnr               AS saksrelasjon_orgnr,\n" +
-					"		sa.applikasjon         AS saksrelasjon_orgnr,\n" +
+					"		sa.applikasjon         AS saksrelasjon_applikasjon,\n" +
 					"		sa.opprettet_tidspunkt AS saksrelasjon_opprettet_tidspunkt,\n" +
 					"		sa.opprettet_av        AS saksrelasjon_opprettet_av,\n" +
 					"		b.bruker_id            AS bruker_brukerid,\n" +
