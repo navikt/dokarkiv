@@ -22,6 +22,10 @@
 			<artifactId>core</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 			<scope>provided</scope>
@@ -51,7 +55,6 @@
 		<dependency>
 			<groupId>no.nav.dokarkiv</groupId>
 			<artifactId>core</artifactId>
-			<version>1-SNAPSHOT</version>
 			<type>test-jar</type>
 			<scope>test</scope>
 		</dependency>

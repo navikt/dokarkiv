@@ -66,6 +66,11 @@ public class ArkivElementEndring {
 	 * Brukes i test
 	 */
 	public String toStringElementFraTil() {
-		return String.format("ArkivElementEndring(arkivElement=%s, fraVerdi=%s, tilVerdi=%s)", arkivElement, fraVerdi, tilVerdi);
+		// Håndterer tilVerdi som er en timestamp, i tilfelle disse er litt forskjellig under test.
+		if(tilVerdi != null && tilVerdi.matches("\\d{4}-\\d{2}-\\d{2}.*")){
+			return String.format("ArkivElementEndring(arkivElement=%s, fraVerdi=%s, tilVerdi=%s)", arkivElement, fraVerdi, tilVerdi.split("\\.")[0]);
+		} else {
+			return String.format("ArkivElementEndring(arkivElement=%s, fraVerdi=%s, tilVerdi=%s)", arkivElement, fraVerdi, tilVerdi);
+		}
 	}
 }

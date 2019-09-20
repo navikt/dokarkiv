@@ -32,10 +32,8 @@ import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
-import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
-import no.nav.dokarkiv.core.domain.service.SkjermingService;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeInngaaendeException;
 import no.nav.dokarkiv.core.exceptions.UgyldigInputException;
@@ -86,7 +84,7 @@ public class HentInngaaendeJournalpostServiceTest {
 		InngaaendeJournalpostTo to = service.hentJournalpost("1");
 
 		assertThat(to.getAvsenderId(), is(InngaaendeJournalDataProvider.AVSENDER_MOTTAKERID));
-		assertThat(to.getForsendelseMottatt(), is(InngaaendeJournalDataProvider.NOW));
+		assertThat(to.getForsendelseMottatt().toLocalDate(), is(InngaaendeJournalDataProvider.NOW.toLocalDate()));
 		assertThat(to.getMottakskanal(), is(MottaksKanalCode.NAV_NO));
 		assertThat(to.getTema(), is(FagomradeCode.PEN));
 		assertThat(to.getKanalReferanseId(), is(InngaaendeJournalDataProvider.KANAL_REFERANSE_ID));
@@ -265,7 +263,7 @@ public class HentInngaaendeJournalpostServiceTest {
 		InngaaendeJournalpostTo to = service.hentJournalpost("1");
 
 		assertThat(to.getAvsenderId(), is(InngaaendeJournalDataProvider.AVSENDER_MOTTAKERID));
-		assertThat(to.getForsendelseMottatt(), is(InngaaendeJournalDataProvider.NOW));
+		assertThat(to.getForsendelseMottatt().toLocalDate(), is(InngaaendeJournalDataProvider.NOW.toLocalDate()));
 		assertThat(to.getMottakskanal(), is(MottaksKanalCode.NAV_NO));
 		assertThat(to.getTema(), is(FagomradeCode.PEN));
 		assertThat(to.getKanalReferanseId(), is(InngaaendeJournalDataProvider.KANAL_REFERANSE_ID));

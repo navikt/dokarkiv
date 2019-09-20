@@ -22,7 +22,6 @@ import no.nav.freg.security.oidc.idp.validation.ValidationResult;
 import no.nav.modig.core.context.SubjectHandler;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.MDC;
-import org.springframework.boot.system.SystemProperties;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -45,10 +44,7 @@ public class ValidateSakApiInterceptor implements HandlerInterceptor {
 	private final NavLdapService navLdapService;
 	private final IdTokenValidationStrategy validationStrategy;
 	private final AuthenticationManager authManager;
-
-	private final SAMLValidator samlValidator = new SAMLValidator(
-			SystemProperties.get("javax.net.ssl.trustStore"),
-			SystemProperties.get("javax.net.ssl.trustStorePassword"));
+	private final SAMLValidator samlValidator;
 
 	private static final String SAML_TOKEN_PREFIX = "Saml ";
 	private static final String BASIC_TOKEN_PREFIX = "Basic ";

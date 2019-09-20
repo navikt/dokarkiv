@@ -11,43 +11,24 @@
 
 	<artifactId>sak</artifactId>
 
-	<properties>
-		<swagger-ui.version>3.9.2</swagger-ui.version>
-
-		<oppgavehandtering.resilience.version>1.00.03</oppgavehandtering.resilience.version>
-
-		<commons.configuration.version>2.5</commons.configuration.version>
-		<commons.beanutils.version>1.9.3</commons.beanutils.version>
-		<commons.io.version>2.4</commons.io.version>
-		<abac.attribute.version>3.3.10</abac.attribute.version>
-
-
-	</properties>
-
 	<dependencies>
-
 		<!--Runtime -->
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
-			<version>${commons.io.version}</version>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-configuration2</artifactId>
-			<version>${commons.configuration.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-beanutils</groupId>
 			<artifactId>commons-beanutils</artifactId>
-			<version>${commons.beanutils.version}</version>
 		</dependency>
-
 		<dependency>
 			<groupId>org.webjars</groupId>
 			<artifactId>swagger-ui</artifactId>
-			<version>${swagger-ui.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>no.nav.dokarkiv</groupId>
@@ -66,7 +47,6 @@
 		<dependency>
 			<groupId>no.nav.dokarkiv</groupId>
 			<artifactId>core</artifactId>
-			<version>1-SNAPSHOT</version>
 			<type>test-jar</type>
 			<scope>test</scope>
 		</dependency>
