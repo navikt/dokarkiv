@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.journalpost.v1.util.oppdaterjournalpost;
 
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.DOKUMENTINFO_ID1;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.JOURNALFOERENDE_ENHET;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.LOCAL_DATE_TIME;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_FOR;
@@ -11,6 +12,7 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createSak;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
+import no.nav.dokarkiv.journalpost.v1.api.DokumentInfo;
 import no.nav.dokarkiv.journalpost.v1.api.OppdaterJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.validators.OppdaterJournalpostValidator;
 import org.junit.Rule;
@@ -18,6 +20,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import java.sql.Date;
+import java.util.Collections;
 
 public class OppdaterFerdigstillJournalpostValidatorTest {
 
@@ -30,6 +33,27 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
     public void happyPath() {
         oppdaterJournalpostRequest = createPutOppdaterJournalpostRequest();
         OppdaterJournalpostValidator.validateOppdaterteFelt(oppdaterJournalpostRequest, JournalStatusCode.M, JournalpostTypeCode.I);
+    }
+
+    // Det skal alltid være liv til å oppdatere avsenderMottaker (id, navn). Se commit.
+    @Test
+    public void shouldUpdateAvsenderMottakerNavnOrIdSetForStatusFS() {
+        oppdaterJournalpostRequest = OppdaterJournalpostRequest.builder()
+                .avsenderMottaker(createAvsenderMottakerPerson())
+                .build();
+        OppdaterJournalpostValidator.validateOppdaterteFelt(oppdaterJournalpostRequest, JournalStatusCode.FS, JournalpostTypeCode.U);
+    }
+
+    // Det skal alltid være lov til å endre brevkode. Se commit.
+    @Test
+    public void shouldUpdateBrevkode() {
+        oppdaterJournalpostRequest = OppdaterJournalpostRequest.builder()
+                .dokumenter(Collections.singletonList(
+                        DokumentInfo.builder()
+                                .brevkode("oppdatert")
+                                .dokumentInfoId(DOKUMENTINFO_ID1)
+                                .build())).build();
+        OppdaterJournalpostValidator.validateOppdaterteFelt(oppdaterJournalpostRequest, JournalStatusCode.FS, JournalpostTypeCode.U);
     }
 
     @Test
@@ -92,15 +116,6 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
     @Test
     public void shouldFailIfTemaSetForStatusFS() {
         oppdaterJournalpostRequest = OppdaterJournalpostRequest.builder().tema(TEMA_FOR).build();
-        expectedException.expect(InputValideringFeiletException.class);
-        OppdaterJournalpostValidator.validateOppdaterteFelt(oppdaterJournalpostRequest, JournalStatusCode.FS, JournalpostTypeCode.U);
-    }
-
-    @Test
-    public void shouldFailIfAvsenderMottakerNavnOrIdSetForStatusFS() {
-        oppdaterJournalpostRequest = OppdaterJournalpostRequest.builder()
-                .avsenderMottaker(createAvsenderMottakerPerson())
-                .build();
         expectedException.expect(InputValideringFeiletException.class);
         OppdaterJournalpostValidator.validateOppdaterteFelt(oppdaterJournalpostRequest, JournalStatusCode.FS, JournalpostTypeCode.U);
     }
