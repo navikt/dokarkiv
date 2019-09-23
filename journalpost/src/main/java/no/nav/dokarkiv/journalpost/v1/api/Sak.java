@@ -6,19 +6,15 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.NotNull;
-
 @Builder
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Sak {
-    @NotNull(message = "Sak mangler sakstype")
     @ApiModelProperty(
             value = "* FAGSAK vil si at dokumentene tilhører en sak i et fagsystem. Dersom FAGSAK velges, må fagsakid og fagsaksystem oppgis.\n" +
                     "* GENERELL_SAK kan brukes for dokumenter som skal journalføres, men som ikke tilhører en konkret fagsak. Generell sak kan ses på som brukerens \"mappe\" på et gitt tema.\n" +
                     "* ARKIVSAK skal kun brukes etter avtale.",
-            required = true,
             example = "FAGSAK"
     )
     private Sakstype sakstype;
