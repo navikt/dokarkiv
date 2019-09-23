@@ -60,7 +60,7 @@ public class OpprettJournalpostApiRequestMapperTest {
 	@Test
 	public void shouldMapInngaaendeJournalpost() {
 		OpprettJournalpostRequest request = createRequest(JournalpostType.INNGAAENDE);
-		Journalpost jp = mapper.map(request);
+		Journalpost jp = mapper.map(request, null);
 
 		assertEquals(JournalpostTypeCode.I, jp.getJournalposttype());
 		assertEquals(JournalStatusCode.M, jp.getJournalstatus());
@@ -115,7 +115,7 @@ public class OpprettJournalpostApiRequestMapperTest {
 	@Test
 	public void shouldMapUtgaaendeJournalpost() {
 		OpprettJournalpostRequest request = createRequest(JournalpostType.UTGAAENDE);
-		Journalpost jp = mapper.map(request);
+		Journalpost jp = mapper.map(request, null);
 
 		assertEquals(JournalpostTypeCode.U, jp.getJournalposttype());
 		assertNull(jp.getMottakskanal());
@@ -131,7 +131,7 @@ public class OpprettJournalpostApiRequestMapperTest {
 	@Test
 	public void shouldMapNotat() {
 		OpprettJournalpostRequest request = createRequest(JournalpostType.NOTAT);
-		Journalpost jp = mapper.map(request);
+		Journalpost jp = mapper.map(request, null);
 
 		assertEquals(JournalpostTypeCode.N, jp.getJournalposttype());
 		assertNull(jp.getMottakskanal());
@@ -142,7 +142,7 @@ public class OpprettJournalpostApiRequestMapperTest {
 	@Test
 	public void shouldMapInngaaendeJournalpostUtenDokumenter() {
 		OpprettJournalpostRequest request = createRequestUtenDokumenter(JournalpostType.INNGAAENDE);
-		Journalpost jp = mapper.map(request);
+		Journalpost jp = mapper.map(request, null);
 
 		assertEquals(JournalpostTypeCode.I, jp.getJournalposttype());
 		assertEquals(JournalStatusCode.OD, jp.getJournalstatus());
@@ -151,7 +151,7 @@ public class OpprettJournalpostApiRequestMapperTest {
 	@Test
 	public void shouldMapUtgaaendeJournalpostUtenDokumenter() {
 		OpprettJournalpostRequest request = createRequestUtenDokumenter(JournalpostType.UTGAAENDE);
-		Journalpost jp = mapper.map(request);
+		Journalpost jp = mapper.map(request, null);
 
 		assertEquals(JournalpostTypeCode.U, jp.getJournalposttype());
 		assertEquals(JournalStatusCode.R, jp.getJournalstatus());
@@ -160,21 +160,21 @@ public class OpprettJournalpostApiRequestMapperTest {
 	@Test
 	public void shouldMapInngaaendeJournalpostOrganisasjon(){
 		OpprettJournalpostRequest request = createRequestAvsenderMottaker(JournalpostType.INNGAAENDE, createAvsenderMottakerOrganisasjon());
-		Journalpost jp = mapper.map(request);
+		Journalpost jp = mapper.map(request, null);
 		assertEquals(AvsenderMottakerIdTypeCode.ORGNR, jp.getAvsenderMottakerIdType());
 
 	}
 	@Test
 	public void shouldMapInngaaendeJournalpostHelsePersonellNr(){
 		OpprettJournalpostRequest request = createRequestAvsenderMottaker(JournalpostType.INNGAAENDE, createAvsenderMottakerHelsepersonell());
-		Journalpost jp = mapper.map(request);
+		Journalpost jp = mapper.map(request, null);
 		assertEquals(AvsenderMottakerIdTypeCode.HPRNR, jp.getAvsenderMottakerIdType());
 
 	}
 	@Test
 	public void shouldMapInngaaendeJournalpostUtlandOrganisasjon(){
 		OpprettJournalpostRequest request = createRequestAvsenderMottaker(JournalpostType.INNGAAENDE, createAvsenderMottakerUtlandOrganisasjon());
-		Journalpost jp = mapper.map(request);
+		Journalpost jp = mapper.map(request, null);
 		assertEquals(AvsenderMottakerIdTypeCode.UTL_ORG, jp.getAvsenderMottakerIdType());
 
 	}

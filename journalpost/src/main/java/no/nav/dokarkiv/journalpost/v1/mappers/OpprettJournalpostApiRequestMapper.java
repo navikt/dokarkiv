@@ -6,6 +6,9 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.commons.lang3.StringUtils.trim;
 
+import no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerService;
+import no.nav.dokarkiv.core.consumer.aktoer.HentIdentForAktoerIdRequestTo;
+import no.nav.dokarkiv.core.consumer.aktoer.PersonIkkeFunnetException;
 import no.nav.dokarkiv.core.domain.codes.AvsenderMottakerIdTypeCode;
 import no.nav.dokarkiv.core.domain.codes.Behandlingstema;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
@@ -27,13 +30,16 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
 import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
+import no.nav.dokarkiv.core.exceptions.UgyldigInputException;
 import no.nav.dokarkiv.journalpost.v1.api.Arkivsaksystem;
 import no.nav.dokarkiv.journalpost.v1.api.AvsenderMottakerIdType;
 import no.nav.dokarkiv.journalpost.v1.api.BrukerIdType;
 import no.nav.dokarkiv.journalpost.v1.api.Dokument;
+import no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem;
 import no.nav.dokarkiv.journalpost.v1.api.JournalpostType;
-import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostRequest;
+import no.nav.dokarkiv.journalpost.v1.api.Sakstype;
 import no.nav.dokarkiv.journalpost.v1.api.Tilleggsopplysning;
+import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostRequest;
 import org.springframework.stereotype.Component;
 
 import java.sql.Date;
@@ -45,7 +51,13 @@ import java.util.stream.Collectors;
 @Component
 public class OpprettJournalpostApiRequestMapper {
 
-	public Journalpost map(OpprettJournalpostRequest request) {
+	private final AktoerConsumerService aktoerConsumerService;
+
+	public OpprettJournalpostApiRequestMapper(AktoerConsumerService aktoerConsumerService) {
+		this.aktoerConsumerService = aktoerConsumerService;
+	}
+
+	public Journalpost map(OpprettJournalpostRequest request, String sakId) {
 		Journalpost journalpost = Journalpost.builder()
 				.journalposttype(mapJournalposttype(request.getJournalpostType()))
 				.journalstatus(mapJournalstatus(request))
@@ -64,7 +76,7 @@ public class OpprettJournalpostApiRequestMapper {
 				.dokumentDato(Date.valueOf(LocalDate.now()))
 				.build();
 
-		addSaksrelasjon(journalpost, request);
+		addSaksrelasjon(journalpost, request, sakId);
 		addBruker(journalpost, request);
 		addJournalpostDokumentInfoRelasjon(journalpost, request);
 
@@ -147,24 +159,80 @@ public class OpprettJournalpostApiRequestMapper {
 	}
 
 
-	private void addSaksrelasjon(Journalpost journalpost, OpprettJournalpostRequest request) {
+	private void addSaksrelasjon(Journalpost journalpost, OpprettJournalpostRequest request, String sakId) {
 		if (request.getSak() != null) {
 			journalpost.setSaksrelasjon(Saksrelasjon.builder()
-					.sakId(request.getSak().getArkivsaksnummer())
-					.fagsystem(Arkivsaksystem.GSAK.equals(request.getSak()
-							.getArkivsaksystem()) ? FagsystemCode.FS22 : FagsystemCode.PEN)
+					.sakId(mapSakId(request, sakId))
+					.fagsystem(mapFagsystem(request))
 					.journalpost(journalpost)
 					.build());
 		}
 	}
 
+	private String mapSakId(OpprettJournalpostRequest request, String sakId) {
+		if (sakId != null) {
+			return sakId;
+		} else if (Sakstype.ARKIVSAK.equals(request.getSak().getSakstype()) || request.getSak().getSakstype() == null) {// Antas å være ARKIVSAK dersom feltet ikke er satt
+	        return request.getSak().getArkivsaksnummer();
+        } else if (Sakstype.FAGSAK.equals(request.getSak().getSakstype()) && Fagsaksystem.PESYS.equals(request.getSak().getFagsaksystem())) {
+			return request.getSak().getFagsakId();
+		} else {
+			throw new UgyldigInputException("Kan ikke mappe sakId basert på input");
+		}
+    }
+
+	private FagsystemCode mapFagsystem(OpprettJournalpostRequest request) {
+		Sakstype sakstype = request.getSak().getSakstype();
+		Fagsaksystem fagsaksystem = request.getSak().getFagsaksystem();
+		Arkivsaksystem arkivsaksystem = request.getSak().getArkivsaksystem();
+		if (Sakstype.ARKIVSAK.equals(sakstype) || request.getSak().getSakstype() == null) { // Antas å være ARKIVSAK dersom feltet ikke er satt
+			return mapArkivsak(arkivsaksystem);
+		} else {
+			return mapFagsakEllerGenerellSak(sakstype, fagsaksystem);
+		}
+	}
+
+	private FagsystemCode mapArkivsak(Arkivsaksystem arkivsaksystem) {
+		if (Arkivsaksystem.PSAK.equals(arkivsaksystem)) {
+			return FagsystemCode.PEN;
+		} else if (Arkivsaksystem.GSAK.equals(arkivsaksystem)) {
+			return FagsystemCode.FS22;
+		} else {
+			throw new UgyldigInputException("Kan ikke mappe fagsystem basert på input");
+		}
+	}
+
+	private FagsystemCode mapFagsakEllerGenerellSak(Sakstype sakstype, Fagsaksystem fagsaksystem) {
+		if (Sakstype.FAGSAK.equals(sakstype) && Fagsaksystem.PESYS.equals(fagsaksystem)) {
+			return FagsystemCode.PEN;
+		} else if ((Sakstype.FAGSAK.equals(sakstype) || Sakstype.GENERELL_SAK.equals(sakstype))
+				&& !Fagsaksystem.PESYS.equals(fagsaksystem)) {
+			return FagsystemCode.FS22;
+		} else {
+			throw new UgyldigInputException("Kan ikke mappe fagsystem basert på input");
+		}
+	}
+
 	private void addBruker(Journalpost jp, OpprettJournalpostRequest request) {
 		if (request.getBruker() != null) {
-			jp.addBruker(Bruker.builder()
-					.brukerId(request.getBruker().getId())
-					.brukerType(BrukerIdType.FNR.equals(request.getBruker()
-							.getIdType()) ? BrukerTypeCode.PERSON : BrukerTypeCode.ORGANISASJON)
-					.build());
+			if (BrukerIdType.AKTOERID.equals(request.getBruker().getIdType())) {
+				String fnr = null;
+				try {
+					fnr = aktoerConsumerService.hentIdentForAktoerId(new HentIdentForAktoerIdRequestTo(request.getBruker().getId())).getIdent();
+				} catch (PersonIkkeFunnetException e) {
+					// Fortsett uten fnr
+				}
+				jp.addBruker(Bruker.builder()
+						.brukerId(fnr)
+						.brukerType(BrukerTypeCode.PERSON)
+						.build());
+			} else {
+				jp.addBruker(Bruker.builder()
+						.brukerId(request.getBruker().getId())
+						.brukerType(BrukerIdType.FNR.equals(request.getBruker()
+								.getIdType()) ? BrukerTypeCode.PERSON : BrukerTypeCode.ORGANISASJON)
+						.build());
+			}
 		}
 	}
 
