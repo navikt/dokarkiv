@@ -3,7 +3,6 @@ package no.nav.dokarkiv.journalpost.v1.validators;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
-import no.nav.dokarkiv.journalpost.v1.api.DokumentInfo;
 import no.nav.dokarkiv.journalpost.v1.api.OppdaterJournalpostRequest;
 
 import java.util.Arrays;
@@ -22,30 +21,10 @@ public final class OppdaterJournalpostValidator {
             checkIfIllegalFieldIsSet(request.getSak(), "Sak", journalpostStatus, journalpostType);
 			checkIfIllegalFieldIsSet(request.getJournalfoerendeEnhet(), "JournalfoerendeEnhet", journalpostStatus, journalpostType);
 			checkIfIllegalFieldIsSet(request.getTema(), "Tema", journalpostStatus, journalpostType);
-
-			if (journalpostStatus != JournalStatusCode.J) {
-				validateAvsenderMottaker(request, journalpostStatus, journalpostType);
-				validateDokumenter(request, journalpostStatus, journalpostType);
-			}
 		}
 
 		if (journalpostType != JournalpostTypeCode.U || !restrictedJournalpostStatusCodes.contains(journalpostStatus)) {
 			checkIfIllegalFieldIsSet(request.getDatoRetur(), "DatoRetur", journalpostStatus, journalpostType);
-		}
-	}
-
-	private static void validateAvsenderMottaker(OppdaterJournalpostRequest request, JournalStatusCode journalpoststatus, JournalpostTypeCode journalpostType) {
-		if (request.getAvsenderMottaker() != null) {
-			checkIfIllegalFieldIsSet(request.getAvsenderMottaker().getId(), "AvsenderMottaker.id", journalpoststatus, journalpostType);
-			checkIfIllegalFieldIsSet(request.getAvsenderMottaker().getNavn(), "AvsenderMottaker.navn", journalpoststatus, journalpostType);
-		}
-	}
-
-	private static void validateDokumenter(OppdaterJournalpostRequest request, JournalStatusCode journalpoststatus, JournalpostTypeCode journalpostType) {
-		if (request.getDokumenter() != null) {
-			for (DokumentInfo dokument : request.getDokumenter()) {
-				checkIfIllegalFieldIsSet(dokument.getBrevkode(), "Brevkode", journalpoststatus, journalpostType);
-			}
 		}
 	}
 
