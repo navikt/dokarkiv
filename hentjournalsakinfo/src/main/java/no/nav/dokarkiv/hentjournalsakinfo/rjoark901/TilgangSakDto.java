@@ -1,6 +1,5 @@
 package no.nav.dokarkiv.hentjournalsakinfo.rjoark901;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Value;
@@ -19,7 +18,7 @@ import java.time.format.DateTimeFormatter;
 @AllArgsConstructor
 public class TilgangSakDto {
 
-	private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
+	static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
 
 	private final String sakId;
 	private final FagsystemCode fagsystem;

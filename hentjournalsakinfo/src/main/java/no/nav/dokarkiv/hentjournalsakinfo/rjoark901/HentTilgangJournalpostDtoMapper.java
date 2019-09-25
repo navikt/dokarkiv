@@ -1,0 +1,50 @@
+package no.nav.dokarkiv.hentjournalsakinfo.rjoark901;
+
+import lombok.experimental.UtilityClass;
+import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
+import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
+import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
+import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
+import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
+import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
+import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
+import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
+import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
+
+import java.sql.Timestamp;
+
+import static java.util.Objects.isNull;
+
+@UtilityClass
+class HentTilgangJournalpostDtoMapper {
+
+	static TilgangJournalpostDto mapTupleTilgangJournalPost(Object[] tuple) {
+		return new TilgangJournalpostDto(
+				isNull(tuple[0]) ? null : ((Long) tuple[0]).toString(),
+				(JournalStatusCode) tuple[1],
+				(JournalpostTypeCode) tuple[2],
+				(FagomradeCode) tuple[3],
+				isNull(tuple[4]) ? null : ((Timestamp) tuple[4]).toLocalDateTime(),
+				(MottaksKanalCode) tuple[5],
+				(SkjermingTypeCode) tuple[6],
+				(String) tuple[7],
+				new TilgangBrukerDto((String) tuple[8],
+						(BrukerTypeCode) tuple[9]),
+				new TilgangSakDto((String) tuple[10],
+						(FagsystemCode) tuple[11],
+						(String) tuple[12],
+						(String) tuple[13],
+						(String) tuple[14],
+						(String) tuple[15],
+						(String) tuple[16],
+						(String) tuple[17],
+						(String) tuple[18]),
+				new TilgangDokumentInfoDto(isNull(tuple[19]) ? null : ((Long) tuple[19]).toString(),
+						isNull(tuple[20]) ? null : (DokumentStatusCode) tuple[20],
+						(String) tuple[21],
+						(SkjermingTypeCode) tuple[22],
+						new TilgangVariantDto((VariantFormatCode) tuple[23],
+								(SkjermingTypeCode) tuple[24])
+				));
+	}
+}

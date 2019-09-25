@@ -1,7 +1,10 @@
 package no.nav.dokarkiv.hentjournalsakinfo.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Data;
+import lombok.Getter;
 import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
 
 import java.time.LocalDateTime;
@@ -16,7 +19,7 @@ import java.time.format.DateTimeFormatter;
 @Builder
 public class SaksrelasjonDto {
 
-	private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
+	private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
 
 	private final String sakId;
 	private final Boolean feilregistrert;
@@ -27,14 +30,17 @@ public class SaksrelasjonDto {
 	private final String applikasjon;
 	private final String orgnr;
 	private final String opprettetAv;
-	private final String opprettetTidspunkt;
+
+	@Getter(AccessLevel.NONE)
+	@JsonProperty("opprettetTidspunkt")
+	private final String opprettetTid;
 
 	// "Opprettet tidspunkt iht. ISO-8601"
 	public String getOpprettetTidspunkt() {
-		if (this.opprettetTidspunkt == null) {
+		if (this.opprettetTid == null) {
 			return null;
 		}
-		return ZonedDateTime.of(LocalDateTime.parse(opprettetTidspunkt, formatter),
+		return ZonedDateTime.of(LocalDateTime.parse(this.opprettetTid, formatter),
 				ZoneId.systemDefault()).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
 	}
 }
