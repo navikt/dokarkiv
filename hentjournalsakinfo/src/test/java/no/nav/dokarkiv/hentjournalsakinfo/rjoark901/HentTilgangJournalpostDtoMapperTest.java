@@ -26,10 +26,8 @@ public class HentTilgangJournalpostDtoMapperTest {
 	public void shouldMapHentTilgangDtoFromTuple() {
 
 		LocalDateTime journalpostDatetime = LocalDateTime.now();
-		String sakrelasjonOpprettetTid = journalpostDatetime.format(TilgangSakDto.formatter);
-		String formattedSakrelasjonOpprettetTid =
-				ZonedDateTime.of(LocalDateTime.parse(sakrelasjonOpprettetTid, TilgangSakDto.formatter),
-						ZoneId.systemDefault()).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+		String formattedSakrelasjonOpprettetTid = ZonedDateTime.of(journalpostDatetime ,ZoneId.systemDefault())
+						.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
 
 		long journalpostId = 1234L;
 		JournalStatusCode journalStatus = JournalStatusCode.J;
@@ -50,6 +48,7 @@ public class HentTilgangJournalpostDtoMapperTest {
 		String sakrelasjonOrgnr = "1234";
 		String sakrelasjonApplikasjon = "FS22";
 		String sakrelasjonOpprettetAv = "Z123456";
+		Timestamp sakrelasjonOpprettetTid = Timestamp.valueOf(journalpostDatetime);
 
 		long dokumentInfoId = 1234L;
 		DokumentStatusCode dokumentInfoStatus = DokumentStatusCode.FERDIGSTILT;

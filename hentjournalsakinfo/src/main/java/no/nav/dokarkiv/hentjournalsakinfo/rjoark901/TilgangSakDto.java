@@ -18,8 +18,6 @@ import java.time.format.DateTimeFormatter;
 @AllArgsConstructor
 public class TilgangSakDto {
 
-	static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
-
 	private final String sakId;
 	private final FagsystemCode fagsystem;
 	private final String aktoerId;
@@ -28,14 +26,14 @@ public class TilgangSakDto {
 	private final String orgnr;
 	private final String applikasjon;
 	private final String opprettetAv;
-	private final String opprettetTidspunkt;
+	private final LocalDateTime opprettetTidspunkt;
 
 	// "Opprettet tidspunkt iht. ISO-8601"
 	public String getOpprettetTidspunkt() {
 		if (this.opprettetTidspunkt == null) {
 			return null;
 		}
-		return ZonedDateTime.of(LocalDateTime.parse(opprettetTidspunkt, formatter),
-				ZoneId.systemDefault()).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+		return ZonedDateTime.of(opprettetTidspunkt, ZoneId.systemDefault())
+				.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
 	}
 }

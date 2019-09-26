@@ -38,7 +38,7 @@ class HentTilgangJournalpostDtoMapper {
 						(String) tuple[15],
 						(String) tuple[16],
 						(String) tuple[17],
-						(String) tuple[18]),
+						isNull(tuple[18]) ? null : ((Timestamp) tuple[18]).toLocalDateTime()),
 				new TilgangDokumentInfoDto(isNull(tuple[19]) ? null : ((Long) tuple[19]).toString(),
 						isNull(tuple[20]) ? null : (DokumentStatusCode) tuple[20],
 						(String) tuple[21],

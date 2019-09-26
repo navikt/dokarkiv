@@ -19,8 +19,6 @@ import java.time.format.DateTimeFormatter;
 @Builder
 public class SaksrelasjonDto {
 
-	private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
-
 	private final String sakId;
 	private final Boolean feilregistrert;
 	private final FagsystemCode fagsystem;
@@ -33,14 +31,14 @@ public class SaksrelasjonDto {
 
 	@Getter(AccessLevel.NONE)
 	@JsonProperty("opprettetTidspunkt")
-	private final String opprettetTid;
+	private final LocalDateTime opprettetTid;
 
 	// "Opprettet tidspunkt iht. ISO-8601"
 	public String getOpprettetTidspunkt() {
 		if (this.opprettetTid == null) {
 			return null;
 		}
-		return ZonedDateTime.of(LocalDateTime.parse(this.opprettetTid, formatter),
-				ZoneId.systemDefault()).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+		return ZonedDateTime.of(this.opprettetTid, ZoneId.systemDefault())
+				.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
 	}
 }
