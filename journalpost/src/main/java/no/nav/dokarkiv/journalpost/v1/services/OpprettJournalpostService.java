@@ -20,6 +20,7 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.Sak;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
+import no.nav.dokarkiv.core.exceptions.UgyldigInputException;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.core.repository.sak.HentSakerRepository;
@@ -104,7 +105,7 @@ public class OpprettJournalpostService {
 		if (saker.isEmpty()) {
 			return hentSakerRepository.lagre(sak).getSakId().toString();
 		} else {
-			return saker.stream().map(Sak::getSakId).max(Comparator.naturalOrder()).toString();
+			return saker.stream().map(Sak::getSakId).max(Comparator.naturalOrder()).orElseThrow(UgyldigInputException::new).toString();
 		}
 	}
 
