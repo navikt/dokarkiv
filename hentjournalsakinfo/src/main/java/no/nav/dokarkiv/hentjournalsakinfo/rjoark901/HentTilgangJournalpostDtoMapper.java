@@ -12,6 +12,7 @@ import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 import static java.util.Objects.isNull;
 
@@ -38,7 +39,7 @@ class HentTilgangJournalpostDtoMapper {
 						(String) tuple[15],
 						(String) tuple[16],
 						(String) tuple[17],
-						isNull(tuple[18]) ? null : ((Timestamp) tuple[18]).toLocalDateTime()),
+						isNull(tuple[18]) ? null : (LocalDateTime) tuple[18]),
 				new TilgangDokumentInfoDto(isNull(tuple[19]) ? null : ((Long) tuple[19]).toString(),
 						isNull(tuple[20]) ? null : (DokumentStatusCode) tuple[20],
 						(String) tuple[21],

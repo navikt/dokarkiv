@@ -48,7 +48,7 @@ public class HentTilgangJournalpostDtoMapperTest {
 		String sakrelasjonOrgnr = "1234";
 		String sakrelasjonApplikasjon = "FS22";
 		String sakrelasjonOpprettetAv = "Z123456";
-		Timestamp sakrelasjonOpprettetTid = Timestamp.valueOf(journalpostDatetime);
+		LocalDateTime sakrelasjonOpprettetTid = journalpostDatetime;
 
 		long dokumentInfoId = 1234L;
 		DokumentStatusCode dokumentInfoStatus = DokumentStatusCode.FERDIGSTILT;
