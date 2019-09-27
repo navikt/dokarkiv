@@ -18,6 +18,7 @@ import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
 import no.nav.dokarkiv.core.metrics.RestMetrics;
 import no.nav.dokarkiv.core.security.abac.AbacSecurityService;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
@@ -202,7 +203,12 @@ public class ArkiverOgJournalfoerRestController {
 
 		// tilgangsstyring abac?
 
-		opprettJournalpostRequestValidator.validateRequest(request);
+		try {
+			opprettJournalpostRequestValidator.validateRequest(request);
+		} catch(InputValideringFeiletException e) {
+			log.warn("rjoark202 feilet under validering. " + e.getMessage(), e);
+			throw e;
+		}
 
 		Journalpost journalpost = opprettJournalpostService.opprettJournalpost(request);
 
