@@ -78,6 +78,11 @@ public abstract class AbstractHentjournalsakinfoItest extends AbstractRestIT {
 
 	@Before
 	public void setUpItest() {
+		entityManager.createNativeQuery("DROP ALIAS IF EXISTS TO_NUMBER; " +
+				"CREATE ALIAS TO_NUMBER AS " +
+				"'Long to_number(String s) {" +
+				"    return s != null ? Long.valueOf(s) : null;" +
+				"}'").executeUpdate();
 		RequestContextSetter.setRequestContext(new SimpleRequestContext.Builder()
 				.userId("itestuser")
 				.componentId("itest")
