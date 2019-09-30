@@ -1,11 +1,15 @@
 package no.nav.dokarkiv.journalpost.v1.rjoark202.util;
 
 import static java.util.Collections.singletonList;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.ARKIVSAKSNUMMER;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.AVSENDER_NAVN;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.BRUKER_ID_PERSON;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.DOKUMENTKATEGORI_SED;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FAGSAK_ID;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FILTYPE_PDF;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FILTYPE_XML;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_FOR;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_PEN;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_SER;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.VARIANTFORMAT_ARKIV;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createMinimalRequest;
@@ -19,9 +23,11 @@ import no.nav.dokarkiv.journalpost.v1.api.Bruker;
 import no.nav.dokarkiv.journalpost.v1.api.BrukerIdType;
 import no.nav.dokarkiv.journalpost.v1.api.Dokument;
 import no.nav.dokarkiv.journalpost.v1.api.DokumentVariant;
+import no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem;
 import no.nav.dokarkiv.journalpost.v1.api.JournalpostType;
-import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.Sak;
+import no.nav.dokarkiv.journalpost.v1.api.Sakstype;
+import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.validators.OpprettJournalpostRequestValidator;
 import org.junit.Rule;
 import org.junit.Test;
@@ -59,6 +65,92 @@ public class OpprettJournalpostRequestValidatorTest {
 				.avsenderMottaker(null)
 				.build();
 
+		validator.validateRequest(request);
+	}
+
+	@Test
+	public void happyPathFagsak() {
+		request = createMinimalRequest(JournalpostType.INNGAAENDE)
+				.tema(TEMA_FOR)
+				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(BRUKER_ID_PERSON).build())
+				.sak(Sak.builder().sakstype(Sakstype.FAGSAK).fagsakId(FAGSAK_ID).fagsaksystem(Fagsaksystem.AO01).build())
+				.build();
+		validator.validateRequest(request);
+	}
+
+	@Test
+	public void happyPathGenerellSak() {
+		request = createMinimalRequest(JournalpostType.INNGAAENDE)
+				.tema(TEMA_FOR)
+				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(BRUKER_ID_PERSON).build())
+				.sak(Sak.builder().sakstype(Sakstype.GENERELL_SAK).build())
+				.build();
+		validator.validateRequest(request);
+	}
+
+	@Test
+	public void happyPathArkivsak() {
+		request = createMinimalRequest(JournalpostType.INNGAAENDE)
+				.sak(Sak.builder().sakstype(Sakstype.ARKIVSAK).arkivsaksystem(Arkivsaksystem.GSAK).arkivsaksnummer(ARKIVSAKSNUMMER).build())
+				.build();
+		validator.validateRequest(request);
+	}
+
+	@Test
+	public void shouldThrowExceptionWhenArkivsaknummerSetForFagsak() {
+		request = createMinimalRequest(JournalpostType.INNGAAENDE)
+				.tema(TEMA_FOR)
+				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(BRUKER_ID_PERSON).build())
+				.sak(Sak.builder().sakstype(Sakstype.FAGSAK).arkivsaksnummer(ARKIVSAKSNUMMER).fagsakId(FAGSAK_ID).fagsaksystem(Fagsaksystem.AO01).build())
+				.build();
+		expectedException.expect(InputValideringFeiletException.class);
+		expectedException.expectMessage("Sak.arkivsaksnummer");
+		validator.validateRequest(request);
+	}
+
+	@Test
+	public void shouldThrowExceptionWhenArkivsaknummerSetForGenerellSak() {
+		request = createMinimalRequest(JournalpostType.INNGAAENDE)
+				.tema(TEMA_FOR)
+				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(BRUKER_ID_PERSON).build())
+				.sak(Sak.builder().sakstype(Sakstype.GENERELL_SAK).arkivsaksnummer(ARKIVSAKSNUMMER).build())
+				.build();
+		expectedException.expect(InputValideringFeiletException.class);
+		expectedException.expectMessage("Sak.arkivsaksnummer");
+		validator.validateRequest(request);
+	}
+
+	@Test
+	public void shouldThrowExceptionWhenFagsakIdSetForGenerellSak() {
+		request = createMinimalRequest(JournalpostType.INNGAAENDE)
+				.tema(TEMA_FOR)
+				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(BRUKER_ID_PERSON).build())
+				.sak(Sak.builder().sakstype(Sakstype.GENERELL_SAK).fagsakId(FAGSAK_ID).build())
+				.build();
+		expectedException.expect(InputValideringFeiletException.class);
+		expectedException.expectMessage("Sak.fagsakId");
+		validator.validateRequest(request);
+	}
+
+	@Test
+	public void shouldThrowExceptionWhenTemaPenForGenerellSak() {
+		request = createMinimalRequest(JournalpostType.INNGAAENDE)
+				.tema(TEMA_PEN)
+				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(BRUKER_ID_PERSON).build())
+				.sak(Sak.builder().sakstype(Sakstype.GENERELL_SAK).fagsakId(FAGSAK_ID).fagsaksystem(Fagsaksystem.AO01).build())
+				.build();
+		expectedException.expect(InputValideringFeiletException.class);
+		expectedException.expectMessage("tema");
+		validator.validateRequest(request);
+	}
+
+	@Test
+	public void shouldThrowExceptionWhenFagsakIdSetForArkivsak() {
+		request = createMinimalRequest(JournalpostType.INNGAAENDE)
+				.sak(Sak.builder().sakstype(Sakstype.ARKIVSAK).fagsakId(FAGSAK_ID).arkivsaksystem(Arkivsaksystem.GSAK).arkivsaksnummer(ARKIVSAKSNUMMER).build())
+				.build();
+		expectedException.expect(InputValideringFeiletException.class);
+		expectedException.expectMessage("Sak.fagsakId");
 		validator.validateRequest(request);
 	}
 

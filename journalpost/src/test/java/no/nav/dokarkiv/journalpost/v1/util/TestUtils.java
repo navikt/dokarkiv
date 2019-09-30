@@ -27,10 +27,10 @@ import no.nav.dokarkiv.journalpost.v1.api.DokumentVariant;
 import no.nav.dokarkiv.journalpost.v1.api.DokumentVedlegg;
 import no.nav.dokarkiv.journalpost.v1.api.JournalpostType;
 import no.nav.dokarkiv.journalpost.v1.api.OppdaterJournalpostRequest;
-import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.Sak;
 import no.nav.dokarkiv.journalpost.v1.api.TilknyttVedleggRequest;
 import no.nav.dokarkiv.journalpost.v1.api.Tilleggsopplysning;
+import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostRequest;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -60,6 +60,8 @@ public class TestUtils {
 	public static final String BRUKER_ID_PERSON = "***gammelt_fnr***";
 	public static final String BRUKER_ID_ORGANISASJON = "987654321";
 	public static final String SAK_ID = "sakId";
+	public static final String FAGSAK_ID = "fagsakId";
+	public static final String ARKIVSAKSNUMMER = "arkivsaksnummer";
 	public static final String INNHOLD = "innhold";
 	public static final String KANALREFERANSE_ID = "kanalreferansId";
 	public static final String DATO_MOTTATT = "2017-02-03T11:37:30";
@@ -85,6 +87,7 @@ public class TestUtils {
 	public static final String OPPRETTET_AV_NAVN = "Sak S. Behandler";
 	public static final String TEMA_FOR = "FOR";
 	public static final String TEMA_SER = "SER";
+	public static final String TEMA_PEN = "PEN";
 	public static final String BEHANDLINGSTEMA = "ab0001";
 	public static final String AVSENDER_MOTTAKER_LAND = "Legoland";
 	public static final String AVSENDER_MOTTAKER_UTLAND = "Utland";
@@ -99,6 +102,7 @@ public class TestUtils {
 	public static final String TILLEGGSOPPLYSNING_NOKKEL = "noekkel";
 	public static final String TILLEGGSOPPLYSNING_VERDI = "verdi";
 	public static final String FILNAVN = "filnavn";
+
 
 	public static Journalpost createJournalpost() {
 		Journalpost journalpost = Journalpost.builder()
