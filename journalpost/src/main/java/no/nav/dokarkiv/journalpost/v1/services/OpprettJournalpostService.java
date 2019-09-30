@@ -74,11 +74,14 @@ public class OpprettJournalpostService {
     }
 
 	public Journalpost opprettJournalpost(OpprettJournalpostRequest request) {
-		Sakstype sakstype = request.getSak().getSakstype();
 		String sakId = null;
-		if((FAGSAK.equals(sakstype) || Sakstype.GENERELL_SAK.equals(sakstype)) && !Fagsaksystem.PESYS.equals(request.getSak().getFagsaksystem())) {
-            sakId = identifiserEllerOpprettArkivsak(request);
+		if (request.getSak() != null) {
+			Sakstype sakstype = request.getSak().getSakstype();
+			if((FAGSAK.equals(sakstype) || Sakstype.GENERELL_SAK.equals(sakstype)) && !Fagsaksystem.PESYS.equals(request.getSak().getFagsaksystem())) {
+				sakId = identifiserEllerOpprettArkivsak(request);
+			}
 		}
+
 		Journalpost journalpost = opprettJournalpostApiRequestMapper.map(request, sakId);
 		defaultSporingPopulator.populateSporingInfo(journalpost, MDC.get(MDCConstants.MDC_CONSUMER_ID));
 		journalpost.getJournalpostDokumentInfoRelasjoner().forEach(journalpostDokumentInfoRelasjon -> journalpostDokumentInfoRelasjon.setTilknyttetAvNavn(journalpost.getOpprettetAvNavn()));
@@ -92,6 +95,8 @@ public class OpprettJournalpostService {
 
 		return journalpost;
 	}
+
+
 
 	private String identifiserEllerOpprettArkivsak(OpprettJournalpostRequest request) {
 		Sak sak = createSak(request);

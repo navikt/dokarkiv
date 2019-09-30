@@ -144,7 +144,7 @@ public class OpprettJournalpostRequestValidator {
 			validateGenerellSak(sak, bruker, tema);
 		}
 
-		if (Sakstype.ARKIVSAK.equals(sak.getSakstype())) {
+		if (Sakstype.ARKIVSAK.equals(sak.getSakstype()) || sak.getSakstype() == null) {
 			validateArkivsak(sak);
 
 		}
