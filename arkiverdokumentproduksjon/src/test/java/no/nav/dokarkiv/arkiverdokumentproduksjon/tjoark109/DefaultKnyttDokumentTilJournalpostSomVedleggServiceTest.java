@@ -51,8 +51,10 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.theories.DataPoints;
+import org.junit.experimental.theories.Theories;
 import org.junit.experimental.theories.Theory;
 import org.junit.rules.ExpectedException;
+import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -68,6 +70,7 @@ import java.util.Set;
 /**
  * @author Sigurd Midttun, Visma Consulting.
  */
+@RunWith(Theories.class)
 public class DefaultKnyttDokumentTilJournalpostSomVedleggServiceTest {
 
 	private static final String OLA_NORDMANN = "Ola Nordmann";
@@ -475,13 +478,13 @@ public class DefaultKnyttDokumentTilJournalpostSomVedleggServiceTest {
 
 	@Theory
 	public void throwsIllegalFagomraadeExceptionWhenJournalpostSourceFagomraadeIsIllegal(FagomradeCode fagomraadeSource, FagomradeCode fagomraadeTarget) throws Exception {
-		assumeThat(fagomraadeSource, not(isOneOf(FagomradeCode.OPP, FagomradeCode.GEN, fagomraadeTarget)));
+		assumeThat(fagomraadeSource, not(isOneOf(FagomradeCode.OPP, FagomradeCode.GEN, FagomradeCode.FEI, fagomraadeTarget)));
 
 		mockFagomrade(journalpostSourceMock, fagomraadeSource);
 		mockFagomrade(journalpostTargetMock, fagomraadeTarget);
 
 		expectedException.expect(IllegalFagomraadeException.class);
-		expectedException.expectMessage("Journalpost source with journalpostId=234 must have fagomrade 'OPP' or 'GEN',"
+		expectedException.expectMessage("Journalpost source with journalpostId=234 must have fagomrade 'OPP','GEN' or 'FEI',"
 				+ " or it must be equal to fagomrade on the target journalpost (journalpostId=345)");
 
 		service.knyttDokumentTilJournalpostSomVedlegg(request);
@@ -491,7 +494,7 @@ public class DefaultKnyttDokumentTilJournalpostSomVedleggServiceTest {
 
 	@Theory
 	public void performsProcessingWhenJournalpostSourceFagomraadeIsLegal(FagomradeCode fagomraadeSource, FagomradeCode fagomraadeTarget) throws Exception {
-		assumeThat(fagomraadeSource, isOneOf(FagomradeCode.OPP, FagomradeCode.GEN, fagomraadeTarget));
+		assumeThat(fagomraadeSource, isOneOf(FagomradeCode.OPP, FagomradeCode.GEN, FagomradeCode.FEI, fagomraadeTarget));
 
 		mockFagomrade(journalpostSourceMock, fagomraadeSource);
 		mockFagomrade(journalpostTargetMock, fagomraadeTarget);
