@@ -49,7 +49,7 @@ public class Rjoark902IT extends AbstractHentjournalsakinfoItest {
 	private static final MottaksKanalCode MOTTAKSKANAL = MottaksKanalCode.NAV_NO;
 	private static final UtsendingsKanalCode UTSENDINGSKANAL = UtsendingsKanalCode.NAV_NO;
 	private static final SkjermingTypeCode SKJERMINGTYPE = SkjermingTypeCode.POL;
-	private static final String SAKID = "test sakid";
+	private static final String SAKID = "6293";
 	private static final FagsystemCode SAKRELASJONFAGSYSTEM = FagsystemCode.FS22;
 	private static final Boolean SAKFEILREGISTRERT = true;
 

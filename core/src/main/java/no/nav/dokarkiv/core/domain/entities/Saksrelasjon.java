@@ -59,7 +59,6 @@ public class Saksrelasjon extends AbstractPersistentVersionedDomainObjectWithKil
 	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "journalpost_id", nullable = false)
 	private Journalpost journalpost;
-	
 	/**
 	 * Defualt constructor.
 	 */
