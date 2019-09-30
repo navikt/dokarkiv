@@ -36,6 +36,13 @@ public final class SqlProjections {
 					"		s.sak_nr_fk            AS saksrelasjon_sakid,\n" +
 					"		s.feilregistrert       AS saksrelasjon_feilregistrert,\n" +
 					"		s.k_fagsystem          AS saksrelasjon_fagsystem,\n" +
+					"		sa.aktoerid            AS saksrelasjon_aktoerid,\n" +
+					"		sa.tema                AS saksrelasjon_tema,\n" +
+					"		sa.fagsaknr            AS saksrelasjon_fagsaknr,\n" +
+					"		sa.orgnr               AS saksrelasjon_orgnr,\n" +
+					"		sa.applikasjon         AS saksrelasjon_applikasjon,\n" +
+					"		sa.opprettet_tidspunkt AS saksrelasjon_opprettet_tid,\n" +
+					"		sa.opprettet_av        AS saksrelasjon_opprettet_av,\n" +
 					"		b.bruker_id            AS bruker_brukerid,\n" +
 					"		b.k_bruker_t           AS bruker_brukeridtype,\n" +
 					"		t.nokkel               AS tilleggsopplysninger_nokkel,\n" +
