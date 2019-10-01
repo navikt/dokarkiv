@@ -4,6 +4,7 @@ import static java.util.Arrays.asList;
 import static no.nav.dokarkiv.core.domain.codes.DokumentStatusCode.FERDIGSTILT;
 import static no.nav.dokarkiv.core.domain.codes.FagomradeCode.GEN;
 import static no.nav.dokarkiv.core.domain.codes.FagomradeCode.OPP;
+import static no.nav.dokarkiv.core.domain.codes.FagomradeCode.FEI;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.D;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.E;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.FL;
@@ -63,7 +64,7 @@ public class DefaultKnyttDokumentTilJournalpostSomVedleggService implements Knyt
 	private static final String PARTSINNSYN_TREDJEPART_DOKUMENT_INFO_FORMAT = PARTSINNSYN_DOKUMENT_INFO_FORMAT + " fra tredjepart";
 	private static final String ON_DEMAND_FIL_DETALJER_FORMAT = "DokumentInfo with dokumentInfoId=%d cannot have fildetaljer with onDemandId defined";
 	private static final String VARIANT_FORMAT_FORMAT = "DokumentInfo with dokumentInfoId=%d requires at least one fildetalj with variantFormat '%s'";
-	private static final String FAGOMRAADE_MESSAGE = "Journalpost source with journalpostId=%d must have fagomrade 'OPP' or 'GEN', or it must be equal"
+	private static final String FAGOMRAADE_MESSAGE = "Journalpost source with journalpostId=%d must have fagomrade 'OPP','GEN' or 'FEI', or it must be equal"
 			+ " to fagomrade on the target journalpost (journalpostId=%d)";
 
 	@Inject
@@ -156,7 +157,7 @@ public class DefaultKnyttDokumentTilJournalpostSomVedleggService implements Knyt
 	}
 
 	private void checkIfJournalpostsHaveLegalFagomrader(Journalpost journalpostSource, Journalpost journalpostTarget) throws IllegalFagomraadeException {
-		EnumSet<FagomradeCode> legalSourceFagomraader = EnumSet.of(OPP, GEN, journalpostTarget.getFagomrade());
+		EnumSet<FagomradeCode> legalSourceFagomraader = EnumSet.of(OPP, GEN, FEI, journalpostTarget.getFagomrade());
 		if (!legalSourceFagomraader.contains(journalpostSource.getFagomrade())) {
 			String message = String.format(FAGOMRAADE_MESSAGE, journalpostSource.getJournalpostId(), journalpostTarget.getJournalpostId());
 			throw new IllegalFagomraadeException(message);
