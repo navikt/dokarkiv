@@ -36,6 +36,7 @@ import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -124,6 +125,8 @@ public class OpprettJournalpostService {
 						request.getSak().getFagsaksystem().name() : APPLIKASJON_FS22)
 				.fagsakNr(FAGSAK.equals(request.getSak().getSakstype()) ?
 						request.getSak().getFagsakId() : null)
+                .opprettetAv(MDC.get(MDC_CONSUMER_ID))
+                .opprettetTidspunkt(LocalDateTime.now())
 				.build();
 	}
 
