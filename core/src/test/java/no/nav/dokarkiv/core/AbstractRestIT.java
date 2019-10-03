@@ -79,7 +79,7 @@ public abstract class AbstractRestIT {
 	@Inject
 	protected DokumentFilRepository dokumentFilRepository;
 	@Inject
-	private SakRepository sakRepository;
+	protected SakRepository sakRepository;
 
 	protected static final String BEARER = "Bearer ";
 	protected static final String NAV_CONSUMER_TOKEN = "Nav-Consumer-Token";

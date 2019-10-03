@@ -1,10 +1,13 @@
 package no.nav.dokarkiv.journalpost.v1.util;
 
+import static no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerV2Mock.AKTOER_ID;
+import static no.nav.dokarkiv.core.domain.codes.FagsystemCode.FS22;
+import static no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem.AO01;
+
 import no.nav.dokarkiv.core.domain.codes.AvsenderMottakerIdTypeCode;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
-import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
 import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
@@ -61,7 +64,7 @@ public class TestUtils {
 	public static final String BRUKER_ID_ORGANISASJON = "987654321";
 	public static final String SAK_ID = "sakId";
 	public static final String FAGSAK_ID = "fagsakId";
-	public static final String ARKIVSAKSNUMMER = "arkivsaksnummer";
+	public static final String ARKIVSAKSNUMMER = "1234567890";
 	public static final String INNHOLD = "innhold";
 	public static final String KANALREFERANSE_ID = "kanalreferansId";
 	public static final String DATO_MOTTATT = "2017-02-03T11:37:30";
@@ -88,6 +91,8 @@ public class TestUtils {
 	public static final String TEMA_FOR = "FOR";
 	public static final String TEMA_SER = "SER";
 	public static final String TEMA_PEN = "PEN";
+	public static final String TEMA_TIL = "TIL";
+	public static final String TEMA_SYM = "SYM";
 	public static final String BEHANDLINGSTEMA = "ab0001";
 	public static final String AVSENDER_MOTTAKER_LAND = "Legoland";
 	public static final String AVSENDER_MOTTAKER_UTLAND = "Utland";
@@ -103,6 +108,7 @@ public class TestUtils {
 	public static final String TILLEGGSOPPLYSNING_VERDI = "verdi";
 	public static final String FILNAVN = "filnavn";
 
+	public static final String CONSUMER_ID = "consumerId";
 
 	public static Journalpost createJournalpost() {
 		Journalpost journalpost = Journalpost.builder()
@@ -120,7 +126,7 @@ public class TestUtils {
 				.journalForendeEnhetId(JOURNALFOERENDE_ENHET)
 				.saksrelasjon(Saksrelasjon.builder()
 						.sakId(SAK_ID)
-						.fagsystem(FagsystemCode.FS22)
+						.fagsystem(FS22)
 						.build())
 				.build();
 
@@ -147,7 +153,7 @@ public class TestUtils {
 				.journalForendeEnhetId(JOURNALFOERENDE_ENHET)
 				.saksrelasjon(Saksrelasjon.builder()
 						.sakId(SAK_ID)
-						.fagsystem(FagsystemCode.FS22)
+						.fagsystem(FS22)
 						.build())
 				.opprettetAvNavn(OPPRETTET_AV_NAVN)
 				.build();
@@ -506,5 +512,26 @@ public class TestUtils {
 		return DokumentVedlegg.builder()
 				.kildeJournalpostId(journalpostId)
 				.dokumentInfoId(dokumentId);
+	}
+
+	public static no.nav.dokarkiv.core.domain.entities.Sak createGenerellSak() {
+		return no.nav.dokarkiv.core.domain.entities.Sak.builder()
+				.aktoerId(AKTOER_ID)
+				.tema(TEMA_SYM)
+				.applikasjon(FS22.name())
+				.opprettetAv(CONSUMER_ID)
+				.opprettetTidspunkt(LocalDateTime.now())
+				.build();
+	}
+
+	public static no.nav.dokarkiv.core.domain.entities.Sak createFagsak() {
+		return no.nav.dokarkiv.core.domain.entities.Sak.builder()
+				.aktoerId(AKTOER_ID)
+				.tema(TEMA_TIL)
+				.applikasjon(AO01.name())
+				.fagsakNr(FAGSAK_ID)
+				.opprettetAv(CONSUMER_ID)
+				.opprettetTidspunkt(LocalDateTime.now())
+				.build();
 	}
 }
