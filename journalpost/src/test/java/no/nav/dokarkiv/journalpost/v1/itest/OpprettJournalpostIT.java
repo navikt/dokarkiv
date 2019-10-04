@@ -2,6 +2,7 @@ package no.nav.dokarkiv.journalpost.v1.itest;
 
 import static java.util.Collections.singletonList;
 import static no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerV2Mock.AKTOER_ID;
+import static no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerV2Mock.FNR;
 import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.OPPRETT;
 import static no.nav.dokarkiv.core.domain.codes.FagsystemCode.FS22;
 import static no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem.AO01;
@@ -42,6 +43,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.codes.AvsenderMottakerIdTypeCode;
+import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
@@ -351,7 +353,6 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		Saksrelasjon saksrelasjon = joarkRepository.findAll().iterator().next().getSaksrelasjon();
 		assertEquals(saksrelasjon.getSakId(), sak.getSakId().toString());
 		assertEquals(saksrelasjon.getFagsystem(), FS22);
-
 	}
 
 	@Test
@@ -381,6 +382,35 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		Saksrelasjon saksrelasjon = joarkRepository.findAll().iterator().next().getSaksrelasjon();
 		assertEquals(saksrelasjon.getSakId(), sak.getSakId().toString());
 		assertEquals(saksrelasjon.getFagsystem(), FS22);
+	}
+
+	@Test
+	public void happyPathNyFagsakAktoerId() throws IOException {
+		clearSakRepository();
+		abacPermit();
+
+		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
+				.tema(TEMA_TIL)
+				.bruker(Bruker.builder().idType(BrukerIdType.AKTOERID).id(AKTOER_ID).build())
+				.sak(Sak.builder().sakstype(Sakstype.FAGSAK).fagsakId(FAGSAK_ID).fagsaksystem(AO01).build())
+				.build();
+
+		HttpEntity requestEntity = new HttpEntity(request, createHeadersWithServiceUserToken());
+		ResponseEntity<OpprettJournalpostResponse> response = restTemplate.exchange(URL_JOURNALPOST, HttpMethod.POST, requestEntity, OpprettJournalpostResponse.class);
+
+		assertEquals(HttpStatus.CREATED, response.getStatusCode());
+		assertEquals(sakRepository.count(), 1);
+
+		no.nav.dokarkiv.core.domain.entities.Sak sak = sakRepository.findAll().iterator().next();
+		assertEquals(sak.getAktoerId(), AKTOER_ID);
+
+		no.nav.dokarkiv.core.domain.entities.Bruker bruker = joarkRepository.findAll().iterator().next().getBrukere().iterator().next();
+		assertEquals(bruker.getBrukerId(), FNR);
+		assertEquals(bruker.getBrukerType(), BrukerTypeCode.PERSON);
+
+		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
+		assertEquals(1, aksjonsLoggList.size());
+		assertEquals(aksjonsLoggList.get(0).getBruker(), FNR);
 	}
 
 	@Test
