@@ -31,7 +31,7 @@ public class FinnJournalpostSqlGeneratorTest {
 	@Test
 	public void shouldGenerateCteUnionSql() {
 		String sql = FinnJournalpostSqlGenerator.generateCteUnionSql(Arrays.asList("gsaker", "psaker"));
-		assertThat(sql, is("SELECT journalpost_id FROM gsaker UNION ALL SELECT journalpost_id FROM psaker"));
+		assertThat(sql, is("SELECT journalpost_id FROM gsaker UNION SELECT journalpost_id FROM psaker"));
 	}
 
 	@Test
@@ -100,7 +100,7 @@ public class FinnJournalpostSqlGeneratorTest {
 						"                              LEAD(j.journalpost_id) OVER (ORDER BY j.journalpost_id) AS prevjournalpostid,\n" +
 						"                              LAG(j.journalpost_id) OVER (ORDER BY j.journalpost_id)  AS nextjournalpostid,\n" +
 						"                              COUNT(*) OVER ()  AS totaltAntall\n" +
-						"                       FROM (SELECT journalpost_id FROM gsaker UNION ALL SELECT journalpost_id FROM psaker) jps\n" +
+						"                       FROM (SELECT journalpost_id FROM gsaker UNION SELECT journalpost_id FROM psaker) jps\n" +
 						"                              JOIN t_journalpost j ON jps.journalpost_id = j.journalpost_id\n" +
 						"                              LEFT JOIN t_saksrelasjon ts ON j.journalpost_id = ts.journalpost_id\n" +
 						"\n" +
