@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 
 @ExactlyOneOf(fields = {"aktoerId", "orgnr"})
 @NotNullWhenDependsOnHasValue(field = "applikasjon", dependsOnField = "fagsakNr")
@@ -120,7 +121,7 @@ public class SakJson {
 		if (opprettetTidspunkt == null) {
 			return null;
 		}
-		return ZonedDateTime.of(opprettetTidspunkt, ZoneId.systemDefault()).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+		return ZonedDateTime.of(opprettetTidspunkt, ZoneId.systemDefault()).truncatedTo(ChronoUnit.MILLIS).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
 	}
 
 	public void setOpprettetTidspunkt(String opprettetTidspunkt) {

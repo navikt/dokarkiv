@@ -105,6 +105,6 @@ final class FinnJournalpostSqlGenerator {
 	}
 
 	static String generateCteUnionSql(List<String> cteAliases) {
-		return cteAliases.stream().map(cteAlias -> "SELECT journalpost_id FROM " + cteAlias).collect(Collectors.joining(" UNION ALL "));
+		return cteAliases.stream().map(cteAlias -> "SELECT journalpost_id FROM " + cteAlias).collect(Collectors.joining(" UNION "));
 	}
 }
