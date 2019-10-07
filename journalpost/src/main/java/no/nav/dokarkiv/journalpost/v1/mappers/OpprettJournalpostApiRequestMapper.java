@@ -119,11 +119,21 @@ public class OpprettJournalpostApiRequestMapper {
 	}
 
 	private JournalStatusCode mapJournalstatus(OpprettJournalpostRequest request) {
-		if (request.getDokumenter().isEmpty()) {
+		if (manglerDokumentvarianter(request)) {
 			return JournalpostType.INNGAAENDE.equals(request.getJournalpostType()) ? JournalStatusCode.OD : JournalStatusCode.R;
 		} else {
 			return JournalpostType.INNGAAENDE.equals(request.getJournalpostType()) ? JournalStatusCode.M : JournalStatusCode.D;
 		}
+	}
+
+	private boolean manglerDokumentvarianter(OpprettJournalpostRequest request) {
+		// sjekker om ett eller flere dokumenter mangler dokumentvarianter
+		for (Dokument d : request.getDokumenter()) {
+			if (d.getDokumentvarianter() == null) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private Map<String, String> mapTilleggsopplysninger(OpprettJournalpostRequest request) {
