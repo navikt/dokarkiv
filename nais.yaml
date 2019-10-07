@@ -82,7 +82,7 @@ fasitResources:
     resourceType: credential
   exposed:
   # soapservice
-  - alias: Journal_v3
+  - alias: "dokument:Journal_v3"
     resourceType: soapservice
     path: /services/journal/v3
     wsdlGroupId: no.nav.tjenester
@@ -90,7 +90,7 @@ fasitResources:
     wsdlVersion: 3.1.5
     securityToken: SAML
     description: Virksomhetstjeneste for henting av journalposter og dokumenter fra arkivet.
-  - alias: InngaaendeJournal_v1
+  - alias: "dokument:InngaaendeJournal_v1"
     resourceType: soapservice
     path: /services/inngaaendejournal/v1
     wsdlGroupId: no.nav.tjenester
@@ -98,7 +98,7 @@ fasitResources:
     wsdlVersion: 1.1.3
     securityToken: SAML
     description: Virksomhetstjeneste for henting av metadata om inngående journalposter.
-  - alias: BehandleInngaaendeJournal_v1
+  - alias: "dokument:BehandleInngaaendeJournal_v1"
     resourceType: soapservice
     path: /services/behandleinngaaendejournal/v1
     wsdlGroupId: no.nav.tjenester
@@ -106,7 +106,7 @@ fasitResources:
     wsdlVersion: 1.0.1
     securityToken: SAML
     description: Virksomhetstjeneste for oppdatering av inngående journalposter.
-  - alias: BehandleJournal_v2
+  - alias: "dokument:BehandleJournal_v2"
     resourceType: soapservice
     path: /services/behandlejournal/v2
     wsdlGroupId: no.nav.tjenester.fim
@@ -114,7 +114,7 @@ fasitResources:
     wsdlVersion: 2.3.0
     securityToken: SAML
     description: Virksomhetstjeneste for midlertidig og endelig journalføring i arkivet.
-  - alias: BehandleJournal_v3
+  - alias: "dokument:BehandleJournal_v3"
     resourceType: soapservice
     path: /services/behandlejournal/v3
     wsdlGroupId: no.nav.tjenester.fim
@@ -122,7 +122,7 @@ fasitResources:
     wsdlVersion: 3.0.2
     securityToken: SAML
     description: Virksomhetstjeneste for midlertidig og endelig journalføring i arkivet versjon 3.
-  - alias: ArkiverDokumentproduksjon_v1
+  - alias: "dokument:ArkiverDokumentproduksjon_v1"
     resourceType: soapservice
     path: /services/arkiverdokumentproduksjon/v1
     wsdlGroupId: no.nav.tjenester.brevogarkiv
@@ -130,7 +130,7 @@ fasitResources:
     wsdlVersion: 3.4.1
     securityToken: USERNAME_TOKEN
     description: Domenetjeneste for arkivering av dokumenter under produksjon.
-  - alias: ArkiverDokumentmottak_v1
+  - alias: "dokument:ArkiverDokumentmottak_v1"
     resourceType: soapservice
     path: /services/arkiverdokumentmottak/v1
     wsdlGroupId: no.nav.tjenester.brevogarkiv
@@ -138,7 +138,7 @@ fasitResources:
     wsdlVersion: 1.1.8
     securityToken: USERNAME_TOKEN
     description: Domenetjeneste for arkivering av dokumenter fra mottak.
-  - alias: ArkiverDokumentmottak_v2
+  - alias: "dokument:ArkiverDokumentmottak_v2"
     resourceType: soapservice
     path: /services/arkiverdokumentmottak/v2
     wsdlGroupId: no.nav.tjenester.brevogarkiv
@@ -146,7 +146,7 @@ fasitResources:
     wsdlVersion: 2.2.3
     securityToken: USERNAME_TOKEN
     description: Domenetjeneste for arkivering av dokumenter fra mottak.
-  - alias: DokumentproduksjonInfo_v1
+  - alias: "dokument:DokumentproduksjonInfo_v1"
     resourceType: soapservice
     path: /services/dokumentproduksjoninfo/v1
     wsdlGroupId: no.nav.tjenester.brevogarkiv
