@@ -433,10 +433,6 @@ public class TestUtils {
 				.build();
 	}
 
-	public static OpprettJournalpostRequest createRequestUtenDokumenter(JournalpostType journalpostType) {
-		return createBaseRequest(journalpostType).build();
-	}
-
 	public static OpprettJournalpostRequest.OpprettJournalpostRequestBuilder createBaseRequest(JournalpostType journalpostType) {
 		return OpprettJournalpostRequest.builder()
 				.journalpostType(journalpostType)

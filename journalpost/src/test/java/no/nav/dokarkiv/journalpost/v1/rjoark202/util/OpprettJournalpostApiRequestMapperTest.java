@@ -18,7 +18,6 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createAvsenderMottak
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createAvsenderMottakerUtlandOrganisasjon;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createRequest;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createRequestAvsenderMottaker;
-import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createRequestUtenDokumenter;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -137,24 +136,6 @@ public class OpprettJournalpostApiRequestMapperTest {
 		assertNull(jp.getMottakskanal());
 		assertEquals(UtsendingsKanalCode.NAV_NO, jp.getUtsendingskanal());
 		assertEquals(JournalStatusCode.D, jp.getJournalstatus());
-	}
-
-	@Test
-	public void shouldMapInngaaendeJournalpostUtenDokumenter() {
-		OpprettJournalpostRequest request = createRequestUtenDokumenter(JournalpostType.INNGAAENDE);
-		Journalpost jp = mapper.map(request, null);
-
-		assertEquals(JournalpostTypeCode.I, jp.getJournalposttype());
-		assertEquals(JournalStatusCode.OD, jp.getJournalstatus());
-	}
-
-	@Test
-	public void shouldMapUtgaaendeJournalpostUtenDokumenter() {
-		OpprettJournalpostRequest request = createRequestUtenDokumenter(JournalpostType.UTGAAENDE);
-		Journalpost jp = mapper.map(request, null);
-
-		assertEquals(JournalpostTypeCode.U, jp.getJournalposttype());
-		assertEquals(JournalStatusCode.R, jp.getJournalstatus());
 	}
 
 	@Test
