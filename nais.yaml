@@ -143,7 +143,7 @@ fasitResources:
     path: /services/arkiverdokumentmottak/v2
     wsdlGroupId: no.nav.tjenester.brevogarkiv
     wsdlArtifactId: arkiverdokumentmottak-tjenestespesifikasjon-v2
-    wsdlVersion: 2.2.3
+    wsdlVersion: 2.1.3
     securityToken: USERNAME_TOKEN
     description: Domenetjeneste for arkivering av dokumenter fra mottak.
   - alias: "dokument:DokumentproduksjonInfo_v1"
@@ -151,7 +151,7 @@ fasitResources:
     path: /services/dokumentproduksjoninfo/v1
     wsdlGroupId: no.nav.tjenester.brevogarkiv
     wsdlArtifactId: dokumentproduksjoninfo-tjenestespesifikasjon
-    wsdlVersion: 2.2.1
+    wsdlVersion: 2.1.1
     securityToken: USERNAME_TOKEN
     description: Domenetjeneste for uthenting av informasjon ifm. dokumentproduksjon.
   # webserviceendpoint (deprekert)
@@ -216,7 +216,7 @@ fasitResources:
     path: /services/arkiverdokumentmottak/v2
     wsdlGroupId: no.nav.tjenester.brevogarkiv
     wsdlArtifactId: arkiverdokumentmottak-tjenestespesifikasjon-v2
-    wsdlVersion: 2.2.3
+    wsdlVersion: 2.1.3
     securityToken: USERNAME_TOKEN
     description: Domenetjeneste for arkivering av dokumenter fra mottak.
   - alias: DokumentproduksjonInfo_v1
@@ -224,7 +224,7 @@ fasitResources:
     path: /services/dokumentproduksjoninfo/v1
     wsdlGroupId: no.nav.tjenester.brevogarkiv
     wsdlArtifactId: dokumentproduksjoninfo-tjenestespesifikasjon
-    wsdlVersion: 2.2.1
+    wsdlVersion: 2.1.1
     securityToken: USERNAME_TOKEN
     description: Domenetjeneste for uthenting av informasjon ifm. dokumentproduksjon.
   - alias: JournalfoerInngaaende_v1
