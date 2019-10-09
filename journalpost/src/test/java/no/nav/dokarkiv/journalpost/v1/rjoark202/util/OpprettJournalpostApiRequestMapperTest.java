@@ -149,6 +149,14 @@ public class OpprettJournalpostApiRequestMapperTest {
 	}
 
 	@Test
+	public void shouldMapJournalfoerendeEnhet() {
+		OpprettJournalpostRequest request = createRequest(JournalpostType.INNGAAENDE, "9999");
+		Journalpost jp = mapper.map(request);
+
+		assertEquals("9999", jp.getJournalForendeEnhetId());
+	}
+
+	@Test
 	public void shouldMapUtgaaendeJournalpostUtenDokumenter() {
 		OpprettJournalpostRequest request = createRequestUtenDokumenter(JournalpostType.UTGAAENDE);
 		Journalpost jp = mapper.map(request);
