@@ -61,6 +61,7 @@ public class OpprettJournalpostApiRequestMapper {
 		Journalpost journalpost = Journalpost.builder()
 				.journalposttype(mapJournalposttype(request.getJournalpostType()))
 				.journalstatus(mapJournalstatus(request))
+				.journalForendeEnhetId(request.getJournalfoerendeEnhet())
 				.innhold(request.getTittel())
 				.fagomrade(mapTema(request))
 				.avsenderMottaker(request.getAvsenderMottaker() == null ? null : request.getAvsenderMottaker().getNavn())

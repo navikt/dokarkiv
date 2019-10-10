@@ -139,6 +139,14 @@ public class OpprettJournalpostApiRequestMapperTest {
 	}
 
 	@Test
+	public void shouldMapJournalfoerendeEnhet() {
+		OpprettJournalpostRequest request = createRequest(JournalpostType.INNGAAENDE, "9999");
+		Journalpost jp = mapper.map(request, null);
+
+		assertEquals("9999", jp.getJournalForendeEnhetId());
+	}
+
+	@Test
 	public void shouldMapInngaaendeJournalpostOrganisasjon(){
 		OpprettJournalpostRequest request = createRequestAvsenderMottaker(JournalpostType.INNGAAENDE, createAvsenderMottakerOrganisasjon());
 		Journalpost jp = mapper.map(request, null);
