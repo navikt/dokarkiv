@@ -14,6 +14,15 @@ import org.springframework.web.client.RestTemplate;
 import javax.inject.Inject;
 
 /**
+ * Tjenesten henter OnDemand og DLF dokumenter fra Joark ved bruk av hentdokumenturl servleten.
+ * <p>
+ * Hvorfor?
+ * Joark bruker et proprietært IBM OnDemand bibliotek (odwek) som kun har støtte for IBM Java 7 som følger med WAS.
+ * Vi valgte å ikke portere denne til dokarkiv siden OnDemand skal fases ut.
+ * <p>
+ * For DLF så har Joark mye custom logikk som fletter data inn i DLF filen og denne kompleksiteten er heller ikke
+ * portert til dokarkiv.
+ *
  * @author Joakim Bjørnstad, Jbit AS
  */
 @Component
@@ -38,6 +47,6 @@ public class HentOndemandDokument {
 	}
 
 	private HentDokumentUrlRequest mapHentDokumentRequest(Long journalpostId, String filUuid) {
-		return new HentDokumentUrlRequest(journalpostId, filUuid, 1L);
+		return new HentDokumentUrlRequest(journalpostId, filUuid, 5L);
 	}
 }
