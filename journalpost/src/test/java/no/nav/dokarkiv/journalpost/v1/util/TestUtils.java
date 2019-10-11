@@ -25,6 +25,7 @@ import no.nav.dokarkiv.journalpost.v1.api.BrukerIdType;
 import no.nav.dokarkiv.journalpost.v1.api.Dokument;
 import no.nav.dokarkiv.journalpost.v1.api.DokumentVariant;
 import no.nav.dokarkiv.journalpost.v1.api.DokumentVedlegg;
+import no.nav.dokarkiv.journalpost.v1.api.FjernVedleggTilknyttJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.JournalpostType;
 import no.nav.dokarkiv.journalpost.v1.api.OppdaterJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostRequest;
@@ -472,6 +473,12 @@ public class TestUtils {
 		return TilknyttVedleggRequest.builder()
 				.tilknyttetAvNavn("Testus Testesen")
 				.dokument(createDokumentVedleggList())
+				.build();
+	}
+
+	public static FjernVedleggTilknyttJournalpostRequest createFjernVedleggTilknyttJournalpostRequest(){
+		return FjernVedleggTilknyttJournalpostRequest.builder()
+				.dokumentId(DOKUMENTINFO_ID1)
 				.build();
 	}
 
