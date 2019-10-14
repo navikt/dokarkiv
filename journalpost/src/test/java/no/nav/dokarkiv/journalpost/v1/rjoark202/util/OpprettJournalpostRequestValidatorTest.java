@@ -20,8 +20,8 @@ import no.nav.dokarkiv.journalpost.v1.api.BrukerIdType;
 import no.nav.dokarkiv.journalpost.v1.api.Dokument;
 import no.nav.dokarkiv.journalpost.v1.api.DokumentVariant;
 import no.nav.dokarkiv.journalpost.v1.api.JournalpostType;
-import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.Sak;
+import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.validators.OpprettJournalpostRequestValidator;
 import org.junit.Rule;
 import org.junit.Test;
@@ -301,6 +301,21 @@ public class OpprettJournalpostRequestValidatorTest {
 				.sak(Sak.builder()
 						.arkivsaksystem(Arkivsaksystem.GSAK)
 						.arkivsaksnummer(null)
+						.build())
+				.build();
+
+		expectedException.expect(InputValideringFeiletException.class);
+		expectedException.expectMessage("Sak.arkivsaksnummer");
+
+		validator.validateRequest(request);
+	}
+
+	@Test
+	public void shouldThrowExceptionIfArkivsaksnummerNotNumeric() {
+		request = createMinimalRequest(JournalpostType.UTGAAENDE)
+				.sak(Sak.builder()
+						.arkivsaksystem(Arkivsaksystem.GSAK)
+						.arkivsaksnummer("quack123")
 						.build())
 				.build();
 

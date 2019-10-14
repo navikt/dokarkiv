@@ -21,7 +21,7 @@ public class SafHentDokumentService {
 		try {
 			return hentDokumentFromJoark(dokumentinfoId, variant);
 		} catch (Exception e) {
-			log.warn("Kunne ikke hente fysisk dokument med dokumentInfoId={}, variantformat={}", dokumentinfoId, variant);
+			log.warn("Kunne ikke hente fysisk dokument med dokumentInfoId={}, variantformat={}", dokumentinfoId, variant, e);
 			throw new DocumentNotFoundException("FilDetaljer med dokumentinfoId=" + dokumentinfoId + " og variant=" + variant + " ikke funnet.", e);
 		}
 	}

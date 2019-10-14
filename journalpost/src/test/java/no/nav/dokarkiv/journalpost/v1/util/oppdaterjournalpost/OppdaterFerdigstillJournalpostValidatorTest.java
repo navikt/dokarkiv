@@ -12,8 +12,10 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createSak;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
+import no.nav.dokarkiv.journalpost.v1.api.Arkivsaksystem;
 import no.nav.dokarkiv.journalpost.v1.api.DokumentInfo;
 import no.nav.dokarkiv.journalpost.v1.api.OppdaterJournalpostRequest;
+import no.nav.dokarkiv.journalpost.v1.api.Sak;
 import no.nav.dokarkiv.journalpost.v1.validators.OppdaterJournalpostValidator;
 import org.junit.Rule;
 import org.junit.Test;
@@ -75,6 +77,19 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
     }
 
     @Test
+    public void shouldThrowExceptionWhenSakArkivsaksnummerNotNumericAndJournalstatusM() {
+        oppdaterJournalpostRequest = OppdaterJournalpostRequest.builder()
+                .sak(Sak.builder()
+                        .arkivsaksnummer("quack123")
+                        .arkivsaksystem(Arkivsaksystem.GSAK)
+                        .build())
+                .build();
+        expectedException.expect(InputValideringFeiletException.class);
+        expectedException.expectMessage("Sak.arkivsaksnummer");
+        OppdaterJournalpostValidator.validateOppdaterteFelt(oppdaterJournalpostRequest, JournalStatusCode.M, JournalpostTypeCode.I);
+    }
+
+    @Test
     public void shouldFailIfJournalFoerendeEnhetSetForStatusJ() {
         oppdaterJournalpostRequest = OppdaterJournalpostRequest.builder().journalfoerendeEnhet(JOURNALFOERENDE_ENHET).build();
         expectedException.expect(InputValideringFeiletException.class);
@@ -125,6 +140,5 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
         oppdaterJournalpostRequest = OppdaterJournalpostRequest.builder().datoRetur(Date.valueOf(LOCAL_DATE_TIME.toLocalDate())).build();
         expectedException.expect(InputValideringFeiletException.class);
         OppdaterJournalpostValidator.validateOppdaterteFelt(oppdaterJournalpostRequest, JournalStatusCode.FS, JournalpostTypeCode.N);
-
     }
 }
