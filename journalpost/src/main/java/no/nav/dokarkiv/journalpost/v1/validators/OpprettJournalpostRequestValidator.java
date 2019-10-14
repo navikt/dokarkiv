@@ -18,8 +18,8 @@ import no.nav.dokarkiv.journalpost.v1.api.Bruker;
 import no.nav.dokarkiv.journalpost.v1.api.BrukerIdType;
 import no.nav.dokarkiv.journalpost.v1.api.Dokument;
 import no.nav.dokarkiv.journalpost.v1.api.DokumentVariant;
-import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.Sak;
+import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostRequest;
 
 import java.util.Arrays;
 
@@ -135,6 +135,9 @@ public class OpprettJournalpostRequestValidator {
 	private void validateSak(Sak sak) {
 		if (isBlank(sak.getArkivsaksnummer())) {
 			throw new InputValideringFeiletException("Sak.arkivsaksnummer må være satt");
+		}
+		if(!isNumeric(sak.getArkivsaksnummer())) {
+			throw new InputValideringFeiletException("Sak.arkivsaksnummer skal være opprettet i GSAK/PSAK og må være et numerisk heltall.");
 		}
 	}
 

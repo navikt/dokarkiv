@@ -29,7 +29,7 @@
   "journalpostType": "INNGAAENDE",
   "kanal": "NAV_NO",
   "sak": {
-    "arkivsaksnummer": "arkivsaknr",
+    "arkivsaksnummer": "12345",
     "arkivsaksystem": "GSAK"
   },
   "tema": "FOR",
