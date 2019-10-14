@@ -187,14 +187,14 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(SERVICE_USER_ID, aksjonsLoggList.get(1).getUtfoertAv());
 		assertEquals(BRUKER_ID_PERSON, aksjonsLoggList.get(1).getBruker());
 		assertEquals(AksjonsTypeCode.FERDIGSTILL, aksjonsLoggList.get(1).getAksjon());
-		assertEquals(3, aksjonsLoggList.get(1).getArkivElementEndringer().size());
+		assertEquals(2, aksjonsLoggList.get(1).getArkivElementEndringer().size());
 	}
 
 	@Test
 	public void happyPathOpprettOgFerdigstillUtgaaende() throws IOException {
 		abacPermit();
 
-		OpprettJournalpostRequest request = createRequest(UTGAAENDE, "9999");
+		OpprettJournalpostRequest request = createRequest(UTGAAENDE, "0123");
 
 		HttpEntity requestEntity = new HttpEntity(request, createHeadersWithServiceUserToken());
 		ResponseEntity<OpprettJournalpostResponse> response = restTemplate.exchange(URL_JOURNALPOST + FERDIGSTILL_QUERY, HttpMethod.POST, requestEntity, OpprettJournalpostResponse.class);
@@ -208,7 +208,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertNotNull(journalpost.getJournalpostId());
 		assertEquals(JournalpostTypeCode.U, journalpost.getJournalposttype());
 		assertEquals(JournalStatusCode.FS, journalpost.getJournalstatus());
-		assertEquals("9999", journalpost.getJournalForendeEnhetId());
+		assertEquals("0123", journalpost.getJournalForendeEnhetId());
 
 		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
 		assertEquals(2, aksjonsLoggList.size());
@@ -220,7 +220,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(SERVICE_USER_ID, aksjonsLoggList.get(1).getUtfoertAv());
 		assertEquals(BRUKER_ID_PERSON, aksjonsLoggList.get(1).getBruker());
 		assertEquals(AksjonsTypeCode.FERDIGSTILL, aksjonsLoggList.get(1).getAksjon());
-		assertEquals(3, aksjonsLoggList.get(1).getArkivElementEndringer().size());
+		assertEquals(2, aksjonsLoggList.get(1).getArkivElementEndringer().size());
 	}
 
 	@Test
