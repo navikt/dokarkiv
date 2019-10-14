@@ -15,7 +15,7 @@ import javax.validation.constraints.NotNull;
 public class Sak {
     @NotNull(message = "Sak mangler arkivsaksnummer")
     @ApiModelProperty(
-            value = "Saksnummeret i PSAK eller GSAK (SAK)",
+            value = "Saksnummeret i PSAK eller GSAK (SAK). Må være et numerisk heltall.",
             required = true,
             example = "111111111"
     )

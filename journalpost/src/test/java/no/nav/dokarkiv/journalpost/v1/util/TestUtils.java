@@ -27,10 +27,10 @@ import no.nav.dokarkiv.journalpost.v1.api.DokumentVariant;
 import no.nav.dokarkiv.journalpost.v1.api.DokumentVedlegg;
 import no.nav.dokarkiv.journalpost.v1.api.JournalpostType;
 import no.nav.dokarkiv.journalpost.v1.api.OppdaterJournalpostRequest;
-import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.Sak;
 import no.nav.dokarkiv.journalpost.v1.api.TilknyttVedleggRequest;
 import no.nav.dokarkiv.journalpost.v1.api.Tilleggsopplysning;
+import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostRequest;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -59,7 +59,7 @@ public class TestUtils {
 
 	public static final String BRUKER_ID_PERSON = "***gammelt_fnr***";
 	public static final String BRUKER_ID_ORGANISASJON = "987654321";
-	public static final String SAK_ID = "sakId";
+	public static final String SAK_ID = "12345";
 	public static final String INNHOLD = "innhold";
 	public static final String KANALREFERANSE_ID = "kanalreferansId";
 	public static final String DATO_MOTTATT = "2017-02-03T11:37:30";
