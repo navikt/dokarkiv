@@ -30,6 +30,10 @@ import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.ARKIV_V2;
 import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.UPDATE_ACTION;
 import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateId;
 
+/**
+ * @author Tsigab Angosom Gebremedhin, NAV.
+ */
+
 @Slf4j
 @RestController
 @RequestMapping("/rest/journalpostapi/v1/journalpost")
@@ -52,15 +56,15 @@ public class JournalpostRestController {
 	@Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_JOURNALPOST),
 			@Abac.Attr(key = RESOURCE_FELLES_DOMENE, value = ARKIV_V2)},
 			actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION))
-	@RestMetrics(value = "dok_request", extraTags = {"process_code", "slettVedlaggTilknyttJournalpost"}, percentiles = {0.5, 0.95})
+	@RestMetrics(value = "dok_request", extraTags = {"process_code", "fjernVedlaggTilknyttJournalpost"}, percentiles = {0.5, 0.95})
 	public ResponseEntity<String> fjernVedlaggTilknyttJournalpost(@PathVariable String journalpostId,
 																  @RequestBody FjernVedleggTilknyttJournalpostRequest request) {
-		MDC.put(MDCConstants.MDC_REQUEST_ID, "slettVedlaggTilknyttJournalpost");
+		MDC.put(MDCConstants.MDC_REQUEST_ID, "fjernVedlaggTilknyttJournalpost");
 		validateId(journalpostId, "tilknyttJournalpostId");
 		abacSecurityService.assertAccessToJournalpost(journalpostId);
 		RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
 		log.info("Mottat kall til å fjerne vedlagg som knyttet til journalpost med journalpostId=%s, dokumentinfoId=%s", journalpostId, request.getDokumentId());
-		fjernVedlaggTilknyttJournalpostService.slettVedleggTilknyttJournalPost(journalpostId, request);
+		fjernVedlaggTilknyttJournalpostService.fjernVedleggTilknyttJournalPost(journalpostId, request);
 		log.info(String.format("Vedlegg som knyttet til journalpost med journalpostId=%s, dokumentinfoId=%s er fjernet",journalpostId,request.getDokumentId()));
 		return ResponseEntity.ok("Vedlegg som knyttet til journalpost fjernet");
 	}

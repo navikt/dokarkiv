@@ -41,7 +41,7 @@ public class FjernVedlaggTilknyttJournalpostService {
 	}
 
 
-	public void slettVedleggTilknyttJournalPost(String journalpostId, FjernVedleggTilknyttJournalpostRequest request) {
+	public void fjernVedleggTilknyttJournalPost(String journalpostId, FjernVedleggTilknyttJournalpostRequest request) {
 
 		fjernVedleggTilknyttJournalpostValidator.validateInput(journalpostId,request.getDokumentId());
 		Long journalpostIdLong = Long.valueOf(journalpostId);
