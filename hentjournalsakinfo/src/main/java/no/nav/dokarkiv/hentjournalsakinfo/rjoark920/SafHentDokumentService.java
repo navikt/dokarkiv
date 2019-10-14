@@ -18,28 +18,30 @@ public class SafHentDokumentService {
 	}
 
 	public SafHentDokumentResponse hentDokumentByDokumentinfoIdAndVariant(Long dokumentinfoId, VariantFormatCode variant) {
-		return hentDokumentFromJoark(dokumentinfoId, variant);
+		try {
+			return hentDokumentFromJoark(dokumentinfoId, variant);
+		} catch (Exception e) {
+			log.warn("Kunne ikke hente fysisk dokument med dokumentInfoId={}, variantformat={}", dokumentinfoId, variant, e);
+			throw new DocumentNotFoundException("FilDetaljer med dokumentinfoId=" + dokumentinfoId + " og variant=" + variant + " ikke funnet.", e);
+		}
 	}
 
 	private SafHentDokumentResponse hentDokumentFromJoark(Long dokumentinfoId, VariantFormatCode variant) {
-		try {
-			JoarkDokumentDto joarkDokumentDto = safHentDokumentRepository.hentDokumentFromJoark(dokumentinfoId, variant);
-			if(joarkDokumentDto.isNormalDocument()) {
-				return SafHentDokumentResponse.builder()
-						.dokument(joarkDokumentDto.getDokument())
-						.filtype(joarkDokumentDto.getFiltype())
-						.build();
-			} else if(joarkDokumentDto.isDlfDocument() || joarkDokumentDto.isOndemandDocument()) {
-				byte[] ondemandDokument = safHentDokumentJoarkRepository.hentDokument(joarkDokumentDto);
-				return SafHentDokumentResponse.builder()
-						.dokument(ondemandDokument)
-						.filtype(joarkDokumentDto.getFiltype())
-						.build();
-			} else {
-				throw new DocumentNotFoundException("Fysisk dokument med dokumentinfoId=" + dokumentinfoId + " og variant=" + variant + " ikke funnet i Joark eller OnDemand.");
-			}
-		} catch (Exception e) {
-			throw new DocumentNotFoundException("FilDetaljer med dokumentinfoId=" + dokumentinfoId + " og variant=" + variant + " ikke funnet.", e);
+		JoarkDokumentDto joarkDokumentDto = safHentDokumentRepository.hentDokumentFromJoark(dokumentinfoId, variant);
+		if (joarkDokumentDto.isNormalDocument()) {
+			return SafHentDokumentResponse.builder()
+					.dokument(joarkDokumentDto.getDokument())
+					.filtype(joarkDokumentDto.getFiltype())
+					.build();
+		} else if (joarkDokumentDto.isDlfDocument() || joarkDokumentDto.isOndemandDocument()) {
+			log.info("Fysisk dokument med dokumentInfoId={}, variantformat={} er et OnDemand dokument eller en DLF. Henter fra Joark.", dokumentinfoId, variant);
+			byte[] ondemandDokument = safHentDokumentJoarkRepository.hentDokument(joarkDokumentDto);
+			return SafHentDokumentResponse.builder()
+					.dokument(ondemandDokument)
+					.filtype(joarkDokumentDto.getFiltype())
+					.build();
+		} else {
+			throw new DocumentNotFoundException("Fysisk dokument med dokumentinfoId=" + dokumentinfoId + " og variant=" + variant + " ikke funnet i Joark eller OnDemand.");
 		}
 	}
 }

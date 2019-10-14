@@ -43,7 +43,7 @@ public class Sak {
     private Fagsaksystem fagsaksystem;
 
     @ApiModelProperty(
-            value = "Saksnummeret i PSAK eller GSAK / SAK.\n" +
+            value = "Saksnummeret i PSAK eller GSAK (SAK). Må være et numerisk heltall.\n" +
                     "Skal kun settes dersom sakstype = ARKIVSAK.\n" +
                     "Feltet skal kun brukes etter avtale.",
             example = "111111111"

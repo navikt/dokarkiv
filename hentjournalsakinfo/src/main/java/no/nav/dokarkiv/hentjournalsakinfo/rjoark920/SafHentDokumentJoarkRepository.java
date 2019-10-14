@@ -2,32 +2,31 @@ package no.nav.dokarkiv.hentjournalsakinfo.rjoark920;
 
 import no.nav.dokarkiv.core.dokumenturl.HentDokumentUrlResponse;
 import no.nav.dokarkiv.core.ondemand.HentOndemandDokument;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
 
 import javax.inject.Inject;
 
 /**
  * Henter dokumenter fra joark (special case)
+ * <p>
+ * Kun for DLF og Ondemand dokumenter.
  *
  * @author Joakim Bjørnstad, Jbit AS
+ * @see HentOndemandDokument
  */
 @Component
 class SafHentDokumentJoarkRepository {
-	private final RestTemplate restTemplate;
 	private final HentOndemandDokument hentOndemandDokument;
+	private final RetryingJoarkHentDokumentFromUrlService retryingJoarkHentDokumentFromUrlService;
 
 	@Inject
-	SafHentDokumentJoarkRepository(RestTemplate restTemplate,
-								   HentOndemandDokument hentOndemandDokument) {
-		this.restTemplate = restTemplate;
+	SafHentDokumentJoarkRepository(HentOndemandDokument hentOndemandDokument, RetryingJoarkHentDokumentFromUrlService retryingJoarkHentDokumentFromUrlService) {
 		this.hentOndemandDokument = hentOndemandDokument;
+		this.retryingJoarkHentDokumentFromUrlService = retryingJoarkHentDokumentFromUrlService;
 	}
 
 	byte[] hentDokument(final JoarkDokumentDto joarkDokumentDto) {
 		HentDokumentUrlResponse dokumentUrl = hentOndemandDokument.createDokumentUrl(joarkDokumentDto.getJournalpostId(), joarkDokumentDto.getFilUuid());
-		ResponseEntity<byte[]> forEntity = restTemplate.getForEntity(dokumentUrl.getDokumentUrl(), byte[].class);
-		return forEntity.getBody();
+		return retryingJoarkHentDokumentFromUrlService.hentDokumentFromJoark(dokumentUrl.getDokumentUrl());
 	}
 }
