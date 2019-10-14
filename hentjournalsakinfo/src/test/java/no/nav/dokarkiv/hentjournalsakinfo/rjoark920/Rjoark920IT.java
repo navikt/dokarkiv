@@ -30,7 +30,6 @@ import java.util.Base64;
  */
 
 public class Rjoark920IT extends AbstractHentjournalsakinfoItest {
-
 	private static final String HENTJOURNALSAKINFO_HENTDOKUMENT = "/hentjournalsakinfo/hentdokument/";
 	private static final String UUID = FilDetaljer.generateUuid();
 	private static final String TEST_FILE_CONTENT = "testfilecontent";
@@ -38,7 +37,6 @@ public class Rjoark920IT extends AbstractHentjournalsakinfoItest {
 	// Happy path
 	@Test
 	public void shouldGetBase64Document() {
-
 		Journalpost journalpost = buildAndPersistJournalpost();
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
@@ -57,7 +55,6 @@ public class Rjoark920IT extends AbstractHentjournalsakinfoItest {
 	//  Unhappy path
 	@Test
 	public void shouldFailToGetDocument() throws Exception {
-
 		String uri = HENTJOURNALSAKINFO_HENTDOKUMENT + "123456789/ARKIV";
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(uri, HttpMethod.GET, createHeaderEntity(), String.class);
