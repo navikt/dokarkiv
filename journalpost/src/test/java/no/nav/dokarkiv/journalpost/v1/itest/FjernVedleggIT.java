@@ -3,7 +3,7 @@ package no.nav.dokarkiv.journalpost.v1.itest;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
-import no.nav.dokarkiv.journalpost.v1.api.FjernVedleggTilknyttJournalpostRequest;
+import no.nav.dokarkiv.journalpost.v1.api.FjernVedleggTilknyttetJournalpostRequest;
 import org.apache.commons.collections15.IteratorUtils;
 import org.junit.Test;
 import org.springframework.http.HttpEntity;
@@ -25,7 +25,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
 
-public class FjernVedlaggTilknyttJournalpostIT extends AbstractJournalpostIT {
+public class FjernVedleggIT extends AbstractJournalpostIT {
 
 	private static final String FJERNVEDLEGG = "/fjernVedlegg";
 
@@ -58,7 +58,7 @@ public class FjernVedlaggTilknyttJournalpostIT extends AbstractJournalpostIT {
 		assertThat(jpDokInfoRelasjonPersist.size(),is(4));
 		assertThat(jpDokInfoRelasjonByJpBeforeDelete.size(),is(2));
 
-		FjernVedleggTilknyttJournalpostRequest request = FjernVedleggTilknyttJournalpostRequest.builder()
+		FjernVedleggTilknyttetJournalpostRequest request = FjernVedleggTilknyttetJournalpostRequest.builder()
 				.dokumentId(vedllegJpDokumentInfoRelasjon.getDokumentInfo().getDokumentInfoId().toString())
 				.build();
 
@@ -99,7 +99,7 @@ public class FjernVedlaggTilknyttJournalpostIT extends AbstractJournalpostIT {
 				.toList(journalpostDokumentInfoRelasjonRepository.findAll().iterator()).get(2);
 		List<Journalpost> persitJournalpost = IteratorUtils.toList(joarkRepository.findAll().iterator());
 		Long journalpostId =vedllegJpDokumentInfoRelasjon.getJournalpost().getJournalpostId();
-		FjernVedleggTilknyttJournalpostRequest request = FjernVedleggTilknyttJournalpostRequest.builder()
+		FjernVedleggTilknyttetJournalpostRequest request = FjernVedleggTilknyttetJournalpostRequest.builder()
 				.dokumentId(vedllegJpDokumentInfoRelasjon.getDokumentInfo().getDokumentInfoId().toString())
 				.build();
 		assertThat(persitJournalpost.size(), is(3));
@@ -122,7 +122,7 @@ public class FjernVedlaggTilknyttJournalpostIT extends AbstractJournalpostIT {
 		abacPermit();
 
 		reinitTransaction();
-		FjernVedleggTilknyttJournalpostRequest request = FjernVedleggTilknyttJournalpostRequest.builder()
+		FjernVedleggTilknyttetJournalpostRequest request = FjernVedleggTilknyttetJournalpostRequest.builder()
 				.dokumentId(null)
 				.build();
 

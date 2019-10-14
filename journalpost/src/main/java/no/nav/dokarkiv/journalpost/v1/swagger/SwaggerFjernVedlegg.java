@@ -17,7 +17,7 @@ import java.lang.annotation.Target;
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@ApiOperation(value = "Fjernevedlegg tilknyttet til journalpost som har journalpost og dokumentinfo relasjon",
+@ApiOperation(value = "Fjernet vedlegg tilknyttet til journalpost som har journalpost og dokumentinfo relasjon",
 		authorizations = {@Authorization(value = "Authorization"), @Authorization(value = "NavConsumerToken")})
 @ApiResponses(value = {
 		@ApiResponse(code = 200, message = "* OK"),
@@ -25,7 +25,7 @@ import java.lang.annotation.Target;
 		@ApiResponse(code = 401, message = "* Ugyldig OIDC token. Denne feilen gis dersom tokenet ikke har riktig format eller er utgått."),
 		@ApiResponse(code = 404, message = "* Journalpost funnet ikke"),
 		@ApiResponse(code = 500, message = "* Internal server error")})
-public @interface SwaggerFjernTilknyttVedlegg {
+public @interface SwaggerFjernVedlegg {
 	@AliasFor(
 			annotation = RequestMapping.class
 	)

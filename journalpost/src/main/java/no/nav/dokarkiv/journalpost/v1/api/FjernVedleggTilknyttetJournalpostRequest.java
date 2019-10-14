@@ -11,11 +11,11 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class FjernVedleggTilknyttJournalpostRequest {
+public class FjernVedleggTilknyttetJournalpostRequest {
 
 	@ApiModelProperty(
-			value = "DokumentinfoId som skal knyttes til journalpostId som vedlegg.",
+			value = "DokumentinfoId som har vedlegg knyttet journalpost.",
 			required = true,
-			example = "123456789")
+			example = "12345678")
 	private String dokumentId;
 }
