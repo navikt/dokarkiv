@@ -1,18 +1,38 @@
 package no.nav.dokarkiv.journalpost.v1.util;
 
+import no.nav.dokarkiv.core.domain.codes.AvsenderMottakerIdTypeCode;
+import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
+import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
+import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
+import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
+import no.nav.dokarkiv.core.domain.codes.ReferanseTypeCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
+import no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode;
+import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
+import no.nav.dokarkiv.core.domain.entities.Bruker;
+import no.nav.dokarkiv.core.domain.entities.DokumentFil;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
+import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
-import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
-import no.nav.dokarkiv.journalpost.v1.api.Dokument;
+import no.nav.dokarkiv.core.domain.entities.Kryssreferanse;
+import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
+import no.nav.dokarkiv.core.domain.entities.SkannetInnhold;
 import no.nav.dokarkiv.journalpost.v1.api.FjernVedleggTilknyttJournalpostRequest;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static no.nav.dokarkiv.core.repository.DokumentFilSkjermetRepository.FIL_UUID_DUMMY_DOKUMENT_KASSERT;
+import static no.nav.dokarkiv.core.repository.DokumentFilSkjermetRepository.FIL_UUID_DUMMY_DOKUMENT_SKJERMET;
 
 
 public class TestDataUtils {
@@ -20,74 +40,163 @@ public class TestDataUtils {
 	public static final long JOURNALPOST_ID = 1234L;
 	public static final long JOURNALPOST_ID_O = 12345L;
 
-	public static final String AVSENDER_NAVN = "avsenderNavn";
-	public static final String AVSENDER_NAVN_ORGANISASJON = "avsenderNavn_org";
-	public static final String AVSENDER_NAVN_HELSEPERSONELLNR = "avsenderNavn_hprnr";
-	public static final String AVSENDER_NAVN_UTLORGANISASJON = "avsenderNavn_utl_org";
-	public static final String AVSENDER_ID_PERSON = "***gammelt_fnr***";
-	public static final String AVSENDER_ID_ORGANISASJON = "123456789";
-	public static final String AVSENDER_ID_HELSEPERSONELLNR = "123456789";
-	public static final String AVSENDER_ID_UTLORGANISASJON = "123456789";
-
-
-	public static final String BRUKER_ID_PERSON = "***gammelt_fnr***";
-	public static final String BRUKER_ID_ORGANISASJON = "987654321";
-	public static final String SAK_ID = "sakId";
+	public static final String OPPRETTET_KILDE_NAVN = "Opprettet kilde";
+	public static final String OPPRETTET_AV_NAVN = "Opprettet navn";
+	public static final String AVSENDER_MOTTAKER_ID = "***gammelt_fnr***";
+	public static final AvsenderMottakerIdTypeCode AVSENDER_MOTTAKER_ID_TYPE = AvsenderMottakerIdTypeCode.FNR;
+	public static final String BRUKER_ID = "123213";
+	public static final String KRYSSREFERANSE_ID = "123213";
+	public static final String DOKUMENT_INFO_TITTEL = "TITTEL";
+	public static final String DOKUMENT_TYPE_ID = "0000001";
+	public static final String SAK_ID = "1232131233";
+	public static final String PSAK_ID = "090909090";
+	public static final String FIL_NAVN = "navn";
+	public static final String TILLEGGOPPLYSNINGER_KEY = "tillegg";
+	public static final String TILLEGGOPPLYSNINGER_VAL = "tillegg_verdi";
+	public static final byte[] FIL = "Test dokument".getBytes();
+	public static final byte[] FIL_DUMMY_KASSERT = "Test kassert dummy dokument dummy".getBytes();
+	public static final Integer ANTALL_RETUR = 3;
 	public static final String INNHOLD = "innhold";
-	public static final String KANALREFERANSE_ID = "kanalreferansId";
-	public static final String DATO_MOTTATT = "2017-02-03T11:37:30";
-	public static final String JOURNALFOERENDE_ENHET = "journalfoerendeEnhet";
 	public static final String DOKUMENTINFO_ID1 = "1234567";
-	public static final String DOKUMNETTYPE_ID1 = "dokumenttypeID1";
-	public static final String BREVKODE1 = "brevkode1";
 	public static final String DOKUMENT_TITTEL1 = "dokumentTittel1";
-	public static final String DOKUMENT_TITTEL_UPDATE = "dokumentTittel_UPDATE";
-	public static final String SKANNETINNHOLD_ID1 = "78547541";
-	public static final String VEDLEGGINNHOLD1 = "vedlegginnhold1";
-	public static final String DOKUMENTINFO_ID2 = "74545455";
-	public static final String DOKUMNETTYPE_ID2 = "dokumenttypeID2";
-	public static final String DOKUMNETTYPE_ID_UPDATE = "dokumenttypeID_UPDATE";
-	public static final String BREVKODE2 = "brevkode2";
-	public static final String BREVKODE_UPDATE = "brevkode_Update";
-	public static final String DOKUMENT_TITTEL2 = "dokumentTittel2";
-	public static final String SKANNETINNHOLD_ID2 = "9874564";
-	public static final String VEDLEGGINNHOLD2 = "vedlegginnhold2";
-	public static final String SKANNETINNHOLD_ID3 = "6875454564";
-	public static final String VEDLEGGINNHOLD3 = "vedlegginnhold3";
-	public static final LocalDateTime LOCAL_DATE_TIME = LocalDateTime.of(2017, 2, 3, 10, 37, 30);
-	public static final String OPPRETTET_AV_NAVN = "Sak S. Behandler";
-	public static final String TEMA_FOR = "FOR";
-	public static final String TEMA_SER = "SER";
-	public static final String BEHANDLINGSTEMA = "ab0001";
-	public static final String AVSENDER_MOTTAKER_LAND = "Legoland";
-	public static final String AVSENDER_MOTTAKER_UTLAND = "Utland";
-	public static final String KANAL_NAVNO = "NAV_NO";
-	public static final String DOKUMENTKATEGORI_SED = "SED";
-	public static final String FILTYPE_PDF = "PDF";
-	public static final String FILTYPE_XML = "XML";
-	public static final String VARIANTFORMAT_ARKIV = "ARKIV";
-	public static final String VARIANTFORMAT_ORIGINAL = "ORIGINAL";
-	public static final byte[] FYSISK_DOKUMENT = "DOKUMENT".getBytes();
-	public static final byte[] FYSISK_DOKUMENT_2 = "DOKUMENT_2".getBytes();
-	public static final String TILLEGGSOPPLYSNING_NOKKEL = "noekkel";
-	public static final String TILLEGGSOPPLYSNING_VERDI = "verdi";
-	public static final String FILNAVN = "filnavn";
+
 
 	public static final JournalStatusCode UNDER_ARBEID = JournalStatusCode.D;
 	private static final JournalpostTypeCode UTGAAENDE_DOKUMENT = JournalpostTypeCode.U;
 
-	public static Journalpost createJournalpost(){
-		return Journalpost.builder()
-				.journalpostId(JOURNALPOST_ID)
-				.journalposttype(UTGAAENDE_DOKUMENT)
+
+	public static Journalpost createJournalpostUnderArbeid() {
+		Journalpost journalpost = Journalpost.builder()
+				.avsenderMottakerId(AVSENDER_MOTTAKER_ID)
+				.avsenderMottakerIdType(AVSENDER_MOTTAKER_ID_TYPE)
+				.dokumentDato(new Date())
+				.utsendingskanal(UtsendingsKanalCode.NAV_NO)
 				.journalstatus(UNDER_ARBEID)
-				.fagomrade(FagomradeCode.AAP)
-				.innhold(INNHOLD)
+				.journalposttype(UTGAAENDE_DOKUMENT)
 				.opprettetAvNavn(OPPRETTET_AV_NAVN)
-				.build();
+				.fagomrade(FagomradeCode.RPO)
+				.mottakskanal(MottaksKanalCode.NAV_NO)
+				.antallRetur(ANTALL_RETUR).build();
+
+		journalpost.addBruker(createBruker());
+		journalpost.addKryssReferanse(createKryssreferanse());
+		journalpost.setSaksrelasjon(createSaksrelasjon(journalpost));
+		journalpost.setTilleggsopplysninger(createTilleggsopplysninger());
+		journalpost.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
+
+		journalpost.addJournalpostDokumentInfoRelasjon(createHoveddokumentRelasjon(journalpost));
+		return journalpost;
 	}
 
-	public static Journalpost createJournalpostIngaaende(){
+	public static Map<String, String> createTilleggsopplysninger() {
+		Map<String, String> tilleggsopplysninger = new HashMap<>();
+		tilleggsopplysninger.put(TILLEGGOPPLYSNINGER_KEY, TILLEGGOPPLYSNINGER_VAL);
+		return tilleggsopplysninger;
+	}
+
+
+	public static JournalpostDokumentInfoRelasjon createHoveddokumentRelasjon(Journalpost journalpost) {
+		DokumentInfo dokumentInfo = createDokumentInfo();
+		dokumentInfo.setOriginalJournalpost(journalpost);
+
+		JournalpostDokumentInfoRelasjon journalpostDokumentInfoRelasjon = JournalpostDokumentInfoRelasjon.builder()
+				.journalpost(journalpost)
+				.dokumentInfo(dokumentInfo)
+				.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.HOVEDDOKUMENT)
+				.build();
+
+		journalpostDokumentInfoRelasjon.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
+		journalpostDokumentInfoRelasjon.setTilknyttetAvNavn(OPPRETTET_KILDE_NAVN);
+		return journalpostDokumentInfoRelasjon;
+	}
+
+	public static JournalpostDokumentInfoRelasjon createVedleggRelasjon(Journalpost journalpost, DokumentInfo dokumentInfo) {
+
+		JournalpostDokumentInfoRelasjon journalpostDokumentInfoRelasjon = JournalpostDokumentInfoRelasjon.builder()
+				.journalpost(journalpost)
+				.dokumentInfo(dokumentInfo)
+				.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
+				.build();
+
+		journalpostDokumentInfoRelasjon.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
+		journalpostDokumentInfoRelasjon.setTilknyttetAvNavn(OPPRETTET_KILDE_NAVN);
+
+		journalpost.addJournalpostDokumentInfoRelasjon(journalpostDokumentInfoRelasjon);
+		return journalpostDokumentInfoRelasjon;
+	}
+
+	public static Saksrelasjon createSaksrelasjon(Journalpost journalpost) {
+		Saksrelasjon saksrelasjon = Saksrelasjon.builder()
+				.fagsystem(FagsystemCode.FS22)
+				.sakId(SAK_ID)
+				.journalpost(journalpost)
+				.build();
+		saksrelasjon.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
+		return saksrelasjon;
+	}
+
+	public static Bruker createBruker() {
+		Bruker bruker = Bruker.builder()
+				.brukerType(BrukerTypeCode.PERSON)
+				.brukerId(BRUKER_ID)
+				.build();
+		bruker.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
+		return bruker;
+	}
+
+	public static Kryssreferanse createKryssreferanse() {
+		Kryssreferanse kryssreferanse = Kryssreferanse.builder()
+				.referanseType(ReferanseTypeCode.SPOERSMAAL)
+				.referanseId(KRYSSREFERANSE_ID)
+				.referanseNr(1L)
+				.build();
+		kryssreferanse.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
+		return kryssreferanse;
+	}
+
+
+	public static DokumentInfo createDokumentInfo() {
+		DokumentInfo dokumentInfo = DokumentInfo.builder()
+				.dokumentstatus(DokumentStatusCode.FERDIGSTILT)
+				.tittel(DOKUMENT_INFO_TITTEL)
+				.dokumenttypeId(DOKUMENT_TYPE_ID)
+				.build();
+		dokumentInfo.addFilDetaljer(createFildetaljerOgFil(dokumentInfo, VariantFormatCode.ARKIV));
+		dokumentInfo.addFilDetaljer(createFildetaljerOgFil(dokumentInfo, VariantFormatCode.PRODUKSJON));
+		dokumentInfo.addSkannetInnhold(createSkannetInnhold());
+		dokumentInfo.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
+		dokumentInfo.setTilleggsopplysninger(createTilleggsopplysninger());
+		return dokumentInfo;
+	}
+
+	public static SkannetInnhold createSkannetInnhold() {
+		SkannetInnhold skannetInnhold = SkannetInnhold.builder()
+				.dokumenttypeid(DOKUMENT_TYPE_ID)
+				.build();
+		skannetInnhold.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
+		return skannetInnhold;
+	}
+
+	public static FilDetaljer createFildetaljerOgFil(DokumentInfo dokumentInfo, VariantFormatCode variantFormatCode) {
+		return createFildetaljerOgFil(dokumentInfo, variantFormatCode, FilDetaljer.generateUuid());
+	}
+
+
+	public static FilDetaljer createFildetaljerOgFil(DokumentInfo dokumentInfo, VariantFormatCode variantFormatCode, String filUuid) {
+		FilDetaljer filDetaljer = FilDetaljer.builder()
+				.dokumentInfo(dokumentInfo)
+				.fileContent(FIL)
+				.filnavn(FIL_NAVN)
+				.filtype(FilTypeCode.PDF)
+				.filUuid(filUuid)
+				.variantFormat(variantFormatCode)
+				.build();
+		filDetaljer.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
+		return filDetaljer;
+	}
+
+
+	public static Journalpost createJournalpostIngaaende() {
 		return Journalpost.builder()
 				.journalpostId(JOURNALPOST_ID)
 				.journalposttype(JournalpostTypeCode.I)
@@ -99,10 +208,26 @@ public class TestDataUtils {
 	}
 
 
-	public static JournalpostDokumentInfoRelasjon JournalpostDokumentInfoRelasjon(){
+	public static DokumentInfo createDokumentInfoWithLikJournalpost() {
+		DokumentInfo dokumentInfo = DokumentInfo.builder()
+				.dokumentInfoId(Long.valueOf(DOKUMENTINFO_ID1))
+				.dokumentstatus(DokumentStatusCode.FERDIGSTILT)
+				.originalJournalpost(Journalpost.builder().journalpostId(JOURNALPOST_ID).build())
+				.tittel(DOKUMENT_INFO_TITTEL)
+				.dokumenttypeId(DOKUMENT_TYPE_ID)
+				.build();
+		dokumentInfo.addFilDetaljer(createFildetaljerOgFil(dokumentInfo, VariantFormatCode.ARKIV));
+		dokumentInfo.addFilDetaljer(createFildetaljerOgFil(dokumentInfo, VariantFormatCode.PRODUKSJON));
+		dokumentInfo.addSkannetInnhold(createSkannetInnhold());
+		dokumentInfo.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
+		dokumentInfo.setTilleggsopplysninger(createTilleggsopplysninger());
+		return dokumentInfo;
+	}
 
-		return JournalpostDokumentInfoRelasjon().builder()
-				.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
+	public static JournalpostDokumentInfoRelasjon createJournalpostDokumentInfoRelasjonHovedDok() {
+
+		JournalpostDokumentInfoRelasjon jpDokRelasjon = JournalpostDokumentInfoRelasjon.builder()
+				.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.HOVEDDOKUMENT)
 				.dokumentInfo(DokumentInfo.builder()
 						.dokumentInfoId(Long.valueOf(DOKUMENTINFO_ID1))
 						.tittel(DOKUMENT_TITTEL1)
@@ -110,29 +235,11 @@ public class TestDataUtils {
 				.tilknyttetAvNavn("Test Testen")
 				.build();
 
-	}
+		jpDokRelasjon.setJournalpost(createJournalpostIngaaende());
+		jpDokRelasjon.setOpprettetKildeNavn(OPPRETTET_AV_NAVN);
 
 
-
-
-	public static DokumentInfo createDokumentInfo(){
-
-		return DokumentInfo.builder()
-				.dokumentInfoId(Long.valueOf(DOKUMENTINFO_ID1))
-				.originalJournalpost(Journalpost.builder()
-						.journalpostId(JOURNALPOST_ID_O)
-						.innhold(INNHOLD)
-						.journalstatus(UNDER_ARBEID)
-						.journalposttype(UTGAAENDE_DOKUMENT)
-						.build())
-				.dokumentstatus(DokumentStatusCode.UNDER_REDIGERING)
-				.build();
-	}
-
-	public static FjernVedleggTilknyttJournalpostRequest createFjernVedleggTilknyttJournalpostRequest(){
-		return FjernVedleggTilknyttJournalpostRequest.builder()
-				.dokumentId(DOKUMENTINFO_ID1)
-				.build();
+		return jpDokRelasjon;
 	}
 
 

@@ -9,8 +9,9 @@ import no.nav.dokarkiv.core.exceptions.SlettIkkeVedleggTilknyttJournalpostExcept
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.D;
 import static no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode.U;
 import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.VEDLEGG;
+import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateId;
 
-public class SlettVedleggTilknyttJournalpostValidator {
+public class FjernVedleggTilknyttJournalpostValidator {
 
 
 	public void validateJournalpostDokumentInfoRelasjon(JournalpostDokumentInfoRelasjon journalpostDokumentInfoRelasjon) {
@@ -33,9 +34,15 @@ public class SlettVedleggTilknyttJournalpostValidator {
 			throw new DokumentInfoIkkeFunnetException(String.format("Fant ikke source doukument og kan ikke slette vedlgegg med journalpostId=%s",
 					journalpostId));
 		} else if (dokumentinfo.getOriginalJournalpost().getJournalpostId().equals(journalpostId)) {
-			throw new SlettIkkeVedleggTilknyttJournalpostException(String.format("JounalpostId er lik med original journalpost og Kan ikke slette vedlegg. journalpostId=%s",
+			throw new SlettIkkeVedleggTilknyttJournalpostException(String.format("JounalpostId er lik med originalJournalpostId og vedlagt kan ikke slettes. med journalpostId=%s",
 					journalpostId));
 		}
+	}
+
+
+	public void validateInput(String journalpostId, String dokumentId){
+		validateId(journalpostId,"journalpostId");
+		validateId(dokumentId,"dokumentinfoId");
 	}
 
 

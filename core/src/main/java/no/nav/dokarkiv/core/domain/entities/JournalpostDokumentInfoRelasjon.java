@@ -226,7 +226,7 @@ public class JournalpostDokumentInfoRelasjon extends AbstractPersistentVersioned
 	 *
 	 * @param journalpost the journalpost to set
 	 */
-	void setJournalpost(Journalpost journalpost) {
+	public void setJournalpost(Journalpost journalpost) {
 		this.journalpost = journalpost;
 	}
 

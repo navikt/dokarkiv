@@ -8,12 +8,11 @@ import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.exceptions.DokumentIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.JournalpostDokumentInfoRelasjonIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
-import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
 import no.nav.dokarkiv.journalpost.v1.api.FjernVedleggTilknyttJournalpostRequest;
-import no.nav.dokarkiv.journalpost.v1.validators.SlettVedleggTilknyttJournalpostValidator;
+import no.nav.dokarkiv.journalpost.v1.validators.FjernVedleggTilknyttJournalpostValidator;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -24,36 +23,34 @@ import javax.inject.Inject;
 
 @Service(value = "fjernVedleggService")
 @Slf4j
-public class SlettVedlaggTilknyttJournalpostService {
+public class FjernVedlaggTilknyttJournalpostService {
 
 
 	private final JoarkRepositorySkjermet joarkRepository;
 	private final DokumentinfoRepository dokumentinfoRepository;
-	private final DokumentFilRepository dokumentFilRepository;
 	private final JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository;
-	private final SlettVedleggTilknyttJournalpostValidator slettVedleggTilknyttJournalpostValidator;
+	private final FjernVedleggTilknyttJournalpostValidator fjernVedleggTilknyttJournalpostValidator;
 
 	@Inject
-	public SlettVedlaggTilknyttJournalpostService(JoarkRepositorySkjermet joarkRepository, DokumentinfoRepository dokumentinfoRepository,
-												  DokumentFilRepository dokumentFilRepository, JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository,
-												  SlettVedleggTilknyttJournalpostValidator slettVedleggTilknyttJournalpostValidator) {
+	public FjernVedlaggTilknyttJournalpostService(JoarkRepositorySkjermet joarkRepository, DokumentinfoRepository dokumentinfoRepository,
+												  JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository) {
 		this.joarkRepository = joarkRepository;
 		this.dokumentinfoRepository = dokumentinfoRepository;
-		this.dokumentFilRepository = dokumentFilRepository;
 		this.journalpostDokumentInfoRelasjonRepository = journalpostDokumentInfoRelasjonRepository;
-		this.slettVedleggTilknyttJournalpostValidator = slettVedleggTilknyttJournalpostValidator;
+		this.fjernVedleggTilknyttJournalpostValidator = new FjernVedleggTilknyttJournalpostValidator();
 	}
 
 
 	public void slettVedleggTilknyttJournalPost(String journalpostId, FjernVedleggTilknyttJournalpostRequest request) {
 
+		fjernVedleggTilknyttJournalpostValidator.validateInput(journalpostId,request.getDokumentId());
 		Long journalpostIdLong = Long.valueOf(journalpostId);
 		Journalpost journalpost = joarkRepository.findById(journalpostIdLong)
 				.orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Fant ikke journalpost med journalpostid=%s", journalpostId)));
-		slettVedleggTilknyttJournalpostValidator.validateJournalPostStatusOgType(journalpost);
+		fjernVedleggTilknyttJournalpostValidator.validateJournalPostStatusOgType(journalpost);
 		Long dokumentInfoId = Long.valueOf(request.getDokumentId());
 		DokumentInfo dokumentInfo = hentDokumentInfo(dokumentInfoId);
-		slettVedleggTilknyttJournalpostValidator.validateDokumentInfoOriginalJpNotEqualsInputJournalPost(dokumentInfo, journalpost.getJournalpostId());
+		fjernVedleggTilknyttJournalpostValidator.validateDokumentInfoOriginalJpNotEqualsInputJournalPost(dokumentInfo, journalpost.getJournalpostId());
 		JournalpostDokumentInfoRelasjon jpDokRelasjon = hentJournalpostDokumentRelasjon(journalpost.getJournalpostId(), dokumentInfoId);
 
 		journalpostDokumentInfoRelasjonRepository.delete(jpDokRelasjon);
@@ -67,7 +64,7 @@ public class SlettVedlaggTilknyttJournalpostService {
 				.orElseThrow(() ->
 						new JournalpostDokumentInfoRelasjonIkkeFunnetException(String.
 								format("Fant ikke JournalpostDokumentInfoRelasjon med journalpostId=%s dokumentId=%s", journalpostId, dokumentId)));
-		slettVedleggTilknyttJournalpostValidator.validateJournalpostDokumentInfoRelasjon(jpDokRelasjon);
+		fjernVedleggTilknyttJournalpostValidator.validateJournalpostDokumentInfoRelasjon(jpDokRelasjon);
 		return jpDokRelasjon;
 	}
 

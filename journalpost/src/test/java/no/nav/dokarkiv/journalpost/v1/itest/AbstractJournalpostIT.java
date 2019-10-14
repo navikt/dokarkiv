@@ -61,6 +61,12 @@ public abstract class AbstractJournalpostIT extends AbstractRestIT {
         }
     }
 
+    protected void reinitTransaction() {
+        TestTransaction.flagForCommit();
+        TestTransaction.end();
+        TestTransaction.start();
+    }
+
     protected Journalpost buildAndCommit(final JournalpostBuilder builder) {
         Journalpost journalpost = joarkRepository.save(builder.build());
         TestTransaction.flagForCommit();

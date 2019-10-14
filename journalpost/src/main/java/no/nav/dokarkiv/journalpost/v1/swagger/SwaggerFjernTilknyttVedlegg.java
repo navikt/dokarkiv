@@ -17,12 +17,13 @@ import java.lang.annotation.Target;
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@ApiOperation(value = "Fjernevedlegg som har vedlegg relasjom mellom journalpost og dokument",
+@ApiOperation(value = "Fjernevedlegg tilknyttet til journalpost som har journalpost og dokumentinfo relasjon",
 		authorizations = {@Authorization(value = "Authorization"), @Authorization(value = "NavConsumerToken")})
 @ApiResponses(value = {
 		@ApiResponse(code = 200, message = "* OK"),
+		@ApiResponse(code = 400, message = "* Kan ikke fjerne vedlegg som knyttet til journalpost"),
 		@ApiResponse(code = 401, message = "* Ugyldig OIDC token. Denne feilen gis dersom tokenet ikke har riktig format eller er utgått."),
-		@ApiResponse(code = 404, message = "* Vedlegg knyttet til Journalpost funnet ikke"),
+		@ApiResponse(code = 404, message = "* Journalpost funnet ikke"),
 		@ApiResponse(code = 500, message = "* Internal server error")})
 public @interface SwaggerFjernTilknyttVedlegg {
 	@AliasFor(
