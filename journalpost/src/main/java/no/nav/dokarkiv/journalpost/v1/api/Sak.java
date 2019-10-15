@@ -35,7 +35,7 @@ public class Sak {
                     "* AO11 (Grisen)\n" +
                     "* IT01 (Infotrygd)\n" +
                     "* OEBS\n" +
-                    "* PESYS\n" +
+                    "* PP01\n" +
                     "Skal kun settes dersom sakstype = FAGSAK",
             example = "FS38"
     )

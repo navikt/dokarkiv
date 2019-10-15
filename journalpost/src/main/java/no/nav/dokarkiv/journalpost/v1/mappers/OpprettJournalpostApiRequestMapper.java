@@ -180,7 +180,7 @@ public class OpprettJournalpostApiRequestMapper {
 			return sakId;
 		} else if (Sakstype.ARKIVSAK.equals(request.getSak().getSakstype()) || request.getSak().getSakstype() == null) {// Antas å være ARKIVSAK dersom feltet ikke er satt
 	        return request.getSak().getArkivsaksnummer();
-        } else if (Sakstype.FAGSAK.equals(request.getSak().getSakstype()) && Fagsaksystem.PESYS.equals(request.getSak().getFagsaksystem())) {
+        } else if (Sakstype.FAGSAK.equals(request.getSak().getSakstype()) && Fagsaksystem.PP01.equals(request.getSak().getFagsaksystem())) {
 			return request.getSak().getFagsakId();
 		} else {
 			throw new UgyldigInputException("Kan ikke mappe sakId basert på input");
@@ -209,10 +209,10 @@ public class OpprettJournalpostApiRequestMapper {
 	}
 
 	private FagsystemCode mapFagsakEllerGenerellSak(Sakstype sakstype, Fagsaksystem fagsaksystem) {
-		if (Sakstype.FAGSAK.equals(sakstype) && Fagsaksystem.PESYS.equals(fagsaksystem)) {
+		if (Sakstype.FAGSAK.equals(sakstype) && Fagsaksystem.PP01.equals(fagsaksystem)) {
 			return FagsystemCode.PEN;
 		} else if ((Sakstype.FAGSAK.equals(sakstype) || Sakstype.GENERELL_SAK.equals(sakstype))
-				&& !Fagsaksystem.PESYS.equals(fagsaksystem)) {
+				&& !Fagsaksystem.PP01.equals(fagsaksystem)) {
 			return FagsystemCode.FS22;
 		} else {
 			throw new UgyldigInputException("Kan ikke mappe fagsystem basert på input");

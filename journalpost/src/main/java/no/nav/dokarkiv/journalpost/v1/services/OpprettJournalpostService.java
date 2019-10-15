@@ -94,7 +94,7 @@ public class OpprettJournalpostService {
 	private String hentSakId(OpprettJournalpostRequest request) {
 		if (request.getSak() != null) {
 			Sakstype sakstype = request.getSak().getSakstype();
-			if((FAGSAK.equals(sakstype) || Sakstype.GENERELL_SAK.equals(sakstype)) && !Fagsaksystem.PESYS.equals(request.getSak().getFagsaksystem())) {
+			if((FAGSAK.equals(sakstype) || Sakstype.GENERELL_SAK.equals(sakstype)) && !Fagsaksystem.PP01.equals(request.getSak().getFagsaksystem())) {
 				return identifiserEllerOpprettArkivsak(request);
 			}
 		}

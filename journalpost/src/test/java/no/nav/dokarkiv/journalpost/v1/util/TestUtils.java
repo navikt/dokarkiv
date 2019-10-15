@@ -91,6 +91,7 @@ public class TestUtils {
 	public static final String TEMA_FOR = "FOR";
 	public static final String TEMA_SER = "SER";
 	public static final String TEMA_PEN = "PEN";
+	public static final String TEMA_UFO = "UFO";
 	public static final String TEMA_TIL = "TIL";
 	public static final String TEMA_SYM = "SYM";
 	public static final String BEHANDLINGSTEMA = "ab0001";
