@@ -1,18 +1,5 @@
 package no.nav.dokarkiv.journalpost.v1.controllers;
 
-import static no.nav.abac.xacml.NavAttributter.RESOURCE_ARKIV_DOKUMENT;
-import static no.nav.abac.xacml.NavAttributter.RESOURCE_ARKIV_JOURNALPOST;
-import static no.nav.abac.xacml.NavAttributter.RESOURCE_FELLES_DOMENE;
-import static no.nav.abac.xacml.NavAttributter.RESOURCE_FELLES_RESOURCE_TYPE;
-import static no.nav.abac.xacml.StandardAttributter.ACTION_ID;
-import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
-import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
-import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
-import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.ARKIV_V2;
-import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.CREATE_ACTION;
-import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.UPDATE_ACTION;
-import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateId;
-
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +10,7 @@ import no.nav.dokarkiv.core.metrics.RestMetrics;
 import no.nav.dokarkiv.core.security.abac.AbacSecurityService;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import no.nav.dokarkiv.journalpost.v1.api.FerdigstillJournalpostRequest;
+import no.nav.dokarkiv.journalpost.v1.api.FjernVedleggTilknyttetJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.OppdaterDistribusjonsinfoRequest;
 import no.nav.dokarkiv.journalpost.v1.api.OppdaterJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.OppdaterJournalpostResponse;
@@ -30,11 +18,13 @@ import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.DokumentInfo;
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostResponse;
 import no.nav.dokarkiv.journalpost.v1.services.FerdigstillJournalpostService;
+import no.nav.dokarkiv.journalpost.v1.services.FjernVedleggTilknyttetJournalpost;
 import no.nav.dokarkiv.journalpost.v1.services.KopierJournalpostService;
 import no.nav.dokarkiv.journalpost.v1.services.OppdaterDistribusjonsinfoService;
 import no.nav.dokarkiv.journalpost.v1.services.OppdaterJournalpostService;
 import no.nav.dokarkiv.journalpost.v1.services.OpprettJournalpostService;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerFerdigstillJournalpost;
+import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerFjernVedlegg;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerKopierJournalpost;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerOppdaterDistribusjonsinfo;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerOppdaterJournalpost;
@@ -63,12 +53,26 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static no.nav.abac.xacml.NavAttributter.RESOURCE_ARKIV_DOKUMENT;
+import static no.nav.abac.xacml.NavAttributter.RESOURCE_ARKIV_JOURNALPOST;
+import static no.nav.abac.xacml.NavAttributter.RESOURCE_FELLES_DOMENE;
+import static no.nav.abac.xacml.NavAttributter.RESOURCE_FELLES_RESOURCE_TYPE;
+import static no.nav.abac.xacml.StandardAttributter.ACTION_ID;
+import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
+import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
+import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
+import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.ARKIV_V2;
+import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.CREATE_ACTION;
+import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.UPDATE_ACTION;
+import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateId;
+
 @Api(description = "Tjenester for å arkivere og journalføre i fagarkiv")
 @Slf4j
 @RestController
 @RequestMapping("/rest/journalpostapi/v1/journalpost")
 public class ArkiverOgJournalfoerRestController {
 
+	private static final String TRUE = "true";
 	private final KopierJournalpostService kopierJournalpostService;
 	private final FerdigstillJournalpostService ferdigstillJournalpostService;
 	private final AbacSecurityService abacSecurityService;
@@ -78,8 +82,7 @@ public class ArkiverOgJournalfoerRestController {
 	private final OpprettJournalpostRequestValidator opprettJournalpostRequestValidator;
 	private final FerdigstillJournalpostValidator ferdigstillJournalpostValidator;
 	private final OppdaterDistribusjonsinfoValidator oppdaterDistribusjonsinfoValidator;
-
-	private static final String TRUE = "true";
+	private final FjernVedleggTilknyttetJournalpost fjernVedleggTilknyttJournalpost;
 
 	@Inject
 	public ArkiverOgJournalfoerRestController(final FerdigstillJournalpostService ferdigstillJournalpostService,
@@ -87,12 +90,14 @@ public class ArkiverOgJournalfoerRestController {
 											  final OppdaterJournalpostService oppdaterJournalpostService,
 											  final OpprettJournalpostService opprettJournalpostService,
 											  final OppdaterDistribusjonsinfoService oppdaterDistribusjonsinfoService,
-											  final AbacSecurityService abacSecurityService) {
+											  final AbacSecurityService abacSecurityService,
+											  FjernVedleggTilknyttetJournalpost fjernVedleggTilknyttJournalpost) {
 		this.ferdigstillJournalpostService = ferdigstillJournalpostService;
 		this.kopierJournalpostService = kopierJournalpostService;
 		this.abacSecurityService = abacSecurityService;
 		this.oppdaterJournalpostService = oppdaterJournalpostService;
 		this.opprettJournalpostService = opprettJournalpostService;
+		this.fjernVedleggTilknyttJournalpost = fjernVedleggTilknyttJournalpost;
 		this.oppdaterDistribusjonsinfoService = oppdaterDistribusjonsinfoService;
 		this.opprettJournalpostRequestValidator = new OpprettJournalpostRequestValidator();
 		this.ferdigstillJournalpostValidator = new FerdigstillJournalpostValidator();
@@ -205,7 +210,7 @@ public class ArkiverOgJournalfoerRestController {
 
 		try {
 			opprettJournalpostRequestValidator.validateRequest(request);
-		} catch(InputValideringFeiletException e) {
+		} catch (InputValideringFeiletException e) {
 			log.warn("rjoark202 feilet under validering. " + e.getMessage(), e);
 			throw e;
 		}
@@ -239,6 +244,26 @@ public class ArkiverOgJournalfoerRestController {
 								.isPresent())
 						.dokumenter(dokumenter)
 						.build());
+	}
+
+
+	@Transactional
+	@SwaggerFjernVedlegg
+	@PatchMapping("/{journalpostId}/fjernVedlegg")
+	@Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_JOURNALPOST),
+			@Abac.Attr(key = RESOURCE_FELLES_DOMENE, value = ARKIV_V2)},
+			actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION))
+	@RestMetrics(value = "dok_request", extraTags = {"process_code", "fjernVedleggTilknyttetJournalpost"}, percentiles = {0.5, 0.95})
+	public ResponseEntity<String> fjernVedleggTilknyttetJournalpost(@PathVariable String journalpostId,
+																	@RequestBody FjernVedleggTilknyttetJournalpostRequest request) {
+		MDC.put(MDCConstants.MDC_REQUEST_ID, "fjernVedleggTilknyttetJournalpost");
+		validateId(journalpostId, "tilknyttJournalpostId");
+		abacSecurityService.assertAccessToJournalpost(journalpostId);
+		RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
+		log.info("Mottat kall til å fjerne vedlagg som knyttet til journalpost med journalpostId=%s, dokumentinfoId=%s", journalpostId, request.getDokumentId());
+		fjernVedleggTilknyttJournalpost.fjernVedleggTilknyttetJournalpost(journalpostId, request);
+		log.info(String.format("Vedlegg som knyttet til journalpost med journalpostId=%s, dokumentinfoId=%s er fjernet", journalpostId, request.getDokumentId()));
+		return ResponseEntity.ok("Vedlegg som knyttet til journalposten fjernet");
 	}
 
 }
