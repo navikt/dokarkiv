@@ -111,7 +111,7 @@ public class OpprettJournalpostApiRequestMapper {
 					avsenderMottakerIdTypeCode = AvsenderMottakerIdTypeCode.UTL_ORG;
 					break;
 				default:
-					throw new InputValideringFeiletException(String.format("AvesenderMottakerIdTypeCode validerer ikke mot kodeverk: %s.", request));
+					throw new InputValideringFeiletException(String.format("AvsenderMottakerIdTypeCode validerer ikke mot kodeverk: %s.", request));
 
 			}
 		}
@@ -129,12 +129,7 @@ public class OpprettJournalpostApiRequestMapper {
 
 	private boolean manglerDokumentvarianter(OpprettJournalpostRequest request) {
 		// sjekker om ett eller flere dokumenter mangler dokumentvarianter
-		for (Dokument d : request.getDokumenter()) {
-			if (d.getDokumentvarianter() == null) {
-				return true;
-			}
-		}
-		return false;
+		return request.getDokumenter().stream().anyMatch(d -> d.getDokumentvarianter() == null);
 	}
 
 	private Map<String, String> mapTilleggsopplysninger(OpprettJournalpostRequest request) {
