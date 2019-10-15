@@ -264,15 +264,17 @@ public class OpprettJournalpostApiRequestMapper {
 				.originalJournalpost(jp)
 				.build();
 
-		dokument.getDokumentvarianter().forEach(
-				dokumentVariant -> dokumentInfo.addFilDetaljer(FilDetaljer.builder()
-						.filtype(mapFilType(dokumentVariant.getFiltype()))
-						.variantFormat(mapVariantFormat(dokumentVariant.getVariantformat()))
-						.filUuid(FilDetaljer.generateUuid())
-						.fileContent(dokumentVariant.getFysiskDokument())
-						.filnavn(dokumentVariant.getFilnavn())
-						.dokumentInfo(dokumentInfo)
-						.build()));
+		if (dokument.getDokumentvarianter() != null) {
+            dokument.getDokumentvarianter().forEach(
+                    dokumentVariant -> dokumentInfo.addFilDetaljer(FilDetaljer.builder()
+                            .filtype(mapFilType(dokumentVariant.getFiltype()))
+                            .variantFormat(mapVariantFormat(dokumentVariant.getVariantformat()))
+                            .filUuid(FilDetaljer.generateUuid())
+                            .fileContent(dokumentVariant.getFysiskDokument())
+                            .filnavn(dokumentVariant.getFilnavn())
+                            .dokumentInfo(dokumentInfo)
+                            .build()));
+        }
 
 		JournalpostDokumentInfoRelasjon relasjon = JournalpostDokumentInfoRelasjon.builder()
 				.tilknyttetJournalpostSom(tilknyttetJournalpostSomCode)
