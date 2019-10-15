@@ -227,16 +227,15 @@ public class OpprettJournalpostApiRequestMapper {
 	private void addBruker(Journalpost jp, OpprettJournalpostRequest request) {
 		if (request.getBruker() != null) {
 			if (BrukerIdType.AKTOERID.equals(request.getBruker().getIdType())) {
-				String fnr = null;
 				try {
-					fnr = aktoerConsumerService.hentIdentForAktoerId(new HentIdentForAktoerIdRequestTo(request.getBruker().getId())).getIdent();
+					String fnr = aktoerConsumerService.hentIdentForAktoerId(new HentIdentForAktoerIdRequestTo(request.getBruker().getId())).getIdent();
+					jp.addBruker(Bruker.builder()
+							.brukerId(fnr)
+							.brukerType(BrukerTypeCode.PERSON)
+							.build());
 				} catch (PersonIkkeFunnetException e) {
-					// Fortsett uten fnr
+					// Fortsett uten å opprette bruker
 				}
-				jp.addBruker(Bruker.builder()
-						.brukerId(fnr)
-						.brukerType(BrukerTypeCode.PERSON)
-						.build());
 			} else {
 				jp.addBruker(Bruker.builder()
 						.brukerId(request.getBruker().getId())

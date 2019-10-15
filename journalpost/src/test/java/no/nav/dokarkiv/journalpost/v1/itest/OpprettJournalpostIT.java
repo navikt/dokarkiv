@@ -2,6 +2,7 @@ package no.nav.dokarkiv.journalpost.v1.itest;
 
 import static java.util.Collections.singletonList;
 import static no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerV2Mock.AKTOER_ID;
+import static no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerV2Mock.FAIL_AKTOER_ID;
 import static no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerV2Mock.FNR;
 import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.OPPRETT;
 import static no.nav.dokarkiv.core.domain.codes.FagsystemCode.FS22;
@@ -13,6 +14,7 @@ import static no.nav.dokarkiv.journalpost.v1.api.JournalpostType.UTGAAENDE;
 import static no.nav.dokarkiv.journalpost.v1.services.OpprettJournalpostService.UKJENT;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.ARKIVSAKSNUMMER;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.BREVKODE1;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.BRUKER_ID_ORGANISASJON;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.BRUKER_ID_PERSON;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.DOKUMENTKATEGORI_SED;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.DOKUMENT_TITTEL1;
@@ -414,6 +416,62 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 	}
 
 	@Test
+	public void shouldOppretteJournalpostWithoutBrukerWhenFnrNotFound() throws IOException {
+		clearSakRepository();
+		abacPermit();
+
+		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
+				.tema(TEMA_TIL)
+				.bruker(Bruker.builder().idType(BrukerIdType.AKTOERID).id(FAIL_AKTOER_ID).build())
+				.sak(Sak.builder().sakstype(Sakstype.FAGSAK).fagsakId(FAGSAK_ID).fagsaksystem(AO01).build())
+				.build();
+
+		HttpEntity requestEntity = new HttpEntity(request, createHeadersWithServiceUserToken());
+		ResponseEntity<OpprettJournalpostResponse> response = restTemplate.exchange(URL_JOURNALPOST, HttpMethod.POST, requestEntity, OpprettJournalpostResponse.class);
+
+		assertEquals(HttpStatus.CREATED, response.getStatusCode());
+		assertEquals(sakRepository.count(), 1);
+
+		no.nav.dokarkiv.core.domain.entities.Sak sak = sakRepository.findAll().iterator().next();
+		assertEquals(sak.getAktoerId(), FAIL_AKTOER_ID);
+
+		assertEquals(joarkRepository.findAll().iterator().next().getBrukere().size(), 0);
+
+		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
+		assertEquals(1, aksjonsLoggList.size());
+		assertEquals(aksjonsLoggList.get(0).getBruker(), UKJENT);
+	}
+
+	@Test
+	public void happyPathNyFagsakOrgnr() throws IOException {
+		clearSakRepository();
+		abacPermit();
+
+		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
+				.tema(TEMA_TIL)
+				.bruker(Bruker.builder().idType(BrukerIdType.ORGNR).id(BRUKER_ID_ORGANISASJON).build())
+				.sak(Sak.builder().sakstype(Sakstype.FAGSAK).fagsakId(FAGSAK_ID).fagsaksystem(AO01).build())
+				.build();
+
+		HttpEntity requestEntity = new HttpEntity(request, createHeadersWithServiceUserToken());
+		ResponseEntity<OpprettJournalpostResponse> response = restTemplate.exchange(URL_JOURNALPOST, HttpMethod.POST, requestEntity, OpprettJournalpostResponse.class);
+
+		assertEquals(HttpStatus.CREATED, response.getStatusCode());
+		assertEquals(sakRepository.count(), 1);
+
+		no.nav.dokarkiv.core.domain.entities.Sak sak = sakRepository.findAll().iterator().next();
+		assertEquals(sak.getOrgnr(), BRUKER_ID_ORGANISASJON);
+
+		no.nav.dokarkiv.core.domain.entities.Bruker bruker = joarkRepository.findAll().iterator().next().getBrukere().iterator().next();
+		assertEquals(bruker.getBrukerId(), BRUKER_ID_ORGANISASJON);
+		assertEquals(bruker.getBrukerType(), BrukerTypeCode.ORGANISASJON);
+
+		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
+		assertEquals(1, aksjonsLoggList.size());
+		assertEquals(aksjonsLoggList.get(0).getBruker(), BRUKER_ID_ORGANISASJON);
+	}
+
+	@Test
 	public void happyPathEksisterendeFagsak() throws IOException {
 		clearSakRepository();
 		abacPermit();
@@ -466,6 +524,8 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 
 		assertEquals(sakRepository.count(), sakRepositoryCount);
 	}
+
+
 
 	@Test
 	public void shouldFailOnFerdigstillingWhenMissingJournalfoerendeEnhet() throws IOException {
