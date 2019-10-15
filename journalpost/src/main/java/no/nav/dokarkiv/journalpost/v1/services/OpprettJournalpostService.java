@@ -75,13 +75,7 @@ public class OpprettJournalpostService {
     }
 
 	public Journalpost opprettJournalpost(OpprettJournalpostRequest request) {
-		String sakId = null;
-		if (request.getSak() != null) {
-			Sakstype sakstype = request.getSak().getSakstype();
-			if((FAGSAK.equals(sakstype) || Sakstype.GENERELL_SAK.equals(sakstype)) && !Fagsaksystem.PESYS.equals(request.getSak().getFagsaksystem())) {
-				sakId = identifiserEllerOpprettArkivsak(request);
-			}
-		}
+		String sakId = hentSakId(request);
 
 		Journalpost journalpost = opprettJournalpostApiRequestMapper.map(request, sakId);
 		defaultSporingPopulator.populateSporingInfo(journalpost, MDC.get(MDCConstants.MDC_CONSUMER_ID));
@@ -97,7 +91,15 @@ public class OpprettJournalpostService {
 		return journalpost;
 	}
 
-
+	private String hentSakId(OpprettJournalpostRequest request) {
+		if (request.getSak() != null) {
+			Sakstype sakstype = request.getSak().getSakstype();
+			if((FAGSAK.equals(sakstype) || Sakstype.GENERELL_SAK.equals(sakstype)) && !Fagsaksystem.PESYS.equals(request.getSak().getFagsaksystem())) {
+				return identifiserEllerOpprettArkivsak(request);
+			}
+		}
+		return null;
+	}
 
 	private String identifiserEllerOpprettArkivsak(OpprettJournalpostRequest request) {
 		Sak sak = createSak(request);
