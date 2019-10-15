@@ -27,7 +27,7 @@ public class AktoerConsumerV2Mock implements AktoerV2 {
 
 	private static volatile List<HentAktoerIdForIdentRequest> identInspectionObjects = Lists.newArrayList();
 
-	public static final String AKTOER_ID = "***gammelt_fnr******gammelt_fnr***00";
+	public static final String AKTOER_ID = "***gammelt_fnr***23";
 	public static final String FNR = "***gammelt_fnr***";
 	public static final String CURRENT_IDENT = "***gammelt_fnr***1";
 	public static final String FAIL_IDENT = "***gammelt_fnr***067";

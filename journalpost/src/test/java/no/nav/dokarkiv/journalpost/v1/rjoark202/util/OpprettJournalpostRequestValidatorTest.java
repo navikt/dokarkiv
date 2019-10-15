@@ -28,7 +28,6 @@ import no.nav.dokarkiv.journalpost.v1.api.JournalpostType;
 import no.nav.dokarkiv.journalpost.v1.api.Sak;
 import no.nav.dokarkiv.journalpost.v1.api.Sakstype;
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostRequest;
-import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.validators.OpprettJournalpostRequestValidator;
 import org.junit.Rule;
 import org.junit.Test;
@@ -317,6 +316,21 @@ public class OpprettJournalpostRequestValidatorTest {
 		request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.bruker(Bruker.builder()
 						.idType(BrukerIdType.ORGNR)
+						.id("1122334455")
+						.build())
+				.build();
+
+		expectedException.expect(InputValideringFeiletException.class);
+		expectedException.expectMessage("Bruker.id");
+
+		validator.validateRequest(request);
+	}
+
+	@Test
+	public void shouldThrowExceptionIfBrukerIdHasInvalidLengthForAktoerid() {
+		request = createMinimalRequest(JournalpostType.INNGAAENDE)
+				.bruker(Bruker.builder()
+						.idType(BrukerIdType.AKTOERID)
 						.id("1122334455")
 						.build())
 				.build();

@@ -48,12 +48,14 @@ public class Sak {
                     "Feltet skal kun brukes etter avtale.",
             example = "111111111"
     )
-    private String arkivsaksnummer; //deprekert
+    @Deprecated
+    private String arkivsaksnummer;
 
     @ApiModelProperty(
             value = "Skal kun settes dersom sakstype = ARKIVSAK.\n" +
                     "Feltet skal kun brukes etter avtale.",
             example = "GSAK"
     )
-    private Arkivsaksystem arkivsaksystem; //deprekert
+    @Deprecated
+    private Arkivsaksystem arkivsaksystem;
 }

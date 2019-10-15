@@ -21,13 +21,13 @@ import no.nav.dokarkiv.journalpost.v1.api.DokumentVariant;
 import no.nav.dokarkiv.journalpost.v1.api.Sak;
 import no.nav.dokarkiv.journalpost.v1.api.Sakstype;
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostRequest;
-import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostRequest;
 
 import java.util.Arrays;
 
 public class OpprettJournalpostRequestValidator {
 
 	private static final int FNR_LENGTH = 11;
+	private static final int AKTOERID_LENGTH = 13;
 	private static final int ORGNR_LENGTH = 9;
 	private static final String TEMA_PEN = "PEN";
 	private static final String TEMA_UFO = "UFO";
@@ -96,6 +96,8 @@ public class OpprettJournalpostRequestValidator {
 			throw new InputValideringFeiletException("Bruker.id må være 11 siffer for FNR.");
 		} else if (BrukerIdType.ORGNR.equals(bruker.getIdType()) && bruker.getId().length() != ORGNR_LENGTH) {
 			throw new InputValideringFeiletException("Bruker.id må være 9 siffer for ORGNR.");
+		} else if (BrukerIdType.AKTOERID.equals(bruker.getIdType()) && bruker.getId().length() != AKTOERID_LENGTH) {
+			throw new InputValideringFeiletException("Bruker.id må være 11 siffer for AKTOERID.");
 		}
 	}
 

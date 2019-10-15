@@ -6,5 +6,5 @@ import io.swagger.annotations.ApiModel;
 public enum Sakstype {
     FAGSAK,
     GENERELL_SAK,
-    ARKIVSAK //deprekert
+    @Deprecated ARKIVSAK
 }
