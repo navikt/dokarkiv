@@ -4,6 +4,7 @@ import static no.nav.dokarkiv.journalpost.v1.api.JournalpostType.INNGAAENDE;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.commons.lang3.StringUtils.isNumeric;
+import static org.apache.cxf.common.util.CollectionUtils.isEmpty;
 
 import no.nav.dokarkiv.core.domain.codes.Behandlingstema;
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
@@ -226,7 +227,9 @@ public class OpprettJournalpostRequestValidator {
 				throw new InputValideringFeiletException(String.format("Dokument.dokumentkategori %s", VALIDERER_IKKE_MOT_KODEVERK));
 			}
 		}
-		dokument.getDokumentvarianter().forEach(this::validateDokumentVariant);
+		if (!isEmpty(dokument.getDokumentvarianter())) {
+			dokument.getDokumentvarianter().forEach(this::validateDokumentVariant);
+		}
 	}
 
 	private void validateDokumentVariant(DokumentVariant dokumentVariant) {
