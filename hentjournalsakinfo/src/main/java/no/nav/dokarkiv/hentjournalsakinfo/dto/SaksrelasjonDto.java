@@ -7,10 +7,7 @@ import lombok.Data;
 import lombok.Getter;
 import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 
 /**
  * @author Joakim Bjørnstad, Jbit AS
@@ -31,14 +28,5 @@ public class SaksrelasjonDto {
 
 	@Getter(AccessLevel.NONE)
 	@JsonProperty("opprettetTidspunkt")
-	private final LocalDateTime opprettetTid;
-
-	// "Opprettet tidspunkt iht. ISO-8601"
-	public String getOpprettetTidspunkt() {
-		if (this.opprettetTid == null) {
-			return null;
-		}
-		return ZonedDateTime.of(this.opprettetTid, ZoneId.systemDefault())
-				.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
-	}
+	private final ZonedDateTime opprettetTid;
 }
