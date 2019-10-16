@@ -55,7 +55,9 @@ public class OpprettJournalpostRequestValidator {
 		}
 		if (!request.getDokumenter().isEmpty()) {
 			request.getDokumenter().forEach(this::validateDokument);
-		}
+		} else {
+            throw new InputValideringFeiletException("Kan ikke opprette journalpost uten dokumenter.");
+        }
 	}
 
 	private void validateAvsenderMottaker(AvsenderMottaker avsenderMottaker) {

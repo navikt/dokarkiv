@@ -34,6 +34,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import java.util.ArrayList;
+
 public class OpprettJournalpostRequestValidatorTest {
 
 	@Rule
@@ -687,6 +689,18 @@ public class OpprettJournalpostRequestValidatorTest {
 
 		expectedException.expect(InputValideringFeiletException.class);
 		expectedException.expectMessage("Dokument.dokumentvariant.variantformat");
+
+		validator.validateRequest(request);
+	}
+
+	@Test
+	public void shouldThrowExceptionIfDokumenterIsEmpty() {
+		request = createMinimalRequest(JournalpostType.INNGAAENDE)
+				.dokumenter(new ArrayList<>())
+				.build();
+
+		expectedException.expect(InputValideringFeiletException.class);
+		expectedException.expectMessage("dokumenter");
 
 		validator.validateRequest(request);
 	}
