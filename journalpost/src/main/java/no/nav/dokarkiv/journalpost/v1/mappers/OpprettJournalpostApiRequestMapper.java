@@ -5,6 +5,7 @@ import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.VED
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.commons.lang3.StringUtils.trim;
+import static org.apache.cxf.common.util.CollectionUtils.isEmpty;
 
 import no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerService;
 import no.nav.dokarkiv.core.consumer.aktoer.HentIdentForAktoerIdRequestTo;
@@ -129,7 +130,7 @@ public class OpprettJournalpostApiRequestMapper {
 
 	private boolean manglerDokumentvarianter(OpprettJournalpostRequest request) {
 		// sjekker om ett eller flere dokumenter mangler dokumentvarianter
-		return request.getDokumenter().stream().anyMatch(d -> d.getDokumentvarianter() == null);
+		return request.getDokumenter().stream().anyMatch(d -> isEmpty(d.getDokumentvarianter()));
 	}
 
 	private Map<String, String> mapTilleggsopplysninger(OpprettJournalpostRequest request) {
