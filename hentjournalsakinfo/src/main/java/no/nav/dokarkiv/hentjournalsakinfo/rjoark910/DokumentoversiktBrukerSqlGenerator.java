@@ -34,6 +34,8 @@ final class DokumentoversiktBrukerSqlGenerator {
 				"     journalpostid_aktoerid AS\n" +
 				"         (SELECT s.journalpost_id\n" +
 				"          FROM sak sa\n" +
+				// Viktig at man alltid bruker kompositt indexen XIF4SAKRELASJON på T_SAKSRELASJON (sak_nr_fk, k_fagsystem)
+				// En cast av T_SAKSRELASJON.sak_nr_fk til noe annet vil ikke treffe index og blir til FULL TABLE SCAN i eksekveringsplanen.
 				"                   JOIN t_saksrelasjon s ON to_char(sa.id) = s.sak_nr_fk AND s.k_fagsystem = 'FS22'\n" +
 				"          WHERE sa.aktoerid = :aktoerId\n" +
 				"            AND " + feilregistrertSelectionSql(dokumentoversiktBrukerFilter.isKunFeilregistrerte()) + "\n" +
@@ -41,6 +43,8 @@ final class DokumentoversiktBrukerSqlGenerator {
 				"     journalpostid_orgnr AS\n" +
 				"         (SELECT s.journalpost_id\n" +
 				"          FROM sak sa\n" +
+				// Viktig at man alltid bruker kompositt indexen XIF4SAKRELASJON på T_SAKSRELASJON (sak_nr_fk, k_fagsystem)
+				// En cast av T_SAKSRELASJON.sak_nr_fk til noe annet vil ikke treffe index og blir til FULL TABLE SCAN i eksekveringsplanen.
 				"                   JOIN t_saksrelasjon s ON to_char(sa.id) = s.sak_nr_fk AND s.k_fagsystem = 'FS22'\n" +
 				"          WHERE sa.orgnr = :orgnr\n" +
 				"            AND " + feilregistrertSelectionSql(dokumentoversiktBrukerFilter.isKunFeilregistrerte()) + "\n" +
@@ -56,6 +60,8 @@ final class DokumentoversiktBrukerSqlGenerator {
 				"     relevantedata AS (SELECT " + RELEVANTE_DATA +
 				"                       FROM t_journalpost j\n" +
 				"                                LEFT JOIN t_saksrelasjon s ON s.journalpost_id = j.journalpost_id\n" +
+				// Viktig at man alltid bruker primærnøkkelen SAK.id
+				// En cast av SAK.id til noe annet vil ikke treffe index og resultatet blir FULL TABLE SCAN i eksekveringsplanen.
 				"                                LEFT JOIN sak sa ON sa.id = to_number(s.sak_nr_fk)\n" +
 				"                                LEFT JOIN t_jp_tillegg t ON j.journalpost_id = t.journalpost_id\n" +
 				"                                LEFT JOIN t_k_behandlingstema bt ON j.k_behandlingstema = bt.k_behandlingstema\n" +
