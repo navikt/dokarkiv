@@ -170,12 +170,25 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 		OppdaterJournalpostValidator.validateOppdaterteFelt(oppdaterJournalpostRequest, JournalStatusCode.J, JournalpostTypeCode.I);
 	}
 
-	@Test
-	public void shouldFailIfJournalFoerendeEnhetSetForStatusJ() {
-		oppdaterJournalpostRequest = OppdaterJournalpostRequest.builder().journalfoerendeEnhet(JOURNALFOERENDE_ENHET).build();
-		expectedException.expect(InputValideringFeiletException.class);
-		OppdaterJournalpostValidator.validateOppdaterteFelt(oppdaterJournalpostRequest, JournalStatusCode.J, JournalpostTypeCode.I);
-	}
+    @Test
+    public void shouldThrowExceptionWhenSakArkivsaksnummerNotNumericAndJournalstatusM() {
+        oppdaterJournalpostRequest = OppdaterJournalpostRequest.builder()
+                .sak(Sak.builder()
+                        .arkivsaksnummer("quack123")
+                        .arkivsaksystem(Arkivsaksystem.GSAK)
+                        .build())
+                .build();
+        expectedException.expect(InputValideringFeiletException.class);
+        expectedException.expectMessage("Sak.arkivsaksnummer");
+        OppdaterJournalpostValidator.validateOppdaterteFelt(oppdaterJournalpostRequest, JournalStatusCode.M, JournalpostTypeCode.I);
+    }
+
+    @Test
+    public void shouldFailIfJournalFoerendeEnhetSetForStatusJ() {
+        oppdaterJournalpostRequest = OppdaterJournalpostRequest.builder().journalfoerendeEnhet(JOURNALFOERENDE_ENHET).build();
+        expectedException.expect(InputValideringFeiletException.class);
+        OppdaterJournalpostValidator.validateOppdaterteFelt(oppdaterJournalpostRequest, JournalStatusCode.J, JournalpostTypeCode.I);
+    }
 
 	@Test
 	public void shouldFailIfTemaSetForStatusJ() {
@@ -216,15 +229,13 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 		OppdaterJournalpostValidator.validateOppdaterteFelt(oppdaterJournalpostRequest, JournalStatusCode.FS, JournalpostTypeCode.U);
 	}
 
-	@Test
-	public void shouldFailIfDatoReturSetForStatusFSAndNotat() {
-		oppdaterJournalpostRequest = OppdaterJournalpostRequest.builder()
-				.datoRetur(Date.valueOf(LOCAL_DATE_TIME.toLocalDate()))
-				.build();
-		expectedException.expect(InputValideringFeiletException.class);
-		OppdaterJournalpostValidator.validateOppdaterteFelt(oppdaterJournalpostRequest, JournalStatusCode.FS, JournalpostTypeCode.N);
+    @Test
+    public void shouldFailIfDatoReturSetForStatusFSAndNotat() {
+        oppdaterJournalpostRequest = OppdaterJournalpostRequest.builder().datoRetur(Date.valueOf(LOCAL_DATE_TIME.toLocalDate())).build();
+        expectedException.expect(InputValideringFeiletException.class);
+        OppdaterJournalpostValidator.validateOppdaterteFelt(oppdaterJournalpostRequest, JournalStatusCode.FS, JournalpostTypeCode.N);
+    }
 
-	}
 
 
 }

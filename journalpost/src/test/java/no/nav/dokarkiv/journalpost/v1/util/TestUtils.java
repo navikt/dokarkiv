@@ -62,7 +62,7 @@ public class TestUtils {
 
 	public static final String BRUKER_ID_PERSON = "***gammelt_fnr***";
 	public static final String BRUKER_ID_ORGANISASJON = "987654321";
-	public static final String SAK_ID = "sakId";
+    public static final String SAK_ID = "12345";
 	public static final String FAGSAK_ID = "fagsakId";
 	public static final String ARKIVSAKSNUMMER = "1234567890";
 	public static final String INNHOLD = "innhold";
@@ -91,6 +91,7 @@ public class TestUtils {
 	public static final String TEMA_FOR = "FOR";
 	public static final String TEMA_SER = "SER";
 	public static final String TEMA_PEN = "PEN";
+	public static final String TEMA_UFO = "UFO";
 	public static final String TEMA_TIL = "TIL";
 	public static final String TEMA_SYM = "SYM";
 	public static final String BEHANDLINGSTEMA = "ab0001";

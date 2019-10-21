@@ -4,6 +4,7 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.AVSENDER_ID_PERSON;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.BREVKODE1;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.BREVKODE2;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.BRUKER_ID_PERSON;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.DOKUMENTKATEGORI_SED;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.DOKUMENT_TITTEL1;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.DOKUMENT_TITTEL2;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FYSISK_DOKUMENT;
@@ -16,6 +17,7 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TILLEGGSOPPLYSNING_V
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createAvsenderMottakerHelsepersonell;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createAvsenderMottakerOrganisasjon;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createAvsenderMottakerUtlandOrganisasjon;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createBaseRequest;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createRequest;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createRequestAvsenderMottaker;
 import static org.junit.Assert.assertArrayEquals;
@@ -41,6 +43,7 @@ import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
+import no.nav.dokarkiv.journalpost.v1.api.Dokument;
 import no.nav.dokarkiv.journalpost.v1.api.JournalpostType;
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.mappers.OpprettJournalpostApiRequestMapper;
@@ -49,6 +52,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.MockitoJUnitRunner;
+
+import java.util.Arrays;
 
 @RunWith(MockitoJUnitRunner.class)
 public class OpprettJournalpostApiRequestMapperTest {
@@ -168,6 +173,19 @@ public class OpprettJournalpostApiRequestMapperTest {
 
 	}
 
+	@Test
+	public void shouldMapInngaaendeJournalpostWithoutDokumentvarianter() {
+        OpprettJournalpostRequest request = createBaseRequest(JournalpostType.INNGAAENDE)
+                .dokumenter(Arrays.asList(
+                        Dokument.builder()
+                                .tittel(DOKUMENT_TITTEL1)
+                                .brevkode(BREVKODE1)
+                                .dokumentKategori(DOKUMENTKATEGORI_SED)
+                                .build()))
+                .build();
+        Journalpost jp = mapper.map(request, null);
+        assertEquals(jp.getJournalstatus(), JournalStatusCode.OD);
+    }
 
 
 }

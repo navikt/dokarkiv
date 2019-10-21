@@ -111,7 +111,7 @@ public class OpprettJournalpostApiRequestMapper {
 					avsenderMottakerIdTypeCode = AvsenderMottakerIdTypeCode.UTL_ORG;
 					break;
 				default:
-					throw new InputValideringFeiletException(String.format("AvesenderMottakerIdTypeCode validerer ikke mot kodeverk: %s.", request));
+					throw new InputValideringFeiletException(String.format("AvsenderMottakerIdTypeCode validerer ikke mot kodeverk: %s.", request));
 
 			}
 		}
@@ -129,12 +129,7 @@ public class OpprettJournalpostApiRequestMapper {
 
 	private boolean manglerDokumentvarianter(OpprettJournalpostRequest request) {
 		// sjekker om ett eller flere dokumenter mangler dokumentvarianter
-		for (Dokument d : request.getDokumenter()) {
-			if (d.getDokumentvarianter() == null) {
-				return true;
-			}
-		}
-		return false;
+		return request.getDokumenter().stream().anyMatch(d -> d.getDokumentvarianter() == null);
 	}
 
 	private Map<String, String> mapTilleggsopplysninger(OpprettJournalpostRequest request) {
@@ -185,7 +180,7 @@ public class OpprettJournalpostApiRequestMapper {
 			return sakId;
 		} else if (Sakstype.ARKIVSAK.equals(request.getSak().getSakstype()) || request.getSak().getSakstype() == null) {// Antas å være ARKIVSAK dersom feltet ikke er satt
 	        return request.getSak().getArkivsaksnummer();
-        } else if (Sakstype.FAGSAK.equals(request.getSak().getSakstype()) && Fagsaksystem.PESYS.equals(request.getSak().getFagsaksystem())) {
+        } else if (Sakstype.FAGSAK.equals(request.getSak().getSakstype()) && Fagsaksystem.PP01.equals(request.getSak().getFagsaksystem())) {
 			return request.getSak().getFagsakId();
 		} else {
 			throw new UgyldigInputException("Kan ikke mappe sakId basert på input");
@@ -214,10 +209,10 @@ public class OpprettJournalpostApiRequestMapper {
 	}
 
 	private FagsystemCode mapFagsakEllerGenerellSak(Sakstype sakstype, Fagsaksystem fagsaksystem) {
-		if (Sakstype.FAGSAK.equals(sakstype) && Fagsaksystem.PESYS.equals(fagsaksystem)) {
+		if (Sakstype.FAGSAK.equals(sakstype) && Fagsaksystem.PP01.equals(fagsaksystem)) {
 			return FagsystemCode.PEN;
 		} else if ((Sakstype.FAGSAK.equals(sakstype) || Sakstype.GENERELL_SAK.equals(sakstype))
-				&& !Fagsaksystem.PESYS.equals(fagsaksystem)) {
+				&& !Fagsaksystem.PP01.equals(fagsaksystem)) {
 			return FagsystemCode.FS22;
 		} else {
 			throw new UgyldigInputException("Kan ikke mappe fagsystem basert på input");
@@ -227,16 +222,15 @@ public class OpprettJournalpostApiRequestMapper {
 	private void addBruker(Journalpost jp, OpprettJournalpostRequest request) {
 		if (request.getBruker() != null) {
 			if (BrukerIdType.AKTOERID.equals(request.getBruker().getIdType())) {
-				String fnr = null;
 				try {
-					fnr = aktoerConsumerService.hentIdentForAktoerId(new HentIdentForAktoerIdRequestTo(request.getBruker().getId())).getIdent();
+					String fnr = aktoerConsumerService.hentIdentForAktoerId(new HentIdentForAktoerIdRequestTo(request.getBruker().getId())).getIdent();
+					jp.addBruker(Bruker.builder()
+							.brukerId(fnr)
+							.brukerType(BrukerTypeCode.PERSON)
+							.build());
 				} catch (PersonIkkeFunnetException e) {
-					// Fortsett uten fnr
+					// Fortsett uten å opprette bruker
 				}
-				jp.addBruker(Bruker.builder()
-						.brukerId(fnr)
-						.brukerType(BrukerTypeCode.PERSON)
-						.build());
 			} else {
 				jp.addBruker(Bruker.builder()
 						.brukerId(request.getBruker().getId())
@@ -270,15 +264,17 @@ public class OpprettJournalpostApiRequestMapper {
 				.originalJournalpost(jp)
 				.build();
 
-		dokument.getDokumentvarianter().forEach(
-				dokumentVariant -> dokumentInfo.addFilDetaljer(FilDetaljer.builder()
-						.filtype(mapFilType(dokumentVariant.getFiltype()))
-						.variantFormat(mapVariantFormat(dokumentVariant.getVariantformat()))
-						.filUuid(FilDetaljer.generateUuid())
-						.fileContent(dokumentVariant.getFysiskDokument())
-						.filnavn(dokumentVariant.getFilnavn())
-						.dokumentInfo(dokumentInfo)
-						.build()));
+		if (dokument.getDokumentvarianter() != null) {
+            dokument.getDokumentvarianter().forEach(
+                    dokumentVariant -> dokumentInfo.addFilDetaljer(FilDetaljer.builder()
+                            .filtype(mapFilType(dokumentVariant.getFiltype()))
+                            .variantFormat(mapVariantFormat(dokumentVariant.getVariantformat()))
+                            .filUuid(FilDetaljer.generateUuid())
+                            .fileContent(dokumentVariant.getFysiskDokument())
+                            .filnavn(dokumentVariant.getFilnavn())
+                            .dokumentInfo(dokumentInfo)
+                            .build()));
+        }
 
 		JournalpostDokumentInfoRelasjon relasjon = JournalpostDokumentInfoRelasjon.builder()
 				.tilknyttetJournalpostSom(tilknyttetJournalpostSomCode)

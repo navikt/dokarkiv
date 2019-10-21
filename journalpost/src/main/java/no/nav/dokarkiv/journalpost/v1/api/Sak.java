@@ -35,7 +35,7 @@ public class Sak {
                     "* AO11 (Grisen)\n" +
                     "* IT01 (Infotrygd)\n" +
                     "* OEBS\n" +
-                    "* PESYS\n" +
+                    "* PP01\n" +
                     "Skal kun settes dersom sakstype = FAGSAK",
             example = "FS38"
     )
@@ -43,17 +43,19 @@ public class Sak {
     private Fagsaksystem fagsaksystem;
 
     @ApiModelProperty(
-            value = "Saksnummeret i PSAK eller GSAK / SAK.\n" +
+            value = "Saksnummeret i PSAK eller GSAK (SAK). Må være et numerisk heltall.\n" +
                     "Skal kun settes dersom sakstype = ARKIVSAK.\n" +
                     "Feltet skal kun brukes etter avtale.",
             example = "111111111"
     )
-    private String arkivsaksnummer; //deprekert
+    @Deprecated
+    private String arkivsaksnummer;
 
     @ApiModelProperty(
             value = "Skal kun settes dersom sakstype = ARKIVSAK.\n" +
                     "Feltet skal kun brukes etter avtale.",
             example = "GSAK"
     )
-    private Arkivsaksystem arkivsaksystem; //deprekert
+    @Deprecated
+    private Arkivsaksystem arkivsaksystem;
 }

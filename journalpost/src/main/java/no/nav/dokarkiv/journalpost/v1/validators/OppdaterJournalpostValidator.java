@@ -1,7 +1,9 @@
 package no.nav.dokarkiv.journalpost.v1.validators;
 
+import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
+import static org.apache.commons.lang3.StringUtils.isNumeric;
 
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
@@ -31,7 +33,6 @@ public final class OppdaterJournalpostValidator {
 			checkIfIllegalFieldIsSet(request.getSak(), "Sak", journalpostStatus, journalpostType);
 			checkIfIllegalFieldIsSet(request.getJournalfoerendeEnhet(), "JournalfoerendeEnhet", journalpostStatus, journalpostType);
 			checkIfIllegalFieldIsSet(request.getTema(), "Tema", journalpostStatus, journalpostType);
-
 		} else if (request.getSak() != null) {
 			validateSak(request.getSak(), request.getBruker(), request.getTema());
 		}
@@ -40,6 +41,7 @@ public final class OppdaterJournalpostValidator {
 			checkIfIllegalFieldIsSet(request.getDatoRetur(), "DatoRetur", journalpostStatus, journalpostType);
 		}
 	}
+
 
 	private static void checkIfIllegalFieldIsSet(Object field, String fieldName, JournalStatusCode journalpoststatus, JournalpostTypeCode journalpostType) {
 		if (field != null) {
@@ -120,6 +122,9 @@ public final class OppdaterJournalpostValidator {
 		}
 		if (sak.getArkivsaksystem() == null) {
 			throw new InputValideringFeiletException("Sak.arkivsaksystem må være satt dersom sakstype=GENERELL_SAK");
+		}
+		if(!isNumeric(sak.getArkivsaksnummer())) {
+			throw new InputValideringFeiletException("Sak.arkivsaksnummer skal være opprettet i GSAK/PSAK og må være et numerisk heltall.");
 		}
 	}
 

@@ -4,7 +4,6 @@ import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.SAKSRELASJON_FAGSYSTEM;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.SAKSRELASJON_SAKID;
-import static org.apache.logging.log4j.util.Strings.isNotBlank;
 
 import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
@@ -38,7 +37,6 @@ public class SaksrelasjonUpdater {
 
 			updateSaksnummer(sakId, request, saksrelasjon, endret);
 			updateArkivsaksystem(request, saksrelasjon, endret);
-
 
 
 			if (endret.isEndretFlagg() && !newSak) {
@@ -78,7 +76,9 @@ public class SaksrelasjonUpdater {
 		} else {
 			saksrelasjon.setFagsystem(mapFagsakEllerGenerellSak(sakstype, fagsaksystem));
 		}
-		endret.add(SAKSRELASJON_FAGSYSTEM, oldFagsystem == null ? null : oldFagsystem.name(), saksrelasjon.getFagsystem() == null ? null : saksrelasjon.getFagsystem().name() );
+		endret.add(SAKSRELASJON_FAGSYSTEM, oldFagsystem == null ? null : oldFagsystem.name(), saksrelasjon.getFagsystem() == null ? null : saksrelasjon
+				.getFagsystem()
+				.name());
 	}
 
 	private FagsystemCode mapArkivsak(Arkivsaksystem arkivsaksystem) {
@@ -99,9 +99,7 @@ public class SaksrelasjonUpdater {
 		} else {
 			throw new UgyldigInputException("Kan ikke mappe fagsystem basert på input");
 		}
-
 	}
-
 
 	FagsystemCode mapArkivSakSystemToFagsystemCode(Arkivsaksystem arkivsaksystem) {
 		assertNotNull(arkivsaksystem, "arkivsaksystem");

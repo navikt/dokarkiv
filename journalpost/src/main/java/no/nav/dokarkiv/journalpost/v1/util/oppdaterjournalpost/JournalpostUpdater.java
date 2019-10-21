@@ -2,11 +2,15 @@ package no.nav.dokarkiv.journalpost.v1.util.oppdaterjournalpost;
 
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
+import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_BRUKER;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_FAGOMRADE;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_INNHOLD;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_JOURNALSTATUS;
 import static org.apache.logging.log4j.util.Strings.isNotBlank;
 
+import no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerService;
+import no.nav.dokarkiv.core.consumer.aktoer.HentIdentForAktoerIdRequestTo;
+import no.nav.dokarkiv.core.consumer.aktoer.PersonIkkeFunnetException;
 import no.nav.dokarkiv.core.domain.codes.AvsenderMottakerIdTypeCode;
 import no.nav.dokarkiv.core.domain.codes.Behandlingstema;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
@@ -37,12 +41,14 @@ import java.util.stream.Collectors;
 public class JournalpostUpdater {
 
 	private final BrukerRepository brukerRepository;
+	private final AktoerConsumerService aktoerConsumerService;
 
 	private static final String DELETE_MARKER = " ";
 
 	@Inject
-	public JournalpostUpdater(BrukerRepository brukerRepository) {
+	public JournalpostUpdater(BrukerRepository brukerRepository, AktoerConsumerService aktoerConsumerService) {
 		this.brukerRepository = brukerRepository;
+		this.aktoerConsumerService = aktoerConsumerService;
 	}
 
 	public ChangeTracker updateFields(Journalpost journalpost, OppdaterJournalpostRequest oppdaterJournalpostRequest) {
@@ -185,23 +191,19 @@ public class JournalpostUpdater {
 
 			if (oppdaterJournalpostRequest.getBruker() != null) {
 				Bruker bruker = new Bruker();
-				bruker.setBrukerId(oppdaterJournalpostRequest.getBruker().getId());
 				assertNotNull(oppdaterJournalpostRequest.getBruker().getIdType(), "Bruker.idType");
-				bruker.setBrukerType(BrukerIdType.ORGNR.equals(oppdaterJournalpostRequest.getBruker().getIdType()) ?
-						BrukerTypeCode.ORGANISASJON : BrukerTypeCode.PERSON);
-				bruker.setOpprettetKildeNavn(MDC.get(MDC_CONSUMER_ID));
-				journalpost.addBruker(bruker);
-				endret.setEndretFlagg(true);
+				checkIfBrukerTypeIsAktoerId(null, bruker, oppdaterJournalpostRequest, journalpost ,endret);
+
 			}
 		} else {
 			if (oppdaterJournalpostRequest.getBruker() != null) {
 				brukere.iterator().forEachRemaining(bruker -> {
+					String oldBrukerId = bruker.getBrukerId();
 					bruker.setBrukerId(oppdaterJournalpostRequest.getBruker().getId());
 					assertNotNull(oppdaterJournalpostRequest.getBruker().getIdType(), "Bruker.idType");
-					bruker.setBrukerType(BrukerIdType.ORGNR.equals(oppdaterJournalpostRequest.getBruker().getIdType()) ?
-							BrukerTypeCode.ORGANISASJON : BrukerTypeCode.PERSON);
+					checkIfBrukerTypeIsAktoerId(oldBrukerId, bruker, oppdaterJournalpostRequest, journalpost ,endret);
 				});
-				endret.setEndretFlagg(true);
+
 			}
 		}
 	}
@@ -210,5 +212,33 @@ public class JournalpostUpdater {
 		if (object == null) {
 			throw new InputValideringFeiletException(String.format("%s kan ikke være null", fieldName));
 		}
+	}
+
+	private void checkIfBrukerTypeIsAktoerId(String oldBrukerId, Bruker bruker, OppdaterJournalpostRequest oppdaterJournalpostRequest, Journalpost journalpost, ChangeTracker endret){
+		if(BrukerIdType.AKTOERID.equals(oppdaterJournalpostRequest.getBruker().getIdType())){
+			try{
+				String fnr = aktoerConsumerService.hentIdentForAktoerId(new HentIdentForAktoerIdRequestTo(oppdaterJournalpostRequest.getBruker().getId())).getIdent();
+				bruker.setBrukerType(BrukerTypeCode.PERSON);
+				bruker.setBrukerId(fnr);
+				addBruker(oldBrukerId, bruker,journalpost,endret);
+
+
+
+			} catch (PersonIkkeFunnetException e ){
+				// Fortsett uten å oppdatere bruker
+			}
+		}else {
+			bruker.setBrukerId(oppdaterJournalpostRequest.getBruker().getId());
+			bruker.setBrukerType(BrukerIdType.ORGNR.equals(oppdaterJournalpostRequest.getBruker().getIdType()) ?
+					BrukerTypeCode.ORGANISASJON : BrukerTypeCode.PERSON);
+			addBruker(oldBrukerId, bruker,journalpost,endret);
+		}
+	}
+
+	private void addBruker(String oldBrukerId ,Bruker nyBruker, Journalpost journalpost, ChangeTracker endret){
+		nyBruker.setOpprettetKildeNavn(MDC.get(MDC_CONSUMER_ID));
+		endret.add(JOURNALPOST_BRUKER, oldBrukerId ,nyBruker.getBrukerId());
+		journalpost.addBruker(nyBruker);
+
 	}
 }
