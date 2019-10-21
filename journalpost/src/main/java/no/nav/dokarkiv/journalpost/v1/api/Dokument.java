@@ -36,6 +36,6 @@ public class Dokument {
 	)
 	private String dokumentKategori;
 
-	@ApiModelProperty(required = true)
+	@ApiModelProperty
 	private List<DokumentVariant> dokumentvarianter = new ArrayList<>();
 }

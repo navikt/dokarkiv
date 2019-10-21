@@ -459,11 +459,17 @@ public class TestUtils {
 						.arkivsaksnummer(SAK_ID)
 						.arkivsaksystem(Arkivsaksystem.GSAK)
 						.build());
-	}
+    }
 
 	public static OpprettJournalpostRequest.OpprettJournalpostRequestBuilder createMinimalRequest(JournalpostType journalpostType) {
 		return OpprettJournalpostRequest.builder()
-				.journalpostType(journalpostType);
+				.journalpostType(journalpostType)
+                .dokumenter(Collections.singletonList(
+                        Dokument.builder()
+                                .tittel(DOKUMENT_TITTEL1)
+                                .brevkode(BREVKODE1)
+                                .dokumentKategori(DOKUMENTKATEGORI_SED)
+                                .build()));
 	}
 
 	public static OpprettJournalpostRequest createRequestAvsenderMottaker(JournalpostType journalpostType, AvsenderMottaker avsenderMottaker) {
