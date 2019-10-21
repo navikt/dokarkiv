@@ -7,6 +7,7 @@ import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
+import no.nav.dokarkiv.core.repository.SakRepository;
 import no.nav.dokarkiv.core.security.BasicAuthRestInterceptor;
 import no.nav.dokarkiv.core.security.LdapConfig;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
@@ -65,6 +66,9 @@ public abstract class AbstractHentjournalsakinfoItest extends AbstractRestIT {
 	protected JoarkRepository joarkRepository;
 
 	@Inject
+	protected SakRepository sakRepository;
+
+	@Inject
 	protected DokumentinfoRepository dokumentInfoRepository;
 
 	@Inject
@@ -83,6 +87,7 @@ public abstract class AbstractHentjournalsakinfoItest extends AbstractRestIT {
 				"'Long to_number(String s) {" +
 				"    return s != null ? Long.valueOf(s) : null;" +
 				"}'").executeUpdate();
+		entityManager.createNativeQuery("ALTER SEQUENCE seq_sak RESTART WITH 1").executeUpdate();
 		RequestContextSetter.setRequestContext(new SimpleRequestContext.Builder()
 				.userId("itestuser")
 				.componentId("itest")
