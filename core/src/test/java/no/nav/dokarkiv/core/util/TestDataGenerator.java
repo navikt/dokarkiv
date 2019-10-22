@@ -23,9 +23,11 @@ import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.entities.Kryssreferanse;
+import no.nav.dokarkiv.core.domain.entities.Sak;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
 import no.nav.dokarkiv.core.domain.entities.SkannetInnhold;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -61,6 +63,7 @@ public class TestDataGenerator {
 	public static final byte[] FIL_DUMMY_SKJERMET = "Test skjermet dummy dokument dummy".getBytes();
 	public static final byte[] FIL_SLADDET = "Test sladdet dokument".getBytes();
 	public static final Integer ANTALL_RETUR = 3;
+	public static final String AKTOER_ID = "***gammelt_fnr***3";
 	
 	public static Journalpost createJournalpostWithHoveddokument() {
 		Journalpost journalpost = Journalpost.builder()
@@ -293,5 +296,17 @@ public class TestDataGenerator {
 		dokumentFil.setFilUuid(filuuid);
 		dokumentFil.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
 		return dokumentFil;
+	}
+
+	public static Sak createGsak() {
+		// sakId = 1 when persisted.
+		return Sak.builder()
+				.aktoerId(AKTOER_ID)
+				.fagsakNr("1234")
+				.tema("RPO")
+				.applikasjon("AO01")
+				.opprettetAv("itest")
+				.opprettetTidspunkt(LocalDate.now().atStartOfDay())
+				.build();
 	}
 }
