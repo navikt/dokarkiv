@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.sak.repository;
+package no.nav.dokarkiv.core.repository.sak;
 
 
 import lombok.AllArgsConstructor;

@@ -8,13 +8,17 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import com.auth0.jwt.JWT;
 import no.nav.dokarkiv.core.AbstractRestIT;
 import no.nav.dokarkiv.core.CoreConfig;
+import no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerV2Mock;
 import no.nav.dokarkiv.core.domain.builder.JournalpostBuilder;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.journalpost.v1.JournalpostConfig;
 import no.nav.freg.security.test.oidc.tools.TestToolsAutoConfig;
+import no.nav.tjeneste.virksomhet.aktoer.v2.binding.AktoerV2;
 import org.apache.commons.io.IOUtils;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -27,7 +31,8 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-        classes = {CoreConfig.class, JournalpostConfig.class, TestToolsAutoConfig.class})
+        classes = {CoreConfig.class, JournalpostConfig.class, TestToolsAutoConfig.class},
+        properties = {"spring.main.allow-bean-definition-overriding=true"})
 @ActiveProfiles("itest,wiremock,ldap,oidc")
 @AutoConfigureWireMock(port = 0)
 public abstract class AbstractJournalpostIT extends AbstractRestIT {
@@ -42,11 +47,20 @@ public abstract class AbstractJournalpostIT extends AbstractRestIT {
     protected String OIDC_TOKEN_PERSON_USER_TEST;
     protected String OIDC_TOKEN_SERVICE_USER_TEST;
 
+    @Configuration
+    public static class TestConfig {
+        @Bean
+        public AktoerV2 aktoerV2() {
+            return new AktoerConsumerV2Mock();
+        }
+    }
+
     void abacPermit() {
         stubFor(post(urlEqualTo("/abac"))
                 .willReturn(aResponse().withStatus(HttpStatus.OK.value())
                         .withHeader(org.apache.http.HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                         .withBodyFile("abac/abac-permit.json")));
+
     }
 
     public static String classpathToString(String path) {
@@ -72,6 +86,17 @@ public abstract class AbstractJournalpostIT extends AbstractRestIT {
         TestTransaction.flagForCommit();
         TestTransaction.end();
         return journalpost;
+    }
+
+    protected void clearSakRepository() {
+        sakRepository.deleteAll();
+        commitAndStartNewTransaction();
+    }
+
+    protected void commitAndStartNewTransaction() {
+        TestTransaction.flagForCommit();
+        TestTransaction.end();
+        TestTransaction.start();
     }
 
     protected HttpHeaders oidcHeaders() {

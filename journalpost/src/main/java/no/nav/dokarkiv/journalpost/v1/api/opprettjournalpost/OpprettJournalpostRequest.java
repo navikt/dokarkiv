@@ -81,10 +81,13 @@ public class OpprettJournalpostRequest {
 	@ApiModelProperty
 	private List<Tilleggsopplysning> tilleggsopplysninger = new ArrayList<>();
 
-	@ApiModelProperty
+	@ApiModelProperty(
+			value = "Saken som journalposten hører til"
+	)
 	private Sak sak;
 
 	@Builder.Default
+	@NotNull(message = "dokumenter kan ikke være null")
 	@ApiModelProperty(
 			value = "Første dokument blir tilknyttet som hoveddokument på journalposten. Øvrige dokumenter tilknyttes som vedlegg. Rekkefølgen på vedlegg beholdes ikke ved uthenting av journalpost.",
 			required = true)

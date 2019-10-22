@@ -17,4 +17,5 @@ public interface AktoerConsumerService {
 	 * @throws PersonIkkeFunnetException Thrown if no person is found for the given ident
 	 */
 	HentAktoerIdForIdentResponseTo hentAktoerIdForIdent(HentAktoerIdForIdentRequestTo request) throws PersonIkkeFunnetException;
+	HentIdentForAktoerIdResponseTo hentIdentForAktoerId(HentIdentForAktoerIdRequestTo request) throws PersonIkkeFunnetException;
 }

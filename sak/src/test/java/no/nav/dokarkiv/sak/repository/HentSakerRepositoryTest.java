@@ -10,6 +10,8 @@ import no.nav.dokarkiv.core.domain.service.SkjermingService;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.core.repository.RepositoryConfig;
 import no.nav.dokarkiv.core.repository.SakRepository;
+import no.nav.dokarkiv.core.repository.sak.HentSakerRepository;
+import no.nav.dokarkiv.core.repository.sak.SakSearchCriteria;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Before;

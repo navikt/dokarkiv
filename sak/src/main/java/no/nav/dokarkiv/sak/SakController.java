@@ -1,5 +1,15 @@
 package no.nav.dokarkiv.sak;
 
+import static io.swagger.annotations.ApiKeyAuthDefinition.ApiKeyLocation.HEADER;
+import static java.util.stream.Collectors.toList;
+import static no.nav.abac.xacml.NavAttributter.RESOURCE_FELLES_RESOURCE_TYPE;
+import static no.nav.abac.xacml.NavAttributter.RESOURCE_SAK_SAK;
+import static no.nav.abac.xacml.StandardAttributter.ACTION_ID;
+import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.CREATE_ACTION;
+import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.READ_ACTION;
+import static no.nav.dokarkiv.sak.infrastruktur.ContextExtractor.getSubjectType;
+import static no.nav.dokarkiv.sak.infrastruktur.SubjectType.SUBJECT_TYPE_EKSTERNBRUKER;
+
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -20,14 +30,14 @@ import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.domain.entities.Sak;
 import no.nav.dokarkiv.core.exceptions.AbacException;
 import no.nav.dokarkiv.core.metrics.SakMetrics;
+import no.nav.dokarkiv.core.repository.sak.HentSakerRepository;
+import no.nav.dokarkiv.core.repository.sak.SakSearchCriteria;
 import no.nav.dokarkiv.core.security.abac.AbacSecurityService;
 import no.nav.dokarkiv.core.security.abac.AuthorizationException;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import no.nav.dokarkiv.core.util.ErrorResponse;
 import no.nav.dokarkiv.sak.dto.SakJson;
 import no.nav.dokarkiv.sak.dto.SakSearchRequest;
-import no.nav.dokarkiv.sak.repository.HentSakerRepository;
-import no.nav.dokarkiv.sak.repository.SakSearchCriteria;
 import no.nav.freg.abac.core.annotation.Abac;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.MDC;
@@ -55,16 +65,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
-import static io.swagger.annotations.ApiKeyAuthDefinition.ApiKeyLocation.HEADER;
-import static java.util.stream.Collectors.toList;
-import static no.nav.abac.xacml.NavAttributter.RESOURCE_FELLES_RESOURCE_TYPE;
-import static no.nav.abac.xacml.NavAttributter.RESOURCE_SAK_SAK;
-import static no.nav.abac.xacml.StandardAttributter.ACTION_ID;
-import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.CREATE_ACTION;
-import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.READ_ACTION;
-import static no.nav.dokarkiv.sak.infrastruktur.ContextExtractor.getSubjectType;
-import static no.nav.dokarkiv.sak.infrastruktur.SubjectType.SUBJECT_TYPE_EKSTERNBRUKER;
 
 @RestController
 @RequestMapping("/rest/saker")
