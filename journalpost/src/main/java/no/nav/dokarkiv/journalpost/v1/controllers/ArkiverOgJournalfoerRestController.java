@@ -260,9 +260,9 @@ public class ArkiverOgJournalfoerRestController {
 		validateId(journalpostId, "tilknyttJournalpostId");
 		abacSecurityService.assertAccessToJournalpost(journalpostId);
 		RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
-		log.info("Mottat kall til å fjerne vedlagg som knyttet til journalpost med journalpostId=%s, dokumentinfoId=%s", journalpostId, request.getDokumentId());
+		log.info(String.format("Mottat kall til å fjerne vedlegg med dokumentinfoId=%s som knyttet til journalpost med journalpostId=%s", request.getDokumentId(), journalpostId));
 		fjernVedleggTilknyttJournalpost.fjernVedleggTilknyttetJournalpost(journalpostId, request);
-		log.info(String.format("Vedlegg som knyttet til journalpost med journalpostId=%s, dokumentinfoId=%s er fjernet", journalpostId, request.getDokumentId()));
+		log.info(String.format("Vedlegg med dokumentinfoId=%s som er knyttet til journalpost med journalpostId=%s  er fjernet", request.getDokumentId(), journalpostId));
 		return ResponseEntity.ok("Vedlegg som knyttet til journalposten fjernet");
 	}
 
