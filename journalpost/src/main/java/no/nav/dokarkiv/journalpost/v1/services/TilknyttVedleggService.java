@@ -78,11 +78,11 @@ public class TilknyttVedleggService {
 			FilDetaljer filDetaljerArkiv = finnArkivFildetaljer(sourceDokumentInfo);
 
 			if (!validateSourceJournalpost(sourceJournalpost, feiledeDokumenter, dokumentVedlegg)) {
-				break;
+				continue;
 			}
 
 			if (!validateSourceDokumentInfo(sourceDokumentInfo, targetJournalpostId, feiledeDokumenter, dokumentVedlegg)) {
-				break;
+				continue;
 			}
 
 			if (filDetaljerSladdet != null) {
