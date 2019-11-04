@@ -69,7 +69,6 @@ public class JournalforInngaaendeForsendelseV2RequestMapper {
 				.behandlingstema(stringToEnum(Behandlingstema.class, journalpost.getBehandlingstema()))
 				.journalForendeEnhetId(journalpost.getJournalforendeEnhet())
 				.opprettetAvNavn(journalpost.getOpprettetAvNavn())
-				.journalfortAvNavn(journalpost.getOpprettetAvNavn())
 				.avsenderMottaker(journalpost.getAvsenderMottakerNavn())
 				.avsenderMottakerId(journalpost.getAvsenderMottakerId())
 				.innhold(journalpost.getInnhold())
