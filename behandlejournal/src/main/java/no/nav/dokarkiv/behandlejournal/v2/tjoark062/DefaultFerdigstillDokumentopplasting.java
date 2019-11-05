@@ -2,6 +2,7 @@ package no.nav.dokarkiv.behandlejournal.v2.tjoark062;
 
 import no.nav.dokarkiv.behandlejournal.SporingUtil;
 import no.nav.dokarkiv.behandlejournal.SporingsMetaData;
+import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
@@ -87,7 +88,12 @@ public class DefaultFerdigstillDokumentopplasting implements FerdigstillDokument
 	}
 
 	private void updateJournalpost(Journalpost journalpost, SporingsMetaData sporingsMetaData) {
-		journalpost.setJournalstatus(JournalStatusCode.MO);
+		if(FagomradeCode.PEN.equals(journalpost.getFagomrade())) {
+			journalpost.setJournalstatus(JournalStatusCode.M);
+		}
+		else {
+			journalpost.setJournalstatus(JournalStatusCode.MO);
+		}
 		sporingPopulator.populateSporingInfo(journalpost, SporingUtil.decideSporingNavn(sporingsMetaData));
 	}
 }
