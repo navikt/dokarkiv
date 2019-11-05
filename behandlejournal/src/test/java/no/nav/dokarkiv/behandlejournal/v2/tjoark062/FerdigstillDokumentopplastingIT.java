@@ -82,6 +82,28 @@ public class FerdigstillDokumentopplastingIT extends AbstractBehandleJournalV2It
 	}
 
 	@Test
+	public void shouldFerdigstillDokumentopplastingForJoarkPensjonsdokumenter() throws Exception {
+		journalpost = buildAndPersistJournalpost(FagomradeCode.PEN);
+		request.setJournalpostId(journalpost.getJournalpostId().toString());
+
+		behandleJournalProvider.ferdigstillDokumentopplasting(request);
+
+		Journalpost ferdigstiltJournalpost = joarkRepository.findById(journalpost.getJournalpostId()).get();
+		assertThat(ferdigstiltJournalpost.getJournalstatus(), is(JournalStatusCode.M));
+
+		assertThat(ferdigstiltJournalpost.getEndretAvNavn(), is(SPORING_FORNAVN + " " + SPORING_ETTERNAVN));
+		assertThat(ferdigstiltJournalpost.getEndretKildeNavn(), is("testComponentId"));
+
+		assertThat(ferdigstiltJournalpost.getSaksrelasjon().getEndretAvNavn(), is(SPORING_FORNAVN + " " + SPORING_ETTERNAVN));
+		assertThat(ferdigstiltJournalpost.getSaksrelasjon().getEndretKildeNavn(), is("testComponentId"));
+
+		for (DokumentInfo dokumentInfo : ferdigstiltJournalpost.findAllDokumentInfos()) {
+			assertThat(dokumentInfo.getEndretAvNavn(), is(SPORING_FORNAVN + " " + SPORING_ETTERNAVN));
+			assertThat(dokumentInfo.getEndretKildeNavn(), is("testComponentId"));
+		}
+	}
+
+	@Test
 	public void shouldFerdigstillDokumentopplastingForJoarkdokumenter() throws Exception {
 		journalpost = buildAndPersistJournalpost(FagomradeCode.BID);
 		request.setJournalpostId(journalpost.getJournalpostId().toString());
@@ -99,30 +121,6 @@ public class FerdigstillDokumentopplastingIT extends AbstractBehandleJournalV2It
 
 		for (DokumentInfo dokumentInfo : ferdigstiltJournalpost.findAllDokumentInfos()) {
 			assertThat(dokumentInfo.getEndretAvNavn(), is(SPORING_FORNAVN + " " + SPORING_ETTERNAVN));
-			assertThat(dokumentInfo.getKategori(), is(DokumentKategoriCode.IS));
-			assertThat(dokumentInfo.getEndretKildeNavn(), is("testComponentId"));
-		}
-	}
-
-	@Test
-	public void shouldFerdigstillDokumentopplastingForJoarkPensjonsDokumenter() throws Exception {
-		journalpost = buildAndPersistJournalpost(FagomradeCode.PEN);
-		request.setJournalpostId(journalpost.getJournalpostId().toString());
-
-		behandleJournalProvider.ferdigstillDokumentopplasting(request);
-
-		Journalpost ferdigstiltJournalpost = joarkRepository.findById(journalpost.getJournalpostId()).get();
-		assertThat(ferdigstiltJournalpost.getJournalstatus(), is(JournalStatusCode.M));
-
-		assertThat(ferdigstiltJournalpost.getEndretAvNavn(), is(SPORING_FORNAVN + " " + SPORING_ETTERNAVN));
-		assertThat(ferdigstiltJournalpost.getEndretKildeNavn(), is("testComponentId"));
-
-		assertThat(ferdigstiltJournalpost.getSaksrelasjon().getEndretAvNavn(), is(SPORING_FORNAVN + " " + SPORING_ETTERNAVN));
-		assertThat(ferdigstiltJournalpost.getSaksrelasjon().getEndretKildeNavn(), is("testComponentId"));
-
-		for (DokumentInfo dokumentInfo : ferdigstiltJournalpost.findAllDokumentInfos()) {
-			assertThat(dokumentInfo.getEndretAvNavn(), is(SPORING_FORNAVN + " " + SPORING_ETTERNAVN));
-			assertThat(dokumentInfo.getKategori(), is(DokumentKategoriCode.ES));
 			assertThat(dokumentInfo.getEndretKildeNavn(), is("testComponentId"));
 		}
 	}
@@ -159,10 +157,6 @@ public class FerdigstillDokumentopplastingIT extends AbstractBehandleJournalV2It
 								.dokumentType(BidragMellomlagringDokumentType.HOVEDDOKUMENT)
 								.dokument("Testfil".getBytes()).build()).build();
 		return bidragMellomlagringRepository.save(build);
-	}
-
-	private Journalpost buildAndPersistJournalpost() {
-		return buildAndPersistJournalpost(FagomradeCode.PEN);
 	}
 
 	private Journalpost buildAndPersistJournalpost(FagomradeCode fagomradeCode) {

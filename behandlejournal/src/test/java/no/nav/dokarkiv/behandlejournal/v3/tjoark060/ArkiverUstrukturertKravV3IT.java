@@ -2,13 +2,17 @@ package no.nav.dokarkiv.behandlejournal.v3.tjoark060;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import no.nav.dokarkiv.behandlejournal.v3.AbstractBehandleJournalV3Itest;
 import no.nav.dokarkiv.behandlejournal.v3.KodeverdiHelper;
+import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentFil;
+import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.bidrag.BidragMellomlagring;
 import no.nav.dokarkiv.core.domain.entities.bidrag.BidragMellomlagringDokument;
 import no.nav.dokarkiv.core.domain.entities.bidrag.BidragMellomlagringDokumentType;
@@ -73,8 +77,12 @@ public class ArkiverUstrukturertKravV3IT extends AbstractBehandleJournalV3Itest 
 		arkiverUstrukturertKravRequest.setApplikasjonsID("applikasjonsId");
 	}
 
-	public void setUpJoark() throws Exception {
-		arkiverUstrukturertKravRequest.setJournalpost(createJournalpost(TEMAVALUE_PEN));
+	private void setUpJoark() throws Exception {
+		setUpJoark(TEMAVALUE_PEN);
+	}
+
+	private void setUpJoark(String temaValue) throws Exception {
+		arkiverUstrukturertKravRequest.setJournalpost(createJournalpost(temaValue));
 		arkiverUstrukturertKravResponse = behandleJournalV3Provider
 				.arkiverUstrukturertKrav(arkiverUstrukturertKravRequest);
 
@@ -141,6 +149,20 @@ public class ArkiverUstrukturertKravV3IT extends AbstractBehandleJournalV3Itest 
 		setUpJoark();
 
 		assertDokumentSaved(persistedJournalpost);
+	}
+
+	@Test
+	public void shouldVerifyThatPensjonAndBidragGetDifferentDokumentStatus() throws Exception {
+		setUpJoark("PEN");
+
+		DokumentInfo dokument = persistedJournalpost.findAllFilDetaljer().get(0).getDokumentInfo();
+		assertNotNull(dokument);
+		assertEquals(DokumentKategoriCode.IS, dokument.getKategori());
+
+		setUpJoark("FOR");
+		dokument = persistedJournalpost.findAllFilDetaljer().get(0).getDokumentInfo();
+		assertNotNull(dokument);
+		assertNull(dokument.getKategori());
 	}
 
 	@Test

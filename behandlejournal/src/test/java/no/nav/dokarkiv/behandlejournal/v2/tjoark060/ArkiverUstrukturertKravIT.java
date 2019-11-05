@@ -2,13 +2,17 @@ package no.nav.dokarkiv.behandlejournal.v2.tjoark060;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import no.nav.dokarkiv.behandlejournal.v2.AbstractBehandleJournalV2Itest;
 import no.nav.dokarkiv.behandlejournal.v2.KodeverdiHelper;
+import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentFil;
+import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.bidrag.BidragMellomlagring;
 import no.nav.dokarkiv.core.domain.entities.bidrag.BidragMellomlagringDokument;
 import no.nav.dokarkiv.core.domain.entities.bidrag.BidragMellomlagringDokumentType;
@@ -73,8 +77,12 @@ public class ArkiverUstrukturertKravIT extends AbstractBehandleJournalV2Itest {
 		arkiverUstrukturertKravRequest.setApplikasjonsID("applikasjonsId");
 	}
 
-	public void setUpJoark() {
-		arkiverUstrukturertKravRequest.setJournalpost(createJournalpost(TEMAVALUE_PEN));
+	private void setUpJoark() {
+		setUpJoark(TEMAVALUE_PEN);
+	}
+
+	private void setUpJoark(String temaValue) {
+		arkiverUstrukturertKravRequest.setJournalpost(createJournalpost(temaValue));
 		arkiverUstrukturertKravResponse = behandleJournalProvider
 				.arkiverUstrukturertKrav(arkiverUstrukturertKravRequest);
 
@@ -142,6 +150,21 @@ public class ArkiverUstrukturertKravIT extends AbstractBehandleJournalV2Itest {
 
 		assertDokumentSaved(persistedJournalpost);
 	}
+
+	@Test
+	public void shouldVerifyThatPensjonAndBidragGetDifferentDokumentStatus() {
+		setUpJoark("PEN");
+
+		DokumentInfo dokument = persistedJournalpost.findAllFilDetaljer().get(0).getDokumentInfo();
+		assertNotNull(dokument);
+		assertEquals(DokumentKategoriCode.IS, dokument.getKategori());
+
+		setUpJoark("FOR");
+		dokument = persistedJournalpost.findAllFilDetaljer().get(0).getDokumentInfo();
+		assertNotNull(dokument);
+		assertNull(dokument.getKategori());
+	}
+
 
 	@Test
 	public void shouldReturnJournalpostIdAndDokumentId() {
