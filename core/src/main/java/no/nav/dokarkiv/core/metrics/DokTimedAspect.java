@@ -198,7 +198,7 @@ public class DokTimedAspect {
 	private String getConsumerName() {
 		String consumerId = MDC.get(MDCConstants.MDC_CONSUMER_ID);
 		if (consumerId == null)
-			return "";
+			return "ukjent";
 		return consumerId;
 	}
 
