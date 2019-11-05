@@ -9,6 +9,7 @@ import static no.nav.dokarkiv.arkiverdokumentmottak.utils.ArkiverDokumentmottakV
 import static no.nav.dokarkiv.arkiverdokumentmottak.utils.ArkiverDokumentmottakV2RequestDataUtil.assertTilleggsopplysninger;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
@@ -62,7 +63,8 @@ public class JournalforInngaaendeForsendelseV2RequestMapperTest {
 		assertThat(domainResult.getFagomrade().name(), is(journalpostRequest.getTema()));
 		assertThat(domainResult.getBehandlingstema().name(), is(journalpostRequest.getBehandlingstema()));
 		assertThat(domainResult.getOpprettetAvNavn(), is(journalpostRequest.getOpprettetAvNavn()));
-		assertThat(domainResult.getJournalfortAvNavn(), is(journalpostRequest.getOpprettetAvNavn()));
+		assertThat(domainResult.getJournalfortAvNavn(), nullValue());
+		assertThat(domainResult.getJournalDato(), nullValue());
 		assertThat(domainResult.getJournalForendeEnhetId(), is(journalpostRequest.getJournalforendeEnhet()));
 		assertThat(domainResult.getInnhold(), is(journalpostRequest.getInnhold()));
 		assertThat(toXMLGregorianCalendar(domainResult.getDokumentDato()), is(journalpostRequest.getDatoDokument()));

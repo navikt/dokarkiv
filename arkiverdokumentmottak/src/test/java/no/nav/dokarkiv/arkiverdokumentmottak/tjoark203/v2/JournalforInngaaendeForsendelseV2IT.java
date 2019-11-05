@@ -663,6 +663,25 @@ public class JournalforInngaaendeForsendelseV2IT extends AbstractArkiverDokument
 		assertJournalStatus(persistedJournalpost, JournalStatusCode.M);
 	}
 
+	/**
+	 * journalfortAvNavn
+	 * HVIS journalStatus = "J"
+	 * Sett journalfoertAvNavn = input.opprettetAvNavn
+	 * ELLERS ikke sett
+	 */
+	@Test
+	public void shouldNotSetJournalfoertAvNavnWhenMidlertidigJournalfoering() throws Exception {
+		request.setForsokEndeligJF(false);
+		JournalforInngaaendeForsendelseResponse response = arkiverDokumentmottakV2Provider.journalforInngaaendeForsendelse(request);
+		List<no.nav.dokarkiv.core.domain.entities.Journalpost> allJournalposts = getAllJournalposts();
+		assertThat(allJournalposts, hasSize(1));
+
+		no.nav.dokarkiv.core.domain.entities.Journalpost persistedJournalpost = allJournalposts.get(0);
+
+		assertResponse(persistedJournalpost, response, JOURNALTILSTAND_MIDLERTIDIG);
+		assertJournalStatus(persistedJournalpost, JournalStatusCode.M);
+		assertThat(persistedJournalpost.getJournalfortAvNavn(), nullValue());
+	}
 
 	@Test
 	public void shouldThrowExceptionOnInvalidMottakskanal() throws Exception {
