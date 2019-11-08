@@ -105,7 +105,7 @@ public class FerdigstillDokumentopplastingV3IT extends AbstractBehandleJournalV3
 
 	@Test
 	public void shouldFerdigstillDokumentopplastingForJoarkdokumenter() throws Exception {
-		journalpost = buildAndPersistJournalpost(FagomradeCode.BID);
+		journalpost = buildAndPersistJournalpost(FagomradeCode.FOR);
 		request.setJournalpostId(journalpost.getJournalpostId().toString());
 
 		behandleJournalV3Provider.ferdigstillDokumentopplasting(request);

@@ -53,6 +53,7 @@ public class ArkiverUstrukturertKravIT extends AbstractBehandleJournalV2Itest {
 	private static final String KANAL_ALTINN = "ALTINN";
 	private static final boolean SIGNERT_TRUE = true;
 	private static final String TEMAVALUE_PEN = "PEN";
+	private static final String TEMAVALUE_FOR = "FOR";
 	private static final String TEMAVALUE_BID = "BID";
 	private static final byte[] DOKUMENT = "dette er et dokument".getBytes();
 	private static final String NAVN = "navn";
@@ -78,7 +79,7 @@ public class ArkiverUstrukturertKravIT extends AbstractBehandleJournalV2Itest {
 	}
 
 	private void setUpJoark() {
-		setUpJoark(TEMAVALUE_PEN);
+		setUpJoark(TEMAVALUE_FOR);
 	}
 
 	private void setUpJoark(String temaValue) {
@@ -152,7 +153,7 @@ public class ArkiverUstrukturertKravIT extends AbstractBehandleJournalV2Itest {
 	}
 
 	@Test
-	public void shouldVerifyThatPensjonAndBidragGetDifferentDokumentStatus() {
+	public void shouldVerifyThatPensjonAndBidragGetDifferentDokumentKategori() {
 		setUpJoark("PEN");
 
 		DokumentInfo dokument = persistedJournalpost.findAllFilDetaljer().get(0).getDokumentInfo();
@@ -203,7 +204,7 @@ public class ArkiverUstrukturertKravIT extends AbstractBehandleJournalV2Itest {
 		assertThat(journalpost.getBrukere().iterator().next().getBrukerId(), is(FNR_BRUKER));
 		assertThat(journalpost.getMottakskanal().name(), is(KANAL_ALTINN));
 		assertThat(journalpost.getSignatur(), is(SIGNERT_TRUE));
-		assertThat(journalpost.getFagomrade().name(), is(TEMAVALUE_PEN));
+		assertThat(journalpost.getFagomrade().name(), is(TEMAVALUE_FOR));
 	}
 
 	private void assertBidragMellomlagringProperties(BidragMellomlagring bidragMellomlagring) {
