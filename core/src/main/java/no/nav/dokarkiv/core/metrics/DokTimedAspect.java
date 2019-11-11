@@ -84,6 +84,7 @@ public class DokTimedAspect {
 			Counter.builder(timed.value() + "_exception")
 					.tags("error_type", isFunctionalException(method, e) ? "functional" : "technical")
 					.tags("exception_name", e.getClass().getSimpleName())
+					.tags("consumer_name", getConsumerName())
 					.tags(timed.extraTags())
 					.tags(tagsBasedOnJoinpoint.apply(pjp))
 					.register(registry)
@@ -92,6 +93,7 @@ public class DokTimedAspect {
 		} finally {
 			sample.stop(Timer.builder(timed.value())
 					.description(timed.description().isEmpty() ? null : timed.description())
+					.tags("consumer_name", getConsumerName())
 					.tags(timed.extraTags())
 					.tags(tagsBasedOnJoinpoint.apply(pjp))
 					.publishPercentileHistogram(timed.histogram())
@@ -119,6 +121,7 @@ public class DokTimedAspect {
 			Counter.builder(restMetrics.value() + "_exception")
 					.tags("error_type", isFunctionalException(method, e) ? "functional" : "technical")
 					.tags("exception_name", e.getClass().getSimpleName())
+					.tags("consumer_name", getConsumerName())
 					.tags(restMetrics.extraTags())
 					.tags(tagsBasedOnJoinpoint.apply(pjp))
 					.register(registry)
@@ -129,6 +132,7 @@ public class DokTimedAspect {
 		} finally {
 			sample.stop(Timer.builder(restMetrics.value())
 					.description(restMetrics.description().isEmpty() ? null : restMetrics.description())
+					.tags("consumer_name", getConsumerName())
 					.tags(restMetrics.extraTags())
 					.tags(tagsBasedOnJoinpoint.apply(pjp))
 					.publishPercentileHistogram(restMetrics.histogram())
@@ -171,6 +175,7 @@ public class DokTimedAspect {
 			Counter.builder(sakMetrics.value() + "_exception")
 					.tags("error_type", isFunctionalException(method, e) ? "functional" : "technical")
 					.tags("exception_name", e.getClass().getSimpleName())
+					.tags("consumer_name", getConsumerName())
 					.tags(sakMetrics.extraTags())
 					.tags(tagsBasedOnJoinpoint.apply(pjp))
 					.register(registry)
@@ -181,6 +186,7 @@ public class DokTimedAspect {
 		} finally {
 			sample.stop(Timer.builder(sakMetrics.value())
 					.description(sakMetrics.description().isEmpty() ? null : sakMetrics.description())
+					.tags("consumer_name", getConsumerName())
 					.tags(sakMetrics.extraTags())
 					.tags(tagsBasedOnJoinpoint.apply(pjp))
 					.publishPercentileHistogram(sakMetrics.histogram())
@@ -189,6 +195,12 @@ public class DokTimedAspect {
 		}
 	}
 
+	private String getConsumerName() {
+		String consumerId = MDC.get(MDCConstants.MDC_CONSUMER_ID);
+		if (consumerId == null)
+			return "ukjent";
+		return consumerId;
+	}
 
 	private boolean isFunctionalException(Method method, Exception e) {
 		return asList(method.getExceptionTypes()).contains(e.getClass()) || MetricUtils.isFunctionalException(e);
