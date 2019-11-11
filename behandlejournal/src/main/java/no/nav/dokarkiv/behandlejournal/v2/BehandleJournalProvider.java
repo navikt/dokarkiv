@@ -106,7 +106,7 @@ public class BehandleJournalProvider implements BehandleJournalV2 {
 		try {
 			behandleJournalServiceBi.ferdigstillDokumentopplasting(ferdigstillDokumentopplastingRequestMapper
 					.map(request));
-			log.info("tjoark063 ferdigstilte dokumentopplasting {}={}",
+			log.info("tjoark062 ferdigstilte dokumentopplasting {}={}",
 					journalpostOrBidragClassifier(request.getJournalpostId()), request.getJournalpostId());
 		} catch (NoJournalpostFoundException e) {
 			throw new FerdigstillDokumentopplastingFerdigstillDokumentopplastingjournalpostIkkeFunnet(e.getMessage(),
