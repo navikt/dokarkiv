@@ -82,8 +82,30 @@ public class FerdigstillDokumentopplastingIT extends AbstractBehandleJournalV2It
 	}
 
 	@Test
+	public void shouldFerdigstillDokumentopplastingForJoarkPensjonsdokumenter() throws Exception {
+		journalpost = buildAndPersistJournalpost(FagomradeCode.PEN);
+		request.setJournalpostId(journalpost.getJournalpostId().toString());
+
+		behandleJournalProvider.ferdigstillDokumentopplasting(request);
+
+		Journalpost ferdigstiltJournalpost = joarkRepository.findById(journalpost.getJournalpostId()).get();
+		assertThat(ferdigstiltJournalpost.getJournalstatus(), is(JournalStatusCode.M));
+
+		assertThat(ferdigstiltJournalpost.getEndretAvNavn(), is(SPORING_FORNAVN + " " + SPORING_ETTERNAVN));
+		assertThat(ferdigstiltJournalpost.getEndretKildeNavn(), is("testComponentId"));
+
+		assertThat(ferdigstiltJournalpost.getSaksrelasjon().getEndretAvNavn(), is(SPORING_FORNAVN + " " + SPORING_ETTERNAVN));
+		assertThat(ferdigstiltJournalpost.getSaksrelasjon().getEndretKildeNavn(), is("testComponentId"));
+
+		for (DokumentInfo dokumentInfo : ferdigstiltJournalpost.findAllDokumentInfos()) {
+			assertThat(dokumentInfo.getEndretAvNavn(), is(SPORING_FORNAVN + " " + SPORING_ETTERNAVN));
+			assertThat(dokumentInfo.getEndretKildeNavn(), is("testComponentId"));
+		}
+	}
+
+	@Test
 	public void shouldFerdigstillDokumentopplastingForJoarkdokumenter() throws Exception {
-		journalpost = buildAndPersistJournalpost();
+		journalpost = buildAndPersistJournalpost(FagomradeCode.FOR);
 		request.setJournalpostId(journalpost.getJournalpostId().toString());
 
 		behandleJournalProvider.ferdigstillDokumentopplasting(request);
@@ -137,14 +159,14 @@ public class FerdigstillDokumentopplastingIT extends AbstractBehandleJournalV2It
 		return bidragMellomlagringRepository.save(build);
 	}
 
-	private Journalpost buildAndPersistJournalpost() {
+	private Journalpost buildAndPersistJournalpost(FagomradeCode fagomradeCode) {
 		Journalpost build = getJournalpostBuilder()
 				.avsenderMottakerId("***gammelt_fnr***")
 				.journalStatus(JournalStatusCode.OD)
 				.journalpostType(JournalpostTypeCode.I)
 				.opprettetAvNavn("opprettetAvNavn")
 				.opprettetKildeNavn("opprettetKildeNavn")
-				.fagomrade(FagomradeCode.PEN)
+				.fagomrade(fagomradeCode)
 				.innhold("innhold")
 				.avsenderMottaker("avsenderMottaker")
 				.journalForendeEnhetId("PEN")

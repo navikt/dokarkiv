@@ -2,13 +2,17 @@ package no.nav.dokarkiv.behandlejournal.v3.tjoark060;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import no.nav.dokarkiv.behandlejournal.v3.AbstractBehandleJournalV3Itest;
 import no.nav.dokarkiv.behandlejournal.v3.KodeverdiHelper;
+import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentFil;
+import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.bidrag.BidragMellomlagring;
 import no.nav.dokarkiv.core.domain.entities.bidrag.BidragMellomlagringDokument;
 import no.nav.dokarkiv.core.domain.entities.bidrag.BidragMellomlagringDokumentType;
@@ -49,6 +53,7 @@ public class ArkiverUstrukturertKravV3IT extends AbstractBehandleJournalV3Itest 
 	private static final String KANAL_ALTINN = "ALTINN";
 	private static final boolean SIGNERT_TRUE = true;
 	private static final String TEMAVALUE_PEN = "PEN";
+	private static final String TEMAVALUE_FOR = "FOR";
 	private static final String TEMAVALUE_BID = "BID";
 	private static final byte[] DOKUMENT = "dette er et dokument".getBytes();
 	private static final String NAVN = "navn";
@@ -73,8 +78,12 @@ public class ArkiverUstrukturertKravV3IT extends AbstractBehandleJournalV3Itest 
 		arkiverUstrukturertKravRequest.setApplikasjonsID("applikasjonsId");
 	}
 
-	public void setUpJoark() throws Exception {
-		arkiverUstrukturertKravRequest.setJournalpost(createJournalpost(TEMAVALUE_PEN));
+	private void setUpJoark() throws Exception {
+		setUpJoark(TEMAVALUE_FOR);
+	}
+
+	private void setUpJoark(String temaValue) throws Exception {
+		arkiverUstrukturertKravRequest.setJournalpost(createJournalpost(temaValue));
 		arkiverUstrukturertKravResponse = behandleJournalV3Provider
 				.arkiverUstrukturertKrav(arkiverUstrukturertKravRequest);
 
@@ -144,6 +153,20 @@ public class ArkiverUstrukturertKravV3IT extends AbstractBehandleJournalV3Itest 
 	}
 
 	@Test
+	public void shouldVerifyThatPensjonAndForeldrepengerGetDifferentDokumentKategori() throws Exception {
+		setUpJoark("PEN");
+
+		DokumentInfo dokument = persistedJournalpost.findAllFilDetaljer().get(0).getDokumentInfo();
+		assertNotNull(dokument);
+		assertEquals(DokumentKategoriCode.IS, dokument.getKategori());
+
+		setUpJoark("FOR");
+		dokument = persistedJournalpost.findAllFilDetaljer().get(0).getDokumentInfo();
+		assertNotNull(dokument);
+		assertNull(dokument.getKategori());
+	}
+
+	@Test
 	public void shouldReturnJournalpostIdAndDokumentId() throws Exception {
 		setUpJoark();
 
@@ -180,7 +203,7 @@ public class ArkiverUstrukturertKravV3IT extends AbstractBehandleJournalV3Itest 
 		assertThat(journalpost.getBrukere().iterator().next().getBrukerId(), is(FNR_BRUKER));
 		assertThat(journalpost.getMottakskanal().name(), is(KANAL_ALTINN));
 		assertThat(journalpost.getSignatur(), is(SIGNERT_TRUE));
-		assertThat(journalpost.getFagomrade().name(), is(TEMAVALUE_PEN));
+		assertThat(journalpost.getFagomrade().name(), is(TEMAVALUE_FOR));
 	}
 
 	private void assertBidragMellomlagringProperties(BidragMellomlagring bidragMellomlagring) {

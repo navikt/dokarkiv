@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.behandlejournal.v3.tjoark060;
 
+import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
@@ -115,6 +116,9 @@ public class DefaultArkiverUstrukturertKravV3 implements ArkiverUstrukturertKrav
 		relasjon.setTilknyttetAvNavn(journalpost.getOpprettetAvNavn());
 
 		DokumentInfo dokumentInfo = relasjon.getDokumentInfo();
+		if(FagomradeCode.PEN.equals(journalpost.getFagomrade())) {
+			dokumentInfo.setKategori(DokumentKategoriCode.IS);
+		}
 		dokumentInfo.setDokumentstatus(DokumentStatusCode.FERDIGSTILT);
 		dokumentInfo.setOriginalJournalpost(journalpost);
 	}
