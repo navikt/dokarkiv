@@ -2,6 +2,7 @@ package no.nav.dokarkiv.hentjournalsakinfo.rjoark900;
 
 import static no.nav.dokarkiv.hentjournalsakinfo.common.SqlProjections.RELEVANTE_DATA;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.text.IsEqualIgnoringWhiteSpace.equalToIgnoringWhiteSpace;
 import static org.junit.Assert.assertThat;
 
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
@@ -35,18 +36,6 @@ public class FinnJournalpostSqlGeneratorTest {
 	}
 
 	@Test
-	public void shouldGenerateOrderingWhenSliceFoerste() {
-		String sql = FinnJournalpostSqlGenerator.paginateSql(JournalpostFilter.Slice.FOERSTE);
-		assertThat(sql, is("p.journalpost_id < :journalpostIdPeker ORDER BY p.journalpost_id DESC"));
-	}
-
-	@Test
-	public void shouldGenerateOrderingWhenSliceSiste() {
-		String sql = FinnJournalpostSqlGenerator.paginateSql(JournalpostFilter.Slice.SISTE);
-		assertThat(sql, is("p.journalpost_id > :journalpostIdPeker ORDER BY p.journalpost_id ASC"));
-	}
-
-	@Test
 	public void shouldGenerateFinnJournalposterSql() {
 		FinnJournalposterRequestTo finnJournalposterRequestTo = new FinnJournalposterRequestTo();
 		finnJournalposterRequestTo.setFraDato("0000-01-01");
@@ -58,7 +47,7 @@ public class FinnJournalpostSqlGeneratorTest {
 		finnJournalposterRequestTo.setAlleIdenter(Collections.singletonList("***gammelt_fnr***"));
 		JournalpostFilter journalpostFilter = new JournalpostFilter(finnJournalposterRequestTo);
 		String sql = FinnJournalpostSqlGenerator.finnJournalposterSql(journalpostFilter, Arrays.asList("gsaker", "psaker"), "");
-		assertThat(sql, is(
+		assertThat(sql, equalToIgnoringWhiteSpace(
 				"WITH psaksaker AS\n" +
 						"       (SELECT s.journalpost_id\n" +
 						"        FROM t_saksrelasjon s\n" +
@@ -105,7 +94,7 @@ public class FinnJournalpostSqlGeneratorTest {
 						"                              LEFT JOIN t_saksrelasjon ts ON j.journalpost_id = ts.journalpost_id\n" +
 						"\n" +
 						"                       WHERE j.k_journalpost_t IN (:inkluderJournalpostType)\n" +
-						"                         AND j.dato_opprettet > :fraDato\n" +
+						"                         AND j.dato_opprettet >= :fraDato\n" +
 						"                         AND (\n" +
 						"                           (ts.feilregistrert = 1 AND\n" +
 						"                            j.k_journal_s IN (:allJournalStatus))\n" +
@@ -115,7 +104,8 @@ public class FinnJournalpostSqlGeneratorTest {
 						"                               j.k_journal_s IN (:inkluderJournalStatus))\n" +
 						"                         )\n" +
 						"                     ) p\n" +
-						"                WHERE p.journalpost_id < :journalpostIdPeker ORDER BY p.journalpost_id DESC              ) t\n" +
+						"                WHERE p.journalpost_id < :journalpostIdPeker ORDER BY p.journalpost_id DESC" +
+						"              ) t\n" +
 						"         WHERE rownum <= :antallRader\n" +
 						"       ) journalposter ON journalposter.journalpost_id = r.journalpostid\n" +
 						"ORDER BY journalpostid DESC, dokumenter_tilknyttetsom ASC, dokumenter_jprelasjonid ASC"
