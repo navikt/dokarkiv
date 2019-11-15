@@ -134,7 +134,8 @@ public class OpprettJournalpostApiRequestMapper {
 	}
 
 	private Map<String, String> mapTilleggsopplysninger(OpprettJournalpostRequest request) {
-		return request.getTilleggsopplysninger()
+		return request.getTilleggsopplysninger() == null ? null :
+			request.getTilleggsopplysninger()
 				.stream()
 				.collect(Collectors.toMap(Tilleggsopplysning::getNokkel, Tilleggsopplysning::getVerdi));
 	}
