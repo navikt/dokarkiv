@@ -74,7 +74,8 @@ final class FinnJournalpostSqlGenerator {
 				"                              LEFT JOIN t_saksrelasjon ts ON j.journalpost_id = ts.journalpost_id\n" +
 				"\n" +
 				"                       WHERE j.k_journalpost_t IN (:inkluderJournalpostType)\n" +
-				"                         AND j.dato_opprettet > :fraDato\n" +
+				"                         AND j.dato_opprettet >= :fraDato\n" +
+				generateTilDato(journalpostFilter) +
 				"                         AND (\n" +
 				"                           (ts.feilregistrert = 1 AND\n" +
 				"                            j.k_journal_s IN (:allJournalStatus))\n" +
@@ -84,27 +85,18 @@ final class FinnJournalpostSqlGenerator {
 				"                               j.k_journal_s IN (:inkluderJournalStatus))\n" +
 				"                         )\n" +
 				"                     ) p\n" +
-				"                WHERE " + paginateSql(journalpostFilter.getSlice()) +
+				"                WHERE p.journalpost_id < :journalpostIdPeker ORDER BY p.journalpost_id DESC" +
 				"              ) t\n" +
 				"         WHERE rownum <= :antallRader\n" +
 				"       ) journalposter ON journalposter.journalpost_id = r.journalpostid\n" +
 				"ORDER BY journalpostid DESC, dokumenter_tilknyttetsom ASC, dokumenter_jprelasjonid ASC";
 	}
 
-	static String paginateSql(JournalpostFilter.Slice slice) {
-		switch (slice) {
-			case FOERSTE:
-				return "p.journalpost_id < :journalpostIdPeker " +
-						"ORDER BY p.journalpost_id DESC";
-			case SISTE:
-				return "p.journalpost_id > :journalpostIdPeker " +
-						"ORDER BY p.journalpost_id ASC";
-			default:
-				return "";
-		}
-	}
-
 	static String generateCteUnionSql(List<String> cteAliases) {
 		return cteAliases.stream().map(cteAlias -> "SELECT journalpost_id FROM " + cteAlias).collect(Collectors.joining(" UNION "));
+	}
+
+	private static String generateTilDato(JournalpostFilter journalpostFilter) {
+		return journalpostFilter.getTilDato() == null ? "" : " AND j.dato_opprettet <= :tilDato\n";
 	}
 }
