@@ -102,11 +102,11 @@ public class DokTimedAspect {
 		}
 	}
 
-	@Around("execution (@no.nav.dokarkiv.core.metrics.SakMetrics * *.*(..))")
+	@Around("execution (@no.nav.dokarkiv.core.metrics.RestMetrics * *.*(..))")
 	public Object restMetrics(ProceedingJoinPoint pjp) throws Throwable {
 		Method method = ((MethodSignature) pjp.getSignature()).getMethod();
 
-		SakMetrics restMetrics = method.getAnnotation(SakMetrics.class);
+		RestMetrics restMetrics = method.getAnnotation(RestMetrics.class);
 		if (restMetrics.value().isEmpty()) {
 			return pjp.proceed();
 		}
