@@ -74,7 +74,7 @@ final class FinnJournalpostSqlGenerator {
 				"                              LEFT JOIN t_saksrelasjon ts ON j.journalpost_id = ts.journalpost_id\n" +
 				"\n" +
 				"                       WHERE j.k_journalpost_t IN (:inkluderJournalpostType)\n" +
-				"                         AND j.dato_opprettet >= :fraDato\n" +
+				"                         AND trunc(j.dato_opprettet) >= :fraDato\n" +
 				generateTilDato(journalpostFilter) +
 				"                         AND (\n" +
 				"                           (ts.feilregistrert = 1 AND\n" +
@@ -97,6 +97,6 @@ final class FinnJournalpostSqlGenerator {
 	}
 
 	private static String generateTilDato(JournalpostFilter journalpostFilter) {
-		return journalpostFilter.getTilDato() == null ? "" : " AND j.dato_opprettet <= :tilDato\n";
+		return journalpostFilter.getTilDato() == null ? "" : " AND trunc(j.dato_opprettet) <= :tilDato\n";
 	}
 }
