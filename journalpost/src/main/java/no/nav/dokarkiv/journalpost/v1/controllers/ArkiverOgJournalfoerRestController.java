@@ -1,5 +1,17 @@
 package no.nav.dokarkiv.journalpost.v1.controllers;
 
+import static no.nav.abac.xacml.NavAttributter.RESOURCE_ARKIV_JOURNALPOST;
+import static no.nav.abac.xacml.NavAttributter.RESOURCE_FELLES_DOMENE;
+import static no.nav.abac.xacml.NavAttributter.RESOURCE_FELLES_RESOURCE_TYPE;
+import static no.nav.abac.xacml.StandardAttributter.ACTION_ID;
+import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
+import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
+import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
+import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.ARKIV_V2;
+import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.CREATE_ACTION;
+import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.UPDATE_ACTION;
+import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateId;
+
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
@@ -52,19 +64,6 @@ import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
-import static no.nav.abac.xacml.NavAttributter.RESOURCE_ARKIV_DOKUMENT;
-import static no.nav.abac.xacml.NavAttributter.RESOURCE_ARKIV_JOURNALPOST;
-import static no.nav.abac.xacml.NavAttributter.RESOURCE_FELLES_DOMENE;
-import static no.nav.abac.xacml.NavAttributter.RESOURCE_FELLES_RESOURCE_TYPE;
-import static no.nav.abac.xacml.StandardAttributter.ACTION_ID;
-import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
-import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
-import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
-import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.ARKIV_V2;
-import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.CREATE_ACTION;
-import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.UPDATE_ACTION;
-import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateId;
 
 @Api(description = "Tjenester for å arkivere og journalføre i fagarkiv")
 @Slf4j
@@ -124,7 +123,7 @@ public class ArkiverOgJournalfoerRestController {
 	@Transactional
 	@SwaggerFerdigstillJournalpost
 	@PatchMapping("/{journalpostId}/ferdigstill")
-	@Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_DOKUMENT),
+	@Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_JOURNALPOST),
 			@Abac.Attr(key = RESOURCE_FELLES_DOMENE, value = ARKIV_V2)},
 			actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION))
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark201"}, percentiles = {0.5, 0.95})
@@ -146,7 +145,7 @@ public class ArkiverOgJournalfoerRestController {
 	@Transactional
 	@SwaggerOppdaterDistribusjonsinfo
 	@PatchMapping("/{journalpostId}/oppdaterDistribusjonsinfo")
-	@Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_DOKUMENT),
+	@Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_JOURNALPOST),
 			@Abac.Attr(key = RESOURCE_FELLES_DOMENE, value = ARKIV_V2)},
 			actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION))
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark201"}, percentiles = {0.5, 0.95})
@@ -193,7 +192,7 @@ public class ArkiverOgJournalfoerRestController {
 	@Transactional
 	@PostMapping
 	@SwaggerOpprettJournalpost
-	@Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_DOKUMENT),
+	@Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_JOURNALPOST),
 			@Abac.Attr(key = RESOURCE_FELLES_DOMENE, value = ARKIV_V2)},
 			actions = @Abac.Attr(key = ACTION_ID, value = CREATE_ACTION))
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark202"}, percentiles = {0.5, 0.95}, histogram = true)

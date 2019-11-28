@@ -1,6 +1,6 @@
 package no.nav.dokarkiv.journalpost.v1.controllers;
 
-import static no.nav.abac.xacml.NavAttributter.RESOURCE_ARKIV_DOKUMENT;
+import static no.nav.abac.xacml.NavAttributter.RESOURCE_ARKIV_JOURNALPOST;
 import static no.nav.abac.xacml.NavAttributter.RESOURCE_FELLES_DOMENE;
 import static no.nav.abac.xacml.NavAttributter.RESOURCE_FELLES_RESOURCE_TYPE;
 import static no.nav.abac.xacml.StandardAttributter.ACTION_ID;
@@ -70,7 +70,7 @@ public class FeilregistrerJournalpostRestController {
     @Transactional
     @SwaggerFeilregistrerSakstilknytning
     @PatchMapping("/{journalpostId}/feilregistrer/" + FEILREGISTRER_SAKSTILKNYTNING)
-    @Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_DOKUMENT),
+    @Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_JOURNALPOST),
                         @Abac.Attr(key = RESOURCE_FELLES_DOMENE, value = ARKIV_V2)},
             actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION))
     @RestMetrics(value = "dok_request", extraTags = {"process_code", "feilregistrer"}, percentiles = {0.5, 0.95})
@@ -85,7 +85,7 @@ public class FeilregistrerJournalpostRestController {
     @Transactional
     @SwaggerOpphevFeilregistrertSakstilknytning
     @PatchMapping("/{journalpostId}/feilregistrer/" + OPPHEV_FEILREGISTRERT_SAKSTILKNYTNING)
-    @Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_DOKUMENT),
+    @Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_JOURNALPOST),
                         @Abac.Attr(key = RESOURCE_FELLES_DOMENE, value = ARKIV_V2)},
             actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION))
     @RestMetrics(value = "dok_request", extraTags = {"process_code", "feilregistrer"}, percentiles = {0.5, 0.95})
@@ -100,7 +100,7 @@ public class FeilregistrerJournalpostRestController {
     @Transactional
     @SwaggerSettUkjentBruker
     @PatchMapping("/{journalpostId}/feilregistrer/" + SETT_UKJENT_BRUKER)
-    @Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_DOKUMENT),
+    @Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_JOURNALPOST),
                         @Abac.Attr(key = RESOURCE_FELLES_DOMENE, value = ARKIV_V2)},
             actions = @Abac.Attr(key = ACTION_ID, value = ADMIN_UPDATE_ACTION))
     @RestMetrics(value = "dok_request", extraTags = {"process_code", "feilregistrer"}, percentiles = {0.5, 0.95})
@@ -115,7 +115,7 @@ public class FeilregistrerJournalpostRestController {
     @Transactional
     @SwaggerAvbryt
     @PatchMapping("/{journalpostId}/feilregistrer/" + AVBRYT)
-    @Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_DOKUMENT),
+    @Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_JOURNALPOST),
                         @Abac.Attr(key = RESOURCE_FELLES_DOMENE, value = ARKIV_V2)},
             actions = @Abac.Attr(key = ACTION_ID, value = ADMIN_UPDATE_ACTION))
     @RestMetrics(value = "dok_request", extraTags = {"process_code", "feilregistrer"}, percentiles = {0.5, 0.95})
