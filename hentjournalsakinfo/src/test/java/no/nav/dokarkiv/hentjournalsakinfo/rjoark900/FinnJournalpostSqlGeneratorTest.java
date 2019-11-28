@@ -94,7 +94,7 @@ public class FinnJournalpostSqlGeneratorTest {
 						"                              LEFT JOIN t_saksrelasjon ts ON j.journalpost_id = ts.journalpost_id\n" +
 						"\n" +
 						"                       WHERE j.k_journalpost_t IN (:inkluderJournalpostType)\n" +
-						"                         AND j.dato_opprettet >= :fraDato\n" +
+						"                         AND trunc(j.dato_opprettet) >= :fraDato\n" +
 						"                         AND (\n" +
 						"                           (ts.feilregistrert = 1 AND\n" +
 						"                            j.k_journal_s IN (:allJournalStatus))\n" +
