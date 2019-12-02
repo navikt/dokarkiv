@@ -52,6 +52,10 @@ public class OppdaterJournalpostRequest {
     @JsonFormat(pattern="yyyy-MM-dd")
     private Date datoRetur;
 
+    @ApiModelProperty(value = "Dato forsendelsen ble mottatt fra avsender. Feltet kan kun settes for inngående journalposter.")
+    @JsonFormat(pattern="yyyy-MM-dd")
+    private Date datoMottatt;
+
     @ApiModelProperty(value = "Fagsystemene som arkiverer kan legge til egne fagspesifikke attributter per journalpost. Disse er representert som et skjemaløst nøkkel-verdi-sett og valideres ikke ved arkivering. Et eksempel på et slikt sett kan være nøkkel: bucid og verdi: 21521.")
     private List<Tilleggsopplysning> tilleggsopplysninger;
 

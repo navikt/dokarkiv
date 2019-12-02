@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -14,7 +15,9 @@ import no.nav.dokarkiv.journalpost.v1.api.Sak;
 import no.nav.dokarkiv.journalpost.v1.api.Tilleggsopplysning;
 
 import javax.validation.constraints.NotNull;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @ApiModel
@@ -76,6 +79,13 @@ public class OpprettJournalpostRequest {
 					"Eksempler på eksternReferanseId kan være sykmeldingsId for sykmeldinger, Altinn ArchiveReference for Altinn-skjema eller SEDid for SED."
 	)
 	private String eksternReferanseId;
+
+	@ApiModelProperty(
+			value = "Dato forsendelsen ble mottatt fra avsender. Dersom datoMottatt er tom, settes verdien til dagens dato.\n" +
+					" Feltet kan kun settes for inngående journalposter."
+	)
+	@JsonFormat(pattern="yyyy-MM-dd")
+	private LocalDate datoMottatt;
 
 	@Builder.Default
 	@ApiModelProperty

@@ -36,6 +36,7 @@ import no.nav.dokarkiv.journalpost.v1.api.TilknyttVedleggRequest;
 import no.nav.dokarkiv.journalpost.v1.api.Tilleggsopplysning;
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostRequest;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
@@ -68,7 +69,7 @@ public class TestUtils {
 	public static final String ARKIVSAKSNUMMER = "1234567890";
 	public static final String INNHOLD = "innhold";
 	public static final String KANALREFERANSE_ID = "kanalreferansId";
-	public static final String DATO_MOTTATT = "2017-02-03T11:37:30";
+	public static final LocalDate  DATO_MOTTATT = LocalDate.now().minusDays(3);
 	public static final String JOURNALFOERENDE_ENHET = "journalfoerendeEnhet";
 	public static final String DOKUMENTINFO_ID1 = "1234567";
 	public static final String DOKUMNETTYPE_ID1 = "dokumenttypeID1";
@@ -452,6 +453,7 @@ public class TestUtils {
 				.tittel(INNHOLD)
 				.kanal(KANAL_NAVNO)
 				.eksternReferanseId(KANALREFERANSE_ID)
+				.datoMottatt(DATO_MOTTATT)
 				.tilleggsopplysninger(Collections.singletonList(Tilleggsopplysning.builder()
 						.nokkel(TILLEGGSOPPLYSNING_NOKKEL)
 						.verdi(TILLEGGSOPPLYSNING_VERDI)

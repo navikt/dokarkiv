@@ -36,10 +36,12 @@ public class Sak {
                     "* IT01 (Infotrygd)\n" +
                     "* OEBS\n" +
                     "* PP01\n" +
+                    "* PP01\n" +
+                    "* K9\n" +
+                    "* BISYS\n" +
                     "Skal kun settes dersom sakstype = FAGSAK",
             example = "FS38"
     )
-
     private Fagsaksystem fagsaksystem;
 
     @ApiModelProperty(
