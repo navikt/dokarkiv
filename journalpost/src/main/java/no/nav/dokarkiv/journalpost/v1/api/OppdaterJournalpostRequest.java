@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -52,9 +53,12 @@ public class OppdaterJournalpostRequest {
     @JsonFormat(pattern="yyyy-MM-dd")
     private Date datoRetur;
 
-    @ApiModelProperty(value = "Dato forsendelsen ble mottatt fra avsender. Feltet kan kun settes for inngående journalposter.")
+    @ApiModelProperty(
+            value = "Dato forsendelsen ble mottatt fra avsender. Feltet kan kun settes for inngående journalposter.",
+            dataType = "LocalDate",
+            example = "2019-11-29")
     @JsonFormat(pattern="yyyy-MM-dd")
-    private Date datoMottatt;
+    private LocalDate datoMottatt;
 
     @ApiModelProperty(value = "Fagsystemene som arkiverer kan legge til egne fagspesifikke attributter per journalpost. Disse er representert som et skjemaløst nøkkel-verdi-sett og valideres ikke ved arkivering. Et eksempel på et slikt sett kan være nøkkel: bucid og verdi: 21521.")
     private List<Tilleggsopplysning> tilleggsopplysninger;
