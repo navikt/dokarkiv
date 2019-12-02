@@ -1,32 +1,5 @@
 package no.nav.dokarkiv.journalpost.v1.rjoark202.util;
 
-import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.AVSENDER_ID_PERSON;
-import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.BREVKODE1;
-import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.BREVKODE2;
-import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.BRUKER_ID_PERSON;
-import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.DOKUMENTKATEGORI_SED;
-import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.DOKUMENT_TITTEL1;
-import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.DOKUMENT_TITTEL2;
-import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FILTYPE_PDF;
-import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FYSISK_DOKUMENT;
-import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FYSISK_DOKUMENT_2;
-import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.INNHOLD;
-import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.KANALREFERANSE_ID;
-import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.SAK_ID;
-import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TILLEGGSOPPLYSNING_NOKKEL;
-import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TILLEGGSOPPLYSNING_VERDI;
-import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.VARIANTFORMAT_ARKIV;
-import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createAvsenderMottakerHelsepersonell;
-import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createAvsenderMottakerOrganisasjon;
-import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createAvsenderMottakerUtlandOrganisasjon;
-import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createBaseRequest;
-import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createRequest;
-import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createRequestAvsenderMottaker;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-
 import no.nav.dokarkiv.core.domain.codes.AvsenderMottakerIdTypeCode;
 import no.nav.dokarkiv.core.domain.codes.Behandlingstema;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
@@ -45,22 +18,66 @@ import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
+import no.nav.dokarkiv.core.exceptions.UgyldigInputException;
+import no.nav.dokarkiv.journalpost.v1.api.Bruker;
+import no.nav.dokarkiv.journalpost.v1.api.BrukerIdType;
 import no.nav.dokarkiv.journalpost.v1.api.Dokument;
 import no.nav.dokarkiv.journalpost.v1.api.DokumentVariant;
+import no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem;
 import no.nav.dokarkiv.journalpost.v1.api.JournalpostType;
+import no.nav.dokarkiv.journalpost.v1.api.Sak;
+import no.nav.dokarkiv.journalpost.v1.api.Sakstype;
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.mappers.OpprettJournalpostApiRequestMapper;
 import no.nav.dokarkiv.journalpost.v1.util.TestUtils;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.sql.Date;
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Collections;
 
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.AVSENDER_ID_PERSON;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.BREVKODE1;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.BREVKODE2;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.BRUKER_ID_PERSON;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.DATO_MOTTATT;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.DOKUMENTKATEGORI_SED;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.DOKUMENT_TITTEL1;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.DOKUMENT_TITTEL2;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FAGSAK_ID;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FILTYPE_PDF;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FYSISK_DOKUMENT;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FYSISK_DOKUMENT_2;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.INNHOLD;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.KANALREFERANSE_ID;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.SAK_ID;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_TIL;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TILLEGGSOPPLYSNING_NOKKEL;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TILLEGGSOPPLYSNING_VERDI;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.VARIANTFORMAT_ARKIV;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createAvsenderMottakerHelsepersonell;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createAvsenderMottakerOrganisasjon;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createAvsenderMottakerUtlandOrganisasjon;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createBaseRequest;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createMinimalRequest;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createRequest;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createRequestAvsenderMottaker;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
 @RunWith(MockitoJUnitRunner.class)
 public class OpprettJournalpostApiRequestMapperTest {
+
+	@Rule
+	public ExpectedException expectedException = ExpectedException.none();
 
 	@InjectMocks
 	private OpprettJournalpostApiRequestMapper mapper;
@@ -134,6 +151,99 @@ public class OpprettJournalpostApiRequestMapperTest {
 		JournalpostDokumentInfoRelasjon relasjon2 = jp.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG).iterator().next();
 		assertEquals(DokumentStatusCode.FERDIGSTILT, relasjon.getDokumentInfo().getDokumentstatus());
 		assertEquals(DokumentStatusCode.FERDIGSTILT, relasjon2.getDokumentInfo().getDokumentstatus());
+	}
+
+	@Test
+	public void shoulMapDatoMottat() {
+		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
+				.datoMottatt(DATO_MOTTATT)
+				.build();
+		Journalpost journalpost = mapper.map(request, null);
+		assertEquals(journalpost.getMottattDato(), Date.valueOf(DATO_MOTTATT));
+	}
+
+	@Test
+	public void shoulMapWithCurrentDateWhenDatoMottatIsNullAndJpTypeI() {
+		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
+				.datoMottatt(null)
+				.build();
+		Journalpost journalpost = mapper.map(request, null);
+		assertEquals(journalpost.getMottattDato(), Date.valueOf(LocalDate.now()));
+	}
+
+	@Test
+	public void shouldMapSaksrelasjonIfFagsaksystemIsValidValue() {
+		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
+				.datoMottatt(DATO_MOTTATT)
+				.tema(TEMA_TIL)
+				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(BRUKER_ID_PERSON).build())
+				.sak(Sak.builder()
+						.sakstype(Sakstype.FAGSAK)
+						.fagsakId(FAGSAK_ID)
+						.fagsaksystem(Fagsaksystem.AO01)
+						.build())
+				.build();
+
+		Journalpost journalpost = mapper.map(request, FAGSAK_ID);
+		assertEquals(journalpost.getSaksrelasjon().getFagsystem(), FagsystemCode.FS22);
+
+	}
+
+	@Test
+	public void shouldNotMapSaksrelasjonIfFagsaksystemIsAnInvalidValue() {
+		expectedException.expect(UgyldigInputException.class);
+		expectedException.expectMessage("Kan ikke mappe fagsystem basert på input");
+		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
+				.datoMottatt(DATO_MOTTATT)
+				.tema(TEMA_TIL)
+				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(BRUKER_ID_PERSON).build())
+				.sak(Sak.builder()
+						.sakstype(Sakstype.FAGSAK)
+						.fagsakId(FAGSAK_ID)
+						.fagsaksystem(null)
+						.build())
+				.build();
+
+		Journalpost journalpost = mapper.map(request, FAGSAK_ID);
+		assertEquals(journalpost.getSaksrelasjon().getFagsystem(), FagsystemCode.FS22);
+
+	}
+
+	@Test
+	public void shouldMapSaksrelasjonIfFagSakAndFagsaksystemIsPP01() {
+		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
+				.datoMottatt(DATO_MOTTATT)
+				.tema(TEMA_TIL)
+				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(BRUKER_ID_PERSON).build())
+				.sak(Sak.builder()
+						.sakstype(Sakstype.FAGSAK)
+						.fagsakId(FAGSAK_ID)
+						.fagsaksystem(Fagsaksystem.PP01)
+						.build())
+				.build();
+
+		Journalpost journalpost = mapper.map(request, FAGSAK_ID);
+		assertEquals(journalpost.getSaksrelasjon().getFagsystem(), FagsystemCode.PEN);
+
+	}
+
+	@Test
+	public void shouldMapSaksrelasjonIfGenerellSakAndFagsaksystemNull(){
+
+		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
+				.datoMottatt(DATO_MOTTATT)
+				.tema(TEMA_TIL)
+				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(BRUKER_ID_PERSON).build())
+				.sak(Sak.builder()
+						.sakstype(Sakstype.GENERELL_SAK)
+						.fagsakId(FAGSAK_ID)
+						.fagsaksystem(null)
+						.build())
+				.build();
+
+		Journalpost journalpost = mapper.map(request, FAGSAK_ID);
+		assertEquals(journalpost.getSaksrelasjon().getFagsystem(), FagsystemCode.FS22);
+
 	}
 
 	@Test
