@@ -57,12 +57,13 @@ public class JournalpostUpdater {
 		ChangeTracker tracker = new ChangeTracker();
         updateTittel(journalpost, oppdaterJournalpostRequest, tracker);
 		updateTema(journalpost, oppdaterJournalpostRequest, tracker);
-        updateAvsenderMottaker(journalpost, oppdaterJournalpostRequest, tracker);
-        updateBehandlingstema(journalpost, oppdaterJournalpostRequest, tracker);
-        updateTilleggsopplysninger(journalpost, oppdaterJournalpostRequest, tracker);
-        updateJournalfoerendeEnhet(journalpost, oppdaterJournalpostRequest, tracker);
-        updateReturInfo(journalpost, oppdaterJournalpostRequest, tracker);
-        updateBruker(journalpost, oppdaterJournalpostRequest, tracker);
+		updateAvsenderMottaker(journalpost, oppdaterJournalpostRequest, tracker);
+		updateBehandlingstema(journalpost, oppdaterJournalpostRequest, tracker);
+		updateTilleggsopplysninger(journalpost, oppdaterJournalpostRequest, tracker);
+		updateJournalfoerendeEnhet(journalpost, oppdaterJournalpostRequest, tracker);
+		updateReturInfo(journalpost, oppdaterJournalpostRequest, tracker);
+		updateBruker(journalpost, oppdaterJournalpostRequest, tracker);
+		updateDatoMottatt(journalpost, oppdaterJournalpostRequest, tracker);
 
 		if (tracker.isEndretFlagg()) {
 			journalpost.setEndretAvNavn(MDC.get(MDC_USER_ID));
@@ -103,7 +104,7 @@ public class JournalpostUpdater {
 		if (oppdaterJournalpostRequest.getDatoRetur() != null &&
 				!oppdaterJournalpostRequest.getDatoRetur().equals(journalpost.getAvsendtReturDato())) {
 			journalpost.setAvsendtReturDato(oppdaterJournalpostRequest.getDatoRetur());
-			journalpost.setAntallRetur(journalpost.getAntallRetur() == null ? 1 : (journalpost.getAntallRetur()+1));
+			journalpost.setAntallRetur(journalpost.getAntallRetur() == null ? 1 : (journalpost.getAntallRetur() + 1));
 			endret.setEndretFlagg(true);
 		}
 	}
