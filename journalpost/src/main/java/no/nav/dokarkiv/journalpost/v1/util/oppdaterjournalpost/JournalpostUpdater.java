@@ -1,13 +1,5 @@
 package no.nav.dokarkiv.journalpost.v1.util.oppdaterjournalpost;
 
-import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
-import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
-import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_BRUKER;
-import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_FAGOMRADE;
-import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_INNHOLD;
-import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_JOURNALSTATUS;
-import static org.apache.logging.log4j.util.Strings.isNotBlank;
-
 import no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerService;
 import no.nav.dokarkiv.core.consumer.aktoer.HentIdentForAktoerIdRequestTo;
 import no.nav.dokarkiv.core.consumer.aktoer.PersonIkkeFunnetException;
@@ -16,6 +8,7 @@ import no.nav.dokarkiv.core.domain.codes.Behandlingstema;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
+import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode;
 import no.nav.dokarkiv.core.domain.entities.Bruker;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
@@ -31,19 +24,27 @@ import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
+import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
+import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_BRUKER;
+import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_FAGOMRADE;
+import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_INNHOLD;
+import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_JOURNALSTATUS;
+import static org.apache.logging.log4j.util.Strings.isNotBlank;
+
 @Component
 public class JournalpostUpdater {
 
+	private static final String DELETE_MARKER = " ";
 	private final BrukerRepository brukerRepository;
 	private final AktoerConsumerService aktoerConsumerService;
-
-	private static final String DELETE_MARKER = " ";
 
 	@Inject
 	public JournalpostUpdater(BrukerRepository brukerRepository, AktoerConsumerService aktoerConsumerService) {
@@ -105,6 +106,19 @@ public class JournalpostUpdater {
 			journalpost.setAntallRetur(journalpost.getAntallRetur() == null ? 1 : (journalpost.getAntallRetur()+1));
 			endret.setEndretFlagg(true);
 		}
+	}
+
+	private void updateDatoMottatt(Journalpost journalpost, OppdaterJournalpostRequest oppdaterJournalpostRequest, ChangeTracker endret) {
+
+		if (JournalpostTypeCode.I.equals(journalpost.getJournalposttype())) {
+			if (oppdaterJournalpostRequest.getDatoMottatt() == null) {
+				journalpost.setMottattDato(java.sql.Date.valueOf(LocalDate.now()));
+			} else {
+				journalpost.setMottattDato(java.sql.Date.valueOf(oppdaterJournalpostRequest.getDatoMottatt()));
+			}
+			endret.setEndretFlagg(true);
+		}
+
 	}
 
 	private void updateTilleggsopplysninger(Journalpost journalpost, OppdaterJournalpostRequest oppdaterJournalpostRequest, ChangeTracker endret) {
