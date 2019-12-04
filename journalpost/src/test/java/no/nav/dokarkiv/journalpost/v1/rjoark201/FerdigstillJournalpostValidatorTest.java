@@ -206,18 +206,6 @@ public class FerdigstillJournalpostValidatorTest {
 	}
 
 	@Test
-	public void shouldThrowExceptionIfDokumentInfoIsMissingKategori() {
-		Journalpost journalpost = createJournalpost();
-		journalpost.setJournalstatus(JournalStatusCode.M);
-		journalpost.getJournalpostDokumentInfoRelasjoner().iterator().next().getDokumentInfo().setKategori(null);
-
-		expectedException.expect(KanIkkeFerdigstilleException.class);
-		expectedException.expectMessage("DokumentInfo.kategori");
-
-		validator.validatePaakrevdeFelter(journalpost);
-	}
-
-	@Test
 	public void shouldThrowExceptionIfDokumentInfoIsMissingTittel() {
 		Journalpost journalpost = createJournalpost();
 		journalpost.setJournalstatus(JournalStatusCode.M);
