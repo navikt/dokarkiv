@@ -146,7 +146,6 @@ public class FerdigstillJournalpostValidator {
 	}
 
 	private void verifyMandatoryFelterDokumentinfo(DokumentInfo dokumentInfo, List<String> manglendePaakrevdeFelter) {
-		verifyFieldNotNull(dokumentInfo, dokumentInfo.getKategori(), "kategori", manglendePaakrevdeFelter);
 		verifyStringNotBlank(dokumentInfo, dokumentInfo.getTittel(), "tittel", manglendePaakrevdeFelter);
 	}
 
