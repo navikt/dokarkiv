@@ -54,7 +54,7 @@ public class OppdaterJournalpostRequest {
 
     @ApiModelProperty(
             value = "Dato forsendelsen ble mottatt fra avsender. Feltet kan kun settes for inngående journalposter.",
-            dataType = "LocalDate",
+            dataType = "Date",
             example = "2019-11-29")
     @JsonFormat(pattern="yyyy-MM-dd")
     private Date datoMottatt;

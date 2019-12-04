@@ -17,6 +17,7 @@ import no.nav.dokarkiv.journalpost.v1.api.Tilleggsopplysning;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @ApiModel
@@ -82,11 +83,11 @@ public class OpprettJournalpostRequest {
 	@ApiModelProperty(
 			value = "Dato forsendelsen ble mottatt fra avsender. Dersom datoMottatt er tom, settes verdien til dagens dato.\n" +
 					" Feltet kan kun settes for inngående journalposter.",
-			dataType = "LocalDate",
+			dataType = "Date",
 			example = "2019-11-29"
 	)
 	@JsonFormat(pattern="yyyy-MM-dd")
-	private LocalDate datoMottatt;
+	private Date datoMottatt;
 
 	@Builder.Default
 	@ApiModelProperty

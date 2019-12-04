@@ -69,7 +69,7 @@ public class TestUtils {
 	public static final String ARKIVSAKSNUMMER = "1234567890";
 	public static final String INNHOLD = "innhold";
 	public static final String KANALREFERANSE_ID = "kanalreferansId";
-	public static final LocalDate  DATO_MOTTATT = LocalDate.now().minusDays(3);
+	public static final Date  DATO_MOTTATT = java.sql.Date.valueOf(LocalDate.now().minusDays(3));
 	public static final Date DATO_MOTTATT_1 = java.sql.Date.valueOf(LocalDate.now().minusDays(3));
 	public static final String JOURNALFOERENDE_ENHET = "journalfoerendeEnhet";
 	public static final String DOKUMENTINFO_ID1 = "1234567";

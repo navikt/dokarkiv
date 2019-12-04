@@ -159,7 +159,7 @@ public class OpprettJournalpostApiRequestMapperTest {
 				.datoMottatt(DATO_MOTTATT)
 				.build();
 		Journalpost journalpost = mapper.map(request, null);
-		assertEquals(journalpost.getMottattDato(), Date.valueOf(DATO_MOTTATT));
+		assertEquals(journalpost.getMottattDato(), DATO_MOTTATT);
 	}
 
 	@Test

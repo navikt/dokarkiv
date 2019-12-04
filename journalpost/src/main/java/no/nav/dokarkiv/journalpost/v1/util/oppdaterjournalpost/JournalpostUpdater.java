@@ -55,7 +55,7 @@ public class JournalpostUpdater {
 	public ChangeTracker updateFields(Journalpost journalpost, OppdaterJournalpostRequest oppdaterJournalpostRequest) {
 
 		ChangeTracker tracker = new ChangeTracker();
-        updateTittel(journalpost, oppdaterJournalpostRequest, tracker);
+		updateTittel(journalpost, oppdaterJournalpostRequest, tracker);
 		updateTema(journalpost, oppdaterJournalpostRequest, tracker);
 		updateAvsenderMottaker(journalpost, oppdaterJournalpostRequest, tracker);
 		updateBehandlingstema(journalpost, oppdaterJournalpostRequest, tracker);
@@ -75,16 +75,16 @@ public class JournalpostUpdater {
 	public ChangeTracker updateFields(Journalpost journalpost, OppdaterDistribusjonsinfoRequest request) {
 		ChangeTracker tracker = new ChangeTracker();
 
-		if(request.getUtsendingsKanal() != null) {
+		if (request.getUtsendingsKanal() != null) {
 			journalpost.setUtsendingskanal(UtsendingsKanalCode.valueOf(request.getUtsendingsKanal()));
 			tracker.setEndretFlagg(true);
 		}
-		if(request.getSettStatusEkspedert()) {
+		if (request.getSettStatusEkspedert()) {
 			journalpost.setJournalstatus(JournalStatusCode.E);
 			journalpost.setEkspedertDato(new Date());
 			tracker.setEndretFlagg(true);
 			tracker.add(JOURNALPOST_JOURNALSTATUS, journalpost.getJournalstatus().name(), JournalStatusCode.E.name());
-        }
+		}
 
 		if (tracker.isEndretFlagg()) {
 			journalpost.setEndretAvNavn(MDC.get(MDC_USER_ID));
@@ -115,9 +115,9 @@ public class JournalpostUpdater {
 			if (oppdaterJournalpostRequest.getDatoMottatt() == null) {
 				journalpost.setMottattDato(java.sql.Date.valueOf(LocalDate.now()));
 			} else {
-			journalpost.setMottattDato(oppdaterJournalpostRequest.getDatoMottatt());
-		}
-		endret.setEndretFlagg(true);
+				journalpost.setMottattDato(oppdaterJournalpostRequest.getDatoMottatt());
+			}
+			endret.setEndretFlagg(true);
 		}
 
 	}
@@ -141,16 +141,16 @@ public class JournalpostUpdater {
 		if (oppdaterJournalpostRequest.getAvsenderMottaker() != null) {
 			AvsenderMottaker ny = oppdaterJournalpostRequest.getAvsenderMottaker();
 			if (ny.getId() != null) {
-				if(ny.getIdType() != null &&
+				if (ny.getIdType() != null &&
 						oversettAvsenderMottakerIdType(ny.getIdType()) != journalpost.getAvsenderMottakerIdType()) {
 					journalpost.setAvsenderMottakerIdType(oversettAvsenderMottakerIdType(ny.getIdType()));
 					endret.setEndretFlagg(true);
 				}
-				if(!ny.getId().equalsIgnoreCase(journalpost.getAvsenderMottakerId())) {
+				if (!ny.getId().equalsIgnoreCase(journalpost.getAvsenderMottakerId())) {
 					journalpost.setAvsenderMottakerId(ny.getId());
 					endret.setEndretFlagg(true);
 				}
-				if(DELETE_MARKER.equalsIgnoreCase(ny.getId())) {
+				if (DELETE_MARKER.equalsIgnoreCase(ny.getId())) {
 					journalpost.setAvsenderMottakerId(null);
 					journalpost.setAvsenderMottakerIdType(null);
 					endret.setEndretFlagg(true);
@@ -171,11 +171,16 @@ public class JournalpostUpdater {
 
 	private AvsenderMottakerIdTypeCode oversettAvsenderMottakerIdType(AvsenderMottakerIdType idType) {
 		switch (idType) {
-			case FNR: return AvsenderMottakerIdTypeCode.FNR;
-			case HPRNR: return AvsenderMottakerIdTypeCode.HPRNR;
-			case ORGNR: return AvsenderMottakerIdTypeCode.ORGNR;
-			case UTL_ORG: return AvsenderMottakerIdTypeCode.UTL_ORG;
-			default: return null;
+			case FNR:
+				return AvsenderMottakerIdTypeCode.FNR;
+			case HPRNR:
+				return AvsenderMottakerIdTypeCode.HPRNR;
+			case ORGNR:
+				return AvsenderMottakerIdTypeCode.ORGNR;
+			case UTL_ORG:
+				return AvsenderMottakerIdTypeCode.UTL_ORG;
+			default:
+				return null;
 		}
 	}
 
@@ -194,7 +199,7 @@ public class JournalpostUpdater {
 	private void updateTittel(Journalpost journalpost, OppdaterJournalpostRequest oppdaterJournalpostRequest, ChangeTracker endret) {
 		if (isNotBlank(oppdaterJournalpostRequest.getTittel()) && !oppdaterJournalpostRequest.getTittel().equals(journalpost.getInnhold())) {
 			endret.add(JOURNALPOST_INNHOLD, journalpost.getInnhold(), oppdaterJournalpostRequest.getTittel());
-            journalpost.setInnhold(oppdaterJournalpostRequest.getTittel());
+			journalpost.setInnhold(oppdaterJournalpostRequest.getTittel());
 		}
 	}
 
@@ -207,7 +212,7 @@ public class JournalpostUpdater {
 			if (oppdaterJournalpostRequest.getBruker() != null) {
 				Bruker bruker = new Bruker();
 				assertNotNull(oppdaterJournalpostRequest.getBruker().getIdType(), "Bruker.idType");
-				checkIfBrukerTypeIsAktoerId(null, bruker, oppdaterJournalpostRequest, journalpost ,endret);
+				checkIfBrukerTypeIsAktoerId(null, bruker, oppdaterJournalpostRequest, journalpost, endret);
 
 			}
 		} else {
@@ -216,7 +221,7 @@ public class JournalpostUpdater {
 					String oldBrukerId = bruker.getBrukerId();
 					bruker.setBrukerId(oppdaterJournalpostRequest.getBruker().getId());
 					assertNotNull(oppdaterJournalpostRequest.getBruker().getIdType(), "Bruker.idType");
-					checkIfBrukerTypeIsAktoerId(oldBrukerId, bruker, oppdaterJournalpostRequest, journalpost ,endret);
+					checkIfBrukerTypeIsAktoerId(oldBrukerId, bruker, oppdaterJournalpostRequest, journalpost, endret);
 				});
 
 			}
@@ -229,30 +234,29 @@ public class JournalpostUpdater {
 		}
 	}
 
-	private void checkIfBrukerTypeIsAktoerId(String oldBrukerId, Bruker bruker, OppdaterJournalpostRequest oppdaterJournalpostRequest, Journalpost journalpost, ChangeTracker endret){
-		if(BrukerIdType.AKTOERID.equals(oppdaterJournalpostRequest.getBruker().getIdType())){
-			try{
+	private void checkIfBrukerTypeIsAktoerId(String oldBrukerId, Bruker bruker, OppdaterJournalpostRequest oppdaterJournalpostRequest, Journalpost journalpost, ChangeTracker endret) {
+		if (BrukerIdType.AKTOERID.equals(oppdaterJournalpostRequest.getBruker().getIdType())) {
+			try {
 				String fnr = aktoerConsumerService.hentIdentForAktoerId(new HentIdentForAktoerIdRequestTo(oppdaterJournalpostRequest.getBruker().getId())).getIdent();
 				bruker.setBrukerType(BrukerTypeCode.PERSON);
 				bruker.setBrukerId(fnr);
-				addBruker(oldBrukerId, bruker,journalpost,endret);
+				addBruker(oldBrukerId, bruker, journalpost, endret);
 
 
-
-			} catch (PersonIkkeFunnetException e ){
+			} catch (PersonIkkeFunnetException e) {
 				// Fortsett uten å oppdatere bruker
 			}
-		}else {
+		} else {
 			bruker.setBrukerId(oppdaterJournalpostRequest.getBruker().getId());
 			bruker.setBrukerType(BrukerIdType.ORGNR.equals(oppdaterJournalpostRequest.getBruker().getIdType()) ?
 					BrukerTypeCode.ORGANISASJON : BrukerTypeCode.PERSON);
-			addBruker(oldBrukerId, bruker,journalpost,endret);
+			addBruker(oldBrukerId, bruker, journalpost, endret);
 		}
 	}
 
-	private void addBruker(String oldBrukerId ,Bruker nyBruker, Journalpost journalpost, ChangeTracker endret){
+	private void addBruker(String oldBrukerId, Bruker nyBruker, Journalpost journalpost, ChangeTracker endret) {
 		nyBruker.setOpprettetKildeNavn(MDC.get(MDC_CONSUMER_ID));
-		endret.add(JOURNALPOST_BRUKER, oldBrukerId ,nyBruker.getBrukerId());
+		endret.add(JOURNALPOST_BRUKER, oldBrukerId, nyBruker.getBrukerId());
 		journalpost.addBruker(nyBruker);
 
 	}

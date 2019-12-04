@@ -74,7 +74,7 @@ public class OpprettJournalpostApiRequestMapper {
 				.mottakskanal(mapMottakskanal(request))
 				.utsendingskanal(mapUtsendingskanal(request))
 				.kanalReferanseId(request.getEksternReferanseId())
-				.mottattDato(mapMottattDato(request) == null ? null : Date.valueOf(mapMottattDato(request)))
+				.mottattDato(mapMottattDato(request) == null ? null : mapMottattDato(request))
 				.dokumentDato(Date.valueOf(LocalDate.now()))
 				.build();
 
@@ -154,9 +154,9 @@ public class OpprettJournalpostApiRequestMapper {
 		return null;
 	}
 
-	private LocalDate mapMottattDato(OpprettJournalpostRequest request) {
+	private java.util.Date mapMottattDato(OpprettJournalpostRequest request) {
 		if (JournalpostType.INNGAAENDE.equals(request.getJournalpostType())) {
-			return request.getDatoMottatt() == null ? LocalDate.now() : request.getDatoMottatt();
+			return request.getDatoMottatt() == null ? Date.valueOf(LocalDate.now()) : request.getDatoMottatt();
 		}
 		return null;
 	}
