@@ -74,7 +74,7 @@ public class OpprettJournalpostApiRequestMapper {
 				.mottakskanal(mapMottakskanal(request))
 				.utsendingskanal(mapUtsendingskanal(request))
 				.kanalReferanseId(request.getEksternReferanseId())
-				.mottattDato(mapMottattDato(request) == null ? null : mapMottattDato(request))
+				.mottattDato(mapMottattDato(request) == null ? null : Date.valueOf(mapMottattDato(request)))
 				.dokumentDato(Date.valueOf(LocalDate.now()))
 				.build();
 
@@ -154,15 +154,11 @@ public class OpprettJournalpostApiRequestMapper {
 		return null;
 	}
 
-	private Date mapMottattDato(OpprettJournalpostRequest request) {
+	private LocalDate mapMottattDato(OpprettJournalpostRequest request) {
 		if (JournalpostType.INNGAAENDE.equals(request.getJournalpostType())) {
-			return request.getDatoMottatt() == null ? Date.valueOf(LocalDate.now()) : Date.valueOf(request.getDatoMottatt());
-		} else if (JournalpostType.UTGAAENDE.equals(request.getJournalpostType()) ||
-				JournalpostType.NOTAT.equals(request.getJournalpostType())) {
-			return request.getDatoMottatt() == null ? null : Date.valueOf(request.getDatoMottatt());
-		} else {
-			throw new UgyldigInputException("Kan ikke mappe fagsystem basert på input");
+			return request.getDatoMottatt() == null ? LocalDate.now() : request.getDatoMottatt();
 		}
+		return null;
 	}
 
 	private Behandlingstema mapBehandlingstema(OpprettJournalpostRequest request) {

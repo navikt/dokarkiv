@@ -21,6 +21,7 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.AVSENDER_ID_PERSON;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.AVSENDER_MOTTAKER_UTLAND;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.AVSENDER_NAVN;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.DATO_MOTTATT;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.DATO_MOTTATT_1;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createPutOppdaterJournalpostAvsenderMottakerKunLandRequest;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createPutOppdaterJournalpostRequest;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createPutOppdaterJournalpostRequestWithDatoMottat;
@@ -120,7 +121,7 @@ public class JournalpostUpdaterTest {
 	}
 
 	@Test
-	public void shouldUpdateMottattDatoWithCurrentDateIfNull() throws UgyldigAksjonsLoggException {
+	public void shouldUpdateJPMottattDatoWithCurrentDateWhenJpErInngaaendeAndRequestMottattDatoNull() throws UgyldigAksjonsLoggException {
 
 		oppdaterJournalpostRequest = createPutOppdaterJournalpostRequestWithDatoMottat(null);
 		journalpost = TestUtils.createJournalpostForOppdatering();
@@ -133,14 +134,14 @@ public class JournalpostUpdaterTest {
 	}
 
 	@Test
-	public void shouldUpdateMottattDato() throws UgyldigAksjonsLoggException {
+	public void shouldUpdateMottattDatoWhenJpErInngaaende() throws UgyldigAksjonsLoggException {
 
-		oppdaterJournalpostRequest = createPutOppdaterJournalpostRequestWithDatoMottat(DATO_MOTTATT);
+		oppdaterJournalpostRequest = createPutOppdaterJournalpostRequestWithDatoMottat(DATO_MOTTATT_1);
 		journalpost = TestUtils.createJournalpostForOppdatering();
 
 		updater.updateFields(journalpost, oppdaterJournalpostRequest);
 
-		assertEquals(journalpost.getMottattDato(), java.sql.Date.valueOf(DATO_MOTTATT));
+		assertEquals(journalpost.getMottattDato(), DATO_MOTTATT_1);
 		assertEquals(journalpost.getJournalposttype(), JournalpostTypeCode.I);
 
 	}

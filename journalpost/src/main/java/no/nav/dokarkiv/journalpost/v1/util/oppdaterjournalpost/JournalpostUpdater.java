@@ -115,9 +115,9 @@ public class JournalpostUpdater {
 			if (oppdaterJournalpostRequest.getDatoMottatt() == null) {
 				journalpost.setMottattDato(java.sql.Date.valueOf(LocalDate.now()));
 			} else {
-				journalpost.setMottattDato(java.sql.Date.valueOf(oppdaterJournalpostRequest.getDatoMottatt()));
-			}
-			endret.setEndretFlagg(true);
+			journalpost.setMottattDato(oppdaterJournalpostRequest.getDatoMottatt());
+		}
+		endret.setEndretFlagg(true);
 		}
 
 	}

@@ -172,6 +172,23 @@ public class OpprettJournalpostApiRequestMapperTest {
 	}
 
 	@Test
+	public void shoulSetDatoMottatNullWhenJpTypeUttgaaende() {
+		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.UTGAAENDE)
+				.datoMottatt(DATO_MOTTATT)
+				.build();
+		Journalpost journalpost = mapper.map(request, null);
+		assertEquals(journalpost.getMottattDato(), null);
+	}
+	@Test
+	public void shoulSetDatoMottatNullWhenJpTypeNotat() {
+		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.NOTAT)
+				.datoMottatt(DATO_MOTTATT)
+				.build();
+		Journalpost journalpost = mapper.map(request, null);
+		assertEquals(journalpost.getMottattDato(), null);
+	}
+
+	@Test
 	public void shouldMapSaksrelasjonIfFagsaksystemIsValidValue() {
 		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.datoMottatt(DATO_MOTTATT)

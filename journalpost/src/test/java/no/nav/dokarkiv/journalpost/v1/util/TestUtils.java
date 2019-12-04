@@ -70,6 +70,7 @@ public class TestUtils {
 	public static final String INNHOLD = "innhold";
 	public static final String KANALREFERANSE_ID = "kanalreferansId";
 	public static final LocalDate  DATO_MOTTATT = LocalDate.now().minusDays(3);
+	public static final Date DATO_MOTTATT_1 = java.sql.Date.valueOf(LocalDate.now().minusDays(3));
 	public static final String JOURNALFOERENDE_ENHET = "journalfoerendeEnhet";
 	public static final String DOKUMENTINFO_ID1 = "1234567";
 	public static final String DOKUMNETTYPE_ID1 = "dokumenttypeID1";
@@ -280,7 +281,7 @@ public class TestUtils {
 				.build();
 	}
 
-	public static OppdaterJournalpostRequest createPutOppdaterJournalpostRequestWithDatoMottat(LocalDate date) {
+	public static OppdaterJournalpostRequest createPutOppdaterJournalpostRequestWithDatoMottat(Date date) {
 		return OppdaterJournalpostRequest.builder()
 				.avsenderMottaker(createAvsenderMottakerPerson())
 				.bruker(createBrukerPerson())
