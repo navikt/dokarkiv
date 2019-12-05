@@ -3,6 +3,7 @@ package no.nav.dokarkiv.behandlejournal.v3.tjoark061;
 import static no.nav.dokarkiv.core.domain.builder.BidragMellomlagringBuilder.getBidragMellomlagringBuilder;
 import static no.nav.dokarkiv.core.domain.builder.BidragMellomlagringDokumentBuilder.getBidragMellomlagringDokumentBuilder;
 import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalpostBuilder;
+import static no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode.IS;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertNotNull;
@@ -16,6 +17,7 @@ import no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder;
 import no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
+import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
@@ -150,6 +152,21 @@ public class LagreVedleggPaaJournalpostV3IT extends AbstractBehandleJournalV3Ite
 		assertThat(fildetaljer.getFilnavn(), is(FILNAVN));
 		assertThat(fildetaljer.getFiltype().toString(), is(FILTYPE));
 		assertThat(fildetaljer.getVariantFormat().toString(), is(VARIANTFORMAT));
+	}
+
+	@Test
+	public void shouldVerifyDokumentKategoriIsISForAddedPensjonVedlegg() throws Exception {
+		journalpost = createAndPersistJournalpostWithHoveddokument();
+		journalpost.setFagomrade(FagomradeCode.PEN);
+		createRequest(journalpost.getJournalpostId().toString());
+		lagreVedleggPaaJournalpostResponse = behandleJournalV3Provider
+				.lagreVedleggPaaJournalpost(lagreVedleggPaaJournalpostRequest);
+		persistedDokumentInfo = dokumentinfoRepository.findById(Long.valueOf(lagreVedleggPaaJournalpostResponse
+				.getDokumentId())).get();
+
+		assertNotNull(persistedDokumentInfo);
+		assertNotNull(persistedDokumentInfo.getKategori());
+		assertThat(persistedDokumentInfo.getKategori(), is(IS));
 	}
 
 	@Test

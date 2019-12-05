@@ -3,6 +3,7 @@ package no.nav.dokarkiv.behandlejournal.v2.tjoark061;
 import static no.nav.dokarkiv.core.domain.builder.BidragMellomlagringBuilder.getBidragMellomlagringBuilder;
 import static no.nav.dokarkiv.core.domain.builder.BidragMellomlagringDokumentBuilder.getBidragMellomlagringDokumentBuilder;
 import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalpostBuilder;
+import static no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode.IS;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertNotNull;
@@ -16,6 +17,7 @@ import no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder;
 import no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
+import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
@@ -153,6 +155,21 @@ public class LagreVedleggPaaJournalpostIT extends AbstractBehandleJournalV2Itest
 	}
 
 	@Test
+	public void shouldVerifyDokumentKategoriIsISForAddedPensjonVedlegg() throws Exception {
+		journalpost = createAndPersistJournalpostWithHoveddokument();
+		journalpost.setFagomrade(FagomradeCode.PEN);
+		createRequest(journalpost.getJournalpostId().toString());
+		lagreVedleggPaaJournalpostResponse = behandleJournalProvider
+				.lagreVedleggPaaJournalpost(lagreVedleggPaaJournalpostRequest);
+		persistedDokumentInfo = dokumentinfoRepository.findById(Long.valueOf(lagreVedleggPaaJournalpostResponse
+				.getDokumentId())).get();
+
+		assertNotNull(persistedDokumentInfo);
+		assertNotNull(persistedDokumentInfo.getKategori());
+		assertThat(persistedDokumentInfo.getKategori(), is(IS));
+	}
+
+	@Test
 	public void shouldVerifyFileContentForTheAddedVedlegg() throws Exception {
 		setUpJoark();
 
@@ -222,6 +239,11 @@ public class LagreVedleggPaaJournalpostIT extends AbstractBehandleJournalV2Itest
 	}
 
 	private Journalpost createAndPersistJournalpostWithHoveddokument() {
+		Journalpost journalpostWithHoveddokument = createJournalpostWithHoveddokument();
+		return joarkRepository.save(journalpostWithHoveddokument);
+	}
+
+	private Journalpost createJournalpostWithHoveddokument() {
 		Journalpost persistedJournalpost = getJournalpostBuilder()
 				.brukere(
 						BrukerBuilder.getBrukerBuilder().brukerId("").brukerType(BrukerTypeCode.PERSON)
@@ -251,7 +273,7 @@ public class LagreVedleggPaaJournalpostIT extends AbstractBehandleJournalV2Itest
 												.build()).build()).build();
 		persistedJournalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo()
 				.setOriginalJournalpost(persistedJournalpost);
-		return joarkRepository.save(persistedJournalpost);
+		return persistedJournalpost;
 	}
 
 	private BidragMellomlagring createAndPersistBidragMellomlagringWithHoveddokument() {
