@@ -1,14 +1,14 @@
 ALTER TABLE SAK
     ADD
         (
-        ENDRET_AV VARCHAR2(20),
+        ENDRET_KILDE_NAVN VARCHAR2(20),
         DATO_ENDRET TIMESTAMP(6)
         );
 
 ALTER TABLE SAK_GR
     ADD
         (
-        ENDRET_AV VARCHAR2(20),
+        ENDRET_KILDE_NAVN VARCHAR2(20),
         DATO_ENDRET TIMESTAMP(6)
         );
 
@@ -17,9 +17,9 @@ create or replace TRIGGER trg_sak_delete
     AFTER DELETE ON sak
     FOR EACH ROW BEGIN
     INSERT INTO sak_gr
-    (sak_gr_id, sak_id, tema, applikasjon, fagsaknr, opprettet_av, opprettet_tidspunkt, endret_av, dato_endret,  dato_overfort_grensesnitt, endring_type)
+    (sak_gr_id, sak_id, tema, applikasjon, fagsaknr, opprettet_av, opprettet_tidspunkt, endret_kilde_navn, dato_endret,  dato_overfort_grensesnitt, endring_type)
     VALUES
-    (seq_sak_gr.nextval, :old.id, :old.tema, :old.applikasjon, :old.fagsaknr, :old.opprettet_av, :old.opprettet_tidspunkt, :old.endret_av, :old.dato_endret, CURRENT_TIMESTAMP, 'D');
+    (seq_sak_gr.nextval, :old.id, :old.tema, :old.applikasjon, :old.fagsaknr, :old.opprettet_av, :old.opprettet_tidspunkt, :old.endret_kilde_navn, :old.dato_endret, CURRENT_TIMESTAMP, 'D');
 END;
 /
 
@@ -34,8 +34,8 @@ BEGIN
     IF inserting THEN endringstype :='I'; END IF;
 
     INSERT INTO sak_gr
-    (sak_gr_id, sak_id, aktoerid, orgnr, tema, applikasjon, fagsaknr, opprettet_av, opprettet_tidspunkt, endret_av, dato_endret, dato_overfort_grensesnitt, endring_type)
+    (sak_gr_id, sak_id, aktoerid, orgnr, tema, applikasjon, fagsaknr, opprettet_av, opprettet_tidspunkt, endret_kilde_navn, dato_endret, dato_overfort_grensesnitt, endring_type)
     VALUES
-    (seq_sak_gr.nextval, :new.id, :new.aktoerid, :new.orgnr, :new.tema, :new.applikasjon, :new.fagsaknr, :new.opprettet_av, :new.opprettet_tidspunkt, :new.endret_av, :new.dato_endret, CURRENT_TIMESTAMP, endringstype);
+    (seq_sak_gr.nextval, :new.id, :new.aktoerid, :new.orgnr, :new.tema, :new.applikasjon, :new.fagsaknr, :new.opprettet_av, :new.opprettet_tidspunkt, :new.endret_kilde_navn, :new.dato_endret, CURRENT_TIMESTAMP, endringstype);
 END;
 /
