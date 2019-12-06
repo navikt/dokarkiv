@@ -1,12 +1,5 @@
 package no.nav.dokarkiv.journalpost.v1.mappers;
 
-import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.HOVEDDOKUMENT;
-import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.VEDLEGG;
-import static org.apache.commons.lang3.StringUtils.isBlank;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
-import static org.apache.commons.lang3.StringUtils.trim;
-import static org.apache.cxf.common.util.CollectionUtils.isEmpty;
-
 import no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerService;
 import no.nav.dokarkiv.core.consumer.aktoer.HentIdentForAktoerIdRequestTo;
 import no.nav.dokarkiv.core.consumer.aktoer.PersonIkkeFunnetException;
@@ -49,6 +42,13 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.HOVEDDOKUMENT;
+import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.VEDLEGG;
+import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
+import static org.apache.commons.lang3.StringUtils.trim;
+import static org.apache.cxf.common.util.CollectionUtils.isEmpty;
+
 @Component
 public class OpprettJournalpostApiRequestMapper {
 
@@ -74,7 +74,7 @@ public class OpprettJournalpostApiRequestMapper {
 				.mottakskanal(mapMottakskanal(request))
 				.utsendingskanal(mapUtsendingskanal(request))
 				.kanalReferanseId(request.getEksternReferanseId())
-				.mottattDato(mapMottattDato(request))
+				.mottattDato(mapMottattDato(request) == null ? null : mapMottattDato(request))
 				.dokumentDato(Date.valueOf(LocalDate.now()))
 				.build();
 
@@ -154,8 +154,11 @@ public class OpprettJournalpostApiRequestMapper {
 		return null;
 	}
 
-	private Date mapMottattDato(OpprettJournalpostRequest request) {
-		return JournalpostType.INNGAAENDE.equals(request.getJournalpostType()) ? Date.valueOf(LocalDate.now()) : null;
+	private java.util.Date mapMottattDato(OpprettJournalpostRequest request) {
+		if (JournalpostType.INNGAAENDE.equals(request.getJournalpostType())) {
+			return request.getDatoMottatt() == null ? Date.valueOf(LocalDate.now()) : request.getDatoMottatt();
+		}
+		return null;
 	}
 
 	private Behandlingstema mapBehandlingstema(OpprettJournalpostRequest request) {
@@ -211,14 +214,22 @@ public class OpprettJournalpostApiRequestMapper {
 	}
 
 	private FagsystemCode mapFagsakEllerGenerellSak(Sakstype sakstype, Fagsaksystem fagsaksystem) {
-		if (Sakstype.FAGSAK.equals(sakstype) && Fagsaksystem.PP01.equals(fagsaksystem)) {
+
+		if (isValidFagsaksystem(sakstype, fagsaksystem) && Fagsaksystem.PP01.equals(fagsaksystem)) {
 			return FagsystemCode.PEN;
-		} else if ((Sakstype.FAGSAK.equals(sakstype) || Sakstype.GENERELL_SAK.equals(sakstype))
+		} else if ((isValidFagsaksystem(sakstype, fagsaksystem) || Sakstype.GENERELL_SAK.equals(sakstype))
 				&& !Fagsaksystem.PP01.equals(fagsaksystem)) {
 			return FagsystemCode.FS22;
 		} else {
 			throw new UgyldigInputException("Kan ikke mappe fagsystem basert på input");
 		}
+	}
+
+	private boolean isValidFagsaksystem(Sakstype sakstype, Fagsaksystem fagsaksystem) {
+		return Arrays.stream(Fagsaksystem.values())
+				.filter(fagsak -> fagsak.equals(fagsaksystem) && Sakstype.FAGSAK.equals(sakstype))
+				.findAny()
+				.isPresent();
 	}
 
 	private void addBruker(Journalpost jp, OpprettJournalpostRequest request) {

@@ -11,5 +11,7 @@ public enum Fagsaksystem {
     OB36,
     AO01,
     IT01,
-    PP01
+    PP01,
+    K9,
+    BISYS
 }

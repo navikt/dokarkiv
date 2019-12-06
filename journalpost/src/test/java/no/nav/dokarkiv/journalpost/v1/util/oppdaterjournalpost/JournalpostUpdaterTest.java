@@ -1,19 +1,6 @@
 package no.nav.dokarkiv.journalpost.v1.util.oppdaterjournalpost;
 
-import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
-import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.AVSENDER_ID_PERSON;
-import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.AVSENDER_MOTTAKER_UTLAND;
-import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.AVSENDER_NAVN;
-import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createPutOppdaterJournalpostAvsenderMottakerKunLandRequest;
-import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createPutOppdaterJournalpostRequest;
-import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createPutOppdaterJournalpostRequestWithoutAvsenderMottaker;
-import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createPutOppdaterJournalpostRequestWithoutAvsenderMottakerId;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-
+import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
 import no.nav.dokarkiv.core.repository.BrukerRepository;
@@ -26,7 +13,25 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.slf4j.MDC;
 
+import java.time.LocalDate;
 import java.util.Date;
+
+import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.AVSENDER_ID_PERSON;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.AVSENDER_MOTTAKER_UTLAND;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.AVSENDER_NAVN;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.DATO_MOTTATT;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.DATO_MOTTATT_1;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createPutOppdaterJournalpostAvsenderMottakerKunLandRequest;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createPutOppdaterJournalpostRequest;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createPutOppdaterJournalpostRequestWithDatoMottat;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createPutOppdaterJournalpostRequestWithoutAvsenderMottaker;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createPutOppdaterJournalpostRequestWithoutAvsenderMottakerId;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 
 @RunWith(MockitoJUnitRunner.class)
 public class JournalpostUpdaterTest {
@@ -113,6 +118,32 @@ public class JournalpostUpdaterTest {
 
 		assertEquals(journalpost.getAvsenderMottakerId(), AVSENDER_ID_PERSON);
 		assertEquals(journalpost.getAvsenderMottaker(), AVSENDER_NAVN);
+	}
+
+	@Test
+	public void shouldUpdateJPMottattDatoWithCurrentDateWhenJpErInngaaendeAndRequestMottattDatoNull() throws UgyldigAksjonsLoggException {
+
+		oppdaterJournalpostRequest = createPutOppdaterJournalpostRequestWithDatoMottat(null);
+		journalpost = TestUtils.createJournalpostForOppdatering();
+
+		updater.updateFields(journalpost, oppdaterJournalpostRequest);
+
+		assertEquals(journalpost.getMottattDato(), java.sql.Date.valueOf(LocalDate.now()));
+		assertEquals(journalpost.getJournalposttype(), JournalpostTypeCode.I);
+
+	}
+
+	@Test
+	public void shouldUpdateMottattDatoWhenJpErInngaaende() throws UgyldigAksjonsLoggException {
+
+		oppdaterJournalpostRequest = createPutOppdaterJournalpostRequestWithDatoMottat(DATO_MOTTATT_1);
+		journalpost = TestUtils.createJournalpostForOppdatering();
+
+		updater.updateFields(journalpost, oppdaterJournalpostRequest);
+
+		assertEquals(journalpost.getMottattDato(), DATO_MOTTATT_1);
+		assertEquals(journalpost.getJournalposttype(), JournalpostTypeCode.I);
+
 	}
 
 	@Test
