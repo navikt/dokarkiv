@@ -3,7 +3,9 @@ package no.nav.dokarkiv.behandlejournal.v2.tjoark061;
 import com.google.common.collect.Lists;
 import no.nav.dokarkiv.behandlejournal.SporingUtil;
 import no.nav.dokarkiv.behandlejournal.SporingsMetaData;
+import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
+import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
@@ -145,6 +147,9 @@ public class DefaultLagreVedleggPaaJournalpost implements LagreVedleggPaaJournal
 
 	private void updateJournalpostAndDokumentInfoValues(Journalpost journalpost, DokumentInfo dokumentInfo,
 			SporingsMetaData sporingsMetaData) {
+		if(FagomradeCode.PEN.equals(journalpost.getFagomrade())) {
+			dokumentInfo.setKategori(DokumentKategoriCode.IS);
+		}
 		updateJournalpostvaluesIfNotInngaaende(journalpost, dokumentInfo);
 		addJournalpostDokumentInfoRelasjon(journalpost, dokumentInfo, sporingsMetaData);
 		addKildeNavnForJournalpostStructure(journalpost);
