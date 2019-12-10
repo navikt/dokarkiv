@@ -28,6 +28,7 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createPutOppdaterJou
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createPutOppdaterJournalpostRequestWithoutAvsenderMottaker;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createPutOppdaterJournalpostRequestWithoutAvsenderMottakerId;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -121,14 +122,14 @@ public class JournalpostUpdaterTest {
 	}
 
 	@Test
-	public void shouldUpdateJPMottattDatoWithCurrentDateWhenJpErInngaaendeAndRequestMottattDatoNull() throws UgyldigAksjonsLoggException {
+	public void shouldUpdateJPMottattDatoWithNullWhenJpErInngaaendeAndRequestMottattDatoNull() throws UgyldigAksjonsLoggException {
 
 		oppdaterJournalpostRequest = createPutOppdaterJournalpostRequestWithDatoMottat(null);
 		journalpost = TestUtils.createJournalpostForOppdatering();
 
 		updater.updateFields(journalpost, oppdaterJournalpostRequest);
 
-		assertEquals(journalpost.getMottattDato(), java.sql.Date.valueOf(LocalDate.now()));
+		assertEquals(journalpost.getMottattDato(), null);
 		assertEquals(journalpost.getJournalposttype(), JournalpostTypeCode.I);
 
 	}
