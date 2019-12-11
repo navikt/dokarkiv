@@ -127,7 +127,7 @@ public class JournalfoerInngaaendeRestController {
 	public PostLogiskVedleggResponse persistLogiskVedlegg(@PathVariable String journalpostId, @PathVariable String dokumentId, @RequestBody PostLogiskVedleggRequest request) {
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
 		log.info("rjoark004i har mottatt kall om å persistere logisk vedlegg på journalpost med journalpostId={} og dokumentId={}", journalpostId, dokumentId);
-		Utils.validateInput(request.getTittel(),"Tittle");
+		Utils.validateInput(request.getTittel(),"Tittelen");
 		Utils.validateJournalpostIdAndDokumentId(journalpostId, dokumentId);
 		abacSecurityService.assertAccessToJournalpost(journalpostId);
 		PostLogiskVedleggResponse responseTo = logiskVedleggService.persistLogiskVedlegg(journalpostId, dokumentId, request);

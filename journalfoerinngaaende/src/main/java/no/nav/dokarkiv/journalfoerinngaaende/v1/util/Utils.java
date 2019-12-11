@@ -69,11 +69,6 @@ public class Utils {
 		}
 	}
 
-	public static void validateInput(String input, String fieldName) throws IllegalArgumentException {
-		if (input == null) {
-			throw new InputValideringFeiletException(String.format("%s på det logiske vedlegget kan ikke være null", fieldName));
-		}
-	}
 
 	public static void assertJournalpostIsInngaaende(Journalpost journalpost) {
 		if (!journalpost.isInngaende()) {
@@ -98,6 +93,12 @@ public class Utils {
 	public static void assertNotNull(Object object, String fieldName) throws IllegalArgumentException {
 		if (object == null) {
 			throw new InputValideringFeiletException(String.format("%s kan ikke være null", fieldName));
+		}
+	}
+
+	public static void validateInput(String input, String fieldName) throws IllegalArgumentException {
+		if (StringUtils.isBlank(input)){
+			throw new InputValideringFeiletException(String.format("%s på det logiske vedlegget kan ikke være null eller tom", fieldName));
 		}
 	}
 }
