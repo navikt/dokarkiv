@@ -120,6 +120,32 @@ public class Rjoark004iIT extends AbstractJournalfoerInngaaendeV1Itest {
 	}
 
 	@Test
+	public void shouldThrowExceptionWhenPostLogiskVedleggIsNull() throws Exception {
+		abacPermit();
+		String tittle = classpathToString("__files/logiskvedlegg/post_logisk_vedlegg_feil_input_request.json");
+		PostLogiskVedleggRequest request = mapper.readValue(tittle==null?null:tittle, PostLogiskVedleggRequest.class);
+
+		Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.J));
+
+		String journalpostId = journalpost.getJournalpostId().toString();
+		String dokumentId = journalpost.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
+				.iterator()
+				.next()
+				.getDokumentInfo()
+				.getDokumentInfoId()
+				.toString();
+
+		HttpEntity<PostLogiskVedleggRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
+
+		ResponseEntity<String> responseEntity = restTemplate.exchange(
+					JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER + journalpostId + "/dokumenter/" + dokumentId + "/logiskeVedlegg", HttpMethod.POST, requestHttpEntity, String.class);
+
+		assertThat(responseEntity.getStatusCode(), is(HttpStatus.BAD_REQUEST));
+		assertThat(responseEntity.getBody(),containsString("Tittle på det logiske vedlegget kan ikke være null"));
+
+	}
+
+	@Test
 	public void shouldFailToPostLogiskVedleggOnlyPersonUserToken() throws Exception {
 		abacPermit();
 		PostLogiskVedleggRequest request = mapper.readValue(classpathToString("__files/logiskvedlegg/post_logisk_vedlegg_happy_input_request.json"), PostLogiskVedleggRequest.class);
@@ -173,7 +199,7 @@ public class Rjoark004iIT extends AbstractJournalfoerInngaaendeV1Itest {
 	}
 
 	/**
-	 * HVIS journalpostType != Inngående, SÅ skal feilmelding gis (4) og behandling avsluttes
+	 * HVIS journalpostType != Inng?ende, S? skal feilmelding gis (4) og behandling avsluttes
 	 **/
 	@Test
 	public void shouldReturnBadRequestJournalpostErIkkeAvTypenInngaaendePostLogiskVedlegg() throws IOException {
@@ -201,10 +227,11 @@ public class Rjoark004iIT extends AbstractJournalfoerInngaaendeV1Itest {
 	}
 
 	@Test
-	public void shouldReturnJournalpostIdNotFoundExceptionPostVedlegg() {
+	public void shouldReturnJournalpostIdNotFoundExceptionPostVedlegg() throws IOException {
 		abacPermit();
+		PostLogiskVedleggRequest request = mapper.readValue(classpathToString("__files/logiskvedlegg/post_logisk_vedlegg_happy_input_request.json"), PostLogiskVedleggRequest.class);
 
-		HttpEntity<PostLogiskVedleggRequest> requestHttpEntity = new HttpEntity<>(new PostLogiskVedleggRequest(), oidcHeaders());
+		HttpEntity<PostLogiskVedleggRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER + 123443546 + "/dokumenter/" + 1234 + "/logiskeVedlegg", HttpMethod.POST, requestHttpEntity, String.class);
@@ -214,13 +241,15 @@ public class Rjoark004iIT extends AbstractJournalfoerInngaaendeV1Itest {
 	}
 
 	@Test
-	public void shouldReturnDokumentinfoIdNotFoundExceptionPostVedlegg() {
+	public void shouldReturnDokumentinfoIdNotFoundExceptionPostVedlegg() throws IOException {
 		abacPermit();
+		PostLogiskVedleggRequest request = mapper.readValue(classpathToString("__files/logiskvedlegg/post_logisk_vedlegg_happy_input_request.json"), PostLogiskVedleggRequest.class);
+
 		Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.J));
 
 		String journalpostId = journalpost.getJournalpostId().toString();
 
-		HttpEntity<PostLogiskVedleggRequest> requestHttpEntity = new HttpEntity<>(new PostLogiskVedleggRequest(), oidcHeaders());
+		HttpEntity<PostLogiskVedleggRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER + journalpostId + "/dokumenter/" + 1234 + "/logiskeVedlegg", HttpMethod.POST, requestHttpEntity, String.class);
@@ -401,7 +430,7 @@ public class Rjoark004iIT extends AbstractJournalfoerInngaaendeV1Itest {
 	}
 
 	/**
-	 * HVIS journalpostType != Inngående, SÅ skal feilmelding gis (4) og behandling avsluttes
+	 * HVIS journalpostType != Inng?ende, S? skal feilmelding gis (4) og behandling avsluttes
 	 **/
 	@Test
 	public void shouldReturnBadRequestJournalpostErIkkeAvTypenInngaaendePutLogiskVedlegg() throws IOException {
@@ -437,10 +466,11 @@ public class Rjoark004iIT extends AbstractJournalfoerInngaaendeV1Itest {
 	}
 
 	@Test
-	public void shouldReturnJournalpostIdNotFoundExceptionPutVedlegg() {
+	public void shouldReturnJournalpostIdNotFoundExceptionPutVedlegg() throws IOException{
 		abacPermit();
+		PutLogiskVedleggRequest request = mapper.readValue(classpathToString("__files/logiskvedlegg/put_logisk_vedlegg_happy_input_request.json"), PutLogiskVedleggRequest.class);
 
-		HttpEntity<PutLogiskVedleggRequest> requestHttpEntity = new HttpEntity<>(new PutLogiskVedleggRequest(), oidcHeaders());
+		HttpEntity<PutLogiskVedleggRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER + "123443546" + "/dokumenter/" + "1234" + "/logiskeVedlegg", HttpMethod.POST, requestHttpEntity, String.class);
@@ -450,13 +480,15 @@ public class Rjoark004iIT extends AbstractJournalfoerInngaaendeV1Itest {
 	}
 
 	@Test
-	public void shouldReturnDokumentinfoIdNotFoundExceptionPutVedlegg() {
+	public void shouldReturnDokumentinfoIdNotFoundExceptionPutVedlegg() throws IOException{
 		abacPermit();
+		PutLogiskVedleggRequest request = mapper.readValue(classpathToString("__files/logiskvedlegg/put_logisk_vedlegg_happy_input_request.json"), PutLogiskVedleggRequest.class);
+
 		Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.J));
 
 		String journalpostId = journalpost.getJournalpostId().toString();
 
-		HttpEntity<PutLogiskVedleggRequest> requestHttpEntity = new HttpEntity<>(new PutLogiskVedleggRequest(), oidcHeaders());
+		HttpEntity<PutLogiskVedleggRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER + journalpostId + "/dokumenter/" + 1234 + "/logiskeVedlegg", HttpMethod.POST, requestHttpEntity, String.class);
@@ -671,7 +703,7 @@ public class Rjoark004iIT extends AbstractJournalfoerInngaaendeV1Itest {
 	}
 
 	/**
-	 * HVIS journalpostType != Inngående, SÅ skal feilmelding gis (4) og behandling avsluttes
+	 * HVIS journalpostType != Inng?ende, S? skal feilmelding gis (4) og behandling avsluttes
 	 **/
 	@Test
 	public void shouldReturnBadRequestJournalpostErIkkeAvTypenInngaaendeDeleteLogiskVedlegg() throws IOException {

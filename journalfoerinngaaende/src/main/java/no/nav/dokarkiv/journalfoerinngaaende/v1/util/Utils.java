@@ -69,6 +69,12 @@ public class Utils {
 		}
 	}
 
+	public static void validateInput(String input, String fieldName) throws IllegalArgumentException {
+		if (input == null) {
+			throw new InputValideringFeiletException(String.format("%s på det logiske vedlegget kan ikke være null", fieldName));
+		}
+	}
+
 	public static void assertJournalpostIsInngaaende(Journalpost journalpost) {
 		if (!journalpost.isInngaende()) {
 			throw new JournalpostIkkeInngaaendeException(String.format("Journalpost med journalpostId=%s er ikke av type Inngaaende", journalpost
