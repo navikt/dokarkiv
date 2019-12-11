@@ -141,7 +141,7 @@ public class Rjoark004iIT extends AbstractJournalfoerInngaaendeV1Itest {
 					JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER + journalpostId + "/dokumenter/" + dokumentId + "/logiskeVedlegg", HttpMethod.POST, requestHttpEntity, String.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.BAD_REQUEST));
-		assertThat(responseEntity.getBody(),containsString("Tittle på det logiske vedlegget kan ikke være null"));
+		assertThat(responseEntity.getBody(),containsString("Tittelen på det logiske vedlegget kan ikke være null eller tom"));
 
 	}
 
