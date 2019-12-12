@@ -1,5 +1,7 @@
 package no.nav.dokarkiv.journalpost.v1.itest;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -30,7 +32,10 @@ import java.util.Set;
 
 public class KopierJournalpostIT extends AbstractJournalpostIT {
     private static final String GYLDIG_CONSUMER = "srvdokarkivproxy";
+    private static final String UGYLDIG_CONSUMER = "srvdokarkiv";
     public static final String NAV_CONSUMER_ID = "Nav-Consumer-Id";
+    private static final String UGYLDIG_JOURNALPOST = "***gammelt_fnr***";
+    private static final String SRV_DOKARKIVPROXY = "srvdokarkivproxy";
 
     @Test
     public void happyPathInngaaende() throws IOException {
@@ -47,10 +52,6 @@ public class KopierJournalpostIT extends AbstractJournalpostIT {
 
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
 
-        TestTransaction.flagForCommit();
-        TestTransaction.end();
-        TestTransaction.start();
-
         Journalpost kopiertJournalpost = joarkRepository.findById(Long.parseLong(response.getBody())).orElseThrow(RuntimeException::new);
         journalpost = joarkRepository.findById(journalpostId).orElseThrow(RuntimeException::new);
 
@@ -62,10 +63,8 @@ public class KopierJournalpostIT extends AbstractJournalpostIT {
         Bruker kopiertBruker = kopiertJournalpost.getBrukere().iterator().next();
         Bruker originalBruker = journalpost.getBrukere().iterator().next();
         assertTrue(kopiertBruker.getChangeStamp().getCreatedDate().after(originalBruker.getChangeStamp().getCreatedDate()));
-//        System.out.println(SERVICE_USER_ID + ", " + kopiertBruker.getEndretKildeNavn());   //TODO: Fjern denne, kun for debug
-//        assertEquals(SERVICE_USER_ID, kopiertBruker.getEndretKildeNavn());            //TODO: Får annen endretAv etter flytting til intern. Hvorfor?
-//        System.out.println(SERVICE_USER_ID + ", " + originalBruker.getOpprettetKildeNavn());   //TODO: Fjern denne, kun for debug
-//        assertEquals(SERVICE_USER_ID, kopiertBruker.getOpprettetKildeNavn());         //TODO: Får annen opprettetAv etter flytting til intern. Hvorfor?
+        assertEquals(NAV_CONSUMER_ID, kopiertBruker.getEndretKildeNavn());
+        assertEquals(NAV_CONSUMER_ID, kopiertBruker.getOpprettetKildeNavn());
 
         assertTrue(brukereSetIsCorrectlyCopied(journalpost.getBrukere(), kopiertJournalpost.getBrukere()));
         assertTrue(kopiertJournalpost.getKryssreferanser().isEmpty());
@@ -86,7 +85,7 @@ public class KopierJournalpostIT extends AbstractJournalpostIT {
 
         List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
         assertEquals(1, aksjonsLoggList.size());
-        assertEquals(SERVICE_USER_ID, aksjonsLoggList.get(0).getUtfoertAv());
+        assertEquals(SRV_DOKARKIVPROXY, aksjonsLoggList.get(0).getUtfoertAv());
         assertEquals(AksjonsTypeCode.KOPIER_JOURNALPOST, aksjonsLoggList.get(0).getAksjon());
 
         Set<ArkivElementEndring> arkivElementEndringTOs = aksjonsLoggList.get(0).getArkivElementEndringer();
@@ -95,6 +94,27 @@ public class KopierJournalpostIT extends AbstractJournalpostIT {
         ArkivElementEndring arkivElementEndring = arkivElementEndringTOs.iterator().next();
         assertEquals(arkivElementEndring.getFraVerdi(), Long.toString(journalpost.getJournalpostId()));
         assertEquals(arkivElementEndring.getTilVerdi(), Long.toString(kopiertJournalpost.getJournalpostId()));
+    }
+
+    @Test
+    public void shouldReturnForbiddenForWrongConsumer(){
+        Journalpost journalpost = createJournalpost();
+        Long journalpostId = joarkRepository.save(journalpost).getJournalpostId();
+
+        HttpHeaders headers = createHeaders(UGYLDIG_CONSUMER);
+        HttpEntity requestEntity = new HttpEntity(headers);
+        ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST_INTERN + KOPIER_QUERY + journalpostId, HttpMethod.POST, requestEntity, String.class);
+
+        assertThat(response.getStatusCode(), is(HttpStatus.FORBIDDEN));
+    }
+
+    @Test
+    public void shouldReturnNotFoundForJournalpost() {
+        HttpHeaders headers = createHeaders(GYLDIG_CONSUMER);
+        HttpEntity requestEntity = new HttpEntity(headers);
+        ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST_INTERN + KOPIER_QUERY + UGYLDIG_JOURNALPOST, HttpMethod.POST, requestEntity, String.class);
+
+        assertThat(response.getStatusCode(), is(HttpStatus.NOT_FOUND));
     }
 
     @After
