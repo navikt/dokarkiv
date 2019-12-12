@@ -22,8 +22,10 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.AVSENDER_MOTTAKER_UT
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.AVSENDER_NAVN;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.DATO_MOTTATT;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.DATO_MOTTATT_1;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.MOTTAT_DATO;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createPutOppdaterJournalpostAvsenderMottakerKunLandRequest;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createPutOppdaterJournalpostRequest;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createPutOppdaterJournalpostRequestUtenDatoMottat;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createPutOppdaterJournalpostRequestWithDatoMottat;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createPutOppdaterJournalpostRequestWithoutAvsenderMottaker;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createPutOppdaterJournalpostRequestWithoutAvsenderMottakerId;
@@ -124,12 +126,12 @@ public class JournalpostUpdaterTest {
 	@Test
 	public void shouldUpdateJPMottattDatoWithNullWhenJpErInngaaendeAndRequestMottattDatoNull() throws UgyldigAksjonsLoggException {
 
-		oppdaterJournalpostRequest = createPutOppdaterJournalpostRequestWithDatoMottat(null);
+		oppdaterJournalpostRequest = createPutOppdaterJournalpostRequestUtenDatoMottat();
 		journalpost = TestUtils.createJournalpostForOppdatering();
 
 		updater.updateFields(journalpost, oppdaterJournalpostRequest);
 
-		assertEquals(journalpost.getMottattDato(), null);
+		assertEquals(journalpost.getMottattDato(), MOTTAT_DATO);
 		assertEquals(journalpost.getJournalposttype(), JournalpostTypeCode.I);
 
 	}
