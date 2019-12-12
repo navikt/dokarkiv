@@ -96,9 +96,4 @@ public class Utils {
 		}
 	}
 
-	public static void validateInput(String input, String fieldName) throws IllegalArgumentException {
-		if (StringUtils.isBlank(input)){
-			throw new InputValideringFeiletException(String.format("%s på det logiske vedlegget kan ikke være null eller tom", fieldName));
-		}
-	}
 }
