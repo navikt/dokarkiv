@@ -111,7 +111,11 @@ public class JournalpostUpdater {
 	private void updateDatoMottatt(Journalpost journalpost, OppdaterJournalpostRequest oppdaterJournalpostRequest, ChangeTracker endret) {
 
 		if (JournalpostTypeCode.I.equals(journalpost.getJournalposttype())) {
-			journalpost.setMottattDato(oppdaterJournalpostRequest.getDatoMottatt());
+			if (oppdaterJournalpostRequest.getDatoMottatt() == null) {
+				return;
+			} else {
+				journalpost.setMottattDato(oppdaterJournalpostRequest.getDatoMottatt());
+			}
 			endret.setEndretFlagg(true);
 		}
 

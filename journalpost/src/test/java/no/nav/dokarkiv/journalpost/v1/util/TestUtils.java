@@ -61,7 +61,7 @@ public class TestUtils {
 	public static final String AVSENDER_ID_HELSEPERSONELLNR = "123456789";
 	public static final String AVSENDER_ID_UTLORGANISASJON = "123456789";
 
-
+	public static final Date MOTTAT_DATO =Date.from(LocalDateTime.of(2017, 2, 3, 10, 37, 30).toInstant(ZoneOffset.UTC));
 	public static final String BRUKER_ID_PERSON = "***gammelt_fnr***";
 	public static final String BRUKER_ID_ORGANISASJON = "987654321";
     public static final String SAK_ID = "12345";
@@ -153,7 +153,7 @@ public class TestUtils {
 				.innhold(INNHOLD)
 				.kanalReferanseId(KANALREFERANSE_ID)
 				.mottakskanal(MottaksKanalCode.ALTINN)
-				.mottattDato(Date.from(LOCAL_DATE_TIME.toInstant(ZoneOffset.UTC)))
+				.mottattDato(MOTTAT_DATO)
 				.journalForendeEnhetId(JOURNALFOERENDE_ENHET)
 				.saksrelasjon(Saksrelasjon.builder()
 						.sakId(SAK_ID)
@@ -281,6 +281,8 @@ public class TestUtils {
 				.build();
 	}
 
+
+
 	public static OppdaterJournalpostRequest createPutOppdaterJournalpostRequestWithDatoMottat(Date date) {
 		return OppdaterJournalpostRequest.builder()
 				.avsenderMottaker(createAvsenderMottakerPerson())
@@ -288,6 +290,19 @@ public class TestUtils {
 				.sak(createSak())
 				.tema(TEMA_FOR)
 				.datoMottatt(date)
+				.behandlingstema(BEHANDLINGSTEMA)
+				.tittel(DOKUMENT_TITTEL1)
+				.tilleggsopplysninger(createTilleggsopplysninger())
+				.dokumenter(createDokumentInfos())
+				.build();
+	}
+
+	public static OppdaterJournalpostRequest createPutOppdaterJournalpostRequestUtenDatoMottat() {
+		return OppdaterJournalpostRequest.builder()
+				.avsenderMottaker(createAvsenderMottakerPerson())
+				.bruker(createBrukerPerson())
+				.sak(createSak())
+				.tema(TEMA_FOR)
 				.behandlingstema(BEHANDLINGSTEMA)
 				.tittel(DOKUMENT_TITTEL1)
 				.tilleggsopplysninger(createTilleggsopplysninger())
