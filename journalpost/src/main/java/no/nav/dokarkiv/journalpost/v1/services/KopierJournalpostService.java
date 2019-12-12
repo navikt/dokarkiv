@@ -19,7 +19,7 @@ import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST
 
 @Component
 public class KopierJournalpostService {
-
+	private static final String SRV_JOARKADMIN = "srvjoarkadmin";
 	private final JoarkRepository joarkRepository;
 	private final LagreAksjonsLoggService aksjonsLoggService;
 	private final KopierJournalpostValidator kopierJournalpostValidator;
@@ -58,7 +58,7 @@ public class KopierJournalpostService {
 
 		aksjonsLoggService.lagreAksjonsLoggForJournalpost(
 				AksjonsTypeCode.KOPIER_JOURNALPOST, journalpostId, null,"Journalposten ble kopiert. Id til ny journalpost er " + nyJournalpostId,
-				null, Collections.singletonList(endring));
+				SRV_JOARKADMIN, Collections.singletonList(endring));
 
 		// returnere journalpostId til ny journalpost
 		return nyJournalpostId;

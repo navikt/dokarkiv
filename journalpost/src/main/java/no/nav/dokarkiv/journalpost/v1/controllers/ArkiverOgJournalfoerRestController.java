@@ -37,7 +37,6 @@ import no.nav.dokarkiv.journalpost.v1.services.OppdaterJournalpostService;
 import no.nav.dokarkiv.journalpost.v1.services.OpprettJournalpostService;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerFerdigstillJournalpost;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerFjernVedlegg;
-import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerKopierJournalpost;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerOppdaterDistribusjonsinfo;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerOppdaterJournalpost;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerOpprettJournalpost;
@@ -72,7 +71,6 @@ import java.util.Optional;
 public class ArkiverOgJournalfoerRestController {
 
 	private static final String TRUE = "true";
-	private final KopierJournalpostService kopierJournalpostService;
 	private final FerdigstillJournalpostService ferdigstillJournalpostService;
 	private final AbacSecurityService abacSecurityService;
 	private final OppdaterJournalpostService oppdaterJournalpostService;
@@ -85,14 +83,12 @@ public class ArkiverOgJournalfoerRestController {
 
 	@Inject
 	public ArkiverOgJournalfoerRestController(final FerdigstillJournalpostService ferdigstillJournalpostService,
-											  final KopierJournalpostService kopierJournalpostService,
 											  final OppdaterJournalpostService oppdaterJournalpostService,
 											  final OpprettJournalpostService opprettJournalpostService,
 											  final OppdaterDistribusjonsinfoService oppdaterDistribusjonsinfoService,
 											  final AbacSecurityService abacSecurityService,
 											  FjernVedleggTilknyttetJournalpost fjernVedleggTilknyttJournalpost) {
 		this.ferdigstillJournalpostService = ferdigstillJournalpostService;
-		this.kopierJournalpostService = kopierJournalpostService;
 		this.abacSecurityService = abacSecurityService;
 		this.oppdaterJournalpostService = oppdaterJournalpostService;
 		this.opprettJournalpostService = opprettJournalpostService;
@@ -101,23 +97,6 @@ public class ArkiverOgJournalfoerRestController {
 		this.opprettJournalpostRequestValidator = new OpprettJournalpostRequestValidator();
 		this.ferdigstillJournalpostValidator = new FerdigstillJournalpostValidator();
 		this.oppdaterDistribusjonsinfoValidator = new OppdaterDistribusjonsinfoValidator();
-	}
-
-	@Transactional
-	@SwaggerKopierJournalpost
-	@PostMapping("/kopierJournalpost")
-	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark203"}, percentiles = {0.5, 0.95})
-	public ResponseEntity<Long> kopierJournalpost(
-			@ApiParam(name = "kildeJournalpostId", value = "IDen til journalposten som skal kopieres", required = true, example = "77778888")
-			@RequestParam String kildeJournalpostId) {
-		MDC.put(MDC_REQUEST_ID, "rjoark203");
-		log.info(MDC.get(MDC_REQUEST_ID) + " har mottatt kall for kopiering av journalpost med journalpostId={}", kildeJournalpostId);
-		validateId(kildeJournalpostId, "journalpostId");
-		RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
-
-		Long nyJournalpostId = kopierJournalpostService.execute(Long.parseLong(kildeJournalpostId));
-
-		return ResponseEntity.status(HttpStatus.CREATED).body(nyJournalpostId);
 	}
 
 	@Transactional
