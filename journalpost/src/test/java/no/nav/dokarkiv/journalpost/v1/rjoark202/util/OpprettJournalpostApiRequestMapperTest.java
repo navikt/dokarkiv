@@ -1,48 +1,8 @@
 package no.nav.dokarkiv.journalpost.v1.rjoark202.util;
 
-import no.nav.dokarkiv.core.domain.codes.AvsenderMottakerIdTypeCode;
-import no.nav.dokarkiv.core.domain.codes.Behandlingstema;
-import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
-import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
-import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
-import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
-import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
-import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
-import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
-import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
-import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
-import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
-import no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode;
-import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
-import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
-import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
-import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
-import no.nav.dokarkiv.core.exceptions.UgyldigInputException;
-import no.nav.dokarkiv.journalpost.v1.api.Bruker;
-import no.nav.dokarkiv.journalpost.v1.api.BrukerIdType;
-import no.nav.dokarkiv.journalpost.v1.api.Dokument;
-import no.nav.dokarkiv.journalpost.v1.api.DokumentVariant;
-import no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem;
-import no.nav.dokarkiv.journalpost.v1.api.JournalpostType;
-import no.nav.dokarkiv.journalpost.v1.api.Sak;
-import no.nav.dokarkiv.journalpost.v1.api.Sakstype;
-import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostRequest;
-import no.nav.dokarkiv.journalpost.v1.mappers.OpprettJournalpostApiRequestMapper;
-import no.nav.dokarkiv.journalpost.v1.util.TestUtils;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.junit.MockitoJUnitRunner;
-
-import java.sql.Date;
-import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.Collections;
-
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.AVSENDER_ID_PERSON;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.AVSENDER_MOTTAKER_LAND;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.AVSENDER_NAVN;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.BREVKODE1;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.BREVKODE2;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.BRUKER_ID_PERSON;
@@ -73,6 +33,47 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
+import no.nav.dokarkiv.core.domain.codes.AvsenderMottakerIdTypeCode;
+import no.nav.dokarkiv.core.domain.codes.Behandlingstema;
+import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
+import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
+import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
+import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
+import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
+import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
+import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
+import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
+import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
+import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
+import no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode;
+import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
+import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
+import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
+import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
+import no.nav.dokarkiv.core.exceptions.UgyldigInputException;
+import no.nav.dokarkiv.journalpost.v1.api.Bruker;
+import no.nav.dokarkiv.journalpost.v1.api.BrukerIdType;
+import no.nav.dokarkiv.journalpost.v1.api.Dokument;
+import no.nav.dokarkiv.journalpost.v1.api.DokumentVariant;
+import no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem;
+import no.nav.dokarkiv.journalpost.v1.api.JournalpostType;
+import no.nav.dokarkiv.journalpost.v1.api.Sak;
+import no.nav.dokarkiv.journalpost.v1.api.Sakstype;
+import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostRequest;
+import no.nav.dokarkiv.journalpost.v1.mappers.OpprettJournalpostApiRequestMapper;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.junit.MockitoJUnitRunner;
+
+import java.sql.Date;
+import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.Collections;
+
 @RunWith(MockitoJUnitRunner.class)
 public class OpprettJournalpostApiRequestMapperTest {
 
@@ -90,7 +91,8 @@ public class OpprettJournalpostApiRequestMapperTest {
 		assertEquals(JournalpostTypeCode.I, jp.getJournalposttype());
 		assertEquals(JournalStatusCode.M, jp.getJournalstatus());
 		assertEquals(AVSENDER_ID_PERSON, jp.getAvsenderMottakerId());
-		assertEquals(TestUtils.AVSENDER_NAVN, jp.getAvsenderMottaker());
+		assertEquals(AVSENDER_NAVN, jp.getAvsenderMottaker());
+		assertEquals(AVSENDER_MOTTAKER_LAND, jp.getLand());
 		assertEquals(BRUKER_ID_PERSON, jp.getBrukere().iterator().next().getBrukerId());
 		assertEquals(BrukerTypeCode.PERSON, jp.getBrukere().iterator().next().getBrukerType());
 		assertEquals(FagomradeCode.FOR, jp.getFagomrade());

@@ -1,5 +1,12 @@
 package no.nav.dokarkiv.journalpost.v1.mappers;
 
+import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.HOVEDDOKUMENT;
+import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.VEDLEGG;
+import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
+import static org.apache.commons.lang3.StringUtils.trim;
+import static org.apache.cxf.common.util.CollectionUtils.isEmpty;
+
 import no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerService;
 import no.nav.dokarkiv.core.consumer.aktoer.HentIdentForAktoerIdRequestTo;
 import no.nav.dokarkiv.core.consumer.aktoer.PersonIkkeFunnetException;
@@ -42,13 +49,6 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.HOVEDDOKUMENT;
-import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.VEDLEGG;
-import static org.apache.commons.lang3.StringUtils.isBlank;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
-import static org.apache.commons.lang3.StringUtils.trim;
-import static org.apache.cxf.common.util.CollectionUtils.isEmpty;
-
 @Component
 public class OpprettJournalpostApiRequestMapper {
 
@@ -69,12 +69,13 @@ public class OpprettJournalpostApiRequestMapper {
 				.avsenderMottakerId(request.getAvsenderMottaker() == null ? null : trim(request.getAvsenderMottaker().getId()))
 				.avsenderMottakerIdType(request.getAvsenderMottaker() == null ? null : mapAvsenderMottakerType(request.getAvsenderMottaker()
 						.getIdType()))
+				.land(request.getAvsenderMottaker() == null ? null : trim(request.getAvsenderMottaker().getLand()))
 				.behandlingstema(mapBehandlingstema(request))
 				.tilleggsopplysninger(mapTilleggsopplysninger(request))
 				.mottakskanal(mapMottakskanal(request))
 				.utsendingskanal(mapUtsendingskanal(request))
 				.kanalReferanseId(request.getEksternReferanseId())
-				.mottattDato(mapMottattDato(request) == null ? null : mapMottattDato(request))
+				.mottattDato(mapMottattDato(request))
 				.dokumentDato(Date.valueOf(LocalDate.now()))
 				.build();
 
@@ -227,9 +228,7 @@ public class OpprettJournalpostApiRequestMapper {
 
 	private boolean isValidFagsaksystem(Sakstype sakstype, Fagsaksystem fagsaksystem) {
 		return Arrays.stream(Fagsaksystem.values())
-				.filter(fagsak -> fagsak.equals(fagsaksystem) && Sakstype.FAGSAK.equals(sakstype))
-				.findAny()
-				.isPresent();
+				.anyMatch(fagsak -> fagsak.equals(fagsaksystem) && Sakstype.FAGSAK.equals(sakstype));
 	}
 
 	private void addBruker(Journalpost jp, OpprettJournalpostRequest request) {
