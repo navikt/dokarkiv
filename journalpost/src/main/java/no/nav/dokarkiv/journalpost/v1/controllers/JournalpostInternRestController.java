@@ -15,6 +15,8 @@ import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import no.nav.dokarkiv.journalpost.v1.api.FeiledeDokumenter;
 import no.nav.dokarkiv.journalpost.v1.api.TilknyttVedleggRequest;
 import no.nav.dokarkiv.journalpost.v1.api.TilknyttVedleggResponse;
+import no.nav.dokarkiv.journalpost.v1.api.finnMottatteJournalposter.FinnMottatteJournalposterResponse;
+import no.nav.dokarkiv.journalpost.v1.services.FinnMottatteJournalposterService;
 import no.nav.dokarkiv.journalpost.v1.services.TilknyttVedleggService;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerTilknyttVedlegg;
 import org.slf4j.MDC;
@@ -22,6 +24,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -43,11 +46,16 @@ import java.util.List;
 public class JournalpostInternRestController {
 
 	private final TilknyttVedleggService tilknyttVedleggService;
+	private final FinnMottatteJournalposterService finnMottatteJournalposterService;
 	private static final String SRVDOKARKIVPROXY = "srvdokarkivproxy";
 
 	@Inject
-	public JournalpostInternRestController(final TilknyttVedleggService tilknyttVedleggService) {
+	public JournalpostInternRestController(
+			final TilknyttVedleggService tilknyttVedleggService,
+			final FinnMottatteJournalposterService finnMottatteJournalposterService
+	) {
 		this.tilknyttVedleggService = tilknyttVedleggService;
+		this.finnMottatteJournalposterService = finnMottatteJournalposterService;
 	}
 
 	@Transactional
@@ -90,6 +98,42 @@ public class JournalpostInternRestController {
 			throw e;
 		} catch (DokarkivTechnicalException e) {
 			log.error("tilknyttVedlegg - feilet teknisk ved tilknytning av vedlegg for journalpostId={}. Feilmelding={}", journalpostId, e
+					.getMessage());
+			throw e;
+		}
+	}
+
+	@Transactional
+	@SwaggerTilknyttVedlegg
+	@ResponseBody
+	@GetMapping(value = "/finnMottatteJournalposter")
+	@RestMetrics(value = "dok_request", extraTags = {"process_code", "finnMottatteJournalposter"}, percentiles = {0.5, 0.95})
+	public ResponseEntity<FinnMottatteJournalposterResponse> tilknyttVedlegg(
+			@RequestHeader(value = NavHeaders.NAV_CALL_ID, required = false) String callId,
+			@RequestHeader(value = NavHeaders.NAV_CONSUMER_ID, required = false) String consumerId,
+			@RequestHeader(value = HttpHeaders.AUTHORIZATION) String auth) {
+		MDC.put(MDC_REQUEST_ID, "finnMottatteJournalposter");
+		try {
+			assertThatConsumerIsSrvdokarkivproxy(auth);
+
+			addToMDC(callId, consumerId);
+
+			RequestContextUtil.createAndSetUsername("finnMottatteJournalposter", "dokarkiv");
+
+			log.info(MDC.get(MDC_REQUEST_ID) + " har mottatt kall om å hente ubehandlede journalposter");
+
+			FinnMottatteJournalposterResponse ubehandledeJournalposter = finnMottatteJournalposterService.finnMottatteJournalposter();
+
+			return ResponseEntity
+					.ok()
+					.body(ubehandledeJournalposter);
+
+		} catch (DokarkivFunctionalException e) {
+			log.warn("finnMottatteJournalposter - feilet funksjonelt ved henting av ubehandlede journalposter. Feilmelding={}", e
+					.getMessage());
+			throw e;
+		} catch (DokarkivTechnicalException e) {
+			log.error("finnMottatteJournalposter - feilet teknisk ved henting av ubehandlede journalposter. Feilmelding={}", e
 					.getMessage());
 			throw e;
 		}

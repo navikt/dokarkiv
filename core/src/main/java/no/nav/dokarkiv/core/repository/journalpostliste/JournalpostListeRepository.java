@@ -1,7 +1,10 @@
 package no.nav.dokarkiv.core.repository.journalpostliste;
 
+import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
+import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.service.SkjermingService;
+import org.joda.time.DateTime;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.Projections;
@@ -25,6 +28,21 @@ public class JournalpostListeRepository {
 	@Inject
 	public JournalpostListeRepository(EntityManager entityManager) {
 		this.entityManager = entityManager;
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<Journalpost> findUbehandletjournalpostListe(){
+		HentMinJPListeParameters parameters = new HentMinJPListeParameters();
+		parameters.setJournalpostTypeCode(JournalpostTypeCode.I);
+		parameters.setTillattInnsynStatus(List.of(JournalStatusCode.MO, JournalStatusCode.M));
+		parameters.setJournalTom(DateTime.now().minusWeeks(1).toDate());
+
+		Session session = entityManager.unwrap(Session.class);
+		JournalpostCriterionBuilder criterionBuilder = new JournalpostCriterionBuilder(session);
+
+		Criteria criteria = criterionBuilder.buildCriteria(parameters);
+
+		return (List<Journalpost>) criteria.list();
 	}
 
 	@SuppressWarnings("unchecked")
