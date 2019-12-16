@@ -69,6 +69,7 @@ public class Utils {
 		}
 	}
 
+
 	public static void assertJournalpostIsInngaaende(Journalpost journalpost) {
 		if (!journalpost.isInngaende()) {
 			throw new JournalpostIkkeInngaaendeException(String.format("Journalpost med journalpostId=%s er ikke av type Inngaaende", journalpost
@@ -94,4 +95,5 @@ public class Utils {
 			throw new InputValideringFeiletException(String.format("%s kan ikke være null", fieldName));
 		}
 	}
+
 }
