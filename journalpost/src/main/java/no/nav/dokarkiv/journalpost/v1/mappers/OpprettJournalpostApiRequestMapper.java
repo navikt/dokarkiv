@@ -1,12 +1,5 @@
 package no.nav.dokarkiv.journalpost.v1.mappers;
 
-import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.HOVEDDOKUMENT;
-import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.VEDLEGG;
-import static org.apache.commons.lang3.StringUtils.isBlank;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
-import static org.apache.commons.lang3.StringUtils.trim;
-import static org.apache.cxf.common.util.CollectionUtils.isEmpty;
-
 import no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerService;
 import no.nav.dokarkiv.core.consumer.aktoer.HentIdentForAktoerIdRequestTo;
 import no.nav.dokarkiv.core.consumer.aktoer.PersonIkkeFunnetException;
@@ -43,11 +36,19 @@ import no.nav.dokarkiv.journalpost.v1.api.Tilleggsopplysning;
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostRequest;
 import org.springframework.stereotype.Component;
 
-import java.sql.Date;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.HOVEDDOKUMENT;
+import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.VEDLEGG;
+import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
+import static org.apache.commons.lang3.StringUtils.trim;
+import static org.apache.cxf.common.util.CollectionUtils.isEmpty;
 
 @Component
 public class OpprettJournalpostApiRequestMapper {
@@ -76,7 +77,7 @@ public class OpprettJournalpostApiRequestMapper {
 				.utsendingskanal(mapUtsendingskanal(request))
 				.kanalReferanseId(request.getEksternReferanseId())
 				.mottattDato(mapMottattDato(request))
-				.dokumentDato(Date.valueOf(LocalDate.now()))
+				.dokumentDato(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()))
 				.build();
 
 		addSaksrelasjon(journalpost, request, sakId);
@@ -157,7 +158,7 @@ public class OpprettJournalpostApiRequestMapper {
 
 	private java.util.Date mapMottattDato(OpprettJournalpostRequest request) {
 		if (JournalpostType.INNGAAENDE.equals(request.getJournalpostType())) {
-			return request.getDatoMottatt() == null ? Date.valueOf(LocalDate.now()) : request.getDatoMottatt();
+			return request.getDatoMottatt() == null ? Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()) : request.getDatoMottatt();
 		}
 		return null;
 	}
