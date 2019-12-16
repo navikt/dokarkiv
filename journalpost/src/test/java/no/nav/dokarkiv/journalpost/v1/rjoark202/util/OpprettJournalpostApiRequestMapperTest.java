@@ -1,38 +1,5 @@
 package no.nav.dokarkiv.journalpost.v1.rjoark202.util;
 
-import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.AVSENDER_ID_PERSON;
-import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.AVSENDER_MOTTAKER_LAND;
-import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.AVSENDER_NAVN;
-import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.BREVKODE1;
-import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.BREVKODE2;
-import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.BRUKER_ID_PERSON;
-import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.DATO_MOTTATT;
-import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.DOKUMENTKATEGORI_SED;
-import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.DOKUMENT_TITTEL1;
-import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.DOKUMENT_TITTEL2;
-import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FAGSAK_ID;
-import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FILTYPE_PDF;
-import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FYSISK_DOKUMENT;
-import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FYSISK_DOKUMENT_2;
-import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.INNHOLD;
-import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.KANALREFERANSE_ID;
-import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.SAK_ID;
-import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_TIL;
-import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TILLEGGSOPPLYSNING_NOKKEL;
-import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TILLEGGSOPPLYSNING_VERDI;
-import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.VARIANTFORMAT_ARKIV;
-import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createAvsenderMottakerHelsepersonell;
-import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createAvsenderMottakerOrganisasjon;
-import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createAvsenderMottakerUtlandOrganisasjon;
-import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createBaseRequest;
-import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createMinimalRequest;
-import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createRequest;
-import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createRequestAvsenderMottaker;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-
 import no.nav.dokarkiv.core.domain.codes.AvsenderMottakerIdTypeCode;
 import no.nav.dokarkiv.core.domain.codes.Behandlingstema;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
@@ -69,10 +36,43 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.sql.Date;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.Collections;
+
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.AVSENDER_ID_PERSON;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.AVSENDER_MOTTAKER_LAND;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.AVSENDER_NAVN;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.BREVKODE1;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.BREVKODE2;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.BRUKER_ID_PERSON;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.DATO_MOTTATT;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.DOKUMENTKATEGORI_SED;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.DOKUMENT_TITTEL1;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.DOKUMENT_TITTEL2;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FAGSAK_ID;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FILTYPE_PDF;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FYSISK_DOKUMENT;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FYSISK_DOKUMENT_2;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.INNHOLD;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.KANALREFERANSE_ID;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.SAK_ID;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_TIL;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TILLEGGSOPPLYSNING_NOKKEL;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TILLEGGSOPPLYSNING_VERDI;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.VARIANTFORMAT_ARKIV;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createAvsenderMottakerHelsepersonell;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createAvsenderMottakerOrganisasjon;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createAvsenderMottakerUtlandOrganisasjon;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createBaseRequest;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createMinimalRequest;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createRequest;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createRequestAvsenderMottaker;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 @RunWith(MockitoJUnitRunner.class)
 public class OpprettJournalpostApiRequestMapperTest {
@@ -170,11 +170,12 @@ public class OpprettJournalpostApiRequestMapperTest {
 				.datoMottatt(null)
 				.build();
 		Journalpost journalpost = mapper.map(request, null);
-		assertEquals(journalpost.getMottattDato(), Date.valueOf(LocalDate.now()));
+		// Sjekk om det er den samme datoen som dagens dato.
+		assertEquals(LocalDate.ofInstant(journalpost.getMottattDato().toInstant(), ZoneId.systemDefault()), LocalDate.now());
 	}
 
 	@Test
-	public void shoulSetDatoMottatNullWhenJpTypeUttgaaende() {
+	public void shoulSetDatoMottatNullWhenJpTypeUtgaaende() {
 		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.UTGAAENDE)
 				.datoMottatt(DATO_MOTTATT)
 				.build();
