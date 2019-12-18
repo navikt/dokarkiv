@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -39,6 +40,9 @@ public interface JoarkRepository extends CrudRepository<Journalpost, Long> {
 			"journalpostDokumentInfoRelasjoner.dokumentInfo.tilleggsopplysninger", "journalpostDokumentInfoRelasjoner.dokumentInfo.skannetInnholdListe",
 			"journalpostDokumentInfoRelasjoner.dokumentInfo.fildetaljerListe", "journalpostDokumentInfoRelasjoner.dokumentInfo.journalpostRelasjoner"})
 	Optional<List<Journalpost>> findJournalposterBySakIdAndFagsystem(@Param("sakId") List<String> sakIdList, @Param("fagsystem") FagsystemCode fagsystemCode);
+
+	@Query(value = "SELECT * FROM t_journalpost j WHERE j.k_journal_s IN ('M', 'MO') AND j.k_journalpost_t = 'I' AND j.dato_opprettet < :dateCreated", nativeQuery = true)
+	Optional<List<Journalpost>> findUbehandledeJournalposts(@Param("dateCreated")Date dateCreated);
 
 	Optional<Journalpost> findJournalpostByKanalReferanseId(String kanalReferanseId);
 

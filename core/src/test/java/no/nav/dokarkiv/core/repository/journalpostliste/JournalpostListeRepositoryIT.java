@@ -1,14 +1,11 @@
 package no.nav.dokarkiv.core.repository.journalpostliste;
 
 import com.google.common.collect.Lists;
-import no.nav.dokarkiv.core.domain.ChangeStamp;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
-import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
 import no.nav.dokarkiv.core.domain.service.SkjermingService;
 import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import no.nav.dokarkiv.core.repository.RepositoryConfig;
@@ -30,10 +27,8 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.inject.Inject;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
@@ -283,46 +278,6 @@ public class JournalpostListeRepositoryIT {
 		Assert.assertThat(journalpostListe, Matchers.hasSize(1));
 		Assert.assertThat(journalpostListe.get(0).getChangeStamp().getCreatedDate(), Matchers.is(shouldBeFoundDate));
 
-	}
-
-	@Test
-	public void finnUbehandlet() {
-
-		List<Date> JournalDateRange = List.of(
-				DateTime.now().plusYears(1).toDate(),
-				DateTime.now().plusMonths(1).toDate(),
-				DateTime.now().plusWeeks(1).toDate(),
-				DateTime.now().plusDays(1).toDate(),
-				DateTime.now().toDate(),
-				DateTime.now().minusDays(1).toDate(),
-				DateTime.now().minusWeeks(1).toDate(),
-				DateTime.now().minusMonths(1).toDate(),
-				DateTime.now().minusYears(1).toDate()
-		);
-
-		for (Date date : JournalDateRange)
-			for (JournalpostTypeCode journalpostTypeCode : JournalpostTypeCode.values())
-				for (JournalStatusCode journalStatusCode : JournalStatusCode.values())
-					joarkRepository.save(TestDataUtils.createUbehandletJournalpost(date, journalpostTypeCode, journalStatusCode));
-
-		Assert.assertThat(true, Matchers.is(
-				journalpostListeRepository
-						.findUbehandletjournalpostListe()
-						.stream()
-						.allMatch(this::verifyUbehandletJournalpost))
-		);
-	}
-
-	private boolean verifyUbehandletJournalpost(Journalpost journalpost) {
-		Date weekAgo = DateTime.now().minusWeeks(1).toDate();
-		Date createdDate = journalpost.getChangeStamp().getCreatedDate();
-		JournalStatusCode status = journalpost.getJournalstatus();
-
-		if( createdDate.after(weekAgo) ) return false;
-		if( status != JournalStatusCode.M && status != JournalStatusCode.MO ) return false;
-		if( !journalpost.isInngaende() ) return false;
-
-		return true;
 	}
 
 	private Journalpost createJournalpostWithSaksrelasjon(String saksnr, boolean isFeilregistrert, FagomradeCode fagomrade,

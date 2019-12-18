@@ -31,21 +31,6 @@ public class JournalpostListeRepository {
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<Journalpost> findUbehandletjournalpostListe(){
-		HentMinJPListeParameters parameters = new HentMinJPListeParameters();
-		parameters.setJournalpostTypeCode(JournalpostTypeCode.I);
-		parameters.setTillattInnsynStatus(List.of(JournalStatusCode.MO, JournalStatusCode.M));
-		parameters.setJournalTom(DateTime.now().minusWeeks(1).toDate());
-
-		Session session = entityManager.unwrap(Session.class);
-		JournalpostCriterionBuilder criterionBuilder = new JournalpostCriterionBuilder(session);
-
-		Criteria criteria = criterionBuilder.buildCriteria(parameters);
-
-		return (List<Journalpost>) criteria.list();
-	}
-
-	@SuppressWarnings("unchecked")
 	public List<Journalpost> findJournalpostListe(HentMinJPListeParameters hentMinJPListeParameters) {
 		List<Journalpost> foundJournalposts = new ArrayList<>();
 

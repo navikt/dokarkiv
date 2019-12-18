@@ -22,5 +22,5 @@ public class UbehandletBruker {
 			value = "Brukertype i Joark",
 			example = "PERSON"
 	)
-	private BrukerTypeCode type;
+	private String type;
 }

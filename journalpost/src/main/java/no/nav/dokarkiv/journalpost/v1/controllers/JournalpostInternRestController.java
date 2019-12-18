@@ -18,6 +18,7 @@ import no.nav.dokarkiv.journalpost.v1.api.TilknyttVedleggResponse;
 import no.nav.dokarkiv.journalpost.v1.api.finnMottatteJournalposter.FinnMottatteJournalposterResponse;
 import no.nav.dokarkiv.journalpost.v1.services.FinnMottatteJournalposterService;
 import no.nav.dokarkiv.journalpost.v1.services.TilknyttVedleggService;
+import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerFinnMottatteJournalposter;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerTilknyttVedlegg;
 import org.slf4j.MDC;
 import org.springframework.http.HttpHeaders;
@@ -103,18 +104,24 @@ public class JournalpostInternRestController {
 		}
 	}
 
-	@Transactional
-	@SwaggerTilknyttVedlegg
+	@Transactional(readOnly = true)
+	@SwaggerFinnMottatteJournalposter
 	@ResponseBody
 	@GetMapping(value = "/finnMottatteJournalposter")
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "finnMottatteJournalposter"}, percentiles = {0.5, 0.95})
-	public ResponseEntity<FinnMottatteJournalposterResponse> tilknyttVedlegg(
+	public ResponseEntity<FinnMottatteJournalposterResponse> finnMottatteJournalposter(
 			@RequestHeader(value = NavHeaders.NAV_CALL_ID, required = false) String callId,
 			@RequestHeader(value = NavHeaders.NAV_CONSUMER_ID, required = false) String consumerId,
 			@RequestHeader(value = HttpHeaders.AUTHORIZATION) String auth) {
 		MDC.put(MDC_REQUEST_ID, "finnMottatteJournalposter");
 		try {
 			assertThatConsumerIsSrvdokarkivproxy(auth);
+
+			/*
+			  TODO
+			   Det er kun servicebrukeren til joarkSikkerhetsnett (navngivning TBD) som får lov til å kalle tjenesten
+			   https://confluence.adeo.no/pages/viewpage.action?pageId=346917288
+			*/
 
 			addToMDC(callId, consumerId);
 

@@ -1,14 +1,11 @@
 package no.nav.dokarkiv.journalpost.v1.api.finnMottatteJournalposter;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import no.nav.dokarkiv.core.domain.codes.Behandlingstema;
-import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
-import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
-import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
 
 import javax.validation.constraints.NotNull;
 import java.util.Date;
@@ -33,7 +30,7 @@ public class UbehandletJournalpost {
 			required = true,
 			example = "M"
 	)
-	private JournalStatusCode journalStatus;
+	private String journalStatus;
 
 	@NotNull(message = "Mottakskanal til journalpost")
 	@ApiModelProperty(
@@ -41,13 +38,10 @@ public class UbehandletJournalpost {
 			required = true,
 			example = "NAV_NO"
 	)
-	private MottaksKanalCode mottaksKanal;
+	private String mottaksKanal;
 
-	@NotNull(message = "Bruker til journalpost mangler")
 	@ApiModelProperty(
-			value = "Bruker til journalpost i Joark",
-			required = true,
-			example = "foo"
+			value = "Bruker til journalpost i Joark"
 	)
 	private UbehandletBruker bruker;
 
@@ -57,7 +51,7 @@ public class UbehandletJournalpost {
 			required = true,
 			example = "PEN"
 	)
-	private FagomradeCode tema;
+	private String tema;
 
 	@NotNull(message = "Behandlingstema til journalpost mangler")
 	@ApiModelProperty(
@@ -65,7 +59,7 @@ public class UbehandletJournalpost {
 			required = true,
 			example = "ab0001"
 	)
-	private Behandlingstema behandlingstema;
+	private String behandlingstema;
 
 	@NotNull(message = "Journalførende enhet for journalpost mangler")
 	@ApiModelProperty(
@@ -79,7 +73,8 @@ public class UbehandletJournalpost {
 	@ApiModelProperty(
 			value = "Dato journalposten ble opprettet i Joark",
 			required = true,
-			example = "Fri Dec 06 15:55:00 CET 2019"
+			example = "2019-12-04T11:07:25.596+0000"
 	)
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ")
 	private Date datoOpprettet;
 }

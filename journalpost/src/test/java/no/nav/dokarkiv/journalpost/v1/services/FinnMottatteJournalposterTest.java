@@ -8,10 +8,8 @@ import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.entities.Bruker;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
 import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
-import no.nav.dokarkiv.core.repository.journalpostliste.JournalpostListeRepository;
 import no.nav.dokarkiv.core.util.TestDataUtils;
 import no.nav.dokarkiv.journalpost.v1.api.finnMottatteJournalposter.UbehandletJournalpost;
 import org.joda.time.DateTime;
@@ -25,9 +23,11 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 
@@ -38,9 +38,6 @@ public class FinnMottatteJournalposterTest {
 	FinnMottatteJournalposterService finnMottatteJournalposterService;
 
 	@Mock
-	private JournalpostListeRepository journalpostListeRepository;
-
-	@Mock
 	private JoarkRepository joarkRepository;
 
 	@Rule
@@ -48,29 +45,29 @@ public class FinnMottatteJournalposterTest {
 
 	@Test
 	public void FinnMottateJournalposterServiceMapsEmptyListToEmptyFinnMottatteJournalposterResponse() {
-		when(journalpostListeRepository.findUbehandletjournalpostListe()).thenReturn(List.of());
-		assertThat(finnMottatteJournalposterService.finnMottatteJournalposter().getJournalposter().isEmpty(), is(true));
+		when(joarkRepository.findUbehandledeJournalposts(any(Date.class))).thenReturn(Optional.empty());
+		assertTrue(finnMottatteJournalposterService.finnMottatteJournalposter().getJournalposter().isEmpty());
 	}
 
 	@Test
 	public void FinnMottatteJournalposterServiceMapsJournalpostToFinnMottateJournalposterResponse() {
 		Date createdDate = DateTime.now().minusWeeks(2).toDate();
 
-		when(journalpostListeRepository.findUbehandletjournalpostListe()).thenReturn(List.of(generateJournalpost(createdDate, "test")));
+		when(joarkRepository.findUbehandledeJournalposts(any(Date.class))).thenReturn(Optional.of(List.of(generateJournalpost(createdDate, "test"))));
 		List<UbehandletJournalpost> ubehandletJournalpostList = finnMottatteJournalposterService.finnMottatteJournalposter().getJournalposter();
 
-		assertThat(ubehandletJournalpostList.size(), is(1));
+		assertEquals(1, ubehandletJournalpostList.size());
 
 		UbehandletJournalpost ubehandletJournalpost = ubehandletJournalpostList.get(0);
 
-		assertThat(ubehandletJournalpost.getBehandlingstema(), is(Behandlingstema.ab0001));
-		assertThat(ubehandletJournalpost.getBruker().getId(), is("test"));
-		assertThat(ubehandletJournalpost.getBruker().getType(), is(BrukerTypeCode.PERSON));
-		assertThat(ubehandletJournalpost.getDatoOpprettet().equals(createdDate), is(true));
-		assertThat(ubehandletJournalpost.getJournalforendeEnhet(), is("test"));
-		assertThat(ubehandletJournalpost.getJournalpostId(), is((long) 300000000));
-		assertThat(ubehandletJournalpost.getJournalStatus(), is(JournalStatusCode.MO));
-		assertThat(ubehandletJournalpost.getTema(), is(FagomradeCode.PEN));
+		assertEquals(Behandlingstema.ab0001.name(), ubehandletJournalpost.getBehandlingstema());
+		assertEquals("test", ubehandletJournalpost.getBruker().getId());
+		assertEquals(BrukerTypeCode.PERSON.name(), ubehandletJournalpost.getBruker().getType());
+		assertEquals(createdDate, ubehandletJournalpost.getDatoOpprettet());
+		assertEquals("test", ubehandletJournalpost.getJournalforendeEnhet());
+		assertEquals(300000000L, ubehandletJournalpost.getJournalpostId());
+		assertEquals(JournalStatusCode.MO.name(), ubehandletJournalpost.getJournalStatus());
+		assertEquals(FagomradeCode.PEN.name(), ubehandletJournalpost.getTema());
 	}
 
 	@Test
@@ -85,15 +82,15 @@ public class FinnMottatteJournalposterTest {
 		journalpost.addBruker(youngest);
 		journalpost.addBruker(middle);
 
-		when(journalpostListeRepository.findUbehandletjournalpostListe()).thenReturn(List.of(journalpost));
+		when(joarkRepository.findUbehandledeJournalposts(any(Date.class))).thenReturn(Optional.of(List.of(journalpost)));
 		UbehandletJournalpost ubehandletJournalpost = finnMottatteJournalposterService.finnMottatteJournalposter().getJournalposter().get(0);
 
-		assertThat(ubehandletJournalpost.getBruker().getId(), is("youngest"));
+		assertEquals("youngest", ubehandletJournalpost.getBruker().getId());
 	}
 
 	@Test
 	public void handlesMultipleJournalposts() {
-		when(journalpostListeRepository.findUbehandletjournalpostListe()).thenReturn((List.of(
+		when(joarkRepository.findUbehandledeJournalposts(any(Date.class))).thenReturn(Optional.of(List.of(
 				generateJournalpost(),
 				generateJournalpost(),
 				generateJournalpost(),
@@ -101,58 +98,127 @@ public class FinnMottatteJournalposterTest {
 				generateJournalpost()
 		)));
 
-		assertThat(finnMottatteJournalposterService.finnMottatteJournalposter().getJournalposter().size(), is(5));
+		assertEquals(5, finnMottatteJournalposterService.finnMottatteJournalposter().getJournalposter().size());
 	}
 
 	@Test
 	public void throwsIfJournalpostDoesNotValidate() {
 		expectedException.expect(InvalidArgumentException.class);
-		expectedException.expectMessage("Journalpost.journalposttype must be set");
+		expectedException.expectMessage("journalStatusCode kan ikke være null");
 
-		when(journalpostListeRepository.findUbehandletjournalpostListe()).thenReturn(List.of(new Journalpost()));
+		when(joarkRepository.findUbehandledeJournalposts(any(Date.class))).thenReturn(Optional.of(List.of(new Journalpost())));
 		finnMottatteJournalposterService.finnMottatteJournalposter();
 	}
 
 	@Test
 	public void throwsIfYoungerThanAWeek() {
-		expectedException.expect(InputValideringFeiletException.class);
-		expectedException.expectMessage("changeStamp.createddate må være eldre enn en(1) uke");
+		expectedException.expect(InvalidArgumentException.class);
+		expectedException.expectMessage("changeStamp.createdDate må være eldre enn en(1) uke");
 
-		when(journalpostListeRepository.findUbehandletjournalpostListe()).thenReturn(List.of(generateJournalpost(DateTime.now().toDate())));
+		when(joarkRepository.findUbehandledeJournalposts(any(Date.class))).thenReturn(Optional.of(List.of(generateJournalpost(DateTime.now().toDate()))));
+		finnMottatteJournalposterService.finnMottatteJournalposter();
+	}
+
+	@Test
+	public void throwIfJournalpostTypeCodeIsNull(){
+		expectedException.expect(InvalidArgumentException.class);
+		expectedException.expectMessage("journalpostTypeCode kan ikke være null");
+
+		when(joarkRepository.findUbehandledeJournalposts(any(Date.class)))
+				.thenReturn(Optional.of(List.of(
+						generateJournalpost(
+								DateTime.now().minusWeeks(2).toDate(),
+								"unitTest",
+								BrukerTypeCode.PERSON,
+								null,
+								JournalStatusCode.MO)
+				)));
 		finnMottatteJournalposterService.finnMottatteJournalposter();
 	}
 
 	@Test
 	public void throwIfJournalpostIsNotTypeCodeI(){
-		expectedException.expect(InputValideringFeiletException.class);
-		expectedException.expectMessage("journalposttype må være I");
+		expectedException.expect(InvalidArgumentException.class);
+		expectedException.expectMessage("journalpostTypeCode må være I");
 
-		when(journalpostListeRepository.findUbehandletjournalpostListe())
-				.thenReturn(List.of(
+		when(joarkRepository.findUbehandledeJournalposts(any(Date.class)))
+				.thenReturn(Optional.of(List.of(
 						generateJournalpost(
 								DateTime.now().minusWeeks(2).toDate(),
 								"unitTest",
 								BrukerTypeCode.PERSON,
 								JournalpostTypeCode.U,
 								JournalStatusCode.MO)
-				));
+				)));
+		finnMottatteJournalposterService.finnMottatteJournalposter();
+	}
+
+	@Test
+	public void throwIfJournalpostStatusCodeisNull(){
+		expectedException.expect(InvalidArgumentException.class);
+		expectedException.expectMessage("journalStatusCode kan ikke være null");
+
+		when(joarkRepository.findUbehandledeJournalposts(any(Date.class)))
+				.thenReturn(Optional.of(List.of(
+						generateJournalpost(
+								DateTime.now().minusWeeks(2).toDate(),
+								"unitTest",
+								BrukerTypeCode.PERSON,
+								JournalpostTypeCode.I,
+								null)
+				)));
 		finnMottatteJournalposterService.finnMottatteJournalposter();
 	}
 
 	@Test
 	public void throwIfJournalpostIsNotStatusCodeMOorM(){
-		expectedException.expect(InputValideringFeiletException.class);
-		expectedException.expectMessage("journalstatus må være MO eller M");
+		expectedException.expect(InvalidArgumentException.class);
+		expectedException.expectMessage("journalStatusCode må være MO eller M");
 
-		when(journalpostListeRepository.findUbehandletjournalpostListe())
-				.thenReturn(List.of(
+		when(joarkRepository.findUbehandledeJournalposts(any(Date.class)))
+				.thenReturn(Optional.of(List.of(
 						generateJournalpost(
 								DateTime.now().minusWeeks(2).toDate(),
 								"unitTest",
 								BrukerTypeCode.PERSON,
 								JournalpostTypeCode.I,
 								JournalStatusCode.U)
-				));
+				)));
+		finnMottatteJournalposterService.finnMottatteJournalposter();
+	}
+
+	@Test
+	public void throwIfJournalpostChangeStampIsNull(){
+		expectedException.expect(InvalidArgumentException.class);
+		expectedException.expectMessage("ChangeStamp kan ikke være null");
+
+		Journalpost journalpost = generateJournalpost(
+				null,
+				"unitTest",
+				BrukerTypeCode.PERSON,
+				JournalpostTypeCode.I,
+				JournalStatusCode.MO);
+		journalpost.setChangeStamp(null);
+
+		when(joarkRepository.findUbehandledeJournalposts(any(Date.class)))
+				.thenReturn(Optional.of(List.of(journalpost)));
+		finnMottatteJournalposterService.finnMottatteJournalposter();
+	}
+
+	@Test
+	public void throwIfJournalpostCreatedDateIsNull(){
+		expectedException.expect(InvalidArgumentException.class);
+		expectedException.expectMessage("changeStamp.createdDate kan ikke være null");
+
+		when(joarkRepository.findUbehandledeJournalposts(any(Date.class)))
+				.thenReturn(Optional.of(List.of(
+						generateJournalpost(
+								null,
+								"unitTest",
+								BrukerTypeCode.PERSON,
+								JournalpostTypeCode.I,
+								JournalStatusCode.MO)
+				)));
 		finnMottatteJournalposterService.finnMottatteJournalposter();
 	}
 
