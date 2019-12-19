@@ -22,6 +22,7 @@ import java.lang.annotation.Target;
 		@ApiResponse(code = 200, message = "OK"),
 		@ApiResponse(code = 207, message = "Delvis ok (Multi-Status). Dokumentene som ikke lot seg knytte til journalpost som vedlegg returneres som en feiledeDokumenter-liste, med årsakskode."),
 		@ApiResponse(code = 401, message = "Konsument har ikke tilgang til å kalle tjenesten."),
+		@ApiResponse(code = 403, message = "Konsument har ikke tilgang til å kalle tjenesten"),
 		@ApiResponse(code = 404, message = " Journalpost finnes ikke eller er utilgjengelig"),
 		@ApiResponse(code = 500, message = "Internal server error")})
 public @interface SwaggerTilknyttVedlegg {

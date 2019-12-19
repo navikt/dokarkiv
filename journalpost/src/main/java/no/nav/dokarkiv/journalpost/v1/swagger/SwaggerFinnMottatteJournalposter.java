@@ -22,6 +22,7 @@ import java.lang.annotation.Target;
 		@ApiResponse(code = 200, message = "OK"),
 		@ApiResponse(code = 400, message = "Kall mangler enn eller flere påkrevde headere"),
 		@ApiResponse(code = 401, message = "Konsument har ikke tilgang til å kalle tjenesten."),
+		@ApiResponse(code = 403, message = "Konsument har ikke tilgang til å kalle tjenesten"),
 		@ApiResponse(code = 500, message = "Internal server error")})
 public @interface SwaggerFinnMottatteJournalposter {
 	@AliasFor(

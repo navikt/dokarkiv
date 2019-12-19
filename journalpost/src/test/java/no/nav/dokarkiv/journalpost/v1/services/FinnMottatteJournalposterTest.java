@@ -8,7 +8,6 @@ import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.entities.Bruker;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.core.util.TestDataUtils;
 import no.nav.dokarkiv.journalpost.v1.api.finnMottatteJournalposter.UbehandletJournalpost;
@@ -99,127 +98,6 @@ public class FinnMottatteJournalposterTest {
 		)));
 
 		assertEquals(5, finnMottatteJournalposterService.finnMottatteJournalposter().getJournalposter().size());
-	}
-
-	@Test
-	public void throwsIfJournalpostDoesNotValidate() {
-		expectedException.expect(InvalidArgumentException.class);
-		expectedException.expectMessage("journalStatusCode kan ikke være null");
-
-		when(joarkRepository.findUbehandledeJournalposts(any(Date.class))).thenReturn(Optional.of(List.of(new Journalpost())));
-		finnMottatteJournalposterService.finnMottatteJournalposter();
-	}
-
-	@Test
-	public void throwsIfYoungerThanAWeek() {
-		expectedException.expect(InvalidArgumentException.class);
-		expectedException.expectMessage("changeStamp.createdDate må være eldre enn en(1) uke");
-
-		when(joarkRepository.findUbehandledeJournalposts(any(Date.class))).thenReturn(Optional.of(List.of(generateJournalpost(DateTime.now().toDate()))));
-		finnMottatteJournalposterService.finnMottatteJournalposter();
-	}
-
-	@Test
-	public void throwIfJournalpostTypeCodeIsNull(){
-		expectedException.expect(InvalidArgumentException.class);
-		expectedException.expectMessage("journalpostTypeCode kan ikke være null");
-
-		when(joarkRepository.findUbehandledeJournalposts(any(Date.class)))
-				.thenReturn(Optional.of(List.of(
-						generateJournalpost(
-								DateTime.now().minusWeeks(2).toDate(),
-								"unitTest",
-								BrukerTypeCode.PERSON,
-								null,
-								JournalStatusCode.MO)
-				)));
-		finnMottatteJournalposterService.finnMottatteJournalposter();
-	}
-
-	@Test
-	public void throwIfJournalpostIsNotTypeCodeI(){
-		expectedException.expect(InvalidArgumentException.class);
-		expectedException.expectMessage("journalpostTypeCode må være I");
-
-		when(joarkRepository.findUbehandledeJournalposts(any(Date.class)))
-				.thenReturn(Optional.of(List.of(
-						generateJournalpost(
-								DateTime.now().minusWeeks(2).toDate(),
-								"unitTest",
-								BrukerTypeCode.PERSON,
-								JournalpostTypeCode.U,
-								JournalStatusCode.MO)
-				)));
-		finnMottatteJournalposterService.finnMottatteJournalposter();
-	}
-
-	@Test
-	public void throwIfJournalpostStatusCodeisNull(){
-		expectedException.expect(InvalidArgumentException.class);
-		expectedException.expectMessage("journalStatusCode kan ikke være null");
-
-		when(joarkRepository.findUbehandledeJournalposts(any(Date.class)))
-				.thenReturn(Optional.of(List.of(
-						generateJournalpost(
-								DateTime.now().minusWeeks(2).toDate(),
-								"unitTest",
-								BrukerTypeCode.PERSON,
-								JournalpostTypeCode.I,
-								null)
-				)));
-		finnMottatteJournalposterService.finnMottatteJournalposter();
-	}
-
-	@Test
-	public void throwIfJournalpostIsNotStatusCodeMOorM(){
-		expectedException.expect(InvalidArgumentException.class);
-		expectedException.expectMessage("journalStatusCode må være MO eller M");
-
-		when(joarkRepository.findUbehandledeJournalposts(any(Date.class)))
-				.thenReturn(Optional.of(List.of(
-						generateJournalpost(
-								DateTime.now().minusWeeks(2).toDate(),
-								"unitTest",
-								BrukerTypeCode.PERSON,
-								JournalpostTypeCode.I,
-								JournalStatusCode.U)
-				)));
-		finnMottatteJournalposterService.finnMottatteJournalposter();
-	}
-
-	@Test
-	public void throwIfJournalpostChangeStampIsNull(){
-		expectedException.expect(InvalidArgumentException.class);
-		expectedException.expectMessage("ChangeStamp kan ikke være null");
-
-		Journalpost journalpost = generateJournalpost(
-				null,
-				"unitTest",
-				BrukerTypeCode.PERSON,
-				JournalpostTypeCode.I,
-				JournalStatusCode.MO);
-		journalpost.setChangeStamp(null);
-
-		when(joarkRepository.findUbehandledeJournalposts(any(Date.class)))
-				.thenReturn(Optional.of(List.of(journalpost)));
-		finnMottatteJournalposterService.finnMottatteJournalposter();
-	}
-
-	@Test
-	public void throwIfJournalpostCreatedDateIsNull(){
-		expectedException.expect(InvalidArgumentException.class);
-		expectedException.expectMessage("changeStamp.createdDate kan ikke være null");
-
-		when(joarkRepository.findUbehandledeJournalposts(any(Date.class)))
-				.thenReturn(Optional.of(List.of(
-						generateJournalpost(
-								null,
-								"unitTest",
-								BrukerTypeCode.PERSON,
-								JournalpostTypeCode.I,
-								JournalStatusCode.MO)
-				)));
-		finnMottatteJournalposterService.finnMottatteJournalposter();
 	}
 
 	private Journalpost generateJournalpost(){

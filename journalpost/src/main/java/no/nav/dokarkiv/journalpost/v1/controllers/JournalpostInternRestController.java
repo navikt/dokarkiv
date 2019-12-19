@@ -114,36 +114,26 @@ public class JournalpostInternRestController {
 			@RequestHeader(value = NavHeaders.NAV_CONSUMER_ID, required = false) String consumerId,
 			@RequestHeader(value = HttpHeaders.AUTHORIZATION) String auth) {
 		MDC.put(MDC_REQUEST_ID, "finnMottatteJournalposter");
-		try {
-			assertThatConsumerIsSrvdokarkivproxy(auth);
 
-			/*
-			  TODO
-			   Det er kun servicebrukeren til joarkSikkerhetsnett (navngivning TBD) som får lov til å kalle tjenesten
-			   https://confluence.adeo.no/pages/viewpage.action?pageId=346917288
-			*/
+		assertThatConsumerIsSrvdokarkivproxy(auth);
 
-			addToMDC(callId, consumerId);
+		/*
+		  TODO
+		   Det er kun servicebrukeren til joarkSikkerhetsnett (navngivning TBD) som får lov til å kalle tjenesten
+		   https://confluence.adeo.no/pages/viewpage.action?pageId=346917288
+		*/
 
-			RequestContextUtil.createAndSetUsername("finnMottatteJournalposter", "dokarkiv");
+		addToMDC(callId, consumerId);
 
-			log.info(MDC.get(MDC_REQUEST_ID) + " har mottatt kall om å hente ubehandlede journalposter");
+		RequestContextUtil.createAndSetUsername("finnMottatteJournalposter", "dokarkiv");
 
-			FinnMottatteJournalposterResponse ubehandledeJournalposter = finnMottatteJournalposterService.finnMottatteJournalposter();
+		log.info(MDC.get(MDC_REQUEST_ID) + " har mottatt kall om å hente ubehandlede journalposter");
 
-			return ResponseEntity
-					.ok()
-					.body(ubehandledeJournalposter);
+		FinnMottatteJournalposterResponse ubehandledeJournalposter = finnMottatteJournalposterService.finnMottatteJournalposter();
 
-		} catch (DokarkivFunctionalException e) {
-			log.warn("finnMottatteJournalposter - feilet funksjonelt ved henting av ubehandlede journalposter. Feilmelding={}", e
-					.getMessage());
-			throw e;
-		} catch (DokarkivTechnicalException e) {
-			log.error("finnMottatteJournalposter - feilet teknisk ved henting av ubehandlede journalposter. Feilmelding={}", e
-					.getMessage());
-			throw e;
-		}
+		return ResponseEntity
+				.ok()
+				.body(ubehandledeJournalposter);
 	}
 
 	private void addValueToMDC(String key, String value) {

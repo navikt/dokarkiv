@@ -32,7 +32,6 @@ public class UbehandletJournalpost {
 	)
 	private String journalStatus;
 
-	@NotNull(message = "Mottakskanal til journalpost")
 	@ApiModelProperty(
 			value = "Mottakskanal til journalpost i Joark",
 			required = true,
@@ -45,7 +44,6 @@ public class UbehandletJournalpost {
 	)
 	private UbehandletBruker bruker;
 
-	@NotNull(message = "Temakode til journalpost mangler")
 	@ApiModelProperty(
 			value = "Temakode til journalpost i Joark",
 			required = true,
@@ -53,7 +51,6 @@ public class UbehandletJournalpost {
 	)
 	private String tema;
 
-	@NotNull(message = "Behandlingstema til journalpost mangler")
 	@ApiModelProperty(
 			value = "Behandlingstema journalpost i Joark",
 			required = true,
@@ -61,7 +58,6 @@ public class UbehandletJournalpost {
 	)
 	private String behandlingstema;
 
-	@NotNull(message = "Journalførende enhet for journalpost mangler")
 	@ApiModelProperty(
 			value = "journalførende enhet for journalpost i Joark",
 			required = true,

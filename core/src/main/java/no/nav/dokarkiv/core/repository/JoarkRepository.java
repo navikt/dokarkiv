@@ -41,8 +41,8 @@ public interface JoarkRepository extends CrudRepository<Journalpost, Long> {
 			"journalpostDokumentInfoRelasjoner.dokumentInfo.fildetaljerListe", "journalpostDokumentInfoRelasjoner.dokumentInfo.journalpostRelasjoner"})
 	Optional<List<Journalpost>> findJournalposterBySakIdAndFagsystem(@Param("sakId") List<String> sakIdList, @Param("fagsystem") FagsystemCode fagsystemCode);
 
-	@Query(value = "SELECT * FROM t_journalpost j WHERE j.k_journal_s IN ('M', 'MO') AND j.k_journalpost_t = 'I' AND j.dato_opprettet < :dateCreated", nativeQuery = true)
-	Optional<List<Journalpost>> findUbehandledeJournalposts(@Param("dateCreated")Date dateCreated);
+	@Query(value = "SELECT * FROM t_journalpost j WHERE j.k_journal_s IN ('M', 'MO') AND j.k_journalpost_t = 'I' AND j.dato_opprettet <= :tilOgMedDato", nativeQuery = true)
+	Optional<List<Journalpost>> findUbehandledeJournalposts(@Param("tilOgMedDato")Date tilOgMedDato);
 
 	Optional<Journalpost> findJournalpostByKanalReferanseId(String kanalReferanseId);
 
