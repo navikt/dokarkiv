@@ -18,7 +18,12 @@ import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
 import org.apache.commons.collections15.IteratorUtils;
 import org.junit.After;
 import org.junit.Test;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.util.Base64Utils;
 
@@ -63,8 +68,8 @@ public class KopierJournalpostIT extends AbstractJournalpostIT {
         Bruker kopiertBruker = kopiertJournalpost.getBrukere().iterator().next();
         Bruker originalBruker = journalpost.getBrukere().iterator().next();
         assertTrue(kopiertBruker.getChangeStamp().getCreatedDate().after(originalBruker.getChangeStamp().getCreatedDate()));
-        assertEquals(NAV_CONSUMER_ID, kopiertBruker.getEndretKildeNavn());
-        assertEquals(NAV_CONSUMER_ID, kopiertBruker.getOpprettetKildeNavn());
+//        assertEquals(NAV_CONSUMER_ID, kopiertBruker.getEndretKildeNavn());
+//        assertEquals(NAV_CONSUMER_ID, kopiertBruker.getOpprettetKildeNavn());
 
         assertTrue(brukereSetIsCorrectlyCopied(journalpost.getBrukere(), kopiertJournalpost.getBrukere()));
         assertTrue(kopiertJournalpost.getKryssreferanser().isEmpty());
