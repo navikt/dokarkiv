@@ -16,16 +16,15 @@ import java.lang.annotation.Target;
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@ApiOperation(value = "Knytter ett eller flere eksisterende dokumenter til en utgående journalpost som vedlegg",
+@ApiOperation(value = "Finner ubehandlede journalposts som er eldre enn 1(en) uke",
 		authorizations = {@Authorization(value = "Authorization"), @Authorization(value = "NavConsumerToken")})
 @ApiResponses(value = {
 		@ApiResponse(code = 200, message = "OK"),
-		@ApiResponse(code = 207, message = "Delvis ok (Multi-Status). Dokumentene som ikke lot seg knytte til journalpost som vedlegg returneres som en feiledeDokumenter-liste, med årsakskode."),
+		@ApiResponse(code = 400, message = "Kall mangler enn eller flere påkrevde headere"),
 		@ApiResponse(code = 401, message = "Konsument har ikke tilgang til å kalle tjenesten."),
 		@ApiResponse(code = 403, message = "Konsument har ikke tilgang til å kalle tjenesten"),
-		@ApiResponse(code = 404, message = " Journalpost finnes ikke eller er utilgjengelig"),
 		@ApiResponse(code = 500, message = "Internal server error")})
-public @interface SwaggerTilknyttVedlegg {
+public @interface SwaggerFinnMottatteJournalposter {
 	@AliasFor(
 			annotation = RequestMapping.class
 	)
