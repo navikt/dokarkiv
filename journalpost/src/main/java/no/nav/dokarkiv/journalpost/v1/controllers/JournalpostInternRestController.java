@@ -79,7 +79,7 @@ public class JournalpostInternRestController {
 
 			RequestContextUtil.createAndSetUsername("tilknyttVedlegg", "dokarkiv");
 
-			log.info(MDC.get(MDC_REQUEST_ID) + " har mottatt kall om å legge til vedlegg på journalpostId={}", journalpostId);
+			log.info("tilknyttVedlegg har mottatt kall om å legge til vedlegg på journalpostId={}", journalpostId);
 
 			List<FeiledeDokumenter> feiledeDokumenterList = tilknyttVedleggService.tilknyttVedlegg(Long.parseLong(journalpostId), request, consumerId);
 
@@ -127,7 +127,7 @@ public class JournalpostInternRestController {
 
 		RequestContextUtil.createAndSetUsername("finnMottatteJournalposter", "dokarkiv");
 
-		log.info(MDC.get(MDC_REQUEST_ID) + " har mottatt kall om å hente ubehandlede journalposter");
+		log.info("finnMottatteJournalposter har mottatt kall om å hente ubehandlede journalposter");
 
 		FinnMottatteJournalposterResponse ubehandledeJournalposter = finnMottatteJournalposterService.finnMottatteJournalposter();
 
@@ -145,7 +145,6 @@ public class JournalpostInternRestController {
 	private void addToMDC(String callId, String consumerId) {
 		addValueToMDC(MDCConstants.MDC_CALL_ID, callId);
 		addValueToMDC(MDCConstants.MDC_CONSUMER_ID, consumerId);
-		MDC.put(MDC_REQUEST_ID, "tilknyttVedlegg");
 	}
 
 	private void assertThatConsumerIsSrvdokarkivproxy(String auth) {
