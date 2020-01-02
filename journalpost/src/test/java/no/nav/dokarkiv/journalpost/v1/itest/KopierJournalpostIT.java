@@ -57,6 +57,10 @@ public class KopierJournalpostIT extends AbstractJournalpostIT {
 
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
 
+        TestTransaction.flagForCommit();
+        TestTransaction.end();
+        TestTransaction.start();
+
         Journalpost kopiertJournalpost = joarkRepository.findById(Long.parseLong(response.getBody())).orElseThrow(RuntimeException::new);
         journalpost = joarkRepository.findById(journalpostId).orElseThrow(RuntimeException::new);
 
@@ -68,8 +72,8 @@ public class KopierJournalpostIT extends AbstractJournalpostIT {
         Bruker kopiertBruker = kopiertJournalpost.getBrukere().iterator().next();
         Bruker originalBruker = journalpost.getBrukere().iterator().next();
         assertTrue(kopiertBruker.getChangeStamp().getCreatedDate().after(originalBruker.getChangeStamp().getCreatedDate()));
-//        assertEquals(NAV_CONSUMER_ID, kopiertBruker.getEndretKildeNavn());
-//        assertEquals(NAV_CONSUMER_ID, kopiertBruker.getOpprettetKildeNavn());
+        assertEquals(SERVICE_USER_ID, kopiertBruker.getEndretKildeNavn());
+        assertEquals(SERVICE_USER_ID, kopiertBruker.getOpprettetKildeNavn());
 
         assertTrue(brukereSetIsCorrectlyCopied(journalpost.getBrukere(), kopiertJournalpost.getBrukere()));
         assertTrue(kopiertJournalpost.getKryssreferanser().isEmpty());

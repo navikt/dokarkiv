@@ -1,6 +1,7 @@
 package no.nav.dokarkiv.journalpost.v1.controllers;
 
 import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
+import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
 import static no.nav.dokarkiv.core.util.DecodeUtils.decodeBasicAuth;
 import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateId;
 
@@ -49,6 +50,7 @@ public class JournalpostInternRestController {
     private final TilknyttVedleggService tilknyttVedleggService;
     private final KopierJournalpostService kopierJournalpostService;
     private static final String SRVDOKARKIVPROXY = "srvdokarkivproxy";
+    private static final String SRVJOARKADMIN = "srvjoarkadmin";
 
     @Inject
     public JournalpostInternRestController(final TilknyttVedleggService tilknyttVedleggService,
@@ -113,10 +115,11 @@ public class JournalpostInternRestController {
         try {
             assertThatConsumerIsSrvdokarkivproxy(auth);
 
+            addValueToMDC(MDCConstants.MDC_CONSUMER_ID, SRVJOARKADMIN);
             MDC.put(MDC_REQUEST_ID, "rjoark203");
             log.info(MDC.get(MDC_REQUEST_ID) + " har mottatt kall for kopiering av journalpost med journalpostId={}", kildeJournalpostId);
             validateId(kildeJournalpostId, "journalpostId");
-            RequestContextUtil.createAndSetUsername("kopierJournalpost", "dokarkiv");       // Etter modell fra tilknyttVedlegg
+            RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
 
             Long nyJournalpostId = kopierJournalpostService.execute(Long.parseLong(kildeJournalpostId));
 
