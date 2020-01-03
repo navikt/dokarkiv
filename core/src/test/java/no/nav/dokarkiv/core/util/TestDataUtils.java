@@ -2,6 +2,7 @@ package no.nav.dokarkiv.core.util;
 
 import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggTO;
 import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
+import no.nav.dokarkiv.core.domain.ChangeStamp;
 import no.nav.dokarkiv.core.domain.builder.BrukerBuilder;
 import no.nav.dokarkiv.core.domain.builder.ChangeStampBuilder;
 import no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder;
@@ -10,6 +11,7 @@ import no.nav.dokarkiv.core.domain.builder.JournalpostBuilder;
 import no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder;
 import no.nav.dokarkiv.core.domain.builder.SaksrelasjonBuilder;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
+import no.nav.dokarkiv.core.domain.codes.Behandlingstema;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
@@ -21,6 +23,7 @@ import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
 import org.joda.time.DateTime;
 
 import java.util.Arrays;
@@ -173,6 +176,47 @@ public class TestDataUtils {
 
 	public static Journalpost createJournalpost() {
 		return createJournalpost("123", DateTime.now().toDate(), JournalStatusCode.J, FagomradeCode.PEN).build();
+	}
+
+	public static Journalpost createUbehandletJournalpost(
+			Date date,
+			JournalpostTypeCode journalpostTypeCode,
+			JournalStatusCode journalStatusCode
+	) {
+
+		Map<String, String> tilleggsopplysninger = new HashMap<>();
+		tilleggsopplysninger.put("key", "value");
+
+		Journalpost journalpost = Journalpost
+				.builder()
+				.opprettetAvNavn("test")
+				.journalposttype(journalpostTypeCode)
+				.journalstatus(journalStatusCode)
+				.journalpostId((long) 300000000)
+				.journalForendeEnhetId("test")
+				.journalDato(date)
+				.kanalReferanseId("kanal")
+				.endretAvNavn("test")
+				.fagomrade(FagomradeCode.PEN)
+				.mottakskanal(MottaksKanalCode.NAV_NO)
+				.behandlingstema(Behandlingstema.ab0001)
+				.build();
+
+		Saksrelasjon saksrelasjon = Saksrelasjon
+				.builder()
+				.sakId("test")
+				.fagsystem(FagsystemCode.PEN)
+				.feilregistrert(false)
+				.saksrelasjonId((long) 300000000)
+				.journalpost(journalpost)
+				.build();
+		saksrelasjon.setOpprettetKildeNavn("test");
+
+		journalpost.setSaksrelasjon(saksrelasjon);
+		journalpost.setOpprettetKildeNavn("itest");
+		journalpost.setChangeStamp(new ChangeStamp("createdBy", date, "String updatedBy", date));
+
+		return journalpost;
 	}
 
 }

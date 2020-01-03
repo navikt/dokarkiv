@@ -29,7 +29,6 @@ import no.nav.dokarkiv.journalpost.v1.api.Sak;
 import no.nav.dokarkiv.journalpost.v1.api.Sakstype;
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.mappers.OpprettJournalpostApiRequestMapper;
-import no.nav.dokarkiv.journalpost.v1.util.TestUtils;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -37,12 +36,14 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.sql.Date;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.Collections;
 
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.AVSENDER_ID_PERSON;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.AVSENDER_MOTTAKER_LAND;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.AVSENDER_NAVN;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.BREVKODE1;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.BREVKODE2;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.BRUKER_ID_PERSON;
@@ -90,7 +91,8 @@ public class OpprettJournalpostApiRequestMapperTest {
 		assertEquals(JournalpostTypeCode.I, jp.getJournalposttype());
 		assertEquals(JournalStatusCode.M, jp.getJournalstatus());
 		assertEquals(AVSENDER_ID_PERSON, jp.getAvsenderMottakerId());
-		assertEquals(TestUtils.AVSENDER_NAVN, jp.getAvsenderMottaker());
+		assertEquals(AVSENDER_NAVN, jp.getAvsenderMottaker());
+		assertEquals(AVSENDER_MOTTAKER_LAND, jp.getLand());
 		assertEquals(BRUKER_ID_PERSON, jp.getBrukere().iterator().next().getBrukerId());
 		assertEquals(BrukerTypeCode.PERSON, jp.getBrukere().iterator().next().getBrukerType());
 		assertEquals(FagomradeCode.FOR, jp.getFagomrade());
@@ -168,11 +170,12 @@ public class OpprettJournalpostApiRequestMapperTest {
 				.datoMottatt(null)
 				.build();
 		Journalpost journalpost = mapper.map(request, null);
-		assertEquals(journalpost.getMottattDato(), Date.valueOf(LocalDate.now()));
+		// Sjekk om det er den samme datoen som dagens dato.
+		assertEquals(LocalDate.ofInstant(journalpost.getMottattDato().toInstant(), ZoneId.systemDefault()), LocalDate.now());
 	}
 
 	@Test
-	public void shoulSetDatoMottatNullWhenJpTypeUttgaaende() {
+	public void shoulSetDatoMottatNullWhenJpTypeUtgaaende() {
 		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.UTGAAENDE)
 				.datoMottatt(DATO_MOTTATT)
 				.build();

@@ -28,7 +28,6 @@ import no.nav.dokarkiv.journalpost.v1.api.BrukerIdType;
 import no.nav.dokarkiv.journalpost.v1.api.Dokument;
 import no.nav.dokarkiv.journalpost.v1.api.DokumentVariant;
 import no.nav.dokarkiv.journalpost.v1.api.DokumentVedlegg;
-import no.nav.dokarkiv.journalpost.v1.api.FjernVedleggTilknyttetJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.JournalpostType;
 import no.nav.dokarkiv.journalpost.v1.api.OppdaterJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.Sak;
@@ -38,6 +37,7 @@ import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostR
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -61,16 +61,16 @@ public class TestUtils {
 	public static final String AVSENDER_ID_HELSEPERSONELLNR = "123456789";
 	public static final String AVSENDER_ID_UTLORGANISASJON = "123456789";
 
-
+	public static final Date MOTTAT_DATO = Date.from(LocalDateTime.of(2017, 2, 3, 10, 37, 30).toInstant(ZoneOffset.UTC));
 	public static final String BRUKER_ID_PERSON = "***gammelt_fnr***";
 	public static final String BRUKER_ID_ORGANISASJON = "987654321";
-    public static final String SAK_ID = "12345";
+	public static final String SAK_ID = "12345";
 	public static final String FAGSAK_ID = "fagsakId";
 	public static final String ARKIVSAKSNUMMER = "1234567890";
 	public static final String INNHOLD = "innhold";
 	public static final String KANALREFERANSE_ID = "kanalreferansId";
-	public static final Date  DATO_MOTTATT = java.sql.Date.valueOf(LocalDate.now().minusDays(3));
-	public static final Date DATO_MOTTATT_1 = java.sql.Date.valueOf(LocalDate.now().minusDays(3));
+	public static final Date DATO_MOTTATT = Date.from(LocalDate.now().minusDays(3).atStartOfDay(ZoneId.systemDefault()).toInstant());
+	public static final Date DATO_MOTTATT_1 = Date.from(LocalDate.now().minusDays(3).atStartOfDay(ZoneId.systemDefault()).toInstant());
 	public static final String JOURNALFOERENDE_ENHET = "journalfoerendeEnhet";
 	public static final String DOKUMENTINFO_ID1 = "1234567";
 	public static final String DOKUMNETTYPE_ID1 = "dokumenttypeID1";
@@ -153,7 +153,7 @@ public class TestUtils {
 				.innhold(INNHOLD)
 				.kanalReferanseId(KANALREFERANSE_ID)
 				.mottakskanal(MottaksKanalCode.ALTINN)
-				.mottattDato(Date.from(LOCAL_DATE_TIME.toInstant(ZoneOffset.UTC)))
+				.mottattDato(MOTTAT_DATO)
 				.journalForendeEnhetId(JOURNALFOERENDE_ENHET)
 				.saksrelasjon(Saksrelasjon.builder()
 						.sakId(SAK_ID)
@@ -281,6 +281,7 @@ public class TestUtils {
 				.build();
 	}
 
+
 	public static OppdaterJournalpostRequest createPutOppdaterJournalpostRequestWithDatoMottat(Date date) {
 		return OppdaterJournalpostRequest.builder()
 				.avsenderMottaker(createAvsenderMottakerPerson())
@@ -288,6 +289,19 @@ public class TestUtils {
 				.sak(createSak())
 				.tema(TEMA_FOR)
 				.datoMottatt(date)
+				.behandlingstema(BEHANDLINGSTEMA)
+				.tittel(DOKUMENT_TITTEL1)
+				.tilleggsopplysninger(createTilleggsopplysninger())
+				.dokumenter(createDokumentInfos())
+				.build();
+	}
+
+	public static OppdaterJournalpostRequest createPutOppdaterJournalpostRequestUtenDatoMottat() {
+		return OppdaterJournalpostRequest.builder()
+				.avsenderMottaker(createAvsenderMottakerPerson())
+				.bruker(createBrukerPerson())
+				.sak(createSak())
+				.tema(TEMA_FOR)
 				.behandlingstema(BEHANDLINGSTEMA)
 				.tittel(DOKUMENT_TITTEL1)
 				.tilleggsopplysninger(createTilleggsopplysninger())
@@ -472,6 +486,7 @@ public class TestUtils {
 						.id(AVSENDER_ID_PERSON)
 						.idType(AvsenderMottakerIdType.FNR)
 						.navn(AVSENDER_NAVN)
+						.land(AVSENDER_MOTTAKER_LAND)
 						.build())
 				.bruker(no.nav.dokarkiv.journalpost.v1.api.Bruker.builder()
 						.idType(BrukerIdType.FNR)
@@ -491,17 +506,17 @@ public class TestUtils {
 						.arkivsaksnummer(SAK_ID)
 						.arkivsaksystem(Arkivsaksystem.GSAK)
 						.build());
-    }
+	}
 
 	public static OpprettJournalpostRequest.OpprettJournalpostRequestBuilder createMinimalRequest(JournalpostType journalpostType) {
 		return OpprettJournalpostRequest.builder()
 				.journalpostType(journalpostType)
-                .dokumenter(Collections.singletonList(
-                        Dokument.builder()
-                                .tittel(DOKUMENT_TITTEL1)
-                                .brevkode(BREVKODE1)
-                                .dokumentKategori(DOKUMENTKATEGORI_SED)
-                                .build()));
+				.dokumenter(Collections.singletonList(
+						Dokument.builder()
+								.tittel(DOKUMENT_TITTEL1)
+								.brevkode(BREVKODE1)
+								.dokumentKategori(DOKUMENTKATEGORI_SED)
+								.build()));
 	}
 
 	public static OpprettJournalpostRequest createRequestAvsenderMottaker(JournalpostType journalpostType, AvsenderMottaker avsenderMottaker) {

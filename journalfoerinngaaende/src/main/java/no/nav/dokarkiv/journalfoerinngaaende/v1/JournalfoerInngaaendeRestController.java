@@ -26,6 +26,8 @@ import no.nav.dokarkiv.journalfoerinngaaende.v1.rjoark001i.GetInngaaendeJournalp
 import no.nav.dokarkiv.journalfoerinngaaende.v1.rjoark002i.UpdateInngaaendeJournalpostService;
 import no.nav.dokarkiv.journalfoerinngaaende.v1.rjoark003i.UpdateInngaaendeJournalpostDokumentService;
 import no.nav.dokarkiv.journalfoerinngaaende.v1.rjoark004i.LogiskVedleggService;
+import no.nav.dokarkiv.journalfoerinngaaende.v1.support.JournalpostValidator;
+import no.nav.dokarkiv.journalfoerinngaaende.v1.to.PostLogiskVedleggRequestTo;
 import no.nav.dokarkiv.journalfoerinngaaende.v1.util.Utils;
 import no.nav.freg.abac.core.annotation.Abac;
 import org.slf4j.MDC;

@@ -24,7 +24,6 @@ import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
-import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -113,7 +112,7 @@ public class JournalpostUpdater {
 
 		if (JournalpostTypeCode.I.equals(journalpost.getJournalposttype())) {
 			if (oppdaterJournalpostRequest.getDatoMottatt() == null) {
-				journalpost.setMottattDato(java.sql.Date.valueOf(LocalDate.now()));
+				return;
 			} else {
 				journalpost.setMottattDato(oppdaterJournalpostRequest.getDatoMottatt());
 			}
