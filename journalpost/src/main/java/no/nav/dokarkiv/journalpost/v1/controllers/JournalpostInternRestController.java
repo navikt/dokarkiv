@@ -67,12 +67,6 @@ public class JournalpostInternRestController {
 		this.finnMottatteJournalposterService = finnMottatteJournalposterService;
         this.kopierJournalpostService = kopierJournalpostService;
 	}
-//    @Inject
-//    public JournalpostInternRestController(final TilknyttVedleggService tilknyttVedleggService,
-//                                           final KopierJournalpostService kopierJournalpostService) {
-//        this.tilknyttVedleggService = tilknyttVedleggService;
-//        this.kopierJournalpostService = kopierJournalpostService;
-//    }
 
     @Transactional
     @SwaggerTilknyttVedlegg
