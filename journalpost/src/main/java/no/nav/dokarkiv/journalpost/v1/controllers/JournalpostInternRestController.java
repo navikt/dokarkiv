@@ -152,11 +152,13 @@ public class JournalpostInternRestController {
     public ResponseEntity<Long> kopierJournalpost(
             @io.swagger.annotations.ApiParam(name = "kildeJournalpostId", value = "IDen til journalposten som skal kopieres", required = true, example = "77778888")
             @RequestHeader(value = HttpHeaders.AUTHORIZATION) String auth,
+			@RequestHeader(value = NavHeaders.NAV_USER_ID) String userId,
             @RequestParam String kildeJournalpostId) {
         try {
             assertThatConsumerIsSrvdokarkivproxy(auth);
 
-            addValueToMDC(MDCConstants.MDC_CONSUMER_ID, SRVJOARKADMIN);
+            addValueToMDC(MDCConstants.MDC_USER_ID, userId);
+//			addValueToMDC(MDCConstants.MDC_CONSUMER_ID, userId);	//TODO: Fjernes når EndretKildeNavn settes fra userID.
             MDC.put(MDC_REQUEST_ID, "rjoark203");
             log.info(MDC.get(MDC_REQUEST_ID) + " har mottatt kall for kopiering av journalpost med journalpostId={}", kildeJournalpostId);
             validateId(kildeJournalpostId, "journalpostId");
