@@ -422,7 +422,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		assertEquals(null, dokumentInfoKopi.getEndretAvNavn());
 		assertEquals(sourceDokumentInfo.getKassertAvNavn(), dokumentInfoKopi.getKassertAvNavn());
 		assertEquals(sourceDokumentInfo.getDatoKassert(), dokumentInfoKopi.getDatoKassert());
-		assertThat(dokumentInfoKopi.getOpprettetKildeNavn(), is(NAV_CONSUMER_ID));
+		assertThat(dokumentInfoKopi.getOpprettetKildeNavn(), is(GYLDIG_CONSUMER));
 		assertEquals(null, dokumentInfoKopi.getEndretKildeNavn());
 
 	}
@@ -433,7 +433,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		assertEquals(sourceFilDetaljer.getOnDemandInstans(), filDetaljerKopi.getOnDemandInstans());
 		assertEquals(sourceFilDetaljer.getMetaforceInstanceId(), filDetaljerKopi.getMetaforceInstanceId());
 		assertThat(filDetaljerKopi.getVariantFormat(), is(VariantFormatCode.ARKIV));
-		assertThat(filDetaljerKopi.getOpprettetKildeNavn(), is(NAV_CONSUMER_ID));
+		assertThat(filDetaljerKopi.getOpprettetKildeNavn(), is(GYLDIG_CONSUMER));
 		assertEquals(sourceFilDetaljer.getBatchNavn(), filDetaljerKopi.getBatchNavn());
 		assertEquals(sourceFilDetaljer.getFilnavn(), filDetaljerKopi.getFilnavn());
 		assertEquals(sourceFilDetaljer.getFilstorrelse(), filDetaljerKopi.getFilstorrelse());
@@ -443,7 +443,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 
 	private void assertDokumentFil(DokumentFil sourceDokumentFil, DokumentFil dokumentFilKopi) {
 		assertEquals(new String(sourceDokumentFil.getFil()), new String(dokumentFilKopi.getFil()));
-		assertThat(dokumentFilKopi.getOpprettetKildeNavn(), is(NAV_CONSUMER_ID));
+		assertThat(dokumentFilKopi.getOpprettetKildeNavn(), is(GYLDIG_CONSUMER));
 	}
 
 	private TilknyttVedleggRequest createTilknyttVedleggRequest(List<DokumentVedlegg> dokumentVedleggList) {

@@ -62,6 +62,7 @@ public class TilknyttVedleggRequestValidatorTest {
 
 	@Test
 	public void shouldThrowExceptionIfconsumerIdIsMissing() {
+		MDC.clear();
 		tilknyttVedleggRequest = createTilknyttVedleggRequest();
 
 		expectedException.expect(InvalidNavConsumerIdFunctionalException.class);
