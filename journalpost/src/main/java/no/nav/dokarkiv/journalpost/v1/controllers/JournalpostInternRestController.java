@@ -74,7 +74,6 @@ public class JournalpostInternRestController {
     @RestMetrics(value = "dok_request", extraTags = {"process_code", "tilknyttVedlegg"}, percentiles = {0.5, 0.95})
     public ResponseEntity<TilknyttVedleggResponse> tilknyttVedlegg(
             @PathVariable String journalpostId,
-            @RequestHeader(value = NavHeaders.NAV_CONSUMER_ID, required = false) String consumerId,
             @RequestHeader(value = HttpHeaders.AUTHORIZATION) String auth,
             @RequestBody TilknyttVedleggRequest request) {
         MDC.put(MDC_REQUEST_ID, "tilknyttVedlegg");
@@ -85,7 +84,7 @@ public class JournalpostInternRestController {
 
 			log.info("tilknyttVedlegg har mottatt kall om å legge til vedlegg på journalpostId={}", journalpostId);
 
-			List<FeiledeDokumenter> feiledeDokumenterList = tilknyttVedleggService.tilknyttVedlegg(Long.parseLong(journalpostId), request, consumerId);
+			List<FeiledeDokumenter> feiledeDokumenterList = tilknyttVedleggService.tilknyttVedlegg(Long.parseLong(journalpostId), request);
 
 			if (feiledeDokumenterList.isEmpty()) {
 				return ResponseEntity

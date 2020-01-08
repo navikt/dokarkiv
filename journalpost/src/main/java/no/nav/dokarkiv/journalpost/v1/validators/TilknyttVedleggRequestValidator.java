@@ -4,7 +4,9 @@ import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
 import no.nav.dokarkiv.core.exceptions.InvalidNavConsumerIdFunctionalException;
 import no.nav.dokarkiv.journalpost.v1.api.DokumentVedlegg;
 import no.nav.dokarkiv.journalpost.v1.api.TilknyttVedleggRequest;
+import org.slf4j.MDC;
 
+import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 /**
@@ -12,8 +14,8 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
  */
 public class TilknyttVedleggRequestValidator {
 
-	public void validateRequest(TilknyttVedleggRequest request, String navConsumerId) {
-		if (navConsumerId == null) {
+	public void validateRequest(TilknyttVedleggRequest request) {
+		if (isBlank(MDC.get(MDC_CONSUMER_ID))) {
 			throw new InvalidNavConsumerIdFunctionalException(String.format("Nav-Consumer-Id kan ikke være null"));
 		}
 		validateTilknyttetAvNavn(request.getTilknyttetAvNavn());

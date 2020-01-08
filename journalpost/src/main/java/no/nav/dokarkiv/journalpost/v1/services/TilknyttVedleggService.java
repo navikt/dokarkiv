@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.journalpost.v1.services;
 
+import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
 
 import lombok.extern.slf4j.Slf4j;
@@ -58,9 +59,9 @@ public class TilknyttVedleggService {
 		this.tilknyttVedleggRequestValidator = new TilknyttVedleggRequestValidator();
 	}
 
-	public List<FeiledeDokumenter> tilknyttVedlegg(Long targetJournalpostId, TilknyttVedleggRequest tilknyttVedleggRequest, String consumerId) {
+	public List<FeiledeDokumenter> tilknyttVedlegg(Long targetJournalpostId, TilknyttVedleggRequest tilknyttVedleggRequest) {
 
-		tilknyttVedleggRequestValidator.validateRequest(tilknyttVedleggRequest, consumerId);
+		tilknyttVedleggRequestValidator.validateRequest(tilknyttVedleggRequest);
 
 		List<FeiledeDokumenter> feiledeDokumenter = new ArrayList<>();
 		tilKnyttetAvNavn = tilknyttVedleggRequest.getTilknyttetAvNavn();
@@ -86,7 +87,7 @@ public class TilknyttVedleggService {
 			}
 
 			if (filDetaljerSladdet != null) {
-				tilknyttDokumentInfoCopySomVedleggPaaJournalpost(targetJournalpostId, sourceDokumentInfo, filDetaljerSladdet, dokumentVedlegg, targetJournalpost, feiledeDokumenter, consumerId);
+				tilknyttDokumentInfoCopySomVedleggPaaJournalpost(targetJournalpostId, sourceDokumentInfo, filDetaljerSladdet, dokumentVedlegg, targetJournalpost, feiledeDokumenter);
 			} else if (filDetaljerArkiv != null) {
 				tilknyttDokumentInfoSomVedleggPaaJournalpost(sourceDokumentInfo, dokumentVedlegg, targetJournalpost, feiledeDokumenter);
 			} else {
@@ -97,9 +98,10 @@ public class TilknyttVedleggService {
 		return feiledeDokumenter;
 	}
 
-	private void tilknyttDokumentInfoCopySomVedleggPaaJournalpost(Long targetJournalpostId, DokumentInfo sourceDokumentInfo, FilDetaljer filDetaljerSladdet, DokumentVedlegg dokumentVedlegg, Journalpost journalpost, List<FeiledeDokumenter> feiledeDokumenterList, String consumerId) {
+	private void tilknyttDokumentInfoCopySomVedleggPaaJournalpost(Long targetJournalpostId, DokumentInfo sourceDokumentInfo, FilDetaljer filDetaljerSladdet, DokumentVedlegg dokumentVedlegg, Journalpost journalpost, List<FeiledeDokumenter> feiledeDokumenterList) {
 		log.info(MDC.get(MDC_REQUEST_ID) + " legger til en kopi av dokumentinfo med dokumentInfoId={} på journalpost journalpostId={} da variant=SLADDET. Kopi av dokumentinfo vil få variant=ARKIV", dokumentVedlegg
 				.getDokumentInfoId(), targetJournalpostId);
+		String consumerId = MDC.get(MDC_CONSUMER_ID);
 		DokumentInfo dokumentInfoCopy = createDokumentInfoCopy(sourceDokumentInfo, consumerId);
 
 		FilDetaljer fildetaljerCopy = createFildetaljerCopy(filDetaljerSladdet, dokumentInfoCopy, consumerId);
