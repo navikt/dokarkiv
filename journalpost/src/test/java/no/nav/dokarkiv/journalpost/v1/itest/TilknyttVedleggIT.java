@@ -293,6 +293,30 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 	}
 
 	@Test
+	public void shouldReturnInvalidRequestForMissingTilknytetAvNavn() {
+		Journalpost journalpostVedlegg = createJournalpostArkiv();
+		Journalpost sourceJournalpost = createJournalpostSladdet();
+		Long journalpostIdVedlegg = joarkRepository.save(journalpostVedlegg).getJournalpostId();
+		Long sourceJournalpostId = joarkRepository.save(sourceJournalpost).getJournalpostId();
+
+		endTransaction();
+
+		Long dokumentInfoId = sourceJournalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId();
+
+		HttpHeaders headers = createHeaders(GYLDIG_CONSUMER);
+
+		TilknyttVedleggRequest request = createTilknyttVedleggRequestWithoutTilknyttetAvNavn(
+				createDokumentVedleggList(sourceJournalpostId, dokumentInfoId.toString())
+		);
+
+		HttpEntity<TilknyttVedleggRequest> requestHttpEntity = new HttpEntity<>(request, headers);
+		ResponseEntity responseEntity = restTemplate.exchange(
+				URL_JOURNALPOST_INTERN + journalpostIdVedlegg + "/tilknyttVedlegg", HttpMethod.PUT, requestHttpEntity, String.class);
+		assertThat(responseEntity.getStatusCode(), is(HttpStatus.BAD_REQUEST));
+		TestTransaction.end();
+	}
+
+	@Test
 	public void shouldReturnNotFoundForJournalpost() {
 
 		List<DokumentVedlegg> dokumentVedleggList = new ArrayList<>();
@@ -425,6 +449,12 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 	private TilknyttVedleggRequest createTilknyttVedleggRequest(List<DokumentVedlegg> dokumentVedleggList) {
 		return TilknyttVedleggRequest.builder()
 				.tilknyttetAvNavn("TilknyttVedleggIT")
+				.dokument(dokumentVedleggList)
+				.build();
+	}
+
+	private TilknyttVedleggRequest createTilknyttVedleggRequestWithoutTilknyttetAvNavn(List<DokumentVedlegg> dokumentVedleggList) {
+		return TilknyttVedleggRequest.builder()
 				.dokument(dokumentVedleggList)
 				.build();
 	}
