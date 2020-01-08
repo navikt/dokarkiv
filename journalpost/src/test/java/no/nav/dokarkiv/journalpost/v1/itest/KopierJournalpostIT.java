@@ -1,8 +1,10 @@
 package no.nav.dokarkiv.journalpost.v1.itest;
 
+import static no.nav.dokarkiv.core.NavHeaders.NAV_CALL_ID;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import no.nav.dokarkiv.core.datautil.JournalpostTestDataProvider;
@@ -34,12 +36,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 public class KopierJournalpostIT extends AbstractJournalpostIT {
     private static final String GYLDIG_CONSUMER = "srvdokarkivproxy";
     private static final String UGYLDIG_CONSUMER = "srvdokarkiv";
     public static final String NAV_CONSUMER_ID = "Nav-Consumer-Id";
     public static final String NAV_USER_ID = "Nav-User-Id";
+    public static final String USER_ID = "X123456";
     private static final String UGYLDIG_JOURNALPOST = "***gammelt_fnr***";
     private static final String SRV_DOKARKIVPROXY = "srvdokarkivproxy";
 
@@ -67,14 +71,18 @@ public class KopierJournalpostIT extends AbstractJournalpostIT {
 
         assertEquals(2, journalpost.getJournalpostDokumentInfoRelasjoner().size());
         assertEquals(2, kopiertJournalpost.getJournalpostDokumentInfoRelasjoner().size());
+        assertEquals(USER_ID, kopiertJournalpost.getEndretAvNavn());
+        assertEquals(GYLDIG_CONSUMER, kopiertJournalpost.getEndretKildeNavn());
+        assertEquals(GYLDIG_CONSUMER, kopiertJournalpost.getOpprettetKildeNavn());
+        assertNull(kopiertJournalpost.getOpprettetAvNavn());
 
         assertEquals(kopiertJournalpost.getBrukere().size(), journalpost.getBrukere().size());
 
         Bruker kopiertBruker = kopiertJournalpost.getBrukere().iterator().next();
         Bruker originalBruker = journalpost.getBrukere().iterator().next();
         assertTrue(kopiertBruker.getChangeStamp().getCreatedDate().after(originalBruker.getChangeStamp().getCreatedDate()));
-        assertEquals(NAV_USER_ID, kopiertBruker.getEndretKildeNavn());
-        assertEquals(NAV_USER_ID, kopiertBruker.getOpprettetKildeNavn());
+        assertEquals(GYLDIG_CONSUMER, kopiertBruker.getEndretKildeNavn());
+        assertEquals(GYLDIG_CONSUMER, kopiertBruker.getOpprettetKildeNavn());
 
         assertTrue(brukereSetIsCorrectlyCopied(journalpost.getBrukere(), kopiertJournalpost.getBrukere()));
         assertTrue(kopiertJournalpost.getKryssreferanser().isEmpty());
@@ -208,10 +216,11 @@ public class KopierJournalpostIT extends AbstractJournalpostIT {
     private HttpHeaders createHeaders(String consumer, boolean includeNavUserId) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.add("Nav-Consumer-Id", NAV_CONSUMER_ID);
+        headers.add(NAV_CONSUMER_ID, consumer);
         if (includeNavUserId) {
-            headers.add("Nav-User-Id", NAV_USER_ID);
+            headers.add(NAV_USER_ID, USER_ID);
         }
+        headers.add(NAV_CALL_ID, UUID.randomUUID().toString());
         String token = Base64Utils.encodeToString(
                 (consumer + ":" + "hemmelig").getBytes(StandardCharsets.UTF_8));
         headers.add(HttpHeaders.AUTHORIZATION, "Basic " + token);

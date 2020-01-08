@@ -5,7 +5,9 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.NavHeaders;
+import no.nav.dokarkiv.core.util.DecodeUtils;
 import org.slf4j.MDC;
+import org.springframework.http.HttpHeaders;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.servlet.http.HttpServletRequest;
@@ -22,10 +24,18 @@ public class PopulateMDCHandler implements HandlerInterceptor {
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 		populateCallId(request);
 		populateConsumerId(request);
+		populateUserId(request);
 
 		MDC.put(MDCConstants.MDC_HTTP_ENDPOINT, request.getRequestURL().toString());
 		MDC.put(MDCConstants.MDC_HTTP_OPERATION, request.getMethod());
 		return true;
+	}
+
+	private void populateUserId(HttpServletRequest request) {
+		final String navUserId = request.getHeader(NavHeaders.NAV_USER_ID);
+		if (isNotBlank(navUserId)) {
+			MDC.put(MDCConstants.MDC_USER_ID, navUserId);
+		}
 	}
 
 	private void populateCallId(HttpServletRequest request) {
@@ -51,9 +61,28 @@ public class PopulateMDCHandler implements HandlerInterceptor {
 	}
 
 	private void populateConsumerId(HttpServletRequest request) {
-		final String navConsumerId = request.getHeader(NavHeaders.NAV_CONSUMER_ID);
+		String navConsumerId = request.getHeader(NavHeaders.NAV_CONSUMER_ID);
+
+		String usernameBasicAuth = getUsernameFromBasicAuth(request);
+		if(isNotBlank(usernameBasicAuth)) {
+			navConsumerId = usernameBasicAuth;
+		}
+
 		if (isNotBlank(navConsumerId)) {
 			MDC.put(MDCConstants.MDC_CONSUMER_ID, navConsumerId);
 		}
+	}
+
+	private String getUsernameFromBasicAuth(HttpServletRequest request) {
+		String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+		if (isNotBlank(authorizationHeader) && authorizationHeader.startsWith("Basic")) {
+			try {
+				String[] strings = DecodeUtils.decodeBasicAuth(authorizationHeader);
+				return strings[0];
+			} catch (Exception e) {
+				return null;
+			}
+		}
+		return null;
 	}
 }

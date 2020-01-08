@@ -55,7 +55,6 @@ public class JournalpostInternRestController {
 	private final FinnMottatteJournalposterService finnMottatteJournalposterService;
     private final KopierJournalpostService kopierJournalpostService;
 	private static final String SRVDOKARKIVPROXY = "srvdokarkivproxy";
-    private static final String SRVJOARKADMIN = "srvjoarkadmin";
 
 	@Inject
 	public JournalpostInternRestController(
@@ -75,7 +74,6 @@ public class JournalpostInternRestController {
     @RestMetrics(value = "dok_request", extraTags = {"process_code", "tilknyttVedlegg"}, percentiles = {0.5, 0.95})
     public ResponseEntity<TilknyttVedleggResponse> tilknyttVedlegg(
             @PathVariable String journalpostId,
-            @RequestHeader(value = NavHeaders.NAV_CALL_ID, required = false) String callId,
             @RequestHeader(value = NavHeaders.NAV_CONSUMER_ID, required = false) String consumerId,
             @RequestHeader(value = HttpHeaders.AUTHORIZATION) String auth,
             @RequestBody TilknyttVedleggRequest request) {
@@ -83,10 +81,7 @@ public class JournalpostInternRestController {
         try {
             assertThatConsumerIsSrvdokarkivproxy(auth);
 
-			addToMDC(callId, consumerId);
 			validateId(journalpostId, "journalpostId");
-
-			RequestContextUtil.createAndSetUsername("tilknyttVedlegg", "dokarkiv");
 
 			log.info("tilknyttVedlegg har mottatt kall om å legge til vedlegg på journalpostId={}", journalpostId);
 
@@ -119,11 +114,8 @@ public class JournalpostInternRestController {
 	@GetMapping(value = "/finnMottatteJournalposter")
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "finnMottatteJournalposter"}, percentiles = {0.5, 0.95})
 	public ResponseEntity<FinnMottatteJournalposterResponse> finnMottatteJournalposter(
-			@RequestHeader(value = NavHeaders.NAV_CALL_ID, required = false) String callId,
-			@RequestHeader(value = NavHeaders.NAV_CONSUMER_ID, required = false) String consumerId,
 			@RequestHeader(value = HttpHeaders.AUTHORIZATION) String auth) {
 		MDC.put(MDC_REQUEST_ID, "finnMottatteJournalposter");
-
 		assertThatConsumerIsSrvdokarkivproxy(auth);
 
 		/*
@@ -131,10 +123,6 @@ public class JournalpostInternRestController {
 		   Det er kun servicebrukeren til joarkSikkerhetsnett (navngivning TBD) som får lov til å kalle tjenesten
 		   https://confluence.adeo.no/pages/viewpage.action?pageId=346917288
 		*/
-
-		addToMDC(callId, consumerId);
-
-		RequestContextUtil.createAndSetUsername("finnMottatteJournalposter", "dokarkiv");
 
 		log.info("finnMottatteJournalposter har mottatt kall om å hente ubehandlede journalposter");
 
@@ -157,12 +145,9 @@ public class JournalpostInternRestController {
         try {
             assertThatConsumerIsSrvdokarkivproxy(auth);
 
-            addValueToMDC(MDCConstants.MDC_USER_ID, userId);
-//			addValueToMDC(MDCConstants.MDC_CONSUMER_ID, userId);	//TODO: Fjernes når EndretKildeNavn settes fra userID.
             MDC.put(MDC_REQUEST_ID, "rjoark203");
             log.info(MDC.get(MDC_REQUEST_ID) + " har mottatt kall for kopiering av journalpost med journalpostId={}", kildeJournalpostId);
             validateId(kildeJournalpostId, "journalpostId");
-            RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
 
             Long nyJournalpostId = kopierJournalpostService.execute(Long.parseLong(kildeJournalpostId));
 
@@ -177,17 +162,6 @@ public class JournalpostInternRestController {
             throw e;
         }
     }
-
-    private void addValueToMDC(String key, String value) {
-		if (value != null && !value.isEmpty()) {
-			MDC.put(key, value);
-		}
-	}
-
-	private void addToMDC(String callId, String consumerId) {
-		addValueToMDC(MDCConstants.MDC_CALL_ID, callId);
-		addValueToMDC(MDCConstants.MDC_CONSUMER_ID, consumerId);
-	}
 
     private void assertThatConsumerIsSrvdokarkivproxy(String auth) {
         if (!SRVDOKARKIVPROXY.equals(decodeBasicAuth(auth)[0])) {

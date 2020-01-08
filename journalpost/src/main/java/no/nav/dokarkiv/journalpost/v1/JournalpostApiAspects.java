@@ -34,6 +34,11 @@ public class JournalpostApiAspects {
         RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
     }
 
+    @Before("execution(* no.nav.dokarkiv.journalpost.v1.controllers.JournalpostInternRestController.*(..))")
+    public void aConfigureMDC(JoinPoint point) {
+        RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
+    }
+
     @Before("execution(* no.nav.dokarkiv.journalpost.v1.controllers.FeilregistrerJournalpostRestController.*(..)) && args(journalpostId)")
     public void bLog(JoinPoint point, String journalpostId) {
         log.info(MDC.get(MDC_REQUEST_ID) + " har mottatt kall for feilregistrering av journalpost med journalpostId={}", journalpostId);
