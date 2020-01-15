@@ -1,6 +1,10 @@
 package no.nav.dokarkiv.journalpost.v1.itest;
 
+import static no.nav.dokarkiv.core.NavHeaders.NAV_CALL_ID;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import no.nav.dokarkiv.core.datautil.JournalpostTestDataProvider;
@@ -20,21 +24,31 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.transaction.TestTransaction;
+import org.springframework.util.Base64Utils;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 public class KopierJournalpostIT extends AbstractJournalpostIT {
+    private static final String GYLDIG_CONSUMER = "srvdokarkivproxy";
+    private static final String UGYLDIG_CONSUMER = "srvdokarkiv";
+    public static final String NAV_CONSUMER_ID = "Nav-Consumer-Id";
+    public static final String NAV_USER_ID = "Nav-User-Id";
+    public static final String USER_ID = "X123456";
+    private static final String UGYLDIG_JOURNALPOST = "***gammelt_fnr***";
+    private static final String SRV_DOKARKIVPROXY = "srvdokarkivproxy";
 
     @Test
     public void happyPathInngaaende() throws IOException {
-        abacPermit();
-
         Journalpost journalpost = createJournalpost();
         Long journalpostId = joarkRepository.save(journalpost).getJournalpostId();
 
@@ -42,8 +56,9 @@ public class KopierJournalpostIT extends AbstractJournalpostIT {
         TestTransaction.end();
         TestTransaction.start();
 
-        HttpEntity requestEntity = new HttpEntity(createHeadersWithServiceUserToken());
-        ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST + KOPIER_QUERY + journalpostId, HttpMethod.POST, requestEntity, String.class);
+        HttpHeaders headers = createHeaders(GYLDIG_CONSUMER);
+        HttpEntity requestEntity = new HttpEntity(headers);
+        ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST_INTERN + KOPIER_QUERY + journalpostId, HttpMethod.POST, requestEntity, String.class);
 
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
 
@@ -56,14 +71,18 @@ public class KopierJournalpostIT extends AbstractJournalpostIT {
 
         assertEquals(2, journalpost.getJournalpostDokumentInfoRelasjoner().size());
         assertEquals(2, kopiertJournalpost.getJournalpostDokumentInfoRelasjoner().size());
+        assertEquals(USER_ID, kopiertJournalpost.getEndretAvNavn());
+        assertEquals(GYLDIG_CONSUMER, kopiertJournalpost.getEndretKildeNavn());
+        assertEquals(GYLDIG_CONSUMER, kopiertJournalpost.getOpprettetKildeNavn());
+        assertNull(kopiertJournalpost.getOpprettetAvNavn());
 
         assertEquals(kopiertJournalpost.getBrukere().size(), journalpost.getBrukere().size());
 
         Bruker kopiertBruker = kopiertJournalpost.getBrukere().iterator().next();
         Bruker originalBruker = journalpost.getBrukere().iterator().next();
         assertTrue(kopiertBruker.getChangeStamp().getCreatedDate().after(originalBruker.getChangeStamp().getCreatedDate()));
-        assertEquals(SERVICE_USER_ID, kopiertBruker.getEndretKildeNavn());
-        assertEquals(SERVICE_USER_ID, kopiertBruker.getOpprettetKildeNavn());
+        assertEquals(GYLDIG_CONSUMER, kopiertBruker.getEndretKildeNavn());
+        assertEquals(GYLDIG_CONSUMER, kopiertBruker.getOpprettetKildeNavn());
 
         assertTrue(brukereSetIsCorrectlyCopied(journalpost.getBrukere(), kopiertJournalpost.getBrukere()));
         assertTrue(kopiertJournalpost.getKryssreferanser().isEmpty());
@@ -84,7 +103,7 @@ public class KopierJournalpostIT extends AbstractJournalpostIT {
 
         List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
         assertEquals(1, aksjonsLoggList.size());
-        assertEquals(SERVICE_USER_ID, aksjonsLoggList.get(0).getUtfoertAv());
+        assertEquals(SRV_DOKARKIVPROXY, aksjonsLoggList.get(0).getUtfoertAv());
         assertEquals(AksjonsTypeCode.KOPIER_JOURNALPOST, aksjonsLoggList.get(0).getAksjon());
 
         Set<ArkivElementEndring> arkivElementEndringTOs = aksjonsLoggList.get(0).getArkivElementEndringer();
@@ -93,6 +112,39 @@ public class KopierJournalpostIT extends AbstractJournalpostIT {
         ArkivElementEndring arkivElementEndring = arkivElementEndringTOs.iterator().next();
         assertEquals(arkivElementEndring.getFraVerdi(), Long.toString(journalpost.getJournalpostId()));
         assertEquals(arkivElementEndring.getTilVerdi(), Long.toString(kopiertJournalpost.getJournalpostId()));
+    }
+
+    @Test
+    public void shouldReturnForbiddenForWrongConsumer(){
+        Journalpost journalpost = createJournalpost();
+        Long journalpostId = joarkRepository.save(journalpost).getJournalpostId();
+
+        HttpHeaders headers = createHeaders(UGYLDIG_CONSUMER);
+        HttpEntity requestEntity = new HttpEntity(headers);
+        ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST_INTERN + KOPIER_QUERY + journalpostId, HttpMethod.POST, requestEntity, String.class);
+
+        assertThat(response.getStatusCode(), is(HttpStatus.FORBIDDEN));
+    }
+
+    @Test
+    public void shouldReturnNotFoundForJournalpost() {
+        HttpHeaders headers = createHeaders(GYLDIG_CONSUMER);
+        HttpEntity requestEntity = new HttpEntity(headers);
+        ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST_INTERN + KOPIER_QUERY + UGYLDIG_JOURNALPOST, HttpMethod.POST, requestEntity, String.class);
+
+        assertThat(response.getStatusCode(), is(HttpStatus.NOT_FOUND));
+    }
+
+    @Test
+    public void shouldFailOnMissingNavUserId() {
+        Journalpost journalpost = createJournalpost();
+        Long journalpostId = joarkRepository.save(journalpost).getJournalpostId();
+
+        HttpHeaders headers = createHeaders(GYLDIG_CONSUMER, false);
+        HttpEntity requestEntity = new HttpEntity(headers);
+        ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST_INTERN + KOPIER_QUERY + journalpostId, HttpMethod.POST, requestEntity, String.class);
+
+        assertThat(response.getStatusCode(), is(HttpStatus.BAD_REQUEST));
     }
 
     @After
@@ -155,5 +207,24 @@ public class KopierJournalpostIT extends AbstractJournalpostIT {
                 .endretKildeNavn("endretKildeNavn")
                 .endretAvNavn("endretAvNavn")
                 .build();
+    }
+
+    private HttpHeaders createHeaders(String consumer) {
+        return createHeaders(consumer, true);
+   }
+
+    private HttpHeaders createHeaders(String consumer, boolean includeNavUserId) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.add(NAV_CONSUMER_ID, consumer);
+        if (includeNavUserId) {
+            headers.add(NAV_USER_ID, USER_ID);
+        }
+        headers.add(NAV_CALL_ID, UUID.randomUUID().toString());
+        String token = Base64Utils.encodeToString(
+                (consumer + ":" + "hemmelig").getBytes(StandardCharsets.UTF_8));
+        headers.add(HttpHeaders.AUTHORIZATION, "Basic " + token);
+
+        return headers;
     }
 }
