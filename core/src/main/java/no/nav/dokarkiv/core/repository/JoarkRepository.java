@@ -44,6 +44,9 @@ public interface JoarkRepository extends CrudRepository<Journalpost, Long> {
 	@Query(value = "SELECT * FROM t_journalpost j WHERE j.k_journal_s IN ('M', 'MO') AND j.k_journalpost_t = 'I' AND j.dato_opprettet <= :tilOgMedDato", nativeQuery = true)
 	Optional<List<Journalpost>> findUbehandledeJournalposts(@Param("tilOgMedDato")Date tilOgMedDato);
 
+	@Query(value = "SELECT * FROM t_journalpost j WHERE j.k_journal_s IN ('M', 'MO') AND j.k_journalpost_t = 'I' AND j.dato_opprettet <= :tilOgMedDato AND j.K_FAGOMRADE in :temaListe", nativeQuery = true)
+	Optional<List<Journalpost>> finnMottatteJournalposterFoerDato(@Param("tilOgMedDato")Date tilOgMedDato, @Param("temaListe")List<String> temaListe);
+
 	Optional<Journalpost> findJournalpostByKanalReferanseId(String kanalReferanseId);
 
 	List<Journalpost> findJournalpostByKanalReferanseIdAndMottakskanal(String kanalReferanseId, MottaksKanalCode mottaksKanalCode);

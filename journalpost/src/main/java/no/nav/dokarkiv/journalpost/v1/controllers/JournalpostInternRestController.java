@@ -110,6 +110,32 @@ public class JournalpostInternRestController {
 	@Transactional(readOnly = true)
 	@SwaggerFinnMottatteJournalposter
 	@ResponseBody
+	@GetMapping(value = "/finnMottatteJournalposter/{temaer}")
+	@RestMetrics(value = "dok_request", extraTags = {"process_code", "finnMottatteJournalposter"}, percentiles = {0.5, 0.95})
+	public ResponseEntity<FinnMottatteJournalposterResponse> finnMottatteJournalposterMedTema(
+			@RequestHeader(value = HttpHeaders.AUTHORIZATION) String auth,
+			@PathVariable List<String> temaer) {
+		MDC.put(MDC_REQUEST_ID, "finnMottatteJournalposter");
+		assertThatConsumerIsSrvdokarkivproxy(auth);
+
+		/*
+		  TODO
+		   Det er kun servicebrukeren til joarkSikkerhetsnett (navngivning TBD) som får lov til å kalle tjenesten
+		   https://confluence.adeo.no/pages/viewpage.action?pageId=346917288
+		*/
+
+		log.info("finnMottatteJournalposter har mottatt kall om å hente ubehandlede journalposter med tema i " + temaer);
+
+		FinnMottatteJournalposterResponse ubehandledeJournalposter = finnMottatteJournalposterService.finnMottatteJournalposterMedTema(temaer);
+
+		return ResponseEntity
+				.ok()
+				.body(ubehandledeJournalposter);
+	}
+
+	@Transactional(readOnly = true)
+	@SwaggerFinnMottatteJournalposter
+	@ResponseBody
 	@GetMapping(value = "/finnMottatteJournalposter")
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "finnMottatteJournalposter"}, percentiles = {0.5, 0.95})
 	public ResponseEntity<FinnMottatteJournalposterResponse> finnMottatteJournalposter(

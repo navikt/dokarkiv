@@ -42,6 +42,17 @@ public class FinnMottatteJournalposterService {
 		}
 	}
 
+	public FinnMottatteJournalposterResponse finnMottatteJournalposterMedTema(List<String> temaer){
+		try {
+			List<Journalpost> ubehandledeJournalposter = joarkRepository
+					.finnMottatteJournalposterFoerDato(DateTime.now().minusWeeks(1).toDate(), temaer)
+					.orElse(List.of());
+			return new FinnMottatteJournalposterResponse(ubehandledeJournalposter.stream().map(this::createResponseObject).collect(Collectors.toList()));
+		} catch(DataAccessException e){
+			log.error(get(MDC_REQUEST_ID) + " finnMottatteJournalposterMedTemaer fikk DataAccessException ved kall mot joarkRepository", e);
+			throw new KanIkkeHenteMottatteJournalposterException("Internal server error");
+		}
+	}
 	private UbehandletJournalpost createResponseObject(Journalpost journalpost){
 
 		try {
