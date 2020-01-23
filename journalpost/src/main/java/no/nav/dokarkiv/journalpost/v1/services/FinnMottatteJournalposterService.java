@@ -30,7 +30,7 @@ public class FinnMottatteJournalposterService {
 		this.joarkRepository = joarkRepository;
 	}
 
-	public FinnMottatteJournalposterResponse finnMottatteJournalposter(){
+	public FinnMottatteJournalposterResponse finnMottatteJournalposter() throws KanIkkeHenteMottatteJournalposterException {
 		try {
 			List<Journalpost> ubehandledeJournalposter = joarkRepository
 					.findUbehandledeJournalposts(DateTime.now().minusWeeks(1).toDate())
@@ -42,10 +42,10 @@ public class FinnMottatteJournalposterService {
 		}
 	}
 
-	public FinnMottatteJournalposterResponse finnMottatteJournalposterMedTema(List<String> temaer){
+	public FinnMottatteJournalposterResponse finnMottatteJournalposterMedTema(List<String> temaer) throws KanIkkeHenteMottatteJournalposterException {
 		try {
 			List<Journalpost> ubehandledeJournalposter = joarkRepository
-					.finnMottatteJournalposterFoerDato(DateTime.now().minusWeeks(1).toDate(), temaer)
+					.findUbehandledeJournalpostsWithTemaIn(DateTime.now().minusWeeks(1).toDate(), temaer)
 					.orElse(List.of());
 			return new FinnMottatteJournalposterResponse(ubehandledeJournalposter.stream().map(this::createResponseObject).collect(Collectors.toList()));
 		} catch(DataAccessException e){
@@ -53,7 +53,7 @@ public class FinnMottatteJournalposterService {
 			throw new KanIkkeHenteMottatteJournalposterException("Internal server error");
 		}
 	}
-	private UbehandletJournalpost createResponseObject(Journalpost journalpost){
+	private UbehandletJournalpost createResponseObject(Journalpost journalpost) throws KanIkkeHenteMottatteJournalposterException {
 
 		try {
 			long journalpostId = journalpost.getJournalpostId();
