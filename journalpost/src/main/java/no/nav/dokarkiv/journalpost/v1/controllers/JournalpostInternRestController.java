@@ -4,6 +4,7 @@ import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
 import static no.nav.dokarkiv.core.util.DecodeUtils.decodeBasicAuth;
 import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateId;
 
+import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.NavHeaders;
 import no.nav.dokarkiv.core.exceptions.ConsumerIsNotSrvDokarkivProxyFunctionalException;
@@ -44,6 +45,7 @@ import java.util.List;
  * @author Olav Røstvold Thorsen, Visma Consulting.
  */
 
+@Api(description = "Interne tjenester mot journalpost")
 @Slf4j
 @RestController
 @RequestMapping("/rest/intern/journalpostapi/v1")
