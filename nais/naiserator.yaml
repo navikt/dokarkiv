@@ -1,0 +1,93 @@
+kind: Application
+apiVersion: nais.io/v1alpha1
+metadata:
+  name: dokarkiv
+  namespace: {{ NAMESPACE }}
+  labels:
+    team: teamdokumenthandtering
+spec:
+  env:
+    - name: FREG_SECURITY_OIDC_IDP_OPENAM_JWKSURL
+      value: {{ FREG_SECURITY_OIDC_IDP_OPENAM_JWKSURL }}
+    - name: FREG_SECURITY_OIDC_IDP_OPENAM_ISSUERURL
+      value: {{ FREG_SECURITY_OIDC_IDP_OPENAM_ISSUERURL }}
+    - name: FREG_SECURITY_OIDC_IDP_OPENAM_HOSTURL
+      value: {{ FREG_SECURITY_OIDC_IDP_OPENAM_HOSTURL }}
+    - name: FREG_SECURITY_OIDC_IDP_NAVSTS_ISSUERURL
+      value: {{ FREG_SECURITY_OIDC_IDP_NAVSTS_ISSUERURL }}
+    - name: FREG_SECURITY_OIDC_IDP_NAVSTS_JWKSURL
+      value: {{ FREG_SECURITY_OIDC_IDP_NAVSTS_JWKSURL }}
+    - name: SPRING_DATASOURCE_URL
+      value: {{ SPRING_DATASOURCE_URL }}
+    - name: SPRING_DATASOURCE_USERNAME
+      value: {{ SPRING_DATASOURCE_USERNAME }}
+    - name: SPRING_LDAP_URLS
+      value: {{ SPRING_LDAP_URLS }}
+    - name: SPRING_LDAP_USERNAME
+      value: {{ SPRING_LDAP_USERNAME }}
+    - name: LDAP_NAVUSER_BASEDN
+      value: {{ LDAP_NAVUSER_BASEDN }}
+    - name: LDAP_SERVICEUSER_BASEDN
+      value: {{ LDAP_SERVICEUSER_BASEDN }}
+    - name: LDAP_DOMAIN
+      value: {{ LDAP_DOMAIN }}
+    - name: LDAP_BASEDN
+      value: {{ LDAP_BASEDN }}
+    - name: SERVICEUSER_USERNAME
+      value: {{ SERVICEUSER_USERNAME }}
+    - name: SECURITYTOKENSERVICE_URL
+      value: {{ SECURITYTOKENSERVICE_URL }}
+    - name: VIRKSOMHET_AKTOER_V2_SECURITYTOKEN
+      value: "SAML"
+    - name: AKTOERV2_URL
+      value: {{ AKTOERV2_URL }}
+    - name: VIRKSOMHET_AKTOER_V2_WSDLURL
+      value: {{ VIRKSOMHET_AKTOER_V2_WSDLURL }}
+    - name: ABAC_URL
+      value: {{ ABAC_URL }}
+    - name: JOARK_HENTDOKUMENT_BASEURL
+      value: {{ JOARK_HENTDOKUMENT_BASEURL }}
+    - name: DOKARKIV_HENTDOKUMENT_BASEURL
+      value: {{ DOKARKIV_HENTDOKUMENT_BASEURL }}
+    - name: DOKARKIV_S3_CREDS_USERNAME
+      value: {{ DOKARKIV_S3_CREDS_USERNAME }}
+  image: {{ image }}
+  ingresses:
+    - {{ INGRESSES }}
+  liveness:
+    path: /isAlive
+    port: 8080
+    initialDelay: 30
+    failureThreshold: 10
+  port: 8080
+  prometheus:
+    enabled: true
+    path: /actuator/prometheus
+  readiness:
+    path: /isReady
+    port: 8080
+    initialDelay: 30
+    timeout: 3
+  replicas:
+    min: 4
+    max: 10
+    cpuThresholdPercentage: 50
+  resources:
+    limits:
+      cpu: 4000m
+      memory: 3072Mi
+    requests:
+      memory: 1920Mi
+  vault:
+    enabled: true
+    paths:
+      - kvPath: {{ DOKARKIV_DS }}
+        mountPath: /var/run/secrets/nais.io/dokarkivDS
+      - kvPath: {{ SRVDOKARKIV }}
+        mountPath: /var/run/secrets/nais.io/srvdokarkiv
+      - kvPath: {{ DOKARKIV_VAULT }}
+        mountPath: /var/run/secrets/nais.io/vault
+      {{#if SRV_LINUX}}
+      - kvPath: {{ SRV_LINUX }}   //TODO: Denne er bare i prod!?
+        mountPath: /var/run/secrets/nais.io/ldap
+      {{/if}}
