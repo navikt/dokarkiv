@@ -25,5 +25,5 @@
   "DOKARKIV_DS": "/oracle/data/prod/creds/joark-dokarkiv",
   "SRVDOKARKIV": "/kv/prod/fss/dokarkiv/default",
   "DOKARKIV_VAULT": "/kv/preprod/fss/dokarkiv/default",
-  "SRV_LINUX": "/serviceuser/data/prod/srvssolinux"
+  "SRV_LINUX": "/serviceuser/data/prod/srvssolinux"   //Todo: Denne må kanskje dokarkiv få tilgang til via vault-iac? Og tror ikke /data skal være med i pathen.
 }
