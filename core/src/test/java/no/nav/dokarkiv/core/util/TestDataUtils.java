@@ -183,6 +183,15 @@ public class TestDataUtils {
 			JournalpostTypeCode journalpostTypeCode,
 			JournalStatusCode journalStatusCode
 	) {
+		return createUbehandletJournalpost(date, journalpostTypeCode, journalStatusCode, FagomradeCode.PEN);
+	}
+
+	public static Journalpost createUbehandletJournalpost(
+			Date date,
+			JournalpostTypeCode journalpostTypeCode,
+			JournalStatusCode journalStatusCode,
+			FagomradeCode fagomradeCode
+	) {
 
 		Map<String, String> tilleggsopplysninger = new HashMap<>();
 		tilleggsopplysninger.put("key", "value");
@@ -197,7 +206,7 @@ public class TestDataUtils {
 				.journalDato(date)
 				.kanalReferanseId("kanal")
 				.endretAvNavn("test")
-				.fagomrade(FagomradeCode.PEN)
+				.fagomrade(fagomradeCode)
 				.mottakskanal(MottaksKanalCode.NAV_NO)
 				.behandlingstema(Behandlingstema.ab0001)
 				.build();

@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.journalpost.v1.itest;
 
+import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
@@ -36,6 +37,8 @@ public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
 	private static final String GYLDIG_CONSUMER = "srvdokarkivproxy";
 	private static final String UGYLDIG_CONSUMER = "srvdokarkiv";
 	private static final String NAV_CONSUMER_ID = "Nav-Consumer-Id";
+	private static final String FAGKODE_UFO = "UFO";
+	private static final String FAGKODE_PEN = "PEN";
 
 	private FinnMottatteJournalposterService finnMottatteJournalposterService;
 
@@ -105,6 +108,50 @@ public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
 	}
 
 	@Test
+	public void shouldOnlyGetUbehandledeJournalpostsWithTemaUFOAndPEN() {
+		List<Date> journalDateRange = List.of(
+				DateTime.now().plusYears(1).toDate(),
+				DateTime.now().plusMonths(1).toDate(),
+				DateTime.now().plusWeeks(1).toDate(),
+				DateTime.now().plusDays(1).toDate(),
+				DateTime.now().toDate(),
+				DateTime.now().minusDays(1).toDate(),
+				DateTime.now().minusWeeks(1).toDate(),
+				DateTime.now().minusMonths(1).toDate(),
+				DateTime.now().minusYears(1).toDate()
+		);
+
+		List<FagomradeCode> temakoder = List.of(FagomradeCode.AAP, FagomradeCode.UFO, FagomradeCode.BAR, FagomradeCode.PEN);
+
+		ArrayList<Long> validJournalpostIds = new ArrayList<>();
+
+		for (Date date : journalDateRange)
+			for (JournalpostTypeCode journalpostTypeCode : JournalpostTypeCode.values())
+				for (JournalStatusCode journalStatusCode : JournalStatusCode.values())
+					for (FagomradeCode temakode : temakoder) {
+						Journalpost journalpost = saveJournalpost(TestDataUtils.createUbehandletJournalpost(date, journalpostTypeCode, journalStatusCode, temakode));
+						if(verifyJournalpostWithTema(journalpost)) validJournalpostIds.add(journalpost.getJournalpostId());
+					}
+
+		reinitTransaction();
+
+		List<UbehandletJournalpost> ubehandletJournalposts = finnMottatteJournalposterService.finnMottatteJournalposterMedTema(List.of(FAGKODE_UFO, FAGKODE_PEN)).getJournalposter();
+		List<Long> retrievedIds = ubehandletJournalposts.stream().map(UbehandletJournalpost::getJournalpostId).collect(Collectors.toList());
+
+		assertFalse(ubehandletJournalposts.isEmpty());
+		assertEquals(retrievedIds.size(), validJournalpostIds.size());
+		assertTrue(retrievedIds.containsAll(validJournalpostIds));
+
+		ubehandletJournalposts = finnMottatteJournalposterService.finnMottatteJournalposterMedTema(List.of(FAGKODE_UFO, FAGKODE_PEN, "FinnesIkke")).getJournalposter();
+		retrievedIds = ubehandletJournalposts.stream().map(UbehandletJournalpost::getJournalpostId).collect(Collectors.toList());
+
+		assertFalse(ubehandletJournalposts.isEmpty());
+		assertEquals(retrievedIds.size(), validJournalpostIds.size());
+		assertTrue(retrievedIds.containsAll(validJournalpostIds));
+
+	}
+
+	@Test
 	public void shouldFailFinnMottatteJournalposter(){
 		abacPermit();
 
@@ -149,7 +196,7 @@ public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
 
 		HttpEntity requestEntity = new HttpEntity<>(null, createHeaders(GYLDIG_CONSUMER));
 
-		ResponseEntity<FinnMottatteJournalposterResponse> response = restTemplate.exchange(URL_JOURNALPOST_INTERN +FINNMOTTATTEJOURNALPOSTER, HttpMethod.GET, requestEntity, FinnMottatteJournalposterResponse.class);
+		ResponseEntity<FinnMottatteJournalposterResponse> response = restTemplate.exchange(URL_INTERN + FINNMOTTATTEJOURNALPOSTER, HttpMethod.GET, requestEntity, FinnMottatteJournalposterResponse.class);
 
 
 		HttpStatus status = response.getStatusCode();
@@ -169,7 +216,7 @@ public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
 
 		HttpEntity requestEntity = new HttpEntity<>(null, new HttpHeaders());
 
-		ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST_INTERN +FINNMOTTATTEJOURNALPOSTER, HttpMethod.GET, requestEntity, String.class);
+		ResponseEntity<String> response = restTemplate.exchange(URL_INTERN + FINNMOTTATTEJOURNALPOSTER, HttpMethod.GET, requestEntity, String.class);
 
 		HttpStatus status = response.getStatusCode();
 
@@ -182,7 +229,7 @@ public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
 
 		HttpEntity requestEntity = new HttpEntity<>(null, createHeaders(UGYLDIG_CONSUMER));
 
-		ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST_INTERN +FINNMOTTATTEJOURNALPOSTER, HttpMethod.GET, requestEntity, String.class);
+		ResponseEntity<String> response = restTemplate.exchange(URL_INTERN + FINNMOTTATTEJOURNALPOSTER, HttpMethod.GET, requestEntity, String.class);
 
 		HttpStatus status = response.getStatusCode();
 
@@ -208,6 +255,20 @@ public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
 		if( createdDate.after(weekAgo) ) return false;
 		if( status != JournalStatusCode.M && status != JournalStatusCode.MO ) return false;
 		if( !journalpost.isInngaende() ) return false;
+
+		return true;
+	}
+
+	private boolean verifyJournalpostWithTema(Journalpost journalpost) {
+		Date weekAgo = DateTime.now().minusWeeks(1).toDate();
+		Date createdDate = journalpost.getChangeStamp().getCreatedDate();
+		JournalStatusCode status = journalpost.getJournalstatus();
+		FagomradeCode fagomrade = journalpost.getFagomrade();
+
+		if( createdDate.after(weekAgo) ) return false;
+		if( status != JournalStatusCode.M && status != JournalStatusCode.MO ) return false;
+		if( !journalpost.isInngaende() ) return false;
+		if ( fagomrade != FagomradeCode.PEN && fagomrade != FagomradeCode.UFO ) return false;
 
 		return true;
 	}

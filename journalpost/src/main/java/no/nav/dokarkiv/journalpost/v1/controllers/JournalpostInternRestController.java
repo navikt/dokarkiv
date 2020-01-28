@@ -1,18 +1,16 @@
 package no.nav.dokarkiv.journalpost.v1.controllers;
 
 import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
-import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
 import static no.nav.dokarkiv.core.util.DecodeUtils.decodeBasicAuth;
 import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateId;
 
+import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
-import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.NavHeaders;
 import no.nav.dokarkiv.core.exceptions.ConsumerIsNotSrvDokarkivProxyFunctionalException;
 import no.nav.dokarkiv.core.exceptions.DokarkivFunctionalException;
 import no.nav.dokarkiv.core.exceptions.DokarkivTechnicalException;
 import no.nav.dokarkiv.core.metrics.RestMetrics;
-import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import no.nav.dokarkiv.journalpost.v1.api.FeiledeDokumenter;
 import no.nav.dokarkiv.journalpost.v1.api.TilknyttVedleggRequest;
 import no.nav.dokarkiv.journalpost.v1.api.TilknyttVedleggResponse;
@@ -21,6 +19,7 @@ import no.nav.dokarkiv.journalpost.v1.services.FinnMottatteJournalposterService;
 import no.nav.dokarkiv.journalpost.v1.services.TilknyttVedleggService;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerFinnMottatteJournalposter;
 import no.nav.dokarkiv.journalpost.v1.services.KopierJournalpostService;
+import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerFinnMottatteJournalposterMedTema;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerTilknyttVedlegg;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerKopierJournalpost;
 import org.slf4j.MDC;
@@ -46,9 +45,10 @@ import java.util.List;
  * @author Olav Røstvold Thorsen, Visma Consulting.
  */
 
+@Api(description = "Interne tjenester mot journalpost")
 @Slf4j
 @RestController
-@RequestMapping("/rest/intern/journalpostapi/v1/journalpost")
+@RequestMapping("/rest/intern/journalpostapi/v1")
 public class JournalpostInternRestController {
 
 	private final TilknyttVedleggService tilknyttVedleggService;
@@ -70,7 +70,7 @@ public class JournalpostInternRestController {
     @Transactional
     @SwaggerTilknyttVedlegg
     @ResponseBody
-    @PutMapping(value = "/{journalpostId}/tilknyttVedlegg")
+    @PutMapping(value = "/journalpost/{journalpostId}/tilknyttVedlegg")
     @RestMetrics(value = "dok_request", extraTags = {"process_code", "tilknyttVedlegg"}, percentiles = {0.5, 0.95})
     public ResponseEntity<TilknyttVedleggResponse> tilknyttVedlegg(
             @PathVariable String journalpostId,
@@ -108,6 +108,32 @@ public class JournalpostInternRestController {
 	}
 
 	@Transactional(readOnly = true)
+	@SwaggerFinnMottatteJournalposterMedTema
+	@ResponseBody
+	@GetMapping(value = "/finnMottatteJournalposter/{temaer}")
+	@RestMetrics(value = "dok_request", extraTags = {"process_code", "finnMottatteJournalposter"}, percentiles = {0.5, 0.95})
+	public ResponseEntity<FinnMottatteJournalposterResponse> finnMottatteJournalposterMedTema(
+			@RequestHeader(value = HttpHeaders.AUTHORIZATION) String auth,
+			@PathVariable List<String> temaer) {
+		MDC.put(MDC_REQUEST_ID, "finnMottatteJournalposter");
+		assertThatConsumerIsSrvdokarkivproxy(auth);
+
+		/*
+		  TODO
+		   Det er kun servicebrukeren til joarkSikkerhetsnett (navngivning TBD) som får lov til å kalle tjenesten
+		   https://confluence.adeo.no/pages/viewpage.action?pageId=346917288
+		*/
+
+		log.info("finnMottatteJournalposter har mottatt kall om å hente ubehandlede journalposter med tema i " + temaer);
+
+		FinnMottatteJournalposterResponse ubehandledeJournalposter = finnMottatteJournalposterService.finnMottatteJournalposterMedTema(temaer);
+
+		return ResponseEntity
+				.ok()
+				.body(ubehandledeJournalposter);
+	}
+
+	@Transactional(readOnly = true)
 	@SwaggerFinnMottatteJournalposter
 	@ResponseBody
 	@GetMapping(value = "/finnMottatteJournalposter")
@@ -134,7 +160,7 @@ public class JournalpostInternRestController {
 
     @Transactional
     @SwaggerKopierJournalpost
-    @PostMapping("/kopierJournalpost")
+    @PostMapping("/journalpost/kopierJournalpost")
     @RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark203"}, percentiles = {0.5, 0.95})
     public ResponseEntity<Long> kopierJournalpost(
             @io.swagger.annotations.ApiParam(name = "kildeJournalpostId", value = "IDen til journalposten som skal kopieres", required = true, example = "77778888")
