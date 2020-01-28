@@ -196,7 +196,7 @@ public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
 
 		HttpEntity requestEntity = new HttpEntity<>(null, createHeaders(GYLDIG_CONSUMER));
 
-		ResponseEntity<FinnMottatteJournalposterResponse> response = restTemplate.exchange(URL_JOURNALPOST_INTERN +FINNMOTTATTEJOURNALPOSTER, HttpMethod.GET, requestEntity, FinnMottatteJournalposterResponse.class);
+		ResponseEntity<FinnMottatteJournalposterResponse> response = restTemplate.exchange(URL_INTERN + FINNMOTTATTEJOURNALPOSTER, HttpMethod.GET, requestEntity, FinnMottatteJournalposterResponse.class);
 
 
 		HttpStatus status = response.getStatusCode();
@@ -216,7 +216,7 @@ public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
 
 		HttpEntity requestEntity = new HttpEntity<>(null, new HttpHeaders());
 
-		ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST_INTERN +FINNMOTTATTEJOURNALPOSTER, HttpMethod.GET, requestEntity, String.class);
+		ResponseEntity<String> response = restTemplate.exchange(URL_INTERN + FINNMOTTATTEJOURNALPOSTER, HttpMethod.GET, requestEntity, String.class);
 
 		HttpStatus status = response.getStatusCode();
 
@@ -229,7 +229,7 @@ public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
 
 		HttpEntity requestEntity = new HttpEntity<>(null, createHeaders(UGYLDIG_CONSUMER));
 
-		ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST_INTERN +FINNMOTTATTEJOURNALPOSTER, HttpMethod.GET, requestEntity, String.class);
+		ResponseEntity<String> response = restTemplate.exchange(URL_INTERN + FINNMOTTATTEJOURNALPOSTER, HttpMethod.GET, requestEntity, String.class);
 
 		HttpStatus status = response.getStatusCode();
 
