@@ -6,24 +6,21 @@
   "FREG_SECURITY_OIDC_IDP_NAVSTS_ISSUERURL": "https://security-token-service.nais.adeo.no",
   "FREG_SECURITY_OIDC_IDP_NAVSTS_JWKSURL": "https://security-token-service.nais.adeo.no/rest/v1/sts/jwks",
   "SPRING_DATASOURCE_URL": "jdbc:oracle:thin:@dm09-scan.adeo.no:1521/joark_ha",
-  "SPRING_DATASOURCE_USERNAME": "dokarkiv",
   "SPRING_LDAP_URLS": "ldaps://ldapgw.adeo.no",
   "SPRING_LDAP_USERNAME": "srvSSOlinux",
   "LDAP_NAVUSER_BASEDN": "ou=NAV,ou=BusinessUnits,dc=adeo,dc=no",
   "LDAP_SERVICEUSER_BASEDN": "ou=ServiceAccounts,dc=adeo,dc=no",
   "LDAP_DOMAIN": "ADEO.NO",
   "LDAP_BASEDN": "dc=adeo,dc=no",
-  "SERVICEUSER_USERNAME": "srvdokarkiv",
   "SECURITYTOKENSERVICE_URL": "https://sts.adeo.no/SecurityTokenServiceProvider/",
   "AKTOERV2_URL": "https://app.adeo.no/aktoerregister/ws/Aktoer/v2",
   "VIRKSOMHET_AKTOER_V2_WSDLURL": "http://maven.adeo.no/nexus/content/groups/public/no/nav/tjenester/fim/nav-fim-aktoer-v2-tjenestespesifikasjon/2.0.1/nav-fim-aktoer-v2-tjenestespesifikasjon-2.0.1.zip",
   "ABAC_URL": "https://wasapp.adeo.no/asm-pdp/authorize",
   "JOARK_HENTDOKUMENT_BASEURL": "https://wasapp.adeo.no/joarkweb/HentDokument",
   "DOKARKIV_HENTDOKUMENT_BASEURL": "https://dokarkiv.nais.adeo.no/hentdokument",
-  "DOKARKIV_S3_CREDS_USERNAME": "Y3Z4TYAGRX33IEYNO094", //todo: bør egnetlig denne være her?
   "INGRESSES": "https://dokarkiv.nais.adeo.no",
   "DOKARKIV_DS": "/oracle/data/prod/creds/joark-dokarkiv",
   "SRVDOKARKIV": "/kv/prod/fss/dokarkiv/default",
   "DOKARKIV_VAULT": "/kv/preprod/fss/dokarkiv/default",
-  "SRV_LINUX": "/serviceuser/data/prod/srvssolinux"   //Todo: Denne må kanskje dokarkiv få tilgang til via vault-iac? Og tror ikke /data skal være med i pathen.
+  "SRV_LINUX": "/serviceuser/data/prod/srvssolinux"
 }

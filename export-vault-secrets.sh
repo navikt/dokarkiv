@@ -20,13 +20,13 @@ then
     echo "Setting SPRING_DATASOURCE_PASSWORD"
     export  SPRING_DATASOURCE_***passord=gammelt_passord***)
 fi
-
-if test -d /var/run/secrets/nais.io/vault;
+if test -f /var/run/secrets/nais.io/ldap/username;
 then
-    echo "Setting dokarkiv_s3_creds_password"
-    export  dokarkiv_s3_creds_***passord=gammelt_passord***)
-    echo "Setting dokarkiv_s3_creds_username"
-    export  dokarkiv_s3_creds_username=$(cat /var/run/secrets/nais.io/vault/dokarkiv_s3_creds_username)
-    echo "Setting dokprodmellomlager_s3_storage_crypto_password"
-    export  dokprodmellomlager_s3_storage_crypto_***passord=gammelt_passord***)
+    echo "Setting SPRING_LDAP_USERNAME"
+    export  SPRING_LDAP_USERNAME=$(cat /var/run/secrets/nais.io/dokarkivDS/username)
+fi
+if test -f /var/run/secrets/nais.io/ldap/password;
+then
+    echo "Setting SPRING_LDAP_PASSWORD"
+    export  SPRING_LDAP_***passord=gammelt_passord***)
 fi
