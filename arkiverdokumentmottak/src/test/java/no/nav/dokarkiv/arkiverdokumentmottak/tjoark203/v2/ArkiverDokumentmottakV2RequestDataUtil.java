@@ -1,7 +1,4 @@
-package no.nav.dokarkiv.arkiverdokumentmottak.utils;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+package no.nav.dokarkiv.arkiverdokumentmottak.tjoark203.v2;
 
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
@@ -21,7 +18,6 @@ import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v2.informasjon.a
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v2.informasjon.arkiverdokumentmottak.SkannetInnhold;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v2.informasjon.arkiverdokumentmottak.TilknyttetJournalpostEnum;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v2.informasjon.arkiverdokumentmottak.Tilleggsopplysning;
-import org.hamcrest.Matchers;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
@@ -29,6 +25,9 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Map;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 /**
  * Util for ArkiverDokumentmottakV2-operations (TJOARK203)
@@ -165,23 +164,23 @@ public class ArkiverDokumentmottakV2RequestDataUtil {
 
 	}
 
-	public static void assertSaksrelasjon(no.nav.dokarkiv.core.domain.entities.Saksrelasjon saksrelasjon, Saksrelasjon requestSaksrelasjon) {
-		assertThat(saksrelasjon.getFagsystem().name(), is(requestSaksrelasjon.getFagsystem()));
-		assertThat(saksrelasjon.getSakId(), is(requestSaksrelasjon.getSaksnummer()));
+	public static void assertSaksrelasjon(no.nav.dokarkiv.core.domain.entities.Saksrelasjon saksrelasjon) {
+		assertThat(saksrelasjon.getFagsystem().name(), is(FAGSYSTEMKODE));
+		assertThat(saksrelasjon.getSakId(), is(SAKSID));
 	}
 
-	public static void assertBruker(no.nav.dokarkiv.core.domain.entities.Bruker bruker, Bruker requestBruker) {
-		assertThat(bruker.getBrukerId(), Matchers.is(requestBruker.getBrukerId()));
-		assertThat(bruker.getBrukerType().name(), Matchers.is(requestBruker.getBrukerType()));
+	public static void assertBruker(no.nav.dokarkiv.core.domain.entities.Bruker bruker) {
+		assertThat(bruker.getBrukerId(), is(PERSONIDENT));
+		assertThat(bruker.getBrukerType(), is(BrukerTypeCode.PERSON));
 	}
 
 	public static void assertTilleggsopplysninger(Map<String, String> tilleggsopplysninger) {
-		assertThat(tilleggsopplysninger.get(OPPLYSNINGSNOEKKEL1), Matchers.is(OPPLYSNINGSVERDI1));
-		assertThat(tilleggsopplysninger.get(OPPLYSNINGSNOEKKEL2), Matchers.is(OPPLYSNINGSVERDI2));
+		assertThat(tilleggsopplysninger.get(OPPLYSNINGSNOEKKEL1), is(OPPLYSNINGSVERDI1));
+		assertThat(tilleggsopplysninger.get(OPPLYSNINGSNOEKKEL2), is(OPPLYSNINGSVERDI2));
 	}
 
 	public static void assertKryssreferanser(no.nav.dokarkiv.core.domain.entities.Kryssreferanse kryssreferanse) {
-		assertThat(kryssreferanse.getReferanseId(), Matchers.is(REFERANSE_ID));
-		assertThat(kryssreferanse.getReferanseType().name(), Matchers.is(ReferanseTypeCode.SPOERSMAAL.name()));
+		assertThat(kryssreferanse.getReferanseId(), is(REFERANSE_ID));
+		assertThat(kryssreferanse.getReferanseType().name(), is(ReferanseTypeCode.SPOERSMAAL.name()));
 	}
 }

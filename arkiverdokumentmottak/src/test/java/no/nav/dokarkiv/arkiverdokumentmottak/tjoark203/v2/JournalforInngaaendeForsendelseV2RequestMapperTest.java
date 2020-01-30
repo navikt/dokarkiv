@@ -1,19 +1,7 @@
 package no.nav.dokarkiv.arkiverdokumentmottak.tjoark203.v2;
 
-import static no.nav.dokarkiv.arkiverdokumentmottak.utils.ArkiverDokumentmottakRequestDataUtil.toXMLGregorianCalendar;
-import static no.nav.dokarkiv.arkiverdokumentmottak.utils.ArkiverDokumentmottakV2RequestDataUtil.assertBruker;
-import static no.nav.dokarkiv.arkiverdokumentmottak.utils.ArkiverDokumentmottakV2RequestDataUtil.assertFilDetaljer;
-import static no.nav.dokarkiv.arkiverdokumentmottak.utils.ArkiverDokumentmottakV2RequestDataUtil.assertKryssreferanser;
-import static no.nav.dokarkiv.arkiverdokumentmottak.utils.ArkiverDokumentmottakV2RequestDataUtil.assertSaksrelasjon;
-import static no.nav.dokarkiv.arkiverdokumentmottak.utils.ArkiverDokumentmottakV2RequestDataUtil.assertSkannetInnhold;
-import static no.nav.dokarkiv.arkiverdokumentmottak.utils.ArkiverDokumentmottakV2RequestDataUtil.assertTilleggsopplysninger;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-
-import no.nav.dokarkiv.arkiverdokumentmottak.utils.JournalforInngaaendeForsendelseV2RequestDataUtil;
+import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
+import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.sporing.KildeNavnPopulator;
@@ -28,6 +16,32 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+
+import static no.nav.dokarkiv.arkiverdokumentmottak.tjoark203.v2.ArkiverDokumentmottakV2RequestDataUtil.BEHANDLINGSTEMA;
+import static no.nav.dokarkiv.arkiverdokumentmottak.tjoark203.v2.ArkiverDokumentmottakV2RequestDataUtil.BREVKODE;
+import static no.nav.dokarkiv.arkiverdokumentmottak.tjoark203.v2.ArkiverDokumentmottakV2RequestDataUtil.DATO_DOKUMENT;
+import static no.nav.dokarkiv.arkiverdokumentmottak.tjoark203.v2.ArkiverDokumentmottakV2RequestDataUtil.DATO_MOTTATT;
+import static no.nav.dokarkiv.arkiverdokumentmottak.tjoark203.v2.ArkiverDokumentmottakV2RequestDataUtil.DOKUMENT_TYPE_ID;
+import static no.nav.dokarkiv.arkiverdokumentmottak.tjoark203.v2.ArkiverDokumentmottakV2RequestDataUtil.EKSTERNPART_NAVN;
+import static no.nav.dokarkiv.arkiverdokumentmottak.tjoark203.v2.ArkiverDokumentmottakV2RequestDataUtil.FAGOMRADE;
+import static no.nav.dokarkiv.arkiverdokumentmottak.tjoark203.v2.ArkiverDokumentmottakV2RequestDataUtil.INNHOLD;
+import static no.nav.dokarkiv.arkiverdokumentmottak.tjoark203.v2.ArkiverDokumentmottakV2RequestDataUtil.JOURNALFOERENDE_ENHET_REF;
+import static no.nav.dokarkiv.arkiverdokumentmottak.tjoark203.v2.ArkiverDokumentmottakV2RequestDataUtil.KATEGORI;
+import static no.nav.dokarkiv.arkiverdokumentmottak.tjoark203.v2.ArkiverDokumentmottakV2RequestDataUtil.MOTTAKS_KANAL_CODE;
+import static no.nav.dokarkiv.arkiverdokumentmottak.tjoark203.v2.ArkiverDokumentmottakV2RequestDataUtil.OPPRETTET_AV_NAVN;
+import static no.nav.dokarkiv.arkiverdokumentmottak.tjoark203.v2.ArkiverDokumentmottakV2RequestDataUtil.PERSONIDENT;
+import static no.nav.dokarkiv.arkiverdokumentmottak.tjoark203.v2.ArkiverDokumentmottakV2RequestDataUtil.SENSITIVITET;
+import static no.nav.dokarkiv.arkiverdokumentmottak.tjoark203.v2.ArkiverDokumentmottakV2RequestDataUtil.TITTEL;
+import static no.nav.dokarkiv.arkiverdokumentmottak.tjoark203.v2.ArkiverDokumentmottakV2RequestDataUtil.assertBruker;
+import static no.nav.dokarkiv.arkiverdokumentmottak.tjoark203.v2.ArkiverDokumentmottakV2RequestDataUtil.assertFilDetaljer;
+import static no.nav.dokarkiv.arkiverdokumentmottak.tjoark203.v2.ArkiverDokumentmottakV2RequestDataUtil.assertKryssreferanser;
+import static no.nav.dokarkiv.arkiverdokumentmottak.tjoark203.v2.ArkiverDokumentmottakV2RequestDataUtil.assertSaksrelasjon;
+import static no.nav.dokarkiv.arkiverdokumentmottak.tjoark203.v2.ArkiverDokumentmottakV2RequestDataUtil.assertSkannetInnhold;
+import static no.nav.dokarkiv.arkiverdokumentmottak.tjoark203.v2.ArkiverDokumentmottakV2RequestDataUtil.assertTilleggsopplysninger;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertThat;
 
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
@@ -45,9 +59,6 @@ public class JournalforInngaaendeForsendelseV2RequestMapperTest {
 	@InjectMocks
 	private JournalforInngaaendeForsendelseV2RequestMapper mapper;
 
-	private Journalpost journalpostRequest;
-	private JournalforInngaaendeForsendelseRequest request;
-
 	@Before
 	public void setUp() throws Exception {
 		RequestContextSetter.setRequestContextForUnitTest();
@@ -56,26 +67,27 @@ public class JournalforInngaaendeForsendelseV2RequestMapperTest {
 
 	@Test
 	public void testMap() throws Exception {
+		JournalforInngaaendeForsendelseRequest request = createRequest();
 		JournalforInngaaendeForsendelseV2RequestTo requestTo = mapper.map(request);
 		no.nav.dokarkiv.core.domain.entities.Journalpost domainResult = requestTo.getJournalpost();
 
 		assertThat(domainResult, notNullValue());
-		assertThat(domainResult.getFagomrade().name(), is(journalpostRequest.getTema()));
-		assertThat(domainResult.getBehandlingstema().name(), is(journalpostRequest.getBehandlingstema()));
-		assertThat(domainResult.getOpprettetAvNavn(), is(journalpostRequest.getOpprettetAvNavn()));
+		assertThat(domainResult.getFagomrade().name(), is(FAGOMRADE.name()));
+		assertThat(domainResult.getBehandlingstema().name(), is(BEHANDLINGSTEMA));
+		assertThat(domainResult.getOpprettetAvNavn(), is(OPPRETTET_AV_NAVN));
 		assertThat(domainResult.getJournalfortAvNavn(), nullValue());
 		assertThat(domainResult.getJournalDato(), nullValue());
-		assertThat(domainResult.getJournalForendeEnhetId(), is(journalpostRequest.getJournalforendeEnhet()));
-		assertThat(domainResult.getInnhold(), is(journalpostRequest.getInnhold()));
-		assertThat(toXMLGregorianCalendar(domainResult.getDokumentDato()), is(journalpostRequest.getDatoDokument()));
-		assertThat(domainResult.getAvsenderMottaker(), is(journalpostRequest.getAvsenderMottakerNavn()));
-		assertThat(domainResult.getAvsenderMottakerId(), is(journalpostRequest.getAvsenderMottakerId()));
-		assertThat(toXMLGregorianCalendar(domainResult.getMottattDato()), is(journalpostRequest.getDatoMottatt()));
-		assertThat(domainResult.getMottakskanal().name(), is(journalpostRequest.getMottakskanal()));
+		assertThat(domainResult.getJournalForendeEnhetId(), is(JOURNALFOERENDE_ENHET_REF));
+		assertThat(domainResult.getInnhold(), is(INNHOLD));
+		assertThat(domainResult.getDokumentDato(), is(DATO_DOKUMENT));
+		assertThat(domainResult.getAvsenderMottaker(), is(EKSTERNPART_NAVN));
+		assertThat(domainResult.getAvsenderMottakerId(), is(PERSONIDENT));
+		assertThat(domainResult.getMottattDato(), is(DATO_MOTTATT));
+		assertThat(domainResult.getMottakskanal(), is(MOTTAKS_KANAL_CODE));
 
-		assertSaksrelasjon(domainResult.getSaksrelasjon(), journalpostRequest.getSaksrelasjon());
+		assertSaksrelasjon(domainResult.getSaksrelasjon());
 		assertJournalpostDokumentInfoRelasjon(domainResult.getJournalpostDokumentInfoRelasjoner().iterator().next());
-		assertBruker(domainResult.getBrukere().iterator().next(), journalpostRequest.getBruker());
+		assertBruker(domainResult.getBrukere().iterator().next());
 
 		assertThat(requestTo.isForsokEndeligJf(), is(SHOULD_ENDELIG_JOURNALFOERES));
 
@@ -84,42 +96,55 @@ public class JournalforInngaaendeForsendelseV2RequestMapperTest {
 	}
 
 	@Test
-	public void shouldRunWhenBehandlingstemaIsNull() {
+	public void shouldMapFagomradeUkjentWhenTemaNull() throws Exception {
+		JournalforInngaaendeForsendelseRequest request = createRequest();
+		request.getJournalpost().setTema(null);
+		JournalforInngaaendeForsendelseV2RequestTo requestTo = mapper.map(request);
+		no.nav.dokarkiv.core.domain.entities.Journalpost domainResult = requestTo.getJournalpost();
+
+		assertThat(domainResult.getFagomrade(), is(FagomradeCode.UKJ));
+	}
+
+	@Test
+	public void shouldMapFagomradeUkjentWhenTemaBlank() throws Exception {
+		JournalforInngaaendeForsendelseRequest request = createRequest();
+		request.getJournalpost().setTema("");
+		JournalforInngaaendeForsendelseV2RequestTo requestTo = mapper.map(request);
+		no.nav.dokarkiv.core.domain.entities.Journalpost domainResult = requestTo.getJournalpost();
+
+		assertThat(domainResult.getFagomrade(), is(FagomradeCode.UKJ));
+	}
+
+	@Test
+	public void shouldRunWhenBehandlingstemaIsNull() throws Exception {
+		JournalforInngaaendeForsendelseRequest request = createRequest();
 		request.getJournalpost().setBehandlingstema(null);
 		JournalforInngaaendeForsendelseV2RequestTo requestTo = mapper.map(request);
-		assertEquals(requestTo.getJournalpost().getBehandlingstema(), null);
+		assertThat(requestTo.getJournalpost().getBehandlingstema(), nullValue());
 	}
 
 	private void assertJournalpostDokumentInfoRelasjon(JournalpostDokumentInfoRelasjon dokumentInfoRelasjon) {
 		assertDokumentInfo(dokumentInfoRelasjon.getDokumentInfo());
-		assertThat(dokumentInfoRelasjon.getTilknyttetJournalpostSom().name(),
-				is(journalpostRequest.getJournalpostDokumentInfoRelasjon().get(0).getTilknyttetJournalpostSom().name()));
-		assertThat(dokumentInfoRelasjon.getTilknyttetAvNavn(), is(journalpostRequest.getOpprettetAvNavn()));
+		assertThat(dokumentInfoRelasjon.getTilknyttetJournalpostSom(), is(TilknyttetJournalpostSomCode.HOVEDDOKUMENT));
+		assertThat(dokumentInfoRelasjon.getTilknyttetAvNavn(), is(OPPRETTET_AV_NAVN));
 
 	}
 
 	private void assertDokumentInfo(DokumentInfo dokumentInfo) {
 		assertFilDetaljer(dokumentInfo.getFildetaljerListe().iterator().next());
 		assertSkannetInnhold(dokumentInfo.getSkannetInnholdListe().iterator().next());
-		assertThat(dokumentInfo.getKategori().name(),
-				is(journalpostRequest.getJournalpostDokumentInfoRelasjon().get(0).getDokumentInfo().getKategori()));
-		assertThat(dokumentInfo.getTittel(),
-				is(journalpostRequest.getJournalpostDokumentInfoRelasjon().get(0).getDokumentInfo().getTittel()));
-		assertThat(dokumentInfo.getBrevkode(),
-				is(journalpostRequest.getJournalpostDokumentInfoRelasjon().get(0).getDokumentInfo().getBrevkode()));
-		assertThat(dokumentInfo.getDokumenttypeId(),
-				is(journalpostRequest.getJournalpostDokumentInfoRelasjon()
-						.get(0)
-						.getDokumentInfo()
-						.getDokumentTypeId()));
-		assertThat(dokumentInfo.getSensitivt(),
-				is(journalpostRequest.getJournalpostDokumentInfoRelasjon().get(0).getDokumentInfo().isSensitivt()));
+		assertThat(dokumentInfo.getKategori().name(), is(KATEGORI));
+		assertThat(dokumentInfo.getTittel(), is(TITTEL));
+		assertThat(dokumentInfo.getBrevkode(), is(BREVKODE));
+		assertThat(dokumentInfo.getDokumenttypeId(), is(DOKUMENT_TYPE_ID));
+		assertThat(dokumentInfo.getSensitivt(), is(SENSITIVITET));
 	}
 
-	private void createRequest() throws Exception {
-		journalpostRequest = JournalforInngaaendeForsendelseV2RequestDataUtil.createJournalpost();
-		request = new JournalforInngaaendeForsendelseRequest();
-		request.setJournalpost(journalpostRequest);
+	private JournalforInngaaendeForsendelseRequest createRequest() throws Exception {
+		Journalpost wsJournalpost = JournalforInngaaendeForsendelseV2RequestDataUtil.createJournalpost();
+		JournalforInngaaendeForsendelseRequest request = new JournalforInngaaendeForsendelseRequest();
+		request.setJournalpost(wsJournalpost);
 		request.setForsokEndeligJF(SHOULD_ENDELIG_JOURNALFOERES);
+		return request;
 	}
 }

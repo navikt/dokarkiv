@@ -1,18 +1,7 @@
 package no.nav.dokarkiv.arkiverdokumentmottak.tjoark203.v2;
 
-import static no.nav.dokarkiv.arkiverdokumentmottak.utils.ArkiverDokumentmottakV2RequestDataUtil.toXMLGregorianCalendar;
-import static no.nav.dokarkiv.arkiverdokumentmottak.utils.JournalforInngaaendeForsendelseV2RequestDataUtil.addFildetaljer;
-import static no.nav.dokarkiv.arkiverdokumentmottak.utils.JournalforInngaaendeForsendelseV2RequestDataUtil.addVedlegg;
-import static no.nav.dokarkiv.arkiverdokumentmottak.utils.JournalforInngaaendeForsendelseV2RequestDataUtil.createJournalpost;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.nullValue;
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-
 import no.nav.dokarkiv.arkiverdokumentmottak.AbstractArkiverDokumentmottakItest;
+import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.codes.ReferanseTypeCode;
@@ -48,6 +37,18 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
+
+import static no.nav.dokarkiv.arkiverdokumentmottak.tjoark203.v2.ArkiverDokumentmottakV2RequestDataUtil.toXMLGregorianCalendar;
+import static no.nav.dokarkiv.arkiverdokumentmottak.tjoark203.v2.JournalforInngaaendeForsendelseV2RequestDataUtil.addFildetaljer;
+import static no.nav.dokarkiv.arkiverdokumentmottak.tjoark203.v2.JournalforInngaaendeForsendelseV2RequestDataUtil.addVedlegg;
+import static no.nav.dokarkiv.arkiverdokumentmottak.tjoark203.v2.JournalforInngaaendeForsendelseV2RequestDataUtil.createJournalpost;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
@@ -196,6 +197,19 @@ public class JournalforInngaaendeForsendelseV2IT extends AbstractArkiverDokument
 		assertJournalStatus(persistedJournalpost, JournalStatusCode.M);
 		assertThat(persistedJournalpost.getJournalForendeEnhetId(), is(request.getJournalpost().getJournalforendeEnhet()));
 
+	}
+
+	@Test
+	public void shouldJournalforeTemaUkjentWhenInputTemaNull() throws Exception {
+		request.getJournalpost().setTema(null);
+		arkiverDokumentmottakV2Provider.journalforInngaaendeForsendelse(request);
+
+		List<no.nav.dokarkiv.core.domain.entities.Journalpost> allJournalposts = getAllJournalposts();
+		assertThat(allJournalposts, hasSize(1));
+
+		no.nav.dokarkiv.core.domain.entities.Journalpost persistedJournalpost = allJournalposts.get(0);
+
+		assertThat(persistedJournalpost.getFagomrade(), is(FagomradeCode.UKJ));
 	}
 
 	@Test

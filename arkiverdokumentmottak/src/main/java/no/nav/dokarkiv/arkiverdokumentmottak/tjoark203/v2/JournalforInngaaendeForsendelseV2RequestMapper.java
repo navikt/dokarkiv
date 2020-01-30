@@ -1,9 +1,5 @@
 package no.nav.dokarkiv.arkiverdokumentmottak.tjoark203.v2;
 
-import static no.nav.dokarkiv.arkiverdokumentmottak.util.ConverterUtils.converTillegsopplysningerToMapV2;
-import static no.nav.dokarkiv.arkiverdokumentmottak.util.ConverterUtils.stringToEnum;
-import static no.nav.dokarkiv.core.util.SpecialFilTypeConverter.convertFilType;
-
 import no.nav.dokarkiv.core.domain.codes.Behandlingstema;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
@@ -28,6 +24,11 @@ import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v2.meldinger.Jou
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
+
+import static no.nav.dokarkiv.arkiverdokumentmottak.util.ConverterUtils.converTillegsopplysningerToMapV2;
+import static no.nav.dokarkiv.arkiverdokumentmottak.util.ConverterUtils.stringToEnum;
+import static no.nav.dokarkiv.core.util.SpecialFilTypeConverter.convertFilType;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 /**
  * Mapper for TJOARK203 request
@@ -65,7 +66,7 @@ public class JournalforInngaaendeForsendelseV2RequestMapper {
 
 	private Journalpost mapJournalpost(no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v2.informasjon.arkiverdokumentmottak.Journalpost journalpost) {
 		return Journalpost.builder()
-				.fagomrade(stringToEnum(FagomradeCode.class, journalpost.getTema()))
+				.fagomrade(mapTema(journalpost))
 				.behandlingstema(stringToEnum(Behandlingstema.class, journalpost.getBehandlingstema()))
 				.journalForendeEnhetId(journalpost.getJournalforendeEnhet())
 				.opprettetAvNavn(journalpost.getOpprettetAvNavn())
@@ -83,6 +84,13 @@ public class JournalforInngaaendeForsendelseV2RequestMapper {
 				.tilleggsopplysninger(converTillegsopplysningerToMapV2(journalpost.getTilleggsopplysninger()))
 				.build();
 
+	}
+
+	private FagomradeCode mapTema(no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v2.informasjon.arkiverdokumentmottak.Journalpost journalpost) {
+		if(isBlank(journalpost.getTema())) {
+			return FagomradeCode.UKJ;
+		}
+		return stringToEnum(FagomradeCode.class, journalpost.getTema());
 	}
 
 	private void mapKryssreferanse(Journalpost domainJournalpost, no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v2.informasjon.arkiverdokumentmottak.Journalpost journalpost) {
