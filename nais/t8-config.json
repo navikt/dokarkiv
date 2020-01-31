@@ -5,9 +5,8 @@
   "FREG_SECURITY_OIDC_IDP_OPENAM_HOSTURL": "https://isso-t.adeo.no:443/isso",
   "FREG_SECURITY_OIDC_IDP_NAVSTS_ISSUERURL": "https://security-token-service-t4.nais.preprod.local",
   "FREG_SECURITY_OIDC_IDP_NAVSTS_JWKSURL": "https://security-token-service-t4.nais.preprod.local/rest/v1/sts/jwks",
-  "SPRING_DATASOURCE_URL": "jdbc:oracle:thin:@d26dbfl020.test.local:1521/joark_t8",
+  "SPRING_DATASOURCE_URL": "jdbc:oracle:thin:@dm07-scan.adeo.no:1521/joark_t8",
   "SPRING_LDAP_URLS": "ldaps://ldapgw.test.local",
-  "SPRING_LDAP_USERNAME": "srvSSOLinux",
   "LDAP_NAVUSER_BASEDN": "ou=NAV,ou=BusinessUnits,dc=test,dc=local",
   "LDAP_SERVICEUSER_BASEDN": "ou=ServiceAccounts,dc=test,dc=local",
   "LDAP_DOMAIN": "TEST.LOCAL",
@@ -20,6 +19,7 @@
   "DOKARKIV_HENTDOKUMENT_BASEURL": "https://dokarkiv-t8.nais.preprod.local/hentdokument",
   "INGRESSES": "https://dokarkiv-t8.nais.preprod.local",
   "DOKARKIV_DS": "/oracle/data/dev/creds/joark_t8-user",
-  "SRVDOKARKIV": "/serviceuser/data/dev/srvdokarkiv",
-  "DOKARKIV_VAULT": "/kv/preprod/fss/dokarkiv/default"
+  "SRVDOKARKIV": "/serviceuser/data/test/srvdokarkiv",
+  "DOKARKIV_VAULT": "/kv/preprod/fss/dokarkiv/t8",
+  "SRV_LINUX": "/serviceuser/data/test/srvssolinux"
 }

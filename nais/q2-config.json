@@ -7,7 +7,6 @@
   "FREG_SECURITY_OIDC_IDP_NAVSTS_JWKSURL": "https://security-token-service.nais.preprod.local/rest/v1/sts/jwks",
   "SPRING_DATASOURCE_URL": "jdbc:oracle:thin:@a01dbfl033.adeo.no:1521/joark_q2",
   "SPRING_LDAP_URLS": "ldaps://ldapgw.preprod.local",
-  "SPRING_LDAP_USERNAME": "srvSSOLinux",
   "LDAP_NAVUSER_BASEDN": "ou=NAV,ou=BusinessUnits,dc=preprod,dc=local",
   "LDAP_SERVICEUSER_BASEDN": "ou=ServiceAccounts,dc=preprod,dc=local",
   "LDAP_DOMAIN": "PREPROD.LOCAL",
@@ -21,5 +20,6 @@
   "INGRESSES": "https://dokarkiv-q2.nais.preprod.local",
   "DOKARKIV_DS": "/oracle/data/dev/creds/joark_q2-user",
   "SRVDOKARKIV": "/serviceuser/data/dev/srvdokarkiv",
-  "DOKARKIV_VAULT": "/kv/preprod/fss/dokarkiv/default"
+  "DOKARKIV_VAULT": "/kv/preprod/fss/dokarkiv/q2",
+  "SRV_LINUX": "/serviceuser/data/dev/srvssolinux"
 }

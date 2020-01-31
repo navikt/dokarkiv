@@ -19,12 +19,8 @@ spec:
       value: {{ FREG_SECURITY_OIDC_IDP_NAVSTS_JWKSURL }}
     - name: SPRING_DATASOURCE_URL
       value: {{ SPRING_DATASOURCE_URL }}
-    - name: SPRING_DATASOURCE_USERNAME
-      value: {{ SPRING_DATASOURCE_USERNAME }}
     - name: SPRING_LDAP_URLS
       value: {{ SPRING_LDAP_URLS }}
-    - name: SPRING_LDAP_USERNAME
-      value: {{ SPRING_LDAP_USERNAME }}
     - name: LDAP_NAVUSER_BASEDN
       value: {{ LDAP_NAVUSER_BASEDN }}
     - name: LDAP_SERVICEUSER_BASEDN
@@ -33,12 +29,8 @@ spec:
       value: {{ LDAP_DOMAIN }}
     - name: LDAP_BASEDN
       value: {{ LDAP_BASEDN }}
-    - name: SERVICEUSER_USERNAME
-      value: {{ SERVICEUSER_USERNAME }}
     - name: SECURITYTOKENSERVICE_URL
       value: {{ SECURITYTOKENSERVICE_URL }}
-    - name: VIRKSOMHET_AKTOER_V2_SECURITYTOKEN
-      value: "SAML"
     - name: AKTOERV2_URL
       value: {{ AKTOERV2_URL }}
     - name: VIRKSOMHET_AKTOER_V2_WSDLURL
@@ -49,8 +41,6 @@ spec:
       value: {{ JOARK_HENTDOKUMENT_BASEURL }}
     - name: DOKARKIV_HENTDOKUMENT_BASEURL
       value: {{ DOKARKIV_HENTDOKUMENT_BASEURL }}
-    - name: DOKARKIV_S3_CREDS_USERNAME
-      value: {{ DOKARKIV_S3_CREDS_USERNAME }}
   image: {{ image }}
   ingresses:
     - {{ INGRESSES }}
@@ -87,7 +77,5 @@ spec:
         mountPath: "/secrets/serviceuser/srvdokarkiv"
       - kvPath: {{ DOKARKIV_VAULT }}
         mountPath: "/var/run/secrets/nais.io/vault"
-      {{#if SRV_LINUX}}
       - kvPath: {{ SRV_LINUX }}
         mountPath: "/var/run/secrets/nais.io/ldap"
-      {{/if}}
