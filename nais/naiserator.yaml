@@ -33,8 +33,6 @@ spec:
       value: {{ SECURITYTOKENSERVICE_URL }}
     - name: AKTOERV2_URL
       value: {{ AKTOERV2_URL }}
-    - name: VIRKSOMHET_AKTOER_V2_WSDLURL
-      value: {{ VIRKSOMHET_AKTOER_V2_WSDLURL }}
     - name: ABAC_URL
       value: {{ ABAC_URL }}
     - name: JOARK_HENTDOKUMENT_BASEURL

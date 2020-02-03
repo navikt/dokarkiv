@@ -13,7 +13,6 @@
   "LDAP_BASEDN": "dc=test,dc=local",
   "SECURITYTOKENSERVICE_URL": "https://sts-t3.test.local/SecurityTokenServiceProvider/",
   "AKTOERV2_URL": "https://app-t3.adeo.no/aktoerregister/ws/Aktoer/v2",
-  "VIRKSOMHET_AKTOER_V2_WSDLURL": "http://maven.adeo.no/nexus/content/groups/public/no/nav/tjenester/fim/nav-fim-aktoer-v2-tjenestespesifikasjon/2.0.1/nav-fim-aktoer-v2-tjenestespesifikasjon-2.0.1.zip",
   "ABAC_URL": "https://wasapp-t3.adeo.no/asm-pdp/authorize",
   "JOARK_HENTDOKUMENT_BASEURL": "https://wasapp-t3.adeo.no/joarkweb/HentDokument",
   "DOKARKIV_HENTDOKUMENT_BASEURL": "https://dokarkiv-t3.nais.preprod.local/hentdokument",
