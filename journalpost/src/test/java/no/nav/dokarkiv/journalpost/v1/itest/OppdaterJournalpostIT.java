@@ -15,8 +15,10 @@ import static no.nav.dokarkiv.core.security.JwtClaimsBuilderProvider.openAmClaim
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.BRUKER_ID_ORGANISASJON;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.BRUKER_ID_PERSON;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FAGSAK_ID;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_PEN;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_SYM;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_TIL;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_UFO;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createFagsak;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createGenerellSak;
 import static org.apache.commons.lang3.StringUtils.isBlank;
@@ -456,7 +458,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 	}
 
 	@Test
-	public void happyPathNyGenerellSak(){
+	public void happyPathNyGenerellSak() {
 		clearSakRepository();
 		abacPermit();
 
@@ -612,7 +614,12 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 		no.nav.dokarkiv.core.domain.entities.Sak sak = sakRepository.findAll().iterator().next();
 		assertEquals(sak.getAktoerId(), AKTOER_ID);
 
-		no.nav.dokarkiv.core.domain.entities.Bruker bruker = joarkRepository.findAll().iterator().next().getBrukere().iterator().next();
+		no.nav.dokarkiv.core.domain.entities.Bruker bruker = joarkRepository.findAll()
+				.iterator()
+				.next()
+				.getBrukere()
+				.iterator()
+				.next();
 		assertEquals(bruker.getBrukerId(), FNR);
 		assertEquals(bruker.getBrukerType(), BrukerTypeCode.PERSON);
 
@@ -696,7 +703,12 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 		no.nav.dokarkiv.core.domain.entities.Sak sak = sakRepository.findAll().iterator().next();
 		assertEquals(sak.getOrgnr(), BRUKER_ID_ORGANISASJON);
 
-		no.nav.dokarkiv.core.domain.entities.Bruker bruker = joarkRepository.findAll().iterator().next().getBrukere().iterator().next();
+		no.nav.dokarkiv.core.domain.entities.Bruker bruker = joarkRepository.findAll()
+				.iterator()
+				.next()
+				.getBrukere()
+				.iterator()
+				.next();
 		assertEquals(bruker.getBrukerId(), BRUKER_ID_ORGANISASJON);
 		assertEquals(bruker.getBrukerType(), BrukerTypeCode.ORGANISASJON);
 
@@ -704,7 +716,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 	}
 
 	@Test
-	public void happyPathEksisterendeFagsak(){
+	public void happyPathEksisterendeFagsak() {
 		clearSakRepository();
 		abacPermit();
 
@@ -786,6 +798,84 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 		TestTransaction.end();
 
+	}
+
+	@Test
+	public void happyPathTemaPEN() {
+		clearSakRepository();
+		abacPermit();
+
+		long sakRepositoryCount = sakRepository.count();
+
+		JournalpostBuilder journalpostBuilder = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
+				.endretAvNavn("saksbehandlersen");
+		Journalpost journalpost = buildAndCommit(journalpostBuilder);
+		Long journalpostId = journalpost.getJournalpostId();
+
+		OppdaterJournalpostRequest request = OppdaterJournalpostRequest.builder()
+				.tema(TEMA_PEN)
+				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(BRUKER_ID_PERSON).build())
+				.sak(Sak.builder()
+						.sakstype(Sakstype.FAGSAK)
+						.fagsakId(FAGSAK_ID)
+						.fagsaksystem(Fagsaksystem.PP01)
+						.build())
+				.build();
+
+		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
+
+		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(
+				URL_JOURNALPOST + journalpostId, HttpMethod.PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
+
+		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
+		assertThat(responseEntity.getBody().getJournalpostId(), is(String.valueOf(journalpostId)));
+
+		TestTransaction.start();
+
+		Journalpost oppdatertJournalpost = joarkRepository.findById(journalpostId).get();
+		assertThat(oppdatertJournalpost.getSaksrelasjon().getFagsystem(), is(PEN));
+		assertEquals(sakRepository.count(), sakRepositoryCount);
+
+		TestTransaction.end();
+	}
+
+	@Test
+	public void happyPathTemaUFO() {
+		clearSakRepository();
+		abacPermit();
+
+		long sakRepositoryCount = sakRepository.count();
+
+		JournalpostBuilder journalpostBuilder = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
+				.endretAvNavn("saksbehandlersen");
+		Journalpost journalpost = buildAndCommit(journalpostBuilder);
+		Long journalpostId = journalpost.getJournalpostId();
+
+		OppdaterJournalpostRequest request = OppdaterJournalpostRequest.builder()
+				.tema(TEMA_UFO)
+				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(BRUKER_ID_PERSON).build())
+				.sak(Sak.builder()
+						.sakstype(Sakstype.FAGSAK)
+						.fagsakId(FAGSAK_ID)
+						.fagsaksystem(Fagsaksystem.PP01)
+						.build())
+				.build();
+
+		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
+
+		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(
+				URL_JOURNALPOST + journalpostId, HttpMethod.PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
+
+		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
+		assertThat(responseEntity.getBody().getJournalpostId(), is(String.valueOf(journalpostId)));
+
+		TestTransaction.start();
+
+		Journalpost oppdatertJournalpost = joarkRepository.findById(journalpostId).get();
+		assertThat(oppdatertJournalpost.getSaksrelasjon().getFagsystem(), is(PEN));
+		assertEquals(sakRepository.count(), sakRepositoryCount);
+
+		TestTransaction.end();
 	}
 
 	private OppdaterJournalpostRequest createPutOppdaterJournalpostRequestWithDokumentInfoId(Long dokumentInfoId) {

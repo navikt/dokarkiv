@@ -13,5 +13,8 @@ public enum Fagsaksystem {
     IT01,
     PP01,
     K9,
-    BISYS
+    BISYS,
+    BA,
+    EF,
+    KONT
 }

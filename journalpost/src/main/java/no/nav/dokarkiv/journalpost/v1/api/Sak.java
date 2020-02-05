@@ -39,6 +39,9 @@ public class Sak {
                     "* PP01\n" +
                     "* K9\n" +
                     "* BISYS\n" +
+                    "* BA (Barnetrygd)\n" +
+                    "* EF (Enslig forsørger)\n" +
+                    "* KONT (Kontantstøtte)\n" +
                     "Skal kun settes dersom sakstype = FAGSAK",
             example = "FS38"
     )

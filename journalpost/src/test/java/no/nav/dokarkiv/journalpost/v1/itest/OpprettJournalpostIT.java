@@ -29,8 +29,10 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FYSISK_DOKUMENT_2;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.INNHOLD;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.SAK_ID;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_FOR;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_PEN;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_SYM;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_TIL;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_UFO;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.VARIANTFORMAT_ARKIV;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createFagsak;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createGenerellSak;
@@ -414,6 +416,50 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
 		assertEquals(1, aksjonsLoggList.size());
 		assertEquals(aksjonsLoggList.get(0).getBruker(), FNR);
+	}
+
+	@Test
+	public void happyPathTemaUFO() throws IOException {
+		clearSakRepository();
+		abacPermit();
+
+		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
+				.tema(TEMA_UFO)
+				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(BRUKER_ID_PERSON).build())
+				.sak(Sak.builder().sakstype(Sakstype.GENERELL_SAK).build())
+				.build();
+
+		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
+		restTemplate.exchange(URL_JOURNALPOST, HttpMethod.POST, requestEntity, OpprettJournalpostResponse.class);
+
+		no.nav.dokarkiv.core.domain.entities.Sak sak = sakRepository.findAll().iterator().next();
+		assertEquals(sak.getTema(), TEMA_UFO);
+		assertEquals(sak.getApplikasjon(), FS22.name());
+
+		Saksrelasjon saksrelasjon = joarkRepository.findAll().iterator().next().getSaksrelasjon();
+		assertEquals(saksrelasjon.getFagsystem(), FS22);
+	}
+
+	@Test
+	public void happyPathTemaPEN() throws IOException {
+		clearSakRepository();
+		abacPermit();
+
+		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
+				.tema(TEMA_PEN)
+				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(BRUKER_ID_PERSON).build())
+				.sak(Sak.builder().sakstype(Sakstype.GENERELL_SAK).build())
+				.build();
+
+		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
+		restTemplate.exchange(URL_JOURNALPOST, HttpMethod.POST, requestEntity, OpprettJournalpostResponse.class);
+
+		no.nav.dokarkiv.core.domain.entities.Sak sak = sakRepository.findAll().iterator().next();
+		assertEquals(sak.getTema(), TEMA_PEN);
+		assertEquals(sak.getApplikasjon(), FS22.name());
+
+		Saksrelasjon saksrelasjon = joarkRepository.findAll().iterator().next().getSaksrelasjon();
+		assertEquals(saksrelasjon.getFagsystem(), FS22);
 	}
 
 	@Test
