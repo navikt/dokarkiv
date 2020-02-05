@@ -8,6 +8,7 @@ import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.NavHeaders;
 import no.nav.dokarkiv.core.exceptions.ConsumerIsNotSrvDokarkivProxyFunctionalException;
+import no.nav.dokarkiv.core.exceptions.ConsumerServiceuserNotAuthorizedFunctionalException;
 import no.nav.dokarkiv.core.exceptions.DokarkivFunctionalException;
 import no.nav.dokarkiv.core.exceptions.DokarkivTechnicalException;
 import no.nav.dokarkiv.core.metrics.RestMetrics;
@@ -53,32 +54,34 @@ public class JournalpostInternRestController {
 
 	private final TilknyttVedleggService tilknyttVedleggService;
 	private final FinnMottatteJournalposterService finnMottatteJournalposterService;
-    private final KopierJournalpostService kopierJournalpostService;
+	private final KopierJournalpostService kopierJournalpostService;
 	private static final String SRVDOKARKIVPROXY = "srvdokarkivproxy";
+	private static final String SRVDOKSIKKERHETSNETT = "srvdoksikkerhetsnt";
 
 	@Inject
 	public JournalpostInternRestController(
 			final TilknyttVedleggService tilknyttVedleggService,
 			final FinnMottatteJournalposterService finnMottatteJournalposterService,
-            final KopierJournalpostService kopierJournalpostService
+			final KopierJournalpostService kopierJournalpostService
 	) {
+
 		this.tilknyttVedleggService = tilknyttVedleggService;
 		this.finnMottatteJournalposterService = finnMottatteJournalposterService;
-        this.kopierJournalpostService = kopierJournalpostService;
+		this.kopierJournalpostService = kopierJournalpostService;
 	}
 
-    @Transactional
-    @SwaggerTilknyttVedlegg
-    @ResponseBody
-    @PutMapping(value = "/journalpost/{journalpostId}/tilknyttVedlegg")
-    @RestMetrics(value = "dok_request", extraTags = {"process_code", "tilknyttVedlegg"}, percentiles = {0.5, 0.95})
-    public ResponseEntity<TilknyttVedleggResponse> tilknyttVedlegg(
-            @PathVariable String journalpostId,
-            @RequestHeader(value = HttpHeaders.AUTHORIZATION) String auth,
-            @RequestBody TilknyttVedleggRequest request) {
-        MDC.put(MDC_REQUEST_ID, "tilknyttVedlegg");
-        try {
-            assertThatConsumerIsSrvdokarkivproxy(auth);
+	@Transactional
+	@SwaggerTilknyttVedlegg
+	@ResponseBody
+	@PutMapping(value = "/journalpost/{journalpostId}/tilknyttVedlegg")
+	@RestMetrics(value = "dok_request", extraTags = {"process_code", "tilknyttVedlegg"}, percentiles = {0.5, 0.95})
+	public ResponseEntity<TilknyttVedleggResponse> tilknyttVedlegg(
+			@PathVariable String journalpostId,
+			@RequestHeader(value = HttpHeaders.AUTHORIZATION) String auth,
+			@RequestBody TilknyttVedleggRequest request) {
+		MDC.put(MDC_REQUEST_ID, "tilknyttVedlegg");
+		try {
+			assertThatConsumerIsSrvdokarkivproxy(auth);
 
 			validateId(journalpostId, "journalpostId");
 
@@ -116,17 +119,12 @@ public class JournalpostInternRestController {
 			@RequestHeader(value = HttpHeaders.AUTHORIZATION) String auth,
 			@PathVariable List<String> temaer) {
 		MDC.put(MDC_REQUEST_ID, "finnMottatteJournalposter");
-		assertThatConsumerIsSrvdokarkivproxy(auth);
-
-		/*
-		  TODO
-		   Det er kun servicebrukeren til joarkSikkerhetsnett (navngivning TBD) som får lov til å kalle tjenesten
-		   https://confluence.adeo.no/pages/viewpage.action?pageId=346917288
-		*/
+		assertThatConsumerIsSrvdoksikkerhetsnettOrSrvdokarkivproxy(auth);
 
 		log.info("finnMottatteJournalposter har mottatt kall om å hente ubehandlede journalposter med tema i " + temaer);
 
 		FinnMottatteJournalposterResponse ubehandledeJournalposter = finnMottatteJournalposterService.finnMottatteJournalposterMedTema(temaer);
+
 
 		return ResponseEntity
 				.ok()
@@ -141,13 +139,7 @@ public class JournalpostInternRestController {
 	public ResponseEntity<FinnMottatteJournalposterResponse> finnMottatteJournalposter(
 			@RequestHeader(value = HttpHeaders.AUTHORIZATION) String auth) {
 		MDC.put(MDC_REQUEST_ID, "finnMottatteJournalposter");
-		assertThatConsumerIsSrvdokarkivproxy(auth);
-
-		/*
-		  TODO
-		   Det er kun servicebrukeren til joarkSikkerhetsnett (navngivning TBD) som får lov til å kalle tjenesten
-		   https://confluence.adeo.no/pages/viewpage.action?pageId=346917288
-		*/
+		assertThatConsumerIsSrvdoksikkerhetsnettOrSrvdokarkivproxy(auth);
 
 		log.info("finnMottatteJournalposter har mottatt kall om å hente ubehandlede journalposter");
 
@@ -158,40 +150,48 @@ public class JournalpostInternRestController {
 				.body(ubehandledeJournalposter);
 	}
 
-    @Transactional
-    @SwaggerKopierJournalpost
-    @PostMapping("/journalpost/kopierJournalpost")
-    @RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark203"}, percentiles = {0.5, 0.95})
-    public ResponseEntity<Long> kopierJournalpost(
-            @io.swagger.annotations.ApiParam(name = "kildeJournalpostId", value = "IDen til journalposten som skal kopieres", required = true, example = "77778888")
-            @RequestHeader(value = HttpHeaders.AUTHORIZATION) String auth,
+	@Transactional
+	@SwaggerKopierJournalpost
+	@PostMapping("/journalpost/kopierJournalpost")
+	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark203"}, percentiles = {0.5, 0.95})
+	public ResponseEntity<Long> kopierJournalpost(
+			@io.swagger.annotations.ApiParam(name = "kildeJournalpostId", value = "IDen til journalposten som skal kopieres", required = true, example = "77778888")
+			@RequestHeader(value = HttpHeaders.AUTHORIZATION) String auth,
 			@RequestHeader(value = NavHeaders.NAV_USER_ID) String userId,
-            @RequestParam String kildeJournalpostId) {
-        try {
-            assertThatConsumerIsSrvdokarkivproxy(auth);
+			@RequestParam String kildeJournalpostId) {
+		try {
+			assertThatConsumerIsSrvdokarkivproxy(auth);
 
-            MDC.put(MDC_REQUEST_ID, "rjoark203");
-            log.info(MDC.get(MDC_REQUEST_ID) + " har mottatt kall for kopiering av journalpost med journalpostId={}", kildeJournalpostId);
-            validateId(kildeJournalpostId, "journalpostId");
+			MDC.put(MDC_REQUEST_ID, "rjoark203");
+			log.info(MDC.get(MDC_REQUEST_ID) + " har mottatt kall for kopiering av journalpost med journalpostId={}", kildeJournalpostId);
+			validateId(kildeJournalpostId, "journalpostId");
 
-            Long nyJournalpostId = kopierJournalpostService.execute(Long.parseLong(kildeJournalpostId));
+			Long nyJournalpostId = kopierJournalpostService.execute(Long.parseLong(kildeJournalpostId));
 
-            return ResponseEntity.status(HttpStatus.CREATED).body(nyJournalpostId);
-        } catch (DokarkivFunctionalException e) {
-            log.warn("kopierJournalpost - feilet funksjonelt ved kopiering av journalpost for journalpostId={}. Feilmelding={}", kildeJournalpostId, e
-                    .getMessage());
-            throw e;
-        } catch (DokarkivTechnicalException e) {
-            log.error("kopierJournalpost - feilet teknisk ved kopiering av journalpost for journalpostId={}. Feilmelding={}", kildeJournalpostId, e
-                    .getMessage());
-            throw e;
-        }
-    }
+			return ResponseEntity.status(HttpStatus.CREATED).body(nyJournalpostId);
+		} catch (DokarkivFunctionalException e) {
+			log.warn("kopierJournalpost - feilet funksjonelt ved kopiering av journalpost for journalpostId={}. Feilmelding={}", kildeJournalpostId, e
+					.getMessage());
+			throw e;
+		} catch (DokarkivTechnicalException e) {
+			log.error("kopierJournalpost - feilet teknisk ved kopiering av journalpost for journalpostId={}. Feilmelding={}", kildeJournalpostId, e
+					.getMessage());
+			throw e;
+		}
+	}
 
-    private void assertThatConsumerIsSrvdokarkivproxy(String auth) {
-        if (!SRVDOKARKIVPROXY.equals(decodeBasicAuth(auth)[0])) {
-            throw new ConsumerIsNotSrvDokarkivProxyFunctionalException("Konsument har ikke tilgang til å kalle tjenesten");
-        }
-    }
+	private void assertThatConsumerIsSrvdokarkivproxy(String auth) {
+		if (!SRVDOKARKIVPROXY.equals(decodeBasicAuth(auth)[0])) {
+			throw new ConsumerIsNotSrvDokarkivProxyFunctionalException("Konsument har ikke tilgang til å kalle tjenesten");
+		}
+	}
+
+	private void assertThatConsumerIsSrvdoksikkerhetsnettOrSrvdokarkivproxy(String auth) {
+		String serviceuser = decodeBasicAuth(auth)[0];
+		//TODO: Tror kanskje denne må catches i toppen ?
+		if (!SRVDOKARKIVPROXY.equals(serviceuser) && !SRVDOKSIKKERHETSNETT.equals(serviceuser)) {
+			throw new ConsumerServiceuserNotAuthorizedFunctionalException("Konsument har ikke tilgang til å kalle tjenesten");
+		}
+	}
 
 }
