@@ -4,9 +4,11 @@ import static java.util.Collections.singletonList;
 import static no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerV2Mock.AKTOER_ID;
 import static no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerV2Mock.FAIL_AKTOER_ID;
 import static no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerV2Mock.FNR;
+import static no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerV2Mock.FNR_2;
 import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.OPPRETT;
 import static no.nav.dokarkiv.core.domain.codes.FagsystemCode.FS22;
 import static no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem.AO01;
+import static no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem.KONT;
 import static no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem.PP01;
 import static no.nav.dokarkiv.journalpost.v1.api.JournalpostType.INNGAAENDE;
 import static no.nav.dokarkiv.journalpost.v1.api.JournalpostType.NOTAT;
@@ -41,13 +43,18 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createRequest;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
+import no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerService;
+import no.nav.dokarkiv.core.consumer.aktoer.HentAktoerIdForIdentRequestTo;
+import no.nav.dokarkiv.core.consumer.aktoer.HentAktoerIdForIdentResponseTo;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.codes.AvsenderMottakerIdTypeCode;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
@@ -71,6 +78,7 @@ import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostR
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostResponse;
 import org.apache.commons.collections15.IteratorUtils;
 import org.junit.Test;
+import org.mockito.Mock;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -84,6 +92,9 @@ import java.util.List;
 public class OpprettJournalpostIT extends AbstractJournalpostIT {
 
 	private ObjectMapper mapper = new ObjectMapper();
+
+	@Mock
+	private AktoerConsumerService aktoerConsumerService;
 
 	@Test
 	public void happyPathOpprettInngaaende() throws IOException {
@@ -252,7 +263,11 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		abacPermit();
 
 		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
-				.sak(Sak.builder().sakstype(Sakstype.ARKIVSAK).arkivsaksnummer(ARKIVSAKSNUMMER).arkivsaksystem(Arkivsaksystem.GSAK).build())
+				.sak(Sak.builder()
+						.sakstype(Sakstype.ARKIVSAK)
+						.arkivsaksnummer(ARKIVSAKSNUMMER)
+						.arkivsaksystem(Arkivsaksystem.GSAK)
+						.build())
 				.build();
 
 		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
@@ -290,7 +305,11 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		abacPermit();
 
 		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
-				.sak(Sak.builder().sakstype(Sakstype.ARKIVSAK).arkivsaksnummer(ARKIVSAKSNUMMER).arkivsaksystem(Arkivsaksystem.PSAK).build())
+				.sak(Sak.builder()
+						.sakstype(Sakstype.ARKIVSAK)
+						.arkivsaksnummer(ARKIVSAKSNUMMER)
+						.arkivsaksystem(Arkivsaksystem.PSAK)
+						.build())
 				.build();
 
 		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
@@ -409,7 +428,12 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		no.nav.dokarkiv.core.domain.entities.Sak sak = sakRepository.findAll().iterator().next();
 		assertEquals(sak.getAktoerId(), AKTOER_ID);
 
-		no.nav.dokarkiv.core.domain.entities.Bruker bruker = joarkRepository.findAll().iterator().next().getBrukere().iterator().next();
+		no.nav.dokarkiv.core.domain.entities.Bruker bruker = joarkRepository.findAll()
+				.iterator()
+				.next()
+				.getBrukere()
+				.iterator()
+				.next();
 		assertEquals(bruker.getBrukerId(), FNR);
 		assertEquals(bruker.getBrukerType(), BrukerTypeCode.PERSON);
 
@@ -509,7 +533,12 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		no.nav.dokarkiv.core.domain.entities.Sak sak = sakRepository.findAll().iterator().next();
 		assertEquals(sak.getOrgnr(), BRUKER_ID_ORGANISASJON);
 
-		no.nav.dokarkiv.core.domain.entities.Bruker bruker = joarkRepository.findAll().iterator().next().getBrukere().iterator().next();
+		no.nav.dokarkiv.core.domain.entities.Bruker bruker = joarkRepository.findAll()
+				.iterator()
+				.next()
+				.getBrukere()
+				.iterator()
+				.next();
 		assertEquals(bruker.getBrukerId(), BRUKER_ID_ORGANISASJON);
 		assertEquals(bruker.getBrukerType(), BrukerTypeCode.ORGANISASJON);
 
@@ -571,7 +600,6 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 
 		assertEquals(sakRepository.count(), sakRepositoryCount);
 	}
-
 
 
 	@Test
@@ -736,5 +764,108 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(HttpStatus.CREATED, response.getStatusCode());
 		assertEquals("ENDELIG", response.getBody().getJournalstatus());
 
+	}
+
+	@Test
+	public void shouldCallAktoerService() throws IOException {
+		abacPermit();
+
+		when(aktoerConsumerService.hentAktoerIdForIdent(new HentAktoerIdForIdentRequestTo(AKTOER_ID)))
+				.thenReturn(new HentAktoerIdForIdentResponseTo(FNR, new ArrayList<>()));
+
+		OpprettJournalpostRequest request = createMinimalRequest(INNGAAENDE)
+				.tema(TEMA_UFO)
+				.sak(Sak.builder()
+						.sakstype(Sakstype.FAGSAK)
+						.fagsaksystem(KONT)
+						.fagsakId(FAGSAK_ID)
+						.build())
+				.bruker(Bruker.builder()
+						.idType(BrukerIdType.AKTOERID)
+						.id(AKTOER_ID)
+						.build())
+				.build();
+
+		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
+		restTemplate.exchange(URL_JOURNALPOST + FERDIGSTILL_QUERY, HttpMethod.POST, requestEntity, OpprettJournalpostResponse.class);
+
+		Journalpost journalpost = joarkRepository.findAll().iterator().next();
+		assertEquals(FNR, journalpost.getBrukere().stream().findFirst().get().getBrukerId());
+	}
+
+	@Test
+	public void shouldNotCallAktoerServiceWithoutBrukerIdTypeAKTOERID() throws IOException {
+		abacPermit();
+
+		when(aktoerConsumerService.hentAktoerIdForIdent(new HentAktoerIdForIdentRequestTo(AKTOER_ID)))
+				.thenReturn(new HentAktoerIdForIdentResponseTo(FNR_2, new ArrayList<>()));
+
+		OpprettJournalpostRequest request = createMinimalRequest(INNGAAENDE)
+				.tema(TEMA_UFO)
+				.sak(Sak.builder()
+						.sakstype(Sakstype.FAGSAK)
+						.fagsaksystem(KONT)
+						.fagsakId(FAGSAK_ID)
+						.build())
+				.bruker(Bruker.builder()
+						.idType(BrukerIdType.FNR)
+						.id(FNR)
+						.build())
+				.build();
+
+		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
+		restTemplate.exchange(URL_JOURNALPOST + FERDIGSTILL_QUERY, HttpMethod.POST, requestEntity, OpprettJournalpostResponse.class);
+
+		Journalpost journalpost = joarkRepository.findAll().iterator().next();
+		journalpost.getBrukere().forEach(bruker -> assertNotEquals(FNR_2, bruker.getBrukerId()));
+	}
+
+	@Test
+	public void shouldNotCallAktoerServiceWithSAKFagsystemPP01() throws IOException {
+		abacPermit();
+
+		when(aktoerConsumerService.hentAktoerIdForIdent(new HentAktoerIdForIdentRequestTo(AKTOER_ID)))
+				.thenReturn(new HentAktoerIdForIdentResponseTo(FNR_2, new ArrayList<>()));
+
+		OpprettJournalpostRequest request = createMinimalRequest(INNGAAENDE)
+				.tema(TEMA_UFO)
+				.sak(Sak.builder()
+						.sakstype(Sakstype.FAGSAK)
+						.fagsaksystem(PP01)
+						.fagsakId(FAGSAK_ID)
+						.build())
+				.bruker(Bruker.builder()
+						.idType(BrukerIdType.FNR)
+						.id(FNR)
+						.build())
+				.build();
+
+		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
+		restTemplate.exchange(URL_JOURNALPOST + FERDIGSTILL_QUERY, HttpMethod.POST, requestEntity, OpprettJournalpostResponse.class);
+
+		Journalpost journalpost = joarkRepository.findAll().iterator().next();
+		journalpost.getBrukere().forEach(bruker -> assertNotEquals(FNR_2, bruker.getBrukerId()));
+	}
+
+	@Test
+	public void shouldNotCallAktoerServiceWithWrongSakstype() throws IOException {
+		abacPermit();
+
+		when(aktoerConsumerService.hentAktoerIdForIdent(new HentAktoerIdForIdentRequestTo(AKTOER_ID)))
+				.thenReturn(new HentAktoerIdForIdentResponseTo(FNR_2, new ArrayList<>()));
+
+		OpprettJournalpostRequest request = createMinimalRequest(INNGAAENDE)
+				.tema(TEMA_UFO)
+				.bruker(Bruker.builder()
+						.idType(BrukerIdType.FNR)
+						.id(FNR)
+						.build())
+				.build();
+
+		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
+		restTemplate.exchange(URL_JOURNALPOST + FERDIGSTILL_QUERY, HttpMethod.POST, requestEntity, OpprettJournalpostResponse.class);
+
+		Journalpost journalpost = joarkRepository.findAll().iterator().next();
+		journalpost.getBrukere().forEach(bruker -> assertNotEquals(FNR_2, bruker.getBrukerId()));
 	}
 }

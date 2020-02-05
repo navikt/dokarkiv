@@ -30,6 +30,7 @@ public class AktoerConsumerV2Mock implements AktoerV2 {
 
 	public static final String AKTOER_ID = "***gammelt_fnr***23";
     public static final String FNR = "***gammelt_fnr***";
+	public static final String FNR_2 = "***gammelt_fnr***";
     public static final String CURRENT_IDENT = "***gammelt_fnr***1";
     public static final String FAIL_AKTOER_ID = "***gammelt_fnr***06";
     public static final String FAIL_IDENT = "***gammelt_fnr***067";
