@@ -8,6 +8,7 @@ import static java.lang.String.format;
 import static no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerV2Mock.AKTOER_ID;
 import static no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerV2Mock.FAIL_AKTOER_ID;
 import static no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerV2Mock.FNR;
+import static no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerV2Mock.identInspectionObjects;
 import static no.nav.dokarkiv.core.datautil.JournalpostTestDataProvider.INNHOLD;
 import static no.nav.dokarkiv.core.domain.codes.FagsystemCode.FS22;
 import static no.nav.dokarkiv.core.domain.codes.FagsystemCode.PEN;
@@ -876,6 +877,113 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(sakRepository.count(), sakRepositoryCount);
 
 		TestTransaction.end();
+	}
+
+	@Test
+	public void shouldCallAktoerService() {
+		clearSakRepository();
+		abacPermit();
+
+		int identInspectionObjectSize = identInspectionObjects.size();
+
+		JournalpostBuilder journalpostBuilder = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
+				.endretAvNavn("saksbehandlersen");
+		Journalpost journalpost = buildAndCommit(journalpostBuilder);
+		Long journalpostId = journalpost.getJournalpostId();
+
+		OppdaterJournalpostRequest request = OppdaterJournalpostRequest.builder()
+				.tema(TEMA_SYM)
+				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(FNR).build())
+				.sak(Sak.builder()
+						.sakstype(Sakstype.FAGSAK)
+						.fagsakId(FAGSAK_ID)
+						.fagsaksystem(Fagsaksystem.KONT)
+						.build())
+				.build();
+
+		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
+		restTemplate.exchange(URL_JOURNALPOST + journalpostId, HttpMethod.PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
+
+		assertEquals(identInspectionObjectSize + 1, identInspectionObjects.size());
+	}
+
+	@Test
+	public void shouldNotCallAktoerServiceWithoutBrukerIdTypeFNR() {
+		clearSakRepository();
+		abacPermit();
+
+		int identInspectionObjectSize = identInspectionObjects.size();
+
+		JournalpostBuilder journalpostBuilder = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
+				.endretAvNavn("saksbehandlersen");
+		Journalpost journalpost = buildAndCommit(journalpostBuilder);
+		Long journalpostId = journalpost.getJournalpostId();
+
+		OppdaterJournalpostRequest request = OppdaterJournalpostRequest.builder()
+				.tema(TEMA_SYM)
+				.bruker(Bruker.builder().idType(BrukerIdType.AKTOERID).id(AKTOER_ID).build())
+				.sak(Sak.builder()
+						.sakstype(Sakstype.FAGSAK)
+						.fagsakId(FAGSAK_ID)
+						.fagsaksystem(Fagsaksystem.KONT)
+						.build())
+				.build();
+
+		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
+		restTemplate.exchange(URL_JOURNALPOST + journalpostId, HttpMethod.PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
+
+		assertEquals(identInspectionObjectSize, identInspectionObjects.size());
+	}
+
+	@Test
+	public void shouldNotCallAktoerServiceWithoutSakstype() {
+		clearSakRepository();
+		abacPermit();
+
+		int identInspectionObjectSize = identInspectionObjects.size();
+
+		JournalpostBuilder journalpostBuilder = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
+				.endretAvNavn("saksbehandlersen");
+		Journalpost journalpost = buildAndCommit(journalpostBuilder);
+		Long journalpostId = journalpost.getJournalpostId();
+
+		OppdaterJournalpostRequest request = OppdaterJournalpostRequest.builder()
+				.tema(TEMA_SYM)
+				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(FNR).build())
+				.build();
+
+		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
+		restTemplate.exchange(URL_JOURNALPOST + journalpostId, HttpMethod.PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
+
+		assertEquals(identInspectionObjectSize, identInspectionObjects.size());
+	}
+
+	@Test
+	public void shouldNotCallAktoerServiceWithSAKFagsystemPP01() {
+		clearSakRepository();
+		abacPermit();
+
+		int identInspectionObjectSize = identInspectionObjects.size();
+
+		JournalpostBuilder journalpostBuilder = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
+				.endretAvNavn("saksbehandlersen");
+		Journalpost journalpost = buildAndCommit(journalpostBuilder);
+		Long journalpostId = journalpost.getJournalpostId();
+
+		OppdaterJournalpostRequest request = OppdaterJournalpostRequest.builder()
+				.tema(TEMA_SYM)
+				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(FNR).build())
+				.sak(Sak.builder()
+						.sakstype(Sakstype.FAGSAK)
+						.fagsakId(FAGSAK_ID)
+						.fagsaksystem(Fagsaksystem.PP01)
+						.build())
+				.build();
+
+		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
+		restTemplate.exchange(URL_JOURNALPOST + journalpostId, HttpMethod.PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
+
+		assertEquals(identInspectionObjectSize, identInspectionObjects.size());
 	}
 
 	private OppdaterJournalpostRequest createPutOppdaterJournalpostRequestWithDokumentInfoId(Long dokumentInfoId) {
