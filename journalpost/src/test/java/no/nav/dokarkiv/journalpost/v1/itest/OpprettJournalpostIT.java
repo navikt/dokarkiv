@@ -48,11 +48,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.cache.Cache;
 import com.google.common.collect.Lists;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.codes.AvsenderMottakerIdTypeCode;
@@ -75,16 +72,13 @@ import no.nav.dokarkiv.journalpost.v1.api.Sak;
 import no.nav.dokarkiv.journalpost.v1.api.Sakstype;
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostResponse;
-import no.nav.tjeneste.virksomhet.aktoer.v2.meldinger.HentAktoerIdForIdentResponse;
 import org.apache.commons.collections15.IteratorUtils;
 import org.junit.Test;
-import org.mockito.Mock;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import javax.inject.Inject;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -440,6 +434,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(aksjonsLoggList.get(0).getBruker(), FNR);
 	}
 
+	//Test for nye valideringsregler for tema PEN etter endringer.
 	@Test
 	public void happyPathTemaUFO() throws IOException {
 		clearSakRepository();
@@ -462,6 +457,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(saksrelasjon.getFagsystem(), FS22);
 	}
 
+	//Test for nye valideringsregler for tema PEN etter endringer.
 	@Test
 	public void happyPathTemaPEN() throws IOException {
 		clearSakRepository();

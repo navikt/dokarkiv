@@ -801,12 +801,11 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 	}
 
+	//Test for nye valideringsregler for tema PEN etter endringer.
 	@Test
 	public void happyPathTemaPEN() {
 		clearSakRepository();
 		abacPermit();
-
-		long sakRepositoryCount = sakRepository.count();
 
 		JournalpostBuilder journalpostBuilder = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
 				.endretAvNavn("saksbehandlersen");
@@ -817,9 +816,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 				.tema(TEMA_PEN)
 				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(BRUKER_ID_PERSON).build())
 				.sak(Sak.builder()
-						.sakstype(Sakstype.FAGSAK)
-						.fagsakId(FAGSAK_ID)
-						.fagsaksystem(Fagsaksystem.PP01)
+						.sakstype(Sakstype.GENERELL_SAK)
 						.build())
 				.build();
 
@@ -831,21 +828,15 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 		assertThat(responseEntity.getBody().getJournalpostId(), is(String.valueOf(journalpostId)));
 
-		TestTransaction.start();
-
 		Journalpost oppdatertJournalpost = joarkRepository.findById(journalpostId).get();
-		assertThat(oppdatertJournalpost.getSaksrelasjon().getFagsystem(), is(PEN));
-		assertEquals(sakRepository.count(), sakRepositoryCount);
-
-		TestTransaction.end();
+		assertThat(oppdatertJournalpost.getSaksrelasjon().getFagsystem(), is(FS22));
 	}
 
+	//Test for nye valideringsregler for tema PEN etter endringer.
 	@Test
 	public void happyPathTemaUFO() {
 		clearSakRepository();
 		abacPermit();
-
-		long sakRepositoryCount = sakRepository.count();
 
 		JournalpostBuilder journalpostBuilder = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
 				.endretAvNavn("saksbehandlersen");
@@ -856,9 +847,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 				.tema(TEMA_UFO)
 				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(BRUKER_ID_PERSON).build())
 				.sak(Sak.builder()
-						.sakstype(Sakstype.FAGSAK)
-						.fagsakId(FAGSAK_ID)
-						.fagsaksystem(Fagsaksystem.PP01)
+						.sakstype(Sakstype.GENERELL_SAK)
 						.build())
 				.build();
 
@@ -870,13 +859,8 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 		assertThat(responseEntity.getBody().getJournalpostId(), is(String.valueOf(journalpostId)));
 
-		TestTransaction.start();
-
 		Journalpost oppdatertJournalpost = joarkRepository.findById(journalpostId).get();
-		assertThat(oppdatertJournalpost.getSaksrelasjon().getFagsystem(), is(PEN));
-		assertEquals(sakRepository.count(), sakRepositoryCount);
-
-		TestTransaction.end();
+		assertThat(oppdatertJournalpost.getSaksrelasjon().getFagsystem(), is(FS22));
 	}
 
 	@Test
