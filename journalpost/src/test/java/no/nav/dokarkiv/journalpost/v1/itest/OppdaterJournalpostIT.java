@@ -801,9 +801,8 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 	}
 
-	//Test for nye valideringsregler for tema PEN etter endringer.
 	@Test
-	public void happyPathTemaPEN() {
+	public void shouldUpdateWhenTemaPENAndGenerellSak() {
 		clearSakRepository();
 		abacPermit();
 
@@ -832,9 +831,8 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 		assertThat(oppdatertJournalpost.getSaksrelasjon().getFagsystem(), is(FS22));
 	}
 
-	//Test for nye valideringsregler for tema PEN etter endringer.
 	@Test
-	public void happyPathTemaUFO() {
+	public void shouldUpdateWhenTemaUFOAndGenerellSak() {
 		clearSakRepository();
 		abacPermit();
 

@@ -434,9 +434,8 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(aksjonsLoggList.get(0).getBruker(), FNR);
 	}
 
-	//Test for nye valideringsregler for tema PEN etter endringer.
 	@Test
-	public void happyPathTemaUFO() throws IOException {
+	public void shouldJournalfoereWhenTemUFOAndGenerellSak() throws IOException {
 		clearSakRepository();
 		abacPermit();
 
@@ -457,9 +456,8 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(saksrelasjon.getFagsystem(), FS22);
 	}
 
-	//Test for nye valideringsregler for tema PEN etter endringer.
 	@Test
-	public void happyPathTemaPEN() throws IOException {
+	public void shouldJournalfoereWhenTemaPENAndGenerellSak() throws IOException {
 		clearSakRepository();
 		abacPermit();
 
