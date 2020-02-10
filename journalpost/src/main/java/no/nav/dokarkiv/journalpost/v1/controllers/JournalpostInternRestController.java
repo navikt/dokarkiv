@@ -8,7 +8,7 @@ import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.NavHeaders;
 import no.nav.dokarkiv.core.exceptions.ConsumerIsNotSrvDokarkivProxyFunctionalException;
-import no.nav.dokarkiv.core.exceptions.ConsumerServiceuserNotAuthorizedFunctionalException;
+import no.nav.dokarkiv.core.exceptions.ConsumerIsNotSrvDokSikkerhetsnettFunctionalException;
 import no.nav.dokarkiv.core.exceptions.DokarkivFunctionalException;
 import no.nav.dokarkiv.core.exceptions.DokarkivTechnicalException;
 import no.nav.dokarkiv.core.metrics.RestMetrics;
@@ -119,16 +119,26 @@ public class JournalpostInternRestController {
 			@RequestHeader(value = HttpHeaders.AUTHORIZATION) String auth,
 			@PathVariable List<String> temaer) {
 		MDC.put(MDC_REQUEST_ID, "finnMottatteJournalposter");
-		assertThatConsumerIsSrvdoksikkerhetsnettOrSrvdokarkivproxy(auth);
+		try {
+			assertThatConsumerIsSrvdoksikkerhetsnett(auth);
 
-		log.info("finnMottatteJournalposter har mottatt kall om å hente ubehandlede journalposter med tema i " + temaer);
+			log.info("finnMottatteJournalposter har mottatt kall om å hente ubehandlede journalposter med tema blandt " + temaer);
 
-		FinnMottatteJournalposterResponse ubehandledeJournalposter = finnMottatteJournalposterService.finnMottatteJournalposterMedTema(temaer);
+			FinnMottatteJournalposterResponse ubehandledeJournalposter = finnMottatteJournalposterService.finnMottatteJournalposterMedTema(temaer);
 
-
-		return ResponseEntity
-				.ok()
-				.body(ubehandledeJournalposter);
+			ResponseEntity<FinnMottatteJournalposterResponse> re = ResponseEntity
+					.ok()
+					.body(ubehandledeJournalposter);
+			return re;
+		} catch (DokarkivFunctionalException e) {
+			log.warn("tilknyttVedlegg - feilet funksjonelt ved søk på ubehandlede journalposter med tema blandt {}. Feilmelding={}", temaer, e
+					.getMessage());
+			throw e;
+		} catch (DokarkivTechnicalException e) {
+			log.error("tilknyttVedlegg - feilet teknisk ved søk på ubehandlede journalposter med tema blandt {}. Feilmelding={}", temaer, e
+					.getMessage());
+			throw e;
+		}
 	}
 
 	@Transactional(readOnly = true)
@@ -139,15 +149,25 @@ public class JournalpostInternRestController {
 	public ResponseEntity<FinnMottatteJournalposterResponse> finnMottatteJournalposter(
 			@RequestHeader(value = HttpHeaders.AUTHORIZATION) String auth) {
 		MDC.put(MDC_REQUEST_ID, "finnMottatteJournalposter");
-		assertThatConsumerIsSrvdoksikkerhetsnettOrSrvdokarkivproxy(auth);
+		try {
+			assertThatConsumerIsSrvdoksikkerhetsnett(auth);
 
-		log.info("finnMottatteJournalposter har mottatt kall om å hente ubehandlede journalposter");
+			log.info("finnMottatteJournalposter har mottatt kall om å hente ubehandlede journalposter");
 
-		FinnMottatteJournalposterResponse ubehandledeJournalposter = finnMottatteJournalposterService.finnMottatteJournalposter();
+			FinnMottatteJournalposterResponse ubehandledeJournalposter = finnMottatteJournalposterService.finnMottatteJournalposter();
 
-		return ResponseEntity
-				.ok()
-				.body(ubehandledeJournalposter);
+			return ResponseEntity
+					.ok()
+					.body(ubehandledeJournalposter);
+		} catch (DokarkivFunctionalException e) {
+			log.warn("tilknyttVedlegg - feilet funksjonelt ved søk på ubehandlede journalposter. Feilmelding={}", e
+					.getMessage());
+			throw e;
+		} catch (DokarkivTechnicalException e) {
+			log.error("tilknyttVedlegg - feilet teknisk ved søk på ubehandlede journalposter. Feilmelding={}", e
+					.getMessage());
+			throw e;
+		}
 	}
 
 	@Transactional
@@ -186,11 +206,9 @@ public class JournalpostInternRestController {
 		}
 	}
 
-	private void assertThatConsumerIsSrvdoksikkerhetsnettOrSrvdokarkivproxy(String auth) {
-		String serviceuser = decodeBasicAuth(auth)[0];
-		//TODO: Tror kanskje denne må catches i toppen ?
-		if (!SRVDOKARKIVPROXY.equals(serviceuser) && !SRVDOKSIKKERHETSNETT.equals(serviceuser)) {
-			throw new ConsumerServiceuserNotAuthorizedFunctionalException("Konsument har ikke tilgang til å kalle tjenesten");
+	private void assertThatConsumerIsSrvdoksikkerhetsnett(String auth) {
+		if (!SRVDOKARKIVPROXY.equals(decodeBasicAuth(auth)[0])) {
+			throw new ConsumerIsNotSrvDokSikkerhetsnettFunctionalException("Konsument har ikke tilgang til å kalle tjenesten");
 		}
 	}
 
