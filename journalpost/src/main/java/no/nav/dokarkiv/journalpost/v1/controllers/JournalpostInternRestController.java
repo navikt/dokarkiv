@@ -207,7 +207,7 @@ public class JournalpostInternRestController {
 	}
 
 	private void assertThatConsumerIsSrvdoksikkerhetsnett(String auth) {
-		if (!SRVDOKARKIVPROXY.equals(decodeBasicAuth(auth)[0])) {
+		if (!SRVDOKSIKKERHETSNETT.equals(decodeBasicAuth(auth)[0])) {
 			throw new ConsumerIsNotSrvDokSikkerhetsnettFunctionalException("Konsument har ikke tilgang til å kalle tjenesten");
 		}
 	}
