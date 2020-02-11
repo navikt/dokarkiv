@@ -1,6 +1,5 @@
 package no.nav.dokarkiv.journalpost.v1.validators;
 
-import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.commons.lang3.StringUtils.isNumeric;
@@ -17,9 +16,6 @@ import java.util.Arrays;
 import java.util.List;
 
 public final class OppdaterJournalpostValidator {
-
-	private static final String TEMA_PEN = "PEN";
-	private static final String TEMA_UFO = "UFO";
 
 	private static List<JournalStatusCode> restrictedJournalpostStatusCodes = Arrays.asList(JournalStatusCode.J, JournalStatusCode.FS, JournalStatusCode.FL, JournalStatusCode.E);
 
@@ -90,9 +86,6 @@ public final class OppdaterJournalpostValidator {
 		if (isBlank(tema)) {
 			throw new InputValideringFeiletException("tema må være satt dersom sakstype=GENERELL_SAK");
 		}
-		if (TEMA_PEN.equals(tema) || TEMA_UFO.equals(tema)) {
-			throw new InputValideringFeiletException("tema kan ikke være UFO eller PEN dersom sakstype=GENERELL_SAK");
-		}
 		if (bruker == null) {
 			throw new InputValideringFeiletException("Bruker må være satt dersom sakstype=GENERELL_SAK");
 		}
@@ -123,7 +116,7 @@ public final class OppdaterJournalpostValidator {
 		if (sak.getArkivsaksystem() == null) {
 			throw new InputValideringFeiletException("Sak.arkivsaksystem må være satt dersom sakstype=GENERELL_SAK");
 		}
-		if(!isNumeric(sak.getArkivsaksnummer())) {
+		if (!isNumeric(sak.getArkivsaksnummer())) {
 			throw new InputValideringFeiletException("Sak.arkivsaksnummer skal være opprettet i GSAK/PSAK og må være et numerisk heltall.");
 		}
 	}

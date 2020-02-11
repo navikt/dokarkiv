@@ -30,8 +30,6 @@ public class OpprettJournalpostRequestValidator {
 	private static final int FNR_LENGTH = 11;
 	private static final int AKTOERID_LENGTH = 13;
 	private static final int ORGNR_LENGTH = 9;
-	private static final String TEMA_PEN = "PEN";
-	private static final String TEMA_UFO = "UFO";
 
 	private static final String VALIDERER_IKKE_MOT_KODEVERK = "validerer ikke mot kodeverk";
 
@@ -42,7 +40,7 @@ public class OpprettJournalpostRequestValidator {
 		if (request.getBruker() != null) {
 			validateBruker(request.getBruker());
 		}
-		if(request.getTema() != null){
+		if (request.getTema() != null) {
 			validateTema(request.getTema());
 		}
 		if (isNotBlank(request.getBehandlingstema())) {
@@ -57,8 +55,8 @@ public class OpprettJournalpostRequestValidator {
 		if (!request.getDokumenter().isEmpty()) {
 			request.getDokumenter().forEach(this::validateDokument);
 		} else {
-            throw new InputValideringFeiletException("Kan ikke opprette journalpost uten dokumenter.");
-        }
+			throw new InputValideringFeiletException("Kan ikke opprette journalpost uten dokumenter.");
+		}
 	}
 
 	private void validateAvsenderMottaker(AvsenderMottaker avsenderMottaker) {
@@ -72,13 +70,15 @@ public class OpprettJournalpostRequestValidator {
 			switch (avsenderMottaker.getIdType()) {
 				case FNR:
 					if (!avsenderMottaker.getId().matches("^\\d{11}$")) {
-						throw new InputValideringFeiletException("AvsenderMottaker.id må være 11 siffer når AvsenderMottaker.idType er " + avsenderMottaker.getIdType() + ".");
+						throw new InputValideringFeiletException("AvsenderMottaker.id må være 11 siffer når AvsenderMottaker.idType er " + avsenderMottaker
+								.getIdType() + ".");
 					}
 					break;
 				case ORGNR:
 				case HPRNR:
 					if (!avsenderMottaker.getId().matches("^\\d{9}$")) {
-						throw new InputValideringFeiletException("AvsenderMottaker.id må være 9 siffer når AvsenderMottaker.idType er " + avsenderMottaker.getIdType() + ".");
+						throw new InputValideringFeiletException("AvsenderMottaker.id må være 9 siffer når AvsenderMottaker.idType er " + avsenderMottaker
+								.getIdType() + ".");
 					}
 					break;
 				default:
@@ -128,7 +128,8 @@ public class OpprettJournalpostRequestValidator {
 				throw new InputValideringFeiletException(String.format("Oppgitt kanal=%s %s", request.getKanal(), VALIDERER_IKKE_MOT_KODEVERK));
 			}
 
-			if (MottaksKanalCode.valueOf(request.getKanal()) == MottaksKanalCode.NAV_NO_UINNLOGGET && !request.getTema().equalsIgnoreCase(FagomradeCode.SER.name())) {
+			if (MottaksKanalCode.valueOf(request.getKanal()) == MottaksKanalCode.NAV_NO_UINNLOGGET && !request.getTema()
+					.equalsIgnoreCase(FagomradeCode.SER.name())) {
 				throw new InputValideringFeiletException("Det er kun mulig å arkivere med mottakskanal NAV_NO_UINNLOGGET dersom tema=SER.");
 			}
 
@@ -181,9 +182,6 @@ public class OpprettJournalpostRequestValidator {
 		if (isBlank(tema)) {
 			throw new InputValideringFeiletException("tema må være satt dersom sakstype=GENERELL_SAK");
 		}
-		if (TEMA_PEN.equals(tema) || TEMA_UFO.equals(tema)) {
-			throw new InputValideringFeiletException("tema kan ikke være UFO eller PEN dersom sakstype=GENERELL_SAK");
-		}
 		if (bruker == null) {
 			throw new InputValideringFeiletException("Bruker må være satt dersom sakstype=GENERELL_SAK");
 		}
@@ -214,7 +212,7 @@ public class OpprettJournalpostRequestValidator {
 		if (sak.getArkivsaksystem() == null) {
 			throw new InputValideringFeiletException("Sak.arkivsaksystem må være satt dersom sakstype=GENERELL_SAK");
 		}
-		if(!isNumeric(sak.getArkivsaksnummer())) {
+		if (!isNumeric(sak.getArkivsaksnummer())) {
 			throw new InputValideringFeiletException("Sak.arkivsaksnummer skal være opprettet i GSAK/PSAK og må være et numerisk heltall.");
 		}
 	}
@@ -250,7 +248,8 @@ public class OpprettJournalpostRequestValidator {
 			throw new InputValideringFeiletException(String.format("Dokument.dokumentvariant.variantformat %s", VALIDERER_IKKE_MOT_KODEVERK));
 		}
 		if (dokumentVariant.getVariantformat().equals(VariantFormatCode.ARKIV.name())
-				&& !Arrays.asList(FilTypeCode.PDF, FilTypeCode.PDFA).contains(FilTypeCode.valueOf(dokumentVariant.getFiltype()))) {
+				&& !Arrays.asList(FilTypeCode.PDF, FilTypeCode.PDFA)
+				.contains(FilTypeCode.valueOf(dokumentVariant.getFiltype()))) {
 			throw new InputValideringFeiletException("Dokument.dokumentvariant.filtype på være PDF eller PDFA for Dokument.dokumentvariant.variantformat=ARKIV.");
 		}
 	}

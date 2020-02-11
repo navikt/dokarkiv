@@ -4,9 +4,12 @@ import static java.util.Collections.singletonList;
 import static no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerV2Mock.AKTOER_ID;
 import static no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerV2Mock.FAIL_AKTOER_ID;
 import static no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerV2Mock.FNR;
+import static no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerV2Mock.FNR_2;
+import static no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerV2Mock.identInspectionObjects;
 import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.OPPRETT;
 import static no.nav.dokarkiv.core.domain.codes.FagsystemCode.FS22;
 import static no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem.AO01;
+import static no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem.KONT;
 import static no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem.PP01;
 import static no.nav.dokarkiv.journalpost.v1.api.JournalpostType.INNGAAENDE;
 import static no.nav.dokarkiv.journalpost.v1.api.JournalpostType.NOTAT;
@@ -29,8 +32,10 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FYSISK_DOKUMENT_2;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.INNHOLD;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.SAK_ID;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_FOR;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_PEN;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_SYM;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_TIL;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_UFO;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.VARIANTFORMAT_ARKIV;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createFagsak;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createGenerellSak;
@@ -250,7 +255,11 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		abacPermit();
 
 		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
-				.sak(Sak.builder().sakstype(Sakstype.ARKIVSAK).arkivsaksnummer(ARKIVSAKSNUMMER).arkivsaksystem(Arkivsaksystem.GSAK).build())
+				.sak(Sak.builder()
+						.sakstype(Sakstype.ARKIVSAK)
+						.arkivsaksnummer(ARKIVSAKSNUMMER)
+						.arkivsaksystem(Arkivsaksystem.GSAK)
+						.build())
 				.build();
 
 		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
@@ -288,7 +297,11 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		abacPermit();
 
 		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
-				.sak(Sak.builder().sakstype(Sakstype.ARKIVSAK).arkivsaksnummer(ARKIVSAKSNUMMER).arkivsaksystem(Arkivsaksystem.PSAK).build())
+				.sak(Sak.builder()
+						.sakstype(Sakstype.ARKIVSAK)
+						.arkivsaksnummer(ARKIVSAKSNUMMER)
+						.arkivsaksystem(Arkivsaksystem.PSAK)
+						.build())
 				.build();
 
 		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
@@ -407,13 +420,62 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		no.nav.dokarkiv.core.domain.entities.Sak sak = sakRepository.findAll().iterator().next();
 		assertEquals(sak.getAktoerId(), AKTOER_ID);
 
-		no.nav.dokarkiv.core.domain.entities.Bruker bruker = joarkRepository.findAll().iterator().next().getBrukere().iterator().next();
+		no.nav.dokarkiv.core.domain.entities.Bruker bruker = joarkRepository.findAll()
+				.iterator()
+				.next()
+				.getBrukere()
+				.iterator()
+				.next();
 		assertEquals(bruker.getBrukerId(), FNR);
 		assertEquals(bruker.getBrukerType(), BrukerTypeCode.PERSON);
 
 		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
 		assertEquals(1, aksjonsLoggList.size());
 		assertEquals(aksjonsLoggList.get(0).getBruker(), FNR);
+	}
+
+	@Test
+	public void shouldJournalfoereWhenTemUFOAndGenerellSak() throws IOException {
+		clearSakRepository();
+		abacPermit();
+
+		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
+				.tema(TEMA_UFO)
+				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(BRUKER_ID_PERSON).build())
+				.sak(Sak.builder().sakstype(Sakstype.GENERELL_SAK).build())
+				.build();
+
+		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
+		restTemplate.exchange(URL_JOURNALPOST, HttpMethod.POST, requestEntity, OpprettJournalpostResponse.class);
+
+		no.nav.dokarkiv.core.domain.entities.Sak sak = sakRepository.findAll().iterator().next();
+		assertEquals(sak.getTema(), TEMA_UFO);
+		assertEquals(sak.getApplikasjon(), FS22.name());
+
+		Saksrelasjon saksrelasjon = joarkRepository.findAll().iterator().next().getSaksrelasjon();
+		assertEquals(saksrelasjon.getFagsystem(), FS22);
+	}
+
+	@Test
+	public void shouldJournalfoereWhenTemaPENAndGenerellSak() throws IOException {
+		clearSakRepository();
+		abacPermit();
+
+		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
+				.tema(TEMA_PEN)
+				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(BRUKER_ID_PERSON).build())
+				.sak(Sak.builder().sakstype(Sakstype.GENERELL_SAK).build())
+				.build();
+
+		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
+		restTemplate.exchange(URL_JOURNALPOST, HttpMethod.POST, requestEntity, OpprettJournalpostResponse.class);
+
+		no.nav.dokarkiv.core.domain.entities.Sak sak = sakRepository.findAll().iterator().next();
+		assertEquals(sak.getTema(), TEMA_PEN);
+		assertEquals(sak.getApplikasjon(), FS22.name());
+
+		Saksrelasjon saksrelasjon = joarkRepository.findAll().iterator().next().getSaksrelasjon();
+		assertEquals(saksrelasjon.getFagsystem(), FS22);
 	}
 
 	@Test
@@ -463,7 +525,12 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		no.nav.dokarkiv.core.domain.entities.Sak sak = sakRepository.findAll().iterator().next();
 		assertEquals(sak.getOrgnr(), BRUKER_ID_ORGANISASJON);
 
-		no.nav.dokarkiv.core.domain.entities.Bruker bruker = joarkRepository.findAll().iterator().next().getBrukere().iterator().next();
+		no.nav.dokarkiv.core.domain.entities.Bruker bruker = joarkRepository.findAll()
+				.iterator()
+				.next()
+				.getBrukere()
+				.iterator()
+				.next();
 		assertEquals(bruker.getBrukerId(), BRUKER_ID_ORGANISASJON);
 		assertEquals(bruker.getBrukerType(), BrukerTypeCode.ORGANISASJON);
 
@@ -525,7 +592,6 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 
 		assertEquals(sakRepository.count(), sakRepositoryCount);
 	}
-
 
 
 	@Test
@@ -690,5 +756,100 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(HttpStatus.CREATED, response.getStatusCode());
 		assertEquals("ENDELIG", response.getBody().getJournalstatus());
 
+	}
+
+	@Test
+	public void shouldCallAktoerService() throws IOException {
+		abacPermit();
+
+		int identInspectionObjectSize = identInspectionObjects.size();
+
+		OpprettJournalpostRequest request = createMinimalRequest(INNGAAENDE)
+				.tema(TEMA_UFO)
+				.sak(Sak.builder()
+						.sakstype(Sakstype.FAGSAK)
+						.fagsaksystem(KONT)
+						.fagsakId(FAGSAK_ID)
+						.build())
+				.bruker(Bruker.builder()
+						.idType(BrukerIdType.FNR)
+						.id(FNR_2)
+						.build())
+				.build();
+
+		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
+		restTemplate.exchange(URL_JOURNALPOST + FERDIGSTILL_QUERY, HttpMethod.POST, requestEntity, OpprettJournalpostResponse.class);
+
+		assertEquals(identInspectionObjectSize + 1, identInspectionObjects.size());
+	}
+
+	@Test
+	public void shouldNotCallAktoerServiceWithoutBrukerIdTypeFNR() throws IOException {
+		abacPermit();
+
+		int identInspectionObjectSize = identInspectionObjects.size();
+
+		OpprettJournalpostRequest request = createMinimalRequest(INNGAAENDE)
+				.tema(TEMA_UFO)
+				.sak(Sak.builder()
+						.sakstype(Sakstype.FAGSAK)
+						.fagsaksystem(KONT)
+						.fagsakId(FAGSAK_ID)
+						.build())
+				.bruker(Bruker.builder()
+						.idType(BrukerIdType.AKTOERID)
+						.id(AKTOER_ID)
+						.build())
+				.build();
+
+		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
+		restTemplate.exchange(URL_JOURNALPOST + FERDIGSTILL_QUERY, HttpMethod.POST, requestEntity, OpprettJournalpostResponse.class);
+
+		assertEquals(identInspectionObjectSize, identInspectionObjects.size());
+	}
+
+	@Test
+	public void shouldNotCallAktoerServiceWithSAKFagsystemPP01() throws IOException {
+		abacPermit();
+
+		int identInspectionObjectSize = identInspectionObjects.size();
+
+		OpprettJournalpostRequest request = createMinimalRequest(INNGAAENDE)
+				.tema(TEMA_UFO)
+				.sak(Sak.builder()
+						.sakstype(Sakstype.FAGSAK)
+						.fagsaksystem(PP01)
+						.fagsakId(FAGSAK_ID)
+						.build())
+				.bruker(Bruker.builder()
+						.idType(BrukerIdType.FNR)
+						.id(FNR)
+						.build())
+				.build();
+
+		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
+		restTemplate.exchange(URL_JOURNALPOST + FERDIGSTILL_QUERY, HttpMethod.POST, requestEntity, OpprettJournalpostResponse.class);
+
+		assertEquals(identInspectionObjectSize, identInspectionObjects.size());
+	}
+
+	@Test
+	public void shouldNotCallAktoerServiceWithoutSakstype() throws IOException {
+		abacPermit();
+
+		int identInspectionObjectSize = identInspectionObjects.size();
+
+		OpprettJournalpostRequest request = createMinimalRequest(INNGAAENDE)
+				.tema(TEMA_UFO)
+				.bruker(Bruker.builder()
+						.idType(BrukerIdType.FNR)
+						.id(FNR)
+						.build())
+				.build();
+
+		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
+		restTemplate.exchange(URL_JOURNALPOST + FERDIGSTILL_QUERY, HttpMethod.POST, requestEntity, OpprettJournalpostResponse.class);
+
+		assertEquals(identInspectionObjectSize, identInspectionObjects.size());
 	}
 }
