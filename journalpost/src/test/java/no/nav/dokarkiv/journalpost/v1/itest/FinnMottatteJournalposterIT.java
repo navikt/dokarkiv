@@ -34,7 +34,7 @@ import static org.junit.Assert.assertEquals;
 public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
 
 	private static final String FINNMOTTATTEJOURNALPOSTER = "finnMottatteJournalposter";
-	private static final String GYLDIG_CONSUMER = "srvdokarkivproxy";
+	private static final String GYLDIG_CONSUMER = "srvdoksikkerhetsnt";
 	private static final String UGYLDIG_CONSUMER = "srvdokarkiv";
 	private static final String NAV_CONSUMER_ID = "Nav-Consumer-Id";
 	private static final String FAGKODE_UFO = "UFO";
