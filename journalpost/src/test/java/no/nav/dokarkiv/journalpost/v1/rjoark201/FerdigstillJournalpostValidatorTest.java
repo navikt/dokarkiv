@@ -1,7 +1,5 @@
 package no.nav.dokarkiv.journalpost.v1.rjoark201;
 
-import static no.nav.dokarkiv.core.util.TestDataUtils.createJournalpost;
-
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
@@ -17,6 +15,8 @@ import no.nav.dokarkiv.journalpost.v1.validators.FerdigstillJournalpostValidator
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
+import static no.nav.dokarkiv.core.util.TestDataUtils.createJournalpost;
 
 public class FerdigstillJournalpostValidatorTest {
 
@@ -229,4 +229,16 @@ public class FerdigstillJournalpostValidatorTest {
 
 		validator.validatePaakrevdeFelter(journalpost);
 	}
+
+
+	@Test
+	public void shouldValidateJournalStatusOD() {
+		Journalpost journalpost = createJournalpost();
+		journalpost.setJournalstatus(JournalStatusCode.OD);
+		journalpost.setJournalposttype(JournalpostTypeCode.I);
+
+		validator.validateJournalpostTilstand(journalpost);
+	}
+
+
 }
