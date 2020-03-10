@@ -63,6 +63,10 @@ public final class RequestContextUtil {
 		createAndSetUsername(getUserId(webServiceContext), applikasjonsID);
 	}
 
+	public static void createAndSetMaskedRequestContext(String applikasjonsID) {
+		createAndSetUsername("***********", applikasjonsID);
+	}
+
 	private static String getUserId(WebServiceContext webServiceContext) {
 		Principal userPrincipal = webServiceContext.getUserPrincipal();
 		if (userPrincipal == null) {

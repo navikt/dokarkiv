@@ -7,7 +7,7 @@
 			i.e. the last handler in the chain is executed first and so on.
 		 -->
 		<jws:handler>
-            <jws:handler-class>no.nav.dokarkiv.core.jaxws.MDCInHandler</jws:handler-class>
+            <jws:handler-class>no.nav.dokarkiv.core.jaxws.MDCInnsynJournalV2Handler</jws:handler-class>
         </jws:handler>
 	</jws:handler-chain>
 </jws:handler-chains>
