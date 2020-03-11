@@ -1,7 +1,6 @@
 package no.nav.dokarkiv.innsynjournal.v2;
 
 import io.micrometer.core.annotation.Timed;
-import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import no.nav.tjeneste.virksomhet.innsynjournal.v2.binding.HentDokumentDokumentIkkeFunnet;
 import no.nav.tjeneste.virksomhet.innsynjournal.v2.binding.HentDokumentSikkerhetsbegrensning;
 import no.nav.tjeneste.virksomhet.innsynjournal.v2.binding.HentTilgjengeligJournalpostListeSikkerhetsbegrensning;
@@ -51,8 +50,6 @@ public class InnsynJournalV2Endpoint implements InnsynJournalV2 {
 	@Override
 	public HentTilgjengeligJournalpostListeResponse hentTilgjengeligJournalpostListe(HentTilgjengeligJournalpostListeRequest request)
 			throws HentTilgjengeligJournalpostListeSikkerhetsbegrensning {
-		// ApplikasjonsID is not used since this is read operation, so we set it to the operation name
-		RequestContextUtil.createAndSetMaskedRequestContext("InnsynJournalV2.hentTilgjengeligJournalpostListe");
 		return innsynJournalV2Provider.hentTilgjengeligJournalpostListe(request);
 	}
 
@@ -60,7 +57,6 @@ public class InnsynJournalV2Endpoint implements InnsynJournalV2 {
 	@Override
 	public HentDokumentResponse hentDokument(HentDokumentRequest hentDokumentRequest) throws HentDokumentDokumentIkkeFunnet,
 			HentDokumentSikkerhetsbegrensning {
-		RequestContextUtil.createAndSetMaskedRequestContext("InnsynJournalV2.hentDokument");
 		return innsynJournalV2Provider.hentDokument(hentDokumentRequest);
 	}
 
@@ -68,8 +64,6 @@ public class InnsynJournalV2Endpoint implements InnsynJournalV2 {
 	@Override
 	public IdentifiserJournalpostResponse identifiserJournalpost(IdentifiserJournalpostRequest request)
 			throws IdentifiserJournalpostUgyldingInput, IdentifiserJournalpostObjektIkkeFunnet, IdentifiserJournalpostUgyldigAntallJournalposter, IdentifiserJournalpostJournalpostIkkeInngaaende {
-		// ApplikasjonsID is not used since this is read operation, so we set it to the operation name
-		RequestContextUtil.createAndSetMaskedRequestContext("InnsynJournalV2.identifiserJournalpost");
 		return innsynJournalV2Provider.identifiserJournalpost(request);
 	}
 }

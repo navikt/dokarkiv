@@ -9,11 +9,9 @@ import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
 import no.nav.dokarkiv.core.exceptions.InvalidFilUuidException;
 import no.nav.dokarkiv.core.exceptions.NoDokumentInfoFoundException;
 import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
-import no.nav.dokarkiv.core.logging.AuditLogger;
 import no.nav.dokarkiv.core.repository.DokumentFilSkjermetRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import no.nav.dokarkiv.innsynjournal.v2.exceptions.DocumentNotFoundException;
-import org.apache.commons.lang3.BooleanUtils;
 
 import javax.inject.Inject;
 
@@ -94,20 +92,4 @@ public abstract class AbstractJournalOperations {
 		}
 		return dokumentFil;
 	}
-
-	/**
-	 * Check if a dokument is sensitivt and log access if it is.
-	 *
-	 * @param journalpost   The Journalpost.
-	 * @param fildetaljer   The FilDetaljer.
-	 * @param operationName The operation generating the log.
-	 */
-	protected void generateAuditLogIfDokumentIsSensitivt(Journalpost journalpost, FilDetaljer fildetaljer,
-														 String operationName) {
-		Boolean sensitivt = fildetaljer.getDokumentInfo().getSensitivt();
-		if (BooleanUtils.isTrue(sensitivt)) {
-			AuditLogger.generateAuditLog(operationName, journalpost, fildetaljer);
-		}
-	}
-
 }
