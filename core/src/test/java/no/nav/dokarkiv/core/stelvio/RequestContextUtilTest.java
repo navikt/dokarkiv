@@ -17,7 +17,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 @RunWith(MockitoJUnitRunner.class)
 public class RequestContextUtilTest {
     private final String USER_KEY = "user";
-    private final String MASKED_ID = "***********";
     private final String USER_ID = "unitTestUser";
 
     @Mock
@@ -29,14 +28,6 @@ public class RequestContextUtilTest {
     @Before
     public void setup(){
         MDCOperations.resetMdcProperties();
-    }
-    @Test
-    public void doNotSetUserInMDC(){
-        assertThat("MDC is cleared", MDC.get(USER_KEY) == null);
-
-        RequestContextUtil.createAndSetMaskedRequestContext("unitTest");
-
-        assertThat("MDC user is masked", MDC.get(USER_KEY).equals(MASKED_ID));
     }
 
     @Test
