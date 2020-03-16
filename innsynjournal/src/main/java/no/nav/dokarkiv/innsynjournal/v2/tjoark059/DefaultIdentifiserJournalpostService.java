@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.innsynjournal.v2.tjoark059;
 
+import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
@@ -12,7 +13,8 @@ import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 import java.util.List;
-import java.util.Objects;
+
+import static java.util.Objects.isNull;
 
 /**
  * @author Ketill Fenne, Visma Consulting.
@@ -27,16 +29,23 @@ public class DefaultIdentifiserJournalpostService implements IdentifiserJournalp
 	public Journalpost identifiserJournalpost(IdentifiserJournalpostToRequest identifiserJournalpostToRequest)
 	throws JournalpostNotSupportedException, JournalpostIkkeFunnetException, UgyldigInputException, JournalpostIkkeInngaaendeException {
 		validateInput(identifiserJournalpostToRequest);
-		List<Journalpost> journalposts = joarkRepository.findJournalpostByKanalReferanseIdAndMottakskanal(identifiserJournalpostToRequest
-				.getKanalReferanseId(), identifiserJournalpostToRequest.getMottaksKanal());
-		if (!(journalposts == null) && journalposts.size() == 1) {
-			validateJournalpost(journalposts.get(0));
-			return journalposts.get(0);
+
+		Journalpost journalpost = findJournalpost(identifiserJournalpostToRequest.getKanalReferanseId(), identifiserJournalpostToRequest.getMottaksKanal());
+		validateJournalpost(journalpost);
+		return journalpost;
+	}
+
+	private Journalpost findJournalpost(final String kanalReferanseId, MottaksKanalCode mottaksKanal) {
+		if (isNull(mottaksKanal)) {
+			return joarkRepository.findJournalpostByKanalReferanseId(kanalReferanseId).orElseThrow(() ->
+					new JournalpostIkkeFunnetException("Uthenting av journalposter med kanalReferanseId=" + kanalReferanseId + " resulterte ikke i nøyaktig én journalpost"));
 		} else {
-			if ((identifiserJournalpostToRequest.getMottaksKanal() == null) || (Objects.equals(identifiserJournalpostToRequest.getMottaksKanal().name(), ""))) {
-				throw new JournalpostIkkeFunnetException("Uthenting av journalposter med kanalReferanseId=" + identifiserJournalpostToRequest.getKanalReferanseId() + " resulterte ikke i nøyaktig én journalpost");
+			List<Journalpost> journalposts = joarkRepository.findJournalpostByKanalReferanseIdAndMottakskanal(kanalReferanseId, mottaksKanal);
+			if (!(journalposts == null) && journalposts.size() == 1) {
+				validateJournalpost(journalposts.get(0));
+				return journalposts.get(0);
 			} else {
-				throw new JournalpostIkkeFunnetException("Uthenting av journalposter med kanalReferanseId=" + identifiserJournalpostToRequest.getKanalReferanseId() + " og mottakskanal=" + identifiserJournalpostToRequest.getMottaksKanal().name() + " resulterte ikke i nøyaktig én journalpost");
+				throw new JournalpostIkkeFunnetException("Uthenting av journalposter med kanalReferanseId=" + kanalReferanseId + " og mottakskanal=" + mottaksKanal + " resulterte ikke i nøyaktig én journalpost");
 			}
 		}
 	}
