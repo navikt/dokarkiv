@@ -1,14 +1,5 @@
 package no.nav.dokarkiv.journalpost.v1.validators;
 
-import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.D;
-import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.M;
-import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.MO;
-import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.R;
-import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.UB;
-import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateId;
-import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateJournalfoerendeEnhet;
-import static org.apache.commons.lang3.StringUtils.isBlank;
-
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
@@ -25,9 +16,19 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.D;
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.M;
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.MO;
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.OD;
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.R;
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.UB;
+import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateId;
+import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateJournalfoerendeEnhet;
+import static org.apache.commons.lang3.StringUtils.isBlank;
+
 public class FerdigstillJournalpostValidator {
 
-	private static final List<JournalStatusCode> MIDLERTIDIG_JOURNALSTATUS = Arrays.asList(M, MO, UB, D, R);
+	private static final List<JournalStatusCode> MIDLERTIDIG_JOURNALSTATUS = Arrays.asList(M, MO, UB, D, R, OD);
 
 	public FerdigstillJournalpostValidator() {
 		// Vi setter ingenting her

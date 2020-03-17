@@ -83,23 +83,38 @@ public class SaksrelasjonUpdaterTest {
 
 	@Test
 	public void shouldNotUpdateSaksrelasjonIfGeneralSakAndFagsaksystemIsNotPP01() {
-		Sak createSak = Sak.builder()
-				.fagsakId(FAGSAK_ID)
-				.sakstype(Sakstype.GENERELL_SAK)
-				.fagsaksystem(Fagsaksystem.BISYS)
-				.build();
+        Sak createSak = Sak.builder()
+                .fagsakId(FAGSAK_ID)
+                .sakstype(Sakstype.GENERELL_SAK)
+                .fagsaksystem(Fagsaksystem.BISYS)
+                .build();
 
-		OppdaterJournalpostRequest oppdaterJournalpostRequest = createPutOppdaterJournalpostRequestSak(createSak);
-		Journalpost journalpost = TestUtils.createJournalpost();
-		expectedException.expect(UgyldigInputException.class);
-		expectedException.expectMessage("Kan ikke oppdatere sakId basert på input");
-		ChangeTracker changeTracker = updater.updateFields(journalpost, oppdaterJournalpostRequest, null);
-		assertEquals(journalpost.getSaksrelasjon().getFagsystem(), FagsystemCode.FS22);
-	}
+        OppdaterJournalpostRequest oppdaterJournalpostRequest = createPutOppdaterJournalpostRequestSak(createSak);
+        Journalpost journalpost = TestUtils.createJournalpost();
+        expectedException.expect(UgyldigInputException.class);
+        expectedException.expectMessage("Kan ikke oppdatere sakId basert på input");
+        ChangeTracker changeTracker = updater.updateFields(journalpost, oppdaterJournalpostRequest, null);
+        assertEquals(journalpost.getSaksrelasjon().getFagsystem(), FagsystemCode.FS22);
+    }
 
-	@Test
-	public void shouldUpdateSaksrelasjonWhenSaksrelasjonSakIdIsNull() {
-		OppdaterJournalpostRequest oppdaterJournalpostRequest = createPutOppdaterJournalpostRequest();
+    @Test
+    public void shouldUpdateSaksrelasjonIfFagsakAndFagsaksystemIsA011() {
+        Sak createSak = Sak.builder()
+                .fagsakId(FAGSAK_ID)
+                .sakstype(Sakstype.FAGSAK)
+                .fagsaksystem(Fagsaksystem.AO11)
+                .build();
+
+        OppdaterJournalpostRequest oppdaterJournalpostRequest = createPutOppdaterJournalpostRequestSak(createSak);
+        Journalpost journalpost = TestUtils.createJournalpost();
+
+        ChangeTracker changeTracker = updater.updateFields(journalpost, oppdaterJournalpostRequest, createSak.getFagsakId());
+        assertEquals(journalpost.getSaksrelasjon().getSakId(), createSak.getFagsakId());
+    }
+
+    @Test
+    public void shouldUpdateSaksrelasjonWhenSaksrelasjonSakIdIsNull() {
+        OppdaterJournalpostRequest oppdaterJournalpostRequest = createPutOppdaterJournalpostRequest();
 
         Journalpost journalpost = TestUtils.createJournalpost();
         journalpost.getSaksrelasjon().setSakId(null);

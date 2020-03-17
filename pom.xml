@@ -63,6 +63,7 @@
 		<commons.beanutils.version>1.9.4</commons.beanutils.version>
 		<commons.io.version>2.6</commons.io.version>
 		<swagger-ui.version>3.9.2</swagger-ui.version>
+		<argLine>-Xmx1024m</argLine>
 		<!-- Se https://issues.apache.org/jira/browse/HTTPCLIENT-1997 for bug i httpclient 4.5.9 -->
 		<httpclient.version>4.5.8</httpclient.version>
 		<lombok.version>1.18.8</lombok.version>
