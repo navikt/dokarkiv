@@ -57,6 +57,7 @@ public class Rjoark902IT extends AbstractHentjournalsakinfoItest {
 	private static final String BREVKODE = "test dokumentinfo brevkode";
 	private static final String TITTEL = "test tittel";
 	private static final String ANTALL_RETUR = "3";
+	public static final String KANAL_REFERANSE_ID = "EKSTERN REFERANSE ID";
 
 	// Happy path
 	@Test
@@ -85,6 +86,7 @@ public class Rjoark902IT extends AbstractHentjournalsakinfoItest {
 		assertEquals(SAKRELASJONFAGSYSTEM, responseJournalpost.getSaksrelasjon().getFagsystem());
 		assertEquals(SAKFEILREGISTRERT, responseJournalpost.getSaksrelasjon().getFeilregistrert());
 		assertEquals(ANTALL_RETUR, responseJournalpost.getAntallRetur());
+		assertEquals(KANAL_REFERANSE_ID, responseJournalpost.getEksternreferanseId());
 
 		DokumentInfoDto responseDokumentInfo = responseJournalpost.getDokumenter().get(0);
 
