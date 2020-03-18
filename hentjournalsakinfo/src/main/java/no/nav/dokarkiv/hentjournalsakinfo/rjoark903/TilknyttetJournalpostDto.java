@@ -51,7 +51,7 @@ public class TilknyttetJournalpostDto {
 	private final Date ekspedertDato;
 	private final SkjermingTypeCode skjerming;
 	private final String antallRetur;
-	private final String eksternreferanseId;
+	private final String kanalReferanseId;
 	private final List<TilleggsopplysningDto> tilleggsopplysninger;
 	private final List<DokumentInfoDto> dokumenter;
 }

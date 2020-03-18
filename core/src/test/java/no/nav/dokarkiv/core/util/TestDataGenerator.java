@@ -63,7 +63,7 @@ public class TestDataGenerator {
 	public static final byte[] FIL_DUMMY_SKJERMET = "Test skjermet dummy dokument dummy".getBytes();
 	public static final byte[] FIL_SLADDET = "Test sladdet dokument".getBytes();
 	public static final Integer ANTALL_RETUR = 3;
-	public static final String KANAL_REFERANSE_ID = "EKSTERN REFERANSE ID";
+	public static final String KANAL_REFERANSE_ID = "KANAL REFERANSE ID";
 	public static final String AKTOER_ID = "***gammelt_fnr***3";
 	
 	public static Journalpost createJournalpostWithHoveddokument() {
