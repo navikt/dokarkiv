@@ -40,14 +40,18 @@ public class JournalpostFilter {
 		} else {
 			this.tilDato = LocalDate.parse(finnJournalposterRequestTo.getTilDato());
 		}
-		this.alleIdenter = finnJournalposterRequestTo.getAlleIdenter().stream().map(ident -> {
-			if(isOrganisasjon(ident)) {
-				// Bruker.brukerId er en CHAR(11). For orgnummer vil den ha space padding siden den er 9 char lang.
-				return ident + "  ";
-			} else {
-				return ident;
-			}
-		}).filter(Objects::nonNull).collect(Collectors.toList());
+		if(finnJournalposterRequestTo.getAlleIdenter() == null || finnJournalposterRequestTo.getAlleIdenter().isEmpty()) {
+			this.alleIdenter = Collections.emptyList();
+		} else {
+			this.alleIdenter = finnJournalposterRequestTo.getAlleIdenter().stream().map(ident -> {
+				if (isOrganisasjon(ident)) {
+					// Bruker.brukerId er en CHAR(11). For orgnummer vil den ha space padding siden den er 9 char lang.
+					return ident + "  ";
+				} else {
+					return ident;
+				}
+			}).filter(Objects::nonNull).collect(Collectors.toList());
+		}
 		this.inkluderJournalStatus = finnJournalposterRequestTo.getInkluderJournalStatus().stream().map(Enum::name).collect(Collectors.toList());
 		this.inkluderJournalpostType = finnJournalposterRequestTo.getInkluderJournalpostType().stream().map(Enum::name).collect(Collectors.toList());
 		this.visFeilregistrerte = finnJournalposterRequestTo.isVisFeilregistrerte();
