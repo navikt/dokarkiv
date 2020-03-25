@@ -240,5 +240,13 @@ public class FerdigstillJournalpostValidatorTest {
 		validator.validateJournalpostTilstand(journalpost);
 	}
 
+	@Test
+	public void shouldValidateJournalStatusFL() {
+		Journalpost journalpost = createJournalpost();
+		journalpost.setJournalstatus(JournalStatusCode.FL);
+		journalpost.setJournalposttype(JournalpostTypeCode.U);
+
+		validator.validateJournalpostTilstand(journalpost);
+	}
 
 }

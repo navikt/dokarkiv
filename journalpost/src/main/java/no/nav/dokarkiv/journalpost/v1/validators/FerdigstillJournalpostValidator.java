@@ -17,6 +17,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.D;
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.FL;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.M;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.MO;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.OD;
@@ -28,7 +29,7 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 
 public class FerdigstillJournalpostValidator {
 
-	private static final List<JournalStatusCode> MIDLERTIDIG_JOURNALSTATUS = Arrays.asList(M, MO, UB, D, R, OD);
+	private static final List<JournalStatusCode> MIDLERTIDIG_JOURNALSTATUS = Arrays.asList(M, MO, UB, D, R, OD, FL);
 
 	public FerdigstillJournalpostValidator() {
 		// Vi setter ingenting her
