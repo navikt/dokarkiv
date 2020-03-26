@@ -19,6 +19,7 @@ public class OpprettJournalpostResponse {
 	@ApiModelProperty(
 			value = "JournalpostId som har blit opprettet",
 			required = true,
+			position = 1,
 			example = "12345678"
 	)
 	private String journalpostId;
@@ -32,24 +33,28 @@ public class OpprettJournalpostResponse {
 					"* ENDELIG - hvis journalpost er opprett og endelig journalført\n\n " +
 					"Feltet er deprekert og vil bli fjernet i fremtiden. Bruk journalpostferdigstilt i stedet.",
 			required = true,
+			position = 2,
 			example = "ENDELIG")
 	@Deprecated
 	private String journalstatus;
 
 	@ApiModelProperty(
 			value = "Melding",
+			position = 5,
 			example = "null"
 	)
 	private String melding;
 
 	@ApiModelProperty(
 			value = "True eller False for om journalpost ble ferdigstilt",
+			position = 3,
 			example = "true"
 	)
 	private Boolean journalpostferdigstilt;
 
 	@ApiModelProperty(
-			value = "Dokumentene på journalposten."
+			value = "Dokumentene på journalposten.",
+			position = 4
 	)
 	private List<DokumentInfo> dokumenter;
 }

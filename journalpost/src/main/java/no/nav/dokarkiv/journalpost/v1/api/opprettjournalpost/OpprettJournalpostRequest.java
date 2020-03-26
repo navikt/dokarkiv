@@ -30,38 +30,47 @@ public class OpprettJournalpostRequest {
 	@NotNull(message = "JournalpostType kan ikke være null")
 	@ApiModelProperty(
 			required = true,
+			position = 2,
 			example = "INNGAAENDE"
 	)
 	private JournalpostType journalpostType;
 
 	@ApiModelProperty(
-			value = "Avsender av forsendelsen"
+			value = "Avsender av forsendelsen",
+			position = 7
 	)
 	private AvsenderMottaker avsenderMottaker;
 
-	@ApiModelProperty
+	@ApiModelProperty(
+			position = 8
+	)
 	private Bruker bruker;
 
 	@ApiModelProperty(
 			value = "Temaet som forsendelsen tilhører, for eksempel \"FOR\" (foreldrepenger).",
+			position = 2,
 			example = "DAG"
+
 	)
 	private String tema;
 
 	@ApiModelProperty(
 			value = "Behandlingstema for forsendelsen, for eksempel ab0001 (Ordinære dagpenger).",
+			position = 3,
 			example = "ab0001"
 	)
 	private String behandlingstema;
 
 	@ApiModelProperty(
 			value = "Tittel som beskriver forsendelsen samlet, feks \"Ettersendelse til søknad om foreldrepenger\".",
+			position = 1,
 			example = "Søknad om dagpenger ved permittering"
 	)
 	private String tittel;
 
 	@ApiModelProperty(
 			value = "Kanalen som ble brukt ved innsending eller distribusjon. F.eks. NAV_NO, ALTINN eller EESSI.",
+			position = 5,
 			example = "NAV_NO"
 	)
 	private String kanal;
@@ -70,6 +79,7 @@ public class OpprettJournalpostRequest {
 			value = "NAV-enheten som har journalført, eventuelt skal journalføre, forsendelsen. " +
 					"Ved automatisk journalføring uten mennesker involvert skal enhet settes til \"9999\".\n" +
 					"Konsument må sette journalfoerendeEnhet dersom tjenesten skal ferdigstille journalføringen.",
+			position = 6,
 			example = "0701"
 	)
 	private String journalfoerendeEnhet;
@@ -98,7 +108,8 @@ public class OpprettJournalpostRequest {
 	private List<Tilleggsopplysning> tilleggsopplysninger = new ArrayList<>();
 
 	@ApiModelProperty(
-			value = "Saken som journalposten hører til"
+			value = "Saken som journalposten hører til",
+			position = 9
 	)
 	private Sak sak;
 
@@ -106,6 +117,7 @@ public class OpprettJournalpostRequest {
 	@NotNull(message = "dokumenter kan ikke være null")
 	@ApiModelProperty(
 			value = "Første dokument blir tilknyttet som hoveddokument på journalposten. Øvrige dokumenter tilknyttes som vedlegg. Rekkefølgen på vedlegg beholdes ikke ved uthenting av journalpost.",
+			position = 10,
 			required = true
 	)
 	private List<Dokument> dokumenter = new ArrayList<>();

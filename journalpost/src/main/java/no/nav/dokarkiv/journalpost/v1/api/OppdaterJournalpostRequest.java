@@ -19,28 +19,40 @@ public class OppdaterJournalpostRequest {
 
     @ApiModelProperty(
             value = "Tittel som beskriver forsendelsen samlet, for eksempel \"Ettersendelse til søknad om foreldrepenger\"",
-            example = "Søknad om foreldrepenger ved fødsel"
+            position = 1,
+            example = "Søknad om dagpenger ved permittering"
     )
     private String tittel;
 
     @ApiModelProperty(
             value = "Fagområdet som forsendelsen tilhører, for eksempel \"FOR\" for Foreldrepenger",
-            example = "FOR")
+            position = 2,
+            example = "DAG")
     private String tema;
 
     @ApiModelProperty(
             value = "Behandlingstema for forsendelsen, for eksempel ab0001 (Ordinære dagpenger).",
-            example = "ab0047"
+            position = 3,
+            example = "ab0001"
     )
     private String behandlingstema;
 
-    @ApiModelProperty(value = "Avsender eller mottaker av forsendelsen.\n\nSkal ikke settes for notater.")
+    @ApiModelProperty(
+            value = "Avsender eller mottaker av forsendelsen.\n\nSkal ikke settes for notater.",
+            position = 4
+    )
     private AvsenderMottaker avsenderMottaker;
 
-    @ApiModelProperty(value = "Brukeren som forsendelsen gjelder.")
+    @ApiModelProperty(
+            value = "Brukeren som forsendelsen gjelder.",
+            position = 5
+    )
     private Bruker bruker;
 
-    @ApiModelProperty(value = "Saken i PSAK eller GSAK som dokumentene skal journalføres mot.\nNB: Dersom journalposten tilhører en fagsak i et fagsystem, må konsument selv sørge for å opprette en GSAK-sak med mapping til fagsaken. Alternativt kan fagsystemet benytte tjenesten knyttTilSak, som knytter journalposten til en fagsak eller generell sak.")
+    @ApiModelProperty(
+            value = "Saken i PSAK eller GSAK som dokumentene skal journalføres mot.\nNB: Dersom journalposten tilhører en fagsak i et fagsystem, må konsument selv sørge for å opprette en GSAK-sak med mapping til fagsaken. Alternativt kan fagsystemet benytte tjenesten knyttTilSak, som knytter journalposten til en fagsak eller generell sak.",
+            position = 6
+    )
     private Sak sak;
 
 
@@ -72,6 +84,9 @@ public class OppdaterJournalpostRequest {
     )
     private List<Tilleggsopplysning> tilleggsopplysninger;
 
-    @ApiModelProperty(value = "Liste over dokumentene på journalposten der metadata skal endres")
+    @ApiModelProperty(
+            value = "Liste over dokumentene på journalposten der metadata skal endres",
+            position = 7
+    )
     private List<DokumentInfo> dokumenter;
 }

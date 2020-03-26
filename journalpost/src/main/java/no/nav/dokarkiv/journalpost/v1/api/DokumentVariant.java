@@ -35,7 +35,7 @@ public class DokumentVariant {
 	@ApiModelProperty(
 			value = "Selve dokumentet.  Hvis filtype er PDF/XML, fysiskDokument brukes byte array. Ex. [98,77.58,91]",
 			required = true,
-			example = "settInnPdfVersjonAvPermitterings"
+			example = "AAAAAAAA"
 	)
 	private byte[] fysiskDokument;
 

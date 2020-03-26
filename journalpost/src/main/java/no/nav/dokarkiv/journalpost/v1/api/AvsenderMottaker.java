@@ -15,20 +15,20 @@ import javax.validation.constraints.NotNull;
 public class AvsenderMottaker {
     @ApiModelProperty(
 			value = "Identifikatoren til avsender/mottaker. Dette er normalt et fødselsnummer eller organisasjonsnummer, men valideres ikke. Dersom det ønskes å nullstille denne verdien, kan den settes til en tom string.",
-			example = "***gammelt_fnr***"
+			example = "\"999263550\""
 	)
     private String id;
 
 	@ApiModelProperty(
 			value = "Angir hvilken type identifikator som er benyttet i AvsenderMottaker.id.\nPåkrevd dersom `id` er satt.",
-			example = "FNR"
+			example = "ORGNR"
 	)
 	private AvsenderMottakerIdType idType;
 
 	@NotNull(message = "AvsenderMottaker mangler navn")
 	@ApiModelProperty(
 			value = "Navnet til avsender/mottaker.\nNavn på personbrukere skal lagres på formatet etternavn, fornavn mellomnavn",
-			example = "Per Hansen"
+			example = "Tiltaksbedrift AS"
 	)
 	private String navn;
 

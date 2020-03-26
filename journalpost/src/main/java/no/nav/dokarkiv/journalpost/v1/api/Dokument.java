@@ -18,14 +18,16 @@ public class Dokument {
 	@ApiModelProperty(
 			value = "Dokumentets tittel, f.eks. \"Søknad om foreldrepenger ved fødsel\" eller \"Legeerklæring\".\n" +
 					"Dokumentets tittel blir synlig i brukers journal på nav.no, samt i Gosys.",
+			position = 1,
 			example = "Søknad om dagpenger ved permittering"
 	)
 	private String tittel;
 
 	@ApiModelProperty(
 			value = "Typen dokument. Brevkoden sier noe om dokumentets innhold og oppbygning.\n" +
-					"For inngående dokumenter kan brevkoden være en NAV-skjemaID f.eks. \"NAV 14-05.09\" eller en SED-id.\n" +
+					"For inngående dokumenter kan brevkoden være en NAV-skjemaID f.eks. \"NAV 04-01.04\" eller en SED-id.\n" +
 					"Brevkode skal ikke settes for ustrukturert, uklassifisert dokumentasjon, f.eks. brukeropplastede vedlegg.",
+			position = 2,
 			example = "NAV 04-01.04"
 	)
 	private String brevkode;
@@ -37,6 +39,8 @@ public class Dokument {
 	)
 	private String dokumentKategori;
 
-	@ApiModelProperty
+	@ApiModelProperty(
+			position = 3
+	)
 	private List<DokumentVariant> dokumentvarianter = new ArrayList<>();
 }
