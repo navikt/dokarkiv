@@ -10,8 +10,12 @@ public enum Fagsaksystem {
     OEBS,
     OB36,
     AO01,
+    AO11,
     IT01,
     PP01,
     K9,
-    BISYS
+    BISYS,
+    BA,
+    EF,
+    KONT
 }

@@ -1,10 +1,5 @@
 package no.nav.dokarkiv.hentjournalsakinfo;
 
-import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.D;
-import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.M;
-import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.MO;
-import static org.apache.commons.lang3.StringUtils.isBlank;
-
 import lombok.Value;
 import no.nav.dokarkiv.hentjournalsakinfo.rjoark900.FinnJournalposterRequestTo;
 import no.nav.dokarkiv.hentjournalsakinfo.rjoark904.FinnJournalposterStatusRequestTo;
@@ -14,7 +9,13 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
+
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.D;
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.M;
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.MO;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 /**
  * @author Joakim Bjørnstad, Jbit AS
@@ -39,7 +40,18 @@ public class JournalpostFilter {
 		} else {
 			this.tilDato = LocalDate.parse(finnJournalposterRequestTo.getTilDato());
 		}
-		this.alleIdenter = finnJournalposterRequestTo.getAlleIdenter();
+		if(finnJournalposterRequestTo.getAlleIdenter() == null || finnJournalposterRequestTo.getAlleIdenter().isEmpty()) {
+			this.alleIdenter = Collections.emptyList();
+		} else {
+			this.alleIdenter = finnJournalposterRequestTo.getAlleIdenter().stream().map(ident -> {
+				if (isOrganisasjon(ident)) {
+					// Bruker.brukerId er en CHAR(11). For orgnummer vil den ha space padding siden den er 9 char lang.
+					return ident + "  ";
+				} else {
+					return ident;
+				}
+			}).filter(Objects::nonNull).collect(Collectors.toList());
+		}
 		this.inkluderJournalStatus = finnJournalposterRequestTo.getInkluderJournalStatus().stream().map(Enum::name).collect(Collectors.toList());
 		this.inkluderJournalpostType = finnJournalposterRequestTo.getInkluderJournalpostType().stream().map(Enum::name).collect(Collectors.toList());
 		this.visFeilregistrerte = finnJournalposterRequestTo.isVisFeilregistrerte();
@@ -59,6 +71,14 @@ public class JournalpostFilter {
 		// Ikke brukt
 		this.alleIdenter = new ArrayList<>();
 		this.visFeilregistrerte = false;
+	}
+
+	private boolean isOrganisasjon(String ident) {
+		if(ident == null) {
+			return false;
+		} else {
+			return ident.length() == 9;
+		}
 	}
 
 	private Long getPeker(String peker) {

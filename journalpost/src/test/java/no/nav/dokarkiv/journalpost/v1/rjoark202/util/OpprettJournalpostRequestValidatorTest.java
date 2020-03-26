@@ -15,7 +15,11 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_UFO;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.VARIANTFORMAT_ARKIV;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createMinimalRequest;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createRequest;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertThat;
+import static org.springframework.test.util.AssertionErrors.assertEquals;
 
+import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
 import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
 import no.nav.dokarkiv.journalpost.v1.api.Arkivsaksystem;
 import no.nav.dokarkiv.journalpost.v1.api.AvsenderMottaker;
@@ -100,6 +104,26 @@ public class OpprettJournalpostRequestValidatorTest {
 	}
 
 	@Test
+	public void happyPathGenerellSakTemaUFO() {
+		request = createMinimalRequest(JournalpostType.INNGAAENDE)
+				.tema(TEMA_UFO)
+				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(BRUKER_ID_PERSON).build())
+				.sak(Sak.builder().sakstype(Sakstype.GENERELL_SAK).build())
+				.build();
+		validator.validateRequest(request);
+	}
+
+	@Test
+	public void happyPathGenerellSakTemaPEN() {
+		request = createMinimalRequest(JournalpostType.INNGAAENDE)
+				.tema(TEMA_PEN)
+				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(BRUKER_ID_PERSON).build())
+				.sak(Sak.builder().sakstype(Sakstype.GENERELL_SAK).build())
+				.build();
+		validator.validateRequest(request);
+	}
+
+	@Test
 	public void shouldThrowExceptionWhenTemaNotSetForFagsak() {
 		request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.tema(null)
@@ -177,30 +201,6 @@ public class OpprettJournalpostRequestValidatorTest {
 				.tema(null)
 				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(BRUKER_ID_PERSON).build())
 				.sak(Sak.builder().sakstype(Sakstype.GENERELL_SAK).build())
-				.build();
-		expectedException.expect(InputValideringFeiletException.class);
-		expectedException.expectMessage("tema");
-		validator.validateRequest(request);
-	}
-
-	@Test
-	public void shouldThrowExceptionWhenTemaPenForGenerellSak() {
-		request = createMinimalRequest(JournalpostType.INNGAAENDE)
-				.tema(TEMA_PEN)
-				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(BRUKER_ID_PERSON).build())
-				.sak(Sak.builder().sakstype(Sakstype.GENERELL_SAK).fagsakId(FAGSAK_ID).fagsaksystem(Fagsaksystem.AO01).build())
-				.build();
-		expectedException.expect(InputValideringFeiletException.class);
-		expectedException.expectMessage("tema");
-		validator.validateRequest(request);
-	}
-
-	@Test
-	public void shouldThrowExceptionWhenTemaUFOForGenerellSak() {
-		request = createMinimalRequest(JournalpostType.INNGAAENDE)
-				.tema(TEMA_UFO)
-				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(BRUKER_ID_PERSON).build())
-				.sak(Sak.builder().sakstype(Sakstype.GENERELL_SAK).fagsakId(FAGSAK_ID).fagsaksystem(Fagsaksystem.AO01).build())
 				.build();
 		expectedException.expect(InputValideringFeiletException.class);
 		expectedException.expectMessage("tema");

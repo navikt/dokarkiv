@@ -293,6 +293,30 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 	}
 
 	@Test
+	public void shouldReturnInvalidRequestForMissingTilknytetAvNavn() {
+		Journalpost journalpostVedlegg = createJournalpostArkiv();
+		Journalpost sourceJournalpost = createJournalpostSladdet();
+		Long journalpostIdVedlegg = joarkRepository.save(journalpostVedlegg).getJournalpostId();
+		Long sourceJournalpostId = joarkRepository.save(sourceJournalpost).getJournalpostId();
+
+		endTransaction();
+
+		Long dokumentInfoId = sourceJournalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId();
+
+		HttpHeaders headers = createHeaders(GYLDIG_CONSUMER);
+
+		TilknyttVedleggRequest request = createTilknyttVedleggRequestWithoutTilknyttetAvNavn(
+				createDokumentVedleggList(sourceJournalpostId, dokumentInfoId.toString())
+		);
+
+		HttpEntity<TilknyttVedleggRequest> requestHttpEntity = new HttpEntity<>(request, headers);
+		ResponseEntity responseEntity = restTemplate.exchange(
+				URL_JOURNALPOST_INTERN + journalpostIdVedlegg + "/tilknyttVedlegg", HttpMethod.PUT, requestHttpEntity, String.class);
+		assertThat(responseEntity.getStatusCode(), is(HttpStatus.BAD_REQUEST));
+		TestTransaction.end();
+	}
+
+	@Test
 	public void shouldReturnNotFoundForJournalpost() {
 
 		List<DokumentVedlegg> dokumentVedleggList = new ArrayList<>();
@@ -398,7 +422,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		assertEquals(null, dokumentInfoKopi.getEndretAvNavn());
 		assertEquals(sourceDokumentInfo.getKassertAvNavn(), dokumentInfoKopi.getKassertAvNavn());
 		assertEquals(sourceDokumentInfo.getDatoKassert(), dokumentInfoKopi.getDatoKassert());
-		assertThat(dokumentInfoKopi.getOpprettetKildeNavn(), is(NAV_CONSUMER_ID));
+		assertThat(dokumentInfoKopi.getOpprettetKildeNavn(), is(GYLDIG_CONSUMER));
 		assertEquals(null, dokumentInfoKopi.getEndretKildeNavn());
 
 	}
@@ -409,7 +433,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		assertEquals(sourceFilDetaljer.getOnDemandInstans(), filDetaljerKopi.getOnDemandInstans());
 		assertEquals(sourceFilDetaljer.getMetaforceInstanceId(), filDetaljerKopi.getMetaforceInstanceId());
 		assertThat(filDetaljerKopi.getVariantFormat(), is(VariantFormatCode.ARKIV));
-		assertThat(filDetaljerKopi.getOpprettetKildeNavn(), is(NAV_CONSUMER_ID));
+		assertThat(filDetaljerKopi.getOpprettetKildeNavn(), is(GYLDIG_CONSUMER));
 		assertEquals(sourceFilDetaljer.getBatchNavn(), filDetaljerKopi.getBatchNavn());
 		assertEquals(sourceFilDetaljer.getFilnavn(), filDetaljerKopi.getFilnavn());
 		assertEquals(sourceFilDetaljer.getFilstorrelse(), filDetaljerKopi.getFilstorrelse());
@@ -419,12 +443,18 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 
 	private void assertDokumentFil(DokumentFil sourceDokumentFil, DokumentFil dokumentFilKopi) {
 		assertEquals(new String(sourceDokumentFil.getFil()), new String(dokumentFilKopi.getFil()));
-		assertThat(dokumentFilKopi.getOpprettetKildeNavn(), is(NAV_CONSUMER_ID));
+		assertThat(dokumentFilKopi.getOpprettetKildeNavn(), is(GYLDIG_CONSUMER));
 	}
 
 	private TilknyttVedleggRequest createTilknyttVedleggRequest(List<DokumentVedlegg> dokumentVedleggList) {
 		return TilknyttVedleggRequest.builder()
 				.tilknyttetAvNavn("TilknyttVedleggIT")
+				.dokument(dokumentVedleggList)
+				.build();
+	}
+
+	private TilknyttVedleggRequest createTilknyttVedleggRequestWithoutTilknyttetAvNavn(List<DokumentVedlegg> dokumentVedleggList) {
+		return TilknyttVedleggRequest.builder()
 				.dokument(dokumentVedleggList)
 				.build();
 	}

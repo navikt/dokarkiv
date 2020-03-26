@@ -1,28 +1,5 @@
 package no.nav.dokarkiv.innsynjournal.v2.tjoark059;
 
-import static no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerV2Mock.CURRENT_IDENT;
-import static no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerV2Mock.FAIL_IDENT;
-import static no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerV2Mock.HISTORICAL_IDENTS;
-import static no.nav.dokarkiv.core.datautil.DokumentFilTestDataProvider.FIL_UUID;
-import static no.nav.dokarkiv.core.datautil.DokumentInfoTestDataProvider.DOKUMENT_TITTEL;
-import static no.nav.dokarkiv.core.datautil.DokumentInfoTestDataProvider.createVedleggDokumentInfo;
-import static no.nav.dokarkiv.core.datautil.FildetaljerTestDataProvider.FIL_TYPE;
-import static no.nav.dokarkiv.core.datautil.FildetaljerTestDataProvider.VARIANT_FORMAT;
-import static no.nav.dokarkiv.core.datautil.JournalpostTestDataProvider.FNR;
-import static no.nav.dokarkiv.core.datautil.JournalpostTestDataProvider.JANUARY_1_2020;
-import static no.nav.dokarkiv.core.datautil.JournalpostTestDataProvider.createJournalpost;
-import static no.nav.dokarkiv.core.datautil.JournalpostTestDataProvider.createJournalpostWithoutHoveddokument;
-import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
-import static no.nav.dokarkiv.core.domain.codes.MottaksKanalCode.NAV_NO;
-import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.HOVEDDOKUMENT;
-import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.VEDLEGG;
-import static no.nav.tjeneste.virksomhet.innsynjournal.v2.informasjon.InnsynDokument.JA;
-import static no.nav.tjeneste.virksomhet.innsynjournal.v2.informasjon.InnsynDokument.KAN_IKKE_AVGJOERES;
-import static no.nav.tjeneste.virksomhet.innsynjournal.v2.informasjon.InnsynDokument.NEI;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-
 import no.nav.dokarkiv.core.datautil.SkannetInnholdTestDataProvider;
 import no.nav.dokarkiv.core.domain.builder.JournalpostBuilder;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
@@ -49,6 +26,29 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.List;
+
+import static no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerV2Mock.CURRENT_IDENT;
+import static no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerV2Mock.FAIL_IDENT;
+import static no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerV2Mock.HISTORICAL_IDENTS;
+import static no.nav.dokarkiv.core.datautil.DokumentFilTestDataProvider.FIL_UUID;
+import static no.nav.dokarkiv.core.datautil.DokumentInfoTestDataProvider.DOKUMENT_TITTEL;
+import static no.nav.dokarkiv.core.datautil.DokumentInfoTestDataProvider.createVedleggDokumentInfo;
+import static no.nav.dokarkiv.core.datautil.FildetaljerTestDataProvider.FIL_TYPE;
+import static no.nav.dokarkiv.core.datautil.FildetaljerTestDataProvider.VARIANT_FORMAT;
+import static no.nav.dokarkiv.core.datautil.JournalpostTestDataProvider.FNR;
+import static no.nav.dokarkiv.core.datautil.JournalpostTestDataProvider.JANUARY_1_2020;
+import static no.nav.dokarkiv.core.datautil.JournalpostTestDataProvider.createJournalpost;
+import static no.nav.dokarkiv.core.datautil.JournalpostTestDataProvider.createJournalpostWithoutHoveddokument;
+import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
+import static no.nav.dokarkiv.core.domain.codes.MottaksKanalCode.NAV_NO;
+import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.HOVEDDOKUMENT;
+import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.VEDLEGG;
+import static no.nav.tjeneste.virksomhet.innsynjournal.v2.informasjon.InnsynDokument.JA;
+import static no.nav.tjeneste.virksomhet.innsynjournal.v2.informasjon.InnsynDokument.KAN_IKKE_AVGJOERES;
+import static no.nav.tjeneste.virksomhet.innsynjournal.v2.informasjon.InnsynDokument.NEI;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 
 /**
  * Integration test for TJOARK053 IdentifiserJournapost.
@@ -108,6 +108,24 @@ public class IdentifiserJournalpostIT extends AbstractInnsynJournalV2Itest {
 		assertDokumentInnsyn(response.getVedleggListe().get(0), is(NEI));
 	}
 
+	@Test
+	public void shouldIdentifiserJournalpostWhenMottakskanalNotIncluded() throws Exception {
+		Journalpost journalpost = buildAndPersist(aJournalpost()
+				.journalpostType(JournalpostTypeCode.I)
+				.dokumentInfoRelasjoner(
+						getJournalpostDokumentInfoRelasjonBuilder()
+								.opprettetKildeNavn("itest")
+								.tilknyttetAvNavn("itest")
+								.tilknyttetJournalpostSom(VEDLEGG)
+								.dokumentInfo(createVedleggDokumentInfo().build()).build()
+				));
+
+		IdentifiserJournalpostRequest request = createRequest(KANAL_REFERANSE_ID, null);
+
+		IdentifiserJournalpostResponse response = innsynJournalV2Provider.identifiserJournalpost(request);
+		assertThat(Long.valueOf(response.getJournalpostId()), is(journalpost.getJournalpostId()));
+	}
+
 	/**
 	 * Hvis journalpost ikke er Inngående, skal feil kastes
 	 */
@@ -115,12 +133,11 @@ public class IdentifiserJournalpostIT extends AbstractInnsynJournalV2Itest {
 	public void shouldThrowExceptionFeilJournalpostType() throws Exception {
 		expectedException.expect(IdentifiserJournalpostJournalpostIkkeInngaaende.class);
 		expectedException.expectMessage("som ble funnet er ikke inngående");
-		Journalpost journalpost = buildAndPersist(aJournalpost()
-				.journalpostType(JournalpostTypeCode.U));
+		buildAndPersist(aJournalpost().journalpostType(JournalpostTypeCode.U));
 
 		IdentifiserJournalpostRequest request = createRequest(KANAL_REFERANSE_ID, MOTTAKS_KANAL);
 
-		IdentifiserJournalpostResponse response = innsynJournalV2Provider.identifiserJournalpost(request);
+		innsynJournalV2Provider.identifiserJournalpost(request);
 	}
 
 	/**
@@ -130,12 +147,12 @@ public class IdentifiserJournalpostIT extends AbstractInnsynJournalV2Itest {
 	public void shouldThrowExceptionFeilJournalpostUtenHoveddokument() throws Exception {
 		expectedException.expect(IdentifiserJournalpostObjektIkkeFunnet.class);
 		expectedException.expectMessage("mangler hoveddokument");
-		Journalpost journalpost = buildAndPersist(aJournalpostWithoutHoveddokument()
+		buildAndPersist(aJournalpostWithoutHoveddokument()
 				.journalpostType(JournalpostTypeCode.I));
 
 		IdentifiserJournalpostRequest request = createRequest(KANAL_REFERANSE_ID, MOTTAKS_KANAL);
 
-		IdentifiserJournalpostResponse response = innsynJournalV2Provider.identifiserJournalpost(request);
+		innsynJournalV2Provider.identifiserJournalpost(request);
 	}
 
 	/**
@@ -145,12 +162,12 @@ public class IdentifiserJournalpostIT extends AbstractInnsynJournalV2Itest {
 	public void shouldThrowExceptionFeilReturnereFeilAntallJournaposter() throws Exception {
 		expectedException.expect(IdentifiserJournalpostUgyldigAntallJournalposter.class);
 		expectedException.expectMessage("Uthenting av journalposter med kanalReferanseId=" + FEIL_KANAL_REFERANSE_ID + " og mottakskanal=" + MOTTAKS_KANAL + " resulterte ikke i nøyaktig én journalpost");
-		Journalpost journalpost = buildAndPersist(aJournalpost()
+		buildAndPersist(aJournalpost()
 				.journalpostType(JournalpostTypeCode.I));
 
 		IdentifiserJournalpostRequest request = createRequest(FEIL_KANAL_REFERANSE_ID, MOTTAKS_KANAL);
 
-		IdentifiserJournalpostResponse response = innsynJournalV2Provider.identifiserJournalpost(request);
+		innsynJournalV2Provider.identifiserJournalpost(request);
 	}
 
 	/**
@@ -160,7 +177,7 @@ public class IdentifiserJournalpostIT extends AbstractInnsynJournalV2Itest {
 	@Test
 	public void shouldSetDokumentInnsynToJAWhenMottakskanalIsNAVAndAvsenderMottakerIdIsEksternBruker() throws Exception {
 		SubjectHandlerUtils.setEksternBruker(FNR, 4, "");
-		Journalpost journalpost = buildAndPersist(aJournalpost()
+		buildAndPersist(aJournalpost()
 				.mottakskanal(NAV_NO)
 				.journalpostType(JournalpostTypeCode.I));
 		IdentifiserJournalpostRequest request = createRequest(KANAL_REFERANSE_ID, MOTTAKS_KANAL);
@@ -176,7 +193,7 @@ public class IdentifiserJournalpostIT extends AbstractInnsynJournalV2Itest {
 	@Test
 	public void shouldSetDokumentInnsynToJAWhenMottakskanalIsNAVAndAvsenderMottakerIdIsNotEksternBrukerAndInAktoerId() throws Exception {
 		SubjectHandlerUtils.setEksternBruker(CURRENT_IDENT, 4, "");
-		Journalpost journalpost = buildAndPersist(aJournalpost()
+		buildAndPersist(aJournalpost()
 				.mottakskanal(NAV_NO)
 				.journalpostType(JournalpostTypeCode.I)
 				.avsenderMottakerId(HISTORICAL_IDENTS.get(0)));
@@ -193,7 +210,7 @@ public class IdentifiserJournalpostIT extends AbstractInnsynJournalV2Itest {
 	@Test
 	public void shouldSetDokumentInnsynToKANIKKEAVGJOERESWhenMottakskanalIsNAVAndAvsenderMottakerIdIsNotEksternAndAktoerIdFeiler() throws Exception {
 		SubjectHandlerUtils.setEksternBruker(FAIL_IDENT, 4, "");
-		Journalpost journalpost = buildAndPersist(aJournalpost()
+		buildAndPersist(aJournalpost()
 				.mottakskanal(NAV_NO)
 				.journalpostType(JournalpostTypeCode.I));
 		IdentifiserJournalpostRequest request = createRequest(KANAL_REFERANSE_ID, MOTTAKS_KANAL);
@@ -210,7 +227,7 @@ public class IdentifiserJournalpostIT extends AbstractInnsynJournalV2Itest {
 	@Test
 	public void shouldSetDokumentInnsynToNEIWhenMottakskanalIsNAVAndAvsenderMottakerIdIsNotEksternBrukerAndNotInAktoerId() throws Exception {
 		SubjectHandlerUtils.setEksternBruker(CURRENT_IDENT, 4, "");
-		Journalpost journalpost = buildAndPersist(aJournalpost()
+		buildAndPersist(aJournalpost()
 				.mottakskanal(NAV_NO)
 				.avsenderMottakerId("***gammelt_fnr***")
 				.journalpostType(JournalpostTypeCode.I));

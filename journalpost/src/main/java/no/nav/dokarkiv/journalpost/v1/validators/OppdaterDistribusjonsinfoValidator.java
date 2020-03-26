@@ -43,7 +43,8 @@ public class OppdaterDistribusjonsinfoValidator {
             throw new KanIkkeOppdatereDistribusjonsinfoException(
                     String.format("Kan ikke ekspedere journalpost med status %s", journalpost.getJournalstatus()));
         }
-        if(journalpost.getSaksrelasjon() == null || journalpost.getSaksrelasjon().getFeilregistrert()) {
+        if(journalpost.getSaksrelasjon() == null || (journalpost.getSaksrelasjon().getFeilregistrert() != null
+                                                     && journalpost.getSaksrelasjon().getFeilregistrert())) {
             throw new KanIkkeOppdatereDistribusjonsinfoException(
                     "Kan ikke ekspedere journalpost med tom/feilregistrert saksrelasjon");
         }

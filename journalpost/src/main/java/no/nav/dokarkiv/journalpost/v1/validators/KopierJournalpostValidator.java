@@ -1,16 +1,16 @@
 package no.nav.dokarkiv.journalpost.v1.validators;
 
-import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.E;
-import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.FL;
-import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.FS;
-import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.J;
-
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.KanIkkeKopiereException;
 
 import java.util.Arrays;
 import java.util.List;
+
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.E;
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.FL;
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.FS;
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.J;
 
 public class KopierJournalpostValidator {
 
@@ -21,7 +21,7 @@ public class KopierJournalpostValidator {
 
 		// Verifisere at journalposten er i en tilstand som kan kopieres (status FL, FS, E eller J)
 		if (!journalpostHasCopyableStatus(status)) {
-			throw new KanIkkeKopiereException(String.format("Kan ikke kopiere journalpost med journalpostId=%s, journalpost har ugyldig status", journalpost.getJournalpostId()));
+			throw new KanIkkeKopiereException(String.format("Kan ikke kopiere journalpost med journalpostId=%s fordi journalpost har ugyldig status=%s", journalpost.getJournalpostId(), journalpost.getJournalstatus()));
 		}
 	}
 

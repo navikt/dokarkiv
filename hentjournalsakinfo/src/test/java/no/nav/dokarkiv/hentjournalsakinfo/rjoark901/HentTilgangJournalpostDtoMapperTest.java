@@ -33,7 +33,7 @@ public class HentTilgangJournalpostDtoMapperTest {
 		JournalStatusCode journalStatus = JournalStatusCode.J;
 		JournalpostTypeCode journalType = JournalpostTypeCode.U;
 		FagomradeCode journalFagomrade = FagomradeCode.PEN;
-		Timestamp craetedDate = Timestamp.valueOf(journalpostDatetime);
+		Timestamp createdDate = Timestamp.valueOf(journalpostDatetime);
 		MottaksKanalCode mottakskanal = MottaksKanalCode.NAV_NO;
 		SkjermingTypeCode jounralpostSkjermingType = SkjermingTypeCode.POL;
 		String avsenderMottakerId = "avsenderId";
@@ -59,7 +59,7 @@ public class HentTilgangJournalpostDtoMapperTest {
 		SkjermingTypeCode fildetaljerSkjermingType = SkjermingTypeCode.POL;
 
 		Object[] tuple = new Object[]{
-				journalpostId, journalStatus, journalType, journalFagomrade, craetedDate,
+				journalpostId, journalStatus, journalType, journalFagomrade, createdDate,
 				mottakskanal, jounralpostSkjermingType, avsenderMottakerId,
 				brukerId, brukerType,
 				sakrelasjonSakId, sakrelasjonFagsystem, sakrelasjonAktoerId,

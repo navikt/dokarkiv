@@ -8,6 +8,7 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.JOURNALFOERENDE_ENHE
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.LOCAL_DATE_TIME;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_FOR;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_PEN;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_UFO;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createAvsenderMottakerPerson;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createBrukerPerson;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createPutOppdaterJournalpostRequest;
@@ -79,6 +80,26 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 	}
 
 	@Test
+	public void happyPathTemaPEN() {
+		oppdaterJournalpostRequest = OppdaterJournalpostRequest.builder()
+				.tema(TEMA_PEN)
+				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(BRUKER_ID_PERSON).build())
+				.sak(Sak.builder().sakstype(Sakstype.GENERELL_SAK).build())
+				.build();
+		OppdaterJournalpostValidator.validateOppdaterteFelt(oppdaterJournalpostRequest, JournalStatusCode.M, JournalpostTypeCode.I);
+	}
+
+	@Test
+	public void happyPathTemaUFO() {
+		oppdaterJournalpostRequest = OppdaterJournalpostRequest.builder()
+				.tema(TEMA_UFO)
+				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(BRUKER_ID_PERSON).build())
+				.sak(Sak.builder().sakstype(Sakstype.GENERELL_SAK).build())
+				.build();
+		OppdaterJournalpostValidator.validateOppdaterteFelt(oppdaterJournalpostRequest, JournalStatusCode.M, JournalpostTypeCode.I);
+	}
+
+	@Test
 	public void shouldThrowExceptionWhenArkivsaknummerSetForFagsak() {
 		oppdaterJournalpostRequest = OppdaterJournalpostRequest.builder()
 				.tema(TEMA_FOR)
@@ -100,18 +121,6 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 				.build();
 		expectedException.expect(InputValideringFeiletException.class);
 		expectedException.expectMessage("Sak.fagsakId");
-		OppdaterJournalpostValidator.validateOppdaterteFelt(oppdaterJournalpostRequest, JournalStatusCode.M, JournalpostTypeCode.I);
-	}
-
-	@Test
-	public void shouldThrowExceptionWhenTemaPenForGenerellSak() {
-		oppdaterJournalpostRequest = OppdaterJournalpostRequest.builder()
-				.tema(TEMA_PEN)
-				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(BRUKER_ID_PERSON).build())
-				.sak(Sak.builder().sakstype(Sakstype.GENERELL_SAK).fagsakId(FAGSAK_ID).build())
-				.build();
-		expectedException.expect(InputValideringFeiletException.class);
-		expectedException.expectMessage("tema");
 		OppdaterJournalpostValidator.validateOppdaterteFelt(oppdaterJournalpostRequest, JournalStatusCode.M, JournalpostTypeCode.I);
 	}
 
