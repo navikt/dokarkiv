@@ -44,7 +44,7 @@ public class OpprettJournalpostRequest {
 
 	@ApiModelProperty(
 			value = "Temaet som forsendelsen tilhører, for eksempel \"FOR\" (foreldrepenger).",
-			example = "FOR"
+			example = "DAG"
 	)
 	private String tema;
 
@@ -56,7 +56,7 @@ public class OpprettJournalpostRequest {
 
 	@ApiModelProperty(
 			value = "Tittel som beskriver forsendelsen samlet, feks \"Ettersendelse til søknad om foreldrepenger\".",
-			example = "Ettersendelse til søknad om foreldrepenger"
+			example = "Søknad om dagpenger ved permittering"
 	)
 	private String tittel;
 
@@ -70,13 +70,14 @@ public class OpprettJournalpostRequest {
 			value = "NAV-enheten som har journalført, eventuelt skal journalføre, forsendelsen. " +
 					"Ved automatisk journalføring uten mennesker involvert skal enhet settes til \"9999\".\n" +
 					"Konsument må sette journalfoerendeEnhet dersom tjenesten skal ferdigstille journalføringen.",
-			example = "9999"
+			example = "0701"
 	)
 	private String journalfoerendeEnhet;
 
 	@ApiModelProperty(
 			value = "Unik id for forsendelsen som kan brukes til sporing gjennom verdikjeden.\n" +
-					"Eksempler på eksternReferanseId kan være sykmeldingsId for sykmeldinger, Altinn ArchiveReference for Altinn-skjema eller SEDid for SED."
+					"Eksempler på eksternReferanseId kan være sykmeldingsId for sykmeldinger, Altinn ArchiveReference for Altinn-skjema eller SEDid for SED.",
+			hidden = true
 	)
 	private String eksternReferanseId;
 
@@ -84,13 +85,16 @@ public class OpprettJournalpostRequest {
 			value = "Dato forsendelsen ble mottatt fra avsender. Dersom datoMottatt er tom, settes verdien til dagens dato.\n" +
 					" Feltet kan kun settes for inngående journalposter.",
 			dataType = "Date",
-			example = "2019-11-29"
+			example = "2019-11-29",
+			hidden = true
 	)
 	@JsonFormat(pattern="yyyy-MM-dd")
 	private Date datoMottatt;
 
 	@Builder.Default
-	@ApiModelProperty
+	@ApiModelProperty(
+			hidden = true
+	)
 	private List<Tilleggsopplysning> tilleggsopplysninger = new ArrayList<>();
 
 	@ApiModelProperty(
@@ -102,7 +106,8 @@ public class OpprettJournalpostRequest {
 	@NotNull(message = "dokumenter kan ikke være null")
 	@ApiModelProperty(
 			value = "Første dokument blir tilknyttet som hoveddokument på journalposten. Øvrige dokumenter tilknyttes som vedlegg. Rekkefølgen på vedlegg beholdes ikke ved uthenting av journalpost.",
-			required = true)
+			required = true
+	)
 	private List<Dokument> dokumenter = new ArrayList<>();
 
 }

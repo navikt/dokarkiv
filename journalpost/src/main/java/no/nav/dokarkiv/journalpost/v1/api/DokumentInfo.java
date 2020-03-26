@@ -17,7 +17,7 @@ public class DokumentInfo {
     @ApiModelProperty(
             value = "ID til dokumentinfo-objektet i Joark",
             required = true,
-            example = "123")
+            example = "\"485227498\"")
     private String dokumentInfoId;
 
     @ApiModelProperty(

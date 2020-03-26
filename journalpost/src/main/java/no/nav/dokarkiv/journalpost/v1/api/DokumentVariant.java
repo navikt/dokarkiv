@@ -33,15 +33,16 @@ public class DokumentVariant {
 	private String variantformat;
 
 	@ApiModelProperty(
-			value = "Selve dokumentet",
+			value = "Selve dokumentet.  Hvis filtype er PDF/XML, fysiskDokument brukes byte array. Ex. [98,77.58,91]",
 			required = true,
-			example = "AAAAAAAA"
+			example = "settInnPdfVersjonAvPermitterings"
 	)
 	private byte[] fysiskDokument;
 
 	@ApiModelProperty(
 			value = "Navnet filen skal ha i arkivet.",
-			example = "eksempeldokument.pdf"
+			example = "eksempeldokument.pdf",
+			hidden = true
 	)
 	private String filnavn;
 }
