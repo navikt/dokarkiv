@@ -13,11 +13,11 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OppdaterJournalpostResponse {
-	@NotNull(message = "OppdaterJournalpostResponse mangler journalpostId")
-	@ApiModelProperty(
-			value = "JournalpostId som har blitt oppdatert (og forsøkt endelig journalført)",
-			required = true,
-			example = "\"467011764\""
-	)
-	private String journalpostId;
+    @NotNull(message = "OppdaterJournalpostResponse mangler journalpostId")
+    @ApiModelProperty(
+            value = "JournalpostId som har blitt oppdatert (og forsøkt endelig journalført)",
+            required = true,
+            example = "\"467011764\""
+    )
+    private String journalpostId;
 }

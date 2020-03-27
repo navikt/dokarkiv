@@ -69,7 +69,7 @@ public class OppdaterJournalpostRequest {
             value = "Dato forsendelsen ble mottatt i retur. Feltet kan kun settes for utgående journalposter.",
             hidden = true
     )
-    @JsonFormat(pattern="yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private Date datoRetur;
 
     @ApiModelProperty(
@@ -77,7 +77,7 @@ public class OppdaterJournalpostRequest {
             hidden = true,
             dataType = "Date",
             example = "2019-11-29")
-    @JsonFormat(pattern="yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private Date datoMottatt;
 
     @ApiModelProperty(
