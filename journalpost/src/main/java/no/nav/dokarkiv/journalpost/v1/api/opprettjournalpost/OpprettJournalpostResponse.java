@@ -33,14 +33,14 @@ public class OpprettJournalpostResponse {
 					"* ENDELIG - hvis journalpost er opprett og endelig journalført\n\n " +
 					"Feltet er deprekert og vil bli fjernet i fremtiden. Bruk journalpostferdigstilt i stedet.",
 			required = true,
-			position = 2,
+			hidden = true,
 			example = "ENDELIG")
 	@Deprecated
 	private String journalstatus;
 
 	@ApiModelProperty(
 			value = "Melding",
-			position = 5,
+			hidden = true,
 			example = "null"
 	)
 	private String melding;

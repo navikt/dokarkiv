@@ -154,6 +154,8 @@ public class ArkiverOgJournalfoerRestController {
 			actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION))
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "oppdaterjournalpost"}, percentiles = {0.5, 0.95})
 	public OppdaterJournalpostResponse oppdaterJournalpost(
+			@ApiParam(name="journalpostId", value = "Angir JournalpostId som skal oppdatere f.eks. 467011764",
+					required = true, defaultValue = "467011764")
 			@PathVariable String journalpostId,
 			@RequestBody OppdaterJournalpostRequest request) {
 		RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDC_CONSUMER_ID));

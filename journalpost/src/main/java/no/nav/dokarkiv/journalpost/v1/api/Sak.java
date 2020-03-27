@@ -43,7 +43,7 @@ public class Sak {
                     "* EF (Enslig forsørger)\n" +
                     "* KONT (Kontantstøtte)\n" +
                     "Skal kun settes dersom sakstype = FAGSAK",
-            example = "FS38"
+            example = "AO01"
     )
     private Fagsaksystem fagsaksystem;
 
