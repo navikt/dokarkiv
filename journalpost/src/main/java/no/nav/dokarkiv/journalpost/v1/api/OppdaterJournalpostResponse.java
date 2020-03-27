@@ -17,7 +17,7 @@ public class OppdaterJournalpostResponse {
 	@ApiModelProperty(
 			value = "JournalpostId som har blitt oppdatert (og forsøkt endelig journalført)",
 			required = true,
-			example = "22345678"
+			example = "\"467011764\""
 	)
 	private String journalpostId;
 }

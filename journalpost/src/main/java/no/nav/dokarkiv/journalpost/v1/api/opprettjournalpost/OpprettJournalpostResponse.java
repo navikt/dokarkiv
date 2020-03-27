@@ -20,7 +20,7 @@ public class OpprettJournalpostResponse {
 			value = "JournalpostId som har blit opprettet",
 			required = true,
 			position = 1,
-			example = "12345678"
+			example = "\"467010363\""
 	)
 	private String journalpostId;
 
