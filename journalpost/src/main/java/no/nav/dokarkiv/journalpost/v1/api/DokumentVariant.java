@@ -33,9 +33,9 @@ public class DokumentVariant {
 	private String variantformat;
 
 	@ApiModelProperty(
-			value = "Selve dokumentet.  Hvis filtype er PDF/XML, fysiskDokument brukes byte array. Ex. [98,77.58,91]",
+			value = "Selve dokumentet.  Hvis filtype er PDF/XML, ved fysisk dokument brukes bytearray. Ex. [98,77.58,91]",
 			required = true,
-			example = "AAAAAAAA"
+			example = "U8O4a25hZCBvbSBkYWdwZW5nZXIgdmVkIHBlcm1pdHRlcmluZw=="
 	)
 	private byte[] fysiskDokument;
 

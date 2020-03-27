@@ -47,7 +47,7 @@ public class OpprettJournalpostRequest {
 	private Bruker bruker;
 
 	@ApiModelProperty(
-			value = "Temaet som forsendelsen tilhører, for eksempel \"FOR\" (foreldrepenger).",
+			value = "Temaet som forsendelsen tilhører, for eksempel \"DAG\" (Dagpenger).",
 			position = 2,
 			example = "DAG"
 
@@ -62,7 +62,7 @@ public class OpprettJournalpostRequest {
 	private String behandlingstema;
 
 	@ApiModelProperty(
-			value = "Tittel som beskriver forsendelsen samlet, feks \"Ettersendelse til søknad om foreldrepenger\".",
+			value = "Tittel som beskriver forsendelsen samlet, feks \"Ettersendelse til søknad om dagpenger\".",
 			position = 1,
 			example = "Søknad om dagpenger ved permittering"
 	)

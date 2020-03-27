@@ -18,14 +18,14 @@ import java.util.List;
 public class OppdaterJournalpostRequest {
 
     @ApiModelProperty(
-            value = "Tittel som beskriver forsendelsen samlet, for eksempel \"Ettersendelse til søknad om foreldrepenger\"",
+            value = "Tittel som beskriver forsendelsen samlet, for eksempel \"Ettersendelse til søknad om dagpenger\"",
             position = 1,
             example = "Søknad om dagpenger ved permittering"
     )
     private String tittel;
 
     @ApiModelProperty(
-            value = "Fagområdet som forsendelsen tilhører, for eksempel \"FOR\" for Foreldrepenger",
+            value = "Fagområdet som forsendelsen tilhører, for eksempel \"DAG\" for dagpenger",
             position = 2,
             example = "DAG")
     private String tema;
@@ -50,7 +50,9 @@ public class OppdaterJournalpostRequest {
     private Bruker bruker;
 
     @ApiModelProperty(
-            value = "Saken i PSAK eller GSAK som dokumentene skal journalføres mot.\nNB: Dersom journalposten tilhører en fagsak i et fagsystem, må konsument selv sørge for å opprette en GSAK-sak med mapping til fagsaken. Alternativt kan fagsystemet benytte tjenesten knyttTilSak, som knytter journalposten til en fagsak eller generell sak.",
+            value = "Saken i PSAK eller GSAK som dokumentene skal journalføres mot.\nNB: Dersom journalposten tilhører en fagsak i et fagsystem, " +
+                    "må konsument selv sørge for å opprette en GSAK-sak med mapping til fagsaken. Alternativt kan fagsystemet benytte tjenesten knyttTilSak, " +
+                    "som knytter journalposten til en fagsak eller generell sak.",
             position = 6
     )
     private Sak sak;
@@ -79,7 +81,9 @@ public class OppdaterJournalpostRequest {
     private Date datoMottatt;
 
     @ApiModelProperty(
-            value = "Fagsystemene som arkiverer kan legge til egne fagspesifikke attributter per journalpost. Disse er representert som et skjemaløst nøkkel-verdi-sett og valideres ikke ved arkivering. Et eksempel på et slikt sett kan være nøkkel: bucid og verdi: 21521.",
+            value = "Fagsystemene som arkiverer kan legge til egne fagspesifikke attributter per journalpost. Disse er representert " +
+                    "som et skjemaløst nøkkel-verdi-sett og valideres ikke ved arkivering. Et eksempel på et slikt sett kan være nøkkel: " +
+                    "bucid og verdi: 21521.",
             hidden = true
     )
     private List<Tilleggsopplysning> tilleggsopplysninger;

@@ -16,7 +16,7 @@ import java.util.List;
 public class Dokument {
 
 	@ApiModelProperty(
-			value = "Dokumentets tittel, f.eks. \"Søknad om foreldrepenger ved fødsel\" eller \"Legeerklæring\".\n" +
+			value = "Dokumentets tittel, f.eks. \"Søknad om dagpenger ved permittering\".\n" +
 					"Dokumentets tittel blir synlig i brukers journal på nav.no, samt i Gosys.",
 			position = 1,
 			example = "Søknad om dagpenger ved permittering"
