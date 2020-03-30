@@ -18,7 +18,7 @@ import java.util.List;
 public class OppdaterJournalpostRequest {
 
     @ApiModelProperty(
-            value = "Tittel som beskriver forsendelsen samlet, for eksempel \"Ettersendelse til søknad om dagpenger\"",
+            value = "Tittel som beskriver forsendelsen samlet, for eksempel \"Søknad om dagpenger ved permittering\"",
             position = 1,
             example = "Søknad om dagpenger ved permittering"
     )

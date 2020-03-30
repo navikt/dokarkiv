@@ -61,7 +61,7 @@ public class OpprettJournalpostRequest {
     private String behandlingstema;
 
     @ApiModelProperty(
-            value = "Tittel som beskriver forsendelsen samlet, feks \"Ettersendelse til søknad om dagpenger\".",
+            value = "Tittel som beskriver forsendelsen samlet, feks \"Søknad om dagpenger ved permittering\".",
             position = 1,
             example = "Søknad om dagpenger ved permittering"
     )
