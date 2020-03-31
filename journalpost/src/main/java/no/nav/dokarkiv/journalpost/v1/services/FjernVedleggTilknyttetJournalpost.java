@@ -46,14 +46,13 @@ public class FjernVedleggTilknyttetJournalpost {
 		fjernVedleggTilknyttetJournalpostValidator.validateInput(journalpostId,request.getDokumentId());
 		Long dokumentInfoId = Long.valueOf(request.getDokumentId());
 		Journalpost journalpost = joarkRepository.findById(Long.valueOf(journalpostId))
-				.orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Fant ikke journalpost med journalpostid=%s", journalpostId)));
+				.orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Fant ikke journalpost med journalpostId=%s", journalpostId)));
 		fjernVedleggTilknyttetJournalpostValidator.validateJournalPostStatusOgType(journalpost);
 		DokumentInfo dokumentInfo = hentDokumentInfo(dokumentInfoId);
 		fjernVedleggTilknyttetJournalpostValidator.validateDokumentInfoOriginalJpNotEqualsInputJournalpost(dokumentInfo, journalpost.getJournalpostId());
 		JournalpostDokumentInfoRelasjon jpDokRelasjon = hentJournalpostDokumentRelasjon(journalpost.getJournalpostId(), dokumentInfoId);
 
 		journalpostDokumentInfoRelasjonRepository.delete(jpDokRelasjon);
-
 	}
 
 
@@ -62,14 +61,14 @@ public class FjernVedleggTilknyttetJournalpost {
 				.findByJournalpostJournalpostIdAndDokumentInfoDokumentInfoId(journalpostId, dokumentId)
 				.orElseThrow(() ->
 						new JournalpostDokumentInfoRelasjonIkkeFunnetException(String.
-								format("Fant ikke JournalpostDokumentInfoRelasjon med journalpostId=%s dokumentId=%s", journalpostId, dokumentId)));
+								format("Fant ikke JournalpostDokumentInfoRelasjon med journalpostId=%s dokumentInfoId=%s", journalpostId, dokumentId)));
 		fjernVedleggTilknyttetJournalpostValidator.validateJournalpostDokumentInfoRelasjon(jpDokRelasjon);
 		return jpDokRelasjon;
 	}
 
 	private DokumentInfo hentDokumentInfo(Long dokumentId) {
 		DokumentInfo dokumentInfo = dokumentinfoRepository.findByDokumentInfoId(dokumentId)
-				.orElseThrow(() -> new DokumentIkkeFunnetException(String.format("Fant ikke dokuemnt med dokumentinfoid=%s", dokumentId)));
+				.orElseThrow(() -> new DokumentIkkeFunnetException(String.format("Fant ikke dokument med dokumentInfoId=%s", dokumentId)));
 		return dokumentInfo;
 	}
 

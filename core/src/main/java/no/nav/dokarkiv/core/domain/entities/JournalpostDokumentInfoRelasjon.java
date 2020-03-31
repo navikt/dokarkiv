@@ -12,6 +12,7 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -47,6 +48,9 @@ public class JournalpostDokumentInfoRelasjon extends AbstractPersistentVersioned
 	@Column(name = "jp_dok_info_rel_id", nullable = false)
 	private Long journalpostDokumentInfoRelasjonId;
 
+	@Embedded
+	private JournalpostDokumentInfoRelasjonId embeddedId;
+
 	@Column(name = "tilknyttet_av_navn", nullable = false)
 	private String tilknyttetAvNavn;
 
@@ -58,7 +62,7 @@ public class JournalpostDokumentInfoRelasjon extends AbstractPersistentVersioned
 	@Enumerated(EnumType.STRING)
 	private SkjermingTypeCode skjermingType;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "dokument_info_id", nullable = false)
 	@Cascade({CascadeType.PERSIST, CascadeType.MERGE, CascadeType.SAVE_UPDATE, CascadeType.DETACH})
 	private DokumentInfo dokumentInfo;
