@@ -13,10 +13,12 @@ import no.nav.dokarkiv.core.exceptions.DokarkivFunctionalException;
 import no.nav.dokarkiv.core.exceptions.DokarkivTechnicalException;
 import no.nav.dokarkiv.core.metrics.RestMetrics;
 import no.nav.dokarkiv.journalpost.v1.api.FeiledeDokumenter;
+import no.nav.dokarkiv.journalpost.v1.api.MottaDokumentUtgaaendeSkanningRequest;
 import no.nav.dokarkiv.journalpost.v1.api.TilknyttVedleggRequest;
 import no.nav.dokarkiv.journalpost.v1.api.TilknyttVedleggResponse;
 import no.nav.dokarkiv.journalpost.v1.api.finnMottatteJournalposter.FinnMottatteJournalposterResponse;
 import no.nav.dokarkiv.journalpost.v1.services.FinnMottatteJournalposterService;
+import no.nav.dokarkiv.journalpost.v1.services.MottaDokumentUtgaaendeSkanningService;
 import no.nav.dokarkiv.journalpost.v1.services.TilknyttVedleggService;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerFinnMottatteJournalposter;
 import no.nav.dokarkiv.journalpost.v1.services.KopierJournalpostService;
@@ -55,19 +57,23 @@ public class JournalpostInternRestController {
 	private final TilknyttVedleggService tilknyttVedleggService;
 	private final FinnMottatteJournalposterService finnMottatteJournalposterService;
 	private final KopierJournalpostService kopierJournalpostService;
+	private final MottaDokumentUtgaaendeSkanningService mottaDokumentUtgaaendeSkanningService;
 	private static final String SRVDOKARKIVPROXY = "srvdokarkivproxy";
 	private static final String SRVDOKSIKKERHETSNETT = "srvdoksikkerhetsnt";
+	private static final String SRVSKANMOT1408 = "srvskanmot1408";
 
 	@Inject
 	public JournalpostInternRestController(
 			final TilknyttVedleggService tilknyttVedleggService,
 			final FinnMottatteJournalposterService finnMottatteJournalposterService,
-			final KopierJournalpostService kopierJournalpostService
+			final KopierJournalpostService kopierJournalpostService,
+			final MottaDokumentUtgaaendeSkanningService mottaDokumentUtgaaendeSkanningService
 	) {
 
 		this.tilknyttVedleggService = tilknyttVedleggService;
 		this.finnMottatteJournalposterService = finnMottatteJournalposterService;
 		this.kopierJournalpostService = kopierJournalpostService;
+		this.mottaDokumentUtgaaendeSkanningService = mottaDokumentUtgaaendeSkanningService;
 	}
 
 	@Transactional
@@ -200,6 +206,37 @@ public class JournalpostInternRestController {
 		}
 	}
 
+	@Transactional
+	@SwaggerKopierJournalpost
+	@PutMapping("/journalpost/{journalpostId}/mottaDokumentUtgaaendeSkanning")
+	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark203"}, percentiles = {0.5, 0.95})
+	public ResponseEntity<Long> mottaDokumentUtgaaendeSkanning(
+			@PathVariable String journalpostId,
+			@RequestHeader(value = HttpHeaders.AUTHORIZATION) String auth,
+			@RequestBody MottaDokumentUtgaaendeSkanningRequest request) {
+		try {
+			//todo logg riktig
+
+			assertThatConsumerIsSrvskanmot1408(auth);
+
+			MDC.put(MDC_REQUEST_ID, "rjoark203");
+			log.info(MDC.get(MDC_REQUEST_ID) + " har mottatt kall for mottaDokumentUtgaaendeSkanning på journalpost med journalpostId={}", journalpostId);
+			validateId(journalpostId, "journalpostId");
+
+			mottaDokumentUtgaaendeSkanningService.mottaDokumentUtgaaendeSkanning(Long.parseLong(journalpostId), request);
+
+			return ResponseEntity.ok().build();
+		} catch (DokarkivFunctionalException e) {
+			log.warn("kopierJournalpost - feilet funksjonelt ved kopiering av journalpost for journalpostId={}. Feilmelding={}", journalpostId, e
+					.getMessage());
+			throw e;
+		} catch (DokarkivTechnicalException e) {
+			log.error("kopierJournalpost - feilet teknisk ved kopiering av journalpost for journalpostId={}. Feilmelding={}", journalpostId, e
+					.getMessage());
+			throw e;
+		}
+	}
+
 	private void assertThatConsumerIsSrvdokarkivproxy(String auth) {
 		if (!SRVDOKARKIVPROXY.equals(decodeBasicAuth(auth)[0])) {
 			throw new ConsumerIsNotSrvDokarkivProxyFunctionalException("Konsument har ikke tilgang til å kalle tjenesten");
@@ -209,6 +246,13 @@ public class JournalpostInternRestController {
 	private void assertThatConsumerIsSrvdoksikkerhetsnett(String auth) {
 		if (!SRVDOKSIKKERHETSNETT.equals(decodeBasicAuth(auth)[0])) {
 			throw new ConsumerIsNotSrvDokSikkerhetsnettFunctionalException("Konsument har ikke tilgang til å kalle tjenesten");
+		}
+	}
+
+	private void assertThatConsumerIsSrvskanmot1408(String auth) {
+		if (!SRVSKANMOT1408.equals(decodeBasicAuth(auth)[0])) {
+			//TODO lag ex exception klasse
+			throw new ConsumerIsNotSrvDokarkivProxyFunctionalException("Konsument har ikke tilgang til å kalle tjenesten");
 		}
 	}
 
