@@ -25,7 +25,6 @@ import javax.inject.Inject;
 @Slf4j
 public class FjernVedleggTilknyttetJournalpost {
 
-
 	private final JoarkRepositorySkjermet joarkRepository;
 	private final DokumentinfoRepository dokumentinfoRepository;
 	private final JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository;
@@ -40,9 +39,7 @@ public class FjernVedleggTilknyttetJournalpost {
 		this.fjernVedleggTilknyttetJournalpostValidator = new FjernVedleggTilknyttetJournalpostValidator();
 	}
 
-
 	public void fjernVedleggTilknyttetJournalpost(String journalpostId, FjernVedleggTilknyttetJournalpostRequest request) {
-
 		fjernVedleggTilknyttetJournalpostValidator.validateInput(journalpostId,request.getDokumentId());
 		Long dokumentInfoId = Long.valueOf(request.getDokumentId());
 		Journalpost journalpost = joarkRepository.findById(Long.valueOf(journalpostId))
@@ -55,7 +52,6 @@ public class FjernVedleggTilknyttetJournalpost {
 		journalpostDokumentInfoRelasjonRepository.delete(jpDokRelasjon);
 	}
 
-
 	public JournalpostDokumentInfoRelasjon hentJournalpostDokumentRelasjon(Long journalpostId, Long dokumentId) {
 		JournalpostDokumentInfoRelasjon jpDokRelasjon = journalpostDokumentInfoRelasjonRepository
 				.findByJournalpostJournalpostIdAndDokumentInfoDokumentInfoId(journalpostId, dokumentId)
@@ -67,9 +63,7 @@ public class FjernVedleggTilknyttetJournalpost {
 	}
 
 	private DokumentInfo hentDokumentInfo(Long dokumentId) {
-		DokumentInfo dokumentInfo = dokumentinfoRepository.findByDokumentInfoId(dokumentId)
+		return dokumentinfoRepository.findByDokumentInfoId(dokumentId)
 				.orElseThrow(() -> new DokumentIkkeFunnetException(String.format("Fant ikke dokument med dokumentInfoId=%s", dokumentId)));
-		return dokumentInfo;
 	}
-
 }

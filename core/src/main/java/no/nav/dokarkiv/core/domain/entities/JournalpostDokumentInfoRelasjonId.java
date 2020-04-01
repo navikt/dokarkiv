@@ -9,6 +9,9 @@ import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
 /**
+ * Denne klassen brukes for å kunne adressere kolonnene i JournalpostDokumentInfoRelasjon uten å si til Hibernate at
+ * den skal fetche DokumentInfo eller Journalpost entitetene (og dermed gjøre joins mot disse i tilfeller det ikke er nødvendig).
+ *
  * @author Joakim Bjørnstad, Jbit AS
  */
 @Data
