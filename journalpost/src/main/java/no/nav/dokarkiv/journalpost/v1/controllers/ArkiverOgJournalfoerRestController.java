@@ -86,7 +86,7 @@ public class ArkiverOgJournalfoerRestController {
                                               final OpprettJournalpostService opprettJournalpostService,
                                               final OppdaterDistribusjonsinfoService oppdaterDistribusjonsinfoService,
                                               final AbacSecurityService abacSecurityService,
-                                              FjernVedleggTilknyttetJournalpost fjernVedleggTilknyttJournalpost) {
+                                              final FjernVedleggTilknyttetJournalpost fjernVedleggTilknyttJournalpost) {
         this.ferdigstillJournalpostService = ferdigstillJournalpostService;
         this.abacSecurityService = abacSecurityService;
         this.oppdaterJournalpostService = oppdaterJournalpostService;
@@ -225,7 +225,6 @@ public class ArkiverOgJournalfoerRestController {
                         .dokumenter(dokumenter)
                         .build());
     }
-
 
     @Transactional
     @SwaggerFjernVedlegg
