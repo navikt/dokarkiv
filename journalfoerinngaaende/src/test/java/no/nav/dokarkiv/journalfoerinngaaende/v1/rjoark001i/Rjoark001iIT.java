@@ -1,16 +1,5 @@
 package no.nav.dokarkiv.journalfoerinngaaende.v1.rjoark001i;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
-import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
-import static com.github.tomakehurst.wiremock.client.WireMock.verify;
-import static java.lang.String.format;
-import static no.nav.dokarkiv.core.datautil.DokumentInfoTestDataProvider.createVedleggDokumentInfo;
-import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.StringContains.containsString;
-
 import no.nav.dok.tjenester.journalfoerinngaaende.GetJournalpostResponse;
 import no.nav.dokarkiv.core.consumer.RestConsumerExceptionResponse;
 import no.nav.dokarkiv.core.datautil.JournalpostTestDataProvider;
@@ -27,6 +16,17 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.transaction.TestTransaction;
+
+import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
+import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.verify;
+import static java.lang.String.format;
+import static no.nav.dokarkiv.core.datautil.DokumentInfoTestDataProvider.createVedleggDokumentInfo;
+import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.StringContains.containsString;
 
 /**
  * @author Sigurd Midttun, Visma Consulting.
@@ -175,19 +175,20 @@ public class Rjoark001iIT extends AbstractJournalfoerInngaaendeV1Itest {
 		abacPermit();
 
 		Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.J));
-		journalpost.addJournalpostDokumentInfoRelasjon(getJournalpostDokumentInfoRelasjonBuilder()
+		Long journalpostId = journalpost.getJournalpostId();
+
+		TestTransaction.start();
+		Journalpost persistedJournalpost = joarkRepository.findById(journalpostId).get();
+		persistedJournalpost.addJournalpostDokumentInfoRelasjon(getJournalpostDokumentInfoRelasjonBuilder()
 				.opprettetKildeNavn("itest")
 				.tilknyttetAvNavn("itest")
 				.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
 				.dokumentInfo(createVedleggDokumentInfo().tittel("siste dokument inn").build())
 				.build());
-
-		joarkRepository.save(journalpost);
-		TestTransaction.start();
+		entityManager.persist(persistedJournalpost);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
-		String journalpostId = journalpost.getJournalpostId().toString();
 
 		ResponseEntity<GetJournalpostResponse> responseEntity = restTemplate.exchange(
 				JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER + journalpostId, HttpMethod.GET, createHeaders(), GetJournalpostResponse.class);
@@ -196,6 +197,5 @@ public class Rjoark001iIT extends AbstractJournalfoerInngaaendeV1Itest {
 		assertThat(responseEntity.getBody().getDokumentListe().get(1).getTittel(), is("Takk skal du ha")); //Vedlegg1
 		assertThat(responseEntity.getBody().getDokumentListe().get(2).getTittel(), is("siste dokument inn")); //Vedlegg2
 	}
-
 }
 
