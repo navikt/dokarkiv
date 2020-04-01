@@ -22,7 +22,7 @@ public class Sak {
     @ApiModelProperty(
             value = "Iden til fagsaken i fagsystemet (altså ikke applikasjonen SAK).\n" +
                     "Skal kun settes dersom sakstype = FAGSAK",
-            example = "111111111"
+            example = "\"10695768\""
     )
     private String fagsakId;
 
@@ -43,23 +43,23 @@ public class Sak {
                     "* EF (Enslig forsørger)\n" +
                     "* KONT (Kontantstøtte)\n" +
                     "Skal kun settes dersom sakstype = FAGSAK",
-            example = "FS38"
+            example = "AO01"
     )
     private Fagsaksystem fagsaksystem;
 
     @ApiModelProperty(
             value = "Saksnummeret i PSAK eller GSAK (SAK). Må være et numerisk heltall.\n" +
                     "Skal kun settes dersom sakstype = ARKIVSAK.\n" +
-                    "Feltet skal kun brukes etter avtale.",
-            example = "111111111"
+                    "Feltet skal kun brukes etter avtale. ",
+            hidden = true
     )
     @Deprecated
     private String arkivsaksnummer;
 
     @ApiModelProperty(
             value = "Skal kun settes dersom sakstype = ARKIVSAK.\n" +
-                    "Feltet skal kun brukes etter avtale.",
-            example = "GSAK"
+                    "Feltet skal kun brukes etter avtale. GSAK,PSAK",
+            hidden = true
     )
     @Deprecated
     private Arkivsaksystem arkivsaksystem;
