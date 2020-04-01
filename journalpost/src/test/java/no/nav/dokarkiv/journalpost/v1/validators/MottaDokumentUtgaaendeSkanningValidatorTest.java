@@ -25,21 +25,6 @@ public class MottaDokumentUtgaaendeSkanningValidatorTest {
     private final String mockFilnavn = "mockFilnavn";
 
     @Test
-    public void foo(){
-        MottaDokumentUtgaaendeSkanningRequest request = new MottaDokumentUtgaaendeSkanningRequest(
-                null,
-                null,
-                null,
-                null,
-                null,
-                null
-        );
-        Optional<String> valdationResult = mottaDokumentUtgaaendeSkanningValidator.validateRequest(request);
-
-        assertTrue(valdationResult.isPresent());
-    }
-
-    @Test
     public void shouldValidatehappyPathRequest(){
         MottaDokumentUtgaaendeSkanningRequest request = buildRequest(
                 List.of(

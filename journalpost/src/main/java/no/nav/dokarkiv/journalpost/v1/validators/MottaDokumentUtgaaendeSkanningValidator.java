@@ -39,10 +39,10 @@ public class MottaDokumentUtgaaendeSkanningValidator {
             errors.add("JournalStatus er ikke R");
         }
         if(dokumentInfos.isEmpty()) {
-            errors.add("Har ikke ett hoveddokument");
+            errors.add("Mangler DokumentInfo");
         }
         if(dokumentInfos.size() > 1) {
-            errors.add("Har mer enn ett dokument");
+            errors.add("Har mer enn ett DokumentInfo objekt");
         }
         if(!journalpost.hasHoveddokumentRelasjon()) {
             errors.add("Har ikke hoveddokument");

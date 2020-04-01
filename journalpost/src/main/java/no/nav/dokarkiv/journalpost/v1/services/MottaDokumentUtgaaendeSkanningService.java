@@ -34,6 +34,11 @@ public class MottaDokumentUtgaaendeSkanningService {
     private final DokumentFilRepository dokumentFilRepository;
     private final MottaDokumentUtgaaendeSkanningValidator validator = new MottaDokumentUtgaaendeSkanningValidator();
 
+    private final String KILDENAVN = "skanmot_1408";
+    private final String MOTTATTI = "mottatti";
+    private final String MOTTATTFRA = "mottattfra";
+    private final String ENDORSERNR = "endorsernr";
+
     public MottaDokumentUtgaaendeSkanningService(JoarkRepository joarkRepository, DokumentFilRepository dokumentFilRepository) {
         this.joarkRepository = joarkRepository;
         this.dokumentFilRepository = dokumentFilRepository;
@@ -41,7 +46,6 @@ public class MottaDokumentUtgaaendeSkanningService {
 
     public void mottaDokumentUtgaaendeSkanning (Long journalpostId, MottaDokumentUtgaaendeSkanningRequest request) {
         try{
-            // validate request
             Optional<String> requestValidationErrors = validator.validateRequest(request);
             if(requestValidationErrors.isPresent()) {
                 InputValideringFeiletException inputValideringFeiletException = new InputValideringFeiletException(requestValidationErrors.get());
@@ -51,7 +55,7 @@ public class MottaDokumentUtgaaendeSkanningService {
 
             Optional<Journalpost> optionalJournalpost = joarkRepository.findById(journalpostId);
             if(optionalJournalpost.isEmpty()) {
-                JournalpostIkkeFunnetException journalpostIkkeFunnetException = new JournalpostIkkeFunnetException("journalpost med id" + journalpostId + " ikke funnet");
+                JournalpostIkkeFunnetException journalpostIkkeFunnetException = new JournalpostIkkeFunnetException("journalpost med id " + journalpostId + " ikke funnet");
                 log.error(get(MDC_REQUEST_ID) + " mottaDokumentUtgaaendeSkanning kunne ikke finne journalpost", journalpostIkkeFunnetException);
                 throw journalpostIkkeFunnetException;
             }
@@ -67,19 +71,21 @@ public class MottaDokumentUtgaaendeSkanningService {
 
             journalpost.setJournalstatus(JournalStatusCode.FL);
             if(!isNullOrEmpty(request.getMottatti())) {
-                journalpost.getTilleggsopplysninger().put("mottatti", request.getMottatti());
+                journalpost.getTilleggsopplysninger().put(MOTTATTI, request.getMottatti());
             }
             if(!isNullOrEmpty(request.getMottattfra())) {
-                journalpost.getTilleggsopplysninger().put("mottattfra", request.getMottattfra());
+                journalpost.getTilleggsopplysninger().put(MOTTATTFRA, request.getMottattfra());
             }
             if(!isNullOrEmpty(request.getEndorsernr())) {
-                journalpost.getTilleggsopplysninger().put("endorsernr", request.getEndorsernr());
+                journalpost.getTilleggsopplysninger().put(ENDORSERNR, request.getEndorsernr());
             }
             journalpost.setMottakskanal(MottaksKanalCode.SKAN_NETS);
+
             //TODO disse er null i q1/2, kan ikke sjekke hva det er i prod
             //journalpost.setUtsendingskanal(UtsendingsKanalCode.?);
             //journalpost.setKanalReferanseId(?);
-            journalpost.setEndretKildeNavn("skanmot_1408");
+
+            journalpost.setEndretKildeNavn(KILDENAVN);
             if(request.getDatoMottatt() != null) {
                 journalpost.setMottattDato(request.getDatoMottatt());
             }
@@ -116,7 +122,7 @@ public class MottaDokumentUtgaaendeSkanningService {
                 .batchNavn(batchnavn)
                 .filUuid(FilDetaljer.generateUuid())
                 .build();
-        filDetaljer.setOpprettetKildeNavn("skanmot_1408");
+        filDetaljer.setOpprettetKildeNavn(KILDENAVN);
         return filDetaljer;
     }
 

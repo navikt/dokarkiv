@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.NavHeaders;
 import no.nav.dokarkiv.core.exceptions.ConsumerIsNotSrvDokarkivProxyFunctionalException;
 import no.nav.dokarkiv.core.exceptions.ConsumerIsNotSrvDokSikkerhetsnettFunctionalException;
+import no.nav.dokarkiv.core.exceptions.ConsumerIsNotSrvSkanMot1408FunctionalException;
 import no.nav.dokarkiv.core.exceptions.DokarkivFunctionalException;
 import no.nav.dokarkiv.core.exceptions.DokarkivTechnicalException;
 import no.nav.dokarkiv.core.metrics.RestMetrics;
@@ -209,29 +210,28 @@ public class JournalpostInternRestController {
 	@Transactional
 	@SwaggerKopierJournalpost
 	@PutMapping("/journalpost/{journalpostId}/mottaDokumentUtgaaendeSkanning")
-	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark203"}, percentiles = {0.5, 0.95})
+	@RestMetrics(value = "dok_request", extraTags = {"process_code", "mottaDokumentUtgaaendeSkanning"}, percentiles = {0.5, 0.95})
 	public ResponseEntity<Long> mottaDokumentUtgaaendeSkanning(
 			@PathVariable String journalpostId,
 			@RequestHeader(value = HttpHeaders.AUTHORIZATION) String auth,
 			@RequestBody MottaDokumentUtgaaendeSkanningRequest request) {
 		try {
-			//todo logg riktig
-
 			assertThatConsumerIsSrvskanmot1408(auth);
 
-			MDC.put(MDC_REQUEST_ID, "rjoark203");
-			log.info(MDC.get(MDC_REQUEST_ID) + " har mottatt kall for mottaDokumentUtgaaendeSkanning på journalpost med journalpostId={}", journalpostId);
+			MDC.put(MDC_REQUEST_ID, "mottaDokumentUtgaaendeSkanning");
+			log.info(MDC.get(MDC_REQUEST_ID) + " har mottatt kall med journalpostId={}", journalpostId);
+
 			validateId(journalpostId, "journalpostId");
 
 			mottaDokumentUtgaaendeSkanningService.mottaDokumentUtgaaendeSkanning(Long.parseLong(journalpostId), request);
 
 			return ResponseEntity.ok().build();
 		} catch (DokarkivFunctionalException e) {
-			log.warn("kopierJournalpost - feilet funksjonelt ved kopiering av journalpost for journalpostId={}. Feilmelding={}", journalpostId, e
+			log.warn("mottaDokumentUtgaaendeSkanning - feilet funksjonelt ved kopiering av journalpost for journalpostId={}. Feilmelding={}", journalpostId, e
 					.getMessage());
 			throw e;
 		} catch (DokarkivTechnicalException e) {
-			log.error("kopierJournalpost - feilet teknisk ved kopiering av journalpost for journalpostId={}. Feilmelding={}", journalpostId, e
+			log.error("mottaDokumentUtgaaendeSkanning - feilet teknisk ved kopiering av journalpost for journalpostId={}. Feilmelding={}", journalpostId, e
 					.getMessage());
 			throw e;
 		}
@@ -251,8 +251,7 @@ public class JournalpostInternRestController {
 
 	private void assertThatConsumerIsSrvskanmot1408(String auth) {
 		if (!SRVSKANMOT1408.equals(decodeBasicAuth(auth)[0])) {
-			//TODO lag ex exception klasse
-			throw new ConsumerIsNotSrvDokarkivProxyFunctionalException("Konsument har ikke tilgang til å kalle tjenesten");
+			throw new ConsumerIsNotSrvSkanMot1408FunctionalException("Konsument har ikke tilgang til å kalle tjenesten");
 		}
 	}
 
