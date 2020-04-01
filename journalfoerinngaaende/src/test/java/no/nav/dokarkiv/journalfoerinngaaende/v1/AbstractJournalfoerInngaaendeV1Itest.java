@@ -1,11 +1,5 @@
 package no.nav.dokarkiv.journalfoerinngaaende.v1;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.post;
-import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
-import static no.nav.dokarkiv.core.security.JwtClaimsBuilderProvider.openAmClaimsBuilder;
-
 import com.auth0.jwt.JWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import no.nav.dokarkiv.core.CoreConfig;
@@ -43,9 +37,16 @@ import org.springframework.transaction.annotation.Transactional;
 import wiremock.com.google.common.io.Resources;
 
 import javax.inject.Inject;
+import javax.persistence.EntityManager;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static no.nav.dokarkiv.core.security.JwtClaimsBuilderProvider.openAmClaimsBuilder;
 
 /**
  * @author Sigurd Midttun, Visma Consulting.
@@ -81,6 +82,8 @@ public abstract class AbstractJournalfoerInngaaendeV1Itest {
     protected DokumentinfoRepository dokumentinfoRepository;
 	@Inject
 	protected OidcTestService oidcTestService;
+	@Inject
+	protected EntityManager entityManager;
 
 	@Before
 	public void setUp() {
@@ -118,6 +121,9 @@ public abstract class AbstractJournalfoerInngaaendeV1Itest {
 	}
 
 	protected Journalpost buildAndCommit(final JournalpostBuilder builder) {
+		if(!TestTransaction.isActive()) {
+			TestTransaction.start();
+		}
 		Journalpost journalpost = joarkRepository.save(builder.build());
 		TestTransaction.flagForCommit();
 		TestTransaction.end();

@@ -1,15 +1,5 @@
 package no.nav.dokarkiv.journalfoerinngaaende.v1.rjoark004i;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
-import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
-import static com.github.tomakehurst.wiremock.client.WireMock.verify;
-import static java.lang.String.format;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.StringContains.containsString;
-
 import no.nav.dok.tjenester.journalfoerinngaaende.PostLogiskVedleggRequest;
 import no.nav.dok.tjenester.journalfoerinngaaende.PostLogiskVedleggResponse;
 import no.nav.dok.tjenester.journalfoerinngaaende.PutLogiskVedleggRequest;
@@ -32,6 +22,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.transaction.TestTransaction;
 
 import java.io.IOException;
+
+import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
+import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.verify;
+import static java.lang.String.format;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.StringContains.containsString;
 
 /**
  * @author Sigurd Midttun, Visma Consulting.
@@ -529,15 +529,16 @@ public class Rjoark004iIT extends AbstractJournalfoerInngaaendeV1Itest {
 		abacPermit();
 
 		//Create and save testdata
-		Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.J));
-		String journalpostId = journalpost.getJournalpostId().toString();
-		String dokumentId = journalpost.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
+		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.J).build();
+		Journalpost persistedJournalpost = joarkRepository.save(journalpost);
+		Long journalpostId = persistedJournalpost.getJournalpostId();
+		String dokumentId = persistedJournalpost.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
 				.iterator()
 				.next()
 				.getDokumentInfo()
 				.getDokumentInfoId()
 				.toString();
-		String logiskVedleggId = journalpost.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
+		String logiskVedleggId = persistedJournalpost.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
 				.iterator()
 				.next()
 				.getDokumentInfo()
@@ -546,18 +547,19 @@ public class Rjoark004iIT extends AbstractJournalfoerInngaaendeV1Itest {
 				.next()
 				.getSkannetInnholdId()
 				.toString();
-
-		journalpost.getDokumentInfoFromJpDokInfoRelasjonerByDokumentInfoId(Long.parseLong(dokumentId))
-				.addSkannetInnhold(SkannetInnholdTestDataProvider.createSkannetInnhold().build());
-
-		TestTransaction.start();
-		joarkRepository.save(journalpost);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
+		TestTransaction.start();
+		Journalpost updatedJournalpost = joarkRepository.findById(journalpostId).get();
+		updatedJournalpost.getDokumentInfoFromJpDokInfoRelasjonerByDokumentInfoId(Long.parseLong(dokumentId))
+				.addSkannetInnhold(SkannetInnholdTestDataProvider.createSkannetInnhold().build());
 		//Start test
-		assertThat(journalpost.getDokumentInfoFromJpDokInfoRelasjonerByDokumentInfoId(Long.parseLong(dokumentId))
+		joarkRepository.save(updatedJournalpost);
+		assertThat(updatedJournalpost.getDokumentInfoFromJpDokInfoRelasjonerByDokumentInfoId(Long.parseLong(dokumentId))
 				.getSkannetInnholdListe().size(), is(2));
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER + journalpostId + "/dokumenter/" + dokumentId + "/logiskeVedlegg/" + logiskVedleggId, HttpMethod.DELETE, createHeaders(), String.class);
@@ -568,7 +570,7 @@ public class Rjoark004iIT extends AbstractJournalfoerInngaaendeV1Itest {
 				getOidcTokenBody(OIDC_TOKEN_SERVICE_USER_TEST.replace("Bearer ", ""))))));
 
 		TestTransaction.start();
-		Journalpost resultJournalpost = joarkRepository.findById(Long.parseLong(journalpostId)).get();
+		Journalpost resultJournalpost = joarkRepository.findById(journalpostId).get();
 		assertThat(resultJournalpost.getDokumentInfoFromJpDokInfoRelasjonerByDokumentInfoId(Long.parseLong(dokumentId))
 				.getSkannetInnholdListe().size(), is(1));
 		TestTransaction.end();
@@ -578,16 +580,16 @@ public class Rjoark004iIT extends AbstractJournalfoerInngaaendeV1Itest {
 	public void shouldDeleteLogiskVedleggOnlyServiceUserToken() throws IOException {
 		abacPermit();
 
-		//Create and save testdata
-		Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.J));
-		String journalpostId = journalpost.getJournalpostId().toString();
-		String dokumentId = journalpost.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
+		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.J).build();
+		Journalpost persistedJournalpost = joarkRepository.save(journalpost);
+		Long journalpostId = persistedJournalpost.getJournalpostId();
+		String dokumentId = persistedJournalpost.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
 				.iterator()
 				.next()
 				.getDokumentInfo()
 				.getDokumentInfoId()
 				.toString();
-		String logiskVedleggId = journalpost.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
+		String logiskVedleggId = persistedJournalpost.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
 				.iterator()
 				.next()
 				.getDokumentInfo()
@@ -596,22 +598,23 @@ public class Rjoark004iIT extends AbstractJournalfoerInngaaendeV1Itest {
 				.next()
 				.getSkannetInnholdId()
 				.toString();
-
-		journalpost.getDokumentInfoFromJpDokInfoRelasjonerByDokumentInfoId(Long.parseLong(dokumentId))
-				.addSkannetInnhold(SkannetInnholdTestDataProvider.createSkannetInnhold().build());
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
 
 		TestTransaction.start();
-		joarkRepository.save(journalpost);
+		Journalpost updatedJournalpost = joarkRepository.findById(journalpostId).get();
+		updatedJournalpost.getDokumentInfoFromJpDokInfoRelasjonerByDokumentInfoId(Long.parseLong(dokumentId))
+				.addSkannetInnhold(SkannetInnholdTestDataProvider.createSkannetInnhold().build());
+		//Start test
+		joarkRepository.save(updatedJournalpost);
+		assertThat(updatedJournalpost.getDokumentInfoFromJpDokInfoRelasjonerByDokumentInfoId(Long.parseLong(dokumentId))
+				.getSkannetInnholdListe().size(), is(2));
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		headers.add(HttpHeaders.AUTHORIZATION, OIDC_TOKEN_SERVICE_USER_TEST);
-
-		//Start test
-		assertThat(journalpost.getDokumentInfoFromJpDokInfoRelasjonerByDokumentInfoId(Long.parseLong(dokumentId))
-				.getSkannetInnholdListe().size(), is(2));
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER + journalpostId + "/dokumenter/" + dokumentId + "/logiskeVedlegg/" + logiskVedleggId, HttpMethod.DELETE, new HttpEntity(headers), String.class);
@@ -620,7 +623,7 @@ public class Rjoark004iIT extends AbstractJournalfoerInngaaendeV1Itest {
 				getOidcTokenBody(OIDC_TOKEN_SERVICE_USER_TEST.replace("Bearer ", ""))))));
 
 		TestTransaction.start();
-		Journalpost resultJournalpost = joarkRepository.findById(Long.parseLong(journalpostId)).get();
+		Journalpost resultJournalpost = joarkRepository.findById(journalpostId).get();
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 		assertThat(resultJournalpost.getDokumentInfoFromJpDokInfoRelasjonerByDokumentInfoId(Long.parseLong(dokumentId))
 				.getSkannetInnholdListe().size(), is(1));
@@ -633,15 +636,16 @@ public class Rjoark004iIT extends AbstractJournalfoerInngaaendeV1Itest {
 		abacPermit();
 
 		//Create and save testdata
-		Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.J));
-		String journalpostId = journalpost.getJournalpostId().toString();
-		String dokumentId = journalpost.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
+		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.J).build();
+		Journalpost persistedJournalpost = joarkRepository.save(journalpost);
+		Long journalpostId = persistedJournalpost.getJournalpostId();
+		String dokumentId = persistedJournalpost.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
 				.iterator()
 				.next()
 				.getDokumentInfo()
 				.getDokumentInfoId()
 				.toString();
-		String logiskVedleggId = journalpost.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
+		String logiskVedleggId = persistedJournalpost.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
 				.iterator()
 				.next()
 				.getDokumentInfo()
@@ -650,12 +654,16 @@ public class Rjoark004iIT extends AbstractJournalfoerInngaaendeV1Itest {
 				.next()
 				.getSkannetInnholdId()
 				.toString();
-
-		journalpost.getDokumentInfoFromJpDokInfoRelasjonerByDokumentInfoId(Long.parseLong(dokumentId))
-				.addSkannetInnhold(SkannetInnholdTestDataProvider.createSkannetInnhold().build());
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
 
 		TestTransaction.start();
-		joarkRepository.save(journalpost);
+		Journalpost updatedJournalpost = joarkRepository.findById(journalpostId).get();
+		updatedJournalpost.getDokumentInfoFromJpDokInfoRelasjonerByDokumentInfoId(Long.parseLong(dokumentId))
+				.addSkannetInnhold(SkannetInnholdTestDataProvider.createSkannetInnhold().build());
+		joarkRepository.save(updatedJournalpost);
+		assertThat(updatedJournalpost.getDokumentInfoFromJpDokInfoRelasjonerByDokumentInfoId(Long.parseLong(dokumentId))
+				.getSkannetInnholdListe().size(), is(2));
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
@@ -663,14 +671,16 @@ public class Rjoark004iIT extends AbstractJournalfoerInngaaendeV1Itest {
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		headers.add(HttpHeaders.AUTHORIZATION, OIDC_TOKEN_PERSON_USER_TEST);
 
-		//Start test
-		assertThat(journalpost.getDokumentInfoFromJpDokInfoRelasjonerByDokumentInfoId(Long.parseLong(dokumentId))
-				.getSkannetInnholdListe().size(), is(2));
-
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER + journalpostId + "/dokumenter/" + dokumentId + "/logiskeVedlegg/" + logiskVedleggId, HttpMethod.DELETE, new HttpEntity(headers), String.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.UNAUTHORIZED));
+
+		TestTransaction.start();
+		Journalpost resultJournalpost = joarkRepository.findById(journalpostId).get();
+		assertThat(resultJournalpost.getDokumentInfoFromJpDokInfoRelasjonerByDokumentInfoId(Long.parseLong(dokumentId))
+				.getSkannetInnholdListe().size(), is(2));
+		TestTransaction.end();
 	}
 
 	@Test
