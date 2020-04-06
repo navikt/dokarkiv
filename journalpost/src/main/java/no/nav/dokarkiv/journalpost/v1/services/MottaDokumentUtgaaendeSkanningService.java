@@ -20,7 +20,6 @@ import no.nav.dokarkiv.journalpost.v1.validators.MottaDokumentUtgaaendeSkanningV
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
@@ -46,37 +45,24 @@ public class MottaDokumentUtgaaendeSkanningService {
 
     public void mottaDokumentUtgaaendeSkanning (Long journalpostId, MottaDokumentUtgaaendeSkanningRequest request) {
         try{
-            Optional<String> requestValidationErrors = validator.validateRequest(request);
-            if(requestValidationErrors.isPresent()) {
-                InputValideringFeiletException inputValideringFeiletException = new InputValideringFeiletException(requestValidationErrors.get());
-                log.error(get(MDC_REQUEST_ID) + " mottaDokumentUtgaaendeSkanning kunne ikke validere request: ", inputValideringFeiletException);
-                throw inputValideringFeiletException;
-            }
+            validator.validateRequest(request).ifPresent(errors -> {
+                throw new InputValideringFeiletException(get(MDC_REQUEST_ID) + " " + errors);
+            });
 
-            Optional<Journalpost> optionalJournalpost = joarkRepository.findById(journalpostId);
-            if(optionalJournalpost.isEmpty()) {
-                JournalpostIkkeFunnetException journalpostIkkeFunnetException = new JournalpostIkkeFunnetException("journalpost med id " + journalpostId + " ikke funnet");
-                log.error(get(MDC_REQUEST_ID) + " mottaDokumentUtgaaendeSkanning kunne ikke finne journalpost", journalpostIkkeFunnetException);
-                throw journalpostIkkeFunnetException;
-            }
+            Journalpost journalpost = joarkRepository.findById(journalpostId).orElseThrow(() -> new JournalpostIkkeFunnetException("journalpost med id " + journalpostId + " ikke funnet"));
 
-            Journalpost journalpost = optionalJournalpost.get();
-
-            Optional<String> journalpostValidationErrors = validator.validateJournalpost(journalpost);
-            if(journalpostValidationErrors.isPresent()) {
-                InputValideringFeiletException inputValideringFeiletException = new InputValideringFeiletException(journalpostValidationErrors.get());
-                log.error(get(MDC_REQUEST_ID) + " mottaDokumentUtgaaendeSkanning kunne ikke validere journalpost:", inputValideringFeiletException);
-                throw inputValideringFeiletException;
-            }
+            validator.validateJournalpost(journalpost).ifPresent(errors -> {
+                throw new InputValideringFeiletException(get(MDC_REQUEST_ID) + " " + errors);
+            });
 
             journalpost.setJournalstatus(JournalStatusCode.FL);
-            if(!isNullOrEmpty(request.getMottatti())) {
+            if(notNullOrEmpty(request.getMottatti())) {
                 journalpost.getTilleggsopplysninger().put(MOTTATTI, request.getMottatti());
             }
-            if(!isNullOrEmpty(request.getMottattfra())) {
+            if(notNullOrEmpty(request.getMottattfra())) {
                 journalpost.getTilleggsopplysninger().put(MOTTATTFRA, request.getMottattfra());
             }
-            if(!isNullOrEmpty(request.getEndorsernr())) {
+            if(notNullOrEmpty(request.getEndorsernr())) {
                 journalpost.getTilleggsopplysninger().put(ENDORSERNR, request.getEndorsernr());
             }
             journalpost.setMottakskanal(MottaksKanalCode.SKAN_NETS);
@@ -94,7 +80,7 @@ public class MottaDokumentUtgaaendeSkanningService {
                     .map(dokumentVariant -> mapDokumentVariantToFildetaljer(dokumentVariant, request.getBatchnavn()))
                     .collect(Collectors.toList());
 
-            filDetaljerList.stream().forEach(filDetaljer -> {
+            filDetaljerList.forEach(filDetaljer -> {
                 DokumentFil dokumentFil = filDetaljer.createDokumentFil();
                 dokumentFilRepository.save(dokumentFil);
             });
@@ -126,7 +112,7 @@ public class MottaDokumentUtgaaendeSkanningService {
         return filDetaljer;
     }
 
-    private boolean isNullOrEmpty(String string){
-        return string == null || string.isBlank();
+    private boolean notNullOrEmpty(String string){
+        return string != null && !string.isBlank();
     }
 }

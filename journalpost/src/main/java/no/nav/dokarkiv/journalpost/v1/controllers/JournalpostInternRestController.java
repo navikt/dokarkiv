@@ -24,6 +24,7 @@ import no.nav.dokarkiv.journalpost.v1.services.TilknyttVedleggService;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerFinnMottatteJournalposter;
 import no.nav.dokarkiv.journalpost.v1.services.KopierJournalpostService;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerFinnMottatteJournalposterMedTema;
+import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerMottaDokumentUtgaaendeSkanning;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerTilknyttVedlegg;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerKopierJournalpost;
 import org.slf4j.MDC;
@@ -208,7 +209,7 @@ public class JournalpostInternRestController {
 	}
 
 	@Transactional
-	@SwaggerKopierJournalpost
+	@SwaggerMottaDokumentUtgaaendeSkanning
 	@PutMapping("/journalpost/{journalpostId}/mottaDokumentUtgaaendeSkanning")
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "mottaDokumentUtgaaendeSkanning"}, percentiles = {0.5, 0.95})
 	public ResponseEntity<Long> mottaDokumentUtgaaendeSkanning(
@@ -227,11 +228,11 @@ public class JournalpostInternRestController {
 
 			return ResponseEntity.ok().build();
 		} catch (DokarkivFunctionalException e) {
-			log.warn("mottaDokumentUtgaaendeSkanning - feilet funksjonelt ved kopiering av journalpost for journalpostId={}. Feilmelding={}", journalpostId, e
+			log.warn("mottaDokumentUtgaaendeSkanning - feilet funksjonelt ved mottak av utgaaende skanning for journalpostId={}. Feilmelding={}", journalpostId, e
 					.getMessage());
 			throw e;
 		} catch (DokarkivTechnicalException e) {
-			log.error("mottaDokumentUtgaaendeSkanning - feilet teknisk ved kopiering av journalpost for journalpostId={}. Feilmelding={}", journalpostId, e
+			log.error("mottaDokumentUtgaaendeSkanning - feilet teknisk ved mottak av utgaaende skanning for journalpostId={}. Feilmelding={}", journalpostId, e
 					.getMessage());
 			throw e;
 		}
