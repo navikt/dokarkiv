@@ -4,8 +4,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(value = HttpStatus.FORBIDDEN)
-public class ConsumerIsNotSrvSkanMot1408FunctionalException extends DokarkivFunctionalException {
-	public ConsumerIsNotSrvSkanMot1408FunctionalException(String message) {
+public class ConsumerIsNotSrvSkanMotUtgaaendeFunctionalException extends DokarkivFunctionalException {
+	public ConsumerIsNotSrvSkanMotUtgaaendeFunctionalException(String message) {
 		super(message);
 	}
 }

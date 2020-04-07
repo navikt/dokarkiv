@@ -9,7 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.NavHeaders;
 import no.nav.dokarkiv.core.exceptions.ConsumerIsNotSrvDokarkivProxyFunctionalException;
 import no.nav.dokarkiv.core.exceptions.ConsumerIsNotSrvDokSikkerhetsnettFunctionalException;
-import no.nav.dokarkiv.core.exceptions.ConsumerIsNotSrvSkanMot1408FunctionalException;
+import no.nav.dokarkiv.core.exceptions.ConsumerIsNotSrvSkanMotUtgaaendeFunctionalException;
 import no.nav.dokarkiv.core.exceptions.DokarkivFunctionalException;
 import no.nav.dokarkiv.core.exceptions.DokarkivTechnicalException;
 import no.nav.dokarkiv.core.metrics.RestMetrics;
@@ -62,7 +62,7 @@ public class JournalpostInternRestController {
 	private final MottaDokumentUtgaaendeSkanningService mottaDokumentUtgaaendeSkanningService;
 	private static final String SRVDOKARKIVPROXY = "srvdokarkivproxy";
 	private static final String SRVDOKSIKKERHETSNETT = "srvdoksikkerhetsnt";
-	private static final String SRVSKANMOT1408 = "srvskanmot1408";
+	private static final String SRVSKANMOTUTGAAENDE = "srvskanmotutgaaende";
 
 	@Inject
 	public JournalpostInternRestController(
@@ -217,7 +217,7 @@ public class JournalpostInternRestController {
 			@RequestHeader(value = HttpHeaders.AUTHORIZATION) String auth,
 			@RequestBody MottaDokumentUtgaaendeSkanningRequest request) {
 		try {
-			assertThatConsumerIsSrvskanmot1408(auth);
+			assertThatConsumerIsSrvskanmotutgaaende(auth);
 
 			MDC.put(MDC_REQUEST_ID, "mottaDokumentUtgaaendeSkanning");
 			log.info(MDC.get(MDC_REQUEST_ID) + " har mottatt kall med journalpostId={}", journalpostId);
@@ -250,9 +250,9 @@ public class JournalpostInternRestController {
 		}
 	}
 
-	private void assertThatConsumerIsSrvskanmot1408(String auth) {
-		if (!SRVSKANMOT1408.equals(decodeBasicAuth(auth)[0])) {
-			throw new ConsumerIsNotSrvSkanMot1408FunctionalException("Konsument har ikke tilgang til å kalle tjenesten");
+	private void assertThatConsumerIsSrvskanmotutgaaende(String auth) {
+		if (!SRVSKANMOTUTGAAENDE.equals(decodeBasicAuth(auth)[0])) {
+			throw new ConsumerIsNotSrvSkanMotUtgaaendeFunctionalException("Konsument har ikke tilgang til å kalle tjenesten");
 		}
 	}
 

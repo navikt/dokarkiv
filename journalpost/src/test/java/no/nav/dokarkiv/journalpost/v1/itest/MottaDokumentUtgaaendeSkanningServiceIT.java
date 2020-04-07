@@ -32,7 +32,6 @@ import org.springframework.util.Base64Utils;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
@@ -43,11 +42,10 @@ import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 public class MottaDokumentUtgaaendeSkanningServiceIT extends AbstractJournalpostIT {
-    private static final String GYLDIG_CONSUMER = "srvskanmot1408";
+    private static final String GYLDIG_CONSUMER = "srvskanmotutgaaende";
     private static final String UGYLDIG_CONSUMER = "srvdokarkiv";
     private static final String NAV_CONSUMER_ID = "Nav-Consumer-Id";
 
