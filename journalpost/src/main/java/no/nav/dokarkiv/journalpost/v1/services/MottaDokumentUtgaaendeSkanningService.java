@@ -33,10 +33,7 @@ public class MottaDokumentUtgaaendeSkanningService {
     private final DokumentFilRepository dokumentFilRepository;
     private final MottaDokumentUtgaaendeSkanningValidator validator = new MottaDokumentUtgaaendeSkanningValidator();
 
-    private final String KILDENAVN = "skanmot_1408";
-    private final String MOTTATTI = "mottatti";
-    private final String MOTTATTFRA = "mottattfra";
-    private final String ENDORSERNR = "endorsernr";
+    private final String KILDENAVN = "skanmotutgaaende";
 
     public MottaDokumentUtgaaendeSkanningService(JoarkRepository joarkRepository, DokumentFilRepository dokumentFilRepository) {
         this.joarkRepository = joarkRepository;
@@ -56,20 +53,10 @@ public class MottaDokumentUtgaaendeSkanningService {
             });
 
             journalpost.setJournalstatus(JournalStatusCode.FL);
-            if(notNullOrEmpty(request.getMottatti())) {
-                journalpost.getTilleggsopplysninger().put(MOTTATTI, request.getMottatti());
-            }
-            if(notNullOrEmpty(request.getMottattfra())) {
-                journalpost.getTilleggsopplysninger().put(MOTTATTFRA, request.getMottattfra());
-            }
-            if(notNullOrEmpty(request.getEndorsernr())) {
-                journalpost.getTilleggsopplysninger().put(ENDORSERNR, request.getEndorsernr());
-            }
-            journalpost.setMottakskanal(MottaksKanalCode.SKAN_NETS);
 
-            //TODO disse er null i q1/2, kan ikke sjekke hva det er i prod
-            //journalpost.setUtsendingskanal(UtsendingsKanalCode.?);
-            //journalpost.setKanalReferanseId(?);
+            request.getTilleggsopplysninger().forEach(tilleggsopplysning -> journalpost.getTilleggsopplysninger().put(tilleggsopplysning.getNokkel(), tilleggsopplysning.getVerdi()));
+
+            journalpost.setMottakskanal(MottaksKanalCode.valueOf(request.getMottakskanal()));
 
             journalpost.setEndretKildeNavn(KILDENAVN);
             if(request.getDatoMottatt() != null) {

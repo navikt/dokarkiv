@@ -18,6 +18,7 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.journalpost.v1.api.DokumentVariant;
 import no.nav.dokarkiv.journalpost.v1.api.MottaDokumentUtgaaendeSkanningRequest;
+import no.nav.dokarkiv.journalpost.v1.api.Tilleggsopplysning;
 import org.junit.Test;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -48,13 +49,13 @@ public class MottaDokumentUtgaaendeSkanningServiceIT extends AbstractJournalpost
     private static final String GYLDIG_CONSUMER = "srvskanmotutgaaende";
     private static final String UGYLDIG_CONSUMER = "srvdokarkiv";
     private static final String NAV_CONSUMER_ID = "Nav-Consumer-Id";
+    private static final String KILDE = "skanmotutgaaende";
 
 
     private final Date mockDate = new Date(Date.UTC(2000, Calendar.NOVEMBER, 10, 0, 0, 0));
 
-    private final String mockEndorsernr = "mockEndorsernr";
-    private final String mockMottattfra = "mockMottattfra";
-    private final String mockMottatti = "mockMottatti";
+    private final String mockMottaksKanal = MottaksKanalCode.SKAN_NETS.toString();
+    private final List<Tilleggsopplysning> mockTilleggsopplysninger = List.of(new Tilleggsopplysning("mockNoekkel", "mockVerdi"));
     private final String mockBatchnavn = "mockBatchnavn";
     private final byte[] mockData = "mockData".getBytes();
     private final String mockFilnavn = "mockFilnavn";
@@ -97,11 +98,9 @@ public class MottaDokumentUtgaaendeSkanningServiceIT extends AbstractJournalpost
 
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         assertEquals(JournalStatusCode.FL, oppdatertJP.getJournalstatus());
-        assertEquals(mockMottatti, tilleggsopplysninger.get("mottatti"));
-        assertEquals(mockMottattfra, tilleggsopplysninger.get("mottattfra"));
-        assertEquals(mockEndorsernr, tilleggsopplysninger.get("endorsernr"));
+        assertEquals(mockTilleggsopplysninger.get(0).getVerdi(), tilleggsopplysninger.get(mockTilleggsopplysninger.get(0).getNokkel()));
         assertEquals(MottaksKanalCode.SKAN_NETS, oppdatertJP.getMottakskanal());
-        assertEquals("skanmot_1408", oppdatertJP.getEndretKildeNavn());
+        assertEquals(KILDE, oppdatertJP.getEndretKildeNavn());
         assertEquals(mockDate, oppdatertJP.getMottattDato());
         assertEquals(FilTypeCode.PDF, filDetaljer.getFiltype());
         assertEquals(mockFilnavn, filDetaljer.getFilnavn());
@@ -163,7 +162,8 @@ public class MottaDokumentUtgaaendeSkanningServiceIT extends AbstractJournalpost
 
     @Test
     public void shouldReturnBadRequestWithInvalidRequest() throws IOException {
-        String errorMessage = "mottaDokumentUtgaaendeSkanning DokumentVariant i request kan ikke valideres: ugyldig filtype mockUgyldigFiltype, ugyldig variantformat mockUgyldigVariantformat, mangler fysiskDokument";
+        String errorMessage = "mottaDokumentUtgaaendeSkanning Kan ikke validere request:\n" +
+                "dokumentvarianter[0] har ugyldig filtype mockUgyldigFiltype, har ugyldig variantformat mockUgyldigVariantformat, mangler fysiskDokument";
 
         Journalpost journalpost = generateTestJournalpost(
                 JournalpostTypeCode.U,
@@ -251,7 +251,6 @@ public class MottaDokumentUtgaaendeSkanningServiceIT extends AbstractJournalpost
         long journalpostId = journalpostInRepository.getId();
 
         endTransaction();
-
 
         // TransactionSynchronizationManager is used to avoid a race condition with the commit of the transaction
         // in the setup portion of this test.
@@ -344,9 +343,8 @@ public class MottaDokumentUtgaaendeSkanningServiceIT extends AbstractJournalpost
     private MottaDokumentUtgaaendeSkanningRequest buildRequest(List<DokumentVariant> dokumentVarianter){
         return new MottaDokumentUtgaaendeSkanningRequest(
                 mockDate,
-                mockEndorsernr,
-                mockMottattfra,
-                mockMottatti,
+                mockMottaksKanal,
+                mockTilleggsopplysninger,
                 mockBatchnavn,
                 dokumentVarianter
         );

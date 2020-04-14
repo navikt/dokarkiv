@@ -3,6 +3,7 @@ package no.nav.dokarkiv.journalpost.v1.validators;
 import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
+import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
@@ -13,17 +14,31 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class MottaDokumentUtgaaendeSkanningValidator {
     public Optional<String> validateRequest(MottaDokumentUtgaaendeSkanningRequest request){
-        List<String> errors = request.getDokumentvarianter().stream()
-                .map(this::validateDokumentVariant)
+
+        List<String> errors = new ArrayList<>();
+
+        if(request.getMottakskanal() == null){
+            errors.add("mottakskanal kan ikke være null");
+        } else {
+            try{
+                MottaksKanalCode.valueOf(request.getMottakskanal());
+            } catch(IllegalArgumentException e) {
+                errors.add("mottakskanal er ugyldig");
+            }
+        }
+
+        errors.addAll(IntStream.range(0, request.getDokumentvarianter().size())
+                .mapToObj(i -> validateDokumentVariant(request.getDokumentvarianter().get(i), i))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
-                .collect(Collectors.toList());
+                .collect(Collectors.toList()));
 
         if(errors.size() == 0){ return Optional.empty(); }
-        return Optional.of(String.join("\n", errors));
+        return Optional.of("Kan ikke validere request:\n" + String.join("\n", errors));
     }
     public Optional<String> validateJournalpost(Journalpost journalpost){
         ArrayList<String> errors = new ArrayList<>();
@@ -56,7 +71,7 @@ public class MottaDokumentUtgaaendeSkanningValidator {
         return Optional.of("Kan ikke validere journalpost: " + String.join(", ", errors));
     }
 
-    private Optional<String> validateDokumentVariant(DokumentVariant dokumentVariant) {
+    private Optional<String> validateDokumentVariant(DokumentVariant dokumentVariant, int index) {
         ArrayList<String> errors = new ArrayList<>();
         if(isNullOrEmpty(dokumentVariant.getFiltype())){
             errors.add("mangler filtype");
@@ -64,7 +79,7 @@ public class MottaDokumentUtgaaendeSkanningValidator {
             try {
                 FilTypeCode.valueOf(dokumentVariant.getFiltype());
             } catch (IllegalArgumentException e) {
-                errors.add("ugyldig filtype " + dokumentVariant.getFiltype());
+                errors.add("har ugyldig filtype " + dokumentVariant.getFiltype());
             }
         }
 
@@ -74,7 +89,7 @@ public class MottaDokumentUtgaaendeSkanningValidator {
             try {
                 VariantFormatCode.valueOf(dokumentVariant.getVariantformat());
             } catch (IllegalArgumentException e) {
-                errors.add("ugyldig variantformat " + dokumentVariant.getVariantformat());
+                errors.add("har ugyldig variantformat " + dokumentVariant.getVariantformat());
             }
         }
         if(isNullOrEmpty(dokumentVariant.getFysiskDokument())){
@@ -83,7 +98,7 @@ public class MottaDokumentUtgaaendeSkanningValidator {
 
         if(errors.size() == 0){ return Optional.empty(); }
 
-        return(Optional.of("DokumentVariant i request kan ikke valideres: " + String.join(", ", errors)));
+        return(Optional.of("dokumentvarianter[" + index + "] " + String.join(", ", errors)));
     }
 
     private boolean isNullOrEmpty(String string) {

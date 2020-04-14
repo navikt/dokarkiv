@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.List;
 
@@ -19,20 +20,16 @@ public class MottaDokumentUtgaaendeSkanningRequest {
     @JsonFormat(pattern="yyyy-MM-dd")
     private Date datoMottatt;
 
+    @NotNull(message = "MottaDokumentUtgaaendeSkanningRequest mangler mottakskanal")
     @ApiModelProperty(
-            value = "nummer som trykkes på selve papirdokumentet under skanning, slik at dette skal være mulig å søke opp i ettertid"
+            value = "Mottakskanal for dokument"
     )
-    private String endorsernr;
+    private String mottakskanal;
 
     @ApiModelProperty(
-            value = "hvor dokumentet er mottatt fra"
+            value = "Liste med Tilleggsopplysninger"
     )
-    private String mottattfra;
-
-    @ApiModelProperty(
-            value = "hvor dokumentet er mottatt i"
-    )
-    private String mottatti;
+    private List<Tilleggsopplysning> tilleggsopplysninger;
 
     @ApiModelProperty(
             value = "navn på batch"

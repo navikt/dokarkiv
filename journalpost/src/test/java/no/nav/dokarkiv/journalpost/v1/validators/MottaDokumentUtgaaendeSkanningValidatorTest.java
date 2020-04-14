@@ -1,9 +1,11 @@
 package no.nav.dokarkiv.journalpost.v1.validators;
 
 import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
+import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.journalpost.v1.api.DokumentVariant;
 import no.nav.dokarkiv.journalpost.v1.api.MottaDokumentUtgaaendeSkanningRequest;
+import no.nav.dokarkiv.journalpost.v1.api.Tilleggsopplysning;
 import org.junit.Test;
 
 import java.util.Date;
@@ -17,12 +19,13 @@ public class MottaDokumentUtgaaendeSkanningValidatorTest {
     MottaDokumentUtgaaendeSkanningValidator mottaDokumentUtgaaendeSkanningValidator = new MottaDokumentUtgaaendeSkanningValidator();
 
     private final Date mockDate = new Date(1000000L);
-    private final String mockEndorsernr = "mockEndorsernr";
-    private final String mockMottattfra = "mockMottattfra";
-    private final String mockMottatti = "mockMottatti";
+    private final String mockMottaksKanal = MottaksKanalCode.SKAN_NETS.toString();
+    private final List<Tilleggsopplysning> mockTilleggsopplysninger = List.of(new Tilleggsopplysning("mockNoekkel", "mockVerdi"));
     private final String mockBatchnavn = "mockBatchnavn";
     private final byte[] mockData = "mockData".getBytes();
     private final String mockFilnavn = "mockFilnavn";
+
+    private final String INVALID_MOTTAKSKANAL = "INVALID_MOCK";
 
     @Test
     public void shouldValidatehappyPathRequest(){
@@ -44,6 +47,7 @@ public class MottaDokumentUtgaaendeSkanningValidatorTest {
     @Test
     public void shouldNotValidateWithMissingRequiredFields(){
         MottaDokumentUtgaaendeSkanningRequest request = buildRequest(
+                null,
                 List.of(
                         DokumentVariant
                                 .builder()
@@ -57,7 +61,9 @@ public class MottaDokumentUtgaaendeSkanningValidatorTest {
         Optional<String> valdationResult = mottaDokumentUtgaaendeSkanningValidator.validateRequest(request);
         assertTrue(valdationResult.isPresent());
         assertEquals(
-                "DokumentVariant i request kan ikke valideres: mangler filtype, mangler variantformat, mangler fysiskDokument",
+                "Kan ikke validere request:\n" +
+                "mottakskanal kan ikke være null\n" +
+                "dokumentvarianter[0] mangler filtype, mangler variantformat, mangler fysiskDokument",
                 valdationResult.get()
         );
     }
@@ -65,6 +71,7 @@ public class MottaDokumentUtgaaendeSkanningValidatorTest {
     @Test
     public void shouldNotValidateWithInvalidRequiredFields(){
         MottaDokumentUtgaaendeSkanningRequest request = buildRequest(
+                INVALID_MOTTAKSKANAL,
                 List.of(
                         DokumentVariant
                                 .builder()
@@ -78,7 +85,9 @@ public class MottaDokumentUtgaaendeSkanningValidatorTest {
         Optional<String> valdationResult = mottaDokumentUtgaaendeSkanningValidator.validateRequest(request);
         assertTrue(valdationResult.isPresent());
         assertEquals(
-                "DokumentVariant i request kan ikke valideres: ugyldig filtype ARKIV, ugyldig variantformat PDF",
+                "Kan ikke validere request:\n" +
+                "mottakskanal er ugyldig\n" +
+                "dokumentvarianter[0] har ugyldig filtype ARKIV, har ugyldig variantformat PDF",
                 valdationResult.get()
         );
     }
@@ -110,6 +119,7 @@ public class MottaDokumentUtgaaendeSkanningValidatorTest {
     @Test
     public void ShouldValidateMultipleDokumentVariantsInvalid(){
         MottaDokumentUtgaaendeSkanningRequest request = buildRequest(
+                INVALID_MOTTAKSKANAL,
                 List.of(
                         DokumentVariant
                                 .builder()
@@ -130,18 +140,23 @@ public class MottaDokumentUtgaaendeSkanningValidatorTest {
         Optional<String> valdationResult = mottaDokumentUtgaaendeSkanningValidator.validateRequest(request);
         assertTrue(valdationResult.isPresent());
         assertEquals(
-                "DokumentVariant i request kan ikke valideres: mangler filtype, mangler variantformat, mangler fysiskDokument\n"
-                + "DokumentVariant i request kan ikke valideres: ugyldig filtype ARKIV, ugyldig variantformat PDF",
+            "Kan ikke validere request:\n" +
+                "mottakskanal er ugyldig\n" +
+                "dokumentvarianter[0] mangler filtype, mangler variantformat, mangler fysiskDokument\n" +
+                "dokumentvarianter[1] har ugyldig filtype ARKIV, har ugyldig variantformat PDF",
                 valdationResult.get()
         );
     }
 
     private MottaDokumentUtgaaendeSkanningRequest buildRequest(List<DokumentVariant> dokumentVarianter){
+        return buildRequest(mockMottaksKanal, dokumentVarianter);
+    }
+
+    private MottaDokumentUtgaaendeSkanningRequest buildRequest(String mottaksKanal, List<DokumentVariant> dokumentVarianter){
         return new MottaDokumentUtgaaendeSkanningRequest(
                 mockDate,
-                mockEndorsernr,
-                mockMottattfra,
-                mockMottatti,
+                mottaksKanal,
+                mockTilleggsopplysninger,
                 mockBatchnavn,
                 dokumentVarianter
         );
