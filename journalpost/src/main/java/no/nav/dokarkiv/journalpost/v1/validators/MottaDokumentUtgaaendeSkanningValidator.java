@@ -31,11 +31,13 @@ public class MottaDokumentUtgaaendeSkanningValidator {
             }
         }
 
-        errors.addAll(IntStream.range(0, request.getDokumentvarianter().size())
-                .mapToObj(i -> validateDokumentVariant(request.getDokumentvarianter().get(i), i))
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .collect(Collectors.toList()));
+        if(request.getDokumentvarianter() != null){
+            errors.addAll(IntStream.range(0, request.getDokumentvarianter().size())
+                    .mapToObj(i -> validateDokumentVariant(request.getDokumentvarianter().get(i), i))
+                    .filter(Optional::isPresent)
+                    .map(Optional::get)
+                    .collect(Collectors.toList()));
+        }
 
         if(errors.size() == 0){ return Optional.empty(); }
         return Optional.of("Kan ikke validere request:\n" + String.join("\n", errors));
