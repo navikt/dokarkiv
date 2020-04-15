@@ -21,6 +21,8 @@ public enum MottaksKanalCode implements CtiRelationship<MottaksKanalCode, String
 	SKAN_PEN,
 	/** Skanning Nets */
 	SKAN_NETS,
+	/** Skanning Iron Mountain */
+	SKAN_IM,
 	/** Eksternt oppslag */
 	EKST_OPPS,
 	/** Helsenettet */
