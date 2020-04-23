@@ -120,7 +120,9 @@ public enum FagomradeCode implements CtiRelationship<FagomradeCode, String> {
 	/** Retting av personopplysninger */
 	RPO,
 	/** Farskap */
-	FAR;
+	FAR,
+	/** Midlertidig kompensasjonsordning for selvstendig næringsdrivende og frilansere*/
+	FRI;
 
 	/** {@inheritDoc} */
 	@Override
