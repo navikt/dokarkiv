@@ -4,6 +4,7 @@ import static no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder.getFilDetal
 import static no.nav.dokarkiv.core.domain.builder.SaksrelasjonBuilder.getSaksrelasjonBuilder;
 import static no.nav.dokarkiv.core.domain.codes.MottaksKanalCode.ALTINN;
 import static no.nav.dokarkiv.core.domain.codes.MottaksKanalCode.NAV_NO;
+import static no.nav.dokarkiv.core.domain.codes.MottaksKanalCode.SKAN_IM;
 import static no.nav.dokarkiv.core.domain.codes.MottaksKanalCode.SKAN_NETS;
 import static no.nav.dokarkiv.core.domain.codes.MottaksKanalCode.SKAN_PEN;
 import static org.hamcrest.Matchers.equalTo;
@@ -283,6 +284,18 @@ public class InnsynJournalV2SecurityFacadeTest {
 	public void shouldNotAllowMottakskanalSkanNets() throws Exception {
 		Journalpost legalJournalpost = createLegalJournalpost();
 		legalJournalpost.setMottakskanal(SKAN_NETS);
+
+		mockJournalpost(legalJournalpost);
+
+		expectedException.expect(SecurityLimitationAttributeException.class);
+
+		securityFacade.hentDokument(JOURNALPOST_ID, DOKUMENT_INFO_ID);
+	}
+
+	@Test
+	public void shouldNotAllowMottakskanalSkanIM() throws Exception {
+		Journalpost legalJournalpost = createLegalJournalpost();
+		legalJournalpost.setMottakskanal(SKAN_IM);
 
 		mockJournalpost(legalJournalpost);
 
