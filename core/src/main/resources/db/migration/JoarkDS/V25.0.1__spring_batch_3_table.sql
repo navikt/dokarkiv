@@ -1,0 +1,33 @@
+-- Default spring batch 3 migration-oracle10g.sql
+-- create the requisite table
+
+CREATE TABLE T_BATCH_JOB_EXECUTION_PARAMS
+(
+    JOB_EXECUTION_ID NUMBER(19, 0) NOT NULL,
+    TYPE_CD          VARCHAR2(6)   NOT NULL,
+    KEY_NAME         VARCHAR2(100) NOT NULL,
+    STRING_VAL       VARCHAR2(250),
+    DATE_VAL         TIMESTAMP DEFAULT NULL,
+    LONG_VAL         NUMBER(19, 0),
+    DOUBLE_VAL       NUMBER,
+    IDENTIFYING      CHAR(1)       NOT NULL,
+    constraint JOB_EXEC_PARAMS_FK foreign key (JOB_EXECUTION_ID)
+        references T_BATCH_JOB_EXECUTION (JOB_EXECUTION_ID)
+);
+
+-- insert script that 'copies' existing batch_job_params to batch_job_execution_params
+-- sets new params to identifying ones
+
+INSERT INTO T_BATCH_JOB_EXECUTION_PARAMS
+(JOB_EXECUTION_ID, TYPE_CD, KEY_NAME, STRING_VAL, DATE_VAL, LONG_VAL, DOUBLE_VAL, IDENTIFYING)
+SELECT JE.JOB_EXECUTION_ID,
+       JP.TYPE_CD,
+       JP.KEY_NAME,
+       JP.STRING_VAL,
+       JP.DATE_VAL,
+       JP.LONG_VAL,
+       JP.DOUBLE_VAL,
+       'Y'
+FROM T_BATCH_JOB_PARAMS JP,
+     T_BATCH_JOB_EXECUTION JE
+WHERE JP.JOB_INSTANCE_ID = JE.JOB_INSTANCE_ID;
