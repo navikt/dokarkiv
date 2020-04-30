@@ -251,7 +251,8 @@ public class InnsynJournalV2SecurityFacade {
 
 	private void verifyMottakskanal(Journalpost journalpost, Long dokumentInfoId) {
 		if (journalpost.getMottakskanal() == MottaksKanalCode.SKAN_PEN ||
-				journalpost.getMottakskanal() == MottaksKanalCode.SKAN_NETS) {
+				journalpost.getMottakskanal() == MottaksKanalCode.SKAN_NETS ||
+				journalpost.getMottakskanal() == MottaksKanalCode.SKAN_IM) {
 			throw new SecurityLimitationAttributeException(journalpost.getJournalpostId(),
 					dokumentInfoId,
 					singletonMap("Journalpost.Mottakskanal", journalpost.getMottakskanal()));
