@@ -74,13 +74,31 @@ public class MottaDokumentUtgaaendeSkanningService {
             filDetaljerList.forEach(filDetaljer -> journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().addFilDetaljer(filDetaljer));
 
         } catch(DokarkivFunctionalException e) {
-            log.error(get(MDC_REQUEST_ID) + " mottaDokumentUtgaaendeSkanning feilet funksjonelt", e);
+            log.error(
+                    get(MDC_REQUEST_ID) + " mottaDokumentUtgaaendeSkanning feilet funksjonelt på journalpost \n"
+                    + "journalpostId: " + journalpostId + "\n"
+                    + "mottakskanal: " + request.getMottakskanal() + "\n"
+                    + "batchnavn: " + request.getBatchnavn() + "\n"
+                    + e.getMessage(), e
+            );
             throw e;
         } catch(DokarkivTechnicalException e) {
-            log.error(get(MDC_REQUEST_ID) + " mottaDokumentUtgaaendeSkanning feilet teknisk", e);
+            log.error(
+                    get(MDC_REQUEST_ID) + " mottaDokumentUtgaaendeSkanning feilet teknisk på journalpost \n"
+                    + "journalpostId: " + journalpostId + "\n"
+                    + "mottakskanal: " + request.getMottakskanal() + "\n"
+                    + "batchnavn: " + request.getBatchnavn() + "\n"
+                    + e.getMessage(), e
+            );
             throw e;
         } catch(Exception e) {
-            log.error(get(MDC_REQUEST_ID) + " mottaDokumentUtgaaendeSkanning feilet med ukjent feil", e);
+            log.error(
+                    get(MDC_REQUEST_ID) + " mottaDokumentUtgaaendeSkanning feilet med ukjent feil på journalpost \n"
+                    + "journalpostId: " + journalpostId + "\n"
+                    + "mottakskanal: " + request.getMottakskanal() + "\n"
+                    + "batchnavn: " + request.getBatchnavn() + "\n"
+                    + e.getMessage(), e
+            );
             throw e;
         }
     }
