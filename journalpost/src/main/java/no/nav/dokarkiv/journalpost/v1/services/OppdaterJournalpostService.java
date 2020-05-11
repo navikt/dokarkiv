@@ -85,17 +85,17 @@ public class OppdaterJournalpostService {
 	)
 	public void oppdaterJournalpost(Long journalpostId, OppdaterJournalpostRequest oppdaterJournalpostRequest) {
 		String sakId = null;
+				Journalpost journalpost = joarkRepository.findById(journalpostId)
+				.orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostId)));
+
+		validateOppdaterteFelt(oppdaterJournalpostRequest, journalpost.getJournalstatus(), journalpost.getJournalposttype());
+
 		if (oppdaterJournalpostRequest.getSak() != null) {
 			Sakstype sakstype = oppdaterJournalpostRequest.getSak().getSakstype();
 			if((FAGSAK.equals(sakstype) || Sakstype.GENERELL_SAK.equals(sakstype)) && !Fagsaksystem.PP01.equals(oppdaterJournalpostRequest.getSak().getFagsaksystem())){
 				sakId = identifiserEllerOpprettArkivsak(oppdaterJournalpostRequest);
 			}
 		}
-
-		Journalpost journalpost = joarkRepository.findById(journalpostId)
-				.orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostId)));
-
-		validateOppdaterteFelt(oppdaterJournalpostRequest, journalpost.getJournalstatus(), journalpost.getJournalposttype());
 
 		ChangeTracker changeTracker = journalpostUpdater.updateFields(journalpost, oppdaterJournalpostRequest);
 

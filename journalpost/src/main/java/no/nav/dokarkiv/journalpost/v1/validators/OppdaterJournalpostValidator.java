@@ -14,6 +14,7 @@ import no.nav.dokarkiv.journalpost.v1.api.Sakstype;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 public final class OppdaterJournalpostValidator {
 
@@ -122,7 +123,7 @@ public final class OppdaterJournalpostValidator {
 	}
 
 	private static boolean isBrukerNull(Bruker bruker){
-		return isBlank(bruker.getId()) || isBlank(bruker.getIdType().name());
+		return isBlank(bruker.getId()) && Objects.isNull(bruker.getIdType());
 	}
 
 }
