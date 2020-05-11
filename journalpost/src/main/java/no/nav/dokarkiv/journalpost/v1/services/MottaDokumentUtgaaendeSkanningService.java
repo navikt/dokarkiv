@@ -45,10 +45,10 @@ public class MottaDokumentUtgaaendeSkanningService {
             validator.validateRequest(request).ifPresent(errors -> {
                 throw new InputValideringFeiletException(
                         get(MDC_REQUEST_ID) + " feilet ved validering av request \n"
-                        + "journalpostId: " + journalpostId + "\n"
-                        + "mottakskanal: " + request.getMottakskanal() + "\n"
-                        + "batchnavn: " + request.getBatchnavn() + "\n"
-                        + errors);
+                                + "journalpostId=" + journalpostId + "\n"
+                                + "mottakskanal=" + request.getMottakskanal() + "\n"
+                                + "batchnavn=" + request.getBatchnavn() + "\n"
+                                + "feilmedling=" + errors);
             });
 
             Journalpost journalpost = joarkRepository.findById(journalpostId).orElseThrow(() -> new JournalpostIkkeFunnetException(get(MDC_REQUEST_ID) + "\n" +"journalpost med id " + journalpostId + " ikke funnet"));
@@ -56,10 +56,10 @@ public class MottaDokumentUtgaaendeSkanningService {
             validator.validateJournalpost(journalpost).ifPresent(errors -> {
                 throw new InputValideringFeiletException(
                         get(MDC_REQUEST_ID) + " feilet ved validering av journalpost \n"
-                        + "journalpostId: " + journalpostId + "\n"
-                        + "mottakskanal: " + request.getMottakskanal() + "\n"
-                        + "batchnavn: " + request.getBatchnavn() + "\n"
-                        + errors);
+                                + "journalpostId=" + journalpostId + "\n"
+                                + "mottakskanal=" + request.getMottakskanal() + "\n"
+                                + "batchnavn=" + request.getBatchnavn() + "\n"
+                                + "feilmedling=" + errors);
             });
 
             journalpost.setJournalstatus(JournalStatusCode.FL);
@@ -85,10 +85,10 @@ public class MottaDokumentUtgaaendeSkanningService {
         } catch(Exception e) {
             log.error(
                     get(MDC_REQUEST_ID) + " mottaDokumentUtgaaendeSkanning feilet med ukjent feil på journalpost \n"
-                    + "journalpostId: " + journalpostId + "\n"
-                    + "mottakskanal: " + request.getMottakskanal() + "\n"
-                    + "batchnavn: " + request.getBatchnavn() + "\n"
-                    + e.getMessage(), e
+                    + "journalpostId=" + journalpostId + "\n"
+                    + "mottakskanal=" + request.getMottakskanal() + "\n"
+                    + "batchnavn=" + request.getBatchnavn() + "\n"
+                    + "feilmedling=" + e.getMessage(), e
             );
             throw e;
         }
