@@ -139,11 +139,11 @@ public class JournalpostInternRestController {
 					.body(ubehandledeJournalposter);
 			return re;
 		} catch (DokarkivFunctionalException e) {
-			log.warn("tilknyttVedlegg - feilet funksjonelt ved søk på ubehandlede journalposter med tema blandt {}. Feilmelding={}", temaer, e
+			log.warn("finnMottatteJournalposter - feilet funksjonelt ved søk på ubehandlede journalposter med tema blandt {}. Feilmelding={}", temaer, e
 					.getMessage());
 			throw e;
 		} catch (DokarkivTechnicalException e) {
-			log.error("tilknyttVedlegg - feilet teknisk ved søk på ubehandlede journalposter med tema blandt {}. Feilmelding={}", temaer, e
+			log.error("finnMottatteJournalposter - feilet teknisk ved søk på ubehandlede journalposter med tema blandt {}. Feilmelding={}", temaer, e
 					.getMessage());
 			throw e;
 		}

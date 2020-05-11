@@ -162,9 +162,6 @@ public class MottaDokumentUtgaaendeSkanningServiceIT extends AbstractJournalpost
 
     @Test
     public void shouldReturnBadRequestWithInvalidRequest() throws IOException {
-        String errorMessage = "mottaDokumentUtgaaendeSkanning Kan ikke validere request:\n" +
-                "dokumentvarianter[0] har ugyldig filtype mockUgyldigFiltype, har ugyldig variantformat mockUgyldigVariantformat, mangler fysiskDokument";
-
         Journalpost journalpost = generateTestJournalpost(
                 JournalpostTypeCode.U,
                 JournalStatusCode.R,
@@ -172,6 +169,13 @@ public class MottaDokumentUtgaaendeSkanningServiceIT extends AbstractJournalpost
         ).build();
 
         long journalpostId = saveJournalpost(journalpost).getId();
+
+        String errorMessage = "mottaDokumentUtgaaendeSkanning feilet ved validering av request \n" +
+                "journalpostId: " + journalpostId +"\n" +
+                "mottakskanal: SKAN_NETS\n" +
+                "batchnavn: mockBatchnavn\n" +
+                "Kan ikke validere request:\n" +
+                "dokumentvarianter[0] har ugyldig filtype mockUgyldigFiltype, har ugyldig variantformat mockUgyldigVariantformat, mangler fysiskDokument";
 
         endTransaction();
 
@@ -288,7 +292,7 @@ public class MottaDokumentUtgaaendeSkanningServiceIT extends AbstractJournalpost
     @Test
     public void shouldReturnNotFoundIfJournalpostDoesNotExist() throws IOException {
 
-        String errorMessage = "journalpost med id 0 ikke funnet";
+        String errorMessage = "mottaDokumentUtgaaendeSkanning\n" + "journalpost med id 0 ikke funnet";
         long journalpostId = 0L;
 
         HttpHeaders headers = createHeaders(GYLDIG_CONSUMER);
