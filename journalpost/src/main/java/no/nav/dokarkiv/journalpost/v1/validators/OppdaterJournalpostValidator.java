@@ -14,6 +14,7 @@ import no.nav.dokarkiv.journalpost.v1.api.Sakstype;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 public final class OppdaterJournalpostValidator {
 
@@ -65,7 +66,7 @@ public final class OppdaterJournalpostValidator {
 		if (isBlank(tema)) {
 			throw new InputValideringFeiletException("tema må være satt dersom sakstype=FAGSAK");
 		}
-		if (bruker == null) {
+		if (isBrukerNull(bruker)) {
 			throw new InputValideringFeiletException("Bruker må være satt dersom sakstype=FAGSAK");
 		}
 		if (isBlank(sak.getFagsakId())) {
@@ -86,7 +87,7 @@ public final class OppdaterJournalpostValidator {
 		if (isBlank(tema)) {
 			throw new InputValideringFeiletException("tema må være satt dersom sakstype=GENERELL_SAK");
 		}
-		if (bruker == null) {
+		if (isBrukerNull(bruker)) {
 			throw new InputValideringFeiletException("Bruker må være satt dersom sakstype=GENERELL_SAK");
 		}
 		if (isNotBlank(sak.getFagsakId())) {
@@ -119,6 +120,10 @@ public final class OppdaterJournalpostValidator {
 		if (!isNumeric(sak.getArkivsaksnummer())) {
 			throw new InputValideringFeiletException("Sak.arkivsaksnummer skal være opprettet i GSAK/PSAK og må være et numerisk heltall.");
 		}
+	}
+
+	private static boolean isBrukerNull(Bruker bruker){
+		return isBlank(bruker.getId()) || Objects.isNull(bruker.getIdType());
 	}
 
 }
