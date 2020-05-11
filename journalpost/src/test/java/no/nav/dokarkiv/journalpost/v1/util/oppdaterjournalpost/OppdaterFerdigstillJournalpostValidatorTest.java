@@ -245,6 +245,20 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
         OppdaterJournalpostValidator.validateOppdaterteFelt(oppdaterJournalpostRequest, JournalStatusCode.FS, JournalpostTypeCode.N);
     }
 
+	@Test
+	public void shouldFailIfBrukerIsNull() {
+		oppdaterJournalpostRequest = OppdaterJournalpostRequest.builder()
+				.bruker(Bruker.builder().idType(BrukerIdType.FNR).build())
+				.tema("DAG")
+				.sak(Sak.builder()
+						.fagsakId("10695768")
+						.sakstype(Sakstype.FAGSAK)
+						.fagsaksystem(Fagsaksystem.AO01)
+						.build())
+				.build();
+		expectedException.expect(InputValideringFeiletException.class);
+		OppdaterJournalpostValidator.validateOppdaterteFelt(oppdaterJournalpostRequest, JournalStatusCode.D, JournalpostTypeCode.I);
+	}
 
 
 }
