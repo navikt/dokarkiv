@@ -123,7 +123,7 @@ public final class OppdaterJournalpostValidator {
 	}
 
 	private static boolean isBrukerNull(Bruker bruker){
-		return isBlank(bruker.getId()) && Objects.isNull(bruker.getIdType());
+		return isBlank(bruker.getId()) || Objects.isNull(bruker.getIdType());
 	}
 
 }
