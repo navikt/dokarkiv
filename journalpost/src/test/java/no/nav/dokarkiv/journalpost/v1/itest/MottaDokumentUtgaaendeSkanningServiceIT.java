@@ -27,8 +27,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.transaction.TestTransaction;
-import org.springframework.transaction.support.TransactionSynchronizationAdapter;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.util.Base64Utils;
 
 import java.io.IOException;
@@ -162,7 +160,11 @@ public class MottaDokumentUtgaaendeSkanningServiceIT extends AbstractJournalpost
 
     @Test
     public void shouldReturnBadRequestWithInvalidRequest() throws IOException {
-        String errorMessage = "mottaDokumentUtgaaendeSkanning Kan ikke validere request:\n" +
+        String errorMessage = "mottaDokumentUtgaaendeSkanning feilet ved validering av request " +
+                "journalpostId=%s " +
+                "mottakskanal=SKAN_NETS " +
+                "batchnavn=mockBatchnavn " +
+                "feilmedling=Kan ikke validere request: " +
                 "dokumentvarianter[0] har ugyldig filtype mockUgyldigFiltype, har ugyldig variantformat mockUgyldigVariantformat, mangler fysiskDokument";
 
         Journalpost journalpost = generateTestJournalpost(
@@ -172,6 +174,7 @@ public class MottaDokumentUtgaaendeSkanningServiceIT extends AbstractJournalpost
         ).build();
 
         long journalpostId = saveJournalpost(journalpost).getId();
+
 
         endTransaction();
 
@@ -194,35 +197,26 @@ public class MottaDokumentUtgaaendeSkanningServiceIT extends AbstractJournalpost
 
         assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
 
-        assertEquals(errorMessage, responseBody.get("message").textValue());
+        assertEquals(String.format(errorMessage, journalpostId), responseBody.get("message").textValue());
 
     }
 
     @Test
-    public void shouldReturnBadRequestWithInvalidJournalpost() {
-        String errorMessage = "mottaDokumentUtgaaendeSkanning Kan ikke validere journalpost: JournalpostType er ikke U eller N, JournalStatus er ikke R, Har mer enn ett DokumentInfo objekt, Har ikke hoveddokument, Har tilknyttede fildetaljer";
-
-        FilDetaljer filDetaljer = FilDetaljer
-                .builder()
-                .filtype(FilTypeCode.PDF)
-                .filnavn("mock")
-                .variantFormat(VariantFormatCode.ARKIV)
-                .fileContent("mock".getBytes())
-                .batchNavn("mock")
-                .filUuid(FilDetaljer.generateUuid())
-                .build();
-        filDetaljer.setOpprettetKildeNavn("Itest");
+    public void shouldReturnBadRequestWithInvalidJournalpost() throws InterruptedException {
+        String errorMessage = "mottaDokumentUtgaaendeSkanning feilet ved validering av journalpost " +
+                "journalpostId=%s " +
+                "mottakskanal=SKAN_NETS " +
+                "batchnavn=mockBatchnavn " +
+                "feilmedling=Kan ikke validere journalpost: JournalpostType er ikke U eller N; JournalStatus er ikke R; Har mer enn ett DokumentInfo objekt; Har ikke hoveddokument";
 
         Journalpost journalpost = generateTestJournalpost(
                 JournalpostTypeCode.I,
                 JournalStatusCode.FL,
-                TilknyttetJournalpostSomCode.VEDLEGG,
-                filDetaljer
+                TilknyttetJournalpostSomCode.VEDLEGG
         ).build();
 
         DokumentInfo dokumentInfo = DokumentInfo
                 .builder()
-                .fildetaljerListe(Set.of(filDetaljer))
                 .build();
         dokumentInfo.setOpprettetKildeNavn("Itest");
 
@@ -252,43 +246,38 @@ public class MottaDokumentUtgaaendeSkanningServiceIT extends AbstractJournalpost
 
         endTransaction();
 
-        // TransactionSynchronizationManager is used to avoid a race condition with the commit of the transaction
-        // in the setup portion of this test.
-        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter(){
-            public void afterCommit(){
-                HttpHeaders headers = createHeaders(GYLDIG_CONSUMER);
+        HttpHeaders headers = createHeaders(GYLDIG_CONSUMER);
 
-                MottaDokumentUtgaaendeSkanningRequest request = buildRequest(List.of(DokumentVariant
-                        .builder()
-                        .filtype(FilTypeCode.PDF.toString())
-                        .variantformat(VariantFormatCode.ORIGINAL.toString())
-                        .fysiskDokument(mockData)
-                        .filnavn(mockFilnavn)
-                        .build()
-                ));
+        MottaDokumentUtgaaendeSkanningRequest request = buildRequest(List.of(DokumentVariant
+                .builder()
+                .filtype(FilTypeCode.PDF.toString())
+                .variantformat(VariantFormatCode.ORIGINAL.toString())
+                .fysiskDokument(mockData)
+                .filnavn(mockFilnavn)
+                .build()
+        ));
 
 
-                HttpEntity<MottaDokumentUtgaaendeSkanningRequest> requestHttpEntity = new HttpEntity<>(request, headers);
-                ResponseEntity responseEntity = restTemplate.exchange(
-                        URL_JOURNALPOST_INTERN + journalpostId + "/mottaDokumentUtgaaendeSkanning", HttpMethod.PUT, requestHttpEntity, String.class);
+        HttpEntity<MottaDokumentUtgaaendeSkanningRequest> requestHttpEntity = new HttpEntity<>(request, headers);
+        ResponseEntity responseEntity = restTemplate.exchange(
+                URL_JOURNALPOST_INTERN + journalpostId + "/mottaDokumentUtgaaendeSkanning", HttpMethod.PUT, requestHttpEntity, String.class);
 
-                try {
-                    JsonNode responseBody = mapper.readTree((String) responseEntity.getBody());
+        try {
+            JsonNode responseBody = mapper.readTree((String) responseEntity.getBody());
 
-                    assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
-                    assertEquals(errorMessage, responseBody.get("message").textValue());
+            assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
+            assertEquals(String.format(errorMessage, journalpostId), responseBody.get("message").textValue());
 
-                } catch (IOException e) {
-                    fail();
-                }
-            }
-        });
+        } catch (IOException e) {
+            fail();
+        }
+
     }
 
     @Test
     public void shouldReturnNotFoundIfJournalpostDoesNotExist() throws IOException {
 
-        String errorMessage = "journalpost med id 0 ikke funnet";
+        String errorMessage = "mottaDokumentUtgaaendeSkanning\n" + "journalpost med id 0 ikke funnet";
         long journalpostId = 0L;
 
         HttpHeaders headers = createHeaders(GYLDIG_CONSUMER);

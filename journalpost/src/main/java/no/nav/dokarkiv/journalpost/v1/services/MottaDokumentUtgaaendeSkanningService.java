@@ -40,16 +40,26 @@ public class MottaDokumentUtgaaendeSkanningService {
         this.dokumentFilRepository = dokumentFilRepository;
     }
 
-    public void mottaDokumentUtgaaendeSkanning (Long journalpostId, MottaDokumentUtgaaendeSkanningRequest request) {
+    public void mottaDokumentUtgaaendeSkanning (Long journalpostId, MottaDokumentUtgaaendeSkanningRequest request) throws DokarkivFunctionalException, DokarkivTechnicalException {
         try{
             validator.validateRequest(request).ifPresent(errors -> {
-                throw new InputValideringFeiletException(get(MDC_REQUEST_ID) + " " + errors);
+                throw new InputValideringFeiletException(
+                        get(MDC_REQUEST_ID) + " feilet ved validering av request "
+                                + "journalpostId=" + journalpostId + " "
+                                + "mottakskanal=" + request.getMottakskanal() + " "
+                                + "batchnavn=" + request.getBatchnavn() + " "
+                                + "feilmedling=" + errors);
             });
 
-            Journalpost journalpost = joarkRepository.findById(journalpostId).orElseThrow(() -> new JournalpostIkkeFunnetException("journalpost med id " + journalpostId + " ikke funnet"));
+            Journalpost journalpost = joarkRepository.findById(journalpostId).orElseThrow(() -> new JournalpostIkkeFunnetException(get(MDC_REQUEST_ID) + "\n" +"journalpost med id " + journalpostId + " ikke funnet"));
 
             validator.validateJournalpost(journalpost).ifPresent(errors -> {
-                throw new InputValideringFeiletException(get(MDC_REQUEST_ID) + " " + errors);
+                throw new InputValideringFeiletException(
+                        get(MDC_REQUEST_ID) + " feilet ved validering av journalpost "
+                                + "journalpostId=" + journalpostId + " "
+                                + "mottakskanal=" + request.getMottakskanal() + " "
+                                + "batchnavn=" + request.getBatchnavn() + " "
+                                + "feilmedling=" + errors);
             });
 
             journalpost.setJournalstatus(JournalStatusCode.FL);
@@ -72,15 +82,14 @@ public class MottaDokumentUtgaaendeSkanningService {
                 dokumentFilRepository.save(dokumentFil);
             });
             filDetaljerList.forEach(filDetaljer -> journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().addFilDetaljer(filDetaljer));
-
-        } catch(DokarkivFunctionalException e) {
-            log.error(get(MDC_REQUEST_ID) + " mottaDokumentUtgaaendeSkanning feilet funksjonelt", e);
-            throw e;
-        } catch(DokarkivTechnicalException e) {
-            log.error(get(MDC_REQUEST_ID) + " mottaDokumentUtgaaendeSkanning feilet teknisk", e);
-            throw e;
         } catch(Exception e) {
-            log.error(get(MDC_REQUEST_ID) + " mottaDokumentUtgaaendeSkanning feilet med ukjent feil", e);
+            log.error(
+                    get(MDC_REQUEST_ID) + " mottaDokumentUtgaaendeSkanning feilet med ukjent feil på journalpost "
+                    + "journalpostId=" + journalpostId + " "
+                    + "mottakskanal=" + request.getMottakskanal() + " "
+                    + "batchnavn=" + request.getBatchnavn() + " "
+                    + "feilmedling=" + e.getMessage(), e
+            );
             throw e;
         }
     }
