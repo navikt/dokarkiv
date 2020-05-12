@@ -72,8 +72,8 @@ public class MottaDokumentUtgaaendeSkanningValidatorTest {
         Optional<String> valdationResult = mottaDokumentUtgaaendeSkanningValidator.validateRequest(request);
         assertTrue(valdationResult.isPresent());
         assertEquals(
-                "Kan ikke validere request:\n" +
-                "mottakskanal kan ikke være null\n" +
+                "Kan ikke validere request: " +
+                "mottakskanal kan ikke være null; " +
                 "dokumentvarianter[0] mangler filtype, mangler variantformat, mangler fysiskDokument",
                 valdationResult.get()
         );
@@ -96,8 +96,8 @@ public class MottaDokumentUtgaaendeSkanningValidatorTest {
         Optional<String> valdationResult = mottaDokumentUtgaaendeSkanningValidator.validateRequest(request);
         assertTrue(valdationResult.isPresent());
         assertEquals(
-                "Kan ikke validere request:\n" +
-                "mottakskanal er ugyldig\n" +
+                "Kan ikke validere request: " +
+                "mottakskanal er ugyldig; " +
                 "dokumentvarianter[0] har ugyldig filtype ARKIV, har ugyldig variantformat PDF",
                 valdationResult.get()
         );
@@ -151,9 +151,9 @@ public class MottaDokumentUtgaaendeSkanningValidatorTest {
         Optional<String> valdationResult = mottaDokumentUtgaaendeSkanningValidator.validateRequest(request);
         assertTrue(valdationResult.isPresent());
         assertEquals(
-            "Kan ikke validere request:\n" +
-                "mottakskanal er ugyldig\n" +
-                "dokumentvarianter[0] mangler filtype, mangler variantformat, mangler fysiskDokument\n" +
+            "Kan ikke validere request: " +
+                "mottakskanal er ugyldig; " +
+                "dokumentvarianter[0] mangler filtype, mangler variantformat, mangler fysiskDokument; " +
                 "dokumentvarianter[1] har ugyldig filtype ARKIV, har ugyldig variantformat PDF",
                 valdationResult.get()
         );
@@ -170,7 +170,7 @@ public class MottaDokumentUtgaaendeSkanningValidatorTest {
 
     @Test
     public void shouldNotValidateInvalidJournalpost() {
-        String errorMessage = "Kan ikke validere journalpost: JournalpostType er ikke U eller N, JournalStatus er ikke R, Har mer enn ett DokumentInfo objekt, Har ikke hoveddokument, Har tilknyttede fildetaljer";
+        String errorMessage = "Kan ikke validere journalpost: JournalpostType er ikke U eller N; JournalStatus er ikke R; Har mer enn ett DokumentInfo objekt; Har ikke hoveddokument; Har tilknyttede fildetaljer";
 
         Journalpost journalpost = generateInvalidJournalpost();
 

@@ -40,7 +40,7 @@ public class MottaDokumentUtgaaendeSkanningValidator {
         }
 
         if(errors.size() == 0){ return Optional.empty(); }
-        return Optional.of("Kan ikke validere request:\n" + String.join("\n", errors));
+        return Optional.of("Kan ikke validere request: " + String.join("; ", errors));
     }
     public Optional<String> validateJournalpost(Journalpost journalpost){
         ArrayList<String> errors = new ArrayList<>();
@@ -70,7 +70,7 @@ public class MottaDokumentUtgaaendeSkanningValidator {
 
         if(errors.isEmpty()){ return Optional.empty(); }
 
-        return Optional.of("Kan ikke validere journalpost: " + String.join(", ", errors));
+        return Optional.of("Kan ikke validere journalpost: " + String.join("; ", errors));
     }
 
     private Optional<String> validateDokumentVariant(DokumentVariant dokumentVariant, int index) {

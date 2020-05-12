@@ -160,11 +160,11 @@ public class MottaDokumentUtgaaendeSkanningServiceIT extends AbstractJournalpost
 
     @Test
     public void shouldReturnBadRequestWithInvalidRequest() throws IOException {
-        String errorMessage = "mottaDokumentUtgaaendeSkanning feilet ved validering av request \n" +
-                "journalpostId=%s\n" +
-                "mottakskanal=SKAN_NETS\n" +
-                "batchnavn=mockBatchnavn\n" +
-                "feilmedling=Kan ikke validere request:\n" +
+        String errorMessage = "mottaDokumentUtgaaendeSkanning feilet ved validering av request " +
+                "journalpostId=%s " +
+                "mottakskanal=SKAN_NETS " +
+                "batchnavn=mockBatchnavn " +
+                "feilmedling=Kan ikke validere request: " +
                 "dokumentvarianter[0] har ugyldig filtype mockUgyldigFiltype, har ugyldig variantformat mockUgyldigVariantformat, mangler fysiskDokument";
 
         Journalpost journalpost = generateTestJournalpost(
@@ -203,11 +203,11 @@ public class MottaDokumentUtgaaendeSkanningServiceIT extends AbstractJournalpost
 
     @Test
     public void shouldReturnBadRequestWithInvalidJournalpost() throws InterruptedException {
-        String errorMessage = "mottaDokumentUtgaaendeSkanning feilet ved validering av journalpost \n" +
-                "journalpostId=%s\n" +
-                "mottakskanal=SKAN_NETS\n" +
-                "batchnavn=mockBatchnavn\n" +
-                "feilmedling=Kan ikke validere journalpost: JournalpostType er ikke U eller N, JournalStatus er ikke R, Har mer enn ett DokumentInfo objekt, Har ikke hoveddokument";
+        String errorMessage = "mottaDokumentUtgaaendeSkanning feilet ved validering av journalpost " +
+                "journalpostId=%s " +
+                "mottakskanal=SKAN_NETS " +
+                "batchnavn=mockBatchnavn " +
+                "feilmedling=Kan ikke validere journalpost: JournalpostType er ikke U eller N; JournalStatus er ikke R; Har mer enn ett DokumentInfo objekt; Har ikke hoveddokument";
 
         Journalpost journalpost = generateTestJournalpost(
                 JournalpostTypeCode.I,

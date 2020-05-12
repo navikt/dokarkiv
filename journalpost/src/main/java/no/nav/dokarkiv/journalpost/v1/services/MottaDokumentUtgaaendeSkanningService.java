@@ -44,10 +44,10 @@ public class MottaDokumentUtgaaendeSkanningService {
         try{
             validator.validateRequest(request).ifPresent(errors -> {
                 throw new InputValideringFeiletException(
-                        get(MDC_REQUEST_ID) + " feilet ved validering av request \n"
-                                + "journalpostId=" + journalpostId + "\n"
-                                + "mottakskanal=" + request.getMottakskanal() + "\n"
-                                + "batchnavn=" + request.getBatchnavn() + "\n"
+                        get(MDC_REQUEST_ID) + " feilet ved validering av request "
+                                + "journalpostId=" + journalpostId + " "
+                                + "mottakskanal=" + request.getMottakskanal() + " "
+                                + "batchnavn=" + request.getBatchnavn() + " "
                                 + "feilmedling=" + errors);
             });
 
@@ -55,10 +55,10 @@ public class MottaDokumentUtgaaendeSkanningService {
 
             validator.validateJournalpost(journalpost).ifPresent(errors -> {
                 throw new InputValideringFeiletException(
-                        get(MDC_REQUEST_ID) + " feilet ved validering av journalpost \n"
-                                + "journalpostId=" + journalpostId + "\n"
-                                + "mottakskanal=" + request.getMottakskanal() + "\n"
-                                + "batchnavn=" + request.getBatchnavn() + "\n"
+                        get(MDC_REQUEST_ID) + " feilet ved validering av journalpost "
+                                + "journalpostId=" + journalpostId + " "
+                                + "mottakskanal=" + request.getMottakskanal() + " "
+                                + "batchnavn=" + request.getBatchnavn() + " "
                                 + "feilmedling=" + errors);
             });
 
@@ -84,10 +84,10 @@ public class MottaDokumentUtgaaendeSkanningService {
             filDetaljerList.forEach(filDetaljer -> journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().addFilDetaljer(filDetaljer));
         } catch(Exception e) {
             log.error(
-                    get(MDC_REQUEST_ID) + " mottaDokumentUtgaaendeSkanning feilet med ukjent feil på journalpost \n"
-                    + "journalpostId=" + journalpostId + "\n"
-                    + "mottakskanal=" + request.getMottakskanal() + "\n"
-                    + "batchnavn=" + request.getBatchnavn() + "\n"
+                    get(MDC_REQUEST_ID) + " mottaDokumentUtgaaendeSkanning feilet med ukjent feil på journalpost "
+                    + "journalpostId=" + journalpostId + " "
+                    + "mottakskanal=" + request.getMottakskanal() + " "
+                    + "batchnavn=" + request.getBatchnavn() + " "
                     + "feilmedling=" + e.getMessage(), e
             );
             throw e;
