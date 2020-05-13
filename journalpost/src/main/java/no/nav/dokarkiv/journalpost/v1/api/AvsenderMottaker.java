@@ -29,7 +29,6 @@ public class AvsenderMottaker {
     )
     private AvsenderMottakerIdType idType;
 
-    @NotNull(message = "AvsenderMottaker mangler navn")
     @ApiModelProperty(
             value = "Navnet til avsender/mottaker.\nNavn på personbrukere skal lagres på formatet etternavn, fornavn mellomnavn",
             example = "Hansen, Per"
