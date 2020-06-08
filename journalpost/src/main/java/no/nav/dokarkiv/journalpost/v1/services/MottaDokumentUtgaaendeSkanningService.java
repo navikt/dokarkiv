@@ -83,7 +83,7 @@ public class MottaDokumentUtgaaendeSkanningService {
             });
             filDetaljerList.forEach(filDetaljer -> journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().addFilDetaljer(filDetaljer));
         } catch(Exception e) {
-            log.error(
+            log.warn(
                     get(MDC_REQUEST_ID) + " mottaDokumentUtgaaendeSkanning feilet med ukjent feil på journalpost "
                     + "journalpostId=" + journalpostId + " "
                     + "mottakskanal=" + request.getMottakskanal() + " "
