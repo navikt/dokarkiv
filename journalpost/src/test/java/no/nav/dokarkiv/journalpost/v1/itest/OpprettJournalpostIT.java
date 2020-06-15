@@ -30,6 +30,7 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FILTYPE_PDF;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FYSISK_DOKUMENT;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FYSISK_DOKUMENT_2;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.INNHOLD;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.KANALREFERANSE_ID;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.SAK_ID;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_FOR;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_PEN;
@@ -57,6 +58,7 @@ import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
+import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
 import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
 import no.nav.dokarkiv.core.domain.entities.DokumentFil;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
@@ -851,5 +853,22 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		restTemplate.exchange(URL_JOURNALPOST + FERDIGSTILL_QUERY, HttpMethod.POST, requestEntity, OpprettJournalpostResponse.class);
 
 		assertEquals(identInspectionObjectSize, identInspectionObjects.size());
+	}
+
+	@Test
+	public void shouldNotOpprettIfKanalSKAN_IMAndReferanseIdAlreadyInDB() throws IOException {
+		OpprettJournalpostRequest request = createMinimalRequest(INNGAAENDE)
+				.kanal(MottaksKanalCode.SKAN_IM.name())
+				.eksternReferanseId(KANALREFERANSE_ID)
+				.build();
+
+		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
+		ResponseEntity<OpprettJournalpostResponse> responseFirst = restTemplate.exchange(URL_JOURNALPOST + FERDIGSTILL_QUERY, HttpMethod.POST, requestEntity, OpprettJournalpostResponse.class);
+		ResponseEntity<OpprettJournalpostResponse> responseSecond = restTemplate.exchange(URL_JOURNALPOST + FERDIGSTILL_QUERY, HttpMethod.POST, requestEntity, OpprettJournalpostResponse.class);
+
+		assertEquals(HttpStatus.CREATED, responseFirst.getStatusCode());
+		assertNotNull(responseFirst.getBody());
+		assertEquals(HttpStatus.CONFLICT, responseSecond.getStatusCode());
+		assertNull(responseSecond.getBody());
 	}
 }

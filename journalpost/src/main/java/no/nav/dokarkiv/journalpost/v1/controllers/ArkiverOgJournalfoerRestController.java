@@ -27,6 +27,7 @@ import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerFjernVedlegg;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerOppdaterDistribusjonsinfo;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerOppdaterJournalpost;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerOpprettJournalpost;
+import no.nav.dokarkiv.journalpost.v1.util.opprettjournalpost.OpprettJournalpostIdempotent;
 import no.nav.dokarkiv.journalpost.v1.validators.FerdigstillJournalpostValidator;
 import no.nav.dokarkiv.journalpost.v1.validators.OppdaterDistribusjonsinfoValidator;
 import no.nav.dokarkiv.journalpost.v1.validators.OpprettJournalpostRequestValidator;
@@ -79,6 +80,7 @@ public class ArkiverOgJournalfoerRestController {
     private final FerdigstillJournalpostValidator ferdigstillJournalpostValidator;
     private final OppdaterDistribusjonsinfoValidator oppdaterDistribusjonsinfoValidator;
     private final FjernVedleggTilknyttetJournalpost fjernVedleggTilknyttJournalpost;
+    private final OpprettJournalpostIdempotent opprettJournalpostIdempotent;
 
     @Inject
     public ArkiverOgJournalfoerRestController(final FerdigstillJournalpostService ferdigstillJournalpostService,
@@ -86,13 +88,15 @@ public class ArkiverOgJournalfoerRestController {
                                               final OpprettJournalpostService opprettJournalpostService,
                                               final OppdaterDistribusjonsinfoService oppdaterDistribusjonsinfoService,
                                               final AbacSecurityService abacSecurityService,
-                                              final FjernVedleggTilknyttetJournalpost fjernVedleggTilknyttJournalpost) {
+                                              final FjernVedleggTilknyttetJournalpost fjernVedleggTilknyttJournalpost,
+                                              final OpprettJournalpostIdempotent opprettJournalpostIdempotent) {
         this.ferdigstillJournalpostService = ferdigstillJournalpostService;
         this.abacSecurityService = abacSecurityService;
         this.oppdaterJournalpostService = oppdaterJournalpostService;
         this.opprettJournalpostService = opprettJournalpostService;
         this.fjernVedleggTilknyttJournalpost = fjernVedleggTilknyttJournalpost;
         this.oppdaterDistribusjonsinfoService = oppdaterDistribusjonsinfoService;
+        this.opprettJournalpostIdempotent = opprettJournalpostIdempotent;
         this.opprettJournalpostRequestValidator = new OpprettJournalpostRequestValidator();
         this.ferdigstillJournalpostValidator = new FerdigstillJournalpostValidator();
         this.oppdaterDistribusjonsinfoValidator = new OppdaterDistribusjonsinfoValidator();
@@ -193,6 +197,11 @@ public class ArkiverOgJournalfoerRestController {
         } catch (InputValideringFeiletException e) {
             log.warn("rjoark202 feilet under validering. " + e.getMessage(), e);
             throw e;
+        }
+
+        if (opprettJournalpostIdempotent.isJournalpostWithKanalSkanImAndEksternReferanseIdAlreadyInDb(request)) {
+            log.warn("Prøver å opprette en journalpost med kanal=SKAN_IM med en referanseId som allerede finnes");
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
         }
 
         Journalpost journalpost = opprettJournalpostService.opprettJournalpost(request);
