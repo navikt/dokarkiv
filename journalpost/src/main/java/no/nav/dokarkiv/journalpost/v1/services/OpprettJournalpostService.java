@@ -25,6 +25,7 @@ import no.nav.dokarkiv.journalpost.v1.api.BrukerIdType;
 import no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem;
 import no.nav.dokarkiv.journalpost.v1.api.Sakstype;
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostRequest;
+import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostResult;
 import no.nav.dokarkiv.journalpost.v1.mappers.OpprettJournalpostApiRequestMapper;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.MDC;
@@ -77,18 +78,19 @@ public class OpprettJournalpostService {
         this.hentSakerRepository = hentSakerRepository;
     }
 
-	public Pair<Journalpost, Boolean> opprettJournalpost(OpprettJournalpostRequest request) {
+	public OpprettJournalpostResult opprettJournalpost(OpprettJournalpostRequest request) {
+
+		Optional<Journalpost> existingJournalpost = findJournalpostWithKanalSkanImAndEksternReferanseIdAlreadyInDb(request);
+		if (existingJournalpost.isPresent()) {
+			log.warn("Prøver å opprette en journalpost med kanal=SKAN_IM med en referanseId som allerede finnes");
+			return new OpprettJournalpostResult(existingJournalpost.get(), false);
+		}
+
 		String sakId = hentSakId(request);
 
 		Journalpost journalpost = opprettJournalpostApiRequestMapper.map(request, sakId);
 		defaultSporingPopulator.populateSporingInfo(journalpost, MDC.get(MDCConstants.MDC_CONSUMER_ID));
 		journalpost.getJournalpostDokumentInfoRelasjoner().forEach(journalpostDokumentInfoRelasjon -> journalpostDokumentInfoRelasjon.setTilknyttetAvNavn(journalpost.getOpprettetAvNavn()));
-
-		Optional<Journalpost> existingJournalpost = findJournalpostWithKanalSkanImAndEksternReferanseIdAlreadyInDb(request);
-		if (existingJournalpost.isPresent()) {
-			log.warn("Prøver å opprette en journalpost med kanal=SKAN_IM med en referanseId som allerede finnes");
-			return Pair.of(existingJournalpost.get(), false);
-		}
 
 		persistDokumentFiler(journalpost);
 
@@ -97,7 +99,7 @@ public class OpprettJournalpostService {
 		populerAksjonslogg(journalpost.getJournalpostId(), OPPRETT);
 		log.info(MDC.get(MDC_REQUEST_ID) + " har opprettet ny journalpost, journalpostId={} og status={}", journalpost.getJournalpostId(), journalpost.getJournalstatus());
 
-		return Pair.of(journalpost, true);
+		return new OpprettJournalpostResult(journalpost, true);
 	}
 
 	private String hentSakId(OpprettJournalpostRequest request) {

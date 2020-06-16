@@ -4,7 +4,6 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.MDCConstants;
-import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
 import no.nav.dokarkiv.core.metrics.RestMetrics;
 import no.nav.dokarkiv.core.security.abac.AbacSecurityService;
@@ -17,6 +16,7 @@ import no.nav.dokarkiv.journalpost.v1.api.OppdaterJournalpostResponse;
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.DokumentInfo;
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostResponse;
+import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostResult;
 import no.nav.dokarkiv.journalpost.v1.services.FerdigstillJournalpostService;
 import no.nav.dokarkiv.journalpost.v1.services.FjernVedleggTilknyttetJournalpost;
 import no.nav.dokarkiv.journalpost.v1.services.OppdaterDistribusjonsinfoService;
@@ -195,11 +195,10 @@ public class ArkiverOgJournalfoerRestController {
             throw e;
         }
 
-        Pair<Journalpost, Boolean> opprettJournalpostResult = opprettJournalpostService.opprettJournalpost(request);
-        Journalpost journalpost = opprettJournalpostResult.getLeft();
+        OpprettJournalpostResult opprettJournalpostResult = opprettJournalpostService.opprettJournalpost(request);
 
         List<DokumentInfo> dokumenter = new ArrayList<>();
-        journalpost.getJournalpostDokumentInfoRelasjoner().forEach(
+        opprettJournalpostResult.getJournalpost().getJournalpostDokumentInfoRelasjoner().forEach(
                 journalpostDokumentInfoRelasjon -> dokumenter.add(DokumentInfo.builder()
                         .dokumentInfoId(journalpostDokumentInfoRelasjon.getDokumentInfo()
                                 .getDokumentInfoId()
@@ -207,8 +206,8 @@ public class ArkiverOgJournalfoerRestController {
                         .build())
         );
 
-        Long journalpostId = journalpost.getJournalpostId();
-        HttpStatus httpStatus = opprettJournalpostResult.getRight() ? HttpStatus.CREATED : HttpStatus.CONFLICT;
+        Long journalpostId = opprettJournalpostResult.getJournalpost().getJournalpostId();
+        HttpStatus httpStatus = opprettJournalpostResult.isAlreadyOpprettet() ? HttpStatus.CREATED : HttpStatus.CONFLICT;
 
         Optional<Pair<String, String>> ferdigstillResponse = Optional.empty();
         if (TRUE.equalsIgnoreCase(forsoekFerdigstill)) {
@@ -219,7 +218,7 @@ public class ArkiverOgJournalfoerRestController {
                 .status(httpStatus)
                 .body(OpprettJournalpostResponse.builder()
                         .journalpostId(String.valueOf(journalpostId))
-                        .journalstatus(ferdigstillResponse.map(Pair::getKey).orElse(journalpost.getJournalstatus().name()))
+                        .journalstatus(ferdigstillResponse.map(Pair::getKey).orElse(opprettJournalpostResult.getJournalpost().getJournalstatus().name()))
                         .melding(ferdigstillResponse.map(Pair::getValue).orElse(null))
                         .journalpostferdigstilt(ferdigstillResponse.map(Pair::getKey)
                                 .filter("ENDELIG"::equalsIgnoreCase)
