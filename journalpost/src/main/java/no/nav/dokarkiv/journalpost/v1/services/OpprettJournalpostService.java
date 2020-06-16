@@ -1,12 +1,5 @@
 package no.nav.dokarkiv.journalpost.v1.services;
 
-import static java.util.Collections.emptyList;
-import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
-import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
-import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.OPPRETT;
-import static no.nav.dokarkiv.journalpost.v1.api.Sakstype.FAGSAK;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
-
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService;
@@ -14,6 +7,7 @@ import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggTO;
 import no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerService;
 import no.nav.dokarkiv.core.consumer.aktoer.HentAktoerIdForIdentRequestTo;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
+import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentFil;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
@@ -32,6 +26,7 @@ import no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem;
 import no.nav.dokarkiv.journalpost.v1.api.Sakstype;
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.mappers.OpprettJournalpostApiRequestMapper;
+import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
 
@@ -40,7 +35,15 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static java.util.Collections.emptyList;
+import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
+import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
+import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.OPPRETT;
+import static no.nav.dokarkiv.journalpost.v1.api.Sakstype.FAGSAK;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 @Service(value = "opprettNyJournalpostService")
 @Slf4j
@@ -74,12 +77,18 @@ public class OpprettJournalpostService {
         this.hentSakerRepository = hentSakerRepository;
     }
 
-	public Journalpost opprettJournalpost(OpprettJournalpostRequest request) {
+	public Pair<Journalpost, Boolean> opprettJournalpost(OpprettJournalpostRequest request) {
 		String sakId = hentSakId(request);
 
 		Journalpost journalpost = opprettJournalpostApiRequestMapper.map(request, sakId);
 		defaultSporingPopulator.populateSporingInfo(journalpost, MDC.get(MDCConstants.MDC_CONSUMER_ID));
 		journalpost.getJournalpostDokumentInfoRelasjoner().forEach(journalpostDokumentInfoRelasjon -> journalpostDokumentInfoRelasjon.setTilknyttetAvNavn(journalpost.getOpprettetAvNavn()));
+
+		Optional<Journalpost> existingJournalpost = findJournalpostWithKanalSkanImAndEksternReferanseIdAlreadyInDb(request);
+		if (existingJournalpost.isPresent()) {
+			log.warn("Prøver å opprette en journalpost med kanal=SKAN_IM med en referanseId som allerede finnes");
+			return Pair.of(existingJournalpost.get(), false);
+		}
 
 		persistDokumentFiler(journalpost);
 
@@ -88,7 +97,7 @@ public class OpprettJournalpostService {
 		populerAksjonslogg(journalpost.getJournalpostId(), OPPRETT);
 		log.info(MDC.get(MDC_REQUEST_ID) + " har opprettet ny journalpost, journalpostId={} og status={}", journalpost.getJournalpostId(), journalpost.getJournalstatus());
 
-		return journalpost;
+		return Pair.of(journalpost, true);
 	}
 
 	private String hentSakId(OpprettJournalpostRequest request) {
@@ -167,5 +176,12 @@ public class OpprettJournalpostService {
 		} catch (UgyldigAksjonsLoggException e) {
 			log.warn("Kunne ikke skrive til AksjonsLogg: "+e.getMessage());
 		}
+	}
+
+	private Optional<Journalpost> findJournalpostWithKanalSkanImAndEksternReferanseIdAlreadyInDb(OpprettJournalpostRequest request) {
+		if (!MottaksKanalCode.SKAN_IM.name().equals(request.getKanal())) {
+			return Optional.empty();
+		}
+		return joarkRepository.findJournalpostWithKanalSkanImByKanalReferanseId(request.getEksternReferanseId());
 	}
 }

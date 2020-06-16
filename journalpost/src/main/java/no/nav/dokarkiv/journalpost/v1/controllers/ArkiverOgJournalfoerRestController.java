@@ -27,7 +27,6 @@ import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerFjernVedlegg;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerOppdaterDistribusjonsinfo;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerOppdaterJournalpost;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerOpprettJournalpost;
-import no.nav.dokarkiv.journalpost.v1.util.opprettjournalpost.OpprettJournalpostIdempotent;
 import no.nav.dokarkiv.journalpost.v1.validators.FerdigstillJournalpostValidator;
 import no.nav.dokarkiv.journalpost.v1.validators.OppdaterDistribusjonsinfoValidator;
 import no.nav.dokarkiv.journalpost.v1.validators.OpprettJournalpostRequestValidator;
@@ -80,7 +79,6 @@ public class ArkiverOgJournalfoerRestController {
     private final FerdigstillJournalpostValidator ferdigstillJournalpostValidator;
     private final OppdaterDistribusjonsinfoValidator oppdaterDistribusjonsinfoValidator;
     private final FjernVedleggTilknyttetJournalpost fjernVedleggTilknyttJournalpost;
-    private final OpprettJournalpostIdempotent opprettJournalpostIdempotent;
 
     @Inject
     public ArkiverOgJournalfoerRestController(final FerdigstillJournalpostService ferdigstillJournalpostService,
@@ -88,15 +86,13 @@ public class ArkiverOgJournalfoerRestController {
                                               final OpprettJournalpostService opprettJournalpostService,
                                               final OppdaterDistribusjonsinfoService oppdaterDistribusjonsinfoService,
                                               final AbacSecurityService abacSecurityService,
-                                              final FjernVedleggTilknyttetJournalpost fjernVedleggTilknyttJournalpost,
-                                              final OpprettJournalpostIdempotent opprettJournalpostIdempotent) {
+                                              final FjernVedleggTilknyttetJournalpost fjernVedleggTilknyttJournalpost) {
         this.ferdigstillJournalpostService = ferdigstillJournalpostService;
         this.abacSecurityService = abacSecurityService;
         this.oppdaterJournalpostService = oppdaterJournalpostService;
         this.opprettJournalpostService = opprettJournalpostService;
         this.fjernVedleggTilknyttJournalpost = fjernVedleggTilknyttJournalpost;
         this.oppdaterDistribusjonsinfoService = oppdaterDistribusjonsinfoService;
-        this.opprettJournalpostIdempotent = opprettJournalpostIdempotent;
         this.opprettJournalpostRequestValidator = new OpprettJournalpostRequestValidator();
         this.ferdigstillJournalpostValidator = new FerdigstillJournalpostValidator();
         this.oppdaterDistribusjonsinfoValidator = new OppdaterDistribusjonsinfoValidator();
@@ -199,12 +195,8 @@ public class ArkiverOgJournalfoerRestController {
             throw e;
         }
 
-        if (opprettJournalpostIdempotent.isJournalpostWithKanalSkanImAndEksternReferanseIdAlreadyInDb(request)) {
-            log.warn("Prøver å opprette en journalpost med kanal=SKAN_IM med en referanseId som allerede finnes");
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
-        }
-
-        Journalpost journalpost = opprettJournalpostService.opprettJournalpost(request);
+        Pair<Journalpost, Boolean> opprettJournalpostResult = opprettJournalpostService.opprettJournalpost(request);
+        Journalpost journalpost = opprettJournalpostResult.getLeft();
 
         List<DokumentInfo> dokumenter = new ArrayList<>();
         journalpost.getJournalpostDokumentInfoRelasjoner().forEach(
@@ -216,6 +208,7 @@ public class ArkiverOgJournalfoerRestController {
         );
 
         Long journalpostId = journalpost.getJournalpostId();
+        HttpStatus httpStatus = opprettJournalpostResult.getRight() ? HttpStatus.CREATED : HttpStatus.CONFLICT;
 
         Optional<Pair<String, String>> ferdigstillResponse = Optional.empty();
         if (TRUE.equalsIgnoreCase(forsoekFerdigstill)) {
@@ -223,7 +216,7 @@ public class ArkiverOgJournalfoerRestController {
         }
 
         return ResponseEntity
-                .status(HttpStatus.CREATED)
+                .status(httpStatus)
                 .body(OpprettJournalpostResponse.builder()
                         .journalpostId(String.valueOf(journalpostId))
                         .journalstatus(ferdigstillResponse.map(Pair::getKey).orElse(journalpost.getJournalstatus().name()))
