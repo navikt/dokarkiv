@@ -1,5 +1,43 @@
 package no.nav.dokarkiv.journalpost.v1.itest;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.Lists;
+import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
+import no.nav.dokarkiv.core.domain.codes.AvsenderMottakerIdTypeCode;
+import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
+import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
+import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
+import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
+import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
+import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
+import no.nav.dokarkiv.core.domain.entities.DokumentFil;
+import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
+import no.nav.dokarkiv.journalpost.v1.api.Arkivsaksystem;
+import no.nav.dokarkiv.journalpost.v1.api.Bruker;
+import no.nav.dokarkiv.journalpost.v1.api.BrukerIdType;
+import no.nav.dokarkiv.journalpost.v1.api.Dokument;
+import no.nav.dokarkiv.journalpost.v1.api.DokumentVariant;
+import no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem;
+import no.nav.dokarkiv.journalpost.v1.api.JournalpostType;
+import no.nav.dokarkiv.journalpost.v1.api.Sak;
+import no.nav.dokarkiv.journalpost.v1.api.Sakstype;
+import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostRequest;
+import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostResponse;
+import no.nav.dokarkiv.journalpost.v1.services.OpprettJournalpostService;
+import org.apache.commons.collections15.IteratorUtils;
+import org.junit.Test;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+
+import javax.inject.Inject;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import static java.util.Collections.singletonList;
 import static no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerV2Mock.AKTOER_ID;
 import static no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerV2Mock.FAIL_AKTOER_ID;
@@ -30,6 +68,7 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FILTYPE_PDF;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FYSISK_DOKUMENT;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FYSISK_DOKUMENT_2;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.INNHOLD;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.KANALREFERANSE_ID;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.SAK_ID;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_FOR;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_PEN;
@@ -49,43 +88,10 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.Lists;
-import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
-import no.nav.dokarkiv.core.domain.codes.AvsenderMottakerIdTypeCode;
-import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
-import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
-import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
-import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
-import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
-import no.nav.dokarkiv.core.domain.entities.DokumentFil;
-import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
-import no.nav.dokarkiv.journalpost.v1.api.Arkivsaksystem;
-import no.nav.dokarkiv.journalpost.v1.api.Bruker;
-import no.nav.dokarkiv.journalpost.v1.api.BrukerIdType;
-import no.nav.dokarkiv.journalpost.v1.api.Dokument;
-import no.nav.dokarkiv.journalpost.v1.api.DokumentVariant;
-import no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem;
-import no.nav.dokarkiv.journalpost.v1.api.JournalpostType;
-import no.nav.dokarkiv.journalpost.v1.api.Sak;
-import no.nav.dokarkiv.journalpost.v1.api.Sakstype;
-import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostRequest;
-import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostResponse;
-import org.apache.commons.collections15.IteratorUtils;
-import org.junit.Test;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 public class OpprettJournalpostIT extends AbstractJournalpostIT {
 
+	@Inject
+	private OpprettJournalpostService opprettJournalpostService;
 	private ObjectMapper mapper = new ObjectMapper();
 
 	@Test
@@ -851,5 +857,22 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		restTemplate.exchange(URL_JOURNALPOST + FERDIGSTILL_QUERY, HttpMethod.POST, requestEntity, OpprettJournalpostResponse.class);
 
 		assertEquals(identInspectionObjectSize, identInspectionObjects.size());
+	}
+
+	@Test
+	public void shouldNotOpprettIfKanalSKAN_IMAndReferanseIdAlreadyInDB() throws IOException {
+		OpprettJournalpostRequest request = createMinimalRequest(INNGAAENDE)
+				.kanal(MottaksKanalCode.SKAN_IM.name())
+				.eksternReferanseId(KANALREFERANSE_ID)
+				.build();
+
+		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
+		ResponseEntity<OpprettJournalpostResponse> responseFirst = restTemplate.exchange(URL_JOURNALPOST + FERDIGSTILL_QUERY, HttpMethod.POST, requestEntity, OpprettJournalpostResponse.class);
+		ResponseEntity<OpprettJournalpostResponse> responseSecond = restTemplate.exchange(URL_JOURNALPOST + FERDIGSTILL_QUERY, HttpMethod.POST, requestEntity, OpprettJournalpostResponse.class);
+
+		assertEquals(HttpStatus.CREATED, responseFirst.getStatusCode());
+		assertNotNull(responseFirst.getBody());
+		assertEquals(HttpStatus.CONFLICT, responseSecond.getStatusCode());
+		assertNotNull(responseSecond.getBody());
 	}
 }
