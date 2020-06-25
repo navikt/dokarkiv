@@ -45,4 +45,11 @@ public class DokumentVariant {
             hidden = true
     )
     private String filnavn;
+
+    @ApiModelProperty(
+            value = "Navnet på skanningsbatchen som produserte filen. Feltet skal kun brukes etter avtale",
+            example = "R512345678",
+            hidden = true
+    )
+    private String batchnavn;
 }
