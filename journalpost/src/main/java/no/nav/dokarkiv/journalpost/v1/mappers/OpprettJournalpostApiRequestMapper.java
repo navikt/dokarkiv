@@ -286,6 +286,7 @@ public class OpprettJournalpostApiRequestMapper {
                             .fileContent(dokumentVariant.getFysiskDokument())
                             .filnavn(dokumentVariant.getFilnavn())
                             .dokumentInfo(dokumentInfo)
+                            .batchNavn(dokumentVariant.getBatchnavn())
                             .build()));
         }
 

@@ -57,6 +57,7 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.ARKIVSAKSNUMMER;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.AVSENDER_ID_PERSON;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.AVSENDER_MOTTAKER_LAND;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.AVSENDER_NAVN;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.BATCHNAVN;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.BREVKODE1;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.BRUKER_ID_ORGANISASJON;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.BRUKER_ID_PERSON;
@@ -117,6 +118,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 				.getFildetaljerListe()
 				.stream()
 				.filter(filDetaljer -> FILNAVN.equals(filDetaljer.getFilnavn()))
+				.filter(filDetaljer -> BATCHNAVN.equals(filDetaljer.getBatchNavn()))
 				.findAny()
 				.get()
 				.getFilnavn());

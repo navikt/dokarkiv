@@ -44,6 +44,7 @@ import java.util.Collections;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.AVSENDER_ID_PERSON;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.AVSENDER_MOTTAKER_LAND;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.AVSENDER_NAVN;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.BATCHNAVN;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.BREVKODE1;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.BREVKODE2;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.BRUKER_ID_PERSON;
@@ -118,6 +119,7 @@ public class OpprettJournalpostApiRequestMapperTest {
 		assertNotNull(filDetaljer.getFilUuid());
 		assertEquals(FilTypeCode.PDF, filDetaljer.getFiltype());
 		assertEquals(VariantFormatCode.ARKIV, filDetaljer.getVariantFormat());
+		assertEquals(BATCHNAVN, filDetaljer.getBatchNavn());
 
 		FilDetaljer filDetaljerOriginal = dokumentInfo.findFilDetaljerByVariantFormat(VariantFormatCode.ORIGINAL);
 		assertArrayEquals(FYSISK_DOKUMENT_2, filDetaljerOriginal.getFileContent());
