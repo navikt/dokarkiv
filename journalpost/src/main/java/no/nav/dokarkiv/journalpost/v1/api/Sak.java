@@ -42,6 +42,7 @@ public class Sak {
                     "* BA (Barnetrygd)\n" +
                     "* EF (Enslig forsørger)\n" +
                     "* KONT (Kontantstøtte)\n" +
+                    "* SUPSTONAD (Supplerende Stønad)\n" +
                     "Skal kun settes dersom sakstype = FAGSAK",
             example = "AO01"
     )
