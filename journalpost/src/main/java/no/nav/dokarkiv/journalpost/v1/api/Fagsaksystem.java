@@ -17,5 +17,6 @@ public enum Fagsaksystem {
     BISYS,
     BA,
     EF,
-    KONT
+    KONT,
+    SUPSTONAD
 }
