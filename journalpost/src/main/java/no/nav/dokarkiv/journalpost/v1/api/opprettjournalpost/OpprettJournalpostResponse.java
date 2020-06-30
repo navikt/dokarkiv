@@ -56,5 +56,5 @@ public class OpprettJournalpostResponse {
             value = "Dokumentene på journalposten.",
             position = 4
     )
-    private List<DokumentInfo> dokumenter;
+    private List<DokumentInfoId> dokumenter;
 }
