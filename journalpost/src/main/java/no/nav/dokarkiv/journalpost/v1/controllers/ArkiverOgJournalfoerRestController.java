@@ -13,7 +13,7 @@ import no.nav.dokarkiv.journalpost.v1.api.FjernVedleggTilknyttetJournalpostReque
 import no.nav.dokarkiv.journalpost.v1.api.OppdaterDistribusjonsinfoRequest;
 import no.nav.dokarkiv.journalpost.v1.api.OppdaterJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.OppdaterJournalpostResponse;
-import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.DokumentId;
+import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.DokumentInfoId;
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostResponse;
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostResult;
@@ -197,9 +197,9 @@ public class ArkiverOgJournalfoerRestController {
 
         OpprettJournalpostResult opprettJournalpostResult = opprettJournalpostService.opprettJournalpost(request);
 
-        List<DokumentId> dokumenter = new ArrayList<>();
+        List<DokumentInfoId> dokumenter = new ArrayList<>();
         opprettJournalpostResult.getJournalpost().getJournalpostDokumentInfoRelasjoner().forEach(
-                journalpostDokumentInfoRelasjon -> dokumenter.add(DokumentId.builder()
+                journalpostDokumentInfoRelasjon -> dokumenter.add(DokumentInfoId.builder()
                         .dokumentInfoId(journalpostDokumentInfoRelasjon.getDokumentInfo()
                                 .getDokumentInfoId()
                                 .toString())
