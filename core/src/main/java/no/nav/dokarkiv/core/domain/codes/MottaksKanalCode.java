@@ -28,7 +28,9 @@ public enum MottaksKanalCode implements CtiRelationship<MottaksKanalCode, String
 	/** Helsenettet */
 	HELSENETTET,
 	/**Ditt NAV uten ID-porten-pålogging**/
-	 NAV_NO_UINNLOGGET;
+	NAV_NO_UINNLOGGET,
+	/** Innsendt av NAV-ansatt **/
+	INNSENDT_NAV_ANSATT;
 
 	/** {@inheritDoc} */
 	@Override
