@@ -32,7 +32,6 @@
 		<module>arkivervariant</module>
 		<module>admin</module>
 		<module>journalpost</module>
-		<module>sak</module>
 	</modules>
 
 	<properties>

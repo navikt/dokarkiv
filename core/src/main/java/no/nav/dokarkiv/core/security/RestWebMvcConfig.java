@@ -2,12 +2,8 @@ package no.nav.dokarkiv.core.security;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import no.nav.dokarkiv.core.security.ldap.NavLdapService;
-import no.nav.dokarkiv.core.security.saml.SAMLValidator;
 import no.nav.freg.security.oidc.auth.OidcAuthProperties;
-import no.nav.freg.security.oidc.auth.idtoken.strategy.IdTokenValidationStrategy;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -21,50 +17,35 @@ import java.util.ArrayList;
 @Configuration
 public class RestWebMvcConfig implements WebMvcConfigurer {
 
-	private final NavLdapService navLdapService;
-	private final OidcAuthProperties oidcAuthProperties;
-	private final HandlerInterceptor basicAuthReadAccessRestInterceptor;
-	private final MeterRegistry meterRegistry;
-	private final IdTokenValidationStrategy validationStrategy;
-	private final AuthenticationManager authManager;
-	private final String trustStore;
-	private final String trustStorePassword;
+    private final NavLdapService navLdapService;
+    private final OidcAuthProperties oidcAuthProperties;
+    private final HandlerInterceptor basicAuthReadAccessRestInterceptor;
+    private final MeterRegistry meterRegistry;
 
-	public RestWebMvcConfig(NavLdapService navLdapService,
-							OidcAuthProperties oidcAuthProperties,
-							@Named("basicAuthReadAccessRestInterceptor") HandlerInterceptor basicAuthReadAccessRestInterceptor,
-							MeterRegistry meterRegistry, IdTokenValidationStrategy validationStrategy, AuthenticationManager authManager,
-							@Value("${javax.net.ssl.trustStore}") String trustStore,
-							@Value("${javax.net.ssl.trustStorePassword}") String trustStorePassword) {
-		this.navLdapService = navLdapService;
-		this.oidcAuthProperties = oidcAuthProperties;
-		this.basicAuthReadAccessRestInterceptor = basicAuthReadAccessRestInterceptor;
-		this.meterRegistry = meterRegistry;
-		this.validationStrategy = validationStrategy;
-		this.authManager = authManager;
-		this.trustStore = trustStore;
-		this.trustStore***passord=gammelt_passord***;
-	}
+    public RestWebMvcConfig(NavLdapService navLdapService,
+                            OidcAuthProperties oidcAuthProperties,
+                            @Named("basicAuthReadAccessRestInterceptor") HandlerInterceptor basicAuthReadAccessRestInterceptor,
+                            MeterRegistry meterRegistry) {
+        this.navLdapService = navLdapService;
+        this.oidcAuthProperties = oidcAuthProperties;
+        this.basicAuthReadAccessRestInterceptor = basicAuthReadAccessRestInterceptor;
+        this.meterRegistry = meterRegistry;
+    }
 
-	@Override
-	public void addInterceptors(InterceptorRegistry registry) {
-		registry.addInterceptor(basicAuthReadAccessRestInterceptor)
-				.addPathPatterns("/hentjournalsakinfo/**");
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(basicAuthReadAccessRestInterceptor)
+                .addPathPatterns("/hentjournalsakinfo/**");
 
-		registry.addInterceptor(new ValidateUserAndAddToMDCHandler(navLdapService, meterRegistry))
-				.excludePathPatterns(new ArrayList<>(oidcAuthProperties.getIgnoredPaths()))
-				.addPathPatterns(oidcAuthProperties.getSecuredPath());
+        registry.addInterceptor(new ValidateUserAndAddToMDCHandler(navLdapService, meterRegistry))
+                .excludePathPatterns(new ArrayList<>(oidcAuthProperties.getIgnoredPaths()))
+                .addPathPatterns(oidcAuthProperties.getSecuredPath());
 
-		registry.addInterceptor(new ValidateAdminConsumerAccessInterceptor(navLdapService))
-				.addPathPatterns("/rest/admin/**");
+        registry.addInterceptor(new ValidateAdminConsumerAccessInterceptor(navLdapService))
+                .addPathPatterns("/rest/admin/**");
 
-		registry.addInterceptor(new ValidateSakApiInterceptor(navLdapService, validationStrategy, authManager,
-				new SAMLValidator(trustStore, trustStorePassword)))
-				.addPathPatterns("/rest/saker/**");
-
-		registry.addInterceptor(new PopulateMDCHandler())
-				.addPathPatterns(oidcAuthProperties.getSecuredPath(),
-						"/hentjournalsakinfo/**")
-				.excludePathPatterns("/rest/saker/**");
-	}
+        registry.addInterceptor(new PopulateMDCHandler())
+                .addPathPatterns(oidcAuthProperties.getSecuredPath(),
+                        "/hentjournalsakinfo/**");
+    }
 }
