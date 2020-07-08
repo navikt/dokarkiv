@@ -17,7 +17,6 @@ import no.nav.dokarkiv.journalfoerinngaaende.v1.JournalfoerInngaaendeConfig;
 import no.nav.dokarkiv.journalpost.v1.JournalpostConfig;
 import no.nav.dokarkiv.nais.NaisContract;
 import no.nav.dokarkiv.platform.TomcatConfig;
-import no.nav.dokarkiv.sak.SakConfig;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.annotation.Import;
 
@@ -41,7 +40,6 @@ import org.springframework.context.annotation.Import;
 		ArkiverVariantConfig.class,
 		AdminConfig.class,
 		JournalpostConfig.class,
-		SakConfig.class,
 		NaisContract.class})
 public class Application {
 	public static void main(String[] args) {
