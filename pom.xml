@@ -32,7 +32,6 @@
 		<module>arkivervariant</module>
 		<module>admin</module>
 		<module>journalpost</module>
-		<module>sak</module>
 	</modules>
 
 	<properties>
@@ -76,11 +75,6 @@
 			<dependency>
 				<groupId>no.nav.dokarkiv</groupId>
 				<artifactId>app</artifactId>
-				<version>1-SNAPSHOT</version>
-			</dependency>
-			<dependency>
-				<groupId>no.nav.dokarkiv</groupId>
-				<artifactId>sak</artifactId>
 				<version>1-SNAPSHOT</version>
 			</dependency>
 			<dependency>
