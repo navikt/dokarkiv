@@ -290,7 +290,7 @@ public class MottaDokumentUtgaaendeSkanningServiceIT extends AbstractJournalpost
                 "journalpostId=%s " +
                 "mottakskanal=SKAN_NETS " +
                 "batchnavn=mockBatchnavn " +
-                "feilmedling=Kan ikke validere journalpost: Ugyldig journalpostId. JournalpostId=200000000 har " +
+                "feilmedling=Kan ikke validere journalpost: Ugyldig journalpostId. JournalpostId=%s har " +
                 "journalposttype=I og status=R";
 
         Journalpost journalpost = generateTestJournalpost(
@@ -324,7 +324,7 @@ public class MottaDokumentUtgaaendeSkanningServiceIT extends AbstractJournalpost
         try {
             JsonNode responseBody = mapper.readTree((String) responseEntity.getBody());
 
-            assertEquals(String.format(errorMessage, journalpostId), responseBody.get("message").textValue());
+            assertEquals(String.format(errorMessage, journalpostId, journalpostId), responseBody.get("message").textValue());
             assertEquals(HttpStatus.CONFLICT, responseEntity.getStatusCode());
 
         } catch (IOException e) {

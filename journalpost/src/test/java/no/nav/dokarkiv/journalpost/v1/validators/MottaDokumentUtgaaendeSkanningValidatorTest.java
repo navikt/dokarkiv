@@ -168,7 +168,7 @@ public class MottaDokumentUtgaaendeSkanningValidatorTest {
     public void shouldValidateJournalpost() {
         Journalpost journalpost = generateValidJournalpost();
 
-        Optional<String> validationResult = mottaDokumentUtgaaendeSkanningValidator.validateJournalpost(journalpost);
+        Optional<String> validationResult = mottaDokumentUtgaaendeSkanningValidator.validateJournalpostHasAllElements(journalpost);
 
         assertTrue(validationResult.isEmpty());
     }
@@ -179,7 +179,7 @@ public class MottaDokumentUtgaaendeSkanningValidatorTest {
 
         Journalpost journalpost = generateJournalpostNoHoveddokument();
 
-        Optional<String> validationResult = mottaDokumentUtgaaendeSkanningValidator.validateJournalpost(journalpost);
+        Optional<String> validationResult = mottaDokumentUtgaaendeSkanningValidator.validateJournalpostHasAllElements(journalpost);
 
         assertTrue(validationResult.isPresent());
 
@@ -192,7 +192,7 @@ public class MottaDokumentUtgaaendeSkanningValidatorTest {
 
         Journalpost journalpost = generateJournalpostNoDokumentInfo();
 
-        Optional<String> validationResult = mottaDokumentUtgaaendeSkanningValidator.validateJournalpost(journalpost);
+        Optional<String> validationResult = mottaDokumentUtgaaendeSkanningValidator.validateJournalpostHasAllElements(journalpost);
 
         assertTrue(validationResult.isPresent());
 
@@ -205,7 +205,7 @@ public class MottaDokumentUtgaaendeSkanningValidatorTest {
 
         Journalpost journalpost = generateJournalpostWithHoveddokument(INVALID_JOURNALPOSTTYPECODE, VALID_JOURNALSTATUSCODE);
 
-        Optional<String> validationResult = mottaDokumentUtgaaendeSkanningValidator.validateJournalpostHandledConflict(journalpost);
+        Optional<String> validationResult = mottaDokumentUtgaaendeSkanningValidator.validateJournalpostMetadata(journalpost);
 
         assertTrue(validationResult.isPresent());
 
@@ -218,7 +218,7 @@ public class MottaDokumentUtgaaendeSkanningValidatorTest {
 
         Journalpost journalpost = generateJournalpostWithHoveddokument(VALID_JOURNALPOSTTYPECODE, INVALID_JOURNALSTATUSCODE);
 
-        Optional<String> validationResult = mottaDokumentUtgaaendeSkanningValidator.validateJournalpostHandledConflict(journalpost);
+        Optional<String> validationResult = mottaDokumentUtgaaendeSkanningValidator.validateJournalpostMetadata(journalpost);
 
         assertTrue(validationResult.isPresent());
 
@@ -231,7 +231,7 @@ public class MottaDokumentUtgaaendeSkanningValidatorTest {
 
         Journalpost journalpost = generateJournalpostTwoDokumentInfo();
 
-        Optional<String> validationResult = mottaDokumentUtgaaendeSkanningValidator.validateJournalpostHandledConflict(journalpost);
+        Optional<String> validationResult = mottaDokumentUtgaaendeSkanningValidator.validateJournalpostMetadata(journalpost);
 
         assertTrue(validationResult.isPresent());
 
@@ -245,7 +245,7 @@ public class MottaDokumentUtgaaendeSkanningValidatorTest {
 
         Journalpost journalpost = generateInvalidJournalpostWithFilDetaljer();
 
-        Optional<String> validationResult = mottaDokumentUtgaaendeSkanningValidator.validateJournalpostHandledConflict(journalpost);
+        Optional<String> validationResult = mottaDokumentUtgaaendeSkanningValidator.validateJournalpostMetadata(journalpost);
 
         assertTrue(validationResult.isPresent());
 

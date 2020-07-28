@@ -4,9 +4,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(code = HttpStatus.CONFLICT)
-public class InputValideringConflictException extends DokarkivFunctionalException {
+public class InputValideringBadMetadataException extends DokarkivFunctionalException {
 
-    public InputValideringConflictException(String message) {
+    public InputValideringBadMetadataException(String message) {
         super(message);
     }
 }
