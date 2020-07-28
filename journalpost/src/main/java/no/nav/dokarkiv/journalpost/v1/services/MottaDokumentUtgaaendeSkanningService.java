@@ -10,6 +10,7 @@ import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.DokarkivFunctionalException;
 import no.nav.dokarkiv.core.exceptions.DokarkivTechnicalException;
+import no.nav.dokarkiv.core.exceptions.InputValideringConflictException;
 import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
@@ -40,8 +41,8 @@ public class MottaDokumentUtgaaendeSkanningService {
         this.dokumentFilRepository = dokumentFilRepository;
     }
 
-    public void mottaDokumentUtgaaendeSkanning (Long journalpostId, MottaDokumentUtgaaendeSkanningRequest request) throws DokarkivFunctionalException, DokarkivTechnicalException {
-        try{
+    public void mottaDokumentUtgaaendeSkanning(Long journalpostId, MottaDokumentUtgaaendeSkanningRequest request) throws DokarkivFunctionalException, DokarkivTechnicalException {
+        try {
             validator.validateRequest(request).ifPresent(errors -> {
                 throw new InputValideringFeiletException(
                         get(MDC_REQUEST_ID) + " feilet ved validering av request "
@@ -51,10 +52,19 @@ public class MottaDokumentUtgaaendeSkanningService {
                                 + "feilmedling=" + errors);
             });
 
-            Journalpost journalpost = joarkRepository.findById(journalpostId).orElseThrow(() -> new JournalpostIkkeFunnetException(get(MDC_REQUEST_ID) + "\n" +"journalpost med id " + journalpostId + " ikke funnet"));
+            Journalpost journalpost = joarkRepository.findById(journalpostId).orElseThrow(() -> new JournalpostIkkeFunnetException(get(MDC_REQUEST_ID) + "\n" + "journalpost med id " + journalpostId + " ikke funnet"));
 
             validator.validateJournalpost(journalpost).ifPresent(errors -> {
                 throw new InputValideringFeiletException(
+                        get(MDC_REQUEST_ID) + " feilet ved validering av journalpost "
+                                + "journalpostId=" + journalpostId + " "
+                                + "mottakskanal=" + request.getMottakskanal() + " "
+                                + "batchnavn=" + request.getBatchnavn() + " "
+                                + "feilmedling=" + errors);
+            });
+
+            validator.validateJournalpostHandledConflict(journalpost).ifPresent(errors -> {
+                throw new InputValideringConflictException(
                         get(MDC_REQUEST_ID) + " feilet ved validering av journalpost "
                                 + "journalpostId=" + journalpostId + " "
                                 + "mottakskanal=" + request.getMottakskanal() + " "
@@ -69,7 +79,7 @@ public class MottaDokumentUtgaaendeSkanningService {
             journalpost.setMottakskanal(MottaksKanalCode.valueOf(request.getMottakskanal()));
 
             journalpost.setEndretKildeNavn(KILDENAVN);
-            if(request.getDatoMottatt() != null) {
+            if (request.getDatoMottatt() != null) {
                 journalpost.setMottattDato(request.getDatoMottatt());
             }
             List<FilDetaljer> filDetaljerList = request.getDokumentvarianter()
@@ -82,7 +92,7 @@ public class MottaDokumentUtgaaendeSkanningService {
                 dokumentFilRepository.save(dokumentFil);
             });
             filDetaljerList.forEach(filDetaljer -> journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().addFilDetaljer(filDetaljer));
-        } catch(Exception e) {
+        } catch (Exception e) {
             log.warn(
                     get(MDC_REQUEST_ID) + " mottaDokumentUtgaaendeSkanning feilet med ukjent feil på journalpost "
                     + "journalpostId=" + journalpostId + " "
@@ -108,7 +118,7 @@ public class MottaDokumentUtgaaendeSkanningService {
         return filDetaljer;
     }
 
-    private boolean notNullOrEmpty(String string){
+    private boolean notNullOrEmpty(String string) {
         return string != null && !string.isBlank();
     }
 }

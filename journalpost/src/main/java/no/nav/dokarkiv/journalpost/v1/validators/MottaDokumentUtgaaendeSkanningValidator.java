@@ -17,21 +17,21 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class MottaDokumentUtgaaendeSkanningValidator {
-    public Optional<String> validateRequest(MottaDokumentUtgaaendeSkanningRequest request){
+    public Optional<String> validateRequest(MottaDokumentUtgaaendeSkanningRequest request) {
 
         List<String> errors = new ArrayList<>();
 
-        if(request.getMottakskanal() == null){
+        if (request.getMottakskanal() == null) {
             errors.add("mottakskanal kan ikke være null");
         } else {
-            try{
+            try {
                 MottaksKanalCode.valueOf(request.getMottakskanal());
-            } catch(IllegalArgumentException e) {
+            } catch (IllegalArgumentException e) {
                 errors.add("mottakskanal er ugyldig");
             }
         }
 
-        if(request.getDokumentvarianter() != null){
+        if (request.getDokumentvarianter() != null) {
             errors.addAll(IntStream.range(0, request.getDokumentvarianter().size())
                     .mapToObj(i -> validateDokumentVariant(request.getDokumentvarianter().get(i), i))
                     .filter(Optional::isPresent)
@@ -42,30 +42,45 @@ public class MottaDokumentUtgaaendeSkanningValidator {
         if(errors.size() == 0){ return Optional.empty(); }
         return Optional.of("Kan ikke validere request: " + String.join("; ", errors));
     }
-    public Optional<String> validateJournalpost(Journalpost journalpost){
+
+    public Optional<String> validateJournalpost(Journalpost journalpost) {
         ArrayList<String> errors = new ArrayList<>();
 
-        JournalpostTypeCode journalpostTypeCode = journalpost.getJournalposttype();
-        JournalStatusCode journalStatusCode = journalpost.getJournalstatus();
         List<DokumentInfo> dokumentInfos = journalpost.findAllDokumentInfos();
 
-        if(journalpostTypeCode != JournalpostTypeCode.U && journalpostTypeCode != JournalpostTypeCode.N){
-            errors.add("JournalpostType er ikke U eller N");
-        }
-        if(journalStatusCode != JournalStatusCode.R) {
-            errors.add("JournalStatus er ikke R");
-        }
-        if(dokumentInfos.isEmpty()) {
+        if (dokumentInfos.isEmpty()) {
             errors.add("Mangler DokumentInfo");
         }
-        if(dokumentInfos.size() > 1) {
-            errors.add("Har mer enn ett DokumentInfo objekt");
-        }
-        if(!journalpost.hasHoveddokumentRelasjon()) {
+        if (!journalpost.hasHoveddokumentRelasjon()) {
             errors.add("Har ikke hoveddokument");
         }
-        if(!dokumentInfos.isEmpty() && !dokumentInfos.get(0).getFildetaljerListe().isEmpty()){
-            errors.add("Har tilknyttede fildetaljer");
+
+        if (errors.isEmpty()) {
+            return Optional.empty();
+        }
+
+        return Optional.of("Kan ikke validere journalpost: " + String.join("; ", errors));
+    }
+
+    public Optional<String> validateJournalpostHandledConflict(Journalpost journalpost) {
+        ArrayList<String> errors = new ArrayList<>();
+
+        JournalStatusCode journalStatusCode = journalpost.getJournalstatus();
+        JournalpostTypeCode journalpostTypeCode = journalpost.getJournalposttype();
+        List<DokumentInfo> dokumentInfos = journalpost.findAllDokumentInfos();
+        long journalpostId = journalpost.getId();
+
+        if (!hasValidJournalPostType(journalpostTypeCode) || !hasValidJournalpostStatus(journalStatusCode)) {
+            errors.add("Ugyldig journalpostId. JournalpostId=" + journalpostId + " har journalposttype=" + journalpostTypeCode +
+                    " og status=" + journalStatusCode);
+        }
+        if (dokumentInfos.size() > 1) {
+            errors.add("Ugyldig journalpostId. JournalpostId=" + journalpostId + " har mer enn ett " +
+                    "DokumentInfo-objekt");
+        }
+        if (!dokumentInfos.isEmpty() && !dokumentInfos.get(0).getFildetaljerListe().isEmpty()) {
+            errors.add("JournalpostId=" + journalpostId + " har allerede fildetaljer og kan ikke oppdateres. " +
+                    "JournalpostId er ugyldig eller samme førsteside er benyttet flere ganger.");
         }
 
         if(errors.isEmpty()){ return Optional.empty(); }
@@ -73,9 +88,17 @@ public class MottaDokumentUtgaaendeSkanningValidator {
         return Optional.of("Kan ikke validere journalpost: " + String.join("; ", errors));
     }
 
+    private boolean hasValidJournalpostStatus(JournalStatusCode journalStatusCode) {
+        return journalStatusCode == JournalStatusCode.R;
+    }
+
+    private boolean hasValidJournalPostType(JournalpostTypeCode journalpostTypeCode) {
+        return journalpostTypeCode == JournalpostTypeCode.U || journalpostTypeCode == JournalpostTypeCode.N;
+    }
+
     private Optional<String> validateDokumentVariant(DokumentVariant dokumentVariant, int index) {
         ArrayList<String> errors = new ArrayList<>();
-        if(isNullOrEmpty(dokumentVariant.getFiltype())){
+        if (isNullOrEmpty(dokumentVariant.getFiltype())) {
             errors.add("mangler filtype");
         } else {
             try {
@@ -85,7 +108,7 @@ public class MottaDokumentUtgaaendeSkanningValidator {
             }
         }
 
-        if(isNullOrEmpty(dokumentVariant.getVariantformat())){
+        if (isNullOrEmpty(dokumentVariant.getVariantformat())) {
             errors.add("mangler variantformat");
         } else {
             try {
@@ -94,20 +117,20 @@ public class MottaDokumentUtgaaendeSkanningValidator {
                 errors.add("har ugyldig variantformat " + dokumentVariant.getVariantformat());
             }
         }
-        if(isNullOrEmpty(dokumentVariant.getFysiskDokument())){
+        if (isNullOrEmpty(dokumentVariant.getFysiskDokument())) {
             errors.add("mangler fysiskDokument");
         }
 
         if(errors.size() == 0){ return Optional.empty(); }
 
-        return(Optional.of("dokumentvarianter[" + index + "] " + String.join(", ", errors)));
+        return (Optional.of("dokumentvarianter[" + index + "] " + String.join(", ", errors)));
     }
 
     private boolean isNullOrEmpty(String string) {
         return string == null || string.isBlank();
     }
 
-    private boolean isNullOrEmpty(byte[] byteArray){
+    private boolean isNullOrEmpty(byte[] byteArray) {
         return byteArray == null || byteArray.length == 0;
     }
 }
