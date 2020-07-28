@@ -168,9 +168,13 @@ public class MottaDokumentUtgaaendeSkanningValidatorTest {
     public void shouldValidateJournalpost() {
         Journalpost journalpost = generateValidJournalpost();
 
-        Optional<String> validationResult = mottaDokumentUtgaaendeSkanningValidator.validateJournalpostHasAllElements(journalpost);
+        Optional<String> validationResultHasAllElements = mottaDokumentUtgaaendeSkanningValidator.validateJournalpostHasAllElements(journalpost);
 
-        assertTrue(validationResult.isEmpty());
+        assertTrue(validationResultHasAllElements.isEmpty());
+
+        Optional<String> validationResultMetadata = mottaDokumentUtgaaendeSkanningValidator.validateJournalpostMetadata(journalpost);
+
+        assertTrue(validationResultMetadata.isEmpty());
     }
 
     @Test
