@@ -35,6 +35,8 @@ public class MottaDokumentUtgaaendeSkanningService {
     private final MottaDokumentUtgaaendeSkanningValidator validator = new MottaDokumentUtgaaendeSkanningValidator();
 
     private final String KILDENAVN = "skanmotutgaaende";
+    private final String JOURNALPOST = "journalpost";
+    private final String REQUEST = "request";
 
     public MottaDokumentUtgaaendeSkanningService(JoarkRepository joarkRepository, DokumentFilRepository dokumentFilRepository) {
         this.joarkRepository = joarkRepository;
@@ -48,7 +50,7 @@ public class MottaDokumentUtgaaendeSkanningService {
 
             Journalpost journalpost = joarkRepository.findById(journalpostId).orElseThrow(() -> new JournalpostIkkeFunnetException(get(MDC_REQUEST_ID) + "\n" + "journalpost med id " + journalpostId + " ikke funnet"));
 
-            validateJournalPost(journalpostId, request, journalpost);
+            validateJournalpost(journalpostId, request, journalpost);
 
             journalpost.setJournalstatus(JournalStatusCode.FL);
 
@@ -82,35 +84,29 @@ public class MottaDokumentUtgaaendeSkanningService {
         }
     }
 
-    public void validateRequest(Long journalpostId, MottaDokumentUtgaaendeSkanningRequest request) throws InputValideringFeiletException {
+    private void validateRequest(Long journalpostId, MottaDokumentUtgaaendeSkanningRequest request) throws InputValideringFeiletException {
         validator.validateRequest(request).ifPresent(errors -> {
-            throw new InputValideringFeiletException(
-                    get(MDC_REQUEST_ID) + " feilet ved validering av request "
-                            + "journalpostId=" + journalpostId + " "
-                            + "mottakskanal=" + request.getMottakskanal() + " "
-                            + "batchnavn=" + request.getBatchnavn() + " "
-                            + "feilmedling=" + errors);
+            throw new InputValideringFeiletException(generateErrorMessage(errors, journalpostId, request, REQUEST));
         });
     }
 
-    public void validateJournalPost(Long journalpostId, MottaDokumentUtgaaendeSkanningRequest request, Journalpost journalpost) throws DokarkivFunctionalException {
+    private void validateJournalpost(Long journalpostId, MottaDokumentUtgaaendeSkanningRequest request, Journalpost journalpost) throws DokarkivFunctionalException {
         validator.validateJournalpostHasAllElements(journalpost).ifPresent(errors -> {
-            throw new InputValideringFeiletException(
-                    get(MDC_REQUEST_ID) + " feilet ved validering av journalpost "
-                            + "journalpostId=" + journalpostId + " "
-                            + "mottakskanal=" + request.getMottakskanal() + " "
-                            + "batchnavn=" + request.getBatchnavn() + " "
-                            + "feilmedling=" + errors);
+            throw new InputValideringFeiletException(generateErrorMessage(errors, journalpostId, request, JOURNALPOST));
         });
 
         validator.validateJournalpostMetadata(journalpost).ifPresent(errors -> {
-            throw new InputValideringBadMetadataException(
-                    get(MDC_REQUEST_ID) + " feilet ved validering av journalpost "
-                            + "journalpostId=" + journalpostId + " "
-                            + "mottakskanal=" + request.getMottakskanal() + " "
-                            + "batchnavn=" + request.getBatchnavn() + " "
-                            + "feilmedling=" + errors);
+            throw new InputValideringBadMetadataException(generateErrorMessage(errors, journalpostId, request, JOURNALPOST));
         });
+    }
+
+    private String generateErrorMessage (String errors, Long journalpostId, MottaDokumentUtgaaendeSkanningRequest request, String valideringAv){
+        String errorMessage = String.format(get(MDC_REQUEST_ID) + " feilet ved validering av %s "
+                + "journalpostId=" + journalpostId + " "
+                + "mottakskanal=" + request.getMottakskanal() + " "
+                + "batchnavn=" + request.getBatchnavn() + " "
+                + "feilmedling=" + errors, valideringAv);
+        return errorMessage;
     }
 
     private FilDetaljer mapDokumentVariantToFildetaljer(DokumentVariant dokumentVariant, String batchnavn) {
