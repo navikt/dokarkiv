@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class MottaDokumentUtgaaendeSkanningValidator {
+
     public Optional<String> validateRequest(MottaDokumentUtgaaendeSkanningRequest request) {
 
         List<String> errors = new ArrayList<>();
@@ -40,8 +41,10 @@ public class MottaDokumentUtgaaendeSkanningValidator {
         }
 
         if(errors.size() == 0){ return Optional.empty(); }
+
         return Optional.of("Kan ikke validere request: " + String.join("; ", errors));
     }
+
 
     public Optional<String> validateJournalpostHasAllElements(Journalpost journalpost) {
         ArrayList<String> errors = new ArrayList<>();
@@ -68,18 +71,18 @@ public class MottaDokumentUtgaaendeSkanningValidator {
         JournalStatusCode journalStatusCode = journalpost.getJournalstatus();
         JournalpostTypeCode journalpostTypeCode = journalpost.getJournalposttype();
         List<DokumentInfo> dokumentInfos = journalpost.findAllDokumentInfos();
-        long journalpostId = journalpost.getId();
 
-        if (!hasValidJournalPostType(journalpostTypeCode) || !hasValidJournalpostStatus(journalStatusCode)) {
-            errors.add("Ugyldig journalpostId. JournalpostId=" + journalpostId + " har journalposttype=" + journalpostTypeCode +
-                    " og status=" + journalStatusCode);
+        if (!hasValidJournalPostType(journalpostTypeCode) ) {
+            errors.add("Journalposten har ugyldig journalposttype=" + journalpostTypeCode);
+        }
+        if(!hasValidJournalpostStatus(journalStatusCode)){
+            errors.add("Journalposten har ugyldig journalpostStatus=" + journalStatusCode);
         }
         if (dokumentInfos.size() > 1) {
-            errors.add("Ugyldig journalpostId. JournalpostId=" + journalpostId + " har mer enn ett " +
-                    "DokumentInfo-objekt");
+            errors.add("Journalposten har mer enn ett DokumentInfo-objekt");
         }
         if (!dokumentInfos.isEmpty() && !dokumentInfos.get(0).getFildetaljerListe().isEmpty()) {
-            errors.add("JournalpostId=" + journalpostId + " har allerede fildetaljer og kan ikke oppdateres. " +
+            errors.add("Journalposten har allerede fildetaljer og kan ikke oppdateres. " +
                     "JournalpostId er ugyldig eller samme førsteside er benyttet flere ganger.");
         }
 
