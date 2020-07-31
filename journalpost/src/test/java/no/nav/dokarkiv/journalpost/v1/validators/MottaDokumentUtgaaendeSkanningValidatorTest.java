@@ -35,11 +35,16 @@ public class MottaDokumentUtgaaendeSkanningValidatorTest {
     private final String mockBatchnavn = "mockBatchnavn";
     private final byte[] mockData = "mockData".getBytes();
     private final String mockFilnavn = "mockFilnavn";
+    private final JournalpostTypeCode VALID_JOURNALPOSTTYPECODE = JournalpostTypeCode.U;
+    private final JournalpostTypeCode INVALID_JOURNALPOSTTYPECODE = JournalpostTypeCode.I;
+    private final JournalStatusCode VALID_JOURNALSTATUSCODE = JournalStatusCode.R;
+    private final JournalStatusCode INVALID_JOURNALSTATUSCODE = JournalStatusCode.FL;
+
 
     private final String INVALID_MOTTAKSKANAL = "INVALID_MOCK";
 
     @Test
-    public void shouldValidatehappyPathRequest(){
+    public void shouldValidatehappyPathRequest() {
         MottaDokumentUtgaaendeSkanningRequest request = buildRequest(
                 List.of(
                         DokumentVariant
@@ -56,7 +61,7 @@ public class MottaDokumentUtgaaendeSkanningValidatorTest {
     }
 
     @Test
-    public void shouldNotValidateWithMissingRequiredFields(){
+    public void shouldNotValidateWithMissingRequiredFields() {
         MottaDokumentUtgaaendeSkanningRequest request = buildRequest(
                 null,
                 List.of(
@@ -73,14 +78,14 @@ public class MottaDokumentUtgaaendeSkanningValidatorTest {
         assertTrue(valdationResult.isPresent());
         assertEquals(
                 "Kan ikke validere request: " +
-                "mottakskanal kan ikke være null; " +
-                "dokumentvarianter[0] mangler filtype, mangler variantformat, mangler fysiskDokument",
+                        "mottakskanal kan ikke være null; " +
+                        "dokumentvarianter[0] mangler filtype, mangler variantformat, mangler fysiskDokument",
                 valdationResult.get()
         );
     }
 
     @Test
-    public void shouldNotValidateWithInvalidRequiredFields(){
+    public void shouldNotValidateWithInvalidRequiredFields() {
         MottaDokumentUtgaaendeSkanningRequest request = buildRequest(
                 INVALID_MOTTAKSKANAL,
                 List.of(
@@ -97,8 +102,8 @@ public class MottaDokumentUtgaaendeSkanningValidatorTest {
         assertTrue(valdationResult.isPresent());
         assertEquals(
                 "Kan ikke validere request: " +
-                "mottakskanal er ugyldig; " +
-                "dokumentvarianter[0] har ugyldig filtype ARKIV, har ugyldig variantformat PDF",
+                        "mottakskanal er ugyldig; " +
+                        "dokumentvarianter[0] har ugyldig filtype ARKIV, har ugyldig variantformat PDF",
                 valdationResult.get()
         );
     }
@@ -128,7 +133,7 @@ public class MottaDokumentUtgaaendeSkanningValidatorTest {
     }
 
     @Test
-    public void ShouldValidateMultipleDokumentVariantsInvalid(){
+    public void ShouldValidateMultipleDokumentVariantsInvalid() {
         MottaDokumentUtgaaendeSkanningRequest request = buildRequest(
                 INVALID_MOTTAKSKANAL,
                 List.of(
@@ -151,10 +156,10 @@ public class MottaDokumentUtgaaendeSkanningValidatorTest {
         Optional<String> valdationResult = mottaDokumentUtgaaendeSkanningValidator.validateRequest(request);
         assertTrue(valdationResult.isPresent());
         assertEquals(
-            "Kan ikke validere request: " +
-                "mottakskanal er ugyldig; " +
-                "dokumentvarianter[0] mangler filtype, mangler variantformat, mangler fysiskDokument; " +
-                "dokumentvarianter[1] har ugyldig filtype ARKIV, har ugyldig variantformat PDF",
+                "Kan ikke validere request: " +
+                        "mottakskanal er ugyldig; " +
+                        "dokumentvarianter[0] mangler filtype, mangler variantformat, mangler fysiskDokument; " +
+                        "dokumentvarianter[1] har ugyldig filtype ARKIV, har ugyldig variantformat PDF",
                 valdationResult.get()
         );
     }
@@ -163,29 +168,99 @@ public class MottaDokumentUtgaaendeSkanningValidatorTest {
     public void shouldValidateJournalpost() {
         Journalpost journalpost = generateValidJournalpost();
 
-        Optional<String> validationResult = mottaDokumentUtgaaendeSkanningValidator.validateJournalpost(journalpost);
+        Optional<String> validationResultHasAllElements = mottaDokumentUtgaaendeSkanningValidator.validateJournalpostHasAllElements(journalpost);
 
-        assertTrue(validationResult.isEmpty());
+        assertTrue(validationResultHasAllElements.isEmpty());
+
+        Optional<String> validationResultMetadata = mottaDokumentUtgaaendeSkanningValidator.validateJournalpostMetadata(journalpost);
+
+        assertTrue(validationResultMetadata.isEmpty());
     }
 
     @Test
-    public void shouldNotValidateInvalidJournalpost() {
-        String errorMessage = "Kan ikke validere journalpost: JournalpostType er ikke U eller N; JournalStatus er ikke R; Har mer enn ett DokumentInfo objekt; Har ikke hoveddokument; Har tilknyttede fildetaljer";
+    public void shouldNotValidateJournalpostNoHoveddokument() {
+        String errorMessage = "Kan ikke validere journalpost: Har ikke hoveddokument";
 
-        Journalpost journalpost = generateInvalidJournalpost();
+        Journalpost journalpost = generateJournalpostNoHoveddokument();
 
-        Optional<String> validationResult = mottaDokumentUtgaaendeSkanningValidator.validateJournalpost(journalpost);
+        Optional<String> validationResult = mottaDokumentUtgaaendeSkanningValidator.validateJournalpostHasAllElements(journalpost);
 
         assertTrue(validationResult.isPresent());
 
         assertEquals(errorMessage, validationResult.get());
     }
 
-    private MottaDokumentUtgaaendeSkanningRequest buildRequest(List<DokumentVariant> dokumentVarianter){
+    @Test
+    public void shouldNotValidateJournalPostNoDokumentInfo() {
+        String errorMessage = "Kan ikke validere journalpost: Mangler DokumentInfo";
+
+        Journalpost journalpost = generateJournalpostNoDokumentInfo();
+
+        Optional<String> validationResult = mottaDokumentUtgaaendeSkanningValidator.validateJournalpostHasAllElements(journalpost);
+
+        assertTrue(validationResult.isPresent());
+
+        assertEquals(errorMessage, validationResult.get());
+    }
+
+    @Test
+    public void shouldNotValidateInvalidJournalPostTypeCode() {
+        String errorMessage = "Kan ikke validere journalpost: Journalposten har ugyldig journalposttype=I";
+
+        Journalpost journalpost = generateJournalpostWithHoveddokument(INVALID_JOURNALPOSTTYPECODE, VALID_JOURNALSTATUSCODE);
+
+        Optional<String> validationResult = mottaDokumentUtgaaendeSkanningValidator.validateJournalpostMetadata(journalpost);
+
+        assertTrue(validationResult.isPresent());
+
+        assertEquals(errorMessage, validationResult.get());
+    }
+
+    @Test
+    public void shouldNotValidateInvalidJournalStatusCode() {
+        String errorMessage = "Kan ikke validere journalpost: Journalposten har ugyldig journalpostStatus=FL";
+
+        Journalpost journalpost = generateJournalpostWithHoveddokument(VALID_JOURNALPOSTTYPECODE, INVALID_JOURNALSTATUSCODE);
+
+        Optional<String> validationResult = mottaDokumentUtgaaendeSkanningValidator.validateJournalpostMetadata(journalpost);
+
+        assertTrue(validationResult.isPresent());
+
+        assertEquals(errorMessage, validationResult.get());
+    }
+
+    @Test
+    public void shouldNotValidateTwoDokumentInfo() {
+        String errorMessage = "Kan ikke validere journalpost: Journalposten har mer enn ett DokumentInfo-objekt";
+
+        Journalpost journalpost = generateJournalpostTwoDokumentInfo();
+
+        Optional<String> validationResult = mottaDokumentUtgaaendeSkanningValidator.validateJournalpostMetadata(journalpost);
+
+        assertTrue(validationResult.isPresent());
+
+        assertEquals(errorMessage, validationResult.get());
+    }
+
+    @Test
+    public void shouldNotValidateJournalpostWithExistingFildetaljer() {
+        String errorMessage = "Kan ikke validere journalpost: Journalposten har ugyldig journalposttype=I; Journalposten har ugyldig journalpostStatus=FL; " +
+                "Journalposten har mer enn ett DokumentInfo-objekt; Journalposten har allerede fildetaljer og kan ikke oppdateres. JournalpostId er ugyldig eller samme førsteside er benyttet flere ganger.";
+
+        Journalpost journalpost = generateInvalidJournalpostWithFilDetaljer();
+
+        Optional<String> validationResult = mottaDokumentUtgaaendeSkanningValidator.validateJournalpostMetadata(journalpost);
+
+        assertTrue(validationResult.isPresent());
+
+        assertEquals(errorMessage, validationResult.get());
+    }
+
+    private MottaDokumentUtgaaendeSkanningRequest buildRequest(List<DokumentVariant> dokumentVarianter) {
         return buildRequest(mockMottaksKanal, dokumentVarianter);
     }
 
-    private MottaDokumentUtgaaendeSkanningRequest buildRequest(String mottaksKanal, List<DokumentVariant> dokumentVarianter){
+    private MottaDokumentUtgaaendeSkanningRequest buildRequest(String mottaksKanal, List<DokumentVariant> dokumentVarianter) {
         return new MottaDokumentUtgaaendeSkanningRequest(
                 mockDate,
                 mottaksKanal,
@@ -196,14 +271,71 @@ public class MottaDokumentUtgaaendeSkanningValidatorTest {
     }
 
     private Journalpost generateValidJournalpost() {
+        return generateJournalpost(VALID_JOURNALPOSTTYPECODE, VALID_JOURNALSTATUSCODE, TilknyttetJournalpostSomCode.HOVEDDOKUMENT);
+    }
 
+    private Journalpost generateJournalpostNoHoveddokument() {
+        return generateJournalpost(VALID_JOURNALPOSTTYPECODE, VALID_JOURNALSTATUSCODE, TilknyttetJournalpostSomCode.VEDLEGG);
+    }
+
+    private Journalpost generateJournalpostWithHoveddokument(JournalpostTypeCode journalpostTypeCode, JournalStatusCode journalstatuscode) {
+        return generateJournalpost(journalpostTypeCode, journalstatuscode, TilknyttetJournalpostSomCode.HOVEDDOKUMENT);
+    }
+
+    private Journalpost generateJournalpost(JournalpostTypeCode journalpostTypeCode, JournalStatusCode journalstatuscode, TilknyttetJournalpostSomCode tilknyttetJournalpostSomCode) {
         Journalpost journalpost = JournalpostBuilder
                 .getJournalpostBuilder()
                 .journalpostId(0L)
                 .opprettetKildeNavn("unitTest")
-                .journalpostType(JournalpostTypeCode.U)
-                .journalStatus(JournalStatusCode.R)
+                .journalpostType(journalpostTypeCode)
+                .journalStatus(journalstatuscode)
                 .dokumentInfoRelasjoner(
+                        JournalpostDokumentInfoRelasjonBuilder
+                                .getJournalpostDokumentInfoRelasjonBuilder()
+                                .opprettetKildeNavn("unitTest")
+                                .tilknyttetAvNavn("unitTest")
+                                .dokumentInfo(DokumentInfoBuilder.getDokumentInfoBuilder().opprettetKildeNavn("unitTest").build())
+                                .tilknyttetJournalpostSom(tilknyttetJournalpostSomCode)
+                                .build())
+                .build();
+
+        return journalpost;
+    }
+
+    private Journalpost generateJournalpostNoDokumentInfo() {
+        Journalpost journalpost = JournalpostBuilder
+                .getJournalpostBuilder()
+                .journalpostId(0L)
+                .opprettetKildeNavn("unitTest")
+                .journalpostType(VALID_JOURNALPOSTTYPECODE)
+                .journalStatus(VALID_JOURNALSTATUSCODE)
+                .dokumentInfoRelasjoner(
+                        JournalpostDokumentInfoRelasjonBuilder
+                                .getJournalpostDokumentInfoRelasjonBuilder()
+                                .opprettetKildeNavn("unitTest")
+                                .tilknyttetAvNavn("unitTest")
+                                .tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.HOVEDDOKUMENT)
+                                .build())
+                .build();
+
+        return journalpost;
+    }
+
+    private Journalpost generateJournalpostTwoDokumentInfo() {
+        Journalpost journalpost = JournalpostBuilder
+                .getJournalpostBuilder()
+                .journalpostId(0L)
+                .opprettetKildeNavn("unitTest")
+                .journalpostType(VALID_JOURNALPOSTTYPECODE)
+                .journalStatus(VALID_JOURNALSTATUSCODE)
+                .dokumentInfoRelasjoner(
+                        JournalpostDokumentInfoRelasjonBuilder
+                                .getJournalpostDokumentInfoRelasjonBuilder()
+                                .opprettetKildeNavn("unitTest")
+                                .tilknyttetAvNavn("unitTest")
+                                .dokumentInfo(DokumentInfoBuilder.getDokumentInfoBuilder().opprettetKildeNavn("unitTest").build())
+                                .tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.HOVEDDOKUMENT)
+                                .build(),
                         JournalpostDokumentInfoRelasjonBuilder
                                 .getJournalpostDokumentInfoRelasjonBuilder()
                                 .opprettetKildeNavn("unitTest")
@@ -212,11 +344,10 @@ public class MottaDokumentUtgaaendeSkanningValidatorTest {
                                 .tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.HOVEDDOKUMENT)
                                 .build())
                 .build();
-
         return journalpost;
     }
 
-    private Journalpost generateInvalidJournalpost() {
+    private Journalpost generateInvalidJournalpostWithFilDetaljer() {
         FilDetaljer filDetaljer = FilDetaljer
                 .builder()
                 .filtype(FilTypeCode.PDF)
@@ -232,8 +363,8 @@ public class MottaDokumentUtgaaendeSkanningValidatorTest {
                 .getJournalpostBuilder()
                 .journalpostId(0L)
                 .opprettetKildeNavn("unitTest")
-                .journalpostType(JournalpostTypeCode.I)
-                .journalStatus(JournalStatusCode.FL)
+                .journalpostType(INVALID_JOURNALPOSTTYPECODE)
+                .journalStatus(INVALID_JOURNALSTATUSCODE)
                 .dokumentInfoRelasjoner(
                         JournalpostDokumentInfoRelasjonBuilder
                                 .getJournalpostDokumentInfoRelasjonBuilder()
@@ -270,4 +401,5 @@ public class MottaDokumentUtgaaendeSkanningValidatorTest {
 
         return journalpost;
     }
+
 }

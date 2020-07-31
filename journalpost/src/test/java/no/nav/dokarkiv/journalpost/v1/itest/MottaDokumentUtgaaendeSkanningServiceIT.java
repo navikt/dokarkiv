@@ -53,7 +53,8 @@ public class MottaDokumentUtgaaendeSkanningServiceIT extends AbstractJournalpost
     private final Date mockDate = new Date(Date.UTC(2000, Calendar.NOVEMBER, 10, 0, 0, 0));
 
     private final String mockMottaksKanal = MottaksKanalCode.SKAN_NETS.toString();
-    private final List<Tilleggsopplysning> mockTilleggsopplysninger = List.of(new Tilleggsopplysning("mockNoekkel", "mockVerdi"));
+    private final List<Tilleggsopplysning> mockTilleggsopplysninger = List.of(new Tilleggsopplysning("mockNoekkel",
+            "mockVerdi"));
     private final String mockBatchnavn = "mockBatchnavn";
     private final byte[] mockData = "mockData".getBytes();
     private final String mockFilnavn = "mockFilnavn";
@@ -63,40 +64,28 @@ public class MottaDokumentUtgaaendeSkanningServiceIT extends AbstractJournalpost
     @Test
     public void mottaDokumentHappy() {
         Journalpost journalpost = generateTestJournalpost(
-                        JournalpostTypeCode.U,
-                        JournalStatusCode.R,
-                        TilknyttetJournalpostSomCode.HOVEDDOKUMENT
-                ).build();
+                JournalpostTypeCode.U,
+                JournalStatusCode.R,
+                TilknyttetJournalpostSomCode.HOVEDDOKUMENT
+        ).build();
 
         long journalpostId = saveJournalpost(journalpost).getId();
 
         endTransaction();
+        MottaDokumentUtgaaendeSkanningRequest request = createGyldigRequest();
 
-        HttpHeaders headers = createHeaders(GYLDIG_CONSUMER);
-
-        MottaDokumentUtgaaendeSkanningRequest request = buildRequest(List.of(DokumentVariant
-                .builder()
-                .filtype(FilTypeCode.PDF.toString())
-                .variantformat(VariantFormatCode.ORIGINAL.toString())
-                .fysiskDokument(mockData)
-                .filnavn(mockFilnavn)
-                .build()
-        ));
-
-        HttpEntity<MottaDokumentUtgaaendeSkanningRequest> requestHttpEntity = new HttpEntity<>(request, headers);
-        ResponseEntity responseEntity = restTemplate.exchange(
-                URL_JOURNALPOST_INTERN + journalpostId + "/mottaDokumentUtgaaendeSkanning", HttpMethod.PUT, requestHttpEntity, String.class);
-
-        endTransaction();
+        ResponseEntity responseEntity = doPutTransaction(GYLDIG_CONSUMER, request, journalpostId);
 
         Journalpost oppdatertJP = joarkRepository.findById(journalpostId).get();
         Map<String, String> tilleggsopplysninger = oppdatertJP.getTilleggsopplysninger();
-        FilDetaljer filDetaljer = oppdatertJP.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getFildetaljerListe().iterator().next();
+        FilDetaljer filDetaljer =
+                oppdatertJP.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getFildetaljerListe().iterator().next();
         DokumentFil dokumentfil = dokumentFilRepository.findByFilUuid(filDetaljer.getFilUuid());
 
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         assertEquals(JournalStatusCode.FL, oppdatertJP.getJournalstatus());
-        assertEquals(mockTilleggsopplysninger.get(0).getVerdi(), tilleggsopplysninger.get(mockTilleggsopplysninger.get(0).getNokkel()));
+        assertEquals(mockTilleggsopplysninger.get(0).getVerdi(),
+                tilleggsopplysninger.get(mockTilleggsopplysninger.get(0).getNokkel()));
         assertEquals(MottaksKanalCode.SKAN_NETS, oppdatertJP.getMottakskanal());
         assertEquals(KILDE, oppdatertJP.getEndretKildeNavn());
         assertEquals(mockDate, oppdatertJP.getMottattDato());
@@ -120,52 +109,47 @@ public class MottaDokumentUtgaaendeSkanningServiceIT extends AbstractJournalpost
 
         endTransaction();
 
-        HttpHeaders headers = createHeaders(GYLDIG_CONSUMER);
-
         MottaDokumentUtgaaendeSkanningRequest request = buildRequest(
-            List.of(
-                DokumentVariant
-                    .builder()
-                    .filtype(FilTypeCode.PDF.toString())
-                    .variantformat(VariantFormatCode.ORIGINAL.toString())
-                    .fysiskDokument(mockData)
-                    .filnavn(mockFilnavn + "-1")
-                    .build(),
-                DokumentVariant
-                    .builder()
-                    .filtype(FilTypeCode.PDF.toString())
-                    .variantformat(VariantFormatCode.ORIGINAL.toString())
-                    .fysiskDokument(mockData)
-                    .filnavn(mockFilnavn + "-2")
-                    .build()
-        ));
+                List.of(
+                        DokumentVariant
+                                .builder()
+                                .filtype(FilTypeCode.PDF.toString())
+                                .variantformat(VariantFormatCode.ORIGINAL.toString())
+                                .fysiskDokument(mockData)
+                                .filnavn(mockFilnavn + "-1")
+                                .build(),
+                        DokumentVariant
+                                .builder()
+                                .filtype(FilTypeCode.PDF.toString())
+                                .variantformat(VariantFormatCode.ORIGINAL.toString())
+                                .fysiskDokument(mockData)
+                                .filnavn(mockFilnavn + "-2")
+                                .build()
+                ));
 
-        HttpEntity<MottaDokumentUtgaaendeSkanningRequest> requestHttpEntity = new HttpEntity<>(request, headers);
-        ResponseEntity responseEntity = restTemplate.exchange(
-                URL_JOURNALPOST_INTERN + journalpostId + "/mottaDokumentUtgaaendeSkanning", HttpMethod.PUT, requestHttpEntity, String.class);
-
-        endTransaction();
-
+        ResponseEntity responseEntity = doPutTransaction(GYLDIG_CONSUMER, request, journalpostId);
         Journalpost oppdatertJP = joarkRepository.findById(journalpostId).get();
 
-        Set<FilDetaljer> filDetaljerSet = oppdatertJP.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getFildetaljerListe();
-        List<FilDetaljer> filDetaljerList = filDetaljerSet.stream().sorted(Comparator.comparing(FilDetaljer::getFilnavn)).collect(Collectors.toList());
+        Set<FilDetaljer> filDetaljerSet =
+                oppdatertJP.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getFildetaljerListe();
+        List<FilDetaljer> filDetaljerList =
+                filDetaljerSet.stream().sorted(Comparator.comparing(FilDetaljer::getFilnavn)).collect(Collectors.toList());
 
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         assertEquals(2, filDetaljerList.size());
         assertEquals(mockFilnavn + "-1", filDetaljerList.get(0).getFilnavn());
         assertEquals(mockFilnavn + "-2", filDetaljerList.get(1).getFilnavn());
-
     }
 
     @Test
     public void shouldReturnBadRequestWithInvalidRequest() throws IOException {
-        String errorMessage = "mottaDokumentUtgaaendeSkanning feilet ved validering av request " +
+        String expectedErrorMessage = "mottaDokumentUtgaaendeSkanning feilet ved validering av request " +
                 "journalpostId=%s " +
                 "mottakskanal=SKAN_NETS " +
                 "batchnavn=mockBatchnavn " +
                 "feilmedling=Kan ikke validere request: " +
-                "dokumentvarianter[0] har ugyldig filtype mockUgyldigFiltype, har ugyldig variantformat mockUgyldigVariantformat, mangler fysiskDokument";
+                "dokumentvarianter[0] har ugyldig filtype mockUgyldigFiltype, har ugyldig variantformat " +
+                "mockUgyldigVariantformat, mangler fysiskDokument";
 
         Journalpost journalpost = generateTestJournalpost(
                 JournalpostTypeCode.U,
@@ -175,10 +159,7 @@ public class MottaDokumentUtgaaendeSkanningServiceIT extends AbstractJournalpost
 
         long journalpostId = saveJournalpost(journalpost).getId();
 
-
         endTransaction();
-
-        HttpHeaders headers = createHeaders(GYLDIG_CONSUMER);
 
         MottaDokumentUtgaaendeSkanningRequest request = buildRequest(List.of(DokumentVariant
                 .builder()
@@ -189,25 +170,16 @@ public class MottaDokumentUtgaaendeSkanningServiceIT extends AbstractJournalpost
                 .build()
         ));
 
-        HttpEntity<MottaDokumentUtgaaendeSkanningRequest> requestHttpEntity = new HttpEntity<>(request, headers);
-        ResponseEntity responseEntity = restTemplate.exchange(
-                URL_JOURNALPOST_INTERN + journalpostId + "/mottaDokumentUtgaaendeSkanning", HttpMethod.PUT, requestHttpEntity, String.class);
-        endTransaction();
-        JsonNode responseBody = mapper.readTree((String) responseEntity.getBody());
-
-        assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
-
-        assertEquals(String.format(errorMessage, journalpostId), responseBody.get("message").textValue());
-
+        validateRequestResponse(request, GYLDIG_CONSUMER, journalpostId, expectedErrorMessage, HttpStatus.BAD_REQUEST);
     }
 
     @Test
-    public void shouldReturnBadRequestWithInvalidJournalpost() throws InterruptedException {
+    public void shouldReturnBadRequestWithMissingElements() throws InterruptedException {
         String errorMessage = "mottaDokumentUtgaaendeSkanning feilet ved validering av journalpost " +
                 "journalpostId=%s " +
                 "mottakskanal=SKAN_NETS " +
                 "batchnavn=mockBatchnavn " +
-                "feilmedling=Kan ikke validere journalpost: JournalpostType er ikke U eller N; JournalStatus er ikke R; Har mer enn ett DokumentInfo objekt; Har ikke hoveddokument";
+                "feilmedling=Kan ikke validere journalpost: Har ikke hoveddokument";
 
         Journalpost journalpost = generateTestJournalpost(
                 JournalpostTypeCode.I,
@@ -246,21 +218,10 @@ public class MottaDokumentUtgaaendeSkanningServiceIT extends AbstractJournalpost
 
         endTransaction();
 
-        HttpHeaders headers = createHeaders(GYLDIG_CONSUMER);
 
-        MottaDokumentUtgaaendeSkanningRequest request = buildRequest(List.of(DokumentVariant
-                .builder()
-                .filtype(FilTypeCode.PDF.toString())
-                .variantformat(VariantFormatCode.ORIGINAL.toString())
-                .fysiskDokument(mockData)
-                .filnavn(mockFilnavn)
-                .build()
-        ));
+        MottaDokumentUtgaaendeSkanningRequest request = createGyldigRequest();
 
-
-        HttpEntity<MottaDokumentUtgaaendeSkanningRequest> requestHttpEntity = new HttpEntity<>(request, headers);
-        ResponseEntity responseEntity = restTemplate.exchange(
-                URL_JOURNALPOST_INTERN + journalpostId + "/mottaDokumentUtgaaendeSkanning", HttpMethod.PUT, requestHttpEntity, String.class);
+        ResponseEntity responseEntity = doPutTransaction(GYLDIG_CONSUMER, request, journalpostId);
 
         try {
             JsonNode responseBody = mapper.readTree((String) responseEntity.getBody());
@@ -271,45 +232,66 @@ public class MottaDokumentUtgaaendeSkanningServiceIT extends AbstractJournalpost
         } catch (IOException e) {
             fail();
         }
+    }
 
+    @Test
+    public void shouldReturnConflictWithInvalidJournalpostTypeCode() throws InterruptedException {
+        String errorMessage = "mottaDokumentUtgaaendeSkanning feilet ved validering av journalpost " +
+                "journalpostId=%s " +
+                "mottakskanal=SKAN_NETS " +
+                "batchnavn=mockBatchnavn " +
+                "feilmedling=Kan ikke validere journalpost: Journalposten har ugyldig journalposttype=I";
+
+        Journalpost journalpost = generateTestJournalpost(
+                JournalpostTypeCode.I,
+                JournalStatusCode.R,
+                TilknyttetJournalpostSomCode.HOVEDDOKUMENT
+        ).build();
+
+        long journalpostId = saveJournalpost(journalpost).getId();
+
+        endTransaction();
+
+        MottaDokumentUtgaaendeSkanningRequest request = createGyldigRequest();
+
+        ResponseEntity responseEntity = doPutTransaction(GYLDIG_CONSUMER, request, journalpostId);
+
+        try {
+            JsonNode responseBody = mapper.readTree((String) responseEntity.getBody());
+
+            assertEquals(String.format(errorMessage, journalpostId, journalpostId), responseBody.get("message").textValue());
+            assertEquals(HttpStatus.CONFLICT, responseEntity.getStatusCode());
+
+        } catch (IOException e) {
+            fail();
+        }
     }
 
     @Test
     public void shouldReturnNotFoundIfJournalpostDoesNotExist() throws IOException {
 
-        String errorMessage = "mottaDokumentUtgaaendeSkanning\n" + "journalpost med id 0 ikke funnet";
+        String expectedErrorMessage = "mottaDokumentUtgaaendeSkanning\n" + "journalpost med id 0 ikke funnet";
         long journalpostId = 0L;
 
-        HttpHeaders headers = createHeaders(GYLDIG_CONSUMER);
+        MottaDokumentUtgaaendeSkanningRequest request = createGyldigRequest();
 
-        MottaDokumentUtgaaendeSkanningRequest request = buildRequest(List.of(DokumentVariant
-                .builder()
-                .filtype(FilTypeCode.PDF.toString())
-                .variantformat(VariantFormatCode.ORIGINAL.toString())
-                .fysiskDokument(mockData)
-                .filnavn(mockFilnavn)
-                .build()
-        ));
-
-        HttpEntity<MottaDokumentUtgaaendeSkanningRequest> requestHttpEntity = new HttpEntity<>(request, headers);
-        ResponseEntity responseEntity = restTemplate.exchange(
-                URL_JOURNALPOST_INTERN + journalpostId + "/mottaDokumentUtgaaendeSkanning", HttpMethod.PUT, requestHttpEntity, String.class);
-        JsonNode responseBody = mapper.readTree((String) responseEntity.getBody());
-
-        assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
-        assertEquals(errorMessage, responseBody.get("message").textValue());
+        validateRequestResponse(request, GYLDIG_CONSUMER, journalpostId, expectedErrorMessage, HttpStatus.NOT_FOUND);
 
     }
 
     @Test
     public void shouldReturnForbiddenIfInvalidConsumer() throws IOException {
 
-        String errorMessage = "Konsument har ikke tilgang til å kalle tjenesten";
+        String expectedErrorMessage = "Konsument har ikke tilgang til å kalle tjenesten";
         long journalpostId = 0L;
 
-        HttpHeaders headers = createHeaders(UGYLDIG_CONSUMER);
+        MottaDokumentUtgaaendeSkanningRequest request = createGyldigRequest();
 
-        MottaDokumentUtgaaendeSkanningRequest request = buildRequest(List.of(DokumentVariant
+        validateRequestResponse(request, UGYLDIG_CONSUMER, journalpostId, expectedErrorMessage, HttpStatus.FORBIDDEN);
+    }
+
+    private MottaDokumentUtgaaendeSkanningRequest createGyldigRequest() {
+        return buildRequest(List.of(DokumentVariant
                 .builder()
                 .filtype(FilTypeCode.PDF.toString())
                 .variantformat(VariantFormatCode.ORIGINAL.toString())
@@ -317,19 +299,34 @@ public class MottaDokumentUtgaaendeSkanningServiceIT extends AbstractJournalpost
                 .filnavn(mockFilnavn)
                 .build()
         ));
+    }
+
+    private ResponseEntity doPutTransaction(String consumer, MottaDokumentUtgaaendeSkanningRequest request, long journalpostId) {
+        HttpHeaders headers = createHeaders(consumer);
+        HttpEntity<MottaDokumentUtgaaendeSkanningRequest> requestHttpEntity = new HttpEntity<>(request, headers);
+        ResponseEntity responseEntity = restTemplate.exchange(
+                URL_JOURNALPOST_INTERN + journalpostId + "/mottaDokumentUtgaaendeSkanning", HttpMethod.PUT,
+                requestHttpEntity, String.class);
+
+        endTransaction();
+        return responseEntity;
+    }
+
+    private void validateRequestResponse(MottaDokumentUtgaaendeSkanningRequest request, String consumer, long journalpostId, String expectedErrorMessage, HttpStatus expectedStatus) throws IOException {
+        HttpHeaders headers = createHeaders(consumer);
 
         HttpEntity<MottaDokumentUtgaaendeSkanningRequest> requestHttpEntity = new HttpEntity<>(request, headers);
         ResponseEntity responseEntity = restTemplate.exchange(
-                URL_JOURNALPOST_INTERN + journalpostId + "/mottaDokumentUtgaaendeSkanning", HttpMethod.PUT, requestHttpEntity, String.class);
+                URL_JOURNALPOST_INTERN + journalpostId + "/mottaDokumentUtgaaendeSkanning", HttpMethod.PUT,
+                requestHttpEntity, String.class);
         JsonNode responseBody = mapper.readTree((String) responseEntity.getBody());
 
 
-        assertEquals(HttpStatus.FORBIDDEN, responseEntity.getStatusCode());
-        assertEquals(errorMessage, responseBody.get("message").textValue());
-
+        assertEquals(String.format(expectedErrorMessage, journalpostId), responseBody.get("message").textValue());
+        assertEquals(expectedStatus, responseEntity.getStatusCode());
     }
 
-    private MottaDokumentUtgaaendeSkanningRequest buildRequest(List<DokumentVariant> dokumentVarianter){
+    private MottaDokumentUtgaaendeSkanningRequest buildRequest(List<DokumentVariant> dokumentVarianter) {
         return new MottaDokumentUtgaaendeSkanningRequest(
                 mockDate,
                 mockMottaksKanal,
@@ -385,5 +382,4 @@ public class MottaDokumentUtgaaendeSkanningServiceIT extends AbstractJournalpost
                                 .tilknyttetJournalpostSom(tilknyttetJournalpostSomCode)
                                 .build());
     }
-
 }
