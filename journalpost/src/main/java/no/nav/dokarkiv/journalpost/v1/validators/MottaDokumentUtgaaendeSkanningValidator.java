@@ -40,7 +40,7 @@ public class MottaDokumentUtgaaendeSkanningValidator {
                     .collect(Collectors.toList()));
         }
 
-        if (errors.size() == 0) {
+        if (errors.isEmpty()) {
             return Optional.empty();
         }
 
@@ -128,7 +128,7 @@ public class MottaDokumentUtgaaendeSkanningValidator {
             errors.add("mangler fysiskDokument");
         }
 
-        if (errors.size() == 0) {
+        if (errors.isEmpty()) {
             return Optional.empty();
         }
 
