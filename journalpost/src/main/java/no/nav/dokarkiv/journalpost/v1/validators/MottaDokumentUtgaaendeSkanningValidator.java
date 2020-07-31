@@ -40,7 +40,9 @@ public class MottaDokumentUtgaaendeSkanningValidator {
                     .collect(Collectors.toList()));
         }
 
-        if(errors.size() == 0){ return Optional.empty(); }
+        if (errors.size() == 0) {
+            return Optional.empty();
+        }
 
         return Optional.of("Kan ikke validere request: " + String.join("; ", errors));
     }
@@ -72,10 +74,10 @@ public class MottaDokumentUtgaaendeSkanningValidator {
         JournalpostTypeCode journalpostTypeCode = journalpost.getJournalposttype();
         List<DokumentInfo> dokumentInfos = journalpost.findAllDokumentInfos();
 
-        if (!hasValidJournalPostType(journalpostTypeCode) ) {
+        if (!hasValidJournalPostType(journalpostTypeCode)) {
             errors.add("Journalposten har ugyldig journalposttype=" + journalpostTypeCode);
         }
-        if(!hasValidJournalpostStatus(journalStatusCode)){
+        if (!hasValidJournalpostStatus(journalStatusCode)) {
             errors.add("Journalposten har ugyldig journalpostStatus=" + journalStatusCode);
         }
         if (dokumentInfos.size() > 1) {
@@ -86,7 +88,9 @@ public class MottaDokumentUtgaaendeSkanningValidator {
                     "JournalpostId er ugyldig eller samme førsteside er benyttet flere ganger.");
         }
 
-        if(errors.isEmpty()){ return Optional.empty(); }
+        if (errors.isEmpty()) {
+            return Optional.empty();
+        }
 
         return Optional.of("Kan ikke validere journalpost: " + String.join("; ", errors));
     }
@@ -124,7 +128,9 @@ public class MottaDokumentUtgaaendeSkanningValidator {
             errors.add("mangler fysiskDokument");
         }
 
-        if(errors.size() == 0){ return Optional.empty(); }
+        if (errors.size() == 0) {
+            return Optional.empty();
+        }
 
         return (Optional.of("dokumentvarianter[" + index + "] " + String.join(", ", errors)));
     }

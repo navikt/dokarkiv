@@ -38,13 +38,13 @@ public class MottaDokumentUtgaaendeSkanningService {
     private final String JOURNALPOST = "journalpost";
     private final String REQUEST = "request";
 
-    public MottaDokumentUtgaaendeSkanningService(JoarkRepository joarkRepository, DokumentFilRepository dokumentFilRepository){
+    public MottaDokumentUtgaaendeSkanningService(JoarkRepository joarkRepository, DokumentFilRepository dokumentFilRepository) {
         this.joarkRepository = joarkRepository;
         this.dokumentFilRepository = dokumentFilRepository;
     }
 
-    public void mottaDokumentUtgaaendeSkanning(Long journalpostId, MottaDokumentUtgaaendeSkanningRequest request) throws DokarkivFunctionalException, DokarkivTechnicalException{
-        try{
+    public void mottaDokumentUtgaaendeSkanning(Long journalpostId, MottaDokumentUtgaaendeSkanningRequest request) throws DokarkivFunctionalException, DokarkivTechnicalException {
+        try {
 
             validateRequest(journalpostId, request);
 
@@ -59,7 +59,7 @@ public class MottaDokumentUtgaaendeSkanningService {
             journalpost.setMottakskanal(MottaksKanalCode.valueOf(request.getMottakskanal()));
 
             journalpost.setEndretKildeNavn(KILDENAVN);
-            if(request.getDatoMottatt() != null){
+            if (request.getDatoMottatt() != null) {
                 journalpost.setMottattDato(request.getDatoMottatt());
             }
             List<FilDetaljer> filDetaljerList = request.getDokumentvarianter()
@@ -74,9 +74,7 @@ public class MottaDokumentUtgaaendeSkanningService {
             filDetaljerList.forEach(filDetaljer -> journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().addFilDetaljer(filDetaljer));
 
         } catch (Exception e) {
-            if(e instanceof DokarkivFunctionalException || e instanceof  DokarkivTechnicalException){
-                throw e;
-            }else {
+            if (!(e instanceof DokarkivFunctionalException || e instanceof DokarkivTechnicalException)) {
                 log.error(
                         get(MDC_REQUEST_ID) + " mottaDokumentUtgaaendeSkanning feilet med ukjent feil på journalpost "
                                 + "journalpostId=" + journalpostId + " "
@@ -85,16 +83,17 @@ public class MottaDokumentUtgaaendeSkanningService {
                                 + "feilmedling=" + e.getMessage(), e
                 );
             }
+            throw e;
         }
     }
 
-    private void validateRequest(Long journalpostId, MottaDokumentUtgaaendeSkanningRequest request) throws InputValideringFeiletException{
+    private void validateRequest(Long journalpostId, MottaDokumentUtgaaendeSkanningRequest request) throws InputValideringFeiletException {
         validator.validateRequest(request).ifPresent(errors -> {
             throw new InputValideringFeiletException(generateErrorMessage(errors, journalpostId, request, REQUEST));
         });
     }
 
-    private void validateJournalpost(Long journalpostId, MottaDokumentUtgaaendeSkanningRequest request, Journalpost journalpost) throws DokarkivFunctionalException{
+    private void validateJournalpost(Long journalpostId, MottaDokumentUtgaaendeSkanningRequest request, Journalpost journalpost) throws DokarkivFunctionalException {
         validator.validateJournalpostHasAllElements(journalpost).ifPresent(errors -> {
             throw new InputValideringFeiletException(generateErrorMessage(errors, journalpostId, request, JOURNALPOST));
         });
@@ -104,7 +103,7 @@ public class MottaDokumentUtgaaendeSkanningService {
         });
     }
 
-    private String generateErrorMessage(String errors, Long journalpostId, MottaDokumentUtgaaendeSkanningRequest request, String valideringAv){
+    private String generateErrorMessage(String errors, Long journalpostId, MottaDokumentUtgaaendeSkanningRequest request, String valideringAv) {
         String errorMessage = String.format(get(MDC_REQUEST_ID) + " feilet ved validering av %s "
                 + "journalpostId=" + journalpostId + " "
                 + "mottakskanal=" + request.getMottakskanal() + " "
@@ -113,7 +112,7 @@ public class MottaDokumentUtgaaendeSkanningService {
         return errorMessage;
     }
 
-    private FilDetaljer mapDokumentVariantToFildetaljer(DokumentVariant dokumentVariant, String batchnavn){
+    private FilDetaljer mapDokumentVariantToFildetaljer(DokumentVariant dokumentVariant, String batchnavn) {
         FilDetaljer filDetaljer = FilDetaljer
                 .builder()
                 .filtype(FilTypeCode.valueOf(dokumentVariant.getFiltype()))
@@ -127,7 +126,7 @@ public class MottaDokumentUtgaaendeSkanningService {
         return filDetaljer;
     }
 
-    private boolean notNullOrEmpty(String string){
+    private boolean notNullOrEmpty(String string) {
         return string != null && !string.isBlank();
     }
 }
