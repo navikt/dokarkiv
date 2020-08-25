@@ -1,9 +1,8 @@
 package no.nav.dokarkiv.core.security;
 
-import static org.apache.commons.lang3.StringUtils.isEmpty;
-import static org.apache.commons.lang3.StringUtils.isNotEmpty;
-
 import com.auth0.jwt.JWT;
+import com.auth0.jwt.interfaces.DecodedJWT;
+import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.MDCConstants;
@@ -12,8 +11,8 @@ import no.nav.dokarkiv.core.security.ldap.NavLdapService;
 import no.nav.dokarkiv.core.security.ldap.NavUser;
 import no.nav.freg.security.oidc.auth.idtoken.extract.HeaderTokenExtractor;
 import no.nav.modig.core.context.SubjectHandler;
-import org.apache.logging.log4j.util.Strings;
 import org.slf4j.MDC;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -21,12 +20,18 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
+
 /**
  * @author Sigurd Midttun, Visma Consulting.
  */
 @Slf4j
 public class ValidateUserAndAddToMDCHandler implements HandlerInterceptor {
 
+	private static final String UNKNOWN_AUDIENCE = "unknown";
+	private static final String NAV_CONSUMER_TOKEN = "Nav-Consumer-Token";
 	private final NavLdapService navLdapService;
 	private final MeterRegistry meterRegistry;
 	private static final String UKJENT = "UKJENT";
@@ -35,13 +40,6 @@ public class ValidateUserAndAddToMDCHandler implements HandlerInterceptor {
 	public ValidateUserAndAddToMDCHandler(NavLdapService navLdapService, MeterRegistry meterRegistry) {
 		this.navLdapService = navLdapService;
 		this.meterRegistry = meterRegistry;
-	}
-
-	private void incrementConsumerCounter(String consumer, String methodName, String controllerName) {
-		meterRegistry.counter("dok_request_consumer_name",
-				"consumer_name", consumer == null ? UKJENT : consumer,
-				"method_name", methodName == null ? UKJENT : methodName,
-				"controller_name", controllerName == null ? UKJENT : controllerName).increment();
 	}
 
 	@Override
@@ -103,16 +101,28 @@ public class ValidateUserAndAddToMDCHandler implements HandlerInterceptor {
 				}
 			}
 
-			try {
-				String consumerName = Strings.isBlank(navConsumerToken) ? getSubjectFromToken(authorizationToken) : getSubjectFromToken(navConsumerToken);
-				String methodName = ((HandlerMethod) handler).getMethod().getName();
-				String controllerName = (((HandlerMethod) handler).getMethod()).getDeclaringClass().getSimpleName();
-				incrementConsumerCounter(consumerName, methodName, controllerName);
-			} catch (Exception e) {
-				log.warn("Det skjedde feil ved henting av consumer, metode eller controller navn for inkrementering av metrikker", e);
-			}
-
+			handleMetrics((HandlerMethod) handler, navConsumerToken, authorizationToken);
 			return true;
+		}
+	}
+
+	private void handleMetrics(final HandlerMethod handler, final String navConsumerToken, final String authorizationToken) {
+		try {
+			final String methodName = handler.getMethod().getName();
+			final String controllerName = (handler.getMethod()).getDeclaringClass().getSimpleName();
+			final DecodedJWT authorizationJWT = JWT.decode(authorizationToken);
+			incrementAudienceCounter(HttpHeaders.AUTHORIZATION, authorizationJWT.getIssuer(), authorizationJWT.getAudience()
+					.stream().findFirst().orElse(UNKNOWN_AUDIENCE));
+			if(isBlank(navConsumerToken)) {
+				incrementConsumerCounter(authorizationJWT.getSubject(), methodName, controllerName);
+			} else {
+				final DecodedJWT navConsumerJWT = JWT.decode(navConsumerToken);
+				incrementConsumerCounter(navConsumerJWT.getSubject(), methodName, controllerName);
+				incrementAudienceCounter(NAV_CONSUMER_TOKEN, navConsumerJWT.getIssuer(), navConsumerJWT.getAudience()
+						.stream().findFirst().orElse(UNKNOWN_AUDIENCE));
+			}
+		} catch (Exception e) {
+			log.warn("Det skjedde feil ved henting av consumer, metode eller controller navn for inkrementering av metrikker", e);
 		}
 	}
 
@@ -126,5 +136,21 @@ public class ValidateUserAndAddToMDCHandler implements HandlerInterceptor {
 			return null;
 		}
 		return JWT.decode(token).getSubject();
+	}
+
+	private void incrementConsumerCounter(String consumer, String methodName, String controllerName) {
+		meterRegistry.counter("dok_request_consumer_name",
+				"consumer_name", consumer == null ? UKJENT : consumer,
+				"method_name", methodName == null ? UKJENT : methodName,
+				"controller_name", controllerName == null ? UKJENT : controllerName).increment();
+	}
+
+	private void incrementAudienceCounter(final String header, final String issuer, final String audience) {
+		Counter.builder("dok_request_audience")
+				.tags("header", header)
+				.tags("issuer", issuer)
+				.tags("audience", audience)
+				.register(meterRegistry)
+				.increment();
 	}
 }
