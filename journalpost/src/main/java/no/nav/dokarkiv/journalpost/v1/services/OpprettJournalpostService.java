@@ -182,7 +182,7 @@ public class OpprettJournalpostService {
 
 	private Optional<Journalpost> findJournalpostWithKanalSkanImOrHelsenettetAndEksternReferanseIdAlreadyInDb(OpprettJournalpostRequest request) {
 		String[] idempodentKanalreferanseids = {MottaksKanalCode.SKAN_IM.name(), MottaksKanalCode.HELSENETTET.name()};
-		if (Arrays.stream(idempodentKanalreferanseids).noneMatch(kanal -> kanal == request.getKanal())) {
+		if (Arrays.stream(idempodentKanalreferanseids).noneMatch(request.getKanal()::equals)) {
 			return Optional.empty();
 		}
 		return joarkRepository.findJournalpostWithMottaksKanalAndKanalReferanseId(request.getKanal(), request.getEksternReferanseId());
