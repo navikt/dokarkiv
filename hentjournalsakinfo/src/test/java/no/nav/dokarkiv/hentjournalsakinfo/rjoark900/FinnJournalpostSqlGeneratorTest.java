@@ -1,10 +1,5 @@
 package no.nav.dokarkiv.hentjournalsakinfo.rjoark900;
 
-import static no.nav.dokarkiv.hentjournalsakinfo.common.SqlProjections.RELEVANTE_DATA;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.text.IsEqualIgnoringWhiteSpace.equalToIgnoringWhiteSpace;
-import static org.junit.Assert.assertThat;
-
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.hentjournalsakinfo.JournalpostFilter;
@@ -12,6 +7,11 @@ import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
+
+import static no.nav.dokarkiv.hentjournalsakinfo.common.SqlProjections.RELEVANTE_DATA;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalToCompressingWhiteSpace;
 
 /**
  * @author Joakim Bjørnstad, Jbit AS
@@ -47,7 +47,7 @@ public class FinnJournalpostSqlGeneratorTest {
 		finnJournalposterRequestTo.setAlleIdenter(Collections.singletonList("***gammelt_fnr***"));
 		JournalpostFilter journalpostFilter = new JournalpostFilter(finnJournalposterRequestTo);
 		String sql = FinnJournalpostSqlGenerator.finnJournalposterSql(journalpostFilter, Arrays.asList("gsaker", "psaker"), "");
-		assertThat(sql, equalToIgnoringWhiteSpace(
+		assertThat(sql, equalToCompressingWhiteSpace(
 				"WITH psaksaker AS\n" +
 						"       (SELECT s.journalpost_id\n" +
 						"        FROM t_saksrelasjon s\n" +
