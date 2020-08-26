@@ -32,6 +32,7 @@ import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -79,9 +80,9 @@ public class OpprettJournalpostService {
 
 	public OpprettJournalpostResult opprettJournalpost(OpprettJournalpostRequest request) {
 
-		Optional<Journalpost> existingJournalpost = findJournalpostWithKanalSkanImAndEksternReferanseIdAlreadyInDb(request);
+		Optional<Journalpost> existingJournalpost = findJournalpostWithKanalSkanImOrHelsenettetAndEksternReferanseIdAlreadyInDb(request);
 		if (existingJournalpost.isPresent()) {
-			log.warn("Prøver å opprette en journalpost med kanal=SKAN_IM med en referanseId som allerede finnes");
+			log.warn("Prøver å opprette en journalpost med kanal={} med en referanseId som allerede finnes", existingJournalpost.get().getMottakskanal());
 			return new OpprettJournalpostResult(existingJournalpost.get(), false);
 		}
 
@@ -179,10 +180,11 @@ public class OpprettJournalpostService {
 		}
 	}
 
-	private Optional<Journalpost> findJournalpostWithKanalSkanImAndEksternReferanseIdAlreadyInDb(OpprettJournalpostRequest request) {
-		if (!MottaksKanalCode.SKAN_IM.name().equals(request.getKanal())) {
+	private Optional<Journalpost> findJournalpostWithKanalSkanImOrHelsenettetAndEksternReferanseIdAlreadyInDb(OpprettJournalpostRequest request) {
+		String[] idempodentKanalreferanseids = {MottaksKanalCode.SKAN_IM.name(), MottaksKanalCode.HELSENETTET.name()};
+		if (Arrays.stream(idempodentKanalreferanseids).noneMatch(kanal -> kanal == request.getKanal())) {
 			return Optional.empty();
 		}
-		return joarkRepository.findJournalpostWithKanalSkanImByKanalReferanseId(request.getEksternReferanseId());
+		return joarkRepository.findJournalpostWithMottaksKanalAndKanalReferanseId(request.getKanal(), request.getEksternReferanseId());
 	}
 }

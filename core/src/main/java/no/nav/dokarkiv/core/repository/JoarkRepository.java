@@ -49,8 +49,8 @@ public interface JoarkRepository extends CrudRepository<Journalpost, Long> {
 
     Optional<Journalpost> findJournalpostByKanalReferanseId(String kanalReferanseId);
 
-    @Query(value = "SELECT * FROM t_journalpost j WHERE j.k_mottaks_kanal = 'SKAN_IM' AND j.kanal_referanse_id = :kanalReferanseId", nativeQuery = true)
-    Optional<Journalpost> findJournalpostWithKanalSkanImByKanalReferanseId(@Param("kanalReferanseId") String kanalReferanseId);
+    @Query(value = "SELECT * FROM t_journalpost j WHERE j.k_mottaks_kanal = :mottakskanal AND j.kanal_referanse_id = :kanalReferanseId", nativeQuery = true)
+    Optional<Journalpost> findJournalpostWithMottaksKanalAndKanalReferanseId(@Param("mottakskanal") String mottakskanal, @Param("kanalReferanseId") String kanalReferanseId);
 
     List<Journalpost> findJournalpostByKanalReferanseIdAndMottakskanal(String kanalReferanseId, MottaksKanalCode mottaksKanalCode);
 }

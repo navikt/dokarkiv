@@ -877,4 +877,21 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(HttpStatus.CONFLICT, responseSecond.getStatusCode());
 		assertNotNull(responseSecond.getBody());
 	}
+
+	@Test
+	public void shouldNotOpprettIfKanalHELSENETTETAndReferanseIdAlreadyInDB() throws IOException {
+		OpprettJournalpostRequest request = createMinimalRequest(INNGAAENDE)
+				.kanal(MottaksKanalCode.HELSENETTET.name())
+				.eksternReferanseId(KANALREFERANSE_ID)
+				.build();
+
+		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
+		ResponseEntity<OpprettJournalpostResponse> responseFirst = restTemplate.exchange(URL_JOURNALPOST + FERDIGSTILL_QUERY, HttpMethod.POST, requestEntity, OpprettJournalpostResponse.class);
+		ResponseEntity<OpprettJournalpostResponse> responseSecond = restTemplate.exchange(URL_JOURNALPOST + FERDIGSTILL_QUERY, HttpMethod.POST, requestEntity, OpprettJournalpostResponse.class);
+
+		assertEquals(HttpStatus.CREATED, responseFirst.getStatusCode());
+		assertNotNull(responseFirst.getBody());
+		assertEquals(HttpStatus.CONFLICT, responseSecond.getStatusCode());
+		assertNotNull(responseSecond.getBody());
+	}
 }
