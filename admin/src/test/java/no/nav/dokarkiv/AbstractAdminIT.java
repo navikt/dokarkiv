@@ -1,18 +1,5 @@
 package no.nav.dokarkiv;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.post;
-import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.BRUKER_ID;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasItems;
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsNull.notNullValue;
-import static org.hamcrest.core.IsNull.nullValue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 import no.nav.dokarkiv.core.AbstractRestIT;
 import no.nav.dokarkiv.core.CoreConfig;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
@@ -41,10 +28,23 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static no.nav.dokarkiv.core.util.TestDataGenerator.BRUKER_ID;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNull.notNullValue;
+import static org.hamcrest.core.IsNull.nullValue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
 		classes = {CoreConfig.class, AdminConfig.class, TestToolsAutoConfig.class, AbstractAdminIT.Config.class},
 		properties = {"spring.main.allow-bean-definition-overriding=true"})
-@ActiveProfiles("itest,wiremock,ldap,oidc")
+@ActiveProfiles({"itest", "wiremock", "ldap", "oidc"})
 @AutoConfigureWireMock(port = 0)
 public abstract class AbstractAdminIT extends AbstractRestIT {
 	protected static final String URL_KASSERDOKUMENT = "/rest/admin/kasserdokument/";

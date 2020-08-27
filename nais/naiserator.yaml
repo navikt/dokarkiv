@@ -57,12 +57,12 @@ spec:
     initialDelay: 30
     timeout: 3
   replicas:
-    min: 4
-    max: 10
+    min: 6
+    max: 12
     cpuThresholdPercentage: 50
   resources:
     limits:
-      cpu: 4000m
+      cpu: 3000m
       memory: 3072Mi
     requests:
       memory: 1920Mi

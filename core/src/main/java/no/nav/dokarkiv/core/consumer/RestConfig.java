@@ -11,34 +11,37 @@ import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
+import java.time.Duration;
+
 /**
  * @author Joakim Bjørnstad, Jbit AS
  */
 @Configuration
 public class RestConfig {
-	@Bean
-	RestTemplate restTemplate(ServiceuserAlias serviceuserAlias,
-							  RestTemplateBuilder restTemplateBuilder,
-							  ClientHttpRequestFactory requestFactory) {
-		return restTemplateBuilder
-				.requestFactory(() -> requestFactory)
-				.basicAuthorization(serviceuserAlias.getUsername(), serviceuserAlias.getPassword())
-				.setConnectTimeout(5000)
-				.setReadTimeout(5000).build();
-	}
+    @Bean
+    RestTemplate restTemplate(ServiceuserAlias serviceuserAlias,
+                              RestTemplateBuilder restTemplateBuilder,
+                              ClientHttpRequestFactory requestFactory) {
+        return restTemplateBuilder
+                .requestFactory(() -> requestFactory)
+                .basicAuthentication(serviceuserAlias.getUsername(), serviceuserAlias.getPassword())
+                .setConnectTimeout(Duration.ofSeconds(5))
+                .setReadTimeout(Duration.ofSeconds(5))
+                .build();
+    }
 
-	@Bean
-	ClientHttpRequestFactory requestFactory(HttpClient httpClient) {
-		return new HttpComponentsClientHttpRequestFactory(httpClient);
-	}
+    @Bean
+    ClientHttpRequestFactory requestFactory(HttpClient httpClient) {
+        return new HttpComponentsClientHttpRequestFactory(httpClient);
+    }
 
-	@Bean
-	HttpClient httpClient() {
-		PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager();
-		connectionManager.setMaxTotal(400);
-		connectionManager.setDefaultMaxPerRoute(100);
-		return HttpClients.custom()
-				.setConnectionManager(connectionManager)
-				.build();
-	}
+    @Bean
+    HttpClient httpClient() {
+        PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager();
+        connectionManager.setMaxTotal(400);
+        connectionManager.setDefaultMaxPerRoute(100);
+        return HttpClients.custom()
+                .setConnectionManager(connectionManager)
+                .build();
+    }
 }

@@ -1,8 +1,5 @@
 package no.nav.dokarkiv.core.security.ldap;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
 import no.nav.dokarkiv.core.security.LdapConfig;
 import org.junit.Rule;
 import org.junit.Test;
@@ -15,13 +12,16 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.inject.Inject;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
 /**
  * @author Joakim Bjørnstad, Jbit AS
  */
 @RunWith(SpringRunner.class)
 @DataLdapTest
 @ContextConfiguration(classes = {LdapConfig.class, NavLdapService.class})
-@ActiveProfiles("itest,ldap")
+@ActiveProfiles({"itest", "ldap"})
 public class NavLdapServiceIT {
 
 	@Inject

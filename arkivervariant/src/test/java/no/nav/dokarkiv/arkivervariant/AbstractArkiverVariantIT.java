@@ -1,12 +1,5 @@
 package no.nav.dokarkiv.arkivervariant;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.post;
-import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 import no.nav.dokarkiv.core.AbstractRestIT;
 import no.nav.dokarkiv.core.CoreConfig;
 import no.nav.dokarkiv.core.security.ldap.NavLdapService;
@@ -26,10 +19,17 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.HashSet;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
 		classes = {CoreConfig.class, ArkiverVariantConfig.class, TestToolsAutoConfig.class, AbstractArkiverVariantIT.Config.class},
 		properties = {"spring.main.allow-bean-definition-overriding=true"})
-@ActiveProfiles("itest,wiremock,ldap,oidc")
+@ActiveProfiles({"itest", "wiremock", "ldap", "oidc"})
 @AutoConfigureWireMock(port = 0)
 public abstract class AbstractArkiverVariantIT extends AbstractRestIT {
 

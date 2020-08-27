@@ -1,10 +1,5 @@
 package no.nav.dokarkiv.journal.v3;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.post;
-import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
-
 import no.nav.dokarkiv.core.CoreConfig;
 import no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerV2Mock;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
@@ -39,11 +34,16 @@ import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 import java.io.IOException;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE,
 		classes = {CoreConfig.class, AbstractJournalV3Itest.TestConfig.class, JournalV3Config.class},
 		properties = {"spring.main.allow-bean-definition-overriding=true"})
-@ActiveProfiles("itest,wiremock")
+@ActiveProfiles({"itest", "wiremock"})
 @AutoConfigureTestDatabase
 @AutoConfigureTestEntityManager
 @AutoConfigureWireMock(port = 0)

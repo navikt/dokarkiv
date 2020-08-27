@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configuration>
+<included>
 	<include resource="org/springframework/boot/logging/logback/defaults.xml"/>
 
 	<appender name="auditLogger" class="com.papertrailapp.logback.Syslog4jAppender">
@@ -70,5 +70,4 @@
 	<logger name="org.apache.cxf.ws.addressing.soap.MAPCodec" additivity="false" level="ERROR"/>
 	<logger name="org.apache.wss4j.common.crypto.CryptoBase" additivity="false" level="ERROR"/>
 	<logger name="log4j.logger.org.apache.cxf.interceptor" additivity="false" level="ERROR"/>
-
-</configuration>
+</included>

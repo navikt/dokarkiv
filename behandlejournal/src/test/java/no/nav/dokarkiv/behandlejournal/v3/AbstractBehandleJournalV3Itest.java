@@ -1,14 +1,5 @@
 package no.nav.dokarkiv.behandlejournal.v3;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.post;
-import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.hasProperty;
-import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.is;
-
 import no.nav.dokarkiv.core.CoreConfig;
 import no.nav.dokarkiv.core.domain.util.DateProvider;
 import no.nav.dokarkiv.core.exceptions.ApplicationException;
@@ -43,10 +34,19 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import java.io.IOException;
 import java.util.GregorianCalendar;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.hasProperty;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.is;
+
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE,
 		classes = {CoreConfig.class, BehandleJournalV3Config.class})
-@ActiveProfiles("itest,wiremock")
+@ActiveProfiles({"itest", "wiremock"})
 @AutoConfigureTestDatabase
 @AutoConfigureTestEntityManager
 @AutoConfigureWireMock(port = 0)
