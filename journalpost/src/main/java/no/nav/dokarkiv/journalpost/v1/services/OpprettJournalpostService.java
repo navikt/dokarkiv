@@ -32,12 +32,13 @@ import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.util.Collections.emptyList;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
@@ -50,141 +51,143 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 @Slf4j
 public class OpprettJournalpostService {
 
-	public static final String UKJENT = "UKJENT";
-	private static final String APPLIKASJON_FS22 = "FS22";
+    public static final String UKJENT = "UKJENT";
+    private static final String APPLIKASJON_FS22 = "FS22";
 
-	private final JoarkRepository joarkRepository;
-	private final DokumentFilRepository dokumentFilRepository;
-	private final OpprettJournalpostApiRequestMapper opprettJournalpostApiRequestMapper;
-	private final DefaultSporingPopulator defaultSporingPopulator;
-	private final AksjonsLoggService aksjonsLoggService;
-	private final AktoerConsumerService aktoerConsumerService;
-	private final HentSakerRepository hentSakerRepository;
+    private final JoarkRepository joarkRepository;
+    private final DokumentFilRepository dokumentFilRepository;
+    private final OpprettJournalpostApiRequestMapper opprettJournalpostApiRequestMapper;
+    private final DefaultSporingPopulator defaultSporingPopulator;
+    private final AksjonsLoggService aksjonsLoggService;
+    private final AktoerConsumerService aktoerConsumerService;
+    private final HentSakerRepository hentSakerRepository;
 
-	@Inject
-	public OpprettJournalpostService(final JoarkRepository joarkRepository,
+    @Inject
+    public OpprettJournalpostService(final JoarkRepository joarkRepository,
                                      final DokumentFilRepository dokumentFilRepository,
                                      final OpprettJournalpostApiRequestMapper opprettJournalpostApiRequestMapper,
                                      final DefaultSporingPopulator defaultSporingPopulator,
                                      final AksjonsLoggService aksjonsLoggService,
                                      final AktoerConsumerService aktoerConsumerService,
                                      final HentSakerRepository hentSakerRepository) {
-		this.joarkRepository = joarkRepository;
-		this.dokumentFilRepository = dokumentFilRepository;
-		this.opprettJournalpostApiRequestMapper = opprettJournalpostApiRequestMapper;
-		this.defaultSporingPopulator = defaultSporingPopulator;
-		this.aksjonsLoggService = aksjonsLoggService;
-		this.aktoerConsumerService = aktoerConsumerService;
+        this.joarkRepository = joarkRepository;
+        this.dokumentFilRepository = dokumentFilRepository;
+        this.opprettJournalpostApiRequestMapper = opprettJournalpostApiRequestMapper;
+        this.defaultSporingPopulator = defaultSporingPopulator;
+        this.aksjonsLoggService = aksjonsLoggService;
+        this.aktoerConsumerService = aktoerConsumerService;
         this.hentSakerRepository = hentSakerRepository;
     }
 
-	public OpprettJournalpostResult opprettJournalpost(OpprettJournalpostRequest request) {
+    public OpprettJournalpostResult opprettJournalpost(OpprettJournalpostRequest request) {
 
-		Optional<Journalpost> existingJournalpost = findJournalpostWithKanalSkanImOrHelsenettetAndEksternReferanseIdAlreadyInDb(request);
-		if (existingJournalpost.isPresent()) {
-			log.warn("Prøver å opprette en journalpost med kanal={} med en referanseId som allerede finnes", existingJournalpost.get().getMottakskanal());
-			return new OpprettJournalpostResult(existingJournalpost.get(), false);
-		}
+        Optional<Journalpost> existingJournalpost = findJournalpostWithKanalSkanImOrHelsenettetAndEksternReferanseIdAlreadyInDb(request);
+        if (existingJournalpost.isPresent()) {
+            log.warn("Prøver å opprette en journalpost med kanal={} med en referanseId som allerede finnes", existingJournalpost.get().getMottakskanal());
+            return new OpprettJournalpostResult(existingJournalpost.get(), false);
+        }
 
-		String sakId = hentSakId(request);
+        String sakId = hentSakId(request);
 
-		Journalpost journalpost = opprettJournalpostApiRequestMapper.map(request, sakId);
-		defaultSporingPopulator.populateSporingInfo(journalpost, MDC.get(MDCConstants.MDC_CONSUMER_ID));
-		journalpost.getJournalpostDokumentInfoRelasjoner().forEach(journalpostDokumentInfoRelasjon -> journalpostDokumentInfoRelasjon.setTilknyttetAvNavn(journalpost.getOpprettetAvNavn()));
+        Journalpost journalpost = opprettJournalpostApiRequestMapper.map(request, sakId);
+        defaultSporingPopulator.populateSporingInfo(journalpost, MDC.get(MDCConstants.MDC_CONSUMER_ID));
+        journalpost.getJournalpostDokumentInfoRelasjoner().forEach(journalpostDokumentInfoRelasjon -> journalpostDokumentInfoRelasjon.setTilknyttetAvNavn(journalpost.getOpprettetAvNavn()));
 
-		persistDokumentFiler(journalpost);
+        persistDokumentFiler(journalpost);
 
-		joarkRepository.save(journalpost);
+        joarkRepository.save(journalpost);
 
-		populerAksjonslogg(journalpost.getJournalpostId(), OPPRETT);
-		log.info(MDC.get(MDC_REQUEST_ID) + " har opprettet ny journalpost, journalpostId={} og status={}", journalpost.getJournalpostId(), journalpost.getJournalstatus());
+        populerAksjonslogg(journalpost.getJournalpostId(), OPPRETT);
+        log.info(MDC.get(MDC_REQUEST_ID) + " har opprettet ny journalpost, journalpostId={} og status={}", journalpost.getJournalpostId(), journalpost.getJournalstatus());
 
-		return new OpprettJournalpostResult(journalpost, true);
-	}
+        return new OpprettJournalpostResult(journalpost, true);
+    }
 
-	private String hentSakId(OpprettJournalpostRequest request) {
-		if (request.getSak() != null) {
-			Sakstype sakstype = request.getSak().getSakstype();
-			if((FAGSAK.equals(sakstype) || Sakstype.GENERELL_SAK.equals(sakstype)) && !Fagsaksystem.PP01.equals(request.getSak().getFagsaksystem())) {
-				return identifiserEllerOpprettArkivsak(request);
-			}
-		}
-		return null;
-	}
+    private String hentSakId(OpprettJournalpostRequest request) {
+        if (request.getSak() != null) {
+            Sakstype sakstype = request.getSak().getSakstype();
+            if ((FAGSAK.equals(sakstype) || Sakstype.GENERELL_SAK.equals(sakstype)) && !Fagsaksystem.PP01.equals(request.getSak().getFagsaksystem())) {
+                return identifiserEllerOpprettArkivsak(request);
+            }
+        }
+        return null;
+    }
 
-	private String identifiserEllerOpprettArkivsak(OpprettJournalpostRequest request) {
-		Sak sak = createSak(request);
-		List<Sak> saker = hentSakerRepository.finnSaker(SakSearchCriteria.builder()
+    private String identifiserEllerOpprettArkivsak(OpprettJournalpostRequest request) {
+        Sak sak = createSak(request);
+        List<Sak> saker = hentSakerRepository.finnSaker(SakSearchCriteria.builder()
                 .aktoerId(sak.getAktoerId())
                 .orgnr(sak.getOrgnr())
                 .tema(Collections.singletonList(sak.getTema()))
                 .applikasjon(sak.getApplikasjon())
                 .fagsakNr(sak.getFagsakNr())
                 .build());
-		if (saker.isEmpty()) {
-			return hentSakerRepository.lagre(sak).getSakId().toString();
-		} else {
-			return saker.stream().map(Sak::getSakId).max(Comparator.naturalOrder()).orElseThrow(UgyldigInputException::new).toString();
-		}
-	}
+        if (saker.isEmpty()) {
+            return hentSakerRepository.lagre(sak).getSakId().toString();
+        } else {
+            return saker.stream().map(Sak::getSakId).max(Comparator.naturalOrder()).orElseThrow(UgyldigInputException::new).toString();
+        }
+    }
 
-	private Sak createSak(OpprettJournalpostRequest request) {
-		return Sak.builder()
-				.aktoerId(hentAktoerId(request.getBruker()))
-				.orgnr(BrukerIdType.ORGNR.equals(request.getBruker().getIdType()) ?
-						request.getBruker().getId() : null)
-				.tema(request.getTema())
-				.applikasjon(FAGSAK.equals(request.getSak().getSakstype()) ?
-						request.getSak().getFagsaksystem().name() : APPLIKASJON_FS22)
-				.fagsakNr(FAGSAK.equals(request.getSak().getSakstype()) ?
-						request.getSak().getFagsakId() : null)
+    private Sak createSak(OpprettJournalpostRequest request) {
+        return Sak.builder()
+                .aktoerId(hentAktoerId(request.getBruker()))
+                .orgnr(BrukerIdType.ORGNR.equals(request.getBruker().getIdType()) ?
+                        request.getBruker().getId() : null)
+                .tema(request.getTema())
+                .applikasjon(FAGSAK.equals(request.getSak().getSakstype()) ?
+                        request.getSak().getFagsaksystem().name() : APPLIKASJON_FS22)
+                .fagsakNr(FAGSAK.equals(request.getSak().getSakstype()) ?
+                        request.getSak().getFagsakId() : null)
                 .opprettetAv(MDC.get(MDC_CONSUMER_ID))
                 .opprettetTidspunkt(LocalDateTime.now())
-				.build();
-	}
+                .build();
+    }
 
-	private String hentAktoerId(Bruker bruker) {
-		switch (bruker.getIdType()) {
-			case AKTOERID:
-				return bruker.getId();
-			case FNR:
-				return aktoerConsumerService.hentAktoerIdForIdent(new HentAktoerIdForIdentRequestTo(bruker.getId()))
+    private String hentAktoerId(Bruker bruker) {
+        switch (bruker.getIdType()) {
+            case AKTOERID:
+                return bruker.getId();
+            case FNR:
+                return aktoerConsumerService.hentAktoerIdForIdent(new HentAktoerIdForIdentRequestTo(bruker.getId()))
                         .getAktoerId();
-			default:
-				return null;
-		}
-	}
+            default:
+                return null;
+        }
+    }
 
-	private void persistDokumentFiler(Journalpost journalpost) {
-		List<DokumentFil> dokumentFilList = journalpost.findAllFilDetaljer().stream().map(FilDetaljer::createDokumentFil).collect(Collectors.toList());
-		dokumentFilList.forEach(dokumentFilRepository::save);
-	}
+    private void persistDokumentFiler(Journalpost journalpost) {
+        List<DokumentFil> dokumentFilList = journalpost.findAllFilDetaljer().stream().map(FilDetaljer::createDokumentFil).collect(Collectors.toList());
+        dokumentFilList.forEach(dokumentFilRepository::save);
+    }
 
-	private void populerAksjonslogg(Long journalpostId, AksjonsTypeCode aksjon) {
-		Journalpost journalpost = joarkRepository.findById(journalpostId).orElseThrow(JournalpostIkkeFunnetException::new);
-		String bruker = null;
-		if (!journalpost.getBrukere().isEmpty()) {
-			bruker = journalpost.getBrukere().iterator().next().getBrukerId();
-		}
-		AksjonsLoggTO aksjonsLoggTo = AksjonsLoggTO.builder()
-				.aksjon(aksjon)
-				.journalpostId(journalpostId)
-				.utfoertAv(MDC.get(MDC_CONSUMER_ID))
-				.bruker(isNotBlank(bruker) ? bruker : UKJENT)
-				.melding("Journalpost "+aksjon.name())
-				.build();
-		try {
-			aksjonsLoggService.validateAndSaveAksjonsLogg(aksjonsLoggTo, emptyList());
-		} catch (UgyldigAksjonsLoggException e) {
-			log.warn("Kunne ikke skrive til AksjonsLogg: "+e.getMessage());
-		}
-	}
+    private void populerAksjonslogg(Long journalpostId, AksjonsTypeCode aksjon) {
+        Journalpost journalpost = joarkRepository.findById(journalpostId).orElseThrow(JournalpostIkkeFunnetException::new);
+        String bruker = null;
+        if (!journalpost.getBrukere().isEmpty()) {
+            bruker = journalpost.getBrukere().iterator().next().getBrukerId();
+        }
+        AksjonsLoggTO aksjonsLoggTo = AksjonsLoggTO.builder()
+                .aksjon(aksjon)
+                .journalpostId(journalpostId)
+                .utfoertAv(MDC.get(MDC_CONSUMER_ID))
+                .bruker(isNotBlank(bruker) ? bruker : UKJENT)
+                .melding("Journalpost " + aksjon.name())
+                .build();
+        try {
+            aksjonsLoggService.validateAndSaveAksjonsLogg(aksjonsLoggTo, emptyList());
+        } catch (UgyldigAksjonsLoggException e) {
+            log.warn("Kunne ikke skrive til AksjonsLogg: " + e.getMessage());
+        }
+    }
 
-	private Optional<Journalpost> findJournalpostWithKanalSkanImOrHelsenettetAndEksternReferanseIdAlreadyInDb(OpprettJournalpostRequest request) {
-		String[] idempodentKanalreferanseids = {MottaksKanalCode.SKAN_IM.name(), MottaksKanalCode.HELSENETTET.name()};
-		if (Arrays.stream(idempodentKanalreferanseids).noneMatch(request.getKanal()::equals)) {
-			return Optional.empty();
-		}
-		return joarkRepository.findJournalpostWithMottaksKanalAndKanalReferanseId(request.getKanal(), request.getEksternReferanseId());
-	}
+    private Optional<Journalpost> findJournalpostWithKanalSkanImOrHelsenettetAndEksternReferanseIdAlreadyInDb(OpprettJournalpostRequest request) {
+        Set<String> idempodentKanalreferanseids = Stream.of(MottaksKanalCode.SKAN_IM.name(), MottaksKanalCode.HELSENETTET.name())
+                .collect(Collectors.toSet());
+        String kanal = request.getKanal();
+        if (null == kanal || idempodentKanalreferanseids.stream().noneMatch(kanal::equals)) {
+            return Optional.empty();
+        }
+        return joarkRepository.findJournalpostWithMottaksKanalAndKanalReferanseId(request.getKanal(), request.getEksternReferanseId());
+    }
 }
