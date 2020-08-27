@@ -70,6 +70,7 @@ import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validate
 public class ArkiverOgJournalfoerRestController {
 
     private static final String TRUE = "true";
+    private static final String STATUS_ENDELIG = "ENDELIG";
     private final FerdigstillJournalpostService ferdigstillJournalpostService;
     private final AbacSecurityService abacSecurityService;
     private final OppdaterJournalpostService oppdaterJournalpostService;
@@ -211,7 +212,13 @@ public class ArkiverOgJournalfoerRestController {
 
         Optional<Pair<String, String>> ferdigstillResponse = Optional.empty();
         if (TRUE.equalsIgnoreCase(forsoekFerdigstill)) {
-            ferdigstillResponse = Optional.of(ferdigstillJournalpostService.forsoekFerdigstill(journalpostId, request));
+            if (HttpStatus.CREATED.equals(httpStatus)) {
+                ferdigstillResponse = Optional.of(ferdigstillJournalpostService.forsoekFerdigstill(journalpostId, request));
+            } else {
+                if (!STATUS_ENDELIG.equals(opprettJournalpostResult.getJournalpost().getJournalstatus().name())) {
+                    ferdigstillResponse = Optional.of(ferdigstillJournalpostService.forsoekFerdigstill(journalpostId, request));
+                }
+            }
         }
 
         return ResponseEntity
@@ -221,7 +228,7 @@ public class ArkiverOgJournalfoerRestController {
                         .journalstatus(ferdigstillResponse.map(Pair::getKey).orElse(opprettJournalpostResult.getJournalpost().getJournalstatus().name()))
                         .melding(ferdigstillResponse.map(Pair::getValue).orElse(null))
                         .journalpostferdigstilt(ferdigstillResponse.map(Pair::getKey)
-                                .filter("ENDELIG"::equalsIgnoreCase)
+                                .filter(STATUS_ENDELIG::equalsIgnoreCase)
                                 .isPresent())
                         .dokumenter(dokumenter)
                         .build());

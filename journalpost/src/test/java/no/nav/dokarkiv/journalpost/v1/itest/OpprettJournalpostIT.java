@@ -875,7 +875,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
         assertEquals(HttpStatus.CREATED, responseFirst.getStatusCode());
         assertNotNull(responseFirst.getBody());
         assertEquals(HttpStatus.CONFLICT, responseSecond.getStatusCode());
-        assertNotNull(responseSecond.getBody());
+        assertEqualOpprettJournalpostResponses(responseFirst.getBody(), responseSecond.getBody());
     }
 
     @Test
@@ -892,6 +892,17 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
         assertEquals(HttpStatus.CREATED, responseFirst.getStatusCode());
         assertNotNull(responseFirst.getBody());
         assertEquals(HttpStatus.CONFLICT, responseSecond.getStatusCode());
-        assertNotNull(responseSecond.getBody());
+        assertEqualOpprettJournalpostResponses(responseFirst.getBody(), responseSecond.getBody());
+    }
+
+    private void assertEqualOpprettJournalpostResponses(OpprettJournalpostResponse res1, OpprettJournalpostResponse res2) {
+        assertEquals(res1.getJournalpostId(), res2.getJournalpostId());
+        assertEquals(res1.getJournalstatus(), res2.getJournalstatus());
+        assertEquals(res1.getMelding(), res2.getMelding());
+        assertEquals(res1.getJournalpostferdigstilt(), res2.getJournalpostferdigstilt());
+        assertEquals(res1.getDokumenter().size(), res2.getDokumenter().size());
+        for (int i = 0; i < res1.getDokumenter().size(); i++) {
+            assertEquals(res1.getDokumenter().get(i).getDokumentInfoId(), res2.getDokumenter().get(i).getDokumentInfoId());
+        }
     }
 }

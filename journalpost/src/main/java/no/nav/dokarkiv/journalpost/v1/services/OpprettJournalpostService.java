@@ -53,6 +53,8 @@ public class OpprettJournalpostService {
 
     public static final String UKJENT = "UKJENT";
     private static final String APPLIKASJON_FS22 = "FS22";
+    private static Set<String> IDEMPODENT_KANALS = Stream.of(MottaksKanalCode.SKAN_IM.name(), MottaksKanalCode.HELSENETTET.name())
+            .collect(Collectors.toSet());
 
     private final JoarkRepository joarkRepository;
     private final DokumentFilRepository dokumentFilRepository;
@@ -81,7 +83,7 @@ public class OpprettJournalpostService {
 
     public OpprettJournalpostResult opprettJournalpost(OpprettJournalpostRequest request) {
 
-        Optional<Journalpost> existingJournalpost = findJournalpostWithKanalSkanImOrHelsenettetAndEksternReferanseIdAlreadyInDb(request);
+        Optional<Journalpost> existingJournalpost = findJournalpostWithIdempodentKanalAlreadyInDb(request);
         if (existingJournalpost.isPresent()) {
             log.warn("Prøver å opprette en journalpost med kanal={} med en referanseId som allerede finnes", existingJournalpost.get().getMottakskanal());
             return new OpprettJournalpostResult(existingJournalpost.get(), false);
@@ -181,11 +183,10 @@ public class OpprettJournalpostService {
         }
     }
 
-    private Optional<Journalpost> findJournalpostWithKanalSkanImOrHelsenettetAndEksternReferanseIdAlreadyInDb(OpprettJournalpostRequest request) {
-        Set<String> idempodentKanalreferanseids = Stream.of(MottaksKanalCode.SKAN_IM.name(), MottaksKanalCode.HELSENETTET.name())
-                .collect(Collectors.toSet());
+    // Bruker eksternReferanseId for å fikse idempodens for spesifikke kanaler
+    private Optional<Journalpost> findJournalpostWithIdempodentKanalAlreadyInDb(OpprettJournalpostRequest request) {
         String kanal = request.getKanal();
-        if (null == kanal || idempodentKanalreferanseids.stream().noneMatch(kanal::equals)) {
+        if (null == kanal || !IDEMPODENT_KANALS.contains(kanal)) {
             return Optional.empty();
         }
         return joarkRepository.findJournalpostWithMottaksKanalAndKanalReferanseId(request.getKanal(), request.getEksternReferanseId());
