@@ -1,12 +1,5 @@
 package no.nav.dokarkiv.journalpost.v1.itest;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.post;
-import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-
 import com.auth0.jwt.JWT;
 import com.google.common.cache.Cache;
 import no.nav.dokarkiv.core.AbstractRestIT;
@@ -35,10 +28,15 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
 		classes = {CoreConfig.class, JournalpostConfig.class, TestToolsAutoConfig.class},
 		properties = {"spring.main.allow-bean-definition-overriding=true"})
-@ActiveProfiles("itest,wiremock,ldap,oidc")
+@ActiveProfiles({"itest", "wiremock", "ldap", "oidc"})
 @AutoConfigureWireMock(port = 0)
 public abstract class AbstractJournalpostIT extends AbstractRestIT {
 

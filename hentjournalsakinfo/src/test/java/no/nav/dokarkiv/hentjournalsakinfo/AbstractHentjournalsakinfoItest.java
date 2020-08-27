@@ -40,7 +40,7 @@ import javax.inject.Named;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
 		classes = {CoreConfig.class, HentJournalsakinfoConfig.class, LdapConfig.class, AbstractHentjournalsakinfoItest.Config.class, TestToolsAutoConfig.class},
 		properties = {"spring.main.allow-bean-definition-overriding=true"})
-@ActiveProfiles("itest,wiremock,ldap,oidc")
+@ActiveProfiles({"itest", "wiremock", "ldap", "oidc"})
 public abstract class AbstractHentjournalsakinfoItest extends AbstractRestIT {
 
 	@Configuration

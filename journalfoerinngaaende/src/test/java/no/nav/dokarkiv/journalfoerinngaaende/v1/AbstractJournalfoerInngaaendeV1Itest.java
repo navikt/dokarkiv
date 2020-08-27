@@ -54,7 +54,7 @@ import static no.nav.dokarkiv.core.security.JwtClaimsBuilderProvider.openAmClaim
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
 		classes = {CoreConfig.class, JournalfoerInngaaendeConfig.class, TestToolsAutoConfig.class})
-@ActiveProfiles("itest,wiremock,ldap,oidc")
+@ActiveProfiles({"itest", "wiremock", "ldap", "oidc"})
 @AutoConfigureDataJpa
 @AutoConfigureTestDatabase
 @AutoConfigureTestEntityManager
