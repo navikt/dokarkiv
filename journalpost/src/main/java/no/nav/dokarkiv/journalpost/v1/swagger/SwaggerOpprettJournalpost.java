@@ -27,8 +27,4 @@ import java.lang.annotation.Target;
         @ApiResponse(code = 409, message = "Journalpost med angitt eksternReferanseId finnes allerede for angitt kanal.\nGjelder bare kanal SKAN_IM og HELSENETTET"),
         @ApiResponse(code = 500, message = "Internal server error")})
 public @interface SwaggerOpprettJournalpost {
-    @AliasFor(
-            annotation = RequestMapping.class
-    )
-    String value() default "";
 }
