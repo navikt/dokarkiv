@@ -1,9 +1,5 @@
 package no.nav.dokarkiv.journalpost.v1.util;
 
-import static no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerV2Mock.AKTOER_ID;
-import static no.nav.dokarkiv.core.domain.codes.FagsystemCode.FS22;
-import static no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem.AO01;
-
 import no.nav.dokarkiv.core.domain.codes.AvsenderMottakerIdTypeCode;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
@@ -46,6 +42,10 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 
+import static no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerV2Mock.AKTOER_ID;
+import static no.nav.dokarkiv.core.domain.codes.FagsystemCode.FS22;
+import static no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem.AO01;
+
 /**
  * @author Sigurd Midttun, Visma Consulting.
  */
@@ -71,7 +71,7 @@ public class TestUtils {
 	public static final String KANALREFERANSE_ID = "kanalreferansId";
 	public static final Date DATO_MOTTATT = Date.from(LocalDate.now().minusDays(3).atStartOfDay(ZoneId.systemDefault()).toInstant());
 	public static final Date DATO_MOTTATT_1 = Date.from(LocalDate.now().minusDays(3).atStartOfDay(ZoneId.systemDefault()).toInstant());
-	public static final String JOURNALFOERENDE_ENHET = "journalfoerendeEnhet";
+	public static final String JOURNALFOERENDE_ENHET = "4000";
 	public static final String DOKUMENTINFO_ID1 = "1234567";
 	public static final String DOKUMNETTYPE_ID1 = "dokumenttypeID1";
 	public static final String BREVKODE1 = "brevkode1";

@@ -110,7 +110,7 @@ public class ArkiverOgJournalfoerRestController {
             @PathVariable @ApiParam(value = "IDen til journalposten som skal ferdigstilles", required = true, example = "77778888") String journalpostId,
             @RequestBody FerdigstillJournalpostRequest request) {
         MDC.put(MDC_REQUEST_ID, "rjoark201");
-        log.info(MDC.get(MDC_REQUEST_ID) + " har mottat kall for ferdigstilling av journalpost med journalpostId={}", journalpostId);
+        log.info(MDC.get(MDC_REQUEST_ID) + " har mottatt kall for ferdigstilling av journalpost med journalpostId={}", journalpostId);
         ferdigstillJournalpostValidator.validateRequest(journalpostId, request);
         abacSecurityService.assertAccessToJournalpost(journalpostId);
         RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
@@ -132,7 +132,7 @@ public class ArkiverOgJournalfoerRestController {
             @PathVariable @ApiParam(value = "IDen til journalposten som skal oppdateres", required = true, example = "77778888") String journalpostId,
             @RequestBody OppdaterDistribusjonsinfoRequest request) {
         MDC.put(MDC_REQUEST_ID, "oppdaterDistribusjonsinfo");
-        log.info(MDC.get(MDC_REQUEST_ID) + " har mottat kall for oppdatering av distribusjonsinfo for journalpostId={}", journalpostId);
+        log.info(MDC.get(MDC_REQUEST_ID) + " har mottatt kall for oppdatering av distribusjonsinfo for journalpostId={}", journalpostId);
         validateId(journalpostId, "journalpostId");
         oppdaterDistribusjonsinfoValidator.validateRequest(journalpostId, request);
         abacSecurityService.assertAccessToJournalpost(journalpostId);
@@ -184,7 +184,7 @@ public class ArkiverOgJournalfoerRestController {
                     "Sjekk \"journalpostferdigstilt\" på responsen for å være sikker på at journalposten faktisk ble ferdigstilt.", allowableValues = "true, false", required = false)
             @RequestParam(required = false) String forsoekFerdigstill) {
         MDC.put(MDC_REQUEST_ID, "rjoark202");
-        log.info(MDC.get(MDC_REQUEST_ID) + " har mottat kall for opprettelse av ny journalpost");
+        log.info(MDC.get(MDC_REQUEST_ID) + " har mottatt kall for opprettelse av ny journalpost");
         RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDC_CONSUMER_ID));
 
         // tilgangsstyring abac?
@@ -212,13 +212,7 @@ public class ArkiverOgJournalfoerRestController {
 
         Optional<Pair<String, String>> ferdigstillResponse = Optional.empty();
         if (TRUE.equalsIgnoreCase(forsoekFerdigstill)) {
-            if (HttpStatus.CREATED.equals(httpStatus)) {
-                ferdigstillResponse = Optional.of(ferdigstillJournalpostService.forsoekFerdigstill(journalpostId, request));
-            } else {
-                if (!STATUS_ENDELIG.equals(opprettJournalpostResult.getJournalpost().getJournalstatus().name())) {
-                    ferdigstillResponse = Optional.of(ferdigstillJournalpostService.forsoekFerdigstill(journalpostId, request));
-                }
-            }
+            ferdigstillResponse = Optional.of(ferdigstillJournalpostService.forsoekFerdigstill(journalpostId, request));
         }
 
         return ResponseEntity

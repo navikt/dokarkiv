@@ -66,9 +66,11 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.DOKUMENT_TITTEL1;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FAGSAK_ID;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FILNAVN;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FILTYPE_PDF;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FILTYPE_XML;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FYSISK_DOKUMENT;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FYSISK_DOKUMENT_2;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.INNHOLD;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.JOURNALFOERENDE_ENHET;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.KANALREFERANSE_ID;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.SAK_ID;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_FOR;
@@ -77,16 +79,22 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_SYM;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_TIL;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_UFO;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.VARIANTFORMAT_ARKIV;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.VARIANTFORMAT_ORIGINAL;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createBaseRequest;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createFagsak;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createGenerellSak;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createMinimalRequest;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createRequest;
 import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public class OpprettJournalpostIT extends AbstractJournalpostIT {
@@ -862,10 +870,30 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
     }
 
     @Test
-    public void shouldNotOpprettIfKanalSKAN_IMAndReferanseIdAlreadyInDB() throws IOException {
-        OpprettJournalpostRequest request = createMinimalRequest(INNGAAENDE)
+    public void shouldNotOpprettIfKanalSKAN_IMAndReferanseIdAlreadyInDBAndEndeligJournalfortFirstTime() throws IOException {
+        OpprettJournalpostRequest request = createBaseRequest(INNGAAENDE)
                 .kanal(MottaksKanalCode.SKAN_IM.name())
                 .eksternReferanseId(KANALREFERANSE_ID)
+                .journalfoerendeEnhet(JOURNALFOERENDE_ENHET)
+                .dokumenter(singletonList(
+                        Dokument.builder()
+                                .tittel(DOKUMENT_TITTEL1)
+                                .brevkode(BREVKODE1)
+                                .dokumentKategori(DOKUMENTKATEGORI_SED)
+                                .dokumentvarianter(Arrays.asList(DokumentVariant.builder()
+                                                .filtype(FILTYPE_PDF)
+                                                .variantformat(VARIANTFORMAT_ARKIV)
+                                                .fysiskDokument(FYSISK_DOKUMENT)
+                                                .batchnavn(BATCHNAVN)
+                                                .build(),
+                                        DokumentVariant.builder()
+                                                .filtype(FILTYPE_XML)
+                                                .variantformat(VARIANTFORMAT_ORIGINAL)
+                                                .filnavn(FILNAVN)
+                                                .fysiskDokument(FYSISK_DOKUMENT_2)
+                                                .batchnavn(BATCHNAVN)
+                                                .build()))
+                                .build()))
                 .build();
 
         HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
@@ -874,15 +902,22 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 
         assertEquals(HttpStatus.CREATED, responseFirst.getStatusCode());
         assertNotNull(responseFirst.getBody());
+        assertThat(responseFirst.getBody().getJournalpostId(), notNullValue());
+        assertThat(responseFirst.getBody().getJournalpostferdigstilt(), is(true));
+        assertThat(responseFirst.getBody().getJournalstatus(), is("ENDELIG"));
+        assertThat(responseFirst.getBody().getMelding(), nullValue());
+        assertThat(responseFirst.getBody().getDokumenter(), hasSize(1));
         assertEquals(HttpStatus.CONFLICT, responseSecond.getStatusCode());
+        assertNotNull(responseSecond.getBody());
         assertEqualOpprettJournalpostResponses(responseFirst.getBody(), responseSecond.getBody());
     }
 
     @Test
-    public void shouldNotOpprettIfKanalHELSENETTETAndReferanseIdAlreadyInDB() throws IOException {
+    public void shouldNotOpprettIfKanalHELSENETTETAndReferanseIdAlreadyInDBAndMidlertidigJournalfoertFirstTime() throws IOException {
         OpprettJournalpostRequest request = createMinimalRequest(INNGAAENDE)
                 .kanal(MottaksKanalCode.HELSENETTET.name())
                 .eksternReferanseId(KANALREFERANSE_ID)
+                .journalfoerendeEnhet(JOURNALFOERENDE_ENHET)
                 .build();
 
         HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
@@ -891,7 +926,13 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 
         assertEquals(HttpStatus.CREATED, responseFirst.getStatusCode());
         assertNotNull(responseFirst.getBody());
+        assertThat(responseFirst.getBody().getJournalpostId(), notNullValue());
+        assertThat(responseFirst.getBody().getJournalpostferdigstilt(), is(false));
+        assertThat(responseFirst.getBody().getJournalstatus(), is("MIDLERTIDIG"));
+        assertThat(responseFirst.getBody().getMelding(), containsString("mangler arkivvariant"));
+        assertThat(responseFirst.getBody().getDokumenter(), hasSize(1));
         assertEquals(HttpStatus.CONFLICT, responseSecond.getStatusCode());
+        assertNotNull(responseSecond.getBody());
         assertEqualOpprettJournalpostResponses(responseFirst.getBody(), responseSecond.getBody());
     }
 
