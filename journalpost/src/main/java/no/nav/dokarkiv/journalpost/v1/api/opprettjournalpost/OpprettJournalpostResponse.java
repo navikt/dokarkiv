@@ -17,7 +17,7 @@ import java.util.List;
 public class OpprettJournalpostResponse {
 
     @ApiModelProperty(
-            value = "JournalpostId som har blit opprettet",
+            value = "JournalpostId som har blitt opprettet",
             required = true,
             position = 1,
             example = "\"467010363\""
