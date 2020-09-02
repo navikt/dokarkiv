@@ -1,11 +1,5 @@
 package no.nav.dokarkiv.journalpost.v1.validators;
 
-import static no.nav.dokarkiv.journalpost.v1.api.JournalpostType.INNGAAENDE;
-import static org.apache.commons.lang3.StringUtils.isBlank;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
-import static org.apache.commons.lang3.StringUtils.isNumeric;
-import static org.apache.cxf.common.util.CollectionUtils.isEmpty;
-
 import no.nav.dokarkiv.core.domain.codes.Behandlingstema;
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
@@ -24,6 +18,11 @@ import no.nav.dokarkiv.journalpost.v1.api.Sakstype;
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostRequest;
 
 import java.util.Arrays;
+
+import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
+import static org.apache.commons.lang3.StringUtils.isNumeric;
+import static org.apache.cxf.common.util.CollectionUtils.isEmpty;
 
 public class OpprettJournalpostRequestValidator {
 
@@ -121,7 +120,7 @@ public class OpprettJournalpostRequestValidator {
 	}
 
 	private void validateKanal(OpprettJournalpostRequest request) {
-		if (INNGAAENDE.equals(request.getJournalpostType())) {
+		if (request.isInngaaende()) {
 			try {
 				MottaksKanalCode.valueOf(request.getKanal());
 			} catch (IllegalArgumentException e) {
