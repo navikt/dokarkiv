@@ -913,6 +913,49 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
     }
 
     @Test
+    public void shouldNotOpprettIfMottakskanalEESSIAndReferanseIdAlreadyInDBAndEndeligJournalfortFirstTime() throws IOException {
+        OpprettJournalpostRequest request = createBaseRequest(INNGAAENDE)
+                .kanal(MottaksKanalCode.EESSI.name())
+                .eksternReferanseId(KANALREFERANSE_ID)
+                .journalfoerendeEnhet(JOURNALFOERENDE_ENHET)
+                .dokumenter(singletonList(
+                        Dokument.builder()
+                                .tittel(DOKUMENT_TITTEL1)
+                                .brevkode(BREVKODE1)
+                                .dokumentKategori(DOKUMENTKATEGORI_SED)
+                                .dokumentvarianter(Arrays.asList(DokumentVariant.builder()
+                                                .filtype(FILTYPE_PDF)
+                                                .variantformat(VARIANTFORMAT_ARKIV)
+                                                .fysiskDokument(FYSISK_DOKUMENT)
+                                                .batchnavn(BATCHNAVN)
+                                                .build(),
+                                        DokumentVariant.builder()
+                                                .filtype(FILTYPE_XML)
+                                                .variantformat(VARIANTFORMAT_ORIGINAL)
+                                                .filnavn(FILNAVN)
+                                                .fysiskDokument(FYSISK_DOKUMENT_2)
+                                                .batchnavn(BATCHNAVN)
+                                                .build()))
+                                .build()))
+                .build();
+
+        HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
+        ResponseEntity<OpprettJournalpostResponse> responseFirst = restTemplate.exchange(URL_JOURNALPOST + FERDIGSTILL_QUERY, HttpMethod.POST, requestEntity, OpprettJournalpostResponse.class);
+        ResponseEntity<OpprettJournalpostResponse> responseSecond = restTemplate.exchange(URL_JOURNALPOST + FERDIGSTILL_QUERY, HttpMethod.POST, requestEntity, OpprettJournalpostResponse.class);
+
+        assertEquals(HttpStatus.CREATED, responseFirst.getStatusCode());
+        assertNotNull(responseFirst.getBody());
+        assertThat(responseFirst.getBody().getJournalpostId(), notNullValue());
+        assertThat(responseFirst.getBody().getJournalpostferdigstilt(), is(true));
+        assertThat(responseFirst.getBody().getJournalstatus(), is("ENDELIG"));
+        assertThat(responseFirst.getBody().getMelding(), nullValue());
+        assertThat(responseFirst.getBody().getDokumenter(), hasSize(1));
+        assertEquals(HttpStatus.CONFLICT, responseSecond.getStatusCode());
+        assertNotNull(responseSecond.getBody());
+        assertEqualOpprettJournalpostResponses(responseFirst.getBody(), responseSecond.getBody());
+    }
+
+    @Test
     public void shouldNotOpprettIfKanalHELSENETTETAndReferanseIdAlreadyInDBAndMidlertidigJournalfoertFirstTime() throws IOException {
         OpprettJournalpostRequest request = createMinimalRequest(INNGAAENDE)
                 .kanal(MottaksKanalCode.HELSENETTET.name())

@@ -1,6 +1,7 @@
 package no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -121,4 +122,8 @@ public class OpprettJournalpostRequest {
     )
     private List<Dokument> dokumenter = new ArrayList<>();
 
+    @JsonIgnore
+    public boolean isInngaaende() {
+        return journalpostType == JournalpostType.INNGAAENDE;
+    }
 }

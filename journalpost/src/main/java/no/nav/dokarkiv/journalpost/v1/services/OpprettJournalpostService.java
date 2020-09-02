@@ -34,11 +34,10 @@ import javax.inject.Inject;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static java.util.Collections.emptyList;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
@@ -53,8 +52,8 @@ public class OpprettJournalpostService {
 
     public static final String UKJENT = "UKJENT";
     private static final String APPLIKASJON_FS22 = "FS22";
-    private static Set<String> IDEMPODENT_KANALS = Stream.of(MottaksKanalCode.SKAN_IM.name(), MottaksKanalCode.HELSENETTET.name())
-            .collect(Collectors.toSet());
+    private static final EnumSet<MottaksKanalCode> INNGAAENDE_IDEMPOTENT_MOTTAKSKANAL =
+            EnumSet.of(MottaksKanalCode.SKAN_IM, MottaksKanalCode.HELSENETTET, MottaksKanalCode.EESSI);
 
     private final JoarkRepository joarkRepository;
     private final DokumentFilRepository dokumentFilRepository;
@@ -186,10 +185,15 @@ public class OpprettJournalpostService {
 
     // Bruker eksternReferanseId for å fikse idempodens for spesifikke kanaler
     private Optional<Journalpost> findJournalpostWithIdempodentKanalAlreadyInDb(OpprettJournalpostRequest request) {
-        String kanal = request.getKanal();
-        if (null == kanal || !IDEMPODENT_KANALS.contains(kanal)) {
+        if (request.isInngaaende() && request.getKanal() != null) {
+            final MottaksKanalCode mottakskanal = MottaksKanalCode.valueOf(request.getKanal());
+            if (INNGAAENDE_IDEMPOTENT_MOTTAKSKANAL.contains(mottakskanal)) {
+                return joarkRepository.findJournalpostWithMottaksKanalAndKanalReferanseId(mottakskanal, request.getEksternReferanseId());
+            } else {
+                return Optional.empty();
+            }
+        } else {
             return Optional.empty();
         }
-        return joarkRepository.findJournalpostWithMottaksKanalAndKanalReferanseId(MottaksKanalCode.valueOf(request.getKanal()), request.getEksternReferanseId());
     }
 }
