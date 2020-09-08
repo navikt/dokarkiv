@@ -58,6 +58,11 @@
 			<type>test-jar</type>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>no.nav.security</groupId>
+			<artifactId>token-validation-test-support</artifactId>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 
 </project>

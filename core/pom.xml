@@ -130,6 +130,10 @@
 			<artifactId>freg-security-oidc</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>no.nav.security</groupId>
+			<artifactId>token-validation-spring</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>com.amazonaws</groupId>
 			<artifactId>aws-java-sdk-s3</artifactId>
 		</dependency>
@@ -159,6 +163,11 @@
 		<dependency>
 			<artifactId>freg-security-test-oidc-tools</artifactId>
 			<groupId>no.nav.freg</groupId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>no.nav.security</groupId>
+			<artifactId>token-validation-test-support</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>

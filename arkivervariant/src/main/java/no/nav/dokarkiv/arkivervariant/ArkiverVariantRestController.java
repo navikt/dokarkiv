@@ -1,9 +1,5 @@
 package no.nav.dokarkiv.arkivervariant;
 
-import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_LOGG_HJEMMEL_HEADER;
-import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_LOGG_MELDING_HEADER;
-import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_LOGG_UTFOERT_AV_HEADER;
-
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.arkivervariant.rjoark103.ArkiverVariantRequest;
 import no.nav.dokarkiv.arkivervariant.rjoark103.ArkiverVariantResponse;
@@ -12,6 +8,7 @@ import no.nav.dokarkiv.arkivervariant.rjoark103.ArkiverVariantValidator;
 import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.metrics.RestMetrics;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
+import no.nav.security.token.support.core.api.Unprotected;
 import org.slf4j.MDC;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,7 +18,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_LOGG_HJEMMEL_HEADER;
+import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_LOGG_MELDING_HEADER;
+import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_LOGG_UTFOERT_AV_HEADER;
+
 @Slf4j
+@Unprotected
 @RestController
 @RequestMapping("rest/admin")
 public class ArkiverVariantRestController {

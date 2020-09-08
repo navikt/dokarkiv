@@ -57,6 +57,7 @@
 		<aws-java-sdk-s3.version>1.11.848</aws-java-sdk-s3.version>
 		<modig-security.version>3.0.6</modig-security.version>
 		<abac-spring.version>1.6.0</abac-spring.version>
+		<token-support.version>1.3.0</token-support.version>
 		<freg-security.version>3.8.1-FIX</freg-security.version>
 		<commons.beanutils.version>1.9.4</commons.beanutils.version>
 		<commons.io.version>2.7</commons.io.version>
@@ -261,6 +262,11 @@
 				<version>${freg-security.version}</version>
 			</dependency>
 			<dependency>
+				<groupId>no.nav.security</groupId>
+				<artifactId>token-validation-spring</artifactId>
+				<version>${token-support.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>commons-io</groupId>
 				<artifactId>commons-io</artifactId>
 				<version>${commons.io.version}</version>
@@ -275,6 +281,17 @@
 				<groupId>org.webjars</groupId>
 				<artifactId>swagger-ui</artifactId>
 				<version>${swagger-ui.version}</version>
+			</dependency>
+			<!--Swagger-->
+			<dependency>
+				<groupId>io.springfox</groupId>
+				<artifactId>springfox-swagger2</artifactId>
+				<version>${swagger.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.springfox</groupId>
+				<artifactId>springfox-swagger-ui</artifactId>
+				<version>${swagger.version}</version>
 			</dependency>
 			<!-- provided og test -->
 			<dependency>
@@ -295,17 +312,11 @@
 				<version>${freg-security.version}</version>
 				<scope>test</scope>
 			</dependency>
-
-			<!--Swagger-->
 			<dependency>
-				<groupId>io.springfox</groupId>
-				<artifactId>springfox-swagger2</artifactId>
-				<version>${swagger.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>io.springfox</groupId>
-				<artifactId>springfox-swagger-ui</artifactId>
-				<version>${swagger.version}</version>
+				<groupId>no.nav.security</groupId>
+				<artifactId>token-validation-test-support</artifactId>
+				<version>${token-support.version}</version>
+				<scope>test</scope>
 			</dependency>
 			<dependency>
 				<groupId>no.nav.modig</groupId>

@@ -1,14 +1,10 @@
 package no.nav.dokarkiv.journalpost.v1.controllers;
 
-import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
-import static no.nav.dokarkiv.core.util.DecodeUtils.decodeBasicAuth;
-import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateId;
-
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.NavHeaders;
-import no.nav.dokarkiv.core.exceptions.ConsumerIsNotSrvDokarkivProxyFunctionalException;
 import no.nav.dokarkiv.core.exceptions.ConsumerIsNotSrvDokSikkerhetsnettFunctionalException;
+import no.nav.dokarkiv.core.exceptions.ConsumerIsNotSrvDokarkivProxyFunctionalException;
 import no.nav.dokarkiv.core.exceptions.ConsumerIsNotSrvSkanMotUtgaaendeFunctionalException;
 import no.nav.dokarkiv.core.exceptions.DokarkivFunctionalException;
 import no.nav.dokarkiv.core.exceptions.DokarkivTechnicalException;
@@ -19,14 +15,15 @@ import no.nav.dokarkiv.journalpost.v1.api.TilknyttVedleggRequest;
 import no.nav.dokarkiv.journalpost.v1.api.TilknyttVedleggResponse;
 import no.nav.dokarkiv.journalpost.v1.api.finnMottatteJournalposter.FinnMottatteJournalposterResponse;
 import no.nav.dokarkiv.journalpost.v1.services.FinnMottatteJournalposterService;
+import no.nav.dokarkiv.journalpost.v1.services.KopierJournalpostService;
 import no.nav.dokarkiv.journalpost.v1.services.MottaDokumentUtgaaendeSkanningService;
 import no.nav.dokarkiv.journalpost.v1.services.TilknyttVedleggService;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerFinnMottatteJournalposter;
-import no.nav.dokarkiv.journalpost.v1.services.KopierJournalpostService;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerFinnMottatteJournalposterMedTema;
+import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerKopierJournalpost;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerMottaDokumentUtgaaendeSkanning;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerTilknyttVedlegg;
-import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerKopierJournalpost;
+import no.nav.security.token.support.core.api.Unprotected;
 import org.slf4j.MDC;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -34,24 +31,28 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.inject.Inject;
 import java.util.List;
 
+import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
+import static no.nav.dokarkiv.core.util.DecodeUtils.decodeBasicAuth;
+import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateId;
+
 /**
  * @author Olav Røstvold Thorsen, Visma Consulting.
  */
-
 @Api(description = "Interne tjenester mot journalpost")
 @Slf4j
+@Unprotected
 @RestController
 @RequestMapping("/rest/intern/journalpostapi/v1")
 public class JournalpostInternRestController {
@@ -71,7 +72,6 @@ public class JournalpostInternRestController {
 			final KopierJournalpostService kopierJournalpostService,
 			final MottaDokumentUtgaaendeSkanningService mottaDokumentUtgaaendeSkanningService
 	) {
-
 		this.tilknyttVedleggService = tilknyttVedleggService;
 		this.finnMottatteJournalposterService = finnMottatteJournalposterService;
 		this.kopierJournalpostService = kopierJournalpostService;

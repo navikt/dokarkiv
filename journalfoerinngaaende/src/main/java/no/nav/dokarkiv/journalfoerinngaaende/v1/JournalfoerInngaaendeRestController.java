@@ -1,14 +1,6 @@
 package no.nav.dokarkiv.journalfoerinngaaende.v1;
 
 
-import static no.nav.abac.xacml.NavAttributter.RESOURCE_ARKIV_JOURNALPOST;
-import static no.nav.abac.xacml.NavAttributter.RESOURCE_FELLES_RESOURCE_TYPE;
-import static no.nav.abac.xacml.StandardAttributter.ACTION_ID;
-import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.CREATE_ACTION;
-import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.DELETE_ACTION;
-import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.READ_ACTION;
-import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.UPDATE_ACTION;
-
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dok.tjenester.journalfoerinngaaende.GetJournalpostResponse;
 import no.nav.dok.tjenester.journalfoerinngaaende.PostLogiskVedleggRequest;
@@ -26,10 +18,9 @@ import no.nav.dokarkiv.journalfoerinngaaende.v1.rjoark001i.GetInngaaendeJournalp
 import no.nav.dokarkiv.journalfoerinngaaende.v1.rjoark002i.UpdateInngaaendeJournalpostService;
 import no.nav.dokarkiv.journalfoerinngaaende.v1.rjoark003i.UpdateInngaaendeJournalpostDokumentService;
 import no.nav.dokarkiv.journalfoerinngaaende.v1.rjoark004i.LogiskVedleggService;
-import no.nav.dokarkiv.journalfoerinngaaende.v1.support.JournalpostValidator;
-import no.nav.dokarkiv.journalfoerinngaaende.v1.to.PostLogiskVedleggRequestTo;
 import no.nav.dokarkiv.journalfoerinngaaende.v1.util.Utils;
 import no.nav.freg.abac.core.annotation.Abac;
+import no.nav.security.token.support.core.api.Protected;
 import org.slf4j.MDC;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -44,11 +35,20 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.inject.Inject;
 
+import static no.nav.abac.xacml.NavAttributter.RESOURCE_ARKIV_JOURNALPOST;
+import static no.nav.abac.xacml.NavAttributter.RESOURCE_FELLES_RESOURCE_TYPE;
+import static no.nav.abac.xacml.StandardAttributter.ACTION_ID;
+import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.CREATE_ACTION;
+import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.DELETE_ACTION;
+import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.READ_ACTION;
+import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.UPDATE_ACTION;
+
 
 /**
  * @author Sigurd Midttun, Visma Consulting.
  */
 @Slf4j
+@Protected
 @RestController
 @RequestMapping("/rest/journalfoerinngaaende/v1/journalposter")
 public class JournalfoerInngaaendeRestController {

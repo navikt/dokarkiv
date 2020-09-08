@@ -3,6 +3,7 @@ package no.nav.dokarkiv.core.security;
 import io.micrometer.core.instrument.MeterRegistry;
 import no.nav.dokarkiv.core.security.ldap.NavLdapService;
 import no.nav.freg.security.oidc.auth.OidcAuthProperties;
+import no.nav.security.token.support.spring.api.EnableJwtTokenValidation;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -14,6 +15,7 @@ import java.util.ArrayList;
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
  */
+@EnableJwtTokenValidation(ignore = {"org.springframework", "springfox"})
 @Configuration
 public class RestWebMvcConfig implements WebMvcConfigurer {
 

@@ -13,6 +13,7 @@ import no.nav.dokarkiv.core.security.LdapConfig;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.dokarkiv.core.stelvio.SimpleRequestContext;
 import no.nav.freg.security.test.oidc.tools.TestToolsAutoConfig;
+import no.nav.security.token.support.test.spring.TokenGeneratorConfiguration;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Value;
@@ -38,7 +39,8 @@ import javax.inject.Named;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-		classes = {CoreConfig.class, HentJournalsakinfoConfig.class, LdapConfig.class, AbstractHentjournalsakinfoItest.Config.class, TestToolsAutoConfig.class},
+		classes = {CoreConfig.class, HentJournalsakinfoConfig.class, LdapConfig.class,
+				AbstractHentjournalsakinfoItest.Config.class, TestToolsAutoConfig.class, TokenGeneratorConfiguration.class},
 		properties = {"spring.main.allow-bean-definition-overriding=true"})
 @ActiveProfiles({"itest", "wiremock", "ldap", "oidc"})
 public abstract class AbstractHentjournalsakinfoItest extends AbstractRestIT {

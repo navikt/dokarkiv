@@ -1,10 +1,5 @@
 package no.nav.dokarkiv;
 
-import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_LOGG_HJEMMEL_HEADER;
-import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_LOGG_MELDING_HEADER;
-import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_LOGG_UTFOERT_AV_HEADER;
-import static org.apache.commons.lang3.StringUtils.isBlank;
-
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.domain.codes.ArkivenhetCode;
@@ -14,6 +9,7 @@ import no.nav.dokarkiv.core.metrics.RestMetrics;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import no.nav.dokarkiv.dto.SkjermArkivenhetRequest;
 import no.nav.dokarkiv.rjoark100.SkjermArkivEnhetOrchestrator;
+import no.nav.security.token.support.core.api.Unprotected;
 import org.slf4j.MDC;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,7 +25,13 @@ import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 import java.util.Objects;
 
+import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_LOGG_HJEMMEL_HEADER;
+import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_LOGG_MELDING_HEADER;
+import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_LOGG_UTFOERT_AV_HEADER;
+import static org.apache.commons.lang3.StringUtils.isBlank;
+
 @Slf4j
+@Unprotected
 @RestController
 @RequestMapping("rest/admin")
 public class SkjermArkivenhetRestController {

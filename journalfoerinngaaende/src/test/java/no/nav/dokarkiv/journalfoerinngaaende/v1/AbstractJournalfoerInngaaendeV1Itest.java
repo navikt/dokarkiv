@@ -10,9 +10,8 @@ import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import no.nav.dokarkiv.core.repository.SkannetInnholdRepository;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.dokarkiv.core.stelvio.SimpleRequestContext;
-import no.nav.freg.security.test.oidc.tools.OidcTestService;
-import no.nav.freg.security.test.oidc.tools.TestToolsAutoConfig;
 import no.nav.modig.testcertificates.TestCertificates;
+import no.nav.security.token.support.test.spring.TokenGeneratorConfiguration;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -46,14 +45,13 @@ import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
-import static no.nav.dokarkiv.core.security.JwtClaimsBuilderProvider.openAmClaimsBuilder;
 
 /**
  * @author Sigurd Midttun, Visma Consulting.
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-		classes = {CoreConfig.class, JournalfoerInngaaendeConfig.class, TestToolsAutoConfig.class})
+        classes = {CoreConfig.class, JournalfoerInngaaendeConfig.class, TokenGeneratorConfiguration.class})
 @ActiveProfiles({"itest", "wiremock", "ldap", "oidc"})
 @AutoConfigureDataJpa
 @AutoConfigureTestDatabase
@@ -63,108 +61,108 @@ import static no.nav.dokarkiv.core.security.JwtClaimsBuilderProvider.openAmClaim
 @Transactional
 public abstract class AbstractJournalfoerInngaaendeV1Itest {
 
-	protected String OIDC_TOKEN_PERSON_USER_TEST;
-	protected String OIDC_TOKEN_SERVICE_USER_TEST;
-	protected String NAV_CONSUMER_TOKEN = "Nav-Consumer-Token";
-	protected final String SERVICE_USER_ID = "srvdokarkiv";
-	protected final String PERSON_USER_ID = "Z990782";
-	protected static final String JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER = "/rest/journalfoerinngaaende/v1/journalposter/";
-	protected static final ObjectMapper mapper = new ObjectMapper();
-	@Rule
-	public ExpectedException expectedException = ExpectedException.none();
-	@Inject
-	protected JoarkRepositorySkjermet joarkRepository;
-	@Inject
-	protected SkannetInnholdRepository skannetInnholdRepository;
-	@Inject
-	protected TestRestTemplate restTemplate;
-	@Inject
+    protected String OIDC_TOKEN_PERSON_USER_TEST;
+    protected String OIDC_TOKEN_SERVICE_USER_TEST;
+    protected String NAV_CONSUMER_TOKEN = "Nav-Consumer-Token";
+    protected final String SERVICE_USER_ID = "srvdokarkiv";
+    protected final String PERSON_USER_ID = "Z990782";
+    protected static final String JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER = "/rest/journalfoerinngaaende/v1/journalposter/";
+    protected static final ObjectMapper mapper = new ObjectMapper();
+    @Rule
+    public ExpectedException expectedException = ExpectedException.none();
+    @Inject
+    protected JoarkRepositorySkjermet joarkRepository;
+    @Inject
+    protected SkannetInnholdRepository skannetInnholdRepository;
+    @Inject
+    protected TestRestTemplate restTemplate;
+    @Inject
     protected DokumentinfoRepository dokumentinfoRepository;
-	@Inject
-	protected OidcTestService oidcTestService;
-	@Inject
-	protected EntityManager entityManager;
+    @Inject
+    protected EntityManager entityManager;
 
-	@Before
-	public void setUp() {
-		OIDC_TOKEN_PERSON_USER_TEST = "Bearer " + oidcTestService.createOidc(openAmClaimsBuilder().subject(PERSON_USER_ID)
-				.build());
-		OIDC_TOKEN_SERVICE_USER_TEST = "Bearer " + oidcTestService.createOidc(openAmClaimsBuilder().subject(SERVICE_USER_ID)
-				.build());
-	}
+    @Before
+    public void setUp() {
+        OIDC_TOKEN_PERSON_USER_TEST = getTokenWithSubject(PERSON_USER_ID);
+        OIDC_TOKEN_SERVICE_USER_TEST = getTokenWithSubject(SERVICE_USER_ID);
+    }
 
-	@BeforeClass
-	public static void setupItest() {
-		TestCertificates.setupKeyAndTrustStore();
-		RequestContextSetter.setRequestContext(new SimpleRequestContext.Builder()
-				.userId("itestuser")
-				.componentId("itest")
-				.build());
-	}
+    protected String getTokenWithSubject(final String subject) {
+        return restTemplate.getForObject("/local/jwt?subject=" + subject, String.class);
+    }
 
-	public static String classpathToString(String path) {
-		return resourceUrlToString(Resources.getResource(path));
-	}
+    @BeforeClass
+    public static void setupItest() {
+        TestCertificates.setupKeyAndTrustStore();
+        RequestContextSetter.setRequestContext(new SimpleRequestContext.Builder()
+                .userId("itestuser")
+                .componentId("itest")
+                .build());
+    }
 
-	public static String resourceUrlToString(URL url) {
-		try {
-			return Resources.toString(url, StandardCharsets.UTF_8);
-		} catch (IOException e) {
-			throw new RuntimeException("Could not convert url to String" + url);
-		}
-	}
+    public static String classpathToString(String path) {
+        return resourceUrlToString(Resources.getResource(path));
+    }
 
-	@Before
-	public void cleanup() {
-		joarkRepository.deleteAll();
-		dokumentinfoRepository.deleteAll();
-	}
+    public static String resourceUrlToString(URL url) {
+        try {
+            return Resources.toString(url, StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            throw new RuntimeException("Could not convert url to String" + url);
+        }
+    }
 
-	protected Journalpost buildAndCommit(final JournalpostBuilder builder) {
-		if(!TestTransaction.isActive()) {
-			TestTransaction.start();
-		}
-		Journalpost journalpost = joarkRepository.save(builder.build());
-		TestTransaction.flagForCommit();
-		TestTransaction.end();
-		return journalpost;
-	}
+    @Before
+    public void cleanup() {
+        joarkRepository.deleteAll();
+        dokumentinfoRepository.deleteAll();
+    }
 
-	protected HttpEntity createHeaders() {
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.TEXT_PLAIN);
-		headers.add(HttpHeaders.AUTHORIZATION, OIDC_TOKEN_PERSON_USER_TEST);
-		headers.add(NAV_CONSUMER_TOKEN, OIDC_TOKEN_SERVICE_USER_TEST);
-		return new HttpEntity(headers);
-	}
+    protected Journalpost buildAndCommit(final JournalpostBuilder builder) {
+        if (!TestTransaction.isActive()) {
+            TestTransaction.start();
+        }
+        Journalpost journalpost = joarkRepository.save(builder.build());
+        TestTransaction.flagForCommit();
+        TestTransaction.end();
+        return journalpost;
+    }
 
-	protected HttpHeaders oidcHeaders() {
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_JSON);
-		headers.add(HttpHeaders.AUTHORIZATION, OIDC_TOKEN_PERSON_USER_TEST);
-		headers.add(NAV_CONSUMER_TOKEN, OIDC_TOKEN_SERVICE_USER_TEST);
-		return headers;
-	}
+    protected HttpEntity createHeaders() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.TEXT_PLAIN);
+        headers.add(HttpHeaders.AUTHORIZATION, "Bearer " + OIDC_TOKEN_PERSON_USER_TEST);
+        headers.add(NAV_CONSUMER_TOKEN, "Bearer " + OIDC_TOKEN_SERVICE_USER_TEST);
+        return new HttpEntity(headers);
+    }
 
-	protected void abacDeny() {
-		stubFor(post(urlEqualTo("/abac"))
-				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
-						.withHeader(org.apache.http.HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-						.withBodyFile("abac/abac-deny.json")));
-	}
+    protected HttpHeaders oidcHeaders() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.add(HttpHeaders.AUTHORIZATION, OIDC_TOKEN_PERSON_USER_TEST);
+        headers.add(NAV_CONSUMER_TOKEN, OIDC_TOKEN_SERVICE_USER_TEST);
+        return headers;
+    }
 
-	protected void abacPermit() {
-		stubFor(post(urlEqualTo("/abac"))
-				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
-						.withHeader(org.apache.http.HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-						.withBodyFile("abac/abac-permit.json")));
-	}
+    protected void abacDeny() {
+        stubFor(post(urlEqualTo("/abac"))
+                .willReturn(aResponse().withStatus(HttpStatus.OK.value())
+                        .withHeader(org.apache.http.HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                        .withBodyFile("abac/abac-deny.json")));
+    }
 
-	protected String stringFromClasspath(String resourcename) throws IOException {
-		return IOUtils.toString(this.getClass().getClassLoader().getResourceAsStream(resourcename));
-	}
+    protected void abacPermit() {
+        stubFor(post(urlEqualTo("/abac"))
+                .willReturn(aResponse().withStatus(HttpStatus.OK.value())
+                        .withHeader(org.apache.http.HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                        .withBodyFile("abac/abac-permit.json")));
+    }
 
-	protected String getOidcTokenBody(String oidcToken) {
-		return JWT.decode(oidcToken).getPayload();
-	}
+    protected String stringFromClasspath(String resourcename) throws IOException {
+        return IOUtils.toString(this.getClass().getClassLoader().getResourceAsStream(resourcename));
+    }
+
+    protected String getOidcTokenBody(String oidcToken) {
+        return JWT.decode(oidcToken).getPayload();
+    }
 }

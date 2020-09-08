@@ -16,6 +16,7 @@ import no.nav.dokarkiv.hentdokument.dokument.HentDokumentResponse;
 import no.nav.dokarkiv.hentdokument.dokumenturlinfo.HentDokumentUrlInfo;
 import no.nav.dokarkiv.hentdokument.dokumenturlinfo.HentDokumentUrlInfoRequest;
 import no.nav.dokarkiv.hentdokument.dokumenturlinfo.HentDokumentUrlInfoResponse;
+import no.nav.security.token.support.core.api.Unprotected;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.inject.Inject;
 
 @Slf4j
+@Unprotected
 @RestController
 public class HentDokumentController {
 
