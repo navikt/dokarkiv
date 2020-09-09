@@ -61,6 +61,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 @Transactional
 public abstract class AbstractJournalfoerInngaaendeV1Itest {
 
+    public static final String BEARER_PREFIX = "Bearer ";
     protected String OIDC_TOKEN_PERSON_USER_TEST;
     protected String OIDC_TOKEN_SERVICE_USER_TEST;
     protected String NAV_CONSUMER_TOKEN = "Nav-Consumer-Token";
@@ -130,17 +131,17 @@ public abstract class AbstractJournalfoerInngaaendeV1Itest {
 
     protected HttpEntity createHeaders() {
         HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.TEXT_PLAIN);
-        headers.add(HttpHeaders.AUTHORIZATION, "Bearer " + OIDC_TOKEN_PERSON_USER_TEST);
-        headers.add(NAV_CONSUMER_TOKEN, "Bearer " + OIDC_TOKEN_SERVICE_USER_TEST);
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.add(HttpHeaders.AUTHORIZATION, BEARER_PREFIX + OIDC_TOKEN_PERSON_USER_TEST);
+        headers.add(NAV_CONSUMER_TOKEN, BEARER_PREFIX + OIDC_TOKEN_SERVICE_USER_TEST);
         return new HttpEntity(headers);
     }
 
     protected HttpHeaders oidcHeaders() {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.add(HttpHeaders.AUTHORIZATION, OIDC_TOKEN_PERSON_USER_TEST);
-        headers.add(NAV_CONSUMER_TOKEN, OIDC_TOKEN_SERVICE_USER_TEST);
+        headers.add(HttpHeaders.AUTHORIZATION, BEARER_PREFIX + OIDC_TOKEN_PERSON_USER_TEST);
+        headers.add(NAV_CONSUMER_TOKEN, BEARER_PREFIX +  OIDC_TOKEN_SERVICE_USER_TEST);
         return headers;
     }
 

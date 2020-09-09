@@ -60,15 +60,14 @@ public class Rjoark001iIT extends AbstractJournalfoerInngaaendeV1Itest {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.TEXT_PLAIN);
-        final String authorizationHeader = getTokenWithSubject(PERSON_USER_ID);
-        headers.add(HttpHeaders.AUTHORIZATION, "Bearer " + authorizationHeader);
+        headers.add(HttpHeaders.AUTHORIZATION, BEARER_PREFIX + OIDC_TOKEN_SERVICE_USER_TEST);
 
 		ResponseEntity<GetJournalpostResponse> responseEntity = restTemplate.exchange(
                 JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER + journalpostId, HttpMethod.GET, new HttpEntity(headers), GetJournalpostResponse.class);
 
         assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
         verify(postRequestedFor(urlEqualTo("/abac")).withRequestBody(equalToJson(format(stringFromClasspath("abac/getInngaaendejournalpost_only_ServiceUser.json"),
-                getOidcTokenBody(authorizationHeader)))));
+                getOidcTokenBody(OIDC_TOKEN_SERVICE_USER_TEST)))));
         assertThat(responseEntity.getBody().getJournalTilstand(), is(GetJournalpostResponse.JournalTilstand.ENDELIG));
     }
 
@@ -165,7 +164,7 @@ public class Rjoark001iIT extends AbstractJournalfoerInngaaendeV1Itest {
                 JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER + journalpostId, HttpMethod.GET, new HttpEntity(headers), String.class);
 
         assertThat(responseEntity.getStatusCode(), is(HttpStatus.UNAUTHORIZED));
-        assertThat(responseEntity.getBody(), containsString("no valid token found in validation context"));
+        assertThat(responseEntity.getBody(), containsString("Finner ingen oidc token på Authorization header"));
     }
 
     /**
