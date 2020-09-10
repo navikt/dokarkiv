@@ -4,6 +4,7 @@ package no.nav.dokarkiv.nais;
 import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.MeterRegistry;
 import lombok.extern.slf4j.Slf4j;
+import no.nav.security.token.support.core.api.Unprotected;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author Joakim Bjørnstad, Jbit AS
  */
 @Slf4j
+@Unprotected
 @RestController
 public final class NaisContract {
 
