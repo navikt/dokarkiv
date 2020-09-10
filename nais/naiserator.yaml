@@ -89,3 +89,4 @@ spec:
         mountPath: "/var/run/secrets/nais.io/vault"
       - kvPath: {{ SRV_LINUX }}
         mountPath: "/var/run/secrets/nais.io/ldap"
+  webproxy: true
