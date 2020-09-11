@@ -9,7 +9,6 @@ import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.jaxws.ThreadLocalSubjectHandler;
 import no.nav.dokarkiv.core.security.ldap.NavLdapService;
 import no.nav.dokarkiv.core.security.ldap.NavUser;
-import no.nav.freg.security.oidc.auth.idtoken.extract.HeaderTokenExtractor;
 import no.nav.modig.core.context.SubjectHandler;
 import org.slf4j.MDC;
 import org.springframework.http.HttpHeaders;

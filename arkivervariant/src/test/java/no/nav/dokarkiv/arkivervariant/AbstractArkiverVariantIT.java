@@ -30,7 +30,7 @@ import static org.mockito.Mockito.when;
 		classes = {CoreConfig.class, ArkiverVariantConfig.class, AbstractArkiverVariantIT.Config.class,
 				TokenGeneratorConfiguration.class},
 		properties = {"spring.main.allow-bean-definition-overriding=true"})
-@ActiveProfiles({"itest", "wiremock", "ldap", "oidc"})
+@ActiveProfiles({"itest", "wiremock", "ldap"})
 @AutoConfigureWireMock(port = 0)
 public abstract class AbstractArkiverVariantIT extends AbstractRestIT {
 

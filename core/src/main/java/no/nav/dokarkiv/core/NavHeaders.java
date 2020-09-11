@@ -10,8 +10,9 @@ public final class NavHeaders {
 	@Deprecated // Konsumenter skal bruke NAV_CALL_ID i stedet.
 	public static final String X_CORRELATION_ID = "X-Correlation-ID";
 	public static final String NAV_CONSUMER_TOKEN = "Nav-Consumer-Token";
+    public static final String BEARER_TOKEN_PREFIX = "Bearer ";
 
-	private NavHeaders() {
+    private NavHeaders() {
 		//noop
 	}
 }

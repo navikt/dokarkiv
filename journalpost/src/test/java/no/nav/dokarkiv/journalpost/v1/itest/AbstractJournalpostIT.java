@@ -33,7 +33,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
 		classes = {CoreConfig.class, JournalpostConfig.class, TokenGeneratorConfiguration.class},
 		properties = {"spring.main.allow-bean-definition-overriding=true"})
-@ActiveProfiles({"itest", "wiremock", "ldap", "oidc"})
+@ActiveProfiles({"itest", "wiremock", "ldap"})
 @AutoConfigureWireMock(port = 0)
 public abstract class AbstractJournalpostIT extends AbstractRestIT {
 

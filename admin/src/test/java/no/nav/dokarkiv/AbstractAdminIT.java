@@ -44,7 +44,7 @@ import static org.mockito.Mockito.when;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
 		classes = {CoreConfig.class, AdminConfig.class, AbstractAdminIT.Config.class, TokenGeneratorConfiguration.class},
 		properties = {"spring.main.allow-bean-definition-overriding=true"})
-@ActiveProfiles({"itest", "wiremock", "ldap", "oidc"})
+@ActiveProfiles({"itest", "wiremock", "ldap"})
 @AutoConfigureWireMock(port = 0)
 public abstract class AbstractAdminIT extends AbstractRestIT {
 	protected static final String URL_KASSERDOKUMENT = "/rest/admin/kasserdokument/";

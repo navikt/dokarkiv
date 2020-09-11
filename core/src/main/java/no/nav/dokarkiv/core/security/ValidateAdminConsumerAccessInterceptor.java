@@ -1,20 +1,19 @@
 package no.nav.dokarkiv.core.security;
 
-import static org.apache.commons.lang3.BooleanUtils.isFalse;
-import static org.apache.commons.lang3.StringUtils.isEmpty;
-import static org.apache.commons.lang3.StringUtils.isNotEmpty;
-
 import com.auth0.jwt.JWT;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.security.ldap.NavLdapService;
 import no.nav.dokarkiv.core.security.ldap.NavUser;
-import no.nav.freg.security.oidc.auth.idtoken.extract.HeaderTokenExtractor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Set;
+
+import static org.apache.commons.lang3.BooleanUtils.isFalse;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
 /**
  * @author Ketill Fenne, Visma Consulting AS
@@ -25,8 +24,8 @@ public class ValidateAdminConsumerAccessInterceptor implements HandlerIntercepto
 	private final HeaderTokenExtractor headerTokenExtractor = new HeaderTokenExtractor();
 	private final NavLdapService navLdapService;
 
-	private final String adminServiceUser = "srvjoarkadmin";
-	private final String adminBrukerRolle = "0000-GA-joark-vedlikehold";
+	private static final String ADMIN_SERVICE_USER = "srvjoarkadmin";
+	private static final String ADMIN_SERVICE_USER_AD_ROLE = "0000-GA-joark-vedlikehold";
 
 	public ValidateAdminConsumerAccessInterceptor(NavLdapService navLdapService) {
 		this.navLdapService = navLdapService;
@@ -44,20 +43,20 @@ public class ValidateAdminConsumerAccessInterceptor implements HandlerIntercepto
 		String authorizationToken = headerTokenExtractor.getIdToken(request);
 
 		if (isEmpty(navConsumerToken)) {
-			if (isFalse(isTokenBelongsToUser(authorizationToken, adminServiceUser))) {
-				String message = String.format("OIDC token på Authorization-header må tilhøre servicebruker på %s", adminServiceUser);
+			if (isFalse(isTokenBelongsToUser(authorizationToken, ADMIN_SERVICE_USER))) {
+				String message = String.format("OIDC token på Authorization-header må tilhøre servicebruker på %s", ADMIN_SERVICE_USER);
 				log.warn(message);
 				response.sendError(HttpServletResponse.SC_UNAUTHORIZED, message);
 				return false;
 			}
 		} else if (isNotEmpty(navConsumerToken)) {
-			if (isFalse(isTokenBelongsToUser(navConsumerToken, adminServiceUser))) {
-				String message = String.format("OIDC token på Nav-Consumer-Token header må tilhøre serviceuser på %s", adminServiceUser);
+			if (isFalse(isTokenBelongsToUser(navConsumerToken, ADMIN_SERVICE_USER))) {
+				String message = String.format("OIDC token på Nav-Consumer-Token header må tilhøre serviceuser på %s", ADMIN_SERVICE_USER);
 				log.warn(message);
 				response.sendError(HttpServletResponse.SC_UNAUTHORIZED, message);
 				return false;
-			} else if (isFalse(isUserInTokenHasRole(authorizationToken, adminBrukerRolle))) {
-				String message = String.format("Bruker må være medlem av gruppen \"%s\"", adminBrukerRolle);
+			} else if (isFalse(isUserInTokenHasRole(authorizationToken, ADMIN_SERVICE_USER_AD_ROLE))) {
+				String message = String.format("Bruker må være medlem av gruppen \"%s\"", ADMIN_SERVICE_USER_AD_ROLE);
 				log.warn(message);
 				response.sendError(HttpServletResponse.SC_UNAUTHORIZED, message);
 				return false;
