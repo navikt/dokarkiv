@@ -7,7 +7,7 @@ import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import no.nav.dokarkiv.dto.KasserDokumentRequest;
 import no.nav.dokarkiv.rjoark102.KasserDokumentOrchestrator;
 import no.nav.dokarkiv.rjoark102.KasserDokumentValidator;
-import no.nav.security.token.support.core.api.Unprotected;
+import no.nav.security.token.support.core.api.Protected;
 import org.slf4j.MDC;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,7 +27,7 @@ import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_LOGG_M
 import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_LOGG_UTFOERT_AV_HEADER;
 
 @Slf4j
-@Unprotected
+@Protected
 @RestController
 @RequestMapping("rest/admin")
 public class KasserDokumentRestController {

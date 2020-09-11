@@ -17,7 +17,7 @@ import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerFeilregistrerSakstilknytnin
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerOpphevFeilregistrertSakstilknytning;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerSettUkjentBruker;
 import no.nav.freg.abac.core.annotation.Abac;
-import no.nav.security.token.support.core.api.Unprotected;
+import no.nav.security.token.support.core.api.Protected;
 import org.slf4j.MDC;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,7 +44,7 @@ import static no.nav.dokarkiv.journalpost.v1.util.AvvikstypeConstants.OPPHEV_FEI
 import static no.nav.dokarkiv.journalpost.v1.util.AvvikstypeConstants.SETT_UKJENT_BRUKER;
 
 @Slf4j
-@Unprotected
+@Protected
 @RestController
 @RequestMapping("/rest/journalpostapi/v1/journalpost")
 @Api(value = "Feilregistrer", description = "Tjenester for å feilregistrere journalpost")

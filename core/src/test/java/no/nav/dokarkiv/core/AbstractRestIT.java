@@ -13,7 +13,6 @@ import no.nav.dokarkiv.core.repository.SakRepository;
 import no.nav.dokarkiv.core.skjerming.SkjermingServiceTest;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.dokarkiv.core.stelvio.SimpleRequestContext;
-import no.nav.freg.security.test.oidc.tools.OidcTestService;
 import no.nav.modig.testcertificates.TestCertificates;
 import org.junit.After;
 import org.junit.BeforeClass;
@@ -37,7 +36,6 @@ import javax.persistence.EntityManager;
 import java.io.IOException;
 import java.util.Objects;
 
-import static no.nav.dokarkiv.core.security.JwtClaimsBuilderProvider.openAmClaimsBuilder;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.OPPRETTET_KILDE_NAVN;
 import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_BRUKER;
 import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_HJEMMEL;
@@ -66,8 +64,6 @@ public abstract class AbstractRestIT {
 	protected DokumentinfoRepository dokumentinfoRepository;
 	@Inject
 	protected TestRestTemplate restTemplate;
-	@Inject
-	protected OidcTestService oidcTestService;
 	@Inject
 	protected SkjermingService skjermingService;
 	@Inject
@@ -117,19 +113,20 @@ public abstract class AbstractRestIT {
 	protected HttpHeaders createHeadersWithUserAndServiceUserToken() throws IOException {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
-		headers.add(HttpHeaders.AUTHORIZATION, BEARER + oidcTestService.createOidc(openAmClaimsBuilder().subject(PERSON_USER_ID)
-				.build()));
-		headers.add(NAV_CONSUMER_TOKEN, BEARER + oidcTestService.createOidc(openAmClaimsBuilder().subject(SERVICE_USER_ID)
-				.build()));
+		headers.add(HttpHeaders.AUTHORIZATION, BEARER + getTokenWithSubject(PERSON_USER_ID));
+		headers.add(NAV_CONSUMER_TOKEN, BEARER + getTokenWithSubject(SERVICE_USER_ID));
 		headers.add(NavHeaders.NAV_CALL_ID, "itest");
 		return headers;
 	}
 
 	protected HttpHeaders createHeadersWithServiceUserToken() throws IOException {
+		return createHeadersWithServiceUserToken(SERVICE_USER_ID);
+	}
+
+	protected HttpHeaders createHeadersWithServiceUserToken(String serviceUserId) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
-		headers.add(HttpHeaders.AUTHORIZATION, BEARER + oidcTestService.createOidc(openAmClaimsBuilder().subject(SERVICE_USER_ID)
-				.build()));
+		headers.add(HttpHeaders.AUTHORIZATION, BEARER + getTokenWithSubject(serviceUserId));
 		headers.add(NavHeaders.NAV_CALL_ID, "itest");
 		return headers;
 	}
@@ -141,14 +138,6 @@ public abstract class AbstractRestIT {
 		httpHeaders.add(AksjonsLoggService.AKSJONS_LOGG_MELDING_HEADER, AKSJON_MELDING);
 		httpHeaders.add(AksjonsLoggService.AKSJONS_LOGG_UTFOERT_AV_HEADER, AKSJON_UTFOERT_AV);
 		return httpHeaders;
-	}
-
-	protected HttpHeaders createHeadersWithServiceUserToken(String serviceUserId) {
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_JSON);
-		headers.add(HttpHeaders.AUTHORIZATION, BEARER + oidcTestService.createOidc(openAmClaimsBuilder().subject(serviceUserId)
-				.build()));
-		return headers;
 	}
 
 	protected Journalpost saveJournalpost(Journalpost journalpost) {
@@ -164,5 +153,9 @@ public abstract class AbstractRestIT {
 			});
 		});
 		return newJp;
+	}
+
+	protected String getTokenWithSubject(final String subject) {
+		return restTemplate.getForObject("/local/jwt?subject=" + subject, String.class);
 	}
 }

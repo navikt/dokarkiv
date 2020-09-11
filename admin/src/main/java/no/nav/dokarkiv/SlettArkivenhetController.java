@@ -6,7 +6,7 @@ import no.nav.dokarkiv.core.metrics.RestMetrics;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import no.nav.dokarkiv.dto.SlettArkivenhetRequest;
 import no.nav.dokarkiv.rjoark101.SlettArkivenhetOrchestrator;
-import no.nav.security.token.support.core.api.Unprotected;
+import no.nav.security.token.support.core.api.Protected;
 import org.slf4j.MDC;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,7 +24,7 @@ import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_LOGG_U
  * @author Ugur Alpay Cenar, Visma Consulting.
  */
 @Slf4j
-@Unprotected
+@Protected
 @RestController
 @RequestMapping("rest/admin")
 public class SlettArkivenhetController {

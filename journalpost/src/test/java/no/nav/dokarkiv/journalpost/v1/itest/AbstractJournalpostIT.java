@@ -1,19 +1,15 @@
 package no.nav.dokarkiv.journalpost.v1.itest;
 
 import com.auth0.jwt.JWT;
-import com.google.common.cache.Cache;
 import no.nav.dokarkiv.core.AbstractRestIT;
 import no.nav.dokarkiv.core.CoreConfig;
 import no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerV2Mock;
 import no.nav.dokarkiv.core.domain.builder.JournalpostBuilder;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.journalpost.v1.JournalpostConfig;
-import no.nav.freg.security.test.oidc.tools.TestToolsAutoConfig;
 import no.nav.security.token.support.test.spring.TokenGeneratorConfiguration;
 import no.nav.tjeneste.virksomhet.aktoer.v2.binding.AktoerV2;
-import no.nav.tjeneste.virksomhet.aktoer.v2.meldinger.HentAktoerIdForIdentResponse;
 import org.apache.commons.io.IOUtils;
-import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.context.annotation.Bean;
@@ -35,7 +31,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-		classes = {CoreConfig.class, JournalpostConfig.class, TestToolsAutoConfig.class, TokenGeneratorConfiguration.class},
+		classes = {CoreConfig.class, JournalpostConfig.class, TokenGeneratorConfiguration.class},
 		properties = {"spring.main.allow-bean-definition-overriding=true"})
 @ActiveProfiles({"itest", "wiremock", "ldap", "oidc"})
 @AutoConfigureWireMock(port = 0)
@@ -51,9 +47,6 @@ public abstract class AbstractJournalpostIT extends AbstractRestIT {
 
 	protected String OIDC_TOKEN_PERSON_USER_TEST;
 	protected String OIDC_TOKEN_SERVICE_USER_TEST;
-
-	@Mock
-	private Cache<String, HentAktoerIdForIdentResponse> aktoerResponseCache;
 
 	@Configuration
 	public static class TestConfig {
@@ -110,8 +103,8 @@ public abstract class AbstractJournalpostIT extends AbstractRestIT {
 	protected HttpHeaders oidcHeaders() {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
-		headers.add(HttpHeaders.AUTHORIZATION, OIDC_TOKEN_PERSON_USER_TEST);
-		headers.add(NAV_CONSUMER_TOKEN, OIDC_TOKEN_SERVICE_USER_TEST);
+		headers.add(HttpHeaders.AUTHORIZATION, BEARER + OIDC_TOKEN_PERSON_USER_TEST);
+		headers.add(NAV_CONSUMER_TOKEN, BEARER + OIDC_TOKEN_SERVICE_USER_TEST);
 		return headers;
 	}
 

@@ -9,7 +9,7 @@ import no.nav.dokarkiv.core.metrics.RestMetrics;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import no.nav.dokarkiv.dto.SkjermArkivenhetRequest;
 import no.nav.dokarkiv.rjoark100.SkjermArkivEnhetOrchestrator;
-import no.nav.security.token.support.core.api.Unprotected;
+import no.nav.security.token.support.core.api.Protected;
 import org.slf4j.MDC;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,7 +31,7 @@ import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_LOGG_U
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 @Slf4j
-@Unprotected
+@Protected
 @RestController
 @RequestMapping("rest/admin")
 public class SkjermArkivenhetRestController {

@@ -13,7 +13,6 @@ import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.security.ldap.NavLdapService;
 import no.nav.dokarkiv.core.security.ldap.NavUser;
 import no.nav.dokarkiv.core.util.TestDataUtils;
-import no.nav.freg.security.test.oidc.tools.TestToolsAutoConfig;
 import no.nav.security.token.support.test.spring.TokenGeneratorConfiguration;
 import org.apache.commons.collections15.IteratorUtils;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -43,8 +42,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-		classes = {CoreConfig.class, AdminConfig.class, TestToolsAutoConfig.class, AbstractAdminIT.Config.class,
-				TokenGeneratorConfiguration.class},
+		classes = {CoreConfig.class, AdminConfig.class, AbstractAdminIT.Config.class, TokenGeneratorConfiguration.class},
 		properties = {"spring.main.allow-bean-definition-overriding=true"})
 @ActiveProfiles({"itest", "wiremock", "ldap", "oidc"})
 @AutoConfigureWireMock(port = 0)
@@ -216,7 +214,6 @@ public abstract class AbstractAdminIT extends AbstractRestIT {
 
 	protected void assertThatDokumentFilIsDeleted(String filuuid) {
 		assertThat(dokumentFilRepository.findByFilUuid(filuuid), nullValue());
-
 	}
 
 	protected void assertThatJournalpostRelasjonerIsNotDeleted(Journalpost journalpost) {
