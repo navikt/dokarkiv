@@ -8,6 +8,7 @@ import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.dokarkiv.core.stelvio.SimpleRequestContext;
+import no.nav.security.token.support.test.spring.TokenGeneratorConfiguration;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.rules.ExpectedException;
@@ -26,7 +27,7 @@ import java.util.Date;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE,
-		classes = {CoreConfig.class, ArkiverDokumentmottakConfig.class})
+		classes = {CoreConfig.class, ArkiverDokumentmottakConfig.class, TokenGeneratorConfiguration.class})
 @ActiveProfiles("itest")
 @AutoConfigureTestDatabase
 @AutoConfigureTestEntityManager

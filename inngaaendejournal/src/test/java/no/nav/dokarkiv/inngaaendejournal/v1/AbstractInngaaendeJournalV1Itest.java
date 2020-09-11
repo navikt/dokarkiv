@@ -9,6 +9,7 @@ import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import no.nav.dokarkiv.core.skjerming.SkjermingServiceTest;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.dokarkiv.core.stelvio.SimpleRequestContext;
+import no.nav.security.token.support.test.spring.TokenGeneratorConfiguration;
 import no.nav.tjeneste.virksomhet.aktoer.v2.binding.AktoerV2;
 import no.nav.tjeneste.virksomhet.inngaaendejournal.v1.binding.InngaaendeJournalV1;
 import org.apache.commons.io.IOUtils;
@@ -40,7 +41,8 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE,
-		classes = {CoreConfig.class, AbstractInngaaendeJournalV1Itest.TestConfig.class, InngaaendeJournalV1Config.class},
+		classes = {CoreConfig.class, AbstractInngaaendeJournalV1Itest.TestConfig.class, InngaaendeJournalV1Config.class,
+				TokenGeneratorConfiguration.class},
 		properties = {"spring.main.allow-bean-definition-overriding=true"})
 @ActiveProfiles({"itest", "wiremock"})
 @AutoConfigureTestDatabase

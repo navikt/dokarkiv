@@ -1,12 +1,5 @@
 package no.nav.dokarkiv.core;
 
-import static no.nav.dokarkiv.core.security.JwtClaimsBuilderProvider.openAmClaimsBuilder;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.OPPRETTET_KILDE_NAVN;
-import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_BRUKER;
-import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_HJEMMEL;
-import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_MELDING;
-import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_UTFOERT_AV;
-
 import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService;
 import no.nav.dokarkiv.core.domain.entities.DokumentFil;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
@@ -43,6 +36,13 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import java.io.IOException;
 import java.util.Objects;
+
+import static no.nav.dokarkiv.core.security.JwtClaimsBuilderProvider.openAmClaimsBuilder;
+import static no.nav.dokarkiv.core.util.TestDataGenerator.OPPRETTET_KILDE_NAVN;
+import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_BRUKER;
+import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_HJEMMEL;
+import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_MELDING;
+import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_UTFOERT_AV;
 
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.

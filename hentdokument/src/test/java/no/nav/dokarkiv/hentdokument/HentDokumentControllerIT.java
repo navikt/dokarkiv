@@ -29,6 +29,7 @@ import no.nav.dokarkiv.core.skjerming.SkjermingServiceTest;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.dokarkiv.core.stelvio.SimpleRequestContext;
 import no.nav.modig.testcertificates.TestCertificates;
+import no.nav.security.token.support.test.spring.TokenGeneratorConfiguration;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpHeaders;
 import org.assertj.core.util.DateUtil;
@@ -67,7 +68,7 @@ import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-		classes = {CoreConfig.class, HentDokumentConfig.class})
+		classes = {CoreConfig.class, HentDokumentConfig.class, TokenGeneratorConfiguration.class})
 @ActiveProfiles({"itest", "wiremock"})
 @AutoConfigureTestDatabase
 @AutoConfigureTestEntityManager

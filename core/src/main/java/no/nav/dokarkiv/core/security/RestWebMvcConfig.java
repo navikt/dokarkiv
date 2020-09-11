@@ -3,17 +3,18 @@ package no.nav.dokarkiv.core.security;
 import io.micrometer.core.instrument.MeterRegistry;
 import no.nav.dokarkiv.core.security.ldap.NavLdapService;
 import no.nav.freg.security.oidc.auth.OidcAuthProperties;
+import no.nav.security.token.support.spring.api.EnableJwtTokenValidation;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import javax.inject.Named;
-import java.util.ArrayList;
 
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
  */
+@EnableJwtTokenValidation(ignore = {"org.springframework", "springfox"})
 @Configuration
 public class RestWebMvcConfig implements WebMvcConfigurer {
 
@@ -38,7 +39,7 @@ public class RestWebMvcConfig implements WebMvcConfigurer {
                 .addPathPatterns("/hentjournalsakinfo/**");
 
         registry.addInterceptor(new ValidateUserAndAddToMDCHandler(navLdapService, meterRegistry))
-                .excludePathPatterns(new ArrayList<>(oidcAuthProperties.getIgnoredPaths()))
+                .excludePathPatterns("/rest/intern/**")
                 .addPathPatterns(oidcAuthProperties.getSecuredPath());
 
         registry.addInterceptor(new ValidateAdminConsumerAccessInterceptor(navLdapService))

@@ -9,6 +9,7 @@ import no.nav.dokarkiv.core.domain.builder.JournalpostBuilder;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.journalpost.v1.JournalpostConfig;
 import no.nav.freg.security.test.oidc.tools.TestToolsAutoConfig;
+import no.nav.security.token.support.test.spring.TokenGeneratorConfiguration;
 import no.nav.tjeneste.virksomhet.aktoer.v2.binding.AktoerV2;
 import no.nav.tjeneste.virksomhet.aktoer.v2.meldinger.HentAktoerIdForIdentResponse;
 import org.apache.commons.io.IOUtils;
@@ -34,7 +35,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-		classes = {CoreConfig.class, JournalpostConfig.class, TestToolsAutoConfig.class},
+		classes = {CoreConfig.class, JournalpostConfig.class, TestToolsAutoConfig.class, TokenGeneratorConfiguration.class},
 		properties = {"spring.main.allow-bean-definition-overriding=true"})
 @ActiveProfiles({"itest", "wiremock", "ldap", "oidc"})
 @AutoConfigureWireMock(port = 0)

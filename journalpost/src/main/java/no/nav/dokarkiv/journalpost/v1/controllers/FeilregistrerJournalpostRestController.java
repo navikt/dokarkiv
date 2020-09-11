@@ -1,19 +1,5 @@
 package no.nav.dokarkiv.journalpost.v1.controllers;
 
-import static no.nav.abac.xacml.NavAttributter.RESOURCE_ARKIV_JOURNALPOST;
-import static no.nav.abac.xacml.NavAttributter.RESOURCE_FELLES_DOMENE;
-import static no.nav.abac.xacml.NavAttributter.RESOURCE_FELLES_RESOURCE_TYPE;
-import static no.nav.abac.xacml.StandardAttributter.ACTION_ID;
-import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
-import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
-import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.ADMIN_UPDATE_ACTION;
-import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.ARKIV_V2;
-import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.UPDATE_ACTION;
-import static no.nav.dokarkiv.journalpost.v1.util.AvvikstypeConstants.AVBRYT;
-import static no.nav.dokarkiv.journalpost.v1.util.AvvikstypeConstants.FEILREGISTRER_SAKSTILKNYTNING;
-import static no.nav.dokarkiv.journalpost.v1.util.AvvikstypeConstants.OPPHEV_FEILREGISTRERT_SAKSTILKNYTNING;
-import static no.nav.dokarkiv.journalpost.v1.util.AvvikstypeConstants.SETT_UKJENT_BRUKER;
-
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
@@ -31,6 +17,7 @@ import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerFeilregistrerSakstilknytnin
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerOpphevFeilregistrertSakstilknytning;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerSettUkjentBruker;
 import no.nav.freg.abac.core.annotation.Abac;
+import no.nav.security.token.support.core.api.Unprotected;
 import org.slf4j.MDC;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,7 +29,22 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.inject.Inject;
 import java.util.List;
 
+import static no.nav.abac.xacml.NavAttributter.RESOURCE_ARKIV_JOURNALPOST;
+import static no.nav.abac.xacml.NavAttributter.RESOURCE_FELLES_DOMENE;
+import static no.nav.abac.xacml.NavAttributter.RESOURCE_FELLES_RESOURCE_TYPE;
+import static no.nav.abac.xacml.StandardAttributter.ACTION_ID;
+import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
+import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
+import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.ADMIN_UPDATE_ACTION;
+import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.ARKIV_V2;
+import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.UPDATE_ACTION;
+import static no.nav.dokarkiv.journalpost.v1.util.AvvikstypeConstants.AVBRYT;
+import static no.nav.dokarkiv.journalpost.v1.util.AvvikstypeConstants.FEILREGISTRER_SAKSTILKNYTNING;
+import static no.nav.dokarkiv.journalpost.v1.util.AvvikstypeConstants.OPPHEV_FEILREGISTRERT_SAKSTILKNYTNING;
+import static no.nav.dokarkiv.journalpost.v1.util.AvvikstypeConstants.SETT_UKJENT_BRUKER;
+
 @Slf4j
+@Unprotected
 @RestController
 @RequestMapping("/rest/journalpostapi/v1/journalpost")
 @Api(value = "Feilregistrer", description = "Tjenester for å feilregistrere journalpost")

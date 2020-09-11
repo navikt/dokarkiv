@@ -1,16 +1,5 @@
 package no.nav.dokarkiv.journalfoerinngaaende.v1.rjoark002i;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
-import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
-import static com.github.tomakehurst.wiremock.client.WireMock.verify;
-import static java.lang.String.format;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.StringContains.containsString;
-
 import no.nav.dok.tjenester.journalfoerinngaaende.PutJournalpostRequest;
 import no.nav.dok.tjenester.journalfoerinngaaende.PutJournalpostResponse;
 import no.nav.dok.tjenester.journalfoerinngaaende.response.Status;
@@ -32,291 +21,302 @@ import org.springframework.test.context.transaction.TestTransaction;
 
 import java.io.IOException;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
+import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.verify;
+import static java.lang.String.format;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.StringContains.containsString;
+
 /**
  * @author Sigurd Midttun, Visma Consulting.
  */
 public class Rjoark002iIT extends AbstractJournalfoerInngaaendeV1Itest {
 
-	/**
-	 * HVIS forsoekEndeligJF == TRUE, og ingen felter mangler for å endelig journalføre => returner 200 OK og journalpostId.
-	 */
-	@Test
-	public void shouldFerdigstillJournalpostVedOppdateringUserTokenAndServiceUserToken() throws IOException {
-		abacPermit();
-
-		PutJournalpostRequest request = mapper.readValue(classpathToString("__files/put_journalpost/happy_input_request.json"), PutJournalpostRequest.class);
-
-		Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
-				.endretAvNavn("saksbehandlersen"));
-		Long journalpostId = journalpost.getJournalpostId();
-
-		HttpEntity<PutJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
-
-		ResponseEntity<PutJournalpostResponse> responseEntity = restTemplate.exchange(
-				JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER + journalpostId, HttpMethod.PUT, requestHttpEntity, PutJournalpostResponse.class);
-
-		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
-		assertThat(responseEntity.getBody().getJournalpostId(), is(String.valueOf(journalpostId)));
-		assertThat(responseEntity.getBody().getMangler(), is(nullValue()));
-		assertThat(responseEntity.getBody().isHarEndeligJF(), is(true));
-
-		verify(postRequestedFor(urlEqualTo("/abac")).withRequestBody(equalToJson(format(stringFromClasspath("abac/putInngaaendejournalpost_PersonUser_and_ServiceUser.json"),
-				getOidcTokenBody(OIDC_TOKEN_PERSON_USER_TEST.replace("Bearer ", "")),
-				getOidcTokenBody(OIDC_TOKEN_SERVICE_USER_TEST.replace("Bearer ", ""))))));
-
-
-		TestTransaction.start();
-		Journalpost oppdatertJP = joarkRepository.findById(journalpostId).get();
-
-		assertThat(oppdatertJP.getEndretAvNavn(), is(PERSON_USER_ID));
-		assertThat(oppdatertJP.getEndretKildeNavn(), is(SERVICE_USER_ID));
-		assertThat(oppdatertJP.getChangeStamp().getUpdatedBy(), is(PERSON_USER_ID));
-		assertThat(oppdatertJP.getInnhold(), is(request.getTittel()));
-		assertThat(oppdatertJP.getFagomrade().name(), is(request.getTema()));
-		assertThat(oppdatertJP.getJournalForendeEnhetId(), is(request.getJournalfEnhet()));
-		assertThat(oppdatertJP.getAvsenderMottakerId(), is(request.getAvsender().getIdentifikator()));
-		assertThat(oppdatertJP.getAvsenderMottaker(), is(request.getAvsender().getNavn()));
-		assertThat(oppdatertJP.getBrukere().size(), is(1));
-		assertThat(oppdatertJP.getBrukere().iterator().next().getBrukerId(), is(request.getBruker().getIdentifikator()));
-		assertThat(oppdatertJP.getBrukere().iterator().next().getBrukerType().name(), is(request.getBruker()
-				.getBrukerType().value()));
-		assertThat(oppdatertJP.getBrukere().iterator().next().getOpprettetKildeNavn(), is(SERVICE_USER_ID));
-		assertThat(oppdatertJP.getSaksrelasjon().getSakId(), is(request.getArkivSak().getArkivSakId()));
-		assertThat(oppdatertJP.getSaksrelasjon().getFagsystem().name(), is("FS22"));
-
-		TestTransaction.end();
-	}
-
-	@Test
-	public void shouldFerdigstillJournalpostVedOppdateringOnlyServiceUserToken() throws IOException {
-		abacPermit();
-
-		PutJournalpostRequest request = mapper.readValue(classpathToString("__files/put_journalpost/happy_input_request.json"), PutJournalpostRequest.class);
-
-		Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
-				.endretAvNavn("saksbehandlersen"));
-		Long journalpostId = journalpost.getJournalpostId();
-
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_JSON);
-		headers.add(HttpHeaders.AUTHORIZATION, OIDC_TOKEN_SERVICE_USER_TEST);
-
-		HttpEntity<PutJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, headers);
-
-		ResponseEntity<PutJournalpostResponse> responseEntity = restTemplate.exchange(
-				JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER + journalpostId, HttpMethod.PUT, requestHttpEntity, PutJournalpostResponse.class);
-
-		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
-		assertThat(responseEntity.getBody().getJournalpostId(), is(String.valueOf(journalpostId)));
-		assertThat(responseEntity.getBody().getMangler(), is(nullValue()));
-		assertThat(responseEntity.getBody().isHarEndeligJF(), is(true));
-
-		verify(postRequestedFor(urlEqualTo("/abac")).withRequestBody(equalToJson(format(stringFromClasspath("abac/putInngaaendejournalpost_only_ServiceUser.json"),
-				getOidcTokenBody(OIDC_TOKEN_SERVICE_USER_TEST.replace("Bearer ", ""))))));
-
-
-		TestTransaction.start();
-		Journalpost oppdatertJP = joarkRepository.findById(journalpostId).get();
-
-		assertThat(oppdatertJP.getEndretAvNavn(), is(SERVICE_USER_ID));
-		assertThat(oppdatertJP.getEndretKildeNavn(), is(SERVICE_USER_ID));
-		assertThat(oppdatertJP.getChangeStamp().getUpdatedBy(), is(SERVICE_USER_ID));
-		assertThat(oppdatertJP.getInnhold(), is(request.getTittel()));
-		assertThat(oppdatertJP.getFagomrade().name(), is(request.getTema()));
-		assertThat(oppdatertJP.getJournalForendeEnhetId(), is(request.getJournalfEnhet()));
-		assertThat(oppdatertJP.getAvsenderMottakerId(), is(request.getAvsender().getIdentifikator()));
-		assertThat(oppdatertJP.getAvsenderMottaker(), is(request.getAvsender().getNavn()));
-		assertThat(oppdatertJP.getBrukere().size(), is(1));
-		assertThat(oppdatertJP.getBrukere().iterator().next().getBrukerId(), is(request.getBruker().getIdentifikator()));
-		assertThat(oppdatertJP.getBrukere().iterator().next().getBrukerType().name(), is(request.getBruker()
-				.getBrukerType().value()));
-		assertThat(oppdatertJP.getBrukere().iterator().next().getOpprettetKildeNavn(), is(SERVICE_USER_ID));
-		assertThat(oppdatertJP.getSaksrelasjon().getSakId(), is(request.getArkivSak().getArkivSakId()));
-		assertThat(oppdatertJP.getSaksrelasjon().getFagsystem().name(), is("FS22"));
-		TestTransaction.end();
-	}
-
-	@Test
-	public void shouldFailOnlyPersonUserToken() throws IOException {
-		PutJournalpostRequest request = mapper.readValue(classpathToString("__files/put_journalpost/happy_input_request.json"), PutJournalpostRequest.class);
+    /**
+     * HVIS forsoekEndeligJF == TRUE, og ingen felter mangler for å endelig journalføre => returner 200 OK og journalpostId.
+     */
+    @Test
+    public void shouldFerdigstillJournalpostVedOppdateringUserTokenAndServiceUserToken() throws IOException {
+        abacPermit();
+
+        PutJournalpostRequest request = mapper.readValue(classpathToString("__files/put_journalpost/happy_input_request.json"), PutJournalpostRequest.class);
+
+        Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
+                .endretAvNavn("saksbehandlersen"));
+        Long journalpostId = journalpost.getJournalpostId();
+
+        HttpEntity<PutJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
+
+        ResponseEntity<PutJournalpostResponse> responseEntity = restTemplate.exchange(
+                JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER + journalpostId, HttpMethod.PUT, requestHttpEntity, PutJournalpostResponse.class);
+
+        assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
+        assertThat(responseEntity.getBody().getJournalpostId(), is(String.valueOf(journalpostId)));
+        assertThat(responseEntity.getBody().getMangler(), is(nullValue()));
+        assertThat(responseEntity.getBody().isHarEndeligJF(), is(true));
+
+        verify(postRequestedFor(urlEqualTo("/abac")).withRequestBody(equalToJson(format(stringFromClasspath("abac/putInngaaendejournalpost_PersonUser_and_ServiceUser.json"),
+                getOidcTokenBody(OIDC_TOKEN_PERSON_USER_TEST),
+                getOidcTokenBody(OIDC_TOKEN_SERVICE_USER_TEST)))));
+
+
+        TestTransaction.start();
+        Journalpost oppdatertJP = joarkRepository.findById(journalpostId).get();
+
+        assertThat(oppdatertJP.getEndretAvNavn(), is(PERSON_USER_ID));
+        assertThat(oppdatertJP.getEndretKildeNavn(), is(SERVICE_USER_ID));
+        assertThat(oppdatertJP.getChangeStamp().getUpdatedBy(), is(PERSON_USER_ID));
+        assertThat(oppdatertJP.getInnhold(), is(request.getTittel()));
+        assertThat(oppdatertJP.getFagomrade().name(), is(request.getTema()));
+        assertThat(oppdatertJP.getJournalForendeEnhetId(), is(request.getJournalfEnhet()));
+        assertThat(oppdatertJP.getAvsenderMottakerId(), is(request.getAvsender().getIdentifikator()));
+        assertThat(oppdatertJP.getAvsenderMottaker(), is(request.getAvsender().getNavn()));
+        assertThat(oppdatertJP.getBrukere().size(), is(1));
+        assertThat(oppdatertJP.getBrukere().iterator().next().getBrukerId(), is(request.getBruker().getIdentifikator()));
+        assertThat(oppdatertJP.getBrukere().iterator().next().getBrukerType().name(), is(request.getBruker()
+                .getBrukerType().value()));
+        assertThat(oppdatertJP.getBrukere().iterator().next().getOpprettetKildeNavn(), is(SERVICE_USER_ID));
+        assertThat(oppdatertJP.getSaksrelasjon().getSakId(), is(request.getArkivSak().getArkivSakId()));
+        assertThat(oppdatertJP.getSaksrelasjon().getFagsystem().name(), is("FS22"));
+
+        TestTransaction.end();
+    }
+
+    @Test
+    public void shouldFerdigstillJournalpostVedOppdateringOnlyServiceUserToken() throws IOException {
+        abacPermit();
+
+        PutJournalpostRequest request = mapper.readValue(classpathToString("__files/put_journalpost/happy_input_request.json"), PutJournalpostRequest.class);
+
+        Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
+                .endretAvNavn("saksbehandlersen"));
+        Long journalpostId = journalpost.getJournalpostId();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.add(HttpHeaders.AUTHORIZATION, BEARER_PREFIX + OIDC_TOKEN_SERVICE_USER_TEST);
+
+        HttpEntity<PutJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, headers);
+
+        ResponseEntity<PutJournalpostResponse> responseEntity = restTemplate.exchange(
+                JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER + journalpostId, HttpMethod.PUT, requestHttpEntity, PutJournalpostResponse.class);
+
+        assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
+        assertThat(responseEntity.getBody().getJournalpostId(), is(String.valueOf(journalpostId)));
+        assertThat(responseEntity.getBody().getMangler(), is(nullValue()));
+        assertThat(responseEntity.getBody().isHarEndeligJF(), is(true));
+
+        verify(postRequestedFor(urlEqualTo("/abac")).withRequestBody(equalToJson(format(stringFromClasspath("abac/putInngaaendejournalpost_only_ServiceUser.json"),
+                getOidcTokenBody(OIDC_TOKEN_SERVICE_USER_TEST)))));
+
+
+        TestTransaction.start();
+        Journalpost oppdatertJP = joarkRepository.findById(journalpostId).get();
+
+        assertThat(oppdatertJP.getEndretAvNavn(), is(SERVICE_USER_ID));
+        assertThat(oppdatertJP.getEndretKildeNavn(), is(SERVICE_USER_ID));
+        assertThat(oppdatertJP.getChangeStamp().getUpdatedBy(), is(SERVICE_USER_ID));
+        assertThat(oppdatertJP.getInnhold(), is(request.getTittel()));
+        assertThat(oppdatertJP.getFagomrade().name(), is(request.getTema()));
+        assertThat(oppdatertJP.getJournalForendeEnhetId(), is(request.getJournalfEnhet()));
+        assertThat(oppdatertJP.getAvsenderMottakerId(), is(request.getAvsender().getIdentifikator()));
+        assertThat(oppdatertJP.getAvsenderMottaker(), is(request.getAvsender().getNavn()));
+        assertThat(oppdatertJP.getBrukere().size(), is(1));
+        assertThat(oppdatertJP.getBrukere().iterator().next().getBrukerId(), is(request.getBruker().getIdentifikator()));
+        assertThat(oppdatertJP.getBrukere().iterator().next().getBrukerType().name(), is(request.getBruker()
+                .getBrukerType().value()));
+        assertThat(oppdatertJP.getBrukere().iterator().next().getOpprettetKildeNavn(), is(SERVICE_USER_ID));
+        assertThat(oppdatertJP.getSaksrelasjon().getSakId(), is(request.getArkivSak().getArkivSakId()));
+        assertThat(oppdatertJP.getSaksrelasjon().getFagsystem().name(), is("FS22"));
+        TestTransaction.end();
+    }
+
+    @Test
+    public void shouldFailOnlyPersonUserToken() throws IOException {
+        PutJournalpostRequest request = mapper.readValue(classpathToString("__files/put_journalpost/happy_input_request.json"), PutJournalpostRequest.class);
 
-		Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
-				.endretAvNavn("saksbehandlersen"));
-		Long journalpostId = journalpost.getJournalpostId();
+        Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
+                .endretAvNavn("saksbehandlersen"));
+        Long journalpostId = journalpost.getJournalpostId();
 
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_JSON);
-		headers.add(HttpHeaders.AUTHORIZATION, OIDC_TOKEN_PERSON_USER_TEST);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.add(HttpHeaders.AUTHORIZATION, BEARER_PREFIX + OIDC_TOKEN_PERSON_USER_TEST);
 
-		HttpEntity<PutJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, headers);
+        HttpEntity<PutJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, headers);
 
-		ResponseEntity<RestConsumerExceptionResponse> responseEntity = restTemplate.exchange(
-				JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER + journalpostId, HttpMethod.PUT, requestHttpEntity, RestConsumerExceptionResponse.class);
+        ResponseEntity<RestConsumerExceptionResponse> responseEntity = restTemplate.exchange(
+                JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER + journalpostId, HttpMethod.PUT, requestHttpEntity, RestConsumerExceptionResponse.class);
 
-		assertThat(responseEntity.getStatusCode(), is(HttpStatus.UNAUTHORIZED));
-	}
+        assertThat(responseEntity.getStatusCode(), is(HttpStatus.UNAUTHORIZED));
+    }
 
-	@Test
-	public void shouldReturnForbiddenBrukerHarIkkeTilgangTilJournalpostPutJournalpost() throws IOException {
-		abacDeny();
+    @Test
+    public void shouldReturnForbiddenBrukerHarIkkeTilgangTilJournalpostPutJournalpost() throws IOException {
+        abacDeny();
 
-		PutJournalpostRequest request = mapper.readValue(classpathToString("__files/put_journalpost/happy_input_request.json"), PutJournalpostRequest.class);
+        PutJournalpostRequest request = mapper.readValue(classpathToString("__files/put_journalpost/happy_input_request.json"), PutJournalpostRequest.class);
 
-		Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
-				.endretAvNavn("saksbehandlersen"));
-		Long journalpostId = journalpost.getJournalpostId();
+        Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
+                .endretAvNavn("saksbehandlersen"));
+        Long journalpostId = journalpost.getJournalpostId();
 
-		HttpEntity<PutJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
+        HttpEntity<PutJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
 
-		ResponseEntity<String> responseEntity = restTemplate.exchange(
-				JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER + journalpostId, HttpMethod.PUT, requestHttpEntity, String.class);
+        ResponseEntity<String> responseEntity = restTemplate.exchange(
+                JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER + journalpostId, HttpMethod.PUT, requestHttpEntity, String.class);
 
-		assertThat(responseEntity.getStatusCode(), is(HttpStatus.FORBIDDEN));
-		assertThat(responseEntity.getBody(), containsString("Bruker har ikke tilgang til journalpost"));
-	}
+        assertThat(responseEntity.getStatusCode(), is(HttpStatus.FORBIDDEN));
+        assertThat(responseEntity.getBody(), containsString("Bruker har ikke tilgang til journalpost"));
+    }
 
-	/**
-	 * HVIS forsoekEndeligJF == TRUE, og 1 eller flere felter mangler for endelig journalføring, returner 200 OK med Mangler-objekt
-	 */
-	@Test
-	public void shouldReturnManglerVedForsoektEndeligJF() throws IOException {
-		abacPermit();
+    /**
+     * HVIS forsoekEndeligJF == TRUE, og 1 eller flere felter mangler for endelig journalføring, returner 200 OK med Mangler-objekt
+     */
+    @Test
+    public void shouldReturnManglerVedForsoektEndeligJF() throws IOException {
+        abacPermit();
 
-		// request mangler "tittel" og "avsenderNavn"
-		PutJournalpostRequest request = mapper.readValue(classpathToString("__files/put_journalpost/request_med_mangler.json"), PutJournalpostRequest.class);
+        // request mangler "tittel" og "avsenderNavn"
+        PutJournalpostRequest request = mapper.readValue(classpathToString("__files/put_journalpost/request_med_mangler.json"), PutJournalpostRequest.class);
 
-		// journalpost mangler "avsenderMottaker" og "innhold"
-		Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
-				.endretAvNavn(null)
-				.avsenderMottaker(null)
-				.innhold(null));
-		String journalpostId = journalpost.getJournalpostId().toString();
+        // journalpost mangler "avsenderMottaker" og "innhold"
+        Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
+                .endretAvNavn(null)
+                .avsenderMottaker(null)
+                .innhold(null));
+        String journalpostId = journalpost.getJournalpostId().toString();
 
-		HttpEntity<PutJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
+        HttpEntity<PutJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
 
-		ResponseEntity<PutJournalpostResponse> responseEntity = restTemplate.exchange(
-				JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER + journalpostId, HttpMethod.PUT, requestHttpEntity, PutJournalpostResponse.class);
+        ResponseEntity<PutJournalpostResponse> responseEntity = restTemplate.exchange(
+                JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER + journalpostId, HttpMethod.PUT, requestHttpEntity, PutJournalpostResponse.class);
 
-		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
-		assertThat(responseEntity.getBody().getJournalpostId(), is(journalpostId));
-		assertThat(responseEntity.getBody().getMangler(), is(notNullValue()));
-		assertThat(responseEntity.getBody().getMangler().getTittel(), is(Status.MANGLER));
-		assertThat(responseEntity.getBody().getMangler().getAvsenderNavn(), is(Status.MANGLER));
-		assertThat(responseEntity.getBody().isHarEndeligJF(), is(false));
-	}
-
-	/**
-	 * HVIS journalpostType != Inngående, SÅ skal feilmelding gis (4) og behandling avsluttes
-	 **/
-	@Test
-	public void shouldReturnBadRequestJournalpostErIkkeAvTypenInngaaendePutJournalpost() throws IOException {
-		abacPermit();
+        assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
+        assertThat(responseEntity.getBody().getJournalpostId(), is(journalpostId));
+        assertThat(responseEntity.getBody().getMangler(), is(notNullValue()));
+        assertThat(responseEntity.getBody().getMangler().getTittel(), is(Status.MANGLER));
+        assertThat(responseEntity.getBody().getMangler().getAvsenderNavn(), is(Status.MANGLER));
+        assertThat(responseEntity.getBody().isHarEndeligJF(), is(false));
+    }
+
+    /**
+     * HVIS journalpostType != Inngående, SÅ skal feilmelding gis (4) og behandling avsluttes
+     **/
+    @Test
+    public void shouldReturnBadRequestJournalpostErIkkeAvTypenInngaaendePutJournalpost() throws IOException {
+        abacPermit();
 
-		PutJournalpostRequest request = mapper.readValue(classpathToString("__files/put_journalpost/request_med_mangler.json"), PutJournalpostRequest.class);
+        PutJournalpostRequest request = mapper.readValue(classpathToString("__files/put_journalpost/request_med_mangler.json"), PutJournalpostRequest.class);
 
-		Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.U, JournalStatusCode.M)
-				.endretAvNavn("saksbehandlersen")
-				.innhold(null));
-		String journalpostId = journalpost.getJournalpostId().toString();
+        Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.U, JournalStatusCode.M)
+                .endretAvNavn("saksbehandlersen")
+                .innhold(null));
+        String journalpostId = journalpost.getJournalpostId().toString();
 
-		HttpEntity<PutJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
+        HttpEntity<PutJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
 
-		ResponseEntity<String> responseEntity = restTemplate.exchange(
-				JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER + journalpostId, HttpMethod.PUT, requestHttpEntity, String.class);
+        ResponseEntity<String> responseEntity = restTemplate.exchange(
+                JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER + journalpostId, HttpMethod.PUT, requestHttpEntity, String.class);
 
-		assertThat(responseEntity.getStatusCode(), is(HttpStatus.BAD_REQUEST));
-		assertThat(responseEntity.getBody(), containsString("er ikke av type Inngaaende"));
-	}
+        assertThat(responseEntity.getStatusCode(), is(HttpStatus.BAD_REQUEST));
+        assertThat(responseEntity.getBody(), containsString("er ikke av type Inngaaende"));
+    }
 
-	/**
-	 * HVIS forsoekEndeligJF == FALSE, returner 200 OK
-	 */
-	@Test
-	public void shouldReturnOKJournalpostIdVedOppdateringUtenEndeligJF() throws IOException {
-		abacPermit();
+    /**
+     * HVIS forsoekEndeligJF == FALSE, returner 200 OK
+     */
+    @Test
+    public void shouldReturnOKJournalpostIdVedOppdateringUtenEndeligJF() throws IOException {
+        abacPermit();
 
-		PutJournalpostRequest request = mapper.readValue(classpathToString("__files/put_journalpost/request_ikke_endeligJF.json"), PutJournalpostRequest.class);
+        PutJournalpostRequest request = mapper.readValue(classpathToString("__files/put_journalpost/request_ikke_endeligJF.json"), PutJournalpostRequest.class);
 
-		Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
-				.endretAvNavn(null));
-		Long journalpostId = journalpost.getJournalpostId();
+        Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
+                .endretAvNavn(null));
+        Long journalpostId = journalpost.getJournalpostId();
 
-		HttpEntity<PutJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
+        HttpEntity<PutJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
 
-		ResponseEntity<PutJournalpostResponse> responseEntity = restTemplate.exchange(
-				JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER + journalpostId, HttpMethod.PUT, requestHttpEntity, PutJournalpostResponse.class);
+        ResponseEntity<PutJournalpostResponse> responseEntity = restTemplate.exchange(
+                JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER + journalpostId, HttpMethod.PUT, requestHttpEntity, PutJournalpostResponse.class);
 
-		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
-		assertThat(responseEntity.getBody().getJournalpostId(), is(journalpostId.toString()));
-		assertThat(responseEntity.getBody().getMangler(), is(nullValue()));
-		assertThat(responseEntity.getBody().isHarEndeligJF(), is(false));
+        assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
+        assertThat(responseEntity.getBody().getJournalpostId(), is(journalpostId.toString()));
+        assertThat(responseEntity.getBody().getMangler(), is(nullValue()));
+        assertThat(responseEntity.getBody().isHarEndeligJF(), is(false));
 
-		TestTransaction.start();
-		Journalpost oppdatertJP = joarkRepository.findById(journalpostId).get();
+        TestTransaction.start();
+        Journalpost oppdatertJP = joarkRepository.findById(journalpostId).get();
 
-		// assert at sporingsinfo er oppdatert
-		assertThat(oppdatertJP.getEndretAvNavn(), is(PERSON_USER_ID));
-		assertThat(oppdatertJP.getEndretKildeNavn(), is(SERVICE_USER_ID));
-		assertThat(oppdatertJP.getChangeStamp().getUpdatedBy(), is(PERSON_USER_ID));
+        // assert at sporingsinfo er oppdatert
+        assertThat(oppdatertJP.getEndretAvNavn(), is(PERSON_USER_ID));
+        assertThat(oppdatertJP.getEndretKildeNavn(), is(SERVICE_USER_ID));
+        assertThat(oppdatertJP.getChangeStamp().getUpdatedBy(), is(PERSON_USER_ID));
 
-		TestTransaction.end();
-	}
+        TestTransaction.end();
+    }
 
-	/**
-	 * HVIS forsoekEndeligJF == TRUE, men journalfEnhet == null, returner ???
-	 */
-	@Test
-	@Ignore("TODO: Endre når oppførsel er avklart.")
-	public void shouldReturnOKWhenEndeligJFAndJournalfEnhetMangler() throws IOException {
-		abacPermit();
+    /**
+     * HVIS forsoekEndeligJF == TRUE, men journalfEnhet == null, returner ???
+     */
+    @Test
+    @Ignore("TODO: Endre når oppførsel er avklart.")
+    public void shouldReturnOKWhenEndeligJFAndJournalfEnhetMangler() throws IOException {
+        abacPermit();
 
-		PutJournalpostRequest request = mapper.readValue(classpathToString("__files/put_journalpost/request_mangler_journalfEnhet.json"), PutJournalpostRequest.class);
+        PutJournalpostRequest request = mapper.readValue(classpathToString("__files/put_journalpost/request_mangler_journalfEnhet.json"), PutJournalpostRequest.class);
 
-		Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
-				.endretAvNavn(null));
-		Long journalpostId = journalpost.getJournalpostId();
+        Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
+                .endretAvNavn(null));
+        Long journalpostId = journalpost.getJournalpostId();
 
-		HttpEntity<PutJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
+        HttpEntity<PutJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
 
-		ResponseEntity<PutJournalpostResponse> responseEntity = restTemplate.exchange(
-				JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER + journalpostId, HttpMethod.PUT, requestHttpEntity, PutJournalpostResponse.class);
+        ResponseEntity<PutJournalpostResponse> responseEntity = restTemplate.exchange(
+                JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER + journalpostId, HttpMethod.PUT, requestHttpEntity, PutJournalpostResponse.class);
 
-		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
-		assertThat(responseEntity.getBody().getJournalpostId(), is(journalpostId.toString()));
-		assertThat(responseEntity.getBody().getMangler(), is(nullValue()));
-		assertThat(responseEntity.getBody().isHarEndeligJF(), is(false));
+        assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
+        assertThat(responseEntity.getBody().getJournalpostId(), is(journalpostId.toString()));
+        assertThat(responseEntity.getBody().getMangler(), is(nullValue()));
+        assertThat(responseEntity.getBody().isHarEndeligJF(), is(false));
 
-		TestTransaction.start();
-		Journalpost oppdatertJP = joarkRepository.findById(journalpostId).get();
+        TestTransaction.start();
+        Journalpost oppdatertJP = joarkRepository.findById(journalpostId).get();
 
-		// assert at sporingsinfo er oppdatert
-		assertThat(oppdatertJP.getEndretAvNavn(), is(PERSON_USER_ID));
-		assertThat(oppdatertJP.getEndretKildeNavn(), is(SERVICE_USER_ID));
-		assertThat(oppdatertJP.getChangeStamp().getUpdatedBy(), is(PERSON_USER_ID));
-		assertThat(oppdatertJP.getJournalForendeEnhetId(), is(notNullValue()));
-		TestTransaction.end();
-	}
+        // assert at sporingsinfo er oppdatert
+        assertThat(oppdatertJP.getEndretAvNavn(), is(PERSON_USER_ID));
+        assertThat(oppdatertJP.getEndretKildeNavn(), is(SERVICE_USER_ID));
+        assertThat(oppdatertJP.getChangeStamp().getUpdatedBy(), is(PERSON_USER_ID));
+        assertThat(oppdatertJP.getJournalForendeEnhetId(), is(notNullValue()));
+        TestTransaction.end();
+    }
 
-	/**
-	 * HVIS journalpostId tilhører en utgående journalpost SÅ skal det kastes en feil og gi 400 BadRequest
-	 */
-	@Test
-	public void shouldThrowExceptionHvisRequestvalideringFeiler() throws IOException {
-		abacPermit();
-		PutJournalpostRequest request = mapper.readValue(classpathToString("__files/put_journalpost/happy_input_request.json"), PutJournalpostRequest.class);
+    /**
+     * HVIS journalpostId tilhører en utgående journalpost SÅ skal det kastes en feil og gi 400 BadRequest
+     */
+    @Test
+    public void shouldThrowExceptionHvisRequestvalideringFeiler() throws IOException {
+        abacPermit();
+        PutJournalpostRequest request = mapper.readValue(classpathToString("__files/put_journalpost/happy_input_request.json"), PutJournalpostRequest.class);
 
-		Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.U, JournalStatusCode.M)
-				.endretAvNavn("saksbehandlersen"));
-		String journalpostId = journalpost.getJournalpostId().toString();
+        Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.U, JournalStatusCode.M)
+                .endretAvNavn("saksbehandlersen"));
+        String journalpostId = journalpost.getJournalpostId().toString();
 
-		HttpEntity<PutJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
+        HttpEntity<PutJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
 
-		ResponseEntity<String> responseEntity = restTemplate.exchange(
-				JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER + journalpostId, HttpMethod.PUT, requestHttpEntity, String.class);
+        ResponseEntity<String> responseEntity = restTemplate.exchange(
+                JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER + journalpostId, HttpMethod.PUT, requestHttpEntity, String.class);
 
-		assertThat(responseEntity.getStatusCode(), is(HttpStatus.BAD_REQUEST));
-		assertThat(responseEntity.getBody(), containsString("ikke av type Inngaaende"));
-	}
+        assertThat(responseEntity.getStatusCode(), is(HttpStatus.BAD_REQUEST));
+        assertThat(responseEntity.getBody(), containsString("ikke av type Inngaaende"));
+    }
 
 }
 

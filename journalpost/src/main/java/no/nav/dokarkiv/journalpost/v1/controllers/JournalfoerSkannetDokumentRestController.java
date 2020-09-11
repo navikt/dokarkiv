@@ -1,17 +1,5 @@
 package no.nav.dokarkiv.journalpost.v1.controllers;
 
-import static no.nav.abac.xacml.NavAttributter.RESOURCE_ARKIV_JOURNALPOST;
-import static no.nav.abac.xacml.NavAttributter.RESOURCE_FELLES_DOMENE;
-import static no.nav.abac.xacml.NavAttributter.RESOURCE_FELLES_RESOURCE_TYPE;
-import static no.nav.abac.xacml.StandardAttributter.ACTION_ID;
-import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
-import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
-import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
-import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.ARKIV_V2;
-import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.UPDATE_ACTION;
-import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.hasText;
-import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateId;
-
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.metrics.RestMetrics;
@@ -25,6 +13,7 @@ import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerEndreLogiskVedlegg;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerLeggTilLogiskVedlegg;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerSlettLogiskVedlegg;
 import no.nav.freg.abac.core.annotation.Abac;
+import no.nav.security.token.support.core.api.Unprotected;
 import org.slf4j.MDC;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,8 +26,21 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.inject.Inject;
 
+import static no.nav.abac.xacml.NavAttributter.RESOURCE_ARKIV_JOURNALPOST;
+import static no.nav.abac.xacml.NavAttributter.RESOURCE_FELLES_DOMENE;
+import static no.nav.abac.xacml.NavAttributter.RESOURCE_FELLES_RESOURCE_TYPE;
+import static no.nav.abac.xacml.StandardAttributter.ACTION_ID;
+import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
+import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
+import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
+import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.ARKIV_V2;
+import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.UPDATE_ACTION;
+import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.hasText;
+import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateId;
+
 @Api(description = "Tjenester for å slette, endre og legge til logiske vedlegg")
 @Slf4j
+@Unprotected
 @RestController
 @Transactional
 @RequestMapping("/rest/journalpostapi/v1/dokumentInfo")

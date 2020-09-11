@@ -23,6 +23,7 @@ import no.nav.dokarkiv.hentjournalsakinfo.rjoark910.DokumentoversiktBrukerRespon
 import no.nav.dokarkiv.hentjournalsakinfo.rjoark910.DokumentoversiktBrukerService;
 import no.nav.dokarkiv.hentjournalsakinfo.rjoark920.SafHentDokumentResponse;
 import no.nav.dokarkiv.hentjournalsakinfo.rjoark920.SafHentDokumentService;
+import no.nav.security.token.support.core.api.Unprotected;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,6 +42,7 @@ import java.util.Base64;
  * @author Sigurd Midttun, Visma Consulting.
  */
 @Slf4j
+@Unprotected
 @RestController
 @RequestMapping("/hentjournalsakinfo")
 public class HentJournalsakinfoController {

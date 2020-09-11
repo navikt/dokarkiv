@@ -1,7 +1,5 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon;
 
-import static org.mockito.Mockito.mock;
-
 import no.nav.dokarkiv.core.CoreConfig;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
@@ -10,6 +8,7 @@ import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.dokarkiv.core.stelvio.SimpleRequestContext;
 import no.nav.dokarkiv.core.storage.Storage;
+import no.nav.security.token.support.test.spring.TokenGeneratorConfiguration;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.ArkiverDokumentproduksjonV1;
 import org.junit.Before;
 import org.junit.Rule;
@@ -27,12 +26,15 @@ import org.springframework.transaction.support.TransactionTemplate;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
+import static org.mockito.Mockito.mock;
+
 /**
  * @author Sigurd Midttun, Visma Consulting.
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE,
-		classes = {AbstractArkiverdokumentproduksjonItest.Config.class, CoreConfig.class, ArkiverDokumentproduksjonConfig.class},
+		classes = {AbstractArkiverdokumentproduksjonItest.Config.class, CoreConfig.class,
+				ArkiverDokumentproduksjonConfig.class, TokenGeneratorConfiguration.class},
 		properties = {"spring.main.allow-bean-definition-overriding=true"})
 @ActiveProfiles("itest")
 @AutoConfigureTestDatabase

@@ -9,6 +9,7 @@ import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository
 import no.nav.dokarkiv.core.skjerming.SkjermingServiceTest;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.dokarkiv.core.stelvio.SimpleRequestContext;
+import no.nav.security.token.support.test.spring.TokenGeneratorConfiguration;
 import no.nav.tjeneste.virksomhet.aktoer.v2.binding.AktoerV2;
 import no.nav.tjeneste.virksomhet.innsynjournal.v2.binding.InnsynJournalV2;
 import org.junit.Before;
@@ -29,7 +30,8 @@ import javax.transaction.Transactional;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE,
-		classes = {CoreConfig.class, AbstractInnsynJournalV2Itest.TestConfig.class, InnsynJournalV2Config.class},
+		classes = {CoreConfig.class, AbstractInnsynJournalV2Itest.TestConfig.class, InnsynJournalV2Config.class,
+				TokenGeneratorConfiguration.class},
 		properties = {"spring.main.allow-bean-definition-overriding=true"})
 @ActiveProfiles("itest")
 @AutoConfigureTestDatabase

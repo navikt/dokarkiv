@@ -1,7 +1,9 @@
 package no.nav.dokarkiv.core.security.abac;
 
+import lombok.extern.slf4j.Slf4j;
 import no.nav.abac.xacml.NavAttributter;
 import no.nav.abac.xacml.StandardAttributter;
+import no.nav.dokarkiv.core.NavHeaders;
 import no.nav.freg.abac.core.annotation.attribute.AbacAttributeLocator;
 import no.nav.freg.abac.core.annotation.attribute.ResolvingAbacAttributeLocator;
 import no.nav.freg.security.oidc.auth.common.OidcTokenAuthentication;
@@ -9,12 +11,18 @@ import no.nav.modig.core.context.SubjectHandler;
 import org.apache.wss4j.common.util.DOM2Writer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.HashSet;
 import java.util.Set;
 
+@Slf4j
 @Configuration
 public class AbacDefaultConfig {
 
@@ -79,7 +87,7 @@ public class AbacDefaultConfig {
 	AbacAttributeLocator authorizationHeaderOidcTokenLocator() {
 		return new ResolvingAbacAttributeLocator(NavAttributter.ENVIRONMENT_FELLES_OIDC_TOKEN_BODY, () -> {
 			if (SecurityContextHolder.getContext().getAuthentication() == null || !(SecurityContextHolder.getContext().getAuthentication() instanceof OidcTokenAuthentication)) {
-				return null;
+				return headerLocatorFallback(HttpHeaders.AUTHORIZATION);
 			} else {
 				return ((OidcTokenAuthentication) SecurityContextHolder.getContext().getAuthentication()).getIdTokenBody();
 			}
@@ -90,12 +98,25 @@ public class AbacDefaultConfig {
 	AbacAttributeLocator navConsumerHeaderOidcTokenLocator() {
 		return new ResolvingAbacAttributeLocator(NavAttributter.ENVIRONMENT_FELLES_CONSUMER_OIDC_TOKEN_BODY, () -> {
 			if (SecurityContextHolder.getContext().getAuthentication() == null || !(SecurityContextHolder.getContext().getAuthentication() instanceof OidcTokenAuthentication)) {
-				return null;
+				return headerLocatorFallback(NavHeaders.NAV_CONSUMER_TOKEN);
 			} else {
 				return ((OidcTokenAuthentication) SecurityContextHolder.getContext()
 						.getAuthentication()).getConsumerTokenBody();
 			}
 		});
+	}
+
+	private String headerLocatorFallback(final String header) {
+		final RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
+		if(requestAttributes instanceof ServletRequestAttributes) {
+			final HttpServletRequest request = ((ServletRequestAttributes) requestAttributes).getRequest();
+			final String headerValue = request.getHeader(header);
+			if(headerValue == null) {
+				return null;
+			}
+			return headerValue.split("\\.")[1];
+		}
+		return null;
 	}
 
 	@Bean
