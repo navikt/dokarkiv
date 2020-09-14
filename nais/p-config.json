@@ -1,10 +1,5 @@
 {
   "NAMESPACE": "default",
-  "FREG_SECURITY_OIDC_IDP_OPENAM_JWKSURL": "https://isso.adeo.no/isso/oauth2/connect/jwk_uri",
-  "FREG_SECURITY_OIDC_IDP_OPENAM_ISSUERURL": "https://isso.adeo.no:443/isso/oauth2",
-  "FREG_SECURITY_OIDC_IDP_OPENAM_HOSTURL": "https://isso.adeo.no:443/isso",
-  "FREG_SECURITY_OIDC_IDP_NAVSTS_ISSUERURL": "https://security-token-service.nais.adeo.no",
-  "FREG_SECURITY_OIDC_IDP_NAVSTS_JWKSURL": "https://security-token-service.nais.adeo.no/rest/v1/sts/jwks",
   "NO_NAV_SECURITY_JWT_ISSUER_AZUREV2_DISCOVERYURL": "https://login.microsoftonline.com/62366534-1ec3-4962-8869-9b5535279d0b/v2.0/.well-known/openid-configuration",
   "NO_NAV_SECURITY_JWT_ISSUER_OPENAM_DISCOVERYURL": "https://isso.adeo.no:443/isso/oauth2/.well-known/openid-configuration",
   "NO_NAV_SECURITY_JWT_ISSUER_RESTSTS_DISCOVERYURL": "https://security-token-service.nais.adeo.no/rest/v1/sts/.well-known/openid-configuration",
