@@ -31,7 +31,7 @@ import no.nav.dokarkiv.journalpost.v1.validators.FerdigstillJournalpostValidator
 import no.nav.dokarkiv.journalpost.v1.validators.OppdaterDistribusjonsinfoValidator;
 import no.nav.dokarkiv.journalpost.v1.validators.OpprettJournalpostRequestValidator;
 import no.nav.freg.abac.core.annotation.Abac;
-import no.nav.security.token.support.core.api.Unprotected;
+import no.nav.security.token.support.core.api.Protected;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.MDC;
 import org.springframework.http.HttpStatus;
@@ -66,7 +66,7 @@ import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validate
 
 @Api(description = "Tjenester for å arkivere og journalføre i fagarkiv")
 @Slf4j
-@Unprotected
+@Protected
 @RestController
 @RequestMapping("/rest/journalpostapi/v1/journalpost")
 public class ArkiverOgJournalfoerRestController {

@@ -58,7 +58,6 @@
 		<modig-security.version>3.0.6</modig-security.version>
 		<abac-spring.version>1.6.0</abac-spring.version>
 		<token-support.version>1.3.0</token-support.version>
-		<freg-security.version>3.8.1-FIX</freg-security.version>
 		<commons.beanutils.version>1.9.4</commons.beanutils.version>
 		<commons.io.version>2.7</commons.io.version>
 		<swagger-ui.version>3.9.2</swagger-ui.version>
@@ -257,11 +256,6 @@
 				<version>${abac-spring.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>no.nav.freg</groupId>
-				<artifactId>freg-security-oidc</artifactId>
-				<version>${freg-security.version}</version>
-			</dependency>
-			<dependency>
 				<groupId>no.nav.security</groupId>
 				<artifactId>token-validation-spring</artifactId>
 				<version>${token-support.version}</version>
@@ -304,12 +298,6 @@
 				<groupId>org.springframework.cloud</groupId>
 				<artifactId>spring-cloud-contract-wiremock</artifactId>
 				<version>${spring-cloud-contract-wiremock.version}</version>
-				<scope>test</scope>
-			</dependency>
-			<dependency>
-				<artifactId>freg-security-test-oidc-tools</artifactId>
-				<groupId>no.nav.freg</groupId>
-				<version>${freg-security.version}</version>
 				<scope>test</scope>
 			</dependency>
 			<dependency>

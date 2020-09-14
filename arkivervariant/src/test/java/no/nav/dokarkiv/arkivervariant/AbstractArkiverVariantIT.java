@@ -4,7 +4,6 @@ import no.nav.dokarkiv.core.AbstractRestIT;
 import no.nav.dokarkiv.core.CoreConfig;
 import no.nav.dokarkiv.core.security.ldap.NavLdapService;
 import no.nav.dokarkiv.core.security.ldap.NavUser;
-import no.nav.freg.security.test.oidc.tools.TestToolsAutoConfig;
 import no.nav.security.token.support.test.spring.TokenGeneratorConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
@@ -28,10 +27,10 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-		classes = {CoreConfig.class, ArkiverVariantConfig.class, TestToolsAutoConfig.class,
-				AbstractArkiverVariantIT.Config.class, TokenGeneratorConfiguration.class},
+		classes = {CoreConfig.class, ArkiverVariantConfig.class, AbstractArkiverVariantIT.Config.class,
+				TokenGeneratorConfiguration.class},
 		properties = {"spring.main.allow-bean-definition-overriding=true"})
-@ActiveProfiles({"itest", "wiremock", "ldap", "oidc"})
+@ActiveProfiles({"itest", "wiremock", "ldap"})
 @AutoConfigureWireMock(port = 0)
 public abstract class AbstractArkiverVariantIT extends AbstractRestIT {
 

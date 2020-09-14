@@ -126,10 +126,6 @@
 			<artifactId>abac-spring</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>no.nav.freg</groupId>
-			<artifactId>freg-security-oidc</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>no.nav.security</groupId>
 			<artifactId>token-validation-spring</artifactId>
 		</dependency>
@@ -162,11 +158,6 @@
 		<dependency>
 			<groupId>com.unboundid</groupId>
 			<artifactId>unboundid-ldapsdk</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<artifactId>freg-security-test-oidc-tools</artifactId>
-			<groupId>no.nav.freg</groupId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>

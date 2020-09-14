@@ -6,7 +6,6 @@ import no.nav.abac.xacml.StandardAttributter;
 import no.nav.dokarkiv.core.NavHeaders;
 import no.nav.freg.abac.core.annotation.attribute.AbacAttributeLocator;
 import no.nav.freg.abac.core.annotation.attribute.ResolvingAbacAttributeLocator;
-import no.nav.freg.security.oidc.auth.common.OidcTokenAuthentication;
 import no.nav.modig.core.context.SubjectHandler;
 import org.apache.wss4j.common.util.DOM2Writer;
 import org.springframework.context.annotation.Bean;
@@ -26,118 +25,108 @@ import java.util.Set;
 @Configuration
 public class AbacDefaultConfig {
 
-	@Bean
-	Set<String> abacDefaultEnvironment() {
-		Set<String> values = new HashSet<>();
-		values.add(NavAttributter.ENVIRONMENT_FELLES_PEP_ID);
-		values.add(NavAttributter.ENVIRONMENT_FELLES_SAML_TOKEN);
-		values.add(NavAttributter.ENVIRONMENT_FELLES_OIDC_TOKEN_BODY);
-		values.add(NavAttributter.ENVIRONMENT_FELLES_CONSUMER_OIDC_TOKEN_BODY);
-		values.add(StandardAttributter.SUBJECT_ID);
-		return values;
-	}
+    @Bean
+    Set<String> abacDefaultEnvironment() {
+        Set<String> values = new HashSet<>();
+        values.add(NavAttributter.ENVIRONMENT_FELLES_PEP_ID);
+        values.add(NavAttributter.ENVIRONMENT_FELLES_SAML_TOKEN);
+        values.add(NavAttributter.ENVIRONMENT_FELLES_OIDC_TOKEN_BODY);
+        values.add(NavAttributter.ENVIRONMENT_FELLES_CONSUMER_OIDC_TOKEN_BODY);
+        values.add(StandardAttributter.SUBJECT_ID);
+        return values;
+    }
 
-	@Bean
-	Set<String> abacDefaultResources() {
-		Set<String> values = new HashSet<>();
-		values.add(NavAttributter.RESOURCE_FELLES_DOMENE);
-		return values;
-	}
+    @Bean
+    Set<String> abacDefaultResources() {
+        Set<String> values = new HashSet<>();
+        values.add(NavAttributter.RESOURCE_FELLES_DOMENE);
+        return values;
+    }
 
-	@Bean
-	Set<String> abacDefaultSubjects() {
-		Set<String> values = new HashSet<>();
-		values.add(StandardAttributter.SUBJECT_ID);
-		values.add(NavAttributter.SUBJECT_FELLES_SUBJECTTYPE);
-		return values;
-	}
+    @Bean
+    Set<String> abacDefaultSubjects() {
+        Set<String> values = new HashSet<>();
+        values.add(StandardAttributter.SUBJECT_ID);
+        values.add(NavAttributter.SUBJECT_FELLES_SUBJECTTYPE);
+        return values;
+    }
 
-	@Bean
-	Set<String> abacDefaultActions() {
-		return new HashSet<>();
-	}
+    @Bean
+    Set<String> abacDefaultActions() {
+        return new HashSet<>();
+    }
 
-	@Bean
-	AbacAttributeLocator pepIdLocator() {
-		return new ResolvingAbacAttributeLocator(NavAttributter.ENVIRONMENT_FELLES_PEP_ID, () -> JoarkAbacAttributes.PEP_ID);
-	}
+    @Bean
+    AbacAttributeLocator pepIdLocator() {
+        return new ResolvingAbacAttributeLocator(NavAttributter.ENVIRONMENT_FELLES_PEP_ID, () -> JoarkAbacAttributes.PEP_ID);
+    }
 
-	@Bean
-	AbacAttributeLocator fellesDomeneLocator() {
-		return new ResolvingAbacAttributeLocator(NavAttributter.RESOURCE_FELLES_DOMENE, () -> JoarkAbacAttributes.ARKIV);
-	}
+    @Bean
+    AbacAttributeLocator fellesDomeneLocator() {
+        return new ResolvingAbacAttributeLocator(NavAttributter.RESOURCE_FELLES_DOMENE, () -> JoarkAbacAttributes.ARKIV);
+    }
 
-	@Bean
-	AbacAttributeLocator resourceTypeLocator() {
-		return new ResolvingAbacAttributeLocator(NavAttributter.RESOURCE_FELLES_RESOURCE_TYPE, () -> NavAttributter.RESOURCE_ARKIV_JOURNALPOST);
-	}
+    @Bean
+    AbacAttributeLocator resourceTypeLocator() {
+        return new ResolvingAbacAttributeLocator(NavAttributter.RESOURCE_FELLES_RESOURCE_TYPE, () -> NavAttributter.RESOURCE_ARKIV_JOURNALPOST);
+    }
 
-	@Bean
-	AbacAttributeLocator samlTokenLocator() {
-		return new ResolvingAbacAttributeLocator(NavAttributter.ENVIRONMENT_FELLES_SAML_TOKEN, () -> {
-			if (SubjectHandler.getSubjectHandler().getSAMLAssertion() == null) {
-				return null;
-			} else {
-				return DOM2Writer.nodeToString(SubjectHandler.getSubjectHandler().getSAMLAssertion()).getBytes();
+    @Bean
+    AbacAttributeLocator samlTokenLocator() {
+        return new ResolvingAbacAttributeLocator(NavAttributter.ENVIRONMENT_FELLES_SAML_TOKEN, () -> {
+            if (SubjectHandler.getSubjectHandler().getSAMLAssertion() == null) {
+                return null;
+            } else {
+                return DOM2Writer.nodeToString(SubjectHandler.getSubjectHandler().getSAMLAssertion()).getBytes();
+            }
+        });
+    }
+
+    @Bean
+    AbacAttributeLocator authorizationHeaderOidcTokenLocator() {
+        return new ResolvingAbacAttributeLocator(NavAttributter.ENVIRONMENT_FELLES_OIDC_TOKEN_BODY, () -> headerLocator(HttpHeaders.AUTHORIZATION));
+    }
+
+    @Bean
+    AbacAttributeLocator navConsumerHeaderOidcTokenLocator() {
+        return new ResolvingAbacAttributeLocator(NavAttributter.ENVIRONMENT_FELLES_CONSUMER_OIDC_TOKEN_BODY, () -> headerLocator(NavHeaders.NAV_CONSUMER_TOKEN));
+    }
+
+    private String headerLocator(final String header) {
+        final RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
+        if (requestAttributes instanceof ServletRequestAttributes) {
+            final HttpServletRequest request = ((ServletRequestAttributes) requestAttributes).getRequest();
+            final String headerValue = request.getHeader(header);
+            if (headerValue == null) {
+                return null;
+            }
+            // Fant JWT token og returnerer payload delen.
+			if(headerValue.startsWith(NavHeaders.BEARER_TOKEN_PREFIX)) {
+				return headerValue.split("\\.")[1];
 			}
-		});
-	}
+        }
+        return null;
+    }
 
-	@Bean
-	AbacAttributeLocator authorizationHeaderOidcTokenLocator() {
-		return new ResolvingAbacAttributeLocator(NavAttributter.ENVIRONMENT_FELLES_OIDC_TOKEN_BODY, () -> {
-			if (SecurityContextHolder.getContext().getAuthentication() == null || !(SecurityContextHolder.getContext().getAuthentication() instanceof OidcTokenAuthentication)) {
-				return headerLocatorFallback(HttpHeaders.AUTHORIZATION);
-			} else {
-				return ((OidcTokenAuthentication) SecurityContextHolder.getContext().getAuthentication()).getIdTokenBody();
-			}
-		});
-	}
+    @Bean
+    AbacAttributeLocator basicAuthHeaderLocator() {
+        return new ResolvingAbacAttributeLocator(StandardAttributter.SUBJECT_ID, () -> {
+            if (SecurityContextHolder.getContext().getAuthentication() == null || !(SecurityContextHolder.getContext().getAuthentication() instanceof UsernamePasswordAuthenticationToken)) {
+                return null;
+            } else {
+                return SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            }
+        });
+    }
 
-	@Bean
-	AbacAttributeLocator navConsumerHeaderOidcTokenLocator() {
-		return new ResolvingAbacAttributeLocator(NavAttributter.ENVIRONMENT_FELLES_CONSUMER_OIDC_TOKEN_BODY, () -> {
-			if (SecurityContextHolder.getContext().getAuthentication() == null || !(SecurityContextHolder.getContext().getAuthentication() instanceof OidcTokenAuthentication)) {
-				return headerLocatorFallback(NavHeaders.NAV_CONSUMER_TOKEN);
-			} else {
-				return ((OidcTokenAuthentication) SecurityContextHolder.getContext()
-						.getAuthentication()).getConsumerTokenBody();
-			}
-		});
-	}
-
-	private String headerLocatorFallback(final String header) {
-		final RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
-		if(requestAttributes instanceof ServletRequestAttributes) {
-			final HttpServletRequest request = ((ServletRequestAttributes) requestAttributes).getRequest();
-			final String headerValue = request.getHeader(header);
-			if(headerValue == null) {
-				return null;
-			}
-			return headerValue.split("\\.")[1];
-		}
-		return null;
-	}
-
-	@Bean
-	AbacAttributeLocator basicAuthHeaderLocator() {
-		return new ResolvingAbacAttributeLocator(StandardAttributter.SUBJECT_ID, () -> {
-			if (SecurityContextHolder.getContext().getAuthentication() == null || !(SecurityContextHolder.getContext().getAuthentication() instanceof UsernamePasswordAuthenticationToken)) {
-				return null;
-			} else {
-				return SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-			}
-		});
-	}
-
-	@Bean
-	AbacAttributeLocator basicAuthHeaderSystemressursLocator() {
-		return new ResolvingAbacAttributeLocator(NavAttributter.SUBJECT_FELLES_SUBJECTTYPE, () -> {
-			if (SecurityContextHolder.getContext().getAuthentication() == null || !(SecurityContextHolder.getContext().getAuthentication() instanceof UsernamePasswordAuthenticationToken)) {
-				return null;
-			} else {
-				return "Systemressurs";
-			}
-		});
-	}
+    @Bean
+    AbacAttributeLocator basicAuthHeaderSystemressursLocator() {
+        return new ResolvingAbacAttributeLocator(NavAttributter.SUBJECT_FELLES_SUBJECTTYPE, () -> {
+            if (SecurityContextHolder.getContext().getAuthentication() == null || !(SecurityContextHolder.getContext().getAuthentication() instanceof UsernamePasswordAuthenticationToken)) {
+                return null;
+            } else {
+                return "Systemressurs";
+            }
+        });
+    }
 }

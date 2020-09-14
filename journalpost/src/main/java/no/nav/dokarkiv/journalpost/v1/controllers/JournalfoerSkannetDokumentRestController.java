@@ -13,7 +13,7 @@ import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerEndreLogiskVedlegg;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerLeggTilLogiskVedlegg;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerSlettLogiskVedlegg;
 import no.nav.freg.abac.core.annotation.Abac;
-import no.nav.security.token.support.core.api.Unprotected;
+import no.nav.security.token.support.core.api.Protected;
 import org.slf4j.MDC;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,7 +40,7 @@ import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validate
 
 @Api(description = "Tjenester for å slette, endre og legge til logiske vedlegg")
 @Slf4j
-@Unprotected
+@Protected
 @RestController
 @Transactional
 @RequestMapping("/rest/journalpostapi/v1/dokumentInfo")

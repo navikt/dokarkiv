@@ -3,9 +3,9 @@ package no.nav.dokarkiv.core.security;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 import no.nav.dokarkiv.core.MDCConstants;
+import no.nav.dokarkiv.core.NavHeaders;
 import no.nav.dokarkiv.core.jaxws.ThreadLocalSubjectHandler;
 import no.nav.dokarkiv.core.security.ldap.NavLdapService;
-import no.nav.freg.security.oidc.auth.idtoken.extract.NavHttpHeaders;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -101,7 +101,7 @@ public class ValidateUserAndAddToMDCHandlerTest {
     public void shouldValidateAndAddToMDCWhenNavUserAndServiceUserTokens() throws Exception {
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.addHeader(HttpHeaders.AUTHORIZATION, OIDC_TOKEN_PERSON_USER_TEST);
-        request.addHeader(NavHttpHeaders.NAV_CONSUMER_TOKEN_HEADER, OIDC_TOKEN_SERVICE_USER_TEST);
+        request.addHeader(NavHeaders.NAV_CONSUMER_TOKEN, OIDC_TOKEN_SERVICE_USER_TEST);
         HttpServletResponse response = new MockHttpServletResponse();
 
         Boolean result = validateUserAndAddToMDCHandler.preHandle(request, response, new HandlerMethod(new Object(), "equals", Object.class));
@@ -135,7 +135,7 @@ public class ValidateUserAndAddToMDCHandlerTest {
     @Test
     public void shouldFailWhenBothHeadersHaveNavUserToken() throws Exception {
         MockHttpServletRequest request = new MockHttpServletRequest();
-        request.addHeader(NavHttpHeaders.NAV_CONSUMER_TOKEN_HEADER, OIDC_TOKEN_PERSON_USER_TEST);
+        request.addHeader(NavHeaders.NAV_CONSUMER_TOKEN, OIDC_TOKEN_PERSON_USER_TEST);
         request.addHeader(HttpHeaders.AUTHORIZATION, OIDC_TOKEN_PERSON_USER_TEST);
         MockHttpServletResponse response = new MockHttpServletResponse();
 
@@ -148,7 +148,7 @@ public class ValidateUserAndAddToMDCHandlerTest {
     public void shouldFailWhenBothHeadersHaveServiceUserToken() throws Exception {
         MockHttpServletRequest request = new MockHttpServletRequest();
         MockHttpServletResponse response = new MockHttpServletResponse();
-        request.addHeader(NavHttpHeaders.NAV_CONSUMER_TOKEN_HEADER, OIDC_TOKEN_SERVICE_USER_TEST);
+        request.addHeader(NavHeaders.NAV_CONSUMER_TOKEN, OIDC_TOKEN_SERVICE_USER_TEST);
         request.addHeader(HttpHeaders.AUTHORIZATION, OIDC_TOKEN_SERVICE_USER_TEST);
 
         Boolean result = validateUserAndAddToMDCHandler.preHandle(request, response, new HandlerMethod(new Object(), "equals", Object.class));

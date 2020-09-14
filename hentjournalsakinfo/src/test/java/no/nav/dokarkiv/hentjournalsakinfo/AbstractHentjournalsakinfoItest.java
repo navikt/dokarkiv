@@ -12,7 +12,6 @@ import no.nav.dokarkiv.core.security.BasicAuthRestInterceptor;
 import no.nav.dokarkiv.core.security.LdapConfig;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.dokarkiv.core.stelvio.SimpleRequestContext;
-import no.nav.freg.security.test.oidc.tools.TestToolsAutoConfig;
 import no.nav.security.token.support.test.spring.TokenGeneratorConfiguration;
 import org.junit.Before;
 import org.junit.runner.RunWith;
@@ -40,9 +39,9 @@ import javax.inject.Named;
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
 		classes = {CoreConfig.class, HentJournalsakinfoConfig.class, LdapConfig.class,
-				AbstractHentjournalsakinfoItest.Config.class, TestToolsAutoConfig.class, TokenGeneratorConfiguration.class},
+				AbstractHentjournalsakinfoItest.Config.class, TokenGeneratorConfiguration.class},
 		properties = {"spring.main.allow-bean-definition-overriding=true"})
-@ActiveProfiles({"itest", "wiremock", "ldap", "oidc"})
+@ActiveProfiles({"itest", "wiremock", "ldap"})
 public abstract class AbstractHentjournalsakinfoItest extends AbstractRestIT {
 
 	@Configuration
@@ -104,7 +103,7 @@ public abstract class AbstractHentjournalsakinfoItest extends AbstractRestIT {
 	protected HttpHeaders createDefaultHeaders() {
 		String basicAuthHeader = "Basic " + Base64Utils.encodeToString(String.format("%s:%s", USERNAME, PASSWORD).getBytes());
 		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
+		headers.setContentType(MediaType.APPLICATION_JSON);
 		headers.add(HttpHeaders.AUTHORIZATION, basicAuthHeader);
 		return headers;
 	}

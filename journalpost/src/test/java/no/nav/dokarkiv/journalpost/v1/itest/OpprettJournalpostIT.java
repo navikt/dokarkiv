@@ -24,7 +24,6 @@ import no.nav.dokarkiv.journalpost.v1.api.Sak;
 import no.nav.dokarkiv.journalpost.v1.api.Sakstype;
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostResponse;
-import no.nav.dokarkiv.journalpost.v1.services.OpprettJournalpostService;
 import org.apache.commons.collections15.IteratorUtils;
 import org.junit.Test;
 import org.springframework.http.HttpEntity;
@@ -32,7 +31,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import javax.inject.Inject;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -99,8 +97,6 @@ import static org.junit.Assert.assertTrue;
 
 public class OpprettJournalpostIT extends AbstractJournalpostIT {
 
-    @Inject
-    private OpprettJournalpostService opprettJournalpostService;
     private ObjectMapper mapper = new ObjectMapper();
 
     @Test
