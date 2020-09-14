@@ -6,7 +6,7 @@
   "NO_NAV_SECURITY_JWT_ISSUER_AZUREV2_ACCEPTED_AUDIENCE": "api://972814f3-8bdf-44f8-a191-c2ed00020b54",
   "NO_NAV_SECURITY_JWT_ISSUER_OPENAM_ACCEPTED_AUDIENCE": "arbeid-og-inntekt-t3,fpfordel-t3,fptilbake-t3,gosys-dokument-auth-proxy-t3,gosys-nais-t3,joarkadmin-t3,k9-fordel-t3,k9-tilbake-t3,arbeid-og-inntekt-t3-localhost",
   "NO_NAV_SECURITY_JWT_ISSUER_RESTSTS_ACCEPTED_AUDIENCE": "srvdolly,srvtestnorge-inntekt,srv-digihot,srv-klage-perm-ref,srvPermJournalforing,srvdagpenger-journ,srvdokumentfordeling,srveessi-pensjon-j,srveux-app,srvfamilie-ks-opps,srvgosys,srvgosys-dokument-,srvimvarsel,srvjfr-automatisk,srvjfr-manuell-opp,srvjoarkadmin,srvk9formidling,srvklage-dittnav,srvmelosys,srvpale2sak,srvpensjon-dokdist,srvpermref-journalf,srvpleiepenger-joark,srvprosess-tiltaks,srvskanmotovrig,srvskanmotreferanse,srvsporenstreks,srvspregosys,srvsyfooppfolgings,srvsyfosmpapirmottak,srvsyfosmsak,srvtilbakemeldings,srvtiltak-tilsagns,srvarbeid-og-inntekt,srvarena-dokgen",
-  "SPRING_DATASOURCE_URL": "jdbc:oracle:thin:@d26dbfl021.test.local:1521/joark_t3",
+  "SPRING_DATASOURCE_URL": "jdbc:oracle:thin:@d26dbfl020.test.local:1521/joark_t3",
   "SPRING_LDAP_URLS": "ldaps://ldapgw.test.local",
   "LDAP_NAVUSER_BASEDN": "ou=NAV,ou=BusinessUnits,dc=test,dc=local",
   "LDAP_SERVICEUSER_BASEDN": "ou=ServiceAccounts,dc=test,dc=local",
