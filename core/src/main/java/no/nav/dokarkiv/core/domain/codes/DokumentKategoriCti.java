@@ -27,7 +27,7 @@ public class DokumentKategoriCti extends CodesTablePeriodicItem<DokumentKategori
 	/**
 	 * ID used for serialization.
 	 */
-	private static final long serialVersionUID = -***gammelt_fnr***44300696L;
+	private static final long serialVersionUID = -3001396116744300696L;
 
 	/**
 	 * Audit information.

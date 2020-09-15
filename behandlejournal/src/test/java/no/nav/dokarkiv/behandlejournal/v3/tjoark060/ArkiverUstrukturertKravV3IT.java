@@ -49,7 +49,7 @@ import org.junit.Test;
  */
 public class ArkiverUstrukturertKravV3IT extends AbstractBehandleJournalV3Itest {
 
-	private static final String FNR_BRUKER = "***gammelt_fnr***";
+	private static final String FNR_BRUKER = "01054512313";
 	private static final String KANAL_ALTINN = "ALTINN";
 	private static final boolean SIGNERT_TRUE = true;
 	private static final String TEMAVALUE_PEN = "PEN";

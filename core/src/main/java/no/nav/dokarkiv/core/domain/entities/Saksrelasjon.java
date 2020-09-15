@@ -32,7 +32,7 @@ import javax.persistence.Table;
 public class Saksrelasjon extends AbstractPersistentVersionedDomainObjectWithKilde {
 
 	/** ID used for serialization. */
-	private static final long serialVersionUID = ***gammelt_fnr***0038569L;
+	private static final long serialVersionUID = 588843673270038569L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "saksrelasjon_seq")

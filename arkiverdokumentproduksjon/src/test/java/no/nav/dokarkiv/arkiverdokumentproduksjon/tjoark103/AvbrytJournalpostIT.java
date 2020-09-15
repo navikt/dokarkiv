@@ -119,7 +119,7 @@ public class AvbrytJournalpostIT extends AbstractArkiverdokumentproduksjonItest 
 
 	private Journalpost createJournalpost(DokumentStatusCode dokumentStatusCode, JournalStatusCode journalStatusCode) {
 		return getJournalpostBuilder()
-				.avsenderMottakerId("***gammelt_fnr***")
+				.avsenderMottakerId("02016126007")
 				.journalStatus(journalStatusCode)
 				.journalpostType(JournalpostTypeCode.U)
 				.opprettetAvNavn(OPPRETTET_AV_NAVN)

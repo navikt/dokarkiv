@@ -15,7 +15,7 @@ import static org.junit.Assert.assertThat;
  */
 public class JournalpostFilterTest {
     private static final String ORGNUMMMER = "999999999";
-    private static final String FOEDSELSNUMMER = "***gammelt_fnr***";
+    private static final String FOEDSELSNUMMER = "11111111111";
 
     @Test
     public void shouldGetAlleIdenterForPersonWhenFoedselsnummerSupplied() {

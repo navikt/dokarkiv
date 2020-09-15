@@ -76,7 +76,7 @@ public class DefaultLagreVedleggPaaJournalpostTest {
 	private static final Long JOURNALPOST_ID = 1L;
 	private static final long DOKUMENT_ID = 100L;
 	private static final Long BIDRAG_MELLOMLAGRING_ID = 1L;
-	private static final Long BIDRAG_JOURNALPOST_ID = ***gammelt_fnr***1L;
+	private static final Long BIDRAG_JOURNALPOST_ID = 424900000001L;
 	private static final Long VEDLEGG_BIDRAG_MELLOMLAGRING_ID = 1001L;
 
 	@Mock
@@ -463,7 +463,7 @@ public class DefaultLagreVedleggPaaJournalpostTest {
 	private BidragMellomlagring createBidragMellomlagringWithHoveddokument() {
 		return getBidragMellomlagringBuilder()
 				.bidragMellomlagringId(DOKUMENT_ID)
-				.avsenderFnr("***gammelt_fnr***")
+				.avsenderFnr("12312312312")
 				.mottattDato(new Date())
 				.status(BidragMellomlagringStatus.DOKUMENTOPPLASTING)
 				.bidragMellomlagringDokuments(

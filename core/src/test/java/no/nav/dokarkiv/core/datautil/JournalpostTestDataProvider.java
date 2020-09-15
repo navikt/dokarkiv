@@ -42,7 +42,7 @@ public final class JournalpostTestDataProvider {
 	public static final FagomradeCode JP_FAGOMRADE = FagomradeCode.PEN;
 	public static final String JP_INNHOLD = "innhold";
 	public static final JournalpostTypeCode JP_TYPE = U;
-	public static final String FNR = "***gammelt_fnr***";
+	public static final String FNR = "12341234123";
 	public static final Date JANUARY_1_2020 = Date.from(LocalDate.of(2020, Month.JANUARY, 1)
 			.atStartOfDay(ZoneId.systemDefault())
 			.toInstant());
@@ -109,7 +109,7 @@ public final class JournalpostTestDataProvider {
 				.journalStatus(journalStatus)
 				.journalpostType(journalpostType)
 				.saksrelasjon(SaksrelasjonTestDataProvider.createPENSaksrelasjon())
-				.brukere(BrukerTestDataProvider.createBruker("***gammelt_fnr***", BrukerTypeCode.PERSON), BrukerTestDataProvider.createBruker("999999999", BrukerTypeCode.ORGANISASJON))
+				.brukere(BrukerTestDataProvider.createBruker("11111111111", BrukerTypeCode.PERSON), BrukerTestDataProvider.createBruker("999999999", BrukerTypeCode.ORGANISASJON))
 				.innhold(INNHOLD)
 				.journalForendeEnhetId("SesamStasjon")
 				.avsenderMottaker("Bjarne Betjent")

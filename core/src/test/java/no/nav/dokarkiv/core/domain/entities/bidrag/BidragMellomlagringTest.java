@@ -18,22 +18,22 @@ public class BidragMellomlagringTest {
 
 	@Test
 	public void shouldReturnTrueForBidragMellomlagringId() {
-		assertThat(BidragMellomlagring.isBidragMellomLagringId(***gammelt_fnr***1L), is(true));
+		assertThat(BidragMellomlagring.isBidragMellomLagringId(424900000001L), is(true));
 	}
 
 	@Test
 	public void isBidragMellomlagringIdShouldReturnFalseForIdWithoutPrefix() throws Exception {
-		assertThat(BidragMellomlagring.isBidragMellomLagringId(***gammelt_fnr***1L), is(false));
+		assertThat(BidragMellomlagring.isBidragMellomLagringId(111100000001L), is(false));
 	}
 
 	@Test
 	public void isBidragMellomlagringIdShouldReturnFalseForIdWithWrongNumberOfDigits() throws Exception {
-		assertThat(BidragMellomlagring.isBidragMellomLagringId(***gammelt_fnr***L), is(false));
+		assertThat(BidragMellomlagring.isBidragMellomLagringId(42490000001L), is(false));
 	}
 
 	@Test
 	public void shouldCreateIdWithPrefixAndPaddedZeroes() throws Exception {
-		Long expectedId = ***gammelt_fnr***8L;
+		Long expectedId = 424900000088L;
 
 		BidragMellomlagring bidragMellomlagring = getBidragMellomlagringBuilder().bidragMellomlagringId(88L).build();
 
@@ -42,7 +42,7 @@ public class BidragMellomlagringTest {
 
 	@Test
 	public void shouldRemovePrefixFromId() throws Exception {
-		Long id = ***gammelt_fnr***8L;
+		Long id = 424900000088L;
 
 		assertThat(BidragMellomlagring.removePrefixFromId(id), is(88L));
 	}

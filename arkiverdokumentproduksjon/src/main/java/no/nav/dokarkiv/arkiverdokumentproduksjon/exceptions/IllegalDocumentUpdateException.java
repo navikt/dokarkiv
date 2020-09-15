@@ -13,7 +13,7 @@ public class IllegalDocumentUpdateException extends DokarkivFunctionalException 
 	/**
 	 * Serialization UID
 	 */
-	private static final long serialVersionUID = ***gammelt_fnr***82139323L;
+	private static final long serialVersionUID = 5624181226982139323L;
 
 	/**
 	 * Constructs a new IllegalDocumentUpdateException.

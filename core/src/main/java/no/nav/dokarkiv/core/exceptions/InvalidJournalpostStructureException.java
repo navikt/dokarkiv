@@ -9,7 +9,7 @@ package no.nav.dokarkiv.core.exceptions;
 public class InvalidJournalpostStructureException extends DokarkivFunctionalException {
 
 	/** Serialization UID */
-	private static final long serialVersionUID = ***gammelt_fnr***75497536L;
+	private static final long serialVersionUID = 4800123366475497536L;
 
 	/**
 	 * Constructs a new InvalidJournalpostStructureException.

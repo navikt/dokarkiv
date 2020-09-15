@@ -25,7 +25,7 @@ public class Bruker {
     @ApiModelProperty(
             value = "Brukerens fødselsnummer (11 siffer) eller organisasjonsnummer (9 siffer)",
             required = true,
-            example = "***gammelt_fnr***"
+            example = "09071844797"
     )
     private String id;
 }

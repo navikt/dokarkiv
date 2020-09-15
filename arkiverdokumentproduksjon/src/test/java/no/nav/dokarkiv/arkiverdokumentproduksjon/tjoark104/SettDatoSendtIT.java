@@ -84,7 +84,7 @@ public class SettDatoSendtIT extends AbstractArkiverdokumentproduksjonItest {
 
 	private Journalpost createJournalpost() {
 		return getJournalpostBuilder()
-				.avsenderMottakerId("***gammelt_fnr***")
+				.avsenderMottakerId("02016126007")
 				.journalStatus(JournalStatusCode.D)
 				.journalpostType(JournalpostTypeCode.U)
 				.opprettetAvNavn("opprettetAvNavn")

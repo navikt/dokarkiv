@@ -12,7 +12,7 @@ public class DocumentNotFoundException extends DokarkivFunctionalException {
 	/**
 	 * Serialization UID
 	 */
-	private static final long serialVersionUID = -***gammelt_fnr***76942265L;
+	private static final long serialVersionUID = -4302567319576942265L;
 
 	private static final String MESSAGE = "Could not find document";
 

@@ -28,7 +28,7 @@ public class FagsystemCti extends CodesTablePeriodicItem<FagsystemCode, String> 
 	/**
 	 * ID used for serialization.
 	 */
-	private static final long serialVersionUID = ***gammelt_fnr***98514180L;
+	private static final long serialVersionUID = 5520374847498514180L;
 
 	@Embedded
 	private ChangeStamp changeStamp;

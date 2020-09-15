@@ -20,7 +20,7 @@ import static org.junit.Assert.assertThat;
 public class Rjoark901IT extends AbstractHentjournalsakinfoItest {
 
 	private static final String HENTTILGANGJOURNALPOST_URI = "/hentjournalsakinfo/henttilgangjournalpost/{journalpostId}/{dokumentInfoId}/{variantFormat}";
-	private static final String EXPECTED_BRUKER_ID = "***gammelt_fnr***";
+	private static final String EXPECTED_BRUKER_ID = "11111111111";
 
 	@Test
 	public void shouldGetTilgangJournalpost() {

@@ -40,7 +40,7 @@ public class BehandleJournalCommonDataUtil {
 	protected static final String FILTYPE = "PDF";
 	protected static final String DOKUMENT_INNHOLD = "ustrukturertInnhold";
 	protected static final String VARIANTFORMAT = "ARKIV";
-	protected static final String PERSONIDENT = "***gammelt_fnr***";
+	protected static final String PERSONIDENT = "22027838743";
 	protected static final String EKSTERNPART_NAVN = "Jippi Hurra";
 	protected static final String ORGNR = "954289600";
 	protected static final boolean SIGNATUR = true;

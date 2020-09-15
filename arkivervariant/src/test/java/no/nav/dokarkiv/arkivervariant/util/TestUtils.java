@@ -29,7 +29,7 @@ public class TestUtils {
 	private static final String OPPRETTET_AV_NAVN = "Opprettet navn";
 	private static final String TILKNYTTET_AV_NAVN = "Tilknyttetnavn";
 	private static final String ENDRET_AV_NAVN = "Endret av navn";
-	private static final String AVSENDER_MOTTAKER_ID = "***gammelt_fnr***";
+	private static final String AVSENDER_MOTTAKER_ID = "02016126007";
 	private static final String DOKUMENT_TITTEL = "SlettDokumentTittel";
 	private static final String BREVGRUPPE = "Brevgruppe";
 	private static final String BREVKODE = "Brevkode";

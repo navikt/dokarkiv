@@ -8,7 +8,7 @@ package no.nav.dokarkiv.core.exceptions;
 public class InvalidBrukerException extends DokarkivFunctionalException {
 
 	/** Serialization ID */
-	private static final long serialVersionUID = -***gammelt_fnr***71491890L;
+	private static final long serialVersionUID = -8740302641771491890L;
 	
 	/**
 	 * Constructs a new InvalidBrukerException.

@@ -16,7 +16,7 @@ import java.util.Date;
  */
 public class PersistentDomainObjectHibernateInterceptor extends EmptyInterceptor {
 
-	private static final long serialVersionUID = ***gammelt_fnr***58677007L;
+	private static final long serialVersionUID = 5990411704958677007L;
 
 	/**
 	 * Updates the change stamp columns of the object that is dirty.

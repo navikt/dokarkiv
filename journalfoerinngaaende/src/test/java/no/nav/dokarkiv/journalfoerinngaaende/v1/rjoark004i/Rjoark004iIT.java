@@ -508,7 +508,7 @@ public class Rjoark004iIT extends AbstractJournalfoerInngaaendeV1Itest {
                 .getDokumentInfo()
                 .getDokumentInfoId()
                 .toString();
-        String logiskVedleggId = "***gammelt_fnr***7965";
+        String logiskVedleggId = "123445667067965";
 
         HttpEntity<PutLogiskVedleggRequest> requestHttpEntity = new HttpEntity<>(new PutLogiskVedleggRequest(), oidcHeaders());
 
@@ -767,7 +767,7 @@ public class Rjoark004iIT extends AbstractJournalfoerInngaaendeV1Itest {
                 .getDokumentInfo()
                 .getDokumentInfoId()
                 .toString();
-        String logiskVedleggId = "***gammelt_fnr***7965";
+        String logiskVedleggId = "123445667067965";
 
         ResponseEntity<String> responseEntity = restTemplate.exchange(
                 JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER + journalpostId + "/dokumenter/" + dokumentId + "/logiskeVedlegg/" + logiskVedleggId, HttpMethod.DELETE, createHeaders(), String.class);

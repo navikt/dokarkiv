@@ -312,7 +312,7 @@ public class OpprettJournalpostRequestValidatorTest {
 		request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.avsenderMottaker(AvsenderMottaker.builder()
 						.navn(AVSENDER_NAVN)
-						.id("***gammelt_fnr***")
+						.id("11223344556")
 						.idType(null)
 						.build())
 				.build();
@@ -355,7 +355,7 @@ public class OpprettJournalpostRequestValidatorTest {
 		request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.avsenderMottaker(AvsenderMottaker.builder()
 						.navn(AVSENDER_NAVN)
-						.id("***gammelt_fnr***1")
+						.id("111111111111")
 						.idType(AvsenderMottakerIdType.FNR)
 						.build())
 				.build();

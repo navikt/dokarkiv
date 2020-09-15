@@ -9,7 +9,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
  * @author Mette Lafton
  */
 public class InvalidArgumentException extends DokarkivFunctionalException {
-	private static final long serialVersionUID = ***gammelt_fnr***6L;
+	private static final long serialVersionUID = 123345612346L;
 
 	/* The name of the argument that is not used correctly */
 	private final String argumentName;

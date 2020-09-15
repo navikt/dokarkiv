@@ -186,7 +186,7 @@ public class AvbrytVedleggIT extends AbstractArkiverdokumentproduksjonItest {
 												   TilknyttetJournalpostSomCode tilknyttetJournalpostSomCode,
 												   DokumentInfo dokumentInfo) {
 		Journalpost journalpost = getJournalpostBuilder()
-				.avsenderMottakerId("***gammelt_fnr***")
+				.avsenderMottakerId("02016126007")
 				.journalStatus(journalStatusCode)
 				.journalpostType(JournalpostTypeCode.U)
 				.opprettetAvNavn(OPPRETTET_AV_NAVN)

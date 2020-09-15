@@ -15,8 +15,8 @@ import org.junit.Test;
  */
 public class BrukerValidatorTest {
 	
-	private static final String SOME_VALID_FNR = "***gammelt_fnr***";
-	private static final String SOME_INVALID_FNR = "***gammelt_fnr***";
+	private static final String SOME_VALID_FNR = "01014138923";
+	private static final String SOME_INVALID_FNR = "01014138924";
 	private static final String SOME_VALID_ORGNR = "123456785";
 	private static final String SOME_GJELDERID = "aaaaa";
 	

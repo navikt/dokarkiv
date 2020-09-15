@@ -39,7 +39,7 @@ public class JournalpostDokumentInfoRelasjon extends AbstractPersistentVersioned
 	/**
 	 * ID for serialization
 	 */
-	private static final long serialVersionUID = -***gammelt_fnr***42004318L;
+	private static final long serialVersionUID = -2512784564042004318L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "journalpostDokumentInfoRelasjon_seq")

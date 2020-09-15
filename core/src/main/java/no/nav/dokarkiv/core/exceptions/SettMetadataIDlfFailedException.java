@@ -10,7 +10,7 @@ public class SettMetadataIDlfFailedException extends DokarkivFunctionalException
 	/**
 	 * Serialization UID
 	 */
-	private static final long serialVersionUID = ***gammelt_fnr***45624652L;
+	private static final long serialVersionUID = 2855835625445624652L;
 
 	/**
 	 * Constructs a new SettMetadataIDlfFailedException.

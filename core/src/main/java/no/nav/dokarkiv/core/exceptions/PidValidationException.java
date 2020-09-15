@@ -11,7 +11,7 @@ import no.nav.dokarkiv.core.domain.validator.FoedselsnummerValidator;
  */
 public class PidValidationException extends DokarkivFunctionalException {
 
-	private static final long serialVersionUID = ***gammelt_fnr***82768191L;
+	private static final long serialVersionUID = 6146570031382768191L;
 
 	/**
 	 * Constructs a <code>PidValidationException</code> with message and cause.

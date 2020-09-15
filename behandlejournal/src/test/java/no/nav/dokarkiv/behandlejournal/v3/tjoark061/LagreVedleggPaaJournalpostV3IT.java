@@ -273,7 +273,7 @@ public class LagreVedleggPaaJournalpostV3IT extends AbstractBehandleJournalV3Ite
 
 	private BidragMellomlagring createAndPersistBidragMellomlagringWithHoveddokument() {
 		BidragMellomlagring bidragMellomlagring = getBidragMellomlagringBuilder()
-				.avsenderFnr("***gammelt_fnr***")
+				.avsenderFnr("12312312312")
 				.mottattDato(new Date())
 				.status(BidragMellomlagringStatus.DOKUMENTOPPLASTING)
 				.bidragMellomlagringDokuments(

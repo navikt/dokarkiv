@@ -37,7 +37,7 @@ import java.util.Set;
  */
 public class TilknyttVedleggIT extends AbstractJournalpostIT {
 
-	private static final String UGYLDIG_JOURNALPOST = "***gammelt_fnr***";
+	private static final String UGYLDIG_JOURNALPOST = "12312312312";
 	private static final String TILLEGGOPPLYSNINGER_KEY = "DOK_ORG_DOK_INFO_ID";
 	private static final String GYLDIG_CONSUMER = "srvdokarkivproxy";
 	private static final String UGYLDIG_CONSUMER = "srvdokarkiv";

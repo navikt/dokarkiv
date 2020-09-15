@@ -225,11 +225,11 @@ public class DefaultOppdaterJournalpostArkiverDokumentServiceTest {
 		return getJournalpostBuilder()
 				.endretKildeNavn("sd")
 				.journalpostId(journalpostId)
-				.avsenderMottakerId("***gammelt_fnr***")
+				.avsenderMottakerId("01054512313")
 				.avsenderMottaker("avsender")
 				.brukere(
 						getBrukerBuilder()
-								.brukerId("***gammelt_fnr***")
+								.brukerId("01054512313")
 								.brukerType(BrukerTypeCode.PERSON).build())
 				.saksrelasjon(
 						getSaksrelasjonBuilder()

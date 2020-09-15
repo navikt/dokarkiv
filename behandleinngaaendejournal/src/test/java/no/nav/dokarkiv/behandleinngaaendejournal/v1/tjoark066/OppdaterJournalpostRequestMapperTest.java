@@ -36,7 +36,7 @@ public class OppdaterJournalpostRequestMapperTest {
 	
 	private static final String JOURNALPOST_ID = "1";
 	private static final String INNHOLD = "INNHOLD";
-	private static final String AVSENDER_MOTTAKERID = "***gammelt_fnr***";
+	private static final String AVSENDER_MOTTAKERID = "02016126007";
 	private static final String AVSENDER_MOTTAKER_NAVN = "Batman";
 	private static final String ARKIV_SAK_FAGSYSTEM = FagsystemCode.PEN.name();
 	private static final String ARKIV_SAKID = "1";
@@ -45,7 +45,7 @@ public class OppdaterJournalpostRequestMapperTest {
 	private static final String HOVEDDOKUMENT_TITTEL = "HOVEDDOKUMENTTITTEL";
 	private static final String VEDLEGG_DOKUMENT_INFO_ID = "9";
 	private static final String VEDLEGG_TITTEL = "VEDLEGGTITTEL";
-	private static final String FNR = "***gammelt_fnr***";
+	private static final String FNR = "01014138923";
 	private static final String ORGNR = "999999999";
 	private static final Tema TEMA = new Tema();
 	

@@ -10,7 +10,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 public class NoDokumentInfoFoundException extends DokarkivFunctionalException {
 
 	/** Serialization UID */
-	private static final long serialVersionUID = ***gammelt_fnr***36396074L;
+	private static final long serialVersionUID = 1642861039136396074L;
 
 	private final Long dokumentInfoId;
 	

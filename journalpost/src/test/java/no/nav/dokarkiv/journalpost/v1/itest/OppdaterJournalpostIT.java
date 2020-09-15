@@ -70,7 +70,7 @@ import static org.junit.Assert.assertTrue;
 
 public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
-    private static final String IDENTIFIKATOR = "***gammelt_fnr***";
+    private static final String IDENTIFIKATOR = "12312312312";
     private static final String AVSENDER_MOTTAKER_NAVN = "etternavn, fornavn";
     private static final AvsenderMottakerIdType AVSENDER_MOTTAKER_TYPE_ID = AvsenderMottakerIdType.FNR;
     private static final String ARKIVSAKSNUMMER = "123123";
@@ -674,7 +674,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
         JournalpostBuilder journalpostBuilder = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
                 .endretAvNavn("saksbehandlersen")
-                .brukere(BrukerTestDataProvider.createBruker("***gammelt_fnr***", BrukerTypeCode.PERSON));
+                .brukere(BrukerTestDataProvider.createBruker("11111111111", BrukerTypeCode.PERSON));
         Journalpost journalpost = buildAndCommit(journalpostBuilder);
         Long journalpostId = journalpost.getJournalpostId();
 

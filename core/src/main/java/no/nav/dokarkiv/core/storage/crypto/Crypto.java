@@ -56,7 +56,7 @@ public class Crypto {
 	private SecretKey key(String passphrase, String salt) {
 		try {
 			SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
-			char[] ***passord=gammelt_passord***();
+			char[] passwordChars = passphrase.toCharArray();
 			KeySpec spec = new PBEKeySpec(passwordChars, salt.getBytes(), 10000, 128);
 			SecretKey key = factory.generateSecret(spec);
 			return new SecretKeySpec(key.getEncoded(), "AES");

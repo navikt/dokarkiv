@@ -14,7 +14,7 @@ import no.nav.dokarkiv.core.domain.entities.Bruker;
 public final class BrukerTestDataProvider {
 
 
-	public static final String BRUKER_ID = "***gammelt_fnr***";
+	public static final String BRUKER_ID = "02016126007";
 
 	private BrukerTestDataProvider() {
 

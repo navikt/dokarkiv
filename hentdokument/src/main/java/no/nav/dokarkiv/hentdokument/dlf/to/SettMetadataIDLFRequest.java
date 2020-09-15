@@ -16,7 +16,7 @@ public class SettMetadataIDLFRequest {
 	/**
 	 * ID used for serialization.
 	 */
-	private static final long serialVersionUID = -***gammelt_fnr***96449856L;
+	private static final long serialVersionUID = -8494959806796449856L;
 
 	private SettMetadataForUthenting settMetadataForUthenting;
 	private SettMetadataForKopiering settMetadataForKopiering;

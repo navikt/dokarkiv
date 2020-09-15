@@ -62,8 +62,8 @@ public class DefaultArkiverUstrukturertKravV3Test {
 
 	private static final long JOURNALPOST_ID = 100L;
 	private static final long DOKUMENT_INFO_ID = 1000L;
-	private final String validFnr = "***gammelt_fnr***";
-	private final String invalidFnr = "***gammelt_fnr***";
+	private final String validFnr = "02016126007";
+	private final String invalidFnr = "99999999999";
 	private final String brevkode = "BREVKODE";
 
 	@InjectMocks
@@ -256,7 +256,7 @@ public class DefaultArkiverUstrukturertKravV3Test {
 	private BidragMellomlagring createBidragMellomlagring() {
 		return getBidragMellomlagringBuilder()
 				.bidragMellomlagringId(100L)
-				.avsenderFnr("***gammelt_fnr***")
+				.avsenderFnr("12312312312")
 				.mottattDato(new Date())
 				.status(BidragMellomlagringStatus.DOKUMENTOPPLASTING)
 				.bidragMellomlagringDokuments(

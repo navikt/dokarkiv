@@ -29,7 +29,7 @@ public class HentDokumentAuthenticationIT extends AbstractInnsynJournalV2Itest {
 	private static final String DEFAULT_JOURNALPOST_ID = "1";
 	private static final String DEFAULT_DOKUMENT_ID = "2";
 	private static final String DOKUMENTITTEL = "Dokumentittel";
-	private static final String FNR = "***gammelt_fnr***";
+	private static final String FNR = "12341234123";
 
 	@BeforeClass
 	public static void setUpSecurity() throws Exception {

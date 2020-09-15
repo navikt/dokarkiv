@@ -25,7 +25,7 @@ import javax.persistence.Table;
 public class ReferanseTypeCti extends CodesTablePeriodicItem<ReferanseTypeCode, String> {
 
 	/** Serialization UID */
-	private static final long serialVersionUID = -***gammelt_fnr***02233269L;
+	private static final long serialVersionUID = -1132683216002233269L;
 
 	/**
 	 * Audit information.

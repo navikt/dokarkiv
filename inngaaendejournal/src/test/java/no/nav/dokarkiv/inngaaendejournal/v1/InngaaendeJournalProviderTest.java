@@ -84,12 +84,12 @@ import java.util.List;
  */
 @RunWith(MockitoJUnitRunner.class)
 public class InngaaendeJournalProviderTest {
-	private static final String AVSENDER_MOTTAKERID = "***gammelt_fnr***";
+	private static final String AVSENDER_MOTTAKERID = "02016126007";
 	private static final Long DOKUMENT_INFO_ID = 1L;
 	private static final String ARKIV_SAKID = "1";
 	private static final String ERRORMSG = "errormsg";
 	private static final LocalDateTime NOW = LocalDateTime.now();
-	private static final String FNR = "***gammelt_fnr***";
+	private static final String FNR = "12345678911";
 	private static final String ORGNR = "999999999";
 	private static final String DOKUMENTTYPE_ID = "I00008";
 	private static final Long DOKUMENT_INFO_ID_VEDLEGG = 2L;

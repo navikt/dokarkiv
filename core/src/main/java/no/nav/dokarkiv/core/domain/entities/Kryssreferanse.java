@@ -28,7 +28,7 @@ import javax.persistence.Table;
 public class Kryssreferanse extends AbstractPersistentVersionedDomainObjectWithKilde {
 
 	/** ID for serialization */
-	private static final long serialVersionUID = ***gammelt_fnr***67421424L;
+	private static final long serialVersionUID = 2970255498067421424L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "kryssreferanse_seq")

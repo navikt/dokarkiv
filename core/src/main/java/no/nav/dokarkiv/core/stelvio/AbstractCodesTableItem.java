@@ -31,7 +31,7 @@ import java.lang.reflect.ParameterizedType;
 @Deprecated
 @MappedSuperclass
 public abstract class AbstractCodesTableItem<K extends Enum, V> implements Serializable, Comparable {
-	private static final long serialVersionUID = -***gammelt_fnr***1433404L;
+	private static final long serialVersionUID = -131941273891433404L;
 
 	/** The decode of an item, often it's message. */
 	@Column(name = "decode")

@@ -149,7 +149,7 @@ public class FerdigstillDokumentopplastingIT extends AbstractBehandleJournalV2It
 
 	private BidragMellomlagring buildAndPersistBidragMellomlagring() {
 		BidragMellomlagring build = getBidragMellomlagringBuilder()
-				.avsenderFnr("***gammelt_fnr***")
+				.avsenderFnr("01010101011")
 				.mottattDato(new Date())
 				.status(BidragMellomlagringStatus.DOKUMENTOPPLASTING)
 				.bidragMellomlagringDokuments(
@@ -161,7 +161,7 @@ public class FerdigstillDokumentopplastingIT extends AbstractBehandleJournalV2It
 
 	private Journalpost buildAndPersistJournalpost(FagomradeCode fagomradeCode) {
 		Journalpost build = getJournalpostBuilder()
-				.avsenderMottakerId("***gammelt_fnr***")
+				.avsenderMottakerId("02016126007")
 				.journalStatus(JournalStatusCode.OD)
 				.journalpostType(JournalpostTypeCode.I)
 				.opprettetAvNavn("opprettetAvNavn")
@@ -179,7 +179,7 @@ public class FerdigstillDokumentopplastingIT extends AbstractBehandleJournalV2It
 						getSaksrelasjonBuilder().sakId("1").fagsystem(FagsystemCode.PEN)
 								.opprettetKildeNavn("opprettetKildeNavn").build())
 				.brukere(
-						getBrukerBuilder().brukerId("***gammelt_fnr***").brukerType(BrukerTypeCode.PERSON)
+						getBrukerBuilder().brukerId("02016126007").brukerType(BrukerTypeCode.PERSON)
 								.opprettetKildeNavn("opprettetKildeNavn").build())
 				.dokumentInfoRelasjoner(
 						getJournalpostDokumentInfoRelasjonBuilder()

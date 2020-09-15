@@ -135,7 +135,7 @@ public class AksjonsLoggIT {
 	public void shouldGetMostRecentBruker() throws UgyldigAksjonsLoggException {
 		Journalpost journalpost = joarkRepository.findById(journalpostId)
 				.orElseThrow(JournalpostIkkeFunnetException::new);
-		String nyBrukerId = "***gammelt_fnr***";
+		String nyBrukerId = "12345678910";
 		Bruker nyBruker = Bruker.builder()
 				.brukerId(nyBrukerId)
 				.brukerType(BrukerTypeCode.PERSON)

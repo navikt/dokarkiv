@@ -44,7 +44,7 @@ import java.util.UUID;
 public class FilDetaljer extends AbstractPersistentVersionedDomainObjectWithKilde {
 
 	/** ID used for serialization. */
-	private static final long serialVersionUID = -***gammelt_fnr***40061652L;
+	private static final long serialVersionUID = -2125839946340061652L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "fil_detaljer_seq")

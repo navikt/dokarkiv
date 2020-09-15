@@ -108,7 +108,7 @@ public class DefaultSettMetadataIDlfXmlUpdaterTest {
 		// Values in hoveddokument.xml
 		String endpointJoark = "https://tjenestebuss.adeo.no/nav-tjeneste-journalbehandling_v1Web/";
 		String user = "srvLiveEditor";
-		String ***passord=gammelt_passord***";
+		String password = "TopSecret";
 		String endpointHpLive = "https://tjenestebuss.adeo.no/nav-tjeneste-hplivejournalbehandling_v1Web/";
 
 		String updatedMetadataXml = xmlUpdater.updateMetadataXmlForKopiering(metadataXml, new SettMetadataForKopiering(1L, "1",

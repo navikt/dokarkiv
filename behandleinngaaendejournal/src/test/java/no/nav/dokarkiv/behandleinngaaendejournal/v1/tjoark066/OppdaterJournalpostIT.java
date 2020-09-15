@@ -73,11 +73,11 @@ import java.util.Set;
 public class OppdaterJournalpostIT extends AbstractBehandleInngaaendeJournalV1Itest {
 	private static final String OPPRETTET_KILDE_NAVN = "opprettet kilde";
 	private static final String TITTEL = "Foreldrepenger!";
-	private static final String FNR = "***gammelt_fnr***";
+	private static final String FNR = "01054512313";
 	private static final String ORGNR = "999999999";
-	private static final String FNR_2 = "***gammelt_fnr***";
+	private static final String FNR_2 = "01014138923";
 	private static final String AVSENDER_MOTTAKER = "Test Testesen";
-	private static final String AVSENDER_MOTTAKER_ID = "***gammelt_fnr***";
+	private static final String AVSENDER_MOTTAKER_ID = "02016126007";
 	private static final Date DOKUMENT_DATO = new Date();
 	private static final String INNHOLD = "innhold";
 	private static final String ENDRET_KILDE_NAVN = "srvdokarkiv";

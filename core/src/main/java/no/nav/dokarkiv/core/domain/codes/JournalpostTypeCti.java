@@ -25,7 +25,7 @@ import javax.persistence.Table;
 public class JournalpostTypeCti extends CodesTablePeriodicItem<JournalpostTypeCode, String> {
 
 	/** Serialization UID */
-	private static final long serialVersionUID = -***gammelt_fnr***89214570L;
+	private static final long serialVersionUID = -8729660705589214570L;
 	
 	/**
 	 * Audit information.

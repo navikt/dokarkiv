@@ -101,7 +101,7 @@ public class DefaultMandatoryFieldsVerifierTest {
 						.endretAvNavn("Endret av")
 						.build())
 				.brukere(getBrukerBuilder()
-						.brukerId("***gammelt_fnr***")
+						.brukerId("01014138923")
 						.brukerType(BrukerTypeCode.PERSON)
 						.build())
 				.kryssReferanser(getKryssreferanseBuilder()

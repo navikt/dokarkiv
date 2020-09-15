@@ -25,7 +25,7 @@ import javax.persistence.Table;
 public class DokumentStatusCti extends CodesTablePeriodicItem<DokumentStatusCode, String> {
 
 	/** Serialization UID */
-	private static final long serialVersionUID = ***gammelt_fnr***61680004L;
+	private static final long serialVersionUID = 7687696421261680004L;
 
 	/**
 	 * Audit information.

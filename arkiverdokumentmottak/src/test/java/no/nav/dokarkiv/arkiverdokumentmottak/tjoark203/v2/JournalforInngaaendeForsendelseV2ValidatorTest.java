@@ -54,7 +54,7 @@ public class JournalforInngaaendeForsendelseV2ValidatorTest {
 	private static final String INNHOLD = "Antonio Banderas";
 	private static final VariantFormatCode VARIANTFORMAT_AKTIV = VariantFormatCode.ARKIV;
 	private static final VariantFormatCode VARIANTFORMAT_ORIGINAL = VariantFormatCode.ORIGINAL;
-	private static final String PERSONIDENT = "***gammelt_fnr***";
+	private static final String PERSONIDENT = "22027838743";
 	private static final String EKSTERNPART_NAVN = "Mario & Luigi";
 	private static final FagsystemCode FAGSYSTEMKODE = FagsystemCode.FS22;
 	private static final String SAKSID = "312";

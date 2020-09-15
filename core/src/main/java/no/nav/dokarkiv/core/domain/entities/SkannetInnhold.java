@@ -28,7 +28,7 @@ public class SkannetInnhold extends AbstractPersistentVersionedDomainObjectWithK
 	/**
 	 * ID used for serialization.
 	 */
-	private static final long serialVersionUID = ***gammelt_fnr***94040373L;
+	private static final long serialVersionUID = 4377297136994040373L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "skannetInnhold_seq")

@@ -34,6 +34,6 @@ public class JournalpostNotSupportedException extends DokarkivFunctionalExceptio
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = ***gammelt_fnr***1620137L;
+	private static final long serialVersionUID = 282695939921620137L;
 
 }

@@ -51,7 +51,7 @@ import java.util.Date;
  */
 public class HentDokumentIT extends AbstractInnsynJournalV2Itest {
 
-	private static final String FNR = "***gammelt_fnr***";
+	private static final String FNR = "12341234123";
 
 	@Value("#{T(java.time.LocalDate).parse(\"${innsynjournal.v2.innsyn.earliest.date}\")}")
 	private LocalDate earliestAllowedDate;
@@ -162,7 +162,7 @@ public class HentDokumentIT extends AbstractInnsynJournalV2Itest {
 	@Test
 	public void shouldNotReturnDocumentWrongAvsenderMottaker() throws Exception {
 		Journalpost journalpost = joarkRepository.save(buildJournalpost(MottaksKanalCode.EESSI)
-				.avsenderMottakerId("***gammelt_fnr***").build());
+				.avsenderMottakerId("78971231232").build());
 
 		expectAccessDenied();
 

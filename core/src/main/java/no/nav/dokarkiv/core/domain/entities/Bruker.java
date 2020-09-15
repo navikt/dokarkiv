@@ -30,7 +30,7 @@ import javax.persistence.Table;
 public class Bruker extends AbstractPersistentVersionedDomainObjectWithKilde {
 
 	/** ID used for serialization. */
-	private static final long serialVersionUID = -***gammelt_fnr***99426224L;
+	private static final long serialVersionUID = -7460602621099426224L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "brukerInfo_seq")

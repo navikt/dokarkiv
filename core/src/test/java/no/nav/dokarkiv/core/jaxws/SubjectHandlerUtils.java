@@ -20,8 +20,8 @@ public class SubjectHandlerUtils {
 	}
 
 	/**
-	 * @param openAmToken - if null it will be generated with a value of "&lt;userId&gt;-&lt;authLevel&gt;", eg "***gammelt_fnr***-4" for the
-	 *                    userId "***gammelt_fnr***" with autLevel "4"
+	 * @param openAmToken - if null it will be generated with a value of "&lt;userId&gt;-&lt;authLevel&gt;", eg "01015245464-4" for the
+	 *                    userId "01015245464" with autLevel "4"
 	 */
 	public static void setEksternBruker(String userId, int authLevel, String openAmToken) {
 

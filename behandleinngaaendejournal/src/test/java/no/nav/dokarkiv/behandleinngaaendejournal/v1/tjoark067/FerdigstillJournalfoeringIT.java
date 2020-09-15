@@ -384,7 +384,7 @@ public class FerdigstillJournalfoeringIT extends AbstractBehandleInngaaendeJourn
 				.innhold("innhold")
 				.dokumentDato(new Date())
 				.avsenderMottaker("Test Testesen")
-				.avsenderMottakerId("***gammelt_fnr***")
+				.avsenderMottakerId("02016126007")
 				.opprettetKildeNavn(OPPRETTET_KILDE_NAVN)
 				.changeStamp(new ChangeStamp("userId"))
 				.brukere(BrukerTestDataProvider.createBruker().build())

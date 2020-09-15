@@ -35,7 +35,7 @@ public class DokumentFil extends AbstractPersistentVersionedDomainObjectWithKild
 	/**
 	 * ID used for serialization.
 	 */
-	private static final long serialVersionUID = ***gammelt_fnr***42760135L;
+	private static final long serialVersionUID = 4404983937742760135L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "dokumentFil_seq")

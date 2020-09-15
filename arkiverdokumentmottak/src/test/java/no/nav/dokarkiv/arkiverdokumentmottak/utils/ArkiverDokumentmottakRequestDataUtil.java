@@ -47,7 +47,7 @@ public final class ArkiverDokumentmottakRequestDataUtil {
 	static final String KATEGORI = DokumentKategoriCode.B.name();
 	static final String INNHOLD = "Antonio Banderas";
 	static final String VARIANTFORMAT = "ARKIV";
-	static final String PERSONIDENT = "***gammelt_fnr***";
+	static final String PERSONIDENT = "22027838743";
 	static final String EKSTERNPART_NAVN = "Mario & Luigi";
 	static final String FAGSYSTEMKODE = FagsystemCode.FS22.name();
 	static final String SAKSID = "312";

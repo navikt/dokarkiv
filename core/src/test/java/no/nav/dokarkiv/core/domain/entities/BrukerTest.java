@@ -28,7 +28,7 @@ public class BrukerTest {
 	@Test
 	public void shouldThrowExceptionForMissingBrukerType() throws Exception {
 		Bruker bruker = getBrukerBuilder()
-						.brukerId("***gammelt_fnr***")
+						.brukerId("12312312312")
 						.build();
 		
 		assertExceptionThrownWhenVerifyingMandatoryFields(bruker, "brukerType");

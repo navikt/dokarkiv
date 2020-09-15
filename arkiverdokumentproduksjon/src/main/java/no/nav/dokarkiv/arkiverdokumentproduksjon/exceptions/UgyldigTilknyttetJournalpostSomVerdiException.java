@@ -11,7 +11,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
  */
 public class UgyldigTilknyttetJournalpostSomVerdiException extends DokarkivFunctionalException {
 
-	private static final long serialVersionUID = ***gammelt_fnr***69188758L;
+	private static final long serialVersionUID = 2992512874669188758L;
 
 	private final TilknyttetJournalpostSomCode tilknyttetJournalpostSomCode;
 

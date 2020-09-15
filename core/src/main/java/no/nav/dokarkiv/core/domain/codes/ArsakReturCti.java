@@ -25,7 +25,7 @@ import javax.persistence.Table;
 public class ArsakReturCti extends CodesTablePeriodicItem<ArsakReturCode, String> {
 
 	/** Serialization UID */
-	private static final long serialVersionUID = ***gammelt_fnr***50448333L;
+	private static final long serialVersionUID = 4484841623650448333L;
 
 	/**
 	 * Audit information.

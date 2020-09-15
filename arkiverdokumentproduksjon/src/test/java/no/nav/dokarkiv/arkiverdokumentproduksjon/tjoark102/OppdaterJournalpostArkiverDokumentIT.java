@@ -146,7 +146,7 @@ public class OppdaterJournalpostArkiverDokumentIT extends AbstractArkiverdokumen
 
 	private Journalpost buildAndPersistJournalpost() {
 		Journalpost journalpost = getJournalpostBuilder()
-				.avsenderMottakerId("***gammelt_fnr***")
+				.avsenderMottakerId("02016126007")
 				.journalStatus(JournalStatusCode.D)
 				.journalpostType(JournalpostTypeCode.U)
 				.opprettetAvNavn(OPPRETTET_AV_NAVN)

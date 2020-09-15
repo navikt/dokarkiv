@@ -27,7 +27,7 @@ public class JournalStatusCti extends CodesTablePeriodicItem<JournalStatusCode, 
 	/**
 	 * ID used for serialization.
 	 */
-	private static final long serialVersionUID = -***gammelt_fnr***61340128L;
+	private static final long serialVersionUID = -3299082084961340128L;
 
 	/**
 	 * Audit information.

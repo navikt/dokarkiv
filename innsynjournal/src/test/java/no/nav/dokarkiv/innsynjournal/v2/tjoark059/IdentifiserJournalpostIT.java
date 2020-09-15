@@ -229,7 +229,7 @@ public class IdentifiserJournalpostIT extends AbstractInnsynJournalV2Itest {
 		SubjectHandlerUtils.setEksternBruker(CURRENT_IDENT, 4, "");
 		buildAndPersist(aJournalpost()
 				.mottakskanal(NAV_NO)
-				.avsenderMottakerId("***gammelt_fnr***")
+				.avsenderMottakerId("13333333337")
 				.journalpostType(JournalpostTypeCode.I));
 		IdentifiserJournalpostRequest request = createRequest(KANAL_REFERANSE_ID, MOTTAKS_KANAL);
 

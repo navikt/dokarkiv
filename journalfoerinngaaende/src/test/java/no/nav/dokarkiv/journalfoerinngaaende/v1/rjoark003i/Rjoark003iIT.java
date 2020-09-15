@@ -244,7 +244,7 @@ public class Rjoark003iIT extends AbstractJournalfoerInngaaendeV1Itest {
                 .withTittel(DOKUMENT_TITTEL_UPDATE), headers);
 
         ResponseEntity<String> responseEntity = restTemplate.exchange(
-                JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER + "***gammelt_fnr***58468464" + "/dokumenter/" + "***gammelt_fnr******gammelt_fnr***48", HttpMethod.PUT, httpEntity, String.class);
+                JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER + "1531384351358468464" + "/dokumenter/" + "000000000000000000008648", HttpMethod.PUT, httpEntity, String.class);
 
         assertThat(responseEntity.getStatusCode(), is(HttpStatus.NOT_FOUND));
     }

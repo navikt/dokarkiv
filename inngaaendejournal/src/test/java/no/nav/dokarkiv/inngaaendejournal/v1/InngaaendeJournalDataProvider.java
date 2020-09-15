@@ -33,11 +33,11 @@ import java.util.Date;
  * @author Joakim Bjørnstad, Jbit AS
  */
 public class InngaaendeJournalDataProvider {
-	public static final String AVSENDER_MOTTAKERID = "***gammelt_fnr***";
+	public static final String AVSENDER_MOTTAKERID = "02016126007";
 	public static final long DOKUMENT_INFO_ID = 1L;
 	public static final String ARKIV_SAKID = "1";
 	public static final LocalDateTime NOW = LocalDateTime.now();
-	public static final String FNR = "***gammelt_fnr***";
+	public static final String FNR = "12345678911";
 	public static final String ORGNR = "999999999";
 	public static final String DOKUMENTTYPE_ID = "I00008";
 	public static final Long DOKUMENT_INFO_ID_VEDLEGG = 2L;

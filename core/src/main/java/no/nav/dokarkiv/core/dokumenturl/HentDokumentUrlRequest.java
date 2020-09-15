@@ -13,7 +13,7 @@ public class HentDokumentUrlRequest {
 	/**
 	 * ID used for serialization.
 	 */
-	private static final long serialVersionUID = ***gammelt_fnr***94578515L;
+	private static final long serialVersionUID = 5734271451794578515L;
 
 	private Long journalpostId;
 	private String filUuid;
