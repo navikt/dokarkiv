@@ -25,7 +25,7 @@ public final class SimpleRequestContext implements RequestContext, Serializable 
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = ***gammelt_fnr***7471488L;
+	private static final long serialVersionUID = 332477076847471488L;
 
 	private String screenId;
 	private String moduleId;

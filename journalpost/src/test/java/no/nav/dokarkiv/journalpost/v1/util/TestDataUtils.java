@@ -34,7 +34,7 @@ public class TestDataUtils {
 
 	public static final String OPPRETTET_KILDE_NAVN = "Opprettet kilde";
 	public static final String OPPRETTET_AV_NAVN = "Opprettet navn";
-	public static final String AVSENDER_MOTTAKER_ID = "***gammelt_fnr***";
+	public static final String AVSENDER_MOTTAKER_ID = "02016126007";
 	public static final AvsenderMottakerIdTypeCode AVSENDER_MOTTAKER_ID_TYPE = AvsenderMottakerIdTypeCode.FNR;
 	public static final String BRUKER_ID = "123213";
 	public static final String KRYSSREFERANSE_ID = "123213";

@@ -23,7 +23,7 @@ import javax.persistence.Table;
 		@AttributeOverride(name = "toDate", column = @Column(name = "dato_tom")) })
 public class OnDemandInstansCti extends CodesTablePeriodicItem<OnDemandInstansCode, String> {
 
-	private static final long serialVersionUID = ***gammelt_fnr***39936458L;
+	private static final long serialVersionUID = 3047109171239936458L;
 	
 	@Embedded
 	private ChangeStamp changeStamp;

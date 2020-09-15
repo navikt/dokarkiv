@@ -31,7 +31,7 @@ import java.util.Objects;
 public class BasicAuthRestInterceptorTest {
 
 	private static final String USERNAME = "username";
-	private static final String ***passord=gammelt_passord***";
+	private static final String PASSWORD = "password";
 	private static final String BASE_DN = "dc=test,dc=local";
 	private static final String SERVICE_USER_BASE_DN = "ou=ServiceAccounts,dc=test,dc=local";
 	private static final String SERVICE_USER_GROUP_DN = "0000-GA-test";

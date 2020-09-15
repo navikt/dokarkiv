@@ -36,7 +36,7 @@ import java.net.URI;
 public class JournalpostAvsenderLocatorTest {
 
 	private static final String JOURNALPOST_ID = "1";
-	private static final String AVSENDER_FNR = "***gammelt_fnr***";
+	private static final String AVSENDER_FNR = "01010124789";
 	private URI attributeId = URI.create("urn:nav:ikt:tilgangskontroll:xacml:resource:attr:journalpost:avsenderfnr");
 	private int designatorType = 1;
 	private EvaluationCtx contextMock = mock(EvaluationCtx.class);

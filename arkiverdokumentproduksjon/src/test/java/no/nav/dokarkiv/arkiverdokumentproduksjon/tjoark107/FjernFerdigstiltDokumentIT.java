@@ -104,7 +104,7 @@ public class FjernFerdigstiltDokumentIT extends AbstractArkiverdokumentproduksjo
 
 	private Journalpost buildAndPersistJournalpost(DokumentStatusCode dokumentStatusCode) {
 		Journalpost journalpost = getJournalpostBuilder()
-				.avsenderMottakerId("***gammelt_fnr***")
+				.avsenderMottakerId("02016126007")
 				.dokumentDato(new Date())
 				.journalStatus(JournalStatusCode.D)
 				.journalpostType(JournalpostTypeCode.U)

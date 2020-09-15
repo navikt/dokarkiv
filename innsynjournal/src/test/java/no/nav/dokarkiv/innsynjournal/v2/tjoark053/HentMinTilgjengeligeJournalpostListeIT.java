@@ -462,7 +462,7 @@ public class HentMinTilgjengeligeJournalpostListeIT extends AbstractInnsynJourna
 		SubjectHandlerUtils.setEksternBruker(CURRENT_IDENT, 4, "");
 		Journalpost journalpost = buildAndPersist(aJournalpost()
 				.mottakskanal(NAV_NO)
-				.avsenderMottakerId("***gammelt_fnr***"));
+				.avsenderMottakerId("13333333337"));
 
 		String sakId = journalpost.getSaksrelasjon().getSakId();
 

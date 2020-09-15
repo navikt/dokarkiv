@@ -58,7 +58,7 @@ public class DefaultFerdigstillDokumentopplastingTest {
 	private static final String SPORING_FORNAVN = "fornavn";
 	private static final String SPORING_ETTERNAVN = "etternavn";
 	private static final Long JOURNALPOST_ID = 100L;
-	private static final Long BIDRAG_JOURNALPOST_ID = ***gammelt_fnr***1L;
+	private static final Long BIDRAG_JOURNALPOST_ID = 424900000001L;
 
 	@Rule
 	public ExpectedException expectedException = ExpectedException.none();
@@ -192,7 +192,7 @@ public class DefaultFerdigstillDokumentopplastingTest {
 
 	private BidragMellomlagring createBidragMellomlagring() {
 		return getBidragMellomlagringBuilder()
-				.avsenderFnr("***gammelt_fnr***")
+				.avsenderFnr("12312312312")
 				.mottattDato(new Date())
 				.status(BidragMellomlagringStatus.DOKUMENTOPPLASTING)
 				.bidragMellomlagringDokuments(
@@ -203,7 +203,7 @@ public class DefaultFerdigstillDokumentopplastingTest {
 
 	private Journalpost createJournalpost(JournalpostTypeCode journalpostTypeCode) {
 		Journalpost jp = createBasicJournalpost()
-				.avsenderMottakerId("***gammelt_fnr***")
+				.avsenderMottakerId("12312312312")
 				.journalStatus(JournalStatusCode.OD)
 				.journalpostType(journalpostTypeCode)
 				.dokumentInfoRelasjoner(
@@ -217,7 +217,7 @@ public class DefaultFerdigstillDokumentopplastingTest {
 		return getJournalpostBuilder().journalStatus(JournalStatusCode.OD).journalpostType(JournalpostTypeCode.I)
 				.opprettetAvNavn("opprettetAvNavn").fagomrade(FagomradeCode.UFO).journalForendeEnhetId("1234")
 				.signatur(true).mottattDato(DateProvider.getToday()).dokumentDato(DateProvider.getToday())
-				.mottakskanal(MottaksKanalCode.ALTINN).brukere(getBrukerBuilder().brukerId("***gammelt_fnr***").build());
+				.mottakskanal(MottaksKanalCode.ALTINN).brukere(getBrukerBuilder().brukerId("02016126007").build());
 	}
 
 	private DokumentInfo createDokumentInfoWithFildetaljer(Long dokumentInfoId) {

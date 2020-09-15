@@ -79,7 +79,7 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	/**
 	 * ID used for serialization.
 	 */
-	private static final long serialVersionUID = ***gammelt_fnr***06158366L;
+	private static final long serialVersionUID = 8744278542606158366L;
 	private static final List<JournalStatusCode> ENDELIG_JOURNALFOERING_STATUS = Arrays.asList(J, JournalStatusCode.FS, JournalStatusCode.FL);
 	private static final List<JournalStatusCode> MIDLERTIDIG_INNGAAENDE_JOURNALFOERING_STATUS = Arrays.asList(MO, M, UB);
 

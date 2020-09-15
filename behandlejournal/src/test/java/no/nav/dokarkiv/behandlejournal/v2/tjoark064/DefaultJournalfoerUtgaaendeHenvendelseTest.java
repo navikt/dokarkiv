@@ -153,9 +153,9 @@ public class DefaultJournalfoerUtgaaendeHenvendelseTest {
 	private Journalpost createJournalpost() {
 		return getJournalpostBuilder()
 				.journalpostId(JOURNALPOST_ID)
-				.avsenderMottakerId("***gammelt_fnr***")
+				.avsenderMottakerId("01054512313")
 				.avsenderMottaker("avsender")
-				.brukere(getBrukerBuilder().brukerId("***gammelt_fnr***").build())
+				.brukere(getBrukerBuilder().brukerId("01054512313").build())
 				.saksrelasjon(
 						SaksrelasjonBuilder.getSaksrelasjonBuilder().sakId("1").fagsystem(FagsystemCode.FS22).build())
 				.signatur(true)

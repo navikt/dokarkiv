@@ -64,7 +64,7 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	/**
 	 * ID used for serialization.
 	 */
-	private static final long serialVersionUID = -***gammelt_fnr***77469184L;
+	private static final long serialVersionUID = -2981029229377469184L;
 
 	/**
 	 * DokumentInfo title for deleted documents. These documents point to a dummy dokument.

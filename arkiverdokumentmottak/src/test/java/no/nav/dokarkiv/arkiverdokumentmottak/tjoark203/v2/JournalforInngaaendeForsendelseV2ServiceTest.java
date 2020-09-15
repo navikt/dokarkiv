@@ -237,7 +237,7 @@ public class JournalforInngaaendeForsendelseV2ServiceTest {
 
 	private Bruker createBruker() {
 		return getBrukerBuilder()
-				.brukerId("***gammelt_fnr***")
+				.brukerId("01054512313")
 				.brukerType(BrukerTypeCode.PERSON)
 				.build();
 	}

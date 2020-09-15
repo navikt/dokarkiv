@@ -1,12 +1,12 @@
 {
   "forsoekEndeligJF": true,
   "avsender": {
-    "identifikator": "***gammelt_fnr***",
+    "identifikator": "12312312312",
     "navn": null
   },
   "bruker": {
     "brukerType": "PERSON",
-    "identifikator": "***gammelt_fnr***"
+    "identifikator": "99988877766"
   },
   "arkivSak": {
     "arkivSakSystem": "GSAK",

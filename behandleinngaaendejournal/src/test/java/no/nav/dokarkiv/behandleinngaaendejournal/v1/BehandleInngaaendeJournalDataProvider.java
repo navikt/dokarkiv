@@ -36,13 +36,13 @@ import java.util.GregorianCalendar;
 public class BehandleInngaaendeJournalDataProvider {
 	public static final long DOKUMENT_INFO_ID = 1L;
 	public static final LocalDateTime now = LocalDateTime.now();
-	public static final String FNR = "***gammelt_fnr***";
+	public static final String FNR = "01014138923";
 	public static final String DOKUMENTTYPE_ID = "I00008";
 	public static final String INNHOLD = "Say NO to porridge";
 	public static final String TITTEL = "Indrefilet av hest";
 	public static final String OPPRETTET_AV_NAVN = "opprettetAvNavn";
 	private static final GregorianCalendar DATE2 = new GregorianCalendar(2017, 1, 2);
-	public static final String AVSENDER_MOTTAKERID = "***gammelt_fnr***";
+	public static final String AVSENDER_MOTTAKERID = "02016126007";
 	public static final String ARKIV_SAKID = "1";
 	public static final Long DOKUMENT_INFO_ID_VEDLEGG = 2L;
 	public static final String ORGNR = "916214588";
@@ -52,7 +52,7 @@ public class BehandleInngaaendeJournalDataProvider {
 	public static final FagsystemCode ARKIV_SAK_FAGSYSTEM = FagsystemCode.PEN;
 	public static final FagomradeCode JOURNALPOST_FAGOMRADE = FagomradeCode.PEN;
 	
-	private static final String FNR2 = "***gammelt_fnr***";
+	private static final String FNR2 = "01017002976";
 	private static final String CREATED_BY = "Roark Bjoarkstrøm";
 	private static final GregorianCalendar DATE1 = new GregorianCalendar(2017, 1, 1);
 	private static final GregorianCalendar DATE3 = new GregorianCalendar(2016, 12, 15);

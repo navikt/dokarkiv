@@ -40,7 +40,7 @@ import java.util.Date;
 @Embeddable
 public class ChangeStamp implements Serializable {
 
-	private static final long serialVersionUID = ***gammelt_fnr***562288L;
+	private static final long serialVersionUID = 61541164562562288L;
 
 	@Column(name = "opprettet_av", insertable = true, updatable = false, nullable = false)
 	private String createdBy;

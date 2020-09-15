@@ -28,13 +28,13 @@ public class AktoerConsumerV2Mock implements AktoerV2 {
 
 	public static volatile List<HentAktoerIdForIdentRequest> identInspectionObjects = Lists.newArrayList();
 
-	public static final String AKTOER_ID = "***gammelt_fnr***23";
-	public static final String FNR = "***gammelt_fnr***";
-	public static final String FNR_2 = "***gammelt_fnr***";
-	public static final String CURRENT_IDENT = "***gammelt_fnr***1";
-	public static final String FAIL_AKTOER_ID = "***gammelt_fnr***06";
-	public static final String FAIL_IDENT = "***gammelt_fnr***067";
-	public static final List<String> HISTORICAL_IDENTS = Lists.newArrayList("***gammelt_fnr***0", "234567810");
+	public static final String AKTOER_ID = "1234567890123";
+	public static final String FNR = "01010199999";
+	public static final String FNR_2 = "01010188888";
+	public static final String CURRENT_IDENT = "111111111111";
+	public static final String FAIL_AKTOER_ID = "9343877893406";
+	public static final String FAIL_IDENT = "93438778934067";
+	public static final List<String> HISTORICAL_IDENTS = Lists.newArrayList("012345678910", "234567810");
 
 
 	@Override

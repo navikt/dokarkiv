@@ -25,7 +25,7 @@ import javax.persistence.Table;
 public class BehandlingstemaCti extends CodesTablePeriodicItem<Behandlingstema, String> {
 
 	/** Serialization UID */
-	private static final long serialVersionUID = ***gammelt_fnr***92000821L;
+	private static final long serialVersionUID = 3952639029892000821L;
 	
 	/**
 	 * Audit information.

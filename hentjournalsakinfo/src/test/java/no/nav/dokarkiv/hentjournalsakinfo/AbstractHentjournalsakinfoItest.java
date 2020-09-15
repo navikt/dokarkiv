@@ -58,7 +58,7 @@ public abstract class AbstractHentjournalsakinfoItest extends AbstractRestIT {
 	}
 
 	protected static final String USERNAME = "srvsaf";
-	protected static final String ***passord=gammelt_passord***";
+	protected static final String PASSWORD = "hemmelig";
 
 	@Inject
 	protected TestRestTemplate restTemplate;

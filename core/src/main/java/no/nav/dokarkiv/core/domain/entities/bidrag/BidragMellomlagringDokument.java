@@ -33,7 +33,7 @@ import java.util.Arrays;
 public class BidragMellomlagringDokument extends AbstractPersistentVersionedDomainObject {
 
 	/** Serialization UID */
-	private static final long serialVersionUID = ***gammelt_fnr***62027348L;
+	private static final long serialVersionUID = 6466749436562027348L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "bidragMellomlagringDok_seq")

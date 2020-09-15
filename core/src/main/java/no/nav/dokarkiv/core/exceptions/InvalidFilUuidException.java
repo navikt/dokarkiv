@@ -8,7 +8,7 @@ package no.nav.dokarkiv.core.exceptions;
 public class InvalidFilUuidException extends DokarkivFunctionalException {
 	
 	/** Serialization UID */
-	private static final long serialVersionUID = ***gammelt_fnr***32278339L;
+	private static final long serialVersionUID = 5962479002132278339L;
 
 	private final String filUuid;
 	

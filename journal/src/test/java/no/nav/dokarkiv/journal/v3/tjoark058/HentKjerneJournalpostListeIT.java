@@ -89,7 +89,7 @@ import java.util.List;
  */
 public class HentKjerneJournalpostListeIT extends AbstractJournalV3Itest {
 
-	private static final String FNR = "***gammelt_fnr***";
+	private static final String FNR = "11071720545";
 	private static final String ORG_NR = "220278387";
 	private static final boolean DEFAULT_FEILREGISTRERT = false;
 	private static final DokumentKategoriCode DOKUMENT_KATEGORI = DokumentKategoriCode.SOK;

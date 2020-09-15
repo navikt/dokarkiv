@@ -27,7 +27,7 @@ public class FagomradeCti extends CodesTablePeriodicItem<FagomradeCode, String> 
 	/**
 	 * ID used for serialization.
 	 */
-	private static final long serialVersionUID = -***gammelt_fnr***73711577L;
+	private static final long serialVersionUID = -7668418456373711577L;
 
 	/**
 	 * Audit information.

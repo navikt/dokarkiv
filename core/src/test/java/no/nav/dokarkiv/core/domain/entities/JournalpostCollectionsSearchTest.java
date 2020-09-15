@@ -193,7 +193,7 @@ public class JournalpostCollectionsSearchTest {
 	@Test
 	public void shouldFindBrukerById() throws Exception {
 		long brukerInfoId = 100L;
-		String brukerId = "***gammelt_fnr***";
+		String brukerId = "12122312312";
 		Journalpost journalpost = getJournalpostBuilder()
 									.brukere(getBrukerBuilder()
 												.brukerInfoId(150L)
@@ -211,7 +211,7 @@ public class JournalpostCollectionsSearchTest {
 	
 	@Test
 	public void shouldFindBrukerByBrukerId() throws Exception {
-		String brukerId = "***gammelt_fnr***";
+		String brukerId = "12122312312";
 		long brukerInfoId = 100L;
 		Journalpost journalpost = getJournalpostBuilder()
 									.brukere(getBrukerBuilder()

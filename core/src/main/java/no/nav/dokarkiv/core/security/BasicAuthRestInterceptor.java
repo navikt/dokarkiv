@@ -78,7 +78,7 @@ public class BasicAuthRestInterceptor implements HandlerInterceptor {
 		}
 
 		String username = decodedCredentials[0];
-		String ***passord=gammelt_passord***];
+		String password = decodedCredentials[1];
 
 		Cache usernameTokenCache = cacheManager.getCache(CacheConfig.USERNAME_TOKEN_CACHE);
 		Integer cachedAuthHash = usernameTokenCache.get(username, Integer.class);

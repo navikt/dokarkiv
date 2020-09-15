@@ -25,7 +25,7 @@ import javax.persistence.Table;
 public class VariantFormatCti extends CodesTablePeriodicItem<VariantFormatCode, String> {
 
 	/** Serialization UID */
-	private static final long serialVersionUID = -***gammelt_fnr***68090864L;
+	private static final long serialVersionUID = -6596839265068090864L;
 	
 	/**
 	 * Audit information.

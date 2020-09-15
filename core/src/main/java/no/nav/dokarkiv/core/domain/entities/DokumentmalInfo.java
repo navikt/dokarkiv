@@ -22,7 +22,7 @@ import javax.persistence.Table;
 @Table(name = "T_DOKUMENT_MAL_INFO")
 public class DokumentmalInfo extends AbstractPersistentDomainObject {
 	/** Serialization UID */
-	private static final long serialVersionUID = -***gammelt_fnr***88597536L;
+	private static final long serialVersionUID = -7954343015588597536L;
 
 	@Id
 	@Column(name = "brev_kode", nullable = false)

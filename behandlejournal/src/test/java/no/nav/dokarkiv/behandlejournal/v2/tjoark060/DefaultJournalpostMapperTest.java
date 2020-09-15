@@ -25,7 +25,7 @@ public class DefaultJournalpostMapperTest {
 
 	private static final String NAVN = "navn";
 	private static final String ORG_NUMMER = "1235";
-	private static final String FNR = "***gammelt_fnr***00000000";
+	private static final String FNR = "0000000000000000000";
 	private DefaultJournalpostMapper journalpostMapper = new DefaultJournalpostMapper();
 
 	private no.nav.dokarkiv.core.domain.entities.Journalpost domainJournalpost;

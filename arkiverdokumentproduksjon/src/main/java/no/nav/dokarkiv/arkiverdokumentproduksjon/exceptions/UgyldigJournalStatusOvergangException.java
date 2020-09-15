@@ -15,7 +15,7 @@ public class UgyldigJournalStatusOvergangException extends DokarkivFunctionalExc
 	/**
 	 * Unique serial version id.
 	 */
-	private static final long serialVersionUID = ***gammelt_fnr***52808018L;
+	private static final long serialVersionUID = 2601785175652808018L;
 
 	private final JournalStatusCode existingJournalStatus;
 	private final JournalStatusCode updatedJournalStatus;

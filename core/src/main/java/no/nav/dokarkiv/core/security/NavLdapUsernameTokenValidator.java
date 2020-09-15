@@ -43,10 +43,10 @@ public class NavLdapUsernameTokenValidator extends UsernameTokenValidator {
 	@Override
 	protected void verifyPlaintextPassword(UsernameToken usernameToken, RequestData data) throws WSSecurityException {
 		String username = usernameToken.getName();
-		String ***passord=gammelt_passord***();
+		String password = usernameToken.getPassword();
 		String sha512Username = sha512Hex(usernameToken.getName());
-		String sha512CachedUsername***passord=gammelt_passord***);
-		if (sha512CachedUsername***passord=gammelt_passord***) {
+		String sha512CachedUsernamePassword = usernameTokenCache.get(sha512Username, String.class);
+		if (sha512CachedUsernamePassword == null) {
 			authenticateLdap(sha512Username, username, password);
 		} else {
 			authenticateCachedEntry(sha512CachedUsernamePassword, username, password);

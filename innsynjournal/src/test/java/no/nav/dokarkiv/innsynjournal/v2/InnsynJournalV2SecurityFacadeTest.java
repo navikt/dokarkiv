@@ -77,7 +77,7 @@ import java.util.Optional;
 public class InnsynJournalV2SecurityFacadeTest {
 
 	private static final byte[] DOK = "dok".getBytes();
-	private static final String USER_ID = "***gammelt_fnr***";
+	private static final String USER_ID = "11111111111";
 	private static Date DAY_BEFORE_LEGAL_DATE = Date.from(LocalDate.of(2015, Month.DECEMBER, 31).atStartOfDay(ZoneId.systemDefault()).toInstant());
 	private static final LocalDate LEGAL_DATE = LocalDate.of(2016, Month.JANUARY, 1);
 	private static Date DAY_AFTER_LEGAL_DATE = Date.from(LocalDate.of(2016, Month.JANUARY, 2).atStartOfDay(ZoneId.systemDefault()).toInstant());
@@ -485,7 +485,7 @@ public class InnsynJournalV2SecurityFacadeTest {
 	@Test
 	public void shouldNotAllowDifferentAvsenderMottaker() throws Exception {
 		Journalpost legalJournalpost = createLegalJournalpost();
-		legalJournalpost.setAvsenderMottakerId("***gammelt_fnr***");
+		legalJournalpost.setAvsenderMottakerId("00000000000");
 
 		HentAktoerIdForIdentResponseTo identResponseTo = new HentAktoerIdForIdentResponseTo("001", createIdentDetaljerList(USER_ID));
 		when(aktoerConsumerService.hentAktoerIdForIdent(eq(new HentAktoerIdForIdentRequestTo(USER_ID)))).thenReturn(identResponseTo);
@@ -517,10 +517,10 @@ public class InnsynJournalV2SecurityFacadeTest {
 
 	@Test
 	public void shouldReturnDocumentIfAvsenderMottakerExistsInHistoricalList() throws Exception {
-		String historicalFnr = "***gammelt_fnr***";
+		String historicalFnr = "31231234212";
 
 		HentAktoerIdForIdentResponseTo identResponseTo = new HentAktoerIdForIdentResponseTo("001",
-				createIdentDetaljerList("***gammelt_fnr***", historicalFnr, "***gammelt_fnr***"));
+				createIdentDetaljerList("22222222222", historicalFnr, "33333333333"));
 		when(aktoerConsumerService.hentAktoerIdForIdent(eq(new HentAktoerIdForIdentRequestTo(USER_ID)))).thenReturn(identResponseTo);
 
 		mockJournalpost(createNAVNOJournalpost(historicalFnr));
@@ -532,7 +532,7 @@ public class InnsynJournalV2SecurityFacadeTest {
 	@Test
 	public void shouldFailIfPersonNotFound() throws Exception {
 		Journalpost legalJournalpost = createLegalJournalpost();
-		legalJournalpost.setAvsenderMottakerId("***gammelt_fnr***444");
+		legalJournalpost.setAvsenderMottakerId("44444444444444");
 		mockJournalpost(legalJournalpost);
 
 		doThrow(new PersonIkkeFunnetException(new Exception(), "Person not found"))

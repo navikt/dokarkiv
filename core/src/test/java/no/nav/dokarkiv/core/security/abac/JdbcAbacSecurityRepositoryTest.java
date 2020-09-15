@@ -87,8 +87,8 @@ public class JdbcAbacSecurityRepositoryTest {
 
 		Journalpost j = createJournalpost(JournalStatusCode.J);
 
-		Bruker b1 = createBruker("***gammelt_fnr***");
-		Bruker b2 = createBruker("***gammelt_fnr***");
+		Bruker b1 = createBruker("01054512313");
+		Bruker b2 = createBruker("02054512313");
 		j.addBruker(b1);
 		j.addBruker(b2);
 		joarkRepository.save(j);
@@ -104,8 +104,8 @@ public class JdbcAbacSecurityRepositoryTest {
 	public void shouldReturnPartialAbacResourcesWithoutSakForJournalpost() {
 		Journalpost j = createJournalpost(JournalStatusCode.J);
 
-		Bruker b1 = createBruker("***gammelt_fnr***");
-		Bruker b2 = createBruker("***gammelt_fnr***");
+		Bruker b1 = createBruker("01054512313");
+		Bruker b2 = createBruker("02054512313");
 		j.addBruker(b1);
 		j.addBruker(b2);
 		j.setSaksrelasjon(null);

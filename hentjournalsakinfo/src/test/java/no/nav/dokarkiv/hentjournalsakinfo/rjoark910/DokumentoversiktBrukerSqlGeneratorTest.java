@@ -49,8 +49,8 @@ public class DokumentoversiktBrukerSqlGeneratorTest {
 		dokumentoversiktBrukerRequestTo.setInkluderJournalStatus(Collections.singletonList(JournalStatusCode.J));
 		dokumentoversiktBrukerRequestTo.setInkluderJournalpostType(Collections.singletonList(JournalpostTypeCode.I));
 		dokumentoversiktBrukerRequestTo.setPsakSakIds(Arrays.asList("P1", "P2"));
-		dokumentoversiktBrukerRequestTo.setAktoerId("***gammelt_fnr***");
-		dokumentoversiktBrukerRequestTo.setAlleIdenter(Collections.singletonList("***gammelt_fnr***"));
+		dokumentoversiktBrukerRequestTo.setAktoerId("10000000000");
+		dokumentoversiktBrukerRequestTo.setAlleIdenter(Collections.singletonList("00000000000"));
 		DokumentoversiktBrukerFilter dokumentoversiktBrukerFilter = new DokumentoversiktBrukerFilter(dokumentoversiktBrukerRequestTo);
 		String sql = DokumentoversiktBrukerSqlGenerator.dokumentoversiktBrukerSql(dokumentoversiktBrukerFilter, Arrays.asList(CTE_ALIAS_AKTOERID, CTE_ALIAS_PSAKSAKER, CTE_ALIAS_MIDLERTIDIGE));
 		assertThat(sql, is(

@@ -8,7 +8,7 @@ package no.nav.dokarkiv.core.exceptions;
 public class InvalidOrgnrException extends DokarkivFunctionalException {
 
 	/** Serialization ID */
-	private static final long serialVersionUID = ***gammelt_fnr***41658110L;
+	private static final long serialVersionUID = 4781594055341658110L;
 	
 	/**
 	 * Constructs a new InvalidOrgnrException.

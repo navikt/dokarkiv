@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
 public class BidragMellomlagring extends AbstractPersistentVersionedDomainObject {
 
 	/** Serialization UID */
-	private static final long serialVersionUID = -***gammelt_fnr***56861638L;
+	private static final long serialVersionUID = -3281387484156861638L;
 	
 	public static final Integer ID_PREFIX = 4249;
 	private static final int ID_PREFIX_LENGTH = ID_PREFIX.toString().length();

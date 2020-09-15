@@ -12,7 +12,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 public class UgyldigDokumentStatusVerdiException extends DokarkivFunctionalException {
 	
 	/** Unique serial version id. */
-	private static final long serialVersionUID = ***gammelt_fnr***0054658L;
+	private static final long serialVersionUID = 652485453050054658L;
 
 	private final DokumentStatusCode dokumentStatus;
 	

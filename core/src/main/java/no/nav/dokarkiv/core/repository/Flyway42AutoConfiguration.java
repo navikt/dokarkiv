@@ -146,7 +146,7 @@ public class Flyway42AutoConfiguration {
 						this.dataSourceProperties::getUrl);
 				String user = getProperty(this.properties::getUser,
 						this.dataSourceProperties::getUsername);
-				String ***passord=gammelt_passord***,
+				String password = getProperty(this.properties::getPassword,
 						this.dataSourceProperties::getPassword);
 				flyway.setDataSource(url, user, password,
 						StringUtils.toStringArray(this.properties.getInitSqls()));

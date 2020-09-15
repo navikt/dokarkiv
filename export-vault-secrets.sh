@@ -8,7 +8,7 @@ fi
 if test -f /secrets/serviceuser/srvdokarkiv/password;
 then
     echo "Setting serviceuser_password"
-    export  serviceuser_***passord=gammelt_passord***)
+    export  serviceuser_password=$(cat /secrets/serviceuser/srvdokarkiv/password)
 fi
 if test -f /var/run/secrets/nais.io/dokarkivDS/username;
 then
@@ -18,7 +18,7 @@ fi
 if test -f /var/run/secrets/nais.io/dokarkivDS/password;
 then
     echo "Setting SPRING_DATASOURCE_PASSWORD"
-    export  SPRING_DATASOURCE_***passord=gammelt_passord***)
+    export  SPRING_DATASOURCE_PASSWORD=$(cat /var/run/secrets/nais.io/dokarkivDS/password)
 fi
 if test -f /var/run/secrets/nais.io/ldap/username;
 then
@@ -28,5 +28,5 @@ fi
 if test -f /var/run/secrets/nais.io/ldap/password;
 then
     echo "Setting SPRING_LDAP_PASSWORD"
-    export  SPRING_LDAP_***passord=gammelt_passord***)
+    export  SPRING_LDAP_PASSWORD=$(cat /var/run/secrets/nais.io/ldap/password)
 fi

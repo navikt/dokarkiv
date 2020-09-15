@@ -56,13 +56,13 @@ public class TestUtils {
 	public static final String AVSENDER_NAVN_ORGANISASJON = "avsenderNavn_org";
 	public static final String AVSENDER_NAVN_HELSEPERSONELLNR = "avsenderNavn_hprnr";
 	public static final String AVSENDER_NAVN_UTLORGANISASJON = "avsenderNavn_utl_org";
-	public static final String AVSENDER_ID_PERSON = "***gammelt_fnr***";
+	public static final String AVSENDER_ID_PERSON = "12345678910";
 	public static final String AVSENDER_ID_ORGANISASJON = "123456789";
 	public static final String AVSENDER_ID_HELSEPERSONELLNR = "123456789";
 	public static final String AVSENDER_ID_UTLORGANISASJON = "123456789";
 
 	public static final Date MOTTAT_DATO = Date.from(LocalDateTime.of(2017, 2, 3, 10, 37, 30).toInstant(ZoneOffset.UTC));
-	public static final String BRUKER_ID_PERSON = "***gammelt_fnr***";
+	public static final String BRUKER_ID_PERSON = "10987654321";
 	public static final String BRUKER_ID_ORGANISASJON = "987654321";
 	public static final String SAK_ID = "12345";
 	public static final String FAGSAK_ID = "fagsakId";

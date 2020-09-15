@@ -24,7 +24,7 @@ import javax.persistence.MappedSuperclass;
 @Deprecated
 @MappedSuperclass
 public abstract class CodesTablePeriodicItem<K extends Enum, V> extends AbstractCodesTablePeriodicItem<K, V> {
-	private static final long serialVersionUID = -***gammelt_fnr***40432765L;
+	private static final long serialVersionUID = -2501698338040432765L;
 
 	/** The code for this item. */
 	@Id

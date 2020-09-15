@@ -24,7 +24,7 @@ import org.junit.Test;
 
 public class HentMinTilgjengeligeJournalpostListeAuthenticationIT extends AbstractInnsynJournalV2Itest {
 
-	private static final String FNR = "***gammelt_fnr***";
+	private static final String FNR = "12341234123";
 
 	@BeforeClass
 	public static void setUpSecurity() throws Exception {

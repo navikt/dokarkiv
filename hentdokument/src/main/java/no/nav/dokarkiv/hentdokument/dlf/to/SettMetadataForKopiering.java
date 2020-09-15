@@ -14,7 +14,7 @@ public class SettMetadataForKopiering implements Serializable {
 	/**
 	 * Serialization UID
 	 */
-	private static final long serialVersionUID = ***gammelt_fnr***59271019L;
+	private static final long serialVersionUID = 8802791172659271019L;
 
 	private final Long journalpostIdVedlegg;
 	private final String filUuidVedlegg;

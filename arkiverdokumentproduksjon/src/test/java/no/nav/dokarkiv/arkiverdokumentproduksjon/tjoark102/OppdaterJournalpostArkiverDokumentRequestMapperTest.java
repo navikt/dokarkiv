@@ -35,7 +35,7 @@ public class OppdaterJournalpostArkiverDokumentRequestMapperTest {
 	private static final FilTypeCode FILTYPE = FilTypeCode.XML;
 	private static final String ENDRET_AV_NAVN = "Siri Saksbehandler";
 	private static final String DOKUMENTINNHOLD = "test dokumeprivate";
-	private static final Date DATO_DOKUMENT = new Date(***gammelt_fnr***0L);
+	private static final Date DATO_DOKUMENT = new Date(212234567890L);
 
 	@InjectMocks
 	private OppdaterJournalpostArkiverDokumentRequestMapper requestMapper;

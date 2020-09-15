@@ -10,7 +10,7 @@ public class MetadataXmlUpdateFailedException extends DokarkivFunctionalExceptio
 	/**
 	 * Serialization UID
 	 */
-	private static final long serialVersionUID = -***gammelt_fnr***98920183L;
+	private static final long serialVersionUID = -4670325015998920183L;
 
 	/**
 	 * Constructs a new MetadataXmlUpdateFailedException.

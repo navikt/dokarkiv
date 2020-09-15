@@ -27,7 +27,7 @@ public class FaktiskDistribusjonskanalCti extends CodesTablePeriodicItem<Faktisk
 	/**
 	 * ID used for serialization.
 	 */
-	private static final long serialVersionUID = ***gammelt_fnr***14245027L;
+	private static final long serialVersionUID = 6883937214214245027L;
 
 	/**
 	 * Audit information.

@@ -46,7 +46,7 @@ public class DefaultSettMetadataIDlfXmlUpdater implements SettMetadataIDlfXmlUpd
 	private static final String FIL_UUID_VEDLEGG_TAG = "filUUID_vedlegg";
 	private static final String ESB_ENDPOINT_URL_JOARK_TAG = "ESBendpointURL";
 	private static final String ESB_USER_ID_TAG = "ESBuserId";
-	private static final String ESB_***passord=gammelt_passord***";
+	private static final String ESB_PASSWORD_TAG = "ESBpasswordText";
 	private static final String ESB_ENDPOINT_URL_HP_LIVE_TAG = "ArkivDokumentURL";
 	private static final String VEDLEGG_URL_TAG = "ArkivPdfVedleggURL";
 
@@ -206,7 +206,7 @@ public class DefaultSettMetadataIDlfXmlUpdater implements SettMetadataIDlfXmlUpd
 		}
 
 		public void setEsbPassword(String esbPassword) {
-			this.esb***passord=gammelt_passord***;
+			this.esbPassword = esbPassword;
 		}
 
 		public String getEsbEndpointUrlHpLive() {

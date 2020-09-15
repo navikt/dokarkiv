@@ -33,9 +33,9 @@ public class TestUtils {
 	public static final long JOURNALPOST_ID = 1234L;
 	public static final String AVSENDER_NAVN = "avsenderNavn";
 	public static final String AVSENDER_NAVN_ORGANISASJON = "avsenderNavn_org";
-	public static final String AVSENDER_ID_PERSON = "***gammelt_fnr***";
+	public static final String AVSENDER_ID_PERSON = "12345678910";
 	public static final String AVSENDER_ID_ORGANISASJON = "123456789";
-	public static final String BRUKER_ID_PERSON = "***gammelt_fnr***";
+	public static final String BRUKER_ID_PERSON = "10987654321";
 	public static final String BRUKER_ID_ORGANISASJON = "987654321";
 	public static final String SAK_ID = "sakId";
 	public static final String INNHOLD = "innhold";

@@ -12,7 +12,7 @@ public class SettMetadataIDLFResponse {
 	/**
 	 * ID used for serialization.
 	 */
-	private static final long serialVersionUID = ***gammelt_fnr***53399069L;
+	private static final long serialVersionUID = 8234071249153399069L;
 
 	private byte[] dlfDokument;
 

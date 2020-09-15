@@ -39,7 +39,7 @@ public class OpprettJournalpostDataUtil {
 	protected static final UtsendingsKanalCode UTSENDINGSKANAL = UtsendingsKanalCode.NAV_NO;
 	protected static final String DOKUMENT_INNHOLD = "ustrukturertInnhold";
 	protected static final String VARIANTFORMAT = "ARKIV";
-	protected static final String PERSONIDENT = "***gammelt_fnr***";
+	protected static final String PERSONIDENT = "22027838743";
 	protected static final String EKSTERNPART_NAVN = "Jippi Hurra";
 	protected static final String FAGSYSTEMKODE = FagsystemCode.FS22.name();
 	protected static final String SAKSID = "312";

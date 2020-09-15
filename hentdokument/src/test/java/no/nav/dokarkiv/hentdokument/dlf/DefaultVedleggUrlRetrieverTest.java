@@ -39,7 +39,7 @@ public class DefaultVedleggUrlRetrieverTest {
 	private ArgumentCaptor<HentDokumentUrlRequest> requestCaptor;
 	
 	private DefaultVedleggUrlRetriever vedleggUrlRetriever;
-	public static final String DOKUMENT_URL = "http://wasapp.adeo.no/joarkweb/HentDokument?docToken=***gammelt_fnr***";
+	public static final String DOKUMENT_URL = "http://wasapp.adeo.no/joarkweb/HentDokument?docToken=98765412398";
 
 	@Before
 	public void setUp() {

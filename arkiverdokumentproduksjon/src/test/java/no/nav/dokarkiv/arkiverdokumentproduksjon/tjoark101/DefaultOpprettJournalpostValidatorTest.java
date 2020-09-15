@@ -294,12 +294,12 @@ public class DefaultOpprettJournalpostValidatorTest {
 				.opprettetKildeNavn(OPPRETTET_KILDE_NAVN)
 				.journalForendeEnhetId("309480dfk")
 				.innhold("innhold")
-				.avsenderMottakerId("***gammelt_fnr***")
+				.avsenderMottakerId("01054512313")
 				.avsenderMottaker("avsender")
 				.land("Norge")
 				.brukere(
 						getBrukerBuilder()
-								.brukerId("***gammelt_fnr***")
+								.brukerId("01054512313")
 								.opprettetKildeNavn(OPPRETTET_KILDE_NAVN)
 								.brukerType(BrukerTypeCode.PERSON).build())
 				.dokumentInfoRelasjoner(

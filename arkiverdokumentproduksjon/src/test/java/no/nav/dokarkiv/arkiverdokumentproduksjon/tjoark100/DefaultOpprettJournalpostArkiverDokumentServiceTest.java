@@ -203,9 +203,9 @@ public class DefaultOpprettJournalpostArkiverDokumentServiceTest {
 	
 	private JournalpostBuilder createJournalpost() {
 		return getJournalpostBuilder()
-				.avsenderMottakerId("***gammelt_fnr***")
+				.avsenderMottakerId("01054512313")
 				.avsenderMottaker("avsender")
-				.brukere(getBrukerBuilder().brukerId("***gammelt_fnr***").build())
+				.brukere(getBrukerBuilder().brukerId("01054512313").build())
 				.saksrelasjon(
 						getSaksrelasjonBuilder().sakId("1").fagsystem(FagsystemCode.FS22).build())
 				.innhold("innhold")

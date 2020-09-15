@@ -1,13 +1,13 @@
 {
   "avsenderMottaker": {
-    "id": "***gammelt_fnr***",
+    "id": "00000000000",
     "idType": "FNR",
     "land": "land",
     "navn": "navn"
   },
   "behandlingstema": "ab0001",
   "bruker": {
-    "id": "***gammelt_fnr***",
+    "id": "01234567890",
     "idType": "FNR"
   },
   "dokumenter": [

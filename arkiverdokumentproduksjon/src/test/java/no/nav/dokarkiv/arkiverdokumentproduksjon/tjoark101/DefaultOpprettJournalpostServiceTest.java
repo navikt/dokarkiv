@@ -154,11 +154,11 @@ public class DefaultOpprettJournalpostServiceTest {
 	private Journalpost createJournalpost(Long journalpostId, Long dokumentinfoId) {
 		return getJournalpostBuilder()
 				.journalpostId(journalpostId)
-				.avsenderMottakerId("***gammelt_fnr***")
+				.avsenderMottakerId("01054512313")
 				.avsenderMottaker("avsender")
 				.brukere(
 						getBrukerBuilder()
-								.brukerId("***gammelt_fnr***")
+								.brukerId("01054512313")
 								.brukerType(BrukerTypeCode.PERSON).build())
 				.saksrelasjon(
 						getSaksrelasjonBuilder()

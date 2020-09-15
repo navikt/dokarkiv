@@ -44,7 +44,7 @@ public class KopierJournalpostIT extends AbstractJournalpostIT {
     public static final String NAV_CONSUMER_ID = "Nav-Consumer-Id";
     public static final String NAV_USER_ID = "Nav-User-Id";
     public static final String USER_ID = "X123456";
-    private static final String UGYLDIG_JOURNALPOST = "***gammelt_fnr***";
+    private static final String UGYLDIG_JOURNALPOST = "12312312312";
     private static final String SRV_DOKARKIVPROXY = "srvdokarkivproxy";
 
     @Test

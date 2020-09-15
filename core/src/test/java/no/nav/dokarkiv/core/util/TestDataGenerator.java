@@ -41,7 +41,7 @@ public class TestDataGenerator {
 	public static final String OPPRETTET_AV_NAVN = "Opprettet navn";
 	public static final String TILKNYTTET_AV_NAVN = "Tilknyttetnavn";
 	public static final String ENDRET_AV_NAVN = "Endret av navn";
-	public static final String AVSENDER_MOTTAKER_ID = "***gammelt_fnr***";
+	public static final String AVSENDER_MOTTAKER_ID = "02016126007";
 	public static final AvsenderMottakerIdTypeCode AVSENDER_MOTTAKER_ID_TYPE = AvsenderMottakerIdTypeCode.FNR;
 	public static final String TITTEL = "FysiskSlettDokument";
 	public static final String BREVGRUPPE = "Brevgruppe";
@@ -64,7 +64,7 @@ public class TestDataGenerator {
 	public static final byte[] FIL_SLADDET = "Test sladdet dokument".getBytes();
 	public static final Integer ANTALL_RETUR = 3;
 	public static final String KANAL_REFERANSE_ID = "KANAL REFERANSE ID";
-	public static final String AKTOER_ID = "***gammelt_fnr***3";
+	public static final String AKTOER_ID = "111113333333";
 	
 	public static Journalpost createJournalpostWithHoveddokument() {
 		Journalpost journalpost = Journalpost.builder()

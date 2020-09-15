@@ -15,7 +15,7 @@ import javax.validation.constraints.NotNull;
 public class AvsenderMottaker {
     @ApiModelProperty(
             value = "Identifikatoren til avsender/mottaker. Dette er normalt et fødselsnummer eller organisasjonsnummer, men valideres ikke. Dersom det ønskes å nullstille denne verdien, kan den settes til en tom string.",
-            example = "\"***gammelt_fnr***\""
+            example = "\"09071844797\""
     )
     private String id;
 
