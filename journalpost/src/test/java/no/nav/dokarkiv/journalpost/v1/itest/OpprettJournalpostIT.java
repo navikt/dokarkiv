@@ -44,9 +44,7 @@ import static no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerV2Mock.FNR_2;
 import static no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerV2Mock.identInspectionObjects;
 import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.OPPRETT;
 import static no.nav.dokarkiv.core.domain.codes.FagsystemCode.FS22;
-import static no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem.AO01;
-import static no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem.PP01;
-import static no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem.SUPSTONAD;
+import static no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem.*;
 import static no.nav.dokarkiv.journalpost.v1.api.JournalpostType.INNGAAENDE;
 import static no.nav.dokarkiv.journalpost.v1.api.JournalpostType.NOTAT;
 import static no.nav.dokarkiv.journalpost.v1.api.JournalpostType.UTGAAENDE;
@@ -785,6 +783,31 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
                         .build())
                 .bruker(Bruker.builder()
                         .idType(BrukerIdType.FNR)
+                        .id(FNR_2)
+                        .build())
+                .build();
+
+        HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
+        restTemplate.exchange(URL_JOURNALPOST + FERDIGSTILL_QUERY, HttpMethod.POST, requestEntity, OpprettJournalpostResponse.class);
+
+        assertEquals(identInspectionObjectSize + 1, identInspectionObjects.size());
+    }
+
+    @Test
+    public void shouldCallAktoerServiceWithFagsaksystemOmsorgspenger() throws IOException {
+        abacPermit();
+
+        int identInspectionObjectSize = identInspectionObjects.size();
+
+        OpprettJournalpostRequest request = createMinimalRequest(INNGAAENDE)
+                .tema(TEMA_UFO)
+                .sak(Sak.builder()
+                        .sakstype(Sakstype.FAGSAK)
+                        .fagsaksystem(OMSORGSPENGER)
+                        .fagsakId(FAGSAK_ID)
+                        .build())
+                .bruker(Bruker.builder()
+                        .idType(BrukerIdType.FNR_2)
                         .id(FNR_2)
                         .build())
                 .build();
