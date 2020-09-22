@@ -806,7 +806,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
                 .tema(TEMA_UFO)
                 .sak(Sak.builder()
                         .sakstype(Sakstype.FAGSAK)
-                        .fagsaksystem(SUPSTONAD)
+                        .fagsaksystem(OMSORGSPENGER)
                         .fagsakId(FAGSAK_ID)
                         .build())
                 .bruker(Bruker.builder()

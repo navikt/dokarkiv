@@ -877,34 +877,6 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
                 .sak(Sak.builder()
                         .sakstype(Sakstype.FAGSAK)
                         .fagsakId(FAGSAK_ID)
-                        .fagsaksystem(Fagsaksystem.SUPSTONAD)
-                        .build())
-                .build();
-
-        HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
-        restTemplate.exchange(URL_JOURNALPOST + journalpostId, HttpMethod.PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
-
-        assertEquals(identInspectionObjectSize + 1, identInspectionObjects.size());
-    }
-
-    @Test
-    public void shouldCallAktoerServiceWithFagsaksystemOmsorgspenger() {
-        clearSakRepository();
-        abacPermit();
-
-        int identInspectionObjectSize = identInspectionObjects.size();
-
-        JournalpostBuilder journalpostBuilder = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
-                .endretAvNavn("saksbehandlersen");
-        Journalpost journalpost = buildAndCommit(journalpostBuilder);
-        Long journalpostId = journalpost.getJournalpostId();
-
-        OppdaterJournalpostRequest request = OppdaterJournalpostRequest.builder()
-                .tema(TEMA_SYM)
-                .bruker(Bruker.builder().idType(BrukerIdType.FNR).id(FNR_2).build())
-                .sak(Sak.builder()
-                        .sakstype(Sakstype.FAGSAK)
-                        .fagsakId(FAGSAK_ID)
                         .fagsaksystem(Fagsaksystem.OMSORGSPENGER)
                         .build())
                 .build();
@@ -933,7 +905,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
                 .sak(Sak.builder()
                         .sakstype(Sakstype.FAGSAK)
                         .fagsakId(FAGSAK_ID)
-                        .fagsaksystem(Fagsaksystem.SUPSTONAD)
+                        .fagsaksystem(Fagsaksystem.OMSORGSPENGER)
                         .build())
                 .build();
 
