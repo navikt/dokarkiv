@@ -102,12 +102,6 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 
     private ObjectMapper mapper = new ObjectMapper();
 
-    @BeforeEach
-    void setup() {
-        abacPermit();
-        clearSakRepository();
-    }
-
     @Test
     public void happyPathOpprettInngaaende() throws IOException {
         abacPermit();
@@ -795,7 +789,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
                         .build())
                 .bruker(Bruker.builder()
                         .idType(BrukerIdType.FNR)
-                        .id(FNR_3)
+                        .id(FNR)
                         .build())
                 .build();
 
