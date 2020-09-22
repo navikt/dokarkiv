@@ -31,6 +31,7 @@ public class AktoerConsumerV2Mock implements AktoerV2 {
 	public static final String AKTOER_ID = "1234567890123";
 	public static final String FNR = "01010199999";
 	public static final String FNR_2 = "01010188888";
+	public static final String FNR_3 = "01020377887";
 	public static final String CURRENT_IDENT = "111111111111";
 	public static final String FAIL_AKTOER_ID = "9343877893406";
 	public static final String FAIL_IDENT = "93438778934067";

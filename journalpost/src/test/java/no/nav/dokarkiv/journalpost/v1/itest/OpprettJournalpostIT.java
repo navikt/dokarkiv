@@ -26,6 +26,7 @@ import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostR
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostResponse;
 import org.apache.commons.collections15.IteratorUtils;
 import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -41,6 +42,7 @@ import static no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerV2Mock.AKTOER_I
 import static no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerV2Mock.FAIL_AKTOER_ID;
 import static no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerV2Mock.FNR;
 import static no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerV2Mock.FNR_2;
+import static no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerV2Mock.FNR_3;
 import static no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerV2Mock.identInspectionObjects;
 import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.OPPRETT;
 import static no.nav.dokarkiv.core.domain.codes.FagsystemCode.FS22;
@@ -99,6 +101,12 @@ import static org.junit.Assert.assertTrue;
 public class OpprettJournalpostIT extends AbstractJournalpostIT {
 
     private ObjectMapper mapper = new ObjectMapper();
+
+    @BeforeEach
+    void setup() {
+        abacPermit();
+        clearSakRepository();
+    }
 
     @Test
     public void happyPathOpprettInngaaende() throws IOException {
@@ -787,7 +795,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
                         .build())
                 .bruker(Bruker.builder()
                         .idType(BrukerIdType.FNR)
-                        .id(FNR_2)
+                        .id(FNR_3)
                         .build())
                 .build();
 
@@ -813,7 +821,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
                         .build())
                 .bruker(Bruker.builder()
                         .idType(BrukerIdType.FNR)
-                        .id(FNR)
+                        .id(FNR_2)
                         .build())
                 .build();
 
