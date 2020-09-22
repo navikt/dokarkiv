@@ -26,7 +26,6 @@ import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostR
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostResponse;
 import org.apache.commons.collections15.IteratorUtils;
 import org.junit.Test;
-import org.junit.jupiter.api.BeforeEach;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -42,7 +41,6 @@ import static no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerV2Mock.AKTOER_I
 import static no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerV2Mock.FAIL_AKTOER_ID;
 import static no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerV2Mock.FNR;
 import static no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerV2Mock.FNR_2;
-import static no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerV2Mock.FNR_3;
 import static no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerV2Mock.identInspectionObjects;
 import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.OPPRETT;
 import static no.nav.dokarkiv.core.domain.codes.FagsystemCode.FS22;
@@ -775,33 +773,6 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 
     @Test
     public void shouldCallAktoerService() throws IOException {
-        clearSakRepository();
-        abacPermit();
-
-        int identInspectionObjectSize = identInspectionObjects.size();
-
-        OpprettJournalpostRequest request = createMinimalRequest(INNGAAENDE)
-                .tema(TEMA_UFO)
-                .sak(Sak.builder()
-                        .sakstype(Sakstype.FAGSAK)
-                        .fagsaksystem(SUPSTONAD)
-                        .fagsakId(FAGSAK_ID)
-                        .build())
-                .bruker(Bruker.builder()
-                        .idType(BrukerIdType.FNR)
-                        .id(FNR)
-                        .build())
-                .build();
-
-        HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
-        restTemplate.exchange(URL_JOURNALPOST + FERDIGSTILL_QUERY, HttpMethod.POST, requestEntity, OpprettJournalpostResponse.class);
-
-        assertEquals(identInspectionObjectSize + 1, identInspectionObjects.size());
-    }
-
-    @Test
-    public void shouldCallAktoerServiceWithFagsaksystemOmsorgspenger() throws IOException {
-        clearSakRepository();
         abacPermit();
 
         int identInspectionObjectSize = identInspectionObjects.size();
