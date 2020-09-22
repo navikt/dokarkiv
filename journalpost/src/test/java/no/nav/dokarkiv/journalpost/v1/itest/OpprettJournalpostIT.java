@@ -47,7 +47,6 @@ import static no.nav.dokarkiv.core.domain.codes.FagsystemCode.FS22;
 import static no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem.AO01;
 import static no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem.OMSORGSPENGER;
 import static no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem.PP01;
-import static no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem.SUPSTONAD;
 import static no.nav.dokarkiv.journalpost.v1.api.JournalpostType.INNGAAENDE;
 import static no.nav.dokarkiv.journalpost.v1.api.JournalpostType.NOTAT;
 import static no.nav.dokarkiv.journalpost.v1.api.JournalpostType.UTGAAENDE;
