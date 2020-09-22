@@ -773,6 +773,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 
     @Test
     public void shouldCallAktoerService() throws IOException {
+        clearSakRepository();
         abacPermit();
 
         int identInspectionObjectSize = identInspectionObjects.size();
