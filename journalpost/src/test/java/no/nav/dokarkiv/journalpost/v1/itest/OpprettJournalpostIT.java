@@ -786,7 +786,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
                         .build())
                 .bruker(Bruker.builder()
                         .idType(BrukerIdType.FNR)
-                        .id(FNR_2)
+                        .id(FNR)
                         .build())
                 .build();
 
