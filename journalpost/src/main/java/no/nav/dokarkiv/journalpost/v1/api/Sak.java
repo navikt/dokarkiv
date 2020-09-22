@@ -43,6 +43,7 @@ public class Sak {
                     "* EF (Enslig forsørger)\n" +
                     "* KONT (Kontantstøtte)\n" +
                     "* SUPSTONAD (Supplerende Stønad)\n" +
+                    "* OMSORGSPENGER\n" +
                     "Skal kun settes dersom sakstype = FAGSAK",
             example = "AO01"
     )

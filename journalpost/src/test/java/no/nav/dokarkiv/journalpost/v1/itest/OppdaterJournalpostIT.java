@@ -876,7 +876,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
                 .sak(Sak.builder()
                         .sakstype(Sakstype.FAGSAK)
                         .fagsakId(FAGSAK_ID)
-                        .fagsaksystem(Fagsaksystem.SUPSTONAD)
+                        .fagsaksystem(Fagsaksystem.OMSORGSPENGER)
                         .build())
                 .build();
 
@@ -904,7 +904,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
                 .sak(Sak.builder()
                         .sakstype(Sakstype.FAGSAK)
                         .fagsakId(FAGSAK_ID)
-                        .fagsaksystem(Fagsaksystem.SUPSTONAD)
+                        .fagsaksystem(Fagsaksystem.OMSORGSPENGER)
                         .build())
                 .build();
 

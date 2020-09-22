@@ -45,8 +45,8 @@ import static no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerV2Mock.identIns
 import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.OPPRETT;
 import static no.nav.dokarkiv.core.domain.codes.FagsystemCode.FS22;
 import static no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem.AO01;
+import static no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem.OMSORGSPENGER;
 import static no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem.PP01;
-import static no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem.SUPSTONAD;
 import static no.nav.dokarkiv.journalpost.v1.api.JournalpostType.INNGAAENDE;
 import static no.nav.dokarkiv.journalpost.v1.api.JournalpostType.NOTAT;
 import static no.nav.dokarkiv.journalpost.v1.api.JournalpostType.UTGAAENDE;
@@ -780,7 +780,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
                 .tema(TEMA_UFO)
                 .sak(Sak.builder()
                         .sakstype(Sakstype.FAGSAK)
-                        .fagsaksystem(SUPSTONAD)
+                        .fagsaksystem(OMSORGSPENGER)
                         .fagsakId(FAGSAK_ID)
                         .build())
                 .bruker(Bruker.builder()
@@ -805,7 +805,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
                 .tema(TEMA_UFO)
                 .sak(Sak.builder()
                         .sakstype(Sakstype.FAGSAK)
-                        .fagsaksystem(SUPSTONAD)
+                        .fagsaksystem(OMSORGSPENGER)
                         .fagsakId(FAGSAK_ID)
                         .build())
                 .bruker(Bruker.builder()
