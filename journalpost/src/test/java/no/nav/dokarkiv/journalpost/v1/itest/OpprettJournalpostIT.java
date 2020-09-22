@@ -773,6 +773,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 
     @Test
     public void shouldCallAktoerService() throws IOException {
+        clearSakRepository();
         abacPermit();
 
         int identInspectionObjectSize = identInspectionObjects.size();
@@ -798,6 +799,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 
     @Test
     public void shouldCallAktoerServiceWithFagsaksystemOmsorgspenger() throws IOException {
+        clearSakRepository();
         abacPermit();
 
         int identInspectionObjectSize = identInspectionObjects.size();
@@ -811,7 +813,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
                         .build())
                 .bruker(Bruker.builder()
                         .idType(BrukerIdType.FNR)
-                        .id(FNR_2)
+                        .id(FNR)
                         .build())
                 .build();
 
