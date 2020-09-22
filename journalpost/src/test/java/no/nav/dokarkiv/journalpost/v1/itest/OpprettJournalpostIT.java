@@ -810,8 +810,8 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
                         .fagsakId(FAGSAK_ID)
                         .build())
                 .bruker(Bruker.builder()
-                        .idType(BrukerIdType.FNR_2)
-                        .id(FNR_2)
+                        .idType(BrukerIdType.FNR)
+                        .id(FNR)
                         .build())
                 .build();
 

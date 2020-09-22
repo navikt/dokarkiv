@@ -47,6 +47,7 @@ import static java.lang.String.format;
 import static no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerV2Mock.AKTOER_ID;
 import static no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerV2Mock.FAIL_AKTOER_ID;
 import static no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerV2Mock.FNR;
+import static no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerV2Mock.FNR_2;
 import static no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerV2Mock.identInspectionObjects;
 import static no.nav.dokarkiv.core.datautil.JournalpostTestDataProvider.INNHOLD;
 import static no.nav.dokarkiv.core.domain.codes.FagsystemCode.FS22;
