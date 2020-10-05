@@ -17,7 +17,7 @@
   "ABAC_URL": "https://wasapp.adeo.no/asm-pdp/authorize",
   "JOARK_HENTDOKUMENT_BASEURL": "https://wasapp.adeo.no/joarkweb/HentDokument",
   "DOKARKIV_HENTDOKUMENT_BASEURL": "https://dokarkiv.nais.adeo.no/hentdokument",
-  "INGRESSES": "https://dokarkiv.nais.adeo.no",
+  "INGRESSES": ["https://dokarkiv.nais.adeo.no"],
   "DOKARKIV_DS": "/oracle/data/prod/creds/joark-dokarkiv",
   "SRVDOKARKIV": "/serviceuser/data/prod/srvdokarkiv",
   "DOKARKIV_VAULT": "/kv/prod/fss/dokarkiv/default",
