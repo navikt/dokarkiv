@@ -43,7 +43,9 @@ spec:
       value: {{ DOKARKIV_HENTDOKUMENT_BASEURL }}
   image: {{ image }}
   ingresses:
-    - {{ INGRESSES }}
+    {{ #each INGRESSES }}
+    - {{ this }}
+    {{/each }}
   liveness:
     path: /isAlive
     port: 8080

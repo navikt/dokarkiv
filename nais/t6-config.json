@@ -17,7 +17,7 @@
   "ABAC_URL": "https://wasapp-t6.adeo.no/asm-pdp/authorize",
   "JOARK_HENTDOKUMENT_BASEURL": "https://wasapp-t6.adeo.no/joarkweb/HentDokument",
   "DOKARKIV_HENTDOKUMENT_BASEURL": "https://dokarkiv-t6.nais.preprod.local/hentdokument",
-  "INGRESSES": "https://dokarkiv-t6.nais.preprod.local",
+  "INGRESSES": ["https://dokarkiv-t6.nais.preprod.local", "https://dokarkiv-t6.dev.adeo.no"],
   "DOKARKIV_DS": "/oracle/data/dev/creds/joark_t6-user",
   "SRVDOKARKIV": "/serviceuser/data/test/srvdokarkiv",
   "DOKARKIV_VAULT": "/kv/preprod/fss/dokarkiv/t6",
