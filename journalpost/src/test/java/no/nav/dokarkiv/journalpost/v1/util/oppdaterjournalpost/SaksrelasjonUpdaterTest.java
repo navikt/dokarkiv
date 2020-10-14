@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.journalpost.v1.util.oppdaterjournalpost;
 
+import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
 import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
@@ -16,6 +17,7 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.slf4j.MDC;
 
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.SAKSRELASJON_FAGSYSTEM;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.SAKSRELASJON_SAKID;
@@ -140,5 +142,22 @@ public class SaksrelasjonUpdaterTest {
         assertThat(journalpost.getSaksrelasjon().getFagsystem(), is(updater.mapArkivSakSystemToFagsystemCode(oppdaterJournalpostRequest.getSak().getArkivsaksystem())));
         assertThat(changeTracker.getChanges(), hasSize(1));
         assertThat(changeTracker.getChanges(), hasItem(ArkivElementEndringTO.builder().arkivElement(SAKSRELASJON_FAGSYSTEM).fraVerdi(null).tilVerdi(FagsystemCode.FS22.name()).build()));
+    }
+
+    @Test
+    public void shouldUpdateSaksrelasjonEndretAvNavn() throws UgyldigAksjonsLoggException {
+        MDC.put(MDCConstants.MDC_USER_NAME, "Test Testesen");
+        Sak createSak = Sak.builder()
+                .fagsakId(FAGSAK_ID)
+                .sakstype(Sakstype.FAGSAK)
+                .fagsaksystem(Fagsaksystem.AO11)
+                .build();
+        OppdaterJournalpostRequest oppdaterJournalpostRequest = createPutOppdaterJournalpostRequestSak(createSak);
+
+        Journalpost journalpost = TestUtils.createJournalpost();
+
+        updater.updateFields(journalpost, oppdaterJournalpostRequest, createSak.getFagsakId());
+
+        assertThat(journalpost.getSaksrelasjon().getEndretAvNavn(), is("Test Testesen"));
     }
 }

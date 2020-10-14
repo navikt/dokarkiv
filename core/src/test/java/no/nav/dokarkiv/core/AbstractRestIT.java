@@ -81,6 +81,7 @@ public abstract class AbstractRestIT {
 	protected static final String NAV_CONSUMER_TOKEN = "Nav-Consumer-Token";
 	protected static final String SERVICE_USER_ID = "srvjoarkadmin";
 	protected static final String PERSON_USER_ID = "Z990782";
+	protected static final String PERSON_USER_NAME = "Stasjonsmester Tidemann";
 	protected static final String NO_ACCESS_SERVICE_USER_ID = "srvdokarkiv";
 
 	@BeforeClass

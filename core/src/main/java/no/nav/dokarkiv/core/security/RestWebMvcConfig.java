@@ -2,6 +2,8 @@ package no.nav.dokarkiv.core.security;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import no.nav.dokarkiv.core.security.ldap.NavLdapService;
+import no.nav.security.token.support.core.configuration.MultiIssuerConfiguration;
+import no.nav.security.token.support.core.context.TokenValidationContextHolder;
 import no.nav.security.token.support.spring.api.EnableJwtTokenValidation;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
@@ -18,13 +20,19 @@ import javax.inject.Named;
 @Configuration
 public class RestWebMvcConfig implements WebMvcConfigurer {
 
+    private final TokenValidationContextHolder tokenValidationContextHolder;
+    private final MultiIssuerConfiguration multiIssuerConfiguration;
     private final NavLdapService navLdapService;
     private final HandlerInterceptor basicAuthReadAccessRestInterceptor;
     private final MeterRegistry meterRegistry;
 
-    public RestWebMvcConfig(NavLdapService navLdapService,
+    public RestWebMvcConfig(TokenValidationContextHolder tokenValidationContextHolder,
+                            MultiIssuerConfiguration multiIssuerConfiguration,
+                            NavLdapService navLdapService,
                             @Lazy @Named("basicAuthReadAccessRestInterceptor") HandlerInterceptor basicAuthReadAccessRestInterceptor,
                             MeterRegistry meterRegistry) {
+        this.tokenValidationContextHolder = tokenValidationContextHolder;
+        this.multiIssuerConfiguration = multiIssuerConfiguration;
         this.navLdapService = navLdapService;
         this.basicAuthReadAccessRestInterceptor = basicAuthReadAccessRestInterceptor;
         this.meterRegistry = meterRegistry;
@@ -35,7 +43,7 @@ public class RestWebMvcConfig implements WebMvcConfigurer {
         registry.addInterceptor(basicAuthReadAccessRestInterceptor)
                 .addPathPatterns("/hentjournalsakinfo/**");
 
-        registry.addInterceptor(new ValidateUserAndAddToMDCHandler(navLdapService, meterRegistry))
+        registry.addInterceptor(new SporingHandlerInterceptor(tokenValidationContextHolder, multiIssuerConfiguration, navLdapService, meterRegistry))
                 .excludePathPatterns("/rest/intern/**")
                 .addPathPatterns("/rest/**");
 

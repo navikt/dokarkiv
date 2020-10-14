@@ -39,11 +39,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
-import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
-import static com.github.tomakehurst.wiremock.client.WireMock.verify;
-import static java.lang.String.format;
 import static no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerV2Mock.AKTOER_ID;
 import static no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerV2Mock.FAIL_AKTOER_ID;
 import static no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerV2Mock.FNR;
@@ -64,7 +59,6 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.StringContains.containsString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -116,15 +110,10 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
         assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
         assertThat(responseEntity.getBody().getJournalpostId(), is(String.valueOf(journalpostId)));
 
-        verify(postRequestedFor(urlEqualTo("/abac")).withRequestBody(equalToJson(format(stringFromClasspath("abac/putInngaaendejournalpost_PersonUser_and_ServiceUser.json"),
-                getOidcTokenBody(OIDC_TOKEN_PERSON_USER_TEST),
-                getOidcTokenBody(OIDC_TOKEN_SERVICE_USER_TEST)))));
-
-
         TestTransaction.start();
         Journalpost oppdatertJP = joarkRepository.findById(journalpostId).get();
 
-        assertThat(oppdatertJP.getEndretAvNavn(), is(PERSON_USER_ID));
+        assertThat(oppdatertJP.getEndretAvNavn(), is(PERSON_USER_NAME));
         assertThat(oppdatertJP.getEndretKildeNavn(), is(SERVICE_USER_ID));
         assertThat(oppdatertJP.getChangeStamp().getUpdatedBy(), is(PERSON_USER_ID));
         assertThat(oppdatertJP.getInnhold(), is(request.getTittel()));
@@ -287,10 +276,6 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
         assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
         assertThat(responseEntity.getBody().getJournalpostId(), is(String.valueOf(journalpostId)));
 
-        verify(postRequestedFor(urlEqualTo("/abac")).withRequestBody(equalToJson(format(stringFromClasspath("abac/putInngaaendejournalpost_only_ServiceUser.json"),
-                getOidcTokenBody(OIDC_TOKEN_SERVICE_USER_TEST)))));
-
-
         TestTransaction.start();
         Journalpost oppdatertJP = joarkRepository.findById(journalpostId).get();
 
@@ -334,30 +319,6 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
                 URL_JOURNALPOST + journalpostId, HttpMethod.PUT, requestHttpEntity, RestConsumerExceptionResponse.class);
 
         assertThat(responseEntity.getStatusCode(), is(HttpStatus.UNAUTHORIZED));
-    }
-
-    @Test
-    public void shouldReturnForbiddenBrukerHarIkkeTilgangTilJournalpostPutJournalpost() {
-        abacDeny();
-
-        Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
-                .endretAvNavn("saksbehandlersen"));
-        Long journalpostId = journalpost.getJournalpostId();
-        Long dokumentInfoId = journalpost.getJournalpostDokumentInfoRelasjoner()
-                .iterator()
-                .next()
-                .getDokumentInfo()
-                .getDokumentInfoId();
-
-        OppdaterJournalpostRequest request = createPutOppdaterJournalpostRequestWithDokumentInfoId(dokumentInfoId);
-
-        HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
-
-        ResponseEntity<String> responseEntity = restTemplate.exchange(
-                URL_JOURNALPOST + journalpostId, HttpMethod.PUT, requestHttpEntity, String.class);
-
-        assertThat(responseEntity.getStatusCode(), is(HttpStatus.FORBIDDEN));
-        assertThat(responseEntity.getBody(), containsString("Bruker har ikke tilgang til journalpost"));
     }
 
     @Test

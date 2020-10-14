@@ -975,6 +975,79 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
         assertEqualOpprettJournalpostResponses(responseFirst.getBody(), responseSecond.getBody());
     }
 
+
+    @Test
+    public void shouldOppretteUtgaaendeJournalpostAndSetSporingmetadataWhenServiceuserToken() throws IOException {
+        OpprettJournalpostRequest request = createRequest(UTGAAENDE);
+
+        HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
+        ResponseEntity<OpprettJournalpostResponse> response = restTemplate.exchange(URL_JOURNALPOST, HttpMethod.POST, requestEntity, OpprettJournalpostResponse.class);
+
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+
+        Journalpost journalpost = joarkRepository.findAll().iterator().next();
+        assertNull(journalpost.getEndretAvNavn());
+        assertEquals(SERVICE_USER_ID, journalpost.getOpprettetAvNavn());
+        assertNull(journalpost.getEndretKildeNavn());
+        assertEquals(SERVICE_USER_ID, journalpost.getOpprettetKildeNavn());
+        assertNull(journalpost.getChangeStamp().getUpdatedBy());
+        assertEquals(SERVICE_USER_ID, journalpost.getChangeStamp().getCreatedBy());
+    }
+
+    @Test
+    public void shouldFerdigstilleUtgaaendeAndSetSporingmetadataWhenServiceuserToken() throws IOException {
+        OpprettJournalpostRequest request = createRequest(UTGAAENDE, "9999");
+
+        HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
+        ResponseEntity<OpprettJournalpostResponse> response = restTemplate.exchange(URL_JOURNALPOST + FERDIGSTILL_QUERY, HttpMethod.POST, requestEntity, OpprettJournalpostResponse.class);
+
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+
+        Journalpost journalpost = joarkRepository.findAll().iterator().next();
+        assertEquals(SERVICE_USER_ID, journalpost.getEndretAvNavn());
+        assertEquals(SERVICE_USER_ID, journalpost.getOpprettetAvNavn());
+        assertEquals(SERVICE_USER_ID, journalpost.getEndretKildeNavn());
+        assertEquals(SERVICE_USER_ID, journalpost.getOpprettetKildeNavn());
+        assertEquals(SERVICE_USER_ID, journalpost.getChangeStamp().getUpdatedBy());
+        assertEquals(SERVICE_USER_ID, journalpost.getChangeStamp().getCreatedBy());
+    }
+
+    @Test
+    public void shouldOppretteUtgaaendeJournalpostAndSetSporingmetadataWhenUserAndServiceuserToken() throws IOException {
+        OpprettJournalpostRequest request = createRequest(UTGAAENDE);
+
+        HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithUserAndServiceUserToken());
+        ResponseEntity<OpprettJournalpostResponse> response = restTemplate.exchange(URL_JOURNALPOST, HttpMethod.POST, requestEntity, OpprettJournalpostResponse.class);
+
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+
+        Journalpost journalpost = joarkRepository.findAll().iterator().next();
+        assertNull(journalpost.getEndretAvNavn());
+        assertEquals(PERSON_USER_NAME, journalpost.getOpprettetAvNavn());
+        assertNull(journalpost.getEndretKildeNavn());
+        assertEquals(SERVICE_USER_ID, journalpost.getOpprettetKildeNavn());
+        assertNull(journalpost.getChangeStamp().getUpdatedBy());
+        assertEquals(PERSON_USER_ID, journalpost.getChangeStamp().getCreatedBy());
+    }
+
+    @Test
+    public void shouldFerdigstilleUtgaaendeAndSetSporingmetadataWhenUserAndServiceuserToken() throws IOException {
+        OpprettJournalpostRequest request = createRequest(UTGAAENDE, "9999");
+
+        HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithUserAndServiceUserToken());
+        ResponseEntity<OpprettJournalpostResponse> response = restTemplate.exchange(URL_JOURNALPOST + FERDIGSTILL_QUERY, HttpMethod.POST, requestEntity, OpprettJournalpostResponse.class);
+
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+
+        Journalpost journalpost = joarkRepository.findAll().iterator().next();
+        assertEquals(PERSON_USER_NAME, journalpost.getEndretAvNavn());
+        assertEquals(PERSON_USER_NAME, journalpost.getOpprettetAvNavn());
+        assertEquals(SERVICE_USER_ID, journalpost.getEndretKildeNavn());
+        assertEquals(SERVICE_USER_ID, journalpost.getOpprettetKildeNavn());
+        assertEquals(PERSON_USER_ID, journalpost.getChangeStamp().getUpdatedBy());
+        assertEquals(PERSON_USER_ID, journalpost.getChangeStamp().getCreatedBy());
+    }
+
     private void assertEqualOpprettJournalpostResponses(OpprettJournalpostResponse res1, OpprettJournalpostResponse res2) {
         assertEquals(res1.getJournalpostId(), res2.getJournalpostId());
         assertEquals(res1.getJournalstatus(), res2.getJournalstatus());
