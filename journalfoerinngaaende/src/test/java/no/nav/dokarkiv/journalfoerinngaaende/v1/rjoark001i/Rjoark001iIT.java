@@ -164,7 +164,7 @@ public class Rjoark001iIT extends AbstractJournalfoerInngaaendeV1Itest {
                 JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER + journalpostId, HttpMethod.GET, new HttpEntity(headers), String.class);
 
         assertThat(responseEntity.getStatusCode(), is(HttpStatus.UNAUTHORIZED));
-        assertThat(responseEntity.getBody(), containsString("Finner ingen oidc token på Authorization header"));
+        assertThat(responseEntity.getBody(), containsString("Authorization headeren mangler Bearer JWT. Undersøk om Authorization header har 'Bearer ' etterfulgt av en utstedt JWT."));
     }
 
     /**
