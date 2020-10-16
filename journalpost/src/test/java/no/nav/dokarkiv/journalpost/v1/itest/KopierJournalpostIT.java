@@ -16,7 +16,6 @@ import no.nav.dokarkiv.core.domain.entities.ArkivElementEndring;
 import no.nav.dokarkiv.core.domain.entities.Bruker;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
-import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
 import org.apache.commons.collections15.IteratorUtils;
 import org.junit.After;
 import org.junit.Test;
@@ -91,7 +90,7 @@ public class KopierJournalpostIT extends AbstractJournalpostIT {
                 kopiertJournalpost.getJournalpostDokumentInfoRelasjoner())
         );
 
-        assertSaksrelasjon(journalpost.getSaksrelasjon(), kopiertJournalpost.getSaksrelasjon(), kopiertJournalpost);
+        assertNull(kopiertJournalpost.getSaksrelasjon());
         assertEquals(journalpost.getTilleggsopplysninger(), kopiertJournalpost.getTilleggsopplysninger());
         assertEquals(journalpost.getBehandlingstema(), kopiertJournalpost.getBehandlingstema());
         assertEquals(journalpost.getJournalposttype(), kopiertJournalpost.getJournalposttype());
@@ -115,7 +114,7 @@ public class KopierJournalpostIT extends AbstractJournalpostIT {
     }
 
     @Test
-    public void shouldReturnForbiddenForWrongConsumer(){
+    public void shouldReturnForbiddenForWrongConsumer() {
         Journalpost journalpost = createJournalpost();
         Long journalpostId = joarkRepository.save(journalpost).getJournalpostId();
 
@@ -161,21 +160,13 @@ public class KopierJournalpostIT extends AbstractJournalpostIT {
     private ArrayList<Map<String, String>> journalpostDokumentInfoRelasjonerSetToArrayList(Set<JournalpostDokumentInfoRelasjon> journalpostDokumentInfoRelasjoner) {
         ArrayList<Map<String, String>> journalpostDokumentInfoRelasjonerList = new ArrayList<>();
 
-        journalpostDokumentInfoRelasjoner.forEach(journalpostDokumentInfoRelasjon -> journalpostDokumentInfoRelasjonerList.add(new HashMap<String, String>()
-          {{
-              put("dokumentInfoId", journalpostDokumentInfoRelasjon.getDokumentInfo().getDokumentInfoId().toString());
-              put("tilknyttetJournalpostSom", journalpostDokumentInfoRelasjon.getTilknyttetJournalpostSom().name());
-          }}
+        journalpostDokumentInfoRelasjoner.forEach(journalpostDokumentInfoRelasjon -> journalpostDokumentInfoRelasjonerList.add(new HashMap<String, String>() {{
+                                                                                                                                   put("dokumentInfoId", journalpostDokumentInfoRelasjon.getDokumentInfo().getDokumentInfoId().toString());
+                                                                                                                                   put("tilknyttetJournalpostSom", journalpostDokumentInfoRelasjon.getTilknyttetJournalpostSom().name());
+                                                                                                                               }}
         ));
 
         return journalpostDokumentInfoRelasjonerList;
-    }
-
-    private void assertSaksrelasjon(Saksrelasjon saksrelasjon, Saksrelasjon kopiertSaksrelasjon, Journalpost kopiertJournalpost) {
-        assertEquals(saksrelasjon.getSakId(), kopiertSaksrelasjon.getSakId());
-        assertEquals(saksrelasjon.getFagsystem(), kopiertSaksrelasjon.getFagsystem());
-        assertEquals(saksrelasjon.getFeilregistrert(), kopiertSaksrelasjon.getFeilregistrert());
-        assertEquals(kopiertJournalpost.getSaksrelasjon().getJournalpost(), kopiertJournalpost);
     }
 
     private boolean brukereSetIsCorrectlyCopied(Set<Bruker> brukere, Set<Bruker> brukereCopy) {
@@ -187,11 +178,10 @@ public class KopierJournalpostIT extends AbstractJournalpostIT {
     private ArrayList<Map<String, String>> brukereSetToArrayList(Set<Bruker> brukere) {
         ArrayList<Map<String, String>> brukereList = new ArrayList<>();
 
-        brukere.forEach(bruker -> brukereList.add(new HashMap<String, String>()
-            {{
-                put("brukerId", bruker.getBrukerId());
-                put("brukerType", bruker.getBrukerType().name());
-            }}
+        brukere.forEach(bruker -> brukereList.add(new HashMap<String, String>() {{
+                                                      put("brukerId", bruker.getBrukerId());
+                                                      put("brukerType", bruker.getBrukerType().name());
+                                                  }}
         ));
 
         return brukereList;
@@ -201,7 +191,8 @@ public class KopierJournalpostIT extends AbstractJournalpostIT {
         return JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.FL)
                 .tilleggsopplysninger(new HashMap<String, String>() {{
                     put("nokkel1", "verdi1");
-                    put("nokkel2", "verdi2"); }})
+                    put("nokkel2", "verdi2");
+                }})
                 .opprettetAvNavn("opprettetAvNavn")
                 .opprettetKildeNavn("opprettetKildeNavn")
                 .endretKildeNavn("endretKildeNavn")
@@ -211,7 +202,7 @@ public class KopierJournalpostIT extends AbstractJournalpostIT {
 
     private HttpHeaders createHeaders(String consumer) {
         return createHeaders(consumer, true);
-   }
+    }
 
     private HttpHeaders createHeaders(String consumer, boolean includeNavUserId) {
         HttpHeaders headers = new HttpHeaders();

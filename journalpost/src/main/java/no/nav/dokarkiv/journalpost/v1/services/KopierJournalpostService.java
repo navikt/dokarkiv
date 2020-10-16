@@ -43,6 +43,9 @@ public class KopierJournalpostService {
 		// kopier journalpost
 		Journalpost nyJournalpost = journalpostCopier.copy(journalpost);
 
+		// Nullstill saksrelasjon på den nye journalposten.
+		nyJournalpost.setSaksrelasjon(null);
+
 		// låse opp den nye journalpost ved å sette den "tilbake" i status: (eks: FS -> D)
 		resetJournalpoststatus(nyJournalpost);
 
