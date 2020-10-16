@@ -17,7 +17,6 @@ import no.nav.security.token.support.core.context.TokenValidationContext;
 import no.nav.security.token.support.core.context.TokenValidationContextHolder;
 import org.slf4j.MDC;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 
@@ -48,7 +47,7 @@ import static org.apache.commons.lang3.StringUtils.isNotEmpty;
  * * opprettet_av_navn
  * * endret_av_navn
  *
- * @author Sigurd Midttun, Visma Consulting.
+ * @author Joakim Bjørnstad, Jbit AS
  */
 @Slf4j
 public class SporingHandlerInterceptor implements HandlerInterceptor {
@@ -80,17 +79,12 @@ public class SporingHandlerInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         ((ThreadLocalSubjectHandler) SubjectHandler.getSubjectHandler()).reset();
 
-        if (response.getStatus() != HttpStatus.OK.value()) {
-            //This means that the validation of oidc tokens failed in JwtTokenValidationFilter and we should let the handler go through
-            return true;
-        }
-
         putAbacMdcValues(request);
         String authorizationToken = headerTokenExtractor.getIdToken(request);
         String navConsumerToken = headerTokenExtractor.getConsumerToken(request);
 
         if (isEmpty(authorizationToken)) {
-            return handleUnauthorizedAccess(response);
+            return handleMissingAuthorizationHeader(response);
         } else {
             return handleAuthorizedAccess(response, handler, authorizationToken, navConsumerToken);
         }
@@ -115,7 +109,7 @@ public class SporingHandlerInterceptor implements HandlerInterceptor {
                 return false;
             }
         } else {
-            handleUnauthorizedAccess(response);
+            return handleInvalidAuthorizationHeaderToken(response);
         }
 
         if (handler instanceof HandlerMethod) {
@@ -130,8 +124,17 @@ public class SporingHandlerInterceptor implements HandlerInterceptor {
         return true;
     }
 
-    private boolean handleUnauthorizedAccess(HttpServletResponse response) throws IOException {
-        String message = "Finner ingen oidc token på Authorization header. Requesten må enten ha oidc-token for servicebruker på header med key=Authorization og value=Bearer [oidc-token] eller ha oidc-token for internbruker i Authorization header og servicebruker på header med key=Nav-Consumer-Token og value=Bearer [oidc-token]";
+    private boolean handleMissingAuthorizationHeader(HttpServletResponse response) throws IOException {
+        String message = "Authorization headeren mangler Bearer JWT. Undersøk om Authorization header har 'Bearer ' etterfulgt av en utstedt JWT.";
+        return handleUnauthorizedAccess(response, message);
+    }
+
+    private boolean handleInvalidAuthorizationHeaderToken(HttpServletResponse response) throws IOException {
+        String message = "Authorization headeren mangler gyldig Bearer JWT. Token kan ha timet ut eller være utstedt av issuer endepunktet ikke støtter.";
+        return handleUnauthorizedAccess(response, message);
+    }
+
+    private boolean handleUnauthorizedAccess(HttpServletResponse response, final String message) throws IOException {
         log.warn(message);
         response.sendError(HttpServletResponse.SC_UNAUTHORIZED, message);
         return false;

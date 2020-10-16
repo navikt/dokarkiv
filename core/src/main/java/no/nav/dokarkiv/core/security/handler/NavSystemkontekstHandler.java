@@ -29,7 +29,7 @@ public class NavSystemkontekstHandler {
     }
 
     private boolean handleUnauthorizedServicebruker(HttpServletResponse response) throws IOException {
-        String message = "OIDC token på Authorization header må tilhøre en Servicebruker når Nav-Consumer-Token header ikke er satt";
+        String message = "Authorization headeren må ha JWT som er utstedt av issuer REST-STS tilhørende servicebruker hvis header Nav-Consumer-Token ikke er satt.";
         log.warn(message);
         response.sendError(HttpServletResponse.SC_UNAUTHORIZED, message);
         return true;

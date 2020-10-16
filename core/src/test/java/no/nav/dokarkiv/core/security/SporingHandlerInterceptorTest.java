@@ -92,7 +92,7 @@ public class SporingHandlerInterceptorTest {
     }
 
     @Test
-    public void shouldValidateAndAddToMDCWhenOnlyServiceUser() throws Exception {
+    public void shouldSetSporingWhenOnlyServiceUserInAuthorizationHeader() throws Exception {
         MockHttpServletRequest request = new MockHttpServletRequest();
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
         request.addHeader(HttpHeaders.AUTHORIZATION, getServiceUserToken());
@@ -106,7 +106,7 @@ public class SporingHandlerInterceptorTest {
     }
 
     @Test
-    public void shouldValidateAndAddToMDCWhenNavUserAndServiceUserTokens() throws Exception {
+    public void shouldSetSporingWhenNavUserAndServiceUserTokensInAuthorizationAndNavConsumerTokenHeaders() throws Exception {
         MockHttpServletRequest request = new MockHttpServletRequest();
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
         request.addHeader(HttpHeaders.AUTHORIZATION, getUserToken());
@@ -121,7 +121,7 @@ public class SporingHandlerInterceptorTest {
     }
 
     @Test
-    public void shouldFailOnlyUserToken() throws Exception {
+    public void shouldFailWhenOnlyUserTokenInAuthorizationHeader() throws Exception {
         MockHttpServletRequest request = new MockHttpServletRequest();
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
         request.addHeader(HttpHeaders.AUTHORIZATION, getUserToken());
@@ -129,22 +129,22 @@ public class SporingHandlerInterceptorTest {
 
         validationFilter.doFilter(request, response, filterChain);
 
-        assertThat(response.getErrorMessage(), containsString("OIDC token på Authorization header må tilhøre en Servicebruker når Nav-Consumer-Token header ikke er satt"));
+        assertThat(response.getErrorMessage(), containsString("Authorization headeren må ha JWT som er utstedt av issuer REST-STS tilhørende servicebruker hvis header Nav-Consumer-Token ikke er satt."));
     }
 
     @Test
-    public void shouldFailWhenNoToken() throws Exception {
+    public void shouldFailWhenNoTokenInHeaders() throws Exception {
         HttpServletRequest request = new MockHttpServletRequest();
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
         MockHttpServletResponse response = new MockHttpServletResponse();
 
         validationFilter.doFilter(request, response, filterChain);
 
-        assertThat(response.getErrorMessage(), containsString("Finner ingen oidc token på Authorization header. Requesten må enten ha oidc-token for servicebruker på header med key=Authorization og value=Bearer [oidc-token] eller ha oidc-token for internbruker i Authorization header og servicebruker på header med key=Nav-Consumer-Token og value=Bearer [oidc-token]"));
+        assertThat(response.getErrorMessage(), containsString("Authorization headeren mangler Bearer JWT. Undersøk om Authorization header har 'Bearer ' etterfulgt av en utstedt JWT."));
     }
 
     @Test
-    public void shouldFailWhenBothHeadersHaveNavUserToken() throws Exception {
+    public void shouldFailWhenBothHeadersHaveUserTokens() throws Exception {
         MockHttpServletRequest request = new MockHttpServletRequest();
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
         request.addHeader(NavHeaders.NAV_CONSUMER_TOKEN, getUserToken());
@@ -153,7 +153,9 @@ public class SporingHandlerInterceptorTest {
 
         validationFilter.doFilter(request, response, filterChain);
 
-        assertThat(response.getErrorMessage(), containsString("OIDC token på Nav-Consumer-Token header må tilhøre en Servicebruker når både Authorization og Nav-Consumer-Token header er satt"));
+        assertThat(response.getErrorMessage(), containsString("Nav-Consumer-Token headeren må ha JWT som er utstedt av issuer REST-STS og tilhøre servicebruker hvis både Authorization og Nav-Consumer-Token headerene er satt. " +
+                "Grunnen til dette er at Nav-Consumer header propagerer systemkontekst og Authorization header propagerer brukerkontekst. " +
+                "Vi anbefaler bruk av Azure OAuth 2.0 On-Behalf-Of flow for å støtte brukerkontekst i system-til-system kall."));
     }
 
     @Test
@@ -166,7 +168,9 @@ public class SporingHandlerInterceptorTest {
 
         validationFilter.doFilter(request, response, filterChain);
 
-        assertThat(response.getErrorMessage(), containsString("OIDC token på Authorization header må tilhøre en Internbruker når både Authorization og Nav-Consumer-Token header er satt"));
+        assertThat(response.getErrorMessage(), containsString("Authorization headeren må ha JWT som er utstedt av issuer OpenAM og tilhøre saksbehandler hvis både Authorization og Nav-Consumer-Token headerene er satt. " +
+                "Grunnen til dette er at Authorization headeren propagerer brukerkontekst og Nav-Consumer-Token header systemkontekst. " +
+                "Vi anbefaler bruk av Azure OAuth 2.0 On-Behalf-Of flow for å støtte brukerkontekst i system-til-system kall."));
     }
 
     private String getServiceUserToken() {

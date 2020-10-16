@@ -44,7 +44,9 @@ public class NavCombinedBrukerSystemkontekstHandler {
             MDC.put(MDCConstants.MDC_USER_ID, userId);
             MDC.put(MDCConstants.MDC_USER_NAME, navUser.getFullname());
         } else {
-            String message = "OIDC token på Authorization header må tilhøre en Internbruker når både Authorization og Nav-Consumer-Token header er satt";
+            String message = "Authorization headeren må ha JWT som er utstedt av issuer OpenAM og tilhøre saksbehandler hvis både Authorization og Nav-Consumer-Token headerene er satt. " +
+                    "Grunnen til dette er at Authorization headeren propagerer brukerkontekst og Nav-Consumer-Token header systemkontekst. " +
+                    "Vi anbefaler bruk av Azure OAuth 2.0 On-Behalf-Of flow for å støtte brukerkontekst i system-til-system kall.";
             log.warn(message);
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, message);
             return true;
@@ -67,7 +69,9 @@ public class NavCombinedBrukerSystemkontekstHandler {
     }
 
     private boolean handleUnauthorizedServicebruker(HttpServletResponse response) throws IOException {
-        String message = "OIDC token på Nav-Consumer-Token header må tilhøre en Servicebruker når både Authorization og Nav-Consumer-Token header er satt";
+        String message = "Nav-Consumer-Token headeren må ha JWT som er utstedt av issuer REST-STS og tilhøre servicebruker hvis både Authorization og Nav-Consumer-Token headerene er satt. " +
+                "Grunnen til dette er at Nav-Consumer header propagerer systemkontekst og Authorization header propagerer brukerkontekst. " +
+                "Vi anbefaler bruk av Azure OAuth 2.0 On-Behalf-Of flow for å støtte brukerkontekst i system-til-system kall.";
         log.warn(message);
         response.sendError(HttpServletResponse.SC_UNAUTHORIZED, message);
         return true;
