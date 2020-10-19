@@ -13,14 +13,12 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.slf4j.MDC;
 
-import java.time.LocalDate;
 import java.util.Date;
 
-import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
+import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_NAME;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.AVSENDER_ID_PERSON;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.AVSENDER_MOTTAKER_UTLAND;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.AVSENDER_NAVN;
-import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.DATO_MOTTATT;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.DATO_MOTTATT_1;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.MOTTAT_DATO;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createPutOppdaterJournalpostAvsenderMottakerKunLandRequest;
@@ -30,7 +28,6 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createPutOppdaterJou
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createPutOppdaterJournalpostRequestWithoutAvsenderMottaker;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createPutOppdaterJournalpostRequestWithoutAvsenderMottakerId;
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -98,21 +95,20 @@ public class JournalpostUpdaterTest {
 
 	@Test
 	public void shouldRemoveAvsenderMottakerIdType() throws UgyldigAksjonsLoggException {
-		MDC.put(MDC_USER_ID, "testuser");
+		MDC.put(MDC_USER_NAME, "Test Testesen");
 		oppdaterJournalpostRequest = createPutOppdaterJournalpostRequestWithoutAvsenderMottakerId();
 
 		journalpost = TestUtils.createJournalpostForOppdatering();
 
 		updater.updateFields(journalpost, oppdaterJournalpostRequest);
 
-		assertEquals("testuser", journalpost.getEndretAvNavn());
+		assertEquals("Test Testesen", journalpost.getEndretAvNavn());
 		assertNull(journalpost.getAvsenderMottakerId());
 		assertNull(journalpost.getAvsenderMottakerIdType());
 	}
 
 	@Test
 	public void shouldNotChangeAvsenderMottaker() throws UgyldigAksjonsLoggException {
-		MDC.put(MDC_USER_ID, "testuser");
 		oppdaterJournalpostRequest = createPutOppdaterJournalpostRequestWithoutAvsenderMottaker();
 
 		journalpost = TestUtils.createJournalpostForOppdatering();
@@ -125,7 +121,6 @@ public class JournalpostUpdaterTest {
 
 	@Test
 	public void shouldUpdateJPMottattDatoWithNullWhenJpErInngaaendeAndRequestMottattDatoNull() throws UgyldigAksjonsLoggException {
-
 		oppdaterJournalpostRequest = createPutOppdaterJournalpostRequestUtenDatoMottat();
 		journalpost = TestUtils.createJournalpostForOppdatering();
 
@@ -133,12 +128,10 @@ public class JournalpostUpdaterTest {
 
 		assertEquals(journalpost.getMottattDato(), MOTTAT_DATO);
 		assertEquals(journalpost.getJournalposttype(), JournalpostTypeCode.I);
-
 	}
 
 	@Test
 	public void shouldUpdateMottattDatoWhenJpErInngaaende() throws UgyldigAksjonsLoggException {
-
 		oppdaterJournalpostRequest = createPutOppdaterJournalpostRequestWithDatoMottat(DATO_MOTTATT_1);
 		journalpost = TestUtils.createJournalpostForOppdatering();
 
@@ -146,7 +139,6 @@ public class JournalpostUpdaterTest {
 
 		assertEquals(journalpost.getMottattDato(), DATO_MOTTATT_1);
 		assertEquals(journalpost.getJournalposttype(), JournalpostTypeCode.I);
-
 	}
 
 	@Test
@@ -164,6 +156,4 @@ public class JournalpostUpdaterTest {
 		assertEquals(journalpost.getAvsenderMottakerId(), AVSENDER_ID_PERSON);
 		assertEquals(journalpost.getLand(), AVSENDER_MOTTAKER_UTLAND);
 	}
-
-
 }

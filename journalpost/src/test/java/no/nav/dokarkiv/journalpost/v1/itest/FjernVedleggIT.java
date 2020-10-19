@@ -20,7 +20,6 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestDataUtils.JOURNALPOST_ID;
 import static no.nav.dokarkiv.journalpost.v1.util.TestDataUtils.createJournalpostUnderArbeid;
 import static no.nav.dokarkiv.journalpost.v1.util.TestDataUtils.createVedleggRelasjon;
 import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
@@ -76,14 +75,10 @@ public class FjernVedleggIT extends AbstractJournalpostIT {
 		assertThat(jpDokInfoRelasjonByJp,notNullValue());
 		assertThat(jpDokInfoRelasjonByJp.size(),is(1));
 		assertThat(jpDokInfoRelasjonAfterDelete.size(),is(3));
-
-
 	}
 
-
-
 	@Test
-	public void shouldFeilToFjernVedleggJournalpostEqualsWithDokumentInfoOriginalJournalpostWithStatut4XX() throws IOException {
+	public void shouldFailToFjernVedleggJournalpostEqualsWithDokumentInfoOriginalJournalpostWithStatus4XX() throws IOException {
 		abacPermit();
 
 		Journalpost journalpost1 = createJournalpostUnderArbeid();
@@ -112,13 +107,27 @@ public class FjernVedleggIT extends AbstractJournalpostIT {
 		Optional<JournalpostDokumentInfoRelasjon> jpDokInfoRelasjon = journalpostDokumentInfoRelasjonRepository.findById(vedllegJpDokumentInfoRelasjon.getJournalpostDokumentInfoRelasjonId());
 		assertThat(response.getStatusCode(), is(HttpStatus.BAD_REQUEST));
 		assertThat(jpDokInfoRelasjon.isPresent(), is(true));
-
-
 	}
 
+	@Test
+	public void shouldReturnNotFoundWhenJournalpostNotFound() throws IOException {
+		abacPermit();
+
+		reinitTransaction();
+		FjernVedleggTilknyttetJournalpostRequest request = FjernVedleggTilknyttetJournalpostRequest.builder()
+				.dokumentId("1111")
+				.build();
+
+		HttpEntity requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
+
+		ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST + JOURNALPOST_ID + FJERNVEDLEGG, HttpMethod.PATCH, requestEntity, String.class);
+		reinitTransaction();
+
+		assertThat(response.getStatusCode(), is(HttpStatus.NOT_FOUND));
+	}
 
 	@Test
-	public void shouldFeilToFjernVedleggJournalpostNotFoundWithStatut404() throws IOException {
+	public void shouldReturnBadRequestWhenDokumentInfoIdNull() throws IOException {
 		abacPermit();
 
 		reinitTransaction();
@@ -131,8 +140,6 @@ public class FjernVedleggIT extends AbstractJournalpostIT {
 		ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST + JOURNALPOST_ID + FJERNVEDLEGG, HttpMethod.PATCH, requestEntity, String.class);
 		reinitTransaction();
 
-		assertThat(response.getStatusCode(), is(HttpStatus.NOT_FOUND));
-
-
+		assertThat(response.getStatusCode(), is(HttpStatus.BAD_REQUEST));
 	}
 }

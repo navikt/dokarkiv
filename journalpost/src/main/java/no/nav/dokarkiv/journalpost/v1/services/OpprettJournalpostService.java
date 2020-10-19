@@ -92,7 +92,7 @@ public class OpprettJournalpostService {
         String sakId = hentSakId(request);
 
         Journalpost journalpost = opprettJournalpostApiRequestMapper.map(request, sakId);
-        defaultSporingPopulator.populateSporingInfo(journalpost, MDC.get(MDCConstants.MDC_CONSUMER_ID));
+        defaultSporingPopulator.populateSporingInfo(journalpost, MDC.get(MDCConstants.MDC_USER_NAME));
         journalpost.getJournalpostDokumentInfoRelasjoner().forEach(journalpostDokumentInfoRelasjon -> journalpostDokumentInfoRelasjon.setTilknyttetAvNavn(journalpost.getOpprettetAvNavn()));
 
         persistDokumentFiler(journalpost);

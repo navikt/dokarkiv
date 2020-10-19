@@ -3,7 +3,6 @@ package no.nav.dokarkiv.journalpost.v1.controllers;
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.metrics.RestMetrics;
-import no.nav.dokarkiv.core.security.abac.AbacSecurityService;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import no.nav.dokarkiv.journalpost.v1.api.EndreLogiskVedleggRequest;
 import no.nav.dokarkiv.journalpost.v1.api.LeggTilLogiskVedleggRequest;
@@ -12,7 +11,6 @@ import no.nav.dokarkiv.journalpost.v1.services.LogiskVedleggService;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerEndreLogiskVedlegg;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerLeggTilLogiskVedlegg;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerSlettLogiskVedlegg;
-import no.nav.freg.abac.core.annotation.Abac;
 import no.nav.security.token.support.core.api.Protected;
 import org.slf4j.MDC;
 import org.springframework.http.ResponseEntity;
@@ -26,15 +24,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.inject.Inject;
 
-import static no.nav.abac.xacml.NavAttributter.RESOURCE_ARKIV_JOURNALPOST;
-import static no.nav.abac.xacml.NavAttributter.RESOURCE_FELLES_DOMENE;
-import static no.nav.abac.xacml.NavAttributter.RESOURCE_FELLES_RESOURCE_TYPE;
-import static no.nav.abac.xacml.StandardAttributter.ACTION_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
-import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.ARKIV_V2;
-import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.UPDATE_ACTION;
 import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.hasText;
 import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateId;
 
@@ -46,7 +38,6 @@ import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validate
 @RequestMapping("/rest/journalpostapi/v1/dokumentInfo")
 public class JournalfoerSkannetDokumentRestController {
 
-    private final AbacSecurityService abacSecurityService;
     private final LogiskVedleggService logiskVedleggService;
 
     private static final String DOKUMENT_INFO_ID_STRING = "dokumentInfoId";
@@ -54,17 +45,12 @@ public class JournalfoerSkannetDokumentRestController {
     private static final String TITTEL_STRING = "tittel";
 
     @Inject
-    public JournalfoerSkannetDokumentRestController(final AbacSecurityService abacSecurityService,
-                                                    final LogiskVedleggService logiskVedleggService) {
-        this.abacSecurityService = abacSecurityService;
+    public JournalfoerSkannetDokumentRestController(final LogiskVedleggService logiskVedleggService) {
         this.logiskVedleggService = logiskVedleggService;
     }
 
     @SwaggerEndreLogiskVedlegg
     @PostMapping(value = "/{dokumentInfoId}/logiskVedlegg/{logiskVedleggId}")
-    @Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_JOURNALPOST),
-                        @Abac.Attr(key = RESOURCE_FELLES_DOMENE, value = ARKIV_V2)},
-            actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION))
     @RestMetrics(value = "dok_request", extraTags = {"process_code", "endrelogiskvedlegg"}, percentiles = {0.5, 0.95})
     public ResponseEntity<String> endreLogiskVedlegg (
             @PathVariable String dokumentInfoId,
@@ -79,8 +65,6 @@ public class JournalfoerSkannetDokumentRestController {
         validateId(logiskVedleggId, LOGISK_VEDLEGG_ID_STRING);
         hasText(request.getTittel(), TITTEL_STRING);
 
-        abacSecurityService.assertAccessToDokumentInfo(Long.parseLong(dokumentInfoId));
-
         logiskVedleggService.endreLogiskVedlegg(dokumentInfoId, logiskVedleggId, request);
 
         log.info("endrelogiskvedlegg har endret logisk vedlegg med logiskVedleggId={}.", logiskVedleggId);
@@ -89,9 +73,6 @@ public class JournalfoerSkannetDokumentRestController {
 
     @SwaggerLeggTilLogiskVedlegg
     @PostMapping(value = "/{dokumentInfoId}/logiskVedlegg/")
-    @Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_JOURNALPOST),
-                        @Abac.Attr(key = RESOURCE_FELLES_DOMENE, value = ARKIV_V2)},
-            actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION))
     @RestMetrics(value = "dok_request", extraTags = {"process_code", "leggtillogiskvedlegg"}, percentiles = {0.5, 0.95})
     public ResponseEntity<LeggTilLogiskVedleggResponse> leggTilLogiskVedlegg (
             @PathVariable String dokumentInfoId,
@@ -103,8 +84,6 @@ public class JournalfoerSkannetDokumentRestController {
         validateId(dokumentInfoId, DOKUMENT_INFO_ID_STRING);
         hasText(request.getTittel(), TITTEL_STRING);
 
-        abacSecurityService.assertAccessToDokumentInfo(Long.parseLong(dokumentInfoId));
-
         String logiskVedleggId = logiskVedleggService.leggTilLogiskVedlegg(dokumentInfoId, request);
         LeggTilLogiskVedleggResponse response = LeggTilLogiskVedleggResponse.builder().logiskVedleggId(logiskVedleggId).build();
 
@@ -114,9 +93,6 @@ public class JournalfoerSkannetDokumentRestController {
 
     @SwaggerSlettLogiskVedlegg
     @DeleteMapping(value = "/{dokumentInfoId}/logiskVedlegg/{logiskVedleggId}")
-    @Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_JOURNALPOST),
-                        @Abac.Attr(key = RESOURCE_FELLES_DOMENE, value = ARKIV_V2)},
-            actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION))
     @RestMetrics(value = "dok_request", extraTags = {"process_code", "slettlogiskvedlegg"}, percentiles = {0.5, 0.95})
     public ResponseEntity<String> slettLogiskVedlegg (
             @PathVariable String dokumentInfoId,
@@ -127,8 +103,6 @@ public class JournalfoerSkannetDokumentRestController {
 
         validateId(dokumentInfoId, DOKUMENT_INFO_ID_STRING);
         validateId(logiskVedleggId, LOGISK_VEDLEGG_ID_STRING);
-
-        abacSecurityService.assertAccessToDokumentInfo(Long.parseLong(dokumentInfoId));
 
         logiskVedleggService.slettLogiskVedlegg(dokumentInfoId, logiskVedleggId);
 

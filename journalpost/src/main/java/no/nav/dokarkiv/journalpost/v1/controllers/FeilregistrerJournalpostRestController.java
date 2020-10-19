@@ -37,7 +37,6 @@ import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
 import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.ADMIN_UPDATE_ACTION;
 import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.ARKIV_V2;
-import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.UPDATE_ACTION;
 import static no.nav.dokarkiv.journalpost.v1.util.AvvikstypeConstants.AVBRYT;
 import static no.nav.dokarkiv.journalpost.v1.util.AvvikstypeConstants.FEILREGISTRER_SAKSTILKNYTNING;
 import static no.nav.dokarkiv.journalpost.v1.util.AvvikstypeConstants.OPPHEV_FEILREGISTRERT_SAKSTILKNYTNING;
@@ -72,9 +71,6 @@ public class FeilregistrerJournalpostRestController {
     @Transactional
     @SwaggerFeilregistrerSakstilknytning
     @PatchMapping("/{journalpostId}/feilregistrer/" + FEILREGISTRER_SAKSTILKNYTNING)
-    @Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_JOURNALPOST),
-                        @Abac.Attr(key = RESOURCE_FELLES_DOMENE, value = ARKIV_V2)},
-            actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION))
     @RestMetrics(value = "dok_request", extraTags = {"process_code", "feilregistrer"}, percentiles = {0.5, 0.95})
     public ResponseEntity<String> feilregistrerSakstilkytning (
             @PathVariable @ApiParam(value = "IDen til journalposten som skal feilregistreres", required = true, example = "77778888") String journalpostId) {
@@ -87,9 +83,6 @@ public class FeilregistrerJournalpostRestController {
     @Transactional
     @SwaggerOpphevFeilregistrertSakstilknytning
     @PatchMapping("/{journalpostId}/feilregistrer/" + OPPHEV_FEILREGISTRERT_SAKSTILKNYTNING)
-    @Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_JOURNALPOST),
-                        @Abac.Attr(key = RESOURCE_FELLES_DOMENE, value = ARKIV_V2)},
-            actions = @Abac.Attr(key = ACTION_ID, value = UPDATE_ACTION))
     @RestMetrics(value = "dok_request", extraTags = {"process_code", "feilregistrer"}, percentiles = {0.5, 0.95})
     public ResponseEntity<String> opphevFeilregistrertSakstilknytning (
             @PathVariable @ApiParam(value = "IDen til journalposten som skal feilregistreres", required = true, example = "77778888") String journalpostId) {

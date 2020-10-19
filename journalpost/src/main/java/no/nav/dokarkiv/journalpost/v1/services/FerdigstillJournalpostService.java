@@ -27,7 +27,7 @@ import java.util.List;
 
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
-import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
+import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_NAME;
 import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.FERDIGSTILL;
 import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateJournalfoerendeEnhet;
 import static org.apache.commons.lang3.StringUtils.isBlank;
@@ -93,8 +93,8 @@ public class FerdigstillJournalpostService {
 		setJournalpostStatus(journalpost);
 		journalpost.setJournalDato(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()));
 		journalpost.setJournalForendeEnhetId(journalfoerendeEnhet);
-		journalpost.setEndretAvNavn(MDC.get(MDC_USER_ID));
-		journalpost.setJournalfortAvNavn(MDC.get(MDC_USER_ID));
+		journalpost.setEndretAvNavn(MDC.get(MDC_USER_NAME));
+		journalpost.setJournalfortAvNavn(MDC.get(MDC_USER_NAME));
 		journalpost.setEndretKildeNavn(MDC.get(MDC_CONSUMER_ID));
 	}
 
