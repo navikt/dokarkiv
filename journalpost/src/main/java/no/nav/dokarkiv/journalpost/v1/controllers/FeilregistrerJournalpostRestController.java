@@ -9,6 +9,7 @@ import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
 import no.nav.dokarkiv.core.metrics.RestMetrics;
+import no.nav.dokarkiv.core.security.abac.AbacSecurityService;
 import no.nav.dokarkiv.journalpost.v1.services.AvbrytService;
 import no.nav.dokarkiv.journalpost.v1.services.FeilregistrerSakstilknytningService;
 import no.nav.dokarkiv.journalpost.v1.services.SettUkjentBrukerService;
@@ -56,16 +57,19 @@ public class FeilregistrerJournalpostRestController {
     private final SettUkjentBrukerService settUkjentBrukerService;
     private final AvbrytService avbrytService;
     private final AksjonsLoggService aksjonsLoggService;
+    private final AbacSecurityService abacSecurityService;
 
     @Inject
     public FeilregistrerJournalpostRestController(final FeilregistrerSakstilknytningService feilregistrerSakstilknytningService,
                                                   final SettUkjentBrukerService settUkjentBrukerService,
                                                   final AvbrytService avbrytService,
-                                                  final AksjonsLoggService aksjonsLoggService){
+                                                  final AksjonsLoggService aksjonsLoggService,
+                                                  AbacSecurityService abacSecurityService){
         this.feilregistrerSakstilknytningService = feilregistrerSakstilknytningService;
         this.settUkjentBrukerService = settUkjentBrukerService;
         this.avbrytService = avbrytService;
         this.aksjonsLoggService = aksjonsLoggService;
+        this.abacSecurityService = abacSecurityService;
     }
 
     @Transactional
@@ -101,6 +105,7 @@ public class FeilregistrerJournalpostRestController {
     @RestMetrics(value = "dok_request", extraTags = {"process_code", "feilregistrer"}, percentiles = {0.5, 0.95})
     public ResponseEntity<String> settUkjentBruker (
             @PathVariable @ApiParam(value = "IDen til journalposten som skal feilregistreres", required = true, example = "77778888") String journalpostId) {
+        abacSecurityService.assertAccessToJournalpost(journalpostId);
         List<ArkivElementEndringTO> arkivElementEndringTOList = settUkjentBrukerService.settUkjentBruker(journalpostId);
         populerAksjonslogg(journalpostId, AksjonsTypeCode.UKJENT_BRUKER ,arkivElementEndringTOList, FIKK_UKJENT_BRUKER);
         log.info(MDC.get(MDC_REQUEST_ID) + " har satt status til Ukjent Bruker for journalpost med journalpostId={}", journalpostId);
@@ -116,6 +121,7 @@ public class FeilregistrerJournalpostRestController {
     @RestMetrics(value = "dok_request", extraTags = {"process_code", "feilregistrer"}, percentiles = {0.5, 0.95})
     public ResponseEntity<String> avbryt (
             @PathVariable @ApiParam(value = "IDen til journalposten som skal feilregistreres", required = true, example = "77778888") String journalpostId) {
+        abacSecurityService.assertAccessToJournalpost(journalpostId);
         String response = avbrytService.avbryt(journalpostId);
         return ResponseEntity.ok().body(response);
     }
