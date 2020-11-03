@@ -2,6 +2,7 @@ package no.nav.dokarkiv.journalpost.v1.itest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
+import com.sun.net.httpserver.HttpsConfigurator;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.codes.AvsenderMottakerIdTypeCode;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
@@ -68,6 +69,7 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FILTYPE_XML;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FYSISK_DOKUMENT;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FYSISK_DOKUMENT_2;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.INNHOLD;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.JOURNALFOERENDEENHET_9999;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.JOURNALFOERENDE_ENHET;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.KANALREFERANSE_ID;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.SAK_ID;
@@ -204,7 +206,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
         assertNotNull(response.getBody());
-        assertNull(response.getBody().getMelding());
+        assertEquals(response.getBody().getMelding(), HttpStatus.OK.name());
         assertThat(response.getBody().getJournalpostferdigstilt(), is(true));
         assertNotNull(response.getBody().getDokumenter());
         assertNotNull(response.getBody().getDokumenter().get(0).getDokumentInfoId());
@@ -239,7 +241,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
         assertNotNull(response.getBody());
-        assertNull(response.getBody().getMelding());
+        assertEquals(response.getBody().getMelding(), HttpStatus.OK.name());
         assertThat(response.getBody().getJournalpostferdigstilt(), is(true));
 
         Journalpost journalpost = joarkRepository.findAll().iterator().next();
@@ -685,6 +687,47 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
     }
 
     @Test
+    public void shouldOppdatertJournalfoerendeEnhetToNullWhenFerdigstillingFailsAndJournalfoerendeEnhetEr9999() throws IOException {
+
+        abacPermit();
+
+        OpprettJournalpostRequest request = createMinimalRequest(INNGAAENDE)
+                .tema(TEMA_FOR)
+                .tittel(INNHOLD)
+                .bruker(null)
+                .journalfoerendeEnhet(JOURNALFOERENDEENHET_9999)
+                .dokumenter(singletonList(
+                        Dokument.builder()
+                                .tittel(DOKUMENT_TITTEL1)
+                                .brevkode(BREVKODE1)
+                                .dokumentKategori(DOKUMENTKATEGORI_SED)
+                                .dokumentvarianter(singletonList(DokumentVariant.builder()
+                                        .filtype(FILTYPE_PDF)
+                                        .variantformat(VARIANTFORMAT_ARKIV)
+                                        .fysiskDokument(FYSISK_DOKUMENT)
+                                        .build()))
+                                .build()))
+                .build();
+
+        HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
+        ResponseEntity<OpprettJournalpostResponse> response = restTemplate.exchange(URL_JOURNALPOST + FERDIGSTILL_QUERY, HttpMethod.POST, requestEntity, OpprettJournalpostResponse.class);
+
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertNotNull(response.getBody().getMelding());
+        assertTrue(response.getBody().getMelding().contains("må knyttes til en bruker"));
+        assertThat(response.getBody().getJournalpostferdigstilt(), is(false));
+
+        Journalpost journalpost = joarkRepository.findAll().iterator().next();
+        assertNotNull(journalpost.getJournalpostId());
+        assertEquals(JournalpostTypeCode.I, journalpost.getJournalposttype());
+        assertEquals(JournalStatusCode.M, journalpost.getJournalstatus());
+
+       assertNull(journalpost.getJournalForendeEnhetId());
+
+    }
+
+    @Test
     public void shouldFailOnFerdigstillingIfMissingBruker() throws IOException {
         abacPermit();
 
@@ -901,7 +944,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
         assertThat(responseFirst.getBody().getJournalpostId(), notNullValue());
         assertThat(responseFirst.getBody().getJournalpostferdigstilt(), is(true));
         assertThat(responseFirst.getBody().getJournalstatus(), is("ENDELIG"));
-        assertThat(responseFirst.getBody().getMelding(), nullValue());
+        assertThat(responseFirst.getBody().getMelding(), is(HttpStatus.OK.name()));
         assertThat(responseFirst.getBody().getDokumenter(), hasSize(1));
         assertEquals(HttpStatus.CONFLICT, responseSecond.getStatusCode());
         assertNotNull(responseSecond.getBody());
@@ -944,7 +987,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
         assertThat(responseFirst.getBody().getJournalpostId(), notNullValue());
         assertThat(responseFirst.getBody().getJournalpostferdigstilt(), is(true));
         assertThat(responseFirst.getBody().getJournalstatus(), is("ENDELIG"));
-        assertThat(responseFirst.getBody().getMelding(), nullValue());
+        assertThat(responseFirst.getBody().getMelding(), is(HttpStatus.OK.name()));
         assertThat(responseFirst.getBody().getDokumenter(), hasSize(1));
         assertEquals(HttpStatus.CONFLICT, responseSecond.getStatusCode());
         assertNotNull(responseSecond.getBody());
@@ -1051,7 +1094,6 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
     private void assertEqualOpprettJournalpostResponses(OpprettJournalpostResponse res1, OpprettJournalpostResponse res2) {
         assertEquals(res1.getJournalpostId(), res2.getJournalpostId());
         assertEquals(res1.getJournalstatus(), res2.getJournalstatus());
-        assertEquals(res1.getMelding(), res2.getMelding());
         assertEquals(res1.getJournalpostferdigstilt(), res2.getJournalpostferdigstilt());
         assertEquals(res1.getDokumenter().size(), res2.getDokumenter().size());
         for (int i = 0; i < res1.getDokumenter().size(); i++) {

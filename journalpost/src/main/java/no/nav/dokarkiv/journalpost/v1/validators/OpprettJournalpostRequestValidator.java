@@ -29,10 +29,12 @@ public class OpprettJournalpostRequestValidator {
 	private static final int FNR_LENGTH = 11;
 	private static final int AKTOERID_LENGTH = 13;
 	private static final int ORGNR_LENGTH = 9;
+	public static final String JOURNALFOERENDE_ENHE = "9999";
+	public static final String FORSOEKFERDIGSTILL = "false";
 
 	private static final String VALIDERER_IKKE_MOT_KODEVERK = "validerer ikke mot kodeverk";
 
-	public void validateRequest(OpprettJournalpostRequest request) {
+	public void validateRequest(OpprettJournalpostRequest request, String journalpostFerdigstilt) {
 		if (request.getAvsenderMottaker() != null) {
 			validateAvsenderMottaker(request.getAvsenderMottaker());
 		}
@@ -50,6 +52,9 @@ public class OpprettJournalpostRequestValidator {
 		}
 		if (request.getSak() != null) {
 			validateSak(request.getSak(), request.getBruker(), request.getTema());
+		}
+		if(isNotBlank(request.getJournalfoerendeEnhet())) {
+			validateJournalPost(journalpostFerdigstilt,request.getJournalfoerendeEnhet());
 		}
 		if (!request.getDokumenter().isEmpty()) {
 			request.getDokumenter().forEach(this::validateDokument);
@@ -108,6 +113,12 @@ public class OpprettJournalpostRequestValidator {
 			FagomradeCode.valueOf(tema);
 		} catch (IllegalArgumentException e) {
 			throw new InputValideringFeiletException(String.format("Oppgitt tema=%s %s", tema, VALIDERER_IKKE_MOT_KODEVERK));
+		}
+	}
+
+	private void validateJournalPost(String journalpostFerdigstilt, String journalfoerendeEnhet) {
+		if(FORSOEKFERDIGSTILL.equals(journalpostFerdigstilt) && JOURNALFOERENDE_ENHE.equals(journalfoerendeEnhet)) {
+			throw new InputValideringFeiletException("Ikke mulig å opprette journalpost på journalfoerendeEnhet 9999");
 		}
 	}
 

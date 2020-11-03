@@ -16,6 +16,7 @@ import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostR
 import no.nav.dokarkiv.journalpost.v1.validators.FerdigstillJournalpostValidator;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.MDC;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
@@ -48,6 +49,15 @@ public class FerdigstillJournalpostService {
 		this.aksjonsLoggService = aksjonsLoggService;
 	}
 
+
+	public void setJournalfoerendeEnhetNull(Long journalpostId, String journalfoerendeEnhet) {
+		Journalpost journalpost = joarkRepository.findById(journalpostId)
+				.orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostId)));
+		journalpost.setJournalForendeEnhetId(null);
+		joarkRepository.save(journalpost);
+		log.info("Oppdatert journalfoerendeEnhet={}",journalpost.getJournalForendeEnhetId());
+	}
+
 	public void ferdigstill(Long journalpostId, String journalfoerendeEnhet) {
 		Journalpost journalpost = joarkRepository.findById(journalpostId)
 				.orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostId)));
@@ -72,7 +82,7 @@ public class FerdigstillJournalpostService {
 			validateJournalfoerendeEnhet(request.getJournalfoerendeEnhet(), "journalfoerendeEnhet");
 			ferdigstill(journalpostId, request.getJournalfoerendeEnhet());
 			log.info(MDC.get(MDC_REQUEST_ID) + " har ferdigstilt journalpost, journalpostId={}", journalpostId);
-			ferdigstillResponse = Pair.of("ENDELIG", null);
+			ferdigstillResponse = Pair.of("ENDELIG", HttpStatus.OK.name());
 		} catch(JournalpostIkkeMidlertidigException e) {
 			log.info(MDC.get(MDC_REQUEST_ID) + " kunne ikke ferdigstille journalpost. Er endelig journalført fra før. journalpostId={}.", journalpostId);
 			ferdigstillResponse = Pair.of("ENDELIG", null);

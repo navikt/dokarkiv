@@ -54,6 +54,8 @@ import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
 import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateId;
+import static no.nav.dokarkiv.journalpost.v1.validators.OpprettJournalpostRequestValidator.JOURNALFOERENDE_ENHE;
+import static org.springframework.http.HttpStatus.OK;
 
 @Api(description = "Tjenester for å arkivere og journalføre i fagarkiv")
 @Slf4j
@@ -163,7 +165,7 @@ public class ArkiverOgJournalfoerRestController {
         RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDC_CONSUMER_ID));
 
         try {
-            opprettJournalpostRequestValidator.validateRequest(request);
+            opprettJournalpostRequestValidator.validateRequest(request, forsoekFerdigstill);
         } catch (InputValideringFeiletException e) {
             log.warn("rjoark202 feilet under validering. " + e.getMessage(), e);
             throw e;
@@ -187,6 +189,14 @@ public class ArkiverOgJournalfoerRestController {
         if (TRUE.equalsIgnoreCase(forsoekFerdigstill)) {
             ferdigstillResponse = Optional.of(ferdigstillJournalpostService.forsoekFerdigstill(journalpostId, request));
         }
+
+        String journalForendeEnhetId = opprettJournalpostResult.getJournalpost().getJournalForendeEnhetId();
+        String httpResponse = ferdigstillResponse.map(Pair::getValue).orElse(null);
+
+        if(TRUE.equalsIgnoreCase(forsoekFerdigstill) && JOURNALFOERENDE_ENHE.equals(journalForendeEnhetId) && !OK.name().equals(httpResponse)) {
+            ferdigstillJournalpostService.setJournalfoerendeEnhetNull(journalpostId,null);
+        }
+
 
         return ResponseEntity
                 .status(httpStatus)
