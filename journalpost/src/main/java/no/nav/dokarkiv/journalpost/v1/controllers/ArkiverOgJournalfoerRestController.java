@@ -54,7 +54,7 @@ import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
 import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateId;
-import static no.nav.dokarkiv.journalpost.v1.validators.OpprettJournalpostRequestValidator.JOURNALFOERENDE_ENHE;
+import static no.nav.dokarkiv.journalpost.v1.validators.OpprettJournalpostRequestValidator.MASKINELL_JOURNALFOERENDE_ENHET;
 import static org.springframework.http.HttpStatus.OK;
 
 @Api(description = "Tjenester for å arkivere og journalføre i fagarkiv")
@@ -158,6 +158,7 @@ public class ArkiverOgJournalfoerRestController {
             @RequestBody OpprettJournalpostRequest request,
             @ApiParam(name = "forsoekFerdigstill", value = "Angir hvorvidt tjenesten skal forsøke å ferdigstille eller ikke. Dette vil å sette journalposten i en status som indikerer at journalføring er komplett, \n og låser journalposten for senere endringer. " +
                     "Journalposten blir uansett opprettet, men kun ferdigstilt dersom den oppfyller krav til struktur og metadata som beskrevet under ferdigstillJournalpost.\n " +
+                    "Dersom det feiler å ferdigstille journalposten og den har status \"midlertidig\" og journalførendeEnhet==\"9999\" skal journalførendeEnhet settes til null." +
                     "Sjekk \"journalpostferdigstilt\" på responsen for å være sikker på at journalposten faktisk ble ferdigstilt.", allowableValues = "true, false", required = false)
             @RequestParam(required = false) String forsoekFerdigstill) {
         MDC.put(MDC_REQUEST_ID, "rjoark202");
@@ -191,9 +192,9 @@ public class ArkiverOgJournalfoerRestController {
         }
 
         String journalForendeEnhetId = opprettJournalpostResult.getJournalpost().getJournalForendeEnhetId();
-        String httpResponse = ferdigstillResponse.map(Pair::getValue).orElse(null);
+        String httpResponse = ferdigstillResponse.map(Pair::getKey).orElse(null);
 
-        if(TRUE.equalsIgnoreCase(forsoekFerdigstill) && JOURNALFOERENDE_ENHE.equals(journalForendeEnhetId) && !OK.name().equals(httpResponse)) {
+        if(TRUE.equalsIgnoreCase(forsoekFerdigstill) && MASKINELL_JOURNALFOERENDE_ENHET.equals(journalForendeEnhetId) && "MIDLERTIDIG".equals(httpResponse)) {
             ferdigstillJournalpostService.setJournalfoerendeEnhetNull(journalpostId,null);
         }
 

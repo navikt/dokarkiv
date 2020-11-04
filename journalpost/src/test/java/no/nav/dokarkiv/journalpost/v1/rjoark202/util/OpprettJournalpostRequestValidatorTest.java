@@ -313,7 +313,7 @@ public class OpprettJournalpostRequestValidatorTest {
 				.sak(Sak.builder().sakstype(Sakstype.ARKIVSAK).arkivsaksystem(Arkivsaksystem.GSAK).arkivsaksnummer(ARKIVSAKSNUMMER).build())
                 .build();
         expectedException.expect(InputValideringFeiletException.class);
-		expectedException.expectMessage("Ikke mulig å opprette journalpost på journalfoerendeEnhet 9999");
+		expectedException.expectMessage("Ikke mulig å opprette journalpost på journalfoerendeEnhet=9999");
         validator.validateRequest(request, FORSOEKFERDIGSTILL);
     }
 
