@@ -65,6 +65,7 @@ import static org.springframework.http.HttpStatus.OK;
 public class ArkiverOgJournalfoerRestController {
 
     private static final String TRUE = "true";
+    private static final String MIDLERTIDIG = "MIDLERTIDIG";
     private static final String STATUS_ENDELIG = "ENDELIG";
     private final FerdigstillJournalpostService ferdigstillJournalpostService;
     private final OppdaterJournalpostService oppdaterJournalpostService;
@@ -194,7 +195,7 @@ public class ArkiverOgJournalfoerRestController {
         String journalForendeEnhetId = opprettJournalpostResult.getJournalpost().getJournalForendeEnhetId();
         String httpResponse = ferdigstillResponse.map(Pair::getKey).orElse(null);
 
-        if(TRUE.equalsIgnoreCase(forsoekFerdigstill) && MASKINELL_JOURNALFOERENDE_ENHET.equals(journalForendeEnhetId) && "MIDLERTIDIG".equals(httpResponse)) {
+        if(TRUE.equalsIgnoreCase(forsoekFerdigstill) && MASKINELL_JOURNALFOERENDE_ENHET.equals(journalForendeEnhetId) && MIDLERTIDIG.equals(httpResponse)) {
             ferdigstillJournalpostService.setJournalfoerendeEnhetNull(journalpostId,null);
         }
 
