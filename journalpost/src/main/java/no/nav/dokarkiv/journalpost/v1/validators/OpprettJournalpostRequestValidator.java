@@ -19,6 +19,7 @@ import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostR
 
 import java.util.Arrays;
 
+import static java.lang.String.format;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.commons.lang3.StringUtils.isNumeric;
@@ -29,10 +30,12 @@ public class OpprettJournalpostRequestValidator {
 	private static final int FNR_LENGTH = 11;
 	private static final int AKTOERID_LENGTH = 13;
 	private static final int ORGNR_LENGTH = 9;
+	public static final String MASKINELL_JOURNALFOERENDE_ENHET = "9999";
+	public static final String JOURNALPOST_FERDIGSTILT = "false";
 
 	private static final String VALIDERER_IKKE_MOT_KODEVERK = "validerer ikke mot kodeverk";
 
-	public void validateRequest(OpprettJournalpostRequest request) {
+	public void validateRequest(OpprettJournalpostRequest request, String journalpostFerdigstilt) {
 		if (request.getAvsenderMottaker() != null) {
 			validateAvsenderMottaker(request.getAvsenderMottaker());
 		}
@@ -50,6 +53,9 @@ public class OpprettJournalpostRequestValidator {
 		}
 		if (request.getSak() != null) {
 			validateSak(request.getSak(), request.getBruker(), request.getTema());
+		}
+		if(isNotBlank(request.getJournalfoerendeEnhet())) {
+			validateJournalpost(journalpostFerdigstilt,request.getJournalfoerendeEnhet());
 		}
 		if (!request.getDokumenter().isEmpty()) {
 			request.getDokumenter().forEach(this::validateDokument);
@@ -107,7 +113,13 @@ public class OpprettJournalpostRequestValidator {
 		try {
 			FagomradeCode.valueOf(tema);
 		} catch (IllegalArgumentException e) {
-			throw new InputValideringFeiletException(String.format("Oppgitt tema=%s %s", tema, VALIDERER_IKKE_MOT_KODEVERK));
+			throw new InputValideringFeiletException(format("Oppgitt tema=%s %s", tema, VALIDERER_IKKE_MOT_KODEVERK));
+		}
+	}
+
+	private void validateJournalpost(String journalpostFerdigstilt, String journalfoerendeEnhet) {
+		if(JOURNALPOST_FERDIGSTILT.equals(journalpostFerdigstilt) && MASKINELL_JOURNALFOERENDE_ENHET.equals(journalfoerendeEnhet)) {
+			throw new InputValideringFeiletException(format("Ikke mulig å opprette journalpost på journalfoerendeEnhet=%s", MASKINELL_JOURNALFOERENDE_ENHET));
 		}
 	}
 
@@ -115,7 +127,7 @@ public class OpprettJournalpostRequestValidator {
 		try {
 			Behandlingstema.valueOf(behandlingstema);
 		} catch (IllegalArgumentException e) {
-			throw new InputValideringFeiletException(String.format("Oppgitt behandlingstema=%s %s", behandlingstema, VALIDERER_IKKE_MOT_KODEVERK));
+			throw new InputValideringFeiletException(format("Oppgitt behandlingstema=%s %s", behandlingstema, VALIDERER_IKKE_MOT_KODEVERK));
 		}
 	}
 
@@ -124,7 +136,7 @@ public class OpprettJournalpostRequestValidator {
 			try {
 				MottaksKanalCode.valueOf(request.getKanal());
 			} catch (IllegalArgumentException e) {
-				throw new InputValideringFeiletException(String.format("Oppgitt kanal=%s %s", request.getKanal(), VALIDERER_IKKE_MOT_KODEVERK));
+				throw new InputValideringFeiletException(format("Oppgitt kanal=%s %s", request.getKanal(), VALIDERER_IKKE_MOT_KODEVERK));
 			}
 
 			if (MottaksKanalCode.valueOf(request.getKanal()) == MottaksKanalCode.NAV_NO_UINNLOGGET && !request.getTema()
@@ -136,7 +148,7 @@ public class OpprettJournalpostRequestValidator {
 			try {
 				UtsendingsKanalCode.valueOf(request.getKanal());
 			} catch (IllegalArgumentException e) {
-				throw new InputValideringFeiletException(String.format("Oppgitt kanal=%s %s", request.getKanal(), VALIDERER_IKKE_MOT_KODEVERK));
+				throw new InputValideringFeiletException(format("Oppgitt kanal=%s %s", request.getKanal(), VALIDERER_IKKE_MOT_KODEVERK));
 			}
 		}
 	}
@@ -221,7 +233,7 @@ public class OpprettJournalpostRequestValidator {
 			try {
 				DokumentKategoriCode.valueOf(dokument.getDokumentKategori());
 			} catch (IllegalArgumentException e) {
-				throw new InputValideringFeiletException(String.format("Dokument.dokumentkategori %s", VALIDERER_IKKE_MOT_KODEVERK));
+				throw new InputValideringFeiletException(format("Dokument.dokumentkategori %s", VALIDERER_IKKE_MOT_KODEVERK));
 			}
 		}
 		if (!isEmpty(dokument.getDokumentvarianter())) {
@@ -236,7 +248,7 @@ public class OpprettJournalpostRequestValidator {
 		try {
 			FilTypeCode.valueOf(dokumentVariant.getFiltype());
 		} catch (IllegalArgumentException e) {
-			throw new InputValideringFeiletException(String.format("Dokument.dokumentvariant.filtype %s", VALIDERER_IKKE_MOT_KODEVERK));
+			throw new InputValideringFeiletException(format("Dokument.dokumentvariant.filtype %s", VALIDERER_IKKE_MOT_KODEVERK));
 		}
 		if (isBlank(dokumentVariant.getVariantformat())) {
 			throw new InputValideringFeiletException("Dokument.dokumentvariant.variantformat må være satt");
@@ -244,7 +256,7 @@ public class OpprettJournalpostRequestValidator {
 		try {
 			VariantFormatCode.valueOf(dokumentVariant.getVariantformat());
 		} catch (IllegalArgumentException e) {
-			throw new InputValideringFeiletException(String.format("Dokument.dokumentvariant.variantformat %s", VALIDERER_IKKE_MOT_KODEVERK));
+			throw new InputValideringFeiletException(format("Dokument.dokumentvariant.variantformat %s", VALIDERER_IKKE_MOT_KODEVERK));
 		}
 		if (dokumentVariant.getVariantformat().equals(VariantFormatCode.ARKIV.name())
 				&& !Arrays.asList(FilTypeCode.PDF, FilTypeCode.PDFA)

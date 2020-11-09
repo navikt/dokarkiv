@@ -54,6 +54,8 @@ import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
 import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateId;
+import static no.nav.dokarkiv.journalpost.v1.validators.OpprettJournalpostRequestValidator.MASKINELL_JOURNALFOERENDE_ENHET;
+import static org.springframework.http.HttpStatus.OK;
 
 @Api(description = "Tjenester for å arkivere og journalføre i fagarkiv")
 @Slf4j
@@ -63,6 +65,7 @@ import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validate
 public class ArkiverOgJournalfoerRestController {
 
     private static final String TRUE = "true";
+    private static final String MIDLERTIDIG = "MIDLERTIDIG";
     private static final String STATUS_ENDELIG = "ENDELIG";
     private final FerdigstillJournalpostService ferdigstillJournalpostService;
     private final OppdaterJournalpostService oppdaterJournalpostService;
@@ -156,6 +159,7 @@ public class ArkiverOgJournalfoerRestController {
             @RequestBody OpprettJournalpostRequest request,
             @ApiParam(name = "forsoekFerdigstill", value = "Angir hvorvidt tjenesten skal forsøke å ferdigstille eller ikke. Dette vil å sette journalposten i en status som indikerer at journalføring er komplett, \n og låser journalposten for senere endringer. " +
                     "Journalposten blir uansett opprettet, men kun ferdigstilt dersom den oppfyller krav til struktur og metadata som beskrevet under ferdigstillJournalpost.\n " +
+                    "Dersom det feiler å ferdigstille journalposten og den har status \"midlertidig\" og journalførendeEnhet==\"9999\" skal journalførendeEnhet settes til null." +
                     "Sjekk \"journalpostferdigstilt\" på responsen for å være sikker på at journalposten faktisk ble ferdigstilt.", allowableValues = "true, false", required = false)
             @RequestParam(required = false) String forsoekFerdigstill) {
         MDC.put(MDC_REQUEST_ID, "rjoark202");
@@ -163,7 +167,7 @@ public class ArkiverOgJournalfoerRestController {
         RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDC_CONSUMER_ID));
 
         try {
-            opprettJournalpostRequestValidator.validateRequest(request);
+            opprettJournalpostRequestValidator.validateRequest(request, forsoekFerdigstill);
         } catch (InputValideringFeiletException e) {
             log.warn("rjoark202 feilet under validering. " + e.getMessage(), e);
             throw e;
@@ -187,6 +191,14 @@ public class ArkiverOgJournalfoerRestController {
         if (TRUE.equalsIgnoreCase(forsoekFerdigstill)) {
             ferdigstillResponse = Optional.of(ferdigstillJournalpostService.forsoekFerdigstill(journalpostId, request));
         }
+
+        String journalForendeEnhetId = opprettJournalpostResult.getJournalpost().getJournalForendeEnhetId();
+        String httpResponse = ferdigstillResponse.map(Pair::getKey).orElse(null);
+
+        if(TRUE.equalsIgnoreCase(forsoekFerdigstill) && MASKINELL_JOURNALFOERENDE_ENHET.equals(journalForendeEnhetId) && MIDLERTIDIG.equals(httpResponse)) {
+            ferdigstillJournalpostService.setJournalfoerendeEnhetNull(journalpostId,null);
+        }
+
 
         return ResponseEntity
                 .status(httpStatus)
