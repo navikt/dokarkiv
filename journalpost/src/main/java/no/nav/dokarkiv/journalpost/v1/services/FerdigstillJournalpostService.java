@@ -54,13 +54,11 @@ public class FerdigstillJournalpostService {
     public void setJournalfoerendeEnhetNull(Long journalpostId, String journalfoerendeEnhet) {
         Journalpost journalpost = joarkRepository.findById(journalpostId)
                 .orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostId)));
-        JournalStatusCode prevJournalstatus = journalpost.getJournalstatus();
-        String prevJournalfoerendeEnhet = journalpost.getJournalForendeEnhetId();
-        String prevJournalfortAvNavn = journalpost.getJournalfortAvNavn();
-        oppdatertJournalpost(journalpost, journalfoerendeEnhet);
-        joarkRepository.save(journalpost);
-        log.info("Oppdatert journalfoerendeEnhet={}", journalpost.getJournalForendeEnhetId());
-        addAksjonslogg(journalpostId, getArkivElementEndringer(journalpost, prevJournalstatus, prevJournalfoerendeEnhet, prevJournalfortAvNavn));
+        if(JournalpostTypeCode.I.equals(journalpost.getJournalposttype())) {
+            oppdatertJournalpost(journalpost, journalfoerendeEnhet);
+            joarkRepository.save(journalpost);
+            log.info("Oppdatert journalfoerendeEnhet={}", journalpost.getJournalForendeEnhetId());
+        }
     }
 
     public void ferdigstill(Long journalpostId, String journalfoerendeEnhet) {
@@ -122,23 +120,6 @@ public class FerdigstillJournalpostService {
         }
     }
 
-
-    private void addAksjonslogg(Long journalpostId, List<ArkivElementEndringTO> arkivElementEndringTOList) {
-        String bruker = joarkRepository.findById(journalpostId).orElseThrow(JournalpostIkkeFunnetException::new).getBrukere().iterator().next().getBrukerId();
-        AksjonsLoggTO aksjonsLoggTo = AksjonsLoggTO.builder()
-                .aksjon(ENDRE_METADATA)
-                .journalpostId(journalpostId)
-                .utfoertAv(MDC.get(MDC_CONSUMER_ID))
-                .bruker(bruker)
-                .melding("JournalfoerendeEnhe blank ut")
-                .build();
-
-        try {
-            aksjonsLoggService.validateAndSaveAksjonsLogg(aksjonsLoggTo, arkivElementEndringTOList);
-        } catch (UgyldigAksjonsLoggException e) {
-            log.warn("Kunne ikke skrive til AksjonsLogg: " + e.getMessage());
-        }
-    }
 
     private void populerAksjonslogg(Long journalpostId, List<ArkivElementEndringTO> arkivElementEndringTOList) {
         String bruker = joarkRepository.findById(journalpostId).orElseThrow(JournalpostIkkeFunnetException::new).getBrukere().iterator().next().getBrukerId();
