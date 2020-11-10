@@ -60,7 +60,7 @@ public class FerdigstillJournalpostService {
         oppdatertJournalpost(journalpost, journalfoerendeEnhet);
         joarkRepository.save(journalpost);
         log.info("Oppdatert journalfoerendeEnhet={}", journalpost.getJournalForendeEnhetId());
-        addAksjonslogg(journalpostId, getArkivElementEndringer(journalpost, prevJournalstatus, prevJournalfoerendeEnhet, prevJournalfortAvNavn));
+        addAksjonslogg(journalpost, getArkivElementEndringer(journalpost, prevJournalstatus, prevJournalfoerendeEnhet, prevJournalfortAvNavn));
     }
 
     public void ferdigstill(Long journalpostId, String journalfoerendeEnhet) {
@@ -123,11 +123,11 @@ public class FerdigstillJournalpostService {
     }
 
 
-    private void addAksjonslogg(Long journalpostId, List<ArkivElementEndringTO> arkivElementEndringTOList) {
-        String bruker = joarkRepository.findById(journalpostId).orElseThrow(JournalpostIkkeFunnetException::new).getBrukere().iterator().next().getBrukerId();
+    private void addAksjonslogg(Journalpost journalpost, List<ArkivElementEndringTO> arkivElementEndringTOList) {
+        String bruker = journalpost.getBrukere()==null ? null : journalpost.getBrukere().iterator().next().getBrukerId();
         AksjonsLoggTO aksjonsLoggTo = AksjonsLoggTO.builder()
                 .aksjon(ENDRE_METADATA)
-                .journalpostId(journalpostId)
+                .journalpostId(journalpost.getJournalpostId())
                 .utfoertAv(MDC.get(MDC_CONSUMER_ID))
                 .bruker(bruker)
                 .melding("JournalfoerendeEnhe blank ut")
