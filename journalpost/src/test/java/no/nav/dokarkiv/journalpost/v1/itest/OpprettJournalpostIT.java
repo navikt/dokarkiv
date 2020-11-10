@@ -677,7 +677,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
         assertEquals(JournalStatusCode.M, journalpost.getJournalstatus());
 
         List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
-        assertEquals(2, aksjonsLoggList.size());
+        assertEquals(1, aksjonsLoggList.size());
         assertEquals(SERVICE_USER_ID, aksjonsLoggList.get(0).getUtfoertAv());
         assertEquals(BRUKER_ID_PERSON, aksjonsLoggList.get(0).getBruker());
         assertEquals(OPPRETT, aksjonsLoggList.get(0).getAksjon());
@@ -727,7 +727,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
        assertNull(journalpost.getJournalForendeEnhetId());
 
         List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
-        assertEquals(2, aksjonsLoggList.size());
+        assertEquals(1, aksjonsLoggList.size());
         assertEquals(SERVICE_USER_ID, aksjonsLoggList.get(0).getUtfoertAv());
         assertEquals(BRUKER_ID_PERSON, aksjonsLoggList.get(0).getBruker());
         assertEquals(OPPRETT, aksjonsLoggList.get(0).getAksjon());
