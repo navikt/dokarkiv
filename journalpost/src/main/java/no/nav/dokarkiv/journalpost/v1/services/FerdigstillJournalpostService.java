@@ -54,13 +54,9 @@ public class FerdigstillJournalpostService {
     public void setJournalfoerendeEnhetNull(Long journalpostId, String journalfoerendeEnhet) {
         Journalpost journalpost = joarkRepository.findById(journalpostId)
                 .orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostId)));
-        JournalStatusCode prevJournalstatus = journalpost.getJournalstatus();
-        String prevJournalfoerendeEnhet = journalpost.getJournalForendeEnhetId();
-        String prevJournalfortAvNavn = journalpost.getJournalfortAvNavn();
         oppdatertJournalpost(journalpost, journalfoerendeEnhet);
         joarkRepository.save(journalpost);
         log.info("Oppdatert journalfoerendeEnhet={}", journalpost.getJournalForendeEnhetId());
-        addAksjonslogg(journalpost, getArkivElementEndringer(journalpost, prevJournalstatus, prevJournalfoerendeEnhet, prevJournalfortAvNavn));
     }
 
     public void ferdigstill(Long journalpostId, String journalfoerendeEnhet) {
@@ -119,24 +115,6 @@ public class FerdigstillJournalpostService {
             journalpost.setJournalstatus(JournalStatusCode.FS);
         } else { // JournalpostTypeCode.N
             journalpost.setJournalstatus(JournalStatusCode.FS);
-        }
-    }
-
-
-    private void addAksjonslogg(Journalpost journalpost, List<ArkivElementEndringTO> arkivElementEndringTOList) {
-        String bruker = journalpost.getBrukere()==null ? null : journalpost.getBrukere().iterator().next().getBrukerId();
-        AksjonsLoggTO aksjonsLoggTo = AksjonsLoggTO.builder()
-                .aksjon(ENDRE_METADATA)
-                .journalpostId(journalpost.getJournalpostId())
-                .utfoertAv(MDC.get(MDC_CONSUMER_ID))
-                .bruker(bruker)
-                .melding("JournalfoerendeEnhe blank ut")
-                .build();
-
-        try {
-            aksjonsLoggService.validateAndSaveAksjonsLogg(aksjonsLoggTo, arkivElementEndringTOList);
-        } catch (UgyldigAksjonsLoggException e) {
-            log.warn("Kunne ikke skrive til AksjonsLogg: " + e.getMessage());
         }
     }
 
