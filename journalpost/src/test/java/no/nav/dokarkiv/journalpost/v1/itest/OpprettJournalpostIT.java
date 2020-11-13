@@ -685,13 +685,17 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
     }
 
     @Test
-    public void shouldFailOnFerdigstillingIfMissingBruker() throws IOException {
+    public void shouldOppdatertJournalfoerendeEnhetToNullWhenFerdigstillingFailsAndJournalfoerendeEnhetEr9999() throws IOException {
+
         abacPermit();
 
         OpprettJournalpostRequest request = createMinimalRequest(INNGAAENDE)
                 .tema(TEMA_FOR)
                 .tittel(INNHOLD)
-                .bruker(null)
+                .bruker(Bruker.builder()
+                        .id(BRUKER_ID_PERSON)
+                        .idType(BrukerIdType.FNR)
+                        .build())
                 .journalfoerendeEnhet("9999")
                 .dokumenter(singletonList(
                         Dokument.builder()
@@ -712,7 +716,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
         assertNotNull(response.getBody());
         assertNotNull(response.getBody().getMelding());
-        assertTrue(response.getBody().getMelding().contains("må knyttes til en bruker"));
+        assertTrue(response.getBody().getMelding().contains("Kunne ikke ferdigstille: Journalpost"));
         assertThat(response.getBody().getJournalpostferdigstilt(), is(false));
 
         Journalpost journalpost = joarkRepository.findAll().iterator().next();
@@ -720,10 +724,12 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
         assertEquals(JournalpostTypeCode.I, journalpost.getJournalposttype());
         assertEquals(JournalStatusCode.M, journalpost.getJournalstatus());
 
+       assertNull(journalpost.getJournalForendeEnhetId());
+
         List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
         assertEquals(1, aksjonsLoggList.size());
         assertEquals(SERVICE_USER_ID, aksjonsLoggList.get(0).getUtfoertAv());
-        assertEquals(UKJENT, aksjonsLoggList.get(0).getBruker());
+        assertEquals(BRUKER_ID_PERSON, aksjonsLoggList.get(0).getBruker());
         assertEquals(OPPRETT, aksjonsLoggList.get(0).getAksjon());
         assertTrue(aksjonsLoggList.get(0).getArkivElementEndringer().isEmpty());
     }
