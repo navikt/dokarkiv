@@ -131,7 +131,7 @@ public class OppdaterJournalpostService {
 	private String hentMeldingFraAksjonsType(AksjonsTypeCode kode) {
 		return kode.equals(AksjonsTypeCode.SAKSTILKNYTNING) ?
 				"Journalposten ble knyttet til en sak." :
-				"Metadata på journalposten ble endretFlagg.";
+				"Metadata på journalposten ble endret";
 	}
 
 	private void assertDokumentInfoNotNull(DokumentInfo dokumentInfo, String journalpostId, String dokumentId) {
