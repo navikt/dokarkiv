@@ -18,9 +18,14 @@ import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_NAME;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.SAKSRELASJON_FAGSYSTEM;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.SAKSRELASJON_SAKID;
+import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.SAK_APPLIKASJON;
+import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.SAK_FAGSAKNR;
+import static no.nav.dokarkiv.journalpost.v1.api.Sakstype.FAGSAK;
 
 @Component
 public class SaksrelasjonUpdater {
+
+	private static final String APPLIKASJON_FS22 = "FS22";
 
 	public ChangeTracker updateFields(Journalpost journalpost, OppdaterJournalpostRequest request, String sakId) {
 		ChangeTracker endret = new ChangeTracker();
@@ -40,6 +45,9 @@ public class SaksrelasjonUpdater {
 			updateSaksnummer(sakId, request, saksrelasjon, endret);
 			updateArkivsaksystem(request, saksrelasjon, endret);
 
+			endret.add(SAK_FAGSAKNR, null, request.getSak().getFagsakId());
+			endret.add(SAK_APPLIKASJON, null, FAGSAK.equals(request.getSak().getSakstype()) ?
+					request.getSak().getFagsaksystem().name() : APPLIKASJON_FS22);
 
 			if (endret.isEndretFlagg() && !newSak) {
 				saksrelasjon.setEndretAvNavn(MDC.get(MDC_USER_NAME));

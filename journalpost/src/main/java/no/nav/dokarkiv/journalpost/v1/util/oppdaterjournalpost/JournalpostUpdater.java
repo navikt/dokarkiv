@@ -32,9 +32,12 @@ import java.util.stream.Collectors;
 
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_NAME;
+import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_AVSENDER_MOTTAKER;
+import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_AVSENDER_MOTTAKER_ID;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_BRUKER;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_FAGOMRADE;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_INNHOLD;
+import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_JOURNALFORENDE_ENHET;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_JOURNALSTATUS;
 import static org.apache.logging.log4j.util.Strings.isNotBlank;
 
@@ -94,6 +97,11 @@ public class JournalpostUpdater {
 
 	private void updateJournalfoerendeEnhet(Journalpost journalpost, OppdaterJournalpostRequest oppdaterJournalpostRequest, ChangeTracker endret) {
 		if (isNotBlank(oppdaterJournalpostRequest.getJournalfoerendeEnhet())) {
+			endret.add(
+					JOURNALPOST_JOURNALFORENDE_ENHET,
+					journalpost.getJournalForendeEnhetId(),
+					oppdaterJournalpostRequest.getJournalfoerendeEnhet()
+			);
 			journalpost.setJournalForendeEnhetId(oppdaterJournalpostRequest.getJournalfoerendeEnhet());
 			endret.setEndretFlagg(true);
 		}
@@ -146,6 +154,11 @@ public class JournalpostUpdater {
 					endret.setEndretFlagg(true);
 				}
 				if (!ny.getId().equalsIgnoreCase(journalpost.getAvsenderMottakerId())) {
+					endret.add(
+							JOURNALPOST_AVSENDER_MOTTAKER_ID,
+							journalpost.getAvsenderMottakerId(),
+							oppdaterJournalpostRequest.getAvsenderMottaker().getId()
+					);
 					journalpost.setAvsenderMottakerId(ny.getId());
 					endret.setEndretFlagg(true);
 				}
@@ -162,6 +175,11 @@ public class JournalpostUpdater {
 			}
 
 			if (isNotBlank(oppdaterJournalpostRequest.getAvsenderMottaker().getNavn())) {
+				endret.add(
+						JOURNALPOST_AVSENDER_MOTTAKER,
+						journalpost.getAvsenderMottaker(),
+						oppdaterJournalpostRequest.getAvsenderMottaker().getNavn()
+				);
 				journalpost.setAvsenderMottaker(oppdaterJournalpostRequest.getAvsenderMottaker().getNavn());
 				endret.setEndretFlagg(true);
 			}

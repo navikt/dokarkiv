@@ -149,12 +149,12 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
         assertEquals(PERSON_USER_ID, aksjonsLoggList.get(0).getUtfoertAv());
         assertEquals(SERVICE_USER_ID, aksjonsLoggList.get(0).getApplikasjon());
         assertEquals(AksjonsTypeCode.ENDRE_METADATA, aksjonsLoggList.get(0).getAksjon());
-        assertEquals(3, aksjonsLoggList.get(0).getArkivElementEndringer().size());
+        assertEquals(6, aksjonsLoggList.get(0).getArkivElementEndringer().size());
 
         assertEquals(PERSON_USER_ID, aksjonsLoggList.get(1).getUtfoertAv());
         assertEquals(SERVICE_USER_ID, aksjonsLoggList.get(1).getApplikasjon());
         assertEquals(AksjonsTypeCode.SAKSTILKNYTNING, aksjonsLoggList.get(1).getAksjon());
-        assertEquals(2, aksjonsLoggList.get(1).getArkivElementEndringer().size());
+        assertEquals(3, aksjonsLoggList.get(1).getArkivElementEndringer().size());
 
         assertEquals(PERSON_USER_ID, aksjonsLoggList.get(2).getUtfoertAv());
         assertEquals(SERVICE_USER_ID, aksjonsLoggList.get(2).getApplikasjon());
@@ -219,7 +219,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
         List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
         assertThat(aksjonsLoggList, hasSize(1));
         assertThat(aksjonsLoggList.get(0).getAksjon(), is(AksjonsTypeCode.SAKSTILKNYTNING));
-        assertThat(aksjonsLoggList.get(0).getArkivElementEndringer(), hasSize(2));
+        assertThat(aksjonsLoggList.get(0).getArkivElementEndringer(), hasSize(3));
         TestTransaction.end();
     }
 

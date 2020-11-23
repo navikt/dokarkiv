@@ -22,6 +22,9 @@ public class ArkivElementConstants {
 	public static final String JOURNALPOST_FAGOMRADE = "Journalpost.fagomrade";
 	public static final String JOURNALPOST_INNHOLD = "Journalpost.innhold";
 	public static final String JOURNALPOST_BRUKER = "Journalpost.bruker";
+	public static final String JOURNALPOST_AVSENDER_MOTTAKER = "journalpost.avsend_mottaker";
+	public static final String JOURNALPOST_AVSENDER_MOTTAKER_ID = "journalpost.avsend_mottak_id";
+	public static final String JOURNALPOST_JOURNALFORENDE_ENHET = "journalpost.journalf_enhet";
 
 	public static final String RELASJON_DOKUMENT_INFO_ID = "JournalpostDokumentInfoRelasjon.dokumentInfoId";
 
@@ -29,6 +32,9 @@ public class ArkivElementConstants {
 
 	public static final String SAKSRELASJON_FAGSYSTEM = "Saksrelasjon.fagsystem";
 	public static final String SAKSRELASJON_SAKID = "Saksrelasjon.sakId";
+
+	public static final String SAK_FAGSAKNR = "Sak.fagsaknr";
+	public static final String SAK_APPLIKASJON = "Sak.applikasjon";
 
 	public static final String RELASJON_SKJERMING_TYPE = "JournalpostDokumentInfoRelasjon.skjermingType";
 
