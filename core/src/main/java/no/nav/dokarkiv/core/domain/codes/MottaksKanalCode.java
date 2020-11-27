@@ -32,7 +32,7 @@ public enum MottaksKanalCode implements CtiRelationship<MottaksKanalCode, String
 	/** Innsendt av NAV-ansatt **/
 	INNSENDT_NAV_ANSATT,
 	/** Innlogget chat **/
-	NAV_NO_CHAT	;
+	NAV_NO_CHAT;
 
 	/** {@inheritDoc} */
 	@Override
