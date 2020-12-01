@@ -2,7 +2,6 @@ package no.nav.dokarkiv.hentjournalsakinfo.dto;
 
 import lombok.Value;
 import no.nav.dokarkiv.core.domain.codes.AvsenderMottakerIdTypeCode;
-import no.nav.dokarkiv.core.domain.codes.Behandlingstema;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
@@ -24,7 +23,7 @@ public class JournalpostDto {
 	private final Long totaltAntall;
 	private final String innhold;
 	private final FagomradeCode fagomrade;
-	private final Behandlingstema behandlingstema;
+	private final String behandlingstema;
 	private final String behandlingstemanavn;
 	private final JournalStatusCode journalstatus;
 	private final String avsenderMottakerId;

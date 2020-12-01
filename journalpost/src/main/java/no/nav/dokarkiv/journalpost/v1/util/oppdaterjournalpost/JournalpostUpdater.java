@@ -4,7 +4,6 @@ import no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerService;
 import no.nav.dokarkiv.core.consumer.aktoer.HentIdentForAktoerIdRequestTo;
 import no.nav.dokarkiv.core.consumer.aktoer.PersonIkkeFunnetException;
 import no.nav.dokarkiv.core.domain.codes.AvsenderMottakerIdTypeCode;
-import no.nav.dokarkiv.core.domain.codes.Behandlingstema;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
@@ -139,7 +138,7 @@ public class JournalpostUpdater {
 
 	private void updateBehandlingstema(Journalpost journalpost, OppdaterJournalpostRequest oppdaterJournalpostRequest, ChangeTracker endret) {
 		if (isNotBlank(oppdaterJournalpostRequest.getBehandlingstema())) {
-			journalpost.setBehandlingstema(Behandlingstema.valueOf(oppdaterJournalpostRequest.getBehandlingstema()));
+			journalpost.setBehandlingstema(oppdaterJournalpostRequest.getBehandlingstema());
 			endret.setEndretFlagg(true);
 		}
 	}

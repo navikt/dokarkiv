@@ -11,7 +11,6 @@ import no.nav.dokarkiv.core.domain.builder.JournalpostBuilder;
 import no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder;
 import no.nav.dokarkiv.core.domain.builder.SaksrelasjonBuilder;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
-import no.nav.dokarkiv.core.domain.codes.Behandlingstema;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
@@ -208,7 +207,7 @@ public class TestDataUtils {
 				.endretAvNavn("test")
 				.fagomrade(fagomradeCode)
 				.mottakskanal(MottaksKanalCode.NAV_NO)
-				.behandlingstema(Behandlingstema.ab0001)
+				.behandlingstema("ab0001")
 				.build();
 
 		Saksrelasjon saksrelasjon = Saksrelasjon

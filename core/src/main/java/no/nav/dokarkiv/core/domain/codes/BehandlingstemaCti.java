@@ -15,6 +15,10 @@ import javax.persistence.Table;
  *
  * @author TPaul Magne Lunde, Visma Consulting
  */
+
+/**
+ * Denne klassen er ikke lenger i bruk, men er fortsatt her for tester.
+ */
 @Entity
 @Table(name = "T_K_BEHANDLINGSTEMA")
 @AttributeOverrides( { @AttributeOverride(name = "code", column = @Column(name = "k_behandlingstema")),

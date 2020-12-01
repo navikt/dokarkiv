@@ -275,5 +275,17 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 		OppdaterJournalpostValidator.validateOppdaterteFelt(oppdaterJournalpostRequest, JournalStatusCode.D, JournalpostTypeCode.I);
 	}
 
+	@Test
+	public void shouldThrowExceptionWhenInvalidBehandlingstema(){
+		oppdaterJournalpostRequest = OppdaterJournalpostRequest.builder()
+				.tema(TEMA_FOR)
+				.behandlingstema("bb3333")
+				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(BRUKER_ID_PERSON).build())
+				.sak(Sak.builder().sakstype(Sakstype.GENERELL_SAK).build())
+				.build();
+		expectedException.expect(InputValideringFeiletException.class);
+		expectedException.expectMessage("Behandlingstema er ikke på formatet ´ab + 4 siffer´. Behandlingstema er=bb3333");
+		OppdaterJournalpostValidator.validateOppdaterteFelt(oppdaterJournalpostRequest, JournalStatusCode.M, JournalpostTypeCode.I);
+	}
 
 }

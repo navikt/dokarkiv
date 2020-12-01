@@ -4,7 +4,6 @@ import no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerService;
 import no.nav.dokarkiv.core.consumer.aktoer.HentIdentForAktoerIdRequestTo;
 import no.nav.dokarkiv.core.consumer.aktoer.PersonIkkeFunnetException;
 import no.nav.dokarkiv.core.domain.codes.AvsenderMottakerIdTypeCode;
-import no.nav.dokarkiv.core.domain.codes.Behandlingstema;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
@@ -71,7 +70,7 @@ public class OpprettJournalpostApiRequestMapper {
 				.avsenderMottakerIdType(request.getAvsenderMottaker() == null ? null : mapAvsenderMottakerType(request.getAvsenderMottaker()
 						.getIdType()))
 				.land(request.getAvsenderMottaker() == null ? null : trim(request.getAvsenderMottaker().getLand()))
-				.behandlingstema(mapBehandlingstema(request))
+				.behandlingstema(request.getBehandlingstema())
 				.tilleggsopplysninger(mapTilleggsopplysninger(request))
 				.mottakskanal(mapMottakskanal(request))
 				.utsendingskanal(mapUtsendingskanal(request))
@@ -161,10 +160,6 @@ public class OpprettJournalpostApiRequestMapper {
 			return request.getDatoMottatt() == null ? Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()) : request.getDatoMottatt();
 		}
 		return null;
-	}
-
-	private Behandlingstema mapBehandlingstema(OpprettJournalpostRequest request) {
-		return isBlank(request.getBehandlingstema()) ? null : Behandlingstema.valueOf(request.getBehandlingstema());
 	}
 
 	private FagomradeCode mapTema(OpprettJournalpostRequest request) {

@@ -724,4 +724,15 @@ public class OpprettJournalpostRequestValidatorTest {
 
         validator.validateRequest(request, FORSOEKFERDIGSTILL);
     }
+
+    @Test
+    public void shouldThrowExceptionWhenBehandlingstemaIsNotValid() {
+        request = createMinimalRequest(JournalpostType.INNGAAENDE)
+                .behandlingstema("ab333")
+                .avsenderMottaker(null)
+                .build();
+        expectedException.expect(InputValideringFeiletException.class);
+        expectedException.expectMessage("Oppgitt behandlingstema=ab333 er ikke på formatet ´ab + fire siffer´.");
+        validator.validateRequest(request, FORSOEKFERDIGSTILL);
+    }
 }

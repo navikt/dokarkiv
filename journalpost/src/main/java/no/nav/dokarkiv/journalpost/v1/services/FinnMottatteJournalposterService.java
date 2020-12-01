@@ -66,7 +66,7 @@ public class FinnMottatteJournalposterService {
 					.map(e -> new UbehandletBruker(e.getBrukerId(), e.getBrukerType().name()))
 					.orElse(null);
 			String tema = journalpost.getFagomrade() != null ? journalpost.getFagomrade().name() : null;
-			String behandlingstema = journalpost.getBehandlingstema() != null ? journalpost.getBehandlingstema().name() : null;
+			String behandlingstema = journalpost.getBehandlingstema() != null ? journalpost.getBehandlingstema() : null;
 			String journalforendeEnhet = journalpost.getJournalForendeEnhetId();
 			Date datoOpprettet = journalpost.getChangeStamp() != null ? journalpost.getChangeStamp().getCreatedDate() : null;
 

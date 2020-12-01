@@ -118,7 +118,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
         assertThat(oppdatertJP.getChangeStamp().getUpdatedBy(), is(PERSON_USER_ID));
         assertThat(oppdatertJP.getInnhold(), is(request.getTittel()));
         assertThat(oppdatertJP.getFagomrade().name(), is(request.getTema()));
-        assertThat(oppdatertJP.getBehandlingstema().name(), is(request.getBehandlingstema()));
+        assertThat(oppdatertJP.getBehandlingstema(), is(request.getBehandlingstema()));
         assertThat(oppdatertJP.getJournalForendeEnhetId(), is(request.getJournalfoerendeEnhet()));
         assertThat(oppdatertJP.getLand(), is(request.getAvsenderMottaker().getLand()));
         assertThat(oppdatertJP.getAvsenderMottakerId(), is(request.getAvsenderMottaker().getId()));
