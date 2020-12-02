@@ -37,6 +37,10 @@ public final class OppdaterJournalpostValidator {
 		if (journalpostType != JournalpostTypeCode.U || !restrictedJournalpostStatusCodes.contains(journalpostStatus)) {
 			checkIfIllegalFieldIsSet(request.getDatoRetur(), "DatoRetur", journalpostStatus, journalpostType);
 		}
+
+		if (isNotBlank(request.getBehandlingstema())) {
+			validateBehandlingstema(request.getBehandlingstema());
+		}
 	}
 
 
@@ -124,6 +128,12 @@ public final class OppdaterJournalpostValidator {
 
 	private static boolean isBrukerNull(Bruker bruker){
 		return isBlank(bruker.getId()) || Objects.isNull(bruker.getIdType());
+	}
+
+	private static void validateBehandlingstema(String behandlingstema){
+		if(behandlingstema.length() != 6 || !behandlingstema.startsWith("ab")){
+			throw new InputValideringFeiletException(String.format("Behandlingstema er ikke på formatet ´ab + 4 siffer´. Behandlingstema er=%s", behandlingstema));
+		}
 	}
 
 }

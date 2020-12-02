@@ -97,7 +97,7 @@ public class TestUtils {
 	public static final String TEMA_UFO = "UFO";
 	public static final String TEMA_TIL = "TIL";
 	public static final String TEMA_SYM = "SYM";
-	public static final String BEHANDLINGSTEMA = "ab0001";
+	public static final String BEHANDLINGSTEMA = "ab9999";
 	public static final String AVSENDER_MOTTAKER_LAND = "Legoland";
 	public static final String AVSENDER_MOTTAKER_UTLAND = "Utland";
 	public static final String KANAL_NAVNO = "NAV_NO";

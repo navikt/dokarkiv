@@ -1,6 +1,5 @@
 package no.nav.dokarkiv.journalpost.v1.validators;
 
-import no.nav.dokarkiv.core.domain.codes.Behandlingstema;
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
@@ -124,10 +123,8 @@ public class OpprettJournalpostRequestValidator {
 	}
 
 	private void validateBehandlingstema(String behandlingstema) {
-		try {
-			Behandlingstema.valueOf(behandlingstema);
-		} catch (IllegalArgumentException e) {
-			throw new InputValideringFeiletException(format("Oppgitt behandlingstema=%s %s", behandlingstema, VALIDERER_IKKE_MOT_KODEVERK));
+		if (behandlingstema.length() != 6 || !behandlingstema.startsWith("ab")) {
+			throw new InputValideringFeiletException(format("Oppgitt behandlingstema=%s er ikke på formatet ´ab + fire siffer´." , behandlingstema));
 		}
 	}
 

@@ -73,7 +73,7 @@ public class JournalforInngaaendeForsendelseV2RequestMapperTest {
 
 		assertThat(domainResult, notNullValue());
 		assertThat(domainResult.getFagomrade().name(), is(FAGOMRADE.name()));
-		assertThat(domainResult.getBehandlingstema().name(), is(BEHANDLINGSTEMA));
+		assertThat(domainResult.getBehandlingstema(), is(BEHANDLINGSTEMA));
 		assertThat(domainResult.getOpprettetAvNavn(), is(OPPRETTET_AV_NAVN));
 		assertThat(domainResult.getJournalfortAvNavn(), nullValue());
 		assertThat(domainResult.getJournalDato(), nullValue());

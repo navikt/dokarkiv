@@ -11,7 +11,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import no.nav.dokarkiv.core.domain.AbstractPersistentVersionedDomainObjectWithKilde;
 import no.nav.dokarkiv.core.domain.codes.AvsenderMottakerIdTypeCode;
-import no.nav.dokarkiv.core.domain.codes.Behandlingstema;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.FaktiskDistribusjonskanalCode;
@@ -201,9 +200,8 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	@Type(type = "org.hibernate.type.TrueFalseType")
 	private Boolean signatur;
 
-	@Enumerated(EnumType.STRING)
 	@Column(name = "k_behandlingstema")
-	private Behandlingstema behandlingstema;
+	private String behandlingstema;
 
 	@Column(name = "k_skjerming_type")
 	@Enumerated(EnumType.STRING)
@@ -1386,7 +1384,7 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	 *
 	 * @return the behandlingstema
 	 */
-	public Behandlingstema getBehandlingstema() {
+	public String getBehandlingstema() {
 		return behandlingstema;
 	}
 
@@ -1395,7 +1393,7 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	 *
 	 * @param behandlingstema the behandlingstema to set
 	 */
-	public void setBehandlingstema(Behandlingstema behandlingstema) {
+	public void setBehandlingstema(String behandlingstema) {
 		this.behandlingstema = behandlingstema;
 	}
 

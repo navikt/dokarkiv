@@ -1,7 +1,6 @@
 package no.nav.dokarkiv.journalpost.v1.services;
 
 import no.nav.dokarkiv.core.domain.ChangeStamp;
-import no.nav.dokarkiv.core.domain.codes.Behandlingstema;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
@@ -59,7 +58,7 @@ public class FinnMottatteJournalposterTest {
 
 		UbehandletJournalpost ubehandletJournalpost = ubehandletJournalpostList.get(0);
 
-		assertEquals(Behandlingstema.ab0001.name(), ubehandletJournalpost.getBehandlingstema());
+		assertEquals("ab0001", ubehandletJournalpost.getBehandlingstema());
 		assertEquals("test", ubehandletJournalpost.getBruker().getId());
 		assertEquals(BrukerTypeCode.PERSON.name(), ubehandletJournalpost.getBruker().getType());
 		assertEquals(createdDate, ubehandletJournalpost.getDatoOpprettet());

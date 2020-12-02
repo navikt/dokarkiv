@@ -5,6 +5,11 @@ import no.nav.dokarkiv.core.stelvio.CodesTablePeriodicItem;
 /**
  * @author Paul Magne Lunde, Visma Consulting
  */
+
+/**
+ * Etter å ha endret type på behandlingstema fra Enum til String,
+ * er ikke denne klassen lenger i bruk, men brukers fortsatt i noen tester.
+ */
 @SuppressWarnings("squid:S00115")
 public enum Behandlingstema implements CtiRelationship<Behandlingstema, String> {
     ab0001,

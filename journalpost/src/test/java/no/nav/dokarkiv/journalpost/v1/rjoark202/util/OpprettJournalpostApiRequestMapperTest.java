@@ -1,7 +1,6 @@
 package no.nav.dokarkiv.journalpost.v1.rjoark202.util;
 
 import no.nav.dokarkiv.core.domain.codes.AvsenderMottakerIdTypeCode;
-import no.nav.dokarkiv.core.domain.codes.Behandlingstema;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
@@ -45,6 +44,7 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.AVSENDER_ID_PERSON;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.AVSENDER_MOTTAKER_LAND;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.AVSENDER_NAVN;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.BATCHNAVN;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.BEHANDLINGSTEMA;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.BREVKODE1;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.BREVKODE2;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.BRUKER_ID_PERSON;
@@ -97,7 +97,7 @@ public class OpprettJournalpostApiRequestMapperTest {
 		assertEquals(BRUKER_ID_PERSON, jp.getBrukere().iterator().next().getBrukerId());
 		assertEquals(BrukerTypeCode.PERSON, jp.getBrukere().iterator().next().getBrukerType());
 		assertEquals(FagomradeCode.FOR, jp.getFagomrade());
-		assertEquals(Behandlingstema.ab0001, jp.getBehandlingstema());
+		assertEquals(BEHANDLINGSTEMA, jp.getBehandlingstema());
 		assertEquals(INNHOLD, jp.getInnhold());
 		assertEquals(MottaksKanalCode.NAV_NO, jp.getMottakskanal());
 		assertNull(jp.getUtsendingskanal());

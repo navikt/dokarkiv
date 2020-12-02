@@ -3,7 +3,6 @@ package no.nav.dokarkiv.hentjournalsakinfo.rjoark902;
 import lombok.AllArgsConstructor;
 import lombok.Value;
 import no.nav.dokarkiv.core.domain.codes.AvsenderMottakerIdTypeCode;
-import no.nav.dokarkiv.core.domain.codes.Behandlingstema;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
@@ -28,7 +27,7 @@ public class HentJournalpostDto {
 	private final Long journalpostId;
 	private final String innhold;
 	private final FagomradeCode fagomrade;
-	private final Behandlingstema behandlingstema;
+	private final String behandlingstema;
 	private final String behandlingstemanavn;
 	private final JournalStatusCode journalstatus;
 	private final String avsenderMottakerId;

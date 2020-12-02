@@ -1,6 +1,5 @@
 package no.nav.dokarkiv.arkiverdokumentmottak.tjoark203.v2;
 
-import no.nav.dokarkiv.core.domain.codes.Behandlingstema;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
@@ -67,7 +66,7 @@ public class JournalforInngaaendeForsendelseV2RequestMapper {
 	private Journalpost mapJournalpost(no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentmottak.v2.informasjon.arkiverdokumentmottak.Journalpost journalpost) {
 		return Journalpost.builder()
 				.fagomrade(mapTema(journalpost))
-				.behandlingstema(stringToEnum(Behandlingstema.class, journalpost.getBehandlingstema()))
+				.behandlingstema(journalpost.getBehandlingstema())
 				.journalForendeEnhetId(journalpost.getJournalforendeEnhet())
 				.opprettetAvNavn(journalpost.getOpprettetAvNavn())
 				.avsenderMottaker(journalpost.getAvsenderMottakerNavn())
