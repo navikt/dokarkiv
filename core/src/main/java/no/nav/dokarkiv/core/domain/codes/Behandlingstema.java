@@ -7,7 +7,8 @@ import no.nav.dokarkiv.core.stelvio.CodesTablePeriodicItem;
  */
 
 /**
- * Denne klassen er ikke lenger i bruk, men er fortsatt her for tester.
+ * Etter å ha endret type på behandlingstema fra Enum til String,
+ * er ikke denne klassen lenger i bruk, men brukers fortsatt i noen tester.
  */
 @SuppressWarnings("squid:S00115")
 public enum Behandlingstema implements CtiRelationship<Behandlingstema, String> {
