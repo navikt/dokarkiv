@@ -26,7 +26,7 @@
   ],
   "eksternReferanseId": "eksrefid",
   "journalfoerendeEnhet": 9999,
-  "journalpostType": "INNGAAENDE",
+  "journalposttype": "INNGAAENDE",
   "kanal": "NAV_NO",
   "sak": {
     "arkivsaksnummer": "12345",

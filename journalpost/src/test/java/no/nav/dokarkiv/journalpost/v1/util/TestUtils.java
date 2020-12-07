@@ -485,7 +485,7 @@ public class TestUtils {
 
 	public static OpprettJournalpostRequest.OpprettJournalpostRequestBuilder createBaseRequest(JournalpostType journalpostType) {
 		return OpprettJournalpostRequest.builder()
-				.journalpostType(journalpostType)
+				.journalposttype(journalpostType)
 				.avsenderMottaker(AvsenderMottaker.builder()
 						.id(AVSENDER_ID_PERSON)
 						.idType(AvsenderMottakerIdType.FNR)
@@ -514,7 +514,7 @@ public class TestUtils {
 
 	public static OpprettJournalpostRequest.OpprettJournalpostRequestBuilder createMinimalRequest(JournalpostType journalpostType) {
 		return OpprettJournalpostRequest.builder()
-				.journalpostType(journalpostType)
+				.journalposttype(journalpostType)
 				.dokumenter(Collections.singletonList(
 						Dokument.builder()
 								.tittel(DOKUMENT_TITTEL1)
@@ -525,7 +525,7 @@ public class TestUtils {
 
 	public static OpprettJournalpostRequest createRequestAvsenderMottaker(JournalpostType journalpostType, AvsenderMottaker avsenderMottaker) {
 		return OpprettJournalpostRequest.builder()
-				.journalpostType(journalpostType)
+				.journalposttype(journalpostType)
 				.avsenderMottaker(avsenderMottaker)
 				.tema(TEMA_FOR)
 				.tittel(INNHOLD)

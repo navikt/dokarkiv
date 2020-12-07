@@ -25,13 +25,15 @@ public class OppdaterJournalpostRequest {
     private String tittel;
 
     @ApiModelProperty(
-            value = "Fagområdet som forsendelsen tilhører, for eksempel \"DAG\" for dagpenger",
+            value = "Temaet som forsendelsen tilhører, for eksempel “DAG” (Dagpenger).\n" +
+                    "Tema er påkrevd dersom Sak oppgis.",
             position = 2,
             example = "DAG")
     private String tema;
 
     @ApiModelProperty(
-            value = "Behandlingstema for forsendelsen, for eksempel ab0001 (Ordinære dagpenger).",
+            value = "Behandlingstema for forsendelsen, for eksempel ab0001 (Ordinære dagpenger).\n" +
+                    "Lovlige verdier finnes i i Felles Kodeverksløsning.",
             position = 3,
             example = "ab0001"
     )
