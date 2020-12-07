@@ -60,7 +60,7 @@ public class OpprettJournalpostApiRequestMapper {
 
 	public Journalpost map(OpprettJournalpostRequest request, String sakId) {
 		Journalpost journalpost = Journalpost.builder()
-				.journalposttype(mapJournalposttype(request.getJournalpostType()))
+				.journalposttype(mapJournalposttype(request.getJournalposttype()))
 				.journalstatus(mapJournalstatus(request))
 				.journalForendeEnhetId(request.getJournalfoerendeEnhet())
 				.innhold(request.getTittel())
@@ -123,9 +123,9 @@ public class OpprettJournalpostApiRequestMapper {
 
 	private JournalStatusCode mapJournalstatus(OpprettJournalpostRequest request) {
 		if (manglerDokumentvarianter(request)) {
-			return JournalpostType.INNGAAENDE.equals(request.getJournalpostType()) ? JournalStatusCode.OD : JournalStatusCode.R;
+			return JournalpostType.INNGAAENDE.equals(request.getJournalposttype()) ? JournalStatusCode.OD : JournalStatusCode.R;
 		} else {
-			return JournalpostType.INNGAAENDE.equals(request.getJournalpostType()) ? JournalStatusCode.M : JournalStatusCode.D;
+			return JournalpostType.INNGAAENDE.equals(request.getJournalposttype()) ? JournalStatusCode.M : JournalStatusCode.D;
 		}
 	}
 
@@ -142,21 +142,21 @@ public class OpprettJournalpostApiRequestMapper {
 	}
 
 	private MottaksKanalCode mapMottakskanal(OpprettJournalpostRequest request) {
-		if (JournalpostType.INNGAAENDE.equals(request.getJournalpostType()) && isNotBlank(request.getKanal())) {
+		if (JournalpostType.INNGAAENDE.equals(request.getJournalposttype()) && isNotBlank(request.getKanal())) {
 			return MottaksKanalCode.valueOf(request.getKanal());
 		}
 		return null;
 	}
 
 	private UtsendingsKanalCode mapUtsendingskanal(OpprettJournalpostRequest request) {
-		if (!JournalpostType.INNGAAENDE.equals(request.getJournalpostType()) && isNotBlank(request.getKanal())) {
+		if (!JournalpostType.INNGAAENDE.equals(request.getJournalposttype()) && isNotBlank(request.getKanal())) {
 			return UtsendingsKanalCode.valueOf(request.getKanal());
 		}
 		return null;
 	}
 
 	private java.util.Date mapMottattDato(OpprettJournalpostRequest request) {
-		if (JournalpostType.INNGAAENDE.equals(request.getJournalpostType())) {
+		if (JournalpostType.INNGAAENDE.equals(request.getJournalposttype())) {
 			return request.getDatoMottatt() == null ? Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()) : request.getDatoMottatt();
 		}
 		return null;

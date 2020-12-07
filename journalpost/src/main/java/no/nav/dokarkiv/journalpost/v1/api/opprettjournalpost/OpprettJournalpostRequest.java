@@ -27,13 +27,13 @@ import java.util.List;
 @AllArgsConstructor
 public class OpprettJournalpostRequest {
 
-    @NotNull(message = "JournalpostType kan ikke være null")
+    @NotNull(message = "Journalposttype kan ikke være null")
     @ApiModelProperty(
             required = true,
             position = 2,
             example = "INNGAAENDE"
     )
-    private JournalpostType journalpostType;
+    private JournalpostType journalposttype;
 
     @ApiModelProperty(
             value = "Avsender av forsendelsen",
@@ -47,15 +47,16 @@ public class OpprettJournalpostRequest {
     private Bruker bruker;
 
     @ApiModelProperty(
-            value = "Temaet som forsendelsen tilhører, for eksempel \"DAG\" (Dagpenger).",
+            value = "Temaet som forsendelsen tilhører, for eksempel “DAG” (Dagpenger).\n" +
+                    "Tema er påkrevd dersom Sak oppgis.",
             position = 2,
             example = "DAG"
-
     )
     private String tema;
 
     @ApiModelProperty(
-            value = "Behandlingstema for forsendelsen, for eksempel ab0001 (Ordinære dagpenger).",
+            value = "Behandlingstema for forsendelsen, for eksempel ab0001 (Ordinære dagpenger).\n" +
+                    "Lovlige verdier finnes i i Felles Kodeverksløsning.",
             position = 3,
             example = "ab0001"
     )
@@ -87,7 +88,7 @@ public class OpprettJournalpostRequest {
     @ApiModelProperty(
             value = "Unik id for forsendelsen som kan brukes til sporing gjennom verdikjeden.\n" +
                     "Eksempler på eksternReferanseId kan være sykmeldingsId for sykmeldinger, Altinn ArchiveReference for Altinn-skjema eller SEDid for SED.",
-            hidden = true
+            example = "a0f480a3-8ab2-4c56-8c93-e53bb35bec2b"
     )
     private String eksternReferanseId;
 
@@ -95,8 +96,7 @@ public class OpprettJournalpostRequest {
             value = "Dato forsendelsen ble mottatt fra avsender. Dersom datoMottatt er tom, settes verdien til dagens dato.\n" +
                     " Feltet kan kun settes for inngående journalposter.",
             dataType = "Date",
-            example = "2019-11-29",
-            hidden = true
+            example = "2020-01-01"
     )
     @JsonFormat(pattern = "yyyy-MM-dd")
     private Date datoMottatt;
@@ -124,6 +124,6 @@ public class OpprettJournalpostRequest {
 
     @JsonIgnore
     public boolean isInngaaende() {
-        return journalpostType == JournalpostType.INNGAAENDE;
+        return journalposttype == JournalpostType.INNGAAENDE;
     }
 }
