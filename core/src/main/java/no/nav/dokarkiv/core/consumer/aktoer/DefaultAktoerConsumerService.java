@@ -53,7 +53,7 @@ public class DefaultAktoerConsumerService implements AktoerConsumerService {
 				response = aktoerV2.hentAktoerIdForIdent(requestAktoerMapper.map(request));
 				aktoerResponseCache.put(request.getIdent(), response);
 			} catch (HentAktoerIdForIdentPersonIkkeFunnet e) {
-				throw new PersonIkkeFunnetException(e, "Fant ikke person med ident: " + request.getIdent());
+				throw new PersonIkkeFunnetException(e, "Fant ikke aktørid for person");
 			}
 		}
 		return responseAktoerMapper.map(response);
@@ -71,7 +71,7 @@ public class DefaultAktoerConsumerService implements AktoerConsumerService {
 				response = aktoerV2.hentIdentForAktoerId(requestIdentMapper.map(request));
 				identResponseCache.put(request.getAktoerId(), response);
 			} catch (HentIdentForAktoerIdPersonIkkeFunnet e) {
-				throw new PersonIkkeFunnetException(e, "Fant ikke person med aktoerId: " + request.getAktoerId());
+				throw new PersonIkkeFunnetException(e, "Fant ikke personnummer eller d-nummer for person");
 			}
 		}
 		return responseIdentMapper.map(response);
