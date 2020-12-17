@@ -1,7 +1,7 @@
 package no.nav.dokarkiv.inngaaendejournal.v1;
 
 import no.nav.dokarkiv.core.CoreConfig;
-import no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerV2Mock;
+import no.nav.dokarkiv.core.consumer.pdl.AktoerConsumerV2Mock;
 import no.nav.dokarkiv.core.domain.builder.JournalpostBuilder;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;

@@ -3,7 +3,7 @@ package no.nav.dokarkiv.journalpost.v1.itest;
 import com.auth0.jwt.JWT;
 import no.nav.dokarkiv.core.AbstractRestIT;
 import no.nav.dokarkiv.core.CoreConfig;
-import no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerV2Mock;
+import no.nav.dokarkiv.core.consumer.pdl.AktoerConsumerV2Mock;
 import no.nav.dokarkiv.core.domain.builder.JournalpostBuilder;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.journalpost.v1.JournalpostConfig;
@@ -62,6 +62,34 @@ public abstract class AbstractJournalpostIT extends AbstractRestIT {
 						.withHeader(org.apache.http.HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
 						.withBodyFile("abac/abac-permit.json")));
 
+	}
+
+	void restStsToken() {
+		stubFor(post(urlEqualTo("/reststs"))
+				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
+						.withHeader(org.apache.http.HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+						.withBodyFile("reststs/reststs-happy.json")));
+	}
+
+	void happyFnrIdentStub() {
+		stubFor(post(urlEqualTo("/pdl"))
+				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
+						.withHeader(org.apache.http.HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+						.withBodyFile("pdl/pdl-folkeregisterident-happy.json")));
+	}
+
+	void fnrIdentNotFoundStub() {
+		stubFor(post(urlEqualTo("/pdl"))
+				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
+						.withHeader(org.apache.http.HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+						.withBodyFile("pdl/pdl-folkeregisterident-notfound.json")));
+	}
+
+	void happyAktoerIdStub() {
+		stubFor(post(urlEqualTo("/pdl"))
+				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
+						.withHeader(org.apache.http.HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+						.withBodyFile("pdl/pdl-aktoerid-happy.json")));
 	}
 
 	public static String classpathToString(String path) {

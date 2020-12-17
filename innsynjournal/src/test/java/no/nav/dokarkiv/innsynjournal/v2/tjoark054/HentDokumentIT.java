@@ -1,17 +1,6 @@
 package no.nav.dokarkiv.innsynjournal.v2.tjoark054;
 
-import static no.nav.dokarkiv.core.datautil.DokumentFilTestDataProvider.FIL_UUID_SLADDET;
-import static no.nav.dokarkiv.core.datautil.DokumentFilTestDataProvider.createDokumentFil;
-import static no.nav.dokarkiv.core.datautil.DokumentFilTestDataProvider.createDokumentFilDummy;
-import static no.nav.dokarkiv.core.datautil.DokumentFilTestDataProvider.createDokumentFilSladdet;
-import static no.nav.dokarkiv.core.datautil.DokumentInfoTestDataProvider.DOKUMENT_TITTEL;
-import static no.nav.dokarkiv.core.datautil.DokumentInfoTestDataProvider.createDokumentInfo;
-import static no.nav.dokarkiv.core.datautil.FildetaljerTestDataProvider.createFildetaljerFil;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.Matchers.isA;
-import static org.junit.Assert.assertThat;
-
-import no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerV2Mock;
+import no.nav.dokarkiv.core.consumer.pdl.AktoerConsumerV2Mock;
 import no.nav.dokarkiv.core.datautil.DokumentFilTestDataProvider;
 import no.nav.dokarkiv.core.datautil.JournalpostTestDataProvider;
 import no.nav.dokarkiv.core.datautil.SaksrelasjonTestDataProvider;
@@ -43,6 +32,17 @@ import org.springframework.test.context.transaction.TestTransaction;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
+
+import static no.nav.dokarkiv.core.datautil.DokumentFilTestDataProvider.FIL_UUID_SLADDET;
+import static no.nav.dokarkiv.core.datautil.DokumentFilTestDataProvider.createDokumentFil;
+import static no.nav.dokarkiv.core.datautil.DokumentFilTestDataProvider.createDokumentFilDummy;
+import static no.nav.dokarkiv.core.datautil.DokumentFilTestDataProvider.createDokumentFilSladdet;
+import static no.nav.dokarkiv.core.datautil.DokumentInfoTestDataProvider.DOKUMENT_TITTEL;
+import static no.nav.dokarkiv.core.datautil.DokumentInfoTestDataProvider.createDokumentInfo;
+import static no.nav.dokarkiv.core.datautil.FildetaljerTestDataProvider.createFildetaljerFil;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.isA;
+import static org.junit.Assert.assertThat;
 
 /**
  * Integration test for HentDokument(TJOARK054).

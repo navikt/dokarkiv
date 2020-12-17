@@ -1,6 +1,7 @@
 package no.nav.dokarkiv.journalpost.v1.itest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.tomakehurst.wiremock.client.WireMock;
 import com.google.common.collect.Lists;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.codes.AvsenderMottakerIdTypeCode;
@@ -25,6 +26,7 @@ import no.nav.dokarkiv.journalpost.v1.api.Sakstype;
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostResponse;
 import org.apache.commons.collections15.IteratorUtils;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -36,12 +38,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.containing;
+import static com.github.tomakehurst.wiremock.client.WireMock.exactly;
+import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static java.util.Collections.singletonList;
-import static no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerV2Mock.AKTOER_ID;
-import static no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerV2Mock.FAIL_AKTOER_ID;
-import static no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerV2Mock.FNR;
-import static no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerV2Mock.FNR_2;
-import static no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerV2Mock.identInspectionObjects;
+import static no.nav.dokarkiv.core.consumer.pdl.AktoerConsumerV2Mock.AKTOER_ID;
+import static no.nav.dokarkiv.core.consumer.pdl.AktoerConsumerV2Mock.FAIL_AKTOER_ID;
+import static no.nav.dokarkiv.core.consumer.pdl.AktoerConsumerV2Mock.FNR;
+import static no.nav.dokarkiv.core.consumer.pdl.AktoerConsumerV2Mock.FNR_2;
 import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.OPPRETT;
 import static no.nav.dokarkiv.core.domain.codes.FagsystemCode.FS22;
 import static no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem.AO01;
@@ -99,9 +105,15 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 
     private ObjectMapper mapper = new ObjectMapper();
 
+    @Before
+    public void setUp() throws Exception {
+        WireMock.reset();
+    }
+
     @Test
     public void happyPathOpprettInngaaende() throws IOException {
         abacPermit();
+        restStsToken();
 
         OpprettJournalpostRequest request = createRequest(INNGAAENDE);
 
@@ -150,6 +162,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
     @Test
     public void happyPathOpprettUtgaaende() throws IOException {
         abacPermit();
+        restStsToken();
 
         OpprettJournalpostRequest request = createRequest(UTGAAENDE);
 
@@ -173,6 +186,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
     @Test
     public void happyPathOpprettNotat() throws IOException {
         abacPermit();
+        restStsToken();
 
         OpprettJournalpostRequest request = createRequest(NOTAT);
 
@@ -196,6 +210,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
     @Test
     public void happyPathOpprettOgFerdigstillInngaaende() throws IOException {
         abacPermit();
+        restStsToken();
 
         OpprettJournalpostRequest request = createRequest(INNGAAENDE, "9999");
 
@@ -231,6 +246,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
     @Test
     public void happyPathOpprettOgFerdigstillUtgaaende() throws IOException {
         abacPermit();
+        restStsToken();
 
         OpprettJournalpostRequest request = createRequest(UTGAAENDE, "0123");
 
@@ -265,6 +281,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
     public void happyPathGsakArkivsak() throws IOException {
         clearSakRepository();
         abacPermit();
+        restStsToken();
 
         OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
                 .sak(Sak.builder()
@@ -288,6 +305,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
     public void happyPathGsakArkivsakSakstypeIkkeAngitt() throws IOException {
         clearSakRepository();
         abacPermit();
+        restStsToken();
 
         OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
                 .sak(Sak.builder().arkivsaksnummer(ARKIVSAKSNUMMER).arkivsaksystem(Arkivsaksystem.GSAK).build())
@@ -307,6 +325,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
     public void happyPathPsakArkivsak() throws IOException {
         clearSakRepository();
         abacPermit();
+        restStsToken();
 
         OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
                 .sak(Sak.builder()
@@ -330,6 +349,8 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
     public void happyPathNyGenerellSak() throws IOException {
         clearSakRepository();
         abacPermit();
+        restStsToken();
+        happyAktoerIdStub();
 
         OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
                 .tema(TEMA_SYM)
@@ -359,6 +380,8 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
     public void happyPathEksisterendeGenerellSak() throws IOException {
         clearSakRepository();
         abacPermit();
+        restStsToken();
+        happyAktoerIdStub();
 
         no.nav.dokarkiv.core.domain.entities.Sak sak = createGenerellSak();
         sakRepository.save(sak);
@@ -387,6 +410,8 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
     public void happyPathNyFagsak() throws IOException {
         clearSakRepository();
         abacPermit();
+        restStsToken();
+        happyAktoerIdStub();
 
         OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
                 .tema(TEMA_TIL)
@@ -416,6 +441,8 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
     public void happyPathNyFagsakAktoerId() throws IOException {
         clearSakRepository();
         abacPermit();
+        restStsToken();
+        happyFnrIdentStub();
 
         OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
                 .tema(TEMA_TIL)
@@ -450,6 +477,8 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
     public void shouldJournalfoereWhenTemUFOAndGenerellSak() throws IOException {
         clearSakRepository();
         abacPermit();
+        restStsToken();
+        happyAktoerIdStub();
 
         OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
                 .tema(TEMA_UFO)
@@ -472,6 +501,8 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
     public void shouldJournalfoereWhenTemaPENAndGenerellSak() throws IOException {
         clearSakRepository();
         abacPermit();
+        restStsToken();
+        happyAktoerIdStub();
 
         OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
                 .tema(TEMA_PEN)
@@ -494,6 +525,8 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
     public void shouldOppretteJournalpostWithoutBrukerWhenFnrNotFound() throws IOException {
         clearSakRepository();
         abacPermit();
+        restStsToken();
+        fnrIdentNotFoundStub();
 
         OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
                 .tema(TEMA_TIL)
@@ -521,6 +554,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
     public void happyPathNyFagsakOrgnr() throws IOException {
         clearSakRepository();
         abacPermit();
+        restStsToken();
 
         OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
                 .tema(TEMA_TIL)
@@ -555,6 +589,8 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
     public void happyPathEksisterendeFagsak() throws IOException {
         clearSakRepository();
         abacPermit();
+        restStsToken();
+        happyAktoerIdStub();
 
         no.nav.dokarkiv.core.domain.entities.Sak sak = createFagsak();
         sakRepository.save(sak);
@@ -584,6 +620,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
     public void happyPathFagsakPesys() throws IOException {
         clearSakRepository();
         abacPermit();
+        restStsToken();
 
         long sakRepositoryCount = sakRepository.count();
 
@@ -609,6 +646,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
     @Test
     public void shouldFailOnFerdigstillingWhenMissingJournalfoerendeEnhet() throws IOException {
         abacPermit();
+        restStsToken();
 
         OpprettJournalpostRequest request = createRequest(INNGAAENDE, null);
 
@@ -636,6 +674,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
     @Test
     public void shouldFailOnFerdigstillingWhenMissingPaakrevdeFelter() throws IOException {
         abacPermit();
+        restStsToken();
 
         OpprettJournalpostRequest request = createMinimalRequest(INNGAAENDE)
                 .tema(TEMA_FOR)
@@ -686,8 +725,8 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 
     @Test
     public void shouldOppdatertJournalfoerendeEnhetToNullWhenFerdigstillingFailsAndJournalfoerendeEnhetEr9999() throws IOException {
-
         abacPermit();
+        restStsToken();
 
         OpprettJournalpostRequest request = createMinimalRequest(INNGAAENDE)
                 .tema(TEMA_FOR)
@@ -737,6 +776,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
     @Test
     public void shouldRunOKWithoutTittelAndTema() throws IOException {
         abacPermit();
+        restStsToken();
 
         OpprettJournalpostRequest request = createMinimalRequest(INNGAAENDE).build();
 
@@ -751,6 +791,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
     @Test
     public void shouldJournalfoereSoeknadOmStoenadIPensjonsnoed() throws IOException {
         abacPermit();
+        restStsToken();
 
         OpprettJournalpostRequest request = mapper.readValue(classpathToString("__files/opprettJournalpostMedEttDokument.json"), OpprettJournalpostRequest.class);
 
@@ -765,6 +806,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
     @Test
     public void shouldEndeligJournalfoereSoeknadOmForeldrepengerVedFoedsel() throws IOException {
         abacPermit();
+        restStsToken();
 
         OpprettJournalpostRequest request = mapper.readValue(classpathToString("__files/soeknadOmForeldrepengerVedFoedsel.json"), OpprettJournalpostRequest.class);
 
@@ -779,8 +821,8 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
     @Test
     public void shouldCallAktoerService() throws IOException {
         abacPermit();
-
-        int identInspectionObjectSize = identInspectionObjects.size();
+        restStsToken();
+        happyAktoerIdStub();
 
         OpprettJournalpostRequest request = createMinimalRequest(INNGAAENDE)
                 .tema(TEMA_UFO)
@@ -798,14 +840,14 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
         HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
         restTemplate.exchange(URL_JOURNALPOST + FERDIGSTILL_QUERY, HttpMethod.POST, requestEntity, OpprettJournalpostResponse.class);
 
-        assertEquals(identInspectionObjectSize + 1, identInspectionObjects.size());
+        verify(exactly(1), postRequestedFor(urlEqualTo("/pdl")));
     }
 
     @Test
     public void shouldNotCallAktoerServiceWithoutBrukerIdTypeFNR() throws IOException {
         abacPermit();
-
-        int identInspectionObjectSize = identInspectionObjects.size();
+        restStsToken();
+        happyFnrIdentStub();
 
         OpprettJournalpostRequest request = createMinimalRequest(INNGAAENDE)
                 .tema(TEMA_UFO)
@@ -823,14 +865,13 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
         HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
         restTemplate.exchange(URL_JOURNALPOST + FERDIGSTILL_QUERY, HttpMethod.POST, requestEntity, OpprettJournalpostResponse.class);
 
-        assertEquals(identInspectionObjectSize, identInspectionObjects.size());
+        verify(exactly(0), postRequestedFor(urlEqualTo("/pdl")).withRequestBody(containing("AKTORID")));
     }
 
     @Test
     public void shouldNotCallAktoerServiceWithSAKFagsystemPP01() throws IOException {
         abacPermit();
-
-        int identInspectionObjectSize = identInspectionObjects.size();
+        restStsToken();
 
         OpprettJournalpostRequest request = createMinimalRequest(INNGAAENDE)
                 .tema(TEMA_UFO)
@@ -848,14 +889,13 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
         HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
         restTemplate.exchange(URL_JOURNALPOST + FERDIGSTILL_QUERY, HttpMethod.POST, requestEntity, OpprettJournalpostResponse.class);
 
-        assertEquals(identInspectionObjectSize, identInspectionObjects.size());
+        verify(exactly(0), postRequestedFor(urlEqualTo("/pdl")));
     }
 
     @Test
     public void shouldNotCallAktoerServiceWithoutSakstype() throws IOException {
         abacPermit();
-
-        int identInspectionObjectSize = identInspectionObjects.size();
+        restStsToken();
 
         OpprettJournalpostRequest request = createMinimalRequest(INNGAAENDE)
                 .tema(TEMA_UFO)
@@ -868,7 +908,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
         HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
         restTemplate.exchange(URL_JOURNALPOST + FERDIGSTILL_QUERY, HttpMethod.POST, requestEntity, OpprettJournalpostResponse.class);
 
-        assertEquals(identInspectionObjectSize, identInspectionObjects.size());
+        verify(exactly(0), postRequestedFor(urlEqualTo("/pdl")));
     }
 
     @Test

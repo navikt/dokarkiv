@@ -1,0 +1,13 @@
+{
+  "data": {
+    "hentIdenter": {
+      "identer": [
+        {
+          "ident": "01010199999",
+          "gruppe": "FOLKEREGISTERIDENT",
+          "historisk": false
+        }
+      ]
+    }
+  }
+}

@@ -1,8 +1,7 @@
 package no.nav.dokarkiv.journalpost.v1.util.oppdaterjournalpost;
 
-import no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerService;
-import no.nav.dokarkiv.core.consumer.aktoer.HentIdentForAktoerIdRequestTo;
-import no.nav.dokarkiv.core.consumer.aktoer.PersonIkkeFunnetException;
+import no.nav.dokarkiv.core.consumer.pdl.IdentConsumer;
+import no.nav.dokarkiv.core.consumer.pdl.PersonIkkeFunnetException;
 import no.nav.dokarkiv.core.domain.codes.AvsenderMottakerIdTypeCode;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
@@ -45,12 +44,12 @@ public class JournalpostUpdater {
 
 	private static final String DELETE_MARKER = " ";
 	private final BrukerRepository brukerRepository;
-	private final AktoerConsumerService aktoerConsumerService;
+	private final IdentConsumer identConsumer;
 
 	@Inject
-	public JournalpostUpdater(BrukerRepository brukerRepository, AktoerConsumerService aktoerConsumerService) {
+	public JournalpostUpdater(BrukerRepository brukerRepository, IdentConsumer identConsumer) {
 		this.brukerRepository = brukerRepository;
-		this.aktoerConsumerService = aktoerConsumerService;
+		this.identConsumer = identConsumer;
 	}
 
 	public ChangeTracker updateFields(Journalpost journalpost, OppdaterJournalpostRequest oppdaterJournalpostRequest) {
@@ -253,7 +252,7 @@ public class JournalpostUpdater {
 	private void checkIfBrukerTypeIsAktoerId(String oldBrukerId, Bruker bruker, OppdaterJournalpostRequest oppdaterJournalpostRequest, Journalpost journalpost, ChangeTracker endret) {
 		if (BrukerIdType.AKTOERID.equals(oppdaterJournalpostRequest.getBruker().getIdType())) {
 			try {
-				String fnr = aktoerConsumerService.hentIdentForAktoerId(new HentIdentForAktoerIdRequestTo(oppdaterJournalpostRequest.getBruker().getId())).getIdent();
+				String fnr = identConsumer.hentFolkeregisterIdent(bruker.getBrukerId());
 				bruker.setBrukerType(BrukerTypeCode.PERSON);
 				bruker.setBrukerId(fnr);
 				addBruker(oldBrukerId, bruker, journalpost, endret);

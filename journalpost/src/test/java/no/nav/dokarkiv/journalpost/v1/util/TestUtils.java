@@ -42,7 +42,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 
-import static no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerV2Mock.AKTOER_ID;
+import static no.nav.dokarkiv.core.consumer.pdl.AktoerConsumerV2Mock.AKTOER_ID;
 import static no.nav.dokarkiv.core.domain.codes.FagsystemCode.FS22;
 import static no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem.AO01;
 

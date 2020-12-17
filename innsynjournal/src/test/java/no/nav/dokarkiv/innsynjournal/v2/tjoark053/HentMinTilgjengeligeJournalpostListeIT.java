@@ -1,8 +1,47 @@
 package no.nav.dokarkiv.innsynjournal.v2.tjoark053;
 
-import static no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerV2Mock.CURRENT_IDENT;
-import static no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerV2Mock.FAIL_IDENT;
-import static no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerV2Mock.HISTORICAL_IDENTS;
+import no.nav.dokarkiv.core.datautil.SaksrelasjonTestDataProvider;
+import no.nav.dokarkiv.core.datautil.SkannetInnholdTestDataProvider;
+import no.nav.dokarkiv.core.domain.ChangeStamp;
+import no.nav.dokarkiv.core.domain.builder.JournalpostBuilder;
+import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
+import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
+import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
+import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
+import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
+import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
+import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.jaxws.SubjectHandlerUtils;
+import no.nav.dokarkiv.core.jaxws.ThreadLocalSubjectHandler;
+import no.nav.dokarkiv.core.util.DateConverterUtil;
+import no.nav.dokarkiv.innsynjournal.v2.AbstractInnsynJournalV2Itest;
+import no.nav.tjeneste.virksomhet.innsynjournal.v2.informasjon.DokumentInnhold;
+import no.nav.tjeneste.virksomhet.innsynjournal.v2.informasjon.DokumentinfoRelasjon;
+import no.nav.tjeneste.virksomhet.innsynjournal.v2.informasjon.Fagsystemer;
+import no.nav.tjeneste.virksomhet.innsynjournal.v2.informasjon.InnsynDokument;
+import no.nav.tjeneste.virksomhet.innsynjournal.v2.informasjon.JournalfoertDokumentInfo;
+import no.nav.tjeneste.virksomhet.innsynjournal.v2.informasjon.Sak;
+import no.nav.tjeneste.virksomhet.innsynjournal.v2.informasjon.SkannetInnhold;
+import no.nav.tjeneste.virksomhet.innsynjournal.v2.meldinger.HentTilgjengeligJournalpostListeRequest;
+import no.nav.tjeneste.virksomhet.innsynjournal.v2.meldinger.HentTilgjengeligJournalpostListeResponse;
+import org.hamcrest.Matcher;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.springframework.test.context.transaction.TestTransaction;
+
+import javax.xml.datatype.XMLGregorianCalendar;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.Month;
+import java.time.ZoneId;
+import java.util.Date;
+import java.util.List;
+
+import static no.nav.dokarkiv.core.consumer.pdl.AktoerConsumerV2Mock.CURRENT_IDENT;
+import static no.nav.dokarkiv.core.consumer.pdl.AktoerConsumerV2Mock.FAIL_IDENT;
+import static no.nav.dokarkiv.core.consumer.pdl.AktoerConsumerV2Mock.HISTORICAL_IDENTS;
 import static no.nav.dokarkiv.core.datautil.DokumentFilTestDataProvider.FIL_UUID;
 import static no.nav.dokarkiv.core.datautil.DokumentFilTestDataProvider.FIL_UUID_SLADDET;
 import static no.nav.dokarkiv.core.datautil.DokumentInfoTestDataProvider.DOKUMENT_TITTEL;
@@ -62,45 +101,6 @@ import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
-
-import no.nav.dokarkiv.core.datautil.SaksrelasjonTestDataProvider;
-import no.nav.dokarkiv.core.datautil.SkannetInnholdTestDataProvider;
-import no.nav.dokarkiv.core.domain.ChangeStamp;
-import no.nav.dokarkiv.core.domain.builder.JournalpostBuilder;
-import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
-import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
-import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
-import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
-import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
-import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
-import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import no.nav.dokarkiv.core.jaxws.SubjectHandlerUtils;
-import no.nav.dokarkiv.core.jaxws.ThreadLocalSubjectHandler;
-import no.nav.dokarkiv.core.util.DateConverterUtil;
-import no.nav.dokarkiv.innsynjournal.v2.AbstractInnsynJournalV2Itest;
-import no.nav.tjeneste.virksomhet.innsynjournal.v2.informasjon.DokumentInnhold;
-import no.nav.tjeneste.virksomhet.innsynjournal.v2.informasjon.DokumentinfoRelasjon;
-import no.nav.tjeneste.virksomhet.innsynjournal.v2.informasjon.Fagsystemer;
-import no.nav.tjeneste.virksomhet.innsynjournal.v2.informasjon.InnsynDokument;
-import no.nav.tjeneste.virksomhet.innsynjournal.v2.informasjon.JournalfoertDokumentInfo;
-import no.nav.tjeneste.virksomhet.innsynjournal.v2.informasjon.Sak;
-import no.nav.tjeneste.virksomhet.innsynjournal.v2.informasjon.SkannetInnhold;
-import no.nav.tjeneste.virksomhet.innsynjournal.v2.meldinger.HentTilgjengeligJournalpostListeRequest;
-import no.nav.tjeneste.virksomhet.innsynjournal.v2.meldinger.HentTilgjengeligJournalpostListeResponse;
-import org.hamcrest.Matcher;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.springframework.test.context.transaction.TestTransaction;
-
-import javax.xml.datatype.XMLGregorianCalendar;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.Month;
-import java.time.ZoneId;
-import java.util.Date;
-import java.util.List;
 
 /**
  * Integration test for TJOARK053 HentMinTilgjengeligeJournalpostListe.

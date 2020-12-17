@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.core.consumer.aktoer;
+package no.nav.dokarkiv.core.consumer.pdl;
 
 import com.google.common.collect.Lists;
 import no.nav.dokarkiv.core.util.DateConverterUtil;

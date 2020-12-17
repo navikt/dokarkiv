@@ -27,9 +27,9 @@ import org.junit.Test;
 
 import java.util.List;
 
-import static no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerV2Mock.CURRENT_IDENT;
-import static no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerV2Mock.FAIL_IDENT;
-import static no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerV2Mock.HISTORICAL_IDENTS;
+import static no.nav.dokarkiv.core.consumer.pdl.AktoerConsumerV2Mock.CURRENT_IDENT;
+import static no.nav.dokarkiv.core.consumer.pdl.AktoerConsumerV2Mock.FAIL_IDENT;
+import static no.nav.dokarkiv.core.consumer.pdl.AktoerConsumerV2Mock.HISTORICAL_IDENTS;
 import static no.nav.dokarkiv.core.datautil.DokumentFilTestDataProvider.FIL_UUID;
 import static no.nav.dokarkiv.core.datautil.DokumentInfoTestDataProvider.DOKUMENT_TITTEL;
 import static no.nav.dokarkiv.core.datautil.DokumentInfoTestDataProvider.createVedleggDokumentInfo;
