@@ -2,8 +2,10 @@ package no.nav.dokarkiv.core.consumer.pdl;
 
 import no.nav.tjeneste.virksomhet.aktoer.v2.binding.HentAktoerIdForIdentPersonIkkeFunnet;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -15,6 +17,8 @@ import org.mockito.runners.MockitoJUnitRunner;
  * @author Roar Bjurstrom, Visma Consulting.
  */
 @RunWith(MockitoJUnitRunner.class)
+@Ignore
+@Disabled
 public class PdlIdentConsumerTest {
 
 	private static final String IDENT = "Ident";

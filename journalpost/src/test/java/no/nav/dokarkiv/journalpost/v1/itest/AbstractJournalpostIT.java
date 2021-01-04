@@ -78,11 +78,11 @@ public abstract class AbstractJournalpostIT extends AbstractRestIT {
 						.withBodyFile("pdl/pdl-folkeregisterident-happy.json")));
 	}
 
-	void fnrIdentNotFoundStub() {
+	void identNotFoundStub() {
 		stubFor(post(urlEqualTo("/pdl"))
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
 						.withHeader(org.apache.http.HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-						.withBodyFile("pdl/pdl-folkeregisterident-notfound.json")));
+						.withBodyFile("pdl/pdl-ident-notfound.json")));
 	}
 
 	void happyAktoerIdStub() {

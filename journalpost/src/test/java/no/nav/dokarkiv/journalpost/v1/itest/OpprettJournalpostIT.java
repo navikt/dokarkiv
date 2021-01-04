@@ -526,7 +526,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
         clearSakRepository();
         abacPermit();
         restStsToken();
-        fnrIdentNotFoundStub();
+        identNotFoundStub();
 
         OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
                 .tema(TEMA_TIL)
