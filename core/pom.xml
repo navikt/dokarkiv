@@ -11,10 +11,6 @@
 
 	<artifactId>core</artifactId>
 
-	<properties>
-		<nav-fim-aktoer-v2-tjenestespesifikasjon.version>2.0.1</nav-fim-aktoer-v2-tjenestespesifikasjon.version>
-	</properties>
-
 	<dependencies>
 		<dependency>
 			<groupId>com.auth0</groupId>
@@ -110,12 +106,6 @@
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>no.nav.tjenester.fim</groupId>
-			<artifactId>nav-fim-aktoer-v2-tjenestespesifikasjon</artifactId>
-			<version>${nav-fim-aktoer-v2-tjenestespesifikasjon.version}</version>
-			<classifier>jaxws</classifier>
 		</dependency>
 		<dependency>
 			<groupId>no.nav.modig</groupId>

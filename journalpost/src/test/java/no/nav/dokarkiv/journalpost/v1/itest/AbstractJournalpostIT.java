@@ -3,17 +3,13 @@ package no.nav.dokarkiv.journalpost.v1.itest;
 import com.auth0.jwt.JWT;
 import no.nav.dokarkiv.core.AbstractRestIT;
 import no.nav.dokarkiv.core.CoreConfig;
-import no.nav.dokarkiv.core.consumer.pdl.AktoerConsumerV2Mock;
 import no.nav.dokarkiv.core.domain.builder.JournalpostBuilder;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.journalpost.v1.JournalpostConfig;
 import no.nav.security.token.support.test.spring.TokenGeneratorConfiguration;
-import no.nav.tjeneste.virksomhet.aktoer.v2.binding.AktoerV2;
 import org.apache.commons.io.IOUtils;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -47,14 +43,6 @@ public abstract class AbstractJournalpostIT extends AbstractRestIT {
 
 	protected String OIDC_TOKEN_PERSON_USER_TEST;
 	protected String OIDC_TOKEN_SERVICE_USER_TEST;
-
-	@Configuration
-	public static class TestConfig {
-		@Bean
-		public AktoerV2 aktoerV2() {
-			return new AktoerConsumerV2Mock();
-		}
-	}
 
 	void abacPermit() {
 		stubFor(post(urlEqualTo("/abac"))

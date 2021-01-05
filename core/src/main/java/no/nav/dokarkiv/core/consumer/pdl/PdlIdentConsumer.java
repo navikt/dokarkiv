@@ -66,10 +66,10 @@ public class PdlIdentConsumer implements IdentConsumer {
 				if (PERSON_IKKE_FUNNET_CODE.equals(pdlResponse.getErrors().get(0).getExtensions().getCode())) {
 					throw new PersonIkkeFunnetException("Fant ikke aktørid for person.");
 				}
-				throw new PdlFunctionalException("Kunne ikke hente identer for ident i pdl. " + pdlResponse.getErrors());
+				throw new PdlFunctionalException("Kunne ikke hente aktørid for folkeregisterident i pdl. " + pdlResponse.getErrors());
 			}
 		} catch (HttpClientErrorException e) {
-			throw new PdlFunctionalException("Kunne ikke hente identer for ident i pdl.", e);
+			throw new PdlFunctionalException("Kall mot pdl feilet funksjonelt.", e);
 		}
 	}
 
@@ -93,12 +93,12 @@ public class PdlIdentConsumer implements IdentConsumer {
 				return pdlResponse.getData().getHentIdenter().getIdenter().get(0).getIdent();
 			} else {
 				if (PERSON_IKKE_FUNNET_CODE.equals(pdlResponse.getErrors().get(0).getExtensions().getCode())) {
-					throw new PersonIkkeFunnetException("Fant ikke aktørid for person.");
+					throw new PersonIkkeFunnetException("Fant ikke folkeregisterident for person.");
 				}
-				throw new PdlFunctionalException("Kunne ikke hente identer for ident i pdl. " + pdlResponse.getErrors());
+				throw new PdlFunctionalException("Kunne ikke hente folkeregisterident for aktørid i pdl. " + pdlResponse.getErrors());
 			}
 		} catch (HttpClientErrorException e) {
-			throw new PdlFunctionalException("Kunne ikke hente identer for ident i pdl.", e);
+			throw new PdlFunctionalException("Kall mot pdl feilet funksjonelt.", e);
 		}
 	}
 
@@ -119,15 +119,15 @@ public class PdlIdentConsumer implements IdentConsumer {
 			final PdlResponse pdlResponse = requireNonNull(restTemplate.exchange(requestEntity, PdlResponse.class).getBody());
 
 			if (pdlResponse.getErrors() == null || pdlResponse.getErrors().isEmpty()) {
-				return pdlResponse.getData().getHentIdenter().getIdenter().stream().map(pdlIdentTo -> pdlIdentTo.getIdent()).collect(Collectors.toList());
+				return pdlResponse.getData().getHentIdenter().getIdenter().stream().map(PdlResponse.PdlIdent::getIdent).collect(Collectors.toList());
 			} else {
 				if (PERSON_IKKE_FUNNET_CODE.equals(pdlResponse.getErrors().get(0).getExtensions().getCode())) {
-					throw new PersonIkkeFunnetException("Fant ikke aktørid for person.");
+					throw new PersonIkkeFunnetException("Fant ikke personen i pdl.");
 				}
-				throw new PdlFunctionalException("Kunne ikke hente identer for ident i pdl. " + pdlResponse.getErrors());
+				throw new PdlFunctionalException("Kunne ikke hente historiske identer for ident." + pdlResponse.getErrors());
 			}
 		} catch (HttpClientErrorException e) {
-			throw new PdlFunctionalException("Kunne ikke hente identer for ident i pdl.", e);
+			throw new PdlFunctionalException("Kall mot pdl feilet funksjonelt.", e);
 		}
 	}
 

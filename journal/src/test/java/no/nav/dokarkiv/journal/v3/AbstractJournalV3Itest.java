@@ -1,7 +1,6 @@
 package no.nav.dokarkiv.journal.v3;
 
 import no.nav.dokarkiv.core.CoreConfig;
-import no.nav.dokarkiv.core.consumer.pdl.AktoerConsumerV2Mock;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.DokumentUrlInfoRepository;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
@@ -11,7 +10,6 @@ import no.nav.dokarkiv.core.skjerming.SkjermingServiceTest;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.dokarkiv.core.stelvio.SimpleRequestContext;
 import no.nav.security.token.support.test.spring.TokenGeneratorConfiguration;
-import no.nav.tjeneste.virksomhet.aktoer.v2.binding.AktoerV2;
 import no.nav.tjeneste.virksomhet.journal.v3.JournalV3;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpHeaders;
@@ -23,8 +21,6 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
@@ -42,7 +38,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE,
-		classes = {CoreConfig.class, AbstractJournalV3Itest.TestConfig.class, JournalV3Config.class, TokenGeneratorConfiguration.class},
+		classes = {CoreConfig.class, JournalV3Config.class, TokenGeneratorConfiguration.class},
 		properties = {"spring.main.allow-bean-definition-overriding=true"})
 @ActiveProfiles({"itest", "wiremock"})
 @AutoConfigureTestDatabase
@@ -71,13 +67,6 @@ public abstract class AbstractJournalV3Itest {
 	protected SkjermingServiceTest skjermingService;
 	@Inject
 	protected EntityManager entityManager;
-	@Configuration
-	public static class TestConfig {
-		@Bean
-		public AktoerV2 aktoerV2() {
-			return new AktoerConsumerV2Mock();
-		}
-	}
 
 	@Before
 	public void setUpItest() {

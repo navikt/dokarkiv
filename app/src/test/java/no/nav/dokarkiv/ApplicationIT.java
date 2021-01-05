@@ -1,6 +1,5 @@
 package no.nav.dokarkiv;
 
-import no.nav.dokarkiv.core.security.STSTestConfig;
 import no.nav.modig.testcertificates.TestCertificates;
 import no.nav.security.token.support.test.spring.TokenGeneratorConfiguration;
 import org.junit.BeforeClass;
@@ -23,7 +22,7 @@ import static org.junit.Assert.assertThat;
  * @author Joakim Bjørnstad, Jbit AS
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = {STSTestConfig.class, Application.class, TokenGeneratorConfiguration.class}, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(classes = {Application.class, TokenGeneratorConfiguration.class}, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("itest")
 @AutoConfigureTestDatabase
 @AutoConfigureTestEntityManager

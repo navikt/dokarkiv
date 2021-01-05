@@ -1,6 +1,5 @@
 package no.nav.dokarkiv.innsynjournal.v2.tjoark054;
 
-import no.nav.dokarkiv.core.consumer.pdl.AktoerConsumerV2Mock;
 import no.nav.dokarkiv.core.datautil.DokumentFilTestDataProvider;
 import no.nav.dokarkiv.core.datautil.JournalpostTestDataProvider;
 import no.nav.dokarkiv.core.datautil.SaksrelasjonTestDataProvider;
@@ -97,8 +96,9 @@ public class HentDokumentIT extends AbstractInnsynJournalV2Itest {
 
 	@Test
 	public void shouldGetDokumentWhenMottakskanalNavNOAndAvsendetMottakerIdHistorical() throws Exception {
+		happyPdlHistoriskeIdenterStub();
 		Journalpost journalpost = joarkRepository.save(buildJournalpost(MottaksKanalCode.NAV_NO)
-				.avsenderMottakerId(AktoerConsumerV2Mock.HISTORICAL_IDENTS.get(0)).build());
+				.avsenderMottakerId(HISTORICAL_IDENTS.get(0)).build());
 
 		HentDokumentResponse response = innsynJournalV2Provider.hentDokument(createRequestFromJournalpost(journalpost));
 
@@ -161,6 +161,7 @@ public class HentDokumentIT extends AbstractInnsynJournalV2Itest {
 
 	@Test
 	public void shouldNotReturnDocumentWrongAvsenderMottaker() throws Exception {
+		notMatchingPdlHistoriskeIdenterStub();
 		Journalpost journalpost = joarkRepository.save(buildJournalpost(MottaksKanalCode.EESSI)
 				.avsenderMottakerId("78971231232").build());
 

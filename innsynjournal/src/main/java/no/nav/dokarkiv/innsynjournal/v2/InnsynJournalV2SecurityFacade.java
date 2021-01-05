@@ -2,6 +2,7 @@ package no.nav.dokarkiv.innsynjournal.v2;
 
 import com.google.common.collect.Maps;
 import no.nav.dokarkiv.core.consumer.pdl.IdentConsumer;
+import no.nav.dokarkiv.core.consumer.pdl.PdlFunctionalException;
 import no.nav.dokarkiv.core.consumer.pdl.PersonIkkeFunnetException;
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
@@ -184,9 +185,8 @@ public class InnsynJournalV2SecurityFacade {
 	private boolean matchesHistoricalFnr(String fnr, Journalpost journalpostTomatch) {
 		List<String> historiskeFolkeregisterIdenter;
 		try {
-			//FIXME ytelse
 			historiskeFolkeregisterIdenter = identConsumer.hentHistoriskeFolkeregisterIdenter(fnr);
-		} catch (PersonIkkeFunnetException e) {
+		} catch (PersonIkkeFunnetException | PdlFunctionalException e) {
 			throw new SecurityTechnicalException("Kan ikke utføre tilgangskontroll for pålogget bruker med fnr=" + fnr + " " +
 					"for journalpost med journalpostId=" + journalpostTomatch.getJournalpostId(), e);
 		}
