@@ -10,6 +10,7 @@ import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -50,7 +51,7 @@ public class PdlIdentConsumer implements IdentConsumer {
 	}
 
 	@Retryable(
-			exclude = {PersonIkkeFunnetException.class, PdlFunctionalException.class},
+			include = HttpServerErrorException.class,
 			backoff = @Backoff(delay = DELAY_SHORT, multiplier = MULTIPLIER_SHORT)
 	)
 	@Override
@@ -64,7 +65,7 @@ public class PdlIdentConsumer implements IdentConsumer {
 				return pdlResponse.getData().getHentIdenter().getIdenter().get(0).getIdent();
 			} else {
 				if (PERSON_IKKE_FUNNET_CODE.equals(pdlResponse.getErrors().get(0).getExtensions().getCode())) {
-					throw new PersonIkkeFunnetException("Fant ikke aktørid for person.");
+					throw new PersonIkkeFunnetException("Fant ikke aktørid for person i pdl.");
 				}
 				throw new PdlFunctionalException("Kunne ikke hente aktørid for folkeregisterident i pdl. " + pdlResponse.getErrors());
 			}
@@ -82,6 +83,10 @@ public class PdlIdentConsumer implements IdentConsumer {
 				.build();
 	}
 
+	@Retryable(
+			include = HttpServerErrorException.class,
+			backoff = @Backoff(delay = DELAY_SHORT, multiplier = MULTIPLIER_SHORT)
+	)
 	@Override
 	public String hentFolkeregisterIdent(String aktoerId) throws PersonIkkeFunnetException {
 		try {
@@ -93,7 +98,7 @@ public class PdlIdentConsumer implements IdentConsumer {
 				return pdlResponse.getData().getHentIdenter().getIdenter().get(0).getIdent();
 			} else {
 				if (PERSON_IKKE_FUNNET_CODE.equals(pdlResponse.getErrors().get(0).getExtensions().getCode())) {
-					throw new PersonIkkeFunnetException("Fant ikke folkeregisterident for person.");
+					throw new PersonIkkeFunnetException("Fant ikke folkeregisterident for person i pdl.");
 				}
 				throw new PdlFunctionalException("Kunne ikke hente folkeregisterident for aktørid i pdl. " + pdlResponse.getErrors());
 			}
@@ -111,6 +116,10 @@ public class PdlIdentConsumer implements IdentConsumer {
 				.build();
 	}
 
+	@Retryable(
+			include = HttpServerErrorException.class,
+			backoff = @Backoff(delay = DELAY_SHORT, multiplier = MULTIPLIER_SHORT)
+	)
 	@Override
 	public List<String> hentHistoriskeFolkeregisterIdenter(String folkeregisterIdent) throws PersonIkkeFunnetException {
 		try {
@@ -122,7 +131,7 @@ public class PdlIdentConsumer implements IdentConsumer {
 				return pdlResponse.getData().getHentIdenter().getIdenter().stream().map(PdlResponse.PdlIdent::getIdent).collect(Collectors.toList());
 			} else {
 				if (PERSON_IKKE_FUNNET_CODE.equals(pdlResponse.getErrors().get(0).getExtensions().getCode())) {
-					throw new PersonIkkeFunnetException("Fant ikke personen i pdl.");
+					throw new PersonIkkeFunnetException("Fant ikke historiske identer for person i pdl.");
 				}
 				throw new PdlFunctionalException("Kunne ikke hente historiske identer for ident." + pdlResponse.getErrors());
 			}

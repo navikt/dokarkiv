@@ -681,14 +681,6 @@ public class InnsynJournalV2SecurityFacadeTest {
 		return journalposts;
 	}
 
-//	private List<IdentDetaljerTo> createIdentDetaljerList(String... fnrs) {
-//		List<IdentDetaljerTo> identDetaljerToList = new ArrayList<>();
-//		for (String fnr : fnrs) {
-//			identDetaljerToList.add(new IdentDetaljerTo(fnr, new Date()));
-//		}
-//		return identDetaljerToList;
-//	}
-
 	private Journalpost createNAVNOJournalpost(String avsenderMottakerId) {
 		return JournalpostBuilder
 				.getJournalpostBuilder()

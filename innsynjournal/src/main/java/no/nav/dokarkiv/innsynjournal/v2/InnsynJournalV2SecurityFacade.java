@@ -39,6 +39,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpServerErrorException;
 
 import javax.inject.Inject;
 import java.time.LocalDate;
@@ -186,7 +187,7 @@ public class InnsynJournalV2SecurityFacade {
 		List<String> historiskeFolkeregisterIdenter;
 		try {
 			historiskeFolkeregisterIdenter = identConsumer.hentHistoriskeFolkeregisterIdenter(fnr);
-		} catch (PersonIkkeFunnetException | PdlFunctionalException e) {
+		} catch (PersonIkkeFunnetException | PdlFunctionalException | HttpServerErrorException e) {
 			throw new SecurityTechnicalException("Kan ikke utføre tilgangskontroll for pålogget bruker med fnr=" + fnr + " " +
 					"for journalpost med journalpostId=" + journalpostTomatch.getJournalpostId(), e);
 		}
