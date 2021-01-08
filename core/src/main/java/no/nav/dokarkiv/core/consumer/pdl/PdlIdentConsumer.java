@@ -26,6 +26,7 @@ import static no.nav.dokarkiv.core.NavHeaders.BEARER_TOKEN_PREFIX;
 import static no.nav.dokarkiv.core.cache.CacheConfig.HISTORISKE_IDENTER;
 import static no.nav.dokarkiv.core.storage.RetryConstants.DELAY_SHORT;
 import static no.nav.dokarkiv.core.storage.RetryConstants.MULTIPLIER_SHORT;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 /**
  * PDL implementasjon av {@link IdentConsumer}
@@ -58,6 +59,9 @@ public class PdlIdentConsumer implements IdentConsumer {
 	)
 	@Override
 	public String hentAktoerId(String folkeregisterIdent) throws PersonIkkeFunnetException {
+		if(isBlank(folkeregisterIdent)) {
+			throw new PersonIkkeFunnetException("Folkeregisterident er null eller blank.");
+		}
 		try {
 			final RequestEntity<PdlRequest> requestEntity = baseRequest()
 					.body(mapHentAktoerIdForFolkeregisterident(folkeregisterIdent));
@@ -91,6 +95,9 @@ public class PdlIdentConsumer implements IdentConsumer {
 	)
 	@Override
 	public String hentFolkeregisterIdent(String aktoerId) throws PersonIkkeFunnetException {
+		if(isBlank(aktoerId)) {
+			throw new PersonIkkeFunnetException("Aktørid er null eller blank.");
+		}
 		try {
 			final RequestEntity<PdlRequest> requestEntity = baseRequest()
 					.body(mapHentFolkeregisterIdentForAktoerId(aktoerId));
@@ -125,6 +132,9 @@ public class PdlIdentConsumer implements IdentConsumer {
 	)
 	@Override
 	public List<String> hentHistoriskeFolkeregisterIdenter(String folkeregisterIdent) throws PersonIkkeFunnetException {
+		if(isBlank(folkeregisterIdent)) {
+			throw new PersonIkkeFunnetException("Folkeregisterident er null eller blank.");
+		}
 		try {
 			final RequestEntity<PdlRequest> requestEntity = baseRequest()
 					.body(mapHentHistoriskeFolkeregisterIdentForAktoerId(folkeregisterIdent));
