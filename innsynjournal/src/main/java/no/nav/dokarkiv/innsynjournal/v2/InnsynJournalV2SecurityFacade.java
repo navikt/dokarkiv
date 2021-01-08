@@ -1,21 +1,9 @@
 package no.nav.dokarkiv.innsynjournal.v2;
 
-import static java.util.Collections.singletonMap;
-import static no.nav.dokarkiv.innsynjournal.v2.InnsynJournalpostTo.innsynJournalposts;
-import static no.nav.dokarkiv.innsynjournal.v2.security.urn.ActionAttributeIds.READ_OPERATION;
-import static no.nav.dokarkiv.innsynjournal.v2.security.urn.EnvironmentAttributeIds.ATTR_ENVIRONMENT_RECIEVER;
-import static no.nav.dokarkiv.innsynjournal.v2.security.urn.EnvironmentAttributeIds.EXTERNAL;
-import static no.nav.dokarkiv.innsynjournal.v2.security.urn.ResourceAttributeIds.ATTR_RESOURCE_TARGET;
-import static no.nav.dokarkiv.innsynjournal.v2.security.urn.ResourceAttributeIds.JOURNALPOST_DOCUMENT;
-import static no.nav.modig.security.tilgangskontroll.policy.attributes.AttributeIds.ATTR_ACTION_ID;
-import static no.nav.modig.security.tilgangskontroll.policy.attributes.AttributeIds.ATTR_RESOURCE_ID;
-
 import com.google.common.collect.Maps;
-import no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerService;
-import no.nav.dokarkiv.core.consumer.aktoer.HentAktoerIdForIdentRequestTo;
-import no.nav.dokarkiv.core.consumer.aktoer.HentAktoerIdForIdentResponseTo;
-import no.nav.dokarkiv.core.consumer.aktoer.IdentDetaljerTo;
-import no.nav.dokarkiv.core.consumer.aktoer.PersonIkkeFunnetException;
+import no.nav.dokarkiv.core.consumer.pdl.IdentConsumer;
+import no.nav.dokarkiv.core.consumer.pdl.PdlFunctionalException;
+import no.nav.dokarkiv.core.consumer.pdl.PersonIkkeFunnetException;
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
@@ -51,6 +39,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpServerErrorException;
 
 import javax.inject.Inject;
 import java.time.LocalDate;
@@ -58,6 +47,16 @@ import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
+import static java.util.Collections.singletonMap;
+import static no.nav.dokarkiv.innsynjournal.v2.InnsynJournalpostTo.innsynJournalposts;
+import static no.nav.dokarkiv.innsynjournal.v2.security.urn.ActionAttributeIds.READ_OPERATION;
+import static no.nav.dokarkiv.innsynjournal.v2.security.urn.EnvironmentAttributeIds.ATTR_ENVIRONMENT_RECIEVER;
+import static no.nav.dokarkiv.innsynjournal.v2.security.urn.EnvironmentAttributeIds.EXTERNAL;
+import static no.nav.dokarkiv.innsynjournal.v2.security.urn.ResourceAttributeIds.ATTR_RESOURCE_TARGET;
+import static no.nav.dokarkiv.innsynjournal.v2.security.urn.ResourceAttributeIds.JOURNALPOST_DOCUMENT;
+import static no.nav.modig.security.tilgangskontroll.policy.attributes.AttributeIds.ATTR_ACTION_ID;
+import static no.nav.modig.security.tilgangskontroll.policy.attributes.AttributeIds.ATTR_RESOURCE_ID;
 
 /**
  * Adds security to the InnsynJournal-services
@@ -75,7 +74,7 @@ public class InnsynJournalV2SecurityFacade {
 	@Inject
 	private Tjoark054HentDokumentService tjoark054HentDokumentService;
 	@Inject
-	private AktoerConsumerService aktoerConsumerService;
+	private IdentConsumer identConsumer;
 	@Inject
 	private JoarkRepositorySkjermet joarkRepository;
 	@Inject
@@ -185,16 +184,16 @@ public class InnsynJournalV2SecurityFacade {
 	}
 
 	private boolean matchesHistoricalFnr(String fnr, Journalpost journalpostTomatch) {
-		HentAktoerIdForIdentResponseTo responseTo;
+		List<String> historiskeFolkeregisterIdenter;
 		try {
-			responseTo = aktoerConsumerService.hentAktoerIdForIdent(new HentAktoerIdForIdentRequestTo(fnr));
-		} catch (PersonIkkeFunnetException e) {
+			historiskeFolkeregisterIdenter = identConsumer.hentHistoriskeFolkeregisterIdenter(fnr);
+		} catch (PersonIkkeFunnetException | PdlFunctionalException | HttpServerErrorException e) {
 			throw new SecurityTechnicalException("Kan ikke utføre tilgangskontroll for pålogget bruker med fnr=" + fnr + " " +
 					"for journalpost med journalpostId=" + journalpostTomatch.getJournalpostId(), e);
 		}
 
-		for (IdentDetaljerTo identDetaljerTo : responseTo.getHistoriskeIdenter()) {
-			if (identDetaljerTo.getFnr().equals(journalpostTomatch.getAvsenderMottakerId())) {
+		for (String folkeregisterIdent : historiskeFolkeregisterIdenter) {
+			if (folkeregisterIdent.equals(journalpostTomatch.getAvsenderMottakerId())) {
 				return true;
 			}
 		}

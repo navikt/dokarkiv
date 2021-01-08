@@ -27,9 +27,6 @@ import org.junit.Test;
 
 import java.util.List;
 
-import static no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerV2Mock.CURRENT_IDENT;
-import static no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerV2Mock.FAIL_IDENT;
-import static no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerV2Mock.HISTORICAL_IDENTS;
 import static no.nav.dokarkiv.core.datautil.DokumentFilTestDataProvider.FIL_UUID;
 import static no.nav.dokarkiv.core.datautil.DokumentInfoTestDataProvider.DOKUMENT_TITTEL;
 import static no.nav.dokarkiv.core.datautil.DokumentInfoTestDataProvider.createVedleggDokumentInfo;
@@ -84,6 +81,7 @@ public class IdentifiserJournalpostIT extends AbstractInnsynJournalV2Itest {
 	 */
 	@Test
 	public void happyPath() throws Exception {
+		notMatchingPdlHistoriskeIdenterStub();
 		Journalpost journalpost = buildAndPersist(aJournalpost()
 				.journalpostType(JournalpostTypeCode.I)
 				.dokumentInfoRelasjoner(
@@ -187,11 +185,12 @@ public class IdentifiserJournalpostIT extends AbstractInnsynJournalV2Itest {
 
 	/**
 	 * Hvis journalpost.avsenderMottakerId er ulik eksternbruker
-	 * og journalpost.avsenderMottakerId finnes i listen som er returnert fra AktoerId
+	 * og journalpost.avsenderMottakerId finnes i listen som er returnert fra pdl
 	 * s&aring; skal {@code Dokumentbeskrivelse.innsynDokument} settes til {@link InnsynDokument#JA}.
 	 */
 	@Test
-	public void shouldSetDokumentInnsynToJAWhenMottakskanalIsNAVAndAvsenderMottakerIdIsNotEksternBrukerAndInAktoerId() throws Exception {
+	public void shouldSetDokumentInnsynToJAWhenMottakskanalIsNAVAndAvsenderMottakerIdIsNotEksternBrukerAndInPdl() throws Exception {
+		happyPdlHistoriskeIdenterStub();
 		SubjectHandlerUtils.setEksternBruker(CURRENT_IDENT, 4, "");
 		buildAndPersist(aJournalpost()
 				.mottakskanal(NAV_NO)
@@ -221,11 +220,12 @@ public class IdentifiserJournalpostIT extends AbstractInnsynJournalV2Itest {
 
 	/**
 	 * Hvis journalpost.avsenderMottakerId er ulik eksternbruker
-	 * og journalpost.avsenderMottakerId ikke finnes i listen som er returnert fra AktoerId
+	 * og journalpost.avsenderMottakerId ikke finnes i listen som er returnert fra pdl
 	 * s&aring; skal {@code Dokumentbeskrivelse.innsynDokument} settes til {@link InnsynDokument#NEI}.
 	 */
 	@Test
-	public void shouldSetDokumentInnsynToNEIWhenMottakskanalIsNAVAndAvsenderMottakerIdIsNotEksternBrukerAndNotInAktoerId() throws Exception {
+	public void shouldSetDokumentInnsynToNEIWhenMottakskanalIsNAVAndAvsenderMottakerIdIsNotEksternBrukerAndNotInPdl() throws Exception {
+		notMatchingPdlHistoriskeIdenterStub();
 		SubjectHandlerUtils.setEksternBruker(CURRENT_IDENT, 4, "");
 		buildAndPersist(aJournalpost()
 				.mottakskanal(NAV_NO)

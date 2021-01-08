@@ -21,6 +21,8 @@ public class CacheConfig {
 	public static final String USERNAME_TOKEN_CACHE = "usernameTokenCache";
 	public static final String NAVUSER_CACHE = "navuserCache";
 	public static final String NAVSERVICEUSER_CACHE = "navserviceuserCache";
+	public static final String REST_STS_CACHE = "RESTSTS";
+	public static final String HISTORISKE_IDENTER = "historiskeIdenterCache";
 
 	@Bean
 	CacheManager cacheManager() {
@@ -37,7 +39,16 @@ public class CacheConfig {
 				new CaffeineCache(USERNAME_TOKEN_CACHE, Caffeine.newBuilder()
 						.expireAfterWrite(10, TimeUnit.MINUTES)
 						.maximumSize(10)
+						.build()),
+				new CaffeineCache(REST_STS_CACHE, Caffeine.newBuilder()
+						.expireAfterWrite(50, TimeUnit.MINUTES)
+						.maximumSize(1)
+						.build()),
+				new CaffeineCache(HISTORISKE_IDENTER, Caffeine.newBuilder()
+						.expireAfterWrite(10, TimeUnit.MINUTES)
+						.maximumSize(25000)
 						.build())
+
 		));
 		return manager;
 	}

@@ -33,8 +33,8 @@ spec:
       value: {{ LDAP_BASEDN }}
     - name: SECURITYTOKENSERVICE_URL
       value: {{ SECURITYTOKENSERVICE_URL }}
-    - name: AKTOERV2_URL
-      value: {{ AKTOERV2_URL }}
+    - name: PDL_URL
+      value: {{ PDL_URL }}
     - name: ABAC_URL
       value: {{ ABAC_URL }}
     - name: JOARK_HENTDOKUMENT_BASEURL

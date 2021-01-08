@@ -1,8 +1,7 @@
 package no.nav.dokarkiv.journalpost.v1.mappers;
 
-import no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerService;
-import no.nav.dokarkiv.core.consumer.aktoer.HentIdentForAktoerIdRequestTo;
-import no.nav.dokarkiv.core.consumer.aktoer.PersonIkkeFunnetException;
+import no.nav.dokarkiv.core.consumer.pdl.IdentConsumer;
+import no.nav.dokarkiv.core.consumer.pdl.PersonIkkeFunnetException;
 import no.nav.dokarkiv.core.domain.codes.AvsenderMottakerIdTypeCode;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
@@ -52,10 +51,10 @@ import static org.apache.cxf.common.util.CollectionUtils.isEmpty;
 @Component
 public class OpprettJournalpostApiRequestMapper {
 
-	private final AktoerConsumerService aktoerConsumerService;
+	private final IdentConsumer identConsumer;
 
-	public OpprettJournalpostApiRequestMapper(AktoerConsumerService aktoerConsumerService) {
-		this.aktoerConsumerService = aktoerConsumerService;
+	public OpprettJournalpostApiRequestMapper(IdentConsumer identConsumer) {
+		this.identConsumer = identConsumer;
 	}
 
 	public Journalpost map(OpprettJournalpostRequest request, String sakId) {
@@ -231,7 +230,7 @@ public class OpprettJournalpostApiRequestMapper {
 		if (request.getBruker() != null) {
 			if (BrukerIdType.AKTOERID.equals(request.getBruker().getIdType())) {
 				try {
-					String fnr = aktoerConsumerService.hentIdentForAktoerId(new HentIdentForAktoerIdRequestTo(request.getBruker().getId())).getIdent();
+					String fnr = identConsumer.hentFolkeregisterIdent(request.getBruker().getId());
 					jp.addBruker(Bruker.builder()
 							.brukerId(fnr)
 							.brukerType(BrukerTypeCode.PERSON)

@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.journalpost.v1.itest;
 
+import com.github.tomakehurst.wiremock.client.WireMock;
 import no.nav.dokarkiv.core.consumer.RestConsumerExceptionResponse;
 import no.nav.dokarkiv.core.datautil.BrukerTestDataProvider;
 import no.nav.dokarkiv.core.datautil.JournalpostTestDataProvider;
@@ -39,16 +40,20 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-import static no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerV2Mock.AKTOER_ID;
-import static no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerV2Mock.FAIL_AKTOER_ID;
-import static no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerV2Mock.FNR;
-import static no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerV2Mock.identInspectionObjects;
+import static com.github.tomakehurst.wiremock.client.WireMock.containing;
+import static com.github.tomakehurst.wiremock.client.WireMock.exactly;
+import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static no.nav.dokarkiv.core.datautil.JournalpostTestDataProvider.INNHOLD;
 import static no.nav.dokarkiv.core.domain.codes.FagsystemCode.FS22;
 import static no.nav.dokarkiv.core.domain.codes.FagsystemCode.PEN;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.AKTOER_ID;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.BRUKER_ID_ORGANISASJON;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.BRUKER_ID_PERSON;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FAGSAK_ID;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FAIL_AKTOER_ID;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FNR;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_PEN;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_SYM;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_TIL;
@@ -82,6 +87,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
     public void setUp() {
         OIDC_TOKEN_PERSON_USER_TEST = getTokenWithSubject(PERSON_USER_ID);
         OIDC_TOKEN_SERVICE_USER_TEST = getTokenWithSubject(SERVICE_USER_ID);
+        WireMock.reset();
     }
 
     /**
@@ -420,6 +426,8 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
     public void happyPathNyGenerellSak() {
         clearSakRepository();
         abacPermit();
+        restStsToken();
+        happyAktoerIdStub();
 
         JournalpostBuilder journalpostBuilder = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
                 .endretAvNavn("saksbehandlersen");
@@ -462,6 +470,8 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
     public void happyPathEksisterendeGenerellSak() {
         clearSakRepository();
         abacPermit();
+        restStsToken();
+        happyAktoerIdStub();
 
         no.nav.dokarkiv.core.domain.entities.Sak sak = createGenerellSak();
         sakRepository.save(sak);
@@ -501,6 +511,8 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
     public void happyPathNyFagsak() {
         clearSakRepository();
         abacPermit();
+        restStsToken();
+        happyAktoerIdStub();
 
         JournalpostBuilder journalpostBuilder = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
                 .endretAvNavn("saksbehandlersen");
@@ -545,6 +557,8 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
     public void happyPathNyFagsakAktoerId() {
         clearSakRepository();
         abacPermit();
+        restStsToken();
+        happyFnrIdentStub();
 
         JournalpostBuilder journalpostBuilder = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
                 .endretAvNavn("saksbehandlersen");
@@ -590,9 +604,11 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
     }
 
     @Test
-    public void shouldOppdattereJournalpostWithoutBrukerWhenFnrNotFound() {
+    public void shouldOppdatereJournalpostWithoutBrukerWhenFnrNotFound() {
         clearSakRepository();
         abacPermit();
+        restStsToken();
+        identNotFoundStub();
 
         JournalpostBuilder journalpostBuilder = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
                 .endretAvNavn("saksbehandlersen");
@@ -678,6 +694,8 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
     public void happyPathEksisterendeFagsak() {
         clearSakRepository();
         abacPermit();
+        restStsToken();
+        happyAktoerIdStub();
 
         no.nav.dokarkiv.core.domain.entities.Sak sak = createFagsak();
         sakRepository.save(sak);
@@ -763,6 +781,8 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
     public void shouldUpdateWhenTemaPENAndGenerellSak() {
         clearSakRepository();
         abacPermit();
+        restStsToken();
+        happyAktoerIdStub();
 
         JournalpostBuilder journalpostBuilder = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
                 .endretAvNavn("saksbehandlersen");
@@ -793,6 +813,8 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
     public void shouldUpdateWhenTemaUFOAndGenerellSak() {
         clearSakRepository();
         abacPermit();
+        restStsToken();
+        happyAktoerIdStub();
 
         JournalpostBuilder journalpostBuilder = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
                 .endretAvNavn("saksbehandlersen");
@@ -823,8 +845,8 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
     public void shouldCallAktoerService() {
         clearSakRepository();
         abacPermit();
-
-        int identInspectionObjectSize = identInspectionObjects.size();
+        restStsToken();
+        happyAktoerIdStub();
 
         JournalpostBuilder journalpostBuilder = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
                 .endretAvNavn("saksbehandlersen");
@@ -844,15 +866,15 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
         HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
         restTemplate.exchange(URL_JOURNALPOST + journalpostId, HttpMethod.PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
 
-        assertEquals(identInspectionObjectSize + 1, identInspectionObjects.size());
+        verify(exactly(1), postRequestedFor(urlEqualTo("/pdl")).withRequestBody(containing("AKTORID")));
     }
 
     @Test
     public void shouldNotCallAktoerServiceWithoutBrukerIdTypeFNR() {
         clearSakRepository();
         abacPermit();
-
-        int identInspectionObjectSize = identInspectionObjects.size();
+        restStsToken();
+        happyFnrIdentStub();
 
         JournalpostBuilder journalpostBuilder = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
                 .endretAvNavn("saksbehandlersen");
@@ -872,15 +894,13 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
         HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
         restTemplate.exchange(URL_JOURNALPOST + journalpostId, HttpMethod.PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
 
-        assertEquals(identInspectionObjectSize, identInspectionObjects.size());
+        verify(exactly(0), postRequestedFor(urlEqualTo("/pdl")).withRequestBody(containing("AKTORID")));
     }
 
     @Test
     public void shouldNotCallAktoerServiceWithoutSakstype() {
         clearSakRepository();
         abacPermit();
-
-        int identInspectionObjectSize = identInspectionObjects.size();
 
         JournalpostBuilder journalpostBuilder = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
                 .endretAvNavn("saksbehandlersen");
@@ -895,15 +915,13 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
         HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
         restTemplate.exchange(URL_JOURNALPOST + journalpostId, HttpMethod.PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
 
-        assertEquals(identInspectionObjectSize, identInspectionObjects.size());
+        verify(exactly(0), postRequestedFor(urlEqualTo("/pdl")).withRequestBody(containing("AKTORID")));
     }
 
     @Test
     public void shouldNotCallAktoerServiceWithSAKFagsystemPP01() {
         clearSakRepository();
         abacPermit();
-
-        int identInspectionObjectSize = identInspectionObjects.size();
 
         JournalpostBuilder journalpostBuilder = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
                 .endretAvNavn("saksbehandlersen");
@@ -923,7 +941,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
         HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
         restTemplate.exchange(URL_JOURNALPOST + journalpostId, HttpMethod.PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
 
-        assertEquals(identInspectionObjectSize, identInspectionObjects.size());
+        verify(exactly(0), postRequestedFor(urlEqualTo("/pdl")));
     }
 
     private OppdaterJournalpostRequest createPutOppdaterJournalpostRequestWithDokumentInfoId(Long dokumentInfoId) {
