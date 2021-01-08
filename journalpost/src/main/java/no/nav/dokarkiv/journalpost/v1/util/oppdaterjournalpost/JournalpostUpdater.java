@@ -252,12 +252,10 @@ public class JournalpostUpdater {
 	private void checkIfBrukerTypeIsAktoerId(String oldBrukerId, Bruker bruker, OppdaterJournalpostRequest oppdaterJournalpostRequest, Journalpost journalpost, ChangeTracker endret) {
 		if (BrukerIdType.AKTOERID.equals(oppdaterJournalpostRequest.getBruker().getIdType())) {
 			try {
-				String fnr = identConsumer.hentFolkeregisterIdent(bruker.getBrukerId());
+				String fnr = identConsumer.hentFolkeregisterIdent(oppdaterJournalpostRequest.getBruker().getId());
 				bruker.setBrukerType(BrukerTypeCode.PERSON);
 				bruker.setBrukerId(fnr);
 				addBruker(oldBrukerId, bruker, journalpost, endret);
-
-
 			} catch (PersonIkkeFunnetException e) {
 				// Fortsett uten å oppdatere bruker
 			}
