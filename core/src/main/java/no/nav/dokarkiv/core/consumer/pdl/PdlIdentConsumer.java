@@ -3,6 +3,7 @@ package no.nav.dokarkiv.core.consumer.pdl;
 import no.nav.dokarkiv.core.consumer.sts.StsRestConsumer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
@@ -22,6 +23,7 @@ import java.util.stream.Collectors;
 
 import static java.util.Objects.requireNonNull;
 import static no.nav.dokarkiv.core.NavHeaders.BEARER_TOKEN_PREFIX;
+import static no.nav.dokarkiv.core.cache.CacheConfig.HISTORISKE_IDENTER;
 import static no.nav.dokarkiv.core.storage.RetryConstants.DELAY_SHORT;
 import static no.nav.dokarkiv.core.storage.RetryConstants.MULTIPLIER_SHORT;
 
@@ -116,6 +118,7 @@ public class PdlIdentConsumer implements IdentConsumer {
 				.build();
 	}
 
+	@Cacheable(HISTORISKE_IDENTER)
 	@Retryable(
 			include = HttpServerErrorException.class,
 			backoff = @Backoff(delay = DELAY_SHORT, multiplier = MULTIPLIER_SHORT)
