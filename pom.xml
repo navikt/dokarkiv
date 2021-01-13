@@ -60,7 +60,7 @@
 		<commons.io.version>2.7</commons.io.version>
 		<swagger-ui.version>3.9.2</swagger-ui.version>
 		<argLine>-Xmx2048m</argLine>
-		<lombok.version>1.18.12</lombok.version>
+		<lombok.version>1.18.16</lombok.version>
 		<!-- test -->
 		<modig.testcertificates.version>1.2.5</modig.testcertificates.version>
 		<spring-cloud-contract-wiremock.version>2.1.5.RELEASE</spring-cloud-contract-wiremock.version>
