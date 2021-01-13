@@ -45,7 +45,7 @@
 		<cxf.version>3.4.1</cxf.version>
 		<!-- Flyway versjon må ses i sammenheng med joark og Flyway42AutoConfiguration -->
 		<flyway.version>4.2.0</flyway.version>
-		<simpleflatmapper.version>8.2.1</simpleflatmapper.version>
+		<simpleflatmapper.version>8.2.3</simpleflatmapper.version>
 		<swagger.version>2.9.2</swagger.version>
 		<commons-collections4.version>4.4</commons-collections4.version>
 		<logstash-logback-encoder.version>6.5</logstash-logback-encoder.version>
