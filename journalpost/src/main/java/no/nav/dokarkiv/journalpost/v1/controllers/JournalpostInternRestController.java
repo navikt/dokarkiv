@@ -20,6 +20,7 @@ import no.nav.dokarkiv.journalpost.v1.services.MottaDokumentUtgaaendeSkanningSer
 import no.nav.dokarkiv.journalpost.v1.services.TilknyttVedleggService;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerFinnMottatteJournalposter;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerFinnMottatteJournalposterMedTema;
+import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerFinnMottatteJournalposterMedTemaEldreEnn;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerKopierJournalpost;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerMottaDokumentUtgaaendeSkanning;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerTilknyttVedlegg;
@@ -41,6 +42,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.inject.Inject;
+import java.util.Arrays;
 import java.util.List;
 
 import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
@@ -120,37 +122,6 @@ public class JournalpostInternRestController {
 	}
 
 	@Transactional(readOnly = true)
-	@SwaggerFinnMottatteJournalposterMedTema
-	@ResponseBody
-	@GetMapping(value = "/finnMottatteJournalposter/{temaer}")
-	@RestMetrics(value = "dok_request", extraTags = {"process_code", "finnMottatteJournalposter"}, percentiles = {0.5, 0.95})
-	public ResponseEntity<FinnMottatteJournalposterResponse> finnMottatteJournalposterMedTema(
-			@RequestHeader(value = HttpHeaders.AUTHORIZATION) String auth,
-			@PathVariable List<String> temaer) {
-		MDC.put(MDC_REQUEST_ID, "finnMottatteJournalposter");
-		try {
-			assertThatConsumerIsSrvdoksikkerhetsnett(auth);
-
-			log.info("finnMottatteJournalposter har mottatt kall om å hente ubehandlede journalposter med tema blandt " + temaer);
-
-			FinnMottatteJournalposterResponse ubehandledeJournalposter = finnMottatteJournalposterService.finnMottatteJournalposterMedTemaEldreEnn(temaer, DEFAULT_DAGER_GAMLE);
-
-			ResponseEntity<FinnMottatteJournalposterResponse> re = ResponseEntity
-					.ok()
-					.body(ubehandledeJournalposter);
-			return re;
-		} catch (DokarkivFunctionalException e) {
-			log.warn("finnMottatteJournalposter - feilet funksjonelt ved søk på ubehandlede journalposter med tema blandt {}. Feilmelding={}", temaer, e
-					.getMessage());
-			throw e;
-		} catch (DokarkivTechnicalException e) {
-			log.error("finnMottatteJournalposter - feilet teknisk ved søk på ubehandlede journalposter med tema blandt {}. Feilmelding={}", temaer, e
-					.getMessage());
-			throw e;
-		}
-	}
-
-	@Transactional(readOnly = true)
 	@SwaggerFinnMottatteJournalposter
 	@ResponseBody
 	@GetMapping(value = "/finnMottatteJournalposter")
@@ -180,10 +151,43 @@ public class JournalpostInternRestController {
 	}
 
 	@Transactional(readOnly = true)
+	@SwaggerFinnMottatteJournalposterMedTema
+	@ResponseBody
+	@GetMapping(value = "/finnMottatteJournalposter/{temaer}")
+	@RestMetrics(value = "dok_request", extraTags = {"process_code", "finnMottatteJournalposter"}, percentiles = {0.5, 0.95})
+	public ResponseEntity<FinnMottatteJournalposterResponse> finnMottatteJournalposterMedTema(
+			@RequestHeader(value = HttpHeaders.AUTHORIZATION) String auth,
+			@PathVariable List<String> temaer) {
+		MDC.put(MDC_REQUEST_ID, "finnMottatteJournalposter");
+		try {
+			assertThatConsumerIsSrvdoksikkerhetsnett(auth);
+
+			log.info("finnMottatteJournalposter har mottatt kall om å hente ubehandlede journalposter med tema blandt " + Arrays.toString(temaer.toArray()));
+
+			FinnMottatteJournalposterResponse ubehandledeJournalposter = finnMottatteJournalposterService.finnMottatteJournalposterMedTemaEldreEnn(temaer, DEFAULT_DAGER_GAMLE);
+
+			ResponseEntity<FinnMottatteJournalposterResponse> re = ResponseEntity
+					.ok()
+					.body(ubehandledeJournalposter);
+			return re;
+		} catch (DokarkivFunctionalException e) {
+			log.warn("finnMottatteJournalposter - feilet funksjonelt ved søk på ubehandlede journalposter med tema blandt {}. Feilmelding={}", Arrays.toString(temaer.toArray()), e
+					.getMessage());
+			throw e;
+		} catch (DokarkivTechnicalException e) {
+			log.error("finnMottatteJournalposter - feilet teknisk ved søk på ubehandlede journalposter med tema blandt {}. Feilmelding={}", Arrays.toString(temaer.toArray()), e
+					.getMessage());
+			throw e;
+		}
+	}
+
+
+	@Transactional(readOnly = true)
+	@SwaggerFinnMottatteJournalposterMedTemaEldreEnn
 	@ResponseBody
 	@GetMapping(value = "/finnMottatteJournalposter/{temaer}/{eldreEnn}")
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "finnMottatteJournalposter"}, percentiles = {0.5, 0.95})
-	public ResponseEntity<FinnMottatteJournalposterResponse> finnMottatteJournalposterMedTema(
+	public ResponseEntity<FinnMottatteJournalposterResponse> finnMottatteJournalposterMedTemaEldreEnn(
 			@RequestHeader(value = HttpHeaders.AUTHORIZATION) String auth,
 			@PathVariable("temaer") List<String> temaer,
 			@PathVariable("eldreEnn") int eldreEnn) {
@@ -191,7 +195,7 @@ public class JournalpostInternRestController {
 		try {
 			assertThatConsumerIsSrvdoksikkerhetsnett(auth);
 
-			log.info("finnMottatteJournalposter_eldreEnn har mottatt kall om å hente ubehandlede journalposter med tema blandt " + temaer);
+			log.info("finnMottatteJournalposter_eldreEnn har mottatt kall om å hente ubehandlede journalposter med tema blandt " + Arrays.toString(temaer.toArray()));
 
 			FinnMottatteJournalposterResponse ubehandledeJournalposter = finnMottatteJournalposterService.finnMottatteJournalposterMedTemaEldreEnn(temaer, eldreEnn);
 
@@ -200,11 +204,11 @@ public class JournalpostInternRestController {
 					.body(ubehandledeJournalposter);
 			return re;
 		} catch (DokarkivFunctionalException e) {
-			log.warn("finnMottatteJournalposter - feilet funksjonelt ved søk på ubehandlede journalposter med tema blandt {}. Feilmelding={}", temaer, e
+			log.warn("finnMottatteJournalposter - feilet funksjonelt ved søk på ubehandlede journalposter med tema blandt {}. Feilmelding={}", Arrays.toString(temaer.toArray()), e
 					.getMessage());
 			throw e;
 		} catch (DokarkivTechnicalException e) {
-			log.error("finnMottatteJournalposter - feilet teknisk ved søk på ubehandlede journalposter med tema blandt {}. Feilmelding={}", temaer, e
+			log.error("finnMottatteJournalposter - feilet teknisk ved søk på ubehandlede journalposter med tema blandt {}. Feilmelding={}", Arrays.toString(temaer.toArray()), e
 					.getMessage());
 			throw e;
 		}
