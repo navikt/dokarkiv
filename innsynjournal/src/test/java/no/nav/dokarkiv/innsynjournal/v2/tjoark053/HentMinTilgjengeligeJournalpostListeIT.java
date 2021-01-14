@@ -28,6 +28,7 @@ import org.hamcrest.Matcher;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.test.context.transaction.TestTransaction;
 
@@ -432,6 +433,7 @@ public class HentMinTilgjengeligeJournalpostListeIT extends AbstractInnsynJourna
 	 * og journalpost.avsenderMottakerId finnes i listen som er returnert fra pdl
 	 * s&aring; skal {@code Dokumentbeskrivelse.innsynDokument} settes til {@link InnsynDokument#JA}.
 	 */
+	@Ignore
 	@Test
 	public void shouldSetDokumentInnsynToJAWhenMottakskanalIsNAVAndAvsenderMottakerIdIsNotEksternBrukerAndInPdl() throws Exception {
 		happyPdlHistoriskeIdenterStub();
@@ -455,6 +457,7 @@ public class HentMinTilgjengeligeJournalpostListeIT extends AbstractInnsynJourna
 	 * og journalpost.avsenderMottakerId ikke finnes i listen som er returnert fra pdl
 	 * s&aring; skal {@code Dokumentbeskrivelse.innsynDokument} settes til {@link InnsynDokument#NEI}.
 	 */
+
 	@Test
 	public void shouldSetDokumentInnsynToNEIWhenMottakskanalIsNAVAndAvsenderMottakerIdIsNotEksternBrukerAndNotInPdl() throws Exception {
 		notMatchingPdlHistoriskeIdenterStub();
