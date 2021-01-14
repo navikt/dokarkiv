@@ -50,7 +50,7 @@
 		<commons-collections4.version>4.4</commons-collections4.version>
 		<logstash-logback-encoder.version>6.5</logstash-logback-encoder.version>
 		<logback-syslog4j.version>1.0.0</logback-syslog4j.version>
-		<jaxb2-basics-runtime.version>0.6.4</jaxb2-basics-runtime.version>
+		<jaxb2-basics-runtime.version>0.12.0</jaxb2-basics-runtime.version>
 		<java-jwt.version>3.10.3</java-jwt.version>
 		<aws-java-sdk-s3.version>1.11.907</aws-java-sdk-s3.version>
 		<modig-security.version>3.0.6</modig-security.version>
