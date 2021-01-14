@@ -42,17 +42,18 @@ public class FinnMottatteJournalposterService {
 		}
 	}
 
-	public FinnMottatteJournalposterResponse finnMottatteJournalposterMedTema(List<String> temaer) throws KanIkkeHenteMottatteJournalposterException {
+	public FinnMottatteJournalposterResponse finnMottatteJournalposterMedTemaEldreEnn(List<String> temaer, int eldreEnn) throws KanIkkeHenteMottatteJournalposterException {
 		try {
 			List<Journalpost> ubehandledeJournalposter = joarkRepository
-					.findUbehandledeJournalpostsWithTemaIn(DateTime.now().minusWeeks(1).toDate(), temaer)
+					.findUbehandledeJournalpostsWithTemaIn(DateTime.now().minusDays(eldreEnn).toDate(), temaer)
 					.orElse(List.of());
 			return new FinnMottatteJournalposterResponse(ubehandledeJournalposter.stream().map(this::createResponseObject).collect(Collectors.toList()));
 		} catch(DataAccessException e){
-			log.error(get(MDC_REQUEST_ID) + " finnMottatteJournalposterMedTemaer fikk DataAccessException ved kall mot joarkRepository", e);
+			log.error(get(MDC_REQUEST_ID) + " finnMottatteJournalposterMedTemaer fikk DataAccessException ved kall mot joarkRepository.", e);
 			throw new KanIkkeHenteMottatteJournalposterException("Internal server error");
 		}
 	}
+
 	private UbehandletJournalpost createResponseObject(Journalpost journalpost) throws KanIkkeHenteMottatteJournalposterException {
 
 		try {
