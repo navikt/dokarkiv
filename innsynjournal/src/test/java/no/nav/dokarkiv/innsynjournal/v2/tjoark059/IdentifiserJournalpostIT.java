@@ -23,6 +23,7 @@ import org.hamcrest.Matcher;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.List;
@@ -188,6 +189,7 @@ public class IdentifiserJournalpostIT extends AbstractInnsynJournalV2Itest {
 	 * og journalpost.avsenderMottakerId finnes i listen som er returnert fra pdl
 	 * s&aring; skal {@code Dokumentbeskrivelse.innsynDokument} settes til {@link InnsynDokument#JA}.
 	 */
+	@Ignore
 	@Test
 	public void shouldSetDokumentInnsynToJAWhenMottakskanalIsNAVAndAvsenderMottakerIdIsNotEksternBrukerAndInPdl() throws Exception {
 		happyPdlHistoriskeIdenterStub();
