@@ -1,25 +1,7 @@
 package no.nav.dokarkiv.innsynjournal.v2;
 
-import static no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder.getFilDetaljerBuilder;
-import static no.nav.dokarkiv.core.domain.builder.SaksrelasjonBuilder.getSaksrelasjonBuilder;
-import static no.nav.dokarkiv.core.domain.codes.MottaksKanalCode.ALTINN;
-import static no.nav.dokarkiv.core.domain.codes.MottaksKanalCode.NAV_NO;
-import static no.nav.dokarkiv.core.domain.codes.MottaksKanalCode.SKAN_IM;
-import static no.nav.dokarkiv.core.domain.codes.MottaksKanalCode.SKAN_NETS;
-import static no.nav.dokarkiv.core.domain.codes.MottaksKanalCode.SKAN_PEN;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.when;
-
-import no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerService;
-import no.nav.dokarkiv.core.consumer.aktoer.HentAktoerIdForIdentRequestTo;
-import no.nav.dokarkiv.core.consumer.aktoer.HentAktoerIdForIdentResponseTo;
-import no.nav.dokarkiv.core.consumer.aktoer.IdentDetaljerTo;
-import no.nav.dokarkiv.core.consumer.aktoer.PersonIkkeFunnetException;
+import no.nav.dokarkiv.core.consumer.pdl.IdentConsumer;
+import no.nav.dokarkiv.core.consumer.pdl.PersonIkkeFunnetException;
 import no.nav.dokarkiv.core.domain.ChangeStamp;
 import no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder;
 import no.nav.dokarkiv.core.domain.builder.JournalpostBuilder;
@@ -62,11 +44,27 @@ import java.time.LocalDate;
 import java.time.Month;
 import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
+import static java.util.Arrays.asList;
+import static no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder.getFilDetaljerBuilder;
+import static no.nav.dokarkiv.core.domain.builder.SaksrelasjonBuilder.getSaksrelasjonBuilder;
+import static no.nav.dokarkiv.core.domain.codes.MottaksKanalCode.ALTINN;
+import static no.nav.dokarkiv.core.domain.codes.MottaksKanalCode.NAV_NO;
+import static no.nav.dokarkiv.core.domain.codes.MottaksKanalCode.SKAN_IM;
+import static no.nav.dokarkiv.core.domain.codes.MottaksKanalCode.SKAN_NETS;
+import static no.nav.dokarkiv.core.domain.codes.MottaksKanalCode.SKAN_PEN;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.when;
 
 /**
  * Unit tests for {@link InnsynJournalV2SecurityFacade}
@@ -92,7 +90,7 @@ public class InnsynJournalV2SecurityFacadeTest {
 	@Mock
 	private Tjoark054HentDokumentService tjoark054HentDokumentService;
 	@Mock
-	private AktoerConsumerService aktoerConsumerService;
+	private IdentConsumer identConsumer;
 	@Mock
 	private HentMinTilgjengeligeJournalpostListeService hentMinTilgjengeligeJournalpostListeService;
 	@Mock
@@ -487,8 +485,7 @@ public class InnsynJournalV2SecurityFacadeTest {
 		Journalpost legalJournalpost = createLegalJournalpost();
 		legalJournalpost.setAvsenderMottakerId("00000000000");
 
-		HentAktoerIdForIdentResponseTo identResponseTo = new HentAktoerIdForIdentResponseTo("001", createIdentDetaljerList(USER_ID));
-		when(aktoerConsumerService.hentAktoerIdForIdent(eq(new HentAktoerIdForIdentRequestTo(USER_ID)))).thenReturn(identResponseTo);
+		when(identConsumer.hentHistoriskeFolkeregisterIdenter(eq(USER_ID))).thenReturn(Collections.singletonList(USER_ID));
 
 		mockJournalpost(legalJournalpost);
 		expectedException.expect(SecurityLimitationAttributeException.class);
@@ -519,9 +516,7 @@ public class InnsynJournalV2SecurityFacadeTest {
 	public void shouldReturnDocumentIfAvsenderMottakerExistsInHistoricalList() throws Exception {
 		String historicalFnr = "31231234212";
 
-		HentAktoerIdForIdentResponseTo identResponseTo = new HentAktoerIdForIdentResponseTo("001",
-				createIdentDetaljerList("22222222222", historicalFnr, "33333333333"));
-		when(aktoerConsumerService.hentAktoerIdForIdent(eq(new HentAktoerIdForIdentRequestTo(USER_ID)))).thenReturn(identResponseTo);
+		when(identConsumer.hentHistoriskeFolkeregisterIdenter(eq(USER_ID))).thenReturn(asList("22222222222", historicalFnr, "33333333333"));
 
 		mockJournalpost(createNAVNOJournalpost(historicalFnr));
 
@@ -536,7 +531,7 @@ public class InnsynJournalV2SecurityFacadeTest {
 		mockJournalpost(legalJournalpost);
 
 		doThrow(new PersonIkkeFunnetException(new Exception(), "Person not found"))
-				.when(aktoerConsumerService).hentAktoerIdForIdent(eq(new HentAktoerIdForIdentRequestTo(USER_ID)));
+				.when(identConsumer).hentHistoriskeFolkeregisterIdenter(eq(USER_ID));
 
 		expectedException.expect(RuntimeException.class);
 		expectedException.expectMessage("Kan ikke utføre tilgangskontroll for pålogget bruker med fnr=" + USER_ID + " "
@@ -562,15 +557,14 @@ public class InnsynJournalV2SecurityFacadeTest {
 		journalpost.setAvsenderMottakerId("notLoggedOnUser");
 		journalpost.setMottakskanal(NAV_NO);
 		HentJournalpostListeToRequest request = createRequest(true);
-		when(aktoerConsumerService.hentAktoerIdForIdent(any(HentAktoerIdForIdentRequestTo.class)))
-				.thenThrow(new PersonIkkeFunnetException(new Throwable(""), "person not found"));
+		when(identConsumer.hentHistoriskeFolkeregisterIdenter(any(String.class)))
+				.thenThrow(new PersonIkkeFunnetException("person not found"));
 		mockHentMinJournalpostListe(request, journalpost);
 
 		List<InnsynJournalpostTo> innsynJournalpostTos = securityFacade.hentMineTilgjengeligeJournalpostListe(request);
 		assertThat(innsynJournalpostTos.get(0).getAvsenderMottaker(), is(InnsynJournalpostTo.AvsenderMottaker.KAN_IKKE_AVGJOERES));
 		assertDokumenInfoInnsyn(innsynJournalpostTos, InnsynJournalpostTo.DokumentInnsyn.KAN_IKKE_AVGJOERES);
 	}
-
 
 	@Test
 	public void shouldNotAllowDokumentInnsynWhenNotInnsendtByBruker() throws PersonIkkeFunnetException {
@@ -580,8 +574,6 @@ public class InnsynJournalV2SecurityFacadeTest {
 		HentJournalpostListeToRequest request = createRequest(true);
 
 		mockHentMinJournalpostListe(request, journalpost);
-		HentAktoerIdForIdentResponseTo identResponseTo = new HentAktoerIdForIdentResponseTo("001", createIdentDetaljerList(USER_ID));
-		when(aktoerConsumerService.hentAktoerIdForIdent(eq(new HentAktoerIdForIdentRequestTo(USER_ID)))).thenReturn(identResponseTo);
 
 		List<InnsynJournalpostTo> innsynJournalpostTos = securityFacade.hentMineTilgjengeligeJournalpostListe(request);
 		assertDokumenInfoInnsyn(innsynJournalpostTos, InnsynJournalpostTo.DokumentInnsyn.NEI);
@@ -685,16 +677,8 @@ public class InnsynJournalV2SecurityFacadeTest {
 
 	private List<Journalpost> createJournalpostList(Journalpost... journalpost) {
 		List<Journalpost> journalposts = new ArrayList<>();
-		journalposts.addAll(Arrays.asList(journalpost));
+		journalposts.addAll(asList(journalpost));
 		return journalposts;
-	}
-
-	private List<IdentDetaljerTo> createIdentDetaljerList(String... fnrs) {
-		List<IdentDetaljerTo> identDetaljerToList = new ArrayList<>();
-		for (String fnr : fnrs) {
-			identDetaljerToList.add(new IdentDetaljerTo(fnr, new Date()));
-		}
-		return identDetaljerToList;
 	}
 
 	private Journalpost createNAVNOJournalpost(String avsenderMottakerId) {

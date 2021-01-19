@@ -1,8 +1,7 @@
 package no.nav.dokarkiv.journalpost.v1.services;
 
 import no.nav.dokarkiv.core.aksjonslogg.LagreAksjonsLoggService;
-import no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerService;
-import no.nav.dokarkiv.core.consumer.aktoer.HentAktoerIdForIdentRequestTo;
+import no.nav.dokarkiv.core.consumer.pdl.IdentConsumer;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
@@ -55,7 +54,7 @@ public class OppdaterJournalpostService {
 	private final SaksrelasjonUpdater saksrelasjonUpdater;
 	private final DokumentInfoUpdater dokumentInfoUpdater;
 	private final LagreAksjonsLoggService lagreAksjonsLoggService;
-	private final AktoerConsumerService aktoerConsumerService;
+	private final IdentConsumer identConsumer;
 	private final HentSakerRepository hentSakerRepository;
 
 	@Inject
@@ -65,7 +64,7 @@ public class OppdaterJournalpostService {
 									  DokumentinfoRepository dokumentinfoRepository,
 									  DokumentInfoUpdater dokumentInfoUpdater,
 									  LagreAksjonsLoggService lagreAksjonsLoggService,
-									  final AktoerConsumerService aktoerConsumerService,
+									  final IdentConsumer identConsumer,
 									  final HentSakerRepository hentSakerRepository) {
 		this.joarkRepository = joarkRepository;
 		this.dokumentinfoRepository = dokumentinfoRepository;
@@ -73,7 +72,7 @@ public class OppdaterJournalpostService {
 		this.saksrelasjonUpdater = saksrelasjonUpdater;
 		this.dokumentInfoUpdater = dokumentInfoUpdater;
 		this.lagreAksjonsLoggService = lagreAksjonsLoggService;
-		this.aktoerConsumerService = aktoerConsumerService;
+		this.identConsumer = identConsumer;
 		this.hentSakerRepository = hentSakerRepository;
 	}
 
@@ -176,8 +175,7 @@ public class OppdaterJournalpostService {
 			case AKTOERID:
 				return bruker.getId();
 			case FNR:
-				return aktoerConsumerService.hentAktoerIdForIdent(new HentAktoerIdForIdentRequestTo(bruker.getId()))
-						.getAktoerId();
+				return identConsumer.hentAktoerId(bruker.getId());
 			default:
 				return null;
 		}

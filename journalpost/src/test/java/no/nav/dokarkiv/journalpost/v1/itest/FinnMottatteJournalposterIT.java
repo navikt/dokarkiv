@@ -39,6 +39,7 @@ public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
 	private static final String NAV_CONSUMER_ID = "Nav-Consumer-Id";
 	private static final String FAGKODE_UFO = "UFO";
 	private static final String FAGKODE_PEN = "PEN";
+	private static final int DEFAULT_DAGER_GAMLE = 5;
 
 	private FinnMottatteJournalposterService finnMottatteJournalposterService;
 
@@ -135,14 +136,14 @@ public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
 
 		reinitTransaction();
 
-		List<UbehandletJournalpost> ubehandletJournalposts = finnMottatteJournalposterService.finnMottatteJournalposterMedTema(List.of(FAGKODE_UFO, FAGKODE_PEN)).getJournalposter();
+		List<UbehandletJournalpost> ubehandletJournalposts = finnMottatteJournalposterService.finnMottatteJournalposterMedTemaEldreEnn(List.of(FAGKODE_UFO, FAGKODE_PEN), DEFAULT_DAGER_GAMLE).getJournalposter();
 		List<Long> retrievedIds = ubehandletJournalposts.stream().map(UbehandletJournalpost::getJournalpostId).collect(Collectors.toList());
 
 		assertFalse(ubehandletJournalposts.isEmpty());
 		assertEquals(retrievedIds.size(), validJournalpostIds.size());
 		assertTrue(retrievedIds.containsAll(validJournalpostIds));
 
-		ubehandletJournalposts = finnMottatteJournalposterService.finnMottatteJournalposterMedTema(List.of(FAGKODE_UFO, FAGKODE_PEN, "FinnesIkke")).getJournalposter();
+		ubehandletJournalposts = finnMottatteJournalposterService.finnMottatteJournalposterMedTemaEldreEnn(List.of(FAGKODE_UFO, FAGKODE_PEN, "FinnesIkke"), DEFAULT_DAGER_GAMLE).getJournalposter();
 		retrievedIds = ubehandletJournalposts.stream().map(UbehandletJournalpost::getJournalpostId).collect(Collectors.toList());
 
 		assertFalse(ubehandletJournalposts.isEmpty());

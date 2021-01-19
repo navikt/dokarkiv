@@ -4,8 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService;
 import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggTO;
-import no.nav.dokarkiv.core.consumer.aktoer.AktoerConsumerService;
-import no.nav.dokarkiv.core.consumer.aktoer.HentAktoerIdForIdentRequestTo;
+import no.nav.dokarkiv.core.consumer.pdl.IdentConsumer;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentFil;
@@ -60,7 +59,7 @@ public class OpprettJournalpostService {
     private final OpprettJournalpostApiRequestMapper opprettJournalpostApiRequestMapper;
     private final DefaultSporingPopulator defaultSporingPopulator;
     private final AksjonsLoggService aksjonsLoggService;
-    private final AktoerConsumerService aktoerConsumerService;
+    private final IdentConsumer identConsumer;
     private final HentSakerRepository hentSakerRepository;
 
     @Inject
@@ -69,14 +68,14 @@ public class OpprettJournalpostService {
                                      final OpprettJournalpostApiRequestMapper opprettJournalpostApiRequestMapper,
                                      final DefaultSporingPopulator defaultSporingPopulator,
                                      final AksjonsLoggService aksjonsLoggService,
-                                     final AktoerConsumerService aktoerConsumerService,
+                                     final IdentConsumer identConsumer,
                                      final HentSakerRepository hentSakerRepository) {
         this.joarkRepository = joarkRepository;
         this.dokumentFilRepository = dokumentFilRepository;
         this.opprettJournalpostApiRequestMapper = opprettJournalpostApiRequestMapper;
         this.defaultSporingPopulator = defaultSporingPopulator;
         this.aksjonsLoggService = aksjonsLoggService;
-        this.aktoerConsumerService = aktoerConsumerService;
+        this.identConsumer = identConsumer;
         this.hentSakerRepository = hentSakerRepository;
     }
 
@@ -151,8 +150,7 @@ public class OpprettJournalpostService {
             case AKTOERID:
                 return bruker.getId();
             case FNR:
-                return aktoerConsumerService.hentAktoerIdForIdent(new HentAktoerIdForIdentRequestTo(bruker.getId()))
-                        .getAktoerId();
+                return identConsumer.hentAktoerId(bruker.getId());
             default:
                 return null;
         }
