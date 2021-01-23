@@ -52,7 +52,7 @@
 		<logback-syslog4j.version>1.0.0</logback-syslog4j.version>
 		<jaxb2-basics-runtime.version>0.6.4</jaxb2-basics-runtime.version>
 		<java-jwt.version>3.10.3</java-jwt.version>
-		<aws-java-sdk-s3.version>1.11.907</aws-java-sdk-s3.version>
+		<aws-java-sdk-s3.version>1.11.942</aws-java-sdk-s3.version>
 		<modig-security.version>3.0.6</modig-security.version>
 		<abac-spring.version>1.6.0</abac-spring.version>
 		<token-support.version>1.3.1</token-support.version>
