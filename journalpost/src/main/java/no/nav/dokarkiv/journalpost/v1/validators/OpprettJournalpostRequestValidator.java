@@ -256,9 +256,9 @@ public class OpprettJournalpostRequestValidator {
 			throw new InputValideringFeiletException(format("Dokument.dokumentvariant.variantformat %s", VALIDERER_IKKE_MOT_KODEVERK));
 		}
 		if (dokumentVariant.getVariantformat().equals(VariantFormatCode.ARKIV.name())
-				&& !Arrays.asList(FilTypeCode.PDF, FilTypeCode.PDFA)
+				&& !Arrays.asList(FilTypeCode.PDF, FilTypeCode.PDFA, FilTypeCode.TIFF, FilTypeCode.PNG, FilTypeCode.JPEG )
 				.contains(FilTypeCode.valueOf(dokumentVariant.getFiltype()))) {
-			throw new InputValideringFeiletException("Dokument.dokumentvariant.filtype på være PDF eller PDFA for Dokument.dokumentvariant.variantformat=ARKIV.");
+			throw new InputValideringFeiletException("Dokument.dokumentvariant.filtype på være PDF, PDFA, TIFF, PNG eller JPEG for Dokument.dokumentvariant.variantformat=ARKIV.");
 		}
 	}
 }

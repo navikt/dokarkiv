@@ -20,6 +20,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import static java.util.Collections.singletonList;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.ARKIVSAKSNUMMER;
@@ -41,6 +42,8 @@ public class OpprettJournalpostRequestValidatorTest {
 
     public static final String FORSOEKFERDIGSTILL = "false";
     public static final String JOURNALFOERENDE_ENHET = "9999";
+    public static final String FILTYPE_PNG = "PNG";
+    public static final String FILTYPE_TIFF = "TIFF";
 
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
@@ -619,6 +622,30 @@ public class OpprettJournalpostRequestValidatorTest {
 
         expectedException.expect(InputValideringFeiletException.class);
         expectedException.expectMessage("Dokument.dokumentkategori");
+
+        validator.validateRequest(request, FORSOEKFERDIGSTILL);
+    }
+
+    @Test
+    public void shouldValidateFiltyper() {
+        request = createMinimalRequest(JournalpostType.INNGAAENDE)
+                .dokumenter(singletonList(Dokument.builder()
+                        .dokumentKategori(DOKUMENTKATEGORI_SED)
+                        .dokumentvarianter(Arrays.asList(
+                        DokumentVariant.builder()
+                                .filtype(FILTYPE_PDF)
+                                .variantformat(VARIANTFORMAT_ARKIV)
+                                .build(),
+                        DokumentVariant.builder()
+                                .filtype(FILTYPE_TIFF)
+                                .variantformat(VARIANTFORMAT_ARKIV)
+                                .build(),
+                        DokumentVariant.builder()
+                                .filtype(FILTYPE_PNG)
+                                .variantformat(VARIANTFORMAT_ARKIV)
+                                .build()))
+                        .build()))
+                .build();
 
         validator.validateRequest(request, FORSOEKFERDIGSTILL);
     }
