@@ -15,78 +15,79 @@ import java.util.List;
 @Repository
 public class HentTilgangJournalpostRepository {
 
-	private final EntityManager entityManager;
+    private final EntityManager entityManager;
 
-	@Inject
-	public HentTilgangJournalpostRepository(EntityManager entityManager) {
-		this.entityManager = entityManager;
-	}
+    @Inject
+    public HentTilgangJournalpostRepository(EntityManager entityManager) {
+        this.entityManager = entityManager;
+    }
 
-	TilgangJournalpostDto hentTilgangJournalpost(Long journalpostId, Long dokumentInfoId, VariantFormatCode variantFormat) {
+    TilgangJournalpostDto hentTilgangJournalpost(Long journalpostId, Long dokumentInfoId, VariantFormatCode variantFormat) {
 
-		List resultList = entityManager
-				.createQuery(
-						"select jp.journalpostId, " +
-								"jp.journalstatus, " +
-								"jp.journalposttype, " +
-								"jp.fagomrade, " +
-								"cs.createdDate, " +
-								"jp.mottakskanal, " +
-								"jp.skjermingType, " +
-								"jp.avsenderMottakerId, " +
-								"br.brukerId, " +
-								"br.brukerType, " +
-								"sr.sakId, " +
-								"sr.fagsystem, " +
-								"sa.aktoerId, " +
-								"sa.tema, " +
-								"sa.fagsakNr, " +
-								"sa.orgnr, " +
-								"sa.applikasjon, " +
-								"sa.opprettetAv, " +
-								"sa.opprettetTidspunkt, " +
-								"di.dokumentInfoId, " +
-								"di.dokumentstatus, " +
-								"di.brevkode, " +
-								"jr.skjermingType, " +
-								"fd.variantFormat, " +
-								"fd.skjermingType " +
-								"from Journalpost jp " +
-								"left join jp.brukere br " +
-								"join jp.changeStamp cs " +
-								"left join jp.saksrelasjon sr on sr.journalpost.journalpostId = :journalpostId " +
-								"left join Sak sa on sr.sakId = sa.sakId " +
-								"join jp.journalpostDokumentInfoRelasjoner jr " +
-								"join jr.dokumentInfo di on di.dokumentInfoId = :dokumentInfoId and jr.journalpost.journalpostId = :journalpostId " +
-								"join FilDetaljer fd on fd.dokumentInfo.dokumentInfoId = :dokumentInfoId and fd.variantFormat = :variantFormat " +
-								"where jp.journalpostId = :journalpostId " +
-								"order by br.brukerInfoId desc"
-				)
-				.setParameter("journalpostId", journalpostId)
-				.setParameter("dokumentInfoId", dokumentInfoId)
-				.setParameter("variantFormat", variantFormat)
-				.setMaxResults(1)
-				.unwrap(Query.class)
-				.setResultTransformer(
-						new ResultTransformer() {
-							@Override
-							public Object transformTuple(
-									Object[] tuple,
-									String[] aliases) {
-								return HentTilgangJournalpostDtoMapper.mapTupleTilgangJournalPost(tuple);
-							}
+        List resultList = entityManager
+                .createQuery(
+                        "select jp.journalpostId, " +
+                                "jp.journalstatus, " +
+                                "jp.journalposttype, " +
+                                "jp.fagomrade, " +
+                                "cs.createdDate, " +
+                                "jp.mottakskanal, " +
+                                "jp.skjermingType, " +
+                                "jp.avsenderMottakerId, " +
+                                "br.brukerId, " +
+                                "br.brukerType, " +
+                                "sr.sakId, " +
+                                "sr.fagsystem, " +
+                                "sa.aktoerId, " +
+                                "sa.tema, " +
+                                "sa.fagsakNr, " +
+                                "sa.orgnr, " +
+                                "sa.applikasjon, " +
+                                "sa.opprettetAv, " +
+                                "sa.opprettetTidspunkt, " +
+                                "di.dokumentInfoId, " +
+                                "di.dokumentstatus, " +
+                                "di.brevkode, " +
+                                "jr.skjermingType, " +
+                                "fd.variantFormat, " +
+                                "fd.skjermingType " +
+                                "from Journalpost jp " +
+                                "left join jp.brukere br " +
+                                "join jp.changeStamp cs " +
+                                "left join jp.saksrelasjon sr on sr.journalpost.journalpostId = :journalpostId " +
+                                "left join Sak sa on sr.sakId = sa.sakId " +
+                                "join jp.journalpostDokumentInfoRelasjoner jr " +
+                                "join jr.dokumentInfo di on di.dokumentInfoId = :dokumentInfoId and jr.journalpost.journalpostId = :journalpostId " +
+                                "join FilDetaljer fd on fd.dokumentInfo.dokumentInfoId = :dokumentInfoId and fd.variantFormat = :variantFormat " +
+                                "where jp.journalpostId = :journalpostId " +
+                                "order by br.brukerInfoId desc"
+                )
+                .setParameter("journalpostId", journalpostId)
+                .setParameter("dokumentInfoId", dokumentInfoId)
+                .setParameter("variantFormat", variantFormat)
+                .setMaxResults(1)
+                .unwrap(Query.class)
+                .setResultTransformer(
+                        new ResultTransformer() {
+                            @Override
+                            public Object transformTuple(
+                                    Object[] tuple,
+                                    String[] aliases) {
+                                return HentTilgangJournalpostDtoMapper.mapTupleTilgangJournalPost(tuple);
+                            }
 
-							@Override
-							public List transformList(List collection) {
-								return collection;
-							}
-						}
-				)
-				.getResultList();
-		return (TilgangJournalpostDto) resultList.get(0);
-	}
+                            @Override
+                            public List transformList(List collection) {
+                                return collection;
+                            }
+                        }
+                )
+                .getResultList();
 
-	private boolean isNull(Object o) {
-		return o == null;
-	}
+        if (!resultList.isEmpty()) {
+            return (TilgangJournalpostDto) resultList.get(0);
+        } else {
+            throw new TilgangJournalpostException("Ingen jornalpost funnet");
+        }
+    }
 }
