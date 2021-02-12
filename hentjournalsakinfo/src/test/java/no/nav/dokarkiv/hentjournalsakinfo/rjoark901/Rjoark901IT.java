@@ -11,77 +11,80 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.transaction.TestTransaction;
 
+import java.util.Objects;
+
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createBruker;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createJournalpostWithHoveddokument;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 public class Rjoark901IT extends AbstractHentjournalsakinfoItest {
 
-	private static final String HENTTILGANGJOURNALPOST_URI = "/hentjournalsakinfo/henttilgangjournalpost/{journalpostId}/{dokumentInfoId}/{variantFormat}";
-	private static final String EXPECTED_BRUKER_ID = "11111111111";
+    private static final String HENTTILGANGJOURNALPOST_URI = "/hentjournalsakinfo/henttilgangjournalpost/{journalpostId}/{dokumentInfoId}/{variantFormat}";
+    private static final String EXPECTED_BRUKER_ID = "11111111111";
 
-	@Test
-	public void shouldGetTilgangJournalpost() {
-		Journalpost storedJournalpost = persistJournalpost(createJournalpostWithHoveddokument());
-		Long journalpostId = storedJournalpost.getJournalpostId();
-		Long dokumentInfoId = storedJournalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId();
+    @Test
+    public void shouldGetTilgangJournalpost() {
+        Journalpost storedJournalpost = persistJournalpost(createJournalpostWithHoveddokument());
+        Long journalpostId = storedJournalpost.getJournalpostId();
+        Long dokumentInfoId = storedJournalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId();
 
-		ResponseEntity<HentTilgangJournalpostResponse> responseEntity = restTemplate.exchange(HENTTILGANGJOURNALPOST_URI, HttpMethod.GET, createHeaderEntity(), HentTilgangJournalpostResponse.class,
-				journalpostId, dokumentInfoId, VariantFormatCode.ARKIV.name());
+        ResponseEntity<HentTilgangJournalpostResponse> responseEntity = restTemplate.exchange(HENTTILGANGJOURNALPOST_URI, HttpMethod.GET, createHeaderEntity(), HentTilgangJournalpostResponse.class,
+                journalpostId, dokumentInfoId, VariantFormatCode.ARKIV.name());
 
-		TilgangJournalpostDto responseJournalpost = responseEntity.getBody().getTilgangJournalpostDto();
-		assertThat(responseJournalpost.getJournalpostId(), is(journalpostId.toString()));
-	}
+        TilgangJournalpostDto responseJournalpost = Objects.requireNonNull(responseEntity.getBody()).getTilgangJournalpostDto();
+        assertEquals(responseJournalpost.getJournalpostId(), journalpostId.toString());
+    }
 
-	@Test
-	public void shouldGetTilgangJournalpostNoBruker() {
-		Journalpost journalpostNoBrukere = createJournalpostWithHoveddokument();
-		journalpostNoBrukere.clearBrukere();
+    @Test
+    public void shouldGetTilgangJournalpostNoBruker() {
+        Journalpost journalpostNoBrukere = createJournalpostWithHoveddokument();
+        journalpostNoBrukere.clearBrukere();
 
-		Journalpost storedJournalpost = persistJournalpost(journalpostNoBrukere);
-		Long journalpostId = storedJournalpost.getJournalpostId();
-		Long dokumentInfoId = storedJournalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId();
+        Journalpost storedJournalpost = persistJournalpost(journalpostNoBrukere);
+        Long journalpostId = storedJournalpost.getJournalpostId();
+        Long dokumentInfoId = storedJournalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId();
 
-		ResponseEntity<HentTilgangJournalpostResponse> responseEntity = restTemplate.exchange(HENTTILGANGJOURNALPOST_URI, HttpMethod.GET, createHeaderEntity(), HentTilgangJournalpostResponse.class,
-				journalpostId, dokumentInfoId, VariantFormatCode.ARKIV.name());
+        ResponseEntity<HentTilgangJournalpostResponse> responseEntity = restTemplate.exchange(HENTTILGANGJOURNALPOST_URI, HttpMethod.GET, createHeaderEntity(), HentTilgangJournalpostResponse.class,
+                journalpostId, dokumentInfoId, VariantFormatCode.ARKIV.name());
 
-		TilgangJournalpostDto responseJournalpost = responseEntity.getBody().getTilgangJournalpostDto();
-		assertThat(responseJournalpost.getBruker().getBrukerId(), nullValue());
-		assertThat(responseJournalpost.getBruker().getBrukerType(), nullValue());
-	}
+        TilgangJournalpostDto responseJournalpost = Objects.requireNonNull(responseEntity.getBody()).getTilgangJournalpostDto();
+        assertNull(responseJournalpost.getBruker().getBrukerId());
+        assertNull(responseJournalpost.getBruker().getBrukerType());
+    }
 
-	@Test
-	public void shouldGetTilgangJournalpostMultipleBrukereUsingLatestBruker() {
-		Journalpost baseStoredJournalpost = persistJournalpost(createJournalpostWithHoveddokument());
-		Bruker actualBruker = createBruker();
-		actualBruker.setBrukerId(EXPECTED_BRUKER_ID);
-		baseStoredJournalpost.addBruker(actualBruker);
+    @Test
+    public void shouldGetTilgangJournalpostMultipleBrukereUsingLatestBruker() {
+        Journalpost baseStoredJournalpost = persistJournalpost(createJournalpostWithHoveddokument());
+        Bruker actualBruker = createBruker();
+        actualBruker.setBrukerId(EXPECTED_BRUKER_ID);
+        baseStoredJournalpost.addBruker(actualBruker);
 
-		TestTransaction.start();
-		Journalpost storedJournalpostTwoBrukere = persistJournalpost(baseStoredJournalpost);
-		Long journalpostId = storedJournalpostTwoBrukere.getJournalpostId();
-		Long dokumentInfoId = storedJournalpostTwoBrukere.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId();
+        TestTransaction.start();
+        Journalpost storedJournalpostTwoBrukere = persistJournalpost(baseStoredJournalpost);
+        Long journalpostId = storedJournalpostTwoBrukere.getJournalpostId();
+        Long dokumentInfoId = storedJournalpostTwoBrukere.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId();
 
-		ResponseEntity<HentTilgangJournalpostResponse> responseEntity = restTemplate.exchange(HENTTILGANGJOURNALPOST_URI, HttpMethod.GET, createHeaderEntity(), HentTilgangJournalpostResponse.class,
-				journalpostId, dokumentInfoId, VariantFormatCode.ARKIV.name());
+        ResponseEntity<HentTilgangJournalpostResponse> responseEntity = restTemplate.exchange(HENTTILGANGJOURNALPOST_URI, HttpMethod.GET, createHeaderEntity(), HentTilgangJournalpostResponse.class,
+                journalpostId, dokumentInfoId, VariantFormatCode.ARKIV.name());
 
-		TilgangJournalpostDto responseJournalpost = responseEntity.getBody().getTilgangJournalpostDto();
-		assertThat(responseJournalpost.getBruker().getBrukerId(), is(EXPECTED_BRUKER_ID));
-	}
+        TilgangJournalpostDto responseJournalpost = Objects.requireNonNull(responseEntity.getBody()).getTilgangJournalpostDto();
+        assertEquals(EXPECTED_BRUKER_ID, responseJournalpost.getBruker().getBrukerId());
+    }
 
-	@Test
-	public void shouldReturn404WhenJournalpostDokumentInfoVariantTripletDoesNotExist() {
-		ResponseEntity<RestConsumerExceptionResponse> responseEntity = restTemplate.exchange(HENTTILGANGJOURNALPOST_URI, HttpMethod.GET, createHeaderEntity(), RestConsumerExceptionResponse.class,
-				1L, 1L, VariantFormatCode.ARKIV.name());
-		assertThat(responseEntity.getStatusCode(), is(HttpStatus.NOT_FOUND));
-	}
+    @Test
+    public void shouldReturn404WhenJournalpostDokumentInfoVariantTripletDoesNotExist() {
+        ResponseEntity<RestConsumerExceptionResponse> responseEntity = restTemplate.exchange(HENTTILGANGJOURNALPOST_URI, HttpMethod.GET, createHeaderEntity(), RestConsumerExceptionResponse.class,
+                1L, 1L, VariantFormatCode.ARKIV.name());
+        assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
+        assertEquals("rjoark901 kunne ikke hente TilgangJournalpost. Ingen treff på journalpostId=1, dokumentInfoId=1 og variantFormat=ARKIV. Feilmelding: Ingen jornalpost funnet", Objects.requireNonNull(responseEntity.getBody()).getMessage());
 
-	private Journalpost persistJournalpost(Journalpost journalpost) {
-		joarkRepository.save(journalpost);
-		TestTransaction.flagForCommit();
-		TestTransaction.end();
-		return journalpost;
-	}
+    }
+
+    private Journalpost persistJournalpost(Journalpost journalpost) {
+        joarkRepository.save(journalpost);
+        TestTransaction.flagForCommit();
+        TestTransaction.end();
+        return journalpost;
+    }
 }
