@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
+
 @Builder
 @Getter
 @NoArgsConstructor
@@ -15,6 +17,36 @@ public class FerdigstillJournalpostRequest {
 	@ApiModelProperty(
 			value = "NAV-enheten som personen som utfører journalføring jobber for. Ved automatisk journalføring uten mennesker involvert, skal enhet settes til \"9999\".",
 			required = true,
-			example = "9999")
+			example = "9999"
+	)
 	private String journalfoerendeEnhet;
+
+	@ApiModelProperty(
+			value = "Navn på saksbehandler eller system som journalførte.",
+			required = false,
+			example = "srvbruker"
+	)
+	private String journalfortAvNavn;
+
+
+	@ApiModelProperty(
+			value = "Navn på saksbehandler eller system som opprettet journalposten.",
+			required = false,
+			example = "srvbruker"
+	)
+	private String opprettetAvNavn;
+
+	@ApiModelProperty(
+			value = "Dato for ferdigstilling av dokumentet i Infotrygd.",
+			required = false,
+			example = "srvbruker"
+	)
+	private Date datoJournal;
+
+	@ApiModelProperty(
+			value = "Datoen journalposten ble plukket ut til Sentral Print.",
+			required = false,
+			example = "srvbruker"
+	)
+	private Date datoSendtPrint;
 }
