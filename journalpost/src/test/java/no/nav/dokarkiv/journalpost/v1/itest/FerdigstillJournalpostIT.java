@@ -252,12 +252,8 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 		assertTrue(response.getBody().getMessage().contains("Journalpost.innhold"));
 	}
 
-
-
-
-
 	@Test
-	public void shouldFailWhenMissingPaakrevdFelter() throws IOException {
+	public void happyPathInngaaendeWithMissingPaakrevdFelter() throws IOException {
 		abacPermit();
 
 		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M).build();
@@ -271,8 +267,8 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 		Date datoJournal = new Date();
 		FerdigstillJournalpostRequest request = FerdigstillJournalpostRequest.builder()
 				.journalfoerendeEnhet("9999")
-				.journalfortAvNavn(journalfortAvNavn)
-				.opprettetAvNavn(opprettetAvNavn)
+				.journalfortAvNavn(JOURNALFORT_AV_NAVN)
+				.opprettetAvNavn(OPPRETTET_AV_NAVN)
 				.datoSendtPrint(datoSendtPrint)
 				.datoJournal(datoJournal)
 				.build();
@@ -287,13 +283,13 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 
 		assertEquals(SERVICE_USER_ID, ferdigstiltJournalpost.getEndretAvNavn());
 		assertEquals(SERVICE_USER_ID, ferdigstiltJournalpost.getEndretKildeNavn());
-		assertEquals(journalfortAvNavn, ferdigstiltJournalpost.getJournalfortAvNavn());
+		assertEquals(JOURNALFORT_AV_NAVN, ferdigstiltJournalpost.getJournalfortAvNavn());
 		assertEquals(SERVICE_USER_ID, ferdigstiltJournalpost.getChangeStamp().getUpdatedBy());
 		assertEquals(request.getJournalfoerendeEnhet(), ferdigstiltJournalpost.getJournalForendeEnhetId());
 		assertEquals(JournalStatusCode.J, ferdigstiltJournalpost.getJournalstatus());
 		assertTrue(ferdigstiltJournalpost.getChangeStamp().getUpdatedDate().after(journalpost.getChangeStamp().getCreatedDate()));
 
-		assertEquals(opprettetAvNavn, ferdigstiltJournalpost.getOpprettetAvNavn());
+		assertEquals(OPPRETTET_AV_NAVN, ferdigstiltJournalpost.getOpprettetAvNavn());
 		assertEquals(datoJournal, ferdigstiltJournalpost.getJournalDato());
 		assertEquals(datoSendtPrint, ferdigstiltJournalpost.getSendtPrintDato());
 

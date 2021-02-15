@@ -134,7 +134,7 @@ public class FerdigstillJournalpostService {
 		journalpost.setJournalForendeEnhetId(journalfoerendeEnhet.getJournalfoerendeEnhet());
 		journalpost.setEndretAvNavn(MDC.get(MDC_USER_NAME));
 		journalpost.setJournalfortAvNavn(
-				journalfoerendeEnhet.getDatoJournal() != null ? journalfoerendeEnhet.getJournalfortAvNavn() : MDC.get(MDC_USER_NAME)
+				journalfoerendeEnhet.getJournalfortAvNavn() != null ? journalfoerendeEnhet.getJournalfortAvNavn() : MDC.get(MDC_USER_NAME)
 		);
 		journalpost.setEndretKildeNavn(MDC.get(MDC_CONSUMER_ID));
 		journalpost.setOpprettetAvNavn(journalfoerendeEnhet.getOpprettetAvNavn());

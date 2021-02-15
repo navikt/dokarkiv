@@ -21,6 +21,7 @@ public class FerdigstillJournalpostRequest {
 	)
 	private String journalfoerendeEnhet;
 
+	@Deprecated
 	@ApiModelProperty(
 			value = "Navn på saksbehandler eller system som journalførte.",
 			required = false,
@@ -28,7 +29,7 @@ public class FerdigstillJournalpostRequest {
 	)
 	private String journalfortAvNavn;
 
-
+	@Deprecated
 	@ApiModelProperty(
 			value = "Navn på saksbehandler eller system som opprettet journalposten.",
 			required = false,
@@ -36,17 +37,19 @@ public class FerdigstillJournalpostRequest {
 	)
 	private String opprettetAvNavn;
 
+	@Deprecated
 	@ApiModelProperty(
 			value = "Dato for ferdigstilling av dokumentet i Infotrygd.",
 			required = false,
-			example = "srvbruker"
+			example = "2020-02-20"
 	)
 	private Date datoJournal;
 
+	@Deprecated
 	@ApiModelProperty(
 			value = "Datoen journalposten ble plukket ut til Sentral Print.",
 			required = false,
-			example = "srvbruker"
+			example = "2020-02-20"
 	)
 	private Date datoSendtPrint;
 }
