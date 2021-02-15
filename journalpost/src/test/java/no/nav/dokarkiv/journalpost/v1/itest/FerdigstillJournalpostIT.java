@@ -253,7 +253,7 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 	}
 
 	@Test
-	public void happyPathInngaaendeWithMissingPaakrevdFelter() throws IOException {
+	public void happyPathInngaaendeFullPayload() throws IOException {
 		abacPermit();
 
 		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M).build();
