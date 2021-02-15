@@ -279,7 +279,9 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(HttpStatus.OK, response.getStatusCode());
 
 		TestTransaction.start();
-		Journalpost ferdigstiltJournalpost = joarkRepository.findById(journalpost.getJournalpostId()).orElseThrow(RuntimeException::new);
+		Journalpost ferdigstiltJournalpost = joarkRepository.findById(journalpost.getJournalpostId()).orElseThrow(() ->
+			new RuntimeException("Journalpost må være i Databasen for å kunne sette den som ferdigstilt.")
+		);
 
 		assertEquals(SERVICE_USER_ID, ferdigstiltJournalpost.getEndretAvNavn());
 		assertEquals(SERVICE_USER_ID, ferdigstiltJournalpost.getEndretKildeNavn());
