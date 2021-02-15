@@ -8,6 +8,10 @@ import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
+/*
+* Deprecated er midertidlig lagt til for migrering fra ondemand to joark.
+* */
+
 @Builder
 @Getter
 @NoArgsConstructor
