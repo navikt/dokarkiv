@@ -59,7 +59,7 @@ public class FerdigstillJournalpostService {
 		log.info("Oppdatert journalfoerendeEnhet={}", journalpost.getJournalForendeEnhetId());
 	}
 
-
+	@Deprecated // skal bli fjernet når migrering fra ondemand til Joark er ferdig
 	public void ferdigstill(Long journalpostId, FerdigstillJournalpostRequest journalfoerendeEnhet) {
 		Journalpost journalpost = joarkRepository.findById(journalpostId)
 				.orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostId)));
@@ -127,6 +127,7 @@ public class FerdigstillJournalpostService {
 		journalpost.setEndretKildeNavn(MDC.get(MDC_CONSUMER_ID));
 	}
 
+	@Deprecated // skal bli fjernet når migrering fra ondemand til Joark er ferdig
 	private void oppdatertJournalpost(Journalpost journalpost, FerdigstillJournalpostRequest journalfoerendeEnhet) {
 		journalpost.setJournalDato(
 				journalfoerendeEnhet.getDatoJournal() != null ? journalfoerendeEnhet.getDatoJournal() : Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant())
