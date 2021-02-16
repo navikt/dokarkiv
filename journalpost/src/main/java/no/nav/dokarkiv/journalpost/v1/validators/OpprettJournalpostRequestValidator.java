@@ -17,6 +17,9 @@ import no.nav.dokarkiv.journalpost.v1.api.Sakstype;
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostRequest;
 
 import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static org.apache.commons.lang3.StringUtils.isBlank;
@@ -53,8 +56,8 @@ public class OpprettJournalpostRequestValidator {
 		if (request.getSak() != null) {
 			validateSak(request.getSak(), request.getBruker(), request.getTema());
 		}
-		if(isNotBlank(request.getJournalfoerendeEnhet())) {
-			validateJournalpost(journalpostFerdigstilt,request.getJournalfoerendeEnhet());
+		if (isNotBlank(request.getJournalfoerendeEnhet())) {
+			validateJournalpost(journalpostFerdigstilt, request.getJournalfoerendeEnhet());
 		}
 		if (!request.getDokumenter().isEmpty()) {
 			request.getDokumenter().forEach(this::validateDokument);
@@ -117,14 +120,14 @@ public class OpprettJournalpostRequestValidator {
 	}
 
 	private void validateJournalpost(String journalpostFerdigstilt, String journalfoerendeEnhet) {
-		if(JOURNALPOST_FERDIGSTILT.equals(journalpostFerdigstilt) && MASKINELL_JOURNALFOERENDE_ENHET.equals(journalfoerendeEnhet)) {
+		if (JOURNALPOST_FERDIGSTILT.equals(journalpostFerdigstilt) && MASKINELL_JOURNALFOERENDE_ENHET.equals(journalfoerendeEnhet)) {
 			throw new InputValideringFeiletException(format("Ikke mulig å opprette journalpost på journalfoerendeEnhet=%s", MASKINELL_JOURNALFOERENDE_ENHET));
 		}
 	}
 
 	private void validateBehandlingstema(String behandlingstema) {
 		if (behandlingstema.length() != 6 || !behandlingstema.startsWith("ab")) {
-			throw new InputValideringFeiletException(format("Oppgitt behandlingstema=%s er ikke på formatet ´ab + fire siffer´." , behandlingstema));
+			throw new InputValideringFeiletException(format("Oppgitt behandlingstema=%s er ikke på formatet ´ab + fire siffer´.", behandlingstema));
 		}
 	}
 
@@ -235,6 +238,20 @@ public class OpprettJournalpostRequestValidator {
 		}
 		if (!isEmpty(dokument.getDokumentvarianter())) {
 			dokument.getDokumentvarianter().forEach(this::validateDokumentVariant);
+			validateUniqueVariant(dokument.getDokumentvarianter());
+		}
+	}
+
+	private void validateUniqueVariant(List<DokumentVariant> dokumentvarianter) {
+		Map<String, Long> duplikater = dokumentvarianter
+				.stream()
+				.collect(Collectors.groupingBy(DokumentVariant::getVariantformat, Collectors.counting()))
+				.entrySet()
+				.stream()
+				.filter(s -> s.getValue() > 1)
+				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+		if (duplikater.size() > 0) {
+			throw new InputValideringFeiletException("Dokument.dokumentvariant.variantformat må være unik for dokumenter");
 		}
 	}
 
