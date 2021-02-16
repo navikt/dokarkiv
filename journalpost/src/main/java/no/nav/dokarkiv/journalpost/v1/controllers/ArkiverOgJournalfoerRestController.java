@@ -98,13 +98,14 @@ public class ArkiverOgJournalfoerRestController {
     @RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark201"}, percentiles = {0.5, 0.95})
     public ResponseEntity<String> ferdigstillJournalpost(
             @PathVariable @ApiParam(value = "IDen til journalposten som skal ferdigstilles", required = true, example = "77778888") String journalpostId,
-            @RequestBody FerdigstillJournalpostRequest request) {
+            @RequestBody FerdigstillJournalpostRequest request
+    ) {
         MDC.put(MDC_REQUEST_ID, "rjoark201");
         log.info(MDC.get(MDC_REQUEST_ID) + " har mottatt kall for ferdigstilling av journalpost med journalpostId={}", journalpostId);
         ferdigstillJournalpostValidator.validateRequest(journalpostId, request);
         RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
 
-        ferdigstillJournalpostService.ferdigstill(Long.parseLong(journalpostId), request.getJournalfoerendeEnhet());
+        ferdigstillJournalpostService.ferdigstill(Long.parseLong(journalpostId), request);
         log.info(MDC.get(MDC_REQUEST_ID) + " har ferdigstilt journalpost med journalpostId={}", journalpostId);
 
         return ResponseEntity.ok().body("Journalpost ferdigstilt");

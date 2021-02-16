@@ -23,6 +23,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.transaction.TestTransaction;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 
 public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
@@ -249,5 +250,57 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 		assertNotNull(response.getBody());
 		assertTrue(response.getBody().getMessage().contains("Journalpost.avsendMottaker"));
 		assertTrue(response.getBody().getMessage().contains("Journalpost.innhold"));
+	}
+
+	@Test
+	public void happyPathInngaaendeFullPayload() throws IOException {
+		abacPermit();
+
+		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M).build();
+		joarkRepository.save(journalpost);
+
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
+
+		Long journalpostId = journalpost.getJournalpostId();
+		Date datoSendtPrint = new Date();
+		Date datoJournal = new Date();
+		FerdigstillJournalpostRequest request = FerdigstillJournalpostRequest.builder()
+				.journalfoerendeEnhet("9999")
+				.journalfortAvNavn(JOURNALFORT_AV_NAVN)
+				.opprettetAvNavn(OPPRETTET_AV_NAVN)
+				.datoSendtPrint(datoSendtPrint)
+				.datoJournal(datoJournal)
+				.build();
+
+		HttpEntity requestEntity = new HttpEntity(request, createHeadersWithServiceUserToken());
+		ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST + journalpostId + FERDIGSTILL, HttpMethod.PATCH, requestEntity, String.class);
+
+		assertEquals(HttpStatus.OK, response.getStatusCode());
+
+		TestTransaction.start();
+		Journalpost ferdigstiltJournalpost = joarkRepository.findById(journalpost.getJournalpostId()).orElseThrow(() ->
+			new RuntimeException("Journalpost må være i Databasen for å kunne sette den som ferdigstilt.")
+		);
+
+		assertEquals(SERVICE_USER_ID, ferdigstiltJournalpost.getEndretAvNavn());
+		assertEquals(SERVICE_USER_ID, ferdigstiltJournalpost.getEndretKildeNavn());
+		assertEquals(JOURNALFORT_AV_NAVN, ferdigstiltJournalpost.getJournalfortAvNavn());
+		assertEquals(SERVICE_USER_ID, ferdigstiltJournalpost.getChangeStamp().getUpdatedBy());
+		assertEquals(request.getJournalfoerendeEnhet(), ferdigstiltJournalpost.getJournalForendeEnhetId());
+		assertEquals(JournalStatusCode.J, ferdigstiltJournalpost.getJournalstatus());
+		assertTrue(ferdigstiltJournalpost.getChangeStamp().getUpdatedDate().after(journalpost.getChangeStamp().getCreatedDate()));
+
+		assertEquals(OPPRETTET_AV_NAVN, ferdigstiltJournalpost.getOpprettetAvNavn());
+		assertEquals(datoJournal, ferdigstiltJournalpost.getJournalDato());
+		assertEquals(datoSendtPrint, ferdigstiltJournalpost.getSendtPrintDato());
+
+		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
+		assertEquals(1, aksjonsLoggList.size());
+		assertEquals(SERVICE_USER_ID, aksjonsLoggList.get(0).getUtfoertAv());
+		assertEquals(AksjonsTypeCode.FERDIGSTILL, aksjonsLoggList.get(0).getAksjon());
+		assertEquals(3, aksjonsLoggList.get(0).getArkivElementEndringer().size());
+
+		TestTransaction.end();
 	}
 }

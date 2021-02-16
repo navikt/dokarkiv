@@ -84,6 +84,9 @@ public abstract class AbstractRestIT {
 	protected static final String PERSON_USER_NAME = "Stasjonsmester Tidemann";
 	protected static final String NO_ACCESS_SERVICE_USER_ID = "srvdokarkiv";
 
+	protected static final String JOURNALFORT_AV_NAVN = "journalfortAvNavn";
+	protected static final String OPPRETTET_AV_NAVN = "opprettetAvNavn";
+
 	@BeforeClass
 	public static void setupRequestContext() {
 		TestCertificates.setupKeyAndTrustStore();
