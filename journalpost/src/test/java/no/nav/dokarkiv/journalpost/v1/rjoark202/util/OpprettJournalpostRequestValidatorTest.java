@@ -20,6 +20,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static java.util.Collections.singletonList;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.ARKIVSAKSNUMMER;
@@ -34,6 +35,7 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_PEN;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_SER;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_UFO;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.VARIANTFORMAT_ARKIV;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.VARIANTFORMAT_ORIGINAL;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createMinimalRequest;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createRequest;
 
@@ -735,4 +737,48 @@ public class OpprettJournalpostRequestValidatorTest {
         expectedException.expectMessage("Oppgitt behandlingstema=ab333 er ikke på formatet ´ab + fire siffer´.");
         validator.validateRequest(request, FORSOEKFERDIGSTILL);
     }
+
+	@Test
+	public void shouldNotThrowExceptionIfDifferentVariantformat() {
+		request = createMinimalRequest(JournalpostType.INNGAAENDE)
+				.dokumenter(List.of(Dokument.builder()
+						.dokumentKategori(DOKUMENTKATEGORI_SED)
+						.dokumentvarianter(List.of(DokumentVariant.builder()
+										.filtype(FILTYPE_PDF)
+										.variantformat(VARIANTFORMAT_ARKIV)
+										.build(),
+								DokumentVariant.builder()
+										.filtype(FILTYPE_PDF)
+										.variantformat(VARIANTFORMAT_ORIGINAL)
+										.build()))
+						.build()))
+				.build();
+		validator.validateRequest(request, FORSOEKFERDIGSTILL);
+	}
+
+	@Test
+	public void shouldThrowExceptionIfDuplicateVariantformat() {
+		request = createMinimalRequest(JournalpostType.INNGAAENDE)
+				.dokumenter(List.of(Dokument.builder()
+						.dokumentKategori(DOKUMENTKATEGORI_SED)
+						.dokumentvarianter(List.of(DokumentVariant.builder()
+										.filtype(FILTYPE_PDF)
+										.variantformat(VARIANTFORMAT_ARKIV)
+										.build(),
+								DokumentVariant.builder()
+										.filtype(FILTYPE_XML)
+										.variantformat(VARIANTFORMAT_ORIGINAL)
+										.build(),
+								DokumentVariant.builder()
+										.filtype(FILTYPE_PDF)
+										.variantformat(VARIANTFORMAT_ORIGINAL)
+										.build()))
+						.build()))
+				.build();
+
+		expectedException.expect(InputValideringFeiletException.class);
+		expectedException.expectMessage("Dokument.dokumentvariant.variantformat");
+		validator.validateRequest(request, FORSOEKFERDIGSTILL);
+	}
+
 }
