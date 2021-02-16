@@ -56,8 +56,8 @@ public class OpprettJournalpostRequestValidator {
 		if (request.getSak() != null) {
 			validateSak(request.getSak(), request.getBruker(), request.getTema());
 		}
-		if(isNotBlank(request.getJournalfoerendeEnhet())) {
-			validateJournalpost(journalpostFerdigstilt,request.getJournalfoerendeEnhet());
+		if (isNotBlank(request.getJournalfoerendeEnhet())) {
+			validateJournalpost(journalpostFerdigstilt, request.getJournalfoerendeEnhet());
 		}
 		if (!request.getDokumenter().isEmpty()) {
 			request.getDokumenter().forEach(this::validateDokument);
@@ -120,14 +120,14 @@ public class OpprettJournalpostRequestValidator {
 	}
 
 	private void validateJournalpost(String journalpostFerdigstilt, String journalfoerendeEnhet) {
-		if(JOURNALPOST_FERDIGSTILT.equals(journalpostFerdigstilt) && MASKINELL_JOURNALFOERENDE_ENHET.equals(journalfoerendeEnhet)) {
+		if (JOURNALPOST_FERDIGSTILT.equals(journalpostFerdigstilt) && MASKINELL_JOURNALFOERENDE_ENHET.equals(journalfoerendeEnhet)) {
 			throw new InputValideringFeiletException(format("Ikke mulig å opprette journalpost på journalfoerendeEnhet=%s", MASKINELL_JOURNALFOERENDE_ENHET));
 		}
 	}
 
 	private void validateBehandlingstema(String behandlingstema) {
 		if (behandlingstema.length() != 6 || !behandlingstema.startsWith("ab")) {
-			throw new InputValideringFeiletException(format("Oppgitt behandlingstema=%s er ikke på formatet ´ab + fire siffer´." , behandlingstema));
+			throw new InputValideringFeiletException(format("Oppgitt behandlingstema=%s er ikke på formatet ´ab + fire siffer´.", behandlingstema));
 		}
 	}
 
@@ -246,9 +246,9 @@ public class OpprettJournalpostRequestValidator {
 		Map<String, Long> duplikater = dokumentvarianter.stream().collect(Collectors.groupingBy(DokumentVariant::getVariantformat, Collectors.counting()))
 				.entrySet()
 				.stream()
-				.filter(s -> s.getValue()>1)
+				.filter(s -> s.getValue() > 1)
 				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-		if(duplikater.size()>0){
+		if (duplikater.size() > 0) {
 			throw new InputValideringFeiletException("Dokument.dokumentvariant.variantformat må være unik for dokumenter");
 		}
 	}
