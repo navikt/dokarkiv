@@ -243,7 +243,9 @@ public class OpprettJournalpostRequestValidator {
 	}
 
 	private void validateUniqueVariant(List<DokumentVariant> dokumentvarianter) {
-		Map<String, Long> duplikater = dokumentvarianter.stream().collect(Collectors.groupingBy(DokumentVariant::getVariantformat, Collectors.counting()))
+		Map<String, Long> duplikater = dokumentvarianter
+				.stream()
+				.collect(Collectors.groupingBy(DokumentVariant::getVariantformat, Collectors.counting()))
 				.entrySet()
 				.stream()
 				.filter(s -> s.getValue() > 1)
