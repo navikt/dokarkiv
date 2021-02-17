@@ -149,7 +149,14 @@ public class OpprettJournalpostApiRequestMapper {
 
 	private UtsendingsKanalCode mapUtsendingskanal(OpprettJournalpostRequest request) {
 		if (!JournalpostType.INNGAAENDE.equals(request.getJournalposttype()) && isNotBlank(request.getKanal())) {
-			return UtsendingsKanalCode.valueOf(request.getKanal());
+			final UtsendingsKanalCode utsendingsKanalCode = UtsendingsKanalCode.valueOf(request.getKanal());
+
+			if (UtsendingsKanalCode.MIGRERING_L.equals(utsendingsKanalCode)) {
+				return UtsendingsKanalCode.L;
+			} else if (UtsendingsKanalCode.MIGRERING_S.equals(utsendingsKanalCode)) {
+				return UtsendingsKanalCode.S;
+			}
+			return utsendingsKanalCode;
 		}
 		return null;
 	}

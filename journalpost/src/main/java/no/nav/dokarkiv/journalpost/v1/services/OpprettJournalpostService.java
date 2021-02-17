@@ -7,6 +7,7 @@ import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggTO;
 import no.nav.dokarkiv.core.consumer.pdl.IdentConsumer;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
+import no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentFil;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
@@ -42,6 +43,9 @@ import static java.util.Collections.emptyList;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
 import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.OPPRETT;
+import static no.nav.dokarkiv.core.domain.codes.MottaksKanalCode.*;
+import static no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode.MIGRERING_L;
+import static no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode.MIGRERING_S;
 import static no.nav.dokarkiv.journalpost.v1.api.Sakstype.FAGSAK;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
@@ -52,7 +56,9 @@ public class OpprettJournalpostService {
     public static final String UKJENT = "UKJENT";
     private static final String APPLIKASJON_FS22 = "FS22";
     private static final EnumSet<MottaksKanalCode> INNGAAENDE_IDEMPOTENT_MOTTAKSKANAL =
-            EnumSet.of(MottaksKanalCode.SKAN_IM, MottaksKanalCode.HELSENETTET, MottaksKanalCode.EESSI);
+            EnumSet.of(SKAN_IM, HELSENETTET, EESSI);
+    private static final EnumSet<UtsendingsKanalCode> IDEMPOTENT_REFERANSE_ID =
+            EnumSet.of(MIGRERING_S, MIGRERING_L);
 
     private final JoarkRepository joarkRepository;
     private final DokumentFilRepository dokumentFilRepository;
@@ -183,15 +189,20 @@ public class OpprettJournalpostService {
 
     // Bruker eksternReferanseId for å fikse idempodens for spesifikke kanaler
     private Optional<Journalpost> findJournalpostWithIdempodentKanalAlreadyInDb(OpprettJournalpostRequest request) {
-        if (request.isInngaaende() && request.getKanal() != null) {
-            final MottaksKanalCode mottakskanal = MottaksKanalCode.valueOf(request.getKanal());
-            if (INNGAAENDE_IDEMPOTENT_MOTTAKSKANAL.contains(mottakskanal)) {
-                return joarkRepository.findJournalpostWithMottaksKanalAndKanalReferanseId(mottakskanal, request.getEksternReferanseId());
+        if (request.getKanal() != null) {
+            if (request.isInngaaende()) {
+                final MottaksKanalCode mottakskanal = valueOf(request.getKanal());
+                if (INNGAAENDE_IDEMPOTENT_MOTTAKSKANAL.contains(mottakskanal)) {
+                    return joarkRepository.findJournalpostWithMottaksKanalAndKanalReferanseId(mottakskanal, request.getEksternReferanseId());
+                }
             } else {
-                return Optional.empty();
+                final UtsendingsKanalCode kanal = UtsendingsKanalCode.valueOf(request.getKanal());
+
+                if (IDEMPOTENT_REFERANSE_ID.contains(kanal)) {
+                    return joarkRepository.findJournalpostByKanalReferanseId(request.getEksternReferanseId());
+                }
             }
-        } else {
-            return Optional.empty();
         }
+        return Optional.empty();
     }
 }
