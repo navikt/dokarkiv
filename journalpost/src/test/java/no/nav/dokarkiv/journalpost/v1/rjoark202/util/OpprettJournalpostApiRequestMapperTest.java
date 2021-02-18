@@ -72,7 +72,7 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createAvsenderMottak
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createAvsenderMottakerUtlandOrganisasjon;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createBaseRequest;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createMinimalRequest;
-import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createMinimalRequestWithKanalAsMigreringS;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createMinimalRequestWithKanal;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createRequest;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createRequestAvsenderMottaker;
 import static org.junit.Assert.assertArrayEquals;
@@ -349,19 +349,19 @@ public class OpprettJournalpostApiRequestMapperTest {
 
 	@Test
     public void shouldMapKanalMigreringSToSWhenMapJournalpost() {
-		Journalpost test = mapper.map(createMinimalRequestWithKanalAsMigreringS(MIGRERING_S.toString()), null);
+		Journalpost test = mapper.map(createMinimalRequestWithKanal(MIGRERING_S.toString()), null);
 		assertEquals(S, test.getUtsendingskanal());
 	}
 
 	@Test
 	public void shouldMapKanalMigreringLToSWhenMapJournalpost() {
-		Journalpost test = mapper.map(createMinimalRequestWithKanalAsMigreringS(MIGRERING_L.toString()), null);
+		Journalpost test = mapper.map(createMinimalRequestWithKanal(MIGRERING_L.toString()), null);
 		assertEquals(L, test.getUtsendingskanal());
 	}
 
 	@Test
 	public void shouldMapKanalCorrectlySWhenMapJournalpost() {
-		Journalpost test = mapper.map(createMinimalRequestWithKanalAsMigreringS(L.toString()), null);
+		Journalpost test = mapper.map(createMinimalRequestWithKanal(L.toString()), null);
 		assertEquals(L, test.getUtsendingskanal());
 	}
 }

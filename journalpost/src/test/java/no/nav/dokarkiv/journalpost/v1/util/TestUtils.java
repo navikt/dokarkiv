@@ -529,7 +529,7 @@ public class TestUtils {
 	}
 
 
-	public static OpprettJournalpostRequest createMinimalRequestWithKanalAsMigreringS(String kanal) {
+	public static OpprettJournalpostRequest createMinimalRequestWithKanal(String kanal) {
 		return OpprettJournalpostRequest.builder()
 				.journalposttype(UTGAAENDE)
 				.eksternReferanseId(KANALREFERANSE_ID)

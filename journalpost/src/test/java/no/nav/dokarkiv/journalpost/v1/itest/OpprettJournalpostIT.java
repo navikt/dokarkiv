@@ -89,7 +89,7 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createBaseRequest;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createFagsak;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createGenerellSak;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createMinimalRequest;
-import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createMinimalRequestWithKanalAsMigreringS;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createMinimalRequestWithKanal;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createRequest;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -1102,7 +1102,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
         abacPermit();
         restStsToken();
 
-        OpprettJournalpostRequest request = createMinimalRequestWithKanalAsMigreringS(MIGRERING_S.toString());
+        OpprettJournalpostRequest request = createMinimalRequestWithKanal(MIGRERING_S.toString());
 
         HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
         ResponseEntity<OpprettJournalpostResponse> firstResponse = restTemplate.exchange(URL_JOURNALPOST, HttpMethod.POST, requestEntity, OpprettJournalpostResponse.class);
