@@ -40,6 +40,10 @@ import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.Collections;
 
+import static no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode.L;
+import static no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode.MIGRERING_L;
+import static no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode.MIGRERING_S;
+import static no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode.S;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.AVSENDER_ID_PERSON;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.AVSENDER_MOTTAKER_LAND;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.AVSENDER_NAVN;
@@ -68,6 +72,7 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createAvsenderMottak
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createAvsenderMottakerUtlandOrganisasjon;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createBaseRequest;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createMinimalRequest;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createMinimalRequestWithKanalAsMigreringS;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createRequest;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createRequestAvsenderMottaker;
 import static org.junit.Assert.assertArrayEquals;
@@ -342,5 +347,21 @@ public class OpprettJournalpostApiRequestMapperTest {
         assertEquals(jp.getJournalstatus(), JournalStatusCode.M);
     }
 
+	@Test
+    public void shouldMapKanalMigreringSToSWhenMapJournalpost() {
+		Journalpost test = mapper.map(createMinimalRequestWithKanalAsMigreringS(MIGRERING_S.toString()), null);
+		assertEquals(S, test.getUtsendingskanal());
+	}
 
+	@Test
+	public void shouldMapKanalMigreringLToSWhenMapJournalpost() {
+		Journalpost test = mapper.map(createMinimalRequestWithKanalAsMigreringS(MIGRERING_L.toString()), null);
+		assertEquals(L, test.getUtsendingskanal());
+	}
+
+	@Test
+	public void shouldMapKanalCorrectlySWhenMapJournalpost() {
+		Journalpost test = mapper.map(createMinimalRequestWithKanalAsMigreringS(L.toString()), null);
+		assertEquals(L, test.getUtsendingskanal());
+	}
 }

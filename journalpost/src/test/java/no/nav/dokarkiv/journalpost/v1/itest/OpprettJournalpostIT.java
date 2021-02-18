@@ -46,6 +46,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static java.util.Collections.singletonList;
 import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.OPPRETT;
 import static no.nav.dokarkiv.core.domain.codes.FagsystemCode.FS22;
+import static no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode.MIGRERING_S;
 import static no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem.AO01;
 import static no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem.OMSORGSPENGER;
 import static no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem.PP01;
@@ -88,6 +89,7 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createBaseRequest;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createFagsak;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createGenerellSak;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createMinimalRequest;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createMinimalRequestWithKanalAsMigreringS;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createRequest;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -1092,6 +1094,24 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
         assertEquals(SERVICE_USER_ID, journalpost.getOpprettetKildeNavn());
         assertEquals(PERSON_USER_ID, journalpost.getChangeStamp().getUpdatedBy());
         assertEquals(PERSON_USER_ID, journalpost.getChangeStamp().getCreatedBy());
+    }
+
+
+    @Test
+    public void shouldHaveIdimpotenseOnJournalpostWhenKanalIsNotInngaaendeAndIsMarkedAsMigrering() throws IOException {
+        abacPermit();
+        restStsToken();
+
+        OpprettJournalpostRequest request = createMinimalRequestWithKanalAsMigreringS(MIGRERING_S.toString());
+
+        HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
+        ResponseEntity<OpprettJournalpostResponse> firstResponse = restTemplate.exchange(URL_JOURNALPOST, HttpMethod.POST, requestEntity, OpprettJournalpostResponse.class);
+        ResponseEntity<OpprettJournalpostResponse> secondResponse = restTemplate.exchange(URL_JOURNALPOST, HttpMethod.POST, requestEntity, OpprettJournalpostResponse.class);
+
+        List<Journalpost> allJournalpostByKanalReferanseId =  joarkRepository.findJournalpostAllByKanalReferanseId(request.getEksternReferanseId());
+
+        assertEquals(1, allJournalpostByKanalReferanseId.size());
+        assertEquals(firstResponse.getBody().getJournalpostId(), secondResponse.getBody().getJournalpostId());
     }
 
     private void assertEqualOpprettJournalpostResponses(OpprettJournalpostResponse res1, OpprettJournalpostResponse res2) {
