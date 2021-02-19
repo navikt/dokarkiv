@@ -354,13 +354,13 @@ public class OpprettJournalpostApiRequestMapperTest {
 	}
 
 	@Test
-	public void shouldMapKanalMigreringLToSWhenMapJournalpost() {
+	public void shouldMapKanalMigreringLToLWhenMapJournalpost() {
 		Journalpost test = mapper.map(createMinimalRequestWithKanal(MIGRERING_L.toString()), null);
 		assertEquals(L, test.getUtsendingskanal());
 	}
 
 	@Test
-	public void shouldMapKanalCorrectlySWhenMapJournalpost() {
+	public void shouldMapKanalCorrectlyLWhenMapJournalpost() {
 		Journalpost test = mapper.map(createMinimalRequestWithKanal(L.toString()), null);
 		assertEquals(L, test.getUtsendingskanal());
 	}
