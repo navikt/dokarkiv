@@ -48,6 +48,7 @@ public interface JoarkRepository extends CrudRepository<Journalpost, Long> {
     Optional<List<Journalpost>> findUbehandledeJournalpostsWithTemaIn(@Param("tilOgMedDato") Date tilOgMedDato, @Param("temaListe") List<String> temaListe);
 
     Optional<Journalpost> findFirstByKanalReferanseId(String kanalReferanseId);
+    Optional<Journalpost> findJournalpostByKanalReferanseId(String kanalReferanseId);
     List<Journalpost> findJournalpostAllByKanalReferanseId(String kanalReferanseId);
 
     @Query("select j from Journalpost j where j.mottakskanal = :mottakskanal and j.kanalReferanseId = :kanalReferanseId")
