@@ -199,7 +199,7 @@ public class OpprettJournalpostService {
                 final UtsendingsKanalCode kanal = UtsendingsKanalCode.valueOf(request.getKanal());
 
                 if (IDEMPOTENT_REFERANSE_ID.contains(kanal)) {
-                    return joarkRepository.findJournalpostByKanalReferanseId(request.getEksternReferanseId());
+                    return joarkRepository.findFirstByKanalReferanseId(request.getEksternReferanseId());
                 }
             }
         }
