@@ -30,7 +30,11 @@ public enum UtsendingsKanalCode implements CtiRelationship<UtsendingsKanalCode, 
 	/**
 	 * INGEN_DISTRIBUSJON
 	 */
-	INGEN_DISTRIBUSJON;
+	INGEN_DISTRIBUSJON,
+	/** midertidelig felt for migrering fra ondemand til dokarkiv, referanse sak: 5140 **/
+	MIGRERING_S,
+	/** midertidelig felt for migrering fra ondemand til dokarkiv, referanse sak: 5140 **/
+	MIGRERING_L;
 
 	/** {@inheritDoc} */
 	@Override

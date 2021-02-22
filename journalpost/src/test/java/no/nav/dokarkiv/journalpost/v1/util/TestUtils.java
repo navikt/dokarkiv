@@ -43,7 +43,9 @@ import java.util.HashSet;
 import java.util.List;
 
 import static no.nav.dokarkiv.core.domain.codes.FagsystemCode.FS22;
+import static no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode.MIGRERING_S;
 import static no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem.AO01;
+import static no.nav.dokarkiv.journalpost.v1.api.JournalpostType.UTGAAENDE;
 
 /**
  * @author Sigurd Midttun, Visma Consulting.
@@ -524,6 +526,21 @@ public class TestUtils {
 								.brevkode(BREVKODE1)
 								.dokumentKategori(DOKUMENTKATEGORI_SED)
 								.build()));
+	}
+
+
+	public static OpprettJournalpostRequest createMinimalRequestWithKanal(String kanal) {
+		return OpprettJournalpostRequest.builder()
+				.journalposttype(UTGAAENDE)
+				.eksternReferanseId(KANALREFERANSE_ID)
+				.kanal(kanal)
+				.dokumenter(Collections.singletonList(
+						Dokument.builder()
+								.tittel(DOKUMENT_TITTEL1)
+								.brevkode(BREVKODE1)
+								.dokumentKategori(DOKUMENTKATEGORI_SED)
+								.build()))
+				.build();
 	}
 
 	public static OpprettJournalpostRequest createRequestAvsenderMottaker(JournalpostType journalpostType, AvsenderMottaker avsenderMottaker) {
