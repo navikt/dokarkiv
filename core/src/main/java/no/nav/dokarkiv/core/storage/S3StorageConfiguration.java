@@ -4,6 +4,8 @@ import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.client.builder.AwsClientBuilder;
+import com.amazonaws.regions.AwsRegionProvider;
+import com.amazonaws.regions.AwsSystemPropertyRegionProvider;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import org.springframework.beans.factory.annotation.Value;
@@ -37,7 +39,14 @@ public class S3StorageConfiguration {
 		return new DokprodMellomlagerS3Storage(s3, encryptionPassphrase);
 	}
 
+	@Bean
+	public AwsRegionProvider awsRegionProvider() {
+		System.setProperty("aws.region", "us-east-1");
+		return new AwsSystemPropertyRegionProvider();
+	}
+
 	private AmazonS3 initS3Client() {
+		awsRegionProvider();
 		AWSCredentials credentials = new BasicAWSCredentials(accessKey, secretKey);
 
 		return AmazonS3ClientBuilder.standard()
