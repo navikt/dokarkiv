@@ -476,6 +476,25 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
     }
 
     @Test
+    public void happyPathWithKanalAsEmptyOrNull() throws IOException {
+        abacPermit();
+        restStsToken();
+
+        OpprettJournalpostRequest requestWithKanalAsEmpty = createMinimalRequestWithKanal("");
+        OpprettJournalpostRequest requestWithKanalAsNull = createMinimalRequestWithKanal(null);
+
+        HttpEntity<OpprettJournalpostRequest> requestEntityWIthKanalAsEmpty = new HttpEntity<>(requestWithKanalAsEmpty, createHeadersWithServiceUserToken());
+        HttpEntity<OpprettJournalpostRequest> requestEntityWIthKanalAsNull = new HttpEntity<>(requestWithKanalAsNull, createHeadersWithServiceUserToken());
+
+        restTemplate.exchange(URL_JOURNALPOST, HttpMethod.POST, requestEntityWIthKanalAsEmpty, OpprettJournalpostResponse.class);
+        restTemplate.exchange(URL_JOURNALPOST, HttpMethod.POST, requestEntityWIthKanalAsNull, OpprettJournalpostResponse.class);
+
+        List<Journalpost> allJournalpostByKanalReferanseId = joarkRepository.findJournalpostAllByKanalReferanseId(requestWithKanalAsEmpty.getEksternReferanseId());
+
+        assertEquals(2, allJournalpostByKanalReferanseId.size());
+    }
+
+    @Test
     public void shouldJournalfoereWhenTemUFOAndGenerellSak() throws IOException {
         clearSakRepository();
         abacPermit();

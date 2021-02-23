@@ -57,7 +57,7 @@ public class OpprettJournalpostService {
     private static final String APPLIKASJON_FS22 = "FS22";
     private static final EnumSet<MottaksKanalCode> INNGAAENDE_IDEMPOTENT_MOTTAKSKANAL =
             EnumSet.of(SKAN_IM, HELSENETTET, EESSI);
-    private static final EnumSet<UtsendingsKanalCode> IDEMPOTENT_REFERANSE_ID =
+    private static final EnumSet<UtsendingsKanalCode> UTGAAENDE_UTSENDING_IDEMPOTENT_REFERANSE_ID =
             EnumSet.of(MIGRERING_S, MIGRERING_L);
 
     private final JoarkRepository joarkRepository;
@@ -189,16 +189,16 @@ public class OpprettJournalpostService {
 
     // Bruker eksternReferanseId for å fikse idempodens for spesifikke kanaler
     private Optional<Journalpost> findJournalpostWithIdempodentKanalAlreadyInDb(OpprettJournalpostRequest request) {
-        if (request.getKanal() != null) {
+        if (isNotBlank(request.getKanal())) {
             if (request.isInngaaende()) {
                 final MottaksKanalCode mottakskanal = valueOf(request.getKanal());
                 if (INNGAAENDE_IDEMPOTENT_MOTTAKSKANAL.contains(mottakskanal)) {
                     return joarkRepository.findJournalpostWithMottaksKanalAndKanalReferanseId(mottakskanal, request.getEksternReferanseId());
                 }
-            } else {
+            } else { // handtere UTGAAENDE og NOTAT
                 final UtsendingsKanalCode kanal = UtsendingsKanalCode.valueOf(request.getKanal());
 
-                if (IDEMPOTENT_REFERANSE_ID.contains(kanal)) {
+                if (UTGAAENDE_UTSENDING_IDEMPOTENT_REFERANSE_ID.contains(kanal)) {
                     return joarkRepository.findJournalpostByKanalReferanseId(request.getEksternReferanseId());
                 }
             }
