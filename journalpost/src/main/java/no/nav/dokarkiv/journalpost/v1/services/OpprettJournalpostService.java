@@ -196,11 +196,13 @@ public class OpprettJournalpostService {
                     return joarkRepository.findJournalpostWithMottaksKanalAndKanalReferanseId(mottakskanal, request.getEksternReferanseId());
                 }
             } else {
-                final UtsendingsKanalCode kanal = UtsendingsKanalCode.valueOf(request.getKanal());
+                try {
+                    final UtsendingsKanalCode kanal = UtsendingsKanalCode.valueOf(request.getKanal());
 
-                if (IDEMPOTENT_REFERANSE_ID.contains(kanal)) {
-                    return joarkRepository.findJournalpostByKanalReferanseId(request.getEksternReferanseId());
-                }
+                    if (IDEMPOTENT_REFERANSE_ID.contains(kanal)) {
+                        return joarkRepository.findJournalpostByKanalReferanseId(request.getEksternReferanseId());
+                    }
+                } catch (IllegalArgumentException ignored) {}
             }
         }
         return Optional.empty();
