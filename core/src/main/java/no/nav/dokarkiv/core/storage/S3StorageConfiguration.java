@@ -39,14 +39,7 @@ public class S3StorageConfiguration {
 		return new DokprodMellomlagerS3Storage(s3, encryptionPassphrase);
 	}
 
-	@Bean
-	public AwsRegionProvider awsRegionProvider() {
-		System.setProperty("aws.region", "us-east-1");
-		return new AwsSystemPropertyRegionProvider();
-	}
-
 	private AmazonS3 initS3Client() {
-		awsRegionProvider();
 		AWSCredentials credentials = new BasicAWSCredentials(accessKey, secretKey);
 
 		return AmazonS3ClientBuilder.standard()
