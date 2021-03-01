@@ -5,6 +5,7 @@ import static no.nav.dokarkiv.core.repository.DokumentFilSkjermetRepository.FIL_
 
 import no.nav.dokarkiv.core.domain.codes.AvsenderMottakerIdTypeCode;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
+import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
@@ -248,6 +249,9 @@ public class TestDataGenerator {
 		dokumentInfo.addSkannetInnhold(createSkannetInnhold());
 		dokumentInfo.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
 		dokumentInfo.setTilleggsopplysninger(createTilleggsopplysninger());
+		dokumentInfo.setKategori(DokumentKategoriCode.B);
+		dokumentInfo.setOrganInternt(true);
+		dokumentInfo.setInnskrenketPartsinnsyn(true);
 		return dokumentInfo;
 	}
 

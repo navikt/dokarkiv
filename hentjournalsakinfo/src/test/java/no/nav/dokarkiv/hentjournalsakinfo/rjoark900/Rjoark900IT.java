@@ -10,11 +10,13 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 
+import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.hentjournalsakinfo.AbstractHentjournalsakinfoItest;
+import no.nav.dokarkiv.hentjournalsakinfo.dto.DokumentInfoDto;
 import no.nav.dokarkiv.hentjournalsakinfo.dto.JournalpostDto;
 import org.junit.Test;
 import org.springframework.http.HttpEntity;
@@ -95,6 +97,27 @@ public class Rjoark900IT extends AbstractHentjournalsakinfoItest {
 		assertThat(journalpostDto.getDokumenter().get(0).getDokumentInfoId(), is(hoveddokument.getDokumentInfoId()));
 		assertThat(journalpostDto.getDokumenter().get(1).getDokumentInfoId(), is(vedlegg1.getDokumentInfoId()));
 		assertThat(journalpostDto.getDokumenter().get(2).getDokumentInfoId(), is(vedlegg2.getDokumentInfoId()));
+	}
+
+	@Test
+	public void shouldReturnNewDokumenInfoValues() {
+		DokumentInfo vedlegg = createDokumentInfo();
+		dokumentInfoRepository.save(vedlegg);
+		Journalpost journalpost = createJournalpostWithHoveddokument();
+		createVedleggRelasjon(journalpost, vedlegg);
+		joarkRepository.save(journalpost);
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
+
+		FinnJournalposterRequestTo request = createRequest(JournalStatusCode.FS);
+		request.setFoerste(1);
+		FinnJournalposterResponseTo responseTo = finnJournalposterRest(request);
+
+		DokumentInfoDto dokumentInfoDto = responseTo.getTilgangJournalposter().get(0).getDokumenter().get(1);
+
+		assertThat(dokumentInfoDto.getKategori(), is(DokumentKategoriCode.B));
+		assertThat(dokumentInfoDto.getOrganInternt(), is(true));
+		assertThat(dokumentInfoDto.getInnskrenketPartsinnsyn(), is(true));
 	}
 
 	private FinnJournalposterRequestTo createRequest(JournalStatusCode journalStatusCode) {

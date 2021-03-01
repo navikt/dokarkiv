@@ -29,7 +29,7 @@ public class DokumentInfoDto {
 	private final Long origJournalpostId;
 	private final Boolean kassert;
 	private final List<LogiskVedleggDto> logiske;
-	private final DokumentKategoriCode dokumentkategori;
-	private final Boolean organinternt;
-	private final Boolean innskrenketpartsinnsyn;
+	private final DokumentKategoriCode kategori;
+	private final Boolean organInternt;
+	private final Boolean innskrenketPartsinnsyn;
 }
