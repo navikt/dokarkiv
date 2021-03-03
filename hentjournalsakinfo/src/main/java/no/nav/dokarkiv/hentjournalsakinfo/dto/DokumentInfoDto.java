@@ -2,6 +2,7 @@ package no.nav.dokarkiv.hentjournalsakinfo.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Value;
+import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 
@@ -28,4 +29,7 @@ public class DokumentInfoDto {
 	private final Long origJournalpostId;
 	private final Boolean kassert;
 	private final List<LogiskVedleggDto> logiske;
+	private final DokumentKategoriCode kategori;
+	private final Boolean organInternt;
+	private final Boolean innskrenketPartsinnsyn;
 }

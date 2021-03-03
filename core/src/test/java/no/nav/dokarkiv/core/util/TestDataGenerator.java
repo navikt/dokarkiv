@@ -5,6 +5,7 @@ import static no.nav.dokarkiv.core.repository.DokumentFilSkjermetRepository.FIL_
 
 import no.nav.dokarkiv.core.domain.codes.AvsenderMottakerIdTypeCode;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
+import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
@@ -248,6 +249,23 @@ public class TestDataGenerator {
 		dokumentInfo.addSkannetInnhold(createSkannetInnhold());
 		dokumentInfo.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
 		dokumentInfo.setTilleggsopplysninger(createTilleggsopplysninger());
+		return dokumentInfo;
+	}
+
+	public static DokumentInfo createDokumentInfoWithMoreData() {
+		DokumentInfo dokumentInfo = DokumentInfo.builder()
+				.dokumentstatus(DokumentStatusCode.FERDIGSTILT)
+				.tittel(DOKUMENT_INFO_TITTEL)
+				.dokumenttypeId(DOKUMENT_TYPE_ID)
+				.build();
+		dokumentInfo.addFilDetaljer(createFildetaljerOgFil(dokumentInfo, VariantFormatCode.ARKIV));
+		dokumentInfo.addFilDetaljer(createFildetaljerOgFil(dokumentInfo, VariantFormatCode.PRODUKSJON));
+		dokumentInfo.addSkannetInnhold(createSkannetInnhold());
+		dokumentInfo.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
+		dokumentInfo.setTilleggsopplysninger(createTilleggsopplysninger());
+		dokumentInfo.setKategori(DokumentKategoriCode.B);
+		dokumentInfo.setOrganInternt(true);
+		dokumentInfo.setInnskrenketPartsinnsyn(true);
 		return dokumentInfo;
 	}
 
