@@ -58,7 +58,7 @@ public final class SqlProjections {
 					"        d.tittel               AS dokumenter_tittel,\n" +
 					"        d.kassert              AS dokumenter_kassert,\n" +
 					"        d.k_kategori_t         AS dokumenter_kategori,\n" +
-					"        d.innskr_partsinnsyn   AS dokumenter_innskrenketpartsinnsyn,\n" +
+					"        d.innskr_partsinnsyn   AS dokumenter_innskrpartsinnsyn,\n" +
 					"        d.organ_internt        AS dokumenter_organinternt,\n" +
 					"        rel.k_skjerming_type   AS dokumenter_skjerming,\n" +
 					"        d.orig_journalpost_id  AS dokumenter_origjournalpostid,\n" +
