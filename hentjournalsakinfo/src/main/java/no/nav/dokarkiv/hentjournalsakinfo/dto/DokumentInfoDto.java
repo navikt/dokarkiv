@@ -31,5 +31,5 @@ public class DokumentInfoDto {
 	private final List<LogiskVedleggDto> logiske;
 	private final DokumentKategoriCode kategori;
 	private final Boolean organInternt;
-	private final Boolean innskrenketPartsinnsyn;
+	private final Boolean innskrPartsinnsyn;
 }
