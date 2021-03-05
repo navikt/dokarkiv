@@ -67,6 +67,28 @@
 	</properties>
 	<dependencyManagement>
 		<dependencies>
+			<!--pdf validator-->
+			<dependency>
+				<groupId>org.verapdf</groupId>
+				<artifactId>validation-model</artifactId>
+				<version>1.18.2</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.pdfbox</groupId>
+				<artifactId>pdfbox</artifactId>
+				<version>2.0.22</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.pdfbox</groupId>
+				<artifactId>jempbox</artifactId>
+				<version>1.8.16</version>
+			</dependency>
+
+
+
+
+
+
 			<dependency>
 				<groupId>no.nav.dokarkiv</groupId>
 				<artifactId>app</artifactId>

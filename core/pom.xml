@@ -12,6 +12,24 @@
 	<artifactId>core</artifactId>
 
 	<dependencies>
+
+		<!-- pdf validator-->
+		<dependency>
+			<groupId>org.verapdf</groupId>
+			<artifactId>validation-model</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.pdfbox</groupId>
+			<artifactId>pdfbox</artifactId>
+		</dependency><dependency>
+		<groupId>org.apache.pdfbox</groupId>
+		<artifactId>jempbox</artifactId>
+		<version>1.8.16</version>
+	</dependency>
+
+
+
+
 		<dependency>
 			<groupId>com.auth0</groupId>
 			<artifactId>java-jwt</artifactId>
@@ -162,6 +180,12 @@
 		<dependency>
 			<groupId>no.nav.modig</groupId>
 			<artifactId>modig-testcertificates</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.github.tomakehurst</groupId>
+			<artifactId>wiremock-standalone</artifactId>
+			<version>2.14.0</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>

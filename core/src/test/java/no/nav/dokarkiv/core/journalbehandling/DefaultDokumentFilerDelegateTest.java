@@ -98,6 +98,7 @@ public class DefaultDokumentFilerDelegateTest {
 		FilDetaljer filDetaljer = createFilDetaljer();
 
 		journalpost = getJournalpostBuilder()
+				.journalpostId(231341412L)
 				.journalpostType(JournalpostTypeCode.U)
 				.journalStatus(JournalStatusCode.D)
 				.dokumentInfoRelasjoner(createDokumentInfoRelasjonWith(filDetaljer))

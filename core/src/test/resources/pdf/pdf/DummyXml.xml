@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+	<include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+	<include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
+
+	<root level="WARN">
+		<appender-ref ref="CONSOLE"/>
+	</root>
+
+	<logger name="no.nav.dokarkiv" level="INFO" additivity="false">
+		<appender-ref ref="CONSOLE"/>
+	</logger>
+
+	<logger name="org.springframework" level="WARN" additivity="false">
+		<appender-ref ref="CONSOLE"/>
+	</logger>
+	<!--	<logger name="org.simpleflatmapper" level="DEBUG" additivity="false">-->
+	<!--		<appender-ref ref="CONSOLE"/>-->
+	<!--	</logger>-->
+
+	<!--	<logger name="no.nav.freg" level="INFO" additivity="false">-->
+	<!--	<appender-ref ref="CONSOLE"/>-->
+	<!--	</logger>-->
+	<!--	<logger name="org.springframework.security" level="INFO" additivity="false">-->
+	<!--	<appender-ref ref="CONSOLE"/>-->
+	<!--	</logger>-->
+
+	<!--	<logger name="log4j.logger.org.apache.cxf.interceptor" additivity="false" level="INFO">-->
+	<!--	<appender-ref ref="CONSOLE"/>-->
+	<!--	</logger>-->
+	<!--	<logger name="org.hibernate.SQL" level="DEBUG"/>-->
+
+</configuration>
