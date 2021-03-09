@@ -119,6 +119,7 @@ public class Rjoark900IT extends AbstractHentjournalsakinfoItest {
         assertThat(dokumentInfoDto.getKategori(), is(DokumentKategoriCode.B));
         assertThat(dokumentInfoDto.getOrganInternt(), is(true));
         assertThat(dokumentInfoDto.getInnskrPartsinnsyn(), is(true));
+        assertThat(dokumentInfoDto.getInnskrTredjepart(), is(true));
     }
 
     private FinnJournalposterRequestTo createRequest(JournalStatusCode journalStatusCode) {
