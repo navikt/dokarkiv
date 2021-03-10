@@ -266,6 +266,7 @@ public class TestDataGenerator {
 		dokumentInfo.setKategori(DokumentKategoriCode.B);
 		dokumentInfo.setOrganInternt(true);
 		dokumentInfo.setInnskrenketPartsinnsyn(true);
+		dokumentInfo.setInnskrenketPartsinnsynFraTredjepart(true);
 		return dokumentInfo;
 	}
 
