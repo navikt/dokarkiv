@@ -1,8 +1,5 @@
 package no.nav.dokarkiv.journalpost.v1.services;
 
-import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
-import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
-
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
@@ -30,6 +27,9 @@ import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 
+import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
+import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
+
 /**
  * @author Olav Røstvold Thorsen, Visma Consulting.
  */
@@ -45,7 +45,6 @@ public class TilknyttVedleggService {
 	private final JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository;
 	private final TilknyttVedleggValidator tilknyttVedleggValidator;
 	private final TilknyttVedleggRequestValidator tilknyttVedleggRequestValidator;
-	private String tilKnyttetAvNavn;
 	private static final String TILLEGGOPPLYSNINGER_KEY = "DOK_ORG_DOK_INFO_ID";
 
 	@Inject
@@ -64,7 +63,7 @@ public class TilknyttVedleggService {
 		tilknyttVedleggRequestValidator.validateRequest(tilknyttVedleggRequest);
 
 		List<FeiledeDokumenter> feiledeDokumenter = new ArrayList<>();
-		tilKnyttetAvNavn = tilknyttVedleggRequest.getTilknyttetAvNavn();
+		String tilKnyttetAvNavn = tilknyttVedleggRequest.getTilknyttetAvNavn();
 
 		Journalpost targetJournalpost = joarkRepository.findById(targetJournalpostId)
 				.orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", targetJournalpostId)));
@@ -87,9 +86,9 @@ public class TilknyttVedleggService {
 			}
 
 			if (filDetaljerSladdet != null) {
-				tilknyttDokumentInfoCopySomVedleggPaaJournalpost(targetJournalpostId, sourceDokumentInfo, filDetaljerSladdet, dokumentVedlegg, targetJournalpost, feiledeDokumenter);
+				tilknyttDokumentInfoCopySomVedleggPaaJournalpost(tilKnyttetAvNavn, targetJournalpostId, sourceDokumentInfo, filDetaljerSladdet, dokumentVedlegg, targetJournalpost, feiledeDokumenter);
 			} else if (filDetaljerArkiv != null) {
-				tilknyttDokumentInfoSomVedleggPaaJournalpost(sourceDokumentInfo, dokumentVedlegg, targetJournalpost, feiledeDokumenter);
+				tilknyttDokumentInfoSomVedleggPaaJournalpost(tilKnyttetAvNavn, sourceDokumentInfo, dokumentVedlegg, targetJournalpost, feiledeDokumenter);
 			} else {
 				addToFeiletDokumentList(feiledeDokumenter, ArsakKode.DOKUMENT_TILLATES_IKKE_GJENBRUKT, dokumentVedlegg);
 			}
@@ -98,7 +97,7 @@ public class TilknyttVedleggService {
 		return feiledeDokumenter;
 	}
 
-	private void tilknyttDokumentInfoCopySomVedleggPaaJournalpost(Long targetJournalpostId, DokumentInfo sourceDokumentInfo, FilDetaljer filDetaljerSladdet, DokumentVedlegg dokumentVedlegg, Journalpost journalpost, List<FeiledeDokumenter> feiledeDokumenterList) {
+	private void tilknyttDokumentInfoCopySomVedleggPaaJournalpost(String tilKnyttetAvNavn, Long targetJournalpostId, DokumentInfo sourceDokumentInfo, FilDetaljer filDetaljerSladdet, DokumentVedlegg dokumentVedlegg, Journalpost journalpost, List<FeiledeDokumenter> feiledeDokumenterList) {
 		log.info(MDC.get(MDC_REQUEST_ID) + " legger til en kopi av dokumentinfo med dokumentInfoId={} på journalpost journalpostId={} da variant=SLADDET. Kopi av dokumentinfo vil få variant=ARKIV", dokumentVedlegg
 				.getDokumentInfoId(), targetJournalpostId);
 		String consumerId = MDC.get(MDC_CONSUMER_ID);
@@ -113,7 +112,7 @@ public class TilknyttVedleggService {
 		dokumentFilRepository.save(dokumentFilCopy);
 		dokumentinfoRepository.save(dokumentInfoCopy);
 
-		tilknyttDokumentInfoSomVedleggPaaJournalpost(dokumentInfoCopy, dokumentVedlegg, journalpost, feiledeDokumenterList);
+		tilknyttDokumentInfoSomVedleggPaaJournalpost(tilKnyttetAvNavn, dokumentInfoCopy, dokumentVedlegg, journalpost, feiledeDokumenterList);
 	}
 
 	private DokumentInfo createDokumentInfoCopy(DokumentInfo dokumentInfo, String consumerId) {
@@ -158,10 +157,10 @@ public class TilknyttVedleggService {
 		return feiledeDokumenterList;
 	}
 
-	private void tilknyttDokumentInfoSomVedleggPaaJournalpost(DokumentInfo dokumentInfo, DokumentVedlegg dokumentVedlegg, Journalpost journalpost, List<FeiledeDokumenter> feiledeDokumenterList) {
+	private void tilknyttDokumentInfoSomVedleggPaaJournalpost(String tilKnyttetAvNavn, DokumentInfo dokumentInfo, DokumentVedlegg dokumentVedlegg, Journalpost journalpost, List<FeiledeDokumenter> feiledeDokumenterList) {
 		JournalpostDokumentInfoRelasjon journalpostDokumentInfoRelasjon;
 		try {
-			journalpostDokumentInfoRelasjon = createJournalpostDokumentInfoRelasjon(dokumentInfo, journalpost);
+			journalpostDokumentInfoRelasjon = createJournalpostDokumentInfoRelasjon(tilKnyttetAvNavn, dokumentInfo, journalpost);
 			journalpost.addJournalpostDokumentInfoRelasjon(journalpostDokumentInfoRelasjon);
 			joarkRepository.save(journalpost);
 			log.info("Journalpost med journalpostId={} har fått tilknyttet dokument vedlegg fra DokumentInfoId={} ", journalpost
@@ -171,7 +170,7 @@ public class TilknyttVedleggService {
 		}
 	}
 
-	private JournalpostDokumentInfoRelasjon createJournalpostDokumentInfoRelasjon(DokumentInfo dokumentInfo, Journalpost journalpost) {
+	private JournalpostDokumentInfoRelasjon createJournalpostDokumentInfoRelasjon(String tilKnyttetAvNavn, DokumentInfo dokumentInfo, Journalpost journalpost) {
 		JournalpostDokumentInfoRelasjon journalpostDokumentInfoRelasjon = JournalpostDokumentInfoRelasjon.builder()
 				.journalpost(journalpost)
 				.dokumentInfo(dokumentInfo)
