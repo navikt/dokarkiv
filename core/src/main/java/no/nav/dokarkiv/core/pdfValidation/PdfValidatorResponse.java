@@ -1,7 +1,8 @@
-package no.nav.dokarkiv.core.util;
+package no.nav.dokarkiv.core.pdfValidation;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import no.nav.dokarkiv.core.domain.entities.Journalpost;
 
 import java.util.Set;
 
@@ -23,7 +24,7 @@ public class PdfValidatorResponse {
 
 	public String toString(String filename){
 
-		return filename +" er en " + validPdfToString() + " PDF/A på format " + pdfVersion +". Den er " + compliantToString();
+		return "DokumentfilId="+filename +" er en " + validPdfToString() + " PDF/A på format " + pdfVersion +". Den er " + compliantToString();
 	}
 
 	public String toString(String journalpostId, String fagomraade, String fileName){

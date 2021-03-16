@@ -1,89 +1,63 @@
 package no.nav.dokarkiv.core.util;
 
-import org.apache.jempbox.xmp.XMPMetadata;
-import org.apache.jempbox.xmp.pdfa.XMPSchemaPDFAId;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
-import org.apache.pdfbox.pdmodel.PDPage;
-import org.apache.pdfbox.pdmodel.PDPageContentStream;
-import org.apache.pdfbox.pdmodel.common.PDMetadata;
-import org.apache.pdfbox.pdmodel.font.PDFont;
-import org.apache.pdfbox.pdmodel.font.PDTrueTypeFont;
-import org.apache.pdfbox.pdmodel.graphics.color.PDOutputIntent;
-import org.junit.Ignore;
+import no.nav.dokarkiv.core.pdfValidation.PdfValidatorUtil;
+import no.nav.dokarkiv.core.pdfValidation.PdfValidatorResponse;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
+import org.junit.runner.RunWith;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.time.Duration;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-
+@RunWith(MockitoJUnitRunner.class)
 public class pdfValidatorTest {
 
-	@Autowired
-	private ApplicationContext ctx;
-
-
-	/*
-	* Testen krever noen ekstra filer
 	@Test
-	@Ignore
-	public void shouldValidateValidPDFA2b() throws Exception {
-		InputStream pdf = createValidPdf();
-
-		PdfValidatorResponse response = PdfValidator.isValidPdf(pdf);
-		assertThat(response.isValidPdf, is(true));
-		assertThat(response.pdfVersion, is("1b"));
-	}*/
-
-	@Test
-	//@Ignore
 	public void validateTestPdfs() throws Exception {
 
-		for (String fileName : getFilenames()) {
+		/*
+		Disse testene må utbedres
+		 */
+		for (String fileName : getq2Filenames()) {
 			InputStream pdf = classpathToInputStream("pdf/pdf/" + fileName);
-			PdfValidatorResponse response = PdfValidator.isValidPdf(pdf);
-			//System.out.println(response.toString(fileName) + "\n");
-			System.out.println(response.toString(""+29283849, "PEN", fileName));
+			PdfValidatorResponse response = PdfValidatorUtil.validatePdf(pdf);
+			System.out.println(response.toString(fileName));
 		}
-
-
 	}
 
-	private static List<InputStream> loadPdfs() throws Exception {
-		ArrayList<InputStream> pdfs = new ArrayList<>();
-
-		pdfs.add(classpathToInputStream("pdf/pdf/453643390_navno_pdfa.pdf"));
-		pdfs.add(classpathToInputStream("pdf/pdf/453643409_navno_pdfa.pdf"));
-		pdfs.add(classpathToInputStream("pdf/pdf/453643559_skan_im_pdf.pdf"));
-		pdfs.add(classpathToInputStream("pdf/pdf/453643863_navno_pdf.pdf"));
-		pdfs.add(classpathToInputStream("pdf/pdf/453644011_navno_pdfa.pdf"));
-		pdfs.add(classpathToInputStream("pdf/pdf/453644029_altinn_pdfa.pdf"));
-		pdfs.add(classpathToInputStream("pdf/pdf/453644120_eessi_pdfa.pdf"));
-		pdfs.add(classpathToInputStream("pdf/pdf/453644161_eessi_pdf.pdf"));
-		pdfs.add(classpathToInputStream("pdf/pdf/453644181_skan_im_pdfa.pdf"));
-		pdfs.add(classpathToInputStream("pdf/pdf/453644357_altinn_pdf.pdf"));
-		pdfs.add(classpathToInputStream("pdf/pdf/453644425_eessi_pdfa.pdf"));
-		pdfs.add(classpathToInputStream("pdf/pdf/453644598_skan_im_pdfa.pdf"));
-		pdfs.add(classpathToInputStream("pdf/pdf/453644612_navno_pdf.pdf"));
-		pdfs.add(classpathToInputStream("pdf/pdf/453644811_altinn_pdfa.pdf"));
-		pdfs.add(classpathToInputStream("pdf/pdf/453644979_eessi_pdf.pdf"));
-
-		return pdfs;
+	@Test
+	public void validateArkivverketPdfs() throws Exception{
+		/*
+		Disse testene må utbedres
+		her testes alle pdf/a'ene fra arkivverket. De skal egentlig (?) kanskje (?) validere men vi godtar denne feilen for nå.
+		dvs at alle bortsett fra 2a/u skal validere mens 2a/u skal feilvalidere med en spesifikk feil
+		 */
+		for (String fileName : getArkiverketFilenames()) {
+			InputStream pdf = classpathToInputStream("pdf/Arkivverket/" + fileName);
+			PdfValidatorResponse response = PdfValidatorUtil.validatePdf(pdf);
+			System.out.println(response.toString(fileName));
+		}
 	}
 
-	private static List<String> getFilenames() {
+	private static List<String> getArkiverketFilenames(){
+		ArrayList<String> fileNames = new ArrayList<>();
+		String baseString = "2021_01_06_nasjonale_tiltak_16_9_PDF_A_";
+		String PDF = ".pdf";
+		fileNames.add("2021_01_06_nasjonale_tiltak_16_9.pdf");
+		fileNames.add(baseString +"1a"+PDF);
+		fileNames.add(baseString +"1b"+PDF);
+		fileNames.add(baseString +"2a"+PDF);
+		fileNames.add(baseString +"2b"+PDF);
+		fileNames.add(baseString +"2u"+PDF);
+		fileNames.add("2a"+PDF);
+		fileNames.add("2u"+PDF);
+		return fileNames;
+	}
+
+	private static List<String> getq2Filenames() {
 		ArrayList<String> fileNames = new ArrayList<>();
 		fileNames.add("Test.txt");
 		fileNames.add("DummyXml.xml");
@@ -111,7 +85,22 @@ public class pdfValidatorTest {
 		return new ClassPathResource(classpathResource).getInputStream();
 	}
 
+	//Gammel kode for å generere en pdf/a 1b
+		/*
+	* Testen krever noen ekstra filer
+	@Test
+	@Ignore
+	public void shouldValidateValidPDFA2b() throws Exception {
+		InputStream pdf = createValidPdf();
+
+		PdfValidatorResponse response = PdfValidator.isValidPdf(pdf);
+		assertThat(response.isValidPdf, is(true));
+		assertThat(response.pdfVersion, is("1b"));
+	}*/
+
 	/*
+	 * Denne testen oppretter en egen PDF/A-1b.
+	 * Det er lettere / bedre å teste på dokumenter vi allerede vet er på PDF/A-xy
 	public static InputStream createValidPdf() throws Exception {
 		InputStream fontStream = classpathToInputStream("pdf/ArialMT.ttf");
 		PDDocument doc = new PDDocument();

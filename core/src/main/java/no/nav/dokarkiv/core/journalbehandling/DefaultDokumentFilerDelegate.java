@@ -5,9 +5,8 @@ import no.nav.dokarkiv.core.domain.entities.DokumentFil;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
-import no.nav.dokarkiv.core.util.PdfValidator;
-import no.nav.dokarkiv.core.util.PdfValidatorResponse;
-import org.springframework.beans.factory.annotation.Autowired;
+import no.nav.dokarkiv.core.pdfValidation.PdfValidatorUtil;
+import no.nav.dokarkiv.core.pdfValidation.PdfValidatorResponse;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
@@ -42,8 +41,7 @@ public class DefaultDokumentFilerDelegate implements DokumentFilerDelegate {
 	public void saveNewDokumentFiler(Journalpost journalpost) {
 		List<DokumentFil> newDokumentFiler = createNewDokumentFiler(journalpost);
 		for (DokumentFil dokumentFil : newDokumentFiler) {
-			saveDokumentFil(dokumentFil, journalpost);
-			validateAndLogDokumentFil(dokumentFil, journalpost);
+			saveDokumentFil(dokumentFil);
 		}
 	}
 
@@ -52,23 +50,23 @@ public class DefaultDokumentFilerDelegate implements DokumentFilerDelegate {
 		for (FilDetaljer filDetaljer : journalpost.findAllFilDetaljer()) {
 			if (filDetaljer.getFildetaljerId() == null && filDetaljer.hasFileContent()) {
 				dokumentFiler.add(filDetaljer.createDokumentFil());
+				PdfValidatorUtil.logJournalpost(journalpost, filDetaljer.getFilUuid());
 			}
 		}
 		return dokumentFiler;
 	}
 
-	private void saveDokumentFil(DokumentFil dokumentFil, Journalpost journalpost) {
+	private void saveDokumentFil(DokumentFil dokumentFil) {
 		dokumentFilRepository.save(dokumentFil);
 
-		//Midlertidig plassering.
-		//Tar inn journalpost for bedre logging.
-		validateAndLogDokumentFil(dokumentFil, journalpost);
+		validateAndLogDokumentFil(dokumentFil);
 	}
 
 	private void updateExistingDokumentFiler(Journalpost journalpost) {
 		for (FilDetaljer filDetaljer : journalpost.findAllFilDetaljer()) {
 			if (filDetaljer.hasId() && filDetaljer.hasFileContent()) {
-				updateDokumentFil(filDetaljer, journalpost);
+				PdfValidatorUtil.logJournalpost(journalpost, filDetaljer.getFilUuid());
+				updateDokumentFil(filDetaljer);
 			}
 		}
 	}
@@ -80,27 +78,24 @@ public class DefaultDokumentFilerDelegate implements DokumentFilerDelegate {
 	 *
 	 * @param filDetaljer The existing FilDetaljer.
 	 */
-	private void updateDokumentFil(FilDetaljer filDetaljer, Journalpost journalpost) {
+	private void updateDokumentFil(FilDetaljer filDetaljer) {
 		DokumentFil existingDokumentFil = dokumentFilRepository.findByFilUuid(filDetaljer.getFilUuid());
 		if (existingDokumentFil == null) {
-			saveDokumentFil(filDetaljer.createDokumentFil(), journalpost);
+			saveDokumentFil(filDetaljer.createDokumentFil());
 		} else {
 			existingDokumentFil.setFil(filDetaljer.getFileContent());
 			existingDokumentFil.setEndretKildeNavn(filDetaljer.getEndretKildeNavn());
 			filDetaljer.setFilstorrelse(String.valueOf(filDetaljer.getFileContent().length));
+			validateAndLogDokumentFil(existingDokumentFil);
 		}
 	}
 
-	//Legger denne bare her i mens. Trenger nok noe mer logikk for å legge den på rett sted
-	private void validateAndLogDokumentFil(DokumentFil dokumentFil, Journalpost journalpost){
+	//Legger denne bare her imens. Trenger nok noe mer logikk for å legge den på rett sted
+	private void validateAndLogDokumentFil(DokumentFil dokumentFil){
 		try {
-
-			String tema = null == journalpost.getBehandlingstema() ? "TEMA_IKKE_SATT" : journalpost.getBehandlingstema();
-			//Problemer i test, dette er korteste veien til mål
-			String journalpostId = journalpost.getId() == null ? "INGEN_ID" : journalpost.getId().toString();
 			String dokumentFilId = null == dokumentFil.getId() ? "INGEN_DOKUMENTFIL_ID" : dokumentFil.getId().toString();
-			PdfValidatorResponse response = PdfValidator.isValidPdf(dokumentFil.getFil());
-			log.info(response.toString(journalpostId, tema, dokumentFilId));
+			PdfValidatorResponse response = PdfValidatorUtil.validatePdf(dokumentFil.getFil());
+			log.info(response.toString(dokumentFilId));
 		}catch(Exception e){
 			//catchall for ikke å påvirke testmiljøet om noe går galt.
 			log.info("Kunne ikke validere dokumentfil", e);
