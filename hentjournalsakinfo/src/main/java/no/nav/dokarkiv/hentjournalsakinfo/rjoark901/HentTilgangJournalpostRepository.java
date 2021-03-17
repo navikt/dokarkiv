@@ -48,6 +48,10 @@ public class HentTilgangJournalpostRepository {
                                 "di.dokumentInfoId, " +
                                 "di.dokumentstatus, " +
                                 "di.brevkode, " +
+                                "di.kategori, " +
+                                "di.organInternt, " +
+                                "di.innskrenketPartsinnsyn, " +
+                                "di.innskrenketPartsinnsynFraTredjepart, " +
                                 "jr.skjermingType, " +
                                 "fd.variantFormat, " +
                                 "fd.skjermingType " +

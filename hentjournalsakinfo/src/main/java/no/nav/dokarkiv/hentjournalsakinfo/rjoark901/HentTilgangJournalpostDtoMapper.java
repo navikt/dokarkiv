@@ -2,6 +2,7 @@ package no.nav.dokarkiv.hentjournalsakinfo.rjoark901;
 
 import lombok.experimental.UtilityClass;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
+import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
@@ -43,9 +44,13 @@ class HentTilgangJournalpostDtoMapper {
 				new TilgangDokumentInfoDto(isNull(tuple[19]) ? null : ((Long) tuple[19]).toString(),
 						isNull(tuple[20]) ? null : (DokumentStatusCode) tuple[20],
 						(String) tuple[21],
-						(SkjermingTypeCode) tuple[22],
-						new TilgangVariantDto((VariantFormatCode) tuple[23],
-								(SkjermingTypeCode) tuple[24])
+						(DokumentKategoriCode) tuple[22],
+						isNull(tuple[23]) ? null : (boolean) tuple[23],
+						isNull(tuple[24]) ? null : (boolean) tuple[23],
+						isNull(tuple[25]) ? null : (boolean) tuple[23],
+						(SkjermingTypeCode) tuple[26],
+						new TilgangVariantDto((VariantFormatCode) tuple[27],
+								(SkjermingTypeCode) tuple[28])
 				));
 	}
 }
