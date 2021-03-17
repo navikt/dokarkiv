@@ -30,6 +30,7 @@ class AzureAdFlowSporingHandlerTest {
 	private static final String APP_CLAIM_SUB = "a2fb96a7-5294-48ea-a1de-a30599f95eb4";
 	private static final String APP_CLAIM_OID = "a2fb96a7-5294-48ea-a1de-a30599f95eb4";
 	private static final String USER_CLAIM_OID = "52968c79-cd9c-4368-a871-8e2b07f4d8b9";
+	private static final String USER_CLAIM_NAVIDENT = "P999999";
 	private static final String USER_CLAIM_NAME = "Donald Duck";
 
 	private final AzureAdFlowSporingHandler azureAdFlowSporingHandler = new AzureAdFlowSporingHandler();
@@ -56,28 +57,44 @@ class AzureAdFlowSporingHandlerTest {
 	void shouldHandleOnBehalfOfFlow() {
 		azureAdFlowSporingHandler.handle(createAzureOnBehalfOfToken());
 
-		assertThat(MDC.get(MDCConstants.MDC_USER_ID)).isEqualTo(USER_CLAIM_OID);
+		assertThat(MDC.get(MDCConstants.MDC_USER_ID)).isEqualTo(USER_CLAIM_NAVIDENT);
 		assertThat(MDC.get(MDCConstants.MDC_CONSUMER_ID)).isEqualTo(APP_CLAIM_AZP);
 		assertThat(MDC.get(MDCConstants.MDC_USER_NAME)).isEqualTo(USER_CLAIM_NAME);
 	}
 
 	@Test
+	void shouldHandleOnBehalfOfFlowMissingNavIdent() {
+		azureAdFlowSporingHandler.handle(createAzureOnBehalfOfTokenWithoutNavIdent());
+
+		assertThat(MDC.get(MDCConstants.MDC_USER_ID)).isEqualTo(USER_CLAIM_OID);
+		assertThat(MDC.get(MDCConstants.MDC_CONSUMER_ID)).isEqualTo(APP_CLAIM_AZP);
+		assertThat(MDC.get(MDCConstants.MDC_USER_NAME)).isEqualTo(USER_CLAIM_NAME);
+	}
+
+
+
+	@Test
 	void shouldThrowMissingClaimExceptionWhenAzureOnBehalfTokenIsMissingNameClaim() {
-		assertThatThrownBy(() -> azureAdFlowSporingHandler.handle(createAzureToken(defaultAzureClaimSet(APP_CLAIM_SUB, USER_CLAIM_OID, APP_CLAIM_AZP))))
+		assertThatThrownBy(() -> azureAdFlowSporingHandler.handle(createAzureToken(defaultAzureClaimSet(APP_CLAIM_SUB, USER_CLAIM_OID, APP_CLAIM_AZP, USER_CLAIM_NAVIDENT))))
 				.isInstanceOf(MissingClaimException.class);
 	}
 
 	JwtToken createAzureClientCredentialGrantWithOptionalIdtypClaimToken() {
-		return createAzureToken(defaultAzureClaimSet(APP_CLAIM_SUB, APP_CLAIM_OID, APP_CLAIM_AZP)
+		return createAzureToken(defaultAzureClaimSet(APP_CLAIM_SUB, APP_CLAIM_OID, APP_CLAIM_AZP, USER_CLAIM_NAVIDENT)
 				.claim(AzureAdFlowSporingHandler.OPTIONAL_CLAIM_SET_IDTYP, AzureAdFlowSporingHandler.OPTIONAL_CLAIM_SET_IDTYP_VALUE));
 	}
 
 	JwtToken createAzureClientCredentialGrantToken() {
-		return createAzureToken(defaultAzureClaimSet(APP_CLAIM_SUB, APP_CLAIM_OID, APP_CLAIM_AZP));
+		return createAzureToken(defaultAzureClaimSet(APP_CLAIM_SUB, APP_CLAIM_OID, APP_CLAIM_AZP, USER_CLAIM_NAVIDENT));
 	}
 
 	JwtToken createAzureOnBehalfOfToken() {
-		return createAzureToken(defaultAzureClaimSet(APP_CLAIM_SUB, USER_CLAIM_OID, APP_CLAIM_AZP)
+		return createAzureToken(defaultAzureClaimSet(APP_CLAIM_SUB, USER_CLAIM_OID, APP_CLAIM_AZP, USER_CLAIM_NAVIDENT)
+				.claim(AzureAdFlowSporingHandler.PROFILE_SCOPE_CLAIM_NAME, USER_CLAIM_NAME));
+	}
+
+	private JwtToken createAzureOnBehalfOfTokenWithoutNavIdent() {
+		return createAzureToken(defaultAzureClaimSet(APP_CLAIM_SUB, USER_CLAIM_OID, APP_CLAIM_AZP, null)
 				.claim(AzureAdFlowSporingHandler.PROFILE_SCOPE_CLAIM_NAME, USER_CLAIM_NAME));
 	}
 
@@ -85,13 +102,14 @@ class AzureAdFlowSporingHandlerTest {
 		return new JwtToken(createSignedJWT(JwkGenerator.getDefaultRSAKey(), azureClaimSetBuilder.build()).serialize());
 	}
 
-	JWTClaimsSet.Builder defaultAzureClaimSet(String subject, String oid, String azp) {
+	JWTClaimsSet.Builder defaultAzureClaimSet(String subject, String oid, String azp, String navIdent) {
 		Date now = new Date();
 		return new JWTClaimsSet.Builder()
 				.subject(subject)
 				.jwtID(UUID.randomUUID().toString())
 				.claim(AzureAdFlowSporingHandler.DEFAULT_CLAIM_OID, oid)
 				.claim(AzureAdFlowSporingHandler.DEFAULT_CLAIM_AZP, azp)
+				.claim(AzureAdFlowSporingHandler.DEFAULT_CLAIM_NAVIDENT, navIdent)
 				.notBeforeTime(now)
 				.issueTime(now)
 				.expirationTime(new Date(now.getTime() + TimeUnit.MINUTES.toMillis(60)));

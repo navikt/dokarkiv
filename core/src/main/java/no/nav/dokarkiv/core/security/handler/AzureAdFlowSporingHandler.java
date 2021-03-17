@@ -67,7 +67,7 @@ public class AzureAdFlowSporingHandler {
 		final String oidClaim = token.getJwtTokenClaims().getStringClaim(DEFAULT_CLAIM_OID);
 		final String navIdentClaim = token.getJwtTokenClaims().getStringClaim(DEFAULT_CLAIM_NAVIDENT);
 		MDC.put(MDCConstants.MDC_CONSUMER_ID, azpClaim);
-		MDC.put(MDCConstants.MDC_USER_ID, navIdentClaim!=null?navIdentClaim:oidClaim);
+		MDC.put(MDCConstants.MDC_USER_ID, navIdentClaim != null ? navIdentClaim : oidClaim);
 		final String nameClaim = token.getJwtTokenClaims().getStringClaim(PROFILE_SCOPE_CLAIM_NAME);
 		if (isNotBlank(nameClaim)) {
 			MDC.put(MDCConstants.MDC_USER_NAME, nameClaim);
