@@ -46,8 +46,8 @@ class HentTilgangJournalpostDtoMapper {
 						(String) tuple[21],
 						(DokumentKategoriCode) tuple[22],
 						isNull(tuple[23]) ? null : (boolean) tuple[23],
-						isNull(tuple[24]) ? null : (boolean) tuple[23],
-						isNull(tuple[25]) ? null : (boolean) tuple[23],
+						isNull(tuple[24]) ? null : (boolean) tuple[24],
+						isNull(tuple[25]) ? null : (boolean) tuple[25],
 						(SkjermingTypeCode) tuple[26],
 						new TilgangVariantDto((VariantFormatCode) tuple[27],
 								(SkjermingTypeCode) tuple[28])

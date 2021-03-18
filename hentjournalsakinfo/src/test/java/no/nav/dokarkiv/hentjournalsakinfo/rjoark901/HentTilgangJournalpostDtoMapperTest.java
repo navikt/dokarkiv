@@ -19,6 +19,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class HentTilgangJournalpostDtoMapperTest {
@@ -60,7 +61,7 @@ public class HentTilgangJournalpostDtoMapperTest {
 
         DokumentKategoriCode dokumentKategoriCode = DokumentKategoriCode.B;
         boolean organinternt = true;
-        boolean innskrenketPartsinnsyn = true;
+        boolean innskrenketPartsinnsyn = false;
         boolean innskrenketTredjepart = true;
 
         Object[] tuple = new Object[]{
@@ -108,7 +109,7 @@ public class HentTilgangJournalpostDtoMapperTest {
         assertEquals(fildetaljerSkjermingType, journalpostDto.getDokument().getVariant().getSkjerming());
 
         assertTrue(journalpostDto.getDokument().getOrganinternt());
-        assertTrue(journalpostDto.getDokument().getInnskrenketPartsinnsyn());
+        assertFalse(journalpostDto.getDokument().getInnskrenketPartsinnsyn());
         assertTrue(journalpostDto.getDokument().getInnskrenketTredjepart());
     }
 }

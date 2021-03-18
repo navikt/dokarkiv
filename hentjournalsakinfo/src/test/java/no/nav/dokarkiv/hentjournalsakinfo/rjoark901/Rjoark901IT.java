@@ -1,6 +1,7 @@
 package no.nav.dokarkiv.hentjournalsakinfo.rjoark901;
 
 import no.nav.dokarkiv.core.consumer.RestConsumerExceptionResponse;
+import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.Bruker;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
@@ -14,9 +15,12 @@ import org.springframework.test.context.transaction.TestTransaction;
 import java.util.Objects;
 
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createBruker;
+import static no.nav.dokarkiv.core.util.TestDataGenerator.createDokumentInfoWithMoreData;
+import static no.nav.dokarkiv.core.util.TestDataGenerator.createHoveddokumentRelasjon;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createJournalpostWithHoveddokument;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 public class Rjoark901IT extends AbstractHentjournalsakinfoItest {
 
@@ -70,6 +74,27 @@ public class Rjoark901IT extends AbstractHentjournalsakinfoItest {
 
         TilgangJournalpostDto responseJournalpost = Objects.requireNonNull(responseEntity.getBody()).getTilgangJournalpostDto();
         assertEquals(EXPECTED_BRUKER_ID, responseJournalpost.getBruker().getBrukerId());
+    }
+
+    @Test
+    public void shouldGetTilgangJournalpostWithMoreData() {
+        Journalpost journalpost = createJournalpostWithHoveddokument();
+        journalpost.addJournalpostDokumentInfoRelasjon(createHoveddokumentRelasjon(journalpost, createDokumentInfoWithMoreData()));
+        persistJournalpost(journalpost);
+
+        Long journalpostId = journalpost.getJournalpostId();
+        Long dokumentInfoId = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId();
+
+        ResponseEntity<HentTilgangJournalpostResponse> responseEntity = restTemplate.exchange(HENTTILGANGJOURNALPOST_URI, HttpMethod.GET, createHeaderEntity(), HentTilgangJournalpostResponse.class,
+                journalpostId, dokumentInfoId, VariantFormatCode.ARKIV.name());
+
+        TilgangJournalpostDto responseJournalpost = Objects.requireNonNull(responseEntity.getBody()).getTilgangJournalpostDto();
+        TilgangDokumentInfoDto tilgangDokumentInfoDto = responseJournalpost.getDokument();
+
+        assertTrue(tilgangDokumentInfoDto.getInnskrenketTredjepart());
+        assertTrue(tilgangDokumentInfoDto.getInnskrenketPartsinnsyn());
+        assertTrue(tilgangDokumentInfoDto.getOrganinternt());
+        assertEquals(DokumentKategoriCode.B, tilgangDokumentInfoDto.getKategori());
     }
 
     @Test
