@@ -1,6 +1,7 @@
 package no.nav.dokarkiv.hentjournalsakinfo.rjoark901;
 
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
+import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
@@ -18,6 +19,8 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class HentTilgangJournalpostDtoMapperTest {
 
@@ -56,6 +59,11 @@ public class HentTilgangJournalpostDtoMapperTest {
         VariantFormatCode fildetaljerVariantFormat = VariantFormatCode.SLADDET;
         SkjermingTypeCode fildetaljerSkjermingType = SkjermingTypeCode.POL;
 
+        DokumentKategoriCode dokumentKategoriCode = DokumentKategoriCode.B;
+        boolean organinternt = true;
+        boolean innskrenketPartsinnsyn = false;
+        boolean innskrenketTredjepart = true;
+
         Object[] tuple = new Object[]{
                 journalpostId, journalStatus, journalType, journalFagomrade, createdDate,
                 mottakskanal, jounralpostSkjermingType, avsenderMottakerId,
@@ -64,6 +72,7 @@ public class HentTilgangJournalpostDtoMapperTest {
                 sakrelasjonTema, sakrelasjonFagsakNr, sakrelasjonOrgnr,
                 sakrelasjonApplikasjon, sakrelasjonOpprettetAv, journalpostDatetime,
                 dokumentInfoId, dokumentInfoStatus, dokumentInfoBrevkode,
+                dokumentKategoriCode, organinternt, innskrenketPartsinnsyn, innskrenketTredjepart,
                 dokumentInfoRelasjonerSkjermingType, fildetaljerVariantFormat, fildetaljerSkjermingType
         };
 
@@ -95,7 +104,12 @@ public class HentTilgangJournalpostDtoMapperTest {
         assertEquals(dokumentInfoStatus, journalpostDto.getDokument().getDokumentstatus());
         assertEquals(dokumentInfoBrevkode, journalpostDto.getDokument().getBrevkode());
         assertEquals(dokumentInfoRelasjonerSkjermingType, journalpostDto.getDokument().getSkjerming());
+        assertEquals(dokumentKategoriCode, journalpostDto.getDokument().getKategori());
         assertEquals(fildetaljerVariantFormat, journalpostDto.getDokument().getVariant().getVariantFormat());
         assertEquals(fildetaljerSkjermingType, journalpostDto.getDokument().getVariant().getSkjerming());
+
+        assertTrue(journalpostDto.getDokument().getOrganinternt());
+        assertFalse(journalpostDto.getDokument().getInnskrenketPartsinnsyn());
+        assertTrue(journalpostDto.getDokument().getInnskrenketTredjepart());
     }
 }
