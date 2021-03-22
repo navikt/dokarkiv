@@ -1,8 +1,5 @@
 package no.nav.dokarkiv.core.util;
 
-import static no.nav.dokarkiv.core.repository.DokumentFilSkjermetRepository.FIL_UUID_DUMMY_DOKUMENT_KASSERT;
-import static no.nav.dokarkiv.core.repository.DokumentFilSkjermetRepository.FIL_UUID_DUMMY_DOKUMENT_SKJERMET;
-
 import no.nav.dokarkiv.core.domain.codes.AvsenderMottakerIdTypeCode;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
@@ -32,6 +29,9 @@ import java.time.LocalDate;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+
+import static no.nav.dokarkiv.core.repository.DokumentFilSkjermetRepository.FIL_UUID_DUMMY_DOKUMENT_KASSERT;
+import static no.nav.dokarkiv.core.repository.DokumentFilSkjermetRepository.FIL_UUID_DUMMY_DOKUMENT_SKJERMET;
 
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
@@ -66,7 +66,7 @@ public class TestDataGenerator {
 	public static final Integer ANTALL_RETUR = 3;
 	public static final String KANAL_REFERANSE_ID = "KANAL REFERANSE ID";
 	public static final String AKTOER_ID = "111113333333";
-	
+
 	public static Journalpost createJournalpostWithHoveddokument() {
 		Journalpost journalpost = Journalpost.builder()
 				.avsenderMottakerId(AVSENDER_MOTTAKER_ID)
@@ -259,7 +259,6 @@ public class TestDataGenerator {
 				.dokumenttypeId(DOKUMENT_TYPE_ID)
 				.build();
 		dokumentInfo.addFilDetaljer(createFildetaljerOgFil(dokumentInfo, VariantFormatCode.ARKIV));
-		dokumentInfo.addFilDetaljer(createFildetaljerOgFil(dokumentInfo, VariantFormatCode.PRODUKSJON));
 		dokumentInfo.addSkannetInnhold(createSkannetInnhold());
 		dokumentInfo.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
 		dokumentInfo.setTilleggsopplysninger(createTilleggsopplysninger());

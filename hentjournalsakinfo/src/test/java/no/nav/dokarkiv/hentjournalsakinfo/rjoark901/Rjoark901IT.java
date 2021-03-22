@@ -2,6 +2,7 @@ package no.nav.dokarkiv.hentjournalsakinfo.rjoark901;
 
 import no.nav.dokarkiv.core.consumer.RestConsumerExceptionResponse;
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
+import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.Bruker;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
@@ -16,8 +17,8 @@ import java.util.Objects;
 
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createBruker;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createDokumentInfoWithMoreData;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.createHoveddokumentRelasjon;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createJournalpostWithHoveddokument;
+import static no.nav.dokarkiv.core.util.TestDataGenerator.createVedleggRelasjon;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -79,11 +80,11 @@ public class Rjoark901IT extends AbstractHentjournalsakinfoItest {
     @Test
     public void shouldGetTilgangJournalpostWithMoreData() {
         Journalpost journalpost = createJournalpostWithHoveddokument();
-        journalpost.addJournalpostDokumentInfoRelasjon(createHoveddokumentRelasjon(journalpost, createDokumentInfoWithMoreData()));
+        journalpost.addJournalpostDokumentInfoRelasjon(createVedleggRelasjon(journalpost, createDokumentInfoWithMoreData()));
         persistJournalpost(journalpost);
 
         Long journalpostId = journalpost.getJournalpostId();
-        Long dokumentInfoId = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId();
+        Long dokumentInfoId = journalpost.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG).stream().findFirst().get().getDokumentInfo().getDokumentInfoId();
 
         ResponseEntity<HentTilgangJournalpostResponse> responseEntity = restTemplate.exchange(HENTTILGANGJOURNALPOST_URI, HttpMethod.GET, createHeaderEntity(), HentTilgangJournalpostResponse.class,
                 journalpostId, dokumentInfoId, VariantFormatCode.ARKIV.name());
