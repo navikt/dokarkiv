@@ -31,11 +31,11 @@ import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static java.util.Collections.emptyList;
@@ -83,10 +83,10 @@ public class OpprettJournalpostService {
 
 	public OpprettJournalpostResult opprettJournalpost(OpprettJournalpostRequest request) {
 
-		List<Journalpost> existingJournalpost = findJournalpostWithIdempodentKanalAlreadyInDb(request);
-		if (existingJournalpost.size() > 0) {
-			final Journalpost journalpost = existingJournalpost.get(0);
-			log.warn("{} journalposter med eksternReferanseId={} for kanal={} finnes fra før. Oppretter ikke ny journalpost.", existingJournalpost.size(), request.getEksternReferanseId(), journalpost.getMottakskanal());
+		Optional<Journalpost> existingJournalpost = findJournalpostWithIdempodentKanalAlreadyInDb(request);
+		if (existingJournalpost.isPresent()) {
+			final Journalpost journalpost = existingJournalpost.get();
+			log.warn("Journalpost med eksternReferanseId={} for kanal={} finnes fra før. Oppretter ikke ny journalpost.", request.getEksternReferanseId(), journalpost.getMottakskanal());
 			return new OpprettJournalpostResult(journalpost, false);
 		}
 		String sakId = hentSakId(request);
@@ -183,17 +183,17 @@ public class OpprettJournalpostService {
 	}
 
 	// Bruker eksternReferanseId for å fikse idempodens for spesifikke kanaler
-	private List<Journalpost> findJournalpostWithIdempodentKanalAlreadyInDb(OpprettJournalpostRequest request) {
+	private Optional<Journalpost> findJournalpostWithIdempodentKanalAlreadyInDb(OpprettJournalpostRequest request) {
 		if (isNotBlank(request.getKanal())) {
-			if (request.isInngaaende()) {
-				return joarkRepository.findJournalpostAllByKanalReferanseId(request.getEksternReferanseId());
+			if (request.isInngaaende() && request.getEksternReferanseId()!=null) {
+				return joarkRepository.findTopByKanalReferanseId(request.getEksternReferanseId());
 			} else { // handtere UTGAAENDE og NOTAT
 				final UtsendingsKanalCode kanal = UtsendingsKanalCode.valueOf(request.getKanal());
 				if (UTGAAENDE_UTSENDING_IDEMPOTENT_REFERANSE_ID.contains(kanal)) {
-					return joarkRepository.findJournalpostAllByKanalReferanseId(request.getEksternReferanseId());
+					return joarkRepository.findTopByKanalReferanseId(request.getEksternReferanseId());
 				}
 			}
 		}
-		return new ArrayList<>();
+		return Optional.empty();
 	}
 }
