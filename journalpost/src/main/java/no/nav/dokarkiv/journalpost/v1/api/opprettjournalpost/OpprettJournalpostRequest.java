@@ -87,7 +87,8 @@ public class OpprettJournalpostRequest {
 
     @ApiModelProperty(
             value = "Unik id for forsendelsen som kan brukes til sporing gjennom verdikjeden.\n" +
-                    "Eksempler på eksternReferanseId kan være sykmeldingsId for sykmeldinger, Altinn ArchiveReference for Altinn-skjema eller SEDid for SED.",
+                    "Eksempler på eksternReferanseId kan være en GUID, sykmeldingsId for sykmeldinger, Altinn ArchiveReference for Altinn-skjema eller SEDid for SED.\n\n" +
+                    "NB: Det er duplikatkontroll på eksternReferanseId. Dersom man sender inn en eksternReferanseId som allerede finnes i arkivet, vil tjenesten kaste feil (409 Conflict).",
             example = "a0f480a3-8ab2-4c56-8c93-e53bb35bec2b"
     )
     private String eksternReferanseId;
