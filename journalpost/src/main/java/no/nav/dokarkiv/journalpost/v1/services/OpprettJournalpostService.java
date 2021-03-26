@@ -185,14 +185,14 @@ public class OpprettJournalpostService {
 	// Bruker eksternReferanseId for å fikse idempodens for spesifikke kanaler
 	private Optional<Journalpost> findJournalpostWithIdempodentKanalAlreadyInDb(OpprettJournalpostRequest request) {
 		if (isNotBlank(request.getKanal())) {
-			if (request.isInngaaende()) {
-				if (request.getEksternReferanseId() != null) {
+			if (request.getEksternReferanseId() != null) {
+				if (request.isInngaaende()) {
 					return joarkRepository.findTopByKanalReferanseId(request.getEksternReferanseId());
-				}
-			} else { // handtere UTGAAENDE og NOTAT
-				final UtsendingsKanalCode kanal = UtsendingsKanalCode.valueOf(request.getKanal());
-				if (UTGAAENDE_UTSENDING_IDEMPOTENT_REFERANSE_ID.contains(kanal)) {
-					return joarkRepository.findTopByKanalReferanseId(request.getEksternReferanseId());
+				} else { // handtere UTGAAENDE og NOTAT
+					final UtsendingsKanalCode kanal = UtsendingsKanalCode.valueOf(request.getKanal());
+					if (UTGAAENDE_UTSENDING_IDEMPOTENT_REFERANSE_ID.contains(kanal)) {
+						return joarkRepository.findTopByKanalReferanseId(request.getEksternReferanseId());
+					}
 				}
 			}
 		}
