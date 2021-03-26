@@ -22,6 +22,7 @@ public class TilgangDokumentInfoDto {
 	private final Boolean organinternt;
 	private final Boolean innskrenketPartsinnsyn;
 	private final Boolean innskrenketTredjepart;
+	private final Boolean kassert;
 	private final SkjermingTypeCode skjerming;
 	private final TilgangVariantDto variant;
 

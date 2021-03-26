@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.transaction.TestTransaction;
 
+import java.util.Date;
 import java.util.Objects;
 
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createBruker;
@@ -20,6 +21,8 @@ import static no.nav.dokarkiv.core.util.TestDataGenerator.createDokumentInfoWith
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createJournalpostWithHoveddokument;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createVedleggRelasjon;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -80,6 +83,7 @@ public class Rjoark901IT extends AbstractHentjournalsakinfoItest {
     @Test
     public void shouldGetTilgangJournalpostWithMoreData() {
         Journalpost journalpost = createJournalpostWithHoveddokument();
+        journalpost.setJournalDato(new Date());
         journalpost.addJournalpostDokumentInfoRelasjon(createVedleggRelasjon(journalpost, createDokumentInfoWithMoreData()));
         persistJournalpost(journalpost);
 
@@ -95,7 +99,10 @@ public class Rjoark901IT extends AbstractHentjournalsakinfoItest {
         assertTrue(tilgangDokumentInfoDto.getInnskrenketTredjepart());
         assertTrue(tilgangDokumentInfoDto.getInnskrenketPartsinnsyn());
         assertTrue(tilgangDokumentInfoDto.getOrganinternt());
+        assertFalse(tilgangDokumentInfoDto.getKassert());
+        assertFalse(responseJournalpost.getSak().getFeilregistrert());
         assertEquals(DokumentKategoriCode.B, tilgangDokumentInfoDto.getKategori());
+        assertNotNull(responseJournalpost.getJournalfoertDato());
     }
 
     @Test

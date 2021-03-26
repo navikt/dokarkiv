@@ -20,6 +20,7 @@ public class TilgangSakDto {
 
 	private final String sakId;
 	private final FagsystemCode fagsystem;
+	private final Boolean feilregistrert;
 	private final String aktoerId;
 	private final String tema;
 	private final String fagsakNr;

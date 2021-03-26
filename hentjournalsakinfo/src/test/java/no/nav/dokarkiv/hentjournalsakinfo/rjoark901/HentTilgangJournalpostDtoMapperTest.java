@@ -36,6 +36,7 @@ public class HentTilgangJournalpostDtoMapperTest {
         JournalpostTypeCode journalType = JournalpostTypeCode.U;
         FagomradeCode journalFagomrade = FagomradeCode.PEN;
         Timestamp createdDate = Timestamp.valueOf(journalpostDatetime);
+        Timestamp journalDato = Timestamp.valueOf(journalpostDatetime);
         MottaksKanalCode mottakskanal = MottaksKanalCode.NAV_NO;
         SkjermingTypeCode jounralpostSkjermingType = SkjermingTypeCode.POL;
         String avsenderMottakerId = "avsenderId";
@@ -44,6 +45,7 @@ public class HentTilgangJournalpostDtoMapperTest {
 
         String sakrelasjonSakId = "12345";
         FagsystemCode sakrelasjonFagsystem = FagsystemCode.FS22;
+        boolean feilregistrert = false;
         String sakrelasjonAktoerId = "aktoerId";
         String sakrelasjonTema = "BID";
         String sakrelasjonFagsakNr = "1234";
@@ -63,16 +65,17 @@ public class HentTilgangJournalpostDtoMapperTest {
         boolean organinternt = true;
         boolean innskrenketPartsinnsyn = false;
         boolean innskrenketTredjepart = true;
+        boolean kassert = true;
 
         Object[] tuple = new Object[]{
-                journalpostId, journalStatus, journalType, journalFagomrade, createdDate,
+                journalpostId, journalStatus, journalType, journalFagomrade, createdDate, journalDato,
                 mottakskanal, jounralpostSkjermingType, avsenderMottakerId,
                 brukerId, brukerType,
-                sakrelasjonSakId, sakrelasjonFagsystem, sakrelasjonAktoerId,
+                sakrelasjonSakId, sakrelasjonFagsystem, feilregistrert, sakrelasjonAktoerId,
                 sakrelasjonTema, sakrelasjonFagsakNr, sakrelasjonOrgnr,
                 sakrelasjonApplikasjon, sakrelasjonOpprettetAv, journalpostDatetime,
                 dokumentInfoId, dokumentInfoStatus, dokumentInfoBrevkode,
-                dokumentKategoriCode, organinternt, innskrenketPartsinnsyn, innskrenketTredjepart,
+                dokumentKategoriCode, organinternt, innskrenketPartsinnsyn, innskrenketTredjepart, kassert,
                 dokumentInfoRelasjonerSkjermingType, fildetaljerVariantFormat, fildetaljerSkjermingType
         };
 
@@ -111,5 +114,6 @@ public class HentTilgangJournalpostDtoMapperTest {
         assertTrue(journalpostDto.getDokument().getOrganinternt());
         assertFalse(journalpostDto.getDokument().getInnskrenketPartsinnsyn());
         assertTrue(journalpostDto.getDokument().getInnskrenketTredjepart());
+        assertTrue(journalpostDto.getDokument().getKassert());
     }
 }

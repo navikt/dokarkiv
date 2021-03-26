@@ -204,6 +204,7 @@ public class TestDataGenerator {
 				.fagsystem(FagsystemCode.FS22)
 				.sakId(SAK_ID)
 				.journalpost(journalpost)
+				.feilregistrert(false)
 				.build();
 		saksrelasjon.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
 		return saksrelasjon;
@@ -266,6 +267,7 @@ public class TestDataGenerator {
 		dokumentInfo.setOrganInternt(true);
 		dokumentInfo.setInnskrenketPartsinnsyn(true);
 		dokumentInfo.setInnskrenketPartsinnsynFraTredjepart(true);
+		dokumentInfo.setKassert(false);
 		return dokumentInfo;
 	}
 
