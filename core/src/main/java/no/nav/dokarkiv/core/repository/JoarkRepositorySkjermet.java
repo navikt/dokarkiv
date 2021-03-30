@@ -94,7 +94,7 @@ public class JoarkRepositorySkjermet {
 	}
 
 	public Optional<Journalpost> findJournalpostByKanalReferanseId(String kanalReferanseId) {
-		Optional<Journalpost> journalpost = joarkRepository.findJournalpostByKanalReferanseId(kanalReferanseId);
+		Optional<Journalpost> journalpost = joarkRepository.findTopByKanalReferanseId(kanalReferanseId);
 
 		if (journalpost.isPresent()) {
 			return skjermingService.isJournalpostSkjermet(journalpost.get()) ? Optional.empty() : journalpost;
