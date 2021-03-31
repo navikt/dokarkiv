@@ -46,7 +46,7 @@
 		<!-- Flyway versjon må ses i sammenheng med joark og Flyway42AutoConfiguration -->
 		<flyway.version>4.2.0</flyway.version>
 		<simpleflatmapper.version>8.2.3</simpleflatmapper.version>
-		<swagger.version>2.10.5</swagger.version>
+		<swagger.version>2.9.2</swagger.version>
 		<commons-collections4.version>4.4</commons-collections4.version>
 		<logstash-logback-encoder.version>6.6</logstash-logback-encoder.version>
 		<logback-syslog4j.version>1.0.0</logback-syslog4j.version>
