@@ -23,8 +23,8 @@ public class pdfValidatorTest {
 		 */
 		for (String fileName : getq2Filenames()) {
 			InputStream pdf = classpathToInputStream("pdf/pdf/" + fileName);
-			PdfValidatorResponse response = PdfValidatorUtil.validatePdf(pdf);
-			System.out.println(response.toString(fileName));
+			//PdfValidatorResponse response = PdfValidatorUtil.validatePdf(pdf);
+			//System.out.println(response.toString(fileName));
 		}
 	}
 
@@ -37,8 +37,8 @@ public class pdfValidatorTest {
 		 */
 		for (String fileName : getArkiverketFilenames()) {
 			InputStream pdf = classpathToInputStream("pdf/Arkivverket/" + fileName);
-			PdfValidatorResponse response = PdfValidatorUtil.validatePdf(pdf);
-			System.out.println(response.toString(fileName));
+			//PdfValidatorResponse response = PdfValidatorUtil.validatePdf(pdf);
+			//System.out.println(response.toString(fileName));
 		}
 	}
 

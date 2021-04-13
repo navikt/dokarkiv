@@ -2,21 +2,39 @@ package no.nav.dokarkiv.core.pdfValidation;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 
+import javax.persistence.Column;
 import java.util.Set;
 
 @AllArgsConstructor
+@NoArgsConstructor
 @Getter
 public class PdfValidatorResponse {
 
-	public boolean isValidPdf;
+	/*
+	antall dokumenter på ugyldig format
+	tema/fagområde
+	journalposttype (inngående, utgående, notat)
+	hvem (team/servicebruker) som arkiverer
+	Tenker vi kanskje kun bør samle statistikk på arkivvarianten (om det arkiveres flere), og kun de som har filtype "PDF" og "PDFA".
+	Hadde det gått an å lage grafana-board som også viser andel oppgitte PDFA som faktisk er pdfa, pluss det samme for oppgitte PDF?
+	Jeg tror også det er nyttig å skille på hoveddokument/vedlegg.
+	 */
+	private boolean isValidPdf;
 
-	public boolean isCompliant;
+	private boolean isCompliant;
 
-	public String pdfVersion;
+	private String pdfVersion;
 
-	public Set<String> assertionResults;
+	private Set<String> assertionResults;
+
+	private String id;
+
+	private String filUuid;
+
 
 	public String validPdfToString(){
 		return isValidPdf? "gyldig":"ugyldig";
