@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static no.nav.dokarkiv.core.domain.codes.FilTypeCode.PDFA;
 
@@ -113,7 +114,7 @@ public class DefaultDokumentFilerDelegate implements DokumentFilerDelegate {
 	private void updateAndValidateExistingDokumentFiler(Journalpost journalpost, List<PdfValidatorResponseToGrafana> responses) {
 		for (FilDetaljer filDetaljer : journalpost.findAllFilDetaljer()) {
 			if (filDetaljer.hasId() && filDetaljer.hasFileContent()) {
-				if(filDetaljer.getFiltype().equals(PDFA)) {
+				if(PDFA.equals(filDetaljer.getFiltype())) {
 					updateAndValidateDokumentFil(filDetaljer, responses);
 				} else {
 					updateDokumentFil(filDetaljer);
@@ -135,8 +136,8 @@ public class DefaultDokumentFilerDelegate implements DokumentFilerDelegate {
 		if (existingDokumentFil == null) {
 			DokumentFil dokumentFil = filDetaljer.createDokumentFil();
 			saveDokumentFil(dokumentFil);
-			if(filDetaljer.getFiltype() == PDFA) {
-				responses.add(safeValidateDokukmentFil(dokumentFil, filDetaljer));
+			if(PDFA.equals(filDetaljer.getFiltype())) {
+				safeValidateDokukmentFil(dokumentFil, filDetaljer).ifPresent(response -> responses.add(response));
 			}
 		} else {
 			existingDokumentFil.setFil(filDetaljer.getFileContent());
@@ -161,20 +162,18 @@ public class DefaultDokumentFilerDelegate implements DokumentFilerDelegate {
 
 	private void validateIfPDFA(FilDetaljer filDetaljer, DokumentFil dokumentFil, List<PdfValidatorResponseToGrafana> responses){
 		if(filDetaljer.getFiltype() == PDFA){
-			responses.add(safeValidateDokukmentFil(dokumentFil,filDetaljer));
+			safeValidateDokukmentFil(dokumentFil,filDetaljer).ifPresent(response -> responses.add(response));
 		}
 	}
 
 	//Legger denne bare her imens. Trenger nok noe mer logikk for å legge den på rett sted
-	private PdfValidatorResponseToGrafana safeValidateDokukmentFil(DokumentFil dokumentFil, FilDetaljer filDetaljer){
+	private Optional<PdfValidatorResponseToGrafana> safeValidateDokukmentFil(DokumentFil dokumentFil, FilDetaljer filDetaljer){
 		try {
 			PdfValidatorResponse response = PdfValidatorUtil.validatePdf(dokumentFil);
-			return new PdfValidatorResponseToGrafana(response, filDetaljer);
+			return Optional.of(new PdfValidatorResponseToGrafana(response, filDetaljer));
 		}catch(Exception e){
-			//TODO: Insert bedre feilhåndtering
-			//catchall for ikke å påvirke testmiljøet om noe går galt.
 			log.warn("Kunne ikke validere dokumentfil", e);
-			return null;
+			return Optional.empty();
 		}
 	}
 

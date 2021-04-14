@@ -62,7 +62,7 @@ public class PdfValidatorUtil {
 		} catch (ModelParsingException e) {
 			return returnNotAPdfValidatorResponse(id, filUuid);
 		} catch (Exception e) {
-			throw new InvalidPdfException("Feil under validering av PDF", e);
+			throw new InvalidPdfException("Feil under validering av PDF/A", e);
 		}
 	}
 

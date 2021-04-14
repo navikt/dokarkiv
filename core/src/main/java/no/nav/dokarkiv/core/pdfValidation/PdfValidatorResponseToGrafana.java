@@ -1,12 +1,9 @@
 package no.nav.dokarkiv.core.pdfValidation;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import org.springframework.beans.BeanUtils;
-
-import java.util.Set;
 
 @Getter
 public class PdfValidatorResponseToGrafana extends PdfValidatorResponse{
@@ -35,8 +32,8 @@ public class PdfValidatorResponseToGrafana extends PdfValidatorResponse{
 	public PdfValidatorResponseToGrafana(PdfValidatorResponse response, FilDetaljer filDetaljer){
 		BeanUtils.copyProperties(this, response);
 		this.filUuid = filDetaljer.getFilUuid();
-		this.teamOrServiceUser = filDetaljer.getOpprettetKildeNavn();
-		this.arkivvariant = filDetaljer.getVariantFormat().toString();
+		this.teamOrServiceUser = filDetaljer.getOpprettetKildeNavn() == null ? "ukjent" : filDetaljer.getOpprettetKildeNavn() ;
+		this.arkivvariant = filDetaljer.getVariantFormat() == null ? "Ukjent format" : filDetaljer.getVariantFormat().toString();
 		this.dokumenttype = filDetaljer.getFiltype().toString();
 
 	}
