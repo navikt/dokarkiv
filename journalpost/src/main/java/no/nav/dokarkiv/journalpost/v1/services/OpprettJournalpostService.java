@@ -1,5 +1,7 @@
 package no.nav.dokarkiv.journalpost.v1.services;
 
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService;
@@ -7,6 +9,7 @@ import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggTO;
 import no.nav.dokarkiv.core.consumer.pdl.IdentConsumer;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
+import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentFil;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
@@ -15,6 +18,9 @@ import no.nav.dokarkiv.core.domain.entities.Sak;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
 import no.nav.dokarkiv.core.exceptions.UgyldigInputException;
+import no.nav.dokarkiv.core.pdfValidation.PdfValidatorResponse;
+import no.nav.dokarkiv.core.pdfValidation.PdfValidatorResponseToGrafana;
+import no.nav.dokarkiv.core.pdfValidation.PdfValidatorUtil;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.core.repository.sak.HentSakerRepository;
@@ -43,9 +49,13 @@ import static java.util.Collections.emptyList;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
 import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.OPPRETT;
-import static no.nav.dokarkiv.core.domain.codes.MottaksKanalCode.*;
+import static no.nav.dokarkiv.core.domain.codes.MottaksKanalCode.EESSI;
+import static no.nav.dokarkiv.core.domain.codes.MottaksKanalCode.HELSENETTET;
+import static no.nav.dokarkiv.core.domain.codes.MottaksKanalCode.SKAN_IM;
+import static no.nav.dokarkiv.core.domain.codes.MottaksKanalCode.valueOf;
 import static no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode.MIGRERING_L;
 import static no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode.MIGRERING_S;
+import static no.nav.dokarkiv.core.pdfValidation.PdfValidatorUtil.NOT_PDFA;
 import static no.nav.dokarkiv.journalpost.v1.api.Sakstype.FAGSAK;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
@@ -67,6 +77,7 @@ public class OpprettJournalpostService {
     private final AksjonsLoggService aksjonsLoggService;
     private final IdentConsumer identConsumer;
     private final HentSakerRepository hentSakerRepository;
+    private final MeterRegistry meterRegistry;
 
     @Inject
     public OpprettJournalpostService(final JoarkRepository joarkRepository,
@@ -75,7 +86,7 @@ public class OpprettJournalpostService {
                                      final DefaultSporingPopulator defaultSporingPopulator,
                                      final AksjonsLoggService aksjonsLoggService,
                                      final IdentConsumer identConsumer,
-                                     final HentSakerRepository hentSakerRepository) {
+                                     final HentSakerRepository hentSakerRepository, MeterRegistry meterRegistry) {
         this.joarkRepository = joarkRepository;
         this.dokumentFilRepository = dokumentFilRepository;
         this.opprettJournalpostApiRequestMapper = opprettJournalpostApiRequestMapper;
@@ -83,6 +94,7 @@ public class OpprettJournalpostService {
         this.aksjonsLoggService = aksjonsLoggService;
         this.identConsumer = identConsumer;
         this.hentSakerRepository = hentSakerRepository;
+        this.meterRegistry = meterRegistry;
     }
 
     public OpprettJournalpostResult opprettJournalpost(OpprettJournalpostRequest request) {
@@ -106,6 +118,8 @@ public class OpprettJournalpostService {
 
         populerAksjonslogg(journalpost.getJournalpostId(), OPPRETT);
         log.info(MDC.get(MDC_REQUEST_ID) + " har opprettet ny journalpost, journalpostId={} og status={}", journalpost.getJournalpostId(), journalpost.getJournalstatus());
+
+        validateDokumentFiler(journalpost);
 
         return new OpprettJournalpostResult(journalpost, true);
     }
@@ -167,6 +181,24 @@ public class OpprettJournalpostService {
         dokumentFilList.forEach(dokumentFilRepository::save);
     }
 
+    private void validateDokumentFiler(Journalpost journalpost) {
+		List<PdfValidatorResponseToGrafana> responses = journalpost.findAllFilDetaljer().stream().
+				map(fil -> safeValidateDokukmentFil(fil.createDokumentFil(), fil))
+                .filter(result -> result.isPresent())
+                .map(Optional::get)
+                .collect(Collectors.toList());
+
+        count(meterRegistry, responses, journalpost);
+        for(PdfValidatorResponseToGrafana response : responses) {
+            log.info("Dokument {} tilhørende journalpost={} fra {} er en {} PDF/A på format {}. Eventuelle feilmeldinger:{}",
+                    response.getFilUuid(), journalpost.getJournalpostId(),
+                    //er opprettetNavn en trygg verdi å logge?
+					//if not, hva er riktig verdi for å finne hvilken srv bruker som opprettet jp'en?
+                    journalpost.getOpprettetAvNavn(), response.validPdfToString(),
+                    response.getPdfVersion(), response.getAssertionResults());
+        }
+    }
+
     private void populerAksjonslogg(Long journalpostId, AksjonsTypeCode aksjon) {
         Journalpost journalpost = joarkRepository.findById(journalpostId).orElseThrow(JournalpostIkkeFunnetException::new);
         String bruker = null;
@@ -204,5 +236,52 @@ public class OpprettJournalpostService {
             }
         }
         return Optional.empty();
+    }
+
+
+    private  void count(MeterRegistry meterRegistry, List<PdfValidatorResponseToGrafana> validationResults, Journalpost journalpost){
+        for(PdfValidatorResponseToGrafana result : validationResults){
+            Optional<TilknyttetJournalpostSomCode> tilknyttetSom = journalpost.findTilknyttetSomByDokumentinfoId(result.getDokumentinfoId());
+            String tilknyttetSomString = tilknyttetSom.isPresent() ? tilknyttetSom.get().toString() : "UKJENT_RELASJON";
+            initOpprettJournalpostValidationCounter(meterRegistry, result, journalpost, tilknyttetSomString);
+        }
+    }
+
+    private Optional<PdfValidatorResponseToGrafana> safeValidateDokukmentFil(DokumentFil dokumentFil, FilDetaljer filDetaljer){
+        try {
+            PdfValidatorResponse response = PdfValidatorUtil.validatePdf(dokumentFil);
+            return Optional.of(new PdfValidatorResponseToGrafana(response, filDetaljer));
+        }catch(Exception e){
+            log.warn("Kunne ikke validere dokumentfil", e);
+            return Optional.empty();
+        }
+    }
+
+    //Tuner nok litt på denne når jeg oppretter grafana-boardsa
+    private void initOpprettJournalpostValidationCounter(MeterRegistry meterRegistry, PdfValidatorResponseToGrafana validationResult, Journalpost journalpost, String tilknyttetSom) {
+
+        //registrer hvor mange PDF/A'er som faktisk er pdfa (konform eller ikke)
+        Counter.builder("faktisk_PDFA")
+                .tag("faktiskPDFA", validationResult.getPdfVersion() == NOT_PDFA ? NOT_PDFA : "PDF/A")
+                .register(meterRegistry).increment();
+
+        //counter for pdfa by tema og arkiverer
+        Counter.builder("gyldig_PDFA_tema")
+                .tag("tema", journalpost.getBehandlingstema() == null ? "ukjent" : journalpost.getBehandlingstema())
+                .tag("arkiverer", journalpost.getOpprettetAvNavn() == null ? "ukjent" : journalpost.getOpprettetAvNavn())
+                .tag("gyldigPFA", validationResult.validPdfToString())
+                .register(meterRegistry).increment();
+
+        //counter for gyldig pdfa sortert på arkivvariant
+        Counter.builder("Gyldig_PDFA_arkivvariant")
+                .tag("gyldigPFA", validationResult.validPdfToString())
+                .tag("arkivvariant", tilknyttetSom)
+                .register(meterRegistry).increment();
+
+        //counter for gyldig pdfa sortert på journalposttype
+        Counter.builder("Gyldig_PDFA_journalposttype")
+                .tag("journalposttype", journalpost.getJournalposttype() == null ? "ukjent" : journalpost.getJournalposttype().toString())
+                .tag("gyldigPFA", validationResult.validPdfToString())
+                .register(meterRegistry).increment();
     }
 }

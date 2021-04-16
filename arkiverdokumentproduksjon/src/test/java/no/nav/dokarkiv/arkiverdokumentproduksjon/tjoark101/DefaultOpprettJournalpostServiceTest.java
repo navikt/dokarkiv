@@ -81,7 +81,7 @@ public class DefaultOpprettJournalpostServiceTest {
 
 		response = service.opprettJournalpost(request);
 		verify(opprettJournalpostValidator).validate(journalpost);
-		verify(dokumentFilerDelegateMock).saveUpdateValidateDokumentFiler(journalpost);
+		verify(dokumentFilerDelegateMock).saveUpdateDokumentFiler(journalpost);
 		verify(joarkRepositoryMock).save(journalpost);
 		assertThat(response.getJournalpostId(), is(JOURNALPOST_ID));
 		assertThat(response.getDokumentInfoId(), is(DOKUMENTINFO_ID));

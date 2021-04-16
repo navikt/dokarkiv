@@ -42,7 +42,6 @@ public class PdfValidatorUtil {
 	}
 
 	public static PdfValidatorResponse validatePdf(DokumentFil dokumentfil) {
-		String id = null == dokumentfil.getId() ? "INGEN_ID" : dokumentfil.getId().toString();
 		String filUuid = null == dokumentfil.getFilUuid() ? "INGEN_FILUUID" : dokumentfil.getFilUuid();
 
 		ByteArrayInputStream pdf = new ByteArrayInputStream(dokumentfil.getFil());
@@ -54,42 +53,32 @@ public class PdfValidatorUtil {
 			ValidationResult result = validator.validate(parser);
 			if (result.isCompliant()) {
 				if (isValidPdfVersion(result)) {
-					return returnCompliantValidatorResponse(true, result, id, filUuid);
+					return returnCompliantValidatorResponse(true, result, filUuid);
 				}
-				return returnCompliantValidatorResponse(false, result, id, filUuid);
+				return returnCompliantValidatorResponse(false, result, filUuid);
 			}
-			return returnNonCompliantValidatorResponse(false, result, result.getTestAssertions(), id, filUuid);
+			return returnNonCompliantValidatorResponse(false, result, result.getTestAssertions(), filUuid);
 		} catch (ModelParsingException e) {
-			return returnNotAPdfValidatorResponse(id, filUuid);
+			return returnNotAPdfValidatorResponse(filUuid);
 		} catch (Exception e) {
 			throw new InvalidPdfException("Feil under validering av PDF/A", e);
 		}
 	}
 
-	//Disse verdiene må endres etter den nye oppgaven
-	public static  void logJournalpost(Journalpost journalpost, String fildetaljer_uuid) {
-		String journalpostID = journalpost.getJournalpostId() == null ? "INGEN_ID" : journalpost.getJournalpostId().toString();
-		String tema = journalpost.getBehandlingstema() == null ? "TEMA_IKKE_SATT" : journalpost.getBehandlingstema();
-		String fagomraade = journalpost.getFagomrade() == null ? "FAGOMRAADE_IKKE_SATT" : journalpost.getFagomrade().toString();
-		String fildetaljerId = fildetaljer_uuid == null ? "INGEN_FILDETAJLER_:UUID" : fildetaljer_uuid;
-		log.info("Starter behandling av filUuid={} tilhørende Journalpost={} med dokumentbehandlingstema:{} fra fagomraade={}, ", fildetaljerId, journalpostID, tema, fagomraade);
-	}
-
-
 	private static  boolean isValidPdfVersion(ValidationResult result) {
 		return validPdfas.contains(result.getPDFAFlavour()) ? true : false;
 	}
 
-	private static  PdfValidatorResponse returnCompliantValidatorResponse(boolean isValidPdf, ValidationResult result, String id, String filuuid) {
-		return new PdfValidatorResponse(isValidPdf, true, result.getPDFAFlavour().toString(), null, id, filuuid);
+	private static  PdfValidatorResponse returnCompliantValidatorResponse(boolean isValidPdf, ValidationResult result, String filuuid) {
+		return new PdfValidatorResponse(isValidPdf, true, result.getPDFAFlavour().toString(), null, filuuid);
 	}
 
-	private static  PdfValidatorResponse returnNonCompliantValidatorResponse(boolean isValidPdf, ValidationResult result, List<TestAssertion> assertions, String id, String filuuid) {
+	private static  PdfValidatorResponse returnNonCompliantValidatorResponse(boolean isValidPdf, ValidationResult result, List<TestAssertion> assertions, String filuuid) {
 		Set<String> reasonsForFailing = assertions.stream().map(assertion -> assertion.getMessage()).collect(Collectors.toSet());
-		return new PdfValidatorResponse(isValidPdf, false, result.getPDFAFlavour().toString(), reasonsForFailing, id, filuuid);
+		return new PdfValidatorResponse(isValidPdf, false, result.getPDFAFlavour().toString(), reasonsForFailing, filuuid);
 	}
 
-	private static  PdfValidatorResponse returnNotAPdfValidatorResponse(String id, String filuuid) {
-		return new PdfValidatorResponse(false, false, NOT_PDFA, NOT_A_PDFA, id, filuuid);
+	private static  PdfValidatorResponse returnNotAPdfValidatorResponse(String filuuid) {
+		return new PdfValidatorResponse(false, false, NOT_PDFA, NOT_A_PDFA, filuuid);
 	}
 }

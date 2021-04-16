@@ -14,15 +14,6 @@ import java.util.Set;
 @Getter
 public class PdfValidatorResponse {
 
-	/*
-	antall dokumenter på ugyldig format
-	tema/fagområde
-	journalposttype (inngående, utgående, notat)
-	hvem (team/servicebruker) som arkiverer
-	Tenker vi kanskje kun bør samle statistikk på arkivvarianten (om det arkiveres flere), og kun de som har filtype "PDF" og "PDFA".
-	Hadde det gått an å lage grafana-board som også viser andel oppgitte PDFA som faktisk er pdfa, pluss det samme for oppgitte PDF?
-	Jeg tror også det er nyttig å skille på hoveddokument/vedlegg.
-	 */
 	private boolean isValidPdf;
 
 	private boolean isCompliant;
@@ -30,8 +21,6 @@ public class PdfValidatorResponse {
 	private String pdfVersion;
 
 	private Set<String> assertionResults;
-
-	private String id;
 
 	private String filUuid;
 

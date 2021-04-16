@@ -12,6 +12,7 @@ public @interface SakMetrics {
 	String value() default "";
 
 	String[] extraTags() default {};
+
 	double[] percentiles() default {};
 
 	boolean histogram() default true;
