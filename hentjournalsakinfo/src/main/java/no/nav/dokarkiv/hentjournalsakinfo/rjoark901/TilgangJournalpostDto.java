@@ -20,6 +20,7 @@ public class TilgangJournalpostDto {
 	private final JournalpostTypeCode journalpostType;
 	private final FagomradeCode fagomrade;
 	private final LocalDateTime datoOpprettet;
+	private final LocalDateTime journalfoertDato;
 	private final MottaksKanalCode mottakskanal;
 	private final SkjermingTypeCode skjerming;
 	private final String avsenderMottakerId;

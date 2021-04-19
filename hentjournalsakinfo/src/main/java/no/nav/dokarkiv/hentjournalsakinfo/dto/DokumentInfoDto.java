@@ -32,4 +32,5 @@ public class DokumentInfoDto {
 	private final DokumentKategoriCode kategori;
 	private final Boolean organInternt;
 	private final Boolean innskrPartsinnsyn;
+	private final Boolean innskrTredjepart;
 }

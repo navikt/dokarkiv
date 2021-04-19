@@ -154,7 +154,7 @@ public class JoarkRepositorySkjermetTest {
 				.getId()
 				.toString()), notNullValue());
 
-		assertTrue(joarkRepository.findJournalpostByKanalReferanseId(KANAL_REFERANSE_ID).isPresent());
+		assertTrue(joarkRepository.findTopByKanalReferanseId(KANAL_REFERANSE_ID).isPresent());
 		assertTrue(joarkRepositorySkjermet.findJournalpostByKanalReferanseId(KANAL_REFERANSE_ID).isPresent());
 	}
 
@@ -282,7 +282,7 @@ public class JoarkRepositorySkjermetTest {
 		TestTransaction.end();
 
 		TestTransaction.start();
-		assertThat(joarkRepository.findJournalpostByKanalReferanseId(KANAL_REFERANSE_ID).isPresent(), is(true));
+		assertThat(joarkRepository.findTopByKanalReferanseId(KANAL_REFERANSE_ID).isPresent(), is(true));
 		assertThat(joarkRepositorySkjermet.findJournalpostByKanalReferanseId(KANAL_REFERANSE_ID).isPresent(), is(false));
 	}
 

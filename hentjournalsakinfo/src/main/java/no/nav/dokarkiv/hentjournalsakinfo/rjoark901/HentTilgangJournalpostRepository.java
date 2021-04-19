@@ -31,6 +31,7 @@ public class HentTilgangJournalpostRepository {
                                 "jp.journalposttype, " +
                                 "jp.fagomrade, " +
                                 "cs.createdDate, " +
+                                "jp.journalDato, " +
                                 "jp.mottakskanal, " +
                                 "jp.skjermingType, " +
                                 "jp.avsenderMottakerId, " +
@@ -38,6 +39,7 @@ public class HentTilgangJournalpostRepository {
                                 "br.brukerType, " +
                                 "sr.sakId, " +
                                 "sr.fagsystem, " +
+                                "sr.feilregistrert, " +
                                 "sa.aktoerId, " +
                                 "sa.tema, " +
                                 "sa.fagsakNr, " +
@@ -48,6 +50,11 @@ public class HentTilgangJournalpostRepository {
                                 "di.dokumentInfoId, " +
                                 "di.dokumentstatus, " +
                                 "di.brevkode, " +
+                                "di.kategori, " +
+                                "di.organInternt, " +
+                                "di.innskrenketPartsinnsyn, " +
+                                "di.innskrenketPartsinnsynFraTredjepart, " +
+                                "di.kassert, " +
                                 "jr.skjermingType, " +
                                 "fd.variantFormat, " +
                                 "fd.skjermingType " +

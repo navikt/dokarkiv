@@ -2,6 +2,7 @@ package no.nav.dokarkiv.hentjournalsakinfo.rjoark901;
 
 import lombok.experimental.UtilityClass;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
+import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
@@ -26,26 +27,33 @@ class HentTilgangJournalpostDtoMapper {
 				(JournalpostTypeCode) tuple[2],
 				(FagomradeCode) tuple[3],
 				isNull(tuple[4]) ? null : ((Timestamp) tuple[4]).toLocalDateTime(),
-				(MottaksKanalCode) tuple[5],
-				(SkjermingTypeCode) tuple[6],
-				(String) tuple[7],
-				new TilgangBrukerDto((String) tuple[8],
-						(BrukerTypeCode) tuple[9]),
-				new TilgangSakDto((String) tuple[10],
-						(FagsystemCode) tuple[11],
-						(String) tuple[12],
-						(String) tuple[13],
+				isNull(tuple[5]) ? null : ((Timestamp) tuple[5]).toLocalDateTime(),
+				(MottaksKanalCode) tuple[6],
+				(SkjermingTypeCode) tuple[7],
+				(String) tuple[8],
+				new TilgangBrukerDto((String) tuple[9],
+						(BrukerTypeCode) tuple[10]),
+				new TilgangSakDto((String) tuple[11],
+						(FagsystemCode) tuple[12],
+						isNull(tuple[13]) ? null : (boolean) tuple[13],
 						(String) tuple[14],
 						(String) tuple[15],
 						(String) tuple[16],
 						(String) tuple[17],
-						isNull(tuple[18]) ? null : (LocalDateTime) tuple[18]),
-				new TilgangDokumentInfoDto(isNull(tuple[19]) ? null : ((Long) tuple[19]).toString(),
-						isNull(tuple[20]) ? null : (DokumentStatusCode) tuple[20],
-						(String) tuple[21],
-						(SkjermingTypeCode) tuple[22],
-						new TilgangVariantDto((VariantFormatCode) tuple[23],
-								(SkjermingTypeCode) tuple[24])
+						(String) tuple[18],
+						(String) tuple[19],
+						isNull(tuple[20]) ? null : (LocalDateTime) tuple[20]),
+				new TilgangDokumentInfoDto(isNull(tuple[21]) ? null : ((Long) tuple[21]).toString(),
+						isNull(tuple[22]) ? null : (DokumentStatusCode) tuple[22],
+						(String) tuple[23],
+						(DokumentKategoriCode) tuple[24],
+						isNull(tuple[25]) ? null : (boolean) tuple[25],
+						isNull(tuple[26]) ? null : (boolean) tuple[26],
+						isNull(tuple[27]) ? null : (boolean) tuple[27],
+						isNull(tuple[28]) ? null : (boolean) tuple[28],
+						(SkjermingTypeCode) tuple[29],
+						new TilgangVariantDto((VariantFormatCode) tuple[30],
+								(SkjermingTypeCode) tuple[31])
 				));
 	}
 }
