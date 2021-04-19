@@ -18,11 +18,6 @@
 			<groupId>org.verapdf</groupId>
 			<artifactId>validation-model</artifactId>
 		</dependency>
-		<!-- usikker på om vi trenger metadata-fixer, men den kan være en del av løsningen -->
-		<dependency>
-			<groupId>org.verapdf</groupId>
-			<artifactId>metadata-fixer</artifactId>
-		</dependency>
 		<!-- /pdf validator -->
 
 

@@ -18,9 +18,9 @@ import no.nav.dokarkiv.core.domain.entities.Sak;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
 import no.nav.dokarkiv.core.exceptions.UgyldigInputException;
-import no.nav.dokarkiv.core.pdfValidation.PdfValidatorResponse;
-import no.nav.dokarkiv.core.pdfValidation.PdfValidatorResponseToGrafana;
-import no.nav.dokarkiv.core.pdfValidation.PdfValidatorUtil;
+import no.nav.dokarkiv.core.pdfValidation.PDFAValidatorResponse;
+import no.nav.dokarkiv.core.pdfValidation.PDFAValidatorResponseToGrafana;
+import no.nav.dokarkiv.core.pdfValidation.PDFAValidatorUtil;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.core.repository.sak.HentSakerRepository;
@@ -55,9 +55,9 @@ import static no.nav.dokarkiv.core.domain.codes.MottaksKanalCode.SKAN_IM;
 import static no.nav.dokarkiv.core.domain.codes.MottaksKanalCode.valueOf;
 import static no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode.MIGRERING_L;
 import static no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode.MIGRERING_S;
-import static no.nav.dokarkiv.core.pdfValidation.PdfValidatorUtil.NOT_PDFA;
 import static no.nav.dokarkiv.journalpost.v1.api.Sakstype.FAGSAK;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
+import static org.verapdf.pdfa.flavours.PDFAFlavour.Specification.NO_STANDARD;
 
 @Service(value = "opprettNyJournalpostService")
 @Slf4j
@@ -182,14 +182,14 @@ public class OpprettJournalpostService {
     }
 
     private void validateDokumentFiler(Journalpost journalpost) {
-		List<PdfValidatorResponseToGrafana> responses = journalpost.findAllFilDetaljer().stream().
+		List<PDFAValidatorResponseToGrafana> responses = journalpost.findAllFilDetaljer().stream().
 				map(fil -> safeValidateDokukmentFil(fil.createDokumentFil(), fil))
                 .filter(result -> result.isPresent())
                 .map(Optional::get)
                 .collect(Collectors.toList());
 
         count(meterRegistry, responses, journalpost);
-        for(PdfValidatorResponseToGrafana response : responses) {
+        for(PDFAValidatorResponseToGrafana response : responses) {
             log.info("Dokument {} tilhørende journalpost={} fra {} er en {} PDF/A på format {}. Eventuelle feilmeldinger:{}",
                     response.getFilUuid(), journalpost.getJournalpostId(),
                     //er opprettetNavn en trygg verdi å logge?
@@ -239,30 +239,30 @@ public class OpprettJournalpostService {
     }
 
 
-    private  void count(MeterRegistry meterRegistry, List<PdfValidatorResponseToGrafana> validationResults, Journalpost journalpost){
-        for(PdfValidatorResponseToGrafana result : validationResults){
+    private  void count(MeterRegistry meterRegistry, List<PDFAValidatorResponseToGrafana> validationResults, Journalpost journalpost){
+        for(PDFAValidatorResponseToGrafana result : validationResults){
             Optional<TilknyttetJournalpostSomCode> tilknyttetSom = journalpost.findTilknyttetSomByDokumentinfoId(result.getDokumentinfoId());
             String tilknyttetSomString = tilknyttetSom.isPresent() ? tilknyttetSom.get().toString() : "UKJENT_RELASJON";
             initOpprettJournalpostValidationCounter(meterRegistry, result, journalpost, tilknyttetSomString);
         }
     }
 
-    private Optional<PdfValidatorResponseToGrafana> safeValidateDokukmentFil(DokumentFil dokumentFil, FilDetaljer filDetaljer){
+    private Optional<PDFAValidatorResponseToGrafana> safeValidateDokukmentFil(DokumentFil dokumentFil, FilDetaljer filDetaljer){
         try {
-            PdfValidatorResponse response = PdfValidatorUtil.validatePdf(dokumentFil);
-            return Optional.of(new PdfValidatorResponseToGrafana(response, filDetaljer));
+            PDFAValidatorResponse response = PDFAValidatorUtil.validatePDFA(dokumentFil);
+            return Optional.of(new PDFAValidatorResponseToGrafana(response, filDetaljer));
         }catch(Exception e){
             log.warn("Kunne ikke validere dokumentfil", e);
             return Optional.empty();
         }
     }
 
-    //Tuner nok litt på denne når jeg oppretter grafana-boardsa
-    private void initOpprettJournalpostValidationCounter(MeterRegistry meterRegistry, PdfValidatorResponseToGrafana validationResult, Journalpost journalpost, String tilknyttetSom) {
+    //Denne må nok tunes litt på når jeg starter på grafana
+    private void initOpprettJournalpostValidationCounter(MeterRegistry meterRegistry, PDFAValidatorResponseToGrafana validationResult, Journalpost journalpost, String tilknyttetSom) {
 
         //registrer hvor mange PDF/A'er som faktisk er pdfa (konform eller ikke)
         Counter.builder("faktisk_PDFA")
-                .tag("faktiskPDFA", validationResult.getPdfVersion() == NOT_PDFA ? NOT_PDFA : "PDF/A")
+                .tag("faktiskPDFA", validationResult.getPdfVersion().equals(NO_STANDARD) ? "Ikke_PDFA" : "PDF/A")
                 .register(meterRegistry).increment();
 
         //counter for pdfa by tema og arkiverer

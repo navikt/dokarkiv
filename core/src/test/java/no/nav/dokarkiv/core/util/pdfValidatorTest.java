@@ -1,160 +1,103 @@
 package no.nav.dokarkiv.core.util;
 
-import no.nav.dokarkiv.core.pdfValidation.PdfValidatorUtil;
-import no.nav.dokarkiv.core.pdfValidation.PdfValidatorResponse;
+import no.nav.dokarkiv.core.domain.entities.DokumentFil;
+import no.nav.dokarkiv.core.exceptions.InvalidPdfException;
+import no.nav.dokarkiv.core.pdfValidation.PDFAValidatorUtil;
+import no.nav.dokarkiv.core.pdfValidation.PDFAValidatorResponse;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.core.io.ClassPathResource;
+import org.verapdf.pdfa.flavours.PDFAFlavour;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.verapdf.pdfa.flavours.PDFAFlavour.*;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @RunWith(MockitoJUnitRunner.class)
 public class pdfValidatorTest {
 
-	@Test
-	public void validateTestPdfs() throws Exception {
-
-		/*
-		Disse testene må utbedres
-		 */
-		for (String fileName : getq2Filenames()) {
-			InputStream pdf = classpathToInputStream("pdf/pdf/" + fileName);
-			//PdfValidatorResponse response = PdfValidatorUtil.validatePdf(pdf);
-			//System.out.println(response.toString(fileName));
-		}
-	}
+	private final String baseString = "2021_01_06_nasjonale_tiltak_16_9_PDF_A_";
+	private final String PDF = ".pdf";
+	private final String faultString = "All properties specified in XMP form shall use either the predefined schemas defined in the XMP Specification,\n\t\t\tISO 19005-1 or this part of ISO 19005, or any extension schemas that comply with 6.6.2.3.2.";
 
 	@Test
-	public void validateArkivverketPdfs() throws Exception{
-		/*
-		Disse testene må utbedres
-		her testes alle pdf/a'ene fra arkivverket. De skal egentlig (?) kanskje (?) validere men vi godtar denne feilen for nå.
-		dvs at alle bortsett fra 2a/u skal validere mens 2a/u skal feilvalidere med en spesifikk feil
-		 */
-		for (String fileName : getArkiverketFilenames()) {
-			InputStream pdf = classpathToInputStream("pdf/Arkivverket/" + fileName);
-			//PdfValidatorResponse response = PdfValidatorUtil.validatePdf(pdf);
-			//System.out.println(response.toString(fileName));
-		}
+	public void validatePdfs() throws Exception{
+		validatePDFA(PDFA_1_A);
+		validatePDFA(PDFA_1_B);
+		validatePDFA(PDFA_2_B);
+
+		//Disse to har noen problemer. Arkivverket mener de er gyldige men veraPDF er ikke enig.
+		//Om disse to slutter å funke prøv å endre de til validatePDFA.
+		validateBadPDFA(PDFA_2_A);
+		validateBadPDFA(PDFA_2_U);
 	}
 
-	private static List<String> getArkiverketFilenames(){
-		ArrayList<String> fileNames = new ArrayList<>();
-		String baseString = "2021_01_06_nasjonale_tiltak_16_9_PDF_A_";
-		String PDF = ".pdf";
-		fileNames.add("2021_01_06_nasjonale_tiltak_16_9.pdf");
-		fileNames.add(baseString +"1a"+PDF);
-		fileNames.add(baseString +"1b"+PDF);
-		fileNames.add(baseString +"2a"+PDF);
-		fileNames.add(baseString +"2b"+PDF);
-		fileNames.add(baseString +"2u"+PDF);
-		fileNames.add("2a"+PDF);
-		fileNames.add("2u"+PDF);
-		return fileNames;
+	@Test
+	public void shouldValidateBadPDFA() throws IOException {
+		InputStream pdfFile = classpathToInputStream("pdf/pdf/453644598_skan_im_pdfa.pdf");
+		DokumentFil dokumentfil = new DokumentFil("1abc", pdfFile.readAllBytes());
+		PDFAValidatorResponse response = PDFAValidatorUtil.validatePDFA(dokumentfil);
+
+		assertThat(response.getPdfVersion(), is(PDFA_1_B));
+		assertThat(response.validPdfToString(), is("ugyldig"));
+		assertThat(response.getAssertionResults().size(), is(6));
 	}
 
-	private static List<String> getq2Filenames() {
-		ArrayList<String> fileNames = new ArrayList<>();
-		fileNames.add("Test.txt");
-		fileNames.add("DummyXml.xml");
-		fileNames.add("453643390_navno_pdfa.pdf");
-		fileNames.add("453643409_navno_pdfa.pdf");
-		fileNames.add("453643559_skan_im_pdf.pdf");
-		fileNames.add("453643863_navno_pdf.pdf");
-		fileNames.add("453644011_navno_pdfa.pdf");
-		fileNames.add("453644029_altinn_pdfa.pdf");
-		fileNames.add("453644120_eessi_pdfa.pdf");
-		fileNames.add("453644161_eessi_pdf.pdf");
-		fileNames.add("453644181_skan_im_pdfa.pdf");
-		fileNames.add("453644357_altinn_pdf.pdf");
-		fileNames.add("453644425_eessi_pdfa.pdf");
-		fileNames.add("453644598_skan_im_pdfa.pdf");
-		fileNames.add("453644612_navno_pdf.pdf");
-		fileNames.add("453644811_altinn_pdfa.pdf");
-		fileNames.add("453644979_eessi_pdf.pdf");
+	@Test
+	public void shouldValidateNotPDFA() throws IOException {
+		InputStream pdfFile = classpathToInputStream("pdf/pdf/DummyXml.xml");
+		DokumentFil dokumentfil = new DokumentFil("1abc", pdfFile.readAllBytes());
+		PDFAValidatorResponse response = PDFAValidatorUtil.validatePDFA(dokumentfil);
 
-		return fileNames;
+		assertThat(response.getPdfVersion(), is(NO_FLAVOUR));
+		assertThat(response.validPdfToString(), is("ugyldig"));
+		assertThat(response.getAssertionResults().size(), is(1));
+		List<String> resultList = new ArrayList<>(response.getAssertionResults());
+		assertThat(resultList.get(0), is("Dokumentet er ikke en PDFA"));
 	}
 
+	@Test
+	public void shouldThrowExceptionWhenNoFile(){
+		DokumentFil dokumentfil = new DokumentFil("1abc", null);
+		Assertions.assertThrows(InvalidPdfException.class, () -> PDFAValidatorUtil.validatePDFA(dokumentfil));
+	}
+
+	@Test
+	public void shouldThrowExceptionWhenNullDokukmentFil(){
+		Assertions.assertThrows(InvalidPdfException.class, () -> PDFAValidatorUtil.validatePDFA(null));
+	}
+
+	private void validatePDFA(PDFAFlavour flavour) throws IOException {
+		InputStream pdfFile = classpathToInputStream("pdf/Arkivverket/" + baseString + flavour.getId() + PDF);
+		DokumentFil dokumentfil = new DokumentFil("1abc", pdfFile.readAllBytes());
+		PDFAValidatorResponse response = PDFAValidatorUtil.validatePDFA(dokumentfil);
+		assertThat(response.getAssertionResults(), is(Collections.emptySet()));
+		assertThat(response.getPdfVersion(), is(flavour));
+		assertThat(response.validPdfToString(), is("gyldig"));
+	}
+
+	private void validateBadPDFA(PDFAFlavour flavour) throws IOException {
+		InputStream pdfFile = classpathToInputStream("pdf/Arkivverket/" + baseString + flavour.getId() + PDF);
+		DokumentFil dokumentfil = new DokumentFil("1abc", pdfFile.readAllBytes());
+		PDFAValidatorResponse response = PDFAValidatorUtil.validatePDFA(dokumentfil);
+
+		assertThat(response.getPdfVersion(), is(flavour));
+		assertThat(response.validPdfToString(), is("ugyldig"));
+		assertThat(response.getAssertionResults().size(), is(1));
+		List<String> resultList = new ArrayList<>(response.getAssertionResults());
+		assertThat(resultList.get(0), is(faultString));
+	}
 
 	private static InputStream classpathToInputStream(String classpathResource) throws IOException {
 		return new ClassPathResource(classpathResource).getInputStream();
 	}
-
-	//Gammel kode for å generere en pdf/a 1b
-		/*
-	* Testen krever noen ekstra filer
-	@Test
-	@Ignore
-	public void shouldValidateValidPDFA2b() throws Exception {
-		InputStream pdf = createValidPdf();
-
-		PdfValidatorResponse response = PdfValidator.isValidPdf(pdf);
-		assertThat(response.isValidPdf, is(true));
-		assertThat(response.pdfVersion, is("1b"));
-	}*/
-
-	/*
-	 * Denne testen oppretter en egen PDF/A-1b.
-	 * Det er lettere / bedre å teste på dokumenter vi allerede vet er på PDF/A-xy
-	public static InputStream createValidPdf() throws Exception {
-		InputStream fontStream = classpathToInputStream("pdf/ArialMT.ttf");
-		PDDocument doc = new PDDocument();
-		PDFont font = PDTrueTypeFont.loadTTF(doc, fontStream);
-
-		PDPage page = new PDPage();
-		for (int i = 0; i < 75; i++)
-			doc.addPage(page);
-
-
-		// create a page with the message where needed
-		PDPageContentStream contentStream = new PDPageContentStream(doc, page);
-		contentStream.beginText();
-		contentStream.setFont(font, 12);
-		contentStream.moveTextPositionByAmount(100, 700);
-		contentStream.drawString("Dette er en liten text");
-		contentStream.endText();
-		contentStream.saveGraphicsState();
-		contentStream.close();
-
-		PDDocumentCatalog cat = doc.getDocumentCatalog();
-		PDMetadata metadata = new PDMetadata(doc);
-		cat.setMetadata(metadata);
-
-		// jempbox version
-		XMPMetadata xmp = new XMPMetadata();
-		XMPSchemaPDFAId pdfaid = new XMPSchemaPDFAId(xmp);
-		xmp.addSchema(pdfaid);
-		pdfaid.setConformance("B");
-		pdfaid.setPart(1);
-		pdfaid.setAbout("");
-		metadata.importXMPMetadata(xmp.asByteArray());
-
-
-		// retrieve icc
-		// this file cannot be added in PDFBox, it must be downloaded
-		// its localization is http://www.color.org/sRGB_IEC61966_2_1_black_scaled.icc
-		// UNIX command to retrieve :
-		// wget _O target/svart.icc http://www.color.org/sRGB_IEC61966_2_1_black_scaled.icc
-		InputStream colorProfile = classpathToInputStream("pdf/svart.icc");
-		// create output intent
-		PDOutputIntent oi = new PDOutputIntent(doc, colorProfile);
-		oi.setInfo("sRGB IEC61966_2.1");
-		oi.setOutputCondition("sRGB IEC61966_2.1");
-		oi.setOutputConditionIdentifier("sRGB IEC61966_2.1");
-		oi.setRegistryName("http://www.color.org");
-		cat.addOutputIntent(oi);
-
-		ByteArrayOutputStream out = new ByteArrayOutputStream();
-		doc.save(out);
-		doc.close();
-		InputStream in = new ByteArrayInputStream(out.toByteArray());
-
-		return in;
-	}*/
 
 }

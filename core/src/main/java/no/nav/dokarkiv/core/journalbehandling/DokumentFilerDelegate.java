@@ -25,4 +25,6 @@ public interface DokumentFilerDelegate {
 	 */
 	void saveNewDokumentFiler(Journalpost journalpost);
 
+
+
 }
