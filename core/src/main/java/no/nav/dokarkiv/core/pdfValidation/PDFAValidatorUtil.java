@@ -1,8 +1,6 @@
 package no.nav.dokarkiv.core.pdfValidation;
 
-import io.micrometer.core.annotation.Timed;
 import lombok.extern.slf4j.Slf4j;
-import no.nav.dokarkiv.core.domain.entities.DokumentFil;
 import no.nav.dokarkiv.core.exceptions.InvalidPdfException;
 import org.verapdf.core.ModelParsingException;
 import org.verapdf.pdfa.Foundries;
@@ -15,19 +13,26 @@ import org.verapdf.pdfa.results.ValidationResult;
 
 import java.io.ByteArrayInputStream;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.Collections;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import static org.verapdf.pdfa.flavours.PDFAFlavour.*;
+import static org.verapdf.pdfa.flavours.PDFAFlavour.NO_FLAVOUR;
+import static org.verapdf.pdfa.flavours.PDFAFlavour.PDFA_1_A;
+import static org.verapdf.pdfa.flavours.PDFAFlavour.PDFA_1_B;
+import static org.verapdf.pdfa.flavours.PDFAFlavour.PDFA_2_A;
+import static org.verapdf.pdfa.flavours.PDFAFlavour.PDFA_2_B;
+import static org.verapdf.pdfa.flavours.PDFAFlavour.PDFA_2_U;
 
 @Slf4j
 public class PDFAValidatorUtil {
 
 	private static final List<PDFAFlavour> validPdfas = Arrays.asList(PDFA_1_A, PDFA_1_B, PDFA_2_A, PDFA_2_B, PDFA_2_U);
 	public static final Set NOT_A_PDFA = new HashSet<>(Arrays.asList("Dokumentet er ikke en PDFA"));
+	private static Pattern brukerPattern = Pattern.compile("[a-zA-Z]\\d{6}");
 
 	//Static init to initialize the FoundryProvider
 	static {
@@ -44,18 +49,12 @@ public class PDFAValidatorUtil {
 	 */
 
 
-	public static PDFAValidatorResponse validatePDFA(DokumentFil dokumentfil) {
-		if (dokumentfil == null) {
-			throw new InvalidPdfException("Dokumentfil er null!");
+	public static PDFAValidatorResponse validatePDFA(byte[] fil, String filUuid) {
+		if (fil == null) {
+			throw new InvalidPdfException("Filen er null!");
 		}
 
-		String filUuid = null == dokumentfil.getFilUuid() ? "INGEN_FILUUID" : dokumentfil.getFilUuid();
-
-		if (dokumentfil.getFil() == null) {
-			throw new InvalidPdfException("FilUuid " + filUuid + ".getFil == null");
-		}
-
-		try (PDFAParser parser = Foundries.defaultInstance().createParser(new ByteArrayInputStream(dokumentfil.getFil()))) {
+		try (PDFAParser parser = Foundries.defaultInstance().createParser(new ByteArrayInputStream(fil))) {
 			PDFAValidator validator = Foundries.defaultInstance().createValidator(parser.getFlavour(), false);
 			ValidationResult result = validator.validate(parser);
 			if (result.isCompliant()) {
@@ -88,4 +87,9 @@ public class PDFAValidatorUtil {
 	private static PDFAValidatorResponse returnNotAPdfValidatorResponse(String filuuid) {
 		return new PDFAValidatorResponse(false, false, NO_FLAVOUR, NOT_A_PDFA, filuuid);
 	}
+
+	public static boolean isServiceuser(String user) {
+		return !brukerPattern.matcher(user).matches();
+	}
+
 }

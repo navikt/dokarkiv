@@ -1,9 +1,8 @@
 package no.nav.dokarkiv.core.util;
 
-import no.nav.dokarkiv.core.domain.entities.DokumentFil;
 import no.nav.dokarkiv.core.exceptions.InvalidPdfException;
-import no.nav.dokarkiv.core.pdfValidation.PDFAValidatorUtil;
 import no.nav.dokarkiv.core.pdfValidation.PDFAValidatorResponse;
+import no.nav.dokarkiv.core.pdfValidation.PDFAValidatorUtil;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 import org.junit.runner.RunWith;
@@ -11,16 +10,19 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.core.io.ClassPathResource;
 import org.verapdf.pdfa.flavours.PDFAFlavour;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.verapdf.pdfa.flavours.PDFAFlavour.*;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.regex.Pattern;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.verapdf.pdfa.flavours.PDFAFlavour.PDFA_1_A;
+import static org.verapdf.pdfa.flavours.PDFAFlavour.PDFA_1_B;
+import static org.verapdf.pdfa.flavours.PDFAFlavour.PDFA_2_A;
+import static org.verapdf.pdfa.flavours.PDFAFlavour.PDFA_2_B;
+import static org.verapdf.pdfa.flavours.PDFAFlavour.PDFA_2_U;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PDFAValidatorUtilTest {
@@ -44,8 +46,7 @@ public class PDFAValidatorUtilTest {
 	@Test
 	public void shouldValidateBadPDFA() throws IOException {
 		InputStream pdfFile = classpathToInputStream("pdf/pdf/453644598_skan_im_pdfa.pdf");
-		DokumentFil dokumentfil = new DokumentFil("1abc", pdfFile.readAllBytes());
-		PDFAValidatorResponse response = PDFAValidatorUtil.validatePDFA(dokumentfil);
+		PDFAValidatorResponse response = PDFAValidatorUtil.validatePDFA(pdfFile.readAllBytes(), "filUuid123");
 
 		assertThat(response.getPdfVersion(), is(PDFA_1_B));
 		assertThat(response.validPdfToString(), is("ugyldig"));
@@ -53,43 +54,23 @@ public class PDFAValidatorUtilTest {
 	}
 
 	@Test
-	public void shouldValidateNotPDFA() throws IOException {
-		InputStream pdfFile = classpathToInputStream("pdf/pdf/DummyXml.xml");
-		DokumentFil dokumentfil = new DokumentFil("1abc", pdfFile.readAllBytes());
-		PDFAValidatorResponse response = PDFAValidatorUtil.validatePDFA(dokumentfil);
-
-		assertThat(response.getPdfVersion(), is(NO_FLAVOUR));
-		assertThat(response.validPdfToString(), is("ugyldig"));
-		assertThat(response.getAssertionResults().size(), is(1));
-		List<String> resultList = new ArrayList<>(response.getAssertionResults());
-		assertThat(resultList.get(0), is("Dokumentet er ikke en PDFA"));
-	}
-
-	@Test
 	public void shouldThrowExceptionWhenNoFile(){
-		DokumentFil dokumentfil = new DokumentFil("1abc", null);
-		Assertions.assertThrows(InvalidPdfException.class, () -> PDFAValidatorUtil.validatePDFA(dokumentfil));
-	}
-
-	@Test
-	public void shouldThrowExceptionWhenNullDokukmentFil(){
-		Assertions.assertThrows(InvalidPdfException.class, () -> PDFAValidatorUtil.validatePDFA(null));
+		Assertions.assertThrows(InvalidPdfException.class, () -> PDFAValidatorUtil.validatePDFA(null, "filUuid123"));
 	}
 
 	@Test
 	public void validateIsSrv(){
-		Pattern pattern = Pattern.compile("[a-zA-Z]\\d{6}");
-		String test1 = "srvdigihot";
-		String test2 = "B123456";
+		String serviceuser ="srvDigihot";
+		String bruker ="B123456";
 
-		assertThat(pattern.matcher(test1).matches(), is(false));
-		assertThat(pattern.matcher(test2).matches(), is(false));
+		assertThat(PDFAValidatorUtil.isServiceuser(bruker), is(false));
+		assertThat(PDFAValidatorUtil.isServiceuser(serviceuser), is(true));
+
 	}
 
 	private void validatePDFA(PDFAFlavour flavour) throws IOException {
 		InputStream pdfFile = classpathToInputStream("pdf/Arkivverket/" + baseString + flavour.getId() + PDF);
-		DokumentFil dokumentfil = new DokumentFil("1abc", pdfFile.readAllBytes());
-		PDFAValidatorResponse response = PDFAValidatorUtil.validatePDFA(dokumentfil);
+		PDFAValidatorResponse response = PDFAValidatorUtil.validatePDFA(pdfFile.readAllBytes(), "filUuid123");
 		assertThat(response.getAssertionResults(), is(Collections.emptySet()));
 		assertThat(response.getPdfVersion(), is(flavour));
 		assertThat(response.validPdfToString(), is("gyldig"));
@@ -97,8 +78,7 @@ public class PDFAValidatorUtilTest {
 
 	private void validateBadPDFA(PDFAFlavour flavour) throws IOException {
 		InputStream pdfFile = classpathToInputStream("pdf/Arkivverket/" + baseString + flavour.getId() + PDF);
-		DokumentFil dokumentfil = new DokumentFil("1abc", pdfFile.readAllBytes());
-		PDFAValidatorResponse response = PDFAValidatorUtil.validatePDFA(dokumentfil);
+		PDFAValidatorResponse response = PDFAValidatorUtil.validatePDFA(pdfFile.readAllBytes(), "filUuid123");
 
 		assertThat(response.getPdfVersion(), is(flavour));
 		assertThat(response.validPdfToString(), is("ugyldig"));
