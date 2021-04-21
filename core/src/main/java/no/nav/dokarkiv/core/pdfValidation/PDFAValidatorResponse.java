@@ -13,13 +13,9 @@ import java.util.Set;
 public class PDFAValidatorResponse {
 
 	private boolean isValidPdf;
-
 	private boolean isCompliant;
-
 	private PDFAFlavour pdfVersion;
-
 	private Set<String> assertionResults;
-
 	private String filUuid;
 
 

@@ -20,9 +20,10 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Pattern;
 
 @RunWith(MockitoJUnitRunner.class)
-public class pdfValidatorTest {
+public class PDFAValidatorUtilTest {
 
 	private final String baseString = "2021_01_06_nasjonale_tiltak_16_9_PDF_A_";
 	private final String PDF = ".pdf";
@@ -73,6 +74,16 @@ public class pdfValidatorTest {
 	@Test
 	public void shouldThrowExceptionWhenNullDokukmentFil(){
 		Assertions.assertThrows(InvalidPdfException.class, () -> PDFAValidatorUtil.validatePDFA(null));
+	}
+
+	@Test
+	public void validateIsSrv(){
+		Pattern pattern = Pattern.compile("[a-zA-Z]\\d{6}");
+		String test1 = "srvdigihot";
+		String test2 = "B123456";
+
+		assertThat(pattern.matcher(test1).matches(), is(false));
+		assertThat(pattern.matcher(test2).matches(), is(false));
 	}
 
 	private void validatePDFA(PDFAFlavour flavour) throws IOException {

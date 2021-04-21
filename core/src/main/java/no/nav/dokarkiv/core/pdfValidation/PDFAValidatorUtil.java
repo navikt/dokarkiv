@@ -27,11 +27,10 @@ import static org.verapdf.pdfa.flavours.PDFAFlavour.*;
 public class PDFAValidatorUtil {
 
 	private static final List<PDFAFlavour> validPdfas = Arrays.asList(PDFA_1_A, PDFA_1_B, PDFA_2_A, PDFA_2_B, PDFA_2_U);
-	public static final String NOT_PDFA = "IKKE_PDFA";
 	public static final Set NOT_A_PDFA = new HashSet<>(Arrays.asList("Dokumentet er ikke en PDFA"));
 
 	//Static init to initialize the FoundryProvider
-	static{
+	static {
 		VeraGreenfieldFoundryProvider.initialise();
 	}
 
@@ -45,19 +44,18 @@ public class PDFAValidatorUtil {
 	 */
 
 
-	@Timed(value = "validatePDFA", percentiles = {0.5, 0.95})
 	public static PDFAValidatorResponse validatePDFA(DokumentFil dokumentfil) {
-		if(dokumentfil == null ){
+		if (dokumentfil == null) {
 			throw new InvalidPdfException("Dokumentfil er null!");
 		}
 
 		String filUuid = null == dokumentfil.getFilUuid() ? "INGEN_FILUUID" : dokumentfil.getFilUuid();
 
-		if(dokumentfil.getFil() == null ){
-			throw new InvalidPdfException("FilUuid "+filUuid + ".getFil == null");
+		if (dokumentfil.getFil() == null) {
+			throw new InvalidPdfException("FilUuid " + filUuid + ".getFil == null");
 		}
-		ByteArrayInputStream pdf = new ByteArrayInputStream(dokumentfil.getFil());
-		try (PDFAParser parser = Foundries.defaultInstance().createParser(pdf)) {
+
+		try (PDFAParser parser = Foundries.defaultInstance().createParser(new ByteArrayInputStream(dokumentfil.getFil()))) {
 			PDFAValidator validator = Foundries.defaultInstance().createValidator(parser.getFlavour(), false);
 			ValidationResult result = validator.validate(parser);
 			if (result.isCompliant()) {
@@ -74,7 +72,7 @@ public class PDFAValidatorUtil {
 		}
 	}
 
-	private static  boolean isValidPdfVersion(ValidationResult result) {
+	private static boolean isValidPdfVersion(ValidationResult result) {
 		return validPdfas.contains(result.getPDFAFlavour()) ? true : false;
 	}
 

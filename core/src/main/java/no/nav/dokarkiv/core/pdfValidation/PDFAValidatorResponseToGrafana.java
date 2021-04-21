@@ -7,15 +7,10 @@ import org.springframework.beans.BeanUtils;
 @Getter
 public class PDFAValidatorResponseToGrafana extends PDFAValidatorResponse {
 
-
 	private String filUuid;
-
 	private String teamOrServiceUser;
-
 	private String arkivvariant;
-
 	private String dokumenttype;
-
 	private long dokumentinfoId;
 
 	public PDFAValidatorResponseToGrafana(PDFAValidatorResponse response, FilDetaljer filDetaljer){
