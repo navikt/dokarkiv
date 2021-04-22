@@ -58,16 +58,6 @@ public class PDFAValidatorUtilTest {
 		Assertions.assertThrows(InvalidPdfException.class, () -> PDFAValidatorUtil.validatePDFA(null, "filUuid123"));
 	}
 
-	@Test
-	public void validateIsSrv(){
-		String serviceuser ="srvDigihot";
-		String bruker ="B123456";
-
-		assertThat(PDFAValidatorUtil.isServiceuser(bruker), is(false));
-		assertThat(PDFAValidatorUtil.isServiceuser(serviceuser), is(true));
-
-	}
-
 	private void validatePDFA(PDFAFlavour flavour) throws IOException {
 		InputStream pdfFile = classpathToInputStream("pdf/Arkivverket/" + baseString + flavour.getId() + PDF);
 		PDFAValidatorResponse response = PDFAValidatorUtil.validatePDFA(pdfFile.readAllBytes(), "filUuid123");

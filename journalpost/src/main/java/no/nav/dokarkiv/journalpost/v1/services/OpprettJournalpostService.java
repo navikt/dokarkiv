@@ -106,7 +106,7 @@ public class OpprettJournalpostService {
 		populerAksjonslogg(journalpost.getJournalpostId(), OPPRETT);
 		log.info(MDC.get(MDC_REQUEST_ID) + " har opprettet ny journalpost, journalpostId={} og status={}", journalpost.getJournalpostId(), journalpost.getJournalstatus());
 
-		opprettJournalpostPDFAUtils.validateAndLogPDFA(journalpost);
+		opprettJournalpostPDFAUtils.safeValidateAndLogPDFA(journalpost);
 
 		return new OpprettJournalpostResult(journalpost, true);
 	}

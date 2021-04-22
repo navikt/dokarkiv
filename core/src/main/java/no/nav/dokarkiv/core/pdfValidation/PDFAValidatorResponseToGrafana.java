@@ -10,16 +10,13 @@ import java.util.regex.Pattern;
 public class PDFAValidatorResponseToGrafana extends PDFAValidatorResponse {
 
 	private String filUuid;
-	private String teamOrServiceUser;
 	private String arkivvariant;
 	private String dokumenttype;
 	private long dokumentinfoId;
-	private Pattern navAnsattPattern = Pattern.compile("[a-zA-Z]\\d{6}");
 
 	public PDFAValidatorResponseToGrafana(PDFAValidatorResponse response, FilDetaljer filDetaljer){
 		BeanUtils.copyProperties(this, response);
 		this.filUuid = filDetaljer.getFilUuid();
-		this.teamOrServiceUser = filDetaljer.getOpprettetKildeNavn() == null ? "null" : PDFAValidatorUtil.isServiceuser(filDetaljer.getOpprettetKildeNavn()) ? filDetaljer.getOpprettetKildeNavn() : "NAV-ansatt" ;
 		this.arkivvariant = filDetaljer.getVariantFormat() == null ? "Ukjent format" : filDetaljer.getVariantFormat().toString();
 		this.dokumenttype = filDetaljer.getFiltype().toString();
 		this.dokumentinfoId = filDetaljer.getDokumentInfo().getDokumentInfoId();

@@ -32,7 +32,6 @@ public class PDFAValidatorUtil {
 
 	private static final List<PDFAFlavour> validPdfas = Arrays.asList(PDFA_1_A, PDFA_1_B, PDFA_2_A, PDFA_2_B, PDFA_2_U);
 	public static final Set NOT_A_PDFA = new HashSet<>(Arrays.asList("Dokumentet er ikke en PDFA"));
-	private static Pattern brukerPattern = Pattern.compile("[a-zA-Z]\\d{6}");
 
 	//Static init to initialize the FoundryProvider
 	static {
@@ -86,10 +85,6 @@ public class PDFAValidatorUtil {
 
 	private static PDFAValidatorResponse returnNotAPdfValidatorResponse(String filuuid) {
 		return new PDFAValidatorResponse(false, false, NO_FLAVOUR, NOT_A_PDFA, filuuid);
-	}
-
-	public static boolean isServiceuser(String user) {
-		return !brukerPattern.matcher(user).matches();
 	}
 
 }
