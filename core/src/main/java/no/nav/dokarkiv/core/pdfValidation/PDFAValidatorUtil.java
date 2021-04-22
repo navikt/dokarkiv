@@ -1,6 +1,7 @@
 package no.nav.dokarkiv.core.pdfValidation;
 
 import lombok.extern.slf4j.Slf4j;
+import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.exceptions.InvalidPdfException;
 import org.verapdf.core.ModelParsingException;
 import org.verapdf.pdfa.Foundries;
@@ -17,7 +18,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static org.verapdf.pdfa.flavours.PDFAFlavour.NO_FLAVOUR;
@@ -48,23 +48,23 @@ public class PDFAValidatorUtil {
 	 */
 
 
-	public static PDFAValidatorResponse validatePDFA(byte[] fil, String filUuid) {
-		if (fil == null) {
+	public static PDFAValidatorResponse validatePDFA(FilDetaljer filDetaljer) {
+		if (filDetaljer == null || filDetaljer.getFileContent() == null) {
 			throw new InvalidPdfException("Filen er null!");
 		}
 
-		try (PDFAParser parser = Foundries.defaultInstance().createParser(new ByteArrayInputStream(fil))) {
+		try (PDFAParser parser = Foundries.defaultInstance().createParser(new ByteArrayInputStream(filDetaljer.getFileContent()))) {
 			PDFAValidator validator = Foundries.defaultInstance().createValidator(parser.getFlavour(), false);
 			ValidationResult result = validator.validate(parser);
 			if (result.isCompliant()) {
 				if (isValidPdfVersion(result)) {
-					return returnCompliantValidatorResponse(true, result, filUuid);
+					return returnCompliantValidatorResponse(true, result, filDetaljer);
 				}
-				return returnCompliantValidatorResponse(false, result, filUuid);
+				return returnCompliantValidatorResponse(false, result, filDetaljer);
 			}
-			return returnNonCompliantValidatorResponse(false, result, result.getTestAssertions(), filUuid);
+			return returnNonCompliantValidatorResponse(false, result, result.getTestAssertions(), filDetaljer);
 		} catch (ModelParsingException e) {
-			return returnNotAPdfValidatorResponse(filUuid);
+			return returnNotAPdfValidatorResponse(filDetaljer);
 		} catch (Exception e) {
 			throw new InvalidPdfException("Feil under validering av PDF/A", e);
 		}
@@ -74,17 +74,17 @@ public class PDFAValidatorUtil {
 		return validPdfas.contains(result.getPDFAFlavour()) ? true : false;
 	}
 
-	private static PDFAValidatorResponse returnCompliantValidatorResponse(boolean isValidPdf, ValidationResult result, String filuuid) {
-		return new PDFAValidatorResponse(isValidPdf, true, result.getPDFAFlavour(), Collections.emptySet(), filuuid);
+	private static PDFAValidatorResponse returnCompliantValidatorResponse(boolean isValidPdf, ValidationResult result, FilDetaljer filDetaljer) {
+		return new PDFAValidatorResponse(isValidPdf, true, result.getPDFAFlavour(), Collections.emptySet(), filDetaljer);
 	}
 
-	private static PDFAValidatorResponse returnNonCompliantValidatorResponse(boolean isValidPdf, ValidationResult result, List<TestAssertion> assertions, String filuuid) {
+	private static PDFAValidatorResponse returnNonCompliantValidatorResponse(boolean isValidPdf, ValidationResult result, List<TestAssertion> assertions, FilDetaljer filDetaljer) {
 		Set<String> reasonsForFailing = assertions.stream().map(assertion -> assertion.getMessage()).collect(Collectors.toSet());
-		return new PDFAValidatorResponse(isValidPdf, false, result.getPDFAFlavour(), reasonsForFailing, filuuid);
+		return new PDFAValidatorResponse(isValidPdf, false, result.getPDFAFlavour(), reasonsForFailing, filDetaljer);
 	}
 
-	private static PDFAValidatorResponse returnNotAPdfValidatorResponse(String filuuid) {
-		return new PDFAValidatorResponse(false, false, NO_FLAVOUR, NOT_A_PDFA, filuuid);
+	private static PDFAValidatorResponse returnNotAPdfValidatorResponse(FilDetaljer filDetaljer) {
+		return new PDFAValidatorResponse(false, false, NO_FLAVOUR, NOT_A_PDFA, filDetaljer);
 	}
 
 }

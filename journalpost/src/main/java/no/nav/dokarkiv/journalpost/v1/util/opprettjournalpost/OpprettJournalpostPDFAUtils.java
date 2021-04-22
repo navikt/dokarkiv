@@ -7,7 +7,6 @@ import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.pdfValidation.PDFAValidatorResponse;
-import no.nav.dokarkiv.core.pdfValidation.PDFAValidatorResponseToGrafana;
 import no.nav.dokarkiv.core.pdfValidation.PDFAValidatorUtil;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
@@ -39,7 +38,8 @@ public class OpprettJournalpostPDFAUtils {
 		//denne tryen skal være veldig unødvendig, men beholder den inntil videre.
 		//Det er ikke så farlig om det er et dokument vi ikke får validert, det er verre om opprettjournalpost slutter å funke..
 		try {
-			List<PDFAValidatorResponseToGrafana> responses = journalpost.findAllFilDetaljer().stream()
+
+			List<PDFAValidatorResponse> responses = journalpost.findAllFilDetaljer().stream()
 					.filter(fildetaljer -> fildetaljer.getFiltype() == PDFA || fildetaljer.getFiltype() == PDF)
 					.map(filDetaljer -> safeValidateDokumentFil(filDetaljer))
 					.filter(result -> result.isPresent())
@@ -50,7 +50,7 @@ public class OpprettJournalpostPDFAUtils {
 
 			incrementMetrics(responses, journalpost, arkivar);
 
-			for (PDFAValidatorResponseToGrafana response : responses) {
+			for (PDFAValidatorResponse response : responses) {
 				log.info("Dokument {} tilhørende journalpost={} fra {} er en {} PDF/A på format {}. Eventuelle feilmeldinger:{}",
 						response.getFilUuid(), journalpost.getJournalpostId(),
 						arkivar, response.validPdfToString(),
@@ -62,18 +62,17 @@ public class OpprettJournalpostPDFAUtils {
 	}
 
 
-	private void incrementMetrics(List<PDFAValidatorResponseToGrafana> validationResults, Journalpost journalpost, String userID) {
-		for (PDFAValidatorResponseToGrafana result : validationResults) {
+	private void incrementMetrics(List<PDFAValidatorResponse> validationResults, Journalpost journalpost, String userID) {
+		for (PDFAValidatorResponse result : validationResults) {
 			Optional<TilknyttetJournalpostSomCode> tilknyttetSom = journalpost.findTilknyttetSomByDokumentinfoId(result.getDokumentinfoId());
 			String tilknyttetSomString = tilknyttetSom.isPresent() ? tilknyttetSom.get().toString() : "UKJENT_RELASJON";
 			initOpprettJournalpostValidationCounter(meterRegistry, result, journalpost, tilknyttetSomString, userID);
 		}
 	}
 
-	public Optional<PDFAValidatorResponseToGrafana> safeValidateDokumentFil(FilDetaljer filDetaljer) {
+	public Optional<PDFAValidatorResponse> safeValidateDokumentFil(FilDetaljer filDetaljer) {
 		try {
-			PDFAValidatorResponse response = PDFAValidatorUtil.validatePDFA(filDetaljer.getFileContent(), filDetaljer.getFilUuid());
-			return Optional.of(new PDFAValidatorResponseToGrafana(response, filDetaljer));
+			return Optional.of(PDFAValidatorUtil.validatePDFA(filDetaljer));
 		} catch (Exception e) {
 			log.warn("Kunne ikke validere dokumentfil", e);
 			return Optional.empty();
@@ -81,7 +80,7 @@ public class OpprettJournalpostPDFAUtils {
 	}
 
 	//Denne må nok tunes litt på når jeg starter på grafana
-	private void initOpprettJournalpostValidationCounter(MeterRegistry meterRegistry, PDFAValidatorResponseToGrafana validationResult,
+	private void initOpprettJournalpostValidationCounter(MeterRegistry meterRegistry, PDFAValidatorResponse validationResult,
 														 Journalpost journalpost, String tilknyttetSom, String arkivar) {
 
 		//registrer hvor mange PDF/A'er som faktisk er pdfa (konform eller ikke)

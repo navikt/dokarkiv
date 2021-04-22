@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.core.util;
 
+import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.exceptions.InvalidPdfException;
 import no.nav.dokarkiv.core.pdfValidation.PDFAValidatorResponse;
 import no.nav.dokarkiv.core.pdfValidation.PDFAValidatorUtil;
@@ -32,7 +33,7 @@ public class PDFAValidatorUtilTest {
 	private final String faultString = "All properties specified in XMP form shall use either the predefined schemas defined in the XMP Specification,\n\t\t\tISO 19005-1 or this part of ISO 19005, or any extension schemas that comply with 6.6.2.3.2.";
 
 	@Test
-	public void validatePdfs() throws Exception{
+	public void validatePdfs() throws Exception {
 		validatePDFA(PDFA_1_A);
 		validatePDFA(PDFA_1_B);
 		validatePDFA(PDFA_2_B);
@@ -46,7 +47,7 @@ public class PDFAValidatorUtilTest {
 	@Test
 	public void shouldValidateBadPDFA() throws IOException {
 		InputStream pdfFile = classpathToInputStream("pdf/pdf/453644598_skan_im_pdfa.pdf");
-		PDFAValidatorResponse response = PDFAValidatorUtil.validatePDFA(pdfFile.readAllBytes(), "filUuid123");
+		PDFAValidatorResponse response = PDFAValidatorUtil.validatePDFA(createFilDetaljer(pdfFile.readAllBytes()));
 
 		assertThat(response.getPdfVersion(), is(PDFA_1_B));
 		assertThat(response.validPdfToString(), is("ugyldig"));
@@ -54,13 +55,13 @@ public class PDFAValidatorUtilTest {
 	}
 
 	@Test
-	public void shouldThrowExceptionWhenNoFile(){
-		Assertions.assertThrows(InvalidPdfException.class, () -> PDFAValidatorUtil.validatePDFA(null, "filUuid123"));
+	public void shouldThrowExceptionWhenNoFile() {
+		Assertions.assertThrows(InvalidPdfException.class, () -> PDFAValidatorUtil.validatePDFA(createFilDetaljer(null)));
 	}
 
 	private void validatePDFA(PDFAFlavour flavour) throws IOException {
 		InputStream pdfFile = classpathToInputStream("pdf/Arkivverket/" + baseString + flavour.getId() + PDF);
-		PDFAValidatorResponse response = PDFAValidatorUtil.validatePDFA(pdfFile.readAllBytes(), "filUuid123");
+		PDFAValidatorResponse response = PDFAValidatorUtil.validatePDFA(createFilDetaljer(pdfFile.readAllBytes()));
 		assertThat(response.getAssertionResults(), is(Collections.emptySet()));
 		assertThat(response.getPdfVersion(), is(flavour));
 		assertThat(response.validPdfToString(), is("gyldig"));
@@ -68,13 +69,19 @@ public class PDFAValidatorUtilTest {
 
 	private void validateBadPDFA(PDFAFlavour flavour) throws IOException {
 		InputStream pdfFile = classpathToInputStream("pdf/Arkivverket/" + baseString + flavour.getId() + PDF);
-		PDFAValidatorResponse response = PDFAValidatorUtil.validatePDFA(pdfFile.readAllBytes(), "filUuid123");
+		PDFAValidatorResponse response = PDFAValidatorUtil.validatePDFA(createFilDetaljer(pdfFile.readAllBytes()));
 
 		assertThat(response.getPdfVersion(), is(flavour));
 		assertThat(response.validPdfToString(), is("ugyldig"));
 		assertThat(response.getAssertionResults().size(), is(1));
 		List<String> resultList = new ArrayList<>(response.getAssertionResults());
 		assertThat(resultList.get(0), is(faultString));
+	}
+
+	private FilDetaljer createFilDetaljer(byte[] fil) {
+		FilDetaljer detaljer = new FilDetaljer();
+		detaljer.setFileContent(fil);
+		return detaljer;
 	}
 
 	private static InputStream classpathToInputStream(String classpathResource) throws IOException {
