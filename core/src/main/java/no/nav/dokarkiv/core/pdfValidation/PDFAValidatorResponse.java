@@ -18,6 +18,7 @@ public class PDFAValidatorResponse {
 	private String arkivvariant;
 	private String dokumenttype;
 	private long dokumentinfoId;
+	private String filtype;
 
 	public PDFAValidatorResponse(boolean isValidPdf, boolean isCompliant, PDFAFlavour pdfVersion, Set<String> assertionResults, FilDetaljer filDetaljer) {
 		this.isValidPdf = isValidPdf;
@@ -28,6 +29,7 @@ public class PDFAValidatorResponse {
 		this.arkivvariant = filDetaljer.getVariantFormat() == null ? "Ukjent format" : filDetaljer.getVariantFormat().toString();
 		this.dokumenttype = filDetaljer.getFiltype() == null ? "UKJENT" : filDetaljer.getFiltype().toString();
 		this.dokumentinfoId = safeDeterminedokumentinfoId(filDetaljer.getDokumentInfo());
+		this.filtype = filDetaljer.getFiltype() == null ? "UKJENT" : filDetaljer.getFiltype().toString();
 	}
 
 	private long safeDeterminedokumentinfoId(DokumentInfo dokumentInfo) {

@@ -18,8 +18,6 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
-import static no.nav.dokarkiv.core.domain.codes.FilTypeCode.PDF;
-import static no.nav.dokarkiv.core.domain.codes.FilTypeCode.PDFA;
 import static org.verapdf.pdfa.flavours.PDFAFlavour.Specification.NO_STANDARD;
 
 @Component
@@ -38,16 +36,14 @@ public class OpprettJournalpostPDFAUtils {
 		//denne tryen skal være veldig unødvendig, men beholder den inntil videre.
 		//Det er ikke så farlig om det er et dokument vi ikke får validert, det er verre om opprettjournalpost slutter å funke..
 		try {
-
 			List<PDFAValidatorResponse> responses = journalpost.findAllFilDetaljer().stream()
-					.filter(fildetaljer -> fildetaljer.getFiltype() == PDFA || fildetaljer.getFiltype() == PDF)
+					.filter(fildetaljer -> fildetaljer.isAPdf())
 					.map(filDetaljer -> safeValidateDokumentFil(filDetaljer))
 					.filter(result -> result.isPresent())
 					.map(Optional::get)
 					.collect(Collectors.toList());
 
 			String arkivar = determineArkivar(MDC.get(MDC_CONSUMER_ID));
-
 			incrementMetrics(responses, journalpost, arkivar);
 
 			for (PDFAValidatorResponse response : responses) {
@@ -86,11 +82,12 @@ public class OpprettJournalpostPDFAUtils {
 		//registrer hvor mange PDF/A'er som faktisk er pdfa (konform eller ikke)
 		Counter.builder("dok_faktisk_PDFA")
 				.tag("faktiskPDFA", (NO_STANDARD.equals(validationResult.getPdfVersion()) || validationResult.getPdfVersion() == null) ? "Ikke_PDFA" : "PDF/A")
+				.tag("oppgittSom", validationResult.getFiltype())
 				.register(meterRegistry).increment();
 
 		//counter for gyldige pdfa by arkivar
 		Counter.builder("dok_gyldig_PDFA_arkiverer")
-				.tag("arkiverer", arkivar)
+				.tag("arkivar", arkivar)
 				.tag("gyldigPDFA", validationResult.validPdfToString())
 				.register(meterRegistry).increment();
 
