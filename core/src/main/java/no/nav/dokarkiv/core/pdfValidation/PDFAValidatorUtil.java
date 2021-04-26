@@ -54,7 +54,7 @@ public class PDFAValidatorUtil {
 		}
 
 		try (PDFAParser parser = Foundries.defaultInstance().createParser(new ByteArrayInputStream(filDetaljer.getFileContent()))) {
-			PDFAValidator validator = Foundries.defaultInstance().createValidator(parser.getFlavour(), false);
+			PDFAValidator validator = Foundries.defaultInstance().createFailFastValidator(parser.getFlavour(), 1);
 			ValidationResult result = validator.validate(parser);
 			if (result.isCompliant()) {
 				if (isValidPdfVersion(result)) {

@@ -12,15 +12,12 @@
 	<artifactId>core</artifactId>
 
 	<dependencies>
-
 		<!-- pdf validator -->
 		<dependency>
 			<groupId>org.verapdf</groupId>
 			<artifactId>validation-model</artifactId>
 		</dependency>
 		<!-- /pdf validator -->
-
-
 
 		<dependency>
 			<groupId>com.auth0</groupId>
