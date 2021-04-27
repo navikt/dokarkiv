@@ -51,7 +51,7 @@ public class PDFAValidatorUtilTest {
 
 		assertThat(response.getPdfVersion(), is(PDFA_1_B));
 		assertThat(response.validPdfToString(), is("ugyldig"));
-		assertThat(response.getAssertionResults().size(), is(1));
+		assertThat(response.getAssertionResults().size(), is(6));
 	}
 
 	@Test
