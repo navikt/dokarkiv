@@ -44,12 +44,13 @@ public class OpprettJournalpostPDFAUtils {
 					.collect(Collectors.toList());
 
 			String arkivar = determineArkivar(MDC.get(MDC_CONSUMER_ID));
-			incrementMetrics(responses, journalpost, arkivar);
 
 			for (PDFAValidatorResponse response : responses) {
-				log.info("Dokument {} tilhørende journalpost={} fra {} er en {} PDF/A på format {}. Eventuelle feilmeldinger:{}",
+				String tilknyttetSom = determineTilknyttetSom(journalpost, response);
+				initOpprettJournalpostValidationCounter(meterRegistry, response, journalpost, tilknyttetSom, arkivar);
+				log.info("Dokument {} knyttet til journalpost={} som={} fra={} er en {} PDF/A på format {}. Eventuelle feilmeldinger:{}",
 						response.getFilUuid(), journalpost.getJournalpostId(),
-						arkivar, response.validPdfToString(),
+						tilknyttetSom, arkivar, response.validPdfToString(),
 						response.getPdfVersion(), response.getAssertionResults());
 			}
 		} catch (Exception e){
@@ -57,14 +58,6 @@ public class OpprettJournalpostPDFAUtils {
 		}
 	}
 
-
-	private void incrementMetrics(List<PDFAValidatorResponse> validationResults, Journalpost journalpost, String userID) {
-		for (PDFAValidatorResponse result : validationResults) {
-			Optional<TilknyttetJournalpostSomCode> tilknyttetSom = journalpost.findTilknyttetSomByDokumentinfoId(result.getDokumentinfoId());
-			String tilknyttetSomString = tilknyttetSom.isPresent() ? tilknyttetSom.get().toString() : "UKJENT_RELASJON";
-			initOpprettJournalpostValidationCounter(meterRegistry, result, journalpost, tilknyttetSomString, userID);
-		}
-	}
 
 	public Optional<PDFAValidatorResponse> safeValidateDokumentFil(FilDetaljer filDetaljer) {
 		try {
@@ -108,6 +101,11 @@ public class OpprettJournalpostPDFAUtils {
 	//consumerID skal vel egentlig alltid være servicebruker, men just i case
 	private String determineArkivar(String consumerId){
 		return (consumerId == null || consumerId.length() == 0 || !isServiceuser(consumerId)) ? "Ukjent_servicebruker" : consumerId;
+	}
+
+	private String determineTilknyttetSom(Journalpost journalpost, PDFAValidatorResponse response){
+		Optional<TilknyttetJournalpostSomCode> tilknyttetSom = journalpost.findTilknyttetSomByDokumentinfoId(response.getDokumentinfoId());
+		return tilknyttetSom.isPresent() ? tilknyttetSom.get().toString() : "UKJENT_RELASJON";
 	}
 
 	private boolean isServiceuser(String user) {

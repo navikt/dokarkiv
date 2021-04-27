@@ -59,7 +59,7 @@ public class PDFAValidatorUtil {
 			if (!validPdfas.contains(parser.getFlavour())) {
 				return returnIncorrectFlavourReponse(filDetaljer, parser.getFlavour());
 			}
-			PDFAValidator validator = Foundries.defaultInstance().createFailFastValidator(parser.getFlavour(), 1);
+			PDFAValidator validator = Foundries.defaultInstance().createValidator(parser.getFlavour(), false);
 			ValidationResult result = validator.validate(parser);
 
 			if (result.isCompliant()) {
