@@ -26,6 +26,7 @@ import no.nav.dokarkiv.journalpost.v1.api.Sakstype;
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostResult;
 import no.nav.dokarkiv.journalpost.v1.mappers.OpprettJournalpostApiRequestMapper;
+import no.nav.dokarkiv.journalpost.v1.util.opprettjournalpost.OpprettJournalpostPDFAUtils;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
 
@@ -63,6 +64,7 @@ public class OpprettJournalpostService {
 	private final AksjonsLoggService aksjonsLoggService;
 	private final IdentConsumer identConsumer;
 	private final HentSakerRepository hentSakerRepository;
+	private final OpprettJournalpostPDFAUtils opprettJournalpostPDFAUtils;
 
 	@Inject
 	public OpprettJournalpostService(final JoarkRepository joarkRepository,
@@ -71,7 +73,8 @@ public class OpprettJournalpostService {
 									 final DefaultSporingPopulator defaultSporingPopulator,
 									 final AksjonsLoggService aksjonsLoggService,
 									 final IdentConsumer identConsumer,
-									 final HentSakerRepository hentSakerRepository) {
+									 final HentSakerRepository hentSakerRepository,
+									 final OpprettJournalpostPDFAUtils opprettJournalpostPDFAUtils) {
 		this.joarkRepository = joarkRepository;
 		this.dokumentFilRepository = dokumentFilRepository;
 		this.opprettJournalpostApiRequestMapper = opprettJournalpostApiRequestMapper;
@@ -79,6 +82,7 @@ public class OpprettJournalpostService {
 		this.aksjonsLoggService = aksjonsLoggService;
 		this.identConsumer = identConsumer;
 		this.hentSakerRepository = hentSakerRepository;
+		this.opprettJournalpostPDFAUtils = opprettJournalpostPDFAUtils;
 	}
 
 	public OpprettJournalpostResult opprettJournalpost(OpprettJournalpostRequest request) {
@@ -101,6 +105,8 @@ public class OpprettJournalpostService {
 
 		populerAksjonslogg(journalpost.getJournalpostId(), OPPRETT);
 		log.info(MDC.get(MDC_REQUEST_ID) + " har opprettet ny journalpost, journalpostId={} og status={}", journalpost.getJournalpostId(), journalpost.getJournalstatus());
+
+		opprettJournalpostPDFAUtils.safeValidateAndLogPDFA(journalpost);
 
 		return new OpprettJournalpostResult(journalpost, true);
 	}

@@ -56,6 +56,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -1559,6 +1560,14 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 			}
 		}
 		return list;
+	}
+
+	public Optional<TilknyttetJournalpostSomCode> findTilknyttetSomByDokumentinfoId(long dokumentinfoId){
+		for (JournalpostDokumentInfoRelasjon rel : getJournalpostDokumentInfoRelasjoner()) {
+			if(rel.getDokumentInfo().getId() == dokumentinfoId)
+				return Optional.of(rel.getTilknyttetJournalpostSom());
+		}
+		return Optional.empty();
 	}
 
 	public boolean hasHoveddokumentRelasjon() {

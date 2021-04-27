@@ -61,12 +61,20 @@
 		<swagger-ui.version>3.9.2</swagger-ui.version>
 		<argLine>-Xmx2048m</argLine>
 		<lombok.version>1.18.18</lombok.version>
+		<verapdf.version>1.18.2</verapdf.version>
 		<!-- test -->
 		<modig.testcertificates.version>1.2.5</modig.testcertificates.version>
 		<spring-cloud-contract-wiremock.version>2.1.5.RELEASE</spring-cloud-contract-wiremock.version>
 	</properties>
 	<dependencyManagement>
 		<dependencies>
+			<!--pdf validator-->
+			<dependency>
+				<groupId>org.verapdf</groupId>
+				<artifactId>validation-model</artifactId>
+				<version>${verapdf.version}</version>
+			</dependency>
+			<!--/pdf validator-->
 			<dependency>
 				<groupId>no.nav.dokarkiv</groupId>
 				<artifactId>app</artifactId>
