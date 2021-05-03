@@ -21,5 +21,6 @@
   "DOKARKIV_DS": "/oracle/data/dev/creds/joark_t0-user",
   "SRVDOKARKIV": "/serviceuser/data/test/srvdokarkiv",
   "DOKARKIV_VAULT": "/kv/preprod/fss/dokarkiv/t0",
-  "SRV_LINUX": "/serviceuser/data/test/srvssolinux"
+  "SRV_LINUX": "/serviceuser/data/test/srvssolinux",
+  "APPDYNAMICS": "/apikey/appdynamics/dev"
 }
