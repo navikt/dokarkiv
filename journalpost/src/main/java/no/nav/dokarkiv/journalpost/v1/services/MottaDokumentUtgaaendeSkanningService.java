@@ -8,6 +8,7 @@ import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentFil;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.domain.util.DateProvider;
 import no.nav.dokarkiv.core.exceptions.DokarkivFunctionalException;
 import no.nav.dokarkiv.core.exceptions.DokarkivTechnicalException;
 import no.nav.dokarkiv.core.exceptions.InputValideringBadMetadataException;
@@ -20,6 +21,8 @@ import no.nav.dokarkiv.journalpost.v1.api.MottaDokumentUtgaaendeSkanningRequest;
 import no.nav.dokarkiv.journalpost.v1.validators.MottaDokumentUtgaaendeSkanningValidator;
 import org.springframework.stereotype.Service;
 
+import java.time.Clock;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -44,7 +47,7 @@ public class MottaDokumentUtgaaendeSkanningService {
     }
 
     public void mottaDokumentUtgaaendeSkanning(Long journalpostId, MottaDokumentUtgaaendeSkanningRequest request) throws DokarkivFunctionalException, DokarkivTechnicalException {
-        try {
+        try { // start here
 
             validateRequest(journalpostId, request);
 
@@ -62,6 +65,8 @@ public class MottaDokumentUtgaaendeSkanningService {
             if (request.getDatoMottatt() != null) {
                 journalpost.setMottattDato(request.getDatoMottatt());
             }
+            journalpost.setJournalDato(DateProvider.getToday());
+
             List<FilDetaljer> filDetaljerList = request.getDokumentvarianter()
                     .stream()
                     .map(dokumentVariant -> mapDokumentVariantToFildetaljer(dokumentVariant, request.getBatchnavn()))

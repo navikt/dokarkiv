@@ -16,6 +16,7 @@ import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
+import no.nav.dokarkiv.core.domain.util.DateProvider;
 import no.nav.dokarkiv.journalpost.v1.api.DokumentVariant;
 import no.nav.dokarkiv.journalpost.v1.api.MottaDokumentUtgaaendeSkanningRequest;
 import no.nav.dokarkiv.journalpost.v1.api.Tilleggsopplysning;
@@ -49,7 +50,6 @@ public class MottaDokumentUtgaaendeSkanningServiceIT extends AbstractJournalpost
     private static final String NAV_CONSUMER_ID = "Nav-Consumer-Id";
     private static final String KILDE = "skanmotutgaaende";
 
-
     private final Date mockDate = new Date(Date.UTC(2000, Calendar.NOVEMBER, 10, 0, 0, 0));
 
     private final String mockMottaksKanal = MottaksKanalCode.SKAN_NETS.toString();
@@ -68,6 +68,7 @@ public class MottaDokumentUtgaaendeSkanningServiceIT extends AbstractJournalpost
                 JournalStatusCode.R,
                 TilknyttetJournalpostSomCode.HOVEDDOKUMENT
         ).build();
+        DateProvider.configure(true, DateProvider.getDate(new Date()));
 
         long journalpostId = saveJournalpost(journalpost).getId();
 
@@ -89,6 +90,7 @@ public class MottaDokumentUtgaaendeSkanningServiceIT extends AbstractJournalpost
         assertEquals(MottaksKanalCode.SKAN_NETS, oppdatertJP.getMottakskanal());
         assertEquals(KILDE, oppdatertJP.getEndretKildeNavn());
         assertEquals(mockDate, oppdatertJP.getMottattDato());
+        assertEquals(DateProvider.getToday(), oppdatertJP.getJournalDato());
         assertEquals(FilTypeCode.PDF, filDetaljer.getFiltype());
         assertEquals(mockFilnavn, filDetaljer.getFilnavn());
         assertEquals(VariantFormatCode.ORIGINAL, filDetaljer.getVariantFormat());
