@@ -21,8 +21,6 @@ import no.nav.dokarkiv.journalpost.v1.api.MottaDokumentUtgaaendeSkanningRequest;
 import no.nav.dokarkiv.journalpost.v1.validators.MottaDokumentUtgaaendeSkanningValidator;
 import org.springframework.stereotype.Service;
 
-import java.time.Clock;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -47,7 +45,7 @@ public class MottaDokumentUtgaaendeSkanningService {
     }
 
     public void mottaDokumentUtgaaendeSkanning(Long journalpostId, MottaDokumentUtgaaendeSkanningRequest request) throws DokarkivFunctionalException, DokarkivTechnicalException {
-        try { // start here
+        try {
 
             validateRequest(journalpostId, request);
 
