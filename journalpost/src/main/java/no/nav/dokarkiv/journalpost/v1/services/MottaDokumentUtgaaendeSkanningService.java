@@ -8,6 +8,7 @@ import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentFil;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.domain.util.DateProvider;
 import no.nav.dokarkiv.core.exceptions.DokarkivFunctionalException;
 import no.nav.dokarkiv.core.exceptions.DokarkivTechnicalException;
 import no.nav.dokarkiv.core.exceptions.InputValideringBadMetadataException;
@@ -62,6 +63,8 @@ public class MottaDokumentUtgaaendeSkanningService {
             if (request.getDatoMottatt() != null) {
                 journalpost.setMottattDato(request.getDatoMottatt());
             }
+            journalpost.setJournalDato(DateProvider.getToday());
+
             List<FilDetaljer> filDetaljerList = request.getDokumentvarianter()
                     .stream()
                     .map(dokumentVariant -> mapDokumentVariantToFildetaljer(dokumentVariant, request.getBatchnavn()))
