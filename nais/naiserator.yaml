@@ -41,6 +41,8 @@ spec:
       value: {{ JOARK_HENTDOKUMENT_BASEURL }}
     - name: DOKARKIV_HENTDOKUMENT_BASEURL
       value: {{ DOKARKIV_HENTDOKUMENT_BASEURL }}
+    - name: APPD_NAME
+      value: {{ APPD_NAME }}
   image: {{ image }}
   ingresses:
     {{#each INGRESSES}}
@@ -81,4 +83,6 @@ spec:
         mountPath: "/var/run/secrets/nais.io/vault"
       - kvPath: {{ SRV_LINUX }}
         mountPath: "/var/run/secrets/nais.io/ldap"
+      - kvPath: {{ APPDYNAMICS }}
+        mountPath: "/var/run/secrets/nais.io/appdynamics"
   webproxy: true
