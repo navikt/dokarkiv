@@ -22,5 +22,6 @@
   "SRVDOKARKIV": "/serviceuser/data/prod/srvdokarkiv",
   "DOKARKIV_VAULT": "/kv/prod/fss/dokarkiv/default",
   "SRV_LINUX": "/serviceuser/data/prod/srvssolinux",
-  "APPDYNAMICS": "/apikey/appdynamics/prod"
+  "APPDYNAMICS": "/apikey/appdynamics/prod",
+  "APPD_NAME": "dokarkiv_prod"
 }

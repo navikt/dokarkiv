@@ -22,5 +22,6 @@
   "SRVDOKARKIV": "/serviceuser/data/dev/srvdokarkiv",
   "DOKARKIV_VAULT": "/kv/preprod/fss/dokarkiv/q2",
   "SRV_LINUX": "/serviceuser/data/dev/srvssolinux",
-  "APPDYNAMICS": "/apikey/appdynamics/dev"
+  "APPDYNAMICS": "/apikey/appdynamics/dev",
+  "APPD_NAME": "dokarkiv_q2"
 }
