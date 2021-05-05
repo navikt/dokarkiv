@@ -41,7 +41,7 @@
 		<jakarta.jws-api.version>1.1.1</jakarta.jws-api.version>
 		<jakarta.activation.version>1.2.1</jakarta.activation.version>
 		<saaj-impl.version>1.5.2</saaj-impl.version>
-		<oracle.version>12.2.0.1</oracle.version>
+		<oracle.version>19.10.0.0</oracle.version>
 		<cxf.version>3.4.2</cxf.version>
 		<!-- Flyway versjon må ses i sammenheng med joark og Flyway42AutoConfiguration -->
 		<flyway.version>4.2.0</flyway.version>
@@ -63,7 +63,6 @@
 		<lombok.version>1.18.18</lombok.version>
 		<verapdf.version>1.18.2</verapdf.version>
 		<!-- test -->
-		<modig.testcertificates.version>1.2.5</modig.testcertificates.version>
 		<spring-cloud-contract-wiremock.version>2.1.5.RELEASE</spring-cloud-contract-wiremock.version>
 	</properties>
 	<dependencyManagement>
@@ -162,12 +161,12 @@
 				<version>1-SNAPSHOT</version>
 			</dependency>
 			<dependency>
-				<groupId>com.oracle</groupId>
-				<artifactId>ojdbc8</artifactId>
+				<groupId>com.oracle.database.jdbc</groupId>
+				<artifactId>ojdbc10</artifactId>
 				<version>${oracle.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.oracle</groupId>
+				<groupId>com.oracle.database.jdbc</groupId>
 				<artifactId>ucp</artifactId>
 				<version>${oracle.version}</version>
 			</dependency>
@@ -310,12 +309,6 @@
 				<groupId>no.nav.security</groupId>
 				<artifactId>token-validation-test-support</artifactId>
 				<version>${token-support.version}</version>
-				<scope>test</scope>
-			</dependency>
-			<dependency>
-				<groupId>no.nav.modig</groupId>
-				<artifactId>modig-testcertificates</artifactId>
-				<version>${modig.testcertificates.version}</version>
 				<scope>test</scope>
 			</dependency>
 		</dependencies>

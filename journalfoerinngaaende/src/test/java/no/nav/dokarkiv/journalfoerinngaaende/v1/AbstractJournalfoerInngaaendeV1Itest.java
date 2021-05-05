@@ -10,7 +10,6 @@ import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import no.nav.dokarkiv.core.repository.SkannetInnholdRepository;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.dokarkiv.core.stelvio.SimpleRequestContext;
-import no.nav.modig.testcertificates.TestCertificates;
 import no.nav.security.token.support.test.spring.TokenGeneratorConfiguration;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
@@ -94,7 +93,6 @@ public abstract class AbstractJournalfoerInngaaendeV1Itest {
 
     @BeforeClass
     public static void setupItest() {
-        TestCertificates.setupKeyAndTrustStore();
         RequestContextSetter.setRequestContext(new SimpleRequestContext.Builder()
                 .userId("itestuser")
                 .componentId("itest")

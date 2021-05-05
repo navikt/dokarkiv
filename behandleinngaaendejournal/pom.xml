@@ -12,7 +12,7 @@
 	<artifactId>behandleinngaaendejournal</artifactId>
 
 	<properties>
-		<nav-behandleInngaaendeJournal-v1-tjenestespesifikasjon.version>1.0.1</nav-behandleInngaaendeJournal-v1-tjenestespesifikasjon.version>
+		<nav-behandleInngaaendeJournal-v1-tjenestespesifikasjon.version>1.2019.09.25-00.21-49b69f0625e0</nav-behandleInngaaendeJournal-v1-tjenestespesifikasjon.version>
 	</properties>
 
 	<dependencies>
@@ -30,10 +30,9 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>no.nav.tjenester</groupId>
+			<groupId>no.nav.tjenestespesifikasjoner</groupId>
 			<artifactId>nav-behandleInngaaendeJournal-v1-tjenestespesifikasjon</artifactId>
 			<version>${nav-behandleInngaaendeJournal-v1-tjenestespesifikasjon.version}</version>
-			<classifier>jaxws</classifier>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

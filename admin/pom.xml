@@ -51,11 +51,6 @@
 			<artifactId>token-validation-test-support</artifactId>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>no.nav.modig</groupId>
-			<artifactId>modig-testcertificates</artifactId>
-			<scope>test</scope>
-		</dependency>
 	</dependencies>
 
 </project>
