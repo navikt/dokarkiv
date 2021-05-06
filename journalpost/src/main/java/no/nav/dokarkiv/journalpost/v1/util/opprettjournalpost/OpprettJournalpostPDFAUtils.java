@@ -53,7 +53,7 @@ public class OpprettJournalpostPDFAUtils {
 						tilknyttetSom, arkivar, response.validPdfToString(),
 						response.getPdfVersion(), response.getAssertionResults());
 			}
-		} catch (Exception e){
+		} catch (Exception e) {
 			log.warn("Feilet under PDF/A validering", e);
 		}
 	}
@@ -96,8 +96,7 @@ public class OpprettJournalpostPDFAUtils {
 				.tag("gyldigPDFA", validationResult.validPdfToString())
 				.register(meterRegistry).increment();
 
-		//Counter for ugyldige PDF'er fordelt på journalposttype og type tilknytning
-		if(! validationResult.isValidPdf()){
+		if (!validationResult.isValidPdf()) {
 
 			//counter for ugyldige pdf'er fordelt på system og journalposttype
 			Counter.builder("dok_journalposttype_ugyldig")
@@ -116,11 +115,11 @@ public class OpprettJournalpostPDFAUtils {
 
 
 	//consumerID skal vel egentlig alltid være servicebruker, men just i case
-	private String determineArkivar(String consumerId){
+	private String determineArkivar(String consumerId) {
 		return (consumerId == null || consumerId.length() == 0 || !isServiceuser(consumerId)) ? "Ukjent_servicebruker" : consumerId;
 	}
 
-	private String determineTilknyttetSom(Journalpost journalpost, PDFAValidatorResponse response){
+	private String determineTilknyttetSom(Journalpost journalpost, PDFAValidatorResponse response) {
 		Optional<TilknyttetJournalpostSomCode> tilknyttetSom = journalpost.findTilknyttetSomByDokumentinfoId(response.getDokumentinfoId());
 		return tilknyttetSom.isPresent() ? tilknyttetSom.get().toString() : "UKJENT_RELASJON";
 	}
