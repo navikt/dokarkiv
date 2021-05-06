@@ -91,7 +91,7 @@ public class OpprettJournalpostPDFAUtils {
 				.register(meterRegistry).increment();
 
 		//counter for fordeling oppgitt på pdf/pdfa
-		Counter.builder("dok_total_gyldig_pdf_or_pdfa")
+		Counter.builder("dok_gyldig_pdf_or_pdfa")
 				.tag("oppgittSom", validationResult.getFiltype())
 				.tag("gyldigPDFA", validationResult.validPdfToString())
 				.register(meterRegistry).increment();
@@ -100,13 +100,13 @@ public class OpprettJournalpostPDFAUtils {
 		if(! validationResult.isValidPdf()){
 
 			//counter for ugyldige pdf'er fordelt på system og journalposttype
-			Counter.builder("dok_total_journalposttype_ugyldig")
+			Counter.builder("dok_journalposttype_ugyldig")
 					.tag("arkivar", arkivar)
 					.tag("journalposttype", journalpost.getJournalposttype() == null ? "ukjent" : journalpost.getJournalposttype().toString())
 					.register(meterRegistry).increment();
 
 			//counter for ugyldige pdf'er fordelt på system og dokumenttilknytning
-			Counter.builder("dok_total_journalposttype_ugyldig")
+			Counter.builder("dok_tilknyttetSom_ugyldig")
 					.tag("arkivar", arkivar)
 					.tag("arkivvariant", tilknyttetSom)
 					.register(meterRegistry).increment();
