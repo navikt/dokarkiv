@@ -105,7 +105,7 @@ public class OpprettJournalpostPDFAUtils {
 					.register(meterRegistry).increment();
 
 			//counter for ugyldige pdf'er fordelt på system og dokumenttilknytning
-			Counter.builder("dok_tilknyttetSom_ugyldig")
+			Counter.builder("dok_tilknyttet_som_ugyldig")
 					.tag("arkivar", arkivar)
 					.tag("arkivvariant", tilknyttetSom)
 					.register(meterRegistry).increment();
