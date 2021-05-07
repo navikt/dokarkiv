@@ -6,7 +6,7 @@ import static no.nav.dokarkiv.core.domain.codes.DokumentStatusCode.FERDIGSTILT;
 import static no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode.N;
 import static no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode.U;
 import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.VEDLEGG;
-import static org.apache.commons.lang.BooleanUtils.isTrue;
+import static org.apache.commons.lang3.BooleanUtils.isTrue;
 
 import com.google.common.collect.Lists;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;

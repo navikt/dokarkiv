@@ -65,6 +65,7 @@
 		<lombok.version>1.18.20</lombok.version>
 		<!-- test -->
 		<spring-cloud-contract-wiremock.version>2.1.5.RELEASE</spring-cloud-contract-wiremock.version>
+		<junit.version>4.13.2</junit.version>
 	</properties>
 	<dependencyManagement>
 		<dependencies>
@@ -276,7 +277,6 @@
 				<groupId>commons-io</groupId>
 				<artifactId>commons-io</artifactId>
 				<version>${commons.io.version}</version>
-				<scope>runtime</scope>
 			</dependency>
 			<dependency>
 				<groupId>commons-beanutils</groupId>
@@ -320,6 +320,14 @@
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
+	<dependencies>
+		<!-- Fjern denne når tester er migrert til junit5 -->
+		<dependency>
+			<groupId>org.junit.vintage</groupId>
+			<artifactId>junit-vintage-engine</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
 	<build>
 		<resources>
 			<resource>
@@ -348,6 +356,16 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-failsafe-plugin</artifactId>
 				<version>3.0.0-M3</version>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>3.2.0</version>
+				<configuration>
+					<nonFilteredFileExtensions>
+						<nonFilteredFileExtension>pdf</nonFilteredFileExtension>
+					</nonFilteredFileExtensions>
+				</configuration>
 			</plugin>
 			<plugin>
 				<artifactId>maven-toolchains-plugin</artifactId>
