@@ -14,9 +14,9 @@ import no.nav.dokarkiv.behandlejournal.v2.tjoark065.JournalfoerNotatHenvendelseR
 import no.nav.dokarkiv.behandlejournal.v2.tjoark065.JournalfoerNotatHenvendelseResponseMapper;
 import no.nav.dokarkiv.core.domain.entities.bidrag.BidragMellomlagring;
 import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
-import no.nav.tjeneste.virksomhet.behandlejournal.v2.binding.BehandleJournalV2;
-import no.nav.tjeneste.virksomhet.behandlejournal.v2.binding.FerdigstillDokumentopplastingFerdigstillDokumentopplastingjournalpostIkkeFunnet;
-import no.nav.tjeneste.virksomhet.behandlejournal.v2.binding.LagreVedleggPaaJournalpostLagreVedleggPaaJournalpostjournalpostIkkeFunnet;
+import no.nav.tjeneste.virksomhet.behandlejournal.v2.BehandleJournalV2;
+import no.nav.tjeneste.virksomhet.behandlejournal.v2.FerdigstillDokumentopplastingFerdigstillDokumentopplastingjournalpostIkkeFunnet;
+import no.nav.tjeneste.virksomhet.behandlejournal.v2.LagreVedleggPaaJournalpostLagreVedleggPaaJournalpostjournalpostIkkeFunnet;
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.feil.JournalpostIkkeFunnet;
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.meldinger.ArkiverUstrukturertKravRequest;
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.meldinger.ArkiverUstrukturertKravResponse;

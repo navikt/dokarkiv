@@ -1,7 +1,7 @@
 package no.nav.dokarkiv.behandlejournal.v2.tjoark060;
 
 import static no.nav.dokarkiv.core.util.SpecialFilTypeConverter.convertFilType;
-import static org.apache.commons.lang.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;

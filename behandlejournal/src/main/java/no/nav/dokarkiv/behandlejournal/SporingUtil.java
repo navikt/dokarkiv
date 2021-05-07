@@ -1,6 +1,6 @@
 package no.nav.dokarkiv.behandlejournal;
 
-import static org.apache.commons.lang.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 import no.nav.dokarkiv.core.exceptions.ApplicationException;

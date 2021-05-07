@@ -1,6 +1,6 @@
 package no.nav.dokarkiv.behandlejournal.v2.tjoark061;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 /**
  * Domain response object for service LagreVedleggPaaJournalpost.
