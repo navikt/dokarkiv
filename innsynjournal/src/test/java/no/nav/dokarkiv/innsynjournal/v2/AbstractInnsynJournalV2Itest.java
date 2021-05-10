@@ -46,7 +46,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 @AutoConfigureTestEntityManager
 @Transactional
 public abstract class AbstractInnsynJournalV2Itest {
-	public static final String CURRENT_IDENT = "111111111111";
+	public static final String CURRENT_IDENT = "11111111111";
 	public static final String FAIL_IDENT = "93438778934067";
 	public static final List<String> HISTORICAL_IDENTS = Lists.newArrayList("012345678910", "234567810");
 

@@ -15,6 +15,7 @@ import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import javax.inject.Inject;
 import java.net.URI;
 import java.time.Duration;
 import java.util.HashMap;
@@ -27,6 +28,7 @@ import static no.nav.dokarkiv.core.cache.CacheConfig.HISTORISKE_IDENTER;
 import static no.nav.dokarkiv.core.storage.RetryConstants.DELAY_SHORT;
 import static no.nav.dokarkiv.core.storage.RetryConstants.MULTIPLIER_SHORT;
 import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.isNumeric;
 
 /**
  * PDL implementasjon av {@link IdentConsumer}
@@ -42,6 +44,7 @@ public class PdlIdentConsumer implements IdentConsumer {
 	private final StsRestConsumer stsRestConsumer;
 	private final URI pdlUri;
 
+	@Inject
 	public PdlIdentConsumer(@Value("${pdl.url}") String pdlUrl,
 							RestTemplateBuilder restTemplateBuilder,
 							StsRestConsumer stsRestConsumer) {
@@ -59,9 +62,7 @@ public class PdlIdentConsumer implements IdentConsumer {
 	)
 	@Override
 	public String hentAktoerId(String folkeregisterIdent) throws PersonIkkeFunnetException {
-		if(isBlank(folkeregisterIdent)) {
-			throw new PersonIkkeFunnetException("Folkeregisterident er null eller blank.");
-		}
+		this.validateFolkeregisterIdent(folkeregisterIdent);
 		try {
 			final RequestEntity<PdlRequest> requestEntity = baseRequest()
 					.body(mapHentAktoerIdForFolkeregisterident(folkeregisterIdent));
@@ -132,9 +133,7 @@ public class PdlIdentConsumer implements IdentConsumer {
 	)
 	@Override
 	public List<String> hentHistoriskeFolkeregisterIdenter(String folkeregisterIdent) throws PersonIkkeFunnetException {
-		if(isBlank(folkeregisterIdent)) {
-			throw new PersonIkkeFunnetException("Folkeregisterident er null eller blank.");
-		}
+		this.validateFolkeregisterIdent(folkeregisterIdent);
 		try {
 			final RequestEntity<PdlRequest> requestEntity = baseRequest()
 					.body(mapHentHistoriskeFolkeregisterIdentForAktoerId(folkeregisterIdent));
@@ -169,5 +168,19 @@ public class PdlIdentConsumer implements IdentConsumer {
 				.header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
 				.header(HttpHeaders.AUTHORIZATION, BEARER_TOKEN_PREFIX + serviceuserToken)
 				.header(HEADER_PDL_NAV_CONSUMER_TOKEN, BEARER_TOKEN_PREFIX + serviceuserToken);
+	}
+
+	void validateFolkeregisterIdent(String folkeregisterIdent) {
+		if(isBlank(folkeregisterIdent)) {
+			throw new PdlFunctionalException("Folkeregisterident er null eller blank.");
+		}
+
+		if (!isNumeric(folkeregisterIdent)) {
+			throw new PdlFunctionalException("Validering av folkeregisterIdent failet pga inneholder karakterer som er bokstaver");
+		}
+
+		if (folkeregisterIdent.length() != 13 && folkeregisterIdent.length() != 11 && folkeregisterIdent.length() != 9) {
+			throw new PdlFunctionalException("Validering av folkeregisterIdent failet pga feil lengde på " + folkeregisterIdent.length());
+		}
 	}
 }

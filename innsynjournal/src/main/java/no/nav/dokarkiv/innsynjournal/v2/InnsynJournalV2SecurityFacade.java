@@ -188,8 +188,7 @@ public class InnsynJournalV2SecurityFacade {
 		try {
 			historiskeFolkeregisterIdenter = identConsumer.hentHistoriskeFolkeregisterIdenter(fnr);
 		} catch (PersonIkkeFunnetException | PdlFunctionalException | HttpServerErrorException e) {
-			throw new SecurityTechnicalException("Kan ikke utføre tilgangskontroll for pålogget bruker med fnr=" + fnr + " " +
-					"for journalpost med journalpostId=" + journalpostTomatch.getJournalpostId(), e);
+			throw new SecurityTechnicalException("Kan ikke utføre tilgangskontroll for pålogget bruker tilknyttet journalpost med journalpostId=" + journalpostTomatch.getJournalpostId(), e);
 		}
 
 		for (String folkeregisterIdent : historiskeFolkeregisterIdenter) {
