@@ -21,17 +21,17 @@ public class PdlIdentConsumerTest {
 	);
 
 	@Test
-	public void ShouldValidateOrgNrWith9Nummers() {
+	public void ShouldValidateOrgNrWith9Numbers() {
 		pdlIdentConsumer.validateFolkeregisterIdent("111111111");
 	}
 
 	@Test
-	public void ShouldValidateFnrWith11Nummers() {
+	public void ShouldValidateFnrWith11Numbers() {
 		pdlIdentConsumer.validateFolkeregisterIdent("11111111111");
 	}
 
 	@Test
-	public void ShouldValidateAktoerIdWith13Nummers() {
+	public void ShouldValidateAktoerIdWith13Numbers() {
 		pdlIdentConsumer.validateFolkeregisterIdent("11111111111");
 	}
 

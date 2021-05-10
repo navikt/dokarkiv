@@ -172,7 +172,7 @@ public class PdlIdentConsumer implements IdentConsumer {
 
 	void validateFolkeregisterIdent(String folkeregisterIdent) {
 		if(isBlank(folkeregisterIdent)) {
-			throw new PdlFunctionalException("Folkeregisterident er null eller blank.");
+			throw new PdlFunctionalException("Validering av folkeregisterIdent failet fordi verdien er null eller blank.");
 		}
 
 		if (!isNumeric(folkeregisterIdent)) {
