@@ -24,7 +24,7 @@ public class BehandleJournalV2Config {
 	@Bean
 	@Profile("nais")
 	Endpoint behandleJournalv2(Bus bus,
-							   BehandleJournalV2 behandleJournalEndpoint) {
+							   BehandleJournalEndpoint behandleJournalEndpoint) {
 		EndpointImpl endpoint = new EndpointImpl(bus, behandleJournalEndpoint);
 		endpoint.publish("/behandlejournal/v2");
 		org.apache.cxf.endpoint.Endpoint cxfEndpoint = endpoint.getServer().getEndpoint();
