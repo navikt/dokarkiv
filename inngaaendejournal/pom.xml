@@ -11,10 +11,6 @@
 
 	<artifactId>inngaaendejournal</artifactId>
 
-	<properties>
-		<nav-inngaaendeJournal-v1-tjenestespesifikasjon.version>1.2019.09.25-00.21-49b69f0625e0</nav-inngaaendeJournal-v1-tjenestespesifikasjon.version>
-	</properties>
-
 	<dependencies>
 		<dependency>
 			<groupId>no.nav.dokarkiv</groupId>
@@ -28,7 +24,6 @@
 		<dependency>
 			<groupId>no.nav.tjenestespesifikasjoner</groupId>
 			<artifactId>nav-inngaaendeJournal-v1-tjenestespesifikasjon</artifactId>
-			<version>${nav-inngaaendeJournal-v1-tjenestespesifikasjon.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

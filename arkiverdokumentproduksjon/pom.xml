@@ -11,10 +11,6 @@
 
 	<artifactId>arkiverdokumentproduksjon</artifactId>
 
-	<properties>
-		<arkiverdokumentproduksjon-tjenestespesifikasjon.version>3.4.1</arkiverdokumentproduksjon-tjenestespesifikasjon.version>
-	</properties>
-
 	<dependencies>
 		<dependency>
 			<groupId>org.projectlombok</groupId>
@@ -32,7 +28,6 @@
 		<dependency>
 			<groupId>no.nav.tjenester.brevogarkiv</groupId>
 			<artifactId>arkiverdokumentproduksjon-tjenestespesifikasjon</artifactId>
-			<version>${arkiverdokumentproduksjon-tjenestespesifikasjon.version}</version>
 			<classifier>jaxws</classifier>
 		</dependency>
 		<dependency>
