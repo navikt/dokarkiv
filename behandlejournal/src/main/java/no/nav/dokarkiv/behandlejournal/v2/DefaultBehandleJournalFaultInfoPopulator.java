@@ -21,7 +21,7 @@ public class DefaultBehandleJournalFaultInfoPopulator extends AbstractJournalFau
 		faultInfo.setFeilaarsak(getRootCause(exception).toString());
 		faultInfo.setFeilkilde(getErrorSource(operationName));
 		faultInfo.setFeilmelding(exception.getMessage());
-		faultInfo.setTidspunkt(getXmlTimestamp());
+		faultInfo.setTidspunkt(getTodayJodaTime());
 		return faultInfo;
 	}
 }

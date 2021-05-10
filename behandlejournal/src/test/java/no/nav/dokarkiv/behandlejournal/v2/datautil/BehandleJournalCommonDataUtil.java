@@ -18,10 +18,13 @@ import no.nav.tjeneste.virksomhet.behandlejournal.v2.informasjon.behandlejournal
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.informasjon.behandlejournal.Signatur;
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.informasjon.behandlejournal.UstrukturertInnhold;
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.informasjon.behandlejournal.Variantformater;
+import org.joda.time.DateTime;
+import org.joda.time.LocalDateTime;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 
 /**
@@ -96,7 +99,7 @@ public class BehandleJournalCommonDataUtil {
 
 	public static Journaldistribusjon createJournaldistribusjon() {
 		Journaldistribusjon journaldistribusjon = new Journaldistribusjon();
-		journaldistribusjon.setSendtPrintDato(getToday());
+		journaldistribusjon.setSendtPrintDato(getTodayJodaTime());
 		return journaldistribusjon;
 	}
 
@@ -122,6 +125,11 @@ public class BehandleJournalCommonDataUtil {
 		} catch (DatatypeConfigurationException e) {
 			return null;
 		}
+	}
+
+	protected static DateTime getTodayJodaTime() {
+		Date today = DateProvider.getToday();
+		return new DateTime(today.getTime());
 	}
 
 }

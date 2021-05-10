@@ -37,7 +37,7 @@ public class JournalfoerNotatHenvendelseDataUtil extends BehandleJournalCommonDa
 	public static Journalpost createJournalpost() throws Exception {
 		Journalpost journalpost = new Journalpost();
 		journalpost.setArkivtema(KodeverdiHelper.kodeVerdi(ARKIVTEMA, Arkivtemaer.class));
-		journalpost.setDokumentDato(getToday());
+		journalpost.setDokumentDato(getTodayJodaTime());
 		journalpost.setSignatur(createSignatur());
 		journalpost.setJournalfoerendeEnhetREF(JOURNALFOERENDE_ENHET_REF);
 		journalpost.setOpprettetAvNavn(OPPRETTET_AV_NAVN);
@@ -57,12 +57,9 @@ public class JournalfoerNotatHenvendelseDataUtil extends BehandleJournalCommonDa
 	}
 
 	private static JournalfoertDokumentInfo createJournalfoertDokumentInfo() throws Exception {
-		GregorianCalendar gcal = new GregorianCalendar();
-		gcal.setTime(DateProvider.getToday());
-		XMLGregorianCalendar gdate = DatatypeFactory.newInstance().newXMLGregorianCalendar(gcal);
 		JournalfoertDokumentInfo dokInfo = new JournalfoertDokumentInfo();
 		dokInfo.setDokumentType(KodeverdiHelper.kodeVerdi(DOKUMENT_TYPE_ID, Dokumenttyper.class));
-		dokInfo.setFerdigDato(gdate);
+		dokInfo.setFerdigDato(getTodayJodaTime());
 		dokInfo.setSensitivitet(SENSITIVITET);
 		dokInfo.setBegrensetPartsInnsyn(BEGRENSET_PARTS_INNSYN);
 		dokInfo.setTilleggsopplysninger(createTilleggsopplysninger());
@@ -70,7 +67,7 @@ public class JournalfoerNotatHenvendelseDataUtil extends BehandleJournalCommonDa
 		dokInfo.setKategorikode(KATEGORI);
 		dokInfo.setErOrganinternt(ORGANINTERNT);
 		dokInfo.getBeskriverInnhold().add(createUstrukurertInnhold());
-		dokInfo.setFerdigDato(getToday());
+		dokInfo.setFerdigDato(getTodayJodaTime());
 		return dokInfo;
 	}
 

@@ -33,7 +33,7 @@ import no.nav.dokarkiv.core.domain.entities.bidrag.BidragMellomlagringDokument;
 import no.nav.dokarkiv.core.domain.entities.bidrag.BidragMellomlagringDokumentType;
 import no.nav.dokarkiv.core.domain.entities.bidrag.BidragMellomlagringStatus;
 import no.nav.dokarkiv.core.domain.util.DateProvider;
-import no.nav.tjeneste.virksomhet.behandlejournal.v2.binding.LagreVedleggPaaJournalpostLagreVedleggPaaJournalpostjournalpostIkkeFunnet;
+import no.nav.tjeneste.virksomhet.behandlejournal.v2.LagreVedleggPaaJournalpostLagreVedleggPaaJournalpostjournalpostIkkeFunnet;
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.feil.ForretningsmessigUnntak;
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.feil.JournalpostIkkeFunnet;
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.informasjon.behandlejournal.Arkivfiltyper;
@@ -225,7 +225,7 @@ public class LagreVedleggPaaJournalpostIT extends AbstractBehandleJournalV2Itest
 		journalpostIkkeFunnet.setFeilaarsak("NoJournalpostFoundException");
 		journalpostIkkeFunnet.setFeilkilde("JOARK:lagreVedleggPaaJournalpost");
 		journalpostIkkeFunnet.setFeilmelding("Journalpost with id: " + NONEXISTING_JOURNALPOST_ID + " does not exist");
-		journalpostIkkeFunnet.setTidspunkt(getXmlTimestamp());
+		journalpostIkkeFunnet.setTidspunkt(getTodayJodaTime());
 		return journalpostIkkeFunnet;
 	}
 

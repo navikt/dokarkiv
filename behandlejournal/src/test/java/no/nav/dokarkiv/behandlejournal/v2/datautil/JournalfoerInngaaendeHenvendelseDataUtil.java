@@ -36,8 +36,8 @@ public class JournalfoerInngaaendeHenvendelseDataUtil extends BehandleJournalCom
 		kanal.setValue(KANAL.name());
 		Journalpost journalpost = new Journalpost();
 		journalpost.setArkivtema(KodeverdiHelper.kodeVerdi(ARKIVTEMA.name(), Arkivtemaer.class));
-		journalpost.setMottattDato(getToday());
-		journalpost.setDokumentDato(getToday());
+		journalpost.setMottattDato(getTodayJodaTime());
+		journalpost.setDokumentDato(getTodayJodaTime());
 		journalpost.setKanal(kanal);
 		journalpost.setSignatur(createSignatur());
 		journalpost.setJournalfoerendeEnhetREF(JOURNALFOERENDE_ENHET_REF);

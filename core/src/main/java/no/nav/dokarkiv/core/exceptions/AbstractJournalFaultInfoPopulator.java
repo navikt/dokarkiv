@@ -1,10 +1,14 @@
 package no.nav.dokarkiv.core.exceptions;
 
 import no.nav.dokarkiv.core.domain.util.DateProvider;
+import org.joda.time.Chronology;
+import org.joda.time.DateTime;
+import org.joda.time.LocalDateTime;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 
 /**
@@ -61,4 +65,8 @@ public abstract class AbstractJournalFaultInfoPopulator {
 		}
 	}
 
+	protected DateTime getTodayJodaTime() {
+		Date today = DateProvider.getToday();
+		return new DateTime(today.getTime());
+	}
 }

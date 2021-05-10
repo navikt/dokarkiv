@@ -37,7 +37,7 @@ public class JournalfoerUtgaaendeHenvendelseDataUtil extends BehandleJournalComm
 	public static Journalpost creatJournalpost() throws Exception {
 		Journalpost journalpost = new Journalpost();
 		journalpost.setArkivtema(KodeverdiHelper.kodeVerdi(ARKIVTEMA.name(), Arkivtemaer.class));
-		journalpost.setDokumentDato(getToday());
+		journalpost.setDokumentDato(getTodayJodaTime());
 		journalpost.setSignatur(createSignatur());
 		journalpost.setJournalfoerendeEnhetREF(JOURNALFOERENDE_ENHET_REF);
 		journalpost.setOpprettetAvNavn(OPPRETTET_AV_NAVN);
@@ -49,7 +49,7 @@ public class JournalfoerUtgaaendeHenvendelseDataUtil extends BehandleJournalComm
 		journalpost.getForBruker().add(createPerson());
 		journalpost.setEksternPart(createEksternPart());
 		journalpost.setKanal(KodeverdiHelper.kodeVerdi(KANAL.name(), Kommunikasjonskanaler.class));
-		journalpost.setDatoEkspedert(getToday());
+		journalpost.setDatoEkspedert(getTodayJodaTime());
 		return journalpost;
 	}
 

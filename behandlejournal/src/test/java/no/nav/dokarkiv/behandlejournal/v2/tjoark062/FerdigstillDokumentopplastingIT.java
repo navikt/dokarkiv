@@ -31,7 +31,7 @@ import no.nav.dokarkiv.core.domain.entities.bidrag.BidragMellomlagringDokumentTy
 import no.nav.dokarkiv.core.domain.entities.bidrag.BidragMellomlagringStatus;
 import no.nav.dokarkiv.core.domain.util.DateProvider;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
-import no.nav.tjeneste.virksomhet.behandlejournal.v2.binding.FerdigstillDokumentopplastingFerdigstillDokumentopplastingjournalpostIkkeFunnet;
+import no.nav.tjeneste.virksomhet.behandlejournal.v2.FerdigstillDokumentopplastingFerdigstillDokumentopplastingjournalpostIkkeFunnet;
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.feil.ForretningsmessigUnntak;
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.feil.JournalpostIkkeFunnet;
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.meldinger.FerdigstillDokumentopplastingRequest;
@@ -143,7 +143,7 @@ public class FerdigstillDokumentopplastingIT extends AbstractBehandleJournalV2It
 		journalpostIkkeFunnet.setFeilaarsak("NoJournalpostFoundException");
 		journalpostIkkeFunnet.setFeilkilde("JOARK:ferdigstillDokumentopplasting");
 		journalpostIkkeFunnet.setFeilmelding("Journalpost with id: " + NONEXISTING_JOURNALPOST_ID + " does not exist");
-		journalpostIkkeFunnet.setTidspunkt(getXmlTimestamp());
+		journalpostIkkeFunnet.setTidspunkt(getTodayJodaTime());
 		return journalpostIkkeFunnet;
 	}
 
