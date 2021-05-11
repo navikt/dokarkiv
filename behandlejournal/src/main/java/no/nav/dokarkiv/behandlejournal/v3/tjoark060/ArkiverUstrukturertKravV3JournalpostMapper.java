@@ -1,7 +1,5 @@
 package no.nav.dokarkiv.behandlejournal.v3.tjoark060;
 
-import static org.apache.commons.lang.StringUtils.isBlank;
-
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
@@ -27,6 +25,8 @@ import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 /**
  * Implementation of JournalpostMapper.

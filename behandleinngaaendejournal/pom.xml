@@ -11,10 +11,6 @@
 
 	<artifactId>behandleinngaaendejournal</artifactId>
 
-	<properties>
-		<nav-behandleInngaaendeJournal-v1-tjenestespesifikasjon.version>1.0.1</nav-behandleInngaaendeJournal-v1-tjenestespesifikasjon.version>
-	</properties>
-
 	<dependencies>
 		<dependency>
 			<groupId>no.nav.dokarkiv</groupId>
@@ -30,10 +26,8 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>no.nav.tjenester</groupId>
+			<groupId>no.nav.tjenestespesifikasjoner</groupId>
 			<artifactId>nav-behandleInngaaendeJournal-v1-tjenestespesifikasjon</artifactId>
-			<version>${nav-behandleInngaaendeJournal-v1-tjenestespesifikasjon.version}</version>
-			<classifier>jaxws</classifier>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

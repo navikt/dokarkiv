@@ -2,9 +2,9 @@ package no.nav.dokarkiv.behandlejournal.v2;
 
 import io.micrometer.core.annotation.Timed;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
-import no.nav.tjeneste.virksomhet.behandlejournal.v2.binding.BehandleJournalV2;
-import no.nav.tjeneste.virksomhet.behandlejournal.v2.binding.FerdigstillDokumentopplastingFerdigstillDokumentopplastingjournalpostIkkeFunnet;
-import no.nav.tjeneste.virksomhet.behandlejournal.v2.binding.LagreVedleggPaaJournalpostLagreVedleggPaaJournalpostjournalpostIkkeFunnet;
+import no.nav.tjeneste.virksomhet.behandlejournal.v2.BehandleJournalV2;
+import no.nav.tjeneste.virksomhet.behandlejournal.v2.FerdigstillDokumentopplastingFerdigstillDokumentopplastingjournalpostIkkeFunnet;
+import no.nav.tjeneste.virksomhet.behandlejournal.v2.LagreVedleggPaaJournalpostLagreVedleggPaaJournalpostjournalpostIkkeFunnet;
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.meldinger.ArkiverUstrukturertKravRequest;
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.meldinger.ArkiverUstrukturertKravResponse;
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.meldinger.FerdigstillDokumentopplastingRequest;
@@ -31,7 +31,7 @@ import javax.xml.ws.soap.Addressing;
  *
  * @author Rune Romundstad, Visma Consulting
  */
-@WebService(endpointInterface = "no.nav.tjeneste.virksomhet.behandlejournal.v2.binding.BehandleJournalV2",
+@WebService(endpointInterface = "no.nav.tjeneste.virksomhet.behandlejournal.v2.BehandleJournalV2",
 		wsdlLocation = "classpath:wsdl/no/nav/tjeneste/virksomhet/behandleJournal/v2/Binding.wsdl",
 		targetNamespace = "http://nav.no/tjeneste/virksomhet/behandleJournal/v2/Binding",
 		serviceName = "BehandleJournal_v2",

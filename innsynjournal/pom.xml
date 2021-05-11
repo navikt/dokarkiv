@@ -11,14 +11,14 @@
 
 	<artifactId>innsynjournal</artifactId>
 
-	<properties>
-		<innsynJournal-v2-tjenestespesifikasjon.version>2.0.2</innsynJournal-v2-tjenestespesifikasjon.version>
-	</properties>
-
 	<dependencies>
 		<dependency>
 			<groupId>no.nav.dokarkiv</groupId>
 			<artifactId>core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.jvnet.jaxb2_commons</groupId>
+			<artifactId>jaxb2-basics-runtime</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.projectlombok</groupId>
@@ -26,10 +26,8 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>no.nav.tjenester</groupId>
+			<groupId>no.nav.tjenestespesifikasjoner</groupId>
 			<artifactId>nav-innsynJournal-v2-tjenestespesifikasjon</artifactId>
-			<version>${innsynJournal-v2-tjenestespesifikasjon.version}</version>
-			<classifier>jaxws</classifier>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -45,11 +43,6 @@
 			<groupId>no.nav.dokarkiv</groupId>
 			<artifactId>core</artifactId>
 			<type>test-jar</type>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>no.nav.modig</groupId>
-			<artifactId>modig-testcertificates</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>

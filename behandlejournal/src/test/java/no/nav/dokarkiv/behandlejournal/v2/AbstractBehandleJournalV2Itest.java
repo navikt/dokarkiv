@@ -10,8 +10,10 @@ import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.dokarkiv.core.stelvio.SimpleRequestContext;
 import no.nav.security.token.support.test.spring.TokenGeneratorConfiguration;
-import no.nav.tjeneste.virksomhet.behandlejournal.v2.binding.BehandleJournalV2;
+import no.nav.tjeneste.virksomhet.behandlejournal.v2.BehandleJournalV2;
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.feil.ForretningsmessigUnntak;
+import org.joda.time.DateTime;
+import org.joda.time.LocalDateTime;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.rules.ExpectedException;
@@ -27,6 +29,7 @@ import javax.transaction.Transactional;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 
 import static org.hamcrest.Matchers.containsString;
@@ -99,5 +102,15 @@ public abstract class AbstractBehandleJournalV2Itest {
 		} catch (DatatypeConfigurationException e) {
 			throw new ApplicationException("Unable to create XMLGregorianCalendar", e);
 		}
+	}
+
+	/**
+	 * Uses DateProvider to configure dates.
+	 *
+	 * @return A testable Joda DateTime.
+	 */
+	protected DateTime getTodayJodaTime() {
+		Date today = DateProvider.getToday();
+		return new DateTime(today.getTime());
 	}
 }

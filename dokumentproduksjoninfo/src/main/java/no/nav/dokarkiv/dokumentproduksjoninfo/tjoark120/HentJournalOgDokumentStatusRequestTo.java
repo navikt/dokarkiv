@@ -1,7 +1,7 @@
 package no.nav.dokarkiv.dokumentproduksjoninfo.tjoark120;
 
 import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
-import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 /**
  * Request object for DokumentproduksjonInfo.hentJournalOgDokumentStatus.

@@ -28,8 +28,8 @@ public class ArkiverUstrukturertKravJournalpostDataUtil extends BehandleJournalC
 		journalpost.setArkivtema(KodeverdiHelper.kodeVerdi(ARKIVTEMA, Arkivtemaer.class));
 		journalpost.setKanal(KodeverdiHelper.kodeVerdi(KANAL, Kommunikasjonskanaler.class));
 		journalpost.setSignatur(createSignatur());
-		journalpost.setDokumentDato(getToday());
-		journalpost.setMottattDato(getToday());
+		journalpost.setDokumentDato(getTodayJodaTime());
+		journalpost.setMottattDato(getTodayJodaTime());
 		journalpost.setJournalfoerendeEnhetREF(JOURNALFOERENDE_ENHET_REF);
 		journalpost.setJournalfoertDokument(createJournalfoertDokumentInfo());
 		return journalpost;

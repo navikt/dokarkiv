@@ -1,12 +1,13 @@
 package no.nav.dokarkiv.behandlejournal.v2.tjoark064;
 
-import static org.apache.commons.lang.StringUtils.isBlank;
 
 import no.nav.dokarkiv.behandlejournal.v2.AbstractBehandleJournalJournalpostValidator;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.ApplicationException;
 import org.springframework.stereotype.Component;
+
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 /**
  * Validator for the JournalfoerUtgaaendeHenvendelseMedHoveddokument service

@@ -1,6 +1,5 @@
 package no.nav.dokarkiv;
 
-import no.nav.modig.testcertificates.TestCertificates;
 import no.nav.security.token.support.test.spring.TokenGeneratorConfiguration;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -31,11 +30,6 @@ public class ApplicationIT {
 
 	@Inject
 	private TestRestTemplate testRestTemplate;
-
-	@BeforeClass
-	public static void beforeClass() {
-		TestCertificates.setupKeyAndTrustStore();
-	}
 
 	@Test
 	public void shouldStartApp() {

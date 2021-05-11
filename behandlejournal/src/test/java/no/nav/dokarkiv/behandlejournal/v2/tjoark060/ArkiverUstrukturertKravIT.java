@@ -233,8 +233,8 @@ public class ArkiverUstrukturertKravIT extends AbstractBehandleJournalV2Itest {
 		journalpost.setKanal(KodeverdiHelper.kodeVerdi(KANAL_ALTINN, Kommunikasjonskanaler.class));
 		journalpost.setSignatur(createSignatur(SIGNERT_TRUE));
 		journalpost.setArkivtema(KodeverdiHelper.kodeVerdi(temaId, Arkivtemaer.class));
-		journalpost.setDokumentDato(getXmlTimestamp());
-		journalpost.setMottattDato(getXmlTimestamp());
+		journalpost.setDokumentDato(getTodayJodaTime());
+		journalpost.setMottattDato(getTodayJodaTime());
 		journalpost.getForBruker().add(createBruker());
 		journalpost.setJournalfoertDokument(createJournalfortDokumentInfo());
 		return journalpost;

@@ -11,23 +11,16 @@
 
 	<artifactId>arkiverdokumentmottak</artifactId>
 
-	<properties>
-		<arkiverdokumentmottak-tjenestespesifikasjon.version>1.1.8</arkiverdokumentmottak-tjenestespesifikasjon.version>
-		<arkiverdokumentmottak-tjenestespesifikasjon-v2.version>2.2.3</arkiverdokumentmottak-tjenestespesifikasjon-v2.version>
-	</properties>
-
 	<dependencies>
 		<dependency>
 			<groupId>no.nav.tjenester.brevogarkiv</groupId>
 			<artifactId>arkiverdokumentmottak-tjenestespesifikasjon</artifactId>
 			<classifier>jaxws</classifier>
-			<version>${arkiverdokumentmottak-tjenestespesifikasjon.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>no.nav.tjenester.brevogarkiv</groupId>
 			<artifactId>arkiverdokumentmottak-tjenestespesifikasjon-v2</artifactId>
 			<classifier>jaxws</classifier>
-			<version>${arkiverdokumentmottak-tjenestespesifikasjon-v2.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>no.nav.dokarkiv</groupId>

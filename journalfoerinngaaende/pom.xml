@@ -11,10 +11,6 @@
 
 	<artifactId>journalfoerinngaaende</artifactId>
 
-	<properties>
-		<no-nav-dok-tjenester-journalfoerinngaaende.version>0.0.21</no-nav-dok-tjenester-journalfoerinngaaende.version>
-	</properties>
-
 	<dependencies>
 		<dependency>
 			<groupId>no.nav.dokarkiv</groupId>
@@ -27,7 +23,6 @@
 		<dependency>
 			<groupId>no.nav.tjenester.fim</groupId>
 			<artifactId>no-nav-dok-tjenester-journalfoerinngaaende</artifactId>
-			<version>${no-nav-dok-tjenester-journalfoerinngaaende.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.projectlombok</groupId>
@@ -62,11 +57,6 @@
 		<dependency>
 			<groupId>no.nav.security</groupId>
 			<artifactId>token-validation-test-support</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>no.nav.modig</groupId>
-			<artifactId>modig-testcertificates</artifactId>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>

@@ -26,10 +26,9 @@ import no.nav.dokarkiv.behandlejournal.v2.tjoark065.JournalfoerNotatHenvendelseR
 import no.nav.dokarkiv.behandlejournal.v2.tjoark065.JournalfoerNotatHenvendelseResponseMapper;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.util.DateProvider;
-import no.nav.dokarkiv.core.exceptions.ApplicationException;
 import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
-import no.nav.tjeneste.virksomhet.behandlejournal.v2.binding.FerdigstillDokumentopplastingFerdigstillDokumentopplastingjournalpostIkkeFunnet;
-import no.nav.tjeneste.virksomhet.behandlejournal.v2.binding.LagreVedleggPaaJournalpostLagreVedleggPaaJournalpostjournalpostIkkeFunnet;
+import no.nav.tjeneste.virksomhet.behandlejournal.v2.FerdigstillDokumentopplastingFerdigstillDokumentopplastingjournalpostIkkeFunnet;
+import no.nav.tjeneste.virksomhet.behandlejournal.v2.LagreVedleggPaaJournalpostLagreVedleggPaaJournalpostjournalpostIkkeFunnet;
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.feil.ForretningsmessigUnntak;
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.feil.JournalpostIkkeFunnet;
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.informasjon.journalfoerutgaaendehenvendelse.Journalpost;
@@ -44,6 +43,8 @@ import no.nav.tjeneste.virksomhet.behandlejournal.v2.meldinger.JournalfoerUtgaae
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.meldinger.JournalfoerUtgaaendeHenvendelseResponse;
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.meldinger.LagreVedleggPaaJournalpostRequest;
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.meldinger.LagreVedleggPaaJournalpostResponse;
+import org.joda.time.DateTime;
+import org.joda.time.LocalDateTime;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -54,11 +55,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.XMLGregorianCalendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 
 /**
  * Unit test class for BehandleJournalProvider.
@@ -297,7 +294,7 @@ public class BehandleJournalProviderTest {
 		expected.expect(hasProperty("faultInfo", hasProperty("feilaarsak", is(FEIL_AARSAK))));
 		expected.expect(hasProperty("faultInfo", hasProperty("feilkilde", is(FEIL_KILDE))));
 		expected.expect(hasProperty("faultInfo", hasProperty("feilmelding", is(EXCEPTION_MESSAGE))));
-		expected.expect(hasProperty("faultInfo", hasProperty("tidspunkt", is(getXmlTimestamp()))));
+		expected.expect(hasProperty("faultInfo", hasProperty("tidspunkt", is(getTodayJodaTime()))));
 	}
 
 	private JournalpostIkkeFunnet createJournalpostIkkeFunnet() {
@@ -305,18 +302,12 @@ public class BehandleJournalProviderTest {
 		journalpostIkkeFunnet.setFeilaarsak(FEIL_AARSAK);
 		journalpostIkkeFunnet.setFeilkilde(FEIL_KILDE);
 		journalpostIkkeFunnet.setFeilmelding(EXCEPTION_MESSAGE);
-		journalpostIkkeFunnet.setTidspunkt(getXmlTimestamp());
+		journalpostIkkeFunnet.setTidspunkt(getTodayJodaTime());
 		return journalpostIkkeFunnet;
 	}
 
-	private XMLGregorianCalendar getXmlTimestamp() {
-		GregorianCalendar calendar = new GregorianCalendar();
-		// Setting the date explicitly to make it testable
-		calendar.setTime(DateProvider.getToday());
-		try {
-			return DatatypeFactory.newInstance().newXMLGregorianCalendar(calendar);
-		} catch (DatatypeConfigurationException e) {
-			throw new ApplicationException("Unable to create XMLGregorianCalendar", e);
-		}
+	protected DateTime getTodayJodaTime() {
+		Date today = DateProvider.getToday();
+		return new DateTime(today.getTime());
 	}
 }

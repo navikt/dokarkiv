@@ -11,10 +11,6 @@
 
 	<artifactId>journal</artifactId>
 
-	<properties>
-		<nav-journal-v3-tjenestespesifikasjon.version>3.1.5</nav-journal-v3-tjenestespesifikasjon.version>
-	</properties>
-
 	<dependencies>
 		<dependency>
 			<groupId>no.nav.dokarkiv</groupId>
@@ -26,10 +22,8 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>no.nav.tjenester</groupId>
+			<groupId>no.nav.tjenestespesifikasjoner</groupId>
 			<artifactId>nav-journal-v3-tjenestespesifikasjon</artifactId>
-			<version>${nav-journal-v3-tjenestespesifikasjon.version}</version>
-			<classifier>jaxws</classifier>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -50,11 +44,6 @@
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-contract-wiremock</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>no.nav.modig</groupId>
-			<artifactId>modig-testcertificates</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>

@@ -1,6 +1,7 @@
 package no.nav.dokarkiv.behandlejournal.v2.tjoark064;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
+
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 /**
  * The response object for the JournalfoerUtgaaendeHenvendelse

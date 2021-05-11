@@ -2,7 +2,7 @@ package no.nav.dokarkiv.behandlejournal.v2;
 
 import no.nav.dokarkiv.behandlejournal.BehandleJournalSporingMapper;
 import no.nav.dokarkiv.core.security.ValidateSamlInInterceptor;
-import no.nav.tjeneste.virksomhet.behandlejournal.v2.binding.BehandleJournalV2;
+import no.nav.tjeneste.virksomhet.behandlejournal.v2.BehandleJournalV2;
 import org.apache.cxf.Bus;
 import org.apache.cxf.jaxws.EndpointImpl;
 import org.springframework.context.annotation.Bean;
@@ -24,7 +24,7 @@ public class BehandleJournalV2Config {
 	@Bean
 	@Profile("nais")
 	Endpoint behandleJournalv2(Bus bus,
-							   BehandleJournalV2 behandleJournalEndpoint) {
+							   BehandleJournalEndpoint behandleJournalEndpoint) {
 		EndpointImpl endpoint = new EndpointImpl(bus, behandleJournalEndpoint);
 		endpoint.publish("/behandlejournal/v2");
 		org.apache.cxf.endpoint.Endpoint cxfEndpoint = endpoint.getServer().getEndpoint();

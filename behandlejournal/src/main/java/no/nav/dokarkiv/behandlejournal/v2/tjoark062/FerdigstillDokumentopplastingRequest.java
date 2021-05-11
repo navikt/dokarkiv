@@ -3,7 +3,7 @@ package no.nav.dokarkiv.behandlejournal.v2.tjoark062;
 import lombok.Builder;
 import no.nav.dokarkiv.behandlejournal.SporingsMetaData;
 import no.nav.dokarkiv.core.exceptions.ApplicationException;
-import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 /**
  * Request object for the FerdigstillDokumentOpplasting operation.
