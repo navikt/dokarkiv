@@ -95,12 +95,9 @@ public class PdlIdentConsumer implements IdentConsumer {
 	)
 	@Override
 	public String hentFolkeregisterIdent(String aktoerId) throws PersonIkkeFunnetException {
-		if(isBlank(aktoerId)) {
-			throw new PersonIkkeFunnetException("Aktørid er null eller blank.");
-		}
 		try {
 			final RequestEntity<PdlRequest> requestEntity = baseRequest()
-					.body(mapHentFolkeregisterIdentForAktoerId(aktoerId));
+					.body(mapHentFolkeregisterIdentForAktoerId(this.validateFolkeregisterIdent(aktoerId)));
 			final PdlResponse pdlResponse = requireNonNull(restTemplate.exchange(requestEntity, PdlResponse.class).getBody());
 
 			if (pdlResponse.getErrors() == null || pdlResponse.getErrors().isEmpty()) {

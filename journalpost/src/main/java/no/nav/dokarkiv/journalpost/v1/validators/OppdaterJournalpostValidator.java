@@ -1,9 +1,5 @@
 package no.nav.dokarkiv.journalpost.v1.validators;
 
-import static org.apache.commons.lang3.StringUtils.isBlank;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
-import static org.apache.commons.lang3.StringUtils.isNumeric;
-
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
@@ -16,7 +12,17 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
+import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.AKTOERID;
+import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.FNR;
+import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.ORGNR;
+import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
+import static org.apache.commons.lang3.StringUtils.isNumeric;
+
 public final class OppdaterJournalpostValidator {
+	private static final int FNR_LENGTH = 11;
+	private static final int AKTOERID_LENGTH = 13;
+	private static final int ORGNR_LENGTH = 9;
 
 	private static List<JournalStatusCode> restrictedJournalpostStatusCodes = Arrays.asList(JournalStatusCode.J, JournalStatusCode.FS, JournalStatusCode.FL, JournalStatusCode.E);
 
@@ -40,6 +46,10 @@ public final class OppdaterJournalpostValidator {
 
 		if (isNotBlank(request.getBehandlingstema())) {
 			validateBehandlingstema(request.getBehandlingstema());
+		}
+
+		if (request.getBruker() != null) {
+			validateBruker(request.getBruker());
 		}
 	}
 
@@ -136,4 +146,19 @@ public final class OppdaterJournalpostValidator {
 		}
 	}
 
+	private static void validateBruker(Bruker bruker) {
+		if (isBlank(bruker.getId())) {
+			throw new InputValideringFeiletException("Bruker.id må være satt.");
+		}
+		if (!isNumeric(bruker.getId())) {
+			throw new InputValideringFeiletException("Bruker.id må bestå av tall.");
+		}
+		if (FNR.equals(bruker.getIdType()) && bruker.getId().length() != FNR_LENGTH) {
+			throw new InputValideringFeiletException("Bruker.id må være 11 siffer for FNR.");
+		} else if (ORGNR.equals(bruker.getIdType()) && bruker.getId().length() != ORGNR_LENGTH) {
+			throw new InputValideringFeiletException("Bruker.id må være 9 siffer for ORGNR.");
+		} else if (AKTOERID.equals(bruker.getIdType()) && bruker.getId().length() != AKTOERID_LENGTH) {
+			throw new InputValideringFeiletException("Bruker.id må være 11 siffer for AKTOERID.");
+		}
+	}
 }
