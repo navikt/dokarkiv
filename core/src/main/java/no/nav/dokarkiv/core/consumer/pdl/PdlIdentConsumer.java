@@ -62,10 +62,9 @@ public class PdlIdentConsumer implements IdentConsumer {
 	)
 	@Override
 	public String hentAktoerId(String folkeregisterIdent) throws PersonIkkeFunnetException {
-		this.validateFolkeregisterIdent(folkeregisterIdent);
 		try {
 			final RequestEntity<PdlRequest> requestEntity = baseRequest()
-					.body(mapHentAktoerIdForFolkeregisterident(folkeregisterIdent));
+					.body(mapHentAktoerIdForFolkeregisterident(this.validateFolkeregisterIdent(folkeregisterIdent)));
 			final PdlResponse pdlResponse = requireNonNull(restTemplate.exchange(requestEntity, PdlResponse.class).getBody());
 
 			if (pdlResponse.getErrors() == null || pdlResponse.getErrors().isEmpty()) {
@@ -133,10 +132,9 @@ public class PdlIdentConsumer implements IdentConsumer {
 	)
 	@Override
 	public List<String> hentHistoriskeFolkeregisterIdenter(String folkeregisterIdent) throws PersonIkkeFunnetException {
-		this.validateFolkeregisterIdent(folkeregisterIdent);
 		try {
 			final RequestEntity<PdlRequest> requestEntity = baseRequest()
-					.body(mapHentHistoriskeFolkeregisterIdentForAktoerId(folkeregisterIdent));
+					.body(mapHentHistoriskeFolkeregisterIdentForAktoerId(this.validateFolkeregisterIdent(folkeregisterIdent)));
 			final PdlResponse pdlResponse = requireNonNull(restTemplate.exchange(requestEntity, PdlResponse.class).getBody());
 
 			if (pdlResponse.getErrors() == null || pdlResponse.getErrors().isEmpty()) {
@@ -170,17 +168,21 @@ public class PdlIdentConsumer implements IdentConsumer {
 				.header(HEADER_PDL_NAV_CONSUMER_TOKEN, BEARER_TOKEN_PREFIX + serviceuserToken);
 	}
 
-	void validateFolkeregisterIdent(String folkeregisterIdent) {
+	String validateFolkeregisterIdent(String folkeregisterIdent) {
 		if(isBlank(folkeregisterIdent)) {
-			throw new PdlFunctionalException("Validering av folkeregisterIdent failet fordi verdien er null eller blank.");
+			throw new PersonIkkeFunnetException("Validering av folkeregisterIdent failet fordi verdien er null eller blank.");
 		}
 
-		if (!isNumeric(folkeregisterIdent)) {
-			throw new PdlFunctionalException("Validering av folkeregisterIdent failet pga inneholder karakterer som er bokstaver");
+		String folkeregisterIdentTrimed = folkeregisterIdent.trim();
+
+		if (!isNumeric(folkeregisterIdentTrimed)) {
+			throw new PersonIkkeFunnetException("Validering av folkeregisterIdent feilet fordi verdien inneholder bokstaver");
 		}
 
-		if (folkeregisterIdent.length() != 13 && folkeregisterIdent.length() != 11 && folkeregisterIdent.length() != 9) {
-			throw new PdlFunctionalException("Validering av folkeregisterIdent failet pga feil lengde på " + folkeregisterIdent.length());
+		if (folkeregisterIdentTrimed.length() != 13 && folkeregisterIdentTrimed.length() != 11 && folkeregisterIdentTrimed.length() != 9) {
+			throw new PersonIkkeFunnetException("Validering av folkeregisterIdent feilet pga feil lengde på ident: " + folkeregisterIdentTrimed.length() + ". Akseptert lengde er 9, 11 eller 13");
 		}
+
+		return folkeregisterIdentTrimed;
 	}
 }

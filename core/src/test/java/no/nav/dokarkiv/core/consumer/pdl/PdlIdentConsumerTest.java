@@ -21,7 +21,7 @@ public class PdlIdentConsumerTest {
 	);
 
 	@Test
-	public void ShouldValidateOrgNrWith9Numbers() {
+	public void shouldValidateOrgNrWith9Numbers() {
 		pdlIdentConsumer.validateFolkeregisterIdent("111111111");
 	}
 
@@ -37,21 +37,27 @@ public class PdlIdentConsumerTest {
 
 	@Test
 	public void shouldThrowExceptionWhenFolkeregisterIdentIsNull() {
-		assertThrows(PdlFunctionalException.class, () -> pdlIdentConsumer.validateFolkeregisterIdent(null));
+		assertThrows(PersonIkkeFunnetException.class, () -> pdlIdentConsumer.validateFolkeregisterIdent(null));
 	}
 
 	@Test
 	public void shouldThrowExceptionWhenFolkeregisterIdentIsEmpty() {
-		assertThrows(PdlFunctionalException.class, () -> pdlIdentConsumer.validateFolkeregisterIdent(""));
+		assertThrows(PersonIkkeFunnetException.class, () -> pdlIdentConsumer.validateFolkeregisterIdent(""));
 	}
 
 	@Test
 	public void shouldThrowExceptionWhenFolkeregisterIdentIsNotNumeric() {
-		assertThrows(PdlFunctionalException.class, () -> pdlIdentConsumer.validateFolkeregisterIdent("abc"));
+		assertThrows(PersonIkkeFunnetException.class, () -> pdlIdentConsumer.validateFolkeregisterIdent("abc"));
 	}
 
 	@Test
 	public void shouldThrowExceptionWhenFolkeregisterIdentIsNotValidLength() {
-		assertThrows(PdlFunctionalException.class, () -> pdlIdentConsumer.validateFolkeregisterIdent("123"));
+		assertThrows(PersonIkkeFunnetException.class, () -> pdlIdentConsumer.validateFolkeregisterIdent("123"));
 	}
+
+	@Test
+	public void ShouldValidateAktoerIdWith13Numbers2() {
+		pdlIdentConsumer.validateFolkeregisterIdent("    11111111111    ");
+	}
+
 }
