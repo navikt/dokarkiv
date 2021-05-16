@@ -20,10 +20,6 @@ public class PdlIdentConsumerTest {
 			Mockito.mock(StsRestConsumer.class)
 	);
 
-	@Test
-	public void shouldValidateOrgNrWith9Numbers() {
-		pdlIdentConsumer.validateFolkeregisterIdent("111111111");
-	}
 
 	@Test
 	public void ShouldValidateFnrWith11Numbers() {
@@ -33,6 +29,11 @@ public class PdlIdentConsumerTest {
 	@Test
 	public void ShouldValidateAktoerIdWith13Numbers() {
 		pdlIdentConsumer.validateFolkeregisterIdent("11111111111");
+	}
+
+	@Test
+	public void shouldThrowExceptionWhenFolkeregisterIdentIsCorrectLengthWithCharactersThatIsNotNumeric() {
+		assertThrows(PersonIkkeFunnetException.class, () -> pdlIdentConsumer.validateFolkeregisterIdent("1test11test"));
 	}
 
 	@Test

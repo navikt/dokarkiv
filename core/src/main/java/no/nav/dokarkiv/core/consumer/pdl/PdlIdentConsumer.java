@@ -165,21 +165,21 @@ public class PdlIdentConsumer implements IdentConsumer {
 				.header(HEADER_PDL_NAV_CONSUMER_TOKEN, BEARER_TOKEN_PREFIX + serviceuserToken);
 	}
 
-	String validateFolkeregisterIdent(String folkeregisterIdent) {
-		if(isBlank(folkeregisterIdent)) {
-			throw new PersonIkkeFunnetException("Validering av folkeregisterIdent failet fordi verdien er null eller blank.");
+	String validateFolkeregisterIdent(String ident) {
+		if(isBlank(ident)) {
+			throw new PersonIkkeFunnetException("Validering av ident failet fordi verdien er null eller blank.");
 		}
 
-		String folkeregisterIdentTrimed = folkeregisterIdent.trim();
+		String identTrimed = ident.trim();
 
-		if (!isNumeric(folkeregisterIdentTrimed)) {
-			throw new PersonIkkeFunnetException("Validering av folkeregisterIdent feilet fordi verdien inneholder bokstaver");
+		if (!isNumeric(identTrimed)) {
+			throw new PersonIkkeFunnetException("Validering av ident feilet fordi verdien inneholder bokstaver");
 		}
 
-		if (folkeregisterIdentTrimed.length() != 13 && folkeregisterIdentTrimed.length() != 11 && folkeregisterIdentTrimed.length() != 9) {
-			throw new PersonIkkeFunnetException("Validering av folkeregisterIdent feilet pga feil lengde på ident: " + folkeregisterIdentTrimed.length() + ". Akseptert lengde er 9, 11 eller 13");
+		if (identTrimed.length() != 13 && identTrimed.length() != 11) {
+			throw new PersonIkkeFunnetException("Validering av ident feilet pga feil lengde på ident: " + identTrimed.length() + ". Akseptert lengde er 9, 11 eller 13");
 		}
 
-		return folkeregisterIdentTrimed;
+		return identTrimed;
 	}
 }
