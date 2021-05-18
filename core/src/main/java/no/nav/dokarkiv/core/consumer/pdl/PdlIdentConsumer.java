@@ -167,7 +167,7 @@ public class PdlIdentConsumer implements IdentConsumer {
 
 	String validateFolkeregisterIdent(String ident) {
 		if(isBlank(ident)) {
-			throw new PersonIkkeFunnetException("Validering av ident failet fordi verdien er null eller blank.");
+			throw new PersonIkkeFunnetException("Validering av ident feilet fordi verdien er null eller blank.");
 		}
 
 		String identTrimed = ident.trim();
@@ -177,7 +177,7 @@ public class PdlIdentConsumer implements IdentConsumer {
 		}
 
 		if (identTrimed.length() != 13 && identTrimed.length() != 11) {
-			throw new PersonIkkeFunnetException("Validering av ident feilet pga feil lengde på ident: " + identTrimed.length() + ". Akseptert lengde er 9, 11 eller 13");
+			throw new PersonIkkeFunnetException("Validering av ident feilet fordi verdien har lengde " + identTrimed.length());
 		}
 
 		return identTrimed;

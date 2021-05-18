@@ -8,6 +8,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -23,12 +24,20 @@ public class PdlIdentConsumerTest {
 
 	@Test
 	public void ShouldValidateFnrWith11Numbers() {
-		pdlIdentConsumer.validateFolkeregisterIdent("11111111111");
+		String validatedIdent = pdlIdentConsumer.validateFolkeregisterIdent("11111111111");
+		assertEquals("11111111111", validatedIdent);
 	}
 
 	@Test
 	public void ShouldValidateAktoerIdWith13Numbers() {
-		pdlIdentConsumer.validateFolkeregisterIdent("11111111111");
+		String validatedIdent = pdlIdentConsumer.validateFolkeregisterIdent("1111111111111");
+		assertEquals("1111111111111", validatedIdent);
+	}
+
+	@Test
+	public void ShouldValidateAktoerIdWith13Numbers2() {
+		String validatedIdent = pdlIdentConsumer.validateFolkeregisterIdent("    11111111111    ");
+		assertEquals("11111111111", validatedIdent);
 	}
 
 	@Test
@@ -55,10 +64,4 @@ public class PdlIdentConsumerTest {
 	public void shouldThrowExceptionWhenFolkeregisterIdentIsNotValidLength() {
 		assertThrows(PersonIkkeFunnetException.class, () -> pdlIdentConsumer.validateFolkeregisterIdent("123"));
 	}
-
-	@Test
-	public void ShouldValidateAktoerIdWith13Numbers2() {
-		pdlIdentConsumer.validateFolkeregisterIdent("    11111111111    ");
-	}
-
 }
