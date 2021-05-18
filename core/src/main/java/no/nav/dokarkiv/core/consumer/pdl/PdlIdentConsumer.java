@@ -177,7 +177,7 @@ public class PdlIdentConsumer implements IdentConsumer {
 		}
 
 		if (identTrimed.length() != 13 && identTrimed.length() != 11) {
-			throw new PersonIkkeFunnetException("Validering av ident feilet fordi verdien har lengde " + identTrimed.length());
+			throw new PersonIkkeFunnetException("Validering av ident feilet fordi verdien har lengde " + identTrimed.length() + ". Akseptert lengde er 11 eller 13");
 		}
 
 		return identTrimed;
