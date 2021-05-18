@@ -23,21 +23,21 @@ public class PdlIdentConsumerTest {
 
 
 	@Test
-	public void ShouldValidateFnrWith11Numbers() {
+	public void shouldValidateFnrWith11Numbers() {
 		String validatedIdent = pdlIdentConsumer.validateFolkeregisterIdent("11111111111");
 		assertEquals("11111111111", validatedIdent);
 	}
 
 	@Test
-	public void ShouldValidateAktoerIdWith13Numbers() {
-		String validatedIdent = pdlIdentConsumer.validateFolkeregisterIdent("1111111111111");
-		assertEquals("1111111111111", validatedIdent);
+	public void shouldValidateAktoerIdWith11NumbersWithSpace() {
+		String validatedIdent = pdlIdentConsumer.validateFolkeregisterIdent("    11111111111    ");
+		assertEquals("11111111111", validatedIdent);
 	}
 
 	@Test
-	public void ShouldValidateAktoerIdWith13Numbers2() {
-		String validatedIdent = pdlIdentConsumer.validateFolkeregisterIdent("    11111111111    ");
-		assertEquals("11111111111", validatedIdent);
+	public void shouldValidateAktoerIdWith13Numbers() {
+		String validatedIdent = pdlIdentConsumer.validateFolkeregisterIdent("1111111111111");
+		assertEquals("1111111111111", validatedIdent);
 	}
 
 	@Test
