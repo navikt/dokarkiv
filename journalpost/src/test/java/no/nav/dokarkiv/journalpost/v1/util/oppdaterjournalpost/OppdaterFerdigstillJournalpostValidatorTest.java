@@ -270,7 +270,6 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 		OppdaterJournalpostValidator.validateOppdaterteFelt(oppdaterJournalpostRequest, JournalStatusCode.D, JournalpostTypeCode.I);
 	}
 
-
 	@Test
 	public void shouldFailIfBrukerIdIsNull() {
 		oppdaterJournalpostRequest = OppdaterJournalpostRequest.builder()
@@ -285,8 +284,6 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 		expectedException.expect(InputValideringFeiletException.class);
 		OppdaterJournalpostValidator.validateOppdaterteFelt(oppdaterJournalpostRequest, JournalStatusCode.D, JournalpostTypeCode.I);
 	}
-
-
 
 	@Test
 	public void shouldThrowExceptionWhenAvsenderMottakerIdTypeHPRNRMoreThan9Digits() {
