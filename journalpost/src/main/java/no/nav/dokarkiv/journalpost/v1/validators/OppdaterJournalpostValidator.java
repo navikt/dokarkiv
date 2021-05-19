@@ -6,15 +6,18 @@ import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
 import no.nav.dokarkiv.journalpost.v1.api.Bruker;
 import no.nav.dokarkiv.journalpost.v1.api.OppdaterJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.Sak;
-import no.nav.dokarkiv.journalpost.v1.api.Sakstype;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.*;
 import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.AKTOERID;
 import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.FNR;
 import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.ORGNR;
+import static no.nav.dokarkiv.journalpost.v1.api.Sakstype.ARKIVSAK;
+import static no.nav.dokarkiv.journalpost.v1.api.Sakstype.FAGSAK;
+import static no.nav.dokarkiv.journalpost.v1.api.Sakstype.GENERELL_SAK;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.commons.lang3.StringUtils.isNumeric;
@@ -24,7 +27,7 @@ public final class OppdaterJournalpostValidator {
 	private static final int AKTOERID_LENGTH = 13;
 	private static final int ORGNR_LENGTH = 9;
 
-	private static List<JournalStatusCode> restrictedJournalpostStatusCodes = Arrays.asList(JournalStatusCode.J, JournalStatusCode.FS, JournalStatusCode.FL, JournalStatusCode.E);
+	private static List<JournalStatusCode> restrictedJournalpostStatusCodes = Arrays.asList(J, FS, FL, E);
 
 	private OppdaterJournalpostValidator() {
 	}
@@ -47,10 +50,6 @@ public final class OppdaterJournalpostValidator {
 		if (isNotBlank(request.getBehandlingstema())) {
 			validateBehandlingstema(request.getBehandlingstema());
 		}
-
-		if (request.getBruker() != null) {
-			validateBruker(request.getBruker());
-		}
 	}
 
 
@@ -62,17 +61,16 @@ public final class OppdaterJournalpostValidator {
 	}
 
 	private static void validateSak(Sak sak, Bruker bruker, String tema) {
-		if (Sakstype.FAGSAK.equals(sak.getSakstype())) {
+		if (FAGSAK.equals(sak.getSakstype())) {
 			validateFagsak(sak, bruker, tema);
 		}
 
-		if (Sakstype.GENERELL_SAK.equals(sak.getSakstype())) {
+		if (GENERELL_SAK.equals(sak.getSakstype())) {
 			validateGenerellSak(sak, bruker, tema);
 		}
 
-		if (Sakstype.ARKIVSAK.equals(sak.getSakstype()) || sak.getSakstype() == null) {
+		if (ARKIVSAK.equals(sak.getSakstype()) || sak.getSakstype() == null) {
 			validateArkivsak(sak);
-
 		}
 	}
 
@@ -83,6 +81,8 @@ public final class OppdaterJournalpostValidator {
 		if (isBrukerNull(bruker)) {
 			throw new InputValideringFeiletException("Bruker må være satt dersom sakstype=FAGSAK");
 		}
+		validateBruker(bruker);
+
 		if (isBlank(sak.getFagsakId())) {
 			throw new InputValideringFeiletException("Sak.fagsakId må være satt dersom sakstype=FAGSAK");
 		}
@@ -104,6 +104,8 @@ public final class OppdaterJournalpostValidator {
 		if (isBrukerNull(bruker)) {
 			throw new InputValideringFeiletException("Bruker må være satt dersom sakstype=GENERELL_SAK");
 		}
+		validateBruker(bruker);
+
 		if (isNotBlank(sak.getFagsakId())) {
 			throw new InputValideringFeiletException("Sak.fagsakId skal ikke være satt dersom sakstype=GENERELL_SAK");
 		}

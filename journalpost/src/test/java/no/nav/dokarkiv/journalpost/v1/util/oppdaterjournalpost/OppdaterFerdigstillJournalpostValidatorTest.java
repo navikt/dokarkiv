@@ -21,6 +21,9 @@ import org.junit.rules.ExpectedException;
 import java.sql.Date;
 import java.util.Collections;
 
+import static no.nav.dokarkiv.journalpost.v1.api.Arkivsaksystem.*;
+import static no.nav.dokarkiv.journalpost.v1.api.Sakstype.ARKIVSAK;
+import static no.nav.dokarkiv.journalpost.v1.api.Sakstype.FAGSAK;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.ARKIVSAKSNUMMER;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.AVSENDER_NAVN;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.BRUKER_ID_PERSON;
@@ -76,7 +79,7 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 				.sak(Sak.builder()
 						.sakstype(Sakstype.ARKIVSAK)
 						.arkivsaksnummer(ARKIVSAKSNUMMER)
-						.arkivsaksystem(Arkivsaksystem.GSAK)
+						.arkivsaksystem(GSAK)
 						.build())
 				.build();
 		OppdaterJournalpostValidator.validateOppdaterteFelt(oppdaterJournalpostRequest, JournalStatusCode.M, JournalpostTypeCode.I);
@@ -133,7 +136,7 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 				.sak(Sak.builder()
 						.sakstype(Sakstype.ARKIVSAK)
 						.arkivsaksnummer(ARKIVSAKSNUMMER)
-						.arkivsaksystem(Arkivsaksystem.GSAK)
+						.arkivsaksystem(GSAK)
 						.fagsakId(FAGSAK_ID)
 						.build())
 				.build();
@@ -187,7 +190,7 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
         oppdaterJournalpostRequest = OppdaterJournalpostRequest.builder()
                 .sak(Sak.builder()
                         .arkivsaksnummer("quack123")
-                        .arkivsaksystem(Arkivsaksystem.GSAK)
+                        .arkivsaksystem(GSAK)
                         .build())
                 .build();
         expectedException.expect(InputValideringFeiletException.class);
@@ -249,6 +252,26 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
     }
 
 	@Test
+	public void shouldTNotValidateBrukerWhenSaksTypeIsArkivsak() {
+		oppdaterJournalpostRequest = OppdaterJournalpostRequest.builder()
+				.sak(Sak.builder()
+						.sakstype(ARKIVSAK)
+						.arkivsaksnummer("11111")
+						.arkivsaksystem(GSAK)
+						.build())
+				.tema("test")
+				.bruker(Bruker.builder().id("test999999").idType(BrukerIdType.ORGNR).build())
+				.avsenderMottaker(AvsenderMottaker.builder()
+						.navn(AVSENDER_NAVN)
+						.id("9999999999")
+						.idType(AvsenderMottakerIdType.HPRNR)
+						.build())
+				.build();
+		OppdaterJournalpostValidator.validateOppdaterteFelt(oppdaterJournalpostRequest, JournalStatusCode.D, JournalpostTypeCode.I);
+	}
+
+
+	@Test
 	public void shouldFailIfBrukerIdIsNull() {
 		oppdaterJournalpostRequest = OppdaterJournalpostRequest.builder()
 				.bruker(Bruker.builder().idType(BrukerIdType.FNR).build())
@@ -268,6 +291,11 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 	@Test
 	public void shouldThrowExceptionWhenAvsenderMottakerIdTypeHPRNRMoreThan9Digits() {
 		oppdaterJournalpostRequest = OppdaterJournalpostRequest.builder()
+				.sak(Sak.builder()
+						.sakstype(FAGSAK)
+						.build())
+				.tema("test")
+				.bruker(Bruker.builder().id("9999999999").idType(BrukerIdType.ORGNR).build())
 				.avsenderMottaker(AvsenderMottaker.builder()
 						.navn(AVSENDER_NAVN)
 						.id("9999999999")
@@ -275,13 +303,17 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 						.build())
 				.build();
 		expectedException.expect(InputValideringFeiletException.class);
-		expectedException.expectMessage("AvsenderMottaker.id");
+		expectedException.expectMessage("Bruker.id må være 9 siffer for ORGNR.");
 		OppdaterJournalpostValidator.validateOppdaterteFelt(oppdaterJournalpostRequest, JournalStatusCode.D, JournalpostTypeCode.I);
 	}
 
 	@Test
 	public void shouldThrowExceptionIfBrukerIdIsNotNumeric() {
 		oppdaterJournalpostRequest = OppdaterJournalpostRequest.builder()
+				.sak(Sak.builder()
+						.sakstype(FAGSAK)
+						.build())
+				.tema("test")
 				.bruker(Bruker.builder()
 						.idType(BrukerIdType.FNR)
 						.id("abc11111111")
@@ -297,6 +329,10 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 	@Test
 	public void shouldThrowExceptionIfBrukerIdHasInvalidLengthForFnr() {
 		oppdaterJournalpostRequest = OppdaterJournalpostRequest.builder()
+				.sak(Sak.builder()
+						.sakstype(FAGSAK)
+						.build())
+				.tema("test")
 				.bruker(Bruker.builder()
 						.idType(BrukerIdType.FNR)
 						.id("1122334455")
@@ -312,6 +348,10 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 	@Test
 	public void shouldThrowExceptionIfBrukerIdHasInvalidLengthForOrgnr() {
 		oppdaterJournalpostRequest = OppdaterJournalpostRequest.builder()
+				.sak(Sak.builder()
+						.sakstype(FAGSAK)
+						.build())
+				.tema("test")
 				.bruker(Bruker.builder()
 						.idType(BrukerIdType.ORGNR)
 						.id("1122334455")
@@ -327,6 +367,10 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 	@Test
 	public void shouldThrowExceptionIfBrukerIdHasInvalidLengthForAktoerid() {
 		oppdaterJournalpostRequest = OppdaterJournalpostRequest.builder()
+				.sak(Sak.builder()
+						.sakstype(FAGSAK)
+						.build())
+				.tema("test")
 				.bruker(Bruker.builder()
 						.idType(BrukerIdType.AKTOERID)
 						.id("1122334455")
