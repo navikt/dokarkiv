@@ -534,8 +534,7 @@ public class InnsynJournalV2SecurityFacadeTest {
 				.when(identConsumer).hentHistoriskeFolkeregisterIdenter(eq(USER_ID));
 
 		expectedException.expect(RuntimeException.class);
-		expectedException.expectMessage("Kan ikke utføre tilgangskontroll for pålogget bruker med fnr=" + USER_ID + " "
-				+ "for journalpost med journalpostId=" + JOURNALPOST_ID);
+		expectedException.expectMessage("Kan ikke utføre tilgangskontroll for pålogget bruker tilknyttet journalpost med journalpostId: " + JOURNALPOST_ID);
 
 		securityFacade.hentDokument(JOURNALPOST_ID, DOKUMENT_INFO_ID);
 	}

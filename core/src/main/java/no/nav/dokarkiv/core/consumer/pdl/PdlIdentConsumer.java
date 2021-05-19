@@ -15,6 +15,7 @@ import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import javax.inject.Inject;
 import java.net.URI;
 import java.time.Duration;
 import java.util.HashMap;
@@ -27,6 +28,7 @@ import static no.nav.dokarkiv.core.cache.CacheConfig.HISTORISKE_IDENTER;
 import static no.nav.dokarkiv.core.storage.RetryConstants.DELAY_SHORT;
 import static no.nav.dokarkiv.core.storage.RetryConstants.MULTIPLIER_SHORT;
 import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.isNumeric;
 
 /**
  * PDL implementasjon av {@link IdentConsumer}
@@ -42,6 +44,7 @@ public class PdlIdentConsumer implements IdentConsumer {
 	private final StsRestConsumer stsRestConsumer;
 	private final URI pdlUri;
 
+	@Inject
 	public PdlIdentConsumer(@Value("${pdl.url}") String pdlUrl,
 							RestTemplateBuilder restTemplateBuilder,
 							StsRestConsumer stsRestConsumer) {
@@ -59,12 +62,9 @@ public class PdlIdentConsumer implements IdentConsumer {
 	)
 	@Override
 	public String hentAktoerId(String folkeregisterIdent) throws PersonIkkeFunnetException {
-		if(isBlank(folkeregisterIdent)) {
-			throw new PersonIkkeFunnetException("Folkeregisterident er null eller blank.");
-		}
 		try {
 			final RequestEntity<PdlRequest> requestEntity = baseRequest()
-					.body(mapHentAktoerIdForFolkeregisterident(folkeregisterIdent));
+					.body(mapHentAktoerIdForFolkeregisterident(this.validateFolkeregisterIdent(folkeregisterIdent)));
 			final PdlResponse pdlResponse = requireNonNull(restTemplate.exchange(requestEntity, PdlResponse.class).getBody());
 
 			if (pdlResponse.getErrors() == null || pdlResponse.getErrors().isEmpty()) {
@@ -95,12 +95,9 @@ public class PdlIdentConsumer implements IdentConsumer {
 	)
 	@Override
 	public String hentFolkeregisterIdent(String aktoerId) throws PersonIkkeFunnetException {
-		if(isBlank(aktoerId)) {
-			throw new PersonIkkeFunnetException("Aktørid er null eller blank.");
-		}
 		try {
 			final RequestEntity<PdlRequest> requestEntity = baseRequest()
-					.body(mapHentFolkeregisterIdentForAktoerId(aktoerId));
+					.body(mapHentFolkeregisterIdentForAktoerId(this.validateFolkeregisterIdent(aktoerId)));
 			final PdlResponse pdlResponse = requireNonNull(restTemplate.exchange(requestEntity, PdlResponse.class).getBody());
 
 			if (pdlResponse.getErrors() == null || pdlResponse.getErrors().isEmpty()) {
@@ -132,12 +129,9 @@ public class PdlIdentConsumer implements IdentConsumer {
 	)
 	@Override
 	public List<String> hentHistoriskeFolkeregisterIdenter(String folkeregisterIdent) throws PersonIkkeFunnetException {
-		if(isBlank(folkeregisterIdent)) {
-			throw new PersonIkkeFunnetException("Folkeregisterident er null eller blank.");
-		}
 		try {
 			final RequestEntity<PdlRequest> requestEntity = baseRequest()
-					.body(mapHentHistoriskeFolkeregisterIdentForAktoerId(folkeregisterIdent));
+					.body(mapHentHistoriskeFolkeregisterIdentForAktoerId(this.validateFolkeregisterIdent(folkeregisterIdent)));
 			final PdlResponse pdlResponse = requireNonNull(restTemplate.exchange(requestEntity, PdlResponse.class).getBody());
 
 			if (pdlResponse.getErrors() == null || pdlResponse.getErrors().isEmpty()) {
@@ -169,5 +163,23 @@ public class PdlIdentConsumer implements IdentConsumer {
 				.header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
 				.header(HttpHeaders.AUTHORIZATION, BEARER_TOKEN_PREFIX + serviceuserToken)
 				.header(HEADER_PDL_NAV_CONSUMER_TOKEN, BEARER_TOKEN_PREFIX + serviceuserToken);
+	}
+
+	String validateFolkeregisterIdent(String ident) {
+		if(isBlank(ident)) {
+			throw new PersonIkkeFunnetException("Validering av ident feilet fordi verdien er null eller blank.");
+		}
+
+		String identTrimed = ident.trim();
+
+		if (!isNumeric(identTrimed)) {
+			throw new PersonIkkeFunnetException("Validering av ident feilet fordi verdien inneholder bokstaver");
+		}
+
+		if (identTrimed.length() != 13 && identTrimed.length() != 11) {
+			throw new PersonIkkeFunnetException("Validering av ident feilet fordi verdien har lengde " + identTrimed.length() + ". Akseptert lengde er 11 eller 13");
+		}
+
+		return identTrimed;
 	}
 }
