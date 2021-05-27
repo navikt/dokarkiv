@@ -21,7 +21,7 @@ public class AvbrytServiceTest {
 
 	private JoarkRepository joarkRepositoryMock = Mockito.mock(JoarkRepository.class);
 
-	private LagreAksjonsLoggService aksjonsLoggService = Mockito.mock(LagreAksjonsLoggService.class);;
+	private LagreAksjonsLoggService aksjonsLoggService = Mockito.mock(LagreAksjonsLoggService.class);
 
 	private AvbrytService avbrytService = new AvbrytService(joarkRepositoryMock, aksjonsLoggService);
 

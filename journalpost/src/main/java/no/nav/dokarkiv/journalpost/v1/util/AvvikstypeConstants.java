@@ -5,7 +5,7 @@ public final class AvvikstypeConstants {
     public static final String OPPHEV_FEILREGISTRERT_SAKSTILKNYTNING = "opphevFeilregistrertSakstilknytning";
     public static final String SETT_UKJENT_BRUKER = "settUkjentBruker";
     public static final String SETT_STATUS_AVBRYT = "settStatusAvbryt";
-    public static final String SETT_STATUS_UTGÅR = "settStatusUtgår";
+    public static final String SETT_STATUS_UTGAAR = "settStatusUtgår";
 
     private AvvikstypeConstants() {}
 }

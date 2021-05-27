@@ -13,7 +13,7 @@ import java.util.Optional;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.A;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.D;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.OD;
-import static no.nav.dokarkiv.journalpost.v1.services.StatusUtgaaService.FIKK_UTGAAR;
+import static no.nav.dokarkiv.journalpost.v1.services.UtgaarService.FIKK_UTGAAR;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -22,13 +22,9 @@ import static org.mockito.Mockito.when;
 
 public class StatusUtgaarServiceTest {
 
-
 	private JoarkRepository joarkRepositoryMock = Mockito.mock(JoarkRepository.class);
-
-	private LagreAksjonsLoggService aksjonsLoggService = Mockito.mock(LagreAksjonsLoggService.class);;
-
-	private StatusUtgaaService statusUtgaaService = new StatusUtgaaService(joarkRepositoryMock, aksjonsLoggService);
-
+	private LagreAksjonsLoggService aksjonsLoggService = Mockito.mock(LagreAksjonsLoggService.class);
+	private UtgaarService utgaarService = new UtgaarService(joarkRepositoryMock, aksjonsLoggService);
 
 	@Test
 	public void HappyPathTest() {
@@ -37,9 +33,7 @@ public class StatusUtgaarServiceTest {
 				.build();
 
 		when(joarkRepositoryMock.findById(any(Long.class))).thenReturn(Optional.of(journalpost));
-
-		String response = statusUtgaaService.settStatusUtgaar("38");
-
+		String response = utgaarService.settStatusUtgaar("38");
 		assertEquals(FIKK_UTGAAR, response);
 	}
 
@@ -49,9 +43,8 @@ public class StatusUtgaarServiceTest {
 				.build();
 
 		when(joarkRepositoryMock.findById(any(Long.class))).thenReturn(Optional.of(journalpost));
-
 		assertThrows(UgyldigJournalStatusException.class, () ->
-				statusUtgaaService.settStatusUtgaar("38")
+				utgaarService.settStatusUtgaar("38")
 		);
 	}
 
@@ -62,9 +55,8 @@ public class StatusUtgaarServiceTest {
 				.build();
 
 		when(joarkRepositoryMock.findById(any(Long.class))).thenReturn(Optional.of(journalpost));
-
 		assertThrows(UgyldigJournalStatusException.class, () ->
-				statusUtgaaService.settStatusUtgaar("38")
+				utgaarService.settStatusUtgaar("38")
 		);
 	}
 
@@ -75,10 +67,8 @@ public class StatusUtgaarServiceTest {
 				.build();
 
 		when(joarkRepositoryMock.findById(any(Long.class))).thenReturn(Optional.of(journalpost));
-
 		assertThrows(UgyldigJournalStatusException.class, () ->
-				statusUtgaaService.settStatusUtgaar("38")
+				utgaarService.settStatusUtgaar("38")
 		);
 	}
-
 }

@@ -19,12 +19,6 @@ import static java.lang.Long.parseLong;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
 import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.AVBRYT;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.*;
-import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.D;
-import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.M;
-import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.MO;
-import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.OD;
-import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.R;
-import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.UB;
 
 @Component
 @Slf4j

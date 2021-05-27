@@ -13,7 +13,7 @@ import no.nav.dokarkiv.core.security.abac.AbacSecurityService;
 import no.nav.dokarkiv.journalpost.v1.services.AvbrytService;
 import no.nav.dokarkiv.journalpost.v1.services.FeilregistrerSakstilknytningService;
 import no.nav.dokarkiv.journalpost.v1.services.SettUkjentBrukerService;
-import no.nav.dokarkiv.journalpost.v1.services.StatusUtgaaService;
+import no.nav.dokarkiv.journalpost.v1.services.UtgaarService;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerAvbryt;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerFeilregistrerSakstilknytning;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerOpphevFeilregistrertSakstilknytning;
@@ -43,7 +43,7 @@ import static no.nav.dokarkiv.journalpost.v1.util.AvvikstypeConstants.SETT_STATU
 import static no.nav.dokarkiv.journalpost.v1.util.AvvikstypeConstants.FEILREGISTRER_SAKSTILKNYTNING;
 import static no.nav.dokarkiv.journalpost.v1.util.AvvikstypeConstants.OPPHEV_FEILREGISTRERT_SAKSTILKNYTNING;
 import static no.nav.dokarkiv.journalpost.v1.util.AvvikstypeConstants.SETT_UKJENT_BRUKER;
-import static no.nav.dokarkiv.journalpost.v1.util.AvvikstypeConstants.SETT_STATUS_UTGÅR;
+import static no.nav.dokarkiv.journalpost.v1.util.AvvikstypeConstants.SETT_STATUS_UTGAAR;
 
 @Slf4j
 @Protected
@@ -60,7 +60,7 @@ public class FeilregistrerJournalpostRestController {
 	private final AvbrytService avbrytService;
 	private final AksjonsLoggService aksjonsLoggService;
 	private final AbacSecurityService abacSecurityService;
-	private final StatusUtgaaService statusUtgaaService;
+	private final UtgaarService utgaarService;
 
 	@Inject
 	public FeilregistrerJournalpostRestController(
@@ -69,14 +69,14 @@ public class FeilregistrerJournalpostRestController {
 			final AvbrytService avbrytService,
 			final AksjonsLoggService aksjonsLoggService,
 			AbacSecurityService abacSecurityService,
-			StatusUtgaaService statusUtgaarService
+			UtgaarService statusUtgaarService
 	) {
 		this.feilregistrerSakstilknytningService = feilregistrerSakstilknytningService;
 		this.settUkjentBrukerService = settUkjentBrukerService;
 		this.avbrytService = avbrytService;
 		this.aksjonsLoggService = aksjonsLoggService;
 		this.abacSecurityService = abacSecurityService;
-		this.statusUtgaaService = statusUtgaarService;
+		this.utgaarService = statusUtgaarService;
 	}
 
 	@Transactional
@@ -125,24 +125,24 @@ public class FeilregistrerJournalpostRestController {
 	@Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_JOURNALPOST),
 			@Abac.Attr(key = RESOURCE_FELLES_DOMENE, value = ARKIV_V2)},
 			actions = @Abac.Attr(key = ACTION_ID, value = ADMIN_UPDATE_ACTION))
-	@RestMetrics(value = "dok_request", extraTags = {"process_code", "feilregistrer"}, percentiles = {0.5, 0.95})
+	@RestMetrics(value = "dok_request", extraTags = {"process_code", "avbryt"}, percentiles = {0.5, 0.95})
 	public ResponseEntity<String> avbryt(
-			@PathVariable @ApiParam(value = "IDen til journalposten som skal feilregistreres", required = true, example = "77778888") String journalpostId) {
+			@PathVariable @ApiParam(value = "IDen til journalposten som skal settes til avbryt", required = true, example = "77778888") String journalpostId) {
 		String response = avbrytService.avbryt(journalpostId);
 		return ResponseEntity.ok().body(response);
 	}
 
 	@Transactional
 	@SwaggerAvbryt
-	@PatchMapping("/{journalpostId}/feilregistrer/" + SETT_STATUS_UTGÅR)
+	@PatchMapping("/{journalpostId}/feilregistrer/" + SETT_STATUS_UTGAAR)
 	@Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_JOURNALPOST),
 			@Abac.Attr(key = RESOURCE_FELLES_DOMENE, value = ARKIV_V2)},
 			actions = @Abac.Attr(key = ACTION_ID, value = ADMIN_UPDATE_ACTION))
-	@RestMetrics(value = "dok_request", extraTags = {"process_code", "feilregistrer"}, percentiles = {0.5, 0.95})
-	public ResponseEntity<String> settStatusUtgaar(
-			@PathVariable @ApiParam(value = "IDen til journalposten som skal feilregistreres", required = true, example = "77778888") String journalpostId
+	@RestMetrics(value = "dok_request", extraTags = {"process_code", "utgaar"}, percentiles = {0.5, 0.95})
+	public ResponseEntity<String> utgaar(
+			@PathVariable @ApiParam(value = "IDen til journalposten som skal settes til utgått", required = true, example = "77778888") String journalpostId
 	) {
-		String response = statusUtgaaService.settStatusUtgaar(journalpostId);
+		String response = utgaarService.settStatusUtgaar(journalpostId);
 		return ResponseEntity.ok().body(response);
 	}
 

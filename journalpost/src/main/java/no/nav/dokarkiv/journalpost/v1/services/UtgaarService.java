@@ -29,14 +29,14 @@ import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.UB;
 
 @Component
 @Slf4j
-public class StatusUtgaaService {
+public class UtgaarService {
 	private final JoarkRepository joarkRepository;
 	private final LagreAksjonsLoggService aksjonsLoggService;
 
 	static final String FIKK_UTGAAR = "Journalposten ble satt til utgår";
 
 	@Inject
-	public StatusUtgaaService(final JoarkRepository joarkRepository, final LagreAksjonsLoggService aksjonsLoggService) {
+	public UtgaarService(final JoarkRepository joarkRepository, final LagreAksjonsLoggService aksjonsLoggService) {
 		this.joarkRepository = joarkRepository;
 		this.aksjonsLoggService = aksjonsLoggService;
 	}
@@ -51,9 +51,9 @@ public class StatusUtgaaService {
 		} else if (Arrays.asList(A, D, R).contains(oldJournalStatus)) {
 			throw new UgyldigJournalStatusException("Journalposten er utgående eller notat. Kun inngående journalposter kan settes til Utgår");
 		} else if (U.equals(oldJournalStatus)) {
-			throw new UgyldigJournalStatusException("Journalposten er allerede Utgåt");
+			throw new UgyldigJournalStatusException("Journalposten er allerede satt til Utgår");
 		} else {
-			throw new UgyldigJournalStatusException("Journalposten kan ikke avbrytes da den er ferdigstilt");
+			throw new UgyldigJournalStatusException("Journalposten kan ikke settes til utgår, da den er ferdigstilt");
 		}
 
 		ArkivElementEndringTO endring = ArkivElementEndringTO.builder()
