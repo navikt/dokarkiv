@@ -39,7 +39,7 @@ import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
 import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.ADMIN_UPDATE_ACTION;
 import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.ARKIV_V2;
-import static no.nav.dokarkiv.journalpost.v1.util.AvvikstypeConstants.AVBRYT;
+import static no.nav.dokarkiv.journalpost.v1.util.AvvikstypeConstants.SETT_STATUS_AVBRYT;
 import static no.nav.dokarkiv.journalpost.v1.util.AvvikstypeConstants.FEILREGISTRER_SAKSTILKNYTNING;
 import static no.nav.dokarkiv.journalpost.v1.util.AvvikstypeConstants.OPPHEV_FEILREGISTRERT_SAKSTILKNYTNING;
 import static no.nav.dokarkiv.journalpost.v1.util.AvvikstypeConstants.SETT_UKJENT_BRUKER;
@@ -121,7 +121,7 @@ public class FeilregistrerJournalpostRestController {
 
 	@Transactional
 	@SwaggerAvbryt
-	@PatchMapping("/{journalpostId}/feilregistrer/" + AVBRYT)
+	@PatchMapping("/{journalpostId}/feilregistrer/" + SETT_STATUS_AVBRYT)
 	@Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_JOURNALPOST),
 			@Abac.Attr(key = RESOURCE_FELLES_DOMENE, value = ARKIV_V2)},
 			actions = @Abac.Attr(key = ACTION_ID, value = ADMIN_UPDATE_ACTION))

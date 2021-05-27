@@ -12,14 +12,19 @@ import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
+import java.util.Arrays;
 import java.util.Collections;
 
 import static java.lang.Long.parseLong;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
 import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.AVBRYT;
-import static no.nav.dokarkiv.journalpost.v1.util.JournalStatusCodeConstants.AVBRUT_JOURNAL_STATUS_CODE;
-import static no.nav.dokarkiv.journalpost.v1.util.JournalStatusCodeConstants.INNGAAENDE_JOURNAL_STATUS_CODE;
-import static no.nav.dokarkiv.journalpost.v1.util.JournalStatusCodeConstants.UTGAAENDE_OR_NOTAT_JOURNAL_STATUS_CODE;
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.*;
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.D;
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.M;
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.MO;
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.OD;
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.R;
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.UB;
 
 @Component
 @Slf4j
@@ -42,11 +47,11 @@ public class AvbrytService {
                 .orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostId)));
 
         JournalStatusCode oldJournalStatus = journalpost.getJournalstatus();
-        if (INNGAAENDE_JOURNAL_STATUS_CODE.contains(oldJournalStatus)) {
+        if (Arrays.asList(U, OD, M, MO, UB).contains(oldJournalStatus)) {
             throw new UgyldigJournalStatusException("Journalposten er inngående. Kun utgående journalposter og notater kan avbrytes");
-        } else if (UTGAAENDE_OR_NOTAT_JOURNAL_STATUS_CODE.contains(oldJournalStatus)) {
-            journalpost.setJournalstatus(JournalStatusCode.A);
-        } else if (AVBRUT_JOURNAL_STATUS_CODE.contains(oldJournalStatus)) {
+        } else if (Arrays.asList(D, R).contains(oldJournalStatus)) {
+            journalpost.setJournalstatus(A);
+        } else if (A.equals(oldJournalStatus)) {
             throw new UgyldigJournalStatusException("Journalposten er allerede avbrutt");
         } else {
             throw new UgyldigJournalStatusException("Journalposten kan ikke avbrytes da den er ferdigstilt");

@@ -7,14 +7,15 @@ import no.nav.dokarkiv.core.util.TestDataGenerator;
 import org.apache.commons.collections15.IteratorUtils;
 import org.junit.Test;
 import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.transaction.TestTransaction;
 
 import java.io.IOException;
 import java.util.List;
 
-import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.*;
+import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.OPPHEV_FEILREGISTRERING;
+import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.UKJENT_BRUKER;
+import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.UTGAAR;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.OD;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.U;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.UB;
@@ -24,6 +25,8 @@ import static no.nav.dokarkiv.journalpost.v1.util.AvvikstypeConstants.SETT_STATU
 import static no.nav.dokarkiv.journalpost.v1.util.AvvikstypeConstants.SETT_UKJENT_BRUKER;
 import static org.junit.Assert.assertEquals;
 import static org.springframework.http.HttpMethod.PATCH;
+import static org.springframework.http.HttpStatus.METHOD_NOT_ALLOWED;
+import static org.springframework.http.HttpStatus.OK;
 
 public class FeilregistrerIT extends AbstractJournalpostIT {
 
@@ -44,7 +47,7 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
         HttpEntity requestEntity = new HttpEntity(createHeadersWithServiceUserToken());
         ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST + journalpostId + FEILREGISTRER + FEILREGISTRER_SAKSTILKNYTNING, PATCH, requestEntity, String.class);
 
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(OK, response.getStatusCode());
 
         TestTransaction.flagForCommit();
         TestTransaction.end();
@@ -81,7 +84,7 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
         HttpEntity requestEntity = new HttpEntity(createHeadersWithServiceUserToken());
         ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST + journalpostId + FEILREGISTRER + OPPHEV_FEILREGISTRERT_SAKSTILKNYTNING, PATCH, requestEntity, String.class);
 
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(OK, response.getStatusCode());
 
         TestTransaction.flagForCommit();
         TestTransaction.end();
@@ -118,7 +121,7 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
         HttpEntity requestEntity = new HttpEntity(createHeadersWithServiceUserToken());
         ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST + journalpostId + FEILREGISTRER + SETT_UKJENT_BRUKER, PATCH, requestEntity, String.class);
 
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(OK, response.getStatusCode());
 
         TestTransaction.flagForCommit();
         TestTransaction.end();
@@ -141,7 +144,25 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
     }
 
     @Test
-    public void shouldGet403WhenJournalPostHaveStatusIngående() throws IOException {
+    public void shouldGet405WhenJournalPostHaveStatusUtgaaende() throws IOException {
+        abacPermit();
+
+        Journalpost journalpost = TestDataGenerator.createJournalpostWithHoveddokument();
+        journalpost.setJournalstatus(U);
+        Long journalpostId = joarkRepository.save(journalpost).getJournalpostId();
+
+        TestTransaction.flagForCommit();
+        TestTransaction.end();
+        TestTransaction.start();
+
+        HttpEntity requestEntity = new HttpEntity(createHeadersWithServiceUserToken());
+        ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST + journalpostId + FEILREGISTRER + SETT_STATUS_UTGÅR, PATCH, requestEntity, String.class);
+
+        assertEquals(METHOD_NOT_ALLOWED, response.getStatusCode());
+    }
+
+    @Test
+    public void happyPathUkjentUtgaar() throws IOException {
         abacPermit();
 
         Journalpost journalpost = TestDataGenerator.createJournalpostWithHoveddokument();
@@ -155,7 +176,7 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
         HttpEntity requestEntity = new HttpEntity(createHeadersWithServiceUserToken());
         ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST + journalpostId + FEILREGISTRER + SETT_STATUS_UTGÅR, PATCH, requestEntity, String.class);
 
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(OK, response.getStatusCode());
 
         TestTransaction.flagForCommit();
         TestTransaction.end();
