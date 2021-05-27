@@ -19,5 +19,5 @@ public enum AksjonsTypeCode {
 	SAKSTILKNYTNING,
 	SLETTING,
 	UKJENT_BRUKER,
-	UTGÅR
+	UTGAAR
 }

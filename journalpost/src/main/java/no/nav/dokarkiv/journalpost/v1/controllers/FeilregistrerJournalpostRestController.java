@@ -13,7 +13,7 @@ import no.nav.dokarkiv.core.security.abac.AbacSecurityService;
 import no.nav.dokarkiv.journalpost.v1.services.AvbrytService;
 import no.nav.dokarkiv.journalpost.v1.services.FeilregistrerSakstilknytningService;
 import no.nav.dokarkiv.journalpost.v1.services.SettUkjentBrukerService;
-import no.nav.dokarkiv.journalpost.v1.services.StatusUtgårService;
+import no.nav.dokarkiv.journalpost.v1.services.StatusUtgaaService;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerAvbryt;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerFeilregistrerSakstilknytning;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerOpphevFeilregistrertSakstilknytning;
@@ -60,7 +60,7 @@ public class FeilregistrerJournalpostRestController {
 	private final AvbrytService avbrytService;
 	private final AksjonsLoggService aksjonsLoggService;
 	private final AbacSecurityService abacSecurityService;
-	private final StatusUtgårService statusUtgårService;
+	private final StatusUtgaaService statusUtgaaService;
 
 	@Inject
 	public FeilregistrerJournalpostRestController(
@@ -69,14 +69,14 @@ public class FeilregistrerJournalpostRestController {
 			final AvbrytService avbrytService,
 			final AksjonsLoggService aksjonsLoggService,
 			AbacSecurityService abacSecurityService,
-			StatusUtgårService statusUtgårService
+			StatusUtgaaService statusUtgaarService
 	) {
 		this.feilregistrerSakstilknytningService = feilregistrerSakstilknytningService;
 		this.settUkjentBrukerService = settUkjentBrukerService;
 		this.avbrytService = avbrytService;
 		this.aksjonsLoggService = aksjonsLoggService;
 		this.abacSecurityService = abacSecurityService;
-		this.statusUtgårService = statusUtgårService;
+		this.statusUtgaaService = statusUtgaarService;
 	}
 
 	@Transactional
@@ -142,7 +142,7 @@ public class FeilregistrerJournalpostRestController {
 	public ResponseEntity<String> settStatusUtgaar(
 			@PathVariable @ApiParam(value = "IDen til journalposten som skal feilregistreres", required = true, example = "77778888") String journalpostId
 	) {
-		String response = statusUtgårService.settStatusUtgaar(journalpostId);
+		String response = statusUtgaaService.settStatusUtgaar(journalpostId);
 		return ResponseEntity.ok().body(response);
 	}
 

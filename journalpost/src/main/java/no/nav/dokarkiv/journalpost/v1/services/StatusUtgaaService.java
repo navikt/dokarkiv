@@ -16,21 +16,21 @@ import java.util.Collections;
 
 import static java.lang.Long.parseLong;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
-import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.UTGÅR;
+import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.UTGAAR;
 import static no.nav.dokarkiv.journalpost.v1.util.JournalStatusCodeConstants.AVBRUT_JOURNAL_STATUS_CODE;
 import static no.nav.dokarkiv.journalpost.v1.util.JournalStatusCodeConstants.INNGÅENDE_JOURNAL_STATUS_CODE;
 import static no.nav.dokarkiv.journalpost.v1.util.JournalStatusCodeConstants.UTGÅENDE_OR_NOTAT_JOURNAL_STATUS_CODE;
 
 @Component
 @Slf4j
-public class StatusUtgårService {
+public class StatusUtgaaService {
 	private final JoarkRepository joarkRepository;
 	private final LagreAksjonsLoggService aksjonsLoggService;
 
 	static final String FIKK_UTGAAR = "Journalposten ble satt til utgår";
 
 	@Inject
-	public StatusUtgårService(final JoarkRepository joarkRepository, final LagreAksjonsLoggService aksjonsLoggService) {
+	public StatusUtgaaService(final JoarkRepository joarkRepository, final LagreAksjonsLoggService aksjonsLoggService) {
 		this.joarkRepository = joarkRepository;
 		this.aksjonsLoggService = aksjonsLoggService;
 	}
@@ -59,7 +59,7 @@ public class StatusUtgårService {
 		joarkRepository.save(journalpost);
 
 		aksjonsLoggService.lagreAksjonsLoggForJournalpost(
-				UTGÅR,
+				UTGAAR,
 				journalpost.getJournalpostId(),
 				"ARKL",
 				FIKK_UTGAAR,

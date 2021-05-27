@@ -172,7 +172,7 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
         AksjonsLogg aksjonsLogg = aksjonsLoggList.get(0);
         assertEquals(journalpostId, aksjonsLogg.getJournalpostId());
         assertEquals(SERVICE_USER_ID, aksjonsLogg.getUtfoertAv());
-        assertEquals(UTGÅR, aksjonsLogg.getAksjon());
+        assertEquals(UTGAAR, aksjonsLogg.getAksjon());
         assertEquals(HJEMMEL, aksjonsLogg.getHjemmel());
         assertEquals(1, aksjonsLogg.getArkivElementEndringer().size());
     }
