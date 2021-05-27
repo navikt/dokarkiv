@@ -139,10 +139,10 @@ public class FeilregistrerJournalpostRestController {
 			@Abac.Attr(key = RESOURCE_FELLES_DOMENE, value = ARKIV_V2)},
 			actions = @Abac.Attr(key = ACTION_ID, value = ADMIN_UPDATE_ACTION))
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "feilregistrer"}, percentiles = {0.5, 0.95})
-	public ResponseEntity<String> settStatusUtgår(
+	public ResponseEntity<String> settStatusUtgaar(
 			@PathVariable @ApiParam(value = "IDen til journalposten som skal feilregistreres", required = true, example = "77778888") String journalpostId
 	) {
-		String response = statusUtgårService.settStatusUtgår(journalpostId);
+		String response = statusUtgårService.settStatusUtgaar(journalpostId);
 		return ResponseEntity.ok().body(response);
 	}
 

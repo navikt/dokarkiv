@@ -38,7 +38,7 @@ public class StatusUtgårServiceTest {
 
 		when(joarkRepositoryMock.findById(any(Long.class))).thenReturn(Optional.of(journalpost));
 
-		String response = statusUtgårService.settStatusUtgår("38");
+		String response = statusUtgårService.settStatusUtgaar("38");
 
 		assertEquals(FIKK_UTGAAR, response);
 	}
@@ -51,7 +51,7 @@ public class StatusUtgårServiceTest {
 		when(joarkRepositoryMock.findById(any(Long.class))).thenReturn(Optional.of(journalpost));
 
 		assertThrows(UgyldigJournalStatusException.class, () ->
-				statusUtgårService.settStatusUtgår("38")
+				statusUtgårService.settStatusUtgaar("38")
 		);
 	}
 
@@ -64,7 +64,7 @@ public class StatusUtgårServiceTest {
 		when(joarkRepositoryMock.findById(any(Long.class))).thenReturn(Optional.of(journalpost));
 
 		assertThrows(UgyldigJournalStatusException.class, () ->
-				statusUtgårService.settStatusUtgår("38")
+				statusUtgårService.settStatusUtgaar("38")
 		);
 	}
 
@@ -77,7 +77,7 @@ public class StatusUtgårServiceTest {
 		when(joarkRepositoryMock.findById(any(Long.class))).thenReturn(Optional.of(journalpost));
 
 		assertThrows(UgyldigJournalStatusException.class, () ->
-				statusUtgårService.settStatusUtgår("38")
+				statusUtgårService.settStatusUtgaar("38")
 		);
 	}
 
