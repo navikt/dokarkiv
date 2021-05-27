@@ -1,12 +1,8 @@
 package no.nav.dokarkiv.journalpost.v1.services;
 
-import static java.lang.Long.parseLong;
-import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
-
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
 import no.nav.dokarkiv.core.aksjonslogg.LagreAksjonsLoggService;
-import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
@@ -16,8 +12,14 @@ import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
-import java.util.Arrays;
 import java.util.Collections;
+
+import static java.lang.Long.parseLong;
+import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
+import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.AVBRYT;
+import static no.nav.dokarkiv.journalpost.v1.util.JournalStatusCodeConstants.AVBRUT_JOURNAL_STATUS_CODE;
+import static no.nav.dokarkiv.journalpost.v1.util.JournalStatusCodeConstants.INNGÅENDE_JOURNAL_STATUS_CODE;
+import static no.nav.dokarkiv.journalpost.v1.util.JournalStatusCodeConstants.UTGÅENDE_OR_NOTAT_JOURNAL_STATUS_CODE;
 
 @Component
 @Slf4j
@@ -25,7 +27,7 @@ public class AvbrytService {
     private final JoarkRepository joarkRepository;
     private final LagreAksjonsLoggService aksjonsLoggService;
 
-    private static final String FIKK_AVBRUTT_UTGAAR = "Journalposten ble satt til avbrutt / utgår";
+    static final String FIKK_AVBRUTT = "Journalposten ble satt til avbrutt";
 
     @Inject
     public AvbrytService(final JoarkRepository joarkRepository,
@@ -40,15 +42,14 @@ public class AvbrytService {
                 .orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostId)));
 
         JournalStatusCode oldJournalStatus = journalpost.getJournalstatus();
-        if (Arrays.asList(JournalStatusCode.OD, JournalStatusCode.M, JournalStatusCode.MO, JournalStatusCode.UB)
-                .contains(oldJournalStatus)) {
-            journalpost.setJournalstatus(JournalStatusCode.U);
-        } else if (Arrays.asList(JournalStatusCode.D, JournalStatusCode.R).contains(oldJournalStatus)) {
+        if (INNGÅENDE_JOURNAL_STATUS_CODE.contains(oldJournalStatus)) {
+            throw new UgyldigJournalStatusException("Journalposten er inngående. Kun utgående journalposter og notater kan avbrytes");
+        } else if (UTGÅENDE_OR_NOTAT_JOURNAL_STATUS_CODE.contains(oldJournalStatus)) {
             journalpost.setJournalstatus(JournalStatusCode.A);
-        } else if (Arrays.asList(JournalStatusCode.A, JournalStatusCode.U).contains(oldJournalStatus)) {
-            throw new UgyldigJournalStatusException("Journalposten er allerede avbrutt)");
+        } else if (AVBRUT_JOURNAL_STATUS_CODE.contains(oldJournalStatus)) {
+            throw new UgyldigJournalStatusException("Journalposten er allerede avbrutt");
         } else {
-            throw new UgyldigJournalStatusException("Journalposten kan ikke avbrytes da den er ferdigstilt)");
+            throw new UgyldigJournalStatusException("Journalposten kan ikke avbrytes da den er ferdigstilt");
         }
 
         ArkivElementEndringTO endring = ArkivElementEndringTO.builder()
@@ -60,11 +61,11 @@ public class AvbrytService {
         joarkRepository.save(journalpost);
 
         aksjonsLoggService.lagreAksjonsLoggForJournalpost(
-                AksjonsTypeCode.AVBRYT, journalpost.getJournalpostId(), "ARKL", FIKK_AVBRUTT_UTGAAR,
+                AVBRYT, journalpost.getJournalpostId(), "ARKL", FIKK_AVBRUTT,
                 null, Collections.singletonList(endring));
 
-        log.info(MDC.get(MDC_REQUEST_ID) + " har satt status til avbrutt / utgår for journalpost med journalpostId={}", journalpostId);
+        log.info(MDC.get(MDC_REQUEST_ID) + " har satt status til avbrutt for journalpost med journalpostId={}", journalpostId);
 
-        return FIKK_AVBRUTT_UTGAAR;
+        return FIKK_AVBRUTT;
     }
 }

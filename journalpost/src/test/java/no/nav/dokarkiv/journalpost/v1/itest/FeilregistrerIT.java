@@ -1,23 +1,29 @@
 package no.nav.dokarkiv.journalpost.v1.itest;
 
-import static org.junit.Assert.assertEquals;
-
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
-import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.util.TestDataGenerator;
-import no.nav.dokarkiv.journalpost.v1.util.AvvikstypeConstants;
 import org.apache.commons.collections15.IteratorUtils;
 import org.junit.Test;
 import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.transaction.TestTransaction;
 
 import java.io.IOException;
 import java.util.List;
+
+import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.*;
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.OD;
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.U;
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.UB;
+import static no.nav.dokarkiv.journalpost.v1.util.AvvikstypeConstants.FEILREGISTRER_SAKSTILKNYTNING;
+import static no.nav.dokarkiv.journalpost.v1.util.AvvikstypeConstants.OPPHEV_FEILREGISTRERT_SAKSTILKNYTNING;
+import static no.nav.dokarkiv.journalpost.v1.util.AvvikstypeConstants.SETT_STATUS_UTGÅR;
+import static no.nav.dokarkiv.journalpost.v1.util.AvvikstypeConstants.SETT_UKJENT_BRUKER;
+import static org.junit.Assert.assertEquals;
+import static org.springframework.http.HttpMethod.PATCH;
 
 public class FeilregistrerIT extends AbstractJournalpostIT {
 
@@ -36,7 +42,7 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
         TestTransaction.start();
 
         HttpEntity requestEntity = new HttpEntity(createHeadersWithServiceUserToken());
-        ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST + journalpostId + FEILREGISTRER + AvvikstypeConstants.FEILREGISTRER_SAKSTILKNYTNING, HttpMethod.PATCH, requestEntity, String.class);
+        ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST + journalpostId + FEILREGISTRER + FEILREGISTRER_SAKSTILKNYTNING, PATCH, requestEntity, String.class);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
@@ -73,7 +79,7 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
         TestTransaction.start();
 
         HttpEntity requestEntity = new HttpEntity(createHeadersWithServiceUserToken());
-        ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST + journalpostId + FEILREGISTRER + AvvikstypeConstants.OPPHEV_FEILREGISTRERT_SAKSTILKNYTNING, HttpMethod.PATCH, requestEntity, String.class);
+        ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST + journalpostId + FEILREGISTRER + OPPHEV_FEILREGISTRERT_SAKSTILKNYTNING, PATCH, requestEntity, String.class);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
@@ -92,7 +98,7 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
         AksjonsLogg aksjonsLogg = aksjonsLoggList.get(0);
         assertEquals(journalpostId, aksjonsLogg.getJournalpostId());
         assertEquals(SERVICE_USER_ID, aksjonsLogg.getUtfoertAv());
-        assertEquals(AksjonsTypeCode.OPPHEV_FEILREGISTRERING, aksjonsLogg.getAksjon());
+        assertEquals(OPPHEV_FEILREGISTRERING, aksjonsLogg.getAksjon());
         assertEquals(HJEMMEL, aksjonsLogg.getHjemmel());
         assertEquals(1, aksjonsLogg.getArkivElementEndringer().size());
     }
@@ -102,7 +108,7 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
         abacPermit();
 
         Journalpost journalpost = TestDataGenerator.createJournalpostWithHoveddokument();
-        journalpost.setJournalstatus(JournalStatusCode.U);
+        journalpost.setJournalstatus(U);
         Long journalpostId = joarkRepository.save(journalpost).getJournalpostId();
 
         TestTransaction.flagForCommit();
@@ -110,7 +116,7 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
         TestTransaction.start();
 
         HttpEntity requestEntity = new HttpEntity(createHeadersWithServiceUserToken());
-        ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST + journalpostId + FEILREGISTRER + AvvikstypeConstants.SETT_UKJENT_BRUKER, HttpMethod.PATCH, requestEntity, String.class);
+        ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST + journalpostId + FEILREGISTRER + SETT_UKJENT_BRUKER, PATCH, requestEntity, String.class);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
@@ -120,7 +126,7 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
 
         Journalpost oppdatertJournalpost = joarkRepository.findById(journalpostId).orElseThrow(RuntimeException::new);
 
-        assertEquals(oppdatertJournalpost.getJournalstatus(), JournalStatusCode.UB);
+        assertEquals(oppdatertJournalpost.getJournalstatus(), UB);
 
         List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
 
@@ -129,17 +135,17 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
         AksjonsLogg aksjonsLogg = aksjonsLoggList.get(0);
         assertEquals(journalpostId, aksjonsLogg.getJournalpostId());
         assertEquals(SERVICE_USER_ID, aksjonsLogg.getUtfoertAv());
-        assertEquals(AksjonsTypeCode.UKJENT_BRUKER, aksjonsLogg.getAksjon());
+        assertEquals(UKJENT_BRUKER, aksjonsLogg.getAksjon());
         assertEquals(HJEMMEL, aksjonsLogg.getHjemmel());
         assertEquals(1, aksjonsLogg.getArkivElementEndringer().size());
     }
 
     @Test
-    public void happyPathAvbryt() throws IOException {
+    public void shouldGet403WhenJournalPostHaveStatusIngående() throws IOException {
         abacPermit();
 
         Journalpost journalpost = TestDataGenerator.createJournalpostWithHoveddokument();
-        journalpost.setJournalstatus(JournalStatusCode.OD);
+        journalpost.setJournalstatus(OD);
         Long journalpostId = joarkRepository.save(journalpost).getJournalpostId();
 
         TestTransaction.flagForCommit();
@@ -147,7 +153,7 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
         TestTransaction.start();
 
         HttpEntity requestEntity = new HttpEntity(createHeadersWithServiceUserToken());
-        ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST + journalpostId + FEILREGISTRER + AvvikstypeConstants.AVBRYT, HttpMethod.PATCH, requestEntity, String.class);
+        ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST + journalpostId + FEILREGISTRER + SETT_STATUS_UTGÅR, PATCH, requestEntity, String.class);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
@@ -157,7 +163,7 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
 
         Journalpost oppdatertJournalpost = joarkRepository.findById(journalpostId).orElseThrow(RuntimeException::new);
 
-        assertEquals(oppdatertJournalpost.getJournalstatus(), JournalStatusCode.U);
+        assertEquals(oppdatertJournalpost.getJournalstatus(), U);
 
         List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
 
@@ -166,7 +172,7 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
         AksjonsLogg aksjonsLogg = aksjonsLoggList.get(0);
         assertEquals(journalpostId, aksjonsLogg.getJournalpostId());
         assertEquals(SERVICE_USER_ID, aksjonsLogg.getUtfoertAv());
-        assertEquals(AksjonsTypeCode.AVBRYT, aksjonsLogg.getAksjon());
+        assertEquals(UTGÅR, aksjonsLogg.getAksjon());
         assertEquals(HJEMMEL, aksjonsLogg.getHjemmel());
         assertEquals(1, aksjonsLogg.getArkivElementEndringer().size());
     }
