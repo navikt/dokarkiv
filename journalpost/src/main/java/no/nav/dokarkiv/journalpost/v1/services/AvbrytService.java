@@ -18,8 +18,8 @@ import static java.lang.Long.parseLong;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
 import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.AVBRYT;
 import static no.nav.dokarkiv.journalpost.v1.util.JournalStatusCodeConstants.AVBRUT_JOURNAL_STATUS_CODE;
-import static no.nav.dokarkiv.journalpost.v1.util.JournalStatusCodeConstants.INNGÅENDE_JOURNAL_STATUS_CODE;
-import static no.nav.dokarkiv.journalpost.v1.util.JournalStatusCodeConstants.UTGÅENDE_OR_NOTAT_JOURNAL_STATUS_CODE;
+import static no.nav.dokarkiv.journalpost.v1.util.JournalStatusCodeConstants.INNGAAENDE_JOURNAL_STATUS_CODE;
+import static no.nav.dokarkiv.journalpost.v1.util.JournalStatusCodeConstants.UTGAAENDE_OR_NOTAT_JOURNAL_STATUS_CODE;
 
 @Component
 @Slf4j
@@ -42,9 +42,9 @@ public class AvbrytService {
                 .orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostId)));
 
         JournalStatusCode oldJournalStatus = journalpost.getJournalstatus();
-        if (INNGÅENDE_JOURNAL_STATUS_CODE.contains(oldJournalStatus)) {
+        if (INNGAAENDE_JOURNAL_STATUS_CODE.contains(oldJournalStatus)) {
             throw new UgyldigJournalStatusException("Journalposten er inngående. Kun utgående journalposter og notater kan avbrytes");
-        } else if (UTGÅENDE_OR_NOTAT_JOURNAL_STATUS_CODE.contains(oldJournalStatus)) {
+        } else if (UTGAAENDE_OR_NOTAT_JOURNAL_STATUS_CODE.contains(oldJournalStatus)) {
             journalpost.setJournalstatus(JournalStatusCode.A);
         } else if (AVBRUT_JOURNAL_STATUS_CODE.contains(oldJournalStatus)) {
             throw new UgyldigJournalStatusException("Journalposten er allerede avbrutt");
