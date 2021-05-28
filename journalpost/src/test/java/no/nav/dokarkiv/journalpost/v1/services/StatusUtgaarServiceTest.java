@@ -2,6 +2,7 @@ package no.nav.dokarkiv.journalpost.v1.services;
 
 
 import no.nav.dokarkiv.core.aksjonslogg.LagreAksjonsLoggService;
+import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.UgyldigJournalStatusException;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
@@ -30,6 +31,7 @@ public class StatusUtgaarServiceTest {
 	public void HappyPathTest() {
 		Journalpost journalpost = Journalpost.builder()
 				.journalstatus(OD)
+				.journalposttype(JournalpostTypeCode.I)
 				.build();
 
 		when(joarkRepositoryMock.findById(any(Long.class))).thenReturn(Optional.of(journalpost));
