@@ -50,13 +50,13 @@ public class AvbrytService {
         JournalpostTypeCode journalposttype = journalpost.getJournalposttype();
 
         if (I.equals(journalposttype)) {
-            throw new UgyldigJournalStatusException("Journalposten er inngående. Kun utgående journalposter og notater kan avbrytes");
+            throw new UgyldigJournalStatusException("Journalposten er inngående. Kun utgående journalposter og notater kan avbrytes, med journalpostId " + journalpostId);
         } else if (JOURNAL_STATUS_CODE_DOKUMENT_RESERVERT.contains(oldJournalStatus)) {
             journalpost.setJournalstatus(A);
         } else if (A.equals(oldJournalStatus)) {
-            throw new UgyldigJournalStatusException("Journalposten er allerede avbrutt");
+            throw new UgyldigJournalStatusException("Journalposten er allerede avbrutt, med journalpostId " + journalpostId);
         } else {
-            throw new UgyldigJournalStatusException("Journalposten kan ikke avbrytes da den er ferdigstilt");
+            throw new UgyldigJournalStatusException("Journalposten kan ikke avbrytes da den er ferdigstilt, med journalpostId " + journalpostId);
         }
 
         ArkivElementEndringTO endring = ArkivElementEndringTO.builder()

@@ -53,11 +53,11 @@ public class UtgaarService {
 		if (JOURNALPOSTTYPE_INNGAAENDE_NOTAT.contains(journalposttype)) {
 			journalpost.setJournalstatus(U);
 		} else if (JOURNAL_STATUS_AVBRUTT_DOKUMENT_RESERVERT.contains(oldJournalStatus)) {
-			throw new UgyldigJournalStatusException("Journalposten er utgående eller notat. Kun inngående journalposter kan settes til Utgår");
+			throw new UgyldigJournalStatusException("Journalposten er utgående eller notat. Kun inngående journalposter kan settes til Utgår, med journalpostId " + journalpostId);
 		} else if (U.equals(oldJournalStatus)) {
-			throw new UgyldigJournalStatusException("Journalposten er allerede satt til Utgår");
+			throw new UgyldigJournalStatusException("Journalposten er allerede satt til Utgår, med journalpostId " + journalpostId);
 		} else {
-			throw new UgyldigJournalStatusException("Journalposten kan ikke settes til utgår, da den er ferdigstilt");
+			throw new UgyldigJournalStatusException("Journalposten kan ikke settes til utgår, da den er ferdigstilt, med journalpostId " + journalpostId);
 		}
 
 		ArkivElementEndringTO endring = ArkivElementEndringTO.builder()

@@ -82,7 +82,7 @@ public class FeilregistrerJournalpostRestController {
 	@Transactional
 	@SwaggerFeilregistrerSakstilknytning
 	@PatchMapping("/{journalpostId}/feilregistrer/" + FEILREGISTRER_SAKSTILKNYTNING)
-	@RestMetrics(value = "dok_request", extraTags = {"process_code", "feilregistrerSakstilknytning"}, percentiles = {0.5, 0.95})
+	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark401"}, percentiles = {0.5, 0.95})
 	public ResponseEntity<String> feilregistrerSakstilkytning(
 			@PathVariable @ApiParam(value = "IDen til journalposten som skal feilregistreres", required = true, example = "77778888") String journalpostId) {
 		List<ArkivElementEndringTO> arkivElementEndringTOList = feilregistrerSakstilknytningService.feilregistrerSakstilknytning(journalpostId);
@@ -94,7 +94,7 @@ public class FeilregistrerJournalpostRestController {
 	@Transactional
 	@SwaggerOpphevFeilregistrertSakstilknytning
 	@PatchMapping("/{journalpostId}/feilregistrer/" + OPPHEV_FEILREGISTRERT_SAKSTILKNYTNING)
-	@RestMetrics(value = "dok_request", extraTags = {"process_code", "opphevFeilregistrertSakstilknytning"}, percentiles = {0.5, 0.95})
+	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark402"}, percentiles = {0.5, 0.95})
 	public ResponseEntity<String> opphevFeilregistrertSakstilknytning(
 			@PathVariable @ApiParam(value = "IDen til journalposten som skal feilregistreres", required = true, example = "77778888") String journalpostId) {
 		List<ArkivElementEndringTO> arkivElementEndringTOList = feilregistrerSakstilknytningService.opphevFeilregistrertSakstilknytning(journalpostId);
@@ -109,7 +109,7 @@ public class FeilregistrerJournalpostRestController {
 	@Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_JOURNALPOST),
 			@Abac.Attr(key = RESOURCE_FELLES_DOMENE, value = ARKIV_V2)},
 			actions = @Abac.Attr(key = ACTION_ID, value = ADMIN_UPDATE_ACTION))
-	@RestMetrics(value = "dok_request", extraTags = {"process_code", "settUkjentBruker"}, percentiles = {0.5, 0.95})
+	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark403"}, percentiles = {0.5, 0.95})
 	public ResponseEntity<String> settUkjentBruker(
 			@PathVariable @ApiParam(value = "IDen til journalposten som skal feilregistreres", required = true, example = "77778888") String journalpostId) {
 		abacSecurityService.assertAccessToJournalpost(journalpostId);
@@ -122,7 +122,7 @@ public class FeilregistrerJournalpostRestController {
 	@Transactional
 	@SwaggerAvbryt
 	@PatchMapping("/{journalpostId}/feilregistrer/" + SETT_STATUS_AVBRYT)
-	@RestMetrics(value = "dok_request", extraTags = {"process_code", "avbryt"}, percentiles = {0.5, 0.95})
+	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark404"}, percentiles = {0.5, 0.95})
 	public ResponseEntity<String> avbryt(
 			@PathVariable @ApiParam(value = "IDen til journalposten som skal settes til avbryt", required = true, example = "77778888") String journalpostId) {
 		String response = avbrytService.avbryt(journalpostId);
@@ -135,7 +135,7 @@ public class FeilregistrerJournalpostRestController {
 	@Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_JOURNALPOST),
 			@Abac.Attr(key = RESOURCE_FELLES_DOMENE, value = ARKIV_V2)},
 			actions = @Abac.Attr(key = ACTION_ID, value = ADMIN_UPDATE_ACTION))
-	@RestMetrics(value = "dok_request", extraTags = {"process_code", "utgaar"}, percentiles = {0.5, 0.95})
+	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark405"}, percentiles = {0.5, 0.95})
 	public ResponseEntity<String> utgaar(
 			@PathVariable @ApiParam(value = "IDen til journalposten som skal settes til utgått", required = true, example = "77778888") String journalpostId
 	) {
