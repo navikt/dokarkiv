@@ -70,4 +70,6 @@
 	<logger name="org.apache.cxf.ws.addressing.soap.MAPCodec" additivity="false" level="ERROR"/>
 	<logger name="org.apache.wss4j.common.crypto.CryptoBase" additivity="false" level="ERROR"/>
 	<logger name="log4j.logger.org.apache.cxf.interceptor" additivity="false" level="ERROR"/>
+<!--	 Remove spam from VeraPDF -->
+	<logger name="org.verapdf.pd.font.Encoding" additivity="false" level="ERROR"/>
 </included>
