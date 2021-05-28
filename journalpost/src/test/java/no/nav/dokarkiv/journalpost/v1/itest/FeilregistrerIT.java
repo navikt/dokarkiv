@@ -1,6 +1,7 @@
 package no.nav.dokarkiv.journalpost.v1.itest;
 
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
+import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.util.TestDataGenerator;
@@ -19,6 +20,7 @@ import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.UTGAAR;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.OD;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.U;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.UB;
+import static no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode.I;
 import static no.nav.dokarkiv.journalpost.v1.util.AvvikstypeConstants.FEILREGISTRER_SAKSTILKNYTNING;
 import static no.nav.dokarkiv.journalpost.v1.util.AvvikstypeConstants.OPPHEV_FEILREGISTRERT_SAKSTILKNYTNING;
 import static no.nav.dokarkiv.journalpost.v1.util.AvvikstypeConstants.SETT_STATUS_UTGAAR;
@@ -167,6 +169,7 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
 
         Journalpost journalpost = TestDataGenerator.createJournalpostWithHoveddokument();
         journalpost.setJournalstatus(OD);
+        journalpost.setJournalposttype(I);
         Long journalpostId = joarkRepository.save(journalpost).getJournalpostId();
 
         TestTransaction.flagForCommit();
