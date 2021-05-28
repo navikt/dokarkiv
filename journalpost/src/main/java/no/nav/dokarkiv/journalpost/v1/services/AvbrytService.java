@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
 import no.nav.dokarkiv.core.aksjonslogg.LagreAksjonsLoggService;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
+import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.UgyldigJournalStatusException;
@@ -19,6 +20,7 @@ import static java.lang.Long.parseLong;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
 import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.AVBRYT;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.*;
+import static no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode.*;
 
 @Component
 @Slf4j
@@ -41,7 +43,9 @@ public class AvbrytService {
                 .orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostId)));
 
         JournalStatusCode oldJournalStatus = journalpost.getJournalstatus();
-        if (Arrays.asList(U, OD, M, MO, UB).contains(oldJournalStatus)) {
+        JournalpostTypeCode journalposttype = journalpost.getJournalposttype();
+
+        if (I.equals(journalposttype)) {
             throw new UgyldigJournalStatusException("Journalposten er inngående. Kun utgående journalposter og notater kan avbrytes");
         } else if (Arrays.asList(D, R).contains(oldJournalStatus)) {
             journalpost.setJournalstatus(A);

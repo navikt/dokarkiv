@@ -122,9 +122,6 @@ public class FeilregistrerJournalpostRestController {
 	@Transactional
 	@SwaggerAvbryt
 	@PatchMapping("/{journalpostId}/feilregistrer/" + SETT_STATUS_AVBRYT)
-	@Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_JOURNALPOST),
-			@Abac.Attr(key = RESOURCE_FELLES_DOMENE, value = ARKIV_V2)},
-			actions = @Abac.Attr(key = ACTION_ID, value = ADMIN_UPDATE_ACTION))
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "avbryt"}, percentiles = {0.5, 0.95})
 	public ResponseEntity<String> avbryt(
 			@PathVariable @ApiParam(value = "IDen til journalposten som skal settes til avbryt", required = true, example = "77778888") String journalpostId) {
@@ -142,6 +139,7 @@ public class FeilregistrerJournalpostRestController {
 	public ResponseEntity<String> utgaar(
 			@PathVariable @ApiParam(value = "IDen til journalposten som skal settes til utgått", required = true, example = "77778888") String journalpostId
 	) {
+		abacSecurityService.assertAccessToJournalpost(journalpostId);
 		String response = utgaarService.settStatusUtgaar(journalpostId);
 		return ResponseEntity.ok().body(response);
 	}
