@@ -20,8 +20,10 @@ import java.util.List;
 import static java.lang.Long.parseLong;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
 import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.AVBRYT;
-import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.*;
-import static no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode.*;
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.A;
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.D;
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.R;
+import static no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode.I;
 
 @Component
 @Slf4j
