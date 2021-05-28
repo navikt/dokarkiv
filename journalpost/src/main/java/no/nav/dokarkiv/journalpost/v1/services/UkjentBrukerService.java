@@ -15,12 +15,12 @@ import java.util.Arrays;
 import java.util.List;
 
 @Component
-public class SettUkjentBrukerService {
+public class UkjentBrukerService {
     private final JoarkRepository joarkRepository;
     private static final List<JournalStatusCode> validJournalStatusList = Arrays.asList(JournalStatusCode.U, JournalStatusCode.OD, JournalStatusCode.M, JournalStatusCode.MO);
 
     @Inject
-    public SettUkjentBrukerService(final JoarkRepository joarkRepository) {
+    public UkjentBrukerService(final JoarkRepository joarkRepository) {
         this.joarkRepository = joarkRepository;
     }
 

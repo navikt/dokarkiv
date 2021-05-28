@@ -12,7 +12,7 @@ import no.nav.dokarkiv.core.metrics.RestMetrics;
 import no.nav.dokarkiv.core.security.abac.AbacSecurityService;
 import no.nav.dokarkiv.journalpost.v1.services.AvbrytService;
 import no.nav.dokarkiv.journalpost.v1.services.FeilregistrerSakstilknytningService;
-import no.nav.dokarkiv.journalpost.v1.services.SettUkjentBrukerService;
+import no.nav.dokarkiv.journalpost.v1.services.UkjentBrukerService;
 import no.nav.dokarkiv.journalpost.v1.services.UtgaarService;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerAvbryt;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerFeilregistrerSakstilknytning;
@@ -56,7 +56,7 @@ public class FeilregistrerJournalpostRestController {
 	private static final String FEILREGISTRERING_OPPHEVET = "Feilregistreringen ble opphevet";
 
 	private final FeilregistrerSakstilknytningService feilregistrerSakstilknytningService;
-	private final SettUkjentBrukerService settUkjentBrukerService;
+	private final UkjentBrukerService ukjentBrukerService;
 	private final AvbrytService avbrytService;
 	private final AksjonsLoggService aksjonsLoggService;
 	private final AbacSecurityService abacSecurityService;
@@ -65,14 +65,14 @@ public class FeilregistrerJournalpostRestController {
 	@Inject
 	public FeilregistrerJournalpostRestController(
 			final FeilregistrerSakstilknytningService feilregistrerSakstilknytningService,
-			final SettUkjentBrukerService settUkjentBrukerService,
+			final UkjentBrukerService ukjentBrukerService,
 			final AvbrytService avbrytService,
 			final AksjonsLoggService aksjonsLoggService,
 			AbacSecurityService abacSecurityService,
 			UtgaarService statusUtgaarService
 	) {
 		this.feilregistrerSakstilknytningService = feilregistrerSakstilknytningService;
-		this.settUkjentBrukerService = settUkjentBrukerService;
+		this.ukjentBrukerService = ukjentBrukerService;
 		this.avbrytService = avbrytService;
 		this.aksjonsLoggService = aksjonsLoggService;
 		this.abacSecurityService = abacSecurityService;
@@ -113,7 +113,7 @@ public class FeilregistrerJournalpostRestController {
 	public ResponseEntity<String> settUkjentBruker(
 			@PathVariable @ApiParam(value = "IDen til journalposten som skal feilregistreres", required = true, example = "77778888") String journalpostId) {
 		abacSecurityService.assertAccessToJournalpost(journalpostId);
-		List<ArkivElementEndringTO> arkivElementEndringTOList = settUkjentBrukerService.settUkjentBruker(journalpostId);
+		List<ArkivElementEndringTO> arkivElementEndringTOList = ukjentBrukerService.settUkjentBruker(journalpostId);
 		populerAksjonslogg(journalpostId, AksjonsTypeCode.UKJENT_BRUKER, arkivElementEndringTOList, FIKK_UKJENT_BRUKER);
 		log.info(MDC.get(MDC_REQUEST_ID) + " har satt status til Ukjent Bruker for journalpost med journalpostId={}", journalpostId);
 		return ResponseEntity.ok().body(FIKK_UKJENT_BRUKER);
