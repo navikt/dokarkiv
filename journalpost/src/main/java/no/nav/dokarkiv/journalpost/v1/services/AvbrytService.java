@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 import static java.lang.Long.parseLong;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
@@ -29,6 +30,7 @@ public class AvbrytService {
     private final LagreAksjonsLoggService aksjonsLoggService;
 
     static final String FIKK_AVBRUTT = "Journalposten ble satt til avbrutt";
+    static final List<JournalStatusCode> JOURNAL_STATUS_CODE_DOKUMENT_RESERVERT = Arrays.asList(D, R);
 
     @Inject
     public AvbrytService(final JoarkRepository joarkRepository,
@@ -47,7 +49,7 @@ public class AvbrytService {
 
         if (I.equals(journalposttype)) {
             throw new UgyldigJournalStatusException("Journalposten er inngående. Kun utgående journalposter og notater kan avbrytes");
-        } else if (Arrays.asList(D, R).contains(oldJournalStatus)) {
+        } else if (JOURNAL_STATUS_CODE_DOKUMENT_RESERVERT.contains(oldJournalStatus)) {
             journalpost.setJournalstatus(A);
         } else if (A.equals(oldJournalStatus)) {
             throw new UgyldigJournalStatusException("Journalposten er allerede avbrutt");

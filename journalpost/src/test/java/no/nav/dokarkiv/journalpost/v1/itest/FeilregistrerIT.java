@@ -162,7 +162,7 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
     }
 
     @Test
-    public void happyPathUkjentUtgaar() throws IOException {
+    public void shouldSetUtgaarJournalstatusWhenValidatedOk() throws IOException {
         abacPermit();
 
         Journalpost journalpost = TestDataGenerator.createJournalpostWithHoveddokument();

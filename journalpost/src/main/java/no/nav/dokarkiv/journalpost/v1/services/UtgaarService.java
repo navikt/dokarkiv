@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 import static java.lang.Long.parseLong;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
@@ -33,6 +34,8 @@ public class UtgaarService {
 	private final LagreAksjonsLoggService aksjonsLoggService;
 
 	static final String FIKK_UTGAAR = "Journalposten ble satt til utgår";
+	static final List<JournalStatusCode> JOURNAL_STATUS_AVBRUTT_DOKUMENT_RESERVERT = Arrays.asList(A, D, R);
+	static final List<JournalpostTypeCode> JOURNALPOSTTYPE_INNGAAENDE_NOTAT = Arrays.asList(I, N);
 
 	@Inject
 	public UtgaarService(final JoarkRepository joarkRepository, final LagreAksjonsLoggService aksjonsLoggService) {
@@ -47,9 +50,9 @@ public class UtgaarService {
 		JournalStatusCode oldJournalStatus = journalpost.getJournalstatus();
 		JournalpostTypeCode journalposttype = journalpost.getJournalposttype();
 
-		if (Arrays.asList(I, N).contains(journalposttype)) {
+		if (JOURNALPOSTTYPE_INNGAAENDE_NOTAT.contains(journalposttype)) {
 			journalpost.setJournalstatus(U);
-		} else if (Arrays.asList(A, D, R).contains(oldJournalStatus)) {
+		} else if (JOURNAL_STATUS_AVBRUTT_DOKUMENT_RESERVERT.contains(oldJournalStatus)) {
 			throw new UgyldigJournalStatusException("Journalposten er utgående eller notat. Kun inngående journalposter kan settes til Utgår");
 		} else if (U.equals(oldJournalStatus)) {
 			throw new UgyldigJournalStatusException("Journalposten er allerede satt til Utgår");
