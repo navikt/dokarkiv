@@ -17,6 +17,7 @@ import no.nav.dokarkiv.journalpost.v1.services.UtgaarService;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerAvbryt;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerFeilregistrerSakstilknytning;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerOpphevFeilregistrertSakstilknytning;
+import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerSettStatusUtgår;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerSettUkjentBruker;
 import no.nav.freg.abac.core.annotation.Abac;
 import no.nav.security.token.support.core.api.Protected;
@@ -130,7 +131,7 @@ public class FeilregistrerJournalpostRestController {
 	}
 
 	@Transactional
-	@SwaggerAvbryt
+	@SwaggerSettStatusUtgår
 	@PatchMapping("/{journalpostId}/feilregistrer/" + SETT_STATUS_UTGAAR)
 	@Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_JOURNALPOST),
 			@Abac.Attr(key = RESOURCE_FELLES_DOMENE, value = ARKIV_V2)},
