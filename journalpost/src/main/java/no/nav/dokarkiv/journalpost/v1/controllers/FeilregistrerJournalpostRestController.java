@@ -140,7 +140,7 @@ public class FeilregistrerJournalpostRestController {
 	public ResponseEntity<String> utgaar(
 			@PathVariable @ApiParam(value = "IDen til journalposten som skal settes til utgått", required = true, example = "77778888") String journalpostId
 	) {
-		//abacSecurityService.assertAccessToJournalpost(journalpostId);
+		abacSecurityService.assertAccessToJournalpost(journalpostId);
 		String response = utgaarService.settStatusUtgaar(journalpostId);
 		return ResponseEntity.ok().body(response);
 	}
