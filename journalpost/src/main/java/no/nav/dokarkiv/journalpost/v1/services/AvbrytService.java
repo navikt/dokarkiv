@@ -1,13 +1,10 @@
 package no.nav.dokarkiv.journalpost.v1.services;
 
-import static java.lang.Long.parseLong;
-import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
-
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
 import no.nav.dokarkiv.core.aksjonslogg.LagreAksjonsLoggService;
-import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
+import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.UgyldigJournalStatusException;
@@ -18,6 +15,15 @@ import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
+
+import static java.lang.Long.parseLong;
+import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
+import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.AVBRYT;
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.A;
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.D;
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.R;
+import static no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode.I;
 
 @Component
 @Slf4j
@@ -25,7 +31,8 @@ public class AvbrytService {
     private final JoarkRepository joarkRepository;
     private final LagreAksjonsLoggService aksjonsLoggService;
 
-    private static final String FIKK_AVBRUTT_UTGAAR = "Journalposten ble satt til avbrutt / utgår";
+    static final String FIKK_AVBRUTT = "Journalposten ble satt til avbrutt";
+    static final List<JournalStatusCode> JOURNAL_STATUS_CODE_DOKUMENT_RESERVERT = Arrays.asList(D, R);
 
     @Inject
     public AvbrytService(final JoarkRepository joarkRepository,
@@ -40,15 +47,16 @@ public class AvbrytService {
                 .orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostId)));
 
         JournalStatusCode oldJournalStatus = journalpost.getJournalstatus();
-        if (Arrays.asList(JournalStatusCode.OD, JournalStatusCode.M, JournalStatusCode.MO, JournalStatusCode.UB)
-                .contains(oldJournalStatus)) {
-            journalpost.setJournalstatus(JournalStatusCode.U);
-        } else if (Arrays.asList(JournalStatusCode.D, JournalStatusCode.R).contains(oldJournalStatus)) {
-            journalpost.setJournalstatus(JournalStatusCode.A);
-        } else if (Arrays.asList(JournalStatusCode.A, JournalStatusCode.U).contains(oldJournalStatus)) {
-            throw new UgyldigJournalStatusException("Journalposten er allerede avbrutt)");
+        JournalpostTypeCode journalposttype = journalpost.getJournalposttype();
+
+        if (I.equals(journalposttype)) {
+            throw new UgyldigJournalStatusException("Journalposten er inngående. Kun utgående journalposter og notater kan avbrytes, med journalpostId " + journalpostId);
+        } else if (JOURNAL_STATUS_CODE_DOKUMENT_RESERVERT.contains(oldJournalStatus)) {
+            journalpost.setJournalstatus(A);
+        } else if (A.equals(oldJournalStatus)) {
+            throw new UgyldigJournalStatusException("Journalposten er allerede avbrutt, med journalpostId " + journalpostId);
         } else {
-            throw new UgyldigJournalStatusException("Journalposten kan ikke avbrytes da den er ferdigstilt)");
+            throw new UgyldigJournalStatusException("Journalposten kan ikke avbrytes da den er ferdigstilt, med journalpostId " + journalpostId);
         }
 
         ArkivElementEndringTO endring = ArkivElementEndringTO.builder()
@@ -60,11 +68,11 @@ public class AvbrytService {
         joarkRepository.save(journalpost);
 
         aksjonsLoggService.lagreAksjonsLoggForJournalpost(
-                AksjonsTypeCode.AVBRYT, journalpost.getJournalpostId(), "ARKL", FIKK_AVBRUTT_UTGAAR,
+                AVBRYT, journalpost.getJournalpostId(), "ARKL", FIKK_AVBRUTT,
                 null, Collections.singletonList(endring));
 
-        log.info(MDC.get(MDC_REQUEST_ID) + " har satt status til avbrutt / utgår for journalpost med journalpostId={}", journalpostId);
+        log.info(MDC.get(MDC_REQUEST_ID) + " har satt status til avbrutt for journalpost med journalpostId={}", journalpostId);
 
-        return FIKK_AVBRUTT_UTGAAR;
+        return FIKK_AVBRUTT;
     }
 }
