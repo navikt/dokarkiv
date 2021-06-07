@@ -146,13 +146,31 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 	}
 
 
-	// Det skal alltid være liv til å oppdatere avsenderMottaker (id, navn). Se commit.
+	// Det skal ikke være lov til å oppdatere avsenderMottaker (id, navn). Se commit.
 	@Test
-	public void shouldUpdateAvsenderMottakerNavnOrIdSetForStatusFS() {
+	public void shouldFailIfAvsenderMottakerNavnOrIdSetForStatusFS() {
 		oppdaterJournalpostRequest = OppdaterJournalpostRequest.builder()
 				.avsenderMottaker(createAvsenderMottakerPerson())
 				.build();
+		expectedException.expect(InputValideringFeiletException.class);
 		OppdaterJournalpostValidator.validateOppdaterteFelt(oppdaterJournalpostRequest, JournalStatusCode.FS, JournalpostTypeCode.U);
+	}
+
+	@Test
+	public void shouldFailIfTittelIsSetForStatusFL() {
+		oppdaterJournalpostRequest = OppdaterJournalpostRequest.builder()
+				.tittel("tittel")
+				.build();
+		expectedException.expect(InputValideringFeiletException.class);
+		OppdaterJournalpostValidator.validateOppdaterteFelt(oppdaterJournalpostRequest, JournalStatusCode.FL, JournalpostTypeCode.U);
+	}
+
+	@Test
+	public void shouldUpdateIfTittelIsSetForJournalPostTypeN() {
+		oppdaterJournalpostRequest = OppdaterJournalpostRequest.builder()
+				.tittel("tittel")
+				.build();
+		OppdaterJournalpostValidator.validateOppdaterteFelt(oppdaterJournalpostRequest, JournalStatusCode.FL, JournalpostTypeCode.N);
 	}
 
 	// Det skal alltid være lov til å endre brevkode. Se commit.
