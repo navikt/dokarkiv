@@ -11,7 +11,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.*;
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.E;
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.FL;
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.FS;
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.J;
 import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.AKTOERID;
 import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.FNR;
 import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.ORGNR;
@@ -27,7 +30,7 @@ public final class OppdaterJournalpostValidator {
 	private static final int AKTOERID_LENGTH = 13;
 	private static final int ORGNR_LENGTH = 9;
 
-	private static List<JournalStatusCode> restrictedJournalpostStatusCodes = Arrays.asList(J, FS, FL, E);
+	private static final List<JournalStatusCode> restrictedJournalpostStatusCodes = Arrays.asList(J, FS, FL, E);
 
 	private OppdaterJournalpostValidator() {
 	}
@@ -39,6 +42,15 @@ public final class OppdaterJournalpostValidator {
 			checkIfIllegalFieldIsSet(request.getSak(), "Sak", journalpostStatus, journalpostType);
 			checkIfIllegalFieldIsSet(request.getJournalfoerendeEnhet(), "JournalfoerendeEnhet", journalpostStatus, journalpostType);
 			checkIfIllegalFieldIsSet(request.getTema(), "Tema", journalpostStatus, journalpostType);
+
+			if (!J.equals(journalpostStatus)) {
+				checkIfIllegalFieldIsSet(request.getTittel(), "Tittel", journalpostStatus, journalpostType);
+				checkIfIllegalFieldIsSet(request.getAvsenderMottaker().getId(), "AvsendeMottakerId", journalpostStatus, journalpostType);
+				checkIfIllegalFieldIsSet(request.getAvsenderMottaker().getIdType(), "AvsendeMottakerIdType", journalpostStatus, journalpostType);
+				checkIfIllegalFieldIsSet(request.getAvsenderMottaker().getNavn(), "AvsendeMottakerNavn", journalpostStatus, journalpostType);
+
+
+			}
 		} else if (request.getSak() != null) {
 			validateSak(request.getSak(), request.getBruker(), request.getTema());
 		}
@@ -51,7 +63,6 @@ public final class OppdaterJournalpostValidator {
 			validateBehandlingstema(request.getBehandlingstema());
 		}
 	}
-
 
 	private static void checkIfIllegalFieldIsSet(Object field, String fieldName, JournalStatusCode journalpoststatus, JournalpostTypeCode journalpostType) {
 		if (field != null) {
@@ -138,12 +149,12 @@ public final class OppdaterJournalpostValidator {
 		}
 	}
 
-	private static boolean isBrukerNull(Bruker bruker){
+	private static boolean isBrukerNull(Bruker bruker) {
 		return isBlank(bruker.getId()) || Objects.isNull(bruker.getIdType());
 	}
 
-	private static void validateBehandlingstema(String behandlingstema){
-		if(behandlingstema.length() != 6 || !behandlingstema.startsWith("ab")){
+	private static void validateBehandlingstema(String behandlingstema) {
+		if (behandlingstema.length() != 6 || !behandlingstema.startsWith("ab")) {
 			throw new InputValideringFeiletException(String.format("Behandlingstema er ikke på formatet ´ab + 4 siffer´. Behandlingstema er=%s", behandlingstema));
 		}
 	}
