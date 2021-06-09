@@ -159,7 +159,7 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 	// Det skal ikke være lov til å oppdatere avsenderMottaker (id, navn) for utgående, ferdigstilte journalposter. .
 	@ParameterizedTest
 	@ValueSource(strings = {"FL", "FS", "E"})
-	void shouldFailWhenAvsenderMottakerNavnOrIdIsSetForStatusFSOrFLOrE(String input) {
+	void shouldFailWhenAvsenderMottakerNavnOrIdIsSetForTypeU(String input) {
 		oppdaterJournalpostRequest = OppdaterJournalpostRequest.builder()
 				.avsenderMottaker(createAvsenderMottakerPerson())
 				.build();
@@ -167,12 +167,14 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 				OppdaterJournalpostValidator.validateOppdaterteFelt(oppdaterJournalpostRequest, JournalStatusCode.valueOf(input), U));
 	}
 
-	@Test
-	public void shouldValidateWhenAvsenderMottakerNavnOrIdIsSetForTypeN() {
+	@ParameterizedTest
+	@ValueSource(strings = {"FL", "FS", "E", "D", "A"})
+	public void shouldFailWhenAvsenderMottakerNavnOrIdIsSetForTypeN(String input) {
 		oppdaterJournalpostRequest = OppdaterJournalpostRequest.builder()
 				.avsenderMottaker(createAvsenderMottakerPerson())
 				.build();
-		OppdaterJournalpostValidator.validateOppdaterteFelt(oppdaterJournalpostRequest, FS, N);
+		assertThrows(InputValideringFeiletException.class, () ->
+				OppdaterJournalpostValidator.validateOppdaterteFelt(oppdaterJournalpostRequest, JournalStatusCode.valueOf(input), N));
 	}
 
 	@Test
