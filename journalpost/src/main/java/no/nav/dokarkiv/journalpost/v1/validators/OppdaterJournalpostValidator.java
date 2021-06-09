@@ -34,8 +34,6 @@ public final class OppdaterJournalpostValidator {
     private static final int AKTOERID_LENGTH = 13;
     private static final int ORGNR_LENGTH = 9;
 
-    private static final List<JournalStatusCode> restrictedJournalpostStatusCodes = Arrays.asList(J, FS, FL, E);
-
     private static final List<JournalStatusCode> INNGAAENDE_RESTRICTED_JOURNALSTATUS = Collections.singletonList(J);
     private static final List<JournalStatusCode> UTGAAENDE_RESTRICTED_JOURNALSTATUS = Arrays.asList(FS, FL, E);
     private static final List<JournalStatusCode> NOTAT_RESTRICTED_JOURNALSTATUS = Arrays.asList(FS, FL, E);
