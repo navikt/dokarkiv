@@ -8,6 +8,7 @@ import no.nav.dokarkiv.journalpost.v1.api.OppdaterJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.Sak;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -15,7 +16,9 @@ import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.E;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.FL;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.FS;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.J;
+import static no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode.I;
 import static no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode.N;
+import static no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode.U;
 import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.AKTOERID;
 import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.FNR;
 import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.ORGNR;
@@ -33,33 +36,55 @@ public final class OppdaterJournalpostValidator {
 
     private static final List<JournalStatusCode> restrictedJournalpostStatusCodes = Arrays.asList(J, FS, FL, E);
 
+    private static final List<JournalStatusCode> INNGAAENDE_RESTRICTED_JOURNALSTATUS = Collections.singletonList(J);
+    private static final List<JournalStatusCode> UTGAAENDE_RESTRICTED_JOURNALSTATUS = Arrays.asList(FS, FL, E);
+    private static final List<JournalStatusCode> NOTAT_RESTRICTED_JOURNALSTATUS = Arrays.asList(FS, FL, E);
+
+
     private OppdaterJournalpostValidator() {
     }
 
     public static void validateOppdaterteFelt(OppdaterJournalpostRequest request, JournalStatusCode journalpostStatus, JournalpostTypeCode journalpostType) {
 
-        if (restrictedJournalpostStatusCodes.contains(journalpostStatus)) {
-            checkIfIllegalFieldIsSet(request.getBruker(), "Bruker", journalpostStatus, journalpostType);
-            checkIfIllegalFieldIsSet(request.getSak(), "Sak", journalpostStatus, journalpostType);
-            checkIfIllegalFieldIsSet(request.getJournalfoerendeEnhet(), "JournalfoerendeEnhet", journalpostStatus, journalpostType);
-            checkIfIllegalFieldIsSet(request.getTema(), "Tema", journalpostStatus, journalpostType);
-
-            if (!J.equals(journalpostStatus) && !N.equals(journalpostType)) {
+        if (I.equals(journalpostType)) {
+            checkIfIllegalFieldIsSet(request.getDatoRetur(), "DatoRetur", journalpostStatus, journalpostType);
+            if (INNGAAENDE_RESTRICTED_JOURNALSTATUS.contains(journalpostStatus)) {
+                checkIfIllegalFieldIsSet(request.getBruker(), "Bruker", journalpostStatus, journalpostType);
+                checkIfIllegalFieldIsSet(request.getSak(), "Sak", journalpostStatus, journalpostType);
+                checkIfIllegalFieldIsSet(request.getJournalfoerendeEnhet(), "JournalfoerendeEnhet", journalpostStatus, journalpostType);
+                checkIfIllegalFieldIsSet(request.getTema(), "Tema", journalpostStatus, journalpostType);
+            } else if (request.getSak() != null) {
+                validateSak(request.getSak(), request.getBruker(), request.getTema());
+            }
+        } else if (U.equals(journalpostType)) {
+            if (UTGAAENDE_RESTRICTED_JOURNALSTATUS.contains(journalpostStatus)) {
+                checkIfIllegalFieldIsSet(request.getBruker(), "Bruker", journalpostStatus, journalpostType);
+                checkIfIllegalFieldIsSet(request.getSak(), "Sak", journalpostStatus, journalpostType);
+                checkIfIllegalFieldIsSet(request.getJournalfoerendeEnhet(), "JournalfoerendeEnhet", journalpostStatus, journalpostType);
+                checkIfIllegalFieldIsSet(request.getTema(), "Tema", journalpostStatus, journalpostType);
                 checkIfIllegalFieldIsSet(request.getTittel(), "Tittel", journalpostStatus, journalpostType);
                 if (request.getAvsenderMottaker() != null) {
                     checkIfIllegalFieldIsSet(request.getAvsenderMottaker().getId(), "AvsendeMottakerId", journalpostStatus, journalpostType);
                     checkIfIllegalFieldIsSet(request.getAvsenderMottaker().getIdType(), "AvsendeMottakerIdType", journalpostStatus, journalpostType);
                     checkIfIllegalFieldIsSet(request.getAvsenderMottaker().getNavn(), "AvsendeMottakerNavn", journalpostStatus, journalpostType);
                 }
+            } else {
+                if (request.getSak() != null) {
+                    validateSak(request.getSak(), request.getBruker(), request.getTema());
+                }
+                checkIfIllegalFieldIsSet(request.getDatoRetur(), "DatoRetur", journalpostStatus, journalpostType);
             }
-        } else if (request.getSak() != null) {
-            validateSak(request.getSak(), request.getBruker(), request.getTema());
-        }
-
-        if (journalpostType != JournalpostTypeCode.U || !restrictedJournalpostStatusCodes.contains(journalpostStatus)) {
+        } else if (N.equals(journalpostType)) {
             checkIfIllegalFieldIsSet(request.getDatoRetur(), "DatoRetur", journalpostStatus, journalpostType);
+            if (NOTAT_RESTRICTED_JOURNALSTATUS.contains(journalpostStatus)) {
+                checkIfIllegalFieldIsSet(request.getBruker(), "Bruker", journalpostStatus, journalpostType);
+                checkIfIllegalFieldIsSet(request.getSak(), "Sak", journalpostStatus, journalpostType);
+                checkIfIllegalFieldIsSet(request.getJournalfoerendeEnhet(), "JournalfoerendeEnhet", journalpostStatus, journalpostType);
+                checkIfIllegalFieldIsSet(request.getTema(), "Tema", journalpostStatus, journalpostType);
+            } else if (request.getSak() != null) {
+                validateSak(request.getSak(), request.getBruker(), request.getTema());
+            }
         }
-
         if (isNotBlank(request.getBehandlingstema())) {
             validateBehandlingstema(request.getBehandlingstema());
         }

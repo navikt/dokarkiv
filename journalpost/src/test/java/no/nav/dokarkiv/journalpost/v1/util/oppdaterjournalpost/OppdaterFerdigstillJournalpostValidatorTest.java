@@ -16,6 +16,9 @@ import no.nav.dokarkiv.journalpost.v1.api.Sakstype;
 import no.nav.dokarkiv.journalpost.v1.validators.OppdaterJournalpostValidator;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.junit.rules.ExpectedException;
 
 import java.sql.Date;
@@ -148,7 +151,18 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 
 	// Det skal ikke være lov til å oppdatere avsenderMottaker (id, navn). Se commit.
 	@Test
-	public void shouldFailIfAvsenderMottakerNavnOrIdSetForStatusFS() {
+	@ParameterizedTest
+	@ValueSource(strings = {"FL", "FS", "E"})
+	void shouldFailWhenAvsenderMottakerNavnOrIdIsSetForStatusFSOrFLOrE(String input) {
+		oppdaterJournalpostRequest = OppdaterJournalpostRequest.builder()
+				.avsenderMottaker(createAvsenderMottakerPerson())
+				.build();
+		expectedException.expect(InputValideringFeiletException.class);
+		OppdaterJournalpostValidator.validateOppdaterteFelt(oppdaterJournalpostRequest, JournalStatusCode.valueOf(input), JournalpostTypeCode.U);
+	}
+
+	@Test
+	void shouldValidateWhenAvsenderMottakerNavnOrIdIsSetForStatusJ() {
 		oppdaterJournalpostRequest = OppdaterJournalpostRequest.builder()
 				.avsenderMottaker(createAvsenderMottakerPerson())
 				.build();
