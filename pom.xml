@@ -77,7 +77,6 @@
 		<no-nav-dok-tjenester-journalfoerinngaaende.version>0.0.21</no-nav-dok-tjenester-journalfoerinngaaende.version>
 		<!-- test -->
 		<spring-cloud-contract-wiremock.version>2.1.5.RELEASE</spring-cloud-contract-wiremock.version>
-		<junit.version>4.13.2</junit.version>
 	</properties>
 	<dependencyManagement>
 		<dependencies>
