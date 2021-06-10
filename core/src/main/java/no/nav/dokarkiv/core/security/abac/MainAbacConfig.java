@@ -86,7 +86,7 @@ public class MainAbacConfig {
 
 	@Bean
 	AbacSecurityService abacArkivV2SecurityService(@Qualifier("abacArkivV2Service") AbacService abacArkivV2Service) {
-		return new AbacSecurityService(abacArkivV2Service, abaclog,
+		return new AbacSecurityService(abaclog, abacArkivV2Service,
 				abacContext, jdbcAbacSecurityRepository,
 				dokumentinfoRepository, joarkRepositorySkjermet);
 	}
