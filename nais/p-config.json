@@ -15,6 +15,7 @@
   "SECURITYTOKENSERVICE_URL": "https://security-token-service.nais.adeo.no/rest/v1/sts/token",
   "PDL_URL": "https://pdl-api.nais.adeo.no/graphql",
   "ABAC_URL": "https://wasapp.adeo.no/asm-pdp/authorize",
+  "ABAC_ARKIV_V2_URL": "https://wasapp.adeo.no/asm-pdp/authorize",
   "JOARK_HENTDOKUMENT_BASEURL": "https://wasapp.adeo.no/joarkweb/HentDokument",
   "DOKARKIV_HENTDOKUMENT_BASEURL": "https://dokarkiv.nais.adeo.no/hentdokument",
   "INGRESSES": ["https://dokarkiv.nais.adeo.no", "https://dokarkiv.prod-fss-pub.nais.io"],

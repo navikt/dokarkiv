@@ -37,6 +37,8 @@ spec:
       value: {{ PDL_URL }}
     - name: ABAC_URL
       value: {{ ABAC_URL }}
+    - name: ABAC_ARKIV_V2_URL
+      value: {{ ABAC_ARKIV_V2_URL }}
     - name: JOARK_HENTDOKUMENT_BASEURL
       value: {{ JOARK_HENTDOKUMENT_BASEURL }}
     - name: DOKARKIV_HENTDOKUMENT_BASEURL
