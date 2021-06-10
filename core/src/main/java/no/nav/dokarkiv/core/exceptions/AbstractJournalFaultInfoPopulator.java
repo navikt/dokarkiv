@@ -1,9 +1,7 @@
 package no.nav.dokarkiv.core.exceptions;
 
 import no.nav.dokarkiv.core.domain.util.DateProvider;
-import org.joda.time.Chronology;
 import org.joda.time.DateTime;
-import org.joda.time.LocalDateTime;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;

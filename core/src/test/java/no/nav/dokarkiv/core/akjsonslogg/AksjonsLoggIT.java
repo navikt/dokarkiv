@@ -185,7 +185,7 @@ public class AksjonsLoggIT {
 		aksjonsLoggTOList.setUtfoertAv(null);
 		aksjonsLoggService.validateAndSaveAksjonsLogg(aksjonsLoggTOList, createArkivElementEndringToList());
 		String faktiskUtfoertAv = aksjonsLoggRepository.findAll().iterator().next().getUtfoertAv();
-		assertEquals(faktiskUtfoertAv, USER_ID);
+		assertEquals(USER_ID, faktiskUtfoertAv);
 	}
 
 	@Test
