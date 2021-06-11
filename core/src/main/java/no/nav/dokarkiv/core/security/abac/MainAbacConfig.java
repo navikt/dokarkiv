@@ -75,6 +75,14 @@ public class MainAbacConfig {
 	}
 
 	@Bean
+	@Primary
+	AbacSecurityService abacArkivSecurityService(AbacService abacArkivService) {
+		return new AbacSecurityService(abaclog, abacArkivService,
+				abacContext, jdbcAbacSecurityRepository,
+				dokumentinfoRepository, joarkRepositorySkjermet);
+	}
+
+	@Bean
 	AbacConsumer abacArkivV2Consumer(RestTemplate restTemplate, @Value("${abac.arkiv.v2.url}") String abacUrl) {
 		return new AbacRestTemplateConsumer(restTemplate, abacUrl, new AbacRequestMapper(), new AbacResponseMapper());
 	}

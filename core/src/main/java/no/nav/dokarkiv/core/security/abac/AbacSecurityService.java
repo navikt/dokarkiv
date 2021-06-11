@@ -29,7 +29,6 @@ import static org.springframework.util.CollectionUtils.isEmpty;
  * @author Martin Burheim Tingstad, Visma Consulting AS
  */
 @Slf4j
-@Component
 public class AbacSecurityService {
 
 	private static final String ACCESS_DENIED_TO_JOURNALPOST = "Bruker har ikke tilgang til journalpost";
