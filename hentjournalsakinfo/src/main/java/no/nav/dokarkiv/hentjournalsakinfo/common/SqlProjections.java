@@ -68,6 +68,7 @@ public final class SqlProjections {
                     "        fd.fil_navn            AS dokumenter_varianter_filnavn,\n" +
                     "        fd.fil_uuid            AS dokumenter_varianter_filuuid,\n" +
                     "        fd.k_fil_t             AS dokumenter_varianter_filtype,\n" +
+                    "        fd.fil_storrelse       AS dokumenter_varianter_filstorrelse,\n" +
                     "        tsi.skannet_innhold_id AS dokumenter_logiske_vedleggid,\n" +
                     "        tsi.vedlegg_innhold    AS dokumenter_logiske_tittel\n";
 }

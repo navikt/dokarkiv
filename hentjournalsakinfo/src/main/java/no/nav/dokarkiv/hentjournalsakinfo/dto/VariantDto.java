@@ -10,5 +10,6 @@ public class VariantDto {
 	private final String filnavn;
 	private final String filuuid;
 	private final String filtype;
+	private final String filstorrelse;
 	private final SkjermingTypeCode skjerming;
 }
