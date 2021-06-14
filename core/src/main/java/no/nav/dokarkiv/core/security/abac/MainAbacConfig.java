@@ -40,31 +40,14 @@ public class MainAbacConfig {
 	private List<ObligationStrategy> obligationStrategies = new ArrayList();
 	@Autowired(required = false)
 	private List<AdviceStrategy> adviceStrategies = new ArrayList();
-
 	/*
 	 * end
 	 */
 
-	/*
-	 * Hva er beste måte å løse dette på? Disse er for bruk i AbacSecurityService.
-	 * Vil det være bedre å gjøre disse ikke final i AbacSecurityService og kjøre field injection der slik at
-	 * det eneste jeg trenger å sende med er AbacServicen for opprettelse?
-	 * Evt andre tanker?
-	 */
-	@Inject
-	private AbacLogger abaclog = null;
-	@Inject
-	private AbacContext abacContext;
-	@Inject
-	private JdbcAbacSecurityRepository jdbcAbacSecurityRepository;
-	@Inject
-	private DokumentinfoRepository dokumentinfoRepository;
-	@Inject
-	private JoarkRepositorySkjermet joarkRepositorySkjermet;
 
 	@Bean
 	@Primary
-	AbacConsumer abacConsumer(RestTemplate restTemplate, @Value("${abac.url}") String abacUrl) {
+	AbacConsumer abacConsumer(RestTemplate restTemplate, @Value("${abac.arkiv.url}") String abacUrl) {
 		return new AbacRestTemplateConsumer(restTemplate, abacUrl, new AbacRequestMapper(), new AbacResponseMapper());
 	}
 
@@ -76,7 +59,10 @@ public class MainAbacConfig {
 
 	@Bean
 	@Primary
-	AbacSecurityService abacArkivSecurityService(AbacService abacArkivService) {
+	@Inject
+	AbacSecurityService abacArkivSecurityService(AbacService abacArkivService, AbacLogger abaclog,
+												 AbacContext abacContext, JdbcAbacSecurityRepository jdbcAbacSecurityRepository,
+												 DokumentinfoRepository dokumentinfoRepository, JoarkRepositorySkjermet joarkRepositorySkjermet) {
 		return new AbacSecurityService(abaclog, abacArkivService,
 				abacContext, jdbcAbacSecurityRepository,
 				dokumentinfoRepository, joarkRepositorySkjermet);
@@ -93,10 +79,11 @@ public class MainAbacConfig {
 	}
 
 	@Bean
-	AbacSecurityService abacArkivV2SecurityService(@Qualifier("abacArkivV2Service") AbacService abacArkivV2Service) {
-		return new AbacSecurityService(abaclog, abacArkivV2Service,
-				abacContext, jdbcAbacSecurityRepository,
-				dokumentinfoRepository, joarkRepositorySkjermet);
+	AbacSecurityService abacArkivV2SecurityService(@Qualifier("abacArkivV2Service") AbacService abacArkivV2Service, AbacLogger abaclog,
+												   AbacContext abacContext, JdbcAbacSecurityRepository jdbcAbacSecurityRepository,
+												   DokumentinfoRepository dokumentinfoRepository, JoarkRepositorySkjermet joarkRepositorySkjermet) {
+			return new AbacSecurityService(abaclog, abacArkivV2Service,
+					abacContext, jdbcAbacSecurityRepository,
+					dokumentinfoRepository, joarkRepositorySkjermet);
+		}
 	}
-
-}

@@ -35,8 +35,8 @@ spec:
       value: {{ SECURITYTOKENSERVICE_URL }}
     - name: PDL_URL
       value: {{ PDL_URL }}
-    - name: ABAC_URL
-      value: {{ ABAC_URL }}
+    - name: ABAC_ARKIV_URL
+      value: {{ ABAC_ARKIV_URL }}
     - name: ABAC_ARKIV_V2_URL
       value: {{ ABAC_ARKIV_V2_URL }}
     - name: JOARK_HENTDOKUMENT_BASEURL
