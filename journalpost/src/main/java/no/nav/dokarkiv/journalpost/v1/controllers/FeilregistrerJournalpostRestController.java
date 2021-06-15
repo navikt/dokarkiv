@@ -22,6 +22,7 @@ import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerSettUkjentBruker;
 import no.nav.freg.abac.core.annotation.Abac;
 import no.nav.security.token.support.core.api.Protected;
 import org.slf4j.MDC;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -40,11 +41,11 @@ import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
 import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.ADMIN_UPDATE_ACTION;
 import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.ARKIV_V2;
-import static no.nav.dokarkiv.journalpost.v1.util.AvvikstypeConstants.SETT_STATUS_AVBRYT;
 import static no.nav.dokarkiv.journalpost.v1.util.AvvikstypeConstants.FEILREGISTRER_SAKSTILKNYTNING;
 import static no.nav.dokarkiv.journalpost.v1.util.AvvikstypeConstants.OPPHEV_FEILREGISTRERT_SAKSTILKNYTNING;
-import static no.nav.dokarkiv.journalpost.v1.util.AvvikstypeConstants.SETT_UKJENT_BRUKER;
+import static no.nav.dokarkiv.journalpost.v1.util.AvvikstypeConstants.SETT_STATUS_AVBRYT;
 import static no.nav.dokarkiv.journalpost.v1.util.AvvikstypeConstants.SETT_STATUS_UTGAAR;
+import static no.nav.dokarkiv.journalpost.v1.util.AvvikstypeConstants.SETT_UKJENT_BRUKER;
 
 @Slf4j
 @Protected
@@ -60,7 +61,7 @@ public class FeilregistrerJournalpostRestController {
 	private final UkjentBrukerService ukjentBrukerService;
 	private final AvbrytService avbrytService;
 	private final AksjonsLoggService aksjonsLoggService;
-	private final AbacSecurityService abacSecurityService;
+	private final AbacSecurityService abacSecurityServiceV2;
 	private final UtgaarService utgaarService;
 
 	@Inject
@@ -69,14 +70,14 @@ public class FeilregistrerJournalpostRestController {
 			final UkjentBrukerService ukjentBrukerService,
 			final AvbrytService avbrytService,
 			final AksjonsLoggService aksjonsLoggService,
-			AbacSecurityService abacSecurityService,
+			@Qualifier("abacArkivV2SecurityService") AbacSecurityService abacSecurityServiceV2,
 			UtgaarService statusUtgaarService
 	) {
 		this.feilregistrerSakstilknytningService = feilregistrerSakstilknytningService;
 		this.ukjentBrukerService = ukjentBrukerService;
 		this.avbrytService = avbrytService;
 		this.aksjonsLoggService = aksjonsLoggService;
-		this.abacSecurityService = abacSecurityService;
+		this.abacSecurityServiceV2 = abacSecurityServiceV2;
 		this.utgaarService = statusUtgaarService;
 	}
 
@@ -113,7 +114,7 @@ public class FeilregistrerJournalpostRestController {
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark403"}, percentiles = {0.5, 0.95})
 	public ResponseEntity<String> settUkjentBruker(
 			@PathVariable @ApiParam(value = "IDen til journalposten som skal feilregistreres", required = true, example = "77778888") String journalpostId) {
-		abacSecurityService.assertAccessToJournalpost(journalpostId);
+		abacSecurityServiceV2.assertAccessToJournalpost(journalpostId);
 		List<ArkivElementEndringTO> arkivElementEndringTOList = ukjentBrukerService.settUkjentBruker(journalpostId);
 		populerAksjonslogg(journalpostId, AksjonsTypeCode.UKJENT_BRUKER, arkivElementEndringTOList, FIKK_UKJENT_BRUKER);
 		log.info(MDC.get(MDC_REQUEST_ID) + " har satt status til Ukjent Bruker for journalpost med journalpostId={}", journalpostId);
@@ -140,7 +141,7 @@ public class FeilregistrerJournalpostRestController {
 	public ResponseEntity<String> utgaar(
 			@PathVariable @ApiParam(value = "IDen til journalposten som skal settes til utgått", required = true, example = "77778888") String journalpostId
 	) {
-		abacSecurityService.assertAccessToJournalpost(journalpostId);
+		abacSecurityServiceV2.assertAccessToJournalpost(journalpostId);
 		String response = utgaarService.settStatusUtgaar(journalpostId);
 		return ResponseEntity.ok().body(response);
 	}
