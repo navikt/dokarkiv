@@ -59,25 +59,6 @@ public class FerdigstillJournalpostService {
 		log.info("Oppdatert journalfoerendeEnhet={}", journalpost.getJournalForendeEnhetId());
 	}
 
-	@Deprecated // skal bli fjernet når migrering fra ondemand til Joark er ferdig, gjelder sak MMA-5140.
-	public void ferdigstill(Long journalpostId, FerdigstillJournalpostRequest journalfoerendeEnhet) {
-		Journalpost journalpost = joarkRepository.findById(journalpostId)
-				.orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostId)));
-
-		JournalStatusCode prevJournalstatus = journalpost.getJournalstatus();
-		String prevJournalfoerendeEnhet = journalpost.getJournalForendeEnhetId();
-		String prevJournalfortAvNavn = journalpost.getJournalfortAvNavn();
-
-		validerJournalpost(journalpost);
-		setJournalpostStatus(journalpost);
-		this.oppdatertJournalpost(journalpost, journalfoerendeEnhet);
-
-		joarkRepository.save(journalpost);
-
-		populerAksjonslogg(journalpostId, getArkivElementEndringer(journalpost, prevJournalstatus, prevJournalfoerendeEnhet, prevJournalfortAvNavn));
-	}
-
-
 	public void ferdigstill(Long journalpostId, String journalfoerendeEnhet) {
 		Journalpost journalpost = joarkRepository.findById(journalpostId)
 				.orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostId)));
@@ -125,21 +106,6 @@ public class FerdigstillJournalpostService {
 		journalpost.setEndretAvNavn(MDC.get(MDC_USER_NAME));
 		journalpost.setJournalfortAvNavn(MDC.get(MDC_USER_NAME));
 		journalpost.setEndretKildeNavn(MDC.get(MDC_CONSUMER_ID));
-	}
-
-	@Deprecated // skal bli fjernet når migrering fra ondemand til Joark er ferdig, gjelder sak MMA-5140.
-	private void oppdatertJournalpost(Journalpost journalpost, FerdigstillJournalpostRequest journalfoerendeEnhet) {
-		journalpost.setJournalDato(
-				journalfoerendeEnhet.getDatoJournal() != null ? journalfoerendeEnhet.getDatoJournal() : Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant())
-		);
-		journalpost.setJournalForendeEnhetId(journalfoerendeEnhet.getJournalfoerendeEnhet());
-		journalpost.setEndretAvNavn(MDC.get(MDC_USER_NAME));
-		journalpost.setJournalfortAvNavn(
-				journalfoerendeEnhet.getJournalfortAvNavn() != null ? journalfoerendeEnhet.getJournalfortAvNavn() : MDC.get(MDC_USER_NAME)
-		);
-		journalpost.setEndretKildeNavn(MDC.get(MDC_CONSUMER_ID));
-		journalpost.setOpprettetAvNavn(journalfoerendeEnhet.getOpprettetAvNavn());
-		journalpost.setSendtPrintDato(journalfoerendeEnhet.getDatoSendtPrint());
 	}
 
 	private void setJournalpostStatus(Journalpost journalpost) {

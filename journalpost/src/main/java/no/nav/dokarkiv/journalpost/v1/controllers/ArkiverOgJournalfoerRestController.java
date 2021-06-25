@@ -105,7 +105,7 @@ public class ArkiverOgJournalfoerRestController {
         ferdigstillJournalpostValidator.validateRequest(journalpostId, request);
         RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
 
-        ferdigstillJournalpostService.ferdigstill(Long.parseLong(journalpostId), request);
+        ferdigstillJournalpostService.ferdigstill(Long.parseLong(journalpostId), request.getJournalfoerendeEnhet());
         log.info(MDC.get(MDC_REQUEST_ID) + " har ferdigstilt journalpost med journalpostId={}", journalpostId);
 
         return ResponseEntity.ok().body("Journalpost ferdigstilt");
