@@ -10,6 +10,8 @@ import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import no.nav.dokarkiv.core.MDCConstants;
+import no.nav.dokarkiv.core.security.ldap.NavLdapService;
+import no.nav.dokarkiv.core.security.ldap.NavUser;
 import no.nav.security.token.support.core.jwt.JwtToken;
 import no.nav.security.token.support.test.JwkGenerator;
 import org.junit.jupiter.api.Test;
@@ -21,6 +23,8 @@ import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * @author Joakim Bjørnstad, Jbit AS
@@ -33,11 +37,12 @@ class AzureAdFlowSporingHandlerTest {
 	private static final String USER_CLAIM_NAVIDENT = "P999999";
 	private static final String USER_CLAIM_NAME = "Donald Duck";
 
-	private final AzureAdFlowSporingHandler azureAdFlowSporingHandler = new AzureAdFlowSporingHandler();
+	private final NavLdapService navLdapServiceMock = mock(NavLdapService.class);
+	private final AzureAdFlowSporingHandler azureAdFlowSporingHandler = new AzureAdFlowSporingHandler(navLdapServiceMock);
 
 	@Test
 	void shouldHandleClientCredentialGrantFlowWhenAppTokenContainsIdTypClaim() {
-		azureAdFlowSporingHandler.handle(createAzureClientCredentialGrantWithOptionalIdtypClaimToken());
+		azureAdFlowSporingHandler.handle(createAzureClientCredentialGrantWithOptionalIdtypClaimToken(), null);
 
 		assertThat(MDC.get(MDCConstants.MDC_USER_ID)).isEqualTo(APP_CLAIM_AZP);
 		assertThat(MDC.get(MDCConstants.MDC_CONSUMER_ID)).isEqualTo(APP_CLAIM_AZP);
@@ -46,7 +51,42 @@ class AzureAdFlowSporingHandlerTest {
 
 	@Test
 	void shouldHandleClientCredentialGrantFlowWhenAppTokenDoesNotContainIdTypClaim() {
-		azureAdFlowSporingHandler.handle(createAzureClientCredentialGrantToken());
+		azureAdFlowSporingHandler.handle(createAzureClientCredentialGrantToken(), null);
+
+		assertThat(MDC.get(MDCConstants.MDC_USER_ID)).isEqualTo(APP_CLAIM_AZP);
+		assertThat(MDC.get(MDCConstants.MDC_CONSUMER_ID)).isEqualTo(APP_CLAIM_AZP);
+		assertThat(MDC.get(MDCConstants.MDC_USER_NAME)).isEqualTo(APP_CLAIM_AZP);
+	}
+
+	@Test
+	void shouldHandleClientCredentialGrantFlowWhenNavUserIdHeaderSet() {
+		when(navLdapServiceMock.findByUserId(USER_CLAIM_NAVIDENT)).thenReturn(NavUser.builder()
+				.userId(USER_CLAIM_NAVIDENT)
+				.displayName(USER_CLAIM_NAME)
+				.userExistsInLdap(true)
+				.build());
+		azureAdFlowSporingHandler.handle(createAzureClientCredentialGrantToken(), USER_CLAIM_NAVIDENT);
+
+		assertThat(MDC.get(MDCConstants.MDC_USER_ID)).isEqualTo(USER_CLAIM_NAVIDENT);
+		assertThat(MDC.get(MDCConstants.MDC_CONSUMER_ID)).isEqualTo(APP_CLAIM_AZP);
+		assertThat(MDC.get(MDCConstants.MDC_USER_NAME)).isEqualTo(USER_CLAIM_NAME);
+	}
+
+	@Test
+	void shouldSetAppContextWhenNavUserIdHeaderSetAndNotExistsInLdap() {
+		when(navLdapServiceMock.findByUserId(USER_CLAIM_NAVIDENT)).thenReturn(NavUser.builder()
+				.userExistsInLdap(false)
+				.build());
+		azureAdFlowSporingHandler.handle(createAzureClientCredentialGrantToken(), USER_CLAIM_NAVIDENT);
+
+		assertThat(MDC.get(MDCConstants.MDC_USER_ID)).isEqualTo(APP_CLAIM_AZP);
+		assertThat(MDC.get(MDCConstants.MDC_CONSUMER_ID)).isEqualTo(APP_CLAIM_AZP);
+		assertThat(MDC.get(MDCConstants.MDC_USER_NAME)).isEqualTo(APP_CLAIM_AZP);
+	}
+
+	@Test
+	void shouldSetAppContextWhenNavUserIdHeaderSetAndInvalidNavIdent() {
+		azureAdFlowSporingHandler.handle(createAzureClientCredentialGrantToken(), "ZZ9999");
 
 		assertThat(MDC.get(MDCConstants.MDC_USER_ID)).isEqualTo(APP_CLAIM_AZP);
 		assertThat(MDC.get(MDCConstants.MDC_CONSUMER_ID)).isEqualTo(APP_CLAIM_AZP);
@@ -55,7 +95,7 @@ class AzureAdFlowSporingHandlerTest {
 
 	@Test
 	void shouldHandleOnBehalfOfFlow() {
-		azureAdFlowSporingHandler.handle(createAzureOnBehalfOfToken());
+		azureAdFlowSporingHandler.handle(createAzureOnBehalfOfToken(), null);
 
 		assertThat(MDC.get(MDCConstants.MDC_USER_ID)).isEqualTo(USER_CLAIM_NAVIDENT);
 		assertThat(MDC.get(MDCConstants.MDC_CONSUMER_ID)).isEqualTo(APP_CLAIM_AZP);
@@ -64,18 +104,16 @@ class AzureAdFlowSporingHandlerTest {
 
 	@Test
 	void shouldHandleOnBehalfOfFlowMissingNavIdent() {
-		azureAdFlowSporingHandler.handle(createAzureOnBehalfOfTokenWithoutNavIdent());
+		azureAdFlowSporingHandler.handle(createAzureOnBehalfOfTokenWithoutNavIdent(), null);
 
 		assertThat(MDC.get(MDCConstants.MDC_USER_ID)).isEqualTo(USER_CLAIM_OID);
 		assertThat(MDC.get(MDCConstants.MDC_CONSUMER_ID)).isEqualTo(APP_CLAIM_AZP);
 		assertThat(MDC.get(MDCConstants.MDC_USER_NAME)).isEqualTo(USER_CLAIM_NAME);
 	}
 
-
-
 	@Test
 	void shouldThrowMissingClaimExceptionWhenAzureOnBehalfTokenIsMissingNameClaim() {
-		assertThatThrownBy(() -> azureAdFlowSporingHandler.handle(createAzureToken(defaultAzureClaimSet(APP_CLAIM_SUB, USER_CLAIM_OID, APP_CLAIM_AZP, USER_CLAIM_NAVIDENT))))
+		assertThatThrownBy(() -> azureAdFlowSporingHandler.handle(createAzureToken(defaultAzureClaimSet(APP_CLAIM_SUB, USER_CLAIM_OID, APP_CLAIM_AZP, USER_CLAIM_NAVIDENT)), null))
 				.isInstanceOf(MissingClaimException.class);
 	}
 

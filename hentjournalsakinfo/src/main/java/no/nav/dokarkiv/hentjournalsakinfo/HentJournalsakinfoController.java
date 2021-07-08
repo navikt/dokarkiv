@@ -109,7 +109,7 @@ public class HentJournalsakinfoController {
 	@Transactional(readOnly = true)
 	@ResponseBody
 	@GetMapping(value = "/henttilgangjournalpost/{journalpostId}/{dokumentInfoId}/{variantFormat}")
-	@RestMetrics(value = "dok_request", extraTags = {"process_code", "tjoark901"}, percentiles = {0.5, 0.95})
+	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark901"}, percentiles = {0.5, 0.95})
 	public HentTilgangJournalpostResponse hentTilgangJournalpost(@PathVariable Long journalpostId,
 																 @PathVariable Long dokumentInfoId,
 																 @PathVariable VariantFormatCode variantFormat) {

@@ -160,9 +160,9 @@ public class DefaultHentMinTilgjengeligeJournalpostListeServiceTest {
 		journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().setOrganInternt(true);
 		journalposts.add(journalpost);
 		journalposts.add(createLegalJournalpost());
-		journalposts = service.hentMineTilgjengeligeJournalposter(createRequest(new SakFagsystem(FagsystemCode.FS22, "1")));
+		List<Journalpost> actualJp = service.hentMineTilgjengeligeJournalposter(createRequest(new SakFagsystem(FagsystemCode.FS22, "1")));
 
-		assertThat(journalposts.size(), is(1));
+		assertThat(actualJp.size(), is(1));
 	}
 
 	@Test

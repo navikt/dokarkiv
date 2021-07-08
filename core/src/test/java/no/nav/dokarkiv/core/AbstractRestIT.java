@@ -133,6 +133,15 @@ public abstract class AbstractRestIT {
 		return headers;
 	}
 
+	protected HttpHeaders createHeadersWithServiceUserTokenAndUserIdHeader(String serviceUserId, String userId) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		headers.add(HttpHeaders.AUTHORIZATION, BEARER + getTokenWithSubject(serviceUserId));
+		headers.add(NavHeaders.NAV_CALL_ID, "itest");
+		headers.add(NavHeaders.NAV_USER_ID, userId);
+		return headers;
+	}
+
 	protected HttpHeaders createHeadersWithAksjon() throws IOException {
 		HttpHeaders httpHeaders = createHeadersWithUserAndServiceUserToken();
 		httpHeaders.add(AksjonsLoggService.AKSJONS_LOGG_BRUKER_HEADER, AKSJON_BRUKER);
