@@ -6,6 +6,7 @@ import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.MDCConstants;
+import no.nav.dokarkiv.core.NavHeaders;
 import no.nav.dokarkiv.core.jaxws.ThreadLocalSubjectHandler;
 import no.nav.dokarkiv.core.security.handler.AzureAdFlowSporingHandler;
 import no.nav.dokarkiv.core.security.handler.NavCombinedBrukerSystemkontekstHandler;
@@ -69,8 +70,8 @@ public class SporingHandlerInterceptor implements HandlerInterceptor {
 		this.tokenValidationContextHolder = tokenValidationContextHolder;
 		this.meterRegistry = meterRegistry;
 		this.headerTokenExtractor = new HeaderTokenExtractor();
-		this.azureAdFlowSporingHandler = new AzureAdFlowSporingHandler();
-		this.navSystemkontekstHandler = new NavSystemkontekstHandler();
+		this.azureAdFlowSporingHandler = new AzureAdFlowSporingHandler(navLdapService);
+		this.navSystemkontekstHandler = new NavSystemkontekstHandler(navLdapService);
 		this.navCombinedBrukerSystemkontekstHandler = new NavCombinedBrukerSystemkontekstHandler(navLdapService,
 				multiIssuerConfiguration.getIssuer(ISSUER_RESTSTS).orElseThrow().getTokenValidator());
 	}
@@ -82,23 +83,27 @@ public class SporingHandlerInterceptor implements HandlerInterceptor {
 		putAbacMdcValues(request);
 		String authorizationToken = headerTokenExtractor.getIdToken(request);
 		String navConsumerToken = headerTokenExtractor.getConsumerToken(request);
+		String navUserIdHeader = request.getHeader(NavHeaders.NAV_USER_ID);
 
 		if (isEmpty(authorizationToken)) {
 			return handleMissingAuthorizationHeader(response);
 		} else {
-			return handleAuthorizedAccess(response, handler, authorizationToken, navConsumerToken);
+			return handleAuthorizedAccess(response, handler, authorizationToken, navConsumerToken, navUserIdHeader);
 		}
 	}
 
-	private boolean handleAuthorizedAccess(HttpServletResponse response, Object handler,
-										   String authorizationToken, String navConsumerToken) throws IOException {
+	private boolean handleAuthorizedAccess(HttpServletResponse response,
+										   Object handler,
+										   String authorizationToken,
+										   String navConsumerToken,
+										   String navUserIdHeader) throws IOException {
 		final TokenValidationContext tokenValidationContext = tokenValidationContextHolder.getTokenValidationContext();
 		if (tokenValidationContext.getJwtTokenAsOptional(ISSUER_AZUREV2).isPresent()) {
 			// Azure AD token (header: Authorization). Oauth 2.0 client credential grant flow og on-behalf-of flow
-			azureAdFlowSporingHandler.handle(tokenValidationContext.getJwtToken(ISSUER_AZUREV2));
+			azureAdFlowSporingHandler.handle(tokenValidationContext.getJwtToken(ISSUER_AZUREV2), navUserIdHeader);
 		} else if (tokenValidationContext.getFirstValidToken().isPresent() && isEmpty(navConsumerToken)) {
 			// REST-STS (header: Authorization). System til system
-			if (navSystemkontekstHandler.handle(tokenValidationContext.getFirstValidToken().get(), response)) {
+			if (navSystemkontekstHandler.handle(tokenValidationContext.getFirstValidToken().get(), response, navUserIdHeader)) {
 				return false;
 			}
 		} else if (tokenValidationContext.getFirstValidToken().isPresent() && isNotEmpty(navConsumerToken)) {

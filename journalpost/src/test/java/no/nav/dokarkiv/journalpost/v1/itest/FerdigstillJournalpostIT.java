@@ -251,4 +251,34 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 		assertTrue(response.getBody().getMessage().contains("Journalpost.avsendMottaker"));
 		assertTrue(response.getBody().getMessage().contains("Journalpost.innhold"));
 	}
+
+	@Test
+	public void shouldSetNavUserIdHeaderSporingWhenServiceUserTokenAndNavUserIdHeaderIsSet() throws IOException {
+		abacPermit();
+
+		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.U, JournalStatusCode.M).build();
+		joarkRepository.save(journalpost);
+
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
+
+		Long journalpostId = journalpost.getJournalpostId();
+		FerdigstillJournalpostRequest request = FerdigstillJournalpostRequest.builder()
+				.journalfoerendeEnhet("9999")
+				.build();
+
+		HttpEntity requestEntity = new HttpEntity(request, createHeadersWithServiceUserTokenAndUserIdHeader(SERVICE_USER_ID, PERSON_USER_ID));
+		ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST + journalpostId + FERDIGSTILL, HttpMethod.PATCH, requestEntity, String.class);
+
+		assertEquals(HttpStatus.OK, response.getStatusCode());
+
+		TestTransaction.start();
+		Journalpost ferdigstiltJournalpost = joarkRepository.findById(journalpost.getJournalpostId()).orElseThrow(RuntimeException::new);
+
+		assertEquals(PERSON_USER_NAME, ferdigstiltJournalpost.getEndretAvNavn());
+		assertEquals(SERVICE_USER_ID, ferdigstiltJournalpost.getEndretKildeNavn());
+		assertEquals(PERSON_USER_NAME, ferdigstiltJournalpost.getJournalfortAvNavn());
+		assertEquals(PERSON_USER_ID, ferdigstiltJournalpost.getChangeStamp().getUpdatedBy());
+		TestTransaction.end();
+	}
 }
