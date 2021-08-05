@@ -1,5 +1,5 @@
 {
-  "NAMESPACE": "q1",
+  "NAMESPACE": "teamdokumenthandtering",
   "NO_NAV_SECURITY_JWT_ISSUER_AZUREV2_DISCOVERYURL": "https://login.microsoftonline.com/966ac572-f5b7-4bbe-aa88-c76419c0f851/v2.0/.well-known/openid-configuration",
   "NO_NAV_SECURITY_JWT_ISSUER_OPENAM_DISCOVERYURL": "https://isso-q.adeo.no:443/isso/oauth2/.well-known/openid-configuration",
   "NO_NAV_SECURITY_JWT_ISSUER_RESTSTS_DISCOVERYURL": "https://security-token-service.nais.preprod.local/rest/v1/sts/.well-known/openid-configuration",
@@ -17,7 +17,7 @@
   "ABAC_ARKIV_URL": "https://abac-arkiv-q1.dev.intern.nav.no/application/asm-pdp/authorize",
   "ABAC_ARKIV_V2_URL": "https://abac-arkiv-v2.dev.intern.nav.no/application/asm-pdp/authorize",
   "JOARK_HENTDOKUMENT_BASEURL": "https://wasapp-q1.adeo.no/joarkweb/HentDokument",
-  "DOKARKIV_HENTDOKUMENT_BASEURL": "https://dokarkiv-q1.nais.preprod.local/hentdokument",
+  "DOKARKIV_HENTDOKUMENT_BASEURL": "https://dokarkiv.dev.intern.nav.no/hentdokument",
   "INGRESSES": ["https://dokarkiv-q1.nais.preprod.local", "https://dokarkiv-q1.dev.adeo.no", "https://dokarkiv.dev-fss-pub.nais.io", "https://dokarkiv.dev.intern.nav.no"],
   "DOKARKIV_DS": "/oracle/data/dev/creds/joark_q1-user",
   "SRVDOKARKIV": "/serviceuser/data/dev/srvdokarkiv",
