@@ -1,0 +1,14 @@
+# default namespace -> teamdokumenthandtering namespace
+# for apper med http://dokarkiv kubernetes service discovery
+# https://doc.nais.io/clusters/team-namespaces/#example
+# Manuelt lagt inn i default namespace prod-fss:
+#   kubectl config use-context prod-fss
+#   kubectl apply -f p-default-extern-svc.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: dokarkiv
+  namespace: default
+spec:
+  type: ExternalName
+  externalName: dokarkiv.teamdokumenthandtering.svc.nais.local

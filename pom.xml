@@ -39,7 +39,6 @@
 		<javax.inject.version>1</javax.inject.version>
 		<jakarta.jaxws-api.version>2.3.2</jakarta.jaxws-api.version>
 		<jakarta.jws-api.version>1.1.1</jakarta.jws-api.version>
-		<saaj-impl.version>1.5.2</saaj-impl.version>
 		<oracle.version>19.10.0.0</oracle.version>
 		<cxf.version>3.4.4</cxf.version>
 		<!-- Flyway versjon må ses i sammenheng med joark og Flyway42AutoConfiguration -->
@@ -77,7 +76,6 @@
 		<!-- test -->
 		<spring-cloud-contract-wiremock.version>2.1.5.RELEASE</spring-cloud-contract-wiremock.version>
 		<!-- plugins -->
-		<maven-surefire-plugin.version>3.0.0-M3</maven-surefire-plugin.version>
 		<maven-resources-plugin.version>3.2.0</maven-resources-plugin.version>
 		<maven-toolchains-plugin.version>3.0.0</maven-toolchains-plugin.version>
 	</properties>
@@ -211,11 +209,6 @@
 				<groupId>jakarta.jws</groupId>
 				<artifactId>jakarta.jws-api</artifactId>
 				<version>${jakarta.jws-api.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.sun.xml.messaging.saaj</groupId>
-				<artifactId>saaj-impl</artifactId>
-				<version>${saaj-impl.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.cxf</groupId>
@@ -418,12 +411,10 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<version>${maven-surefire-plugin.version}</version>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-failsafe-plugin</artifactId>
-				<version>${maven-surefire-plugin.version}</version>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
