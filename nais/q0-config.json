@@ -18,7 +18,11 @@
   "ABAC_ARKIV_V2_URL": "https://abac-arkiv-v2.dev.intern.nav.no/application/asm-pdp/authorize",
   "JOARK_HENTDOKUMENT_BASEURL": "https://wasapp-q0.adeo.no/joarkweb/HentDokument",
   "DOKARKIV_HENTDOKUMENT_BASEURL": "https://dokarkiv-q0.dev.intern.nav.no/hentdokument",
-  "INGRESSES": ["https://dokarkiv-q0.nais.preprod.local", "https://dokarkiv-q0.dev.adeo.no", "https://dokarkiv-q0.dev.intern.nav.no"],
+  "INGRESSES": [
+    "https://dokarkiv-q0.nais.preprod.local",
+    "https://dokarkiv-q0.dev.adeo.no",
+    "https://dokarkiv-q0.dev.intern.nav.no"
+  ],
   "DOKARKIV_DS": "/oracle/data/dev/creds/joark_q0-user",
   "SRVDOKARKIV": "/serviceuser/data/dev/srvdokarkiv",
   "DOKARKIV_VAULT": "/kv/preprod/fss/dokarkiv/q0",
