@@ -124,6 +124,39 @@ public class OpprettJournalpostRequestValidatorTest {
         validator.validateRequest(request, FORSOEKFERDIGSTILL);
     }
 
+
+    @Test
+    public void shouldHappyWhenJournaforendeEnhetErNull() {
+        request = createMinimalRequest(JournalpostType.INNGAAENDE)
+                .journalfoerendeEnhet(null)
+                .sak(Sak.builder().sakstype(Sakstype.ARKIVSAK).arkivsaksystem(Arkivsaksystem.GSAK).arkivsaksnummer(ARKIVSAKSNUMMER).build())
+                .build();
+        validator.validateRequest(request, FORSOEKFERDIGSTILL);
+    }
+
+    @Test
+    public void shouldThrowExceptionWhenJournaforendeEnhetIsNotNullOrNot4Digits() {
+        request = createMinimalRequest(JournalpostType.INNGAAENDE)
+                .journalfoerendeEnhet(TestUtils.JOURNALFOERENDE_ENHET_UGYLDYG)
+                .sak(Sak.builder().sakstype(Sakstype.ARKIVSAK).arkivsaksystem(Arkivsaksystem.GSAK).arkivsaksnummer(ARKIVSAKSNUMMER).build())
+                .build();
+        expectedException.expect(InputValideringFeiletException.class);
+        expectedException.expectMessage("JournalfoerendeEnhet må være null eller fire siffer. JournalfoerendeEnhet="+TestUtils.JOURNALFOERENDE_ENHET_UGYLDYG);
+        validator.validateRequest(request, FORSOEKFERDIGSTILL);
+    }
+
+
+    @Test
+    public void shouldThrowExceptionWhenJournaforendeEnhetIsLotsOfSpaces() {
+        request = createMinimalRequest(JournalpostType.INNGAAENDE)
+                .journalfoerendeEnhet(TestUtils.JOURNALFOERENDE_ENHET_UGYLDYG_WHITESPACES)
+                .sak(Sak.builder().sakstype(Sakstype.ARKIVSAK).arkivsaksystem(Arkivsaksystem.GSAK).arkivsaksnummer(ARKIVSAKSNUMMER).build())
+                .build();
+        expectedException.expect(InputValideringFeiletException.class);
+        expectedException.expectMessage("JournalfoerendeEnhet må være null eller fire siffer. JournalfoerendeEnhet="+TestUtils.JOURNALFOERENDE_ENHET_UGYLDYG_WHITESPACES);
+        validator.validateRequest(request, FORSOEKFERDIGSTILL);
+    }
+
     @Test
     public void happyPathGenerellSakTemaPEN() {
         request = createMinimalRequest(JournalpostType.INNGAAENDE)

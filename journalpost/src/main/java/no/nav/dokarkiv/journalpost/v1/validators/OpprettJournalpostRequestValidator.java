@@ -56,6 +56,7 @@ public class OpprettJournalpostRequestValidator {
 		if (request.getSak() != null) {
 			validateSak(request.getSak(), request.getBruker(), request.getTema());
 		}
+		validatejournalfoerendeEnhet(request.getJournalfoerendeEnhet());
 		if (isNotBlank(request.getJournalfoerendeEnhet())) {
 			validateJournalpost(journalpostFerdigstilt, request.getJournalfoerendeEnhet());
 		}
@@ -116,6 +117,12 @@ public class OpprettJournalpostRequestValidator {
 			FagomradeCode.valueOf(tema);
 		} catch (IllegalArgumentException e) {
 			throw new InputValideringFeiletException(format("Oppgitt tema=%s %s", tema, VALIDERER_IKKE_MOT_KODEVERK));
+		}
+	}
+
+	private void validatejournalfoerendeEnhet(String journalfoerendeEnhet) {
+		if (journalfoerendeEnhet != null && !journalfoerendeEnhet.matches("^\\d{4}$")) {
+			throw new InputValideringFeiletException(format("JournalfoerendeEnhet må være null eller fire siffer. JournalfoerendeEnhet=%s", journalfoerendeEnhet));
 		}
 	}
 
