@@ -19,6 +19,7 @@ import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostR
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
@@ -36,6 +37,7 @@ public class OpprettJournalpostRequestValidator {
 	public static final String JOURNALPOST_FERDIGSTILT = "false";
 
 	private static final String VALIDERER_IKKE_MOT_KODEVERK = "validerer ikke mot kodeverk";
+	private static final Pattern JOURNALFOERENDE_ENHET_PATTERN = Pattern.compile("^\\d{4}$");
 
 	public void validateRequest(OpprettJournalpostRequest request, String journalpostFerdigstilt) {
 		if (request.getAvsenderMottaker() != null) {
@@ -64,6 +66,7 @@ public class OpprettJournalpostRequestValidator {
 		} else {
 			throw new InputValideringFeiletException("Kan ikke opprette journalpost uten dokumenter.");
 		}
+		validatejournalfoerendeEnhet(request.getJournalfoerendeEnhet());
 	}
 
 	private void validateAvsenderMottaker(AvsenderMottaker avsenderMottaker) {
@@ -116,6 +119,12 @@ public class OpprettJournalpostRequestValidator {
 			FagomradeCode.valueOf(tema);
 		} catch (IllegalArgumentException e) {
 			throw new InputValideringFeiletException(format("Oppgitt tema=%s %s", tema, VALIDERER_IKKE_MOT_KODEVERK));
+		}
+	}
+
+	private void validatejournalfoerendeEnhet(String journalfoerendeEnhet) {
+		if (journalfoerendeEnhet != null && !JOURNALFOERENDE_ENHET_PATTERN.matcher(journalfoerendeEnhet).matches()) {
+			throw new InputValideringFeiletException(format("Journalpost.journalfoerendeEnhet må være null eller fire siffer. journalfoerendeEnhet=%s", journalfoerendeEnhet));
 		}
 	}
 

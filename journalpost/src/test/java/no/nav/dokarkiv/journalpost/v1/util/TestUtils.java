@@ -73,6 +73,8 @@ public class TestUtils {
 	public static final Date DATO_MOTTATT = Date.from(LocalDate.now().minusDays(3).atStartOfDay(ZoneId.systemDefault()).toInstant());
 	public static final Date DATO_MOTTATT_1 = Date.from(LocalDate.now().minusDays(3).atStartOfDay(ZoneId.systemDefault()).toInstant());
 	public static final String JOURNALFOERENDE_ENHET = "4000";
+	public static final String JOURNALFOERENDE_ENHET_UGYLDIG = "40000";
+	public static final String JOURNALFOERENDE_ENHET_UGYLDIG_WHITESPACES = "    ";
 	public static final String DOKUMENTINFO_ID1 = "1234567";
 	public static final String DOKUMNETTYPE_ID1 = "dokumenttypeID1";
 	public static final String BREVKODE1 = "brevkode1";
