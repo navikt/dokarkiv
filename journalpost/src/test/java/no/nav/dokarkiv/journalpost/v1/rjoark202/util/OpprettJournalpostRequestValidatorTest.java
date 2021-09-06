@@ -141,7 +141,7 @@ public class OpprettJournalpostRequestValidatorTest {
 				.sak(Sak.builder().sakstype(Sakstype.ARKIVSAK).arkivsaksystem(Arkivsaksystem.GSAK).arkivsaksnummer(ARKIVSAKSNUMMER).build())
 				.build();
 		expectedException.expect(InputValideringFeiletException.class);
-		expectedException.expectMessage("JournalfoerendeEnhet må være null eller fire siffer. JournalfoerendeEnhet=" + TestUtils.JOURNALFOERENDE_ENHET_UGYLDIG);
+		expectedException.expectMessage("Journalpost.journalfoerendeEnhet må være null eller fire siffer. journalfoerendeEnhet=" + TestUtils.JOURNALFOERENDE_ENHET_UGYLDIG);
 		validator.validateRequest(request, FORSOEKFERDIGSTILL);
 	}
 
@@ -153,7 +153,7 @@ public class OpprettJournalpostRequestValidatorTest {
 				.sak(Sak.builder().sakstype(Sakstype.ARKIVSAK).arkivsaksystem(Arkivsaksystem.GSAK).arkivsaksnummer(ARKIVSAKSNUMMER).build())
 				.build();
 		expectedException.expect(InputValideringFeiletException.class);
-		expectedException.expectMessage("JournalfoerendeEnhet må være null eller fire siffer. JournalfoerendeEnhet=" + TestUtils.JOURNALFOERENDE_ENHET_UGYLDIG_WHITESPACES);
+		expectedException.expectMessage("Journalpost.journalfoerendeEnhet må være null eller fire siffer. journalfoerendeEnhet=" + TestUtils.JOURNALFOERENDE_ENHET_UGYLDIG_WHITESPACES);
 		validator.validateRequest(request, FORSOEKFERDIGSTILL);
 	}
 
