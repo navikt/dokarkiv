@@ -121,6 +121,12 @@ public abstract class AbstractRestIT {
 		return headers;
 	}
 
+	protected HttpHeaders createBidragHeadersWithServiceUserToken() throws IOException {
+		HttpHeaders bidragHeader = createHeadersWithServiceUserToken(SERVICE_USER_ID);
+		bidragHeader.add(NavHeaders.NAV_CONSUMER_ID, "dialogstyring-bidrag");
+		return bidragHeader;
+	}
+
 	protected HttpHeaders createHeadersWithServiceUserToken() throws IOException {
 		return createHeadersWithServiceUserToken(SERVICE_USER_ID);
 	}

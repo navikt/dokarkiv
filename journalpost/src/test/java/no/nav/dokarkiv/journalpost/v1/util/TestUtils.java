@@ -43,7 +43,6 @@ import java.util.HashSet;
 import java.util.List;
 
 import static no.nav.dokarkiv.core.domain.codes.FagsystemCode.FS22;
-import static no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode.MIGRERING_S;
 import static no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem.AO01;
 import static no.nav.dokarkiv.journalpost.v1.api.JournalpostType.UTGAAENDE;
 
@@ -452,6 +451,35 @@ public class TestUtils {
 
 	public static OpprettJournalpostRequest createRequest(JournalpostType journalpostType) {
 		return createRequest(journalpostType, null);
+	}
+
+	public static OpprettJournalpostRequest createRequestBidrag() {
+		return createBaseRequest(JournalpostType.INNGAAENDE)
+				.tema(FagomradeCode.BID.name())
+				.dokumenter(Arrays.asList(
+						Dokument.builder()
+								.tittel(DOKUMENT_TITTEL1)
+								.brevkode(BREVKODE1)
+								.dokumentKategori(DOKUMENTKATEGORI_SED)
+								.dokumentvarianter(Arrays.asList(DokumentVariant.builder()
+												.filtype(FILTYPE_PDF)
+												.variantformat(VARIANTFORMAT_ARKIV)
+												.fysiskDokument(FYSISK_DOKUMENT)
+												.batchnavn(BATCHNAVN)
+												.build()))
+								.build(),
+						Dokument.builder()
+								.tittel(DOKUMENT_TITTEL2)
+								.brevkode(BREVKODE2)
+								.dokumentKategori(DOKUMENTKATEGORI_SED)
+								.dokumentvarianter(Collections.singletonList(DokumentVariant.builder()
+										.filtype(FILTYPE_PDF)
+										.variantformat(VARIANTFORMAT_ARKIV)
+										.fysiskDokument(FYSISK_DOKUMENT_2)
+										.batchnavn(BATCHNAVN)
+										.build()))
+								.build()))
+				.build();
 	}
 
 	public static OpprettJournalpostRequest createRequest(JournalpostType journalpostType, String journalfoerendeEnhet) {
