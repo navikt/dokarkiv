@@ -110,6 +110,7 @@ public class TestUtils {
 	public static final String VARIANTFORMAT_ORIGINAL = "ORIGINAL";
 	public static final byte[] FYSISK_DOKUMENT = "DOKUMENT".getBytes();
 	public static final byte[] FYSISK_DOKUMENT_2 = "DOKUMENT_2".getBytes();
+	public static final byte[] VEDLEGG_KVITTERING = "VedleggKvitteringBidrag".getBytes();
 	public static final String TILLEGGSOPPLYSNING_NOKKEL = "noekkel";
 	public static final String TILLEGGSOPPLYSNING_VERDI = "verdi";
 	public static final String FILNAVN = "filnavn";
@@ -454,32 +455,38 @@ public class TestUtils {
 	}
 
 	public static OpprettJournalpostRequest createRequestBidrag() {
+		return createBaseBidragRequest().build();
+	}
+
+	public static OpprettJournalpostRequest.OpprettJournalpostRequestBuilder createBaseBidragRequest() {
 		return createBaseRequest(JournalpostType.INNGAAENDE)
 				.tema(FagomradeCode.BID.name())
 				.dokumenter(Arrays.asList(
 						Dokument.builder()
 								.tittel(DOKUMENT_TITTEL1)
-								.brevkode(BREVKODE1)
-								.dokumentKategori(DOKUMENTKATEGORI_SED)
-								.dokumentvarianter(Arrays.asList(DokumentVariant.builder()
-												.filtype(FILTYPE_PDF)
-												.variantformat(VARIANTFORMAT_ARKIV)
-												.fysiskDokument(FYSISK_DOKUMENT)
-												.batchnavn(BATCHNAVN)
-												.build()))
+								.dokumentvarianter(Collections.singletonList(DokumentVariant.builder()
+										.filtype(FILTYPE_PDF)
+										.variantformat(VARIANTFORMAT_ARKIV)
+										.fysiskDokument(FYSISK_DOKUMENT)
+										.build()))
 								.build(),
 						Dokument.builder()
 								.tittel(DOKUMENT_TITTEL2)
-								.brevkode(BREVKODE2)
-								.dokumentKategori(DOKUMENTKATEGORI_SED)
 								.dokumentvarianter(Collections.singletonList(DokumentVariant.builder()
 										.filtype(FILTYPE_PDF)
 										.variantformat(VARIANTFORMAT_ARKIV)
 										.fysiskDokument(FYSISK_DOKUMENT_2)
-										.batchnavn(BATCHNAVN)
 										.build()))
-								.build()))
-				.build();
+								.build(),
+						Dokument.builder()
+								.tittel("Vedlegg kvittering")
+								.brevkode("458212")
+								.dokumentvarianter(Collections.singletonList(DokumentVariant.builder()
+										.filtype(FILTYPE_PDF)
+										.variantformat(VARIANTFORMAT_ARKIV)
+										.fysiskDokument(VEDLEGG_KVITTERING)
+										.build()))
+								.build()));
 	}
 
 	public static OpprettJournalpostRequest createRequest(JournalpostType journalpostType, String journalfoerendeEnhet) {
