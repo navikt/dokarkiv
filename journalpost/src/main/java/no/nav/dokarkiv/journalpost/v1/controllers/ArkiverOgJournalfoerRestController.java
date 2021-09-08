@@ -16,6 +16,7 @@ import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.DokumentInfoId;
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostResponse;
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostResult;
+import no.nav.dokarkiv.journalpost.v1.bidrag.OpprettJournalpostBidragRequestValidator;
 import no.nav.dokarkiv.journalpost.v1.services.FerdigstillJournalpostService;
 import no.nav.dokarkiv.journalpost.v1.services.FjernVedleggTilknyttetJournalpost;
 import no.nav.dokarkiv.journalpost.v1.services.OppdaterDistribusjonsinfoService;
@@ -55,7 +56,6 @@ import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
 import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateId;
 import static no.nav.dokarkiv.journalpost.v1.validators.OpprettJournalpostRequestValidator.MASKINELL_JOURNALFOERENDE_ENHET;
-import static org.springframework.http.HttpStatus.OK;
 
 @Api(description = "Tjenester for å arkivere og journalføre i fagarkiv")
 @Slf4j
@@ -75,6 +75,7 @@ public class ArkiverOgJournalfoerRestController {
     private final FerdigstillJournalpostValidator ferdigstillJournalpostValidator;
     private final OppdaterDistribusjonsinfoValidator oppdaterDistribusjonsinfoValidator;
     private final FjernVedleggTilknyttetJournalpost fjernVedleggTilknyttJournalpost;
+    private final OpprettJournalpostBidragRequestValidator opprettJournalpostBidragRequestValidator;
 
     @Inject
     public ArkiverOgJournalfoerRestController(final FerdigstillJournalpostService ferdigstillJournalpostService,
@@ -90,6 +91,7 @@ public class ArkiverOgJournalfoerRestController {
         this.opprettJournalpostRequestValidator = new OpprettJournalpostRequestValidator();
         this.ferdigstillJournalpostValidator = new FerdigstillJournalpostValidator();
         this.oppdaterDistribusjonsinfoValidator = new OppdaterDistribusjonsinfoValidator();
+        this.opprettJournalpostBidragRequestValidator = new OpprettJournalpostBidragRequestValidator();
     }
 
     @Transactional
@@ -166,6 +168,15 @@ public class ArkiverOgJournalfoerRestController {
         MDC.put(MDC_REQUEST_ID, "rjoark202");
         log.info(MDC.get(MDC_REQUEST_ID) + " har mottatt kall for opprettelse av ny journalpost");
         RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDC_CONSUMER_ID));
+
+        if ("dialogstyring-bidrag".equals(MDC.get(MDC_CONSUMER_ID))) {
+            try {
+                opprettJournalpostBidragRequestValidator.validateRequest(request);
+            } catch (InputValideringFeiletException e) {
+                log.warn("rjoark202 feilet under validering for bidrag. " + e.getMessage(), e);
+                throw e;
+            }
+        }
 
         try {
             opprettJournalpostRequestValidator.validateRequest(request, forsoekFerdigstill);
