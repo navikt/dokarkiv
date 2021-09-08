@@ -461,6 +461,7 @@ public class TestUtils {
 	public static OpprettJournalpostRequest.OpprettJournalpostRequestBuilder createBaseBidragRequest() {
 		return createBaseRequest(JournalpostType.INNGAAENDE)
 				.tema(FagomradeCode.BID.name())
+				.datoMottatt(DATO_MOTTATT)
 				.dokumenter(Arrays.asList(
 						Dokument.builder()
 								.tittel(DOKUMENT_TITTEL1)
