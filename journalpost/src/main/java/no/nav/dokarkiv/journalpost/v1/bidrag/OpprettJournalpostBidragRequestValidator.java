@@ -31,17 +31,17 @@ public class OpprettJournalpostBidragRequestValidator {
 
 	private void validateDokument(Dokument dokument) {
 		if (dokument.getDokumentvarianter().size() != 1) {
-			throw new InputValideringFeiletException("Dokumenter skal kun ha én dokumentvariant.");
+			throw new InputValideringFeiletException("Listen dokument.dokumentVarianter skal kun ha ett element (én dokumentvariant).");
 		} else {
 			DokumentVariant dokumentVariant = dokument.getDokumentvarianter().get(0);
 			if (!dokumentVariant.getVariantformat().equals("ARKIV")) {
-				throw new InputValideringFeiletException("Dokumentet må ha variantformat ARKIV.");
+				throw new InputValideringFeiletException("dokumentVariant.variantFormat må ha variantformat ARKIV.");
 			}
 			if (!FilTypeCode.PDF.name().equals(dokumentVariant.getFiltype())) {
-				throw new InputValideringFeiletException("Dokumentet må ha filtype PDF.");
+				throw new InputValideringFeiletException("dokumentVariant.filtype må ha filtype PDF.");
 			}
 			if (dokumentVariant.getFysiskDokument() == null || dokumentVariant.getFysiskDokument().length == 0) {
-				throw new InputValideringFeiletException("Det faktiske dokumentet er ikke lagt ved.");
+				throw new InputValideringFeiletException("dokumentVariant.fysiskDokument mangler data.");
 			}
 		}
 	}

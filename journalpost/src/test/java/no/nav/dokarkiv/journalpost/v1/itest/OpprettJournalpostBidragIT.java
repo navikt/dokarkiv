@@ -6,10 +6,8 @@ import no.nav.dokarkiv.core.domain.entities.bidrag.BidragMellomlagringDokument;
 import no.nav.dokarkiv.core.domain.entities.bidrag.BidragMellomlagringDokumentType;
 import no.nav.dokarkiv.core.repository.BidragMellomlagringRepository;
 import no.nav.dokarkiv.journalpost.v1.api.AvsenderMottaker;
-import no.nav.dokarkiv.journalpost.v1.api.AvsenderMottakerIdType;
 import no.nav.dokarkiv.journalpost.v1.api.Dokument;
 import no.nav.dokarkiv.journalpost.v1.api.DokumentVariant;
-import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.DokumentInfoId;
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostResponse;
 import org.junit.Before;
@@ -21,7 +19,6 @@ import org.springframework.http.ResponseEntity;
 
 import javax.inject.Inject;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -29,7 +26,6 @@ import static no.nav.dokarkiv.core.domain.entities.bidrag.BidragMellomlagringSta
 import static no.nav.dokarkiv.journalpost.v1.api.AvsenderMottakerIdType.FNR;
 import static no.nav.dokarkiv.journalpost.v1.api.AvsenderMottakerIdType.ORGNR;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.AVSENDER_ID_PERSON;
-import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.DATO_MOTTATT;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.DOKUMENT_TITTEL1;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.DOKUMENT_TITTEL2;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FILTYPE_PDF;
@@ -69,7 +65,7 @@ public class OpprettJournalpostBidragIT extends AbstractJournalpostIT {
 		BidragMellomlagring bidragMellomlagring = bidragMellomlagringRepository.findById(Long.parseLong(response.getBody().getJournalpostId().substring(4)))
 				.orElseThrow(() -> new RuntimeException("Mellomlagring finnes ikke i databasen"));
 		assertThat(bidragMellomlagring.getAvsenderFnr()).isEqualTo(AVSENDER_ID_PERSON);
-		assertThat(bidragMellomlagring.getMottattDato()).isEqualTo(DATO_MOTTATT);
+		assertThat(bidragMellomlagring.getMottattDato()).isNotNull();
 		assertThat(bidragMellomlagring.getStatus()).isEqualTo(KLAR_TIL_OVERFORING);
 
 		BidragMellomlagringDokument hoveddokument = bidragMellomlagring.getBidragMellomlagringDokuments().stream().filter(p -> p.getDokumentType() == BidragMellomlagringDokumentType.HOVEDDOKUMENT).findFirst().get();
@@ -82,8 +78,7 @@ public class OpprettJournalpostBidragIT extends AbstractJournalpostIT {
 		assertEquals(HttpStatus.CREATED, response.getStatusCode());
 		assertThat(response.getBody().getJournalpostId()).startsWith("4249");
 		assertThat(response.getBody().getJournalpostferdigstilt()).isFalse();
-		assertThat(response.getBody().getDokumenter()).hasSize(2);
-		assertThat(response.getBody().getDokumenter()).extracting(DokumentInfoId::getDokumentInfoId).startsWith("4249");
+		assertThat(response.getBody().getDokumenter()).hasSize(3);
 	}
 
 	@Test
@@ -99,7 +94,7 @@ public class OpprettJournalpostBidragIT extends AbstractJournalpostIT {
 				.build();
 
 		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createBidragHeadersWithServiceUserToken());
-		ResponseEntity<OpprettJournalpostResponse> response = restTemplate.exchange(URL_JOURNALPOST, HttpMethod.POST, requestEntity, OpprettJournalpostResponse.class);
+		ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST, HttpMethod.POST, requestEntity, String.class);
 
 		assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
 	}
@@ -117,7 +112,7 @@ public class OpprettJournalpostBidragIT extends AbstractJournalpostIT {
 				.build();
 
 		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createBidragHeadersWithServiceUserToken());
-		ResponseEntity<OpprettJournalpostResponse> response = restTemplate.exchange(URL_JOURNALPOST, HttpMethod.POST, requestEntity, OpprettJournalpostResponse.class);
+		ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST, HttpMethod.POST, requestEntity, String.class);
 
 		assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
 	}
@@ -135,7 +130,7 @@ public class OpprettJournalpostBidragIT extends AbstractJournalpostIT {
 				.build();
 
 		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createBidragHeadersWithServiceUserToken());
-		ResponseEntity<OpprettJournalpostResponse> response = restTemplate.exchange(URL_JOURNALPOST, HttpMethod.POST, requestEntity, OpprettJournalpostResponse.class);
+		ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST, HttpMethod.POST, requestEntity, String.class);
 
 		assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
 	}
@@ -150,7 +145,7 @@ public class OpprettJournalpostBidragIT extends AbstractJournalpostIT {
 				.build();
 
 		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createBidragHeadersWithServiceUserToken());
-		ResponseEntity<OpprettJournalpostResponse> response = restTemplate.exchange(URL_JOURNALPOST, HttpMethod.POST, requestEntity, OpprettJournalpostResponse.class);
+		ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST, HttpMethod.POST, requestEntity, String.class);
 
 		assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
 	}
@@ -173,7 +168,7 @@ public class OpprettJournalpostBidragIT extends AbstractJournalpostIT {
 				.build();
 
 		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createBidragHeadersWithServiceUserToken());
-		ResponseEntity<OpprettJournalpostResponse> response = restTemplate.exchange(URL_JOURNALPOST, HttpMethod.POST, requestEntity, OpprettJournalpostResponse.class);
+		ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST, HttpMethod.POST, requestEntity, String.class);
 
 		assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
 	}
@@ -204,7 +199,7 @@ public class OpprettJournalpostBidragIT extends AbstractJournalpostIT {
 				.build();
 
 		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createBidragHeadersWithServiceUserToken());
-		ResponseEntity<OpprettJournalpostResponse> response = restTemplate.exchange(URL_JOURNALPOST, HttpMethod.POST, requestEntity, OpprettJournalpostResponse.class);
+		ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST, HttpMethod.POST, requestEntity, String.class);
 
 		assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
 	}
@@ -227,7 +222,7 @@ public class OpprettJournalpostBidragIT extends AbstractJournalpostIT {
 				.build();
 
 		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createBidragHeadersWithServiceUserToken());
-		ResponseEntity<OpprettJournalpostResponse> response = restTemplate.exchange(URL_JOURNALPOST, HttpMethod.POST, requestEntity, OpprettJournalpostResponse.class);
+		ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST, HttpMethod.POST, requestEntity, String.class);
 
 		assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
 	}
