@@ -25,6 +25,7 @@ public class BidragService {
 
 	private final BidragMellomlagringRepository bidragMellomlagringRepository;
 	private final OpprettJournalpostBidragRequestValidator opprettJournalpostBidragRequestValidator;
+	private static final String BIDRAG_BREVKODE = "458212";
 
 	@Inject
 	public BidragService(BidragMellomlagringRepository bidragMellomlagringRepository) {
@@ -43,15 +44,15 @@ public class BidragService {
 
 		BidragMellomlagring bidragMellomlagring = mapOpprettJournalPostRequestToBidragMellomlagring(request);
 		addDokumentTilBidragMellomlagring(request, bidragMellomlagring);
-		log.info("Bidrag-request er mappet til BidragMellomlagring.");
 
 		BidragMellomlagring lagretBidragMellomlagring = bidragMellomlagringRepository.save(bidragMellomlagring);
-		log.info("BidragMellomlagring er lagret til databasen.");
+		String bidragMellomlagringId = lagretBidragMellomlagring.getIdWithPrefix().toString();
+		log.info("Opprettet ny BidragMellomlagring. bidragMellomlagringId={}", bidragMellomlagringId);
 
 		return ResponseEntity
 				.status(HttpStatus.CREATED)
 				.body(OpprettJournalpostResponse.builder()
-						.journalpostId(lagretBidragMellomlagring.getIdWithPrefix().toString())
+						.journalpostId(bidragMellomlagringId)
 						.melding("Forsendelsen er lagret i den midlertidige verdikjeden for arkivering av innsendinger til Bisys.")
 						.journalpostferdigstilt(false)
 						.dokumenter(getDokumentInfoIdListe(lagretBidragMellomlagring))
@@ -65,7 +66,7 @@ public class BidragService {
 			if (i == 0) {
 				bidragMellomlagringDokument.setDokumentType(BidragMellomlagringDokumentType.HOVEDDOKUMENT);
 			} else {
-				if (dokument.getBrevkode() != null && dokument.getBrevkode().equals("458212")) {
+				if (dokument.getBrevkode() != null && dokument.getBrevkode().equals(BIDRAG_BREVKODE)) {
 					bidragMellomlagringDokument.setDokumentType(BidragMellomlagringDokumentType.VEDLEGG_KVITTERING);
 				} else {
 					bidragMellomlagringDokument.setDokumentType(BidragMellomlagringDokumentType.VEDLEGG);

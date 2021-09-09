@@ -1,6 +1,7 @@
 package no.nav.dokarkiv.journalpost.v1.bidrag;
 
 import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
+import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
 import no.nav.dokarkiv.journalpost.v1.api.AvsenderMottaker;
 import no.nav.dokarkiv.journalpost.v1.api.AvsenderMottakerIdType;
@@ -34,7 +35,7 @@ public class OpprettJournalpostBidragRequestValidator {
 			throw new InputValideringFeiletException("Listen dokument.dokumentVarianter skal kun ha ett element (én dokumentvariant).");
 		} else {
 			DokumentVariant dokumentVariant = dokument.getDokumentvarianter().get(0);
-			if (!dokumentVariant.getVariantformat().equals("ARKIV")) {
+			if (!dokumentVariant.getVariantformat().equals(VariantFormatCode.ARKIV.name())) {
 				throw new InputValideringFeiletException("dokumentVariant.variantFormat må ha variantformat ARKIV.");
 			}
 			if (!FilTypeCode.PDF.name().equals(dokumentVariant.getFiltype())) {

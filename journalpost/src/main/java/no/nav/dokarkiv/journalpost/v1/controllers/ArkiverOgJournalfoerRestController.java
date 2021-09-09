@@ -67,6 +67,7 @@ public class ArkiverOgJournalfoerRestController {
     private static final String TRUE = "true";
     private static final String MIDLERTIDIG = "MIDLERTIDIG";
     private static final String STATUS_ENDELIG = "ENDELIG";
+    private static final String DIALOGSTYRING_BIDRAG = "dialogstyring-bidrag";
     private final FerdigstillJournalpostService ferdigstillJournalpostService;
     private final OppdaterJournalpostService oppdaterJournalpostService;
     private final OppdaterDistribusjonsinfoService oppdaterDistribusjonsinfoService;
@@ -170,7 +171,7 @@ public class ArkiverOgJournalfoerRestController {
         log.info(MDC.get(MDC_REQUEST_ID) + " har mottatt kall for opprettelse av ny journalpost");
         RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDC_CONSUMER_ID));
 
-        if ("dialogstyring-bidrag".equals(MDC.get(MDC_CONSUMER_ID))) {
+        if (DIALOGSTYRING_BIDRAG.equals(MDC.get(MDC_CONSUMER_ID))) {
             return bidragService.opprettBidrag(request);
         }
 
