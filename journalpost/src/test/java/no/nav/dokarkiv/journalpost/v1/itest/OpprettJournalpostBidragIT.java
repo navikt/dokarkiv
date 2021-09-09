@@ -1,6 +1,7 @@
 package no.nav.dokarkiv.journalpost.v1.itest;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
+import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.entities.bidrag.BidragMellomlagring;
 import no.nav.dokarkiv.core.domain.entities.bidrag.BidragMellomlagringDokument;
 import no.nav.dokarkiv.core.domain.entities.bidrag.BidragMellomlagringDokumentType;
@@ -18,7 +19,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import javax.inject.Inject;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -51,7 +51,7 @@ public class OpprettJournalpostBidragIT extends AbstractJournalpostIT {
 	}
 
 	@Test
-	public void shouldMellomlagreBidragWhenTemaBidAndConsumerIdHeaderIsSet() throws IOException {
+	public void shouldMellomlagreBidragWhenTemaBidAndConsumerIdHeaderIsSet() {
 		abacPermit();
 		restStsToken();
 
@@ -82,7 +82,22 @@ public class OpprettJournalpostBidragIT extends AbstractJournalpostIT {
 	}
 
 	@Test
-	public void shouldReturnBadRequestWhenAvsenderMottakerIdNotSet() throws IOException {
+	public void shouldNotMellomlagreBidragWhenTemaIsNotBid() {
+		abacPermit();
+		restStsToken();
+
+		OpprettJournalpostRequest request = createBaseBidragRequest()
+				.tema(FagomradeCode.DAG.name())
+				.build();
+
+		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createBidragHeadersWithServiceUserToken());
+		ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST, HttpMethod.POST, requestEntity, String.class);
+
+		assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+	}
+
+	@Test
+	public void shouldReturnBadRequestWhenAvsenderMottakerIdNotSet() {
 		abacPermit();
 		restStsToken();
 
@@ -100,7 +115,7 @@ public class OpprettJournalpostBidragIT extends AbstractJournalpostIT {
 	}
 
 	@Test
-	public void shouldReturnBadRequestWhenAvsenderMottakerIdTypeIsNotFNR() throws IOException {
+	public void shouldReturnBadRequestWhenAvsenderMottakerIdTypeIsNotFNR() {
 		abacPermit();
 		restStsToken();
 
@@ -118,7 +133,7 @@ public class OpprettJournalpostBidragIT extends AbstractJournalpostIT {
 	}
 
 	@Test
-	public void shouldReturnBadRequestWhenAvsenderMottakerIdIsNot11Digits() throws IOException {
+	public void shouldReturnBadRequestWhenAvsenderMottakerIdIsNot11Digits() {
 		abacPermit();
 		restStsToken();
 
@@ -136,7 +151,7 @@ public class OpprettJournalpostBidragIT extends AbstractJournalpostIT {
 	}
 
 	@Test
-	public void shouldReturnBadRequestWhenDatoMottattNotSet() throws IOException {
+	public void shouldReturnBadRequestWhenDatoMottattNotSet() {
 		abacPermit();
 		restStsToken();
 
@@ -151,7 +166,7 @@ public class OpprettJournalpostBidragIT extends AbstractJournalpostIT {
 	}
 
 	@Test
-	public void shouldReturnBadRequestWhenDokumentNotVariantformatArkiv() throws IOException {
+	public void shouldReturnBadRequestWhenDokumentNotVariantformatArkiv() {
 		abacPermit();
 		restStsToken();
 
@@ -174,7 +189,7 @@ public class OpprettJournalpostBidragIT extends AbstractJournalpostIT {
 	}
 
 	@Test
-	public void shouldReturnBadRequestWhenNotAllDokumenterPdf() throws IOException {
+	public void shouldReturnBadRequestWhenNotAllDokumenterPdf() {
 		abacPermit();
 		restStsToken();
 
@@ -205,7 +220,7 @@ public class OpprettJournalpostBidragIT extends AbstractJournalpostIT {
 	}
 
 	@Test
-	public void shouldReturnBadRequestWhenFysiskDokumentLength0() throws IOException {
+	public void shouldReturnBadRequestWhenFysiskDokumentLength0() {
 		abacPermit();
 		restStsToken();
 
