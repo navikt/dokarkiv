@@ -18,7 +18,7 @@ public class OpprettJournalpostBidragRequestValidator {
 
 	public void validateRequest(OpprettJournalpostRequest request) {
 		if (request.getTema() != null && !BIDRAG_GYLDIG_TEMA.equals(request.getTema())) {
-			throw new InputValideringFeiletException("Kan ikke opprette bidrag med tema ulikt BID.");
+			throw new InputValideringFeiletException("Kan ikke opprette bidrag mellomlagring. Tema må være BID.");
 		}
 
 		if (request.getAvsenderMottaker() != null) {
