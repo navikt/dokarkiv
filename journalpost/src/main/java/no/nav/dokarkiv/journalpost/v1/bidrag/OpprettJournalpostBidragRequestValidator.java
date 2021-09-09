@@ -14,7 +14,13 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 public class OpprettJournalpostBidragRequestValidator {
 
+	private static final String BIDRAG_GYLDIG_TEMA = "BID";
+
 	public void validateRequest(OpprettJournalpostRequest request) {
+		if (request.getTema() != null && !BIDRAG_GYLDIG_TEMA.equals(request.getTema())) {
+			throw new InputValideringFeiletException("Kan ikke opprette bidrag med tema ulikt BID.");
+		}
+
 		if (request.getAvsenderMottaker() != null) {
 			validateAvsenderMottaker(request.getAvsenderMottaker());
 		}
