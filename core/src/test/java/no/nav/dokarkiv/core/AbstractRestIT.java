@@ -82,8 +82,8 @@ public abstract class AbstractRestIT {
 	protected static final String PERSON_USER_ID = "Z990782";
 	protected static final String PERSON_USER_NAME = "Stasjonsmester Tidemann";
 	protected static final String NO_ACCESS_SERVICE_USER_ID = "srvdokarkiv";
+	private static final String DIALOGSTYRING_BIDRAG = "dialogstyring-bidrag";
 
-	protected static final String JOURNALFORT_AV_NAVN = "journalfortAvNavn";
 	protected static final String OPPRETTET_AV_NAVN = "opprettetAvNavn";
 
 	@BeforeClass
@@ -112,13 +112,19 @@ public abstract class AbstractRestIT {
 		TestTransaction.end();
 	}
 
-	protected HttpHeaders createHeadersWithUserAndServiceUserToken() throws IOException {
+	protected HttpHeaders createHeadersWithUserAndServiceUserToken() {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		headers.add(HttpHeaders.AUTHORIZATION, BEARER + getTokenWithSubject(PERSON_USER_ID));
 		headers.add(NAV_CONSUMER_TOKEN, BEARER + getTokenWithSubject(SERVICE_USER_ID));
 		headers.add(NavHeaders.NAV_CALL_ID, "itest");
 		return headers;
+	}
+
+	protected HttpHeaders createBidragHeadersWithServiceUserToken() {
+		HttpHeaders bidragHeader = createHeadersWithServiceUserToken(SERVICE_USER_ID);
+		bidragHeader.add(NavHeaders.NAV_CONSUMER_ID, DIALOGSTYRING_BIDRAG);
+		return bidragHeader;
 	}
 
 	protected HttpHeaders createHeadersWithServiceUserToken() throws IOException {
