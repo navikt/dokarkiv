@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.domain.entities.bidrag.BidragMellomlagring;
 import no.nav.dokarkiv.core.domain.entities.bidrag.BidragMellomlagringDokument;
 import no.nav.dokarkiv.core.domain.entities.bidrag.BidragMellomlagringDokumentType;
-import no.nav.dokarkiv.core.domain.entities.bidrag.BidragMellomlagringStatus;
 import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
 import no.nav.dokarkiv.core.repository.BidragMellomlagringRepository;
 import no.nav.dokarkiv.journalpost.v1.api.Dokument;
@@ -25,56 +24,38 @@ public class BidragService {
 
 	private final BidragMellomlagringRepository bidragMellomlagringRepository;
 	private final OpprettJournalpostBidragRequestValidator opprettJournalpostBidragRequestValidator;
-	private static final String BIDRAG_BREVKODE = "458212";
+	private final OpprettJournalpostBidragRequestMapper opprettJournalpostBidragRequestMapper;
 
 	@Inject
 	public BidragService(BidragMellomlagringRepository bidragMellomlagringRepository) {
 		this.bidragMellomlagringRepository = bidragMellomlagringRepository;
 		this.opprettJournalpostBidragRequestValidator = new OpprettJournalpostBidragRequestValidator();
+		this.opprettJournalpostBidragRequestMapper = new OpprettJournalpostBidragRequestMapper();
 	}
 
 	public ResponseEntity<OpprettJournalpostResponse> opprettBidrag(OpprettJournalpostRequest request) {
+		final String eksternReferanseId = request.getEksternReferanseId();
+		log.info("journalpostapi.opprettJournalpost har mottatt kall for opprettelse av ny bidrag mellomlagring med eksternReferanseId={}", eksternReferanseId);
 		try {
 			opprettJournalpostBidragRequestValidator.validateRequest(request);
 		} catch (InputValideringFeiletException e) {
-			log.warn("rjoark202 feilet under validering for bidrag. " + e.getMessage(), e);
+			log.warn("journalpostapi.opprettJournalpost feilet under validering for bidrag. eksternReferanseId={}.", eksternReferanseId, e);
 			throw e;
 		}
-		log.info("Bidrag har validert OK.");
 
-		BidragMellomlagring bidragMellomlagring = mapOpprettJournalPostRequestToBidragMellomlagring(request);
-		addDokumentTilBidragMellomlagring(request, bidragMellomlagring);
-
+		BidragMellomlagring bidragMellomlagring = opprettJournalpostBidragRequestMapper.map(request);
 		BidragMellomlagring lagretBidragMellomlagring = bidragMellomlagringRepository.save(bidragMellomlagring);
 		String bidragMellomlagringId = lagretBidragMellomlagring.getIdWithPrefix().toString();
-		log.info("Opprettet ny BidragMellomlagring. bidragMellomlagringId={}", bidragMellomlagringId);
+		log.info("Opprettet ny BidragMellomlagring. eksternReferanseId={}, bidragMellomlagringId={}", eksternReferanseId, bidragMellomlagringId);
 
 		return ResponseEntity
 				.status(HttpStatus.CREATED)
 				.body(OpprettJournalpostResponse.builder()
 						.journalpostId(bidragMellomlagringId)
-						.melding("Forsendelsen er lagret i den midlertidige verdikjeden for arkivering av innsendinger til Bisys.")
+						.melding("Forsendelsen med eksternReferanseId=" + eksternReferanseId + " er lagret i den midlertidige verdikjeden for arkivering av innsendinger til Bisys.")
 						.journalpostferdigstilt(false)
 						.dokumenter(getDokumentInfoIdListe(lagretBidragMellomlagring))
 						.build());
-	}
-
-	private void addDokumentTilBidragMellomlagring(OpprettJournalpostRequest request, BidragMellomlagring bidragMellomlagring) {
-		for (int i = 0; i < request.getDokumenter().size(); i++) {
-			Dokument dokument = request.getDokumenter().get(i);
-			BidragMellomlagringDokument bidragMellomlagringDokument = new BidragMellomlagringDokument();
-			if (i == 0) {
-				bidragMellomlagringDokument.setDokumentType(BidragMellomlagringDokumentType.HOVEDDOKUMENT);
-			} else {
-				if (dokument.getBrevkode() != null && dokument.getBrevkode().equals(BIDRAG_BREVKODE)) {
-					bidragMellomlagringDokument.setDokumentType(BidragMellomlagringDokumentType.VEDLEGG_KVITTERING);
-				} else {
-					bidragMellomlagringDokument.setDokumentType(BidragMellomlagringDokumentType.VEDLEGG);
-				}
-			}
-			bidragMellomlagringDokument.setDokument(dokument.getDokumentvarianter().get(0).getFysiskDokument());
-			bidragMellomlagring.addBidragMellomlagringDokument(bidragMellomlagringDokument);
-		}
 	}
 
 	private List<DokumentInfoId> getDokumentInfoIdListe(BidragMellomlagring lagretBidragMellomlagring) {
@@ -82,13 +63,5 @@ public class BidragService {
 		lagretBidragMellomlagring.getBidragMellomlagringDokuments().iterator()
 				.forEachRemaining(el -> dokumentInfoIdListe.add(new DokumentInfoId(el.getBidragMellomlagringDokumentId().toString())));
 		return dokumentInfoIdListe;
-	}
-
-	private BidragMellomlagring mapOpprettJournalPostRequestToBidragMellomlagring(OpprettJournalpostRequest request) {
-		BidragMellomlagring bidragMellomlagring = new BidragMellomlagring();
-		bidragMellomlagring.setAvsenderFnr(request.getAvsenderMottaker().getId());
-		bidragMellomlagring.setStatus(BidragMellomlagringStatus.KLAR_TIL_OVERFORING);
-		bidragMellomlagring.setMottattDato(request.getDatoMottatt());
-		return bidragMellomlagring;
 	}
 }

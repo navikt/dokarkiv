@@ -168,13 +168,13 @@ public class ArkiverOgJournalfoerRestController {
                     "Sjekk \"journalpostferdigstilt\" på responsen for å være sikker på at journalposten faktisk ble ferdigstilt.", allowableValues = "true, false", required = false)
             @RequestParam(required = false) String forsoekFerdigstill) {
         MDC.put(MDC_REQUEST_ID, "rjoark202");
-        log.info(MDC.get(MDC_REQUEST_ID) + " har mottatt kall for opprettelse av ny journalpost");
         RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDC_CONSUMER_ID));
 
         if (BIDRAG_NAV_CONSUMER_ID.equals(MDC.get(MDC_CONSUMER_ID))) {
             return bidragService.opprettBidrag(request);
         }
 
+        log.info(MDC.get(MDC_REQUEST_ID) + " har mottatt kall for opprettelse av ny journalpost");
         try {
             opprettJournalpostRequestValidator.validateRequest(request, forsoekFerdigstill);
         } catch (InputValideringFeiletException e) {
