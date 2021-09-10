@@ -12,7 +12,7 @@ import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostR
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
-public class OpprettJournalpostBidragRequestValidator {
+class OpprettJournalpostBidragRequestValidator {
 
 	private static final String BIDRAG_GYLDIG_TEMA = "BID";
 

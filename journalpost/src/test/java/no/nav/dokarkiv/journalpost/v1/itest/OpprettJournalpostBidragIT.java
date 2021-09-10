@@ -32,6 +32,7 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FILTYPE_PDF;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FILTYPE_XML;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FYSISK_DOKUMENT;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FYSISK_DOKUMENT_2;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.KANALREFERANSE_ID;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.VARIANTFORMAT_ARKIV;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.VARIANTFORMAT_ORIGINAL;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.VEDLEGG_KVITTERING;
@@ -66,6 +67,7 @@ public class OpprettJournalpostBidragIT extends AbstractJournalpostIT {
 				.orElseThrow(() -> new RuntimeException("Mellomlagring finnes ikke i databasen"));
 		assertThat(bidragMellomlagring.getAvsenderFnr()).isEqualTo(AVSENDER_ID_PERSON);
 		assertThat(bidragMellomlagring.getMottattDato()).isNotNull();
+		assertThat(bidragMellomlagring.getEksternReferanseId()).isEqualTo(KANALREFERANSE_ID);
 		assertThat(bidragMellomlagring.getStatus()).isEqualTo(KLAR_TIL_OVERFORING);
 
 		BidragMellomlagringDokument hoveddokument = bidragMellomlagring.getBidragMellomlagringDokuments().stream().filter(p -> p.getDokumentType() == BidragMellomlagringDokumentType.HOVEDDOKUMENT).findFirst().get();

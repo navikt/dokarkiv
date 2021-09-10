@@ -481,7 +481,7 @@ public class TestUtils {
 								.build(),
 						Dokument.builder()
 								.tittel("Vedlegg kvittering")
-								.brevkode("458212")
+								.brevkode("L7")
 								.dokumentvarianter(Collections.singletonList(DokumentVariant.builder()
 										.filtype(FILTYPE_PDF)
 										.variantformat(VARIANTFORMAT_ARKIV)
