@@ -18,6 +18,7 @@ class OpprettJournalpostBidragRequestMapper {
 		bidragMellomlagring.setAvsenderFnr(request.getAvsenderMottaker().getId());
 		bidragMellomlagring.setStatus(BidragMellomlagringStatus.KLAR_TIL_OVERFORING);
 		bidragMellomlagring.setMottattDato(request.getDatoMottatt());
+		bidragMellomlagring.setEksternReferanseId(request.getEksternReferanseId());
 		addDokumentTilBidragMellomlagring(request, bidragMellomlagring);
 		return bidragMellomlagring;
 	}

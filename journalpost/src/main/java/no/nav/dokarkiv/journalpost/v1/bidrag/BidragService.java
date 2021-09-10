@@ -35,7 +35,7 @@ public class BidragService {
 
 	public ResponseEntity<OpprettJournalpostResponse> opprettBidrag(OpprettJournalpostRequest request) {
 		final String eksternReferanseId = request.getEksternReferanseId();
-		log.info("journalpostapi.opprettJournalpost har mottatt kall for opprettelse av ny bidrag mellomlagring med eksternReferanseId={}", eksternReferanseId);
+		log.info("journalpostapi.opprettJournalpost har mottatt kall for opprettelse av ny BidragMellomlagring med eksternReferanseId={}.", eksternReferanseId);
 		try {
 			opprettJournalpostBidragRequestValidator.validateRequest(request);
 		} catch (InputValideringFeiletException e) {
@@ -46,7 +46,7 @@ public class BidragService {
 		BidragMellomlagring bidragMellomlagring = opprettJournalpostBidragRequestMapper.map(request);
 		BidragMellomlagring lagretBidragMellomlagring = bidragMellomlagringRepository.save(bidragMellomlagring);
 		String bidragMellomlagringId = lagretBidragMellomlagring.getIdWithPrefix().toString();
-		log.info("Opprettet ny BidragMellomlagring. eksternReferanseId={}, bidragMellomlagringId={}", eksternReferanseId, bidragMellomlagringId);
+		log.info("journalpostapi.opprettJournalpost opprettet ny BidragMellomlagring. eksternReferanseId={}, bidragMellomlagringId={}.", eksternReferanseId, bidragMellomlagringId);
 
 		return ResponseEntity
 				.status(HttpStatus.CREATED)
