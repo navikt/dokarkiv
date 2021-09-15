@@ -110,7 +110,7 @@ public class Rjoark901IT extends AbstractHentjournalsakinfoItest {
         ResponseEntity<RestConsumerExceptionResponse> responseEntity = restTemplate.exchange(HENTTILGANGJOURNALPOST_URI, HttpMethod.GET, createHeaderEntity(), RestConsumerExceptionResponse.class,
                 1L, 1L, VariantFormatCode.ARKIV.name());
         assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
-        assertEquals("rjoark901 kunne ikke hente TilgangJournalpost. Ingen treff på journalpostId=1, dokumentInfoId=1 og variantFormat=ARKIV. Feilmelding: Ingen jornalpost funnet", Objects.requireNonNull(responseEntity.getBody()).getMessage());
+        assertEquals("Ingen journalpost funnet for journalpostId=1, dokumentInfoId=1, variantFormat=ARKIV", Objects.requireNonNull(responseEntity.getBody()).getMessage());
 
     }
 
