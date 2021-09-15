@@ -20,14 +20,18 @@ public class HentTilgangJournalpostService {
 	public HentTilgangJournalpostResponse hentTilgangJournalpost(Long journalpostId, Long dokumentInfoId, VariantFormatCode variantFormat) {
 		try {
 			TilgangJournalpostDto tilgangJournalpostDto = hentTilgangJournalpostRepository.hentTilgangJournalpost(journalpostId, dokumentInfoId, variantFormat);
+			if (tilgangJournalpostDto == null) {
+				throw new TilgangJournalpostException("Ingen journalpost funnet for journalpostId=" + journalpostId + ", dokumentInfoId=" + dokumentInfoId + ", variantFormat=" + variantFormat.name());
+			}
 			return HentTilgangJournalpostResponse.builder()
 					.tilgangJournalpostDto(tilgangJournalpostDto)
 					.build();
+		} catch(TilgangJournalpostException e) {
+			log.warn("rjoark901 kunne ikke hente TilgangJournalpost. Feilmelding={}", e.getMessage(), e);
+			throw e;
 		} catch (Exception e) {
-			log.error("rjoark901 kunne ikke hente TilgangJournalpost. Ingen treff på journalpostId={}, dokumentInfoId={} og variantFormat={}. Feilmelding: {}",
-					journalpostId, dokumentInfoId, variantFormat.name(), e.getMessage());
-			throw new TilgangJournalpostException(String.format("rjoark901 kunne ikke hente TilgangJournalpost. Ingen treff på journalpostId=%s, dokumentInfoId=%s og variantFormat=%s. Feilmelding: %s",
-					journalpostId, dokumentInfoId, variantFormat.name(), e.getMessage()), e);
+			log.error("Ukjent teknisk feil. Feilmelding={}", e.getMessage(), e);
+			throw e;
 		}
 	}
 }

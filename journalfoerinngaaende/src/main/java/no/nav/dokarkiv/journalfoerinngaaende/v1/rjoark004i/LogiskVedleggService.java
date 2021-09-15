@@ -1,8 +1,5 @@
 package no.nav.dokarkiv.journalfoerinngaaende.v1.rjoark004i;
 
-import static no.nav.dokarkiv.journalfoerinngaaende.v1.util.Utils.DOKUMENT_ID;
-import static no.nav.dokarkiv.journalfoerinngaaende.v1.util.Utils.JOURNALPOST_ID;
-
 import no.nav.dok.tjenester.journalfoerinngaaende.PostLogiskVedleggRequest;
 import no.nav.dok.tjenester.journalfoerinngaaende.PostLogiskVedleggResponse;
 import no.nav.dok.tjenester.journalfoerinngaaende.PutLogiskVedleggRequest;
@@ -22,6 +19,9 @@ import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 
+import static no.nav.dokarkiv.journalfoerinngaaende.v1.util.Utils.DOKUMENT_ID;
+import static no.nav.dokarkiv.journalfoerinngaaende.v1.util.Utils.JOURNALPOST_ID;
+
 /**
  * @author Sigurd Midttun, Visma Consulting.
  */
@@ -34,7 +34,9 @@ public class LogiskVedleggService {
 	private static final String JOURNALPOST_IKKE_FUNNET = "Kunne ikke finne journalpost med journalpostId=%s i joark";
 
 	@Inject
-	public LogiskVedleggService(JoarkRepositorySkjermet joarkRepository, SkannetInnholdRepository skannetInnholdRepository, PostLogiskVedleggRequestMapper postLogiskVedleggRequestMapper) {
+	public LogiskVedleggService(JoarkRepositorySkjermet joarkRepository,
+								SkannetInnholdRepository skannetInnholdRepository,
+								PostLogiskVedleggRequestMapper postLogiskVedleggRequestMapper) {
 		this.joarkRepository = joarkRepository;
 		this.skannetInnholdRepository = skannetInnholdRepository;
 		this.postLogiskVedleggRequestMapper = postLogiskVedleggRequestMapper;
