@@ -13,7 +13,7 @@ import java.util.List;
  * @author Sigurd Midttun, Visma Consulting.
  */
 @Repository
-public class HentTilgangJournalpostRepository {
+class HentTilgangJournalpostRepository {
 
     private final EntityManager entityManager;
 
@@ -94,7 +94,7 @@ public class HentTilgangJournalpostRepository {
         if (!resultList.isEmpty()) {
             return (TilgangJournalpostDto) resultList.get(0);
         } else {
-            throw new TilgangJournalpostException("Ingen jornalpost funnet");
+            return null;
         }
     }
 }
