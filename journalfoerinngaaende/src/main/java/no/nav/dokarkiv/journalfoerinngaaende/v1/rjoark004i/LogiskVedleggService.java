@@ -79,7 +79,7 @@ public class LogiskVedleggService {
 	public PostLogiskVedleggResponse persistLogiskVedlegg(String journalpostIdString, String dokumentIdString, PostLogiskVedleggRequest request) {
 		Long journalpostId = Utils.convertStringToLong(journalpostIdString, JOURNALPOST_ID);
 		Long dokumentId = Utils.convertStringToLong(dokumentIdString, DOKUMENT_ID);
-		PostLogiskVedleggRequestTo postLogiskVedleggRequest =postLogiskVedleggRequestMapper.map(request);
+		PostLogiskVedleggRequestTo postLogiskVedleggRequest = postLogiskVedleggRequestMapper.map(request);
 
 		Journalpost journalpost = joarkRepository.findById(journalpostId)
 				.orElseThrow(() -> new JournalpostIkkeFunnetException(String.format(JOURNALPOST_IKKE_FUNNET, journalpostIdString)));
