@@ -1,6 +1,6 @@
 package no.nav.dokarkiv.core.consumer.sts;
 
-import no.nav.dokarkiv.core.fasit.ServiceuserAlias;
+import no.nav.dokarkiv.core.properties.ServiceuserAlias;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.cache.annotation.Cacheable;
