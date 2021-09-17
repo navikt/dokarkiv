@@ -24,5 +24,6 @@
   "DOKARKIV_VAULT": "/kv/preprod/fss/dokarkiv/t0",
   "SRV_LINUX": "/serviceuser/data/test/srvssolinux",
   "APPDYNAMICS": "/apikey/appdynamics/dev",
-  "APPD_NAME": "dokarkiv_t0"
+  "APPD_NAME": "dokarkiv_t0",
+  "DOKARKIV_DATABASE_POOLSIZE": "20"
 }

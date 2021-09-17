@@ -28,5 +28,6 @@
   "DOKARKIV_VAULT": "/kv/preprod/fss/dokarkiv/q5",
   "SRV_LINUX": "/serviceuser/data/dev/srvssolinux",
   "APPDYNAMICS": "/apikey/appdynamics/dev",
-  "APPD_NAME": "dokarkiv_q5"
+  "APPD_NAME": "dokarkiv_q5",
+  "DOKARKIV_DATABASE_POOLSIZE": "20"
 }
