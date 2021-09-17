@@ -46,7 +46,7 @@ spec:
     - name: APPD_NAME
       value: {{ APPD_NAME }}
     - name: DOKARKIV_DATABASE_POOLSIZE
-      value: {{ DOKARKIV_DATABASE_POOLSIZE }}
+      value: "{{ DOKARKIV_DATABASE_POOLSIZE }}"
   image: {{ image }}
   ingresses:
     {{#each INGRESSES}}
