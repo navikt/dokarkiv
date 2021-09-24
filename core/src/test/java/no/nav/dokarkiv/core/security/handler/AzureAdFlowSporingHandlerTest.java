@@ -34,7 +34,8 @@ class AzureAdFlowSporingHandlerTest {
 	private static final String APP_CLAIM_SUB = "a2fb96a7-5294-48ea-a1de-a30599f95eb4";
 	private static final String APP_CLAIM_OID = "a2fb96a7-5294-48ea-a1de-a30599f95eb4";
 	private static final String APP_CLAIM_AZP_NAME = "dev-fss:andeby:donald_duck";
-	private static final String APP_CLAIM_AZP_NAME_LANG = "dev-fss:flaaklypa:sjeik_ben_redic_fy_fazan";
+	private static final String APP_CLAIM_AZP_NAME_PARSED = "donald_duck";
+	private static final String APP_CLAIM_AZP_NAME_LANG = "dev-fss:flaaklypa:sjeik_ben_redic_fy_fazan_snake_oil_grandprix";
 	private static final String USER_CLAIM_OID = "52968c79-cd9c-4368-a871-8e2b07f4d8b9";
 	private static final String USER_CLAIM_NAVIDENT = "P999999";
 	private static final String USER_CLAIM_NAME = "Donald Duck";
@@ -46,18 +47,18 @@ class AzureAdFlowSporingHandlerTest {
 	void shouldHandleClientCredentialGrantFlowWhenAppTokenContainsIdTypClaim() {
 		azureAdFlowSporingHandler.handle(createAzureClientCredentialGrantWithOptionalIdtypClaimToken(), null);
 
-		assertThat(MDC.get(MDCConstants.MDC_USER_ID)).isEqualTo(APP_CLAIM_AZP_NAME);
-		assertThat(MDC.get(MDCConstants.MDC_CONSUMER_ID)).isEqualTo(APP_CLAIM_AZP_NAME);
-		assertThat(MDC.get(MDCConstants.MDC_USER_NAME)).isEqualTo(APP_CLAIM_AZP_NAME);
+		assertThat(MDC.get(MDCConstants.MDC_USER_ID)).isEqualTo(APP_CLAIM_AZP_NAME_PARSED);
+		assertThat(MDC.get(MDCConstants.MDC_CONSUMER_ID)).isEqualTo(APP_CLAIM_AZP_NAME_PARSED);
+		assertThat(MDC.get(MDCConstants.MDC_USER_NAME)).isEqualTo(APP_CLAIM_AZP_NAME_PARSED);
 	}
 
 	@Test
 	void shouldHandleClientCredentialGrantFlowWhenAppTokenDoesNotContainIdTypClaim() {
 		azureAdFlowSporingHandler.handle(createAzureClientCredentialGrantToken(), null);
 
-		assertThat(MDC.get(MDCConstants.MDC_USER_ID)).isEqualTo(APP_CLAIM_AZP_NAME);
-		assertThat(MDC.get(MDCConstants.MDC_CONSUMER_ID)).isEqualTo(APP_CLAIM_AZP_NAME);
-		assertThat(MDC.get(MDCConstants.MDC_USER_NAME)).isEqualTo(APP_CLAIM_AZP_NAME);
+		assertThat(MDC.get(MDCConstants.MDC_USER_ID)).isEqualTo(APP_CLAIM_AZP_NAME_PARSED);
+		assertThat(MDC.get(MDCConstants.MDC_CONSUMER_ID)).isEqualTo(APP_CLAIM_AZP_NAME_PARSED);
+		assertThat(MDC.get(MDCConstants.MDC_USER_NAME)).isEqualTo(APP_CLAIM_AZP_NAME_PARSED);
 	}
 
 	@Test
@@ -70,7 +71,7 @@ class AzureAdFlowSporingHandlerTest {
 		azureAdFlowSporingHandler.handle(createAzureClientCredentialGrantToken(), USER_CLAIM_NAVIDENT);
 
 		assertThat(MDC.get(MDCConstants.MDC_USER_ID)).isEqualTo(USER_CLAIM_NAVIDENT);
-		assertThat(MDC.get(MDCConstants.MDC_CONSUMER_ID)).isEqualTo(APP_CLAIM_AZP_NAME);
+		assertThat(MDC.get(MDCConstants.MDC_CONSUMER_ID)).isEqualTo(APP_CLAIM_AZP_NAME_PARSED);
 		assertThat(MDC.get(MDCConstants.MDC_USER_NAME)).isEqualTo(USER_CLAIM_NAME);
 	}
 
@@ -81,18 +82,18 @@ class AzureAdFlowSporingHandlerTest {
 				.build());
 		azureAdFlowSporingHandler.handle(createAzureClientCredentialGrantToken(), USER_CLAIM_NAVIDENT);
 
-		assertThat(MDC.get(MDCConstants.MDC_USER_ID)).isEqualTo(APP_CLAIM_AZP_NAME);
-		assertThat(MDC.get(MDCConstants.MDC_CONSUMER_ID)).isEqualTo(APP_CLAIM_AZP_NAME);
-		assertThat(MDC.get(MDCConstants.MDC_USER_NAME)).isEqualTo(APP_CLAIM_AZP_NAME);
+		assertThat(MDC.get(MDCConstants.MDC_USER_ID)).isEqualTo(APP_CLAIM_AZP_NAME_PARSED);
+		assertThat(MDC.get(MDCConstants.MDC_CONSUMER_ID)).isEqualTo(APP_CLAIM_AZP_NAME_PARSED);
+		assertThat(MDC.get(MDCConstants.MDC_USER_NAME)).isEqualTo(APP_CLAIM_AZP_NAME_PARSED);
 	}
 
 	@Test
 	void shouldSetAppContextWhenNavUserIdHeaderSetAndInvalidNavIdent() {
 		azureAdFlowSporingHandler.handle(createAzureClientCredentialGrantToken(), "ZZ9999");
 
-		assertThat(MDC.get(MDCConstants.MDC_USER_ID)).isEqualTo(APP_CLAIM_AZP_NAME);
-		assertThat(MDC.get(MDCConstants.MDC_CONSUMER_ID)).isEqualTo(APP_CLAIM_AZP_NAME);
-		assertThat(MDC.get(MDCConstants.MDC_USER_NAME)).isEqualTo(APP_CLAIM_AZP_NAME);
+		assertThat(MDC.get(MDCConstants.MDC_USER_ID)).isEqualTo(APP_CLAIM_AZP_NAME_PARSED);
+		assertThat(MDC.get(MDCConstants.MDC_CONSUMER_ID)).isEqualTo(APP_CLAIM_AZP_NAME_PARSED);
+		assertThat(MDC.get(MDCConstants.MDC_USER_NAME)).isEqualTo(APP_CLAIM_AZP_NAME_PARSED);
 	}
 
 	@Test
@@ -100,7 +101,7 @@ class AzureAdFlowSporingHandlerTest {
 		azureAdFlowSporingHandler.handle(createAzureOnBehalfOfToken(), null);
 
 		assertThat(MDC.get(MDCConstants.MDC_USER_ID)).isEqualTo(USER_CLAIM_NAVIDENT);
-		assertThat(MDC.get(MDCConstants.MDC_CONSUMER_ID)).isEqualTo(APP_CLAIM_AZP_NAME);
+		assertThat(MDC.get(MDCConstants.MDC_CONSUMER_ID)).isEqualTo(APP_CLAIM_AZP_NAME_PARSED);
 		assertThat(MDC.get(MDCConstants.MDC_USER_NAME)).isEqualTo(USER_CLAIM_NAME);
 	}
 
@@ -109,7 +110,7 @@ class AzureAdFlowSporingHandlerTest {
 		azureAdFlowSporingHandler.handle(createAzureOnBehalfOfTokenWithoutNavIdent(), null);
 
 		assertThat(MDC.get(MDCConstants.MDC_USER_ID)).isEqualTo(USER_CLAIM_OID);
-		assertThat(MDC.get(MDCConstants.MDC_CONSUMER_ID)).isEqualTo(APP_CLAIM_AZP_NAME);
+		assertThat(MDC.get(MDCConstants.MDC_CONSUMER_ID)).isEqualTo(APP_CLAIM_AZP_NAME_PARSED);
 		assertThat(MDC.get(MDCConstants.MDC_USER_NAME)).isEqualTo(USER_CLAIM_NAME);
 	}
 
@@ -128,7 +129,7 @@ class AzureAdFlowSporingHandlerTest {
 		JwtToken azureTokenAzpnameClaimMoreThan40Chars = createAzureToken(defaultNavClaimSet(APP_CLAIM_SUB, APP_CLAIM_OID, APP_CLAIM_AZP, APP_CLAIM_AZP_NAME_LANG, null));
 		azureAdFlowSporingHandler.handle(azureTokenAzpnameClaimMoreThan40Chars, null);
 
-		String expected = "dev-fss:flaaklypa:sjeik_ben_redic_fy_faz";
+		String expected = "sjeik_ben_redic_fy_fazan_snake_oil_grand";
 		assertThat(MDC.get(MDCConstants.MDC_USER_ID)).isEqualTo(expected);
 		assertThat(MDC.get(MDCConstants.MDC_CONSUMER_ID)).isEqualTo(expected);
 		assertThat(MDC.get(MDCConstants.MDC_USER_NAME)).isEqualTo(expected);
