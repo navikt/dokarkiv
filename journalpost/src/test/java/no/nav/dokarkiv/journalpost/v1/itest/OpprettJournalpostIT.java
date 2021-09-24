@@ -891,7 +891,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 	}
 
 	@Test
-	public void shouldNotCallAktoerServiceWithSAKFagsystemPP01() throws IOException {
+	public void shouldCallAktoerServiceWithSAKFagsystemPP01() throws IOException {
 		abacPermit();
 		restStsToken();
 		happyAktoerIdStub();
@@ -912,7 +912,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
 		restTemplate.exchange(URL_JOURNALPOST + FERDIGSTILL_QUERY, HttpMethod.POST, requestEntity, OpprettJournalpostResponse.class);
 
-		verify(exactly(0), postRequestedFor(urlEqualTo("/pdl")));
+		verify(exactly(1), postRequestedFor(urlEqualTo("/pdl")));
 	}
 
 	@Test
@@ -932,7 +932,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
 		restTemplate.exchange(URL_JOURNALPOST + FERDIGSTILL_QUERY, HttpMethod.POST, requestEntity, OpprettJournalpostResponse.class);
 
-		verify(exactly(1), postRequestedFor(urlEqualTo("/pdl")));
+		verify(exactly(0), postRequestedFor(urlEqualTo("/pdl")));
 	}
 
 	@Test
