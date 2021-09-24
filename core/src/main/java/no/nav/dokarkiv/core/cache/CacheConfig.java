@@ -23,6 +23,7 @@ public class CacheConfig {
 	public static final String NAVSERVICEUSER_CACHE = "navserviceuserCache";
 	public static final String REST_STS_CACHE = "RESTSTS";
 	public static final String HISTORISKE_IDENTER = "historiskeIdenterCache";
+	public static final String PERSON_IDENTER = "personIdenterCache";
 
 	@Bean
 	CacheManager cacheManager() {
@@ -45,6 +46,10 @@ public class CacheConfig {
 						.maximumSize(1)
 						.build()),
 				new CaffeineCache(HISTORISKE_IDENTER, Caffeine.newBuilder()
+						.expireAfterWrite(10, TimeUnit.MINUTES)
+						.maximumSize(25000)
+						.build()),
+				new CaffeineCache(PERSON_IDENTER, Caffeine.newBuilder()
 						.expireAfterWrite(10, TimeUnit.MINUTES)
 						.maximumSize(25000)
 						.build())

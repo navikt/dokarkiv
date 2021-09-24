@@ -5,6 +5,7 @@ import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService;
 import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggTO;
 import no.nav.dokarkiv.core.consumer.pdl.IdentConsumer;
+import no.nav.dokarkiv.core.consumer.pdl.PersonIdent;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentFil;
@@ -93,9 +94,10 @@ public class OpprettJournalpostService {
 			log.warn("Journalpost med eksternReferanseId={} for kanal={} finnes fra før. Oppretter ikke ny journalpost.", request.getEksternReferanseId(), journalpost.getMottakskanal());
 			return new OpprettJournalpostResult(journalpost, false);
 		}
-		String sakId = hentSakId(request);
+		PersonIdent personIdent = hentPersonIdent(request.getBruker(), request.getTema());
+		String sakId = hentSakId(request, personIdent.getIdent());
 
-		Journalpost journalpost = opprettJournalpostApiRequestMapper.map(request, sakId);
+		Journalpost journalpost = opprettJournalpostApiRequestMapper.map(request, sakId, personIdent);
 		defaultSporingPopulator.populateSporingInfo(journalpost, MDC.get(MDCConstants.MDC_USER_NAME));
 		journalpost.getJournalpostDokumentInfoRelasjoner().forEach(journalpostDokumentInfoRelasjon -> journalpostDokumentInfoRelasjon.setTilknyttetAvNavn(journalpost.getOpprettetAvNavn()));
 
@@ -111,18 +113,18 @@ public class OpprettJournalpostService {
 		return new OpprettJournalpostResult(journalpost, true);
 	}
 
-	private String hentSakId(OpprettJournalpostRequest request) {
+	private String hentSakId(OpprettJournalpostRequest request, String ident) {
 		if (request.getSak() != null) {
 			Sakstype sakstype = request.getSak().getSakstype();
 			if ((FAGSAK.equals(sakstype) || Sakstype.GENERELL_SAK.equals(sakstype)) && !Fagsaksystem.PP01.equals(request.getSak().getFagsaksystem())) {
-				return identifiserEllerOpprettArkivsak(request);
+				return identifiserEllerOpprettArkivsak(request, ident);
 			}
 		}
 		return null;
 	}
 
-	private String identifiserEllerOpprettArkivsak(OpprettJournalpostRequest request) {
-		Sak sak = createSak(request);
+	private String identifiserEllerOpprettArkivsak(OpprettJournalpostRequest request, String ident) {
+		Sak sak = createSak(request, ident);
 		List<Sak> saker = hentSakerRepository.finnSaker(SakSearchCriteria.builder()
 				.aktoerId(sak.getAktoerId())
 				.orgnr(sak.getOrgnr())
@@ -137,9 +139,9 @@ public class OpprettJournalpostService {
 		}
 	}
 
-	private Sak createSak(OpprettJournalpostRequest request) {
+	private Sak createSak(OpprettJournalpostRequest request, String ident) {
 		return Sak.builder()
-				.aktoerId(hentAktoerId(request.getBruker()))
+				.aktoerId(ident)
 				.orgnr(BrukerIdType.ORGNR.equals(request.getBruker().getIdType()) ?
 						request.getBruker().getId() : null)
 				.tema(request.getTema())
@@ -152,14 +154,17 @@ public class OpprettJournalpostService {
 				.build();
 	}
 
-	private String hentAktoerId(Bruker bruker) {
+	private PersonIdent hentPersonIdent(Bruker bruker, String tema) {
+		if(bruker==null){
+			return PersonIdent.builder().build();
+		}
 		switch (bruker.getIdType()) {
 			case AKTOERID:
-				return bruker.getId();
+				return PersonIdent.builder().ident(bruker.getId()).build();
 			case FNR:
-				return identConsumer.hentAktoerId(bruker.getId());
+				return identConsumer.hentAktoer(bruker.getId(), tema);
 			default:
-				return null;
+				return PersonIdent.builder().build();
 		}
 	}
 

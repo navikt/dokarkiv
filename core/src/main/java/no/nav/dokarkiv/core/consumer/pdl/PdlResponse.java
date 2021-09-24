@@ -14,6 +14,7 @@ public class PdlResponse {
     @Data
     public static class PdlHentIdenter {
         private PdlIdenter hentIdenter;
+        private PdlPerson hentPerson;
     }
 
     @Data
@@ -30,6 +31,19 @@ public class PdlResponse {
     }
 
     @Data
+    public static class PdlPerson {
+        private List<PdlNavn> navn;
+    }
+
+    @Data
+    public static class PdlNavn {
+        @ToString.Exclude
+        private String fornavn;
+        private String mellomnavn;
+        private String etternavn;
+    }
+
+    @Data
     @JsonIgnoreProperties({"locations", "path"})
     public static class PdlError {
         private String message;
@@ -40,9 +54,18 @@ public class PdlResponse {
     public static class PdlErrorExtension {
         private String code;
         private String classification;
+        private PdlErrorDetails details;
+    }
+
+    @Data
+    public static class PdlErrorDetails {
+        private String type;
+        private String cause;
+        private String policy;
     }
 
     public enum PdlGruppe {
         FOLKEREGISTERIDENT, AKTORID, NPID;
     }
+
 }

@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
 import static java.util.Objects.requireNonNull;
 import static no.nav.dokarkiv.core.NavHeaders.BEARER_TOKEN_PREFIX;
 import static no.nav.dokarkiv.core.cache.CacheConfig.HISTORISKE_IDENTER;
+import static no.nav.dokarkiv.core.cache.CacheConfig.PERSON_IDENTER;
 import static no.nav.dokarkiv.core.storage.RetryConstants.DELAY_SHORT;
 import static no.nav.dokarkiv.core.storage.RetryConstants.MULTIPLIER_SHORT;
 import static org.apache.commons.lang3.StringUtils.isBlank;
@@ -39,6 +40,7 @@ import static org.apache.commons.lang3.StringUtils.isNumeric;
 public class PdlIdentConsumer implements IdentConsumer {
 	private static final String HEADER_PDL_NAV_CONSUMER_TOKEN = "Nav-Consumer-Token";
 	private static final String PERSON_IKKE_FUNNET_CODE = "not_found";
+	private static final String TEMA = "Tema";
 
 	private final RestTemplate restTemplate;
 	private final StsRestConsumer stsRestConsumer;
@@ -56,19 +58,20 @@ public class PdlIdentConsumer implements IdentConsumer {
 		this.pdlUri = UriComponentsBuilder.fromHttpUrl(pdlUrl).build().toUri();
 	}
 
+	@Cacheable(PERSON_IDENTER)
 	@Retryable(
 			include = HttpServerErrorException.class,
 			backoff = @Backoff(delay = DELAY_SHORT, multiplier = MULTIPLIER_SHORT)
 	)
 	@Override
-	public String hentAktoerId(String folkeregisterIdent) throws PersonIkkeFunnetException {
+	public PersonIdent hentAktoer(String folkeregisterIdent, String tema) throws PersonIkkeFunnetException {
 		try {
-			final RequestEntity<PdlRequest> requestEntity = baseRequest()
-					.body(mapHentAktoerIdForFolkeregisterident(this.validateFolkeregisterIdent(folkeregisterIdent)));
+			final RequestEntity<PdlRequest> requestEntity = temaRequest(tema)
+					.body(mapHentAktoerIdAndNavnForFolkeregisterident(this.validateFolkeregisterIdent(folkeregisterIdent)));
 			final PdlResponse pdlResponse = requireNonNull(restTemplate.exchange(requestEntity, PdlResponse.class).getBody());
 
-			if (pdlResponse.getErrors() == null || pdlResponse.getErrors().isEmpty()) {
-				return pdlResponse.getData().getHentIdenter().getIdenter().get(0).getIdent();
+			if (pdlResponse.getData() != null && pdlResponse.getData().getHentIdenter()!=null && !pdlResponse.getData().getHentIdenter().getIdenter().isEmpty()) {
+				return mapToPersonIdent(pdlResponse.getData());
 			} else {
 				if (PERSON_IKKE_FUNNET_CODE.equals(pdlResponse.getErrors().get(0).getExtensions().getCode())) {
 					throw new PersonIkkeFunnetException("Fant ikke aktørid for person i pdl.");
@@ -80,11 +83,26 @@ public class PdlIdentConsumer implements IdentConsumer {
 		}
 	}
 
-	private PdlRequest mapHentAktoerIdForFolkeregisterident(final String ident) {
+	private PersonIdent mapToPersonIdent(PdlResponse.PdlHentIdenter data) {
+		if(data.getHentPerson()!=null && data.getHentPerson().getNavn()!=null && !data.getHentPerson().getNavn().isEmpty()){
+			PdlResponse.PdlNavn navn = data.getHentPerson().getNavn().get(0);
+			return PersonIdent.builder().fornavn(navn.getFornavn()).mellomnavn(navn.getMellomnavn()).etternavn(navn.getEtternavn()).ident(data.getHentIdenter().getIdenter().get(0).getIdent()).build();
+		}
+		return PersonIdent.builder().ident(data.getHentIdenter().getIdenter().get(0).getIdent()).build();
+	}
+
+	private PdlRequest mapHentAktoerIdAndNavnForFolkeregisterident(final String ident) {
 		final HashMap<String, Object> variables = new HashMap<>();
 		variables.put("ident", ident);
 		return PdlRequest.builder()
-				.query("query hentIdenter($ident: ID!) {hentIdenter(ident: $ident, grupper: AKTORID, historikk: false) {identer { ident gruppe historisk } } }")
+				.query("query hentIdenter($ident: ID!) {hentIdenter(ident: $ident, grupper: AKTORID, historikk: false) {identer { ident gruppe historisk } }," +
+						", hentPerson(ident: $ident) {\n" +
+						"\tnavn(historikk: false) {\n" +
+						"\t  fornavn\n" +
+						"\t  mellomnavn\n" +
+						"\t  etternavn\n" +
+						"    }\n" +
+						"  } }")
 				.variables(variables)
 				.build();
 	}
@@ -151,7 +169,14 @@ public class PdlIdentConsumer implements IdentConsumer {
 		final HashMap<String, Object> variables = new HashMap<>();
 		variables.put("ident", ident);
 		return PdlRequest.builder()
-				.query("query hentIdenter($ident: ID!) {hentIdenter(ident: $ident, grupper: FOLKEREGISTERIDENT, historikk: true) {identer { ident gruppe historisk } } }")
+				.query("query hentIdenter($ident: ID!) {hentIdenter(ident: $ident, grupper: FOLKEREGISTERIDENT, historikk: true) {identer { ident gruppe historisk } }, " +
+						", hentPerson(ident: $ident) {\n" +
+						"\tnavn(historikk: false) {\n" +
+						"\t  fornavn\n" +
+						"\t  mellomnavn\n" +
+						"\t  etternavn\n" +
+						"    }\n" +
+						"  } }")
 				.variables(variables)
 				.build();
 	}
@@ -162,6 +187,16 @@ public class PdlIdentConsumer implements IdentConsumer {
 				.accept(MediaType.APPLICATION_JSON)
 				.header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
 				.header(HttpHeaders.AUTHORIZATION, BEARER_TOKEN_PREFIX + serviceuserToken)
+				.header(HEADER_PDL_NAV_CONSUMER_TOKEN, BEARER_TOKEN_PREFIX + serviceuserToken);
+	}
+
+	private RequestEntity.BodyBuilder temaRequest(String tema) {
+		final String serviceuserToken = stsRestConsumer.getStsToken().getAccess_token();
+		return RequestEntity.post(pdlUri)
+				.accept(MediaType.APPLICATION_JSON)
+				.header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+				.header(HttpHeaders.AUTHORIZATION, BEARER_TOKEN_PREFIX + serviceuserToken)
+				.header(TEMA, tema)
 				.header(HEADER_PDL_NAV_CONSUMER_TOKEN, BEARER_TOKEN_PREFIX + serviceuserToken);
 	}
 

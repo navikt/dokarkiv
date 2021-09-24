@@ -696,6 +696,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 	public void shouldFailOnFerdigstillingWhenMissingPaakrevdeFelter() throws IOException {
 		abacPermit();
 		restStsToken();
+		happyAktoerIdStub();
 
 		OpprettJournalpostRequest request = createMinimalRequest(INNGAAENDE)
 				.tema(TEMA_FOR)
@@ -748,7 +749,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 	public void shouldOppdatertJournalfoerendeEnhetToNullWhenFerdigstillingFailsAndJournalfoerendeEnhetEr9999() throws IOException {
 		abacPermit();
 		restStsToken();
-
+		happyAktoerIdStub();
 		OpprettJournalpostRequest request = createMinimalRequest(INNGAAENDE)
 				.tema(TEMA_FOR)
 				.tittel(INNHOLD)
@@ -828,7 +829,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 	public void shouldEndeligJournalfoereSoeknadOmForeldrepengerVedFoedsel() throws IOException {
 		abacPermit();
 		restStsToken();
-
+		happyAktoerIdStub();
 		OpprettJournalpostRequest request = mapper.readValue(classpathToString("__files/soeknadOmForeldrepengerVedFoedsel.json"), OpprettJournalpostRequest.class);
 
 		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
@@ -893,6 +894,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 	public void shouldNotCallAktoerServiceWithSAKFagsystemPP01() throws IOException {
 		abacPermit();
 		restStsToken();
+		happyAktoerIdStub();
 
 		OpprettJournalpostRequest request = createMinimalRequest(INNGAAENDE)
 				.tema(TEMA_UFO)
@@ -917,6 +919,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 	public void shouldNotCallAktoerServiceWithoutSakstype() throws IOException {
 		abacPermit();
 		restStsToken();
+		happyAktoerIdStub();
 
 		OpprettJournalpostRequest request = createMinimalRequest(INNGAAENDE)
 				.tema(TEMA_UFO)
@@ -929,7 +932,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
 		restTemplate.exchange(URL_JOURNALPOST + FERDIGSTILL_QUERY, HttpMethod.POST, requestEntity, OpprettJournalpostResponse.class);
 
-		verify(exactly(0), postRequestedFor(urlEqualTo("/pdl")));
+		verify(exactly(1), postRequestedFor(urlEqualTo("/pdl")));
 	}
 
 	@Test
@@ -977,6 +980,8 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 
 	@Test
 	public void shouldNotOpprettIfMottakskanalEESSIAndReferanseIdAlreadyInDBAndEndeligJournalfortFirstTime() throws IOException {
+		restStsToken();
+		happyAktoerIdStub();
 		OpprettJournalpostRequest request = createBaseRequest(INNGAAENDE)
 				.kanal(MottaksKanalCode.EESSI.name())
 				.eksternReferanseId(KANALREFERANSE_ID)
@@ -1045,6 +1050,8 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 
 	@Test
 	public void shouldOppretteUtgaaendeJournalpostAndSetSporingmetadataWhenServiceuserToken() throws IOException {
+		restStsToken();
+		happyAktoerIdStub();
 		OpprettJournalpostRequest request = createRequest(UTGAAENDE);
 
 		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());

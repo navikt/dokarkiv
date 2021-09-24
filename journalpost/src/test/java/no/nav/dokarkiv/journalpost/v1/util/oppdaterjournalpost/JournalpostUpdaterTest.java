@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.journalpost.v1.util.oppdaterjournalpost;
 
+import no.nav.dokarkiv.core.consumer.pdl.IdentConsumer;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
@@ -37,6 +38,8 @@ import static org.junit.Assert.assertThat;
 public class JournalpostUpdaterTest {
     @Mock
 	private BrukerRepository brukerRepositoryMock;
+    @Mock
+	private IdentConsumer identConsumerMock;
 
 	private OppdaterJournalpostRequest oppdaterJournalpostRequest;
 	private Journalpost journalpost;

@@ -259,7 +259,8 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 	@Test
 	public void shouldFerdigstillJournalpostVedOppdateringOnlyServiceUserToken() throws IOException {
 		abacPermit();
-
+		restStsToken();
+		happyFnrIdentStub();
 		Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
 				.endretAvNavn("saksbehandlersen"));
 		Long journalpostId = journalpost.getJournalpostId();
@@ -686,6 +687,8 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 	public void happyPathNyFagsakOrgnr() {
 		clearSakRepository();
 		abacPermit();
+		restStsToken();
+		happyAktoerIdStub();
 
 		JournalpostBuilder journalpostBuilder = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
 				.endretAvNavn("saksbehandlersen")

@@ -12,10 +12,11 @@ public interface IdentConsumer {
 	 * Henter NAV intern aktørId for folkeregisterIdent.
 	 *
 	 * @param folkeregisterIdent Folkeregisterident tilhørende person
+	 * @param tema for journalpost
 	 * @return NAV intern aktørId
 	 * @throws PersonIkkeFunnetException Finner ikke person
 	 */
-	String hentAktoerId(final String folkeregisterIdent) throws PersonIkkeFunnetException;
+	PersonIdent hentAktoer(final String folkeregisterIdent, final String tema) throws PersonIkkeFunnetException;
 
 	/**
 	 * Henter Folkeregisterets fødselsnummer for NAV intern aktørId

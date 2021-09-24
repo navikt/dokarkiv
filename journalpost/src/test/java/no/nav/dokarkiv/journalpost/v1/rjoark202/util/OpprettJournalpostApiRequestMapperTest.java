@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.journalpost.v1.rjoark202.util;
 
+import no.nav.dokarkiv.core.consumer.pdl.PersonIdent;
 import no.nav.dokarkiv.core.domain.codes.AvsenderMottakerIdTypeCode;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
@@ -92,7 +93,7 @@ public class OpprettJournalpostApiRequestMapperTest {
 	@Test
 	public void shouldMapInngaaendeJournalpost() {
 		OpprettJournalpostRequest request = createRequest(JournalpostType.INNGAAENDE);
-		Journalpost jp = mapper.map(request, null);
+		Journalpost jp = mapper.map(request, null, PersonIdent.builder().fornavn("Test").etternavn("Etternavn").build());
 
 		assertEquals(JournalpostTypeCode.I, jp.getJournalposttype());
 		assertEquals(JournalStatusCode.M, jp.getJournalstatus());
@@ -149,7 +150,7 @@ public class OpprettJournalpostApiRequestMapperTest {
 	@Test
 	public void shouldMapUtgaaendeJournalpost() {
 		OpprettJournalpostRequest request = createRequest(JournalpostType.UTGAAENDE);
-		Journalpost jp = mapper.map(request, null);
+		Journalpost jp = mapper.map(request, null, PersonIdent.builder().fornavn("Test").etternavn("Etternavn").build());
 
 		assertEquals(JournalpostTypeCode.U, jp.getJournalposttype());
 		assertNull(jp.getMottakskanal());
@@ -167,7 +168,7 @@ public class OpprettJournalpostApiRequestMapperTest {
 		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.datoMottatt(DATO_MOTTATT)
 				.build();
-		Journalpost journalpost = mapper.map(request, null);
+		Journalpost journalpost = mapper.map(request, null, PersonIdent.builder().fornavn("Test").etternavn("Etternavn").build());
 		assertEquals(journalpost.getMottattDato(), DATO_MOTTATT);
 	}
 
@@ -176,7 +177,7 @@ public class OpprettJournalpostApiRequestMapperTest {
 		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.datoMottatt(null)
 				.build();
-		Journalpost journalpost = mapper.map(request, null);
+		Journalpost journalpost = mapper.map(request, null, PersonIdent.builder().fornavn("Test").etternavn("Etternavn").build());
 		// Sjekk om det er den samme datoen som dagens dato.
 		assertEquals(LocalDate.ofInstant(journalpost.getMottattDato().toInstant(), ZoneId.systemDefault()), LocalDate.now());
 	}
@@ -186,7 +187,7 @@ public class OpprettJournalpostApiRequestMapperTest {
 		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.UTGAAENDE)
 				.datoMottatt(DATO_MOTTATT)
 				.build();
-		Journalpost journalpost = mapper.map(request, null);
+		Journalpost journalpost = mapper.map(request, null, PersonIdent.builder().fornavn("Test").etternavn("Etternavn").build());
 		assertEquals(journalpost.getMottattDato(), null);
 	}
 	@Test
@@ -194,7 +195,7 @@ public class OpprettJournalpostApiRequestMapperTest {
 		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.NOTAT)
 				.datoMottatt(DATO_MOTTATT)
 				.build();
-		Journalpost journalpost = mapper.map(request, null);
+		Journalpost journalpost = mapper.map(request, null, PersonIdent.builder().fornavn("Test").etternavn("Etternavn").build());
 		assertEquals(journalpost.getMottattDato(), null);
 	}
 
@@ -211,7 +212,7 @@ public class OpprettJournalpostApiRequestMapperTest {
 						.build())
 				.build();
 
-		Journalpost journalpost = mapper.map(request, FAGSAK_ID);
+		Journalpost journalpost = mapper.map(request, FAGSAK_ID, PersonIdent.builder().fornavn("Test").etternavn("Etternavn").build());
 		assertEquals(journalpost.getSaksrelasjon().getFagsystem(), FagsystemCode.FS22);
 
 	}
@@ -231,7 +232,7 @@ public class OpprettJournalpostApiRequestMapperTest {
 						.build())
 				.build();
 
-		Journalpost journalpost = mapper.map(request, FAGSAK_ID);
+		Journalpost journalpost = mapper.map(request, FAGSAK_ID, PersonIdent.builder().fornavn("Test").etternavn("Etternavn").build());
 		assertEquals(journalpost.getSaksrelasjon().getFagsystem(), FagsystemCode.FS22);
 
 	}
@@ -249,7 +250,7 @@ public class OpprettJournalpostApiRequestMapperTest {
 						.build())
 				.build();
 
-		Journalpost journalpost = mapper.map(request, FAGSAK_ID);
+		Journalpost journalpost = mapper.map(request, FAGSAK_ID, PersonIdent.builder().fornavn("Test").etternavn("Etternavn").build());
 		assertEquals(journalpost.getSaksrelasjon().getFagsystem(), FagsystemCode.PEN);
 
 	}
@@ -268,7 +269,7 @@ public class OpprettJournalpostApiRequestMapperTest {
 						.build())
 				.build();
 
-		Journalpost journalpost = mapper.map(request, FAGSAK_ID);
+		Journalpost journalpost = mapper.map(request, FAGSAK_ID, PersonIdent.builder().fornavn("Test").etternavn("Etternavn").build());
 		assertEquals(journalpost.getSaksrelasjon().getFagsystem(), FagsystemCode.FS22);
 
 	}
@@ -276,7 +277,7 @@ public class OpprettJournalpostApiRequestMapperTest {
 	@Test
 	public void shouldMapNotat() {
 		OpprettJournalpostRequest request = createRequest(JournalpostType.NOTAT);
-		Journalpost jp = mapper.map(request, null);
+		Journalpost jp = mapper.map(request, null, PersonIdent.builder().fornavn("Test").etternavn("Etternavn").build());
 
 		assertEquals(JournalpostTypeCode.N, jp.getJournalposttype());
 		assertNull(jp.getMottakskanal());
@@ -287,7 +288,7 @@ public class OpprettJournalpostApiRequestMapperTest {
 	@Test
 	public void shouldMapJournalfoerendeEnhet() {
 		OpprettJournalpostRequest request = createRequest(JournalpostType.INNGAAENDE, "9999");
-		Journalpost jp = mapper.map(request, null);
+		Journalpost jp = mapper.map(request, null, PersonIdent.builder().fornavn("Test").etternavn("Etternavn").build());
 
 		assertEquals("9999", jp.getJournalForendeEnhetId());
 	}
@@ -295,21 +296,21 @@ public class OpprettJournalpostApiRequestMapperTest {
 	@Test
 	public void shouldMapInngaaendeJournalpostOrganisasjon(){
 		OpprettJournalpostRequest request = createRequestAvsenderMottaker(JournalpostType.INNGAAENDE, createAvsenderMottakerOrganisasjon());
-		Journalpost jp = mapper.map(request, null);
+		Journalpost jp = mapper.map(request, null, PersonIdent.builder().fornavn("Test").etternavn("Etternavn").build());
 		assertEquals(AvsenderMottakerIdTypeCode.ORGNR, jp.getAvsenderMottakerIdType());
 
 	}
 	@Test
 	public void shouldMapInngaaendeJournalpostHelsePersonellNr(){
 		OpprettJournalpostRequest request = createRequestAvsenderMottaker(JournalpostType.INNGAAENDE, createAvsenderMottakerHelsepersonell());
-		Journalpost jp = mapper.map(request, null);
+		Journalpost jp = mapper.map(request, null, PersonIdent.builder().fornavn("Test").etternavn("Etternavn").build());
 		assertEquals(AvsenderMottakerIdTypeCode.HPRNR, jp.getAvsenderMottakerIdType());
 
 	}
 	@Test
 	public void shouldMapInngaaendeJournalpostUtlandOrganisasjon(){
 		OpprettJournalpostRequest request = createRequestAvsenderMottaker(JournalpostType.INNGAAENDE, createAvsenderMottakerUtlandOrganisasjon());
-		Journalpost jp = mapper.map(request, null);
+		Journalpost jp = mapper.map(request, null, PersonIdent.builder().fornavn("Test").etternavn("Etternavn").build());
 		assertEquals(AvsenderMottakerIdTypeCode.UTL_ORG, jp.getAvsenderMottakerIdType());
 
 	}
@@ -324,7 +325,7 @@ public class OpprettJournalpostApiRequestMapperTest {
                                 .dokumentKategori(DOKUMENTKATEGORI_SED)
                                 .build()))
                 .build();
-        Journalpost jp = mapper.map(request, null);
+        Journalpost jp = mapper.map(request, null, PersonIdent.builder().fornavn("Test").etternavn("Etternavn").build());
         assertEquals(jp.getJournalstatus(), JournalStatusCode.OD);
     }
 
@@ -343,25 +344,25 @@ public class OpprettJournalpostApiRequestMapperTest {
 										.build()))
                                 .build()))
                 .build();
-        Journalpost jp = mapper.map(request, null);
+        Journalpost jp = mapper.map(request, null, PersonIdent.builder().fornavn("Test").etternavn("Etternavn").build());
         assertEquals(jp.getJournalstatus(), JournalStatusCode.M);
     }
 
 	@Test
     public void shouldMapKanalMigreringSToSWhenMapJournalpost() {
-		Journalpost test = mapper.map(createMinimalRequestWithKanal(MIGRERING_S.toString()), null);
+		Journalpost test = mapper.map(createMinimalRequestWithKanal(MIGRERING_S.toString()), null, PersonIdent.builder().fornavn("Test").etternavn("Etternavn").build());
 		assertEquals(S, test.getUtsendingskanal());
 	}
 
 	@Test
 	public void shouldMapKanalMigreringLToLWhenMapJournalpost() {
-		Journalpost test = mapper.map(createMinimalRequestWithKanal(MIGRERING_L.toString()), null);
+		Journalpost test = mapper.map(createMinimalRequestWithKanal(MIGRERING_L.toString()), null, PersonIdent.builder().fornavn("Test").etternavn("Etternavn").build());
 		assertEquals(L, test.getUtsendingskanal());
 	}
 
 	@Test
 	public void shouldMapKanalCorrectlyLWhenMapJournalpost() {
-		Journalpost test = mapper.map(createMinimalRequestWithKanal(L.toString()), null);
+		Journalpost test = mapper.map(createMinimalRequestWithKanal(L.toString()), null, PersonIdent.builder().fornavn("Test").etternavn("Etternavn").build());
 		assertEquals(L, test.getUtsendingskanal());
 	}
 }

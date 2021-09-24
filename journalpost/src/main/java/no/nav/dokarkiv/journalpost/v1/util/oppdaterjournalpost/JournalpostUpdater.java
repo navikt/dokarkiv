@@ -1,6 +1,7 @@
 package no.nav.dokarkiv.journalpost.v1.util.oppdaterjournalpost;
 
 import no.nav.dokarkiv.core.consumer.pdl.IdentConsumer;
+import no.nav.dokarkiv.core.consumer.pdl.PersonIdent;
 import no.nav.dokarkiv.core.consumer.pdl.PersonIkkeFunnetException;
 import no.nav.dokarkiv.core.domain.codes.AvsenderMottakerIdTypeCode;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
@@ -37,6 +38,7 @@ import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_INNHOLD;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_JOURNALFORENDE_ENHET;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_JOURNALSTATUS;
+import static org.apache.logging.log4j.util.Strings.isEmpty;
 import static org.apache.logging.log4j.util.Strings.isNotBlank;
 
 @Component
@@ -146,8 +148,8 @@ public class JournalpostUpdater {
 		if (oppdaterJournalpostRequest.getAvsenderMottaker() != null) {
 			AvsenderMottaker ny = oppdaterJournalpostRequest.getAvsenderMottaker();
 			if (ny.getId() != null) {
-				if (ny.getIdType() != null &&
-						oversettAvsenderMottakerIdType(ny.getIdType()) != journalpost.getAvsenderMottakerIdType()) {
+				PersonIdent personIdent = hentAktoerId(oppdaterJournalpostRequest.getBruker(), oppdaterJournalpostRequest.getTema());
+				if (ny.getIdType() != null && oversettAvsenderMottakerIdType(ny.getIdType()) != journalpost.getAvsenderMottakerIdType()) {
 					journalpost.setAvsenderMottakerIdType(oversettAvsenderMottakerIdType(ny.getIdType()));
 					endret.setEndretFlagg(true);
 				}
@@ -163,6 +165,15 @@ public class JournalpostUpdater {
 				if (DELETE_MARKER.equalsIgnoreCase(ny.getId())) {
 					journalpost.setAvsenderMottakerId(null);
 					journalpost.setAvsenderMottakerIdType(null);
+					endret.setEndretFlagg(true);
+				}
+				if(isEmpty(oppdaterJournalpostRequest.getAvsenderMottaker().getNavn()) && isNotBlank(personIdent.getNavn())) {
+					endret.add(
+							JOURNALPOST_AVSENDER_MOTTAKER,
+							journalpost.getAvsenderMottaker(),
+							personIdent.getNavn()
+					);
+					journalpost.setAvsenderMottaker(personIdent.getIdent());
 					endret.setEndretFlagg(true);
 				}
 			}
@@ -194,6 +205,17 @@ public class JournalpostUpdater {
 				return AvsenderMottakerIdTypeCode.ORGNR;
 			case UTL_ORG:
 				return AvsenderMottakerIdTypeCode.UTL_ORG;
+			default:
+				return null;
+		}
+	}
+
+	private PersonIdent hentAktoerId(no.nav.dokarkiv.journalpost.v1.api.Bruker bruker, String tema) {
+		switch (bruker.getIdType()) {
+			case AKTOERID:
+				return PersonIdent.builder().ident(bruker.getId()).build();
+			case FNR:
+				return identConsumer.hentAktoer(bruker.getId(), tema);
 			default:
 				return null;
 		}

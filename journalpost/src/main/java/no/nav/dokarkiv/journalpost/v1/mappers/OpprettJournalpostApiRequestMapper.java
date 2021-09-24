@@ -1,6 +1,7 @@
 package no.nav.dokarkiv.journalpost.v1.mappers;
 
 import no.nav.dokarkiv.core.consumer.pdl.IdentConsumer;
+import no.nav.dokarkiv.core.consumer.pdl.PersonIdent;
 import no.nav.dokarkiv.core.consumer.pdl.PersonIkkeFunnetException;
 import no.nav.dokarkiv.core.domain.codes.AvsenderMottakerIdTypeCode;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
@@ -57,14 +58,14 @@ public class OpprettJournalpostApiRequestMapper {
 		this.identConsumer = identConsumer;
 	}
 
-	public Journalpost map(OpprettJournalpostRequest request, String sakId) {
+	public Journalpost map(OpprettJournalpostRequest request, String sakId, PersonIdent personIdent) {
 		Journalpost journalpost = Journalpost.builder()
 				.journalposttype(mapJournalposttype(request.getJournalposttype()))
 				.journalstatus(mapJournalstatus(request))
 				.journalForendeEnhetId(request.getJournalfoerendeEnhet())
 				.innhold(request.getTittel())
 				.fagomrade(mapTema(request))
-				.avsenderMottaker(request.getAvsenderMottaker() == null ? null : request.getAvsenderMottaker().getNavn())
+				.avsenderMottaker(request.getAvsenderMottaker() == null ? personIdent.getNavn() : request.getAvsenderMottaker().getNavn())
 				.avsenderMottakerId(request.getAvsenderMottaker() == null ? null : trim(request.getAvsenderMottaker().getId()))
 				.avsenderMottakerIdType(request.getAvsenderMottaker() == null ? null : mapAvsenderMottakerType(request.getAvsenderMottaker()
 						.getIdType()))

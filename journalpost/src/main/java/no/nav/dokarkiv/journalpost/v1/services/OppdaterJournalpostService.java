@@ -2,6 +2,7 @@ package no.nav.dokarkiv.journalpost.v1.services;
 
 import no.nav.dokarkiv.core.aksjonslogg.LagreAksjonsLoggService;
 import no.nav.dokarkiv.core.consumer.pdl.IdentConsumer;
+import no.nav.dokarkiv.core.consumer.pdl.PersonIdent;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
@@ -87,7 +88,6 @@ public class OppdaterJournalpostService {
 				.orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostId)));
 
 		validateOppdaterteFelt(oppdaterJournalpostRequest, journalpost.getJournalstatus(), journalpost.getJournalposttype());
-
 		if (oppdaterJournalpostRequest.getSak() != null) {
 			Sakstype sakstype = oppdaterJournalpostRequest.getSak().getSakstype();
 			if((FAGSAK.equals(sakstype) || Sakstype.GENERELL_SAK.equals(sakstype)) && !Fagsaksystem.PP01.equals(oppdaterJournalpostRequest.getSak().getFagsaksystem())){
@@ -156,8 +156,9 @@ public class OppdaterJournalpostService {
 	}
 
 	private Sak createSak(OppdaterJournalpostRequest request) {
+		PersonIdent personIdent = hentAktoerId(request.getBruker(), request.getTema());
 		return Sak.builder()
-				.aktoerId(hentAktoerId(request.getBruker()))
+				.aktoerId(personIdent!=null?personIdent.getIdent():null)
 				.orgnr(BrukerIdType.ORGNR.equals(request.getBruker().getIdType()) ?
 						request.getBruker().getId() : null)
 				.tema(request.getTema())
@@ -170,12 +171,12 @@ public class OppdaterJournalpostService {
 				.build();
 	}
 
-	private String hentAktoerId(Bruker bruker) {
+	private PersonIdent hentAktoerId(Bruker bruker, String tema) {
 		switch (bruker.getIdType()) {
 			case AKTOERID:
-				return bruker.getId();
+				return PersonIdent.builder().ident(bruker.getId()).build();
 			case FNR:
-				return identConsumer.hentAktoerId(bruker.getId());
+				return identConsumer.hentAktoer(bruker.getId(), tema);
 			default:
 				return null;
 		}

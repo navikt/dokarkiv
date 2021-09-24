@@ -8,6 +8,15 @@
           "historisk": false
         }
       ]
+    },
+    "hentPerson": {
+      "navn": [
+        {
+          "fornavn": "TESTFORNAVN",
+          "mellomnavn": null,
+          "etternavn": "TESTFAMILIEN"
+        }
+      ]
     }
   }
 }
