@@ -12,11 +12,12 @@ import javax.persistence.MappedSuperclass;
 @MappedSuperclass
 public abstract class AbstractPersistentVersionedDomainObjectWithKilde extends AbstractPersistentVersionedDomainObject
 		implements Identifiable {
-	
-	@Column(name = "opprettet_kilde_navn", nullable = false, updatable = false)
+	public static final int KILDE_NAVN_LENGTH = 40;
+
+	@Column(name = "opprettet_kilde_navn", nullable = false, updatable = false, length = KILDE_NAVN_LENGTH)
 	private String opprettetKildeNavn;
 	
-	@Column(name = "endret_kilde_navn")
+	@Column(name = "endret_kilde_navn", length = KILDE_NAVN_LENGTH)
 	private String endretKildeNavn;
 
 	/**
