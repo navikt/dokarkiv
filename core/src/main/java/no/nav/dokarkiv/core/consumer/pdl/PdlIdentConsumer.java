@@ -39,6 +39,7 @@ import static org.apache.commons.lang3.StringUtils.isNumeric;
 public class PdlIdentConsumer implements IdentConsumer {
 	private static final String HEADER_PDL_NAV_CONSUMER_TOKEN = "Nav-Consumer-Token";
 	private static final String PERSON_IKKE_FUNNET_CODE = "not_found";
+	private static final String TEMA = "Tema";
 
 	private final RestTemplate restTemplate;
 	private final StsRestConsumer stsRestConsumer;
@@ -147,6 +148,41 @@ public class PdlIdentConsumer implements IdentConsumer {
 		}
 	}
 
+	@Override
+	public String hentPersonIdent(String aktoerId, String tema) {
+		try {
+			final RequestEntity<PdlRequest> requestEntity = temaRequest(tema)
+					.body(mapHentPersonIdentForId(this.validateFolkeregisterIdent(aktoerId)));
+			final PdlPersonResponse pdlPersonResponse = requireNonNull(restTemplate.exchange(requestEntity, PdlPersonResponse.class).getBody());
+
+			if (pdlPersonResponse.getErrors() == null || pdlPersonResponse.getErrors().isEmpty()) {
+				return pdlPersonResponse.getData().getHentPerson().getNavn().get(0).getNavn();
+			} else {
+				if (PERSON_IKKE_FUNNET_CODE.equals(pdlPersonResponse.getErrors().get(0).getExtensions().getCode())) {
+					throw new PersonIkkeFunnetException("Fant ikke navn for person i pdl.");
+				}
+				throw new PdlFunctionalException("Kunne ikke hente navn for aktørid i pdl. " + pdlPersonResponse.getErrors());
+			}
+		} catch (HttpClientErrorException e) {
+			throw new PdlFunctionalException("Kall mot pdl feilet funksjonelt.", e);
+		}
+	}
+
+	private PdlRequest mapHentPersonIdentForId(final String ident) {
+		final HashMap<String, Object> variables = new HashMap<>();
+		variables.put("ident", ident);
+		return PdlRequest.builder()
+				.query("query hentPerson($ident: ID!) {hentPerson(ident: $ident) {\n" +
+						"navn(historikk: false) {\n" +
+						"  fornavn\n" +
+						"  mellomnavn\n" +
+						"  etternavn\n" +
+						"}"+
+				"}}")
+				.variables(variables)
+				.build();
+	}
+
 	private PdlRequest mapHentHistoriskeFolkeregisterIdentForAktoerId(final String ident) {
 		final HashMap<String, Object> variables = new HashMap<>();
 		variables.put("ident", ident);
@@ -154,6 +190,16 @@ public class PdlIdentConsumer implements IdentConsumer {
 				.query("query hentIdenter($ident: ID!) {hentIdenter(ident: $ident, grupper: FOLKEREGISTERIDENT, historikk: true) {identer { ident gruppe historisk } } }")
 				.variables(variables)
 				.build();
+	}
+
+	private RequestEntity.BodyBuilder temaRequest(String tema) {
+		final String serviceuserToken = stsRestConsumer.getStsToken().getAccess_token();
+		return RequestEntity.post(pdlUri)
+				.accept(MediaType.APPLICATION_JSON)
+				.header(TEMA, tema)
+				.header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+				.header(HttpHeaders.AUTHORIZATION, BEARER_TOKEN_PREFIX + serviceuserToken)
+				.header(HEADER_PDL_NAV_CONSUMER_TOKEN, BEARER_TOKEN_PREFIX + serviceuserToken);
 	}
 
 	private RequestEntity.BodyBuilder baseRequest() {

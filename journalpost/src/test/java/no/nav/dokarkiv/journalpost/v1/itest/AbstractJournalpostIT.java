@@ -59,6 +59,13 @@ public abstract class AbstractJournalpostIT extends AbstractRestIT {
 						.withBodyFile("reststs/reststs-happy.json")));
 	}
 
+	void happyPersonIdentStub() {
+		stubFor(post(urlEqualTo("/pdl"))
+				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
+						.withHeader(org.apache.http.HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+						.withBodyFile("pdl/pdl-hentperson-happy.json")));
+	}
+
 	void happyFnrIdentStub() {
 		stubFor(post(urlEqualTo("/pdl"))
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())

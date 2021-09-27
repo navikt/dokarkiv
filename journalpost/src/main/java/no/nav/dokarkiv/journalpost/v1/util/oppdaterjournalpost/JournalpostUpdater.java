@@ -37,6 +37,7 @@ import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_INNHOLD;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_JOURNALFORENDE_ENHET;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_JOURNALSTATUS;
+import static no.nav.dokarkiv.journalpost.v1.api.AvsenderMottakerIdType.FNR;
 import static org.apache.logging.log4j.util.Strings.isNotBlank;
 
 @Component
@@ -171,16 +172,27 @@ public class JournalpostUpdater {
 				journalpost.setLand(ny.getLand());
 				endret.setEndretFlagg(true);
 			}
-
 			if (isNotBlank(oppdaterJournalpostRequest.getAvsenderMottaker().getNavn())) {
-				endret.add(
-						JOURNALPOST_AVSENDER_MOTTAKER,
-						journalpost.getAvsenderMottaker(),
-						oppdaterJournalpostRequest.getAvsenderMottaker().getNavn()
-				);
-				journalpost.setAvsenderMottaker(oppdaterJournalpostRequest.getAvsenderMottaker().getNavn());
-				endret.setEndretFlagg(true);
+				oppdaterAvsenderMottaker(endret, journalpost, oppdaterJournalpostRequest.getAvsenderMottaker().getNavn());
+			} else if (oppdaterJournalpostRequest.getAvsenderMottaker() != null && oppdaterJournalpostRequest.getAvsenderMottaker().getId()!=null){
+				if(oversettAvsenderMottakerIdType(oppdaterJournalpostRequest.getAvsenderMottaker().getIdType()).equals(FNR)){
+					String navn = identConsumer.hentPersonIdent(oppdaterJournalpostRequest.getAvsenderMottaker().getId(), oppdaterJournalpostRequest.getTema());
+					oppdaterAvsenderMottaker(endret, journalpost, navn);
+
+				}
 			}
+		}
+	}
+
+	private void oppdaterAvsenderMottaker(ChangeTracker endret, Journalpost journalpost, String navn) {
+		if(isNotBlank(navn)){
+		endret.add(
+				JOURNALPOST_AVSENDER_MOTTAKER,
+				journalpost.getAvsenderMottaker(),
+				navn
+		);
+		journalpost.setAvsenderMottaker(navn);
+		endret.setEndretFlagg(true);
 		}
 	}
 
