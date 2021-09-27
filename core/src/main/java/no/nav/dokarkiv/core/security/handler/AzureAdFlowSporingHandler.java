@@ -30,7 +30,7 @@ import static org.apache.commons.lang3.StringUtils.left;
 public class AzureAdFlowSporingHandler {
 	private static final String ERROR_MELDING_PREFIX = "Tjeneste kalt med Azure Client Credential Grant Flow token og Nav-User-Id header.";
 	private static final String ERROR_MELDING_SUFFIX = "Konsument må informeres og bes om å rette dette.";
-	private static final Pattern AZP_NAME_PATTERN = Pattern.compile("^[a-zA-Z-_]+:[a-zA-Z-_]+:(?<appnavn>[a-zA-Z-_]+)$");
+	private static final Pattern AZP_NAME_PATTERN = Pattern.compile("^[a-zA-Z-_]+:(?<teamappnavn>[a-zA-Z-_]+:[a-zA-Z-_]+)$");
 
 	// https://docs.microsoft.com/en-us/azure/active-directory/develop/active-directory-optional-claims#v10-and-v20-optional-claims-set
 	static final String OPTIONAL_CLAIM_SET_IDTYP = "idtyp";
@@ -130,8 +130,8 @@ public class AzureAdFlowSporingHandler {
 			String azpnameClaim = jwtTokenClaims.getStringClaim(NAV_CUSTOM_CLAIM_AZP_NAME);
 			if (isNotBlank(azpnameClaim)) {
 				Matcher matcher = AZP_NAME_PATTERN.matcher(azpnameClaim);
-				String appnavn = matcher.matches() ? matcher.group("appnavn") : azpnameClaim;
-				return left(appnavn, KILDE_NAVN_LENGTH);
+				String teamappnavn = matcher.matches() ? matcher.group("teamappnavn") : azpnameClaim;
+				return left(teamappnavn, KILDE_NAVN_LENGTH);
 			}
 			return jwtTokenClaims.getStringClaim(DEFAULT_CLAIM_AZP);
 		}

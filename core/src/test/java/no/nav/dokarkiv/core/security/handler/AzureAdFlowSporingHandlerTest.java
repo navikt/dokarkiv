@@ -34,8 +34,8 @@ class AzureAdFlowSporingHandlerTest {
 	private static final String APP_CLAIM_SUB = "a2fb96a7-5294-48ea-a1de-a30599f95eb4";
 	private static final String APP_CLAIM_OID = "a2fb96a7-5294-48ea-a1de-a30599f95eb4";
 	private static final String APP_CLAIM_AZP_NAME = "dev-fss:andeby:donald_duck";
-	private static final String APP_CLAIM_AZP_NAME_PARSED = "donald_duck";
-	private static final String APP_CLAIM_AZP_NAME_LANG = "dev-fss:flaaklypa:sjeik_ben_redic_fy_fazan_snake_oil_grandprix";
+	private static final String APP_CLAIM_AZP_NAME_PARSED = "andeby:donald_duck";
+	private static final String APP_CLAIM_AZP_NAME_LANG = "dev-fss:flaaklypa:sjeik_ben_redic_fy_fazan_snake_oil";
 	private static final String USER_CLAIM_OID = "52968c79-cd9c-4368-a871-8e2b07f4d8b9";
 	private static final String USER_CLAIM_NAVIDENT = "P999999";
 	private static final String USER_CLAIM_NAME = "Donald Duck";
@@ -129,7 +129,7 @@ class AzureAdFlowSporingHandlerTest {
 		JwtToken azureTokenAzpnameClaimMoreThan40Chars = createAzureToken(defaultNavClaimSet(APP_CLAIM_SUB, APP_CLAIM_OID, APP_CLAIM_AZP, APP_CLAIM_AZP_NAME_LANG, null));
 		azureAdFlowSporingHandler.handle(azureTokenAzpnameClaimMoreThan40Chars, null);
 
-		String expected = "sjeik_ben_redic_fy_fazan_snake_oil_grand";
+		String expected = "flaaklypa:sjeik_ben_redic_fy_fazan_snake";
 		assertThat(MDC.get(MDCConstants.MDC_USER_ID)).isEqualTo(expected);
 		assertThat(MDC.get(MDCConstants.MDC_CONSUMER_ID)).isEqualTo(expected);
 		assertThat(MDC.get(MDCConstants.MDC_USER_NAME)).isEqualTo(expected);
