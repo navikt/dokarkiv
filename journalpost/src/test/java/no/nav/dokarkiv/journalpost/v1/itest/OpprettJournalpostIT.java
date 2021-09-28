@@ -48,7 +48,7 @@ import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.OPPRETT;
 import static no.nav.dokarkiv.core.domain.codes.FagsystemCode.FS22;
 import static no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode.MIGRERING_S;
 import static no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem.AO01;
-import static no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem.OMSORGSPENGER;
+import static no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem.HJELPEMIDLER;
 import static no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem.PP01;
 import static no.nav.dokarkiv.journalpost.v1.api.JournalpostType.INNGAAENDE;
 import static no.nav.dokarkiv.journalpost.v1.api.JournalpostType.NOTAT;
@@ -849,7 +849,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 				.tema(TEMA_UFO)
 				.sak(Sak.builder()
 						.sakstype(Sakstype.FAGSAK)
-						.fagsaksystem(OMSORGSPENGER)
+						.fagsaksystem(HJELPEMIDLER)
 						.fagsakId(FAGSAK_ID)
 						.build())
 				.bruker(Bruker.builder()
@@ -874,7 +874,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 				.tema(TEMA_UFO)
 				.sak(Sak.builder()
 						.sakstype(Sakstype.FAGSAK)
-						.fagsaksystem(OMSORGSPENGER)
+						.fagsaksystem(HJELPEMIDLER)
 						.fagsakId(FAGSAK_ID)
 						.build())
 				.bruker(Bruker.builder()
