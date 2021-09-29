@@ -157,7 +157,7 @@ public class PdlIdentConsumer implements IdentConsumer {
 					.body(mapHentPersonIdentForId(this.validateFolkeregisterIdent(aktoerId)));
 			final PdlPersonResponse pdlPersonResponse = requireNonNull(restTemplate.exchange(requestEntity, PdlPersonResponse.class).getBody());
 
-			if ((pdlPersonResponse.getErrors() == null || pdlPersonResponse.getErrors().isEmpty()) && pdlPersonResponse.getData().getHentPerson() != null && !pdlPersonResponse.getData().getHentPerson().getNavn().isEmpty()) {
+			if (pdlPersonResponse.getData().getHentPerson() != null && !pdlPersonResponse.getData().getHentPerson().getNavn().isEmpty()) {
 				return pdlPersonResponse.getData().getHentPerson().getNavn().get(0).getNavn();
 			} else {
 				if (PERSON_IKKE_FUNNET_CODE.equals(pdlPersonResponse.getErrors().get(0).getExtensions().getCode())) {
