@@ -177,8 +177,8 @@ public class PdlIdentConsumer implements IdentConsumer {
 						"  fornavn\n" +
 						"  mellomnavn\n" +
 						"  etternavn\n" +
-						"}"+
-				"}}")
+						"}" +
+						"}}")
 				.variables(variables)
 				.build();
 	}
@@ -212,7 +212,7 @@ public class PdlIdentConsumer implements IdentConsumer {
 	}
 
 	String validateFolkeregisterIdent(String ident) {
-		if(isBlank(ident)) {
+		if (isBlank(ident)) {
 			throw new PersonIkkeFunnetException("Validering av ident feilet fordi verdien er null eller blank.");
 		}
 

@@ -28,7 +28,6 @@ import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostR
 import org.apache.commons.collections15.IteratorUtils;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.platform.commons.util.ReflectionUtils;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -1185,6 +1184,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertEquals("TESTFORNAVN TESTFAMILIEN", journalpost.getAvsenderMottaker());
 		assertEquals(AVSENDER_ID_PERSON, journalpost.getAvsenderMottakerId());
 	}
+
 	@Test
 	public void shouldUseProvidedNameForAvsenderMottaker() throws IOException {
 		OpprettJournalpostRequest request = createRequest(UTGAAENDE, "9999");
