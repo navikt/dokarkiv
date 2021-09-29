@@ -4,8 +4,6 @@ import no.nav.dokarkiv.core.consumer.sts.StsRestConsumer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
@@ -29,6 +27,10 @@ import static no.nav.dokarkiv.core.storage.RetryConstants.DELAY_SHORT;
 import static no.nav.dokarkiv.core.storage.RetryConstants.MULTIPLIER_SHORT;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNumeric;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 /**
  * PDL implementasjon av {@link IdentConsumer}
@@ -155,7 +157,7 @@ public class PdlIdentConsumer implements IdentConsumer {
 					.body(mapHentPersonIdentForId(this.validateFolkeregisterIdent(aktoerId)));
 			final PdlPersonResponse pdlPersonResponse = requireNonNull(restTemplate.exchange(requestEntity, PdlPersonResponse.class).getBody());
 
-			if (pdlPersonResponse.getErrors() == null || pdlPersonResponse.getErrors().isEmpty()) {
+			if ((pdlPersonResponse.getErrors() == null || pdlPersonResponse.getErrors().isEmpty()) && pdlPersonResponse.getData().getHentPerson() != null && !pdlPersonResponse.getData().getHentPerson().getNavn().isEmpty()) {
 				return pdlPersonResponse.getData().getHentPerson().getNavn().get(0).getNavn();
 			} else {
 				if (PERSON_IKKE_FUNNET_CODE.equals(pdlPersonResponse.getErrors().get(0).getExtensions().getCode())) {
@@ -195,19 +197,19 @@ public class PdlIdentConsumer implements IdentConsumer {
 	private RequestEntity.BodyBuilder temaRequest(String tema) {
 		final String serviceuserToken = stsRestConsumer.getStsToken().getAccess_token();
 		return RequestEntity.post(pdlUri)
-				.accept(MediaType.APPLICATION_JSON)
+				.accept(APPLICATION_JSON)
 				.header(TEMA, tema)
-				.header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-				.header(HttpHeaders.AUTHORIZATION, BEARER_TOKEN_PREFIX + serviceuserToken)
+				.header(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+				.header(AUTHORIZATION, BEARER_TOKEN_PREFIX + serviceuserToken)
 				.header(HEADER_PDL_NAV_CONSUMER_TOKEN, BEARER_TOKEN_PREFIX + serviceuserToken);
 	}
 
 	private RequestEntity.BodyBuilder baseRequest() {
 		final String serviceuserToken = stsRestConsumer.getStsToken().getAccess_token();
 		return RequestEntity.post(pdlUri)
-				.accept(MediaType.APPLICATION_JSON)
-				.header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-				.header(HttpHeaders.AUTHORIZATION, BEARER_TOKEN_PREFIX + serviceuserToken)
+				.accept(APPLICATION_JSON)
+				.header(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+				.header(AUTHORIZATION, BEARER_TOKEN_PREFIX + serviceuserToken)
 				.header(HEADER_PDL_NAV_CONSUMER_TOKEN, BEARER_TOKEN_PREFIX + serviceuserToken);
 	}
 

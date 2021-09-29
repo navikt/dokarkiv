@@ -174,8 +174,8 @@ public class JournalpostUpdater {
 			}
 			if (isNotBlank(oppdaterJournalpostRequest.getAvsenderMottaker().getNavn())) {
 				oppdaterAvsenderMottaker(endret, journalpost, oppdaterJournalpostRequest.getAvsenderMottaker().getNavn());
-			} else if (oppdaterJournalpostRequest.getAvsenderMottaker() != null && oppdaterJournalpostRequest.getAvsenderMottaker().getId()!=null){
-				if(oversettAvsenderMottakerIdType(oppdaterJournalpostRequest.getAvsenderMottaker().getIdType()).equals(FNR)){
+			} else if (oppdaterJournalpostRequest.getAvsenderMottaker() != null && oppdaterJournalpostRequest.getAvsenderMottaker().getId() != null) {
+				if (oversettAvsenderMottakerIdType(oppdaterJournalpostRequest.getAvsenderMottaker().getIdType()).equals(FNR)) {
 					String navn = identConsumer.hentPersonIdent(oppdaterJournalpostRequest.getAvsenderMottaker().getId(), oppdaterJournalpostRequest.getTema());
 					oppdaterAvsenderMottaker(endret, journalpost, navn);
 
@@ -185,14 +185,14 @@ public class JournalpostUpdater {
 	}
 
 	private void oppdaterAvsenderMottaker(ChangeTracker endret, Journalpost journalpost, String navn) {
-		if(isNotBlank(navn)){
-		endret.add(
-				JOURNALPOST_AVSENDER_MOTTAKER,
-				journalpost.getAvsenderMottaker(),
-				navn
-		);
-		journalpost.setAvsenderMottaker(navn);
-		endret.setEndretFlagg(true);
+		if (isNotBlank(navn)) {
+			endret.add(
+					JOURNALPOST_AVSENDER_MOTTAKER,
+					journalpost.getAvsenderMottaker(),
+					navn
+			);
+			journalpost.setAvsenderMottaker(navn);
+			endret.setEndretFlagg(true);
 		}
 	}
 
