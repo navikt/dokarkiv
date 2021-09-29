@@ -194,7 +194,7 @@ public class ArkiverOgJournalfoerRestController {
         );
 
         Long journalpostId = opprettJournalpostResult.getJournalpost().getJournalpostId();
-        HttpStatus httpStatus = opprettJournalpostResult.isAlreadyOpprettet() ? HttpStatus.CREATED : HttpStatus.CONFLICT;
+        HttpStatus httpStatus = opprettJournalpostResult.isAlreadyOpprettet() ? HttpStatus.CONFLICT : HttpStatus.CREATED;
 
         Optional<Pair<String, String>> ferdigstillResponse = Optional.empty();
         if (TRUE.equalsIgnoreCase(forsoekFerdigstill)) {

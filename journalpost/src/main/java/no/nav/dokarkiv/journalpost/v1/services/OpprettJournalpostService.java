@@ -91,7 +91,7 @@ public class OpprettJournalpostService {
 		if (existingJournalpost.isPresent()) {
 			final Journalpost journalpost = existingJournalpost.get();
 			log.warn("Journalpost med eksternReferanseId={} for kanal={} finnes fra før. Oppretter ikke ny journalpost.", request.getEksternReferanseId(), journalpost.getMottakskanal());
-			return new OpprettJournalpostResult(journalpost, false);
+			return new OpprettJournalpostResult(journalpost, true);
 		}
 		String sakId = hentSakId(request);
 
@@ -108,7 +108,7 @@ public class OpprettJournalpostService {
 
 		opprettJournalpostPDFAUtils.safeValidateAndLogPDFA(journalpost);
 
-		return new OpprettJournalpostResult(journalpost, true);
+		return new OpprettJournalpostResult(journalpost, false);
 	}
 
 	private String hentSakId(OpprettJournalpostRequest request) {
