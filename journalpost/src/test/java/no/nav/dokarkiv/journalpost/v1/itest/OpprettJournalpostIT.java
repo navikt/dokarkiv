@@ -32,6 +32,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -1166,6 +1167,36 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 
 		assertEquals(1, allJournalpostByKanalReferanseId.size());
 		assertEquals(firstResponse.getBody().getJournalpostId(), secondResponse.getBody().getJournalpostId());
+	}
+
+	@Test
+	public void shouldUsePdlNameForAvsenderMottakerNameNull() throws IOException {
+		restStsToken();
+		happyPersonIdentStub();
+		OpprettJournalpostRequest request = createRequest(UTGAAENDE, "9999");
+		ReflectionTestUtils.setField(request.getAvsenderMottaker(), "navn", "");
+		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
+		ResponseEntity<OpprettJournalpostResponse> response = restTemplate.exchange(URL_JOURNALPOST + FERDIGSTILL_QUERY, HttpMethod.POST, requestEntity, OpprettJournalpostResponse.class);
+
+		assertEquals(HttpStatus.CREATED, response.getStatusCode());
+
+		Journalpost journalpost = joarkRepository.findAll().iterator().next();
+		assertEquals("TESTFORNAVN TESTFAMILIEN", journalpost.getAvsenderMottaker());
+		assertEquals(AVSENDER_ID_PERSON, journalpost.getAvsenderMottakerId());
+	}
+
+	@Test
+	public void shouldUseProvidedNameForAvsenderMottaker() throws IOException {
+		OpprettJournalpostRequest request = createRequest(UTGAAENDE, "9999");
+
+		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
+		ResponseEntity<OpprettJournalpostResponse> response = restTemplate.exchange(URL_JOURNALPOST + FERDIGSTILL_QUERY, HttpMethod.POST, requestEntity, OpprettJournalpostResponse.class);
+
+		assertEquals(HttpStatus.CREATED, response.getStatusCode());
+
+		Journalpost journalpost = joarkRepository.findAll().iterator().next();
+		assertEquals(AVSENDER_NAVN, journalpost.getAvsenderMottaker());
+		assertEquals(AVSENDER_ID_PERSON, journalpost.getAvsenderMottakerId());
 	}
 
 	private void assertEqualOpprettJournalpostResponses(OpprettJournalpostResponse res1, OpprettJournalpostResponse res2) {
