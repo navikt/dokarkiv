@@ -35,6 +35,4 @@ public interface IdentConsumer {
 	 * @throws PersonIkkeFunnetException Finner ikke person
 	 */
 	List<String> hentHistoriskeFolkeregisterIdenter(final String folkeregisterIdent) throws PersonIkkeFunnetException;
-
-	String hentPersonIdent(String id, String tema);
 }

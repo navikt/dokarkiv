@@ -64,7 +64,7 @@ public class OpprettJournalpostApiRequestMapper {
 				.journalForendeEnhetId(request.getJournalfoerendeEnhet())
 				.innhold(request.getTittel())
 				.fagomrade(mapTema(request))
-				.avsenderMottaker(hentNavn(request))
+				.avsenderMottaker(request.getAvsenderMottaker() == null ? null : request.getAvsenderMottaker().getNavn())
 				.avsenderMottakerId(request.getAvsenderMottaker() == null ? null : trim(request.getAvsenderMottaker().getId()))
 				.avsenderMottakerIdType(request.getAvsenderMottaker() == null ? null : mapAvsenderMottakerType(request.getAvsenderMottaker()
 						.getIdType()))
@@ -83,16 +83,6 @@ public class OpprettJournalpostApiRequestMapper {
 		addJournalpostDokumentInfoRelasjon(journalpost, request);
 
 		return journalpost;
-	}
-
-	private String hentNavn(OpprettJournalpostRequest request) {
-		if (request.getAvsenderMottaker() != null && isNotBlank(request.getAvsenderMottaker().getNavn())) {
-			return request.getAvsenderMottaker().getNavn();
-		} else if (request.getAvsenderMottaker() != null && isNotBlank(request.getAvsenderMottaker().getId())) {
-			return identConsumer.hentPersonIdent(request.getAvsenderMottaker().getId(), request.getTema());
-
-		}
-		return null;
 	}
 
 	private JournalpostTypeCode mapJournalposttype(JournalpostType request) {
@@ -145,9 +135,9 @@ public class OpprettJournalpostApiRequestMapper {
 
 	private Map<String, String> mapTilleggsopplysninger(OpprettJournalpostRequest request) {
 		return request.getTilleggsopplysninger() == null ? null :
-				request.getTilleggsopplysninger()
-						.stream()
-						.collect(Collectors.toMap(Tilleggsopplysning::getNokkel, Tilleggsopplysning::getVerdi));
+			request.getTilleggsopplysninger()
+				.stream()
+				.collect(Collectors.toMap(Tilleggsopplysning::getNokkel, Tilleggsopplysning::getVerdi));
 	}
 
 	private MottaksKanalCode mapMottakskanal(OpprettJournalpostRequest request) {
@@ -197,13 +187,13 @@ public class OpprettJournalpostApiRequestMapper {
 		if (sakId != null) {
 			return sakId;
 		} else if (Sakstype.ARKIVSAK.equals(request.getSak().getSakstype()) || request.getSak().getSakstype() == null) {// Antas å være ARKIVSAK dersom feltet ikke er satt
-			return request.getSak().getArkivsaksnummer();
-		} else if (Sakstype.FAGSAK.equals(request.getSak().getSakstype()) && Fagsaksystem.PP01.equals(request.getSak().getFagsaksystem())) {
+	        return request.getSak().getArkivsaksnummer();
+        } else if (Sakstype.FAGSAK.equals(request.getSak().getSakstype()) && Fagsaksystem.PP01.equals(request.getSak().getFagsaksystem())) {
 			return request.getSak().getFagsakId();
 		} else {
 			throw new UgyldigInputException("Kan ikke mappe sakId basert på input");
 		}
-	}
+    }
 
 	private FagsystemCode mapFagsystem(OpprettJournalpostRequest request) {
 		Sakstype sakstype = request.getSak().getSakstype();
@@ -289,17 +279,17 @@ public class OpprettJournalpostApiRequestMapper {
 				.build();
 
 		if (dokument.getDokumentvarianter() != null) {
-			dokument.getDokumentvarianter().forEach(
-					dokumentVariant -> dokumentInfo.addFilDetaljer(FilDetaljer.builder()
-							.filtype(mapFilType(dokumentVariant.getFiltype()))
-							.variantFormat(mapVariantFormat(dokumentVariant.getVariantformat()))
-							.filUuid(FilDetaljer.generateUuid())
-							.fileContent(dokumentVariant.getFysiskDokument())
-							.filnavn(dokumentVariant.getFilnavn())
-							.dokumentInfo(dokumentInfo)
-							.batchNavn(dokumentVariant.getBatchnavn())
-							.build()));
-		}
+            dokument.getDokumentvarianter().forEach(
+                    dokumentVariant -> dokumentInfo.addFilDetaljer(FilDetaljer.builder()
+                            .filtype(mapFilType(dokumentVariant.getFiltype()))
+                            .variantFormat(mapVariantFormat(dokumentVariant.getVariantformat()))
+                            .filUuid(FilDetaljer.generateUuid())
+                            .fileContent(dokumentVariant.getFysiskDokument())
+                            .filnavn(dokumentVariant.getFilnavn())
+                            .dokumentInfo(dokumentInfo)
+                            .batchNavn(dokumentVariant.getBatchnavn())
+                            .build()));
+        }
 
 		JournalpostDokumentInfoRelasjon relasjon = JournalpostDokumentInfoRelasjon.builder()
 				.tilknyttetJournalpostSom(tilknyttetJournalpostSomCode)

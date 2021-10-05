@@ -4,6 +4,8 @@ import no.nav.dokarkiv.core.consumer.sts.StsRestConsumer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
@@ -27,10 +29,6 @@ import static no.nav.dokarkiv.core.storage.RetryConstants.DELAY_SHORT;
 import static no.nav.dokarkiv.core.storage.RetryConstants.MULTIPLIER_SHORT;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNumeric;
-import static org.springframework.http.HttpHeaders.AUTHORIZATION;
-import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
-import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 /**
  * PDL implementasjon av {@link IdentConsumer}
@@ -41,7 +39,6 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 public class PdlIdentConsumer implements IdentConsumer {
 	private static final String HEADER_PDL_NAV_CONSUMER_TOKEN = "Nav-Consumer-Token";
 	private static final String PERSON_IKKE_FUNNET_CODE = "not_found";
-	private static final String TEMA = "Tema";
 
 	private final RestTemplate restTemplate;
 	private final StsRestConsumer stsRestConsumer;
@@ -150,41 +147,6 @@ public class PdlIdentConsumer implements IdentConsumer {
 		}
 	}
 
-	@Override
-	public String hentPersonIdent(String aktoerId, String tema) {
-		try {
-			final RequestEntity<PdlRequest> requestEntity = temaRequest(tema)
-					.body(mapHentPersonIdentForId(this.validateFolkeregisterIdent(aktoerId)));
-			final PdlPersonResponse pdlPersonResponse = requireNonNull(restTemplate.exchange(requestEntity, PdlPersonResponse.class).getBody());
-
-			if (pdlPersonResponse.getData().getHentPerson() != null && !pdlPersonResponse.getData().getHentPerson().getNavn().isEmpty()) {
-				return pdlPersonResponse.getData().getHentPerson().getNavn().get(0).getNavn();
-			} else {
-				if (PERSON_IKKE_FUNNET_CODE.equals(pdlPersonResponse.getErrors().get(0).getExtensions().getCode())) {
-					throw new PersonIkkeFunnetException("Fant ikke navn for person i pdl.");
-				}
-				throw new PdlFunctionalException("Kunne ikke hente navn for aktørid i pdl. " + pdlPersonResponse.getErrors());
-			}
-		} catch (HttpClientErrorException e) {
-			throw new PdlFunctionalException("Kall mot pdl feilet funksjonelt.", e);
-		}
-	}
-
-	private PdlRequest mapHentPersonIdentForId(final String ident) {
-		final HashMap<String, Object> variables = new HashMap<>();
-		variables.put("ident", ident);
-		return PdlRequest.builder()
-				.query("query hentPerson($ident: ID!) {hentPerson(ident: $ident) {\n" +
-						"navn(historikk: false) {\n" +
-						"  fornavn\n" +
-						"  mellomnavn\n" +
-						"  etternavn\n" +
-						"}" +
-						"}}")
-				.variables(variables)
-				.build();
-	}
-
 	private PdlRequest mapHentHistoriskeFolkeregisterIdentForAktoerId(final String ident) {
 		final HashMap<String, Object> variables = new HashMap<>();
 		variables.put("ident", ident);
@@ -194,27 +156,17 @@ public class PdlIdentConsumer implements IdentConsumer {
 				.build();
 	}
 
-	private RequestEntity.BodyBuilder temaRequest(String tema) {
-		final String serviceuserToken = stsRestConsumer.getStsToken().getAccess_token();
-		return RequestEntity.post(pdlUri)
-				.accept(APPLICATION_JSON)
-				.header(TEMA, tema)
-				.header(CONTENT_TYPE, APPLICATION_JSON_VALUE)
-				.header(AUTHORIZATION, BEARER_TOKEN_PREFIX + serviceuserToken)
-				.header(HEADER_PDL_NAV_CONSUMER_TOKEN, BEARER_TOKEN_PREFIX + serviceuserToken);
-	}
-
 	private RequestEntity.BodyBuilder baseRequest() {
 		final String serviceuserToken = stsRestConsumer.getStsToken().getAccess_token();
 		return RequestEntity.post(pdlUri)
-				.accept(APPLICATION_JSON)
-				.header(CONTENT_TYPE, APPLICATION_JSON_VALUE)
-				.header(AUTHORIZATION, BEARER_TOKEN_PREFIX + serviceuserToken)
+				.accept(MediaType.APPLICATION_JSON)
+				.header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+				.header(HttpHeaders.AUTHORIZATION, BEARER_TOKEN_PREFIX + serviceuserToken)
 				.header(HEADER_PDL_NAV_CONSUMER_TOKEN, BEARER_TOKEN_PREFIX + serviceuserToken);
 	}
 
 	String validateFolkeregisterIdent(String ident) {
-		if (isBlank(ident)) {
+		if(isBlank(ident)) {
 			throw new PersonIkkeFunnetException("Validering av ident feilet fordi verdien er null eller blank.");
 		}
 
