@@ -2,15 +2,16 @@ package no.nav.dokarkiv.journalpost.v1.util.oppdaterjournalpost;
 
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
 import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
 import no.nav.dokarkiv.core.repository.BrukerRepository;
 import no.nav.dokarkiv.journalpost.v1.api.OppdaterJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.util.TestUtils;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.MDC;
 
 import java.util.Date;
@@ -25,17 +26,20 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createPutOppdaterJou
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createPutOppdaterJournalpostRequest;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createPutOppdaterJournalpostRequestUtenDatoMottat;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createPutOppdaterJournalpostRequestWithDatoMottat;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createPutOppdaterJournalpostRequestWithIdTypeNull;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createPutOppdaterJournalpostRequestWithoutAvsenderMottaker;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createPutOppdaterJournalpostRequestWithoutAvsenderMottakerId;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@RunWith(MockitoJUnitRunner.class)
+
+@ExtendWith(MockitoExtension.class)
 public class JournalpostUpdaterTest {
-    @Mock
+	@Mock
 	private BrukerRepository brukerRepositoryMock;
 
 	private OppdaterJournalpostRequest oppdaterJournalpostRequest;
@@ -80,16 +84,16 @@ public class JournalpostUpdaterTest {
 
 		updater.updateFields(journalpost, oppdaterJournalpostRequest);
 
-		assertEquals(new Integer(1), journalpost.getAntallRetur());
+		assertEquals(1, journalpost.getAntallRetur());
 		updater.updateFields(journalpost, oppdaterJournalpostRequest);
-		assertEquals(new Integer(1), journalpost.getAntallRetur());
+		assertEquals(1, journalpost.getAntallRetur());
 
 		earliest.setTime(earliest.getTime() + 1);
 		oppdaterJournalpostRequest = TestUtils.createPutOppdaterJournalpostRequestWithDatoRetur(earliest);
 		updater.updateFields(journalpost, oppdaterJournalpostRequest);
-		assertEquals(new Integer(2), journalpost.getAntallRetur());
+		assertEquals(2, journalpost.getAntallRetur());
 		updater.updateFields(journalpost, oppdaterJournalpostRequest);
-		assertEquals(new Integer(2), journalpost.getAntallRetur());
+		assertEquals(2, journalpost.getAntallRetur());
 	}
 
 
@@ -155,5 +159,19 @@ public class JournalpostUpdaterTest {
 		assertEquals(journalpost.getAvsenderMottaker(), AVSENDER_NAVN);
 		assertEquals(journalpost.getAvsenderMottakerId(), AVSENDER_ID_PERSON);
 		assertEquals(journalpost.getLand(), AVSENDER_MOTTAKER_UTLAND);
+	}
+
+	@Test
+	public void shouldThrowExceptionWhenIdTypeIsNull() throws UgyldigAksjonsLoggException {
+		oppdaterJournalpostRequest = createPutOppdaterJournalpostRequestWithIdTypeNull();
+		journalpost = TestUtils.createJournalpost();
+
+		assertThat(journalpost.getBrukere(), hasSize(2));
+
+		InputValideringFeiletException e = assertThrows(InputValideringFeiletException.class, () ->
+				updater.updateFields(journalpost, oppdaterJournalpostRequest));
+
+		assertEquals("IdType kan ikke være null", e.getLocalizedMessage());
+
 	}
 }

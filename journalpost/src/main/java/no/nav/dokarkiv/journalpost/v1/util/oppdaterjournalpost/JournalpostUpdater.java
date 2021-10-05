@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static java.util.Objects.isNull;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_NAME;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_AVSENDER_MOTTAKER;
@@ -146,6 +147,9 @@ public class JournalpostUpdater {
 	private void updateAvsenderMottaker(Journalpost journalpost, OppdaterJournalpostRequest oppdaterJournalpostRequest, ChangeTracker endret) {
 		if (oppdaterJournalpostRequest.getAvsenderMottaker() != null) {
 			AvsenderMottaker ny = oppdaterJournalpostRequest.getAvsenderMottaker();
+			if (isNull(ny.getIdType())) {
+				throw new InputValideringFeiletException("IdType kan ikke være null");
+			}
 			if (ny.getId() != null) {
 				if (ny.getIdType() != null &&
 						oversettAvsenderMottakerIdType(ny.getIdType()) != journalpost.getAvsenderMottakerIdType()) {

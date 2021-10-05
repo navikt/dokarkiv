@@ -262,6 +262,20 @@ public class TestUtils {
 				.build();
 	}
 
+	public static OppdaterJournalpostRequest createPutOppdaterJournalpostRequestWithIdTypeNull() {
+		return OppdaterJournalpostRequest.builder()
+				.avsenderMottaker(createAvsenderMottakerPerson())
+				.bruker(createBrukerPersonWithIdTypeNull())
+				.sak(createSak())
+				.tema(TEMA_FOR)
+				.behandlingstema(BEHANDLINGSTEMA)
+				.tittel(DOKUMENT_TITTEL1)
+				.tilleggsopplysninger(createTilleggsopplysninger())
+				.dokumenter(createDokumentInfos())
+				.build();
+	}
+
+
 	public static OppdaterJournalpostRequest createPutOppdaterJournalpostRequestSak(Sak sak) {
 		return OppdaterJournalpostRequest.builder()
 				.avsenderMottaker(createAvsenderMottakerPerson())
@@ -417,10 +431,10 @@ public class TestUtils {
 				.build();
 	}
 
-	public static no.nav.dokarkiv.journalpost.v1.api.Bruker createBrukerOrganisasjon() {
+	public static no.nav.dokarkiv.journalpost.v1.api.Bruker createBrukerPersonWithIdTypeNull() {
 		return no.nav.dokarkiv.journalpost.v1.api.Bruker.builder()
-				.idType(BrukerIdType.ORGNR)
-				.id(BRUKER_ID_ORGANISASJON)
+				.idType(null)
+				.id(BRUKER_ID_PERSON)
 				.build();
 	}
 
