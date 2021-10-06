@@ -262,20 +262,6 @@ public class TestUtils {
 				.build();
 	}
 
-	public static OppdaterJournalpostRequest createPutOppdaterJournalpostRequestWithIdTypeNull() {
-		return OppdaterJournalpostRequest.builder()
-				.avsenderMottaker(createAvsenderMottakerPersonWithoutIdType())
-				.bruker(createBrukerPerson())
-				.sak(createSak())
-				.tema(TEMA_FOR)
-				.behandlingstema(BEHANDLINGSTEMA)
-				.tittel(DOKUMENT_TITTEL1)
-				.tilleggsopplysninger(createTilleggsopplysninger())
-				.dokumenter(createDokumentInfos())
-				.build();
-	}
-
-
 	public static OppdaterJournalpostRequest createPutOppdaterJournalpostRequestSak(Sak sak) {
 		return OppdaterJournalpostRequest.builder()
 				.avsenderMottaker(createAvsenderMottakerPerson())
@@ -359,7 +345,7 @@ public class TestUtils {
 
 	public static OppdaterJournalpostRequest createPutOppdaterJournalpostAvsenderMottakerKunLandRequest() {
 		return OppdaterJournalpostRequest.builder()
-				.avsenderMottaker(AvsenderMottaker.builder().idType(AvsenderMottakerIdType.FNR).land(AVSENDER_MOTTAKER_UTLAND).build())
+				.avsenderMottaker(AvsenderMottaker.builder().land(AVSENDER_MOTTAKER_UTLAND).build())
 				.bruker(createBrukerPerson())
 				.sak(createSak())
 				.tema(TEMA_FOR)
@@ -371,15 +357,6 @@ public class TestUtils {
 	}
 
 	public static AvsenderMottaker createAvsenderMottakerPerson() {
-		return AvsenderMottaker.builder()
-				.navn(AVSENDER_NAVN)
-				.id(AVSENDER_ID_PERSON)
-				.idType(AvsenderMottakerIdType.FNR)
-				.land(AVSENDER_MOTTAKER_LAND)
-				.build();
-	}
-
-	public static AvsenderMottaker createAvsenderMottakerPersonWithoutIdType() {
 		return AvsenderMottaker.builder()
 				.navn(AVSENDER_NAVN)
 				.id(AVSENDER_ID_PERSON)
@@ -437,6 +414,13 @@ public class TestUtils {
 		return no.nav.dokarkiv.journalpost.v1.api.Bruker.builder()
 				.idType(BrukerIdType.FNR)
 				.id(BRUKER_ID_PERSON)
+				.build();
+	}
+
+	public static no.nav.dokarkiv.journalpost.v1.api.Bruker createBrukerOrganisasjon() {
+		return no.nav.dokarkiv.journalpost.v1.api.Bruker.builder()
+				.idType(BrukerIdType.ORGNR)
+				.id(BRUKER_ID_ORGANISASJON)
 				.build();
 	}
 
