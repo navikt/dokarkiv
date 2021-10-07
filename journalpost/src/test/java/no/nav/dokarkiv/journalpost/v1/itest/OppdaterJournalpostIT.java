@@ -67,6 +67,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 public class OppdaterJournalpostIT extends AbstractJournalpostIT {
@@ -982,6 +983,29 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 		verify(exactly(0), postRequestedFor(urlEqualTo("/pdl")));
 	}
+
+	@Test
+	public void shouldDeleteAvsenderMottaker() {
+		clearSakRepository();
+		abacPermit();
+
+		JournalpostBuilder journalpostBuilder = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
+				.endretAvNavn("saksbehandlersen");
+		Journalpost journalpost = buildAndCommit(journalpostBuilder);
+		Long journalpostId = journalpost.getJournalpostId();
+
+		OppdaterJournalpostRequest request = OppdaterJournalpostRequest.builder()
+				.tema(TEMA_SYM)
+				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(FNR).build())
+				.avsenderMottaker(AvsenderMottaker.builder().id("").build())
+				.build();
+
+		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
+		restTemplate.exchange(URL_JOURNALPOST + journalpostId, HttpMethod.PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
+		Journalpost journalpostOppdatert = joarkRepository.findById(journalpostId).get();
+		assertEquals("", journalpostOppdatert.getAvsenderMottakerId());
+	}
+
 
 	private OppdaterJournalpostRequest createPutOppdaterJournalpostRequestWithDokumentInfoId(Long dokumentInfoId) {
 		return OppdaterJournalpostRequest.builder()
