@@ -109,7 +109,7 @@ public class ArkiverOgJournalfoerRestController {
         ferdigstillJournalpostValidator.validateRequest(journalpostId, request);
         RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
 
-        ferdigstillJournalpostService.ferdigstill(Long.parseLong(journalpostId), request.getJournalfoerendeEnhet());
+        ferdigstillJournalpostService.ferdigstill(Long.parseLong(journalpostId), request);
         log.info(MDC.get(MDC_REQUEST_ID) + " har ferdigstilt journalpost med journalpostId={}", journalpostId);
 
         return ResponseEntity.ok().body("Journalpost ferdigstilt");
@@ -141,7 +141,7 @@ public class ArkiverOgJournalfoerRestController {
     @PutMapping(value = "/{journalpostId}")
     @RestMetrics(value = "dok_request", extraTags = {"process_code", "oppdaterjournalpost"}, percentiles = {0.5, 0.95})
     public OppdaterJournalpostResponse oppdaterJournalpost(
-            @ApiParam(name = "journalpostId", value = "Angir JournalpostId som skal oppdatere f.eks. 467011764",
+            @ApiParam(name = "journalpostId", value = "Angir JournalpostId som skal oppdatere f,.eks. 467011764",
                     required = true, defaultValue = "467011764")
             @PathVariable String journalpostId,
             @RequestBody OppdaterJournalpostRequest request) {
@@ -160,7 +160,7 @@ public class ArkiverOgJournalfoerRestController {
     @PostMapping
     @SwaggerOpprettJournalpost
     @RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark202"}, percentiles = {0.5, 0.95}, histogram = true)
-    public ResponseEntity<OpprettJournalpostResponse> opprettJournalpost(
+    public ResponseEntity<OpprettJournalpostResponse> opprettJournalpost( //TODO create here
             @RequestBody OpprettJournalpostRequest request,
             @ApiParam(name = "forsoekFerdigstill", value = "Angir hvorvidt tjenesten skal forsøke å ferdigstille eller ikke. Dette vil å sette journalposten i en status som indikerer at journalføring er komplett, \n og låser journalposten for senere endringer. " +
                     "Journalposten blir uansett opprettet, men kun ferdigstilt dersom den oppfyller krav til struktur og metadata som beskrevet under ferdigstillJournalpost.\n " +
