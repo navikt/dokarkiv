@@ -16,7 +16,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -35,14 +35,31 @@ public class OpprettJournalpostServiceTest {
 				.kanal(MottaksKanalCode.NAV_NO.toString())
 				.journalposttype(JournalpostType.INNGAAENDE)
 				.build();
-		Journalpost journalpostEksisterende = Journalpost
-				.builder()
+		Journalpost journalpostEksisterende = Journalpost.builder()
 				.journalposttype(JournalpostTypeCode.I)
 				.kanalReferanseId(eksternReferanseId)
 				.build();
 		when(joarkRepository.findTopByKanalReferanseId(eksternReferanseId)).thenReturn(Optional.of(journalpostEksisterende));
 		OpprettJournalpostResult result = opprettJournalpostService.opprettJournalpost(request);
-		assertFalse(result.isAlreadyOpprettet());
+		assertTrue(result.isAlreadyOpprettet());
+		assertEquals(result.getJournalpost(), journalpostEksisterende);
+	}
+
+	@Test
+	public void opprettDuplikatJournalpostMedJournalposttypeUtgaaendeTest() {
+		String eksternReferanseId = "testerDuplikater";
+		OpprettJournalpostRequest request = OpprettJournalpostRequest.builder()
+				.eksternReferanseId(eksternReferanseId)
+				.kanal(MottaksKanalCode.NAV_NO.toString())
+				.journalposttype(JournalpostType.UTGAAENDE)
+				.build();
+		Journalpost journalpostEksisterende = Journalpost.builder()
+				.journalposttype(JournalpostTypeCode.U)
+				.kanalReferanseId(eksternReferanseId)
+				.build();
+		when(joarkRepository.findTopByKanalReferanseId(eksternReferanseId)).thenReturn(Optional.of(journalpostEksisterende));
+		OpprettJournalpostResult result = opprettJournalpostService.opprettJournalpost(request);
+		assertTrue(result.isAlreadyOpprettet());
 		assertEquals(result.getJournalpost(), journalpostEksisterende);
 	}
 }
