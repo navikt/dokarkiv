@@ -56,6 +56,8 @@ import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
 import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateId;
 import static no.nav.dokarkiv.journalpost.v1.validators.OpprettJournalpostRequestValidator.MASKINELL_JOURNALFOERENDE_ENHET;
+import static org.springframework.http.HttpStatus.CONFLICT;
+import static org.springframework.http.HttpStatus.CREATED;
 
 @Api(description = "Tjenester for å arkivere og journalføre i fagarkiv")
 @Slf4j
@@ -194,7 +196,7 @@ public class ArkiverOgJournalfoerRestController {
         );
 
         Long journalpostId = opprettJournalpostResult.getJournalpost().getJournalpostId();
-        HttpStatus httpStatus = opprettJournalpostResult.isAlreadyOpprettet() ? HttpStatus.CONFLICT : HttpStatus.CREATED;
+        HttpStatus httpStatus = opprettJournalpostResult.isAlreadyOpprettet() ? CONFLICT : CREATED;
 
         Optional<Pair<String, String>> ferdigstillResponse = Optional.empty();
         if (TRUE.equalsIgnoreCase(forsoekFerdigstill)) {
