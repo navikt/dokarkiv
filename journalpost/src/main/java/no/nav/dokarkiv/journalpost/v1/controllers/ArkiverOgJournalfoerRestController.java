@@ -160,7 +160,7 @@ public class ArkiverOgJournalfoerRestController {
     @PostMapping
     @SwaggerOpprettJournalpost
     @RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark202"}, percentiles = {0.5, 0.95}, histogram = true)
-    public ResponseEntity<OpprettJournalpostResponse> opprettJournalpost( //TODO create here
+    public ResponseEntity<OpprettJournalpostResponse> opprettJournalpost(
             @RequestBody OpprettJournalpostRequest request,
             @ApiParam(name = "forsoekFerdigstill", value = "Angir hvorvidt tjenesten skal forsøke å ferdigstille eller ikke. Dette vil å sette journalposten i en status som indikerer at journalføring er komplett, \n og låser journalposten for senere endringer. " +
                     "Journalposten blir uansett opprettet, men kun ferdigstilt dersom den oppfyller krav til struktur og metadata som beskrevet under ferdigstillJournalpost.\n " +

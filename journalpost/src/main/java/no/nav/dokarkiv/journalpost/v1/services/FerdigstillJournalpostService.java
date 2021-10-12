@@ -61,9 +61,9 @@ public class FerdigstillJournalpostService {
 	}
 
 	@Deprecated // skal bli fjernet når migrering fra ondemand til Joark er ferdig, gjelder sak MMA-5695.
-	public void ferdigstill(Long journalpostId, FerdigstillJournalpostRequest journalfoerendeEnhet) {
+	public void ferdigstill(Long journalpostId, FerdigstillJournalpostRequest ferdigstillJournalpostRequest) {
 		if (false) {
-			this.ferdigstill(journalpostId, journalfoerendeEnhet.getJournalfoerendeEnhet());
+			this.ferdigstill(journalpostId, ferdigstillJournalpostRequest.getJournalfoerendeEnhet());
 		}
 
 		Journalpost journalpost = joarkRepository.findById(journalpostId)
@@ -75,7 +75,7 @@ public class FerdigstillJournalpostService {
 
 		validerJournalpost(journalpost);
 		setJournalpostStatus(journalpost);
-		this.oppdatertJournalpost(journalpost, journalfoerendeEnhet);
+		this.oppdatertJournalpost(journalpost, ferdigstillJournalpostRequest);
 
 		joarkRepository.save(journalpost);
 
