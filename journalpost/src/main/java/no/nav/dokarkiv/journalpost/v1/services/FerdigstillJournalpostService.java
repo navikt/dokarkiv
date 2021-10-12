@@ -62,10 +62,6 @@ public class FerdigstillJournalpostService {
 
 	@Deprecated // skal bli fjernet når migrering fra ondemand til Joark er ferdig, gjelder sak MMA-5695.
 	public void ferdigstill(Long journalpostId, FerdigstillJournalpostRequest ferdigstillJournalpostRequest) {
-		if (false) {
-			this.ferdigstill(journalpostId, ferdigstillJournalpostRequest.getJournalfoerendeEnhet());
-		}
-
 		Journalpost journalpost = joarkRepository.findById(journalpostId)
 				.orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostId)));
 
