@@ -111,7 +111,7 @@ public class ArkiverOgJournalfoerRestController {
         ferdigstillJournalpostValidator.validateRequest(journalpostId, request);
         RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
 
-        ferdigstillJournalpostService.ferdigstill(Long.parseLong(journalpostId), request.getJournalfoerendeEnhet());
+        ferdigstillJournalpostService.ferdigstill(Long.parseLong(journalpostId), request);
         log.info(MDC.get(MDC_REQUEST_ID) + " har ferdigstilt journalpost med journalpostId={}", journalpostId);
 
         return ResponseEntity.ok().body("Journalpost ferdigstilt");
@@ -143,7 +143,7 @@ public class ArkiverOgJournalfoerRestController {
     @PutMapping(value = "/{journalpostId}")
     @RestMetrics(value = "dok_request", extraTags = {"process_code", "oppdaterjournalpost"}, percentiles = {0.5, 0.95})
     public OppdaterJournalpostResponse oppdaterJournalpost(
-            @ApiParam(name = "journalpostId", value = "Angir JournalpostId som skal oppdatere f.eks. 467011764",
+            @ApiParam(name = "journalpostId", value = "Angir JournalpostId som skal oppdatere f,.eks. 467011764",
                     required = true, defaultValue = "467011764")
             @PathVariable String journalpostId,
             @RequestBody OppdaterJournalpostRequest request) {
