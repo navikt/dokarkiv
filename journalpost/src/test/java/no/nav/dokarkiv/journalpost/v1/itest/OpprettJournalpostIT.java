@@ -1183,6 +1183,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		Journalpost journalpost = joarkRepository.findAll().iterator().next();
 		assertEquals("TESTFORNAVN TESTFAMILIEN", journalpost.getAvsenderMottaker());
 		assertEquals(AVSENDER_ID_PERSON, journalpost.getAvsenderMottakerId());
+		verify(exactly(1), postRequestedFor(urlEqualTo("/pdl")));
 	}
 
 	@Test
