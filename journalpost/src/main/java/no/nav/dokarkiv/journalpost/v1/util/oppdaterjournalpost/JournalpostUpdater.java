@@ -175,7 +175,7 @@ public class JournalpostUpdater {
 			if (isNotBlank(oppdaterJournalpostRequest.getAvsenderMottaker().getNavn())) {
 				oppdaterAvsenderMottaker(endret, journalpost, oppdaterJournalpostRequest.getAvsenderMottaker().getNavn());
 			} else if (oppdaterJournalpostRequest.getAvsenderMottaker() != null && oppdaterJournalpostRequest.getAvsenderMottaker().getId() != null && oppdaterJournalpostRequest.getAvsenderMottaker().getIdType() != null) {
-				if (oversettAvsenderMottakerIdType(oppdaterJournalpostRequest.getAvsenderMottaker().getIdType()).equals(FNR)) {
+				if (oversettAvsenderMottakerIdType(oppdaterJournalpostRequest.getAvsenderMottaker().getIdType()).equals(AvsenderMottakerIdTypeCode.FNR)) {
 					String navn = identConsumer.hentPersonIdent(oppdaterJournalpostRequest.getAvsenderMottaker().getId(), oppdaterJournalpostRequest.getTema());
 					oppdaterAvsenderMottaker(endret, journalpost, navn);
 
