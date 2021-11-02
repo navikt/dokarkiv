@@ -28,7 +28,7 @@
   ],
   "DOKARKIV_DS": "/oracle/data/dev/creds/joark_q2-user",
   "SRVDOKARKIV": "/serviceuser/data/dev/srvdokarkiv",
-  "DOKARKIV_VAULT": "/kv/preprod/fss/dokarkiv/q2",
+  "DOKARKIV_VAULT": "/kv/preprod/fss/dokarkiv/teamdokumenthandtering",
   "SRV_LINUX": "/serviceuser/data/dev/srvssolinux",
   "APPDYNAMICS": "/apikey/appdynamics/dev",
   "APPD_NAME": "dokarkiv_q2",

@@ -27,7 +27,7 @@
   ],
   "DOKARKIV_DS": "/oracle/data/prod/creds/joark-dokarkiv",
   "SRVDOKARKIV": "/serviceuser/data/prod/srvdokarkiv",
-  "DOKARKIV_VAULT": "/kv/prod/fss/dokarkiv/default",
+  "DOKARKIV_VAULT": "/kv/prod/fss/dokarkiv/teamdokumenthandtering",
   "SRV_LINUX": "/serviceuser/data/prod/srvssolinux",
   "APPDYNAMICS": "/apikey/appdynamics/prod",
   "APPD_NAME": "dokarkiv",
