@@ -1,5 +1,5 @@
 {
-  "NAMESPACE": "teamdokumenthandtering",
+  "APP_NAME": "dokarkiv",
   "MIN_REPLICAS": 1,
   "MAX_REPLICAS": 2,
   "NO_NAV_SECURITY_JWT_ISSUER_AZUREV2_DISCOVERYURL": "https://login.microsoftonline.com/966ac572-f5b7-4bbe-aa88-c76419c0f851/v2.0/.well-known/openid-configuration",
