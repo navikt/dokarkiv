@@ -22,7 +22,8 @@
   "DOKARKIV_HENTDOKUMENT_BASEURL": "https://dokarkiv-t0.nais.preprod.local/hentdokument",
   "INGRESSES": [
     "https://dokarkiv-t0.nais.preprod.local",
-    "https://dokarkiv-t0.dev.adeo.no"
+    "https://dokarkiv-t0.dev.adeo.no",
+    "https://dokarkiv-t0.dev.intern.nav.no"
   ],
   "DOKARKIV_DS": "/oracle/data/dev/creds/joark_t0-user",
   "SRVDOKARKIV": "/serviceuser/data/test/srvdokarkiv",
