@@ -1,5 +1,5 @@
 {
-  "NAMESPACE": "t2",
+  "APP_NAME": "dokarkiv-t2",
   "MIN_REPLICAS": 1,
   "MAX_REPLICAS": 2,
   "NO_NAV_SECURITY_JWT_ISSUER_AZUREV2_DISCOVERYURL": "https://login.microsoftonline.com/966ac572-f5b7-4bbe-aa88-c76419c0f851/v2.0/.well-known/openid-configuration",
@@ -20,10 +20,14 @@
   "ABAC_ARKIV_V2_URL": "https://abac-arkiv-v2.dev.intern.nav.no/application/asm-pdp/authorize",
   "JOARK_HENTDOKUMENT_BASEURL": "https://wasapp-t2.adeo.no/joarkweb/HentDokument",
   "DOKARKIV_HENTDOKUMENT_BASEURL": "https://dokarkiv-t2.nais.preprod.local/hentdokument",
-  "INGRESSES": ["https://dokarkiv-t2.nais.preprod.local", "https://dokarkiv-t2.dev.adeo.no"],
+  "INGRESSES": [
+    "https://dokarkiv-t2.nais.preprod.local",
+    "https://dokarkiv-t2.dev.adeo.no",
+    "https://dokarkiv-t2.dev.intern.nav.no"
+  ],
   "DOKARKIV_DS": "/oracle/data/dev/creds/joark_t2-user",
   "SRVDOKARKIV": "/serviceuser/data/test/srvdokarkiv",
-  "DOKARKIV_VAULT": "/kv/preprod/fss/dokarkiv/t2",
+  "DOKARKIV_VAULT": "/kv/preprod/fss/dokarkiv-t2/teamdokumenthandtering",
   "SRV_LINUX": "/serviceuser/data/test/srvssolinux",
   "APPDYNAMICS": "/apikey/appdynamics/dev",
   "APPD_NAME": "dokarkiv_t2",

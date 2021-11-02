@@ -1,5 +1,5 @@
 {
-  "NAMESPACE": "q4",
+  "APP_NAME": "dokarkiv-q4",
   "MIN_REPLICAS": 1,
   "MAX_REPLICAS": 2,
   "NO_NAV_SECURITY_JWT_ISSUER_AZUREV2_DISCOVERYURL": "https://login.microsoftonline.com/966ac572-f5b7-4bbe-aa88-c76419c0f851/v2.0/.well-known/openid-configuration",
@@ -27,7 +27,7 @@
   ],
   "DOKARKIV_DS": "/oracle/data/dev/creds/joark_q4-user",
   "SRVDOKARKIV": "/serviceuser/data/dev/srvdokarkiv",
-  "DOKARKIV_VAULT": "/kv/preprod/fss/dokarkiv/q4",
+  "DOKARKIV_VAULT": "/kv/preprod/fss/dokarkiv-q4/teamdokumenthandtering",
   "SRV_LINUX": "/serviceuser/data/dev/srvssolinux",
   "APPDYNAMICS": "/apikey/appdynamics/dev",
   "APPD_NAME": "dokarkiv_q4",
