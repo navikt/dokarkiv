@@ -101,7 +101,10 @@ public class PdlIdentConsumer implements IdentConsumer {
 			final PdlResponse pdlResponse = requireNonNull(restTemplate.exchange(requestEntity, PdlResponse.class).getBody());
 
 			if (pdlResponse.getErrors() == null || pdlResponse.getErrors().isEmpty()) {
-				return pdlResponse.getData().getHentIdenter().getIdenter().get(0).getIdent();
+				if(pdlResponse.getData().getHentIdenter().getIdenter().size() > 0)
+					return pdlResponse.getData().getHentIdenter().getIdenter().get(0).getIdent();
+				else
+					throw new PersonIngenIdentFunnetException("Ingen ident ble funnet for personen i pdl.");
 			} else {
 				if (PERSON_IKKE_FUNNET_CODE.equals(pdlResponse.getErrors().get(0).getExtensions().getCode())) {
 					throw new PersonIkkeFunnetException("Fant ikke folkeregisterident for person i pdl.");
