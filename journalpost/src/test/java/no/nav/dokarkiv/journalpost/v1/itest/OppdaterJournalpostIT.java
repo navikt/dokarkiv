@@ -23,6 +23,8 @@ import no.nav.dokarkiv.journalpost.v1.api.OppdaterJournalpostResponse;
 import no.nav.dokarkiv.journalpost.v1.api.Sak;
 import no.nav.dokarkiv.journalpost.v1.api.Sakstype;
 import no.nav.dokarkiv.journalpost.v1.api.Tilleggsopplysning;
+import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostRequest;
+import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostResponse;
 import org.apache.commons.collections15.IteratorUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,6 +33,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.transaction.TestTransaction;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -51,7 +54,10 @@ import static no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem.AO01;
 import static no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem.OMSORGSPENGER;
 import static no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem.PP01;
 import static no.nav.dokarkiv.journalpost.v1.api.Sakstype.FAGSAK;
+import static no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem.HJELPEMIDLER;
+import static no.nav.dokarkiv.journalpost.v1.api.JournalpostType.UTGAAENDE;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.AKTOER_ID;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.AVSENDER_ID_PERSON;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.BRUKER_ID_ORGANISASJON;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.BRUKER_ID_PERSON;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FAGSAK_ID;
@@ -63,11 +69,13 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_TIL;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_UFO;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createFagsak;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createGenerellSak;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createRequest;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.springframework.http.HttpMethod.PUT;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
@@ -937,9 +945,9 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 				.tema(TEMA_SYM)
 				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(FNR).build())
 				.sak(Sak.builder()
-						.sakstype(FAGSAK)
+						.sakstype(Sakstype.FAGSAK)
 						.fagsakId(FAGSAK_ID)
-						.fagsaksystem(OMSORGSPENGER)
+						.fagsaksystem(HJELPEMIDLER)
 						.build())
 				.build();
 
@@ -963,11 +971,11 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 		OppdaterJournalpostRequest request = OppdaterJournalpostRequest.builder()
 				.tema(TEMA_SYM)
-				.bruker(Bruker.builder().idType(AKTOERID).id(AKTOER_ID).build())
+				.bruker(Bruker.builder().idType(BrukerIdType.AKTOERID).id(AKTOER_ID).build())
 				.sak(Sak.builder()
-						.sakstype(FAGSAK)
+						.sakstype(Sakstype.FAGSAK)
 						.fagsakId(FAGSAK_ID)
-						.fagsaksystem(OMSORGSPENGER)
+						.fagsaksystem(HJELPEMIDLER)
 						.build())
 				.build();
 
@@ -1012,7 +1020,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 				.tema(TEMA_SYM)
 				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(FNR).build())
 				.sak(Sak.builder()
-						.sakstype(FAGSAK)
+						.sakstype(Sakstype.FAGSAK)
 						.fagsakId(FAGSAK_ID)
 						.fagsaksystem(PP01)
 						.build())
@@ -1023,6 +1031,54 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 		verify(exactly(0), postRequestedFor(urlEqualTo("/pdl")));
 	}
+
+	@Test
+	public void shouldDeleteAvsenderMottaker() {
+		clearSakRepository();
+		abacPermit();
+
+		JournalpostBuilder journalpostBuilder = JournalpostTestDataProvider.buildJournalpost(I, M)
+				.endretAvNavn("saksbehandlersen");
+		Journalpost journalpost = buildAndCommit(journalpostBuilder);
+		Long journalpostId = journalpost.getJournalpostId();
+
+		OppdaterJournalpostRequest request = OppdaterJournalpostRequest.builder()
+				.tema(TEMA_SYM)
+				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(FNR).build())
+				.avsenderMottaker(AvsenderMottaker.builder().id("").build())
+				.build();
+
+		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
+		restTemplate.exchange(URL_JOURNALPOST + journalpostId, PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
+		Journalpost journalpostOppdatert = joarkRepository.findById(journalpostId).get();
+		assertEquals("", journalpostOppdatert.getAvsenderMottakerId());
+	}
+
+
+	@Test
+	public void shouldUsePdlNameForAvsenderMottakerNameNull() throws IOException {
+		clearSakRepository();
+		abacPermit();
+		restStsToken();
+		happyPersonIdentStub();
+		JournalpostBuilder journalpostBuilder = JournalpostTestDataProvider.buildJournalpost(I, M)
+				.endretAvNavn("saksbehandlersen");
+		Journalpost journalpost = buildAndCommit(journalpostBuilder);
+		Long journalpostId = journalpost.getJournalpostId();
+
+		OppdaterJournalpostRequest request = OppdaterJournalpostRequest.builder()
+				.tema(TEMA_SYM)
+				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(FNR).build())
+				.avsenderMottaker(AvsenderMottaker.builder().id("01234567891").idType(AvsenderMottakerIdType.FNR).build())
+				.build();
+
+		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
+		restTemplate.exchange(URL_JOURNALPOST + journalpostId, PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
+		Journalpost journalpostOppdatert = joarkRepository.findById(journalpostId).get();
+		assertEquals("TESTFORNAVN TESTFAMILIEN", journalpostOppdatert.getAvsenderMottaker());
+		verify(exactly(1), postRequestedFor(urlEqualTo("/pdl")));
+	}
+
 
 	private OppdaterJournalpostRequest createPutOppdaterJournalpostRequestWithDokumentInfoId(Long dokumentInfoId) {
 		return OppdaterJournalpostRequest.builder()

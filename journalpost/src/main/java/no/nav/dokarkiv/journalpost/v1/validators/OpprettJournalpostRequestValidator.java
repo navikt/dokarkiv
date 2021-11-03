@@ -59,7 +59,6 @@ public class OpprettJournalpostRequestValidator {
 			validateSak(request.getSak(), request.getBruker(), request.getTema());
 		}
 		if (isNotBlank(request.getJournalfoerendeEnhet())) {
-			validatejournalfoerendeEnhet(request.getJournalfoerendeEnhet());
 			validateJournalpost(journalpostFerdigstilt, request.getJournalfoerendeEnhet());
 		}
 		if (!request.getDokumenter().isEmpty()) {
@@ -67,6 +66,7 @@ public class OpprettJournalpostRequestValidator {
 		} else {
 			throw new InputValideringFeiletException("Kan ikke opprette journalpost uten dokumenter.");
 		}
+		validatejournalfoerendeEnhet(request.getJournalfoerendeEnhet());
 	}
 
 	private void validateAvsenderMottaker(AvsenderMottaker avsenderMottaker) {
@@ -123,7 +123,7 @@ public class OpprettJournalpostRequestValidator {
 	}
 
 	private void validatejournalfoerendeEnhet(String journalfoerendeEnhet) {
-		if (journalfoerendeEnhet != null && JOURNALFOERENDE_ENHET_PATTERN.matcher(journalfoerendeEnhet).matches()) {
+		if (journalfoerendeEnhet != null && !JOURNALFOERENDE_ENHET_PATTERN.matcher(journalfoerendeEnhet).matches()) {
 			throw new InputValideringFeiletException(format("Journalpost.journalfoerendeEnhet må være null eller fire siffer. journalfoerendeEnhet=%s", journalfoerendeEnhet));
 		}
 	}

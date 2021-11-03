@@ -1,5 +1,7 @@
 package no.nav.dokarkiv.core.repository;
 
+import lombok.extern.slf4j.Slf4j;
+import no.nav.dokarkiv.core.properties.DokarkivProperties;
 import oracle.net.ns.SQLnetDef;
 import oracle.ucp.jdbc.PoolDataSource;
 import oracle.ucp.jdbc.PoolDataSourceFactory;
@@ -21,6 +23,7 @@ import java.util.Properties;
 /**
  * @author Joakim Bjørnstad, Jbit AS
  */
+@Slf4j
 @EntityScan(basePackages = {
 		"no.nav.dokarkiv.core.domain.entities",
 		"no.nav.dokarkiv.core.domain.codes"
@@ -42,7 +45,8 @@ import java.util.Properties;
 public class RepositoryConfig {
 	@Bean
 	@Primary
-	DataSource dataSource(final DataSourceProperties dataSourceProperties) throws SQLException {
+	DataSource dataSource(final DataSourceProperties dataSourceProperties,
+						  final DokarkivProperties dokarkivProperties) throws SQLException {
 		PoolDataSource poolDataSource = PoolDataSourceFactory.getPoolDataSource();
 		poolDataSource.setURL(dataSourceProperties.getUrl());
 		poolDataSource.setUser(dataSourceProperties.getUsername());
@@ -53,12 +57,14 @@ public class RepositoryConfig {
 		Properties connProperties = new Properties();
 		connProperties.setProperty(SQLnetDef.TCP_CONNTIMEOUT_STR, "3000");
 		connProperties.setProperty("oracle.jdbc.thinForceDNSLoadBalancing", "true");
-		// Optimizing UCP behaviour https://docs.oracle.com/database/121/JJUCP/optimize.htm#JJUCP8143
-		poolDataSource.setInitialPoolSize(5);
-		poolDataSource.setMinPoolSize(2);
-		poolDataSource.setMaxPoolSize(20);
+		// Statisk poolsize. Se DokarkivProperties.java
+		int poolsize = dokarkivProperties.getDatabase().getPoolsize();
+		log.info("Setter opp Oracle UCP med statisk poolsize={}", poolsize);
+		poolDataSource.setInitialPoolSize(poolsize);
+		poolDataSource.setMinPoolSize(poolsize);
+		poolDataSource.setMaxPoolSize(poolsize);
 		poolDataSource.setMaxConnectionReuseTime(300); // 5min
-		poolDataSource.setMaxConnectionReuseCount(100);
+		poolDataSource.setMaxConnectionReuseCount(1000);
 		poolDataSource.setConnectionProperties(connProperties);
 		return poolDataSource;
 	}

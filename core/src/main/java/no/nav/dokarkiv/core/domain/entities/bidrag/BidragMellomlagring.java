@@ -53,6 +53,9 @@ public class BidragMellomlagring extends AbstractPersistentVersionedDomainObject
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "dato_mottatt", nullable = false)
 	private Date mottattDato;
+
+	@Column(name = "ekstern_referanse_id")
+	private String eksternReferanseId;
 	
 	@Enumerated(EnumType.STRING)
 	@Column(name = "status", nullable = false)
@@ -154,6 +157,14 @@ public class BidragMellomlagring extends AbstractPersistentVersionedDomainObject
 		} else {
 			this.mottattDato = null;
 		}
+	}
+
+	public void setEksternReferanseId(String eksternReferanseId) {
+		this.eksternReferanseId = eksternReferanseId;
+	}
+
+	public String getEksternReferanseId() {
+		return eksternReferanseId;
 	}
 
 	/**

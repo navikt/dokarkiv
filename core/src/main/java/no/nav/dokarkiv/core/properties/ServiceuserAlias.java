@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.core.fasit;
+package no.nav.dokarkiv.core.properties;
 
 import lombok.Getter;
 import lombok.Setter;

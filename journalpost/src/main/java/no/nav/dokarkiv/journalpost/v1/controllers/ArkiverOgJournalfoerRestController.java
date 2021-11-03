@@ -16,6 +16,7 @@ import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.DokumentInfoId;
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostResponse;
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostResult;
+import no.nav.dokarkiv.journalpost.v1.bidrag.BidragService;
 import no.nav.dokarkiv.journalpost.v1.services.FerdigstillJournalpostService;
 import no.nav.dokarkiv.journalpost.v1.services.FjernVedleggTilknyttetJournalpost;
 import no.nav.dokarkiv.journalpost.v1.services.OppdaterDistribusjonsinfoService;
@@ -55,7 +56,8 @@ import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
 import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateId;
 import static no.nav.dokarkiv.journalpost.v1.validators.OpprettJournalpostRequestValidator.MASKINELL_JOURNALFOERENDE_ENHET;
-import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.http.HttpStatus.CONFLICT;
+import static org.springframework.http.HttpStatus.CREATED;
 
 @Api(description = "Tjenester for å arkivere og journalføre i fagarkiv")
 @Slf4j
@@ -67,6 +69,7 @@ public class ArkiverOgJournalfoerRestController {
     private static final String TRUE = "true";
     private static final String MIDLERTIDIG = "MIDLERTIDIG";
     private static final String STATUS_ENDELIG = "ENDELIG";
+    private static final String BIDRAG_NAV_CONSUMER_ID = "dialogstyring-bidrag";
     private final FerdigstillJournalpostService ferdigstillJournalpostService;
     private final OppdaterJournalpostService oppdaterJournalpostService;
     private final OppdaterDistribusjonsinfoService oppdaterDistribusjonsinfoService;
@@ -75,13 +78,15 @@ public class ArkiverOgJournalfoerRestController {
     private final FerdigstillJournalpostValidator ferdigstillJournalpostValidator;
     private final OppdaterDistribusjonsinfoValidator oppdaterDistribusjonsinfoValidator;
     private final FjernVedleggTilknyttetJournalpost fjernVedleggTilknyttJournalpost;
+    private final BidragService bidragService;
 
     @Inject
     public ArkiverOgJournalfoerRestController(final FerdigstillJournalpostService ferdigstillJournalpostService,
                                               final OppdaterJournalpostService oppdaterJournalpostService,
                                               final OpprettJournalpostService opprettJournalpostService,
                                               final OppdaterDistribusjonsinfoService oppdaterDistribusjonsinfoService,
-                                              final FjernVedleggTilknyttetJournalpost fjernVedleggTilknyttJournalpost) {
+                                              final FjernVedleggTilknyttetJournalpost fjernVedleggTilknyttJournalpost,
+                                              final BidragService bidragService) {
         this.ferdigstillJournalpostService = ferdigstillJournalpostService;
         this.oppdaterJournalpostService = oppdaterJournalpostService;
         this.opprettJournalpostService = opprettJournalpostService;
@@ -90,6 +95,7 @@ public class ArkiverOgJournalfoerRestController {
         this.opprettJournalpostRequestValidator = new OpprettJournalpostRequestValidator();
         this.ferdigstillJournalpostValidator = new FerdigstillJournalpostValidator();
         this.oppdaterDistribusjonsinfoValidator = new OppdaterDistribusjonsinfoValidator();
+        this.bidragService = bidragService;
     }
 
     @Transactional
@@ -105,7 +111,7 @@ public class ArkiverOgJournalfoerRestController {
         ferdigstillJournalpostValidator.validateRequest(journalpostId, request);
         RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
 
-        ferdigstillJournalpostService.ferdigstill(Long.parseLong(journalpostId), request.getJournalfoerendeEnhet());
+        ferdigstillJournalpostService.ferdigstill(Long.parseLong(journalpostId), request);
         log.info(MDC.get(MDC_REQUEST_ID) + " har ferdigstilt journalpost med journalpostId={}", journalpostId);
 
         return ResponseEntity.ok().body("Journalpost ferdigstilt");
@@ -137,7 +143,7 @@ public class ArkiverOgJournalfoerRestController {
     @PutMapping(value = "/{journalpostId}")
     @RestMetrics(value = "dok_request", extraTags = {"process_code", "oppdaterjournalpost"}, percentiles = {0.5, 0.95})
     public OppdaterJournalpostResponse oppdaterJournalpost(
-            @ApiParam(name = "journalpostId", value = "Angir JournalpostId som skal oppdatere f.eks. 467011764",
+            @ApiParam(name = "journalpostId", value = "Angir JournalpostId som skal oppdatere f,.eks. 467011764",
                     required = true, defaultValue = "467011764")
             @PathVariable String journalpostId,
             @RequestBody OppdaterJournalpostRequest request) {
@@ -164,9 +170,13 @@ public class ArkiverOgJournalfoerRestController {
                     "Sjekk \"journalpostferdigstilt\" på responsen for å være sikker på at journalposten faktisk ble ferdigstilt.", allowableValues = "true, false", required = false)
             @RequestParam(required = false) String forsoekFerdigstill) {
         MDC.put(MDC_REQUEST_ID, "rjoark202");
-        log.info(MDC.get(MDC_REQUEST_ID) + " har mottatt kall for opprettelse av ny journalpost");
         RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDC_CONSUMER_ID));
 
+        if (BIDRAG_NAV_CONSUMER_ID.equals(MDC.get(MDC_CONSUMER_ID))) {
+            return bidragService.opprettBidrag(request);
+        }
+
+        log.info(MDC.get(MDC_REQUEST_ID) + " har mottatt kall for opprettelse av ny journalpost");
         try {
             opprettJournalpostRequestValidator.validateRequest(request, forsoekFerdigstill);
         } catch (InputValideringFeiletException e) {
@@ -186,7 +196,7 @@ public class ArkiverOgJournalfoerRestController {
         );
 
         Long journalpostId = opprettJournalpostResult.getJournalpost().getJournalpostId();
-        HttpStatus httpStatus = opprettJournalpostResult.isAlreadyOpprettet() ? HttpStatus.CREATED : HttpStatus.CONFLICT;
+        HttpStatus httpStatus = opprettJournalpostResult.isAlreadyOpprettet() ? CONFLICT : CREATED;
 
         Optional<Pair<String, String>> ferdigstillResponse = Optional.empty();
         if (TRUE.equalsIgnoreCase(forsoekFerdigstill)) {

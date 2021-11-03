@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.5.2</version>
+		<version>2.5.4</version>
 	</parent>
 	<groupId>no.nav.dokarkiv</groupId>
 	<artifactId>dokarkiv</artifactId>
@@ -59,8 +59,7 @@
 		<swagger-ui.version>3.9.2</swagger-ui.version>
 		<argLine>-Xmx2048m</argLine>
 		<verapdf.version>1.18.2</verapdf.version>
-		<bcprov-jdk15on.version>1.68</bcprov-jdk15on.version>
-		<lombok.version>1.18.20</lombok.version>
+		<bcprov-jdk15on.version>1.69</bcprov-jdk15on.version>
 		<!-- Tjenestegrensesnitt -->
 		<behandlejournal-v2-tjenestespesifikasjon.version>1.2019.09.25-00.21-49b69f0625e0</behandlejournal-v2-tjenestespesifikasjon.version>
 		<behandlejournal-v3-tjenestespesifikasjon.version>1.2019.09.25-00.21-49b69f0625e0</behandlejournal-v3-tjenestespesifikasjon.version>
@@ -368,12 +367,6 @@
 				<version>${swagger.version}</version>
 			</dependency>
 			<!-- provided og test -->
-			<dependency>
-				<groupId>org.projectlombok</groupId>
-				<artifactId>lombok</artifactId>
-				<version>${lombok.version}</version>
-				<scope>provided</scope>
-			</dependency>
 			<dependency>
 				<groupId>org.springframework.cloud</groupId>
 				<artifactId>spring-cloud-contract-wiremock</artifactId>

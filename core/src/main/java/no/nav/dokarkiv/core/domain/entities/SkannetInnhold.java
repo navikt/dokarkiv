@@ -24,10 +24,7 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "T_SKANNET_INNHOLD")
 public class SkannetInnhold extends AbstractPersistentVersionedDomainObjectWithKilde {
-
-	/**
-	 * ID used for serialization.
-	 */
+	public static final int VEDLEGG_INNHOLD_LENGTH = 550;
 	private static final long serialVersionUID = 4377297136994040373L;
 
 	@Id
@@ -41,7 +38,7 @@ public class SkannetInnhold extends AbstractPersistentVersionedDomainObjectWithK
 	@Column(name = "vedlegg_nr")
 	private Integer vedleggNr;
 
-	@Column(name = "vedlegg_innhold")
+	@Column(name = "vedlegg_innhold", length = VEDLEGG_INNHOLD_LENGTH)
 	private String vedleggInnhold;
 
 	@Column(name = "dokumenttypeid")

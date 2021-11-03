@@ -1,11 +1,13 @@
 {
-  "NAMESPACE": "t4",
+  "APP_NAME": "dokarkiv-t4",
+  "MIN_REPLICAS": 1,
+  "MAX_REPLICAS": 2,
   "NO_NAV_SECURITY_JWT_ISSUER_AZUREV2_DISCOVERYURL": "https://login.microsoftonline.com/966ac572-f5b7-4bbe-aa88-c76419c0f851/v2.0/.well-known/openid-configuration",
   "NO_NAV_SECURITY_JWT_ISSUER_OPENAM_DISCOVERYURL": "https://isso-t.adeo.no:443/isso/oauth2/.well-known/openid-configuration",
   "NO_NAV_SECURITY_JWT_ISSUER_RESTSTS_DISCOVERYURL": "https://security-token-service-t4.nais.preprod.local/rest/v1/sts/.well-known/openid-configuration",
   "NO_NAV_SECURITY_JWT_ISSUER_AZUREV2_ACCEPTED_AUDIENCE": "972814f3-8bdf-44f8-a191-c2ed00020b54",
-  "NO_NAV_SECURITY_JWT_ISSUER_OPENAM_ACCEPTED_AUDIENCE": "veilarblogin-t4,arbeid-og-inntekt-t4,fpfordel-t4,fptilbake-t4,gosys-dokument-auth-proxy-t4,gosys-nais-t4,joarkadmin-t4,k9-fordel-t4,k9-tilbake-t4,arbeid-og-inntekt-t4-localhost",
-  "NO_NAV_SECURITY_JWT_ISSUER_RESTSTS_ACCEPTED_AUDIENCE": "srvdolly,srvsyfomock,srvtestnorge-inntekt,srv-digihot,srv-klage-perm-ref,srvPermJournalforing,srvdagpenger-journ,srvdokumentfordeling,srveessi-pensjon-j,srveux-app,srvfamilie-ks-opps,srvgosys,srvgosys-dokument-,srvimvarsel,srvjfr-automatisk,srvjfr-manuell-opp,srvjoarkadmin,srvk9formidling,srvklage-dittnav,srvmelosys,srvpale2sak,srvpensjon-dokdist,srvpermref-journalf,srvpleiepenger-joark,srvprosess-tiltaks,srvskanmotovrig,srvskanmotreferanse,srvsporenstreks,srvspregosys,srvsyfooppfolgings,srvsyfosmpapirmottak,srvsyfosmsak,srvtilbakemeldings,srvtiltak-tilsagns,srvarbeid-og-inntekt,srvarena-dokgen,srvsoknadarkiverer,srvsupstonad,srvregpapirsm,srvBrevBestilling,srvpadm2",
+  "NO_NAV_SECURITY_JWT_ISSUER_OPENAM_ACCEPTED_AUDIENCE": "veilarblogin-t4,arbeid-og-inntekt-t4,fpfordel-t4,fptilbake-t4,gosys-dokument-auth-proxy-t4,gosys-nais-t4,joarkadmin-t4,k9-fordel-t4,k9-tilbake-t4,arbeid-og-inntekt-t4-localhost,pensjon-psak",
+  "NO_NAV_SECURITY_JWT_ISSUER_RESTSTS_ACCEPTED_AUDIENCE": "srvdolly,srvsyfomock,srvtestnorge-inntekt,srv-digihot,srv-klage-perm-ref,srvPermJournalforing,srvdagpenger-journ,srvdokumentfordeling,srveessi-pensjon-j,srveux-app,srvfamilie-ks-opps,srvgosys,srvgosys-dokument-,srvimvarsel,srvjfr-automatisk,srvjfr-manuell-opp,srvjoarkadmin,srvk9formidling,srvklage-dittnav,srvmelosys,srvpale2sak,srvpensjon-dokdist,srvpermref-journalf,srvpleiepenger-joark,srvprosess-tiltaks,srvskanmotovrig,srvskanmotreferanse,srvsporenstreks,srvspregosys,srvsyfooppfolgings,srvsyfosmpapirmottak,srvsyfosmsak,srvtilbakemeldings,srvtiltak-tilsagns,srvarbeid-og-inntekt,srvarena-dokgen,srvsoknadarkiverer,srvsupstonad,srvregpapirsm,srvBrevBestilling,srvpadm2,srvpensjon",
   "SPRING_DATASOURCE_URL": "jdbc:oracle:thin:@d26dbfl020.test.local:1521/joark_t4",
   "SPRING_LDAP_URLS": "ldaps://ldapgw.test.local",
   "LDAP_NAVUSER_BASEDN": "ou=NAV,ou=BusinessUnits,dc=test,dc=local",
@@ -18,11 +20,16 @@
   "ABAC_ARKIV_V2_URL": "https://abac-arkiv-v2.dev.intern.nav.no/application/asm-pdp/authorize",
   "JOARK_HENTDOKUMENT_BASEURL": "https://wasapp-t4.adeo.no/joarkweb/HentDokument",
   "DOKARKIV_HENTDOKUMENT_BASEURL": "https://dokarkiv-t4.nais.preprod.local/hentdokument",
-  "INGRESSES": ["https://dokarkiv-t4.nais.preprod.local", "https://dokarkiv-t4.dev.adeo.no"],
+  "INGRESSES": [
+    "https://dokarkiv-t4.nais.preprod.local",
+    "https://dokarkiv-t4.dev.adeo.no",
+    "https://dokarkiv-t4.dev.intern.nav.no"
+  ],
   "DOKARKIV_DS": "/oracle/data/dev/creds/joark_t4-user",
   "SRVDOKARKIV": "/serviceuser/data/test/srvdokarkiv",
-  "DOKARKIV_VAULT": "/kv/preprod/fss/dokarkiv/t4",
+  "DOKARKIV_VAULT": "/kv/preprod/fss/dokarkiv-t4/teamdokumenthandtering",
   "SRV_LINUX": "/serviceuser/data/test/srvssolinux",
   "APPDYNAMICS": "/apikey/appdynamics/dev",
-  "APPD_NAME": "dokarkiv_t4"
+  "APPD_NAME": "dokarkiv_t4",
+  "DOKARKIV_DATABASE_POOLSIZE": "20"
 }

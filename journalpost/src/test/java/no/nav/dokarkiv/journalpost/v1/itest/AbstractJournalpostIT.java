@@ -9,6 +9,7 @@ import no.nav.security.token.support.test.spring.TokenGeneratorConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.transaction.TestTransaction;
 import wiremock.com.google.common.io.Resources;
@@ -59,6 +60,13 @@ public abstract class AbstractJournalpostIT extends AbstractRestIT {
 				.willReturn(aResponse().withStatus(OK.value())
 						.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
 						.withBodyFile("reststs/reststs-happy.json")));
+	}
+
+	void happyPersonIdentStub() {
+		stubFor(post(urlEqualTo("/pdl"))
+				.willReturn(aResponse().withStatus(OK.value())
+						.withHeader(org.apache.http.HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+						.withBodyFile("pdl/pdl-hentperson-happy.json")));
 	}
 
 	void happyFnrIdentStub() {

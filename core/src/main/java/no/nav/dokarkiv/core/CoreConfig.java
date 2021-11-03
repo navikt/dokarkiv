@@ -1,7 +1,8 @@
 package no.nav.dokarkiv.core;
 
 import io.micrometer.core.instrument.MeterRegistry;
-import no.nav.dokarkiv.core.fasit.ServiceuserAlias;
+import no.nav.dokarkiv.core.properties.DokarkivProperties;
+import no.nav.dokarkiv.core.properties.ServiceuserAlias;
 import no.nav.dokarkiv.core.jaxws.ThreadLocalSubjectHandler;
 import no.nav.dokarkiv.core.metrics.DokTimedAspect;
 import no.nav.dokarkiv.core.repository.Flyway42AutoConfiguration;
@@ -24,7 +25,7 @@ import javax.annotation.PostConstruct;
 @ComponentScan(excludeFilters = {@ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = Flyway42AutoConfiguration.class)})
 @Configuration
 @EnableAutoConfiguration(exclude = {DataSourceAutoConfiguration.class, FlywayAutoConfiguration.class})
-@EnableConfigurationProperties(ServiceuserAlias.class)
+@EnableConfigurationProperties({ServiceuserAlias.class, DokarkivProperties.class})
 @EnableAspectJAutoProxy
 @EnableRetry
 public class CoreConfig {
