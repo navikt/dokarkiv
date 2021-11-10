@@ -41,6 +41,8 @@ import java.util.Date;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static no.nav.dokarkiv.core.domain.codes.BrukerTypeCode.ORGANISASJON;
+import static no.nav.dokarkiv.core.domain.codes.BrukerTypeCode.PERSON;
 import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.HOVEDDOKUMENT;
 import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.VEDLEGG;
 import static org.apache.commons.lang3.StringUtils.isBlank;
@@ -249,13 +251,13 @@ public class OpprettJournalpostApiRequestMapper {
 				String fnr = identConsumer.hentFolkeregisterIdent(request.getBruker().getId());
 				jp.addBruker(Bruker.builder()
 						.brukerId(fnr)
-						.brukerType(BrukerTypeCode.PERSON)
+						.brukerType(PERSON)
 						.build());
 			} else {
 				jp.addBruker(Bruker.builder()
 						.brukerId(request.getBruker().getId())
 						.brukerType(BrukerIdType.FNR.equals(request.getBruker()
-								.getIdType()) ? BrukerTypeCode.PERSON : BrukerTypeCode.ORGANISASJON)
+								.getIdType()) ? PERSON : ORGANISASJON)
 						.build());
 			}
 		}
