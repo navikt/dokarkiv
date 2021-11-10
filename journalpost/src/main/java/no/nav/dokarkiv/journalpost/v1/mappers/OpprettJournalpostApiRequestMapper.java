@@ -246,15 +246,11 @@ public class OpprettJournalpostApiRequestMapper {
 	private void addBruker(Journalpost jp, OpprettJournalpostRequest request) {
 		if (request.getBruker() != null) {
 			if (BrukerIdType.AKTOERID.equals(request.getBruker().getIdType())) {
-				try {
-					String fnr = identConsumer.hentFolkeregisterIdent(request.getBruker().getId());
-					jp.addBruker(Bruker.builder()
-							.brukerId(fnr)
-							.brukerType(BrukerTypeCode.PERSON)
-							.build());
-				} catch (PersonIkkeFunnetException e) {
-					// Fortsett uten å opprette bruker
-				}
+				String fnr = identConsumer.hentFolkeregisterIdent(request.getBruker().getId());
+				jp.addBruker(Bruker.builder()
+						.brukerId(fnr)
+						.brukerType(BrukerTypeCode.PERSON)
+						.build());
 			} else {
 				jp.addBruker(Bruker.builder()
 						.brukerId(request.getBruker().getId())

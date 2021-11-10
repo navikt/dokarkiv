@@ -3,6 +3,7 @@ package no.nav.dokarkiv.journalpost.v1.itest;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import no.nav.dokarkiv.core.NavHeaders;
 import no.nav.dokarkiv.core.consumer.RestConsumerExceptionResponse;
+import no.nav.dokarkiv.core.consumer.pdl.PersonIngenIdentFunnetException;
 import no.nav.dokarkiv.core.datautil.BrukerTestDataProvider;
 import no.nav.dokarkiv.core.datautil.JournalpostTestDataProvider;
 import no.nav.dokarkiv.core.domain.builder.JournalpostBuilder;
@@ -35,6 +36,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import javax.validation.constraints.AssertTrue;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
@@ -76,6 +78,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.springframework.http.HttpMethod.PUT;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
@@ -607,7 +610,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 	}
 
 	@Test
-	public void shouldThrowPersonIngenIdentFunnetExceptionWhenNoErrorsAndNoIdentsFound() {
+	public void shouldThrowPersonIngenIdentFunnetExceptionWhenNoErrorsAndNoIdentsFound() throws PersonIngenIdentFunnetException {
 		clearSakRepository();
 		abacPermit();
 		restStsToken();
@@ -631,14 +634,16 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
 
+
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_JOURNALPOST + journalpostId,
 				PUT,
 				requestHttpEntity,
 				String.class);
 
-		assertTrue(responseEntity.getBody().contains("Ingen ident ble funnet for personen i pdl."));
+		assertTrue(responseEntity.getBody().contains("Ingen identer ble funnet for personen i pdl."));
 		assertThat(responseEntity.getStatusCode(), is(NOT_FOUND));
+
 	}
 
 	@Test
