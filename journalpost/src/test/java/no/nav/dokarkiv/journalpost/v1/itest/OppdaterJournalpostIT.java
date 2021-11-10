@@ -610,7 +610,11 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 	}
 
 	@Test
+<<<<<<< HEAD
 	public void shouldThrowPersonIngenIdentFunnetExceptionWhenNoErrorsAndNoIdentsFound() throws PersonIngenIdentFunnetException {
+=======
+	public void shouldThrowPersonIngenIdentFunnetExceptionWhenNoErrorsAndNoIdentsFound() {
+>>>>>>> master
 		clearSakRepository();
 		abacPermit();
 		restStsToken();
@@ -634,7 +638,6 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
 
-
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_JOURNALPOST + journalpostId,
 				PUT,
@@ -643,7 +646,6 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 		assertTrue(responseEntity.getBody().contains("Ingen identer ble funnet for personen i pdl."));
 		assertThat(responseEntity.getStatusCode(), is(NOT_FOUND));
-
 	}
 
 	@Test
