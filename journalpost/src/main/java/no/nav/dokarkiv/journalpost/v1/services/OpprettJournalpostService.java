@@ -6,7 +6,6 @@ import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService;
 import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggTO;
 import no.nav.dokarkiv.core.consumer.pdl.IdentConsumer;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
-import no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentFil;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
@@ -34,7 +33,6 @@ import javax.inject.Inject;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -43,8 +41,6 @@ import static java.util.Collections.emptyList;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
 import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.OPPRETT;
-import static no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode.MIGRERING_L;
-import static no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode.MIGRERING_S;
 import static no.nav.dokarkiv.journalpost.v1.api.Sakstype.FAGSAK;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
@@ -54,8 +50,6 @@ public class OpprettJournalpostService {
 
 	public static final String UKJENT = "UKJENT";
 	private static final String APPLIKASJON_FS22 = "FS22";
-	private static final EnumSet<UtsendingsKanalCode> UTGAAENDE_UTSENDING_IDEMPOTENT_REFERANSE_ID =
-			EnumSet.of(MIGRERING_S, MIGRERING_L);
 
 	private final JoarkRepository joarkRepository;
 	private final DokumentFilRepository dokumentFilRepository;
@@ -91,7 +85,7 @@ public class OpprettJournalpostService {
 		if (existingJournalpost.isPresent()) {
 			final Journalpost journalpost = existingJournalpost.get();
 			log.warn("Journalpost med eksternReferanseId={} for kanal={} finnes fra før. Oppretter ikke ny journalpost.", request.getEksternReferanseId(), journalpost.getMottakskanal());
-			return new OpprettJournalpostResult(journalpost, false);
+			return new OpprettJournalpostResult(journalpost, true);
 		}
 		String sakId = hentSakId(request);
 
@@ -106,10 +100,9 @@ public class OpprettJournalpostService {
 		populerAksjonslogg(journalpost.getJournalpostId(), OPPRETT);
 		log.info(MDC.get(MDC_REQUEST_ID) + " har opprettet ny journalpost, journalpostId={} og status={}", journalpost.getJournalpostId(), journalpost.getJournalstatus());
 
-//		Skru av pdf validering
-//		opprettJournalpostPDFAUtils.safeValidateAndLogPDFA(journalpost);
+		opprettJournalpostPDFAUtils.safeValidateAndLogPDFA(journalpost);
 
-		return new OpprettJournalpostResult(journalpost, true);
+		return new OpprettJournalpostResult(journalpost, false);
 	}
 
 	private String hentSakId(OpprettJournalpostRequest request) {
@@ -191,17 +184,8 @@ public class OpprettJournalpostService {
 
 	// Bruker eksternReferanseId for å fikse idempodens for spesifikke kanaler
 	private Optional<Journalpost> findJournalpostWithIdempodentKanalAlreadyInDb(OpprettJournalpostRequest request) {
-		if (isNotBlank(request.getKanal())) {
-			if (request.getEksternReferanseId() != null) {
-				if (request.isInngaaende()) {
-					return joarkRepository.findTopByKanalReferanseId(request.getEksternReferanseId());
-				} else { // handtere UTGAAENDE og NOTAT
-					final UtsendingsKanalCode kanal = UtsendingsKanalCode.valueOf(request.getKanal());
-					if (UTGAAENDE_UTSENDING_IDEMPOTENT_REFERANSE_ID.contains(kanal)) {
-						return joarkRepository.findTopByKanalReferanseId(request.getEksternReferanseId());
-					}
-				}
-			}
+		if (isNotBlank(request.getKanal()) && request.getEksternReferanseId() != null) {
+			return joarkRepository.findTopByKanalReferanseId(request.getEksternReferanseId());
 		}
 		return Optional.empty();
 	}

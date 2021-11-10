@@ -1,6 +1,6 @@
 package no.nav.dokarkiv.core.consumer;
 
-import no.nav.dokarkiv.core.fasit.ServiceuserAlias;
+import no.nav.dokarkiv.core.properties.ServiceuserAlias;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;

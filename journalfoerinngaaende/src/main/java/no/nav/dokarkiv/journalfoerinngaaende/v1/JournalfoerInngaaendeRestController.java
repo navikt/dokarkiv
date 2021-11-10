@@ -18,6 +18,7 @@ import no.nav.dokarkiv.journalfoerinngaaende.v1.rjoark001i.GetInngaaendeJournalp
 import no.nav.dokarkiv.journalfoerinngaaende.v1.rjoark002i.UpdateInngaaendeJournalpostService;
 import no.nav.dokarkiv.journalfoerinngaaende.v1.rjoark003i.UpdateInngaaendeJournalpostDokumentService;
 import no.nav.dokarkiv.journalfoerinngaaende.v1.rjoark004i.LogiskVedleggService;
+import no.nav.dokarkiv.journalfoerinngaaende.v1.support.OppdaterLogiskVedleggValidator;
 import no.nav.dokarkiv.journalfoerinngaaende.v1.util.Utils;
 import no.nav.freg.abac.core.annotation.Abac;
 import no.nav.security.token.support.core.api.Protected;
@@ -58,18 +59,21 @@ public class JournalfoerInngaaendeRestController {
 	private final LogiskVedleggService logiskVedleggService;
 	private final AbacSecurityService abacSecurityService;
 	private final UpdateInngaaendeJournalpostDokumentService updateInngaaendeJournalpostDokumentService;
+	private final OppdaterLogiskVedleggValidator oppdaterLogiskVedleggValidator;
 
 	@Inject
 	public JournalfoerInngaaendeRestController(GetInngaaendeJournalpostService getInngaaendeJournalpostService,
 											   UpdateInngaaendeJournalpostService updateInngaaendeJournalpostService,
 											   LogiskVedleggService logiskVedleggService,
 											   AbacSecurityService abacSecurityService,
-											   UpdateInngaaendeJournalpostDokumentService updateInngaaendeJournalpostDokumentService) {
+											   UpdateInngaaendeJournalpostDokumentService updateInngaaendeJournalpostDokumentService,
+											   OppdaterLogiskVedleggValidator oppdaterLogiskVedleggValidator) {
 		this.getInngaaendeJournalpostService = getInngaaendeJournalpostService;
 		this.abacSecurityService = abacSecurityService;
 		this.updateInngaaendeJournalpostDokumentService = updateInngaaendeJournalpostDokumentService;
 		this.updateInngaaendeJournalpostService = updateInngaaendeJournalpostService;
 		this.logiskVedleggService = logiskVedleggService;
+		this.oppdaterLogiskVedleggValidator = oppdaterLogiskVedleggValidator;
 	}
 
 	@Transactional(readOnly = true)
@@ -146,7 +150,7 @@ public class JournalfoerInngaaendeRestController {
 	public String updateLogiskVedlegg(@PathVariable String journalpostId, @PathVariable String dokumentId, @PathVariable String logiskVedleggId, @RequestBody PutLogiskVedleggRequest request) {
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
 		log.info("rjoark004i har mottatt kall om å oppdatere logisk vedlegg med logiskVedleggId={} på journalpost med journalpostId={} og dokumentId={}", logiskVedleggId, journalpostId, dokumentId);
-		Utils.validateIds(journalpostId, dokumentId, logiskVedleggId);
+		oppdaterLogiskVedleggValidator.validate(journalpostId, dokumentId, logiskVedleggId, request);
 		abacSecurityService.assertAccessToJournalpost(journalpostId);
 		logiskVedleggService.updateLogiskVedlegg(journalpostId, dokumentId, logiskVedleggId, request);
 		log.info("rjoark004i oppdaterte logisk vedlegg på journalpost, journalpostId={}, dokumentinfoId={}, logiskVedleggId={}.", journalpostId, dokumentId, logiskVedleggId);

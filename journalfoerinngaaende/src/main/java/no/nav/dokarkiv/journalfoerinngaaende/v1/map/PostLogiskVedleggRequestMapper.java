@@ -7,6 +7,8 @@ import no.nav.dokarkiv.journalfoerinngaaende.v1.to.PostLogiskVedleggRequestTo;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
+import static no.nav.dokarkiv.core.domain.entities.SkannetInnhold.VEDLEGG_INNHOLD_LENGTH;
+
 @Component
 public class PostLogiskVedleggRequestMapper {
 
@@ -20,6 +22,9 @@ public class PostLogiskVedleggRequestMapper {
 	private void validateInput(PostLogiskVedleggRequest request) throws InputValideringFeiletException {
 		if(StringUtils.isBlank(request.getTittel())){
 			throw new PostLogiskVedleggRequestValidationException("Tittelen kan ikke være null eller tom");
+		}
+		if (request.getTittel().length() > VEDLEGG_INNHOLD_LENGTH) {
+			throw new PostLogiskVedleggRequestValidationException("Tittelen kan ikke være lengre enn " + VEDLEGG_INNHOLD_LENGTH + " tegn.");
 		}
 	}
 }

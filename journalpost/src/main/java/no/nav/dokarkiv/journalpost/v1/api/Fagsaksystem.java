@@ -19,5 +19,6 @@ public enum Fagsaksystem {
     EF,
     KONT,
     SUPSTONAD,
-    OMSORGSPENGER
+    OMSORGSPENGER,
+    HJELPEMIDLER
 }

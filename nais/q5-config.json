@@ -1,11 +1,13 @@
 {
-  "NAMESPACE": "q5",
+  "APP_NAME": "dokarkiv-q5",
+  "MIN_REPLICAS": 1,
+  "MAX_REPLICAS": 2,
   "NO_NAV_SECURITY_JWT_ISSUER_AZUREV2_DISCOVERYURL": "https://login.microsoftonline.com/966ac572-f5b7-4bbe-aa88-c76419c0f851/v2.0/.well-known/openid-configuration",
   "NO_NAV_SECURITY_JWT_ISSUER_OPENAM_DISCOVERYURL": "https://isso-q.adeo.no:443/isso/oauth2/.well-known/openid-configuration",
   "NO_NAV_SECURITY_JWT_ISSUER_RESTSTS_DISCOVERYURL": "https://security-token-service.nais.preprod.local/rest/v1/sts/.well-known/openid-configuration",
   "NO_NAV_SECURITY_JWT_ISSUER_AZUREV2_ACCEPTED_AUDIENCE": "972814f3-8bdf-44f8-a191-c2ed00020b54",
-  "NO_NAV_SECURITY_JWT_ISSUER_OPENAM_ACCEPTED_AUDIENCE": "veilarblogin-q5,arbeid-og-inntekt-q5,fpfordel-q5,fptilbake-q5,gosys-dokument-auth-proxy-q5,gosys-nais-q5,joarkadmin-q5,k9-fordel-q5,k9-tilbake-q5,arbeid-og-inntekt-q5-localhost,ida-q",
-  "NO_NAV_SECURITY_JWT_ISSUER_RESTSTS_ACCEPTED_AUDIENCE": "srvdolly,srvsyfomock,srvtestnorge-inntekt,srv-digihot,srv-klage-perm-ref,srvPermJournalforing,srvdagpenger-journ,srvdokumentfordeling,srveessi-pensjon-j,srveux-app,srvfamilie-ks-opps,srvgosys,srvgosys-dokument-,srvimvarsel,srvjfr-automatisk,srvjfr-manuell-opp,srvjoarkadmin,srvk9formidling,srvklage-dittnav,srvmelosys,srvpale2sak,srvpensjon-dokdist,srvpermref-journalf,srvpleiepenger-joark,srvprosess-tiltaks,srvskanmotovrig,srvskanmotreferanse,srvsporenstreks,srvspregosys,srvsyfooppfolgings,srvsyfosmpapirmottak,srvsyfosmsak,srvtilbakemeldings,srvtiltak-tilsagns,srvarbeid-og-inntekt,srvarena-dokgen,srvsoknadarkiverer,srvsupstonad,srvregpapirsm,srvBrevBestilling,srvpadm2",
+  "NO_NAV_SECURITY_JWT_ISSUER_OPENAM_ACCEPTED_AUDIENCE": "veilarblogin-q5,arbeid-og-inntekt-q5,fpfordel-q5,fptilbake-q5,gosys-dokument-auth-proxy-q5,gosys-nais-q5,joarkadmin-q5,k9-fordel-q5,k9-tilbake-q5,arbeid-og-inntekt-q5-localhost,ida-q,pensjon-psak",
+  "NO_NAV_SECURITY_JWT_ISSUER_RESTSTS_ACCEPTED_AUDIENCE": "srvdolly,srvsyfomock,srvtestnorge-inntekt,srv-digihot,srv-klage-perm-ref,srvPermJournalforing,srvdagpenger-journ,srvdokumentfordeling,srveessi-pensjon-j,srveux-app,srvfamilie-ks-opps,srvgosys,srvgosys-dokument-,srvimvarsel,srvjfr-automatisk,srvjfr-manuell-opp,srvjoarkadmin,srvk9formidling,srvklage-dittnav,srvmelosys,srvpale2sak,srvpensjon-dokdist,srvpermref-journalf,srvpleiepenger-joark,srvprosess-tiltaks,srvskanmotovrig,srvskanmotreferanse,srvsporenstreks,srvspregosys,srvsyfooppfolgings,srvsyfosmpapirmottak,srvsyfosmsak,srvtilbakemeldings,srvtiltak-tilsagns,srvarbeid-og-inntekt,srvarena-dokgen,srvsoknadarkiverer,srvsupstonad,srvregpapirsm,srvBrevBestilling,srvpadm2,srvpensjon",
   "SPRING_DATASOURCE_URL": "jdbc:oracle:thin:@a01dbfl032.adeo.no:1521/joark_q5",
   "SPRING_LDAP_URLS": "ldaps://ldapgw.preprod.local",
   "LDAP_NAVUSER_BASEDN": "ou=NAV,ou=BusinessUnits,dc=preprod,dc=local",
@@ -25,8 +27,9 @@
   ],
   "DOKARKIV_DS": "/oracle/data/dev/creds/joark_q5-user",
   "SRVDOKARKIV": "/serviceuser/data/dev/srvdokarkiv",
-  "DOKARKIV_VAULT": "/kv/preprod/fss/dokarkiv/q5",
+  "DOKARKIV_VAULT": "/kv/preprod/fss/dokarkiv-q5/teamdokumenthandtering",
   "SRV_LINUX": "/serviceuser/data/dev/srvssolinux",
   "APPDYNAMICS": "/apikey/appdynamics/dev",
-  "APPD_NAME": "dokarkiv_q5"
+  "APPD_NAME": "dokarkiv_q5",
+  "DOKARKIV_DATABASE_POOLSIZE": "20"
 }

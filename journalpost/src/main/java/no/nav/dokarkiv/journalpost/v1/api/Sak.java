@@ -44,6 +44,7 @@ public class Sak {
                     "* KONT (Kontantstøtte)\n" +
                     "* SUPSTONAD (Supplerende Stønad)\n" +
                     "* OMSORGSPENGER\n" +
+                    "* HJELPEMIDLER\n" +
                     "Skal kun settes dersom sakstype = FAGSAK",
             example = "AO01"
     )

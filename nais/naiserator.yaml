@@ -1,8 +1,8 @@
 kind: Application
 apiVersion: nais.io/v1alpha1
 metadata:
-  name: dokarkiv
-  namespace: {{ NAMESPACE }}
+  name: {{ APP_NAME }}
+  namespace: teamdokumenthandtering
   labels:
     team: teamdokumenthandtering
 spec:
@@ -45,6 +45,8 @@ spec:
       value: {{ DOKARKIV_HENTDOKUMENT_BASEURL }}
     - name: APPD_NAME
       value: {{ APPD_NAME }}
+    - name: DOKARKIV_DATABASE_POOLSIZE
+      value: "{{ DOKARKIV_DATABASE_POOLSIZE }}"
   image: {{ image }}
   ingresses:
     {{#each INGRESSES}}
@@ -65,8 +67,8 @@ spec:
     initialDelay: 30
     timeout: 3
   replicas:
-    min: 6
-    max: 12
+    min: {{ MIN_REPLICAS }}
+    max: {{ MAX_REPLICAS }}
     cpuThresholdPercentage: 50
   resources:
     limits:

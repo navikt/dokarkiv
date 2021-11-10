@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static java.time.LocalDateTime.now;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_NAME;
@@ -57,6 +58,24 @@ public class FerdigstillJournalpostService {
 		oppdatertJournalpost(journalpost, journalfoerendeEnhet);
 		joarkRepository.save(journalpost);
 		log.info("Oppdatert journalfoerendeEnhet={}", journalpost.getJournalForendeEnhetId());
+	}
+
+	@Deprecated // skal bli fjernet når migrering fra ondemand til Joark er ferdig, gjelder sak MMA-5695.
+	public void ferdigstill(Long journalpostId, FerdigstillJournalpostRequest ferdigstillJournalpostRequest) {
+		Journalpost journalpost = joarkRepository.findById(journalpostId)
+				.orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostId)));
+
+		JournalStatusCode prevJournalstatus = journalpost.getJournalstatus();
+		String prevJournalfoerendeEnhet = journalpost.getJournalForendeEnhetId();
+		String prevJournalfortAvNavn = journalpost.getJournalfortAvNavn();
+
+		validerJournalpost(journalpost);
+		setJournalpostStatus(journalpost);
+		this.oppdatertJournalpost(journalpost, ferdigstillJournalpostRequest);
+
+		joarkRepository.save(journalpost);
+
+		populerAksjonslogg(journalpostId, getArkivElementEndringer(journalpost, prevJournalstatus, prevJournalfoerendeEnhet, prevJournalfortAvNavn));
 	}
 
 	public void ferdigstill(Long journalpostId, String journalfoerendeEnhet) {
@@ -98,6 +117,26 @@ public class FerdigstillJournalpostService {
 		ferdigstillJournalpostValidator.validateJournalpostTilstand(journalpost);
 		ferdigstillJournalpostValidator.validateJournalpostStruktur(journalpost);
 		ferdigstillJournalpostValidator.validatePaakrevdeFelter(journalpost);
+	}
+
+	@Deprecated // skal bli fjernet når migrering fra ondemand til Joark er ferdig, gjelder sak MMA-5695.
+	private void oppdatertJournalpost(Journalpost journalpost, FerdigstillJournalpostRequest journalfoerendeEnhet) {
+		journalpost.setJournalDato(
+				journalfoerendeEnhet.getDatoJournal() != null ? journalfoerendeEnhet.getDatoJournal() :
+						Date.from(now().atZone(ZoneId.systemDefault()).toInstant())
+		);
+		journalpost.setJournalForendeEnhetId(journalfoerendeEnhet.getJournalfoerendeEnhet());
+		journalpost.setEndretAvNavn(MDC.get(MDC_USER_NAME));
+		journalpost.setJournalfortAvNavn(
+				journalfoerendeEnhet.getJournalfortAvNavn() != null ? journalfoerendeEnhet.getJournalfortAvNavn() : MDC.get(MDC_USER_NAME)
+		);
+		journalpost.setEndretKildeNavn(MDC.get(MDC_CONSUMER_ID));
+		if (!isBlank(journalfoerendeEnhet.getOpprettetAvNavn())) {
+			journalpost.setOpprettetAvNavn(journalfoerendeEnhet.getOpprettetAvNavn());
+		}
+		if (journalfoerendeEnhet.getDatoSendtPrint() != null) {
+			journalpost.setSendtPrintDato(journalfoerendeEnhet.getDatoSendtPrint());
+		}
 	}
 
 	private void oppdatertJournalpost(Journalpost journalpost, String journalfoerendeEnhet) {
