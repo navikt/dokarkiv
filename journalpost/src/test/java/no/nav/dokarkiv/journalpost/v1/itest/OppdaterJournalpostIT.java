@@ -610,11 +610,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 	}
 
 	@Test
-<<<<<<< HEAD
-	public void shouldThrowPersonIngenIdentFunnetExceptionWhenNoErrorsAndNoIdentsFound() throws PersonIngenIdentFunnetException {
-=======
 	public void shouldThrowPersonIngenIdentFunnetExceptionWhenNoErrorsAndNoIdentsFound() {
->>>>>>> master
 		clearSakRepository();
 		abacPermit();
 		restStsToken();
