@@ -16,10 +16,12 @@
 
 package no.nav.dokarkiv.core.repository;
 
+import no.nav.dokarkiv.core.exceptions.FlywayMigrationScriptMissingException;
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.MigrationVersion;
 import org.flywaydb.core.api.callback.Callback;
 import org.flywaydb.core.api.configuration.FluentConfiguration;
+import org.flywaydb.core.api.migration.JavaMigration;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -36,7 +38,6 @@ import org.springframework.boot.autoconfigure.flyway.FlywayProperties;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConfigurationPropertiesBinding;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.context.properties.PropertyMapper;
@@ -60,21 +61,19 @@ import org.springframework.util.ObjectUtils;
 
 import javax.sql.DataSource;
 import java.sql.DatabaseMetaData;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.springframework.jdbc.support.JdbcUtils.extractDatabaseMetaData;
 import static org.springframework.util.StringUtils.hasText;
 
 /**
- * Kopiert  fra spring-boot 2.0.9.RELEASE og modifisert for kompatibilitet med flyway 4.2.0.
+ * Kopiert  fra spring-boot 2.5.0 og modifisert for kompatibilitet med flyway 8.0.0.
  * <p>
  * {@link EnableAutoConfiguration Auto-configuration} for Flyway database migrations.
  *
@@ -91,8 +90,8 @@ import static org.springframework.util.StringUtils.hasText;
 @ConditionalOnClass(Flyway.class)
 @Conditional(Flyway42AutoConfiguration.FlywayDataSourceCondition.class)
 @ConditionalOnProperty(prefix = "spring.flyway", name = "enabled", matchIfMissing = true)
-@AutoConfigureAfter({DataSourceAutoConfiguration.class,
-		JdbcTemplateAutoConfiguration.class, HibernateJpaAutoConfiguration.class})
+@AutoConfigureAfter({DataSourceAutoConfiguration.class, JdbcTemplateAutoConfiguration.class,
+		HibernateJpaAutoConfiguration.class})
 @Import(DatabaseInitializationDependencyConfigurer.class)
 @Profile("nais")
 public class Flyway42AutoConfiguration {
@@ -115,75 +114,52 @@ public class Flyway42AutoConfiguration {
 	@Profile("nais")
 	public static class FlywayConfiguration {
 
-		private final FlywayProperties properties;
-
-		private final ResourceLoader resourceLoader;
-
-		private final DataSource dataSource;
-
-		private final DataSource flywayDataSource;
-
-		private final FlywayMigrationStrategy migrationStrategy;
-
-		private List<Callback> callbacks;
-
-		private Stream<FlywayConfigurationCustomizer> flywayConfigurationCustomizer;
-
-
-		public FlywayConfiguration(FlywayProperties properties, ResourceLoader resourceLoader,
-								   ObjectProvider<DataSource> dataSource,
-								   @FlywayDataSource ObjectProvider<DataSource> flywayDataSource,
-								   ObjectProvider<FlywayMigrationStrategy> migrationStrategy,
-								   ObjectProvider<Callback> callbacks,
-								   ObjectProvider<FlywayConfigurationCustomizer> fluentConfigurationCustomizers) {
-			this.properties = properties;
-			this.resourceLoader = resourceLoader;
-			this.dataSource = dataSource.getIfUnique();
-			this.flywayDataSource = flywayDataSource.getIfAvailable();
-			this.migrationStrategy = migrationStrategy.getIfAvailable();
-			this.callbacks = callbacks.orderedStream().collect(Collectors.toList());
-			this.flywayConfigurationCustomizer = fluentConfigurationCustomizers.orderedStream();
-		}
-
 		@Bean
-		@ConfigurationProperties(prefix = "spring.flyway")
-		public Flyway flyway() {
+		public Flyway flyway(FlywayProperties properties, ResourceLoader resourceLoader,
+							 ObjectProvider<DataSource> dataSource, @FlywayDataSource ObjectProvider<DataSource> flywayDataSource,
+							 ObjectProvider<FlywayConfigurationCustomizer> fluentConfigurationCustomizers,
+							 ObjectProvider<JavaMigration> javaMigrations, ObjectProvider<Callback> callbacks) {
 			FluentConfiguration configuration = new FluentConfiguration(resourceLoader.getClassLoader());
-			configureDataSource(configuration);
-			configureProperties(configuration);
-			configureCallbacks(configuration);
-			flywayConfigurationCustomizer.forEach(customizer -> customizer.customize(configuration));
-			configureFlywayCallbacks(configuration);
-
+			configureDataSource(configuration, properties, flywayDataSource.getIfAvailable(), dataSource.getIfUnique());
+			checkLocationExists(configuration.getDataSource(), properties, resourceLoader);
+			configureProperties(configuration, properties);
+			List<Callback> orderedCallbacks = callbacks.orderedStream().collect(Collectors.toList());
+			configureCallbacks(configuration, orderedCallbacks);
+			fluentConfigurationCustomizers.orderedStream().forEach((customizer) -> customizer.customize(configuration));
+			configureFlywayCallbacks(configuration, orderedCallbacks);
+			List<JavaMigration> migrations = javaMigrations.stream().collect(Collectors.toList());
+			configureJavaMigrations(configuration, migrations);
 			return configuration.load();
 		}
 
-		private void configureDataSource(FluentConfiguration configuration) {
-			DataSource migrationDataSource = getMigrationDataSource();
+		private void configureDataSource(FluentConfiguration configuration, FlywayProperties properties,
+										 DataSource flywayDataSource, DataSource dataSource) {
+			DataSource migrationDataSource = getMigrationDataSource(properties, flywayDataSource, dataSource);
 			configuration.dataSource(migrationDataSource);
 		}
 
-		private DataSource getMigrationDataSource() {
+		private DataSource getMigrationDataSource(FlywayProperties properties, DataSource flywayDataSource,
+												  DataSource dataSource) {
 			if (flywayDataSource != null) {
 				return flywayDataSource;
 			}
 			if (properties.getUrl() != null) {
 				DataSourceBuilder<?> builder = DataSourceBuilder.create().type(SimpleDriverDataSource.class);
 				builder.url(properties.getUrl());
-				applyCommonBuilderProperties(builder);
+				applyCommonBuilderProperties(properties, builder);
 				return builder.build();
 			}
 			if (properties.getUser() != null && dataSource != null) {
 				DataSourceBuilder<?> builder = DataSourceBuilder.derivedFrom(dataSource)
 						.type(SimpleDriverDataSource.class);
-				applyCommonBuilderProperties(builder);
+				applyCommonBuilderProperties(properties, builder);
 				return builder.build();
 			}
 			Assert.state(dataSource != null, "Flyway migration DataSource missing");
 			return dataSource;
 		}
 
-		private void applyCommonBuilderProperties(DataSourceBuilder<?> builder) {
+		private void applyCommonBuilderProperties(FlywayProperties properties, DataSourceBuilder<?> builder) {
 			builder.username(properties.getUser());
 			builder.password(properties.getPassword());
 			if (hasText(properties.getDriverClassName())) {
@@ -191,40 +167,50 @@ public class Flyway42AutoConfiguration {
 			}
 		}
 
-		private void configureProperties(FluentConfiguration configuration) {
+		private void configureProperties(FluentConfiguration configuration, FlywayProperties properties) {
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			String[] locations = new LocationResolver(configuration.getDataSource())
 					.resolveLocations(properties.getLocations()).toArray(new String[0]);
-			checkLocationExists(locations);
 			map.from(locations).to(configuration::locations);
 			map.from(properties.getEncoding()).to(configuration::encoding);
 			map.from(properties.getConnectRetries()).to(configuration::connectRetries);
 		}
 
-		private void configureCallbacks(FluentConfiguration configuration) {
+		private void configureCallbacks(FluentConfiguration configuration, List<Callback> callbacks) {
 			if (!callbacks.isEmpty()) {
 				configuration.callbacks(callbacks.toArray(new Callback[0]));
 			}
 		}
 
-		private void configureFlywayCallbacks(FluentConfiguration flyway) {
+		private void configureFlywayCallbacks(FluentConfiguration flyway, List<Callback> callbacks) {
 			if (!callbacks.isEmpty()) {
 				flyway.callbacks(callbacks.toArray(new Callback[0]));
 			}
 		}
 
-		private void checkLocationExists(String... locations) {
-			Assert.state(locations.length != 0,
-					"Migration script locations not configured");
-			boolean exists = hasAtLeastOneLocation(locations);
-			Assert.state(exists, () -> "Cannot find migrations location in: "
-					+ Arrays.asList(locations)
-					+ " (please add migrations or check your Flyway configuration)");
+		private void configureJavaMigrations(FluentConfiguration flyway, List<JavaMigration> migrations) {
+			if (!migrations.isEmpty()) {
+				try {
+					flyway.javaMigrations(migrations.toArray(new JavaMigration[0]));
+				} catch (NoSuchMethodError ex) {
+					Optional.empty();
+				}
+			}
 		}
 
-		private boolean hasAtLeastOneLocation(String... locations) {
+		private void checkLocationExists(DataSource dataSource, FlywayProperties properties,
+										 ResourceLoader resourceLoader) {
+			if (properties.isCreateSchemas()) {
+				List<String> locations = new LocationResolver(dataSource).resolveLocations(properties.getLocations());
+				if (!hasAtLeastOneLocation(resourceLoader, locations)) {
+					throw new FlywayMigrationScriptMissingException(locations);
+				}
+			}
+		}
+
+		private boolean hasAtLeastOneLocation(ResourceLoader resourceLoader, Collection<String> locations) {
 			for (String location : locations) {
-				if (this.resourceLoader.getResource(normalizePrefix(location)).exists()) {
+				if (resourceLoader.getResource(normalizePrefix(location)).exists()) {
 					return true;
 				}
 			}
@@ -237,8 +223,8 @@ public class Flyway42AutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		public FlywayMigrationInitializer flywayInitializer(Flyway flyway) {
-			return new FlywayMigrationInitializer(flyway, this.migrationStrategy);
+		public FlywayMigrationInitializer flywayInitializer(Flyway flyway, ObjectProvider<FlywayMigrationStrategy> migrationStrategy) {
+			return new FlywayMigrationInitializer(flyway, migrationStrategy.getIfAvailable());
 		}
 
 	}
