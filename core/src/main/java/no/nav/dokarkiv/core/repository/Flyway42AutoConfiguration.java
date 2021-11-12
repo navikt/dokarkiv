@@ -58,6 +58,7 @@ import org.springframework.jdbc.support.JdbcUtils;
 import org.springframework.jdbc.support.MetaDataAccessException;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 
 import javax.sql.DataSource;
 import java.sql.DatabaseMetaData;
@@ -174,6 +175,18 @@ public class Flyway42AutoConfiguration {
 			map.from(locations).to(configuration::locations);
 			map.from(properties.getEncoding()).to(configuration::encoding);
 			map.from(properties.getConnectRetries()).to(configuration::connectRetries);
+
+			map.from(properties.getDefaultSchema()).to((schema) -> configuration.defaultSchema(schema));
+			map.from(properties.getSchemas()).as(StringUtils::toStringArray).to(configuration::schemas);
+			configureCreateSchemas(configuration, properties.isCreateSchemas());
+			map.from(properties.getTable()).to(configuration::table);
+
+			map.from(properties.getBaselineDescription()).to(configuration::baselineDescription);
+			map.from(properties.getBaselineVersion()).to(configuration::baselineVersion);
+
+			map.from(properties.getTarget()).to(configuration::target);
+			map.from(properties.isBaselineOnMigrate()).to(configuration::baselineOnMigrate);
+
 		}
 
 		private void configureCallbacks(FluentConfiguration configuration, List<Callback> callbacks) {
@@ -195,6 +208,15 @@ public class Flyway42AutoConfiguration {
 				} catch (NoSuchMethodError ex) {
 					Optional.empty();
 				}
+			}
+		}
+
+		private void configureCreateSchemas(FluentConfiguration configuration, boolean createSchemas) {
+			try {
+				configuration.createSchemas(createSchemas);
+			}
+			catch (NoSuchMethodError ex) {
+				Optional.empty();
 			}
 		}
 
@@ -226,7 +248,6 @@ public class Flyway42AutoConfiguration {
 		public FlywayMigrationInitializer flywayInitializer(Flyway flyway, ObjectProvider<FlywayMigrationStrategy> migrationStrategy) {
 			return new FlywayMigrationInitializer(flyway, migrationStrategy.getIfAvailable());
 		}
-
 	}
 
 	private static class LocationResolver {
@@ -303,7 +324,6 @@ public class Flyway42AutoConfiguration {
 			String value = ObjectUtils.nullSafeToString(source);
 			return MigrationVersion.fromVersion(value);
 		}
-
 	}
 
 	static final class FlywayDataSourceCondition extends AnyNestedCondition {
@@ -321,7 +341,6 @@ public class Flyway42AutoConfiguration {
 		private static final class FlywayUrlCondition {
 
 		}
-
 	}
 
 }
