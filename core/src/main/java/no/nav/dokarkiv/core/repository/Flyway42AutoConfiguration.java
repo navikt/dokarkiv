@@ -181,11 +181,31 @@ public class Flyway42AutoConfiguration {
 			configureCreateSchemas(configuration, properties.isCreateSchemas());
 			map.from(properties.getTable()).to(configuration::table);
 
+			// No method reference for compatibility with Flyway 5.x
+			map.from(properties.getTablespace()).to((tablespace) -> configuration.tablespace(tablespace));
 			map.from(properties.getBaselineDescription()).to(configuration::baselineDescription);
 			map.from(properties.getBaselineVersion()).to(configuration::baselineVersion);
-
+			map.from(properties.getInstalledBy()).to(configuration::installedBy);
+			map.from(properties.getPlaceholders()).to(configuration::placeholders);
+			map.from(properties.getPlaceholderPrefix()).to(configuration::placeholderPrefix);
+			map.from(properties.getPlaceholderSuffix()).to(configuration::placeholderSuffix);
+			map.from(properties.isPlaceholderReplacement()).to(configuration::placeholderReplacement);
+			map.from(properties.getSqlMigrationPrefix()).to(configuration::sqlMigrationPrefix);
+			map.from(properties.getSqlMigrationSuffixes()).as(StringUtils::toStringArray)
+					.to(configuration::sqlMigrationSuffixes);
+			map.from(properties.getSqlMigrationSeparator()).to(configuration::sqlMigrationSeparator);
+			map.from(properties.getRepeatableSqlMigrationPrefix()).to(configuration::repeatableSqlMigrationPrefix);
 			map.from(properties.getTarget()).to(configuration::target);
 			map.from(properties.isBaselineOnMigrate()).to(configuration::baselineOnMigrate);
+			map.from(properties.isCleanDisabled()).to(configuration::cleanDisabled);
+			map.from(properties.isCleanOnValidationError()).to(configuration::cleanOnValidationError);
+			map.from(properties.isGroup()).to(configuration::group);
+			map.from(properties.isMixed()).to(configuration::mixed);
+			map.from(properties.isOutOfOrder()).to(configuration::outOfOrder);
+			map.from(properties.isSkipDefaultCallbacks()).to(configuration::skipDefaultCallbacks);
+			map.from(properties.isSkipDefaultResolvers()).to(configuration::skipDefaultResolvers);
+			configureValidateMigrationNaming(configuration, properties.isValidateMigrationNaming());
+			map.from(properties.isValidateOnMigrate()).to(configuration::validateOnMigrate);
 
 		}
 
@@ -208,6 +228,17 @@ public class Flyway42AutoConfiguration {
 				} catch (NoSuchMethodError ex) {
 					Optional.empty();
 				}
+			}
+		}
+
+		private void configureValidateMigrationNaming(FluentConfiguration configuration,
+													  boolean validateMigrationNaming) {
+			try {
+				configuration.validateMigrationNaming(validateMigrationNaming);
+			}
+			catch (NoSuchMethodError ex) {
+				// Flyway < 6.2
+				Optional.empty();
 			}
 		}
 
