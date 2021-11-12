@@ -47,7 +47,6 @@ import org.springframework.boot.sql.init.dependency.DatabaseInitializationDepend
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.ConfigurationCondition;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.convert.TypeDescriptor;
@@ -239,9 +238,7 @@ public class Flyway42AutoConfiguration {
 													  boolean validateMigrationNaming) {
 			try {
 				configuration.validateMigrationNaming(validateMigrationNaming);
-			}
-			catch (NoSuchMethodError ex) {
-				// Flyway < 6.2
+			} catch (NoSuchMethodError ex) {
 				Optional.empty();
 			}
 		}
@@ -249,8 +246,7 @@ public class Flyway42AutoConfiguration {
 		private void configureCreateSchemas(FluentConfiguration configuration, boolean createSchemas) {
 			try {
 				configuration.createSchemas(createSchemas);
-			}
-			catch (NoSuchMethodError ex) {
+			} catch (NoSuchMethodError ex) {
 				Optional.empty();
 			}
 		}
@@ -364,17 +360,22 @@ public class Flyway42AutoConfiguration {
 	static final class FlywayDataSourceCondition extends AnyNestedCondition {
 
 		FlywayDataSourceCondition() {
-			super(ConfigurationCondition.ConfigurationPhase.REGISTER_BEAN);
+			super(ConfigurationPhase.REGISTER_BEAN);
 		}
 
-		@ConditionalOnBean(DataSource.class)
-		private static final class DataSourceBeanCondition {
-
-		}
-
-		@ConditionalOnProperty(prefix = "spring.flyway", name = "url")
+		@ConditionalOnProperty(
+				prefix = "spring.flyway",
+				name = {"url"}
+		)
 		private static final class FlywayUrlCondition {
+			private FlywayUrlCondition() {
+			}
+		}
 
+		@ConditionalOnBean({DataSource.class})
+		private static final class DataSourceBeanCondition {
+			private DataSourceBeanCondition() {
+			}
 		}
 	}
 
