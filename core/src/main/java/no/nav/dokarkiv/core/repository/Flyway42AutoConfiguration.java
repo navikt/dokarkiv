@@ -66,6 +66,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -206,6 +207,9 @@ public class Flyway42AutoConfiguration {
 			map.from(properties.isSkipDefaultResolvers()).to(configuration::skipDefaultResolvers);
 			configureValidateMigrationNaming(configuration, properties.isValidateMigrationNaming());
 			map.from(properties.isValidateOnMigrate()).to(configuration::validateOnMigrate);
+
+			map.from(properties.getJdbcProperties()).whenNot(Map::isEmpty)
+					.to((jdbcProperties) -> configuration.jdbcProperties(jdbcProperties));
 
 		}
 
