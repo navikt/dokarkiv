@@ -13,6 +13,10 @@
 	<packaging>jar</packaging>
 
 	<dependencies>
+		<dependency>
+			<groupId>org.flywaydb</groupId>
+			<artifactId>flyway-core</artifactId>
+		</dependency>
 		<!-- domenetjenester -->
 		<dependency>
 			<groupId>no.nav.dokarkiv</groupId>
