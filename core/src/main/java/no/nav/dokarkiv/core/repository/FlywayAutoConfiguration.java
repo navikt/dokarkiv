@@ -89,13 +89,13 @@ import static org.springframework.util.StringUtils.hasText;
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(Flyway.class)
-@Conditional(Flyway42AutoConfiguration.FlywayDataSourceCondition.class)
+@Conditional(FlywayAutoConfiguration.FlywayDataSourceCondition.class)
 @ConditionalOnProperty(prefix = "spring.flyway", name = "enabled", matchIfMissing = true)
 @AutoConfigureAfter({DataSourceAutoConfiguration.class, JdbcTemplateAutoConfiguration.class,
 		HibernateJpaAutoConfiguration.class})
 @Import(DatabaseInitializationDependencyConfigurer.class)
 @Profile("nais")
-public class Flyway42AutoConfiguration {
+public class FlywayAutoConfiguration {
 
 	@Bean
 	@ConfigurationPropertiesBinding
