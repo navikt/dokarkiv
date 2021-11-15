@@ -5,7 +5,6 @@ import no.nav.dokarkiv.core.jaxws.ThreadLocalSubjectHandler;
 import no.nav.dokarkiv.core.metrics.DokTimedAspect;
 import no.nav.dokarkiv.core.properties.DokarkivProperties;
 import no.nav.dokarkiv.core.properties.ServiceuserAlias;
-import no.nav.dokarkiv.core.repository.FlywayConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -13,7 +12,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
-import org.springframework.context.annotation.FilterType;
 import org.springframework.retry.annotation.EnableRetry;
 
 import javax.annotation.PostConstruct;
@@ -24,9 +22,9 @@ import static no.nav.modig.core.context.SubjectHandler.SUBJECTHANDLER_KEY;
 /**
  * @author Joakim Bjørnstad, Jbit AS
  */
-@ComponentScan(excludeFilters = {@ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = FlywayConfiguration.class)})
+@ComponentScan
 @Configuration
-@EnableAutoConfiguration(exclude = {DataSourceAutoConfiguration.class, FlywayConfiguration.class})
+@EnableAutoConfiguration(exclude = {DataSourceAutoConfiguration.class})
 @EnableConfigurationProperties({ServiceuserAlias.class, DokarkivProperties.class})
 @EnableAspectJAutoProxy
 @EnableRetry
