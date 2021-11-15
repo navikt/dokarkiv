@@ -1,2 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  no.nav.dokarkiv.core.repository.FlywayAutoConfiguration
+  no.nav.dokarkiv.core.repository.FlywayConfiguration

@@ -5,7 +5,7 @@ import no.nav.dokarkiv.core.jaxws.ThreadLocalSubjectHandler;
 import no.nav.dokarkiv.core.metrics.DokTimedAspect;
 import no.nav.dokarkiv.core.properties.DokarkivProperties;
 import no.nav.dokarkiv.core.properties.ServiceuserAlias;
-import no.nav.dokarkiv.core.repository.FlywayAutoConfiguration;
+import no.nav.dokarkiv.core.repository.FlywayConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -24,9 +24,9 @@ import static no.nav.modig.core.context.SubjectHandler.SUBJECTHANDLER_KEY;
 /**
  * @author Joakim Bjørnstad, Jbit AS
  */
-@ComponentScan(excludeFilters = {@ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = FlywayAutoConfiguration.class)})
+@ComponentScan(excludeFilters = {@ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = FlywayConfiguration.class)})
 @Configuration
-@EnableAutoConfiguration(exclude = {DataSourceAutoConfiguration.class, FlywayAutoConfiguration.class})
+@EnableAutoConfiguration(exclude = {DataSourceAutoConfiguration.class, FlywayConfiguration.class})
 @EnableConfigurationProperties({ServiceuserAlias.class, DokarkivProperties.class})
 @EnableAspectJAutoProxy
 @EnableRetry
