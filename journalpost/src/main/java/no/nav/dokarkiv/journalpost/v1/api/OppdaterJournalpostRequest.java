@@ -85,8 +85,7 @@ public class OppdaterJournalpostRequest {
     @ApiModelProperty(
             value = "Fagsystemene som arkiverer kan legge til egne fagspesifikke attributter per journalpost. Disse er representert " +
                     "som et skjemaløst nøkkel-verdi-sett og valideres ikke ved arkivering. Et eksempel på et slikt sett kan være nøkkel: " +
-                    "bucid og verdi: 21521.",
-            hidden = true
+                    "bucid og verdi: 12345."
     )
     private List<Tilleggsopplysning> tilleggsopplysninger;
 

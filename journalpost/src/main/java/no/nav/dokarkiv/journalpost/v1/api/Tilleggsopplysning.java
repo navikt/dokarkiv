@@ -15,6 +15,7 @@ import javax.validation.constraints.NotNull;
 public class Tilleggsopplysning {
 	@NotNull(message = "Tilleggsopplysning mangler nokkel")
 	@ApiModelProperty(
+			value = "Nøkkelen til det fagspesifikke attributtet.",
 			required = true,
 			example = "bucid"
 	)
@@ -22,8 +23,9 @@ public class Tilleggsopplysning {
 
 	@NotNull(message = "Tilleggsopplysning mangler verdi")
 	@ApiModelProperty(
+			value = "Verdien til det fagspesifikke attributtet.",
 			required = true,
-			example = "eksempel_verdi_123"
+			example = "12345"
 	)
 	private String verdi;
 }
