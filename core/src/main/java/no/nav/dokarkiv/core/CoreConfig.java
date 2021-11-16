@@ -1,30 +1,30 @@
 package no.nav.dokarkiv.core;
 
 import io.micrometer.core.instrument.MeterRegistry;
-import no.nav.dokarkiv.core.properties.DokarkivProperties;
-import no.nav.dokarkiv.core.properties.ServiceuserAlias;
 import no.nav.dokarkiv.core.jaxws.ThreadLocalSubjectHandler;
 import no.nav.dokarkiv.core.metrics.DokTimedAspect;
-import no.nav.dokarkiv.core.repository.Flyway42AutoConfiguration;
+import no.nav.dokarkiv.core.properties.DokarkivProperties;
+import no.nav.dokarkiv.core.properties.ServiceuserAlias;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
-import org.springframework.context.annotation.FilterType;
 import org.springframework.retry.annotation.EnableRetry;
 
 import javax.annotation.PostConstruct;
 
+import static java.lang.System.setProperty;
+import static no.nav.modig.core.context.SubjectHandler.SUBJECTHANDLER_KEY;
+
 /**
  * @author Joakim Bjørnstad, Jbit AS
  */
-@ComponentScan(excludeFilters = {@ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = Flyway42AutoConfiguration.class)})
+@ComponentScan
 @Configuration
-@EnableAutoConfiguration(exclude = {DataSourceAutoConfiguration.class, FlywayAutoConfiguration.class})
+@EnableAutoConfiguration(exclude = {DataSourceAutoConfiguration.class})
 @EnableConfigurationProperties({ServiceuserAlias.class, DokarkivProperties.class})
 @EnableAspectJAutoProxy
 @EnableRetry
@@ -37,6 +37,6 @@ public class CoreConfig {
 
 	@PostConstruct
 	public void postConstruct() {
-		System.setProperty(ThreadLocalSubjectHandler.SUBJECTHANDLER_KEY, ThreadLocalSubjectHandler.class.getName());
+		setProperty(SUBJECTHANDLER_KEY, ThreadLocalSubjectHandler.class.getName());
 	}
 }
