@@ -42,6 +42,7 @@ import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
 import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.OPPRETT;
 import static no.nav.dokarkiv.journalpost.v1.api.Sakstype.FAGSAK;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 @Service(value = "opprettNyJournalpostService")
@@ -81,7 +82,7 @@ public class OpprettJournalpostService {
 
 	public OpprettJournalpostResult opprettJournalpost(OpprettJournalpostRequest request) {
 
-		Optional<Journalpost> existingJournalpost = findJournalpostWithIdempodentEksternReferanseIdAlreadyInDb(request);
+		Optional<Journalpost> existingJournalpost = findExisitingJournalpostWithEksternReferanseId(request.getEksternReferanseId());
 		if (existingJournalpost.isPresent()) {
 			final Journalpost journalpost = existingJournalpost.get();
 			log.warn("Journalpost med eksternReferanseId={} for kanal={} finnes fra før. Oppretter ikke ny journalpost.", request.getEksternReferanseId(), journalpost.getMottakskanal());
@@ -182,12 +183,9 @@ public class OpprettJournalpostService {
 		}
 	}
 
-	// Bruker eksternReferanseId for å fikse idempodens
-	private Optional<Journalpost> findJournalpostWithIdempodentEksternReferanseIdAlreadyInDb(OpprettJournalpostRequest request) {
-		if (request.getEksternReferanseId() != null) {
-			//eksternReferanseId == kanalReferanseId
-			return joarkRepository.findTopByKanalReferanseId(request.getEksternReferanseId());
-		}
-		return Optional.empty();
+	// Bruker eksternReferanseId for å se etter duplikater
+	private Optional<Journalpost> findExisitingJournalpostWithEksternReferanseId(String eksternReferanseId) {
+		//eksternReferanseId == kanalReferanseId
+		return isBlank(eksternReferanseId) ? Optional.empty() : joarkRepository.findTopByKanalReferanseId(eksternReferanseId);
 	}
 }
