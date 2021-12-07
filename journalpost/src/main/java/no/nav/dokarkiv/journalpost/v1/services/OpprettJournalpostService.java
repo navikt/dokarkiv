@@ -184,7 +184,7 @@ public class OpprettJournalpostService {
 
 	// Bruker eksternReferanseId for å fikse idempodens for spesifikke kanaler
 	private Optional<Journalpost> findJournalpostWithIdempodentKanalAlreadyInDb(OpprettJournalpostRequest request) {
-		if (isNotBlank(request.getKanal()) && request.getEksternReferanseId() != null) {
+		if (request.getEksternReferanseId() != null) {
 			return joarkRepository.findTopByKanalReferanseId(request.getEksternReferanseId());
 		}
 		return Optional.empty();
