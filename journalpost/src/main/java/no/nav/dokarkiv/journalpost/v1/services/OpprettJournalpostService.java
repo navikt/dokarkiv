@@ -81,7 +81,7 @@ public class OpprettJournalpostService {
 
 	public OpprettJournalpostResult opprettJournalpost(OpprettJournalpostRequest request) {
 
-		Optional<Journalpost> existingJournalpost = findJournalpostWithIdempodentKanalAlreadyInDb(request);
+		Optional<Journalpost> existingJournalpost = findJournalpostWithIdempodentEksternReferanseIdAlreadyInDb(request);
 		if (existingJournalpost.isPresent()) {
 			final Journalpost journalpost = existingJournalpost.get();
 			log.warn("Journalpost med eksternReferanseId={} for kanal={} finnes fra før. Oppretter ikke ny journalpost.", request.getEksternReferanseId(), journalpost.getMottakskanal());
@@ -182,9 +182,10 @@ public class OpprettJournalpostService {
 		}
 	}
 
-	// Bruker eksternReferanseId for å fikse idempodens for spesifikke kanaler
-	private Optional<Journalpost> findJournalpostWithIdempodentKanalAlreadyInDb(OpprettJournalpostRequest request) {
+	// Bruker eksternReferanseId for å fikse idempodens
+	private Optional<Journalpost> findJournalpostWithIdempodentEksternReferanseIdAlreadyInDb(OpprettJournalpostRequest request) {
 		if (request.getEksternReferanseId() != null) {
+			//eksternReferanseId == kanalReferanseId
 			return joarkRepository.findTopByKanalReferanseId(request.getEksternReferanseId());
 		}
 		return Optional.empty();
