@@ -477,22 +477,33 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 	}
 
 	@Test
-	public void happyPathWithKanalAsEmptyOrNull() throws IOException {
+	public void happyPathWithKanalAsNull() throws IOException {
+		abacPermit();
+		restStsToken();
+
+		OpprettJournalpostRequest requestWithKanalAsNull = createMinimalRequestWithKanal(null);
+
+		HttpEntity<OpprettJournalpostRequest> requestEntityWithKanalAsNull = new HttpEntity<>(requestWithKanalAsNull, createHeadersWithServiceUserToken());
+
+		restTemplate.exchange(URL_JOURNALPOST, HttpMethod.POST, requestEntityWithKanalAsNull, OpprettJournalpostResponse.class);
+
+		Journalpost emptyKanalJournalpost = joarkRepository.findJournalpostAllByKanalReferanseId(requestWithKanalAsNull.getEksternReferanseId()).get(0);
+		assertNotNull(emptyKanalJournalpost);
+	}
+
+	@Test
+	public void happyPathWithKanalAsEmpty() throws IOException {
 		abacPermit();
 		restStsToken();
 
 		OpprettJournalpostRequest requestWithKanalAsEmpty = createMinimalRequestWithKanal("");
-		OpprettJournalpostRequest requestWithKanalAsNull = createMinimalRequestWithKanal(null);
 
-		HttpEntity<OpprettJournalpostRequest> requestEntityWIthKanalAsEmpty = new HttpEntity<>(requestWithKanalAsEmpty, createHeadersWithServiceUserToken());
-		HttpEntity<OpprettJournalpostRequest> requestEntityWIthKanalAsNull = new HttpEntity<>(requestWithKanalAsNull, createHeadersWithServiceUserToken());
+		HttpEntity<OpprettJournalpostRequest> requestEntityWithKanalAsEmpty = new HttpEntity<>(requestWithKanalAsEmpty, createHeadersWithServiceUserToken());
 
-		restTemplate.exchange(URL_JOURNALPOST, HttpMethod.POST, requestEntityWIthKanalAsEmpty, OpprettJournalpostResponse.class);
-		restTemplate.exchange(URL_JOURNALPOST, HttpMethod.POST, requestEntityWIthKanalAsNull, OpprettJournalpostResponse.class);
+		restTemplate.exchange(URL_JOURNALPOST, HttpMethod.POST, requestEntityWithKanalAsEmpty, OpprettJournalpostResponse.class);
 
-		List<Journalpost> allJournalpostByKanalReferanseId = joarkRepository.findJournalpostAllByKanalReferanseId(requestWithKanalAsEmpty.getEksternReferanseId());
-
-		assertEquals(2, allJournalpostByKanalReferanseId.size());
+		Journalpost emptyKanalJournalpost = joarkRepository.findJournalpostAllByKanalReferanseId(requestWithKanalAsEmpty.getEksternReferanseId()).get(0);
+		assertNotNull(emptyKanalJournalpost);
 	}
 
 	@Test
