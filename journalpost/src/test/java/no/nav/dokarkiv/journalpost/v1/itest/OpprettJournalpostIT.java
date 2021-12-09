@@ -9,7 +9,6 @@ import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
-import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
 import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
 import no.nav.dokarkiv.core.domain.entities.DokumentFil;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
@@ -47,7 +46,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static java.util.Collections.singletonList;
 import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.OPPRETT;
 import static no.nav.dokarkiv.core.domain.codes.FagsystemCode.FS22;
-import static no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode.MIGRERING_S;
+import static no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode.ALTINN;
 import static no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem.AO01;
 import static no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem.HJELPEMIDLER;
 import static no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem.PP01;
@@ -477,22 +476,33 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 	}
 
 	@Test
-	public void happyPathWithKanalAsEmptyOrNull() throws IOException {
+	public void happyPathWithKanalAsNull() throws IOException {
+		abacPermit();
+		restStsToken();
+
+		OpprettJournalpostRequest requestWithKanalAsNull = createMinimalRequestWithKanal(null);
+
+		HttpEntity<OpprettJournalpostRequest> requestEntityWithKanalAsNull = new HttpEntity<>(requestWithKanalAsNull, createHeadersWithServiceUserToken());
+
+		restTemplate.exchange(URL_JOURNALPOST, HttpMethod.POST, requestEntityWithKanalAsNull, OpprettJournalpostResponse.class);
+
+		Journalpost emptyKanalJournalpost = joarkRepository.findJournalpostAllByKanalReferanseId(requestWithKanalAsNull.getEksternReferanseId()).get(0);
+		assertNotNull(emptyKanalJournalpost);
+	}
+
+	@Test
+	public void happyPathWithKanalAsEmpty() throws IOException {
 		abacPermit();
 		restStsToken();
 
 		OpprettJournalpostRequest requestWithKanalAsEmpty = createMinimalRequestWithKanal("");
-		OpprettJournalpostRequest requestWithKanalAsNull = createMinimalRequestWithKanal(null);
 
-		HttpEntity<OpprettJournalpostRequest> requestEntityWIthKanalAsEmpty = new HttpEntity<>(requestWithKanalAsEmpty, createHeadersWithServiceUserToken());
-		HttpEntity<OpprettJournalpostRequest> requestEntityWIthKanalAsNull = new HttpEntity<>(requestWithKanalAsNull, createHeadersWithServiceUserToken());
+		HttpEntity<OpprettJournalpostRequest> requestEntityWithKanalAsEmpty = new HttpEntity<>(requestWithKanalAsEmpty, createHeadersWithServiceUserToken());
 
-		restTemplate.exchange(URL_JOURNALPOST, HttpMethod.POST, requestEntityWIthKanalAsEmpty, OpprettJournalpostResponse.class);
-		restTemplate.exchange(URL_JOURNALPOST, HttpMethod.POST, requestEntityWIthKanalAsNull, OpprettJournalpostResponse.class);
+		restTemplate.exchange(URL_JOURNALPOST, HttpMethod.POST, requestEntityWithKanalAsEmpty, OpprettJournalpostResponse.class);
 
-		List<Journalpost> allJournalpostByKanalReferanseId = joarkRepository.findJournalpostAllByKanalReferanseId(requestWithKanalAsEmpty.getEksternReferanseId());
-
-		assertEquals(2, allJournalpostByKanalReferanseId.size());
+		Journalpost emptyKanalJournalpost = joarkRepository.findJournalpostAllByKanalReferanseId(requestWithKanalAsEmpty.getEksternReferanseId()).get(0);
+		assertNotNull(emptyKanalJournalpost);
 	}
 
 	@Test
@@ -1108,11 +1118,11 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 	}
 
 	@Test
-	public void shouldHaveIdimpotenseOnJournalpostWhenKanalIsNotInngaaendeAndIsMarkedAsMigrering() throws IOException {
+	public void shouldNotCreateDuplicateJournalpostWithSameEksternReferanseId() throws IOException {
 		abacPermit();
 		restStsToken();
 
-		OpprettJournalpostRequest request = createMinimalRequestWithKanal(MIGRERING_S.toString());
+		OpprettJournalpostRequest request = createMinimalRequestWithKanal(ALTINN.toString());
 
 		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
 		ResponseEntity<OpprettJournalpostResponse> firstResponse = restTemplate.exchange(URL_JOURNALPOST, HttpMethod.POST, requestEntity, OpprettJournalpostResponse.class);
