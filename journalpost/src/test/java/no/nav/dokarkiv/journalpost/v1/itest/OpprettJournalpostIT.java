@@ -9,7 +9,6 @@ import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
-import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
 import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
 import no.nav.dokarkiv.core.domain.entities.DokumentFil;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
@@ -47,7 +46,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static java.util.Collections.singletonList;
 import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.OPPRETT;
 import static no.nav.dokarkiv.core.domain.codes.FagsystemCode.FS22;
-import static no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode.MIGRERING_S;
+import static no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode.ALTINN;
 import static no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem.AO01;
 import static no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem.HJELPEMIDLER;
 import static no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem.PP01;
@@ -1119,11 +1118,11 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 	}
 
 	@Test
-	public void shouldHaveIdimpotenseOnJournalpostWhenKanalIsNotInngaaendeAndIsMarkedAsMigrering() throws IOException {
+	public void shouldNotCreateDuplicateJournalpostWithSameEksternReferanseId() throws IOException {
 		abacPermit();
 		restStsToken();
 
-		OpprettJournalpostRequest request = createMinimalRequestWithKanal(MIGRERING_S.toString());
+		OpprettJournalpostRequest request = createMinimalRequestWithKanal(ALTINN.toString());
 
 		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
 		ResponseEntity<OpprettJournalpostResponse> firstResponse = restTemplate.exchange(URL_JOURNALPOST, HttpMethod.POST, requestEntity, OpprettJournalpostResponse.class);
