@@ -1,8 +1,5 @@
 package no.nav.dokarkiv.journalpost.v1.util.kopierjournalpost;
 
-import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
-import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
-
 import no.nav.dokarkiv.core.domain.entities.Bruker;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
@@ -14,6 +11,10 @@ import java.time.ZoneId;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
+
+import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
+import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
 
 public class JournalpostCopier {
 
@@ -23,6 +24,7 @@ public class JournalpostCopier {
                 .opprettetAvNavn(null)
                 .tilleggsopplysninger(copyTilleggsopplysninger(journalpost.getTilleggsopplysninger()))
                 .saksrelasjon(null)
+                .kanalReferanseId(copyKanalReferanseId(journalpost.getKanalReferanseId()))
                 .build();
 
         kopiertJournalpost.setJournalDato(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()));
@@ -45,6 +47,13 @@ public class JournalpostCopier {
         journalpost.getKryssreferanser().forEach(kopiertJournalpost::addKryssReferanse);
 
         return kopiertJournalpost;
+    }
+
+    private String copyKanalReferanseId(String kanalReferanseId) {
+        if(kanalReferanseId!=null){
+            return kanalReferanseId +"_"+ UUID.randomUUID().toString().replace("-","").substring(0,8);
+        }
+        return null;
     }
 
     private Bruker cloneBruker(Bruker originalBruker) {
