@@ -1,12 +1,5 @@
 package no.nav.dokarkiv.journalpost.v1.itest;
 
-import static no.nav.dokarkiv.core.NavHeaders.NAV_CALL_ID;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
 import no.nav.dokarkiv.core.datautil.JournalpostTestDataProvider;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
@@ -20,11 +13,11 @@ import org.apache.commons.collections15.IteratorUtils;
 import org.junit.After;
 import org.junit.Test;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.util.Base64Utils;
 
@@ -36,6 +29,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+
+import static no.nav.dokarkiv.core.NavHeaders.NAV_CALL_ID;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 public class KopierJournalpostIT extends AbstractJournalpostIT {
     private static final String GYLDIG_CONSUMER = "srvdokarkivproxy";
@@ -145,6 +145,55 @@ public class KopierJournalpostIT extends AbstractJournalpostIT {
 
         assertThat(response.getStatusCode(), is(HttpStatus.BAD_REQUEST));
     }
+
+    @Test
+    public void shouldNotUpdateNullKanalReferanseId() {
+        Journalpost journalpost = createJournalpost();
+        Long journalpostId = joarkRepository.save(journalpost).getJournalpostId();
+        journalpost.setKanalReferanseId(null);
+        TestTransaction.flagForCommit();
+        TestTransaction.end();
+        TestTransaction.start();
+
+        HttpHeaders headers = createHeaders(GYLDIG_CONSUMER);
+        HttpEntity requestEntity = new HttpEntity(headers);
+        ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST_INTERN + KOPIER_QUERY + journalpostId, HttpMethod.POST, requestEntity, String.class);
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+
+        TestTransaction.flagForCommit();
+        TestTransaction.end();
+        TestTransaction.start();
+
+        Journalpost kopiertJournalpost = joarkRepository.findById(Long.parseLong(response.getBody())).orElseThrow(RuntimeException::new);
+        assertTrue(kopiertJournalpost.getKanalReferanseId()==null);
+    }
+
+    @Test
+    public void shouldUpdateKanalReferanseId() {
+        Journalpost journalpost = createJournalpost();
+
+        Long journalpostId = joarkRepository.save(journalpost).getJournalpostId();
+
+        TestTransaction.flagForCommit();
+        TestTransaction.end();
+        TestTransaction.start();
+
+        HttpHeaders headers = createHeaders(GYLDIG_CONSUMER);
+        HttpEntity requestEntity = new HttpEntity(headers);
+        ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST_INTERN + KOPIER_QUERY + journalpostId, HttpMethod.POST, requestEntity, String.class);
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+
+        TestTransaction.flagForCommit();
+        TestTransaction.end();
+        TestTransaction.start();
+
+        Journalpost kopiertJournalpost = joarkRepository.findById(Long.parseLong(response.getBody())).orElseThrow(RuntimeException::new);
+        journalpost = joarkRepository.findById(journalpostId).orElseThrow(RuntimeException::new);
+        assertTrue(!kopiertJournalpost.getKanalReferanseId().isEmpty());
+        assertTrue(kopiertJournalpost.getKanalReferanseId().startsWith(journalpost.getKanalReferanseId()));
+        assertTrue(kopiertJournalpost.getKanalReferanseId().length()==journalpost.getKanalReferanseId().length()+9);
+    }
+
 
     @After
     public void closeTransaction() {
