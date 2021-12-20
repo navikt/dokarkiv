@@ -35,7 +35,8 @@
 	</modules>
 
 	<properties>
-		<java.version>11</java.version>
+		<java.version>17</java.version>
+
 		<javax.inject.version>1</javax.inject.version>
 		<jakarta.jaxws-api.version>2.3.2</jakarta.jaxws-api.version>
 		<jakarta.jws-api.version>1.1.1</jakarta.jws-api.version>
@@ -58,6 +59,7 @@
 		<argLine>-Xmx2048m</argLine>
 		<verapdf.version>1.18.2</verapdf.version>
 		<bcprov-jdk15on.version>1.69</bcprov-jdk15on.version>
+
 		<!-- Tjenestegrensesnitt -->
 		<behandlejournal-v2-tjenestespesifikasjon.version>1.2019.09.25-00.21-49b69f0625e0</behandlejournal-v2-tjenestespesifikasjon.version>
 		<behandlejournal-v3-tjenestespesifikasjon.version>1.2019.09.25-00.21-49b69f0625e0</behandlejournal-v3-tjenestespesifikasjon.version>
@@ -70,8 +72,10 @@
 		<arkiverdokumentmottak-tjenestespesifikasjon-v2.version>2.2.3</arkiverdokumentmottak-tjenestespesifikasjon-v2.version>
 		<dokumentproduksjoninfo-tjenestespesifikasjon.version>2.1.1</dokumentproduksjoninfo-tjenestespesifikasjon.version>
 		<no-nav-dok-tjenester-journalfoerinngaaende.version>0.0.21</no-nav-dok-tjenester-journalfoerinngaaende.version>
+
 		<!-- test -->
 		<spring-cloud-contract-wiremock.version>2.1.5.RELEASE</spring-cloud-contract-wiremock.version>
+
 		<!-- plugins -->
 		<maven-resources-plugin.version>3.2.0</maven-resources-plugin.version>
 		<maven-toolchains-plugin.version>3.0.0</maven-toolchains-plugin.version>
@@ -431,7 +435,7 @@
 				<configuration>
 					<toolchains>
 						<jdk>
-							<version>11</version>
+							<version>17</version>
 							<vendor>openjdk</vendor>
 						</jdk>
 					</toolchains>
