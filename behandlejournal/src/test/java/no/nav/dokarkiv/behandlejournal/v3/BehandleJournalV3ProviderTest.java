@@ -1,15 +1,5 @@
 package no.nav.dokarkiv.behandlejournal.v3;
 
-import static org.hamcrest.Matchers.hasProperty;
-import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import no.nav.dokarkiv.behandlejournal.SporingsMetaData;
 import no.nav.dokarkiv.behandlejournal.v3.tjoark060.ArkiverUstrukturertKravV3RequestMapper;
 import no.nav.dokarkiv.behandlejournal.v3.tjoark060.ArkiverUstrukturertKravV3ResponseMapper;
@@ -59,6 +49,16 @@ import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+
+import static org.hamcrest.Matchers.hasProperty;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * Unit test class for BehandleJournalProvider.
@@ -179,7 +179,7 @@ public class BehandleJournalV3ProviderTest {
 		when(behandleJournalServiceMock.lagreVedleggPaaJournalpost(domainRequest)).thenThrow(
 				NoJournalpostFoundException.class);
 		when(behandleJournalV3FaultInfoPopulatorMock.populateFaultInfo((JournalpostIkkeFunnet) any(),
-						(Exception) any(), (String) any())).thenReturn(journalpostIkkeFunnet);
+				any(), any())).thenReturn(journalpostIkkeFunnet);
 
 		behandleJournalV3Provider.lagreVedleggPaaJournalpost(wsRequest);
 	}
@@ -235,7 +235,7 @@ public class BehandleJournalV3ProviderTest {
 		doThrow(NoJournalpostFoundException.class).when(behandleJournalServiceMock).ferdigstillDokumentopplasting(
 				domainRequest);
 		when(behandleJournalV3FaultInfoPopulatorMock.populateFaultInfo((JournalpostIkkeFunnet) any(),
-						(Exception) any(), (String) any())).thenReturn(journalpostIkkeFunnet);
+						any(), any())).thenReturn(journalpostIkkeFunnet);
 
 		behandleJournalV3Provider.ferdigstillDokumentopplasting(wsRequest);
 	}

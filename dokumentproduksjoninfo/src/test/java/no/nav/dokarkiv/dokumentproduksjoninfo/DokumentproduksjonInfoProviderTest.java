@@ -1,13 +1,5 @@
 package no.nav.dokarkiv.dokumentproduksjoninfo;
 
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.hasProperty;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.anyListOf;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import no.nav.dokarkiv.core.exceptions.NoDokumentInfoFoundException;
 import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
 import no.nav.dokarkiv.dokumentproduksjoninfo.tjoark120.HentJournalOgDokumentStatus;
@@ -16,7 +8,6 @@ import no.nav.dokarkiv.dokumentproduksjoninfo.tjoark120.HentJournalOgDokumentSta
 import no.nav.dokarkiv.dokumentproduksjoninfo.tjoark120.HentJournalOgDokumentStatusResponseMapper;
 import no.nav.dokarkiv.dokumentproduksjoninfo.tjoark120.HentJournalOgDokumentStatusResponseTo;
 import no.nav.dokarkiv.dokumentproduksjoninfo.tjoark121.HentFerdigstilteDokumenterResponseMapper;
-import no.nav.dokarkiv.dokumentproduksjoninfo.tjoark121.HentFerdigstilteDokumenterResponseTo;
 import no.nav.dokarkiv.dokumentproduksjoninfo.tjoark121.HentFerdigstilteDokumenterService;
 import no.nav.dokarkiv.dokumentproduksjoninfo.tjoark122.HentJournalpostInfoService;
 import no.nav.tjeneste.domene.brevogarkiv.dokumentproduksjoninfo.v1.HentFerdigstilteDokumenterUgyldingInput;
@@ -32,6 +23,14 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.hasProperty;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * Unit tests for DokumentproduksjonInfoProvider
@@ -112,7 +111,7 @@ public class DokumentproduksjonInfoProviderTest {
 		wsRequest.getDokumentInfoListe().add(2L);
 		
 		dokumentproduksjonInfoProvider.hentFerdigstilteDokumenter(wsRequest);
-		verify(hentFerdigstilteDokumenterServiceResponeMapper).map(anyListOf(HentFerdigstilteDokumenterResponseTo.class));
+		verify(hentFerdigstilteDokumenterServiceResponeMapper).map(anyList());
 	}
 	
 	@Test

@@ -1,21 +1,5 @@
 package no.nav.dokarkiv.behandlejournal.v2.tjoark060;
 
-import static no.nav.dokarkiv.core.domain.builder.BidragMellomlagringBuilder.getBidragMellomlagringBuilder;
-import static no.nav.dokarkiv.core.domain.builder.BidragMellomlagringDokumentBuilder.getBidragMellomlagringDokumentBuilder;
-import static no.nav.dokarkiv.core.domain.builder.BrukerBuilder.getBrukerBuilder;
-import static no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder.getDokumentInfoBuilder;
-import static no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder.getFilDetaljerBuilder;
-import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalpostBuilder;
-import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
@@ -51,6 +35,22 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Date;
 
+import static no.nav.dokarkiv.core.domain.builder.BidragMellomlagringBuilder.getBidragMellomlagringBuilder;
+import static no.nav.dokarkiv.core.domain.builder.BidragMellomlagringDokumentBuilder.getBidragMellomlagringDokumentBuilder;
+import static no.nav.dokarkiv.core.domain.builder.BrukerBuilder.getBrukerBuilder;
+import static no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder.getDokumentInfoBuilder;
+import static no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder.getFilDetaljerBuilder;
+import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalpostBuilder;
+import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 /**
  * Test class for {@link DefaultArkiverUstrukturertKrav}.
  * 
@@ -63,8 +63,6 @@ public class DefaultArkiverUstrukturertKravTest {
 	private static final long JOURNALPOST_ID = 100L;
 	private static final long DOKUMENT_INFO_ID = 1000L;
 	private final String validFnr = "02016126007";
-	private final String invalidFnr = "99999999999";
-	private final String brevkode = "BREVKODE";
 
 	@InjectMocks
 	private DefaultArkiverUstrukturertKrav service;
@@ -113,6 +111,7 @@ public class DefaultArkiverUstrukturertKravTest {
 
 	@Test
 	public void shouldNotValidateRequestWithInvalidPartId() {
+		String invalidFnr = "99999999999";
 		Journalpost journalpost = createJournalpost(invalidFnr, FagomradeCode.UFO);
 		request = new ArkiverUstrukturertKravRequest(journalpost);
 
@@ -282,6 +281,7 @@ public class DefaultArkiverUstrukturertKravTest {
 	private DokumentInfo createDokumentInfoWithFildetaljer() {
 		FilDetaljer fildetaljer = createFildetaljer(VariantFormatCode.ARKIV);
 
+		String brevkode = "BREVKODE";
 		return getDokumentInfoBuilder().dokumentInfoId(DOKUMENT_INFO_ID).dokumentstatus(DokumentStatusCode.FERDIGSTILT)
 				.dokumenttypeId("dokumenttypeId").brevkode(brevkode).filDetaljerList(fildetaljer).build();
 	}

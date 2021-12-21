@@ -1,14 +1,5 @@
 package no.nav.dokarkiv.core.hentdokumenturl;
 
-import static no.nav.dokarkiv.core.domain.codes.OnDemandInstansCode.SYFO;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
-import static org.mockito.Matchers.isA;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import no.nav.dokarkiv.core.dokumenturl.DefaultHentDokumentUrl;
 import no.nav.dokarkiv.core.dokumenturl.HentDokumentUrlConstants;
 import no.nav.dokarkiv.core.dokumenturl.HentDokumentUrlRequest;
@@ -45,6 +36,15 @@ import org.mockito.MockitoAnnotations;
 
 import java.net.URLDecoder;
 import java.util.Optional;
+
+import static no.nav.dokarkiv.core.domain.codes.OnDemandInstansCode.SYFO;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.isA;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * Unit tests for HentDokumentUrlServiceTest.

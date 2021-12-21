@@ -1,19 +1,5 @@
 package no.nav.dokarkiv.inngaaendejournal.v1;
 
-import static no.nav.dokarkiv.core.domain.codes.MottaksKanalCode.NAV_NO;
-import static no.nav.dokarkiv.inngaaendejournal.v1.InngaaendeJournalProvider.HENT_JOURNALPOST;
-import static no.nav.dokarkiv.inngaaendejournal.v1.InngaaendeJournalProvider.UTLED_JOURNALFOERINGSBEHOV;
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.isA;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.Matchers.hasSize;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.when;
-
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
@@ -78,6 +64,20 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+
+import static no.nav.dokarkiv.core.domain.codes.MottaksKanalCode.NAV_NO;
+import static no.nav.dokarkiv.inngaaendejournal.v1.InngaaendeJournalProvider.HENT_JOURNALPOST;
+import static no.nav.dokarkiv.inngaaendejournal.v1.InngaaendeJournalProvider.UTLED_JOURNALFOERINGSBEHOV;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.isA;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.Matchers.hasSize;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.when;
 
 /**
  * @author Joakim Bjørnstad, Jbit AS

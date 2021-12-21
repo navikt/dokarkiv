@@ -1,13 +1,5 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.DokumentInfoInnskrenketPartsinnsynException;
 import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.DokumentInfoIsOrganInterntException;
 import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.DokumentInfoNotFoundException;
@@ -110,9 +102,17 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatcher;
 import org.mockito.InjectMocks;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * Unit tests for ArkiverDokumentproduksjonProvider
@@ -253,7 +253,7 @@ public class ArkiverDokumentproduksjonProviderTest {
 	@Test
 	public void shouldAvbrytJournalpost() throws Exception {
 		provider.avbrytJournalpost(createAvbrytJournalpostRequest(JOURNALPOST_ID, ENDRET_AV_NAVN));
-		verify(avbrytJournalpostServiceMock).avbrytJournalpost(Matchers.argThat(new IsAvbrytJournalpostServiceCalledWithExpectedInput()));
+		verify(avbrytJournalpostServiceMock).avbrytJournalpost(argThat(new IsAvbrytJournalpostServiceCalledWithExpectedInput()));
 	}
 
 
