@@ -1,26 +1,5 @@
 package no.nav.dokarkiv.behandleinngaaendejournal.v1.tjoark067;
 
-import static no.nav.dokarkiv.behandleinngaaendejournal.v1.BehandleInngaaendeJournalDataProvider.DOKUMENT_INFO_ID_VEDLEGG;
-import static no.nav.dokarkiv.behandleinngaaendejournal.v1.BehandleInngaaendeJournalDataProvider.OPPRETTET_AV_NAVN;
-import static no.nav.dokarkiv.behandleinngaaendejournal.v1.BehandleInngaaendeJournalDataProvider.buildJournalpost;
-import static no.nav.dokarkiv.behandleinngaaendejournal.v1.BehandleInngaaendeJournalDataProvider.buildNoRelasjonJournalpost;
-import static no.nav.dokarkiv.behandleinngaaendejournal.v1.BehandleInngaaendeJournalDataProvider.createFilDetaljerArkiv;
-import static no.nav.dokarkiv.behandleinngaaendejournal.v1.BehandleInngaaendeJournalDataProvider.createFilDetaljerProduksjon;
-import static no.nav.dokarkiv.behandleinngaaendejournal.v1.BehandleInngaaendeJournalDataProvider.createHovedDokumentInfo;
-import static no.nav.dokarkiv.behandleinngaaendejournal.v1.BehandleInngaaendeJournalDataProvider.createHoveddokumentInfoNoFildetaljer;
-import static no.nav.dokarkiv.behandleinngaaendejournal.v1.BehandleInngaaendeJournalDataProvider.createVedleggDokumentInfo;
-import static no.nav.dokarkiv.behandleinngaaendejournal.v1.BehandleInngaaendeJournalDataProvider.createVedleggDokumentInfoNoFildetaljer;
-import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
-import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
-import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
-import static no.nav.dokarkiv.core.domain.builder.SaksrelasjonBuilder.getSaksrelasjonBuilder;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.when;
-
 import no.nav.dokarkiv.behandleinngaaendejournal.v1.exceptions.FerdigstillingIkkeMuligException;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
@@ -46,6 +25,27 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.slf4j.MDC;
 
 import java.util.Optional;
+
+import static no.nav.dokarkiv.behandleinngaaendejournal.v1.BehandleInngaaendeJournalDataProvider.DOKUMENT_INFO_ID_VEDLEGG;
+import static no.nav.dokarkiv.behandleinngaaendejournal.v1.BehandleInngaaendeJournalDataProvider.OPPRETTET_AV_NAVN;
+import static no.nav.dokarkiv.behandleinngaaendejournal.v1.BehandleInngaaendeJournalDataProvider.buildJournalpost;
+import static no.nav.dokarkiv.behandleinngaaendejournal.v1.BehandleInngaaendeJournalDataProvider.buildNoRelasjonJournalpost;
+import static no.nav.dokarkiv.behandleinngaaendejournal.v1.BehandleInngaaendeJournalDataProvider.createFilDetaljerArkiv;
+import static no.nav.dokarkiv.behandleinngaaendejournal.v1.BehandleInngaaendeJournalDataProvider.createFilDetaljerProduksjon;
+import static no.nav.dokarkiv.behandleinngaaendejournal.v1.BehandleInngaaendeJournalDataProvider.createHovedDokumentInfo;
+import static no.nav.dokarkiv.behandleinngaaendejournal.v1.BehandleInngaaendeJournalDataProvider.createHoveddokumentInfoNoFildetaljer;
+import static no.nav.dokarkiv.behandleinngaaendejournal.v1.BehandleInngaaendeJournalDataProvider.createVedleggDokumentInfo;
+import static no.nav.dokarkiv.behandleinngaaendejournal.v1.BehandleInngaaendeJournalDataProvider.createVedleggDokumentInfoNoFildetaljer;
+import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
+import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
+import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
+import static no.nav.dokarkiv.core.domain.builder.SaksrelasjonBuilder.getSaksrelasjonBuilder;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.when;
 
 /**
  * @author Joakim Bjørnstad, Jbit AS

@@ -1,15 +1,5 @@
 package no.nav.dokarkiv.innsynjournal.v2.security.pip;
 
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsNull.nullValue;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.anyLong;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import no.nav.dokarkiv.innsynjournal.v2.security.XMLTypes;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
@@ -26,6 +16,16 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.persistence.EntityManager;
 import java.net.URI;
+
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNull.nullValue;
+import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * Unit tests for {@link JournalpostAvsenderLocator}

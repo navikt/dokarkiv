@@ -1,20 +1,6 @@
 package no.nav.dokarkiv.arkiverdokumentmottak.tjoark203.v1;
 
 
-import static no.nav.dokarkiv.arkiverdokumentmottak.ArkiverDokumentmottakConstants.FORSENDELSE_MOTTAK_ID_KEY;
-import static no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder.getDokumentInfoBuilder;
-import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalpostBuilder;
-import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.hasSize;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.mockito.Mockito.when;
-
 import com.google.common.collect.ImmutableMap;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.entities.Bruker;
@@ -31,6 +17,19 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
 import java.util.Optional;
+
+import static no.nav.dokarkiv.arkiverdokumentmottak.ArkiverDokumentmottakConstants.FORSENDELSE_MOTTAK_ID_KEY;
+import static no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder.getDokumentInfoBuilder;
+import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalpostBuilder;
+import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.hasSize;
+import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 @RunWith(org.mockito.junit.MockitoJUnitRunner.class)
 public class JournalforInngaaendeForsendelseServiceTest {
@@ -131,8 +130,8 @@ public class JournalforInngaaendeForsendelseServiceTest {
 		verify(repositoryMock).findJournalpostIdByTilleggsopplysningerNokkelAndVerdi(FORSENDELSE_MOTTAK_ID_KEY, FORSENDLESE_MOTTAKS_ID);
 		verify(repositoryMock).findById(JOURNALPOST_ID);
 		verifyNoMoreInteractions(repositoryMock);
-		verifyZeroInteractions(validator);
-		verifyZeroInteractions(dokumentFilerDelegateMock);
+		verifyNoMoreInteractions(validator);
+		verifyNoMoreInteractions(dokumentFilerDelegateMock);
 	}
 
 	private Journalpost createJournalpost(Long journalpostId, Long dokumentInfoIdHoveddokument, Long dokumentInfoIdVedlegg1) {

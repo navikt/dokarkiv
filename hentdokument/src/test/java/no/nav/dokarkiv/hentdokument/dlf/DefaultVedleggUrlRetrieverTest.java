@@ -1,12 +1,5 @@
 package no.nav.dokarkiv.hentdokument.dlf;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
-import static org.mockito.Matchers.isA;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import no.nav.dokarkiv.core.dokumenturl.HentDokumentUrl;
 import no.nav.dokarkiv.core.dokumenturl.HentDokumentUrlRequest;
 import no.nav.dokarkiv.core.dokumenturl.HentDokumentUrlResponse;
@@ -19,6 +12,13 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.isA;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * Unit tests for DefaultVedleggUrlRetriever.

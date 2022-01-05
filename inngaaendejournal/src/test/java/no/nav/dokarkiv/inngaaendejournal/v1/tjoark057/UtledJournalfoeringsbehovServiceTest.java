@@ -1,20 +1,5 @@
 package no.nav.dokarkiv.inngaaendejournal.v1.tjoark057;
 
-import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalpostBuilder;
-import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
-import static no.nav.dokarkiv.core.domain.builder.SaksrelasjonBuilder.getSaksrelasjonBuilder;
-import static no.nav.dokarkiv.inngaaendejournal.v1.InngaaendeJournalDataProvider.DOKUMENT_INFO_ID;
-import static no.nav.dokarkiv.inngaaendejournal.v1.InngaaendeJournalDataProvider.DOKUMENT_INFO_ID_VEDLEGG;
-import static no.nav.dokarkiv.inngaaendejournal.v1.InngaaendeJournalDataProvider.buildJournalpost;
-import static no.nav.dokarkiv.inngaaendejournal.v1.InngaaendeJournalDataProvider.createHovedDokumentInfo;
-import static no.nav.dokarkiv.inngaaendejournal.v1.InngaaendeJournalDataProvider.createVedleggDokumentInfo;
-import static no.nav.dokarkiv.inngaaendejournal.v1.common.JournalfoeringsbehovTo.MANGLER;
-import static no.nav.dokarkiv.inngaaendejournal.v1.common.JournalfoeringsbehovTo.MANGLER_IKKE;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.when;
-
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
@@ -34,6 +19,21 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Optional;
+
+import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalpostBuilder;
+import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
+import static no.nav.dokarkiv.core.domain.builder.SaksrelasjonBuilder.getSaksrelasjonBuilder;
+import static no.nav.dokarkiv.inngaaendejournal.v1.InngaaendeJournalDataProvider.DOKUMENT_INFO_ID;
+import static no.nav.dokarkiv.inngaaendejournal.v1.InngaaendeJournalDataProvider.DOKUMENT_INFO_ID_VEDLEGG;
+import static no.nav.dokarkiv.inngaaendejournal.v1.InngaaendeJournalDataProvider.buildJournalpost;
+import static no.nav.dokarkiv.inngaaendejournal.v1.InngaaendeJournalDataProvider.createHovedDokumentInfo;
+import static no.nav.dokarkiv.inngaaendejournal.v1.InngaaendeJournalDataProvider.createVedleggDokumentInfo;
+import static no.nav.dokarkiv.inngaaendejournal.v1.common.JournalfoeringsbehovTo.MANGLER;
+import static no.nav.dokarkiv.inngaaendejournal.v1.common.JournalfoeringsbehovTo.MANGLER_IKKE;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 /**
  * @author Joakim Bjørnstad, Jbit AS

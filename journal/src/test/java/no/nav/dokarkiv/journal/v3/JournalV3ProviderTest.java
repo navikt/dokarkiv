@@ -1,20 +1,5 @@
 package no.nav.dokarkiv.journal.v3;
 
-import static no.nav.dokarkiv.journal.v3.JournalV3Provider.JOURNAL_V3_HENT_DOKUMENT;
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.hasProperty;
-import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.isA;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyListOf;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.util.DateProvider;
@@ -70,6 +55,21 @@ import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.util.GregorianCalendar;
 import java.util.List;
+
+import static no.nav.dokarkiv.journal.v3.JournalV3Provider.JOURNAL_V3_HENT_DOKUMENT;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.hasProperty;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isA;
+import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * Unit tests for JournalV3Provider.
@@ -133,7 +133,7 @@ public class JournalV3ProviderTest {
 	
 	@Test
 	public void hentKjerneJournalpostListeShouldDelegateToService() throws Exception {
-		when(hentKjerneJournalpostListeRequestMapper.map(eq(hentKjerneJournalpostListeRequest), anyListOf(ArkivSak.class))).thenReturn(requestTo);
+		when(hentKjerneJournalpostListeRequestMapper.map(eq(hentKjerneJournalpostListeRequest), anyList())).thenReturn(requestTo);
 		when(hentKjerneJournalpostListeService.hentKjerneJournalpostListe(requestTo)).thenReturn(responseTo);
 		when(hentKjerneJournalpostListeResponseMapper.map(responseTo)).thenReturn(wsResponse);
 		
@@ -155,7 +155,7 @@ public class JournalV3ProviderTest {
 		ArkivSak accessableArkivSak = new ArkivSak().withArkivSakId("1").withArkivSakSystem("FS22");
 		ArkivSak notAccesableArkivSak = new ArkivSak().withArkivSakId("2").withArkivSakSystem("PEN");
 
-		when(hentKjerneJournalpostListeRequestMapper.map(eq(hentKjerneJournalpostListeRequest), anyListOf(ArkivSak.class))).thenReturn(requestTo);
+		when(hentKjerneJournalpostListeRequestMapper.map(eq(hentKjerneJournalpostListeRequest), anyList())).thenReturn(requestTo);
 		when(abacSecurityService.assertAccessToSak(any(XacmlRequest.class), eq("1"), eq(FagsystemCode.FS22))).thenReturn(Decision.PERMIT);
 		when(abacSecurityService.assertAccessToSak(any(XacmlRequest.class), eq("2"), eq(FagsystemCode.PEN))).thenReturn(Decision.DENY);
 		

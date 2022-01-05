@@ -1,8 +1,5 @@
 package no.nav.dokarkiv.behandlejournal.v2;
 
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.verify;
-
 import no.nav.dokarkiv.behandlejournal.SporingsMetaData;
 import no.nav.dokarkiv.behandlejournal.v2.tjoark060.ArkiverUstrukturertKrav;
 import no.nav.dokarkiv.behandlejournal.v2.tjoark060.ArkiverUstrukturertKravRequest;
@@ -23,6 +20,9 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
 
 
 /**

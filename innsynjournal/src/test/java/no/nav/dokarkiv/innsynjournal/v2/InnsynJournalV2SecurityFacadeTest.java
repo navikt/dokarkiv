@@ -36,7 +36,6 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -76,9 +75,9 @@ public class InnsynJournalV2SecurityFacadeTest {
 
 	private static final byte[] DOK = "dok".getBytes();
 	private static final String USER_ID = "11111111111";
-	private static Date DAY_BEFORE_LEGAL_DATE = Date.from(LocalDate.of(2015, Month.DECEMBER, 31).atStartOfDay(ZoneId.systemDefault()).toInstant());
+	private static final Date DAY_BEFORE_LEGAL_DATE = Date.from(LocalDate.of(2015, Month.DECEMBER, 31).atStartOfDay(ZoneId.systemDefault()).toInstant());
 	private static final LocalDate LEGAL_DATE = LocalDate.of(2016, Month.JANUARY, 1);
-	private static Date DAY_AFTER_LEGAL_DATE = Date.from(LocalDate.of(2016, Month.JANUARY, 2).atStartOfDay(ZoneId.systemDefault()).toInstant());
+	private static final Date DAY_AFTER_LEGAL_DATE = Date.from(LocalDate.of(2016, Month.JANUARY, 2).atStartOfDay(ZoneId.systemDefault()).toInstant());
 
 	private static final long JOURNALPOST_ID = 1L;
 	private static final long DOKUMENT_INFO_ID = 2L;
@@ -732,7 +731,7 @@ public class InnsynJournalV2SecurityFacadeTest {
 	}
 
 	private void mockJournalpost(Journalpost journalpost) throws NoJournalpostFoundException, DocumentNotFoundException {
-		when(joarkRepository.findById(Matchers.eq(JOURNALPOST_ID))).thenReturn(Optional.ofNullable(journalpost));
+		when(joarkRepository.findById(eq(JOURNALPOST_ID))).thenReturn(Optional.ofNullable(journalpost));
 		when(tjoark054HentDokumentService.hentDokument(eq(new HentDokumentRequestTo(JOURNALPOST_ID, DOKUMENT_INFO_ID, VariantFormatCode.ARKIV))))
 				.thenReturn(DOK);
 	}
