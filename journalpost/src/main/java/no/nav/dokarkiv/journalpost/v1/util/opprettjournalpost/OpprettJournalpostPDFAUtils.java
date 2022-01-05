@@ -18,14 +18,13 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
-import static org.verapdf.pdfa.flavours.PDFAFlavour.Specification.NO_STANDARD;
 
 @Component
 @Slf4j
 public class OpprettJournalpostPDFAUtils {
 
 	private final MeterRegistry meterRegistry;
-	private static Pattern brukerPattern = Pattern.compile("[a-zA-Z]\\d{6}");
+	private static final Pattern BRUKER_PATTERN = Pattern.compile("[a-zA-Z]\\d{6}");
 
 	@Inject
 	public OpprettJournalpostPDFAUtils(MeterRegistry meterRegistry) {
@@ -37,9 +36,9 @@ public class OpprettJournalpostPDFAUtils {
 		//Det er ikke så farlig om det er et dokument vi ikke får validert, det er verre om opprettjournalpost slutter å funke..
 		try {
 			List<PDFAValidatorResponse> responses = journalpost.findAllFilDetaljer().stream()
-					.filter(fildetaljer -> fildetaljer.isAPdf())
-					.map(filDetaljer -> safeValidateDokumentFil(filDetaljer))
-					.filter(result -> result.isPresent())
+					.filter(FilDetaljer::isAPdf)
+					.map(this::safeValidateDokumentFil)
+					.filter(Optional::isPresent)
 					.map(Optional::get)
 					.collect(Collectors.toList());
 
@@ -53,8 +52,8 @@ public class OpprettJournalpostPDFAUtils {
 						tilknyttetSom, arkivar, response.validPdfToString(),
 						response.getPdfVersion(), response.getAssertionResults());
 			}
-		} catch (Exception e) {
-			log.warn("Feilet under PDF/A validering", e);
+		} catch (Throwable t) {
+			log.warn("Feilet under PDF/A validering", t);
 		}
 	}
 
@@ -62,8 +61,8 @@ public class OpprettJournalpostPDFAUtils {
 	public Optional<PDFAValidatorResponse> safeValidateDokumentFil(FilDetaljer filDetaljer) {
 		try {
 			return Optional.of(PDFAValidatorUtil.validatePDFA(filDetaljer));
-		} catch (Exception e) {
-			log.warn("Kunne ikke validere dokumentfil", e);
+		} catch (Throwable t) {
+			log.warn("Kunne ikke validere dokumentfil", t);
 			return Optional.empty();
 		}
 	}
@@ -125,6 +124,6 @@ public class OpprettJournalpostPDFAUtils {
 	}
 
 	private boolean isServiceuser(String user) {
-		return !brukerPattern.matcher(user).matches();
+		return !BRUKER_PATTERN.matcher(user).matches();
 	}
 }
