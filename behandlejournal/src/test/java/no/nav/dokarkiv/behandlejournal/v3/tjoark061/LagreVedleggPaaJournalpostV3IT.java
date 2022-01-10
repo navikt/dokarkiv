@@ -1,14 +1,5 @@
 package no.nav.dokarkiv.behandlejournal.v3.tjoark061;
 
-import static no.nav.dokarkiv.core.domain.builder.BidragMellomlagringBuilder.getBidragMellomlagringBuilder;
-import static no.nav.dokarkiv.core.domain.builder.BidragMellomlagringDokumentBuilder.getBidragMellomlagringDokumentBuilder;
-import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalpostBuilder;
-import static no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode.IS;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-
 import no.nav.dokarkiv.behandlejournal.v3.AbstractBehandleJournalV3Itest;
 import no.nav.dokarkiv.behandlejournal.v3.KodeverdiHelper;
 import no.nav.dokarkiv.core.domain.builder.BrukerBuilder;
@@ -50,6 +41,15 @@ import org.junit.Test;
 
 import java.util.Date;
 import java.util.Set;
+
+import static no.nav.dokarkiv.core.domain.builder.BidragMellomlagringBuilder.getBidragMellomlagringBuilder;
+import static no.nav.dokarkiv.core.domain.builder.BidragMellomlagringDokumentBuilder.getBidragMellomlagringDokumentBuilder;
+import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalpostBuilder;
+import static no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode.IS;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 
 /**
  * Integration test of operation LagreVedleggPaaJournalpost.
@@ -245,6 +245,7 @@ public class LagreVedleggPaaJournalpostV3IT extends AbstractBehandleJournalV3Ite
 								.opprettetKildeNavn("test").build())
 				.journalpostType(JournalpostTypeCode.U)
 				.journalStatus(JournalStatusCode.OD)
+				.fagomrade(FagomradeCode.FOR)
 				.opprettetKildeNavn("test")
 				.dokumentInfoRelasjoner(
 						JournalpostDokumentInfoRelasjonBuilder

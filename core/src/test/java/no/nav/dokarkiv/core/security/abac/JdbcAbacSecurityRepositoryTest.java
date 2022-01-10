@@ -1,18 +1,5 @@
 package no.nav.dokarkiv.core.security.abac;
 
-import static no.nav.dokarkiv.core.domain.builder.BrukerBuilder.getBrukerBuilder;
-import static no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder.getDokumentInfoBuilder;
-import static no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder.getFilDetaljerBuilder;
-import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalpostBuilder;
-import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
-import static no.nav.dokarkiv.core.domain.builder.SaksrelasjonBuilder.getSaksrelasjonBuilder;
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
-
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
@@ -45,6 +32,19 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
 import java.util.Date;
+
+import static no.nav.dokarkiv.core.domain.builder.BrukerBuilder.getBrukerBuilder;
+import static no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder.getDokumentInfoBuilder;
+import static no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder.getFilDetaljerBuilder;
+import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalpostBuilder;
+import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
+import static no.nav.dokarkiv.core.domain.builder.SaksrelasjonBuilder.getSaksrelasjonBuilder;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertThat;
 
 /**
  * @author Martin Burheim Tingstad, Visma Consulting AS
@@ -153,7 +153,6 @@ public class JdbcAbacSecurityRepositoryTest {
 		Journalpost j = createJournalpost(JournalStatusCode.J);
 		j.clearBrukere();
 		j.setSaksrelasjon(null);
-		j.setFagomrade(null);
 
 		joarkRepository.save(j);
 
@@ -161,7 +160,6 @@ public class JdbcAbacSecurityRepositoryTest {
 		assertThat(abacResources.getFagsystem(), is(nullValue()));
 		assertThat(abacResources.getSakId(), is(""));
 		assertThat(abacResources.getBrukerIds(), is(empty()));
-		assertThat(abacResources.getFagomrade(), is(nullValue()));
 	}
 
 	@Test

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder;
 import no.nav.dokarkiv.core.domain.builder.JournalpostBuilder;
 import no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder;
+import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
@@ -372,6 +373,7 @@ public class MottaDokumentUtgaaendeSkanningServiceIT extends AbstractJournalpost
         return JournalpostBuilder
                 .getJournalpostBuilder()
                 .journalpostId(0L)
+                .fagomrade(FagomradeCode.FOR)
                 .opprettetKildeNavn("ITest")
                 .journalpostType(journalpostTypeCode)
                 .journalStatus(journalStatusCode)
