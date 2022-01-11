@@ -1,9 +1,9 @@
 package no.nav.dokarkiv.journalpost.v1.swagger;
 
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
-import io.swagger.annotations.Authorization;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -14,17 +14,23 @@ import java.lang.annotation.Target;
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@ApiOperation(value = "Fullfører journalføringen og låser journalposten for senere endringer",
-        authorizations = {@Authorization(value = "Authorization"), @Authorization(value = "NavConsumerToken")})
+@Operation(
+		summary = "Fullfører journalføringen og låser journalposten for senere endringer"
+)
 @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "OK - Journalposten fikk status ekspedert"),
-        @ApiResponse(code = 400, message = "Kan bare sette status ekspedert, når:\n" +
-                "*Journalpost er UTGÅENDE\n" +
-                "*Journalpost har status FS eller FL\n" +
-                "*Journalpost har en saksrelasjon som ikke er feilregistrert"),
-        @ApiResponse(code = 401, message = "Ugyldig OIDC token. Denne feilen gis dersom tokenet ikke har riktig format eller er utgått."),
-        @ApiResponse(code = 403, message = "Konsument har ikke tilgang til å ekspedere journalpost"),
-        @ApiResponse(code = 404, message = "Journalpost ikke funnet"),
-        @ApiResponse(code = 500, message = "Uventet teknisk feil")})
+		@ApiResponse(responseCode = "200", description = "OK - Journalposten fikk status ekspedert"),
+		@ApiResponse(responseCode = "400", description = """
+							Kan bare sette status ekspedert, når:
+							* Journalpost er UTGÅENDE
+							* Journalpost har status FS eller FL
+							* Journalpost har en saksrelasjon som ikke er feilregistrert
+						""",
+				content = @Content
+		),
+		@ApiResponse(responseCode = "401", description = "Ugyldig OIDC token. Denne feilen gis dersom tokenet ikke har riktig format eller er utgått.", content = @Content),
+		@ApiResponse(responseCode = "403", description = "Konsument har ikke tilgang til å ekspedere journalpost", content = @Content),
+		@ApiResponse(responseCode = "404", description = "Journalpost ikke funnet", content = @Content),
+		@ApiResponse(responseCode = "500", description = "Uventet teknisk feil", content = @Content)
+})
 public @interface SwaggerOppdaterDistribusjonsinfo {
 }

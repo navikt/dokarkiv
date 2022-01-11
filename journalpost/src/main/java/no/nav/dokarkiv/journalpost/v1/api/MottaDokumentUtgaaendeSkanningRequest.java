@@ -1,7 +1,7 @@
 package no.nav.dokarkiv.journalpost.v1.api;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -14,30 +14,33 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 public class MottaDokumentUtgaaendeSkanningRequest {
-    @ApiModelProperty(
-            dataType = "Date",
+
+    // TODO: Sjekk at dataType er Date etter fjerning av dataType = "Date"
+    // TODO: Description: Er det dato på mottatt batch?
+    @Schema(
+            description = "Dato batch ble mottatt",
             example = "2019-11-29")
     @JsonFormat(pattern="yyyy-MM-dd")
     private Date datoMottatt;
 
     @NotNull(message = "MottaDokumentUtgaaendeSkanningRequest mangler mottakskanal")
-    @ApiModelProperty(
-            value = "Mottakskanal for dokument"
+    @Schema(
+            description = "Mottakskanal for dokument"
     )
     private String mottakskanal;
 
-    @ApiModelProperty(
-            value = "Liste med Tilleggsopplysninger"
+    @Schema(
+            description = "Liste med tilleggsopplysninger"
     )
     private List<Tilleggsopplysning> tilleggsopplysninger;
 
-    @ApiModelProperty(
-            value = "navn på batch"
+    @Schema(
+            description = "Navn på batch"
     )
     private String batchnavn;
 
-    @ApiModelProperty(
-            value = "liste av skannede dokumenter"
+    @Schema(
+            description = "Liste av skannede dokumenter"
     )
     private List<DokumentVariant> dokumentvarianter;
 }

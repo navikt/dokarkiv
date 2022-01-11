@@ -1,6 +1,6 @@
 package no.nav.dokarkiv.journalpost.v1.api.finnMottatteJournalposter;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -14,10 +14,11 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class FinnMottatteJournalposterResponse {
+
+	// TODO: Sjekk at dataType="List" framleis viser i grensesnittet
 	@NotNull(message = "FinnMottatteJournalposterResponse mangler Journalposter")
-	@ApiModelProperty(
-			dataType="List",
-			value = "journalposter",
+	@Schema(
+			description = "journalposter",
 			required = true
 	)
 	private List<UbehandletJournalpost> journalposter;

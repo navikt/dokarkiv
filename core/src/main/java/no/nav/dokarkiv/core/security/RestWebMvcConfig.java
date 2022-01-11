@@ -16,7 +16,7 @@ import javax.inject.Named;
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
  */
-@EnableJwtTokenValidation(ignore = {"org.springframework", "springfox"})
+@EnableJwtTokenValidation(ignore = {"org.springframework", "org.springdoc"})
 @Configuration
 public class RestWebMvcConfig implements WebMvcConfigurer {
 

@@ -1,6 +1,6 @@
 package no.nav.dokarkiv.journalpost.v1.api;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -20,6 +20,8 @@ import java.util.List;
 public class TilknyttVedleggResponse {
 
 	@Builder.Default
-	@ApiModelProperty(value = "Liste med dokumenter som ikke kunne knyttes til journalpostId")
+	@Schema(
+			description = "Liste med dokumenter som ikke kunne knyttes til journalpostId"
+	)
 	private List<FeiledeDokumenter> feiledeDokumenter = new ArrayList<>();
 }

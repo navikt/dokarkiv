@@ -1,9 +1,9 @@
 package no.nav.dokarkiv.journalpost.v1.swagger;
 
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
-import io.swagger.annotations.Authorization;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -14,13 +14,15 @@ import java.lang.annotation.Target;
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@ApiOperation(value = "Tar en inngående journalpost ut av ordinær saksbehandling fordi det ikke er mulig å identifisere hvilken bruker dokumentene er knyttet til",
-        authorizations = {@Authorization(value = "Authorization"), @Authorization(value = "NavConsumerToken")})
+@Operation(
+		summary = "Tar en inngående journalpost ut av ordinær saksbehandling fordi det ikke er mulig å identifisere hvilken bruker dokumentene er knyttet til"
+)
 @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "* OK"),
-        @ApiResponse(code = 400, message = "* Feil i aksjonslogg"),
-        @ApiResponse(code = 401, message = "* Ugyldig OIDC token. Denne feilen gis dersom tokenet ikke har riktig format eller er utgått."),
-        @ApiResponse(code = 404, message = "* Journalpost ikke funnet"),
-        @ApiResponse(code = 500, message = "* Internal server error")})
+		@ApiResponse(responseCode = "200", description = "OK"),
+		@ApiResponse(responseCode = "400", description = "Feil i aksjonslogg", content = @Content),
+		@ApiResponse(responseCode = "401", description = "Ugyldig OIDC token. Denne feilen gis dersom tokenet ikke har riktig format eller er utgått.", content = @Content),
+		@ApiResponse(responseCode = "404", description = "Journalpost ikke funnet", content = @Content),
+		@ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
+})
 public @interface SwaggerSettUkjentBruker {
 }

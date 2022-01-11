@@ -1,8 +1,8 @@
 package no.nav.dokarkiv.journalpost.v1.api;
 
-import io.swagger.annotations.ApiModel;
+import io.swagger.v3.oas.annotations.media.Schema;
 
-@ApiModel
+@Schema
 public enum Sakstype {
     FAGSAK,
     GENERELL_SAK,

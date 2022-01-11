@@ -1,6 +1,6 @@
 package no.nav.dokarkiv.journalpost.v1.controllers;
 
-import io.swagger.annotations.Api;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.metrics.RestMetrics;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
@@ -30,7 +30,7 @@ import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
 import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.hasText;
 import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateId;
 
-@Api(description = "Tjenester for å slette, endre og legge til logiske vedlegg")
+@Tag(name="journalfoer-skannet-dokument-rest-controller", description = "Tjenester for å slette, endre og legge til logiske vedlegg")
 @Slf4j
 @Protected
 @RestController
