@@ -1,13 +1,8 @@
 package no.nav.dokarkiv.hentjournalsakinfo.rjoark920;
 
-import static no.nav.dokarkiv.core.domain.builder.DokumentFilBuilder.getDokumentFilBuilder;
-import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalpostBuilder;
-import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
 import no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder;
 import no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder;
+import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
@@ -24,6 +19,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.transaction.TestTransaction;
 
 import java.util.Base64;
+
+import static no.nav.dokarkiv.core.domain.builder.DokumentFilBuilder.getDokumentFilBuilder;
+import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalpostBuilder;
+import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 /**
  * @author Sigurd Midttun, Visma Consulting.
@@ -66,9 +67,9 @@ public class Rjoark920IT extends AbstractHentjournalsakinfoItest {
 		Journalpost journalpost = getJournalpostBuilder()
 				.journalStatus(JournalStatusCode.D)
 				.journalpostType(JournalpostTypeCode.U)
+				.fagomrade(FagomradeCode.FOR)
 				.opprettetAvNavn("testuser")
 				.opprettetKildeNavn("test")
-
 				.dokumentInfoRelasjoner(
 						getJournalpostDokumentInfoRelasjonBuilder()
 								.tilknyttetAvNavn("testuser")

@@ -1,24 +1,5 @@
 package no.nav.dokarkiv.journal.v3.tjoark051;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
-import static com.github.tomakehurst.wiremock.client.WireMock.get;
-import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.resetAllRequests;
-import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
-import static com.github.tomakehurst.wiremock.client.WireMock.verify;
-import static no.nav.dokarkiv.core.domain.entities.DokumentInfo.DELETED_DOCUMENT_TITLE;
-import static no.nav.dokarkiv.core.repository.DokumentFilSkjermetRepository.FIL_UUID_DUMMY_DOKUMENT_KASSERT;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.hasProperty;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.isA;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
-
 import no.nav.dokarkiv.core.datautil.BrukerTestDataProvider;
 import no.nav.dokarkiv.core.datautil.SaksrelasjonTestDataProvider;
 import no.nav.dokarkiv.core.domain.builder.DokumentFilBuilder;
@@ -60,6 +41,25 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.resetAllRequests;
+import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
+import static com.github.tomakehurst.wiremock.client.WireMock.verify;
+import static no.nav.dokarkiv.core.domain.entities.DokumentInfo.DELETED_DOCUMENT_TITLE;
+import static no.nav.dokarkiv.core.repository.DokumentFilSkjermetRepository.FIL_UUID_DUMMY_DOKUMENT_KASSERT;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.hasProperty;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isA;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 /**
  * Integration test for HentDokument(TJOARK051) in 3rd gen. Journal service.
@@ -315,6 +315,7 @@ public class HentDokumentIT extends AbstractJournalV3Itest {
 				.getJournalpostBuilder()
 				.journalStatus(JournalStatusCode.FS)
 				.journalpostType(JournalpostTypeCode.U)
+				.fagomrade(FagomradeCode.FOR)
 				.opprettetAvNavn("testuser")
 				.opprettetKildeNavn("test")
 				.saksrelasjon(SaksrelasjonTestDataProvider.createSaksrelasjon().build())
@@ -347,6 +348,7 @@ public class HentDokumentIT extends AbstractJournalV3Itest {
 				.getJournalpostBuilder()
 				.journalStatus(JournalStatusCode.FS)
 				.journalpostType(JournalpostTypeCode.U)
+				.fagomrade(FagomradeCode.FOR)
 				.opprettetAvNavn("testuser")
 				.opprettetKildeNavn("test")
 				.saksrelasjon(SaksrelasjonTestDataProvider.createSaksrelasjon().build())

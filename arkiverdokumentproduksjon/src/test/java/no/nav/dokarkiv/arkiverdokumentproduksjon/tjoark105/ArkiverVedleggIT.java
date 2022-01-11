@@ -1,14 +1,9 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark105;
 
-import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalpostBuilder;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
-
 import no.nav.dokarkiv.arkiverdokumentproduksjon.AbstractArkiverdokumentproduksjonItest;
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
+import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
@@ -28,6 +23,12 @@ import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
+import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalpostBuilder;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
 
 /**
  * Integration tests for the arkiverVedlegg operation
@@ -161,6 +162,7 @@ public class ArkiverVedleggIT extends AbstractArkiverdokumentproduksjonItest {
 		return getJournalpostBuilder()
 				.journalStatus(journalStatusCode)
 				.journalpostType(JournalpostTypeCode.U)
+				.fagomrade(FagomradeCode.FOR)
 				.opprettetKildeNavn(OPPRETTET_KILDE_NAVN)
 				.build();
 	}

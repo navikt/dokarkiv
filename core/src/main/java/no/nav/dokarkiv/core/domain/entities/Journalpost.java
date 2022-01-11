@@ -1,12 +1,5 @@
 package no.nav.dokarkiv.core.domain.entities;
 
-import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.J;
-import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.M;
-import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.MO;
-import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.OD;
-import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.U;
-import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.UB;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import no.nav.dokarkiv.core.domain.AbstractPersistentVersionedDomainObjectWithKilde;
@@ -59,6 +52,13 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.J;
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.M;
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.MO;
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.OD;
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.U;
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.UB;
 
 /**
  * Domain entity that represents journalposts.
@@ -134,7 +134,7 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	private String kanalReferanseId;
 
 	@Enumerated(EnumType.STRING)
-	@Column(name = "k_fagomrade")
+	@Column(name = "k_fagomrade", nullable = false)
 	private FagomradeCode fagomrade;
 
 	@Enumerated(EnumType.STRING)

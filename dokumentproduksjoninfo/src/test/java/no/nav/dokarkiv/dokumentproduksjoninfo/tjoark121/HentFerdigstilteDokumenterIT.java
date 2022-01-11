@@ -1,17 +1,9 @@
 package no.nav.dokarkiv.dokumentproduksjoninfo.tjoark121;
 
-import static no.nav.dokarkiv.core.domain.builder.DokumentFilBuilder.getDokumentFilBuilder;
-import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalpostBuilder;
-import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
-import static no.nav.dokarkiv.core.domain.codes.DokumentStatusCode.FERDIGSTILT;
-import static no.nav.dokarkiv.core.domain.codes.DokumentStatusCode.UNDER_REDIGERING;
-import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.FS;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-
 import no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder;
 import no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
+import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
@@ -30,6 +22,15 @@ import org.junit.Test;
 import org.springframework.test.context.transaction.TestTransaction;
 
 import java.io.ByteArrayOutputStream;
+
+import static no.nav.dokarkiv.core.domain.builder.DokumentFilBuilder.getDokumentFilBuilder;
+import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalpostBuilder;
+import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
+import static no.nav.dokarkiv.core.domain.codes.DokumentStatusCode.FERDIGSTILT;
+import static no.nav.dokarkiv.core.domain.codes.DokumentStatusCode.UNDER_REDIGERING;
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.FS;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 
 /**
  * Integration test for HentFerdigstilteDokumenter.
@@ -161,6 +162,7 @@ public class HentFerdigstilteDokumenterIT extends AbstractDokumentproduksjoninfo
 				.journalpostType(JournalpostTypeCode.U)
 				.opprettetAvNavn("testuser")
 				.opprettetKildeNavn("test")
+				.fagomrade(FagomradeCode.FOR)
 				.dokumentInfoRelasjoner(
 						getJournalpostDokumentInfoRelasjonBuilder()
 								.tilknyttetAvNavn("testuser")

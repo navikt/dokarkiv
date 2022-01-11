@@ -558,6 +558,7 @@ public class TestUtils {
 	public static OpprettJournalpostRequest.OpprettJournalpostRequestBuilder createMinimalRequest(JournalpostType journalpostType) {
 		return OpprettJournalpostRequest.builder()
 				.journalposttype(journalpostType)
+				.tema(FagomradeCode.FOR.name())
 				.dokumenter(Collections.singletonList(
 						Dokument.builder()
 								.tittel(DOKUMENT_TITTEL1)
@@ -570,6 +571,7 @@ public class TestUtils {
 	public static OpprettJournalpostRequest createMinimalRequestWithKanal(String kanal) {
 		return OpprettJournalpostRequest.builder()
 				.journalposttype(UTGAAENDE)
+				.tema(FagomradeCode.FOR.name())
 				.eksternReferanseId(KANALREFERANSE_ID)
 				.kanal(kanal)
 				.dokumenter(Collections.singletonList(

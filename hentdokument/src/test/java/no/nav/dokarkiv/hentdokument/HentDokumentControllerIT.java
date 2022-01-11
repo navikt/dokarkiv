@@ -10,6 +10,7 @@ import no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder;
 import no.nav.dokarkiv.core.domain.builder.JournalpostBuilder;
 import no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
+import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
@@ -34,7 +35,6 @@ import org.apache.http.HttpHeaders;
 import org.assertj.core.util.DateUtil;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -245,6 +245,7 @@ public class HentDokumentControllerIT {
 		return JournalpostBuilder
 				.getJournalpostBuilder()
 				.journalStatus(JournalStatusCode.FS)
+				.fagomrade(FagomradeCode.FOR)
 				.journalpostType(JournalpostTypeCode.U)
 				.opprettetAvNavn("testuser")
 				.opprettetKildeNavn("test")
@@ -277,6 +278,7 @@ public class HentDokumentControllerIT {
 		return JournalpostBuilder
 				.getJournalpostBuilder()
 				.journalStatus(JournalStatusCode.FS)
+				.fagomrade(FagomradeCode.FOR)
 				.journalpostType(JournalpostTypeCode.U)
 				.opprettetAvNavn("testuser")
 				.opprettetKildeNavn("test")
