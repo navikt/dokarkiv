@@ -39,6 +39,7 @@ public class Springdoc {
 												.scheme("bearer")
 												.bearerFormat("JWT")
 												.in(SecurityScheme.In.HEADER)
+												.description("Eksempel på verdi som skal inn i Value-feltet (Bearer trengs altså ikke å oppgis): 'eyAidH...'")
 												.name(HttpHeaders.AUTHORIZATION)
 								)
 								.addSecuritySchemes("Nav-Consumer-Token",
@@ -47,7 +48,7 @@ public class Springdoc {
 												.scheme("bearer")
 												.bearerFormat("JWT")
 												.in(SecurityScheme.In.HEADER)
-												.description("Bearer må eksplisitt inkluderes i Value under som 'Bearer ejY...'")
+												.description("Eksempel på verdi som skal inn i Value-feltet: 'Bearer eyJraWQi...'")
 												.name(NavHeaders.NAV_CONSUMER_TOKEN)
 								)
 				)

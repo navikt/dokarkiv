@@ -20,9 +20,9 @@ import java.lang.annotation.Target;
 )
 @ApiResponses(value = {
 		@ApiResponse(responseCode = "200", description = "OK"),
-		@ApiResponse(responseCode = "400", description = "Kan ikke fjerne vedlegg som knyttet til journalpost", content = @Content),
+		@ApiResponse(responseCode = "400", description = "Kan ikke fjerne vedlegg som er knyttet til journalpost", content = @Content),
 		@ApiResponse(responseCode = "401", description = "Ugyldig OIDC token. Denne feilen gis dersom tokenet ikke har riktig format eller er utgått.", content = @Content),
-		@ApiResponse(responseCode = "404", description = "Journalpost funnet ikke", content = @Content),
+		@ApiResponse(responseCode = "404", description = "Journalpost ikke funnet", content = @Content),
 		@ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
 })
 public @interface SwaggerFjernVedlegg {

@@ -18,7 +18,7 @@ import java.lang.annotation.Target;
 		summary = "Oppretter en journalpost i fagarkivet, med eller uten dokumenter"
 )
 @ApiResponses(value = {
-		@ApiResponse(responseCode = "201", description = "Created"),
+		@ApiResponse(responseCode = "201", description = "Journalpost opprettet"),
 		@ApiResponse(responseCode = "400", description = "Kan ikke opprette journalpost", content = @Content),
 		@ApiResponse(responseCode = "401", description = "Mangler tilgang til å opprette ny journalpost. Ugyldig OIDC token. Denne feilen gis dersom tokenet ikke har riktig format eller er utgått.", content = @Content),
 		@ApiResponse(responseCode = "403", description = "Bruker mangler tilgang til å opprette journalpost på tema", content = @Content),
