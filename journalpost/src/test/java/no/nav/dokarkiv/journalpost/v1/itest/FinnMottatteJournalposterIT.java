@@ -25,10 +25,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
-import static org.junit.Assert.assertTrue;
+
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 
 public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
@@ -62,7 +63,7 @@ public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
 				.map(Journalpost::getJournalpostId)
 				.collect(Collectors.toList());
 
-		reinitTransaction();
+		commitAndStartNewTransaction();
 
 		List<Long> ubehandletJournalpostIds = finnMottatteJournalposterService
 				.finnMottatteJournalposter()
@@ -97,7 +98,7 @@ public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
 					if(verifyJournalpost(journalpost)) validJournalpostIds.add(journalpost.getJournalpostId());
 				}
 
-		reinitTransaction();
+		commitAndStartNewTransaction();
 
 		List<UbehandletJournalpost> ubehandletJournalposts = finnMottatteJournalposterService.finnMottatteJournalposter().getJournalposter();
 		List<Long> retrievedIds = ubehandletJournalposts.stream().map(UbehandletJournalpost::getJournalpostId).collect(Collectors.toList());
@@ -134,7 +135,7 @@ public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
 						if(verifyJournalpostWithTema(journalpost)) validJournalpostIds.add(journalpost.getJournalpostId());
 					}
 
-		reinitTransaction();
+		commitAndStartNewTransaction();
 
 		List<UbehandletJournalpost> ubehandletJournalposts = finnMottatteJournalposterService.finnMottatteJournalposterMedTemaEldreEnn(List.of(FAGKODE_UFO, FAGKODE_PEN), DEFAULT_DAGER_GAMLE).getJournalposter();
 		List<Long> retrievedIds = ubehandletJournalposts.stream().map(UbehandletJournalpost::getJournalpostId).collect(Collectors.toList());
@@ -167,7 +168,7 @@ public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
 				.map(Journalpost::getJournalpostId)
 				.collect(Collectors.toList());
 
-		reinitTransaction();
+		commitAndStartNewTransaction();
 
 		List<Long> ubehandletJournalpostIds = finnMottatteJournalposterService
 				.finnMottatteJournalposter()
@@ -193,7 +194,7 @@ public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
 				.map(Journalpost::getJournalpostId)
 				.collect(Collectors.toList());
 
-		reinitTransaction();
+		commitAndStartNewTransaction();
 
 		HttpEntity requestEntity = new HttpEntity<>(null, createHeaders(GYLDIG_CONSUMER));
 

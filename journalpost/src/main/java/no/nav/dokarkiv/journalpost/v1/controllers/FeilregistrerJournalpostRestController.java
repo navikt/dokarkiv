@@ -37,8 +37,8 @@ import static no.nav.abac.xacml.NavAttributter.RESOURCE_ARKIV_JOURNALPOST;
 import static no.nav.abac.xacml.NavAttributter.RESOURCE_FELLES_DOMENE;
 import static no.nav.abac.xacml.NavAttributter.RESOURCE_FELLES_RESOURCE_TYPE;
 import static no.nav.abac.xacml.StandardAttributter.ACTION_ID;
-import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
+import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
 import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.ADMIN_UPDATE_ACTION;
 import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.ARKIV_V2;
 import static no.nav.dokarkiv.journalpost.v1.util.AvvikstypeConstants.FEILREGISTRER_SAKSTILKNYTNING;
@@ -151,7 +151,7 @@ public class FeilregistrerJournalpostRestController {
 		aksjonsLoggTo = AksjonsLoggTO.builder()
 				.aksjon(aksjon)
 				.journalpostId(Long.parseLong(journalpostId))
-				.utfoertAv(MDC.get(MDC_CONSUMER_ID))
+				.utfoertAv(MDC.get(MDC_USER_ID))
 				.hjemmel("ARKL")
 				.melding(melding)
 				.build();
