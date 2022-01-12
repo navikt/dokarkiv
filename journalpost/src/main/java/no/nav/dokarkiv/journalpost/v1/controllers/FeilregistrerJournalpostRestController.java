@@ -51,7 +51,7 @@ import static no.nav.dokarkiv.journalpost.v1.util.AvvikstypeConstants.SETT_UKJEN
 @Protected
 @RestController
 @RequestMapping("/rest/journalpostapi/v1/journalpost")
-@Tag(name = "feilregistrer-journalpost-rest-controller", description = "Tjenester for å feilregistrere journalpost")
+@Tag(name = "journalpostapi - feilregistrer", description = "Tjenester for å feilregistrere journalpost")
 public class FeilregistrerJournalpostRestController {
 
 	private static final String FIKK_UKJENT_BRUKER = "Journalposten fikk status Ukjent Bruker";

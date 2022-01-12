@@ -30,7 +30,7 @@ import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
 import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.hasText;
 import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateId;
 
-@Tag(name="journalfoer-skannet-dokument-rest-controller", description = "Tjenester for å slette, endre og legge til logiske vedlegg")
+@Tag(name="journalpostapi - logiske vedlegg", description = "Tjenester for å slette, endre og legge til logiske vedlegg")
 @Slf4j
 @Protected
 @RestController

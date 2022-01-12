@@ -53,7 +53,7 @@ import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validate
 /**
  * @author Olav Røstvold Thorsen, Visma Consulting.
  */
-@Tag(name="journalpost-intern-rest-controller", description = "Interne tjenester mot journalpost")
+@Tag(name="journalpost - internt", description = "Interne tjenester mot journalpost")
 @Slf4j
 @Unprotected
 @RestController

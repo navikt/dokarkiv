@@ -60,7 +60,7 @@ import static no.nav.dokarkiv.journalpost.v1.validators.OpprettJournalpostReques
 import static org.springframework.http.HttpStatus.CONFLICT;
 import static org.springframework.http.HttpStatus.CREATED;
 
-@Tag(name="arkiver-og-journalfoer-rest-controller", description = "Tjenester for å arkivere og journalføre i fagarkiv")
+@Tag(name="journalpostapi", description = "Tjenester for å arkivere og journalføre i fagarkiv")
 @Slf4j
 @Protected
 @RestController
