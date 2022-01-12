@@ -2,6 +2,7 @@ package no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,8 +26,6 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OpprettJournalpostRequest {
-
-	// TODO: Sjekk at rekkjefylgje er ok etter fjerning av positions. Ev. flytt rundt på variablane så det er i orden
 
 	@NotNull(message = "Journalposttype kan ikke være null")
 	@Schema(
@@ -107,12 +106,13 @@ public class OpprettJournalpostRequest {
 	private Date datoMottatt;
 
 	@Builder.Default
-	@Schema(
+	@ArraySchema(arraySchema = @Schema(
 			description = """
 					Fagsystemene som arkiverer kan legge til egne fagspesifikke attributter per journalpost. Disse er representert
 					som et skjemaløst nøkkel-verdi-sett og valideres ikke ved arkivering. Et eksempel på et slikt sett kan være
 					nøkkel: bucid og verdi: 12345.
 					"""
+		)
 	)
 	private List<Tilleggsopplysning> tilleggsopplysninger = new ArrayList<>();
 
@@ -123,9 +123,10 @@ public class OpprettJournalpostRequest {
 
 	@Builder.Default
 	@NotNull(message = "dokumenter kan ikke være null")
-	@Schema(
+	@ArraySchema(arraySchema=@Schema(
 			description = "Første dokument blir tilknyttet som hoveddokument på journalposten. Øvrige dokumenter tilknyttes som vedlegg. Rekkefølgen på vedlegg beholdes ikke ved uthenting av journalpost.",
 			required = true
+		)
 	)
 	private List<Dokument> dokumenter = new ArrayList<>();
 

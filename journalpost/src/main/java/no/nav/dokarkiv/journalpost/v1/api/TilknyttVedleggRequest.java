@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.journalpost.v1.api;
 
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,9 +28,10 @@ public class TilknyttVedleggRequest {
 	private String tilknyttetAvNavn;
 
 	@Builder.Default
-	@Schema(
+	@ArraySchema(arraySchema = @Schema(
 			description = "Liste med et eller flere dokumenter som skal knyttes til journalpostId som vedlegg",
 			required = true
+		)
 	)
 	private List<DokumentVedlegg> dokument = new ArrayList<>();
 

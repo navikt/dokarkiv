@@ -3,6 +3,7 @@ package no.nav.dokarkiv.journalpost.v1.api;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.Hidden;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,8 +18,6 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OppdaterJournalpostRequest {
-
-	// TODO: Sjekk at rekkjefylgje er ok etter fjerning av positions. Ev. flytt rundt på variablane så det er i orden
 
 	@Schema(
 			description = """
@@ -92,17 +91,19 @@ public class OppdaterJournalpostRequest {
 	@JsonFormat(pattern = "yyyy-MM-dd")
 	private Date datoMottatt;
 
-	@Schema(
+	@ArraySchema(arraySchema = @Schema(
 			description = """
 					Fagsystemene som arkiverer kan legge til egne fagspesifikke attributter per journalpost. Disse er representert
 					som et skjemaløst nøkkel-verdi-sett og valideres ikke ved arkivering. Et eksempel på et slikt sett kan være
 					nøkkel: bucid og verdi: 12345.
 					"""
+		)
 	)
 	private List<Tilleggsopplysning> tilleggsopplysninger;
 
-	@Schema(
+	@ArraySchema(arraySchema = @Schema(
 			description = "Liste over dokumentene på journalposten der metadata skal endres"
+		)
 	)
 	private List<DokumentInfo> dokumenter;
 }
