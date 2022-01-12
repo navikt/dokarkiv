@@ -72,6 +72,6 @@ public class UbehandletJournalpost {
 			required = true,
 			example = "2019-12-04T11:07:25.596+0000"
 	)
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") // TODO: Ikkje likt som example
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ")
 	private Date datoOpprettet;
 }

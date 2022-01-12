@@ -94,7 +94,6 @@ public class OpprettJournalpostRequest {
 	)
 	private String eksternReferanseId;
 
-	// TODO: Sjekk at type er dato etter fjerning av dataType = "Date"
 	@Schema(
 			description = """
 					Dato forsendelsen ble mottatt fra avsender. Dersom datoMottatt er tom, settes verdien til dagens dato.

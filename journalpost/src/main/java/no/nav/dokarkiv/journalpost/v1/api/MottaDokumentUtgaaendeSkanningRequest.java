@@ -15,8 +15,6 @@ import java.util.List;
 @AllArgsConstructor
 public class MottaDokumentUtgaaendeSkanningRequest {
 
-    // TODO: Sjekk at dataType er Date etter fjerning av dataType = "Date"
-    // TODO: Description: Er det dato på mottatt batch?
     @Schema(
             description = "Dato batch ble mottatt",
             example = "2019-11-29")
