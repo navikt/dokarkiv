@@ -53,9 +53,7 @@
 		<bcprov-jdk15on.version>1.70</bcprov-jdk15on.version>
 		<commons.beanutils.version>1.9.4</commons.beanutils.version>
 		<commons.io.version>2.11.0</commons.io.version>
-
-		<!-- Skal gå over til springdoc -->
-		<swagger.version>2.9.2</swagger.version>
+		<springdoc-openapi-ui.version>1.6.4</springdoc-openapi-ui.version>
 
 		<!-- NAV -->
 		<modig-security.version>3.0.6</modig-security.version>
@@ -184,6 +182,7 @@
 				<artifactId>journalpost</artifactId>
 				<version>1-SNAPSHOT</version>
 			</dependency>
+
 			<dependency>
 				<groupId>com.oracle.database.jdbc</groupId>
 				<artifactId>ojdbc10</artifactId>
@@ -352,16 +351,11 @@
 				<version>${no-nav-dok-tjenester-journalfoerinngaaende.version}</version>
 			</dependency>
 
-			<!-- Swagger -->
+			<!-- Springdoc -->
 			<dependency>
-				<groupId>io.springfox</groupId>
-				<artifactId>springfox-swagger2</artifactId>
-				<version>${swagger.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>io.springfox</groupId>
-				<artifactId>springfox-swagger-ui</artifactId>
-				<version>${swagger.version}</version>
+				<groupId>org.springdoc</groupId>
+				<artifactId>springdoc-openapi-ui</artifactId>
+				<version>${springdoc-openapi-ui.version}</version>
 			</dependency>
 
 			<!-- provided og test -->

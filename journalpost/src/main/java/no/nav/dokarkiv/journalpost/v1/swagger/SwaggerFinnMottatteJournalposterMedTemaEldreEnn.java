@@ -1,9 +1,9 @@
 package no.nav.dokarkiv.journalpost.v1.swagger;
 
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
-import io.swagger.annotations.Authorization;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -14,13 +14,17 @@ import java.lang.annotation.Target;
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@ApiOperation(value = "Finner ubehandlede journalposts som er eldre enn \"eldreEnn\" dager og har tema lik input",
-		authorizations = {@Authorization(value = "Authorization"), @Authorization(value = "NavConsumerToken")})
+@Operation(
+		summary = """
+				Finner ubehandlede journalposter som er eldre enn "eldreEnn" dager med tema lik input
+				"""
+)
 @ApiResponses(value = {
-		@ApiResponse(code = 200, message = "OK"),
-		@ApiResponse(code = 400, message = "Kall mangler enn eller flere påkrevde headere"),
-		@ApiResponse(code = 401, message = "Konsument har ikke tilgang til å kalle tjenesten."),
-		@ApiResponse(code = 403, message = "Konsument har ikke tilgang til å kalle tjenesten"),
-		@ApiResponse(code = 500, message = "Internal server error")})
+		@ApiResponse(responseCode = "200", description = "OK"),
+		@ApiResponse(responseCode = "400", description = "Kall mangler enn eller flere påkrevde headere", content = @Content),
+		@ApiResponse(responseCode = "401", description = "Konsument har ikke tilgang til å kalle tjenesten.", content = @Content),
+		@ApiResponse(responseCode = "403", description = "Konsument har ikke tilgang til å kalle tjenesten", content = @Content),
+		@ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
+})
 public @interface SwaggerFinnMottatteJournalposterMedTemaEldreEnn {
 }

@@ -1,9 +1,10 @@
 package no.nav.dokarkiv.journalpost.v1.swagger;
 
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
-import io.swagger.annotations.Authorization;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -14,14 +15,17 @@ import java.lang.annotation.Target;
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@ApiOperation(value = "Knytter ett eller flere eksisterende dokumenter til en utgående journalpost som vedlegg",
-		authorizations = {@Authorization(value = "Authorization"), @Authorization(value = "NavConsumerToken")})
+@Operation(
+		summary = "Knytter ett eller flere eksisterende dokumenter til en utgående journalpost som vedlegg",
+		security = { @SecurityRequirement(name = "bearer-key"), @SecurityRequirement(name = "nav-consumer-token") }
+)
 @ApiResponses(value = {
-		@ApiResponse(code = 200, message = "OK"),
-		@ApiResponse(code = 207, message = "Delvis ok (Multi-Status). Dokumentene som ikke lot seg knytte til journalpost som vedlegg returneres som en feiledeDokumenter-liste, med årsakskode."),
-		@ApiResponse(code = 401, message = "Konsument har ikke tilgang til å kalle tjenesten."),
-		@ApiResponse(code = 403, message = "Konsument har ikke tilgang til å kalle tjenesten"),
-		@ApiResponse(code = 404, message = " Journalpost finnes ikke eller er utilgjengelig"),
-		@ApiResponse(code = 500, message = "Internal server error")})
+		@ApiResponse(responseCode = "200", description = "OK"),
+		@ApiResponse(responseCode = "207", description = "Delvis ok (Multi-Status). Dokumentene som ikke lot seg knytte til journalpost som vedlegg returneres som en feiledeDokumenter-liste, med årsakskode.", content = @Content),
+		@ApiResponse(responseCode = "401", description = "Konsument har ikke tilgang til å kalle tjenesten.", content = @Content),
+		@ApiResponse(responseCode = "403", description = "Konsument har ikke tilgang til å kalle tjenesten", content = @Content),
+		@ApiResponse(responseCode = "404", description = "Journalpost finnes ikke eller er utilgjengelig", content = @Content),
+		@ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
+})
 public @interface SwaggerTilknyttVedlegg {
 }

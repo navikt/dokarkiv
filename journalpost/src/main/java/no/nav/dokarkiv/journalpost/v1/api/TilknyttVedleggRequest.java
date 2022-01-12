@@ -1,6 +1,7 @@
 package no.nav.dokarkiv.journalpost.v1.api;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -19,17 +20,19 @@ import java.util.List;
 @AllArgsConstructor
 public class TilknyttVedleggRequest {
 
-	@ApiModelProperty(
-			value = "navn på saksbehandler som tilknytter vedleggene",
+	@Schema(
+			description = "Navn på saksbehandler som tilknytter vedleggene",
 			required = true,
 			example = "Mikkel Pettersen"
 	)
 	private String tilknyttetAvNavn;
 
 	@Builder.Default
-	@ApiModelProperty(
-			value = "liste med et eller flere dokumenter som skal knyttes til journalpostId som vedlegg",
-			required = true)
+	@ArraySchema(arraySchema = @Schema(
+			description = "Liste med et eller flere dokumenter som skal knyttes til journalpostId som vedlegg",
+			required = true
+		)
+	)
 	private List<DokumentVedlegg> dokument = new ArrayList<>();
 
 }

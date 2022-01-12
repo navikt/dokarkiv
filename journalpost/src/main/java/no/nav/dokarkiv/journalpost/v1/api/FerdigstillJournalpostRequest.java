@@ -1,6 +1,6 @@
 package no.nav.dokarkiv.journalpost.v1.api;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,41 +18,39 @@ import java.util.Date;
 @AllArgsConstructor
 public class FerdigstillJournalpostRequest {
 
-	@ApiModelProperty(
-			value = "NAV-enheten som personen som utfører journalføring jobber for. Ved automatisk journalføring uten mennesker involvert, skal enhet settes til \"9999\".",
+	@Schema(
+			description = """
+					NAV-enheten som personen som utfører journalføring jobber for. Ved automatisk journalføring uten mennesker involvert, skal enhet settes til "9999".
+					""",
 			required = true,
 			example = "9999"
 	)
 	private String journalfoerendeEnhet;
 
 	@Deprecated
-	@ApiModelProperty(
-			value = "Navn på saksbehandler eller system som journalførte.",
-			required = false,
+	@Schema(
+			description = "Navn på saksbehandler eller system som journalførte.",
 			example = "srvbruker"
 	)
 	private String journalfortAvNavn;
 
 	@Deprecated
-	@ApiModelProperty(
-			value = "Navn på saksbehandler eller system som opprettet journalposten.",
-			required = false,
+	@Schema(
+			description = "Navn på saksbehandler eller system som opprettet journalposten.",
 			example = "srvbruker"
 	)
 	private String opprettetAvNavn;
 
 	@Deprecated
-	@ApiModelProperty(
-			value = "Dato for ferdigstilling av dokumentet i Infotrygd.",
-			required = false,
+	@Schema(
+			description = "Dato for ferdigstilling av dokumentet i Infotrygd.",
 			example = "2020-02-20"
 	)
 	private Date datoJournal;
 
 	@Deprecated
-	@ApiModelProperty(
-			value = "Datoen journalposten ble plukket ut til Sentral Print.",
-			required = false,
+	@Schema(
+			description = "Datoen journalposten ble plukket ut til Sentral Print.",
 			example = "2020-02-20"
 	)
 	private Date datoSendtPrint;

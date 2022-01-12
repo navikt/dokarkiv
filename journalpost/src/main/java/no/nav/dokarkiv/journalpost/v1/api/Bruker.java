@@ -1,6 +1,6 @@
 package no.nav.dokarkiv.journalpost.v1.api;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -14,16 +14,16 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor
 public class Bruker {
     @NotNull(message = "Bruker mangler idType")
-    @ApiModelProperty(
-            value = "Angir hvilken type identifikator som er benyttet i bruker.id",
+    @Schema(
+            description = "Angir hvilken type identifikator som er benyttet i bruker.id",
             required = true,
             example = "FNR"
     )
     private BrukerIdType idType;
 
     @NotNull(message = "Bruker mangler id")
-    @ApiModelProperty(
-            value = "Brukerens fødselsnummer (11 siffer) eller organisasjonsnummer (9 siffer)",
+    @Schema(
+            description = "Brukerens fødselsnummer (11 siffer) eller organisasjonsnummer (9 siffer)",
             required = true,
             example = "09071844797"
     )
