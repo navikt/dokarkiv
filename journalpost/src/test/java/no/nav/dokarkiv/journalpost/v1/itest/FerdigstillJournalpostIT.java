@@ -5,6 +5,7 @@ import no.nav.dokarkiv.core.datautil.JournalpostTestDataProvider;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
+import no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode;
 import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.journalpost.v1.api.FerdigstillJournalpostRequest;
@@ -20,6 +21,7 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
+import static no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode.*;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -151,6 +153,76 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 		assertTrue(ferdigstiltJournalpost.getChangeStamp().getUpdatedDate().after(journalpost.getChangeStamp().getCreatedDate()));
 		TestTransaction.end();
 	}
+	@Test
+	public void happyPathUtgaaendeUtsendingsKanalL() throws IOException {
+		abacPermit();
+
+		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.U, JournalStatusCode.M).build();
+		journalpost.setUtsendingskanal(L);
+		joarkRepository.save(journalpost);
+
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
+
+		journalpost.getUtsendingskanal();
+
+		Long journalpostId = journalpost.getJournalpostId();
+		FerdigstillJournalpostRequest request = FerdigstillJournalpostRequest.builder()
+				.journalfoerendeEnhet("9999")
+				.build();
+
+		HttpEntity requestEntity = new HttpEntity(request, createHeadersWithServiceUserToken());
+		ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST + journalpostId + FERDIGSTILL, HttpMethod.PATCH, requestEntity, String.class);
+
+		assertEquals(HttpStatus.OK, response.getStatusCode());
+
+		TestTransaction.start();
+		Journalpost ferdigstiltJournalpost = joarkRepository.findById(journalpost.getJournalpostId()).orElseThrow(RuntimeException::new);
+
+		assertEquals(SERVICE_USER_ID, ferdigstiltJournalpost.getEndretAvNavn());
+		assertEquals(SERVICE_USER_ID, ferdigstiltJournalpost.getEndretKildeNavn());
+		assertEquals(SERVICE_USER_ID, ferdigstiltJournalpost.getJournalfortAvNavn());
+		assertEquals(SERVICE_USER_ID, ferdigstiltJournalpost.getChangeStamp().getUpdatedBy());
+		assertEquals(request.getJournalfoerendeEnhet(), ferdigstiltJournalpost.getJournalForendeEnhetId());
+		assertEquals(JournalStatusCode.FL, ferdigstiltJournalpost.getJournalstatus());
+		assertTrue(ferdigstiltJournalpost.getChangeStamp().getUpdatedDate().after(journalpost.getChangeStamp().getCreatedDate()));
+		TestTransaction.end();
+	}
+
+	@Test
+	public void happyPathJournalstatusFSKanFerdigstilles() throws IOException {
+		abacPermit();
+
+		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.U, JournalStatusCode.FS).build();
+		joarkRepository.save(journalpost);
+
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
+
+		journalpost.getUtsendingskanal();
+
+		Long journalpostId = journalpost.getJournalpostId();
+		FerdigstillJournalpostRequest request = FerdigstillJournalpostRequest.builder()
+				.journalfoerendeEnhet("9999")
+				.build();
+
+		HttpEntity requestEntity = new HttpEntity(request, createHeadersWithServiceUserToken());
+		ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST + journalpostId + FERDIGSTILL, HttpMethod.PATCH, requestEntity, String.class);
+
+		assertEquals(HttpStatus.OK, response.getStatusCode());
+
+		TestTransaction.start();
+		Journalpost ferdigstiltJournalpost = joarkRepository.findById(journalpost.getJournalpostId()).orElseThrow(RuntimeException::new);
+
+		assertEquals(SERVICE_USER_ID, ferdigstiltJournalpost.getEndretAvNavn());
+		assertEquals(SERVICE_USER_ID, ferdigstiltJournalpost.getEndretKildeNavn());
+		assertEquals(SERVICE_USER_ID, ferdigstiltJournalpost.getJournalfortAvNavn());
+		assertEquals(SERVICE_USER_ID, ferdigstiltJournalpost.getChangeStamp().getUpdatedBy());
+		assertEquals(request.getJournalfoerendeEnhet(), ferdigstiltJournalpost.getJournalForendeEnhetId());
+		assertEquals(JournalStatusCode.FS, ferdigstiltJournalpost.getJournalstatus());
+		assertTrue(ferdigstiltJournalpost.getChangeStamp().getUpdatedDate().after(journalpost.getChangeStamp().getCreatedDate()));
+		TestTransaction.end();
+	}
 
 	@Test
 	public void happyPathNotat() throws IOException {
@@ -181,7 +253,7 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(SERVICE_USER_ID, ferdigstiltJournalpost.getJournalfortAvNavn());
 		assertEquals(SERVICE_USER_ID, ferdigstiltJournalpost.getChangeStamp().getUpdatedBy());
 		assertEquals(request.getJournalfoerendeEnhet(), ferdigstiltJournalpost.getJournalForendeEnhetId());
-		assertEquals(JournalStatusCode.FS, ferdigstiltJournalpost.getJournalstatus());
+		assertEquals(JournalStatusCode.FL, ferdigstiltJournalpost.getJournalstatus());
 		assertTrue(ferdigstiltJournalpost.getChangeStamp().getUpdatedDate().after(journalpost.getChangeStamp().getCreatedDate()));
 		TestTransaction.end();
 	}
@@ -190,7 +262,7 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 	public void shouldFailIfJournalpostIsNotMidlertidig() throws IOException {
 		abacPermit();
 
-		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.U, JournalStatusCode.FS).build();
+		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.U, JournalStatusCode.E).build();
 		joarkRepository.save(journalpost);
 
 		TestTransaction.flagForCommit();

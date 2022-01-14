@@ -6,6 +6,7 @@ import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggTO;
 import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
+import no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.DokarkivFunctionalException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
@@ -32,6 +33,7 @@ import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_NAME;
 import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.FERDIGSTILL;
 import static no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode.I;
+import static no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode.L;
 import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateJournalfoerendeEnhet;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
@@ -151,9 +153,13 @@ public class FerdigstillJournalpostService {
 		if (I.equals(journalpost.getJournalposttype())) {
 			journalpost.setJournalstatus(JournalStatusCode.J);
 		} else if (JournalpostTypeCode.U.equals(journalpost.getJournalposttype())) {
-			journalpost.setJournalstatus(JournalStatusCode.FS);
+			if (L.equals(journalpost.getUtsendingskanal())) {
+				journalpost.setJournalstatus(JournalStatusCode.FL);
+			} else {
+				journalpost.setJournalstatus(JournalStatusCode.FS);
+			}
 		} else { // JournalpostTypeCode.N
-			journalpost.setJournalstatus(JournalStatusCode.FS);
+			journalpost.setJournalstatus(JournalStatusCode.FL);
 		}
 	}
 
