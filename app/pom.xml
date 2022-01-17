@@ -41,10 +41,6 @@
 		</dependency>
 		<dependency>
 			<groupId>no.nav.dokarkiv</groupId>
-			<artifactId>inngaaendejournal</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>no.nav.dokarkiv</groupId>
 			<artifactId>behandleinngaaendejournal</artifactId>
 		</dependency>
 		<dependency>
