@@ -1,7 +1,8 @@
 package no.nav.dokarkiv.journalpost.v1.controllers;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiParam;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
@@ -59,7 +60,7 @@ import static no.nav.dokarkiv.journalpost.v1.validators.OpprettJournalpostReques
 import static org.springframework.http.HttpStatus.CONFLICT;
 import static org.springframework.http.HttpStatus.CREATED;
 
-@Api(description = "Tjenester for å arkivere og journalføre i fagarkiv")
+@Tag(name="journalpostapi", description = "Tjenester for å arkivere og journalføre i fagarkiv")
 @Slf4j
 @Protected
 @RestController
@@ -103,7 +104,7 @@ public class ArkiverOgJournalfoerRestController {
     @PatchMapping("/{journalpostId}/ferdigstill")
     @RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark201"}, percentiles = {0.5, 0.95})
     public ResponseEntity<String> ferdigstillJournalpost(
-            @PathVariable @ApiParam(value = "IDen til journalposten som skal ferdigstilles", required = true, example = "77778888") String journalpostId,
+            @PathVariable @Parameter(description = "IDen til journalposten som skal ferdigstilles", required = true, example = "77778888") String journalpostId,
             @RequestBody FerdigstillJournalpostRequest request
     ) {
         MDC.put(MDC_REQUEST_ID, "rjoark201");
@@ -122,7 +123,7 @@ public class ArkiverOgJournalfoerRestController {
     @PatchMapping("/{journalpostId}/oppdaterDistribusjonsinfo")
     @RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark201"}, percentiles = {0.5, 0.95})
     public ResponseEntity<String> oppdaterDistribusjonsinfo(
-            @PathVariable @ApiParam(value = "IDen til journalposten som skal oppdateres", required = true, example = "77778888") String journalpostId,
+            @PathVariable @Parameter(description = "IDen til journalposten som skal oppdateres", required = true, example = "77778888") String journalpostId,
             @RequestBody OppdaterDistribusjonsinfoRequest request) {
         MDC.put(MDC_REQUEST_ID, "oppdaterDistribusjonsinfo");
         log.info(MDC.get(MDC_REQUEST_ID) + " har mottatt kall for oppdatering av distribusjonsinfo for journalpostId={}", journalpostId);
@@ -143,8 +144,12 @@ public class ArkiverOgJournalfoerRestController {
     @PutMapping(value = "/{journalpostId}")
     @RestMetrics(value = "dok_request", extraTags = {"process_code", "oppdaterjournalpost"}, percentiles = {0.5, 0.95})
     public OppdaterJournalpostResponse oppdaterJournalpost(
-            @ApiParam(name = "journalpostId", value = "Angir JournalpostId som skal oppdatere f,.eks. 467011764",
-                    required = true, defaultValue = "467011764")
+            @Parameter(
+                    name = "journalpostId",
+                    description = "Angir JournalpostId som skal oppdatere f.eks. 467011764",
+                    required = true,
+                    example = "467011764"
+            )
             @PathVariable String journalpostId,
             @RequestBody OppdaterJournalpostRequest request) {
         RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDC_CONSUMER_ID));
@@ -164,10 +169,14 @@ public class ArkiverOgJournalfoerRestController {
     @RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark202"}, percentiles = {0.5, 0.95}, histogram = true)
     public ResponseEntity<OpprettJournalpostResponse> opprettJournalpost(
             @RequestBody OpprettJournalpostRequest request,
-            @ApiParam(name = "forsoekFerdigstill", value = "Angir hvorvidt tjenesten skal forsøke å ferdigstille eller ikke. Dette vil å sette journalposten i en status som indikerer at journalføring er komplett, \n og låser journalposten for senere endringer. " +
-                    "Journalposten blir uansett opprettet, men kun ferdigstilt dersom den oppfyller krav til struktur og metadata som beskrevet under ferdigstillJournalpost.\n " +
-                    "Dersom det feiler å ferdigstille journalposten og den har status \"midlertidig\" og journalførendeEnhet==\"9999\" skal journalførendeEnhet settes til null." +
-                    "Sjekk \"journalpostferdigstilt\" på responsen for å være sikker på at journalposten faktisk ble ferdigstilt.", allowableValues = "true, false", required = false)
+            @Parameter(
+                    name = "forsoekFerdigstill",
+                    description = """
+                            Angir hvorvidt tjenesten skal forsøke å ferdigstille eller ikke. Dette vil å sette journalposten i en status som indikerer at journalføring er komplett,
+                             og låser journalposten for senere endringer. Journalposten blir uansett opprettet, men kun ferdigstilt dersom den oppfyller krav til struktur og metadata som beskrevet under ferdigstillJournalpost.
+                             Dersom det feiler å ferdigstille journalposten og den har status "midlertidig" og journalførendeEnhet=="9999" skal journalførendeEnhet settes til null. Sjekk "journalpostferdigstilt" på responsen for å være sikker på at journalposten faktisk ble ferdigstilt.""",
+                    schema = @Schema(type = "boolean", allowableValues = {"true", "false"})
+            )
             @RequestParam(required = false) String forsoekFerdigstill) {
         MDC.put(MDC_REQUEST_ID, "rjoark202");
         RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDC_CONSUMER_ID));

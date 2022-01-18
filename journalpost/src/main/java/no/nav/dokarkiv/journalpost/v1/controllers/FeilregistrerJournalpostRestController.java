@@ -1,7 +1,7 @@
 package no.nav.dokarkiv.journalpost.v1.controllers;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiParam;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService;
 import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggTO;
@@ -37,8 +37,8 @@ import static no.nav.abac.xacml.NavAttributter.RESOURCE_ARKIV_JOURNALPOST;
 import static no.nav.abac.xacml.NavAttributter.RESOURCE_FELLES_DOMENE;
 import static no.nav.abac.xacml.NavAttributter.RESOURCE_FELLES_RESOURCE_TYPE;
 import static no.nav.abac.xacml.StandardAttributter.ACTION_ID;
-import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
+import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
 import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.ADMIN_UPDATE_ACTION;
 import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.ARKIV_V2;
 import static no.nav.dokarkiv.journalpost.v1.util.AvvikstypeConstants.FEILREGISTRER_SAKSTILKNYTNING;
@@ -51,7 +51,7 @@ import static no.nav.dokarkiv.journalpost.v1.util.AvvikstypeConstants.SETT_UKJEN
 @Protected
 @RestController
 @RequestMapping("/rest/journalpostapi/v1/journalpost")
-@Api(value = "Feilregistrer", description = "Tjenester for å feilregistrere journalpost")
+@Tag(name = "journalpostapi - feilregistrer", description = "Tjenester for å feilregistrere journalpost")
 public class FeilregistrerJournalpostRestController {
 
 	private static final String FIKK_UKJENT_BRUKER = "Journalposten fikk status Ukjent Bruker";
@@ -86,7 +86,7 @@ public class FeilregistrerJournalpostRestController {
 	@PatchMapping("/{journalpostId}/feilregistrer/" + FEILREGISTRER_SAKSTILKNYTNING)
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark401"}, percentiles = {0.5, 0.95})
 	public ResponseEntity<String> feilregistrerSakstilkytning(
-			@PathVariable @ApiParam(value = "IDen til journalposten som skal feilregistreres", required = true, example = "77778888") String journalpostId) {
+			@PathVariable @Parameter(description = "IDen til journalposten som skal feilregistreres", required = true, example = "77778888") String journalpostId) {
 		List<ArkivElementEndringTO> arkivElementEndringTOList = feilregistrerSakstilknytningService.feilregistrerSakstilknytning(journalpostId);
 		populerAksjonslogg(journalpostId, AksjonsTypeCode.FEILREGISTRER_SAKSTILKNYTNING, arkivElementEndringTOList, "Saksrelasjonen ble feilregistrert");
 		log.info(MDC.get(MDC_REQUEST_ID) + " har feilregistrert journalpost med journalpostId={}", journalpostId);
@@ -98,7 +98,7 @@ public class FeilregistrerJournalpostRestController {
 	@PatchMapping("/{journalpostId}/feilregistrer/" + OPPHEV_FEILREGISTRERT_SAKSTILKNYTNING)
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark402"}, percentiles = {0.5, 0.95})
 	public ResponseEntity<String> opphevFeilregistrertSakstilknytning(
-			@PathVariable @ApiParam(value = "IDen til journalposten som skal feilregistreres", required = true, example = "77778888") String journalpostId) {
+			@PathVariable @Parameter(description = "IDen til journalposten som skal feilregistreres", required = true, example = "77778888") String journalpostId) {
 		List<ArkivElementEndringTO> arkivElementEndringTOList = feilregistrerSakstilknytningService.opphevFeilregistrertSakstilknytning(journalpostId);
 		populerAksjonslogg(journalpostId, AksjonsTypeCode.OPPHEV_FEILREGISTRERING, arkivElementEndringTOList, FEILREGISTRERING_OPPHEVET);
 		log.info(MDC.get(MDC_REQUEST_ID) + " har opphevet feilregistrering av journalpost med journalpostId={}", journalpostId);
@@ -113,7 +113,7 @@ public class FeilregistrerJournalpostRestController {
 			actions = @Abac.Attr(key = ACTION_ID, value = ADMIN_UPDATE_ACTION))
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark403"}, percentiles = {0.5, 0.95})
 	public ResponseEntity<String> settUkjentBruker(
-			@PathVariable @ApiParam(value = "IDen til journalposten som skal feilregistreres", required = true, example = "77778888") String journalpostId) {
+			@PathVariable @Parameter(description = "IDen til journalposten som skal feilregistreres", required = true, example = "77778888") String journalpostId) {
 		abacSecurityServiceV2.assertAccessToJournalpost(journalpostId);
 		List<ArkivElementEndringTO> arkivElementEndringTOList = ukjentBrukerService.settUkjentBruker(journalpostId);
 		populerAksjonslogg(journalpostId, AksjonsTypeCode.UKJENT_BRUKER, arkivElementEndringTOList, FIKK_UKJENT_BRUKER);
@@ -126,7 +126,7 @@ public class FeilregistrerJournalpostRestController {
 	@PatchMapping("/{journalpostId}/feilregistrer/" + SETT_STATUS_AVBRYT)
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark404"}, percentiles = {0.5, 0.95})
 	public ResponseEntity<String> avbryt(
-			@PathVariable @ApiParam(value = "IDen til journalposten som skal settes til avbryt", required = true, example = "77778888") String journalpostId) {
+			@PathVariable @Parameter(description = "IDen til journalposten som skal settes til avbryt", required = true, example = "77778888") String journalpostId) {
 		String response = avbrytService.avbryt(journalpostId);
 		return ResponseEntity.ok().body(response);
 	}
@@ -139,7 +139,7 @@ public class FeilregistrerJournalpostRestController {
 			actions = @Abac.Attr(key = ACTION_ID, value = ADMIN_UPDATE_ACTION))
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark405"}, percentiles = {0.5, 0.95})
 	public ResponseEntity<String> utgaar(
-			@PathVariable @ApiParam(value = "IDen til journalposten som skal settes til utgått", required = true, example = "77778888") String journalpostId
+			@PathVariable @Parameter(description = "IDen til journalposten som skal settes til utgått", required = true, example = "77778888") String journalpostId
 	) {
 		abacSecurityServiceV2.assertAccessToJournalpost(journalpostId);
 		String response = utgaarService.settStatusUtgaar(journalpostId);
@@ -151,7 +151,7 @@ public class FeilregistrerJournalpostRestController {
 		aksjonsLoggTo = AksjonsLoggTO.builder()
 				.aksjon(aksjon)
 				.journalpostId(Long.parseLong(journalpostId))
-				.utfoertAv(MDC.get(MDC_CONSUMER_ID))
+				.utfoertAv(MDC.get(MDC_USER_ID))
 				.hjemmel("ARKL")
 				.melding(melding)
 				.build();

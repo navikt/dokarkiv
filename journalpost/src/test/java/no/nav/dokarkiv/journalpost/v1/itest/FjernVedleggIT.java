@@ -43,7 +43,7 @@ public class FjernVedleggIT extends AbstractJournalpostIT {
 		saveJournalpost(journalpost1);
 		saveJournalpost(journalpost2);
 		Long journalpostId = saveJournalpost(journalpostSomSkalFjernes).getJournalpostId();
-		reinitTransaction();
+		commitAndStartNewTransaction();
 
 		List<JournalpostDokumentInfoRelasjon> jpDokInfoRelasjonPersist= IteratorUtils.toList(journalpostDokumentInfoRelasjonRepository.findAll().iterator());
 		JournalpostDokumentInfoRelasjon vedllegJpDokumentInfoRelasjon = IteratorUtils.toList(journalpostDokumentInfoRelasjonRepository.findAll().iterator()).stream()
@@ -66,7 +66,7 @@ public class FjernVedleggIT extends AbstractJournalpostIT {
 
 		ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST + journalpostId + FJERNVEDLEGG, HttpMethod.PATCH, requestEntity, String.class);
 
-		reinitTransaction();
+		commitAndStartNewTransaction();
 		Optional<JournalpostDokumentInfoRelasjon> jpDokInfoRelasjon = journalpostDokumentInfoRelasjonRepository.findById(vedllegJpDokumentInfoRelasjon.getJournalpostDokumentInfoRelasjonId());
 		List<JournalpostDokumentInfoRelasjon> jpDokInfoRelasjonByJp= journalpostDokumentInfoRelasjonRepository.findAllByJournalpostJournalpostId(vedllegJpDokumentInfoRelasjon.getJournalpost().getJournalpostId());
 		List<JournalpostDokumentInfoRelasjon> jpDokInfoRelasjonAfterDelete= IteratorUtils.toList(journalpostDokumentInfoRelasjonRepository.findAll().iterator());
@@ -88,7 +88,7 @@ public class FjernVedleggIT extends AbstractJournalpostIT {
 		saveJournalpost(journalpost1);
 		saveJournalpost(journalpost2);
 		saveJournalpost(journalpostSomSkalFjernes);
-		reinitTransaction();
+		commitAndStartNewTransaction();
 
 		JournalpostDokumentInfoRelasjon vedllegJpDokumentInfoRelasjon = IteratorUtils
 				.toList(journalpostDokumentInfoRelasjonRepository.findAll().iterator()).get(2);
@@ -102,7 +102,7 @@ public class FjernVedleggIT extends AbstractJournalpostIT {
 		HttpEntity requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
 
 		ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST + journalpostId + FJERNVEDLEGG, HttpMethod.PATCH, requestEntity, String.class);
-		reinitTransaction();
+		commitAndStartNewTransaction();
 
 		Optional<JournalpostDokumentInfoRelasjon> jpDokInfoRelasjon = journalpostDokumentInfoRelasjonRepository.findById(vedllegJpDokumentInfoRelasjon.getJournalpostDokumentInfoRelasjonId());
 		assertThat(response.getStatusCode(), is(HttpStatus.BAD_REQUEST));
@@ -113,7 +113,7 @@ public class FjernVedleggIT extends AbstractJournalpostIT {
 	public void shouldReturnNotFoundWhenJournalpostNotFound() throws IOException {
 		abacPermit();
 
-		reinitTransaction();
+		commitAndStartNewTransaction();
 		FjernVedleggTilknyttetJournalpostRequest request = FjernVedleggTilknyttetJournalpostRequest.builder()
 				.dokumentId("1111")
 				.build();
@@ -121,7 +121,7 @@ public class FjernVedleggIT extends AbstractJournalpostIT {
 		HttpEntity requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
 
 		ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST + JOURNALPOST_ID + FJERNVEDLEGG, HttpMethod.PATCH, requestEntity, String.class);
-		reinitTransaction();
+		commitAndStartNewTransaction();
 
 		assertThat(response.getStatusCode(), is(HttpStatus.NOT_FOUND));
 	}
@@ -130,7 +130,7 @@ public class FjernVedleggIT extends AbstractJournalpostIT {
 	public void shouldReturnBadRequestWhenDokumentInfoIdNull() throws IOException {
 		abacPermit();
 
-		reinitTransaction();
+		commitAndStartNewTransaction();
 		FjernVedleggTilknyttetJournalpostRequest request = FjernVedleggTilknyttetJournalpostRequest.builder()
 				.dokumentId(null)
 				.build();
@@ -138,7 +138,7 @@ public class FjernVedleggIT extends AbstractJournalpostIT {
 		HttpEntity requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
 
 		ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST + JOURNALPOST_ID + FJERNVEDLEGG, HttpMethod.PATCH, requestEntity, String.class);
-		reinitTransaction();
+		commitAndStartNewTransaction();
 
 		assertThat(response.getStatusCode(), is(HttpStatus.BAD_REQUEST));
 	}

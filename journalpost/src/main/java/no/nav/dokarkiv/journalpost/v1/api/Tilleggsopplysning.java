@@ -1,6 +1,6 @@
 package no.nav.dokarkiv.journalpost.v1.api;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -14,16 +14,16 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor
 public class Tilleggsopplysning {
 	@NotNull(message = "Tilleggsopplysning mangler nokkel")
-	@ApiModelProperty(
-			value = "Nøkkelen til det fagspesifikke attributtet.",
+	@Schema(
+			description = "Nøkkelen til det fagspesifikke attributtet.",
 			required = true,
 			example = "bucid"
 	)
 	private String nokkel;
 
 	@NotNull(message = "Tilleggsopplysning mangler verdi")
-	@ApiModelProperty(
-			value = "Verdien til det fagspesifikke attributtet.",
+	@Schema(
+			description = "Verdien til det fagspesifikke attributtet.",
 			required = true,
 			example = "12345"
 	)

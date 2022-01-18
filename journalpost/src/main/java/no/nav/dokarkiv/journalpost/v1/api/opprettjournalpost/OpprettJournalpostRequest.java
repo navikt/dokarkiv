@@ -2,8 +2,8 @@ package no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -20,113 +20,117 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-@ApiModel
+@Schema
 @Builder
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 public class OpprettJournalpostRequest {
 
-    @NotNull(message = "Journalposttype kan ikke være null")
-    @ApiModelProperty(
-            required = true,
-            position = 2,
-            example = "INNGAAENDE"
-    )
-    private JournalpostType journalposttype;
+	@NotNull(message = "Journalposttype kan ikke være null")
+	@Schema(
+			required = true,
+			example = "INNGAAENDE"
+	)
+	private JournalpostType journalposttype;
 
-    @ApiModelProperty(
-            value = "Avsender av forsendelsen",
-            position = 7
-    )
-    private AvsenderMottaker avsenderMottaker;
+	@Schema(
+			description = "Avsender av forsendelsen"
+	)
+	private AvsenderMottaker avsenderMottaker;
 
-    @ApiModelProperty(
-            position = 8
-    )
-    private Bruker bruker;
+	@Schema
+	private Bruker bruker;
 
-    @ApiModelProperty(
-            value = "Temaet som forsendelsen tilhører, for eksempel “DAG” (Dagpenger).\n" +
-                    "Tema er påkrevd dersom Sak oppgis.",
-            position = 2,
-            example = "DAG"
-    )
-    private String tema;
+	@Schema(
+			description = """
+					Temaet som forsendelsen tilhører, for eksempel “DAG” (Dagpenger).
+					Tema er påkrevd dersom Sak oppgis.
+					""",
+			example = "DAG"
+	)
+	private String tema;
 
-    @ApiModelProperty(
-            value = "Behandlingstema for forsendelsen, for eksempel ab0001 (Ordinære dagpenger).\n" +
-                    "Lovlige verdier finnes i i Felles Kodeverksløsning.",
-            position = 3,
-            example = "ab0001"
-    )
-    private String behandlingstema;
+	@Schema(
+			description = """
+					Behandlingstema for forsendelsen, for eksempel ab0001 (Ordinære dagpenger).
+					Lovlige verdier finnes i felles kodeverksløsning.
+					""",
+			example = "ab0001"
+	)
+	private String behandlingstema;
 
-    @ApiModelProperty(
-            value = "Tittel som beskriver forsendelsen samlet, feks \"Søknad om dagpenger ved permittering\".",
-            position = 1,
-            example = "Søknad om dagpenger ved permittering"
-    )
-    private String tittel;
+	@Schema(
+			description = """
+					Tittel som beskriver forsendelsen samlet, f.eks. "Søknad om dagpenger ved permittering".
+					""",
+			example = "Søknad om dagpenger ved permittering"
+	)
+	private String tittel;
 
-    @ApiModelProperty(
-            value = "Kanalen som ble brukt ved innsending eller distribusjon. F.eks. NAV_NO, ALTINN eller EESSI.",
-            position = 5,
-            example = "NAV_NO"
-    )
-    private String kanal;
+	@Schema(
+			description = "Kanalen som ble brukt ved innsending eller distribusjon. F.eks. NAV_NO, ALTINN eller EESSI.",
+			example = "NAV_NO"
+	)
+	private String kanal;
 
-    @ApiModelProperty(
-            value = "NAV-enheten som har journalført, eventuelt skal journalføre, forsendelsen. " +
-                    "Ved automatisk journalføring uten mennesker involvert skal enhet settes til \"9999\".\n" +
-                    "Konsument må sette journalfoerendeEnhet dersom tjenesten skal ferdigstille journalføringen.",
-            position = 6,
-            example = "0701"
-    )
-    private String journalfoerendeEnhet;
+	@Schema(
+			description = """
+					NAV-enheten som har journalført, eventuelt skal journalføre, forsendelsen.
+					Ved automatisk journalføring uten mennesker involvert skal enhet settes til "9999".
+					Konsument må sette journalfoerendeEnhet dersom tjenesten skal ferdigstille journalføringen.
+					""",
+			example = "0701"
+	)
+	private String journalfoerendeEnhet;
 
-    @ApiModelProperty(
-            value = "Unik id for forsendelsen som kan brukes til sporing gjennom verdikjeden.\n" +
-                    "Eksempler på eksternReferanseId kan være en GUID, sykmeldingsId for sykmeldinger, Altinn ArchiveReference for Altinn-skjema eller SEDid for SED.\n\n" +
-                    "NB: Det er duplikatkontroll på eksternReferanseId. Dersom man sender inn en eksternReferanseId som allerede finnes i arkivet, vil tjenesten kaste feil (409 Conflict).",
-            example = "a0f480a3-8ab2-4c56-8c93-e53bb35bec2b"
-    )
-    private String eksternReferanseId;
+	@Schema(
+			description = """
+					Unik id for forsendelsen som kan brukes til sporing gjennom verdikjeden.
+					Eksempler på eksternReferanseId kan være en GUID, sykmeldingsId for sykmeldinger, Altinn ArchiveReference for Altinn-skjema eller SEDid for SED.
+					NB: Det er duplikatkontroll på eksternReferanseId. Dersom man sender inn en eksternReferanseId som allerede finnes i arkivet, vil tjenesten kaste feil (409 Conflict).
+					""",
+			example = "a0f480a3-8ab2-4c56-8c93-e53bb35bec2b"
+	)
+	private String eksternReferanseId;
 
-    @ApiModelProperty(
-            value = "Dato forsendelsen ble mottatt fra avsender. Dersom datoMottatt er tom, settes verdien til dagens dato.\n" +
-                    " Feltet kan kun settes for inngående journalposter.",
-            dataType = "Date",
-            example = "2020-01-01"
-    )
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private Date datoMottatt;
+	@Schema(
+			description = """
+					Dato forsendelsen ble mottatt fra avsender. Dersom datoMottatt er tom, settes verdien til dagens dato.
+					Feltet kan kun settes for inngående journalposter.
+					""",
+			example = "2020-01-01"
+	)
+	@JsonFormat(pattern = "yyyy-MM-dd")
+	private Date datoMottatt;
 
-    @Builder.Default
-    @ApiModelProperty(
-            value = "Fagsystemene som arkiverer kan legge til egne fagspesifikke attributter per journalpost. Disse er representert " +
-                    "som et skjemaløst nøkkel-verdi-sett og valideres ikke ved arkivering. Et eksempel på et slikt sett kan være nøkkel: " +
-                    "bucid og verdi: 12345."
-    )
-    private List<Tilleggsopplysning> tilleggsopplysninger = new ArrayList<>();
+	@Builder.Default
+	@ArraySchema(arraySchema = @Schema(
+			description = """
+					Fagsystemene som arkiverer kan legge til egne fagspesifikke attributter per journalpost. Disse er representert
+					som et skjemaløst nøkkel-verdi-sett og valideres ikke ved arkivering. Et eksempel på et slikt sett kan være
+					nøkkel: bucid og verdi: 12345.
+					"""
+		)
+	)
+	private List<Tilleggsopplysning> tilleggsopplysninger = new ArrayList<>();
 
-    @ApiModelProperty(
-            value = "Saken som journalposten hører til",
-            position = 9
-    )
-    private Sak sak;
+	@Schema(
+			description = "Saken som journalposten hører til"
+	)
+	private Sak sak;
 
-    @Builder.Default
-    @NotNull(message = "dokumenter kan ikke være null")
-    @ApiModelProperty(
-            value = "Første dokument blir tilknyttet som hoveddokument på journalposten. Øvrige dokumenter tilknyttes som vedlegg. Rekkefølgen på vedlegg beholdes ikke ved uthenting av journalpost.",
-            position = 10,
-            required = true
-    )
-    private List<Dokument> dokumenter = new ArrayList<>();
+	@Builder.Default
+	@NotNull(message = "dokumenter kan ikke være null")
+	@ArraySchema(arraySchema=@Schema(
+			description = "Første dokument blir tilknyttet som hoveddokument på journalposten. Øvrige dokumenter tilknyttes som vedlegg. Rekkefølgen på vedlegg beholdes ikke ved uthenting av journalpost.",
+			required = true
+		)
+	)
+	private List<Dokument> dokumenter = new ArrayList<>();
 
-    @JsonIgnore
-    public boolean isInngaaende() {
-        return journalposttype == JournalpostType.INNGAAENDE;
-    }
+	@JsonIgnore
+	public boolean isInngaaende() {
+		return journalposttype == JournalpostType.INNGAAENDE;
+	}
 }

@@ -1,6 +1,7 @@
 package no.nav.dokarkiv.journalpost.v1.controllers;
 
-import io.swagger.annotations.Api;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.NavHeaders;
 import no.nav.dokarkiv.core.exceptions.ConsumerIsNotSrvDokSikkerhetsnettFunctionalException;
@@ -52,7 +53,7 @@ import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validate
 /**
  * @author Olav Røstvold Thorsen, Visma Consulting.
  */
-@Api(description = "Interne tjenester mot journalpost")
+@Tag(name="journalpostapi - internt", description = "Interne tjenester mot journalpost")
 @Slf4j
 @Unprotected
 @RestController
@@ -166,10 +167,9 @@ public class JournalpostInternRestController {
 
 			FinnMottatteJournalposterResponse ubehandledeJournalposter = finnMottatteJournalposterService.finnMottatteJournalposterMedTemaEldreEnn(temaer, DEFAULT_DAGER_GAMLE);
 
-			ResponseEntity<FinnMottatteJournalposterResponse> re = ResponseEntity
+			return ResponseEntity
 					.ok()
 					.body(ubehandledeJournalposter);
-			return re;
 		} catch (DokarkivFunctionalException e) {
 			log.warn("finnMottatteJournalposter - feilet funksjonelt ved søk på ubehandlede journalposter med tema blandt {}. Feilmelding={}", Arrays.toString(temaer.toArray()), e
 					.getMessage());
@@ -199,10 +199,9 @@ public class JournalpostInternRestController {
 
 			FinnMottatteJournalposterResponse ubehandledeJournalposter = finnMottatteJournalposterService.finnMottatteJournalposterMedTemaEldreEnn(temaer, eldreEnn);
 
-			ResponseEntity<FinnMottatteJournalposterResponse> re = ResponseEntity
+			return ResponseEntity
 					.ok()
 					.body(ubehandledeJournalposter);
-			return re;
 		} catch (DokarkivFunctionalException e) {
 			log.warn("finnMottatteJournalposter - feilet funksjonelt ved søk på ubehandlede journalposter med tema blandt {}. Feilmelding={}", Arrays.toString(temaer.toArray()), e
 					.getMessage());
@@ -219,7 +218,7 @@ public class JournalpostInternRestController {
 	@PostMapping("/journalpost/kopierJournalpost")
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark203"}, percentiles = {0.5, 0.95})
 	public ResponseEntity<Long> kopierJournalpost(
-			@io.swagger.annotations.ApiParam(name = "kildeJournalpostId", value = "IDen til journalposten som skal kopieres", required = true, example = "77778888")
+			@Parameter(name = "kildeJournalpostId", description = "IDen til journalposten som skal kopieres", required = true, example = "77778888")
 			@RequestHeader(value = HttpHeaders.AUTHORIZATION) String auth,
 			@RequestHeader(value = NavHeaders.NAV_USER_ID) String userId,
 			@RequestParam String kildeJournalpostId) {
