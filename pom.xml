@@ -23,7 +23,6 @@
 		<module>arkiverdokumentmottak</module>
 		<module>behandlejournal</module>
 		<module>innsynjournal</module>
-		<module>behandleinngaaendejournal</module>
 		<module>journal</module>
 		<module>journalfoerinngaaende</module>
 		<module>hentdokument</module>
@@ -63,7 +62,6 @@
 		<!-- Tjenestegrensesnitt -->
 		<behandlejournal-v2-tjenestespesifikasjon.version>1.2019.09.25-00.21-49b69f0625e0</behandlejournal-v2-tjenestespesifikasjon.version>
 		<behandlejournal-v3-tjenestespesifikasjon.version>1.2019.09.25-00.21-49b69f0625e0</behandlejournal-v3-tjenestespesifikasjon.version>
-		<nav-behandleInngaaendeJournal-v1-tjenestespesifikasjon.version>1.2019.09.25-00.21-49b69f0625e0</nav-behandleInngaaendeJournal-v1-tjenestespesifikasjon.version>
 		<innsynJournal-v2-tjenestespesifikasjon.version>1.2019.09.25-00.21-49b69f0625e0</innsynJournal-v2-tjenestespesifikasjon.version>
 		<nav-journal-v3-tjenestespesifikasjon.version>1.2019.09.25-00.21-49b69f0625e0</nav-journal-v3-tjenestespesifikasjon.version>
 		<arkiverdokumentproduksjon-tjenestespesifikasjon.version>3.4.1</arkiverdokumentproduksjon-tjenestespesifikasjon.version>
@@ -133,11 +131,6 @@
 			<dependency>
 				<groupId>no.nav.dokarkiv</groupId>
 				<artifactId>innsynjournal</artifactId>
-				<version>1-SNAPSHOT</version>
-			</dependency>
-			<dependency>
-				<groupId>no.nav.dokarkiv</groupId>
-				<artifactId>behandleinngaaendejournal</artifactId>
 				<version>1-SNAPSHOT</version>
 			</dependency>
 			<dependency>
@@ -293,11 +286,6 @@
 				<groupId>no.nav.tjenestespesifikasjoner</groupId>
 				<artifactId>nav-fim-behandleJournal-v3-tjenestespesifikasjon</artifactId>
 				<version>${behandlejournal-v3-tjenestespesifikasjon.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>no.nav.tjenestespesifikasjoner</groupId>
-				<artifactId>nav-behandleInngaaendeJournal-v1-tjenestespesifikasjon</artifactId>
-				<version>${nav-behandleInngaaendeJournal-v1-tjenestespesifikasjon.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>no.nav.tjenestespesifikasjoner</groupId>
