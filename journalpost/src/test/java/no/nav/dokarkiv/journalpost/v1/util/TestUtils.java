@@ -43,6 +43,7 @@ import java.util.HashSet;
 import java.util.List;
 
 import static no.nav.dokarkiv.core.domain.codes.FagsystemCode.FS22;
+import static no.nav.dokarkiv.journalpost.v1.api.AvsenderMottakerIdType.ORGNR;
 import static no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem.AO01;
 import static no.nav.dokarkiv.journalpost.v1.api.JournalpostType.UTGAAENDE;
 
@@ -364,6 +365,19 @@ public class TestUtils {
 				.build();
 	}
 
+	public static AvsenderMottaker createAvsenderMottakerPersonWithoutNavnAndIdType() {
+		return AvsenderMottaker.builder()
+				.id(AVSENDER_ID_PERSON)
+				.build();
+	}
+
+	public static AvsenderMottaker createAvsenderMottakerPersonWithoutNavn() {
+		return AvsenderMottaker.builder()
+				.id(AVSENDER_ID_PERSON)
+				.idType(AvsenderMottakerIdType.FNR)
+				.build();
+	}
+
 	public static AvsenderMottaker createAvsenderMottakerPersonWithoutId() {
 		return AvsenderMottaker.builder()
 				.idType(AvsenderMottakerIdType.FNR)
@@ -397,6 +411,13 @@ public class TestUtils {
 				.id(AVSENDER_ID_UTLORGANISASJON)
 				.idType(AvsenderMottakerIdType.UTL_ORG)
 				.land(AVSENDER_MOTTAKER_LAND)
+				.build();
+	}
+
+	public static AvsenderMottaker createAvsenderMottakerOrganisasjonWithoutNavn() {
+		return AvsenderMottaker.builder()
+				.id(AVSENDER_ID_ORGANISASJON)
+				.idType(ORGNR)
 				.build();
 	}
 
