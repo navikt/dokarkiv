@@ -286,6 +286,7 @@ public class OpprettJournalpostApiRequestMapper {
 						DokumentStatusCode.FERDIGSTILT : null)
 				.brevkode(dokument.getBrevkode())
 				.originalJournalpost(jp)
+				.dokumentFerdigDato(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()))
 				.build();
 
 		if (dokument.getDokumentvarianter() != null) {
