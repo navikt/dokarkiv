@@ -140,7 +140,11 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 				.findAny()
 				.get()
 				.getFilnavn());
-
+		assertNotNull(journalpost.findAllDokumentInfos()
+				.stream()
+				.findAny()
+				.get()
+				.getDokumentFerdigDato());
 		assertEquals(AvsenderMottakerIdTypeCode.FNR, journalpost.getAvsenderMottakerIdType());
 		assertEquals(AVSENDER_NAVN, journalpost.getAvsenderMottaker());
 		assertEquals(AVSENDER_ID_PERSON, journalpost.getAvsenderMottakerId());
