@@ -24,6 +24,7 @@ import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
 import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
 import no.nav.dokarkiv.core.exceptions.UgyldigInputException;
 import no.nav.dokarkiv.journalpost.v1.api.Arkivsaksystem;
+import no.nav.dokarkiv.journalpost.v1.api.AvsenderMottaker;
 import no.nav.dokarkiv.journalpost.v1.api.AvsenderMottakerIdType;
 import no.nav.dokarkiv.journalpost.v1.api.BrukerIdType;
 import no.nav.dokarkiv.journalpost.v1.api.Dokument;
@@ -86,11 +87,12 @@ public class OpprettJournalpostApiRequestMapper {
 	}
 
 	private String hentNavn(OpprettJournalpostRequest request) {
-		if (request.getAvsenderMottaker() != null && isNotBlank(request.getAvsenderMottaker().getNavn())) {
-			return request.getAvsenderMottaker().getNavn();
-		} else if (request.getAvsenderMottaker() != null && isNotBlank(request.getAvsenderMottaker().getId())) {
-			return identConsumer.hentPersonIdent(request.getAvsenderMottaker().getId(), request.getTema());
-
+		final AvsenderMottaker avsenderMottaker = request.getAvsenderMottaker();
+		if (avsenderMottaker != null && isNotBlank(avsenderMottaker.getNavn())) {
+			return avsenderMottaker.getNavn();
+		} else if (avsenderMottaker != null && isNotBlank(avsenderMottaker.getId()) &&
+				(avsenderMottaker.getIdType() == null || avsenderMottaker.getIdType() == AvsenderMottakerIdType.FNR)) {
+			return identConsumer.hentPersonIdent(avsenderMottaker.getId(), request.getTema());
 		}
 		return null;
 	}

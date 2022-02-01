@@ -151,10 +151,10 @@ public class PdlIdentConsumer implements IdentConsumer {
 	}
 
 	@Override
-	public String hentPersonIdent(String aktoerId, String tema) {
+	public String hentPersonIdent(String ident, String tema) {
 		try {
 			final RequestEntity<PdlRequest> requestEntity = temaRequest(tema)
-					.body(mapHentPersonIdentForId(this.validateFolkeregisterIdent(aktoerId)));
+					.body(mapHentPersonIdentForId(this.validateFolkeregisterIdent(ident)));
 			final PdlPersonResponse pdlPersonResponse = requireNonNull(restTemplate.exchange(requestEntity, PdlPersonResponse.class).getBody());
 
 			if (pdlPersonResponse.getData().getHentPerson() != null && !pdlPersonResponse.getData().getHentPerson().getNavn().isEmpty()) {
@@ -218,16 +218,16 @@ public class PdlIdentConsumer implements IdentConsumer {
 			throw new PersonIkkeFunnetException("Validering av ident feilet fordi verdien er null eller blank.");
 		}
 
-		String identTrimed = ident.trim();
+		String identTrimmed = ident.trim();
 
-		if (!isNumeric(identTrimed)) {
+		if (!isNumeric(identTrimmed)) {
 			throw new PersonIkkeFunnetException("Validering av ident feilet fordi verdien inneholder bokstaver");
 		}
 
-		if (identTrimed.length() != 13 && identTrimed.length() != 11) {
-			throw new PersonIkkeFunnetException("Validering av ident feilet fordi verdien har lengde " + identTrimed.length() + ". Akseptert lengde er 11 eller 13");
+		if (identTrimmed.length() != 13 && identTrimmed.length() != 11) {
+			throw new PersonIkkeFunnetException("Validering av ident feilet fordi verdien har lengde " + identTrimmed.length() + ". Akseptert lengde er 11 eller 13");
 		}
 
-		return identTrimed;
+		return identTrimmed;
 	}
 }
