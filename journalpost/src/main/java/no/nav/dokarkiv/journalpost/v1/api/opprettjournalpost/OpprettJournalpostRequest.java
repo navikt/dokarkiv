@@ -1,6 +1,5 @@
 package no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -101,7 +100,6 @@ public class OpprettJournalpostRequest {
 					""",
 			example = "2020-01-01"
 	)
-	@JsonFormat(pattern = "yyyy-MM-dd")
 	private Date datoMottatt;
 
 	@Builder.Default
