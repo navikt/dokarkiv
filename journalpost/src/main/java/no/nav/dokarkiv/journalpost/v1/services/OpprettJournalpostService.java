@@ -51,6 +51,7 @@ public class OpprettJournalpostService {
 
 	public static final String UKJENT = "UKJENT";
 	private static final String APPLIKASJON_FS22 = "FS22";
+	private static final String SKANMOTOVRIG = "srvskanmotovrig";
 
 	private final JoarkRepository joarkRepository;
 	private final DokumentFilRepository dokumentFilRepository;
@@ -101,7 +102,9 @@ public class OpprettJournalpostService {
 		populerAksjonslogg(journalpost.getJournalpostId(), OPPRETT);
 		log.info(MDC.get(MDC_REQUEST_ID) + " har opprettet ny journalpost, journalpostId={} og status={}", journalpost.getJournalpostId(), journalpost.getJournalstatus());
 
-		opprettJournalpostPDFAUtils.safeValidateAndLogPDFA(journalpost);
+		if(!SKANMOTOVRIG.equalsIgnoreCase(journalpost.getOpprettetAvNavn())) {
+			opprettJournalpostPDFAUtils.safeValidateAndLogPDFA(journalpost);
+		}
 
 		return new OpprettJournalpostResult(journalpost, false);
 	}
