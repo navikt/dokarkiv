@@ -116,11 +116,11 @@ public class PdlIdentConsumer implements IdentConsumer {
 		}
 	}
 
-	private PdlRequest mapHentFolkeregisterIdentForAktoerId(final String ident) {
+	PdlRequest mapHentFolkeregisterIdentForAktoerId(final String ident) {
 		final HashMap<String, Object> variables = new HashMap<>();
 		variables.put("ident", ident);
 		return PdlRequest.builder()
-				.query("query hentIdenter($ident: ID!) {hentIdenter(ident: $ident, grupper: FOLKEREGISTERIDENT, historikk: false) {identer { ident gruppe historisk } } }")
+				.query("query hentIdenter($ident: ID!) {hentIdenter(ident: $ident, grupper: [FOLKEREGISTERIDENT, NPID] historikk: false) {identer { ident gruppe historisk } } }")
 				.variables(variables)
 				.build();
 	}
