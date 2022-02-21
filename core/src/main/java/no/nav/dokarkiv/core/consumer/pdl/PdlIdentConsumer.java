@@ -116,7 +116,7 @@ public class PdlIdentConsumer implements IdentConsumer {
 		}
 	}
 
-	PdlRequest mapHentFolkeregisterIdentForAktoerId(final String ident) {
+	private PdlRequest mapHentFolkeregisterIdentForAktoerId(final String ident) {
 		final HashMap<String, Object> variables = new HashMap<>();
 		variables.put("ident", ident);
 		return PdlRequest.builder()
