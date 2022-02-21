@@ -26,7 +26,7 @@ final class FinnJournalpostSqlGenerator {
 	// Spørringen finner journalposter tilknyttet sak og midlertidige journalposter.
 	// Den inkluderer felt som behøves for SAF tilgangsmodell og visningsmodell.
 	// Aliasnavn kan ikke være lengre enn 30 tegn i Oracle
-	static String finnJournalposterSql(JournalpostFilter journalpostFilter, List<String> cteAliases, String gsakCte) {
+	static String finnJournalposterSql(JournalpostFilter journalpostFilter, List<String> cteAliases, String gsakCte, boolean alleJournalposter) {
 		return "WITH psaksaker AS\n" +
 				"       (SELECT s.journalpost_id\n" +
 				"        FROM t_saksrelasjon s\n" +
@@ -54,7 +54,7 @@ final class FinnJournalpostSqlGenerator {
 				"                              LEFT JOIN t_fil_detaljer fd ON d.dokument_info_id = fd.dokument_info_id AND fd.k_variant_format IN ('ARKIV', 'SLADDET', 'PRODUKSJON', 'PRODUKSJON_DLF', 'FULLVERSJON', 'ORIGINAL')\n" +
 				"                              LEFT JOIN t_skannet_innhold tsi ON d.dokument_info_id = tsi.dokument_info_id" +
 				"     )\n" +
-				"SELECT r.*,\n" +
+				"SELECT /*+ parallel,10 */ r.*,\n" +
 				"       journalposter.prevjournalpostid,\n" +
 				"       journalposter.nextjournalpostid,\n" +
 				"       journalposter.totaltAntall\n" +
@@ -65,7 +65,7 @@ final class FinnJournalpostSqlGenerator {
 				"         FROM (\n" +
 				"                SELECT *\n" +
 				"                FROM (\n" +
-				"                       SELECT j.journalpost_id,\n" +
+				"                       SELECT /*+ parallel,10 */ j.journalpost_id,\n" +
 				"                              LEAD(j.journalpost_id) OVER (ORDER BY j.journalpost_id) AS prevjournalpostid,\n" +
 				"                              LAG(j.journalpost_id) OVER (ORDER BY j.journalpost_id)  AS nextjournalpostid,\n" +
 				"                              COUNT(*) OVER ()  AS totaltAntall\n" +
@@ -76,20 +76,28 @@ final class FinnJournalpostSqlGenerator {
 				"                       WHERE j.k_journalpost_t IN (:inkluderJournalpostType)\n" +
 				"                         AND trunc(j.dato_opprettet) >= :fraDato\n" +
 				generateTilDato(journalpostFilter) +
-				"                         AND (\n" +
-				"                           (ts.feilregistrert = 1 AND\n" +
-				"                            j.k_journal_s IN (:allJournalStatus))\n" +
-				"                           OR (ts.feilregistrert IS NULL AND\n" +
-				"                               j.k_journal_s IN (:inkluderJournalStatus))\n" +
-				"                           OR (ts.feilregistrert = 0 AND\n" +
-				"                               j.k_journal_s IN (:inkluderJournalStatus))\n" +
-				"                         )\n" +
-				"                     ) p\n" +
-				"                WHERE p.journalpost_id < :journalpostIdPeker ORDER BY p.journalpost_id DESC" +
+				generateAlleJournalposter(alleJournalposter) +
+				"                WHERE p.journalpost_id < :journalpostIdPeker ORDER BY p.journalpost_id DESC " +
 				"              ) t\n" +
 				"         WHERE rownum <= :antallRader\n" +
 				"       ) journalposter ON journalposter.journalpost_id = r.journalpostid\n" +
 				"ORDER BY journalpostid DESC, dokumenter_tilknyttetsom ASC, dokumenter_jprelasjonid ASC";
+	}
+
+	private static String generateAlleJournalposter(boolean alleJournalposter) {
+		if(!alleJournalposter) {
+			return
+					"                         AND (\n" +
+							"                           (ts.feilregistrert = 1 AND\n" +
+							"                            j.k_journal_s IN (:allJournalStatus))\n" +
+							"                           OR (ts.feilregistrert IS NULL AND\n" +
+							"                               j.k_journal_s IN (:inkluderJournalStatus))\n" +
+							"                           OR (ts.feilregistrert = 0 AND\n" +
+							"                               j.k_journal_s IN (:inkluderJournalStatus))\n" +
+							"                         )\n" +
+							"                     ) p\n";
+		}
+		return "AND (j.k_journal_s IN (:allJournalStatus))\n";
 	}
 
 	static String generateCteUnionSql(List<String> cteAliases) {

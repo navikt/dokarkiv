@@ -56,8 +56,8 @@ class FinnJournalposterSpringJdbcRepository {
 		if (cteAliases.isEmpty()) {
 			return new ArrayList<>();
 		}
-
-		String finnJournalposterSql = finnJournalposterSql(journalpostFilter, cteAliases, gsakCte.getCteSql());
+		Boolean alleJournalposter = journalpostFilter.getInkluderJournalpostType().containsAll(ALL_JOURNALSTATUS);
+		String finnJournalposterSql = finnJournalposterSql(journalpostFilter, cteAliases, gsakCte.getCteSql(), alleJournalposter);
 		return jdbcTemplate.query(finnJournalposterSql, namedParams, JOURNALPOST_DTO_RESULT_SET_EXTRACTOR);
 	}
 
@@ -84,7 +84,9 @@ class FinnJournalposterSpringJdbcRepository {
 		if(journalpostFilter.getTilDato() != null) {
 			namedParams.addValue("tilDato", Timestamp.valueOf(journalpostFilter.getTilDato().atStartOfDay()));
 		}
-		namedParams.addValue("inkluderJournalpostType", journalpostFilter.getInkluderJournalpostType());
+		if(!journalpostFilter.getInkluderJournalpostType().containsAll(ALL_JOURNALPOST)) {
+			namedParams.addValue("inkluderJournalpostType", journalpostFilter.getInkluderJournalpostType());
+		}
 		namedParams.addValue("allJournalStatus", ALL_JOURNALSTATUS);
 		namedParams.addValue("visFeilregistrert", journalpostFilter.isVisFeilregistrerte() ? ALL_JOURNALPOST : NO_FEILREGISTRERT_JOURNALPOST);
 		namedParams.addValue("antallRader", journalpostFilter.getAntallRader());
