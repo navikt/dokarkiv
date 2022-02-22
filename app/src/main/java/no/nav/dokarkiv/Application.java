@@ -1,6 +1,5 @@
 package no.nav.dokarkiv;
 
-import no.nav.dokarkiv.arkiverdokumentmottak.ArkiverDokumentmottakConfig;
 import no.nav.dokarkiv.arkiverdokumentproduksjon.ArkiverDokumentproduksjonConfig;
 import no.nav.dokarkiv.arkivervariant.ArkiverVariantConfig;
 import no.nav.dokarkiv.behandlejournal.v2.BehandleJournalV2Config;
@@ -23,7 +22,6 @@ import org.springframework.context.annotation.Import;
 @Import({CoreConfig.class,
 		DokumentproduksjonInfoConfig.class,
 		ArkiverDokumentproduksjonConfig.class,
-		ArkiverDokumentmottakConfig.class,
 		BehandleJournalV2Config.class,
 		BehandleJournalV3Config.class,
 		InnsynJournalV2Config.class,

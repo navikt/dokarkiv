@@ -26,10 +26,6 @@
 			<groupId>no.nav.dokarkiv</groupId>
 			<artifactId>arkiverdokumentproduksjon</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>no.nav.dokarkiv</groupId>
-			<artifactId>arkiverdokumentmottak</artifactId>
-		</dependency>
 		<!-- virksomhetstjenester -->
 		<dependency>
 			<groupId>no.nav.dokarkiv</groupId>
