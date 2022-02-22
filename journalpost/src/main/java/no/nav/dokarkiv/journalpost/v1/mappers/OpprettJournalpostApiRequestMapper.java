@@ -280,6 +280,8 @@ public class OpprettJournalpostApiRequestMapper {
 		}
 	}
 
+	//hack for sykepengeberegningsmodulen. ref MMA-6005
+	private static final String BREVKODE_4936 = "4936";
 	private void createJournalpostDokumentInfoRelasjon(Journalpost jp, Dokument dokument, TilknyttetJournalpostSomCode tilknyttetJournalpostSomCode) {
 		DokumentInfo dokumentInfo = DokumentInfo.builder()
 				.kategori(dokument.getDokumentKategori() != null ? DokumentKategoriCode.valueOf(dokument.getDokumentKategori()) : DokumentKategoriCode.IS)
@@ -288,6 +290,8 @@ public class OpprettJournalpostApiRequestMapper {
 						DokumentStatusCode.FERDIGSTILT : null)
 				.brevkode(dokument.getBrevkode())
 				.originalJournalpost(jp)
+				//hack for sykepengeberegningsmodulen. ref MMA-6005
+				.dokumenttypeId(BREVKODE_4936.equals(dokument.getBrevkode()) ? "I000067" : null)
 				//FIXME: Kommentert ut pga feil i Gosys
 				//.dokumentFerdigDato(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()))
 				.build();
