@@ -53,6 +53,7 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.BATCHNAVN;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.BEHANDLINGSTEMA;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.BREVKODE1;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.BREVKODE2;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.BREVKODE_4936;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.BRUKER_ID_PERSON;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.DATO_MOTTATT;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.DOKUMENTKATEGORI_SED;
@@ -78,6 +79,7 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createAvsenderMottak
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createAvsenderMottakerUtlandOrganisasjon;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createBaseRequest;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createMinimalRequest;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createMinimalRequestWithBrevkode;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createMinimalRequestWithKanal;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createRequest;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createRequestAvsenderMottaker;
@@ -402,5 +404,15 @@ public class OpprettJournalpostApiRequestMapperTest {
 		OpprettJournalpostRequest request = createRequestAvsenderMottaker(JournalpostType.INNGAAENDE, createAvsenderMottakerOrganisasjonWithoutNavn());
 		Journalpost jp = mapper.map(request, null);
 		assertNull(jp.getAvsenderMottaker());
+	}
+
+	@Test
+	public void shoulMapdokumenttypeIdWhenBrevkode4936() {
+		OpprettJournalpostRequest request = createMinimalRequestWithBrevkode(BREVKODE_4936);
+		Journalpost journalpost = mapper.map(request, null);
+
+		DokumentInfo dokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
+		assertEquals(BREVKODE_4936, dokumentInfo.getBrevkode());
+		assertEquals("I000067", dokumentInfo.getDokumenttypeId());
 	}
 }

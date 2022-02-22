@@ -78,6 +78,7 @@ public class TestUtils {
 	public static final String DOKUMENTINFO_ID1 = "1234567";
 	public static final String DOKUMNETTYPE_ID1 = "dokumenttypeID1";
 	public static final String BREVKODE1 = "brevkode1";
+	public static final String BREVKODE_4936 = "4936";
 	public static final String DOKUMENT_TITTEL1 = "dokumentTittel1";
 	public static final String DOKUMENT_TITTEL_UPDATE = "dokumentTittel_UPDATE";
 	public static final String SKANNETINNHOLD_ID1 = "78547541";
@@ -599,6 +600,20 @@ public class TestUtils {
 						Dokument.builder()
 								.tittel(DOKUMENT_TITTEL1)
 								.brevkode(BREVKODE1)
+								.dokumentKategori(DOKUMENTKATEGORI_SED)
+								.build()))
+				.build();
+	}
+
+	public static OpprettJournalpostRequest createMinimalRequestWithBrevkode(String brevkode) {
+		return OpprettJournalpostRequest.builder()
+				.journalposttype(UTGAAENDE)
+				.tema(FagomradeCode.FOR.name())
+				.eksternReferanseId(KANALREFERANSE_ID)
+				.dokumenter(Collections.singletonList(
+						Dokument.builder()
+								.tittel(DOKUMENT_TITTEL1)
+								.brevkode(brevkode)
 								.dokumentKategori(DOKUMENTKATEGORI_SED)
 								.build()))
 				.build();
