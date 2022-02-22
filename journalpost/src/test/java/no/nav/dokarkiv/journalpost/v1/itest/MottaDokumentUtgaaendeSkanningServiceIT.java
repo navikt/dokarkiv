@@ -214,13 +214,9 @@ public class MottaDokumentUtgaaendeSkanningServiceIT extends AbstractJournalpost
         );
 
 
-        Journalpost journalpostInRepository = joarkRepository.save(journalpost);
-
-
-        long journalpostId = journalpostInRepository.getId();
+        long journalpostId = saveJournalpost(journalpost).getId();
 
         endTransaction();
-
 
         MottaDokumentUtgaaendeSkanningRequest request = createGyldigRequest();
 
