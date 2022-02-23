@@ -20,6 +20,7 @@
 		<module>core</module>
 		<module>dokumentproduksjoninfo</module>
 		<module>arkiverdokumentproduksjon</module>
+		<module>arkiverdokumentmottak</module>
 		<module>behandlejournal</module>
 		<module>innsynjournal</module>
 		<module>journal</module>
@@ -64,6 +65,8 @@
 		<innsynJournal-v2-tjenestespesifikasjon.version>1.2019.09.25-00.21-49b69f0625e0</innsynJournal-v2-tjenestespesifikasjon.version>
 		<nav-journal-v3-tjenestespesifikasjon.version>1.2019.09.25-00.21-49b69f0625e0</nav-journal-v3-tjenestespesifikasjon.version>
 		<arkiverdokumentproduksjon-tjenestespesifikasjon.version>3.4.1</arkiverdokumentproduksjon-tjenestespesifikasjon.version>
+		<arkiverdokumentmottak-tjenestespesifikasjon.version>1.1.8</arkiverdokumentmottak-tjenestespesifikasjon.version>
+		<arkiverdokumentmottak-tjenestespesifikasjon-v2.version>2.2.3</arkiverdokumentmottak-tjenestespesifikasjon-v2.version>
 		<dokumentproduksjoninfo-tjenestespesifikasjon.version>2.1.1</dokumentproduksjoninfo-tjenestespesifikasjon.version>
 		<no-nav-dok-tjenester-journalfoerinngaaende.version>0.0.21</no-nav-dok-tjenester-journalfoerinngaaende.version>
 
@@ -113,6 +116,11 @@
 			<dependency>
 				<groupId>no.nav.dokarkiv</groupId>
 				<artifactId>arkiverdokumentproduksjon</artifactId>
+				<version>1-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>no.nav.dokarkiv</groupId>
+				<artifactId>arkiverdokumentmottak</artifactId>
 				<version>1-SNAPSHOT</version>
 			</dependency>
 			<dependency>
@@ -294,6 +302,18 @@
 				<artifactId>arkiverdokumentproduksjon-tjenestespesifikasjon</artifactId>
 				<version>${arkiverdokumentproduksjon-tjenestespesifikasjon.version}</version>
 				<classifier>jaxws</classifier>
+			</dependency>
+			<dependency>
+				<groupId>no.nav.tjenester.brevogarkiv</groupId>
+				<artifactId>arkiverdokumentmottak-tjenestespesifikasjon</artifactId>
+				<classifier>jaxws</classifier>
+				<version>${arkiverdokumentmottak-tjenestespesifikasjon.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>no.nav.tjenester.brevogarkiv</groupId>
+				<artifactId>arkiverdokumentmottak-tjenestespesifikasjon-v2</artifactId>
+				<classifier>jaxws</classifier>
+				<version>${arkiverdokumentmottak-tjenestespesifikasjon-v2.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>no.nav.tjenester.brevogarkiv</groupId>
