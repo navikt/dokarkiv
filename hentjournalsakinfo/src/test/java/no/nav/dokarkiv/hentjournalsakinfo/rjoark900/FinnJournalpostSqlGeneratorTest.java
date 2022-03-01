@@ -46,7 +46,7 @@ public class FinnJournalpostSqlGeneratorTest {
 		finnJournalposterRequestTo.setGsakSakIds(Collections.singletonList("G1"));
 		finnJournalposterRequestTo.setAlleIdenter(Collections.singletonList("00000000000"));
 		JournalpostFilter journalpostFilter = new JournalpostFilter(finnJournalposterRequestTo);
-		String sql = FinnJournalpostSqlGenerator.finnJournalposterSql(journalpostFilter, Arrays.asList("gsaker", "psaker"), "", false);
+		String sql = FinnJournalpostSqlGenerator.finnJournalposterSql(journalpostFilter, Arrays.asList("gsaker", "psaker"), false);
 		assertThat(sql, equalToCompressingWhiteSpace(
 				"WITH psaksaker AS\n" +
 						"       (SELECT s.journalpost_id\n" +
