@@ -84,9 +84,7 @@ class FinnJournalposterSpringJdbcRepository {
 		if(journalpostFilter.getTilDato() != null) {
 			namedParams.addValue("tilDato", Timestamp.valueOf(journalpostFilter.getTilDato().atStartOfDay()));
 		}
-		if(!journalpostFilter.getInkluderJournalpostType().containsAll(ALL_JOURNALPOST)) {
-			namedParams.addValue("inkluderJournalpostType", journalpostFilter.getInkluderJournalpostType());
-		}
+		namedParams.addValue("inkluderJournalpostType", journalpostFilter.getInkluderJournalpostType());
 		namedParams.addValue("allJournalStatus", ALL_JOURNALSTATUS);
 		namedParams.addValue("visFeilregistrert", journalpostFilter.isVisFeilregistrerte() ? ALL_JOURNALPOST : NO_FEILREGISTRERT_JOURNALPOST);
 		namedParams.addValue("antallRader", journalpostFilter.getAntallRader());
