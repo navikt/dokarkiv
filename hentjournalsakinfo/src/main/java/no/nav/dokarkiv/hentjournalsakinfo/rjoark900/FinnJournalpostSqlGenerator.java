@@ -1,11 +1,11 @@
 package no.nav.dokarkiv.hentjournalsakinfo.rjoark900;
 
-import static no.nav.dokarkiv.hentjournalsakinfo.common.SqlProjections.RELEVANTE_DATA;
-
 import no.nav.dokarkiv.hentjournalsakinfo.JournalpostFilter;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static no.nav.dokarkiv.hentjournalsakinfo.common.SqlProjections.RELEVANTE_DATA;
 
 /**
  * @author Joakim Bjørnstad, Jbit AS
@@ -26,7 +26,7 @@ final class FinnJournalpostSqlGenerator {
 	// Spørringen finner journalposter tilknyttet sak og midlertidige journalposter.
 	// Den inkluderer felt som behøves for SAF tilgangsmodell og visningsmodell.
 	// Aliasnavn kan ikke være lengre enn 30 tegn i Oracle
-	static String finnJournalposterSql(JournalpostFilter journalpostFilter, List<String> cteAliases, String gsakCte) {
+	static String finnJournalposterSql(JournalpostFilter journalpostFilter, List<String> cteAliases, String gsakCte, Boolean parallell) {
 		return "WITH psaksaker AS\n" +
 				"       (SELECT s.journalpost_id\n" +
 				"        FROM t_saksrelasjon s\n" +
@@ -54,7 +54,7 @@ final class FinnJournalpostSqlGenerator {
 				"                              LEFT JOIN t_fil_detaljer fd ON d.dokument_info_id = fd.dokument_info_id AND fd.k_variant_format IN ('ARKIV', 'SLADDET', 'PRODUKSJON', 'PRODUKSJON_DLF', 'FULLVERSJON', 'ORIGINAL')\n" +
 				"                              LEFT JOIN t_skannet_innhold tsi ON d.dokument_info_id = tsi.dokument_info_id" +
 				"     )\n" +
-				"SELECT r.*,\n" +
+				"SELECT "+(parallell ? "/*+ parallel,10 */" : "")+" r.*,\n" +
 				"       journalposter.prevjournalpostid,\n" +
 				"       journalposter.nextjournalpostid,\n" +
 				"       journalposter.totaltAntall\n" +
@@ -65,7 +65,7 @@ final class FinnJournalpostSqlGenerator {
 				"         FROM (\n" +
 				"                SELECT *\n" +
 				"                FROM (\n" +
-				"                       SELECT j.journalpost_id,\n" +
+				"                       SELECT " + (parallell ? "/*+ parallel,10 */" : "") + " j.journalpost_id,\n" +
 				"                              LEAD(j.journalpost_id) OVER (ORDER BY j.journalpost_id) AS prevjournalpostid,\n" +
 				"                              LAG(j.journalpost_id) OVER (ORDER BY j.journalpost_id)  AS nextjournalpostid,\n" +
 				"                              COUNT(*) OVER ()  AS totaltAntall\n" +

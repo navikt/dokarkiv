@@ -36,7 +36,7 @@ class FinnJournalposterSpringJdbcRepository {
 	private static final String CTE_ALIAS_GSAKSAKER = "gsaksaker";
 	private static final String CTE_ALIAS_PSAKSAKER = "psaksaker";
 	private static final String CTE_ALIAS_MIDLERTIDIGE = "midlertidige";
-
+	private static final int ORACLE_PARALLELL = 300;
 	private final GsakCteMapper gsakCteMapper;
 	private final NamedParameterJdbcTemplate jdbcTemplate;
 
@@ -56,8 +56,8 @@ class FinnJournalposterSpringJdbcRepository {
 		if (cteAliases.isEmpty()) {
 			return new ArrayList<>();
 		}
-
-		String finnJournalposterSql = finnJournalposterSql(journalpostFilter, cteAliases, gsakCte.getCteSql());
+		Boolean parallell = (gsakIds.size() > ORACLE_PARALLELL);
+		String finnJournalposterSql = finnJournalposterSql(journalpostFilter, cteAliases, gsakCte.getCteSql(), parallell);
 		return jdbcTemplate.query(finnJournalposterSql, namedParams, JOURNALPOST_DTO_RESULT_SET_EXTRACTOR);
 	}
 
