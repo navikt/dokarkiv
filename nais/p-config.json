@@ -31,5 +31,127 @@
   "SRV_LINUX": "/serviceuser/data/prod/srvssolinux",
   "APPDYNAMICS": "/apikey/appdynamics/prod",
   "APPD_NAME": "dokarkiv",
-  "DOKARKIV_DATABASE_POOLSIZE": "60"
+  "DOKARKIV_DATABASE_POOLSIZE": "60",
+  "AZURE_IAC_RULES": [
+    {
+      "app": "salesforce",
+      "namespace": "teamcrm",
+      "cluster": "prod-external"
+    },
+    {
+      "app": "familie-integrasjoner",
+      "namespace": "teamfamilie",
+      "cluster": "prod-fss"
+    },
+    {
+      "app": "omsorgspenger-journalforing",
+      "namespace": "omsorgspenger",
+      "cluster": "prod-gcp"
+    },
+    {
+      "app": "altinn-meldinger-api",
+      "namespace": "permittering-og-nedbemanning",
+      "cluster": "prod-gcp"
+    },
+    {
+      "app": "isdialogmote",
+      "namespace": "teamsykefravr",
+      "cluster": "prod-gcp"
+    },
+    {
+      "app": "kabal-api",
+      "namespace": "klage",
+      "cluster": "prod-gcp"
+    },
+    {
+      "app": "safselvbetjening",
+      "namespace": "teamdokumenthandtering",
+      "cluster": "prod-fss"
+    },
+    {
+      "app": "dokmotaltinn",
+      "namespace": "teamdokumenthandtering",
+      "cluster": "prod-fss"
+    },
+    {
+      "app": "padm2",
+      "namespace": "teamsykefravr",
+      "cluster": "prod-fss"
+    },
+    {
+      "app": "padm2",
+      "namespace": "teamsykefravr",
+      "cluster": "prod-gcp"
+    },
+    {
+      "app": "journalforing-frontend",
+      "namespace": "isa",
+      "cluster": "prod-fss"
+    },
+    {
+      "app": "asynkron",
+      "namespace": "farskapsportal",
+      "cluster": "prod-gcp"
+    },
+    {
+      "app": "fritakagp",
+      "namespace": "helsearbeidsgiver",
+      "cluster": "prod-gcp"
+    },
+    {
+      "app": "jfr-infotrygd",
+      "namespace": "isa",
+      "cluster": "prod-fss"
+    },
+    {
+      "app": "jfr-arena",
+      "namespace": "isa",
+      "cluster": "prod-fss"
+    },
+    {
+      "app": "jfr-generell",
+      "namespace": "isa",
+      "cluster": "prod-fss"
+    },
+    {
+      "app": "journalfoer-soeknad",
+      "namespace": "etterlatte",
+      "cluster": "prod-gcp"
+    },
+    {
+      "app": "spinnsyn-arkivering",
+      "namespace": "flex",
+      "cluster": "prod-gcp"
+    },
+    {
+      "app": "sykepengesoknad-arkivering-oppgave",
+      "namespace": "flex",
+      "cluster": "prod-gcp"
+    },
+    {
+      "app": "medlemskap-joark-listener",
+      "namespace": "medlemskap",
+      "cluster": "prod-gcp"
+    },
+    {
+      "app": "k9-punsj",
+      "namespace": "k9saksbehandling",
+      "cluster": "prod-fss"
+    },
+    {
+      "app": "yrkesskade-melding-mottak",
+      "namespace": "yrkesskade",
+      "cluster": "prod-gcp"
+    },
+    {
+      "app": "flex-joark-mottak",
+      "namespace": "flex",
+      "cluster": "prod-gcp"
+    },
+    {
+      "app": "eessi-pensjon-journalforing",
+      "namespace": "eessipensjon",
+      "cluster": "prod-gcp"
+    }
+  ]
 }

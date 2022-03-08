@@ -32,5 +32,167 @@
   "SRV_LINUX": "/serviceuser/data/dev/srvssolinux",
   "APPDYNAMICS": "/apikey/appdynamics/dev",
   "APPD_NAME": "dokarkiv_q1",
-  "DOKARKIV_DATABASE_POOLSIZE": "20"
+  "DOKARKIV_DATABASE_POOLSIZE": "20",
+  "AZURE_IAC_RULES": [
+    {
+      "app": "salesforce",
+      "namespace": "teamcrm",
+      "cluster": "dev-external"
+    },
+    {
+      "app": "familie-integrasjoner",
+      "namespace": "teamfamilie",
+      "cluster": "dev-fss"
+    },
+    {
+      "app": "familie-integrasjoner-q1",
+      "namespace": "teamfamilie",
+      "cluster": "dev-fss"
+    },
+    {
+      "app": "omsorgspenger-journalforing",
+      "namespace": "omsorgspenger",
+      "cluster": "dev-gcp"
+    },
+    {
+      "app": "altinn-meldinger-api",
+      "namespace": "permittering-og-nedbemanning",
+      "cluster": "dev-gcp"
+    },
+    {
+      "app": "isdialogmote",
+      "namespace": "teamsykefravr",
+      "cluster": "dev-gcp"
+    },
+    {
+      "app": "kabal-api",
+      "namespace": "klage",
+      "cluster": "dev-gcp"
+    },
+    {
+      "app": "safselvbetjening",
+      "namespace": "teamdokumenthandtering",
+      "cluster": "dev-fss"
+    },
+    {
+      "app": "dokmotaltinn",
+      "namespace": "teamdokumenthandtering",
+      "cluster": "dev-fss"
+    },
+    {
+      "app": "dokdistfordeling",
+      "namespace": "teamdokumenthandtering",
+      "cluster": "dev-fss"
+    },
+    {
+      "app": "dokdistfordeling-q1",
+      "namespace": "teamdokumenthandtering",
+      "cluster": "dev-fss"
+    },
+    {
+      "app": "padm2",
+      "namespace": "teamsykefravr",
+      "cluster": "dev-fss"
+    },
+    {
+      "app": "padm2",
+      "namespace": "teamsykefravr",
+      "cluster": "dev-gcp"
+    },
+    {
+      "app": "journalforing-frontend",
+      "namespace": "isa",
+      "cluster": "dev-fss"
+    },
+    {
+      "app": "journalforing-frontend-q1",
+      "namespace": "isa",
+      "cluster": "dev-fss"
+    },
+    {
+      "app": "fritakagp",
+      "namespace": "helsearbeidsgiver",
+      "cluster": "dev-gcp"
+    },
+    {
+      "app": "asynkron",
+      "namespace": "farskapsportal",
+      "cluster": "dev-gcp"
+    },
+    {
+      "app": "asynkron-feature",
+      "namespace": "farskapsportal",
+      "cluster": "dev-gcp"
+    },
+    {
+      "app": "medlemskap-joark-listener",
+      "namespace": "medlemskap",
+      "cluster": "dev-gcp"
+    },
+    {
+      "app": "jfr-infotrygd-q1",
+      "namespace": "isa",
+      "cluster": "dev-fss"
+    },
+    {
+      "app": "jfr-infotrygd-q2",
+      "namespace": "isa",
+      "cluster": "dev-fss"
+    },
+    {
+      "app": "jfr-generell-q2",
+      "namespace": "isa",
+      "cluster": "dev-fss"
+    },
+    {
+      "app": "jfr-infotrygd-q2",
+      "namespace": "isa",
+      "cluster": "dev-gcp"
+    },
+    {
+      "app": "jfr-arena-q2",
+      "namespace": "isa",
+      "cluster": "dev-fss"
+    },
+    {
+      "app": "journalfoer-soeknad",
+      "namespace": "etterlatte",
+      "cluster": "dev-gcp"
+    },
+    {
+      "app": "spinnsyn-arkivering",
+      "namespace": "flex",
+      "cluster": "dev-gcp"
+    },
+    {
+      "app": "sykepengesoknad-arkivering-oppgave",
+      "namespace": "flex",
+      "cluster": "dev-gcp"
+    },
+    {
+      "app": "yrkesskade-melding-mottak",
+      "namespace": "yrkesskade",
+      "cluster": "dev-gcp"
+    },
+    {
+      "app": "k9-punsj",
+      "namespace": "k9saksbehandling",
+      "cluster": "dev-fss"
+    },
+    {
+      "app": "flex-joark-mottak",
+      "namespace": "flex",
+      "cluster": "dev-gcp"
+    },
+    {
+      "app": "eessi-pensjon-journalforing-q2",
+      "namespace": "eessipensjon",
+      "cluster": "dev-gcp"
+    },
+    {
+      "app": "eessi-pensjon-journalforing-q1",
+      "namespace": "eessipensjon",
+      "cluster": "dev-gcp"
+    }
+  ]
 }
