@@ -100,12 +100,12 @@ spec:
         extra:
           - "NAVident"
           - "azp_name"
-    accessPolicy:
-      inbound:
-        rules:
-      {{#each AZURE_IAC_RULES}}
-          - application: {{app}}
-            namespace: {{namespace}}
-            cluster: {{cluster}}
-      {{/each}}
+  accessPolicy:
+    inbound:
+      rules:
+    {{#each AZURE_IAC_RULES}}
+        - application: {{app}}
+          namespace: {{namespace}}
+          cluster: {{cluster}}
+    {{/each}}
 {{/if}}
