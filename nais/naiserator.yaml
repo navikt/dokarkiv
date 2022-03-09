@@ -13,8 +13,10 @@ spec:
       value: {{ NO_NAV_SECURITY_JWT_ISSUER_RESTSTS_DISCOVERYURL }}
     - name: NO_NAV_SECURITY_JWT_ISSUER_OPENAM_DISCOVERYURL
       value: {{ NO_NAV_SECURITY_JWT_ISSUER_OPENAM_DISCOVERYURL }}
+    {{#if NO_NAV_SECURITY_JWT_ISSUER_AZUREV2_ACCEPTED_AUDIENCE}}
     - name: NO_NAV_SECURITY_JWT_ISSUER_AZUREV2_ACCEPTED_AUDIENCE
       value: {{ NO_NAV_SECURITY_JWT_ISSUER_AZUREV2_ACCEPTED_AUDIENCE }}
+    {{/if}}
     - name: NO_NAV_SECURITY_JWT_ISSUER_OPENAM_ACCEPTED_AUDIENCE
       value: {{ NO_NAV_SECURITY_JWT_ISSUER_OPENAM_ACCEPTED_AUDIENCE }}
     - name: NO_NAV_SECURITY_JWT_ISSUER_RESTSTS_ACCEPTED_AUDIENCE
@@ -90,3 +92,20 @@ spec:
       - kvPath: {{ APPDYNAMICS }}
         mountPath: "/var/run/secrets/nais.io/appdynamics"
   webproxy: true
+{{#if AZURE_IAC_RULES}}
+  azure:
+    application:
+      enabled: true
+      claims:
+        extra:
+          - "NAVident"
+          - "azp_name"
+  accessPolicy:
+    inbound:
+      rules:
+    {{#each AZURE_IAC_RULES}}
+        - application: {{app}}
+          namespace: {{namespace}}
+          cluster: {{cluster}}
+    {{/each}}
+{{/if}}
