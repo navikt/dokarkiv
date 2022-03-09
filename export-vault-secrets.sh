@@ -41,7 +41,7 @@ else
 fi
 
 # Kun for instanser med azure enabled.
-if[[-z "${AZURE_APP_CLIENT_ID}"]]; then
+if [ -z "${AZURE_APP_CLIENT_ID}" ]; then
   echo "Setter NO_NAV_SECURITY_JWT_ISSUER_AZUREV2_ACCEPTED_AUDIENCE=${AZURE_APP_CLIENT_ID}"
   export NO_NAV_SECURITY_JWT_ISSUER_AZUREV2_ACCEPTED_AUDIENCE="${AZURE_APP_CLIENT_ID}"
 fi
