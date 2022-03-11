@@ -54,7 +54,7 @@ final class FinnJournalpostSqlGenerator {
 				"                              LEFT JOIN t_fil_detaljer fd ON d.dokument_info_id = fd.dokument_info_id AND fd.k_variant_format IN ('ARKIV', 'SLADDET', 'PRODUKSJON', 'PRODUKSJON_DLF', 'FULLVERSJON', 'ORIGINAL')\n" +
 				"                              LEFT JOIN t_skannet_innhold tsi ON d.dokument_info_id = tsi.dokument_info_id" +
 				"     )\n" +
-				"SELECT "+(parallell ? "/*+ parallel,10 */" : "")+" r.*,\n" +
+				"SELECT "+(parallell ? "/*+ PARALLEL(10) */" : "")+" r.*,\n" +
 				"       journalposter.prevjournalpostid,\n" +
 				"       journalposter.nextjournalpostid,\n" +
 				"       journalposter.totaltAntall\n" +
@@ -65,7 +65,7 @@ final class FinnJournalpostSqlGenerator {
 				"         FROM (\n" +
 				"                SELECT *\n" +
 				"                FROM (\n" +
-				"                       SELECT " + (parallell ? "/*+ parallel,10 */" : "") + " j.journalpost_id,\n" +
+				"                       SELECT " + (parallell ? "/*+ PARALLEL(10) */" : "") + " j.journalpost_id,\n" +
 				"                              LEAD(j.journalpost_id) OVER (ORDER BY j.journalpost_id) AS prevjournalpostid,\n" +
 				"                              LAG(j.journalpost_id) OVER (ORDER BY j.journalpost_id)  AS nextjournalpostid,\n" +
 				"                              COUNT(*) OVER ()  AS totaltAntall\n" +
