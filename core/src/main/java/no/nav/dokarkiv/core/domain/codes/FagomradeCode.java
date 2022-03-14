@@ -122,7 +122,11 @@ public enum FagomradeCode implements CtiRelationship<FagomradeCode, String> {
 	/** Farskap */
 	FAR,
 	/** Midlertidig kompensasjonsordning for selvstendig næringsdrivende og frilansere*/
-	FRI;
+	FRI,
+	/** Barnepensjon */
+	EYB,
+	/** Omstillingsstønad */
+	EYO;
 
 	/** {@inheritDoc} */
 	@Override
