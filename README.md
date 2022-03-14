@@ -33,7 +33,7 @@ For å kjøre opp applikasjonen lokal, bruk profile `nais` og systemvariabler he
 ## Drift og støtte
 ### Logging
 Loggene til tjenesten kan leses på to måter:
-
+ 
 ### Kibana
 For [dev-fss](https://logs.adeo.no/goto/25ee1a4d3a207f9bfb97c9d7abbadf72)
 
