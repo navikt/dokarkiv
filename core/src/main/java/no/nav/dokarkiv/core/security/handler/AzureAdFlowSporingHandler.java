@@ -129,12 +129,24 @@ public class AzureAdFlowSporingHandler {
 		if (jwtTokenClaims.getAllClaims().containsKey(NAV_CUSTOM_CLAIM_AZP_NAME)) {
 			String azpnameClaim = jwtTokenClaims.getStringClaim(NAV_CUSTOM_CLAIM_AZP_NAME);
 			if (isNotBlank(azpnameClaim)) {
-				Matcher matcher = AZP_NAME_PATTERN.matcher(azpnameClaim);
-				String teamappnavn = matcher.matches() ? matcher.group("teamappnavn") : azpnameClaim;
-				return left(teamappnavn, KILDE_NAVN_LENGTH);
+				return left(parseAzpnameClaim(azpnameClaim), KILDE_NAVN_LENGTH);
 			}
 			return jwtTokenClaims.getStringClaim(DEFAULT_CLAIM_AZP);
 		}
 		return jwtTokenClaims.getStringClaim(DEFAULT_CLAIM_AZP);
+	}
+
+	private String parseAzpnameClaim(String azpnameClaim) {
+		Matcher matcher = AZP_NAME_PATTERN.matcher(azpnameClaim);
+		if (matcher.matches()) {
+			return matcher.group("teamappnavn");
+		} else {
+			try {
+				final String[] split = azpnameClaim.split(":");
+				return split[1] + ":" + split[2];
+			} catch (Exception e) {
+				return azpnameClaim;
+			}
+		}
 	}
 }
