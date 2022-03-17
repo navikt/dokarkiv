@@ -136,6 +136,28 @@ class AzureAdFlowSporingHandlerTest {
 	}
 
 	@Test
+	void shouldParseAzpnameWhenNotMatchingPattern() {
+		JwtToken azureTokenMalformedAzpname = createAzureToken(defaultNavClaimSet(APP_CLAIM_SUB, APP_CLAIM_OID, APP_CLAIM_AZP, "¨dev-fss:gotham:batman", null));
+		azureAdFlowSporingHandler.handle(azureTokenMalformedAzpname, null);
+
+		String expected = "gotham:batman";
+		assertThat(MDC.get(MDCConstants.MDC_USER_ID)).isEqualTo(expected);
+		assertThat(MDC.get(MDCConstants.MDC_CONSUMER_ID)).isEqualTo(expected);
+		assertThat(MDC.get(MDCConstants.MDC_USER_NAME)).isEqualTo(expected);
+	}
+
+	@Test
+	void shouldFailoverAndParseAzpnameWhenNoColons() {
+		JwtToken azureTokenMalformedAzpname = createAzureToken(defaultNavClaimSet(APP_CLAIM_SUB, APP_CLAIM_OID, APP_CLAIM_AZP, "dev-fss;gotham;batman", null));
+		azureAdFlowSporingHandler.handle(azureTokenMalformedAzpname, null);
+
+		String expected = "dev-fss;gotham;batman";
+		assertThat(MDC.get(MDCConstants.MDC_USER_ID)).isEqualTo(expected);
+		assertThat(MDC.get(MDCConstants.MDC_CONSUMER_ID)).isEqualTo(expected);
+		assertThat(MDC.get(MDCConstants.MDC_USER_NAME)).isEqualTo(expected);
+	}
+
+	@Test
 	void shouldThrowMissingClaimExceptionWhenAzureOnBehalfTokenIsMissingNameClaim() {
 		assertThatThrownBy(() -> azureAdFlowSporingHandler.handle(createAzureToken(defaultNavClaimSet(APP_CLAIM_SUB, USER_CLAIM_OID, APP_CLAIM_AZP, APP_CLAIM_AZP_NAME, USER_CLAIM_NAVIDENT)), null))
 				.isInstanceOf(MissingClaimException.class);
