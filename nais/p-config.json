@@ -156,6 +156,26 @@
       "app": "eessi-pensjon-journalforing",
       "namespace": "eessipensjon",
       "cluster": "prod-gcp"
+    },
+    {
+      "app": "syfosmsak",
+      "namespace": "teamsykmelding",
+      "cluster": "prod-fss"
+    },
+    {
+      "app": "pale-2-sak",
+      "namespace": "teamsykmelding",
+      "cluster": "prod-fss"
+    },
+    {
+      "app": "syfosmpapirmottak",
+      "namespace": "teamsykmelding",
+      "cluster": "prod-fss"
+    },
+    {
+      "app": "smregistrering-backend",
+      "namespace": "teamsykmelding",
+      "cluster": "prod-fss"
     }
   ]
 }
