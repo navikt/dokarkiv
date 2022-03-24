@@ -21,6 +21,8 @@
   "DOKARKIV_HENTDOKUMENT_BASEURL": "https://dokarkiv-q1.dev.intern.nav.no/hentdokument",
   "DOKPRODMELLOMLAGER_PROJECTID": "teamdokumenthandteri-dev-2c5a",
   "DOKPRODMELLOMLAGER_BUCKET": "dokprodmellomlager-dev",
+  "DOKPRODMELLOMLAGER_KEYRING": "dokprodmellomlager-keyring-dev",
+  "DOKPRODMELLOMLAGER_KEYID": "dokprodmellomlager-symmetric-dev",
   "INGRESSES": [
     "https://dokarkiv-q1.nais.preprod.local",
     "https://dokarkiv-q1.dev.adeo.no",

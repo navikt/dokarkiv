@@ -53,6 +53,10 @@ spec:
       value: {{ DOKPRODMELLOMLAGER_PROJECTID }}
     - name: DOKPRODMELLOMLAGER_BUCKET
       value: {{ DOKPRODMELLOMLAGER_BUCKET }}
+    - name: DOKPRODMELLOMLAGER_KEYRING
+      value: {{ DOKPRODMELLOMLAGER_KEYRING }}
+    - name: DOKPRODMELLOMLAGER_KEYID
+      value: {{ DOKPRODMELLOMLAGER_KEYID }}
   image: {{ image }}
   ingresses:
     {{#each INGRESSES}}

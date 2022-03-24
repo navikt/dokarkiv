@@ -21,6 +21,8 @@
   "DOKARKIV_HENTDOKUMENT_BASEURL": "https://dokarkiv.intern.nav.no/hentdokument",
   "DOKPRODMELLOMLAGER_PROJECTID": "teamdokumenthandteri-prod-a63b",
   "DOKPRODMELLOMLAGER_BUCKET": "dokprodmellomlager-prod",
+  "DOKPRODMELLOMLAGER_KEYRING": "dokprodmellomlager-keyring-prod",
+  "DOKPRODMELLOMLAGER_KEYID": "dokprodmellomlager-symmetric-prod",
   "INGRESSES": [
     "https://dokarkiv.nais.adeo.no",
     "https://dokarkiv.prod-fss-pub.nais.io",

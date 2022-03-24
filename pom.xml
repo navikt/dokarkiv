@@ -48,6 +48,7 @@
 		<java-jwt.version>3.18.2</java-jwt.version>
 
 		<google-cloud-storage.version>2.4.5</google-cloud-storage.version>
+		<tink.version>1.6.0</tink.version>
 
 		<bcprov-jdk15on.version>1.70</bcprov-jdk15on.version>
 		<commons.beanutils.version>1.9.4</commons.beanutils.version>
@@ -240,11 +241,21 @@
 				<version>${java-jwt.version}</version>
 			</dependency>
 
-			<!-- Google Cloud Storage -->
+			<!-- Google Cloud Storage og dekryptering -->
 			<dependency>
 				<groupId>com.google.cloud</groupId>
 				<artifactId>google-cloud-storage</artifactId>
 				<version>${google-cloud-storage.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.google.crypto.tink</groupId>
+				<artifactId>tink</artifactId>
+				<version>${tink.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.google.crypto.tink</groupId>
+				<artifactId>tink-gcpkms</artifactId>
+				<version>${tink.version}</version>
 			</dependency>
 
 			<dependency>
