@@ -7,7 +7,7 @@ import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.dokarkiv.core.stelvio.SimpleRequestContext;
-import no.nav.dokarkiv.core.storage.Storage;
+import no.nav.dokarkiv.core.storage.GoogleCloudBucketStorage;
 import no.nav.security.token.support.test.spring.TokenGeneratorConfiguration;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.ArkiverDokumentproduksjonV1;
 import org.junit.Before;
@@ -74,8 +74,8 @@ public abstract class AbstractArkiverdokumentproduksjonItest {
 	@Configuration
 	static class Config {
 		@Bean
-		public Storage dokprodMellomlagerStorage() {
-			return mock(Storage.class);
+		public GoogleCloudBucketStorage dokprodMellomlagerStorage() {
+			return mock(GoogleCloudBucketStorage.class);
 		}
 	}
 }

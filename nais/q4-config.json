@@ -20,6 +20,8 @@
   "ABAC_ARKIV_V2_URL": "https://abac-arkiv-v2.dev.intern.nav.no/application/asm-pdp/authorize",
   "JOARK_HENTDOKUMENT_BASEURL": "https://wasapp-q4.adeo.no/joarkweb/HentDokument",
   "DOKARKIV_HENTDOKUMENT_BASEURL": "https://dokarkiv-q4.dev.intern.nav.no/hentdokument",
+  "DOKPRODMELLOMLAGER_PROJECTID": "teamdokumenthandteri-dev-2c5a",
+  "DOKPRODMELLOMLAGER_BUCKET": "dokprodmellomlager-dev",
   "INGRESSES": [
     "https://dokarkiv-q4.nais.preprod.local",
     "https://dokarkiv-q4.dev.adeo.no",

@@ -1,8 +1,5 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark112;
 
-import static java.util.Arrays.asList;
-import static java.util.Collections.singletonList;
-
 import no.nav.dokarkiv.arkiverdokumentproduksjon.ArkiverDokumentproduksjonConstants;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
@@ -23,6 +20,9 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import java.util.Base64;
 import java.util.Date;
 import java.util.GregorianCalendar;
+
+import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 
 /**
  * Util for creating Journalpost for the OpprettJournalpostArkiverDokumenter
@@ -57,7 +57,7 @@ public class OpprettJournalpostArkiverDokumenterDataUtil {
 	protected static final String TILLEGGSOPPLYSNING_KEY_2 = "tilleggsopplysning-2";
 	protected static final String BESTILLINGS_ID = "id010101";
 	protected static final String TILLEGGSOPPLYSNING_VALUE_2 = "Tillegg 2";
-	protected static final String FILREFERANSE_S3 = "filreferanseS3";
+	protected static final String FILREFERANSE_GCS = "filreferanseGoogleCloudStorage";
 
 	public static no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasjon.opprettjournalpostarkiverdokumenter.Journalpost createJournalpost() {
 		return new Journalpost()
@@ -91,7 +91,7 @@ public class OpprettJournalpostArkiverDokumenterDataUtil {
 		dokumentInfo.setDokumentTypeId(DOKUMENT_TYPE_ID);
 		dokumentInfo.getTilleggsopplysninger().addAll(asList(
 				createTilleggsopplysning(ArkiverDokumentproduksjonConstants.BESTILLINGS_ID_KEY, BESTILLINGS_ID),
-				createTilleggsopplysning(ArkiverDokumentproduksjonConstants.FILREFERANSE_ID_KEY, FILREFERANSE_S3)));
+				createTilleggsopplysning(ArkiverDokumentproduksjonConstants.FILREFERANSE_ID_KEY, FILREFERANSE_GCS)));
 		return dokumentInfo;
 	}
 
@@ -103,7 +103,7 @@ public class OpprettJournalpostArkiverDokumenterDataUtil {
 		dokumentInfo.setSensitivt(true);
 		dokumentInfo.setDokumentTypeId(DOKUMENT_TYPE_ID);
 		dokumentInfo.getTilleggsopplysninger().addAll(singletonList(
-				createTilleggsopplysning(ArkiverDokumentproduksjonConstants.FILREFERANSE_ID_KEY, FILREFERANSE_S3)));
+				createTilleggsopplysning(ArkiverDokumentproduksjonConstants.FILREFERANSE_ID_KEY, FILREFERANSE_GCS)));
 		return dokumentInfo;
 	}
 

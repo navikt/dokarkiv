@@ -1,17 +1,27 @@
 package no.nav.dokarkiv.core.util;
 
-import com.amazonaws.util.json.Jackson;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
  */
 public class JsonSerializer {
 
-	public static String serialize(Object object) {
-		return Jackson.toJsonString(object);
+	private static final ObjectMapper objectMapper = new ObjectMapper();
+
+	static {
+		objectMapper.configure(JsonParser.Feature.ALLOW_COMMENTS, true);
+		objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 	}
 
 	public static <T> T deserialize(String jsonPayload, Class<T> tClass) {
-		return Jackson.fromJsonString(jsonPayload, tClass);
+		try {
+			return objectMapper.readValue(jsonPayload, tClass);
+		} catch (JsonProcessingException e) {
+			throw new IllegalStateException(e);
+		}
 	}
 }

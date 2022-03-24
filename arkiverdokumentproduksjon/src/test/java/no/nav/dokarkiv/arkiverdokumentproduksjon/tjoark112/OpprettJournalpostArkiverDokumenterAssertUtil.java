@@ -1,14 +1,6 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark112;
 
 
-import static no.nav.dokarkiv.arkiverdokumentproduksjon.ArkiverDokumentproduksjonConstants.FILREFERANSE_ID_KEY;
-import static no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark112.OpprettJournalpostArkiverDokumenterDataUtil.BESTILLINGS_ID;
-import static no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark112.OpprettJournalpostArkiverDokumenterDataUtil.FILREFERANSE_S3;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.Matchers.hasEntry;
-import static org.junit.Assert.assertThat;
-
 import no.nav.dokarkiv.arkiverdokumentproduksjon.ArkiverDokumentproduksjonConstants;
 import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
@@ -23,6 +15,14 @@ import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
 import java.util.Map;
 import java.util.Set;
 
+import static no.nav.dokarkiv.arkiverdokumentproduksjon.ArkiverDokumentproduksjonConstants.FILREFERANSE_ID_KEY;
+import static no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark112.OpprettJournalpostArkiverDokumenterDataUtil.BESTILLINGS_ID;
+import static no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark112.OpprettJournalpostArkiverDokumenterDataUtil.FILREFERANSE_GCS;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.Matchers.hasEntry;
+import static org.junit.Assert.assertThat;
+
 
 /**
  * Assert util specific for operation OpprettJournalpostArkiverDokument
@@ -31,7 +31,7 @@ import java.util.Set;
  */
 public class OpprettJournalpostArkiverDokumenterAssertUtil {
 
-	public static void assertEqualJournalposts(no.nav.dokarkiv.core.domain.entities.Journalpost domainJournalpost) throws Exception {
+	public static void assertEqualJournalposts(no.nav.dokarkiv.core.domain.entities.Journalpost domainJournalpost) {
 		assertJournalpostFields(domainJournalpost);
 		assertSak(domainJournalpost.getSaksrelasjon());
 		assertBruker(domainJournalpost.getBrukere());
@@ -98,7 +98,7 @@ public class OpprettJournalpostArkiverDokumenterAssertUtil {
 	}
 
 	private static void assertTilleggsopplysninger(Map<String, String> tilleggsopplysninger) {
-		assertThat(tilleggsopplysninger, hasEntry(FILREFERANSE_ID_KEY, FILREFERANSE_S3));
+		assertThat(tilleggsopplysninger, hasEntry(FILREFERANSE_ID_KEY, FILREFERANSE_GCS));
 	}
 
 	private static void assertBruker(Set<Bruker> domainBrukere) {

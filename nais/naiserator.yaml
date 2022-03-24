@@ -49,6 +49,10 @@ spec:
       value: {{ APPD_NAME }}
     - name: DOKARKIV_DATABASE_POOLSIZE
       value: "{{ DOKARKIV_DATABASE_POOLSIZE }}"
+    - name: DOKPRODMELLOMLAGER_PROJECTID
+      value: {{ DOKPRODMELLOMLAGER_PROJECTID }}
+    - name: DOKPRODMELLOMLAGER_BUCKET
+      value: {{ DOKPRODMELLOMLAGER_BUCKET }}
   image: {{ image }}
   ingresses:
     {{#each INGRESSES}}
