@@ -46,7 +46,10 @@
 		<logback-syslog4j.version>1.0.0</logback-syslog4j.version>
 		<jaxb2-basics-runtime.version>0.12.0</jaxb2-basics-runtime.version>
 		<java-jwt.version>3.18.2</java-jwt.version>
-		<aws-java-sdk-s3.version>1.12.129</aws-java-sdk-s3.version>
+
+		<google-cloud-storage.version>2.4.5</google-cloud-storage.version>
+		<tink.version>1.6.0</tink.version>
+
 		<bcprov-jdk15on.version>1.70</bcprov-jdk15on.version>
 		<commons.beanutils.version>1.9.4</commons.beanutils.version>
 		<commons.io.version>2.11.0</commons.io.version>
@@ -237,11 +240,24 @@
 				<artifactId>java-jwt</artifactId>
 				<version>${java-jwt.version}</version>
 			</dependency>
+
+			<!-- Google Cloud Storage og dekryptering -->
 			<dependency>
-				<groupId>com.amazonaws</groupId>
-				<artifactId>aws-java-sdk-s3</artifactId>
-				<version>${aws-java-sdk-s3.version}</version>
+				<groupId>com.google.cloud</groupId>
+				<artifactId>google-cloud-storage</artifactId>
+				<version>${google-cloud-storage.version}</version>
 			</dependency>
+			<dependency>
+				<groupId>com.google.crypto.tink</groupId>
+				<artifactId>tink</artifactId>
+				<version>${tink.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.google.crypto.tink</groupId>
+				<artifactId>tink-gcpkms</artifactId>
+				<version>${tink.version}</version>
+			</dependency>
+
 			<dependency>
 				<groupId>no.nav.modig</groupId>
 				<artifactId>modig-security-authorization</artifactId>
