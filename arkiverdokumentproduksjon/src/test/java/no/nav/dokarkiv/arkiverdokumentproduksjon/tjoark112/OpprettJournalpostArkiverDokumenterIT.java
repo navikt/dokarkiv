@@ -28,6 +28,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
@@ -45,7 +46,7 @@ public class OpprettJournalpostArkiverDokumenterIT extends AbstractArkiverdokume
 
 	@Before
 	public void setUp() throws Exception {
-		when(dokprodMellomlagerStorage.downloadObject(eq(FILREFERANSE_GCS))).thenReturn((Optional.of("{\n" +
+		when(dokprodMellomlagerStorage.downloadObject(eq(FILREFERANSE_GCS), anyString())).thenReturn((Optional.of("{\n" +
 				"  \"axml\" : \"" + DOKUMENT_INNHOLD_BASE64 + "\",\n" +
 				"  \"pdf\": \"" + DOKUMENT_INNHOLD_BASE64 + "\"\n" +
 				"}")));

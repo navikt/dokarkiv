@@ -32,6 +32,8 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static java.lang.String.format;
+import static no.nav.dokarkiv.arkiverdokumentproduksjon.ArkiverDokumentproduksjonConstants.BESTILLINGS_ID_KEY;
 import static no.nav.dokarkiv.arkiverdokumentproduksjon.ArkiverDokumentproduksjonConstants.FILREFERANSE_ID_KEY;
 import static org.apache.commons.lang3.StringUtils.trim;
 
@@ -62,8 +64,14 @@ public class OpprettJournalpostArkiverDokumenterRequestMapper {
 		Journalpost domainJournalpost = createDomainJournalpostBase(journalpost);
 		addBruker(domainJournalpost, journalpost);
 		setSaksrelasjon(domainJournalpost, journalpost);
-		addJournalpostDokumentInfoRelasjon(domainJournalpost, dokumentInfoHoveddokument, TilknyttetJournalpostSomCode.HOVEDDOKUMENT);
-		dokumentInfoVedleggList.forEach(dokumentInfo -> addJournalpostDokumentInfoRelasjon(domainJournalpost, dokumentInfo, TilknyttetJournalpostSomCode.VEDLEGG));
+		final var bestillingsId = dokumentInfoHoveddokument.getTilleggsopplysninger()
+				.stream()
+				.filter(p -> BESTILLINGS_ID_KEY.equals(p.getOpplysningsnoekkel()))
+				.findFirst()
+				.orElseThrow(() -> new DokarkivTechnicalException("tjoark112 fant ingen opplysningsNoekkel=bestillingsId på hoveddokumentinfo"))
+				.getOpplysningsverdi();
+		addJournalpostDokumentInfoRelasjon(domainJournalpost, dokumentInfoHoveddokument, TilknyttetJournalpostSomCode.HOVEDDOKUMENT, bestillingsId);
+		dokumentInfoVedleggList.forEach(dokumentInfo -> addJournalpostDokumentInfoRelasjon(domainJournalpost, dokumentInfo, TilknyttetJournalpostSomCode.VEDLEGG, bestillingsId));
 
 		kildeNavnPopulator.populateKildeNavnForEntireJournalStructure(domainJournalpost, RequestContextHolder
 				.currentRequestContext().getComponentId());
@@ -112,7 +120,8 @@ public class OpprettJournalpostArkiverDokumenterRequestMapper {
 
 	private void addJournalpostDokumentInfoRelasjon(Journalpost domainJournalpost,
 													no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasjon.opprettjournalpostarkiverdokumenter.DokumentInfo dokumentInfo,
-													TilknyttetJournalpostSomCode tilknyttetJournalpostSom) {
+													TilknyttetJournalpostSomCode tilknyttetJournalpostSom,
+													String bestillingsId) {
 
 		DokumentInfo domainDokumentInfo = DokumentInfo.builder()
 				.kategori(dokumentInfo.getKategori() == null ? null : DokumentKategoriCode.valueOf(dokumentInfo.getKategori()))
@@ -125,7 +134,7 @@ public class OpprettJournalpostArkiverDokumenterRequestMapper {
 								.stream()
 								.collect(Collectors.toMap(Tilleggsopplysning::getOpplysningsnoekkel, Tilleggsopplysning::getOpplysningsverdi)))
 				.build();
-		addFildetaljer(domainDokumentInfo);
+		addFildetaljer(domainDokumentInfo, bestillingsId);
 		JournalpostDokumentInfoRelasjon relasjon = JournalpostDokumentInfoRelasjon.builder()
 				.tilknyttetJournalpostSom(tilknyttetJournalpostSom)
 				.journalpost(domainJournalpost)
@@ -135,9 +144,9 @@ public class OpprettJournalpostArkiverDokumenterRequestMapper {
 		domainJournalpost.addJournalpostDokumentInfoRelasjon(relasjon);
 	}
 
-	private void addFildetaljer(final DokumentInfo domainDokumentInfo) {
+	private void addFildetaljer(final DokumentInfo domainDokumentInfo, final String bestillingsId) {
 		final String filreferanse = domainDokumentInfo.getTilleggsopplysninger().get(FILREFERANSE_ID_KEY);
-		final DoksysDokument doksysDokument = createDokumentResultWithDocumentsFromGoogleCloudStorage(filreferanse);
+		final DoksysDokument doksysDokument = createDokumentResultWithDocumentsFromGoogleCloudStorage(filreferanse, bestillingsId);
 
 		domainDokumentInfo.addFilDetaljer(FilDetaljer.builder()
 				.filtype(FilTypeCode.PDFA)
@@ -155,13 +164,13 @@ public class OpprettJournalpostArkiverDokumenterRequestMapper {
 				.build());
 	}
 
-	private DoksysDokument createDokumentResultWithDocumentsFromGoogleCloudStorage(String objectName) {
+	private DoksysDokument createDokumentResultWithDocumentsFromGoogleCloudStorage(String objectName, String bestillingsId) {
 		log.info("tjoark112 henter dokument fra Google Cloud Storage. objectName={}", objectName);
 
-		Optional<String> jsonPayload = dokprodMellomlagerStorage.downloadObject(objectName);
+		Optional<String> jsonPayload = dokprodMellomlagerStorage.downloadObject(objectName, bestillingsId);
 
 		if (jsonPayload.isEmpty()) {
-			throw new DokarkivTechnicalException(String.format("qdok002 fant ingen dokument i Google Cloud Storage med objectName=%s ", objectName));
+			throw new DokarkivTechnicalException(format("tjoark112 fant ingen dokument i Google Cloud Storage med objectName=%s ", objectName));
 		}
 
 		return JsonSerializer.deserialize(jsonPayload.get(), DoksysDokument.class);

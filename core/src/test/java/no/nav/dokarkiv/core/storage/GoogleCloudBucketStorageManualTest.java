@@ -35,6 +35,6 @@ public class GoogleCloudBucketStorageManualTest {
 				System.getProperty("keyring"),
 				System.getProperty("keyid")
 		);
-		Optional<String> downloadedObject = bucketStorage.downloadObject(objectName);
+		Optional<String> downloadedObject = bucketStorage.downloadObject(objectName, "dokprodmellomlager");
 	}
 }
