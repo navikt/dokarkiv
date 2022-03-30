@@ -180,6 +180,11 @@
       "app": "smregistrering-backend",
       "namespace": "teamsykmelding",
       "cluster": "prod-fss"
+    },
+    {
+      "app": "dp-behov-journalforing",
+      "namespace": "teamdagpenger",
+      "cluster": "prod-gcp"
     }
   ]
 }
