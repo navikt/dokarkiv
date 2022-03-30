@@ -221,6 +221,11 @@
       "app": "teamsykmelding-mock-backend",
       "namespace": "teamsykmelding",
       "cluster": "dev-gcp"
+    },
+    {
+      "app": "dp-behov-journalforing",
+      "namespace": "teamdagpenger",
+      "cluster": "dev-gcp"
     }
   ]
 }
