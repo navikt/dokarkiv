@@ -35,6 +35,7 @@
   "APPDYNAMICS": "/apikey/appdynamics/prod",
   "APPD_NAME": "dokarkiv",
   "DOKARKIV_DATABASE_POOLSIZE": "60",
+  "SPRINGDOC_ENABLED": "false",
   "AZURE_IAC_RULES": [
     {
       "app": "salesforce",

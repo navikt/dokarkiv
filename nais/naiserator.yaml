@@ -57,6 +57,8 @@ spec:
       value: {{ DOKPRODMELLOMLAGER_KEYRING }}
     - name: DOKPRODMELLOMLAGER_KEYID
       value: {{ DOKPRODMELLOMLAGER_KEYID }}
+    - name: SPRINGDOC_ENABLED
+      value: "{{ SPRINGDOC_ENABLED }}"
   image: {{ image }}
   ingresses:
     {{#each INGRESSES}}

@@ -7,18 +7,20 @@ import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import no.nav.dokarkiv.core.NavHeaders;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
 
+@ConditionalOnProperty(
+		value = {"springdoc.enabled"},
+		havingValue = "true"
+)
 @Configuration
 public class Springdoc {
 
-	@Value("${APP_VERSION:0.0.0}")
-	private String version;
-
 	@Bean
-	public OpenAPI apiNew() {
+	public OpenAPI dokarkivApi(@Value("${NAIS_APP_IMAGE:1-SNAPSHOT}") String version) {
 		return new OpenAPI()
 				.info(new Info()
 						.title("Dokarkiv APIer")

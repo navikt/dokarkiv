@@ -35,5 +35,6 @@
   "SRV_LINUX": "/serviceuser/data/dev/srvssolinux",
   "APPDYNAMICS": "/apikey/appdynamics/dev",
   "APPD_NAME": "dokarkiv_q5",
-  "DOKARKIV_DATABASE_POOLSIZE": "20"
+  "DOKARKIV_DATABASE_POOLSIZE": "20",
+  "SPRINGDOC_ENABLED": "true"
 }
