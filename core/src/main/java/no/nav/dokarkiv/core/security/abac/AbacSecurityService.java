@@ -2,10 +2,8 @@ package no.nav.dokarkiv.core.security.abac;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
-import no.nav.dokarkiv.core.exceptions.DokumentInfoIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.logging.AbacLogger;
-import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import no.nav.freg.abac.core.annotation.context.AbacContext;
 import no.nav.freg.abac.core.dto.request.XacmlRequest;
@@ -13,7 +11,6 @@ import no.nav.freg.abac.core.dto.response.Decision;
 import no.nav.freg.abac.core.dto.response.XacmlResponse;
 import no.nav.freg.abac.core.service.AbacService;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 import java.util.HashMap;
@@ -38,36 +35,19 @@ public class AbacSecurityService {
 	private final AbacService abacService;
 	private final AbacContext abacContext;
 	private final JdbcAbacSecurityRepository jdbcAbacSecurityRepository;
-	private final DokumentinfoRepository dokumentinfoRepository;
 	private final JoarkRepositorySkjermet joarkRepositorySkjermet;
 
 
 	@Inject
 	public AbacSecurityService(AbacLogger abaclog, AbacService abacService,
 							   AbacContext abacContext, JdbcAbacSecurityRepository jdbcAbacSecurityRepository,
-							   DokumentinfoRepository dokumentinfoRepository, JoarkRepositorySkjermet joarkRepositorySkjermet) {
+							   JoarkRepositorySkjermet joarkRepositorySkjermet) {
 		this.abaclog = abaclog;
 		this.abacService = abacService;
 		this.abacContext = abacContext;
 		this.jdbcAbacSecurityRepository = jdbcAbacSecurityRepository;
-		this.dokumentinfoRepository = dokumentinfoRepository;
 		this.joarkRepositorySkjermet = joarkRepositorySkjermet;
 	}
-
-	public void assertAccessToDokumentInfo(Long dokumentInfoId) {
-
-		if (!dokumentinfoRepository.existsById(dokumentInfoId)) {
-			throw new DokumentInfoIkkeFunnetException("DokumentInfo ikke funnet. dokumentInfoId=" + dokumentInfoId);
-		}
-		Long journalpostId = joarkRepositorySkjermet.findJournalpostIdByDokumentinfoId(dokumentInfoId.toString());
-		if (journalpostId == null) {
-			log.warn(String.format("DokumentInfo med dokumentInfoId=%s mangler originalJournalpost", dokumentInfoId));
-			throw new DokumentInfoIkkeFunnetException(String.format("DokumentInfo med dokumentInfoId=%s mangler originalJournalpost", dokumentInfoId));
-		}
-
-		assertAccessToJournalpost(journalpostId.toString());
-	}
-
 
 	public void assertAccessToJournalpost(String journalpost) {
 		Long journalpostId = Long.parseLong(journalpost);
