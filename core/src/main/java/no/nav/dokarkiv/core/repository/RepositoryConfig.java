@@ -2,6 +2,7 @@ package no.nav.dokarkiv.core.repository;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.properties.DokarkivProperties;
+import oracle.jdbc.pool.OracleDataSource;
 import oracle.net.ns.SQLnetDef;
 import oracle.ucp.jdbc.PoolDataSource;
 import oracle.ucp.jdbc.PoolDataSourceFactory;
@@ -35,7 +36,8 @@ import java.util.Properties;
 		JournalpostDokumentInfoRelasjonRepository.class,
 		BidragMellomlagringRepository.class,
 		BidragMellomlagringDokumentRepository.class,
-		JoarkDeleteRepository.class, AksjonsLoggRepository.class,
+		JoarkDeleteRepository.class,
+		AksjonsLoggRepository.class,
 		SakRepository.class
 })
 @EnableTransactionManagement
@@ -51,7 +53,7 @@ public class RepositoryConfig {
 		poolDataSource.setURL(dataSourceProperties.getUrl());
 		poolDataSource.setUser(dataSourceProperties.getUsername());
 		poolDataSource.setPassword(dataSourceProperties.getPassword());
-		poolDataSource.setConnectionFactoryClassName(dataSourceProperties.getDriverClassName());
+		poolDataSource.setConnectionFactoryClassName(OracleDataSource.class.getName());
 		poolDataSource.registerConnectionInitializationCallback(connection -> connection.setSchema("joark"));
 
 		Properties connProperties = new Properties();
