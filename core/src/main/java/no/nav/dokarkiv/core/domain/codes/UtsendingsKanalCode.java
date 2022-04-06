@@ -3,40 +3,68 @@ package no.nav.dokarkiv.core.domain.codes;
 import no.nav.dokarkiv.core.stelvio.CodesTablePeriodicItem;
 
 /**
- * Enum for codes in T_K_UTSENDINGS_KANAL. 
- * 
+ * Enum for codes in T_K_UTSENDINGS_KANAL.
+ *
  * @author Per Kristian Foss, Visma Sirius
  */
 public enum UtsendingsKanalCode implements CtiRelationship<UtsendingsKanalCode, String> {
 
-	/** EESSI */
+	/**
+	 * EESSI
+	 */
 	EESSI,
-	/** ALTINN */
+	/**
+	 * ALTINN
+	 */
 	ALTINN,
-	/** Ditt NAV */
+	/**
+	 * Ditt NAV
+	 */
 	NAV_NO,
-	/** Sentral print */
+	/**
+	 * Sentral print
+	 */
 	S,
-	/** Lokal print */
+	/**
+	 * Lokal print
+	 */
 	L,
-	/** Sikker digital post */
+	/**
+	 * Sikker digital post
+	 */
 	SDP,
-	/** EIA */
+	/**
+	 * EIA
+	 */
 	EIA,
-	/** Helsenettet */
+	/**
+	 * Helsenettet
+	 */
 	HELSENETTET,
-	/** Trygderetten */
-    TRYGDERETTEN,
+	/**
+	 * Trygderetten
+	 */
+	TRYGDERETTEN,
 	/**
 	 * INGEN_DISTRIBUSJON
 	 */
 	INGEN_DISTRIBUSJON,
-	/** midertidelig felt for migrering fra ondemand til dokarkiv, referanse sak: 5140 **/
+	/**
+	 * Midertidelig felt for migrering fra ondemand til dokarkiv, referanse sak: 5140
+	 **/
 	MIGRERING_S,
-	/** midertidelig felt for migrering fra ondemand til dokarkiv, referanse sak: 5140 **/
-	MIGRERING_L;
+	/**
+	 * Midlertidig felt for migrering fra ondemand til dokarkiv, referanse sak: 5140
+	 **/
+	MIGRERING_L,
+	/**
+	 * Innlogget samtale
+	 */
+	NAV_NO_CHAT;
 
-	/** {@inheritDoc} */
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Class<? extends CodesTablePeriodicItem<UtsendingsKanalCode, String>> getCtiClass() {
 		return UtsendingsKanalCti.class;
