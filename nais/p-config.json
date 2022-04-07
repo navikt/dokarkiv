@@ -186,6 +186,11 @@
       "app": "dp-behov-journalforing",
       "namespace": "teamdagpenger",
       "cluster": "prod-gcp"
+    },
+    {
+      "app": "bidrag-dokument-arkiv",
+      "namespace": "bidrag",
+      "cluster": "prod-fss"
     }
   ]
 }

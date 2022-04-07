@@ -198,6 +198,11 @@
       "app": "eessi-pensjon-journalforing-q1",
       "namespace": "eessipensjon",
       "cluster": "dev-gcp"
+    },
+    {
+      "app": "bidrag-dokument-arkiv",
+      "namespace": "bidrag",
+      "cluster": "dev-fss"
     }
   ]
 }

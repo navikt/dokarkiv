@@ -227,6 +227,11 @@
       "app": "dp-behov-journalforing",
       "namespace": "teamdagpenger",
       "cluster": "dev-gcp"
+    },
+    {
+      "app": "bidrag-dokument-arkiv-feature",
+      "namespace": "bidrag",
+      "cluster": "dev-fss"
     }
   ]
 }
