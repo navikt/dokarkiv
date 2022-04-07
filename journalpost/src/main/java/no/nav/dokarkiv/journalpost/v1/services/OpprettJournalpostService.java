@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.journalpost.v1.services;
 
+import io.micrometer.core.instrument.MeterRegistry;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService;
@@ -42,6 +43,7 @@ import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
 import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.OPPRETT;
 import static no.nav.dokarkiv.journalpost.v1.api.Sakstype.FAGSAK;
+import static no.nav.dokarkiv.journalpost.v1.util.JournalpostApiMetrics.incrementSakstypeCounter;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
@@ -61,6 +63,7 @@ public class OpprettJournalpostService {
 	private final IdentConsumer identConsumer;
 	private final HentSakerRepository hentSakerRepository;
 	private final OpprettJournalpostPDFAUtils opprettJournalpostPDFAUtils;
+	private final MeterRegistry meterRegistry;
 
 	@Inject
 	public OpprettJournalpostService(final JoarkRepository joarkRepository,
@@ -70,7 +73,8 @@ public class OpprettJournalpostService {
 									 final AksjonsLoggService aksjonsLoggService,
 									 final IdentConsumer identConsumer,
 									 final HentSakerRepository hentSakerRepository,
-									 final OpprettJournalpostPDFAUtils opprettJournalpostPDFAUtils) {
+									 final OpprettJournalpostPDFAUtils opprettJournalpostPDFAUtils,
+									 final MeterRegistry meterRegistry) {
 		this.joarkRepository = joarkRepository;
 		this.dokumentFilRepository = dokumentFilRepository;
 		this.opprettJournalpostApiRequestMapper = opprettJournalpostApiRequestMapper;
@@ -79,6 +83,7 @@ public class OpprettJournalpostService {
 		this.identConsumer = identConsumer;
 		this.hentSakerRepository = hentSakerRepository;
 		this.opprettJournalpostPDFAUtils = opprettJournalpostPDFAUtils;
+		this.meterRegistry = meterRegistry;
 	}
 
 	public OpprettJournalpostResult opprettJournalpost(OpprettJournalpostRequest request) {
@@ -102,7 +107,7 @@ public class OpprettJournalpostService {
 		populerAksjonslogg(journalpost.getJournalpostId(), OPPRETT);
 		log.info(MDC.get(MDC_REQUEST_ID) + " har opprettet ny journalpost, journalpostId={} og status={}", journalpost.getJournalpostId(), journalpost.getJournalstatus());
 
-		if(!SKANMOTOVRIG.equalsIgnoreCase(journalpost.getOpprettetAvNavn())) {
+		if (!SKANMOTOVRIG.equalsIgnoreCase(journalpost.getOpprettetAvNavn())) {
 			opprettJournalpostPDFAUtils.safeValidateAndLogPDFA(journalpost);
 		}
 
@@ -113,6 +118,7 @@ public class OpprettJournalpostService {
 		if (request.getSak() != null) {
 			Sakstype sakstype = request.getSak().getSakstype();
 			if ((FAGSAK.equals(sakstype) || Sakstype.GENERELL_SAK.equals(sakstype)) && !Fagsaksystem.PP01.equals(request.getSak().getFagsaksystem())) {
+				incrementSakstypeCounter(sakstype, "opprettjournalpost", meterRegistry);
 				return identifiserEllerOpprettArkivsak(request);
 			}
 		}
