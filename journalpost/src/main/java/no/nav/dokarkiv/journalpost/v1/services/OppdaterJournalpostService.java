@@ -19,7 +19,6 @@ import no.nav.dokarkiv.journalpost.v1.api.BrukerIdType;
 import no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem;
 import no.nav.dokarkiv.journalpost.v1.api.OppdaterJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.Sakstype;
-import no.nav.dokarkiv.journalpost.v1.util.JournalpostApiMetrics;
 import no.nav.dokarkiv.journalpost.v1.util.oppdaterjournalpost.ChangeTracker;
 import no.nav.dokarkiv.journalpost.v1.util.oppdaterjournalpost.DokumentInfoUpdater;
 import no.nav.dokarkiv.journalpost.v1.util.oppdaterjournalpost.JournalpostUpdater;
@@ -42,6 +41,7 @@ import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.journalpost.v1.JournalpostApiConfig.RETRY_DELAY;
 import static no.nav.dokarkiv.journalpost.v1.JournalpostApiConfig.RETRY_MULTIPLIER;
 import static no.nav.dokarkiv.journalpost.v1.api.Sakstype.FAGSAK;
+import static no.nav.dokarkiv.journalpost.v1.util.JournalpostApiMetrics.incrementSakstypeCounter;
 import static no.nav.dokarkiv.journalpost.v1.validators.OppdaterJournalpostValidator.validateOppdaterteFelt;
 
 @Service
@@ -95,8 +95,8 @@ public class OppdaterJournalpostService {
 
 		if (oppdaterJournalpostRequest.getSak() != null) {
 			Sakstype sakstype = oppdaterJournalpostRequest.getSak().getSakstype();
+			incrementSakstypeCounter(sakstype, "oppdaterjournalpost", meterRegistry);
 			if ((FAGSAK.equals(sakstype) || Sakstype.GENERELL_SAK.equals(sakstype)) && !Fagsaksystem.PP01.equals(oppdaterJournalpostRequest.getSak().getFagsaksystem())) {
-				JournalpostApiMetrics.incrementSakstypeCounter(sakstype, "oppdaterjournalpost", meterRegistry);
 				sakId = identifiserEllerOpprettArkivsak(oppdaterJournalpostRequest);
 			}
 		}
