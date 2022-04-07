@@ -68,7 +68,7 @@ public enum UtsendingsKanalCode implements CtiRelationship<UtsendingsKanalCode, 
 	/**
 	 * Digital Post til Virksomhet (sensitiv)
 	 */
-	DPVS;;
+	DPVS;
 
 	/**
 	 * {@inheritDoc}
