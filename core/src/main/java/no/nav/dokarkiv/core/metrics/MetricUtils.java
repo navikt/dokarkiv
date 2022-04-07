@@ -10,25 +10,14 @@ import no.nav.dokarkiv.core.security.abac.AuthorizationException;
  */
 public class MetricUtils {
 
+	public static void incrementCounter(MeterRegistry meterRegistry, String counterName, String... otherParameters) {
+		Counter.builder(counterName)
+				.tags(otherParameters)
+				.register(meterRegistry)
+				.increment();
+	}
 
-    public static void incrementExceptionCounter(String counterName, Throwable throwable, MeterRegistry meterRegistry, String... otherParameters) {
-        Counter.builder(counterName)
-                .tags("error_type", isFunctionalException(throwable) ? "functional" : "technical")
-                .tags("exception_name", throwable.getClass().getSimpleName())
-                .tags(otherParameters)
-                .register(meterRegistry)
-                .increment();
-    }
-
-    public static void incrementCounter(MeterRegistry meterRegistry, String counterName, String... otherParameters) {
-        Counter.builder(counterName)
-                .tags(otherParameters)
-                .register(meterRegistry)
-                .increment();
-    }
-
-    public static boolean isFunctionalException(Throwable e) {
-        return e instanceof DokarkivFunctionalException || e instanceof AuthorizationException;
-    }
-
+	public static boolean isFunctionalException(Throwable e) {
+		return e instanceof DokarkivFunctionalException || e instanceof AuthorizationException;
+	}
 }

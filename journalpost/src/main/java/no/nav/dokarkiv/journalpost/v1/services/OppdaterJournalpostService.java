@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.journalpost.v1.services;
 
+import io.micrometer.core.instrument.MeterRegistry;
 import no.nav.dokarkiv.core.aksjonslogg.LagreAksjonsLoggService;
 import no.nav.dokarkiv.core.consumer.pdl.IdentConsumer;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
@@ -18,6 +19,7 @@ import no.nav.dokarkiv.journalpost.v1.api.BrukerIdType;
 import no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem;
 import no.nav.dokarkiv.journalpost.v1.api.OppdaterJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.Sakstype;
+import no.nav.dokarkiv.journalpost.v1.util.JournalpostApiMetrics;
 import no.nav.dokarkiv.journalpost.v1.util.oppdaterjournalpost.ChangeTracker;
 import no.nav.dokarkiv.journalpost.v1.util.oppdaterjournalpost.DokumentInfoUpdater;
 import no.nav.dokarkiv.journalpost.v1.util.oppdaterjournalpost.JournalpostUpdater;
@@ -48,24 +50,26 @@ public class OppdaterJournalpostService {
 
 	private static final String APPLIKASJON_FS22 = "FS22";
 
-    private final JoarkRepositorySkjermet joarkRepository;
-    private final DokumentinfoRepository dokumentinfoRepository;
+	private final JoarkRepositorySkjermet joarkRepository;
+	private final DokumentinfoRepository dokumentinfoRepository;
 	private final JournalpostUpdater journalpostUpdater;
 	private final SaksrelasjonUpdater saksrelasjonUpdater;
 	private final DokumentInfoUpdater dokumentInfoUpdater;
 	private final LagreAksjonsLoggService lagreAksjonsLoggService;
 	private final IdentConsumer identConsumer;
 	private final HentSakerRepository hentSakerRepository;
+	private final MeterRegistry meterRegistry;
 
 	@Inject
-    public OppdaterJournalpostService(JoarkRepositorySkjermet joarkRepository,
+	public OppdaterJournalpostService(JoarkRepositorySkjermet joarkRepository,
 									  JournalpostUpdater journalpostUpdater,
 									  SaksrelasjonUpdater saksrelasjonUpdater,
 									  DokumentinfoRepository dokumentinfoRepository,
 									  DokumentInfoUpdater dokumentInfoUpdater,
 									  LagreAksjonsLoggService lagreAksjonsLoggService,
 									  final IdentConsumer identConsumer,
-									  final HentSakerRepository hentSakerRepository) {
+									  final HentSakerRepository hentSakerRepository,
+									  final MeterRegistry meterRegistry) {
 		this.joarkRepository = joarkRepository;
 		this.dokumentinfoRepository = dokumentinfoRepository;
 		this.journalpostUpdater = journalpostUpdater;
@@ -74,6 +78,7 @@ public class OppdaterJournalpostService {
 		this.lagreAksjonsLoggService = lagreAksjonsLoggService;
 		this.identConsumer = identConsumer;
 		this.hentSakerRepository = hentSakerRepository;
+		this.meterRegistry = meterRegistry;
 	}
 
 	@Retryable(
@@ -90,14 +95,15 @@ public class OppdaterJournalpostService {
 
 		if (oppdaterJournalpostRequest.getSak() != null) {
 			Sakstype sakstype = oppdaterJournalpostRequest.getSak().getSakstype();
-			if((FAGSAK.equals(sakstype) || Sakstype.GENERELL_SAK.equals(sakstype)) && !Fagsaksystem.PP01.equals(oppdaterJournalpostRequest.getSak().getFagsaksystem())){
+			if ((FAGSAK.equals(sakstype) || Sakstype.GENERELL_SAK.equals(sakstype)) && !Fagsaksystem.PP01.equals(oppdaterJournalpostRequest.getSak().getFagsaksystem())) {
+				JournalpostApiMetrics.incrementSakstypeCounter(sakstype, "oppdaterjournalpost", meterRegistry);
 				sakId = identifiserEllerOpprettArkivsak(oppdaterJournalpostRequest);
 			}
 		}
 
 		ChangeTracker changeTracker = journalpostUpdater.updateFields(journalpost, oppdaterJournalpostRequest);
 
-		if(!changeTracker.getChanges().isEmpty()) {
+		if (!changeTracker.getChanges().isEmpty()) {
 			lagreAksjonsLoggService.lagreAksjonsLoggForJournalpost(
 					AksjonsTypeCode.ENDRE_METADATA, journalpostId, null,
 					hentMeldingFraAksjonsType(AksjonsTypeCode.ENDRE_METADATA), null, changeTracker.getChanges());
@@ -105,7 +111,7 @@ public class OppdaterJournalpostService {
 
 		changeTracker = saksrelasjonUpdater.updateFields(journalpost, oppdaterJournalpostRequest, sakId);
 		joarkRepository.save(journalpost);
-		if(!changeTracker.getChanges().isEmpty()) {
+		if (!changeTracker.getChanges().isEmpty()) {
 			lagreAksjonsLoggService.lagreAksjonsLoggForJournalpost(
 					AksjonsTypeCode.SAKSTILKNYTNING, journalpostId, null,
 					hentMeldingFraAksjonsType(AksjonsTypeCode.SAKSTILKNYTNING), null, changeTracker.getChanges());
@@ -118,7 +124,7 @@ public class OppdaterJournalpostService {
 
 				changeTracker = dokumentInfoUpdater.updateFields(dokumentInfo, dokument);
 				dokumentinfoRepository.save(dokumentInfo);
-				if(!changeTracker.getChanges().isEmpty()) {
+				if (!changeTracker.getChanges().isEmpty()) {
 					lagreAksjonsLoggService.lagreAksjonsLogg(
 							AksjonsTypeCode.ENDRE_METADATA, dokumentInfo.getDokumentInfoId(), null,
 							hentMeldingFraAksjonsType(AksjonsTypeCode.ENDRE_METADATA), null, changeTracker.getChanges());
