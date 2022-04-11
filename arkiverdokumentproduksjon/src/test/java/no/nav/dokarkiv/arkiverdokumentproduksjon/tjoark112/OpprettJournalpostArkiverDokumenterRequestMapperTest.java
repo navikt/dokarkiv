@@ -14,6 +14,7 @@ import java.util.Optional;
 import static no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark112.OpprettJournalpostArkiverDokumenterDataUtil.DOKUMENT_INNHOLD_BASE64;
 import static no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark112.OpprettJournalpostArkiverDokumenterDataUtil.FILREFERANSE_GCS;
 import static no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark112.OpprettJournalpostArkiverDokumenterDataUtil.PERSONIDENT;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -36,7 +37,7 @@ public class OpprettJournalpostArkiverDokumenterRequestMapperTest {
 		DateProvider.configure(true, "2014-08-27T12:00:00");
 		createRequest();
 		RequestContextSetter.setRequestContextForUnitTest();
-		when(storageMock.downloadObject(eq(FILREFERANSE_GCS))).thenReturn(Optional.of("{\n" +
+		when(storageMock.downloadObject(eq(FILREFERANSE_GCS), anyString())).thenReturn(Optional.of("{\n" +
 				"  \"axml\" : \"" + DOKUMENT_INNHOLD_BASE64 + "\",\n" +
 				"  \"pdf\": \"" + DOKUMENT_INNHOLD_BASE64 + "\"\n" +
 				"}"));
