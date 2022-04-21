@@ -9,12 +9,9 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.inject.Named;
-import java.util.List;
 
 /**
  * Vi bruker spring-security for standard filtre.
@@ -50,20 +47,5 @@ public class SecurityRestConfig extends WebSecurityConfigurerAdapter {
 														  @Value("${ldap.serviceuser.basedn}") String serviceuserBaseDn,
 														  @Value("${auth.group.lesetilgang.joark}") String authReadRequiredMemberOf) {
 		return new BasicAuthRestInterceptor(baseDn, serviceuserBaseDn, authReadRequiredMemberOf, ldapTemplate, cacheManager);
-	}
-
-	@Override
-	protected UserDetailsService userDetailsService() {
-		return username -> new NoUser();
-	}
-
-	/**
-	 * Appen har ingen autoriserte brukere.
-	 * Dette for å unngå at det settes opp en generert bruker.
-	 */
-	public static class NoUser extends User {
-		public NoUser() {
-			super(null, null, false, true, true, true, List.of());
-		}
 	}
 }
