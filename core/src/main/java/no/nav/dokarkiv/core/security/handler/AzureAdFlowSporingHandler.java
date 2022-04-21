@@ -95,12 +95,12 @@ public class AzureAdFlowSporingHandler {
 				MDC.put(MDCConstants.MDC_USER_NAME, navUser.getFullname());
 				MDC.put(MDCConstants.MDC_CONSUMER_ID, appClaim);
 			} else {
-				log.error(ERROR_MELDING_PREFIX + " Fant ikke NAVIdent={} i onprem Active Directory. " + ERROR_MELDING_SUFFIX, navUserIdHeader);
 				handleClientCredentialGrantFlowAppContext(appClaim);
+				log.error(ERROR_MELDING_PREFIX + " Fant ikke NAVIdent={} i onprem Active Directory. " + ERROR_MELDING_SUFFIX, navUserIdHeader);
 			}
 		} else {
-			log.error(ERROR_MELDING_PREFIX + " Ugyldig format på NAVIdent={}. Må matche \"" + NAVIDENT_REGEX + "\". " + ERROR_MELDING_SUFFIX, navUserIdHeader);
 			handleClientCredentialGrantFlowAppContext(appClaim);
+			log.error(ERROR_MELDING_PREFIX + " Ugyldig format på NAVIdent={}. Må matche \"" + NAVIDENT_REGEX + "\". " + ERROR_MELDING_SUFFIX, navUserIdHeader);
 		}
 	}
 
