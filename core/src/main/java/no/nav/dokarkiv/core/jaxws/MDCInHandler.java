@@ -115,7 +115,6 @@ public class MDCInHandler implements SOAPHandler<SOAPMessageContext> {
 		return qNames;
 	}
 	
-	@SuppressWarnings("unchecked")
 	private String extractOrGenerateNewCallId(SOAPHeader header) {
 		String callId = UUID.randomUUID().toString();
 		

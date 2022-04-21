@@ -1,9 +1,5 @@
 package no.nav.dokarkiv.core.jaxws;
 
-import static no.nav.dokarkiv.core.MDCConstants.MDC_APP_ID;
-import static no.nav.dokarkiv.core.MDCConstants.MDC_CALL_ID;
-import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
-
 import com.google.common.collect.Sets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +16,10 @@ import javax.xml.ws.handler.soap.SOAPMessageContext;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.UUID;
+
+import static no.nav.dokarkiv.core.MDCConstants.MDC_APP_ID;
+import static no.nav.dokarkiv.core.MDCConstants.MDC_CALL_ID;
+import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 
 /**
  * Handler used for UsernameToken to get appId, consumerId and callId, which is not present in the
@@ -91,7 +91,6 @@ public class MDCUsernameTokenInHandler implements SOAPHandler<SOAPMessageContext
 		return Sets.newHashSet(APPID_QNAME, CONSUMER_QNAME, CALLID_QNAME);
 	}
 
-	@SuppressWarnings("unchecked")
 	private String extractMDC(SOAPHeader header, QName mdcQname) {
 		String mdc = "";
 		if (header == null) {

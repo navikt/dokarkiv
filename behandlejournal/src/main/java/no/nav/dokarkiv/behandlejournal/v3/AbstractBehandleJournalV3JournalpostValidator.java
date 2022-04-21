@@ -91,21 +91,6 @@ public abstract class AbstractBehandleJournalV3JournalpostValidator implements B
 		}
 	}
 
-	protected void validateDokumentInfo(Journalpost journalpost) {
-		for (DokumentInfo dokumentInfo : journalpost.findAllDokumentInfos()) {
-			validateCommonDokumentInfo(dokumentInfo);
-		}
-	}
-
-	protected void validateCommonDokumentInfo(DokumentInfo dokumentInfo) {
-		if (dokumentInfo.getKategori() == null) {
-			throw new ApplicationException("Kategori must be set");
-		}
-		if (isBlank(dokumentInfo.getTittel())) {
-			throw new ApplicationException("Tittel must be set");
-		}
-	}
-
 	protected void validateBrevkode(DokumentInfo dokumentInfo) {
 		if (isBlank(dokumentInfo.getBrevkode())) {
 			throw new ApplicationException("Brevkode must be set");

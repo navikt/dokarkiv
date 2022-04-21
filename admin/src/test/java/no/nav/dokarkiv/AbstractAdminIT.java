@@ -109,13 +109,6 @@ public abstract class AbstractAdminIT extends AbstractRestIT {
 				.get();
 	}
 
-	protected AksjonsLogg getAksjonsLoggByDokumentInfoId(List<AksjonsLogg> aksjonsLoggList, Long dokumentInfoId) {
-		return aksjonsLoggList.stream()
-				.filter(aksjonsLogg -> aksjonsLogg.getJournalpostId() == null && dokumentInfoId.equals(aksjonsLogg.getDokumentInfoId()))
-				.findAny()
-				.get();
-	}
-
 	protected JournalpostDokumentInfoRelasjon getRelasjonByDokumentInfoId(Journalpost journalpost, Long dokumentInfoId) {
 		return journalpost.getJournalpostDokumentInfoRelasjoner()
 				.stream()
@@ -127,7 +120,6 @@ public abstract class AbstractAdminIT extends AbstractRestIT {
 	protected void assertAksjonsLogg(AksjonsLogg aksjonsLogg, AksjonsTypeCode expectedAksjonsTypeCode, Long journalpostId, Long dokumentInfoId, List<ArkivElementEndring> expectedArkivElementEndringList) {
 		assertAksjonsLogg(aksjonsLogg, expectedAksjonsTypeCode, journalpostId, dokumentInfoId, null, expectedArkivElementEndringList);
 	}
-
 
 	protected void assertAksjonsLogg(AksjonsLogg aksjonsLogg, AksjonsTypeCode expectedAksjonsTypeCode, Long journalpostId, Long dokumentInfoId, String expectedMelding, List<ArkivElementEndring> expectedArkivElementEndringList) {
 

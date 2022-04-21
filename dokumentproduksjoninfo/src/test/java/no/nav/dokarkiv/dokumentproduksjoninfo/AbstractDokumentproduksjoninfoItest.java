@@ -3,7 +3,6 @@ package no.nav.dokarkiv.dokumentproduksjoninfo;
 import no.nav.dokarkiv.core.CoreConfig;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
-import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
 import no.nav.dokarkiv.core.skjerming.SkjermingServiceTest;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.dokarkiv.core.stelvio.SimpleRequestContext;
@@ -18,7 +17,6 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEnti
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.inject.Inject;
 import javax.transaction.Transactional;
@@ -39,14 +37,9 @@ public abstract class AbstractDokumentproduksjoninfoItest {
 	@Inject
     protected JoarkRepositorySkjermet joarkRepository;
 	@Inject
-	protected JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository;
-	@Inject
 	protected DokumentFilRepository dokumentFilRepository;
 	@Inject
 	protected SkjermingServiceTest skjermingService;
-
-	@Inject
-	protected TransactionTemplate transactionTemplate;
 
 	@Before
 	public void setUpItest() {

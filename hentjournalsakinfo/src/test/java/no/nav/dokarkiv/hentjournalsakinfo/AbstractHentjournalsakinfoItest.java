@@ -6,7 +6,6 @@ import no.nav.dokarkiv.core.CoreConfig;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
-import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
 import no.nav.dokarkiv.core.repository.SakRepository;
 import no.nav.dokarkiv.core.security.BasicAuthRestInterceptor;
 import no.nav.dokarkiv.core.security.LdapConfig;
@@ -74,9 +73,6 @@ public abstract class AbstractHentjournalsakinfoItest extends AbstractRestIT {
 
 	@Inject
 	protected DokumentFilRepository dokumentFilRepository;
-
-	@Inject
-	protected JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository;
 
 	@Inject
 	protected ObjectMapper objectMapper;

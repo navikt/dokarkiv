@@ -1,5 +1,30 @@
 package no.nav.dokarkiv.journalfoerinngaaende.v1.rjoark001i;
 
+import no.nav.dok.tjenester.journalfoerinngaaende.ArkivSakNoArkivsakSystemEnum;
+import no.nav.dok.tjenester.journalfoerinngaaende.Avsender;
+import no.nav.dok.tjenester.journalfoerinngaaende.Bruker;
+import no.nav.dok.tjenester.journalfoerinngaaende.Dokument;
+import no.nav.dok.tjenester.journalfoerinngaaende.GetJournalpostResponse;
+import no.nav.dok.tjenester.journalfoerinngaaende.LogiskVedlegg;
+import no.nav.dok.tjenester.journalfoerinngaaende.Variant;
+import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
+import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
+import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
+import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
+import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
+import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
+import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
+import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
+import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.junit.MockitoJUnitRunner;
+
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.util.Date;
+import java.util.List;
+
 import static no.nav.dokarkiv.journalfoerinngaaende.v1.util.TestUtils.AVSENDER_ID_ORGANISASJON;
 import static no.nav.dokarkiv.journalfoerinngaaende.v1.util.TestUtils.AVSENDER_ID_PERSON;
 import static no.nav.dokarkiv.journalfoerinngaaende.v1.util.TestUtils.AVSENDER_NAVN;
@@ -28,31 +53,6 @@ import static no.nav.dokarkiv.journalfoerinngaaende.v1.util.TestUtils.createJour
 import static no.nav.dokarkiv.journalfoerinngaaende.v1.util.TestUtils.createJournalpostKassert;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-
-import no.nav.dok.tjenester.journalfoerinngaaende.ArkivSakNoArkivsakSystemEnum;
-import no.nav.dok.tjenester.journalfoerinngaaende.Avsender;
-import no.nav.dok.tjenester.journalfoerinngaaende.Bruker;
-import no.nav.dok.tjenester.journalfoerinngaaende.Dokument;
-import no.nav.dok.tjenester.journalfoerinngaaende.GetJournalpostResponse;
-import no.nav.dok.tjenester.journalfoerinngaaende.LogiskVedlegg;
-import no.nav.dok.tjenester.journalfoerinngaaende.Variant;
-import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
-import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
-import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
-import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
-import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
-import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
-import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
-import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
-import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
-
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-import java.util.Date;
-import java.util.List;
 
 /**
  * @author Sigurd Midttun, Visma Consulting.
@@ -152,7 +152,7 @@ public class GetInngaaendeJournalpostMapperTest {
 	@Test
 	public void shouldMapArkivsaksystemPsak() {
 		Journalpost journalpost = createJournalpost();
-		journalpost.getSaksrelasjon().setFagsystem(FagsystemCode.PEN.PEN);
+		journalpost.getSaksrelasjon().setFagsystem(FagsystemCode.PEN);
 		GetJournalpostResponse response = mapper.map(journalpost);
 		assertThat(response.getArkivSak().getArkivSakSystem(), is(ARKIVSAK_SYSTEM_PSAK));
 	}
@@ -177,7 +177,7 @@ public class GetInngaaendeJournalpostMapperTest {
 	@Test
 	public void shouldMapEmptyVarianterWhenKassert() {
 		Journalpost journalpost = createJournalpostKassert();
-		journalpost.getSaksrelasjon().setFagsystem(FagsystemCode.PEN.PEN);
+		journalpost.getSaksrelasjon().setFagsystem(FagsystemCode.PEN);
 		GetJournalpostResponse response = mapper.map(journalpost);
 		assertThat(response.getDokumentListe().size(), is(2));
 		assertThat(response.getDokumentListe().get(0).getVariant().size(), is(1));

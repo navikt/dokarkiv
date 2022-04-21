@@ -2,7 +2,6 @@ package no.nav.dokarkiv.behandlejournal.v2;
 
 import no.nav.dokarkiv.core.CoreConfig;
 import no.nav.dokarkiv.core.domain.util.DateProvider;
-import no.nav.dokarkiv.core.exceptions.ApplicationException;
 import no.nav.dokarkiv.core.repository.BidragMellomlagringRepository;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
@@ -13,7 +12,6 @@ import no.nav.security.token.support.test.spring.TokenGeneratorConfiguration;
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.BehandleJournalV2;
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.feil.ForretningsmessigUnntak;
 import org.joda.time.DateTime;
-import org.joda.time.LocalDateTime;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.rules.ExpectedException;
@@ -26,11 +24,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.inject.Inject;
 import javax.transaction.Transactional;
-import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.XMLGregorianCalendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasProperty;
@@ -86,22 +80,6 @@ public abstract class AbstractBehandleJournalV2Itest {
 		expectedException.expect(hasProperty("faultInfo", hasProperty("feilkilde", is(expectedFaultInfo.getFeilkilde()))));
 		expectedException.expect(hasProperty("faultInfo", hasProperty("feilmelding", is(expectedFaultInfo.getFeilmelding()))));
 		expectedException.expect(hasProperty("faultInfo", hasProperty("tidspunkt", is(expectedFaultInfo.getTidspunkt()))));
-	}
-
-	/**
-	 * A testable XMLGregorianCalendar. Uses DateProvider to configure dates.
-	 *
-	 * @return
-	 */
-	protected XMLGregorianCalendar getXmlTimestamp() {
-		GregorianCalendar calendar = new GregorianCalendar();
-		// Setting the date explicitly to make it testable
-		calendar.setTime(DateProvider.getToday());
-		try {
-			return DatatypeFactory.newInstance().newXMLGregorianCalendar(calendar);
-		} catch (DatatypeConfigurationException e) {
-			throw new ApplicationException("Unable to create XMLGregorianCalendar", e);
-		}
 	}
 
 	/**
