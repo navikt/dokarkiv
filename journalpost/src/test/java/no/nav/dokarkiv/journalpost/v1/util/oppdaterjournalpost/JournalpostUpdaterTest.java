@@ -44,7 +44,6 @@ public class JournalpostUpdaterTest {
 	@InjectMocks
 	private JournalpostUpdater updater;
 
-
 	@Test
 	public void shouldUpdateJournalpost() throws UgyldigAksjonsLoggException {
 		oppdaterJournalpostRequest = createPutOppdaterJournalpostRequest();
@@ -80,16 +79,16 @@ public class JournalpostUpdaterTest {
 
 		updater.updateFields(journalpost, oppdaterJournalpostRequest);
 
-		assertEquals(new Integer(1), journalpost.getAntallRetur());
+		assertEquals(1, journalpost.getAntallRetur().intValue());
 		updater.updateFields(journalpost, oppdaterJournalpostRequest);
-		assertEquals(new Integer(1), journalpost.getAntallRetur());
+		assertEquals(1, journalpost.getAntallRetur().intValue());
 
 		earliest.setTime(earliest.getTime() + 1);
 		oppdaterJournalpostRequest = TestUtils.createPutOppdaterJournalpostRequestWithDatoRetur(earliest);
 		updater.updateFields(journalpost, oppdaterJournalpostRequest);
-		assertEquals(new Integer(2), journalpost.getAntallRetur());
+		assertEquals(2, journalpost.getAntallRetur().intValue());
 		updater.updateFields(journalpost, oppdaterJournalpostRequest);
-		assertEquals(new Integer(2), journalpost.getAntallRetur());
+		assertEquals(2, journalpost.getAntallRetur().intValue());
 	}
 
 

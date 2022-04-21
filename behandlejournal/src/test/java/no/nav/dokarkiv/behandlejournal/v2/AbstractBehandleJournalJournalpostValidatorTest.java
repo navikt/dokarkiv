@@ -1,12 +1,5 @@
 package no.nav.dokarkiv.behandlejournal.v2;
 
-import static no.nav.dokarkiv.core.domain.builder.BrukerBuilder.getBrukerBuilder;
-import static no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder.getDokumentInfoBuilder;
-import static no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder.getFilDetaljerBuilder;
-import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalpostBuilder;
-import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
-import static no.nav.dokarkiv.core.domain.builder.SaksrelasjonBuilder.getSaksrelasjonBuilder;
-
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
@@ -26,6 +19,13 @@ import org.junit.rules.ExpectedException;
 import org.mockito.Mock;
 
 import java.util.Date;
+
+import static no.nav.dokarkiv.core.domain.builder.BrukerBuilder.getBrukerBuilder;
+import static no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder.getDokumentInfoBuilder;
+import static no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder.getFilDetaljerBuilder;
+import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalpostBuilder;
+import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
+import static no.nav.dokarkiv.core.domain.builder.SaksrelasjonBuilder.getSaksrelasjonBuilder;
 
 /**
  * Base class for JournalpostValidator tests.
@@ -157,49 +157,6 @@ public abstract class AbstractBehandleJournalJournalpostValidatorTest {
 										.build())
 						.build())
 				.build());
-	}
-
-	protected void addNonUniqueRelasjon(Journalpost journalpost) {
-		journalpost.addJournalpostDokumentInfoRelasjon(getJournalpostDokumentInfoRelasjonBuilder().dokumentInfo(
-				getDokumentInfoBuilder()
-						.dokumentInfoId(1L)
-						.dokumenttypeId("dokumentTypeId")
-						.sensitivt(true)
-						.tittel("tittel")
-						.kategori(DokumentKategoriCode.ES)
-						.filDetaljerList(
-								getFilDetaljerBuilder()
-										.variantFormat(VariantFormatCode.ARKIV)
-										.filtype(FilTypeCode.PDF)
-										.fileContent("test".getBytes())
-										.build())
-						.build())
-				.build());
-	}
-
-	protected void addHoveddokument(Journalpost journalpost) {
-		journalpost.addJournalpostDokumentInfoRelasjon(
-				getJournalpostDokumentInfoRelasjonBuilder()
-						.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.HOVEDDOKUMENT)
-						.dokumentInfo(
-								getDokumentInfoBuilder()
-										.dokumentInfoId(2L)
-										.dokumenttypeId("dokumentTypeId")
-										.sensitivt(true)
-										.tittel("tittel")
-										.kategori(DokumentKategoriCode.ES)
-										.filDetaljerList(
-												getFilDetaljerBuilder()
-														.variantFormat(VariantFormatCode.ARKIV)
-														.filtype(FilTypeCode.PDF)
-														.fileContent("test".getBytes())
-														.build())
-										.build())
-						.build());
-	}
-
-	protected void replaceArkivVariant(Journalpost journalpost) {
-		journalpost.findAllFilDetaljer().iterator().next().setVariantFormat(VariantFormatCode.SLADDET);
 	}
 
 }

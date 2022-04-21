@@ -43,7 +43,7 @@ public class ArkivElementConstants {
 
 	public static final String DOKUMENT_FIL_FIL_UUID = "DokumentFil.filUuid";
 
-	public static final String fildetaljerSkjermingTypeVariant(VariantFormatCode variantFormatCode) {
+	public static String fildetaljerSkjermingTypeVariant(VariantFormatCode variantFormatCode) {
 		return String.format("Fildetaljer.variantFormat[%s].skjermingType", variantFormatCode);
 	}
 

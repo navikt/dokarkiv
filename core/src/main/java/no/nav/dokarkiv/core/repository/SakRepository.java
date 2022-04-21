@@ -5,5 +5,4 @@ import org.springframework.data.repository.CrudRepository;
 
 public interface SakRepository extends CrudRepository<Sak, Long> {
 
-
 }

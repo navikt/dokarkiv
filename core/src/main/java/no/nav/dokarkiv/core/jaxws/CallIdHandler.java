@@ -1,7 +1,5 @@
 package no.nav.dokarkiv.core.jaxws;
 
-import static no.nav.dokarkiv.core.MDCConstants.MDC_CALL_ID;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -18,6 +16,8 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.UUID;
+
+import static no.nav.dokarkiv.core.MDCConstants.MDC_CALL_ID;
 
 /**
  * Inspired by MDCInHandler in modig-log-jaxws. Since MDCInHandler uses
@@ -81,7 +81,6 @@ public class CallIdHandler implements SOAPHandler<SOAPMessageContext> {
 		return Collections.singleton(CALLID_QNAME);
 	}
 
-	@SuppressWarnings("unchecked")
 	private String extractCallId(SOAPHeader header) {
 		String callId = null;
 

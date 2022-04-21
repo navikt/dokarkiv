@@ -1,13 +1,11 @@
 package no.nav.dokarkiv.journalpost.v1.itest;
 
-import com.auth0.jwt.JWT;
 import no.nav.dokarkiv.core.AbstractRestIT;
 import no.nav.dokarkiv.core.CoreConfig;
 import no.nav.dokarkiv.core.domain.builder.JournalpostBuilder;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.journalpost.v1.JournalpostConfig;
 import no.nav.security.token.support.test.spring.TokenGeneratorConfiguration;
-import org.apache.commons.io.IOUtils;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.http.HttpHeaders;
@@ -125,18 +123,4 @@ public abstract class AbstractJournalpostIT extends AbstractRestIT {
 		return headers;
 	}
 
-	protected void abacDeny() {
-		stubFor(post(urlEqualTo("/abac"))
-				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
-						.withHeader(org.apache.http.HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-						.withBodyFile("abac/abac-deny.json")));
-	}
-
-	protected String stringFromClasspath(String resourcename) throws IOException {
-		return IOUtils.toString(this.getClass().getClassLoader().getResourceAsStream(resourcename));
-	}
-
-	protected String getOidcTokenBody(String oidcToken) {
-		return JWT.decode(oidcToken).getPayload();
-	}
 }

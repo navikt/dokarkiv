@@ -163,7 +163,6 @@ public class BehandleJournalV3ProviderTest {
 		assertThat(response.getDokumentId(), is(DOKUMENT_ID.toString()));
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test
 	public void shouldNotAddVedleggToJournalpostAndThrowCheckedExceptionWhenLagreVedleggPaaJournalpostIsCalled()
 			throws Exception {
