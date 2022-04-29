@@ -16,6 +16,7 @@ public class SafHentDokumentRepository {
 			JoarkDokumentDto.class.getCanonicalName() +
 			"(" +
 			" j.journalpostId," +
+			" j.journalposttype," +
 			" fd.filUuid," +
 			" fd.onDemandId," +
 			" fd.filtype," +
