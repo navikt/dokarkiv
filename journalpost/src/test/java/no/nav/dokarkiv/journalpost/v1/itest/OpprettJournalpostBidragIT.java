@@ -11,8 +11,8 @@ import no.nav.dokarkiv.journalpost.v1.api.Dokument;
 import no.nav.dokarkiv.journalpost.v1.api.DokumentVariant;
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostResponse;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -39,14 +39,14 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.VEDLEGG_KVITTERING;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createBaseBidragRequest;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createRequestBidrag;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class OpprettJournalpostBidragIT extends AbstractJournalpostIT {
 
 	@Inject
 	private BidragMellomlagringRepository bidragMellomlagringRepository;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		WireMock.reset();
 	}

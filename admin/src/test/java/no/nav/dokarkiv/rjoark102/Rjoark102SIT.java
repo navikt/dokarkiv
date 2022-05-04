@@ -1,13 +1,6 @@
 package no.nav.dokarkiv.rjoark102;
 
 
-import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.DOKUMENT_INFO_KASSERT;
-import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.fildetaljerSkjermingTypeVariant;
-import static no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode.POL;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.createJournalpostWithHoveddokument;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
-
 import junit.framework.TestCase;
 import no.nav.dokarkiv.AbstractAdminIT;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
@@ -18,17 +11,23 @@ import no.nav.dokarkiv.core.domain.entities.ArkivElementEndring;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import org.apache.commons.collections15.IteratorUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.transaction.TestTransaction;
 
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+
+import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.DOKUMENT_INFO_KASSERT;
+import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.fildetaljerSkjermingTypeVariant;
+import static no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode.POL;
+import static no.nav.dokarkiv.core.util.TestDataGenerator.createJournalpostWithHoveddokument;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
 
 public class Rjoark102SIT extends AbstractAdminIT {
 
@@ -42,7 +41,7 @@ public class Rjoark102SIT extends AbstractAdminIT {
 
 		reinitTransaction();
 
-		ResponseEntity responseEntity = restTemplate.exchange(
+		var responseEntity = restTemplate.exchange(
 				URL_KASSERDOKUMENT_SKJERM + "/" + dokumentInfoSomSkalSkjermesSomKassert.getDokumentInfoId(),
 				HttpMethod.POST,
 				new HttpEntity<>(createHeadersWithAksjon()),
@@ -97,7 +96,7 @@ public class Rjoark102SIT extends AbstractAdminIT {
 
 		reinitTransaction();
 
-		ResponseEntity responseEntity = restTemplate.exchange(
+		var responseEntity = restTemplate.exchange(
 				URL_KASSERDOKUMENT_SKJERM + "/" + dokumentInfoSomSkalSkjermesSomKassert.getDokumentInfoId(),
 				HttpMethod.DELETE,
 				new HttpEntity<>(createHeadersWithAksjon()),
@@ -141,7 +140,7 @@ public class Rjoark102SIT extends AbstractAdminIT {
 	public void skalFeileHvisDokumentIkkeFinnes() throws IOException {
 		abacPermit();
 
-		ResponseEntity responseEntity = restTemplate.exchange(
+		var responseEntity = restTemplate.exchange(
 				URL_KASSERDOKUMENT_SKJERM + "/" + 1,
 				HttpMethod.POST,
 				new HttpEntity<>(createHeadersWithAksjon()),
@@ -150,7 +149,7 @@ public class Rjoark102SIT extends AbstractAdminIT {
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.NOT_FOUND));
 
 
-		ResponseEntity responseEntityOpphev = restTemplate.exchange(
+		var responseEntityOpphev = restTemplate.exchange(
 				URL_KASSERDOKUMENT_SKJERM + "/" + 1,
 				HttpMethod.DELETE,
 				new HttpEntity<>(createHeadersWithAksjon()),

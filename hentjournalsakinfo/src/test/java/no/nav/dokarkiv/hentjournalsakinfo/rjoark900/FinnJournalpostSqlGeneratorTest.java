@@ -3,7 +3,7 @@ package no.nav.dokarkiv.hentjournalsakinfo.rjoark900;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.hentjournalsakinfo.JournalpostFilter;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Collections;

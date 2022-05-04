@@ -1,18 +1,5 @@
 package no.nav.dokarkiv.rjoark100;
 
-import static junit.framework.TestCase.assertNull;
-import static junit.framework.TestCase.assertTrue;
-import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_SKJERMING_TYPE;
-import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.RELASJON_SKJERMING_TYPE;
-import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.fildetaljerSkjermingTypeVariant;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.createFildetaljerOgFil;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.createJournalpostWithGjenbruktHoveddokument;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.createJournalpostWithHoveddokument;
-import static no.nav.dokarkiv.util.TestUtil.createSkjermarkivenhetRequest;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.nullValue;
-import static org.hamcrest.core.Is.is;
-
 import no.nav.dokarkiv.AbstractAdminIT;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.codes.ArkivenhetCode;
@@ -25,11 +12,10 @@ import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.util.TestDataGenerator;
 import org.apache.commons.collections15.IteratorUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.transaction.TestTransaction;
 
 import java.io.IOException;
@@ -37,6 +23,19 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+
+import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_SKJERMING_TYPE;
+import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.RELASJON_SKJERMING_TYPE;
+import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.fildetaljerSkjermingTypeVariant;
+import static no.nav.dokarkiv.core.util.TestDataGenerator.createFildetaljerOgFil;
+import static no.nav.dokarkiv.core.util.TestDataGenerator.createJournalpostWithGjenbruktHoveddokument;
+import static no.nav.dokarkiv.core.util.TestDataGenerator.createJournalpostWithHoveddokument;
+import static no.nav.dokarkiv.util.TestUtil.createSkjermarkivenhetRequest;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.core.Is.is;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Test for skjerming av arkivenhet
@@ -55,11 +54,11 @@ public class Rjoark100aIT extends AbstractAdminIT {
 		assertNull(journalpost.getSkjermingType());
 
 		TestTransaction.start();
-		HttpEntity httpEntity = new HttpEntity(
+		var httpEntity = new HttpEntity<>(
 				createSkjermarkivenhetRequest(SkjermingTypeCode.POL, ArkivenhetCode.JOURNALPOST, journalpost.getJournalpostId(), null, null),
 				createHeadersWithAksjon());
 
-		ResponseEntity responseEntity = restTemplate.exchange(
+		var responseEntity = restTemplate.exchange(
 				URL_SKJERMARKIVENHET,
 				HttpMethod.POST,
 				httpEntity,
@@ -76,7 +75,7 @@ public class Rjoark100aIT extends AbstractAdminIT {
 
 		assertAksjonsLogg(getAksjonsLoggByJournalpostId(aksjonsLoggList, journalpost.getJournalpostId()), AksjonsTypeCode.ENDRE_SKJERMING, journalpost
 						.getJournalpostId(), journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId(),
-				Arrays.asList(
+				List.of(
 						ArkivElementEndring.builder()
 								.arkivElement(JOURNALPOST_SKJERMING_TYPE)
 								.fraVerdi(null)
@@ -110,10 +109,10 @@ public class Rjoark100aIT extends AbstractAdminIT {
 		assertNull(journalpostMedDokumentSomSkalSkjermes.findHoveddokumentDokumentInfoRelasjon().getSkjermingType());
 
 		TestTransaction.start();
-		ResponseEntity<String> responseEntity = restTemplate.exchange(
+		var responseEntity = restTemplate.exchange(
 				URL_SKJERMARKIVENHET,
 				HttpMethod.POST,
-				new HttpEntity(
+				new HttpEntity<>(
 						createSkjermarkivenhetRequest(SkjermingTypeCode.POL, ArkivenhetCode.DOKUMENT_INFO, null,
 								dokumentInfoSomSkalSkjermes.getDokumentInfoId(), null),
 						createHeadersWithAksjon()),
@@ -172,13 +171,13 @@ public class Rjoark100aIT extends AbstractAdminIT {
 		assertNull(originalJournalpost.findHoveddokumentDokumentInfoRelasjon().getSkjermingType());
 		assertNull(originalJournalpost.getSkjermingType());
 
-		HttpEntity httpEntity = new HttpEntity(
+		var httpEntity = new HttpEntity<>(
 				createSkjermarkivenhetRequest(SkjermingTypeCode.POL, ArkivenhetCode.DOKUMENT_INFO, null,
 						dokumentInfoSomSkalSkjermes.getDokumentInfoId(), null),
 				createHeadersWithAksjon());
 
 		TestTransaction.start();
-		ResponseEntity<String> responseEntity = restTemplate.exchange(
+		var responseEntity = restTemplate.exchange(
 				URL_SKJERMARKIVENHET,
 				HttpMethod.POST,
 				httpEntity,
@@ -217,7 +216,7 @@ public class Rjoark100aIT extends AbstractAdminIT {
 		assertAksjonsLogg(getAksjonsLoggByJournalpostId(aksjonsLoggList, journalpostMedHoveddokumentSomErGjenbrukt.getJournalpostId()), AksjonsTypeCode.ENDRE_SKJERMING, journalpostMedHoveddokumentSomErGjenbrukt
 						.getJournalpostId(), dokumentInfoSomSkalSkjermes
 						.getDokumentInfoId(),
-				Arrays.asList(
+				List.of(
 						ArkivElementEndring.builder()
 								.arkivElement(JOURNALPOST_SKJERMING_TYPE)
 								.fraVerdi(null)
@@ -227,7 +226,7 @@ public class Rjoark100aIT extends AbstractAdminIT {
 		assertAksjonsLogg(getAksjonsLoggByJournalpostId(aksjonsLoggList, journalpostMedHoveddokument.getJournalpostId()), AksjonsTypeCode.ENDRE_SKJERMING, journalpostMedHoveddokument
 						.getJournalpostId(), dokumentInfoSomSkalSkjermes
 						.getDokumentInfoId(),
-				Arrays.asList(
+				List.of(
 						ArkivElementEndring.builder()
 								.arkivElement(RELASJON_SKJERMING_TYPE)
 								.fraVerdi(null)
@@ -249,12 +248,12 @@ public class Rjoark100aIT extends AbstractAdminIT {
 
 		assertNull(dokumentInfo.findFilDetaljerByVariantFormat(VariantFormatCode.ARKIV).getSkjermingType());
 
-		HttpEntity httpEntity = new HttpEntity(
+		var httpEntity = new HttpEntity<>(
 				createSkjermarkivenhetRequest(SkjermingTypeCode.POL, ArkivenhetCode.DOKUMENT_FIL, null,
 						dokumentInfo.getDokumentInfoId(), VariantFormatCode.ARKIV),
 				createHeadersWithAksjon());
 
-		ResponseEntity responseEntity = restTemplate.exchange(
+		var responseEntity = restTemplate.exchange(
 				URL_SKJERMARKIVENHET,
 				HttpMethod.POST,
 				httpEntity,
@@ -275,7 +274,7 @@ public class Rjoark100aIT extends AbstractAdminIT {
 		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
 		assertThat(aksjonsLoggList.size(), is(1));
 		assertAksjonsLogg(aksjonsLoggList.get(0), AksjonsTypeCode.ENDRE_SKJERMING, journalpost.getJournalpostId(), dokumentInfo.getDokumentInfoId(),
-				Arrays.asList(
+				List.of(
 						ArkivElementEndring.builder()
 								.arkivElement(fildetaljerSkjermingTypeVariant(VariantFormatCode.ARKIV))
 								.fraVerdi(null)
@@ -297,12 +296,12 @@ public class Rjoark100aIT extends AbstractAdminIT {
 		assertNull(dokumentInfo.findFilDetaljerByVariantFormat(VariantFormatCode.ARKIV).getSkjermingType());
 		assertNull(dokumentInfo.findFilDetaljerByVariantFormat(VariantFormatCode.PRODUKSJON).getSkjermingType());
 
-		HttpEntity httpEntity = new HttpEntity(
+		var httpEntity = new HttpEntity<>(
 				createSkjermarkivenhetRequest(SkjermingTypeCode.POL, ArkivenhetCode.DOKUMENT_FIL, null,
 						dokumentInfo.getDokumentInfoId(), null),
 				createHeadersWithAksjon());
 
-		ResponseEntity responseEntity = restTemplate.exchange(
+		var responseEntity = restTemplate.exchange(
 				URL_SKJERMARKIVENHET,
 				HttpMethod.POST,
 				httpEntity,
@@ -351,12 +350,12 @@ public class Rjoark100aIT extends AbstractAdminIT {
 
 		reinitTransaction();
 
-		HttpEntity httpEntity = new HttpEntity(
+		var httpEntity = new HttpEntity<>(
 				createSkjermarkivenhetRequest(SkjermingTypeCode.POL, ArkivenhetCode.DOKUMENT_FIL, null,
 						dokumentInfo.getDokumentInfoId(), VariantFormatCode.ARKIV),
 				createHeadersWithAksjon());
 
-		ResponseEntity responseEntity = restTemplate.exchange(
+		var responseEntity = restTemplate.exchange(
 				URL_SKJERMARKIVENHET,
 				HttpMethod.POST,
 				httpEntity,
@@ -375,7 +374,7 @@ public class Rjoark100aIT extends AbstractAdminIT {
 		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
 		assertThat(aksjonsLoggList.size(), is(1));
 		assertAksjonsLogg(aksjonsLoggList.get(0), AksjonsTypeCode.ENDRE_SKJERMING, journalpost.getJournalpostId(), dokumentInfo.getDokumentInfoId(),
-				Arrays.asList(
+				List.of(
 						ArkivElementEndring.builder()
 								.arkivElement(fildetaljerSkjermingTypeVariant(VariantFormatCode.ARKIV))
 								.fraVerdi(null)
@@ -411,13 +410,13 @@ public class Rjoark100aIT extends AbstractAdminIT {
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
-		HttpEntity httpEntity = new HttpEntity(
+		var httpEntity = new HttpEntity<>(
 				createSkjermarkivenhetRequest(SkjermingTypeCode.POL, ArkivenhetCode.DOKUMENT_INFO, null,
 						dokumentInfo.getDokumentInfoId(), null),
 				createHeadersWithAksjon());
 
 		TestTransaction.start();
-		ResponseEntity<String> responseEntity = restTemplate.exchange(
+		var responseEntity = restTemplate.exchange(
 				URL_SKJERMARKIVENHET,
 				HttpMethod.POST,
 				httpEntity,
@@ -451,13 +450,13 @@ public class Rjoark100aIT extends AbstractAdminIT {
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
-		HttpEntity httpEntity = new HttpEntity(
+		var httpEntity = new HttpEntity<>(
 				createSkjermarkivenhetRequest(SkjermingTypeCode.POL, ArkivenhetCode.JOURNALPOST, journalpost.getJournalpostId(),
 						null, null),
 				createHeadersWithAksjon());
 
 		TestTransaction.start();
-		ResponseEntity<String> responseEntity = restTemplate.exchange(
+		var responseEntity = restTemplate.exchange(
 				URL_SKJERMARKIVENHET,
 				HttpMethod.POST,
 				httpEntity,
@@ -483,13 +482,13 @@ public class Rjoark100aIT extends AbstractAdminIT {
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
-		HttpEntity httpEntity = new HttpEntity(
+		var httpEntity = new HttpEntity<>(
 				createSkjermarkivenhetRequest(SkjermingTypeCode.POL, ArkivenhetCode.DOKUMENT_FIL, null,
 						dokumentInfo.getDokumentInfoId(), VariantFormatCode.ARKIV),
 				createHeadersWithAksjon());
 
 		TestTransaction.start();
-		ResponseEntity<String> responseEntity = restTemplate.exchange(
+		var responseEntity = restTemplate.exchange(
 				URL_SKJERMARKIVENHET,
 				HttpMethod.POST,
 				httpEntity,
@@ -506,11 +505,11 @@ public class Rjoark100aIT extends AbstractAdminIT {
 	@Test
 	public void skalIkkeFåTilgangHvisServiceBrukerIkkeErSrvJoarkadmin() {
 
-		HttpEntity httpEntity = new HttpEntity(
+		var httpEntity = new HttpEntity<>(
 				createSkjermarkivenhetRequest(SkjermingTypeCode.POL, ArkivenhetCode.JOURNALPOST, 1L, null, null),
 				createHeadersWithServiceUserToken(NO_ACCESS_SERVICE_USER_ID));
 
-		ResponseEntity<String> responseEntity = restTemplate.exchange(
+		var responseEntity = restTemplate.exchange(
 				URL_SKJERMARKIVENHET,
 				HttpMethod.POST,
 				httpEntity,

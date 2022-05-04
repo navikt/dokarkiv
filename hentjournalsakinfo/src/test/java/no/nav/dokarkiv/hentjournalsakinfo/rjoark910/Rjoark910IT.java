@@ -1,23 +1,12 @@
 package no.nav.dokarkiv.hentjournalsakinfo.rjoark910;
 
-import static no.nav.dokarkiv.core.util.TestDataGenerator.AKTOER_ID;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.PSAK_ID;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.createDokumentInfo;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.createGsak;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.createJournalpostWithHoveddokument;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.createPsakSaksrelasjon;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.createVedleggRelasjon;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
-
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.hentjournalsakinfo.AbstractHentjournalsakinfoItest;
 import no.nav.dokarkiv.hentjournalsakinfo.dto.JournalpostDto;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -28,6 +17,17 @@ import org.springframework.web.client.HttpClientErrorException;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Collections;
+
+import static no.nav.dokarkiv.core.util.TestDataGenerator.AKTOER_ID;
+import static no.nav.dokarkiv.core.util.TestDataGenerator.PSAK_ID;
+import static no.nav.dokarkiv.core.util.TestDataGenerator.createDokumentInfo;
+import static no.nav.dokarkiv.core.util.TestDataGenerator.createGsak;
+import static no.nav.dokarkiv.core.util.TestDataGenerator.createJournalpostWithHoveddokument;
+import static no.nav.dokarkiv.core.util.TestDataGenerator.createPsakSaksrelasjon;
+import static no.nav.dokarkiv.core.util.TestDataGenerator.createVedleggRelasjon;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 
 public class Rjoark910IT extends AbstractHentjournalsakinfoItest {
 	private static final String DOKUMENTOVERSIKTBRUKER_ENDPOINT = "/hentjournalsakinfo/dokumentoversiktbruker";
