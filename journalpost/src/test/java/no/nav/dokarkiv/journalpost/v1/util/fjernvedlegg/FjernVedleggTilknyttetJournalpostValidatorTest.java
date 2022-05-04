@@ -7,57 +7,54 @@ import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
 import no.nav.dokarkiv.core.exceptions.KanIkkeSlettetVedleggKnyttetTilJournalpostException;
 import no.nav.dokarkiv.journalpost.v1.util.TestDataUtils;
 import no.nav.dokarkiv.journalpost.v1.validators.FjernVedleggTilknyttetJournalpostValidator;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Test;
 
 import static no.nav.dokarkiv.journalpost.v1.util.TestDataUtils.JOURNALPOST_ID;
 import static no.nav.dokarkiv.journalpost.v1.util.TestDataUtils.createJournalpostDokumentInfoRelasjonHovedDok;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * @author Tsigab Angosom Gebremedhin, NAV.
  */
-
 public class FjernVedleggTilknyttetJournalpostValidatorTest {
 
-
-	@Rule
-	public ExpectedException expectedException = ExpectedException.none();
-	private FjernVedleggTilknyttetJournalpostValidator fjernVedleggTilknyttetJournalpostValidator = new FjernVedleggTilknyttetJournalpostValidator();
+	private final FjernVedleggTilknyttetJournalpostValidator fjernVedleggTilknyttetJournalpostValidator = new FjernVedleggTilknyttetJournalpostValidator();
 
 	@Test
 	public void shouldThrowExceptionIfJournalPostErIkkeUnderArbeidOgUtgaaende() {
 		Journalpost hentJournalpost = TestDataUtils.createJournalpostIngaaende();
-		expectedException.expect(KanIkkeSlettetVedleggKnyttetTilJournalpostException.class);
-		expectedException.expectMessage("Kan ikke slette vedlegg med journalpostId=1234, Journalpost må være utgående(U) og under arbeid(D)");
-		fjernVedleggTilknyttetJournalpostValidator.validateJournalPostStatusOgType(hentJournalpost);
+
+		assertThrows(KanIkkeSlettetVedleggKnyttetTilJournalpostException.class,
+				() -> fjernVedleggTilknyttetJournalpostValidator.validateJournalPostStatusOgType(hentJournalpost),
+				"Kan ikke slette vedlegg med journalpostId=1234, Journalpost må være utgående(U) og under arbeid(D)");
 	}
 
 	@Test
 	public void shouldThrowExceptionIfDokumentInfoOriginalJournalpostIsEqualsWithInputJournalPost() {
 		DokumentInfo hentDokumentInfo = TestDataUtils.createDokumentInfoWithLikJournalpost();
-		expectedException.expect(KanIkkeSlettetVedleggKnyttetTilJournalpostException.class);
-		expectedException.expectMessage("JounalpostId er lik med originalJournalpostId og vedlagt kan ikke slettes. med journalpostId=1234");
-		fjernVedleggTilknyttetJournalpostValidator.validateDokumentInfoOriginalJpNotEqualsInputJournalpost(hentDokumentInfo, JOURNALPOST_ID);
-	}
 
+		assertThrows(KanIkkeSlettetVedleggKnyttetTilJournalpostException.class,
+				() -> fjernVedleggTilknyttetJournalpostValidator.validateDokumentInfoOriginalJpNotEqualsInputJournalpost(hentDokumentInfo, JOURNALPOST_ID),
+				"Kan ikke slette vedlegg med journalpostId=1234, Journalpost må være utgående(U) og under arbeid(D)");
+	}
 
 	@Test
 	public void shouldThrowExceptionJournalpostDokumentInfoRelasjonIfIkkeSomVedlegg() {
 		JournalpostDokumentInfoRelasjon jpDokRelasjon = createJournalpostDokumentInfoRelasjonHovedDok();
-		expectedException.expect(KanIkkeSlettetVedleggKnyttetTilJournalpostException.class);
-		expectedException.expectMessage("TilknytteJournalpost er ikke som vedlegg og kan ikke slettes");
-		fjernVedleggTilknyttetJournalpostValidator.validateJournalpostDokumentInfoRelasjon(jpDokRelasjon);
 
+		assertThrows(KanIkkeSlettetVedleggKnyttetTilJournalpostException.class,
+				() -> fjernVedleggTilknyttetJournalpostValidator.validateJournalpostDokumentInfoRelasjon(jpDokRelasjon),
+				"TilknytteJournalpost er ikke som vedlegg og kan ikke slettes");
 	}
 
 	@Test
 	public void shouldThrowInvalidInputExceptionHvisJournalpostIdOgDokumentInfoIdErUgylidy() {
 		String journalpostId = null;
 		String dokumentinfoId = "523684";
-		expectedException.expect(InputValideringFeiletException.class);
-		expectedException.expectMessage("");
-		fjernVedleggTilknyttetJournalpostValidator.validateInput(journalpostId, dokumentinfoId);
+
+		assertThrows(InputValideringFeiletException.class,
+				() -> fjernVedleggTilknyttetJournalpostValidator.validateInput(journalpostId, dokumentinfoId),
+				"");
 	}
 
 }

@@ -9,8 +9,8 @@ import no.nav.dokarkiv.journalpost.v1.api.finnMottatteJournalposter.FinnMottatte
 import no.nav.dokarkiv.journalpost.v1.api.finnMottatteJournalposter.UbehandletJournalpost;
 import no.nav.dokarkiv.journalpost.v1.services.FinnMottatteJournalposterService;
 import org.joda.time.DateTime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -19,17 +19,16 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.Base64Utils;
 
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
@@ -44,13 +43,13 @@ public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
 
 	private FinnMottatteJournalposterService finnMottatteJournalposterService;
 
-	@Before
-	public void setup(){
+	@BeforeEach
+	public void setup() {
 		finnMottatteJournalposterService = new FinnMottatteJournalposterService(joarkRepository);
 	}
 
 	@Test
-	public void shouldHappyFinnMottatteJournalposter(){
+	public void shouldHappyFinnMottatteJournalposter() {
 		abacPermit();
 
 		List<Journalpost> journalposts = List.of(
@@ -60,8 +59,7 @@ public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
 
 		List<Long> journalpostIds = journalposts.stream()
 				.map(this::saveJournalpost)
-				.map(Journalpost::getJournalpostId)
-				.collect(Collectors.toList());
+				.map(Journalpost::getJournalpostId).toList();
 
 		commitAndStartNewTransaction();
 
@@ -69,14 +67,13 @@ public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
 				.finnMottatteJournalposter()
 				.getJournalposter()
 				.stream()
-				.map(UbehandletJournalpost::getJournalpostId)
-				.collect(Collectors.toList());
+				.map(UbehandletJournalpost::getJournalpostId).toList();
 
 		assertTrue(ubehandletJournalpostIds.containsAll(journalpostIds));
 	}
 
 	@Test
-	public void shouldOnlyGetUbehandledeJournalposts(){
+	public void shouldOnlyGetUbehandledeJournalposts() {
 		List<Date> journalDateRange = List.of(
 				DateTime.now().plusYears(1).toDate(),
 				DateTime.now().plusMonths(1).toDate(),
@@ -93,15 +90,15 @@ public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
 
 		for (Date date : journalDateRange)
 			for (JournalpostTypeCode journalpostTypeCode : JournalpostTypeCode.values())
-				for (JournalStatusCode journalStatusCode : JournalStatusCode.values()){
+				for (JournalStatusCode journalStatusCode : JournalStatusCode.values()) {
 					Journalpost journalpost = saveJournalpost(TestDataUtils.createUbehandletJournalpost(date, journalpostTypeCode, journalStatusCode));
-					if(verifyJournalpost(journalpost)) validJournalpostIds.add(journalpost.getJournalpostId());
+					if (verifyJournalpost(journalpost)) validJournalpostIds.add(journalpost.getJournalpostId());
 				}
 
 		commitAndStartNewTransaction();
 
 		List<UbehandletJournalpost> ubehandletJournalposts = finnMottatteJournalposterService.finnMottatteJournalposter().getJournalposter();
-		List<Long> retrievedIds = ubehandletJournalposts.stream().map(UbehandletJournalpost::getJournalpostId).collect(Collectors.toList());
+		List<Long> retrievedIds = ubehandletJournalposts.stream().map(UbehandletJournalpost::getJournalpostId).toList();
 
 		assertFalse(ubehandletJournalposts.isEmpty());
 		assertEquals(retrievedIds.size(), validJournalpostIds.size());
@@ -132,7 +129,8 @@ public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
 				for (JournalStatusCode journalStatusCode : JournalStatusCode.values())
 					for (FagomradeCode temakode : temakoder) {
 						Journalpost journalpost = saveJournalpost(TestDataUtils.createUbehandletJournalpost(date, journalpostTypeCode, journalStatusCode, temakode));
-						if(verifyJournalpostWithTema(journalpost)) validJournalpostIds.add(journalpost.getJournalpostId());
+						if (verifyJournalpostWithTema(journalpost))
+							validJournalpostIds.add(journalpost.getJournalpostId());
 					}
 
 		commitAndStartNewTransaction();
@@ -154,7 +152,7 @@ public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
 	}
 
 	@Test
-	public void shouldFailFinnMottatteJournalposter(){
+	public void shouldFailFinnMottatteJournalposter() {
 		abacPermit();
 
 		List<Journalpost> journalposts = List.of(
@@ -165,8 +163,7 @@ public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
 
 		List<Long> journalpostIds = journalposts.stream()
 				.map(this::saveJournalpost)
-				.map(Journalpost::getJournalpostId)
-				.collect(Collectors.toList());
+				.map(Journalpost::getJournalpostId).toList();
 
 		commitAndStartNewTransaction();
 
@@ -174,14 +171,13 @@ public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
 				.finnMottatteJournalposter()
 				.getJournalposter()
 				.stream()
-				.map(UbehandletJournalpost::getJournalpostId)
-				.collect(Collectors.toList());
+				.map(UbehandletJournalpost::getJournalpostId).toList();
 
 		assertFalse(journalpostIds.stream().anyMatch(ubehandletJournalpostIds::contains));
 	}
 
 	@Test
-	public void returnsOKWithResponseJSONifValidRequest() throws IOException {
+	public void returnsOKWithResponseJSONifValidRequest() {
 		abacPermit();
 
 		List<Journalpost> journalposts = List.of(
@@ -191,12 +187,11 @@ public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
 
 		List<Long> journalpostIds = journalposts.stream()
 				.map(this::saveJournalpost)
-				.map(Journalpost::getJournalpostId)
-				.collect(Collectors.toList());
+				.map(Journalpost::getJournalpostId).toList();
 
 		commitAndStartNewTransaction();
 
-		HttpEntity requestEntity = new HttpEntity<>(null, createHeaders(GYLDIG_CONSUMER));
+		var requestEntity = new HttpEntity<>(null, createHeaders(GYLDIG_CONSUMER));
 
 		ResponseEntity<FinnMottatteJournalposterResponse> response = restTemplate.exchange(URL_INTERN + FINNMOTTATTEJOURNALPOSTER, HttpMethod.GET, requestEntity, FinnMottatteJournalposterResponse.class);
 
@@ -207,16 +202,16 @@ public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
 		assertEquals(HttpStatus.OK, status);
 		assertNotNull(body);
 
-		List<Long> ubehandletJournalpostIds = body.getJournalposter().stream().map(UbehandletJournalpost::getJournalpostId).collect(Collectors.toList());
+		List<Long> ubehandletJournalpostIds = body.getJournalposter().stream().map(UbehandletJournalpost::getJournalpostId).toList();
 
 		assertTrue(ubehandletJournalpostIds.containsAll(journalpostIds));
 	}
 
 	@Test
-	public void returnsBadRequestIfNoAuthorizationHeader() throws IOException {
+	public void returnsBadRequestIfNoAuthorizationHeader() {
 		abacPermit();
 
-		HttpEntity requestEntity = new HttpEntity<>(null, new HttpHeaders());
+		var requestEntity = new HttpEntity<>(null, new HttpHeaders());
 
 		ResponseEntity<String> response = restTemplate.exchange(URL_INTERN + FINNMOTTATTEJOURNALPOSTER, HttpMethod.GET, requestEntity, String.class);
 
@@ -226,10 +221,10 @@ public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
 	}
 
 	@Test
-	public void returnsForbiddenIfInvalidConsumer() throws IOException {
+	public void returnsForbiddenIfInvalidConsumer() {
 		abacPermit();
 
-		HttpEntity requestEntity = new HttpEntity<>(null, createHeaders(UGYLDIG_CONSUMER));
+		var requestEntity = new HttpEntity<>(null, createHeaders(UGYLDIG_CONSUMER));
 
 		ResponseEntity<String> response = restTemplate.exchange(URL_INTERN + FINNMOTTATTEJOURNALPOSTER, HttpMethod.GET, requestEntity, String.class);
 
@@ -254,11 +249,9 @@ public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
 		Date createdDate = journalpost.getChangeStamp().getCreatedDate();
 		JournalStatusCode status = journalpost.getJournalstatus();
 
-		if( createdDate.after(weekAgo) ) return false;
-		if( status != JournalStatusCode.M && status != JournalStatusCode.MO ) return false;
-		if( !journalpost.isInngaende() ) return false;
-
-		return true;
+		if (createdDate.after(weekAgo)) return false;
+		if (status != JournalStatusCode.M && status != JournalStatusCode.MO) return false;
+		return journalpost.isInngaende();
 	}
 
 	private boolean verifyJournalpostWithTema(Journalpost journalpost) {
@@ -267,11 +260,9 @@ public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
 		JournalStatusCode status = journalpost.getJournalstatus();
 		FagomradeCode fagomrade = journalpost.getFagomrade();
 
-		if( createdDate.after(weekAgo) ) return false;
-		if( status != JournalStatusCode.M && status != JournalStatusCode.MO ) return false;
-		if( !journalpost.isInngaende() ) return false;
-		if ( fagomrade != FagomradeCode.PEN && fagomrade != FagomradeCode.UFO ) return false;
-
-		return true;
+		if (createdDate.after(weekAgo)) return false;
+		if (status != JournalStatusCode.M && status != JournalStatusCode.MO) return false;
+		if (!journalpost.isInngaende()) return false;
+		return fagomrade == FagomradeCode.PEN || fagomrade == FagomradeCode.UFO;
 	}
 }

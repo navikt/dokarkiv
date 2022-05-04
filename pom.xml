@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.6.6</version>
+		<version>2.6.7</version>
 	</parent>
 	<groupId>no.nav.dokarkiv</groupId>
 	<artifactId>dokarkiv</artifactId>
@@ -37,13 +37,13 @@
 		<javax.inject.version>1</javax.inject.version>
 		<jakarta.jws-api.version>1.1.1</jakarta.jws-api.version>
 		<oracle.version>19.12.0.0</oracle.version>
-		<cxf.version>3.5.1</cxf.version>
+		<cxf.version>3.5.2</cxf.version>
 		<simpleflatmapper.version>8.2.3</simpleflatmapper.version>
 		<commons-collections4.version>4.4</commons-collections4.version>
 		<logstash-logback-encoder.version>7.0.1</logstash-logback-encoder.version>
 		<logback-syslog4j.version>1.0.0</logback-syslog4j.version>
 		<jaxb2-basics-runtime.version>0.12.0</jaxb2-basics-runtime.version>
-		<java-jwt.version>3.18.2</java-jwt.version>
+		<java-jwt.version>3.19.1</java-jwt.version>
 
 		<google-cloud-storage.version>2.4.5</google-cloud-storage.version>
 		<tink.version>1.6.1</tink.version>

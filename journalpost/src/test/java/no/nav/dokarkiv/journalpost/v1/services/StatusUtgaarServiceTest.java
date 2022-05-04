@@ -6,7 +6,7 @@ import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.UgyldigJournalStatusException;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import java.util.Optional;
@@ -23,9 +23,9 @@ import static org.mockito.Mockito.when;
 
 public class StatusUtgaarServiceTest {
 
-	private JoarkRepository joarkRepositoryMock = Mockito.mock(JoarkRepository.class);
-	private LagreAksjonsLoggService aksjonsLoggService = Mockito.mock(LagreAksjonsLoggService.class);
-	private UtgaarService utgaarService = new UtgaarService(joarkRepositoryMock, aksjonsLoggService);
+	private final JoarkRepository joarkRepositoryMock = Mockito.mock(JoarkRepository.class);
+	private final LagreAksjonsLoggService aksjonsLoggService = Mockito.mock(LagreAksjonsLoggService.class);
+	private final UtgaarService utgaarService = new UtgaarService(joarkRepositoryMock, aksjonsLoggService);
 
 	@Test
 	public void HappyPathTest() {

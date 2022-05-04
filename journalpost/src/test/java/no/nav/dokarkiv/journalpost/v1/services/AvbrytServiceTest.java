@@ -4,7 +4,7 @@ import no.nav.dokarkiv.core.aksjonslogg.LagreAksjonsLoggService;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.UgyldigJournalStatusException;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import java.util.Optional;
@@ -13,17 +13,15 @@ import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.A;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.D;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.OD;
 import static no.nav.dokarkiv.journalpost.v1.services.AvbrytService.FIKK_AVBRUTT;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 public class AvbrytServiceTest {
-
-	private JoarkRepository joarkRepositoryMock = Mockito.mock(JoarkRepository.class);
-
-	private LagreAksjonsLoggService aksjonsLoggService = Mockito.mock(LagreAksjonsLoggService.class);
-
-	private AvbrytService avbrytService = new AvbrytService(joarkRepositoryMock, aksjonsLoggService);
+	private final JoarkRepository joarkRepositoryMock = Mockito.mock(JoarkRepository.class);
+	private final LagreAksjonsLoggService aksjonsLoggService = Mockito.mock(LagreAksjonsLoggService.class);
+	private final AvbrytService avbrytService = new AvbrytService(joarkRepositoryMock, aksjonsLoggService);
 
 
 	@Test

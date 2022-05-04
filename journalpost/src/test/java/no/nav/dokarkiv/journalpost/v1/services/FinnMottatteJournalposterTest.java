@@ -11,25 +11,23 @@ import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.core.util.TestDataUtils;
 import no.nav.dokarkiv.journalpost.v1.api.finnMottatteJournalposter.UbehandletJournalpost;
 import org.joda.time.DateTime;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class FinnMottatteJournalposterTest {
 
 	@InjectMocks
@@ -37,9 +35,6 @@ public class FinnMottatteJournalposterTest {
 
 	@Mock
 	private JoarkRepository joarkRepository;
-
-	@Rule
-	public ExpectedException expectedException = ExpectedException.none();
 
 	@Test
 	public void FinnMottateJournalposterServiceMapsEmptyListToEmptyFinnMottatteJournalposterResponse() {
@@ -99,7 +94,7 @@ public class FinnMottatteJournalposterTest {
 		assertEquals(5, finnMottatteJournalposterService.finnMottatteJournalposter().getJournalposter().size());
 	}
 
-	private Journalpost generateJournalpost(){
+	private Journalpost generateJournalpost() {
 		return generateJournalpost(DateTime.now().minusWeeks(2).toDate());
 	}
 

@@ -5,7 +5,7 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.journalpost.v1.api.FjernVedleggTilknyttetJournalpostRequest;
 import org.apache.commons.collections15.IteratorUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -45,36 +45,36 @@ public class FjernVedleggIT extends AbstractJournalpostIT {
 		Long journalpostId = saveJournalpost(journalpostSomSkalFjernes).getJournalpostId();
 		commitAndStartNewTransaction();
 
-		List<JournalpostDokumentInfoRelasjon> jpDokInfoRelasjonPersist= IteratorUtils.toList(journalpostDokumentInfoRelasjonRepository.findAll().iterator());
+		List<JournalpostDokumentInfoRelasjon> jpDokInfoRelasjonPersist = IteratorUtils.toList(journalpostDokumentInfoRelasjonRepository.findAll().iterator());
 		JournalpostDokumentInfoRelasjon vedllegJpDokumentInfoRelasjon = IteratorUtils.toList(journalpostDokumentInfoRelasjonRepository.findAll().iterator()).stream()
 				.filter(jpdok -> VEDLEGG.equals(jpdok.getTilknyttetJournalpostSom()))
 				.findAny()
 				.get();
-		List<JournalpostDokumentInfoRelasjon> jpDokInfoRelasjonByJpBeforeDelete= journalpostDokumentInfoRelasjonRepository.findAllByJournalpostJournalpostId(vedllegJpDokumentInfoRelasjon.getJournalpost().getJournalpostId());
+		List<JournalpostDokumentInfoRelasjon> jpDokInfoRelasjonByJpBeforeDelete = journalpostDokumentInfoRelasjonRepository.findAllByJournalpostJournalpostId(vedllegJpDokumentInfoRelasjon.getJournalpost().getJournalpostId());
 
 		List<Journalpost> persitJournalpost = IteratorUtils.toList(joarkRepository.findAll().iterator());
-		assertThat(persitJournalpost.size(),is(3));
-		assertThat(jpDokInfoRelasjonPersist.size(),is(4));
-		assertThat(jpDokInfoRelasjonByJpBeforeDelete.size(),is(2));
+		assertThat(persitJournalpost.size(), is(3));
+		assertThat(jpDokInfoRelasjonPersist.size(), is(4));
+		assertThat(jpDokInfoRelasjonByJpBeforeDelete.size(), is(2));
 
 		FjernVedleggTilknyttetJournalpostRequest request = FjernVedleggTilknyttetJournalpostRequest.builder()
 				.dokumentId(vedllegJpDokumentInfoRelasjon.getDokumentInfo().getDokumentInfoId().toString())
 				.build();
 
 
-		HttpEntity requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
+		var requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
 
 		ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST + journalpostId + FJERNVEDLEGG, HttpMethod.PATCH, requestEntity, String.class);
 
 		commitAndStartNewTransaction();
 		Optional<JournalpostDokumentInfoRelasjon> jpDokInfoRelasjon = journalpostDokumentInfoRelasjonRepository.findById(vedllegJpDokumentInfoRelasjon.getJournalpostDokumentInfoRelasjonId());
-		List<JournalpostDokumentInfoRelasjon> jpDokInfoRelasjonByJp= journalpostDokumentInfoRelasjonRepository.findAllByJournalpostJournalpostId(vedllegJpDokumentInfoRelasjon.getJournalpost().getJournalpostId());
-		List<JournalpostDokumentInfoRelasjon> jpDokInfoRelasjonAfterDelete= IteratorUtils.toList(journalpostDokumentInfoRelasjonRepository.findAll().iterator());
+		List<JournalpostDokumentInfoRelasjon> jpDokInfoRelasjonByJp = journalpostDokumentInfoRelasjonRepository.findAllByJournalpostJournalpostId(vedllegJpDokumentInfoRelasjon.getJournalpost().getJournalpostId());
+		List<JournalpostDokumentInfoRelasjon> jpDokInfoRelasjonAfterDelete = IteratorUtils.toList(journalpostDokumentInfoRelasjonRepository.findAll().iterator());
 		assertThat(response.getStatusCode(), is(HttpStatus.OK));
 		assertThat(jpDokInfoRelasjon.isPresent(), is(false));
-		assertThat(jpDokInfoRelasjonByJp,notNullValue());
-		assertThat(jpDokInfoRelasjonByJp.size(),is(1));
-		assertThat(jpDokInfoRelasjonAfterDelete.size(),is(3));
+		assertThat(jpDokInfoRelasjonByJp, notNullValue());
+		assertThat(jpDokInfoRelasjonByJp.size(), is(1));
+		assertThat(jpDokInfoRelasjonAfterDelete.size(), is(3));
 	}
 
 	@Test
@@ -93,13 +93,13 @@ public class FjernVedleggIT extends AbstractJournalpostIT {
 		JournalpostDokumentInfoRelasjon vedllegJpDokumentInfoRelasjon = IteratorUtils
 				.toList(journalpostDokumentInfoRelasjonRepository.findAll().iterator()).get(2);
 		List<Journalpost> persitJournalpost = IteratorUtils.toList(joarkRepository.findAll().iterator());
-		Long journalpostId =vedllegJpDokumentInfoRelasjon.getJournalpost().getJournalpostId();
+		Long journalpostId = vedllegJpDokumentInfoRelasjon.getJournalpost().getJournalpostId();
 		FjernVedleggTilknyttetJournalpostRequest request = FjernVedleggTilknyttetJournalpostRequest.builder()
 				.dokumentId(vedllegJpDokumentInfoRelasjon.getDokumentInfo().getDokumentInfoId().toString())
 				.build();
 		assertThat(persitJournalpost.size(), is(3));
 
-		HttpEntity requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
+		var requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
 
 		ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST + journalpostId + FJERNVEDLEGG, HttpMethod.PATCH, requestEntity, String.class);
 		commitAndStartNewTransaction();
@@ -118,7 +118,7 @@ public class FjernVedleggIT extends AbstractJournalpostIT {
 				.dokumentId("1111")
 				.build();
 
-		HttpEntity requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
+		var requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
 
 		ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST + JOURNALPOST_ID + FJERNVEDLEGG, HttpMethod.PATCH, requestEntity, String.class);
 		commitAndStartNewTransaction();
@@ -135,7 +135,7 @@ public class FjernVedleggIT extends AbstractJournalpostIT {
 				.dokumentId(null)
 				.build();
 
-		HttpEntity requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
+		var requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
 
 		ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST + JOURNALPOST_ID + FJERNVEDLEGG, HttpMethod.PATCH, requestEntity, String.class);
 		commitAndStartNewTransaction();

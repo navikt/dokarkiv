@@ -1,20 +1,20 @@
 package no.nav.dokarkiv.hentjournalsakinfo.rjoark910;
 
+import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
+import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
+import org.junit.jupiter.api.Test;
+
+import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.Collections;
+
 import static no.nav.dokarkiv.hentjournalsakinfo.common.SqlProjections.RELEVANTE_DATA;
 import static no.nav.dokarkiv.hentjournalsakinfo.rjoark910.DokumentoversiktBrukerSpringJdbcRepository.CTE_ALIAS_AKTOERID;
 import static no.nav.dokarkiv.hentjournalsakinfo.rjoark910.DokumentoversiktBrukerSpringJdbcRepository.CTE_ALIAS_MIDLERTIDIGE;
 import static no.nav.dokarkiv.hentjournalsakinfo.rjoark910.DokumentoversiktBrukerSpringJdbcRepository.CTE_ALIAS_ORGNR;
 import static no.nav.dokarkiv.hentjournalsakinfo.rjoark910.DokumentoversiktBrukerSpringJdbcRepository.CTE_ALIAS_PSAKSAKER;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
-import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
-import org.junit.Test;
-
-import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.Collections;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * @author Joakim Bjørnstad, Jbit AS

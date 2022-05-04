@@ -1,21 +1,21 @@
 package no.nav.dokarkiv.hentjournalsakinfo.rjoark903;
 
+import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
+import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.hentjournalsakinfo.AbstractHentjournalsakinfoItest;
+import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.transaction.TestTransaction;
+
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createDokumentInfo;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createJournalpostWithGjenbruktHoveddokument;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createJournalpostWithHoveddokument;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createVedleggRelasjon;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-
-import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
-import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import no.nav.dokarkiv.hentjournalsakinfo.AbstractHentjournalsakinfoItest;
-import org.junit.Test;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.transaction.TestTransaction;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class Rjoark903IT extends AbstractHentjournalsakinfoItest {
 	private static final String TILKNYTTEDEJOURNALPOSTER_GJENBRUK = "/hentjournalsakinfo/tilknyttedejournalposter/{dokumentInfoId}/GJENBRUK";
