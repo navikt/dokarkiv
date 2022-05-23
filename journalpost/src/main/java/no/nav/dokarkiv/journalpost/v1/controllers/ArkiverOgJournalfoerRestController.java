@@ -181,9 +181,10 @@ public class ArkiverOgJournalfoerRestController {
         MDC.put(MDC_REQUEST_ID, "rjoark202");
         RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDC_CONSUMER_ID));
 
+        /*
         if (BIDRAG_NAV_CONSUMER_ID.equals(MDC.get(MDC_CONSUMER_ID))) {
             return bidragService.opprettBidrag(request);
-        }
+        }*/
 
         log.info(MDC.get(MDC_REQUEST_ID) + " har mottatt kall for opprettelse av ny journalpost");
         try {
