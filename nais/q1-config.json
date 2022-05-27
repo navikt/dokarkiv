@@ -233,9 +233,19 @@
       "namespace": "bidrag",
       "cluster": "dev-fss"
     },
-	{
+	  {
       "app": "soknadsarkiverer",
       "namespace": "team-soknad",
+      "cluster": "dev-gcp"
+    },
+	  {
+      "app": "k9-joark",
+      "namespace": "dusseldorf",
+      "cluster": "dev-fss"
+    },
+	  {
+      "app": "k9-joark",
+      "namespace": "dusseldorf",
       "cluster": "dev-gcp"
     }
   ]
