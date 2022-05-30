@@ -1,6 +1,7 @@
 package no.nav.dokarkiv.core.domain.validator;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
 
 /**
  * Endringer:
@@ -24,6 +25,15 @@ import org.apache.commons.lang3.StringUtils;
  * @author Odin Hole Standal
  */
 public final class FoedselsnummerValidator {
+
+
+	private static String clusterName = System.getenv("NAIS_CLUSTER_NAME");
+	private static final String DEV_FSS = "dev-fss";
+
+	static{
+		clusterName = System.getProperty("NAIS_CLUSTER_NAME");
+	}
+
 	private FoedselsnummerValidator() {
 	}
 
@@ -44,12 +54,15 @@ public final class FoedselsnummerValidator {
 	 * @return Month in birth date part of FoedselsnummerValidator
 	 */
 	private static int getMonth(String validPid) {
-		int foersteSiffer =  Integer.parseInt(validPid.substring(2, 3));
-		if(foersteSiffer > 1){
-			foersteSiffer = foersteSiffer-8;
+		System.out.println(clusterName);
+
+		if(clusterName == DEV_FSS) {
+			int fnr =  Integer.parseInt(validPid.substring(2, 4));
+			int foersteSiffer = Integer.parseInt(validPid.substring(2, 3));
+			return foersteSiffer > 1 ? fnr % 20 : fnr;
 		}
-		String foedselsnr = foersteSiffer + validPid.substring(3, 4);
-		return Integer.parseInt(foedselsnr);
+
+		return Integer.parseInt(validPid.substring(2, 4));
 	}
 
 	/**
